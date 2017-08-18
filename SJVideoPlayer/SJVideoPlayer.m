@@ -14,7 +14,7 @@
 
 #import "SJVideoPlayerPresentView.h"
 
-#import "SJVideoPlayerControlView.h"
+#import "SJVideoPlayerControl.h"
 
 #import <Masonry/Masonry.h>
 
@@ -28,7 +28,7 @@ static const NSString *SJPlayerItemStatusContext;;
 @property (nonatomic, strong, readwrite) AVPlayer *player;
 
 
-@property (nonatomic, strong, readonly) SJVideoPlayerControlView *controlView;
+@property (nonatomic, strong, readonly) SJVideoPlayerControl *control;
 @property (nonatomic, strong, readonly) SJVideoPlayerPresentView *presentView;
 
 @end
@@ -36,7 +36,7 @@ static const NSString *SJPlayerItemStatusContext;;
 
 @implementation SJVideoPlayer
 
-@synthesize controlView = _controlView;
+@synthesize control = _control;
 @synthesize presentView = _presentView;
 
 
@@ -53,8 +53,8 @@ static const NSString *SJPlayerItemStatusContext;;
 - (instancetype)init {
     self = [super init];
     if ( !self ) return nil;
-    [self.presentView addSubview:self.controlView];
-    [_controlView mas_makeConstraints:^(MASConstraintMaker *make) {
+    [self.presentView addSubview:self.control.view];
+    [_control.view mas_makeConstraints:^(MASConstraintMaker *make) {
         make.edges.offset(0);
     }];
     return self;
@@ -101,7 +101,7 @@ static const NSString *SJPlayerItemStatusContext;;
     _presentView.player = _player;
     
     // control
-    _controlView.player = _player;
+    _control.player = _player;
     
 }
 
@@ -123,10 +123,10 @@ static const NSString *SJPlayerItemStatusContext;;
     return _presentView;
 }
 
-- (SJVideoPlayerControlView *)controlView {
-    if ( _controlView ) return _controlView;
-    _controlView = [SJVideoPlayerControlView new];
-    return _controlView;
+- (SJVideoPlayerControl *)control {
+    if ( _control ) return _control;
+    _control = [SJVideoPlayerControl new];
+    return _control;
 }
 
 @end

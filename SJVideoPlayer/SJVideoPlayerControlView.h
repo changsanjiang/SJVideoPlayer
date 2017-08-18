@@ -8,11 +8,19 @@
 
 #import <UIKit/UIKit.h>
 
-@class AVPlayer;
+@protocol SJVideoPlayerControlViewDelegate;
 
 
 @interface SJVideoPlayerControlView : UIView
 
-@property (nonatomic, strong, readwrite) AVPlayer *player;
+@property (nonatomic, weak) id <SJVideoPlayerControlViewDelegate> delegate;
+
+@end
+
+
+@protocol SJVideoPlayerControlViewDelegate <NSObject>
+
+@optional
+- (void)clickedBackBtnAtControlView:(SJVideoPlayerControlView *)controlView;
 
 @end

@@ -8,17 +8,11 @@
 
 #import "SJVideoPlayerControlView.h"
 
-#import <AVFoundation/AVPlayer.h>
-
 @interface SJVideoPlayerControlView ()
+
 
 @end
 
 @implementation SJVideoPlayerControlView
-
-- (void)setPlayer:(AVPlayer *)player {
-    _player = player;
-    [_player play];
-}
 
 @end

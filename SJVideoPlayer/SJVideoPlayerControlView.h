@@ -57,8 +57,7 @@ typedef NS_ENUM(NSUInteger, SJVideoPlayControlViewTag) {
 
 @interface SJVideoPlayerControlView (TimeOperation)
 
-@property (nonatomic, assign, readwrite) NSTimeInterval currentTime;
-@property (nonatomic, assign, readwrite) NSTimeInterval duration;
+- (void)setCurrentTime:(NSTimeInterval)time duration:(NSTimeInterval)duration;
 
 @end
 

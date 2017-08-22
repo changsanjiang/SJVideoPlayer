@@ -94,7 +94,8 @@ static const NSString *SJPlayerItemStatusContext;
         if ( !self ) return;
         NSTimeInterval currentTime = CMTimeGetSeconds(time);
         NSTimeInterval duration = CMTimeGetSeconds(self.playerItem.duration);
-        
+        [self.controlView setCurrentTime:currentTime duration:duration];
+        self.controlView.hiddenReplayBtn = !(currentTime == duration);
     };
     
     // Add observer and store pointer for future use
@@ -149,12 +150,15 @@ static const NSString *SJPlayerItemStatusContext;
 }
 
 - (void)play {
-    NSLog(@"%zd - %s", __LINE__, __func__);
-    
+    [self.player play];
+    self.controlView.hiddenPlayBtn = YES;
+    self.controlView.hiddenPauseBtn = NO;
 }
 
 - (void)pause {
-    NSLog(@"%zd - %s", __LINE__, __func__);
+    [self.player pause];
+    self.controlView.hiddenPlayBtn = NO;
+    self.controlView.hiddenPauseBtn = YES;
 }
 
 - (void)replay {

@@ -215,6 +215,7 @@
  *  default is NO
  */
 - (void)setHiddenPlayBtn:(BOOL)hiddenPlayBtn {
+    if ( hiddenPlayBtn == self.hiddenPlayBtn ) return;
     objc_setAssociatedObject(self, @selector(hiddenPlayBtn), @(hiddenPlayBtn), OBJC_ASSOCIATION_RETAIN_NONATOMIC);
     [self hiddenOrShowView:self.playBtn bol:hiddenPlayBtn];
 }
@@ -227,6 +228,7 @@
  *  default is NO
  */
 - (void)setHiddenPauseBtn:(BOOL)hiddenPauseBtn {
+    if ( hiddenPauseBtn == self.hiddenPauseBtn ) return;
     objc_setAssociatedObject(self, @selector(hiddenPauseBtn), @(hiddenPauseBtn), OBJC_ASSOCIATION_RETAIN_NONATOMIC);
     [self hiddenOrShowView:self.pauseBtn bol:hiddenPauseBtn];
 }
@@ -239,6 +241,7 @@
  *  default is NO
  */
 - (void)setHiddenReplayBtn:(BOOL)hiddenReplayBtn {
+    if ( hiddenReplayBtn == self.hiddenReplayBtn ) return;
     objc_setAssociatedObject(self, @selector(hiddenReplayBtn), @(hiddenReplayBtn), OBJC_ASSOCIATION_RETAIN_NONATOMIC);
     [self hiddenOrShowView:self.replayBtn bol:hiddenReplayBtn];
 }
@@ -259,26 +262,21 @@
 @end
 
 
-#warning Next...
+
 
 @implementation SJVideoPlayerControlView (TimeOperation)
 
-- (void)setCurrentTime:(NSTimeInterval)currentTime {
-    objc_setAssociatedObject(self, @selector(currentTime), @(currentTime), OBJC_ASSOCIATION_RETAIN_NONATOMIC);
-
+- (NSString *)formatSeconds:(NSInteger)value {
+    NSInteger seconds = value % 60;
+    NSInteger minutes = value / 60;
+    return [NSString stringWithFormat:@"%02ld:%02ld", (long) minutes, (long) seconds];
 }
 
-- (NSTimeInterval)currentTime {
-    return [objc_getAssociatedObject(self, _cmd) boolValue];
-}
-
-- (void)setDuration:(NSTimeInterval)duration {
-    objc_setAssociatedObject(self, @selector(duration), @(duration), OBJC_ASSOCIATION_RETAIN_NONATOMIC);
-
-}
-
-- (NSTimeInterval)duration {
-    return [objc_getAssociatedObject(self, _cmd) boolValue];
+- (void)setCurrentTime:(NSTimeInterval)currentTime duration:(NSTimeInterval)duration {
+    _currentTimeLabel.text = [self formatSeconds:currentTime];
+    _durationTimeLabel.text = [self formatSeconds:duration];
+    if ( 0 == duration ) return;
+    _sliderControl.value = currentTime / duration;
 }
 
 @end

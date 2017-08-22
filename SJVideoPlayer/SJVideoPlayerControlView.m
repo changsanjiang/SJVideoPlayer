@@ -35,7 +35,6 @@
 @property (nonatomic, strong, readonly) UILabel *currentTimeLabel;
 @property (nonatomic, strong, readonly) UILabel *separateLabel;
 @property (nonatomic, strong, readonly) UILabel *durationTimeLabel;
-@property (nonatomic, strong, readonly) SJSlider *sliderControl;
 
 @property (nonatomic, strong, readonly) SJMaskView *controlMaskView;
 

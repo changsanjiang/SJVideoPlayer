@@ -14,7 +14,7 @@
 
 #import <AVFoundation/AVPlayerItem.h>
 
-
+#import <SJSlider/SJSlider.h>
 
 /*!
  *  AVPlayerItem's status property
@@ -31,7 +31,22 @@ static const NSString *SJPlayerItemStatusContext;
 
 
 
+@interface SJVideoPlayerControl (SJSliderDelegateMethods)<SJSliderDelegate>
+
+@end
+
+
 @interface SJVideoPlayerControl (SJVideoPlayerControlViewDelegateMethods)<SJVideoPlayerControlViewDelegate>
+
+- (void)play;
+
+- (void)pause;
+
+- (void)replay;
+
+- (void)back;
+
+- (void)full;
 
 @end
 
@@ -45,6 +60,8 @@ static const NSString *SJPlayerItemStatusContext;
 @property (nonatomic, strong, readwrite) AVPlayerItem *playerItem;
 
 @property (nonatomic, strong, readwrite) id timeObserver;
+
+@property (nonatomic, strong, readwrite) id itemEndObserver;
 
 @end
 
@@ -72,8 +89,11 @@ static const NSString *SJPlayerItemStatusContext;
         dispatch_async(dispatch_get_main_queue(), ^{
             [self.playerItem removeObserver:self forKeyPath:STATUS_KEYPATH];
             if (self.playerItem.status == AVPlayerItemStatusReadyToPlay) {
-                [self.player play];
+                
+                [self play];
+                
                 [self addPlayerItemTimeObserver];
+                [self addItemEndObserverForPlayerItem];
             } else {
                 NSLog(@"Failed to load Video: %@", self.playerItem.error);
                 NSLog(@"Failed to load Video: %@", self.playerItem.error);
@@ -87,7 +107,6 @@ static const NSString *SJPlayerItemStatusContext;
     CMTime interval = CMTimeMakeWithSeconds(REFRESH_INTERVAL, NSEC_PER_SEC);
     dispatch_queue_t queue = dispatch_get_main_queue();
     // Create callback block for time observer
-    
     __weak typeof(self) _self = self;
     void (^callback)(CMTime time) = ^(CMTime time) {
         __strong typeof(_self) self = _self;
@@ -95,7 +114,6 @@ static const NSString *SJPlayerItemStatusContext;
         NSTimeInterval currentTime = CMTimeGetSeconds(time);
         NSTimeInterval duration = CMTimeGetSeconds(self.playerItem.duration);
         [self.controlView setCurrentTime:currentTime duration:duration];
-        self.controlView.hiddenReplayBtn = !(currentTime == duration);
     };
     
     // Add observer and store pointer for future use
@@ -103,6 +121,29 @@ static const NSString *SJPlayerItemStatusContext;
     [self.player addPeriodicTimeObserverForInterval:interval
                                               queue:queue
                                          usingBlock:callback];
+}
+
+- (void)addItemEndObserverForPlayerItem {
+    
+    NSString *name = AVPlayerItemDidPlayToEndTimeNotification;
+    
+    NSOperationQueue *queue = [NSOperationQueue mainQueue];
+    
+    __weak typeof(self) _self = self;
+    void (^callback)(NSNotification *note) = ^(NSNotification *notification) {
+        __strong typeof(_self) self = _self;
+        if ( !self ) return;
+        [self.player seekToTime:kCMTimeZero
+                  completionHandler:^(BOOL finished) {
+                      self.controlView.hiddenReplayBtn = NO;
+                  }];
+    };
+    
+    self.itemEndObserver =                                                  // 4
+    [[NSNotificationCenter defaultCenter] addObserverForName:name
+                                                      object:self.playerItem
+                                                       queue:queue
+                                                  usingBlock:callback];
 }
 
 // MARK: Getter
@@ -115,6 +156,7 @@ static const NSString *SJPlayerItemStatusContext;
     if ( _controlView ) return _controlView;
     _controlView = [SJVideoPlayerControlView new];
     _controlView.delegate = self;
+    _controlView.sliderControl.delegate = self;
     _controlView.hiddenPlayBtn = YES;
     _controlView.hiddenReplayBtn = YES;
     return _controlView;
@@ -151,6 +193,7 @@ static const NSString *SJPlayerItemStatusContext;
 
 - (void)play {
     [self.player play];
+    self.controlView.hiddenReplayBtn = YES;
     self.controlView.hiddenPlayBtn = YES;
     self.controlView.hiddenPauseBtn = NO;
 }
@@ -163,6 +206,7 @@ static const NSString *SJPlayerItemStatusContext;
 
 - (void)replay {
     NSLog(@"%zd - %s", __LINE__, __func__);
+    
 }
 
 - (void)back {
@@ -171,6 +215,23 @@ static const NSString *SJPlayerItemStatusContext;
 
 - (void)full {
     NSLog(@"%zd - %s", __LINE__, __func__);
+}
+
+
+
+@end
+
+
+
+
+@implementation SJVideoPlayerControl (SJSliderDelegateMethods)
+
+- (void)slidingOnSlider:(SJSlider *)slider {
+    [self pause];
+}
+
+- (void)slidesOnSlider:(SJSlider *)slider {
+    [self play];
 }
 
 @end

@@ -8,6 +8,7 @@
 
 #import <UIKit/UIKit.h>
 
+@class SJSlider;
 
 typedef NS_ENUM(NSUInteger, SJVideoPlayControlViewTag) {
     SJVideoPlayControlViewTag_Back,
@@ -27,6 +28,8 @@ typedef NS_ENUM(NSUInteger, SJVideoPlayControlViewTag) {
 @interface SJVideoPlayerControlView : UIView
 
 @property (nonatomic, weak, readwrite) id <SJVideoPlayerControlViewDelegate> delegate;
+
+@property (nonatomic, strong, readonly) SJSlider *sliderControl;
 
 @end
 

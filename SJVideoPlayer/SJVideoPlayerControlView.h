@@ -8,19 +8,69 @@
 
 #import <UIKit/UIKit.h>
 
+
+typedef NS_ENUM(NSUInteger, SJVideoPlayControlViewTag) {
+    SJVideoPlayControlViewTag_Back,
+    SJVideoPlayControlViewTag_Full,
+    SJVideoPlayControlViewTag_Play,
+    SJVideoPlayControlViewTag_Pause,
+    SJVideoPlayControlViewTag_Replay,
+};
+
+
+
+
 @protocol SJVideoPlayerControlViewDelegate;
+
 
 
 @interface SJVideoPlayerControlView : UIView
 
-@property (nonatomic, weak) id <SJVideoPlayerControlViewDelegate> delegate;
+@property (nonatomic, weak, readwrite) id <SJVideoPlayerControlViewDelegate> delegate;
 
 @end
+
+
+
+
+
+@interface SJVideoPlayerControlView (HiddenOrShow)
+
+/*!
+ *  default is NO
+ */
+@property (nonatomic, assign, readwrite) BOOL hiddenPauseBtn;
+
+/*!
+ *  default is NO
+ */
+@property (nonatomic, assign, readwrite) BOOL hiddenPlayBtn;
+
+/*!
+ *  default is NO
+ */
+@property (nonatomic, assign, readwrite) BOOL hiddenReplayBtn;
+
+@end
+
+
+
+@interface SJVideoPlayerControlView (TimeOperation)
+
+@property (nonatomic, assign, readwrite) NSTimeInterval currentTime;
+@property (nonatomic, assign, readwrite) NSTimeInterval duration;
+
+@end
+
+
+
+
 
 
 @protocol SJVideoPlayerControlViewDelegate <NSObject>
 
 @optional
-- (void)clickedBackBtnAtControlView:(SJVideoPlayerControlView *)controlView;
+
+- (void)controlView:(SJVideoPlayerControlView *)controlView clickedBtnTag:(SJVideoPlayControlViewTag)tag;
 
 @end

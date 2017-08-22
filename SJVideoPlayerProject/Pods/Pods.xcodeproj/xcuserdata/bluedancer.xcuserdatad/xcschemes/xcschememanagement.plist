@@ -14,10 +14,20 @@
 			<key>isShown</key>
 			<false/>
 		</dict>
+		<key>SJSlider.xcscheme</key>
+		<dict>
+			<key>isShown</key>
+			<false/>
+		</dict>
 	</dict>
 	<key>SuppressBuildableAutocreation</key>
 	<dict>
-		<key>294CBC747AEED0F478E76DF30877F156</key>
+		<key>3B75195291AEB8C7A6FDC937BAE5D4B5</key>
+		<dict>
+			<key>primary</key>
+			<true/>
+		</dict>
+		<key>7670EC1CFFB90A0B537F00D0826071BC</key>
 		<dict>
 			<key>primary</key>
 			<true/>

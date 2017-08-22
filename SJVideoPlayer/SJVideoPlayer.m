@@ -10,15 +10,17 @@
 
 #import <UIKit/UIView.h>
 
-#import <AVFoundation/AVFoundation.h>
+#import <AVFoundation/AVAsset.h>
+
+#import <AVFoundation/AVPlayerItem.h>
+
+#import <AVFoundation/AVPlayer.h>
 
 #import "SJVideoPlayerPresentView.h"
 
 #import "SJVideoPlayerControl.h"
 
 #import <Masonry/Masonry.h>
-
-static const NSString *SJPlayerItemStatusContext;;
 
 
 @interface SJVideoPlayer ()
@@ -78,7 +80,6 @@ static const NSString *SJPlayerItemStatusContext;;
 
 // MARK: Private
 
-
 - (void)_sjVideoPlayerPrepareToPlay {
     
     [self _sjVideoPlayerResetPlayer];
@@ -93,26 +94,17 @@ static const NSString *SJPlayerItemStatusContext;;
       @"commonMetadata",
       @"availableMediaCharacteristicsWithMediaSelectionOptions"];
     _playerItem = [AVPlayerItem playerItemWithAsset:self.asset automaticallyLoadedAssetKeys:keys];
-    [_playerItem addObserver:self forKeyPath:@"status" options:0 context:&SJPlayerItemStatusContext];
     _player = [AVPlayer playerWithPlayerItem:self.playerItem];
-    
     
     // present
     _presentView.player = _player;
     
     // control
-    _control.player = _player;
-    
+    [_control setPlayerItem:_playerItem player:_player];
 }
 
 - (void)_sjVideoPlayerResetPlayer {
     NSLog(@"Reset Player");
-}
-
-// MARK: Observer
-
-- (void)observeValueForKeyPath:(NSString *)keyPath ofObject:(id)object change:(NSDictionary<NSKeyValueChangeKey,id> *)change context:(void *)context {
-    
 }
 
 // MARK: Lazy

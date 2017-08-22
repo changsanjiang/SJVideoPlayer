@@ -1,0 +1,30 @@
+{
+  "DVTSourceControlWorkspaceBlueprintPrimaryRemoteRepositoryKey" : "DDE377DAB80BE6811219825C56CE2B0A6DF49FFD",
+  "DVTSourceControlWorkspaceBlueprintWorkingCopyRepositoryLocationsKey" : {
+
+  },
+  "DVTSourceControlWorkspaceBlueprintWorkingCopyStatesKey" : {
+    "DDE377DAB80BE6811219825C56CE2B0A6DF49FFD" : 9223372036854775807,
+    "B034779BFF588A2D058A3DFCA7CF483BE667004D" : 9223372036854775807
+  },
+  "DVTSourceControlWorkspaceBlueprintIdentifierKey" : "E849568F-FDBD-44C9-8116-15911E3A170B",
+  "DVTSourceControlWorkspaceBlueprintWorkingCopyPathsKey" : {
+    "DDE377DAB80BE6811219825C56CE2B0A6DF49FFD" : "SJVideoPlayer\/",
+    "B034779BFF588A2D058A3DFCA7CF483BE667004D" : "..\/..\/lanwuzhe"
+  },
+  "DVTSourceControlWorkspaceBlueprintNameKey" : "SJVideoPlayerProject",
+  "DVTSourceControlWorkspaceBlueprintVersion" : 204,
+  "DVTSourceControlWorkspaceBlueprintRelativePathToProjectKey" : "SJVideoPlayerProject\/SJVideoPlayerProject.xcworkspace",
+  "DVTSourceControlWorkspaceBlueprintRemoteRepositoriesKey" : [
+    {
+      "DVTSourceControlWorkspaceBlueprintRemoteRepositoryURLKey" : "https:\/\/git.oschina.net\/lanwuzhe\/lanwuzhe.git",
+      "DVTSourceControlWorkspaceBlueprintRemoteRepositorySystemKey" : "com.apple.dt.Xcode.sourcecontrol.Git",
+      "DVTSourceControlWorkspaceBlueprintRemoteRepositoryIdentifierKey" : "B034779BFF588A2D058A3DFCA7CF483BE667004D"
+    },
+    {
+      "DVTSourceControlWorkspaceBlueprintRemoteRepositoryURLKey" : "https:\/\/github.com\/changsanjiang\/SJVideoPlayer.git",
+      "DVTSourceControlWorkspaceBlueprintRemoteRepositorySystemKey" : "com.apple.dt.Xcode.sourcecontrol.Git",
+      "DVTSourceControlWorkspaceBlueprintRemoteRepositoryIdentifierKey" : "DDE377DAB80BE6811219825C56CE2B0A6DF49FFD"
+    }
+  ]
+}

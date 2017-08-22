@@ -21,7 +21,7 @@
     
     SJVideoPlayer *player = [SJVideoPlayer sharedPlayer];
     
-    player.assetURL = [NSURL URLWithString:@"http://vod.lanwuzhe.com/615388f2b38c4fc8b3d3c621939762c4/3fe91db43dc84353b9bb3f9623e7784f-5287d2089db37e62345123a1be272f8b.mp4?video="];
+    player.assetURL = [[NSBundle mainBundle] URLForResource:@"sample.mp4" withExtension:nil];
     
     [self.view addSubview:player.view];
     

@@ -582,8 +582,6 @@ static NSString *const SJVideoPlayPreviewColCellID = @"SJVideoPlayPreviewColCell
 @implementation SJVideoPlayerControlView (ColDelegateMethods)
 
 - (void)collectionView:(UICollectionView *)collectionView didSelectItemAtIndexPath:(NSIndexPath *)indexPath {
-    [self previewImgColView_HiddenAnima];
-    self.previewBtn.selected = NO;
     if ( ![self.delegate respondsToSelector:@selector(controlView:selectedPreviewModel:)] ) return;
     SJVideoPreviewModel *model = [[collectionView cellForItemAtIndexPath:indexPath] valueForKey:@"model"];
     [self.delegate controlView:self selectedPreviewModel:model];

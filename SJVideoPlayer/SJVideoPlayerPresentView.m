@@ -25,7 +25,6 @@
 - (instancetype)initWithFrame:(CGRect)frame {
     self = [super initWithFrame:frame];
     if ( !self ) return nil;
-    self.backgroundColor = [UIColor blackColor];
     return self;
 }
 

@@ -234,6 +234,8 @@
     self.trackHeight = 8.0;
     self.minValue = 0.0;
     self.maxValue = 1.0;
+    self.borderWidth = 0.4;
+    self.borderColor = [UIColor lightGrayColor];
     
     self.enableBufferProgress = NO;
     self.bufferProgress = 0;
@@ -267,17 +269,22 @@
 - (void)handlePanGR:(UIPanGestureRecognizer *)pan {
     
     switch (pan.state) {
-        case UIGestureRecognizerStateBegan:
+        case UIGestureRecognizerStateBegan: {
+            _isDragging = YES;
+            if ( ![self.delegate respondsToSelector:@selector(sliderWillBeginDragging:)] ) break;
+            [self.delegate sliderWillBeginDragging:self];
+        }
         case UIGestureRecognizerStateChanged: {
-            if ( ![self.delegate respondsToSelector:@selector(slidingOnSlider:)] ) break;
-            [self.delegate slidingOnSlider:self];
+            if ( ![self.delegate respondsToSelector:@selector(sliderDidDrag:)] ) break;
+            [self.delegate sliderDidDrag:self];
         }
             break;
         case UIGestureRecognizerStateEnded:
         case UIGestureRecognizerStateFailed:
         case UIGestureRecognizerStateCancelled: {
-            if ( ![self.delegate respondsToSelector:@selector(slidesOnSlider:)] ) break;
-            [self.delegate slidesOnSlider:self];
+            _isDragging = NO;
+            if ( ![self.delegate respondsToSelector:@selector(sliderDidEndDragging:)] ) break;
+            [self.delegate sliderDidEndDragging:self];
         }
             break;
         default:
@@ -297,8 +304,6 @@
     [self.containerView addSubview:self.bufferProgressView];
     [self.containerView addSubview:self.traceImageView];
     
-    _containerView.layer.borderWidth = 0.5;
-    _containerView.layer.borderColor = [UIColor lightGrayColor].CGColor;
     [_containerView mas_makeConstraints:^(MASConstraintMaker *make) {
         make.leading.trailing.offset(0);
         make.center.offset(0);

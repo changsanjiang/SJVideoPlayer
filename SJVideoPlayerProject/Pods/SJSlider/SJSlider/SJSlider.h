@@ -30,12 +30,13 @@
 /*!
  *  borderColor
  *  default is lightGrayColor.
+ *  if you don't want it, you can set it to clearColor.
  */
 @property (nonatomic, strong, readwrite) UIColor *borderColor;
 
 /*!
  *  borderWidth
- *  default is 0.5.
+ *  default is 0.4.
  */
 @property (nonatomic, assign, readwrite) CGFloat borderWidth;
 
@@ -65,6 +66,11 @@
  *  触动手势
  */
 @property (nonatomic, strong, readonly) UIPanGestureRecognizer *pan;
+
+/*!
+ *  slider是否被拖拽
+ */
+@property (nonatomic, assign, readonly) BOOL isDragging;
 
 @end
 
@@ -97,14 +103,21 @@
 
 @protocol SJSliderDelegate <NSObject>
 
+@optional
+
+/*!
+ *  开始滑动
+ */
+- (void)sliderWillBeginDragging:(SJSlider *)slider;
+
 /*!
  *  正在滑动
  */
-- (void)slidingOnSlider:(SJSlider *)slider;
+- (void)sliderDidDrag:(SJSlider *)slider;
 
 /*!
  *  滑动完成
  */
-- (void)slidesOnSlider:(SJSlider *)slider;
+- (void)sliderDidEndDragging:(SJSlider *)slider;
 
 @end

@@ -8,6 +8,8 @@
 
 #import <UIKit/UIKit.h>
 
+#import <CoreMedia/CMTime.h>
+
 @class SJSlider;
 
 typedef NS_ENUM(NSUInteger, SJVideoPlayControlViewTag) {
@@ -16,6 +18,7 @@ typedef NS_ENUM(NSUInteger, SJVideoPlayControlViewTag) {
     SJVideoPlayControlViewTag_Play,
     SJVideoPlayControlViewTag_Pause,
     SJVideoPlayControlViewTag_Replay,
+    SJVideoPlayControlViewTag_Preview,
 };
 
 
@@ -54,8 +57,17 @@ typedef NS_ENUM(NSUInteger, SJVideoPlayControlViewTag) {
  */
 @property (nonatomic, assign, readwrite) BOOL hiddenReplayBtn;
 
+/*!
+ *  default is NO
+ */
+@property (nonatomic, assign, readwrite) BOOL hiddenPreviewBtn;
+
+
 @end
 
+
+
+// MARK: Time
 
 
 @interface SJVideoPlayerControlView (TimeOperation)
@@ -68,11 +80,33 @@ typedef NS_ENUM(NSUInteger, SJVideoPlayControlViewTag) {
 
 
 
+// MARK: Preview
+
+@interface SJVideoPreviewModel : NSObject
+
+@property (nonatomic, strong, readonly) UIImage *image;
+@property (nonatomic, assign, readonly) CMTime localTime;
+
++ (instancetype)previewModelWithImage:(UIImage *)image localTime:(CMTime)time;
+
+@end
+
+
+@interface SJVideoPlayerControlView (Preview)
+
+@property (nonatomic, strong) NSArray<SJVideoPreviewModel *> *previewImages;
+
+@end
+
+
+
 
 @protocol SJVideoPlayerControlViewDelegate <NSObject>
 
 @optional
 
 - (void)controlView:(SJVideoPlayerControlView *)controlView clickedBtnTag:(SJVideoPlayControlViewTag)tag;
+
+- (void)controlView:(SJVideoPlayerControlView *)controlView selectedPreviewModel:(SJVideoPreviewModel *)model;
 
 @end

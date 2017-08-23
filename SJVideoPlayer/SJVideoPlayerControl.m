@@ -16,6 +16,12 @@
 
 #import <SJSlider/SJSlider.h>
 
+#import <AVFoundation/AVAsset.h>
+
+#import <AVFoundation/AVAssetImageGenerator.h>
+
+#import <AVFoundation/AVTime.h>
+
 /*!
  *  AVPlayerItem's status property
  */
@@ -28,6 +34,9 @@
 
 
 static const NSString *SJPlayerItemStatusContext;
+
+
+
 
 
 
@@ -48,12 +57,20 @@ static const NSString *SJPlayerItemStatusContext;
 
 - (void)full;
 
+- (void)stop;
+
+- (void)jumpedToTime:(NSTimeInterval)time completionHandler:(void (^)(BOOL finished))completionHandler;
+
+- (void)jumpedToCMTime:(CMTime)time completionHandler:(void (^)(BOOL finished))completionHandler;
+
 @end
 
 
 @interface SJVideoPlayerControl ()
 
 @property (nonatomic, strong, readonly) SJVideoPlayerControlView *controlView;
+
+@property (nonatomic, strong, readwrite) AVAsset *asset;
 
 @property (nonatomic, strong, readwrite) AVPlayer *player;
 
@@ -62,6 +79,8 @@ static const NSString *SJPlayerItemStatusContext;
 @property (nonatomic, strong, readwrite) id timeObserver;
 
 @property (nonatomic, strong, readwrite) id itemEndObserver;
+
+@property (nonatomic, assign, readwrite) CGFloat lastPlaybackRate;
 
 @end
 
@@ -76,10 +95,68 @@ static const NSString *SJPlayerItemStatusContext;
     return self;
 }
 
-- (void)setPlayerItem:(AVPlayerItem *)playerItem player:(AVPlayer *)player {
-    _player = player;
+- (void)setAsset:(AVAsset *)asset playerItem:(AVPlayerItem *)playerItem player:(AVPlayer *)player {
+    [self _sjResetPlayer];
+    
+    _asset = asset;
     _playerItem = playerItem;
+    _player = player;
+    
     [_playerItem addObserver:self forKeyPath:STATUS_KEYPATH options:0 context:&SJPlayerItemStatusContext];
+    
+    [self generatePreviewImgs];
+}
+
+
+- (void)generatePreviewImgs {
+    
+    NSMutableArray<NSValue *> *timesM = [NSMutableArray new];
+    
+    NSInteger second = _asset.duration.value / _asset.duration.timescale;
+    short interval = 3;
+    __block NSInteger count = second / interval;
+    
+    for ( int i = 0 ; i < count ; i ++ ) {
+        CMTime time = CMTimeMake(i * interval, 1);
+        NSValue *tV = [NSValue valueWithCMTime:time];
+        if ( tV ) [timesM addObject:tV];
+    }
+    
+    __weak typeof(self) _self = self;
+    NSMutableArray <SJVideoPreviewModel *> *imagesM = [NSMutableArray new];
+    [[AVAssetImageGenerator assetImageGeneratorWithAsset:_asset] generateCGImagesAsynchronouslyForTimes:timesM completionHandler:^(CMTime requestedTime, CGImageRef  _Nullable imageRef, CMTime actualTime, AVAssetImageGeneratorResult result, NSError * _Nullable error) {
+        if ( result == AVAssetImageGeneratorSucceeded ) {
+            UIImage *image = [UIImage imageWithCGImage:imageRef];
+            SJVideoPreviewModel *model = [SJVideoPreviewModel previewModelWithImage:image localTime:actualTime];
+            if ( model ) [imagesM addObject:model];
+        }
+        else {
+            NSLog(@"ERROR : %@", error);
+            NSLog(@"ERROR : %@", error);
+            NSLog(@"ERROR : %@", error);
+        }
+                
+        if ( --count == 0 ) {
+            __strong typeof(_self) self = _self;
+            if ( !self ) return;
+            dispatch_async(dispatch_get_main_queue(), ^{
+                self.controlView.previewImages = imagesM;
+            });
+
+        }
+    }];
+}
+
+- (void)_sjResetPlayer {
+    NSLog(@"reset Player");
+    
+    [self.player removeTimeObserver:_timeObserver];
+    _timeObserver = nil;
+    
+    [[NSNotificationCenter defaultCenter] removeObserver:_itemEndObserver name:AVPlayerItemDidPlayToEndTimeNotification object:_player.currentItem];
+    _itemEndObserver = nil;
+    
+
 }
 
 // MARK: Observer
@@ -90,10 +167,15 @@ static const NSString *SJPlayerItemStatusContext;
             [self.playerItem removeObserver:self forKeyPath:STATUS_KEYPATH];
             if (self.playerItem.status == AVPlayerItemStatusReadyToPlay) {
                 
-                [self play];
-                
                 [self addPlayerItemTimeObserver];
                 [self addItemEndObserverForPlayerItem];
+                
+                CMTime duration = self.playerItem.duration;
+                
+                [self.controlView setCurrentTime:CMTimeGetSeconds(kCMTimeZero) duration:CMTimeGetSeconds(duration)];
+                
+                [self play];
+                
             } else {
                 NSLog(@"Failed to load Video: %@", self.playerItem.error);
                 NSLog(@"Failed to load Video: %@", self.playerItem.error);
@@ -134,9 +216,10 @@ static const NSString *SJPlayerItemStatusContext;
         __strong typeof(_self) self = _self;
         if ( !self ) return;
         [self.player seekToTime:kCMTimeZero
-                  completionHandler:^(BOOL finished) {
-                      self.controlView.hiddenReplayBtn = NO;
-                  }];
+              completionHandler:^(BOOL finished) {
+                  self.controlView.hiddenReplayBtn = NO;
+              }];
+        [self pause];
     };
     
     self.itemEndObserver =                                                  // 4
@@ -168,6 +251,12 @@ static const NSString *SJPlayerItemStatusContext;
 
 @implementation SJVideoPlayerControl (SJVideoPlayerControlViewDelegateMethods)
 
+- (void)controlView:(SJVideoPlayerControlView *)controlView selectedPreviewModel:(SJVideoPreviewModel *)model {
+    [self jumpedToCMTime:model.localTime completionHandler:^(BOOL finished) {
+        if ( self.lastPlaybackRate > 0.f) [self play];
+    }];
+}
+
 - (void)controlView:(SJVideoPlayerControlView *)controlView clickedBtnTag:(SJVideoPlayControlViewTag)tag {
     switch (tag) {
         case SJVideoPlayControlViewTag_Play:
@@ -196,17 +285,19 @@ static const NSString *SJPlayerItemStatusContext;
     self.controlView.hiddenReplayBtn = YES;
     self.controlView.hiddenPlayBtn = YES;
     self.controlView.hiddenPauseBtn = NO;
+    self.lastPlaybackRate = self.player.rate;
 }
 
 - (void)pause {
     [self.player pause];
     self.controlView.hiddenPlayBtn = NO;
     self.controlView.hiddenPauseBtn = YES;
+    self.lastPlaybackRate = self.player.rate;
 }
 
 - (void)replay {
     NSLog(@"%zd - %s", __LINE__, __func__);
-    
+    [self play];
 }
 
 - (void)back {
@@ -217,7 +308,22 @@ static const NSString *SJPlayerItemStatusContext;
     NSLog(@"%zd - %s", __LINE__, __func__);
 }
 
+- (void)stop {
+    [self.player setRate:0.0f];
+    self.lastPlaybackRate = self.player.rate;
+}
 
+
+- (void)jumpedToTime:(NSTimeInterval)time completionHandler:(void (^)(BOOL finished))completionHandler {
+    CMTime seekTime = CMTimeMakeWithSeconds(time, NSEC_PER_SEC);
+    [self jumpedToCMTime:seekTime completionHandler:completionHandler];
+}
+
+- (void)jumpedToCMTime:(CMTime)time completionHandler:(void (^)(BOOL))completionHandler {
+    [self.player seekToTime:time completionHandler:^(BOOL finished) {
+        if ( completionHandler ) completionHandler(finished);
+    }];
+}
 
 @end
 
@@ -226,12 +332,18 @@ static const NSString *SJPlayerItemStatusContext;
 
 @implementation SJVideoPlayerControl (SJSliderDelegateMethods)
 
-- (void)slidingOnSlider:(SJSlider *)slider {
-    [self pause];
+- (void)sliderWillBeginDragging:(SJSlider *)slider {
+    [self.player removeTimeObserver:self.timeObserver];
 }
 
-- (void)slidesOnSlider:(SJSlider *)slider {
-    [self play];
+- (void)sliderDidDrag:(SJSlider *)slider {
+    [self.playerItem cancelPendingSeeks];
+    [self jumpedToTime:slider.value * CMTimeGetSeconds(_playerItem.duration) completionHandler:nil];
+}
+
+- (void)sliderDidEndDragging:(SJSlider *)slider {
+    [self addPlayerItemTimeObserver];
+    if ( self.lastPlaybackRate > 0.f) [self play];
 }
 
 @end

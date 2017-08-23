@@ -8,13 +8,13 @@
 
 #import <Foundation/Foundation.h>
 
-@class UIView, AVPlayer, AVPlayerItem;
+@class UIView, AVAsset, AVPlayer, AVPlayerItem;
 
 @interface SJVideoPlayerControl : NSObject
 
 - (instancetype)init;
 
-- (void)setPlayerItem:(AVPlayerItem *)playerItem player:(AVPlayer *)player;
+- (void)setAsset:(AVAsset *)asset playerItem:(AVPlayerItem *)playerItem player:(AVPlayer *)player;
 
 /*!
  *  controlView.

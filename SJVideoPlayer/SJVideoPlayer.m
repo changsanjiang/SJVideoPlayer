@@ -22,6 +22,7 @@
 
 #import <Masonry/Masonry.h>
 
+#import <AVFoundation/AVMetadataItem.h>
 
 @interface SJVideoPlayer ()
 
@@ -82,29 +83,22 @@
 
 - (void)_sjVideoPlayerPrepareToPlay {
     
-    [self _sjVideoPlayerResetPlayer];
-    
     // initialize
     _asset = [AVAsset assetWithURL:_assetURL];
     
     // loaded keys
     NSArray <NSString *> *keys =
     @[@"tracks",
-      @"duration",
-      @"commonMetadata",
-      @"availableMediaCharacteristicsWithMediaSelectionOptions"];
+      @"duration",];
     _playerItem = [AVPlayerItem playerItemWithAsset:self.asset automaticallyLoadedAssetKeys:keys];
     _player = [AVPlayer playerWithPlayerItem:self.playerItem];
     
+    // control
+    [_control setAsset:_asset playerItem:_playerItem player:_player];
+
     // present
     _presentView.player = _player;
-    
-    // control
-    [_control setPlayerItem:_playerItem player:_player];
-}
 
-- (void)_sjVideoPlayerResetPlayer {
-    NSLog(@"Reset Player");
 }
 
 // MARK: Lazy

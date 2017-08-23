@@ -20,38 +20,76 @@
 
 #import <objc/message.h>
 
+
+#define SJPreviewImgW   (120)
+#define SJPreViewImgH   (SJPreviewImgW * 9 / 16)
+
+
 @interface SJMaskView : UIView
+@end
+
+
+static NSString *const SJVideoPlayPreviewColCellID = @"SJVideoPlayPreviewColCell";
+
+@interface SJVideoPlayPreviewColCell : UICollectionViewCell
+@property (nonatomic, strong, readwrite) SJVideoPreviewModel *model;
+@end
+
+
+@interface SJVideoPlayerControlView (ColDelegateMethods)<UICollectionViewDelegate>
+@end
+
+@interface SJVideoPlayerControlView (ColDataSourceMethods)<UICollectionViewDataSource>
 @end
 
 
 
 @interface SJVideoPlayerControlView ()
 
+// MARK: ...
+
+@property (nonatomic, strong, readonly) UIView *topContainerView;
 @property (nonatomic, strong, readonly) UIButton *backBtn;
+@property (nonatomic, strong, readonly) UIButton *previewBtn;
+@property (nonatomic, strong, readonly) UICollectionView *previewImgColView;
+
+
+// MARK: ...
+@property (nonatomic, strong, readonly) UIButton *replayBtn;
+
+
+// MARK: ...
+@property (nonatomic, strong, readonly) SJMaskView *bottomContainerView;
 @property (nonatomic, strong, readonly) UIButton *playBtn;
 @property (nonatomic, strong, readonly) UIButton *pauseBtn;
 @property (nonatomic, strong, readonly) UIButton *fullBtn;
-@property (nonatomic, strong, readonly) UIButton *replayBtn;
 @property (nonatomic, strong, readonly) UILabel *currentTimeLabel;
 @property (nonatomic, strong, readonly) UILabel *separateLabel;
 @property (nonatomic, strong, readonly) UILabel *durationTimeLabel;
 
-@property (nonatomic, strong, readonly) SJMaskView *controlMaskView;
 
 @end
 
 @implementation SJVideoPlayerControlView
 
+// MARK: ...
+@synthesize topContainerView = _topContainerView;
 @synthesize backBtn = _backBtn;
+@synthesize previewBtn = _previewBtn;
+@synthesize previewImgColView = _previewImgColView;
+
+// MARK: ...
+@synthesize replayBtn = _replayBtn;
+
+// MARK: ...
+@synthesize bottomContainerView = _bottomContainerView;
 @synthesize playBtn = _playBtn;
 @synthesize pauseBtn = _pauseBtn;
 @synthesize fullBtn = _fullBtn;
-@synthesize replayBtn = _replayBtn;
 @synthesize currentTimeLabel = _currentTimeLabel;
 @synthesize separateLabel = _separateLabel;
 @synthesize durationTimeLabel = _durationTimeLabel;
 @synthesize sliderControl = _sliderControl;
-@synthesize controlMaskView = _controlMaskView;
 
 
 - (instancetype)initWithFrame:(CGRect)frame {
@@ -64,35 +102,87 @@
 // MARK: Actions
 
 - (void)clickedBtn:(UIButton *)btn {
+    // preview anima
+    if ( btn == self.previewBtn ) {
+        if ( !btn.selected )
+            [self previewImgColView_ShowAnima];
+        else
+            [self previewImgColView_HiddenAnima];
+        btn.selected = !btn.selected;
+    }
+    
     if ( ![self.delegate respondsToSelector:@selector(controlView:clickedBtnTag:)] ) return;
     [self.delegate controlView:self clickedBtnTag:btn.tag];
+}
+
+// MARK: PreviewImgColView Anima
+
+- (void)previewImgColView_ShowAnima {
+    [UIView animateWithDuration:0.25 animations:^{
+        self.previewImgColView.transform = CGAffineTransformIdentity;
+    }];
+}
+
+- (void)previewImgColView_HiddenAnima {
+    [UIView animateWithDuration:0.25 animations:^{
+        self.previewImgColView.transform = CGAffineTransformMakeScale(1, 0.001);
+    }];
 }
 
 // MARK: UI
 
 - (void)_SJVideoPlayerControlViewSetupUI {
-    [self addSubview:self.backBtn];
-    [self addSubview:self.replayBtn];
-    [self addSubview:self.controlMaskView];
-    [_controlMaskView addSubview:self.fullBtn];
-    [_controlMaskView addSubview:self.playBtn];
-    [_controlMaskView addSubview:self.pauseBtn];
-    [_controlMaskView addSubview:self.currentTimeLabel];
-    [_controlMaskView addSubview:self.separateLabel];
-    [_controlMaskView addSubview:self.durationTimeLabel];
-    [_controlMaskView addSubview:self.sliderControl];
+    
+    // MARK: ...
+    [self addSubview:self.topContainerView];
+    [_topContainerView addSubview:self.backBtn];
+    [_topContainerView addSubview:self.previewBtn];
+    
+    [self addSubview:self.previewImgColView];
+    [self previewImgColView_HiddenAnima];
+    [_previewImgColView mas_makeConstraints:^(MASConstraintMaker *make) {
+        make.height.offset(SJPreViewImgH);
+        make.leading.trailing.offset(0);
+        make.top.equalTo(_topContainerView.mas_bottom);
+    }];
+    
+    [_topContainerView mas_makeConstraints:^(MASConstraintMaker *make) {
+        make.leading.top.trailing.offset(0);
+        make.height.offset(49);
+    }];
     
     [_backBtn mas_makeConstraints:^(MASConstraintMaker *make) {
-        make.size.equalTo(_playBtn);
-        make.top.offset(12);
-        make.leading.offset(0);
+        make.top.leading.bottom.offset(0);
+        make.width.equalTo(_backBtn.mas_height);
     }];
+    
+    [_previewBtn mas_makeConstraints:^(MASConstraintMaker *make) {
+        make.top.bottom.trailing.offset(0);
+        make.width.equalTo(_previewBtn.mas_height);
+    }];
+    
+    
+    
+    // MARK: ...
+    [self addSubview:self.replayBtn];
     
     [_replayBtn mas_makeConstraints:^(MASConstraintMaker *make) {
         make.center.offset(0);
     }];
     
-    [_controlMaskView mas_makeConstraints:^(MASConstraintMaker *make) {
+    
+    
+    // MARK: ...
+    [self addSubview:self.bottomContainerView];
+    [_bottomContainerView addSubview:self.fullBtn];
+    [_bottomContainerView addSubview:self.playBtn];
+    [_bottomContainerView addSubview:self.pauseBtn];
+    [_bottomContainerView addSubview:self.currentTimeLabel];
+    [_bottomContainerView addSubview:self.separateLabel];
+    [_bottomContainerView addSubview:self.durationTimeLabel];
+    [_bottomContainerView addSubview:self.sliderControl];
+    
+    [_bottomContainerView mas_makeConstraints:^(MASConstraintMaker *make) {
         make.leading.bottom.trailing.offset(0);
         make.height.offset(49);
     }];
@@ -133,10 +223,55 @@
     }];
 }
 
+// MARK: ...
+
+- (UIView *)topContainerView {
+    if ( _topContainerView ) return _topContainerView;
+    _topContainerView = [UIView new];
+    _topContainerView.backgroundColor = [UIColor clearColor];
+    return _topContainerView;
+}
+
 - (UIButton *)backBtn {
     if ( _backBtn ) return _backBtn;
     _backBtn = [UIButton buttonWithImageName:@"sj_video_player_back" tag:SJVideoPlayControlViewTag_Back target:self sel:@selector(clickedBtn:)];
     return _backBtn;
+}
+
+- (UIButton *)previewBtn {
+    if ( _previewBtn ) return _previewBtn;
+    _previewBtn = [UIButton buttonWithTitle:@"预览" backgroundColor:[UIColor clearColor] tag:SJVideoPlayControlViewTag_Preview target:self sel:@selector(clickedBtn:) fontSize:14];
+    return _previewBtn;
+}
+
+- (UICollectionView *)previewImgColView {
+    if ( _previewImgColView ) return _previewImgColView;
+    _previewImgColView = [UICollectionView collectionViewWithItemSize:CGSizeMake(SJPreviewImgW, SJPreViewImgH) backgroundColor:[UIColor blackColor] scrollDirection:UICollectionViewScrollDirectionHorizontal];
+    _previewImgColView.delegate = self;
+    _previewImgColView.dataSource = self;
+    [_previewImgColView registerClass:NSClassFromString(SJVideoPlayPreviewColCellID) forCellWithReuseIdentifier:SJVideoPlayPreviewColCellID];
+    return _previewImgColView;
+}
+
+// MARK: ...
+
+- (UIButton *)replayBtn {
+    if ( _replayBtn ) return _replayBtn;
+    _replayBtn = [UIButton buttonWithTitle:@"" backgroundColor:[UIColor clearColor] tag:SJVideoPlayControlViewTag_Replay target:self sel:@selector(clickedBtn:) fontSize:16];
+    _replayBtn.titleLabel.numberOfLines = 3;
+    _replayBtn.titleLabel.textAlignment = NSTextAlignmentCenter;
+    NSAttributedString *attr = [NSAttributedString mh_imageTextWithImage:[UIImage imageNamed:@"sj_video_player_replay"] imageW:35 imageH:35 title:@"重播" fontSize:16 titleColor:[UIColor whiteColor] spacing:6];
+    [_replayBtn setAttributedTitle:attr forState:UIControlStateNormal];
+    return _replayBtn;
+}
+
+
+// MARK: ...
+
+- (SJMaskView *)bottomContainerView {
+    if ( _bottomContainerView ) return _bottomContainerView;
+    _bottomContainerView = [SJMaskView new];
+    return _bottomContainerView;
 }
 
 - (UIButton *)playBtn {
@@ -149,16 +284,6 @@
     if ( _pauseBtn ) return _pauseBtn;
     _pauseBtn = [UIButton buttonWithImageName:@"sj_video_player_pause" tag:SJVideoPlayControlViewTag_Pause target:self sel:@selector(clickedBtn:)];
     return _pauseBtn;
-}
-
-- (UIButton *)replayBtn {
-    if ( _replayBtn ) return _replayBtn;
-    _replayBtn = [UIButton buttonWithTitle:@"" backgroundColor:[UIColor clearColor] tag:SJVideoPlayControlViewTag_Replay target:self sel:@selector(clickedBtn:) fontSize:16];
-    _replayBtn.titleLabel.numberOfLines = 3;
-    _replayBtn.titleLabel.textAlignment = NSTextAlignmentCenter;
-    NSAttributedString *attr = [NSAttributedString mh_imageTextWithImage:[UIImage imageNamed:@"sj_video_player_replay"] imageW:35 imageH:35 title:@"重播" fontSize:16 titleColor:[UIColor whiteColor] spacing:6];
-    [_replayBtn setAttributedTitle:attr forState:UIControlStateNormal];
-    return _replayBtn;
 }
 
 - (UIButton *)fullBtn {
@@ -194,12 +319,6 @@
     _sliderControl.trackHeight = 2;
     _sliderControl.borderColor = [UIColor clearColor];
     return _sliderControl;
-}
-
-- (SJMaskView *)controlMaskView {
-    if ( _controlMaskView ) return _controlMaskView;
-    _controlMaskView = [SJMaskView new];
-    return _controlMaskView;
 }
 
 @end
@@ -249,10 +368,24 @@
     return [objc_getAssociatedObject(self, _cmd) boolValue];
 }
 
+/*!
+ *  default is NO
+ */
+- (void)setHiddenPreviewBtn:(BOOL)hiddenPreviewBtn {
+    if ( hiddenPreviewBtn == self.hiddenPreviewBtn ) return;
+    objc_setAssociatedObject(self, @selector(hiddenPreviewBtn), @(hiddenPreviewBtn), OBJC_ASSOCIATION_RETAIN_NONATOMIC);
+    [self hiddenOrShowView:self.previewBtn bol:hiddenPreviewBtn];
+    if ( hiddenPreviewBtn ) [self hiddenOrShowView:self.previewImgColView bol:hiddenPreviewBtn];
+}
+
+- (BOOL)hiddenPreviewBtn {
+    return [objc_getAssociatedObject(self, _cmd) boolValue];
+}
 
 - (void)hiddenOrShowView:(UIView *)view bol:(BOOL)hidden {
     CGFloat alpha = 1.;
     if ( hidden ) alpha = 0.001;
+    if ( view.alpha == alpha ) return;
     [UIView animateWithDuration:0.25 animations:^{
         view.alpha = alpha;
     }];
@@ -308,3 +441,120 @@
 @end
 
 
+
+@interface SJVideoPlayPreviewColCell ()
+
+@property (nonatomic, strong, readonly) UIImageView *imageView;
+
+@end
+
+@implementation SJVideoPlayPreviewColCell
+
+@synthesize imageView = _imageView;
+
+- (instancetype)initWithFrame:(CGRect)frame {
+    self = [super initWithFrame:frame];
+    if ( !self ) return nil;
+    [self _SJVideoPlayPreviewColCellSetupUI];
+    return self;
+}
+
+- (void)setModel:(SJVideoPreviewModel *)model {
+    _model = model;
+    _imageView.image = model.image;
+}
+
+// MARK: UI
+
+- (void)_SJVideoPlayPreviewColCellSetupUI {
+    [self.contentView addSubview:self.imageView];
+    [_imageView mas_makeConstraints:^(MASConstraintMaker *make) {
+        make.edges.offset(0);
+    }];
+}
+
+- (UIImageView *)imageView {
+    if ( _imageView ) return _imageView;
+    _imageView = [UIImageView imageViewWithImageStr:@"" viewMode:UIViewContentModeScaleAspectFit];
+    return _imageView;
+}
+
+@end
+
+
+
+@implementation SJVideoPlayerControlView (ColDelegateMethods)
+
+- (void)collectionView:(UICollectionView *)collectionView didSelectItemAtIndexPath:(NSIndexPath *)indexPath {
+    [self previewImgColView_HiddenAnima];
+    self.previewBtn.selected = NO;
+    if ( ![self.delegate respondsToSelector:@selector(controlView:selectedPreviewModel:)] ) return;
+    SJVideoPreviewModel *model = [[collectionView cellForItemAtIndexPath:indexPath] valueForKey:@"model"];
+    [self.delegate controlView:self selectedPreviewModel:model];
+}
+
+@end
+
+
+
+
+
+
+@implementation SJVideoPlayerControlView (ColDataSourceMethods)
+
+// MARK: UICollectionViewDataSource
+
+- (NSInteger)numberOfSectionsInCollectionView:(UICollectionView *)collectionView {
+    return 1;
+}
+
+- (NSInteger)collectionView:(UICollectionView *)collectionView numberOfItemsInSection:(NSInteger)section {
+    return self.previewImages.count;
+}
+
+- (UICollectionViewCell *)collectionView:(UICollectionView *)collectionView cellForItemAtIndexPath:(NSIndexPath *)indexPath {
+    UICollectionViewCell *cell = [collectionView dequeueReusableCellWithReuseIdentifier:SJVideoPlayPreviewColCellID forIndexPath:indexPath];
+    [cell setValue:self.previewImages[indexPath.row] forKey:@"model"];
+    return cell;
+}
+
+@end
+
+
+
+
+
+
+// MARK: Preview
+
+@interface SJVideoPreviewModel ()
+
+@property (nonatomic, strong, readwrite) UIImage *image;
+@property (nonatomic, assign, readwrite) CMTime localTime;
+
+@end
+
+@implementation SJVideoPreviewModel
+
++ (instancetype)previewModelWithImage:(UIImage *)image localTime:(CMTime)time {
+    SJVideoPreviewModel *model = [self new];
+    model.image = image;
+    model.localTime = time;
+    return model;
+}
+
+@end
+
+
+@implementation SJVideoPlayerControlView (Preview)
+
+- (void)setPreviewImages:(NSArray<SJVideoPreviewModel *> *)previewImages {
+    objc_setAssociatedObject(self, @selector(previewImages), previewImages, OBJC_ASSOCIATION_RETAIN_NONATOMIC);
+    [self.previewImgColView reloadData];
+}
+
+- (NSArray<SJVideoPreviewModel *> *)previewImages {
+    return objc_getAssociatedObject(self, _cmd);
+}
+
+@end

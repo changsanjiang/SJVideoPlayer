@@ -10,6 +10,12 @@
 
 #import <CoreMedia/CMTime.h>
 
+#define SJPreviewImgW   (120)
+#define SJPreViewImgH   (SJPreviewImgW * 9 / 16)
+#define SJContainerH    (49)
+
+#define SJHiddenControlInterval (4)
+
 @class SJSlider;
 
 typedef NS_ENUM(NSUInteger, SJVideoPlayControlViewTag) {
@@ -33,6 +39,8 @@ typedef NS_ENUM(NSUInteger, SJVideoPlayControlViewTag) {
 @property (nonatomic, weak, readwrite) id <SJVideoPlayerControlViewDelegate> delegate;
 
 @property (nonatomic, strong, readonly) SJSlider *sliderControl;
+
+@property (nonatomic, strong, readonly) UITapGestureRecognizer *singleTap;
 
 @end
 
@@ -88,6 +96,8 @@ typedef NS_ENUM(NSUInteger, SJVideoPlayControlViewTag) {
 @property (nonatomic, assign, readonly) CMTime localTime;
 
 + (instancetype)previewModelWithImage:(UIImage *)image localTime:(CMTime)time;
+
+@property (nonatomic, assign, readwrite) BOOL isHiddenControl;
 
 @end
 

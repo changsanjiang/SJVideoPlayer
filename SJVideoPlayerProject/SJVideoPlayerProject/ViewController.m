@@ -8,9 +8,15 @@
 
 #import "ViewController.h"
 
-#import "SJVideoPlayer.h"
+#import "UIView+Extension.h"
+
+#import <Masonry/Masonry.h>
+
+#import "VideoPlayerViewController.h"
 
 @interface ViewController ()
+
+@property (nonatomic, strong) UIButton *pushBtn;
 
 @end
 
@@ -19,20 +25,23 @@
 - (void)viewDidLoad {
     [super viewDidLoad];
     
-    SJVideoPlayer *player = [SJVideoPlayer sharedPlayer];
+    [self.view addSubview:self.pushBtn];
     
-//    player.assetURL = [[NSBundle mainBundle] URLForResource:@"sample.mp4" withExtension:nil];
-    
-    player.assetURL = [NSURL URLWithString:@"http://vod.lanwuzhe.com/9a86250dbcdd4bc58489e723838839b6/fefd3e2d0bd54a50a5a02fbaf7161c8f-5287d2089db37e62345123a1be272f8b.mp4?video"];
-    
-    [self.view addSubview:player.view];
-    
-    player.view.frame = CGRectMake(0, 0, [UIScreen mainScreen].bounds.size.width, [UIScreen mainScreen].bounds.size.width * 9 / 16);
-    
-    player.view.center = self.view.center;
+    [self.pushBtn mas_makeConstraints:^(MASConstraintMaker *make) {
+        make.center.offset(0);
+    }];
     
     // Do any additional setup after loading the view, typically from a nib.
 }
 
+- (void)clickedBtn:(UIButton *)btn {
+    [self.navigationController pushViewController:[VideoPlayerViewController new] animated:YES];
+}
+
+- (UIButton *)pushBtn {
+    if ( _pushBtn ) return _pushBtn;
+    _pushBtn = [UIButton buttonWithTitle:@"Push" titleColor:[UIColor blackColor] backgroundColor:[UIColor clearColor] tag:0 target:self sel:@selector(clickedBtn:) fontSize:14];
+    return _pushBtn;
+}
 
 @end

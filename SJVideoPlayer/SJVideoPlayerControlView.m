@@ -20,9 +20,7 @@
 
 #import <objc/message.h>
 
-
-#define SJPreviewImgW   (120)
-#define SJPreViewImgH   (SJPreviewImgW * 9 / 16)
+#import "NSTimer+SJExtention.h"
 
 
 @interface SJMaskView : UIView
@@ -41,6 +39,21 @@ static NSString *const SJVideoPlayPreviewColCellID = @"SJVideoPlayPreviewColCell
 
 @interface SJVideoPlayerControlView (ColDataSourceMethods)<UICollectionViewDataSource>
 @end
+
+
+
+
+
+// MARK: 观察处理
+
+@interface SJVideoPlayerControlView (DBObservers)
+
+- (void)_SJVideoPlayerControlViewObservers;
+
+- (void)_SJVideoPlayerControlViewRemoveObservers;
+
+@end
+
 
 
 
@@ -68,6 +81,16 @@ static NSString *const SJVideoPlayPreviewColCellID = @"SJVideoPlayPreviewColCell
 @property (nonatomic, strong, readonly) UILabel *durationTimeLabel;
 
 
+// MARK: ...
+@property (nonatomic, strong, readwrite) UITapGestureRecognizer *singleTap;
+
+
+
+// MARK: ...
+@property (nonatomic, assign, readwrite) BOOL isHiddenControl;
+@property (nonatomic, assign, readwrite) NSInteger hiddenControlPoint;
+@property (nonatomic, strong, readonly) NSTimer *pointTimer;
+
 @end
 
 @implementation SJVideoPlayerControlView
@@ -91,12 +114,22 @@ static NSString *const SJVideoPlayPreviewColCellID = @"SJVideoPlayPreviewColCell
 @synthesize durationTimeLabel = _durationTimeLabel;
 @synthesize sliderControl = _sliderControl;
 
+// MARK: ...
+@synthesize pointTimer = _pointTimer;
+
 
 - (instancetype)initWithFrame:(CGRect)frame {
     self = [super initWithFrame:frame];
     if ( !self ) return nil;
     [self _SJVideoPlayerControlViewSetupUI];
+    [self _SJVideoPlayerControlViewGRs];
+    [self _SJVideoPlayerControlViewObservers];
+    [self pointTimer];
     return self;
+}
+
+- (void)dealloc {
+    [self _SJVideoPlayerControlViewRemoveObservers];
 }
 
 // MARK: Actions
@@ -104,10 +137,17 @@ static NSString *const SJVideoPlayPreviewColCellID = @"SJVideoPlayPreviewColCell
 - (void)clickedBtn:(UIButton *)btn {
     // preview anima
     if ( btn == self.previewBtn ) {
-        if ( !btn.selected )
+        if ( !btn.selected ) {
             [self previewImgColView_ShowAnima];
-        else
+            
+            [_pointTimer invalidate];
+            _pointTimer = nil;
+        }
+        else {
             [self previewImgColView_HiddenAnima];
+            
+            [self.pointTimer fire];
+        }
         btn.selected = !btn.selected;
     }
     
@@ -115,23 +155,54 @@ static NSString *const SJVideoPlayPreviewColCellID = @"SJVideoPlayPreviewColCell
     [self.delegate controlView:self clickedBtnTag:btn.tag];
 }
 
-// MARK: PreviewImgColView Anima
+// MARK: Anima
 
 - (void)previewImgColView_ShowAnima {
-    [UIView animateWithDuration:0.25 animations:^{
+    [UIView animateWithDuration:0.3 animations:^{
         self.previewImgColView.transform = CGAffineTransformIdentity;
     }];
 }
 
 - (void)previewImgColView_HiddenAnima {
-    [UIView animateWithDuration:0.25 animations:^{
+    [UIView animateWithDuration:0.3 animations:^{
         self.previewImgColView.transform = CGAffineTransformMakeScale(1, 0.001);
     }];
 }
 
+- (void)_showControl {
+    [UIView animateWithDuration:0.3 animations:^{
+        self.topContainerView.transform = CGAffineTransformIdentity;
+        self.bottomContainerView.transform = CGAffineTransformIdentity;
+        self.topContainerView.alpha = 1;
+        self.bottomContainerView.alpha = 1;
+    }];
+    
+    [self.pointTimer fire];
+    
+    self.hiddenControlPoint = 0;
+}
+
+- (void)_hiddenControl {
+
+    [UIView animateWithDuration:0.3 animations:^{
+        self.topContainerView.transform = CGAffineTransformMakeTranslation(0, -SJContainerH);
+        self.bottomContainerView.transform = CGAffineTransformMakeTranslation(0, SJContainerH);
+        self.topContainerView.alpha = 0.001;
+        self.bottomContainerView.alpha = 0.001;
+    }];
+    
+    [_pointTimer invalidate];
+    _pointTimer = nil;
+    
+    self.hiddenControlPoint = 0;
+}
+
+
 // MARK: UI
 
 - (void)_SJVideoPlayerControlViewSetupUI {
+    
+    self.clipsToBounds = YES;
     
     // MARK: ...
     [self addSubview:self.topContainerView];
@@ -148,7 +219,7 @@ static NSString *const SJVideoPlayPreviewColCellID = @"SJVideoPlayPreviewColCell
     
     [_topContainerView mas_makeConstraints:^(MASConstraintMaker *make) {
         make.leading.top.trailing.offset(0);
-        make.height.offset(49);
+        make.height.offset(SJContainerH);
     }];
     
     [_backBtn mas_makeConstraints:^(MASConstraintMaker *make) {
@@ -184,7 +255,7 @@ static NSString *const SJVideoPlayPreviewColCellID = @"SJVideoPlayPreviewColCell
     
     [_bottomContainerView mas_makeConstraints:^(MASConstraintMaker *make) {
         make.leading.bottom.trailing.offset(0);
-        make.height.offset(49);
+        make.height.offset(SJContainerH);
     }];
     
     [_playBtn mas_makeConstraints:^(MASConstraintMaker *make) {
@@ -321,6 +392,31 @@ static NSString *const SJVideoPlayPreviewColCellID = @"SJVideoPlayPreviewColCell
     return _sliderControl;
 }
 
+// MARK: Single Tap
+
+- (void)_SJVideoPlayerControlViewGRs {
+    self.singleTap = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(handleTap:)];
+    [self addGestureRecognizer:self.singleTap];
+}
+
+- (void)handleTap:(UITapGestureRecognizer *)tap {
+    self.isHiddenControl = !self.isHiddenControl;
+}
+
+// MARK: Lazy
+
+- (NSTimer *)pointTimer {
+    if ( _pointTimer ) return _pointTimer;
+    __weak typeof(self) _self = self;
+    _pointTimer = [NSTimer sj_scheduledTimerWithTimeInterval:1 exeBlock:^{
+        __strong typeof(_self) self = _self;
+        if ( !self ) return;
+        if ( !self.sliderControl.isDragging ) self.hiddenControlPoint += 1;
+        else self.hiddenControlPoint = 0;
+    } repeats:YES];
+    return _pointTimer;
+}
+
 @end
 
 
@@ -407,7 +503,7 @@ static NSString *const SJVideoPlayPreviewColCellID = @"SJVideoPlayPreviewColCell
 - (void)setCurrentTime:(NSTimeInterval)currentTime duration:(NSTimeInterval)duration {
     _currentTimeLabel.text = [self formatSeconds:currentTime];
     _durationTimeLabel.text = [self formatSeconds:duration];
-    if ( 0 == duration ) return;
+    if ( 0 == duration || isnan(duration) ) return;
     _sliderControl.value = currentTime / duration;
 }
 
@@ -555,6 +651,42 @@ static NSString *const SJVideoPlayPreviewColCellID = @"SJVideoPlayPreviewColCell
 
 - (NSArray<SJVideoPreviewModel *> *)previewImages {
     return objc_getAssociatedObject(self, _cmd);
+}
+
+@end
+
+
+
+
+
+
+// MARK: Observers
+
+
+@implementation SJVideoPlayerControlView (DBObservers)
+
+
+- (void)_SJVideoPlayerControlViewObservers {
+    [self addObserver:self forKeyPath:@"hiddenControlPoint" options:NSKeyValueObservingOptionNew context:nil];
+    [self addObserver:self forKeyPath:@"isHiddenControl" options:NSKeyValueObservingOptionNew context:nil];
+
+}
+
+- (void)_SJVideoPlayerControlViewRemoveObservers {
+    [self removeObserver:self forKeyPath:@"hiddenControlPoint"];
+    [self removeObserver:self forKeyPath:@"isHiddenControl"];
+}
+
+- (void)observeValueForKeyPath:(NSString *)keyPath ofObject:(id)object change:(NSDictionary<NSKeyValueChangeKey,id> *)change context:(void *)context {
+    if ( [keyPath isEqualToString:@"hiddenControlPoint"] ) {
+        if ( _hiddenControlPoint >= SJHiddenControlInterval ) { self.isHiddenControl = YES;}
+    }
+    else if ( [keyPath isEqualToString:@"isHiddenControl"] ) {
+        if ( self.isHiddenControl )
+            [self _hiddenControl];
+        else
+            [self _showControl];
+    }
 }
 
 @end

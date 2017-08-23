@@ -10,6 +10,8 @@
 		09A4777CDB247E7E1BCAA736 /* libPods-SJVideoPlayerProject.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 7C49166A356BD4B40CE605A1 /* libPods-SJVideoPlayerProject.a */; };
 		7700D0191F4C045B00B043F8 /* sample.mp4 in Resources */ = {isa = PBXBuildFile; fileRef = 7700D0181F4C045B00B043F8 /* sample.mp4 */; };
 		7700D01C1F4C065600B043F8 /* NSAttributedString+ZFBAdditon.m in Sources */ = {isa = PBXBuildFile; fileRef = 7700D01B1F4C065600B043F8 /* NSAttributedString+ZFBAdditon.m */; };
+		7700D01F1F4D584500B043F8 /* VideoPlayerViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 7700D01E1F4D584500B043F8 /* VideoPlayerViewController.m */; };
+		7700D0251F4D631A00B043F8 /* NSTimer+SJExtention.m in Sources */ = {isa = PBXBuildFile; fileRef = 7700D0241F4D631A00B043F8 /* NSTimer+SJExtention.m */; };
 		772D46341F46E4CE0047A7BF /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 772D46331F46E4CE0047A7BF /* main.m */; };
 		772D46371F46E4CE0047A7BF /* AppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = 772D46361F46E4CE0047A7BF /* AppDelegate.m */; };
 		772D463A1F46E4CE0047A7BF /* ViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 772D46391F46E4CE0047A7BF /* ViewController.m */; };
@@ -28,6 +30,10 @@
 		7700D0181F4C045B00B043F8 /* sample.mp4 */ = {isa = PBXFileReference; lastKnownFileType = file; path = sample.mp4; sourceTree = "<group>"; };
 		7700D01A1F4C065600B043F8 /* NSAttributedString+ZFBAdditon.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "NSAttributedString+ZFBAdditon.h"; sourceTree = "<group>"; };
 		7700D01B1F4C065600B043F8 /* NSAttributedString+ZFBAdditon.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "NSAttributedString+ZFBAdditon.m"; sourceTree = "<group>"; };
+		7700D01D1F4D584500B043F8 /* VideoPlayerViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = VideoPlayerViewController.h; sourceTree = "<group>"; };
+		7700D01E1F4D584500B043F8 /* VideoPlayerViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = VideoPlayerViewController.m; sourceTree = "<group>"; };
+		7700D0231F4D631A00B043F8 /* NSTimer+SJExtention.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "NSTimer+SJExtention.h"; sourceTree = "<group>"; };
+		7700D0241F4D631A00B043F8 /* NSTimer+SJExtention.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "NSTimer+SJExtention.m"; sourceTree = "<group>"; };
 		772D462F1F46E4CE0047A7BF /* SJVideoPlayerProject.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = SJVideoPlayerProject.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		772D46331F46E4CE0047A7BF /* main.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = main.m; sourceTree = "<group>"; };
 		772D46351F46E4CE0047A7BF /* AppDelegate.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = AppDelegate.h; sourceTree = "<group>"; };
@@ -98,6 +104,8 @@
 				772D46361F46E4CE0047A7BF /* AppDelegate.m */,
 				772D46381F46E4CE0047A7BF /* ViewController.h */,
 				772D46391F46E4CE0047A7BF /* ViewController.m */,
+				7700D01D1F4D584500B043F8 /* VideoPlayerViewController.h */,
+				7700D01E1F4D584500B043F8 /* VideoPlayerViewController.m */,
 				772D46491F46E5310047A7BF /* SJVideoPlayer */,
 				772D46321F46E4CE0047A7BF /* Supporting Files */,
 			);
@@ -157,6 +165,8 @@
 				77F390B51F4718740047F2A0 /* UIView+Extension.m */,
 				7700D01A1F4C065600B043F8 /* NSAttributedString+ZFBAdditon.h */,
 				7700D01B1F4C065600B043F8 /* NSAttributedString+ZFBAdditon.m */,
+				7700D0231F4D631A00B043F8 /* NSTimer+SJExtention.h */,
+				7700D0241F4D631A00B043F8 /* NSTimer+SJExtention.m */,
 			);
 			name = Category;
 			sourceTree = "<group>";
@@ -298,7 +308,9 @@
 				772D46371F46E4CE0047A7BF /* AppDelegate.m in Sources */,
 				772D46341F46E4CE0047A7BF /* main.m in Sources */,
 				77F390AC1F47096B0047F2A0 /* SJVideoPlayerPresentView.m in Sources */,
+				7700D01F1F4D584500B043F8 /* VideoPlayerViewController.m in Sources */,
 				77F390AF1F4713850047F2A0 /* SJVideoPlayerControl.m in Sources */,
+				7700D0251F4D631A00B043F8 /* NSTimer+SJExtention.m in Sources */,
 				7700D01C1F4C065600B043F8 /* NSAttributedString+ZFBAdditon.m in Sources */,
 				77F390B61F4718740047F2A0 /* UIView+Extension.m in Sources */,
 				772D464C1F46E7F80047A7BF /* SJVideoPlayer.m in Sources */,

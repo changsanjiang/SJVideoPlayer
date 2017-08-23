@@ -82,6 +82,9 @@ static const NSString *SJPlayerItemStatusContext;
 
 @property (nonatomic, assign, readwrite) CGFloat lastPlaybackRate;
 
+@property (nonatomic, strong, readwrite) UITapGestureRecognizer *doubleTap;
+@property (nonatomic, strong, readwrite) UIPanGestureRecognizer *panGR;
+
 @end
 
 @implementation SJVideoPlayerControl
@@ -242,7 +245,30 @@ static const NSString *SJPlayerItemStatusContext;
     _controlView.sliderControl.delegate = self;
     _controlView.hiddenPlayBtn = YES;
     _controlView.hiddenReplayBtn = YES;
+    
+    self.doubleTap = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(handleDoubleTap:)];
+    self.doubleTap.numberOfTapsRequired = 2;
+    
+    self.panGR = [[UIPanGestureRecognizer alloc] initWithTarget:self action:@selector(handlePan:)];
+    
+    [_controlView.singleTap requireGestureRecognizerToFail:self.doubleTap];
+    [self.doubleTap requireGestureRecognizerToFail:self.panGR];
+    
+    [_controlView addGestureRecognizer:self.doubleTap];
+    [_controlView addGestureRecognizer:self.panGR];
     return _controlView;
+}
+
+- (void)handleDoubleTap:(UITapGestureRecognizer *)tap {
+    NSLog(@"double tap");
+    if ( self.lastPlaybackRate > 0.f )
+        [self pause];
+    else
+        [self play];
+}
+
+- (void)handlePan:(UIPanGestureRecognizer *)pan {
+    NSLog(@"pan");
 }
 
 @end

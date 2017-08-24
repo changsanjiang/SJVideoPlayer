@@ -76,16 +76,23 @@
 #define SJSCREEN_MAX MAX(SJSCREEN_H,SJSCREEN_W)
 
 
+#import "SJVideoPlayerStringConstant.h"
+
+
 @implementation SJVideoPlayerPresentView (DBNotifications)
 
 // MARK: 通知安装
 
 - (void)_SJVideoPlayerPresentViewInstallNotifications {
-    [self _addDeviceOrientationChangeObserver];
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(playerBeginPlayingNotification) name:SJPlayerBeginPlayingNotification object:nil];
 }
 
 - (void)_SJVideoPlayerPresentViewRemoveNotifications {
     [self _removeDeviceOrientationChangeObserver];
+}
+
+- (void)playerBeginPlayingNotification {
+    [self _addDeviceOrientationChangeObserver];
 }
 
 - (void)_addDeviceOrientationChangeObserver {

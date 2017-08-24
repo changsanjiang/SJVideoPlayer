@@ -30,7 +30,7 @@ NS_ASSUME_NONNULL_BEGIN
 /*!
  *  Error
  */
-@property (nonatomic, strong) NSError *error;
+@property (nonatomic, strong, readonly) NSError *error;
 
 @end
 

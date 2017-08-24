@@ -24,6 +24,18 @@
 
 #import <AVFoundation/AVMetadataItem.h>
 
+#import "SJVideoPlayerStringConstant.h"
+
+// MARK: 通知处理
+
+@interface SJVideoPlayer (DBNotifications)
+
+- (void)_SJVideoPlayerInstallNotifications;
+
+- (void)_SJVideoPlayerRemoveNotifications;
+
+@end
+
 
 
 @interface SJVideoPlayer ()
@@ -61,7 +73,12 @@
     self = [super init];
     if ( !self ) return nil;
     [self setupView];
+    [self _SJVideoPlayerInstallNotifications];
     return self;
+}
+
+- (void)dealloc {
+    [self _SJVideoPlayerRemoveNotifications];
 }
 
 - (void)setupView {
@@ -138,3 +155,27 @@
 }
 
 @end
+
+
+
+
+// MARK: 通知处理
+
+@implementation SJVideoPlayer (DBNotifications)
+
+// MARK: 通知安装
+
+- (void)_SJVideoPlayerInstallNotifications {
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(playerPlayFailedErrorNotification:) name:SJPlayerPlayFailedErrorNotification object:nil];
+}
+
+- (void)_SJVideoPlayerRemoveNotifications {
+    [[NSNotificationCenter defaultCenter] removeObserver:self];
+}
+
+- (void)playerPlayFailedErrorNotification:(NSNotification *)notifi {
+    _error = notifi.object;
+}
+
+@end
+

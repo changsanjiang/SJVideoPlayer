@@ -20,3 +20,9 @@ extern NSNotificationName const SJPlayerFullScreenNotitication;
 
 /// 小屏
 extern NSNotificationName const SJPlayerSmallScreenNotification;
+
+/// 开始播放
+extern NSNotificationName const SJPlayerBeginPlayingNotification;
+
+/// 播放Error
+extern NSNotificationName const SJPlayerPlayFailedErrorNotification;

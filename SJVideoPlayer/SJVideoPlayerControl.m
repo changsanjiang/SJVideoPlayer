@@ -20,6 +20,8 @@
 
 #import "SJVideoPlayer.h"
 
+#import "SJVideoPlayerStringConstant.h"
+
 /*!
  *  AVPlayerItem's status property
  */
@@ -202,11 +204,17 @@ static const NSString *SJPlayerItemStatusContext;
                 
                 [self clickedPlay];
                 
+                // MARK: SJPlayerBeginPlayingNotification
+                [[NSNotificationCenter defaultCenter] postNotificationName:SJPlayerBeginPlayingNotification object:nil];
+                
             } else {
                 NSLog(@"Failed to load Video: %@", self.playerItem.error);
                 NSLog(@"Failed to load Video: %@", self.playerItem.error);
                 NSLog(@"Failed to load Video: %@", self.playerItem.error);
-                [SJVideoPlayer sharedPlayer].error = self.playerItem.error;
+                
+                
+                [[NSNotificationCenter defaultCenter] postNotificationName:SJPlayerPlayFailedErrorNotification object:self.playerItem.error];
+
                 self.controlView.hiddenLoadFailedBtn = NO;
             }
         });
@@ -700,8 +708,6 @@ static UIView *target = nil;
 
 
 // MARK: 通知处理
-
-#import "SJVideoPlayerStringConstant.h"
 
 @implementation SJVideoPlayerControl (DBNotifications)
 

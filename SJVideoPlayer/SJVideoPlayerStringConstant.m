@@ -20,3 +20,9 @@ NSNotificationName const SJPlayerFullScreenNotitication = @"SJPlayerFullScreenNo
 
 /// 小屏
 NSNotificationName const SJPlayerSmallScreenNotification = @"SJPlayerSmallScreenNotification";
+
+/// 开始播放
+NSNotificationName const SJPlayerBeginPlayingNotification = @"SJPlayerBeginPlayingNotification";
+
+/// 播放Error
+NSNotificationName const SJPlayerPlayFailedErrorNotification = @"SJPlayerPlayFailedErrorNotification";

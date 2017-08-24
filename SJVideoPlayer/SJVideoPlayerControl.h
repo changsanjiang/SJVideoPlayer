@@ -10,6 +10,10 @@
 
 @class UIView, AVAsset, AVPlayer, AVPlayerItem;
 
+
+@protocol SJVideoPlayerControlDelegate;
+
+
 @interface SJVideoPlayerControl : NSObject
 
 - (instancetype)init;
@@ -20,5 +24,23 @@
  *  controlView.
  */
 @property (nonatomic, strong, readonly) UIView *view;
+
+@property (nonatomic, weak, readwrite) id <SJVideoPlayerControlDelegate> delegate;
+
+@end
+
+
+
+@protocol SJVideoPlayerControlDelegate <NSObject>
+
+@optional
+
+- (void)clickedFullScreenBtnEvent:(SJVideoPlayerControl *)control;
+
+- (void)clickedBackBtnEvent:(SJVideoPlayerControl *)control;
+
+- (void)clickedLockBtnEvent:(SJVideoPlayerControl *)control;
+
+- (void)clickedUnlockBtnEvent:(SJVideoPlayerControl *)control;
 
 @end

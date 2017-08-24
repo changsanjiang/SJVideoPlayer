@@ -33,11 +33,15 @@
 #define REFRESH_INTERVAL (0.5)
 
 
+typedef NS_ENUM(NSUInteger, SJPanDirection) {
+    SJPanDirection_Unknown,
+    SJPanDirection_V,
+    SJPanDirection_H,
+};
+
+
+
 static const NSString *SJPlayerItemStatusContext;
-
-
-
-
 
 
 @interface SJVideoPlayerControl (SJSliderDelegateMethods)<SJSliderDelegate>
@@ -65,7 +69,6 @@ static const NSString *SJPlayerItemStatusContext;
 
 @end
 
-
 @interface SJVideoPlayerControl ()
 
 @property (nonatomic, strong, readonly) SJVideoPlayerControlView *controlView;
@@ -82,8 +85,13 @@ static const NSString *SJPlayerItemStatusContext;
 
 @property (nonatomic, assign, readwrite) CGFloat lastPlaybackRate;
 
+@property (nonatomic, strong, readwrite) UITapGestureRecognizer *singleTap;
+
 @property (nonatomic, strong, readwrite) UITapGestureRecognizer *doubleTap;
+
 @property (nonatomic, strong, readwrite) UIPanGestureRecognizer *panGR;
+
+@property (nonatomic, assign, readwrite) SJPanDirection panDirection;
 
 @end
 
@@ -225,7 +233,7 @@ static const NSString *SJPlayerItemStatusContext;
         [self pause];
     };
     
-    self.itemEndObserver =                                                  // 4
+    self.itemEndObserver =
     [[NSNotificationCenter defaultCenter] addObserverForName:name
                                                       object:self.playerItem
                                                        queue:queue
@@ -245,18 +253,28 @@ static const NSString *SJPlayerItemStatusContext;
     _controlView.sliderControl.delegate = self;
     _controlView.hiddenPlayBtn = YES;
     _controlView.hiddenReplayBtn = YES;
+    _controlView.hiddenLockBtn = YES;
     
+    // MARK: GestureRecognizer
+
+    self.singleTap = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(handleSingleTap:)];
     self.doubleTap = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(handleDoubleTap:)];
     self.doubleTap.numberOfTapsRequired = 2;
     
     self.panGR = [[UIPanGestureRecognizer alloc] initWithTarget:self action:@selector(handlePan:)];
     
-    [_controlView.singleTap requireGestureRecognizerToFail:self.doubleTap];
+    [self.singleTap requireGestureRecognizerToFail:self.doubleTap];
     [self.doubleTap requireGestureRecognizerToFail:self.panGR];
     
+    [_controlView addGestureRecognizer:self.singleTap];
     [_controlView addGestureRecognizer:self.doubleTap];
     [_controlView addGestureRecognizer:self.panGR];
+    
     return _controlView;
+}
+
+- (void)handleSingleTap:(UITapGestureRecognizer *)tap {
+    _controlView.hiddenControl = !_controlView.hiddenControl;
 }
 
 - (void)handleDoubleTap:(UITapGestureRecognizer *)tap {
@@ -268,7 +286,74 @@ static const NSString *SJPlayerItemStatusContext;
 }
 
 - (void)handlePan:(UIPanGestureRecognizer *)pan {
-    NSLog(@"pan");
+    
+    // 根据在view上Pan的位置，确定是调音量还是亮度
+    CGPoint locationPoint = [pan locationInView:pan.view];
+    
+    // 我们要响应水平移动和垂直移动
+    // 根据上次和本次移动的位置，算出一个速率的point
+    CGPoint velocityPoint = [pan velocityInView:pan.view];
+    
+    CGPoint offset = [pan translationInView:pan.view];
+    
+    // 判断是垂直移动还是水平移动
+    switch (pan.state) {
+        case UIGestureRecognizerStateBegan:{ // 开始移动
+            // 使用绝对值来判断移动的方向
+            CGFloat x = fabs(velocityPoint.x);
+            CGFloat y = fabs(velocityPoint.y);
+            if (x > y) { // 水平移动
+                NSLog(@"水平移动");
+                self.panDirection = SJPanDirection_H;
+                [self sliderWillBeginDragging:_controlView.sliderControl];
+            }
+            else if (x < y){ // 垂直移动
+                NSLog(@"垂直移动");
+                self.panDirection = SJPanDirection_V;
+                
+            }
+            break;
+        }
+        case UIGestureRecognizerStateChanged:{ // 正在移动
+            switch (self.panDirection) {
+                case SJPanDirection_H:{
+                    _controlView.sliderControl.value += offset.x * 0.003;
+                    [self sliderDidDrag:_controlView.sliderControl];
+                }
+                    break;
+                case SJPanDirection_V:{
+                    // 垂直移动方法只要y方向的值
+                }
+                    break;
+                default:
+                    break;
+            }
+            break;
+        }
+        case UIGestureRecognizerStateEnded:{ // 移动停止
+            // 移动结束也需要判断垂直或者平移
+            // 比如水平移动结束时，要快进到指定位置，如果这里没有判断，当我们调节音量完之后，会出现屏幕跳动的bug
+            switch (self.panDirection) {
+                case SJPanDirection_H:{
+                    [self sliderDidEndDragging:_controlView.sliderControl];
+                    break;
+                }
+                case SJPanDirection_V:{
+                    // 垂直移动结束后，把状态改为不再控制音量
+                    
+                    break;
+                }
+                default:
+                    break;
+            }
+            break;
+        }
+        default:
+            break;
+    }
+    
+    
+    [pan setTranslation:CGPointZero inView:pan.view];
 }
 
 @end
@@ -300,8 +385,13 @@ static const NSString *SJPlayerItemStatusContext;
         case SJVideoPlayControlViewTag_Full:
             [self full];
             break;
-            
-        default:
+        case SJVideoPlayControlViewTag_Preview:
+            break;
+        case SJVideoPlayControlViewTag_Lock:
+            [self lock];
+            break;
+        case SJVideoPlayControlViewTag_Unlock:
+            [self unlock];
             break;
     }
 }
@@ -322,16 +412,17 @@ static const NSString *SJPlayerItemStatusContext;
 }
 
 - (void)replay {
-    NSLog(@"%zd - %s", __LINE__, __func__);
     [self play];
 }
 
 - (void)back {
-    NSLog(@"%zd - %s", __LINE__, __func__);
+    if ( ![self.delegate respondsToSelector:@selector(clickedBackBtnEvent:)] ) return;
+    [self.delegate clickedBackBtnEvent:self];
 }
 
 - (void)full {
-    NSLog(@"%zd - %s", __LINE__, __func__);
+    if ( ![self.delegate respondsToSelector:@selector(clickedFullScreenBtnEvent:)] ) return;
+    [self.delegate clickedFullScreenBtnEvent:self];
 }
 
 - (void)stop {
@@ -339,6 +430,19 @@ static const NSString *SJPlayerItemStatusContext;
     self.lastPlaybackRate = self.player.rate;
 }
 
+- (void)lock {
+    _controlView.hiddenLockBtn = !_controlView.hiddenLockBtn;
+    _controlView.hiddenUnlockBtn = !_controlView.hiddenLockBtn;
+    if ( ![self.delegate respondsToSelector:@selector(clickedLockBtnEvent:)] ) return;
+    [self.delegate clickedLockBtnEvent:self];
+}
+
+- (void)unlock {
+    _controlView.hiddenLockBtn = !_controlView.hiddenLockBtn;
+    _controlView.hiddenUnlockBtn = !_controlView.hiddenLockBtn;
+    if ( ![self.delegate respondsToSelector:@selector(clickedUnlockBtnEvent:)] ) return;
+    [self.delegate clickedUnlockBtnEvent:self];
+}
 
 - (void)jumpedToTime:(NSTimeInterval)time completionHandler:(void (^)(BOOL finished))completionHandler {
     CMTime seekTime = CMTimeMakeWithSeconds(time, NSEC_PER_SEC);

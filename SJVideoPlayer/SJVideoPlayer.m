@@ -24,19 +24,12 @@
 
 #import <AVFoundation/AVMetadataItem.h>
 
+#import "SJVideoPlayerStringConstant.h"
 
 
-// MARK: 通知处理
-
-@interface SJVideoPlayer (DBNotifications)
-
-- (void)_SJVideoPlayerInstallNotifications;
-
-- (void)_SJVideoPlayerRemoveNotifications;
+@interface SJVideoPlayer (ControlDelegateMethods)<SJVideoPlayerControlDelegate>
 
 @end
-
-
 
 
 @interface SJVideoPlayer ()
@@ -49,6 +42,8 @@
 @property (nonatomic, strong, readonly) UIView *containerView;
 @property (nonatomic, strong, readonly) SJVideoPlayerControl *control;
 @property (nonatomic, strong, readonly) SJVideoPlayerPresentView *presentView;
+
+@property (nonatomic, assign, readwrite) BOOL isLock;
 
 @end
 
@@ -74,12 +69,7 @@
     self = [super init];
     if ( !self ) return nil;
     [self setupView];
-    [self _SJVideoPlayerInstallNotifications];
     return self;
-}
-
-- (void)dealloc {
-    [self _SJVideoPlayerRemoveNotifications];
 }
 
 - (void)setupView {
@@ -102,6 +92,13 @@
     [self _sjVideoPlayerPrepareToPlay];
 }
 
+- (void)setIsLock:(BOOL)isLock {
+    _isLock = isLock;
+    NSNotificationName name = nil;
+    if ( isLock ) name = SJPlayerLockedScreenNotification;
+    else name = SJPlayerUnlockedScreenNotification;
+    [[NSNotificationCenter defaultCenter] postNotificationName:name object:nil];
+}
 
 // MARK: Public
 
@@ -128,8 +125,7 @@
     [_control setAsset:_asset playerItem:_playerItem player:_player];
 
     // present
-    _presentView.player = _player;
-
+    [_presentView setPlayer:_player superv:_containerView];
 }
 
 // MARK: Lazy
@@ -150,6 +146,7 @@
 - (SJVideoPlayerControl *)control {
     if ( _control ) return _control;
     _control = [SJVideoPlayerControl new];
+    _control.delegate = self;
     return _control;
 }
 
@@ -158,93 +155,39 @@
 
 
 
-// MARK: 通知处理
 
-#define SCREEN_HEIGHT CGRectGetHeight([[UIScreen mainScreen] bounds])
-#define SCREEN_WIDTH  CGRectGetWidth([[UIScreen mainScreen] bounds])
+@implementation SJVideoPlayer (ControlDelegateMethods)
 
-#define SCREEN_MIN MIN(SCREEN_HEIGHT,SCREEN_WIDTH)
-#define SCREEN_MAX MAX(SCREEN_HEIGHT,SCREEN_WIDTH)
-
-@implementation SJVideoPlayer (DBNotifications)
-
-// MARK: 通知安装
-
-- (void)_SJVideoPlayerInstallNotifications {
-    if (![UIDevice currentDevice].generatesDeviceOrientationNotifications) {
-        [[UIDevice currentDevice] beginGeneratingDeviceOrientationNotifications];
-    }
-    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(handleDeviceOrientationChange:)
-                                                 name:UIDeviceOrientationDidChangeNotification object:nil];
+- (void)clickedBackBtnEvent:(SJVideoPlayerControl *)control {
+//    // status : clicked back
+//    if ( self.presentView.superview == self.containerView ) {
+//        
+//    }
+//    // status : full screen
+//    else {
+//        [self _deviceOrientationPortrait];
+//    }
 }
 
-- (void)_SJVideoPlayerRemoveNotifications {
-    [[NSNotificationCenter defaultCenter] removeObserver:self];
+- (void)clickedFullScreenBtnEvent:(SJVideoPlayerControl *)control {
+//    if ( self.presentView.superview == self.containerView ) {
+//        [self _deviceOrientationLandscapeLeft];
+//    }
+//    else {
+//        [self _deviceOrientationPortrait];
+//    }
 }
 
-- (void)handleDeviceOrientationChange:(NSNotification *)notification {
-    
-    UIDeviceOrientation orientation = [UIDevice currentDevice].orientation;
-    
-    switch (orientation) {
-        case UIDeviceOrientationLandscapeLeft: {
-//                        NSLog(@"屏幕向左横置");
-            [self.presentView removeFromSuperview];
-            UIWindow *window = [UIApplication sharedApplication].keyWindow;
-            [window addSubview:self.presentView];
-            [self.presentView mas_remakeConstraints:^(MASConstraintMaker *make) {
-                make.center.mas_offset(CGPointMake(0, 0));
-                make.width.offset(SCREEN_MAX);
-                make.height.offset(SCREEN_MIN);
-            }];
-            
-            [UIView animateWithDuration:0.25 animations:^{
-                self.presentView.transform = CGAffineTransformMakeRotation(M_PI_2);
-            }];
-            [[UIApplication sharedApplication] setStatusBarHidden:YES];
-        }
-            break;
-            
-        case UIDeviceOrientationLandscapeRight: {
-//                        NSLog(@"屏幕向右橫置");
-            [self.presentView removeFromSuperview];
-            UIWindow *window = [UIApplication sharedApplication].keyWindow;
-            [window addSubview:self.presentView];
-            [self.presentView mas_remakeConstraints:^(MASConstraintMaker *make) {
-                make.center.mas_offset(CGPointMake(0, 0));
-                make.width.offset(SCREEN_MAX);
-                make.height.offset(SCREEN_MIN);
-            }];
-            [UIView animateWithDuration:0.25 animations:^{
-                self.presentView.transform = CGAffineTransformMakeRotation(-M_PI_2);
-            }];
-            
-            [[UIApplication sharedApplication] setStatusBarHidden:YES];
-            
-        }
-            break;
-            
-        case UIDeviceOrientationPortrait: {
-//                        NSLog(@"屏幕直立");
-            [self.presentView removeFromSuperview];
-            [self.containerView addSubview:self.presentView];
-            [self.presentView mas_remakeConstraints:^(MASConstraintMaker *make) {
-                make.edges.offset(0);
-            }];
-            
-            [UIView animateWithDuration:0.25 animations:^{
-                self.presentView.transform = CGAffineTransformIdentity;
-            }];
-            
-            [[UIApplication sharedApplication] setStatusBarHidden:NO];
-        }
-            break;
-        default: {
-            
-        }
-            break;
-    }
+- (void)clickedUnlockBtnEvent:(SJVideoPlayerControl *)control {
+//    self.isLock = YES;
+//    // 锁屏
+//    [self _removeDeviceOrientationChangeObserver];
+}
+
+- (void)clickedLockBtnEvent:(SJVideoPlayerControl *)control {
+//    self.isLock = NO;
+//    // 解锁
+//    [self _addDeviceOrientationChangeObserver];
 }
 
 @end
-

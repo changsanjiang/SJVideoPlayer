@@ -29,6 +29,7 @@
 
 static NSString *const SJVideoPlayPreviewColCellID = @"SJVideoPlayPreviewColCell";
 
+
 @interface SJVideoPlayPreviewColCell : UICollectionViewCell
 @property (nonatomic, strong, readwrite) SJVideoPreviewModel *model;
 @end
@@ -41,6 +42,16 @@ static NSString *const SJVideoPlayPreviewColCellID = @"SJVideoPlayPreviewColCell
 @end
 
 
+
+// MARK: 通知处理
+
+@interface SJVideoPlayerControlView (DBNotifications)
+
+- (void)_SJVideoPlayerControlViewInstallNotifications;
+
+- (void)_SJVideoPlayerControlViewRemoveNotifications;
+
+@end
 
 
 
@@ -69,6 +80,9 @@ static NSString *const SJVideoPlayPreviewColCellID = @"SJVideoPlayPreviewColCell
 
 // MARK: ...
 @property (nonatomic, strong, readonly) UIButton *replayBtn;
+@property (nonatomic, strong, readonly) UIView *lockBtnContainerView;
+@property (nonatomic, strong, readonly) UIButton *unlockBtn;
+@property (nonatomic, strong, readonly) UIButton *lockBtn;
 
 
 // MARK: ...
@@ -103,6 +117,9 @@ static NSString *const SJVideoPlayPreviewColCellID = @"SJVideoPlayPreviewColCell
 
 // MARK: ...
 @synthesize replayBtn = _replayBtn;
+@synthesize lockBtnContainerView = _lockBtnContainerView;
+@synthesize unlockBtn = _unlockBtn;
+@synthesize lockBtn = _lockBtn;
 
 // MARK: ...
 @synthesize bottomContainerView = _bottomContainerView;
@@ -122,7 +139,6 @@ static NSString *const SJVideoPlayPreviewColCellID = @"SJVideoPlayPreviewColCell
     self = [super initWithFrame:frame];
     if ( !self ) return nil;
     [self _SJVideoPlayerControlViewSetupUI];
-    [self _SJVideoPlayerControlViewGRs];
     [self _SJVideoPlayerControlViewObservers];
     [self pointTimer];
     return self;
@@ -233,9 +249,25 @@ static NSString *const SJVideoPlayPreviewColCellID = @"SJVideoPlayPreviewColCell
     }];
     
     
-    
     // MARK: ...
     [self addSubview:self.replayBtn];
+    [self addSubview:self.lockBtnContainerView];
+    [self.lockBtnContainerView addSubview:self.lockBtn];
+    [self.lockBtnContainerView addSubview:self.unlockBtn];
+    
+    [_lockBtnContainerView mas_makeConstraints:^(MASConstraintMaker *make) {
+        make.leading.offset(0);
+        make.width.height.offset(44);
+        make.centerY.equalTo(_lockBtnContainerView.superview);
+    }];
+    
+    [_lockBtn mas_makeConstraints:^(MASConstraintMaker *make) {
+        make.edges.offset(0);
+    }];
+    
+    [_unlockBtn mas_makeConstraints:^(MASConstraintMaker *make) {
+        make.edges.offset(0);
+    }];
     
     [_replayBtn mas_makeConstraints:^(MASConstraintMaker *make) {
         make.center.offset(0);
@@ -336,6 +368,24 @@ static NSString *const SJVideoPlayPreviewColCellID = @"SJVideoPlayPreviewColCell
     return _replayBtn;
 }
 
+- (UIView *)lockBtnContainerView {
+    if ( _lockBtnContainerView ) return _lockBtnContainerView;
+    _lockBtnContainerView = [UIView new];
+    _lockBtnContainerView.backgroundColor = [UIColor clearColor];
+    return _lockBtnContainerView;
+}
+
+- (UIButton *)unlockBtn {
+    if ( _unlockBtn ) return _unlockBtn;
+    _unlockBtn = [UIButton buttonWithImageName:@"sj_video_player_unlock" tag:SJVideoPlayControlViewTag_Unlock target:self sel:@selector(clickedBtn:)];
+    return _unlockBtn;
+}
+
+- (UIButton *)lockBtn {
+    if ( _lockBtn ) return _lockBtn;
+    _lockBtn = [UIButton buttonWithImageName:@"sj_video_player_lock" tag:SJVideoPlayControlViewTag_Lock target:self sel:@selector(clickedBtn:)];
+    return _lockBtn;
+}
 
 // MARK: ...
 
@@ -390,17 +440,6 @@ static NSString *const SJVideoPlayPreviewColCellID = @"SJVideoPlayPreviewColCell
     _sliderControl.trackHeight = 2;
     _sliderControl.borderColor = [UIColor clearColor];
     return _sliderControl;
-}
-
-// MARK: Single Tap
-
-- (void)_SJVideoPlayerControlViewGRs {
-    self.singleTap = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(handleTap:)];
-    [self addGestureRecognizer:self.singleTap];
-}
-
-- (void)handleTap:(UITapGestureRecognizer *)tap {
-    self.isHiddenControl = !self.isHiddenControl;
 }
 
 // MARK: Lazy
@@ -475,6 +514,46 @@ static NSString *const SJVideoPlayPreviewColCellID = @"SJVideoPlayPreviewColCell
 }
 
 - (BOOL)hiddenPreviewBtn {
+    return [objc_getAssociatedObject(self, _cmd) boolValue];
+}
+
+/*!
+ *  default is NO
+ */
+- (void)setHiddenLockBtn:(BOOL)hiddenLockBtn {
+    if ( hiddenLockBtn == self.hiddenLockBtn ) return;
+    objc_setAssociatedObject(self, @selector(hiddenLockBtn), @(hiddenLockBtn), OBJC_ASSOCIATION_RETAIN_NONATOMIC);
+    [self hiddenOrShowView:self.lockBtn bol:hiddenLockBtn];
+
+}
+
+- (BOOL)hiddenLockBtn {
+    return [objc_getAssociatedObject(self, _cmd) boolValue];
+}
+
+/*!
+ *  default is NO
+ */
+- (void)setHiddenControl:(BOOL)hiddenControl {
+    if ( hiddenControl == self.hiddenControl ) return;
+    objc_setAssociatedObject(self, @selector(hiddenControl), @(hiddenControl), OBJC_ASSOCIATION_RETAIN_NONATOMIC);
+    self.isHiddenControl = hiddenControl;
+}
+
+- (BOOL)hiddenControl {
+   return [objc_getAssociatedObject(self, _cmd) boolValue];
+}
+
+/*!
+ *  default is NO
+ */
+- (void)setHiddenUnlockBtn:(BOOL)hiddenUnlockBtn {
+    if ( hiddenUnlockBtn == self.hiddenUnlockBtn ) return;
+    objc_setAssociatedObject(self, @selector(hiddenUnlockBtn), @(hiddenUnlockBtn), OBJC_ASSOCIATION_RETAIN_NONATOMIC);
+    [self hiddenOrShowView:self.unlockBtn bol:hiddenUnlockBtn];
+}
+
+- (BOOL)hiddenUnlockBtn  {
     return [objc_getAssociatedObject(self, _cmd) boolValue];
 }
 
@@ -677,7 +756,7 @@ static NSString *const SJVideoPlayPreviewColCellID = @"SJVideoPlayPreviewColCell
 
 - (void)observeValueForKeyPath:(NSString *)keyPath ofObject:(id)object change:(NSDictionary<NSKeyValueChangeKey,id> *)change context:(void *)context {
     if ( [keyPath isEqualToString:@"hiddenControlPoint"] ) {
-        if ( _hiddenControlPoint >= SJHiddenControlInterval ) { self.isHiddenControl = YES;}
+        if ( _hiddenControlPoint >= SJHiddenControlInterval ) { self.hiddenControl = YES;}
     }
     else if ( [keyPath isEqualToString:@"isHiddenControl"] ) {
         if ( self.isHiddenControl )
@@ -688,3 +767,22 @@ static NSString *const SJVideoPlayPreviewColCellID = @"SJVideoPlayPreviewColCell
 }
 
 @end
+
+
+
+// MARK: 通知处理
+
+@implementation SJVideoPlayerControlView (DBNotifications)
+
+// MARK: 通知安装
+
+- (void)_SJVideoPlayerControlViewInstallNotifications {
+    
+}
+
+- (void)_SJVideoPlayerControlViewRemoveNotifications {
+    [[NSNotificationCenter defaultCenter] removeObserver:self];
+}
+
+@end
+

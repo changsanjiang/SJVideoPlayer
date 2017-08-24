@@ -25,6 +25,8 @@ typedef NS_ENUM(NSUInteger, SJVideoPlayControlViewTag) {
     SJVideoPlayControlViewTag_Pause,
     SJVideoPlayControlViewTag_Replay,
     SJVideoPlayControlViewTag_Preview,
+    SJVideoPlayControlViewTag_Lock,
+    SJVideoPlayControlViewTag_Unlock,
 };
 
 
@@ -39,8 +41,6 @@ typedef NS_ENUM(NSUInteger, SJVideoPlayControlViewTag) {
 @property (nonatomic, weak, readwrite) id <SJVideoPlayerControlViewDelegate> delegate;
 
 @property (nonatomic, strong, readonly) SJSlider *sliderControl;
-
-@property (nonatomic, strong, readonly) UITapGestureRecognizer *singleTap;
 
 @end
 
@@ -70,6 +70,20 @@ typedef NS_ENUM(NSUInteger, SJVideoPlayControlViewTag) {
  */
 @property (nonatomic, assign, readwrite) BOOL hiddenPreviewBtn;
 
+/*!
+ *  default is NO
+ */
+@property (nonatomic, assign, readwrite) BOOL hiddenUnlockBtn;
+
+/*!
+ *  default is NO
+ */
+@property (nonatomic, assign, readwrite) BOOL hiddenLockBtn;
+
+/*!
+ *  default is NO
+ */
+@property (nonatomic, assign, readwrite) BOOL hiddenControl;
 
 @end
 

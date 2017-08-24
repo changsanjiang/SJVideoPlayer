@@ -13,6 +13,6 @@
 
 @interface SJVideoPlayerPresentView : UIView
 
-@property (nonatomic, strong, readwrite) AVPlayer *player;
+- (void)setPlayer:(AVPlayer *)player superv:(UIView *)superv;
 
 @end

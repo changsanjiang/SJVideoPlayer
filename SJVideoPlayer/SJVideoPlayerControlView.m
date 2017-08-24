@@ -179,12 +179,6 @@ static NSString *const SJVideoPlayPreviewColCellID = @"SJVideoPlayPreviewColCell
             [self.pointTimer fire];
         }
     }
-    else if ( btn == self.pauseBtn ) {
-        _isUserClickedPause = YES;
-    }
-    else if ( btn == self.playBtn ) {
-        _isUserClickedPause = NO;
-    }
     
     if ( ![self.delegate respondsToSelector:@selector(controlView:clickedBtnTag:)] ) return;
     [self.delegate controlView:self clickedBtnTag:btn.tag];

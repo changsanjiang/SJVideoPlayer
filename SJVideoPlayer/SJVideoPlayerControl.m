@@ -136,8 +136,9 @@ static const NSString *SJPlayerItemStatusContext;
 
 @property (nonatomic, strong, readonly) SJVideoPlayerBackstageStatusRegistrar *backstageRegistrar;
 
-
 @property (nonatomic, assign, readwrite) NSTimeInterval playedTime;
+
+@property (nonatomic, assign, readwrite) BOOL isUserClickedPause;
 
 @end
 
@@ -222,10 +223,9 @@ static const NSString *SJPlayerItemStatusContext;
         if ( _playerItem.playbackBufferEmpty ) { NSLog(@"缓冲为空. 停止播放"); [self clickedPause]; return;}
         dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(2 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
             NSLog(@"开始缓冲了");
-            NSLog(@"缓冲小于 5 秒, 退出继续等待缓冲");
-            if ( [self loadTimeSeconds] < (self.playedTime + 5) ) return ;
+            if ( [self loadTimeSeconds] < (self.playedTime + 5) ) {NSLog(@"缓冲小于 5 秒, 退出继续等待缓冲"); return;}
             NSLog(@"缓冲差不多了, 开始播放");
-            if ( !_controlView.isUserClickedPause ) [self clickedPlay];
+            if ( !self.isUserClickedPause ) [self clickedPlay];
         });
     }
 }
@@ -438,10 +438,14 @@ static const NSString *SJPlayerItemStatusContext;
 
 - (void)handleDoubleTap:(UITapGestureRecognizer *)tap {
     NSLog(@"double tap");
-    if ( self.lastPlaybackRate > 0.f )
+    if ( self.lastPlaybackRate > 0.f ) {
+        self.isUserClickedPause = YES;
         [self clickedPause];
-    else
+    }
+    else {
+        self.isUserClickedPause = NO;
         [self clickedPlay];
+    }
 }
 
 static UIView *target = nil;
@@ -563,11 +567,15 @@ static UIView *target = nil;
 
 - (void)controlView:(SJVideoPlayerControlView *)controlView clickedBtnTag:(SJVideoPlayControlViewTag)tag {
     switch (tag) {
-        case SJVideoPlayControlViewTag_Play:
+        case SJVideoPlayControlViewTag_Play: {
+            self.isUserClickedPause = NO;
             [self clickedPlay];
+        }
             break;
-        case SJVideoPlayControlViewTag_Pause:
+        case SJVideoPlayControlViewTag_Pause: {
+            self.isUserClickedPause = YES;
             [self clickedPause];
+        }
             break;
         case SJVideoPlayControlViewTag_Replay:
             [self clickedReplay];

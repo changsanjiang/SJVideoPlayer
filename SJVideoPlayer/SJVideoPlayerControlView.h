@@ -45,8 +45,6 @@ typedef NS_ENUM(NSUInteger, SJVideoPlayControlViewTag) {
 @property (nonatomic, strong, readonly) UILabel *draggingTimeLabel;
 @property (nonatomic, strong, readonly) SJSlider *draggingProgressView;
 
-@property (nonatomic, assign, readonly) BOOL isUserClickedPause;
-
 @end
 
 

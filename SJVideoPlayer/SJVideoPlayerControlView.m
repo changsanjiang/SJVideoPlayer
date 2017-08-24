@@ -176,12 +176,14 @@ static NSString *const SJVideoPlayPreviewColCellID = @"SJVideoPlayPreviewColCell
 - (void)previewImgColView_ShowAnima {
     [UIView animateWithDuration:0.3 animations:^{
         self.previewImgColView.transform = CGAffineTransformIdentity;
+        self.previewImgColView.alpha = 1.0;
     }];
 }
 
 - (void)previewImgColView_HiddenAnima {
     [UIView animateWithDuration:0.3 animations:^{
         self.previewImgColView.transform = CGAffineTransformMakeScale(1, 0.001);
+        self.previewImgColView.alpha = 0.001;
     }];
 }
 
@@ -226,7 +228,7 @@ static NSString *const SJVideoPlayPreviewColCellID = @"SJVideoPlayPreviewColCell
     [_topContainerView addSubview:self.previewBtn];
     
     [self addSubview:self.previewImgColView];
-    [self previewImgColView_HiddenAnima];
+    
     [_previewImgColView mas_makeConstraints:^(MASConstraintMaker *make) {
         make.height.offset(SJPreViewImgH);
         make.leading.trailing.offset(0);
@@ -353,6 +355,8 @@ static NSString *const SJVideoPlayPreviewColCellID = @"SJVideoPlayPreviewColCell
     _previewImgColView.delegate = self;
     _previewImgColView.dataSource = self;
     [_previewImgColView registerClass:NSClassFromString(SJVideoPlayPreviewColCellID) forCellWithReuseIdentifier:SJVideoPlayPreviewColCellID];
+    _previewImgColView.transform = CGAffineTransformMakeScale(1, 0.001);
+    _previewImgColView.alpha = 0.001;
     return _previewImgColView;
 }
 

@@ -8,19 +8,15 @@
 
 #import "SJVideoPlayerControl.h"
 
-#import <AVFoundation/AVPlayer.h>
-
 #import "SJVideoPlayerControlView.h"
-
-#import <AVFoundation/AVPlayerItem.h>
 
 #import <SJSlider/SJSlider.h>
 
-#import <AVFoundation/AVAsset.h>
+#import <MediaPlayer/MPVolumeView.h>
 
-#import <AVFoundation/AVAssetImageGenerator.h>
+#import <AVFoundation/AVFoundation.h>
 
-#import <AVFoundation/AVTime.h>
+#import "SJVideoPlayerTipsView.h"
 
 /*!
  *  AVPlayerItem's status property
@@ -39,6 +35,12 @@ typedef NS_ENUM(NSUInteger, SJPanDirection) {
     SJPanDirection_H,
 };
 
+
+typedef NS_ENUM(NSUInteger, SJVerticalPanLocation) {
+    SJVerticalPanLocation_Unknown,
+    SJVerticalPanLocation_Left,
+    SJVerticalPanLocation_Right,
+};
 
 
 static const NSString *SJPlayerItemStatusContext;
@@ -71,6 +73,8 @@ static const NSString *SJPlayerItemStatusContext;
 
 @interface SJVideoPlayerControl ()
 
+@property (nonatomic, strong, readonly) UISlider *systemVolume;
+
 @property (nonatomic, strong, readonly) SJVideoPlayerControlView *controlView;
 
 @property (nonatomic, strong, readwrite) AVAsset *asset;
@@ -93,16 +97,26 @@ static const NSString *SJPlayerItemStatusContext;
 
 @property (nonatomic, assign, readwrite) SJPanDirection panDirection;
 
+@property (nonatomic, assign, readwrite) SJVerticalPanLocation panLocation;
+
+@property (nonatomic, strong, readonly) SJVideoPlayerTipsView *volumeView;
+
+@property (nonatomic, strong, readonly) SJVideoPlayerTipsView *brightnessView;
+
 @end
 
 @implementation SJVideoPlayerControl
 
+@synthesize systemVolume = _systemVolume;
 @synthesize controlView = _controlView;
+@synthesize volumeView = _volumeView;
+@synthesize brightnessView = _brightnessView;
 
 - (instancetype)init {
     self = [super init];
     if ( !self ) return nil;
     [self controlView];
+    [self systemVolume];
     return self;
 }
 
@@ -242,8 +256,47 @@ static const NSString *SJPlayerItemStatusContext;
 
 // MARK: Getter
 
+- (UISlider *)systemVolume {
+    if ( _systemVolume ) return _systemVolume;
+    MPVolumeView *volumeView = [[MPVolumeView alloc] init];
+    [_controlView addSubview:volumeView];
+    volumeView.frame = CGRectMake(-1000, -100, 100, 100);
+    for (UIView *view in [volumeView subviews]){
+        if ([view.class.description isEqualToString:@"MPVolumeSlider"]){
+            _systemVolume = (UISlider *)view;
+            break;
+        }
+    }
+    NSError *setCategoryError = nil;
+    BOOL success = [[AVAudioSession sharedInstance]
+                    setCategory: AVAudioSessionCategoryPlayback
+                    error:&setCategoryError];
+    if (!success) { /* handle the error in setCategoryError */ }
+    return _systemVolume;
+}
+
 - (UIView *)view {
     return self.controlView;
+}
+
+- (SJVideoPlayerTipsView *)brightnessView {
+    if ( _brightnessView ) return _brightnessView;
+    _brightnessView = [SJVideoPlayerTipsView new];
+    _brightnessView.bounds = CGRectMake(0, 0, 155, 155);
+    _brightnessView.center = [UIApplication sharedApplication].keyWindow.center;
+    _brightnessView.titleLabel.text = @"亮度";
+    _brightnessView.imageView.image = [UIImage imageNamed:@"sj_video_player_brightness"];
+    return _brightnessView;
+}
+
+- (SJVideoPlayerTipsView *)volumeView {
+    if ( _volumeView ) return _volumeView;
+    _volumeView = [SJVideoPlayerTipsView new];
+    _volumeView.bounds = CGRectMake(0, 0, 155, 155);
+    _volumeView.center = [UIApplication sharedApplication].keyWindow.center;
+    _volumeView.titleLabel.text = @"音量";
+    _volumeView.imageView.image = [UIImage imageNamed:@"sj_video_player_volume"];
+    return _volumeView;
 }
 
 - (SJVideoPlayerControlView *)controlView {
@@ -287,9 +340,6 @@ static const NSString *SJPlayerItemStatusContext;
 
 - (void)handlePan:(UIPanGestureRecognizer *)pan {
     
-    // 根据在view上Pan的位置，确定是调音量还是亮度
-    CGPoint locationPoint = [pan locationInView:pan.view];
-    
     // 我们要响应水平移动和垂直移动
     // 根据上次和本次移动的位置，算出一个速率的point
     CGPoint velocityPoint = [pan velocityInView:pan.view];
@@ -304,13 +354,20 @@ static const NSString *SJPlayerItemStatusContext;
             CGFloat y = fabs(velocityPoint.y);
             if (x > y) { // 水平移动
                 NSLog(@"水平移动");
-                self.panDirection = SJPanDirection_H;
+                _panDirection = SJPanDirection_H;
                 [self sliderWillBeginDragging:_controlView.sliderControl];
             }
             else if (x < y){ // 垂直移动
                 NSLog(@"垂直移动");
-                self.panDirection = SJPanDirection_V;
+                _panDirection = SJPanDirection_V;
                 
+                CGPoint locationPoint = [pan locationInView:pan.view];
+                if (locationPoint.x > _controlView.bounds.size.width / 2)
+                    _panLocation = SJVerticalPanLocation_Right;
+                else
+                    _panLocation = SJVerticalPanLocation_Left;
+                
+                [[UIApplication sharedApplication].keyWindow addSubview:self.volumeView];
             }
             break;
         }
@@ -323,6 +380,19 @@ static const NSString *SJPlayerItemStatusContext;
                     break;
                 case SJPanDirection_V:{
                     // 垂直移动方法只要y方向的值
+                    switch (_panLocation) {
+                        case SJVerticalPanLocation_Left: {
+                            
+                        }
+                            break;
+                        case SJVerticalPanLocation_Right: {
+                            _systemVolume.value -= offset.y * 0.006;
+                        }
+                            break;
+                            
+                        default:
+                            break;
+                    }
                 }
                     break;
                 default:

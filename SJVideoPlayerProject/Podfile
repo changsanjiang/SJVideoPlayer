@@ -8,4 +8,5 @@ target 'SJVideoPlayerProject' do
   # Pods for SJVideoPlayerProject
 	pod 'Masonry'
     pod 'SJSlider'
+    pod 'SJBorderLineView'
 end

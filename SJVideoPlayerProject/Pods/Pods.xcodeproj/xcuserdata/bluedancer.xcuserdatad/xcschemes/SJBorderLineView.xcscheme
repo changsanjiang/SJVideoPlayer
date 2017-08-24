@@ -14,10 +14,10 @@
             buildForArchiving = "YES">
             <BuildableReference
                BuildableIdentifier = 'primary'
-               BlueprintIdentifier = 'A5ED3C200243413E9DB943C307CF978A'
-               BlueprintName = 'SJSlider'
+               BlueprintIdentifier = 'D85A387B25587339EBCB86FE81A26B20'
+               BlueprintName = 'SJBorderLineView'
                ReferencedContainer = 'container:Pods.xcodeproj'
-               BuildableName = 'libSJSlider.a'>
+               BuildableName = 'libSJBorderLineView.a'>
             </BuildableReference>
          </BuildActionEntry>
       </BuildActionEntries>

@@ -158,6 +158,7 @@
     else if ( bufferProgress < 0 ) bufferProgress = 0;
     objc_setAssociatedObject(self, @selector(bufferProgress), @(bufferProgress), OBJC_ASSOCIATION_RETAIN_NONATOMIC);
     dispatch_async(dispatch_get_main_queue(), ^{
+        if ( !self.bufferProgressView.superview ) return ;
         [self.bufferProgressView mas_updateConstraints:^(MASConstraintMaker *make) {
             make.width.offset(bufferProgress * self.containerView.csj_w);
         }];
@@ -250,8 +251,9 @@
     CGFloat x = 0;
     CGFloat y = 0;
     CGFloat w = self.csj_w * self.rate;
-    CGFloat h = self.csj_h;
+    CGFloat h = self.trackHeight;
     _traceImageView.frame = CGRectMake(x, y, w, h);
+    if ( self.enableBufferProgress ) [self setBufferProgress:self.bufferProgress];
 }
 
 - (CGFloat)rate {

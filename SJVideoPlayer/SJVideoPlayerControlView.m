@@ -104,9 +104,10 @@ static NSString *const SJVideoPlayPreviewColCellID = @"SJVideoPlayPreviewColCell
 
 
 // MARK: ...
-@property (nonatomic, strong, readonly) UIView *draggingShowContainerView;
-@property (nonatomic, strong, readonly) UILabel *draggingTimeLabel;
-@property (nonatomic, strong, readonly) SJSlider *draggingShowProgressView;
+@property (nonatomic, strong, readonly) UIButton *loadFailedBtn;
+
+// MARK: ...
+@property (nonatomic, strong, readonly) SJSlider *bottomProgressView;
 
 
 @end
@@ -139,10 +140,14 @@ static NSString *const SJVideoPlayPreviewColCellID = @"SJVideoPlayPreviewColCell
 @synthesize pointTimer = _pointTimer;
 
 // MARK: ...
-@synthesize draggingShowContainerView = _draggingShowContainerView;
 @synthesize draggingTimeLabel = _draggingTimeLabel;
-@synthesize draggingShowProgressView = _draggingShowProgressView;
+@synthesize draggingProgressView = _draggingProgressView;
 
+// MARK: ...
+@synthesize loadFailedBtn = _loadFailedBtn;
+
+// MARK: ...
+@synthesize bottomProgressView = _bottomProgressView;
 
 - (instancetype)initWithFrame:(CGRect)frame {
     self = [super initWithFrame:frame];
@@ -173,6 +178,12 @@ static NSString *const SJVideoPlayPreviewColCellID = @"SJVideoPlayPreviewColCell
             
             [self.pointTimer fire];
         }
+    }
+    else if ( btn == self.pauseBtn ) {
+        _isUserClickedPause = YES;
+    }
+    else if ( btn == self.playBtn ) {
+        _isUserClickedPause = NO;
     }
     
     if ( ![self.delegate respondsToSelector:@selector(controlView:clickedBtnTag:)] ) return;
@@ -208,6 +219,8 @@ static NSString *const SJVideoPlayPreviewColCellID = @"SJVideoPlayPreviewColCell
     [self.pointTimer fire];
     
     self.hiddenControlPoint = 0;
+    
+    self.hiddenBottomProgressView = YES;
 }
 
 - (void)hiddenController {
@@ -223,6 +236,8 @@ static NSString *const SJVideoPlayPreviewColCellID = @"SJVideoPlayPreviewColCell
     _pointTimer = nil;
     
     self.hiddenControlPoint = 0;
+    
+    self.hiddenBottomProgressView = NO;
 }
 
 
@@ -317,13 +332,13 @@ static NSString *const SJVideoPlayPreviewColCellID = @"SJVideoPlayPreviewColCell
     }];
     
     [_currentTimeLabel mas_makeConstraints:^(MASConstraintMaker *make) {
-        make.leading.equalTo(_playBtn.mas_trailing);
         make.centerY.equalTo(_separateLabel);
+        make.leading.equalTo(_playBtn.mas_trailing);
     }];
     
     [_separateLabel mas_makeConstraints:^(MASConstraintMaker *make) {
-        make.leading.equalTo(_currentTimeLabel.mas_trailing);
         make.centerY.equalTo(_separateLabel.superview);
+        make.leading.equalTo(_currentTimeLabel.mas_trailing);
     }];
     
     [_durationTimeLabel mas_makeConstraints:^(MASConstraintMaker *make) {
@@ -332,9 +347,42 @@ static NSString *const SJVideoPlayPreviewColCellID = @"SJVideoPlayPreviewColCell
     }];
     
     [_sliderControl mas_makeConstraints:^(MASConstraintMaker *make) {
-        make.leading.equalTo(_durationTimeLabel.mas_trailing).offset(20);
+        make.leading.equalTo(_playBtn.mas_trailing).offset(90);
         make.trailing.equalTo(_fullBtn.mas_leading).offset(-8);
         make.top.bottom.offset(0);
+    }];
+    
+    
+    // MARK: ...
+    [self addSubview:self.draggingTimeLabel];
+    [self addSubview:self.draggingProgressView];
+    
+    _draggingTimeLabel.text = @"00:00";
+    [_draggingTimeLabel mas_makeConstraints:^(MASConstraintMaker *make) {
+        make.centerX.equalTo(_draggingTimeLabel.superview);
+        make.bottom.equalTo(_draggingTimeLabel.superview.mas_centerY).offset(-8);
+    }];
+    
+    [_draggingProgressView mas_makeConstraints:^(MASConstraintMaker *make) {
+        make.width.offset(130);
+        make.height.offset(3);
+        make.center.offset(0);
+    }];
+    
+    
+    // MARK: ...
+    [self addSubview:self.loadFailedBtn];
+    [_loadFailedBtn mas_makeConstraints:^(MASConstraintMaker *make) {
+        make.center.offset(0);
+    }];
+    
+    // MARK: ...
+    [self addSubview:self.bottomProgressView];
+    [_bottomProgressView mas_makeConstraints:^(MASConstraintMaker *make) {
+        make.bottom.offset(0);
+        make.leading.offset(-1);
+        make.trailing.offset(1);
+        make.height.offset(1);
     }];
 }
 
@@ -451,9 +499,51 @@ static NSString *const SJVideoPlayPreviewColCellID = @"SJVideoPlayPreviewColCell
     if ( _sliderControl ) return _sliderControl;
     _sliderControl = [SJSlider new];
     _sliderControl.trackHeight = 2;
+    _sliderControl.enableBufferProgress = YES;
     _sliderControl.borderColor = [UIColor clearColor];
+    _sliderControl.trackImageView.backgroundColor = [UIColor grayColor];
+    _sliderControl.bufferProgressColor = [UIColor whiteColor];
     return _sliderControl;
 }
+
+- (SJSlider *)draggingProgressView {
+    if ( _draggingProgressView ) return _draggingProgressView;
+    _draggingProgressView = [SJSlider new];
+    _draggingProgressView.trackHeight = 3;
+    _draggingProgressView.trackImageView.backgroundColor = [UIColor colorWithWhite:0 alpha:0.3];
+    _draggingProgressView.pan.enabled = NO;
+    return _draggingProgressView;
+}
+
+- (UILabel *)draggingTimeLabel {
+    if ( _draggingTimeLabel ) return _draggingTimeLabel;
+    _draggingTimeLabel = [UILabel labelWithFontSize:60 textColor:[UIColor colorWithWhite:1 alpha:0.5] alignment:NSTextAlignmentCenter];
+    return _draggingTimeLabel;
+}
+
+
+// MARK: ...
+- (UIButton *)loadFailedBtn {
+    if ( _loadFailedBtn ) return _loadFailedBtn;
+    _loadFailedBtn = [UIButton buttonWithTitle:@"加载失败,点击重试" backgroundColor:[UIColor clearColor] tag:SJVideoPlayControlViewTag_LoadFailed target:self sel:@selector(clickedBtn:) fontSize:14];
+    return _loadFailedBtn;
+}
+
+
+// MARK: ...
+
+- (SJSlider *)bottomProgressView {
+    if ( _bottomProgressView  ) return _bottomProgressView;
+    _bottomProgressView = [SJSlider new];
+    _bottomProgressView.alpha = 0.001;
+    _bottomProgressView.trackImageView.backgroundColor = [UIColor clearColor];
+    _bottomProgressView.borderColor = [UIColor clearColor];
+    _bottomProgressView.traceImageView.backgroundColor = [UIColor whiteColor];
+    _bottomProgressView.trackHeight = 1;
+    _bottomProgressView.pan.enabled = NO;
+    return _bottomProgressView;
+}
+
 
 // MARK: Lazy
 
@@ -583,6 +673,32 @@ static NSString *const SJVideoPlayPreviewColCellID = @"SJVideoPlayPreviewColCell
 /*!
  *  default is NO
  */
+- (void)setHiddenLoadFailedBtn:(BOOL)hiddenLoadFailedBtn {
+    if ( hiddenLoadFailedBtn == self.hiddenLoadFailedBtn ) return;
+    objc_setAssociatedObject(self, @selector(hiddenLoadFailedBtn), @(hiddenLoadFailedBtn), OBJC_ASSOCIATION_RETAIN_NONATOMIC);
+    [self hiddenOrShowView:self.loadFailedBtn bol:hiddenLoadFailedBtn];
+}
+
+- (BOOL)hiddenLoadFailedBtn {
+    return [objc_getAssociatedObject(self, _cmd) boolValue];
+}
+
+/*!
+ *  default is NO
+ */
+- (void)setHiddenBottomProgressView:(BOOL)hiddenBottomProgressView {
+    if ( hiddenBottomProgressView == self.hiddenBottomProgressView ) return;
+    objc_setAssociatedObject(self, @selector(hiddenBottomProgressView), @(hiddenBottomProgressView), OBJC_ASSOCIATION_RETAIN_NONATOMIC);
+    [self hiddenOrShowView:self.bottomProgressView bol:hiddenBottomProgressView];
+}
+
+- (BOOL)hiddenBottomProgressView {
+    return [objc_getAssociatedObject(self, _cmd) boolValue];
+}
+
+/*!
+ *  default is NO
+ */
 - (void)setHiddenUnlockBtn:(BOOL)hiddenUnlockBtn {
     if ( hiddenUnlockBtn == self.hiddenUnlockBtn ) return;
     objc_setAssociatedObject(self, @selector(hiddenUnlockBtn), @(hiddenUnlockBtn), OBJC_ASSOCIATION_RETAIN_NONATOMIC);
@@ -620,6 +736,7 @@ static NSString *const SJVideoPlayPreviewColCellID = @"SJVideoPlayPreviewColCell
     _durationTimeLabel.text = [self formatSeconds:duration];
     if ( 0 == duration || isnan(duration) ) return;
     _sliderControl.value = currentTime / duration;
+    _bottomProgressView.value = _sliderControl.value;
 }
 
 @end

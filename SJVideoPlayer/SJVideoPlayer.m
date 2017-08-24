@@ -25,10 +25,6 @@
 #import <AVFoundation/AVMetadataItem.h>
 
 
-@interface SJVideoPlayer (ControlDelegateMethods)<SJVideoPlayerControlDelegate>
-
-@end
-
 
 @interface SJVideoPlayer ()
 
@@ -99,6 +95,8 @@
 
 - (void)_sjVideoPlayerPrepareToPlay {
     
+    _error = nil;
+    
     // initialize
     _asset = [AVAsset assetWithURL:_assetURL];
     
@@ -136,48 +134,7 @@
 - (SJVideoPlayerControl *)control {
     if ( _control ) return _control;
     _control = [SJVideoPlayerControl new];
-    _control.delegate = self;
     return _control;
-}
-
-@end
-
-
-
-
-
-@implementation SJVideoPlayer (ControlDelegateMethods)
-
-- (void)clickedBackBtnEvent:(SJVideoPlayerControl *)control {
-//    // status : clicked back
-//    if ( self.presentView.superview == self.containerView ) {
-//        
-//    }
-//    // status : full screen
-//    else {
-//        [self _deviceOrientationPortrait];
-//    }
-}
-
-- (void)clickedFullScreenBtnEvent:(SJVideoPlayerControl *)control {
-//    if ( self.presentView.superview == self.containerView ) {
-//        [self _deviceOrientationLandscapeLeft];
-//    }
-//    else {
-//        [self _deviceOrientationPortrait];
-//    }
-}
-
-- (void)clickedUnlockBtnEvent:(SJVideoPlayerControl *)control {
-//    self.isLock = YES;
-//    // 锁屏
-//    [self _removeDeviceOrientationChangeObserver];
-}
-
-- (void)clickedLockBtnEvent:(SJVideoPlayerControl *)control {
-//    self.isLock = NO;
-//    // 解锁
-//    [self _addDeviceOrientationChangeObserver];
 }
 
 @end

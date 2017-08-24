@@ -18,6 +18,8 @@
 
 #import "SJVideoPlayerTipsView.h"
 
+#import "SJVideoPlayer.h"
+
 /*!
  *  AVPlayerItem's status property
  */
@@ -47,6 +49,20 @@ typedef NS_ENUM(NSUInteger, SJVerticalPanLocation) {
 static const NSString *SJPlayerItemStatusContext;
 
 
+
+@interface SJVideoPlayerBackstageStatusRegistrar : NSObject
+
+- (void)registrar:(SJVideoPlayerControlView *)controlView;
+
+@property (nonatomic, assign, readwrite) BOOL hiddenLockBtn;
+
+@property (nonatomic, assign, readwrite) BOOL hiddenPlayBtn;
+
+@end
+
+
+
+
 // MARK: 通知处理
 
 @interface SJVideoPlayerControl (DBNotifications)
@@ -66,17 +82,19 @@ static const NSString *SJPlayerItemStatusContext;
 
 @interface SJVideoPlayerControl (SJVideoPlayerControlViewDelegateMethods)<SJVideoPlayerControlViewDelegate>
 
-- (void)play;
+- (void)clickedPlay;
 
-- (void)pause;
+- (void)clickedPause;
 
-- (void)replay;
+- (void)clickedReplay;
 
-- (void)back;
+- (void)clickedBack;
 
-- (void)full;
+- (void)clickedFull;
 
-- (void)stop;
+- (void)clickedStop;
+
+- (void)clickedLoadFailed;
 
 - (void)jumpedToTime:(NSTimeInterval)time completionHandler:(void (^)(BOOL finished))completionHandler;
 
@@ -116,6 +134,11 @@ static const NSString *SJPlayerItemStatusContext;
 
 @property (nonatomic, strong, readonly) SJVideoPlayerTipsView *brightnessView;
 
+@property (nonatomic, strong, readonly) SJVideoPlayerBackstageStatusRegistrar *backstageRegistrar;
+
+
+@property (nonatomic, assign, readwrite) NSTimeInterval playedTime;
+
 @end
 
 @implementation SJVideoPlayerControl
@@ -124,6 +147,7 @@ static const NSString *SJPlayerItemStatusContext;
 @synthesize controlView = _controlView;
 @synthesize volumeView = _volumeView;
 @synthesize brightnessView = _brightnessView;
+@synthesize backstageRegistrar = _backstageRegistrar;
 
 - (instancetype)init {
     self = [super init];
@@ -151,12 +175,69 @@ static const NSString *SJPlayerItemStatusContext;
     
     [_playerItem addObserver:self forKeyPath:STATUS_KEYPATH options:0 context:&SJPlayerItemStatusContext];
     
-    [self generatePreviewImgs];
+    [_playerItem addObserver:self forKeyPath:@"loadedTimeRanges" options:NSKeyValueObservingOptionNew context:nil];
+    // 缓冲区空了，需要等待数据
+    [_playerItem addObserver:self forKeyPath:@"playbackBufferEmpty" options:NSKeyValueObservingOptionNew context:nil];
 }
 
+// MARK: Observer
+
+- (void)observeValueForKeyPath:(NSString *)keyPath ofObject:(id)object change:(NSDictionary<NSKeyValueChangeKey,id> *)change context:(void *)context {
+    if ( context == &SJPlayerItemStatusContext ) {
+        dispatch_async(dispatch_get_main_queue(), ^{
+            [self.playerItem removeObserver:self forKeyPath:STATUS_KEYPATH];
+            if (self.playerItem.status == AVPlayerItemStatusReadyToPlay) {
+                
+                [self _setEnabledGestureRecognizer:YES];
+                [self addPlayerItemTimeObserver];
+                [self addItemEndObserverForPlayerItem];
+                [self generatePreviewImgs];
+                
+                CMTime duration = self.playerItem.duration;
+                
+                [self.controlView setCurrentTime:CMTimeGetSeconds(kCMTimeZero) duration:CMTimeGetSeconds(duration)];
+                
+                self.controlView.hiddenLoadFailedBtn = YES;
+                
+                [self clickedPlay];
+                
+            } else {
+                NSLog(@"Failed to load Video: %@", self.playerItem.error);
+                NSLog(@"Failed to load Video: %@", self.playerItem.error);
+                NSLog(@"Failed to load Video: %@", self.playerItem.error);
+                [SJVideoPlayer sharedPlayer].error = self.playerItem.error;
+                self.controlView.hiddenLoadFailedBtn = NO;
+            }
+        });
+    }
+    
+    if ( [keyPath isEqualToString:@"loadedTimeRanges"] ) {
+        dispatch_async(dispatch_get_main_queue(), ^{
+            if ( 0 == CMTimeGetSeconds(_playerItem.duration) ) return;
+            _controlView.sliderControl.bufferProgress = [self loadTimeSeconds] / CMTimeGetSeconds(_playerItem.duration);
+        });
+    }
+    
+    if ( [keyPath isEqualToString:@"playbackBufferEmpty"] ) {
+        if ( _playerItem.playbackBufferEmpty ) { NSLog(@"缓冲为空. 停止播放"); [self clickedPause]; return;}
+        dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(2 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
+            NSLog(@"开始缓冲了");
+            NSLog(@"缓冲小于 5 秒, 退出继续等待缓冲");
+            if ( [self loadTimeSeconds] < (self.playedTime + 5) ) return ;
+            NSLog(@"缓冲差不多了, 开始播放");
+            if ( !_controlView.isUserClickedPause ) [self clickedPlay];
+        });
+    }
+}
+
+- (NSTimeInterval)loadTimeSeconds {
+    CMTimeRange loadTimeRange = [_playerItem.loadedTimeRanges.firstObject CMTimeRangeValue];
+    CMTime startTime = loadTimeRange.start;
+    CMTime rangeDuration  = loadTimeRange.duration;
+    return CMTimeGetSeconds(startTime) + CMTimeGetSeconds(rangeDuration);
+}
 
 - (void)generatePreviewImgs {
-    
     NSMutableArray<NSValue *> *timesM = [NSMutableArray new];
     
     NSInteger second = _asset.duration.value / _asset.duration.timescale;
@@ -181,13 +262,16 @@ static const NSString *SJPlayerItemStatusContext;
             NSLog(@"ERROR : %@", error);
             NSLog(@"ERROR : %@", error);
             NSLog(@"ERROR : %@", error);
+
         }
                 
         if ( --count == 0 ) {
             __strong typeof(_self) self = _self;
             if ( !self ) return;
             dispatch_async(dispatch_get_main_queue(), ^{
+                if ( 0 == imagesM.count ) return ;
                 self.controlView.previewImages = imagesM;
+                self.controlView.hiddenPreviewBtn = NO;
             });
 
         }
@@ -197,39 +281,25 @@ static const NSString *SJPlayerItemStatusContext;
 - (void)_sjResetPlayer {
     NSLog(@"reset Player");
     
+    [_playerItem removeObserver:self forKeyPath:@"loadedTimeRanges"];
+    
+    [_playerItem removeObserver:self forKeyPath:@"playbackBufferEmpty"];
+    
     [self.player removeTimeObserver:_timeObserver];
     _timeObserver = nil;
     
     [[NSNotificationCenter defaultCenter] removeObserver:_itemEndObserver name:AVPlayerItemDidPlayToEndTimeNotification object:_player.currentItem];
     _itemEndObserver = nil;
     
+    
+    [self _setEnabledGestureRecognizer:NO];
 
 }
 
-// MARK: Observer
-
-- (void)observeValueForKeyPath:(NSString *)keyPath ofObject:(id)object change:(NSDictionary<NSKeyValueChangeKey,id> *)change context:(void *)context {
-    if ( context == &SJPlayerItemStatusContext ) {
-        dispatch_async(dispatch_get_main_queue(), ^{
-            [self.playerItem removeObserver:self forKeyPath:STATUS_KEYPATH];
-            if (self.playerItem.status == AVPlayerItemStatusReadyToPlay) {
-                
-                [self addPlayerItemTimeObserver];
-                [self addItemEndObserverForPlayerItem];
-                
-                CMTime duration = self.playerItem.duration;
-                
-                [self.controlView setCurrentTime:CMTimeGetSeconds(kCMTimeZero) duration:CMTimeGetSeconds(duration)];
-                
-                [self play];
-                
-            } else {
-                NSLog(@"Failed to load Video: %@", self.playerItem.error);
-                NSLog(@"Failed to load Video: %@", self.playerItem.error);
-                NSLog(@"Failed to load Video: %@", self.playerItem.error);
-            }
-        });
-    }
+- (void)_setEnabledGestureRecognizer:(BOOL)bol {
+    self.singleTap.enabled = bol;
+    self.doubleTap.enabled = bol;
+//    self.panGR.enabled = bol;
 }
 
 - (void)addPlayerItemTimeObserver {
@@ -242,6 +312,7 @@ static const NSString *SJPlayerItemStatusContext;
         if ( !self ) return;
         NSTimeInterval currentTime = CMTimeGetSeconds(time);
         NSTimeInterval duration = CMTimeGetSeconds(self.playerItem.duration);
+        self.playedTime = currentTime;
         [self.controlView setCurrentTime:currentTime duration:duration];
     };
     
@@ -266,7 +337,7 @@ static const NSString *SJPlayerItemStatusContext;
               completionHandler:^(BOOL finished) {
                   self.controlView.hiddenReplayBtn = NO;
               }];
-        [self pause];
+        [self clickedPause];
     };
     
     self.itemEndObserver =
@@ -323,6 +394,12 @@ static const NSString *SJPlayerItemStatusContext;
     return _volumeView;
 }
 
+- (SJVideoPlayerBackstageStatusRegistrar *)backstageRegistrar {
+    if ( _backstageRegistrar ) return _backstageRegistrar;
+    _backstageRegistrar = [SJVideoPlayerBackstageStatusRegistrar new];
+    return _backstageRegistrar;
+}
+
 - (SJVideoPlayerControlView *)controlView {
     if ( _controlView ) return _controlView;
     _controlView = [SJVideoPlayerControlView new];
@@ -332,7 +409,11 @@ static const NSString *SJPlayerItemStatusContext;
     _controlView.hiddenReplayBtn = YES;
     _controlView.hiddenLockBtn = YES;
     _controlView.hiddenLockContainerView = YES;
-    
+    _controlView.draggingTimeLabel.alpha = 0.001;
+    _controlView.draggingProgressView.alpha = 0.001;
+    _controlView.hiddenLoadFailedBtn = YES;
+    _controlView.hiddenPreviewBtn = YES;
+
     // MARK: GestureRecognizer
 
     self.singleTap = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(handleSingleTap:)];
@@ -358,9 +439,9 @@ static const NSString *SJPlayerItemStatusContext;
 - (void)handleDoubleTap:(UITapGestureRecognizer *)tap {
     NSLog(@"double tap");
     if ( self.lastPlaybackRate > 0.f )
-        [self pause];
+        [self clickedPause];
     else
-        [self play];
+        [self clickedPlay];
 }
 
 static UIView *target = nil;
@@ -476,39 +557,43 @@ static UIView *target = nil;
 
 - (void)controlView:(SJVideoPlayerControlView *)controlView selectedPreviewModel:(SJVideoPreviewModel *)model {
     [self jumpedToCMTime:model.localTime completionHandler:^(BOOL finished) {
-        if ( self.lastPlaybackRate > 0.f) [self play];
+        if ( self.lastPlaybackRate > 0.f) [self clickedPlay];
     }];
 }
 
 - (void)controlView:(SJVideoPlayerControlView *)controlView clickedBtnTag:(SJVideoPlayControlViewTag)tag {
     switch (tag) {
         case SJVideoPlayControlViewTag_Play:
-            [self play];
+            [self clickedPlay];
             break;
         case SJVideoPlayControlViewTag_Pause:
-            [self pause];
+            [self clickedPause];
             break;
         case SJVideoPlayControlViewTag_Replay:
-            [self replay];
+            [self clickedReplay];
             break;
         case SJVideoPlayControlViewTag_Back:
-            [self back];
+            [self clickedBack];
             break;
         case SJVideoPlayControlViewTag_Full:
-            [self full];
+            [self clickedFull];
             break;
         case SJVideoPlayControlViewTag_Preview:
             break;
         case SJVideoPlayControlViewTag_Lock:
-            [self lock];
+            [self clickedLock];
             break;
         case SJVideoPlayControlViewTag_Unlock:
-            [self unlock];
+            [self clickedUnlock];
+            break;
+        case SJVideoPlayControlViewTag_LoadFailed:
+            [self clickedLoadFailed];
             break;
     }
 }
 
-- (void)play {
+- (void)clickedPlay {
+    if ( 0 != self.player.rate ) return;
     [self.player play];
     self.controlView.hiddenReplayBtn = YES;
     self.controlView.hiddenPlayBtn = YES;
@@ -516,40 +601,46 @@ static UIView *target = nil;
     self.lastPlaybackRate = self.player.rate;
 }
 
-- (void)pause {
+- (void)clickedPause {
     [self.player pause];
     self.controlView.hiddenPlayBtn = NO;
     self.controlView.hiddenPauseBtn = YES;
     self.lastPlaybackRate = self.player.rate;
 }
 
-- (void)replay {
-    [self play];
+- (void)clickedReplay {
+    [self clickedPlay];
 }
 
-- (void)back {
+- (void)clickedBack {
     if ( ![self.delegate respondsToSelector:@selector(clickedBackBtnEvent:)] ) return;
     [self.delegate clickedBackBtnEvent:self];
 }
 
-- (void)full {
+- (void)clickedFull {
     if ( ![self.delegate respondsToSelector:@selector(clickedFullScreenBtnEvent:)] ) return;
     [self.delegate clickedFullScreenBtnEvent:self];
 }
 
-- (void)stop {
+- (void)clickedStop {
     [self.player setRate:0.0f];
     self.lastPlaybackRate = self.player.rate;
 }
 
-- (void)lock {
+- (void)clickedLock {
     if ( ![self.delegate respondsToSelector:@selector(clickedLockBtnEvent:)] ) return;
     [self.delegate clickedLockBtnEvent:self];
 }
 
-- (void)unlock {
+- (void)clickedUnlock {
     if ( ![self.delegate respondsToSelector:@selector(clickedUnlockBtnEvent:)] ) return;
     [self.delegate clickedUnlockBtnEvent:self];
+}
+
+- (void)clickedLoadFailed {
+    /// 重新加载
+    _controlView.hiddenLoadFailedBtn = YES;
+    [SJVideoPlayer sharedPlayer].assetURL = [SJVideoPlayer sharedPlayer].assetURL;
 }
 
 - (void)jumpedToTime:(NSTimeInterval)time completionHandler:(void (^)(BOOL finished))completionHandler {
@@ -572,16 +663,27 @@ static UIView *target = nil;
 
 - (void)sliderWillBeginDragging:(SJSlider *)slider {
     [self.player removeTimeObserver:self.timeObserver];
+    _controlView.draggingProgressView.value = _controlView.sliderControl.value;
+    [UIView animateWithDuration:0.25 animations:^{
+        _controlView.draggingProgressView.alpha = 1.0;
+        _controlView.draggingTimeLabel.alpha = 1.0;
+    }];
 }
 
 - (void)sliderDidDrag:(SJSlider *)slider {
-    [self.playerItem cancelPendingSeeks];
+    [_playerItem cancelPendingSeeks];
     [self jumpedToTime:slider.value * CMTimeGetSeconds(_playerItem.duration) completionHandler:nil];
+    _controlView.draggingProgressView.value = slider.value;
+    _controlView.draggingTimeLabel.text = [_controlView formatSeconds:slider.value * CMTimeGetSeconds(_playerItem.duration)];
 }
 
 - (void)sliderDidEndDragging:(SJSlider *)slider {
     [self addPlayerItemTimeObserver];
-    if ( self.lastPlaybackRate > 0.f) [self play];
+    if ( self.lastPlaybackRate > 0.f) [self clickedPlay];
+    [UIView animateWithDuration:1 animations:^{
+        _controlView.draggingProgressView.alpha = 0.001;
+        _controlView.draggingTimeLabel.alpha = 0.001;
+    }];
 }
 
 @end
@@ -608,6 +710,14 @@ static UIView *target = nil;
     /// 小屏
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(playerSmallScreenNotification) name:SJPlayerSmallScreenNotification object:nil];
 
+    // 耳机
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(audioSessionRouteChangeNotification:) name:AVAudioSessionRouteChangeNotification object:nil];
+
+    // 后台
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(applicationWillResignActiveNotification) name:UIApplicationWillResignActiveNotification object:nil];
+    
+    // 前台
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(applicationDidBecomeActiveNotification) name:UIApplicationDidBecomeActiveNotification object:nil];
 }
 
 - (void)_SJVideoPlayerControlRemoveNotifications {
@@ -622,8 +732,8 @@ static UIView *target = nil;
 - (void)playerLockedScreenNotification {
     NSLog(@"锁定");
     _controlView.hiddenControl = YES;
-    _controlView.hiddenLockBtn = !_controlView.hiddenLockBtn;
-    _controlView.hiddenUnlockBtn = !_controlView.hiddenLockBtn;
+    _controlView.hiddenLockBtn = NO;
+    _controlView.hiddenUnlockBtn = YES;
     
     _singleTap.enabled = NO;
     _doubleTap.enabled = NO;
@@ -634,8 +744,8 @@ static UIView *target = nil;
 - (void)playerUnlockedScreenNotification {
     NSLog(@"解锁");
     _controlView.hiddenControl = NO;
-    _controlView.hiddenLockBtn = !_controlView.hiddenLockBtn;
-    _controlView.hiddenUnlockBtn = !_controlView.hiddenLockBtn;
+    _controlView.hiddenLockBtn = YES;
+    _controlView.hiddenUnlockBtn = NO;
     
     _singleTap.enabled = YES;
     _doubleTap.enabled = YES;
@@ -656,5 +766,53 @@ static UIView *target = nil;
     _controlView.hiddenLockContainerView = YES;
 }
 
+/// 耳机
+- (void)audioSessionRouteChangeNotification:(NSNotification*)notifi {
+    NSDictionary *interuptionDict = notifi.userInfo;
+    NSInteger routeChangeReason = [[interuptionDict valueForKey:AVAudioSessionRouteChangeReasonKey] integerValue];
+    switch (routeChangeReason) {
+            
+        case AVAudioSessionRouteChangeReasonNewDeviceAvailable:
+            // 耳机插入
+            break;
+            
+        case AVAudioSessionRouteChangeReasonOldDeviceUnavailable:
+        {
+            // 耳机拔掉
+            // 拔掉耳机继续播放
+            [self clickedPlay];
+        }
+            break;
+            
+        case AVAudioSessionRouteChangeReasonCategoryChange:
+            // called at start - also when other audio wants to play
+            NSLog(@"AVAudioSessionRouteChangeReasonCategoryChange");
+            break;
+    }
+}
+
+// 后台
+- (void)applicationWillResignActiveNotification {
+    [self.backstageRegistrar registrar:_controlView];
+    [self clickedPause];
+    if ( _backstageRegistrar.hiddenLockBtn ) [self clickedUnlock];
+}
+
+// 前台
+- (void)applicationDidBecomeActiveNotification {
+    if ( _backstageRegistrar.hiddenLockBtn ) [self clickedLock];
+    if ( _backstageRegistrar.hiddenPlayBtn ) [self clickedPlay];
+}
+
 @end
 
+
+
+@implementation SJVideoPlayerBackstageStatusRegistrar
+
+- (void)registrar:(SJVideoPlayerControlView *)controlView {
+    self.hiddenLockBtn = controlView.hiddenLockBtn;
+    self.hiddenPlayBtn = controlView.hiddenPlayBtn;
+}
+
+@end

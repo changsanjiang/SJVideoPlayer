@@ -27,6 +27,11 @@ NS_ASSUME_NONNULL_BEGIN
  */
 @property (nonatomic, strong, readonly) UIView *view;
 
+/*!
+ *  Error
+ */
+@property (nonatomic, strong) NSError *error;
+
 @end
 
 NS_ASSUME_NONNULL_END

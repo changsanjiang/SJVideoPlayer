@@ -27,6 +27,7 @@ typedef NS_ENUM(NSUInteger, SJVideoPlayControlViewTag) {
     SJVideoPlayControlViewTag_Preview,
     SJVideoPlayControlViewTag_Lock,
     SJVideoPlayControlViewTag_Unlock,
+    SJVideoPlayControlViewTag_LoadFailed,
 };
 
 
@@ -41,6 +42,10 @@ typedef NS_ENUM(NSUInteger, SJVideoPlayControlViewTag) {
 @property (nonatomic, weak, readwrite) id <SJVideoPlayerControlViewDelegate> delegate;
 
 @property (nonatomic, strong, readonly) SJSlider *sliderControl;
+@property (nonatomic, strong, readonly) UILabel *draggingTimeLabel;
+@property (nonatomic, strong, readonly) SJSlider *draggingProgressView;
+
+@property (nonatomic, assign, readonly) BOOL isUserClickedPause;
 
 @end
 
@@ -90,6 +95,15 @@ typedef NS_ENUM(NSUInteger, SJVideoPlayControlViewTag) {
  */
 @property (nonatomic, assign, readwrite) BOOL hiddenControl;
 
+/*!
+ *  default is NO
+ */
+@property (nonatomic, assign, readwrite) BOOL hiddenLoadFailedBtn;
+
+/*!
+ *  default is No
+ */
+@property (nonatomic, assign, readwrite) BOOL hiddenBottomProgressView;
 
 @end
 
@@ -101,6 +115,8 @@ typedef NS_ENUM(NSUInteger, SJVideoPlayControlViewTag) {
 @interface SJVideoPlayerControlView (TimeOperation)
 
 - (void)setCurrentTime:(NSTimeInterval)time duration:(NSTimeInterval)duration;
+
+- (NSString *)formatSeconds:(NSInteger)value;
 
 @end
 

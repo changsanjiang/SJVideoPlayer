@@ -212,7 +212,7 @@ static const NSString *SJPlayerItemStatusContext;
                 NSLog(@"Failed to load Video: %@", self.playerItem.error);
                 NSLog(@"Failed to load Video: %@", self.playerItem.error);
                 
-                
+                // MARK: SJPlayerPlayFailedErrorNotification
                 [[NSNotificationCenter defaultCenter] postNotificationName:SJPlayerPlayFailedErrorNotification object:self.playerItem.error];
 
                 self.controlView.hiddenLoadFailedBtn = NO;
@@ -228,14 +228,24 @@ static const NSString *SJPlayerItemStatusContext;
     }
     
     if ( [keyPath isEqualToString:@"playbackBufferEmpty"] ) {
-        if ( _playerItem.playbackBufferEmpty ) { NSLog(@"缓冲为空. 停止播放"); [self clickedPause]; return;}
-        dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(2 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
-            NSLog(@"开始缓冲了");
-            if ( [self loadTimeSeconds] < (self.playedTime + 5) ) {NSLog(@"缓冲小于 5 秒, 退出继续等待缓冲"); return;}
-            NSLog(@"缓冲差不多了, 开始播放");
-            if ( !self.isUserClickedPause ) [self clickedPlay];
-        });
+        if ( !_playerItem.playbackBufferEmpty ) return;
+        NSLog(@"缓冲为空. 停止播放");
+        [self clickedPause];
+        [self _buffering];
     }
+}
+
+- (void)_buffering {
+    dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(2 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
+        NSLog(@"开始缓冲了");
+        if ( [self loadTimeSeconds] < (self.playedTime + 5) ) {
+            NSLog(@"A: 缓冲小于 5 秒, 退出继续等待缓冲");
+            [self _buffering];
+            return;
+        }
+        NSLog(@"A: 缓冲差不多了, 开始播放");
+        if ( !self.isUserClickedPause ) [self clickedPlay];
+    });
 }
 
 - (NSTimeInterval)loadTimeSeconds {
@@ -293,12 +303,9 @@ static const NSString *SJPlayerItemStatusContext;
     
     [_playerItem removeObserver:self forKeyPath:@"playbackBufferEmpty"];
     
-    [self.player removeTimeObserver:_timeObserver];
-    _timeObserver = nil;
+    [self.player removeTimeObserver:_timeObserver]; _timeObserver = nil;
     
-    [[NSNotificationCenter defaultCenter] removeObserver:_itemEndObserver name:AVPlayerItemDidPlayToEndTimeNotification object:_player.currentItem];
-    _itemEndObserver = nil;
-    
+    [[NSNotificationCenter defaultCenter] removeObserver:_itemEndObserver name:AVPlayerItemDidPlayToEndTimeNotification object:_player.currentItem]; _itemEndObserver = nil;
     
     [self _setEnabledGestureRecognizer:NO];
 
@@ -307,7 +314,7 @@ static const NSString *SJPlayerItemStatusContext;
 - (void)_setEnabledGestureRecognizer:(BOOL)bol {
     self.singleTap.enabled = bol;
     self.doubleTap.enabled = bol;
-//    self.panGR.enabled = bol;
+    self.panGR.enabled = bol;
 }
 
 - (void)addPlayerItemTimeObserver {

@@ -294,7 +294,7 @@
     }
     
     CGPoint offset = [pan translationInView:pan.view];
-    self.value += offset.x * 0.00365;
+    self.value += offset.x * 0.00267;
     [pan setTranslation:CGPointMake(0, 0) inView:pan.view];
 }
 

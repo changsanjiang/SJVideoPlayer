@@ -8,11 +8,18 @@
 
 #import <UIKit/UIKit.h>
 
-@class AVPlayer;
 
+@class AVPlayer;
 
 @interface SJVideoPlayerPresentView : UIView
 
 - (void)setPlayer:(AVPlayer *)player superv:(UIView *)superv;
+
+@end
+
+
+#import "SJVideoPlayerControl.h"
+
+@interface SJVideoPlayerPresentView (ControlDelegateMethods)<SJVideoPlayerControlDelegate>
 
 @end

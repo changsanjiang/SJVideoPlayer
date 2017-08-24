@@ -29,29 +29,26 @@
 
 static NSString *const SJVideoPlayPreviewColCellID = @"SJVideoPlayPreviewColCell";
 
+@protocol SJVideoPlayPreviewColCellDelegate;
 
 @interface SJVideoPlayPreviewColCell : UICollectionViewCell
 @property (nonatomic, strong, readwrite) SJVideoPreviewModel *model;
+@property (nonatomic, weak) id <SJVideoPlayPreviewColCellDelegate> delegate;
+@end
+
+@protocol SJVideoPlayPreviewColCellDelegate <NSObject>
+@optional
+- (void)clickedItemOnCell:(SJVideoPlayPreviewColCell *)cell;
 @end
 
 
-@interface SJVideoPlayerControlView (ColDelegateMethods)<UICollectionViewDelegate>
+@interface SJVideoPlayerControlView (PreviewCellDelegateMethods)<SJVideoPlayPreviewColCellDelegate>
+
 @end
 
 @interface SJVideoPlayerControlView (ColDataSourceMethods)<UICollectionViewDataSource>
 @end
 
-
-
-// MARK: 通知处理
-
-@interface SJVideoPlayerControlView (DBNotifications)
-
-- (void)_SJVideoPlayerControlViewInstallNotifications;
-
-- (void)_SJVideoPlayerControlViewRemoveNotifications;
-
-@end
 
 
 
@@ -105,6 +102,13 @@ static NSString *const SJVideoPlayPreviewColCellID = @"SJVideoPlayPreviewColCell
 @property (nonatomic, assign, readwrite) NSInteger hiddenControlPoint;
 @property (nonatomic, strong, readonly) NSTimer *pointTimer;
 
+
+// MARK: ...
+@property (nonatomic, strong, readonly) UIView *draggingShowContainerView;
+@property (nonatomic, strong, readonly) UILabel *draggingTimeLabel;
+@property (nonatomic, strong, readonly) SJSlider *draggingShowProgressView;
+
+
 @end
 
 @implementation SJVideoPlayerControlView
@@ -133,6 +137,11 @@ static NSString *const SJVideoPlayPreviewColCellID = @"SJVideoPlayPreviewColCell
 
 // MARK: ...
 @synthesize pointTimer = _pointTimer;
+
+// MARK: ...
+@synthesize draggingShowContainerView = _draggingShowContainerView;
+@synthesize draggingTimeLabel = _draggingTimeLabel;
+@synthesize draggingShowProgressView = _draggingShowProgressView;
 
 
 - (instancetype)initWithFrame:(CGRect)frame {
@@ -164,7 +173,6 @@ static NSString *const SJVideoPlayPreviewColCellID = @"SJVideoPlayPreviewColCell
             
             [self.pointTimer fire];
         }
-        btn.selected = !btn.selected;
     }
     
     if ( ![self.delegate respondsToSelector:@selector(controlView:clickedBtnTag:)] ) return;
@@ -178,6 +186,7 @@ static NSString *const SJVideoPlayPreviewColCellID = @"SJVideoPlayPreviewColCell
         self.previewImgColView.transform = CGAffineTransformIdentity;
         self.previewImgColView.alpha = 1.0;
     }];
+    self.previewBtn.selected = YES;
 }
 
 - (void)previewImgColView_HiddenAnima {
@@ -185,9 +194,10 @@ static NSString *const SJVideoPlayPreviewColCellID = @"SJVideoPlayPreviewColCell
         self.previewImgColView.transform = CGAffineTransformMakeScale(1, 0.001);
         self.previewImgColView.alpha = 0.001;
     }];
+    self.previewBtn.selected = NO;
 }
 
-- (void)_showControl {
+- (void)showController {
     [UIView animateWithDuration:0.3 animations:^{
         self.topContainerView.transform = CGAffineTransformIdentity;
         self.bottomContainerView.transform = CGAffineTransformIdentity;
@@ -200,7 +210,7 @@ static NSString *const SJVideoPlayPreviewColCellID = @"SJVideoPlayPreviewColCell
     self.hiddenControlPoint = 0;
 }
 
-- (void)_hiddenControl {
+- (void)hiddenController {
 
     [UIView animateWithDuration:0.3 animations:^{
         self.topContainerView.transform = CGAffineTransformMakeTranslation(0, -SJContainerH);
@@ -352,7 +362,6 @@ static NSString *const SJVideoPlayPreviewColCellID = @"SJVideoPlayPreviewColCell
 - (UICollectionView *)previewImgColView {
     if ( _previewImgColView ) return _previewImgColView;
     _previewImgColView = [UICollectionView collectionViewWithItemSize:CGSizeMake(SJPreviewImgW, SJPreViewImgH) backgroundColor:[UIColor blackColor] scrollDirection:UICollectionViewScrollDirectionHorizontal];
-    _previewImgColView.delegate = self;
     _previewImgColView.dataSource = self;
     [_previewImgColView registerClass:NSClassFromString(SJVideoPlayPreviewColCellID) forCellWithReuseIdentifier:SJVideoPlayPreviewColCellID];
     _previewImgColView.transform = CGAffineTransformMakeScale(1, 0.001);
@@ -538,6 +547,29 @@ static NSString *const SJVideoPlayPreviewColCellID = @"SJVideoPlayPreviewColCell
 /*!
  *  default is NO
  */
+- (void)setHiddenLockContainerView:(BOOL)hiddenLockContainerView {
+    if ( hiddenLockContainerView == self.hiddenLockContainerView ) return;
+    objc_setAssociatedObject(self, @selector(hiddenLockContainerView), @(hiddenLockContainerView), OBJC_ASSOCIATION_RETAIN_NONATOMIC);
+    CGAffineTransform transform = CGAffineTransformIdentity;
+    CGFloat alpha = 1;
+    if ( hiddenLockContainerView ) {
+        transform = CGAffineTransformMakeTranslation(-100, 0);
+        alpha = 0.001;
+    }
+    
+    [UIView animateWithDuration:0.25 animations:^{
+        self.lockBtnContainerView.transform = transform;
+        self.lockBtnContainerView.alpha = alpha;
+    }];
+}
+
+- (BOOL)hiddenLockContainerView {
+    return [objc_getAssociatedObject(self, _cmd) boolValue];
+}
+
+/*!
+ *  default is NO
+ */
 - (void)setHiddenControl:(BOOL)hiddenControl {
     if ( hiddenControl == self.hiddenControl ) return;
     objc_setAssociatedObject(self, @selector(hiddenControl), @(hiddenControl), OBJC_ASSOCIATION_RETAIN_NONATOMIC);
@@ -622,14 +654,14 @@ static NSString *const SJVideoPlayPreviewColCellID = @"SJVideoPlayPreviewColCell
 
 
 @interface SJVideoPlayPreviewColCell ()
-
 @property (nonatomic, strong, readonly) UIImageView *imageView;
-
+@property (nonatomic, strong, readonly) UIButton *backgroundBtn;
 @end
 
 @implementation SJVideoPlayPreviewColCell
 
 @synthesize imageView = _imageView;
+@synthesize backgroundBtn = _backgroundBtn;
 
 - (instancetype)initWithFrame:(CGRect)frame {
     self = [super initWithFrame:frame];
@@ -643,11 +675,20 @@ static NSString *const SJVideoPlayPreviewColCellID = @"SJVideoPlayPreviewColCell
     _imageView.image = model.image;
 }
 
+- (void)clickedBtn:(UIButton *)btn {
+    if ( ![self.delegate respondsToSelector:@selector(clickedItemOnCell:)] ) return;
+    [self.delegate clickedItemOnCell:self];
+}
+
 // MARK: UI
 
 - (void)_SJVideoPlayPreviewColCellSetupUI {
+    [self.contentView addSubview:self.backgroundBtn];
     [self.contentView addSubview:self.imageView];
     [_imageView mas_makeConstraints:^(MASConstraintMaker *make) {
+        make.edges.offset(0);
+    }];
+    [_backgroundBtn mas_makeConstraints:^(MASConstraintMaker *make) {
         make.edges.offset(0);
     }];
 }
@@ -658,16 +699,10 @@ static NSString *const SJVideoPlayPreviewColCellID = @"SJVideoPlayPreviewColCell
     return _imageView;
 }
 
-@end
-
-
-
-@implementation SJVideoPlayerControlView (ColDelegateMethods)
-
-- (void)collectionView:(UICollectionView *)collectionView didSelectItemAtIndexPath:(NSIndexPath *)indexPath {
-    if ( ![self.delegate respondsToSelector:@selector(controlView:selectedPreviewModel:)] ) return;
-    SJVideoPreviewModel *model = [[collectionView cellForItemAtIndexPath:indexPath] valueForKey:@"model"];
-    [self.delegate controlView:self selectedPreviewModel:model];
+- (UIButton *)backgroundBtn {
+    if ( _backgroundBtn ) return _backgroundBtn;
+    _backgroundBtn = [UIButton buttonWithImageName:@"" tag:0 target:self sel:@selector(clickedBtn:)];
+    return _backgroundBtn;
 }
 
 @end
@@ -692,6 +727,7 @@ static NSString *const SJVideoPlayPreviewColCellID = @"SJVideoPlayPreviewColCell
 - (UICollectionViewCell *)collectionView:(UICollectionView *)collectionView cellForItemAtIndexPath:(NSIndexPath *)indexPath {
     UICollectionViewCell *cell = [collectionView dequeueReusableCellWithReuseIdentifier:SJVideoPlayPreviewColCellID forIndexPath:indexPath];
     [cell setValue:self.previewImages[indexPath.row] forKey:@"model"];
+    [cell setValue:self forKey:@"delegate"];
     return cell;
 }
 
@@ -699,6 +735,16 @@ static NSString *const SJVideoPlayPreviewColCellID = @"SJVideoPlayPreviewColCell
 
 
 
+
+@implementation SJVideoPlayerControlView (PreviewCellDelegateMethods)
+
+- (void)clickedItemOnCell:(SJVideoPlayPreviewColCell *)cell {
+    if ( ![self.delegate respondsToSelector:@selector(controlView:selectedPreviewModel:)] ) return;
+    SJVideoPreviewModel *model = cell.model;
+    [self.delegate controlView:self selectedPreviewModel:model];
+}
+
+@end
 
 
 
@@ -764,28 +810,12 @@ static NSString *const SJVideoPlayPreviewColCellID = @"SJVideoPlayPreviewColCell
     }
     else if ( [keyPath isEqualToString:@"isHiddenControl"] ) {
         if ( self.isHiddenControl )
-            [self _hiddenControl];
+            [self hiddenController];
         else
-            [self _showControl];
+            [self showController];
+        
+        [self previewImgColView_HiddenAnima];
     }
-}
-
-@end
-
-
-
-// MARK: 通知处理
-
-@implementation SJVideoPlayerControlView (DBNotifications)
-
-// MARK: 通知安装
-
-- (void)_SJVideoPlayerControlViewInstallNotifications {
-    
-}
-
-- (void)_SJVideoPlayerControlViewRemoveNotifications {
-    [[NSNotificationCenter defaultCenter] removeObserver:self];
 }
 
 @end

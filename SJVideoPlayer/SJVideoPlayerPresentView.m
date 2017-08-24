@@ -14,6 +14,8 @@
 
 #import <Masonry/Masonry.h>
 
+#import "SJVideoPlayerStringConstant.h"
+
 
 // MARK: 通知处理
 
@@ -24,6 +26,8 @@
 - (void)_SJVideoPlayerPresentViewRemoveNotifications;
 
 @end
+
+
 
 
 
@@ -93,7 +97,7 @@
 }
 
 - (void)_removeDeviceOrientationChangeObserver {
-    if (![UIDevice currentDevice].generatesDeviceOrientationNotifications) {
+    if ( [UIDevice currentDevice].generatesDeviceOrientationNotifications ) {
         [[UIDevice currentDevice] endGeneratingDeviceOrientationNotifications];
     }
     [[NSNotificationCenter defaultCenter] removeObserver:self];
@@ -105,19 +109,19 @@
     
     switch (orientation) {
         case UIDeviceOrientationLandscapeLeft: {
-            //                        NSLog(@"屏幕向左横置");
+            /// 屏幕向左横置
             [self _deviceOrientationLandscapeLeft];
         }
             break;
             
         case UIDeviceOrientationLandscapeRight: {
-            //                        NSLog(@"屏幕向右橫置");
+            /// 屏幕向右橫置
             [self _deviceOrientationLandscapeRight];
         }
             break;
             
         case UIDeviceOrientationPortrait: {
-            //                        NSLog(@"屏幕直立");
+            /// 屏幕直立
             [self _deviceOrientationPortrait];
         }
             break;
@@ -137,11 +141,11 @@
         make.width.offset(SJSCREEN_MAX);
         make.height.offset(SJSCREEN_MIN);
     }];
-    
     [UIView animateWithDuration:0.25 animations:^{
         self.transform = CGAffineTransformMakeRotation(M_PI_2);
     }];
     [[UIApplication sharedApplication] setStatusBarHidden:YES];
+    [[NSNotificationCenter defaultCenter] postNotificationName:SJPlayerFullScreenNotitication object:nil];
 }
 
 - (void)_deviceOrientationLandscapeRight {
@@ -156,8 +160,8 @@
     [UIView animateWithDuration:0.25 animations:^{
         self.transform = CGAffineTransformMakeRotation(-M_PI_2);
     }];
-    
     [[UIApplication sharedApplication] setStatusBarHidden:YES];
+    [[NSNotificationCenter defaultCenter] postNotificationName:SJPlayerFullScreenNotitication object:nil];
 }
 
 - (void)_deviceOrientationPortrait {
@@ -166,13 +170,50 @@
     [self mas_remakeConstraints:^(MASConstraintMaker *make) {
         make.edges.offset(0);
     }];
-    
     [UIView animateWithDuration:0.25 animations:^{
         self.transform = CGAffineTransformIdentity;
     }];
-    
     [[UIApplication sharedApplication] setStatusBarHidden:NO];
+    [[NSNotificationCenter defaultCenter] postNotificationName:SJPlayerSmallScreenNotification object:nil];
 }
 
 @end
 
+
+
+@implementation SJVideoPlayerPresentView (ControlDelegateMethods)
+
+- (void)clickedFullScreenBtnEvent:(SJVideoPlayerControl *)control {
+    if ( self.superview == self.superv ) {
+        [self _deviceOrientationLandscapeLeft];
+    }
+    else {
+        [self _deviceOrientationPortrait];
+    }
+}
+
+- (void)clickedBackBtnEvent:(SJVideoPlayerControl *)control {
+    // status : clicked back
+    if ( self.superview == self.superv ) {
+        NSLog(@"back");
+    }
+    // status : full screen
+    else {
+        [self _deviceOrientationPortrait];
+    }
+}
+
+- (void)clickedUnlockBtnEvent:(SJVideoPlayerControl *)control {
+    // 锁屏
+    [self _removeDeviceOrientationChangeObserver];
+    [[NSNotificationCenter defaultCenter] postNotificationName:SJPlayerLockedScreenNotification object:nil];
+}
+
+- (void)clickedLockBtnEvent:(SJVideoPlayerControl *)control {
+    // 解锁
+    [self _addDeviceOrientationChangeObserver];
+    
+    [[NSNotificationCenter defaultCenter] postNotificationName:SJPlayerUnlockedScreenNotification object:nil];
+}
+
+@end

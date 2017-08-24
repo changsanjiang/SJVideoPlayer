@@ -81,9 +81,15 @@ typedef NS_ENUM(NSUInteger, SJVideoPlayControlViewTag) {
 @property (nonatomic, assign, readwrite) BOOL hiddenLockBtn;
 
 /*!
+ *  defautl is NO
+ */
+@property (nonatomic, assign, readwrite) BOOL hiddenLockContainerView;
+
+/*!
  *  default is NO
  */
 @property (nonatomic, assign, readwrite) BOOL hiddenControl;
+
 
 @end
 

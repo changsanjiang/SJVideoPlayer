@@ -24,8 +24,6 @@
 
 #import <AVFoundation/AVMetadataItem.h>
 
-#import "SJVideoPlayerStringConstant.h"
-
 
 @interface SJVideoPlayer (ControlDelegateMethods)<SJVideoPlayerControlDelegate>
 
@@ -42,8 +40,6 @@
 @property (nonatomic, strong, readonly) UIView *containerView;
 @property (nonatomic, strong, readonly) SJVideoPlayerControl *control;
 @property (nonatomic, strong, readonly) SJVideoPlayerPresentView *presentView;
-
-@property (nonatomic, assign, readwrite) BOOL isLock;
 
 @end
 
@@ -92,14 +88,6 @@
     [self _sjVideoPlayerPrepareToPlay];
 }
 
-- (void)setIsLock:(BOOL)isLock {
-    _isLock = isLock;
-    NSNotificationName name = nil;
-    if ( isLock ) name = SJPlayerLockedScreenNotification;
-    else name = SJPlayerUnlockedScreenNotification;
-    [[NSNotificationCenter defaultCenter] postNotificationName:name object:nil];
-}
-
 // MARK: Public
 
 - (UIView *)view {
@@ -126,6 +114,8 @@
 
     // present
     [_presentView setPlayer:_player superv:_containerView];
+    
+    _control.delegate = _presentView;
 }
 
 // MARK: Lazy

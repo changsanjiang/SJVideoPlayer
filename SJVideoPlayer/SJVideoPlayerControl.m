@@ -43,7 +43,20 @@ typedef NS_ENUM(NSUInteger, SJVerticalPanLocation) {
 };
 
 
+
 static const NSString *SJPlayerItemStatusContext;
+
+
+// MARK: 通知处理
+
+@interface SJVideoPlayerControl (DBNotifications)
+
+- (void)_SJVideoPlayerControlInstallNotifications;
+
+- (void)_SJVideoPlayerControlRemoveNotifications;
+
+@end
+
 
 
 @interface SJVideoPlayerControl (SJSliderDelegateMethods)<SJSliderDelegate>
@@ -117,7 +130,16 @@ static const NSString *SJPlayerItemStatusContext;
     if ( !self ) return nil;
     [self controlView];
     [self systemVolume];
+    [[UIApplication sharedApplication].keyWindow addSubview:self.volumeView];
+    [[UIApplication sharedApplication].keyWindow addSubview:self.brightnessView];
+    self.volumeView.alpha = 0.001;
+    self.brightnessView.alpha = 0.001;
+    [self _SJVideoPlayerControlInstallNotifications];
     return self;
+}
+
+- (void)dealloc {
+    [self _SJVideoPlayerControlRemoveNotifications];
 }
 
 - (void)setAsset:(AVAsset *)asset playerItem:(AVPlayerItem *)playerItem player:(AVPlayer *)player {
@@ -309,6 +331,7 @@ static const NSString *SJPlayerItemStatusContext;
     _controlView.hiddenPlayBtn = YES;
     _controlView.hiddenReplayBtn = YES;
     _controlView.hiddenLockBtn = YES;
+    _controlView.hiddenLockContainerView = YES;
     
     // MARK: GestureRecognizer
 
@@ -340,6 +363,8 @@ static const NSString *SJPlayerItemStatusContext;
         [self play];
 }
 
+static UIView *target = nil;
+
 - (void)handlePan:(UIPanGestureRecognizer *)pan {
     
     // 我们要响应水平移动和垂直移动
@@ -354,26 +379,33 @@ static const NSString *SJPlayerItemStatusContext;
             // 使用绝对值来判断移动的方向
             CGFloat x = fabs(velocityPoint.x);
             CGFloat y = fabs(velocityPoint.y);
-            if (x > y) { // 水平移动
-                NSLog(@"水平移动");
+            if (x > y) {
+                /// 水平移动
                 _panDirection = SJPanDirection_H;
                 [self sliderWillBeginDragging:_controlView.sliderControl];
             }
-            else if (x < y){ // 垂直移动
-                NSLog(@"垂直移动");
+            else if (x < y){
+                /// 垂直移动
                 _panDirection = SJPanDirection_V;
                 
                 CGPoint locationPoint = [pan locationInView:pan.view];
                 if (locationPoint.x > _controlView.bounds.size.width / 2) {
                     _panLocation = SJVerticalPanLocation_Right;
-                    [[UIApplication sharedApplication].keyWindow addSubview:self.volumeView];
-                    _volumeView.transform = _controlView.superview.transform;
+                    _volumeView.value = self.systemVolume.value;
+                    target = _volumeView;
                 }
                 else {
                     _panLocation = SJVerticalPanLocation_Left;
-                    [[UIApplication sharedApplication].keyWindow addSubview:self.brightnessView];
-                    _brightnessView.transform = _controlView.superview.transform;
+                    _brightnessView.value = [UIScreen mainScreen].brightness;
+                    target = _brightnessView;
                 }
+                
+                [[UIApplication sharedApplication].keyWindow bringSubviewToFront:target];
+                target.transform = _controlView.superview.transform;
+                [UIView animateWithDuration:0.25 animations:^{
+                    target.alpha = 1;
+                }];
+
             }
             break;
         }
@@ -396,7 +428,6 @@ static const NSString *SJPlayerItemStatusContext;
                             break;
                         case SJVerticalPanLocation_Right: {
                             _systemVolume.value -= offset.y * 0.006;
-                            _volumeView.value = _systemVolume.value;
                         }
                             break;
                             
@@ -419,8 +450,9 @@ static const NSString *SJPlayerItemStatusContext;
                     break;
                 }
                 case SJPanDirection_V:{
-                    // 垂直移动结束后，把状态改为不再控制音量
-                    
+                    [UIView animateWithDuration:0.5 animations:^{
+                        target.alpha = 0.001;
+                    }];
                     break;
                 }
                 default:
@@ -511,15 +543,11 @@ static const NSString *SJPlayerItemStatusContext;
 }
 
 - (void)lock {
-    _controlView.hiddenLockBtn = !_controlView.hiddenLockBtn;
-    _controlView.hiddenUnlockBtn = !_controlView.hiddenLockBtn;
     if ( ![self.delegate respondsToSelector:@selector(clickedLockBtnEvent:)] ) return;
     [self.delegate clickedLockBtnEvent:self];
 }
 
 - (void)unlock {
-    _controlView.hiddenLockBtn = !_controlView.hiddenLockBtn;
-    _controlView.hiddenUnlockBtn = !_controlView.hiddenLockBtn;
     if ( ![self.delegate respondsToSelector:@selector(clickedUnlockBtnEvent:)] ) return;
     [self.delegate clickedUnlockBtnEvent:self];
 }
@@ -557,3 +585,76 @@ static const NSString *SJPlayerItemStatusContext;
 }
 
 @end
+
+
+
+
+// MARK: 通知处理
+
+#import "SJVideoPlayerStringConstant.h"
+
+@implementation SJVideoPlayerControl (DBNotifications)
+
+// MARK: 通知安装
+
+- (void)_SJVideoPlayerControlInstallNotifications {
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(volumeChanged) name:@"AVSystemController_SystemVolumeDidChangeNotification" object:nil];
+    /// 锁定
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(playerLockedScreenNotification) name:SJPlayerLockedScreenNotification object:nil];
+    /// 解锁
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(playerUnlockedScreenNotification) name:SJPlayerUnlockedScreenNotification object:nil];
+    /// 全屏
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(playerFullScreenNotitication) name:SJPlayerFullScreenNotitication object:nil];
+    /// 小屏
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(playerSmallScreenNotification) name:SJPlayerSmallScreenNotification object:nil];
+
+}
+
+- (void)_SJVideoPlayerControlRemoveNotifications {
+    [[NSNotificationCenter defaultCenter] removeObserver:self];
+}
+
+- (void)volumeChanged {
+    _volumeView.value = _systemVolume.value;
+}
+
+/// 锁定
+- (void)playerLockedScreenNotification {
+    NSLog(@"锁定");
+    _controlView.hiddenControl = YES;
+    _controlView.hiddenLockBtn = !_controlView.hiddenLockBtn;
+    _controlView.hiddenUnlockBtn = !_controlView.hiddenLockBtn;
+    
+    _singleTap.enabled = NO;
+    _doubleTap.enabled = NO;
+    _panGR.enabled = NO;
+}
+
+/// 解锁
+- (void)playerUnlockedScreenNotification {
+    NSLog(@"解锁");
+    _controlView.hiddenControl = NO;
+    _controlView.hiddenLockBtn = !_controlView.hiddenLockBtn;
+    _controlView.hiddenUnlockBtn = !_controlView.hiddenLockBtn;
+    
+    _singleTap.enabled = YES;
+    _doubleTap.enabled = YES;
+    _panGR.enabled = YES;
+}
+
+/// 全屏
+- (void)playerFullScreenNotitication {
+    NSLog(@"全屏");
+    _controlView.hiddenControl = NO;
+    _controlView.hiddenLockContainerView = NO;
+}
+
+/// 小屏
+- (void)playerSmallScreenNotification {
+    NSLog(@"小屏");
+    _controlView.hiddenControl = NO;
+    _controlView.hiddenLockContainerView = YES;
+}
+
+@end
+

@@ -27,6 +27,8 @@
 
 @property (nonatomic, strong, readonly) NSArray<UIView *> *tipsViewsArr;
 
+@property (nonatomic, strong, readonly) UIImageView *imageView;
+
 @end
 
 
@@ -37,12 +39,28 @@
 @synthesize imageView = _imageView;
 @synthesize tipsContainerView = _tipsContainerView;
 @synthesize tipsViewsArr = _tipsViewsArr;
+@synthesize minShowTitleLabel = _minShowTitleLabel;
 
 - (instancetype)initWithFrame:(CGRect)frame {
     self = [super initWithFrame:frame];
     if ( !self ) return nil;
     [self _SJVideoPlayerTipsViewSetupUI];
     return self;
+}
+
+- (void)setValue:(CGFloat)value {
+    _value = value;
+    
+    CGFloat showTipsCount = value * _tipsViewsArr.count;
+        
+    for ( NSInteger i = 0 ; i < _tipsViewsArr.count ; i ++ ) { _tipsViewsArr[i].hidden = i >= showTipsCount; }
+    
+    if ( 0 == value ) _imageView.image = _minShowImage;
+    else _imageView.image = _normalShowImage;
+    
+    _tipsContainerView.hidden = (0 == value);
+    
+    _minShowTitleLabel.hidden = !_tipsContainerView.hidden;
 }
 
 // MARK: UI
@@ -56,6 +74,7 @@
     [self addSubview:self.titleLabel];
     [self addSubview:self.imageView];
     [self addSubview:self.tipsContainerView];
+    [self addSubview:self.minShowTitleLabel];
     
     [_bottomMaskView mas_makeConstraints:^(MASConstraintMaker *make) {
         make.edges.offset(0);
@@ -73,7 +92,7 @@
     [_tipsContainerView mas_makeConstraints:^(MASConstraintMaker *make) {
         make.leading.offset(12);
         make.trailing.offset(-12);
-        make.bottom.offset(-20);
+        make.bottom.offset(-16);
         make.height.offset(7);
     }];
     
@@ -94,6 +113,10 @@
             }];
         }
     }];
+    
+    [_minShowTitleLabel mas_makeConstraints:^(MASConstraintMaker *make) {
+        make.center.equalTo(_tipsContainerView);
+    }];
 }
 
 - (UIVisualEffectView *)bottomMaskView {
@@ -105,7 +128,8 @@
 
 - (UILabel *)titleLabel {
     if ( _titleLabel ) return _titleLabel;
-    _titleLabel = [UILabel labelWithFontSize:16 textColor:SJThemeColor];
+    _titleLabel = [UILabel labelWithFontSize:16 textColor:SJThemeColor alignment:NSTextAlignmentCenter];
+    _titleLabel.font = [UIFont boldSystemFontOfSize:16];
     return _titleLabel;
 }
 
@@ -128,9 +152,17 @@
     for ( int i = 0 ; i < 16 ; i ++ ) {
         SJBorderlineView *view = [SJBorderlineView borderlineViewWithSide:SJBorderlineSideAll startMargin:0 endMargin:0 lineColor:SJThemeColor backgroundColor:[UIColor whiteColor]];
         [tipsArrM addObject:view];
+        view.hidden = YES;
     }
     _tipsViewsArr = tipsArrM;
     return _tipsViewsArr;
+}
+
+- (UILabel *)minShowTitleLabel {
+    if ( _minShowTitleLabel  ) return _minShowTitleLabel;
+    _minShowTitleLabel = [UILabel labelWithFontSize:14 textColor:SJThemeColor alignment:NSTextAlignmentCenter];
+    _minShowTitleLabel.hidden = YES;
+    return _minShowTitleLabel;
 }
 
 @end

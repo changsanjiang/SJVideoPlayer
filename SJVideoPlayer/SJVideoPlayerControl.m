@@ -285,7 +285,7 @@ static const NSString *SJPlayerItemStatusContext;
     _brightnessView.bounds = CGRectMake(0, 0, 155, 155);
     _brightnessView.center = [UIApplication sharedApplication].keyWindow.center;
     _brightnessView.titleLabel.text = @"亮度";
-    _brightnessView.imageView.image = [UIImage imageNamed:@"sj_video_player_brightness"];
+    _brightnessView.normalShowImage = [UIImage imageNamed:@"sj_video_player_brightness"];
     return _brightnessView;
 }
 
@@ -295,7 +295,9 @@ static const NSString *SJPlayerItemStatusContext;
     _volumeView.bounds = CGRectMake(0, 0, 155, 155);
     _volumeView.center = [UIApplication sharedApplication].keyWindow.center;
     _volumeView.titleLabel.text = @"音量";
-    _volumeView.imageView.image = [UIImage imageNamed:@"sj_video_player_volume"];
+    _volumeView.minShowImage = [UIImage imageNamed:@"sj_video_player_un_volume"];
+    _volumeView.minShowTitleLabel.text = @"静音";
+    _volumeView.normalShowImage = [UIImage imageNamed:@"sj_video_player_volume"];
     return _volumeView;
 }
 
@@ -362,12 +364,16 @@ static const NSString *SJPlayerItemStatusContext;
                 _panDirection = SJPanDirection_V;
                 
                 CGPoint locationPoint = [pan locationInView:pan.view];
-                if (locationPoint.x > _controlView.bounds.size.width / 2)
+                if (locationPoint.x > _controlView.bounds.size.width / 2) {
                     _panLocation = SJVerticalPanLocation_Right;
-                else
+                    [[UIApplication sharedApplication].keyWindow addSubview:self.volumeView];
+                    _volumeView.transform = _controlView.superview.transform;
+                }
+                else {
                     _panLocation = SJVerticalPanLocation_Left;
-                
-                [[UIApplication sharedApplication].keyWindow addSubview:self.volumeView];
+                    [[UIApplication sharedApplication].keyWindow addSubview:self.brightnessView];
+                    _brightnessView.transform = _controlView.superview.transform;
+                }
             }
             break;
         }
@@ -382,11 +388,15 @@ static const NSString *SJPlayerItemStatusContext;
                     // 垂直移动方法只要y方向的值
                     switch (_panLocation) {
                         case SJVerticalPanLocation_Left: {
-                            
+                            CGFloat value = [UIScreen mainScreen].brightness - offset.y * 0.006;
+                            if ( value < 1.0 / 16 ) value = 1.0 / 16;
+                            [UIScreen mainScreen].brightness = value;
+                            _brightnessView.value = value;
                         }
                             break;
                         case SJVerticalPanLocation_Right: {
                             _systemVolume.value -= offset.y * 0.006;
+                            _volumeView.value = _systemVolume.value;
                         }
                             break;
                             

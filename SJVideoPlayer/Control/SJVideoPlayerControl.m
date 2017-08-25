@@ -222,12 +222,13 @@ static const NSString *SJPlayerItemStatusContext;
             _controlView.hiddenPreview = YES;
             [_pointTimer invalidate];
             _pointTimer = nil;
+            _controlView.hiddenLockContainerView = !self.backstageRegistrar.isLock;
         }
         else {
             _hiddenControlPoint = 0;
             [self.pointTimer fire];
+            _controlView.hiddenLockContainerView = NO;
         }
-        if ( _controlView.hiddenLockBtn ) _controlView.hiddenLockContainerView = _controlView.hiddenControl;
         return;
     }
     
@@ -237,7 +238,6 @@ static const NSString *SJPlayerItemStatusContext;
             [_pointTimer invalidate];
             _pointTimer = nil;
             _hiddenControlPoint = 0;
-            if ( _controlView.hiddenLockBtn ) _controlView.hiddenLockContainerView = YES;
         }
         return;
     }
@@ -925,25 +925,19 @@ static UIView *target = nil;
 /// 锁定
 - (void)playerLockedScreenNotification {
     NSLog(@"锁定");
+    self.backstageRegistrar.isLock = YES;
     _controlView.hiddenControl = YES;
-    _controlView.hiddenLockBtn = NO;
-    _controlView.hiddenUnlockBtn = YES;
-    
-    _singleTap.enabled = NO;
-    _doubleTap.enabled = NO;
-    _panGR.enabled = NO;
+    _controlView.hiddenUnlockBtn = !(_controlView.hiddenLockBtn = NO);
+    [self _setEnabledGestureRecognizer:NO];
 }
 
 /// 解锁
 - (void)playerUnlockedScreenNotification {
     NSLog(@"解锁");
+    self.backstageRegistrar.isLock = NO;
     _controlView.hiddenControl = NO;
-    _controlView.hiddenLockBtn = YES;
-    _controlView.hiddenUnlockBtn = NO;
-    
-    _singleTap.enabled = YES;
-    _doubleTap.enabled = YES;
-    _panGR.enabled = YES;
+    _controlView.hiddenUnlockBtn = !(_controlView.hiddenLockBtn = YES);
+    [self _setEnabledGestureRecognizer:YES];
 }
 
 /// 全屏

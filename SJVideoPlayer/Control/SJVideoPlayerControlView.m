@@ -1022,6 +1022,8 @@ static NSString *const SJVideoPlayPreviewColCellID = @"SJVideoPlayPreviewColCell
         else
             [self showController];
         
+        if ( self.hiddenLockBtn ) self.hiddenLockContainerView = self.hiddenControl;
+
         [self previewImgColView_HiddenAnima];
     }
 }

@@ -14,6 +14,10 @@
 
 - (void)setPlayer:(AVPlayer *)player superv:(UIView *)superv;
 
+@property (nonatomic, strong, readwrite) UIImage *placeholderImage;
+
+@property (nonatomic, copy, readwrite) void(^back)();
+
 @end
 
 

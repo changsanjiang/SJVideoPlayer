@@ -3,7 +3,7 @@
 //  dancebaby
 //
 //  Created by BlueDancer on 2017/6/12.
-//  Copyright © 2017年 hunter. All rights reserved.
+//  Copyright © 2017年 SanJiang. All rights reserved.
 //
 
 #import "SJSlider.h"
@@ -39,6 +39,7 @@
     frame.origin.y  = csj_y;
     self.frame      = frame;
 }
+
 - (CGFloat)csj_y {
     return self.frame.origin.y;
 }
@@ -68,7 +69,12 @@
 
 
 
-@interface SJContainerView : UIView @end
+@interface SJContainerView : UIView
+/*!
+ *  default is YES.
+ */
+@property (nonatomic, assign, readwrite) BOOL isRound;
+@end
 
 @implementation SJContainerView
 
@@ -87,7 +93,14 @@
 
 - (void)layoutSubviews {
     [super layoutSubviews];
-    self.layer.cornerRadius = MIN(self.csj_w, self.csj_h) * 0.5;
+    if ( _isRound ) self.layer.cornerRadius = MIN(self.csj_w, self.csj_h) * 0.5;
+    else self.layer.cornerRadius = 0;
+}
+
+- (void)setIsRound:(BOOL)isRound {
+    _isRound = isRound;
+    if ( _isRound ) self.layer.cornerRadius = MIN(self.csj_w, self.csj_h) * 0.5;
+    else self.layer.cornerRadius = 0;
 }
 
 @end
@@ -197,6 +210,11 @@
 
 // MARK: Setter
 
+- (void)setIsRound:(BOOL)isRound {
+    _isRound = isRound;
+    _containerView.isRound = isRound;
+}
+
 - (void)setTrackHeight:(CGFloat)trackHeight {
     _trackHeight = trackHeight;
     [self.containerView mas_updateConstraints:^(MASConstraintMaker *make) {
@@ -208,16 +226,6 @@
     if      ( value < self.minValue ) value = self.minValue;
     else if ( value > self.maxValue ) value = self.maxValue;
     _value = value;
-}
-
-- (void)setBorderColor:(UIColor *)borderColor {
-    _borderColor = borderColor;
-    _containerView.layer.borderColor = borderColor.CGColor;
-}
-
-- (void)setBorderWidth:(CGFloat)borderWidth {
-    _borderWidth = borderWidth;
-    _containerView.layer.borderWidth = borderWidth;
 }
 
 // MARK: 生命周期
@@ -237,6 +245,7 @@
     self.maxValue = 1.0;
     self.borderWidth = 0.4;
     self.borderColor = [UIColor lightGrayColor];
+    self.isRound = YES;
     
     self.enableBufferProgress = NO;
     self.bufferProgress = 0;
@@ -248,11 +257,6 @@
 
 - (void)layoutSubviews {
     [super layoutSubviews];
-    CGFloat x = 0;
-    CGFloat y = 0;
-    CGFloat w = self.csj_w * self.rate;
-    CGFloat h = self.trackHeight;
-    _traceImageView.frame = CGRectMake(x, y, w, h);
     if ( self.enableBufferProgress ) [self setBufferProgress:self.bufferProgress];
 }
 
@@ -293,14 +297,14 @@
             break;
     }
     
-    CGPoint offset = [pan translationInView:pan.view];
-    self.value += offset.x * 0.00267;
-    [pan setTranslation:CGPointMake(0, 0) inView:pan.view];
+    CGPoint offset = [pan velocityInView:pan.view];
+    self.value += offset.x / 10000;
 }
 
 // MARK: UI
 
 - (void)_SJSliderSetupUI {
+    self.backgroundColor = [UIColor clearColor];
     [self addSubview:self.containerView];
     [self.containerView addSubview:self.trackImageView];
     [self.containerView addSubview:self.bufferProgressView];
@@ -318,6 +322,11 @@
     [_bufferProgressView mas_makeConstraints:^(MASConstraintMaker *make) {
         make.top.leading.bottom.offset(0);
         make.width.offset(0);
+    }];
+    
+    [_traceImageView mas_makeConstraints:^(MASConstraintMaker *make) {
+        make.top.leading.bottom.offset(0);
+        make.width.offset(0.001);
     }];
 }
 
@@ -337,6 +346,7 @@
 - (UIImageView *)traceImageView {
     if ( _traceImageView ) return _traceImageView;
     _traceImageView = [self imageViewWithImageStr:@""];
+    _traceImageView.frame = CGRectZero;
     _traceImageView.backgroundColor = [UIColor greenColor];
     return _traceImageView;
 }
@@ -383,8 +393,55 @@
 
 - (void)observeValueForKeyPath:(NSString *)keyPath ofObject:(id)object change:(NSDictionary<NSKeyValueChangeKey,id> *)change context:(void *)context  {
     if ( ![keyPath isEqualToString:@"value"] ) return;
-    _traceImageView.csj_w = self.csj_w * self.rate;
+    [_traceImageView mas_remakeConstraints:^(MASConstraintMaker *make) {
+        make.top.leading.bottom.offset(0);
+        make.width.equalTo(_traceImageView.superview).multipliedBy(self.rate);
+    }];
 }
 
 
+@end
+
+
+
+
+
+
+
+@implementation SJSlider (BorderLine)
+
+- (void)setVisualBorder:(BOOL)visualBorder {
+    if ( self.visualBorder == visualBorder ) return;
+    objc_setAssociatedObject(self, @selector(visualBorder), @(visualBorder), OBJC_ASSOCIATION_RETAIN_NONATOMIC);
+    if ( visualBorder ) {
+        _containerView.layer.borderColor = self.borderColor.CGColor;
+        _containerView.layer.borderWidth = self.borderWidth;
+    }
+    else {
+        _containerView.layer.borderColor = nil;
+        _containerView.layer.borderWidth = 0;
+    }
+}
+
+- (BOOL)visualBorder {
+    return [objc_getAssociatedObject(self, _cmd) boolValue];
+}
+
+- (void)setBorderColor:(UIColor *)borderColor {
+    objc_setAssociatedObject(self, @selector(borderColor), borderColor, OBJC_ASSOCIATION_RETAIN_NONATOMIC);
+    if ( self.visualBorder ) _containerView.layer.borderColor = borderColor.CGColor;
+}
+
+- (UIColor *)borderColor {
+    return objc_getAssociatedObject(self, _cmd);
+}
+
+- (void)setBorderWidth:(CGFloat)borderWidth {
+    objc_setAssociatedObject(self, @selector(borderWidth), @(borderWidth), OBJC_ASSOCIATION_RETAIN_NONATOMIC);
+    if ( self.visualBorder ) _containerView.layer.borderWidth = borderWidth;
+}
+
+- (CGFloat)borderWidth {
+    return [objc_getAssociatedObject(self, _cmd) doubleValue];
+}
 @end

@@ -16,6 +16,8 @@
 
 #import "SJVideoPlayerStringConstant.h"
 
+#import "UIView+Extension.h"
+
 
 // MARK: 通知处理
 
@@ -38,9 +40,15 @@
 
 @property (nonatomic, weak, readwrite) UIView *superv;
 
+@property (nonatomic, assign, readwrite) UIDeviceOrientation lastOrientation;
+
+@property (nonatomic, strong, readonly) UIImageView *placeholderImageView;
+
 @end
 
 @implementation SJVideoPlayerPresentView
+
+@synthesize placeholderImageView = _placeholderImageView;
 
 + (Class)layerClass {
     return [AVPlayerLayer class];
@@ -49,6 +57,12 @@
 - (instancetype)initWithFrame:(CGRect)frame {
     self = [super initWithFrame:frame];
     if ( !self ) return nil;
+    self.backgroundColor = [UIColor blackColor];
+    self.lastOrientation = UIDeviceOrientationPortrait;
+    [self addSubview:self.placeholderImageView];
+    [_placeholderImageView mas_makeConstraints:^(MASConstraintMaker *make) {
+        make.edges.offset(0);
+    }];
     [self _SJVideoPlayerPresentViewInstallNotifications];
     return self;
 }
@@ -60,8 +74,18 @@
 - (void)setPlayer:(AVPlayer *)player superv:(UIView *)superv {
     _player = player;
     [(AVPlayerLayer *)self.layer setPlayer:player];
-    
     self.superv = superv;
+}
+
+- (void)setPlaceholderImage:(UIImage *)placeholderImage {
+    _placeholderImageView.image = placeholderImage;
+}
+
+- (UIImageView *)placeholderImageView {
+    if ( _placeholderImageView ) return _placeholderImageView;
+    _placeholderImageView = [UIImageView imageViewWithImageStr:@"" viewMode:UIViewContentModeScaleAspectFit];
+    _placeholderImageView.alpha = 0.001;
+    return _placeholderImageView;
 }
 
 @end
@@ -84,6 +108,7 @@
 // MARK: 通知安装
 
 - (void)_SJVideoPlayerPresentViewInstallNotifications {
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(playerPrepareToPlayNotification) name:SJPlayerPrepareToPlayNotification object:nil];
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(playerBeginPlayingNotification) name:SJPlayerBeginPlayingNotification object:nil];
 }
 
@@ -91,7 +116,16 @@
     [self _removeDeviceOrientationChangeObserver];
 }
 
+- (void)playerPrepareToPlayNotification {
+    [UIView animateWithDuration:0.25 animations:^{
+        self.placeholderImageView.alpha = 1;
+    }];
+}
+
 - (void)playerBeginPlayingNotification {
+    [UIView animateWithDuration:0.25 animations:^{
+        self.placeholderImageView.alpha = 0.001;
+    }];
     [self _addDeviceOrientationChangeObserver];
 }
 
@@ -107,27 +141,31 @@
     if ( [UIDevice currentDevice].generatesDeviceOrientationNotifications ) {
         [[UIDevice currentDevice] endGeneratingDeviceOrientationNotifications];
     }
-    [[NSNotificationCenter defaultCenter] removeObserver:self];
+    [[NSNotificationCenter defaultCenter] removeObserver:self name:UIDeviceOrientationDidChangeNotification object:nil];
 }
 
 - (void)handleDeviceOrientationChange:(NSNotification *)notification {
     
     UIDeviceOrientation orientation = [UIDevice currentDevice].orientation;
+    if ( self.lastOrientation == orientation ) return;
     
     switch (orientation) {
         case UIDeviceOrientationLandscapeLeft: {
+            self.lastOrientation = orientation;
             /// 屏幕向左横置
             [self _deviceOrientationLandscapeLeft];
         }
             break;
             
         case UIDeviceOrientationLandscapeRight: {
+            self.lastOrientation = orientation;
             /// 屏幕向右橫置
             [self _deviceOrientationLandscapeRight];
         }
             break;
             
         case UIDeviceOrientationPortrait: {
+            self.lastOrientation = orientation;
             /// 屏幕直立
             [self _deviceOrientationPortrait];
         }
@@ -202,7 +240,7 @@
 - (void)clickedBackBtnEvent:(SJVideoPlayerControl *)control {
     // status : clicked back
     if ( self.superview == self.superv ) {
-        NSLog(@"back");
+        if ( _back ) _back();
     }
     // status : full screen
     else {

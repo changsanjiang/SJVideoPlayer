@@ -9,10 +9,10 @@
 #import "SJVideoPlayerStringConstant.h"
 
 
-/// 锁定屏幕
+/// 锁定
 NSNotificationName const SJPlayerLockedScreenNotification = @"SJPlayerLockedScreenNotification";
 
-/// 解锁屏幕
+/// 解锁
 NSNotificationName const SJPlayerUnlockedScreenNotification = @"SJPlayerUnlockedScreenNotification";
 
 /// 全屏
@@ -20,6 +20,9 @@ NSNotificationName const SJPlayerFullScreenNotitication = @"SJPlayerFullScreenNo
 
 /// 小屏
 NSNotificationName const SJPlayerSmallScreenNotification = @"SJPlayerSmallScreenNotification";
+
+/// 准备播放
+NSNotificationName const SJPlayerPrepareToPlayNotification = @"SJPlayerPrepareToPlayNotification";
 
 /// 开始播放
 NSNotificationName const SJPlayerBeginPlayingNotification = @"SJPlayerBeginPlayingNotification";

@@ -3,7 +3,7 @@
 //  dancebaby
 //
 //  Created by BlueDancer on 2017/6/12.
-//  Copyright © 2017年 hunter. All rights reserved.
+//  Copyright © 2017年 SanJing. All rights reserved.
 //
 
 #import <UIKit/UIKit.h>
@@ -13,24 +13,83 @@
 @interface SJSlider : UIView
 
 /*!
+ *  default is YES.
+ */
+@property (nonatomic, assign, readwrite) BOOL isRound;
+
+/*!
  *  轨道
+ *  this is view, If you don't want to set up photos, You can set the background color.
  */
 @property (nonatomic, strong, readonly) UIImageView *trackImageView;
 
 /*!
  *  走过的痕迹
+ *  this is view, If you don't want to set up photos, You can set the background color.
  */
 @property (nonatomic, strong, readonly) UIImageView *traceImageView;
 
 /*!
  *  拇指
+ *  If you do not set the image, it will not display.
  */
 @property (nonatomic, strong, readonly) UIImageView *thumbImageView;
 
 /*!
+ *  当前进度值
+ *  current Value
+ */
+@property (nonatomic, assign, readwrite) CGFloat value;
+
+/*!
+ *  设置轨道高度. 
+ *  default is 8.0;
+ */
+@property (nonatomic, assign, readwrite) CGFloat trackHeight;
+
+/*!
+ *  最小值. 
+ *  default is 0.0;
+ */
+@property (nonatomic, assign, readwrite) CGFloat minValue;
+
+/*!
+ *  最大值. 
+ *  default is 1.0;
+ */
+@property (nonatomic, assign, readwrite) CGFloat maxValue;
+
+@property (nonatomic, weak) id <SJSliderDelegate>delegate;
+
+/*!
+ *  触动手势
+ *  If you don't want to use this gesture, you can disable it
+ *  pan.enable = NO.
+ */
+@property (nonatomic, strong, readonly) UIPanGestureRecognizer *pan;
+
+/*!
+ *  slider是否被拖拽
+ */
+@property (nonatomic, assign, readonly) BOOL isDragging;
+
+@end
+
+
+
+
+
+@interface SJSlider (BorderLine)
+
+/*!
+ *  visual border line.
+ *  default is NO.
+ */
+@property (nonatomic, assign, readwrite) BOOL visualBorder;
+
+/*!
  *  borderColor
  *  default is lightGrayColor.
- *  if you don't want it, you can set it to clearColor.
  */
 @property (nonatomic, strong, readwrite) UIColor *borderColor;
 
@@ -39,38 +98,6 @@
  *  default is 0.4.
  */
 @property (nonatomic, assign, readwrite) CGFloat borderWidth;
-
-/*!
- *  当前进度值
- */
-@property (nonatomic, assign, readwrite) CGFloat value;
-
-/*!
- *  设置轨道高度. default is 8.0;
- */
-@property (nonatomic, assign, readwrite) CGFloat trackHeight;
-
-/*!
- *  最小值. default is 0.0;
- */
-@property (nonatomic, assign, readwrite) CGFloat minValue;
-
-/*!
- *  最大值. default is 1.0;
- */
-@property (nonatomic, assign, readwrite) CGFloat maxValue;
-
-@property (nonatomic, weak) id <SJSliderDelegate>delegate;
-
-/*!
- *  触动手势
- */
-@property (nonatomic, strong, readonly) UIPanGestureRecognizer *pan;
-
-/*!
- *  slider是否被拖拽
- */
-@property (nonatomic, assign, readonly) BOOL isDragging;
 
 @end
 

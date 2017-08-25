@@ -10,13 +10,15 @@
 
 #import <CoreMedia/CMTime.h>
 
+NS_ASSUME_NONNULL_BEGIN
+
 #define SJPreviewImgW   (120)
 #define SJPreViewImgH   (SJPreviewImgW * 9 / 16)
 #define SJContainerH    (49)
 
 #define SJHiddenControlInterval (4)
 
-@class SJSlider;
+@class SJSlider, SJVideoPlayerMoreSetting;
 
 typedef NS_ENUM(NSUInteger, SJVideoPlayControlViewTag) {
     SJVideoPlayControlViewTag_Back,
@@ -28,7 +30,19 @@ typedef NS_ENUM(NSUInteger, SJVideoPlayControlViewTag) {
     SJVideoPlayControlViewTag_Lock,
     SJVideoPlayControlViewTag_Unlock,
     SJVideoPlayControlViewTag_LoadFailed,
+    SJVideoPlayControlViewTag_More,
 };
+
+
+
+
+typedef NS_ENUM(NSUInteger, SJVideoPlaySliderTag) {
+    SJVideoPlaySliderTag_Volume,
+    SJVideoPlaySliderTag_Brightness,
+    SJVideoPlaySliderTag_Rate,
+    SJVideoPlaySliderTag_Control,
+};
+
 
 
 
@@ -44,6 +58,8 @@ typedef NS_ENUM(NSUInteger, SJVideoPlayControlViewTag) {
 @property (nonatomic, strong, readonly) SJSlider *sliderControl;
 @property (nonatomic, strong, readonly) UILabel *draggingTimeLabel;
 @property (nonatomic, strong, readonly) SJSlider *draggingProgressView;
+
+@property (nonatomic, strong, readwrite) NSArray<SJVideoPlayerMoreSetting *> *moreSettings;
 
 @end
 
@@ -99,9 +115,14 @@ typedef NS_ENUM(NSUInteger, SJVideoPlayControlViewTag) {
 @property (nonatomic, assign, readwrite) BOOL hiddenLoadFailedBtn;
 
 /*!
- *  default is No
+ *  default is NO
  */
 @property (nonatomic, assign, readwrite) BOOL hiddenBottomProgressView;
+
+/*!
+ *  default is YES
+ */
+@property (nonatomic, assign, readwrite) BOOL hiddenMoreSettingsView;
 
 @end
 
@@ -145,6 +166,23 @@ typedef NS_ENUM(NSUInteger, SJVideoPlayControlViewTag) {
 
 
 
+// MARK: More Settings
+
+@interface SJVideoPlayerControlView (MoreSettings)
+
+@property (nonatomic, strong, readonly, nullable) SJSlider *volumeSlider;
+@property (nonatomic, strong, readonly, nullable) SJSlider *brightnessSlider;
+@property (nonatomic, strong, readonly, nullable) SJSlider *rateSlider;
+
+- (void)getMoreSettingsSlider:(void(^)(SJSlider *volumeSlider, SJSlider *brightnessSlider, SJSlider *rateSlider))block;
+
+@end
+
+
+
+// MARK: Delegate
+
+
 @protocol SJVideoPlayerControlViewDelegate <NSObject>
 
 @optional
@@ -154,3 +192,6 @@ typedef NS_ENUM(NSUInteger, SJVideoPlayControlViewTag) {
 - (void)controlView:(SJVideoPlayerControlView *)controlView selectedPreviewModel:(SJVideoPreviewModel *)model;
 
 @end
+
+
+NS_ASSUME_NONNULL_END

@@ -26,6 +26,8 @@
 
 #import "SJVideoPlayerStringConstant.h"
 
+#import "SJVideoPlayerMoreSetting.h"
+
 // MARK: 通知处理
 
 @interface SJVideoPlayer (DBNotifications)
@@ -93,12 +95,29 @@
     }];
 }
 
+- (void)stop {
+    [_control sjResetPlayer];
+}
 
 // MARK: Setter
+
+- (void)setClickedBackEvent:(void (^)())clickedBackEvent {
+    _presentView.back = clickedBackEvent;
+}
 
 - (void)setAssetURL:(NSURL *)assetURL {
     _assetURL = assetURL;
     [self _sjVideoPlayerPrepareToPlay];
+}
+
+- (void)setPlaceholder:(UIImage *)placeholder {
+    _placeholder = placeholder;
+    _presentView.placeholderImage = placeholder;
+}
+
+- (void)setMoreSettings:(NSArray<SJVideoPlayerMoreSetting *> *)moreSettings {
+    _moreSettings = moreSettings;
+    _control.moreSettings = moreSettings;
 }
 
 // MARK: Public
@@ -111,6 +130,8 @@
 // MARK: Private
 
 - (void)_sjVideoPlayerPrepareToPlay {
+    
+    [[NSNotificationCenter defaultCenter] postNotificationName:SJPlayerPrepareToPlayNotification object:nil];
     
     _error = nil;
     
@@ -178,4 +199,3 @@
 }
 
 @end
-

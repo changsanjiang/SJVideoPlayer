@@ -8,7 +8,7 @@
 
 #import <Foundation/Foundation.h>
 
-@class UIView, AVAsset, AVPlayer, AVPlayerItem;
+@class UIView, AVAsset, AVPlayer, AVPlayerItem, SJVideoPlayerMoreSetting;
 
 
 @protocol SJVideoPlayerControlDelegate;
@@ -26,6 +26,10 @@
 @property (nonatomic, strong, readonly) UIView *view;
 
 @property (nonatomic, weak, readwrite) id <SJVideoPlayerControlDelegate> delegate;
+
+@property (nonatomic, strong, readwrite) NSArray<SJVideoPlayerMoreSetting *> *moreSettings;
+
+- (void)sjResetPlayer;
 
 @end
 

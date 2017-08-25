@@ -527,10 +527,14 @@ static const NSString *SJPlayerItemStatusContext;
     // MARK: GestureRecognizer
 
     self.singleTap = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(handleSingleTap:)];
+    self.singleTap.delaysTouchesBegan = YES;
+    
     self.doubleTap = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(handleDoubleTap:)];
+    self.doubleTap.delaysTouchesBegan = YES;
     self.doubleTap.numberOfTapsRequired = 2;
     
     self.panGR = [[UIPanGestureRecognizer alloc] initWithTarget:self action:@selector(handlePan:)];
+    self.panGR.delaysTouchesBegan = YES;
     
     [self.singleTap requireGestureRecognizerToFail:self.doubleTap];
     [self.doubleTap requireGestureRecognizerToFail:self.panGR];
@@ -788,6 +792,7 @@ static UIView *target = nil;
 }
 
 - (void)clickedMore {
+    _controlView.hiddenControl = YES;
     _controlView.hiddenMoreSettingsView = NO;
     _controlView.volumeSlider.value = _systemVolume.value;
     _controlView.brightnessSlider.value = [UIScreen mainScreen].brightness;

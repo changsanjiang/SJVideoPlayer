@@ -38,9 +38,19 @@ NS_ASSUME_NONNULL_BEGIN
  */
 @property (nonatomic, strong, readonly) NSError *error;
 
+@end
+
+
+
+
+@interface SJVideoPlayer (Operation)
+
+- (void)jumpedToTime:(NSTimeInterval)time completionHandler:(void (^)(BOOL finished))completionHandler;
+
 - (void)stop;
 
 @end
+
 
 
 NS_ASSUME_NONNULL_END

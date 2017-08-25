@@ -8,6 +8,9 @@
 
 #import <Foundation/Foundation.h>
 
+#define SJHiddenControlInterval (4)
+
+
 @class UIView, AVAsset, AVPlayer, AVPlayerItem, SJVideoPlayerMoreSetting;
 
 
@@ -30,6 +33,8 @@
 @property (nonatomic, strong, readwrite) NSArray<SJVideoPlayerMoreSetting *> *moreSettings;
 
 - (void)sjResetPlayer;
+
+- (void)jumpedToTime:(NSTimeInterval)time completionHandler:(void (^)(BOOL finished))completionHandler;
 
 @end
 

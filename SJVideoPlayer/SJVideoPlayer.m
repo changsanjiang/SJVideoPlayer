@@ -95,10 +95,6 @@
     }];
 }
 
-- (void)stop {
-    [_control sjResetPlayer];
-}
-
 // MARK: Setter
 
 - (void)setClickedBackEvent:(void (^)())clickedBackEvent {
@@ -196,6 +192,23 @@
 
 - (void)playerPlayFailedErrorNotification:(NSNotification *)notifi {
     _error = notifi.object;
+}
+
+@end
+
+
+
+
+
+
+@implementation SJVideoPlayer (Operation)
+
+- (void)jumpedToTime:(NSTimeInterval)time completionHandler:(void (^)(BOOL finished))completionHandler {
+    [_control jumpedToTime:time completionHandler:completionHandler];
+}
+
+- (void)stop {
+    [_control sjResetPlayer];
 }
 
 @end

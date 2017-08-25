@@ -16,7 +16,6 @@ NS_ASSUME_NONNULL_BEGIN
 #define SJPreViewImgH   (SJPreviewImgW * 9 / 16)
 #define SJContainerH    (49)
 
-#define SJHiddenControlInterval (4)
 
 @class SJSlider, SJVideoPlayerMoreSetting;
 
@@ -88,6 +87,11 @@ typedef NS_ENUM(NSUInteger, SJVideoPlaySliderTag) {
  *  default is NO
  */
 @property (nonatomic, assign, readwrite) BOOL hiddenPreviewBtn;
+
+/*!
+ *  default is NO
+ */
+@property (nonatomic, assign, readwrite) BOOL hiddenPreview;
 
 /*!
  *  default is NO

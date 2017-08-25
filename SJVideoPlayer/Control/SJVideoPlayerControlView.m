@@ -63,20 +63,6 @@ static NSString *const SJVideoPlayPreviewColCellID = @"SJVideoPlayPreviewColCell
 
 
 
-// MARK: 观察处理
-
-@interface SJVideoPlayerControlView (DBObservers)
-
-- (void)_SJVideoPlayerControlViewObservers;
-
-- (void)_SJVideoPlayerControlViewRemoveObservers;
-
-@end
-
-
-
-
-
 
 // MARK: More Settings
 
@@ -124,17 +110,6 @@ static NSString *const SJVideoPlayPreviewColCellID = @"SJVideoPlayPreviewColCell
 
 
 // MARK: ...
-@property (nonatomic, strong, readwrite) UITapGestureRecognizer *singleTap;
-
-
-
-// MARK: ...
-@property (nonatomic, assign, readwrite) BOOL isHiddenControl;
-@property (nonatomic, assign, readwrite) NSInteger hiddenControlPoint;
-@property (nonatomic, strong, readonly) NSTimer *pointTimer;
-
-
-// MARK: ...
 @property (nonatomic, strong, readonly) UIButton *loadFailedBtn;
 
 // MARK: ...
@@ -169,9 +144,6 @@ static NSString *const SJVideoPlayPreviewColCellID = @"SJVideoPlayPreviewColCell
 @synthesize sliderControl = _sliderControl;
 
 // MARK: ...
-@synthesize pointTimer = _pointTimer;
-
-// MARK: ...
 @synthesize draggingTimeLabel = _draggingTimeLabel;
 @synthesize draggingProgressView = _draggingProgressView;
 
@@ -186,33 +158,15 @@ static NSString *const SJVideoPlayPreviewColCellID = @"SJVideoPlayPreviewColCell
     self = [super initWithFrame:frame];
     if ( !self ) return nil;
     [self _SJVideoPlayerControlViewSetupUI];
-    [self _SJVideoPlayerControlViewObservers];
-    [self pointTimer];
     return self;
 }
 
 - (void)dealloc {
-    [self _SJVideoPlayerControlViewRemoveObservers];
 }
 
 // MARK: Actions
 
 - (void)clickedBtn:(UIButton *)btn {
-    // preview anima
-    if ( btn == self.previewBtn ) {
-        if ( !btn.selected ) {
-            [self previewImgColView_ShowAnima];
-            
-            [_pointTimer invalidate];
-            _pointTimer = nil;
-        }
-        else {
-            [self previewImgColView_HiddenAnima];
-            
-            [self.pointTimer fire];
-        }
-    }
-    
     if ( ![self.delegate respondsToSelector:@selector(controlView:clickedBtnTag:)] ) return;
     [self.delegate controlView:self clickedBtnTag:btn.tag];
 }
@@ -224,7 +178,6 @@ static NSString *const SJVideoPlayPreviewColCellID = @"SJVideoPlayPreviewColCell
         self.previewImgColView.transform = CGAffineTransformIdentity;
         self.previewImgColView.alpha = 1.0;
     }];
-    self.previewBtn.selected = YES;
 }
 
 - (void)previewImgColView_HiddenAnima {
@@ -232,7 +185,6 @@ static NSString *const SJVideoPlayPreviewColCellID = @"SJVideoPlayPreviewColCell
         self.previewImgColView.transform = CGAffineTransformMakeScale(1, 0.001);
         self.previewImgColView.alpha = 0.001;
     }];
-    self.previewBtn.selected = NO;
 }
 
 - (void)showController {
@@ -242,10 +194,6 @@ static NSString *const SJVideoPlayPreviewColCellID = @"SJVideoPlayPreviewColCell
         self.topContainerView.alpha = 1;
         self.bottomContainerView.alpha = 1;
     }];
-    
-    [self.pointTimer fire];
-    
-    self.hiddenControlPoint = 0;
     
     self.hiddenBottomProgressView = YES;
 }
@@ -258,11 +206,6 @@ static NSString *const SJVideoPlayPreviewColCellID = @"SJVideoPlayPreviewColCell
         self.topContainerView.alpha = 0.001;
         self.bottomContainerView.alpha = 0.001;
     }];
-    
-    [_pointTimer invalidate];
-    _pointTimer = nil;
-    
-    self.hiddenControlPoint = 0;
     
     self.hiddenBottomProgressView = NO;
 }
@@ -621,21 +564,6 @@ static NSString *const SJVideoPlayPreviewColCellID = @"SJVideoPlayPreviewColCell
     return _bottomProgressView;
 }
 
-
-// MARK: Lazy
-
-- (NSTimer *)pointTimer {
-    if ( _pointTimer ) return _pointTimer;
-    __weak typeof(self) _self = self;
-    _pointTimer = [NSTimer sj_scheduledTimerWithTimeInterval:1 exeBlock:^{
-        __strong typeof(_self) self = _self;
-        if ( !self ) return;
-        if ( !self.sliderControl.isDragging ) self.hiddenControlPoint += 1;
-        else self.hiddenControlPoint = 0;
-    } repeats:YES];
-    return _pointTimer;
-}
-
 @end
 
 
@@ -700,6 +628,21 @@ static NSString *const SJVideoPlayPreviewColCellID = @"SJVideoPlayPreviewColCell
 /*!
  *  default is NO
  */
+- (void)setHiddenPreview:(BOOL)hiddenPreview {
+    if ( hiddenPreview == self.hiddenPreview ) return;
+    objc_setAssociatedObject(self, @selector(hiddenPreview), @(hiddenPreview), OBJC_ASSOCIATION_RETAIN_NONATOMIC);
+    if ( hiddenPreview ) [self previewImgColView_HiddenAnima];
+    else [self previewImgColView_ShowAnima];
+}
+
+- (BOOL)hiddenPreview {
+    return [objc_getAssociatedObject(self, _cmd) boolValue];
+}
+
+
+/*!
+ *  default is NO
+ */
 - (void)setHiddenLockBtn:(BOOL)hiddenLockBtn {
     if ( hiddenLockBtn == self.hiddenLockBtn ) return;
     objc_setAssociatedObject(self, @selector(hiddenLockBtn), @(hiddenLockBtn), OBJC_ASSOCIATION_RETAIN_NONATOMIC);
@@ -740,7 +683,8 @@ static NSString *const SJVideoPlayPreviewColCellID = @"SJVideoPlayPreviewColCell
 - (void)setHiddenControl:(BOOL)hiddenControl {
     if ( hiddenControl == self.hiddenControl ) return;
     objc_setAssociatedObject(self, @selector(hiddenControl), @(hiddenControl), OBJC_ASSOCIATION_RETAIN_NONATOMIC);
-    self.isHiddenControl = hiddenControl;
+    if ( hiddenControl ) [self hiddenController];
+    else [self showController];
 }
 
 - (BOOL)hiddenControl {
@@ -989,47 +933,6 @@ static NSString *const SJVideoPlayPreviewColCellID = @"SJVideoPlayPreviewColCell
 }
 
 @end
-
-
-
-
-
-
-// MARK: Observers
-
-
-@implementation SJVideoPlayerControlView (DBObservers)
-
-
-- (void)_SJVideoPlayerControlViewObservers {
-    [self addObserver:self forKeyPath:@"hiddenControlPoint" options:NSKeyValueObservingOptionNew context:nil];
-    [self addObserver:self forKeyPath:@"isHiddenControl" options:NSKeyValueObservingOptionNew context:nil];
-
-}
-
-- (void)_SJVideoPlayerControlViewRemoveObservers {
-    [self removeObserver:self forKeyPath:@"hiddenControlPoint"];
-    [self removeObserver:self forKeyPath:@"isHiddenControl"];
-}
-
-- (void)observeValueForKeyPath:(NSString *)keyPath ofObject:(id)object change:(NSDictionary<NSKeyValueChangeKey,id> *)change context:(void *)context {
-    if ( [keyPath isEqualToString:@"hiddenControlPoint"] ) {
-        if ( _hiddenControlPoint >= SJHiddenControlInterval ) { self.hiddenControl = YES;}
-    }
-    else if ( [keyPath isEqualToString:@"isHiddenControl"] ) {
-        if ( self.isHiddenControl )
-            [self hiddenController];
-        else
-            [self showController];
-        
-        if ( self.hiddenLockBtn ) self.hiddenLockContainerView = self.hiddenControl;
-
-        [self previewImgColView_HiddenAnima];
-    }
-}
-
-@end
-
 
 
 

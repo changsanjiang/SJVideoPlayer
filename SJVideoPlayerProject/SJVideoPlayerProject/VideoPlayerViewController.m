@@ -65,9 +65,7 @@
         NSLog(@"clicked %@", model.title);
     }];
     
-    
     player.moreSettings = @[model0, model1, model2, model3];
-    
     
     __weak typeof(self) _self = self;
     player.clickedBackEvent = ^{

@@ -442,7 +442,6 @@ static const NSString *SJPlayerItemStatusContext;
     _controlView.hiddenPlayBtn = YES;
     _controlView.hiddenReplayBtn = YES;
     _controlView.hiddenLockBtn = YES;
-    _controlView.hiddenLockContainerView = YES;
     _controlView.draggingTimeLabel.alpha = 0.001;
     _controlView.draggingProgressView.alpha = 0.001;
     _controlView.hiddenLoadFailedBtn = YES;
@@ -472,6 +471,7 @@ static const NSString *SJPlayerItemStatusContext;
         return;
     }
     _controlView.hiddenControl = !_controlView.hiddenControl;
+    if ( _controlView.hiddenLockBtn ) _controlView.hiddenLockContainerView = _controlView.hiddenControl;
 }
 
 - (void)handleDoubleTap:(UITapGestureRecognizer *)tap {

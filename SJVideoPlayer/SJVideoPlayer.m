@@ -208,7 +208,8 @@
 }
 
 - (void)stop {
-    [_control sjResetPlayer];
+    [_presentView sjReset];
+    [_control sjReset];
 }
 
 @end

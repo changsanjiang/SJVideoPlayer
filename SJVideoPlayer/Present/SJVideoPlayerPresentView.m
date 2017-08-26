@@ -27,6 +27,10 @@
 
 - (void)_SJVideoPlayerPresentViewRemoveNotifications;
 
+- (void)_addDeviceOrientationChangeObserver;
+
+- (void)_removeDeviceOrientationChangeObserver;
+
 @end
 
 
@@ -86,6 +90,12 @@
     _placeholderImageView = [UIImageView imageViewWithImageStr:@"" viewMode:UIViewContentModeScaleAspectFit];
     _placeholderImageView.alpha = 0.001;
     return _placeholderImageView;
+}
+
+- (void)sjReset {
+    _player = nil;
+    _superv = nil;
+    [self _removeDeviceOrientationChangeObserver];
 }
 
 @end

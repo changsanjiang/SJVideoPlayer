@@ -128,6 +128,11 @@ typedef NS_ENUM(NSUInteger, SJVideoPlaySliderTag) {
  */
 @property (nonatomic, assign, readwrite) BOOL hiddenMoreSettingsView;
 
+/*!
+ *  default is NO
+ */
+@property (nonatomic, assign, readwrite) BOOL hiddenDraggingProgress;
+
 @end
 
 

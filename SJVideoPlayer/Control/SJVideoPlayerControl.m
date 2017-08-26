@@ -199,7 +199,7 @@ static const NSString *SJPlayerItemStatusContext;
 }
 
 - (void)setAsset:(AVAsset *)asset playerItem:(AVPlayerItem *)playerItem player:(AVPlayer *)player {
-    [self sjResetPlayer];
+    [self sjReset];
     
     self.asset = asset;
     self.playerItem = playerItem;
@@ -367,7 +367,7 @@ static const NSString *SJPlayerItemStatusContext;
     }];
 }
 
-- (void)sjResetPlayer {
+- (void)sjReset {
     NSLog(@"reset Player");
     
     [_playerItem removeObserver:self forKeyPath:@"loadedTimeRanges"];
@@ -518,8 +518,7 @@ static const NSString *SJPlayerItemStatusContext;
     _controlView.hiddenPlayBtn = YES;
     _controlView.hiddenReplayBtn = YES;
     _controlView.hiddenLockBtn = YES;
-    _controlView.draggingTimeLabel.alpha = 0.001;
-    _controlView.draggingProgressView.alpha = 0.001;
+    _controlView.hiddenDraggingProgress = YES;
     _controlView.hiddenLoadFailedBtn = YES;
     _controlView.hiddenPreviewBtn = YES;
     _controlView.hiddenPreview = YES;
@@ -585,6 +584,7 @@ static UIView *target = nil;
             if (x > y) {
                 /// 水平移动
                 _panDirection = SJPanDirection_H;
+                _controlView.hiddenControl = YES;
                 [self sliderWillBeginDragging:_controlView.sliderControl];
             }
             else if (x < y) {
@@ -816,12 +816,9 @@ static UIView *target = nil;
 - (void)sliderWillBeginDragging:(SJSlider *)slider {
     switch (slider.tag) {
         case SJVideoPlaySliderTag_Control: {
-            [self.player removeTimeObserver:self.timeObserver];
+            if ( _timeObserver ) [self.player removeTimeObserver:_timeObserver];
             _controlView.draggingProgressView.value = _controlView.sliderControl.value;
-            [UIView animateWithDuration:0.25 animations:^{
-                _controlView.draggingProgressView.alpha = 1.0;
-                _controlView.draggingTimeLabel.alpha = 1.0;
-            }];
+            _controlView.hiddenDraggingProgress = NO;
         }
             break;
         case SJVideoPlaySliderTag_Rate: {
@@ -865,10 +862,7 @@ static UIView *target = nil;
         case SJVideoPlaySliderTag_Control: {
             [self addPlayerItemTimeObserver];
             if ( self.lastPlaybackRate > 0.f) [self clickedPlay];
-            [UIView animateWithDuration:1 animations:^{
-                _controlView.draggingProgressView.alpha = 0.001;
-                _controlView.draggingTimeLabel.alpha = 0.001;
-            }];
+            _controlView.hiddenDraggingProgress = YES;
         }
             break;
         case SJVideoPlaySliderTag_Rate: {

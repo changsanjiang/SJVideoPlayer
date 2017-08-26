@@ -18,6 +18,8 @@
 
 @property (nonatomic, copy, readwrite) void(^back)();
 
+- (void)sjReset;
+
 @end
 
 

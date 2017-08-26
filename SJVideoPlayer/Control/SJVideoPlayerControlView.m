@@ -537,7 +537,7 @@ static NSString *const SJVideoPlayPreviewColCellID = @"SJVideoPlayPreviewColCell
 
 - (UILabel *)draggingTimeLabel {
     if ( _draggingTimeLabel ) return _draggingTimeLabel;
-    _draggingTimeLabel = [UILabel labelWithFontSize:60 textColor:[UIColor colorWithWhite:1 alpha:0.5] alignment:NSTextAlignmentCenter];
+    _draggingTimeLabel = [UILabel labelWithFontSize:60 textColor:[UIColor whiteColor] alignment:NSTextAlignmentCenter];
     return _draggingTimeLabel;
 }
 
@@ -752,6 +752,21 @@ static NSString *const SJVideoPlayPreviewColCellID = @"SJVideoPlayPreviewColCell
         view.alpha = alpha;
     }];
 }
+
+/*!
+ *  default is NO
+ */
+- (void)setHiddenDraggingProgress:(BOOL)hiddenDraggingProgress {
+    if ( hiddenDraggingProgress == self.hiddenDraggingProgress ) return;
+    objc_setAssociatedObject(self, @selector(hiddenDraggingProgress), @(hiddenDraggingProgress), OBJC_ASSOCIATION_RETAIN_NONATOMIC);
+    [self hiddenOrShowView:self.draggingTimeLabel bol:hiddenDraggingProgress];
+    [self hiddenOrShowView:self.draggingProgressView bol:hiddenDraggingProgress];
+}
+
+- (BOOL)hiddenDraggingProgress {
+    return [objc_getAssociatedObject(self, _cmd) boolValue];
+}
+
 
 @end
 

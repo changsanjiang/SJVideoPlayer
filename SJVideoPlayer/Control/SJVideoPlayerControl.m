@@ -382,9 +382,9 @@ static const NSString *SJPlayerItemStatusContext;
     
     [_playerItem removeObserver:self forKeyPath:@"playbackBufferEmpty"];
     
-    [_player removeTimeObserver:_timeObserver]; _timeObserver = nil;
+    if ( _timeObserver ) {[_player removeTimeObserver:_timeObserver]; _timeObserver = nil;}
     
-    [[NSNotificationCenter defaultCenter] removeObserver:_itemEndObserver name:AVPlayerItemDidPlayToEndTimeNotification object:_player.currentItem]; _itemEndObserver = nil;
+    if ( _itemEndObserver ) {[[NSNotificationCenter defaultCenter] removeObserver:_itemEndObserver name:AVPlayerItemDidPlayToEndTimeNotification object:_playerItem]; _itemEndObserver = nil;}
     
     [self _setEnabledGestureRecognizer:NO];
     

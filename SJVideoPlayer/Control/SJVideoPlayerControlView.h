@@ -12,7 +12,7 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
-#define SJPreviewImgW   (120)
+#define SJPreviewImgW   (160.0)
 #define SJPreViewImgH   (SJPreviewImgW * 9 / 16)
 #define SJContainerH    (49)
 
@@ -124,6 +124,11 @@ typedef NS_ENUM(NSUInteger, SJVideoPlaySliderTag) {
 @property (nonatomic, assign, readwrite) BOOL hiddenBottomProgressView;
 
 /*!
+ *  default is NO
+ */
+@property (nonatomic, assign, readwrite) BOOL hiddenMoreBtn;
+
+/*!
  *  default is YES
  */
 @property (nonatomic, assign, readwrite) BOOL hiddenMoreSettingsView;
@@ -132,6 +137,7 @@ typedef NS_ENUM(NSUInteger, SJVideoPlaySliderTag) {
  *  default is NO
  */
 @property (nonatomic, assign, readwrite) BOOL hiddenDraggingProgress;
+
 
 @end
 

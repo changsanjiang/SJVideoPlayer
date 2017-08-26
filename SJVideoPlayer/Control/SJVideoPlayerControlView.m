@@ -24,6 +24,10 @@
 
 #import "NSTimer+SJExtention.h"
 
+#import "SJVideoPlayerStringConstant.h"
+
+#import "SJVideoPlayer.h"
+
 
 #define SJSCREEN_H  CGRectGetHeight([[UIScreen mainScreen] bounds])
 #define SJSCREEN_W  CGRectGetWidth([[UIScreen mainScreen] bounds])
@@ -34,8 +38,60 @@
 
 #define SJMoreSettings_W    ceil(SJSCREEN_MAX * 0.382)
 
+
+// MARK: Mask View
+
+typedef NS_ENUM(NSUInteger, SJMaskStyle) {
+    SJMaskStyle_bottom,
+    SJMaskStyle_top,
+};
+
 @interface SJMaskView : UIView
+- (instancetype)initWithStyle:(SJMaskStyle)style;
 @end
+
+
+
+
+
+
+
+
+
+
+
+// MARK: More Settings View
+
+@class SJVideoPlayerMoreSettingsFooterView;
+
+
+@interface SJVideoPlayerMoreSettingsView : UIView
+
+@property (nonatomic, strong, readonly) SJVideoPlayerMoreSettingsFooterView *footerView;
+@property (nonatomic, strong, readwrite) NSArray<SJVideoPlayerMoreSetting *> *moreSettings;
+
+@end
+
+
+@interface SJVideoPlayerMoreSettingsView (DBNotifications)
+
+- (void)_SJVideoPlayerMoreSettingsViewInstallNotifications;
+
+- (void)_SJVideoPlayerMoreSettingsViewRemoveNotifications;
+
+@end
+
+
+
+
+
+
+
+
+
+
+
+// MARK: Preview Collection View
 
 
 static NSString *const SJVideoPlayPreviewColCellID = @"SJVideoPlayPreviewColCell";
@@ -53,38 +109,37 @@ static NSString *const SJVideoPlayPreviewColCellID = @"SJVideoPlayPreviewColCell
 @end
 
 
-@interface SJVideoPlayerControlView (PreviewCellDelegateMethods)<SJVideoPlayPreviewColCellDelegate>
+@interface SJVideoPlayerControlView (PreviewCellDelegateMethods)<SJVideoPlayPreviewColCellDelegate>@end
+
+@interface SJVideoPlayerControlView (ColDataSourceMethods)<UICollectionViewDataSource>@end
+
+
+
+
+
+
+
+
+
+
+
+
+// MARK: Control View
+
+@interface SJVideoPlayerControlView (DBNotifications)
+
+- (void)_SJVideoPlayerControlViewInstallNotifications;
+
+- (void)_SJVideoPlayerControlViewRemoveNotifications;
 
 @end
-
-@interface SJVideoPlayerControlView (ColDataSourceMethods)<UICollectionViewDataSource>
-@end
-
-
-
-
-
-// MARK: More Settings
-
-@class SJVideoPlayerMoreSettingsFooterView;
-
-@interface SJVideoPlayerMoreSettingsView : UIView
-
-@property (nonatomic, strong, readonly) SJVideoPlayerMoreSettingsFooterView *footerView;
-@property (nonatomic, strong, readwrite) NSArray<SJVideoPlayerMoreSetting *> *moreSettings;
-
-@end
-
-
-
 
 
 
 @interface SJVideoPlayerControlView ()
 
 // MARK: ...
-
-@property (nonatomic, strong, readonly) UIView *topContainerView;
+@property (nonatomic, strong, readonly) SJMaskView *topContainerView;
 @property (nonatomic, strong, readonly) UIButton *backBtn;
 @property (nonatomic, strong, readonly) UIButton *previewBtn;
 @property (nonatomic, strong, readonly) UICollectionView *previewImgColView;
@@ -158,10 +213,12 @@ static NSString *const SJVideoPlayPreviewColCellID = @"SJVideoPlayPreviewColCell
     self = [super initWithFrame:frame];
     if ( !self ) return nil;
     [self _SJVideoPlayerControlViewSetupUI];
+    [self _SJVideoPlayerControlViewInstallNotifications];
     return self;
 }
 
 - (void)dealloc {
+    [self _SJVideoPlayerControlViewRemoveNotifications];
 }
 
 // MARK: Actions
@@ -194,20 +251,15 @@ static NSString *const SJVideoPlayPreviewColCellID = @"SJVideoPlayPreviewColCell
         self.topContainerView.alpha = 1;
         self.bottomContainerView.alpha = 1;
     }];
-    
-    self.hiddenBottomProgressView = YES;
 }
 
 - (void)hiddenController {
-
     [UIView animateWithDuration:0.3 animations:^{
         self.topContainerView.transform = CGAffineTransformMakeTranslation(0, -SJContainerH);
         self.bottomContainerView.transform = CGAffineTransformMakeTranslation(0, SJContainerH);
         self.topContainerView.alpha = 0.001;
         self.bottomContainerView.alpha = 0.001;
     }];
-    
-    self.hiddenBottomProgressView = NO;
 }
 
 
@@ -396,8 +448,7 @@ static NSString *const SJVideoPlayPreviewColCellID = @"SJVideoPlayPreviewColCell
 
 - (UIView *)topContainerView {
     if ( _topContainerView ) return _topContainerView;
-    _topContainerView = [UIView new];
-    _topContainerView.backgroundColor = [UIColor clearColor];
+    _topContainerView = [[SJMaskView alloc] initWithStyle:SJMaskStyle_top];
     return _topContainerView;
 }
 
@@ -471,7 +522,7 @@ static NSString *const SJVideoPlayPreviewColCellID = @"SJVideoPlayPreviewColCell
 
 - (SJMaskView *)bottomContainerView {
     if ( _bottomContainerView ) return _bottomContainerView;
-    _bottomContainerView = [SJMaskView new];
+    _bottomContainerView = [[SJMaskView alloc] initWithStyle:SJMaskStyle_bottom];
     return _bottomContainerView;
 }
 
@@ -551,7 +602,6 @@ static NSString *const SJVideoPlayPreviewColCellID = @"SJVideoPlayPreviewColCell
 
 
 // MARK: ...
-
 - (SJSlider *)bottomProgressView {
     if ( _bottomProgressView  ) return _bottomProgressView;
     _bottomProgressView = [SJSlider new];
@@ -565,6 +615,48 @@ static NSString *const SJVideoPlayPreviewColCellID = @"SJVideoPlayPreviewColCell
 }
 
 @end
+
+
+
+
+// MARK: Control View 通知处理
+
+@implementation SJVideoPlayerControlView (DBNotifications)
+
+- (void)_SJVideoPlayerControlViewInstallNotifications {
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(settingsPlayerNotification:) name:SJSettingsPlayerNotification object:nil];
+}
+
+- (void)_SJVideoPlayerControlViewRemoveNotifications {
+    [[NSNotificationCenter defaultCenter] removeObserver:self];
+}
+
+- (void)settingsPlayerNotification:(NSNotification *)notifi {
+    SJVideoPlayerSettings *settings = notifi.object;
+    if ( settings.backBtnImage ) [self.backBtn setImage:settings.backBtnImage forState:UIControlStateNormal];
+    if ( settings.playBtnImage ) [self.playBtn setImage:settings.playBtnImage forState:UIControlStateNormal];
+    if ( settings.pauseBtnImage ) [self.pauseBtn setImage:settings.pauseBtnImage forState:UIControlStateNormal];
+    if ( settings.replayBtnImage ) [self.replayBtn setImage:settings.replayBtnImage forState:UIControlStateNormal];
+    if ( settings.replayBtnTitle ) [self.replayBtn setTitle:settings.replayBtnTitle forState:UIControlStateNormal];
+    if ( settings.fullBtnImage ) [self.fullBtn setImage:settings.fullBtnImage forState:UIControlStateNormal];
+    if ( settings.previewBtnImage ) [self.previewBtn setImage:settings.previewBtnImage forState:UIControlStateNormal];
+    if ( settings.moreBtnImage ) [self.moreBtn setImage:settings.moreBtnImage forState:UIControlStateNormal];
+    if ( settings.lockBtnImage ) [self.lockBtn setImage:settings.lockBtnImage forState:UIControlStateNormal];
+    if ( settings.unlockBtnImage ) [self.unlockBtn setImage:settings.unlockBtnImage forState:UIControlStateNormal];
+    if ( settings.traceColor ) {
+        self.sliderControl.traceImageView.backgroundColor = settings.traceColor;
+        self.draggingProgressView.traceImageView.backgroundColor = settings.traceColor;
+    }
+    if ( settings.trackColor ) {
+        self.sliderControl.trackImageView.backgroundColor = settings.trackColor;
+        self.draggingProgressView.trackImageView.backgroundColor = settings.trackColor;
+    }
+    if ( settings.bufferColor ) self.sliderControl.bufferProgressColor = settings.bufferColor;
+}
+
+@end
+
+
 
 
 
@@ -647,7 +739,7 @@ static NSString *const SJVideoPlayPreviewColCellID = @"SJVideoPlayPreviewColCell
     if ( hiddenLockBtn == self.hiddenLockBtn ) return;
     objc_setAssociatedObject(self, @selector(hiddenLockBtn), @(hiddenLockBtn), OBJC_ASSOCIATION_RETAIN_NONATOMIC);
     [self hiddenOrShowView:self.lockBtn bol:hiddenLockBtn];
-
+    
 }
 
 - (BOOL)hiddenLockBtn {
@@ -688,7 +780,7 @@ static NSString *const SJVideoPlayPreviewColCellID = @"SJVideoPlayPreviewColCell
 }
 
 - (BOOL)hiddenControl {
-   return [objc_getAssociatedObject(self, _cmd) boolValue];
+    return [objc_getAssociatedObject(self, _cmd) boolValue];
 }
 
 /*!
@@ -731,6 +823,19 @@ static NSString *const SJVideoPlayPreviewColCellID = @"SJVideoPlayPreviewColCell
 }
 
 /*!
+ *  default is NO
+ */
+- (void)setHiddenMoreBtn:(BOOL)hiddenMoreBtn {
+    if ( hiddenMoreBtn == self.hiddenMoreBtn ) return;
+    objc_setAssociatedObject(self, @selector(hiddenMoreBtn), @(hiddenMoreBtn), OBJC_ASSOCIATION_RETAIN_NONATOMIC);
+    [self hiddenOrShowView:self.moreBtn bol:hiddenMoreBtn];
+}
+
+- (BOOL)hiddenMoreBtn {
+    return [objc_getAssociatedObject(self, _cmd) boolValue];
+}
+
+/*!
  *  default is YES
  */
 - (void)setHiddenMoreSettingsView:(BOOL)hiddenMoreSettingsView {
@@ -767,7 +872,6 @@ static NSString *const SJVideoPlayPreviewColCellID = @"SJVideoPlayPreviewColCell
     return [objc_getAssociatedObject(self, _cmd) boolValue];
 }
 
-
 @end
 
 
@@ -793,32 +897,8 @@ static NSString *const SJVideoPlayPreviewColCellID = @"SJVideoPlayPreviewColCell
 
 
 
-@implementation SJMaskView {
-    CAGradientLayer *_maskGradientLayer;
-}
 
-- (instancetype)initWithFrame:(CGRect)frame {
-    self = [super initWithFrame:frame];
-    if ( !self ) return nil;
-    [self initializeGL];
-    return self;
-}
-
-- (void)initializeGL {
-    _maskGradientLayer = [CAGradientLayer layer];
-    _maskGradientLayer.colors = @[(__bridge id)[UIColor clearColor].CGColor,
-                                  (__bridge id)[UIColor colorWithRed:0 green:0 blue:0 alpha:1].CGColor];
-    [self.layer addSublayer:_maskGradientLayer];
-}
-
-- (void)layoutSubviews {
-    [super layoutSubviews];
-    _maskGradientLayer.frame = self.bounds;
-}
-
-@end
-
-
+// MARK: Preview Cell
 
 @interface SJVideoPlayPreviewColCell ()
 @property (nonatomic, strong, readonly) UIImageView *imageView;
@@ -875,10 +955,6 @@ static NSString *const SJVideoPlayPreviewColCellID = @"SJVideoPlayPreviewColCell
 @end
 
 
-
-
-
-
 @implementation SJVideoPlayerControlView (ColDataSourceMethods)
 
 // MARK: UICollectionViewDataSource
@@ -901,8 +977,6 @@ static NSString *const SJVideoPlayPreviewColCellID = @"SJVideoPlayPreviewColCell
 @end
 
 
-
-
 @implementation SJVideoPlayerControlView (PreviewCellDelegateMethods)
 
 - (void)clickedItemOnCell:(SJVideoPlayPreviewColCell *)cell {
@@ -915,7 +989,7 @@ static NSString *const SJVideoPlayPreviewColCellID = @"SJVideoPlayPreviewColCell
 
 
 
-// MARK: Preview
+// MARK: Preview Model
 
 @interface SJVideoPreviewModel ()
 
@@ -985,7 +1059,7 @@ static NSString *const SJVideoPlayPreviewColCellID = @"SJVideoPlayPreviewColCell
 
 
 
-// MARK: MoreSettings
+// MARK: More Settings View
 
 
 static NSString *const SJVideoPlayerMoreSettingsColCellID = @"SJVideoPlayerMoreSettingsColCell";
@@ -1000,25 +1074,36 @@ static NSString *const SJVideoPlayerMoreSettingsFooterViewID = @"SJVideoPlayerMo
 - (void)getMoreSettingsSlider:(void(^)(SJSlider *volumeSlider, SJSlider *brightnessSlider, SJSlider *rateSlider))block;
 
 @property (nonatomic, copy, readwrite) void(^getFooterCallBlock)(SJSlider *volumeSlider, SJSlider *brightnessSlider, SJSlider *rateSlider);
+
+@property (nonatomic, strong, readonly) NSMutableArray<void(^)(SJSlider *volumeSlider, SJSlider *brightnessSlider, SJSlider *rateSlider)> *exeBlocks;
+
 @end
 
 @implementation SJVideoPlayerMoreSettingsView
 
 @synthesize footerView = _footerView;
 @synthesize colView = _colView;
+@synthesize exeBlocks = _exeBlocks;
 
 - (instancetype)initWithFrame:(CGRect)frame {
     self = [super initWithFrame:frame];
     if ( !self ) return nil;
     [self _SJVideoPlayerMoreSettingsViewSetupUI];
+    [self _SJVideoPlayerMoreSettingsViewInstallNotifications];
     [self addPanGR];
     return self;
 }
 
+- (void)dealloc {
+    [self _SJVideoPlayerMoreSettingsViewRemoveNotifications];
+}
+
 - (void)setFooterView:(SJVideoPlayerMoreSettingsFooterView *)footerView {
     _footerView = footerView;
-    if ( _getFooterCallBlock ) _getFooterCallBlock(footerView.volumeSlider, footerView.brightnessSlider, footerView.rateSlider);
-    _getFooterCallBlock = nil;
+    [self.exeBlocks enumerateObjectsWithOptions:NSEnumerationReverse usingBlock:^(void (^ _Nonnull obj)(SJSlider *, SJSlider *, SJSlider *), NSUInteger idx, BOOL * _Nonnull stop) {
+        obj(_footerView.volumeSlider, _footerView.brightnessSlider, _footerView.rateSlider);
+        [self.exeBlocks removeObject:obj];
+    }];
 }
 
 - (void)setMoreSettings:(NSArray<SJVideoPlayerMoreSetting *> *)moreSettings {
@@ -1027,7 +1112,12 @@ static NSString *const SJVideoPlayerMoreSettingsFooterViewID = @"SJVideoPlayerMo
 }
 
 - (void)getMoreSettingsSlider:(void (^)(SJSlider *, SJSlider *, SJSlider *))block {
-    self.getFooterCallBlock = block;
+    if ( !block ) return;
+    if ( self.footerView ) {
+        block(_footerView.volumeSlider, _footerView.brightnessSlider, _footerView.rateSlider);
+        return;
+    }
+    [self.exeBlocks addObject:block];
 }
 
 - (void)addPanGR {
@@ -1059,15 +1149,20 @@ static NSString *const SJVideoPlayerMoreSettingsFooterViewID = @"SJVideoPlayerMo
     return _colView;
 }
 
+- (NSMutableArray<void (^)(SJSlider *, SJSlider *, SJSlider *)> *)exeBlocks {
+    if ( _exeBlocks ) return _exeBlocks;
+    _exeBlocks = [NSMutableArray new];
+    return _exeBlocks;
+}
+
 @end
 
 
-// MARK: DataSource
+// MARK: MoreSettings DataSource
 
 
 @implementation SJVideoPlayerMoreSettingsView (UICollectionViewDataSourceMethods)
 
-// MARK: UICollectionViewDataSource
 
 - (NSInteger)numberOfSectionsInCollectionView:(UICollectionView *)collectionView {
     return 1;
@@ -1094,7 +1189,7 @@ static NSString *const SJVideoPlayerMoreSettingsFooterViewID = @"SJVideoPlayerMo
 
 
 
-// MARK: Collection
+// MARK: More Settings Cell
 
 @interface SJVideoPlayerMoreSettingsColCell ()
 
@@ -1155,12 +1250,41 @@ static NSString *const SJVideoPlayerMoreSettingsFooterViewID = @"SJVideoPlayerMo
 
 
 
+// MARK: More Settings View 通知处理
+
+@implementation SJVideoPlayerMoreSettingsView (DBNotifications)
+
+- (void)_SJVideoPlayerMoreSettingsViewInstallNotifications {
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(settingsPlayerNotification:) name:SJSettingsPlayerNotification object:nil];
+}
+
+- (void)_SJVideoPlayerMoreSettingsViewRemoveNotifications {
+    [[NSNotificationCenter defaultCenter] removeObserver:self];
+}
+
+- (void)settingsPlayerNotification:(NSNotification *)notifi {
+    SJVideoPlayerSettings *settings = notifi.object;
+    [self getMoreSettingsSlider:^(SJSlider *volumeSlider, SJSlider *brightnessSlider, SJSlider *rateSlider) {
+        if ( settings.traceColor ) {
+            volumeSlider.traceImageView.backgroundColor = settings.traceColor;
+            brightnessSlider.traceImageView.backgroundColor = settings.traceColor;
+            rateSlider.traceImageView.backgroundColor = settings.traceColor;
+        }
+        if ( settings.trackColor ) {
+            volumeSlider.trackImageView.backgroundColor = settings.trackColor;
+            brightnessSlider.trackImageView.backgroundColor = settings.trackColor;
+            rateSlider.trackImageView.backgroundColor = settings.trackColor;
+        }
+    }];
+}
+
+@end
 
 
 
-// MARK: Footer
 
-// MARK: 观察处理
+
+
 
 @interface SJVideoPlayerMoreSettingsFooterView (DBObservers)
 
@@ -1262,7 +1386,6 @@ static NSString *const SJVideoPlayerMoreSettingsFooterViewID = @"SJVideoPlayerMo
     }];
 }
 
-//- (void)
 
 - (SJSlider *)volumeSlider {
     if ( _volumeSlider ) return _volumeSlider;
@@ -1315,7 +1438,6 @@ static NSString *const SJVideoPlayerMoreSettingsFooterViewID = @"SJVideoPlayerMo
 
 - (SJSlider *)slider {
     SJSlider *slider = [SJSlider new];
-//    slider.thumbImageView.image = [UIImage imageNamed:@"sj_video_player_thumb"];
     return slider;
 }
 
@@ -1323,7 +1445,8 @@ static NSString *const SJVideoPlayerMoreSettingsFooterViewID = @"SJVideoPlayerMo
 
 
 
-// MARK: Observers
+// MARK: More Settings FooterView  观察处理
+
 
 @implementation SJVideoPlayerMoreSettingsFooterView (DBObservers)
 
@@ -1350,7 +1473,7 @@ static NSString *const SJVideoPlayerMoreSettingsFooterViewID = @"SJVideoPlayerMo
 
 
 
-// MARK: More Settings
+// MARK: More Settings Sliders
 
 @implementation SJVideoPlayerControlView (MoreSettings) 
 
@@ -1368,6 +1491,73 @@ static NSString *const SJVideoPlayerMoreSettingsFooterViewID = @"SJVideoPlayerMo
 
 - (void)getMoreSettingsSlider:(void(^)(SJSlider *volumeSlider, SJSlider *brightnessSlider, SJSlider *rateSlider))block {
     [self.moreSettingsView getMoreSettingsSlider:block];
+}
+
+@end
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+// MARK: Mask View
+
+
+@interface SJMaskView ()
+@property (nonatomic, assign, readwrite) SJMaskStyle style;
+@end
+
+@implementation SJMaskView {
+    CAGradientLayer *_maskGradientLayer;
+}
+
+- (instancetype)initWithStyle:(SJMaskStyle)style {
+    self = [super initWithFrame:CGRectZero];
+    if ( !self ) return nil;
+    self.style = style;
+    [self initializeGL];
+    return self;
+}
+
+- (void)initializeGL {
+    self.backgroundColor = [UIColor clearColor];
+    _maskGradientLayer = [CAGradientLayer layer];
+    switch (_style) {
+        case SJMaskStyle_top: {
+            _maskGradientLayer.colors = @[(__bridge id)[UIColor colorWithWhite:0 alpha:0.42].CGColor,
+                                          (__bridge id)[UIColor clearColor].CGColor];
+        }
+            break;
+        case SJMaskStyle_bottom: {
+            _maskGradientLayer.colors = @[(__bridge id)[UIColor clearColor].CGColor,
+                                          (__bridge id)[UIColor colorWithWhite:0 alpha:0.42].CGColor];
+        }
+            break;
+    }
+    [self.layer addSublayer:_maskGradientLayer];
+}
+
+- (void)layoutSubviews {
+    [super layoutSubviews];
+    _maskGradientLayer.frame = self.bounds;
 }
 
 @end

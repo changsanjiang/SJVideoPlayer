@@ -54,6 +54,8 @@
 @property (nonatomic, strong, readonly) SJVideoPlayerPresentView *presentView;
 @property (nonatomic, strong, readonly) SJVideoPlayerPrompt *prompt;
 
+@property (nonatomic, strong, readonly) SJVideoPlayerSettings *settings;
+
 @end
 
 
@@ -63,6 +65,7 @@
 @synthesize control = _control;
 @synthesize presentView = _presentView;
 @synthesize prompt = _prompt;
+@synthesize settings = _settings;
 
 
 + (instancetype)sharedPlayer {
@@ -125,6 +128,10 @@
     return self.containerView;
 }
 
+- (void)playerSettings:(void (^)(SJVideoPlayerSettings * _Nonnull))block {
+    if ( block ) block(self.settings);
+    [[NSNotificationCenter defaultCenter] postNotificationName:SJSettingsPlayerNotification object:self.settings];
+}
 
 // MARK: Private
 
@@ -178,6 +185,12 @@
     if ( _prompt ) return _prompt;
     _prompt = [SJVideoPlayerPrompt promptWithPresentView:self.presentView];
     return _prompt;
+}
+
+- (SJVideoPlayerSettings *)settings {
+    if ( _settings ) return _settings;
+    _settings = [SJVideoPlayerSettings new];
+    return _settings;
 }
 
 @end
@@ -259,3 +272,6 @@
 }
 
 @end
+
+
+@implementation SJVideoPlayerSettings@end

@@ -29,7 +29,7 @@
     
     self.view.backgroundColor = [UIColor whiteColor];
     
-    // MARK: Player View
+// MARK: Player View
 
     SJVideoPlayer *player = [SJVideoPlayer sharedPlayer];
     [self.view addSubview:player.view];
@@ -40,7 +40,7 @@
     }];
 
     
-    // MARK: AssetURL
+// MARK: AssetURL
     
 //    player.assetURL = [[NSBundle mainBundle] URLForResource:@"sample.mp4" withExtension:nil];
 //    player.assetURL = [NSURL URLWithString:@"http://streaming.youku.com/live2play/gtvyxjj_yk720.m3u8?auth_key=1525831956-0-0-4ec52cd453761e1e7f551decbb3eee6d"];
@@ -51,13 +51,13 @@
     
     
     
-    // MARK: Loading Placeholder
+// MARK: Loading Placeholder
     
     player.placeholder = [UIImage imageNamed:@"sj_video_player_placeholder"];
     
 
     
-    // MARK: More Settings
+// MARK: More Settings
 
     SJVideoPlayerMoreSetting.titleFontSize = 12;
 
@@ -84,7 +84,7 @@
     player.moreSettings = @[model0, model1, model2, model3];
     
     
-    // MARK: Clicked Back Button
+// MARK: Clicked Back Button
     
     __weak typeof(self) _self = self;
     player.clickedBackEvent = ^{
@@ -92,6 +92,28 @@
         if ( !self ) return;
         [self.navigationController popViewControllerAnimated:YES];
     };
+    
+    
+    
+    
+// MARK: Setting Player
+
+    [player playerSettings:^(SJVideoPlayerSettings * _Nonnull settings) {
+        settings.traceColor = [UIColor colorWithRed:1.0 * (arc4random() % 256 / 255.0)
+                                              green:1.0 * (arc4random() % 256 / 255.0)
+                                               blue:1.0 * (arc4random() % 256 / 255.0)
+                                              alpha:1];
+        settings.trackColor = [UIColor colorWithRed:1.0 * (arc4random() % 256 / 255.0)
+                                              green:1.0 * (arc4random() % 256 / 255.0)
+                                               blue:1.0 * (arc4random() % 256 / 255.0)
+                                              alpha:1];
+        settings.bufferColor = [UIColor colorWithRed:1.0 * (arc4random() % 256 / 255.0)
+                                               green:1.0 * (arc4random() % 256 / 255.0)
+                                                blue:1.0 * (arc4random() % 256 / 255.0)
+                                               alpha:1];
+    }];
+    
+    
     // Do any additional setup after loading the view.
 }
 

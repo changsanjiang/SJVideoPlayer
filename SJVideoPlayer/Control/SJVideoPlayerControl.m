@@ -220,6 +220,7 @@ static const NSString *SJPlayerItemStatusContext;
             [self.pointTimer fire];
             _controlView.hiddenLockContainerView = NO;
         }
+        _controlView.hiddenBottomProgressView = !_controlView.hiddenControl;
         return;
     }
     
@@ -948,6 +949,8 @@ static UIView *target = nil;
     
     // 前台
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(applicationDidBecomeActiveNotification) name:UIApplicationDidBecomeActiveNotification object:nil];
+    
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(settingsPlayerNotification:) name:SJSettingsPlayerNotification object:nil];
 }
 
 - (void)_SJVideoPlayerControlRemoveNotifications {
@@ -1026,6 +1029,12 @@ static UIView *target = nil;
     if ( _backstageRegistrar.hiddenPlayBtn ) [self clickedPlay];
 }
 
+- (void)settingsPlayerNotification:(NSNotification *)notifi {
+    SJVideoPlayerSettings *settings = notifi.object;
+    if ( settings.volumeImage ) self.volumeView.normalShowImage = settings.volumeImage;
+    if ( settings.muteImage ) self.volumeView.minShowImage = settings.muteImage;
+    if ( settings.brightnessImage ) self.brightnessView.normalShowImage = settings.brightnessImage;
+}
 @end
 
 

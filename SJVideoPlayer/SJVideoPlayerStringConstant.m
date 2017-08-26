@@ -32,3 +32,6 @@ NSNotificationName const SJPlayerDidPlayToEndTimeNotification = @"SJPlayerDidPla
 
 /// 播放Error
 NSNotificationName const SJPlayerPlayFailedErrorNotification = @"SJPlayerPlayFailedErrorNotification";
+
+/// 配置播放器
+NSNotificationName const SJSettingsPlayerNotification = @"SJSettingsPlayerNotification";

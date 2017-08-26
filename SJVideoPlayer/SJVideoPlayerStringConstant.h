@@ -32,3 +32,6 @@ extern NSNotificationName const SJPlayerDidPlayToEndTimeNotification;
 
 /// 播放Error
 extern NSNotificationName const SJPlayerPlayFailedErrorNotification;
+
+/// 配置播放器
+extern NSNotificationName const SJSettingsPlayerNotification;

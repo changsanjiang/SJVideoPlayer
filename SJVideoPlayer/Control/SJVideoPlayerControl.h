@@ -11,7 +11,7 @@
 #define SJHiddenControlInterval (4)
 
 
-@class UIView, AVAsset, AVPlayer, AVPlayerItem, SJVideoPlayerMoreSetting;
+@class UIView, AVAsset, AVPlayer, AVPlayerItem, UIImage, SJVideoPlayerSettings, SJVideoPlayerMoreSetting;
 
 
 @protocol SJVideoPlayerControlDelegate;
@@ -22,6 +22,8 @@
 - (instancetype)init;
 
 - (void)setAsset:(AVAsset *)asset playerItem:(AVPlayerItem *)playerItem player:(AVPlayer *)player;
+
+@property (nonatomic, strong, readwrite) SJVideoPlayerSettings *settings;
 
 /*!
  *  controlView.

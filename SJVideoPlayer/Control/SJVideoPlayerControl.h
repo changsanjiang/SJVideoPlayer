@@ -40,6 +40,8 @@
 
 - (void)jumpedToTime:(NSTimeInterval)time completionHandler:(void (^)(BOOL finished))completionHandler;
 
+@property (nonatomic, assign, readwrite) float rate;
+
 @end
 
 

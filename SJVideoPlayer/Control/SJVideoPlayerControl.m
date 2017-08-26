@@ -22,6 +22,8 @@
 
 #import "SJVideoPlayerStringConstant.h"
 
+#import "SJVideoPlayerMoreSetting.h"
+
 #import "NSTimer+SJExtention.h"
 
 
@@ -159,7 +161,7 @@ static const NSString *SJPlayerItemStatusContext;
 @synthesize brightnessView = _brightnessView;
 @synthesize backstageRegistrar = _backstageRegistrar;
 @synthesize pointTimer = _pointTimer;
-
+@synthesize rate = _rate;
 
 - (instancetype)init {
     self = [super init];
@@ -372,6 +374,13 @@ static const NSString *SJPlayerItemStatusContext;
     [_playerItem addObserver:self forKeyPath:@"playbackBufferEmpty" options:NSKeyValueObservingOptionNew context:nil];
 }
 
+- (void)setRate:(float)rate {
+    if ( rate < 0.5 ) rate = .5;
+    if ( rate > 2 ) rate = 2;
+    _rate = rate;
+    _player.rate = rate;
+}
+
 // MARK: Operations
 
 - (void)play {
@@ -396,6 +405,8 @@ static const NSString *SJPlayerItemStatusContext;
     [_imageGenerator cancelAllCGImageGeneration];
     
     self.playerItem = nil;
+    
+    self.rate = 1;
 }
 
 - (void)jumpedToTime:(NSTimeInterval)time completionHandler:(void (^)(BOOL))completionHandler {
@@ -459,6 +470,18 @@ static const NSString *SJPlayerItemStatusContext;
 
 - (void)setMoreSettings:(NSArray<SJVideoPlayerMoreSetting *> *)moreSettings {
     _moreSettings = moreSettings;
+    __weak typeof(self) _self = self;
+    [moreSettings enumerateObjectsUsingBlock:^(SJVideoPlayerMoreSetting * _Nonnull obj, NSUInteger idx, BOOL * _Nonnull stop) {
+        if ( obj.clickedExeBlock ) {
+            void(^clickedExeBlock)(SJVideoPlayerMoreSetting *model) = [obj.clickedExeBlock copy];
+            obj.clickedExeBlock = ^(SJVideoPlayerMoreSetting * _Nonnull model) {
+                clickedExeBlock(model);
+                __strong typeof(_self) self = _self;
+                if ( !self ) return;
+                self.controlView.hiddenMoreSettingsView = YES;
+            };
+        }
+    }];
     _controlView.moreSettings = moreSettings;
 }
 
@@ -568,11 +591,14 @@ static const NSString *SJPlayerItemStatusContext;
     if ( self.lastPlaybackRate > 0.f ) {
         self.isUserClickedPause = YES;
         [self clickedPause];
+        _controlView.hiddenControl = NO;
     }
     else {
         self.isUserClickedPause = NO;
         [self clickedPlay];
+        _controlView.hiddenControl = YES;
     }
+    
 }
 
 static UIView *target = nil;
@@ -770,7 +796,12 @@ static UIView *target = nil;
 }
 
 - (void)clickedReplay {
-    [self clickedPlay];
+    [[NSNotificationCenter defaultCenter] postNotificationName:SJPlayerBeginPlayingNotification object:nil];
+    [self.player play];
+    self.controlView.hiddenReplayBtn = YES;
+    self.controlView.hiddenPlayBtn = YES;
+    self.controlView.hiddenPauseBtn = NO;
+    self.lastPlaybackRate = self.player.rate;
 }
 
 - (void)clickedBack {
@@ -865,7 +896,7 @@ static UIView *target = nil;
         }
             break;
         case SJVideoPlaySliderTag_Rate: {
-            _player.rate = slider.value;
+            self.rate = slider.value;
         }
             break;
     }
@@ -880,9 +911,9 @@ static UIView *target = nil;
         }
             break;
         case SJVideoPlaySliderTag_Rate: {
-            if ( slider.value < 1.08 && slider.value > 0.98 ) {
+            if ( slider.value < 1.08 && slider.value > 0.92 ) {
                 slider.value = 1;
-                _player.rate = slider.value;
+                self.rate = slider.value;
             }
         }
         default:

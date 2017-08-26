@@ -224,6 +224,14 @@
     [_control sjReset];
 }
 
+- (void)setRate:(float)rate {
+    _control.rate = rate;
+}
+
+- (float)rate {
+    return _control.rate;
+}
+
 - (UIImage *)screenShot {
     return [_presentView screenShot];
 }

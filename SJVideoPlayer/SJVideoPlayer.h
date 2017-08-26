@@ -54,6 +54,11 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (void)stop;
 
+/*!
+ *  0.5 ... 2.0
+ */
+@property (nonatomic, assign, readwrite) float rate;
+
 - (UIImage *)screenShot;
 
 @end

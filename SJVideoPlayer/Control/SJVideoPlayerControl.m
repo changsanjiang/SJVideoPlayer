@@ -24,10 +24,6 @@
 
 #import "NSTimer+SJExtention.h"
 
-/*!
- *  AVPlayerItem's status property
- */
-#define STATUS_KEYPATH @"status"
 
 /*!
  *  Refresh interval for timed observations of AVPlayer
@@ -247,9 +243,8 @@ static const NSString *SJPlayerItemStatusContext;
         return;
     }
     
-    if ( context == &SJPlayerItemStatusContext ) {
+    if ( [keyPath isEqualToString:@"status"] ) {
         dispatch_async(dispatch_get_main_queue(), ^{
-            [self.playerItem removeObserver:self forKeyPath:STATUS_KEYPATH];
             if (self.playerItem.status == AVPlayerItemStatusReadyToPlay) {
                 
                 [self _setEnabledGestureRecognizer:YES];
@@ -264,9 +259,6 @@ static const NSString *SJPlayerItemStatusContext;
                 self.controlView.hiddenLoadFailedBtn = YES;
                 
                 [self clickedPlay];
-                
-                // MARK: SJPlayerBeginPlayingNotification
-                [[NSNotificationCenter defaultCenter] postNotificationName:SJPlayerBeginPlayingNotification object:nil];
                 
                 [self.pointTimer fire];
                 
@@ -365,7 +357,7 @@ static const NSString *SJPlayerItemStatusContext;
 - (void)setPlayerItem:(AVPlayerItem *)playerItem {
     if ( _playerItem == playerItem ) return;
     
-    [_playerItem removeObserver:self forKeyPath:STATUS_KEYPATH];
+    [_playerItem removeObserver:self forKeyPath:@"status"];
     
     [_playerItem removeObserver:self forKeyPath:@"loadedTimeRanges"];
     
@@ -373,11 +365,11 @@ static const NSString *SJPlayerItemStatusContext;
     
     _playerItem = playerItem;
     
-    [playerItem addObserver:self forKeyPath:STATUS_KEYPATH options:0 context:&SJPlayerItemStatusContext];
+    [_playerItem addObserver:self forKeyPath:@"status" options:NSKeyValueObservingOptionNew context:nil];
     
-    [playerItem addObserver:self forKeyPath:@"loadedTimeRanges" options:NSKeyValueObservingOptionNew context:nil];
+    [_playerItem addObserver:self forKeyPath:@"loadedTimeRanges" options:NSKeyValueObservingOptionNew context:nil];
     
-    [playerItem addObserver:self forKeyPath:@"playbackBufferEmpty" options:NSKeyValueObservingOptionNew context:nil];
+    [_playerItem addObserver:self forKeyPath:@"playbackBufferEmpty" options:NSKeyValueObservingOptionNew context:nil];
 }
 
 // MARK: Operations
@@ -402,6 +394,8 @@ static const NSString *SJPlayerItemStatusContext;
     if ( _player.rate != 0 )[_player pause];
     
     [_imageGenerator cancelAllCGImageGeneration];
+    
+    self.playerItem = nil;
 }
 
 - (void)jumpedToTime:(NSTimeInterval)time completionHandler:(void (^)(BOOL))completionHandler {
@@ -758,6 +752,9 @@ static UIView *target = nil;
 
 - (void)clickedPlay {
     if ( 0 != self.player.rate ) return;
+    if ( 1 >= CMTimeGetSeconds(_playerItem.currentTime) ) {
+        [[NSNotificationCenter defaultCenter] postNotificationName:SJPlayerBeginPlayingNotification object:nil];
+    }
     [self.player play];
     self.controlView.hiddenReplayBtn = YES;
     self.controlView.hiddenPlayBtn = YES;
@@ -774,7 +771,6 @@ static UIView *target = nil;
 
 - (void)clickedReplay {
     [self clickedPlay];
-    [[NSNotificationCenter defaultCenter] postNotificationName:SJPlayerBeginPlayingNotification object:nil];
 }
 
 - (void)clickedBack {

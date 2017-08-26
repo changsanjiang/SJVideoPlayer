@@ -27,5 +27,8 @@ NSNotificationName const SJPlayerPrepareToPlayNotification = @"SJPlayerPrepareTo
 /// 开始播放
 NSNotificationName const SJPlayerBeginPlayingNotification = @"SJPlayerBeginPlayingNotification";
 
+/// 播放完成
+NSNotificationName const SJPlayerDidPlayToEndTimeNotification = @"SJPlayerDidPlayToEndTimeNotification";
+
 /// 播放Error
 NSNotificationName const SJPlayerPlayFailedErrorNotification = @"SJPlayerPlayFailedErrorNotification";

@@ -84,14 +84,24 @@
     _player = player;
     _asset = asset;
     [(AVPlayerLayer *)self.layer setPlayer:player];
-    [UIView animateWithDuration:0.25 animations:^{
-        self.placeholderImageView.alpha = 1;
-    }];
+    [self _showPlaceholderImage];
     self.superv = superv;
 }
 
 - (void)setPlaceholderImage:(UIImage *)placeholderImage {
     _placeholderImageView.image = placeholderImage;
+}
+
+- (void)_showPlaceholderImage {
+    [UIView animateWithDuration:0.25 animations:^{
+        self.placeholderImageView.alpha = 1;
+    }];
+}
+
+- (void)_hiddenPlaceholderImage {
+    [UIView animateWithDuration:0.25 animations:^{
+        self.placeholderImageView.alpha = 0.001;
+    }];
 }
 
 - (UIImageView *)placeholderImageView {
@@ -134,6 +144,7 @@
 
 - (void)_SJVideoPlayerPresentViewInstallNotifications {
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(playerBeginPlayingNotification) name:SJPlayerBeginPlayingNotification object:nil];
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(playerDidPlayToEndTimeNotification) name:SJPlayerDidPlayToEndTimeNotification object:nil];
 }
 
 - (void)_SJVideoPlayerPresentViewRemoveNotifications {
@@ -141,10 +152,12 @@
 }
 
 - (void)playerBeginPlayingNotification {
-    [UIView animateWithDuration:0.25 animations:^{
-        self.placeholderImageView.alpha = 0.001;
-    }];
+    [self _hiddenPlaceholderImage];
     [self _addDeviceOrientationChangeObserver];
+}
+
+- (void)playerDidPlayToEndTimeNotification {
+    [self _showPlaceholderImage];
 }
 
 - (void)_addDeviceOrientationChangeObserver {

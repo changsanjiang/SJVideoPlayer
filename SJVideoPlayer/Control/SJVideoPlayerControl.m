@@ -451,6 +451,7 @@ static const NSString *SJPlayerItemStatusContext;
                   self.controlView.hiddenReplayBtn = NO;
               }];
         [self clickedPause];
+        [[NSNotificationCenter defaultCenter] postNotificationName:SJPlayerDidPlayToEndTimeNotification object:nil];
     };
     
     self.itemEndObserver =
@@ -773,6 +774,7 @@ static UIView *target = nil;
 
 - (void)clickedReplay {
     [self clickedPlay];
+    [[NSNotificationCenter defaultCenter] postNotificationName:SJPlayerBeginPlayingNotification object:nil];
 }
 
 - (void)clickedBack {

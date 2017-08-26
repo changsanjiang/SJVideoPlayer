@@ -27,5 +27,8 @@ extern NSNotificationName const SJPlayerPrepareToPlayNotification;
 /// 开始播放
 extern NSNotificationName const SJPlayerBeginPlayingNotification;
 
+/// 播放完成
+extern NSNotificationName const SJPlayerDidPlayToEndTimeNotification;
+
 /// 播放Error
 extern NSNotificationName const SJPlayerPlayFailedErrorNotification;

@@ -406,7 +406,7 @@ static const NSString *SJPlayerItemStatusContext;
     
     self.playerItem = nil;
     
-    self.rate = 1;
+    _rate = 1;
 }
 
 - (void)jumpedToTime:(NSTimeInterval)time completionHandler:(void (^)(BOOL))completionHandler {

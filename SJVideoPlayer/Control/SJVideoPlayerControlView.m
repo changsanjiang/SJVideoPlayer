@@ -466,7 +466,7 @@ static NSString *const SJVideoPlayPreviewColCellID = @"SJVideoPlayPreviewColCell
 
 - (UICollectionView *)previewImgColView {
     if ( _previewImgColView ) return _previewImgColView;
-    _previewImgColView = [UICollectionView collectionViewWithItemSize:CGSizeMake(SJPreviewImgW, SJPreViewImgH) backgroundColor:[UIColor blackColor] scrollDirection:UICollectionViewScrollDirectionHorizontal];
+    _previewImgColView = [UICollectionView collectionViewWithItemSize:CGSizeMake(SJPreviewImgW, SJPreViewImgH) backgroundColor:[UIColor colorWithWhite:0 alpha:0.42] scrollDirection:UICollectionViewScrollDirectionHorizontal];
     _previewImgColView.dataSource = self;
     [_previewImgColView registerClass:NSClassFromString(SJVideoPlayPreviewColCellID) forCellWithReuseIdentifier:SJVideoPlayPreviewColCellID];
     _previewImgColView.transform = CGAffineTransformMakeScale(1, 0.001);
@@ -540,7 +540,7 @@ static NSString *const SJVideoPlayPreviewColCellID = @"SJVideoPlayPreviewColCell
 
 - (UIButton *)fullBtn {
     if ( _fullBtn ) return _fullBtn;
-    _fullBtn = [UIButton buttonWithImageName:@"sj_video_player_fullscreen" tag:SJVideoPlayControlViewTag_Full target:self sel:@selector(clickedBtn:)]; 
+    _fullBtn = [UIButton buttonWithImageName:@"sj_video_player_fullscreen" tag:SJVideoPlayControlViewTag_Full target:self sel:@selector(clickedBtn:)];
     return _fullBtn;
 }
 
@@ -933,7 +933,9 @@ static NSString *const SJVideoPlayPreviewColCellID = @"SJVideoPlayPreviewColCell
     [self.contentView addSubview:self.backgroundBtn];
     [self.contentView addSubview:self.imageView];
     [_imageView mas_makeConstraints:^(MASConstraintMaker *make) {
-        make.edges.offset(0);
+        make.leading.trailing.offset(0);
+        make.top.offset(2);
+        make.bottom.offset(-2);
     }];
     [_backgroundBtn mas_makeConstraints:^(MASConstraintMaker *make) {
         make.edges.offset(0);
@@ -1277,7 +1279,6 @@ static NSString *const SJVideoPlayerMoreSettingsFooterViewID = @"SJVideoPlayerMo
         }
     }];
 }
-
 @end
 
 
@@ -1340,7 +1341,7 @@ static NSString *const SJVideoPlayerMoreSettingsFooterViewID = @"SJVideoPlayerMo
         make.top.offset(25);
         make.leading.trailing.offset(0);
         make.height.offset((self.csj_h - 25 * 2) / 3);
-
+        
     }];
     
     [volumeBackgroundView mas_makeConstraints:^(MASConstraintMaker *make) {
@@ -1475,7 +1476,7 @@ static NSString *const SJVideoPlayerMoreSettingsFooterViewID = @"SJVideoPlayerMo
 
 // MARK: More Settings Sliders
 
-@implementation SJVideoPlayerControlView (MoreSettings) 
+@implementation SJVideoPlayerControlView (MoreSettings)
 
 - (SJSlider *)volumeSlider {
     return self.moreSettingsView.footerView.volumeSlider;

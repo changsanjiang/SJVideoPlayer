@@ -94,8 +94,6 @@
     };
     
     
-    
-    
 // MARK: Setting Player
 
     [player playerSettings:^(SJVideoPlayerSettings * _Nonnull settings) {

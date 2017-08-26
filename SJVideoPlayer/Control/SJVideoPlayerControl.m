@@ -288,23 +288,16 @@ static const NSString *SJPlayerItemStatusContext;
     
     if ( [keyPath isEqualToString:@"playbackBufferEmpty"] ) {
         if ( !_playerItem.playbackBufferEmpty ) return;
-        NSLog(@"缓冲为空. 停止播放");
-        [self clickedPause];
         [self _buffering];
         return;
     }
 }
 
 - (void)_buffering {
-    dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(2 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
-        NSLog(@"开始缓冲了");
-        if ( [self loadTimeSeconds] < (self.playedTime + 5) ) {
-            NSLog(@"A: 缓冲小于 5 秒, 退出继续等待缓冲");
-            [self _buffering];
-            return;
-        }
-        NSLog(@"A: 缓冲差不多了, 开始播放");
-        if ( !self.isUserClickedPause ) [self clickedPlay];
+    [self clickedPause];
+    dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(1 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
+        [self play];
+        if ( !_playerItem.isPlaybackLikelyToKeepUp ) [self _buffering];
     });
 }
 

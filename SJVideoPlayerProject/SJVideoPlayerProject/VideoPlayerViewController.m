@@ -55,18 +55,22 @@
     
     SJVideoPlayerMoreSetting *model0 = [[SJVideoPlayerMoreSetting alloc] initWithTitle:@"点赞" image:[UIImage imageNamed:@"db_video_like_n"] clickedExeBlock:^(SJVideoPlayerMoreSetting * _Nonnull model) {
         NSLog(@"clicked %@", model.title);
+        [[SJVideoPlayer sharedPlayer] showTitle:@"超长震古烁今的名字"];
     }];
     
     SJVideoPlayerMoreSetting *model1 = [[SJVideoPlayerMoreSetting alloc] initWithTitle:@"缓存" image:[UIImage imageNamed:@"db_audio_play_download_n"] clickedExeBlock:^(SJVideoPlayerMoreSetting * _Nonnull model) {
         NSLog(@"clicked %@", model.title);
+        [[SJVideoPlayer sharedPlayer] showTitle:model.title];
     }];
     
     SJVideoPlayerMoreSetting *model2 = [[SJVideoPlayerMoreSetting alloc] initWithTitle:@"收藏" image:[UIImage imageNamed:@"db_video_favorite_n"] clickedExeBlock:^(SJVideoPlayerMoreSetting * _Nonnull model) {
         NSLog(@"clicked %@", model.title);
+        [[SJVideoPlayer sharedPlayer] showTitle:model.title];
     }];
     
     SJVideoPlayerMoreSetting *model3 = [[SJVideoPlayerMoreSetting alloc] initWithTitle:@"分享" image:[UIImage imageNamed:@"db_audio_play_share_n"] clickedExeBlock:^(SJVideoPlayerMoreSetting * _Nonnull model) {
         NSLog(@"clicked %@", model.title);
+        [[SJVideoPlayer sharedPlayer] showTitle:model.title];
     }];
     
     player.moreSettings = @[model0, model1, model2, model3];

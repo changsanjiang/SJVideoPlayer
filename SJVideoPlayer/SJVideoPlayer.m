@@ -28,6 +28,8 @@
 
 #import "SJVideoPlayerMoreSetting.h"
 
+#import "SJVideoPlayerPrompt.h"
+
 // MARK: 通知处理
 
 @interface SJVideoPlayer (DBNotifications)
@@ -50,6 +52,7 @@
 @property (nonatomic, strong, readonly) UIView *containerView;
 @property (nonatomic, strong, readonly) SJVideoPlayerControl *control;
 @property (nonatomic, strong, readonly) SJVideoPlayerPresentView *presentView;
+@property (nonatomic, strong, readonly) SJVideoPlayerPrompt *prompt;
 
 @end
 
@@ -59,7 +62,7 @@
 @synthesize containerView = _containerView;
 @synthesize control = _control;
 @synthesize presentView = _presentView;
-
+@synthesize prompt = _prompt;
 
 
 + (instancetype)sharedPlayer {
@@ -171,6 +174,12 @@
     return _control;
 }
 
+- (SJVideoPlayerPrompt *)prompt {
+    if ( _prompt ) return _prompt;
+    _prompt = [SJVideoPlayerPrompt promptWithPresentView:self.presentView];
+    return _prompt;
+}
+
 @end
 
 
@@ -234,6 +243,19 @@
 
 - (UIImage *)screenShot {
     return [_presentView screenShot];
+}
+
+@end
+
+
+
+
+
+
+@implementation SJVideoPlayer (Prompt)
+
+- (void)showTitle:(NSString *)title {
+    [self.prompt showTitle:title];
 }
 
 @end

@@ -385,7 +385,6 @@ static const NSString *SJPlayerItemStatusContext;
 }
 
 - (void)sjReset {
-    NSLog(@"reset Player");
     
     if ( _timeObserver ) {[_player removeTimeObserver:_timeObserver]; _timeObserver = nil;}
     

@@ -204,13 +204,6 @@ static const NSString *SJPlayerItemStatusContext;
     self.asset = asset;
     self.playerItem = playerItem;
     self.player = player;
-    
-    [_playerItem addObserver:self forKeyPath:STATUS_KEYPATH options:0 context:&SJPlayerItemStatusContext];
-    
-    [_playerItem addObserver:self forKeyPath:@"loadedTimeRanges" options:NSKeyValueObservingOptionNew context:nil];
-    // 缓冲区空了，需要等待数据
-    [_playerItem addObserver:self forKeyPath:@"playbackBufferEmpty" options:NSKeyValueObservingOptionNew context:nil];
-    
 }
 
 // MARK: Observer
@@ -350,7 +343,7 @@ static const NSString *SJPlayerItemStatusContext;
             SJVideoPreviewModel *model = [SJVideoPreviewModel previewModelWithImage:image localTime:actualTime];
             if ( model ) [imagesM addObject:model];
         }
-        else {
+        else if ( result == AVAssetImageGeneratorFailed ) {
             NSLog(@"ERROR : %@", error);
         }
                 
@@ -367,6 +360,28 @@ static const NSString *SJPlayerItemStatusContext;
     }];
 }
 
+// MARK: Setter
+
+- (void)setPlayerItem:(AVPlayerItem *)playerItem {
+    if ( _playerItem == playerItem ) return;
+    
+    [_playerItem removeObserver:self forKeyPath:STATUS_KEYPATH];
+    
+    [_playerItem removeObserver:self forKeyPath:@"loadedTimeRanges"];
+    
+    [_playerItem removeObserver:self forKeyPath:@"playbackBufferEmpty"];
+    
+    _playerItem = playerItem;
+    
+    [playerItem addObserver:self forKeyPath:STATUS_KEYPATH options:0 context:&SJPlayerItemStatusContext];
+    
+    [playerItem addObserver:self forKeyPath:@"loadedTimeRanges" options:NSKeyValueObservingOptionNew context:nil];
+    
+    [playerItem addObserver:self forKeyPath:@"playbackBufferEmpty" options:NSKeyValueObservingOptionNew context:nil];
+}
+
+// MARK: Operations
+
 - (void)play {
     [self clickedPlay];
 }
@@ -378,23 +393,15 @@ static const NSString *SJPlayerItemStatusContext;
 - (void)sjReset {
     NSLog(@"reset Player");
     
-    [_playerItem removeObserver:self forKeyPath:@"loadedTimeRanges"];
-    
-    [_playerItem removeObserver:self forKeyPath:@"playbackBufferEmpty"];
-    
     if ( _timeObserver ) {[_player removeTimeObserver:_timeObserver]; _timeObserver = nil;}
     
     if ( _itemEndObserver ) {[[NSNotificationCenter defaultCenter] removeObserver:_itemEndObserver name:AVPlayerItemDidPlayToEndTimeNotification object:_playerItem]; _itemEndObserver = nil;}
     
     [self _setEnabledGestureRecognizer:NO];
     
-    [_player pause];
+    if ( _player.rate != 0 )[_player pause];
     
     [_imageGenerator cancelAllCGImageGeneration];
-    _imageGenerator = nil;
-    _playerItem = nil;
-    _asset = nil;
-    _player = nil;
 }
 
 - (void)jumpedToTime:(NSTimeInterval)time completionHandler:(void (^)(BOOL))completionHandler {

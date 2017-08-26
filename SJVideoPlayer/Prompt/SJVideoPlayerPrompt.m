@@ -110,7 +110,7 @@
 
 - (CGSize)sizeFortitle:(NSString *)title size:(CGSize)size {
     CGSize result;
-    if ([title respondsToSelector:@selector(boundingRectWithSize:options:attributes:context:)]) {
+    if ( [title respondsToSelector:@selector(boundingRectWithSize:options:attributes:context:)] ) {
         NSMutableDictionary *attr = [NSMutableDictionary new];
         attr[NSFontAttributeName] = [UIFont systemFontOfSize:SJVideoPlayerPrompt_F];
         CGRect rect = [title boundingRectWithSize:size

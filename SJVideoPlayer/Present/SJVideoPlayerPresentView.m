@@ -18,6 +18,9 @@
 
 #import "UIView+Extension.h"
 
+#import <AVFoundation/AVAssetImageGenerator.h>
+
+#import <AVFoundation/AVPlayerItem.h>
 
 // MARK: 通知处理
 
@@ -41,6 +44,8 @@
 @interface SJVideoPlayerPresentView ()
 
 @property (nonatomic, strong, readwrite) AVPlayer *player;
+
+@property (nonatomic, strong, readwrite) AVAsset *asset;
 
 @property (nonatomic, weak, readwrite) UIView *superv;
 
@@ -75,9 +80,13 @@
     [self _SJVideoPlayerPresentViewRemoveNotifications];
 }
 
-- (void)setPlayer:(AVPlayer *)player superv:(UIView *)superv {
+- (void)setPlayer:(AVPlayer *)player asset:(AVAsset *)asset superv:(UIView *)superv {
     _player = player;
+    _asset = asset;
     [(AVPlayerLayer *)self.layer setPlayer:player];
+    [UIView animateWithDuration:0.25 animations:^{
+        self.placeholderImageView.alpha = 1;
+    }];
     self.superv = superv;
 }
 
@@ -94,8 +103,14 @@
 
 - (void)sjReset {
     _player = nil;
+    _asset = nil;
     _superv = nil;
     [self _removeDeviceOrientationChangeObserver];
+}
+
+- (UIImage *)screenShot {
+    CMTime time = _player.currentItem.currentTime;
+    return [UIImage imageWithCGImage:[[AVAssetImageGenerator assetImageGeneratorWithAsset:_asset] copyCGImageAtTime:time actualTime:&time error:nil]];
 }
 
 @end
@@ -118,18 +133,11 @@
 // MARK: 通知安装
 
 - (void)_SJVideoPlayerPresentViewInstallNotifications {
-    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(playerPrepareToPlayNotification) name:SJPlayerPrepareToPlayNotification object:nil];
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(playerBeginPlayingNotification) name:SJPlayerBeginPlayingNotification object:nil];
 }
 
 - (void)_SJVideoPlayerPresentViewRemoveNotifications {
     [self _removeDeviceOrientationChangeObserver];
-}
-
-- (void)playerPrepareToPlayNotification {
-    [UIView animateWithDuration:0.25 animations:^{
-        self.placeholderImageView.alpha = 1;
-    }];
 }
 
 - (void)playerBeginPlayingNotification {

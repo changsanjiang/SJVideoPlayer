@@ -16,9 +16,13 @@
 
 @interface VideoPlayerViewController ()
 
+@property (nonatomic, assign, readwrite) NSTimeInterval currentTime;
+
 @end
 
 @implementation VideoPlayerViewController
+
+// MARK: 生命周期
 
 - (void)viewDidLoad {
     [super viewDidLoad];
@@ -74,6 +78,19 @@
         [self.navigationController popViewControllerAnimated:YES];
     };
     // Do any additional setup after loading the view.
+}
+
+- (void)viewDidAppear:(BOOL)animated {
+    [super viewDidAppear:animated];
+    [[SJVideoPlayer sharedPlayer] jumpedToTime:self.currentTime completionHandler:^(BOOL finished) {
+        [[SJVideoPlayer sharedPlayer] play];
+    }];
+}
+
+- (void)viewWillDisappear:(BOOL)animated {
+    [super viewWillDisappear:animated];
+    self.currentTime = [SJVideoPlayer sharedPlayer].currentTime;
+    [[SJVideoPlayer sharedPlayer] pause];
 }
 
 - (void)dealloc {

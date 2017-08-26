@@ -32,6 +32,10 @@
 
 @property (nonatomic, strong, readwrite) NSArray<SJVideoPlayerMoreSetting *> *moreSettings;
 
+- (void)play;
+
+- (void)pause;
+
 - (void)sjReset;
 
 - (void)jumpedToTime:(NSTimeInterval)time completionHandler:(void (^)(BOOL finished))completionHandler;

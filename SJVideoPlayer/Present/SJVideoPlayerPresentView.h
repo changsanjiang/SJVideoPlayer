@@ -8,17 +8,19 @@
 
 #import <UIKit/UIKit.h>
 
-@class AVPlayer;
+@class AVPlayer, AVAsset;
 
 @interface SJVideoPlayerPresentView : UIView
 
-- (void)setPlayer:(AVPlayer *)player superv:(UIView *)superv;
+- (void)setPlayer:(AVPlayer *)player asset:(AVAsset *)asset superv:(UIView *)superv;
 
 @property (nonatomic, strong, readwrite) UIImage *placeholderImage;
 
 @property (nonatomic, copy, readwrite) void(^back)();
 
 - (void)sjReset;
+
+- (UIImage *)screenShot;
 
 @end
 

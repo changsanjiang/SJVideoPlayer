@@ -143,9 +143,9 @@
     
     // control
     [_control setAsset:_asset playerItem:_playerItem player:_player];
-
+    
     // present
-    [_presentView setPlayer:_player superv:_containerView];
+    [_presentView setPlayer:_player asset:_asset superv:_containerView];
     
     _control.delegate = _presentView;
 }
@@ -203,6 +203,18 @@
 
 @implementation SJVideoPlayer (Operation)
 
+- (NSTimeInterval)currentTime {
+    return CMTimeGetSeconds(_playerItem.currentTime);
+}
+
+- (void)play {
+    [_control play];
+}
+
+- (void)pause {
+    [_control pause];
+}
+
 - (void)jumpedToTime:(NSTimeInterval)time completionHandler:(void (^)(BOOL finished))completionHandler {
     [_control jumpedToTime:time completionHandler:completionHandler];
 }
@@ -210,6 +222,10 @@
 - (void)stop {
     [_presentView sjReset];
     [_control sjReset];
+}
+
+- (UIImage *)screenShot {
+    return [_presentView screenShot];
 }
 
 @end

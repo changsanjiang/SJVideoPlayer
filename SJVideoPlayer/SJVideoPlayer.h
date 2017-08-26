@@ -32,7 +32,6 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic, strong, readwrite) UIImage *placeholder;
 @property (nonatomic, strong, readwrite) NSArray<SJVideoPlayerMoreSetting *> *moreSettings;
 
-
 /*!
  *  Error
  */
@@ -45,9 +44,17 @@ NS_ASSUME_NONNULL_BEGIN
 
 @interface SJVideoPlayer (Operation)
 
-- (void)jumpedToTime:(NSTimeInterval)time completionHandler:(void (^)(BOOL finished))completionHandler;
+- (NSTimeInterval)currentTime;
+
+- (void)pause;
+
+- (void)play;
+
+- (void)jumpedToTime:(NSTimeInterval)time completionHandler:(void (^ __nullable)(BOOL finished))completionHandler;
 
 - (void)stop;
+
+- (UIImage *)screenShot;
 
 @end
 

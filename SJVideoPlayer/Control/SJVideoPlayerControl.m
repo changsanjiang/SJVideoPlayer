@@ -367,6 +367,14 @@ static const NSString *SJPlayerItemStatusContext;
     }];
 }
 
+- (void)play {
+    [self clickedPlay];
+}
+
+- (void)pause {
+    [self clickedPause];
+}
+
 - (void)sjReset {
     NSLog(@"reset Player");
     
@@ -721,6 +729,7 @@ static UIView *target = nil;
             [self clickedFull];
             break;
         case SJVideoPlayControlViewTag_Preview: {
+            _controlView.hiddenControl = NO;
             _controlView.hiddenPreview = !_controlView.hiddenPreview;
         }
             break;

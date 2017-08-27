@@ -58,6 +58,12 @@ typedef NS_ENUM(NSUInteger, SJVideoPlaySliderTag) {
 @property (nonatomic, strong, readonly) SJSlider *sliderControl;
 @property (nonatomic, strong, readonly) UILabel *draggingTimeLabel;
 @property (nonatomic, strong, readonly) SJSlider *draggingProgressView;
+
+
+/// 1 level more settings
+@property (nonatomic, strong, readwrite) NSArray<SJVideoPlayerMoreSetting *> *moreSettings;
+
+/// 2 level more settings
 @property (nonatomic, strong, readwrite) SJVideoPlayerMoreSetting *twoLevelSettings;
 
 @end

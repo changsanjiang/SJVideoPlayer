@@ -1063,6 +1063,8 @@ static UIView *target = nil;
             };
         }
     }];
+    
+    self.controlView.moreSettings = moreSettings;
 }
 
 @end

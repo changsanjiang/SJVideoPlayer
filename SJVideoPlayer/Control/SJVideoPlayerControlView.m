@@ -296,6 +296,11 @@ static NSString *const SJVideoPlayPreviewColCellID = @"SJVideoPlayPreviewColCell
 
 // MARK: Setter
 
+- (void)setMoreSettings:(NSArray<SJVideoPlayerMoreSetting *> *)moreSettings {
+    _moreSettings = moreSettings;
+    self.moreSettingsView.moreSettings = moreSettings;
+}
+
 - (void)setTwoLevelSettings:(SJVideoPlayerMoreSettingTwoSetting *)twoLevelSettings {
     _twoLevelSettings = twoLevelSettings;
     self.moreSettingsTwoLevelView.twoLevelSettings = twoLevelSettings;
@@ -1156,6 +1161,11 @@ static NSString *const SJVideoPlayerMoreSettingsFooterViewID = @"SJVideoPlayerMo
     [self _SJVideoPlayerMoreSettingsViewRemoveNotifications];
 }
 
+- (void)setMoreSettings:(NSArray<SJVideoPlayerMoreSetting *> *)moreSettings {
+    _moreSettings = moreSettings;
+    [self.colView reloadData];
+}
+
 - (void)setFooterView:(SJVideoPlayerMoreSettingsFooterView *)footerView {
     _footerView = footerView;
     [self.exeBlocks enumerateObjectsWithOptions:NSEnumerationReverse usingBlock:^(void (^ _Nonnull obj)(SJSlider *, SJSlider *, SJSlider *), NSUInteger idx, BOOL * _Nonnull stop) {
@@ -1308,7 +1318,6 @@ static NSString *const SJVideoPlayerMoreSettingsFooterViewID = @"SJVideoPlayerMo
 
 - (void)_SJVideoPlayerMoreSettingsViewInstallNotifications {
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(settingsPlayerNotification:) name:SJSettingsPlayerNotification object:nil];
-    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(moreSettingsNotification:) name:SJMoreSettingsNotification object:nil];
 }
 
 - (void)_SJVideoPlayerMoreSettingsViewRemoveNotifications {
@@ -1329,12 +1338,6 @@ static NSString *const SJVideoPlayerMoreSettingsFooterViewID = @"SJVideoPlayerMo
             rateSlider.trackImageView.backgroundColor = settings.trackColor;
         }
     }];
-}
-
-- (void)moreSettingsNotification:(NSNotification *)notifi {
-    NSArray<SJVideoPlayerMoreSetting *> *moreSettings = notifi.object;
-    self.moreSettings = moreSettings;
-    [self.colView reloadData];
 }
 
 @end

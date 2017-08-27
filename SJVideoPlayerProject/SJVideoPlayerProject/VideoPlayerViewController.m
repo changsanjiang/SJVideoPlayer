@@ -75,7 +75,7 @@
     
 
     
-// MARK: 1级 More Settings
+// MARK: 1 Level More Settings
 
     SJVideoPlayerMoreSetting.titleFontSize = 12;
 
@@ -93,27 +93,28 @@
         NSLog(@"clicked %@", model.title);
         [[SJVideoPlayer sharedPlayer] showTitle:model.title];
     }];
-    
-    SJVideoPlayerMoreSetting *model3 = [[SJVideoPlayerMoreSetting alloc] initWithTitle:@"分享" image:[UIImage imageNamed:@"db_audio_play_share_n"] clickedExeBlock:^(SJVideoPlayerMoreSetting * _Nonnull model) {
-        NSLog(@"clicked %@", model.title);
-        [[SJVideoPlayer sharedPlayer] showTitle:model.title];
-    }];
-    
-    
 
     
-    // MARK: 2级 More Settings
+// MARK: 2 Level More Settings
     
-    SJVideoPlayerMoreSettingTwoSetting *twoSetting = [[SJVideoPlayerMoreSettingTwoSetting alloc] initWithTitle:@"二级Item" image:[UIImage imageNamed:@"db_audio_play_share_n"] clickedExeBlock:^(SJVideoPlayerMoreSetting * _Nonnull model) {
+    SJVideoPlayerMoreSettingTwoSetting *twoSetting0 = [[SJVideoPlayerMoreSettingTwoSetting alloc] initWithTitle:@"QQ" image:[UIImage imageNamed:@"db_login_qq"] clickedExeBlock:^(SJVideoPlayerMoreSetting * _Nonnull model) {
         [[SJVideoPlayer sharedPlayer] showTitle:model.title];
     }];
     
-    SJVideoPlayerMoreSetting *model4 =
-    [[SJVideoPlayerMoreSetting alloc] initWithTitle:@"测试"
+    SJVideoPlayerMoreSettingTwoSetting *twoSetting1 = [[SJVideoPlayerMoreSettingTwoSetting alloc] initWithTitle:@"微博" image:[UIImage imageNamed:@"db_login_weibo"] clickedExeBlock:^(SJVideoPlayerMoreSetting * _Nonnull model) {
+        [[SJVideoPlayer sharedPlayer] showTitle:model.title];
+    }];
+    
+    SJVideoPlayerMoreSettingTwoSetting *twoSetting2 = [[SJVideoPlayerMoreSettingTwoSetting alloc] initWithTitle:@"微信" image:[UIImage imageNamed:@"db_login_weixin"] clickedExeBlock:^(SJVideoPlayerMoreSetting * _Nonnull model) {
+        [[SJVideoPlayer sharedPlayer] showTitle:model.title];
+    }];
+    
+    SJVideoPlayerMoreSetting *model3 =
+    [[SJVideoPlayerMoreSetting alloc] initWithTitle:@"分享"
                                               image:[UIImage imageNamed:@"db_audio_play_share_n"]
                                      showTowSetting:YES
-                                    twoSettingTitle:@"二级界面"
-                                    twoSettingItems:@[twoSetting]  // 2级 Settings
+                                    twoSettingTitle:@"分享到"
+                                    twoSettingItems:@[twoSetting0, twoSetting1, twoSetting2]  // 2级 Settings
                                     clickedExeBlock:^(SJVideoPlayerMoreSetting * _Nonnull model) {}];
     
     [player moreSettings:^(NSMutableArray<SJVideoPlayerMoreSetting *> * _Nonnull moreSettings) {
@@ -121,7 +122,6 @@
         [moreSettings addObject:model1];
         [moreSettings addObject:model2];
         [moreSettings addObject:model3];
-        [moreSettings addObject:model4];
     }];
         
     

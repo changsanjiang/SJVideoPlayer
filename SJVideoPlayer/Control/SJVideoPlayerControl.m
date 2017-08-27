@@ -828,7 +828,7 @@ static UIView *target = nil;
     if ( self.playerItem.status != AVPlayerStatusReadyToPlay ) return;
     CMTime sub = CMTimeSubtract(_playerItem.currentTime, time);
     // 小于1秒 不给跳.
-    if ( labs(sub.value / sub.timescale) < 1 ) return;
+    if ( labs(sub.value / sub.timescale) < 1 ) {if ( completionHandler ) completionHandler(YES); return;}
     [self.player seekToTime:time completionHandler:^(BOOL finished) {
         if ( completionHandler ) completionHandler(finished);
     }];

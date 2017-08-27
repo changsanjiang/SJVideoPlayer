@@ -64,7 +64,12 @@ static const NSString *SJPlayerItemStatusContext;
 
 @property (nonatomic, assign, readwrite) BOOL isHiddenControl;
 
+/*!
+ *  player play status
+ */
 @property (nonatomic, assign, readwrite) BOOL isPlaying;
+
+@property (nonatomic, assign, readwrite) BOOL isPlayEnded;
 
 @end
 
@@ -451,6 +456,7 @@ static const NSString *SJPlayerItemStatusContext;
                   self.controlView.hiddenReplayBtn = NO;
               }];
         [self clickedPause];
+        self.backstageRegistrar.isPlayEnded = YES;
         [[NSNotificationCenter defaultCenter] postNotificationName:SJPlayerDidPlayToEndTimeNotification object:nil];
     };
     
@@ -565,12 +571,12 @@ static const NSString *SJPlayerItemStatusContext;
 }
 
 - (void)handleDoubleTap:(UITapGestureRecognizer *)tap {
-    NSLog(@"double tap");
     if ( self.lastPlaybackRate > 0.f ) {
         [self controlView:_controlView clickedBtnTag:SJVideoPlayControlViewTag_Pause];
         _controlView.hiddenControl = NO;
     }
     else {
+        if ( self.backstageRegistrar.isPlayEnded ) [self play];
         [self controlView:_controlView clickedBtnTag:SJVideoPlayControlViewTag_Play];
         _controlView.hiddenControl = YES;
     }
@@ -756,8 +762,9 @@ static UIView *target = nil;
 - (void)clickedPlay {
     if ( self.backstageRegistrar.isPlaying ) return;
     if ( 0 != self.player.rate ) return;
-    if ( 1 >= CMTimeGetSeconds(_playerItem.currentTime) ) {
+    if ( 1 >= CMTimeGetSeconds(_playerItem.currentTime) || self.backstageRegistrar.isPlayEnded ) {
         [[NSNotificationCenter defaultCenter] postNotificationName:SJPlayerBeginPlayingNotification object:nil];
+        self.backstageRegistrar.isPlayEnded = NO;
     }
     [self.player play];
     self.controlView.hiddenReplayBtn = YES;

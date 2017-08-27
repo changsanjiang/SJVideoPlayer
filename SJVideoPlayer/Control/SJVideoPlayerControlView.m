@@ -492,8 +492,16 @@ static NSString *const SJVideoPlayerMoreSettingTwoLevelSettingsHeaderViewID = @"
     self = [super initWithFrame:frame];
     if ( !self ) return nil;
     [self _SJVideoPlayerMoreSettingTwoLevelSettingsViewSetupUI];
+    [self addPanGR];
     return self;
+} 
+
+- (void)addPanGR {
+    UIPanGestureRecognizer *pan = [[UIPanGestureRecognizer alloc] initWithTarget:self action:@selector(handlePanGR:)];
+    [self addGestureRecognizer:pan];
 }
+
+- (void)handlePanGR:(UIPanGestureRecognizer *)pan {}
 
 - (void)setTwoLevelSettings:(SJVideoPlayerMoreSetting *)twoLevelSettings {
     _twoLevelSettings = twoLevelSettings;

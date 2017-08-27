@@ -636,8 +636,6 @@ static NSString *const SJVideoPlayPreviewColCellID = @"SJVideoPlayPreviewColCell
     if ( settings.backBtnImage ) [self.backBtn setImage:settings.backBtnImage forState:UIControlStateNormal];
     if ( settings.playBtnImage ) [self.playBtn setImage:settings.playBtnImage forState:UIControlStateNormal];
     if ( settings.pauseBtnImage ) [self.pauseBtn setImage:settings.pauseBtnImage forState:UIControlStateNormal];
-    if ( settings.replayBtnImage ) [self.replayBtn setImage:settings.replayBtnImage forState:UIControlStateNormal];
-    if ( settings.replayBtnTitle ) [self.replayBtn setTitle:settings.replayBtnTitle forState:UIControlStateNormal];
     if ( settings.fullBtnImage ) [self.fullBtn setImage:settings.fullBtnImage forState:UIControlStateNormal];
     if ( settings.previewBtnImage ) [self.previewBtn setImage:settings.previewBtnImage forState:UIControlStateNormal];
     if ( settings.moreBtnImage ) [self.moreBtn setImage:settings.moreBtnImage forState:UIControlStateNormal];
@@ -646,12 +644,25 @@ static NSString *const SJVideoPlayPreviewColCellID = @"SJVideoPlayPreviewColCell
     if ( settings.traceColor ) {
         self.sliderControl.traceImageView.backgroundColor = settings.traceColor;
         self.draggingProgressView.traceImageView.backgroundColor = settings.traceColor;
+        self.bottomProgressView.traceImageView.backgroundColor = settings.traceColor;
     }
     if ( settings.trackColor ) {
         self.sliderControl.trackImageView.backgroundColor = settings.trackColor;
         self.draggingProgressView.trackImageView.backgroundColor = settings.trackColor;
+        self.bottomProgressView.trackImageView.backgroundColor = settings.trackColor;
     }
     if ( settings.bufferColor ) self.sliderControl.bufferProgressColor = settings.bufferColor;
+    
+    if ( settings.replayBtnImage && 0 == settings.replayBtnTitle.length ) {
+        [self.replayBtn setImage:settings.replayBtnImage forState:UIControlStateNormal];
+    }
+    if ( settings.replayBtnTitle && nil == settings.replayBtnImage ) {
+        [self.replayBtn setTitle:settings.replayBtnTitle forState:UIControlStateNormal];
+    }
+    if ( settings.replayBtnTitle && settings.replayBtnImage ) {
+        NSAttributedString *attr = [NSAttributedString mh_imageTextWithImage:settings.replayBtnImage imageW:settings.replayBtnImage.size.width imageH:settings.replayBtnImage.size.height title:settings.replayBtnTitle fontSize:16 titleColor:[UIColor whiteColor] spacing:6];
+        [self.replayBtn setAttributedTitle:attr forState:UIControlStateNormal];
+    }
 }
 
 @end

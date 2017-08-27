@@ -49,6 +49,24 @@
     
 //    player.assetURL = [NSURL URLWithString:@"http://vod.lanwuzhe.com/9da7002189d34b60bbf82ac743241a61/d0539e7be21a4f8faa9fef69a67bc1fb-5287d2089db37e62345123a1be272f8b.mp4?video="];
     
+
+// MARK: Setting Player
+    
+    [player playerSettings:^(SJVideoPlayerSettings * _Nonnull settings) {
+        settings.traceColor = [UIColor colorWithRed:1.0 * (arc4random() % 256 / 255.0)
+                                              green:1.0 * (arc4random() % 256 / 255.0)
+                                               blue:1.0 * (arc4random() % 256 / 255.0)
+                                              alpha:1];
+        settings.trackColor = [UIColor colorWithRed:1.0 * (arc4random() % 256 / 255.0)
+                                              green:1.0 * (arc4random() % 256 / 255.0)
+                                               blue:1.0 * (arc4random() % 256 / 255.0)
+                                              alpha:1];
+        settings.bufferColor = [UIColor colorWithRed:1.0 * (arc4random() % 256 / 255.0)
+                                               green:1.0 * (arc4random() % 256 / 255.0)
+                                                blue:1.0 * (arc4random() % 256 / 255.0)
+                                               alpha:1];
+    }];
+    
     
     
 // MARK: Loading Placeholder
@@ -92,24 +110,6 @@
         if ( !self ) return;
         [self.navigationController popViewControllerAnimated:YES];
     };
-    
-    
-// MARK: Setting Player
-
-    [player playerSettings:^(SJVideoPlayerSettings * _Nonnull settings) {
-        settings.traceColor = [UIColor colorWithRed:1.0 * (arc4random() % 256 / 255.0)
-                                              green:1.0 * (arc4random() % 256 / 255.0)
-                                               blue:1.0 * (arc4random() % 256 / 255.0)
-                                              alpha:1];
-        settings.trackColor = [UIColor colorWithRed:1.0 * (arc4random() % 256 / 255.0)
-                                              green:1.0 * (arc4random() % 256 / 255.0)
-                                               blue:1.0 * (arc4random() % 256 / 255.0)
-                                              alpha:1];
-        settings.bufferColor = [UIColor colorWithRed:1.0 * (arc4random() % 256 / 255.0)
-                                               green:1.0 * (arc4random() % 256 / 255.0)
-                                                blue:1.0 * (arc4random() % 256 / 255.0)
-                                               alpha:1];
-    }];
     
     
     // Do any additional setup after loading the view.

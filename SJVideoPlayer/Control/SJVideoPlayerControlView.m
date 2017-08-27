@@ -405,7 +405,7 @@ static NSString *const SJVideoPlayerMoreSettingsFooterViewID = @"SJVideoPlayerMo
     _rateSlider = [self slider];
     _rateSlider.tag = SJVideoPlaySliderTag_Rate;
     _rateSlider.minValue = 0.5;
-    _rateSlider.maxValue = 1.5;
+    _rateSlider.maxValue = 2;
     _rateSlider.value = 1.0;
     return _rateSlider;
 }

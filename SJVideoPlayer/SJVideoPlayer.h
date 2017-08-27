@@ -124,9 +124,11 @@ NS_ASSUME_NONNULL_BEGIN
 
 // MARK: More Settings Model
 
+@class SJVideoPlayerMoreSettingTwoSetting;
+
 @interface SJVideoPlayerMoreSetting : NSObject
 
-// MARK: ...
+// MARK: ... Class methods
 
 /*!
  *  SJVideoPlayerMoreSetting.titleColor = [UIColor whiteColor];
@@ -143,16 +145,34 @@ NS_ASSUME_NONNULL_BEGIN
 @property (class, nonatomic, assign) double titleFontSize;
 
 
-// MARK: ...
+// MARK: ... Instance Methods.   show 1 level interface
 
 @property (nonatomic, strong, nullable) NSString *title;
 @property (nonatomic, strong, nullable) UIImage *image;
 @property (nonatomic, copy) void(^clickedExeBlock)(SJVideoPlayerMoreSetting *model);
 
-- (instancetype)initWithTitle:(NSString *)title image:(UIImage *)image clickedExeBlock:(void(^)(SJVideoPlayerMoreSetting *model))block;
+- (instancetype)initWithTitle:(NSString *)title
+                        image:(UIImage *)image
+              clickedExeBlock:(void(^)(SJVideoPlayerMoreSetting *model))block;
+
+
+// MARK: ... Instance Methods.   show 2 level interface
+
+@property (nonatomic, assign, getter=isShowTowSetting) BOOL showTowSetting;
+@property (nonatomic, strong) NSString *twoSettingTitle;
+@property (nonatomic, strong) NSArray<SJVideoPlayerMoreSettingTwoSetting *> *twoSettingItems;
+
+- (instancetype)initWithTitle:(NSString *)title
+                        image:(UIImage *)image
+               showTowSetting:(BOOL)showTowSetting                                      // show
+              twoSettingTitle:(NSString *)twoSettingTitle                               // title
+              twoSettingItems:(NSArray<SJVideoPlayerMoreSettingTwoSetting *> *)items    // items
+              clickedExeBlock:(void(^)(SJVideoPlayerMoreSetting *model))block;
 
 @end
 
+
+@interface SJVideoPlayerMoreSettingTwoSetting : SJVideoPlayerMoreSetting @end
 
 
 NS_ASSUME_NONNULL_END

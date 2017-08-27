@@ -317,14 +317,23 @@
     objc_setAssociatedObject(self, @selector(titleFontSize), @(titleFontSize), OBJC_ASSOCIATION_RETAIN_NONATOMIC);
 }
 
-- (instancetype)initWithTitle:(NSString *)title image:(UIImage *)image clickedExeBlock:(void(^)(SJVideoPlayerMoreSetting *model))block; {
+- (instancetype)initWithTitle:(NSString *)title image:(UIImage *)image clickedExeBlock:(void(^)(SJVideoPlayerMoreSetting *model))block {
+    return [self initWithTitle:title image:image showTowSetting:NO twoSettingTitle:@"" twoSettingItems:@[] clickedExeBlock:block];
+}
+
+- (instancetype)initWithTitle:(NSString *)title image:(UIImage *)image showTowSetting:(BOOL)showTowSetting twoSettingTitle:(NSString *)twoSettingTitle twoSettingItems:(NSArray<SJVideoPlayerMoreSettingTwoSetting *> *)items clickedExeBlock:(void(^)(SJVideoPlayerMoreSetting *model))block {
     self = [super init];
     if ( !self ) return self;
     self.title = title;
     self.image = image;
+    self.twoSettingTitle = twoSettingTitle;
+    self.showTowSetting = showTowSetting;
+    self.twoSettingItems = items;
     self.clickedExeBlock = block;
     return self;
 }
 
-
 @end
+
+
+@implementation SJVideoPlayerMoreSettingTwoSetting @end

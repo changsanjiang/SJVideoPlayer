@@ -75,7 +75,7 @@
     
 
     
-// MARK: More Settings
+// MARK: 1级 More Settings
 
     SJVideoPlayerMoreSetting.titleFontSize = 12;
 
@@ -99,11 +99,29 @@
         [[SJVideoPlayer sharedPlayer] showTitle:model.title];
     }];
     
+    
+
+    
+    // MARK: 2级 More Settings
+    
+    SJVideoPlayerMoreSettingTwoSetting *twoSetting = [[SJVideoPlayerMoreSettingTwoSetting alloc] initWithTitle:@"测试二级" image:[UIImage imageNamed:@"db_audio_play_share_n"] clickedExeBlock:^(SJVideoPlayerMoreSetting * _Nonnull model) {
+        [[SJVideoPlayer sharedPlayer] showTitle:model.title];
+    }];
+    
+    SJVideoPlayerMoreSetting *model4 =
+    [[SJVideoPlayerMoreSetting alloc] initWithTitle:@"测试"
+                                              image:[UIImage imageNamed:@"db_audio_play_share_n"]
+                                     showTowSetting:YES
+                                    twoSettingTitle:@"二级界面"
+                                    twoSettingItems:@[twoSetting]  // 2级 Settings
+                                    clickedExeBlock:^(SJVideoPlayerMoreSetting * _Nonnull model) {}];
+    
     [player moreSettings:^(NSMutableArray<SJVideoPlayerMoreSetting *> * _Nonnull moreSettings) {
         [moreSettings addObject:model0];
         [moreSettings addObject:model1];
         [moreSettings addObject:model2];
         [moreSettings addObject:model3];
+        [moreSettings addObject:model4];
     }];
         
     

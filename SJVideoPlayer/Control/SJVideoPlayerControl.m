@@ -568,6 +568,10 @@ static const NSString *SJPlayerItemStatusContext;
         _controlView.hiddenMoreSettingsView = YES;
         return;
     }
+    if ( !_controlView.hiddenMoreSettingsTwoLevelView ) {
+        _controlView.hiddenMoreSettingsTwoLevelView = YES;
+        return;
+    }
     _controlView.hiddenControl = !_controlView.hiddenControl;
 }
 
@@ -1039,6 +1043,18 @@ static UIView *target = nil;
     [moreSettings enumerateObjectsUsingBlock:^(SJVideoPlayerMoreSetting * _Nonnull obj, NSUInteger idx, BOOL * _Nonnull stop) {
         if ( obj.clickedExeBlock ) {
             void(^clickedExeBlock)(SJVideoPlayerMoreSetting *model) = [obj.clickedExeBlock copy];
+
+            if ( obj.isShowTowSetting ) {
+                obj.clickedExeBlock = ^(SJVideoPlayerMoreSetting * _Nonnull model) {
+                    clickedExeBlock(model);
+                    __strong typeof(_self) self = _self;
+                    if ( !self ) return;
+                    self.controlView.twoLevelSettings = model;
+                    self.controlView.hiddenMoreSettingsTwoLevelView = NO;
+                };
+                return;
+            }
+            
             obj.clickedExeBlock = ^(SJVideoPlayerMoreSetting * _Nonnull model) {
                 clickedExeBlock(model);
                 __strong typeof(_self) self = _self;

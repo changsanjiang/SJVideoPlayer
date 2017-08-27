@@ -17,7 +17,7 @@ NS_ASSUME_NONNULL_BEGIN
 #define SJContainerH    (49)
 
 
-@class SJSlider;
+@class SJSlider, SJVideoPlayerMoreSetting;
 
 typedef NS_ENUM(NSUInteger, SJVideoPlayControlViewTag) {
     SJVideoPlayControlViewTag_Back,
@@ -58,6 +58,7 @@ typedef NS_ENUM(NSUInteger, SJVideoPlaySliderTag) {
 @property (nonatomic, strong, readonly) SJSlider *sliderControl;
 @property (nonatomic, strong, readonly) UILabel *draggingTimeLabel;
 @property (nonatomic, strong, readonly) SJSlider *draggingProgressView;
+@property (nonatomic, strong, readwrite) SJVideoPlayerMoreSetting *twoLevelSettings;
 
 @end
 
@@ -133,10 +134,14 @@ typedef NS_ENUM(NSUInteger, SJVideoPlaySliderTag) {
 @property (nonatomic, assign, readwrite) BOOL hiddenMoreSettingsView;
 
 /*!
+ *  default is YES
+ */
+@property (nonatomic, assign, readwrite) BOOL hiddenMoreSettingsTwoLevelView;
+
+/*!
  *  default is NO
  */
 @property (nonatomic, assign, readwrite) BOOL hiddenDraggingProgress;
-
 
 @end
 

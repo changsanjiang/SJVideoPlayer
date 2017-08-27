@@ -380,6 +380,7 @@ static const NSString *SJPlayerItemStatusContext;
     if ( rate > 2 ) rate = 2;
     _rate = rate;
     _player.rate = rate;
+    [self clickedPlay];
 }
 
 // MARK: Operations
@@ -761,7 +762,6 @@ static UIView *target = nil;
 
 - (void)clickedPlay {
     if ( self.backstageRegistrar.isPlaying ) return;
-    if ( 0 != self.player.rate ) return;
     if ( 1 >= CMTimeGetSeconds(_playerItem.currentTime) || self.backstageRegistrar.isPlayEnded ) {
         [[NSNotificationCenter defaultCenter] postNotificationName:SJPlayerBeginPlayingNotification object:nil];
         self.backstageRegistrar.isPlayEnded = NO;
@@ -770,6 +770,7 @@ static UIView *target = nil;
     self.controlView.hiddenReplayBtn = YES;
     self.controlView.hiddenPlayBtn = YES;
     self.controlView.hiddenPauseBtn = NO;
+    self.player.rate = self.rate;
     self.lastPlaybackRate = self.player.rate;
     self.backstageRegistrar.isPlaying = YES;
 }

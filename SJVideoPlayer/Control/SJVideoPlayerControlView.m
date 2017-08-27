@@ -34,9 +34,9 @@
 #define SJSCREEN_MIN MIN(SJSCREEN_H,SJSCREEN_W)
 #define SJSCREEN_MAX MAX(SJSCREEN_H,SJSCREEN_W)
 
-
 #define SJMoreSettings_W    ceil(SJSCREEN_MAX * 0.382)
 
+#define SJGetFileWithName(name)    [@"SJVideoPlayer.bundle" stringByAppendingPathComponent:name]
 
 // MARK: Mask View
 
@@ -494,7 +494,7 @@ static NSString *const SJVideoPlayerMoreSettingTwoLevelSettingsHeaderViewID = @"
     [self _SJVideoPlayerMoreSettingTwoLevelSettingsViewSetupUI];
     [self addPanGR];
     return self;
-} 
+}
 
 - (void)addPanGR {
     UIPanGestureRecognizer *pan = [[UIPanGestureRecognizer alloc] initWithTarget:self action:@selector(handlePanGR:)];
@@ -1165,7 +1165,7 @@ static NSString *const SJVideoPlayPreviewColCellID = @"SJVideoPlayPreviewColCell
 
 - (UIButton *)backBtn {
     if ( _backBtn ) return _backBtn;
-    _backBtn = [UIButton buttonWithImageName:@"sj_video_player_back" tag:SJVideoPlayControlViewTag_Back target:self sel:@selector(clickedBtn:)];
+    _backBtn = [UIButton buttonWithImageName:SJGetFileWithName(@"sj_video_player_back") tag:SJVideoPlayControlViewTag_Back target:self sel:@selector(clickedBtn:)];
     return _backBtn;
 }
 
@@ -1187,7 +1187,7 @@ static NSString *const SJVideoPlayPreviewColCellID = @"SJVideoPlayPreviewColCell
 
 - (UIButton *)moreBtn {
     if ( _moreBtn ) return _moreBtn;
-    _moreBtn = [UIButton buttonWithImageName:@"sj_video_player_more" tag:SJVideoPlayControlViewTag_More target:self sel:@selector(clickedBtn:)];
+    _moreBtn = [UIButton buttonWithImageName:SJGetFileWithName(@"sj_video_player_more") tag:SJVideoPlayControlViewTag_More target:self sel:@selector(clickedBtn:)];
     return _moreBtn;
 }
 
@@ -1210,7 +1210,7 @@ static NSString *const SJVideoPlayPreviewColCellID = @"SJVideoPlayPreviewColCell
     _replayBtn = [UIButton buttonWithTitle:@"" backgroundColor:[UIColor clearColor] tag:SJVideoPlayControlViewTag_Replay target:self sel:@selector(clickedBtn:) fontSize:16];
     _replayBtn.titleLabel.numberOfLines = 3;
     _replayBtn.titleLabel.textAlignment = NSTextAlignmentCenter;
-    NSAttributedString *attr = [NSAttributedString mh_imageTextWithImage:[UIImage imageNamed:@"sj_video_player_replay"] imageW:35 imageH:32 title:@"重播" fontSize:16 titleColor:[UIColor whiteColor] spacing:6];
+    NSAttributedString *attr = [NSAttributedString mh_imageTextWithImage:[UIImage imageNamed:SJGetFileWithName(@"sj_video_player_replay")] imageW:35 imageH:32 title:@"重播" fontSize:16 titleColor:[UIColor whiteColor] spacing:6];
     [_replayBtn setAttributedTitle:attr forState:UIControlStateNormal];
     return _replayBtn;
 }
@@ -1224,13 +1224,13 @@ static NSString *const SJVideoPlayPreviewColCellID = @"SJVideoPlayPreviewColCell
 
 - (UIButton *)unlockBtn {
     if ( _unlockBtn ) return _unlockBtn;
-    _unlockBtn = [UIButton buttonWithImageName:@"sj_video_player_unlock" tag:SJVideoPlayControlViewTag_Unlock target:self sel:@selector(clickedBtn:)];
+    _unlockBtn = [UIButton buttonWithImageName:SJGetFileWithName(@"sj_video_player_unlock") tag:SJVideoPlayControlViewTag_Unlock target:self sel:@selector(clickedBtn:)];
     return _unlockBtn;
 }
 
 - (UIButton *)lockBtn {
     if ( _lockBtn ) return _lockBtn;
-    _lockBtn = [UIButton buttonWithImageName:@"sj_video_player_lock" tag:SJVideoPlayControlViewTag_Lock target:self sel:@selector(clickedBtn:)];
+    _lockBtn = [UIButton buttonWithImageName:SJGetFileWithName(@"sj_video_player_lock") tag:SJVideoPlayControlViewTag_Lock target:self sel:@selector(clickedBtn:)];
     return _lockBtn;
 }
 
@@ -1244,19 +1244,19 @@ static NSString *const SJVideoPlayPreviewColCellID = @"SJVideoPlayPreviewColCell
 
 - (UIButton *)playBtn {
     if ( _playBtn ) return _playBtn;
-    _playBtn = [UIButton buttonWithImageName:@"sj_video_player_play" tag:SJVideoPlayControlViewTag_Play target:self sel:@selector(clickedBtn:)];
+    _playBtn = [UIButton buttonWithImageName:SJGetFileWithName(@"sj_video_player_play") tag:SJVideoPlayControlViewTag_Play target:self sel:@selector(clickedBtn:)];
     return _playBtn;
 }
 
 - (UIButton *)pauseBtn {
     if ( _pauseBtn ) return _pauseBtn;
-    _pauseBtn = [UIButton buttonWithImageName:@"sj_video_player_pause" tag:SJVideoPlayControlViewTag_Pause target:self sel:@selector(clickedBtn:)];
+    _pauseBtn = [UIButton buttonWithImageName:SJGetFileWithName(@"sj_video_player_pause") tag:SJVideoPlayControlViewTag_Pause target:self sel:@selector(clickedBtn:)];
     return _pauseBtn;
 }
 
 - (UIButton *)fullBtn {
     if ( _fullBtn ) return _fullBtn;
-    _fullBtn = [UIButton buttonWithImageName:@"sj_video_player_fullscreen" tag:SJVideoPlayControlViewTag_Full target:self sel:@selector(clickedBtn:)];
+    _fullBtn = [UIButton buttonWithImageName:SJGetFileWithName(@"sj_video_player_fullscreen") tag:SJVideoPlayControlViewTag_Full target:self sel:@selector(clickedBtn:)];
     return _fullBtn;
 }
 
@@ -1371,7 +1371,7 @@ static NSString *const SJVideoPlayPreviewColCellID = @"SJVideoPlayPreviewColCell
     if ( settings.bufferColor ) self.sliderControl.bufferProgressColor = settings.bufferColor;
     
     if ( settings.replayBtnTitle || settings.replayBtnImage ) {
-        UIImage *image = settings.replayBtnImage ? settings.replayBtnImage : [UIImage imageNamed:@"sj_video_player_replay"];
+        UIImage *image = settings.replayBtnImage ? settings.replayBtnImage : [UIImage imageNamed:SJGetFileWithName(@"sj_video_player_replay")];
         NSString *title = settings.replayBtnTitle ? settings.replayBtnTitle : @"重播";
         float fontSize = 0 != settings.replayBtnFontSize ? settings.replayBtnFontSize : 16;
         NSAttributedString *attr = [NSAttributedString mh_imageTextWithImage:image imageW:image.size.width imageH:image.size.height title:title fontSize:fontSize titleColor:[UIColor whiteColor] spacing:6];

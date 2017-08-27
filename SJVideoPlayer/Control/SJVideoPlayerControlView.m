@@ -65,31 +65,594 @@ typedef NS_ENUM(NSUInteger, SJMaskStyle) {
 
 
 @interface SJVideoPlayerMoreSettingsView : UIView
-
 @property (nonatomic, strong, readonly) SJVideoPlayerMoreSettingsFooterView *footerView;
 @property (nonatomic, strong, readwrite) NSArray<SJVideoPlayerMoreSetting *> *moreSettings;
-
 @end
-
 
 @interface SJVideoPlayerMoreSettingsView (DBNotifications)
-
 - (void)_SJVideoPlayerMoreSettingsViewInstallNotifications;
-
 - (void)_SJVideoPlayerMoreSettingsViewRemoveNotifications;
+@end
+
+
+@interface SJVideoPlayerMoreSettingsColCell : UICollectionViewCell
+@property (nonatomic, strong) SJVideoPlayerMoreSetting *model;
+@end
+
+
+@interface SJVideoPlayerMoreSettingsView (UICollectionViewDataSourceMethods)<UICollectionViewDataSource>
+@end
+
+
+@interface SJVideoPlayerMoreSettingsFooterView : UICollectionReusableView
+@property (nonatomic, strong, readonly) SJSlider *volumeSlider;
+@property (nonatomic, strong, readonly) SJSlider *brightnessSlider;
+@property (nonatomic, strong, readonly) SJSlider *rateSlider;
+@end
+
+static NSString *const SJVideoPlayerMoreSettingsColCellID = @"SJVideoPlayerMoreSettingsColCell";
+
+static NSString *const SJVideoPlayerMoreSettingsFooterViewID = @"SJVideoPlayerMoreSettingsFooterView";
+
+
+@interface SJVideoPlayerMoreSettingsView ()
+@property (nonatomic, strong, readonly) UICollectionView *colView;
+- (void)getMoreSettingsSlider:(void(^)(SJSlider *volumeSlider, SJSlider *brightnessSlider, SJSlider *rateSlider))block;
+@property (nonatomic, copy, readwrite) void(^getFooterCallBlock)(SJSlider *volumeSlider, SJSlider *brightnessSlider, SJSlider *rateSlider);
+@property (nonatomic, strong, readonly) NSMutableArray<void(^)(SJSlider *volumeSlider, SJSlider *brightnessSlider, SJSlider *rateSlider)> *exeBlocks;
+@end
+
+@implementation SJVideoPlayerMoreSettingsView
+
+@synthesize footerView = _footerView;
+@synthesize colView = _colView;
+@synthesize exeBlocks = _exeBlocks;
+
+- (instancetype)initWithFrame:(CGRect)frame {
+    self = [super initWithFrame:frame];
+    if ( !self ) return nil;
+    [self _SJVideoPlayerMoreSettingsViewSetupUI];
+    [self _SJVideoPlayerMoreSettingsViewInstallNotifications];
+    [self addPanGR];
+    return self;
+}
+
+- (void)dealloc {
+    [self _SJVideoPlayerMoreSettingsViewRemoveNotifications];
+}
+
+- (void)setMoreSettings:(NSArray<SJVideoPlayerMoreSetting *> *)moreSettings {
+    _moreSettings = moreSettings;
+    [self.colView reloadData];
+}
+
+- (void)setFooterView:(SJVideoPlayerMoreSettingsFooterView *)footerView {
+    _footerView = footerView;
+    [self.exeBlocks enumerateObjectsWithOptions:NSEnumerationReverse usingBlock:^(void (^ _Nonnull obj)(SJSlider *, SJSlider *, SJSlider *), NSUInteger idx, BOOL * _Nonnull stop) {
+        obj(_footerView.volumeSlider, _footerView.brightnessSlider, _footerView.rateSlider);
+        [self.exeBlocks removeObject:obj];
+    }];
+}
+
+- (void)getMoreSettingsSlider:(void (^)(SJSlider *, SJSlider *, SJSlider *))block {
+    if ( !block ) return;
+    if ( self.footerView ) {
+        block(_footerView.volumeSlider, _footerView.brightnessSlider, _footerView.rateSlider);
+        return;
+    }
+    [self.exeBlocks addObject:block];
+}
+
+- (void)addPanGR {
+    UIPanGestureRecognizer *pan = [[UIPanGestureRecognizer alloc] initWithTarget:self action:@selector(handlePanGR:)];
+    [self addGestureRecognizer:pan];
+}
+
+- (void)handlePanGR:(UIPanGestureRecognizer *)pan {}
+
+
+- (void)_SJVideoPlayerMoreSettingsViewSetupUI {
+    self.backgroundColor = [UIColor colorWithWhite:0 alpha:0.85];
+    
+    [self addSubview:self.colView];
+    [_colView mas_makeConstraints:^(MASConstraintMaker *make) {
+        make.top.offset(25);
+        make.leading.bottom.trailing.offset(0);
+    }];
+}
+
+- (UICollectionView *)colView {
+    if ( _colView ) return _colView;
+    CGFloat itemW_H = floor(SJMoreSettings_W / 3);
+    _colView = [UICollectionView collectionViewWithItemSize:CGSizeMake(itemW_H, itemW_H) backgroundColor:[UIColor clearColor] scrollDirection:UICollectionViewScrollDirectionVertical headerSize:CGSizeZero footerSize:CGSizeMake(SJMoreSettings_W, 200)];
+    [_colView registerClass:NSClassFromString(SJVideoPlayerMoreSettingsColCellID) forCellWithReuseIdentifier:SJVideoPlayerMoreSettingsColCellID];
+    [_colView registerClass:NSClassFromString(SJVideoPlayerMoreSettingsFooterViewID) forSupplementaryViewOfKind:UICollectionElementKindSectionFooter withReuseIdentifier:SJVideoPlayerMoreSettingsFooterViewID];
+    _colView.dataSource = self;
+    return _colView;
+}
+
+- (NSMutableArray<void (^)(SJSlider *, SJSlider *, SJSlider *)> *)exeBlocks {
+    if ( _exeBlocks ) return _exeBlocks;
+    _exeBlocks = [NSMutableArray new];
+    return _exeBlocks;
+}
 
 @end
+
+
+@implementation SJVideoPlayerMoreSettingsView (UICollectionViewDataSourceMethods)
+
+
+- (NSInteger)numberOfSectionsInCollectionView:(UICollectionView *)collectionView {
+    return 1;
+}
+
+- (NSInteger)collectionView:(UICollectionView *)collectionView numberOfItemsInSection:(NSInteger)section {
+    return self.moreSettings.count;
+}
+
+- (UICollectionViewCell *)collectionView:(UICollectionView *)collectionView cellForItemAtIndexPath:(NSIndexPath *)indexPath {
+    UICollectionViewCell *cell = [collectionView dequeueReusableCellWithReuseIdentifier:SJVideoPlayerMoreSettingsColCellID forIndexPath:indexPath];
+    [cell setValue:self.moreSettings[indexPath.row] forKey:@"model"];
+    return cell;
+}
+
+- (UICollectionReusableView *)collectionView:(UICollectionView *)collectionView viewForSupplementaryElementOfKind:(NSString *)kind atIndexPath:(NSIndexPath *)indexPath {
+    if ( ![kind isEqualToString:UICollectionElementKindSectionFooter] ) return nil;
+    self.footerView = [collectionView dequeueReusableSupplementaryViewOfKind:kind withReuseIdentifier:SJVideoPlayerMoreSettingsFooterViewID forIndexPath:indexPath];
+    return self.footerView;
+}
+
+@end
+
+@interface SJVideoPlayerMoreSettingsColCell ()
+@property (nonatomic, strong, readonly) UIButton *itemBtn;
+@end
+
+@implementation SJVideoPlayerMoreSettingsColCell
+
+@synthesize itemBtn = _itemBtn;
+
+- (instancetype)initWithFrame:(CGRect)frame {
+    self = [super initWithFrame:frame];
+    if ( !self ) return nil;
+    [self _SJVideoPlayerMoreSettingsColCellSetupUI];
+    return self;
+}
+
+- (void)clickedBtn:(UIButton *)btn {
+    if ( self.model.clickedExeBlock ) self.model.clickedExeBlock(self.model);
+}
+
+- (void)setModel:(SJVideoPlayerMoreSetting *)model {
+    _model = model;
+    NSAttributedString *attr = [NSAttributedString mh_imageTextWithImage:model.image imageW:model.image.size.width imageH:model.image.size.height title:model.title ? model.title : @"" fontSize:[SJVideoPlayerMoreSetting titleFontSize] titleColor:[SJVideoPlayerMoreSetting titleColor] spacing:6];
+    [_itemBtn setAttributedTitle:attr forState:UIControlStateNormal];
+}
+
+// MARK: UI
+
+- (void)_SJVideoPlayerMoreSettingsColCellSetupUI {
+    [self.contentView addSubview:self.itemBtn];
+    [_itemBtn mas_makeConstraints:^(MASConstraintMaker *make) {
+        make.edges.offset(0);
+    }];
+}
+
+- (UIButton *)itemBtn {
+    if ( _itemBtn ) return _itemBtn;
+    _itemBtn = [UIButton buttonWithImageName:@"" tag:0 target:self sel:@selector(clickedBtn:)];
+    _itemBtn.titleLabel.numberOfLines = 3;
+    _itemBtn.titleLabel.textAlignment = NSTextAlignmentCenter;
+    return _itemBtn;
+}
+
+@end
+
+@implementation SJVideoPlayerMoreSettingsView (DBNotifications)
+
+- (void)_SJVideoPlayerMoreSettingsViewInstallNotifications {
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(settingsPlayerNotification:) name:SJSettingsPlayerNotification object:nil];
+}
+
+- (void)_SJVideoPlayerMoreSettingsViewRemoveNotifications {
+    [[NSNotificationCenter defaultCenter] removeObserver:self];
+}
+
+- (void)settingsPlayerNotification:(NSNotification *)notifi {
+    SJVideoPlayerSettings *settings = notifi.object;
+    [self getMoreSettingsSlider:^(SJSlider *volumeSlider, SJSlider *brightnessSlider, SJSlider *rateSlider) {
+        if ( settings.traceColor ) {
+            volumeSlider.traceImageView.backgroundColor = settings.traceColor;
+            brightnessSlider.traceImageView.backgroundColor = settings.traceColor;
+            rateSlider.traceImageView.backgroundColor = settings.traceColor;
+        }
+        if ( settings.trackColor ) {
+            volumeSlider.trackImageView.backgroundColor = settings.trackColor;
+            brightnessSlider.trackImageView.backgroundColor = settings.trackColor;
+            rateSlider.trackImageView.backgroundColor = settings.trackColor;
+        }
+    }];
+}
+
+@end
+
+
+@interface SJVideoPlayerMoreSettingsFooterView (DBObservers)
+- (void)_SJVideoPlayerMoreSettingsFooterViewObservers;
+- (void)_SJVideoPlayerMoreSettingsFooterViewRemoveObservers;
+@end
+
+@interface SJVideoPlayerMoreSettingsFooterView ()
+@property (nonatomic, strong, readonly) UILabel *volumeLabel;
+@property (nonatomic, strong, readonly) UILabel *brightnessLabel;
+@property (nonatomic, strong, readonly) UILabel *rateLabel;
+@end
+
+@implementation SJVideoPlayerMoreSettingsFooterView
+
+@synthesize volumeSlider = _volumeSlider;
+@synthesize brightnessSlider = _brightnessSlider;
+@synthesize rateSlider = _rateSlider;
+
+@synthesize volumeLabel = _volumeLabel;
+@synthesize brightnessLabel = _brightnessLabel;
+@synthesize rateLabel = _rateLabel;
+
+- (instancetype)initWithFrame:(CGRect)frame {
+    self = [super initWithFrame:frame];
+    if ( !self ) return nil;
+    [self _SJVideoPlayerMoreSettingsFooterViewSetupUI];
+    [self _SJVideoPlayerMoreSettingsFooterViewObservers];
+    return self;
+}
+
+- (void)dealloc {
+    [self _SJVideoPlayerMoreSettingsFooterViewRemoveObservers];
+}
+
+- (void)_SJVideoPlayerMoreSettingsFooterViewSetupUI {
+    
+    UIView *volumeBackgroundView = [UIView new];
+    UIView *brightnessBackgroundView = [UIView new];
+    UIView *rateBackgroundView = [UIView new];
+    
+    [self addSubview:volumeBackgroundView];
+    [self addSubview:brightnessBackgroundView];
+    [self addSubview:rateBackgroundView];
+    
+    [rateBackgroundView mas_makeConstraints:^(MASConstraintMaker *make) {
+        make.top.offset(25);
+        make.leading.trailing.offset(0);
+        make.height.offset((self.csj_h - 25 * 2) / 3);
+        
+    }];
+    
+    [volumeBackgroundView mas_makeConstraints:^(MASConstraintMaker *make) {
+        make.top.equalTo(rateBackgroundView.mas_bottom);
+        make.leading.trailing.offset(0);
+        make.height.equalTo(rateBackgroundView);
+    }];
+    
+    [brightnessBackgroundView mas_makeConstraints:^(MASConstraintMaker *make) {
+        make.top.equalTo(volumeBackgroundView.mas_bottom);
+        make.leading.trailing.offset(0);
+        make.height.equalTo(volumeBackgroundView);
+    }];
+    
+    
+    [volumeBackgroundView addSubview:self.volumeLabel];
+    [volumeBackgroundView addSubview:self.volumeSlider];
+    
+    [brightnessBackgroundView addSubview:self.brightnessLabel];
+    [brightnessBackgroundView addSubview:self.brightnessSlider];
+    
+    [rateBackgroundView addSubview:self.rateLabel];
+    [rateBackgroundView addSubview:self.rateSlider];
+    
+    [self _constraintsLabel:_volumeLabel slider:_volumeSlider];
+    
+    [self _constraintsLabel:_brightnessLabel slider:_brightnessSlider];
+    
+    [self _constraintsLabel:_rateLabel slider:_rateSlider];
+    
+}
+
+- (void)_constraintsLabel:(UILabel *)label slider:(SJSlider *)slider {
+    [label mas_makeConstraints:^(MASConstraintMaker *make) {
+        make.top.bottom.offset(0);
+        make.leading.offset(25);
+    }];
+    
+    [slider mas_makeConstraints:^(MASConstraintMaker *make) {
+        make.top.bottom.offset(0);
+        make.trailing.offset(-25);
+        make.leading.offset(99);
+    }];
+}
+
+
+- (SJSlider *)volumeSlider {
+    if ( _volumeSlider ) return _volumeSlider;
+    _volumeSlider = [self slider];
+    _volumeSlider.tag = SJVideoPlaySliderTag_Volume;
+    return _volumeSlider;
+}
+
+- (UILabel *)volumeLabel {
+    if ( _volumeLabel ) return _volumeLabel;
+    _volumeLabel = [self label];
+    _volumeLabel.text = @"音量";
+    return _volumeLabel;
+}
+
+- (SJSlider *)brightnessSlider {
+    if ( _brightnessSlider ) return _brightnessSlider;
+    _brightnessSlider = [self slider];
+    _brightnessSlider.tag = SJVideoPlaySliderTag_Brightness;
+    return _brightnessSlider;
+}
+
+- (UILabel *)brightnessLabel {
+    if ( _brightnessLabel ) return _brightnessLabel;
+    _brightnessLabel = [self label];
+    _brightnessLabel.text = @"亮度";
+    return _brightnessLabel;
+}
+
+- (SJSlider *)rateSlider {
+    if ( _rateSlider ) return _rateSlider;
+    _rateSlider = [self slider];
+    _rateSlider.tag = SJVideoPlaySliderTag_Rate;
+    _rateSlider.minValue = 0.5;
+    _rateSlider.maxValue = 1.5;
+    _rateSlider.value = 1.0;
+    return _rateSlider;
+}
+
+- (UILabel *)rateLabel {
+    if ( _rateLabel ) return _rateLabel;
+    _rateLabel = [self label];
+    _rateLabel.text = @"调速";
+    return _rateLabel;
+}
+
+- (UILabel *)label {
+    return [UILabel labelWithFontSize:12 textColor:[UIColor whiteColor] alignment:NSTextAlignmentCenter];
+}
+
+- (SJSlider *)slider {
+    SJSlider *slider = [SJSlider new];
+    return slider;
+}
+
+@end
+
+@implementation SJVideoPlayerMoreSettingsFooterView (DBObservers)
+
+
+- (void)_SJVideoPlayerMoreSettingsFooterViewObservers {
+    [self.volumeSlider addObserver:self forKeyPath:@"value" options:NSKeyValueObservingOptionNew context:nil];
+    [self.rateSlider addObserver:self forKeyPath:@"value" options:NSKeyValueObservingOptionNew context:nil];
+    [self.brightnessSlider addObserver:self forKeyPath:@"value" options:NSKeyValueObservingOptionNew context:nil];
+}
+
+- (void)_SJVideoPlayerMoreSettingsFooterViewRemoveObservers {
+    [self.volumeSlider removeObserver:self forKeyPath:@"value"];
+    [self.rateSlider removeObserver:self forKeyPath:@"value"];
+    [self.brightnessSlider removeObserver:self forKeyPath:@"value"];
+}
+
+- (void)observeValueForKeyPath:(NSString *)keyPath ofObject:(id)object change:(NSDictionary<NSKeyValueChangeKey,id> *)change context:(void *)context {
+    if ( object == _volumeSlider ) _volumeLabel.text = [NSString stringWithFormat:@"音量  %.01f", _volumeSlider.value];
+    if ( object == _rateSlider ) _rateLabel.text = [NSString stringWithFormat:@"调速  %.01f", _rateSlider.value];
+    if ( object == _brightnessSlider ) _brightnessLabel.text = [NSString stringWithFormat:@"亮度  %.01f", _brightnessSlider.value];
+}
+
+@end
+
 
 
 
 // MARK: More Settings Two Level View
 
-
 @interface SJVideoPlayerMoreSettingTwoLevelSettingsView : UIView
-
 @property (nonatomic, strong, readwrite) SJVideoPlayerMoreSetting *twoLevelSettings;
+@end
+
+
+static NSString *const SJVideoPlayerMoreSettingTwoSettingsCellID = @"SJVideoPlayerMoreSettingTwoSettingsCell";
+
+@interface SJVideoPlayerMoreSettingTwoSettingsCell : UICollectionViewCell
+@property (nonatomic, strong, readwrite) SJVideoPlayerMoreSettingTwoSetting *model;
+@end
+
+
+static NSString *const SJVideoPlayerMoreSettingTwoLevelSettingsHeaderViewID = @"SJVideoPlayerMoreSettingTwoLevelSettingsHeaderView";
+
+@interface SJVideoPlayerMoreSettingTwoLevelSettingsHeaderView : UICollectionReusableView
+@property (nonatomic, strong, readwrite) SJVideoPlayerMoreSetting *model;
+@end
+
+
+@interface SJVideoPlayerMoreSettingTwoLevelSettingsView (ColDataSourceMethods)<UICollectionViewDataSource>
+@end
+
+
+@interface SJVideoPlayerMoreSettingTwoLevelSettingsView ()
+@property (nonatomic, strong, readonly) UICollectionView *colView;
+@property (nonatomic, strong, readwrite) SJVideoPlayerMoreSettingTwoLevelSettingsHeaderView *headerView;
+@end
+
+@implementation SJVideoPlayerMoreSettingTwoLevelSettingsView
+
+@synthesize colView = _colView;
+
+- (instancetype)initWithFrame:(CGRect)frame {
+    self = [super initWithFrame:frame];
+    if ( !self ) return nil;
+    [self _SJVideoPlayerMoreSettingTwoLevelSettingsViewSetupUI];
+    return self;
+}
+
+- (void)setTwoLevelSettings:(SJVideoPlayerMoreSetting *)twoLevelSettings {
+    _twoLevelSettings = twoLevelSettings;
+    [self.colView reloadData];
+}
+
+// MARK: UI
+
+- (void)_SJVideoPlayerMoreSettingTwoLevelSettingsViewSetupUI {
+    self.backgroundColor = [UIColor colorWithWhite:0 alpha:0.85];
+    [self addSubview:self.colView];
+    [_colView mas_makeConstraints:^(MASConstraintMaker *make) {
+        make.edges.offset(0);
+    }];
+}
+
+- (UICollectionView *)colView {
+    if ( _colView ) return _colView;
+    CGFloat itemW_H = floor(SJMoreSettings_W / 3);
+    _colView = [UICollectionView collectionViewWithItemSize:CGSizeMake(itemW_H, itemW_H) backgroundColor:[UIColor clearColor] scrollDirection:UICollectionViewScrollDirectionVertical headerSize:CGSizeMake(SJMoreSettings_W, [SJVideoPlayerMoreSetting twoTitleFontSize] * 1.2 + 20) footerSize:CGSizeZero];
+    [_colView registerClass:NSClassFromString(SJVideoPlayerMoreSettingTwoSettingsCellID) forCellWithReuseIdentifier:SJVideoPlayerMoreSettingTwoSettingsCellID];
+    [_colView registerClass:NSClassFromString(SJVideoPlayerMoreSettingTwoLevelSettingsHeaderViewID) forSupplementaryViewOfKind:UICollectionElementKindSectionHeader withReuseIdentifier:SJVideoPlayerMoreSettingTwoLevelSettingsHeaderViewID];
+    _colView.dataSource = self;
+    return _colView;
+}
 
 @end
+
+@implementation SJVideoPlayerMoreSettingTwoLevelSettingsView (ColDataSourceMethods)
+
+// MARK: UICollectionViewDataSource
+
+- (NSInteger)numberOfSectionsInCollectionView:(UICollectionView *)collectionView {
+    return 1;
+}
+
+- (NSInteger)collectionView:(UICollectionView *)collectionView numberOfItemsInSection:(NSInteger)section {
+    return self.twoLevelSettings.twoSettingItems.count;
+}
+
+- (UICollectionViewCell *)collectionView:(UICollectionView *)collectionView cellForItemAtIndexPath:(NSIndexPath *)indexPath {
+    UICollectionViewCell *cell = [collectionView dequeueReusableCellWithReuseIdentifier:SJVideoPlayerMoreSettingTwoSettingsCellID forIndexPath:indexPath];
+    [cell setValue:self.twoLevelSettings.twoSettingItems[indexPath.row] forKey:@"model"];
+    return cell;
+}
+
+- (UICollectionReusableView *)collectionView:(UICollectionView *)collectionView viewForSupplementaryElementOfKind:(NSString *)kind atIndexPath:(NSIndexPath *)indexPath {
+    if ( ![kind isEqualToString:UICollectionElementKindSectionHeader] ) return nil;
+    self.headerView = [collectionView dequeueReusableSupplementaryViewOfKind:UICollectionElementKindSectionHeader withReuseIdentifier:SJVideoPlayerMoreSettingTwoLevelSettingsHeaderViewID forIndexPath:indexPath];
+    self.headerView.model = self.twoLevelSettings;
+    return self.headerView;
+}
+
+@end
+
+
+@interface SJVideoPlayerMoreSettingTwoSettingsCell ()
+@property (nonatomic, strong, readonly) UIButton *itemBtn;
+@end
+
+@implementation SJVideoPlayerMoreSettingTwoSettingsCell
+
+@synthesize itemBtn = _itemBtn;
+
+- (instancetype)initWithFrame:(CGRect)frame {
+    self = [super initWithFrame:frame];
+    if ( !self ) return nil;
+    [self _SJVideoPlayerMoreSettingTwoSettingsCellSetupUI];
+    return self;
+}
+
+- (void)clickedBtn:(UIButton *)btn {
+    NSLog(@"clicked btn");
+    if ( self.model.clickedExeBlock ) self.model.clickedExeBlock(self.model);
+}
+
+- (void)setModel:(SJVideoPlayerMoreSettingTwoSetting *)model {
+    _model = model;
+    
+    NSAttributedString *attr = [NSAttributedString mh_imageTextWithImage:model.image imageW:model.image.size.width imageH:model.image.size.height title:model.title ? model.title : @"" fontSize:[SJVideoPlayerMoreSetting titleFontSize] titleColor:[SJVideoPlayerMoreSetting titleColor] spacing:6];
+    [_itemBtn setAttributedTitle:attr forState:UIControlStateNormal];
+}
+
+- (void)_SJVideoPlayerMoreSettingTwoSettingsCellSetupUI {
+    [self.contentView addSubview:self.itemBtn];
+    [_itemBtn mas_makeConstraints:^(MASConstraintMaker *make) {
+        make.edges.offset(0);
+    }];
+}
+
+- (UIButton *)itemBtn {
+    if ( _itemBtn ) return _itemBtn;
+    _itemBtn = [UIButton buttonWithImageName:@"" tag:0 target:self sel:@selector(clickedBtn:)];
+    _itemBtn.titleLabel.numberOfLines = 3;
+    _itemBtn.titleLabel.textAlignment = NSTextAlignmentCenter;
+    return _itemBtn;
+}
+
+@end
+
+
+@interface SJVideoPlayerMoreSettingTwoLevelSettingsHeaderView ()
+@property (nonatomic, strong, readonly) SJBorderlineView *backgroundView;
+@property (nonatomic, strong, readonly) UILabel *titleLabel;
+@end
+
+@implementation SJVideoPlayerMoreSettingTwoLevelSettingsHeaderView
+
+@synthesize backgroundView = _backgroundView;
+@synthesize titleLabel = _titleLabel;
+
+- (instancetype)initWithFrame:(CGRect)frame {
+    self = [super initWithFrame:frame];
+    if ( !self ) return nil;
+    [self _SJVideoPlayerMoreSettingTwoLevelSettingsHeaderViewSetupUI];
+    return self;
+}
+
+
+- (void)setModel:(SJVideoPlayerMoreSetting *)model {
+    _model = model;
+    self.titleLabel.text = model.twoSettingTitle;
+}
+
+- (void)_SJVideoPlayerMoreSettingTwoLevelSettingsHeaderViewSetupUI {
+    [self addSubview:self.backgroundView];
+    [self.backgroundView addSubview:self.titleLabel];
+    
+    [_backgroundView mas_makeConstraints:^(MASConstraintMaker *make) {
+        make.edges.offset(0);
+    }];
+    
+    [_titleLabel mas_makeConstraints:^(MASConstraintMaker *make) {
+        make.leading.offset(15);
+        make.trailing.offset(-8);
+        make.top.bottom.offset(0);
+    }];
+}
+
+- (SJBorderlineView *)backgroundView {
+    if ( _backgroundView ) return _backgroundView;
+    _backgroundView = [SJBorderlineView borderlineViewWithSide:SJBorderlineSideBottom startMargin:15 endMargin:0 lineColor:[UIColor lightGrayColor] backgroundColor:[UIColor clearColor]];
+    return _backgroundView;
+}
+
+- (UILabel *)titleLabel {
+    if ( _titleLabel ) return _titleLabel;
+    _titleLabel = [UILabel labelWithFontSize:[SJVideoPlayerMoreSettingTwoSetting twoTitleFontSize] textColor:[SJVideoPlayerMoreSettingTwoSetting titleColor] alignment:NSTextAlignmentLeft];
+    return _titleLabel;
+}
+
+@end
+
+
+
+
+
+
+
 
 
 
@@ -116,6 +679,114 @@ static NSString *const SJVideoPlayPreviewColCellID = @"SJVideoPlayPreviewColCell
 @interface SJVideoPlayerControlView (PreviewCellDelegateMethods)<SJVideoPlayPreviewColCellDelegate>@end
 
 @interface SJVideoPlayerControlView (ColDataSourceMethods)<UICollectionViewDataSource>@end
+
+
+@interface SJVideoPlayPreviewColCell ()
+@property (nonatomic, strong, readonly) UIImageView *imageView;
+@property (nonatomic, strong, readonly) UIButton *backgroundBtn;
+@end
+
+@implementation SJVideoPlayPreviewColCell
+
+@synthesize imageView = _imageView;
+@synthesize backgroundBtn = _backgroundBtn;
+
+- (instancetype)initWithFrame:(CGRect)frame {
+    self = [super initWithFrame:frame];
+    if ( !self ) return nil;
+    [self _SJVideoPlayPreviewColCellSetupUI];
+    return self;
+}
+
+- (void)setModel:(SJVideoPreviewModel *)model {
+    _model = model;
+    _imageView.image = model.image;
+}
+
+- (void)clickedBtn:(UIButton *)btn {
+    if ( ![self.delegate respondsToSelector:@selector(clickedItemOnCell:)] ) return;
+    [self.delegate clickedItemOnCell:self];
+}
+
+- (void)_SJVideoPlayPreviewColCellSetupUI {
+    [self.contentView addSubview:self.backgroundBtn];
+    [self.contentView addSubview:self.imageView];
+    [_imageView mas_makeConstraints:^(MASConstraintMaker *make) {
+        make.leading.trailing.offset(0);
+        make.top.offset(2);
+        make.bottom.offset(-2);
+    }];
+    [_backgroundBtn mas_makeConstraints:^(MASConstraintMaker *make) {
+        make.edges.offset(0);
+    }];
+}
+
+- (UIImageView *)imageView {
+    if ( _imageView ) return _imageView;
+    _imageView = [UIImageView imageViewWithImageStr:@"" viewMode:UIViewContentModeScaleAspectFit];
+    return _imageView;
+}
+
+- (UIButton *)backgroundBtn {
+    if ( _backgroundBtn ) return _backgroundBtn;
+    _backgroundBtn = [UIButton buttonWithImageName:@"" tag:0 target:self sel:@selector(clickedBtn:)];
+    return _backgroundBtn;
+}
+
+@end
+
+
+@implementation SJVideoPlayerControlView (ColDataSourceMethods)
+
+- (NSInteger)numberOfSectionsInCollectionView:(UICollectionView *)collectionView {
+    return 1;
+}
+
+- (NSInteger)collectionView:(UICollectionView *)collectionView numberOfItemsInSection:(NSInteger)section {
+    return self.previewImages.count;
+}
+
+- (UICollectionViewCell *)collectionView:(UICollectionView *)collectionView cellForItemAtIndexPath:(NSIndexPath *)indexPath {
+    UICollectionViewCell *cell = [collectionView dequeueReusableCellWithReuseIdentifier:SJVideoPlayPreviewColCellID forIndexPath:indexPath];
+    [cell setValue:self.previewImages[indexPath.row] forKey:@"model"];
+    [cell setValue:self forKey:@"delegate"];
+    return cell;
+}
+
+@end
+
+
+@implementation SJVideoPlayerControlView (PreviewCellDelegateMethods)
+
+- (void)clickedItemOnCell:(SJVideoPlayPreviewColCell *)cell {
+    if ( ![self.delegate respondsToSelector:@selector(controlView:selectedPreviewModel:)] ) return;
+    SJVideoPreviewModel *model = cell.model;
+    [self.delegate controlView:self selectedPreviewModel:model];
+}
+
+@end
+
+
+
+// MARK: Preview Model
+
+@interface SJVideoPreviewModel ()
+
+@property (nonatomic, strong, readwrite) UIImage *image;
+@property (nonatomic, assign, readwrite) CMTime localTime;
+
+@end
+
+@implementation SJVideoPreviewModel
+
++ (instancetype)previewModelWithImage:(UIImage *)image localTime:(CMTime)time {
+    SJVideoPreviewModel *model = [self new];
+    model.image = image;
+    model.localTime = time;
+    return model;
+}
+
+@end
 
 
 
@@ -958,580 +1629,6 @@ static NSString *const SJVideoPlayPreviewColCellID = @"SJVideoPlayPreviewColCell
 
 
 
-// MARK: Preview Cell
-
-@interface SJVideoPlayPreviewColCell ()
-@property (nonatomic, strong, readonly) UIImageView *imageView;
-@property (nonatomic, strong, readonly) UIButton *backgroundBtn;
-@end
-
-@implementation SJVideoPlayPreviewColCell
-
-@synthesize imageView = _imageView;
-@synthesize backgroundBtn = _backgroundBtn;
-
-- (instancetype)initWithFrame:(CGRect)frame {
-    self = [super initWithFrame:frame];
-    if ( !self ) return nil;
-    [self _SJVideoPlayPreviewColCellSetupUI];
-    return self;
-}
-
-- (void)setModel:(SJVideoPreviewModel *)model {
-    _model = model;
-    _imageView.image = model.image;
-}
-
-- (void)clickedBtn:(UIButton *)btn {
-    if ( ![self.delegate respondsToSelector:@selector(clickedItemOnCell:)] ) return;
-    [self.delegate clickedItemOnCell:self];
-}
-
-// MARK: UI
-
-- (void)_SJVideoPlayPreviewColCellSetupUI {
-    [self.contentView addSubview:self.backgroundBtn];
-    [self.contentView addSubview:self.imageView];
-    [_imageView mas_makeConstraints:^(MASConstraintMaker *make) {
-        make.leading.trailing.offset(0);
-        make.top.offset(2);
-        make.bottom.offset(-2);
-    }];
-    [_backgroundBtn mas_makeConstraints:^(MASConstraintMaker *make) {
-        make.edges.offset(0);
-    }];
-}
-
-- (UIImageView *)imageView {
-    if ( _imageView ) return _imageView;
-    _imageView = [UIImageView imageViewWithImageStr:@"" viewMode:UIViewContentModeScaleAspectFit];
-    return _imageView;
-}
-
-- (UIButton *)backgroundBtn {
-    if ( _backgroundBtn ) return _backgroundBtn;
-    _backgroundBtn = [UIButton buttonWithImageName:@"" tag:0 target:self sel:@selector(clickedBtn:)];
-    return _backgroundBtn;
-}
-
-@end
-
-
-@implementation SJVideoPlayerControlView (ColDataSourceMethods)
-
-// MARK: UICollectionViewDataSource
-
-- (NSInteger)numberOfSectionsInCollectionView:(UICollectionView *)collectionView {
-    return 1;
-}
-
-- (NSInteger)collectionView:(UICollectionView *)collectionView numberOfItemsInSection:(NSInteger)section {
-    return self.previewImages.count;
-}
-
-- (UICollectionViewCell *)collectionView:(UICollectionView *)collectionView cellForItemAtIndexPath:(NSIndexPath *)indexPath {
-    UICollectionViewCell *cell = [collectionView dequeueReusableCellWithReuseIdentifier:SJVideoPlayPreviewColCellID forIndexPath:indexPath];
-    [cell setValue:self.previewImages[indexPath.row] forKey:@"model"];
-    [cell setValue:self forKey:@"delegate"];
-    return cell;
-}
-
-@end
-
-
-@implementation SJVideoPlayerControlView (PreviewCellDelegateMethods)
-
-- (void)clickedItemOnCell:(SJVideoPlayPreviewColCell *)cell {
-    if ( ![self.delegate respondsToSelector:@selector(controlView:selectedPreviewModel:)] ) return;
-    SJVideoPreviewModel *model = cell.model;
-    [self.delegate controlView:self selectedPreviewModel:model];
-}
-
-@end
-
-
-
-// MARK: Preview Model
-
-@interface SJVideoPreviewModel ()
-
-@property (nonatomic, strong, readwrite) UIImage *image;
-@property (nonatomic, assign, readwrite) CMTime localTime;
-
-@end
-
-@implementation SJVideoPreviewModel
-
-+ (instancetype)previewModelWithImage:(UIImage *)image localTime:(CMTime)time {
-    SJVideoPreviewModel *model = [self new];
-    model.image = image;
-    model.localTime = time;
-    return model;
-}
-
-@end
-
-
-@implementation SJVideoPlayerControlView (Preview)
-
-- (void)setPreviewImages:(NSArray<SJVideoPreviewModel *> *)previewImages {
-    objc_setAssociatedObject(self, @selector(previewImages), previewImages, OBJC_ASSOCIATION_RETAIN_NONATOMIC);
-    [self.previewImgColView reloadData];
-}
-
-- (NSArray<SJVideoPreviewModel *> *)previewImages {
-    return objc_getAssociatedObject(self, _cmd);
-}
-
-@end
-
-
-
-
-
-
-
-
-
-
-
-// MARK: More Settings View
-
-
-@interface SJVideoPlayerMoreSettingsColCell : UICollectionViewCell
-@property (nonatomic, strong) SJVideoPlayerMoreSetting *model;
-@end
-
-
-
-@interface SJVideoPlayerMoreSettingsView (UICollectionViewDataSourceMethods)<UICollectionViewDataSource>
-@end
-
-
-@interface SJVideoPlayerMoreSettingsFooterView : UICollectionReusableView
-@property (nonatomic, strong, readonly) SJSlider *volumeSlider;
-@property (nonatomic, strong, readonly) SJSlider *brightnessSlider;
-@property (nonatomic, strong, readonly) SJSlider *rateSlider;
-@end
-
-
-
-
-
-
-
-
-// MARK: More Settings View
-
-
-static NSString *const SJVideoPlayerMoreSettingsColCellID = @"SJVideoPlayerMoreSettingsColCell";
-
-static NSString *const SJVideoPlayerMoreSettingsFooterViewID = @"SJVideoPlayerMoreSettingsFooterView";
-
-
-@interface SJVideoPlayerMoreSettingsView ()
-
-@property (nonatomic, strong, readonly) UICollectionView *colView;
-
-- (void)getMoreSettingsSlider:(void(^)(SJSlider *volumeSlider, SJSlider *brightnessSlider, SJSlider *rateSlider))block;
-
-@property (nonatomic, copy, readwrite) void(^getFooterCallBlock)(SJSlider *volumeSlider, SJSlider *brightnessSlider, SJSlider *rateSlider);
-
-@property (nonatomic, strong, readonly) NSMutableArray<void(^)(SJSlider *volumeSlider, SJSlider *brightnessSlider, SJSlider *rateSlider)> *exeBlocks;
-
-@end
-
-@implementation SJVideoPlayerMoreSettingsView
-
-@synthesize footerView = _footerView;
-@synthesize colView = _colView;
-@synthesize exeBlocks = _exeBlocks;
-
-- (instancetype)initWithFrame:(CGRect)frame {
-    self = [super initWithFrame:frame];
-    if ( !self ) return nil;
-    [self _SJVideoPlayerMoreSettingsViewSetupUI];
-    [self _SJVideoPlayerMoreSettingsViewInstallNotifications];
-    [self addPanGR];
-    return self;
-}
-
-- (void)dealloc {
-    [self _SJVideoPlayerMoreSettingsViewRemoveNotifications];
-}
-
-- (void)setMoreSettings:(NSArray<SJVideoPlayerMoreSetting *> *)moreSettings {
-    _moreSettings = moreSettings;
-    [self.colView reloadData];
-}
-
-- (void)setFooterView:(SJVideoPlayerMoreSettingsFooterView *)footerView {
-    _footerView = footerView;
-    [self.exeBlocks enumerateObjectsWithOptions:NSEnumerationReverse usingBlock:^(void (^ _Nonnull obj)(SJSlider *, SJSlider *, SJSlider *), NSUInteger idx, BOOL * _Nonnull stop) {
-        obj(_footerView.volumeSlider, _footerView.brightnessSlider, _footerView.rateSlider);
-        [self.exeBlocks removeObject:obj];
-    }];
-}
-
-- (void)getMoreSettingsSlider:(void (^)(SJSlider *, SJSlider *, SJSlider *))block {
-    if ( !block ) return;
-    if ( self.footerView ) {
-        block(_footerView.volumeSlider, _footerView.brightnessSlider, _footerView.rateSlider);
-        return;
-    }
-    [self.exeBlocks addObject:block];
-}
-
-- (void)addPanGR {
-    UIPanGestureRecognizer *pan = [[UIPanGestureRecognizer alloc] initWithTarget:self action:@selector(handlePanGR:)];
-    [self addGestureRecognizer:pan];
-}
-
-- (void)handlePanGR:(UIPanGestureRecognizer *)pan {}
-
-// MARK: UI
-
-- (void)_SJVideoPlayerMoreSettingsViewSetupUI {
-    self.backgroundColor = [UIColor colorWithWhite:0 alpha:0.85];
-    
-    [self addSubview:self.colView];
-    [_colView mas_makeConstraints:^(MASConstraintMaker *make) {
-        make.top.offset(25);
-        make.leading.bottom.trailing.offset(0);
-    }];
-}
-
-- (UICollectionView *)colView {
-    if ( _colView ) return _colView;
-    CGFloat itemW_H = floor(SJMoreSettings_W / 3);
-    _colView = [UICollectionView collectionViewWithItemSize:CGSizeMake(itemW_H, itemW_H) backgroundColor:[UIColor clearColor] scrollDirection:UICollectionViewScrollDirectionVertical headerSize:CGSizeZero footerSize:CGSizeMake(SJMoreSettings_W, 200)];
-    [_colView registerClass:NSClassFromString(SJVideoPlayerMoreSettingsColCellID) forCellWithReuseIdentifier:SJVideoPlayerMoreSettingsColCellID];
-    [_colView registerClass:NSClassFromString(SJVideoPlayerMoreSettingsFooterViewID) forSupplementaryViewOfKind:UICollectionElementKindSectionFooter withReuseIdentifier:SJVideoPlayerMoreSettingsFooterViewID];
-    _colView.dataSource = self;
-    return _colView;
-}
-
-- (NSMutableArray<void (^)(SJSlider *, SJSlider *, SJSlider *)> *)exeBlocks {
-    if ( _exeBlocks ) return _exeBlocks;
-    _exeBlocks = [NSMutableArray new];
-    return _exeBlocks;
-}
-
-@end
-
-
-// MARK: MoreSettings DataSource
-
-
-@implementation SJVideoPlayerMoreSettingsView (UICollectionViewDataSourceMethods)
-
-
-- (NSInteger)numberOfSectionsInCollectionView:(UICollectionView *)collectionView {
-    return 1;
-}
-
-- (NSInteger)collectionView:(UICollectionView *)collectionView numberOfItemsInSection:(NSInteger)section {
-    return self.moreSettings.count;
-}
-
-- (UICollectionViewCell *)collectionView:(UICollectionView *)collectionView cellForItemAtIndexPath:(NSIndexPath *)indexPath {
-    UICollectionViewCell *cell = [collectionView dequeueReusableCellWithReuseIdentifier:SJVideoPlayerMoreSettingsColCellID forIndexPath:indexPath];
-    [cell setValue:self.moreSettings[indexPath.row] forKey:@"model"];
-    return cell;
-}
-
-- (UICollectionReusableView *)collectionView:(UICollectionView *)collectionView viewForSupplementaryElementOfKind:(NSString *)kind atIndexPath:(NSIndexPath *)indexPath {
-    if ( ![kind isEqualToString:UICollectionElementKindSectionFooter] ) return nil;
-    self.footerView = [collectionView dequeueReusableSupplementaryViewOfKind:kind withReuseIdentifier:SJVideoPlayerMoreSettingsFooterViewID forIndexPath:indexPath];
-    return self.footerView;
-}
-
-@end
-
-
-
-// MARK: More Settings Cell
-
-@interface SJVideoPlayerMoreSettingsColCell ()
-
-@property (nonatomic, strong, readonly) UIButton *itemBtn;
-
-@end
-
-@implementation SJVideoPlayerMoreSettingsColCell
-
-@synthesize itemBtn = _itemBtn;
-
-- (instancetype)initWithFrame:(CGRect)frame {
-    self = [super initWithFrame:frame];
-    if ( !self ) return nil;
-    [self _SJVideoPlayerMoreSettingsColCellSetupUI];
-    return self;
-}
-
-- (void)clickedBtn:(UIButton *)btn {
-    if ( self.model.clickedExeBlock ) self.model.clickedExeBlock(self.model);
-}
-
-- (void)setModel:(SJVideoPlayerMoreSetting *)model {
-    _model = model;
-    if ( model.title && !model.image ) {
-        [_itemBtn setTitle:model.title forState:UIControlStateNormal];
-        _itemBtn.titleLabel.font = [UIFont systemFontOfSize:[SJVideoPlayerMoreSetting titleFontSize]];
-        return;
-    }
-    
-    if ( !model.title && model.image ) {
-        [_itemBtn setImage:model.image forState:UIControlStateNormal];
-        return;
-    }
-    
-    NSAttributedString *attr = [NSAttributedString mh_imageTextWithImage:model.image imageW:model.image.size.width imageH:model.image.size.height title:model.title fontSize:[SJVideoPlayerMoreSetting titleFontSize] titleColor:[SJVideoPlayerMoreSetting titleColor] spacing:6];
-    [_itemBtn setAttributedTitle:attr forState:UIControlStateNormal];
-}
-
-// MARK: UI
-
-- (void)_SJVideoPlayerMoreSettingsColCellSetupUI {
-    [self.contentView addSubview:self.itemBtn];
-    [_itemBtn mas_makeConstraints:^(MASConstraintMaker *make) {
-        make.edges.offset(0);
-    }];
-}
-
-- (UIButton *)itemBtn {
-    if ( _itemBtn ) return _itemBtn;
-    _itemBtn = [UIButton buttonWithImageName:@"" tag:0 target:self sel:@selector(clickedBtn:)];
-    _itemBtn.titleLabel.numberOfLines = 3;
-    _itemBtn.titleLabel.textAlignment = NSTextAlignmentCenter;
-    return _itemBtn;
-}
-
-@end
-
-
-
-// MARK: More Settings View 通知处理
-
-@implementation SJVideoPlayerMoreSettingsView (DBNotifications)
-
-- (void)_SJVideoPlayerMoreSettingsViewInstallNotifications {
-    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(settingsPlayerNotification:) name:SJSettingsPlayerNotification object:nil];
-}
-
-- (void)_SJVideoPlayerMoreSettingsViewRemoveNotifications {
-    [[NSNotificationCenter defaultCenter] removeObserver:self];
-}
-
-- (void)settingsPlayerNotification:(NSNotification *)notifi {
-    SJVideoPlayerSettings *settings = notifi.object;
-    [self getMoreSettingsSlider:^(SJSlider *volumeSlider, SJSlider *brightnessSlider, SJSlider *rateSlider) {
-        if ( settings.traceColor ) {
-            volumeSlider.traceImageView.backgroundColor = settings.traceColor;
-            brightnessSlider.traceImageView.backgroundColor = settings.traceColor;
-            rateSlider.traceImageView.backgroundColor = settings.traceColor;
-        }
-        if ( settings.trackColor ) {
-            volumeSlider.trackImageView.backgroundColor = settings.trackColor;
-            brightnessSlider.trackImageView.backgroundColor = settings.trackColor;
-            rateSlider.trackImageView.backgroundColor = settings.trackColor;
-        }
-    }];
-}
-
-@end
-
-
-
-
-
-
-
-@interface SJVideoPlayerMoreSettingsFooterView (DBObservers)
-
-- (void)_SJVideoPlayerMoreSettingsFooterViewObservers;
-
-- (void)_SJVideoPlayerMoreSettingsFooterViewRemoveObservers;
-
-@end
-
-@interface SJVideoPlayerMoreSettingsFooterView ()
-
-@property (nonatomic, strong, readonly) UILabel *volumeLabel;
-@property (nonatomic, strong, readonly) UILabel *brightnessLabel;
-@property (nonatomic, strong, readonly) UILabel *rateLabel;
-
-@end
-
-@implementation SJVideoPlayerMoreSettingsFooterView
-
-@synthesize volumeSlider = _volumeSlider;
-@synthesize brightnessSlider = _brightnessSlider;
-@synthesize rateSlider = _rateSlider;
-
-@synthesize volumeLabel = _volumeLabel;
-@synthesize brightnessLabel = _brightnessLabel;
-@synthesize rateLabel = _rateLabel;
-
-- (instancetype)initWithFrame:(CGRect)frame {
-    self = [super initWithFrame:frame];
-    if ( !self ) return nil;
-    [self _SJVideoPlayerMoreSettingsFooterViewSetupUI];
-    [self _SJVideoPlayerMoreSettingsFooterViewObservers];
-    return self;
-}
-
-- (void)dealloc {
-    [self _SJVideoPlayerMoreSettingsFooterViewRemoveObservers];
-}
-
-// MARK: UI
-
-- (void)_SJVideoPlayerMoreSettingsFooterViewSetupUI {
-    
-    UIView *volumeBackgroundView = [UIView new];
-    UIView *brightnessBackgroundView = [UIView new];
-    UIView *rateBackgroundView = [UIView new];
-    
-    [self addSubview:volumeBackgroundView];
-    [self addSubview:brightnessBackgroundView];
-    [self addSubview:rateBackgroundView];
-    
-    [rateBackgroundView mas_makeConstraints:^(MASConstraintMaker *make) {
-        make.top.offset(25);
-        make.leading.trailing.offset(0);
-        make.height.offset((self.csj_h - 25 * 2) / 3);
-        
-    }];
-    
-    [volumeBackgroundView mas_makeConstraints:^(MASConstraintMaker *make) {
-        make.top.equalTo(rateBackgroundView.mas_bottom);
-        make.leading.trailing.offset(0);
-        make.height.equalTo(rateBackgroundView);
-    }];
-    
-    [brightnessBackgroundView mas_makeConstraints:^(MASConstraintMaker *make) {
-        make.top.equalTo(volumeBackgroundView.mas_bottom);
-        make.leading.trailing.offset(0);
-        make.height.equalTo(volumeBackgroundView);
-    }];
-    
-    
-    [volumeBackgroundView addSubview:self.volumeLabel];
-    [volumeBackgroundView addSubview:self.volumeSlider];
-    
-    [brightnessBackgroundView addSubview:self.brightnessLabel];
-    [brightnessBackgroundView addSubview:self.brightnessSlider];
-    
-    [rateBackgroundView addSubview:self.rateLabel];
-    [rateBackgroundView addSubview:self.rateSlider];
-    
-    [self _constraintsLabel:_volumeLabel slider:_volumeSlider];
-    
-    [self _constraintsLabel:_brightnessLabel slider:_brightnessSlider];
-    
-    [self _constraintsLabel:_rateLabel slider:_rateSlider];
-    
-}
-
-- (void)_constraintsLabel:(UILabel *)label slider:(SJSlider *)slider {
-    [label mas_makeConstraints:^(MASConstraintMaker *make) {
-        make.top.bottom.offset(0);
-        make.leading.offset(25);
-    }];
-    
-    [slider mas_makeConstraints:^(MASConstraintMaker *make) {
-        make.top.bottom.offset(0);
-        make.trailing.offset(-25);
-        make.leading.offset(99);
-    }];
-}
-
-
-- (SJSlider *)volumeSlider {
-    if ( _volumeSlider ) return _volumeSlider;
-    _volumeSlider = [self slider];
-    _volumeSlider.tag = SJVideoPlaySliderTag_Volume;
-    return _volumeSlider;
-}
-
-- (UILabel *)volumeLabel {
-    if ( _volumeLabel ) return _volumeLabel;
-    _volumeLabel = [self label];
-    _volumeLabel.text = @"音量";
-    return _volumeLabel;
-}
-
-- (SJSlider *)brightnessSlider {
-    if ( _brightnessSlider ) return _brightnessSlider;
-    _brightnessSlider = [self slider];
-    _brightnessSlider.tag = SJVideoPlaySliderTag_Brightness;
-    return _brightnessSlider;
-}
-
-- (UILabel *)brightnessLabel {
-    if ( _brightnessLabel ) return _brightnessLabel;
-    _brightnessLabel = [self label];
-    _brightnessLabel.text = @"亮度";
-    return _brightnessLabel;
-}
-
-- (SJSlider *)rateSlider {
-    if ( _rateSlider ) return _rateSlider;
-    _rateSlider = [self slider];
-    _rateSlider.tag = SJVideoPlaySliderTag_Rate;
-    _rateSlider.minValue = 0.5;
-    _rateSlider.maxValue = 1.5;
-    _rateSlider.value = 1.0;
-    return _rateSlider;
-}
-
-- (UILabel *)rateLabel {
-    if ( _rateLabel ) return _rateLabel;
-    _rateLabel = [self label];
-    _rateLabel.text = @"调速";
-    return _rateLabel;
-}
-
-- (UILabel *)label {
-    return [UILabel labelWithFontSize:12 textColor:[UIColor whiteColor] alignment:NSTextAlignmentCenter];
-}
-
-- (SJSlider *)slider {
-    SJSlider *slider = [SJSlider new];
-    return slider;
-}
-
-@end
-
-
-
-// MARK: More Settings FooterView  观察处理
-
-
-@implementation SJVideoPlayerMoreSettingsFooterView (DBObservers)
-
-
-- (void)_SJVideoPlayerMoreSettingsFooterViewObservers {
-    [self.volumeSlider addObserver:self forKeyPath:@"value" options:NSKeyValueObservingOptionNew context:nil];
-    [self.rateSlider addObserver:self forKeyPath:@"value" options:NSKeyValueObservingOptionNew context:nil];
-    [self.brightnessSlider addObserver:self forKeyPath:@"value" options:NSKeyValueObservingOptionNew context:nil];
-}
-
-- (void)_SJVideoPlayerMoreSettingsFooterViewRemoveObservers {
-    [self.volumeSlider removeObserver:self forKeyPath:@"value"];
-    [self.rateSlider removeObserver:self forKeyPath:@"value"];
-    [self.brightnessSlider removeObserver:self forKeyPath:@"value"];
-}
-
-- (void)observeValueForKeyPath:(NSString *)keyPath ofObject:(id)object change:(NSDictionary<NSKeyValueChangeKey,id> *)change context:(void *)context {
-    if ( object == _volumeSlider ) _volumeLabel.text = [NSString stringWithFormat:@"音量  %.01f", _volumeSlider.value];
-    if ( object == _rateSlider ) _rateLabel.text = [NSString stringWithFormat:@"调速  %.01f", _rateSlider.value];
-    if ( object == _brightnessSlider ) _brightnessLabel.text = [NSString stringWithFormat:@"亮度  %.01f", _brightnessSlider.value];
-}
-
-@end
-
 
 
 // MARK: More Settings Sliders
@@ -1558,219 +1655,20 @@ static NSString *const SJVideoPlayerMoreSettingsFooterViewID = @"SJVideoPlayerMo
 
 
 
+// MARK: Preview
 
-// MARK: More Setting Two Level
+@implementation SJVideoPlayerControlView (Preview)
 
-/// Cell
-static NSString *const SJVideoPlayerMoreSettingTwoSettingsCellID = @"SJVideoPlayerMoreSettingTwoSettingsCell";
-
-@interface SJVideoPlayerMoreSettingTwoSettingsCell : UICollectionViewCell
-@property (nonatomic, strong, readwrite) SJVideoPlayerMoreSettingTwoSetting *model;
-
-@end
-
-
-/// Header
-
-static NSString *const SJVideoPlayerMoreSettingTwoLevelSettingsHeaderViewID = @"SJVideoPlayerMoreSettingTwoLevelSettingsHeaderView";
-
-@interface SJVideoPlayerMoreSettingTwoLevelSettingsHeaderView : UICollectionReusableView
-
-@property (nonatomic, strong, readwrite) SJVideoPlayerMoreSetting *model;
-
-@end
-
-@interface SJVideoPlayerMoreSettingTwoLevelSettingsView (ColDataSourceMethods)<UICollectionViewDataSource>
-
-@end
-
-@interface SJVideoPlayerMoreSettingTwoLevelSettingsView ()
-
-@property (nonatomic, strong, readonly) UICollectionView *colView;
-@property (nonatomic, strong, readwrite) SJVideoPlayerMoreSettingTwoLevelSettingsHeaderView *headerView;
-
-@end
-
-@implementation SJVideoPlayerMoreSettingTwoLevelSettingsView
-
-@synthesize colView = _colView;
-
-- (instancetype)initWithFrame:(CGRect)frame {
-    self = [super initWithFrame:frame];
-    if ( !self ) return nil;
-    [self _SJVideoPlayerMoreSettingTwoLevelSettingsViewSetupUI];
-    return self;
+- (void)setPreviewImages:(NSArray<SJVideoPreviewModel *> *)previewImages {
+    objc_setAssociatedObject(self, @selector(previewImages), previewImages, OBJC_ASSOCIATION_RETAIN_NONATOMIC);
+    [self.previewImgColView reloadData];
 }
 
-- (void)setTwoLevelSettings:(SJVideoPlayerMoreSetting *)twoLevelSettings {
-    _twoLevelSettings = twoLevelSettings;
-    [self.colView reloadData];
-}
-
-// MARK: UI
-
-- (void)_SJVideoPlayerMoreSettingTwoLevelSettingsViewSetupUI {
-    self.backgroundColor = [UIColor colorWithWhite:0 alpha:0.85];
-    [self addSubview:self.colView];
-    [_colView mas_makeConstraints:^(MASConstraintMaker *make) {
-        make.edges.offset(0);
-    }];
-}
-
-- (UICollectionView *)colView {
-    if ( _colView ) return _colView;
-    CGFloat itemW_H = floor(SJMoreSettings_W / 3);
-    _colView = [UICollectionView collectionViewWithItemSize:CGSizeMake(itemW_H, itemW_H) backgroundColor:[UIColor clearColor] scrollDirection:UICollectionViewScrollDirectionVertical headerSize:CGSizeMake(SJMoreSettings_W, [SJVideoPlayerMoreSetting twoTitleFontSize] * 1.2 + 20) footerSize:CGSizeZero];
-    [_colView registerClass:NSClassFromString(SJVideoPlayerMoreSettingTwoSettingsCellID) forCellWithReuseIdentifier:SJVideoPlayerMoreSettingTwoSettingsCellID];
-    [_colView registerClass:NSClassFromString(SJVideoPlayerMoreSettingTwoLevelSettingsHeaderViewID) forSupplementaryViewOfKind:UICollectionElementKindSectionHeader withReuseIdentifier:SJVideoPlayerMoreSettingTwoLevelSettingsHeaderViewID];
-    _colView.dataSource = self;
-    return _colView;
+- (NSArray<SJVideoPreviewModel *> *)previewImages {
+    return objc_getAssociatedObject(self, _cmd);
 }
 
 @end
-
-@implementation SJVideoPlayerMoreSettingTwoLevelSettingsView (ColDataSourceMethods)
-
-// MARK: UICollectionViewDataSource
-
-- (NSInteger)numberOfSectionsInCollectionView:(UICollectionView *)collectionView {
-    return 1;
-}
-
-- (NSInteger)collectionView:(UICollectionView *)collectionView numberOfItemsInSection:(NSInteger)section {
-    return self.twoLevelSettings.twoSettingItems.count;
-}
-
-- (UICollectionViewCell *)collectionView:(UICollectionView *)collectionView cellForItemAtIndexPath:(NSIndexPath *)indexPath {
-    UICollectionViewCell *cell = [collectionView dequeueReusableCellWithReuseIdentifier:SJVideoPlayerMoreSettingTwoSettingsCellID forIndexPath:indexPath];
-    [cell setValue:self.twoLevelSettings.twoSettingItems[indexPath.row] forKey:@"model"];
-    return cell;
-}
-
-- (UICollectionReusableView *)collectionView:(UICollectionView *)collectionView viewForSupplementaryElementOfKind:(NSString *)kind atIndexPath:(NSIndexPath *)indexPath {
-    if ( ![kind isEqualToString:UICollectionElementKindSectionHeader] ) return nil;
-    self.headerView = [collectionView dequeueReusableSupplementaryViewOfKind:UICollectionElementKindSectionHeader withReuseIdentifier:SJVideoPlayerMoreSettingTwoLevelSettingsHeaderViewID forIndexPath:indexPath];
-    self.headerView.model = self.twoLevelSettings;
-    return self.headerView;
-}
-
-@end
-
-
-
-/// Cell
-
-@interface SJVideoPlayerMoreSettingTwoSettingsCell ()
-
-@property (nonatomic, strong, readonly) UIButton *itemBtn;
-
-@end
-
-@implementation SJVideoPlayerMoreSettingTwoSettingsCell
-
-@synthesize itemBtn = _itemBtn;
-
-- (instancetype)initWithFrame:(CGRect)frame {
-    self = [super initWithFrame:frame];
-    if ( !self ) return nil;
-    [self _SJVideoPlayerMoreSettingTwoSettingsCellSetupUI];
-    return self;
-}
-
-- (void)clickedBtn:(UIButton *)btn {
-    NSLog(@"clicked btn");
-    if ( self.model.clickedExeBlock ) self.model.clickedExeBlock(self.model);
-}
-
-- (void)setModel:(SJVideoPlayerMoreSettingTwoSetting *)model {
-    _model = model;
-    
-    NSAttributedString *attr = [NSAttributedString mh_imageTextWithImage:model.image imageW:model.image.size.width imageH:model.image.size.height title:model.title ? model.title : @"" fontSize:[SJVideoPlayerMoreSetting titleFontSize] titleColor:[SJVideoPlayerMoreSetting titleColor] spacing:6];
-    [_itemBtn setAttributedTitle:attr forState:UIControlStateNormal];
-}
-
-// MARK: UI
-
-- (void)_SJVideoPlayerMoreSettingTwoSettingsCellSetupUI {
-    [self.contentView addSubview:self.itemBtn];
-    [_itemBtn mas_makeConstraints:^(MASConstraintMaker *make) {
-        make.edges.offset(0);
-    }];
-}
-
-- (UIButton *)itemBtn {
-    if ( _itemBtn ) return _itemBtn;
-    _itemBtn = [UIButton buttonWithImageName:@"" tag:0 target:self sel:@selector(clickedBtn:)];
-    _itemBtn.titleLabel.numberOfLines = 3;
-    _itemBtn.titleLabel.textAlignment = NSTextAlignmentCenter;
-    return _itemBtn;
-}
-
-@end
-
-/// Header
-
-@interface SJVideoPlayerMoreSettingTwoLevelSettingsHeaderView ()
-
-@property (nonatomic, strong, readonly) SJBorderlineView *backgroundView;
-@property (nonatomic, strong, readonly) UILabel *titleLabel;
-
-@end
-
-@implementation SJVideoPlayerMoreSettingTwoLevelSettingsHeaderView
-
-@synthesize backgroundView = _backgroundView;
-@synthesize titleLabel = _titleLabel;
-
-- (instancetype)initWithFrame:(CGRect)frame {
-    self = [super initWithFrame:frame];
-    if ( !self ) return nil;
-    [self _SJVideoPlayerMoreSettingTwoLevelSettingsHeaderViewSetupUI];
-    return self;
-}
-
-
-- (void)setModel:(SJVideoPlayerMoreSetting *)model {
-    _model = model;
-    self.titleLabel.text = model.twoSettingTitle;
-}
-
-- (void)_SJVideoPlayerMoreSettingTwoLevelSettingsHeaderViewSetupUI {
-    [self addSubview:self.backgroundView];
-    [self.backgroundView addSubview:self.titleLabel];
-    
-    [_backgroundView mas_makeConstraints:^(MASConstraintMaker *make) {
-        make.edges.offset(0);
-    }];
-    
-    [_titleLabel mas_makeConstraints:^(MASConstraintMaker *make) {
-        make.leading.offset(15);
-        make.trailing.offset(-8);
-        make.top.bottom.offset(0);
-    }];
-}
-
-- (SJBorderlineView *)backgroundView {
-    if ( _backgroundView ) return _backgroundView;
-    _backgroundView = [SJBorderlineView borderlineViewWithSide:SJBorderlineSideBottom startMargin:15 endMargin:0 lineColor:[UIColor lightGrayColor] backgroundColor:[UIColor clearColor]];
-    return _backgroundView;
-}
-
-- (UILabel *)titleLabel {
-    if ( _titleLabel ) return _titleLabel;
-    _titleLabel = [UILabel labelWithFontSize:[SJVideoPlayerMoreSettingTwoSetting twoTitleFontSize] textColor:[SJVideoPlayerMoreSettingTwoSetting titleColor] alignment:NSTextAlignmentLeft];
-    return _titleLabel;
-}
-
-@end
-
-
-
-
-
-
-
-
 
 
 

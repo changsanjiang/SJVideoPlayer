@@ -295,7 +295,7 @@ static const NSString *SJPlayerItemStatusContext;
 }
 
 - (void)_buffering {
-    [self clickedPause];
+    if ( 0 == _player.rate ) [self clickedPause];
     dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(1 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
         [self play];
         if ( !_playerItem.isPlaybackLikelyToKeepUp ) [self _buffering];

@@ -133,6 +133,7 @@
 }
 
 - (void)moreSettings:(void (^)(NSMutableArray<SJVideoPlayerMoreSetting *> * _Nonnull))block {
+    [self.moreSettings removeAllObjects];
     if ( block ) block(self.moreSettings);
     [[NSNotificationCenter defaultCenter] postNotificationName:SJMoreSettingsNotification object:self.moreSettings];
 }
@@ -277,7 +278,11 @@
 @implementation SJVideoPlayer (Prompt)
 
 - (void)showTitle:(NSString *)title {
-    [self.prompt showTitle:title];
+    [self.prompt showTitle:title duration:1];
+}
+
+- (void)showTitle:(NSString *)title duration:(NSTimeInterval)duration {
+    [self.prompt showTitle:title duration:duration];
 }
 
 @end

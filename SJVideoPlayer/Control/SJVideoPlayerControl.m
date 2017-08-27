@@ -24,6 +24,8 @@
 
 #import "NSTimer+SJExtention.h"
 
+#import "SJVideoPlayer.h"
+
 
 /*!
  *  Refresh interval for timed observations of AVPlayer
@@ -568,6 +570,7 @@ static const NSString *SJPlayerItemStatusContext;
         self.isUserClickedPause = YES;
         [self clickedPause];
         _controlView.hiddenControl = NO;
+        [[SJVideoPlayer sharedPlayer] showTitle:@"已暂停" duration:0.8];
     }
     else {
         self.isUserClickedPause = NO;

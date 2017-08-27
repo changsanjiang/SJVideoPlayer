@@ -48,7 +48,7 @@
 
 // MARK: Public
 
-- (void)showTitle:(NSString *)title {
+- (void)showTitle:(NSString *)title duration:(NSTimeInterval)duration {
     [[UIApplication sharedApplication].keyWindow addSubview:self.backgroundView];
     CGFloat width = [self sizeFortitle:title size:CGSizeMake(1000, SJVideoPlayerPrompt_H)].width;
     [self.backgroundView mas_remakeConstraints:^(MASConstraintMaker *make) {
@@ -59,7 +59,7 @@
     _promptLabel.text = title;
     [self _show];
 
-    dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(1 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
+    dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(duration * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
         [self _hidden];
     });
 }

@@ -14,6 +14,6 @@
 
 + (instancetype)promptWithPresentView:(UIView *)presentView;
 
-- (void)showTitle:(NSString *)title;
+- (void)showTitle:(NSString *)title duration:(NSTimeInterval)duration;
 
 @end

@@ -109,7 +109,12 @@ NS_ASSUME_NONNULL_BEGIN
 
 @interface SJVideoPlayer (Prompt)
 
+/*!
+ *  duration default is 1.0
+ */
 - (void)showTitle:(NSString *)title;
+
+- (void)showTitle:(NSString *)title duration:(NSTimeInterval)duration;
 
 @end
 
@@ -121,23 +126,28 @@ NS_ASSUME_NONNULL_BEGIN
 
 @interface SJVideoPlayerMoreSetting : NSObject
 
-@property (nonatomic, strong, nullable) NSString *title;
-@property (nonatomic, strong, nullable) UIImage *image;
-@property (nonatomic, copy) void(^clickedExeBlock)(SJVideoPlayerMoreSetting *model);
-
+// MARK: ...
 
 /*!
  *  SJVideoPlayerMoreSetting.titleColor = [UIColor whiteColor];
+ *
  *  default is whiteColor
  */
-@property (nonatomic, strong, class) UIColor *titleColor;
+@property (class, nonatomic, strong) UIColor *titleColor;
 
 /*!
  *  SJVideoPlayerMoreSetting.titleFontSize = 12;
+ *
  *  deafult is 12
  */
-@property (nonatomic, assign, class) double titleFontSize;
+@property (class, nonatomic, assign) double titleFontSize;
 
+
+// MARK: ...
+
+@property (nonatomic, strong, nullable) NSString *title;
+@property (nonatomic, strong, nullable) UIImage *image;
+@property (nonatomic, copy) void(^clickedExeBlock)(SJVideoPlayerMoreSetting *model);
 
 - (instancetype)initWithTitle:(NSString *)title image:(UIImage *)image clickedExeBlock:(void(^)(SJVideoPlayerMoreSetting *model))block;
 

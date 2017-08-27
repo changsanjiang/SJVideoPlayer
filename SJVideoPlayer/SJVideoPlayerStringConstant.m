@@ -35,3 +35,6 @@ NSNotificationName const SJPlayerPlayFailedErrorNotification = @"SJPlayerPlayFai
 
 /// 配置播放器
 NSNotificationName const SJSettingsPlayerNotification = @"SJSettingsPlayerNotification";
+
+/// 配置更多按钮
+NSNotificationName const SJMoreSettingsNotification = @"SJMoreSettingsNotification";

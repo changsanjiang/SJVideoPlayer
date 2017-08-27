@@ -20,8 +20,6 @@
 
 #import <objc/message.h>
 
-#import "SJVideoPlayerMoreSetting.h"
-
 #import "NSTimer+SJExtention.h"
 
 #import "SJVideoPlayerStringConstant.h"
@@ -277,10 +275,6 @@ static NSString *const SJVideoPlayPreviewColCellID = @"SJVideoPlayPreviewColCell
 
 // MARK: Setter
 
-- (void)setMoreSettings:(NSArray<SJVideoPlayerMoreSetting *> *)moreSettings {
-    _moreSettings = moreSettings;
-    _moreSettingsView.moreSettings = moreSettings;
-}
 
 // MARK: UI
 
@@ -1116,11 +1110,6 @@ static NSString *const SJVideoPlayerMoreSettingsFooterViewID = @"SJVideoPlayerMo
     }];
 }
 
-- (void)setMoreSettings:(NSArray<SJVideoPlayerMoreSetting *> *)moreSettings {
-    _moreSettings = moreSettings;
-    [self.colView reloadData];
-}
-
 - (void)getMoreSettingsSlider:(void (^)(SJSlider *, SJSlider *, SJSlider *))block {
     if ( !block ) return;
     if ( self.footerView ) {
@@ -1266,6 +1255,7 @@ static NSString *const SJVideoPlayerMoreSettingsFooterViewID = @"SJVideoPlayerMo
 
 - (void)_SJVideoPlayerMoreSettingsViewInstallNotifications {
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(settingsPlayerNotification:) name:SJSettingsPlayerNotification object:nil];
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(moreSettingsNotification:) name:SJMoreSettingsNotification object:nil];
 }
 
 - (void)_SJVideoPlayerMoreSettingsViewRemoveNotifications {
@@ -1287,6 +1277,13 @@ static NSString *const SJVideoPlayerMoreSettingsFooterViewID = @"SJVideoPlayerMo
         }
     }];
 }
+
+- (void)moreSettingsNotification:(NSNotification *)notifi {
+    NSArray<SJVideoPlayerMoreSetting *> *moreSettings = notifi.object;
+    self.moreSettings = moreSettings;
+    [self.colView reloadData];
+}
+
 @end
 
 

@@ -12,8 +12,6 @@
 
 #import <Masonry.h>
 
-#import "SJVideoPlayerMoreSetting.h"
-
 @interface VideoPlayerViewController ()
 
 @property (nonatomic, assign, readwrite) NSTimeInterval currentTime;
@@ -101,8 +99,13 @@
         [[SJVideoPlayer sharedPlayer] showTitle:model.title];
     }];
     
-    player.moreSettings = @[model0, model1, model2, model3];
-    
+    [player moreSettings:^(NSMutableArray<SJVideoPlayerMoreSetting *> * _Nonnull moreSettings) {
+        [moreSettings addObject:model0];
+        [moreSettings addObject:model1];
+        [moreSettings addObject:model2];
+        [moreSettings addObject:model3];
+    }];
+        
     
 // MARK: Clicked Back Button
     

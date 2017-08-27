@@ -8,7 +8,7 @@
 
 #import <Foundation/Foundation.h>
 
-@class UIView, UIImage, UIColor, SJVideoPlayerMoreSetting;
+@class UIView, UIImage, UIColor, SJVideoPlayerMoreSetting, SJVideoPlayerMoreSetting;
 
 NS_ASSUME_NONNULL_BEGIN
 
@@ -52,6 +52,11 @@ NS_ASSUME_NONNULL_BEGIN
 - (void)playerSettings:(void(^)(SJVideoPlayerSettings *settings))block;
 
 /*!
+ *  clicked More button to display items.
+ */
+- (void)moreSettings:(void(^)(NSMutableArray<SJVideoPlayerMoreSetting *> *moreSettings))block;
+
+/*!
  *  clicked back btn exe block.
  */
 @property (nonatomic, copy, readwrite) void(^clickedBackEvent)();
@@ -70,11 +75,6 @@ NS_ASSUME_NONNULL_BEGIN
  *  loading show this.
  */
 @property (nonatomic, strong, readwrite) UIImage *placeholder;
-
-/*!
- *  clicked More button to display items.
- */
-@property (nonatomic, strong, readwrite) NSArray<SJVideoPlayerMoreSetting *> *moreSettings;
 
 /*!
  *  error.
@@ -110,6 +110,36 @@ NS_ASSUME_NONNULL_BEGIN
 @interface SJVideoPlayer (Prompt)
 
 - (void)showTitle:(NSString *)title;
+
+@end
+
+
+
+
+
+
+
+@interface SJVideoPlayerMoreSetting : NSObject
+
+@property (nonatomic, strong, nullable) NSString *title;
+@property (nonatomic, strong, nullable) UIImage *image;
+@property (nonatomic, copy) void(^clickedExeBlock)(SJVideoPlayerMoreSetting *model);
+
+
+/*!
+ *  SJVideoPlayerMoreSetting.titleColor = [UIColor whiteColor];
+ *  default is whiteColor
+ */
+@property (nonatomic, strong, class) UIColor *titleColor;
+
+/*!
+ *  SJVideoPlayerMoreSetting.titleFontSize = 12;
+ *  deafult is 12
+ */
+@property (nonatomic, assign, class) double titleFontSize;
+
+
+- (instancetype)initWithTitle:(NSString *)title image:(UIImage *)image clickedExeBlock:(void(^)(SJVideoPlayerMoreSetting *model))block;
 
 @end
 

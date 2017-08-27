@@ -16,7 +16,6 @@
 		7700D05B1F502CF700B043F8 /* SJVideoPlayerControl.m in Sources */ = {isa = PBXBuildFile; fileRef = 7700D0491F502CF700B043F8 /* SJVideoPlayerControl.m */; };
 		7700D05C1F502CF700B043F8 /* SJVideoPlayerControlView.m in Sources */ = {isa = PBXBuildFile; fileRef = 7700D04B1F502CF700B043F8 /* SJVideoPlayerControlView.m */; };
 		7700D05D1F502CF700B043F8 /* SJVideoPlayerTipsView.m in Sources */ = {isa = PBXBuildFile; fileRef = 7700D04D1F502CF700B043F8 /* SJVideoPlayerTipsView.m */; };
-		7700D05E1F502CF700B043F8 /* SJVideoPlayerMoreSetting.m in Sources */ = {isa = PBXBuildFile; fileRef = 7700D0501F502CF700B043F8 /* SJVideoPlayerMoreSetting.m */; };
 		7700D05F1F502CF700B043F8 /* SJVideoPlayerPresentView.m in Sources */ = {isa = PBXBuildFile; fileRef = 7700D0531F502CF700B043F8 /* SJVideoPlayerPresentView.m */; };
 		7700D0601F502CF700B043F8 /* SJVideoPlayer.m in Sources */ = {isa = PBXBuildFile; fileRef = 7700D0551F502CF700B043F8 /* SJVideoPlayer.m */; };
 		7700D0611F502CF700B043F8 /* SJVideoPlayerStringConstant.m in Sources */ = {isa = PBXBuildFile; fileRef = 7700D0571F502CF700B043F8 /* SJVideoPlayerStringConstant.m */; };
@@ -53,8 +52,6 @@
 		7700D04B1F502CF700B043F8 /* SJVideoPlayerControlView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SJVideoPlayerControlView.m; sourceTree = "<group>"; };
 		7700D04C1F502CF700B043F8 /* SJVideoPlayerTipsView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SJVideoPlayerTipsView.h; sourceTree = "<group>"; };
 		7700D04D1F502CF700B043F8 /* SJVideoPlayerTipsView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SJVideoPlayerTipsView.m; sourceTree = "<group>"; };
-		7700D04F1F502CF700B043F8 /* SJVideoPlayerMoreSetting.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SJVideoPlayerMoreSetting.h; sourceTree = "<group>"; };
-		7700D0501F502CF700B043F8 /* SJVideoPlayerMoreSetting.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SJVideoPlayerMoreSetting.m; sourceTree = "<group>"; };
 		7700D0521F502CF700B043F8 /* SJVideoPlayerPresentView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SJVideoPlayerPresentView.h; sourceTree = "<group>"; };
 		7700D0531F502CF700B043F8 /* SJVideoPlayerPresentView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SJVideoPlayerPresentView.m; sourceTree = "<group>"; };
 		7700D0541F502CF700B043F8 /* SJVideoPlayer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SJVideoPlayer.h; sourceTree = "<group>"; };
@@ -114,7 +111,6 @@
 				7700D0571F502CF700B043F8 /* SJVideoPlayerStringConstant.m */,
 				7700D0401F502CF700B043F8 /* Category */,
 				7700D0471F502CF700B043F8 /* Control */,
-				7700D04E1F502CF700B043F8 /* Model */,
 				7700D0511F502CF700B043F8 /* Present */,
 				7798A3071F517ADC004CB9BA /* Prompt */,
 			);
@@ -146,15 +142,6 @@
 				7700D04D1F502CF700B043F8 /* SJVideoPlayerTipsView.m */,
 			);
 			path = Control;
-			sourceTree = "<group>";
-		};
-		7700D04E1F502CF700B043F8 /* Model */ = {
-			isa = PBXGroup;
-			children = (
-				7700D04F1F502CF700B043F8 /* SJVideoPlayerMoreSetting.h */,
-				7700D0501F502CF700B043F8 /* SJVideoPlayerMoreSetting.m */,
-			);
-			path = Model;
 			sourceTree = "<group>";
 		};
 		7700D0511F502CF700B043F8 /* Present */ = {
@@ -372,7 +359,6 @@
 				7700D05D1F502CF700B043F8 /* SJVideoPlayerTipsView.m in Sources */,
 				7798A30A1F517B8B004CB9BA /* SJVideoPlayerPrompt.m in Sources */,
 				772D46371F46E4CE0047A7BF /* AppDelegate.m in Sources */,
-				7700D05E1F502CF700B043F8 /* SJVideoPlayerMoreSetting.m in Sources */,
 				7700D0591F502CF700B043F8 /* NSTimer+SJExtention.m in Sources */,
 				7700D0601F502CF700B043F8 /* SJVideoPlayer.m in Sources */,
 				7700D05B1F502CF700B043F8 /* SJVideoPlayerControl.m in Sources */,

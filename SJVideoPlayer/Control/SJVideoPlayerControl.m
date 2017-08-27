@@ -22,8 +22,6 @@
 
 #import "SJVideoPlayerStringConstant.h"
 
-#import "SJVideoPlayerMoreSetting.h"
-
 #import "NSTimer+SJExtention.h"
 
 
@@ -462,23 +460,6 @@ static const NSString *SJPlayerItemStatusContext;
 }
 
 // MARK: Setter
-
-- (void)setMoreSettings:(NSArray<SJVideoPlayerMoreSetting *> *)moreSettings {
-    _moreSettings = moreSettings;
-    __weak typeof(self) _self = self;
-    [moreSettings enumerateObjectsUsingBlock:^(SJVideoPlayerMoreSetting * _Nonnull obj, NSUInteger idx, BOOL * _Nonnull stop) {
-        if ( obj.clickedExeBlock ) {
-            void(^clickedExeBlock)(SJVideoPlayerMoreSetting *model) = [obj.clickedExeBlock copy];
-            obj.clickedExeBlock = ^(SJVideoPlayerMoreSetting * _Nonnull model) {
-                clickedExeBlock(model);
-                __strong typeof(_self) self = _self;
-                if ( !self ) return;
-                self.controlView.hiddenMoreSettingsView = YES;
-            };
-        }
-    }];
-    _controlView.moreSettings = moreSettings;
-}
 
 // MARK: Getter
 
@@ -957,6 +938,8 @@ static UIView *target = nil;
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(applicationDidBecomeActiveNotification) name:UIApplicationDidBecomeActiveNotification object:nil];
     
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(settingsPlayerNotification:) name:SJSettingsPlayerNotification object:nil];
+    
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(moreSettingsNotification:) name:SJMoreSettingsNotification object:nil];
 }
 
 - (void)_SJVideoPlayerControlRemoveNotifications {
@@ -1041,6 +1024,23 @@ static UIView *target = nil;
     if ( settings.muteImage ) self.volumeView.minShowImage = settings.muteImage;
     if ( settings.brightnessImage ) self.brightnessView.normalShowImage = settings.brightnessImage;
 }
+
+- (void)moreSettingsNotification:(NSNotification *)notifi {
+    NSArray<SJVideoPlayerMoreSetting *> *moreSettings = notifi.object;
+    __weak typeof(self) _self = self;
+    [moreSettings enumerateObjectsUsingBlock:^(SJVideoPlayerMoreSetting * _Nonnull obj, NSUInteger idx, BOOL * _Nonnull stop) {
+        if ( obj.clickedExeBlock ) {
+            void(^clickedExeBlock)(SJVideoPlayerMoreSetting *model) = [obj.clickedExeBlock copy];
+            obj.clickedExeBlock = ^(SJVideoPlayerMoreSetting * _Nonnull model) {
+                clickedExeBlock(model);
+                __strong typeof(_self) self = _self;
+                if ( !self ) return;
+                self.controlView.hiddenMoreSettingsView = YES;
+            };
+        }
+    }];
+}
+
 @end
 
 

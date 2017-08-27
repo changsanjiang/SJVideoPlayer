@@ -26,9 +26,11 @@
 
 #import "SJVideoPlayerStringConstant.h"
 
-#import "SJVideoPlayerMoreSetting.h"
-
 #import "SJVideoPlayerPrompt.h"
+
+#import <objc/message.h>
+
+#import <UIKit/UIColor.h>
 
 // MARK: 通知处理
 
@@ -55,6 +57,7 @@
 @property (nonatomic, strong, readonly) SJVideoPlayerPrompt *prompt;
 
 @property (nonatomic, strong, readonly) SJVideoPlayerSettings *settings;
+@property (nonatomic, strong, readonly) NSMutableArray<SJVideoPlayerMoreSetting *> *moreSettings;
 
 @end
 
@@ -66,6 +69,7 @@
 @synthesize presentView = _presentView;
 @synthesize prompt = _prompt;
 @synthesize settings = _settings;
+@synthesize moreSettings = _moreSettings;
 
 
 + (instancetype)sharedPlayer {
@@ -117,11 +121,6 @@
     _presentView.placeholderImage = placeholder;
 }
 
-- (void)setMoreSettings:(NSArray<SJVideoPlayerMoreSetting *> *)moreSettings {
-    _moreSettings = moreSettings;
-    _control.moreSettings = moreSettings;
-}
-
 // MARK: Public
 
 - (UIView *)view {
@@ -131,6 +130,11 @@
 - (void)playerSettings:(void (^)(SJVideoPlayerSettings * _Nonnull))block {
     if ( block ) block(self.settings);
     [[NSNotificationCenter defaultCenter] postNotificationName:SJSettingsPlayerNotification object:self.settings];
+}
+
+- (void)moreSettings:(void (^)(NSMutableArray<SJVideoPlayerMoreSetting *> * _Nonnull))block {
+    if ( block ) block(self.moreSettings);
+    [[NSNotificationCenter defaultCenter] postNotificationName:SJMoreSettingsNotification object:self.moreSettings];
 }
 
 // MARK: Private
@@ -193,6 +197,11 @@
     return _settings;
 }
 
+- (NSMutableArray<SJVideoPlayerMoreSetting *> *)moreSettings {
+    if ( _moreSettings ) return _moreSettings;
+    _moreSettings = [NSMutableArray new];
+    return _moreSettings;
+}
 @end
 
 
@@ -275,3 +284,42 @@
 
 
 @implementation SJVideoPlayerSettings@end
+
+
+@implementation SJVideoPlayerMoreSetting
+
++ (UIColor *)titleColor {
+    UIColor *color = objc_getAssociatedObject(self, _cmd);
+    if ( color ) return color;
+    color = [UIColor whiteColor];
+    [self setTitleColor:color];
+    return color;
+}
+
++ (void)setTitleColor:(UIColor *)titleColor {
+    objc_setAssociatedObject(self, @selector(titleColor), titleColor, OBJC_ASSOCIATION_RETAIN_NONATOMIC);
+}
+
++ (double)titleFontSize {
+    double fontSize = [objc_getAssociatedObject(self, _cmd) doubleValue];
+    if ( 0 != fontSize ) return fontSize;
+    fontSize = 12;
+    [self setTitleFontSize:fontSize];
+    return fontSize;
+}
+
++ (void)setTitleFontSize:(double)titleFontSize {
+    objc_setAssociatedObject(self, @selector(titleFontSize), @(titleFontSize), OBJC_ASSOCIATION_RETAIN_NONATOMIC);
+}
+
+- (instancetype)initWithTitle:(NSString *)title image:(UIImage *)image clickedExeBlock:(void(^)(SJVideoPlayerMoreSetting *model))block; {
+    self = [super init];
+    if ( !self ) return self;
+    self.title = title;
+    self.image = image;
+    self.clickedExeBlock = block;
+    return self;
+}
+
+
+@end

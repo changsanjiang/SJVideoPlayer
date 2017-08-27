@@ -23,8 +23,6 @@
 
 - (void)setAsset:(AVAsset *)asset playerItem:(AVPlayerItem *)playerItem player:(AVPlayer *)player;
 
-@property (nonatomic, strong, readwrite) SJVideoPlayerSettings *settings;
-
 /*!
  *  controlView.
  */

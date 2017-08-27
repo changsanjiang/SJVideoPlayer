@@ -826,6 +826,9 @@ static UIView *target = nil;
 
 - (void)jumpedToCMTime:(CMTime)time completionHandler:(void (^)(BOOL))completionHandler {
     if ( self.playerItem.status != AVPlayerStatusReadyToPlay ) return;
+    CMTime sub = CMTimeSubtract(_playerItem.currentTime, time);
+    // 小于1秒 不给跳.
+    if ( labs(sub.value / sub.timescale) < 1 ) return;
     [self.player seekToTime:time completionHandler:^(BOOL finished) {
         if ( completionHandler ) completionHandler(finished);
     }];
@@ -841,7 +844,7 @@ static UIView *target = nil;
 - (void)sliderWillBeginDragging:(SJSlider *)slider {
     switch (slider.tag) {
         case SJVideoPlaySliderTag_Control: {
-            if ( _timeObserver ) [self.player removeTimeObserver:_timeObserver];
+            if ( _timeObserver ) {[self.player removeTimeObserver:_timeObserver]; _timeObserver = nil;}
             _controlView.draggingProgressView.value = _controlView.sliderControl.value;
             _controlView.hiddenDraggingProgress = NO;
         }

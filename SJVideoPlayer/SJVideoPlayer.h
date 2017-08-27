@@ -117,7 +117,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 
 
-
+// MARK: More Settings Model
 
 @interface SJVideoPlayerMoreSetting : NSObject
 

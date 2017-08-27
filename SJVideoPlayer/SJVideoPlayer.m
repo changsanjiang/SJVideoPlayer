@@ -140,7 +140,6 @@
 // MARK: Private
 
 - (void)_sjVideoPlayerPrepareToPlay {
-    
     [[NSNotificationCenter defaultCenter] postNotificationName:SJPlayerPrepareToPlayNotification object:nil];
     
     _error = nil;
@@ -202,6 +201,7 @@
     _moreSettings = [NSMutableArray new];
     return _moreSettings;
 }
+
 @end
 
 

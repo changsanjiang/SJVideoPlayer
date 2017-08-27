@@ -567,14 +567,11 @@ static const NSString *SJPlayerItemStatusContext;
 - (void)handleDoubleTap:(UITapGestureRecognizer *)tap {
     NSLog(@"double tap");
     if ( self.lastPlaybackRate > 0.f ) {
-        self.isUserClickedPause = YES;
-        [self clickedPause];
+        [self controlView:_controlView clickedBtnTag:SJVideoPlayControlViewTag_Pause];
         _controlView.hiddenControl = NO;
-        [[SJVideoPlayer sharedPlayer] showTitle:@"已暂停" duration:0.8];
     }
     else {
-        self.isUserClickedPause = NO;
-        [self clickedPlay];
+        [self controlView:_controlView clickedBtnTag:SJVideoPlayControlViewTag_Play];
         _controlView.hiddenControl = YES;
     }
     
@@ -722,6 +719,7 @@ static UIView *target = nil;
         }
             break;
         case SJVideoPlayControlViewTag_Pause: {
+            [[SJVideoPlayer sharedPlayer] showTitle:@"已暂停" duration:0.8];
             self.isUserClickedPause = YES;
             [self clickedPause];
         }

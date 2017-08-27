@@ -84,10 +84,6 @@
         [[SJVideoPlayer sharedPlayer] showTitle:@"超长震古烁今的名字"];
     }];
     
-    SJVideoPlayerMoreSetting *model1 = [[SJVideoPlayerMoreSetting alloc] initWithTitle:@"缓存" image:[UIImage imageNamed:@"db_audio_play_download_n"] clickedExeBlock:^(SJVideoPlayerMoreSetting * _Nonnull model) {
-        NSLog(@"clicked %@", model.title);
-        [[SJVideoPlayer sharedPlayer] showTitle:model.title];
-    }];
     
     SJVideoPlayerMoreSetting *model2 = [[SJVideoPlayerMoreSetting alloc] initWithTitle:@"收藏" image:[UIImage imageNamed:@"db_video_favorite_n"] clickedExeBlock:^(SJVideoPlayerMoreSetting * _Nonnull model) {
         NSLog(@"clicked %@", model.title);
@@ -96,6 +92,29 @@
 
     
 // MARK: 2 Level More Settings
+    
+    SJVideoPlayerMoreSettingTwoSetting *twoS0 = [[SJVideoPlayerMoreSettingTwoSetting alloc] initWithTitle:@"高清" image:nil clickedExeBlock:^(SJVideoPlayerMoreSetting * _Nonnull model) {
+        [[SJVideoPlayer sharedPlayer] showTitle:model.title];
+    }];
+    
+    SJVideoPlayerMoreSettingTwoSetting *twoS1 = [[SJVideoPlayerMoreSettingTwoSetting alloc] initWithTitle:@"标准" image:nil clickedExeBlock:^(SJVideoPlayerMoreSetting * _Nonnull model) {
+        [[SJVideoPlayer sharedPlayer] showTitle:model.title];
+    }];
+    
+// MARK: 1 Level More Settings
+    
+    SJVideoPlayerMoreSetting *model1 =
+    [[SJVideoPlayerMoreSetting alloc] initWithTitle:@"缓存"
+                                              image:[UIImage imageNamed:@"db_audio_play_download_n"]
+                                     showTowSetting:YES
+                                    twoSettingTitle:@"缓存方式"
+                                    twoSettingItems:@[twoS0, twoS1]
+                                    clickedExeBlock:^(SJVideoPlayerMoreSetting * _Nonnull model) {}];
+    
+    
+// MARK: 2 Level More Settings
+    
+    SJVideoPlayerMoreSetting.twoTitleFontSize = 14;
     
     SJVideoPlayerMoreSettingTwoSetting *twoSetting0 = [[SJVideoPlayerMoreSettingTwoSetting alloc] initWithTitle:@"QQ" image:[UIImage imageNamed:@"db_login_qq"] clickedExeBlock:^(SJVideoPlayerMoreSetting * _Nonnull model) {
         [[SJVideoPlayer sharedPlayer] showTitle:model.title];

@@ -1620,7 +1620,7 @@ static NSString *const SJVideoPlayerMoreSettingTwoLevelSettingsHeaderViewID = @"
 - (UICollectionView *)colView {
     if ( _colView ) return _colView;
     CGFloat itemW_H = floor(SJMoreSettings_W / 3);
-    _colView = [UICollectionView collectionViewWithItemSize:CGSizeMake(itemW_H, itemW_H) backgroundColor:[UIColor clearColor] scrollDirection:UICollectionViewScrollDirectionVertical headerSize:CGSizeMake(SJMoreSettings_W, 36) footerSize:CGSizeZero];
+    _colView = [UICollectionView collectionViewWithItemSize:CGSizeMake(itemW_H, itemW_H) backgroundColor:[UIColor clearColor] scrollDirection:UICollectionViewScrollDirectionVertical headerSize:CGSizeMake(SJMoreSettings_W, [SJVideoPlayerMoreSetting twoTitleFontSize] * 1.2 + 20) footerSize:CGSizeZero];
     [_colView registerClass:NSClassFromString(SJVideoPlayerMoreSettingTwoSettingsCellID) forCellWithReuseIdentifier:SJVideoPlayerMoreSettingTwoSettingsCellID];
     [_colView registerClass:NSClassFromString(SJVideoPlayerMoreSettingTwoLevelSettingsHeaderViewID) forSupplementaryViewOfKind:UICollectionElementKindSectionHeader withReuseIdentifier:SJVideoPlayerMoreSettingTwoLevelSettingsHeaderViewID];
     _colView.dataSource = self;
@@ -1684,18 +1684,8 @@ static NSString *const SJVideoPlayerMoreSettingTwoLevelSettingsHeaderViewID = @"
 
 - (void)setModel:(SJVideoPlayerMoreSettingTwoSetting *)model {
     _model = model;
-    if ( model.title && !model.image ) {
-        [_itemBtn setTitle:model.title forState:UIControlStateNormal];
-        _itemBtn.titleLabel.font = [UIFont systemFontOfSize:[SJVideoPlayerMoreSetting titleFontSize]];
-        return;
-    }
     
-    if ( !model.title && model.image ) {
-        [_itemBtn setImage:model.image forState:UIControlStateNormal];
-        return;
-    }
-    
-    NSAttributedString *attr = [NSAttributedString mh_imageTextWithImage:model.image imageW:model.image.size.width imageH:model.image.size.height title:model.title fontSize:[SJVideoPlayerMoreSetting titleFontSize] titleColor:[SJVideoPlayerMoreSetting titleColor] spacing:6];
+    NSAttributedString *attr = [NSAttributedString mh_imageTextWithImage:model.image imageW:model.image.size.width imageH:model.image.size.height title:model.title ? model.title : @"" fontSize:[SJVideoPlayerMoreSetting titleFontSize] titleColor:[SJVideoPlayerMoreSetting titleColor] spacing:6];
     [_itemBtn setAttributedTitle:attr forState:UIControlStateNormal];
 }
 

@@ -151,8 +151,8 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic, strong, nullable) UIImage *image;
 @property (nonatomic, copy) void(^clickedExeBlock)(SJVideoPlayerMoreSetting *model);
 
-- (instancetype)initWithTitle:(NSString *)title
-                        image:(UIImage *)image
+- (instancetype)initWithTitle:(NSString *__nullable)title
+                        image:(UIImage *__nullable)image
               clickedExeBlock:(void(^)(SJVideoPlayerMoreSetting *model))block;
 
 
@@ -169,8 +169,8 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic, strong) NSString *twoSettingTitle;
 @property (nonatomic, strong) NSArray<SJVideoPlayerMoreSettingTwoSetting *> *twoSettingItems;
 
-- (instancetype)initWithTitle:(NSString *)title
-                        image:(UIImage *)image
+- (instancetype)initWithTitle:(NSString *__nullable)title
+                        image:(UIImage *__nullable)image
                showTowSetting:(BOOL)showTowSetting                                      // show
               twoSettingTitle:(NSString *)twoSettingTitle                               // title
               twoSettingItems:(NSArray<SJVideoPlayerMoreSettingTwoSetting *> *)items    // items

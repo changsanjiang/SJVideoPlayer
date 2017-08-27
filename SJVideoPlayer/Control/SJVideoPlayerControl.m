@@ -64,6 +64,8 @@ static const NSString *SJPlayerItemStatusContext;
 
 @property (nonatomic, assign, readwrite) BOOL isHiddenControl;
 
+@property (nonatomic, assign, readwrite) BOOL isPlaying;
+
 @end
 
 
@@ -295,7 +297,7 @@ static const NSString *SJPlayerItemStatusContext;
 }
 
 - (void)_buffering {
-    if ( 0 == _player.rate ) [self clickedPause];
+    if ( 0 == self.lastPlaybackRate ) [self clickedPause];
     dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(1 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
         [self play];
         if ( !_playerItem.isPlaybackLikelyToKeepUp ) [self _buffering];
@@ -398,7 +400,7 @@ static const NSString *SJPlayerItemStatusContext;
     [_imageGenerator cancelAllCGImageGeneration];
     
     self.playerItem = nil;
-    
+    _backstageRegistrar = nil;
     _rate = 1;
 }
 
@@ -770,6 +772,7 @@ static UIView *target = nil;
 }
 
 - (void)clickedPlay {
+    if ( self.backstageRegistrar.isPlaying ) return;
     if ( 0 != self.player.rate ) return;
     if ( 1 >= CMTimeGetSeconds(_playerItem.currentTime) ) {
         [[NSNotificationCenter defaultCenter] postNotificationName:SJPlayerBeginPlayingNotification object:nil];
@@ -779,13 +782,16 @@ static UIView *target = nil;
     self.controlView.hiddenPlayBtn = YES;
     self.controlView.hiddenPauseBtn = NO;
     self.lastPlaybackRate = self.player.rate;
+    self.backstageRegistrar.isPlaying = YES;
 }
 
 - (void)clickedPause {
+    if ( !self.backstageRegistrar.isPlaying ) return;
     [self.player pause];
     self.controlView.hiddenPlayBtn = NO;
     self.controlView.hiddenPauseBtn = YES;
     self.lastPlaybackRate = self.player.rate;
+    self.backstageRegistrar.isPlaying = NO;
 }
 
 - (void)clickedReplay {

@@ -785,11 +785,7 @@ static UIView *target = nil;
 
 - (void)clickedReplay {
     [[NSNotificationCenter defaultCenter] postNotificationName:SJPlayerBeginPlayingNotification object:nil];
-    [self.player play];
-    self.controlView.hiddenReplayBtn = YES;
-    self.controlView.hiddenPlayBtn = YES;
-    self.controlView.hiddenPauseBtn = NO;
-    self.lastPlaybackRate = self.player.rate;
+    [self clickedPlay];
 }
 
 - (void)clickedBack {
@@ -898,6 +894,7 @@ static UIView *target = nil;
         case SJVideoPlaySliderTag_Control: {
             [self addPlayerItemTimeObserver];
             if ( self.lastPlaybackRate > 0.f) [self clickedPlay];
+            if ( self.backstageRegistrar.isPlayEnded ) [self clickedPlay];
             _controlView.hiddenDraggingProgress = YES;
         }
             break;

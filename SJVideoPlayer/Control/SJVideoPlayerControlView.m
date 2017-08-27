@@ -577,6 +577,7 @@ static NSString *const SJVideoPlayPreviewColCellID = @"SJVideoPlayPreviewColCell
     _draggingProgressView.trackHeight = 3;
     _draggingProgressView.trackImageView.backgroundColor = [UIColor colorWithWhite:0 alpha:0.3];
     _draggingProgressView.pan.enabled = NO;
+    _draggingProgressView.tag = SJVideoPlaySliderTag_Dragging;
     return _draggingProgressView;
 }
 

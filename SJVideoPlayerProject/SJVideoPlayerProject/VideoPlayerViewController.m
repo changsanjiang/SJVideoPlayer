@@ -65,6 +65,8 @@
                                                green:1.0 * (arc4random() % 256 / 255.0)
                                                 blue:1.0 * (arc4random() % 256 / 255.0)
                                                alpha:1];
+        settings.replayBtnTitle = @"播放完毕, 点击重播";
+        settings.replayBtnFontSize = 12;
     }];
     
     

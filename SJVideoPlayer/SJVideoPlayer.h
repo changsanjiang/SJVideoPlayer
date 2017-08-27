@@ -16,26 +16,27 @@ NS_ASSUME_NONNULL_BEGIN
 @interface SJVideoPlayerSettings : NSObject
 
 // MARK: btns
-@property (nonatomic, strong) UIImage *backBtnImage;
-@property (nonatomic, strong) UIImage *playBtnImage;
-@property (nonatomic, strong) UIImage *pauseBtnImage;
-@property (nonatomic, strong) UIImage *replayBtnImage;
-@property (nonatomic, strong) NSString *replayBtnTitle;
-@property (nonatomic, strong) UIImage *fullBtnImage;
-@property (nonatomic, strong) UIImage *previewBtnImage;
-@property (nonatomic, strong) UIImage *moreBtnImage;
-@property (nonatomic, strong) UIImage *lockBtnImage;
-@property (nonatomic, strong) UIImage *unlockBtnImage;
+@property (nonatomic, strong, readwrite) UIImage *backBtnImage;
+@property (nonatomic, strong, readwrite) UIImage *playBtnImage;
+@property (nonatomic, strong, readwrite) UIImage *pauseBtnImage;
+@property (nonatomic, strong, readwrite) UIImage *replayBtnImage;
+@property (nonatomic, strong, readwrite) NSString *replayBtnTitle;
+@property (nonatomic, assign, readwrite) float replayBtnFontSize;
+@property (nonatomic, strong, readwrite) UIImage *fullBtnImage;
+@property (nonatomic, strong, readwrite) UIImage *previewBtnImage;
+@property (nonatomic, strong, readwrite) UIImage *moreBtnImage;
+@property (nonatomic, strong, readwrite) UIImage *lockBtnImage;
+@property (nonatomic, strong, readwrite) UIImage *unlockBtnImage;
 
 // MARK: slider
-@property (nonatomic, strong) UIColor *traceColor;
-@property (nonatomic, strong) UIColor *trackColor;
-@property (nonatomic, strong) UIColor *bufferColor;
+@property (nonatomic, strong, readwrite) UIColor *traceColor;
+@property (nonatomic, strong, readwrite) UIColor *trackColor;
+@property (nonatomic, strong, readwrite) UIColor *bufferColor;
 
 // MARK: volume & brightness
-@property (nonatomic, strong) UIImage *volumeImage;
-@property (nonatomic, strong) UIImage *muteImage;
-@property (nonatomic, strong) UIImage *brightnessImage;
+@property (nonatomic, strong, readwrite) UIImage *volumeImage;
+@property (nonatomic, strong, readwrite) UIImage *muteImage;
+@property (nonatomic, strong, readwrite) UIImage *brightnessImage;
 
 @end
 

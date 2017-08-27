@@ -653,14 +653,11 @@ static NSString *const SJVideoPlayPreviewColCellID = @"SJVideoPlayPreviewColCell
     }
     if ( settings.bufferColor ) self.sliderControl.bufferProgressColor = settings.bufferColor;
     
-    if ( settings.replayBtnImage && 0 == settings.replayBtnTitle.length ) {
-        [self.replayBtn setImage:settings.replayBtnImage forState:UIControlStateNormal];
-    }
-    if ( settings.replayBtnTitle && nil == settings.replayBtnImage ) {
-        [self.replayBtn setTitle:settings.replayBtnTitle forState:UIControlStateNormal];
-    }
-    if ( settings.replayBtnTitle && settings.replayBtnImage ) {
-        NSAttributedString *attr = [NSAttributedString mh_imageTextWithImage:settings.replayBtnImage imageW:settings.replayBtnImage.size.width imageH:settings.replayBtnImage.size.height title:settings.replayBtnTitle fontSize:16 titleColor:[UIColor whiteColor] spacing:6];
+    if ( settings.replayBtnTitle || settings.replayBtnImage ) {
+        UIImage *image = settings.replayBtnImage ? settings.replayBtnImage : [UIImage imageNamed:@"sj_video_player_replay"];
+        NSString *title = settings.replayBtnTitle ? settings.replayBtnTitle : @"重播";
+        float fontSize = 0 != settings.replayBtnFontSize ? settings.replayBtnFontSize : 16;
+        NSAttributedString *attr = [NSAttributedString mh_imageTextWithImage:image imageW:image.size.width imageH:image.size.height title:title fontSize:fontSize titleColor:[UIColor whiteColor] spacing:6];
         [self.replayBtn setAttributedTitle:attr forState:UIControlStateNormal];
     }
 }

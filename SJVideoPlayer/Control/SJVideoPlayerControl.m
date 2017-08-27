@@ -770,8 +770,7 @@ static UIView *target = nil;
     self.controlView.hiddenReplayBtn = YES;
     self.controlView.hiddenPlayBtn = YES;
     self.controlView.hiddenPauseBtn = NO;
-    self.player.rate = self.rate;
-    self.lastPlaybackRate = self.player.rate;
+    self.lastPlaybackRate = self.player.rate = self.rate;
     self.backstageRegistrar.isPlaying = YES;
 }
 
@@ -826,7 +825,7 @@ static UIView *target = nil;
     _controlView.hiddenMoreSettingsView = NO;
     _controlView.volumeSlider.value = _systemVolume.value;
     _controlView.brightnessSlider.value = [UIScreen mainScreen].brightness;
-    _controlView.rateSlider.value = _player.rate;
+    _controlView.rateSlider.value = self.rate;
 }
 
 - (void)jumpedToCMTime:(CMTime)time completionHandler:(void (^)(BOOL))completionHandler {

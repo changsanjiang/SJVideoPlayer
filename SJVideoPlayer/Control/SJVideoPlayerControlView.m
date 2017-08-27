@@ -313,7 +313,8 @@ static NSString *const SJVideoPlayPreviewColCellID = @"SJVideoPlayPreviewColCell
     }];
     
     [_moreBtn mas_makeConstraints:^(MASConstraintMaker *make) {
-        make.top.bottom.trailing.offset(0);
+        make.top.bottom.offset(0);
+        make.trailing.offset(0);
         make.width.equalTo(_moreBtn.mas_height);
     }];
     

@@ -1768,7 +1768,7 @@ static NSString *const SJVideoPlayerMoreSettingTwoLevelSettingsHeaderViewID = @"
 
 - (UILabel *)titleLabel {
     if ( _titleLabel ) return _titleLabel;
-    _titleLabel = [UILabel labelWithFontSize:[SJVideoPlayerMoreSettingTwoSetting titleFontSize] textColor:[SJVideoPlayerMoreSettingTwoSetting titleColor] alignment:NSTextAlignmentLeft];
+    _titleLabel = [UILabel labelWithFontSize:[SJVideoPlayerMoreSettingTwoSetting twoTitleFontSize] textColor:[SJVideoPlayerMoreSettingTwoSetting titleColor] alignment:NSTextAlignmentLeft];
     return _titleLabel;
 }
 

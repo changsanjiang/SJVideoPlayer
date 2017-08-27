@@ -140,9 +140,9 @@ NS_ASSUME_NONNULL_BEGIN
 /*!
  *  SJVideoPlayerMoreSetting.titleFontSize = 12;
  *
- *  deafult is 12
+ *  default is 12
  */
-@property (class, nonatomic, assign) double titleFontSize;
+@property (class, nonatomic, assign) float titleFontSize;
 
 
 // MARK: ... Instance Methods.   show 1 level interface
@@ -157,6 +157,13 @@ NS_ASSUME_NONNULL_BEGIN
 
 
 // MARK: ... Instance Methods.   show 2 level interface
+
+/*!
+ *  SJVideoPlayerMoreSetting.twoTitleFontSize = 14;
+ *
+ *  default is 14
+ */
+@property (class, nonatomic, assign) float twoTitleFontSize;
 
 @property (nonatomic, assign, getter=isShowTowSetting) BOOL showTowSetting;
 @property (nonatomic, strong) NSString *twoSettingTitle;

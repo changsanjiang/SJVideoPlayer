@@ -305,16 +305,28 @@
     objc_setAssociatedObject(self, @selector(titleColor), titleColor, OBJC_ASSOCIATION_RETAIN_NONATOMIC);
 }
 
-+ (double)titleFontSize {
-    double fontSize = [objc_getAssociatedObject(self, _cmd) doubleValue];
++ (float)titleFontSize {
+    float fontSize = [objc_getAssociatedObject(self, _cmd) floatValue];
     if ( 0 != fontSize ) return fontSize;
     fontSize = 12;
     [self setTitleFontSize:fontSize];
     return fontSize;
 }
 
-+ (void)setTitleFontSize:(double)titleFontSize {
++ (void)setTitleFontSize:(float)titleFontSize {
     objc_setAssociatedObject(self, @selector(titleFontSize), @(titleFontSize), OBJC_ASSOCIATION_RETAIN_NONATOMIC);
+}
+
++ (void)setTwoTitleFontSize:(float)twoTitleFontSize {
+    objc_setAssociatedObject(self, @selector(twoTitleFontSize), @(twoTitleFontSize), OBJC_ASSOCIATION_RETAIN_NONATOMIC);
+}
+
++ (float)twoTitleFontSize {
+    float fontSize = [objc_getAssociatedObject(self, _cmd) floatValue];
+    if ( 0 != fontSize ) return fontSize;
+    fontSize = 14;
+    [self setTwoTitleFontSize:fontSize];
+    return fontSize;
 }
 
 - (instancetype)initWithTitle:(NSString *)title image:(UIImage *)image clickedExeBlock:(void(^)(SJVideoPlayerMoreSetting *model))block {

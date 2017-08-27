@@ -1039,32 +1039,51 @@ static UIView *target = nil;
 
 - (void)moreSettingsNotification:(NSNotification *)notifi {
     NSArray<SJVideoPlayerMoreSetting *> *moreSettings = notifi.object;
-    __weak typeof(self) _self = self;
+    /// 获取所有相关的moreSettings
+    NSMutableSet<SJVideoPlayerMoreSetting *> *moreSettingsM = [NSMutableSet new];
     [moreSettings enumerateObjectsUsingBlock:^(SJVideoPlayerMoreSetting * _Nonnull obj, NSUInteger idx, BOOL * _Nonnull stop) {
-        if ( obj.clickedExeBlock ) {
-            void(^clickedExeBlock)(SJVideoPlayerMoreSetting *model) = [obj.clickedExeBlock copy];
-
-            if ( obj.isShowTowSetting ) {
-                obj.clickedExeBlock = ^(SJVideoPlayerMoreSetting * _Nonnull model) {
-                    clickedExeBlock(model);
-                    __strong typeof(_self) self = _self;
-                    if ( !self ) return;
-                    self.controlView.twoLevelSettings = model;
-                    self.controlView.hiddenMoreSettingsTwoLevelView = NO;
-                };
-                return;
-            }
-            
-            obj.clickedExeBlock = ^(SJVideoPlayerMoreSetting * _Nonnull model) {
-                clickedExeBlock(model);
-                __strong typeof(_self) self = _self;
-                if ( !self ) return;
-                self.controlView.hiddenMoreSettingsView = YES;
-            };
-        }
+        [self addSetting:obj container:moreSettingsM];
     }];
     
+    [moreSettingsM enumerateObjectsUsingBlock:^(SJVideoPlayerMoreSetting * _Nonnull obj, BOOL * _Nonnull stop) {
+        [self dressSetting:obj];
+    }];
     self.controlView.moreSettings = moreSettings;
+}
+
+- (void)addSetting:(SJVideoPlayerMoreSetting *)setting container:(NSMutableSet<SJVideoPlayerMoreSetting *> *)moreSttingsM {
+    [moreSttingsM addObject:setting];
+    if ( !setting.showTowSetting ) return;
+    [setting.twoSettingItems enumerateObjectsUsingBlock:^(SJVideoPlayerMoreSettingTwoSetting * _Nonnull obj, NSUInteger idx, BOOL * _Nonnull stop) {
+        [self addSetting:obj container:moreSttingsM];
+    }];
+}
+
+- (void)dressSetting:(SJVideoPlayerMoreSetting *)setting {
+    if ( !setting.clickedExeBlock ) return;
+    
+    void(^clickedExeBlock)(SJVideoPlayerMoreSetting *model) = [setting.clickedExeBlock copy];
+    __weak typeof(self) _self = self;
+    if ( setting.isShowTowSetting ) {
+        setting.clickedExeBlock = ^(SJVideoPlayerMoreSetting * _Nonnull model) {
+            clickedExeBlock(model);
+            __strong typeof(_self) self = _self;
+            if ( !self ) return;
+            self.controlView.twoLevelSettings = model;
+            self.controlView.hiddenMoreSettingsView = YES;
+            self.controlView.hiddenMoreSettingsTwoLevelView = NO;
+        };
+        return;
+    }
+    
+    setting.clickedExeBlock = ^(SJVideoPlayerMoreSetting * _Nonnull model) {
+        clickedExeBlock(model);
+        __strong typeof(_self) self = _self;
+        if ( !self ) return;
+        self.controlView.hiddenMoreSettingsView = YES;
+        if ( !model.isShowTowSetting ) self.controlView.hiddenMoreSettingsTwoLevelView = YES;
+    };
+
 }
 
 @end

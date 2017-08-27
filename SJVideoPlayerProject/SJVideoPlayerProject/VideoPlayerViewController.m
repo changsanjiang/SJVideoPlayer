@@ -104,7 +104,7 @@
     
     // MARK: 2级 More Settings
     
-    SJVideoPlayerMoreSettingTwoSetting *twoSetting = [[SJVideoPlayerMoreSettingTwoSetting alloc] initWithTitle:@"测试二级" image:[UIImage imageNamed:@"db_audio_play_share_n"] clickedExeBlock:^(SJVideoPlayerMoreSetting * _Nonnull model) {
+    SJVideoPlayerMoreSettingTwoSetting *twoSetting = [[SJVideoPlayerMoreSettingTwoSetting alloc] initWithTitle:@"二级Item" image:[UIImage imageNamed:@"db_audio_play_share_n"] clickedExeBlock:^(SJVideoPlayerMoreSetting * _Nonnull model) {
         [[SJVideoPlayer sharedPlayer] showTitle:model.title];
     }];
     

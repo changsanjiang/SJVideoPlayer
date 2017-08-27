@@ -282,7 +282,6 @@ static NSString *const SJVideoPlayPreviewColCellID = @"SJVideoPlayPreviewColCell
 }
 
 - (void)_showMoreSettringsTwoLevelView {
-    self.hiddenMoreSettingsView = YES;
     [UIView animateWithDuration:0.3 animations:^{
         _moreSettingsTwoLevelView.transform = CGAffineTransformIdentity;
     }];
@@ -1755,7 +1754,7 @@ static NSString *const SJVideoPlayerMoreSettingTwoLevelSettingsHeaderViewID = @"
     }];
     
     [_titleLabel mas_makeConstraints:^(MASConstraintMaker *make) {
-        make.leading.offset(8);
+        make.leading.offset(15);
         make.trailing.offset(-8);
         make.top.bottom.offset(0);
     }];
@@ -1763,7 +1762,7 @@ static NSString *const SJVideoPlayerMoreSettingTwoLevelSettingsHeaderViewID = @"
 
 - (SJBorderlineView *)backgroundView {
     if ( _backgroundView ) return _backgroundView;
-    _backgroundView = [SJBorderlineView borderlineViewWithSide:SJBorderlineSideBottom startMargin:8 endMargin:0 lineColor:[UIColor lightGrayColor] backgroundColor:[UIColor clearColor]];
+    _backgroundView = [SJBorderlineView borderlineViewWithSide:SJBorderlineSideBottom startMargin:15 endMargin:0 lineColor:[UIColor lightGrayColor] backgroundColor:[UIColor clearColor]];
     return _backgroundView;
 }
 

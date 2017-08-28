@@ -38,3 +38,6 @@ extern NSNotificationName const SJSettingsPlayerNotification;
 
 /// 配置更多按钮
 extern NSNotificationName const SJMoreSettingsNotification;
+
+/// 拖拽完调速Slider后的通知
+extern NSNotificationName const SJPlayerRateDidEndDraggingNotification;

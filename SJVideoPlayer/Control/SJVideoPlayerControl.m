@@ -175,8 +175,6 @@ static const NSString *SJPlayerItemStatusContext;
     if ( !self ) return nil;
     [self controlView];
     [self systemVolume];
-    [[UIApplication sharedApplication].keyWindow addSubview:self.volumeView];
-    [[UIApplication sharedApplication].keyWindow addSubview:self.brightnessView];
     self.volumeView.alpha = 0.001;
     self.brightnessView.alpha = 0.001;
     [self _SJVideoPlayerControlInstallNotifications];
@@ -907,6 +905,7 @@ static UIView *target = nil;
                 slider.value = 1;
                 self.rate = slider.value;
             }
+            [[NSNotificationCenter defaultCenter] postNotificationName:SJPlayerRateDidEndDraggingNotification object:@(slider.value)];
         }
         default:
             break;

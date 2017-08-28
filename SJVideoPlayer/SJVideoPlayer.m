@@ -133,9 +133,13 @@
 }
 
 - (void)moreSettings:(void (^)(NSMutableArray<SJVideoPlayerMoreSetting *> * _Nonnull))block {
-    [self.moreSettings removeAllObjects];
+    [self resetMoreSettings];
     if ( block ) block(self.moreSettings);
     [[NSNotificationCenter defaultCenter] postNotificationName:SJMoreSettingsNotification object:self.moreSettings];
+}
+
+- (void)resetMoreSettings {
+    [self.moreSettings removeAllObjects];
 }
 
 // MARK: Private

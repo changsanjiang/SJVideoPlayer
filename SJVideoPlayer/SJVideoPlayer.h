@@ -8,6 +8,8 @@
 
 #import <Foundation/Foundation.h>
 
+#define SJGetFileWithName(name)    [@"SJVideoPlayer.bundle" stringByAppendingPathComponent:name]
+
 @class UIView, UIImage, UIColor, SJVideoPlayerMoreSetting, SJVideoPlayerMoreSetting;
 
 NS_ASSUME_NONNULL_BEGIN
@@ -55,6 +57,8 @@ NS_ASSUME_NONNULL_BEGIN
  *  clicked More button to display items.
  */
 - (void)moreSettings:(void(^)(NSMutableArray<SJVideoPlayerMoreSetting *> *moreSettings))block;
+
+- (void)resetMoreSettings;
 
 /*!
  *  clicked back btn exe block.

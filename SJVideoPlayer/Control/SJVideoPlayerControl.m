@@ -408,6 +408,7 @@ static const NSString *SJPlayerItemStatusContext;
     
     self.playerItem = nil;
     [self playerUnlocked];
+    _controlView.hiddenLoadFailedBtn = YES;
     _backstageRegistrar = nil;
     _rate = 1;
 }
@@ -503,7 +504,7 @@ static const NSString *SJPlayerItemStatusContext;
     _brightnessView.bounds = CGRectMake(0, 0, 155, 155);
     _brightnessView.center = [UIApplication sharedApplication].keyWindow.center;
     _brightnessView.titleLabel.text = @"亮度";
-    _brightnessView.normalShowImage = [UIImage imageNamed:@"sj_video_player_brightness"];
+    _brightnessView.normalShowImage = [UIImage imageNamed:SJGetFileWithName(@"sj_video_player_brightness")];
     return _brightnessView;
 }
 
@@ -513,9 +514,9 @@ static const NSString *SJPlayerItemStatusContext;
     _volumeView.bounds = CGRectMake(0, 0, 155, 155);
     _volumeView.center = [UIApplication sharedApplication].keyWindow.center;
     _volumeView.titleLabel.text = @"音量";
-    _volumeView.minShowImage = [UIImage imageNamed:@"sj_video_player_un_volume"];
+    _volumeView.minShowImage = [UIImage imageNamed:SJGetFileWithName(@"sj_video_player_un_volume")];
     _volumeView.minShowTitleLabel.text = @"静音";
-    _volumeView.normalShowImage = [UIImage imageNamed:@"sj_video_player_volume"];
+    _volumeView.normalShowImage = [UIImage imageNamed:SJGetFileWithName(@"sj_video_player_volume")];
     return _volumeView;
 }
 
@@ -627,8 +628,7 @@ static UIView *target = nil;
                     _brightnessView.value = [UIScreen mainScreen].brightness;
                     target = _brightnessView;
                 }
-                
-                [[UIApplication sharedApplication].keyWindow bringSubviewToFront:target];
+                [[UIApplication sharedApplication].keyWindow addSubview:target];
                 target.transform = _controlView.superview.transform;
                 [UIView animateWithDuration:0.25 animations:^{
                     target.alpha = 1;

@@ -34,6 +34,7 @@
 		7798A31A1F51AB78004CB9BA /* sample4.png in Resources */ = {isa = PBXBuildFile; fileRef = 7798A3151F51AB78004CB9BA /* sample4.png */; };
 		7798A31C1F51ABEA004CB9BA /* sample5.png in Resources */ = {isa = PBXBuildFile; fileRef = 7798A31B1F51ABEA004CB9BA /* sample5.png */; };
 		7798A31F1F532876004CB9BA /* SJVideoPlayer.bundle in Resources */ = {isa = PBXBuildFile; fileRef = 7798A31E1F532876004CB9BA /* SJVideoPlayer.bundle */; };
+		7798A3471F53D9DD004CB9BA /* sample6.png in Resources */ = {isa = PBXBuildFile; fileRef = 7798A3461F53D9DD004CB9BA /* sample6.png */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -79,6 +80,7 @@
 		7798A3151F51AB78004CB9BA /* sample4.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = sample4.png; sourceTree = "<group>"; };
 		7798A31B1F51ABEA004CB9BA /* sample5.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = sample5.png; sourceTree = "<group>"; };
 		7798A31E1F532876004CB9BA /* SJVideoPlayer.bundle */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.plug-in"; path = SJVideoPlayer.bundle; sourceTree = "<group>"; };
+		7798A3461F53D9DD004CB9BA /* sample6.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = sample6.png; sourceTree = "<group>"; };
 		7C49166A356BD4B40CE605A1 /* libPods-SJVideoPlayerProject.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-SJVideoPlayerProject.a"; sourceTree = BUILT_PRODUCTS_DIR; };
 		FA4B9D875424697D91053C03 /* Pods-SJVideoPlayerProject.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-SJVideoPlayerProject.debug.xcconfig"; path = "Pods/Target Support Files/Pods-SJVideoPlayerProject/Pods-SJVideoPlayerProject.debug.xcconfig"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
@@ -199,6 +201,7 @@
 				7798A3141F51AB78004CB9BA /* sample3.png */,
 				7798A3151F51AB78004CB9BA /* sample4.png */,
 				7798A31B1F51ABEA004CB9BA /* sample5.png */,
+				7798A3461F53D9DD004CB9BA /* sample6.png */,
 				7798A30F1F519125004CB9BA /* SJVideoPlayer.png */,
 				772D463B1F46E4CE0047A7BF /* Main.storyboard */,
 				772D463E1F46E4CE0047A7BF /* Assets.xcassets */,
@@ -308,6 +311,7 @@
 				7798A3101F519125004CB9BA /* SJVideoPlayer.png in Resources */,
 				772D463D1F46E4CE0047A7BF /* Main.storyboard in Resources */,
 				7700D0191F4C045B00B043F8 /* sample.mp4 in Resources */,
+				7798A3471F53D9DD004CB9BA /* sample6.png in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

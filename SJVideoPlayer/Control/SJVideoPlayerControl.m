@@ -26,8 +26,6 @@
 
 #import "SJVideoPlayer.h"
 
-#import <UIKit/UIScrollView.h>
-
 #import <Masonry/Masonry.h>
 
 /*!
@@ -227,7 +225,7 @@ static const NSString *SJPlayerItemStatusContext;
 
 - (void)setAsset:(AVAsset *)asset playerItem:(AVPlayerItem *)playerItem player:(AVPlayer *)player {
     [self sjReset];
-    
+
     self.asset = asset;
     self.playerItem = playerItem;
     self.player = player;
@@ -879,10 +877,14 @@ static UIView *target = nil;
 }
 
 - (void)jumpedToCMTime:(CMTime)time completionHandler:(void (^)(BOOL))completionHandler {
-    if ( self.playerItem.status != AVPlayerStatusReadyToPlay ) return;
+    if ( self.playerItem.status != AVPlayerStatusReadyToPlay ) {
+        if ( completionHandler ) completionHandler(NO);
+        return;
+    }
     CMTime sub = CMTimeSubtract(_playerItem.currentTime, time);
     // 小于1秒 不给跳.
     if ( labs(sub.value / sub.timescale) < 1 ) {if ( completionHandler ) completionHandler(YES); return;}
+    NSLog(@"跳");
     [self.player seekToTime:time completionHandler:^(BOOL finished) {
         if ( completionHandler ) completionHandler(finished);
     }];

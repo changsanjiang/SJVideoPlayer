@@ -8,6 +8,8 @@
 
 #import "AppDelegate.h"
 
+#import "VideoPlayerNavigationController.h"
+
 @interface AppDelegate ()
 
 @end
@@ -21,7 +23,7 @@
     
     _window.backgroundColor = [UIColor whiteColor];
     
-    UINavigationController *nav = [[UINavigationController alloc] initWithRootViewController:[NSClassFromString(@"ViewController") new]];
+    VideoPlayerNavigationController *nav = [[VideoPlayerNavigationController alloc] initWithRootViewController:[NSClassFromString(@"ViewController") new]];
     
     _window.rootViewController = nav;
     

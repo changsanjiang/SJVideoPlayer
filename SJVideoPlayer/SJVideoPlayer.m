@@ -32,9 +32,6 @@
 
 #import <UIKit/UIColor.h>
 
-#import <UIKit/UIScrollView.h>
-
-
 // MARK: 通知处理
 
 @interface SJVideoPlayer (DBNotifications)

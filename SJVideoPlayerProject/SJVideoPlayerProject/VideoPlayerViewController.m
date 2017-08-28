@@ -32,7 +32,7 @@
     SJVideoPlayer *player = [SJVideoPlayer sharedPlayer];
     [self.view addSubview:player.view];
     [player.view mas_makeConstraints:^(MASConstraintMaker *make) {
-        make.top.offset(64);
+        make.top.offset(20);
         make.leading.trailing.offset(0);
         make.height.equalTo(player.view.mas_width).multipliedBy(9.0 / 16.0);
     }];
@@ -157,6 +157,11 @@
     // Do any additional setup after loading the view.
 }
 
+- (void)viewWillAppear:(BOOL)animated {
+    [super viewWillAppear:animated];
+    [self.navigationController setNavigationBarHidden:YES animated:YES];
+}
+
 - (void)viewDidAppear:(BOOL)animated {
     [super viewDidAppear:animated];
     [[SJVideoPlayer sharedPlayer] jumpedToTime:self.currentTime completionHandler:^(BOOL finished) {
@@ -166,6 +171,8 @@
 
 - (void)viewWillDisappear:(BOOL)animated {
     [super viewWillDisappear:animated];
+    [self.navigationController setNavigationBarHidden:NO animated:YES];
+
     self.currentTime = [SJVideoPlayer sharedPlayer].currentTime;
     [[SJVideoPlayer sharedPlayer] pause];
 }

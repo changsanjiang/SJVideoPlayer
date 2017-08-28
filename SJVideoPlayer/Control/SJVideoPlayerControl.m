@@ -85,6 +85,8 @@ static const NSString *SJPlayerItemStatusContext;
 
 - (void)_SJVideoPlayerControlRemoveNotifications;
 
+- (void)playerUnlocked;
+
 @end
 
 
@@ -277,7 +279,7 @@ static const NSString *SJPlayerItemStatusContext;
                 
                 // MARK: SJPlayerPlayFailedErrorNotification
                 [[NSNotificationCenter defaultCenter] postNotificationName:SJPlayerPlayFailedErrorNotification object:self.playerItem.error];
-
+                
                 self.controlView.hiddenLoadFailedBtn = NO;
             }
         });
@@ -330,6 +332,7 @@ static const NSString *SJPlayerItemStatusContext;
     __weak typeof(self) _self = self;
     NSMutableArray <SJVideoPreviewModel *> *imagesM = [NSMutableArray new];
     _imageGenerator = [AVAssetImageGenerator assetImageGeneratorWithAsset:_asset];
+    _imageGenerator.appliesPreferredTrackTransform = YES;
     [_imageGenerator generateCGImagesAsynchronouslyForTimes:timesM completionHandler:^(CMTime requestedTime, CGImageRef  _Nullable imageRef, CMTime actualTime, AVAssetImageGeneratorResult result, NSError * _Nullable error) {
         if ( result == AVAssetImageGeneratorSucceeded ) {
             UIImage *image = [UIImage imageWithCGImage:imageRef];
@@ -339,7 +342,7 @@ static const NSString *SJPlayerItemStatusContext;
         else if ( result == AVAssetImageGeneratorFailed ) {
             NSLog(@"ERROR : %@", error);
         }
-                
+        
         if ( --count == 0 ) {
             __strong typeof(_self) self = _self;
             if ( !self ) return;
@@ -348,7 +351,7 @@ static const NSString *SJPlayerItemStatusContext;
                 self.controlView.previewImages = imagesM;
                 self.controlView.hiddenPreviewBtn = NO;
             });
-
+            
         }
     }];
 }
@@ -404,6 +407,7 @@ static const NSString *SJPlayerItemStatusContext;
     [_imageGenerator cancelAllCGImageGeneration];
     
     self.playerItem = nil;
+    [self playerUnlocked];
     _backstageRegistrar = nil;
     _rate = 1;
 }
@@ -540,7 +544,7 @@ static const NSString *SJPlayerItemStatusContext;
     _controlView.hiddenPreview = YES;
     
     // MARK: GestureRecognizer
-
+    
     self.singleTap = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(handleSingleTap:)];
     self.singleTap.delaysTouchesBegan = YES;
     
@@ -629,7 +633,7 @@ static UIView *target = nil;
                 [UIView animateWithDuration:0.25 animations:^{
                     target.alpha = 1;
                 }];
-
+                
             }
             break;
         }
@@ -931,17 +935,17 @@ static UIView *target = nil;
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(playerLockedScreenNotification) name:SJPlayerLockedScreenNotification object:nil];
     
     /// 解锁
-    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(playerUnlockedScreenNotification) name:SJPlayerUnlockedScreenNotification object:nil];
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(playerUnlocked) name:SJPlayerUnlockedScreenNotification object:nil];
     
     /// 全屏
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(playerFullScreenNotitication) name:SJPlayerFullScreenNotitication object:nil];
     
     /// 小屏
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(playerSmallScreenNotification) name:SJPlayerSmallScreenNotification object:nil];
-
+    
     // 耳机
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(audioSessionRouteChangeNotification:) name:AVAudioSessionRouteChangeNotification object:nil];
-
+    
     // 后台
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(applicationWillResignActiveNotification) name:UIApplicationWillResignActiveNotification object:nil];
     
@@ -971,7 +975,7 @@ static UIView *target = nil;
 }
 
 /// 解锁
-- (void)playerUnlockedScreenNotification {
+- (void)playerUnlocked {
     NSLog(@"解锁");
     self.backstageRegistrar.isLock = NO;
     _controlView.hiddenControl = NO;
@@ -1082,7 +1086,7 @@ static UIView *target = nil;
         self.controlView.hiddenMoreSettingsView = YES;
         if ( !model.isShowTowSetting ) self.controlView.hiddenMoreSettingsTwoLevelView = YES;
     };
-
+    
 }
 
 @end

@@ -36,7 +36,6 @@
 
 #define SJMoreSettings_W    ceil(SJSCREEN_MAX * 0.382)
 
-#define SJGetFileWithName(name)    [@"SJVideoPlayer.bundle" stringByAppendingPathComponent:name]
 
 // MARK: Mask View
 

@@ -33,7 +33,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 @property (nonatomic, weak, readwrite, nullable) NSArray<SJVideoPlayerMoreSetting *> *moreSettings;
 
-- (void)setScrollView:(UIScrollView *)scrollView indexPath:(NSIndexPath *)indexPath onViewTag:(NSInteger)tag;
+- (void)setScrollView:(UIScrollView *)scrollView indexPath:(NSIndexPath *)indexPath;
 
 - (void)play;
 

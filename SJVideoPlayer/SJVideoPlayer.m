@@ -129,7 +129,7 @@
     self.scrollView = scrollView;
     self.indexPath = indexPath;
     self.onViewTag = tag;
-    [_control setScrollView:scrollView indexPath:indexPath onViewTag:tag];
+    [_control setScrollView:scrollView indexPath:indexPath];
 }
 
 // MARK: Public

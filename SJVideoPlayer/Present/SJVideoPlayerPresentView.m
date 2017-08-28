@@ -254,7 +254,7 @@
             make.width.offset(SJSCREEN_MAX);
             make.height.offset(SJSCREEN_MIN);
         }
-        else [window layoutIfNeeded];
+        else make.edges.offset(0);
     }];
     [UIView animateWithDuration:0.25 animations:^{
         if ( isLandscapeView ) self.transform = CGAffineTransformMakeRotation(-M_PI_2);

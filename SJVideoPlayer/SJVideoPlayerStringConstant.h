@@ -36,8 +36,11 @@ extern NSNotificationName const SJPlayerPlayFailedErrorNotification;
 /// 配置播放器
 extern NSNotificationName const SJSettingsPlayerNotification;
 
-/// 配置更多按钮
+/// 配置更多
 extern NSNotificationName const SJMoreSettingsNotification;
+
+/// 重置更多
+extern NSNotificationName const SJResetMoreSettingsNotification;
 
 /// 拖拽完调速Slider后的通知
 extern NSNotificationName const SJPlayerRateDidEndDraggingNotification;

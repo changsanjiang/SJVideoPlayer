@@ -36,8 +36,11 @@ NSNotificationName const SJPlayerPlayFailedErrorNotification = @"SJPlayerPlayFai
 /// 配置播放器
 NSNotificationName const SJSettingsPlayerNotification = @"SJSettingsPlayerNotification";
 
-/// 配置更多按钮
+/// 配置更多
 NSNotificationName const SJMoreSettingsNotification = @"SJMoreSettingsNotification";
+
+/// 重置更多
+NSNotificationName const SJResetMoreSettingsNotification = @"SJResetMoreSettingsNotification";
 
 /// 拖拽完调速Slider后的通知
 NSNotificationName const SJPlayerRateDidEndDraggingNotification = @"SJPlayerRateDidEndDraggingNotification";

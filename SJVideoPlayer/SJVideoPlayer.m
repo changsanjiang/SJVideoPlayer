@@ -140,6 +140,7 @@
 
 - (void)resetMoreSettings {
     [self.moreSettings removeAllObjects];
+    [[NSNotificationCenter defaultCenter] postNotificationName:SJResetMoreSettingsNotification object:self.moreSettings];
 }
 
 // MARK: Private

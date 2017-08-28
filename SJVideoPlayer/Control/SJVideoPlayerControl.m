@@ -179,7 +179,6 @@ static const NSString *SJPlayerItemStatusContext;
 
 @property (nonatomic, weak, readwrite) UIScrollView *scrollView;
 @property (nonatomic, strong, readwrite) NSIndexPath *indexPath;
-@property (nonatomic, assign, readwrite) NSInteger onViewTag;
 
 @end
 
@@ -403,10 +402,9 @@ static const NSString *SJPlayerItemStatusContext;
     [_playerItem addObserver:self forKeyPath:@"playbackBufferEmpty" options:NSKeyValueObservingOptionNew context:nil];
 }
 
-- (void)setScrollView:(UIScrollView *)scrollView indexPath:(NSIndexPath *)indexPath onViewTag:(NSInteger)tag {
+- (void)setScrollView:(UIScrollView *)scrollView indexPath:(NSIndexPath *)indexPath {
     self.scrollView = scrollView;
     self.indexPath = indexPath;
-    self.onViewTag = tag;
     self.backstageRegistrar.playingOnCell = YES;
     if ( !self.backstageRegistrar.fullScreen ) self.panGR.enabled = NO;
 }
@@ -452,6 +450,8 @@ static const NSString *SJPlayerItemStatusContext;
     
     [self playerUnlocked];
     
+    _controlView.hiddenControl = YES;
+    _controlView.hiddenMoreSettingsView = YES;
     _controlView.hiddenReplayBtn = YES;
     _controlView.hiddenLoadFailedBtn = YES;
     _backstageRegistrar = nil;

@@ -26,6 +26,8 @@
 
 #import "SJVideoPlayer.h"
 
+#import <Masonry/Masonry.h>
+
 
 /*!
  *  Refresh interval for timed observations of AVPlayer
@@ -501,8 +503,6 @@ static const NSString *SJPlayerItemStatusContext;
 - (SJVideoPlayerTipsView *)brightnessView {
     if ( _brightnessView ) return _brightnessView;
     _brightnessView = [SJVideoPlayerTipsView new];
-    _brightnessView.bounds = CGRectMake(0, 0, 155, 155);
-    _brightnessView.center = [UIApplication sharedApplication].keyWindow.center;
     _brightnessView.titleLabel.text = @"亮度";
     _brightnessView.normalShowImage = [UIImage imageNamed:SJGetFileWithName(@"sj_video_player_brightness")];
     return _brightnessView;
@@ -511,8 +511,6 @@ static const NSString *SJPlayerItemStatusContext;
 - (SJVideoPlayerTipsView *)volumeView {
     if ( _volumeView ) return _volumeView;
     _volumeView = [SJVideoPlayerTipsView new];
-    _volumeView.bounds = CGRectMake(0, 0, 155, 155);
-    _volumeView.center = [UIApplication sharedApplication].keyWindow.center;
     _volumeView.titleLabel.text = @"音量";
     _volumeView.minShowImage = [UIImage imageNamed:SJGetFileWithName(@"sj_video_player_un_volume")];
     _volumeView.minShowTitleLabel.text = @"静音";
@@ -629,6 +627,10 @@ static UIView *target = nil;
                     target = _brightnessView;
                 }
                 [[UIApplication sharedApplication].keyWindow addSubview:target];
+                [target mas_remakeConstraints:^(MASConstraintMaker *make) {
+                    make.size.mas_offset(CGSizeMake(155, 155));
+                    make.center.equalTo([UIApplication sharedApplication].keyWindow);
+                }];
                 target.transform = _controlView.superview.transform;
                 [UIView animateWithDuration:0.25 animations:^{
                     target.alpha = 1;

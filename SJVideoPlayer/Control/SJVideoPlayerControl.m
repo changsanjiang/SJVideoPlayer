@@ -446,13 +446,22 @@ static const NSString *SJPlayerItemStatusContext;
     [_imageGenerator cancelAllCGImageGeneration];
     
     self.playerItem = nil;
+    
     [self playerUnlocked];
+    
     _controlView.hiddenReplayBtn = YES;
     _controlView.hiddenLoadFailedBtn = YES;
     _backstageRegistrar = nil;
     _rate = 1;
 
     [_controlView setCurrentTime:0 duration:0];
+    
+    self.scrollView = nil;
+    self.indexPath = nil;
+    
+    _asset = nil;
+    
+    _player = nil;
 }
 
 - (void)jumpedToTime:(NSTimeInterval)time completionHandler:(void (^)(BOOL))completionHandler {
@@ -1181,12 +1190,10 @@ static UIView *target = nil;
         UITableViewCell *cell = [tableView cellForRowAtIndexPath:self.indexPath];
         NSArray *visableCells = tableView.visibleCells;
         if ( [visableCells containsObject:cell] ) {
-            NSLog(@"滑入");
-            /// 滑入时 加入到 cell 中.
+            /// 滑入时 恢复.
             self.backstageRegistrar.scrollIn = YES;
             
         } else {
-            NSLog(@"滑出");
             /// 滑出时 暂停, 并 停止 方向 监听
             self.backstageRegistrar.scrollIn = NO;
             

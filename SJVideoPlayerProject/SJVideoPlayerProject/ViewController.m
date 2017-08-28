@@ -14,9 +14,12 @@
 
 #import "VideoPlayerViewController.h"
 
+#import "VideoPlayerTableViewController.h"
+
 @interface ViewController ()
 
 @property (nonatomic, strong) UIButton *pushBtn;
+@property (nonatomic, strong) UIButton *pushTableViewBtn;
 
 @end
 
@@ -26,22 +29,44 @@
     [super viewDidLoad];
     
     [self.view addSubview:self.pushBtn];
+    [self.view addSubview:self.pushTableViewBtn];
     
     [self.pushBtn mas_makeConstraints:^(MASConstraintMaker *make) {
         make.center.offset(0);
     }];
     
+    [self.pushTableViewBtn mas_makeConstraints:^(MASConstraintMaker *make) {
+        make.top.equalTo(_pushBtn.mas_bottom).offset(12);
+        make.centerX.equalTo(_pushBtn);
+    }];
+    
+    
+    
     // Do any additional setup after loading the view, typically from a nib.
 }
 
 - (void)clickedBtn:(UIButton *)btn {
-    [self.navigationController pushViewController:[VideoPlayerViewController new] animated:YES];
+    switch (btn.tag) {
+        case 0:
+            [self.navigationController pushViewController:[VideoPlayerViewController new] animated:YES];
+            break;
+        case 1:
+            [self.navigationController pushViewController:[VideoPlayerTableViewController new] animated:YES];
+            break;
+        default:
+            break;
+    }
 }
 
 - (UIButton *)pushBtn {
     if ( _pushBtn ) return _pushBtn;
-    _pushBtn = [UIButton buttonWithTitle:@"Push" titleColor:[UIColor blackColor] backgroundColor:[UIColor clearColor] tag:0 target:self sel:@selector(clickedBtn:) fontSize:14];
+    _pushBtn = [UIButton buttonWithTitle:@"Single" titleColor:[UIColor blackColor] backgroundColor:[UIColor clearColor] tag:0 target:self sel:@selector(clickedBtn:) fontSize:14];
     return _pushBtn;
 }
 
+- (UIButton *)pushTableViewBtn {
+    if ( _pushTableViewBtn ) return _pushTableViewBtn;
+    _pushTableViewBtn = [UIButton buttonWithTitle:@"TableView" titleColor:[UIColor blackColor] backgroundColor:[UIColor clearColor] tag:1 target:self sel:@selector(clickedBtn:) fontSize:14];
+    return _pushTableViewBtn;
+}
 @end

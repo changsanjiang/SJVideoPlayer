@@ -10,7 +10,7 @@
 
 #define SJGetFileWithName(name)    [@"SJVideoPlayer.bundle" stringByAppendingPathComponent:name]
 
-@class UIView, UIImage, UIColor, SJVideoPlayerMoreSetting, SJVideoPlayerMoreSetting;
+@class UIView, UIImage, UIColor, UIScrollView, NSIndexPath, SJVideoPlayerMoreSetting, SJVideoPlayerMoreSetting;
 
 NS_ASSUME_NONNULL_BEGIN
 
@@ -71,6 +71,11 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic, strong, readwrite) NSURL *assetURL;
 
 /*!
+ *  if playing on the cell, you should set it.
+ */
+- (void)setScrollView:(UIScrollView *)scrollView indexPath:(NSIndexPath *)indexPath;
+
+/*!
  *  present View. you shuold set it frame (support autoLayout).
  */
 @property (nonatomic, strong, readonly) UIView *view;
@@ -109,6 +114,7 @@ NS_ASSUME_NONNULL_BEGIN
 - (UIImage *)screenShot;
 
 @end
+
 
 
 @interface SJVideoPlayer (Prompt)

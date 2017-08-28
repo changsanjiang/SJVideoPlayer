@@ -44,3 +44,9 @@ NSNotificationName const SJResetMoreSettingsNotification = @"SJResetMoreSettings
 
 /// 拖拽完调速Slider后的通知
 NSNotificationName const SJPlayerRateDidEndDraggingNotification = @"SJPlayerRateDidEndDraggingNotification";
+
+/// 滑入
+NSNotificationName const SJPlayerScrollInNotification = @"SJPlayerScrollInNotification";
+
+/// 滑出
+NSNotificationName const SJPlayerScrollOutNotification = @"SJPlayerScrollOutNotification";

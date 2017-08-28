@@ -44,3 +44,9 @@ extern NSNotificationName const SJResetMoreSettingsNotification;
 
 /// 拖拽完调速Slider后的通知
 extern NSNotificationName const SJPlayerRateDidEndDraggingNotification;
+
+/// 滑入
+extern NSNotificationName const SJPlayerScrollInNotification;
+
+/// 滑出
+extern NSNotificationName const SJPlayerScrollOutNotification;

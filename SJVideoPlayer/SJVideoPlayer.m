@@ -32,6 +32,9 @@
 
 #import <UIKit/UIColor.h>
 
+#import <UIKit/UIScrollView.h>
+
+
 // MARK: 通知处理
 
 @interface SJVideoPlayer (DBNotifications)
@@ -121,6 +124,10 @@
     _presentView.placeholderImage = placeholder;
 }
 
+- (void)setScrollView:(UIScrollView *)scrollView indexPath:(NSIndexPath *)indexPath {
+    [_control setScrollView:scrollView indexPath:indexPath];
+}
+
 // MARK: Public
 
 - (UIView *)view {
@@ -146,6 +153,11 @@
 // MARK: Private
 
 - (void)_sjVideoPlayerPrepareToPlay {
+    
+    [UIView animateWithDuration:0.25 animations:^{
+        _containerView.alpha = 1.0;
+    }];
+    
     [[NSNotificationCenter defaultCenter] postNotificationName:SJPlayerPrepareToPlayNotification object:nil];
     
     _error = nil;
@@ -221,6 +233,8 @@
 
 - (void)_SJVideoPlayerInstallNotifications {
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(playerPlayFailedErrorNotification:) name:SJPlayerPlayFailedErrorNotification object:nil];
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(playerScrollInNotification) name:SJPlayerScrollInNotification object:nil];
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(playerScrollOutNotification) name:SJPlayerScrollOutNotification object:nil];
 }
 
 - (void)_SJVideoPlayerRemoveNotifications {
@@ -229,6 +243,14 @@
 
 - (void)playerPlayFailedErrorNotification:(NSNotification *)notifi {
     _error = notifi.object;
+}
+
+- (void)playerScrollInNotification {
+    self.containerView.alpha = 1;
+}
+
+- (void)playerScrollOutNotification {
+    self.containerView.alpha = 0.001;
 }
 
 @end

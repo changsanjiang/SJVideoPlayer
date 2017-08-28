@@ -156,6 +156,8 @@
 - (void)_SJVideoPlayerPresentViewInstallNotifications {
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(playerBeginPlayingNotification) name:SJPlayerBeginPlayingNotification object:nil];
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(playerDidPlayToEndTimeNotification) name:SJPlayerDidPlayToEndTimeNotification object:nil];
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(playerScrollInNotification) name:SJPlayerScrollInNotification object:nil];
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(playerScrollOutNotification) name:SJPlayerScrollOutNotification object:nil];
 }
 
 - (void)_SJVideoPlayerPresentViewRemoveNotifications {
@@ -233,7 +235,7 @@
         }
         else make.edges.offset(0);
     }];
-    
+
     [UIView animateWithDuration:0.25 animations:^{
         if ( isLandscapeView ) self.transform = CGAffineTransformMakeRotation(M_PI_2);
         else [window layoutIfNeeded];
@@ -278,6 +280,14 @@
     }];
     [[UIApplication sharedApplication] setStatusBarHidden:NO];
     [[NSNotificationCenter defaultCenter] postNotificationName:SJPlayerSmallScreenNotification object:nil];
+}
+
+- (void)playerScrollInNotification {
+    [self _addDeviceOrientationChangeObserver];
+}
+
+- (void)playerScrollOutNotification {
+    [self _removeDeviceOrientationChangeObserver];
 }
 
 @end

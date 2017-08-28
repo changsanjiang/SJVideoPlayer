@@ -26,8 +26,9 @@
 
 #import "SJVideoPlayer.h"
 
-#import <Masonry/Masonry.h>
+#import <UIKit/UIScrollView.h>
 
+#import <Masonry/Masonry.h>
 
 /*!
  *  Refresh interval for timed observations of AVPlayer
@@ -54,7 +55,7 @@ static const NSString *SJPlayerItemStatusContext;
 
 
 
-@interface SJVideoPlayerBackstageStatusRegistrar : NSObject
+@interface SJVideoPlayerStatusRegistrar : NSObject
 
 - (void)registrar:(SJVideoPlayerControlView *)controlView;
 
@@ -73,6 +74,13 @@ static const NSString *SJPlayerItemStatusContext;
 
 @property (nonatomic, assign, readwrite) BOOL isPlayEnded;
 
+@property (nonatomic, assign, readwrite) BOOL scrollIn;
+
+@property (nonatomic, assign, readwrite) BOOL playingOnCell;
+
+@property (nonatomic, assign, readwrite) BOOL fullScreen;
+
+
 @end
 
 
@@ -87,10 +95,18 @@ static const NSString *SJPlayerItemStatusContext;
 
 - (void)_SJVideoPlayerControlRemoveNotifications;
 
+- (void)smallScreenPlaying;
+
 - (void)playerUnlocked;
 
 @end
 
+
+@interface SJVideoPlayerControl (PlayingOnTheCell)
+
+- (void)scrollViewDidScroll;
+
+@end
 
 
 @interface SJVideoPlayerControl (SJSliderDelegateMethods)<SJSliderDelegate>
@@ -150,7 +166,7 @@ static const NSString *SJPlayerItemStatusContext;
 
 @property (nonatomic, strong, readonly) SJVideoPlayerTipsView *brightnessView;
 
-@property (nonatomic, strong, readonly) SJVideoPlayerBackstageStatusRegistrar *backstageRegistrar;
+@property (nonatomic, strong, readonly) SJVideoPlayerStatusRegistrar *backstageRegistrar;
 
 @property (nonatomic, assign, readwrite) NSTimeInterval playedTime;
 
@@ -161,6 +177,9 @@ static const NSString *SJPlayerItemStatusContext;
 @property (nonatomic, assign, readwrite) BOOL isHiddenControl;
 @property (nonatomic, assign, readwrite) NSInteger hiddenControlPoint;
 @property (nonatomic, strong, readonly) NSTimer *pointTimer;
+
+@property (nonatomic, weak, readwrite) UIScrollView *scrollView;
+@property (nonatomic, strong, readwrite) NSIndexPath *indexPath;
 
 @end
 
@@ -188,6 +207,7 @@ static const NSString *SJPlayerItemStatusContext;
 }
 
 - (void)dealloc {
+    if ( _scrollView ) [_scrollView removeObserver:self forKeyPath:@"contentOffset"];
     [self removeOtherObservers];
     [self _SJVideoPlayerControlRemoveNotifications];
 }
@@ -216,6 +236,11 @@ static const NSString *SJPlayerItemStatusContext;
 // MARK: Observer
 
 - (void)observeValueForKeyPath:(NSString *)keyPath ofObject:(id)object change:(NSDictionary<NSKeyValueChangeKey,id> *)change context:(void *)context {
+    
+    if ( [keyPath isEqualToString:@"contentOffset"] ) {
+        [self scrollViewDidScroll];
+        return;
+    }
     
     if ( [keyPath isEqualToString:@"hiddenControl"] ) {
         if ( _controlView.hiddenControl ) {
@@ -378,6 +403,20 @@ static const NSString *SJPlayerItemStatusContext;
     [_playerItem addObserver:self forKeyPath:@"playbackBufferEmpty" options:NSKeyValueObservingOptionNew context:nil];
 }
 
+- (void)setScrollView:(UIScrollView *)scrollView indexPath:(NSIndexPath *)indexPath {
+    self.scrollView = scrollView;
+    self.indexPath = indexPath;
+    self.backstageRegistrar.playingOnCell = YES;
+    if ( !self.backstageRegistrar.fullScreen ) self.panGR.enabled = NO;
+}
+
+- (void)setScrollView:(UIScrollView *)scrollView {
+    if ( _scrollView == scrollView ) return;
+    if ( scrollView != _scrollView ) [_scrollView removeObserver:self forKeyPath:@"contentOffset"];
+    _scrollView = scrollView;
+    [_scrollView addObserver:self forKeyPath:@"contentOffset" options:NSKeyValueObservingOptionNew context:nil];
+}
+
 - (void)setRate:(float)rate {
     if ( rate < 0.5 ) rate = .5;
     if ( rate > 2 ) rate = 2;
@@ -410,9 +449,12 @@ static const NSString *SJPlayerItemStatusContext;
     
     self.playerItem = nil;
     [self playerUnlocked];
+    _controlView.hiddenReplayBtn = YES;
     _controlView.hiddenLoadFailedBtn = YES;
     _backstageRegistrar = nil;
     _rate = 1;
+
+    [_controlView setCurrentTime:0 duration:0];
 }
 
 - (void)jumpedToTime:(NSTimeInterval)time completionHandler:(void (^)(BOOL))completionHandler {
@@ -423,7 +465,8 @@ static const NSString *SJPlayerItemStatusContext;
 - (void)_setEnabledGestureRecognizer:(BOOL)bol {
     self.singleTap.enabled = bol;
     self.doubleTap.enabled = bol;
-    self.panGR.enabled = bol;
+    if ( bol && self.backstageRegistrar.fullScreen ) self.panGR.enabled = bol;
+    else { self.panGR.enabled = !self.backstageRegistrar.playingOnCell; }
 }
 
 - (void)addPlayerItemTimeObserver {
@@ -473,7 +516,6 @@ static const NSString *SJPlayerItemStatusContext;
                                                   usingBlock:callback];
 }
 
-// MARK: Setter
 
 // MARK: Getter
 
@@ -518,9 +560,9 @@ static const NSString *SJPlayerItemStatusContext;
     return _volumeView;
 }
 
-- (SJVideoPlayerBackstageStatusRegistrar *)backstageRegistrar {
+- (SJVideoPlayerStatusRegistrar *)backstageRegistrar {
     if ( _backstageRegistrar ) return _backstageRegistrar;
-    _backstageRegistrar = [SJVideoPlayerBackstageStatusRegistrar new];
+    _backstageRegistrar = [SJVideoPlayerStatusRegistrar new];
     return _backstageRegistrar;
 }
 
@@ -943,7 +985,7 @@ static UIView *target = nil;
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(playerFullScreenNotitication) name:SJPlayerFullScreenNotitication object:nil];
     
     /// 小屏
-    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(playerSmallScreenNotification) name:SJPlayerSmallScreenNotification object:nil];
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(smallScreenPlaying) name:SJPlayerSmallScreenNotification object:nil];
     
     // 耳机
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(audioSessionRouteChangeNotification:) name:AVAudioSessionRouteChangeNotification object:nil];
@@ -991,12 +1033,16 @@ static UIView *target = nil;
 - (void)playerFullScreenNotitication {
     NSLog(@"全屏");
     _controlView.hiddenControl = NO;
+    self.panGR.enabled = YES;
+    self.backstageRegistrar.fullScreen = YES;
 }
 
 /// 小屏
-- (void)playerSmallScreenNotification {
+- (void)smallScreenPlaying {
     NSLog(@"小屏");
     _controlView.hiddenControl = NO;
+    if ( self.backstageRegistrar.playingOnCell ) self.panGR.enabled = NO;
+    self.backstageRegistrar.fullScreen = NO;
 }
 
 /// 耳机
@@ -1102,11 +1148,53 @@ static UIView *target = nil;
 
 
 
-@implementation SJVideoPlayerBackstageStatusRegistrar
+@implementation SJVideoPlayerStatusRegistrar
 
 - (void)registrar:(SJVideoPlayerControlView *)controlView {
     self.hiddenLockBtn = controlView.hiddenLockBtn;
     self.hiddenPlayBtn = controlView.hiddenPlayBtn;
+}
+
+- (void)setScrollIn:(BOOL)scrollIn {
+    if ( _scrollIn == scrollIn ) return;
+    _scrollIn = scrollIn;
+    if ( _scrollIn ) {
+        [[NSNotificationCenter defaultCenter] postNotificationName:SJPlayerScrollInNotification object:nil];
+    }
+    else {
+        [[NSNotificationCenter defaultCenter] postNotificationName:SJPlayerScrollOutNotification object:nil];
+    }
+}
+
+@end
+
+
+
+
+@implementation SJVideoPlayerControl (PlayingOnTheCell)
+
+- (void)scrollViewDidScroll {
+    if ( [self.scrollView isKindOfClass:[UITableView class]] ) {
+        UITableView *tableView = (UITableView *)self.scrollView;
+        UITableViewCell *cell = [tableView cellForRowAtIndexPath:self.indexPath];
+        NSArray *visableCells = tableView.visibleCells;
+        if ( [visableCells containsObject:cell] ) {
+            NSLog(@"滑入");
+            /// 滑入时 加入到 cell 中.
+            self.backstageRegistrar.scrollIn = YES;
+            
+        } else {
+            NSLog(@"滑出");
+            /// 滑出时 暂停, 并 停止 方向 监听
+            self.backstageRegistrar.scrollIn = NO;
+            
+            [self clickedPause];
+        }
+    } 
+}
+
+- (void)updatePlayerViewToCell {
+    
 }
 
 @end

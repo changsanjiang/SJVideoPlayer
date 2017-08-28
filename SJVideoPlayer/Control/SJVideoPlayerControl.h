@@ -10,8 +10,9 @@
 
 #define SJHiddenControlInterval (4)
 
+NS_ASSUME_NONNULL_BEGIN
 
-@class UIView, AVAsset, AVPlayer, AVPlayerItem, UIImage, SJVideoPlayerSettings, SJVideoPlayerMoreSetting;
+@class UIView, AVAsset, AVPlayer, AVPlayerItem, UIScrollView, UIImage, SJVideoPlayerSettings, SJVideoPlayerMoreSetting;
 
 
 @protocol SJVideoPlayerControlDelegate;
@@ -28,9 +29,11 @@
  */
 @property (nonatomic, strong, readonly) UIView *view;
 
-@property (nonatomic, weak, readwrite) id <SJVideoPlayerControlDelegate> delegate;
+@property (nonatomic, weak, readwrite, nullable) id <SJVideoPlayerControlDelegate> delegate;
 
-@property (nonatomic, strong, readwrite) NSArray<SJVideoPlayerMoreSetting *> *moreSettings;
+@property (nonatomic, weak, readwrite, nullable) NSArray<SJVideoPlayerMoreSetting *> *moreSettings;
+
+- (void)setScrollView:(UIScrollView *)scrollView indexPath:(NSIndexPath *)indexPath;
 
 - (void)play;
 
@@ -38,7 +41,7 @@
 
 - (void)sjReset;
 
-- (void)jumpedToTime:(NSTimeInterval)time completionHandler:(void (^)(BOOL finished))completionHandler;
+- (void)jumpedToTime:(NSTimeInterval)time completionHandler:(void (^ __nullable)(BOOL finished))completionHandler;
 
 @property (nonatomic, assign, readwrite) float rate;
 
@@ -59,3 +62,6 @@
 - (void)clickedUnlockBtnEvent:(SJVideoPlayerControl *)control;
 
 @end
+
+
+NS_ASSUME_NONNULL_END

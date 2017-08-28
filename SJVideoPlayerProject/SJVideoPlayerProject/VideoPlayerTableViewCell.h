@@ -21,6 +21,6 @@
 
 @protocol VideoPlayerTableViewCellDelegate <NSObject>
 
-- (void)clickedPlayBtnOnTheCell:(VideoPlayerTableViewCell *)cell;
+- (void)clickedPlayBtnOnTheCell:(VideoPlayerTableViewCell *)cell onViewTag:(NSInteger)tag;
 
 @end

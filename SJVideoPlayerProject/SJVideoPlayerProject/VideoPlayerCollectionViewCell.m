@@ -1,12 +1,12 @@
 //
-//  VideoPlayerTableViewCell.m
+//  VideoPlayerCollectionViewCell.m
 //  SJVideoPlayerProject
 //
 //  Created by BlueDancer on 2017/8/28.
 //  Copyright © 2017年 SanJiang. All rights reserved.
 //
 
-#import "VideoPlayerTableViewCell.h"
+#import "VideoPlayerCollectionViewCell.h"
 
 #import "UIView+Extension.h"
 
@@ -14,7 +14,7 @@
 
 #import <SJBorderLineView/SJBorderlineView.h>
 
-@interface VideoPlayerTableViewCell ()
+@interface VideoPlayerCollectionViewCell ()
 
 @property (nonatomic, strong, readonly) SJBorderlineView *backgroundView;
 
@@ -22,17 +22,16 @@
 
 @end
 
-@implementation VideoPlayerTableViewCell
+@implementation VideoPlayerCollectionViewCell
 
 @synthesize backgroundView = _backgroundView;
 @synthesize videoImageView = _videoImageView;
 @synthesize playVideoBtn = _playVideoBtn;
 
-- (instancetype)initWithStyle:(UITableViewCellStyle)style reuseIdentifier:(NSString *)reuseIdentifier {
-    self = [super initWithStyle:style reuseIdentifier:reuseIdentifier];
-    if (self) {
-        [self _VideoPlayerTableViewCellSetupUI];
-    }
+- (instancetype)initWithFrame:(CGRect)frame {
+    self = [super initWithFrame:frame];
+    if ( !self ) return nil;
+    [self _VideoPlayerCollectionViewCellSetupUI];
     return self;
 }
 
@@ -45,7 +44,7 @@
 
 // MARK: UI
 
-- (void)_VideoPlayerTableViewCellSetupUI {
+- (void)_VideoPlayerCollectionViewCellSetupUI {
     
     [self.contentView addSubview:self.backgroundView];
     [_backgroundView addSubview:self.videoImageView];
@@ -81,7 +80,8 @@
 
 - (UIView *)backgroundView {
     if ( _backgroundView ) return _backgroundView;
-    _backgroundView = [SJBorderlineView borderlineViewWithSide:SJBorderlineSideBottom startMargin:0 endMargin:0 lineColor:[UIColor lightGrayColor] lineWidth:6 backgroundColor:[UIColor clearColor]];
+    _backgroundView = [SJBorderlineView borderlineViewWithSide:SJBorderlineSideAll startMargin:0 endMargin:0 lineColor:[UIColor lightGrayColor] lineWidth:1 backgroundColor:[UIColor clearColor]];
     return _backgroundView;
 }
 @end
+

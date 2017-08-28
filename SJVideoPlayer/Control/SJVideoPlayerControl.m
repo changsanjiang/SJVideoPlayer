@@ -28,11 +28,12 @@
 
 #import <Masonry/Masonry.h>
 
+#import <objc/message.h>
+
 /*!
  *  Refresh interval for timed observations of AVPlayer
  */
 #define REFRESH_INTERVAL (0.5)
-
 
 typedef NS_ENUM(NSUInteger, SJPanDirection) {
     SJPanDirection_Unknown,
@@ -178,6 +179,7 @@ static const NSString *SJPlayerItemStatusContext;
 
 @property (nonatomic, weak, readwrite) UIScrollView *scrollView;
 @property (nonatomic, strong, readwrite) NSIndexPath *indexPath;
+@property (nonatomic, assign, readwrite) NSInteger onViewTag;
 
 @end
 
@@ -401,9 +403,10 @@ static const NSString *SJPlayerItemStatusContext;
     [_playerItem addObserver:self forKeyPath:@"playbackBufferEmpty" options:NSKeyValueObservingOptionNew context:nil];
 }
 
-- (void)setScrollView:(UIScrollView *)scrollView indexPath:(NSIndexPath *)indexPath {
+- (void)setScrollView:(UIScrollView *)scrollView indexPath:(NSIndexPath *)indexPath onViewTag:(NSInteger)tag {
     self.scrollView = scrollView;
     self.indexPath = indexPath;
+    self.onViewTag = tag;
     self.backstageRegistrar.playingOnCell = YES;
     if ( !self.backstageRegistrar.fullScreen ) self.panGR.enabled = NO;
 }
@@ -1192,18 +1195,28 @@ static UIView *target = nil;
         if ( [visableCells containsObject:cell] ) {
             /// 滑入时 恢复.
             self.backstageRegistrar.scrollIn = YES;
-            
-        } else {
+        }
+        else {
             /// 滑出时 暂停, 并 停止 方向 监听
             self.backstageRegistrar.scrollIn = NO;
             
             [self clickedPause];
         }
-    } 
-}
-
-- (void)updatePlayerViewToCell {
-    
+    }
+    else if ( [self.scrollView isKindOfClass:[UICollectionView class]] ) {
+        UICollectionView *collectionView = (UICollectionView *)self.scrollView;
+        UICollectionViewCell *cell = [collectionView cellForItemAtIndexPath:self.indexPath];
+        if ( [collectionView.visibleCells containsObject:cell]) {
+            /// 滑入时 恢复.
+            self.backstageRegistrar.scrollIn = YES;
+        }
+        else {
+            /// 滑出时 暂停, 并 停止 方向 监听
+            self.backstageRegistrar.scrollIn = NO;
+            
+            [self clickedPause];
+        }
+    }
 }
 
 @end

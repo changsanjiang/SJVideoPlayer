@@ -59,6 +59,10 @@
 @property (nonatomic, strong, readonly) SJVideoPlayerSettings *settings;
 @property (nonatomic, strong, readonly) NSMutableArray<SJVideoPlayerMoreSetting *> *moreSettings;
 
+@property (nonatomic, weak, readwrite) UIScrollView *scrollView;
+@property (nonatomic, strong, readwrite) NSIndexPath *indexPath;
+@property (nonatomic, assign, readwrite) NSInteger onViewTag;
+
 @end
 
 
@@ -121,8 +125,11 @@
     _presentView.placeholderImage = placeholder;
 }
 
-- (void)setScrollView:(UIScrollView *)scrollView indexPath:(NSIndexPath *)indexPath {
-    [_control setScrollView:scrollView indexPath:indexPath];
+- (void)setScrollView:(UIScrollView *)scrollView indexPath:(NSIndexPath *)indexPath onViewTag:(NSInteger)tag {
+    self.scrollView = scrollView;
+    self.indexPath = indexPath;
+    self.onViewTag = tag;
+    [_control setScrollView:scrollView indexPath:indexPath onViewTag:tag];
 }
 
 // MARK: Public
@@ -244,6 +251,25 @@
 
 - (void)playerScrollInNotification {
     self.containerView.alpha = 1;
+    if ([self.scrollView isKindOfClass:[UITableView class]]) {
+        UITableView *tableView = (UITableView *)self.scrollView;
+        UITableViewCell *cell = [tableView cellForRowAtIndexPath:self.indexPath];
+        UIView *onView = [cell.contentView viewWithTag:self.onViewTag];
+        [self.containerView removeFromSuperview];
+        [onView addSubview:self.containerView];
+        [self.containerView mas_makeConstraints:^(MASConstraintMaker *make) {
+            make.edges.offset(0);
+        }];
+    } else if ([self.scrollView isKindOfClass:[UICollectionView class]]) {
+        UICollectionView *collectionView = (UICollectionView *)self.scrollView;
+        UICollectionViewCell *cell = [collectionView cellForItemAtIndexPath:self.indexPath];
+        UIView *onView = [cell.contentView viewWithTag:self.onViewTag];
+        [self.containerView removeFromSuperview];
+        [onView addSubview:self.containerView];
+        [self.containerView mas_makeConstraints:^(MASConstraintMaker *make) {
+            make.edges.offset(0);
+        }];
+    }
 }
 
 - (void)playerScrollOutNotification {

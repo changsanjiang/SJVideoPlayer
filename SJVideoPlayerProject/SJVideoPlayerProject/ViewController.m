@@ -16,10 +16,13 @@
 
 #import "VideoPlayerTableViewController.h"
 
+#import "VideoPlayerCollectionViewController.h"
+
 @interface ViewController ()
 
 @property (nonatomic, strong) UIButton *pushBtn;
 @property (nonatomic, strong) UIButton *pushTableViewBtn;
+@property (nonatomic, strong) UIButton *pushCollectionViewBtn;
 
 @end
 
@@ -30,6 +33,7 @@
     
     [self.view addSubview:self.pushBtn];
     [self.view addSubview:self.pushTableViewBtn];
+    [self.view addSubview:self.pushCollectionViewBtn];
     
     [self.pushBtn mas_makeConstraints:^(MASConstraintMaker *make) {
         make.center.offset(0);
@@ -40,7 +44,10 @@
         make.centerX.equalTo(_pushBtn);
     }];
     
-    
+    [self.pushCollectionViewBtn mas_makeConstraints:^(MASConstraintMaker *make) {
+        make.top.equalTo(_pushTableViewBtn.mas_bottom).offset(12);
+        make.centerX.equalTo(_pushTableViewBtn);
+    }];
     
     // Do any additional setup after loading the view, typically from a nib.
 }
@@ -52,6 +59,9 @@
             break;
         case 1:
             [self.navigationController pushViewController:[VideoPlayerTableViewController new] animated:YES];
+            break;
+        case 2:
+            [self.navigationController pushViewController:[[VideoPlayerCollectionViewController alloc] initWithCollectionViewLayout:[UICollectionViewFlowLayout new]] animated:YES];
             break;
         default:
             break;
@@ -68,5 +78,11 @@
     if ( _pushTableViewBtn ) return _pushTableViewBtn;
     _pushTableViewBtn = [UIButton buttonWithTitle:@"TableView" titleColor:[UIColor blackColor] backgroundColor:[UIColor clearColor] tag:1 target:self sel:@selector(clickedBtn:) fontSize:14];
     return _pushTableViewBtn;
+}
+
+- (UIButton *)pushCollectionViewBtn {
+    if ( _pushCollectionViewBtn ) return _pushCollectionViewBtn;
+    _pushCollectionViewBtn = [UIButton buttonWithTitle:@"CollectionView" titleColor:[UIColor blackColor] backgroundColor:[UIColor clearColor] tag:2 target:self sel:@selector(clickedBtn:) fontSize:14];
+    return _pushCollectionViewBtn;
 }
 @end

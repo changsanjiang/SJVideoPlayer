@@ -73,7 +73,7 @@ NS_ASSUME_NONNULL_BEGIN
 /*!
  *  if playing on the cell, you should set it.
  */
-- (void)setScrollView:(UIScrollView *)scrollView indexPath:(NSIndexPath *)indexPath;
+- (void)setScrollView:(UIScrollView *)scrollView indexPath:(NSIndexPath *)indexPath onViewTag:(NSInteger)tag;
 
 /*!
  *  present View. you shuold set it frame (support autoLayout).

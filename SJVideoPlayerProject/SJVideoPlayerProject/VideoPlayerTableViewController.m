@@ -87,14 +87,13 @@ static NSString *const VideoPlayerTableViewCellID = @"VideoPlayerTableViewCell";
 
 @implementation VideoPlayerTableViewController (VideoPlayerTableViewCellDelegateMethods)
 
-- (void)clickedPlayBtnOnTheCell:(VideoPlayerTableViewCell *)cell {
+- (void)clickedPlayBtnOnTheCell:(VideoPlayerTableViewCell *)cell onViewTag:(NSInteger)tag {
     [SJVideoPlayer sharedPlayer].assetURL = [[NSBundle mainBundle] URLForResource:@"sample.mp4" withExtension:nil];
-    NSLog(@"%@", [SJVideoPlayer sharedPlayer].view);
     [cell.videoImageView addSubview:[SJVideoPlayer sharedPlayer].view];
     [[SJVideoPlayer sharedPlayer].view mas_makeConstraints:^(MASConstraintMaker *make) {
         make.edges.offset(0);
     }];
-    [[SJVideoPlayer sharedPlayer] setScrollView:self.tableView indexPath:[self.tableView indexPathForCell:cell]];
+    [[SJVideoPlayer sharedPlayer] setScrollView:self.tableView indexPath:[self.tableView indexPathForCell:cell] onViewTag:tag];
 }
 
 @end

@@ -106,7 +106,7 @@
 
 - (UIImageView *)placeholderImageView {
     if ( _placeholderImageView ) return _placeholderImageView;
-    _placeholderImageView = [UIImageView imageViewWithImageStr:@"" viewMode:UIViewContentModeScaleAspectFit];
+    _placeholderImageView = [UIImageView imageViewWithImageStr:@"" viewMode:UIViewContentModeScaleAspectFill];
     _placeholderImageView.alpha = 0.001;
     return _placeholderImageView;
 }
@@ -120,7 +120,18 @@
 
 - (UIImage *)screenShot {
     CMTime time = _player.currentItem.currentTime;
-    return [UIImage imageWithCGImage:[[AVAssetImageGenerator assetImageGeneratorWithAsset:_asset] copyCGImageAtTime:time actualTime:&time error:nil]];
+    AVAssetImageGenerator *generator = [AVAssetImageGenerator assetImageGeneratorWithAsset:_asset];
+    generator.appliesPreferredTrackTransform = YES;
+    return [UIImage imageWithCGImage:[generator copyCGImageAtTime:time actualTime:&time error:nil]];
+}
+
+- (CGRect)_sjVideoRect {
+    return [(AVPlayerLayer *)self.layer videoRect];
+}
+
+- (BOOL)isLandscapeVideo {
+    CGSize size = [self _sjVideoRect].size;
+    return size.width > size.height;
 }
 
 @end
@@ -212,13 +223,20 @@
     [self removeFromSuperview];
     UIWindow *window = [UIApplication sharedApplication].keyWindow;
     [window addSubview:self];
+    
+    BOOL isLandscapeView = [self isLandscapeVideo];
     [self mas_remakeConstraints:^(MASConstraintMaker *make) {
-        make.center.mas_offset(CGPointMake(0, 0));
-        make.width.offset(SJSCREEN_MAX);
-        make.height.offset(SJSCREEN_MIN);
+        if ( isLandscapeView ) {
+            make.center.mas_offset(CGPointMake(0, 0));
+            make.width.offset(SJSCREEN_MAX);
+            make.height.offset(SJSCREEN_MIN);
+        }
+        else make.edges.offset(0);
     }];
+    
     [UIView animateWithDuration:0.25 animations:^{
-        self.transform = CGAffineTransformMakeRotation(M_PI_2);
+        if ( isLandscapeView ) self.transform = CGAffineTransformMakeRotation(M_PI_2);
+        else [window layoutIfNeeded];
     }];
     [[UIApplication sharedApplication] setStatusBarHidden:YES];
     [[NSNotificationCenter defaultCenter] postNotificationName:SJPlayerFullScreenNotitication object:nil];
@@ -228,13 +246,19 @@
     [self removeFromSuperview];
     UIWindow *window = [UIApplication sharedApplication].keyWindow;
     [window addSubview:self];
+    
+    BOOL isLandscapeView = [self isLandscapeVideo];
     [self mas_remakeConstraints:^(MASConstraintMaker *make) {
-        make.center.mas_offset(CGPointMake(0, 0));
-        make.width.offset(SJSCREEN_MAX);
-        make.height.offset(SJSCREEN_MIN);
+        if ( isLandscapeView ) {
+            make.center.mas_offset(CGPointMake(0, 0));
+            make.width.offset(SJSCREEN_MAX);
+            make.height.offset(SJSCREEN_MIN);
+        }
+        else [window layoutIfNeeded];
     }];
     [UIView animateWithDuration:0.25 animations:^{
-        self.transform = CGAffineTransformMakeRotation(-M_PI_2);
+        if ( isLandscapeView ) self.transform = CGAffineTransformMakeRotation(-M_PI_2);
+        else [window layoutIfNeeded];
     }];
     [[UIApplication sharedApplication] setStatusBarHidden:YES];
     [[NSNotificationCenter defaultCenter] postNotificationName:SJPlayerFullScreenNotitication object:nil];
@@ -246,8 +270,11 @@
     [self mas_remakeConstraints:^(MASConstraintMaker *make) {
         make.edges.offset(0);
     }];
+    
+    BOOL isLandscapeView = [self isLandscapeVideo];
     [UIView animateWithDuration:0.25 animations:^{
-        self.transform = CGAffineTransformIdentity;
+        if ( isLandscapeView ) self.transform = CGAffineTransformIdentity;
+        else [self.superv layoutIfNeeded];
     }];
     [[UIApplication sharedApplication] setStatusBarHidden:NO];
     [[NSNotificationCenter defaultCenter] postNotificationName:SJPlayerSmallScreenNotification object:nil];

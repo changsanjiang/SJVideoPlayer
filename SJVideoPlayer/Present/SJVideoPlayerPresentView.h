@@ -22,6 +22,8 @@
 
 - (UIImage *)screenShot;
 
+- (BOOL)isLandscapeVideo;
+
 @end
 
 

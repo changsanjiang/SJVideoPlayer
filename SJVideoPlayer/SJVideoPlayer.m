@@ -297,6 +297,18 @@
     [_control pause];
 }
 
+/*!
+ *  暂停 并停止旋转
+ */
+- (void)pauseAndStopRotation {
+    [_presentView stopRotation];
+    [_control pause];
+}
+
+- (void)enableRotation {
+    [_presentView enableRotation];
+}
+
 - (void)jumpedToTime:(NSTimeInterval)time completionHandler:(void (^)(BOOL finished))completionHandler {
     [_control jumpedToTime:time completionHandler:completionHandler];
 }

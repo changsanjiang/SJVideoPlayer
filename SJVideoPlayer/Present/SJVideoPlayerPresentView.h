@@ -24,6 +24,10 @@
 
 - (BOOL)isLandscapeVideo;
 
+- (void)enableRotation;
+
+- (void)stopRotation;
+
 @end
 
 

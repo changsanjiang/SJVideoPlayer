@@ -134,6 +134,14 @@
     return size.width > size.height;
 }
 
+- (void)enableRotation {
+    [self _addDeviceOrientationChangeObserver];
+}
+
+- (void)stopRotation {
+    [self _removeDeviceOrientationChangeObserver];
+}
+
 @end
 
 

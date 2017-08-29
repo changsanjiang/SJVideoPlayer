@@ -100,7 +100,11 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (void)pause;
 
+- (void)pauseAndStopRotation;
+
 - (void)play;
+
+- (void)enableRotation;
 
 - (void)jumpedToTime:(NSTimeInterval)time completionHandler:(void (^ __nullable)(BOOL finished))completionHandler;
 

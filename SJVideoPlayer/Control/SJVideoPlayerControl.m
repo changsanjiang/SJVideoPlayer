@@ -479,8 +479,13 @@ static const NSString *SJPlayerItemStatusContext;
 - (void)_setEnabledGestureRecognizer:(BOOL)bol {
     self.singleTap.enabled = bol;
     self.doubleTap.enabled = bol;
-    if ( bol && self.backstageRegistrar.fullScreen ) self.panGR.enabled = bol;
-    else { self.panGR.enabled = !self.backstageRegistrar.playingOnCell; }
+    if ( self.backstageRegistrar.fullScreen ) self.panGR.enabled = bol;
+    else {
+        if ( self.backstageRegistrar.playingOnCell )
+             self.panGR.enabled = NO;
+        else
+            self.panGR.enabled = bol;
+    }
 }
 
 - (void)addPlayerItemTimeObserver {

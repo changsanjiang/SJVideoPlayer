@@ -235,7 +235,7 @@
         }
         else make.edges.offset(0);
     }];
-
+    
     [UIView animateWithDuration:0.25 animations:^{
         if ( isLandscapeView ) self.transform = CGAffineTransformMakeRotation(M_PI_2);
         else [window layoutIfNeeded];
@@ -245,6 +245,7 @@
 }
 
 - (void)_deviceOrientationLandscapeRight {
+    if ( !self.superv ) return;
     [self removeFromSuperview];
     UIWindow *window = [UIApplication sharedApplication].keyWindow;
     [window addSubview:self];
@@ -267,6 +268,7 @@
 }
 
 - (void)_deviceOrientationPortrait {
+    if ( !self.superv ) return;
     [self removeFromSuperview];
     [self.superv addSubview:self];
     [self mas_remakeConstraints:^(MASConstraintMaker *make) {

@@ -1022,8 +1022,6 @@ static UIView *target = nil;
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(settingsPlayerNotification:) name:SJSettingsPlayerNotification object:nil];
     
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(moreSettingsNotification:) name:SJMoreSettingsNotification object:nil];
-    
-    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(resetMoreSettings:) name:SJResetMoreSettingsNotification object:nil];
 }
 
 - (void)_SJVideoPlayerControlRemoveNotifications {
@@ -1126,11 +1124,6 @@ static UIView *target = nil;
     [moreSettingsM enumerateObjectsUsingBlock:^(SJVideoPlayerMoreSetting * _Nonnull obj, BOOL * _Nonnull stop) {
         [self dressSetting:obj];
     }];
-    self.controlView.moreSettings = moreSettings;
-}
-
-- (void)resetMoreSettings:(NSNotification *)notifi {
-    NSArray<SJVideoPlayerMoreSetting *> *moreSettings = notifi.object;
     self.controlView.moreSettings = moreSettings;
 }
 

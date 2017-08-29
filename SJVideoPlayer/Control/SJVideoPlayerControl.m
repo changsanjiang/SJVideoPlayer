@@ -293,7 +293,10 @@ static const NSString *SJPlayerItemStatusContext;
                 
                 self.controlView.hiddenLoadFailedBtn = YES;
                 
-                [self clickedPlay];
+                ///  开始播放时黑屏/花屏一下. 延时 1秒 播放.
+                dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(1 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
+                    [self clickedPlay];
+                });
                 
                 [self.pointTimer fire];
                 

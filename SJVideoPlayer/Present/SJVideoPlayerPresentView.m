@@ -93,9 +93,7 @@
 }
 
 - (void)_showPlaceholderImage {
-    [UIView animateWithDuration:0.25 animations:^{
-        self.placeholderImageView.alpha = 1;
-    }];
+    self.placeholderImageView.alpha = 1;
 }
 
 - (void)_hiddenPlaceholderImage {

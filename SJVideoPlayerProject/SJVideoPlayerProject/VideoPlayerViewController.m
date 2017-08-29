@@ -142,17 +142,6 @@
         [moreSettings addObject:model2];
         [moreSettings addObject:model3];
     }];
-        
-    
-// MARK: Clicked Back Button
-    
-    __weak typeof(self) _self = self;
-    player.clickedBackEvent = ^{
-        __strong typeof(_self) self = _self;
-        if ( !self ) return;
-        [self.navigationController popViewControllerAnimated:YES];
-    };
-    
     
     // Do any additional setup after loading the view.
 }
@@ -160,6 +149,14 @@
 - (void)viewWillAppear:(BOOL)animated {
     [super viewWillAppear:animated];
     [self.navigationController setNavigationBarHidden:YES animated:YES];
+    
+// MARK: Clicked Back Button
+    __weak typeof(self) _self = self;
+    [SJVideoPlayer sharedPlayer].clickedBackEvent = ^{
+        __strong typeof(_self) self = _self;
+        if ( !self ) return;
+        [self.navigationController popViewControllerAnimated:YES];
+    };
 }
 
 - (void)viewDidAppear:(BOOL)animated {

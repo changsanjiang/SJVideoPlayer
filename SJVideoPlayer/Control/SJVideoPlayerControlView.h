@@ -77,6 +77,12 @@ typedef NS_ENUM(NSUInteger, SJVideoPlaySliderTag) {
 /*!
  *  default is NO
  */
+@property (nonatomic, assign, readwrite) BOOL hiddenBackBtn;
+
+
+/*!
+ *  default is NO
+ */
 @property (nonatomic, assign, readwrite) BOOL hiddenPauseBtn;
 
 /*!

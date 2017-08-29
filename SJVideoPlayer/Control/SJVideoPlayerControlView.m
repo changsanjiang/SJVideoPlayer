@@ -1391,6 +1391,20 @@ static NSString *const SJVideoPlayPreviewColCellID = @"SJVideoPlayPreviewColCell
 /*!
  *  default is NO
  */
+- (void)setHiddenBackBtn:(BOOL)hiddenBackBtn {
+    if ( hiddenBackBtn == self.hiddenBackBtn ) return;
+    objc_setAssociatedObject(self, @selector(hiddenBackBtn), @(hiddenBackBtn), OBJC_ASSOCIATION_RETAIN_NONATOMIC);
+    if ( hiddenBackBtn ) _backBtn.alpha = 0.001;
+    else _backBtn.alpha = 1;
+}
+
+- (BOOL)hiddenBackBtn {
+    return [objc_getAssociatedObject(self, _cmd) boolValue];
+}
+
+/*!
+ *  default is NO
+ */
 - (void)setHiddenPlayBtn:(BOOL)hiddenPlayBtn {
     if ( hiddenPlayBtn == self.hiddenPlayBtn ) return;
     objc_setAssociatedObject(self, @selector(hiddenPlayBtn), @(hiddenPlayBtn), OBJC_ASSOCIATION_RETAIN_NONATOMIC);

@@ -46,6 +46,14 @@ static NSString *const VideoPlayerTableViewCellID = @"VideoPlayerTableViewCell";
     [super viewWillDisappear:animated];
     self.currentTime = [SJVideoPlayer sharedPlayer].currentTime;
     [[SJVideoPlayer sharedPlayer] pause];
+    
+// MARK: Clicked Back Button
+    __weak typeof(self) _self = self;
+    [SJVideoPlayer sharedPlayer].clickedBackEvent = ^{
+        __strong typeof(_self) self = _self;
+        if ( !self ) return;
+        [self.navigationController popViewControllerAnimated:YES];
+    };
 }
 
 - (void)dealloc {

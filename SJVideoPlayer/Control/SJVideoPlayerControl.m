@@ -79,7 +79,6 @@ static const NSString *SJPlayerItemStatusContext;
 
 @property (nonatomic, assign, readwrite) BOOL fullScreen;
 
-
 @end
 
 
@@ -405,6 +404,7 @@ static const NSString *SJPlayerItemStatusContext;
 - (void)setScrollView:(UIScrollView *)scrollView indexPath:(NSIndexPath *)indexPath {
     self.scrollView = scrollView;
     self.indexPath = indexPath;
+    self.controlView.hiddenBackBtn = YES;
     self.backstageRegistrar.playingOnCell = YES;
     if ( !self.backstageRegistrar.fullScreen ) self.panGR.enabled = NO;
 }
@@ -451,6 +451,7 @@ static const NSString *SJPlayerItemStatusContext;
     [self playerUnlocked];
     
     _controlView.hiddenControl = YES;
+    _controlView.hiddenBackBtn = NO;
     _controlView.hiddenMoreSettingsView = YES;
     _controlView.hiddenReplayBtn = YES;
     _controlView.hiddenLoadFailedBtn = YES;
@@ -1047,6 +1048,7 @@ static UIView *target = nil;
 - (void)playerFullScreenNotitication {
     NSLog(@"全屏");
     _controlView.hiddenControl = NO;
+    _controlView.hiddenBackBtn = NO;
     self.panGR.enabled = YES;
     self.backstageRegistrar.fullScreen = YES;
 }
@@ -1055,6 +1057,7 @@ static UIView *target = nil;
 - (void)smallScreenPlaying {
     NSLog(@"小屏");
     _controlView.hiddenControl = NO;
+    if ( self.backstageRegistrar.playingOnCell ) _controlView.hiddenBackBtn = YES;
     if ( self.backstageRegistrar.playingOnCell ) self.panGR.enabled = NO;
     self.backstageRegistrar.fullScreen = NO;
 }

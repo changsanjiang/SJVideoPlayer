@@ -450,6 +450,9 @@ static const NSString *SJPlayerItemStatusContext;
     
     [self playerUnlocked];
     
+    _controlView.sliderControl.value = 0;
+    _controlView.hiddenPreviewBtn = YES;
+    _controlView.previewImages = nil;
     _controlView.hiddenControl = YES;
     _controlView.hiddenBackBtn = NO;
     _controlView.hiddenMoreSettingsView = YES;

@@ -190,7 +190,7 @@ typedef NS_ENUM(NSUInteger, SJVideoPlaySliderTag) {
 
 @interface SJVideoPlayerControlView (Preview)
 
-@property (nonatomic, strong) NSArray<SJVideoPreviewModel *> *previewImages;
+@property (nonatomic, strong, nullable) NSArray<SJVideoPreviewModel *> *previewImages;
 
 @end
 

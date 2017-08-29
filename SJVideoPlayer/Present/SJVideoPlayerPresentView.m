@@ -43,9 +43,9 @@
 
 @interface SJVideoPlayerPresentView ()
 
-@property (nonatomic, strong, readwrite) AVPlayer *player;
+@property (nonatomic, weak, readwrite) AVPlayer *player;
 
-@property (nonatomic, strong, readwrite) AVAsset *asset;
+@property (nonatomic, weak, readwrite) AVAsset *asset;
 
 @property (nonatomic, weak, readwrite) UIView *superv;
 
@@ -110,9 +110,6 @@
 }
 
 - (void)sjReset {
-    _player = nil;
-    _asset = nil;
-    _superv = nil;
     [self _removeDeviceOrientationChangeObserver];
 }
 

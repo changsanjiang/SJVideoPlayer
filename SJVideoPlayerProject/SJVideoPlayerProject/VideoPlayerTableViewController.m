@@ -101,6 +101,7 @@ static NSString *const VideoPlayerTableViewCellID = @"VideoPlayerTableViewCell";
     [[SJVideoPlayer sharedPlayer].view mas_makeConstraints:^(MASConstraintMaker *make) {
         make.edges.offset(0);
     }];
+    
     [[SJVideoPlayer sharedPlayer] setScrollView:self.tableView indexPath:[self.tableView indexPathForCell:cell] onViewTag:tag];
 }
 

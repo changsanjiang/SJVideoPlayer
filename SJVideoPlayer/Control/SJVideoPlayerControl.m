@@ -179,6 +179,8 @@ static const NSString *SJPlayerItemStatusContext;
 @property (nonatomic, weak, readwrite) UIScrollView *scrollView;
 @property (nonatomic, strong, readwrite) NSIndexPath *indexPath;
 
+@property (nonatomic, strong, readonly) dispatch_queue_t SJPlayerQueue;
+
 @end
 
 @implementation SJVideoPlayerControl
@@ -190,6 +192,7 @@ static const NSString *SJPlayerItemStatusContext;
 @synthesize backstageRegistrar = _backstageRegistrar;
 @synthesize pointTimer = _pointTimer;
 @synthesize rate = _rate;
+@synthesize SJPlayerQueue = _SJPlayerQueue;
 
 - (instancetype)init {
     self = [super init];
@@ -224,11 +227,52 @@ static const NSString *SJPlayerItemStatusContext;
 }
 
 - (void)setAsset:(AVAsset *)asset playerItem:(AVPlayerItem *)playerItem player:(AVPlayer *)player {
-    [self sjReset];
-
     self.asset = asset;
     self.playerItem = playerItem;
     self.player = player;
+}
+
+// MARK: Setter
+
+- (void)setPlayerItem:(AVPlayerItem *)playerItem {
+    if ( _playerItem && _playerItem == playerItem ) return;
+    __block AVPlayerItem *oldPlayerItem = _playerItem;
+    __weak typeof(self) _self = self;
+    [self _addOperation:^{
+        __strong typeof(_self) self = _self;
+        if ( !self ) return;
+        [oldPlayerItem removeObserver:self forKeyPath:@"status"];
+        [oldPlayerItem removeObserver:self forKeyPath:@"loadedTimeRanges"];
+        [oldPlayerItem removeObserver:self forKeyPath:@"playbackBufferEmpty"];
+        oldPlayerItem = nil;
+    }];
+    
+    _playerItem = playerItem;
+    
+    [_playerItem addObserver:self forKeyPath:@"status" options:NSKeyValueObservingOptionNew context:nil];
+    
+    [_playerItem addObserver:self forKeyPath:@"loadedTimeRanges" options:NSKeyValueObservingOptionNew context:nil];
+    
+    [_playerItem addObserver:self forKeyPath:@"playbackBufferEmpty" options:NSKeyValueObservingOptionNew context:nil];
+}
+
+- (void)setAsset:(AVAsset *)asset {
+    if ( _asset && asset == _asset ) return;
+    __block AVAsset *oldAsset = _asset;
+    [self _addOperation:^{
+        oldAsset = nil;
+    }];
+    _asset = asset;
+}
+
+- (void)setPlayer:(AVPlayer *)player {
+    if ( _player && player == _player ) return;
+    __block AVPlayer *oldPlayer = _player;
+    [self _addOperation:^{
+        [oldPlayer replaceCurrentItemWithPlayerItem:nil];
+        oldPlayer = nil;
+    }];
+    _player = player;
 }
 
 // MARK: Observer
@@ -384,25 +428,7 @@ static const NSString *SJPlayerItemStatusContext;
     }];
 }
 
-// MARK: Setter
-
-- (void)setPlayerItem:(AVPlayerItem *)playerItem {
-    if ( _playerItem == playerItem ) return;
-    
-    [_playerItem removeObserver:self forKeyPath:@"status"];
-    
-    [_playerItem removeObserver:self forKeyPath:@"loadedTimeRanges"];
-    
-    [_playerItem removeObserver:self forKeyPath:@"playbackBufferEmpty"];
-    
-    _playerItem = playerItem;
-    
-    [_playerItem addObserver:self forKeyPath:@"status" options:NSKeyValueObservingOptionNew context:nil];
-    
-    [_playerItem addObserver:self forKeyPath:@"loadedTimeRanges" options:NSKeyValueObservingOptionNew context:nil];
-    
-    [_playerItem addObserver:self forKeyPath:@"playbackBufferEmpty" options:NSKeyValueObservingOptionNew context:nil];
-}
+// MARK: Public
 
 - (void)setScrollView:(UIScrollView *)scrollView indexPath:(NSIndexPath *)indexPath {
     self.scrollView = scrollView;
@@ -449,7 +475,6 @@ static const NSString *SJPlayerItemStatusContext;
     
     [_imageGenerator cancelAllCGImageGeneration];
     
-    self.playerItem = nil;
     
     [self playerUnlocked];
     
@@ -469,9 +494,9 @@ static const NSString *SJPlayerItemStatusContext;
     self.scrollView = nil;
     self.indexPath = nil;
     
-    _asset = nil;
-    
-    _player = nil;
+    self.asset = nil;
+    self.playerItem = nil;
+    self.player = nil;
 }
 
 - (void)jumpedToTime:(NSTimeInterval)time completionHandler:(void (^)(BOOL))completionHandler {
@@ -776,6 +801,23 @@ static UIView *target = nil;
         else self.hiddenControlPoint = 0;
     } repeats:YES];
     return _pointTimer;
+}
+
+// MARK: Lazy
+
+- (dispatch_queue_t)SJPlayerQueue {
+    if ( _SJPlayerQueue ) return _SJPlayerQueue;
+    _SJPlayerQueue = dispatch_queue_create("SJPlayerThreadQueue", NULL);
+    return _SJPlayerQueue;
+}
+
+- (void)_addOperation:(void(^)())block {
+    __weak typeof(self) _self = self;
+    dispatch_async(self.SJPlayerQueue, ^{
+        __strong typeof(_self) self = _self;
+        if ( !self ) return;
+        if ( block ) block();
+    });
 }
 
 @end

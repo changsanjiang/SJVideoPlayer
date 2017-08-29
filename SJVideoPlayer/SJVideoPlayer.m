@@ -152,15 +152,9 @@
 // MARK: Private
 
 - (void)_sjVideoPlayerPrepareToPlay {
-    
-    [UIView animateWithDuration:0.25 animations:^{
-        _containerView.alpha = 1.0;
-    }];
-    
-    [[NSNotificationCenter defaultCenter] postNotificationName:SJPlayerPrepareToPlayNotification object:nil];
+    [self stop];
     
     _error = nil;
-    
     // initialize
     _asset = [AVAsset assetWithURL:_assetURL];
     
@@ -171,6 +165,12 @@
     _playerItem = [AVPlayerItem playerItemWithAsset:self.asset automaticallyLoadedAssetKeys:keys];
     _player = [AVPlayer playerWithPlayerItem:self.playerItem];
     
+    [UIView animateWithDuration:0.25 animations:^{
+        _containerView.alpha = 1.0;
+    }];
+    
+    [[NSNotificationCenter defaultCenter] postNotificationName:SJPlayerPrepareToPlayNotification object:nil];
+    
     // control
     [_control setAsset:_asset playerItem:_playerItem player:_player];
     
@@ -178,6 +178,7 @@
     [_presentView setPlayer:_player asset:_asset superv:_containerView];
     
     _control.delegate = _presentView;
+
 }
 
 // MARK: Lazy
@@ -304,6 +305,7 @@
 }
 
 - (void)stop {
+    _containerView.alpha = 0.001;
     [_presentView sjReset];
     [_control sjReset];
 }

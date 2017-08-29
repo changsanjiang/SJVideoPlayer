@@ -297,12 +297,8 @@
     [_control pause];
 }
 
-/*!
- *  暂停 并停止旋转
- */
-- (void)pauseAndStopRotation {
+- (void)stopRotation {
     [_presentView stopRotation];
-    [_control pause];
 }
 
 - (void)enableRotation {

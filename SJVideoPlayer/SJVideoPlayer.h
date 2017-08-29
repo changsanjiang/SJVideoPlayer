@@ -100,7 +100,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (void)pause;
 
-- (void)pauseAndStopRotation;
+- (void)stopRotation;
 
 - (void)play;
 

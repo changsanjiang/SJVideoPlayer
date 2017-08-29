@@ -144,14 +144,9 @@
 }
 
 - (void)moreSettings:(void (^)(NSMutableArray<SJVideoPlayerMoreSetting *> * _Nonnull))block {
-    [self resetMoreSettings];
-    if ( block ) block(self.moreSettings);
-    [[NSNotificationCenter defaultCenter] postNotificationName:SJMoreSettingsNotification object:self.moreSettings];
-}
-
-- (void)resetMoreSettings {
-    [self.moreSettings removeAllObjects];
-    [[NSNotificationCenter defaultCenter] postNotificationName:SJResetMoreSettingsNotification object:self.moreSettings];
+    NSMutableArray<SJVideoPlayerMoreSetting *> *moreSettingsM = self.moreSettings;
+    if ( block ) block(moreSettingsM);
+    [[NSNotificationCenter defaultCenter] postNotificationName:SJMoreSettingsNotification object:moreSettingsM];
 }
 
 // MARK: Private
@@ -219,7 +214,6 @@
 }
 
 - (NSMutableArray<SJVideoPlayerMoreSetting *> *)moreSettings {
-    if ( _moreSettings ) return _moreSettings;
     _moreSettings = [NSMutableArray new];
     return _moreSettings;
 }

@@ -58,8 +58,6 @@ NS_ASSUME_NONNULL_BEGIN
  */
 - (void)moreSettings:(void(^)(NSMutableArray<SJVideoPlayerMoreSetting *> *moreSettings))block;
 
-- (void)resetMoreSettings;
-
 /*!
  *  clicked back btn exe block.
  */

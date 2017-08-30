@@ -79,6 +79,8 @@ static const NSString *SJPlayerItemStatusContext;
 
 @property (nonatomic, assign, readwrite) BOOL fullScreen;
 
+@property (nonatomic, assign, readwrite) BOOL generatedImages;
+
 @end
 
 
@@ -421,7 +423,8 @@ static const NSString *SJPlayerItemStatusContext;
             dispatch_async(dispatch_get_main_queue(), ^{
                 if ( 0 == imagesM.count ) return ;
                 self.controlView.previewImages = imagesM;
-                self.controlView.hiddenPreviewBtn = NO;
+                if ( self.backstageRegistrar.fullScreen ) self.controlView.hiddenPreviewBtn = NO;
+                self.backstageRegistrar.generatedImages = YES;
             });
             
         }
@@ -480,6 +483,7 @@ static const NSString *SJPlayerItemStatusContext;
     
     _controlView.sliderControl.value = 0;
     _controlView.hiddenPreviewBtn = YES;
+    _controlView.hiddenMoreBtn = YES;
     _controlView.previewImages = nil;
     _controlView.hiddenControl = YES;
     _controlView.hiddenBackBtn = NO;
@@ -488,7 +492,7 @@ static const NSString *SJPlayerItemStatusContext;
     _controlView.hiddenLoadFailedBtn = YES;
     _backstageRegistrar = nil;
     _rate = 1;
-
+    
     [_controlView setCurrentTime:0 duration:0];
     
     self.scrollView = nil;
@@ -510,7 +514,7 @@ static const NSString *SJPlayerItemStatusContext;
     if ( self.backstageRegistrar.fullScreen ) self.panGR.enabled = bol;
     else {
         if ( self.backstageRegistrar.playingOnCell )
-             self.panGR.enabled = NO;
+            self.panGR.enabled = NO;
         else
             self.panGR.enabled = bol;
     }
@@ -950,7 +954,6 @@ static UIView *target = nil;
     CMTime sub = CMTimeSubtract(_playerItem.currentTime, time);
     // 小于1秒 不给跳.
     if ( labs(sub.value / sub.timescale) < 1 ) {if ( completionHandler ) completionHandler(YES); return;}
-    NSLog(@"跳");
     [self.player seekToTime:time completionHandler:^(BOOL finished) {
         if ( completionHandler ) completionHandler(finished);
     }];
@@ -1102,6 +1105,8 @@ static UIView *target = nil;
     _controlView.hiddenBackBtn = NO;
     self.panGR.enabled = YES;
     self.backstageRegistrar.fullScreen = YES;
+    if ( self.backstageRegistrar.generatedImages ) _controlView.hiddenPreviewBtn = NO;
+    _controlView.hiddenMoreBtn = NO;
 }
 
 /// 小屏
@@ -1111,6 +1116,8 @@ static UIView *target = nil;
     if ( self.backstageRegistrar.playingOnCell ) _controlView.hiddenBackBtn = YES;
     if ( self.backstageRegistrar.playingOnCell ) self.panGR.enabled = NO;
     self.backstageRegistrar.fullScreen = NO;
+    _controlView.hiddenMoreBtn = YES;
+    _controlView.hiddenPreviewBtn = YES;
 }
 
 /// 耳机

@@ -110,6 +110,7 @@
 }
 
 - (void)sjReset {
+    [self stopRotation];
     [self _removeDeviceOrientationChangeObserver];
 }
 

@@ -89,6 +89,7 @@
 }
 
 - (void)setPlaceholderImage:(UIImage *)placeholderImage {
+    _placeholderImage = placeholderImage;
     _placeholderImageView.image = placeholderImage;
 }
 

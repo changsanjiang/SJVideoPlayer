@@ -28,6 +28,8 @@
 
 #import <SJBorderLineView/SJBorderlineView.h>
 
+#import "JDradualLoadingView.h"
+
 #define SJSCREEN_H  CGRectGetHeight([[UIScreen mainScreen] bounds])
 #define SJSCREEN_W  CGRectGetWidth([[UIScreen mainScreen] bounds])
 
@@ -853,6 +855,10 @@ static NSString *const SJVideoPlayPreviewColCellID = @"SJVideoPlayPreviewColCell
 // MARK: ...
 @property (nonatomic, strong, readonly) SJSlider *bottomProgressView;
 
+// MARK: ...
+@property (nonatomic, strong, readonly) JDradualLoadingView *loadingView;
+
+
 @end
 
 @implementation SJVideoPlayerControlView
@@ -891,6 +897,9 @@ static NSString *const SJVideoPlayPreviewColCellID = @"SJVideoPlayPreviewColCell
 
 // MARK: ...
 @synthesize bottomProgressView = _bottomProgressView;
+
+// MARK: ...
+@synthesize loadingView = _loadingView;
 
 
 - (instancetype)initWithFrame:(CGRect)frame {
@@ -981,6 +990,23 @@ static NSString *const SJVideoPlayPreviewColCellID = @"SJVideoPlayPreviewColCell
 - (void)setTwoLevelSettings:(SJVideoPlayerMoreSettingTwoSetting *)twoLevelSettings {
     _twoLevelSettings = twoLevelSettings;
     self.moreSettingsTwoLevelView.twoLevelSettings = twoLevelSettings;
+}
+
+// MARK: Public
+
+- (void)startLoading {
+    [self addSubview:self.loadingView];
+    [_loadingView mas_makeConstraints:^(MASConstraintMaker *make) {
+        make.center.offset(0);
+        make.height.equalTo(_loadingView.superview).multipliedBy(0.3);
+        make.width.equalTo(_loadingView.mas_height);
+    }];
+    [self.loadingView startAnimation];
+}
+
+- (void)stopLoading {
+    [self.loadingView stopAnimation];
+    [self.loadingView removeFromSuperview];
 }
 
 // MARK: UI
@@ -1330,6 +1356,14 @@ static NSString *const SJVideoPlayPreviewColCellID = @"SJVideoPlayPreviewColCell
     return _bottomProgressView;
 }
 
+// MARK: ...
+- (JDradualLoadingView *)loadingView {
+    if ( _loadingView ) return _loadingView;
+    _loadingView = [JDradualLoadingView new];
+    _loadingView.lineWidth = 0.6;
+    _loadingView.lineColor = [UIColor whiteColor];
+    return _loadingView;
+}
 @end
 
 

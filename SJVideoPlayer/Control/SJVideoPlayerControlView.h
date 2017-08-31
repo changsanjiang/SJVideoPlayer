@@ -66,6 +66,10 @@ typedef NS_ENUM(NSUInteger, SJVideoPlaySliderTag) {
 /// 2 level more settings
 @property (nonatomic, strong, readwrite) SJVideoPlayerMoreSetting *twoLevelSettings;
 
+- (void)startLoading;
+
+- (void)stopLoading;
+
 @end
 
 

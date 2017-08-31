@@ -363,13 +363,15 @@ static const NSString *SJPlayerItemStatusContext;
     if ( [keyPath isEqualToString:@"loadedTimeRanges"] ) {
         dispatch_async(dispatch_get_main_queue(), ^{
             if ( 0 == CMTimeGetSeconds(_playerItem.duration) ) return;
-            _controlView.sliderControl.bufferProgress = [self loadTimeSeconds] / CMTimeGetSeconds(_playerItem.duration);
+            CGFloat value = [self loadTimeSeconds] / CMTimeGetSeconds(_playerItem.duration);
+            if ( value > _controlView.sliderControl.bufferProgress ) _controlView.sliderControl.bufferProgress = value;
         });
         return;
     }
     
     if ( [keyPath isEqualToString:@"playbackBufferEmpty"] ) {
         if ( !_playerItem.playbackBufferEmpty ) return;
+        [_controlView startLoading];
         [self _buffering];
         return;
     }
@@ -378,8 +380,12 @@ static const NSString *SJPlayerItemStatusContext;
 - (void)_buffering {
     if ( 0 == self.lastPlaybackRate ) [self clickedPause];
     dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(1 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
+        if ( !_playerItem.isPlaybackLikelyToKeepUp ) {
+            [self _buffering];
+            return ;
+        }
         [self play];
-        if ( !_playerItem.isPlaybackLikelyToKeepUp ) [self _buffering];
+        [_controlView stopLoading];
     });
 }
 
@@ -1070,6 +1076,12 @@ static UIView *target = nil;
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(settingsPlayerNotification:) name:SJSettingsPlayerNotification object:nil];
     
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(moreSettingsNotification:) name:SJMoreSettingsNotification object:nil];
+    
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(playerPrepareToPlayNotification) name:SJPlayerPrepareToPlayNotification object:nil];
+    
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(playerBeginPlayingNotification) name:SJPlayerBeginPlayingNotification object:nil];
+    
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(playerPlayFailedErrorNotification) name:SJPlayerPlayFailedErrorNotification object:nil];
 }
 
 - (void)_SJVideoPlayerControlRemoveNotifications {
@@ -1212,6 +1224,18 @@ static UIView *target = nil;
         if ( !model.isShowTowSetting ) self.controlView.hiddenMoreSettingsTwoLevelView = YES;
     };
     
+}
+
+- (void)playerPrepareToPlayNotification {
+    [_controlView startLoading];
+}
+
+- (void)playerBeginPlayingNotification {
+    [_controlView stopLoading];
+}
+
+- (void)playerPlayFailedErrorNotification {
+    [_controlView stopLoading];
 }
 
 @end

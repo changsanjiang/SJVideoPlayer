@@ -8,6 +8,8 @@
 
 #import <Foundation/Foundation.h>
 
+#import "SJVideoPlayerAssetCarrier.h"
+
 #define SJHiddenControlInterval (4)
 
 NS_ASSUME_NONNULL_BEGIN
@@ -22,7 +24,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (instancetype)init;
 
-- (void)setAsset:(AVAsset *)asset playerItem:(AVPlayerItem *)playerItem player:(AVPlayer *)player;
+@property (nonatomic, weak, readwrite) SJVideoPlayerAssetCarrier *assetCarrier;
 
 /*!
  *  controlView.

@@ -32,6 +32,8 @@
 
 #import <UIKit/UIColor.h>
 
+#import "SJVideoPlayerAssetCarrier.h"
+
 // MARK: 通知处理
 
 @interface SJVideoPlayer (DBNotifications)
@@ -62,6 +64,8 @@
 @property (nonatomic, weak, readwrite) UIScrollView *scrollView;
 @property (nonatomic, strong, readwrite) NSIndexPath *indexPath;
 @property (nonatomic, assign, readwrite) NSInteger onViewTag;
+
+@property (nonatomic, strong, readwrite) SJVideoPlayerAssetCarrier *assetCarrier;
 
 @end
 
@@ -152,18 +156,10 @@
 // MARK: Private
 
 - (void)_sjVideoPlayerPrepareToPlay {
+    
     [self stop];
     
     _error = nil;
-    // initialize
-    _asset = [AVAsset assetWithURL:_assetURL];
-    
-    // loaded keys
-    NSArray <NSString *> *keys =
-    @[@"tracks",
-      @"duration",];
-    _playerItem = [AVPlayerItem playerItemWithAsset:self.asset automaticallyLoadedAssetKeys:keys];
-    _player = [AVPlayer playerWithPlayerItem:self.playerItem];
     
     [UIView animateWithDuration:0.25 animations:^{
         _containerView.alpha = 1.0;
@@ -171,11 +167,14 @@
     
     [[NSNotificationCenter defaultCenter] postNotificationName:SJPlayerPrepareToPlayNotification object:nil];
     
+    self.assetCarrier = [[SJVideoPlayerAssetCarrier alloc] initWithAssetURL:_assetURL];
+    
     // control
-    [_control setAsset:_asset playerItem:_playerItem player:_player];
+    _control.assetCarrier = _assetCarrier;
     
     // present
-    [_presentView setPlayer:_player asset:_asset superv:_containerView];
+    self.assetCarrier.presentViewSuperView = self.containerView;
+    _presentView.assetCarrier = _assetCarrier;
     
     _control.delegate = _presentView;
 
@@ -293,11 +292,11 @@
 }
 
 - (void)stopRotation {
-    [_presentView stopRotation];
+    _presentView.enabledRotation = NO;
 }
 
 - (void)enableRotation {
-    [_presentView enableRotation];
+    _presentView.enabledRotation = YES;
 }
 
 - (void)jumpedToTime:(NSTimeInterval)time completionHandler:(void (^)(BOOL finished))completionHandler {

@@ -198,6 +198,8 @@ typedef UIColor * (^floatColorBlock)(float);
         
         CGPathAddLineToPoint(outerEnveloppe, 0, p3.x, p3.y);
         CGPathAddLineToPoint(innerEnveloppe, 0, p0.x, p0.y);
+        
+        CGPathRelease(scaledPath);
     }
     CGContextSetLineWidth(ctx, 0);
     CGContextSetLineJoin(ctx, kCGLineJoinRound);
@@ -209,6 +211,9 @@ typedef UIColor * (^floatColorBlock)(float);
     CGContextMoveToPoint(ctx, p4.x, p4.y);
     CGContextAddLineToPoint(ctx, p5.x, p5.y);
     CGContextStrokePath(ctx);
+    
+    CGPathRelease(outerEnveloppe);
+    CGPathRelease(innerEnveloppe);
 }
 
 

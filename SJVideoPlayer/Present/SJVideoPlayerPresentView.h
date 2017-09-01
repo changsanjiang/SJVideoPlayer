@@ -8,13 +8,22 @@
 
 #import <UIKit/UIKit.h>
 
+#import "SJVideoPlayerAssetCarrier.h"
+
+typedef NS_ENUM(NSUInteger, SJVideoPlayerPresentOrientation) {
+    SJVideoPlayerPresentOrientationPortrait = 0,
+    SJVideoPlayerPresentOrientationLandscapeLeft,
+    SJVideoPlayerPresentOrientationLandscapeRight,
+};
+
+
 @class AVPlayer, AVAsset;
 
 @interface SJVideoPlayerPresentView : UIView
 
-- (void)setPlayer:(AVPlayer *)player asset:(AVAsset *)asset superv:(UIView *)superv;
+@property (nonatomic, weak, readwrite) SJVideoPlayerAssetCarrier *assetCarrier;
 
-@property (nonatomic, strong, readwrite) UIImage *placeholderImage;
+- (void)setPlaceholderImage:(UIImage *)placeholderImage;
 
 @property (nonatomic, copy, readwrite) void(^back)();
 
@@ -22,17 +31,43 @@
 
 - (UIImage *)screenShot;
 
-- (BOOL)isLandscapeVideo;
-
-- (void)enableRotation;
-
-- (void)stopRotation;
+@property (nonatomic, assign, readonly) BOOL isLandscapeVideo;
 
 @end
 
 
+#pragma mark -
+
+@interface SJVideoPlayerPresentView (PresentViewRotation)
+
+/*!
+ *  default is Portrait.
+ */
+@property (nonatomic, assign, readonly) SJVideoPlayerPresentOrientation orientation;
+
+/*!
+ *  default is NO.
+ */
+@property (nonatomic, assign, readwrite, getter=isEnabledRotation) BOOL enabledRotation;
+
+@end
+
+
+#pragma mark -
+
 #import "SJVideoPlayerControl.h"
 
 @interface SJVideoPlayerPresentView (ControlDelegateMethods)<SJVideoPlayerControlDelegate>
+
+@end
+
+
+
+
+#pragma mark -
+
+@interface SJVideoPlayerAssetCarrier (PresentViewExtention)
+
+@property (nonatomic, weak) UIView *presentViewSuperView;
 
 @end

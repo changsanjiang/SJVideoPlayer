@@ -45,7 +45,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 
 
-
+#pragma mark -
 
 @interface SJVideoPlayer : NSObject
 
@@ -91,6 +91,8 @@ NS_ASSUME_NONNULL_BEGIN
 @end
 
 
+#pragma mark -
+
 
 @interface SJVideoPlayer (Operation)
 
@@ -119,6 +121,8 @@ NS_ASSUME_NONNULL_BEGIN
 
 
 
+#pragma mark -
+
 @interface SJVideoPlayer (Prompt)
 
 /*!
@@ -133,6 +137,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 
 
+#pragma mark -
 
 // MARK: More Settings Model
 
@@ -190,6 +195,8 @@ NS_ASSUME_NONNULL_BEGIN
 
 @end
 
+
+#pragma mark -
 
 @interface SJVideoPlayerMoreSettingTwoSetting : SJVideoPlayerMoreSetting @end
 

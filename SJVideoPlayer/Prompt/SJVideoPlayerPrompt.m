@@ -42,7 +42,7 @@
 - (instancetype)init {
     self = [super init];
     if ( !self ) return self;
-    [self setupView];
+    [self _setupView];
     return self;
 }
 
@@ -80,7 +80,7 @@
 
 // MARK: ...
 
-- (void)setupView {
+- (void)_setupView {
     [self.backgroundView addSubview:self.promptLabel];
     [_promptLabel mas_makeConstraints:^(MASConstraintMaker *make) {
         make.edges.offset(0);

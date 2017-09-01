@@ -215,165 +215,179 @@ static const NSString *SJPlayerItemStatusContext;
     [self _SJVideoPlayerControlRemoveNotifications];
 }
 
-
 - (void)addOtherObservers {
     [self.controlView addObserver:self forKeyPath:@"hiddenControl" options:NSKeyValueObservingOptionNew context:nil];
     [self addObserver:self forKeyPath:@"hiddenControlPoint" options:NSKeyValueObservingOptionNew context:nil];
     [self.controlView addObserver:self forKeyPath:@"hiddenPreview" options:NSKeyValueObservingOptionNew context:nil];
+    [self addObserver:self forKeyPath:@"asset" options:NSKeyValueObservingOptionOld context:nil];
+    [self addObserver:self forKeyPath:@"playerItem" options:NSKeyValueObservingOptionOld context:nil];
+    [self addObserver:self forKeyPath:@"player" options:NSKeyValueObservingOptionOld context:nil];
 }
 
 - (void)removeOtherObservers {
     [self.controlView removeObserver:self forKeyPath:@"hiddenControl"];
     [self.controlView removeObserver:self forKeyPath:@"hiddenPreview"];
     [self addObserver:self forKeyPath:@"hiddenControlPoint" options:NSKeyValueObservingOptionNew context:nil];
+    [self removeObserver:self forKeyPath:@"asset"];
+    [self removeObserver:self forKeyPath:@"playerItem"];
+    [self removeObserver:self forKeyPath:@"player"];
 }
 
-- (void)setAsset:(AVAsset *)asset playerItem:(AVPlayerItem *)playerItem player:(AVPlayer *)player {
-    self.asset = asset;
-    self.playerItem = playerItem;
-    self.player = player;
+- (void)setAssetCarrier:(SJVideoPlayerAssetCarrier *)assetCarrier {
+    _assetCarrier = assetCarrier;
+    self.asset = assetCarrier.asset;
+    self.playerItem = assetCarrier.playerItem;
+    self.player = assetCarrier.player;
 }
 
 // MARK: Setter
 
 - (void)setPlayerItem:(AVPlayerItem *)playerItem {
-    if ( _playerItem && _playerItem == playerItem ) return;
-    __block AVPlayerItem *oldPlayerItem = _playerItem;
-    __weak typeof(self) _self = self;
-    [self _addOperation:^{
-        __strong typeof(_self) self = _self;
-        if ( !self ) return;
-        [oldPlayerItem removeObserver:self forKeyPath:@"status"];
-        [oldPlayerItem removeObserver:self forKeyPath:@"loadedTimeRanges"];
-        [oldPlayerItem removeObserver:self forKeyPath:@"playbackBufferEmpty"];
-        oldPlayerItem = nil;
-    }];
-    
     _playerItem = playerItem;
-    
     [_playerItem addObserver:self forKeyPath:@"status" options:NSKeyValueObservingOptionNew context:nil];
-    
     [_playerItem addObserver:self forKeyPath:@"loadedTimeRanges" options:NSKeyValueObservingOptionNew context:nil];
-    
     [_playerItem addObserver:self forKeyPath:@"playbackBufferEmpty" options:NSKeyValueObservingOptionNew context:nil];
-}
-
-- (void)setAsset:(AVAsset *)asset {
-    if ( _asset && asset == _asset ) return;
-    __block AVAsset *oldAsset = _asset;
-    [self _addOperation:^{
-        oldAsset = nil;
-    }];
-    _asset = asset;
-}
-
-- (void)setPlayer:(AVPlayer *)player {
-    if ( _player && player == _player ) return;
-    __block AVPlayer *oldPlayer = _player;
-    [self _addOperation:^{
-        [oldPlayer replaceCurrentItemWithPlayerItem:nil];
-        oldPlayer = nil;
-    }];
-    _player = player;
 }
 
 // MARK: Observer
 
 - (void)observeValueForKeyPath:(NSString *)keyPath ofObject:(id)object change:(NSDictionary<NSKeyValueChangeKey,id> *)change context:(void *)context {
     
-    if ( [keyPath isEqualToString:@"contentOffset"] ) {
-        [self scrollViewDidScroll];
-        return;
+    if ( object == self.scrollView ) {
+        if ( [keyPath isEqualToString:@"contentOffset"] ) {
+            [self scrollViewDidScroll];
+            return;
+        }
     }
     
-    if ( [keyPath isEqualToString:@"hiddenControl"] ) {
-        if ( _controlView.hiddenControl ) {
-            _controlView.hiddenPreview = YES;
-            [_pointTimer invalidate];
-            _pointTimer = nil;
-            _controlView.hiddenLockContainerView = !self.backstageRegistrar.isLock;
-        }
-        else {
-            _hiddenControlPoint = 0;
-            [self.pointTimer fire];
-            _controlView.hiddenLockContainerView = NO;
-        }
-        _controlView.hiddenBottomProgressView = !_controlView.hiddenControl;
-        return;
-    }
-    
-    if ( [keyPath isEqualToString:@"hiddenControlPoint"] ) {
-        if ( _hiddenControlPoint >= SJHiddenControlInterval ) {
-            _controlView.hiddenControl = YES;
-            [_pointTimer invalidate];
-            _pointTimer = nil;
-            _hiddenControlPoint = 0;
-        }
-        return;
-    }
-    
-    if ( [keyPath isEqualToString:@"hiddenPreview"] ) {
-        if ( !_controlView.hiddenPreview ) {
-            [_pointTimer invalidate];
-            _pointTimer = nil;
-            _hiddenControlPoint = 0;
-        }
-        else {
-            if ( !_controlView.hiddenControl ) [self.pointTimer fire];
-        }
-        return;
-    }
-    
-    if ( [keyPath isEqualToString:@"status"] ) {
-        dispatch_async(dispatch_get_main_queue(), ^{
-            if (self.playerItem.status == AVPlayerItemStatusReadyToPlay) {
-                
-                [self _setEnabledGestureRecognizer:YES];
-                [self addPlayerItemTimeObserver];
-                [self addItemEndObserverForPlayerItem];
-                [self generatePreviewImgs];
-                
-                CMTime duration = self.playerItem.duration;
-                
-                [self.controlView setCurrentTime:CMTimeGetSeconds(kCMTimeZero) duration:CMTimeGetSeconds(duration)];
-                
-                self.controlView.hiddenLoadFailedBtn = YES;
-                
-                ///  开始播放时黑屏/花屏一下. 延时 1秒 播放.
-                dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(1 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
-                    [self clickedPlay];
-                });
-                
-                [self.pointTimer fire];
-                
-            } else {
-                NSLog(@"Failed to load Video: %@", self.playerItem.error);
-                NSLog(@"Failed to load Video: %@", self.playerItem.error);
-                NSLog(@"Failed to load Video: %@", self.playerItem.error);
-                
-                // MARK: SJPlayerPlayFailedErrorNotification
-                [[NSNotificationCenter defaultCenter] postNotificationName:SJPlayerPlayFailedErrorNotification object:self.playerItem.error];
-                
-                self.controlView.hiddenLoadFailedBtn = NO;
+    if ( object == self.controlView ) {
+        if ( [keyPath isEqualToString:@"hiddenControl"] ) {
+            if ( _controlView.hiddenControl ) {
+                _controlView.hiddenPreview = YES;
+                [_pointTimer invalidate];
+                _pointTimer = nil;
+                _controlView.hiddenLockContainerView = !self.backstageRegistrar.isLock;
             }
-        });
-        return;
+            else {
+                _hiddenControlPoint = 0;
+                [self.pointTimer fire];
+                _controlView.hiddenLockContainerView = NO;
+            }
+            _controlView.hiddenBottomProgressView = !_controlView.hiddenControl;
+            return;
+        }
+        if ( [keyPath isEqualToString:@"hiddenPreview"] ) {
+            if ( !_controlView.hiddenPreview ) {
+                [_pointTimer invalidate];
+                _pointTimer = nil;
+                _hiddenControlPoint = 0;
+            }
+            else {
+                if ( !_controlView.hiddenControl ) [self.pointTimer fire];
+            }
+            return;
+        }
     }
     
-    if ( [keyPath isEqualToString:@"loadedTimeRanges"] ) {
-        dispatch_async(dispatch_get_main_queue(), ^{
-            if ( 0 == CMTimeGetSeconds(_playerItem.duration) ) return;
-            CGFloat value = [self loadTimeSeconds] / CMTimeGetSeconds(_playerItem.duration);
-            if ( value > _controlView.sliderControl.bufferProgress ) _controlView.sliderControl.bufferProgress = value;
-        });
-        return;
+    if ( object == self ) {
+        if ( [keyPath isEqualToString:@"hiddenControlPoint"] ) {
+            if ( _hiddenControlPoint >= SJHiddenControlInterval ) {
+                _controlView.hiddenControl = YES;
+                [_pointTimer invalidate];
+                _pointTimer = nil;
+                _hiddenControlPoint = 0;
+            }
+        }
+        else if ( [keyPath isEqualToString:@"player"] ) {
+            AVPlayer *player = change[NSKeyValueChangeOldKey];
+            if ( _player == player ) return;
+            __block AVPlayer *oldPlayer = player;
+            [self _addOperation:^{
+                if ( !oldPlayer || [oldPlayer isKindOfClass:[NSNull class]] ) return;
+                [oldPlayer replaceCurrentItemWithPlayerItem:nil];
+                oldPlayer = nil;
+            }];
+        }
+        
+        else if ( [keyPath isEqualToString:@"playerItem"] ) {
+            AVPlayerItem *playerItem = change[NSKeyValueChangeOldKey];
+            if ( playerItem == _playerItem ) return;
+            __block AVPlayerItem *oldPlayerItem = playerItem;
+            __weak typeof(self) _self = self;
+            [self _addOperation:^{
+                __strong typeof(_self) self = _self;
+                if ( !self ) return;
+                
+                if ( !oldPlayerItem || [oldPlayerItem isKindOfClass:[NSNull class]] ) return;
+                [oldPlayerItem removeObserver:self forKeyPath:@"status"];
+                [oldPlayerItem removeObserver:self forKeyPath:@"loadedTimeRanges"];
+                [oldPlayerItem removeObserver:self forKeyPath:@"playbackBufferEmpty"];
+                oldPlayerItem = nil;
+            }];
+        }
+        else if ( [keyPath isEqualToString:@"asset"] ) {
+            AVAsset *asset = change[NSKeyValueChangeOldKey];
+            if ( _asset == asset ) return;
+            __block AVAsset *oldAsset = asset;
+            [self _addOperation:^{
+                if ( !asset || [asset isKindOfClass:[NSNull class]] ) return;
+                oldAsset = nil;
+            }];
+        }
     }
     
-    if ( [keyPath isEqualToString:@"playbackBufferEmpty"] ) {
-        if ( !_playerItem.playbackBufferEmpty ) return;
-        [_controlView startLoading];
-        [self _buffering];
-        return;
+    if ( object == self.playerItem ) {
+        if ( [keyPath isEqualToString:@"status"] ) {
+            dispatch_async(dispatch_get_main_queue(), ^{
+                if (self.playerItem.status == AVPlayerItemStatusReadyToPlay) {
+                    
+                    [self _setEnabledGestureRecognizer:YES];
+                    [self addPlayerItemTimeObserver];
+                    [self addItemEndObserverForPlayerItem];
+                    [self generatePreviewImgs];
+                    
+                    CMTime duration = self.playerItem.duration;
+                    
+                    [self.controlView setCurrentTime:CMTimeGetSeconds(kCMTimeZero) duration:CMTimeGetSeconds(duration)];
+                    
+                    self.controlView.hiddenLoadFailedBtn = YES;
+                    
+                    ///  开始播放时黑屏/花屏一下. 延时 1秒 播放.
+                    dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(1 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
+                        [self clickedPlay];
+                    });
+                    
+                    [self.pointTimer fire];
+                    
+                } else {
+                    NSLog(@"Failed to load Video: %@", self.playerItem.error);
+                    NSLog(@"Failed to load Video: %@", self.playerItem.error);
+                    NSLog(@"Failed to load Video: %@", self.playerItem.error);
+                    
+                    // MARK: SJPlayerPlayFailedErrorNotification
+                    [[NSNotificationCenter defaultCenter] postNotificationName:SJPlayerPlayFailedErrorNotification object:self.playerItem.error];
+                    
+                    self.controlView.hiddenLoadFailedBtn = NO;
+                }
+            });
+            return;
+        }
+        
+        if ( [keyPath isEqualToString:@"loadedTimeRanges"] ) {
+            dispatch_async(dispatch_get_main_queue(), ^{
+                if ( 0 == CMTimeGetSeconds(_playerItem.duration) ) return;
+                CGFloat value = [self loadTimeSeconds] / CMTimeGetSeconds(_playerItem.duration);
+                if ( value > _controlView.sliderControl.bufferProgress ) _controlView.sliderControl.bufferProgress = value;
+            });
+            return;
+        }
+        
+        if ( [keyPath isEqualToString:@"playbackBufferEmpty"] ) {
+            if ( !_playerItem.playbackBufferEmpty ) return;
+            [_controlView startLoading];
+            [self _buffering];
+            return;
+        }
     }
 }
 

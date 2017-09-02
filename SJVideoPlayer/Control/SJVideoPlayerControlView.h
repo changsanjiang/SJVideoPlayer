@@ -74,6 +74,74 @@ typedef NS_ENUM(NSUInteger, SJVideoPlaySliderTag) {
 @end
 
 
+#pragma mark -
+
+
+@interface SJVideoPlayerControlView (TimeOperation)
+
+- (void)setCurrentTime:(NSTimeInterval)time duration:(NSTimeInterval)duration;
+
+- (NSString *)formatSeconds:(NSInteger)value;
+
+@end
+
+
+
+
+
+#pragma mark -
+
+@interface SJVideoPreviewModel : NSObject
+
+@property (nonatomic, strong, readonly) UIImage *image;
+@property (nonatomic, assign, readonly) CMTime localTime;
+
++ (instancetype)previewModelWithImage:(UIImage *)image localTime:(CMTime)time;
+
+@property (nonatomic, assign, readwrite) BOOL isHiddenControl;
+
+@end
+
+
+@interface SJVideoPlayerControlView (Preview)
+
+@property (nonatomic, strong, nullable) NSArray<SJVideoPreviewModel *> *previewImages;
+
+@end
+
+
+
+
+#pragma mark -
+
+@interface SJVideoPlayerControlView (MoreSettings)
+
+@property (nonatomic, strong, readonly, nullable) SJSlider *volumeSlider;
+@property (nonatomic, strong, readonly, nullable) SJSlider *brightnessSlider;
+@property (nonatomic, strong, readonly, nullable) SJSlider *rateSlider;
+
+- (void)getMoreSettingsSlider:(void(^)(SJSlider *volumeSlider, SJSlider *brightnessSlider, SJSlider *rateSlider))block;
+
+@end
+
+
+
+
+#pragma mark -
+
+
+@protocol SJVideoPlayerControlViewDelegate <NSObject>
+
+@optional
+
+- (void)controlView:(SJVideoPlayerControlView *)controlView clickedBtnTag:(SJVideoPlayControlViewTag)tag;
+
+- (void)controlView:(SJVideoPlayerControlView *)controlView selectedPreviewModel:(SJVideoPreviewModel *)model;
+
+@end
+
+
+
 
 #pragma mark -
 
@@ -161,74 +229,5 @@ typedef NS_ENUM(NSUInteger, SJVideoPlaySliderTag) {
 @property (nonatomic, assign, readwrite) BOOL hiddenDraggingProgress;
 
 @end
-
-
-
-#pragma mark -
-
-
-@interface SJVideoPlayerControlView (TimeOperation)
-
-- (void)setCurrentTime:(NSTimeInterval)time duration:(NSTimeInterval)duration;
-
-- (NSString *)formatSeconds:(NSInteger)value;
-
-@end
-
-
-
-
-
-#pragma mark -
-
-@interface SJVideoPreviewModel : NSObject
-
-@property (nonatomic, strong, readonly) UIImage *image;
-@property (nonatomic, assign, readonly) CMTime localTime;
-
-+ (instancetype)previewModelWithImage:(UIImage *)image localTime:(CMTime)time;
-
-@property (nonatomic, assign, readwrite) BOOL isHiddenControl;
-
-@end
-
-
-@interface SJVideoPlayerControlView (Preview)
-
-@property (nonatomic, strong, nullable) NSArray<SJVideoPreviewModel *> *previewImages;
-
-@end
-
-
-
-
-#pragma mark -
-
-@interface SJVideoPlayerControlView (MoreSettings)
-
-@property (nonatomic, strong, readonly, nullable) SJSlider *volumeSlider;
-@property (nonatomic, strong, readonly, nullable) SJSlider *brightnessSlider;
-@property (nonatomic, strong, readonly, nullable) SJSlider *rateSlider;
-
-- (void)getMoreSettingsSlider:(void(^)(SJSlider *volumeSlider, SJSlider *brightnessSlider, SJSlider *rateSlider))block;
-
-@end
-
-
-
-
-#pragma mark -
-
-
-@protocol SJVideoPlayerControlViewDelegate <NSObject>
-
-@optional
-
-- (void)controlView:(SJVideoPlayerControlView *)controlView clickedBtnTag:(SJVideoPlayControlViewTag)tag;
-
-- (void)controlView:(SJVideoPlayerControlView *)controlView selectedPreviewModel:(SJVideoPreviewModel *)model;
-
-@end
-
 
 NS_ASSUME_NONNULL_END

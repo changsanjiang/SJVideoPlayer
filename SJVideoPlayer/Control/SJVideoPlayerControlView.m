@@ -39,6 +39,7 @@
 #define SJMoreSettings_W    ceil(SJSCREEN_MAX * 0.382)
 
 
+#pragma mark -
 
 typedef NS_ENUM(NSUInteger, SJMaskStyle) {
     SJMaskStyle_bottom,
@@ -565,7 +566,7 @@ static NSString *const SJVideoPlayerMoreSettingsFooterViewID = @"SJVideoPlayerMo
 
 - (void)setModel:(SJVideoPlayerMoreSetting *)model {
     _model = model;
-    self.titleLabel.text = model.twoSettingTitle;
+    self.titleLabel.text = model.twoSettingTopTitle;
 }
 
 - (void)_SJVideoPlayerMoreSettingTwoLevelSettingsHeaderViewSetupUI {
@@ -591,7 +592,7 @@ static NSString *const SJVideoPlayerMoreSettingsFooterViewID = @"SJVideoPlayerMo
 
 - (UILabel *)titleLabel {
     if ( _titleLabel ) return _titleLabel;
-    _titleLabel = [UILabel labelWithFontSize:[SJVideoPlayerMoreSettingTwoSetting twoTitleFontSize] textColor:[SJVideoPlayerMoreSettingTwoSetting titleColor] alignment:NSTextAlignmentLeft];
+    _titleLabel = [UILabel labelWithFontSize:[SJVideoPlayerMoreSettingTwoSetting topTitleFontSize] textColor:[SJVideoPlayerMoreSettingTwoSetting titleColor] alignment:NSTextAlignmentLeft];
     return _titleLabel;
 }
 
@@ -655,7 +656,7 @@ static NSString *const SJVideoPlayerMoreSettingTwoLevelSettingsHeaderViewID = @"
 - (UICollectionView *)colView {
     if ( _colView ) return _colView;
     CGFloat itemW_H = floor(SJMoreSettings_W / 3);
-    _colView = [UICollectionView collectionViewWithItemSize:CGSizeMake(itemW_H, itemW_H) backgroundColor:[UIColor clearColor] scrollDirection:UICollectionViewScrollDirectionVertical headerSize:CGSizeMake(SJMoreSettings_W, [SJVideoPlayerMoreSetting twoTitleFontSize] * 1.2 + 20) footerSize:CGSizeZero];
+    _colView = [UICollectionView collectionViewWithItemSize:CGSizeMake(itemW_H, itemW_H) backgroundColor:[UIColor clearColor] scrollDirection:UICollectionViewScrollDirectionVertical headerSize:CGSizeMake(SJMoreSettings_W, [SJVideoPlayerMoreSettingTwoSetting topTitleFontSize] * 1.2 + 20) footerSize:CGSizeZero];
     [_colView registerClass:NSClassFromString(SJVideoPlayerMoreSettingTwoSettingsCellID) forCellWithReuseIdentifier:SJVideoPlayerMoreSettingTwoSettingsCellID];
     [_colView registerClass:NSClassFromString(SJVideoPlayerMoreSettingTwoLevelSettingsHeaderViewID) forSupplementaryViewOfKind:UICollectionElementKindSectionHeader withReuseIdentifier:SJVideoPlayerMoreSettingTwoLevelSettingsHeaderViewID];
     _colView.dataSource = self;

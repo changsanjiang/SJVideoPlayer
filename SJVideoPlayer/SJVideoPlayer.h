@@ -175,21 +175,14 @@ NS_ASSUME_NONNULL_BEGIN
 
 // MARK: ... Instance Methods.   show 2 level interface
 
-/*!
- *  SJVideoPlayerMoreSetting.twoTitleFontSize = 14;
- *
- *  default is 14
- */
-@property (class, nonatomic, assign) float twoTitleFontSize;
-
 @property (nonatomic, assign, getter=isShowTowSetting) BOOL showTowSetting;
-@property (nonatomic, strong) NSString *twoSettingTitle;
+@property (nonatomic, strong) NSString *twoSettingTopTitle;
 @property (nonatomic, strong) NSArray<SJVideoPlayerMoreSettingTwoSetting *> *twoSettingItems;
 
 - (instancetype)initWithTitle:(NSString *__nullable)title
                         image:(UIImage *__nullable)image
                showTowSetting:(BOOL)showTowSetting                                      // show
-              twoSettingTitle:(NSString *)twoSettingTitle                               // title
+           twoSettingTopTitle:(NSString *)twoSettingTopTitle                            // top title
               twoSettingItems:(NSArray<SJVideoPlayerMoreSettingTwoSetting *> *)items    // items
               clickedExeBlock:(void(^)(SJVideoPlayerMoreSetting *model))block;
 
@@ -198,7 +191,16 @@ NS_ASSUME_NONNULL_BEGIN
 
 #pragma mark -
 
-@interface SJVideoPlayerMoreSettingTwoSetting : SJVideoPlayerMoreSetting @end
+@interface SJVideoPlayerMoreSettingTwoSetting : SJVideoPlayerMoreSetting
+
+/*!
+ *  SJVideoPlayerMoreSetting.topTitleFontSize = 14;
+ *
+ *  default is 14
+ */
+@property (class, nonatomic, assign) float topTitleFontSize;
+
+@end
 
 
 NS_ASSUME_NONNULL_END

@@ -366,28 +366,16 @@
     objc_setAssociatedObject(self, @selector(titleFontSize), @(titleFontSize), OBJC_ASSOCIATION_RETAIN_NONATOMIC);
 }
 
-+ (void)setTwoTitleFontSize:(float)twoTitleFontSize {
-    objc_setAssociatedObject(self, @selector(twoTitleFontSize), @(twoTitleFontSize), OBJC_ASSOCIATION_RETAIN_NONATOMIC);
-}
-
-+ (float)twoTitleFontSize {
-    float fontSize = [objc_getAssociatedObject(self, _cmd) floatValue];
-    if ( 0 != fontSize ) return fontSize;
-    fontSize = 14;
-    [self setTwoTitleFontSize:fontSize];
-    return fontSize;
-}
-
 - (instancetype)initWithTitle:(NSString *)title image:(UIImage *)image clickedExeBlock:(void(^)(SJVideoPlayerMoreSetting *model))block {
-    return [self initWithTitle:title image:image showTowSetting:NO twoSettingTitle:@"" twoSettingItems:@[] clickedExeBlock:block];
+    return [self initWithTitle:title image:image showTowSetting:NO twoSettingTopTitle:@"" twoSettingItems:@[] clickedExeBlock:block];
 }
 
-- (instancetype)initWithTitle:(NSString *)title image:(UIImage *)image showTowSetting:(BOOL)showTowSetting twoSettingTitle:(NSString *)twoSettingTitle twoSettingItems:(NSArray<SJVideoPlayerMoreSettingTwoSetting *> *)items clickedExeBlock:(void(^)(SJVideoPlayerMoreSetting *model))block {
+- (instancetype)initWithTitle:(NSString *)title image:(UIImage *)image showTowSetting:(BOOL)showTowSetting twoSettingTopTitle:(nonnull NSString *)twoSettingTopTitle twoSettingItems:(nonnull NSArray<SJVideoPlayerMoreSettingTwoSetting *> *)items clickedExeBlock:(nonnull void (^)(SJVideoPlayerMoreSetting * _Nonnull))block {
     self = [super init];
     if ( !self ) return self;
     self.title = title;
     self.image = image;
-    self.twoSettingTitle = twoSettingTitle;
+    self.twoSettingTopTitle = twoSettingTopTitle;
     self.showTowSetting = showTowSetting;
     self.twoSettingItems = items;
     self.clickedExeBlock = block;
@@ -397,4 +385,18 @@
 @end
 
 
-@implementation SJVideoPlayerMoreSettingTwoSetting @end
+@implementation SJVideoPlayerMoreSettingTwoSetting
+
++ (void)setTopTitleFontSize:(float)topTitleFontSize {
+    objc_setAssociatedObject(self, @selector(topTitleFontSize), @(topTitleFontSize), OBJC_ASSOCIATION_RETAIN_NONATOMIC);
+}
+
++ (float)topTitleFontSize {
+    float fontSize = [objc_getAssociatedObject(self, _cmd) floatValue];
+    if ( 0 != fontSize ) return fontSize;
+    fontSize = 14;
+    [self setTopTitleFontSize:fontSize];
+    return fontSize;
+}
+
+@end

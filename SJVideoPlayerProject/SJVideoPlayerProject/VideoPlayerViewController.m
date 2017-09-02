@@ -108,14 +108,14 @@
     [[SJVideoPlayerMoreSetting alloc] initWithTitle:@"缓存"
                                               image:[UIImage imageNamed:@"db_audio_play_download_n"]
                                      showTowSetting:YES
-                                    twoSettingTitle:@"缓存方式"
+                                 twoSettingTopTitle:@"缓存方式"
                                     twoSettingItems:@[twoS0, twoS1]
                                     clickedExeBlock:^(SJVideoPlayerMoreSetting * _Nonnull model) {}];
     
     
 // MARK: 2 Level More Settings
     
-    SJVideoPlayerMoreSetting.twoTitleFontSize = 14;
+    SJVideoPlayerMoreSettingTwoSetting.topTitleFontSize = 14;
     
     SJVideoPlayerMoreSettingTwoSetting *twoSetting0 = [[SJVideoPlayerMoreSettingTwoSetting alloc] initWithTitle:@"QQ" image:[UIImage imageNamed:@"db_login_qq"] clickedExeBlock:^(SJVideoPlayerMoreSetting * _Nonnull model) {
         [[SJVideoPlayer sharedPlayer] showTitle:model.title];
@@ -133,7 +133,7 @@
     [[SJVideoPlayerMoreSetting alloc] initWithTitle:@"分享"
                                               image:[UIImage imageNamed:@"db_audio_play_share_n"]
                                      showTowSetting:YES
-                                    twoSettingTitle:@"分享到"
+                                 twoSettingTopTitle:@"分享到"
                                     twoSettingItems:@[twoSetting0, twoSetting1, twoSetting2]  // 2级 Settings
                                     clickedExeBlock:^(SJVideoPlayerMoreSetting * _Nonnull model) {}];
     

@@ -1385,6 +1385,7 @@ typedef NS_ENUM(NSUInteger, SJVerticalPanLocation) {
     if ( singleTap ) return singleTap;
     singleTap = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(handleSingleTap:)];
     singleTap.delaysTouchesBegan = YES;
+    objc_setAssociatedObject(self, _cmd, singleTap, OBJC_ASSOCIATION_RETAIN_NONATOMIC);
     return singleTap;
 }
 
@@ -1394,6 +1395,7 @@ typedef NS_ENUM(NSUInteger, SJVerticalPanLocation) {
     doubleTap = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(handleDoubleTap:)];
     doubleTap.delaysTouchesBegan = YES;
     doubleTap.numberOfTapsRequired = 2;
+    objc_setAssociatedObject(self, _cmd, doubleTap, OBJC_ASSOCIATION_RETAIN_NONATOMIC);
     return doubleTap;
 }
 
@@ -1402,6 +1404,7 @@ typedef NS_ENUM(NSUInteger, SJVerticalPanLocation) {
     if ( panGR ) return panGR;
     panGR = [[UIPanGestureRecognizer alloc] initWithTarget:self action:@selector(handlePan:)];
     panGR.delaysTouchesBegan = YES;
+    objc_setAssociatedObject(self, _cmd, panGR, OBJC_ASSOCIATION_RETAIN_NONATOMIC);
     return panGR;
 }
 

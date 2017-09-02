@@ -29,7 +29,7 @@ typedef NS_ENUM(NSUInteger, SJVideoPlayerPresentOrientation) {
 
 - (void)sjReset;
 
-- (UIImage *)screenShot;
+- (UIImage *)screenshot;
 
 @property (nonatomic, assign, readonly) BOOL isLandscapeVideo;
 

@@ -113,7 +113,7 @@
     [self _removeDeviceOrientationChangeObserver];
 }
 
-- (UIImage *)screenShot {
+- (UIImage *)screenshot {
     CMTime time = _player.currentItem.currentTime;
     AVAssetImageGenerator *generator = [AVAssetImageGenerator assetImageGeneratorWithAsset:_asset];
     generator.appliesPreferredTrackTransform = YES;

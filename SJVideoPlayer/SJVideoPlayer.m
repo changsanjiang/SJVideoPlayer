@@ -299,8 +299,8 @@
     return _control.rate;
 }
 
-- (UIImage *)screenShot {
-    return [_presentView screenShot];
+- (UIImage *)screenshot {
+    return [_presentView screenshot];
 }
 
 @end

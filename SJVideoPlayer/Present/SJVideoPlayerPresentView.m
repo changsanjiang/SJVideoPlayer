@@ -88,6 +88,7 @@
     [self _setupView];
     [self _installNotifications];
     [self _installObservers];
+    [self sjReset];
     return self;
 }
 

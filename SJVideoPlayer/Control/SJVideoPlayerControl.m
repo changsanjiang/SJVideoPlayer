@@ -53,7 +53,6 @@ typedef NS_ENUM(NSUInteger, SJVerticalPanLocation) {
 static const NSString *SJPlayerItemStatusContext;
 
 
-
 @interface SJVideoPlayerStatusRegistrar : NSObject
 
 - (void)registrar:(SJVideoPlayerControlView *)controlView;
@@ -85,6 +84,7 @@ static const NSString *SJPlayerItemStatusContext;
 
 
 
+#pragma mark -
 
 
 // MARK: 通知处理
@@ -102,6 +102,8 @@ static const NSString *SJPlayerItemStatusContext;
 @end
 
 
+#pragma mark -
+
 @interface SJVideoPlayerControl (PlayingOnTheCell)
 
 - (void)scrollViewDidScroll;
@@ -109,10 +111,13 @@ static const NSString *SJPlayerItemStatusContext;
 @end
 
 
+#pragma mark -
+
 @interface SJVideoPlayerControl (SJSliderDelegateMethods)<SJSliderDelegate>
 
 @end
 
+#pragma mark -
 
 @interface SJVideoPlayerControl (SJVideoPlayerControlViewDelegateMethods)<SJVideoPlayerControlViewDelegate>
 
@@ -133,6 +138,9 @@ static const NSString *SJPlayerItemStatusContext;
 - (void)jumpedToCMTime:(CMTime)time completionHandler:(void (^)(BOOL finished))completionHandler;
 
 @end
+
+
+#pragma mark -
 
 @interface SJVideoPlayerControl ()
 
@@ -184,6 +192,9 @@ static const NSString *SJPlayerItemStatusContext;
 @property (nonatomic, strong, readonly) dispatch_queue_t SJPlayerQueue;
 
 @end
+
+
+#pragma mark -
 
 @implementation SJVideoPlayerControl
 
@@ -846,7 +857,7 @@ static UIView *target = nil;
 
 @end
 
-
+#pragma mark -
 
 @implementation SJVideoPlayerControl (SJVideoPlayerControlViewDelegateMethods)
 
@@ -982,7 +993,7 @@ static UIView *target = nil;
 @end
 
 
-
+#pragma mark -
 
 @implementation SJVideoPlayerControl (SJSliderDelegateMethods)
 
@@ -1055,6 +1066,7 @@ static UIView *target = nil;
 
 
 
+#pragma mark -
 
 // MARK: 通知处理
 
@@ -1255,6 +1267,7 @@ static UIView *target = nil;
 @end
 
 
+#pragma mark -
 
 @implementation SJVideoPlayerStatusRegistrar
 
@@ -1278,6 +1291,7 @@ static UIView *target = nil;
 
 
 
+#pragma mark -
 
 @implementation SJVideoPlayerControl (PlayingOnTheCell)
 

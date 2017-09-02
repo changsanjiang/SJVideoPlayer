@@ -48,11 +48,6 @@
 
 @interface SJVideoPlayer ()
 
-@property (nonatomic, strong, readwrite) AVAsset *asset;
-@property (nonatomic, strong, readwrite) AVPlayerItem *playerItem;
-@property (nonatomic, strong, readwrite) AVPlayer *player;
-
-
 @property (nonatomic, strong, readonly) UIView *containerView;
 @property (nonatomic, strong, readonly) SJVideoPlayerControl *control;
 @property (nonatomic, strong, readonly) SJVideoPlayerPresentView *presentView;
@@ -61,7 +56,7 @@
 @property (nonatomic, strong, readonly) SJVideoPlayerSettings *settings;
 @property (nonatomic, strong, readonly) NSMutableArray<SJVideoPlayerMoreSetting *> *moreSettings;
 
-@property (nonatomic, weak, readwrite) UIScrollView *scrollView;
+@property (nonatomic, weak,   readwrite) UIScrollView *scrollView;
 @property (nonatomic, strong, readwrite) NSIndexPath *indexPath;
 @property (nonatomic, assign, readwrite) NSInteger onViewTag;
 
@@ -120,6 +115,7 @@
 }
 
 - (void)setAssetURL:(NSURL *)assetURL {
+    if ( !assetURL ) return;
     _assetURL = assetURL;
     [self _sjVideoPlayerPrepareToPlay];
 }
@@ -159,25 +155,22 @@
     
     [self stop];
     
-    _error = nil;
+    [[NSNotificationCenter defaultCenter] postNotificationName:SJPlayerPrepareToPlayNotification object:nil];
     
     [UIView animateWithDuration:0.25 animations:^{
         _containerView.alpha = 1.0;
     }];
     
-    [[NSNotificationCenter defaultCenter] postNotificationName:SJPlayerPrepareToPlayNotification object:nil];
-    
-    self.assetCarrier = [[SJVideoPlayerAssetCarrier alloc] initWithAssetURL:_assetURL];
+    _assetCarrier = [[SJVideoPlayerAssetCarrier alloc] initWithAssetURL:_assetURL];
     
     // control
     _control.assetCarrier = _assetCarrier;
+    _control.delegate = _presentView;
     
     // present
-    self.assetCarrier.presentViewSuperView = self.containerView;
+    _assetCarrier.presentViewSuperView = _containerView;
     _presentView.assetCarrier = _assetCarrier;
-    
-    _control.delegate = _presentView;
-
+    _presentView.enabledRotation = YES;
 }
 
 // MARK: Lazy
@@ -280,7 +273,7 @@
 @implementation SJVideoPlayer (Operation)
 
 - (NSTimeInterval)currentTime {
-    return CMTimeGetSeconds(_playerItem.currentTime);
+    return CMTimeGetSeconds(self.assetCarrier.playerItem.currentTime);
 }
 
 - (void)play {
@@ -304,6 +297,9 @@
 }
 
 - (void)stop {
+    _error = nil;
+    _assetCarrier = nil;
+    _indexPath = nil;
     _containerView.alpha = 0.001;
     [_presentView sjReset];
     [_control sjReset];

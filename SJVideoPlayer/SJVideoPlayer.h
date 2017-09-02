@@ -10,39 +10,9 @@
 
 #define SJGetFileWithName(name)    [@"SJVideoPlayer.bundle" stringByAppendingPathComponent:name]
 
-@class UIView, UIImage, UIColor, UIScrollView, NSIndexPath, SJVideoPlayerMoreSetting, SJVideoPlayerMoreSetting;
+@class UIView, UIImage, UIColor, UIScrollView, NSIndexPath, SJVideoPlayerMoreSetting, SJVideoPlayerMoreSettingTwoSetting, SJVideoPlayerSettings;
 
 NS_ASSUME_NONNULL_BEGIN
-
-
-@interface SJVideoPlayerSettings : NSObject
-
-// MARK: btns
-@property (nonatomic, strong, readwrite) UIImage *backBtnImage;
-@property (nonatomic, strong, readwrite) UIImage *playBtnImage;
-@property (nonatomic, strong, readwrite) UIImage *pauseBtnImage;
-@property (nonatomic, strong, readwrite) UIImage *replayBtnImage;
-@property (nonatomic, strong, readwrite) NSString *replayBtnTitle;
-@property (nonatomic, assign, readwrite) float replayBtnFontSize;
-@property (nonatomic, strong, readwrite) UIImage *fullBtnImage;
-@property (nonatomic, strong, readwrite) UIImage *previewBtnImage;
-@property (nonatomic, strong, readwrite) UIImage *moreBtnImage;
-@property (nonatomic, strong, readwrite) UIImage *lockBtnImage;
-@property (nonatomic, strong, readwrite) UIImage *unlockBtnImage;
-
-// MARK: slider
-@property (nonatomic, strong, readwrite) UIColor *traceColor;
-@property (nonatomic, strong, readwrite) UIColor *trackColor;
-@property (nonatomic, strong, readwrite) UIColor *bufferColor;
-
-// MARK: volume & brightness
-@property (nonatomic, strong, readwrite) UIImage *volumeImage;
-@property (nonatomic, strong, readwrite) UIImage *muteImage;
-@property (nonatomic, strong, readwrite) UIImage *brightnessImage;
-
-@end
-
-
 
 
 #pragma mark -
@@ -50,13 +20,6 @@ NS_ASSUME_NONNULL_BEGIN
 @interface SJVideoPlayer : NSObject
 
 + (instancetype)sharedPlayer;
-
-- (void)playerSettings:(void(^)(SJVideoPlayerSettings *settings))block;
-
-/*!
- *  clicked More button to display items.
- */
-- (void)moreSettings:(void(^)(NSMutableArray<SJVideoPlayerMoreSetting *> *moreSettings))block;
 
 /*!
  *  clicked back btn exe block.
@@ -89,6 +52,23 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic, strong, readonly) NSError *error;
 
 @end
+
+
+
+#pragma mark -
+
+@interface SJVideoPlayer (Setting)
+
+- (void)playerSettings:(void(^)(SJVideoPlayerSettings *settings))block;
+
+/*!
+ *  clicked More button to display items.
+ */
+- (void)moreSettings:(void(^)(NSMutableArray<SJVideoPlayerMoreSetting *> *moreSettings))block;
+
+@end
+
+
 
 
 #pragma mark -
@@ -134,6 +114,35 @@ NS_ASSUME_NONNULL_BEGIN
 
 @end
 
+
+#pragma mark -
+
+@interface SJVideoPlayerSettings : NSObject
+
+// MARK: btns
+@property (nonatomic, strong, readwrite) UIImage *backBtnImage;
+@property (nonatomic, strong, readwrite) UIImage *playBtnImage;
+@property (nonatomic, strong, readwrite) UIImage *pauseBtnImage;
+@property (nonatomic, strong, readwrite) UIImage *replayBtnImage;
+@property (nonatomic, strong, readwrite) NSString *replayBtnTitle;
+@property (nonatomic, assign, readwrite) float replayBtnFontSize;
+@property (nonatomic, strong, readwrite) UIImage *fullBtnImage;
+@property (nonatomic, strong, readwrite) UIImage *previewBtnImage;
+@property (nonatomic, strong, readwrite) UIImage *moreBtnImage;
+@property (nonatomic, strong, readwrite) UIImage *lockBtnImage;
+@property (nonatomic, strong, readwrite) UIImage *unlockBtnImage;
+
+// MARK: slider
+@property (nonatomic, strong, readwrite) UIColor *traceColor;
+@property (nonatomic, strong, readwrite) UIColor *trackColor;
+@property (nonatomic, strong, readwrite) UIColor *bufferColor;
+
+// MARK: volume & brightness
+@property (nonatomic, strong, readwrite) UIImage *volumeImage;
+@property (nonatomic, strong, readwrite) UIImage *muteImage;
+@property (nonatomic, strong, readwrite) UIImage *brightnessImage;
+
+@end
 
 
 

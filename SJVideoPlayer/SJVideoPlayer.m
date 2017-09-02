@@ -44,7 +44,7 @@
 
 @end
 
-
+#pragma mark -
 
 @interface SJVideoPlayer ()
 
@@ -64,6 +64,8 @@
 
 @end
 
+
+#pragma mark -
 
 @implementation SJVideoPlayer
 
@@ -138,17 +140,6 @@
     return self.containerView;
 }
 
-- (void)playerSettings:(void (^)(SJVideoPlayerSettings * _Nonnull))block {
-    if ( block ) block(self.settings);
-    [[NSNotificationCenter defaultCenter] postNotificationName:SJSettingsPlayerNotification object:self.settings];
-}
-
-- (void)moreSettings:(void (^)(NSMutableArray<SJVideoPlayerMoreSetting *> * _Nonnull))block {
-    NSMutableArray<SJVideoPlayerMoreSetting *> *moreSettingsM = self.moreSettings;
-    if ( block ) block(moreSettingsM);
-    [[NSNotificationCenter defaultCenter] postNotificationName:SJMoreSettingsNotification object:moreSettingsM];
-}
-
 // MARK: Private
 
 - (void)_sjVideoPlayerPrepareToPlay {
@@ -215,8 +206,26 @@
 
 
 
+#pragma mark -
 
-// MARK: 通知处理
+@implementation SJVideoPlayer (Setting)
+
+- (void)playerSettings:(void (^)(SJVideoPlayerSettings * _Nonnull))block {
+    if ( block ) block(self.settings);
+    [[NSNotificationCenter defaultCenter] postNotificationName:SJSettingsPlayerNotification object:self.settings];
+}
+
+- (void)moreSettings:(void (^)(NSMutableArray<SJVideoPlayerMoreSetting *> * _Nonnull))block {
+    NSMutableArray<SJVideoPlayerMoreSetting *> *moreSettingsM = self.moreSettings;
+    if ( block ) block(moreSettingsM);
+    [[NSNotificationCenter defaultCenter] postNotificationName:SJMoreSettingsNotification object:moreSettingsM];
+}
+
+@end
+
+
+
+#pragma mark -
 
 @implementation SJVideoPlayer (DBNotifications)
 
@@ -268,7 +277,7 @@
 
 
 
-
+#pragma mark -
 
 @implementation SJVideoPlayer (Operation)
 
@@ -322,7 +331,7 @@
 
 
 
-
+#pragma mark -
 
 @implementation SJVideoPlayer (Prompt)
 
@@ -384,6 +393,8 @@
 
 @end
 
+
+#pragma mark -
 
 @implementation SJVideoPlayerMoreSettingTwoSetting
 

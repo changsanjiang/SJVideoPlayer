@@ -192,7 +192,7 @@
 
 #pragma mark - layer
 - (void)rounded:(CGFloat)cornerRadius {
-    [self rounded:cornerRadius width:0 color:nil];
+    [self rounded:cornerRadius width:0 color:[UIColor clearColor]];
 }
 
 - (void)border:(CGFloat)borderWidth color:(UIColor *)borderColor {
@@ -492,11 +492,11 @@
 }
 
 + (UIButton *)buttonWithImageName:(NSString *)imageName title:(NSString *)title tag:(NSUInteger)tag target:(id)target sel:(SEL)sel {
-    return [self buttonWithImageName:imageName title:title backgroundColor:nil tag:tag target:target sel:sel];
+    return [self buttonWithImageName:imageName title:title backgroundColor:[UIColor clearColor] tag:tag target:target sel:sel];
 }
 
 + (UIButton *)buttonWithImageName:(NSString *)imageName title:(NSString *)title backgroundColor:(UIColor *)backgroundColor tag:(NSUInteger)tag target:(id)target sel:(SEL)sel {
-    return [self buttonWithImageName:imageName title:title titleColor:[UIColor whiteColor] backgroundColor:nil tag:tag target:target sel:sel];
+    return [self buttonWithImageName:imageName title:title titleColor:[UIColor whiteColor] backgroundColor:backgroundColor tag:tag target:target sel:sel];
 }
 
 + (UIButton *)buttonWithImageName:(NSString *)imageName title:(NSString *)title titleColor:(UIColor *)titleColor backgroundColor:(UIColor *)backgroundColor tag:(NSUInteger)tag target:(id)target sel:(SEL)sel {
@@ -513,7 +513,7 @@
 }
 
 + (UIButton *)buttonWithTitle:(NSString *)title backgroundColor:(UIColor *)backgroundColor tag:(NSUInteger)tag  target:(id)target sel:(SEL)sel fontSize:(CGFloat)fontSize {
-    return [self buttonWithTitle:title titleColor:nil backgroundColor:backgroundColor tag:tag target:target sel:sel fontSize:fontSize];
+    return [self buttonWithTitle:title titleColor:[UIColor whiteColor] backgroundColor:backgroundColor tag:tag target:target sel:sel fontSize:fontSize];
 }
 
 + (UIButton *)buttonWithTitle:(NSString *)title titleColor:(UIColor *)titleColor backgroundColor:(UIColor *)backgroundColor tag:(NSUInteger)tag target:(id)target sel:(SEL)sel fontSize:(CGFloat)fontSize {

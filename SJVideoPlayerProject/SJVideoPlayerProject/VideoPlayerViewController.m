@@ -179,4 +179,8 @@
     [[SJVideoPlayer sharedPlayer] stop];
 }
 
+- (void)didReceiveMemoryWarning {
+    NSLog(@"ddfffdfff");
+}
+
 @end

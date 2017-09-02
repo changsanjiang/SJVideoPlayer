@@ -370,7 +370,7 @@
 				TargetAttributes = {
 					772D462E1F46E4CE0047A7BF = {
 						CreatedOnToolsVersion = 8.3.2;
-						DevelopmentTeam = U5A7L7SMNP;
+						DevelopmentTeam = DB5B5F2RH5;
 						ProvisioningStyle = Manual;
 					};
 				};
@@ -612,15 +612,15 @@
 			baseConfigurationReference = FA4B9D875424697D91053C03 /* Pods-SJVideoPlayerProject.debug.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
-				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer: Hailun Song (NRNJDR35L6)";
-				DEVELOPMENT_TEAM = U5A7L7SMNP;
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer: sanjiang chang (43553KMQ9B)";
+				DEVELOPMENT_TEAM = DB5B5F2RH5;
 				INFOPLIST_FILE = SJVideoPlayerProject/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 8.0;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
-				PRODUCT_BUNDLE_IDENTIFIER = com.dancebaby.lanwuzhe;
+				PRODUCT_BUNDLE_IDENTIFIER = com.SanJiang.videoPlayer;
 				PRODUCT_NAME = "$(TARGET_NAME)";
-				PROVISIONING_PROFILE = "73e6c467-8a3b-4d1a-8c76-c0e459c4be62";
-				PROVISIONING_PROFILE_SPECIFIER = DevProfile;
+				PROVISIONING_PROFILE = "126671f6-fbcc-4c23-8a70-c255edc993eb";
+				PROVISIONING_PROFILE_SPECIFIER = SanJiangDevelopment;
 			};
 			name = Debug;
 		};
@@ -629,13 +629,14 @@
 			baseConfigurationReference = 74EBC7B45C74AADE84AF2DBA /* Pods-SJVideoPlayerProject.release.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
-				DEVELOPMENT_TEAM = "";
+				DEVELOPMENT_TEAM = DB5B5F2RH5;
 				INFOPLIST_FILE = SJVideoPlayerProject/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 8.0;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
-				PRODUCT_BUNDLE_IDENTIFIER = com.dancebaby.lanwuzhe;
+				PRODUCT_BUNDLE_IDENTIFIER = com.SanJiang.videoPlayer;
 				PRODUCT_NAME = "$(TARGET_NAME)";
-				PROVISIONING_PROFILE_SPECIFIER = "";
+				PROVISIONING_PROFILE = "69b03a16-4788-4a83-b37a-fb5f44a68a15";
+				PROVISIONING_PROFILE_SPECIFIER = SanJiangDevelopment;
 			};
 			name = Release;
 		};

@@ -44,6 +44,8 @@
 @end
 
 
+#pragma mark -
+
 @implementation SJVideoPlayerPrompt
 
 @synthesize backgroundView = _backgroundView;
@@ -169,6 +171,7 @@
 @end
 
 
+#pragma mark -
 
 @implementation SJVideoPlayerPrompt (DBObservers)
 

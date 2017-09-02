@@ -40,7 +40,7 @@ extern NSNotificationName const SJSettingsPlayerNotification;
 extern NSNotificationName const SJMoreSettingsNotification;
 
 /// 拖拽完调速Slider后的通知
-extern NSNotificationName const SJPlayerRateDidEndDraggingNotification;
+extern NSNotificationName const SJPlayerRateSliderDidEndDraggingNotification;
 
 /// 滑入
 extern NSNotificationName const SJPlayerScrollInNotification;

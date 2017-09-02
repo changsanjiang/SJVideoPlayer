@@ -848,6 +848,8 @@ static NSString *const SJVideoPlayPreviewColCellID = @"SJVideoPlayPreviewColCell
 
 
 
+#pragma mark -
+
 @interface SJVideoPlayerControlView ()
 
 // MARK: ...

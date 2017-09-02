@@ -91,6 +91,17 @@ typedef NS_ENUM(NSUInteger, SJVideoPlaySliderTag) {
 
 #pragma mark -
 
+@class SJVideoPreviewModel;
+
+@interface SJVideoPlayerControlView (Preview)
+
+@property (nonatomic, strong, nullable) NSArray<SJVideoPreviewModel *> *previewImages;
+
+@end
+
+
+#pragma mark -
+
 @interface SJVideoPreviewModel : NSObject
 
 @property (nonatomic, strong, readonly) UIImage *image;
@@ -101,14 +112,6 @@ typedef NS_ENUM(NSUInteger, SJVideoPlaySliderTag) {
 @property (nonatomic, assign, readwrite) BOOL isHiddenControl;
 
 @end
-
-
-@interface SJVideoPlayerControlView (Preview)
-
-@property (nonatomic, strong, nullable) NSArray<SJVideoPreviewModel *> *previewImages;
-
-@end
-
 
 
 

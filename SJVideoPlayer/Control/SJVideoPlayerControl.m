@@ -282,13 +282,14 @@ typedef NS_ENUM(NSUInteger, SJVideoPlayerPlayState) {
 }
 
 - (void)_controlViewPlayingStatus {
+    self.controlView.hiddenPlayBtn = YES;
+    self.controlView.hiddenPauseBtn = NO;
+    self.controlView.hiddenReplayBtn = YES;
+    self.controlView.hiddenDraggingProgress = YES;
+    self.controlView.hiddenLoadFailedBtn = YES;
+    
     // 小屏
     if ( !self.backstageRegistrar.fullScreen ) {
-        self.controlView.hiddenPlayBtn = YES;
-        self.controlView.hiddenPauseBtn = NO;
-        self.controlView.hiddenReplayBtn = YES;
-        self.controlView.hiddenDraggingProgress = YES;
-        self.controlView.hiddenLoadFailedBtn = YES;
         self.controlView.hiddenPreviewBtn = YES;
         self.controlView.hiddenPreview = YES;
         self.controlView.hiddenMoreBtn = YES;
@@ -879,11 +880,7 @@ typedef NS_ENUM(NSUInteger, SJVideoPlayerPlayState) {
 
 #pragma mark -
 
-// MARK: 通知处理
-
 @implementation SJVideoPlayerControl (DBNotifications)
-
-// MARK: 通知安装
 
 - (void)_installNotifications {
     

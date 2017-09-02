@@ -439,6 +439,10 @@ static UIView *target = nil;
 
 - (void)_controlViewPlayFailed;
 
+- (void)_controlViewSmallScreen;
+
+- (void)_controlViewFullScreen;
+
 @end
 
 
@@ -505,6 +509,21 @@ static UIView *target = nil;
 
 - (void)_controlViewPlayFailed {
     self.controlView.hiddenLoadFailedBtn = NO;
+}
+
+- (void)_controlViewSmallScreen {
+    self.controlView.hiddenControl = NO;
+    self.controlView.hiddenPreview = YES;
+    self.controlView.hiddenMoreBtn = YES;
+    self.controlView.hiddenPreviewBtn = YES;
+    if ( self.backstageRegistrar.playingOnCell ) self.controlView.hiddenBackBtn = YES;
+}
+
+- (void)_controlViewFullScreen {
+    self.controlView.hiddenControl = NO;
+    self.controlView.hiddenBackBtn = NO;
+    if ( self.backstageRegistrar.generatedImages ) self.controlView.hiddenPreviewBtn = NO;
+    self.controlView.hiddenMoreBtn = NO;
 }
 
 @end
@@ -1103,23 +1122,17 @@ static UIView *target = nil;
 /// 全屏
 - (void)playerFullScreenNotitication {
     NSLog(@"全屏");
-    _controlView.hiddenControl = NO;
-    _controlView.hiddenBackBtn = NO;
+    [self _controlViewFullScreen];
     self.panGR.enabled = YES;
     self.backstageRegistrar.fullScreen = YES;
-    if ( self.backstageRegistrar.generatedImages ) _controlView.hiddenPreviewBtn = NO;
-    _controlView.hiddenMoreBtn = NO;
 }
 
 /// 小屏
 - (void)_smallScreenPlaying {
     NSLog(@"小屏");
-    _controlView.hiddenControl = NO;
-    if ( self.backstageRegistrar.playingOnCell ) _controlView.hiddenBackBtn = YES;
+    [self _controlViewSmallScreen];
     if ( self.backstageRegistrar.playingOnCell ) self.panGR.enabled = NO;
     self.backstageRegistrar.fullScreen = NO;
-    _controlView.hiddenMoreBtn = YES;
-    _controlView.hiddenPreviewBtn = YES;
 }
 
 /// 耳机
@@ -1213,7 +1226,6 @@ static UIView *target = nil;
         self.controlView.hiddenMoreSettingsView = YES;
         if ( !model.isShowTowSetting ) self.controlView.hiddenMoreSettingsTwoLevelView = YES;
     };
-    
 }
 
 - (void)playerPrepareToPlayNotification {

@@ -1484,6 +1484,8 @@ static UIView *target = nil;
 - (void)_controlViewSmallScreen {
     self.controlView.hiddenControl = NO;
     self.controlView.hiddenPreview = YES;
+    self.controlView.hiddenMoreSettingsView = YES;
+    self.controlView.hiddenMoreSettingsTwoLevelView = YES;
     self.controlView.hiddenMoreBtn = YES;
     self.controlView.hiddenPreviewBtn = YES;
     if ( self.backstageRegistrar.playingOnCell ) self.controlView.hiddenBackBtn = YES;

@@ -24,6 +24,8 @@
  */
 #define REFRESH_INTERVAL (0.5)
 
+#define SJPreViewImgsMaxCount (30)
+
 // 未知-准备播放-播放中-暂停播放-播放完毕-播放错误
 typedef NS_ENUM(NSUInteger, SJVideoPlayerPlayState) {
     SJVideoPlayerPlayState_Unknown,
@@ -296,11 +298,13 @@ typedef NS_ENUM(NSUInteger, SJVerticalPanLocation) {
     if ( self.lastPlaybackRate > 0.f ) {
         [self controlView:self.controlView clickedBtnTag:SJVideoPlayControlViewTag_Pause];
         self.controlView.hiddenControl = NO;
+        self.backstageRegistrar.playState = SJVideoPlayerPlayState_Playing;
     }
     else {
         if ( self.backstageRegistrar.playState == SJVideoPlayerPlayState_PlayEnd ) [self play];
         [self controlView:self.controlView clickedBtnTag:SJVideoPlayControlViewTag_Play];
         self.controlView.hiddenControl = YES;
+        self.backstageRegistrar.playState = SJVideoPlayerPlayState_Pause;
     }
     
 }
@@ -530,6 +534,7 @@ static UIView *target = nil;
     [self _installNotifications];
     [self _addOtherObservers];
     [self pointTimer];
+    [self systemVolume];
     return self;
 }
 
@@ -613,7 +618,7 @@ static UIView *target = nil;
     short interval = 1;
     __block NSInteger maxCount = 0;
     A: maxCount = second / interval;
-    if ( maxCount > 30 ) { interval += 2; goto A;}
+    if ( maxCount > SJPreViewImgsMaxCount ) { interval += 2; goto A;}
     for ( int i = 0 ; i < maxCount ; i ++ ) {
         CMTime time = CMTimeMake(i * interval, 1);
         NSValue *tV = [NSValue valueWithCMTime:time];

@@ -24,7 +24,6 @@
     pan.edges = UIRectEdgeLeft;
     [self.view addGestureRecognizer:pan];
     
-    // 禁用系统手势
     self.interactivePopGestureRecognizer.enabled = NO;
     
     // Do any additional setup after loading the view.
@@ -32,7 +31,7 @@
 
 #pragma mark - UIGestureRecognizerDelegate
 - (BOOL)gestureRecognizer:(UIGestureRecognizer *)gestureRecognizer shouldReceiveTouch:(UITouch *)touch{
-    return self.viewControllers.count > 1;
+    return self.childViewControllers.count > 0;
     
 }
 

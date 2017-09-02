@@ -274,11 +274,7 @@ typedef NS_ENUM(NSUInteger, SJVideoPlayerPlayState) {
     [self addObserver:self forKeyPath:@"asset" options:NSKeyValueObservingOptionOld context:nil];
     [self addObserver:self forKeyPath:@"playerItem" options:NSKeyValueObservingOptionOld context:nil];
     [self addObserver:self forKeyPath:@"player" options:NSKeyValueObservingOptionOld context:nil];
-    
-    
-    // MARK: >>>>>>>>
     [self addObserver:self forKeyPath:@"backstageRegistrar" options:NSKeyValueObservingOptionOld context:nil];
-    // MARK: <<<<<<<
 }
 
 - (void)_removeOtherObservers {
@@ -287,12 +283,7 @@ typedef NS_ENUM(NSUInteger, SJVideoPlayerPlayState) {
     [self removeObserver:self forKeyPath:@"asset"];
     [self removeObserver:self forKeyPath:@"playerItem"];
     [self removeObserver:self forKeyPath:@"player"];
-    
-    
-    // MARK: >>>>>>>>
     [self removeObserver:self forKeyPath:@"backstageRegistrar"];
-    // MARK: <<<<<<<<
-
 }
 
 - (void)setAssetCarrier:(SJVideoPlayerAssetCarrier *)assetCarrier {
@@ -825,17 +816,17 @@ typedef NS_ENUM(NSUInteger, SJVideoPlayerPlayState) {
 /// 全屏
 - (void)playerFullScreenNotitication {
     NSLog(@"全屏");
+    self.backstageRegistrar.fullScreen = YES;
     [self _controlViewFullScreen];
     self.panGR.enabled = YES;
-    self.backstageRegistrar.fullScreen = YES;
 }
 
 /// 小屏
 - (void)_smallScreenPlaying {
     NSLog(@"小屏");
+    self.backstageRegistrar.fullScreen = NO;
     [self _controlViewSmallScreen];
     if ( self.backstageRegistrar.playingOnCell ) self.panGR.enabled = NO;
-    self.backstageRegistrar.fullScreen = NO;
 }
 
 /// 耳机

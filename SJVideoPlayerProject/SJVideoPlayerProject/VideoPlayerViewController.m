@@ -27,7 +27,8 @@
     
     self.view.backgroundColor = [UIColor whiteColor];
     
-// MARK: Player View
+    
+#pragma mark - Player View
 
     SJVideoPlayer *player = [SJVideoPlayer sharedPlayer];
     [self.view addSubview:player.view];
@@ -38,7 +39,7 @@
     }];
 
     
-// MARK: AssetURL
+#pragma mark - AssetURL
     
 //    player.assetURL = [[NSBundle mainBundle] URLForResource:@"sample.mp4" withExtension:nil];
 
@@ -49,7 +50,7 @@
     player.assetURL = [NSURL URLWithString:@"http://vod.lanwuzhe.com/9da7002189d34b60bbf82ac743241a61/d0539e7be21a4f8faa9fef69a67bc1fb-5287d2089db37e62345123a1be272f8b.mp4?video="];
     
 
-// MARK: Setting Player
+#pragma mark - Setting Player
     
     [player playerSettings:^(SJVideoPlayerSettings * _Nonnull settings) {
         settings.traceColor = [UIColor colorWithRed:1.0 * (arc4random() % 256 / 255.0)
@@ -70,13 +71,13 @@
     
     
     
-// MARK: Loading Placeholder
+#pragma mark - Loading Placeholder
     
     player.placeholder = [UIImage imageNamed:@"sj_video_player_placeholder"];
     
 
     
-// MARK: 1 Level More Settings
+#pragma mark - 1 Level More Settings
 
     SJVideoPlayerMoreSetting.titleFontSize = 12;
 
@@ -92,7 +93,7 @@
     }];
 
     
-// MARK: 2 Level More Settings
+#pragma mark - 2 Level More Settings
     
     SJVideoPlayerMoreSettingTwoSetting *twoS0 = [[SJVideoPlayerMoreSettingTwoSetting alloc] initWithTitle:@"高清" image:nil clickedExeBlock:^(SJVideoPlayerMoreSetting * _Nonnull model) {
         [[SJVideoPlayer sharedPlayer] showTitle:model.title];
@@ -102,7 +103,7 @@
         [[SJVideoPlayer sharedPlayer] showTitle:model.title];
     }];
     
-// MARK: 1 Level More Settings
+#pragma mark - 1 Level More Settings
     
     SJVideoPlayerMoreSetting *model1 =
     [[SJVideoPlayerMoreSetting alloc] initWithTitle:@"缓存"
@@ -113,7 +114,7 @@
                                     clickedExeBlock:^(SJVideoPlayerMoreSetting * _Nonnull model) {}];
     
     
-// MARK: 2 Level More Settings
+#pragma mark - 2 Level More Settings
     
     SJVideoPlayerMoreSettingTwoSetting.topTitleFontSize = 14;
     
@@ -182,7 +183,7 @@
 }
 
 - (void)didReceiveMemoryWarning {
-    NSLog(@"ddfffdfff");
+    NSLog(@"%zd - %s", __LINE__, __func__);
 }
 
 @end

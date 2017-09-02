@@ -150,7 +150,6 @@ typedef NS_ENUM(NSUInteger, SJVideoPlayerPlayState) {
 
 @property (nonatomic, strong, readonly) SJVideoPlayerTipsView *brightnessView;
 
-
 @property (nonatomic, strong, readonly) SJVideoPlayerControlView *controlView;
 
 @property (nonatomic, weak, readwrite) AVAsset *asset;
@@ -229,144 +228,12 @@ typedef NS_ENUM(NSUInteger, SJVideoPlayerPlayState) {
 
 - (void)_controlViewHiddenTwoMoreSettingsView;
 /// 显示或隐藏控制层
-- (void)_controlViewControlLayerShowedOrHidden;
+- (void)_controlViewHiddenControl;
+- (void)_controlViewControlLayerStateChanged;
 /// 显示或隐藏预览视图
 - (void)_controlViewPreviewShowedOrHidden;
 
 @end
-
-
-@implementation SJVideoPlayerControl (ControlViewState)
-
-- (void)_controlViewUnknownStatus {
-    self.controlView.hidden = YES;
-    self.controlView.sliderControl.value = 0;
-    self.controlView.draggingProgressView.value = 0;
-    self.controlView.draggingTimeLabel.text = @"00:00";
-    self.controlView.hiddenPreviewBtn = YES;
-    self.controlView.hiddenMoreBtn = YES;
-    self.controlView.previewImages = nil;
-    self.controlView.hiddenControl = YES;
-    self.controlView.hiddenBackBtn = NO;
-    self.controlView.hiddenMoreSettingsView = YES;
-    self.controlView.hiddenReplayBtn = YES;
-    self.controlView.hiddenLoadFailedBtn = YES;
-}
-
-- (void)_controlViewPrepareToPlayStatus {
-    self.controlView.hidden = NO;
-    self.controlView.hiddenLockBtn = YES;
-    self.controlView.hiddenPlayBtn = YES;
-    self.controlView.hiddenPauseBtn = NO;
-    self.controlView.hiddenReplayBtn = YES;
-    self.controlView.hiddenDraggingProgress = YES;
-    self.controlView.hiddenLoadFailedBtn = YES;
-    self.controlView.hiddenPreviewBtn = YES;
-    self.controlView.hiddenPreview = YES;
-    self.controlView.hiddenMoreBtn = YES;
-}
-
-- (void)_controlViewPlayingStatus {
-    self.controlView.hiddenPlayBtn = YES;
-    self.controlView.hiddenPauseBtn = NO;
-    self.controlView.hiddenReplayBtn = YES;
-    self.controlView.hiddenDraggingProgress = YES;
-    self.controlView.hiddenLoadFailedBtn = YES;
-    
-    // 小屏
-    if ( !self.backstageRegistrar.fullScreen ) {
-        self.controlView.hiddenPreviewBtn = YES;
-        self.controlView.hiddenPreview = YES;
-        self.controlView.hiddenMoreBtn = YES;
-    }
-    // 全屏
-    else {
-        self.controlView.hiddenMoreBtn = NO;
-        if ( self.backstageRegistrar.generatedImages ) self.controlView.hiddenPreviewBtn = NO;
-        else { self.controlView.hiddenPreviewBtn = YES; self.controlView.hiddenPreview = YES;}
-    }
-}
-
-- (void)_controlViewPauseStatus {
-    self.controlView.hidden = NO;
-    self.controlView.hiddenPlayBtn = NO;
-    self.controlView.hiddenPauseBtn = YES;
-}
-
-- (void)_controlViewPlayEndStatus {
-    self.controlView.hidden = NO;
-    self.controlView.hiddenReplayBtn = NO;
-}
-
-- (void)_controlViewPlayFailed {
-    self.controlView.hiddenLoadFailedBtn = NO;
-}
-
-- (void)_controlViewSmallScreen {
-    self.controlView.hiddenControl = NO;
-    self.controlView.hiddenPreview = YES;
-    self.controlView.hiddenMoreBtn = YES;
-    self.controlView.hiddenPreviewBtn = YES;
-    if ( self.backstageRegistrar.playingOnCell ) self.controlView.hiddenBackBtn = YES;
-}
-
-- (void)_controlViewFullScreen {
-    self.controlView.hiddenControl = NO;
-    self.controlView.hiddenBackBtn = NO;
-    if ( self.backstageRegistrar.generatedImages ) self.controlView.hiddenPreviewBtn = NO;
-    self.controlView.hiddenMoreBtn = NO;
-}
-
-- (void)_controlViewLockScreen {
-    self.controlView.hiddenControl = YES;
-    self.controlView.hiddenUnlockBtn = !(self.controlView.hiddenLockBtn = NO);
-}
-
-- (void)_controlViewUnlockScreen {
-    self.controlView.hiddenControl = NO;
-    self.controlView.hiddenUnlockBtn = !(self.controlView.hiddenLockBtn = YES);
-}
-
-- (void)_controlViewHidenMoreSettingsView {
-    self.controlView.hiddenMoreSettingsView = YES;
-}
-
-- (void)_controlViewShowTwoMoreSettingsView {
-    self.controlView.hiddenMoreSettingsView = YES;
-    self.controlView.hiddenMoreSettingsTwoLevelView = NO;
-}
-
-- (void)_controlViewHiddenTwoMoreSettingsView {
-    self.controlView.hiddenMoreSettingsTwoLevelView = YES;
-}
-
-- (void)_controlViewControlLayerShowedOrHidden {
-    if ( self.controlView.hiddenControl ) {
-        self.controlView.hiddenPreview = YES;
-        [self _resetTimer];
-        self.controlView.hiddenLockContainerView = !self.backstageRegistrar.isLock;
-    }
-    else {
-        self.hiddenControlPoint = 0;
-        [self.pointTimer fire];
-        self.controlView.hiddenLockContainerView = NO;
-    }
-    self.controlView.hiddenBottomProgressView = !self.controlView.hiddenControl;
-}
-
-- (void)_controlViewPreviewShowedOrHidden {
-    self.controlView.hiddenControl = NO;
-    self.controlView.hiddenPreview = !self.controlView.hiddenPreview;
-    if ( !self.controlView.hiddenPreview )
-        [self _resetTimer];
-    else {
-        if ( !self.controlView.hiddenControl ) [self.pointTimer fire];
-    }
-}
-
-@end
-
-
 
 #pragma mark -
 
@@ -469,7 +336,7 @@ typedef NS_ENUM(NSUInteger, SJVideoPlayerPlayState) {
 - (void)generatePreviewImgs {
     NSMutableArray<NSValue *> *timesM = [NSMutableArray new];
     
-    NSInteger second = _asset.duration.value / _asset.duration.timescale;
+    NSInteger second = (long)_asset.duration.value / _asset.duration.timescale;
     short interval = 1;
     __block NSInteger maxCount = 0;
     A: maxCount = second / interval;
@@ -663,6 +530,7 @@ typedef NS_ENUM(NSUInteger, SJVideoPlayerPlayState) {
 }
 
 - (void)_resetTimer {
+    if ( nil == _pointTimer ) return;
     _hiddenControlPoint = 0;
     [_pointTimer invalidate];
     _pointTimer = nil;
@@ -808,7 +676,7 @@ typedef NS_ENUM(NSUInteger, SJVideoPlayerPlayState) {
     }
     CMTime sub = CMTimeSubtract(_playerItem.currentTime, time);
     // 小于1秒 不给跳.
-    if ( labs(sub.value / sub.timescale) < 1 ) {if ( completionHandler ) completionHandler(YES); return;}
+    if ( labs((long)sub.value / sub.timescale) < 1 ) {if ( completionHandler ) completionHandler(YES); return;}
     [self.player seekToTime:time completionHandler:^(BOOL finished) {
         if ( completionHandler ) completionHandler(finished);
     }];
@@ -1134,7 +1002,12 @@ typedef NS_ENUM(NSUInteger, SJVideoPlayerPlayState) {
     
     if ( object == self.controlView ) {
         if ( [keyPath isEqualToString:@"hiddenControl"] ) {
-            [self _controlViewControlLayerShowedOrHidden];
+            [self _controlViewControlLayerStateChanged];
+            if ( !self.controlView.hiddenControl ) {
+                self.hiddenControlPoint = 0;
+                [self.pointTimer fire];
+            }
+            else [self _resetTimer];
             return;
         }
     }
@@ -1150,54 +1023,33 @@ typedef NS_ENUM(NSUInteger, SJVideoPlayerPlayState) {
     if ( object == self ) {
         if ( [keyPath isEqualToString:@"hiddenControlPoint"] ) {
             if ( _hiddenControlPoint >= SJHiddenControlInterval ) {
-                _controlView.hiddenControl = YES;
-                [_pointTimer invalidate];
-                _pointTimer = nil;
-                _hiddenControlPoint = 0;
+                [self _controlViewHiddenControl];
+                [self _resetTimer];
             }
         }
         else if ( [keyPath isEqualToString:@"player"] ) {
             AVPlayer *player = change[NSKeyValueChangeOldKey];
             if ( _player == player ) return;
-            __block AVPlayer *oldPlayer = player;
-            [self _addOperation:^{
-                if ( !oldPlayer || [oldPlayer isKindOfClass:[NSNull class]] ) return;
-                [oldPlayer replaceCurrentItemWithPlayerItem:nil];
-                oldPlayer = nil;
-            }];
+            [self _releaseOldPlayer:player];
         }
         
         else if ( [keyPath isEqualToString:@"playerItem"] ) {
             AVPlayerItem *playerItem = change[NSKeyValueChangeOldKey];
             if ( playerItem == _playerItem ) return;
-            __block AVPlayerItem *oldPlayerItem = playerItem;
-            __weak typeof(self) _self = self;
-            [self _addOperation:^{
-                __strong typeof(_self) self = _self;
-                if ( !self ) return;
-                if ( !oldPlayerItem || [oldPlayerItem isKindOfClass:[NSNull class]] ) return;
-                [oldPlayerItem removeObserver:self forKeyPath:@"status"];
-                [oldPlayerItem removeObserver:self forKeyPath:@"loadedTimeRanges"];
-                [oldPlayerItem removeObserver:self forKeyPath:@"playbackBufferEmpty"];
-                [oldPlayerItem cancelPendingSeeks];
-                oldPlayerItem = nil;
-            }];
+            [self _releaseOldPlayerItem:playerItem];
         }
         else if ( [keyPath isEqualToString:@"asset"] ) {
             AVAsset *asset = change[NSKeyValueChangeOldKey];
             if ( _asset == asset ) return;
-            __block AVAsset *oldAsset = asset;
-            [self _addOperation:^{
-                if ( !asset || [asset isKindOfClass:[NSNull class]] ) return;
-                [oldAsset cancelLoading];
-                oldAsset = nil;
-            }];
+            [self _releaseOldAsset:asset];
         }
         else if ( [keyPath isEqualToString:@"backstageRegistrar"] ) {
             SJVideoPlayerStatusRegistrar *oldBackstageRegistrar = change[NSKeyValueChangeOldKey];
             if ( !oldBackstageRegistrar || [oldBackstageRegistrar isKindOfClass:[NSNull class]] ) return;
             [oldBackstageRegistrar removeObserver:self forKeyPath:@"playState"];
         }
+        
+        return;
     }
     
     if ( object == self.playerItem ) {
@@ -1247,7 +1099,35 @@ typedef NS_ENUM(NSUInteger, SJVideoPlayerPlayState) {
             [self _buffering];
             return;
         }
+        return;
     }
+}
+
+- (void)_releaseOldAsset:(AVAsset *)oldAsset {
+    [self _addOperation:^{
+        if ( !oldAsset || [oldAsset isKindOfClass:[NSNull class]] ) return;
+        [oldAsset cancelLoading];
+    }];
+}
+
+- (void)_releaseOldPlayerItem:(AVPlayerItem *)oldPlayerItem {
+    __weak typeof(self) _self = self;
+    [self _addOperation:^{
+        __strong typeof(_self) self = _self;
+        if ( !self ) return;
+        if ( !oldPlayerItem || [oldPlayerItem isKindOfClass:[NSNull class]] ) return;
+        [oldPlayerItem removeObserver:self forKeyPath:@"status"];
+        [oldPlayerItem removeObserver:self forKeyPath:@"loadedTimeRanges"];
+        [oldPlayerItem removeObserver:self forKeyPath:@"playbackBufferEmpty"];
+        [oldPlayerItem cancelPendingSeeks];
+    }];
+}
+
+- (void)_releaseOldPlayer:(AVPlayer *)oldPlayer {
+    [self _addOperation:^{
+        if ( !oldPlayer || [oldPlayer isKindOfClass:[NSNull class]] ) return;
+        [oldPlayer replaceCurrentItemWithPlayerItem:nil];
+    }];
 }
 
 - (void)_playStateChanged {
@@ -1327,7 +1207,6 @@ typedef NS_ENUM(NSUInteger, SJVideoPlayerPlayState) {
                                                        queue:queue
                                                   usingBlock:callback];
 }
-
 
 @end
 
@@ -1541,3 +1420,138 @@ static UIView *target = nil;
 }
 
 @end
+
+
+#pragma mark -
+
+@implementation SJVideoPlayerControl (ControlViewState)
+
+- (void)_controlViewUnknownStatus {
+    self.controlView.hidden = YES;
+    self.controlView.sliderControl.value = 0;
+    self.controlView.draggingProgressView.value = 0;
+    self.controlView.draggingTimeLabel.text = @"00:00";
+    self.controlView.hiddenPreviewBtn = YES;
+    self.controlView.hiddenMoreBtn = YES;
+    self.controlView.previewImages = nil;
+    self.controlView.hiddenControl = YES;
+    self.controlView.hiddenBackBtn = NO;
+    self.controlView.hiddenMoreSettingsView = YES;
+    self.controlView.hiddenReplayBtn = YES;
+    self.controlView.hiddenLoadFailedBtn = YES;
+}
+
+- (void)_controlViewPrepareToPlayStatus {
+    self.controlView.hidden = NO;
+    self.controlView.hiddenLockBtn = YES;
+    self.controlView.hiddenPlayBtn = YES;
+    self.controlView.hiddenPauseBtn = NO;
+    self.controlView.hiddenReplayBtn = YES;
+    self.controlView.hiddenDraggingProgress = YES;
+    self.controlView.hiddenLoadFailedBtn = YES;
+    self.controlView.hiddenPreviewBtn = YES;
+    self.controlView.hiddenPreview = YES;
+    self.controlView.hiddenMoreBtn = YES;
+}
+
+- (void)_controlViewPlayingStatus {
+    self.controlView.hiddenPlayBtn = YES;
+    self.controlView.hiddenPauseBtn = NO;
+    self.controlView.hiddenReplayBtn = YES;
+    self.controlView.hiddenDraggingProgress = YES;
+    self.controlView.hiddenLoadFailedBtn = YES;
+    
+    // 小屏
+    if ( !self.backstageRegistrar.fullScreen ) {
+        self.controlView.hiddenPreviewBtn = YES;
+        self.controlView.hiddenPreview = YES;
+        self.controlView.hiddenMoreBtn = YES;
+    }
+    // 全屏
+    else {
+        self.controlView.hiddenMoreBtn = NO;
+        if ( self.backstageRegistrar.generatedImages ) self.controlView.hiddenPreviewBtn = NO;
+        else { self.controlView.hiddenPreviewBtn = YES; self.controlView.hiddenPreview = YES;}
+    }
+}
+
+- (void)_controlViewPauseStatus {
+    self.controlView.hidden = NO;
+    self.controlView.hiddenPlayBtn = NO;
+    self.controlView.hiddenPauseBtn = YES;
+}
+
+- (void)_controlViewPlayEndStatus {
+    self.controlView.hidden = NO;
+    self.controlView.hiddenReplayBtn = NO;
+}
+
+- (void)_controlViewPlayFailed {
+    self.controlView.hiddenLoadFailedBtn = NO;
+}
+
+- (void)_controlViewSmallScreen {
+    self.controlView.hiddenControl = NO;
+    self.controlView.hiddenPreview = YES;
+    self.controlView.hiddenMoreBtn = YES;
+    self.controlView.hiddenPreviewBtn = YES;
+    if ( self.backstageRegistrar.playingOnCell ) self.controlView.hiddenBackBtn = YES;
+}
+
+- (void)_controlViewFullScreen {
+    self.controlView.hiddenControl = NO;
+    self.controlView.hiddenBackBtn = NO;
+    if ( self.backstageRegistrar.generatedImages ) self.controlView.hiddenPreviewBtn = NO;
+    self.controlView.hiddenMoreBtn = NO;
+}
+
+- (void)_controlViewLockScreen {
+    self.controlView.hiddenControl = YES;
+    self.controlView.hiddenUnlockBtn = !(self.controlView.hiddenLockBtn = NO);
+}
+
+- (void)_controlViewUnlockScreen {
+    self.controlView.hiddenControl = NO;
+    self.controlView.hiddenUnlockBtn = !(self.controlView.hiddenLockBtn = YES);
+}
+
+- (void)_controlViewHidenMoreSettingsView {
+    self.controlView.hiddenMoreSettingsView = YES;
+}
+
+- (void)_controlViewShowTwoMoreSettingsView {
+    self.controlView.hiddenMoreSettingsView = YES;
+    self.controlView.hiddenMoreSettingsTwoLevelView = NO;
+}
+
+- (void)_controlViewHiddenTwoMoreSettingsView {
+    self.controlView.hiddenMoreSettingsTwoLevelView = YES;
+}
+
+- (void)_controlViewHiddenControl {
+    self.controlView.hiddenControl = YES;
+}
+
+- (void)_controlViewControlLayerStateChanged {
+    if ( self.controlView.hiddenControl ) {
+        self.controlView.hiddenPreview = YES;
+        self.controlView.hiddenLockContainerView = !self.backstageRegistrar.isLock;
+    }
+    else {
+        self.controlView.hiddenLockContainerView = NO;
+    }
+    self.controlView.hiddenBottomProgressView = !self.controlView.hiddenControl;
+}
+
+- (void)_controlViewPreviewShowedOrHidden {
+    self.controlView.hiddenControl = NO;
+    self.controlView.hiddenPreview = !self.controlView.hiddenPreview;
+    if ( !self.controlView.hiddenPreview )
+        [self _resetTimer];
+    else {
+        if ( !self.controlView.hiddenControl ) [self.pointTimer fire];
+    }
+}
+
+@end
+

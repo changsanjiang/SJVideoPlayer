@@ -26,28 +26,12 @@
 
 #define SJPreViewImgsMaxCount (30)
 
-// 未知-准备播放-播放中-暂停播放-播放完毕-播放错误
 typedef NS_ENUM(NSUInteger, SJVideoPlayerPlayState) {
     SJVideoPlayerPlayState_Unknown,
-    /*!
-     *  准备播放
-     */
     SJVideoPlayerPlayState_Prepare,
-    /*!
-     *  播放中
-     */
     SJVideoPlayerPlayState_Playing,
-    /*!
-     *  暂停播放
-     */
     SJVideoPlayerPlayState_Pause,
-    /*!
-     *  播放完毕
-     */
     SJVideoPlayerPlayState_PlayEnd,
-    /*!
-     *  播放错误
-     */
     SJVideoPlayerPlayState_PlayFailed,
 };
 
@@ -56,13 +40,13 @@ typedef NS_ENUM(NSUInteger, SJVideoPlayerPlayState) {
 
 - (void)registrar:(SJVideoPlayerControlView *)controlView;
 
+// 进入后台 统计信息 >>>>>
 @property (nonatomic, assign, readwrite) BOOL hiddenLockBtn;
 
 @property (nonatomic, assign, readwrite) BOOL hiddenPlayBtn;
+// <<<<<<<<<<<
 
 @property (nonatomic, assign, readwrite) BOOL isLock;
-
-@property (nonatomic, assign, readwrite) BOOL isHiddenControl;
 
 @property (nonatomic, assign, readwrite) BOOL scrollIn;
 
@@ -72,12 +56,8 @@ typedef NS_ENUM(NSUInteger, SJVideoPlayerPlayState) {
 
 @property (nonatomic, assign, readwrite) BOOL generatedImages;
 
-
-// MARK: >>>>>>>>>>>>>>
-
 @property (nonatomic, assign, readwrite) SJVideoPlayerPlayState playState;
 
-// MARK: <<<<<<<<<<<<<<
 @end
 
 @implementation SJVideoPlayerStatusRegistrar
@@ -196,6 +176,7 @@ typedef NS_ENUM(NSUInteger, SJVideoPlayerPlayState) {
 @property (nonatomic, assign, readwrite) BOOL isHiddenControl;
 @property (nonatomic, assign, readwrite) NSInteger hiddenControlPoint;
 @property (nonatomic, strong, readonly) NSTimer *pointTimer;
+- (void)_resetTimer;
 
 @property (nonatomic, weak, readwrite) UIScrollView *scrollView;
 @property (nonatomic, strong, readwrite) NSIndexPath *indexPath;
@@ -247,6 +228,10 @@ typedef NS_ENUM(NSUInteger, SJVideoPlayerPlayState) {
 - (void)_controlViewShowTwoMoreSettingsView;
 
 - (void)_controlViewHiddenTwoMoreSettingsView;
+/// 显示或隐藏控制层
+- (void)_controlViewControlLayerShowedOrHidden;
+/// 显示或隐藏预览视图
+- (void)_controlViewPreviewShowedOrHidden;
 
 @end
 
@@ -297,15 +282,12 @@ typedef NS_ENUM(NSUInteger, SJVideoPlayerPlayState) {
     // 全屏
     else {
         self.controlView.hiddenMoreBtn = NO;
-        if ( !self.backstageRegistrar.generatedImages ) self.controlView.hiddenPreviewBtn = NO;
-        else {self.controlView.hiddenPreviewBtn = YES; self.controlView.hiddenPreview = YES;}
+        if ( self.backstageRegistrar.generatedImages ) self.controlView.hiddenPreviewBtn = NO;
+        else { self.controlView.hiddenPreviewBtn = YES; self.controlView.hiddenPreview = YES;}
     }
-    
-    NSLog(@"state: playing");
 }
 
 - (void)_controlViewPauseStatus {
-    NSLog(@"state: pause");
     self.controlView.hidden = NO;
     self.controlView.hiddenPlayBtn = NO;
     self.controlView.hiddenPauseBtn = YES;
@@ -358,6 +340,30 @@ typedef NS_ENUM(NSUInteger, SJVideoPlayerPlayState) {
     self.controlView.hiddenMoreSettingsTwoLevelView = YES;
 }
 
+- (void)_controlViewControlLayerShowedOrHidden {
+    if ( self.controlView.hiddenControl ) {
+        self.controlView.hiddenPreview = YES;
+        [self _resetTimer];
+        self.controlView.hiddenLockContainerView = !self.backstageRegistrar.isLock;
+    }
+    else {
+        self.hiddenControlPoint = 0;
+        [self.pointTimer fire];
+        self.controlView.hiddenLockContainerView = NO;
+    }
+    self.controlView.hiddenBottomProgressView = !self.controlView.hiddenControl;
+}
+
+- (void)_controlViewPreviewShowedOrHidden {
+    self.controlView.hiddenControl = NO;
+    self.controlView.hiddenPreview = !self.controlView.hiddenPreview;
+    if ( !self.controlView.hiddenPreview )
+        [self _resetTimer];
+    else {
+        if ( !self.controlView.hiddenControl ) [self.pointTimer fire];
+    }
+}
+
 @end
 
 
@@ -398,7 +404,6 @@ typedef NS_ENUM(NSUInteger, SJVideoPlayerPlayState) {
 - (void)_addOtherObservers {
     [self.controlView addObserver:self forKeyPath:@"hiddenControl" options:NSKeyValueObservingOptionNew context:nil];
     [self addObserver:self forKeyPath:@"hiddenControlPoint" options:NSKeyValueObservingOptionNew context:nil];
-    [self.controlView addObserver:self forKeyPath:@"hiddenPreview" options:NSKeyValueObservingOptionNew context:nil];
     [self addObserver:self forKeyPath:@"asset" options:NSKeyValueObservingOptionOld context:nil];
     [self addObserver:self forKeyPath:@"playerItem" options:NSKeyValueObservingOptionOld context:nil];
     [self addObserver:self forKeyPath:@"player" options:NSKeyValueObservingOptionOld context:nil];
@@ -411,7 +416,6 @@ typedef NS_ENUM(NSUInteger, SJVideoPlayerPlayState) {
 
 - (void)_removeOtherObservers {
     [self.controlView removeObserver:self forKeyPath:@"hiddenControl"];
-    [self.controlView removeObserver:self forKeyPath:@"hiddenPreview"];
     [self addObserver:self forKeyPath:@"hiddenControlPoint" options:NSKeyValueObservingOptionNew context:nil];
     [self removeObserver:self forKeyPath:@"asset"];
     [self removeObserver:self forKeyPath:@"playerItem"];
@@ -658,6 +662,12 @@ typedef NS_ENUM(NSUInteger, SJVideoPlayerPlayState) {
     return _pointTimer;
 }
 
+- (void)_resetTimer {
+    _hiddenControlPoint = 0;
+    [_pointTimer invalidate];
+    _pointTimer = nil;
+}
+
 // MARK: Lazy
 
 - (dispatch_queue_t)SJPlayerQueue {
@@ -710,8 +720,7 @@ typedef NS_ENUM(NSUInteger, SJVideoPlayerPlayState) {
             [self _clickedFull];
             break;
         case SJVideoPlayControlViewTag_Preview: {
-            _controlView.hiddenControl = NO;
-            _controlView.hiddenPreview = !_controlView.hiddenPreview;
+            [self _controlViewPreviewShowedOrHidden];
         }
             break;
         case SJVideoPlayControlViewTag_Lock:
@@ -1125,29 +1134,7 @@ typedef NS_ENUM(NSUInteger, SJVideoPlayerPlayState) {
     
     if ( object == self.controlView ) {
         if ( [keyPath isEqualToString:@"hiddenControl"] ) {
-            if ( _controlView.hiddenControl ) {
-                _controlView.hiddenPreview = YES;
-                [_pointTimer invalidate];
-                _pointTimer = nil;
-                _controlView.hiddenLockContainerView = !self.backstageRegistrar.isLock;
-            }
-            else {
-                _hiddenControlPoint = 0;
-                [self.pointTimer fire];
-                _controlView.hiddenLockContainerView = NO;
-            }
-            _controlView.hiddenBottomProgressView = !_controlView.hiddenControl;
-            return;
-        }
-        if ( [keyPath isEqualToString:@"hiddenPreview"] ) {
-            if ( !_controlView.hiddenPreview ) {
-                [_pointTimer invalidate];
-                _pointTimer = nil;
-                _hiddenControlPoint = 0;
-            }
-            else {
-                if ( !_controlView.hiddenControl ) [self.pointTimer fire];
-            }
+            [self _controlViewControlLayerShowedOrHidden];
             return;
         }
     }
@@ -1292,8 +1279,6 @@ typedef NS_ENUM(NSUInteger, SJVideoPlayerPlayState) {
         }
             break;
     }
-    
-    NSLog(@"A : %zd", self.backstageRegistrar.playState);
 }
 
 - (void)_addPlayerItemTimeObserver {

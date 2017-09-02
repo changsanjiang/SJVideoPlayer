@@ -217,211 +217,6 @@ typedef NS_ENUM(NSUInteger, SJVideoPlayerPlayState) {
 
 @end
 
-typedef NS_ENUM(NSUInteger, SJPanDirection) {
-    SJPanDirection_Unknown,
-    SJPanDirection_V,
-    SJPanDirection_H,
-};
-
-
-typedef NS_ENUM(NSUInteger, SJVerticalPanLocation) {
-    SJVerticalPanLocation_Unknown,
-    SJVerticalPanLocation_Left,
-    SJVerticalPanLocation_Right,
-};
-
-@implementation SJVideoPlayerControl (GestureRecognizer)
-
-- (void)_addGestureToView:(UIView *)view {
-    [self.singleTap requireGestureRecognizerToFail:self.doubleTap];
-    [self.doubleTap requireGestureRecognizerToFail:self.panGR];
-    
-    [view addGestureRecognizer:self.singleTap];
-    [view addGestureRecognizer:self.doubleTap];
-    [view addGestureRecognizer:self.panGR];
-}
-
-- (UITapGestureRecognizer *)singleTap {
-    UITapGestureRecognizer *singleTap = objc_getAssociatedObject(self, _cmd);
-    if ( singleTap ) return singleTap;
-    singleTap = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(handleSingleTap:)];
-    singleTap.delaysTouchesBegan = YES;
-    return singleTap;
-}
-
-- (UITapGestureRecognizer *)doubleTap {
-    UITapGestureRecognizer *doubleTap = objc_getAssociatedObject(self, _cmd);
-    if ( doubleTap ) return doubleTap;
-    doubleTap = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(handleDoubleTap:)];
-    doubleTap.delaysTouchesBegan = YES;
-    doubleTap.numberOfTapsRequired = 2;
-    return doubleTap;
-}
-
-- (UIPanGestureRecognizer *)panGR {
-    UIPanGestureRecognizer *panGR = objc_getAssociatedObject(self, _cmd);
-    if ( panGR ) return panGR;
-    panGR = [[UIPanGestureRecognizer alloc] initWithTarget:self action:@selector(handlePan:)];
-    panGR.delaysTouchesBegan = YES;
-    return panGR;
-}
-
-- (void)setPanDirection:(SJPanDirection)panDirection {
-    objc_setAssociatedObject(self, @selector(panDirection), @(panDirection), OBJC_ASSOCIATION_RETAIN_NONATOMIC);
-}
-
-- (SJPanDirection)panDirection {
-    return (SJPanDirection)[objc_getAssociatedObject(self , _cmd) integerValue];
-}
-
-- (void)setPanLocation:(SJVerticalPanLocation)panLocation {
-    objc_setAssociatedObject(self, @selector(panLocation), @(panLocation), OBJC_ASSOCIATION_RETAIN_NONATOMIC);
-}
-
-- (SJVerticalPanLocation)panLocation {
-    return (SJVerticalPanLocation)[objc_getAssociatedObject(self , _cmd) integerValue];
-}
-
-- (void)handleSingleTap:(UITapGestureRecognizer *)tap {
-    if ( !self.controlView.hiddenMoreSettingsView ) {
-        self.controlView.hiddenMoreSettingsView = YES;
-        return;
-    }
-    if ( !self.controlView.hiddenMoreSettingsTwoLevelView ) {
-        self.controlView.hiddenMoreSettingsTwoLevelView = YES;
-        return;
-    }
-    self.controlView.hiddenControl = !self.controlView.hiddenControl;
-}
-
-- (void)handleDoubleTap:(UITapGestureRecognizer *)tap {
-    if ( self.lastPlaybackRate > 0.f ) {
-        [self controlView:self.controlView clickedBtnTag:SJVideoPlayControlViewTag_Pause];
-        self.controlView.hiddenControl = NO;
-        self.backstageRegistrar.playState = SJVideoPlayerPlayState_Playing;
-    }
-    else {
-        if ( self.backstageRegistrar.playState == SJVideoPlayerPlayState_PlayEnd ) [self play];
-        [self controlView:self.controlView clickedBtnTag:SJVideoPlayControlViewTag_Play];
-        self.controlView.hiddenControl = YES;
-        self.backstageRegistrar.playState = SJVideoPlayerPlayState_Pause;
-    }
-    
-}
-
-static UIView *target = nil;
-
-- (void)handlePan:(UIPanGestureRecognizer *)pan {
-    
-    // 我们要响应水平移动和垂直移动
-    // 根据上次和本次移动的位置，算出一个速率的point
-    CGPoint velocityPoint = [pan velocityInView:pan.view];
-    
-    CGPoint offset = [pan translationInView:pan.view];
-    
-    // 判断是垂直移动还是水平移动
-    switch (pan.state) {
-        case UIGestureRecognizerStateBegan:{ // 开始移动
-            // 使用绝对值来判断移动的方向
-            CGFloat x = fabs(velocityPoint.x);
-            CGFloat y = fabs(velocityPoint.y);
-            if (x > y) {
-                /// 水平移动
-                self.panDirection = SJPanDirection_H;
-                self.controlView.hiddenControl = YES;
-                [self sliderWillBeginDragging:self.controlView.sliderControl];
-            }
-            else if (x < y) {
-                /// 垂直移动
-                self.panDirection = SJPanDirection_V;
-                
-                CGPoint locationPoint = [pan locationInView:pan.view];
-                if (locationPoint.x > self.controlView.bounds.size.width / 2) {
-                    self.panLocation = SJVerticalPanLocation_Right;
-                    self.volumeView.value = self.systemVolume.value;
-                    target = self.volumeView;
-                }
-                else {
-                    self.panLocation = SJVerticalPanLocation_Left;
-                    self.brightnessView.value = [UIScreen mainScreen].brightness;
-                    target = self.brightnessView;
-                }
-                [[UIApplication sharedApplication].keyWindow addSubview:target];
-                [target mas_remakeConstraints:^(MASConstraintMaker *make) {
-                    make.size.mas_offset(CGSizeMake(155, 155));
-                    make.center.equalTo([UIApplication sharedApplication].keyWindow);
-                }];
-                target.transform = self.controlView.superview.transform;
-                [UIView animateWithDuration:0.25 animations:^{
-                    target.alpha = 1;
-                }];
-                
-            }
-            break;
-        }
-        case UIGestureRecognizerStateChanged:{ // 正在移动
-            switch (self.panDirection) {
-                case SJPanDirection_H:{
-                    self.controlView.sliderControl.value += offset.x * 0.003;
-                    [self sliderDidDrag:self.controlView.sliderControl];
-                }
-                    break;
-                case SJPanDirection_V:{
-                    // 垂直移动方法只要y方向的值
-                    switch (self.panLocation) {
-                        case SJVerticalPanLocation_Left: {
-                            CGFloat value = [UIScreen mainScreen].brightness - offset.y * 0.006;
-                            if ( value < 1.0 / 16 ) value = 1.0 / 16;
-                            [UIScreen mainScreen].brightness = value;
-                            self.brightnessView.value = value;
-                            self.controlView.brightnessSlider.value = self.brightnessView.value;
-                        }
-                            break;
-                        case SJVerticalPanLocation_Right: {
-                            self.systemVolume.value -= offset.y * 0.006;
-                            self.controlView.volumeSlider.value = self.systemVolume.value;
-                        }
-                            break;
-                            
-                        default:
-                            break;
-                    }
-                }
-                    break;
-                default:
-                    break;
-            }
-            break;
-        }
-        case UIGestureRecognizerStateEnded:{ // 移动停止
-            // 移动结束也需要判断垂直或者平移
-            // 比如水平移动结束时，要快进到指定位置，如果这里没有判断，当我们调节音量完之后，会出现屏幕跳动的bug
-            switch (self.panDirection) {
-                case SJPanDirection_H:{
-                    [self sliderDidEndDragging:self.controlView.sliderControl];
-                    break;
-                }
-                case SJPanDirection_V:{
-                    [UIView animateWithDuration:0.5 animations:^{
-                        target.alpha = 0.001;
-                    }];
-                    break;
-                }
-                default:
-                    break;
-            }
-            break;
-        }
-        default:
-            break;
-    }
-    
-    
-    [pan setTranslation:CGPointZero inView:pan.view];
-}
-
-@end
-
 
 #pragma mark -
 
@@ -442,6 +237,16 @@ static UIView *target = nil;
 - (void)_controlViewSmallScreen;
 
 - (void)_controlViewFullScreen;
+
+- (void)_controlViewLockScreen;
+
+- (void)_controlViewUnlockScreen;
+
+- (void)_controlViewHidenMoreSettingsView;
+
+- (void)_controlViewShowTwoMoreSettingsView;
+
+- (void)_controlViewHiddenTwoMoreSettingsView;
 
 @end
 
@@ -524,6 +329,29 @@ static UIView *target = nil;
     self.controlView.hiddenBackBtn = NO;
     if ( self.backstageRegistrar.generatedImages ) self.controlView.hiddenPreviewBtn = NO;
     self.controlView.hiddenMoreBtn = NO;
+}
+
+- (void)_controlViewLockScreen {
+    self.controlView.hiddenControl = YES;
+    self.controlView.hiddenUnlockBtn = !(self.controlView.hiddenLockBtn = NO);
+}
+
+- (void)_controlViewUnlockScreen {
+    self.controlView.hiddenControl = NO;
+    self.controlView.hiddenUnlockBtn = !(self.controlView.hiddenLockBtn = YES);
+}
+
+- (void)_controlViewHidenMoreSettingsView {
+    self.controlView.hiddenMoreSettingsView = YES;
+}
+
+- (void)_controlViewShowTwoMoreSettingsView {
+    self.controlView.hiddenMoreSettingsView = YES;
+    self.controlView.hiddenMoreSettingsTwoLevelView = NO;
+}
+
+- (void)_controlViewHiddenTwoMoreSettingsView {
+    self.controlView.hiddenMoreSettingsTwoLevelView = YES;
 }
 
 @end
@@ -1105,8 +933,7 @@ static UIView *target = nil;
 - (void)playerLockedScreenNotification {
     NSLog(@"锁定");
     self.backstageRegistrar.isLock = YES;
-    _controlView.hiddenControl = YES;
-    _controlView.hiddenUnlockBtn = !(_controlView.hiddenLockBtn = NO);
+    [self _controlViewLockScreen];
     [self _setEnabledGestureRecognizer:NO];
 }
 
@@ -1114,8 +941,7 @@ static UIView *target = nil;
 - (void)_playerUnlocked {
     NSLog(@"解锁");
     self.backstageRegistrar.isLock = NO;
-    _controlView.hiddenControl = NO;
-    _controlView.hiddenUnlockBtn = !(_controlView.hiddenLockBtn = YES);
+    [self _controlViewUnlockScreen];
     [self _setEnabledGestureRecognizer:YES];
 }
 
@@ -1213,8 +1039,7 @@ static UIView *target = nil;
             __strong typeof(_self) self = _self;
             if ( !self ) return;
             self.controlView.twoLevelSettings = model;
-            self.controlView.hiddenMoreSettingsView = YES;
-            self.controlView.hiddenMoreSettingsTwoLevelView = NO;
+            [self _controlViewShowTwoMoreSettingsView];
         };
         return;
     }
@@ -1223,8 +1048,8 @@ static UIView *target = nil;
         clickedExeBlock(model);
         __strong typeof(_self) self = _self;
         if ( !self ) return;
-        self.controlView.hiddenMoreSettingsView = YES;
-        if ( !model.isShowTowSetting ) self.controlView.hiddenMoreSettingsTwoLevelView = YES;
+        [self _controlViewHidenMoreSettingsView];
+        if ( !model.isShowTowSetting ) [self _controlViewHiddenTwoMoreSettingsView];
     };
 }
 
@@ -1519,3 +1344,214 @@ static UIView *target = nil;
 
 @end
 
+
+
+
+
+
+
+#pragma mark - Gesture
+
+
+
+typedef NS_ENUM(NSUInteger, SJPanDirection) {
+    SJPanDirection_Unknown,
+    SJPanDirection_V,
+    SJPanDirection_H,
+};
+
+
+typedef NS_ENUM(NSUInteger, SJVerticalPanLocation) {
+    SJVerticalPanLocation_Unknown,
+    SJVerticalPanLocation_Left,
+    SJVerticalPanLocation_Right,
+};
+
+@implementation SJVideoPlayerControl (GestureRecognizer)
+
+- (void)_addGestureToView:(UIView *)view {
+    [self.singleTap requireGestureRecognizerToFail:self.doubleTap];
+    [self.doubleTap requireGestureRecognizerToFail:self.panGR];
+    
+    [view addGestureRecognizer:self.singleTap];
+    [view addGestureRecognizer:self.doubleTap];
+    [view addGestureRecognizer:self.panGR];
+}
+
+- (UITapGestureRecognizer *)singleTap {
+    UITapGestureRecognizer *singleTap = objc_getAssociatedObject(self, _cmd);
+    if ( singleTap ) return singleTap;
+    singleTap = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(handleSingleTap:)];
+    singleTap.delaysTouchesBegan = YES;
+    return singleTap;
+}
+
+- (UITapGestureRecognizer *)doubleTap {
+    UITapGestureRecognizer *doubleTap = objc_getAssociatedObject(self, _cmd);
+    if ( doubleTap ) return doubleTap;
+    doubleTap = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(handleDoubleTap:)];
+    doubleTap.delaysTouchesBegan = YES;
+    doubleTap.numberOfTapsRequired = 2;
+    return doubleTap;
+}
+
+- (UIPanGestureRecognizer *)panGR {
+    UIPanGestureRecognizer *panGR = objc_getAssociatedObject(self, _cmd);
+    if ( panGR ) return panGR;
+    panGR = [[UIPanGestureRecognizer alloc] initWithTarget:self action:@selector(handlePan:)];
+    panGR.delaysTouchesBegan = YES;
+    return panGR;
+}
+
+- (void)setPanDirection:(SJPanDirection)panDirection {
+    objc_setAssociatedObject(self, @selector(panDirection), @(panDirection), OBJC_ASSOCIATION_RETAIN_NONATOMIC);
+}
+
+- (SJPanDirection)panDirection {
+    return (SJPanDirection)[objc_getAssociatedObject(self , _cmd) integerValue];
+}
+
+- (void)setPanLocation:(SJVerticalPanLocation)panLocation {
+    objc_setAssociatedObject(self, @selector(panLocation), @(panLocation), OBJC_ASSOCIATION_RETAIN_NONATOMIC);
+}
+
+- (SJVerticalPanLocation)panLocation {
+    return (SJVerticalPanLocation)[objc_getAssociatedObject(self , _cmd) integerValue];
+}
+
+- (void)handleSingleTap:(UITapGestureRecognizer *)tap {
+    if ( !self.controlView.hiddenMoreSettingsView ) {
+        self.controlView.hiddenMoreSettingsView = YES;
+        return;
+    }
+    if ( !self.controlView.hiddenMoreSettingsTwoLevelView ) {
+        self.controlView.hiddenMoreSettingsTwoLevelView = YES;
+        return;
+    }
+    self.controlView.hiddenControl = !self.controlView.hiddenControl;
+}
+
+- (void)handleDoubleTap:(UITapGestureRecognizer *)tap {
+    if ( self.lastPlaybackRate > 0.f ) {
+        [self controlView:self.controlView clickedBtnTag:SJVideoPlayControlViewTag_Pause];
+        self.controlView.hiddenControl = NO;
+        self.backstageRegistrar.playState = SJVideoPlayerPlayState_Playing;
+    }
+    else {
+        if ( self.backstageRegistrar.playState == SJVideoPlayerPlayState_PlayEnd ) [self play];
+        [self controlView:self.controlView clickedBtnTag:SJVideoPlayControlViewTag_Play];
+        self.controlView.hiddenControl = YES;
+        self.backstageRegistrar.playState = SJVideoPlayerPlayState_Pause;
+    }
+    
+}
+
+static UIView *target = nil;
+
+- (void)handlePan:(UIPanGestureRecognizer *)pan {
+    
+    // 我们要响应水平移动和垂直移动
+    // 根据上次和本次移动的位置，算出一个速率的point
+    CGPoint velocityPoint = [pan velocityInView:pan.view];
+    
+    CGPoint offset = [pan translationInView:pan.view];
+    
+    // 判断是垂直移动还是水平移动
+    switch (pan.state) {
+        case UIGestureRecognizerStateBegan:{ // 开始移动
+            // 使用绝对值来判断移动的方向
+            CGFloat x = fabs(velocityPoint.x);
+            CGFloat y = fabs(velocityPoint.y);
+            if (x > y) {
+                /// 水平移动
+                self.panDirection = SJPanDirection_H;
+                self.controlView.hiddenControl = YES;
+                [self sliderWillBeginDragging:self.controlView.sliderControl];
+            }
+            else if (x < y) {
+                /// 垂直移动
+                self.panDirection = SJPanDirection_V;
+                
+                CGPoint locationPoint = [pan locationInView:pan.view];
+                if (locationPoint.x > self.controlView.bounds.size.width / 2) {
+                    self.panLocation = SJVerticalPanLocation_Right;
+                    self.volumeView.value = self.systemVolume.value;
+                    target = self.volumeView;
+                }
+                else {
+                    self.panLocation = SJVerticalPanLocation_Left;
+                    self.brightnessView.value = [UIScreen mainScreen].brightness;
+                    target = self.brightnessView;
+                }
+                [[UIApplication sharedApplication].keyWindow addSubview:target];
+                [target mas_remakeConstraints:^(MASConstraintMaker *make) {
+                    make.size.mas_offset(CGSizeMake(155, 155));
+                    make.center.equalTo([UIApplication sharedApplication].keyWindow);
+                }];
+                target.transform = self.controlView.superview.transform;
+                [UIView animateWithDuration:0.25 animations:^{
+                    target.alpha = 1;
+                }];
+                
+            }
+            break;
+        }
+        case UIGestureRecognizerStateChanged:{ // 正在移动
+            switch (self.panDirection) {
+                case SJPanDirection_H:{
+                    self.controlView.sliderControl.value += offset.x * 0.003;
+                    [self sliderDidDrag:self.controlView.sliderControl];
+                }
+                    break;
+                case SJPanDirection_V:{
+                    switch (self.panLocation) {
+                        case SJVerticalPanLocation_Left: {
+                            CGFloat value = [UIScreen mainScreen].brightness - offset.y * 0.006;
+                            if ( value < 1.0 / 16 ) value = 1.0 / 16;
+                            [UIScreen mainScreen].brightness = value;
+                            self.brightnessView.value = value;
+                            self.controlView.brightnessSlider.value = self.brightnessView.value;
+                        }
+                            break;
+                        case SJVerticalPanLocation_Right: {
+                            self.systemVolume.value -= offset.y * 0.006;
+                            self.controlView.volumeSlider.value = self.systemVolume.value;
+                        }
+                            break;
+                            
+                        default:
+                            break;
+                    }
+                }
+                    break;
+                default:
+                    break;
+            }
+            break;
+        }
+        case UIGestureRecognizerStateEnded:{ // 移动停止
+            switch (self.panDirection) {
+                case SJPanDirection_H:{
+                    [self sliderDidEndDragging:self.controlView.sliderControl];
+                    break;
+                }
+                case SJPanDirection_V:{
+                    [UIView animateWithDuration:0.5 animations:^{
+                        target.alpha = 0.001;
+                    }];
+                    break;
+                }
+                default:
+                    break;
+            }
+            break;
+        }
+        default:
+            break;
+    }
+    
+    
+    [pan setTranslation:CGPointZero inView:pan.view];
+}
+
+@end

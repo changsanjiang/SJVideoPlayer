@@ -164,6 +164,7 @@
     [super viewDidAppear:animated];
     [[SJVideoPlayer sharedPlayer] jumpedToTime:self.currentTime completionHandler:^(BOOL finished) {
         [[SJVideoPlayer sharedPlayer] play];
+        [[SJVideoPlayer sharedPlayer] enableRotation];
     }];
 }
 
@@ -173,6 +174,7 @@
 
     self.currentTime = [SJVideoPlayer sharedPlayer].currentTime;
     [[SJVideoPlayer sharedPlayer] pause];
+    [[SJVideoPlayer sharedPlayer] stopRotation];
 }
 
 - (void)dealloc {

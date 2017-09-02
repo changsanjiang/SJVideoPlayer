@@ -79,6 +79,9 @@ NS_ASSUME_NONNULL_BEGIN
  */
 - (void)showTitle:(NSString *)title;
 
+/*!
+ *  duration if value set -1. promptView will always show.
+ */
 - (void)showTitle:(NSString *)title duration:(NSTimeInterval)duration;
 
 - (void)hidden;

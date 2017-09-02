@@ -12,6 +12,7 @@
 
 #import "UIView+Extension.h"
 
+#import "NSTimer+SJExtention.h"
 
 #define SJVideoPlayerPrompt_H   (50)
 
@@ -26,7 +27,22 @@
 
 @property (nonatomic, strong, readonly) UILabel *promptLabel;
 
+@property (nonatomic, strong, readwrite) NSTimer *hiddenPromptTimer;
+@property (nonatomic, assign, readwrite) NSTimeInterval hiddenPoint;
+@property (nonatomic, assign, readwrite) NSTimeInterval duration;
+
 @end
+
+
+
+@interface SJVideoPlayerPrompt (DBObservers)
+
+- (void)_installObservers;
+
+- (void)_removeObservers;
+
+@end
+
 
 @implementation SJVideoPlayerPrompt
 
@@ -43,7 +59,14 @@
     self = [super init];
     if ( !self ) return self;
     [self _setupView];
+    [self _installObservers];
     return self;
+}
+
+- (void)dealloc {
+    [_hiddenPromptTimer invalidate];
+    _hiddenPromptTimer = nil;
+    [self _removeObservers];
 }
 
 // MARK: Public
@@ -58,10 +81,12 @@
     _backgroundView.transform = _presentView.transform;
     _promptLabel.text = title;
     [self _show];
-
-    dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(duration * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
-        [self _hidden];
-    });
+    [_hiddenPromptTimer invalidate];
+    _hiddenPromptTimer = nil;
+    if ( duration == - 1 ) return;
+    self.hiddenPoint = 0;
+    self.duration = duration;
+    [self.hiddenPromptTimer fire];
 }
 
 - (void)hidden {
@@ -112,6 +137,17 @@
     return _promptLabel;
 }
 
+- (NSTimer *)hiddenPromptTimer {
+    if ( _hiddenPromptTimer ) return _hiddenPromptTimer;
+    __weak typeof(self) _self = self;
+    _hiddenPromptTimer = [NSTimer sj_scheduledTimerWithTimeInterval:0.1 exeBlock:^{
+        __strong typeof(_self) self = _self;
+        if ( !self ) return;
+        self.hiddenPoint += 0.1;
+    } repeats:YES];
+    return _hiddenPromptTimer;
+}
+
 - (CGSize)sizeFortitle:(NSString *)title size:(CGSize)size {
     CGSize result;
     if ( [title respondsToSelector:@selector(boundingRectWithSize:options:attributes:context:)] ) {
@@ -128,6 +164,28 @@
 #pragma clang diagnostic pop
     }
     return result;
+}
+
+@end
+
+
+
+@implementation SJVideoPlayerPrompt (DBObservers)
+
+- (void)_installObservers {
+    [self addObserver:self  forKeyPath:@"hiddenPoint" options:NSKeyValueObservingOptionNew context:nil];
+}
+
+- (void)_removeObservers {
+    [self removeObserver:self forKeyPath:@"hiddenPoint"];
+}
+
+- (void)observeValueForKeyPath:(NSString *)keyPath ofObject:(id)object change:(NSDictionary<NSKeyValueChangeKey,id> *)change context:(void *)context {
+    if ( _hiddenPoint > _duration ) {
+        [self _hidden];
+        [_hiddenPromptTimer invalidate];
+        _hiddenPromptTimer = nil;
+    }
 }
 
 @end

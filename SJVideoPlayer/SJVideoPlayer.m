@@ -7,31 +7,18 @@
 //
 
 #import "SJVideoPlayer.h"
-
 #import <UIKit/UIView.h>
-
-#import <AVFoundation/AVAsset.h>
-
-#import <AVFoundation/AVPlayerItem.h>
-
-#import <AVFoundation/AVPlayer.h>
-
-#import "SJVideoPlayerPresentView.h"
-
-#import "SJVideoPlayerControl.h"
-
-#import <Masonry/Masonry.h>
-
-#import <AVFoundation/AVMetadataItem.h>
-
-#import "SJVideoPlayerStringConstant.h"
-
-#import "SJVideoPlayerPrompt.h"
-
-#import <objc/message.h>
-
 #import <UIKit/UIColor.h>
-
+#import <objc/message.h>
+#import <Masonry/Masonry.h>
+#import <AVFoundation/AVAsset.h>
+#import <AVFoundation/AVPlayer.h>
+#import <AVFoundation/AVPlayerItem.h>
+#import <AVFoundation/AVMetadataItem.h>
+#import "SJVideoPlayerPresentView.h"
+#import "SJVideoPlayerControl.h"
+#import "SJVideoPlayerStringConstant.h"
+#import "SJVideoPlayerPrompt.h"
 #import "SJVideoPlayerAssetCarrier.h"
 
 
@@ -224,8 +211,6 @@
 
 @implementation SJVideoPlayer (DBNotifications)
 
-// MARK: 通知安装
-
 - (void)_installNotifications {
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(playerPlayFailedErrorNotification:) name:SJPlayerPlayFailedErrorNotification object:nil];
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(playerScrollInNotification) name:SJPlayerScrollInNotification object:nil];
@@ -241,26 +226,23 @@
 }
 
 - (void)playerScrollInNotification {
-    self.containerView.alpha = 1;
-    if ([self.scrollView isKindOfClass:[UITableView class]]) {
+    UIView *onView = nil;
+    if ( [self.scrollView isKindOfClass:[UITableView class]] ) {
         UITableView *tableView = (UITableView *)self.scrollView;
         UITableViewCell *cell = [tableView cellForRowAtIndexPath:self.indexPath];
-        UIView *onView = [cell.contentView viewWithTag:self.onViewTag];
-        [self.containerView removeFromSuperview];
-        [onView addSubview:self.containerView];
-        [self.containerView mas_makeConstraints:^(MASConstraintMaker *make) {
-            make.edges.offset(0);
-        }];
-    } else if ([self.scrollView isKindOfClass:[UICollectionView class]]) {
+        onView = [cell.contentView viewWithTag:self.onViewTag];
+    } else if ( [self.scrollView isKindOfClass:[UICollectionView class]] ) {
         UICollectionView *collectionView = (UICollectionView *)self.scrollView;
         UICollectionViewCell *cell = [collectionView cellForItemAtIndexPath:self.indexPath];
-        UIView *onView = [cell.contentView viewWithTag:self.onViewTag];
-        [self.containerView removeFromSuperview];
-        [onView addSubview:self.containerView];
-        [self.containerView mas_makeConstraints:^(MASConstraintMaker *make) {
-            make.edges.offset(0);
-        }];
+        onView = [cell.contentView viewWithTag:self.onViewTag];
     }
+    if ( !onView ) return;
+    self.containerView.alpha = 1;
+    [self.containerView removeFromSuperview];
+    [onView addSubview:self.containerView];
+    [self.containerView mas_makeConstraints:^(MASConstraintMaker *make) {
+        make.edges.offset(0);
+    }];
 }
 
 - (void)playerScrollOutNotification {

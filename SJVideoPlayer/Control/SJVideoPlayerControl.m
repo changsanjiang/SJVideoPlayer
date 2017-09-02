@@ -300,9 +300,12 @@ typedef NS_ENUM(NSUInteger, SJVideoPlayerPlayState) {
         if ( !self.backstageRegistrar.generatedImages ) self.controlView.hiddenPreviewBtn = NO;
         else {self.controlView.hiddenPreviewBtn = YES; self.controlView.hiddenPreview = YES;}
     }
+    
+    NSLog(@"state: playing");
 }
 
 - (void)_controlViewPauseStatus {
+    NSLog(@"state: pause");
     self.controlView.hidden = NO;
     self.controlView.hiddenPlayBtn = NO;
     self.controlView.hiddenPauseBtn = YES;
@@ -1289,6 +1292,8 @@ typedef NS_ENUM(NSUInteger, SJVideoPlayerPlayState) {
         }
             break;
     }
+    
+    NSLog(@"A : %zd", self.backstageRegistrar.playState);
 }
 
 - (void)_addPlayerItemTimeObserver {
@@ -1431,14 +1436,10 @@ typedef NS_ENUM(NSUInteger, SJVerticalPanLocation) {
 - (void)handleDoubleTap:(UITapGestureRecognizer *)tap {
     if ( self.lastPlaybackRate > 0.f ) {
         [self controlView:self.controlView clickedBtnTag:SJVideoPlayControlViewTag_Pause];
-        self.controlView.hiddenControl = NO;
-        self.backstageRegistrar.playState = SJVideoPlayerPlayState_Playing;
     }
     else {
         if ( self.backstageRegistrar.playState == SJVideoPlayerPlayState_PlayEnd ) [self play];
         [self controlView:self.controlView clickedBtnTag:SJVideoPlayControlViewTag_Play];
-        self.controlView.hiddenControl = YES;
-        self.backstageRegistrar.playState = SJVideoPlayerPlayState_Pause;
     }
     
 }

@@ -112,7 +112,7 @@ NS_ASSUME_NONNULL_BEGIN
  */
 @property (nonatomic, assign, readwrite) float rate;
 
-- (UIImage *)screenShot;
+- (UIImage *)screenshot;
 
 @end
 

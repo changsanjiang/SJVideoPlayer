@@ -50,6 +50,7 @@ typedef NS_ENUM(NSUInteger, SJVideoPlaySliderTag) {
 @protocol SJVideoPlayerControlViewDelegate;
 
 
+#pragma mark -
 
 @interface SJVideoPlayerControlView : UIView
 
@@ -74,7 +75,7 @@ typedef NS_ENUM(NSUInteger, SJVideoPlaySliderTag) {
 
 
 
-
+#pragma mark -
 
 @interface SJVideoPlayerControlView (HiddenOrShow)
 
@@ -163,7 +164,7 @@ typedef NS_ENUM(NSUInteger, SJVideoPlaySliderTag) {
 
 
 
-// MARK: Time
+#pragma mark -
 
 
 @interface SJVideoPlayerControlView (TimeOperation)
@@ -178,7 +179,7 @@ typedef NS_ENUM(NSUInteger, SJVideoPlaySliderTag) {
 
 
 
-// MARK: Preview
+#pragma mark -
 
 @interface SJVideoPreviewModel : NSObject
 
@@ -201,7 +202,7 @@ typedef NS_ENUM(NSUInteger, SJVideoPlaySliderTag) {
 
 
 
-// MARK: More Settings
+#pragma mark -
 
 @interface SJVideoPlayerControlView (MoreSettings)
 
@@ -215,7 +216,8 @@ typedef NS_ENUM(NSUInteger, SJVideoPlaySliderTag) {
 
 
 
-// MARK: Delegate
+
+#pragma mark -
 
 
 @protocol SJVideoPlayerControlViewDelegate <NSObject>

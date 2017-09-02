@@ -45,7 +45,6 @@
 @property (nonatomic, strong, readonly) SJVideoPlayerPrompt *prompt;
 
 @property (nonatomic, strong, readonly) SJVideoPlayerSettings *settings;
-@property (nonatomic, strong, readonly) NSMutableArray<SJVideoPlayerMoreSetting *> *moreSettings;
 
 @property (nonatomic, weak,   readwrite) UIScrollView *scrollView;
 @property (nonatomic, strong, readwrite) NSIndexPath *indexPath;
@@ -76,7 +75,6 @@
 @synthesize presentView = _presentView;
 @synthesize prompt = _prompt;
 @synthesize settings = _settings;
-@synthesize moreSettings = _moreSettings;
 
 
 + (instancetype)sharedPlayer {
@@ -199,11 +197,6 @@
     return _settings;
 }
 
-- (NSMutableArray<SJVideoPlayerMoreSetting *> *)moreSettings {
-    _moreSettings = [NSMutableArray new];
-    return _moreSettings;
-}
-
 @end
 
 
@@ -218,7 +211,7 @@
 }
 
 - (void)moreSettings:(void (^)(NSMutableArray<SJVideoPlayerMoreSetting *> * _Nonnull))block {
-    NSMutableArray<SJVideoPlayerMoreSetting *> *moreSettingsM = self.moreSettings;
+    NSMutableArray<SJVideoPlayerMoreSetting *> *moreSettingsM = [NSMutableArray new];
     if ( block ) block(moreSettingsM);
     [[NSNotificationCenter defaultCenter] postNotificationName:SJMoreSettingsNotification object:moreSettingsM];
 }

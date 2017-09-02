@@ -16,4 +16,6 @@
 
 - (void)showTitle:(NSString *)title duration:(NSTimeInterval)duration;
 
+- (void)hidden;
+
 @end

@@ -64,6 +64,10 @@
     });
 }
 
+- (void)hidden {
+    [self _hidden];
+}
+
 // MARK: Anima
 
 - (void)_show {

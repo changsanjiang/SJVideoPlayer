@@ -70,9 +70,23 @@ NS_ASSUME_NONNULL_BEGIN
 
 
 
-
 #pragma mark -
 
+@interface SJVideoPlayer (Prompt)
+
+/*!
+ *  duration default is 1.0
+ */
+- (void)showTitle:(NSString *)title;
+
+- (void)showTitle:(NSString *)title duration:(NSTimeInterval)duration;
+
+- (void)hidden;
+
+@end
+
+
+#pragma mark -
 
 @interface SJVideoPlayer (Operation)
 
@@ -102,53 +116,6 @@ NS_ASSUME_NONNULL_BEGIN
 
 
 #pragma mark -
-
-@interface SJVideoPlayer (Prompt)
-
-/*!
- *  duration default is 1.0
- */
-- (void)showTitle:(NSString *)title;
-
-- (void)showTitle:(NSString *)title duration:(NSTimeInterval)duration;
-
-@end
-
-
-#pragma mark -
-
-@interface SJVideoPlayerSettings : NSObject
-
-// MARK: btns
-@property (nonatomic, strong, readwrite) UIImage *backBtnImage;
-@property (nonatomic, strong, readwrite) UIImage *playBtnImage;
-@property (nonatomic, strong, readwrite) UIImage *pauseBtnImage;
-@property (nonatomic, strong, readwrite) UIImage *replayBtnImage;
-@property (nonatomic, strong, readwrite) NSString *replayBtnTitle;
-@property (nonatomic, assign, readwrite) float replayBtnFontSize;
-@property (nonatomic, strong, readwrite) UIImage *fullBtnImage;
-@property (nonatomic, strong, readwrite) UIImage *previewBtnImage;
-@property (nonatomic, strong, readwrite) UIImage *moreBtnImage;
-@property (nonatomic, strong, readwrite) UIImage *lockBtnImage;
-@property (nonatomic, strong, readwrite) UIImage *unlockBtnImage;
-
-// MARK: slider
-@property (nonatomic, strong, readwrite) UIColor *traceColor;
-@property (nonatomic, strong, readwrite) UIColor *trackColor;
-@property (nonatomic, strong, readwrite) UIColor *bufferColor;
-
-// MARK: volume & brightness
-@property (nonatomic, strong, readwrite) UIImage *volumeImage;
-@property (nonatomic, strong, readwrite) UIImage *muteImage;
-@property (nonatomic, strong, readwrite) UIImage *brightnessImage;
-
-@end
-
-
-
-#pragma mark -
-
-// MARK: More Settings Model
 
 @class SJVideoPlayerMoreSettingTwoSetting;
 
@@ -208,6 +175,37 @@ NS_ASSUME_NONNULL_BEGIN
  *  default is 14
  */
 @property (class, nonatomic, assign) float topTitleFontSize;
+
+@end
+
+
+
+#pragma mark -
+
+@interface SJVideoPlayerSettings : NSObject
+
+// MARK: btns
+@property (nonatomic, strong, readwrite) UIImage *backBtnImage;
+@property (nonatomic, strong, readwrite) UIImage *playBtnImage;
+@property (nonatomic, strong, readwrite) UIImage *pauseBtnImage;
+@property (nonatomic, strong, readwrite) UIImage *replayBtnImage;
+@property (nonatomic, strong, readwrite) NSString *replayBtnTitle;
+@property (nonatomic, assign, readwrite) float replayBtnFontSize;
+@property (nonatomic, strong, readwrite) UIImage *fullBtnImage;
+@property (nonatomic, strong, readwrite) UIImage *previewBtnImage;
+@property (nonatomic, strong, readwrite) UIImage *moreBtnImage;
+@property (nonatomic, strong, readwrite) UIImage *lockBtnImage;
+@property (nonatomic, strong, readwrite) UIImage *unlockBtnImage;
+
+// MARK: slider
+@property (nonatomic, strong, readwrite) UIColor *traceColor;
+@property (nonatomic, strong, readwrite) UIColor *trackColor;
+@property (nonatomic, strong, readwrite) UIColor *bufferColor;
+
+// MARK: volume & brightness
+@property (nonatomic, strong, readwrite) UIImage *volumeImage;
+@property (nonatomic, strong, readwrite) UIImage *muteImage;
+@property (nonatomic, strong, readwrite) UIImage *brightnessImage;
 
 @end
 

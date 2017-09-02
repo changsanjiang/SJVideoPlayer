@@ -34,15 +34,6 @@
 
 #import "SJVideoPlayerAssetCarrier.h"
 
-// MARK: 通知处理
-
-@interface SJVideoPlayer (DBNotifications)
-
-- (void)_SJVideoPlayerInstallNotifications;
-
-- (void)_SJVideoPlayerRemoveNotifications;
-
-@end
 
 #pragma mark -
 
@@ -61,6 +52,17 @@
 @property (nonatomic, assign, readwrite) NSInteger onViewTag;
 
 @property (nonatomic, strong, readwrite) SJVideoPlayerAssetCarrier *assetCarrier;
+
+@end
+
+
+#pragma mark -
+
+@interface SJVideoPlayer (DBNotifications)
+
+- (void)_installNotifications;
+
+- (void)_removeNotifications;
 
 @end
 
@@ -89,16 +91,16 @@
 - (instancetype)init {
     self = [super init];
     if ( !self ) return nil;
-    [self setupView];
-    [self _SJVideoPlayerInstallNotifications];
+    [self _setupView];
+    [self _installNotifications];
     return self;
 }
 
 - (void)dealloc {
-    [self _SJVideoPlayerRemoveNotifications];
+    [self _removeNotifications];
 }
 
-- (void)setupView {
+- (void)_setupView {
     [self.containerView addSubview:self.presentView];
     [self.presentView addSubview:self.control.view];
     
@@ -231,13 +233,13 @@
 
 // MARK: 通知安装
 
-- (void)_SJVideoPlayerInstallNotifications {
+- (void)_installNotifications {
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(playerPlayFailedErrorNotification:) name:SJPlayerPlayFailedErrorNotification object:nil];
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(playerScrollInNotification) name:SJPlayerScrollInNotification object:nil];
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(playerScrollOutNotification) name:SJPlayerScrollOutNotification object:nil];
 }
 
-- (void)_SJVideoPlayerRemoveNotifications {
+- (void)_removeNotifications {
     [[NSNotificationCenter defaultCenter] removeObserver:self];
 }
 
@@ -341,6 +343,10 @@
 
 - (void)showTitle:(NSString *)title duration:(NSTimeInterval)duration {
     [self.prompt showTitle:title duration:duration];
+}
+
+- (void)hidden {
+    [self.prompt hidden];
 }
 
 @end

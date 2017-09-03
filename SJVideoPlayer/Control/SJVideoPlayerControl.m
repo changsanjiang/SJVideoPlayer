@@ -181,7 +181,7 @@ typedef NS_ENUM(NSUInteger, SJVideoPlayerPlayState) {
 
 @interface SJVideoPlayerControl (GestureRecognizer)
 
-- (void)_addGestureToView:(UIView *)view;
+- (void)_addGestureToControlView;
 
 @property (nonatomic, strong, readonly) UITapGestureRecognizer *singleTap;
 @property (nonatomic, strong, readonly) UITapGestureRecognizer *doubleTap;
@@ -243,7 +243,7 @@ typedef NS_ENUM(NSUInteger, SJVideoPlayerPlayState) {
 - (instancetype)init {
     self = [super init];
     if ( !self ) return nil;
-    [self _addGestureToView:self.controlView];
+    [self _addGestureToControlView];
     self.backstageRegistrar.playState = SJVideoPlayerPlayState_Unknown;
     self.volumeView.alpha = 0.001;
     self.brightnessView.alpha = 0.001;
@@ -1218,13 +1218,13 @@ typedef NS_ENUM(NSUInteger, SJVerticalPanLocation) {
 
 @implementation SJVideoPlayerControl (GestureRecognizer)
 
-- (void)_addGestureToView:(UIView *)view {
+- (void)_addGestureToControlView {
     [self.singleTap requireGestureRecognizerToFail:self.doubleTap];
     [self.doubleTap requireGestureRecognizerToFail:self.panGR];
     
-    [view addGestureRecognizer:self.singleTap];
-    [view addGestureRecognizer:self.doubleTap];
-    [view addGestureRecognizer:self.panGR];
+    [self.controlView addGestureRecognizer:self.singleTap];
+    [self.controlView addGestureRecognizer:self.doubleTap];
+    [self.controlView addGestureRecognizer:self.panGR];
 }
 
 - (UITapGestureRecognizer *)singleTap {

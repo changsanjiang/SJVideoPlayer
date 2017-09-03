@@ -58,6 +58,8 @@ typedef NS_ENUM(NSUInteger, SJVideoPlayerPlayState) {
 
 @property (nonatomic, assign, readwrite) SJVideoPlayerPlayState playState;
 
+@property (nonatomic, assign, readwrite) BOOL userClickedPause;
+
 @end
 
 @implementation SJVideoPlayerStatusRegistrar
@@ -106,9 +108,7 @@ typedef NS_ENUM(NSUInteger, SJVideoPlayerPlayState) {
 #pragma mark -
 
 @interface SJVideoPlayerControl (PlayingOnTheCell)
-
 - (void)_scrollViewDidScroll;
-
 @end
 
 
@@ -155,24 +155,16 @@ typedef NS_ENUM(NSUInteger, SJVideoPlayerPlayState) {
 @property (nonatomic, weak, readwrite) AVAsset *asset;
 
 @property (nonatomic, weak, readwrite) AVPlayer *player;
+@property (nonatomic, assign, readwrite) CGFloat lastPlaybackRate;
 
 @property (nonatomic, weak, readwrite) AVPlayerItem *playerItem;
-
 @property (nonatomic, strong, readwrite) id timeObserver;
-
 @property (nonatomic, strong, readwrite) id itemEndObserver;
-
-@property (nonatomic, assign, readwrite) CGFloat lastPlaybackRate;
 
 @property (nonatomic, strong, readwrite) SJVideoPlayerStatusRegistrar *backstageRegistrar;
 
-@property (nonatomic, assign, readwrite) NSTimeInterval playedTime;
-
-@property (nonatomic, assign, readwrite) BOOL isUserClickedPause;
-
 @property (nonatomic, strong, readwrite) AVAssetImageGenerator *imageGenerator;
 
-@property (nonatomic, assign, readwrite) BOOL isHiddenControl;
 @property (nonatomic, assign, readwrite) NSInteger hiddenControlPoint;
 @property (nonatomic, strong, readonly) NSTimer *pointTimer;
 - (void)_resetTimer;
@@ -287,6 +279,7 @@ typedef NS_ENUM(NSUInteger, SJVideoPlayerPlayState) {
 }
 
 - (void)setAssetCarrier:(SJVideoPlayerAssetCarrier *)assetCarrier {
+    if ( _assetCarrier == assetCarrier ) return;
     _assetCarrier = assetCarrier;
     self.asset = assetCarrier.asset;
     self.playerItem = assetCarrier.playerItem;
@@ -307,13 +300,12 @@ typedef NS_ENUM(NSUInteger, SJVideoPlayerPlayState) {
 
 - (void)_buffering {
     if ( 0 == self.lastPlaybackRate ) [self _clickedPause];
-    dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(1 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
+    dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(2 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
         if ( !_playerItem.isPlaybackLikelyToKeepUp ) {
             [self _buffering];
             return ;
         }
         [self play];
-        [_controlView stopLoading];
     });
 }
 
@@ -559,13 +551,13 @@ typedef NS_ENUM(NSUInteger, SJVideoPlayerPlayState) {
 - (void)controlView:(SJVideoPlayerControlView *)controlView clickedBtnTag:(SJVideoPlayControlViewTag)tag {
     switch (tag) {
         case SJVideoPlayControlViewTag_Play: {
-            self.isUserClickedPause = NO;
+            self.backstageRegistrar.userClickedPause = NO;
             [self _clickedPlay];
         }
             break;
         case SJVideoPlayControlViewTag_Pause: {
             [[SJVideoPlayer sharedPlayer] showTitle:@"已暂停" duration:0.8];
-            self.isUserClickedPause = YES;
+            self.backstageRegistrar.userClickedPause = YES;
             [self _clickedPause];
         }
             break;
@@ -606,6 +598,7 @@ typedef NS_ENUM(NSUInteger, SJVideoPlayerPlayState) {
     [self.player play];
     self.lastPlaybackRate = self.player.rate = self.rate;
     self.backstageRegistrar.playState = SJVideoPlayerPlayState_Playing;
+    [self.controlView stopLoading];
 }
 
 - (void)_clickedPause {
@@ -1086,7 +1079,7 @@ typedef NS_ENUM(NSUInteger, SJVideoPlayerPlayState) {
         
         if ( [keyPath isEqualToString:@"playbackBufferEmpty"] ) {
             if ( !_playerItem.playbackBufferEmpty ) return;
-            [_controlView startLoading];
+            [self.controlView startLoading];
             [self _buffering];
             return;
         }
@@ -1162,7 +1155,6 @@ typedef NS_ENUM(NSUInteger, SJVideoPlayerPlayState) {
         if ( !self ) return;
         NSTimeInterval currentTime = CMTimeGetSeconds(time);
         NSTimeInterval duration = CMTimeGetSeconds(self.playerItem.duration);
-        self.playedTime = currentTime;
         [self.controlView setCurrentTime:currentTime duration:duration];
     };
     

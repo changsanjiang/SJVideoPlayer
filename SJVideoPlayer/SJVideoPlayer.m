@@ -106,7 +106,7 @@
 - (void)setAssetURL:(NSURL *)assetURL {
     if ( !assetURL ) return;
     _assetURL = assetURL;
-    [self _sjVideoPlayerPrepareToPlay];
+    [self _prepareToPlay];
 }
 
 - (void)setPlaceholder:(UIImage *)placeholder {
@@ -129,7 +129,7 @@
 
 // MARK: Private
 
-- (void)_sjVideoPlayerPrepareToPlay {
+- (void)_prepareToPlay {
     
     [self stop];
     

@@ -126,8 +126,6 @@ typedef NS_ENUM(NSUInteger, SJMaskStyle) {
     [_itemBtn setAttributedTitle:attr forState:UIControlStateNormal];
 }
 
-// MARK: UI
-
 - (void)_SJVideoPlayerMoreSettingsColCellSetupUI {
     [self.contentView addSubview:self.itemBtn];
     [_itemBtn mas_makeConstraints:^(MASConstraintMaker *make) {
@@ -1028,7 +1026,7 @@ static NSString *const SJVideoPlayPreviewColCellID = @"SJVideoPlayPreviewColCell
     [self addSubview:self.loadingView];
     [_loadingView mas_makeConstraints:^(MASConstraintMaker *make) {
         make.center.offset(0);
-        make.height.equalTo(_loadingView.superview).multipliedBy(0.3);
+        make.height.equalTo(_loadingView.superview).multipliedBy(0.2);
         make.width.equalTo(_loadingView.mas_height);
     }];
     [self.loadingView startAnimation];
@@ -1440,6 +1438,8 @@ static NSString *const SJVideoPlayPreviewColCellID = @"SJVideoPlayPreviewColCell
         NSAttributedString *attr = [NSAttributedString mh_imageTextWithImage:image imageW:image.size.width imageH:image.size.height title:title fontSize:fontSize titleColor:[UIColor whiteColor] spacing:6];
         [self.replayBtn setAttributedTitle:attr forState:UIControlStateNormal];
     }
+    if ( settings.loadingLineColor ) self.loadingView.lineColor = settings.loadingLineColor;
+    if ( 0 != settings.loadingLineWidth ) self.loadingView.lineWidth = settings.loadingLineWidth;
 }
 
 @end

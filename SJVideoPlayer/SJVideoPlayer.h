@@ -210,6 +210,11 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic, strong, readwrite) UIImage *muteImage;
 @property (nonatomic, strong, readwrite) UIImage *brightnessImage;
 
+// MARK: Loading
+@property (nonatomic, strong, readwrite) UIColor *loadingLineColor;
+@property (nonatomic, assign, readwrite) float loadingLineWidth;
+
+
 @end
 
 

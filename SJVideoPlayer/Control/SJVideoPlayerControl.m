@@ -38,12 +38,12 @@ typedef NS_ENUM(NSUInteger, SJVideoPlayerPlayState) {
 
 @interface SJVideoPlayerStatusRegistrar : NSObject
 
+// 进入后台 统计信息 >>>>>
 - (void)registrar:(SJVideoPlayerControlView *)controlView;
 
-// 进入后台 统计信息 >>>>>
-@property (nonatomic, assign, readwrite) BOOL hiddenLockBtn;
+@property (nonatomic, assign, readonly) BOOL hiddenLockBtn;
 
-@property (nonatomic, assign, readwrite) BOOL hiddenPlayBtn;
+@property (nonatomic, assign, readonly) BOOL hiddenPlayBtn;
 // <<<<<<<<<<<
 
 @property (nonatomic, assign, readwrite) BOOL isLock;
@@ -65,8 +65,8 @@ typedef NS_ENUM(NSUInteger, SJVideoPlayerPlayState) {
 @implementation SJVideoPlayerStatusRegistrar
 
 - (void)registrar:(SJVideoPlayerControlView *)controlView {
-    self.hiddenLockBtn = controlView.hiddenLockBtn;
-    self.hiddenPlayBtn = controlView.hiddenPlayBtn;
+    _hiddenLockBtn = controlView.hiddenLockBtn;
+    _hiddenPlayBtn = controlView.hiddenPlayBtn;
 }
 
 - (void)setScrollIn:(BOOL)scrollIn {

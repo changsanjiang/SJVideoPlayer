@@ -93,6 +93,9 @@ NS_ASSUME_NONNULL_BEGIN
 
 @interface SJVideoPlayer (Operation)
 
+/*!
+ *  unit sec.
+ */
 - (NSTimeInterval)currentTime;
 
 - (void)pause;

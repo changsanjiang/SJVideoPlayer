@@ -30,6 +30,7 @@ typedef NS_ENUM(NSUInteger, SJVideoPlayerPlayState) {
     SJVideoPlayerPlayState_Unknown,
     SJVideoPlayerPlayState_Prepare,
     SJVideoPlayerPlayState_Playing,
+    SJVideoPlayerPlayState_Buffing,
     SJVideoPlayerPlayState_Pause,
     SJVideoPlayerPlayState_PlayEnd,
     SJVideoPlayerPlayState_PlayFailed,
@@ -299,13 +300,16 @@ typedef NS_ENUM(NSUInteger, SJVideoPlayerPlayState) {
 }
 
 - (void)_buffering {
-    if ( 0 == self.lastPlaybackRate ) [self _clickedPause];
+    if ( 0 == self.lastPlaybackRate && self.backstageRegistrar.playState != SJVideoPlayerPlayState_Buffing ) {
+        [self _clickedPause];
+        self.backstageRegistrar.playState = SJVideoPlayerPlayState_Buffing;
+    }
     dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(2 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
         if ( !_playerItem.isPlaybackLikelyToKeepUp ) {
             [self _buffering];
             return ;
         }
-        [self play];
+        [self _clickedPlay];
     });
 }
 
@@ -1077,7 +1081,6 @@ A: maxCount = second / interval;
         
         if ( [keyPath isEqualToString:@"playbackBufferEmpty"] ) {
             if ( !_playerItem.playbackBufferEmpty ) return;
-            [self.controlView startLoading];
             [self _buffering];
             return;
         }
@@ -1121,6 +1124,10 @@ A: maxCount = second / interval;
         case SJVideoPlayerPlayState_Prepare: {
             [self _controlViewPrepareToPlayStatus];
             [self _setEnabledGestureRecognizer:NO];
+        }
+            break;
+        case SJVideoPlayerPlayState_Buffing: {
+            [_controlView startLoading];
         }
             break;
         case SJVideoPlayerPlayState_Playing: {

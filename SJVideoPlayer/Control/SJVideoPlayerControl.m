@@ -322,7 +322,7 @@ typedef NS_ENUM(NSUInteger, SJVideoPlayerPlayState) {
     NSInteger second = (long)_asset.duration.value / _asset.duration.timescale;
     short interval = 1;
     __block NSInteger maxCount = 0;
-    A: maxCount = second / interval;
+A: maxCount = second / interval;
     if ( maxCount > SJPreViewImgsMaxCount ) { interval += 2; goto A;}
     for ( int i = 0 ; i < maxCount ; i ++ ) {
         CMTime time = CMTimeMake(i * interval, 1);
@@ -598,7 +598,6 @@ typedef NS_ENUM(NSUInteger, SJVideoPlayerPlayState) {
     [self.player play];
     self.lastPlaybackRate = self.player.rate = self.rate;
     self.backstageRegistrar.playState = SJVideoPlayerPlayState_Playing;
-    [self.controlView stopLoading];
 }
 
 - (void)_clickedPause {
@@ -1041,11 +1040,10 @@ typedef NS_ENUM(NSUInteger, SJVideoPlayerPlayState) {
             dispatch_async(dispatch_get_main_queue(), ^{
                 if (self.playerItem.status == AVPlayerItemStatusReadyToPlay) {
                     
-                    [self _setEnabledGestureRecognizer:YES];
                     [self _addPlayerItemTimeObserver];
                     [self _addItemEndObserverForPlayerItem];
                     [self generatePreviewImgs];
-
+                    
                     CMTime duration = self.playerItem.duration;
                     
                     [self.controlView setCurrentTime:CMTimeGetSeconds(kCMTimeZero) duration:CMTimeGetSeconds(duration)];
@@ -1122,10 +1120,13 @@ typedef NS_ENUM(NSUInteger, SJVideoPlayerPlayState) {
             break;
         case SJVideoPlayerPlayState_Prepare: {
             [self _controlViewPrepareToPlayStatus];
+            [self _setEnabledGestureRecognizer:NO];
         }
             break;
         case SJVideoPlayerPlayState_Playing: {
             [self _controlViewPlayingStatus];
+            [self _setEnabledGestureRecognizer:YES];
+            [_controlView stopLoading];
         }
             break;
         case SJVideoPlayerPlayState_Pause: {
@@ -1422,6 +1423,7 @@ static UIView *target = nil;
     self.controlView.hiddenMoreSettingsView = YES;
     self.controlView.hiddenReplayBtn = YES;
     self.controlView.hiddenLoadFailedBtn = YES;
+    self.controlView.hiddenControl = YES;
 }
 
 - (void)_controlViewPrepareToPlayStatus {
@@ -1435,6 +1437,7 @@ static UIView *target = nil;
     self.controlView.hiddenPreviewBtn = YES;
     self.controlView.hiddenPreview = YES;
     self.controlView.hiddenMoreBtn = YES;
+    self.controlView.hiddenControl = YES;
 }
 
 - (void)_controlViewPlayingStatus {
@@ -1443,6 +1446,7 @@ static UIView *target = nil;
     self.controlView.hiddenReplayBtn = YES;
     self.controlView.hiddenDraggingProgress = YES;
     self.controlView.hiddenLoadFailedBtn = YES;
+    self.controlView.hiddenControl = NO;
     
     // 小屏
     if ( !self.backstageRegistrar.fullScreen ) {

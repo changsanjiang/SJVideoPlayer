@@ -14,4 +14,6 @@ s.resource     = 'SJVideoPlayer/Resource/SJVideoPlayer.bundle'
 s.framework  = 'UIKit'
 s.requires_arc = true
 s.dependency 'Masonry'
+s.dependency 'SJSlider'
+s.dependency 'SJBorderLineView'
 end

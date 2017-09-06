@@ -7,7 +7,7 @@
 //
 
 #import "UIView+SJExtension.h"
-
+#import "NSAttributedString+ZFBAdditon.h"
 
 @interface _SJRoundImageView : UIImageView
 @end
@@ -389,6 +389,17 @@
 }
 
 // MARK: 创建视图
+
++ (UIButton *)attrTitleButtonWithTitle:(NSString *)title imageName:(NSString *)imageName tag:(NSUInteger)tag target:(id)target sel:(SEL)sel {
+    UIButton *btn = [UIButton buttonWithType:UIButtonTypeCustom];
+    NSAttributedString *attrStr = [NSAttributedString mh_imageTextWithImage:[UIImage imageNamed:imageName] imageW:25 imageH:25 title:title fontSize:8 titleColor:[UIColor whiteColor] spacing:3];
+    if ( attrStr ) [btn setAttributedTitle:attrStr forState:UIControlStateNormal];
+    btn.tag = tag;
+    [btn addTarget:target action:sel forControlEvents:UIControlEventTouchUpInside];
+    btn.titleLabel.numberOfLines = 3;
+    btn.titleLabel.textAlignment = NSTextAlignmentCenter;
+    return btn;
+}
 
 + (UIView *)roundViewWithBackGroundColor:(UIColor *)backgroundColor {
     _SJRoundView *view = [_SJRoundView new];

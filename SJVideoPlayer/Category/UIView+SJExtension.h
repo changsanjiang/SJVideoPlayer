@@ -70,6 +70,8 @@
 
 #pragma mark - 创建视图
 
++ (UIButton *)attrTitleButtonWithTitle:(NSString *)title imageName:(NSString *)imageName tag:(NSUInteger)tag target:(id)target sel:(SEL)sel;
+
 + (UIView *)roundViewWithBackGroundColor:(UIColor *)backgroundColor;
 
 /*!

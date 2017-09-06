@@ -1,6 +1,8 @@
 # SJVideoPlayer
 video play
 
+pod 'SJVideoPlayer' （Please perform " pod update --no-repo-update "）
+
 <img src="https://github.com/changsanjiang/SJVideoPlayer/blob/master/SJVideoPlayerProject/SJVideoPlayerProject/sample6.png" width="40%">  
 
 <img src="https://github.com/changsanjiang/SJVideoPlayer/blob/master/SJVideoPlayerProject/SJVideoPlayerProject/sample1.png" width="40%">  

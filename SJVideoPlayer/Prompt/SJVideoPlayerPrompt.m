@@ -10,9 +10,9 @@
 
 #import <Masonry/Masonry.h>
 
-#import "UIView+Extension.h"
+#import "UIView+SJExtension.h"
 
-#import "NSTimer+SJExtention.h"
+#import "NSTimer+SJExtension.h"
 
 #define SJVideoPlayerPrompt_H   (50)
 

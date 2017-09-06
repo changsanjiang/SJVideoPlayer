@@ -8,7 +8,7 @@
 
 #import "SJVideoPlayerTipsView.h"
 
-#import "UIView+Extension.h"
+#import "UIView+SJExtension.h"
 
 #import <SJBorderLineView/SJBorderlineView.h>
 

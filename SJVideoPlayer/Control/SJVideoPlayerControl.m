@@ -15,7 +15,7 @@
 #import "SJVideoPlayerStringConstant.h"
 #import "SJVideoPlayerControlView.h"
 #import "SJVideoPlayerTipsView.h"
-#import "NSTimer+SJExtention.h"
+#import "NSTimer+SJExtension.h"
 #import "SJVideoPlayer.h"
 #import "SJVideoPlayer.h"
 

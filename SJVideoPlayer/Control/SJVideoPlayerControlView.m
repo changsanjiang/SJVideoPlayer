@@ -12,7 +12,7 @@
 
 #import <UIKit/UIKit.h>
 
-#import "UIView+Extension.h"
+#import "UIView+SJExtension.h"
 
 #import <Masonry/Masonry.h>
 
@@ -20,7 +20,7 @@
 
 #import <objc/message.h>
 
-#import "NSTimer+SJExtention.h"
+#import "NSTimer+SJExtension.h"
 
 #import "SJVideoPlayerStringConstant.h"
 

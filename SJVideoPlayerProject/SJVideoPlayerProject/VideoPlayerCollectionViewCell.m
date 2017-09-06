@@ -8,7 +8,7 @@
 
 #import "VideoPlayerCollectionViewCell.h"
 
-#import "UIView+Extension.h"
+#import "UIView+SJExtension.h"
 
 #import <Masonry.h>
 

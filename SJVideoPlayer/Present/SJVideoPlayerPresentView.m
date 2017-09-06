@@ -16,7 +16,7 @@
 
 #import "SJVideoPlayerStringConstant.h"
 
-#import "UIView+Extension.h"
+#import "UIView+SJExtension.h"
 
 #import <AVFoundation/AVAssetImageGenerator.h>
 
@@ -186,6 +186,7 @@
 
 - (void)_removeNotifications {
     [self _removeDeviceOrientationChangeObserver];
+    [[NSNotificationCenter defaultCenter] removeObserver:self];
 }
 
 - (void)playerBeginPlayingNotification {

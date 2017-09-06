@@ -1,14 +1,14 @@
 //
-//  NSTimer+SJExtention.m
+//  NSTimer+SJExtension.m
 //  SJVideoPlayerProject
 //
-//  Created by BlueDancer on 2017/8/23.
+//  Created by BlueDancer on 2017/9/6.
 //  Copyright © 2017年 SanJiang. All rights reserved.
 //
 
-#import "NSTimer+SJExtention.h"
+#import "NSTimer+SJExtension.h"
 
-@implementation NSTimer (SJExtention)
+@implementation NSTimer (SJExtension)
 
 + (instancetype)sj_scheduledTimerWithTimeInterval:(NSTimeInterval)ti exeBlock:(void(^)())block repeats:(BOOL)yesOrNo {
     NSAssert(block, @"block 不可为空");

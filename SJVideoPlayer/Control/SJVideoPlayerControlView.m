@@ -848,7 +848,7 @@ static NSString *const SJVideoPlayPreviewColCellID = @"SJVideoPlayPreviewColCell
 
 #pragma mark -
 
-@interface SJVideoPlayerControlView ()
+@interface SJVideoPlayerControlView ()<UIGestureRecognizerDelegate>
 
 // MARK: ...
 @property (nonatomic, strong, readonly) SJMaskView *topContainerView;
@@ -1206,6 +1206,17 @@ static NSString *const SJVideoPlayPreviewColCellID = @"SJVideoPlayPreviewColCell
     }];
     
     self.hiddenMoreSettingsTwoLevelView = YES;
+    
+    
+    UIPanGestureRecognizer *pan = [[UIPanGestureRecognizer alloc] initWithTarget:self action:@selector(handlePanGR:)];
+    pan.delegate = self;
+    [self.previewImgColView addGestureRecognizer:pan];
+}
+
+- (void)handlePanGR:(UIPanGestureRecognizer *)pan {}
+
+- (BOOL)gestureRecognizer:(UIGestureRecognizer *)gestureRecognizer shouldRecognizeSimultaneouslyWithGestureRecognizer:(nonnull UIGestureRecognizer *)otherGestureRecognizer {
+    return YES;
 }
 
 // MARK: ...

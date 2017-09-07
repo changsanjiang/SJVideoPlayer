@@ -657,14 +657,17 @@ A: maxCount = second / interval;
 }
 
 - (void)jumpedToCMTime:(CMTime)time completionHandler:(void (^)(BOOL))completionHandler {
-    if ( self.playerItem.status != AVPlayerStatusReadyToPlay ) {
-        if ( completionHandler ) completionHandler(NO);
-        return;
-    }
-    CMTime sub = CMTimeSubtract(_playerItem.currentTime, time);
-    // 小于1秒 不给跳.
-    if ( labs((long)sub.value / sub.timescale) < 1 ) {if ( completionHandler ) completionHandler(YES); return;}
+    if ( self.playerItem.status != AVPlayerStatusReadyToPlay ) return;
+    
+    // compare return. same = 0. time > currentTime = 1. time < current Time = -1
+    if ( 0 == CMTimeCompare(time, _playerItem.currentTime) ) return;
+    if ( 1 == CMTimeCompare(time, _playerItem.duration) ) return;
+    
+    CMTime sub = CMTimeSubtract(time, _playerItem.currentTime);
+    // absolute value if Less than one second. return
+    if ( labs((long)(sub.value / sub.timescale)) < 1 ) return;
     [self.player seekToTime:time completionHandler:^(BOOL finished) {
+        if ( !finished ) return;
         if ( completionHandler ) completionHandler(finished);
     }];
 }

@@ -53,17 +53,17 @@
 #pragma mark - Setting Player
     
     [player playerSettings:^(SJVideoPlayerSettings * _Nonnull settings) {
-        settings.traceColor = [UIColor colorWithRed:1.0 * (arc4random() % 256 / 255.0)
-                                              green:1.0 * (arc4random() % 256 / 255.0)
-                                               blue:1.0 * (arc4random() % 256 / 255.0)
+        settings.traceColor = [UIColor colorWithRed:arc4random() % 256 / 255.0
+                                              green:arc4random() % 256 / 255.0
+                                               blue:arc4random() % 256 / 255.0
                                               alpha:1];
-        settings.trackColor = [UIColor colorWithRed:1.0 * (arc4random() % 256 / 255.0)
-                                              green:1.0 * (arc4random() % 256 / 255.0)
-                                               blue:1.0 * (arc4random() % 256 / 255.0)
+        settings.trackColor = [UIColor colorWithRed:arc4random() % 256 / 255.0
+                                              green:arc4random() % 256 / 255.0
+                                               blue:arc4random() % 256 / 255.0
                                               alpha:1];
-        settings.bufferColor = [UIColor colorWithRed:1.0 * (arc4random() % 256 / 255.0)
-                                               green:1.0 * (arc4random() % 256 / 255.0)
-                                                blue:1.0 * (arc4random() % 256 / 255.0)
+        settings.bufferColor = [UIColor colorWithRed:arc4random() % 256 / 255.0
+                                               green:arc4random() % 256 / 255.0
+                                                blue:arc4random() % 256 / 255.0
                                                alpha:1];
         settings.replayBtnTitle = @"播放完毕, 点击重播";
         settings.replayBtnFontSize = 12;

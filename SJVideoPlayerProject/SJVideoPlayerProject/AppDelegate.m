@@ -10,6 +10,8 @@
 
 #import "VideoPlayerNavigationController.h"
 
+#import <CoreMedia/CoreMedia.h>
+
 @interface AppDelegate ()
 
 @end
@@ -27,8 +29,26 @@
     
     _window.rootViewController = nav;
     
+    [self cmtime];
+    
     // Override point for customization after application launch.
     return YES;
+}
+
+
+- (void)cmtime {
+    
+    CMTime time1 = CMTimeMake(6, 1);
+    CMTime time2 = CMTimeMake(10, 1);
+    CMTime time3 = CMTimeMake(6, 1);
+    
+    int32_t result1 = CMTimeCompare(time1, time2);
+    
+    int32_t result2 = CMTimeCompare(time2, time1);
+    
+    int32_t result3 = CMTimeCompare(time1, time3);
+    
+    NSLog(@"%d - %d - %d", result1, result2, result3);
 }
 
 

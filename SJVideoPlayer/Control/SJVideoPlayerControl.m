@@ -412,7 +412,6 @@ typedef NS_ENUM(NSUInteger, SJVideoPlayerPlayState) {
     
     [_imageGenerator cancelAllCGImageGeneration];
     
-    
     [self _playerUnlocked];
     
     _rate = 1;
@@ -427,6 +426,8 @@ typedef NS_ENUM(NSUInteger, SJVideoPlayerPlayState) {
     self.asset = nil;
     self.playerItem = nil;
     self.player = nil;
+    
+    [[SJVideoPlayer sharedPlayer] hiddenTitle];
 }
 
 - (void)jumpedToTime:(NSTimeInterval)time completionHandler:(void (^)(BOOL))completionHandler {

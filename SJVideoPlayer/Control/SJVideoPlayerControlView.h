@@ -12,7 +12,7 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
-#define SJPreviewImgW   (160.0)
+#define SJPreviewImgW   ([UIScreen mainScreen].bounds.size.width * 0.35)
 #define SJPreViewImgH   (SJPreviewImgW * 9 / 16)
 #define SJContainerH    (49)
 

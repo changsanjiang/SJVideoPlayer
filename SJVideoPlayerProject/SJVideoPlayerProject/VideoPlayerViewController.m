@@ -164,6 +164,7 @@
 - (void)viewDidAppear:(BOOL)animated {
     [super viewDidAppear:animated];
     [[SJVideoPlayer sharedPlayer] jumpedToTime:self.currentTime completionHandler:^(BOOL finished) {
+        if ( !finished ) return;
         [[SJVideoPlayer sharedPlayer] play];
         [[SJVideoPlayer sharedPlayer] enableRotation];
     }];

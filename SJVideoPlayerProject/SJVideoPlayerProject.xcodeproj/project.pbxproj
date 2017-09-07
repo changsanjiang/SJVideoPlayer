@@ -619,7 +619,7 @@
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				PRODUCT_BUNDLE_IDENTIFIER = com.SanJiang.videoPlayer;
 				PRODUCT_NAME = "$(TARGET_NAME)";
-				PROVISIONING_PROFILE = "126671f6-fbcc-4c23-8a70-c255edc993eb";
+				PROVISIONING_PROFILE = "acd2453e-e396-4ccf-bf56-508276824c6c";
 				PROVISIONING_PROFILE_SPECIFIER = SanJiangDevelopment;
 			};
 			name = Debug;

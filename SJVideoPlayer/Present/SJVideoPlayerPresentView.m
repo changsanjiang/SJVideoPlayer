@@ -216,7 +216,7 @@
 - (void)handleDeviceOrientationChange:(NSNotification *)notification {
     UIDeviceOrientation orientation = [UIDevice currentDevice].orientation;
     if ( self.lastOrientation == orientation ) return;
-    
+    NSLog(@"%zd", [UIApplication sharedApplication].statusBarOrientation);
     switch (orientation) {
         case UIDeviceOrientationLandscapeLeft:
             self.lastOrientation = orientation; /// 屏幕向左横置

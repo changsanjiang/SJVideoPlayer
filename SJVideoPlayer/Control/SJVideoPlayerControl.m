@@ -24,7 +24,7 @@
  */
 #define REFRESH_INTERVAL (0.5)
 
-#define SJPreViewImgsMaxCount (30)
+#define SJPreImgGenerateInterval (0.05)
 
 typedef NS_ENUM(NSUInteger, SJVideoPlayerPlayState) {
     SJVideoPlayerPlayState_Unknown,
@@ -323,11 +323,12 @@ typedef NS_ENUM(NSUInteger, SJVideoPlayerPlayState) {
 - (void)generatePreviewImgs {
     NSMutableArray<NSValue *> *timesM = [NSMutableArray new];
     
-    NSInteger second = (long)_asset.duration.value / _asset.duration.timescale;
-    short interval = 1;
-    __block NSInteger maxCount = 0;
-A: maxCount = second / interval;
-    if ( maxCount > SJPreViewImgsMaxCount ) { interval += 2; goto A;}
+    NSInteger seconds = (long)_asset.duration.value / _asset.duration.timescale;
+    if ( 0 == seconds ) return;
+    
+    // %5 生成一张图片。 一共20张.
+    __block short maxCount = (short)floorf(1.0 / SJPreImgGenerateInterval);
+    short interval = (short)floor(seconds * SJPreImgGenerateInterval);
     for ( int i = 0 ; i < maxCount ; i ++ ) {
         CMTime time = CMTimeMake(i * interval, 1);
         NSValue *tV = [NSValue valueWithCMTime:time];

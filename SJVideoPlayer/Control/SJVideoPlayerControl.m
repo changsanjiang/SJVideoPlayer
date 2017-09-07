@@ -24,6 +24,9 @@
  */
 #define REFRESH_INTERVAL (0.5)
 
+/*!
+ *  0.0 - 1.0
+ */
 #define SJPreImgGenerateInterval (0.05)
 
 typedef NS_ENUM(NSUInteger, SJVideoPlayerPlayState) {
@@ -325,8 +328,7 @@ typedef NS_ENUM(NSUInteger, SJVideoPlayerPlayState) {
     
     NSInteger seconds = (long)_asset.duration.value / _asset.duration.timescale;
     if ( 0 == seconds ) return;
-    
-    // %5 生成一张图片。 一共20张.
+    if ( SJPreImgGenerateInterval > 1.0 ) return;
     __block short maxCount = (short)floorf(1.0 / SJPreImgGenerateInterval);
     short interval = (short)floor(seconds * SJPreImgGenerateInterval);
     for ( int i = 0 ; i < maxCount ; i ++ ) {
@@ -548,7 +550,11 @@ typedef NS_ENUM(NSUInteger, SJVideoPlayerPlayState) {
 @implementation SJVideoPlayerControl (SJVideoPlayerControlViewDelegateMethods)
 
 - (void)controlView:(SJVideoPlayerControlView *)controlView selectedPreviewModel:(SJVideoPreviewModel *)model {
+    NSInteger seconds = CMTimeGetSeconds(model.localTime);
+    [[SJVideoPlayer sharedPlayer] showTitle:[NSString stringWithFormat:@"跳转至: %@", [_controlView formatSeconds:seconds]] duration:-1];
     [self jumpedToCMTime:model.localTime completionHandler:^(BOOL finished) {
+        [[SJVideoPlayer sharedPlayer] hiddenTitle];
+        if ( !finished ) { return;}
         if ( self.lastPlaybackRate > 0.f) [self _clickedPlay];
     }];
 }
@@ -658,15 +664,23 @@ typedef NS_ENUM(NSUInteger, SJVideoPlayerPlayState) {
 }
 
 - (void)jumpedToCMTime:(CMTime)time completionHandler:(void (^)(BOOL))completionHandler {
-    if ( self.playerItem.status != AVPlayerStatusReadyToPlay ) return;
-    
+    if ( self.playerItem.status != AVPlayerStatusReadyToPlay ) goto __SJQuit;
     // compare return. same = 0. time > currentTime = 1. time < current Time = -1
-    if ( 0 == CMTimeCompare(time, _playerItem.currentTime) ) return;
-    if ( 1 == CMTimeCompare(time, _playerItem.duration) ) return;
+    if ( 0 == CMTimeCompare(time, _playerItem.currentTime) ) goto __SJQuit;
+    if ( 1 == CMTimeCompare(time, _playerItem.duration) ) goto __SJQuit;
     
     CMTime sub = CMTimeSubtract(time, _playerItem.currentTime);
     // absolute value if Less than one second. return
-    if ( labs((long)(sub.value / sub.timescale)) < 1 ) return;
+    if ( labs((long)(sub.value / sub.timescale)) < 1 ) goto __SJQuit;
+    // seek to time
+    [self _seekToTime:time completionHandler:completionHandler];
+    return;
+    
+__SJQuit:
+    if ( completionHandler ) completionHandler(NO);
+}
+
+- (void)_seekToTime:(CMTime)time completionHandler:(void (^)(BOOL))completionHandler {
     [self.player seekToTime:time completionHandler:^(BOOL finished) {
         if ( !finished ) return;
         if ( completionHandler ) completionHandler(finished);

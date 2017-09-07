@@ -320,7 +320,7 @@
     [self.prompt showTitle:title duration:duration];
 }
 
-- (void)hidden {
+- (void)hiddenTitle {
     [self.prompt hidden];
 }
 

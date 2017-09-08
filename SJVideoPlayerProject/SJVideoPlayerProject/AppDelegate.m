@@ -8,8 +8,6 @@
 
 #import "AppDelegate.h"
 
-#import "VideoPlayerNavigationController.h"
-
 #import <CoreMedia/CoreMedia.h>
 
 @interface AppDelegate ()
@@ -22,12 +20,12 @@
 - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions {
     
     _window = [[UIWindow alloc] initWithFrame:[UIScreen mainScreen].bounds];
-    
     _window.backgroundColor = [UIColor whiteColor];
-    
-    VideoPlayerNavigationController *nav = [[VideoPlayerNavigationController alloc] initWithRootViewController:[NSClassFromString(@"ViewController") new]];
-    
-    _window.rootViewController = nav;
+    UINavigationController *nav = [[UINavigationController alloc] initWithRootViewController:[NSClassFromString(@"ViewController") new]];
+    nav.viewControllers.firstObject.title = @"首页";
+    UITabBarController *tabBarController = [UITabBarController new];
+    tabBarController.viewControllers = @[nav];
+    _window.rootViewController = tabBarController;
     
     [self cmtime];
     

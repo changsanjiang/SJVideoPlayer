@@ -10,8 +10,6 @@
 
 #import <objc/message.h>
 
-static UIScreenEdgePanGestureRecognizer *_pan;
-
 @implementation UINavigationController (SJExtension)
 
 + (void)load {
@@ -22,13 +20,21 @@ static UIScreenEdgePanGestureRecognizer *_pan;
 
 - (void)sjPushViewController:(UIViewController *)viewController animated:(BOOL)animated {
     [self sjPushViewController:viewController animated:animated];
+    [self sjPanGesture];
+}
+
+- (UIScreenEdgePanGestureRecognizer *)sjPanGesture {
+    UIScreenEdgePanGestureRecognizer *sjPanGesture = objc_getAssociatedObject(self, _cmd);
+    if ( sjPanGesture ) return sjPanGesture;
 #pragma clang diagnostic push
 #pragma clang diagnostic ignored "-Wundeclared-selector"
-    _pan = [[UIScreenEdgePanGestureRecognizer alloc] initWithTarget:self.interactivePopGestureRecognizer.delegate action:@selector(handleNavigationTransition:)];
+    sjPanGesture = [[UIScreenEdgePanGestureRecognizer alloc] initWithTarget:self.interactivePopGestureRecognizer.delegate action:@selector(handleNavigationTransition:)];
 #pragma clang diagnostic pop
-    _pan.edges = UIRectEdgeLeft;
-    [self.view addGestureRecognizer:_pan];
+    sjPanGesture.edges = UIRectEdgeLeft;
+    [self.view addGestureRecognizer:sjPanGesture];
     self.interactivePopGestureRecognizer.enabled = NO;
+    objc_setAssociatedObject(self, _cmd, sjPanGesture, OBJC_ASSOCIATION_RETAIN_NONATOMIC);
+    return sjPanGesture;
 }
 
 #pragma mark - UIGestureRecognizerDelegate

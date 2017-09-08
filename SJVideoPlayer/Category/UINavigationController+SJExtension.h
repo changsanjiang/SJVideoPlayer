@@ -10,4 +10,6 @@
 
 @interface UINavigationController (SJExtension)
 
+@property (nonatomic, strong, readonly) UIScreenEdgePanGestureRecognizer *sjPanGesture;
+
 @end

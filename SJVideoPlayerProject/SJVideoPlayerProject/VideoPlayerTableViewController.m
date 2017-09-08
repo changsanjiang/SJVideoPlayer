@@ -65,6 +65,21 @@ static NSString *const VideoPlayerTableViewCellID = @"VideoPlayerTableViewCell";
     // Dispose of any resources that can be recreated.
 }
 
+#pragma mark - 不旋转
+
+- (BOOL)shouldAutorotate {
+    return NO;
+}
+
+- (UIInterfaceOrientationMask)supportedInterfaceOrientations {
+    return UIInterfaceOrientationMaskPortrait;
+}
+
+- (UIInterfaceOrientation)preferredInterfaceOrientationForPresentation {
+    return UIInterfaceOrientationPortrait;
+}
+
+
 #pragma mark - Table view data source
 
 - (NSInteger)numberOfSectionsInTableView:(UITableView *)tableView {

@@ -37,15 +37,15 @@ static UIScreenEdgePanGestureRecognizer *_pan;
 }
 
 - (BOOL)shouldAutorotate {
-    return [self.topViewController shouldAutorotate];
+    return self.topViewController.shouldAutorotate;
 }
 
 - (UIInterfaceOrientationMask)supportedInterfaceOrientations {
-    return [self.topViewController supportedInterfaceOrientations];
+    return self.topViewController.supportedInterfaceOrientations;
 }
 
 - (UIInterfaceOrientation)preferredInterfaceOrientationForPresentation {
-    return [self.topViewController preferredInterfaceOrientationForPresentation];
+    return self.topViewController.preferredInterfaceOrientationForPresentation;
 }
 
 - (UIViewController *)childViewControllerForStatusBarStyle {

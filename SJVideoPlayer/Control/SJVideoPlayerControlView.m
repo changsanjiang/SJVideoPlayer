@@ -1052,7 +1052,7 @@ static NSString *const SJVideoPlayPreviewColCellID = @"SJVideoPlayPreviewColCell
     [self addSubview:self.previewImgColView];
     
     [_previewImgColView mas_makeConstraints:^(MASConstraintMaker *make) {
-        make.height.offset(SJPreViewImgH);
+        make.height.offset(SJPreViewImgH + 8);
         make.leading.trailing.offset(0);
         make.top.equalTo(_topContainerView.mas_bottom);
     }];

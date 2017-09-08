@@ -327,7 +327,7 @@ typedef NS_ENUM(NSUInteger, SJVideoPlayerPlayState) {
     NSMutableArray<NSValue *> *timesM = [NSMutableArray new];
     
     NSInteger seconds = (long)_asset.duration.value / _asset.duration.timescale;
-    if ( 0 == seconds ) return;
+    if ( 0 == seconds || isnan(seconds) ) return;
     if ( SJPreImgGenerateInterval > 1.0 ) return;
     __block short maxCount = (short)floorf(1.0 / SJPreImgGenerateInterval);
     short interval = (short)floor(seconds * SJPreImgGenerateInterval);
@@ -669,10 +669,6 @@ typedef NS_ENUM(NSUInteger, SJVideoPlayerPlayState) {
     // compare return. same = 0. time > currentTime = 1. time < current Time = -1
     if ( 0 == CMTimeCompare(time, _playerItem.currentTime) ) goto __SJQuit;
     if ( 1 == CMTimeCompare(time, _playerItem.duration) ) goto __SJQuit;
-    
-    CMTime sub = CMTimeSubtract(time, _playerItem.currentTime);
-    // absolute value if Less than one second. return
-    if ( labs((long)(sub.value / sub.timescale)) < 1 ) goto __SJQuit;
     // seek to time
     [self _seekToTime:time completionHandler:completionHandler];
     return;

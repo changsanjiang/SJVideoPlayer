@@ -159,6 +159,8 @@
         if ( !self ) return;
         [self.navigationController popViewControllerAnimated:YES];
     };
+    
+    NSLog(@"%zd - %s", __LINE__, __func__);
 }
 
 - (void)viewDidAppear:(BOOL)animated {
@@ -168,6 +170,8 @@
         [[SJVideoPlayer sharedPlayer] play];
         [[SJVideoPlayer sharedPlayer] enableRotation];
     }];
+    
+    NSLog(@"%zd - %s", __LINE__, __func__);
 }
 
 - (void)viewWillDisappear:(BOOL)animated {
@@ -177,6 +181,8 @@
     self.currentTime = [SJVideoPlayer sharedPlayer].currentTime;
     [[SJVideoPlayer sharedPlayer] pause];
     [[SJVideoPlayer sharedPlayer] stopRotation];
+    
+    NSLog(@"%zd - %s", __LINE__, __func__);
 }
 
 - (void)dealloc {
@@ -185,6 +191,20 @@
 
 - (void)didReceiveMemoryWarning {
     NSLog(@"%zd - %s", __LINE__, __func__);
+}
+
+#pragma mark - 不旋转
+
+- (BOOL)shouldAutorotate {
+    return NO;
+}
+
+- (UIInterfaceOrientationMask)supportedInterfaceOrientations {
+    return UIInterfaceOrientationMaskPortrait;
+}
+
+- (UIInterfaceOrientation)preferredInterfaceOrientationForPresentation {
+    return UIInterfaceOrientationPortrait;
 }
 
 @end

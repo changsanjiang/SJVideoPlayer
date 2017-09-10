@@ -956,9 +956,14 @@ __SJQuit:
 - (void)_scrollViewDidScroll {
     if ( [self.scrollView isKindOfClass:[UITableView class]] ) {
         UITableView *tableView = (UITableView *)self.scrollView;
-        UITableViewCell *cell = [tableView cellForRowAtIndexPath:self.indexPath];
-        NSArray *visableCells = tableView.visibleCells;
-        if ( [visableCells containsObject:cell] ) {
+        __block BOOL visable = NO;
+        [tableView.indexPathsForVisibleRows enumerateObjectsUsingBlock:^(NSIndexPath * _Nonnull obj, NSUInteger idx, BOOL * _Nonnull stop) {
+            if ( [obj compare:self.indexPath] == NSOrderedSame ) {
+                visable = YES;
+                *stop = YES;
+            }
+        }];
+        if ( visable ) {
             /// 滑入时 恢复.
             self.backstageRegistrar.scrollIn = YES;
         }

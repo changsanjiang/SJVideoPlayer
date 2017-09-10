@@ -503,6 +503,7 @@ typedef NS_ENUM(NSUInteger, SJVideoPlayerPlayState) {
         volumeSlider.delegate = self;
         rateSlider.delegate = self;
     }];
+    [self _controlViewUnknownStatus];
     return _controlView;
 }
 
@@ -1446,6 +1447,8 @@ static UIView *target = nil;
     self.controlView.hiddenReplayBtn = YES;
     self.controlView.hiddenLoadFailedBtn = YES;
     self.controlView.hiddenControl = YES;
+    self.controlView.hiddenDraggingProgress = YES;
+    self.controlView.hiddenPlayBtn = YES;
 }
 
 - (void)_controlViewPrepareToPlayStatus {

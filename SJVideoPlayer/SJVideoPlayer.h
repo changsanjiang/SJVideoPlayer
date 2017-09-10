@@ -98,6 +98,10 @@ NS_ASSUME_NONNULL_BEGIN
  */
 - (NSTimeInterval)currentTime;
 
+- (void)playWithURL:(NSURL *)playURL;
+
+- (void)playWithURL:(NSURL *)playURL jumpedToTime:(NSTimeInterval)time;
+
 - (void)pause;
 
 - (void)stopRotation;

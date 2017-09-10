@@ -47,7 +47,7 @@
     
 //    player.assetURL = [NSURL URLWithString:@"http://video.cdn.lanwuzhe.com/1493370091000dfb1"];
     
-    player.assetURL = [NSURL URLWithString:@"http://vod.lanwuzhe.com/9da7002189d34b60bbf82ac743241a61/d0539e7be21a4f8faa9fef69a67bc1fb-5287d2089db37e62345123a1be272f8b.mp4?video="];
+//    player.assetURL = [NSURL URLWithString:@"http://vod.lanwuzhe.com/9da7002189d34b60bbf82ac743241a61/d0539e7be21a4f8faa9fef69a67bc1fb-5287d2089db37e62345123a1be272f8b.mp4?video="];
     
 
 #pragma mark - Setting Player
@@ -165,11 +165,8 @@
 
 - (void)viewDidAppear:(BOOL)animated {
     [super viewDidAppear:animated];
-    [[SJVideoPlayer sharedPlayer] jumpedToTime:self.currentTime completionHandler:^(BOOL finished) {
-        if ( !finished ) return;
-        [[SJVideoPlayer sharedPlayer] play];
-        [[SJVideoPlayer sharedPlayer] enableRotation];
-    }];
+    
+    [[SJVideoPlayer sharedPlayer] playWithURL:[NSURL URLWithString:@"http://vod.lanwuzhe.com/9da7002189d34b60bbf82ac743241a61/d0539e7be21a4f8faa9fef69a67bc1fb-5287d2089db37e62345123a1be272f8b.mp4?video="] jumpedToTime:self.currentTime];
     
     NSLog(@"%zd - %s", __LINE__, __func__);
 }
@@ -177,12 +174,14 @@
 - (void)viewWillDisappear:(BOOL)animated {
     [super viewWillDisappear:animated];
     [self.navigationController setNavigationBarHidden:NO animated:YES];
-
-    self.currentTime = [SJVideoPlayer sharedPlayer].currentTime;
-    [[SJVideoPlayer sharedPlayer] pause];
-    [[SJVideoPlayer sharedPlayer] stopRotation];
     
     NSLog(@"%zd - %s", __LINE__, __func__);
+}
+
+- (void)viewDidDisappear:(BOOL)animated {
+    [super viewDidDisappear:animated];
+    self.currentTime = [SJVideoPlayer sharedPlayer].currentTime;
+    [[SJVideoPlayer sharedPlayer] stop];
 }
 
 - (void)dealloc {

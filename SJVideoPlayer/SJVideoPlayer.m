@@ -39,6 +39,10 @@
 
 @property (nonatomic, strong, readwrite) SJVideoPlayerAssetCarrier *assetCarrier;
 
+@property (nonatomic, assign, readwrite) BOOL needJump;
+
+@property (nonatomic, assign, readwrite) NSTimeInterval jumpedToTime;
+
 @end
 
 
@@ -215,6 +219,7 @@
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(playerPlayFailedErrorNotification:) name:SJPlayerPlayFailedErrorNotification object:nil];
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(playerScrollInNotification) name:SJPlayerScrollInNotification object:nil];
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(playerScrollOutNotification) name:SJPlayerScrollOutNotification object:nil];
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(playerBeginPlayingNotification) name:SJPlayerBeginPlayingNotification object:nil];
 }
 
 - (void)_removeNotifications {
@@ -249,6 +254,13 @@
     self.containerView.alpha = 0.001;
 }
 
+- (void)playerBeginPlayingNotification {
+    if ( !self.needJump ) return;
+    [self jumpedToTime:self.jumpedToTime completionHandler:nil];
+    self.needJump = NO;
+    self.jumpedToTime = 0;
+}
+
 @end
 
 
@@ -260,6 +272,17 @@
 
 - (NSTimeInterval)currentTime {
     return CMTimeGetSeconds(self.assetCarrier.playerItem.currentTime);
+}
+
+- (void)playWithURL:(NSURL *)playURL {
+    self.assetURL = playURL;
+}
+
+- (void)playWithURL:(NSURL *)playURL jumpedToTime:(NSTimeInterval)time {
+    self.assetURL = playURL;
+    if ( 0 == time ) return;
+    self.jumpedToTime = time;
+    self.needJump = YES;
 }
 
 - (void)play {

@@ -14,9 +14,12 @@
 #import "SJVideoPreviewModel.h"
 
 @interface SJVideoPlayPreviewColCell ()
+
 @property (nonatomic, strong, readonly) UIImageView *imageView;
 @property (nonatomic, strong, readonly) UIButton *backgroundBtn;
+
 @end
+
 
 @implementation SJVideoPlayPreviewColCell
 

@@ -12,13 +12,19 @@
 
 @protocol SJVideoPlayPreviewColCellDelegate;
 
+
 @interface SJVideoPlayPreviewColCell : UICollectionViewCell
+
 @property (nonatomic, strong, readwrite) SJVideoPreviewModel *model;
 @property (nonatomic, weak) id <SJVideoPlayPreviewColCellDelegate> delegate;
+
 @end
 
+
 @protocol SJVideoPlayPreviewColCellDelegate <NSObject>
+
 @optional
 - (void)clickedItemOnCell:(SJVideoPlayPreviewColCell *)cell;
+
 @end
 

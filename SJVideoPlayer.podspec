@@ -21,26 +21,32 @@ s.source_files = 'SJVideoPlayer/*.{h,m}'
 
     s.subspec 'Category' do |ss|
         ss.source_files = 'SJVideoPlayer/Category/*.{h,m}'
+    ss.public_header_files = 'SJVideoPlayer/Category/*.{h}'
     end
 
     s.subspec 'Control' do |ss|
         ss.source_files = 'SJVideoPlayer/Control/***/**/*.{h,m}'
+        ss.public_header_files = 'SJVideoPlayer/Control/***/**/*.{h}'
     end
 
     s.subspec 'Loading' do |ss|
         ss.source_files = 'SJVideoPlayer/Loading/*.{h,m}'
+        ss.public_header_files = 'SJVideoPlayer/Loading/*.{h}'
     end
 
     s.subspec 'Model' do |ss|
         ss.source_files = 'SJVideoPlayer/Model/*.{h,m}'
+        ss.public_header_files = 'SJVideoPlayer/Model/*.{h}'
     end
 
     s.subspec 'Present' do |ss|
         ss.source_files = 'SJVideoPlayer/Present/*.{h,m}'
+        ss.public_header_files = 'SJVideoPlayer/Present/*.{h}'
     end
 
     s.subspec 'Prompt' do |ss|
         ss.source_files = 'SJVideoPlayer/Prompt/*.{h,m}'
+        ss.public_header_files = 'SJVideoPlayer/Prompt/*.{h}'
     end
 
 

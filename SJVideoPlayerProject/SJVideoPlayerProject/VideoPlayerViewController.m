@@ -7,8 +7,13 @@
 //
 
 #import "VideoPlayerViewController.h"
-#import "SJVideoPlayer.h"
+#import "SJPlayer.h"
 #import <Masonry/Masonry.h>
+#import "UIView+SJExtension.h"
+#import "UIView+SJExtension.h"
+#import "SJVideoPlayerMoreSetting.h"
+#import "SJVideoPlayerMoreSettingTwoSetting.h"
+#import "SJVideoPlayerSettings.h"
 
 @interface VideoPlayerViewController ()
 

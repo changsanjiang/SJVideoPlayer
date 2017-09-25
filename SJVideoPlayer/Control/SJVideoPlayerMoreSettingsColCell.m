@@ -1,29 +1,33 @@
 //
-//  SJVideoPlayerMoreSettingTwoSettingsColCell.m
+//  SJVideoPlayerMoreSettingsColCell.m
 //  SJVideoPlayerProject
 //
 //  Created by BlueDancer on 2017/9/25.
 //  Copyright © 2017年 SanJiang. All rights reserved.
 //
 
-#import "SJVideoPlayerMoreSettingTwoSettingsColCell.h"
-#import "SJVideoPlayer.h"
+#import "SJVideoPlayerMoreSettingsColCell.h"
 #import "NSAttributedString+ZFBAdditon.h"
 #import <Masonry/Masonry.h>
 #import "UIView+SJExtension.h"
+#import "SJVideoPlayerMoreSetting.h"
 
-@interface SJVideoPlayerMoreSettingTwoSettingsColCell ()
+
+@interface SJVideoPlayerMoreSettingsColCell ()
+
 @property (nonatomic, strong, readonly) UIButton *itemBtn;
+
 @end
 
-@implementation SJVideoPlayerMoreSettingTwoSettingsColCell
+
+@implementation SJVideoPlayerMoreSettingsColCell
 
 @synthesize itemBtn = _itemBtn;
 
 - (instancetype)initWithFrame:(CGRect)frame {
     self = [super initWithFrame:frame];
     if ( !self ) return nil;
-    [self _SJVideoPlayerMoreSettingTwoSettingsCellSetupUI];
+    [self _SJVideoPlayerMoreSettingsColCellSetupUI];
     return self;
 }
 
@@ -31,14 +35,13 @@
     if ( self.model.clickedExeBlock ) self.model.clickedExeBlock(self.model);
 }
 
-- (void)setModel:(SJVideoPlayerMoreSettingTwoSetting *)model {
+- (void)setModel:(SJVideoPlayerMoreSetting *)model {
     _model = model;
-    
     NSAttributedString *attr = [NSAttributedString mh_imageTextWithImage:model.image imageW:model.image.size.width imageH:model.image.size.height title:model.title ? model.title : @"" fontSize:[SJVideoPlayerMoreSetting titleFontSize] titleColor:[SJVideoPlayerMoreSetting titleColor] spacing:6];
     [_itemBtn setAttributedTitle:attr forState:UIControlStateNormal];
 }
 
-- (void)_SJVideoPlayerMoreSettingTwoSettingsCellSetupUI {
+- (void)_SJVideoPlayerMoreSettingsColCellSetupUI {
     [self.contentView addSubview:self.itemBtn];
     [_itemBtn mas_makeConstraints:^(MASConstraintMaker *make) {
         make.edges.offset(0);
@@ -54,4 +57,3 @@
 }
 
 @end
-

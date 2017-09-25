@@ -16,7 +16,6 @@
 #import <objc/message.h>
 #import "NSTimer+SJExtension.h"
 #import "SJVideoPlayerStringConstant.h"
-#import "SJVideoPlayer.h"
 #import <SJBorderLineView/SJBorderlineView.h>
 #import "JDradualLoadingView.h"
 
@@ -26,6 +25,9 @@
 #import "SJVideoPlayerMoreSettingTwoSettingsColCell.h"
 #import "SJVideoPlayerMoreSettingTwoSettingsHeaderView.h"
 #import "SJVideoPlayPreviewColCell.h"
+
+
+#define SJGetFileWithName(name)    [@"SJVideoPlayer.bundle" stringByAppendingPathComponent:name]
 
 
 #pragma mark - Preview
@@ -264,8 +266,8 @@ static NSString *const SJVideoPlayPreviewColCellID = @"SJVideoPlayPreviewColCell
 }
 
 - (void)setTwoLevelSettings:(SJVideoPlayerMoreSettingTwoSetting *)twoLevelSettings {
-    _twoLevelSettings = twoLevelSettings;
-    self.moreSettingsTwoLevelView.twoLevelSettings = twoLevelSettings;
+    _twoLevelSettings = (SJVideoPlayerMoreSetting *)twoLevelSettings;
+    self.moreSettingsTwoLevelView.twoLevelSettings = _twoLevelSettings;
 }
 
 // MARK: Public
@@ -657,6 +659,7 @@ static NSString *const SJVideoPlayPreviewColCellID = @"SJVideoPlayPreviewColCell
 
 
 // MARK: Control View 通知处理
+#import "SJVideoPlayerSettings.h"
 
 @implementation SJVideoPlayerControlView (DBNotifications)
 

@@ -7,19 +7,12 @@
 //
 
 #import "SJVideoPlayerPresentView.h"
-
 #import <AVFoundation/AVPlayerLayer.h>
-
 #import <AVFoundation/AVPlayer.h>
-
 #import <Masonry/Masonry.h>
-
 #import "SJVideoPlayerStringConstant.h"
-
 #import "UIView+SJExtension.h"
-
 #import <AVFoundation/AVAssetImageGenerator.h>
-
 #import <AVFoundation/AVPlayerItem.h>
 
 #pragma mark -

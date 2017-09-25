@@ -7,12 +7,12 @@
 //
 
 #import "SJVideoPlayerMoreSettingTwoSettingsView.h"
-#import "SJVideoPlayer.h"
 #import <Masonry/Masonry.h>
 #import "UIView+SJExtension.h"
 #import "SJVideoPlayerControlView.h"
 #import "NSAttributedString+ZFBAdditon.h"
 #import "SJVideoPlayerMoreSettingTwoSettingsHeaderView.h"
+#import "SJVideoPlayerMoreSettingTwoSetting.h"
 
 @interface SJVideoPlayerMoreSettingTwoSettingsView (ColDataSourceMethods)<UICollectionViewDataSource>
 @end

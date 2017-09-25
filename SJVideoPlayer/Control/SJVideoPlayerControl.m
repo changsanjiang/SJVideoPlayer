@@ -16,9 +16,12 @@
 #import "SJVideoPlayerControlView.h"
 #import "SJVideoPlayerTipsView.h"
 #import "NSTimer+SJExtension.h"
-#import "SJVideoPlayer.h"
-#import "SJVideoPlayer.h"
 #import "SJVideoPreviewModel.h"
+#import "SJVideoPlayerMoreSetting.h"
+#import "SJVideoPlayerSettings.h"
+#import "SJVideoPlayerPrompt.h"
+
+#define SJGetFileWithName(name)    [@"SJVideoPlayer.bundle" stringByAppendingPathComponent:name]
 
 /*!
  *  Refresh interval for timed observations of AVPlayer
@@ -428,7 +431,8 @@ typedef NS_ENUM(NSUInteger, SJVideoPlayerPlayState) {
     self.playerItem = nil;
     self.player = nil;
     
-    [[SJVideoPlayer sharedPlayer] hiddenTitle];
+    [self.prompt hidden];
+    
 }
 
 - (void)jumpedToTime:(NSTimeInterval)time completionHandler:(void (^)(BOOL))completionHandler {
@@ -553,12 +557,15 @@ typedef NS_ENUM(NSUInteger, SJVideoPlayerPlayState) {
 
 - (void)controlView:(SJVideoPlayerControlView *)controlView selectedPreviewModel:(SJVideoPreviewModel *)model {
     NSInteger seconds = CMTimeGetSeconds(model.localTime);
-    [[SJVideoPlayer sharedPlayer] showTitle:[NSString stringWithFormat:@"跳转至: %@", [_controlView formatSeconds:seconds]] duration:-1];
+    
+    [self.prompt showTitle:[NSString stringWithFormat:@"跳转至: %@", [_controlView formatSeconds:seconds]] duration:-1];
+    
     [self jumpedToCMTime:model.localTime completionHandler:^(BOOL finished) {
-        [[SJVideoPlayer sharedPlayer] hiddenTitle];
+        [self.prompt hidden];
         if ( !finished ) { return;}
         if ( self.lastPlaybackRate > 0.f) [self _clickedPlay];
     }];
+    
 }
 
 - (void)controlView:(SJVideoPlayerControlView *)controlView clickedBtnTag:(SJVideoPlayControlViewTag)tag {
@@ -569,7 +576,7 @@ typedef NS_ENUM(NSUInteger, SJVideoPlayerPlayState) {
         }
             break;
         case SJVideoPlayControlViewTag_Pause: {
-            [[SJVideoPlayer sharedPlayer] showTitle:@"已暂停" duration:0.8];
+            [self.prompt showTitle:@"已暂停" duration:0.8];
             self.backstageRegistrar.userClickedPause = YES;
             [self _clickedPause];
         }
@@ -653,7 +660,7 @@ typedef NS_ENUM(NSUInteger, SJVideoPlayerPlayState) {
 - (void)_clickedLoadFailed {
     /// 重新加载
     _controlView.hiddenLoadFailedBtn = YES;
-    [SJVideoPlayer sharedPlayer].assetURL = [SJVideoPlayer sharedPlayer].assetURL;
+    if ( _clickedLoadFiledBtnCallBlock ) _clickedLoadFiledBtnCallBlock(self);
 }
 
 - (void)clickedMore {
@@ -903,7 +910,7 @@ __SJQuit:
     [moreSttingsM addObject:setting];
     if ( !setting.showTowSetting ) return;
     [setting.twoSettingItems enumerateObjectsUsingBlock:^(SJVideoPlayerMoreSettingTwoSetting * _Nonnull obj, NSUInteger idx, BOOL * _Nonnull stop) {
-        [self addSetting:obj container:moreSttingsM];
+        [self addSetting:(SJVideoPlayerMoreSetting *)obj container:moreSttingsM];
     }];
 }
 

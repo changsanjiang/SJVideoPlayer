@@ -7,7 +7,6 @@
 //
 
 #import "SJVideoPlayPreviewColCell.h"
-#import "SJVideoPlayer.h"
 #import <Masonry/Masonry.h>
 #import "UIView+SJExtension.h"
 #import "SJVideoPlayerControlView.h"

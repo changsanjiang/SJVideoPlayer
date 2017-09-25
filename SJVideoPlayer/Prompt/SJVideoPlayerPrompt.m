@@ -7,11 +7,8 @@
 //
 
 #import "SJVideoPlayerPrompt.h"
-
 #import <Masonry/Masonry.h>
-
 #import "UIView+SJExtension.h"
-
 #import "NSTimer+SJExtension.h"
 
 #define SJVideoPlayerPrompt_H   (50)

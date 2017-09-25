@@ -10,7 +10,7 @@
 
 #import "VideoPlayerCollectionViewCell.h"
 
-#import "SJVideoPlayer.h"
+#import "SJPlayer.h"
 
 
 @interface VideoPlayerCollectionViewController ()

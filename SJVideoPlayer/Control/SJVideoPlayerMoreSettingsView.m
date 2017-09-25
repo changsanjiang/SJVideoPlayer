@@ -8,7 +8,6 @@
 
 #import "SJVideoPlayerMoreSettingsView.h"
 #import "SJVideoPlayerMoreSettingsFooterSlidersView.h"
-#import "SJVideoPlayer.h"
 #import <Masonry/Masonry.h>
 #import "UIView+SJExtension.h"
 #import "SJVideoPlayerControlView.h"
@@ -141,7 +140,7 @@ static NSString *const SJVideoPlayerMoreSettingsFooterSlidersViewID = @"SJVideoP
 
 
 #import "SJVideoPlayerStringConstant.h"
-
+#import "SJVideoPlayerSettings.h"
 
 @implementation SJVideoPlayerMoreSettingsView (DBNotifications)
 

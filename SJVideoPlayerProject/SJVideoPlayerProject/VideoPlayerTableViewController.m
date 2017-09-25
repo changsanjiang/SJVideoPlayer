@@ -8,7 +8,7 @@
 
 #import "VideoPlayerTableViewController.h"
 
-#import "SJVideoPlayer.h"
+#import "SJPlayer.h"
 
 static NSString *const VideoPlayerTableViewCellID = @"VideoPlayerTableViewCell";
 

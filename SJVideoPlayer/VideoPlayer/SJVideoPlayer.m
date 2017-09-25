@@ -20,6 +20,9 @@
 #import "SJVideoPlayerStringConstant.h"
 #import "SJVideoPlayerPrompt.h"
 #import "SJVideoPlayerAssetCarrier.h"
+#import "SJVideoPlayerMoreSetting.h"
+#import "SJVideoPlayerMoreSettingTwoSetting.h"
+#import "SJVideoPlayerSettings.h"
 
 #pragma mark -
 
@@ -144,12 +147,18 @@
         _containerView.alpha = 1.0;
     }];
     
-    
     _assetCarrier = [[SJVideoPlayerAssetCarrier alloc] initWithAssetURL:_assetURL];
     
     // control
     _control.assetCarrier = _assetCarrier;
     _control.delegate = _presentView;
+    _control.prompt = self.prompt;
+    __weak typeof(self) _self = self;
+    _control.clickedLoadFiledBtnCallBlock = ^(SJVideoPlayerControl * _Nonnull control) {
+        __strong typeof(_self) self = _self;
+        if ( !self ) return;
+        self.assetURL = self.assetURL;
+    };
     
     // present
     _assetCarrier.presentViewSuperView = _containerView;
@@ -351,69 +360,3 @@
 
 @end
 
-
-@implementation SJVideoPlayerSettings@end
-
-
-@implementation SJVideoPlayerMoreSetting
-
-+ (UIColor *)titleColor {
-    UIColor *color = objc_getAssociatedObject(self, _cmd);
-    if ( color ) return color;
-    color = [UIColor whiteColor];
-    [self setTitleColor:color];
-    return color;
-}
-
-+ (void)setTitleColor:(UIColor *)titleColor {
-    objc_setAssociatedObject(self, @selector(titleColor), titleColor, OBJC_ASSOCIATION_RETAIN_NONATOMIC);
-}
-
-+ (float)titleFontSize {
-    float fontSize = [objc_getAssociatedObject(self, _cmd) floatValue];
-    if ( 0 != fontSize ) return fontSize;
-    fontSize = 12;
-    [self setTitleFontSize:fontSize];
-    return fontSize;
-}
-
-+ (void)setTitleFontSize:(float)titleFontSize {
-    objc_setAssociatedObject(self, @selector(titleFontSize), @(titleFontSize), OBJC_ASSOCIATION_RETAIN_NONATOMIC);
-}
-
-- (instancetype)initWithTitle:(NSString *)title image:(UIImage *)image clickedExeBlock:(void(^)(SJVideoPlayerMoreSetting *model))block {
-    return [self initWithTitle:title image:image showTowSetting:NO twoSettingTopTitle:@"" twoSettingItems:@[] clickedExeBlock:block];
-}
-
-- (instancetype)initWithTitle:(NSString *)title image:(UIImage *)image showTowSetting:(BOOL)showTowSetting twoSettingTopTitle:(nonnull NSString *)twoSettingTopTitle twoSettingItems:(nonnull NSArray<SJVideoPlayerMoreSettingTwoSetting *> *)items clickedExeBlock:(nonnull void (^)(SJVideoPlayerMoreSetting * _Nonnull))block {
-    self = [super init];
-    if ( !self ) return self;
-    self.title = title;
-    self.image = image;
-    self.twoSettingTopTitle = twoSettingTopTitle;
-    self.showTowSetting = showTowSetting;
-    self.twoSettingItems = items;
-    self.clickedExeBlock = block;
-    return self;
-}
-
-@end
-
-
-#pragma mark -
-
-@implementation SJVideoPlayerMoreSettingTwoSetting
-
-+ (void)setTopTitleFontSize:(float)topTitleFontSize {
-    objc_setAssociatedObject(self, @selector(topTitleFontSize), @(topTitleFontSize), OBJC_ASSOCIATION_RETAIN_NONATOMIC);
-}
-
-+ (float)topTitleFontSize {
-    float fontSize = [objc_getAssociatedObject(self, _cmd) floatValue];
-    if ( 0 != fontSize ) return fontSize;
-    fontSize = 14;
-    [self setTopTitleFontSize:fontSize];
-    return fontSize;
-}
-
-@end

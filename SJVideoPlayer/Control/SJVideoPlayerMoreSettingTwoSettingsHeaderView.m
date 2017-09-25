@@ -7,12 +7,13 @@
 //
 
 #import "SJVideoPlayerMoreSettingTwoSettingsHeaderView.h"
-#import "SJVideoPlayer.h"
 #import "NSAttributedString+ZFBAdditon.h"
 #import <Masonry/Masonry.h>
 #import "UIView+SJExtension.h"
+#import "SJVideoPlayerMoreSetting.h"
+#import "SJVideoPlayerMoreSettingTwoSettingsView.h"
 #import <SJBorderLineView/SJBorderlineView.h>
-
+#import "SJVideoPlayerMoreSettingTwoSetting.h"
 
 @interface SJVideoPlayerMoreSettingTwoSettingsHeaderView ()
 

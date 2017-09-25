@@ -8,7 +8,6 @@
 
 #import <UIKit/UIKit.h>
 
-#import "SJVideoPlayerAssetCarrier.h"
 
 typedef NS_ENUM(NSUInteger, SJVideoPlayerPresentOrientation) {
     SJVideoPlayerPresentOrientationPortrait = 0,
@@ -17,7 +16,7 @@ typedef NS_ENUM(NSUInteger, SJVideoPlayerPresentOrientation) {
 };
 
 
-@class AVPlayer, AVAsset;
+@class AVPlayer, AVAsset, SJVideoPlayerAssetCarrier;
 
 @interface SJVideoPlayerPresentView : UIView
 
@@ -65,6 +64,8 @@ typedef NS_ENUM(NSUInteger, SJVideoPlayerPresentOrientation) {
 
 
 #pragma mark -
+
+#import "SJVideoPlayerAssetCarrier.h"
 
 @interface SJVideoPlayerAssetCarrier (PresentViewExtention)
 

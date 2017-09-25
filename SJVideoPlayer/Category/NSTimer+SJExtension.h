@@ -10,6 +10,6 @@
 
 @interface NSTimer (SJExtension)
 
-+ (instancetype)sj_scheduledTimerWithTimeInterval:(NSTimeInterval)ti exeBlock:(void(^)())block repeats:(BOOL)yesOrNo;
++ (instancetype)sj_scheduledTimerWithTimeInterval:(NSTimeInterval)ti exeBlock:(void(^)(void))block repeats:(BOOL)yesOrNo;
 
 @end

@@ -101,7 +101,7 @@ static NSString * const VideoPlayerCollectionViewCellID = @"VideoPlayerCollectio
 
 
 
-#import <Masonry.h>
+#import <Masonry/Masonry.h>
 
 @interface VideoPlayerCollectionViewController (VideoPlayerCollectionViewCellDelegateMethods)<VideoPlayerCollectionViewCellDelegate>
 

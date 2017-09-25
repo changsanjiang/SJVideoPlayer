@@ -7,41 +7,29 @@
 //
 
 #import <UIKit/UIKit.h>
-
+#import "SJVideoPlayerControlViewEnumHeader.h"
 #import <CoreMedia/CMTime.h>
 
 NS_ASSUME_NONNULL_BEGIN
 
-#define SJPreviewImgW   ([UIScreen mainScreen].bounds.size.width * 0.35)
-#define SJPreViewImgH   (SJPreviewImgW * 9 / 16)
-#define SJContainerH    (49)
+
+#define SJSCREEN_H          CGRectGetHeight([[UIScreen mainScreen] bounds])
+#define SJSCREEN_W          CGRectGetWidth([[UIScreen mainScreen] bounds])
+
+#define SJSCREEN_MIN        MIN(SJSCREEN_H,SJSCREEN_W)
+#define SJSCREEN_MAX        MAX(SJSCREEN_H,SJSCREEN_W)
+
+#define SJPreviewImgW       ([UIScreen mainScreen].bounds.size.width * 0.35)
+#define SJPreViewImgH       (SJPreviewImgW * 9 / 16)
+#define SJContainerH        (49)
+#define SJMoreSettings_W    ceil(SJSCREEN_MAX * 0.382)
 
 
-@class SJSlider, SJVideoPlayerMoreSetting;
-
-typedef NS_ENUM(NSUInteger, SJVideoPlayControlViewTag) {
-    SJVideoPlayControlViewTag_Back,
-    SJVideoPlayControlViewTag_Full,
-    SJVideoPlayControlViewTag_Play,
-    SJVideoPlayControlViewTag_Pause,
-    SJVideoPlayControlViewTag_Replay,
-    SJVideoPlayControlViewTag_Preview,
-    SJVideoPlayControlViewTag_Lock,
-    SJVideoPlayControlViewTag_Unlock,
-    SJVideoPlayControlViewTag_LoadFailed,
-    SJVideoPlayControlViewTag_More,
-};
 
 
 
 
-typedef NS_ENUM(NSUInteger, SJVideoPlaySliderTag) {
-    SJVideoPlaySliderTag_Volume,
-    SJVideoPlaySliderTag_Brightness,
-    SJVideoPlaySliderTag_Rate,
-    SJVideoPlaySliderTag_Control,
-    SJVideoPlaySliderTag_Dragging,
-};
+@class SJSlider, SJVideoPlayerMoreSetting;
 
 
 
@@ -100,18 +88,6 @@ typedef NS_ENUM(NSUInteger, SJVideoPlaySliderTag) {
 @end
 
 
-#pragma mark -
-
-@interface SJVideoPreviewModel : NSObject
-
-@property (nonatomic, strong, readonly) UIImage *image;
-@property (nonatomic, assign, readonly) CMTime localTime;
-
-+ (instancetype)previewModelWithImage:(UIImage *)image localTime:(CMTime)time;
-
-@property (nonatomic, assign, readwrite) BOOL isHiddenControl;
-
-@end
 
 
 

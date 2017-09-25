@@ -25,7 +25,7 @@ typedef NS_ENUM(NSUInteger, SJVideoPlayerPresentOrientation) {
 
 - (void)setPlaceholderImage:(UIImage *)placeholderImage;
 
-@property (nonatomic, copy, readwrite) void(^back)();
+@property (nonatomic, copy, readwrite) void(^back)(void);
 
 - (void)sjReset;
 

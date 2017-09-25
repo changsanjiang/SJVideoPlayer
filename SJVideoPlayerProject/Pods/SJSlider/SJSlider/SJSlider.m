@@ -298,7 +298,7 @@
     }
     
     CGPoint offset = [pan velocityInView:pan.view];
-    self.value += offset.x / 10000;
+    self.value += offset.x / 15000;
 }
 
 // MARK: UI
@@ -311,7 +311,8 @@
     [self.containerView addSubview:self.traceImageView];
     
     [_containerView mas_makeConstraints:^(MASConstraintMaker *make) {
-        make.leading.trailing.offset(0);
+        make.leading.offset(0);
+        make.trailing.offset(0);
         make.center.offset(0);
     }];
     
@@ -356,8 +357,8 @@
     _thumbImageView = [self imageViewWithImageStr:@""];
     [self addSubview:self.thumbImageView];
     [_thumbImageView mas_makeConstraints:^(MASConstraintMaker *make) {
-        make.centerX.equalTo(_traceImageView.mas_trailing);
         make.centerY.equalTo(_thumbImageView.superview);
+        make.centerX.equalTo(_traceImageView.mas_trailing);
     }];
     return _thumbImageView;
 }
@@ -393,9 +394,15 @@
 
 - (void)observeValueForKeyPath:(NSString *)keyPath ofObject:(id)object change:(NSDictionary<NSKeyValueChangeKey,id> *)change context:(void *)context  {
     if ( ![keyPath isEqualToString:@"value"] ) return;
+    CGFloat rate = self.rate;
+    CGFloat minX = _thumbImageView.csj_w * 0.25 / self.containerView.csj_w;
+    // spacing
+    if ( 0 == minX ) {}
+    else if ( rate < minX ) rate = minX;
+    else if ( rate > (1 - minX) ) rate = 1 - minX;
     [_traceImageView mas_remakeConstraints:^(MASConstraintMaker *make) {
         make.top.leading.bottom.offset(0);
-        make.width.equalTo(_traceImageView.superview).multipliedBy(self.rate);
+        make.width.equalTo(_traceImageView.superview).multipliedBy(rate);
     }];
 }
 

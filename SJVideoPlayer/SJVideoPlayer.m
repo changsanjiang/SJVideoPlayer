@@ -21,7 +21,6 @@
 #import "SJVideoPlayerPrompt.h"
 #import "SJVideoPlayerAssetCarrier.h"
 
-
 #pragma mark -
 
 @interface SJVideoPlayer ()
@@ -103,7 +102,7 @@
 
 // MARK: Setter
 
-- (void)setClickedBackEvent:(void (^)())clickedBackEvent {
+- (void)setClickedBackEvent:(void (^)(void))clickedBackEvent {
     _presentView.back = clickedBackEvent;
 }
 
@@ -136,12 +135,15 @@
 - (void)_prepareToPlay {
     
     [self stop];
+
+    [[UIApplication sharedApplication]setStatusBarOrientation:UIInterfaceOrientationPortrait];
     
     [[NSNotificationCenter defaultCenter] postNotificationName:SJPlayerPrepareToPlayNotification object:nil];
     
     [UIView animateWithDuration:0.25 animations:^{
         _containerView.alpha = 1.0;
     }];
+    
     
     _assetCarrier = [[SJVideoPlayerAssetCarrier alloc] initWithAssetURL:_assetURL];
     

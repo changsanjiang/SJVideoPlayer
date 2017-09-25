@@ -10,7 +10,7 @@
 
 #import "UIView+SJExtension.h"
 
-#import <Masonry.h>
+#import <Masonry/Masonry.h>
 
 #import <SJBorderLineView/SJBorderlineView.h>
 

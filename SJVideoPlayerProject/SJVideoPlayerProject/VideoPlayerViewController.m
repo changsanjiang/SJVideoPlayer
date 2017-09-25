@@ -7,10 +7,8 @@
 //
 
 #import "VideoPlayerViewController.h"
-
 #import "SJVideoPlayer.h"
-
-#import <Masonry.h>
+#import <Masonry/Masonry.h>
 
 @interface VideoPlayerViewController ()
 
@@ -45,7 +43,7 @@
 
 //    player.assetURL = [NSURL URLWithString:@"http://streaming.youku.com/live2play/gtvyxjj_yk720.m3u8?auth_key=1525831956-0-0-4ec52cd453761e1e7f551decbb3eee6d"];
     
-//    player.assetURL = [NSURL URLWithString:@"http://video.cdn.lanwuzhe.com/1493370091000dfb1"];
+    player.assetURL = [NSURL URLWithString:@"http://video.cdn.lanwuzhe.com/1493370091000dfb1"];
     
 //    player.assetURL = [NSURL URLWithString:@"http://vod.lanwuzhe.com/9da7002189d34b60bbf82ac743241a61/d0539e7be21a4f8faa9fef69a67bc1fb-5287d2089db37e62345123a1be272f8b.mp4?video="];
     
@@ -159,14 +157,6 @@
         if ( !self ) return;
         [self.navigationController popViewControllerAnimated:YES];
     };
-    
-    NSLog(@"%zd - %s", __LINE__, __func__);
-}
-
-- (void)viewDidAppear:(BOOL)animated {
-    [super viewDidAppear:animated];
-    
-    [[SJVideoPlayer sharedPlayer] playWithURL:[NSURL URLWithString:@"http://vod.lanwuzhe.com/9da7002189d34b60bbf82ac743241a61/d0539e7be21a4f8faa9fef69a67bc1fb-5287d2089db37e62345123a1be272f8b.mp4?video="] jumpedToTime:self.currentTime];
     
     NSLog(@"%zd - %s", __LINE__, __func__);
 }

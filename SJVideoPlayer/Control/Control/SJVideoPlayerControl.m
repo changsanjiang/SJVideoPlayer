@@ -18,6 +18,7 @@
 #import "NSTimer+SJExtension.h"
 #import "SJVideoPlayer.h"
 #import "SJVideoPlayer.h"
+#import "SJVideoPreviewModel.h"
 
 /*!
  *  Refresh interval for timed observations of AVPlayer
@@ -436,7 +437,6 @@ typedef NS_ENUM(NSUInteger, SJVideoPlayerPlayState) {
 }
 
 - (void)_setEnabledGestureRecognizer:(BOOL)bol {
-    self.singleTap.enabled = bol;
     self.doubleTap.enabled = bol;
     if ( self.backstageRegistrar.fullScreen ) self.panGR.enabled = bol;
     else {
@@ -536,7 +536,7 @@ typedef NS_ENUM(NSUInteger, SJVideoPlayerPlayState) {
     return _SJPlayerQueue;
 }
 
-- (void)_addOperation:(void(^)())block {
+- (void)_addOperation:(void(^)(void))block {
     __weak typeof(self) _self = self;
     dispatch_async(self.SJPlayerQueue, ^{
         __strong typeof(_self) self = _self;
@@ -621,7 +621,6 @@ typedef NS_ENUM(NSUInteger, SJVideoPlayerPlayState) {
 }
 
 - (void)_clickedReplay {
-    [[NSNotificationCenter defaultCenter] postNotificationName:SJPlayerBeginPlayingNotification object:nil];
     [self _clickedPlay];
 }
 
@@ -1144,7 +1143,6 @@ __SJQuit:
             break;
         case SJVideoPlayerPlayState_Prepare: {
             [self _controlViewPrepareToPlayStatus];
-            [self _setEnabledGestureRecognizer:NO];
         }
             break;
         case SJVideoPlayerPlayState_Buffing: {
@@ -1153,7 +1151,6 @@ __SJQuit:
             break;
         case SJVideoPlayerPlayState_Playing: {
             [self _controlViewPlayingStatus];
-            [self _setEnabledGestureRecognizer:YES];
             [_controlView stopLoading];
         }
             break;
@@ -1301,6 +1298,7 @@ typedef NS_ENUM(NSUInteger, SJVerticalPanLocation) {
 }
 
 - (void)handleSingleTap:(UITapGestureRecognizer *)tap {
+    if ( self.backstageRegistrar.isLock ) return;
     if ( !self.controlView.hiddenMoreSettingsView ) {
         self.controlView.hiddenMoreSettingsView = YES;
         return;
@@ -1471,12 +1469,20 @@ static UIView *target = nil;
 }
 
 - (void)_controlViewPlayingStatus {
+    
     self.controlView.hiddenPlayBtn = YES;
     self.controlView.hiddenPauseBtn = NO;
     self.controlView.hiddenReplayBtn = YES;
     self.controlView.hiddenDraggingProgress = YES;
     self.controlView.hiddenLoadFailedBtn = YES;
-    self.controlView.hiddenControl = NO;
+    
+    // 锁定
+    if ( self.backstageRegistrar.isLock ) {
+        self.controlView.hiddenControl = YES;
+    }
+    else {
+        self.controlView.hiddenControl = NO;
+    }
     
     // 小屏
     if ( !self.backstageRegistrar.fullScreen ) {

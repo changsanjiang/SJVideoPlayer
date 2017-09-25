@@ -15,6 +15,9 @@
 NS_ASSUME_NONNULL_BEGIN
 
 
+
+
+
 #pragma mark -
 
 @interface SJVideoPlayer : NSObject
@@ -24,7 +27,7 @@ NS_ASSUME_NONNULL_BEGIN
 /*!
  *  clicked back btn exe block.
  */
-@property (nonatomic, copy, readwrite) void(^clickedBackEvent)();
+@property (nonatomic, copy, readwrite) void(^clickedBackEvent)(void);
 
 /*!
  *  if you want to play, you need to set it up.

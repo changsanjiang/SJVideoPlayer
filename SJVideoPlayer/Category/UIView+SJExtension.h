@@ -66,9 +66,11 @@
 
 - (void)praiseAnimationWithFatherView:(UIView *)fatherView;
 
-- (void)praiseAnimationWithFatherView:(UIView *)fatherView complete:(void(^)())block;
+- (void)praiseAnimationWithFatherView:(UIView *)fatherView complete:(void(^)(void))block;
 
 #pragma mark - 创建视图
+
++ (UIButton *)roundAttrTitleButtonWithTitle:(NSString *)title imageName:(NSString *)imageName tag:(NSInteger)tag target:(id)target sel:(SEL)sel;
 
 + (UIButton *)attrTitleButtonWithTitle:(NSString *)title imageName:(NSString *)imageName tag:(NSUInteger)tag target:(id)target sel:(SEL)sel;
 
@@ -98,6 +100,8 @@
 + (UICollectionView *)collectionViewWithItemSize:(CGSize)itemSize backgroundColor:(UIColor *)backgroundColor scrollDirection:(UICollectionViewScrollDirection)direction;
 
 + (UICollectionView *)collectionViewWithItemSize:(CGSize)itemSize backgroundColor:(UIColor *)backgroundColor scrollDirection:(UICollectionViewScrollDirection)direction headerSize:(CGSize)headerSize footerSize:(CGSize)footerSize;
+
++ (UICollectionView *)collectionViewWithItemSize:(CGSize)size backgroundColor:(UIColor *)backgroundColor scrollDirection:(UICollectionViewScrollDirection)scrollDirection minimumLineSpacing:(CGFloat)minimumLineSpacing minimumInteritemSpacing:(CGFloat)minimumInteritemSpacing;
 
 + (UIButton *)buttonWithImageName:(NSString *)imageName tag:(NSUInteger)tag target:(id)target sel:(SEL)sel;
 

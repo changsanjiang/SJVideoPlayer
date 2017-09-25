@@ -86,7 +86,7 @@ static NSString *const VideoPlayerTableViewCellID = @"VideoPlayerTableViewCell";
 
 #import "VideoPlayerTableViewCell.h"
 
-#import <Masonry.h>
+#import <Masonry/Masonry.h>
 
 @interface VideoPlayerTableViewController (VideoPlayerTableViewCellDelegateMethods)<VideoPlayerTableViewCellDelegate>
 

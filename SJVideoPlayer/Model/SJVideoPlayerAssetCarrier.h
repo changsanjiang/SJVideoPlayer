@@ -8,13 +8,13 @@
 
 #import <Foundation/Foundation.h>
 
-@class AVAsset, AVPlayer, AVPlayerItem;
+@class AVURLAsset, AVPlayer, AVPlayerItem;
 
 @interface SJVideoPlayerAssetCarrier : NSObject
 
 - (instancetype)initWithAssetURL:(NSURL *)assetURL;
 
-@property (nonatomic, strong, readonly) AVAsset *asset;
+@property (nonatomic, strong, readonly) AVURLAsset *asset;
 @property (nonatomic, strong, readonly) AVPlayerItem *playerItem;
 @property (nonatomic, strong, readonly) AVPlayer *player;
 @property (nonatomic, strong, readonly) NSURL *assetURL;

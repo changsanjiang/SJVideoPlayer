@@ -9,6 +9,17 @@
 #import "UIView+SJExtension.h"
 #import "NSAttributedString+ZFBAdditon.h"
 
+@interface _SJRoundButton : UIButton
+@end
+
+@implementation _SJRoundButton
+- (void)layoutSubviews {
+    [super layoutSubviews];
+    self.layer.cornerRadius = MIN(self.bounds.size.width, self.bounds.size.height) * 0.5;
+    self.clipsToBounds = YES;
+}
+@end
+
 @interface _SJRoundImageView : UIImageView
 @end
 
@@ -297,7 +308,7 @@
     [self.layer addAnimation:anima forKey:@"scaleAnimation"];
 }
 
-- (void)praiseAnimationWithFatherView:(UIView *)fatherView complete:(void(^)())block {
+- (void)praiseAnimationWithFatherView:(UIView *)fatherView complete:(void(^)(void))block {
     UIImageView *imageView = [[UIImageView alloc] initWithFrame:CGRectMake(0, 0, 50, 50)];
     NSInteger random = arc4random() % 8;
     NSString *imageName = [NSString stringWithFormat:@"zan_%02zd", random];
@@ -389,6 +400,16 @@
 }
 
 // MARK: 创建视图
+
++ (UIButton *)roundAttrTitleButtonWithTitle:(NSString *)title imageName:(NSString *)imageName tag:(NSInteger)tag target:(id)target sel:(SEL)sel {
+    UIButton *btn = [_SJRoundButton buttonWithType:UIButtonTypeCustom];
+    btn.tag = tag;
+    [btn addTarget:target action:sel forControlEvents:UIControlEventTouchUpInside];
+    [btn setAttributedTitle:[NSAttributedString mh_imageTextWithImage:[UIImage imageNamed:imageName] imageW:25 imageH:25 title:@"" fontSize:12 titleColor:[UIColor whiteColor] spacing:5] forState:UIControlStateNormal];
+    btn.titleLabel.numberOfLines = 3;
+    btn.titleLabel.textAlignment = NSTextAlignmentCenter;
+    return btn;
+}
 
 + (UIButton *)attrTitleButtonWithTitle:(NSString *)title imageName:(NSString *)imageName tag:(NSUInteger)tag target:(id)target sel:(SEL)sel {
     UIButton *btn = [UIButton buttonWithType:UIButtonTypeCustom];
@@ -495,6 +516,22 @@
     collectionView.showsHorizontalScrollIndicator = YES;
     collectionView.showsVerticalScrollIndicator = YES;
     
+    return collectionView;
+}
+
++ (UICollectionView *)collectionViewWithItemSize:(CGSize)itemSize backgroundColor:(UIColor *)backgroundColor scrollDirection:(UICollectionViewScrollDirection)scrollDirection minimumLineSpacing:(CGFloat)minimumLineSpacing minimumInteritemSpacing:(CGFloat)minimumInteritemSpacing {
+    CGFloat itemW = itemSize.width;
+    CGFloat itemH = itemSize.height;
+    UICollectionViewFlowLayout *flowLayout = [[UICollectionViewFlowLayout alloc] init];
+    flowLayout.itemSize = CGSizeMake(itemW, itemH);
+    flowLayout.minimumLineSpacing = minimumLineSpacing;
+    flowLayout.minimumInteritemSpacing = minimumInteritemSpacing;
+    flowLayout.scrollDirection = scrollDirection;
+    
+    UICollectionView *collectionView = [[UICollectionView alloc] initWithFrame:CGRectZero collectionViewLayout:flowLayout];
+    collectionView.backgroundColor = backgroundColor;
+    collectionView.showsHorizontalScrollIndicator = YES;
+    collectionView.showsVerticalScrollIndicator = YES;
     return collectionView;
 }
 

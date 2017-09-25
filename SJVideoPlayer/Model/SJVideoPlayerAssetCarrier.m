@@ -17,7 +17,7 @@
 - (instancetype)initWithAssetURL:(NSURL *)assetURL {
     self = [super init];
     if ( !self ) return nil;
-    _asset = [AVAsset assetWithURL:assetURL];
+    _asset = [AVURLAsset assetWithURL:assetURL];
     _playerItem = [AVPlayerItem playerItemWithAsset:_asset automaticallyLoadedAssetKeys:@[@"duration"]];
     _player = [AVPlayer playerWithPlayerItem:_playerItem];
     _assetURL = assetURL;

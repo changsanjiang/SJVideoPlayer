@@ -1,7 +1,7 @@
 PODS:
-  - Masonry (1.0.2)
+  - Masonry (1.1.0)
   - SJBorderLineView (0.0.3)
-  - SJSlider (0.0.4):
+  - SJSlider (0.0.9):
     - Masonry
 
 DEPENDENCIES:
@@ -10,9 +10,9 @@ DEPENDENCIES:
   - SJSlider
 
 SPEC CHECKSUMS:
-  Masonry: 7c429b56da9d4ee0bbb3ed77a5ea710d6a5df39e
+  Masonry: 678fab65091a9290e40e2832a55e7ab731aad201
   SJBorderLineView: 791d0ba12a8dd7be28b898e0c60b9e07b7f5c62f
-  SJSlider: 95c43055a83553717baca8a5d0bd78b443fbf223
+  SJSlider: c637f70af30f0e80dea0f092307260faa35913e2
 
 PODFILE CHECKSUM: 7ea53fcf4be298f26c29999e711cfaac6482809d
 

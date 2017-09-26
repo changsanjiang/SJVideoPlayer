@@ -7,15 +7,10 @@
 //
 
 #import "ViewController.h"
-
 #import "UIView+SJExtension.h"
-
 #import <Masonry/Masonry.h>
-
 #import "VideoPlayerViewController.h"
-
 #import "VideoPlayerTableViewController.h"
-
 #import "VideoPlayerCollectionViewController.h"
 
 @interface ViewController ()

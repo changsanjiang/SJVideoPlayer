@@ -19,7 +19,7 @@
 #import "SJVideoPreviewModel.h"
 #import "SJVideoPlayerMoreSetting.h"
 #import "SJVideoPlayerSettings.h"
-#import "SJVideoPlayerPrompt.h"
+#import <SJPrompt/SJPrompt.h>
 
 #define SJGetFileWithName(name)    [@"SJVideoPlayer.bundle" stringByAppendingPathComponent:name]
 

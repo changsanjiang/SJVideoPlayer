@@ -1,22 +1,44 @@
 //
-//  SJVideoPlayerPrompt.m
-//  SJVideoPlayerProject
+//  SJPrompt.m
+//  SJPromptProject
 //
-//  Created by BlueDancer on 2017/8/26.
+//  Created by BlueDancer on 2017/9/26.
 //  Copyright © 2017年 SanJiang. All rights reserved.
 //
 
-#import "SJVideoPlayerPrompt.h"
+#import "SJPrompt.h"
 #import <Masonry/Masonry.h>
-#import "UIView+SJExtension.h"
-#import "NSTimer+SJExtension.h"
-
-#define SJVideoPlayerPrompt_H   (50)
-
-#define SJVideoPlayerPrompt_F   (14)
 
 
-@interface SJVideoPlayerPrompt ()
+#define SJPrompt_H   (50)
+
+#define SJPrompt_F   (14)
+
+
+@interface NSTimer (SJPromptExtension)
+
++ (instancetype)sjprompt_scheduledTimerWithTimeInterval:(NSTimeInterval)ti exeBlock:(void(^)(void))block repeats:(BOOL)yesOrNo;
+
+@end
+
+@implementation NSTimer (SJPromptExtension)
+
++ (instancetype)sjprompt_scheduledTimerWithTimeInterval:(NSTimeInterval)ti exeBlock:(void(^)(void))block repeats:(BOOL)yesOrNo {
+    NSAssert(block, @"block 不可为空");
+    return [self scheduledTimerWithTimeInterval:ti target:self selector:@selector(sjprompt_exeTimerEvent:) userInfo:[block copy] repeats:yesOrNo];
+}
+
++ (void)sjprompt_exeTimerEvent:(NSTimer *)timer {
+    void(^block)(void) = timer.userInfo;
+    if ( block ) block();
+}
+
+@end
+
+
+
+
+@interface SJPrompt ()
 
 @property (nonatomic, strong, readwrite) UIView *presentView;
 
@@ -32,7 +54,7 @@
 
 
 
-@interface SJVideoPlayerPrompt (DBObservers)
+@interface SJPrompt (DBObservers)
 
 - (void)_installObservers;
 
@@ -43,13 +65,13 @@
 
 #pragma mark -
 
-@implementation SJVideoPlayerPrompt
+@implementation SJPrompt
 
 @synthesize backgroundView = _backgroundView;
 @synthesize promptLabel = _promptLabel;
 
 + (instancetype)promptWithPresentView:(UIView *)presentView {
-    SJVideoPlayerPrompt *prompt = [SJVideoPlayerPrompt new];
+    SJPrompt *prompt = [SJPrompt new];
     prompt.presentView = presentView;
     return prompt;
 }
@@ -71,13 +93,12 @@
 // MARK: Public
 
 - (void)showTitle:(NSString *)title duration:(NSTimeInterval)duration {
-    [[UIApplication sharedApplication].keyWindow addSubview:self.backgroundView];
-    CGFloat width = [self sizeFortitle:title size:CGSizeMake(1000, SJVideoPlayerPrompt_H)].width;
+    [_presentView addSubview:self.backgroundView];
+    CGFloat width = [self sizeFortitle:title size:CGSizeMake(1000, SJPrompt_H)].width;
     [self.backgroundView mas_remakeConstraints:^(MASConstraintMaker *make) {
         make.center.equalTo(_presentView);
-        make.size.mas_offset(CGSizeMake(width + 24, SJVideoPlayerPrompt_H));
+        make.size.mas_offset(CGSizeMake(width + 24, SJPrompt_H));
     }];
-    _backgroundView.transform = _presentView.transform;
     _promptLabel.text = title;
     [self _show];
     [_hiddenPromptTimer invalidate];
@@ -132,14 +153,18 @@
 
 - (UILabel *)promptLabel {
     if ( _promptLabel ) return _promptLabel;
-    _promptLabel = [UILabel labelWithFontSize:SJVideoPlayerPrompt_F textColor:[UIColor whiteColor] alignment:NSTextAlignmentCenter];
+    _promptLabel = [UILabel new];
+    _promptLabel.font = [UIFont systemFontOfSize:SJPrompt_F];
+    _promptLabel.textAlignment = NSTextAlignmentCenter;
+    _promptLabel.textColor = [UIColor whiteColor];
+    _promptLabel.backgroundColor = [UIColor blackColor];
     return _promptLabel;
 }
 
 - (NSTimer *)hiddenPromptTimer {
     if ( _hiddenPromptTimer ) return _hiddenPromptTimer;
     __weak typeof(self) _self = self;
-    _hiddenPromptTimer = [NSTimer sj_scheduledTimerWithTimeInterval:0.1 exeBlock:^{
+    _hiddenPromptTimer = [NSTimer sjprompt_scheduledTimerWithTimeInterval:0.1 exeBlock:^{
         __strong typeof(_self) self = _self;
         if ( !self ) return;
         self.hiddenPoint += 0.1;
@@ -151,15 +176,15 @@
     CGSize result;
     if ( [title respondsToSelector:@selector(boundingRectWithSize:options:attributes:context:)] ) {
         NSMutableDictionary *attr = [NSMutableDictionary new];
-        attr[NSFontAttributeName] = [UIFont systemFontOfSize:SJVideoPlayerPrompt_F];
+        attr[NSFontAttributeName] = [UIFont systemFontOfSize:SJPrompt_F];
         CGRect rect = [title boundingRectWithSize:size
-                                         options:NSStringDrawingUsesLineFragmentOrigin | NSStringDrawingUsesFontLeading
-                                      attributes:attr context:nil];
+                                          options:NSStringDrawingUsesLineFragmentOrigin | NSStringDrawingUsesFontLeading
+                                       attributes:attr context:nil];
         result = rect.size;
     } else {
 #pragma clang diagnostic push
 #pragma clang diagnostic ignored "-Wdeprecated-declarations"
-        result = [title sizeWithFont:[UIFont systemFontOfSize:SJVideoPlayerPrompt_F] constrainedToSize:size lineBreakMode:NSLineBreakByWordWrapping];
+        result = [title sizeWithFont:[UIFont systemFontOfSize:SJPrompt_F] constrainedToSize:size lineBreakMode:NSLineBreakByWordWrapping];
 #pragma clang diagnostic pop
     }
     return result;
@@ -170,7 +195,7 @@
 
 #pragma mark -
 
-@implementation SJVideoPlayerPrompt (DBObservers)
+@implementation SJPrompt (DBObservers)
 
 - (void)_installObservers {
     [self addObserver:self  forKeyPath:@"hiddenPoint" options:NSKeyValueObservingOptionNew context:nil];
@@ -189,3 +214,4 @@
 }
 
 @end
+

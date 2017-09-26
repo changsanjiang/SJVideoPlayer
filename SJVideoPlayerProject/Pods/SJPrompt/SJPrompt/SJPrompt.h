@@ -1,8 +1,8 @@
 //
-//  SJVideoPlayerPrompt.h
-//  SJVideoPlayerProject
+//  SJPrompt.h
+//  SJPromptProject
 //
-//  Created by BlueDancer on 2017/8/26.
+//  Created by BlueDancer on 2017/9/26.
 //  Copyright © 2017年 SanJiang. All rights reserved.
 //
 
@@ -10,7 +10,7 @@
 
 @class UIView;
 
-@interface SJVideoPlayerPrompt : NSObject
+@interface SJPrompt : NSObject
 
 + (instancetype)promptWithPresentView:(UIView *)presentView;
 
@@ -22,3 +22,4 @@
 - (void)hidden;
 
 @end
+

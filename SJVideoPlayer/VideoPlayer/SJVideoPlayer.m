@@ -18,7 +18,7 @@
 #import "SJVideoPlayerPresentView.h"
 #import "SJVideoPlayerControl.h"
 #import "SJVideoPlayerStringConstant.h"
-#import "SJVideoPlayerPrompt.h"
+#import <SJPrompt/SJPrompt.h>
 #import "SJVideoPlayerAssetCarrier.h"
 #import "SJVideoPlayerMoreSetting.h"
 #import "SJVideoPlayerMoreSettingTwoSetting.h"
@@ -31,7 +31,7 @@
 @property (nonatomic, strong, readonly) UIView *containerView;
 @property (nonatomic, strong, readonly) SJVideoPlayerControl *control;
 @property (nonatomic, strong, readonly) SJVideoPlayerPresentView *presentView;
-@property (nonatomic, strong, readonly) SJVideoPlayerPrompt *prompt;
+@property (nonatomic, strong, readonly) SJPrompt *prompt;
 
 @property (nonatomic, strong, readonly) SJVideoPlayerSettings *settings;
 
@@ -187,9 +187,9 @@
     return _control;
 }
 
-- (SJVideoPlayerPrompt *)prompt {
+- (SJPrompt *)prompt {
     if ( _prompt ) return _prompt;
-    _prompt = [SJVideoPlayerPrompt promptWithPresentView:self.presentView];
+    _prompt = [SJPrompt promptWithPresentView:self.presentView];
     return _prompt;
 }
 

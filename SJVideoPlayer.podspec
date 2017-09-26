@@ -1,7 +1,7 @@
 
 Pod::Spec.new do |s|
 s.name         = 'SJVideoPlayer'
-s.version      = '0.0.6'
+s.version      = '0.0.7'
 s.summary      = 'video player.'
 s.description  = 'https://github.com/changsanjiang/SJVideoPlayer/blob/master/README.md'
 s.homepage     = 'https://github.com/changsanjiang/SJVideoPlayer'
@@ -15,7 +15,7 @@ s.requires_arc = true
 s.dependency 'Masonry'
 s.dependency 'SJSlider'
 s.dependency 'SJBorderLineView'
-
+s.dependency 'SJPrompt'
 
 
 s.source_files = 'SJVideoPlayer/SJPlayer.h'
@@ -37,7 +37,6 @@ s.subspec 'Control' do |ss|
     ss.dependency 'SJVideoPlayer/Category'
     ss.dependency 'SJVideoPlayer/Loading'
     ss.dependency 'SJVideoPlayer/Constant'
-    ss.dependency 'SJVideoPlayer/Prompt'
 end
 
 
@@ -59,19 +58,12 @@ s.subspec 'Present' do |ss|
 end
 
 
-s.subspec 'Prompt' do |ss|
-    ss.source_files = 'SJVideoPlayer/Prompt/*.{h,m}'
-    ss.dependency 'SJVideoPlayer/Category'
-end
-
-
 s.subspec 'VideoPlayer' do |ss|
     ss.source_files = 'SJVideoPlayer/VideoPlayer/*.{h,m}'
     ss.dependency 'SJVideoPlayer/Control'
     ss.dependency 'SJVideoPlayer/Loading'
     ss.dependency 'SJVideoPlayer/Model'
     ss.dependency 'SJVideoPlayer/Present'
-    ss.dependency 'SJVideoPlayer/Prompt'
     ss.dependency 'SJVideoPlayer/Constant'
 end
 

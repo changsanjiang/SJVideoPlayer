@@ -14,7 +14,7 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
-@class UIView, AVAsset, AVPlayer, AVPlayerItem, UIScrollView, UIImage, SJVideoPlayerSettings, SJVideoPlayerMoreSetting, SJVideoPlayerPrompt;
+@class UIView, AVAsset, AVPlayer, AVPlayerItem, UIScrollView, UIImage, SJVideoPlayerSettings, SJVideoPlayerMoreSetting, SJPrompt;
 
 
 @protocol SJVideoPlayerControlDelegate;
@@ -35,7 +35,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 @property (nonatomic, weak, readwrite, nullable) NSArray<SJVideoPlayerMoreSetting *> *moreSettings;
 
-@property (nonatomic, weak, readwrite) SJVideoPlayerPrompt *prompt;
+@property (nonatomic, weak, readwrite) SJPrompt *prompt;
 
 @property (nonatomic, copy, readwrite) void(^clickedLoadFiledBtnCallBlock)(SJVideoPlayerControl *control);
 

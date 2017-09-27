@@ -21,7 +21,6 @@
 		772E4EFA1F792AD60068A058 /* SJVideoPlayer.m in Sources */ = {isa = PBXBuildFile; fileRef = 77AFBF1D1F792A5A0088328F /* SJVideoPlayer.m */; };
 		772E4EFD1F792B0C0068A058 /* SJVideoPlayerMoreSetting.m in Sources */ = {isa = PBXBuildFile; fileRef = 772E4EFC1F792B0C0068A058 /* SJVideoPlayerMoreSetting.m */; };
 		772E4F001F792B460068A058 /* SJVideoPlayerMoreSettingTwoSetting.m in Sources */ = {isa = PBXBuildFile; fileRef = 772E4EFF1F792B460068A058 /* SJVideoPlayerMoreSettingTwoSetting.m */; };
-		7786CB651F641BC200093612 /* UINavigationController+ZFFullscreenPopGesture.m in Sources */ = {isa = PBXBuildFile; fileRef = 7786CB641F641BC200093612 /* UINavigationController+ZFFullscreenPopGesture.m */; };
 		7798A3101F519125004CB9BA /* SJVideoPlayer.png in Resources */ = {isa = PBXBuildFile; fileRef = 7798A30F1F519125004CB9BA /* SJVideoPlayer.png */; };
 		7798A3161F51AB78004CB9BA /* sample0.png in Resources */ = {isa = PBXBuildFile; fileRef = 7798A3111F51AB78004CB9BA /* sample0.png */; };
 		7798A3171F51AB78004CB9BA /* sample1.png in Resources */ = {isa = PBXBuildFile; fileRef = 7798A3121F51AB78004CB9BA /* sample1.png */; };
@@ -81,8 +80,6 @@
 		772E4EFC1F792B0C0068A058 /* SJVideoPlayerMoreSetting.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = SJVideoPlayerMoreSetting.m; sourceTree = "<group>"; };
 		772E4EFE1F792B460068A058 /* SJVideoPlayerMoreSettingTwoSetting.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = SJVideoPlayerMoreSettingTwoSetting.h; sourceTree = "<group>"; };
 		772E4EFF1F792B460068A058 /* SJVideoPlayerMoreSettingTwoSetting.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = SJVideoPlayerMoreSettingTwoSetting.m; sourceTree = "<group>"; };
-		7786CB631F641BC200093612 /* UINavigationController+ZFFullscreenPopGesture.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "UINavigationController+ZFFullscreenPopGesture.h"; sourceTree = "<group>"; };
-		7786CB641F641BC200093612 /* UINavigationController+ZFFullscreenPopGesture.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "UINavigationController+ZFFullscreenPopGesture.m"; sourceTree = "<group>"; };
 		7798A30F1F519125004CB9BA /* SJVideoPlayer.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = SJVideoPlayer.png; sourceTree = "<group>"; };
 		7798A3111F51AB78004CB9BA /* sample0.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = sample0.png; sourceTree = "<group>"; };
 		7798A3121F51AB78004CB9BA /* sample1.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = sample1.png; sourceTree = "<group>"; };
@@ -195,8 +192,6 @@
 		7700D0401F502CF700B043F8 /* Category */ = {
 			isa = PBXGroup;
 			children = (
-				7786CB631F641BC200093612 /* UINavigationController+ZFFullscreenPopGesture.h */,
-				7786CB641F641BC200093612 /* UINavigationController+ZFFullscreenPopGesture.m */,
 				7798A3481F540A16004CB9BA /* NSAttributedString+ZFBAdditon.h */,
 				7798A3491F540A16004CB9BA /* NSAttributedString+ZFBAdditon.m */,
 				77BED2F21F5FBD4F0024D879 /* UIView+SJExtension.h */,
@@ -568,7 +563,6 @@
 			buildActionMask = 2147483647;
 			files = (
 				77AFBF101F791D140088328F /* SJVideoPlayPreviewColCell.m in Sources */,
-				7786CB651F641BC200093612 /* UINavigationController+ZFFullscreenPopGesture.m in Sources */,
 				77CD7AC61F5958A400EDCC25 /* SJVideoPlayerAssetCarrier.m in Sources */,
 				77AA66F01F6233920015C906 /* UINavigationController+SJExtension.m in Sources */,
 				7798A3CE1F5443B0004CB9BA /* VideoPlayerTableViewCell.m in Sources */,

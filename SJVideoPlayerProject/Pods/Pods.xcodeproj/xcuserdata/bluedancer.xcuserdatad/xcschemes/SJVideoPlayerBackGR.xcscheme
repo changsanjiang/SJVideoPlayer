@@ -14,9 +14,9 @@
             buildForAnalyzing = "YES">
             <BuildableReference
                BuildableIdentifier = "primary"
-               BlueprintIdentifier = "61627C3A658A4E6DC588874B53B96F29"
-               BuildableName = "libSJSlider.a"
-               BlueprintName = "SJSlider"
+               BlueprintIdentifier = "2D15757A354B9B4829AAF60916180F1B"
+               BuildableName = "libSJVideoPlayerBackGR.a"
+               BlueprintName = "SJVideoPlayerBackGR"
                ReferencedContainer = "container:Pods.xcodeproj">
             </BuildableReference>
          </BuildActionEntry>
@@ -47,9 +47,9 @@
       <MacroExpansion>
          <BuildableReference
             BuildableIdentifier = "primary"
-            BlueprintIdentifier = "61627C3A658A4E6DC588874B53B96F29"
-            BuildableName = "libSJSlider.a"
-            BlueprintName = "SJSlider"
+            BlueprintIdentifier = "2D15757A354B9B4829AAF60916180F1B"
+            BuildableName = "libSJVideoPlayerBackGR.a"
+            BlueprintName = "SJVideoPlayerBackGR"
             ReferencedContainer = "container:Pods.xcodeproj">
          </BuildableReference>
       </MacroExpansion>

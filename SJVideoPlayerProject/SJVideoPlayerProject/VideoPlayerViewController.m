@@ -179,10 +179,6 @@
     [[SJVideoPlayer sharedPlayer] stop];
 }
 
-- (void)dealloc {
-    [[SJVideoPlayer sharedPlayer] stop];
-}
-
 - (void)didReceiveMemoryWarning {
     NSLog(@"%zd - %s", __LINE__, __func__);
 }

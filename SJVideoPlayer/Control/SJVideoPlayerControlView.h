@@ -21,10 +21,10 @@ NS_ASSUME_NONNULL_BEGIN
 
 #define SJPreviewImgH       (60 * SJSCREEN_MIN / 375)
 #define SJContainerH        (49)
+
+
+
 #define SJMoreSettings_W    ceil(SJSCREEN_MAX * 0.382)
-
-
-
 
 
 

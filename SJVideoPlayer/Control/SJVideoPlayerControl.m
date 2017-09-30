@@ -361,7 +361,7 @@ typedef NS_ENUM(NSUInteger, SJVideoPlayerPlayState) {
             dispatch_async(dispatch_get_main_queue(), ^{
                 if ( 0 == imagesM.count ) return ;
                 self.controlView.previewImages = imagesM;
-                self.controlView.hiddenPreviewBtn = NO;
+                if ( self.backstageRegistrar.fullScreen ) self.controlView.hiddenPreviewBtn = NO;
                 self.backstageRegistrar.generatedImages = YES;
             });
             
@@ -1482,7 +1482,6 @@ static UIView *target = nil;
     self.controlView.hiddenReplayBtn = YES;
     self.controlView.hiddenDraggingProgress = YES;
     self.controlView.hiddenLoadFailedBtn = YES;
-    self.controlView.hiddenMoreBtn = NO;
     
     // 锁定
     if ( self.backstageRegistrar.isLock ) {
@@ -1492,12 +1491,17 @@ static UIView *target = nil;
         self.controlView.hiddenControl = NO;
     }
     
-    if ( self.backstageRegistrar.generatedImages ) {
-        self.controlView.hiddenPreviewBtn = NO;
-    }
-    else {
+    // 小屏
+    if ( !self.backstageRegistrar.fullScreen ) {
         self.controlView.hiddenPreviewBtn = YES;
         self.controlView.hiddenPreview = YES;
+        self.controlView.hiddenMoreBtn = YES;
+    }
+    // 全屏
+    else {
+        self.controlView.hiddenMoreBtn = NO;
+        if ( self.backstageRegistrar.generatedImages ) self.controlView.hiddenPreviewBtn = NO;
+        else { self.controlView.hiddenPreviewBtn = YES; self.controlView.hiddenPreview = YES;}
     }
 }
 
@@ -1518,9 +1522,11 @@ static UIView *target = nil;
 
 - (void)_controlViewSmallScreen {
     self.controlView.hiddenControl = NO;
+    self.controlView.hiddenPreview = YES;
     self.controlView.hiddenMoreSettingsView = YES;
     self.controlView.hiddenMoreSettingsTwoLevelView = YES;
-    if ( self.backstageRegistrar.generatedImages ) self.controlView.hiddenPreviewBtn = NO;
+    self.controlView.hiddenMoreBtn = YES;
+    self.controlView.hiddenPreviewBtn = YES;
     if ( self.backstageRegistrar.playingOnCell ) self.controlView.hiddenBackBtn = YES;
 }
 
@@ -1528,6 +1534,7 @@ static UIView *target = nil;
     self.controlView.hiddenControl = NO;
     self.controlView.hiddenBackBtn = NO;
     if ( self.backstageRegistrar.generatedImages ) self.controlView.hiddenPreviewBtn = NO;
+    self.controlView.hiddenMoreBtn = NO;
 }
 
 - (void)_controlViewLockScreen {

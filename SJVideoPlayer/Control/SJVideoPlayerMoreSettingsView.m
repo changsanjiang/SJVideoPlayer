@@ -22,6 +22,10 @@
 @interface SJVideoPlayerMoreSettingsView (UICollectionViewDataSourceMethods)<UICollectionViewDataSource>
 @end
 
+@interface SJVideoPlayerMoreSettingsView (UICollectionViewDelegateMethods)<UICollectionViewDelegate>
+@end
+
+
 static NSString *const SJVideoPlayerMoreSettingsColCellID = @"SJVideoPlayerMoreSettingsColCell";
 
 static NSString *const SJVideoPlayerMoreSettingsFooterSlidersViewID = @"SJVideoPlayerMoreSettingsFooterSlidersView";
@@ -84,21 +88,28 @@ static NSString *const SJVideoPlayerMoreSettingsFooterSlidersViewID = @"SJVideoP
 
 - (void)_SJVideoPlayerMoreSettingsViewSetupUI {
     self.backgroundColor = [UIColor colorWithWhite:0 alpha:0.85];
-    
     [self addSubview:self.colView];
     [_colView mas_makeConstraints:^(MASConstraintMaker *make) {
-        make.top.offset(25);
-        make.leading.bottom.trailing.offset(0);
+        make.edges.offset(0);
     }];
+    self.layer.shadowOffset = CGSizeMake(-1, 0);
+    self.layer.shadowColor = [UIColor colorWithWhite:0 alpha:0.5].CGColor;
+    self.layer.shadowRadius = 1;
+    self.layer.shadowOpacity = 1;
 }
 
 - (UICollectionView *)colView {
     if ( _colView ) return _colView;
-    CGFloat itemW_H = floor(SJMoreSettings_W / 3);
-    _colView = [UICollectionView collectionViewWithItemSize:CGSizeMake(itemW_H, itemW_H) backgroundColor:[UIColor clearColor] scrollDirection:UICollectionViewScrollDirectionVertical headerSize:CGSizeZero footerSize:CGSizeMake(SJMoreSettings_W, 200)];
+    
+    UICollectionViewFlowLayout *flowLayout = [[UICollectionViewFlowLayout alloc] init];
+    flowLayout.scrollDirection = UICollectionViewScrollDirectionVertical;
+    flowLayout.footerReferenceSize = CGSizeMake(0, 200);
+    _colView = [[UICollectionView alloc] initWithFrame:CGRectZero collectionViewLayout:flowLayout];
+
     [_colView registerClass:NSClassFromString(SJVideoPlayerMoreSettingsColCellID) forCellWithReuseIdentifier:SJVideoPlayerMoreSettingsColCellID];
     [_colView registerClass:NSClassFromString(SJVideoPlayerMoreSettingsFooterSlidersViewID) forSupplementaryViewOfKind:UICollectionElementKindSectionFooter withReuseIdentifier:SJVideoPlayerMoreSettingsFooterSlidersViewID];
     _colView.dataSource = self;
+    _colView.delegate = self;
     return _colView;
 }
 
@@ -139,6 +150,34 @@ static NSString *const SJVideoPlayerMoreSettingsFooterSlidersViewID = @"SJVideoP
 
 
 
+@implementation SJVideoPlayerMoreSettingsView (UICollectionViewDelegateMethods)
+
+- (CGSize)collectionView:(UICollectionView *)collectionView layout:(UICollectionViewLayout*)collectionViewLayout sizeForItemAtIndexPath:(NSIndexPath *)indexPath {
+    return CGSizeMake(self.csj_w / 3 - 1, self.csj_w / 3);
+}
+
+- (UIEdgeInsets)collectionView:(UICollectionView *)collectionView layout:(UICollectionViewLayout*)collectionViewLayout insetForSectionAtIndex:(NSInteger)section {
+    if ( 0 == section ) return UIEdgeInsetsMake(20, 0, 0, 0);
+    return UIEdgeInsetsMake(0, 0, 0, 0);
+}
+
+- (CGFloat)collectionView:(UICollectionView *)collectionView layout:(UICollectionViewLayout*)collectionViewLayout minimumInteritemSpacingForSectionAtIndex:(NSInteger)section {
+    return 0;
+}
+
+- (CGFloat)collectionView:(UICollectionView *)collectionView layout:(UICollectionViewLayout*)collectionViewLayout minimumLineSpacingForSectionAtIndex:(NSInteger)section {
+    return 0;
+}
+
+@end
+
+
+
+
+#pragma mark -
+
+
+
 #import "SJVideoPlayerStringConstant.h"
 #import "SJVideoPlayerSettings.h"
 
@@ -146,6 +185,7 @@ static NSString *const SJVideoPlayerMoreSettingsFooterSlidersViewID = @"SJVideoP
 
 - (void)_installNotifications {
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(settingsPlayerNotification:) name:SJSettingsPlayerNotification object:nil];
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(reset) name:SJPlayerFullScreenNotitication object:nil];
 }
 
 - (void)_removeNotifications {
@@ -168,6 +208,8 @@ static NSString *const SJVideoPlayerMoreSettingsFooterSlidersViewID = @"SJVideoP
     }];
 }
 
+- (void)reset {
+    [self.colView reloadData];
+}
+
 @end
-
-

@@ -17,6 +17,9 @@
 @interface SJVideoPlayerMoreSettingTwoSettingsView (ColDataSourceMethods)<UICollectionViewDataSource>
 @end
 
+@interface SJVideoPlayerMoreSettingTwoSettingsView (UICollectionViewDelegateMethods)<UICollectionViewDelegate>
+@end
+
 
 static NSString *const SJVideoPlayerMoreSettingTwoSettingsColCellID = @"SJVideoPlayerMoreSettingTwoSettingsColCell";
 
@@ -59,15 +62,24 @@ static NSString *const SJVideoPlayerMoreSettingTwoSettingsHeaderViewID = @"SJVid
     [_colView mas_makeConstraints:^(MASConstraintMaker *make) {
         make.edges.offset(0);
     }];
+    
+    self.layer.shadowOffset = CGSizeMake(-1, 0);
+    self.layer.shadowColor = [UIColor colorWithWhite:0 alpha:0.5].CGColor;
+    self.layer.shadowRadius = 1;
+    self.layer.shadowOpacity = 1;
 }
 
 - (UICollectionView *)colView {
     if ( _colView ) return _colView;
-    CGFloat itemW_H = floor(SJMoreSettings_W / 3);
-    _colView = [UICollectionView collectionViewWithItemSize:CGSizeMake(itemW_H, itemW_H) backgroundColor:[UIColor clearColor] scrollDirection:UICollectionViewScrollDirectionVertical headerSize:CGSizeMake(SJMoreSettings_W, [SJVideoPlayerMoreSettingTwoSetting topTitleFontSize] * 1.2 + 20) footerSize:CGSizeZero];
+    UICollectionViewFlowLayout *flowLayout = [[UICollectionViewFlowLayout alloc] init];
+    flowLayout.scrollDirection = UICollectionViewScrollDirectionVertical;
+    flowLayout.headerReferenceSize = CGSizeMake(0, [SJVideoPlayerMoreSettingTwoSetting topTitleFontSize] * 1.2 + 20);
+    _colView = [[UICollectionView alloc] initWithFrame:CGRectZero collectionViewLayout:flowLayout];
     [_colView registerClass:NSClassFromString(SJVideoPlayerMoreSettingTwoSettingsColCellID) forCellWithReuseIdentifier:SJVideoPlayerMoreSettingTwoSettingsColCellID];
     [_colView registerClass:NSClassFromString(SJVideoPlayerMoreSettingTwoSettingsHeaderViewID) forSupplementaryViewOfKind:UICollectionElementKindSectionHeader withReuseIdentifier:SJVideoPlayerMoreSettingTwoSettingsHeaderViewID];
     _colView.dataSource = self;
+    _colView.delegate = self;
+    
     return _colView;
 }
 
@@ -92,10 +104,31 @@ static NSString *const SJVideoPlayerMoreSettingTwoSettingsHeaderViewID = @"SJVid
 }
 
 - (UICollectionReusableView *)collectionView:(UICollectionView *)collectionView viewForSupplementaryElementOfKind:(NSString *)kind atIndexPath:(NSIndexPath *)indexPath {
-    if ( ![kind isEqualToString:UICollectionElementKindSectionHeader] ) return nil;
     self.headerView = [collectionView dequeueReusableSupplementaryViewOfKind:UICollectionElementKindSectionHeader withReuseIdentifier:SJVideoPlayerMoreSettingTwoSettingsHeaderViewID forIndexPath:indexPath];
     self.headerView.model = self.twoLevelSettings;
     return self.headerView;
+}
+
+@end
+
+
+
+@implementation SJVideoPlayerMoreSettingTwoSettingsView (UICollectionViewDelegateMethods)
+
+- (CGSize)collectionView:(UICollectionView *)collectionView layout:(UICollectionViewLayout*)collectionViewLayout sizeForItemAtIndexPath:(NSIndexPath *)indexPath {
+    return CGSizeMake(self.csj_w / 3 - 1, self.csj_w / 3);
+}
+
+- (UIEdgeInsets)collectionView:(UICollectionView *)collectionView layout:(UICollectionViewLayout*)collectionViewLayout insetForSectionAtIndex:(NSInteger)section {
+    return UIEdgeInsetsMake(0, 0, 0, 0);
+}
+
+- (CGFloat)collectionView:(UICollectionView *)collectionView layout:(UICollectionViewLayout*)collectionViewLayout minimumInteritemSpacingForSectionAtIndex:(NSInteger)section {
+    return 0;
+}
+
+- (CGFloat)collectionView:(UICollectionView *)collectionView layout:(UICollectionViewLayout*)collectionViewLayout minimumLineSpacingForSectionAtIndex:(NSInteger)section {
+    return 0;
 }
 
 @end

@@ -12,19 +12,18 @@
 #import "UIView+SJExtension.h"
 #import "SJVideoPlayerMoreSetting.h"
 #import "SJVideoPlayerMoreSettingTwoSettingsView.h"
-#import <SJBorderLineView/SJBorderlineView.h>
 #import "SJVideoPlayerMoreSettingTwoSetting.h"
 
 @interface SJVideoPlayerMoreSettingTwoSettingsHeaderView ()
 
-@property (nonatomic, strong, readonly) SJBorderlineView *backgroundView;
+@property (nonatomic, strong, readonly) UIView *line;
 @property (nonatomic, strong, readonly) UILabel *titleLabel;
 
 @end
 
 @implementation SJVideoPlayerMoreSettingTwoSettingsHeaderView
 
-@synthesize backgroundView = _backgroundView;
+@synthesize line = _line;
 @synthesize titleLabel = _titleLabel;
 
 - (instancetype)initWithFrame:(CGRect)frame {
@@ -41,24 +40,27 @@
 }
 
 - (void)_SJVideoPlayerMoreSettingTwoSettingsHeaderViewSetupUI {
-    [self addSubview:self.backgroundView];
-    [self.backgroundView addSubview:self.titleLabel];
-    
-    [_backgroundView mas_makeConstraints:^(MASConstraintMaker *make) {
-        make.edges.offset(0);
-    }];
+    [self addSubview:self.line];
+    [self addSubview:self.titleLabel];
     
     [_titleLabel mas_makeConstraints:^(MASConstraintMaker *make) {
         make.leading.offset(15);
         make.trailing.offset(-8);
         make.top.bottom.offset(0);
     }];
+    
+    [_line mas_makeConstraints:^(MASConstraintMaker *make) {
+        make.leading.equalTo(_titleLabel);
+        make.bottom.trailing.offset(0);
+        make.height.offset(1);
+    }];
 }
 
-- (SJBorderlineView *)backgroundView {
-    if ( _backgroundView ) return _backgroundView;
-    _backgroundView = [SJBorderlineView borderlineViewWithSide:SJBorderlineSideBottom startMargin:15 endMargin:0 lineColor:[UIColor lightGrayColor] backgroundColor:[UIColor clearColor]];
-    return _backgroundView;
+- (UIView *)line {
+    if ( _line ) return _line;
+    _line = [UIView new];
+    _line.backgroundColor = [UIColor lightGrayColor];
+    return _line;
 }
 
 - (UILabel *)titleLabel {

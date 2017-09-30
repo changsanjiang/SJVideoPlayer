@@ -16,7 +16,6 @@
 #import <objc/message.h>
 #import "NSTimer+SJExtension.h"
 #import "SJVideoPlayerStringConstant.h"
-#import <SJBorderLineView/SJBorderlineView.h>
 #import "JDradualLoadingView.h"
 
 #import "SJVideoPlayerMoreSettingsView.h"
@@ -481,11 +480,10 @@ static NSString *const SJVideoPlayPreviewColCellID = @"SJVideoPlayPreviewColCell
     [self addSubview:self.moreSettingsTwoLevelView];
     [_moreSettingsTwoLevelView mas_makeConstraints:^(MASConstraintMaker *make) {
         make.top.trailing.bottom.offset(0);
-        make.width.offset(SJMoreSettings_W);
+        make.width.equalTo(_moreSettingsView);
     }];
     
     self.hiddenMoreSettingsTwoLevelView = YES;
-    
     
     UIPanGestureRecognizer *pan = [[UIPanGestureRecognizer alloc] initWithTarget:self action:@selector(handlePanGR:)];
     pan.delegate = self;

@@ -101,7 +101,7 @@
     
 #pragma mark - 1 Level More Settings
 
-    SJVideoPlayerMoreSetting.titleFontSize = 12;
+    SJVideoPlayerMoreSetting.titleFontSize = 10;
 
     SJVideoPlayerMoreSetting *model0 = [[SJVideoPlayerMoreSetting alloc] initWithTitle:@"点赞" image:[UIImage imageNamed:@"db_video_like_n"] clickedExeBlock:^(SJVideoPlayerMoreSetting * _Nonnull model) {
         NSLog(@"clicked %@", model.title);

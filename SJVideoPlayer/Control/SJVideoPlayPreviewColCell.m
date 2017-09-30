@@ -46,9 +46,7 @@
     [self.contentView addSubview:self.backgroundBtn];
     [self.contentView addSubview:self.imageView];
     [_imageView mas_makeConstraints:^(MASConstraintMaker *make) {
-        make.leading.trailing.offset(0);
-        make.top.offset(2);
-        make.bottom.offset(-2);
+        make.edges.offset(0);
     }];
     [_backgroundBtn mas_makeConstraints:^(MASConstraintMaker *make) {
         make.edges.offset(0);

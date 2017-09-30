@@ -9,9 +9,10 @@
 /* Begin PBXBuildFile section */
 		09A4777CDB247E7E1BCAA736 /* libPods-SJVideoPlayerProject.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 7C49166A356BD4B40CE605A1 /* libPods-SJVideoPlayerProject.a */; };
 		7700D0191F4C045B00B043F8 /* sample.mp4 in Resources */ = {isa = PBXBuildFile; fileRef = 7700D0181F4C045B00B043F8 /* sample.mp4 */; };
-		7700D01F1F4D584500B043F8 /* VideoPlayerViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 7700D01E1F4D584500B043F8 /* VideoPlayerViewController.m */; };
 		7700D05F1F502CF700B043F8 /* SJVideoPlayerPresentView.m in Sources */ = {isa = PBXBuildFile; fileRef = 7700D0531F502CF700B043F8 /* SJVideoPlayerPresentView.m */; };
 		77166EC81F793186004839E6 /* SJVideoPlayerSettings.m in Sources */ = {isa = PBXBuildFile; fileRef = 77166EC71F793186004839E6 /* SJVideoPlayerSettings.m */; };
+		7728ED0C1F7BCF5600E19EDC /* VideoPlayerViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 7728ED0B1F7BCF4D00E19EDC /* VideoPlayerViewController.m */; };
+		7728ED101F7BCF7E00E19EDC /* PlayerSampleViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 7728ED0E1F7BCF7B00E19EDC /* PlayerSampleViewController.m */; };
 		772D46341F46E4CE0047A7BF /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 772D46331F46E4CE0047A7BF /* main.m */; };
 		772D46371F46E4CE0047A7BF /* AppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = 772D46361F46E4CE0047A7BF /* AppDelegate.m */; };
 		772D463A1F46E4CE0047A7BF /* ViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 772D46391F46E4CE0047A7BF /* ViewController.m */; };
@@ -60,12 +61,14 @@
 /* Begin PBXFileReference section */
 		74EBC7B45C74AADE84AF2DBA /* Pods-SJVideoPlayerProject.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-SJVideoPlayerProject.release.xcconfig"; path = "Pods/Target Support Files/Pods-SJVideoPlayerProject/Pods-SJVideoPlayerProject.release.xcconfig"; sourceTree = "<group>"; };
 		7700D0181F4C045B00B043F8 /* sample.mp4 */ = {isa = PBXFileReference; lastKnownFileType = file; path = sample.mp4; sourceTree = "<group>"; };
-		7700D01D1F4D584500B043F8 /* VideoPlayerViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = VideoPlayerViewController.h; sourceTree = "<group>"; };
-		7700D01E1F4D584500B043F8 /* VideoPlayerViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = VideoPlayerViewController.m; sourceTree = "<group>"; };
 		7700D0521F502CF700B043F8 /* SJVideoPlayerPresentView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SJVideoPlayerPresentView.h; sourceTree = "<group>"; };
 		7700D0531F502CF700B043F8 /* SJVideoPlayerPresentView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SJVideoPlayerPresentView.m; sourceTree = "<group>"; };
 		77166EC61F793186004839E6 /* SJVideoPlayerSettings.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = SJVideoPlayerSettings.h; sourceTree = "<group>"; };
 		77166EC71F793186004839E6 /* SJVideoPlayerSettings.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = SJVideoPlayerSettings.m; sourceTree = "<group>"; };
+		7728ED0A1F7BCF4D00E19EDC /* VideoPlayerViewController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = VideoPlayerViewController.h; sourceTree = "<group>"; };
+		7728ED0B1F7BCF4D00E19EDC /* VideoPlayerViewController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = VideoPlayerViewController.m; sourceTree = "<group>"; };
+		7728ED0E1F7BCF7B00E19EDC /* PlayerSampleViewController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = PlayerSampleViewController.m; sourceTree = "<group>"; };
+		7728ED0F1F7BCF7B00E19EDC /* PlayerSampleViewController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = PlayerSampleViewController.h; sourceTree = "<group>"; };
 		772D462F1F46E4CE0047A7BF /* SJVideoPlayerProject.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = SJVideoPlayerProject.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		772D46331F46E4CE0047A7BF /* main.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = main.m; sourceTree = "<group>"; };
 		772D46351F46E4CE0047A7BF /* AppDelegate.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = AppDelegate.h; sourceTree = "<group>"; };
@@ -213,8 +216,6 @@
 			children = (
 				77AFBF011F791CF50088328F /* SJVideoPlayerControl.h */,
 				77AFBF051F791CF50088328F /* SJVideoPlayerControl.m */,
-				77AFBEF91F791CF40088328F /* SJVideoPlayerControlMaskView.h */,
-				77AFBF041F791CF50088328F /* SJVideoPlayerControlMaskView.m */,
 				77AFBEF01F791CF30088328F /* SJVideoPlayerControlView.h */,
 				77AFBEF61F791CF40088328F /* SJVideoPlayerControlView.m */,
 				77AFBEFD1F791CF40088328F /* SJVideoPlayerControlViewEnumHeader.h */,
@@ -234,6 +235,8 @@
 				77AFBEFE1F791CF40088328F /* SJVideoPlayerTipsView.m */,
 				77AFBEF41F791CF40088328F /* SJVideoPlayPreviewColCell.h */,
 				77AFBEF51F791CF40088328F /* SJVideoPlayPreviewColCell.m */,
+				77AFBEF91F791CF40088328F /* SJVideoPlayerControlMaskView.h */,
+				77AFBF041F791CF50088328F /* SJVideoPlayerControlMaskView.m */,
 				77AFBEF81F791CF40088328F /* SJVideoPreviewModel.h */,
 				77AFBEFF1F791CF40088328F /* SJVideoPreviewModel.m */,
 			);
@@ -247,6 +250,57 @@
 				7700D0531F502CF700B043F8 /* SJVideoPlayerPresentView.m */,
 			);
 			path = Present;
+			sourceTree = "<group>";
+		};
+		7728ED051F7BCF4D00E19EDC /* Signle */ = {
+			isa = PBXGroup;
+			children = (
+				7728ED0D1F7BCF5C00E19EDC /* Demo0 */,
+				7728ED061F7BCF4D00E19EDC /* Demo1_Editing */,
+			);
+			path = Signle;
+			sourceTree = "<group>";
+		};
+		7728ED061F7BCF4D00E19EDC /* Demo1_Editing */ = {
+			isa = PBXGroup;
+			children = (
+				7728ED071F7BCF4D00E19EDC /* Controller */,
+				7728ED081F7BCF4D00E19EDC /* Model */,
+				7728ED091F7BCF4D00E19EDC /* View */,
+			);
+			path = Demo1_Editing;
+			sourceTree = "<group>";
+		};
+		7728ED071F7BCF4D00E19EDC /* Controller */ = {
+			isa = PBXGroup;
+			children = (
+				7728ED0F1F7BCF7B00E19EDC /* PlayerSampleViewController.h */,
+				7728ED0E1F7BCF7B00E19EDC /* PlayerSampleViewController.m */,
+			);
+			path = Controller;
+			sourceTree = "<group>";
+		};
+		7728ED081F7BCF4D00E19EDC /* Model */ = {
+			isa = PBXGroup;
+			children = (
+			);
+			path = Model;
+			sourceTree = "<group>";
+		};
+		7728ED091F7BCF4D00E19EDC /* View */ = {
+			isa = PBXGroup;
+			children = (
+			);
+			path = View;
+			sourceTree = "<group>";
+		};
+		7728ED0D1F7BCF5C00E19EDC /* Demo0 */ = {
+			isa = PBXGroup;
+			children = (
+				7728ED0A1F7BCF4D00E19EDC /* VideoPlayerViewController.h */,
+				7728ED0B1F7BCF4D00E19EDC /* VideoPlayerViewController.m */,
+			);
+			path = Demo0;
 			sourceTree = "<group>";
 		};
 		772D46261F46E4CE0047A7BF = {
@@ -314,20 +368,11 @@
 		7798A3C51F54432D004CB9BA /* Sample */ = {
 			isa = PBXGroup;
 			children = (
-				7798A3C61F54433E004CB9BA /* Signle */,
+				7728ED051F7BCF4D00E19EDC /* Signle */,
 				7798A3C71F544364004CB9BA /* TableView */,
 				7798A3CF1F5450C4004CB9BA /* CollectionView */,
 			);
 			name = Sample;
-			sourceTree = "<group>";
-		};
-		7798A3C61F54433E004CB9BA /* Signle */ = {
-			isa = PBXGroup;
-			children = (
-				7700D01D1F4D584500B043F8 /* VideoPlayerViewController.h */,
-				7700D01E1F4D584500B043F8 /* VideoPlayerViewController.m */,
-			);
-			name = Signle;
 			sourceTree = "<group>";
 		};
 		7798A3C71F544364004CB9BA /* TableView */ = {
@@ -516,13 +561,16 @@
 			files = (
 			);
 			inputPaths = (
+				"${PODS_PODFILE_DIR_PATH}/Podfile.lock",
+				"${PODS_ROOT}/Manifest.lock",
 			);
 			name = "[CP] Check Pods Manifest.lock";
 			outputPaths = (
+				"$(DERIVED_FILE_DIR)/Pods-SJVideoPlayerProject-checkManifestLockResult.txt",
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-			shellScript = "diff \"${PODS_ROOT}/../Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [ $? != 0 ] ; then\n    # print error to STDERR\n    echo \"error: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\" >&2\n    exit 1\nfi\n";
+			shellScript = "diff \"${PODS_PODFILE_DIR_PATH}/Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [ $? != 0 ] ; then\n    # print error to STDERR\n    echo \"error: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\" >&2\n    exit 1\nfi\n# This output is used by Xcode 'outputs' to avoid re-running this script phase.\necho \"SUCCESS\" > \"${SCRIPT_OUTPUT_FILE_0}\"\n";
 			showEnvVarsInLog = 0;
 		};
 		7C5A0283CB680928E5657118 /* [CP] Embed Pods Frameworks */ = {
@@ -569,6 +617,7 @@
 				77AFBF0F1F791D110088328F /* SJVideoPlayerTipsView.m in Sources */,
 				772D463A1F46E4CE0047A7BF /* ViewController.m in Sources */,
 				772E4EFA1F792AD60068A058 /* SJVideoPlayer.m in Sources */,
+				7728ED101F7BCF7E00E19EDC /* PlayerSampleViewController.m in Sources */,
 				77AFBF0C1F791D0A0088328F /* SJVideoPlayerMoreSettingTwoSettingsColCell.m in Sources */,
 				772D46371F46E4CE0047A7BF /* AppDelegate.m in Sources */,
 				772E4EFD1F792B0C0068A058 /* SJVideoPlayerMoreSetting.m in Sources */,
@@ -577,6 +626,7 @@
 				7798A3D21F5450DB004CB9BA /* VideoPlayerCollectionViewController.m in Sources */,
 				7798A3E81F567C5C004CB9BA /* JDradualLoadingView.m in Sources */,
 				77BED2F41F5FBD4F0024D879 /* UIView+SJExtension.m in Sources */,
+				7728ED0C1F7BCF5600E19EDC /* VideoPlayerViewController.m in Sources */,
 				7798A34C1F540A16004CB9BA /* NSAttributedString+ZFBAdditon.m in Sources */,
 				772D46341F46E4CE0047A7BF /* main.m in Sources */,
 				772E4F001F792B460068A058 /* SJVideoPlayerMoreSettingTwoSetting.m in Sources */,
@@ -585,7 +635,6 @@
 				77AA66F61F623F0B0015C906 /* UITabBarController+SJExtension.m in Sources */,
 				77AFBF071F791CFC0088328F /* SJVideoPlayerControlMaskView.m in Sources */,
 				77166EC81F793186004839E6 /* SJVideoPlayerSettings.m in Sources */,
-				7700D01F1F4D584500B043F8 /* VideoPlayerViewController.m in Sources */,
 				77AFBF081F791CFF0088328F /* SJVideoPlayerControlView.m in Sources */,
 				77BED2F71F5FBD610024D879 /* NSTimer+SJExtension.m in Sources */,
 				77AFBF1A1F792A4B0088328F /* SJVideoPlayerStringConstant.m in Sources */,

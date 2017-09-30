@@ -25,6 +25,7 @@
 #import "SJVideoPlayerMoreSettingTwoSettingsColCell.h"
 #import "SJVideoPlayerMoreSettingTwoSettingsHeaderView.h"
 #import "SJVideoPlayPreviewColCell.h"
+#import "SJVideoPreviewModel.h"
 
 
 #define SJGetFileWithName(name)    [@"SJVideoPlayer.bundle" stringByAppendingPathComponent:name]
@@ -32,11 +33,11 @@
 
 #pragma mark - Preview
 
-
-@interface SJVideoPlayerControlView (ColDataSourceMethods)<UICollectionViewDataSource>@end
-
-
 static NSString *const SJVideoPlayPreviewColCellID = @"SJVideoPlayPreviewColCell";
+
+/// Preview DataSource
+@interface SJVideoPlayerControlView (ColDataSourceMethods)<UICollectionViewDataSource>
+@end
 
 @implementation SJVideoPlayerControlView (ColDataSourceMethods)
 
@@ -58,10 +59,37 @@ static NSString *const SJVideoPlayPreviewColCellID = @"SJVideoPlayPreviewColCell
 @end
 
 
+/// Preview Delegate
+@interface SJVideoPlayerControlView (UICollectionViewDelegateMethods)<UICollectionViewDelegate>
+@end
 
-#pragma mark -
+@implementation SJVideoPlayerControlView (UICollectionViewDelegateMethods)
 
-@interface SJVideoPlayerControlView (PreviewCellDelegateMethods)<SJVideoPlayPreviewColCellDelegate>@end
+- (CGSize)collectionView:(UICollectionView *)collectionView layout:(UICollectionViewLayout*)collectionViewLayout sizeForItemAtIndexPath:(NSIndexPath *)indexPath {
+    UIImage *image = [self.previewImages firstObject].image;
+    CGFloat SJPreviewImgW = image.size.width * SJPreviewImgH / image.size.height;
+    return CGSizeMake(SJPreviewImgW, SJPreviewImgH);
+}
+
+- (UIEdgeInsets)collectionView:(UICollectionView *)collectionView layout:(UICollectionViewLayout*)collectionViewLayout insetForSectionAtIndex:(NSInteger)section {
+    return UIEdgeInsetsMake(0, 0, 0, 0);
+}
+
+- (CGFloat)collectionView:(UICollectionView *)collectionView layout:(UICollectionViewLayout*)collectionViewLayout minimumInteritemSpacingForSectionAtIndex:(NSInteger)section {
+    return 4;
+}
+
+- (CGFloat)collectionView:(UICollectionView *)collectionView layout:(UICollectionViewLayout*)collectionViewLayout minimumLineSpacingForSectionAtIndex:(NSInteger)section {
+    return 4;
+}
+
+@end
+
+
+
+/// Preview CELL!!! Delegate
+@interface SJVideoPlayerControlView (PreviewCellDelegateMethods)<SJVideoPlayPreviewColCellDelegate>
+@end
 
 @implementation SJVideoPlayerControlView (PreviewCellDelegateMethods)
 
@@ -83,6 +111,7 @@ static NSString *const SJVideoPlayPreviewColCellID = @"SJVideoPlayPreviewColCell
 
 
 #pragma mark -
+
 
 @interface SJVideoPlayerControlView (DBNotifications)
 
@@ -302,7 +331,7 @@ static NSString *const SJVideoPlayPreviewColCellID = @"SJVideoPlayPreviewColCell
     [self addSubview:self.previewImgColView];
     
     [_previewImgColView mas_makeConstraints:^(MASConstraintMaker *make) {
-        make.height.offset(SJPreViewImgH + 8);
+        make.height.offset(SJPreviewImgH + 8);
         make.leading.trailing.offset(0);
         make.top.equalTo(_topContainerView.mas_bottom);
     }];
@@ -491,8 +520,9 @@ static NSString *const SJVideoPlayPreviewColCellID = @"SJVideoPlayPreviewColCell
 
 - (UICollectionView *)previewImgColView {
     if ( _previewImgColView ) return _previewImgColView;
-    _previewImgColView = [UICollectionView collectionViewWithItemSize:CGSizeMake(SJPreviewImgW, SJPreViewImgH) backgroundColor:[UIColor colorWithWhite:0 alpha:0.42] scrollDirection:UICollectionViewScrollDirectionHorizontal];
+    _previewImgColView = [UICollectionView collectionViewWithItemSize:CGSizeZero backgroundColor:[UIColor colorWithWhite:0 alpha:0.42] scrollDirection:UICollectionViewScrollDirectionHorizontal];
     _previewImgColView.dataSource = self;
+    _previewImgColView.delegate = self;
     [_previewImgColView registerClass:NSClassFromString(SJVideoPlayPreviewColCellID) forCellWithReuseIdentifier:SJVideoPlayPreviewColCellID];
     _previewImgColView.transform = CGAffineTransformMakeScale(1, 0.001);
     _previewImgColView.alpha = 0.001;

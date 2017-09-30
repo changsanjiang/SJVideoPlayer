@@ -9,6 +9,10 @@
 #import "UINavigationController+SJVideoPlayerAdd.h"
 #import <objc/message.h>
 #import "UIViewController+SJVideoPlayerAdd.h"
+#import "SJScreenshotView.h"
+
+
+#define SJ_Shift        (-100)
 
 
 #pragma mark - Timer
@@ -47,8 +51,8 @@
 
 #pragma mark -
 
-static UIImageView *SJVideoPlayer_screenshortImageView;
-static NSMutableArray<UIImage *> * SJVideoPlayer_screenshortImagesM;
+static SJScreenshotView *SJVideoPlayer_screenshotView;
+static NSMutableArray<UIImage *> * SJVideoPlayer_screenshotImagesM;
 
 
 
@@ -58,8 +62,8 @@ static NSMutableArray<UIImage *> * SJVideoPlayer_screenshortImagesM;
 
 @interface UIViewController (SJVideoPlayerExtension)
 
-@property (class, nonatomic, strong, readonly) UIImageView *SJVideoPlayer_screenshortImageView;
-@property (class, nonatomic, strong, readonly) NSMutableArray<UIImage *> * SJVideoPlayer_screenshortImagesM;
+@property (class, nonatomic, strong, readonly) SJScreenshotView *SJVideoPlayer_screenshotView;
+@property (class, nonatomic, strong, readonly) NSMutableArray<UIImage *> * SJVideoPlayer_screenshotImagesM;
 
 @end
 
@@ -67,7 +71,6 @@ static NSMutableArray<UIImage *> * SJVideoPlayer_screenshortImagesM;
 
 + (void)load {
     Class vc = [self class];
-    
     
     
     // dismiss
@@ -78,34 +81,42 @@ static NSMutableArray<UIImage *> * SJVideoPlayer_screenshortImagesM;
 }
 
 - (void)SJVideoPlayer_dismissViewControllerAnimated:(BOOL)flag completion:(void (^)(void))completion {
-    NSLog(@"%zd - %s", __LINE__, __func__);
-    if ( !self.navigationController ) return;
     
-    // rest image
-    [self SJVideoPlayer_resetScreenshortImage];
+    if ( !self.navigationController ) {
+        // call origin method
+        [self SJVideoPlayer_dismissViewControllerAnimated:flag completion:completion];
+        return;
+    }
+    
+    // reset image
+    if ( self.presentingViewController ) [self SJVideoPlayer_resetScreenshotImage];
     
     // call origin method
     [self SJVideoPlayer_dismissViewControllerAnimated:flag completion:completion];
 }
 
-- (void)SJVideoPlayer_resetScreenshortImage {
-    // remove last screenshort
-    [[[self class] SJVideoPlayer_screenshortImagesM] removeLastObject];
-    // update screenshortImage
-    [[[self class] SJVideoPlayer_screenshortImageView] setImage:[[[self class] SJVideoPlayer_screenshortImagesM] lastObject]];
+- (void)SJVideoPlayer_resetScreenshotImage {
+    // remove last screenshot
+    [[[self class] SJVideoPlayer_screenshotImagesM] removeLastObject];
+    // update screenshotImage
+    [[[self class] SJVideoPlayer_screenshotView] setImage:[[[self class] SJVideoPlayer_screenshotImagesM] lastObject]];
 }
 
-+ (UIImageView *)SJVideoPlayer_screenshortImageView {
-    if ( SJVideoPlayer_screenshortImageView ) return SJVideoPlayer_screenshortImageView;
-    SJVideoPlayer_screenshortImageView = [[UIImageView alloc] initWithFrame:[[UIScreen mainScreen] bounds]];
-    SJVideoPlayer_screenshortImageView.image = [UIImage imageNamed:@"test.png"];
-    return SJVideoPlayer_screenshortImageView;
++ (SJScreenshotView *)SJVideoPlayer_screenshotView {
+    if ( SJVideoPlayer_screenshotView ) return SJVideoPlayer_screenshotView;
+    SJVideoPlayer_screenshotView = [SJScreenshotView new];
+    CGRect bounds = [UIScreen mainScreen].bounds;
+    CGFloat width = MIN(bounds.size.width, bounds.size.height);
+    CGFloat height = MAX(bounds.size.width, bounds.size.height);
+    SJVideoPlayer_screenshotView.frame = CGRectMake(0, 0, width, height);
+    SJVideoPlayer_screenshotView.transform = CGAffineTransformMakeTranslation(SJ_Shift, 0);
+    return SJVideoPlayer_screenshotView;
 }
 
-+ (NSMutableArray<UIImage *> *)SJVideoPlayer_screenshortImagesM {
-    if ( SJVideoPlayer_screenshortImagesM ) return SJVideoPlayer_screenshortImagesM;
-    SJVideoPlayer_screenshortImagesM = [NSMutableArray array];
-    return SJVideoPlayer_screenshortImagesM;
++ (NSMutableArray<UIImage *> *)SJVideoPlayer_screenshotImagesM {
+    if ( SJVideoPlayer_screenshotImagesM ) return SJVideoPlayer_screenshotImagesM;
+    SJVideoPlayer_screenshotImagesM = [NSMutableArray array];
+    return SJVideoPlayer_screenshotImagesM;
 }
 
 @end
@@ -126,7 +137,7 @@ static NSMutableArray<UIImage *> * SJVideoPlayer_screenshortImagesM;
 + (void)load {
     
     // App launching
-    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(SJVideoPlayer_addscreenshortImageViewToWindow) name:UIApplicationDidFinishLaunchingNotification object:nil];
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(SJVideoPlayer_addscreenshotImageViewToWindow) name:UIApplicationDidFinishLaunchingNotification object:nil];
     
     Class nav = [self class];
     
@@ -148,9 +159,9 @@ static NSMutableArray<UIImage *> * SJVideoPlayer_screenshortImagesM;
 }
 
 // App launching
-+ (void)SJVideoPlayer_addscreenshortImageViewToWindow {
++ (void)SJVideoPlayer_addscreenshotImageViewToWindow {
     UIWindow *window = [(id)[UIApplication sharedApplication].delegate valueForKey:@"window"];
-    [window insertSubview:self.SJVideoPlayer_screenshortImageView atIndex:0];
+    [window insertSubview:self.SJVideoPlayer_screenshotView atIndex:0];
 }
 
 
@@ -169,10 +180,10 @@ static NSMutableArray<UIImage *> * SJVideoPlayer_screenshortImagesM;
         // 添加自定义手势
         [nav.view addGestureRecognizer:nav.pan];
         // 添加阴影
-        self.view.layer.shadowOffset = CGSizeMake(-1, 0);
-        self.view.layer.shadowColor = [UIColor colorWithWhite:0 alpha:0.5].CGColor;
-        self.view.layer.shadowRadius = 1;
-        self.view.layer.shadowOpacity = 1;
+        nav.view.layer.shadowOffset = CGSizeMake(-1, 0);
+        nav.view.layer.shadowColor = [UIColor colorWithWhite:0 alpha:0.5].CGColor;
+        nav.view.layer.shadowRadius = 1;
+        nav.view.layer.shadowOpacity = 1;
         
     } repeats:YES] fire];
     return [self SJVideoPlayer_initWithRootViewController:rootViewController];
@@ -181,7 +192,6 @@ static NSMutableArray<UIImage *> * SJVideoPlayer_screenshortImagesM;
 
 // Push
 - (void)SJVideoPlayer_pushViewController:(UIViewController *)viewController animated:(BOOL)animated {
-    NSLog(@"%zd - %s", __LINE__, __func__);
     
     // get scrrenshort
     id appDelegate = [UIApplication sharedApplication].delegate;
@@ -192,10 +202,9 @@ static NSMutableArray<UIImage *> * SJVideoPlayer_screenshortImagesM;
     UIGraphicsEndImageContext();
     
     // add to container
-    [[self class].SJVideoPlayer_screenshortImagesM addObject:viewImage];
-    // change screenshortImage
-    [[self class].SJVideoPlayer_screenshortImageView setImage:viewImage];
-    
+    [[self class].SJVideoPlayer_screenshotImagesM addObject:viewImage];
+    // change screenshotImage
+    [[self class].SJVideoPlayer_screenshotView setImage:viewImage];
     
     // call origin method
     [self SJVideoPlayer_pushViewController:viewController animated:animated];
@@ -204,10 +213,8 @@ static NSMutableArray<UIImage *> * SJVideoPlayer_screenshortImagesM;
 // Pop
 - (UIViewController *)SJVideoPlayer_popViewControllerAnimated:(BOOL)animated {
     
-    NSLog(@"%zd - %s", __LINE__, __func__);
-    
     // reset image
-    [self SJVideoPlayer_resetScreenshortImage];
+    [self SJVideoPlayer_resetScreenshotImage];
     
     // call origin method
     return [self SJVideoPlayer_popViewControllerAnimated:animated];
@@ -228,15 +235,50 @@ static NSMutableArray<UIImage *> * SJVideoPlayer_screenshortImagesM;
     UIPanGestureRecognizer *pan = objc_getAssociatedObject(self, _cmd);
     if ( pan ) return pan;
     pan = [[UIPanGestureRecognizer alloc] initWithTarget:self action:@selector(SJVideoPlayer_handlePanGR:)];
+    pan.delegate = self;
     objc_setAssociatedObject(self, _cmd, pan, OBJC_ASSOCIATION_RETAIN_NONATOMIC);
     return pan;
+}
+
+
+- (BOOL)gestureRecognizerShouldBegin:(UIPanGestureRecognizer *)gestureRecognizer {
+    if (gestureRecognizer.view != self.view) return NO;
+    CGPoint translate = [gestureRecognizer translationInView:self.view];
+    BOOL possible = translate.x != 0 && fabs(translate.y) == 0;
+    if ( possible ) return YES;
+    else return NO;
+}
+
+- (BOOL)gestureRecognizer:(UIGestureRecognizer *)gestureRecognizer shouldRecognizeSimultaneouslyWithGestureRecognizer:(UIGestureRecognizer *)otherGestureRecognizer {
+    if ([otherGestureRecognizer isKindOfClass:NSClassFromString(@"UIScrollViewPanGestureRecognizer")] || [otherGestureRecognizer isKindOfClass:NSClassFromString(@"UIPanGestureRecognizer")]|| [otherGestureRecognizer isKindOfClass:NSClassFromString(@"UIScrollViewPagingSwipeGestureRecognizer")]) {
+        UIView *aView = otherGestureRecognizer.view;
+        if ( [aView isKindOfClass:[UIScrollView class]] ) {
+            return [self SJVideoPlayer_considerScrollView:(UIScrollView *)aView];
+        }
+        return NO;
+    }
+    return YES;
+}
+
+- (BOOL)SJVideoPlayer_considerScrollView:(UIScrollView *)sv {
+    if ( [sv isKindOfClass:[UICollectionView class]] ) {
+        UIView *sup = sv.superview;
+        if ( [sup isKindOfClass:[UITableViewCell class]] ) return NO;
+        // 如果是 TableView 嵌套 CollectionView, 尽量不同时识别.
+        for ( int i = 0 ; i < 4; ++ i ) {
+            sup = sup.superview;
+            if ( [sup isKindOfClass:[UITableViewCell class]] ) return NO;
+        }
+    }
+    if ( sv.contentOffset.x == 0 ) return YES;
+    return NO;
 }
 
 - (void)SJVideoPlayer_handlePanGR:(UIPanGestureRecognizer *)pan {
     if ( self.childViewControllers.count <= 1 ) return;
     
     CGFloat offset = [pan translationInView:self.view].x;
-
+    
     switch (pan.state) {
         case UIGestureRecognizerStateBegan: {
             [self SJVideoPlayer_ViewWillBeginDragging];
@@ -259,8 +301,14 @@ static NSMutableArray<UIImage *> * SJVideoPlayer_screenshortImagesM;
 }
 
 - (void)SJVideoPlayer_ViewWillBeginDragging {
+    [self.view endEditing:YES];
+    
     // call block
     if ( self.topViewController.sj_viewWillBeginDragging ) self.topViewController.sj_viewWillBeginDragging(self.topViewController);
+    
+    
+    // begin animation
+    
 }
 
 - (void)SJVideoPlayer_ViewDidDrag:(CGFloat)offset {
@@ -268,26 +316,40 @@ static NSMutableArray<UIImage *> * SJVideoPlayer_screenshortImagesM;
     
     // call block
     if ( self.topViewController.sj_viewDidDrag ) self.topViewController.sj_viewDidDrag(self.topViewController);
+    
+    // continuous animation
+    CGFloat rate = offset / self.view.frame.size.width;
+    [[self class] SJVideoPlayer_screenshotView].transform = CGAffineTransformMakeTranslation(SJ_Shift - SJ_Shift * rate, 0);
+    [[[self class] SJVideoPlayer_screenshotView] setShadeAlpha:1 - rate];
 }
 
 - (void)SJVideoPlayer_ViewDidEndDragging:(CGFloat)offset {
     CGFloat rate = offset / self.view.frame.size.width;
-    if ( rate < 0.35 ) {
+    if ( rate < self.scMaxOffset ) {
         [UIView animateWithDuration:0.25 animations:^{
             self.view.transform = CGAffineTransformIdentity;
+            
+            // reset status
+            [[self class] SJVideoPlayer_screenshotView].transform = CGAffineTransformMakeTranslation(SJ_Shift, 0);
+            [[[self class] SJVideoPlayer_screenshotView] setShadeAlpha:1];
         }];
     }
     else {
         [UIView animateWithDuration:0.25 animations:^{
             self.view.transform = CGAffineTransformMakeTranslation(self.view.frame.size.width, 0);
+            
+            // finished animation
+            [[self class] SJVideoPlayer_screenshotView].transform = CGAffineTransformMakeTranslation(0, 0);
+            [[[self class] SJVideoPlayer_screenshotView] setShadeAlpha:0.001];
         } completion:^(BOOL finished) {
             [self popViewControllerAnimated:NO];
             self.view.transform = CGAffineTransformIdentity;
         }];
     }
-    
+
     // call block
     if ( self.topViewController.sj_viewDidEndDragging ) self.topViewController.sj_viewDidEndDragging(self.topViewController);
+    
 }
 
 @end
@@ -298,7 +360,21 @@ static NSMutableArray<UIImage *> * SJVideoPlayer_screenshortImagesM;
 
 
 
+#pragma mark - Settings
 
+@implementation UINavigationController (Settings)
+
+- (void)setScMaxOffset:(float)scMaxOffset {
+    objc_setAssociatedObject(self, @selector(scMaxOffset), @(scMaxOffset), OBJC_ASSOCIATION_RETAIN_NONATOMIC);
+}
+
+- (float)scMaxOffset {
+    float offset = [objc_getAssociatedObject(self, _cmd) floatValue];
+    if ( 0 == offset ) return 0.35;
+    return offset;
+}
+
+@end
 
 
 

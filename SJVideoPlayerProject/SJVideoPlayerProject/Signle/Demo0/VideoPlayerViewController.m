@@ -10,18 +10,24 @@
 #import "SJPlayer.h"
 #import <Masonry/Masonry.h>
 #import "UIView+SJExtension.h"
-#import "UIView+SJExtension.h"
 #import "SJVideoPlayerMoreSetting.h"
 #import "SJVideoPlayerMoreSettingTwoSetting.h"
 #import "SJVideoPlayerSettings.h"
+#import <Masonry.h>
 
 @interface VideoPlayerViewController ()
 
 @property (nonatomic, assign, readwrite) NSTimeInterval currentTime;
 
+@property (nonatomic, strong, readonly) UIButton *switchVideoBtn1;
+@property (nonatomic, strong, readonly) UIButton *switchVideoBtn2;
+
 @end
 
 @implementation VideoPlayerViewController
+
+@synthesize switchVideoBtn1 = _switchVideoBtn1;
+@synthesize switchVideoBtn2 = _switchVideoBtn2;
 
 // MARK: 生命周期
 
@@ -29,6 +35,19 @@
     [super viewDidLoad];
     
     self.view.backgroundColor = [UIColor whiteColor];
+    
+    [self.view addSubview:self.switchVideoBtn1];
+    [_switchVideoBtn1 mas_makeConstraints:^(MASConstraintMaker *make) {
+        make.center.offset(0);
+        make.size.mas_offset(CGSizeMake(80, 30));
+    }];
+    
+    [self.view addSubview:self.switchVideoBtn2];
+    [_switchVideoBtn2 mas_makeConstraints:^(MASConstraintMaker *make) {
+        make.top.equalTo(_switchVideoBtn1.mas_bottom).offset(20);
+        make.centerX.equalTo(_switchVideoBtn1);
+        make.size.equalTo(_switchVideoBtn1);
+    }];
     
     
 #pragma mark - Player View
@@ -183,4 +202,37 @@
     NSLog(@"%zd - %s", __LINE__, __func__);
 }
 
+
+
+
+// MARK: msg .....
+
+- (void)clcikedswitchVideoBtn:(UIButton *)btn {
+    NSURL *videoURL = nil;
+    switch (btn.tag) {
+        case 1:
+            videoURL = [NSURL URLWithString:@"http://vod.lanwuzhe.com/f2c0582d9a184161891bd92c6c3a2df3/2f071a1b3c5d4e78bd213586d0a87244-5287d2089db37e62345123a1be272f8b.mp4?video="];
+            break;
+        case 2:
+            videoURL = [NSURL URLWithString:@"http://video.cdn.lanwuzhe.com/usertrend/1506392730401800032.mp4"];
+            break;
+        default:
+            break;
+    }
+    [[SJVideoPlayer sharedPlayer] setAssetURL:videoURL];
+}
+
+- (UIButton *)switchVideoBtn1 {
+    if ( _switchVideoBtn1 ) return _switchVideoBtn1;
+    _switchVideoBtn1 = [UIButton buttonWithTitle:@"切换1" backgroundColor:[UIColor clearColor] tag:1 target:self sel:@selector(clcikedswitchVideoBtn:) fontSize:14];
+    [_switchVideoBtn1 setTitleColor:[UIColor blackColor] forState:UIControlStateNormal];
+    return _switchVideoBtn1;
+}
+
+- (UIButton *)switchVideoBtn2 {
+    if ( _switchVideoBtn2 ) return _switchVideoBtn2;
+    _switchVideoBtn2 = [UIButton buttonWithTitle:@"切换2" backgroundColor:[UIColor clearColor] tag:2 target:self sel:@selector(clcikedswitchVideoBtn:) fontSize:14];
+    [_switchVideoBtn2 setTitleColor:[UIColor blackColor] forState:UIControlStateNormal];
+    return _switchVideoBtn2;
+}
 @end

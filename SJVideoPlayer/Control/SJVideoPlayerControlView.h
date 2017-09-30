@@ -19,8 +19,7 @@ NS_ASSUME_NONNULL_BEGIN
 #define SJSCREEN_MIN        MIN(SJSCREEN_H,SJSCREEN_W)
 #define SJSCREEN_MAX        MAX(SJSCREEN_H,SJSCREEN_W)
 
-#define SJPreviewImgW       ([UIScreen mainScreen].bounds.size.width * 0.35)
-#define SJPreViewImgH       (SJPreviewImgW * 9 / 16)
+#define SJPreviewImgH       (60 * SJSCREEN_MIN / 375)
 #define SJContainerH        (49)
 #define SJMoreSettings_W    ceil(SJSCREEN_MAX * 0.382)
 

@@ -75,11 +75,11 @@ static NSString *const SJVideoPlayPreviewColCellID = @"SJVideoPlayPreviewColCell
 }
 
 - (CGFloat)collectionView:(UICollectionView *)collectionView layout:(UICollectionViewLayout*)collectionViewLayout minimumInteritemSpacingForSectionAtIndex:(NSInteger)section {
-    return 4;
+    return 8;
 }
 
 - (CGFloat)collectionView:(UICollectionView *)collectionView layout:(UICollectionViewLayout*)collectionViewLayout minimumLineSpacingForSectionAtIndex:(NSInteger)section {
-    return 4;
+    return 8;
 }
 
 @end
@@ -330,7 +330,7 @@ static NSString *const SJVideoPlayPreviewColCellID = @"SJVideoPlayPreviewColCell
     [self addSubview:self.previewImgColView];
     
     [_previewImgColView mas_makeConstraints:^(MASConstraintMaker *make) {
-        make.height.offset(SJPreviewImgH + 8);
+        make.height.offset(SJPreviewImgH + 16);
         make.leading.trailing.offset(0);
         make.top.equalTo(_topContainerView.mas_bottom);
     }];

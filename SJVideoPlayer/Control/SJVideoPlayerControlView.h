@@ -19,7 +19,7 @@ NS_ASSUME_NONNULL_BEGIN
 #define SJSCREEN_MIN        MIN(SJSCREEN_H,SJSCREEN_W)
 #define SJSCREEN_MAX        MAX(SJSCREEN_H,SJSCREEN_W)
 
-#define SJPreviewImgH       (80 * SJSCREEN_MIN / 375)
+#define SJPreviewImgH       (120 * SJSCREEN_MIN / 375)
 #define SJContainerH        (49)
 
 

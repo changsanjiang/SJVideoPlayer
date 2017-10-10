@@ -10,8 +10,8 @@
 
 @interface UIViewController (SJVideoPlayerAdd)
 
-@property (nonatomic, copy, readwrite) void(^sj_viewWillBeginDragging)(UIViewController *vc);
-@property (nonatomic, copy, readwrite) void(^sj_viewDidDrag)(UIViewController *vc);
-@property (nonatomic, copy, readwrite) void(^sj_viewDidEndDragging)(UIViewController *vc);
+@property (nonatomic, copy, readwrite) void(^sj_viewWillBeginDragging)(__kindof UIViewController *vc);
+@property (nonatomic, copy, readwrite) void(^sj_viewDidDrag)(__kindof UIViewController *vc);
+@property (nonatomic, copy, readwrite) void(^sj_viewDidEndDragging)(__kindof UIViewController *vc);
 
 @end

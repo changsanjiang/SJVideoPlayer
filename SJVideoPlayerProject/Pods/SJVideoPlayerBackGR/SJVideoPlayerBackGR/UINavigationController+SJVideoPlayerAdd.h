@@ -11,7 +11,7 @@
 
 @interface UINavigationController (SJVideoPlayerAdd)<UIGestureRecognizerDelegate>
 
-@property (nonatomic, strong, readonly) UIPanGestureRecognizer *pan;
+@property (nonatomic, strong, readonly) UIPanGestureRecognizer *sj_pan;
 
 @end
 
@@ -26,5 +26,11 @@
  *  0.0 .. 1.0
  */
 @property (nonatomic, assign, readwrite) float scMaxOffset;
+
+/*!
+ *  default is NO.
+ *  If you use native gestures, some methods(sj_viewWillBeginDragging...) of the controller will not be called.
+ */
+@property (nonatomic, assign, readwrite) BOOL useNativeGesture;
 
 @end

@@ -65,7 +65,7 @@
 - (UIView *)shadeView {
     if ( _shadeView ) return _shadeView;
     _shadeView = [UIView new];
-    _shadeView.backgroundColor = [UIColor colorWithWhite:0.2 alpha:0.8];
+    _shadeView.backgroundColor = [UIColor colorWithWhite:0.0 alpha:0.8];
     return _shadeView;
 }
 

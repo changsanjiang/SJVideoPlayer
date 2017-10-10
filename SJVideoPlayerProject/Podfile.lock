@@ -5,7 +5,7 @@ PODS:
     - Masonry
   - SJSlider (0.0.9):
     - Masonry
-  - SJVideoPlayerBackGR (0.0.8)
+  - SJVideoPlayerBackGR (1.0.3)
 
 DEPENDENCIES:
   - Masonry
@@ -19,7 +19,7 @@ SPEC CHECKSUMS:
   SJBorderLineView: 791d0ba12a8dd7be28b898e0c60b9e07b7f5c62f
   SJPrompt: eb3e7efb0cf796e114d1838695deb66f2cd18a7d
   SJSlider: c637f70af30f0e80dea0f092307260faa35913e2
-  SJVideoPlayerBackGR: e1a792cf8ed497673739c46ff536a9023774d280
+  SJVideoPlayerBackGR: 0b6583f2c9fa61bf50743309ae1452f00769558f
 
 PODFILE CHECKSUM: 0ce8fe38d6688c477bbcb3dd068a91ed61c918e8
 

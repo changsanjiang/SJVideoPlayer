@@ -307,16 +307,25 @@ typedef NS_ENUM(NSUInteger, SJVideoPlayerPlayState) {
 }
 
 - (void)_buffering {
-    if ( 0 == self.lastPlaybackRate && self.backstageRegistrar.playState != SJVideoPlayerPlayState_Buffing ) {
-        [self _clickedPause];
-        self.backstageRegistrar.playState = SJVideoPlayerPlayState_Buffing;
-    }
+    
+    if ( self.backstageRegistrar.playState == SJVideoPlayerPlayState_PlayEnd ) return;
+    
+    if ( self.backstageRegistrar.playState == SJVideoPlayerPlayState_Buffing ) return;
+    
+    if ( self.backstageRegistrar.userClickedPause ) return;
+    
+    [self _clickedPause];
+    
+    self.backstageRegistrar.playState = SJVideoPlayerPlayState_Buffing;
+    
     dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(2 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
         if ( !_playerItem.isPlaybackLikelyToKeepUp ) {
-            [self _buffering];
-            return ;
+            [self _buffering];     return ;
         }
-        [self _clickedPlay];
+        if ( self.backstageRegistrar.playState != SJVideoPlayerPlayState_Playing &&
+            !self.backstageRegistrar.userClickedPause ) {
+            [self _clickedPlay];
+        }
     });
 }
 
@@ -334,12 +343,9 @@ typedef NS_ENUM(NSUInteger, SJVideoPlayerPlayState) {
     if ( 0 == seconds || isnan(seconds) ) return;
     if ( SJPreImgGenerateInterval > 1.0 ) return;
     __block short maxCount = (short)floorf(1.0 / SJPreImgGenerateInterval);
-    short interval = (short)ceil(seconds * SJPreImgGenerateInterval);
-    if ( 0 == interval ) interval = 1;
+    short interval = (short)floor(seconds * SJPreImgGenerateInterval);
     for ( int i = 0 ; i < maxCount ; i ++ ) {
-        short loc = i * interval;
-        if ( loc > seconds ) interval = seconds;
-        CMTime time = CMTimeMake(loc, 1);
+        CMTime time = CMTimeMake(i * interval, 1);
         NSValue *tV = [NSValue valueWithCMTime:time];
         if ( tV ) [timesM addObject:tV];
     }
@@ -1071,6 +1077,9 @@ __SJQuit:
     
     if ( object == self.playerItem ) {
         if ( [keyPath isEqualToString:@"status"] ) {
+            if ( self.backstageRegistrar.playState == SJVideoPlayerPlayState_PlayEnd ) return;
+            if ( self.backstageRegistrar.userClickedPause ) return;
+            
             dispatch_async(dispatch_get_main_queue(), ^{
                 if (self.playerItem.status == AVPlayerItemStatusReadyToPlay) {
                     
@@ -1321,7 +1330,8 @@ typedef NS_ENUM(NSUInteger, SJVerticalPanLocation) {
 }
 
 - (void)handleDoubleTap:(UITapGestureRecognizer *)tap {
-    if ( self.lastPlaybackRate > 0.f ) {
+    
+    if ( !self.backstageRegistrar.userClickedPause ) {
         [self controlView:self.controlView clickedBtnTag:SJVideoPlayControlViewTag_Pause];
     }
     else {

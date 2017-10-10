@@ -11,28 +11,28 @@
 
 @implementation UIViewController (SJVideoPlayerAdd)
 
-- (void)setSj_viewWillBeginDragging:(void (^)(UIViewController *))sj_viewWillBeginDragging {
+- (void)setSj_viewWillBeginDragging:(void (^)(__kindof UIViewController *))sj_viewWillBeginDragging {
     objc_setAssociatedObject(self, @selector(sj_viewWillBeginDragging), sj_viewWillBeginDragging, OBJC_ASSOCIATION_COPY);
 }
 
-- (void (^)(UIViewController *))sj_viewWillBeginDragging {
+- (void (^)(__kindof UIViewController *))sj_viewWillBeginDragging {
     return objc_getAssociatedObject(self, _cmd);
 }
 
 
-- (void)setSj_viewDidDrag:(void (^)(UIViewController *))sj_viewDidDrag {
+- (void)setSj_viewDidDrag:(void (^)(__kindof UIViewController *))sj_viewDidDrag {
     objc_setAssociatedObject(self, @selector(sj_viewDidDrag), sj_viewDidDrag, OBJC_ASSOCIATION_COPY);
 }
 
-- (void (^)(UIViewController *))sj_viewDidDrag {
+- (void (^)(__kindof UIViewController *))sj_viewDidDrag {
     return objc_getAssociatedObject(self, _cmd);
 }
 
-- (void)setSj_viewDidEndDragging:(void (^)(UIViewController *))sj_viewDidEndDragging {
+- (void)setSj_viewDidEndDragging:(void (^)(__kindof UIViewController *))sj_viewDidEndDragging {
     objc_setAssociatedObject(self, @selector(sj_viewDidEndDragging), sj_viewDidEndDragging, OBJC_ASSOCIATION_COPY);
 }
 
-- (void (^)(UIViewController *))sj_viewDidEndDragging {
+- (void (^)(__kindof UIViewController *))sj_viewDidEndDragging {
     return objc_getAssociatedObject(self, _cmd);
 }
 

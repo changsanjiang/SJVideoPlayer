@@ -334,9 +334,12 @@ typedef NS_ENUM(NSUInteger, SJVideoPlayerPlayState) {
     if ( 0 == seconds || isnan(seconds) ) return;
     if ( SJPreImgGenerateInterval > 1.0 ) return;
     __block short maxCount = (short)floorf(1.0 / SJPreImgGenerateInterval);
-    short interval = (short)floor(seconds * SJPreImgGenerateInterval);
+    short interval = (short)ceil(seconds * SJPreImgGenerateInterval);
+    if ( 0 == interval ) interval = 1;
     for ( int i = 0 ; i < maxCount ; i ++ ) {
-        CMTime time = CMTimeMake(i * interval, 1);
+        short loc = i * interval;
+        if ( loc > seconds ) interval = seconds;
+        CMTime time = CMTimeMake(loc, 1);
         NSValue *tV = [NSValue valueWithCMTime:time];
         if ( tV ) [timesM addObject:tV];
     }

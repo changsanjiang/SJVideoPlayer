@@ -1486,6 +1486,7 @@ static UIView *target = nil;
     self.controlView.hiddenPreview = YES;
     self.controlView.hiddenMoreBtn = YES;
     self.controlView.hiddenControl = YES;
+    self.controlView.hiddenLockContainerView = YES;
 }
 
 - (void)_controlViewPlayingStatus {
@@ -1509,10 +1510,12 @@ static UIView *target = nil;
         self.controlView.hiddenPreviewBtn = YES;
         self.controlView.hiddenPreview = YES;
         self.controlView.hiddenMoreBtn = YES;
+        self.controlView.hiddenLockContainerView = YES;
     }
     // 全屏
     else {
         self.controlView.hiddenMoreBtn = NO;
+        self.controlView.hiddenLockContainerView = NO;
         if ( self.backstageRegistrar.generatedImages ) self.controlView.hiddenPreviewBtn = NO;
         else { self.controlView.hiddenPreviewBtn = YES; self.controlView.hiddenPreview = YES;}
     }
@@ -1540,12 +1543,14 @@ static UIView *target = nil;
     self.controlView.hiddenMoreSettingsTwoLevelView = YES;
     self.controlView.hiddenMoreBtn = YES;
     self.controlView.hiddenPreviewBtn = YES;
+    self.controlView.hiddenLockContainerView = YES;
     if ( self.backstageRegistrar.playingOnCell ) self.controlView.hiddenBackBtn = YES;
 }
 
 - (void)_controlViewFullScreen {
     self.controlView.hiddenControl = NO;
     self.controlView.hiddenBackBtn = NO;
+    self.controlView.hiddenLockContainerView = NO;
     if ( self.backstageRegistrar.generatedImages ) self.controlView.hiddenPreviewBtn = NO;
     self.controlView.hiddenMoreBtn = NO;
 }

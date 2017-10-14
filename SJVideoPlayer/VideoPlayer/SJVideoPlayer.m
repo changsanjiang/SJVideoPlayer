@@ -11,14 +11,14 @@
 #import <UIKit/UIColor.h>
 #import <objc/message.h>
 #import <Masonry/Masonry.h>
+#import <SJPrompt/SJPrompt.h>
+#import "SJVideoPlayerControl.h"
 #import <AVFoundation/AVAsset.h>
 #import <AVFoundation/AVPlayer.h>
 #import <AVFoundation/AVPlayerItem.h>
 #import <AVFoundation/AVMetadataItem.h>
 #import "SJVideoPlayerPresentView.h"
-#import "SJVideoPlayerControl.h"
 #import "SJVideoPlayerStringConstant.h"
-#import <SJPrompt/SJPrompt.h>
 #import "SJVideoPlayerAssetCarrier.h"
 #import "SJVideoPlayerMoreSetting.h"
 #import "SJVideoPlayerMoreSettingTwoSetting.h"
@@ -41,6 +41,8 @@
 
 @property (nonatomic, strong, readwrite) SJVideoPlayerAssetCarrier *assetCarrier;
 
+/*!
+ *  是否调用了 - (void)playWithURL:(NSURL *)playURL jumpedToTime:(NSTimeInterval)time */
 @property (nonatomic, assign, readwrite) BOOL needJump;
 
 @property (nonatomic, assign, readwrite) NSTimeInterval jumpedToTime;

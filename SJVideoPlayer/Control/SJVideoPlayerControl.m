@@ -1179,6 +1179,7 @@ __SJQuit:
             break;
         case SJVideoPlayerPlayState_PlayEnd: {
             [self _controlViewPlayEndStatus];
+//            [self sjReset];
         }
             break;
         case SJVideoPlayerPlayState_PlayFailed: {
@@ -1331,7 +1332,7 @@ typedef NS_ENUM(NSUInteger, SJVerticalPanLocation) {
 
 - (void)handleDoubleTap:(UITapGestureRecognizer *)tap {
     
-    if ( !self.backstageRegistrar.userClickedPause ) {
+    if ( self.backstageRegistrar.playState != SJVideoPlayerPlayState_Pause ) {
         [self controlView:self.controlView clickedBtnTag:SJVideoPlayControlViewTag_Pause];
     }
     else {

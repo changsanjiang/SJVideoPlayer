@@ -3,9 +3,9 @@ PODS:
   - SJBorderLineView (0.0.3)
   - SJPrompt (0.0.2):
     - Masonry
-  - SJSlider (0.0.9):
+  - SJSlider (1.0.0):
     - Masonry
-  - SJVideoPlayerBackGR (1.0.3)
+  - SJVideoPlayerBackGR (1.0.11)
 
 DEPENDENCIES:
   - Masonry
@@ -18,9 +18,9 @@ SPEC CHECKSUMS:
   Masonry: 678fab65091a9290e40e2832a55e7ab731aad201
   SJBorderLineView: 791d0ba12a8dd7be28b898e0c60b9e07b7f5c62f
   SJPrompt: eb3e7efb0cf796e114d1838695deb66f2cd18a7d
-  SJSlider: c637f70af30f0e80dea0f092307260faa35913e2
-  SJVideoPlayerBackGR: 0b6583f2c9fa61bf50743309ae1452f00769558f
+  SJSlider: 5c186d4b5e9c4938509d2db65ed3ba400d499d31
+  SJVideoPlayerBackGR: 7922ba475f77776e9389db5dfb77864bad7b1f83
 
-PODFILE CHECKSUM: 0ce8fe38d6688c477bbcb3dd068a91ed61c918e8
+PODFILE CHECKSUM: b60af3a045353ea4b2ba41f4e51395a00f1e567f
 
-COCOAPODS: 1.3.1
+COCOAPODS: 1.4.0.beta.2

@@ -1,0 +1,28 @@
+PODS:
+  - Masonry (1.1.0)
+  - SJAttributesFactory (1.1.3)
+  - SJSlider (1.0.0):
+    - Masonry
+  - SJUIFactory (0.0.2):
+    - SJAttributesFactory
+    - SJUIFactory/Category (= 0.0.2)
+  - SJUIFactory/Category (0.0.2):
+    - SJAttributesFactory
+  - SJVideoPlayerBackGR (1.0.11)
+
+DEPENDENCIES:
+  - Masonry
+  - SJSlider
+  - SJUIFactory
+  - SJVideoPlayerBackGR
+
+SPEC CHECKSUMS:
+  Masonry: 678fab65091a9290e40e2832a55e7ab731aad201
+  SJAttributesFactory: 4877a8bf7c02b4862f6fcf0f0959e49d12ecf1a7
+  SJSlider: 5c186d4b5e9c4938509d2db65ed3ba400d499d31
+  SJUIFactory: be0046775b07ac55abd0fb8d83fadd9b665b28bf
+  SJVideoPlayerBackGR: 7922ba475f77776e9389db5dfb77864bad7b1f83
+
+PODFILE CHECKSUM: 52b30a82e04b06fb57482336e0dc66b377110de7
+
+COCOAPODS: 1.4.0.beta.2

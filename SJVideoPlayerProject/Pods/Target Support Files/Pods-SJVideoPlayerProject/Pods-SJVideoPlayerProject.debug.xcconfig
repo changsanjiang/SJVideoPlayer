@@ -1,9 +1,9 @@
 GCC_PREPROCESSOR_DEFINITIONS = $(inherited) COCOAPODS=1
 HEADER_SEARCH_PATHS = $(inherited) "${PODS_ROOT}/Headers/Public" "${PODS_ROOT}/Headers/Public/Masonry" "${PODS_ROOT}/Headers/Public/SJBorderLineView" "${PODS_ROOT}/Headers/Public/SJPrompt" "${PODS_ROOT}/Headers/Public/SJSlider" "${PODS_ROOT}/Headers/Public/SJVideoPlayerBackGR"
-LIBRARY_SEARCH_PATHS = $(inherited) "$PODS_CONFIGURATION_BUILD_DIR/Masonry" "$PODS_CONFIGURATION_BUILD_DIR/SJBorderLineView" "$PODS_CONFIGURATION_BUILD_DIR/SJPrompt" "$PODS_CONFIGURATION_BUILD_DIR/SJSlider" "$PODS_CONFIGURATION_BUILD_DIR/SJVideoPlayerBackGR"
+LIBRARY_SEARCH_PATHS = $(inherited) "${PODS_CONFIGURATION_BUILD_DIR}/Masonry" "${PODS_CONFIGURATION_BUILD_DIR}/SJBorderLineView" "${PODS_CONFIGURATION_BUILD_DIR}/SJPrompt" "${PODS_CONFIGURATION_BUILD_DIR}/SJSlider" "${PODS_CONFIGURATION_BUILD_DIR}/SJVideoPlayerBackGR"
 OTHER_CFLAGS = $(inherited) -isystem "${PODS_ROOT}/Headers/Public" -isystem "${PODS_ROOT}/Headers/Public/Masonry" -isystem "${PODS_ROOT}/Headers/Public/SJBorderLineView" -isystem "${PODS_ROOT}/Headers/Public/SJPrompt" -isystem "${PODS_ROOT}/Headers/Public/SJSlider" -isystem "${PODS_ROOT}/Headers/Public/SJVideoPlayerBackGR"
 OTHER_LDFLAGS = $(inherited) -ObjC -l"Masonry" -l"SJBorderLineView" -l"SJPrompt" -l"SJSlider" -l"SJVideoPlayerBackGR" -framework "Foundation" -framework "UIKit"
-PODS_BUILD_DIR = $BUILD_DIR
-PODS_CONFIGURATION_BUILD_DIR = $PODS_BUILD_DIR/$(CONFIGURATION)$(EFFECTIVE_PLATFORM_NAME)
+PODS_BUILD_DIR = ${BUILD_DIR}
+PODS_CONFIGURATION_BUILD_DIR = ${PODS_BUILD_DIR}/$(CONFIGURATION)$(EFFECTIVE_PLATFORM_NAME)
 PODS_PODFILE_DIR_PATH = ${SRCROOT}/.
 PODS_ROOT = ${SRCROOT}/Pods

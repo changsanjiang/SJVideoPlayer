@@ -11,4 +11,5 @@ target 'SJVideoPlayerProject' do
     pod 'SJBorderLineView'
     pod 'SJPrompt'
     pod 'SJVideoPlayerBackGR'
+#    pod 'SFObservers'
 end

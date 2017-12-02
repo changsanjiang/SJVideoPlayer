@@ -324,16 +324,12 @@ static const SJPlayerObserverKey assetCarrierKey = @"assetCarrier";
 //static NSString *
 
 - (void)_installObservers {
-//    [self addObserver:self forKeyPath:@"" options:NSKeyValueObservingOptionNew context:nil];
-    
     [self addObserver:self forKeyPath:enabledRotationKey options:NSKeyValueObservingOptionNew context:nil];
     [self addObserver:self forKeyPath:lastOrientationKey options:NSKeyValueObservingOptionNew context:nil];
     [self addObserver:self forKeyPath:assetCarrierKey options:NSKeyValueObservingOptionNew context:nil];
 }
 
 - (void)_removeObservers {
-//    [self removeObserver:self forKeyPath:@""];
-    
     [self removeObserver:self forKeyPath:enabledRotationKey];
     [self removeObserver:self forKeyPath:lastOrientationKey];
     [self removeObserver:self forKeyPath:assetCarrierKey];

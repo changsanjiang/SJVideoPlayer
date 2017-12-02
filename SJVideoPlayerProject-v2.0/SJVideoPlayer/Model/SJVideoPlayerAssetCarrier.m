@@ -40,6 +40,7 @@
     _assetURL = assetURL;
     [self _addTimeObserver];
     [self _addItemPlayEndObserver];
+    [self _addPlayerItemObserver];
     return self;
 }
 
@@ -66,6 +67,15 @@
     }];
 }
 
+- (void)_addPlayerItemObserver {
+    [self.playerItem addObserver:self forKeyPath:@"status" options:NSKeyValueObservingOptionNew context:nil];
+}
+
+- (void)observeValueForKeyPath:(NSString *)keyPath ofObject:(id)object change:(NSDictionary<NSKeyValueChangeKey,id> *)change context:(void *)context {
+    if ( self.playerItemStateChanged ) self.playerItemStateChanged(self, self.playerItem.status);
+}
+
+#pragma mark -
 - (void)generatedPreviewImagesWithMaxItemSize:(CGSize)itemSize completion:(void (^)(SJVideoPlayerAssetCarrier * _Nonnull, NSArray<SJVideoPreviewModel *> * _Nullable, NSError * _Nullable))block {
     NSMutableArray<NSValue *> *timesM = [NSMutableArray new];
     NSInteger seconds = (long)_asset.duration.value / _asset.duration.timescale;
@@ -111,6 +121,7 @@
 - (void)dealloc {
     [self.player removeTimeObserver:_timeObserver];
     [[NSNotificationCenter defaultCenter] removeObserver:_itemEndObserver name:AVPlayerItemDidPlayToEndTimeNotification object:nil];
+    [self.playerItem removeObserver:self forKeyPath:@"status"];
     
     // 清空操作
 }

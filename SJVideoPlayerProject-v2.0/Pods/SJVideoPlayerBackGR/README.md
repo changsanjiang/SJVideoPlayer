@@ -11,9 +11,10 @@ pod SJVideoPlayerBackGR
 如果好用, 兄弟, 给个 Star 吧.
 
 ### Disable 
-```
+```Objective-C
 // 如果想使用系统手势，可以像下面那样. 
 // If you want to use the system gestures, you can do the same as below.
+#import "UIViewController+SJVideoPlayerAdd.h"
 - (void)viewWillAppear:(BOOL)animated {
     [super viewWillAppear:animated];
     // use system 
@@ -26,6 +27,21 @@ pod SJVideoPlayerBackGR
     self.navigationController.useNativeGesture = NO;
 }
 ```
+
+### Fade Area
+```Objective-C
+// 如果想某个区域不触发手势, 可以这样做.
+// If you want an area to not trigger gestures, you can do the same as below.
+#import "UIViewController+SJVideoPlayerAdd.h"
+- (void)viewDidLoad {
+    [super viewDidLoad];
+    
+    self.sj_fadeArea = @[@(_btn.frame), @(_view2.frame)];
+    // or
+    self.sj_fadeAreaViews = @[_btn, _view2];
+}
+```
+
 ### Example
 <img src="https://github.com/changsanjiang/SJVideoPlayerBackGR/blob/master/SJBackGRProject/SJBackGRProject/GestrueSample.gif" width="40%">    
 

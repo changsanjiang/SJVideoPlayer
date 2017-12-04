@@ -26,18 +26,26 @@
 }
 
 @property (nonatomic, strong, readwrite) AVAssetImageGenerator *imageGenerator;
+@property (nonatomic, assign, readwrite) BOOL hasBeenGeneratedPreviewImages;
+@property (nonatomic, strong, readwrite) NSArray<SJVideoPreviewModel *> *generatedPreviewImages;
 
 @end
 
 @implementation SJVideoPlayerAssetCarrier
 
 - (instancetype)initWithAssetURL:(NSURL *)assetURL {
+    return [self initWithAssetURL:assetURL beginTime:0];
+}
+
+/// unit is sec.
+- (instancetype)initWithAssetURL:(NSURL *)assetURL beginTime:(NSTimeInterval)beginTime {
     self = [super init];
     if ( !self ) return nil;
     _asset = [AVURLAsset assetWithURL:assetURL];
     _playerItem = [AVPlayerItem playerItemWithAsset:_asset automaticallyLoadedAssetKeys:@[@"duration"]];
     _player = [AVPlayer playerWithPlayerItem:_playerItem];
     _assetURL = assetURL;
+    _beginTime = beginTime;
     [self _addTimeObserver];
     [self _addItemPlayEndObserver];
     [self _addPlayerItemObserver];
@@ -111,19 +119,27 @@
                 if ( 0 == imagesM.count ) return;
                 __strong typeof(_self) self = _self;
                 if ( !self ) return;
+                self.hasBeenGeneratedPreviewImages = YES;
+                self.generatedPreviewImages = imagesM;
                 if ( block ) block(self, imagesM, nil);
             });
-            
         }
     }];
 }
 
+- (void)cancelPreviewImagesGeneration {
+    [_imageGenerator cancelAllCGImageGeneration];
+}
+
 - (void)dealloc {
-    [self.player removeTimeObserver:_timeObserver];
+    [_player removeTimeObserver:_timeObserver];
     [[NSNotificationCenter defaultCenter] removeObserver:_itemEndObserver name:AVPlayerItemDidPlayToEndTimeNotification object:nil];
-    [self.playerItem removeObserver:self forKeyPath:@"status"];
-    
-    // 清空操作
+    [_playerItem removeObserver:self forKeyPath:@"status"];
+
+    _assetURL = nil;
+    _asset = nil;
+    _playerItem = nil;
+    _player = nil;
 }
 
 @end

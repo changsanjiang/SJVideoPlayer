@@ -3,7 +3,21 @@
 ```ruby
   pod 'SJAttributesFactory'
 ```
-另外关于富文本的属性介绍, 请查看:
+### 最近动态:
+- 完善参数错误的相关提示
+- 修复了insert方法插入-1时的Bug
+- 增加了正则相关的方法
+- 新增了一个替换方法
+- 新增了一个范围获取AttrStr的方法
+- 添加了HeaderFile, 方便导入头文件
+- 添加了第二种范围编辑Method
+- 修复了Size方法的Bug
+- 增加了对范围段落Style编辑的方法
+- 改变了项目结构, 使其更合逻辑(变更较大)
+- 新增可变参(insert)插入方法   
+
+
+附 富文本属性:
 http://www.jianshu.com/p/ebbcfc24f9cb
 ___
 ### 上下图文效果:

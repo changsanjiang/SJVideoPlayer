@@ -7,7 +7,44 @@
 //
 
 #import "SJVideoPlayerBaseView.h"
+#import "SJVideoPlayerControlViewEnumHeader.h"
+#import "SJVideoPlayerTopControlView.h"
+#import "SJVideoPlayerLeftControlView.h"
+#import "SJVideoPlayerBottomControlView.h"
+#import "SJVideoPlayerCenterControlView.h"
+#import "SJVideoPlayerPreviewView.h"
+
+NS_ASSUME_NONNULL_BEGIN
+
+@class SJVideoPreviewModel, SJVideoPlayerAssetCarrier;
+
+@protocol SJVideoPlayerControlViewDelegate;
 
 @interface SJVideoPlayerControlView : SJVideoPlayerBaseView
 
+@property (nonatomic, weak, readwrite, nullable) id<SJVideoPlayerControlViewDelegate> delegate;
+@property (nonatomic, weak, readwrite, nullable) SJVideoPlayerAssetCarrier *asset;
+
+@property (nonatomic, strong, readonly) SJVideoPlayerTopControlView *topControlView;
+@property (nonatomic, strong, readonly) SJVideoPlayerPreviewView *previewView;
+@property (nonatomic, strong, readonly) SJVideoPlayerLeftControlView *leftControlView;
+@property (nonatomic, strong, readonly) SJVideoPlayerCenterControlView *centerControlView;
+@property (nonatomic, strong, readonly) SJVideoPlayerBottomControlView *bottomControlView;
+
 @end
+
+@protocol SJVideoPlayerControlViewDelegate <NSObject>
+			
+@optional
+- (void)controlView:(SJVideoPlayerControlView *)controlView clickedBtnTag:(SJVideoPlayControlViewTag)tag;
+//- (void)controlView:(SJVideoPlayerControlView *)controlView
+//- (void)controlView:(SJVideoPlayerControlView *)controlView
+//- (void)controlView:(SJVideoPlayerControlView *)controlView
+//- (void)controlView:(SJVideoPlayerControlView *)controlView
+//- (void)controlView:(SJVideoPlayerControlView *)controlView
+//- (void)controlView:(SJVideoPlayerControlView *)controlView
+//- (void)controlView:(SJVideoPlayerControlView *)controlView
+
+@end
+
+NS_ASSUME_NONNULL_END

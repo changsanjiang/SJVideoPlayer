@@ -12,4 +12,6 @@
 
 + (instancetype)sj_scheduledTimerWithTimeInterval:(NSTimeInterval)ti exeBlock:(void(^)(void))block repeats:(BOOL)yesOrNo;
 
++ (instancetype)csj_scheduledTimerWithTimeInterval:(NSTimeInterval)ti exeBlock:(void(^)(NSTimer *timer))block repeats:(BOOL)yesOrNo;
+
 @end

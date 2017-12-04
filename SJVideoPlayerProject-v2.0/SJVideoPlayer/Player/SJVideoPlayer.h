@@ -8,6 +8,8 @@
 
 #import <UIKit/UIKit.h>
 #import <AVFoundation/AVFoundation.h>
+#import "SJVideoPlayerState.h"
+#import "SJVideoPlayerAssetCarrier.h"
 
 NS_ASSUME_NONNULL_BEGIN
 
@@ -17,13 +19,19 @@ NS_ASSUME_NONNULL_BEGIN
 
 /*!
  *  present View. you shuold set it frame (support autoLayout).
+ *
+ *  播放器视图
  */
 @property (nonatomic, strong, readonly) UIView *view;
 
 /*!
- *  error.
+ *  error. support observe. default is nil.
+ *
+ *  播放报错, 如果需要, 可以使用观察者, 来观察他的改变.
  */
-@property (nonatomic, strong, readonly) NSError *error;
+@property (nonatomic, strong, readonly, nullable) NSError *error;
+
+@property (nonatomic, assign, readonly) SJVideoPlayerPlayState state;
 
 @end
 
@@ -33,9 +41,16 @@ NS_ASSUME_NONNULL_BEGIN
 @interface SJVideoPlayer (Setting)
 
 /*!
- *  if you want to play, you need to set it up.
+ *  if you want to play, you can set it up.
+ *
+ *  视频播放地址
  */
 @property (nonatomic, strong, readwrite, nullable) NSURL *assetURL;
+
+/*!
+ *  if you want to play, you can set it up.
+ */
+@property (nonatomic, strong, readwrite, nullable) SJVideoPlayerAssetCarrier *asset;
 
 /*!
  *  loading show this.
@@ -44,22 +59,37 @@ NS_ASSUME_NONNULL_BEGIN
 
 /*!
  *  default is YES.
+ *
+ *  是否自动播放, 默认是 YES.
  */
-@property (nonatomic, assign, getter=isAutoplay) BOOL autoplay;
+@property (nonatomic, assign, readwrite, getter=isAutoplay) BOOL autoplay;
 - (void)setIsAutoplay:(BOOL)isAutoplay;
 
 /*!
  *  default is YES.
+ *
+ *  是否自动生成预览视图, 默认是 YES.
  */
 @property (nonatomic, assign, readwrite) BOOL generatePreviewImages;
 
 /*!
  *  clicked back btn exe block.
+ *
+ *  点击返回按钮的回调
  */
 @property (nonatomic, copy, readwrite) void(^clickedBackEvent)(SJVideoPlayer *player);
 
 /*!
+ *  Whether screen rotation is disabled. default is NO.
+ *
+ *  是否禁用屏幕旋转, 默认是NO.
+ */
+@property (nonatomic, assign, readwrite) BOOL disableRotation;
+
+/*!
  *  if playing on the cell, you should set it.
+ *
+ *  如果在 cell 中播放视频, 请设置他.
  */
 - (void)setScrollView:(UIScrollView *)scrollView indexPath:(NSIndexPath *)indexPath onViewTag:(NSInteger)tag;
 
@@ -75,6 +105,8 @@ NS_ASSUME_NONNULL_BEGIN
 - (BOOL)play;
 
 - (BOOL)pause;
+
+- (void)stop;
 
 @end
 

@@ -35,6 +35,14 @@
     
     Player.assetURL = [[NSBundle mainBundle] URLForResource:@"sample.mp4" withExtension:nil];
     
+    __weak typeof(self) _self = self;
+    Player.clickedBackEvent = ^(SJVideoPlayer * _Nonnull player) {
+        __strong typeof(_self) self = _self;
+        if ( !self ) return;
+        [Player stop];
+        [self.navigationController popViewControllerAnimated:YES];
+    };
+    
     // Do any additional setup after loading the view.
 }
 

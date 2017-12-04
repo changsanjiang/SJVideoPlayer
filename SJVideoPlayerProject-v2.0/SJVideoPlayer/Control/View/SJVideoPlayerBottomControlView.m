@@ -7,8 +7,6 @@
 //
 
 #import "SJVideoPlayerBottomControlView.h"
-#import <SJSlider/SJSlider.h>
-#import "SJVideoPlayerControlViewEnumHeader.h"
 #import <SJUIFactory/SJUIFactory.h>
 #import "SJVideoPlayerResources.h"
 #import <Masonry/Masonry.h>
@@ -17,13 +15,6 @@
 @interface SJVideoPlayerBottomControlView ()
 
 @property (nonatomic, strong, readonly) SJVideoPlayerControlMaskView *controlMaskView;
-@property (nonatomic, strong, readonly) UIButton *playBtn;
-@property (nonatomic, strong, readonly) UIButton *pauseBtn;
-@property (nonatomic, strong, readonly) UILabel *currentTimeLabel;
-@property (nonatomic, strong, readonly) UILabel *separateLabel;
-@property (nonatomic, strong, readonly) UILabel *durationTimeLabel;
-@property (nonatomic, strong, readonly) SJSlider *progressSlider;
-@property (nonatomic, strong, readonly) UIButton *fullBtn;
 
 @end
 
@@ -45,7 +36,8 @@
 }
 
 - (void)clickedBtn:(UIButton *)btn {
-    
+    if ( ![_delegate respondsToSelector:@selector(bottomControlView:clickedBtnTag:)] ) return;
+    [_delegate bottomControlView:self clickedBtnTag:btn.tag];
 }
 
 - (void)_bottomSetupView {
@@ -88,7 +80,7 @@
     
     [_progressSlider mas_makeConstraints:^(MASConstraintMaker *make) {
         make.leading.equalTo(_durationTimeLabel.mas_trailing).offset(8);
-        make.centerY.equalTo(_playBtn);
+        make.top.bottom.offset(0);
         make.trailing.equalTo(_fullBtn.mas_leading).offset(-8);
     }];
     

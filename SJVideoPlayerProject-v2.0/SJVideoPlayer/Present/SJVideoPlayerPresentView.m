@@ -11,7 +11,6 @@
 #import "SJVideoPlayerAssetCarrier.h"
 
 @interface SJVideoPlayerPresentView ()
-@property (nonatomic, strong, readonly) UIImageView *placeholderImageView;
 @end
 
 @implementation SJVideoPlayerPresentView
@@ -25,6 +24,7 @@
 - (instancetype)initWithFrame:(CGRect)frame {
     self = [super initWithFrame:frame];
     if ( !self ) return nil;
+    _videoGravity = AVLayerVideoGravityResizeAspect;
     [self _presentSetupView];
     [self _addObserver];
     return self;
@@ -62,19 +62,9 @@
     self.avLayer.player = asset.player;
 }
 
-- (void)setPlaceholder:(UIImage *)placeholder {
-    _placeholder = placeholder;
-    _placeholderImageView.image = placeholder;
-}
-
-- (void)setShowPlaceholder:(BOOL)showPlaceholder {
-    if ( showPlaceholder == _showPlaceholder ) return;
-    _showPlaceholder = showPlaceholder;
-    [UIView animateWithDuration:0.25 animations:^{
-        if ( showPlaceholder )
-            _placeholderImageView.alpha = 1;
-        else _placeholderImageView.alpha = 0.001;
-    }];
+- (void)setVideoGravity:(AVLayerVideoGravity)videoGravity {
+    _videoGravity = videoGravity;
+    self.avLayer.videoGravity = videoGravity;
 }
 
 #pragma mark - Views

@@ -7,6 +7,7 @@
 //
 
 #import "UIViewController+SJExtension.h"
+#import <objc/message.h>
 
 @implementation UIViewController (SJExtension)
 

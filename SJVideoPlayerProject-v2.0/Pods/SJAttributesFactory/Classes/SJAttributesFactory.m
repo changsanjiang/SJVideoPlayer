@@ -22,7 +22,7 @@
 @implementation SJAttributesFactory
 
 + (NSAttributedString *)alteringStr:(NSString *)str task:(void(^)(SJAttributeWorker *worker))task {
-    NSAssert(str, @"param must not be empty!");
+    if ( !str ) return nil;
     SJAttributeWorker *worker = [SJAttributeWorker new];
     worker.insert(str, 0);
     task(worker);
@@ -30,7 +30,7 @@
 }
 
 + (NSAttributedString *)alteringAttrStr:(NSAttributedString *)attrStr task:(void(^)(SJAttributeWorker *worker))task {
-    NSAssert(attrStr, @"param must not be empty!");
+    if ( !attrStr ) return nil;
     SJAttributeWorker *worker = [SJAttributeWorker new];
     worker.insert(attrStr, 0);
     task(worker);
@@ -38,7 +38,7 @@
 }
 
 + (NSAttributedString *)producingWithImage:(UIImage *)image size:(CGSize)size task:(void(^)(SJAttributeWorker *worker))task {
-    NSAssert(image, @"param must not be empty!");
+    if ( !image ) return nil;
     SJAttributeWorker *worker = [SJAttributeWorker new];
     worker.insert(image, 0, CGPointZero, size);
     task(worker);

@@ -16,10 +16,15 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (instancetype)initWithAssetURL:(NSURL *)assetURL;
 
+/// unit is sec.
+- (instancetype)initWithAssetURL:(NSURL *)assetURL beginTime:(NSTimeInterval)beginTime;
+
 @property (nonatomic, strong, readonly) AVURLAsset *asset;
 @property (nonatomic, strong, readonly) AVPlayerItem *playerItem;
 @property (nonatomic, strong, readonly) AVPlayer *player;
 @property (nonatomic, strong, readonly) NSURL *assetURL;
+@property (nonatomic, assign, readonly) NSTimeInterval beginTime;
+
 
 @property (nonatomic, copy, readwrite, nullable) void(^playerItemStateChanged)(SJVideoPlayerAssetCarrier *asset, AVPlayerItemStatus status);
 
@@ -27,7 +32,14 @@ NS_ASSUME_NONNULL_BEGIN
 
 @property (nonatomic, copy, readwrite, nullable) void(^playDidToEnd)(SJVideoPlayerAssetCarrier *asset);
 
+#pragma mark - Generated Preview Images
+
+@property (nonatomic, assign, readonly) BOOL hasBeenGeneratedPreviewImages;
+@property (nonatomic, strong, readonly) NSArray<SJVideoPreviewModel *> *generatedPreviewImages;
+
 - (void)generatedPreviewImagesWithMaxItemSize:(CGSize)itemSize completion:(void(^)(SJVideoPlayerAssetCarrier *asset, NSArray<SJVideoPreviewModel *> *__nullable images, NSError *__nullable error))block;
+
+- (void)cancelPreviewImagesGeneration;
 
 @end
 

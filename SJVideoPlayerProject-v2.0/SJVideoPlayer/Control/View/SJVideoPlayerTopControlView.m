@@ -7,7 +7,6 @@
 //
 
 #import "SJVideoPlayerTopControlView.h"
-#import "SJVideoPlayerControlViewEnumHeader.h"
 #import <SJUIFactory/SJUIFactory.h>
 #import "SJVideoPlayerResources.h"
 #import <Masonry/Masonry.h>
@@ -16,9 +15,6 @@
 @interface SJVideoPlayerTopControlView ()
 
 @property (nonatomic, strong, readonly) SJVideoPlayerControlMaskView *controlMaskView;
-@property (nonatomic, strong, readonly) UIButton *backBtn;
-@property (nonatomic, strong, readonly) UIButton *previewBtn;
-@property (nonatomic, strong, readonly) UIButton *moreBtn;
 
 @end
 
@@ -36,8 +32,9 @@
     return self;
 }
 
-- (void)clickedBtn:(UIButton *)bt {
-    
+- (void)clickedBtn:(UIButton *)btn {
+    if ( ![_delegate respondsToSelector:@selector(topControlView:clickedBtnTag:)] ) return;
+    [_delegate topControlView:self clickedBtnTag:btn.tag];
 }
 
 - (void)_topSetupViews {

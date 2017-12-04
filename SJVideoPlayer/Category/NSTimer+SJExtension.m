@@ -20,4 +20,14 @@
     if ( block ) block();
 }
 
++ (instancetype)csj_scheduledTimerWithTimeInterval:(NSTimeInterval)ti exeBlock:(void(^)(NSTimer *timer))block repeats:(BOOL)yesOrNo {
+    NSAssert(block, @"block 不可为空");
+    return [self scheduledTimerWithTimeInterval:ti target:self selector:@selector(csj_exeTimerEvent:) userInfo:[block copy] repeats:yesOrNo];
+}
+
++ (void)csj_exeTimerEvent:(NSTimer *)timer {
+    void(^block)(NSTimer *timer) = timer.userInfo;
+    if ( block ) block(timer);
+}
+
 @end

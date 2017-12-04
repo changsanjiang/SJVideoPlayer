@@ -85,10 +85,12 @@
 
 #pragma mark -
 - (void)generatedPreviewImagesWithMaxItemSize:(CGSize)itemSize completion:(void (^)(SJVideoPlayerAssetCarrier * _Nonnull, NSArray<SJVideoPreviewModel *> * _Nullable, NSError * _Nullable))block {
+    if ( !_asset ) return;
+    if ( 0 == _asset.duration.timescale ) return;
     NSMutableArray<NSValue *> *timesM = [NSMutableArray new];
     NSInteger seconds = (long)_asset.duration.value / _asset.duration.timescale;
     if ( 0 == seconds || isnan(seconds) ) return;
-    if ( SJPreImgGenerateInterval > 1.0 ) return;
+    if ( SJPreImgGenerateInterval > 1.0 || SJPreImgGenerateInterval <= 0 ) return;
     __block short maxCount = (short)floorf(1.0 / SJPreImgGenerateInterval);
     short interval = (short)floor(seconds * SJPreImgGenerateInterval);
     for ( int i = 0 ; i < maxCount ; i ++ ) {
@@ -98,7 +100,7 @@
     }
     __weak typeof(self) _self = self;
     NSMutableArray <SJVideoPreviewModel *> *imagesM = [NSMutableArray new];
-    _imageGenerator = [AVAssetImageGenerator assetImageGeneratorWithAsset:self.asset];
+    _imageGenerator = [AVAssetImageGenerator assetImageGeneratorWithAsset:_asset];
     _imageGenerator.appliesPreferredTrackTransform = YES;
     _imageGenerator.maximumSize = itemSize;
     [_imageGenerator generateCGImagesAsynchronouslyForTimes:timesM completionHandler:^(CMTime requestedTime, CGImageRef  _Nullable imageRef, CMTime actualTime, AVAssetImageGeneratorResult result, NSError * _Nullable error) {
@@ -129,6 +131,22 @@
 
 - (void)cancelPreviewImagesGeneration {
     [_imageGenerator cancelAllCGImageGeneration];
+}
+
+- (UIImage *)screenshot {
+    if ( !_playerItem || !_asset ) return nil;
+    CMTime time = _playerItem.currentTime;
+    AVAssetImageGenerator *generator = [AVAssetImageGenerator assetImageGeneratorWithAsset:_asset];
+    generator.appliesPreferredTrackTransform = YES;
+    return [UIImage imageWithCGImage:[generator copyCGImageAtTime:time actualTime:&time error:nil]];
+}
+
+- (NSInteger)duration {
+    return CMTimeGetSeconds(_playerItem.duration);
+}
+
+- (NSInteger)currentTime {
+    return CMTimeGetSeconds(_playerItem.currentTime);
 }
 
 - (void)dealloc {

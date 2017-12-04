@@ -10,4 +10,5 @@ target 'SJVideoPlayerProject' do
   pod 'Masonry'
   pod 'SJSlider'
   pod 'SJVideoPlayerBackGR'
+  pod 'SJBorderLineView'
 end

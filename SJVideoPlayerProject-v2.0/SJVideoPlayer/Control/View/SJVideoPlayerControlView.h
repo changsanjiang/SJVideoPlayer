@@ -30,6 +30,7 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic, strong, readonly) SJVideoPlayerLeftControlView *leftControlView;
 @property (nonatomic, strong, readonly) SJVideoPlayerCenterControlView *centerControlView;
 @property (nonatomic, strong, readonly) SJVideoPlayerBottomControlView *bottomControlView;
+@property (nonatomic, strong, readonly) SJSlider *bottomProgressSlider;
 
 @end
 
@@ -37,13 +38,10 @@ NS_ASSUME_NONNULL_BEGIN
 			
 @optional
 - (void)controlView:(SJVideoPlayerControlView *)controlView clickedBtnTag:(SJVideoPlayControlViewTag)tag;
-//- (void)controlView:(SJVideoPlayerControlView *)controlView
-//- (void)controlView:(SJVideoPlayerControlView *)controlView
-//- (void)controlView:(SJVideoPlayerControlView *)controlView
-//- (void)controlView:(SJVideoPlayerControlView *)controlView
-//- (void)controlView:(SJVideoPlayerControlView *)controlView
-//- (void)controlView:(SJVideoPlayerControlView *)controlView
-//- (void)controlView:(SJVideoPlayerControlView *)controlView
+- (void)controlView:(SJVideoPlayerControlView *)controlView didSelectPreviewItem:(SJVideoPreviewModel *)item;
+- (void)controlView:(SJVideoPlayerControlView *)controlView handleSingleTap:(UITapGestureRecognizer *)tap;
+- (void)controlView:(SJVideoPlayerControlView *)controlView handleDoubleTap:(UITapGestureRecognizer *)tap;
+- (void)controlView:(SJVideoPlayerControlView *)controlView handlePan:(UIPanGestureRecognizer *)pan;
 
 @end
 

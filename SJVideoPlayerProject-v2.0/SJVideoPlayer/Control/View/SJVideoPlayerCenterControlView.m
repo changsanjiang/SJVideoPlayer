@@ -36,11 +36,11 @@
     [self.containerView addSubview:self.failedBtn];
     [self.containerView addSubview:self.replayBtn];
     [_failedBtn mas_makeConstraints:^(MASConstraintMaker *make) {
-        make.edges.offset(0);
+        make.center.offset(0);
     }];
     
     [_replayBtn mas_makeConstraints:^(MASConstraintMaker *make) {
-        make.edges.offset(0);
+        make.center.offset(0);
     }];
 }
 

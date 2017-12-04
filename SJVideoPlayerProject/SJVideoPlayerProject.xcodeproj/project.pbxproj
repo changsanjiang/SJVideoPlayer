@@ -86,7 +86,7 @@
 		772E4EFE1F792B460068A058 /* SJVideoPlayerMoreSettingTwoSetting.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = SJVideoPlayerMoreSettingTwoSetting.h; sourceTree = "<group>"; };
 		772E4EFF1F792B460068A058 /* SJVideoPlayerMoreSettingTwoSetting.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = SJVideoPlayerMoreSettingTwoSetting.m; sourceTree = "<group>"; };
 		774B250B1FCEB35A002113CC /* SJVideoPlayer.podspec */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = SJVideoPlayer.podspec; path = ../SJVideoPlayer.podspec; sourceTree = "<group>"; };
-		774B250D1FCEB362002113CC /* Podfile */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = Podfile; sourceTree = "<group>"; };
+		774B250D1FCEB362002113CC /* Podfile */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = Podfile; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.ruby; };
 		7798A30F1F519125004CB9BA /* SJVideoPlayer.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = SJVideoPlayer.png; sourceTree = "<group>"; };
 		7798A3111F51AB78004CB9BA /* sample0.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = sample0.png; sourceTree = "<group>"; };
 		7798A3121F51AB78004CB9BA /* sample1.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = sample1.png; sourceTree = "<group>"; };

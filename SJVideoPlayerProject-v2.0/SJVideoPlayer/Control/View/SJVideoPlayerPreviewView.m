@@ -59,7 +59,7 @@ static NSString *SJVideoPlayerPreviewCollectionViewCellID = @"SJVideoPlayerPrevi
 
 - (UICollectionViewCell *)collectionView:(UICollectionView *)collectionView cellForItemAtIndexPath:(NSIndexPath *)indexPath {
     UICollectionViewCell *cell = [collectionView dequeueReusableCellWithReuseIdentifier:SJVideoPlayerPreviewCollectionViewCellID forIndexPath:indexPath];
-    [cell setValue:_previewImages[indexPath.row] forKey:@"model"];
+    [cell setValue:_previewImages[indexPath.item] forKey:@"model"];
     return cell;
 }
 
@@ -81,6 +81,11 @@ static NSString *SJVideoPlayerPreviewCollectionViewCellID = @"SJVideoPlayerPrevi
 
 - (CGFloat)collectionView:(UICollectionView *)collectionView layout:(UICollectionViewLayout*)collectionViewLayout minimumInteritemSpacingForSectionAtIndex:(NSInteger)section {
     return 0;
+}
+
+- (void)collectionView:(UICollectionView *)collectionView didSelectItemAtIndexPath:(NSIndexPath *)indexPath {
+    if ( ![self.delegate respondsToSelector:@selector(previewView:didSelectItem:)] ) return;
+    [self.delegate previewView:self didSelectItem:_previewImages[indexPath.item]];
 }
 
 @end

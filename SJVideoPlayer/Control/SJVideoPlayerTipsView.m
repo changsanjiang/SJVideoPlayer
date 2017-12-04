@@ -7,11 +7,8 @@
 //
 
 #import "SJVideoPlayerTipsView.h"
-
-#import "UIView+SJExtension.h"
-
+#import <SJUIFactory/SJUIFactory.h>
 #import <SJBorderLineView/SJBorderlineView.h>
-
 #import <Masonry/Masonry.h>
 
 #define SJThemeColor [UIColor colorWithRed:1 / 255.0 \
@@ -128,14 +125,14 @@
 
 - (UILabel *)titleLabel {
     if ( _titleLabel ) return _titleLabel;
-    _titleLabel = [UILabel labelWithFontSize:16 textColor:SJThemeColor alignment:NSTextAlignmentCenter];
+    _titleLabel = [SJUIFactory labelWithText:@"" textColor:SJThemeColor alignment:NSTextAlignmentCenter height:0];
     _titleLabel.font = [UIFont boldSystemFontOfSize:16];
     return _titleLabel;
 }
 
 - (UIImageView *)imageView {
     if ( _imageView ) return _imageView;
-    _imageView = [UIImageView imageViewWithImageStr:@"" viewMode:UIViewContentModeScaleAspectFit];
+    _imageView = [SJUIFactory imageViewWithImageName:@"" viewMode:UIViewContentModeScaleAspectFit];
     return _imageView;
 }
 
@@ -160,8 +157,9 @@
 
 - (UILabel *)minShowTitleLabel {
     if ( _minShowTitleLabel  ) return _minShowTitleLabel;
-    _minShowTitleLabel = [UILabel labelWithFontSize:14 textColor:SJThemeColor alignment:NSTextAlignmentCenter];
+    _minShowTitleLabel = [SJUIFactory labelWithText:@"" textColor:SJThemeColor alignment:NSTextAlignmentCenter height:12];
     _minShowTitleLabel.hidden = YES;
+    _titleLabel.font = [UIFont systemFontOfSize:14];
     return _minShowTitleLabel;
 }
 

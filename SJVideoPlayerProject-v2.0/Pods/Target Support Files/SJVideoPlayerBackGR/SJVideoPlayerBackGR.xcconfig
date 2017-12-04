@@ -1,6 +1,6 @@
 CONFIGURATION_BUILD_DIR = ${PODS_CONFIGURATION_BUILD_DIR}/SJVideoPlayerBackGR
 GCC_PREPROCESSOR_DEFINITIONS = $(inherited) COCOAPODS=1
-HEADER_SEARCH_PATHS = "${PODS_ROOT}/Headers/Private" "${PODS_ROOT}/Headers/Private/SJVideoPlayerBackGR" "${PODS_ROOT}/Headers/Public" "${PODS_ROOT}/Headers/Public/Masonry" "${PODS_ROOT}/Headers/Public/SJAttributesFactory" "${PODS_ROOT}/Headers/Public/SJSlider" "${PODS_ROOT}/Headers/Public/SJUIFactory" "${PODS_ROOT}/Headers/Public/SJVideoPlayerBackGR"
+HEADER_SEARCH_PATHS = "${PODS_ROOT}/Headers/Private" "${PODS_ROOT}/Headers/Private/SJVideoPlayerBackGR" "${PODS_ROOT}/Headers/Public" "${PODS_ROOT}/Headers/Public/Masonry" "${PODS_ROOT}/Headers/Public/SJAttributesFactory" "${PODS_ROOT}/Headers/Public/SJBorderLineView" "${PODS_ROOT}/Headers/Public/SJSlider" "${PODS_ROOT}/Headers/Public/SJUIFactory" "${PODS_ROOT}/Headers/Public/SJVideoPlayerBackGR"
 PODS_BUILD_DIR = ${BUILD_DIR}
 PODS_CONFIGURATION_BUILD_DIR = ${PODS_BUILD_DIR}/$(CONFIGURATION)$(EFFECTIVE_PLATFORM_NAME)
 PODS_ROOT = ${SRCROOT}

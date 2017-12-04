@@ -65,7 +65,7 @@
     
     [_currentTimeLabel mas_makeConstraints:^(MASConstraintMaker *make) {
         make.centerY.equalTo(_separateLabel);
-        make.leading.equalTo(_playBtn.mas_trailing).offset(8);
+        make.leading.equalTo(_playBtn.mas_trailing).offset(0);
     }];
     
     [_separateLabel mas_makeConstraints:^(MASConstraintMaker *make) {
@@ -93,6 +93,7 @@
     [SJUIFactory boundaryProtectedWithView:_currentTimeLabel];
     [SJUIFactory boundaryProtectedWithView:_separateLabel];
     [SJUIFactory boundaryProtectedWithView:_durationTimeLabel];
+    [SJUIFactory boundaryProtectedWithView:_progressSlider];
 }
 
 - (UIButton *)playBtn {
@@ -110,6 +111,7 @@
 - (SJSlider *)progressSlider {
     if ( _progressSlider ) return _progressSlider;
     _progressSlider = [SJSlider new];
+    _progressSlider.tag = SJVideoPlaySliderTag_Progress;
     return _progressSlider;
 }
 

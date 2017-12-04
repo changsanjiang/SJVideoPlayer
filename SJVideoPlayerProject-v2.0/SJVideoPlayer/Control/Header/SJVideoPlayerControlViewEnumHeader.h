@@ -29,7 +29,7 @@ typedef NS_ENUM(NSUInteger, SJVideoPlaySliderTag) {
     SJVideoPlaySliderTag_Volume,
     SJVideoPlaySliderTag_Brightness,
     SJVideoPlaySliderTag_Rate,
-    SJVideoPlaySliderTag_Control,
+    SJVideoPlaySliderTag_Progress,
     SJVideoPlaySliderTag_Dragging,
 };
 

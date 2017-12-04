@@ -11,10 +11,18 @@
 #import "SJVideoPreviewModel.h"
 #import <Masonry/Masonry.h>
 
-@interface SJVideoPlayerControlView()<SJVideoPlayerTopControlViewDelegate, SJVideoPlayerLeftControlViewDelegate, SJVideoPlayerCenterControlViewDelegate, SJVideoPlayerBottomControlViewDelegate>
+@interface SJVideoPlayerControlView()<SJVideoPlayerTopControlViewDelegate, SJVideoPlayerLeftControlViewDelegate, SJVideoPlayerCenterControlViewDelegate, SJVideoPlayerBottomControlViewDelegate, SJVideoPlayerPreviewViewDelegate>
+@property (nonatomic, strong, readonly) UITapGestureRecognizer *singleTap;
+@property (nonatomic, strong, readonly) UITapGestureRecognizer *doubleTap;
+@property (nonatomic, strong, readonly) UIPanGestureRecognizer *panGR;
+
 @end
 
 @implementation SJVideoPlayerControlView
+@synthesize singleTap = _singleTap;
+@synthesize doubleTap = _doubleTap;
+@synthesize panGR = _panGR;
+@synthesize bottomProgressSlider = _bottomProgressSlider;
 @synthesize previewView = _previewView;
 
 @synthesize topControlView = _topControlView;
@@ -26,11 +34,25 @@
     self = [super initWithFrame:frame];
     if ( !self ) return nil;
     [self _controlSetupView];
+    [self _addGestureToControlView];
     _topControlView.delegate = self;
     _leftControlView.delegate = self;
     _centerControlView.delegate = self;
     _bottomControlView.delegate = self;
+    _previewView.delegate = self;
     return self;
+}
+
+- (void)_addGestureToControlView {
+    [self.singleTap requireGestureRecognizerToFail:self.doubleTap];
+    [self.doubleTap requireGestureRecognizerToFail:self.panGR];
+    
+    [self addGestureRecognizer:self.singleTap];
+    [self addGestureRecognizer:self.doubleTap];
+    [self addGestureRecognizer:self.panGR];
+    
+    [_singleTap requireGestureRecognizerToFail:_doubleTap];
+    [_doubleTap requireGestureRecognizerToFail:_panGR];
 }
 
 #pragma mark
@@ -41,6 +63,7 @@
     [self.containerView addSubview:self.centerControlView];
     [self.containerView addSubview:self.bottomControlView];
     [self.containerView addSubview:self.previewView];
+    [self.containerView addSubview:self.bottomProgressSlider];
     
     [_topControlView mas_makeConstraints:^(MASConstraintMaker *make) {
         make.top.leading.trailing.offset(0);
@@ -66,6 +89,11 @@
     [_bottomControlView mas_makeConstraints:^(MASConstraintMaker *make) {
         make.bottom.leading.trailing.offset(0);
         make.height.offset(49);
+    }];
+    
+    [_bottomProgressSlider mas_makeConstraints:^(MASConstraintMaker *make) {
+        make.leading.bottom.trailing.offset(0);
+        make.height.offset(1);
     }];
 }
 
@@ -114,10 +142,54 @@
     [_delegate controlView:self clickedBtnTag:tag];
 }
 
+- (void)previewView:(SJVideoPlayerPreviewView *)view didSelectItem:(SJVideoPreviewModel *)item {
+    if ( ![_delegate respondsToSelector:@selector(controlView:didSelectPreviewItem:)] ) return;
+    [_delegate controlView:self didSelectPreviewItem:item];
+}
+
 - (SJVideoPlayerPreviewView *)previewView {
     if ( _previewView ) return _previewView;
     _previewView = [SJVideoPlayerPreviewView new];
     _previewView.backgroundColor = [UIColor colorWithWhite:0 alpha:0.4];
     return _previewView;
 }
+- (SJSlider *)bottomProgressSlider {
+    if ( _bottomProgressSlider ) return _bottomProgressSlider;
+    _bottomProgressSlider = [SJSlider new];
+    _bottomProgressSlider.trackHeight = 1;
+    _bottomProgressSlider.pan.enabled = NO;
+    return _bottomProgressSlider;
+}
+- (UITapGestureRecognizer *)singleTap {
+    if ( _singleTap ) return _singleTap;
+    _singleTap = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(handleSingleTap:)];
+    return _singleTap;
+}
+- (UITapGestureRecognizer *)doubleTap {
+    if ( _doubleTap ) return _doubleTap;
+    _doubleTap = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(handleDoubleTap:)];
+    _doubleTap.numberOfTapsRequired = 2;
+    return _doubleTap;
+}
+- (UIPanGestureRecognizer *)panGR {
+    if ( _panGR ) return _panGR;
+    _panGR = [[UIPanGestureRecognizer alloc] initWithTarget:self action:@selector(handlePan:)];
+    return _panGR;
+}
+
+- (void)handleSingleTap:(UITapGestureRecognizer *)tap {
+    if ( ![_delegate respondsToSelector:@selector(controlView:handleSingleTap:)] ) return;
+    [_delegate controlView:self handleSingleTap:tap];
+}
+
+- (void)handleDoubleTap:(UITapGestureRecognizer *)tap {
+    if ( ![_delegate respondsToSelector:@selector(controlView:handleDoubleTap:)] ) return;
+    [_delegate controlView:self handleDoubleTap:tap];
+}
+
+- (void)handlePan:(UIPanGestureRecognizer *)pan {
+    if ( ![_delegate respondsToSelector:@selector(controlView:handlePan:)] ) return;
+    [_delegate controlView:self handlePan:pan];
+}
+
 @end

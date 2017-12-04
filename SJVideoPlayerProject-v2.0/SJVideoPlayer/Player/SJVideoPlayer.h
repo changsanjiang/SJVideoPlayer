@@ -108,6 +108,10 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (void)stop;
 
+- (void)jumpedToTime:(NSTimeInterval)time completionHandler:(void (^ __nullable)(BOOL finished))completionHandler;
+
+- (UIImage *)screenshot;
+
 @end
 
 NS_ASSUME_NONNULL_END

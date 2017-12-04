@@ -173,6 +173,7 @@
 }
 
 - (void)setValue:(CGFloat)value {
+    if ( isnan(value) ) return;
     if      ( value < self.minValue ) value = self.minValue;
     else if ( value > self.maxValue ) value = self.maxValue;
     _value = value;
@@ -343,6 +344,7 @@
 }
 
 - (void)observeValueForKeyPath:(NSString *)keyPath ofObject:(id)object change:(NSDictionary<NSKeyValueChangeKey,id> *)change context:(void *)context  {
+    if ( 0 == self.containerView.csj_w ) return;
     if ( ![keyPath isEqualToString:@"value"] ) return;
     CGFloat rate = self.rate;
     CGFloat minX = _thumbImageView.csj_w * 0.25 / self.containerView.csj_w;

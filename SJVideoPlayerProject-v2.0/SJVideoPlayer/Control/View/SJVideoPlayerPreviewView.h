@@ -11,11 +11,22 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
+@protocol SJVideoPlayerPreviewViewDelegate;
+
 @interface SJVideoPlayerPreviewView : SJVideoPlayerBaseView
+
+@property (nonatomic, weak, readwrite, nullable) id<SJVideoPlayerPreviewViewDelegate> delegate;
 
 @property (nonatomic, strong, readwrite, nullable) NSArray<SJVideoPreviewModel *> *previewImages;
 
 @property (nonatomic, strong, readonly) UICollectionView *collectionView;
+
+@end
+
+@protocol SJVideoPlayerPreviewViewDelegate <NSObject>
+			
+@optional
+- (void)previewView:(SJVideoPlayerPreviewView *)view didSelectItem:(SJVideoPreviewModel *)item;
 
 @end
 

@@ -24,7 +24,8 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic, strong, readonly) AVPlayer *player;
 @property (nonatomic, strong, readonly) NSURL *assetURL;
 @property (nonatomic, assign, readonly) NSTimeInterval beginTime;
-
+@property (nonatomic, assign, readonly) NSInteger duration; // unit is sec.
+@property (nonatomic, assign, readonly) NSInteger currentTime; // unit is sec.
 
 @property (nonatomic, copy, readwrite, nullable) void(^playerItemStateChanged)(SJVideoPlayerAssetCarrier *asset, AVPlayerItemStatus status);
 
@@ -40,6 +41,8 @@ NS_ASSUME_NONNULL_BEGIN
 - (void)generatedPreviewImagesWithMaxItemSize:(CGSize)itemSize completion:(void(^)(SJVideoPlayerAssetCarrier *asset, NSArray<SJVideoPreviewModel *> *__nullable images, NSError *__nullable error))block;
 
 - (void)cancelPreviewImagesGeneration;
+
+- (UIImage *)screenshot;
 
 @end
 

@@ -48,18 +48,20 @@
     }];
     
     [_backBtn mas_makeConstraints:^(MASConstraintMaker *make) {
-        make.top.leading.bottom.offset(0);
+        make.leading.offset(8);
+        make.bottom.offset(0);
+        make.height.equalTo(_backBtn.superview).multipliedBy(0.7);
         make.height.equalTo(_backBtn.mas_width);
     }];
     
     [_previewBtn mas_makeConstraints:^(MASConstraintMaker *make) {
         make.size.bottom.equalTo(_backBtn);
-        make.trailing.equalTo(_moreBtn.mas_leading);
+        make.trailing.equalTo(_moreBtn.mas_leading).offset(-8);
     }];
     
     [_moreBtn mas_makeConstraints:^(MASConstraintMaker *make) {
         make.size.bottom.equalTo(_backBtn);
-        make.trailing.offset(0);
+        make.trailing.offset(-8);
     }];
 }
 

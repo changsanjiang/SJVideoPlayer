@@ -403,7 +403,7 @@ static const SJPlayerObserverKey assetCarrierKey = @"assetCarrier";
         if ( isLandscapeView ) self.transform = transform;
         else [window layoutIfNeeded];
     }];
-    [[UIApplication sharedApplication] setStatusBarHidden:YES];
+    [[UIApplication sharedApplication] setStatusBarHidden:YES withAnimation:UIStatusBarAnimationFade];
     [[NSNotificationCenter defaultCenter] postNotificationName:SJPlayerFullScreenNotitication object:nil];
 }
 

@@ -10,6 +10,7 @@
 #import <AVFoundation/AVFoundation.h>
 #import "SJVideoPlayerState.h"
 #import "SJVideoPlayerAssetCarrier.h"
+#import "SJVideoPlayerMoreSettingSecondary.h"
 
 NS_ASSUME_NONNULL_BEGIN
 
@@ -18,7 +19,7 @@ NS_ASSUME_NONNULL_BEGIN
 + (instancetype)sharedPlayer;
 
 /*!
- *  present View. you shuold set it frame (support autoLayout).
+ *  present View. support autoLayout.
  *
  *  播放器视图
  */
@@ -53,9 +54,21 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic, strong, readwrite, nullable) SJVideoPlayerAssetCarrier *asset;
 
 /*!
+ *  clicked More button to display items.
+ */
+@property (nonatomic, strong, readwrite, nullable) NSArray<SJVideoPlayerMoreSetting *> *moreSettings;
+
+/*!
  *  loading show this.
  */
 - (void)setPlaceholder:(UIImage *)placeholder;
+
+/*!
+ *  if playing on the cell, you should set it.
+ *
+ *  如果在 cell 中播放视频, 请设置他.
+ */
+- (void)setScrollView:(UIScrollView *)scrollView indexPath:(NSIndexPath *)indexPath onViewTag:(NSInteger)tag;
 
 /*!
  *  default is YES.
@@ -63,7 +76,6 @@ NS_ASSUME_NONNULL_BEGIN
  *  是否自动播放, 默认是 YES.
  */
 @property (nonatomic, assign, readwrite, getter=isAutoplay) BOOL autoplay;
-- (void)setIsAutoplay:(BOOL)isAutoplay;
 
 /*!
  *  default is YES.
@@ -86,13 +98,6 @@ NS_ASSUME_NONNULL_BEGIN
  */
 @property (nonatomic, assign, readwrite) BOOL disableRotation;
 
-/*!
- *  if playing on the cell, you should set it.
- *
- *  如果在 cell 中播放视频, 请设置他.
- */
-- (void)setScrollView:(UIScrollView *)scrollView indexPath:(NSIndexPath *)indexPath onViewTag:(NSInteger)tag;
-
 @property (nonatomic, strong, readwrite) AVLayerVideoGravity videoGravity;
 
 @end
@@ -111,6 +116,25 @@ NS_ASSUME_NONNULL_BEGIN
 - (void)jumpedToTime:(NSTimeInterval)time completionHandler:(void (^ __nullable)(BOOL finished))completionHandler;
 
 - (UIImage *)screenshot;
+
+@end
+
+
+#pragma mark -
+
+@interface SJVideoPlayer (Prompt)
+
+/*!
+ *  duration default is 1.0
+ */
+- (void)showTitle:(NSString *)title;
+
+/*!
+ *  duration if value set -1, promptView will always show.
+ */
+- (void)showTitle:(NSString *)title duration:(NSTimeInterval)duration;
+
+- (void)hiddenTitle;
 
 @end
 

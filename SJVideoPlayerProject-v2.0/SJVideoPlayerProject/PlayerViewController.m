@@ -22,7 +22,7 @@
 - (void)viewDidLoad {
     [super viewDidLoad];
     
-    self.view.backgroundColor = [UIColor whiteColor];
+    self.view.backgroundColor = [UIColor blackColor];
     
     [self.view addSubview:Player.view];
     [Player.view mas_makeConstraints:^(MASConstraintMaker *make) {
@@ -43,7 +43,31 @@
         [self.navigationController popViewControllerAnimated:YES];
     };
     
+    [self _setPlayerMoreSettingItems];
+    
     // Do any additional setup after loading the view.
+}
+
+- (void)_setPlayerMoreSettingItems {
+    
+    SJVideoPlayerMoreSettingSecondary *QQ = [[SJVideoPlayerMoreSettingSecondary alloc] initWithTitle:@"" image:[UIImage imageNamed:@"qq"] clickedExeBlock:^(SJVideoPlayerMoreSetting * _Nonnull model) {
+        [Player showTitle:@"分享到QQ"];
+    }];
+    
+    SJVideoPlayerMoreSettingSecondary *wechat = [[SJVideoPlayerMoreSettingSecondary alloc] initWithTitle:@"" image:[UIImage imageNamed:@"wechat"] clickedExeBlock:^(SJVideoPlayerMoreSetting * _Nonnull model) {
+        [Player showTitle:@"分享到wechat"];
+    }];
+    
+    SJVideoPlayerMoreSettingSecondary *weibo = [[SJVideoPlayerMoreSettingSecondary alloc] initWithTitle:@"" image:[UIImage imageNamed:@"weibo"] clickedExeBlock:^(SJVideoPlayerMoreSetting * _Nonnull model) {
+        [Player showTitle:@"分享到weibo"];
+    }];
+    
+    SJVideoPlayerMoreSetting *share = [[SJVideoPlayerMoreSetting alloc] initWithTitle:@"share" image:[UIImage imageNamed:@"share"] showTowSetting:YES twoSettingTopTitle:@"shareTitle" twoSettingItems:@[QQ, wechat, weibo] clickedExeBlock:^(SJVideoPlayerMoreSetting * _Nonnull model) {
+        [Player showTitle:@"clicked Share"];
+    }];
+    
+//    shareItem.twoSettingItems
+    Player.moreSettings = @[share];
 }
 
 - (void)dealloc {

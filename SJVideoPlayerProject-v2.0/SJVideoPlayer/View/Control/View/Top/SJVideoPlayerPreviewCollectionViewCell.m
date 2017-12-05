@@ -18,6 +18,7 @@
 @end
 
 @implementation SJVideoPlayerPreviewCollectionViewCell
+
 @synthesize imageView = _imageView;
 
 - (instancetype)initWithFrame:(CGRect)frame {

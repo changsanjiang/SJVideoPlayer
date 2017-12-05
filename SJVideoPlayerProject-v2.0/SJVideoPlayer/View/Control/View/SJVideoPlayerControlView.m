@@ -13,6 +13,7 @@
 #import "SJVideoPlayerResources.h"
 
 @interface SJVideoPlayerControlView()<SJVideoPlayerTopControlViewDelegate, SJVideoPlayerLeftControlViewDelegate, SJVideoPlayerCenterControlViewDelegate, SJVideoPlayerBottomControlViewDelegate, SJVideoPlayerPreviewViewDelegate>
+
 @property (nonatomic, strong, readonly) UITapGestureRecognizer *singleTap;
 @property (nonatomic, strong, readonly) UITapGestureRecognizer *doubleTap;
 @property (nonatomic, strong, readonly) UIPanGestureRecognizer *panGR;
@@ -68,8 +69,9 @@
     [self.containerView addSubview:self.bottomProgressSlider];
     
     [_topControlView mas_makeConstraints:^(MASConstraintMaker *make) {
-        make.top.leading.trailing.offset(0);
-        make.height.offset(49);
+        make.top.offset(0);
+        make.leading.trailing.offset(0);
+        make.height.offset(20 + 30);
     }];
     
     [_previewView mas_makeConstraints:^(MASConstraintMaker *make) {
@@ -85,7 +87,9 @@
     }];
     
     [_centerControlView mas_makeConstraints:^(MASConstraintMaker *make) {
-        make.edges.mas_offset(UIEdgeInsetsMake(49, 49, 49, 49));
+        make.center.offset(0);
+        make.width.equalTo(_centerControlView.superview).multipliedBy(0.382);
+        make.height.equalTo(_centerControlView.mas_width);
     }];
     
     [_bottomControlView mas_makeConstraints:^(MASConstraintMaker *make) {

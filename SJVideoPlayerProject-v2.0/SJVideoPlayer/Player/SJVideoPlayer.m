@@ -15,7 +15,13 @@
 #import <objc/message.h>
 #import "SJVideoPlayerResources.h"
 #import <MediaPlayer/MPVolumeView.h>
+#import "SJVideoPlayerMoreSettingsView.h"
+#import "SJVideoPlayerMoreSettingSecondaryView.h"
+#import <SJPrompt/SJPrompt.h>
+#import "SJOrentationObserver.h"
 
+
+#define MoreSettingWidth (MAX([UIScreen mainScreen].bounds.size.width, [UIScreen mainScreen].bounds.size.height) * 0.382)
 
 inline static void _sjErrorLog(NSString *msg) {
     NSLog(@"__error__: %@", msg);
@@ -56,8 +62,15 @@ inline static NSString *_formatWithSec(NSInteger sec) {
 
 @property (nonatomic, strong, readonly) SJVideoPlayerPresentView *presentView;
 @property (nonatomic, strong, readonly) SJVideoPlayerControlView *controlView;
+@property (nonatomic, strong, readonly) SJVideoPlayerMoreSettingsView *moreSettingView;
+@property (nonatomic, strong, readonly) SJVideoPlayerMoreSettingSecondaryView *moreSecondarySettingView;
+@property (nonatomic, strong, readonly) SJOrentationObserver *orentation;
+
 
 @property (nonatomic, assign, readwrite) SJVideoPlayerPlayState state;
+
+@property (nonatomic, assign, readwrite) BOOL hiddenMoreSettingView;
+@property (nonatomic, assign, readwrite) BOOL hiddenMoreSecondarySettingView;
 
 @end
 
@@ -118,138 +131,6 @@ inline static NSString *_formatWithSec(NSInteger sec) {
 @end
 
 
-
-
-
-#pragma mark - Orientation
-
-@interface SJVideoPlayer (Orientation)
-
-@property (nonatomic, assign, readwrite, getter=isFullScreen) BOOL fullScreen;
-
-@property (nonatomic, copy, readwrite) void(^orientationChangedCallBlock)(void);
-
-@property (nonatomic, copy, readwrite) BOOL(^rotationCondition)(void);
-
-- (void)_observerDeviceOrientation;
-
-- (BOOL)_changeScreenOrientation;
-
-
-@end
-
-@implementation SJVideoPlayer (Orientation)
-
-- (void)_observerDeviceOrientation {
-    if ( ![UIDevice currentDevice].generatesDeviceOrientationNotifications ) {
-        [[UIDevice currentDevice] beginGeneratingDeviceOrientationNotifications];
-    }
-    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(_handleDeviceOrientationChange:)
-                                                 name:UIDeviceOrientationDidChangeNotification object:nil];
-}
-
-- (void)_handleDeviceOrientationChange:(NSNotification *)notification {
-    switch ( [UIDevice currentDevice].orientation ) {
-        case UIDeviceOrientationPortrait: {
-            self.fullScreen = NO;
-        }
-            break;
-        case UIDeviceOrientationLandscapeLeft:
-        case UIDeviceOrientationLandscapeRight: {
-            self.fullScreen = YES;
-        }
-            break;
-        default: break;
-    }
-}
-
-- (BOOL)isFullScreen {
-    return [objc_getAssociatedObject(self, _cmd) boolValue];
-}
-
-- (void)setFullScreen:(BOOL)fullScreen {
-    if ( self.rotationCondition ) {
-        if ( !self.rotationCondition() ) return;
-    }
-    
-    UIInterfaceOrientation statusBarOrientation = [UIApplication sharedApplication].statusBarOrientation;
-    UIDeviceOrientation deviceOrientation = [UIDevice currentDevice].orientation;
-    if ( (UIDeviceOrientation)statusBarOrientation == deviceOrientation ) return;
-
-    objc_setAssociatedObject(self, @selector(isFullScreen), @(fullScreen), OBJC_ASSOCIATION_RETAIN_NONATOMIC);
-    
-    CGAffineTransform transform = CGAffineTransformIdentity;
-    UIView *superview = nil;
-    switch ( [UIDevice currentDevice].orientation ) {
-        case UIDeviceOrientationPortrait: {
-            [UIApplication sharedApplication].statusBarOrientation = UIInterfaceOrientationPortrait;
-            transform = CGAffineTransformIdentity;
-            superview = self.view;
-        }
-            break;
-        case UIDeviceOrientationLandscapeLeft: {
-            [UIApplication sharedApplication].statusBarOrientation = UIInterfaceOrientationLandscapeRight;
-            transform = CGAffineTransformMakeRotation(M_PI_2);
-            superview = [UIApplication sharedApplication].keyWindow;
-        }
-            break;
-        case UIDeviceOrientationLandscapeRight: {
-            [UIApplication sharedApplication].statusBarOrientation = UIInterfaceOrientationLandscapeLeft;
-            transform = CGAffineTransformMakeRotation(-M_PI_2);
-            superview = [UIApplication sharedApplication].keyWindow;
-        }
-            break;
-        default: break;
-    }
-    
-    _sjAnima(^{
-        [superview addSubview:self.presentView];
-        [self.presentView mas_remakeConstraints:^(MASConstraintMaker *make) {
-            if ( UIDeviceOrientationPortrait == [UIDevice currentDevice].orientation ) {
-                make.edges.offset(0);
-            }
-            else {
-                CGFloat width = [UIScreen mainScreen].bounds.size.width;
-                CGFloat height = [UIScreen mainScreen].bounds.size.height;
-                make.size.mas_offset(CGSizeMake(MAX(width, height), MIN(width, height)));
-                make.center.offset(0);
-            }
-        }];
-        
-        self.presentView.transform = transform;
-        [superview layoutIfNeeded];
-    });
-    
-    if ( self.orientationChangedCallBlock ) self.orientationChangedCallBlock();
-}
-
-- (void)setOrientationChangedCallBlock:(void (^)(void))orientationChangedCallBlock {
-    objc_setAssociatedObject(self, @selector(orientationChangedCallBlock), orientationChangedCallBlock, OBJC_ASSOCIATION_COPY_NONATOMIC);
-}
-
-- (void (^)(void))orientationChangedCallBlock {
-    return objc_getAssociatedObject(self, _cmd);
-}
-
-- (void)setRotationCondition:(BOOL (^)(void))rotationCondition {
-    objc_setAssociatedObject(self, @selector(rotationCondition), rotationCondition, OBJC_ASSOCIATION_COPY_NONATOMIC);
-}
-
-- (BOOL (^)(void))rotationCondition {
-    return objc_getAssociatedObject(self, _cmd);
-}
-
-- (BOOL)_changeScreenOrientation {
-    if ( [UIDevice currentDevice].orientation != UIInterfaceOrientationPortrait ) {
-        [[UIDevice currentDevice] setValue:@(UIInterfaceOrientationPortrait) forKey:@"orientation"];
-    }
-    else {
-        [[UIDevice currentDevice] setValue:@(UIInterfaceOrientationLandscapeRight) forKey:@"orientation"];
-    }
-    return YES;
-}
-
-@end
 
 
 #pragma mark - SeekToTime
@@ -378,9 +259,17 @@ inline static NSString *_formatWithSec(NSInteger sec) {
     if ( self.isLockedScrren == lockScreen ) return;
     objc_setAssociatedObject(self, @selector(isLockedScrren), @(lockScreen), OBJC_ASSOCIATION_RETAIN_NONATOMIC);
     _sjAnima(^{
-        if ( lockScreen ) [self _lockScreenState];
-        else [self _unlockScreenState];
+        if ( lockScreen ) {
+            [self _lockScreenState];
+        }
+        else {
+            [self _unlockScreenState];
+        }
     });
+    
+    if ( self.orentation.fullScreen ) {
+        [UIApplication sharedApplication].statusBarHidden = lockScreen;
+    }
 }
 
 - (BOOL)isLockedScrren {
@@ -389,6 +278,7 @@ inline static NSString *_formatWithSec(NSInteger sec) {
 
 - (void)setHideControl:(BOOL)hideControl {
     if ( self.isHiddenControl == hideControl ) return;
+    if ( self.isLockedScrren ) return;
     objc_setAssociatedObject(self, @selector(isHiddenControl), @(hideControl), OBJC_ASSOCIATION_RETAIN_NONATOMIC);
     if ( hideControl ) [self _hideControlState];
     else [self _showControlState];
@@ -414,6 +304,19 @@ inline static NSString *_formatWithSec(NSInteger sec) {
                      self.controlView.bottomControlView.playBtn,
                      self.controlView.bottomProgressSlider,
                      ]);
+    
+    if ( self.orentation.fullScreen ) {
+        _sjShowViews(@[self.controlView.topControlView.moreBtn,
+                       self.controlView.leftControlView,]);
+        if ( self.asset.hasBeenGeneratedPreviewImages ) {
+            _sjShowViews(@[self.controlView.topControlView.previewBtn]);
+        }
+    }
+    else {
+        _sjHiddenViews(@[self.controlView.topControlView.moreBtn,
+                         self.controlView.topControlView.previewBtn,
+                         self.controlView.leftControlView,]);
+    }
     
     self.state = SJVideoPlayerPlayState_Prepare;
 }
@@ -561,15 +464,37 @@ typedef NS_ENUM(NSUInteger, SJVerticalPanLocation) {
     return (SJVerticalPanLocation)[objc_getAssociatedObject(self , _cmd) integerValue];
 }
 
+- (BOOL)_isFadeAreaWithGesture:(UIGestureRecognizer *)gesture {
+    CGPoint point = [gesture locationInView:gesture.view];
+    if ( CGRectContainsPoint(self.moreSettingView.frame, point) ||
+        CGRectContainsPoint(self.moreSecondarySettingView.frame, point) ) {
+        [gesture setValue:@(UIGestureRecognizerStateCancelled) forKey:@"state"];
+        return YES;
+    }
+    return NO;
+}
+
 - (void)controlView:(SJVideoPlayerControlView *)controlView handleSingleTap:(UITapGestureRecognizer *)tap {
     if ( self.isLockedScrren ) return;
+    if ( [self _isFadeAreaWithGesture:tap] ) return;
+    
     _sjAnima(^{
-        self.hideControl = !self.isHiddenControl;
+        if ( !self.hiddenMoreSettingView ) {
+            self.hiddenMoreSettingView = YES;
+        }
+        else if ( !self.hiddenMoreSecondarySettingView ) {
+            self.hiddenMoreSecondarySettingView = YES;
+        }
+        else {
+            self.hideControl = !self.isHiddenControl;
+        }
     });
 }
 
 - (void)controlView:(SJVideoPlayerControlView *)controlView handleDoubleTap:(UITapGestureRecognizer *)tap {
     if ( self.isLockedScrren ) return;
+    if ( [self _isFadeAreaWithGesture:tap] ) return;
+    
     switch (self.state) {
         case SJVideoPlayerPlayState_Unknown:
         case SJVideoPlayerPlayState_Prepare:
@@ -592,6 +517,8 @@ typedef NS_ENUM(NSUInteger, SJVerticalPanLocation) {
 static UIView *target = nil;
 - (void)controlView:(SJVideoPlayerControlView *)controlView handlePan:(UIPanGestureRecognizer *)pan {
     if ( self.lockScreen ) return;
+    if ( [self _isFadeAreaWithGesture:pan] ) return;
+    
     CGPoint offset = [pan translationInView:pan.view];
     switch (pan.state) {
         case UIGestureRecognizerStateBegan:{
@@ -709,6 +636,9 @@ static UIView *target = nil;
 
 @synthesize presentView = _presentView;
 @synthesize controlView = _controlView;
+@synthesize moreSettingView = _moreSettingView;
+@synthesize moreSecondarySettingView = _moreSecondarySettingView;
+@synthesize orentation = _orentation;
 @synthesize view = _view;
 
 + (instancetype)sharedPlayer {
@@ -733,6 +663,8 @@ static UIView *target = nil;
     
     [self.view addSubview:self.presentView];
     [_presentView addSubview:self.controlView];
+    [_controlView addSubview:self.moreSettingView];
+    [_controlView addSubview:self.moreSecondarySettingView];
     _controlView.delegate = self;
     
     [_presentView mas_makeConstraints:^(MASConstraintMaker *make) {
@@ -743,30 +675,26 @@ static UIView *target = nil;
         make.edges.offset(0);
     }];
     
-    self.isAutoplay = YES;
+    [_moreSettingView mas_makeConstraints:^(MASConstraintMaker *make) {
+        make.top.bottom.trailing.offset(0);
+        make.width.offset(MoreSettingWidth);
+    }];
+    
+    [_moreSecondarySettingView mas_makeConstraints:^(MASConstraintMaker *make) {
+        make.edges.equalTo(_moreSettingView);
+    }];
+    
+    self.hiddenMoreSettingView = YES;
+    self.hiddenMoreSecondarySettingView = YES;
+    
+    self.autoplay = YES;
     self.generatePreviewImages = YES;
-
-    __weak typeof(self) _self = self;
-    self.orientationChangedCallBlock = ^{
-        __strong typeof(_self) self = _self;
-        if ( !self ) return;
-        [self _hiddenPreview];
-    };
-    
-    self.rotationCondition = ^BOOL(void) {
-        __strong typeof(_self) self = _self;
-        if ( !self ) return NO;
-        if ( self.state == SJVideoPlayerPlayState_Unknown ) return NO;
-        if ( self.disableRotation ) return NO;
-        if ( self.isLockedScrren ) return NO;
-        return YES;
-    };
-    
-    [self _observerDeviceOrientation];
     
     _controlView.bottomControlView.progressSlider.delegate = self;
     
     [self _initialize_VolumeAndBrightness];
+    
+    [self orentation];
     
     return self;
 }
@@ -795,6 +723,76 @@ static UIView *target = nil;
     return _view;
 }
 
+- (SJVideoPlayerMoreSettingsView *)moreSettingView {
+    if ( _moreSettingView ) return _moreSettingView;
+    _moreSettingView = [SJVideoPlayerMoreSettingsView new];
+    _moreSettingView.backgroundColor = [UIColor blackColor];
+    return _moreSettingView;
+}
+
+- (SJVideoPlayerMoreSettingSecondaryView *)moreSecondarySettingView {
+    if ( _moreSecondarySettingView ) return _moreSecondarySettingView;
+    _moreSecondarySettingView = [SJVideoPlayerMoreSettingSecondaryView new];
+    _moreSecondarySettingView.backgroundColor = [UIColor blackColor];
+    return _moreSecondarySettingView;
+}
+
+- (void)setHiddenMoreSettingView:(BOOL)hiddenMoreSettingView {
+    if ( hiddenMoreSettingView == _hiddenMoreSettingView ) return;
+    _hiddenMoreSettingView = hiddenMoreSettingView;
+    if ( hiddenMoreSettingView ) {
+        _moreSettingView.transform = CGAffineTransformMakeTranslation(MoreSettingWidth, 0);
+    }
+    else {
+        _moreSettingView.transform = CGAffineTransformIdentity;
+    }
+}
+
+- (void)setHiddenMoreSecondarySettingView:(BOOL)hiddenMoreSecondarySettingView {
+    if ( hiddenMoreSecondarySettingView == _hiddenMoreSecondarySettingView ) return;
+    _hiddenMoreSecondarySettingView = hiddenMoreSecondarySettingView;
+    if ( hiddenMoreSecondarySettingView ) {
+        _moreSecondarySettingView.transform = CGAffineTransformMakeTranslation(MoreSettingWidth, 0);
+    }
+    else {
+        _moreSecondarySettingView.transform = CGAffineTransformIdentity;
+    }
+}
+
+- (SJOrentationObserver *)orentation {
+    if ( _orentation ) return _orentation;
+    _orentation = [[SJOrentationObserver alloc] initWithTarget:self.presentView container:self.view];
+    __weak typeof(self) _self = self;
+    _orentation.orientationChanged = ^(SJOrentationObserver * _Nonnull observer) {
+        __strong typeof(_self) self = _self;
+        if ( !self ) return;
+        _sjAnima(^{
+            self.hideControl = NO;
+            if ( observer.fullScreen ) {
+                _sjShowViews(@[self.controlView.topControlView.moreBtn,
+                               self.controlView.leftControlView,]);
+                if ( self.asset.hasBeenGeneratedPreviewImages ) {
+                    _sjShowViews(@[self.controlView.topControlView.previewBtn]);
+                }
+            }
+            else {
+                _sjHiddenViews(@[self.controlView.topControlView.moreBtn,
+                                 self.controlView.topControlView.previewBtn,
+                                 self.controlView.leftControlView,]);
+            }
+        });
+    };
+    
+    _orentation.rotationCondition = ^BOOL(SJOrentationObserver * _Nonnull observer) {
+        __strong typeof(_self) self = _self;
+        if ( !self ) return NO;
+        if ( self.state == SJVideoPlayerPlayState_Unknown ) return NO;
+        if ( self.disableRotation ) return NO;
+        if ( self.isLockedScrren ) return NO;
+        return YES;
+    };
+    return _orentation;
+}
 
 #pragma mark ======================================================
 
@@ -804,6 +802,12 @@ static UIView *target = nil;
             [self pause];
             NSInteger currentTime = slider.value * self.asset.duration;
             [self _refreshingTimeLabelWithCurrentTime:currentTime duration:self.asset.duration];
+            
+            _sjAnima(^{
+                _sjShowViews(@[self.controlView.draggingProgressView]);
+            });
+            self.controlView.draggingProgressView.progressSlider.value = slider.value;
+            self.controlView.draggingProgressView.progressLabel.text = _formatWithSec(currentTime);
         }
             break;
             
@@ -817,6 +821,9 @@ static UIView *target = nil;
         case SJVideoPlaySliderTag_Progress: {
             NSInteger currentTime = slider.value * self.asset.duration;
             [self _refreshingTimeLabelWithCurrentTime:currentTime duration:self.asset.duration];
+            
+            self.controlView.draggingProgressView.progressSlider.value = slider.value;
+            self.controlView.draggingProgressView.progressLabel.text =  _formatWithSec(self.asset.duration * slider.value);
         }
             break;
             
@@ -834,6 +841,9 @@ static UIView *target = nil;
                 __strong typeof(_self) self = _self;
                 if ( !self ) return;
                 [self play];
+                _sjAnima(^{
+                    _sjHiddenViews(@[self.controlView.draggingProgressView]);
+                });
             }];
         }
             break;
@@ -876,9 +886,9 @@ static UIView *target = nil;
 - (void)controlView:(SJVideoPlayerControlView *)controlView clickedBtnTag:(SJVideoPlayControlViewTag)tag {
     switch (tag) {
         case SJVideoPlayControlViewTag_Back: {
-            if ( self.isFullScreen ) {
+            if ( self.orentation.isFullScreen ) {
                 if ( self.disableRotation ) return;
-                else [self _changeScreenOrientation];
+                else [self.orentation _changeOrientation];
             }
             else {
                 if ( self.clickedBackEvent ) self.clickedBackEvent(self);
@@ -886,7 +896,7 @@ static UIView *target = nil;
         }
             break;
         case SJVideoPlayControlViewTag_Full: {
-            [self _changeScreenOrientation];
+            [self.orentation _changeOrientation];
         }
             break;
             
@@ -926,7 +936,10 @@ static UIView *target = nil;
         }
             break;
         case SJVideoPlayControlViewTag_More: {
-            
+            _sjAnima(^{
+                self.hiddenMoreSettingView = NO;
+                self.hideControl = YES;
+            });
         }
             break;
     }
@@ -976,9 +989,11 @@ static UIView *target = nil;
             else {
                 __strong typeof(_self) self = _self;
                 if ( !self ) return;
-                _sjAnima(^{
-                    _sjShowViews(@[self.controlView.topControlView.previewBtn]);
-                });
+                if ( self.orentation.fullScreen ) {
+                    _sjAnima(^{
+                        _sjShowViews(@[self.controlView.topControlView.previewBtn]);
+                    });
+                }
                 self.controlView.previewView.previewImages = images;
             }
         }];
@@ -1018,16 +1033,70 @@ static UIView *target = nil;
     return objc_getAssociatedObject(self, _cmd);
 }
 
+- (void)setMoreSettings:(NSArray<SJVideoPlayerMoreSetting *> *)moreSettings {
+    objc_setAssociatedObject(self, @selector(moreSettings), moreSettings, OBJC_ASSOCIATION_RETAIN_NONATOMIC);
+    NSMutableSet<SJVideoPlayerMoreSetting *> *moreSettingsM = [NSMutableSet new];
+    [moreSettings enumerateObjectsUsingBlock:^(SJVideoPlayerMoreSetting * _Nonnull obj, NSUInteger idx, BOOL * _Nonnull stop) {
+        [self addSetting:obj container:moreSettingsM];
+    }];
+    
+    [moreSettingsM enumerateObjectsUsingBlock:^(SJVideoPlayerMoreSetting * _Nonnull obj, BOOL * _Nonnull stop) {
+        [self dressSetting:obj];
+    }];
+    self.moreSettingView.moreSettings = moreSettings;
+}
+
+- (void)addSetting:(SJVideoPlayerMoreSetting *)setting container:(NSMutableSet<SJVideoPlayerMoreSetting *> *)moreSttingsM {
+    [moreSttingsM addObject:setting];
+    if ( !setting.showTowSetting ) return;
+    [setting.twoSettingItems enumerateObjectsUsingBlock:^(SJVideoPlayerMoreSettingSecondary * _Nonnull obj, NSUInteger idx, BOOL * _Nonnull stop) {
+        [self addSetting:(SJVideoPlayerMoreSetting *)obj container:moreSttingsM];
+    }];
+}
+
+- (void)dressSetting:(SJVideoPlayerMoreSetting *)setting {
+    if ( !setting.clickedExeBlock ) return;
+    void(^clickedExeBlock)(SJVideoPlayerMoreSetting *model) = [setting.clickedExeBlock copy];
+    __weak typeof(self) _self = self;
+    if ( setting.isShowTowSetting ) {
+        setting.clickedExeBlock = ^(SJVideoPlayerMoreSetting * _Nonnull model) {
+            clickedExeBlock(model);
+            __strong typeof(_self) self = _self;
+            if ( !self ) return;
+            self.moreSecondarySettingView.twoLevelSettings = model;
+            _sjAnima(^{
+                self.hiddenMoreSettingView = YES;
+                self.hiddenMoreSecondarySettingView = NO;
+            });
+        };
+        return;
+    }
+    
+    setting.clickedExeBlock = ^(SJVideoPlayerMoreSetting * _Nonnull model) {
+        clickedExeBlock(model);
+        __strong typeof(_self) self = _self;
+        if ( !self ) return;
+        _sjAnima(^{
+            self.hiddenMoreSettingView = YES;
+            if ( !model.isShowTowSetting ) self.hiddenMoreSecondarySettingView = YES;
+        });
+    };
+}
+
+- (NSArray<SJVideoPlayerMoreSetting *> *)moreSettings {
+    return objc_getAssociatedObject(self, _cmd);
+}
+
 - (void)setPlaceholder:(UIImage *)placeholder {
     self.presentView.placeholderImageView.image = placeholder;
 }
 
-- (void)setAutoplay:(BOOL)autoplay {
-    objc_setAssociatedObject(self, @selector(isAutoplay), @(autoplay), OBJC_ASSOCIATION_RETAIN_NONATOMIC);
+- (void)setScrollView:(UIScrollView *)scrollView indexPath:(NSIndexPath *)indexPath onViewTag:(NSInteger)tag {
+    
 }
 
-- (void)setIsAutoplay:(BOOL)isAutoplay {
-    self.autoplay = isAutoplay;
+- (void)setAutoplay:(BOOL)autoplay {
+    objc_setAssociatedObject(self, @selector(isAutoplay), @(autoplay), OBJC_ASSOCIATION_RETAIN_NONATOMIC);
 }
 
 - (BOOL)isAutoplay {
@@ -1056,11 +1125,7 @@ static UIView *target = nil;
 
 - (BOOL)disableRotation {
     return [objc_getAssociatedObject(self, _cmd) boolValue];
-}
-
-- (void)setScrollView:(UIScrollView *)scrollView indexPath:(NSIndexPath *)indexPath onViewTag:(NSInteger)tag {
-    
-}
+} 
 
 - (void)setVideoGravity:(AVLayerVideoGravity)videoGravity {
     objc_setAssociatedObject(self, @selector(videoGravity), videoGravity, OBJC_ASSOCIATION_RETAIN_NONATOMIC);
@@ -1126,4 +1191,29 @@ static UIView *target = nil;
 - (UIImage *)screenshot {
     return [self.asset screenshot];
 }
+@end
+
+
+@implementation SJVideoPlayer (Prompt)
+
+- (SJPrompt *)prompt {
+    SJPrompt *prompt = objc_getAssociatedObject(self, _cmd);
+    if ( prompt ) return prompt;
+    prompt = [SJPrompt promptWithPresentView:self.presentView];
+    objc_setAssociatedObject(self, _cmd, prompt, OBJC_ASSOCIATION_RETAIN_NONATOMIC);
+    return prompt;
+}
+
+- (void)showTitle:(NSString *)title {
+    [self showTitle:title duration:1];
+}
+
+- (void)showTitle:(NSString *)title duration:(NSTimeInterval)duration {
+    [self.prompt showTitle:title duration:duration];
+}
+
+- (void)hiddenTitle {
+    [self.prompt hidden];
+}
+
 @end

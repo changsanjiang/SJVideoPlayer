@@ -26,6 +26,7 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic, assign, readonly) NSTimeInterval beginTime;
 @property (nonatomic, assign, readonly) NSInteger duration; // unit is sec.
 @property (nonatomic, assign, readonly) NSInteger currentTime; // unit is sec.
+@property (nonatomic, assign, readonly) float progress; // 0..1
 
 @property (nonatomic, copy, readwrite, nullable) void(^playerItemStateChanged)(SJVideoPlayerAssetCarrier *asset, AVPlayerItemStatus status);
 

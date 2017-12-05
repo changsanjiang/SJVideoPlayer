@@ -10,6 +10,7 @@
 #import "SJVideoPlayerAssetCarrier.h"
 #import "SJVideoPreviewModel.h"
 #import <Masonry/Masonry.h>
+#import "SJVideoPlayerResources.h"
 
 @interface SJVideoPlayerControlView()<SJVideoPlayerTopControlViewDelegate, SJVideoPlayerLeftControlViewDelegate, SJVideoPlayerCenterControlViewDelegate, SJVideoPlayerBottomControlViewDelegate, SJVideoPlayerPreviewViewDelegate>
 @property (nonatomic, strong, readonly) UITapGestureRecognizer *singleTap;
@@ -24,11 +25,11 @@
 @synthesize panGR = _panGR;
 @synthesize bottomProgressSlider = _bottomProgressSlider;
 @synthesize previewView = _previewView;
-
 @synthesize topControlView = _topControlView;
 @synthesize leftControlView = _leftControlView;
 @synthesize centerControlView = _centerControlView;
 @synthesize bottomControlView = _bottomControlView;
+@synthesize draggingProgressView = _draggingProgressView;
 
 - (instancetype)initWithFrame:(CGRect)frame {
     self = [super initWithFrame:frame];
@@ -58,6 +59,7 @@
 #pragma mark
 
 - (void)_controlSetupView {
+    [self.containerView addSubview:self.draggingProgressView];
     [self.containerView addSubview:self.topControlView];
     [self.containerView addSubview:self.leftControlView];
     [self.containerView addSubview:self.centerControlView];
@@ -95,6 +97,10 @@
         make.leading.bottom.trailing.offset(0);
         make.height.offset(1);
     }];
+    
+    [_draggingProgressView mas_makeConstraints:^(MASConstraintMaker *make) {
+        make.edges.offset(0);
+    }];
 }
 
 - (SJVideoPlayerTopControlView *)topControlView {
@@ -119,6 +125,12 @@
     if ( _bottomControlView ) return _bottomControlView;
     _bottomControlView = [SJVideoPlayerBottomControlView new];
     return _bottomControlView;
+}
+
+- (SJVideoPlayerDraggingProgressView *)draggingProgressView {
+    if ( _draggingProgressView ) return _draggingProgressView;
+    _draggingProgressView = [SJVideoPlayerDraggingProgressView new];
+    return _draggingProgressView;
 }
 
 #pragma mark

@@ -149,6 +149,12 @@
     return CMTimeGetSeconds(_playerItem.currentTime);
 }
 
+- (float)progress {
+    NSInteger duration = self.duration;
+    if ( 0 == duration ) return 0;
+    else return self.currentTime * 1.0 / duration;
+}
+
 - (void)dealloc {
     [_player removeTimeObserver:_timeObserver];
     [[NSNotificationCenter defaultCenter] removeObserver:_itemEndObserver name:AVPlayerItemDidPlayToEndTimeNotification object:nil];

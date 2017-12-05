@@ -26,7 +26,7 @@
     
     [self.view addSubview:Player.view];
     [Player.view mas_makeConstraints:^(MASConstraintMaker *make) {
-        make.center.offset(0);
+        make.top.offset(20);
         make.leading.trailing.offset(0);
         make.height.equalTo(Player.view.mas_width).multipliedBy(9.0f / 16);
     }];
@@ -44,6 +44,10 @@
     };
     
     // Do any additional setup after loading the view.
+}
+
+- (void)dealloc {
+    [Player stop];
 }
 
 - (void)viewWillAppear:(BOOL)animated {

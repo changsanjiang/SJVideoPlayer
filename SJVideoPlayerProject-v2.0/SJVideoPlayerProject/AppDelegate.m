@@ -16,6 +16,7 @@
 
 
 - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions {
+    [UIApplication sharedApplication].statusBarOrientation = UIInterfaceOrientationPortrait;
     // Override point for customization after application launch.
     return YES;
 }

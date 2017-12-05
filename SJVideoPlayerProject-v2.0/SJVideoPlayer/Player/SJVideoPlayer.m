@@ -13,6 +13,8 @@
 #import "SJVideoPlayerControlView.h"
 #import <AVFoundation/AVFoundation.h>
 #import <objc/message.h>
+#import "SJVideoPlayerResources.h"
+#import <MediaPlayer/MPVolumeView.h>
 
 
 inline static void _sjErrorLog(NSString *msg) {
@@ -39,6 +41,11 @@ inline static void _sjAnima(void(^block)(void)) {
     }
 }
 
+inline static NSString *_formatWithSec(NSInteger sec) {
+    NSInteger seconds = sec % 60;
+    NSInteger minutes = sec / 60;
+    return [NSString stringWithFormat:@"%02ld:%02ld", (long)minutes, (long)seconds];
+}
 
 
 
@@ -122,11 +129,12 @@ inline static void _sjAnima(void(^block)(void)) {
 
 @property (nonatomic, copy, readwrite) void(^orientationChangedCallBlock)(void);
 
-@property (nonatomic, copy, readwrite) BOOL(^rotationCondition)(BOOL demand);
+@property (nonatomic, copy, readwrite) BOOL(^rotationCondition)(void);
 
 - (void)_observerDeviceOrientation;
 
 - (BOOL)_changeScreenOrientation;
+
 
 @end
 
@@ -161,8 +169,13 @@ inline static void _sjAnima(void(^block)(void)) {
 
 - (void)setFullScreen:(BOOL)fullScreen {
     if ( self.rotationCondition ) {
-        if ( !self.rotationCondition(fullScreen) ) return;
+        if ( !self.rotationCondition() ) return;
     }
+    
+    UIInterfaceOrientation statusBarOrientation = [UIApplication sharedApplication].statusBarOrientation;
+    UIDeviceOrientation deviceOrientation = [UIDevice currentDevice].orientation;
+    if ( (UIDeviceOrientation)statusBarOrientation == deviceOrientation ) return;
+
     objc_setAssociatedObject(self, @selector(isFullScreen), @(fullScreen), OBJC_ASSOCIATION_RETAIN_NONATOMIC);
     
     CGAffineTransform transform = CGAffineTransformIdentity;
@@ -176,15 +189,13 @@ inline static void _sjAnima(void(^block)(void)) {
             break;
         case UIDeviceOrientationLandscapeLeft: {
             [UIApplication sharedApplication].statusBarOrientation = UIInterfaceOrientationLandscapeRight;
-            [UIApplication sharedApplication].statusBarHidden = YES;
             transform = CGAffineTransformMakeRotation(M_PI_2);
             superview = [UIApplication sharedApplication].keyWindow;
         }
             break;
         case UIDeviceOrientationLandscapeRight: {
-            transform = CGAffineTransformMakeRotation(-M_PI_2);
             [UIApplication sharedApplication].statusBarOrientation = UIInterfaceOrientationLandscapeLeft;
-            [UIApplication sharedApplication].statusBarHidden = YES;
+            transform = CGAffineTransformMakeRotation(-M_PI_2);
             superview = [UIApplication sharedApplication].keyWindow;
         }
             break;
@@ -220,11 +231,11 @@ inline static void _sjAnima(void(^block)(void)) {
     return objc_getAssociatedObject(self, _cmd);
 }
 
-- (void)setRotationCondition:(BOOL (^)(BOOL))rotationCondition {
+- (void)setRotationCondition:(BOOL (^)(void))rotationCondition {
     objc_setAssociatedObject(self, @selector(rotationCondition), rotationCondition, OBJC_ASSOCIATION_COPY_NONATOMIC);
 }
 
-- (BOOL (^)(BOOL))rotationCondition {
+- (BOOL (^)(void))rotationCondition {
     return objc_getAssociatedObject(self, _cmd);
 }
 
@@ -256,6 +267,82 @@ inline static void _sjAnima(void(^block)(void)) {
         if ( !finished ) return;
         if ( block ) block(finished);
     }];
+}
+
+@end
+
+
+
+
+
+#pragma mark - Volume And Brightness
+
+@interface SJVideoPlayer (VolumeAndBrightness)
+
+@property (nonatomic, strong, readonly) SJVideoPlayerTipsView *volumeView;
+@property (nonatomic, strong, readonly) SJVideoPlayerTipsView *brightnessView;
+@property (nonatomic, strong, readonly) UISlider *systemVolume;
+
+- (void)_initialize_VolumeAndBrightness;
+
+- (void)_clean_VolumeAndBrightness;
+
+@end
+
+@implementation SJVideoPlayer (VolumeAndBrightness)
+
+- (void)_initialize_VolumeAndBrightness {
+    [self volumeView];
+    [self brightnessView];
+    [self systemVolume];
+    
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(_volumeChanged) name:@"AVSystemController_SystemVolumeDidChangeNotification" object:nil];
+}
+
+- (void)_clean_VolumeAndBrightness {
+    [[NSNotificationCenter defaultCenter] removeObserver:self name:@"AVSystemController_SystemVolumeDidChangeNotification" object:nil];
+}
+
+- (void)_volumeChanged {
+    self.volumeView.value = self.systemVolume.value;
+}
+
+- (SJVideoPlayerTipsView *)volumeView {
+    SJVideoPlayerTipsView *volumeView = objc_getAssociatedObject(self, _cmd);
+    if ( volumeView ) return volumeView;
+    volumeView = [SJVideoPlayerTipsView new];
+    volumeView.titleLabel.text = @"音量";
+    volumeView.minShowImage = [SJVideoPlayerResources imageNamed:@"sj_video_player_un_volume"];
+    volumeView.minShowTitleLabel.text = @"静音";
+    volumeView.normalShowImage = [SJVideoPlayerResources imageNamed:@"sj_video_player_volume"];
+    objc_setAssociatedObject(self, _cmd, volumeView, OBJC_ASSOCIATION_RETAIN_NONATOMIC);
+    return volumeView;
+}
+
+- (SJVideoPlayerTipsView *)brightnessView {
+    SJVideoPlayerTipsView *brightnessView = objc_getAssociatedObject(self, _cmd);
+    if ( brightnessView ) return brightnessView;
+    brightnessView = [SJVideoPlayerTipsView new];
+    brightnessView.titleLabel.text = @"亮度";
+    brightnessView.normalShowImage = [SJVideoPlayerResources imageNamed:@"sj_video_player_brightness"];
+    objc_setAssociatedObject(self, _cmd, brightnessView, OBJC_ASSOCIATION_RETAIN_NONATOMIC);
+    return brightnessView;
+}
+
+- (UISlider *)systemVolume {
+    UISlider *systemVolume = objc_getAssociatedObject(self, _cmd);
+    if ( systemVolume ) return systemVolume;
+    MPVolumeView *volumeView = [[MPVolumeView alloc] init];
+    [self.controlView addSubview:volumeView];
+    volumeView.frame = CGRectMake(-1000, -100, 100, 100);
+    for (UIView *view in [volumeView subviews]){
+        if ([view.class.description isEqualToString:@"MPVolumeSlider"]){
+            systemVolume = (UISlider *)view;
+            break;
+        }
+    }
+    objc_setAssociatedObject(self, _cmd, systemVolume, OBJC_ASSOCIATION_RETAIN_NONATOMIC);
+    return systemVolume;
 }
 
 @end
@@ -318,11 +405,14 @@ inline static void _sjAnima(void(^block)(void)) {
     
     // hidden
     [self _hiddenPreview];
-    _sjHiddenViews(@[self.controlView.topControlView.previewBtn,
+    _sjHiddenViews(@[
+                     self.controlView.draggingProgressView,
+                     self.controlView.topControlView.previewBtn,
                      self.controlView.leftControlView.lockBtn,
                      self.controlView.centerControlView.failedBtn,
                      self.controlView.centerControlView.replayBtn,
                      self.controlView.bottomControlView.playBtn,
+                     self.controlView.bottomProgressSlider,
                      ]);
     
     self.state = SJVideoPlayerPlayState_Prepare;
@@ -334,9 +424,11 @@ inline static void _sjAnima(void(^block)(void)) {
     _sjShowViews(@[self.controlView.bottomControlView.pauseBtn]);
     
     // hidden
-    _sjHiddenViews(@[self.presentView.placeholderImageView,
+    _sjHiddenViews(@[
+                     self.presentView.placeholderImageView,
                      self.controlView.bottomControlView.playBtn,
-                     self.controlView.centerControlView.replayBtn,]);
+                     self.controlView.centerControlView.replayBtn,
+                     ]);
     
     self.state = SJVideoPlayerPlayState_Playing;
 }
@@ -365,7 +457,12 @@ inline static void _sjAnima(void(^block)(void)) {
 - (void)_playEndState {
     
     // show
-    _sjShowViews(@[self.controlView.centerControlView.replayBtn]);
+    _sjShowViews(@[self.controlView.centerControlView.replayBtn,
+                   self.controlView.bottomControlView.playBtn]);
+    
+    // hidden
+    _sjHiddenViews(@[self.controlView.bottomControlView.pauseBtn]);
+    
     
     self.state = SJVideoPlayerPlayState_PlayEnd;
 }
@@ -377,19 +474,22 @@ inline static void _sjAnima(void(^block)(void)) {
     
     // hidden
     _sjHiddenViews(@[self.controlView.leftControlView.unlockBtn]);
-    self.hideControl = YES;
     
+    // transform hidden
+    self.controlView.topControlView.transform = CGAffineTransformMakeTranslation(0, - self.controlView.topControlView.frame.size.height);
+    self.controlView.bottomControlView.transform = CGAffineTransformMakeTranslation(0, self.controlView.bottomControlView.frame.size.height);
 }
 
 - (void)_unlockScreenState {
     
     // show
     _sjShowViews(@[self.controlView.leftControlView.unlockBtn]);
-    self.hideControl = NO;
     
     // hidden
     _sjHiddenViews(@[self.controlView.leftControlView.lockBtn]);
     
+    // transform show
+    self.controlView.topControlView.transform = self.controlView.bottomControlView.transform = CGAffineTransformIdentity;
 }
 
 - (void)_hideControlState {
@@ -412,6 +512,7 @@ inline static void _sjAnima(void(^block)(void)) {
     _sjShowViews(@[self.controlView.leftControlView]);
     
     // hidden
+    _sjHiddenViews(@[self.controlView.bottomProgressSlider]);
     [self _hiddenPreview];
     
     // transform show
@@ -490,108 +591,110 @@ typedef NS_ENUM(NSUInteger, SJVerticalPanLocation) {
 
 static UIView *target = nil;
 - (void)controlView:(SJVideoPlayerControlView *)controlView handlePan:(UIPanGestureRecognizer *)pan {
-//    // 我们要响应水平移动和垂直移动
-//    // 根据上次和本次移动的位置，算出一个速率的point
-//    CGPoint velocityPoint = [pan velocityInView:pan.view];
-//    
-//    CGPoint offset = [pan translationInView:pan.view];
-//    
-//    // 判断是垂直移动还是水平移动
-//    switch (pan.state) {
-//        case UIGestureRecognizerStateBegan:{ // 开始移动
-//            // 使用绝对值来判断移动的方向
-//            CGFloat x = fabs(velocityPoint.x);
-//            CGFloat y = fabs(velocityPoint.y);
-//            if (x > y) {
-//                /// 水平移动
-//                self.panDirection = SJPanDirection_H;
-//                self.controlView.hiddenControl = YES;
-//                [self sliderWillBeginDragging:self.controlView.sliderControl];
-//            }
-//            else if (x < y) {
-//                /// 垂直移动
-//                self.panDirection = SJPanDirection_V;
-//                
-//                CGPoint locationPoint = [pan locationInView:pan.view];
-//                if (locationPoint.x > self.controlView.bounds.size.width / 2) {
-//                    self.panLocation = SJVerticalPanLocation_Right;
-//                    self.volumeView.value = self.systemVolume.value;
-//                    target = self.volumeView;
-//                }
-//                else {
-//                    self.panLocation = SJVerticalPanLocation_Left;
-//                    self.brightnessView.value = [UIScreen mainScreen].brightness;
-//                    target = self.brightnessView;
-//                }
-//                [[UIApplication sharedApplication].keyWindow addSubview:target];
-//                [target mas_remakeConstraints:^(MASConstraintMaker *make) {
-//                    make.size.mas_offset(CGSizeMake(155, 155));
-//                    make.center.equalTo([UIApplication sharedApplication].keyWindow);
-//                }];
-//                target.transform = self.controlView.superview.transform;
-//                [UIView animateWithDuration:0.25 animations:^{
-//                    target.alpha = 1;
-//                }];
-//                
-//            }
-//            break;
-//        }
-//        case UIGestureRecognizerStateChanged:{ // 正在移动
-//            switch (self.panDirection) {
-//                case SJPanDirection_H:{
-//                    self.controlView.sliderControl.value += offset.x * 0.003;
-//                    [self sliderDidDrag:self.controlView.sliderControl];
-//                }
-//                    break;
-//                case SJPanDirection_V:{
-//                    switch (self.panLocation) {
-//                        case SJVerticalPanLocation_Left: {
-//                            CGFloat value = [UIScreen mainScreen].brightness - offset.y * 0.006;
-//                            if ( value < 1.0 / 16 ) value = 1.0 / 16;
-//                            [UIScreen mainScreen].brightness = value;
-//                            self.brightnessView.value = value;
-//                            self.controlView.brightnessSlider.value = self.brightnessView.value;
-//                        }
-//                            break;
-//                        case SJVerticalPanLocation_Right: {
-//                            self.systemVolume.value -= offset.y * 0.006;
-//                            self.controlView.volumeSlider.value = self.systemVolume.value;
-//                        }
-//                            break;
-//                            
-//                        default:
-//                            break;
-//                    }
-//                }
-//                    break;
-//                default:
-//                    break;
-//            }
-//            break;
-//        }
-//        case UIGestureRecognizerStateEnded:{ // 移动停止
-//            switch (self.panDirection) {
-//                case SJPanDirection_H:{
-//                    [self sliderDidEndDragging:self.controlView.sliderControl];
-//                    break;
-//                }
-//                case SJPanDirection_V:{
-//                    [UIView animateWithDuration:0.5 animations:^{
-//                        target.alpha = 0.001;
-//                    }];
-//                    break;
-//                }
-//                default:
-//                    break;
-//            }
-//            break;
-//        }
-//        default:
-//            break;
-//    }
-//    
-//    
-//    [pan setTranslation:CGPointZero inView:pan.view];
+    if ( self.lockScreen ) return;
+    CGPoint offset = [pan translationInView:pan.view];
+    switch (pan.state) {
+        case UIGestureRecognizerStateBegan:{
+            CGPoint velocity = [pan velocityInView:pan.view];
+            CGFloat x = fabs(velocity.x);
+            CGFloat y = fabs(velocity.y);
+            if (x > y) {
+                /// 水平移动, 调整进度
+                self.panDirection = SJPanDirection_H;
+                [self pause];
+                _sjAnima(^{
+                    _sjShowViews(@[self.controlView.draggingProgressView]);
+                });
+                self.controlView.draggingProgressView.progressSlider.value = self.asset.progress;
+                self.controlView.draggingProgressView.progressLabel.text = _formatWithSec(self.asset.currentTime);
+                self.hideControl = YES;
+            }
+            else {
+                /// 垂直移动, 调整音量 或者 亮度
+                self.panDirection = SJPanDirection_V;
+                CGPoint locationPoint = [pan locationInView:pan.view];
+                // 手指位置, 左边还是右边
+                if ( locationPoint.x > self.controlView.bounds.size.width / 2 ) {
+                    self.panLocation = SJVerticalPanLocation_Right;
+                    self.volumeView.value = self.systemVolume.value;
+                    target = self.volumeView;
+                }
+                else {
+                    self.panLocation = SJVerticalPanLocation_Left;
+                    self.brightnessView.value = [UIScreen mainScreen].brightness;
+                    target = self.brightnessView;
+                }
+                [[UIApplication sharedApplication].keyWindow addSubview:target];
+                [target mas_remakeConstraints:^(MASConstraintMaker *make) {
+                    make.size.mas_offset(CGSizeMake(155, 155));
+                    make.center.equalTo([UIApplication sharedApplication].keyWindow);
+                }];
+                target.transform = self.controlView.superview.transform;
+                _sjAnima(^{
+                    _sjShowViews(@[target]);
+                });
+            }
+            break;
+        }
+        case UIGestureRecognizerStateChanged:{ // 正在移动
+            switch (self.panDirection) {
+                case SJPanDirection_H:{
+                    self.controlView.draggingProgressView.progressSlider.value += offset.x * 0.003;
+                    self.controlView.draggingProgressView.progressLabel.text =  _formatWithSec(self.asset.duration * self.controlView.draggingProgressView.progressSlider.value);
+                }
+                    break;
+                case SJPanDirection_V:{
+                    switch (self.panLocation) {
+                        case SJVerticalPanLocation_Left: {
+                            CGFloat value = [UIScreen mainScreen].brightness - offset.y * 0.006;
+                            if ( value < 1.0 / 16 ) value = 1.0 / 16;
+                            [UIScreen mainScreen].brightness = value;
+                            self.brightnessView.value = value;
+                        }
+                            break;
+                        case SJVerticalPanLocation_Right: {
+                            self.systemVolume.value -= offset.y * 0.006;
+                        }
+                            break;
+                        case SJVerticalPanLocation_Unknown: break;
+                    }
+                }
+                    break;
+                case SJPanDirection_Unknown: break;
+            }
+            break;
+        }
+        case UIGestureRecognizerStateFailed:
+        case UIGestureRecognizerStateCancelled:
+        case UIGestureRecognizerStateEnded:{
+            switch ( self.panDirection ) {
+                case SJPanDirection_H:{
+                    _sjAnima(^{
+                        _sjHiddenViews(@[self.controlView.draggingProgressView]);
+                    });
+                    __weak typeof(self) _self = self;
+                    [self jumpedToTime:self.controlView.draggingProgressView.progressSlider.value * self.asset.duration completionHandler:^(BOOL finished) {
+                        __strong typeof(_self) self = _self;
+                        if ( !self ) return ;
+                        [self play];
+                    }];
+                }
+                    break;
+                case SJPanDirection_V:{
+                    _sjAnima(^{
+                        _sjHiddenViews(@[target]);
+                    });
+                }
+                    break;
+                case SJPanDirection_Unknown: break;
+            }
+            break;
+        }
+        default: break;
+    }
+
+
+    [pan setTranslation:CGPointZero inView:pan.view];
 }
 
 
@@ -622,6 +725,12 @@ static UIView *target = nil;
 - (instancetype)init {
     self = [super init];
     if ( !self )  return nil;
+    NSError *error = nil;
+    [[AVAudioSession sharedInstance] setCategory: AVAudioSessionCategoryPlayback error:&error];
+    if ( error ) {
+        _sjErrorLog([NSString stringWithFormat:@"%@", error.userInfo]);
+    }
+    
     [self.view addSubview:self.presentView];
     [_presentView addSubview:self.controlView];
     _controlView.delegate = self;
@@ -644,13 +753,12 @@ static UIView *target = nil;
         [self _hiddenPreview];
     };
     
-    self.rotationCondition = ^BOOL(BOOL demand) {
+    self.rotationCondition = ^BOOL(void) {
         __strong typeof(_self) self = _self;
         if ( !self ) return NO;
         if ( self.state == SJVideoPlayerPlayState_Unknown ) return NO;
         if ( self.disableRotation ) return NO;
         if ( self.isLockedScrren ) return NO;
-        if ( self.isFullScreen == demand ) return NO;
         return YES;
     };
     
@@ -658,7 +766,13 @@ static UIView *target = nil;
     
     _controlView.bottomControlView.progressSlider.delegate = self;
     
+    [self _initialize_VolumeAndBrightness];
+    
     return self;
+}
+
+- (void)dealloc {
+    [self _clean_VolumeAndBrightness];
 }
 
 - (SJVideoPlayerPresentView *)presentView {
@@ -744,8 +858,8 @@ static UIView *target = nil;
 }
 
 - (void)_refreshingTimeLabelWithCurrentTime:(NSTimeInterval)currentTime duration:(NSTimeInterval)duration {
-    self.controlView.bottomControlView.currentTimeLabel.text = [self _formatSeconds:currentTime];
-    self.controlView.bottomControlView.durationTimeLabel.text = [self _formatSeconds:duration];
+    self.controlView.bottomControlView.currentTimeLabel.text = _formatWithSec(currentTime);
+    self.controlView.bottomControlView.durationTimeLabel.text = _formatWithSec(duration);
 }
 
 - (void)_refreshingTimeProgressSliderWithCurrentTime:(NSTimeInterval)currentTime duration:(NSTimeInterval)duration {
@@ -826,14 +940,6 @@ static UIView *target = nil;
         if ( !self ) return;
         [self play];
     }];
-}
-
-#pragma mark
-
-- (NSString *)_formatSeconds:(NSInteger)value {
-    NSInteger seconds = value % 60;
-    NSInteger minutes = value / 60;
-    return [NSString stringWithFormat:@"%02ld:%02ld", (long) minutes, (long) seconds];
 }
 
 @end

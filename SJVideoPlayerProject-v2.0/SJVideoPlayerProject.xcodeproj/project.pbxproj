@@ -214,7 +214,7 @@
 				774B25461FCECA1F002113CC /* SJVideoPlayerHeader.h */,
 				774B25481FCECA1F002113CC /* Player */,
 				775A7C041FD6673C00BE1EE2 /* OrentationObserver */,
-				775A7C0E1FD6C2E100BE1EE2 /* Notifications */,
+				775A7C0E1FD6C2E100BE1EE2 /* Registrar */,
 				775A7BA41FD640D300BE1EE2 /* Model */,
 				775A7BC11FD6670800BE1EE2 /* View */,
 				774B25731FCEDC48002113CC /* Resource */,
@@ -427,13 +427,13 @@
 			path = Preview;
 			sourceTree = "<group>";
 		};
-		775A7C0E1FD6C2E100BE1EE2 /* Notifications */ = {
+		775A7C0E1FD6C2E100BE1EE2 /* Registrar */ = {
 			isa = PBXGroup;
 			children = (
 				775A7C0F1FD6C2FE00BE1EE2 /* SJVideoPlayerRegistrar.h */,
 				775A7C101FD6C2FE00BE1EE2 /* SJVideoPlayerRegistrar.m */,
 			);
-			path = Notifications;
+			path = Registrar;
 			sourceTree = "<group>";
 		};
 		775E89231FD505C800E89EA4 /* Category */ = {

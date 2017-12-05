@@ -19,6 +19,7 @@
 #import "SJVideoPlayerMoreSettingSecondaryView.h"
 #import <SJPrompt/SJPrompt.h>
 #import "SJOrentationObserver.h"
+#import "SJVideoPlayerRegistrar.h"
 
 
 #define MoreSettingWidth (MAX([UIScreen mainScreen].bounds.size.width, [UIScreen mainScreen].bounds.size.height) * 0.382)
@@ -66,12 +67,12 @@ inline static NSString *_formatWithSec(NSInteger sec) {
 @property (nonatomic, strong, readonly) SJVideoPlayerMoreSettingSecondaryView *moreSecondarySettingView;
 @property (nonatomic, strong, readonly) SJOrentationObserver *orentation;
 
-
 @property (nonatomic, assign, readwrite) SJVideoPlayerPlayState state;
 
 @property (nonatomic, assign, readwrite) BOOL hiddenMoreSettingView;
 @property (nonatomic, assign, readwrite) BOOL hiddenMoreSecondarySettingView;
 @property (nonatomic, strong, readonly) SJMoreSettingsFooterViewModel *moreSettingFooterViewModel;
+@property (nonatomic, strong, readonly) SJVideoPlayerRegistrar *registrar;
 
 @end
 
@@ -584,6 +585,7 @@ static UIView *target = nil;
 @synthesize orentation = _orentation;
 @synthesize view = _view;
 @synthesize moreSettingFooterViewModel = _moreSettingFooterViewModel;
+@synthesize registrar = _registrar;
 
 + (instancetype)sharedPlayer {
     static id _instance;
@@ -828,6 +830,12 @@ static UIView *target = nil;
         return YES;
     };
     return _orentation;
+}
+
+- (SJVideoPlayerRegistrar *)registrar {
+    if ( _registrar ) return _registrar;
+    _registrar = [SJVideoPlayerRegistrar new];
+    return _registrar;
 }
 
 #pragma mark ======================================================

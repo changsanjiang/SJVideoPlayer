@@ -13,24 +13,20 @@
 #import "SJVideoPlayerControlView.h"
 
 
-@interface SJVideoPlayerMoreSettingsView (UICollectionViewDataSourceMethods)<UICollectionViewDataSource>
-@end
-
-@interface SJVideoPlayerMoreSettingsView (UICollectionViewDelegateMethods)<UICollectionViewDelegate>
-@end
-
-
 static NSString *const SJVideoPlayerMoreSettingsColCellID = @"SJVideoPlayerMoreSettingsColCell";
 
 static NSString *const SJVideoPlayerMoreSettingsFooterSlidersViewID = @"SJVideoPlayerMoreSettingsFooterSlidersView";
 
-@interface SJVideoPlayerMoreSettingsView ()
+
+@interface SJVideoPlayerMoreSettingsView ()<UICollectionViewDataSource, UICollectionViewDelegate>
 
 @property (nonatomic, strong, readonly) UICollectionView *colView;
 
 @end
 
-@implementation SJVideoPlayerMoreSettingsView
+@implementation SJVideoPlayerMoreSettingsView {
+    SJVideoPlayerMoreSettingsFooterSlidersView *_footerView;
+}
 
 @synthesize colView = _colView;
 
@@ -44,6 +40,11 @@ static NSString *const SJVideoPlayerMoreSettingsFooterSlidersViewID = @"SJVideoP
 - (void)setMoreSettings:(NSArray<SJVideoPlayerMoreSetting *> *)moreSettings {
     _moreSettings = moreSettings;
     [self.colView reloadData];
+}
+
+- (void)setFooterViewModel:(SJMoreSettingsFooterViewModel *)footerViewModel {
+    _footerViewModel = footerViewModel;
+    _footerView.model = footerViewModel;
 }
 
 - (void)_SJVideoPlayerMoreSettingsViewSetupUI {
@@ -70,11 +71,6 @@ static NSString *const SJVideoPlayerMoreSettingsFooterSlidersViewID = @"SJVideoP
     return _colView;
 }
 
-@end
-
-
-@implementation SJVideoPlayerMoreSettingsView (UICollectionViewDataSourceMethods)
-
 - (NSInteger)numberOfSectionsInCollectionView:(UICollectionView *)collectionView {
     return 1;
 }
@@ -90,16 +86,10 @@ static NSString *const SJVideoPlayerMoreSettingsFooterSlidersViewID = @"SJVideoP
 }
 
 - (UICollectionReusableView *)collectionView:(UICollectionView *)collectionView viewForSupplementaryElementOfKind:(NSString *)kind atIndexPath:(NSIndexPath *)indexPath {
-    SJVideoPlayerMoreSettingsFooterSlidersView *footerView = [collectionView dequeueReusableSupplementaryViewOfKind:kind withReuseIdentifier:SJVideoPlayerMoreSettingsFooterSlidersViewID forIndexPath:indexPath];
-    return footerView;
+    _footerView = [collectionView dequeueReusableSupplementaryViewOfKind:kind withReuseIdentifier:SJVideoPlayerMoreSettingsFooterSlidersViewID forIndexPath:indexPath];
+    _footerView.model = _footerViewModel;
+    return _footerView;
 }
-
-@end
-
-
-
-
-@implementation SJVideoPlayerMoreSettingsView (UICollectionViewDelegateMethods)
 
 - (CGSize)collectionView:(UICollectionView *)collectionView layout:(UICollectionViewLayout*)collectionViewLayout sizeForItemAtIndexPath:(NSIndexPath *)indexPath {
     CGFloat width = floor(self.frame.size.width / 3);

@@ -7,13 +7,14 @@
 //
 
 #import <UIKit/UIKit.h>
+#import "SJMoreSettingsFooterViewModel.h"
 
-@class SJSlider;
+NS_ASSUME_NONNULL_BEGIN
 
 @interface SJVideoPlayerMoreSettingsFooterSlidersView : UICollectionReusableView
 
-@property (nonatomic, strong, readonly) SJSlider *volumeSlider;
-@property (nonatomic, strong, readonly) SJSlider *brightnessSlider;
-@property (nonatomic, strong, readonly) SJSlider *rateSlider;
+@property (nonatomic, weak, readwrite) SJMoreSettingsFooterViewModel *model;
 
 @end
+
+NS_ASSUME_NONNULL_END

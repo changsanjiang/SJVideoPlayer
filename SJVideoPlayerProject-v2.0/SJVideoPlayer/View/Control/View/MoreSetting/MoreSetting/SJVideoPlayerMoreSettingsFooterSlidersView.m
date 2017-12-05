@@ -12,11 +12,15 @@
 #import <SJUIFactory/SJUIFactory.h>
 #import "SJVideoPlayerControlViewEnumHeader.h"
 
-@interface SJVideoPlayerMoreSettingsFooterSlidersView ()
+@interface SJVideoPlayerMoreSettingsFooterSlidersView ()<SJSliderDelegate>
 
 @property (nonatomic, strong, readonly) UILabel *volumeLabel;
 @property (nonatomic, strong, readonly) UILabel *brightnessLabel;
 @property (nonatomic, strong, readonly) UILabel *rateLabel;
+
+@property (nonatomic, strong, readonly) SJSlider *volumeSlider;
+@property (nonatomic, strong, readonly) SJSlider *brightnessSlider;
+@property (nonatomic, strong, readonly) SJSlider *rateSlider;
 
 @end
 
@@ -47,6 +51,32 @@
     [self _SJVideoPlayerMoreSettingsFooterSlidersViewRemoveObservers];
 }
 
+- (void)setModel:(SJMoreSettingsFooterViewModel *)model {
+    _model = model;
+    __weak typeof(self) _self = self;
+    model.volumeChanged = ^(float volume) {
+        __strong typeof(_self) self = _self;
+        if ( !self ) return;
+        self.volumeSlider.value = volume;
+    };
+    
+    model.brightnessChanged = ^(float brightness) {
+        __strong typeof(_self) self = _self;
+        if ( !self ) return;
+        self.brightnessSlider.value = brightness;
+    };
+    
+    model.playerRateChanged = ^(float rate) {
+        __strong typeof(_self) self = _self;
+        if ( !self ) return;
+        self.rateSlider.value = rate;
+    };
+    
+    if ( model.initialVolumeValue ) self.volumeSlider.value = model.initialVolumeValue();
+    if ( model.initialBrightnessValue ) self.brightnessSlider.value = model.initialBrightnessValue();
+    if ( model.initialPlayerRateValue )self.rateSlider.value = model.initialPlayerRateValue();
+}
+
 - (void)_SJVideoPlayerMoreSettingsFooterSlidersViewSetupUI {
     
     UIView *volumeBackgroundView = [UIView new];
@@ -75,7 +105,6 @@
         make.height.equalTo(volumeBackgroundView);
     }];
     
-    
     [volumeBackgroundView addSubview:self.volumeLabel];
     [volumeBackgroundView addSubview:self.volumeSlider];
     
@@ -91,6 +120,9 @@
     
     [self _constraintsLabel:_rateLabel slider:_rateSlider];
     
+    _volumeSlider.delegate = self;
+    _brightnessSlider.delegate = self;
+    _rateSlider.delegate = self;
 }
 
 - (void)_constraintsLabel:(UILabel *)label slider:(SJSlider *)slider {
@@ -125,6 +157,7 @@
     if ( _brightnessSlider ) return _brightnessSlider;
     _brightnessSlider = [self slider];
     _brightnessSlider.tag = SJVideoPlaySliderTag_Brightness;
+    _brightnessSlider.minValue = 0.1;
     return _brightnessSlider;
 }
 
@@ -140,7 +173,7 @@
     _rateSlider = [self slider];
     _rateSlider.tag = SJVideoPlaySliderTag_Rate;
     _rateSlider.minValue = 0.5;
-    _rateSlider.maxValue = 2;
+    _rateSlider.maxValue = 1.5;
     _rateSlider.value = 1.0;
     return _rateSlider;
 }
@@ -161,6 +194,44 @@
 - (SJSlider *)slider {
     SJSlider *slider = [SJSlider new];
     return slider;
+}
+
+#pragma mark
+
+- (void)sliderWillBeginDragging:(SJSlider *)slider {
+    if ( slider == _rateSlider ) {
+        if ( _model.needChangePlayerRate ) _model.needChangePlayerRate(slider.value);
+    }
+    else if ( slider == _volumeSlider ) {
+        if ( _model.needChangeVolume ) _model.needChangeVolume(slider.value);
+    }
+    else {
+        if ( _model.needChangeBrightness ) _model.needChangeBrightness(slider.value);
+    }
+}
+
+- (void)sliderDidDrag:(SJSlider *)slider {
+    if ( slider == _rateSlider ) {
+        if ( _model.needChangePlayerRate ) _model.needChangePlayerRate(slider.value);
+    }
+    else if ( slider == _volumeSlider ) {
+        if ( _model.needChangeVolume ) _model.needChangeVolume(slider.value);
+    }
+    else {
+        if ( _model.needChangeBrightness ) _model.needChangeBrightness(slider.value);
+    }
+}
+
+- (void)sliderDidEndDragging:(SJSlider *)slider {
+    if ( slider == _rateSlider ) {
+        if ( _model.needChangePlayerRate ) _model.needChangePlayerRate(slider.value);
+    }
+    else if ( slider == _volumeSlider ) {
+        if ( _model.needChangeVolume ) _model.needChangeVolume(slider.value);
+    }
+    else {
+        if ( _model.needChangeBrightness ) _model.needChangeBrightness(slider.value);
+    }
 }
 
 @end

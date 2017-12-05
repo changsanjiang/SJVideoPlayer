@@ -71,6 +71,7 @@ inline static NSString *_formatWithSec(NSInteger sec) {
 
 @property (nonatomic, assign, readwrite) BOOL hiddenMoreSettingView;
 @property (nonatomic, assign, readwrite) BOOL hiddenMoreSecondarySettingView;
+@property (nonatomic, strong, readonly) SJMoreSettingsFooterViewModel *moreSettingFooterViewModel;
 
 @end
 
@@ -186,6 +187,7 @@ inline static NSString *_formatWithSec(NSInteger sec) {
 
 - (void)_volumeChanged {
     self.volumeView.value = self.systemVolume.value;
+    if ( self.moreSettingFooterViewModel.volumeChanged ) self.moreSettingFooterViewModel.volumeChanged(self.volumeView.value);
 }
 
 - (SJVideoPlayerTipsView *)volumeView {
@@ -549,6 +551,7 @@ static UIView *target = nil;
                 else {
                     self.panLocation = SJVerticalPanLocation_Left;
                     self.brightnessView.value = [UIScreen mainScreen].brightness;
+                    if ( self.moreSettingFooterViewModel.brightnessChanged ) self.moreSettingFooterViewModel.brightnessChanged(self.brightnessView.value);
                     target = self.brightnessView;
                 }
                 [[UIApplication sharedApplication].keyWindow addSubview:target];
@@ -577,6 +580,7 @@ static UIView *target = nil;
                             if ( value < 1.0 / 16 ) value = 1.0 / 16;
                             [UIScreen mainScreen].brightness = value;
                             self.brightnessView.value = value;
+                            if ( self.moreSettingFooterViewModel.brightnessChanged ) self.moreSettingFooterViewModel.brightnessChanged(value);
                         }
                             break;
                         case SJVerticalPanLocation_Right: {
@@ -631,6 +635,7 @@ static UIView *target = nil;
 
 
 #pragma mark - SJVideoPlayer
+#import "SJMoreSettingsFooterViewModel.h"
 
 @implementation SJVideoPlayer
 
@@ -640,6 +645,7 @@ static UIView *target = nil;
 @synthesize moreSecondarySettingView = _moreSecondarySettingView;
 @synthesize orentation = _orentation;
 @synthesize view = _view;
+@synthesize moreSettingFooterViewModel = _moreSettingFooterViewModel;
 
 + (instancetype)sharedPlayer {
     static id _instance;
@@ -660,7 +666,7 @@ static UIView *target = nil;
     if ( error ) {
         _sjErrorLog([NSString stringWithFormat:@"%@", error.userInfo]);
     }
-    
+
     [self.view addSubview:self.presentView];
     [_presentView addSubview:self.controlView];
     [_controlView addSubview:self.moreSettingView];
@@ -734,6 +740,45 @@ static UIView *target = nil;
     if ( _moreSecondarySettingView ) return _moreSecondarySettingView;
     _moreSecondarySettingView = [SJVideoPlayerMoreSettingSecondaryView new];
     _moreSecondarySettingView.backgroundColor = [UIColor blackColor];
+    _moreSettingFooterViewModel = [SJMoreSettingsFooterViewModel new];
+    __weak typeof(self) _self = self;
+    _moreSettingFooterViewModel.needChangeBrightness = ^(float brightness) {
+        __strong typeof(_self) self = _self;
+        if ( !self ) return;
+        [UIScreen mainScreen].brightness = brightness;
+    };
+    
+    _moreSettingFooterViewModel.needChangePlayerRate = ^(float rate) {
+        __strong typeof(_self) self = _self;
+        if ( !self ) return;
+        self.asset.player.rate = rate;
+    };
+    
+    _moreSettingFooterViewModel.needChangeVolume = ^(float volume) {
+        __strong typeof(_self) self = _self;
+        if ( !self ) return;
+        self.systemVolume.value = volume;
+    };
+    
+    _moreSettingFooterViewModel.initialVolumeValue = ^float{
+        __strong typeof(_self) self = _self;
+        if ( !self ) return 0;
+        return self.systemVolume.value;
+    };
+    
+    _moreSettingFooterViewModel.initialBrightnessValue = ^float{
+        __strong typeof(_self) self = _self;
+        if ( !self ) return 0;
+        return [UIScreen mainScreen].brightness;
+    };
+    
+    _moreSettingFooterViewModel.initialPlayerRateValue = ^float{
+        __strong typeof(_self) self = _self;
+        if ( !self ) return 0;
+       return self.asset.player.rate;
+    };
+    
+    _moreSettingView.footerViewModel = _moreSettingFooterViewModel;
     return _moreSecondarySettingView;
 }
 
@@ -1155,6 +1200,7 @@ static UIView *target = nil;
     if ( !self.asset ) return NO;
     else {
         [self.asset.player play];
+        self.moreSettingFooterViewModel.playerRateChanged(self.asset.player.rate);
         _sjAnima(^{
             [self _playState];
         });

@@ -9,6 +9,8 @@
 #import "SJVideoPlayerAssetCarrier.h"
 #import <UIKit/UIKit.h>
 
+NSNotificationName const SJ_AVPlayerRateDidChangeNotification = @"SJ_AVPlayerRateDidChangeNotification";
+
 /*!
  *  Refresh interval for timed observations of AVPlayer
  */
@@ -48,7 +50,7 @@
     _beginTime = beginTime;
     [self _addTimeObserver];
     [self _addItemPlayEndObserver];
-    [self _addPlayerItemObserver];
+    [self _observing];
     return self;
 }
 
@@ -75,12 +77,14 @@
     }];
 }
 
-- (void)_addPlayerItemObserver {
+- (void)_observing {
     [self.playerItem addObserver:self forKeyPath:@"status" options:NSKeyValueObservingOptionNew context:nil];
 }
 
 - (void)observeValueForKeyPath:(NSString *)keyPath ofObject:(id)object change:(NSDictionary<NSKeyValueChangeKey,id> *)change context:(void *)context {
-    if ( self.playerItemStateChanged ) self.playerItemStateChanged(self, self.playerItem.status);
+    if ( [keyPath isEqualToString:@"status"] ) {
+        if ( self.playerItemStateChanged ) self.playerItemStateChanged(self, self.playerItem.status);
+    }
 }
 
 #pragma mark -

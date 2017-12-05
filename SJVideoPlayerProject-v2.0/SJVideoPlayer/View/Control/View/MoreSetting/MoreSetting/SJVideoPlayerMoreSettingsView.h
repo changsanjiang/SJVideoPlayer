@@ -7,6 +7,7 @@
 //
 
 #import <UIKit/UIKit.h>
+#import "SJMoreSettingsFooterViewModel.h"
 
 NS_ASSUME_NONNULL_BEGIN
 
@@ -15,6 +16,8 @@ NS_ASSUME_NONNULL_BEGIN
 @interface SJVideoPlayerMoreSettingsView : UIView
 
 @property (nonatomic, strong, readwrite, nullable) NSArray<SJVideoPlayerMoreSetting *> *moreSettings;
+
+@property (nonatomic, strong, readwrite, nullable) SJMoreSettingsFooterViewModel *footerViewModel;
 
 @end
 

@@ -83,12 +83,14 @@ NSNotificationName const SJ_AVPlayerRateDidChangeNotification = @"SJ_AVPlayerRat
 
 - (void)observeValueForKeyPath:(NSString *)keyPath ofObject:(id)object change:(NSDictionary<NSKeyValueChangeKey,id> *)change context:(void *)context {
     if ( [keyPath isEqualToString:@"status"] ) {
+        NSLog(@"%zd - %s - %zd", __LINE__, __func__, self.playerItem.status);
         if ( self.playerItemStateChanged ) self.playerItemStateChanged(self, self.playerItem.status);
     }
 }
 
 #pragma mark -
 - (void)generatedPreviewImagesWithMaxItemSize:(CGSize)itemSize completion:(void (^)(SJVideoPlayerAssetCarrier * _Nonnull, NSArray<SJVideoPreviewModel *> * _Nullable, NSError * _Nullable))block {
+    
     if ( !_asset ) return;
     if ( 0 == _asset.duration.timescale ) return;
     NSMutableArray<NSValue *> *timesM = [NSMutableArray new];

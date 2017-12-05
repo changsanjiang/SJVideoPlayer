@@ -38,20 +38,16 @@
 
 - (void)_addObserver {
     [self.avLayer addObserver:self forKeyPath:@"readyForDisplay" options:NSKeyValueObservingOptionNew context:nil];
-    [self.avLayer addObserver:self forKeyPath:@"videoRect" options:NSKeyValueObservingOptionNew context:nil];
 }
 
 - (void)dealloc {
     [self.avLayer removeObserver:self forKeyPath:@"readyForDisplay"];
-    [self.avLayer removeObserver:self forKeyPath:@"videoRect"];
 }
 
 - (void)observeValueForKeyPath:(NSString *)keyPath ofObject:(id)object change:(NSDictionary<NSKeyValueChangeKey,id> *)change context:(void *)context {
     if ( [keyPath isEqualToString:@"readyForDisplay"] ) {
+        NSLog(@"%zd - %s", __LINE__, __func__);
         if ( self.readyForDisplay ) self.readyForDisplay(self);
-    }
-    if ( [keyPath isEqualToString:@"videoRect"] ) {
-        if ( self.receivedVideoRect ) self.receivedVideoRect(self, self.avLayer.videoRect);
     }
 }
 

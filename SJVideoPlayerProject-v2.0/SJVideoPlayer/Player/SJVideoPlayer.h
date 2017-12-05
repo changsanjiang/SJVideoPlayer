@@ -115,6 +115,8 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (void)jumpedToTime:(NSTimeInterval)time completionHandler:(void (^ __nullable)(BOOL finished))completionHandler;
 
+- (void)seekToTime:(CMTime)time completionHandler:(void (^ __nullable)(BOOL finished))completionHandler;
+
 - (UIImage *)screenshot;
 
 @end

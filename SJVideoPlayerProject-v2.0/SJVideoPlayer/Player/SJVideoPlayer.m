@@ -76,86 +76,21 @@ inline static NSString *_formatWithSec(NSInteger sec) {
 @end
 
 
-
-
-
-#pragma mark - Preview
-
-@interface SJVideoPlayer (Preview)
-
-- (void)_generatingPreviewImagesWithBounds:(CGRect)bounds
-                                completion:(void(^)(NSArray<SJVideoPreviewModel *> *images, NSError *error))block;
-
-- (void)_showOrHiddenPreview;
-
-- (void)_showPreview;
-
-- (void)_hiddenPreview;
-
-@end
-
-@implementation SJVideoPlayer (Preview)
-
-- (void)_generatingPreviewImagesWithBounds:(CGRect)bounds completion:(void(^)(NSArray<SJVideoPreviewModel *> *images, NSError *error))block {
-    dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(2 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
-        if ( self.asset.hasBeenGeneratedPreviewImages ) {
-            if ( block ) block(self.asset.generatedPreviewImages, nil);
-            return ;
-        }
-        if ( !self.generatePreviewImages ) return;
-        CGFloat width = [UIScreen mainScreen].bounds.size.width * 0.4;
-        CGFloat height = width * bounds.size.height / bounds.size.width;
-        CGSize size = CGSizeMake(width, height);
-        [self.asset generatedPreviewImagesWithMaxItemSize:size completion:^(SJVideoPlayerAssetCarrier * _Nonnull asset, NSArray<SJVideoPreviewModel *> * _Nullable images, NSError * _Nullable error) {
-            if ( block ) block(images, error);
-        }];
-    });
-}
-
-- (void)_showOrHiddenPreview {
-    if ( self.controlView.previewView.alpha != 1 )
-        [self _showPreview];
-    else [self _hiddenPreview];
-}
-
-- (void)_showPreview {
-    self.controlView.previewView.alpha = 1;
-    self.controlView.previewView.transform = CGAffineTransformIdentity;
-    [self.controlView.previewView.collectionView reloadData];
-}
-
-- (void)_hiddenPreview {
-    self.controlView.previewView.alpha = 0.001;
-    self.controlView.previewView.transform = CGAffineTransformMakeScale(1, 0.001);
-}
-
-@end
-
-
-
-
-#pragma mark - SeekToTime
-
-@interface SJVideoPlayer (SeekToTime)
-
-- (void)_seekToTime:(CMTime)time completion:(void (^)(BOOL r))block;
-
-@end
-
-@implementation SJVideoPlayer (SeekToTime)
-
-- (void)_seekToTime:(CMTime)time completion:(void (^)(BOOL))block {
-    [self.asset.player seekToTime:time completionHandler:^(BOOL finished) {
-        if ( !finished ) return;
-        if ( block ) block(finished);
-    }];
-}
-
-@end
-
-
-
-
+//- (void)_generatingPreviewImagesWithBounds:(CGRect)bounds completion:(void(^)(NSArray<SJVideoPreviewModel *> *images, NSError *error))block {
+//    dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(2 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
+//        if ( self.asset.hasBeenGeneratedPreviewImages ) {
+//            if ( block ) block(self.asset.generatedPreviewImages, nil);
+//            return ;
+//        }
+//        if ( !self.generatePreviewImages ) return;
+//        CGFloat width = [UIScreen mainScreen].bounds.size.width * 0.4;
+//        CGFloat height = width * bounds.size.height / bounds.size.width;
+//        CGSize size = CGSizeMake(width, height);
+//        [self.asset generatedPreviewImagesWithMaxItemSize:size completion:^(SJVideoPlayerAssetCarrier * _Nonnull asset, NSArray<SJVideoPreviewModel *> * _Nullable images, NSError * _Nullable error) {
+//            if ( block ) block(images, error);
+//        }];
+//    });
+//}
 
 #pragma mark - Volume And Brightness
 
@@ -186,8 +121,11 @@ inline static NSString *_formatWithSec(NSInteger sec) {
 }
 
 - (void)_volumeChanged {
-    self.volumeView.value = self.systemVolume.value;
-    if ( self.moreSettingFooterViewModel.volumeChanged ) self.moreSettingFooterViewModel.volumeChanged(self.volumeView.value);
+    dispatch_async(dispatch_get_main_queue(), ^{
+        self.volumeView.value = self.systemVolume.value;
+        if ( self.moreSettingFooterViewModel.volumeChanged ) self.moreSettingFooterViewModel.volumeChanged(self.volumeView.value);
+    });
+
 }
 
 - (SJVideoPlayerTipsView *)volumeView {
@@ -296,7 +234,7 @@ inline static NSString *_formatWithSec(NSInteger sec) {
     _sjShowViews(@[self.presentView.placeholderImageView]);
     
     // hidden
-    [self _hiddenPreview];
+    self.controlView.previewView.hidden = YES;
     _sjHiddenViews(@[
                      self.controlView.draggingProgressView,
                      self.controlView.topControlView.previewBtn,
@@ -403,7 +341,7 @@ inline static NSString *_formatWithSec(NSInteger sec) {
     _sjShowViews(@[self.controlView.bottomProgressSlider]);
     
     // hidden
-    [self _hiddenPreview];
+    self.controlView.previewView.hidden = YES;
     
     // transform hidden
     self.controlView.topControlView.transform = CGAffineTransformMakeTranslation(0, - self.controlView.topControlView.frame.size.height);
@@ -418,7 +356,7 @@ inline static NSString *_formatWithSec(NSInteger sec) {
     
     // hidden
     _sjHiddenViews(@[self.controlView.bottomProgressSlider]);
-    [self _hiddenPreview];
+    self.controlView.previewView.hidden = YES;
     
     // transform show
     self.controlView.leftControlView.transform = self.controlView.topControlView.transform = self.controlView.bottomControlView.transform = CGAffineTransformIdentity;
@@ -667,46 +605,71 @@ static UIView *target = nil;
         _sjErrorLog([NSString stringWithFormat:@"%@", error.userInfo]);
     }
 
-    [self.view addSubview:self.presentView];
-    [_presentView addSubview:self.controlView];
-    [_controlView addSubview:self.moreSettingView];
-    [_controlView addSubview:self.moreSecondarySettingView];
-    _controlView.delegate = self;
+    [self view];
+    [self orentation];
     
-    [_presentView mas_makeConstraints:^(MASConstraintMaker *make) {
-        make.edges.offset(0);
-    }];
-    
-    [_controlView mas_makeConstraints:^(MASConstraintMaker *make) {
-        make.edges.offset(0);
-    }];
-    
-    [_moreSettingView mas_makeConstraints:^(MASConstraintMaker *make) {
-        make.top.bottom.trailing.offset(0);
-        make.width.offset(MoreSettingWidth);
-    }];
-    
-    [_moreSecondarySettingView mas_makeConstraints:^(MASConstraintMaker *make) {
-        make.edges.equalTo(_moreSettingView);
-    }];
-    
-    self.hiddenMoreSettingView = YES;
-    self.hiddenMoreSecondarySettingView = YES;
-    
+    // default values
     self.autoplay = YES;
     self.generatePreviewImages = YES;
     
-    _controlView.bottomControlView.progressSlider.delegate = self;
-    
-    [self _initialize_VolumeAndBrightness];
-    
-    [self orentation];
+    [self _notifications];
     
     return self;
 }
 
 - (void)dealloc {
     [self _clean_VolumeAndBrightness];
+    [[NSNotificationCenter defaultCenter] removeObserver:self];
+}
+
+- (void)_notifications {
+    // 耳机
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(audioSessionRouteChangeNotification:) name:AVAudioSessionRouteChangeNotification object:nil];
+    
+    // 后台
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(applicationWillResignActiveNotification) name:UIApplicationWillResignActiveNotification object:nil];
+    
+    // 前台
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(applicationDidBecomeActiveNotification) name:UIApplicationDidBecomeActiveNotification object:nil];
+}
+
+/// 耳机
+- (void)audioSessionRouteChangeNotification:(NSNotification*)notifi {
+    dispatch_async(dispatch_get_main_queue(), ^{
+        NSDictionary *interuptionDict = notifi.userInfo;
+        NSInteger routeChangeReason = [[interuptionDict valueForKey:AVAudioSessionRouteChangeReasonKey] integerValue];
+        switch (routeChangeReason) {
+                // 插入耳机
+            case AVAudioSessionRouteChangeReasonNewDeviceAvailable: {
+                
+            }
+                break;
+                // 拔掉耳机
+            case AVAudioSessionRouteChangeReasonOldDeviceUnavailable: {
+                if ( _state == SJVideoPlayerPlayState_Playing ) {
+                    self.state = SJVideoPlayerPlayState_Pause;
+                    [self play];
+                }
+            }
+                break;
+                // 当其他音频想要播放时
+            case AVAudioSessionRouteChangeReasonCategoryChange:
+                NSLog(@"%zd - %s", __LINE__, __func__);
+                break;
+        }
+    });
+
+}
+
+// 后台
+- (void)applicationWillResignActiveNotification {
+    [self pause];
+    self.lockScreen = YES;
+}
+
+// 前台
+- (void)applicationDidBecomeActiveNotification {
+    self.lockScreen = NO;
 }
 
 - (SJVideoPlayerPresentView *)presentView {
@@ -726,6 +689,33 @@ static UIView *target = nil;
     if ( _view ) return _view;
     _view = [UIView new];
     _view.backgroundColor = [UIColor blackColor];
+    [_view addSubview:self.presentView];
+    [_presentView addSubview:self.controlView];
+    [_controlView addSubview:self.moreSettingView];
+    [_controlView addSubview:self.moreSecondarySettingView];
+    self.hiddenMoreSettingView = YES;
+    self.hiddenMoreSecondarySettingView = YES;
+    _controlView.delegate = self;
+    _controlView.bottomControlView.progressSlider.delegate = self;
+    [self _initialize_VolumeAndBrightness];
+    
+    [_presentView mas_makeConstraints:^(MASConstraintMaker *make) {
+        make.edges.offset(0);
+    }];
+    
+    [_controlView mas_makeConstraints:^(MASConstraintMaker *make) {
+        make.edges.offset(0);
+    }];
+    
+    [_moreSettingView mas_makeConstraints:^(MASConstraintMaker *make) {
+        make.top.bottom.trailing.offset(0);
+        make.width.offset(MoreSettingWidth);
+    }];
+    
+    [_moreSecondarySettingView mas_makeConstraints:^(MASConstraintMaker *make) {
+        make.edges.equalTo(_moreSettingView);
+    }];
+    
     return _view;
 }
 
@@ -752,6 +742,7 @@ static UIView *target = nil;
         __strong typeof(_self) self = _self;
         if ( !self ) return;
         self.asset.player.rate = rate;
+        [self play];
     };
     
     _moreSettingFooterViewModel.needChangeVolume = ^(float volume) {
@@ -905,11 +896,21 @@ static UIView *target = nil;
 }
 
 - (void)_itemPlayFailed {
-    
+    NSLog(@"%@", self.asset.playerItem.error);
 }
 
 - (void)_itemReadyToPlay {
-    if ( self.autoplay ) [self play];
+    if ( 0 != self.asset.beginTime ) {
+        __weak typeof(self) _self = self;
+        [self jumpedToTime:self.asset.beginTime completionHandler:^(BOOL finished) {
+            __strong typeof(_self) self = _self;
+            if ( !self ) return;
+            if ( self.autoplay ) [self play];
+        }];
+    }
+    else {
+        if ( self.autoplay ) [self play];
+    }
 }
 
 - (void)_refreshingTimeLabelWithCurrentTime:(NSTimeInterval)currentTime duration:(NSTimeInterval)duration {
@@ -962,7 +963,7 @@ static UIView *target = nil;
             break;
         case SJVideoPlayControlViewTag_Preview: {
             _sjAnima(^{
-                [self _showOrHiddenPreview];
+                self.controlView.previewView.hidden = !self.controlView.previewView.isHidden;
             });
         }
             break;
@@ -993,7 +994,7 @@ static UIView *target = nil;
 - (void)controlView:(SJVideoPlayerControlView *)controlView didSelectPreviewItem:(SJVideoPreviewModel *)item {
     [self pause];
     __weak typeof(self) _self = self;
-    [self _seekToTime:item.localTime completion:^(BOOL r) {
+    [self seekToTime:item.localTime completionHandler:^(BOOL finished) {
         __strong typeof(_self) self = _self;
         if ( !self ) return;
         [self play];
@@ -1019,6 +1020,7 @@ static UIView *target = nil;
 }
 
 - (void)setAsset:(SJVideoPlayerAssetCarrier *)asset {
+    
     objc_setAssociatedObject(self, @selector(asset), asset, OBJC_ASSOCIATION_RETAIN_NONATOMIC);
     _presentView.asset = asset;
     _controlView.asset = asset;
@@ -1026,8 +1028,14 @@ static UIView *target = nil;
     [self _itemPrepareToPlay];
     
     __weak typeof(self) _self = self;
-    _presentView.receivedVideoRect = ^(SJVideoPlayerPresentView * _Nonnull view, CGRect bounds) {
-        [_self _generatingPreviewImagesWithBounds:bounds completion:^(NSArray<SJVideoPreviewModel *> *images, NSError *error) {
+    _presentView.readyForDisplay = ^(SJVideoPlayerPresentView * _Nonnull view) {
+        if ( asset.hasBeenGeneratedPreviewImages ) { return ; }
+        if ( !_self.generatePreviewImages ) return;
+        CGRect bounds = view.avLayer.videoRect;
+        CGFloat width = [UIScreen mainScreen].bounds.size.width * 0.4;
+        CGFloat height = width * bounds.size.height / bounds.size.width;
+        CGSize size = CGSizeMake(width, height);
+        [asset generatedPreviewImagesWithMaxItemSize:size completion:^(SJVideoPlayerAssetCarrier * _Nonnull asset, NSArray<SJVideoPreviewModel *> * _Nullable images, NSError * _Nullable error) {
             if ( error ) {
                 _sjErrorLog(@"Generate Preview Image Failed!");
             }
@@ -1047,17 +1055,21 @@ static UIView *target = nil;
     asset.playerItemStateChanged = ^(SJVideoPlayerAssetCarrier * _Nonnull asset, AVPlayerItemStatus status) {
         __strong typeof(_self) self = _self;
         if ( !self ) return;
-        switch (status) {
-            case AVPlayerItemStatusUnknown: break;
-            case AVPlayerItemStatusFailed: {
-                [self _itemPlayFailed];
+        if ( self.state == SJVideoPlayerPlayState_PlayEnd ) return;
+        dispatch_async(dispatch_get_main_queue(), ^{
+            switch (status) {
+                case AVPlayerItemStatusUnknown: break;
+                case AVPlayerItemStatusFailed: {
+                    [self _itemPlayFailed];
+                }
+                    break;
+                case AVPlayerItemStatusReadyToPlay: {
+                    [self performSelector:@selector(_itemReadyToPlay) withObject:nil afterDelay:1];
+                }
+                    break;
             }
-                break;
-            case AVPlayerItemStatusReadyToPlay: {
-                [self _itemReadyToPlay];
-            }
-                break;
-        }
+        });
+
     };
     
     asset.playTimeChanged = ^(SJVideoPlayerAssetCarrier * _Nonnull asset, NSTimeInterval currentTime, NSTimeInterval duration) {
@@ -1197,7 +1209,8 @@ static UIView *target = nil;
 @implementation SJVideoPlayer (Control)
 
 - (BOOL)play {
-    if ( !self.asset ) return NO;
+    if      ( !self.asset ) return NO;
+    else if ( self.state == SJVideoPlayerPlayState_Playing ) return YES;
     else {
         [self.asset.player play];
         self.moreSettingFooterViewModel.playerRateChanged(self.asset.player.rate);
@@ -1210,6 +1223,7 @@ static UIView *target = nil;
 
 - (BOOL)pause {
     if ( !self.asset ) return NO;
+    else if ( self.state == SJVideoPlayerPlayState_Pause ) return YES;
     else {
         [self.asset.player pause];
         _sjAnima(^{
@@ -1229,14 +1243,18 @@ static UIView *target = nil;
 }
 
 - (void)jumpedToTime:(NSTimeInterval)time completionHandler:(void (^ __nullable)(BOOL finished))completionHandler {
-//    if ( self.state == SJVideoPlayerPlayState_Unknown ) return;
     CMTime seekTime = CMTimeMakeWithSeconds(time, NSEC_PER_SEC);
-    [self _seekToTime:seekTime completion:completionHandler];
+    [self seekToTime:seekTime completionHandler:completionHandler];
+}
+
+- (void)seekToTime:(CMTime)time completionHandler:(void (^ __nullable)(BOOL finished))completionHandler {
+    [self.asset.playerItem seekToTime:time completionHandler:completionHandler];
 }
 
 - (UIImage *)screenshot {
     return [self.asset screenshot];
 }
+
 @end
 
 

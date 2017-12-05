@@ -23,7 +23,6 @@ NS_ASSUME_NONNULL_BEGIN
 
 @property (nonatomic, copy, readwrite, nullable) void(^readyForDisplay)(SJVideoPlayerPresentView *view);
 
-@property (nonatomic, copy, readwrite, nullable) void(^receivedVideoRect)(SJVideoPlayerPresentView *view, CGRect bounds);
 /// default is AVLayerVideoGravityResizeAspect.
 @property (nonatomic, strong, readwrite) AVLayerVideoGravity videoGravity;
 

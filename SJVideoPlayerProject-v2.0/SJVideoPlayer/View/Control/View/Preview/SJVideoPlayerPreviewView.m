@@ -15,6 +15,8 @@ static NSString *SJVideoPlayerPreviewCollectionViewCellID = @"SJVideoPlayerPrevi
 
 @interface SJVideoPlayerPreviewView ()<UICollectionViewDelegate, UICollectionViewDataSource>
 
+@property (nonatomic, strong, readonly) UICollectionView *collectionView;
+
 @end
 
 @implementation SJVideoPlayerPreviewView
@@ -30,6 +32,23 @@ static NSString *SJVideoPlayerPreviewCollectionViewCellID = @"SJVideoPlayerPrevi
 - (void)setPreviewImages:(NSArray<SJVideoPreviewModel *> *)previewImages {
     _previewImages = previewImages;
     [_collectionView reloadData];
+}
+
+- (void)setHidden:(BOOL)hidden {
+    if ( hidden == self.isHidden ) return;
+    if ( !hidden ) {
+        self.alpha = 1;
+        self.transform = CGAffineTransformIdentity;
+        [self.collectionView reloadData];
+    }
+    else {
+        self.alpha = 0.001;
+        self.transform = CGAffineTransformMakeScale(1, 0.001);
+    }
+}
+
+- (BOOL)isHidden {
+    return self.alpha != 1;
 }
 
 #pragma mark

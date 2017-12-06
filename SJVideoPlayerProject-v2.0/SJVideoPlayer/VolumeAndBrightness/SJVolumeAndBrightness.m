@@ -27,20 +27,9 @@
 - (instancetype)init {
     self = [super init];
     if ( !self ) return nil;
-    
     [self volumeView];
     [self brightnessView];
-    [self systemVolume];
-    
     return self;
-}
-
-- (void)_sysBrightnessChanged {
-    NSLog(@"brightness change");
-    dispatch_async(dispatch_get_main_queue(), ^{
-        _brightnessView.value = self.brightness;
-        if ( _brightnessChanged ) _brightnessChanged(_brightnessView.value);
-    });
 }
 
 - (SJVideoPlayerTipsView *)volumeView {
@@ -80,6 +69,7 @@
 }
 
 - (void)setVolume:(float)volume {
+    if ( isnan(volume) ) volume = 0;
     if ( volume < 0 ) volume = 0;
     else if ( volume > 1 ) volume = 1;
     _systemVolume.value = volume;
@@ -92,6 +82,7 @@
 }
 
 - (void)setBrightness:(float)brightness {
+    if ( isnan(brightness) ) brightness = 0;
     if ( brightness < 0.1 ) brightness = 0.1;
     else if ( brightness > 1 ) brightness = 1;
     [UIScreen mainScreen].brightness = brightness;

@@ -479,17 +479,17 @@ static UIView *target = nil;
 #pragma mark - SJVideoPlayer
 #import "SJMoreSettingsFooterViewModel.h"
 
-@implementation SJVideoPlayer
-
-@synthesize presentView = _presentView;
-@synthesize controlView = _controlView;
-@synthesize moreSettingView = _moreSettingView;
-@synthesize moreSecondarySettingView = _moreSecondarySettingView;
-@synthesize orentation = _orentation;
-@synthesize view = _view;
-@synthesize moreSettingFooterViewModel = _moreSettingFooterViewModel;
-@synthesize registrar = _registrar;
-@synthesize volBrig = _volBrig;
+@implementation SJVideoPlayer {
+    SJVideoPlayerPresentView *_presentView;
+    SJVideoPlayerControlView *_controlView;
+    SJVideoPlayerMoreSettingsView *_moreSettingView;
+    SJVideoPlayerMoreSettingSecondaryView *_moreSecondarySettingView;
+    SJOrentationObserver *_orentation;
+    UIView *_view;
+    SJMoreSettingsFooterViewModel *_moreSettingFooterViewModel;
+    SJVideoPlayerRegistrar *_registrar;
+    SJVolumeAndBrightness *_volBrig;
+}
 
 + (instancetype)sharedPlayer {
     static id _instance;
@@ -553,10 +553,7 @@ static UIView *target = nil;
                 break;
                 // 拔掉耳机
             case AVAudioSessionRouteChangeReasonOldDeviceUnavailable: {
-                if ( _state == SJVideoPlayerPlayState_Playing ) {
-                    self.state = SJVideoPlayerPlayState_Pause;
-                    [self play];
-                }
+                if ( !self.registrar.userClickedPause ) [self play];
             }
                 break;
                 // 当其他音频想要播放时
@@ -934,7 +931,6 @@ static UIView *target = nil;
 #pragma mark
 - (BOOL)_play {
     if      ( !self.asset ) return NO;
-    else if ( self.state == SJVideoPlayerPlayState_Playing ) return YES;
     else {
         [self.asset.player play];
         self.moreSettingFooterViewModel.playerRateChanged(self.asset.player.rate);
@@ -947,7 +943,6 @@ static UIView *target = nil;
 
 - (BOOL)_pause {
     if ( !self.asset ) return NO;
-    else if ( self.state == SJVideoPlayerPlayState_Pause ) return YES;
     else {
         [self.asset.player pause];
         _sjAnima(^{

@@ -18,7 +18,9 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic, strong, readonly) UIView *volumeView;
 @property (nonatomic, strong, readonly) UIView *brightnessView;
 
+/// 0..1
 @property (nonatomic, assign, readwrite) float volume;
+/// 0.1..1
 @property (nonatomic, assign, readwrite) float brightness;
 
 @end

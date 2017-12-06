@@ -10,8 +10,8 @@
 
 typedef NS_ENUM(NSUInteger, SJVideoPlayerBackstageState) {
     SJVideoPlayerBackstageState_Normal,
-    SJVideoPlayerBackstageState_Forground,
-    SJVideoPlayerBackstageState_Background,
+    SJVideoPlayerBackstageState_Forground,  // 从后台进入前台
+    SJVideoPlayerBackstageState_Background, // 从前台进入后台
 };
 
 @interface SJVideoPlayerRegistrar : NSObject

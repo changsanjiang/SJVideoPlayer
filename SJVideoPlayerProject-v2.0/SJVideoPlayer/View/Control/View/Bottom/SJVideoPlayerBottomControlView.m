@@ -112,6 +112,7 @@
     if ( _progressSlider ) return _progressSlider;
     _progressSlider = [SJSlider new];
     _progressSlider.tag = SJVideoPlaySliderTag_Progress;
+    _progressSlider.enableBufferProgress = YES;
     return _progressSlider;
 }
 

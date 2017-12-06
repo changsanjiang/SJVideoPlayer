@@ -29,15 +29,19 @@ extern NSNotificationName const SJ_AVPlayerRateDidChangeNotification;
 
 @property (nonatomic, copy, readwrite, nullable) void(^playDidToEnd)(SJVideoPlayerAssetCarrier *asset);
 
+@property (nonatomic, copy, readwrite, nullable) void(^loadedTimeProgress)(float progress);
+
+@property (nonatomic, copy, readwrite, nullable) void(^beingBuffered)(BOOL state);
+
 - (void)generatedPreviewImagesWithMaxItemSize:(CGSize)itemSize completion:(void(^)(SJVideoPlayerAssetCarrier *asset, NSArray<SJVideoPreviewModel *> *__nullable images, NSError *__nullable error))block;
 - (void)cancelPreviewImagesGeneration;
-
 
 @property (nonatomic, strong, readonly) AVURLAsset *asset;
 @property (nonatomic, strong, readonly) AVPlayerItem *playerItem;
 @property (nonatomic, strong, readonly) AVPlayer *player;
 @property (nonatomic, strong, readonly) NSURL *assetURL;
 @property (nonatomic, assign, readonly) NSTimeInterval beginTime;
+@property (nonatomic, assign, readwrite) BOOL jumped;
 @property (nonatomic, assign, readonly) NSInteger duration; // unit is sec.
 @property (nonatomic, assign, readonly) NSInteger currentTime; // unit is sec.
 @property (nonatomic, assign, readonly) float progress; // 0..1

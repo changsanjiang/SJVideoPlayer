@@ -78,14 +78,36 @@ NSNotificationName const SJ_AVPlayerRateDidChangeNotification = @"SJ_AVPlayerRat
 }
 
 - (void)_observing {
-    [self.playerItem addObserver:self forKeyPath:@"status" options:NSKeyValueObservingOptionNew context:nil];
+    [_playerItem addObserver:self forKeyPath:@"status" options:NSKeyValueObservingOptionNew context:nil];
+    [_playerItem addObserver:self forKeyPath:@"loadedTimeRanges" options:NSKeyValueObservingOptionNew context:nil];
+    [_playerItem addObserver:self forKeyPath:@"playbackBufferEmpty" options:NSKeyValueObservingOptionNew context:nil];
 }
 
 - (void)observeValueForKeyPath:(NSString *)keyPath ofObject:(id)object change:(NSDictionary<NSKeyValueChangeKey,id> *)change context:(void *)context {
-    if ( [keyPath isEqualToString:@"status"] ) {
-        NSLog(@"%zd - %s - %zd", __LINE__, __func__, self.playerItem.status);
-        if ( self.playerItemStateChanged ) self.playerItemStateChanged(self, self.playerItem.status);
-    }
+    dispatch_async(dispatch_get_main_queue(), ^{
+        if ( [keyPath isEqualToString:@"status"] ) {
+            NSLog(@"%zd - %s - %zd", __LINE__, __func__, self.playerItem.status);
+            if ( self.playerItemStateChanged ) self.playerItemStateChanged(self, self.playerItem.status);
+        }
+        else if ( [keyPath isEqualToString:@"loadedTimeRanges"] ) {
+            if ( 0 == CMTimeGetSeconds(_playerItem.duration) ) return;
+            CGFloat progress = [self _loadedTimeSecs] / CMTimeGetSeconds(_playerItem.duration);
+            if ( self.loadedTimeProgress ) self.loadedTimeProgress(progress);
+        }
+        else if ( [keyPath isEqualToString:@"playbackBufferEmpty"] ) {
+            NSLog(@"%zd - %s - %zd - %zd", __LINE__, __func__, [self _loadedTimeSecs], self.currentTime);
+            if ( self.beingBuffered ) self.beingBuffered([self _loadedTimeSecs] <= self.currentTime + 5);
+        }
+    });
+
+}
+
+- (NSInteger)_loadedTimeSecs {
+    CMTimeRange loadTimeRange = [_playerItem.loadedTimeRanges.firstObject CMTimeRangeValue];
+    CMTime startTime = loadTimeRange.start;
+    CMTime rangeDuration  = loadTimeRange.duration;
+    NSInteger seconds = CMTimeGetSeconds(startTime) + CMTimeGetSeconds(rangeDuration);
+    return seconds;
 }
 
 #pragma mark -
@@ -165,6 +187,8 @@ NSNotificationName const SJ_AVPlayerRateDidChangeNotification = @"SJ_AVPlayerRat
     [_player removeTimeObserver:_timeObserver];
     [[NSNotificationCenter defaultCenter] removeObserver:_itemEndObserver name:AVPlayerItemDidPlayToEndTimeNotification object:nil];
     [_playerItem removeObserver:self forKeyPath:@"status"];
+    [_playerItem removeObserver:self forKeyPath:@"playbackBufferEmpty"];
+    [_playerItem removeObserver:self forKeyPath:@"loadedTimeRanges"];
 
     _assetURL = nil;
     _asset = nil;

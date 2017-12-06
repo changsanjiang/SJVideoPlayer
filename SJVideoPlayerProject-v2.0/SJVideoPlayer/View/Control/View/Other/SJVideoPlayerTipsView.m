@@ -159,7 +159,7 @@
     if ( _minShowTitleLabel  ) return _minShowTitleLabel;
     _minShowTitleLabel = [SJUIFactory labelWithText:@"" textColor:SJThemeColor alignment:NSTextAlignmentCenter height:12];
     _minShowTitleLabel.hidden = YES;
-    _titleLabel.font = [UIFont systemFontOfSize:14];
+    _minShowTitleLabel.font = [UIFont systemFontOfSize:12];
     return _minShowTitleLabel;
 }
 

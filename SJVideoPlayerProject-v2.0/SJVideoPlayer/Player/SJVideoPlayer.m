@@ -101,6 +101,8 @@ inline static NSString *_formatWithSec(NSInteger sec) {
 
 - (void)_playEndState;
 
+- (void)_playFailedState;
+
 @end
 
 @implementation SJVideoPlayer (State)
@@ -218,6 +220,16 @@ inline static NSString *_formatWithSec(NSInteger sec) {
     
     
     self.state = SJVideoPlayerPlayState_PlayEnd;
+}
+
+- (void)_playFailedState {
+    // show
+    _sjShowViews(@[self.controlView.centerControlView.failedBtn]);
+    
+    // hidden
+    _sjShowViews(@[self.controlView.centerControlView.replayBtn]);
+    
+    self.state = SJVideoPlayerPlayState_PlayFailed;
 }
 
 - (void)_lockScreenState {
@@ -478,6 +490,7 @@ static UIView *target = nil;
 
 #pragma mark - SJVideoPlayer
 #import "SJMoreSettingsFooterViewModel.h"
+#import "JDradualLoadingView.h"
 
 @implementation SJVideoPlayer {
     SJVideoPlayerPresentView *_presentView;
@@ -489,6 +502,7 @@ static UIView *target = nil;
     SJMoreSettingsFooterViewModel *_moreSettingFooterViewModel;
     SJVideoPlayerRegistrar *_registrar;
     SJVolumeAndBrightness *_volBrig;
+    JDradualLoadingView *_loadingView;
 }
 
 + (instancetype)sharedPlayer {
@@ -513,15 +527,14 @@ static UIView *target = nil;
 
     [self view];
     [self orentation];
+    [self volBrig];
+    [self _notifications];
+    
     
     // default values
     self.autoplay = YES;
     self.generatePreviewImages = YES;
-    
-    [self _notifications];
-    
-    [self volBrig];
-    
+
     return self;
 }
 
@@ -618,6 +631,10 @@ static UIView *target = nil;
     [_moreSecondarySettingView mas_makeConstraints:^(MASConstraintMaker *make) {
         make.edges.equalTo(_moreSettingView);
     }];
+    
+    _loadingView = [JDradualLoadingView new];
+    _loadingView.lineWidth = 0.6;
+    _loadingView.lineColor = [UIColor whiteColor];
     
     return _view;
 }
@@ -816,44 +833,6 @@ static UIView *target = nil;
     }
 }
 
-#pragma mark
-
-- (void)_itemPrepareToPlay {
-    [self _prepareState];
-}
-
-- (void)_itemPlayFailed {
-    NSLog(@"%@", self.asset.playerItem.error);
-}
-
-- (void)_itemReadyToPlay {
-    if ( 0 != self.asset.beginTime ) {
-        __weak typeof(self) _self = self;
-        [self jumpedToTime:self.asset.beginTime completionHandler:^(BOOL finished) {
-            __strong typeof(_self) self = _self;
-            if ( !self ) return;
-            if ( self.autoplay ) [self play];
-        }];
-    }
-    else {
-        if ( self.autoplay ) [self play];
-    }
-}
-
-- (void)_refreshingTimeLabelWithCurrentTime:(NSTimeInterval)currentTime duration:(NSTimeInterval)duration {
-    self.controlView.bottomControlView.currentTimeLabel.text = _formatWithSec(currentTime);
-    self.controlView.bottomControlView.durationTimeLabel.text = _formatWithSec(duration);
-}
-
-- (void)_refreshingTimeProgressSliderWithCurrentTime:(NSTimeInterval)currentTime duration:(NSTimeInterval)duration {
-    self.controlView.bottomProgressSlider.value = self.controlView.bottomControlView.progressSlider.value = currentTime / duration;
-}
-
-- (void)_itemPlayEnd {
-    [self jumpedToTime:0 completionHandler:nil];
-    [self _playEndState];
-}
-
 #pragma mark ======================================================
 
 - (void)controlView:(SJVideoPlayerControlView *)controlView clickedBtnTag:(SJVideoPlayControlViewTag)tag {
@@ -929,28 +908,92 @@ static UIView *target = nil;
 }
 
 #pragma mark
-- (BOOL)_play {
-    if      ( !self.asset ) return NO;
+
+- (void)_itemPrepareToPlay {
+    [self _startLoading];
+    [self _prepareState];
+}
+
+- (void)_itemPlayFailed {
+    NSLog(@"%@", self.asset.playerItem.error);
+}
+
+- (void)_itemReadyToPlay {
+    if ( 0 != self.asset.beginTime && !self.asset.jumped ) {
+        __weak typeof(self) _self = self;
+        [self jumpedToTime:self.asset.beginTime completionHandler:^(BOOL finished) {
+            __strong typeof(_self) self = _self;
+            if ( !self ) return;
+            self.asset.jumped = YES;
+            if ( self.autoplay ) [self play];
+        }];
+    }
     else {
-        [self.asset.player play];
-        self.moreSettingFooterViewModel.playerRateChanged(self.asset.player.rate);
-        _sjAnima(^{
-            [self _playState];
-        });
-        return YES;
+        if ( self.autoplay ) [self play];
     }
 }
 
-- (BOOL)_pause {
-    if ( !self.asset ) return NO;
-    else {
-        [self.asset.player pause];
-        _sjAnima(^{
-            [self _pauseState];
-        });
-        return YES;
-    }
+- (void)_refreshingTimeLabelWithCurrentTime:(NSTimeInterval)currentTime duration:(NSTimeInterval)duration {
+    self.controlView.bottomControlView.currentTimeLabel.text = _formatWithSec(currentTime);
+    self.controlView.bottomControlView.durationTimeLabel.text = _formatWithSec(duration);
 }
+
+- (void)_refreshingTimeProgressSliderWithCurrentTime:(NSTimeInterval)currentTime duration:(NSTimeInterval)duration {
+    self.controlView.bottomProgressSlider.value = self.controlView.bottomControlView.progressSlider.value = currentTime / duration;
+}
+
+- (void)_itemPlayEnd {
+    [self jumpedToTime:0 completionHandler:nil];
+    [self _playEndState];
+}
+
+- (void)_play {
+    [self _stopLoading];
+    [self.asset.player play];
+    self.moreSettingFooterViewModel.playerRateChanged(self.asset.player.rate);
+}
+
+- (void)_pause {
+    [self.asset.player pause];
+}
+
+static BOOL _isLoading;
+- (void)_startLoading {
+    if ( _isLoading ) return;
+    _isLoading = YES;
+    [_controlView addSubview:_loadingView];
+    [_loadingView mas_makeConstraints:^(MASConstraintMaker *make) {
+        make.center.offset(0);
+        make.height.equalTo(_loadingView.superview).multipliedBy(0.2);
+        make.width.equalTo(_loadingView.mas_height);
+    }];
+    [_loadingView startAnimation];
+}
+
+- (void)_stopLoading {
+    _isLoading = NO;
+    [_loadingView stopAnimation];
+    [_loadingView removeFromSuperview];
+}
+
+- (void)_buffering {
+    if ( self.state == SJVideoPlayerPlayState_PlayEnd ) return;
+    if ( self.registrar.userClickedPause ) return;
+    
+    [self _startLoading];
+    [self _pause];
+    self.state = SJVideoPlayerPlayState_Buffing;
+    dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(2 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
+        if ( !self.asset.playerItem.isPlaybackLikelyToKeepUp ) {
+            [self _buffering];
+        }
+        else {
+            [self _stopLoading];
+            if ( !self.registrar.userClickedPause ) [self play];
+        }
+    });
+}
+
 @end
 
 
@@ -1033,6 +1076,18 @@ static UIView *target = nil;
         __strong typeof(_self) self = _self;
         if ( !self ) return;
         [self _itemPlayEnd];
+    };
+    
+    asset.loadedTimeProgress = ^(float progress) {
+        __strong typeof(_self) self = _self;
+        if ( !self ) return;
+        self.controlView.bottomControlView.progressSlider.bufferProgress = progress;
+    };
+    
+    asset.beingBuffered = ^(BOOL state) {
+        __strong typeof(_self) self = _self;
+        if ( !self ) return;
+        [self _buffering];
     };
 }
 
@@ -1159,13 +1214,23 @@ static UIView *target = nil;
 @implementation SJVideoPlayer (Control)
 
 - (BOOL)play {
+    if ( !self.asset ) return NO;
     self.registrar.userClickedPause = NO;
-    return [self _play];
+    _sjAnima(^{
+        [self _playState];
+    });
+    [self _play];
+    return YES;
 }
 
 - (BOOL)pause {
+    if ( !self.asset ) return NO;
     self.registrar.userClickedPause = YES;
-    return [self _pause];
+    _sjAnima(^{
+        [self _pauseState];
+    });
+    [self _pause];
+    return YES;
 }
 
 - (void)stop {
@@ -1183,7 +1248,14 @@ static UIView *target = nil;
 }
 
 - (void)seekToTime:(CMTime)time completionHandler:(void (^ __nullable)(BOOL finished))completionHandler {
-    [self.asset.playerItem seekToTime:time completionHandler:completionHandler];
+    [self _startLoading];
+    __weak typeof(self) _self = self;
+    [self.asset.playerItem seekToTime:time completionHandler:^(BOOL finished) {
+        __strong typeof(_self) self = _self;
+        if ( !self ) return;
+        [self _stopLoading];
+        if ( completionHandler ) completionHandler(finished);
+    }];
 }
 
 - (UIImage *)screenshot {

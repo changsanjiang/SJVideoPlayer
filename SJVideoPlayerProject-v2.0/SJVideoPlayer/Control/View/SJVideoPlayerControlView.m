@@ -66,7 +66,7 @@
     [_topControlView mas_makeConstraints:^(MASConstraintMaker *make) {
         make.top.offset(0);
         make.leading.trailing.offset(0);
-        make.height.offset(20 + 30);
+        make.height.offset(SJControlTopH);
     }];
     
     [_previewView mas_makeConstraints:^(MASConstraintMaker *make) {
@@ -76,7 +76,7 @@
     }];
     
     [_leftControlView mas_makeConstraints:^(MASConstraintMaker *make) {
-        make.size.offset(49);
+        make.size.offset(SJControlLeftH);
         make.leading.offset(0);
         make.centerY.offset(0);
     }];
@@ -89,7 +89,7 @@
     
     [_bottomControlView mas_makeConstraints:^(MASConstraintMaker *make) {
         make.bottom.leading.trailing.offset(0);
-        make.height.offset(49);
+        make.height.offset(SJControlBottomH);
     }];
     
     [_bottomProgressSlider mas_makeConstraints:^(MASConstraintMaker *make) {

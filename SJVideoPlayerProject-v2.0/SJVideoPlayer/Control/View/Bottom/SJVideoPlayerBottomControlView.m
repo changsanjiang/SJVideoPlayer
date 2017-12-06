@@ -53,10 +53,11 @@
     [_controlMaskView mas_makeConstraints:^(MASConstraintMaker *make) {
         make.edges.offset(0);
     }];
-    
+
     [_playBtn mas_makeConstraints:^(MASConstraintMaker *make) {
-        make.top.leading.bottom.offset(0);
-        make.height.equalTo(_playBtn.mas_width);
+        make.leading.offset(0);
+        make.size.offset(49);
+        make.bottom.offset(-8);
     }];
     
     [_pauseBtn mas_makeConstraints:^(MASConstraintMaker *make) {
@@ -69,7 +70,7 @@
     }];
     
     [_separateLabel mas_makeConstraints:^(MASConstraintMaker *make) {
-        make.centerY.equalTo(_separateLabel.superview);
+        make.centerY.equalTo(_playBtn);
         make.leading.equalTo(_currentTimeLabel.mas_trailing);
     }];
 
@@ -80,13 +81,14 @@
     
     [_progressSlider mas_makeConstraints:^(MASConstraintMaker *make) {
         make.leading.equalTo(_playBtn.mas_trailing).offset(86 + 8);
-        make.top.bottom.offset(0);
+        make.height.centerY.equalTo(_playBtn);
         make.trailing.equalTo(_fullBtn.mas_leading).offset(-8);
     }];
     
     [_fullBtn mas_makeConstraints:^(MASConstraintMaker *make) {
         make.size.equalTo(_playBtn);
-        make.bottom.trailing.offset(0);
+        make.centerY.equalTo(_playBtn);
+        make.trailing.offset(0);
     }];
     
     

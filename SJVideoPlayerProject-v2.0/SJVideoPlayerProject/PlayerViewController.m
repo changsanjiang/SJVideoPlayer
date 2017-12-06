@@ -26,7 +26,7 @@
     
     [self.view addSubview:Player.view];
     [Player.view mas_makeConstraints:^(MASConstraintMaker *make) {
-        make.top.offset(20);
+        make.center.offset(0);
         make.leading.trailing.offset(0);
         make.height.equalTo(Player.view.mas_width).multipliedBy(9.0f / 16);
     }];
@@ -71,6 +71,10 @@
 //    shareItem.twoSettingItems
     Player.moreSettings = @[share];
 }
+
+//- (UIStatusBarStyle)preferredStatusBarStyle {
+//    return UIStatusBarStyleLightContent;
+//}
 
 - (void)dealloc {
     [Player stop];

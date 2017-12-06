@@ -48,10 +48,9 @@
     }];
     
     [_backBtn mas_makeConstraints:^(MASConstraintMaker *make) {
-        make.leading.offset(8);
-        make.bottom.offset(0);
-        make.height.equalTo(_backBtn.superview).multipliedBy(0.7);
-        make.height.equalTo(_backBtn.mas_width);
+        make.top.offset(20);
+        make.size.offset(49);
+        make.leading.offset(0);
     }];
     
     [_previewBtn mas_makeConstraints:^(MASConstraintMaker *make) {

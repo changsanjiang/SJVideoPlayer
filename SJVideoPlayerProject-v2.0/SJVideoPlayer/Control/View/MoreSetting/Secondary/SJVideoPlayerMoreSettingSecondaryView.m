@@ -56,10 +56,6 @@ static NSString *const SJVideoPlayerMoreSettingsSecondaryHeaderViewID = @"SJVide
         make.edges.offset(0);
     }];
     
-    self.layer.shadowOffset = CGSizeMake(-1, 0);
-    self.layer.shadowColor = [UIColor colorWithWhite:0 alpha:0.5].CGColor;
-    self.layer.shadowRadius = 1;
-    self.layer.shadowOpacity = 1;
 }
 
 - (UICollectionView *)colView {

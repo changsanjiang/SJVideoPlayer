@@ -292,13 +292,22 @@ inline static NSString *_formatWithSec(NSInteger sec) {
     self.controlView.previewView.hidden = YES;
     
     // transform hidden
-    self.controlView.topControlView.transform = CGAffineTransformMakeTranslation(0, - self.controlView.topControlView.frame.size.height);
-    self.controlView.bottomControlView.transform = CGAffineTransformMakeTranslation(0, self.controlView.bottomControlView.frame.size.height);
+    self.controlView.topControlView.transform = CGAffineTransformMakeTranslation(0, -SJControlTopH);
+    self.controlView.bottomControlView.transform = CGAffineTransformMakeTranslation(0, SJControlBottomH);
 
     if ( self.orentation.fullScreen ) {
         if ( self.isLockedScrren ) self.hiddenLeftControlView = NO;
         else self.hiddenLeftControlView = YES;
     }
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wdeprecated-declarations"
+    if ( self.orentation.fullScreen ) {
+        [[UIApplication sharedApplication] setStatusBarHidden:YES animated:YES];
+    }
+    else {
+        [[UIApplication sharedApplication] setStatusBarHidden:NO animated:YES];
+    }
+#pragma clang diagnostic pop
 }
 
 - (void)_showControlState {
@@ -311,6 +320,10 @@ inline static NSString *_formatWithSec(NSInteger sec) {
     self.controlView.topControlView.transform = self.controlView.bottomControlView.transform = CGAffineTransformIdentity;
     
     self.hiddenLeftControlView = !self.orentation.fullScreen;
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wdeprecated-declarations"
+    [[UIApplication sharedApplication] setStatusBarHidden:NO animated:YES];
+#pragma clang diagnostic pop
 }
 
 @end
@@ -583,6 +596,7 @@ static UIView *target = nil;
 - (SJVideoPlayerControlView *)controlView {
     if ( _controlView ) return _controlView;
     _controlView = [SJVideoPlayerControlView new];
+    _controlView.clipsToBounds = YES;
     return _controlView;
 }
 
@@ -707,7 +721,7 @@ static UIView *target = nil;
     if ( hiddenLeftControlView == _hiddenLeftControlView ) return;
     _hiddenLeftControlView = hiddenLeftControlView;
     if ( _hiddenLeftControlView ) {
-        self.controlView.leftControlView.transform = CGAffineTransformMakeTranslation(-[UIScreen mainScreen].bounds.size.width, 0);
+        self.controlView.leftControlView.transform = CGAffineTransformMakeTranslation(-SJControlLeftH, 0);
     }
     else {
         self.controlView.leftControlView.transform =  CGAffineTransformIdentity;
@@ -733,10 +747,20 @@ static UIView *target = nil;
                 if ( self.asset.hasBeenGeneratedPreviewImages ) {
                     _sjShowViews(@[self.controlView.topControlView.previewBtn]);
                 }
+                
+                [self.controlView mas_remakeConstraints:^(MASConstraintMaker *make) {
+                    make.center.offset(0);
+                    make.height.equalTo(self.controlView.superview);
+                    make.width.equalTo(self.controlView.mas_height).multipliedBy(16.0 / 9.0);
+                }];
             }
             else {
                 _sjHiddenViews(@[self.controlView.topControlView.moreBtn,
                                  self.controlView.topControlView.previewBtn,]);
+                
+                [self.controlView mas_remakeConstraints:^(MASConstraintMaker *make) {
+                    make.edges.offset(0);
+                }];
             }
         });
     };

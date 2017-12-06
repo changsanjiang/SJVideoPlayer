@@ -53,9 +53,6 @@ static NSString *const SJVideoPlayerMoreSettingsFooterSlidersViewID = @"SJVideoP
     [_colView mas_makeConstraints:^(MASConstraintMaker *make) {
         make.edges.offset(0);
     }];
-    self.layer.shadowOffset = CGSizeMake(0.5, 0.5);
-    self.layer.shadowColor = [UIColor colorWithWhite:0 alpha:0.25].CGColor;
-    self.layer.shadowOpacity = 1;
 }
 
 - (UICollectionView *)colView {

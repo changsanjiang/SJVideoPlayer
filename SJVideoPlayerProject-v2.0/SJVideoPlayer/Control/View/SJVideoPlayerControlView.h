@@ -17,6 +17,11 @@
 #import "SJVideoPlayerDraggingProgressView.h"
 
 
+#define SJControlTopH (100)
+#define SJControlLeftH (49)
+#define SJControlBottomH (80)
+
+
 NS_ASSUME_NONNULL_BEGIN
 
 @class SJVideoPreviewModel, SJVideoPlayerAssetCarrier;

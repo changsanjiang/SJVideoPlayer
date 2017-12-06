@@ -13,11 +13,6 @@
 #import "SJVideoPlayerResources.h"
 
 @interface SJVideoPlayerControlView()<SJVideoPlayerTopControlViewDelegate, SJVideoPlayerLeftControlViewDelegate, SJVideoPlayerCenterControlViewDelegate, SJVideoPlayerBottomControlViewDelegate, SJVideoPlayerPreviewViewDelegate>
-
-@property (nonatomic, strong, readonly) UITapGestureRecognizer *singleTap;
-@property (nonatomic, strong, readonly) UITapGestureRecognizer *doubleTap;
-@property (nonatomic, strong, readonly) UIPanGestureRecognizer *panGR;
-
 @end
 
 @implementation SJVideoPlayerControlView

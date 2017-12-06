@@ -76,6 +76,8 @@ inline static NSString *_formatWithSec(NSInteger sec) {
 @property (nonatomic, strong, readonly) SJVideoPlayerRegistrar *registrar;
 @property (nonatomic, strong, readonly) SJVolumeAndBrightness *volBrig;
 
+- (void)_play;
+- (void)_pause;
 @end
 
 
@@ -227,7 +229,7 @@ inline static NSString *_formatWithSec(NSInteger sec) {
     _sjShowViews(@[self.controlView.centerControlView.failedBtn]);
     
     // hidden
-    _sjShowViews(@[self.controlView.centerControlView.replayBtn]);
+    _sjHiddenViews(@[self.controlView.centerControlView.replayBtn]);
     
     self.state = SJVideoPlayerPlayState_PlayFailed;
 }
@@ -292,7 +294,10 @@ inline static NSString *_formatWithSec(NSInteger sec) {
 
 #pragma mark - Gesture
 
-@interface SJVideoPlayer (GestureRecognizer)
+@interface SJVideoPlayer (GestureRecognizer)<UIGestureRecognizerDelegate>
+
+- (void)_settingControlViewGestureDelegate;
+
 @end
 
 typedef NS_ENUM(NSUInteger, SJPanDirection) {
@@ -309,6 +314,12 @@ typedef NS_ENUM(NSUInteger, SJVerticalPanLocation) {
 };
 
 @implementation SJVideoPlayer (GestureRecognizer)
+
+- (void)_settingControlViewGestureDelegate {
+    self.controlView.singleTap.delegate = self;
+    self.controlView.doubleTap.delegate = self;
+    self.controlView.panGR.delegate = self;
+}
 
 - (void)setPanDirection:(SJPanDirection)panDirection {
     objc_setAssociatedObject(self, @selector(panDirection), @(panDirection), OBJC_ASSOCIATION_RETAIN_NONATOMIC);
@@ -329,17 +340,21 @@ typedef NS_ENUM(NSUInteger, SJVerticalPanLocation) {
 - (BOOL)_isFadeAreaWithGesture:(UIGestureRecognizer *)gesture {
     CGPoint point = [gesture locationInView:gesture.view];
     if ( CGRectContainsPoint(self.moreSettingView.frame, point) ||
-        CGRectContainsPoint(self.moreSecondarySettingView.frame, point) ) {
+        CGRectContainsPoint(self.moreSecondarySettingView.frame, point) ||
+        CGRectContainsPoint(self.controlView.previewView.frame, point) ) {
         [gesture setValue:@(UIGestureRecognizerStateCancelled) forKey:@"state"];
         return YES;
     }
     return NO;
 }
 
+- (BOOL)gestureRecognizerShouldBegin:(UIGestureRecognizer *)gestureRecognizer {
+    if ( self.isLockedScrren ) return NO;
+    if ( [self _isFadeAreaWithGesture:gestureRecognizer] ) return NO;
+    return YES;
+}
+
 - (void)controlView:(SJVideoPlayerControlView *)controlView handleSingleTap:(UITapGestureRecognizer *)tap {
-    if ( self.isLockedScrren ) return;
-    if ( [self _isFadeAreaWithGesture:tap] ) return;
-    
     _sjAnima(^{
         if ( !self.hiddenMoreSettingView ) {
             self.hiddenMoreSettingView = YES;
@@ -354,9 +369,6 @@ typedef NS_ENUM(NSUInteger, SJVerticalPanLocation) {
 }
 
 - (void)controlView:(SJVideoPlayerControlView *)controlView handleDoubleTap:(UITapGestureRecognizer *)tap {
-    if ( self.isLockedScrren ) return;
-    if ( [self _isFadeAreaWithGesture:tap] ) return;
-    
     switch (self.state) {
         case SJVideoPlayerPlayState_Unknown:
         case SJVideoPlayerPlayState_Prepare:
@@ -378,9 +390,6 @@ typedef NS_ENUM(NSUInteger, SJVerticalPanLocation) {
 
 static UIView *target = nil;
 - (void)controlView:(SJVideoPlayerControlView *)controlView handlePan:(UIPanGestureRecognizer *)pan {
-    if ( self.lockScreen ) return;
-    if ( [self _isFadeAreaWithGesture:pan] ) return;
-    
     CGPoint offset = [pan translationInView:pan.view];
     switch (pan.state) {
         case UIGestureRecognizerStateBegan:{
@@ -390,7 +399,7 @@ static UIView *target = nil;
             if (x > y) {
                 /// 水平移动, 调整进度
                 self.panDirection = SJPanDirection_H;
-                [self pause];
+                [self _pause];
                 _sjAnima(^{
                     _sjShowViews(@[self.controlView.draggingProgressView]);
                 });
@@ -529,7 +538,7 @@ static UIView *target = nil;
     [self orentation];
     [self volBrig];
     [self _notifications];
-    
+    [self _settingControlViewGestureDelegate];
     
     // default values
     self.autoplay = YES;
@@ -580,7 +589,7 @@ static UIView *target = nil;
 
 // 后台
 - (void)applicationWillResignActiveNotification {
-    [self pause];
+    [self _pause];
     self.lockScreen = YES;
 }
 
@@ -724,6 +733,8 @@ static UIView *target = nil;
         if ( !self ) return;
         _sjAnima(^{
             self.hideControl = NO;
+            self.hiddenMoreSecondarySettingView = YES;
+            self.hiddenMoreSettingView = YES;
             if ( observer.fullScreen ) {
                 _sjShowViews(@[self.controlView.topControlView.moreBtn,
                                self.controlView.leftControlView,]);
@@ -742,7 +753,12 @@ static UIView *target = nil;
     _orentation.rotationCondition = ^BOOL(SJOrentationObserver * _Nonnull observer) {
         __strong typeof(_self) self = _self;
         if ( !self ) return NO;
-        if ( self.state == SJVideoPlayerPlayState_Unknown ) return NO;
+        switch (self.state) {
+            case SJVideoPlayerPlayState_Unknown:
+            case SJVideoPlayerPlayState_Prepare:
+            case SJVideoPlayerPlayState_PlayFailed: return NO;
+            default: break;
+        }
         if ( self.disableRotation ) return NO;
         if ( self.isLockedScrren ) return NO;
         return YES;
@@ -881,6 +897,7 @@ static UIView *target = nil;
         case SJVideoPlayControlViewTag_Unlock: {
             // 锁屏
             self.lockScreen = YES;
+            [self showTitle:@"已锁定"];
         }
             break;
         case SJVideoPlayControlViewTag_LoadFailed: {
@@ -898,7 +915,7 @@ static UIView *target = nil;
 }
 
 - (void)controlView:(SJVideoPlayerControlView *)controlView didSelectPreviewItem:(SJVideoPreviewModel *)item {
-    [self pause];
+    [self _pause];
     __weak typeof(self) _self = self;
     [self seekToTime:item.localTime completionHandler:^(BOOL finished) {
         __strong typeof(_self) self = _self;
@@ -911,14 +928,23 @@ static UIView *target = nil;
 
 - (void)_itemPrepareToPlay {
     [self _startLoading];
+    _sjAnima(^{
+        self.hideControl = YES;
+    });
+    self.hiddenMoreSettingView = YES;
+    self.hiddenMoreSecondarySettingView = YES;
     [self _prepareState];
 }
 
 - (void)_itemPlayFailed {
-    NSLog(@"%@", self.asset.playerItem.error);
+    [self _stopLoading];
+    [self _playFailedState];
 }
 
 - (void)_itemReadyToPlay {
+    _sjAnima(^{
+        self.hideControl = NO;
+    });
     if ( 0 != self.asset.beginTime && !self.asset.jumped ) {
         __weak typeof(self) _self = self;
         [self jumpedToTime:self.asset.beginTime completionHandler:^(BOOL finished) {
@@ -929,7 +955,7 @@ static UIView *target = nil;
         }];
     }
     else {
-        if ( self.autoplay ) [self play];
+        if ( self.autoplay && !self.registrar.userClickedPause ) [self play];
     }
 }
 
@@ -1230,6 +1256,7 @@ static BOOL _isLoading;
         [self _pauseState];
     });
     [self _pause];
+    [self showTitle:@"已暂停"];
     return YES;
 }
 

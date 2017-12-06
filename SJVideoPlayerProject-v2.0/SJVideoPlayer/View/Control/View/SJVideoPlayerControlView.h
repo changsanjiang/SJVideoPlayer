@@ -36,6 +36,10 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic, strong, readonly) SJSlider *bottomProgressSlider;
 @property (nonatomic, strong, readonly) SJVideoPlayerDraggingProgressView *draggingProgressView;
 
+@property (nonatomic, strong, readonly) UITapGestureRecognizer *singleTap;
+@property (nonatomic, strong, readonly) UITapGestureRecognizer *doubleTap;
+@property (nonatomic, strong, readonly) UIPanGestureRecognizer *panGR;
+
 @end
 
 @protocol SJVideoPlayerControlViewDelegate <NSObject>

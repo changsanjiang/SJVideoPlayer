@@ -86,7 +86,6 @@ NSNotificationName const SJ_AVPlayerRateDidChangeNotification = @"SJ_AVPlayerRat
 - (void)observeValueForKeyPath:(NSString *)keyPath ofObject:(id)object change:(NSDictionary<NSKeyValueChangeKey,id> *)change context:(void *)context {
     dispatch_async(dispatch_get_main_queue(), ^{
         if ( [keyPath isEqualToString:@"status"] ) {
-            NSLog(@"%zd - %s - %zd", __LINE__, __func__, self.playerItem.status);
             if ( self.playerItemStateChanged ) self.playerItemStateChanged(self, self.playerItem.status);
         }
         else if ( [keyPath isEqualToString:@"loadedTimeRanges"] ) {
@@ -95,11 +94,9 @@ NSNotificationName const SJ_AVPlayerRateDidChangeNotification = @"SJ_AVPlayerRat
             if ( self.loadedTimeProgress ) self.loadedTimeProgress(progress);
         }
         else if ( [keyPath isEqualToString:@"playbackBufferEmpty"] ) {
-            NSLog(@"%zd - %s - %zd - %zd", __LINE__, __func__, [self _loadedTimeSecs], self.currentTime);
             if ( self.beingBuffered ) self.beingBuffered([self _loadedTimeSecs] <= self.currentTime + 5);
         }
     });
-
 }
 
 - (NSInteger)_loadedTimeSecs {

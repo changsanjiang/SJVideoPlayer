@@ -116,7 +116,6 @@
 }
 
 - (BOOL)_changeOrientation {
-    
     if ( self.fullScreen ) {
         [[UIDevice currentDevice] setValue:@(UIInterfaceOrientationPortrait) forKey:@"orientation"];
     }

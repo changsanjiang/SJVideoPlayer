@@ -80,6 +80,7 @@ inline static NSString *_formatWithSec(NSInteger sec) {
 @property (nonatomic, assign, readwrite) BOOL userClickedPause;
 @property (nonatomic, assign, readwrite) BOOL playOnCell;
 @property (nonatomic, assign, readwrite) BOOL scrollIn;
+@property (nonatomic, strong, readwrite) NSError *error;
 
 - (void)_play;
 - (void)_pause;
@@ -409,6 +410,7 @@ typedef NS_ENUM(NSUInteger, SJVerticalPanLocation) {
 }
 
 - (void)controlView:(SJVideoPlayerControlView *)controlView handleSingleTap:(UITapGestureRecognizer *)tap {
+
     _sjAnima(^{
         if ( !self.hiddenMoreSettingView ) {
             self.hiddenMoreSettingView = YES;
@@ -674,11 +676,7 @@ static UIView *target = nil;
         __strong typeof(_self) self = _self;
         if ( !self ) return;
         if ( !self.asset ) return;
-        self.asset.player.rate = rate;
-        self.userClickedPause = NO;
-        _sjAnima(^{
-            [self _playState];
-        });
+        self.rate = rate;
     };
     
     _moreSettingFooterViewModel.needChangeVolume = ^(float volume) {
@@ -992,12 +990,15 @@ static UIView *target = nil;
     self.userClickedPause = NO;
     self.hiddenMoreSettingView = YES;
     self.hiddenMoreSecondarySettingView = YES;
+    self.controlView.bottomProgressSlider.value = 0;
+    self.controlView.bottomProgressSlider.bufferProgress = 0;
     [self _prepareState];
 }
 
 - (void)_itemPlayFailed {
     [self _stopLoading];
     [self _playFailedState];
+    self.error = self.asset.playerItem.error;
 }
 
 - (void)_itemReadyToPlay {
@@ -1089,8 +1090,17 @@ static BOOL _isLoading;
 
 @implementation SJVideoPlayer (Setting)
 
+- (void)playWithURL:(NSURL *)playURL {
+    [self playWithURL:playURL jumpedToTime:0];
+}
+
+// unit: sec.
+- (void)playWithURL:(NSURL *)playURL jumpedToTime:(NSTimeInterval)time {
+    self.asset = [[SJVideoPlayerAssetCarrier alloc] initWithAssetURL:playURL beginTime:time];
+}
+
 - (void)setAssetURL:(NSURL *)assetURL {
-    self.asset = [[SJVideoPlayerAssetCarrier alloc] initWithAssetURL:assetURL];
+    [self playWithURL:assetURL jumpedToTime:0];
 }
 
 - (NSURL *)assetURL {
@@ -1313,10 +1323,6 @@ static BOOL _isLoading;
     self.presentView.placeholderImageView.image = placeholder;
 }
 
-- (void)setScrollView:(__weak UIScrollView *)scrollView indexPath:(NSIndexPath *)indexPath onViewTag:(NSInteger)tag {
-    
-}
-
 - (void)setAutoplay:(BOOL)autoplay {
     objc_setAssociatedObject(self, @selector(isAutoplay), @(autoplay), OBJC_ASSOCIATION_RETAIN_NONATOMIC);
 }
@@ -1361,6 +1367,27 @@ static BOOL _isLoading;
 - (void)_cleanSetting {
     [self.asset cancelPreviewImagesGeneration];
     self.asset = nil;
+}
+
+- (void)setRate:(float)rate {
+    self.asset.player.rate = rate;
+    self.userClickedPause = NO;
+    _sjAnima(^{
+        [self _playState];
+    });
+}
+
+- (float)rate {
+    return self.asset.player.rate;
+}
+
+- (void)setSettings:(SJVideoPlayerSettings *)settings {
+    objc_setAssociatedObject(self, @selector(settings), settings, OBJC_ASSOCIATION_RETAIN_NONATOMIC);
+    [[NSNotificationCenter defaultCenter] postNotificationName:SJSettingsPlayerNotification object:nil];
+}
+
+- (SJVideoPlayerSettings *)settings {
+    return objc_getAssociatedObject(self, _cmd);
 }
 
 @end
@@ -1421,6 +1448,18 @@ static BOOL _isLoading;
 
 - (UIImage *)screenshot {
     return [self.asset screenshot];
+}
+
+- (NSTimeInterval)currentTime {
+    return self.asset.currentTime;
+}
+
+- (void)stopRotation {
+    self.disableRotation = YES;
+}
+
+- (void)enableRotation {
+    self.disableRotation = NO;
 }
 
 @end

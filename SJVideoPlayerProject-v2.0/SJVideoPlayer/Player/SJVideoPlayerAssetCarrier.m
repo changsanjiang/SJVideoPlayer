@@ -67,8 +67,8 @@ NSNotificationName const SJ_AVPlayerRateDidChangeNotification = @"SJ_AVPlayerRat
 
 - (instancetype)initWithAssetURL:(NSURL *)assetURL
                        beginTime:(NSTimeInterval)beginTime
-                      scrollView:(UIScrollView * __nullable)scrollView
-                       indexPath:(NSIndexPath *)indexPath
+                      scrollView:(UIScrollView *__unsafe_unretained)scrollView
+                       indexPath:(NSIndexPath *__weak)indexPath
                     superviewTag:(NSInteger)superviewTag {
     self = [super init];
     if ( !self ) return nil;

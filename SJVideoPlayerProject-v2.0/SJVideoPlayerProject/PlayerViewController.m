@@ -7,7 +7,7 @@
 //
 
 #import "PlayerViewController.h"
-#import "SJVideoPlayerHeader.h"
+#import "SJVideoPlayer.h"
 #import <Masonry.h>
 
 

@@ -51,7 +51,6 @@
 		775A7C261FD7EC5000BE1EE2 /* PlayerTableViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 775A7C251FD7EC5000BE1EE2 /* PlayerTableViewController.m */; };
 		775A7C291FD7EC7C00BE1EE2 /* PlayerTableViewCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 775A7C281FD7EC7C00BE1EE2 /* PlayerTableViewCell.m */; };
 		77EDB3591FD2CA550075A014 /* sample.mp4 in Resources */ = {isa = PBXBuildFile; fileRef = 77EDB3581FD2CA550075A014 /* sample.mp4 */; };
-		A6A68FBF1FD578920042730B /* NSTimer+SJExtension.m in Sources */ = {isa = PBXBuildFile; fileRef = A6A68FB81FD578920042730B /* NSTimer+SJExtension.m */; };
 		A6A68FC01FD578920042730B /* UITabBarController+SJExtension.m in Sources */ = {isa = PBXBuildFile; fileRef = A6A68FB91FD578920042730B /* UITabBarController+SJExtension.m */; };
 		A6A68FC11FD578920042730B /* UIViewController+SJExtension.m in Sources */ = {isa = PBXBuildFile; fileRef = A6A68FBB1FD578920042730B /* UIViewController+SJExtension.m */; };
 		A6A68FC21FD578920042730B /* UINavigationController+SJExtension.m in Sources */ = {isa = PBXBuildFile; fileRef = A6A68FBE1FD578920042730B /* UINavigationController+SJExtension.m */; };
@@ -70,7 +69,6 @@
 		774B25271FCEBA5D002113CC /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/LaunchScreen.storyboard; sourceTree = "<group>"; };
 		774B25291FCEBA5D002113CC /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		774B252A1FCEBA5D002113CC /* main.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = main.m; sourceTree = "<group>"; };
-		774B25461FCECA1F002113CC /* SJVideoPlayerHeader.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SJVideoPlayerHeader.h; sourceTree = "<group>"; };
 		774B25491FCECA1F002113CC /* SJVideoPlayer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SJVideoPlayer.h; sourceTree = "<group>"; };
 		774B254A1FCECA1F002113CC /* SJVideoPlayer.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SJVideoPlayer.m; sourceTree = "<group>"; };
 		774B254B1FCECA1F002113CC /* SJVideoPlayerState.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SJVideoPlayerState.h; sourceTree = "<group>"; };
@@ -147,8 +145,6 @@
 		775A7C281FD7EC7C00BE1EE2 /* PlayerTableViewCell.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = PlayerTableViewCell.m; sourceTree = "<group>"; };
 		77EDB3581FD2CA550075A014 /* sample.mp4 */ = {isa = PBXFileReference; lastKnownFileType = file; path = sample.mp4; sourceTree = "<group>"; };
 		A53C6944FFDAC5FD9DA4750E /* libPods-SJVideoPlayerProject.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-SJVideoPlayerProject.a"; sourceTree = BUILT_PRODUCTS_DIR; };
-		A6A68FB71FD578920042730B /* NSTimer+SJExtension.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "NSTimer+SJExtension.h"; sourceTree = "<group>"; };
-		A6A68FB81FD578920042730B /* NSTimer+SJExtension.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "NSTimer+SJExtension.m"; sourceTree = "<group>"; };
 		A6A68FB91FD578920042730B /* UITabBarController+SJExtension.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "UITabBarController+SJExtension.m"; sourceTree = "<group>"; };
 		A6A68FBA1FD578920042730B /* UITabBarController+SJExtension.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "UITabBarController+SJExtension.h"; sourceTree = "<group>"; };
 		A6A68FBB1FD578920042730B /* UIViewController+SJExtension.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "UIViewController+SJExtension.m"; sourceTree = "<group>"; };
@@ -230,7 +226,8 @@
 		774B25311FCEBA78002113CC /* SJVideoPlayer */ = {
 			isa = PBXGroup;
 			children = (
-				774B25461FCECA1F002113CC /* SJVideoPlayerHeader.h */,
+				774B25491FCECA1F002113CC /* SJVideoPlayer.h */,
+				774B254A1FCECA1F002113CC /* SJVideoPlayer.m */,
 				774B25481FCECA1F002113CC /* Player */,
 				775A7C1A1FD7C08C00BE1EE2 /* TimerControl */,
 				775A7C121FD78AE200BE1EE2 /* VolumeAndBrightness */,
@@ -249,8 +246,6 @@
 		774B25481FCECA1F002113CC /* Player */ = {
 			isa = PBXGroup;
 			children = (
-				774B25491FCECA1F002113CC /* SJVideoPlayer.h */,
-				774B254A1FCECA1F002113CC /* SJVideoPlayer.m */,
 				775A7BA51FD640D300BE1EE2 /* SJVideoPlayerAssetCarrier.h */,
 				775A7BA61FD640D300BE1EE2 /* SJVideoPlayerAssetCarrier.m */,
 				774B254B1FCECA1F002113CC /* SJVideoPlayerState.h */,
@@ -493,8 +488,6 @@
 		775E89231FD505C800E89EA4 /* Category */ = {
 			isa = PBXGroup;
 			children = (
-				A6A68FB71FD578920042730B /* NSTimer+SJExtension.h */,
-				A6A68FB81FD578920042730B /* NSTimer+SJExtension.m */,
 				A6A68FBC1FD578920042730B /* UINavigationController+SJExtension.h */,
 				A6A68FBE1FD578920042730B /* UINavigationController+SJExtension.m */,
 				A6A68FBA1FD578920042730B /* UITabBarController+SJExtension.h */,
@@ -649,7 +642,6 @@
 				775A7C201FD7EB2B00BE1EE2 /* SJVideoPlayerView.m in Sources */,
 				775A7C011FD6670800BE1EE2 /* SJVideoPlayerPreviewView.m in Sources */,
 				775A7C111FD6C2FE00BE1EE2 /* SJVideoPlayerRegistrar.m in Sources */,
-				A6A68FBF1FD578920042730B /* NSTimer+SJExtension.m in Sources */,
 				774B254E1FCECA1F002113CC /* SJVideoPlayer.m in Sources */,
 				A6A68FC21FD578920042730B /* UINavigationController+SJExtension.m in Sources */,
 				775A7BFA1FD6670800BE1EE2 /* SJVideoPlayerMoreSettingsView.m in Sources */,

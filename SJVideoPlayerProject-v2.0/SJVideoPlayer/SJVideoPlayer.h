@@ -11,6 +11,7 @@
 #import "SJVideoPlayerState.h"
 #import "SJVideoPlayerAssetCarrier.h"
 #import "SJVideoPlayerMoreSettingSecondary.h"
+#import "SJVideoPlayerSettings.h"
 
 NS_ASSUME_NONNULL_BEGIN
 
@@ -41,6 +42,11 @@ NS_ASSUME_NONNULL_BEGIN
 
 @interface SJVideoPlayer (Setting)
 
+- (void)playWithURL:(NSURL *)playURL;
+
+// unit: sec.
+- (void)playWithURL:(NSURL *)playURL jumpedToTime:(NSTimeInterval)time;
+
 /*!
  *  if you want to play, you can set it up.
  *
@@ -62,13 +68,6 @@ NS_ASSUME_NONNULL_BEGIN
  *  loading show this.
  */
 - (void)setPlaceholder:(UIImage *)placeholder;
-
-/*!
- *  if playing on the cell, you should set it.
- *
- *  如果在 cell 中播放视频, 请设置他.
- */
-- (void)setScrollView:(__weak UIScrollView *)scrollView indexPath:(NSIndexPath *)indexPath onViewTag:(NSInteger)tag;
 
 /*!
  *  default is YES.
@@ -100,6 +99,10 @@ NS_ASSUME_NONNULL_BEGIN
 
 @property (nonatomic, strong, readwrite) AVLayerVideoGravity videoGravity;
 
+@property (nonatomic, assign, readwrite) float rate;
+
+@property (nonatomic, strong, readwrite) SJVideoPlayerSettings *settings;
+
 @end
 
 
@@ -113,11 +116,20 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (void)stop;
 
+- (void)stopRotation;
+
+- (void)enableRotation;
+
 - (void)jumpedToTime:(NSTimeInterval)time completionHandler:(void (^ __nullable)(BOOL finished))completionHandler;
 
 - (void)seekToTime:(CMTime)time completionHandler:(void (^ __nullable)(BOOL finished))completionHandler;
 
 - (UIImage *)screenshot;
+
+/*!
+ *  unit sec.
+ */
+- (NSTimeInterval)currentTime;
 
 @end
 

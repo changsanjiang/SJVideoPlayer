@@ -25,13 +25,13 @@ extern NSNotificationName const SJ_AVPlayerRateDidChangeNotification;
                        beginTime:(NSTimeInterval)beginTime;
 
 - (instancetype)initWithAssetURL:(NSURL *)assetURL
-                      scrollView:(__weak UIScrollView * __nullable)scrollView
+                      scrollView:(__unsafe_unretained UIScrollView * __nullable)scrollView
                        indexPath:(__weak NSIndexPath * __nullable)indexPath
                     superviewTag:(NSInteger)superviewTag;
 
 - (instancetype)initWithAssetURL:(NSURL *)assetURL
                        beginTime:(NSTimeInterval)beginTime
-                      scrollView:(__weak UIScrollView *__nullable)scrollView
+                      scrollView:(__unsafe_unretained UIScrollView *__nullable)scrollView
                        indexPath:(__weak NSIndexPath *__nullable)indexPath
                     superviewTag:(NSInteger)superviewTag;
 
@@ -66,7 +66,7 @@ extern NSNotificationName const SJ_AVPlayerRateDidChangeNotification;
 @property (nonatomic, strong, readonly) NSArray<SJVideoPreviewModel *> *generatedPreviewImages;
 @property (nonatomic, weak, readonly) NSIndexPath *indexPath;
 @property (nonatomic, assign, readonly) NSInteger superviewTag;
-@property (nonatomic, unsafe_unretained, readonly) UIScrollView *scrollView;
+@property (nonatomic, unsafe_unretained, readonly, nullable) UIScrollView *scrollView;
 
 @end
 

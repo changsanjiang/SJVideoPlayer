@@ -188,7 +188,10 @@ NSNotificationName const SJ_AVPlayerRateDidChangeNotification = @"SJ_AVPlayerRat
     CMTime time = _playerItem.currentTime;
     AVAssetImageGenerator *generator = [AVAssetImageGenerator assetImageGeneratorWithAsset:_asset];
     generator.appliesPreferredTrackTransform = YES;
-    return [UIImage imageWithCGImage:[generator copyCGImageAtTime:time actualTime:&time error:nil]];
+    CGImageRef imgRef = [generator copyCGImageAtTime:time actualTime:&time error:nil];
+    UIImage *image = [UIImage imageWithCGImage:imgRef];
+    CGImageRelease(imgRef);
+    return image;
 }
 
 - (NSTimeInterval)duration {
@@ -214,11 +217,6 @@ NSNotificationName const SJ_AVPlayerRateDidChangeNotification = @"SJ_AVPlayerRat
     [_scrollView removeObserver:self forKeyPath:@"contentOffset"];
     
     if ( _deallocCallBlock ) _deallocCallBlock(self);
-    
-    _assetURL = nil;
-    _asset = nil;
-    _playerItem = nil;
-    _player = nil;
 }
 
 @end

@@ -159,7 +159,7 @@ inline static NSString *_formatWithSec(NSInteger sec) {
 }
 
 - (void)setHideControl:(BOOL)hideControl {
-    if ( self.isHiddenControl == hideControl ) return;
+//    if ( self.isHiddenControl == hideControl ) return;
     objc_setAssociatedObject(self, @selector(isHiddenControl), @(hideControl), OBJC_ASSOCIATION_RETAIN_NONATOMIC);
     [self.timerControl reset];
     if ( hideControl ) [self _hideControlState];
@@ -749,10 +749,8 @@ static UIView *target = nil;
     _orentation.orientationChanged = ^(SJOrentationObserver * _Nonnull observer) {
         __strong typeof(_self) self = _self;
         if ( !self ) return;
-        [self _cancelDelayHiddenControl];
-        [self _delayHiddenControl];
+        self.hideControl = NO;
         _sjAnima(^{
-            self.hideControl = NO;
             self.controlView.previewView.hidden = YES;
             self.hiddenMoreSecondarySettingView = YES;
             self.hiddenMoreSettingView = YES;
@@ -1100,7 +1098,6 @@ static BOOL _isLoading;
 }
 
 - (void)setAsset:(SJVideoPlayerAssetCarrier *)asset {
-    if ( !asset ) return;
     objc_setAssociatedObject(self, @selector(asset), asset, OBJC_ASSOCIATION_RETAIN_NONATOMIC);
     _presentView.asset = asset;
     _controlView.asset = asset;

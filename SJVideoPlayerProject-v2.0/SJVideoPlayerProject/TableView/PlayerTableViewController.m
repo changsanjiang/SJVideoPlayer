@@ -37,6 +37,10 @@ static NSString *const PlayerTableViewCellID = @"PlayerTableViewCell";
     // Dispose of any resources that can be recreated.
 }
 
+- (void)dealloc {
+    [TabPlayer stop];
+}
+
 #pragma mark - Table view data source
 
 - (NSInteger)numberOfSectionsInTableView:(UITableView *)tableView {

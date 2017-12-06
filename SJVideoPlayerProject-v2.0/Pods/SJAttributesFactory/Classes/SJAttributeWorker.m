@@ -270,7 +270,7 @@
             [_attrM addAttribute:NSFontAttributeName value:_r_nextFont range:range];
             _r_nextFont = nil;
         }
-        if ( _r_nextExpansion ) {
+        if ( nil != _r_nextExpansion ) {
             [_attrM addAttribute:NSExpansionAttributeName value:_r_nextExpansion range:range];
             _r_nextExpansion = nil;
         }
@@ -278,7 +278,7 @@
             [_attrM addAttribute:NSForegroundColorAttributeName value:_r_nextFontColor range:range];
             _r_nextFontColor = nil;
         }
-        if ( _r_nextUnderline ) {
+        if ( nil != _r_nextUnderline ) {
             [_attrM addAttribute:NSUnderlineStyleAttributeName value:_r_nextUnderline range:range];
             _r_nextUnderline = nil;
         }
@@ -290,11 +290,11 @@
             [_attrM addAttribute:NSBackgroundColorAttributeName value:_r_nextBackgroundColor range:range];
             _r_nextBackgroundColor = nil;
         }
-        if ( _r_nextLetterSpacing ) {
+        if ( nil != _r_nextLetterSpacing ) {
             [_attrM addAttribute:NSKernAttributeName value:_r_nextLetterSpacing range:range];
             _r_nextLetterSpacing = nil;
         }
-        if ( _r_nextStrikethough ) {
+        if ( nil != _r_nextStrikethough ) {
             [_attrM addAttribute:NSStrikethroughStyleAttributeName value:_r_nextStrikethough range:range];
             _r_nextStrikethough = nil;
         }
@@ -302,7 +302,7 @@
             [_attrM addAttribute:NSStrikethroughColorAttributeName value:_r_nextStrikethoughColor range:range];
             _r_nextStrikethoughColor = nil;
         }
-        if ( _r_nextStrokeBorder ) {
+        if ( nil != _r_nextStrokeBorder ) {
             [_attrM addAttribute:NSStrokeWidthAttributeName value:_r_nextStrokeBorder range:range];
             _r_nextStrokeBorder = nil;
         }
@@ -324,11 +324,11 @@
             [_attrM addAttribute:NSLinkAttributeName value:@(1) range:range];
             _r_nextLink = NO;
         }
-        if ( _r_nextOffset ) {
+        if ( nil != _r_nextOffset ) {
             [_attrM addAttribute:NSBaselineOffsetAttributeName value:_r_nextOffset range:range];
             _r_nextOffset = nil;
         }
-        if ( _r_nextObliqueness ) {
+        if ( nil != _r_nextObliqueness ) {
             [_attrM addAttribute:NSObliquenessAttributeName value:_r_nextObliqueness range:range];
             _r_nextObliqueness = nil;
         }
@@ -624,9 +624,9 @@
 }
 
 #pragma mark -
-- (SJAttributeWorker * _Nonnull (^)(NSString * _Nonnull, void (^ _Nonnull)(SJAttributeWorker * _Nonnull)))regexp {
+- (SJAttributeWorker * _Nonnull (^)(NSString * _Nonnull, void (^ _Nonnull)(SJAttributeWorker *)))regexp {
     return ^ SJAttributeWorker *(NSString *ex, void(^task)(SJAttributeWorker *worker)) {
-        self.regexpRanges(ex, ^(NSArray<NSValue *> * _Nonnull ranges) {
+        self.regexpRanges(ex, ^(NSArray<NSValue *> * __nullable ranges) {
             [ranges enumerateObjectsUsingBlock:^(NSValue * _Nonnull obj, NSUInteger idx, BOOL * _Nonnull stop) {
                 task(self);
                 self.range(obj.rangeValue);
@@ -636,20 +636,20 @@
     };
 }
 
-- (SJAttributeWorker * _Nonnull (^)(NSString * _Nonnull, void (^ _Nonnull)(NSArray<NSValue *> * _Nonnull)))regexpRanges {
+- (SJAttributeWorker * _Nonnull (^)(NSString * _Nonnull, void (^ _Nonnull)(NSArray<NSValue *> * _Nullable)))regexpRanges {
     return ^ SJAttributeWorker *(NSString *ex, void(^task)(NSArray<NSValue *> *ranges)) {
         if ( 0 == ex.length ) {
             _errorLog([NSString stringWithFormat:@"Exe Regular Expression Failed! param `ex` is empty!"], _attrM.string);
-            task(nil);
+//            task(rangesM);
             return self;
         }
         NSRegularExpression *regex = [NSRegularExpression regularExpressionWithPattern:ex options:kNilOptions error:nil];
-        NSMutableArray *rangesM = [NSMutableArray new];
+        NSMutableArray<NSValue *> *rangesM = [NSMutableArray new];
         [regex enumerateMatchesInString:_attrM.string options:NSMatchingWithoutAnchoringBounds range:_rangeAll(_attrM) usingBlock:^(NSTextCheckingResult * _Nullable result, NSMatchingFlags flags, BOOL * _Nonnull stop) {
             [rangesM addObject:[NSValue valueWithRange:result.range]];
         }];
         if ( 0 != rangesM.count ) task(rangesM);
-        else task(nil);
+//        else task(rangesM);
         return self;
     };
 }

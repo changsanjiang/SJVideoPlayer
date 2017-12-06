@@ -203,7 +203,7 @@ NS_ASSUME_NONNULL_BEGIN
 /// 正则匹配
 @property (nonatomic, copy, readonly) SJAttributeWorker *(^regexp)(NSString *ex, void(^task)(SJAttributeWorker *regexp));
 /// 正则匹配
-@property (nonatomic, copy, readonly) SJAttributeWorker *(^regexpRanges)(NSString *ex, void(^task)(NSArray<NSValue *> *ranges));
+@property (nonatomic, copy, readonly) SJAttributeWorker *(^regexpRanges)(NSString *ex, void(^task)(NSArray<NSValue *> * __nullable ranges));
 
 
 #pragma mark - Other

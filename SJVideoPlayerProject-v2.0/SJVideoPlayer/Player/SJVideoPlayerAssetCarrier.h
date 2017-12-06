@@ -16,7 +16,7 @@ extern NSNotificationName const SJ_AVPlayerRateDidChangeNotification;
 
 @interface SJVideoPlayerAssetCarrier : NSObject
 
-- (UIImage *)screenshot;
+- (UIImage * __nullable)screenshot;
 
 - (instancetype)initWithAssetURL:(NSURL *)assetURL;
 
@@ -26,13 +26,13 @@ extern NSNotificationName const SJ_AVPlayerRateDidChangeNotification;
 
 - (instancetype)initWithAssetURL:(NSURL *)assetURL
                       scrollView:(__weak UIScrollView * __nullable)scrollView
-                       indexPath:(NSIndexPath * __nullable)indexPath
+                       indexPath:(__weak NSIndexPath * __nullable)indexPath
                     superviewTag:(NSInteger)superviewTag;
 
 - (instancetype)initWithAssetURL:(NSURL *)assetURL
                        beginTime:(NSTimeInterval)beginTime
                       scrollView:(__weak UIScrollView *__nullable)scrollView
-                       indexPath:(NSIndexPath *__nullable)indexPath
+                       indexPath:(__weak NSIndexPath *__nullable)indexPath
                     superviewTag:(NSInteger)superviewTag;
 
 @property (nonatomic, copy, readwrite, nullable) void(^playerItemStateChanged)(SJVideoPlayerAssetCarrier *asset, AVPlayerItemStatus status);
@@ -64,7 +64,7 @@ extern NSNotificationName const SJ_AVPlayerRateDidChangeNotification;
 @property (nonatomic, assign, readonly) float progress; // 0..1
 @property (nonatomic, assign, readonly) BOOL hasBeenGeneratedPreviewImages;
 @property (nonatomic, strong, readonly) NSArray<SJVideoPreviewModel *> *generatedPreviewImages;
-@property (nonatomic, strong, readonly) NSIndexPath *indexPath;
+@property (nonatomic, weak, readonly) NSIndexPath *indexPath;
 @property (nonatomic, assign, readonly) NSInteger superviewTag;
 @property (nonatomic, weak, readonly) UIScrollView *scrollView;
 

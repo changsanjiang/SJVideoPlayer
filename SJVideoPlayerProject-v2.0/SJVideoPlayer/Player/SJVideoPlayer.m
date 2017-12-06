@@ -76,6 +76,7 @@ inline static NSString *_formatWithSec(NSInteger sec) {
 @property (nonatomic, strong, readonly) SJMoreSettingsFooterViewModel *moreSettingFooterViewModel;
 @property (nonatomic, strong, readonly) SJVideoPlayerRegistrar *registrar;
 @property (nonatomic, strong, readonly) SJVolumeAndBrightness *volBrig;
+@property (nonatomic, assign, readwrite) BOOL userClickedPause;
 
 - (void)_play;
 - (void)_pause;
@@ -538,7 +539,6 @@ static UIView *target = nil;
     [self view];
     [self orentation];
     [self volBrig];
-    [self _notifications];
     [self _settingControlViewGestureDelegate];
     
     // default values
@@ -546,57 +546,6 @@ static UIView *target = nil;
     self.generatePreviewImages = YES;
 
     return self;
-}
-
-- (void)dealloc {
-    [[NSNotificationCenter defaultCenter] removeObserver:self];
-}
-
-- (void)_notifications {
-    // 耳机
-    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(audioSessionRouteChangeNotification:) name:AVAudioSessionRouteChangeNotification object:nil];
-    
-    // 后台
-    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(applicationWillResignActiveNotification) name:UIApplicationWillResignActiveNotification object:nil];
-    
-    // 前台
-    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(applicationDidBecomeActiveNotification) name:UIApplicationDidBecomeActiveNotification object:nil];
-}
-
-/// 耳机
-- (void)audioSessionRouteChangeNotification:(NSNotification*)notifi {
-    dispatch_async(dispatch_get_main_queue(), ^{
-        NSDictionary *interuptionDict = notifi.userInfo;
-        NSInteger routeChangeReason = [[interuptionDict valueForKey:AVAudioSessionRouteChangeReasonKey] integerValue];
-        switch (routeChangeReason) {
-                // 插入耳机
-            case AVAudioSessionRouteChangeReasonNewDeviceAvailable: {
-                
-            }
-                break;
-                // 拔掉耳机
-            case AVAudioSessionRouteChangeReasonOldDeviceUnavailable: {
-                if ( !self.registrar.userClickedPause ) [self play];
-            }
-                break;
-                // 当其他音频想要播放时
-            case AVAudioSessionRouteChangeReasonCategoryChange:
-                NSLog(@"%zd - %s", __LINE__, __func__);
-                break;
-        }
-    });
-
-}
-
-// 后台
-- (void)applicationWillResignActiveNotification {
-    [self _pause];
-    self.lockScreen = YES;
-}
-
-// 前台
-- (void)applicationDidBecomeActiveNotification {
-    self.lockScreen = NO;
 }
 
 - (SJVideoPlayerPresentView *)presentView {
@@ -673,7 +622,7 @@ static UIView *target = nil;
         if ( !self ) return;
         if ( !self.asset ) return;
         self.asset.player.rate = rate;
-        self.registrar.userClickedPause = NO;
+        self.userClickedPause = NO;
         _sjAnima(^{
             [self _playState];
         });
@@ -784,6 +733,33 @@ static UIView *target = nil;
 - (SJVideoPlayerRegistrar *)registrar {
     if ( _registrar ) return _registrar;
     _registrar = [SJVideoPlayerRegistrar new];
+    
+    __weak typeof(self) _self = self;
+    _registrar.willResignActive = ^(SJVideoPlayerRegistrar * _Nonnull registrar) {
+        __strong typeof(_self) self = _self;
+        if ( !self ) return;
+        [self _pause];
+        self.lockScreen = YES;
+    };
+    
+    _registrar.didBecomeActive = ^(SJVideoPlayerRegistrar * _Nonnull registrar) {
+        __strong typeof(_self) self = _self;
+        if ( !self ) return;
+        self.lockScreen = NO;
+    };
+    
+    _registrar.oldDeviceUnavailable = ^(SJVideoPlayerRegistrar * _Nonnull registrar) {
+        __strong typeof(_self) self = _self;
+        if ( !self ) return;
+        if ( !self.userClickedPause ) [self play];
+    };
+    
+//    _registrar.categoryChange = ^(SJVideoPlayerRegistrar * _Nonnull registrar) {
+//        __strong typeof(_self) self = _self;
+//        if ( !self ) return;
+//
+//    };
+    
     return _registrar;
 }
 
@@ -916,7 +892,7 @@ static UIView *target = nil;
         }
             break;
         case SJVideoPlayControlViewTag_LoadFailed: {
-            
+            self.asset = self.asset;
         }
             break;
         case SJVideoPlayControlViewTag_More: {
@@ -946,6 +922,7 @@ static UIView *target = nil;
     _sjAnima(^{
         self.hideControl = YES;
     });
+    self.userClickedPause = NO;
     self.hiddenMoreSettingView = YES;
     self.hiddenMoreSecondarySettingView = YES;
     [self _prepareState];
@@ -970,7 +947,7 @@ static UIView *target = nil;
         }];
     }
     else {
-        if ( self.autoplay && !self.registrar.userClickedPause ) [self play];
+        if ( self.autoplay && !self.userClickedPause ) [self play];
     }
 }
 
@@ -1019,7 +996,7 @@ static BOOL _isLoading;
 
 - (void)_buffering {
     if ( self.state == SJVideoPlayerPlayState_PlayEnd ) return;
-    if ( self.registrar.userClickedPause ) return;
+    if ( self.userClickedPause ) return;
     
     [self _startLoading];
     [self _pause];
@@ -1030,7 +1007,7 @@ static BOOL _isLoading;
         }
         else {
             [self _stopLoading];
-            if ( !self.registrar.userClickedPause ) [self play];
+            if ( !self.userClickedPause ) [self play];
         }
     });
 }
@@ -1054,7 +1031,7 @@ static BOOL _isLoading;
 }
 
 - (void)setAsset:(SJVideoPlayerAssetCarrier *)asset {
-    
+    if ( !asset ) return;
     objc_setAssociatedObject(self, @selector(asset), asset, OBJC_ASSOCIATION_RETAIN_NONATOMIC);
     _presentView.asset = asset;
     _controlView.asset = asset;
@@ -1256,7 +1233,7 @@ static BOOL _isLoading;
 
 - (BOOL)play {
     if ( !self.asset ) return NO;
-    self.registrar.userClickedPause = NO;
+    self.userClickedPause = NO;
     _sjAnima(^{
         [self _playState];
     });
@@ -1266,7 +1243,7 @@ static BOOL _isLoading;
 
 - (BOOL)pause {
     if ( !self.asset ) return NO;
-    self.registrar.userClickedPause = YES;
+    self.userClickedPause = YES;
     _sjAnima(^{
         [self _pauseState];
     });

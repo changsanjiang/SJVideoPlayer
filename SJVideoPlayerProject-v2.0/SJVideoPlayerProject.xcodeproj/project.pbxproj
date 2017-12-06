@@ -46,6 +46,7 @@
 		775A7C111FD6C2FE00BE1EE2 /* SJVideoPlayerRegistrar.m in Sources */ = {isa = PBXBuildFile; fileRef = 775A7C101FD6C2FE00BE1EE2 /* SJVideoPlayerRegistrar.m */; };
 		775A7C151FD78AFD00BE1EE2 /* SJVolumeAndBrightness.m in Sources */ = {isa = PBXBuildFile; fileRef = 775A7C141FD78AFD00BE1EE2 /* SJVolumeAndBrightness.m */; };
 		775A7C191FD79EF100BE1EE2 /* JDradualLoadingView.m in Sources */ = {isa = PBXBuildFile; fileRef = 775A7C181FD79EF100BE1EE2 /* JDradualLoadingView.m */; };
+		775A7C1D1FD7C09700BE1EE2 /* SJTimerControl.m in Sources */ = {isa = PBXBuildFile; fileRef = 775A7C1C1FD7C09700BE1EE2 /* SJTimerControl.m */; };
 		77EDB3591FD2CA550075A014 /* sample.mp4 in Resources */ = {isa = PBXBuildFile; fileRef = 77EDB3581FD2CA550075A014 /* sample.mp4 */; };
 		A6A68FBF1FD578920042730B /* NSTimer+SJExtension.m in Sources */ = {isa = PBXBuildFile; fileRef = A6A68FB81FD578920042730B /* NSTimer+SJExtension.m */; };
 		A6A68FC01FD578920042730B /* UITabBarController+SJExtension.m in Sources */ = {isa = PBXBuildFile; fileRef = A6A68FB91FD578920042730B /* UITabBarController+SJExtension.m */; };
@@ -133,6 +134,8 @@
 		775A7C141FD78AFD00BE1EE2 /* SJVolumeAndBrightness.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = SJVolumeAndBrightness.m; sourceTree = "<group>"; };
 		775A7C171FD79EF100BE1EE2 /* JDradualLoadingView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = JDradualLoadingView.h; sourceTree = "<group>"; };
 		775A7C181FD79EF100BE1EE2 /* JDradualLoadingView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = JDradualLoadingView.m; sourceTree = "<group>"; };
+		775A7C1B1FD7C09700BE1EE2 /* SJTimerControl.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = SJTimerControl.h; sourceTree = "<group>"; };
+		775A7C1C1FD7C09700BE1EE2 /* SJTimerControl.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = SJTimerControl.m; sourceTree = "<group>"; };
 		77EDB3581FD2CA550075A014 /* sample.mp4 */ = {isa = PBXFileReference; lastKnownFileType = file; path = sample.mp4; sourceTree = "<group>"; };
 		A53C6944FFDAC5FD9DA4750E /* libPods-SJVideoPlayerProject.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-SJVideoPlayerProject.a"; sourceTree = BUILT_PRODUCTS_DIR; };
 		A6A68FB71FD578920042730B /* NSTimer+SJExtension.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "NSTimer+SJExtension.h"; sourceTree = "<group>"; };
@@ -218,13 +221,15 @@
 			isa = PBXGroup;
 			children = (
 				774B25461FCECA1F002113CC /* SJVideoPlayerHeader.h */,
+				775A7C1A1FD7C08C00BE1EE2 /* TimerControl */,
 				774B25481FCECA1F002113CC /* Player */,
 				775A7C121FD78AE200BE1EE2 /* VolumeAndBrightness */,
 				775A7C041FD6673C00BE1EE2 /* OrentationObserver */,
 				775A7C161FD79EF100BE1EE2 /* Loading */,
 				775A7C0E1FD6C2E100BE1EE2 /* Registrar */,
 				775A7BA41FD640D300BE1EE2 /* Model */,
-				775A7BC11FD6670800BE1EE2 /* View */,
+				775A7BC21FD6670800BE1EE2 /* Control */,
+				775A7BEF1FD6670800BE1EE2 /* Present */,
 				774B25731FCEDC48002113CC /* Resource */,
 				775E89231FD505C800E89EA4 /* Category */,
 			);
@@ -260,15 +265,6 @@
 				775A7BBC1FD64A6900BE1EE2 /* SJVideoPlayerSettings.m */,
 			);
 			path = Model;
-			sourceTree = "<group>";
-		};
-		775A7BC11FD6670800BE1EE2 /* View */ = {
-			isa = PBXGroup;
-			children = (
-				775A7BC21FD6670800BE1EE2 /* Control */,
-				775A7BEF1FD6670800BE1EE2 /* Present */,
-			);
-			path = View;
 			sourceTree = "<group>";
 		};
 		775A7BC21FD6670800BE1EE2 /* Control */ = {
@@ -462,6 +458,15 @@
 			path = Loading;
 			sourceTree = "<group>";
 		};
+		775A7C1A1FD7C08C00BE1EE2 /* TimerControl */ = {
+			isa = PBXGroup;
+			children = (
+				775A7C1B1FD7C09700BE1EE2 /* SJTimerControl.h */,
+				775A7C1C1FD7C09700BE1EE2 /* SJTimerControl.m */,
+			);
+			path = TimerControl;
+			sourceTree = "<group>";
+		};
 		775E89231FD505C800E89EA4 /* Category */ = {
 			isa = PBXGroup;
 			children = (
@@ -635,6 +640,7 @@
 				774B25781FCEDC7E002113CC /* SJVideoPlayerResources.m in Sources */,
 				774B25571FCED47B002113CC /* PlayerViewController.m in Sources */,
 				775A7C001FD6670800BE1EE2 /* SJVideoPlayerPreviewCollectionViewCell.m in Sources */,
+				775A7C1D1FD7C09700BE1EE2 /* SJTimerControl.m in Sources */,
 				775A7C151FD78AFD00BE1EE2 /* SJVolumeAndBrightness.m in Sources */,
 				775A7BB01FD640D300BE1EE2 /* SJVideoPreviewModel.m in Sources */,
 				775A7BF31FD6670800BE1EE2 /* SJVideoPlayerCenterControlView.m in Sources */,

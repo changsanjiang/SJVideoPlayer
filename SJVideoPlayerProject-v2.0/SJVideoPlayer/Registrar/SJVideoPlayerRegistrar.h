@@ -8,18 +8,27 @@
 
 #import <UIKit/UIKit.h>
 
+NS_ASSUME_NONNULL_BEGIN
+
 typedef NS_ENUM(NSUInteger, SJVideoPlayerBackstageState) {
-    SJVideoPlayerBackstageState_Normal,
     SJVideoPlayerBackstageState_Forground,  // 从后台进入前台
     SJVideoPlayerBackstageState_Background, // 从前台进入后台
 };
 
 @interface SJVideoPlayerRegistrar : NSObject
 
-@property (nonatomic, assign) SJVideoPlayerBackstageState state;
+@property (nonatomic, assign, readonly) SJVideoPlayerBackstageState state;
 
-@property (nonatomic, assign) BOOL userClickedPause;
+@property (nonatomic, copy, readwrite, nullable) void(^willResignActive)(SJVideoPlayerRegistrar *registrar);
 
-- (void)reset;
+@property (nonatomic, copy, readwrite, nullable) void(^didBecomeActive)(SJVideoPlayerRegistrar *registrar);
+
+@property (nonatomic, copy, readwrite, nullable) void(^newDeviceAvailable)(SJVideoPlayerRegistrar *registrar);
+
+@property (nonatomic, copy, readwrite, nullable) void(^oldDeviceUnavailable)(SJVideoPlayerRegistrar *registrar);
+
+@property (nonatomic, copy, readwrite, nullable) void(^categoryChange)(SJVideoPlayerRegistrar *registrar);
 
 @end
+
+NS_ASSUME_NONNULL_END

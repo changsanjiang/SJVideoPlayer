@@ -79,7 +79,7 @@
     }];
     
     [_progressSlider mas_makeConstraints:^(MASConstraintMaker *make) {
-        make.leading.equalTo(_durationTimeLabel.mas_trailing).offset(8);
+        make.leading.equalTo(_playBtn.mas_trailing).offset(86 + 8);
         make.top.bottom.offset(0);
         make.trailing.equalTo(_fullBtn.mas_leading).offset(-8);
     }];

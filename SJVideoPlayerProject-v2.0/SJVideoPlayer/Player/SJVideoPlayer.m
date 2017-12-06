@@ -72,6 +72,7 @@ inline static NSString *_formatWithSec(NSInteger sec) {
 
 @property (nonatomic, assign, readwrite) BOOL hiddenMoreSettingView;
 @property (nonatomic, assign, readwrite) BOOL hiddenMoreSecondarySettingView;
+@property (nonatomic, assign, readwrite) BOOL hiddenLeftControlView;
 @property (nonatomic, strong, readonly) SJMoreSettingsFooterViewModel *moreSettingFooterViewModel;
 @property (nonatomic, strong, readonly) SJVideoPlayerRegistrar *registrar;
 @property (nonatomic, strong, readonly) SJVolumeAndBrightness *volBrig;
@@ -160,16 +161,16 @@ inline static NSString *_formatWithSec(NSInteger sec) {
                      ]);
     
     if ( self.orentation.fullScreen ) {
-        _sjShowViews(@[self.controlView.topControlView.moreBtn,
-                       self.controlView.leftControlView,]);
+        _sjShowViews(@[self.controlView.topControlView.moreBtn,]);
+        self.hiddenLeftControlView = NO;
         if ( self.asset.hasBeenGeneratedPreviewImages ) {
             _sjShowViews(@[self.controlView.topControlView.previewBtn]);
         }
     }
     else {
+        self.hiddenLeftControlView = YES;
         _sjHiddenViews(@[self.controlView.topControlView.moreBtn,
-                         self.controlView.topControlView.previewBtn,
-                         self.controlView.leftControlView,]);
+                         self.controlView.topControlView.previewBtn,]);
     }
     
     self.state = SJVideoPlayerPlayState_Prepare;
@@ -270,20 +271,20 @@ inline static NSString *_formatWithSec(NSInteger sec) {
     // transform hidden
     self.controlView.topControlView.transform = CGAffineTransformMakeTranslation(0, - self.controlView.topControlView.frame.size.height);
     self.controlView.bottomControlView.transform = CGAffineTransformMakeTranslation(0, self.controlView.bottomControlView.frame.size.height);
-    self.controlView.leftControlView.transform = CGAffineTransformMakeTranslation(-self.controlView.leftControlView.frame.size.width, 0);;
+
+    self.hiddenLeftControlView = YES;
 }
 
 - (void)_showControlState {
-    
-    // show
-    _sjShowViews(@[self.controlView.leftControlView]);
     
     // hidden
     _sjHiddenViews(@[self.controlView.bottomProgressSlider]);
     self.controlView.previewView.hidden = YES;
     
     // transform show
-    self.controlView.leftControlView.transform = self.controlView.topControlView.transform = self.controlView.bottomControlView.transform = CGAffineTransformIdentity;
+    self.controlView.topControlView.transform = self.controlView.bottomControlView.transform = CGAffineTransformIdentity;
+    
+    self.hiddenLeftControlView = !self.orentation.fullScreen;
 }
 
 @end
@@ -670,8 +671,12 @@ static UIView *target = nil;
     _moreSettingFooterViewModel.needChangePlayerRate = ^(float rate) {
         __strong typeof(_self) self = _self;
         if ( !self ) return;
+        if ( !self.asset ) return;
         self.asset.player.rate = rate;
-        [self play];
+        self.registrar.userClickedPause = NO;
+        _sjAnima(^{
+            [self _playState];
+        });
     };
     
     _moreSettingFooterViewModel.needChangeVolume = ^(float volume) {
@@ -724,6 +729,17 @@ static UIView *target = nil;
     }
 }
 
+- (void)setHiddenLeftControlView:(BOOL)hiddenLeftControlView {
+    if ( hiddenLeftControlView == _hiddenLeftControlView ) return;
+    _hiddenLeftControlView = hiddenLeftControlView;
+    if ( _hiddenLeftControlView ) {
+        self.controlView.leftControlView.transform = CGAffineTransformMakeTranslation(-[UIScreen mainScreen].bounds.size.width, 0);
+    }
+    else {
+        self.controlView.leftControlView.transform =  CGAffineTransformIdentity;
+    }
+}
+
 - (SJOrentationObserver *)orentation {
     if ( _orentation ) return _orentation;
     _orentation = [[SJOrentationObserver alloc] initWithTarget:self.presentView container:self.view];
@@ -735,17 +751,16 @@ static UIView *target = nil;
             self.hideControl = NO;
             self.hiddenMoreSecondarySettingView = YES;
             self.hiddenMoreSettingView = YES;
-            if ( observer.fullScreen ) {
-                _sjShowViews(@[self.controlView.topControlView.moreBtn,
-                               self.controlView.leftControlView,]);
+            self.hiddenLeftControlView = !observer.isFullScreen;
+            if ( observer.isFullScreen ) {
+                _sjShowViews(@[self.controlView.topControlView.moreBtn,]);
                 if ( self.asset.hasBeenGeneratedPreviewImages ) {
                     _sjShowViews(@[self.controlView.topControlView.previewBtn]);
                 }
             }
             else {
                 _sjHiddenViews(@[self.controlView.topControlView.moreBtn,
-                                 self.controlView.topControlView.previewBtn,
-                                 self.controlView.leftControlView,]);
+                                 self.controlView.topControlView.previewBtn,]);
             }
         });
     };

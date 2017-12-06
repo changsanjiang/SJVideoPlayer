@@ -295,7 +295,10 @@ inline static NSString *_formatWithSec(NSInteger sec) {
     self.controlView.topControlView.transform = CGAffineTransformMakeTranslation(0, - self.controlView.topControlView.frame.size.height);
     self.controlView.bottomControlView.transform = CGAffineTransformMakeTranslation(0, self.controlView.bottomControlView.frame.size.height);
 
-    self.hiddenLeftControlView = !self.isLockedScrren && !self.orentation.fullScreen;
+    if ( self.orentation.fullScreen ) {
+        if ( self.isLockedScrren ) self.hiddenLeftControlView = NO;
+        else self.hiddenLeftControlView = YES;
+    }
 }
 
 - (void)_showControlState {

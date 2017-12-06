@@ -12,11 +12,14 @@ typedef NS_ENUM(NSUInteger, SJVideoPlayerBackstageState) {
     SJVideoPlayerBackstageState_Normal,
     SJVideoPlayerBackstageState_Forground,
     SJVideoPlayerBackstageState_Background,
-    SJVideoPlayerBackstageState_UserClickedPause,
 };
 
 @interface SJVideoPlayerRegistrar : NSObject
 
 @property (nonatomic, assign) SJVideoPlayerBackstageState state;
+
+@property (nonatomic, assign) BOOL userClickedPause;
+
+- (void)reset;
 
 @end

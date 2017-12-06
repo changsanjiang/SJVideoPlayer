@@ -44,6 +44,7 @@
 		775A7C071FD6674700BE1EE2 /* SJOrentationObserver.m in Sources */ = {isa = PBXBuildFile; fileRef = 775A7C061FD6674700BE1EE2 /* SJOrentationObserver.m */; };
 		775A7C0D1FD68F2400BE1EE2 /* SJMoreSettingsFooterViewModel.m in Sources */ = {isa = PBXBuildFile; fileRef = 775A7C0C1FD68F2400BE1EE2 /* SJMoreSettingsFooterViewModel.m */; };
 		775A7C111FD6C2FE00BE1EE2 /* SJVideoPlayerRegistrar.m in Sources */ = {isa = PBXBuildFile; fileRef = 775A7C101FD6C2FE00BE1EE2 /* SJVideoPlayerRegistrar.m */; };
+		775A7C151FD78AFD00BE1EE2 /* SJVolumeAndBrightness.m in Sources */ = {isa = PBXBuildFile; fileRef = 775A7C141FD78AFD00BE1EE2 /* SJVolumeAndBrightness.m */; };
 		77EDB3591FD2CA550075A014 /* sample.mp4 in Resources */ = {isa = PBXBuildFile; fileRef = 77EDB3581FD2CA550075A014 /* sample.mp4 */; };
 		A6A68FBF1FD578920042730B /* NSTimer+SJExtension.m in Sources */ = {isa = PBXBuildFile; fileRef = A6A68FB81FD578920042730B /* NSTimer+SJExtension.m */; };
 		A6A68FC01FD578920042730B /* UITabBarController+SJExtension.m in Sources */ = {isa = PBXBuildFile; fileRef = A6A68FB91FD578920042730B /* UITabBarController+SJExtension.m */; };
@@ -127,6 +128,8 @@
 		775A7C0C1FD68F2400BE1EE2 /* SJMoreSettingsFooterViewModel.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = SJMoreSettingsFooterViewModel.m; sourceTree = "<group>"; };
 		775A7C0F1FD6C2FE00BE1EE2 /* SJVideoPlayerRegistrar.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = SJVideoPlayerRegistrar.h; sourceTree = "<group>"; };
 		775A7C101FD6C2FE00BE1EE2 /* SJVideoPlayerRegistrar.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = SJVideoPlayerRegistrar.m; sourceTree = "<group>"; };
+		775A7C131FD78AFD00BE1EE2 /* SJVolumeAndBrightness.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = SJVolumeAndBrightness.h; sourceTree = "<group>"; };
+		775A7C141FD78AFD00BE1EE2 /* SJVolumeAndBrightness.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = SJVolumeAndBrightness.m; sourceTree = "<group>"; };
 		77EDB3581FD2CA550075A014 /* sample.mp4 */ = {isa = PBXFileReference; lastKnownFileType = file; path = sample.mp4; sourceTree = "<group>"; };
 		A53C6944FFDAC5FD9DA4750E /* libPods-SJVideoPlayerProject.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-SJVideoPlayerProject.a"; sourceTree = BUILT_PRODUCTS_DIR; };
 		A6A68FB71FD578920042730B /* NSTimer+SJExtension.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "NSTimer+SJExtension.h"; sourceTree = "<group>"; };
@@ -213,6 +216,7 @@
 			children = (
 				774B25461FCECA1F002113CC /* SJVideoPlayerHeader.h */,
 				774B25481FCECA1F002113CC /* Player */,
+				775A7C121FD78AE200BE1EE2 /* VolumeAndBrightness */,
 				775A7C041FD6673C00BE1EE2 /* OrentationObserver */,
 				775A7C0E1FD6C2E100BE1EE2 /* Registrar */,
 				775A7BA41FD640D300BE1EE2 /* Model */,
@@ -436,6 +440,15 @@
 			path = Registrar;
 			sourceTree = "<group>";
 		};
+		775A7C121FD78AE200BE1EE2 /* VolumeAndBrightness */ = {
+			isa = PBXGroup;
+			children = (
+				775A7C131FD78AFD00BE1EE2 /* SJVolumeAndBrightness.h */,
+				775A7C141FD78AFD00BE1EE2 /* SJVolumeAndBrightness.m */,
+			);
+			path = VolumeAndBrightness;
+			sourceTree = "<group>";
+		};
 		775E89231FD505C800E89EA4 /* Category */ = {
 			isa = PBXGroup;
 			children = (
@@ -608,6 +621,7 @@
 				774B25781FCEDC7E002113CC /* SJVideoPlayerResources.m in Sources */,
 				774B25571FCED47B002113CC /* PlayerViewController.m in Sources */,
 				775A7C001FD6670800BE1EE2 /* SJVideoPlayerPreviewCollectionViewCell.m in Sources */,
+				775A7C151FD78AFD00BE1EE2 /* SJVolumeAndBrightness.m in Sources */,
 				775A7BB01FD640D300BE1EE2 /* SJVideoPreviewModel.m in Sources */,
 				775A7BF31FD6670800BE1EE2 /* SJVideoPlayerCenterControlView.m in Sources */,
 				775A7BFF1FD6670800BE1EE2 /* SJVideoPlayerControlView.m in Sources */,

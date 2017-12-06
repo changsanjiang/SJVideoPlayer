@@ -20,6 +20,7 @@
 #import <SJPrompt/SJPrompt.h>
 #import "SJOrentationObserver.h"
 #import "SJVideoPlayerRegistrar.h"
+#import "SJVolumeAndBrightness.h"
 
 
 #define MoreSettingWidth (MAX([UIScreen mainScreen].bounds.size.width, [UIScreen mainScreen].bounds.size.height) * 0.382)
@@ -73,99 +74,7 @@ inline static NSString *_formatWithSec(NSInteger sec) {
 @property (nonatomic, assign, readwrite) BOOL hiddenMoreSecondarySettingView;
 @property (nonatomic, strong, readonly) SJMoreSettingsFooterViewModel *moreSettingFooterViewModel;
 @property (nonatomic, strong, readonly) SJVideoPlayerRegistrar *registrar;
-
-@end
-
-
-//- (void)_generatingPreviewImagesWithBounds:(CGRect)bounds completion:(void(^)(NSArray<SJVideoPreviewModel *> *images, NSError *error))block {
-//    dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(2 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
-//        if ( self.asset.hasBeenGeneratedPreviewImages ) {
-//            if ( block ) block(self.asset.generatedPreviewImages, nil);
-//            return ;
-//        }
-//        if ( !self.generatePreviewImages ) return;
-//        CGFloat width = [UIScreen mainScreen].bounds.size.width * 0.4;
-//        CGFloat height = width * bounds.size.height / bounds.size.width;
-//        CGSize size = CGSizeMake(width, height);
-//        [self.asset generatedPreviewImagesWithMaxItemSize:size completion:^(SJVideoPlayerAssetCarrier * _Nonnull asset, NSArray<SJVideoPreviewModel *> * _Nullable images, NSError * _Nullable error) {
-//            if ( block ) block(images, error);
-//        }];
-//    });
-//}
-
-#pragma mark - Volume And Brightness
-
-@interface SJVideoPlayer (VolumeAndBrightness)
-
-@property (nonatomic, strong, readonly) SJVideoPlayerTipsView *volumeView;
-@property (nonatomic, strong, readonly) SJVideoPlayerTipsView *brightnessView;
-@property (nonatomic, strong, readonly) UISlider *systemVolume;
-
-- (void)_initialize_VolumeAndBrightness;
-
-- (void)_clean_VolumeAndBrightness;
-
-@end
-
-@implementation SJVideoPlayer (VolumeAndBrightness)
-
-- (void)_initialize_VolumeAndBrightness {
-    [self volumeView];
-    [self brightnessView];
-    [self systemVolume];
-    
-    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(_volumeChanged) name:@"AVSystemController_SystemVolumeDidChangeNotification" object:nil];
-}
-
-- (void)_clean_VolumeAndBrightness {
-    [[NSNotificationCenter defaultCenter] removeObserver:self name:@"AVSystemController_SystemVolumeDidChangeNotification" object:nil];
-}
-
-- (void)_volumeChanged {
-    dispatch_async(dispatch_get_main_queue(), ^{
-        self.volumeView.value = self.systemVolume.value;
-        if ( self.moreSettingFooterViewModel.volumeChanged ) self.moreSettingFooterViewModel.volumeChanged(self.volumeView.value);
-    });
-
-}
-
-- (SJVideoPlayerTipsView *)volumeView {
-    SJVideoPlayerTipsView *volumeView = objc_getAssociatedObject(self, _cmd);
-    if ( volumeView ) return volumeView;
-    volumeView = [SJVideoPlayerTipsView new];
-    volumeView.titleLabel.text = @"音量";
-    volumeView.minShowImage = [SJVideoPlayerResources imageNamed:@"sj_video_player_un_volume"];
-    volumeView.minShowTitleLabel.text = @"静音";
-    volumeView.normalShowImage = [SJVideoPlayerResources imageNamed:@"sj_video_player_volume"];
-    objc_setAssociatedObject(self, _cmd, volumeView, OBJC_ASSOCIATION_RETAIN_NONATOMIC);
-    return volumeView;
-}
-
-- (SJVideoPlayerTipsView *)brightnessView {
-    SJVideoPlayerTipsView *brightnessView = objc_getAssociatedObject(self, _cmd);
-    if ( brightnessView ) return brightnessView;
-    brightnessView = [SJVideoPlayerTipsView new];
-    brightnessView.titleLabel.text = @"亮度";
-    brightnessView.normalShowImage = [SJVideoPlayerResources imageNamed:@"sj_video_player_brightness"];
-    objc_setAssociatedObject(self, _cmd, brightnessView, OBJC_ASSOCIATION_RETAIN_NONATOMIC);
-    return brightnessView;
-}
-
-- (UISlider *)systemVolume {
-    UISlider *systemVolume = objc_getAssociatedObject(self, _cmd);
-    if ( systemVolume ) return systemVolume;
-    MPVolumeView *volumeView = [[MPVolumeView alloc] init];
-    [self.controlView addSubview:volumeView];
-    volumeView.frame = CGRectMake(-1000, -100, 100, 100);
-    for (UIView *view in [volumeView subviews]){
-        if ([view.class.description isEqualToString:@"MPVolumeSlider"]){
-            systemVolume = (UISlider *)view;
-            break;
-        }
-    }
-    objc_setAssociatedObject(self, _cmd, systemVolume, OBJC_ASSOCIATION_RETAIN_NONATOMIC);
-    return systemVolume;
-}
+@property (nonatomic, strong, readonly) SJVolumeAndBrightness *volBrig;
 
 @end
 
@@ -481,17 +390,13 @@ static UIView *target = nil;
                 /// 垂直移动, 调整音量 或者 亮度
                 self.panDirection = SJPanDirection_V;
                 CGPoint locationPoint = [pan locationInView:pan.view];
-                // 手指位置, 左边还是右边
                 if ( locationPoint.x > self.controlView.bounds.size.width / 2 ) {
                     self.panLocation = SJVerticalPanLocation_Right;
-                    self.volumeView.value = self.systemVolume.value;
-                    target = self.volumeView;
+                    target = self.volBrig.volumeView;
                 }
                 else {
                     self.panLocation = SJVerticalPanLocation_Left;
-                    self.brightnessView.value = [UIScreen mainScreen].brightness;
-                    if ( self.moreSettingFooterViewModel.brightnessChanged ) self.moreSettingFooterViewModel.brightnessChanged(self.brightnessView.value);
-                    target = self.brightnessView;
+                    target = self.volBrig.brightnessView;
                 }
                 [[UIApplication sharedApplication].keyWindow addSubview:target];
                 [target mas_remakeConstraints:^(MASConstraintMaker *make) {
@@ -515,15 +420,13 @@ static UIView *target = nil;
                 case SJPanDirection_V:{
                     switch (self.panLocation) {
                         case SJVerticalPanLocation_Left: {
-                            CGFloat value = [UIScreen mainScreen].brightness - offset.y * 0.006;
+                            CGFloat value = self.volBrig.brightness - offset.y * 0.006;
                             if ( value < 1.0 / 16 ) value = 1.0 / 16;
-                            [UIScreen mainScreen].brightness = value;
-                            self.brightnessView.value = value;
-                            if ( self.moreSettingFooterViewModel.brightnessChanged ) self.moreSettingFooterViewModel.brightnessChanged(value);
+                            self.volBrig.brightness = value;
                         }
                             break;
                         case SJVerticalPanLocation_Right: {
-                            self.systemVolume.value -= offset.y * 0.006;
+                            self.volBrig.volume -= offset.y * 0.006;
                         }
                             break;
                         case SJVerticalPanLocation_Unknown: break;
@@ -586,6 +489,7 @@ static UIView *target = nil;
 @synthesize view = _view;
 @synthesize moreSettingFooterViewModel = _moreSettingFooterViewModel;
 @synthesize registrar = _registrar;
+@synthesize volBrig = _volBrig;
 
 + (instancetype)sharedPlayer {
     static id _instance;
@@ -616,11 +520,12 @@ static UIView *target = nil;
     
     [self _notifications];
     
+    [self volBrig];
+    
     return self;
 }
 
 - (void)dealloc {
-    [self _clean_VolumeAndBrightness];
     [[NSNotificationCenter defaultCenter] removeObserver:self];
 }
 
@@ -699,7 +604,6 @@ static UIView *target = nil;
     self.hiddenMoreSecondarySettingView = YES;
     _controlView.delegate = self;
     _controlView.bottomControlView.progressSlider.delegate = self;
-    [self _initialize_VolumeAndBrightness];
     
     [_presentView mas_makeConstraints:^(MASConstraintMaker *make) {
         make.edges.offset(0);
@@ -737,7 +641,7 @@ static UIView *target = nil;
     _moreSettingFooterViewModel.needChangeBrightness = ^(float brightness) {
         __strong typeof(_self) self = _self;
         if ( !self ) return;
-        [UIScreen mainScreen].brightness = brightness;
+        self.volBrig.brightness = brightness;
     };
     
     _moreSettingFooterViewModel.needChangePlayerRate = ^(float rate) {
@@ -750,19 +654,19 @@ static UIView *target = nil;
     _moreSettingFooterViewModel.needChangeVolume = ^(float volume) {
         __strong typeof(_self) self = _self;
         if ( !self ) return;
-        self.systemVolume.value = volume;
+        self.volBrig.volume = volume;
     };
     
     _moreSettingFooterViewModel.initialVolumeValue = ^float{
         __strong typeof(_self) self = _self;
         if ( !self ) return 0;
-        return self.systemVolume.value;
+        return self.volBrig.volume;
     };
     
     _moreSettingFooterViewModel.initialBrightnessValue = ^float{
         __strong typeof(_self) self = _self;
         if ( !self ) return 0;
-        return [UIScreen mainScreen].brightness;
+        return self.volBrig.brightness;
     };
     
     _moreSettingFooterViewModel.initialPlayerRateValue = ^float{
@@ -836,6 +740,24 @@ static UIView *target = nil;
     if ( _registrar ) return _registrar;
     _registrar = [SJVideoPlayerRegistrar new];
     return _registrar;
+}
+
+- (SJVolumeAndBrightness *)volBrig {
+    if ( _volBrig ) return _volBrig;
+    _volBrig  = [SJVolumeAndBrightness new];
+    __weak typeof(self) _self = self;
+    _volBrig.volumeChanged = ^(float volume) {
+        __strong typeof(_self) self = _self;
+        if ( !self ) return;
+        if ( self.moreSettingFooterViewModel.volumeChanged ) self.moreSettingFooterViewModel.volumeChanged(volume);
+    };
+    
+    _volBrig.brightnessChanged = ^(float brightness) {
+        __strong typeof(_self) self = _self;
+        if ( !self ) return;
+        if ( self.moreSettingFooterViewModel.brightnessChanged ) self.moreSettingFooterViewModel.brightnessChanged(self.volBrig.brightness);
+    };
+    return _volBrig;
 }
 
 #pragma mark ======================================================
@@ -1009,6 +931,31 @@ static UIView *target = nil;
     }];
 }
 
+#pragma mark
+- (BOOL)_play {
+    if      ( !self.asset ) return NO;
+    else if ( self.state == SJVideoPlayerPlayState_Playing ) return YES;
+    else {
+        [self.asset.player play];
+        self.moreSettingFooterViewModel.playerRateChanged(self.asset.player.rate);
+        _sjAnima(^{
+            [self _playState];
+        });
+        return YES;
+    }
+}
+
+- (BOOL)_pause {
+    if ( !self.asset ) return NO;
+    else if ( self.state == SJVideoPlayerPlayState_Pause ) return YES;
+    else {
+        [self.asset.player pause];
+        _sjAnima(^{
+            [self _pauseState];
+        });
+        return YES;
+    }
+}
 @end
 
 
@@ -1217,32 +1164,17 @@ static UIView *target = nil;
 @implementation SJVideoPlayer (Control)
 
 - (BOOL)play {
-    if      ( !self.asset ) return NO;
-    else if ( self.state == SJVideoPlayerPlayState_Playing ) return YES;
-    else {
-        [self.asset.player play];
-        self.moreSettingFooterViewModel.playerRateChanged(self.asset.player.rate);
-        _sjAnima(^{
-            [self _playState];
-        });
-        return YES;
-    }
+    self.registrar.userClickedPause = NO;
+    return [self _play];
 }
 
 - (BOOL)pause {
-    if ( !self.asset ) return NO;
-    else if ( self.state == SJVideoPlayerPlayState_Pause ) return YES;
-    else {
-        [self.asset.player pause];
-        _sjAnima(^{
-            [self _pauseState];
-        });
-        return YES;
-    }
+    self.registrar.userClickedPause = YES;
+    return [self _pause];
 }
 
 - (void)stop {
-    [self pause];
+    [self _pause];
     [self _cleanSetting];
     
     _sjAnima(^{

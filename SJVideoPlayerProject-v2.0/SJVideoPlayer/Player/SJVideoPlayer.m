@@ -140,6 +140,7 @@ inline static NSString *_formatWithSec(NSInteger sec) {
 - (void)setLockScreen:(BOOL)lockScreen {
     if ( self.isLockedScrren == lockScreen ) return;
     objc_setAssociatedObject(self, @selector(isLockedScrren), @(lockScreen), OBJC_ASSOCIATION_RETAIN_NONATOMIC);
+    [self _cancelDelayHiddenControl];
     _sjAnima(^{
         if ( lockScreen ) {
             [self _lockScreenState];
@@ -148,10 +149,6 @@ inline static NSString *_formatWithSec(NSInteger sec) {
             [self _unlockScreenState];
         }
     });
-    
-    if ( self.orentation.fullScreen ) {
-        [UIApplication sharedApplication].statusBarHidden = lockScreen;
-    }
 }
 
 - (BOOL)isLockedScrren {
@@ -160,7 +157,6 @@ inline static NSString *_formatWithSec(NSInteger sec) {
 
 - (void)setHideControl:(BOOL)hideControl {
     if ( self.isHiddenControl == hideControl ) return;
-    if ( self.isLockedScrren ) return;
     objc_setAssociatedObject(self, @selector(isHiddenControl), @(hideControl), OBJC_ASSOCIATION_RETAIN_NONATOMIC);
     [self.timerControl reset];
     if ( hideControl ) [self _hideControlState];
@@ -273,22 +269,18 @@ inline static NSString *_formatWithSec(NSInteger sec) {
     
     // hidden
     _sjHiddenViews(@[self.controlView.leftControlView.unlockBtn]);
-    
-    // transform hidden
-    self.controlView.topControlView.transform = CGAffineTransformMakeTranslation(0, - self.controlView.topControlView.frame.size.height);
-    self.controlView.bottomControlView.transform = CGAffineTransformMakeTranslation(0, self.controlView.bottomControlView.frame.size.height);
+    self.hideControl = YES;
 }
 
 - (void)_unlockScreenState {
     
     // show
     _sjShowViews(@[self.controlView.leftControlView.unlockBtn]);
+    self.hideControl = NO;
     
     // hidden
     _sjHiddenViews(@[self.controlView.leftControlView.lockBtn]);
     
-    // transform show
-    self.controlView.topControlView.transform = self.controlView.bottomControlView.transform = CGAffineTransformIdentity;
 }
 
 - (void)_hideControlState {
@@ -303,7 +295,7 @@ inline static NSString *_formatWithSec(NSInteger sec) {
     self.controlView.topControlView.transform = CGAffineTransformMakeTranslation(0, - self.controlView.topControlView.frame.size.height);
     self.controlView.bottomControlView.transform = CGAffineTransformMakeTranslation(0, self.controlView.bottomControlView.frame.size.height);
 
-    self.hiddenLeftControlView = YES;
+    self.hiddenLeftControlView = !self.isLockedScrren && !self.orentation.fullScreen;
 }
 
 - (void)_showControlState {

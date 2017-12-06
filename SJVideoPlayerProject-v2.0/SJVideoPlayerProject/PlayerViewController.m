@@ -72,10 +72,6 @@
     Player.moreSettings = @[share];
 }
 
-//- (UIStatusBarStyle)preferredStatusBarStyle {
-//    return UIStatusBarStyleLightContent;
-//}
-
 - (void)dealloc {
     [Player stop];
 }

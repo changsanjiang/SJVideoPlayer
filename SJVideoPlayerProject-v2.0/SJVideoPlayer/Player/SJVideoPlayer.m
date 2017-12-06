@@ -22,6 +22,7 @@
 #import "SJVideoPlayerRegistrar.h"
 #import "SJVolumeAndBrightness.h"
 #import "SJTimerControl.h"
+#import "SJVideoPlayerView.h"
 
 
 #define MoreSettingWidth (MAX([UIScreen mainScreen].bounds.size.width, [UIScreen mainScreen].bounds.size.height) * 0.382)
@@ -77,6 +78,8 @@ inline static NSString *_formatWithSec(NSInteger sec) {
 @property (nonatomic, assign, readwrite) BOOL hiddenMoreSecondarySettingView;
 @property (nonatomic, assign, readwrite) BOOL hiddenLeftControlView;
 @property (nonatomic, assign, readwrite) BOOL userClickedPause;
+@property (nonatomic, assign, readwrite) BOOL playOnCell;
+@property (nonatomic, assign, readwrite) BOOL scrollIn;
 
 - (void)_play;
 - (void)_pause;
@@ -317,9 +320,17 @@ inline static NSString *_formatWithSec(NSInteger sec) {
     self.controlView.previewView.hidden = YES;
     
     // transform show
-    self.controlView.topControlView.transform = self.controlView.bottomControlView.transform = CGAffineTransformIdentity;
+    if ( self.playOnCell && !self.orentation.fullScreen ) {
+        self.controlView.topControlView.transform = CGAffineTransformMakeTranslation(0, -SJControlTopH);
+    }
+    else {
+        self.controlView.topControlView.transform = CGAffineTransformIdentity;
+    }
+    self.controlView.bottomControlView.transform = CGAffineTransformIdentity;
     
     self.hiddenLeftControlView = !self.orentation.fullScreen;
+    
+    
 #pragma clang diagnostic push
 #pragma clang diagnostic ignored "-Wdeprecated-declarations"
     [[UIApplication sharedApplication] setStatusBarHidden:NO animated:YES];
@@ -390,6 +401,9 @@ typedef NS_ENUM(NSUInteger, SJVerticalPanLocation) {
 
 - (BOOL)gestureRecognizerShouldBegin:(UIGestureRecognizer *)gestureRecognizer {
     if ( self.isLockedScrren ) return NO;
+    if ( gestureRecognizer != self.controlView.singleTap &&
+         self.playOnCell &&
+         !self.orentation.fullScreen ) return NO;
     if ( [self _isFadeAreaWithGesture:gestureRecognizer] ) return NO;
     return YES;
 }
@@ -547,7 +561,7 @@ static UIView *target = nil;
     SJVideoPlayerMoreSettingsView *_moreSettingView;
     SJVideoPlayerMoreSettingSecondaryView *_moreSecondarySettingView;
     SJOrentationObserver *_orentation;
-    UIView *_view;
+    SJVideoPlayerView *_view;
     SJMoreSettingsFooterViewModel *_moreSettingFooterViewModel;
     SJVideoPlayerRegistrar *_registrar;
     SJVolumeAndBrightness *_volBrig;
@@ -602,7 +616,7 @@ static UIView *target = nil;
 
 - (UIView *)view {
     if ( _view ) return _view;
-    _view = [UIView new];
+    _view = [SJVideoPlayerView new];
     _view.backgroundColor = [UIColor blackColor];
     [_view addSubview:self.presentView];
     [_presentView addSubview:self.controlView];
@@ -739,6 +753,7 @@ static UIView *target = nil;
         [self _delayHiddenControl];
         _sjAnima(^{
             self.hideControl = NO;
+            self.controlView.previewView.hidden = YES;
             self.hiddenMoreSecondarySettingView = YES;
             self.hiddenMoreSettingView = YES;
             self.hiddenLeftControlView = !observer.isFullScreen;
@@ -774,6 +789,7 @@ static UIView *target = nil;
             case SJVideoPlayerPlayState_PlayFailed: return NO;
             default: break;
         }
+        if ( self.playOnCell && !self.scrollIn ) return NO;
         if ( self.disableRotation ) return NO;
         if ( self.isLockedScrren ) return NO;
         return YES;
@@ -1160,6 +1176,82 @@ static BOOL _isLoading;
         if ( !self ) return;
         [self _buffering];
     };
+    
+    asset.deallocCallBlock = ^(SJVideoPlayerAssetCarrier * _Nonnull asset) {
+        __strong typeof(_self) self = _self;
+        if ( !self ) return;
+        self.view.alpha = 1;
+    };
+    
+    if ( asset.indexPath ) {
+        self.playOnCell = YES;
+        self.scrollIn = YES;
+    }
+    else {
+        self.playOnCell = NO;
+        self.scrollIn = NO;
+    }
+    
+    asset.scrollViewDidScroll = ^(SJVideoPlayerAssetCarrier * _Nonnull asset) {
+        __strong typeof(_self) self = _self;
+        if ( !self ) return;
+        if ( [asset.scrollView isKindOfClass:[UITableView class]] ) {
+            UITableView *tableView = (UITableView *)asset.scrollView;
+            __block BOOL visable = NO;
+            [tableView.indexPathsForVisibleRows enumerateObjectsUsingBlock:^(NSIndexPath * _Nonnull obj, NSUInteger idx, BOOL * _Nonnull stop) {
+                if ( [obj compare:self.asset.indexPath] == NSOrderedSame ) {
+                    visable = YES;
+                    *stop = YES;
+                }
+            }];
+            if ( visable ) {
+                if ( YES == self.scrollIn ) return;
+                /// 滑入时
+                self.scrollIn = YES;
+                self.view.alpha = 1;
+                [self.view removeFromSuperview];
+                UITableViewCell *cell = [tableView cellForRowAtIndexPath:self.asset.indexPath];
+                UIView *superview = [cell.contentView viewWithTag:self.asset.superviewTag];
+                if ( !superview ) { return;}
+                [superview addSubview:self.view];
+                [self.view mas_remakeConstraints:^(MASConstraintMaker *make) {
+                    make.edges.offset(0);
+                }];
+            }
+            else {
+                if ( NO == self.scrollIn ) return;
+                /// 滑出时
+                self.scrollIn = NO;
+                self.view.alpha = 0.001;
+                [self pause];
+            }
+        }
+        else if ( [asset.scrollView isKindOfClass:[UICollectionView class]] ) {
+            UICollectionView *collectionView = (UICollectionView *)asset.scrollView;
+            UICollectionViewCell *cell = [collectionView cellForItemAtIndexPath:self.asset.indexPath];
+            if ( [collectionView.visibleCells containsObject:cell] ) {
+                if ( YES == self.scrollIn ) return;
+                /// 滑入时
+                self.scrollIn = YES;
+                self.view.alpha = 1;
+                [self.view removeFromSuperview];
+                UICollectionViewCell *cell = [collectionView cellForItemAtIndexPath:self.asset.indexPath];
+                UIView *superview = [cell.contentView viewWithTag:self.asset.superviewTag];
+                if ( !superview ) return;
+                [superview addSubview:self.view];
+                [self.view mas_remakeConstraints:^(MASConstraintMaker *make) {
+                    make.edges.offset(0);
+                }];
+            }
+            else {
+                if ( NO == self.scrollIn ) return;
+                /// 滑出时
+                self.scrollIn = NO;
+                self.view.alpha = 0.001;
+                [self pause];
+            }
+        }
+    };
 }
 
 - (SJVideoPlayerAssetCarrier *)asset {
@@ -1224,7 +1316,7 @@ static BOOL _isLoading;
     self.presentView.placeholderImageView.image = placeholder;
 }
 
-- (void)setScrollView:(UIScrollView *)scrollView indexPath:(NSIndexPath *)indexPath onViewTag:(NSInteger)tag {
+- (void)setScrollView:(__weak UIScrollView *)scrollView indexPath:(NSIndexPath *)indexPath onViewTag:(NSInteger)tag {
     
 }
 
@@ -1301,7 +1393,7 @@ static BOOL _isLoading;
         [self _pauseState];
     });
     [self _pause];
-    [self showTitle:@"已暂停"];
+    if ( !self.playOnCell ) [self showTitle:@"已暂停"];
     return YES;
 }
 

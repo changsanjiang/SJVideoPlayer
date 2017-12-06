@@ -68,7 +68,7 @@ NS_ASSUME_NONNULL_BEGIN
  *
  *  如果在 cell 中播放视频, 请设置他.
  */
-- (void)setScrollView:(UIScrollView *)scrollView indexPath:(NSIndexPath *)indexPath onViewTag:(NSInteger)tag;
+- (void)setScrollView:(__weak UIScrollView *)scrollView indexPath:(NSIndexPath *)indexPath onViewTag:(NSInteger)tag;
 
 /*!
  *  default is YES.

@@ -46,7 +46,6 @@
 
 - (void)observeValueForKeyPath:(NSString *)keyPath ofObject:(id)object change:(NSDictionary<NSKeyValueChangeKey,id> *)change context:(void *)context {
     if ( [keyPath isEqualToString:@"readyForDisplay"] ) {
-        NSLog(@"%zd - %s", __LINE__, __func__);
         if ( self.readyForDisplay ) self.readyForDisplay(self);
     }
 }

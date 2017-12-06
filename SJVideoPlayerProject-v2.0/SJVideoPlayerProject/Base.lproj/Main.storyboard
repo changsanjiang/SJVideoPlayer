@@ -25,11 +25,20 @@
                                     <action selector="push:" destination="BYZ-38-t0r" eventType="touchUpInside" id="hOz-So-8tN"/>
                                 </connections>
                             </button>
+                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="oXB-PJ-2Km">
+                                <rect key="frame" x="170" y="367" width="37" height="30"/>
+                                <state key="normal" title="Table"/>
+                                <connections>
+                                    <action selector="pushTable:" destination="BYZ-38-t0r" eventType="touchUpInside" id="IzR-pX-mik"/>
+                                </connections>
+                            </button>
                         </subviews>
                         <color key="backgroundColor" red="1" green="1" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                         <constraints>
                             <constraint firstItem="cMv-Nn-BvR" firstAttribute="centerX" secondItem="8bC-Xf-vdC" secondAttribute="centerX" id="5ds-d9-8g3"/>
                             <constraint firstItem="cMv-Nn-BvR" firstAttribute="centerY" secondItem="8bC-Xf-vdC" secondAttribute="centerY" id="6LX-mQ-5Me"/>
+                            <constraint firstItem="oXB-PJ-2Km" firstAttribute="top" secondItem="cMv-Nn-BvR" secondAttribute="bottom" constant="18.5" id="QIN-YJ-8W5"/>
+                            <constraint firstItem="oXB-PJ-2Km" firstAttribute="centerX" secondItem="cMv-Nn-BvR" secondAttribute="centerX" id="mDw-AF-PvN"/>
                         </constraints>
                         <viewLayoutGuide key="safeArea" id="6Tk-OE-BBY"/>
                     </view>

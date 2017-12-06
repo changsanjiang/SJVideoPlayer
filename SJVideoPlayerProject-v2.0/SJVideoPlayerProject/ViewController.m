@@ -8,6 +8,7 @@
 
 #import "ViewController.h"
 #import "PlayerViewController.h"
+#import "PlayerTableViewController.h"
 
 @interface ViewController ()
 
@@ -23,6 +24,10 @@
 
 - (IBAction)push:(id)sender {
     [self.navigationController pushViewController:[[PlayerViewController alloc] init] animated:YES];
+}
+
+- (IBAction)pushTable:(id)sender {
+    [self.navigationController pushViewController:[[PlayerTableViewController alloc] init] animated:YES];
 }
 
 - (void)didReceiveMemoryWarning {

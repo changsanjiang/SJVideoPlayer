@@ -72,7 +72,7 @@
     [_previewView mas_makeConstraints:^(MASConstraintMaker *make) {
         make.top.equalTo(_topControlView.mas_bottom);
         make.leading.trailing.offset(0);
-        make.height.equalTo(_previewView.superview).multipliedBy(0.32);
+        make.height.offset([UIScreen mainScreen].bounds.size.width * 0.32);
     }];
     
     [_leftControlView mas_makeConstraints:^(MASConstraintMaker *make) {

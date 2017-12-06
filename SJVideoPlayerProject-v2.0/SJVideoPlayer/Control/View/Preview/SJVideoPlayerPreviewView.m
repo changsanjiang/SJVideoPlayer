@@ -39,7 +39,6 @@ static NSString *SJVideoPlayerPreviewCollectionViewCellID = @"SJVideoPlayerPrevi
     if ( !hidden ) {
         self.alpha = 1;
         self.transform = CGAffineTransformIdentity;
-        [self.collectionView reloadData];
     }
     else {
         self.alpha = 0.001;

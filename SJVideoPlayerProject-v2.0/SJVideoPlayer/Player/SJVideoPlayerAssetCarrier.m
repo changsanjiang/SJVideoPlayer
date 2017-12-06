@@ -40,7 +40,23 @@ NSNotificationName const SJ_AVPlayerRateDidChangeNotification = @"SJ_AVPlayerRat
 }
 
 /// unit is sec.
-- (instancetype)initWithAssetURL:(NSURL *)assetURL beginTime:(NSTimeInterval)beginTime {
+- (instancetype)initWithAssetURL:(NSURL *)assetURL
+                       beginTime:(NSTimeInterval)beginTime {
+    return [self initWithAssetURL:assetURL beginTime:beginTime scrollView:nil indexPath:nil superviewTag:0];
+}
+
+- (instancetype)initWithAssetURL:(NSURL *)assetURL
+                      scrollView:(UIScrollView * __nullable)scrollView
+                       indexPath:(NSIndexPath * __nullable)indexPath
+                    superviewTag:(NSInteger)superviewTag {
+    return [self initWithAssetURL:assetURL beginTime:0 scrollView:scrollView indexPath:indexPath superviewTag:superviewTag];
+}
+
+- (instancetype)initWithAssetURL:(NSURL *)assetURL
+                       beginTime:(NSTimeInterval)beginTime
+                      scrollView:(UIScrollView * __nullable)scrollView
+                       indexPath:(NSIndexPath *)indexPath
+                    superviewTag:(NSInteger)superviewTag {
     self = [super init];
     if ( !self ) return nil;
     _asset = [AVURLAsset assetWithURL:assetURL];
@@ -48,6 +64,9 @@ NSNotificationName const SJ_AVPlayerRateDidChangeNotification = @"SJ_AVPlayerRat
     _player = [AVPlayer playerWithPlayerItem:_playerItem];
     _assetURL = assetURL;
     _beginTime = beginTime;
+    _scrollView = scrollView;
+    _indexPath = indexPath;
+    _superviewTag = superviewTag;
     [self _addTimeObserver];
     [self _addItemPlayEndObserver];
     [self _observing];
@@ -81,6 +100,9 @@ NSNotificationName const SJ_AVPlayerRateDidChangeNotification = @"SJ_AVPlayerRat
     [_playerItem addObserver:self forKeyPath:@"status" options:NSKeyValueObservingOptionNew context:nil];
     [_playerItem addObserver:self forKeyPath:@"loadedTimeRanges" options:NSKeyValueObservingOptionNew context:nil];
     [_playerItem addObserver:self forKeyPath:@"playbackBufferEmpty" options:NSKeyValueObservingOptionNew context:nil];
+    if ( _scrollView ) {
+        [_scrollView addObserver:self forKeyPath:@"contentOffset" options:NSKeyValueObservingOptionNew context:nil];
+    }
 }
 
 - (void)observeValueForKeyPath:(NSString *)keyPath ofObject:(id)object change:(NSDictionary<NSKeyValueChangeKey,id> *)change context:(void *)context {
@@ -95,6 +117,9 @@ NSNotificationName const SJ_AVPlayerRateDidChangeNotification = @"SJ_AVPlayerRat
         }
         else if ( [keyPath isEqualToString:@"playbackBufferEmpty"] ) {
             if ( self.beingBuffered ) self.beingBuffered([self _loadedTimeSecs] <= self.currentTime + 5);
+        }
+        if ( [keyPath isEqualToString:@"contentOffset"] ) {
+            if ( self.scrollViewDidScroll ) self.scrollViewDidScroll(self);
         }
     });
 }
@@ -166,18 +191,18 @@ NSNotificationName const SJ_AVPlayerRateDidChangeNotification = @"SJ_AVPlayerRat
     return [UIImage imageWithCGImage:[generator copyCGImageAtTime:time actualTime:&time error:nil]];
 }
 
-- (NSInteger)duration {
+- (NSTimeInterval)duration {
     return CMTimeGetSeconds(_playerItem.duration);
 }
 
-- (NSInteger)currentTime {
+- (NSTimeInterval)currentTime {
     return CMTimeGetSeconds(_playerItem.currentTime);
 }
 
 - (float)progress {
     NSInteger duration = self.duration;
     if ( 0 == duration ) return 0;
-    else return self.currentTime * 1.0 / duration;
+    else return self.currentTime / duration;
 }
 
 - (void)dealloc {
@@ -186,7 +211,10 @@ NSNotificationName const SJ_AVPlayerRateDidChangeNotification = @"SJ_AVPlayerRat
     [_playerItem removeObserver:self forKeyPath:@"status"];
     [_playerItem removeObserver:self forKeyPath:@"playbackBufferEmpty"];
     [_playerItem removeObserver:self forKeyPath:@"loadedTimeRanges"];
-
+    [_scrollView removeObserver:self forKeyPath:@"contentOffset"];
+    
+    if ( _deallocCallBlock ) _deallocCallBlock(self);
+    
     _assetURL = nil;
     _asset = nil;
     _playerItem = nil;

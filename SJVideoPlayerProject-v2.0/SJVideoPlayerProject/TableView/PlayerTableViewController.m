@@ -37,6 +37,11 @@ static NSString *const PlayerTableViewCellID = @"PlayerTableViewCell";
     // Dispose of any resources that can be recreated.
 }
 
+- (void)viewWillDisappear:(BOOL)animated {
+    [super viewWillDisappear:animated];
+//    [TabPlayer stop];
+}
+
 - (void)dealloc {
     [TabPlayer stop];
 }

@@ -1106,7 +1106,7 @@ static BOOL _isLoading;
     
     __weak typeof(self) _self = self;
     _presentView.readyForDisplay = ^(SJVideoPlayerPresentView * _Nonnull view) {
-        if ( asset.hasBeenGeneratedPreviewImages ) { return ; }
+        if ( _self.asset.hasBeenGeneratedPreviewImages ) { return ; }
         if ( !_self.generatePreviewImages ) return;
         CGRect bounds = view.avLayer.videoRect;
         CGFloat width = [UIScreen mainScreen].bounds.size.width * 0.4;

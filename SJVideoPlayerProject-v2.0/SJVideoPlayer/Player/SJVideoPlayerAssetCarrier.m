@@ -8,6 +8,7 @@
 
 #import "SJVideoPlayerAssetCarrier.h"
 #import <UIKit/UIKit.h>
+#import <objc/message.h>
 
 NSNotificationName const SJ_AVPlayerRateDidChangeNotification = @"SJ_AVPlayerRateDidChangeNotification";
 
@@ -22,6 +23,17 @@ NSNotificationName const SJ_AVPlayerRateDidChangeNotification = @"SJ_AVPlayerRat
 #define SJPreImgGenerateInterval (0.05)
 
 
+@interface SJTmpObj : NSObject
+@property (nonatomic, copy) void(^deallocCallBlock)(SJTmpObj *obj);
+@end
+
+@implementation SJTmpObj
+- (void)dealloc {
+    if ( _deallocCallBlock ) _deallocCallBlock(self);
+}
+@end
+
+
 @interface SJVideoPlayerAssetCarrier () {
     id _timeObserver;
     id _itemEndObserver;
@@ -30,6 +42,7 @@ NSNotificationName const SJ_AVPlayerRateDidChangeNotification = @"SJ_AVPlayerRat
 @property (nonatomic, strong, readwrite) AVAssetImageGenerator *imageGenerator;
 @property (nonatomic, assign, readwrite) BOOL hasBeenGeneratedPreviewImages;
 @property (nonatomic, strong, readwrite) NSArray<SJVideoPreviewModel *> *generatedPreviewImages;
+@property (nonatomic, assign, readwrite) BOOL removedScrollObserver;
 
 @end
 
@@ -102,6 +115,7 @@ NSNotificationName const SJ_AVPlayerRateDidChangeNotification = @"SJ_AVPlayerRat
     [_playerItem addObserver:self forKeyPath:@"playbackBufferEmpty" options:NSKeyValueObservingOptionNew context:nil];
     if ( _scrollView ) {
         [_scrollView addObserver:self forKeyPath:@"contentOffset" options:NSKeyValueObservingOptionNew context:nil];
+        [self _injectTmpObjToScrollView];
     }
 }
 
@@ -214,9 +228,28 @@ NSNotificationName const SJ_AVPlayerRateDidChangeNotification = @"SJ_AVPlayerRat
     [_playerItem removeObserver:self forKeyPath:@"status"];
     [_playerItem removeObserver:self forKeyPath:@"playbackBufferEmpty"];
     [_playerItem removeObserver:self forKeyPath:@"loadedTimeRanges"];
-    [_scrollView removeObserver:self forKeyPath:@"contentOffset"];
-    
+    if ( !_removedScrollObserver ) [self _removingScrollViewObserver];
     if ( _deallocCallBlock ) _deallocCallBlock(self);
+}
+
+#pragma mark
+- (void)_injectTmpObjToScrollView {
+    SJTmpObj *obj = [SJTmpObj new];
+    __weak typeof(self) _self = self;
+    obj.deallocCallBlock = ^(SJTmpObj *obj) {
+        __strong typeof(_self) self = _self;
+        if ( !self ) return;
+        if ( !self.removedScrollObserver ) {
+            [self _removingScrollViewObserver];
+        }
+    };
+    objc_setAssociatedObject(_scrollView, _cmd, obj, OBJC_ASSOCIATION_RETAIN_NONATOMIC);
+}
+
+- (void)_removingScrollViewObserver {
+    [_scrollView removeObserver:self forKeyPath:@"contentOffset"];
+    _scrollView = nil;
+    _removedScrollObserver = YES;
 }
 
 @end

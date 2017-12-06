@@ -66,7 +66,7 @@ extern NSNotificationName const SJ_AVPlayerRateDidChangeNotification;
 @property (nonatomic, strong, readonly) NSArray<SJVideoPreviewModel *> *generatedPreviewImages;
 @property (nonatomic, weak, readonly) NSIndexPath *indexPath;
 @property (nonatomic, assign, readonly) NSInteger superviewTag;
-@property (nonatomic, weak, readonly) UIScrollView *scrollView;
+@property (nonatomic, unsafe_unretained, readonly) UIScrollView *scrollView;
 
 @end
 

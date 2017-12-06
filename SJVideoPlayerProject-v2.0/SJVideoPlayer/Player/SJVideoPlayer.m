@@ -21,6 +21,7 @@
 #import "SJOrentationObserver.h"
 #import "SJVideoPlayerRegistrar.h"
 #import "SJVolumeAndBrightness.h"
+#import "SJTimerControl.h"
 
 
 #define MoreSettingWidth (MAX([UIScreen mainScreen].bounds.size.width, [UIScreen mainScreen].bounds.size.height) * 0.382)
@@ -67,19 +68,19 @@ inline static NSString *_formatWithSec(NSInteger sec) {
 @property (nonatomic, strong, readonly) SJVideoPlayerMoreSettingsView *moreSettingView;
 @property (nonatomic, strong, readonly) SJVideoPlayerMoreSettingSecondaryView *moreSecondarySettingView;
 @property (nonatomic, strong, readonly) SJOrentationObserver *orentation;
-
-@property (nonatomic, assign, readwrite) SJVideoPlayerPlayState state;
-
-@property (nonatomic, assign, readwrite) BOOL hiddenMoreSettingView;
-@property (nonatomic, assign, readwrite) BOOL hiddenMoreSecondarySettingView;
-@property (nonatomic, assign, readwrite) BOOL hiddenLeftControlView;
 @property (nonatomic, strong, readonly) SJMoreSettingsFooterViewModel *moreSettingFooterViewModel;
 @property (nonatomic, strong, readonly) SJVideoPlayerRegistrar *registrar;
 @property (nonatomic, strong, readonly) SJVolumeAndBrightness *volBrig;
+
+@property (nonatomic, assign, readwrite) SJVideoPlayerPlayState state;
+@property (nonatomic, assign, readwrite) BOOL hiddenMoreSettingView;
+@property (nonatomic, assign, readwrite) BOOL hiddenMoreSecondarySettingView;
+@property (nonatomic, assign, readwrite) BOOL hiddenLeftControlView;
 @property (nonatomic, assign, readwrite) BOOL userClickedPause;
 
 - (void)_play;
 - (void)_pause;
+
 @end
 
 
@@ -90,10 +91,12 @@ inline static NSString *_formatWithSec(NSInteger sec) {
 
 @interface SJVideoPlayer (State)
 
-/// default is NO.
+@property (nonatomic, assign, readwrite, getter=isHiddenControl) BOOL hideControl;
 @property (nonatomic, assign, readwrite, getter=isLockedScrren) BOOL lockScreen;
 
-@property (nonatomic, assign, readwrite, getter=isHiddenControl) BOOL hideControl;
+- (void)_cancelDelayHiddenControl;
+
+- (void)_delayHiddenControl;
 
 - (void)_prepareState;
 
@@ -110,6 +113,29 @@ inline static NSString *_formatWithSec(NSInteger sec) {
 @end
 
 @implementation SJVideoPlayer (State)
+
+- (SJTimerControl *)timerControl {
+    SJTimerControl *timerControl = objc_getAssociatedObject(self, _cmd);
+    if ( timerControl ) return timerControl;
+    timerControl = [SJTimerControl new];
+    objc_setAssociatedObject(self, _cmd, timerControl, OBJC_ASSOCIATION_RETAIN_NONATOMIC);
+    return timerControl;
+}
+
+- (void)_cancelDelayHiddenControl {
+    [self.timerControl reset];
+}
+
+- (void)_delayHiddenControl {
+    __weak typeof(self) _self = self;
+    [self.timerControl start:^(SJTimerControl * _Nonnull control) {
+        __strong typeof(_self) self = _self;
+        if ( !self ) return;
+        _sjAnima(^{
+            self.hideControl = YES;
+        });
+    }];
+}
 
 - (void)setLockScreen:(BOOL)lockScreen {
     if ( self.isLockedScrren == lockScreen ) return;
@@ -136,8 +162,12 @@ inline static NSString *_formatWithSec(NSInteger sec) {
     if ( self.isHiddenControl == hideControl ) return;
     if ( self.isLockedScrren ) return;
     objc_setAssociatedObject(self, @selector(isHiddenControl), @(hideControl), OBJC_ASSOCIATION_RETAIN_NONATOMIC);
+    [self.timerControl reset];
     if ( hideControl ) [self _hideControlState];
-    else [self _showControlState];
+    else {
+        [self _showControlState];
+        [self _delayHiddenControl];
+    }
 }
 
 - (BOOL)isHiddenControl {
@@ -544,7 +574,7 @@ static UIView *target = nil;
     // default values
     self.autoplay = YES;
     self.generatePreviewImages = YES;
-
+    
     return self;
 }
 
@@ -696,6 +726,8 @@ static UIView *target = nil;
     _orentation.orientationChanged = ^(SJOrentationObserver * _Nonnull observer) {
         __strong typeof(_self) self = _self;
         if ( !self ) return;
+        [self _cancelDelayHiddenControl];
+        [self _delayHiddenControl];
         _sjAnima(^{
             self.hideControl = NO;
             self.hiddenMoreSecondarySettingView = YES;
@@ -786,13 +818,13 @@ static UIView *target = nil;
 - (void)sliderWillBeginDragging:(SJSlider *)slider {
     switch (slider.tag) {
         case SJVideoPlaySliderTag_Progress: {
-            [self pause];
+            [self _pause];
             NSInteger currentTime = slider.value * self.asset.duration;
             [self _refreshingTimeLabelWithCurrentTime:currentTime duration:self.asset.duration];
-            
             _sjAnima(^{
                 _sjShowViews(@[self.controlView.draggingProgressView]);
             });
+            [self _cancelDelayHiddenControl];
             self.controlView.draggingProgressView.progressSlider.value = slider.value;
             self.controlView.draggingProgressView.progressLabel.text = _formatWithSec(currentTime);
         }
@@ -828,6 +860,7 @@ static UIView *target = nil;
                 __strong typeof(_self) self = _self;
                 if ( !self ) return;
                 [self play];
+                [self _delayHiddenControl];
                 _sjAnima(^{
                     _sjHiddenViews(@[self.controlView.draggingProgressView]);
                 });
@@ -875,6 +908,7 @@ static UIView *target = nil;
         }
             break;
         case SJVideoPlayControlViewTag_Preview: {
+            [self _cancelDelayHiddenControl];
             _sjAnima(^{
                 self.controlView.previewView.hidden = !self.controlView.previewView.isHidden;
             });

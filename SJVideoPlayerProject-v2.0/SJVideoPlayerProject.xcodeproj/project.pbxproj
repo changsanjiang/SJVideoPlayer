@@ -221,8 +221,8 @@
 			isa = PBXGroup;
 			children = (
 				774B25461FCECA1F002113CC /* SJVideoPlayerHeader.h */,
-				775A7C1A1FD7C08C00BE1EE2 /* TimerControl */,
 				774B25481FCECA1F002113CC /* Player */,
+				775A7C1A1FD7C08C00BE1EE2 /* TimerControl */,
 				775A7C121FD78AE200BE1EE2 /* VolumeAndBrightness */,
 				775A7C041FD6673C00BE1EE2 /* OrentationObserver */,
 				775A7C161FD79EF100BE1EE2 /* Loading */,

@@ -54,7 +54,7 @@ s.subspec 'Category' do |ss|
 end
 
 s.subspec 'Control' do |ss|
-    ss.source_files = 'SJVideoPlayer/Control/*/**.{h,m}'
+    ss.source_files = 'SJVideoPlayer/Control/*.{h,m}'
     ss.dependency 'SJVideoPlayer/Other'
 end
 
@@ -99,18 +99,3 @@ s.subspec 'Resource' do |ss|
 end
 
 end
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-

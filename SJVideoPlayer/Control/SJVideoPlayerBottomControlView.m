@@ -139,19 +139,19 @@
 
 - (UILabel *)separateLabel {
     if ( _separateLabel ) return _separateLabel;
-    _separateLabel = [SJUIFactory labelWithText:@"/" textColor:[UIColor whiteColor] alignment:NSTextAlignmentCenter height:16];
+    _separateLabel = [SJUIFactory labelWithText:@"/" textColor:[UIColor whiteColor] alignment:NSTextAlignmentCenter font:[UIFont systemFontOfSize:13]];
     return _separateLabel;
 }
 
 - (UILabel *)durationTimeLabel {
     if ( _durationTimeLabel ) return _durationTimeLabel;
-    _durationTimeLabel = [SJUIFactory labelWithText:@"00:00" textColor:[UIColor whiteColor] alignment:NSTextAlignmentCenter height:16];
+    _durationTimeLabel = [SJUIFactory labelWithText:@"00:00" textColor:[UIColor whiteColor] alignment:NSTextAlignmentCenter font:[UIFont systemFontOfSize:13]];
     return _durationTimeLabel;
 }
 
 - (UILabel *)currentTimeLabel {
     if ( _currentTimeLabel ) return _currentTimeLabel;
-    _currentTimeLabel = [SJUIFactory labelWithText:@"00:00" textColor:[UIColor whiteColor] alignment:NSTextAlignmentCenter height:16];
+    _currentTimeLabel = [SJUIFactory labelWithText:@"00:00" textColor:[UIColor whiteColor] alignment:NSTextAlignmentCenter font:[UIFont systemFontOfSize:13]];
     return _currentTimeLabel;
 }
 

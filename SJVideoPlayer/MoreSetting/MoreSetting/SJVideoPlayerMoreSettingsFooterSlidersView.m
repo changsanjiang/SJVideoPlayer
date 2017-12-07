@@ -186,8 +186,7 @@
 }
 
 - (UILabel *)label {
-    UILabel *label = [SJUIFactory labelWithText:@"" textColor:[UIColor whiteColor] alignment:NSTextAlignmentCenter height:12];
-    label.font = [UIFont systemFontOfSize:12];
+    UILabel *label = [SJUIFactory labelWithText:@"" textColor:[UIColor whiteColor] alignment:NSTextAlignmentCenter font:[UIFont systemFontOfSize:12]];
     return label;
 }
 

@@ -85,7 +85,7 @@
 
 - (UIButton *)previewBtn {
     if ( _previewBtn ) return _previewBtn;
-    _previewBtn = [SJUIFactory buttonWithTitle:@"预览" titleColor:[UIColor whiteColor] height:16 backgroundColor:nil target:self sel:@selector(clickedBtn:) tag:SJVideoPlayControlViewTag_Preview];
+    _previewBtn = [SJUIFactory buttonWithTitle:@"预览" titleColor:[UIColor whiteColor] font:[UIFont systemFontOfSize:14] backgroundColor:nil target:self sel:@selector(clickedBtn:) tag:SJVideoPlayControlViewTag_Preview];
     return _previewBtn;
 }
 

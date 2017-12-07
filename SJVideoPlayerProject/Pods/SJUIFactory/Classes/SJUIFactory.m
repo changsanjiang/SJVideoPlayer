@@ -13,7 +13,7 @@
 /*!
  *  通过高度 get 到字体大小
  *
- *  不管粗体还是普通, 高度相同, 粗细不同. 
+ *  不管粗体还是普通, 高度相同, 粗细不同.
  *
  *  Height  Font    scale
  *  12      10      1.2
@@ -22,6 +22,31 @@
  *  36      30      1.2
  *  48      40      1.2
  */
+
+#pragma mark - Round View
+
+@interface SJRoundView : UIView
+@property (nonatomic, strong, readonly) CAShapeLayer *shapeLayer;
+@end
+@implementation SJRoundView
+- (void)layoutSubviews {
+    [super layoutSubviews];
+    self.layer.cornerRadius = MIN(self.bounds.size.width, self.bounds.size.height) * 0.5;
+    
+    //    CAShapeLayer *layer = [CAShapeLayer layer];
+    //    layer.frame = self.bounds;
+    //    layer.path = [UIBezierPath bezierPathWithArcCenter:_sjCenter(self.frame) radius:CGRectGetWidth(self.frame) * 0.5 startAngle:0 endAngle:M_PI * 2 clockwise:YES].CGPath;
+    //    self.layer.mask = layer;
+    
+}
+
+@synthesize shapeLayer = _shapeLayer;
+- (CAShapeLayer *)shapeLayer {
+    if ( _shapeLayer ) return _shapeLayer;
+    _shapeLayer = [CAShapeLayer layer];
+    return _shapeLayer;
+}
+@end
 
 #pragma mark - Line View
 
@@ -121,6 +146,13 @@
     return [UIFont boldSystemFontOfSize:height / 1.2];
 }
 
++ (void)commonShadowWithView:(UIView *)view {
+    view.layer.shadowColor = [UIColor colorWithWhite:0 alpha:0.2].CGColor;
+    view.layer.shadowOpacity = 1;
+    view.layer.shadowOffset = CGSizeMake(0.5, 0.5);
+    view.layer.masksToBounds = NO;
+}
+
 + (void)regulate:(UIView *)view cornerRadius:(CGFloat)cornerRadius {
     view.layer.cornerRadius = cornerRadius;
     view.layer.masksToBounds = YES;
@@ -133,7 +165,7 @@
     [view setContentCompressionResistancePriority:UILayoutPriorityRequired forAxis:UILayoutConstraintAxisHorizontal];
 }
 
-#pragma mark - 
+#pragma mark -
 + (UIView *)viewWithBackgroundColor:(UIColor *)backgroundColor {
     return [self viewWithBackgroundColor:backgroundColor frame:CGRectZero];
 }
@@ -143,6 +175,12 @@
     if ( !backgroundColor ) backgroundColor = [UIColor clearColor];
     view.backgroundColor = backgroundColor;
     view.frame = frame;
+    return view;
+}
+
++ (UIView *)roundViewWithBackgroundColor:(UIColor *)color {
+    SJRoundView *view = [SJRoundView new];
+    view.backgroundColor = color;
     return view;
 }
 
@@ -205,21 +243,83 @@ estimatedSectionFooterHeight:(CGFloat)estimatedSectionFooterHeight {
     tableView.estimatedSectionFooterHeight = estimatedSectionFooterHeight;
 }
 
-+ (UILabel *)labelWithText:(NSString *)text
-                   textColor:(UIColor *)textColor
-                   alignment:(NSTextAlignment)alignment
-                      height:(CGFloat)height; {
-    UILabel *label = [UILabel new];
-    [self settingLabelWithLabel:label text:text textColor:textColor alignment:alignment font:[self getFontWithViewHeight:height] attrStr:nil];
-    return label;
++ (UICollectionView *)collectionViewWithItemSize:(CGSize)itemSize backgroundColor:(UIColor *)backgroundColor {
+    UICollectionView *collectionView = [self collectionViewWithItemSize:itemSize backgroundColor:backgroundColor scrollDirection:UICollectionViewScrollDirectionVertical];
+    return collectionView;
 }
 
-+ (UILabel *)boldLabelWithText:(NSString *)text
-                     textColor:(UIColor *)textColor
-                     alignment:(NSTextAlignment)alignment
-                        height:(CGFloat)height {
+
++ (UICollectionView *)collectionViewWithItemSize:(CGSize)itemSize backgroundColor:(UIColor *)backgroundColor scrollDirection:(UICollectionViewScrollDirection)direction {
+    
+    CGFloat itemW = itemSize.width;
+    CGFloat itemH = itemSize.height;
+    UICollectionViewFlowLayout *flowLayout = [[UICollectionViewFlowLayout alloc] init];
+    flowLayout.itemSize = CGSizeMake(itemW, itemH);
+    flowLayout.minimumLineSpacing = 0.0;
+    flowLayout.minimumInteritemSpacing = 0.0;
+    flowLayout.scrollDirection = direction;
+    
+    UICollectionView *collectionView = [[UICollectionView alloc] initWithFrame:CGRectZero collectionViewLayout:flowLayout];
+    collectionView.backgroundColor = backgroundColor;
+    collectionView.showsHorizontalScrollIndicator = YES;
+    collectionView.showsVerticalScrollIndicator = YES;
+    
+    return collectionView;
+}
+
++ (UICollectionView *)collectionViewWithItemSize:(CGSize)itemSize backgroundColor:(UIColor *)backgroundColor scrollDirection:(UICollectionViewScrollDirection)direction headerSize:(CGSize)headerSize footerSize:(CGSize)footerSize {
+    CGFloat itemW = itemSize.width;
+    CGFloat itemH = itemSize.height;
+    UICollectionViewFlowLayout *flowLayout = [[UICollectionViewFlowLayout alloc] init];
+    flowLayout.itemSize = CGSizeMake(itemW, itemH);
+    flowLayout.minimumLineSpacing = 0.0;
+    flowLayout.minimumInteritemSpacing = 0.0;
+    flowLayout.scrollDirection = direction;
+    flowLayout.headerReferenceSize = headerSize;
+    flowLayout.footerReferenceSize = footerSize;
+    
+    UICollectionView *collectionView = [[UICollectionView alloc] initWithFrame:CGRectZero collectionViewLayout:flowLayout];
+    collectionView.backgroundColor = backgroundColor;
+    collectionView.showsHorizontalScrollIndicator = YES;
+    collectionView.showsVerticalScrollIndicator = YES;
+    
+    return collectionView;
+}
+
++ (UICollectionView *)collectionViewWithItemSize:(CGSize)itemSize backgroundColor:(UIColor *)backgroundColor scrollDirection:(UICollectionViewScrollDirection)scrollDirection minimumLineSpacing:(CGFloat)minimumLineSpacing minimumInteritemSpacing:(CGFloat)minimumInteritemSpacing {
+    CGFloat itemW = itemSize.width;
+    CGFloat itemH = itemSize.height;
+    UICollectionViewFlowLayout *flowLayout = [[UICollectionViewFlowLayout alloc] init];
+    flowLayout.itemSize = CGSizeMake(itemW, itemH);
+    flowLayout.minimumLineSpacing = minimumLineSpacing;
+    flowLayout.minimumInteritemSpacing = minimumInteritemSpacing;
+    flowLayout.scrollDirection = scrollDirection;
+    
+    UICollectionView *collectionView = [[UICollectionView alloc] initWithFrame:CGRectZero collectionViewLayout:flowLayout];
+    collectionView.backgroundColor = backgroundColor;
+    collectionView.showsHorizontalScrollIndicator = YES;
+    collectionView.showsVerticalScrollIndicator = YES;
+    return collectionView;
+}
+
++ (UILabel *)labelWithFont:(UIFont *)font
+                 textColor:(UIColor *)textColor {
+    return [self labelWithFont:font textColor:textColor alignment:0];
+}
+
+
++ (UILabel *)labelWithFont:(UIFont *)font
+                 textColor:(UIColor *)textColor
+                 alignment:(NSTextAlignment)alignment {
+    return [self labelWithText:nil textColor:textColor alignment:alignment font:font];
+}
+
++ (UILabel *)labelWithText:(NSString *)text
+                 textColor:(UIColor *)textColor
+                 alignment:(NSTextAlignment)alignment
+                      font:(UIFont *)font {
     UILabel *label = [UILabel new];
-    [self settingLabelWithLabel:label text:text textColor:textColor alignment:alignment font:[self getBoldFontWithViewHeight:height] attrStr:nil];
+    [self settingLabelWithLabel:label text:text textColor:textColor alignment:alignment font:font attrStr:nil];
     return label;
 }
 
@@ -246,21 +346,85 @@ estimatedSectionFooterHeight:(CGFloat)estimatedSectionFooterHeight {
 
 
 + (UIButton *)buttonWithTarget:(id)target sel:(SEL)sel {
-    UIButton *btn = [UIButton new];
-    [btn addTarget:target action:sel forControlEvents:UIControlEventTouchUpInside];
-    return btn;
+    return [self buttonWithBackgroundColor:nil target:target sel:sel];
+}
+
++ (UIButton *)buttonWithTarget:(id)target sel:(SEL)sel tag:(NSInteger)tag {
+    return [self buttonWithBackgroundColor:nil target:target sel:sel tag:tag];
+}
+
++ (UIButton *)buttonWithBackgroundColor:(UIColor *)color
+                                 target:(id)target
+                                    sel:(SEL)sel {
+    return [self buttonWithBackgroundColor:color target:target sel:sel tag:0];
 }
 
 
++ (UIButton *)buttonWithBackgroundColor:(UIColor *)color
+                                 target:(id)target
+                                    sel:(SEL)sel
+                                    tag:(NSInteger)tag {
+    UIButton *btn = [UIButton new];
+    [btn addTarget:target action:sel forControlEvents:UIControlEventTouchUpInside];
+    if ( !color ) color = [UIColor clearColor];
+    btn.backgroundColor = color;
+    btn.tag = tag;
+    return btn;
+}
+
++ (UIButton *)buttonWithImageName:(NSString *)imageName {
+    UIButton *btn = [UIButton new];
+    [btn setImage:[UIImage imageNamed:imageName] forState:UIControlStateNormal];
+    return btn;
+}
+
++ (UIButton *)buttonWithTitle:(NSString *)title titleColor:(UIColor *)titleColor {
+    UIButton *btn = [UIButton new];
+    [btn setTitle:title forState:UIControlStateNormal];
+    [btn setTitleColor:titleColor forState:UIControlStateNormal];
+    return btn;
+}
+
++ (UIButton *)buttonWithTitle:(NSString *)title titleColor:(UIColor *)titleColor imageName:(NSString *)imageName {
+    UIButton *btn = [self buttonWithTitle:title titleColor:titleColor];
+    [btn setImage:[UIImage imageNamed:imageName] forState:UIControlStateNormal];
+    return btn;
+}
+
 + (UIButton *)buttonWithTitle:(NSString *)title
                    titleColor:(UIColor *)titleColor
-                       height:(CGFloat)height
+                         font:(UIFont *)font
               backgroundColor:(UIColor *)backgroundColor
                        target:(id)target
                           sel:(SEL)sel
-                              tag:(NSInteger)tag {
+                          tag:(NSInteger)tag {
     UIButton *btn = [UIButton new];
-    [self settingButtonWithBtn:btn font:[self getFontWithViewHeight:height] title:title titleColor:titleColor attributedTitle:nil imageName:nil backgroundColor:backgroundColor target:target sel:sel tag:tag];
+    [self settingButtonWithBtn:btn font:font title:title titleColor:titleColor attributedTitle:nil imageName:nil backgroundColor:backgroundColor target:target sel:sel tag:tag];
+    return btn;
+}
+
++ (UIButton *)buttonWithTitle:(NSString *)title
+                   titleColor:(UIColor *)titleColor
+              backgroundColor:(UIColor *)backgroundColor
+                    imageName:(NSString *)imageName
+                       target:(id)target
+                          sel:(SEL)sel
+                          tag:(NSInteger)tag {
+    UIButton *btn = [UIButton new];
+    [self settingButtonWithBtn:btn font:[UIFont systemFontOfSize:14] title:nil titleColor:titleColor attributedTitle:nil imageName:nil backgroundColor:backgroundColor target:target sel:sel tag:tag];
+    return btn;
+}
+
++ (UIButton *)buttonWithTitle:(NSString *)title
+                   titleColor:(UIColor *)titleColor
+                         font:(UIFont *)font
+              backgroundColor:(UIColor *)backgroundColor
+                    imageName:(NSString *)imageName
+                       target:(id)target
+                          sel:(SEL)sel
+                          tag:(NSInteger)tag {
+    UIButton *btn = [UIButton new];
+    [self settingButtonWithBtn:btn font:font title:title titleColor:titleColor attributedTitle:nil imageName:imageName backgroundColor:backgroundColor target:target sel:sel tag:tag];
     return btn;
 }
 
@@ -283,31 +447,20 @@ estimatedSectionFooterHeight:(CGFloat)estimatedSectionFooterHeight {
     if ( target ) [btn addTarget:target action:sel forControlEvents:UIControlEventTouchUpInside];
     if ( font ) [btn.titleLabel setFont:font];
     if ( imageName ) [btn setImage:[UIImage imageNamed:imageName] forState:UIControlStateNormal];
+    btn.titleLabel.numberOfLines = 0;
     btn.tag = tag;
 }
 
 + (UIButton *)buttonWithSubClass:(Class)subClass
                            title:(NSString *)title
                       titleColor:(UIColor *)titleColor
-                          height:(CGFloat)height
+                            font:(UIFont *)font
                  backgroundColor:(UIColor *)backgroundColor
                           target:(id)target
                              sel:(SEL)sel
                              tag:(NSInteger)tag {
     UIButton *btn = [subClass new];
-    [self settingButtonWithBtn:btn font:[self getFontWithViewHeight:height] title:title titleColor:titleColor attributedTitle:nil imageName:nil backgroundColor:backgroundColor target:target sel:sel tag:tag];
-    return btn;
-}
-
-+ (UIButton *)buttonWithBoldTitle:(NSString *)title
-                       titleColor:(UIColor *)titleColor
-                           height:(CGFloat)height
-                  backgroundColor:(UIColor *)backgroundColor
-                           target:(id)target
-                              sel:(SEL)sel
-                              tag:(NSInteger)tag {
-    UIButton *btn = [UIButton new];
-    [self settingButtonWithBtn:btn font:[self getBoldFontWithViewHeight:height] title:title titleColor:titleColor attributedTitle:nil imageName:nil backgroundColor:backgroundColor target:target sel:sel tag:tag];
+    [self settingButtonWithBtn:btn font:font title:title titleColor:titleColor attributedTitle:nil imageName:nil backgroundColor:backgroundColor target:target sel:sel tag:tag];
     return btn;
 }
 
@@ -332,25 +485,25 @@ estimatedSectionFooterHeight:(CGFloat)estimatedSectionFooterHeight {
 
 + (UIButton *)roundButtonWithTitle:(NSString *)title
                         titleColor:(UIColor *)titleColor
-                            height:(CGFloat)height
+                              font:(UIFont *)font
                    backgroundColor:(UIColor *)backgroundColor
                             target:(id)target
                                sel:(SEL)sel
                                tag:(NSInteger)tag {
-    return [self buttonWithSubClass:[SJRoundButton class] title:title titleColor:titleColor height:height backgroundColor:backgroundColor target:target sel:sel tag:tag];
+    return [self buttonWithSubClass:[SJRoundButton class] title:title titleColor:titleColor font:font backgroundColor:backgroundColor target:target sel:sel tag:tag];
 }
 
 
 
 + (UIButton *)roundButtonWithBoldTitle:(NSString *)title
                             titleColor:(UIColor *)titleColor
-                                height:(CGFloat)height
+                                  font:(UIFont *)font
                        backgroundColor:(UIColor *)backgroundColor
                                 target:(id)target
                                    sel:(SEL)sel
                                    tag:(NSInteger)tag {
     UIButton *btn = [SJRoundButton new];
-    [self settingButtonWithBtn:btn font:[self getBoldFontWithViewHeight:height] title:title titleColor:titleColor attributedTitle:nil imageName:nil backgroundColor:backgroundColor target:target sel:sel tag:tag];
+    [self settingButtonWithBtn:btn font:font title:title titleColor:titleColor attributedTitle:nil imageName:nil backgroundColor:backgroundColor target:target sel:sel tag:tag];
     return btn;
 }
 
@@ -368,14 +521,18 @@ estimatedSectionFooterHeight:(CGFloat)estimatedSectionFooterHeight {
 
 
 + (UIButton *)roundButtonWithAttributeTitle:(NSAttributedString *)attrStr
-                                     height:(CGFloat)height
+                                       font:(UIFont *)font
                             backgroundColor:(UIColor *)backgroundColor
                                      target:(id)target
                                         sel:(SEL)sel
                                         tag:(NSInteger)tag {
     UIButton *btn = [SJRoundButton new];
-    [self settingButtonWithBtn:btn font:[self getFontWithViewHeight:height] title:nil titleColor:nil attributedTitle:attrStr imageName:nil backgroundColor:backgroundColor target:target sel:sel tag:tag];
+    [self settingButtonWithBtn:btn font:font title:nil titleColor:nil attributedTitle:attrStr imageName:nil backgroundColor:backgroundColor target:target sel:sel tag:tag];
     return btn;
+}
+
++ (UIImageView *)imageViewWithViewMode:(UIViewContentMode)mode {
+    return [self imageViewWithImageName:nil];
 }
 
 + (UIImageView *)imageViewWithImageName:(NSString *)imageName
@@ -423,7 +580,7 @@ estimatedSectionFooterHeight:(CGFloat)estimatedSectionFooterHeight {
 + (UITextField *)textFieldWithPlaceholder:(NSString *)placeholder
                          placeholderColor:(UIColor *)placeholderColor
                                      text:(NSString *)text
-                                   height:(CGFloat)height
+                                     font:(UIFont *)font
                                 textColor:(UIColor *)textColor
                              keyboardType:(UIKeyboardType)keyboardType
                             returnKeyType:(UIReturnKeyType)returnKeyType
@@ -435,7 +592,7 @@ estimatedSectionFooterHeight:(CGFloat)estimatedSectionFooterHeight {
     }
     else textField.placeholder = placeholder;
     textField.text = text;
-    textField.font = [self getFontWithViewHeight:height];
+    textField.font = font;
     if ( !textColor ) textColor = [UIColor blackColor];
     textField.keyboardType = keyboardType;
     textField.textColor = textColor;
@@ -447,7 +604,7 @@ estimatedSectionFooterHeight:(CGFloat)estimatedSectionFooterHeight {
 
 + (UITextField *)textFieldWithAttrPlaceholder:(NSAttributedString *)placeholder
                                          text:(NSString *)text
-                                       height:(CGFloat)height
+                                         font:(UIFont *)font
                                     textColor:(UIColor *)textColor
                                  keyboardType:(UIKeyboardType)keyboardType
                                 returnKeyType:(UIReturnKeyType)returnKeyType
@@ -455,7 +612,7 @@ estimatedSectionFooterHeight:(CGFloat)estimatedSectionFooterHeight {
     UITextField *textField = [UITextField new];
     textField.attributedPlaceholder = placeholder;
     textField.text = text;
-    textField.font = [self getFontWithViewHeight:height];
+    textField.font = font;
     if ( !textColor ) textColor = [UIColor blackColor];
     textField.keyboardType = keyboardType;
     textField.textColor = textColor;
@@ -499,10 +656,10 @@ estimatedSectionFooterHeight:(CGFloat)estimatedSectionFooterHeight {
 #pragma mark -
 - (void)
 alterPickerViewControllerWithController:(UIViewController *)controller
-                             alertTitle:(NSString *)title
-                                    msg:(NSString *)msg
-                           photoLibrary:(void(^)(UIImage *selectedImage))photoLibraryBlock
-                                 camera:(void(^)(UIImage *selectedImage))cameraBlock {
+alertTitle:(NSString *)title
+msg:(NSString *)msg
+photoLibrary:(void(^)(UIImage *selectedImage))photoLibraryBlock
+camera:(void(^)(UIImage *selectedImage))cameraBlock {
     NSMutableArray<NSString *> *titlesM = [NSMutableArray new];
     NSMutableArray<void(^)(void)> *actionsM = [NSMutableArray new];
     
@@ -536,7 +693,7 @@ alterPickerViewControllerWithController:(UIViewController *)controller
         });
     }];
     
-
+    
     UIAlertController *alertController = [UIAlertController alertControllerWithTitle:title message:msg preferredStyle:UIAlertControllerStyleActionSheet];
     
     // actions

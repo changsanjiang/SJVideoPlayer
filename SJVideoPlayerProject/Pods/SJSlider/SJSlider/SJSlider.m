@@ -146,7 +146,7 @@
 - (instancetype)initWithFrame:(CGRect)frame {
     self = [super initWithFrame:frame];
     if ( !self ) return nil;
-
+    
     [self _SJSliderObservers];
     
     [self _SJSliderSetupUI];
@@ -458,3 +458,4 @@
 }
 
 @end
+

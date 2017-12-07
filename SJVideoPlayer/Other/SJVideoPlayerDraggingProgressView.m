@@ -62,8 +62,7 @@
 
 - (UILabel *)progressLabel {
     if ( _progressLabel ) return _progressLabel;
-    _progressLabel = [SJUIFactory labelWithText:@"00:00" textColor:[UIColor whiteColor] alignment:NSTextAlignmentCenter height:10];
-    _progressLabel.font = [UIFont systemFontOfSize:60];
+    _progressLabel = [SJUIFactory labelWithText:@"00:00" textColor:[UIColor whiteColor] alignment:NSTextAlignmentCenter font:[UIFont boldSystemFontOfSize:42]];
     return _progressLabel;
 }
 

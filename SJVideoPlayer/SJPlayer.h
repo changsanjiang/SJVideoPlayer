@@ -9,5 +9,6 @@
 #ifndef SJPlayer_h
 #define SJPlayer_h
 
+#import "SJVideoPlayer.h"
 
 #endif /* SJPlayer_h */

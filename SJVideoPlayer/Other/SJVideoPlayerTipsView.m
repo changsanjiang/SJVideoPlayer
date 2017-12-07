@@ -125,8 +125,7 @@
 
 - (UILabel *)titleLabel {
     if ( _titleLabel ) return _titleLabel;
-    _titleLabel = [SJUIFactory labelWithText:@"" textColor:SJThemeColor alignment:NSTextAlignmentCenter height:0];
-    _titleLabel.font = [UIFont boldSystemFontOfSize:16];
+    _titleLabel = [SJUIFactory labelWithText:@"" textColor:SJThemeColor alignment:NSTextAlignmentCenter font:[UIFont boldSystemFontOfSize:14]];
     return _titleLabel;
 }
 
@@ -157,7 +156,7 @@
 
 - (UILabel *)minShowTitleLabel {
     if ( _minShowTitleLabel  ) return _minShowTitleLabel;
-    _minShowTitleLabel = [SJUIFactory labelWithText:@"" textColor:SJThemeColor alignment:NSTextAlignmentCenter height:12];
+    _minShowTitleLabel = [SJUIFactory labelWithText:@"" textColor:SJThemeColor alignment:NSTextAlignmentCenter font:[UIFont systemFontOfSize:10]];
     _minShowTitleLabel.hidden = YES;
     _minShowTitleLabel.font = [UIFont systemFontOfSize:12];
     return _minShowTitleLabel;

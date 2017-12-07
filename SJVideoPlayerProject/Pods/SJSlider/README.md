@@ -38,9 +38,7 @@ ___
 ```Objective-C    
     SJSlider *slider = [SJSlider new];
     [self.view addSubview:slider];
-    slider.isRound = NO;
     slider.frame = CGRectMake(20, 100, 200, 10);
-    slider.thumbImageView.image = [UIImage imageNamed:@"thumb"];
     slider.value = 0.5;
     slider.enableBufferProgress = YES;
     slider.bufferProgress = 0.8;

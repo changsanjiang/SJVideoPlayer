@@ -405,7 +405,7 @@ typedef NS_ENUM(NSUInteger, SJVerticalPanLocation) {
 
 - (BOOL)gestureRecognizerShouldBegin:(UIGestureRecognizer *)gestureRecognizer {
     if ( self.isLockedScrren ) return NO;
-    if ( gestureRecognizer != self.controlView.singleTap &&
+    if ( gestureRecognizer == self.controlView.panGR &&
          self.playOnCell &&
          !self.orentation.fullScreen ) return NO;
     if ( [self _isFadeAreaWithGesture:gestureRecognizer] ) return NO;

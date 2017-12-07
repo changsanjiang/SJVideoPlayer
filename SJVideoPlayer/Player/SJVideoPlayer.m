@@ -27,7 +27,7 @@
 
 #define MoreSettingWidth (MAX([UIScreen mainScreen].bounds.size.width, [UIScreen mainScreen].bounds.size.height) * 0.382)
 
-inline static void _sjErrorLog(NSString *msg) {
+inline static void _sjErrorLog(id msg) {
     NSLog(@"__error__: %@", msg);
 }
 
@@ -1010,7 +1010,7 @@ static UIView *target = nil;
     [self _stopLoading];
     [self _playFailedState];
     self.error = self.asset.playerItem.error;
-    _sjErrorLog([NSString stringWithFormat:@"%@", self.error]);
+    _sjErrorLog(self.error);
 }
 
 - (void)_itemReadyToPlay {

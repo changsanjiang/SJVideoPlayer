@@ -1010,7 +1010,7 @@ static UIView *target = nil;
     [self _stopLoading];
     [self _playFailedState];
     self.error = self.asset.playerItem.error;
-    _sjErrorLog(self.error);
+    _sjErrorLog([NSString stringWithFormat:@"%@", self.error]);
 }
 
 - (void)_itemReadyToPlay {

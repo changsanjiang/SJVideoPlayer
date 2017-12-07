@@ -64,12 +64,21 @@
         [Player showTitle:@"分享到weibo"];
     }];
     
-    SJVideoPlayerMoreSetting *share = [[SJVideoPlayerMoreSetting alloc] initWithTitle:@"share" image:[UIImage imageNamed:@"share"] showTowSetting:YES twoSettingTopTitle:@"shareTitle" twoSettingItems:@[QQ, wechat, weibo] clickedExeBlock:^(SJVideoPlayerMoreSetting * _Nonnull model) {
+    SJVideoPlayerMoreSetting *share = [[SJVideoPlayerMoreSetting alloc] initWithTitle:@"share" image:[UIImage imageNamed:@"share"] showTowSetting:YES twoSettingTopTitle:@"分享到" twoSettingItems:@[QQ, wechat, weibo] clickedExeBlock:^(SJVideoPlayerMoreSetting * _Nonnull model) {
         [Player showTitle:@"clicked Share"];
     }];
     
-//    shareItem.twoSettingItems
-    Player.moreSettings = @[share];
+    SJVideoPlayerMoreSetting *download = [[SJVideoPlayerMoreSetting alloc] initWithTitle:@"下载" image:[UIImage imageNamed:@"download"] clickedExeBlock:^(SJVideoPlayerMoreSetting * _Nonnull model) {
+        [Player showTitle:@"clicked download"];
+    }];
+    
+    SJVideoPlayerMoreSetting *collection = [[SJVideoPlayerMoreSetting alloc] initWithTitle:@"收藏" image:[UIImage imageNamed:@"collection"] clickedExeBlock:^(SJVideoPlayerMoreSetting * _Nonnull model) {
+        [Player showTitle:@"clicked collection"];
+    }];
+    
+    SJVideoPlayerMoreSetting.titleFontSize = 10;
+    
+    Player.moreSettings = @[share, download, collection];
 }
 
 - (void)dealloc {

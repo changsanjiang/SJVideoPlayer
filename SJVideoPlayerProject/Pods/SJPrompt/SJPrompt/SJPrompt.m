@@ -15,55 +15,13 @@
 #define SJPrompt_F   (14)
 
 
-@interface NSTimer (SJPromptExtension)
-
-+ (instancetype)sjprompt_scheduledTimerWithTimeInterval:(NSTimeInterval)ti exeBlock:(void(^)(void))block repeats:(BOOL)yesOrNo;
-
-@end
-
-@implementation NSTimer (SJPromptExtension)
-
-+ (instancetype)sjprompt_scheduledTimerWithTimeInterval:(NSTimeInterval)ti exeBlock:(void(^)(void))block repeats:(BOOL)yesOrNo {
-    NSAssert(block, @"block 不可为空");
-    return [self scheduledTimerWithTimeInterval:ti target:self selector:@selector(sjprompt_exeTimerEvent:) userInfo:[block copy] repeats:yesOrNo];
-}
-
-+ (void)sjprompt_exeTimerEvent:(NSTimer *)timer {
-    void(^block)(void) = timer.userInfo;
-    if ( block ) block();
-}
-
-@end
-
-
-
-
 @interface SJPrompt ()
 
 @property (nonatomic, strong, readwrite) UIView *presentView;
-
 @property (nonatomic, strong, readonly) UIView *backgroundView;
-
 @property (nonatomic, strong, readonly) UILabel *promptLabel;
 
-@property (nonatomic, strong, readwrite) NSTimer *hiddenPromptTimer;
-@property (nonatomic, assign, readwrite) NSTimeInterval hiddenPoint;
-@property (nonatomic, assign, readwrite) NSTimeInterval duration;
-
 @end
-
-
-
-@interface SJPrompt (DBObservers)
-
-- (void)_installObservers;
-
-- (void)_removeObservers;
-
-@end
-
-
-#pragma mark -
 
 @implementation SJPrompt
 
@@ -80,14 +38,7 @@
     self = [super init];
     if ( !self ) return self;
     [self _setupView];
-    [self _installObservers];
     return self;
-}
-
-- (void)dealloc {
-    [_hiddenPromptTimer invalidate];
-    _hiddenPromptTimer = nil;
-    [self _removeObservers];
 }
 
 // MARK: Public
@@ -101,12 +52,9 @@
     }];
     _promptLabel.text = title;
     [self _show];
-    [_hiddenPromptTimer invalidate];
-    _hiddenPromptTimer = nil;
+    [NSObject cancelPreviousPerformRequestsWithTarget:self selector:@selector(_hidden) object:nil];
     if ( duration == - 1 ) return;
-    self.hiddenPoint = 0;
-    self.duration = duration;
-    [self.hiddenPromptTimer fire];
+    [self performSelector:@selector(_hidden) withObject:nil afterDelay:duration];
 }
 
 - (void)hidden {
@@ -161,17 +109,6 @@
     return _promptLabel;
 }
 
-- (NSTimer *)hiddenPromptTimer {
-    if ( _hiddenPromptTimer ) return _hiddenPromptTimer;
-    __weak typeof(self) _self = self;
-    _hiddenPromptTimer = [NSTimer sjprompt_scheduledTimerWithTimeInterval:0.1 exeBlock:^{
-        __strong typeof(_self) self = _self;
-        if ( !self ) return;
-        self.hiddenPoint += 0.1;
-    } repeats:YES];
-    return _hiddenPromptTimer;
-}
-
 - (CGSize)sizeFortitle:(NSString *)title size:(CGSize)size {
     CGSize result;
     if ( [title respondsToSelector:@selector(boundingRectWithSize:options:attributes:context:)] ) {
@@ -191,27 +128,3 @@
 }
 
 @end
-
-
-#pragma mark -
-
-@implementation SJPrompt (DBObservers)
-
-- (void)_installObservers {
-    [self addObserver:self  forKeyPath:@"hiddenPoint" options:NSKeyValueObservingOptionNew context:nil];
-}
-
-- (void)_removeObservers {
-    [self removeObserver:self forKeyPath:@"hiddenPoint"];
-}
-
-- (void)observeValueForKeyPath:(NSString *)keyPath ofObject:(id)object change:(NSDictionary<NSKeyValueChangeKey,id> *)change context:(void *)context {
-    if ( _hiddenPoint > _duration ) {
-        [self _hidden];
-        [_hiddenPromptTimer invalidate];
-        _hiddenPromptTimer = nil;
-    }
-}
-
-@end
-

@@ -12,6 +12,8 @@
 
 @property (nonatomic, assign, readwrite) CGFloat startMargin;
 @property (nonatomic, assign, readwrite) CGFloat endMargin;
+@property (nonatomic, strong, readwrite) UIBezierPath *bezierPath;
+@property (nonatomic, strong, readonly) CAShapeLayer *shapeLayer;
 
 @end
 
@@ -29,50 +31,60 @@
     view.endMargin = endMargin;
     view.lineColor = color;
     view.lineWidth = width;
+    view.bezierPath = [UIBezierPath bezierPath];
     return view;
 }
 
-- (void)drawRect:(CGRect)rect {
-    [super drawRect:rect];
-    UIBezierPath *bezierPath = [UIBezierPath bezierPath];
-    bezierPath.lineWidth = 1.0;
-    
-    CGPoint movePoint = CGPointZero;
-    CGPoint addLineToPoint = CGPointZero;
-    
+- (void)layoutSubviews {
+    [super layoutSubviews];
     if ( 0 == _side ) return;
+    
     if ( SJBorderlineSideAll == ( _side & SJBorderlineSideAll ) ) {
         _side = SJBorderlineSideTop | SJBorderlineSideLeading | SJBorderlineSideBottom | SJBorderlineSideTrailing;
     }
     
+    CGPoint movePoint = CGPointZero;
+    CGPoint addLineToPoint = CGPointZero;
+    CGRect rect = self.bounds;
     if ( SJBorderlineSideTop == ( _side & SJBorderlineSideTop ) ) {
-        movePoint = CGPointMake(_startMargin, 0);
-        addLineToPoint = CGPointMake(rect.size.width - _endMargin, 0);
-        [self drawLineWithBezierPath:bezierPath MovePoint:movePoint addLineToPoint:addLineToPoint];
+        movePoint = CGPointMake(_startMargin, _lineWidth * 0.5);
+        addLineToPoint = CGPointMake(rect.size.width - _endMargin, _lineWidth * 0.5);
+        UIBezierPath *bezierPath = [UIBezierPath bezierPath];
+        [bezierPath moveToPoint:movePoint];
+        [bezierPath addLineToPoint:addLineToPoint];
+        [_bezierPath appendPath:bezierPath];
     }
+    
     if ( SJBorderlineSideLeading == ( _side & SJBorderlineSideLeading ) ) {
-        movePoint = CGPointMake(0, _startMargin);
-        addLineToPoint = CGPointMake(0, rect.size.height - _endMargin);
-        [self drawLineWithBezierPath:bezierPath MovePoint:movePoint addLineToPoint:addLineToPoint];
+        movePoint = CGPointMake(_lineWidth * 0.5, _startMargin);
+        addLineToPoint = CGPointMake(_lineWidth * 0.5, rect.size.height - _endMargin);
+        UIBezierPath *bezierPath = [UIBezierPath bezierPath];
+        [bezierPath moveToPoint:movePoint];
+        [bezierPath addLineToPoint:addLineToPoint];
+        [_bezierPath appendPath:bezierPath];
     }
+    
     if ( SJBorderlineSideBottom == ( _side & SJBorderlineSideBottom ) ) {
-        movePoint = CGPointMake(_startMargin, rect.size.height);
-        addLineToPoint = CGPointMake(rect.size.width - _endMargin, rect.size.height);
-        [self drawLineWithBezierPath:bezierPath MovePoint:movePoint addLineToPoint:addLineToPoint];
+        movePoint = CGPointMake(_startMargin, rect.size.height - _lineWidth * 0.5);
+        addLineToPoint = CGPointMake(rect.size.width - _endMargin, rect.size.height - _lineWidth * 0.5);
+        UIBezierPath *bezierPath = [UIBezierPath bezierPath];
+        [bezierPath moveToPoint:movePoint];
+        [bezierPath addLineToPoint:addLineToPoint];
+        [_bezierPath appendPath:bezierPath];
     }
     if ( SJBorderlineSideTrailing == ( _side & SJBorderlineSideTrailing ) ) {
-        movePoint = CGPointMake(rect.size.width, _startMargin);
-        addLineToPoint = CGPointMake(rect.size.width, rect.size.height - _endMargin);
-        [self drawLineWithBezierPath:bezierPath MovePoint:movePoint addLineToPoint:addLineToPoint];
+        movePoint = CGPointMake(rect.size.width - _lineWidth * 0.5, _startMargin);
+        addLineToPoint = CGPointMake(rect.size.width - _lineWidth * 0.5, rect.size.height - _endMargin);
+        UIBezierPath *bezierPath = [UIBezierPath bezierPath];
+        [bezierPath moveToPoint:movePoint];
+        [bezierPath addLineToPoint:addLineToPoint];
+        [_bezierPath appendPath:bezierPath];
     }
-}
-
-- (void)drawLineWithBezierPath:(UIBezierPath *)bezierPath MovePoint:(CGPoint)movePoint addLineToPoint:(CGPoint)addLineToPoint {
-    bezierPath.lineWidth = _lineWidth * 2;
-    [bezierPath moveToPoint:movePoint];
-    [bezierPath addLineToPoint:addLineToPoint];
-    [_lineColor setStroke];
-    [bezierPath strokeWithBlendMode:kCGBlendModeCopy alpha:1];
+    
+    self.shapeLayer.path = _bezierPath.CGPath;
+    self.shapeLayer.lineWidth = _lineWidth;
+    self.shapeLayer.strokeColor = _lineColor.CGColor;
+    [_bezierPath removeAllPoints];
 }
 
 - (void)setLineColor:(UIColor *)lineColor {
@@ -93,6 +105,15 @@
 }
 
 - (void)update {
-    [self setNeedsDisplay];
+    [self layoutSubviews];
+}
+
+@synthesize shapeLayer = _shapeLayer;
+- (CAShapeLayer *)shapeLayer {
+    if ( _shapeLayer ) return _shapeLayer;
+    _shapeLayer = [CAShapeLayer layer];
+    _shapeLayer.fillColor = [UIColor clearColor].CGColor;
+    [self.layer addSublayer:_shapeLayer];
+    return _shapeLayer;
 }
 @end

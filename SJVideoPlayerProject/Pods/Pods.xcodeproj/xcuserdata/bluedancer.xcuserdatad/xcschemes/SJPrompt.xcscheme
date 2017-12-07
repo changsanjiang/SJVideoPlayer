@@ -14,7 +14,7 @@
             buildForAnalyzing = "YES">
             <BuildableReference
                BuildableIdentifier = "primary"
-               BlueprintIdentifier = "01B776E0971D06184E420B8A504FEFFC"
+               BlueprintIdentifier = "F03FF23F2669D03B44BF2738A87C80E4"
                BuildableName = "libSJPrompt.a"
                BlueprintName = "SJPrompt"
                ReferencedContainer = "container:Pods.xcodeproj">
@@ -47,7 +47,7 @@
       <MacroExpansion>
          <BuildableReference
             BuildableIdentifier = "primary"
-            BlueprintIdentifier = "01B776E0971D06184E420B8A504FEFFC"
+            BlueprintIdentifier = "F03FF23F2669D03B44BF2738A87C80E4"
             BuildableName = "libSJPrompt.a"
             BlueprintName = "SJPrompt"
             ReferencedContainer = "container:Pods.xcodeproj">

@@ -40,7 +40,7 @@
     return [self initWithTitle:title image:image showTowSetting:NO twoSettingTopTitle:@"" twoSettingItems:@[] clickedExeBlock:block];
 }
 
-- (instancetype)initWithTitle:(NSString *)title image:(UIImage *)image showTowSetting:(BOOL)showTowSetting twoSettingTopTitle:(nonnull NSString *)twoSettingTopTitle twoSettingItems:(nonnull NSArray<SJVideoPlayerMoreSettingTwoSetting *> *)items clickedExeBlock:(nonnull void (^)(SJVideoPlayerMoreSetting * _Nonnull))block {
+- (instancetype)initWithTitle:(NSString *)title image:(UIImage *)image showTowSetting:(BOOL)showTowSetting twoSettingTopTitle:(nonnull NSString *)twoSettingTopTitle twoSettingItems:(nonnull NSArray<SJVideoPlayerMoreSettingSecondary *> *)items clickedExeBlock:(nonnull void (^)(SJVideoPlayerMoreSetting * _Nonnull))block {
     self = [super init];
     if ( !self ) return self;
     self.title = title;

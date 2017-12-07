@@ -8,6 +8,8 @@
 
 #import "SJVideoPlayerSettings.h"
 
+NSNotificationName const SJSettingsPlayerNotification = @"SJSettingsPlayerNotification";
+
 @implementation SJVideoPlayerSettings
 
 @end

@@ -146,6 +146,8 @@
 - (instancetype)initWithFrame:(CGRect)frame {
     self = [super initWithFrame:frame];
     if ( !self ) return nil;
+
+    [self _SJSliderObservers];
     
     [self _SJSliderSetupUI];
     
@@ -153,7 +155,6 @@
     
     [self _SJSliderPanGR];
     
-    [self _SJSliderObservers];
     
     return self;
 }
@@ -173,6 +174,7 @@
 }
 
 - (void)setValue:(CGFloat)value {
+    if ( isnan(value) ) return;
     if      ( value < self.minValue ) value = self.minValue;
     else if ( value > self.maxValue ) value = self.maxValue;
     _value = value;
@@ -345,11 +347,13 @@
 - (void)observeValueForKeyPath:(NSString *)keyPath ofObject:(id)object change:(NSDictionary<NSKeyValueChangeKey,id> *)change context:(void *)context  {
     if ( ![keyPath isEqualToString:@"value"] ) return;
     CGFloat rate = self.rate;
-    CGFloat minX = _thumbImageView.csj_w * 0.25 / self.containerView.csj_w;
-    // spacing
-    if ( 0 == minX ) {}
-    else if ( rate < minX ) rate = minX;
-    else if ( rate > (1 - minX) ) rate = 1 - minX;
+    if ( 0 != self.containerView.csj_w ) {
+        CGFloat minX = 0;
+        minX = _thumbImageView.csj_w * 0.25 / self.containerView.csj_w;
+        // spacing
+        if ( rate < minX ) rate = minX;
+        else if ( rate > (1 - minX) ) rate = 1 - minX;
+    }
     [_traceImageView mas_remakeConstraints:^(MASConstraintMaker *make) {
         make.top.leading.bottom.offset(0);
         make.width.equalTo(_traceImageView.superview).multipliedBy(rate);

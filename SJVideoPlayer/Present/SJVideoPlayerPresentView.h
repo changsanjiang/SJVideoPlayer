@@ -2,73 +2,30 @@
 //  SJVideoPlayerPresentView.h
 //  SJVideoPlayerProject
 //
-//  Created by BlueDancer on 2017/8/18.
+//  Created by BlueDancer on 2017/11/29.
 //  Copyright © 2017年 SanJiang. All rights reserved.
 //
 
 #import <UIKit/UIKit.h>
+#import <AVFoundation/AVFoundation.h>
 
+@class SJVideoPlayerAssetCarrier;
 
-typedef NS_ENUM(NSUInteger, SJVideoPlayerPresentOrientation) {
-    SJVideoPlayerPresentOrientationPortrait = 0,
-    SJVideoPlayerPresentOrientationLandscapeLeft,
-    SJVideoPlayerPresentOrientationLandscapeRight,
-};
-
-
-@class AVPlayer, AVAsset, SJVideoPlayerAssetCarrier;
+NS_ASSUME_NONNULL_BEGIN
 
 @interface SJVideoPlayerPresentView : UIView
 
-@property (nonatomic, weak, readwrite) SJVideoPlayerAssetCarrier *assetCarrier;
+- (AVPlayerLayer *)avLayer;
 
-- (void)setPlaceholderImage:(UIImage *)placeholderImage;
+@property (nonatomic, weak, readwrite, nullable) SJVideoPlayerAssetCarrier *asset;
 
-@property (nonatomic, copy, readwrite) void(^back)(void);
+@property (nonatomic, strong, readonly) UIImageView *placeholderImageView;
 
-- (void)sjReset;
+@property (nonatomic, copy, readwrite, nullable) void(^readyForDisplay)(SJVideoPlayerPresentView *view);
 
-- (UIImage *)screenshot;
-
-@property (nonatomic, assign, readonly) BOOL isLandscapeVideo;
-
-@end
-
-
-#pragma mark -
-
-@interface SJVideoPlayerPresentView (PresentViewRotation)
-
-/*!
- *  default is Portrait.
- */
-@property (nonatomic, assign, readonly) SJVideoPlayerPresentOrientation orientation;
-
-/*!
- *  default is NO.
- */
-@property (nonatomic, assign, readwrite, getter=isEnabledRotation) BOOL enabledRotation;
+/// default is AVLayerVideoGravityResizeAspect.
+@property (nonatomic, strong, readwrite) AVLayerVideoGravity videoGravity;
 
 @end
 
-
-#pragma mark -
-
-#import "SJVideoPlayerControl.h"
-
-@interface SJVideoPlayerPresentView (ControlDelegateMethods)<SJVideoPlayerControlDelegate>
-
-@end
-
-
-
-
-#pragma mark -
-
-#import "SJVideoPlayerAssetCarrier.h"
-
-@interface SJVideoPlayerAssetCarrier (PresentViewExtention)
-
-@property (nonatomic, weak) UIView *presentViewSuperView;
-
-@end
+NS_ASSUME_NONNULL_END

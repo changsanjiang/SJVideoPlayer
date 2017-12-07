@@ -2,209 +2,58 @@
 //  SJVideoPlayerControlView.h
 //  SJVideoPlayerProject
 //
-//  Created by BlueDancer on 2017/8/18.
+//  Created by BlueDancer on 2017/11/29.
 //  Copyright © 2017年 SanJiang. All rights reserved.
 //
 
-#import <UIKit/UIKit.h>
+#import "SJVideoPlayerBaseView.h"
 #import "SJVideoPlayerControlViewEnumHeader.h"
-#import <CoreMedia/CMTime.h>
+#import "SJVideoPlayerTopControlView.h"
+#import "SJVideoPlayerLeftControlView.h"
+#import "SJVideoPlayerBottomControlView.h"
+#import "SJVideoPlayerCenterControlView.h"
+#import "SJVideoPlayerPreviewView.h"
+#import "SJVideoPlayerDraggingProgressView.h"
+
+
+#define SJControlTopH (100)
+#define SJControlLeftH (49)
+#define SJControlBottomH (100)
+
 
 NS_ASSUME_NONNULL_BEGIN
 
-
-#define SJSCREEN_H          CGRectGetHeight([[UIScreen mainScreen] bounds])
-#define SJSCREEN_W          CGRectGetWidth([[UIScreen mainScreen] bounds])
-
-#define SJSCREEN_MIN        MIN(SJSCREEN_H,SJSCREEN_W)
-#define SJSCREEN_MAX        MAX(SJSCREEN_H,SJSCREEN_W)
-
-#define SJPreviewImgH       (100 * SJSCREEN_MIN / 375)
-#define SJContainerH        (49)
-
-
-
-#define SJMoreSettings_W    ceil(SJSCREEN_MAX * 0.382)
-
-
-
-@class SJSlider, SJVideoPlayerMoreSetting;
-
-
-
-
+@class SJVideoPreviewModel, SJVideoPlayerAssetCarrier;
 
 @protocol SJVideoPlayerControlViewDelegate;
 
+@interface SJVideoPlayerControlView : SJVideoPlayerBaseView
 
-#pragma mark -
+@property (nonatomic, weak, readwrite, nullable) id<SJVideoPlayerControlViewDelegate> delegate;
+@property (nonatomic, weak, readwrite, nullable) SJVideoPlayerAssetCarrier *asset;
 
-@interface SJVideoPlayerControlView : UIView
+@property (nonatomic, strong, readonly) SJVideoPlayerTopControlView *topControlView;
+@property (nonatomic, strong, readonly) SJVideoPlayerPreviewView *previewView;
+@property (nonatomic, strong, readonly) SJVideoPlayerLeftControlView *leftControlView;
+@property (nonatomic, strong, readonly) SJVideoPlayerCenterControlView *centerControlView;
+@property (nonatomic, strong, readonly) SJVideoPlayerBottomControlView *bottomControlView;
+@property (nonatomic, strong, readonly) SJSlider *bottomProgressSlider;
+@property (nonatomic, strong, readonly) SJVideoPlayerDraggingProgressView *draggingProgressView;
 
-@property (nonatomic, weak, readwrite) id <SJVideoPlayerControlViewDelegate> delegate;
-
-@property (nonatomic, strong, readonly) SJSlider *sliderControl;
-@property (nonatomic, strong, readonly) UILabel *draggingTimeLabel;
-@property (nonatomic, strong, readonly) SJSlider *draggingProgressView;
-
-
-/// 1 level more settings
-@property (nonatomic, strong, readwrite) NSArray<SJVideoPlayerMoreSetting *> *moreSettings;
-
-/// 2 level more settings
-@property (nonatomic, strong, readwrite) SJVideoPlayerMoreSetting *twoLevelSettings;
-
-- (void)startLoading;
-
-- (void)stopLoading;
+@property (nonatomic, strong, readonly) UITapGestureRecognizer *singleTap;
+@property (nonatomic, strong, readonly) UITapGestureRecognizer *doubleTap;
+@property (nonatomic, strong, readonly) UIPanGestureRecognizer *panGR;
 
 @end
-
-
-#pragma mark -
-
-
-@interface SJVideoPlayerControlView (TimeOperation)
-
-- (void)setCurrentTime:(NSTimeInterval)time duration:(NSTimeInterval)duration;
-
-- (NSString *)formatSeconds:(NSInteger)value;
-
-@end
-
-
-
-
-
-#pragma mark -
-
-@class SJVideoPreviewModel;
-
-@interface SJVideoPlayerControlView (Preview)
-
-@property (nonatomic, strong, nullable) NSArray<SJVideoPreviewModel *> *previewImages;
-
-@end
-
-
-
-
-
-#pragma mark -
-
-@interface SJVideoPlayerControlView (MoreSettings)
-
-@property (nonatomic, strong, readonly, nullable) SJSlider *volumeSlider;
-@property (nonatomic, strong, readonly, nullable) SJSlider *brightnessSlider;
-@property (nonatomic, strong, readonly, nullable) SJSlider *rateSlider;
-
-- (void)getMoreSettingsSlider:(void(^)(SJSlider *volumeSlider, SJSlider *brightnessSlider, SJSlider *rateSlider))block;
-
-@end
-
-
-
-
-#pragma mark -
-
 
 @protocol SJVideoPlayerControlViewDelegate <NSObject>
-
+			
 @optional
-
 - (void)controlView:(SJVideoPlayerControlView *)controlView clickedBtnTag:(SJVideoPlayControlViewTag)tag;
-
-- (void)controlView:(SJVideoPlayerControlView *)controlView selectedPreviewModel:(SJVideoPreviewModel *)model;
-
-@end
-
-
-
-
-#pragma mark -
-
-@interface SJVideoPlayerControlView (HiddenOrShow)
-
-/*!
- *  default is NO
- */
-@property (nonatomic, assign, readwrite) BOOL hiddenBackBtn;
-
-
-/*!
- *  default is NO
- */
-@property (nonatomic, assign, readwrite) BOOL hiddenPauseBtn;
-
-/*!
- *  default is NO
- */
-@property (nonatomic, assign, readwrite) BOOL hiddenPlayBtn;
-
-/*!
- *  default is NO
- */
-@property (nonatomic, assign, readwrite) BOOL hiddenReplayBtn;
-
-/*!
- *  default is NO
- */
-@property (nonatomic, assign, readwrite) BOOL hiddenPreviewBtn;
-
-/*!
- *  default is NO
- */
-@property (nonatomic, assign, readwrite) BOOL hiddenPreview;
-
-/*!
- *  default is NO
- */
-@property (nonatomic, assign, readwrite) BOOL hiddenUnlockBtn;
-
-/*!
- *  default is NO
- */
-@property (nonatomic, assign, readwrite) BOOL hiddenLockBtn;
-
-/*!
- *  defautl is NO
- */
-@property (nonatomic, assign, readwrite) BOOL hiddenLockContainerView;
-
-/*!
- *  default is NO
- */
-@property (nonatomic, assign, readwrite) BOOL hiddenControl;
-
-/*!
- *  default is NO
- */
-@property (nonatomic, assign, readwrite) BOOL hiddenLoadFailedBtn;
-
-/*!
- *  default is NO
- */
-@property (nonatomic, assign, readwrite) BOOL hiddenBottomProgressView;
-
-/*!
- *  default is NO
- */
-@property (nonatomic, assign, readwrite) BOOL hiddenMoreBtn;
-
-/*!
- *  default is YES
- */
-@property (nonatomic, assign, readwrite) BOOL hiddenMoreSettingsView;
-
-/*!
- *  default is YES
- */
-@property (nonatomic, assign, readwrite) BOOL hiddenMoreSettingsTwoLevelView;
-
-/*!
- *  default is NO
- */
-@property (nonatomic, assign, readwrite) BOOL hiddenDraggingProgress;
+- (void)controlView:(SJVideoPlayerControlView *)controlView didSelectPreviewItem:(SJVideoPreviewModel *)item;
+- (void)controlView:(SJVideoPlayerControlView *)controlView handleSingleTap:(UITapGestureRecognizer *)tap;
+- (void)controlView:(SJVideoPlayerControlView *)controlView handleDoubleTap:(UITapGestureRecognizer *)tap;
+- (void)controlView:(SJVideoPlayerControlView *)controlView handlePan:(UIPanGestureRecognizer *)pan;
 
 @end
 

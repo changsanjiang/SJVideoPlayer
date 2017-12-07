@@ -2,13 +2,11 @@
 //  AppDelegate.m
 //  SJVideoPlayerProject
 //
-//  Created by BlueDancer on 2017/8/18.
+//  Created by BlueDancer on 2017/11/29.
 //  Copyright © 2017年 SanJiang. All rights reserved.
 //
 
 #import "AppDelegate.h"
-
-#import <CoreMedia/CoreMedia.h>
 
 @interface AppDelegate ()
 
@@ -18,35 +16,11 @@
 
 
 - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions {
-    
-    _window = [[UIWindow alloc] initWithFrame:[UIScreen mainScreen].bounds];
-    _window.backgroundColor = [UIColor whiteColor];
-    UINavigationController *nav = [[UINavigationController alloc] initWithRootViewController:[NSClassFromString(@"ViewController") new]];
-    nav.viewControllers.firstObject.title = @"首页";
-    UITabBarController *tabBarController = [UITabBarController new];
-    tabBarController.viewControllers = @[nav];
-    _window.rootViewController = tabBarController;
-    
-    [self cmtime];
-    
+    [UIApplication sharedApplication].statusBarOrientation = UIInterfaceOrientationPortrait;
+    [UIApplication sharedApplication].statusBarHidden = NO;
+    [UIApplication sharedApplication].statusBarStyle = UIStatusBarStyleLightContent;
     // Override point for customization after application launch.
     return YES;
-}
-
-
-- (void)cmtime {
-    
-    CMTime time1 = CMTimeMake(6, 1);
-    CMTime time2 = CMTimeMake(10, 1);
-    CMTime time3 = CMTimeMake(6, 1);
-    
-    int32_t result1 = CMTimeCompare(time1, time2);
-    
-    int32_t result2 = CMTimeCompare(time2, time1);
-    
-    int32_t result3 = CMTimeCompare(time1, time3);
-    
-    NSLog(@"%d - %d - %d", result1, result2, result3);
 }
 
 

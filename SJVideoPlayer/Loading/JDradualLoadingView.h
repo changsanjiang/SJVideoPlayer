@@ -15,6 +15,7 @@
 
 /** 渐变线宽 默认10*/
 @property (nonatomic, assign) CGFloat lineWidth;
+
 /** 渐变线的颜色 默认redColor*/
 @property (nonatomic, strong) UIColor *lineColor;
 

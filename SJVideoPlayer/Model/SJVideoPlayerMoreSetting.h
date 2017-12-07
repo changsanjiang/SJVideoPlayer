@@ -10,16 +10,17 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
-@class SJVideoPlayerMoreSettingTwoSetting, UIColor, UIImage;
+@class SJVideoPlayerMoreSettingSecondary, UIColor, UIImage;
 
 @interface SJVideoPlayerMoreSetting : NSObject
 
-// MARK: ... Class methods
+// MARK: ... This --> Class methods
 
 /*!
  *  SJVideoPlayerMoreSetting.titleColor = [UIColor whiteColor];
  *
  *  default is whiteColor
+ *  设置item默认的标题颜色
  */
 @property (class, nonatomic, strong) UIColor *titleColor;
 
@@ -27,11 +28,12 @@ NS_ASSUME_NONNULL_BEGIN
  *  SJVideoPlayerMoreSetting.titleFontSize = 12;
  *
  *  default is 12
+ *  设置item默认的字体
  */
 @property (class, nonatomic, assign) float titleFontSize;
 
 
-// MARK: ... Instance Methods.   show 1 level interface
+// MARK: ... This --> Instance Methods.   show 1 level interface
 
 @property (nonatomic, strong, nullable) NSString *title;
 @property (nonatomic, strong, nullable) UIImage *image;
@@ -42,17 +44,17 @@ NS_ASSUME_NONNULL_BEGIN
               clickedExeBlock:(void(^)(SJVideoPlayerMoreSetting *model))block;
 
 
-// MARK: ... Instance Methods.   show 2 level interface
+// MARK: ... This --> Instance Methods.   show 2 level interface
 
 @property (nonatomic, assign, getter=isShowTowSetting) BOOL showTowSetting;
 @property (nonatomic, strong) NSString *twoSettingTopTitle;
-@property (nonatomic, strong) NSArray<SJVideoPlayerMoreSettingTwoSetting *> *twoSettingItems;
+@property (nonatomic, strong) NSArray<SJVideoPlayerMoreSettingSecondary *> *twoSettingItems;
 
 - (instancetype)initWithTitle:(NSString *__nullable)title
                         image:(UIImage *__nullable)image
                showTowSetting:(BOOL)showTowSetting                                      // show
            twoSettingTopTitle:(NSString *)twoSettingTopTitle                            // top title
-              twoSettingItems:(NSArray<SJVideoPlayerMoreSettingTwoSetting *> *)items    // items
+              twoSettingItems:(NSArray<SJVideoPlayerMoreSettingSecondary *> *)items    // items
               clickedExeBlock:(void(^)(SJVideoPlayerMoreSetting *model))block;
 
 @end

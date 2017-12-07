@@ -6,10 +6,10 @@ target 'SJVideoPlayerProject' do
   # use_frameworks!
 
   # Pods for SJVideoPlayerProject
-	pod 'Masonry'
-    pod 'SJSlider'
-    pod 'SJBorderLineView'
-    pod 'SJPrompt'
-    pod 'SJVideoPlayerBackGR'
-#    pod 'SFObservers'
+  pod 'SJUIFactory'
+  pod 'Masonry'
+  pod 'SJSlider'
+  pod 'SJVideoPlayerBackGR'
+  pod 'SJBorderLineView'
+  pod 'SJPrompt'
 end

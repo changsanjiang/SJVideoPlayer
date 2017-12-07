@@ -8,10 +8,11 @@
 
 #import <Foundation/Foundation.h>
 
+extern NSNotificationName const SJSettingsPlayerNotification;
+
 @class UIImage, UIColor;
 
 @interface SJVideoPlayerSettings : NSObject
-
 // MARK: btns
 @property (nonatomic, strong, readwrite) UIImage *backBtnImage;
 @property (nonatomic, strong, readwrite) UIImage *playBtnImage;
@@ -26,9 +27,16 @@
 @property (nonatomic, strong, readwrite) UIImage *unlockBtnImage;
 
 // MARK: slider
-@property (nonatomic, strong, readwrite) UIColor *traceColor;
-@property (nonatomic, strong, readwrite) UIColor *trackColor;
-@property (nonatomic, strong, readwrite) UIColor *bufferColor;
+@property (nonatomic, strong, readwrite) UIColor *progress_traceColor;
+@property (nonatomic, strong, readwrite) UIColor *progress_trackColor;
+@property (nonatomic, strong, readwrite) UIImage *progress_thumbImage;
+@property (nonatomic, strong, readwrite) UIColor *progress_bufferColor;
+@property (nonatomic, assign, readwrite) float progress_traceHeight;
+
+@property (nonatomic, strong, readwrite) UIColor *more_traceColor;
+@property (nonatomic, strong, readwrite) UIColor *more_trackColor;
+@property (nonatomic, assign, readwrite) float more_traceHeight;
+
 
 // MARK: volume & brightness
 @property (nonatomic, strong, readwrite) UIImage *volumeImage;

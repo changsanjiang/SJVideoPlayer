@@ -75,6 +75,8 @@ NS_ASSUME_NONNULL_BEGIN
  **/
 @property (nonatomic, assign, readwrite) float rate;
 
+@property (nonatomic, copy, readwrite, nullable) void(^rateChanged)(SJVideoPlayer *player);
+
 /*!
  *  loading show this.
  */

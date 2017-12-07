@@ -137,6 +137,7 @@ inline static NSString *_formatWithSec(NSInteger sec) {
     [self.timerControl start:^(SJTimerControl * _Nonnull control) {
         __strong typeof(_self) self = _self;
         if ( !self ) return;
+        if ( self.state == SJVideoPlayerPlayState_Pause ) return;
         _sjAnima(^{
             self.hideControl = YES;
         });
@@ -944,7 +945,7 @@ static UIView *target = nil;
             break;
         case SJVideoPlayControlViewTag_Replay: {
             _sjAnima(^{
-                self.hideControl = NO;
+                if ( !self.isLockedScrren ) self.hideControl = NO;
             });
             [self play];
         }
@@ -1048,7 +1049,6 @@ static UIView *target = nil;
 - (void)_play {
     [self _stopLoading];
     [self.asset.player play];
-    self.moreSettingFooterViewModel.playerRateChanged(self.asset.player.rate);
 }
 
 - (void)_pause {
@@ -1418,18 +1418,32 @@ static BOOL _isLoading;
 - (void)_cleanSetting {
     [self.asset cancelPreviewImagesGeneration];
     self.asset = nil;
+    self.rate = 1;
 }
 
 - (void)setRate:(float)rate {
+    if ( self.rate == rate ) return;
+    objc_setAssociatedObject(self, @selector(rate), @(rate), OBJC_ASSOCIATION_RETAIN_NONATOMIC);
     self.asset.player.rate = rate;
     self.userClickedPause = NO;
     _sjAnima(^{
         [self _playState];
     });
+    if ( self.moreSettingFooterViewModel.playerRateChanged )
+        self.moreSettingFooterViewModel.playerRateChanged(rate);
+    if ( self.rateChanged ) self.rateChanged(self);
 }
 
 - (float)rate {
-    return self.asset.player.rate;
+    return [objc_getAssociatedObject(self, _cmd) floatValue];
+}
+
+- (void (^)(SJVideoPlayer * _Nonnull))rateChanged {
+    return objc_getAssociatedObject(self, _cmd);
+}
+
+- (void)setRateChanged:(void (^)(SJVideoPlayer * _Nonnull))rateChanged {
+    objc_setAssociatedObject(self, @selector(rateChanged), rateChanged, OBJC_ASSOCIATION_COPY_NONATOMIC);
 }
 
 @end
@@ -1459,7 +1473,7 @@ static BOOL _isLoading;
         [self _pauseState];
     });
     [self _pause];
-    if ( !self.playOnCell ) [self showTitle:@"已暂停"];
+    if ( !self.playOnCell || self.orentation.fullScreen ) [self showTitle:@"已暂停"];
     return YES;
 }
 

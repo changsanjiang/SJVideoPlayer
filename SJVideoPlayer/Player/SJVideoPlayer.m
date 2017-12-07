@@ -110,11 +110,11 @@ inline static NSString *_formatWithSec(NSInteger sec) {
 
 - (void)_pauseState;
 
-- (void)_stopState;
-
 - (void)_playEndState;
 
 - (void)_playFailedState;
+
+- (void)_unknownState;
 
 @end
 
@@ -177,10 +177,20 @@ inline static NSString *_formatWithSec(NSInteger sec) {
     return [objc_getAssociatedObject(self, _cmd) boolValue];
 }
 
-- (void)_prepareState {
-    
+- (void)_unknownState {
     // show
-    _sjShowViews(@[self.presentView.placeholderImageView]);
+    _sjShowViews(@[self.presentView.placeholderImageView,]);
+    
+    // hidden
+    _sjHiddenViews(@[self.controlView]);
+    
+    self.state = SJVideoPlayerPlayState_Unknown;
+}
+
+- (void)_prepareState {
+    // show
+    _sjShowViews(@[self.controlView,
+                   self.presentView.placeholderImageView]);
     
     // hidden
     self.controlView.previewView.hidden = YES;
@@ -234,16 +244,6 @@ inline static NSString *_formatWithSec(NSInteger sec) {
     _sjHiddenViews(@[self.controlView.bottomControlView.pauseBtn]);
     
     self.state = SJVideoPlayerPlayState_Pause;
-}
-
-- (void)_stopState {
-    
-    // show
-    [self _pauseState];
-    _sjShowViews(@[self.presentView.placeholderImageView,]);
-    
-    
-    self.state = SJVideoPlayerPlayState_Unknown;
 }
 
 - (void)_playEndState {
@@ -603,6 +603,8 @@ static UIView *target = nil;
     // default values
     self.autoplay = YES;
     self.generatePreviewImages = YES;
+    
+    [self _unknownState];
     
     return self;
 }
@@ -996,14 +998,19 @@ static UIView *target = nil;
 
 - (void)_itemPrepareToPlay {
     [self _startLoading];
-    _sjAnima(^{
-        self.hideControl = YES;
-    });
+    self.hideControl = YES;
     self.userClickedPause = NO;
     self.hiddenMoreSettingView = YES;
     self.hiddenMoreSecondarySettingView = YES;
     self.controlView.bottomProgressSlider.value = 0;
     self.controlView.bottomProgressSlider.bufferProgress = 0;
+    self.rate = 1;
+    if ( self.moreSettingFooterViewModel.volumeChanged ) {
+        self.moreSettingFooterViewModel.volumeChanged(self.volBrig.volume);
+    }
+    if ( self.moreSettingFooterViewModel.brightnessChanged ) {
+        self.moreSettingFooterViewModel.brightnessChanged(self.volBrig.brightness);
+    }
     [self _prepareState];
 }
 
@@ -1273,6 +1280,30 @@ static BOOL _isLoading;
     };
 }
 
+static __weak UIView *tmpView = nil;
+- (UIView *)_getSuperviewWithContentView:(UIView *)contentView tag:(NSInteger)tag {
+    if ( contentView.tag == tag ) return contentView;
+    
+    [self _searchingWithView:contentView tag:tag];
+    UIView *target = tmpView;
+    tmpView = nil;
+    return target;
+}
+
+- (void)_searchingWithView:(UIView *)view tag:(NSInteger)tag {
+    if ( tmpView ) return;
+    [view.subviews enumerateObjectsUsingBlock:^(__kindof UIView * _Nonnull obj, NSUInteger idx, BOOL * _Nonnull stop) {
+        if ( obj.tag == tag ) {
+            *stop = YES;
+            tmpView = obj;
+        }
+        else {
+            [self _searchingWithView:obj tag:tag];
+        }
+    }];
+    return;
+}
+
 - (SJVideoPlayerAssetCarrier *)asset {
     return objc_getAssociatedObject(self, _cmd);
 }
@@ -1482,7 +1513,7 @@ static BOOL _isLoading;
     [self _cleanSetting];
     
     _sjAnima(^{
-        [self _stopState];
+        [self _unknownState];
     });
 }
 

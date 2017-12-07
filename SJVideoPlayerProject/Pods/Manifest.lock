@@ -6,10 +6,10 @@ PODS:
     - Masonry
   - SJSlider (1.0.1):
     - Masonry
-  - SJUIFactory (0.0.3):
+  - SJUIFactory (0.0.4):
     - SJAttributesFactory
-    - SJUIFactory/Category (= 0.0.3)
-  - SJUIFactory/Category (0.0.3):
+    - SJUIFactory/Category (= 0.0.4)
+  - SJUIFactory/Category (0.0.4):
     - SJAttributesFactory
   - SJVideoPlayerBackGR (1.0.13)
 
@@ -27,7 +27,7 @@ SPEC CHECKSUMS:
   SJBorderLineView: 624c1fcd123eec6dac35d77af6427daa4ca0ef81
   SJPrompt: f4edb0a7ccc9af0c1b58d53d38d4662f4d2d84b4
   SJSlider: 04a793058a0599a39f4bf1aaea602e3fac838c6e
-  SJUIFactory: bc8d31d132c42965905fab24c78eb8e38a05a129
+  SJUIFactory: b1c8ddc7b6731697e00ba4e3fd4edcc9e918bb5c
   SJVideoPlayerBackGR: aac92b4116b6de20412b72c282598279ce639d17
 
 PODFILE CHECKSUM: 6ddd4fff99a6e743557207a472173abe500ed61b

@@ -62,7 +62,7 @@
 
 - (UIButton *)itemBtn {
     if ( _itemBtn ) return _itemBtn;
-    _itemBtn = [SJUIFactory buttonWithTarget:self sel:@selector(clickedBtn:)];
+    _itemBtn = [SJUIButtonFactory buttonWithTarget:self sel:@selector(clickedBtn:)];
     _itemBtn.titleLabel.numberOfLines = 0;
     _itemBtn.titleLabel.textAlignment = NSTextAlignmentCenter;
     return _itemBtn;

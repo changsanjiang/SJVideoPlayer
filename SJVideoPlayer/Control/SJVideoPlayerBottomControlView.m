@@ -113,13 +113,13 @@
 
 - (UIButton *)playBtn {
     if ( _playBtn ) return _playBtn;
-    _playBtn = [SJUIFactory buttonWithImageName:nil target:self sel:@selector(clickedBtn:) tag:SJVideoPlayControlViewTag_Play];
+    _playBtn = [SJUIButtonFactory buttonWithImageName:nil target:self sel:@selector(clickedBtn:) tag:SJVideoPlayControlViewTag_Play];
     return _playBtn;
 }
 
 - (UIButton *)pauseBtn {
     if ( _pauseBtn ) return _pauseBtn;
-    _pauseBtn = [SJUIFactory buttonWithImageName:nil target:self sel:@selector(clickedBtn:) tag:SJVideoPlayControlViewTag_Pause];
+    _pauseBtn = [SJUIButtonFactory buttonWithImageName:nil target:self sel:@selector(clickedBtn:) tag:SJVideoPlayControlViewTag_Pause];
     return _pauseBtn;
 }
 
@@ -133,25 +133,25 @@
 
 - (UIButton *)fullBtn {
     if ( _fullBtn ) return _fullBtn;
-    _fullBtn = [SJUIFactory buttonWithImageName:nil target:self sel:@selector(clickedBtn:) tag:SJVideoPlayControlViewTag_Full];
+    _fullBtn = [SJUIButtonFactory buttonWithImageName:nil target:self sel:@selector(clickedBtn:) tag:SJVideoPlayControlViewTag_Full];
     return _fullBtn;
 }
 
 - (UILabel *)separateLabel {
     if ( _separateLabel ) return _separateLabel;
-    _separateLabel = [SJUIFactory labelWithText:@"/" textColor:[UIColor whiteColor] alignment:NSTextAlignmentCenter font:[UIFont systemFontOfSize:13]];
+    _separateLabel = [SJUILabelFactory labelWithText:@"/" textColor:[UIColor whiteColor] alignment:NSTextAlignmentCenter font:[UIFont systemFontOfSize:13]];
     return _separateLabel;
 }
 
 - (UILabel *)durationTimeLabel {
     if ( _durationTimeLabel ) return _durationTimeLabel;
-    _durationTimeLabel = [SJUIFactory labelWithText:@"00:00" textColor:[UIColor whiteColor] alignment:NSTextAlignmentCenter font:[UIFont systemFontOfSize:13]];
+    _durationTimeLabel = [SJUILabelFactory labelWithText:@"00:00" textColor:[UIColor whiteColor] alignment:NSTextAlignmentCenter font:[UIFont systemFontOfSize:13]];
     return _durationTimeLabel;
 }
 
 - (UILabel *)currentTimeLabel {
     if ( _currentTimeLabel ) return _currentTimeLabel;
-    _currentTimeLabel = [SJUIFactory labelWithText:@"00:00" textColor:[UIColor whiteColor] alignment:NSTextAlignmentCenter font:[UIFont systemFontOfSize:13]];
+    _currentTimeLabel = [SJUILabelFactory labelWithText:@"00:00" textColor:[UIColor whiteColor] alignment:NSTextAlignmentCenter font:[UIFont systemFontOfSize:13]];
     return _currentTimeLabel;
 }
 

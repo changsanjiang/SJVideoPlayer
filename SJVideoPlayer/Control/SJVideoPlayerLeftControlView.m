@@ -53,13 +53,13 @@
 
 - (UIButton *)lockBtn {
     if ( _lockBtn ) return _lockBtn;
-    _lockBtn = [SJUIFactory buttonWithImageName:nil target:self sel:@selector(clickedBtn:) tag:SJVideoPlayControlViewTag_Lock];
+    _lockBtn = [SJUIButtonFactory buttonWithImageName:nil target:self sel:@selector(clickedBtn:) tag:SJVideoPlayControlViewTag_Lock];
     return _lockBtn;
 }
 
 - (UIButton *)unlockBtn {
     if ( _unlockBtn ) return _unlockBtn;
-    _unlockBtn = [SJUIFactory buttonWithImageName:nil target:self sel:@selector(clickedBtn:) tag:SJVideoPlayControlViewTag_Unlock];
+    _unlockBtn = [SJUIButtonFactory buttonWithImageName:nil target:self sel:@selector(clickedBtn:) tag:SJVideoPlayControlViewTag_Unlock];
     return _unlockBtn;
 }
 

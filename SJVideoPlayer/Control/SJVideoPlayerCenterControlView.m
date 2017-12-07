@@ -66,12 +66,12 @@
 
 - (UIButton *)failedBtn {
     if ( _failedBtn ) return _failedBtn;
-    _failedBtn = [SJUIFactory buttonWithTitle:@"加载失败,点击重试" titleColor:[UIColor whiteColor] font:[UIFont systemFontOfSize:14] backgroundColor:nil target:self sel:@selector(clickedBtn:) tag:SJVideoPlayControlViewTag_LoadFailed];
+    _failedBtn = [SJUIButtonFactory buttonWithTitle:@"加载失败,点击重试" titleColor:[UIColor whiteColor] font:[UIFont systemFontOfSize:14] backgroundColor:nil target:self sel:@selector(clickedBtn:) tag:SJVideoPlayControlViewTag_LoadFailed];
     return _failedBtn;
 }
 - (UIButton *)replayBtn {
     if ( _replayBtn ) return _replayBtn;
-    _replayBtn = [SJUIFactory buttonWithImageName:@"" target:self sel:@selector(clickedBtn:) tag:SJVideoPlayControlViewTag_Replay];
+    _replayBtn = [SJUIButtonFactory buttonWithImageName:@"" target:self sel:@selector(clickedBtn:) tag:SJVideoPlayControlViewTag_Replay];
     _replayBtn.titleLabel.numberOfLines = 0;
     return _replayBtn;
 }

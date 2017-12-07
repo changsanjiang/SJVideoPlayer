@@ -39,7 +39,7 @@
 
 - (UIView *)containerView {
     if ( _containerView ) return _containerView;
-    _containerView = [SJUIFactory viewWithBackgroundColor:nil];
+    _containerView = [SJUIViewFactory viewWithBackgroundColor:nil];
     return _containerView;
 }
 

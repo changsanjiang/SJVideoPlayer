@@ -10,6 +10,30 @@
 #import "UIImagePickerController+Extension.h"
 #import "UIView+SJUIFactory.h"
 
+CGSize SJScreen_Size(void) {
+    return [UIScreen mainScreen].bounds.size;
+}
+
+float SJScreen_W(void) {
+    return SJScreen_Size().width;
+}
+
+float SJScreen_H(void) {
+    return SJScreen_Size().height;
+}
+
+float SJScreen_Min(void) {
+    return MIN(SJScreen_W(), SJScreen_H());
+}
+
+float SJScreen_Max(void) {
+    return MAX(SJScreen_W(), SJScreen_H());
+}
+
+BOOL SJ_is_iPhoneX(void) {
+    return SJScreen_Min() / SJScreen_Max() == 1125.0 / 2436;
+}
+
 /*!
  *  通过高度 get 到字体大小
  *
@@ -112,15 +136,6 @@
 
 
 
-
-
-
-
-#pragma mark -
-
-@interface SJUIFactory()<UIImagePickerControllerDelegate, UINavigationControllerDelegate>
-@end
-
 @implementation SJUIFactory
 
 + (instancetype)sharedManager {
@@ -130,10 +145,6 @@
         _instance = [self new];
     });
     return _instance;
-}
-
-+ (BOOL)isiPhoneX {
-    return [UIScreen instancesRespondToSelector:@selector(currentMode)] ? CGSizeEqualToSize(CGSizeMake(1125, 2436), [[UIScreen mainScreen] currentMode].size) : NO;
 }
 
 + (UIFont *)getFontWithViewHeight:(CGFloat)height {
@@ -165,17 +176,41 @@
     [view setContentCompressionResistancePriority:UILayoutPriorityRequired forAxis:UILayoutConstraintAxisHorizontal];
 }
 
-#pragma mark -
+@end
+
+
+#pragma mark - UIView
+@implementation SJUIViewFactory
+
 + (UIView *)viewWithBackgroundColor:(UIColor *)backgroundColor {
     return [self viewWithBackgroundColor:backgroundColor frame:CGRectZero];
 }
 
 + (UIView *)viewWithBackgroundColor:(UIColor *)backgroundColor frame:(CGRect)frame {
     UIView *view = [UIView new];
+    [self _settingView:view backgroundColor:backgroundColor frame:frame];
+    return view;
+}
+
++ (__kindof UIView *)viewWithSubClass:(Class)subClass
+                      backgroundColor:(UIColor *)backgroundColor {
+    return [self viewWithSubClass:subClass backgroundColor:backgroundColor frame:CGRectZero];
+}
+
++ (__kindof UIView *)viewWithSubClass:(Class)subClass
+                      backgroundColor:(UIColor *)backgroundColor
+                                frame:(CGRect)frame {
+    UIView *view = [subClass new];
+    [self _settingView:view backgroundColor:backgroundColor frame:frame];
+    return view;
+}
+
++ (void)_settingView:(UIView *)view
+    backgroundColor:(UIColor *)backgroundColor
+              frame:(CGRect)frame {
     if ( !backgroundColor ) backgroundColor = [UIColor clearColor];
     view.backgroundColor = backgroundColor;
     view.frame = frame;
-    return view;
 }
 
 + (UIView *)roundViewWithBackgroundColor:(UIColor *)color {
@@ -188,6 +223,13 @@
     UIView *view = [[SJLineView alloc] initWithHeight:height lineColor:color];
     return view;
 }
+@end
+
+
+
+#pragma mark - UIScrollView
+
+@implementation SJScrollViewFactory
 
 + (UIScrollView *)scrollViewWithContentSize:(CGSize)contentSize pagingEnabled:(BOOL)pagingEnabled {
     UIScrollView *scrollView = [UIScrollView new];
@@ -196,6 +238,13 @@
     scrollView.keyboardDismissMode = UIScrollViewKeyboardDismissModeOnDrag;
     return scrollView;
 }
+
+@end
+
+
+#pragma mark - UITableView
+
+@implementation SJUITableViewFactory
 
 + (UITableView *)tableViewWithStyle:(UITableViewStyle)style backgroundColor:(UIColor *)backgroundColor separatorStyle:(UITableViewCellSeparatorStyle)separatorStyle showsVerticalScrollIndicator:(BOOL)showsVerticalScrollIndicator delegate:(id<UITableViewDelegate>)delegate dataSource:(id<UITableViewDataSource>)dataSource {
     UITableView *tableView = [[UITableView alloc] initWithFrame:CGRectZero style:style];
@@ -242,6 +291,14 @@ estimatedSectionFooterHeight:(CGFloat)estimatedSectionFooterHeight {
     tableView.estimatedSectionHeaderHeight = estimatedSectionHeaderHeight;
     tableView.estimatedSectionFooterHeight = estimatedSectionFooterHeight;
 }
+
+@end
+
+
+
+#pragma mark - UICollectionView
+
+@implementation SJUICollectionViewFactory
 
 + (UICollectionView *)collectionViewWithItemSize:(CGSize)itemSize backgroundColor:(UIColor *)backgroundColor {
     UICollectionView *collectionView = [self collectionViewWithItemSize:itemSize backgroundColor:backgroundColor scrollDirection:UICollectionViewScrollDirectionVertical];
@@ -302,6 +359,19 @@ estimatedSectionFooterHeight:(CGFloat)estimatedSectionFooterHeight {
     return collectionView;
 }
 
+@end
+
+
+
+
+#pragma mark - Label
+
+@implementation SJUILabelFactory
+
++ (UILabel *)labelWithFont:(UIFont *)font {
+    return [self labelWithFont:font textColor:nil alignment:0];
+}
+
 + (UILabel *)labelWithFont:(UIFont *)font
                  textColor:(UIColor *)textColor {
     return [self labelWithFont:font textColor:textColor alignment:0];
@@ -312,6 +382,17 @@ estimatedSectionFooterHeight:(CGFloat)estimatedSectionFooterHeight {
                  textColor:(UIColor *)textColor
                  alignment:(NSTextAlignment)alignment {
     return [self labelWithText:nil textColor:textColor alignment:alignment font:font];
+}
+
++ (UILabel *)labelWithText:(NSString *)text
+                 textColor:(UIColor *)textColor {
+    return [self labelWithText:text textColor:textColor alignment:0];
+}
+
++ (UILabel *)labelWithText:(NSString *)text
+                 textColor:(UIColor *)textColor
+                 alignment:(NSTextAlignment)alignment {
+    return [self labelWithText:text textColor:textColor alignment:alignment font:nil];
 }
 
 + (UILabel *)labelWithText:(NSString *)text
@@ -339,12 +420,19 @@ estimatedSectionFooterHeight:(CGFloat)estimatedSectionFooterHeight {
     if ( !textColor ) textColor = [UIColor whiteColor];
     label.textColor = textColor;
     if ( text ) label.text = text;
-    if ( font ) label.font = font;
     if ( attrStr ) label.attributedText = attrStr;
+    else {
+        if ( !font ) font = [UIFont systemFontOfSize:14];
+        label.font = font;
+    }
     [label sizeToFit];
 }
 
+@end
 
+
+
+@implementation SJUIButtonFactory
 + (UIButton *)buttonWithTarget:(id)target sel:(SEL)sel {
     return [self buttonWithBackgroundColor:nil target:target sel:sel];
 }
@@ -531,6 +619,19 @@ estimatedSectionFooterHeight:(CGFloat)estimatedSectionFooterHeight {
     return btn;
 }
 
+@end
+
+
+
+
+#pragma mark - UIImageVIew
+
+@implementation SJUIImageViewFactory
+
++ (UIImageView *)imageViewWithBackgroundColor:(UIColor *)color {
+    return [self imageViewWithBackgroundColor:color viewMode:UIViewContentModeScaleAspectFit];
+}
+
 + (UIImageView *)imageViewWithViewMode:(UIViewContentMode)mode {
     return [self imageViewWithImageName:nil];
 }
@@ -538,14 +639,14 @@ estimatedSectionFooterHeight:(CGFloat)estimatedSectionFooterHeight {
 + (UIImageView *)imageViewWithImageName:(NSString *)imageName
                                viewMode:(UIViewContentMode)mode {
     UIImageView *imageView = [UIImageView new];
-    imageView.image = [UIImage imageNamed:imageName];
+    if ( imageName ) imageView.image = [UIImage imageNamed:imageName];
     imageView.contentMode = mode;
     imageView.clipsToBounds = YES;
     return imageView;
 }
 
 + (UIImageView *)imageViewWithImageName:(NSString *)imageName {
-    return [SJUIFactory imageViewWithImageName:imageName viewMode:UIViewContentModeScaleAspectFit];
+    return [SJUIImageViewFactory imageViewWithImageName:imageName viewMode:UIViewContentModeScaleAspectFit];
 }
 
 + (UIImageView *)imageViewWithBackgroundColor:(UIColor *)color
@@ -558,7 +659,7 @@ estimatedSectionFooterHeight:(CGFloat)estimatedSectionFooterHeight {
 }
 
 + (UIImageView *)roundImageViewWithImageName:(NSString *)imageName {
-    return [SJUIFactory roundImageViewWithImageName:imageName viewMode:UIViewContentModeScaleAspectFit];
+    return [SJUIImageViewFactory roundImageViewWithImageName:imageName viewMode:UIViewContentModeScaleAspectFit];
 }
 
 + (UIImageView *)roundImageViewWithBackgroundColor:(UIColor *)color
@@ -576,6 +677,13 @@ estimatedSectionFooterHeight:(CGFloat)estimatedSectionFooterHeight {
     imageView.contentMode = mode;
     return imageView;
 }
+
+@end
+
+
+#pragma mark - Text Field
+
+@implementation SJUITextFieldFactory
 
 + (UITextField *)textFieldWithPlaceholder:(NSString *)placeholder
                          placeholderColor:(UIColor *)placeholderColor
@@ -633,16 +741,23 @@ estimatedSectionFooterHeight:(CGFloat)estimatedSectionFooterHeight {
 + (void)textField:(UITextField *)textField setLeftSpace:(CGFloat)leftSpace rightSpace:(CGFloat)rightSpace {
     if ( 0 != leftSpace ) {
         textField.leftViewMode = UITextFieldViewModeAlways;
-        textField.leftView = [self viewWithBackgroundColor:nil frame:CGRectMake(0, 0, leftSpace, 0)];
+        textField.leftView = [SJUIViewFactory viewWithBackgroundColor:nil frame:CGRectMake(0, 0, leftSpace, 0)];
     }
     
     if ( 0 != rightSpace ) {
         textField.rightViewMode = UITextFieldViewModeAlways;
-        textField.rightView = [self viewWithBackgroundColor:nil frame:CGRectMake(0, 0, rightSpace, 0)];
+        textField.rightView = [SJUIViewFactory viewWithBackgroundColor:nil frame:CGRectMake(0, 0, rightSpace, 0)];
     }
 }
 
-#pragma mark -
+@end
+
+
+
+#pragma mark - Text View
+
+@implementation SJUITextViewFactory
+
 + (UITextView *)textViewWithTextColor:(UIColor *)textColor
                       backgroundColor:(UIColor *)backgroundColor
                                  font:(UIFont *)font {
@@ -653,13 +768,31 @@ estimatedSectionFooterHeight:(CGFloat)estimatedSectionFooterHeight {
     return textView;
 }
 
-#pragma mark -
-- (void)
-alterPickerViewControllerWithController:(UIViewController *)controller
-alertTitle:(NSString *)title
-msg:(NSString *)msg
-photoLibrary:(void(^)(UIImage *selectedImage))photoLibraryBlock
-camera:(void(^)(UIImage *selectedImage))cameraBlock {
+@end
+
+
+
+#pragma mark - UIImagePickerController
+
+@interface SJUIImagePickerControllerFactory ()<UIImagePickerControllerDelegate, UINavigationControllerDelegate>
+@end
+
+@implementation SJUIImagePickerControllerFactory
+
++ (instancetype)shared {
+    static id _instance;
+    static dispatch_once_t onceToken;
+    dispatch_once(&onceToken, ^{
+        _instance = [self new];
+    });
+    return _instance;
+}
+
+- (void)alterPickerViewControllerWithController:(UIViewController *)controller
+                                     alertTitle:(NSString *)title
+                                            msg:(NSString *)msg
+                                   photoLibrary:(void(^)(UIImage *selectedImage))photoLibraryBlock
+                                         camera:(void(^)(UIImage *selectedImage))cameraBlock {
     NSMutableArray<NSString *> *titlesM = [NSMutableArray new];
     NSMutableArray<void(^)(void)> *actionsM = [NSMutableArray new];
     
@@ -736,5 +869,4 @@ camera:(void(^)(UIImage *selectedImage))cameraBlock {
 - (void)imagePickerControllerDidCancel:(UIImagePickerController *)picker {
     [picker dismissViewControllerAnimated:YES completion:nil];
 }
-
 @end

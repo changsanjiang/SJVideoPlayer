@@ -64,7 +64,7 @@
 
 - (UILabel *)titleLabel {
     if ( _titleLabel ) return _titleLabel;
-    _titleLabel = [SJUIFactory labelWithText:@"" textColor:[SJVideoPlayerMoreSettingSecondary titleColor] alignment:NSTextAlignmentLeft font:[UIFont systemFontOfSize:10]];
+    _titleLabel = [SJUILabelFactory labelWithText:@"" textColor:[SJVideoPlayerMoreSettingSecondary titleColor] alignment:NSTextAlignmentLeft font:[UIFont systemFontOfSize:10]];
     _titleLabel.font = [UIFont systemFontOfSize:[SJVideoPlayerMoreSettingSecondary topTitleFontSize]];
     return _titleLabel;
 }

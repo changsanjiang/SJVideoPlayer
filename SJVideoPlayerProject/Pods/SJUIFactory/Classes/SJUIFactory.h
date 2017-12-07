@@ -8,16 +8,20 @@
 
 #import <UIKit/UIKit.h>
 
+extern CGSize SJScreen_Size(void);
+extern float SJScreen_W(void);
+extern float SJScreen_H(void);
+extern float SJScreen_Min(void);
+extern float SJScreen_Max(void);
+extern BOOL SJ_is_iPhoneX(void);
+
+#pragma mark -
 
 @interface SJUIFactory : NSObject
 
 + (instancetype)sharedManager;
 
-@property (class, nonatomic, assign, readonly) BOOL isiPhoneX;
-
-
 + (UIFont *)getFontWithViewHeight:(CGFloat)height;
-
 
 + (UIFont *)getBoldFontWithViewHeight:(CGFloat)height;
 
@@ -27,31 +31,48 @@
 
 + (void)boundaryProtectedWithView:(UIView *)view;
 
+@end
 
-#pragma mark - View
-/// backgroundColor if nil, it will be set clear.
+
+#pragma mark -
+/*!
+ *  backgroundColor if nil, it will be set clear.
+ **/
+@interface SJUIViewFactory : NSObject
+
 + (UIView *)viewWithBackgroundColor:(UIColor *)backgroundColor;
 
++ (UIView *)viewWithBackgroundColor:(UIColor *)backgroundColor
+                              frame:(CGRect)frame;
 
++ (__kindof UIView *)viewWithSubClass:(Class)subClass
+                      backgroundColor:(UIColor *)backgroundColor;
 
-+ (UIView *)viewWithBackgroundColor:(UIColor *)backgroundColor frame:(CGRect)frame;
-
++ (__kindof UIView *)viewWithSubClass:(Class)subClass
+                      backgroundColor:(UIColor *)backgroundColor
+                                frame:(CGRect)frame;
 
 + (UIView *)roundViewWithBackgroundColor:(UIColor *)color;
 
++ (UIView *)lineViewWithHeight:(CGFloat)height
+                     lineColor:(UIColor *)color;
 
-+ (UIView *)lineViewWithHeight:(CGFloat)height lineColor:(UIColor *)color;
-
-
-
-#pragma mark - ScrollView
-+ (UIScrollView *)scrollViewWithContentSize:(CGSize)contentSize pagingEnabled:(BOOL)pagingEnabled;
+@end
 
 
+#pragma mark -
+@interface SJScrollViewFactory : NSObject
+
++ (UIScrollView *)scrollViewWithContentSize:(CGSize)contentSize
+                              pagingEnabled:(BOOL)pagingEnabled;
+
+@end
 
 
-#pragma mark - TableView
+#pragma mark -
 /// backgroundColor if nil, it will be set clear.
+@interface SJUITableViewFactory : NSObject
+
 + (UITableView *)tableViewWithStyle:(UITableViewStyle)style
                     backgroundColor:(UIColor *)backgroundColor
                      separatorStyle:(UITableViewCellSeparatorStyle)separatorStyle
@@ -83,10 +104,12 @@
 estimatedSectionHeaderHeight:(CGFloat)estimatedSectionHeaderHeight
 estimatedSectionFooterHeight:(CGFloat)estimatedSectionFooterHeight;
 
+@end
 
 
+#pragma mark -
+@interface SJUICollectionViewFactory : NSObject
 
-#pragma mark - Collection View
 + (UICollectionView *)collectionViewWithItemSize:(CGSize)itemSize backgroundColor:(UIColor *)backgroundColor;
 
 + (UICollectionView *)collectionViewWithItemSize:(CGSize)itemSize backgroundColor:(UIColor *)backgroundColor scrollDirection:(UICollectionViewScrollDirection)direction;
@@ -95,10 +118,18 @@ estimatedSectionFooterHeight:(CGFloat)estimatedSectionFooterHeight;
 
 + (UICollectionView *)collectionViewWithItemSize:(CGSize)size backgroundColor:(UIColor *)backgroundColor scrollDirection:(UICollectionViewScrollDirection)scrollDirection minimumLineSpacing:(CGFloat)minimumLineSpacing minimumInteritemSpacing:(CGFloat)minimumInteritemSpacing;
 
+@end
 
 
+#pragma mark -
+/*!
+ *  textColor if nil, it will be set white.
+ *  font if nil, it will be set 14.
+ **/
+@interface SJUILabelFactory : NSObject
 
-#pragma mark - Label
++ (UILabel *)labelWithFont:(UIFont *)font;
+
 + (UILabel *)labelWithFont:(UIFont *)font
                  textColor:(UIColor *)textColor;
 
@@ -106,15 +137,19 @@ estimatedSectionFooterHeight:(CGFloat)estimatedSectionFooterHeight;
                  textColor:(UIColor *)textColor
                  alignment:(NSTextAlignment)alignment;
 
-/// textColor if nil, it will be set white.
++ (UILabel *)labelWithText:(NSString *)text
+                 textColor:(UIColor *)textColor;
+
++ (UILabel *)labelWithText:(NSString *)text
+                 textColor:(UIColor *)textColor
+                 alignment:(NSTextAlignment)alignment;
+
 + (UILabel *)labelWithText:(NSString *)text
                  textColor:(UIColor *)textColor
                  alignment:(NSTextAlignment)alignment
                       font:(UIFont *)font;
 
-
 + (UILabel *)labelWithAttrStr:(NSAttributedString *)attrStr;
-
 
 
 + (void)settingLabelWithLabel:(UILabel *)label
@@ -124,16 +159,27 @@ estimatedSectionFooterHeight:(CGFloat)estimatedSectionFooterHeight;
                          font:(UIFont *)font
                       attrStr:(NSAttributedString *)attrStr;
 
+@end
 
 
-#pragma mark - UIButton
-+ (UIButton *)buttonWithTarget:(id)target sel:(SEL)sel;
+#pragma mark -
+/*!
+ *  titleColor if nil, it will be set white.
+ *  backgroundColor if nil, it will be set clear.
+ **/
+@interface SJUIButtonFactory : NSObject
 
-+ (UIButton *)buttonWithTarget:(id)target sel:(SEL)sel tag:(NSInteger)tag;
++ (UIButton *)buttonWithTarget:(id)target
+                           sel:(SEL)sel;
+
++ (UIButton *)buttonWithTarget:(id)target
+                           sel:(SEL)sel
+                           tag:(NSInteger)tag;
 
 + (UIButton *)buttonWithBackgroundColor:(UIColor *)color
                                  target:(id)target
                                     sel:(SEL)sel;
+
 + (UIButton *)buttonWithBackgroundColor:(UIColor *)color
                                  target:(id)target
                                     sel:(SEL)sel
@@ -141,14 +187,13 @@ estimatedSectionFooterHeight:(CGFloat)estimatedSectionFooterHeight;
 
 + (UIButton *)buttonWithImageName:(NSString *)imageName;
 
-+ (UIButton *)buttonWithTitle:(NSString *)title titleColor:(UIColor *)titleColor;
++ (UIButton *)buttonWithTitle:(NSString *)title
+                   titleColor:(UIColor *)titleColor;
 
-+ (UIButton *)buttonWithTitle:(NSString *)title titleColor:(UIColor *)titleColor imageName:(NSString *)imageName;
++ (UIButton *)buttonWithTitle:(NSString *)title
+                   titleColor:(UIColor *)titleColor
+                    imageName:(NSString *)imageName;
 
-/// titleColor if nil, it will be set white.
-/// backgroundColor if nil, it will be set clear.
-/// height is show ( font + space ) height.
-/// if the height is equal to 0, this will not set it.
 + (UIButton *)buttonWithTitle:(NSString *)title
                    titleColor:(UIColor *)titleColor
                          font:(UIFont *)font
@@ -247,45 +292,45 @@ estimatedSectionFooterHeight:(CGFloat)estimatedSectionFooterHeight;
                                         tag:(NSInteger)tag;
 
 
+@end
 
-#pragma mark - ImageView
+
+#pragma mark -
+/*!
+ *  viewMode -> UIViewContentModeScaleAspectFit
+ **/
+@interface SJUIImageViewFactory : NSObject
+
++ (UIImageView *)imageViewWithBackgroundColor:(UIColor *)color;
+
++ (UIImageView *)imageViewWithBackgroundColor:(UIColor *)color
+                                     viewMode:(UIViewContentMode)mode;
+
 + (UIImageView *)imageViewWithViewMode:(UIViewContentMode)mode;
+
++ (UIImageView *)imageViewWithImageName:(NSString *)imageName;
 
 + (UIImageView *)imageViewWithImageName:(NSString *)imageName
                                viewMode:(UIViewContentMode)mode;
 
 
-/// viewMode -> UIViewContentModeScaleAspectFit
-+ (UIImageView *)imageViewWithImageName:(NSString *)imageName;
-
-
-
-+ (UIImageView *)imageViewWithBackgroundColor:(UIColor *)color
-                                     viewMode:(UIViewContentMode)mode;
-
-
-
-/// viewMode -> UIViewContentModeScaleAspectFit
 + (UIImageView *)roundImageViewWithImageName:(NSString *)imageName;
-
-
 
 + (UIImageView *)roundImageViewWithBackgroundColor:(UIColor *)color
                                           viewMode:(UIViewContentMode)mode;
 
-
-
 + (UIImageView *)roundImageViewWithImageName:(NSString *)imageName
                                     viewMode:(UIViewContentMode)mode;
 
+@end
 
 
 
-#pragma mark - TextField
+#pragma mark -
 /// 如果placeholderColor不为nil, 则设置为 attr. 否则设置是default
 /// textColor if nil, it will be set black.
-/// height is show ( font + space ) height.
 /// backgroundColor if nil, it will be set clear.
+@interface SJUITextFieldFactory : NSObject
 + (UITextField *)textFieldWithPlaceholder:(NSString *)placeholder
                          placeholderColor:(UIColor *)placeholderColor
                                      text:(NSString *)text
@@ -313,23 +358,27 @@ estimatedSectionFooterHeight:(CGFloat)estimatedSectionFooterHeight;
 
 + (void)textField:(UITextField *)textField setLeftSpace:(CGFloat)leftSpace rightSpace:(CGFloat)rightSpace;
 
+@end
 
 
+#pragma mark -
+@interface SJUITextViewFactory : NSObject
 
-#pragma mark - TextView
 + (UITextView *)textViewWithTextColor:(UIColor *)textColor
                       backgroundColor:(UIColor *)backgroundColor
                                  font:(UIFont *)font;
 
-
-
-#pragma mark - ImagePickerViewController
-- (void)
-alterPickerViewControllerWithController:(UIViewController *)controller
-                             alertTitle:(NSString *)title
-                                    msg:(NSString *)msg
-                           photoLibrary:(void(^)(UIImage *selectedImage))photoLibraryBlock
-                                 camera:(void(^)(UIImage *selectedImage))cameraBlock;
-
 @end
 
+
+#pragma mark -
+@interface SJUIImagePickerControllerFactory : NSObject
+
++ (instancetype)shared;
+
+- (void)alterPickerViewControllerWithController:(UIViewController *)controller
+                                     alertTitle:(NSString *)title
+                                            msg:(NSString *)msg
+                                   photoLibrary:(void(^)(UIImage *selectedImage))photoLibraryBlock
+                                         camera:(void(^)(UIImage *selectedImage))cameraBlock;
+@end

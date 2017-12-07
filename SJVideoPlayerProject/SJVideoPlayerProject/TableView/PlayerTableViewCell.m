@@ -47,12 +47,15 @@
 
 - (UIImageView *)backgroundImageView {
     if ( _backgroundImageView ) return _backgroundImageView;
-    _backgroundImageView = [SJUIFactory imageViewWithImageName:@"placeholder"];
+    _backgroundImageView = [SJUIImageViewFactory imageViewWithImageName:@"placeholder"];
+    
+    _backgroundImageView.tag = 100;
+    _backgroundImageView.userInteractionEnabled = YES;
     return _backgroundImageView;
 }
 - (UIImageView *)playImageView {
     if ( _playImageView ) return _playImageView;
-    _playImageView = [SJUIFactory imageViewWithImageName:@"play"];
+    _playImageView = [SJUIImageViewFactory imageViewWithImageName:@"play"];
     return _playImageView;
 }
 @end

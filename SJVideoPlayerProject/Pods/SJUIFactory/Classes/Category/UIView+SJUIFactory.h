@@ -21,7 +21,7 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic, assign) CGFloat csj_centerY;
 @property (nonatomic, assign, readonly) CGFloat csj_maxX;
 @property (nonatomic, assign, readonly) CGFloat csj_maxY;
-@property (nonatomic, strong, readonly) UIViewController *csj_viewController;
+@property (nonatomic, strong, readonly, nullable) UIViewController *csj_viewController;
 
 @end
 

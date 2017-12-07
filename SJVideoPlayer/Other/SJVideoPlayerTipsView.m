@@ -125,13 +125,13 @@
 
 - (UILabel *)titleLabel {
     if ( _titleLabel ) return _titleLabel;
-    _titleLabel = [SJUIFactory labelWithText:@"" textColor:SJThemeColor alignment:NSTextAlignmentCenter font:[UIFont boldSystemFontOfSize:14]];
+    _titleLabel = [SJUILabelFactory labelWithText:@"" textColor:SJThemeColor alignment:NSTextAlignmentCenter font:[UIFont boldSystemFontOfSize:14]];
     return _titleLabel;
 }
 
 - (UIImageView *)imageView {
     if ( _imageView ) return _imageView;
-    _imageView = [SJUIFactory imageViewWithImageName:@"" viewMode:UIViewContentModeScaleAspectFit];
+    _imageView = [SJUIImageViewFactory imageViewWithImageName:@"" viewMode:UIViewContentModeScaleAspectFit];
     return _imageView;
 }
 
@@ -156,7 +156,7 @@
 
 - (UILabel *)minShowTitleLabel {
     if ( _minShowTitleLabel  ) return _minShowTitleLabel;
-    _minShowTitleLabel = [SJUIFactory labelWithText:@"" textColor:SJThemeColor alignment:NSTextAlignmentCenter font:[UIFont systemFontOfSize:10]];
+    _minShowTitleLabel = [SJUILabelFactory labelWithText:@"" textColor:SJThemeColor alignment:NSTextAlignmentCenter font:[UIFont systemFontOfSize:10]];
     _minShowTitleLabel.hidden = YES;
     _minShowTitleLabel.font = [UIFont systemFontOfSize:12];
     return _minShowTitleLabel;

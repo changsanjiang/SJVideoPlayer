@@ -42,7 +42,7 @@
 
 - (UIImageView *)imageView {
     if ( _imageView ) return _imageView;
-    _imageView = [SJUIFactory imageViewWithImageName:@"" viewMode:UIViewContentModeScaleAspectFill];
+    _imageView = [SJUIImageViewFactory imageViewWithImageName:@"" viewMode:UIViewContentModeScaleAspectFill];
     return _imageView;
 }
 @end

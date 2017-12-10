@@ -1,8 +1,8 @@
 //
-//  SJVolumeAndBrightness.h
-//  SJVideoPlayerProject
+//  SJVolBrigControl.h
+//  SJVolBrigControl
 //
-//  Created by BlueDancer on 2017/12/6.
+//  Created by BlueDancer on 2017/12/10.
 //  Copyright © 2017年 SanJiang. All rights reserved.
 //
 
@@ -10,18 +10,18 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
-@interface SJVolumeAndBrightness : NSObject
-
-@property (nonatomic, copy, readwrite, nullable) void(^volumeChanged)(float volume);
-@property (nonatomic, copy, readwrite, nullable) void(^brightnessChanged)(float brightness);
+@interface SJVolBrigControl : NSObject
 
 @property (nonatomic, strong, readonly) UIView *volumeView;
 @property (nonatomic, strong, readonly) UIView *brightnessView;
 
 /// 0..1
 @property (nonatomic, assign, readwrite) float volume;
+@property (nonatomic, copy, readwrite, nullable) void(^volumeChanged)(float volume);
+
 /// 0.1..1
 @property (nonatomic, assign, readwrite) float brightness;
+@property (nonatomic, copy, readwrite, nullable) void(^brightnessChanged)(float brightness);
 
 @end
 

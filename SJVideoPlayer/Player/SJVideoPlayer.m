@@ -20,7 +20,7 @@
 #import <SJPrompt/SJPrompt.h>
 #import <SJOrentationObserver/SJOrentationObserver.h>
 #import "SJVideoPlayerRegistrar.h"
-#import "SJVolumeAndBrightness.h"
+#import "SJVolBrigControl.h"
 #import "SJTimerControl.h"
 #import "SJVideoPlayerView.h"
 #import "JDradualLoadingView.h"
@@ -72,7 +72,7 @@ inline static NSString *_formatWithSec(NSInteger sec) {
 @property (nonatomic, strong, readonly) SJOrentationObserver *orentation;
 @property (nonatomic, strong, readonly) SJMoreSettingsFooterViewModel *moreSettingFooterViewModel;
 @property (nonatomic, strong, readonly) SJVideoPlayerRegistrar *registrar;
-@property (nonatomic, strong, readonly) SJVolumeAndBrightness *volBrig;
+@property (nonatomic, strong, readonly) SJVolBrigControl *volBrigControl;
 @property (nonatomic, strong, readonly) JDradualLoadingView *loadingView;
 @property (nonatomic, strong, readonly) SJPlayerGestureControl *gestureControl;
 
@@ -358,7 +358,7 @@ inline static NSString *_formatWithSec(NSInteger sec) {
     SJVideoPlayerView *_view;
     SJMoreSettingsFooterViewModel *_moreSettingFooterViewModel;
     SJVideoPlayerRegistrar *_registrar;
-    SJVolumeAndBrightness *_volBrig;
+    SJVolBrigControl *_volBrigControl;
     JDradualLoadingView *_loadingView;
     SJPlayerGestureControl *_gestureControl;
 }
@@ -421,7 +421,7 @@ inline static NSString *_formatWithSec(NSInteger sec) {
     [_presentView addSubview:self.controlView];
     [_controlView addSubview:self.moreSettingView];
     [_controlView addSubview:self.moreSecondarySettingView];
-    [self _settingGestureControlWithView:_controlView];
+    [self gesturesHandleWithTargetView:_controlView];
     self.hiddenMoreSettingView = YES;
     self.hiddenMoreSecondarySettingView = YES;
     _controlView.delegate = self;
@@ -475,7 +475,7 @@ inline static NSString *_formatWithSec(NSInteger sec) {
     _moreSettingFooterViewModel.needChangeBrightness = ^(float brightness) {
         __strong typeof(_self) self = _self;
         if ( !self ) return;
-        self.volBrig.brightness = brightness;
+        self.volBrigControl.brightness = brightness;
     };
     
     _moreSettingFooterViewModel.needChangePlayerRate = ^(float rate) {
@@ -488,19 +488,19 @@ inline static NSString *_formatWithSec(NSInteger sec) {
     _moreSettingFooterViewModel.needChangeVolume = ^(float volume) {
         __strong typeof(_self) self = _self;
         if ( !self ) return;
-        self.volBrig.volume = volume;
+        self.volBrigControl.volume = volume;
     };
     
     _moreSettingFooterViewModel.initialVolumeValue = ^float{
         __strong typeof(_self) self = _self;
         if ( !self ) return 0;
-        return self.volBrig.volume;
+        return self.volBrigControl.volume;
     };
     
     _moreSettingFooterViewModel.initialBrightnessValue = ^float{
         __strong typeof(_self) self = _self;
         if ( !self ) return 0;
-        return self.volBrig.brightness;
+        return self.volBrigControl.brightness;
     };
     
     _moreSettingFooterViewModel.initialPlayerRateValue = ^float{
@@ -632,27 +632,28 @@ inline static NSString *_formatWithSec(NSInteger sec) {
     return _registrar;
 }
 
-- (SJVolumeAndBrightness *)volBrig {
-    if ( _volBrig ) return _volBrig;
-    _volBrig  = [SJVolumeAndBrightness new];
+- (SJVolBrigControl *)volBrig {
+    if ( _volBrigControl ) return _volBrigControl;
+    _volBrigControl  = [SJVolBrigControl new];
     __weak typeof(self) _self = self;
-    _volBrig.volumeChanged = ^(float volume) {
+    _volBrigControl.volumeChanged = ^(float volume) {
         __strong typeof(_self) self = _self;
         if ( !self ) return;
         if ( self.moreSettingFooterViewModel.volumeChanged ) self.moreSettingFooterViewModel.volumeChanged(volume);
     };
     
-    _volBrig.brightnessChanged = ^(float brightness) {
+    _volBrigControl.brightnessChanged = ^(float brightness) {
         __strong typeof(_self) self = _self;
         if ( !self ) return;
-        if ( self.moreSettingFooterViewModel.brightnessChanged ) self.moreSettingFooterViewModel.brightnessChanged(self.volBrig.brightness);
+        if ( self.moreSettingFooterViewModel.brightnessChanged ) self.moreSettingFooterViewModel.brightnessChanged(self.volBrigControl.brightness);
     };
-    return _volBrig;
+    return _volBrigControl;
 }
 
-- (void)_settingGestureControlWithView:(UIView *)targetView {
-    _gestureControl = [[SJPlayerGestureControl alloc] initWithTargetView:targetView];
+- (void)gesturesHandleWithTargetView:(UIView *)targetView {
     
+    _gestureControl = [[SJPlayerGestureControl alloc] initWithTargetView:targetView];
+
     __weak typeof(self) _self = self;
     _gestureControl.triggerCondition = ^BOOL(SJPlayerGestureControl * _Nonnull control, UIGestureRecognizer *gesture) {
         __strong typeof(_self) self = _self;
@@ -731,11 +732,11 @@ inline static NSString *_formatWithSec(NSInteger sec) {
             case SJPanDirection_V: {
                 switch (location) {
                     case SJPanLocation_Right: {
-                        target = self.volBrig.volumeView;
+                        target = self.volBrigControl.volumeView;
                     }
                         break;
                     case SJPanLocation_Left: {
-                        target = self.volBrig.brightnessView;
+                        target = self.volBrigControl.brightnessView;
                     }
                         break;
                     case SJPanLocation_Unknown: break;
@@ -771,13 +772,13 @@ inline static NSString *_formatWithSec(NSInteger sec) {
             case SJPanDirection_V: {
                 switch (location) {
                     case SJPanLocation_Left: {
-                        CGFloat value = self.volBrig.brightness - translate.y * 0.006;
+                        CGFloat value = self.volBrigControl.brightness - translate.y * 0.006;
                         if ( value < 1.0 / 16 ) value = 1.0 / 16;
-                        self.volBrig.brightness = value;
+                        self.volBrigControl.brightness = value;
                     }
                         break;
                     case SJPanLocation_Right: {
-                        self.volBrig.volume -= translate.y * 0.006;
+                        self.volBrigControl.volume -= translate.y * 0.006;
                     }
                         break;
                     case SJPanLocation_Unknown: break;
@@ -962,10 +963,10 @@ inline static NSString *_formatWithSec(NSInteger sec) {
     self.controlView.bottomProgressSlider.bufferProgress = 0;
     self.rate = 1;
     if ( self.moreSettingFooterViewModel.volumeChanged ) {
-        self.moreSettingFooterViewModel.volumeChanged(self.volBrig.volume);
+        self.moreSettingFooterViewModel.volumeChanged(self.volBrigControl.volume);
     }
     if ( self.moreSettingFooterViewModel.brightnessChanged ) {
-        self.moreSettingFooterViewModel.brightnessChanged(self.volBrig.brightness);
+        self.moreSettingFooterViewModel.brightnessChanged(self.volBrigControl.brightness);
     }
     [self _prepareState];
 }

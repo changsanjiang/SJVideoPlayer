@@ -80,8 +80,6 @@
     if ( _doubleTapped ) _doubleTapped(self);
 }
 
-static UIView *target = nil;
-
 - (void)handlePan:(UIPanGestureRecognizer *)pan {
 
     CGPoint translate = [pan translationInView:pan.view];

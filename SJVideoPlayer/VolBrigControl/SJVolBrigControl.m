@@ -1,19 +1,18 @@
 //
-//  SJVolumeAndBrightness.m
-//  SJVideoPlayerProject
+//  SJVolBrigControl.m
+//  SJVolBrigControl
 //
-//  Created by BlueDancer on 2017/12/6.
+//  Created by BlueDancer on 2017/12/10.
 //  Copyright © 2017年 SanJiang. All rights reserved.
 //
 
-#import "SJVolumeAndBrightness.h"
+#import "SJVolBrigControl.h"
 #import <MediaPlayer/MPVolumeView.h>
 #import <Masonry/Masonry.h>
-#import "SJVideoPlayerResources.h"
 #import "SJVideoPlayerTipsView.h"
-#import <SJSlider/SJSlider.h>
+#import "SJVideoPlayerResources.h"
 
-@interface SJVolumeAndBrightness ()
+@interface SJVolBrigControl ()
 
 @property (nonatomic, strong, readwrite) SJVideoPlayerTipsView *volumeView;
 @property (nonatomic, strong, readwrite) SJVideoPlayerTipsView *brightnessView;
@@ -21,7 +20,7 @@
 
 @end
 
-@implementation SJVolumeAndBrightness
+@implementation SJVolBrigControl
 @synthesize systemVolume = _systemVolume;
 
 - (instancetype)init {
@@ -37,13 +36,8 @@
         _volumeView = [SJVideoPlayerTipsView new];
         _volumeView.titleLabel.text = @"音量";
         _volumeView.minShowTitleLabel.text = @"静音";
-        __weak typeof(self) _self = self;
-        _volumeView.setting = ^(SJVideoPlayerSettings * _Nonnull setting) {
-            __strong typeof(_self) self = _self;
-            if ( !self ) return;
-            ((SJVideoPlayerTipsView *)self.volumeView).minShowImage = [SJVideoPlayerResources imageNamed:@"sj_video_player_un_volume"];
-            ((SJVideoPlayerTipsView *)self.volumeView).normalShowImage = [SJVideoPlayerResources imageNamed:@"sj_video_player_volume"];
-        };
+        _volumeView.minShowImage = [SJVideoPlayerResources imageNamed:@"sj_video_player_un_volume"];
+        _volumeView.normalShowImage = [SJVideoPlayerResources imageNamed:@"sj_video_player_volume"];
     }
     _volumeView.value = self.volume;
     return _volumeView;
@@ -53,12 +47,7 @@
     if ( !_brightnessView ) {
         _brightnessView = [SJVideoPlayerTipsView new];
         _brightnessView.titleLabel.text = @"亮度";
-        __weak typeof(self) _self = self;
-        _brightnessView.setting = ^(SJVideoPlayerSettings * _Nonnull setting) {
-            __strong typeof(_self) self = _self;
-            if ( !self ) return;
-            ((SJVideoPlayerTipsView *)self.brightnessView).normalShowImage = [SJVideoPlayerResources imageNamed:@"sj_video_player_brightness"];
-        };
+        _brightnessView.normalShowImage = [SJVideoPlayerResources imageNamed:@"sj_video_player_brightness"];
     }
     _brightnessView.value = self.brightness;
     return _brightnessView;

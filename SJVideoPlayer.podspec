@@ -40,10 +40,11 @@ s.subspec 'Player' do |ss|
     ss.dependency 'SJVideoPlayer/Loading'
     ss.dependency 'SJVideoPlayer/MoreSetting'
     ss.dependency 'SJVideoPlayer/OrentationObserver'
-    ss.dependency 'SJVideoPlayer/VolumeAndBrightness'
+    ss.dependency 'SJVideoPlayer/VolBrigControl'
     ss.dependency 'SJVideoPlayer/Present'
     ss.dependency 'SJVideoPlayer/Registrar'
     ss.dependency 'SJVideoPlayer/TimerControl'
+    ss.dependency 'SJVideoPlayer/GestureControl'
 end
 
 s.subspec 'Model' do |ss|
@@ -55,6 +56,10 @@ s.subspec 'Control' do |ss|
     ss.dependency 'SJVideoPlayer/Other'
 end
 
+s.subspec 'GestureControl' do |ss|
+    ss.source_files = 'SJVideoPlayer/GestureControl/*.{h,m}'
+end
+
 s.subspec 'Loading' do |ss|
     ss.source_files = 'SJVideoPlayer/Loading/*.{h,m}'
 end
@@ -64,8 +69,8 @@ s.subspec 'MoreSetting' do |ss|
     ss.dependency 'SJVideoPlayer/Other'
 end
 
-s.subspec 'VolumeAndBrightness' do |ss|
-    ss.source_files = 'SJVideoPlayer/VolumeAndBrightness/*.{h,m}'
+s.subspec 'VolBrigControl' do |ss|
+    ss.source_files = 'SJVideoPlayer/VolBrigControl/*.{h,m}'
     ss.dependency 'SJVideoPlayer/Other'
 end
 

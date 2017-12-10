@@ -156,9 +156,8 @@
 
 - (UILabel *)minShowTitleLabel {
     if ( _minShowTitleLabel  ) return _minShowTitleLabel;
-    _minShowTitleLabel = [SJUILabelFactory labelWithText:@"" textColor:SJThemeColor alignment:NSTextAlignmentCenter font:[UIFont systemFontOfSize:10]];
+    _minShowTitleLabel = [SJUILabelFactory labelWithText:@"" textColor:SJThemeColor alignment:NSTextAlignmentCenter font:[UIFont systemFontOfSize:12]];
     _minShowTitleLabel.hidden = YES;
-    _minShowTitleLabel.font = [UIFont systemFontOfSize:12];
     return _minShowTitleLabel;
 }
 

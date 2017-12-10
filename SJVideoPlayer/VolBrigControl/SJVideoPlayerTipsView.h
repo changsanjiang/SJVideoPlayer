@@ -6,9 +6,9 @@
 //  Copyright © 2017年 SanJiang. All rights reserved.
 //
 
-#import "SJVideoPlayerBaseView.h"
+#import <UIKit/UIKit.h>
 
-@interface SJVideoPlayerTipsView : SJVideoPlayerBaseView
+@interface SJVideoPlayerTipsView : UIView
 
 @property (nonatomic, strong, readonly) UILabel *titleLabel;
 

@@ -37,12 +37,6 @@ extern NSNotificationName const SJSettingsPlayerNotification;
 @property (nonatomic, strong, readwrite) UIColor *more_trackColor;
 @property (nonatomic, assign, readwrite) float more_traceHeight;
 
-
-// MARK: volume & brightness
-@property (nonatomic, strong, readwrite) UIImage *volumeImage;
-@property (nonatomic, strong, readwrite) UIImage *muteImage;
-@property (nonatomic, strong, readwrite) UIImage *brightnessImage;
-
 // MARK: Loading
 @property (nonatomic, strong, readwrite) UIColor *loadingLineColor;
 @property (nonatomic, assign, readwrite) float loadingLineWidth;

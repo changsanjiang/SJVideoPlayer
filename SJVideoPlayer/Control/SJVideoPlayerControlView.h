@@ -40,10 +40,6 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic, strong, readonly) SJSlider *bottomProgressSlider;
 @property (nonatomic, strong, readonly) SJVideoPlayerDraggingProgressView *draggingProgressView;
 
-@property (nonatomic, strong, readonly) UITapGestureRecognizer *singleTap;
-@property (nonatomic, strong, readonly) UITapGestureRecognizer *doubleTap;
-@property (nonatomic, strong, readonly) UIPanGestureRecognizer *panGR;
-
 @end
 
 @protocol SJVideoPlayerControlViewDelegate <NSObject>
@@ -51,9 +47,6 @@ NS_ASSUME_NONNULL_BEGIN
 @optional
 - (void)controlView:(SJVideoPlayerControlView *)controlView clickedBtnTag:(SJVideoPlayControlViewTag)tag;
 - (void)controlView:(SJVideoPlayerControlView *)controlView didSelectPreviewItem:(SJVideoPreviewModel *)item;
-- (void)controlView:(SJVideoPlayerControlView *)controlView handleSingleTap:(UITapGestureRecognizer *)tap;
-- (void)controlView:(SJVideoPlayerControlView *)controlView handleDoubleTap:(UITapGestureRecognizer *)tap;
-- (void)controlView:(SJVideoPlayerControlView *)controlView handlePan:(UIPanGestureRecognizer *)pan;
 
 @end
 

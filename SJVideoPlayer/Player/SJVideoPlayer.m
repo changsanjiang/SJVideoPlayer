@@ -24,6 +24,7 @@
 #import "SJTimerControl.h"
 #import "SJVideoPlayerView.h"
 #import "JDradualLoadingView.h"
+#import "SJPlayerGestureControl.h"
 
 #define MoreSettingWidth (MAX([UIScreen mainScreen].bounds.size.width, [UIScreen mainScreen].bounds.size.height) * 0.382)
 
@@ -73,6 +74,7 @@ inline static NSString *_formatWithSec(NSInteger sec) {
 @property (nonatomic, strong, readonly) SJVideoPlayerRegistrar *registrar;
 @property (nonatomic, strong, readonly) SJVolumeAndBrightness *volBrig;
 @property (nonatomic, strong, readonly) JDradualLoadingView *loadingView;
+@property (nonatomic, strong, readonly) SJPlayerGestureControl *gestureControl;
 
 
 @property (nonatomic, assign, readwrite) SJVideoPlayerPlayState state;
@@ -344,218 +346,6 @@ inline static NSString *_formatWithSec(NSInteger sec) {
 @end
 
 
-
-
-
-#pragma mark - Gesture
-
-@interface SJVideoPlayer (GestureRecognizer)<UIGestureRecognizerDelegate>
-
-- (void)_settingControlViewGestureDelegate;
-
-@end
-
-typedef NS_ENUM(NSUInteger, SJPanDirection) {
-    SJPanDirection_Unknown,
-    SJPanDirection_V,
-    SJPanDirection_H,
-};
-
-
-typedef NS_ENUM(NSUInteger, SJVerticalPanLocation) {
-    SJVerticalPanLocation_Unknown,
-    SJVerticalPanLocation_Left,
-    SJVerticalPanLocation_Right,
-};
-
-@implementation SJVideoPlayer (GestureRecognizer)
-
-- (void)_settingControlViewGestureDelegate {
-    self.controlView.singleTap.delegate = self;
-    self.controlView.doubleTap.delegate = self;
-    self.controlView.panGR.delegate = self;
-}
-
-- (void)setPanDirection:(SJPanDirection)panDirection {
-    objc_setAssociatedObject(self, @selector(panDirection), @(panDirection), OBJC_ASSOCIATION_RETAIN_NONATOMIC);
-}
-
-- (SJPanDirection)panDirection {
-    return (SJPanDirection)[objc_getAssociatedObject(self , _cmd) integerValue];
-}
-
-- (void)setPanLocation:(SJVerticalPanLocation)panLocation {
-    objc_setAssociatedObject(self, @selector(panLocation), @(panLocation), OBJC_ASSOCIATION_RETAIN_NONATOMIC);
-}
-
-- (SJVerticalPanLocation)panLocation {
-    return (SJVerticalPanLocation)[objc_getAssociatedObject(self , _cmd) integerValue];
-}
-
-- (BOOL)_isFadeAreaWithGesture:(UIGestureRecognizer *)gesture {
-    CGPoint point = [gesture locationInView:gesture.view];
-    if ( CGRectContainsPoint(self.moreSettingView.frame, point) ||
-        CGRectContainsPoint(self.moreSecondarySettingView.frame, point) ||
-        CGRectContainsPoint(self.controlView.previewView.frame, point) ) {
-        [gesture setValue:@(UIGestureRecognizerStateCancelled) forKey:@"state"];
-        return YES;
-    }
-    return NO;
-}
-
-- (BOOL)gestureRecognizerShouldBegin:(UIGestureRecognizer *)gestureRecognizer {
-    if ( self.isLockedScrren ) return NO;
-    if ( gestureRecognizer == self.controlView.panGR &&
-         self.playOnCell &&
-         !self.orentation.fullScreen ) return NO;
-    if ( [self _isFadeAreaWithGesture:gestureRecognizer] ) return NO;
-    return YES;
-}
-
-- (void)controlView:(SJVideoPlayerControlView *)controlView handleSingleTap:(UITapGestureRecognizer *)tap {
-
-    _sjAnima(^{
-        if ( !self.hiddenMoreSettingView ) {
-            self.hiddenMoreSettingView = YES;
-        }
-        else if ( !self.hiddenMoreSecondarySettingView ) {
-            self.hiddenMoreSecondarySettingView = YES;
-        }
-        else {
-            self.hideControl = !self.isHiddenControl;
-        }
-    });
-}
-
-- (void)controlView:(SJVideoPlayerControlView *)controlView handleDoubleTap:(UITapGestureRecognizer *)tap {
-    switch (self.state) {
-        case SJVideoPlayerPlayState_Unknown:
-        case SJVideoPlayerPlayState_Prepare:
-            break;
-        case SJVideoPlayerPlayState_Buffing:
-        case SJVideoPlayerPlayState_Playing: {
-            [self pause];
-        }
-            break;
-        case SJVideoPlayerPlayState_Pause:
-        case SJVideoPlayerPlayState_PlayEnd: {
-            [self play];
-        }
-            break;
-        case SJVideoPlayerPlayState_PlayFailed:
-            break;
-    }
-}
-
-static UIView *target = nil;
-- (void)controlView:(SJVideoPlayerControlView *)controlView handlePan:(UIPanGestureRecognizer *)pan {
-    CGPoint offset = [pan translationInView:pan.view];
-    switch (pan.state) {
-        case UIGestureRecognizerStateBegan:{
-            CGPoint velocity = [pan velocityInView:pan.view];
-            CGFloat x = fabs(velocity.x);
-            CGFloat y = fabs(velocity.y);
-            if (x > y) {
-                /// 水平移动, 调整进度
-                self.panDirection = SJPanDirection_H;
-                [self _pause];
-                _sjAnima(^{
-                    _sjShowViews(@[self.controlView.draggingProgressView]);
-                });
-                self.controlView.draggingProgressView.progressSlider.value = self.asset.progress;
-                self.controlView.draggingProgressView.progressLabel.text = _formatWithSec(self.asset.currentTime);
-                self.hideControl = YES;
-            }
-            else {
-                /// 垂直移动, 调整音量 或者 亮度
-                self.panDirection = SJPanDirection_V;
-                CGPoint locationPoint = [pan locationInView:pan.view];
-                if ( locationPoint.x > self.controlView.bounds.size.width / 2 ) {
-                    self.panLocation = SJVerticalPanLocation_Right;
-                    target = self.volBrig.volumeView;
-                }
-                else {
-                    self.panLocation = SJVerticalPanLocation_Left;
-                    target = self.volBrig.brightnessView;
-                }
-                [[UIApplication sharedApplication].keyWindow addSubview:target];
-                [target mas_remakeConstraints:^(MASConstraintMaker *make) {
-                    make.size.mas_offset(CGSizeMake(155, 155));
-                    make.center.equalTo([UIApplication sharedApplication].keyWindow);
-                }];
-                target.transform = self.controlView.superview.transform;
-                _sjAnima(^{
-                    _sjShowViews(@[target]);
-                });
-            }
-            break;
-        }
-        case UIGestureRecognizerStateChanged:{ // 正在移动
-            switch (self.panDirection) {
-                case SJPanDirection_H:{
-                    self.controlView.draggingProgressView.progressSlider.value += offset.x * 0.003;
-                    self.controlView.draggingProgressView.progressLabel.text =  _formatWithSec(self.asset.duration * self.controlView.draggingProgressView.progressSlider.value);
-                }
-                    break;
-                case SJPanDirection_V:{
-                    switch (self.panLocation) {
-                        case SJVerticalPanLocation_Left: {
-                            CGFloat value = self.volBrig.brightness - offset.y * 0.006;
-                            if ( value < 1.0 / 16 ) value = 1.0 / 16;
-                            self.volBrig.brightness = value;
-                        }
-                            break;
-                        case SJVerticalPanLocation_Right: {
-                            self.volBrig.volume -= offset.y * 0.006;
-                        }
-                            break;
-                        case SJVerticalPanLocation_Unknown: break;
-                    }
-                }
-                    break;
-                case SJPanDirection_Unknown: break;
-            }
-            break;
-        }
-        case UIGestureRecognizerStateFailed:
-        case UIGestureRecognizerStateCancelled:
-        case UIGestureRecognizerStateEnded:{
-            switch ( self.panDirection ) {
-                case SJPanDirection_H:{
-                    _sjAnima(^{
-                        _sjHiddenViews(@[self.controlView.draggingProgressView]);
-                    });
-                    __weak typeof(self) _self = self;
-                    [self jumpedToTime:self.controlView.draggingProgressView.progressSlider.value * self.asset.duration completionHandler:^(BOOL finished) {
-                        __strong typeof(_self) self = _self;
-                        if ( !self ) return ;
-                        [self play];
-                    }];
-                }
-                    break;
-                case SJPanDirection_V:{
-                    _sjAnima(^{
-                        _sjHiddenViews(@[target]);
-                    });
-                }
-                    break;
-                case SJPanDirection_Unknown: break;
-            }
-            break;
-        }
-        default: break;
-    }
-
-
-    [pan setTranslation:CGPointZero inView:pan.view];
-}
-
-
-@end
-
-
-
-
 #pragma mark - SJVideoPlayer
 #import "SJMoreSettingsFooterViewModel.h"
 
@@ -570,6 +360,7 @@ static UIView *target = nil;
     SJVideoPlayerRegistrar *_registrar;
     SJVolumeAndBrightness *_volBrig;
     JDradualLoadingView *_loadingView;
+    SJPlayerGestureControl *_gestureControl;
 }
 
 + (instancetype)sharedPlayer {
@@ -595,7 +386,6 @@ static UIView *target = nil;
     [self view];
     [self orentation];
     [self volBrig];
-    [self _settingControlViewGestureDelegate];
     [self settingPlayer:^(SJVideoPlayerSettings * _Nonnull settings) {
         [self resetSetting];
     }];
@@ -631,6 +421,7 @@ static UIView *target = nil;
     [_presentView addSubview:self.controlView];
     [_controlView addSubview:self.moreSettingView];
     [_controlView addSubview:self.moreSecondarySettingView];
+    [self _settingGestureControlWithView:_controlView];
     self.hiddenMoreSettingView = YES;
     self.hiddenMoreSecondarySettingView = YES;
     _controlView.delegate = self;
@@ -664,6 +455,7 @@ static UIView *target = nil;
         self.loadingView.lineWidth = setting.loadingLineWidth;
         self.loadingView.lineColor = setting.loadingLineColor;
     };
+    
     return _view;
 }
 
@@ -856,6 +648,170 @@ static UIView *target = nil;
         if ( self.moreSettingFooterViewModel.brightnessChanged ) self.moreSettingFooterViewModel.brightnessChanged(self.volBrig.brightness);
     };
     return _volBrig;
+}
+
+- (void)_settingGestureControlWithView:(UIView *)targetView {
+    _gestureControl = [[SJPlayerGestureControl alloc] initWithTargetView:targetView];
+    
+    __weak typeof(self) _self = self;
+    _gestureControl.triggerCondition = ^BOOL(SJPlayerGestureControl * _Nonnull control, UIGestureRecognizer *gesture) {
+        __strong typeof(_self) self = _self;
+        if ( !self ) return NO;
+        if ( self.isLockedScrren ) return NO;
+        if ( [gesture isKindOfClass:[UIPanGestureRecognizer class]] &&
+             self.playOnCell &&
+            !self.orentation.fullScreen ) return NO;
+        else return YES;
+    };
+    
+    _gestureControl.fadeArea = ^BOOL(CGPoint point) {
+        __strong typeof(_self) self = _self;
+        if ( !self ) return YES;
+        if ( CGRectContainsPoint(self.moreSettingView.frame, point) ||
+             CGRectContainsPoint(self.moreSecondarySettingView.frame, point) ||
+             CGRectContainsPoint(self.controlView.previewView.frame, point) ) {
+            return YES;
+        }
+        return NO;
+    };
+    
+    _gestureControl.singleTapped = ^(SJPlayerGestureControl * _Nonnull control) {
+        __strong typeof(_self) self = _self;
+        if ( !self ) return;
+        _sjAnima(^{
+            if ( !self.hiddenMoreSettingView ) {
+                self.hiddenMoreSettingView = YES;
+            }
+            else if ( !self.hiddenMoreSecondarySettingView ) {
+                self.hiddenMoreSecondarySettingView = YES;
+            }
+            else {
+                self.hideControl = !self.isHiddenControl;
+            }
+        });
+    };
+    
+    _gestureControl.doubleTapped = ^(SJPlayerGestureControl * _Nonnull control) {
+        __strong typeof(_self) self = _self;
+        if ( !self ) return;
+        switch (self.state) {
+            case SJVideoPlayerPlayState_Unknown:
+            case SJVideoPlayerPlayState_Prepare:
+                break;
+            case SJVideoPlayerPlayState_Buffing:
+            case SJVideoPlayerPlayState_Playing: {
+                [self pause];
+            }
+                break;
+            case SJVideoPlayerPlayState_Pause:
+            case SJVideoPlayerPlayState_PlayEnd: {
+                [self play];
+            }
+                break;
+            case SJVideoPlayerPlayState_PlayFailed:
+                break;
+        }
+    };
+    
+    static __weak UIView *target = nil;
+    _gestureControl.beganPan = ^(SJPlayerGestureControl * _Nonnull control, SJPanDirection direction, SJPanLocation location) {
+        __strong typeof(_self) self = _self;
+        if ( !self ) return;
+        switch (direction) {
+            case SJPanDirection_H: {
+                [self _pause];
+                _sjAnima(^{
+                    _sjShowViews(@[self.controlView.draggingProgressView]);
+                });
+                self.controlView.draggingProgressView.progressSlider.value = self.asset.progress;
+                self.controlView.draggingProgressView.progressLabel.text = _formatWithSec(self.asset.currentTime);
+                self.hideControl = YES;
+            }
+                break;
+            case SJPanDirection_V: {
+                switch (location) {
+                    case SJPanLocation_Right: {
+                        target = self.volBrig.volumeView;
+                    }
+                        break;
+                    case SJPanLocation_Left: {
+                        target = self.volBrig.brightnessView;
+                    }
+                        break;
+                    case SJPanLocation_Unknown: break;
+                }
+                
+                if ( target ) {
+                    [[UIApplication sharedApplication].keyWindow addSubview:target];
+                    [target mas_remakeConstraints:^(MASConstraintMaker *make) {
+                        make.size.mas_offset(CGSizeMake(155, 155));
+                        make.center.equalTo([UIApplication sharedApplication].keyWindow);
+                    }];
+                    target.transform = self.controlView.superview.transform;
+                    _sjAnima(^{
+                        _sjShowViews(@[target]);
+                    });
+                }
+            }
+                break;
+            case SJPanDirection_Unknown:
+                break;
+        }
+    };
+    
+    _gestureControl.changedPan = ^(SJPlayerGestureControl * _Nonnull control, SJPanDirection direction, SJPanLocation location, CGPoint translate) {
+        __strong typeof(_self) self = _self;
+        if ( !self ) return;
+        switch (direction) {
+            case SJPanDirection_H: {
+                self.controlView.draggingProgressView.progressSlider.value += translate.x * 0.003;
+                self.controlView.draggingProgressView.progressLabel.text =  _formatWithSec(self.asset.duration * self.controlView.draggingProgressView.progressSlider.value);
+            }
+                break;
+            case SJPanDirection_V: {
+                switch (location) {
+                    case SJPanLocation_Left: {
+                        CGFloat value = self.volBrig.brightness - translate.y * 0.006;
+                        if ( value < 1.0 / 16 ) value = 1.0 / 16;
+                        self.volBrig.brightness = value;
+                    }
+                        break;
+                    case SJPanLocation_Right: {
+                        self.volBrig.volume -= translate.y * 0.006;
+                    }
+                        break;
+                    case SJPanLocation_Unknown: break;
+                }
+            }
+                break;
+            default:
+                break;
+        }
+    };
+    
+    _gestureControl.endedPan = ^(SJPlayerGestureControl * _Nonnull control, SJPanDirection direction, SJPanLocation location) {
+        switch ( direction ) {
+            case SJPanDirection_H:{
+                _sjAnima(^{
+                    _sjHiddenViews(@[_self.controlView.draggingProgressView]);
+                });
+                [_self jumpedToTime:_self.controlView.draggingProgressView.progressSlider.value * _self.asset.duration completionHandler:^(BOOL finished) {
+                    __strong typeof(_self) self = _self;
+                    if ( !self ) return;
+                    [self play];
+                }];
+            }
+                break;
+            case SJPanDirection_V:{
+                _sjAnima(^{
+                    _sjHiddenViews(@[target]);
+                });
+            }
+                break;
+            case SJPanDirection_Unknown: break;
+        }
+        target = nil;
+    };
 }
 
 #pragma mark ======================================================
@@ -1394,9 +1350,6 @@ static __weak UIView *tmpView = nil;
     setting.more_traceColor = [UIColor greenColor];
     setting.more_trackColor = [UIColor whiteColor];
     setting.more_traceHeight = 5;
-    setting.volumeImage = [SJVideoPlayerResources imageNamed:@"sj_video_player_volume"];
-    setting.muteImage = [SJVideoPlayerResources imageNamed:@"sj_video_player_un_volume"];
-    setting.brightnessImage = [SJVideoPlayerResources imageNamed:@"sj_video_player_brightness"];
     setting.loadingLineColor = [UIColor whiteColor];
     setting.loadingLineWidth = 1;
 }

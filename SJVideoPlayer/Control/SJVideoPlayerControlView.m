@@ -16,9 +16,6 @@
 @end
 
 @implementation SJVideoPlayerControlView
-@synthesize singleTap = _singleTap;
-@synthesize doubleTap = _doubleTap;
-@synthesize panGR = _panGR;
 @synthesize bottomProgressSlider = _bottomProgressSlider;
 @synthesize previewView = _previewView;
 @synthesize topControlView = _topControlView;
@@ -31,7 +28,6 @@
     self = [super initWithFrame:frame];
     if ( !self ) return nil;
     [self _controlSetupView];
-    [self _addGestureToControlView];
     _topControlView.delegate = self;
     _leftControlView.delegate = self;
     _centerControlView.delegate = self;
@@ -45,18 +41,6 @@
         self.bottomProgressSlider.trackImageView.backgroundColor = setting.progress_trackColor;
     };
     return self;
-}
-
-- (void)_addGestureToControlView {
-    [self.singleTap requireGestureRecognizerToFail:self.doubleTap];
-    [self.doubleTap requireGestureRecognizerToFail:self.panGR];
-    
-    [self addGestureRecognizer:self.singleTap];
-    [self addGestureRecognizer:self.doubleTap];
-    [self addGestureRecognizer:self.panGR];
-    
-    [_singleTap requireGestureRecognizerToFail:_doubleTap];
-    [_doubleTap requireGestureRecognizerToFail:_panGR];
 }
 
 #pragma mark
@@ -177,37 +161,6 @@
     _bottomProgressSlider.trackHeight = 1;
     _bottomProgressSlider.pan.enabled = NO;
     return _bottomProgressSlider;
-}
-- (UITapGestureRecognizer *)singleTap {
-    if ( _singleTap ) return _singleTap;
-    _singleTap = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(handleSingleTap:)];
-    return _singleTap;
-}
-- (UITapGestureRecognizer *)doubleTap {
-    if ( _doubleTap ) return _doubleTap;
-    _doubleTap = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(handleDoubleTap:)];
-    _doubleTap.numberOfTapsRequired = 2;
-    return _doubleTap;
-}
-- (UIPanGestureRecognizer *)panGR {
-    if ( _panGR ) return _panGR;
-    _panGR = [[UIPanGestureRecognizer alloc] initWithTarget:self action:@selector(handlePan:)];
-    return _panGR;
-}
-
-- (void)handleSingleTap:(UITapGestureRecognizer *)tap {
-    if ( ![_delegate respondsToSelector:@selector(controlView:handleSingleTap:)] ) return;
-    [_delegate controlView:self handleSingleTap:tap];
-}
-
-- (void)handleDoubleTap:(UITapGestureRecognizer *)tap {
-    if ( ![_delegate respondsToSelector:@selector(controlView:handleDoubleTap:)] ) return;
-    [_delegate controlView:self handleDoubleTap:tap];
-}
-
-- (void)handlePan:(UIPanGestureRecognizer *)pan {
-    if ( ![_delegate respondsToSelector:@selector(controlView:handlePan:)] ) return;
-    [_delegate controlView:self handlePan:pan];
 }
 
 @end

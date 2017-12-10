@@ -53,6 +53,7 @@
 		778E24EC1FD97DF9008D0DD3 /* README.md in Resources */ = {isa = PBXBuildFile; fileRef = 778E24EB1FD97DF9008D0DD3 /* README.md */; };
 		778E24EF1FD97E85008D0DD3 /* IMG_0457.PNG in Resources */ = {isa = PBXBuildFile; fileRef = 778E24ED1FD97E85008D0DD3 /* IMG_0457.PNG */; };
 		778E24F01FD97E85008D0DD3 /* IMG_0454.PNG in Resources */ = {isa = PBXBuildFile; fileRef = 778E24EE1FD97E85008D0DD3 /* IMG_0454.PNG */; };
+		77A4394F1FDD887A008BD092 /* SJPlayerGestureControl.m in Sources */ = {isa = PBXBuildFile; fileRef = 77A4394E1FDD8879008BD092 /* SJPlayerGestureControl.m */; };
 		77EDB3591FD2CA550075A014 /* sample.mp4 in Resources */ = {isa = PBXBuildFile; fileRef = 77EDB3581FD2CA550075A014 /* sample.mp4 */; };
 		B009175F0CF36E1274CC84A3 /* libPods-SJVideoPlayerProject.a in Frameworks */ = {isa = PBXBuildFile; fileRef = A53C6944FFDAC5FD9DA4750E /* libPods-SJVideoPlayerProject.a */; };
 /* End PBXBuildFile section */
@@ -146,6 +147,8 @@
 		778E24EB1FD97DF9008D0DD3 /* README.md */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = net.daringfireball.markdown; name = README.md; path = ../README.md; sourceTree = "<group>"; };
 		778E24ED1FD97E85008D0DD3 /* IMG_0457.PNG */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = IMG_0457.PNG; sourceTree = "<group>"; };
 		778E24EE1FD97E85008D0DD3 /* IMG_0454.PNG */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = IMG_0454.PNG; sourceTree = "<group>"; };
+		77A4394D1FDD8879008BD092 /* SJPlayerGestureControl.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SJPlayerGestureControl.h; sourceTree = "<group>"; };
+		77A4394E1FDD8879008BD092 /* SJPlayerGestureControl.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SJPlayerGestureControl.m; sourceTree = "<group>"; };
 		77EDB3581FD2CA550075A014 /* sample.mp4 */ = {isa = PBXFileReference; lastKnownFileType = file; path = sample.mp4; sourceTree = "<group>"; };
 		A53C6944FFDAC5FD9DA4750E /* libPods-SJVideoPlayerProject.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-SJVideoPlayerProject.a"; sourceTree = BUILT_PRODUCTS_DIR; };
 		CF7AAE46F079AA385055F66D /* Pods-SJVideoPlayerProject.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-SJVideoPlayerProject.release.xcconfig"; path = "Pods/Target Support Files/Pods-SJVideoPlayerProject/Pods-SJVideoPlayerProject.release.xcconfig"; sourceTree = "<group>"; };
@@ -232,6 +235,7 @@
 				777D315F1FD8F44E0075E5FD /* SJPlayer.h */,
 				777D30DC1FD8F0010075E5FD /* Base */,
 				777D30E61FD8F0010075E5FD /* Control */,
+				77A4394C1FDD8879008BD092 /* GestureControl */,
 				777D30FA1FD8F0010075E5FD /* Header */,
 				777D30FD1FD8F0010075E5FD /* Loading */,
 				777D31001FD8F0010075E5FD /* Model */,
@@ -445,6 +449,15 @@
 			name = "New Group";
 			sourceTree = "<group>";
 		};
+		77A4394C1FDD8879008BD092 /* GestureControl */ = {
+			isa = PBXGroup;
+			children = (
+				77A4394D1FDD8879008BD092 /* SJPlayerGestureControl.h */,
+				77A4394E1FDD8879008BD092 /* SJPlayerGestureControl.m */,
+			);
+			path = GestureControl;
+			sourceTree = "<group>";
+		};
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
@@ -584,6 +597,7 @@
 				777D31541FD8F0010075E5FD /* SJVideoPlayerControlMaskView.m in Sources */,
 				777D313F1FD8F0010075E5FD /* SJVideoPlayerBottomControlView.m in Sources */,
 				777D31441FD8F0010075E5FD /* SJVideoPlayerControlView.m in Sources */,
+				77A4394F1FDD887A008BD092 /* SJPlayerGestureControl.m in Sources */,
 				777D31481FD8F0010075E5FD /* SJVideoPlayerAssetCarrier.m in Sources */,
 				777D314A1FD8F0010075E5FD /* SJVideoPlayerMoreSettingSecondary.m in Sources */,
 				777D31511FD8F0010075E5FD /* SJVideoPlayerMoreSettingSecondaryView.m in Sources */,

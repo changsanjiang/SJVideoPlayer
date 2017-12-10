@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <Scheme
-   LastUpgradeVersion = "0910"
+   LastUpgradeVersion = "0920"
    version = "1.3">
    <BuildAction
       parallelizeBuildables = "YES"
@@ -14,7 +14,7 @@
             buildForAnalyzing = "YES">
             <BuildableReference
                BuildableIdentifier = "primary"
-               BlueprintIdentifier = "0C3B009085425C485009DB2CFA4450F1"
+               BlueprintIdentifier = "B7644AF70E0C647AE14F89DAD3DB89E8"
                BuildableName = "libSJVideoPlayerBackGR.a"
                BlueprintName = "SJVideoPlayerBackGR"
                ReferencedContainer = "container:Pods.xcodeproj">
@@ -47,7 +47,7 @@
       <MacroExpansion>
          <BuildableReference
             BuildableIdentifier = "primary"
-            BlueprintIdentifier = "0C3B009085425C485009DB2CFA4450F1"
+            BlueprintIdentifier = "B7644AF70E0C647AE14F89DAD3DB89E8"
             BuildableName = "libSJVideoPlayerBackGR.a"
             BlueprintName = "SJVideoPlayerBackGR"
             ReferencedContainer = "container:Pods.xcodeproj">

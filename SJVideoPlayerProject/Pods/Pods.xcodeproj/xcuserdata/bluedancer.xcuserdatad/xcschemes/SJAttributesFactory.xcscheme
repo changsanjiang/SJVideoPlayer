@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <Scheme
-   LastUpgradeVersion = "0910"
+   LastUpgradeVersion = "0920"
    version = "1.3">
    <BuildAction
       parallelizeBuildables = "YES"
@@ -14,7 +14,7 @@
             buildForAnalyzing = "YES">
             <BuildableReference
                BuildableIdentifier = "primary"
-               BlueprintIdentifier = "20BCE26D01933D8B587DAF5FC62A0142"
+               BlueprintIdentifier = "673F6306D6B1E5259924FC9EBDC75734"
                BuildableName = "libSJAttributesFactory.a"
                BlueprintName = "SJAttributesFactory"
                ReferencedContainer = "container:Pods.xcodeproj">
@@ -47,7 +47,7 @@
       <MacroExpansion>
          <BuildableReference
             BuildableIdentifier = "primary"
-            BlueprintIdentifier = "20BCE26D01933D8B587DAF5FC62A0142"
+            BlueprintIdentifier = "673F6306D6B1E5259924FC9EBDC75734"
             BuildableName = "libSJAttributesFactory.a"
             BlueprintName = "SJAttributesFactory"
             ReferencedContainer = "container:Pods.xcodeproj">

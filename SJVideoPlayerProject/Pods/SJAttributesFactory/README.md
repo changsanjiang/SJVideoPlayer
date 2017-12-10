@@ -3,6 +3,10 @@
 ```ruby
   pod 'SJAttributesFactory'
 ```
+### 最新:
+- 修复了手残导致的Range方法的问题
+- 添加了一个编辑最近(lastInserted)插入的文本的方法.
+
 ### 最近动态:
 - 完善参数错误的相关提示
 - 修复了insert方法插入-1时的Bug

@@ -18,7 +18,7 @@
 #import "SJVideoPlayerMoreSettingsView.h"
 #import "SJVideoPlayerMoreSettingSecondaryView.h"
 #import <SJPrompt/SJPrompt.h>
-#import "SJOrentationObserver.h"
+#import <SJOrentationObserver/SJOrentationObserver.h>
 #import "SJVideoPlayerRegistrar.h"
 #import "SJVolumeAndBrightness.h"
 #import "SJTimerControl.h"

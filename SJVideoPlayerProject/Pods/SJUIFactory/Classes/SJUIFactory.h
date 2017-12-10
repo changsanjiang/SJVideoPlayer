@@ -19,17 +19,27 @@ extern BOOL SJ_is_iPhoneX(void);
 
 @interface SJUIFactory : NSObject
 
-+ (instancetype)sharedManager;
-
 + (UIFont *)getFontWithViewHeight:(CGFloat)height;
 
 + (UIFont *)getBoldFontWithViewHeight:(CGFloat)height;
 
 + (void)commonShadowWithView:(UIView *)view;
 
++ (void)commonShadowWithLayer:(CALayer *)layer;
+
++ (void)commonShadowWithView:(UIView *)view size:(CGSize)size;
+
++ (void)commonShadowWithView:(UIView *)view size:(CGSize)size cornerRadius:(CGFloat)cornerRadius;
+
 + (void)regulate:(UIView *)view cornerRadius:(CGFloat)cornerRadius;
 
 + (void)boundaryProtectedWithView:(UIView *)view;
+
++ (CAShapeLayer *)roundShapeLayerWithSize:(CGSize)size;
+
++ (CAShapeLayer *)shapeLayerWithSize:(CGSize)size cornerRadius:(float)cornerRadius;
+
++ (CAShapeLayer *)commonShadowShapeLayerWithSize:(CGSize)size cornerRadius:(float)radius;
 
 @end
 
@@ -137,8 +147,14 @@ estimatedSectionFooterHeight:(CGFloat)estimatedSectionFooterHeight;
                  textColor:(UIColor *)textColor
                  alignment:(NSTextAlignment)alignment;
 
++ (UILabel *)labelWithText:(NSString *)text;
+
 + (UILabel *)labelWithText:(NSString *)text
                  textColor:(UIColor *)textColor;
+
++ (UILabel *)labelWithText:(NSString *)text
+                 textColor:(UIColor *)textColor
+                      font:(UIFont *)font;
 
 + (UILabel *)labelWithText:(NSString *)text
                  textColor:(UIColor *)textColor
@@ -149,8 +165,9 @@ estimatedSectionFooterHeight:(CGFloat)estimatedSectionFooterHeight;
                  alignment:(NSTextAlignment)alignment
                       font:(UIFont *)font;
 
-+ (UILabel *)labelWithAttrStr:(NSAttributedString *)attrStr;
++ (UILabel *)attributeLabel;
 
++ (UILabel *)labelWithAttrStr:(NSAttributedString *)attrStr;
 
 + (void)settingLabelWithLabel:(UILabel *)label
                          text:(NSString *)text
@@ -189,6 +206,12 @@ estimatedSectionFooterHeight:(CGFloat)estimatedSectionFooterHeight;
 
 + (UIButton *)buttonWithTitle:(NSString *)title
                    titleColor:(UIColor *)titleColor;
+
++ (UIButton *)buttonWithTitle:(NSString *)title
+                   titleColor:(UIColor *)titleColor
+                         font:(UIFont *)font
+                       target:(id)target
+                          sel:(SEL)sel;
 
 + (UIButton *)buttonWithTitle:(NSString *)title
                    titleColor:(UIColor *)titleColor
@@ -256,6 +279,7 @@ estimatedSectionFooterHeight:(CGFloat)estimatedSectionFooterHeight;
                                    tag:(NSInteger)tag;
 
 
++ (UIButton *)roundButton;
 
 + (UIButton *)roundButtonWithTitle:(NSString *)title
                         titleColor:(UIColor *)titleColor
@@ -296,11 +320,11 @@ estimatedSectionFooterHeight:(CGFloat)estimatedSectionFooterHeight;
 
 
 #pragma mark -
+
+@interface SJUIImageViewFactory : NSObject
 /*!
  *  viewMode -> UIViewContentModeScaleAspectFit
  **/
-@interface SJUIImageViewFactory : NSObject
-
 + (UIImageView *)imageViewWithBackgroundColor:(UIColor *)color;
 
 + (UIImageView *)imageViewWithBackgroundColor:(UIColor *)color
@@ -313,15 +337,41 @@ estimatedSectionFooterHeight:(CGFloat)estimatedSectionFooterHeight;
 + (UIImageView *)imageViewWithImageName:(NSString *)imageName
                                viewMode:(UIViewContentMode)mode;
 
++ (UIImageView *)imageViewWithImageName:(NSString *)imageName
+                               viewMode:(UIViewContentMode)mode
+                        backgroundColor:(UIColor *)color;
 
-+ (UIImageView *)roundImageViewWithImageName:(NSString *)imageName;
+@end
+
+/*!
+ *  viewMode -> UIViewContentModeScaleAspectFill
+ *  不提供设置隐影, 如果要设置阴影
+ */
+@interface SJShapeImageViewFactory : NSObject
+
++ (UIImageView *)imageViewWithCornerRadius:(float)cornerRadius;
+
++ (UIImageView *)imageViewWithCornerRadius:(float)cornerRadius
+                                 imageName:(NSString *)imageName;
+
++ (UIImageView *)imageViewWithCornerRadius:(float)cornerRadius
+                                 imageName:(NSString *)imageName
+                                  viewMode:(UIViewContentMode)mode;
+
+
++ (UIImageView *)roundImageView;
+
++ (UIImageView *)roundImageViewWithViewMode:(UIViewContentMode)mode;
+
++ (UIImageView *)roundImageViewWithBackgroundColor:(UIColor *)color;
 
 + (UIImageView *)roundImageViewWithBackgroundColor:(UIColor *)color
                                           viewMode:(UIViewContentMode)mode;
 
++ (UIImageView *)roundImageViewWithImageName:(NSString *)imageName;
+
 + (UIImageView *)roundImageViewWithImageName:(NSString *)imageName
                                     viewMode:(UIViewContentMode)mode;
-
 @end
 
 
@@ -382,3 +432,4 @@ estimatedSectionFooterHeight:(CGFloat)estimatedSectionFooterHeight;
                                    photoLibrary:(void(^)(UIImage *selectedImage))photoLibraryBlock
                                          camera:(void(^)(UIImage *selectedImage))cameraBlock;
 @end
+

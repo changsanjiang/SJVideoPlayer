@@ -10,7 +10,7 @@ s.author       = { 'SanJiang' => 'changsanjiang@gmail.com' }
 s.platform     = :ios, '8.0'
 s.source       = { :git => 'https://github.com/changsanjiang/SJVideoPlayer.git', :tag => "v#{s.version}" }
 s.resource     = 'SJVideoPlayer/Resource/SJVideoPlayer.bundle'
-s.framework  = 'UIKit', 'AVFoundation'
+s.frameworks  = "UIKit", "AVFoundation"
 s.requires_arc = true
 s.dependency 'Masonry'
 s.dependency 'SJSlider'
@@ -19,6 +19,7 @@ s.dependency 'SJBorderLineView'
 s.dependency 'SJPrompt'
 s.dependency 'SJUIFactory'
 s.dependency 'SJVideoPlayerBackGR'
+s.dependency 'SJOrentationObserver'
 
 s.source_files = 'SJVideoPlayer/SJPlayer.h'
 
@@ -49,10 +50,6 @@ s.subspec 'Model' do |ss|
     ss.source_files = 'SJVideoPlayer/Model/*.{h,m}'
 end
 
-s.subspec 'Category' do |ss|
-    ss.source_files = 'SJVideoPlayer/Category/*.{h,m}'
-end
-
 s.subspec 'Control' do |ss|
     ss.source_files = 'SJVideoPlayer/Control/*.{h,m}'
     ss.dependency 'SJVideoPlayer/Other'
@@ -65,10 +62,6 @@ end
 s.subspec 'MoreSetting' do |ss|
     ss.source_files = 'SJVideoPlayer/MoreSetting/*/**.{h,m}'
     ss.dependency 'SJVideoPlayer/Other'
-end
-
-s.subspec 'OrentationObserver' do |ss|
-    ss.source_files = 'SJVideoPlayer/OrentationObserver/*.{h,m}'
 end
 
 s.subspec 'VolumeAndBrightness' do |ss|

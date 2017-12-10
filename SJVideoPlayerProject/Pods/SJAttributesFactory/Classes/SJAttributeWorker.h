@@ -181,7 +181,16 @@ NS_ASSUME_NONNULL_BEGIN
  *  insert([UIImage imageNamed:name], 10, CGPointMake(0, -20), CGSizeMake(50, 50))
  */
 @property (nonatomic, copy, readonly) SJAttributeWorker *(^insert)(id strOrAttrStrOrImg, ...);
-
+/*!
+ *  worker.insert(@" recur ", worker.lastInsertedRange.location);
+ *  worker.lastInserted(^(SJAttributeWorker * _Nonnull worker) {
+ *      worker
+ *      .nextFont([UIFont systemFontOfSize:30])
+ *      .nextFontColor([UIColor redColor]);
+ *  });
+ */
+@property (nonatomic, copy, readonly) SJAttributeWorker *(^lastInserted)(void(^rangeTask)(SJAttributeWorker *worker));
+@property (nonatomic, assign, readonly) NSRange lastInsertedRange;
 
 #pragma mark - Replace
 /// value == NSString Or NSAttributedString
@@ -203,7 +212,7 @@ NS_ASSUME_NONNULL_BEGIN
 /// 正则匹配
 @property (nonatomic, copy, readonly) SJAttributeWorker *(^regexp)(NSString *ex, void(^task)(SJAttributeWorker *regexp));
 /// 正则匹配
-@property (nonatomic, copy, readonly) SJAttributeWorker *(^regexpRanges)(NSString *ex, void(^task)(NSArray<NSValue *> * __nullable ranges));
+@property (nonatomic, copy, readonly) SJAttributeWorker *(^regexpRanges)(NSString *ex, void(^task)(NSArray<NSValue *> *ranges));
 
 
 #pragma mark - Other
@@ -223,3 +232,4 @@ NS_ASSUME_NONNULL_BEGIN
 @end
 
 NS_ASSUME_NONNULL_END
+

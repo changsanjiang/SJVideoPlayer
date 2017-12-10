@@ -12,7 +12,7 @@
 
 @property (nonatomic, assign, readwrite) CGFloat startMargin;
 @property (nonatomic, assign, readwrite) CGFloat endMargin;
-@property (nonatomic, strong, readwrite) UIBezierPath *bezierPath;
+@property (nonatomic, strong, readonly) UIBezierPath *bezierPath;
 @property (nonatomic, strong, readonly) CAShapeLayer *shapeLayer;
 
 @end
@@ -31,8 +31,14 @@
     view.endMargin = endMargin;
     view.lineColor = color;
     view.lineWidth = width;
-    view.bezierPath = [UIBezierPath bezierPath];
     return view;
+}
+
+@synthesize bezierPath = _bezierPath;
+- (UIBezierPath *)bezierPath {
+    if ( _bezierPath ) return _bezierPath;
+    _bezierPath = [UIBezierPath bezierPath];
+    return _bezierPath;
 }
 
 - (void)layoutSubviews {
@@ -52,7 +58,7 @@
         UIBezierPath *bezierPath = [UIBezierPath bezierPath];
         [bezierPath moveToPoint:movePoint];
         [bezierPath addLineToPoint:addLineToPoint];
-        [_bezierPath appendPath:bezierPath];
+        [self.bezierPath appendPath:bezierPath];
     }
     
     if ( SJBorderlineSideLeading == ( _side & SJBorderlineSideLeading ) ) {
@@ -61,7 +67,7 @@
         UIBezierPath *bezierPath = [UIBezierPath bezierPath];
         [bezierPath moveToPoint:movePoint];
         [bezierPath addLineToPoint:addLineToPoint];
-        [_bezierPath appendPath:bezierPath];
+        [self.bezierPath appendPath:bezierPath];
     }
     
     if ( SJBorderlineSideBottom == ( _side & SJBorderlineSideBottom ) ) {
@@ -70,7 +76,7 @@
         UIBezierPath *bezierPath = [UIBezierPath bezierPath];
         [bezierPath moveToPoint:movePoint];
         [bezierPath addLineToPoint:addLineToPoint];
-        [_bezierPath appendPath:bezierPath];
+        [self.bezierPath appendPath:bezierPath];
     }
     if ( SJBorderlineSideTrailing == ( _side & SJBorderlineSideTrailing ) ) {
         movePoint = CGPointMake(rect.size.width - _lineWidth * 0.5, _startMargin);
@@ -78,7 +84,7 @@
         UIBezierPath *bezierPath = [UIBezierPath bezierPath];
         [bezierPath moveToPoint:movePoint];
         [bezierPath addLineToPoint:addLineToPoint];
-        [_bezierPath appendPath:bezierPath];
+        [self.bezierPath appendPath:bezierPath];
     }
     
     self.shapeLayer.path = _bezierPath.CGPath;
@@ -117,3 +123,4 @@
     return _shapeLayer;
 }
 @end
+

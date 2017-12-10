@@ -25,6 +25,8 @@
 @property (nonatomic, strong, readonly) NSMutableParagraphStyle *style;
 @property (nonatomic, strong, readonly) NSMutableDictionary<NSValue *, NSParagraphStyle *> *localParagraphStyleDictM;
 
+@property (nonatomic, assign, readwrite) NSRange lastInsertedRange;
+
 @property (nonatomic, strong, readwrite) UIFont *r_nextFont;
 @property (nonatomic, strong, readwrite) NSNumber *r_nextExpansion;
 @property (nonatomic, strong, readwrite) UIColor *r_nextFontColor;
@@ -262,7 +264,7 @@
 
 - (void (^)(NSRange))range {
     return ^(NSRange range) {
-        if ( _rangeContains(_rangeAll(_attrM), range) ) {
+        if ( !_rangeContains(_rangeAll(_attrM), range) ) {
             _errorLog(@"Added Attribute Failed! param 'range' is unlawful!", _attrM.string);
             return;
         }
@@ -522,6 +524,7 @@
         }
         if ( -1 == index || index > _attrM.length ) index = _attrM.length;
         [_attrM insertAttributedString:attr atIndex:index];
+        _lastInsertedRange = NSMakeRange(index, attr.length);
         return self;
     };
 }
@@ -552,7 +555,15 @@
             self.insertImage(insert, va_arg(args, int), va_arg(args, CGPoint), va_arg(args, CGSize));
         }
         va_end(args);
+        
+//        _lastInsertedRange =
         return self;
+    };
+}
+
+- (SJAttributeWorker * _Nonnull (^)(void (^ _Nonnull)(SJAttributeWorker * _Nonnull)))lastInserted {
+    return ^ SJAttributeWorker *(void(^task)(SJAttributeWorker *worker)) {
+        return self.rangeEdit(_lastInsertedRange, task);
     };
 }
 
@@ -636,7 +647,7 @@
     };
 }
 
-- (SJAttributeWorker * _Nonnull (^)(NSString * _Nonnull, void (^ _Nonnull)(NSArray<NSValue *> * _Nullable)))regexpRanges {
+- (SJAttributeWorker * _Nonnull (^)(NSString * _Nonnull, void (^ _Nonnull)(NSArray<NSValue *> *)))regexpRanges {
     return ^ SJAttributeWorker *(NSString *ex, void(^task)(NSArray<NSValue *> *ranges)) {
         NSMutableArray<NSValue *> *rangesM = [NSMutableArray new];
         if ( 0 == ex.length ) {
@@ -648,8 +659,7 @@
         [regex enumerateMatchesInString:_attrM.string options:NSMatchingWithoutAnchoringBounds range:_rangeAll(_attrM) usingBlock:^(NSTextCheckingResult * _Nullable result, NSMatchingFlags flags, BOOL * _Nonnull stop) {
             [rangesM addObject:[NSValue valueWithRange:result.range]];
         }];
-        if ( 0 != rangesM.count ) task(rangesM);
-        else task(rangesM);
+        task(rangesM);
         return self;
     };
 }
@@ -751,3 +761,4 @@ inline static void _errorLog(NSString *msg, NSString *target) {
 }
 
 @end
+

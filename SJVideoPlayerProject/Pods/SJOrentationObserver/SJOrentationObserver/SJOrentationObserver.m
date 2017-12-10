@@ -7,7 +7,6 @@
 //
 
 #import "SJOrentationObserver.h"
-#import <Masonry/Masonry.h>
 
 @interface SJOrentationObserver ()
 
@@ -15,6 +14,8 @@
 
 @property (nonatomic, weak, readwrite) UIView *view;
 @property (nonatomic, weak, readwrite) UIView *targetSuperview;
+
+@property (nonatomic, assign, readwrite, getter=isTransitioning) BOOL transitioning;
 
 @end
 
@@ -26,6 +27,7 @@
     [self _observerDeviceOrientation];
     _view = view;
     _targetSuperview = targetSuperview;
+    _duration = 0.3;
     return self;
 }
 
@@ -61,12 +63,16 @@
         if ( !self.rotationCondition(self) ) return;
     }
     
+    if ( self.isTransitioning ) return;
+    
+    
     UIInterfaceOrientation statusBarOrientation = [UIApplication sharedApplication].statusBarOrientation;
     UIDeviceOrientation deviceOrientation = [UIDevice currentDevice].orientation;
     if ( (UIDeviceOrientation)statusBarOrientation == deviceOrientation ) return;
     
     _fullScreen = fullScreen;
-    
+    self.transitioning = YES;
+
     CGAffineTransform transform = CGAffineTransformIdentity;
     UIView *superview = nil;
     UIInterfaceOrientation ori = UIInterfaceOrientationUnknown;
@@ -92,30 +98,39 @@
         default: break;
     }
 
-    if ( !superview ) return;
-    if ( UIInterfaceOrientationUnknown == ori ) return;
+    if ( !superview || UIInterfaceOrientationUnknown == ori ) {
+        self.transitioning = NO;
+        return;
+    }
     
     [superview addSubview:_view];
-    [_view mas_remakeConstraints:^(MASConstraintMaker *make) {
-        if ( UIInterfaceOrientationPortrait == ori ) {
-            make.edges.offset(0);
-        }
-        else {
-            CGFloat width = [UIScreen mainScreen].bounds.size.width;
-            CGFloat height = [UIScreen mainScreen].bounds.size.height;
-            make.size.mas_offset(CGSizeMake(MAX(width, height), MIN(width, height)));
-            make.center.mas_offset(CGPointMake(0, 0));
-        }
-    }];
+    _view.translatesAutoresizingMaskIntoConstraints = NO;
+    if ( UIInterfaceOrientationPortrait == ori ) {
+        [superview addConstraints:[NSLayoutConstraint constraintsWithVisualFormat:@"V:|[_view]|" options:0 metrics:nil views:NSDictionaryOfVariableBindings(_view)]];
+        [superview addConstraints:[NSLayoutConstraint constraintsWithVisualFormat:@"H:|[_view]|" options:0 metrics:nil views:NSDictionaryOfVariableBindings(_view)]];
+    }
+    else {
+        CGFloat width = [UIScreen mainScreen].bounds.size.width;
+        CGFloat height = [UIScreen mainScreen].bounds.size.height;
+        CGFloat max = MAX(width, height);
+        CGFloat min = MIN(width, height);
+        [superview addConstraint:[NSLayoutConstraint constraintWithItem:_view attribute:NSLayoutAttributeWidth relatedBy:NSLayoutRelationEqual toItem:nil attribute:NSLayoutAttributeNotAnAttribute multiplier:1 constant:max]];
+        [superview addConstraint:[NSLayoutConstraint constraintWithItem:_view attribute:NSLayoutAttributeHeight relatedBy:NSLayoutRelationEqual toItem:nil attribute:NSLayoutAttributeNotAnAttribute multiplier:1 constant:min]];
+        [superview addConstraint:[NSLayoutConstraint constraintWithItem:_view attribute:NSLayoutAttributeCenterX relatedBy:NSLayoutRelationEqual toItem:superview attribute:NSLayoutAttributeCenterX multiplier:1 constant:0]];
+        [superview addConstraint:[NSLayoutConstraint constraintWithItem:_view attribute:NSLayoutAttributeCenterY relatedBy:NSLayoutRelationEqual toItem:superview attribute:NSLayoutAttributeCenterY multiplier:1 constant:0]];
+    }
     
-    [UIView animateWithDuration:0.3 animations:^{
+    [UIView animateWithDuration:_duration animations:^{
         _view.transform = transform;
+    } completion:^(BOOL finished) {
+        self.transitioning = NO;
     }];
     [UIApplication sharedApplication].statusBarOrientation = ori;
-    if ( self.orientationChanged ) self.orientationChanged(self);
+    if ( _orientationChanged ) _orientationChanged(self);
 }
 
 - (BOOL)_changeOrientation {
+    if ( self.isTransitioning ) return NO;
     if ( self.fullScreen ) {
         [[UIDevice currentDevice] setValue:@(UIInterfaceOrientationPortrait) forKey:@"orientation"];
     }

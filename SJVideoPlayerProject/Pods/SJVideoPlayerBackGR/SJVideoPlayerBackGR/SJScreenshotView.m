@@ -37,18 +37,25 @@
     [self addSubview:self.containerView];
     [_containerView addSubview:self.screenshotImageView];
     [_containerView addSubview:self.shadeView];
-    
-    _containerView.translatesAutoresizingMaskIntoConstraints = NO;
-    [self addConstraints:[NSLayoutConstraint constraintsWithVisualFormat:@"V:|[_containerView]|" options:NSLayoutFormatAlignAllLeading metrics:nil views:NSDictionaryOfVariableBindings(_containerView)]];
-    [self addConstraints:[NSLayoutConstraint constraintsWithVisualFormat:@"H:|[_containerView]|" options:NSLayoutFormatAlignAllTop metrics:nil views:NSDictionaryOfVariableBindings(_containerView)]];
-    
-    _screenshotImageView.translatesAutoresizingMaskIntoConstraints = NO;
-    [_containerView addConstraints:[NSLayoutConstraint constraintsWithVisualFormat:@"V:|[_screenshotImageView]|" options:NSLayoutFormatAlignAllLeading metrics:nil views:NSDictionaryOfVariableBindings(_screenshotImageView)]];
-    [_containerView addConstraints:[NSLayoutConstraint constraintsWithVisualFormat:@"H:|[_screenshotImageView]|" options:NSLayoutFormatAlignAllTop metrics:nil views:NSDictionaryOfVariableBindings(_screenshotImageView)]];
-    
-    _shadeView.translatesAutoresizingMaskIntoConstraints = NO;
-    [_containerView addConstraints:[NSLayoutConstraint constraintsWithVisualFormat:@"V:|[_shadeView]|" options:NSLayoutFormatAlignAllLeading metrics:nil views:NSDictionaryOfVariableBindings(_shadeView)]];
-    [_containerView addConstraints:[NSLayoutConstraint constraintsWithVisualFormat:@"H:|[_shadeView]|" options:NSLayoutFormatAlignAllTop metrics:nil views:NSDictionaryOfVariableBindings(_shadeView)]];
+//    _containerView.translatesAutoresizingMaskIntoConstraints = NO;
+//    [self addConstraints:[NSLayoutConstraint constraintsWithVisualFormat:@"V:|[_containerView]|" options:NSLayoutFormatAlignAllLeading metrics:nil views:NSDictionaryOfVariableBindings(_containerView)]];
+//    [self addConstraints:[NSLayoutConstraint constraintsWithVisualFormat:@"H:|[_containerView]|" options:NSLayoutFormatAlignAllTop metrics:nil views:NSDictionaryOfVariableBindings(_containerView)]];
+//
+//    _screenshotImageView.translatesAutoresizingMaskIntoConstraints = NO;
+//    [_containerView addConstraints:[NSLayoutConstraint constraintsWithVisualFormat:@"V:|[_screenshotImageView]|" options:NSLayoutFormatAlignAllLeading metrics:nil views:NSDictionaryOfVariableBindings(_screenshotImageView)]];
+//    [_containerView addConstraints:[NSLayoutConstraint constraintsWithVisualFormat:@"H:|[_screenshotImageView]|" options:NSLayoutFormatAlignAllTop metrics:nil views:NSDictionaryOfVariableBindings(_screenshotImageView)]];
+//
+//    _shadeView.translatesAutoresizingMaskIntoConstraints = NO;
+//    [_containerView addConstraints:[NSLayoutConstraint constraintsWithVisualFormat:@"V:|[_shadeView]|" options:NSLayoutFormatAlignAllLeading metrics:nil views:NSDictionaryOfVariableBindings(_shadeView)]];
+//    [_containerView addConstraints:[NSLayoutConstraint constraintsWithVisualFormat:@"H:|[_shadeView]|" options:NSLayoutFormatAlignAllTop metrics:nil views:NSDictionaryOfVariableBindings(_shadeView)]];
+
+}
+
+- (void)layoutSubviews {
+    [super layoutSubviews];
+
+    _screenshotImageView.frame = self.bounds;
+    _shadeView.frame = self.bounds;
 }
 
 - (void)setImage:(UIImage *)image {

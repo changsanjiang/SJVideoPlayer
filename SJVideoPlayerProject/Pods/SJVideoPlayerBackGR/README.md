@@ -1,11 +1,16 @@
 # SJVideoPlayerBackGR
 自定义全屏返回手势. 系统原生手势和自定义手势随意切换. 适用于带有视频播放器的App.    
 Customize full-screen return gestures. System native gestures and custom gestures are free to switch. App for App with video player.    
-可以查看 [SJVideoPlayer](https://github.com/changsanjiang/SJVideoPlayer) 这个播放器项目用了这个手势. 
+
+### 功能
+- 全屏手势(兼容scrollView, 当scrollView.contentOffset.x==0时, 触发全屏手势).
+- 指定盲区, 在指定区域不触发全屏手势. 可指定Frame或者View. 
+- 切换, 系统边缘手势与全屏手势切换.
+- 禁用, 可在某个页面禁用手势.
 
 ### Use
 ```
-pod SJVideoPlayerBackGR
+pod 'SJVideoPlayerBackGR'
 ```
 
 如果好用, 兄弟, 给个 Star 吧.

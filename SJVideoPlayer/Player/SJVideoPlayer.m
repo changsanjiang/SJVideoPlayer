@@ -73,8 +73,8 @@ inline static NSString *_formatWithSec(NSInteger sec) {
 @property (nonatomic, strong, readonly) SJMoreSettingsFooterViewModel *moreSettingFooterViewModel;
 @property (nonatomic, strong, readonly) SJVideoPlayerRegistrar *registrar;
 @property (nonatomic, strong, readonly) SJVolBrigControl *volBrigControl;
-@property (nonatomic, strong, readonly) JDradualLoadingView *loadingView;
 @property (nonatomic, strong, readonly) SJPlayerGestureControl *gestureControl;
+@property (nonatomic, strong, readonly) JDradualLoadingView *loadingView;
 
 
 @property (nonatomic, assign, readwrite) SJVideoPlayerPlayState state;
@@ -403,6 +403,30 @@ inline static NSString *_formatWithSec(NSInteger sec) {
     if ( _presentView ) return _presentView;
     _presentView = [SJVideoPlayerPresentView new];
     _presentView.clipsToBounds = YES;
+    __weak typeof(self) _self = self;
+    _presentView.readyForDisplay = ^(SJVideoPlayerPresentView * _Nonnull view) {
+        if ( _self.asset.hasBeenGeneratedPreviewImages ) { return ; }
+        if ( !_self.generatePreviewImages ) return;
+        CGRect bounds = view.avLayer.videoRect;
+        CGFloat width = [UIScreen mainScreen].bounds.size.width * 0.4;
+        CGFloat height = width * bounds.size.height / bounds.size.width;
+        CGSize size = CGSizeMake(width, height);
+        [_self.asset generatedPreviewImagesWithMaxItemSize:size completion:^(SJVideoPlayerAssetCarrier * _Nonnull asset, NSArray<SJVideoPreviewModel *> * _Nullable images, NSError * _Nullable error) {
+            if ( error ) {
+                _sjErrorLog(@"Generate Preview Image Failed!");
+            }
+            else {
+                __strong typeof(_self) self = _self;
+                if ( !self ) return;
+                if ( self.orentation.fullScreen ) {
+                    _sjAnima(^{
+                        _sjShowViews(@[self.controlView.topControlView.previewBtn]);
+                    });
+                }
+                self.controlView.previewView.previewImages = images;
+            }
+        }];
+    };
     return _presentView;
 }
 
@@ -1091,29 +1115,6 @@ static BOOL _isLoading;
     [self _itemPrepareToPlay];
     
     __weak typeof(self) _self = self;
-    _presentView.readyForDisplay = ^(SJVideoPlayerPresentView * _Nonnull view) {
-        if ( _self.asset.hasBeenGeneratedPreviewImages ) { return ; }
-        if ( !_self.generatePreviewImages ) return;
-        CGRect bounds = view.avLayer.videoRect;
-        CGFloat width = [UIScreen mainScreen].bounds.size.width * 0.4;
-        CGFloat height = width * bounds.size.height / bounds.size.width;
-        CGSize size = CGSizeMake(width, height);
-        [asset generatedPreviewImagesWithMaxItemSize:size completion:^(SJVideoPlayerAssetCarrier * _Nonnull asset, NSArray<SJVideoPreviewModel *> * _Nullable images, NSError * _Nullable error) {
-            if ( error ) {
-                _sjErrorLog(@"Generate Preview Image Failed!");
-            }
-            else {
-                __strong typeof(_self) self = _self;
-                if ( !self ) return;
-                if ( self.orentation.fullScreen ) {
-                    _sjAnima(^{
-                        _sjShowViews(@[self.controlView.topControlView.previewBtn]);
-                    });
-                }
-                self.controlView.previewView.previewImages = images;
-            }
-        }];
-    };
     
     asset.playerItemStateChanged = ^(SJVideoPlayerAssetCarrier * _Nonnull asset, AVPlayerItemStatus status) {
         __strong typeof(_self) self = _self;

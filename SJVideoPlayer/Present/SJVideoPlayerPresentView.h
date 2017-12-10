@@ -17,14 +17,13 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (AVPlayerLayer *)avLayer;
 
-@property (nonatomic, weak, readwrite, nullable) SJVideoPlayerAssetCarrier *asset;
-
 @property (nonatomic, strong, readonly) UIImageView *placeholderImageView;
 
-@property (nonatomic, copy, readwrite, nullable) void(^readyForDisplay)(SJVideoPlayerPresentView *view);
-
-/// default is AVLayerVideoGravityResizeAspect.
 @property (nonatomic, strong, readwrite) AVLayerVideoGravity videoGravity;
+
+@property (nonatomic, weak, readwrite, nullable) SJVideoPlayerAssetCarrier *asset;
+
+@property (nonatomic, copy, readwrite, nullable) void(^readyForDisplay)(SJVideoPlayerPresentView *view);
 
 @end
 

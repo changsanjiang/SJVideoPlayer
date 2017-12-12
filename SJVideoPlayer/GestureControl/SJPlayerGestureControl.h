@@ -27,7 +27,6 @@ typedef NS_ENUM(NSUInteger, SJPanLocation) {
 - (instancetype)initWithTargetView:(__weak UIView *)view;
 
 @property (nonatomic, copy, readwrite, nullable) BOOL(^triggerCondition)(SJPlayerGestureControl *control, UIGestureRecognizer *gesture);
-@property (nonatomic, copy, readwrite, nullable) BOOL(^fadeArea)(CGPoint point);
 
 @property (nonatomic, copy, readwrite, nullable) void(^singleTapped)(SJPlayerGestureControl *control);
 @property (nonatomic, copy, readwrite, nullable) void(^doubleTapped)(SJPlayerGestureControl *control);
@@ -38,3 +37,4 @@ typedef NS_ENUM(NSUInteger, SJPanLocation) {
 @end
 
 NS_ASSUME_NONNULL_END
+

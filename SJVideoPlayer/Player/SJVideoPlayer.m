@@ -165,7 +165,7 @@ inline static NSString *_formatWithSec(NSInteger sec) {
 }
 
 - (void)setHideControl:(BOOL)hideControl {
-//    if ( self.isHiddenControl == hideControl ) return;
+    //    if ( self.isHiddenControl == hideControl ) return;
     objc_setAssociatedObject(self, @selector(isHiddenControl), @(hideControl), OBJC_ASSOCIATION_RETAIN_NONATOMIC);
     [self.timerControl reset];
     if ( hideControl ) [self _hideControlState];
@@ -293,7 +293,7 @@ inline static NSString *_formatWithSec(NSInteger sec) {
 }
 
 - (void)_hideControlState {
-
+    
     // show
     _sjShowViews(@[self.controlView.bottomProgressSlider]);
     
@@ -303,7 +303,7 @@ inline static NSString *_formatWithSec(NSInteger sec) {
     // transform hidden
     self.controlView.topControlView.transform = CGAffineTransformMakeTranslation(0, -SJControlTopH);
     self.controlView.bottomControlView.transform = CGAffineTransformMakeTranslation(0, SJControlBottomH);
-
+    
     if ( self.orentation.fullScreen ) {
         if ( self.isLockedScrren ) self.hiddenLeftControlView = NO;
         else self.hiddenLeftControlView = YES;
@@ -382,7 +382,7 @@ inline static NSString *_formatWithSec(NSInteger sec) {
     if ( error ) {
         _sjErrorLog([NSString stringWithFormat:@"%@", error.userInfo]);
     }
-
+    
     [self view];
     [self orentation];
     [self volBrig];
@@ -530,7 +530,7 @@ inline static NSString *_formatWithSec(NSInteger sec) {
     _moreSettingFooterViewModel.initialPlayerRateValue = ^float{
         __strong typeof(_self) self = _self;
         if ( !self ) return 0;
-       return self.asset.player.rate;
+        return self.asset.player.rate;
     };
     
     _moreSettingView.footerViewModel = _moreSettingFooterViewModel;
@@ -647,11 +647,11 @@ inline static NSString *_formatWithSec(NSInteger sec) {
         if ( !self.userClickedPause ) [self play];
     };
     
-//    _registrar.categoryChange = ^(SJVideoPlayerRegistrar * _Nonnull registrar) {
-//        __strong typeof(_self) self = _self;
-//        if ( !self ) return;
-//
-//    };
+    //    _registrar.categoryChange = ^(SJVideoPlayerRegistrar * _Nonnull registrar) {
+    //        __strong typeof(_self) self = _self;
+    //        if ( !self ) return;
+    //
+    //    };
     
     return _registrar;
 }
@@ -677,27 +677,22 @@ inline static NSString *_formatWithSec(NSInteger sec) {
 - (void)gesturesHandleWithTargetView:(UIView *)targetView {
     
     _gestureControl = [[SJPlayerGestureControl alloc] initWithTargetView:targetView];
-
+    
     __weak typeof(self) _self = self;
     _gestureControl.triggerCondition = ^BOOL(SJPlayerGestureControl * _Nonnull control, UIGestureRecognizer *gesture) {
         __strong typeof(_self) self = _self;
         if ( !self ) return NO;
         if ( self.isLockedScrren ) return NO;
+        CGPoint point = [gesture locationInView:gesture.view];
+        if ( CGRectContainsPoint(self.moreSettingView.frame, point) ||
+            CGRectContainsPoint(self.moreSecondarySettingView.frame, point) ||
+            CGRectContainsPoint(self.controlView.previewView.frame, point) ) {
+            return NO;
+        }
         if ( [gesture isKindOfClass:[UIPanGestureRecognizer class]] &&
-             self.playOnCell &&
+            self.playOnCell &&
             !self.orentation.fullScreen ) return NO;
         else return YES;
-    };
-    
-    _gestureControl.fadeArea = ^BOOL(CGPoint point) {
-        __strong typeof(_self) self = _self;
-        if ( !self ) return YES;
-        if ( CGRectContainsPoint(self.moreSettingView.frame, point) ||
-             CGRectContainsPoint(self.moreSecondarySettingView.frame, point) ||
-             CGRectContainsPoint(self.controlView.previewView.frame, point) ) {
-            return YES;
-        }
-        return NO;
     };
     
     _gestureControl.singleTapped = ^(SJPlayerGestureControl * _Nonnull control) {
@@ -1133,7 +1128,7 @@ static BOOL _isLoading;
                     break;
             }
         });
-
+        
     };
     
     asset.playTimeChanged = ^(SJVideoPlayerAssetCarrier * _Nonnull asset, NSTimeInterval currentTime, NSTimeInterval duration) {
@@ -1390,7 +1385,7 @@ static __weak UIView *tmpView = nil;
 
 - (BOOL)disableRotation {
     return [objc_getAssociatedObject(self, _cmd) boolValue];
-} 
+}
 
 - (void)setVideoGravity:(AVLayerVideoGravity)videoGravity {
     objc_setAssociatedObject(self, @selector(videoGravity), videoGravity, OBJC_ASSOCIATION_RETAIN_NONATOMIC);
@@ -1530,3 +1525,4 @@ static __weak UIView *tmpView = nil;
 }
 
 @end
+

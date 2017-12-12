@@ -50,7 +50,6 @@
 }
 
 - (BOOL)gestureRecognizerShouldBegin:(UIGestureRecognizer *)gestureRecognizer {
-    if ( _fadeArea ) return !_fadeArea([gestureRecognizer locationInView:gestureRecognizer.view]);
     if ( _triggerCondition ) return _triggerCondition(self, gestureRecognizer);
     return YES;
 }
@@ -127,3 +126,5 @@
 }
 
 @end
+
+

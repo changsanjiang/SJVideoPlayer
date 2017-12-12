@@ -389,6 +389,7 @@ inline static NSString *_formatWithSec(NSInteger sec) {
     [self settingPlayer:^(SJVideoPlayerSettings * _Nonnull settings) {
         [self resetSetting];
     }];
+    [self registrar];
     
     // default values
     self.autoplay = YES;
@@ -639,6 +640,7 @@ inline static NSString *_formatWithSec(NSInteger sec) {
         __strong typeof(_self) self = _self;
         if ( !self ) return;
         self.lockScreen = NO;
+        if ( !self.userClickedPause ) [self play];
     };
     
     _registrar.oldDeviceUnavailable = ^(SJVideoPlayerRegistrar * _Nonnull registrar) {
@@ -1525,4 +1527,3 @@ static __weak UIView *tmpView = nil;
 }
 
 @end
-

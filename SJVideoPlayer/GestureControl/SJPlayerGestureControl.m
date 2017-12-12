@@ -46,29 +46,32 @@
     
     [_singleTap requireGestureRecognizerToFail:_doubleTap];
     [_doubleTap requireGestureRecognizerToFail:_panGR];
+    
 }
 
 - (BOOL)gestureRecognizerShouldBegin:(UIGestureRecognizer *)gestureRecognizer {
-    if ( _triggerCondition ) return !_triggerCondition(self, gestureRecognizer);
     if ( _fadeArea ) return !_fadeArea([gestureRecognizer locationInView:gestureRecognizer.view]);
-    
+    if ( _triggerCondition ) return _triggerCondition(self, gestureRecognizer);
     return YES;
 }
 
 - (UITapGestureRecognizer *)singleTap {
     if ( _singleTap ) return _singleTap;
     _singleTap = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(handleSingleTap:)];
+    _singleTap.delegate = self;
     return _singleTap;
 }
 - (UITapGestureRecognizer *)doubleTap {
     if ( _doubleTap ) return _doubleTap;
     _doubleTap = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(handleDoubleTap:)];
     _doubleTap.numberOfTapsRequired = 2;
+    _doubleTap.delegate = self;
     return _doubleTap;
 }
 - (UIPanGestureRecognizer *)panGR {
     if ( _panGR ) return _panGR;
     _panGR = [[UIPanGestureRecognizer alloc] initWithTarget:self action:@selector(handlePan:)];
+    _panGR.delegate = self;
     return _panGR;
 }
 
@@ -81,9 +84,9 @@
 }
 
 - (void)handlePan:(UIPanGestureRecognizer *)pan {
-
+    
     CGPoint translate = [pan translationInView:pan.view];
-
+    
     switch (pan.state) {
         case UIGestureRecognizerStateBegan:{
             CGPoint locationPoint = [pan locationInView:pan.view];

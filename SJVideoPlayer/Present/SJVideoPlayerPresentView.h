@@ -9,9 +9,9 @@
 #import <UIKit/UIKit.h>
 #import <AVFoundation/AVFoundation.h>
 
-@class SJVideoPlayerAssetCarrier;
-
 NS_ASSUME_NONNULL_BEGIN
+
+@class SJVideoPlayerAssetCarrier;
 
 @interface SJVideoPlayerPresentView : UIView
 

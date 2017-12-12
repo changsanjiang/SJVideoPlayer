@@ -61,9 +61,9 @@
     }];
     
     [_previewView mas_makeConstraints:^(MASConstraintMaker *make) {
-        make.top.equalTo(_topControlView.mas_bottom);
+        make.top.equalTo(_topControlView.previewBtn.mas_bottom).offset(12);
         make.leading.trailing.offset(0);
-        make.height.offset([UIScreen mainScreen].bounds.size.width * 0.32);
+        make.height.offset([UIScreen mainScreen].bounds.size.width * 0.25);
     }];
     
     [_leftControlView mas_makeConstraints:^(MASConstraintMaker *make) {

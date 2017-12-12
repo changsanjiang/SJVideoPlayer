@@ -37,4 +37,3 @@ typedef NS_ENUM(NSUInteger, SJPanLocation) {
 @end
 
 NS_ASSUME_NONNULL_END
-

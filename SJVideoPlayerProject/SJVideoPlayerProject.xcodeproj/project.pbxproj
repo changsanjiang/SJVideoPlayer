@@ -763,14 +763,14 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CODE_SIGN_STYLE = Manual;
-				DEVELOPMENT_TEAM = U5A7L7SMNP;
+				DEVELOPMENT_TEAM = DB5B5F2RH5;
 				INFOPLIST_FILE = SJVideoPlayerProject/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 9.0;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
-				PRODUCT_BUNDLE_IDENTIFIER = com.dancebaby.lanwuzhe;
+				PRODUCT_BUNDLE_IDENTIFIER = com.sanjiang.videoplayer;
 				PRODUCT_NAME = "$(TARGET_NAME)";
-				PROVISIONING_PROFILE = "fa6d274f-eca0-4b49-aded-9969891b1a62";
-				PROVISIONING_PROFILE_SPECIFIER = DevProfile;
+				PROVISIONING_PROFILE = "acd2453e-e396-4ccf-bf56-508276824c6c";
+				PROVISIONING_PROFILE_SPECIFIER = SanJiangDevelopment;
 				TARGETED_DEVICE_FAMILY = "1,2";
 			};
 			name = Debug;
@@ -785,7 +785,7 @@
 				INFOPLIST_FILE = SJVideoPlayerProject/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 9.0;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
-				PRODUCT_BUNDLE_IDENTIFIER = com.dancebaby.lanwuzhe;
+				PRODUCT_BUNDLE_IDENTIFIER = com.sanjiang.videoplayer;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE_SPECIFIER = "";
 				TARGETED_DEVICE_FAMILY = "1,2";

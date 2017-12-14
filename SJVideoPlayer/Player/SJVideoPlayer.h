@@ -12,6 +12,7 @@
 #import "SJVideoPlayerAssetCarrier.h"
 #import "SJVideoPlayerMoreSettingSecondary.h"
 #import "SJVideoPlayerSettings.h"
+#import <SJPrompt/SJPrompt.h>
 
 NS_ASSUME_NONNULL_BEGIN
 
@@ -146,6 +147,8 @@ NS_ASSUME_NONNULL_BEGIN
 #pragma mark -
 
 @interface SJVideoPlayer (Prompt)
+
+@property (nonatomic, strong, readonly) SJPrompt *prompt;
 
 /*!
  *  duration default is 1.0

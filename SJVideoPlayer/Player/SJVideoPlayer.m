@@ -17,7 +17,6 @@
 #import <MediaPlayer/MPVolumeView.h>
 #import "SJVideoPlayerMoreSettingsView.h"
 #import "SJVideoPlayerMoreSettingSecondaryView.h"
-#import <SJPrompt/SJPrompt.h>
 #import <SJOrentationObserver/SJOrentationObserver.h>
 #import "SJVideoPlayerRegistrar.h"
 #import "SJVolBrigControl.h"
@@ -1190,14 +1189,15 @@ static BOOL _isLoading;
                 /// 滑入时
                 self.scrollIn = YES;
                 self.view.alpha = 1;
-                [self.view removeFromSuperview];
                 UITableViewCell *cell = [tableView cellForRowAtIndexPath:self.asset.indexPath];
                 UIView *superview = [cell.contentView viewWithTag:self.asset.superviewTag];
-                if ( !superview ) { return;}
-                [superview addSubview:self.view];
-                [self.view mas_remakeConstraints:^(MASConstraintMaker *make) {
-                    make.edges.offset(0);
-                }];
+                if ( superview && self.view.superview != superview ) {
+                    [self.view removeFromSuperview];
+                    [superview addSubview:self.view];
+                    [self.view mas_remakeConstraints:^(MASConstraintMaker *make) {
+                        make.edges.offset(0);
+                    }];
+                }
             }
             else {
                 if ( NO == self.scrollIn ) return;
@@ -1205,6 +1205,7 @@ static BOOL _isLoading;
                 self.scrollIn = NO;
                 self.view.alpha = 0.001;
                 [self pause];
+                self.hideControl = NO;
             }
         }
         else if ( [asset.scrollView isKindOfClass:[UICollectionView class]] ) {
@@ -1218,11 +1219,13 @@ static BOOL _isLoading;
                 [self.view removeFromSuperview];
                 UICollectionViewCell *cell = [collectionView cellForItemAtIndexPath:self.asset.indexPath];
                 UIView *superview = [cell.contentView viewWithTag:self.asset.superviewTag];
-                if ( !superview ) return;
-                [superview addSubview:self.view];
-                [self.view mas_remakeConstraints:^(MASConstraintMaker *make) {
-                    make.edges.offset(0);
-                }];
+                if ( superview && self.view.superview != superview ) {
+                    [self.view removeFromSuperview];
+                    [superview addSubview:self.view];
+                    [self.view mas_remakeConstraints:^(MASConstraintMaker *make) {
+                        make.edges.offset(0);
+                    }];
+                }
             }
             else {
                 if ( NO == self.scrollIn ) return;
@@ -1230,34 +1233,35 @@ static BOOL _isLoading;
                 self.scrollIn = NO;
                 self.view.alpha = 0.001;
                 [self pause];
+                self.hideControl = NO;
             }
         }
     };
 }
 
-static __weak UIView *tmpView = nil;
-- (UIView *)_getSuperviewWithContentView:(UIView *)contentView tag:(NSInteger)tag {
-    if ( contentView.tag == tag ) return contentView;
-    
-    [self _searchingWithView:contentView tag:tag];
-    UIView *target = tmpView;
-    tmpView = nil;
-    return target;
-}
-
-- (void)_searchingWithView:(UIView *)view tag:(NSInteger)tag {
-    if ( tmpView ) return;
-    [view.subviews enumerateObjectsUsingBlock:^(__kindof UIView * _Nonnull obj, NSUInteger idx, BOOL * _Nonnull stop) {
-        if ( obj.tag == tag ) {
-            *stop = YES;
-            tmpView = obj;
-        }
-        else {
-            [self _searchingWithView:obj tag:tag];
-        }
-    }];
-    return;
-}
+//static __weak UIView *tmpView = nil;
+//- (UIView *)_getSuperviewWithContentView:(UIView *)contentView tag:(NSInteger)tag {
+//    if ( contentView.tag == tag ) return contentView;
+//    
+//    [self _searchingWithView:contentView tag:tag];
+//    UIView *target = tmpView;
+//    tmpView = nil;
+//    return target;
+//}
+//
+//- (void)_searchingWithView:(UIView *)view tag:(NSInteger)tag {
+//    if ( tmpView ) return;
+//    [view.subviews enumerateObjectsUsingBlock:^(__kindof UIView * _Nonnull obj, NSUInteger idx, BOOL * _Nonnull stop) {
+//        if ( obj.tag == tag ) {
+//            *stop = YES;
+//            tmpView = obj;
+//        }
+//        else {
+//            [self _searchingWithView:obj tag:tag];
+//        }
+//    }];
+//    return;
+//}
 
 - (SJVideoPlayerAssetCarrier *)asset {
     return objc_getAssociatedObject(self, _cmd);

@@ -8,13 +8,12 @@
 
 #import "SJVolBrigControl.h"
 #import <MediaPlayer/MPVolumeView.h>
-#import <Masonry/Masonry.h>
 #import "SJVideoPlayerTipsView.h"
 #import "SJVideoPlayerResources.h"
+#import <AVFoundation/AVFoundation.h>
 
 @interface SJVolBrigControl ()
 
-@property (nonatomic, strong, readwrite) SJVideoPlayerTipsView *volumeView;
 @property (nonatomic, strong, readwrite) SJVideoPlayerTipsView *brightnessView;
 @property (nonatomic, strong, readonly) UISlider *systemVolume;
 
@@ -22,25 +21,29 @@
 
 @implementation SJVolBrigControl
 @synthesize systemVolume = _systemVolume;
+@synthesize volume = _volume;
 
 - (instancetype)init {
     self = [super init];
     if ( !self ) return nil;
-    [self volumeView];
+    
+    [self systemVolume];
     [self brightnessView];
+    
+    [[AVAudioSession sharedInstance] addObserver:self forKeyPath:@"outputVolume" options:NSKeyValueObservingOptionNew | NSKeyValueObservingOptionOld context:(void *)[AVAudioSession sharedInstance]];
+
     return self;
 }
 
-- (SJVideoPlayerTipsView *)volumeView {
-    if ( !_volumeView ) {
-        _volumeView = [SJVideoPlayerTipsView new];
-        _volumeView.titleLabel.text = @"音量";
-        _volumeView.minShowTitleLabel.text = @"静音";
-        _volumeView.minShowImage = [SJVideoPlayerResources imageNamed:@"sj_video_player_un_volume"];
-        _volumeView.normalShowImage = [SJVideoPlayerResources imageNamed:@"sj_video_player_volume"];
+- (void)observeValueForKeyPath:(NSString *)keyPath ofObject:(id)object change:(NSDictionary *)change context:(void *)context{
+    if( context == (__bridge void *)[AVAudioSession sharedInstance] ){
+        float newValue = [[change objectForKey:@"new"] floatValue];
+        if ( _volumeChanged ) _volumeChanged(newValue);
     }
-    _volumeView.value = self.volume;
-    return _volumeView;
+}
+
+- (void)dealloc {
+    [[AVAudioSession sharedInstance] removeObserver:self forKeyPath:@"outputVolume"];
 }
 
 - (SJVideoPlayerTipsView *)brightnessView {
@@ -56,9 +59,9 @@
 - (UISlider *)systemVolume {
     if ( _systemVolume ) return _systemVolume;
     MPVolumeView *volumeView = [[MPVolumeView alloc] init];
-    [[UIApplication sharedApplication].keyWindow addSubview:volumeView]; // 隐藏系统volume
-    volumeView.frame = CGRectMake(-1000, -100, 100, 100);
     for (UIView *view in [volumeView subviews]){
+//    [[UIApplication sharedApplication].keyWindow addSubview:volumeView]; // 隐藏系统volume
+//    volumeView.frame = CGRectMake(-1000, -100, 100, 100);
         if ([view.class.description isEqualToString:@"MPVolumeSlider"]){
             _systemVolume = (UISlider *)view;
             break;
@@ -68,16 +71,8 @@
 }
 
 - (void)setVolume:(float)volume {
-    if ( isnan(volume) ) volume = 0;
-    if ( volume < 0 ) volume = 0;
-    else if ( volume > 1 ) volume = 1;
+    _volume = volume;
     _systemVolume.value = volume;
-    _volumeView.value = volume;
-    if ( _volumeChanged ) _volumeChanged(volume);
-}
-
-- (float)volume {
-    return self.systemVolume.value;
 }
 
 - (void)setBrightness:(float)brightness {

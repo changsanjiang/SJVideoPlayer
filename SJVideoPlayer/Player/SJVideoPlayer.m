@@ -672,6 +672,7 @@ inline static NSString *_formatWithSec(NSInteger sec) {
         if ( !self ) return;
         if ( self.moreSettingFooterViewModel.brightnessChanged ) self.moreSettingFooterViewModel.brightnessChanged(self.volBrigControl.brightness);
     };
+    
     return _volBrigControl;
 }
 
@@ -751,27 +752,20 @@ inline static NSString *_formatWithSec(NSInteger sec) {
                 break;
             case SJPanDirection_V: {
                 switch (location) {
-                    case SJPanLocation_Right: {
-                        target = self.volBrigControl.volumeView;
-                    }
-                        break;
+                    case SJPanLocation_Right: break;
                     case SJPanLocation_Left: {
-                        target = self.volBrigControl.brightnessView;
+                        [[UIApplication sharedApplication].keyWindow addSubview:self.volBrigControl.brightnessView];
+                        [self.volBrigControl.brightnessView mas_remakeConstraints:^(MASConstraintMaker *make) {
+                            make.size.mas_offset(CGSizeMake(155, 155));
+                            make.center.equalTo([UIApplication sharedApplication].keyWindow);
+                        }];
+                        self.volBrigControl.brightnessView.transform = self.controlView.superview.transform;
+                        _sjAnima(^{
+                            _sjShowViews(@[self.volBrigControl.brightnessView]);
+                        });
                     }
                         break;
                     case SJPanLocation_Unknown: break;
-                }
-                
-                if ( target ) {
-                    [[UIApplication sharedApplication].keyWindow addSubview:target];
-                    [target mas_remakeConstraints:^(MASConstraintMaker *make) {
-                        make.size.mas_offset(CGSizeMake(155, 155));
-                        make.center.equalTo([UIApplication sharedApplication].keyWindow);
-                    }];
-                    target.transform = self.controlView.superview.transform;
-                    _sjAnima(^{
-                        _sjShowViews(@[target]);
-                    });
                 }
             }
                 break;
@@ -798,7 +792,8 @@ inline static NSString *_formatWithSec(NSInteger sec) {
                     }
                         break;
                     case SJPanLocation_Right: {
-                        self.volBrigControl.volume -= translate.y * 0.006;
+                        CGFloat value = translate.y * 0.006;
+                        self.volBrigControl.volume -= value;
                     }
                         break;
                     case SJPanLocation_Unknown: break;
@@ -824,9 +819,13 @@ inline static NSString *_formatWithSec(NSInteger sec) {
             }
                 break;
             case SJPanDirection_V:{
-                _sjAnima(^{
-                    _sjHiddenViews(@[target]);
-                });
+                if ( location == SJPanLocation_Left ) {
+                    _sjAnima(^{
+                        __strong typeof(_self) self = _self;
+                        if ( !self ) return;
+                        _sjHiddenViews(@[self.volBrigControl.brightnessView]);
+                    });
+                }
             }
                 break;
             case SJPanDirection_Unknown: break;
@@ -948,7 +947,7 @@ inline static NSString *_formatWithSec(NSInteger sec) {
         }
             break;
         case SJVideoPlayControlViewTag_LoadFailed: {
-            self.asset = self.asset;
+            self.asset = [[SJVideoPlayerAssetCarrier alloc] initWithAssetURL:self.asset.assetURL beginTime:self.asset.beginTime scrollView:self.asset.scrollView indexPath:self.asset.indexPath superviewTag:self.asset.superviewTag];
         }
             break;
         case SJVideoPlayControlViewTag_More: {

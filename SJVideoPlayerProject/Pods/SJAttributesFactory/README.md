@@ -3,11 +3,11 @@
 ```ruby
   pod 'SJAttributesFactory'
 ```
-### 最新:
-- 修复了手残导致的Range方法的问题
-- 添加了一个编辑最近(lastInserted)插入的文本的方法.
+### 最新动态:
+- 增加了一个可以匹配点击动作的 Label.
 
-### 最近动态:
+### 最近更新:
+- 添加了一个编辑最近(lastInserted)插入的文本的方法.
 - 完善参数错误的相关提示
 - 修复了insert方法插入-1时的Bug
 - 增加了正则相关的方法
@@ -24,6 +24,9 @@
 附 富文本属性:
 http://www.jianshu.com/p/ebbcfc24f9cb
 ___
+### 可匹配点击的Label:
+<img src="https://github.com/changsanjiang/SJAttributesFactory/blob/master/Demo/SJAttributesFactory/action.gif" />
+
 ### 上下图文效果:
 ![上下图文.jpg](http://upload-images.jianshu.io/upload_images/2318691-e92f48d24e29ae61.jpg?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240)
 

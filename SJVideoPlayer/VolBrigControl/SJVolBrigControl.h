@@ -12,7 +12,6 @@ NS_ASSUME_NONNULL_BEGIN
 
 @interface SJVolBrigControl : NSObject
 
-@property (nonatomic, strong, readonly) UIView *volumeView;
 @property (nonatomic, strong, readonly) UIView *brightnessView;
 
 /// 0..1

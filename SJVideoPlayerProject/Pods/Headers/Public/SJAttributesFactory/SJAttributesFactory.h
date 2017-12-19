@@ -1,1 +1,1 @@
-../../../SJAttributesFactory/Classes/SJAttributesFactory.h
+../../../SJAttributesFactory/SJAttributesFactory/SJAttributesFactory.h

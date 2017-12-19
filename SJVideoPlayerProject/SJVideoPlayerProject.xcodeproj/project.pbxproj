@@ -213,7 +213,7 @@
 				778E24F11FD97E93008D0DD3 /* Single */,
 				775A7C2A1FD7EC8000BE1EE2 /* TableView */,
 				777D30DB1FD8F0010075E5FD /* SJVideoPlayer */,
-				778E24F21FD97EB6008D0DD3 /* New Group */,
+				778E24F21FD97EB6008D0DD3 /* Asset */,
 			);
 			path = SJVideoPlayerProject;
 			sourceTree = "<group>";
@@ -433,7 +433,7 @@
 			path = Single;
 			sourceTree = "<group>";
 		};
-		778E24F21FD97EB6008D0DD3 /* New Group */ = {
+		778E24F21FD97EB6008D0DD3 /* Asset */ = {
 			isa = PBXGroup;
 			children = (
 				774B25581FCED554002113CC /* test.png */,
@@ -446,7 +446,7 @@
 				778E24ED1FD97E85008D0DD3 /* IMG_0457.PNG */,
 				774B252A1FCEBA5D002113CC /* main.m */,
 			);
-			name = "New Group";
+			name = Asset;
 			sourceTree = "<group>";
 		};
 		77A4394C1FDD8879008BD092 /* GestureControl */ = {

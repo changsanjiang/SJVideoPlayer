@@ -39,9 +39,10 @@
     helper.factor = sub;
     sub.factor = helper;
     
-    const char *helpeKey = [NSString stringWithFormat:@"%zd", [observer hash]].UTF8String;
+    const char *helpeKey = [[keyPath mutableCopy] UTF8String];
+    const char *subKey = [[keyPath mutableCopy] UTF8String];
     objc_setAssociatedObject(self, helpeKey, helper, OBJC_ASSOCIATION_RETAIN_NONATOMIC);
-    objc_setAssociatedObject(observer, helpeKey, sub, OBJC_ASSOCIATION_RETAIN_NONATOMIC);
+    objc_setAssociatedObject(observer, subKey, sub, OBJC_ASSOCIATION_RETAIN_NONATOMIC);
 }
 
 @end

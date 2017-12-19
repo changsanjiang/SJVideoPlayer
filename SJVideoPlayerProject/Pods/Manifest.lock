@@ -1,19 +1,19 @@
 PODS:
   - Masonry (1.1.0)
-  - SJAttributesFactory (1.1.6)
+  - SJAttributesFactory (1.1.13)
   - SJBorderLineView (0.0.5)
-  - SJObserverHelper (1.0.2)
-  - SJOrentationObserver (0.0.1):
-    - SJOrentationObserver/Category (= 0.0.1)
-  - SJOrentationObserver/Category (0.0.1)
-  - SJPrompt (0.0.3):
+  - SJObserverHelper (1.0.3)
+  - SJOrentationObserver (0.0.4):
+    - SJOrentationObserver/Category (= 0.0.4)
+  - SJOrentationObserver/Category (0.0.4)
+  - SJPrompt (1.0.1):
     - Masonry
   - SJSlider (1.0.1):
     - Masonry
-  - SJUIFactory (0.0.6):
+  - SJUIFactory (0.0.8):
     - SJAttributesFactory
-    - SJUIFactory/Category (= 0.0.6)
-  - SJUIFactory/Category (0.0.6):
+    - SJUIFactory/Category (= 0.0.8)
+  - SJUIFactory/Category (0.0.8):
     - SJAttributesFactory
   - SJVideoPlayerBackGR (1.0.15):
     - SJObserverHelper
@@ -29,15 +29,15 @@ DEPENDENCIES:
 
 SPEC CHECKSUMS:
   Masonry: 678fab65091a9290e40e2832a55e7ab731aad201
-  SJAttributesFactory: f792ee911d85df1feec311f2fbed72e87222003d
+  SJAttributesFactory: dc143ec95966aa1caf78674bf56905968a9a0c21
   SJBorderLineView: 5f7bf13a55a30ad4d19c5f085ad0567304702e61
-  SJObserverHelper: cfc0431646b0bace1e96874e29b3a659f6c3a57b
-  SJOrentationObserver: 279b609fcd44662eaeb94a083d069be4a75a63d8
-  SJPrompt: f4edb0a7ccc9af0c1b58d53d38d4662f4d2d84b4
+  SJObserverHelper: b270d707cd18ab76538596aa4e98cf798c9e9868
+  SJOrentationObserver: 0ff8ffedd31e6b32fb5aca5568db38d68ebee75b
+  SJPrompt: eaecd94f2055a12d25090967dbad3f21da011626
   SJSlider: 04a793058a0599a39f4bf1aaea602e3fac838c6e
-  SJUIFactory: e1dafcff0be8828f843b21c964f78b8637d7e425
+  SJUIFactory: d91d57830cfbf0b1385ad75f26d3a54147671a9f
   SJVideoPlayerBackGR: 9565fb9bd75b2c556f0e85573880e3e61d043285
 
 PODFILE CHECKSUM: c04c0a86837370ac27091f10435934f8029652fd
 
-COCOAPODS: 1.4.0.beta.2
+COCOAPODS: 1.4.0.rc.1

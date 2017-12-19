@@ -9,17 +9,12 @@
 #import "SJPrompt.h"
 #import <Masonry/Masonry.h>
 
-
-#define SJPrompt_H   (50)
-
-#define SJPrompt_F   (14)
-
-
 @interface SJPrompt ()
 
-@property (nonatomic, strong, readwrite) UIView *presentView;
+@property (nonatomic, weak, readwrite) UIView *presentView;
 @property (nonatomic, strong, readonly) UIView *backgroundView;
 @property (nonatomic, strong, readonly) UILabel *promptLabel;
+@property (nonatomic, strong, readonly) SJPromptConfig *config;
 
 @end
 
@@ -27,28 +22,48 @@
 
 @synthesize backgroundView = _backgroundView;
 @synthesize promptLabel = _promptLabel;
+@synthesize config = _config;
 
-+ (instancetype)promptWithPresentView:(UIView *)presentView {
-    SJPrompt *prompt = [SJPrompt new];
-    prompt.presentView = presentView;
-    return prompt;
++ (instancetype)promptWithPresentView:(__weak UIView *)presentView {
+    return [[SJPrompt alloc] initWithPresentView:presentView];
 }
 
-- (instancetype)init {
+- (instancetype)initWithPresentView:(__weak UIView *)presentView {
     self = [super init];
     if ( !self ) return self;
+    NSAssert(presentView, @"presentView can not be empty!");
+    _presentView = presentView;
     [self _setupView];
+    self.update(^(SJPromptConfig * _Nonnull config) {/**/});
     return self;
 }
 
-// MARK: Public
+- (void (^)(void (^ _Nonnull)(SJPromptConfig * _Nonnull)))update {
+    __weak typeof(self) _self = self;
+    return ^void(void(^block)(SJPromptConfig *config)) {
+        __strong typeof(_self) self = _self;
+        if ( !self ) return;
+        if ( block ) block(self.config);
+        self.promptLabel.font = self.config.font;
+        self.promptLabel.textColor = self.config.fontColor;
+        self.backgroundView.backgroundColor = self.config.backgroundColor;
+        self.backgroundView.layer.cornerRadius = self.config.cornerRadius;
+        [self.promptLabel mas_updateConstraints:^(MASConstraintMaker *make) {
+            make.edges.mas_offset(self.config.insets);
+        }];
+    };
+}
+
+- (void)reset {
+    [self.config reset];
+}
 
 - (void)showTitle:(NSString *)title duration:(NSTimeInterval)duration {
-    [_presentView addSubview:self.backgroundView];
-    CGFloat width = [self sizeFortitle:title size:CGSizeMake(1000, SJPrompt_H)].width;
-    [self.backgroundView mas_remakeConstraints:^(MASConstraintMaker *make) {
-        make.center.equalTo(_presentView);
-        make.size.mas_offset(CGSizeMake(width + 24, SJPrompt_H));
+    if ( !_presentView ) return;
+    CGFloat maxWdith = 0 != self.config.maxWidth ? self.config.maxWidth : _presentView.frame.size.width * 0.6;
+    CGSize size = [self _sizeForTitle:title constraints:CGSizeMake(maxWdith, CGFLOAT_MAX)];
+    [_promptLabel mas_updateConstraints:^(MASConstraintMaker *make) {
+        make.size.mas_offset(size);
     }];
     _promptLabel.text = title;
     [self _show];
@@ -60,8 +75,6 @@
 - (void)hidden {
     [self _hidden];
 }
-
-// MARK: Anima
 
 - (void)_show {
     [UIView animateWithDuration:0.25 animations:^{
@@ -75,25 +88,17 @@
     }];
 }
 
-// MARK: ...
-
 - (void)_setupView {
-    [self.backgroundView addSubview:self.promptLabel];
-    [_promptLabel mas_makeConstraints:^(MASConstraintMaker *make) {
-        make.edges.offset(0);
+    [_presentView addSubview:self.backgroundView];
+    [_backgroundView addSubview:self.promptLabel];
+    [_backgroundView mas_makeConstraints:^(MASConstraintMaker *make) {
+        make.center.offset(0);
     }];
-}
-
-- (UIView *)presentView {
-    if ( _presentView ) return _presentView;
-    return _presentView;
 }
 
 - (UIView *)backgroundView  {
     if ( _backgroundView ) return _backgroundView;
     _backgroundView = [UIView new];
-    _backgroundView.backgroundColor = [UIColor blackColor];
-    _backgroundView.layer.cornerRadius = 6;
     _backgroundView.clipsToBounds = YES;
     _backgroundView.alpha = 0.001;
     return _backgroundView;
@@ -102,18 +107,22 @@
 - (UILabel *)promptLabel {
     if ( _promptLabel ) return _promptLabel;
     _promptLabel = [UILabel new];
-    _promptLabel.font = [UIFont systemFontOfSize:SJPrompt_F];
     _promptLabel.textAlignment = NSTextAlignmentCenter;
-    _promptLabel.textColor = [UIColor whiteColor];
-    _promptLabel.backgroundColor = [UIColor blackColor];
+    _promptLabel.numberOfLines = 0;
     return _promptLabel;
 }
 
-- (CGSize)sizeFortitle:(NSString *)title size:(CGSize)size {
+- (SJPromptConfig *)config {
+    if ( _config ) return _config;
+    _config = [SJPromptConfig new];
+    return _config;
+}
+
+- (CGSize)_sizeForTitle:(NSString *)title constraints:(CGSize)size {
     CGSize result;
     if ( [title respondsToSelector:@selector(boundingRectWithSize:options:attributes:context:)] ) {
         NSMutableDictionary *attr = [NSMutableDictionary new];
-        attr[NSFontAttributeName] = [UIFont systemFontOfSize:SJPrompt_F];
+        attr[NSFontAttributeName] = self.config.font;
         CGRect rect = [title boundingRectWithSize:size
                                           options:NSStringDrawingUsesLineFragmentOrigin | NSStringDrawingUsesFontLeading
                                        attributes:attr context:nil];
@@ -121,10 +130,10 @@
     } else {
 #pragma clang diagnostic push
 #pragma clang diagnostic ignored "-Wdeprecated-declarations"
-        result = [title sizeWithFont:[UIFont systemFontOfSize:SJPrompt_F] constrainedToSize:size lineBreakMode:NSLineBreakByWordWrapping];
+        result = [title sizeWithFont:self.config.font constrainedToSize:size lineBreakMode:NSLineBreakByWordWrapping];
 #pragma clang diagnostic pop
     }
-    return result;
+    return CGSizeMake(ceil(result.width), ceil(result.height));
 }
 
 @end

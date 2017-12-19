@@ -7,7 +7,7 @@
 //
 
 #import "SJAttributeWorker.h"
-
+#import <CoreText/CoreText.h>
 
 @interface NSString (SJAdd)
 @end
@@ -44,6 +44,9 @@
 @property (nonatomic, assign, readwrite) BOOL r_nextLink;
 @property (nonatomic, strong, readwrite) NSNumber *r_nextOffset;
 @property (nonatomic, strong, readwrite) NSNumber *r_nextObliqueness;
+@property (nonatomic, strong, readwrite) NSString *r_nextKey;
+@property (nonatomic, strong, readwrite) id r_nextValue;
+@property (nonatomic, copy, readwrite) void(^r_task)(NSRange range, NSAttributedString *matched);
 
 @end
 
@@ -252,6 +255,28 @@
     };
 }
 
+- (SJAttributeWorker * _Nonnull (^)(NSString * _Nonnull, id _Nonnull))addAttribute {
+    return ^ SJAttributeWorker *(NSString *key, id value) {
+        if ( !key || !value ) {
+            _errorLog(@"Added Attribute Failed! param `key or value` is Empty!", _attrM.string);
+            return self;
+        }
+        [_attrM addAttribute:key value:value range:_rangeAll(_attrM)];
+        return self;
+    };
+}
+
+- (SJAttributeWorker * _Nonnull (^)(void (^ _Nonnull)(NSRange range, NSAttributedString *matched)))action {
+    return ^ SJAttributeWorker *(void(^action)(NSRange range, NSAttributedString *matched)) {
+        if ( !action ) {
+            _errorLog(@"Added `Action` Attribute Failed! param `task` is Empty!", _attrM.string);
+            return self;
+        }
+        [_attrM addAttribute:SJActionAttributeName value:action range:_rangeAll(_attrM)];
+        return self;
+    };
+}
+
 #pragma mark -
 
 - (SJAttributeWorker * _Nonnull (^)(NSRange, void (^ _Nonnull)(SJAttributeWorker * _Nonnull)))rangeEdit {
@@ -337,6 +362,15 @@
         if ( _r_nextShadow ) {
             [_attrM addAttribute:NSShadowAttributeName value:_r_nextShadow range:range];
             _r_nextShadow = nil;
+        }
+        if ( _r_nextKey && _r_nextValue ) {
+            [_attrM addAttribute:_r_nextKey value:_r_nextValue range:range];
+            _r_nextKey = nil;
+            _r_nextValue = nil;
+        }
+        if ( _r_task ) {
+            [_attrM addAttribute:SJActionAttributeName value:_r_task range:range];
+            _r_task = nil;
         }
     };
 }
@@ -497,6 +531,21 @@
     };
 }
 
+- (SJAttributeWorker * _Nonnull (^)(NSString * _Nonnull, id _Nonnull))next {
+    return ^ SJAttributeWorker *(NSString *key, id value) {
+        _r_nextKey = key;
+        _r_nextValue = value;
+        return self;
+    };
+}
+
+- (SJAttributeWorker * _Nonnull (^)(void (^ _Nonnull)(NSRange range, NSAttributedString *matched)))nextAction {
+    return ^ SJAttributeWorker *(void(^task)(NSRange range, NSAttributedString *matched)) {
+        _r_task = task;
+        return self;
+    };
+}
+
 #pragma mark -
 
 - (SJAttributeWorker *(^)(UIImage *, NSInteger, CGPoint, CGSize))insertImage {
@@ -541,22 +590,20 @@
     };
 }
 
-- (SJAttributeWorker * _Nonnull (^)(id _Nonnull, ...))insert {
-    return ^ SJAttributeWorker *(id insert, ...) {
+- (SJAttributeWorker * _Nonnull (^)(id, NSInteger, ...))insert {
+    return ^ SJAttributeWorker *(id insert, NSInteger index, ...) {
         va_list args;
-        va_start(args, insert);
+        va_start(args, index);
         if      ( [insert isKindOfClass:[NSString class]] ) {
-            self.insertText(insert, va_arg(args, int));
+            self.insertText(insert, index);
         }
         else if ( [insert isKindOfClass:[NSAttributedString class]] ) {
-            self.insertAttr(insert, va_arg(args, int));
+            self.insertAttr(insert, index);
         }
         else if ( [insert isKindOfClass:[UIImage class]] ) {
-            self.insertImage(insert, va_arg(args, int), va_arg(args, CGPoint), va_arg(args, CGSize));
+            self.insertImage(insert, index, va_arg(args, CGPoint), va_arg(args, CGSize));
         }
         va_end(args);
-        
-//        _lastInsertedRange =
         return self;
     };
 }

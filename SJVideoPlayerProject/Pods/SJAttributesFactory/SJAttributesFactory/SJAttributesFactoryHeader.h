@@ -11,5 +11,6 @@
 
 #import "SJAttributesFactory.h"
 #import "SJAttributeWorker.h"
+#import "SJAttributedStringKeys.h"
 
 #endif /* SJAttributesFactoryHeader_h */

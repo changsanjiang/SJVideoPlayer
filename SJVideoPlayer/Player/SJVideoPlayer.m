@@ -792,7 +792,7 @@ inline static NSString *_formatWithSec(NSInteger sec) {
                     }
                         break;
                     case SJPanLocation_Right: {
-                        CGFloat value = translate.y * 0.006;
+                        CGFloat value = translate.y * 0.012;
                         self.volBrigControl.volume -= value;
                     }
                         break;

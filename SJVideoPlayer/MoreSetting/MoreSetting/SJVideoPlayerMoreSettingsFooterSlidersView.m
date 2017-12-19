@@ -57,6 +57,7 @@
     model.volumeChanged = ^(float volume) {
         __strong typeof(_self) self = _self;
         if ( !self ) return;
+        if ( self.volumeSlider.isDragging ) return;
         self.volumeSlider.value = volume;
     };
     

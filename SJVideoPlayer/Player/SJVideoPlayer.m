@@ -452,11 +452,11 @@ inline static NSString *_formatWithSec(NSInteger sec) {
     _controlView.bottomControlView.progressSlider.delegate = self;
     
     [_presentView mas_makeConstraints:^(MASConstraintMaker *make) {
-        make.edges.offset(0);
+        make.edges.equalTo(_presentView.superview);
     }];
     
     [_controlView mas_makeConstraints:^(MASConstraintMaker *make) {
-        make.edges.offset(0);
+        make.edges.equalTo(_controlView.superview);
     }];
     
     [_moreSettingView mas_makeConstraints:^(MASConstraintMaker *make) {
@@ -600,7 +600,7 @@ inline static NSString *_formatWithSec(NSInteger sec) {
                                  self.controlView.topControlView.previewBtn,]);
                 
                 [self.controlView mas_remakeConstraints:^(MASConstraintMaker *make) {
-                    make.edges.offset(0);
+                    make.edges.equalTo(self.controlView.superview);
                 }];
             }
         });
@@ -1194,7 +1194,7 @@ static BOOL _isLoading;
                     [self.view removeFromSuperview];
                     [superview addSubview:self.view];
                     [self.view mas_remakeConstraints:^(MASConstraintMaker *make) {
-                        make.edges.offset(0);
+                        make.edges.equalTo(self.view.superview);
                     }];
                 }
             }
@@ -1222,7 +1222,7 @@ static BOOL _isLoading;
                     [self.view removeFromSuperview];
                     [superview addSubview:self.view];
                     [self.view mas_remakeConstraints:^(MASConstraintMaker *make) {
-                        make.edges.offset(0);
+                        make.edges.equalTo(self.view.superview);
                     }];
                 }
             }

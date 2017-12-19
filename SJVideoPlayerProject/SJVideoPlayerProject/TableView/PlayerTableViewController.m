@@ -67,7 +67,7 @@ static NSString *const PlayerTableViewCellID = @"PlayerTableViewCell";
         [cell.backgroundImageView addSubview:TabPlayer.view];
         
         [TabPlayer.view mas_makeConstraints:^(MASConstraintMaker *make) {
-            make.edges.offset(0);
+            make.edges.equalTo(TabPlayer.view.superview);
         }];
         
         SJVideoPlayerAssetCarrier *asset = [[SJVideoPlayerAssetCarrier alloc] initWithAssetURL:[NSURL URLWithString:@"http://vod.lanwuzhe.com/d09d3a5f9ba4491fa771cd63294ad349%2F0831eae12c51428fa7aed3825c511370-5287d2089db37e62345123a1be272f8b.mp4"] scrollView:tableView indexPath:indexPath superviewTag:cell.backgroundImageView.tag];

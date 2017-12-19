@@ -57,7 +57,7 @@
 - (void)_SJVideoPlayerMoreSettingsColCellSetupUI {
     [self.contentView addSubview:self.itemBtn];
     [_itemBtn mas_makeConstraints:^(MASConstraintMaker *make) {
-        make.edges.offset(0);
+        make.edges.equalTo(_itemBtn.superview);
     }];
 }
 

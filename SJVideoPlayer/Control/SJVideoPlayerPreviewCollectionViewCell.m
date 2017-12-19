@@ -36,7 +36,7 @@
 - (void)_collectionSetupView {
     [self.contentView addSubview:self.imageView];
     [_imageView mas_makeConstraints:^(MASConstraintMaker *make) {
-        make.edges.offset(0);
+        make.edges.equalTo(_imageView.superview);
     }];
 }
 

@@ -55,7 +55,7 @@ static NSString *SJVideoPlayerPreviewCollectionViewCellID = @"SJVideoPlayerPrevi
 - (void)_previewSetupView {
     [self.containerView addSubview:self.collectionView];
     [_collectionView mas_makeConstraints:^(MASConstraintMaker *make) {
-        make.edges.offset(0);
+        make.edges.equalTo(_collectionView.superview);
     }];
 }
 

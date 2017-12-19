@@ -33,7 +33,7 @@
 - (void)_baseSetupView {
     [self addSubview:self.containerView];
     [_containerView mas_makeConstraints:^(MASConstraintMaker *make) {
-        make.edges.offset(0);
+        make.edges.equalTo(_containerView.superview);
     }];
 }
 

@@ -64,7 +64,7 @@
     [self.containerView addSubview:self.fullBtn];
     
     [_controlMaskView mas_makeConstraints:^(MASConstraintMaker *make) {
-        make.edges.offset(0);
+        make.edges.equalTo(_controlMaskView.superview);
     }];
 
     [_playBtn mas_makeConstraints:^(MASConstraintMaker *make) {

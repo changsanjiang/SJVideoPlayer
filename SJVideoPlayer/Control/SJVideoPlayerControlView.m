@@ -89,7 +89,7 @@
     }];
     
     [_draggingProgressView mas_makeConstraints:^(MASConstraintMaker *make) {
-        make.edges.offset(0);
+        make.edges.equalTo(_draggingProgressView.superview);
     }];
 }
 

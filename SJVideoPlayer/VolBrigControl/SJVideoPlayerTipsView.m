@@ -74,7 +74,7 @@
     [self addSubview:self.minShowTitleLabel];
     
     [_bottomMaskView mas_makeConstraints:^(MASConstraintMaker *make) {
-        make.edges.offset(0);
+        make.edges.equalTo(_bottomMaskView.superview);
     }];
     
     [_titleLabel mas_makeConstraints:^(MASConstraintMaker *make) {

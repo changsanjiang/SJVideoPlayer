@@ -57,7 +57,7 @@
     [self.containerView addSubview:self.moreBtn];
     
     [_controlMaskView mas_makeConstraints:^(MASConstraintMaker *make) {
-        make.edges.offset(0);
+        make.edges.equalTo(_controlMaskView.superview);
     }];
     
     [_backBtn mas_makeConstraints:^(MASConstraintMaker *make) {

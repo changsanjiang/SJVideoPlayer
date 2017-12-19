@@ -49,7 +49,7 @@ static NSString *const SJVideoPlayerMoreSettingsFooterSlidersViewID = @"SJVideoP
     self.backgroundColor = [UIColor colorWithWhite:0 alpha:0.85];
     [self addSubview:self.colView];
     [_colView mas_makeConstraints:^(MASConstraintMaker *make) {
-        make.edges.offset(0);
+        make.edges.equalTo(_colView.superview);
     }];
 }
 

@@ -792,7 +792,7 @@ inline static NSString *_formatWithSec(NSInteger sec) {
                     }
                         break;
                     case SJPanLocation_Right: {
-                        CGFloat value = translate.y * 0.012;
+                        CGFloat value = translate.y * 0.015;
                         self.volBrigControl.volume -= value;
                     }
                         break;
@@ -1103,6 +1103,7 @@ static BOOL _isLoading;
 }
 
 - (void)setAsset:(SJVideoPlayerAssetCarrier *)asset {
+    [self stop];
     objc_setAssociatedObject(self, @selector(asset), asset, OBJC_ASSOCIATION_RETAIN_NONATOMIC);
     _presentView.asset = asset;
     _controlView.asset = asset;
@@ -1401,12 +1402,6 @@ static BOOL _isLoading;
     return objc_getAssociatedObject(self, _cmd);
 }
 
-- (void)_cleanSetting {
-    [self.asset cancelPreviewImagesGeneration];
-    self.asset = nil;
-    self.rate = 1;
-}
-
 - (void)setRate:(float)rate {
     if ( self.rate == rate ) return;
     objc_setAssociatedObject(self, @selector(rate), @(rate), OBJC_ASSOCIATION_RETAIN_NONATOMIC);
@@ -1464,12 +1459,12 @@ static BOOL _isLoading;
 }
 
 - (void)stop {
-    [self _pause];
-    [self _cleanSetting];
-    
     _sjAnima(^{
         [self _unknownState];
     });
+    if ( !self.asset ) return;
+    [self _pause];
+    if ( self.generatePreviewImages && !self.asset.hasBeenGeneratedPreviewImages ) [self.asset cancelPreviewImagesGeneration];
 }
 
 - (void)jumpedToTime:(NSTimeInterval)time completionHandler:(void (^ __nullable)(BOOL finished))completionHandler {
@@ -1513,6 +1508,10 @@ static BOOL _isLoading;
     SJPrompt *prompt = objc_getAssociatedObject(self, _cmd);
     if ( prompt ) return prompt;
     prompt = [SJPrompt promptWithPresentView:self.presentView];
+    prompt.update(^(SJPromptConfig * _Nonnull config) {
+        config.cornerRadius = 4;
+        config.font = [UIFont systemFontOfSize:12];
+    });
     objc_setAssociatedObject(self, _cmd, prompt, OBJC_ASSOCIATION_RETAIN_NONATOMIC);
     return prompt;
 }

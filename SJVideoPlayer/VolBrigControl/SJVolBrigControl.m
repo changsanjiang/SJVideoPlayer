@@ -7,43 +7,37 @@
 //
 
 #import "SJVolBrigControl.h"
-#import <MediaPlayer/MPVolumeView.h>
 #import "SJVideoPlayerTipsView.h"
 #import "SJVideoPlayerResources.h"
-#import <AVFoundation/AVFoundation.h>
+#import <MediaPlayer/MPMusicPlayerController.h>
+
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wdeprecated-declarations"
+
 
 @interface SJVolBrigControl ()
 
 @property (nonatomic, strong, readwrite) SJVideoPlayerTipsView *brightnessView;
-@property (nonatomic, strong, readonly) UISlider *systemVolume;
 
 @end
 
 @implementation SJVolBrigControl
-@synthesize systemVolume = _systemVolume;
 @synthesize volume = _volume;
 
 - (instancetype)init {
     self = [super init];
     if ( !self ) return nil;
-    
-    [self systemVolume];
     [self brightnessView];
-    
-    [[AVAudioSession sharedInstance] addObserver:self forKeyPath:@"outputVolume" options:NSKeyValueObservingOptionNew | NSKeyValueObservingOptionOld context:(void *)[AVAudioSession sharedInstance]];
-
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(volumeDidChange) name:MPMusicPlayerControllerVolumeDidChangeNotification object:nil];
     return self;
 }
 
-- (void)observeValueForKeyPath:(NSString *)keyPath ofObject:(id)object change:(NSDictionary *)change context:(void *)context{
-    if( context == (__bridge void *)[AVAudioSession sharedInstance] ){
-        float newValue = [[change objectForKey:@"new"] floatValue];
-        if ( _volumeChanged ) _volumeChanged(newValue);
-    }
+- (void)volumeDidChange {
+    if ( _volumeChanged ) _volumeChanged([MPMusicPlayerController applicationMusicPlayer].volume);
 }
 
 - (void)dealloc {
-    [[AVAudioSession sharedInstance] removeObserver:self forKeyPath:@"outputVolume"];
+    [[NSNotificationCenter defaultCenter] removeObserver:self name:MPMusicPlayerControllerVolumeDidChangeNotification object:nil];
 }
 
 - (SJVideoPlayerTipsView *)brightnessView {
@@ -56,23 +50,11 @@
     return _brightnessView;
 }
 
-- (UISlider *)systemVolume {
-    if ( _systemVolume ) return _systemVolume;
-    MPVolumeView *volumeView = [[MPVolumeView alloc] init];
-    for (UIView *view in [volumeView subviews]){
-//    [[UIApplication sharedApplication].keyWindow addSubview:volumeView]; // 隐藏系统volume
-//    volumeView.frame = CGRectMake(-1000, -100, 100, 100);
-        if ([view.class.description isEqualToString:@"MPVolumeSlider"]){
-            _systemVolume = (UISlider *)view;
-            break;
-        }
-    }
-    return _systemVolume;
-}
-
 - (void)setVolume:(float)volume {
+    if ( isnan(volume) || volume < 0 ) volume = 0;
+    else if ( volume > 1 ) volume = 1;
     _volume = volume;
-    _systemVolume.value = volume;
+    [[MPMusicPlayerController applicationMusicPlayer] setVolume:volume];
 }
 
 - (void)setBrightness:(float)brightness {
@@ -89,3 +71,4 @@
 }
 
 @end
+#pragma clang diagnostic pop

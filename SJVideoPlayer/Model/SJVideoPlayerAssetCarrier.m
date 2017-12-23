@@ -10,8 +10,6 @@
 #import <UIKit/UIKit.h>
 #import <objc/message.h>
 
-NSNotificationName const SJ_AVPlayerRateDidChangeNotification = @"SJ_AVPlayerRateDidChangeNotification";
-
 /*!
  *  Refresh interval for timed observations of AVPlayer
  */

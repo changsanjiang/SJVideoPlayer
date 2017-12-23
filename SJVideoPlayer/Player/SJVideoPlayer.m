@@ -507,6 +507,7 @@ inline static NSString *_formatWithSec(NSInteger sec) {
         if ( !self ) return;
         if ( !self.asset ) return;
         self.rate = rate;
+        if ( self.internallyChangedRate ) self.internallyChangedRate(self, rate);
     };
     
     _moreSettingFooterViewModel.needChangeVolume = ^(float volume) {
@@ -604,6 +605,7 @@ inline static NSString *_formatWithSec(NSInteger sec) {
                 }];
             }
         });
+        if ( self.rotatedScreen ) self.rotatedScreen(self, observer.isFullScreen);
     };
     
     _orentation.rotationCondition = ^BOOL(SJOrentationObserver * _Nonnull observer) {
@@ -1105,6 +1107,7 @@ static BOOL _isLoading;
 - (void)setAsset:(SJVideoPlayerAssetCarrier *)asset {
     [self stop];
     objc_setAssociatedObject(self, @selector(asset), asset, OBJC_ASSOCIATION_RETAIN_NONATOMIC);
+    if ( !asset ) return;
     _presentView.asset = asset;
     _controlView.asset = asset;
     
@@ -1267,28 +1270,33 @@ static BOOL _isLoading;
     return objc_getAssociatedObject(self, _cmd);
 }
 
+- (void)_clearAsset {
+    if ( self.generatePreviewImages && !self.asset.hasBeenGeneratedPreviewImages ) [self.asset cancelPreviewImagesGeneration];
+    objc_setAssociatedObject(self, @selector(asset), nil, OBJC_ASSOCIATION_ASSIGN);
+}
+
 - (void)setMoreSettings:(NSArray<SJVideoPlayerMoreSetting *> *)moreSettings {
     objc_setAssociatedObject(self, @selector(moreSettings), moreSettings, OBJC_ASSOCIATION_RETAIN_NONATOMIC);
     NSMutableSet<SJVideoPlayerMoreSetting *> *moreSettingsM = [NSMutableSet new];
     [moreSettings enumerateObjectsUsingBlock:^(SJVideoPlayerMoreSetting * _Nonnull obj, NSUInteger idx, BOOL * _Nonnull stop) {
-        [self addSetting:obj container:moreSettingsM];
+        [self _addSetting:obj container:moreSettingsM];
     }];
     
     [moreSettingsM enumerateObjectsUsingBlock:^(SJVideoPlayerMoreSetting * _Nonnull obj, BOOL * _Nonnull stop) {
-        [self dressSetting:obj];
+        [self _dressSetting:obj];
     }];
     self.moreSettingView.moreSettings = moreSettings;
 }
 
-- (void)addSetting:(SJVideoPlayerMoreSetting *)setting container:(NSMutableSet<SJVideoPlayerMoreSetting *> *)moreSttingsM {
+- (void)_addSetting:(SJVideoPlayerMoreSetting *)setting container:(NSMutableSet<SJVideoPlayerMoreSetting *> *)moreSttingsM {
     [moreSttingsM addObject:setting];
     if ( !setting.showTowSetting ) return;
     [setting.twoSettingItems enumerateObjectsUsingBlock:^(SJVideoPlayerMoreSettingSecondary * _Nonnull obj, NSUInteger idx, BOOL * _Nonnull stop) {
-        [self addSetting:(SJVideoPlayerMoreSetting *)obj container:moreSttingsM];
+        [self _addSetting:(SJVideoPlayerMoreSetting *)obj container:moreSttingsM];
     }];
 }
 
-- (void)dressSetting:(SJVideoPlayerMoreSetting *)setting {
+- (void)_dressSetting:(SJVideoPlayerMoreSetting *)setting {
     if ( !setting.clickedExeBlock ) return;
     void(^clickedExeBlock)(SJVideoPlayerMoreSetting *model) = [setting.clickedExeBlock copy];
     __weak typeof(self) _self = self;
@@ -1378,7 +1386,7 @@ static BOOL _isLoading;
 }
 
 - (void)setClickedBackEvent:(void (^)(SJVideoPlayer *player))clickedBackEvent {
-    objc_setAssociatedObject(self, @selector(clickedBackEvent), clickedBackEvent, OBJC_ASSOCIATION_COPY);
+    objc_setAssociatedObject(self, @selector(clickedBackEvent), clickedBackEvent, OBJC_ASSOCIATION_COPY_NONATOMIC);
 }
 
 - (void (^)(SJVideoPlayer * _Nonnull))clickedBackEvent {
@@ -1391,7 +1399,15 @@ static BOOL _isLoading;
 
 - (BOOL)disableRotation {
     return [objc_getAssociatedObject(self, _cmd) boolValue];
-} 
+}
+
+- (void)setRotatedScreen:(void (^)(SJVideoPlayer * _Nonnull, BOOL))rotatedScreen {
+    objc_setAssociatedObject(self, @selector(rotatedScreen), rotatedScreen, OBJC_ASSOCIATION_COPY_NONATOMIC);
+}
+
+- (void (^)(SJVideoPlayer * _Nonnull, BOOL))rotatedScreen {
+    return objc_getAssociatedObject(self, _cmd);
+}
 
 - (void)setVideoGravity:(AVLayerVideoGravity)videoGravity {
     objc_setAssociatedObject(self, @selector(videoGravity), videoGravity, OBJC_ASSOCIATION_RETAIN_NONATOMIC);
@@ -1419,12 +1435,20 @@ static BOOL _isLoading;
     return [objc_getAssociatedObject(self, _cmd) floatValue];
 }
 
+- (void)setRateChanged:(void (^)(SJVideoPlayer * _Nonnull))rateChanged {
+    objc_setAssociatedObject(self, @selector(rateChanged), rateChanged, OBJC_ASSOCIATION_COPY_NONATOMIC);
+}
+
 - (void (^)(SJVideoPlayer * _Nonnull))rateChanged {
     return objc_getAssociatedObject(self, _cmd);
 }
 
-- (void)setRateChanged:(void (^)(SJVideoPlayer * _Nonnull))rateChanged {
-    objc_setAssociatedObject(self, @selector(rateChanged), rateChanged, OBJC_ASSOCIATION_COPY_NONATOMIC);
+- (void)setInternallyChangedRate:(void (^)(SJVideoPlayer * _Nonnull, float))internallyChangedRate {
+    objc_setAssociatedObject(self, @selector(internallyChangedRate), internallyChangedRate, OBJC_ASSOCIATION_COPY_NONATOMIC);
+}
+
+- (void (^)(SJVideoPlayer * _Nonnull, float))internallyChangedRate {
+    return objc_getAssociatedObject(self, _cmd);
 }
 
 @end
@@ -1464,7 +1488,7 @@ static BOOL _isLoading;
     });
     if ( !self.asset ) return;
     [self _pause];
-    if ( self.generatePreviewImages && !self.asset.hasBeenGeneratedPreviewImages ) [self.asset cancelPreviewImagesGeneration];
+    [self _clearAsset];
 }
 
 - (void)jumpedToTime:(NSTimeInterval)time completionHandler:(void (^ __nullable)(BOOL finished))completionHandler {

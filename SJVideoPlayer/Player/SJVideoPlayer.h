@@ -76,7 +76,17 @@ NS_ASSUME_NONNULL_BEGIN
  **/
 @property (nonatomic, assign, readwrite) float rate;
 
+/*!
+ *  Call when the rate changes.
+ *
+ *  调速时调用.
+ **/
 @property (nonatomic, copy, readwrite, nullable) void(^rateChanged)(SJVideoPlayer *player);
+
+/*!
+ *  当滑动内部的`rate slider`时候调用. 外部改变`rate`不会调用.
+ **/
+@property (nonatomic, copy, readwrite, nullable) void(^internallyChangedRate)(SJVideoPlayer *player, float rate);
 
 /*!
  *  loading show this.
@@ -110,6 +120,13 @@ NS_ASSUME_NONNULL_BEGIN
  *  是否禁用屏幕旋转, 默认是NO.
  */
 @property (nonatomic, assign, readwrite) BOOL disableRotation;
+
+/*!
+ *  Call when the screen is rotated.
+ *
+ *  屏幕旋转的时候调用.
+ **/
+@property (nonatomic, copy, readwrite, nullable) void(^rotatedScreen)(SJVideoPlayer *player, BOOL isFullScreen);
 
 @property (nonatomic, strong, readwrite) AVLayerVideoGravity videoGravity;
 

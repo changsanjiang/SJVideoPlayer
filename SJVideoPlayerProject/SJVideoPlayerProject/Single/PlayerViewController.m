@@ -9,7 +9,7 @@
 #import "PlayerViewController.h"
 #import "SJVideoPlayer.h"
 #import <Masonry.h>
-
+#import <SJUIFactory/SJUIFactory.h>
 
 #define Player  [SJVideoPlayer sharedPlayer]
 
@@ -22,27 +22,34 @@
 - (void)viewDidLoad {
     [super viewDidLoad];
     
-    self.view.backgroundColor = [UIColor blackColor];
+    self.view.backgroundColor = [UIColor whiteColor];
+    Player.view.backgroundColor = [UIColor whiteColor];
     
     [self.view addSubview:Player.view];
     [Player.view mas_makeConstraints:^(MASConstraintMaker *make) {
-        make.center.offset(0);
+        make.top.offset(SJ_is_iPhoneX() ? 34 : 20);
         make.leading.trailing.offset(0);
         make.height.equalTo(Player.view.mas_width).multipliedBy(9.0f / 16);
     }];
     
     Player.placeholder = [UIImage imageNamed:@"test"];
-//    http://video.cdn.lanwuzhe.com/1493370091000dfb1
-//    http://vod.lanwuzhe.com/d09d3a5f9ba4491fa771cd63294ad349%2F0831eae12c51428fa7aed3825c511370-5287d2089db37e62345123a1be272f8b.mp4
-//    Player.asset = [[SJVideoPlayerAssetCarrier alloc] initWithAssetURL:[[NSBundle mainBundle] URLForResource:@"sample.mp4" withExtension:nil] beginTime:10];
-    
     Player.asset = [[SJVideoPlayerAssetCarrier alloc] initWithAssetURL:[NSURL URLWithString:@"http://vod.lanwuzhe.com/d09d3a5f9ba4491fa771cd63294ad349%2F0831eae12c51428fa7aed3825c511370-5287d2089db37e62345123a1be272f8b.mp4"] beginTime:10];
+    
     __weak typeof(self) _self = self;
     Player.clickedBackEvent = ^(SJVideoPlayer * _Nonnull player) {
         __strong typeof(_self) self = _self;
         if ( !self ) return;
         [Player stop];
         [self.navigationController popViewControllerAnimated:YES];
+    };
+    
+    Player.rotatedScreen = ^(SJVideoPlayer * _Nonnull player, BOOL isFullScreen) {
+        if ( isFullScreen ) {
+            [UIApplication sharedApplication].statusBarStyle = UIStatusBarStyleLightContent;
+        }
+        else {
+            [UIApplication sharedApplication].statusBarStyle = UIStatusBarStyleDefault;
+        }
     };
     
     [self _setPlayerMoreSettingItems];

@@ -43,10 +43,6 @@
     [_targetView addGestureRecognizer:_singleTap];
     [_targetView addGestureRecognizer:_doubleTap];
     [_targetView addGestureRecognizer:_panGR];
-    
-    [_singleTap requireGestureRecognizerToFail:_doubleTap];
-    [_doubleTap requireGestureRecognizerToFail:_panGR];
-    
 }
 
 - (BOOL)gestureRecognizerShouldBegin:(UIGestureRecognizer *)gestureRecognizer {

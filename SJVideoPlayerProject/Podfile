@@ -13,4 +13,5 @@ target 'SJVideoPlayerProject' do
   pod 'SJBorderLineView'
   pod 'SJPrompt'
   pod 'SJOrentationObserver'
+  pod 'SJLoadingView'
 end

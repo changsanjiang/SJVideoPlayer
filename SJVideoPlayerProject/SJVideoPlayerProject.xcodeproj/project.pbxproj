@@ -26,7 +26,6 @@
 		777D31431FD8F0010075E5FD /* SJVideoPlayerPreviewView.m in Sources */ = {isa = PBXBuildFile; fileRef = 777D30F41FD8F0010075E5FD /* SJVideoPlayerPreviewView.m */; };
 		777D31441FD8F0010075E5FD /* SJVideoPlayerControlView.m in Sources */ = {isa = PBXBuildFile; fileRef = 777D30F61FD8F0010075E5FD /* SJVideoPlayerControlView.m */; };
 		777D31451FD8F0010075E5FD /* SJVideoPlayerTopControlView.m in Sources */ = {isa = PBXBuildFile; fileRef = 777D30F91FD8F0010075E5FD /* SJVideoPlayerTopControlView.m */; };
-		777D31461FD8F0010075E5FD /* JDradualLoadingView.m in Sources */ = {isa = PBXBuildFile; fileRef = 777D30FF1FD8F0010075E5FD /* JDradualLoadingView.m */; };
 		777D31471FD8F0010075E5FD /* SJMoreSettingsFooterViewModel.m in Sources */ = {isa = PBXBuildFile; fileRef = 777D31021FD8F0010075E5FD /* SJMoreSettingsFooterViewModel.m */; };
 		777D31481FD8F0010075E5FD /* SJVideoPlayerAssetCarrier.m in Sources */ = {isa = PBXBuildFile; fileRef = 777D31041FD8F0010075E5FD /* SJVideoPlayerAssetCarrier.m */; };
 		777D31491FD8F0010075E5FD /* SJVideoPlayerMoreSetting.m in Sources */ = {isa = PBXBuildFile; fileRef = 777D31061FD8F0010075E5FD /* SJVideoPlayerMoreSetting.m */; };
@@ -96,8 +95,6 @@
 		777D30F91FD8F0010075E5FD /* SJVideoPlayerTopControlView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SJVideoPlayerTopControlView.m; sourceTree = "<group>"; };
 		777D30FB1FD8F0010075E5FD /* SJVideoPlayerControlViewEnumHeader.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SJVideoPlayerControlViewEnumHeader.h; sourceTree = "<group>"; };
 		777D30FC1FD8F0010075E5FD /* SJVideoPlayerState.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SJVideoPlayerState.h; sourceTree = "<group>"; };
-		777D30FE1FD8F0010075E5FD /* JDradualLoadingView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = JDradualLoadingView.h; sourceTree = "<group>"; };
-		777D30FF1FD8F0010075E5FD /* JDradualLoadingView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = JDradualLoadingView.m; sourceTree = "<group>"; };
 		777D31011FD8F0010075E5FD /* SJMoreSettingsFooterViewModel.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SJMoreSettingsFooterViewModel.h; sourceTree = "<group>"; };
 		777D31021FD8F0010075E5FD /* SJMoreSettingsFooterViewModel.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SJMoreSettingsFooterViewModel.m; sourceTree = "<group>"; };
 		777D31031FD8F0010075E5FD /* SJVideoPlayerAssetCarrier.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SJVideoPlayerAssetCarrier.h; sourceTree = "<group>"; };
@@ -237,7 +234,6 @@
 				777D30E61FD8F0010075E5FD /* Control */,
 				77A4394C1FDD8879008BD092 /* GestureControl */,
 				777D30FA1FD8F0010075E5FD /* Header */,
-				777D30FD1FD8F0010075E5FD /* Loading */,
 				777D31001FD8F0010075E5FD /* Model */,
 				777D310D1FD8F0010075E5FD /* MoreSetting */,
 				777D311F1FD8F0010075E5FD /* Other */,
@@ -289,15 +285,6 @@
 				777D30FC1FD8F0010075E5FD /* SJVideoPlayerState.h */,
 			);
 			path = Header;
-			sourceTree = "<group>";
-		};
-		777D30FD1FD8F0010075E5FD /* Loading */ = {
-			isa = PBXGroup;
-			children = (
-				777D30FE1FD8F0010075E5FD /* JDradualLoadingView.h */,
-				777D30FF1FD8F0010075E5FD /* JDradualLoadingView.m */,
-			);
-			path = Loading;
 			sourceTree = "<group>";
 		};
 		777D31001FD8F0010075E5FD /* Model */ = {
@@ -608,7 +595,6 @@
 				777D31431FD8F0010075E5FD /* SJVideoPlayerPreviewView.m in Sources */,
 				774B25201FCEBA5D002113CC /* ViewController.m in Sources */,
 				777D31421FD8F0010075E5FD /* SJVideoPlayerPreviewCollectionViewCell.m in Sources */,
-				777D31461FD8F0010075E5FD /* JDradualLoadingView.m in Sources */,
 				777D315C1FD8F0010075E5FD /* SJVideoPlayer.m in Sources */,
 				774B252B1FCEBA5D002113CC /* main.m in Sources */,
 				777D313B1FD8F0010075E5FD /* SJVideoPlayerBaseView.m in Sources */,
@@ -769,8 +755,8 @@
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				PRODUCT_BUNDLE_IDENTIFIER = com.sanjiang.videoplayer;
 				PRODUCT_NAME = "$(TARGET_NAME)";
-				PROVISIONING_PROFILE = "acd2453e-e396-4ccf-bf56-508276824c6c";
-				PROVISIONING_PROFILE_SPECIFIER = SanJiangDevelopment;
+				PROVISIONING_PROFILE = "a317fe74-1a78-4494-b955-994f23dd28be";
+				PROVISIONING_PROFILE_SPECIFIER = sanjiang17macDev;
 				TARGETED_DEVICE_FAMILY = "1,2";
 			};
 			name = Debug;

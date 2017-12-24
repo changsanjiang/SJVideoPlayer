@@ -39,6 +39,5 @@ extern NSNotificationName const SJSettingsPlayerNotification;
 
 // MARK: Loading
 @property (nonatomic, strong, readwrite) UIColor *loadingLineColor;
-@property (nonatomic, assign, readwrite) float loadingLineWidth;
 
 @end

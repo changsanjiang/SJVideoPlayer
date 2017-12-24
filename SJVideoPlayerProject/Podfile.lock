@@ -2,6 +2,7 @@ PODS:
   - Masonry (1.1.0)
   - SJAttributesFactory (1.1.13)
   - SJBorderLineView (0.0.5)
+  - SJLoadingView (0.0.1)
   - SJObserverHelper (1.0.3)
   - SJOrentationObserver (0.0.4):
     - SJOrentationObserver/Category (= 0.0.4)
@@ -21,6 +22,7 @@ PODS:
 DEPENDENCIES:
   - Masonry
   - SJBorderLineView
+  - SJLoadingView
   - SJOrentationObserver
   - SJPrompt
   - SJSlider
@@ -31,6 +33,7 @@ SPEC CHECKSUMS:
   Masonry: 678fab65091a9290e40e2832a55e7ab731aad201
   SJAttributesFactory: dc143ec95966aa1caf78674bf56905968a9a0c21
   SJBorderLineView: 5f7bf13a55a30ad4d19c5f085ad0567304702e61
+  SJLoadingView: 72dda8fe96ff9d1a9c17dcb6d4438b331fdeba7a
   SJObserverHelper: b270d707cd18ab76538596aa4e98cf798c9e9868
   SJOrentationObserver: 0ff8ffedd31e6b32fb5aca5568db38d68ebee75b
   SJPrompt: eaecd94f2055a12d25090967dbad3f21da011626
@@ -38,6 +41,6 @@ SPEC CHECKSUMS:
   SJUIFactory: d91d57830cfbf0b1385ad75f26d3a54147671a9f
   SJVideoPlayerBackGR: 9565fb9bd75b2c556f0e85573880e3e61d043285
 
-PODFILE CHECKSUM: c04c0a86837370ac27091f10435934f8029652fd
+PODFILE CHECKSUM: 04ca93bae53c8a64e9b57eea53d39b895938f7db
 
 COCOAPODS: 1.4.0.rc.1

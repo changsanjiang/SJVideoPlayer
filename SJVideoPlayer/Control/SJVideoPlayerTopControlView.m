@@ -91,7 +91,7 @@
 
 - (UIButton *)moreBtn {
     if ( _moreBtn ) return _moreBtn;
-    _moreBtn = [SJUIButtonFactory buttonWithImageName:[SJVideoPlayerResources bundleComponentWithImageName:@"sj_video_player_more"] target:self sel:@selector(clickedBtn:) tag:SJVideoPlayControlViewTag_More];
+    _moreBtn = [SJUIButtonFactory buttonWithImageName:nil target:self sel:@selector(clickedBtn:) tag:SJVideoPlayControlViewTag_More];
     return _moreBtn;
 }
 

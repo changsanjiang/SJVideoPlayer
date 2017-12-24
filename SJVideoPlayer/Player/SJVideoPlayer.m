@@ -22,7 +22,7 @@
 #import "SJVolBrigControl.h"
 #import "SJTimerControl.h"
 #import "SJVideoPlayerView.h"
-#import "JDradualLoadingView.h"
+#import <SJLoadingView/SJLoadingView.h>
 #import "SJPlayerGestureControl.h"
 
 #define MoreSettingWidth (MAX([UIScreen mainScreen].bounds.size.width, [UIScreen mainScreen].bounds.size.height) * 0.382)
@@ -73,7 +73,7 @@ inline static NSString *_formatWithSec(NSInteger sec) {
 @property (nonatomic, strong, readonly) SJVideoPlayerRegistrar *registrar;
 @property (nonatomic, strong, readonly) SJVolBrigControl *volBrigControl;
 @property (nonatomic, strong, readonly) SJPlayerGestureControl *gestureControl;
-@property (nonatomic, strong, readonly) JDradualLoadingView *loadingView;
+@property (nonatomic, strong, readonly) SJLoadingView *loadingView;
 
 
 @property (nonatomic, assign, readwrite) SJVideoPlayerPlayState state;
@@ -358,7 +358,7 @@ inline static NSString *_formatWithSec(NSInteger sec) {
     SJMoreSettingsFooterViewModel *_moreSettingFooterViewModel;
     SJVideoPlayerRegistrar *_registrar;
     SJVolBrigControl *_volBrigControl;
-    JDradualLoadingView *_loadingView;
+    SJLoadingView *_loadingView;
     SJPlayerGestureControl *_gestureControl;
 }
 
@@ -468,15 +468,16 @@ inline static NSString *_formatWithSec(NSInteger sec) {
         make.edges.equalTo(_moreSettingView);
     }];
     
-    _loadingView = [JDradualLoadingView new];
-    _loadingView.lineWidth = 0.6;
-    _loadingView.lineColor = [UIColor whiteColor];
-    
+    _loadingView = [SJLoadingView new];
+    [_controlView addSubview:_loadingView];
+    [_loadingView mas_makeConstraints:^(MASConstraintMaker *make) {
+        make.center.offset(0);
+    }];
+
     __weak typeof(self) _self = self;
     _view.setting = ^(SJVideoPlayerSettings * _Nonnull setting) {
         __strong typeof(_self) self = _self;
         if ( !self ) return;
-        self.loadingView.lineWidth = setting.loadingLineWidth;
         self.loadingView.lineColor = setting.loadingLineColor;
     };
     
@@ -1044,23 +1045,14 @@ inline static NSString *_formatWithSec(NSInteger sec) {
     [self.asset.player pause];
 }
 
-static BOOL _isLoading;
 - (void)_startLoading {
-    if ( _isLoading ) return;
-    _isLoading = YES;
-    [_controlView addSubview:_loadingView];
-    [_loadingView mas_makeConstraints:^(MASConstraintMaker *make) {
-        make.center.offset(0);
-        make.height.equalTo(_loadingView.superview).multipliedBy(0.2);
-        make.width.equalTo(_loadingView.mas_height);
-    }];
-    [_loadingView startAnimation];
+    if ( _loadingView.isAnimating ) return;
+    [_loadingView start];
 }
 
 - (void)_stopLoading {
-    _isLoading = NO;
-    [_loadingView stopAnimation];
-    [_loadingView removeFromSuperview];
+    if ( !_loadingView.isAnimating ) return;
+    [_loadingView stop];
 }
 
 - (void)_buffering {
@@ -1334,8 +1326,12 @@ static BOOL _isLoading;
 }
 
 - (void)settingPlayer:(void (^)(SJVideoPlayerSettings * _Nonnull))block {
-    if ( block ) block([self settings]);
-    [[NSNotificationCenter defaultCenter] postNotificationName:SJSettingsPlayerNotification object:[self settings]];
+    dispatch_async(dispatch_get_global_queue(0, 0), ^{
+        if ( block ) block([self settings]);
+        dispatch_async(dispatch_get_main_queue(), ^{
+            [[NSNotificationCenter defaultCenter] postNotificationName:SJSettingsPlayerNotification object:[self settings]];
+        });
+    });
 }
 
 - (SJVideoPlayerSettings *)settings {
@@ -1366,7 +1362,6 @@ static BOOL _isLoading;
     setting.more_trackColor = [UIColor whiteColor];
     setting.more_traceHeight = 5;
     setting.loadingLineColor = [UIColor whiteColor];
-    setting.loadingLineWidth = 1;
 }
 
 - (void)setPlaceholder:(UIImage *)placeholder {

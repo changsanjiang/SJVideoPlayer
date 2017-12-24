@@ -1,7 +1,7 @@
 
 Pod::Spec.new do |s|
 s.name         = 'SJVideoPlayer'
-s.version      = '1.3.2'
+s.version      = '1.3.3'
 s.summary      = 'video player.'
 s.description  = 'https://github.com/changsanjiang/SJVideoPlayer/blob/master/README.md'
 s.homepage     = 'https://github.com/changsanjiang/SJVideoPlayer'
@@ -20,6 +20,7 @@ s.dependency 'SJPrompt'
 s.dependency 'SJUIFactory'
 s.dependency 'SJVideoPlayerBackGR'
 s.dependency 'SJOrentationObserver'
+s.dependency 'SJLoadingView'
 
 s.source_files = 'SJVideoPlayer/SJPlayer.h'
 
@@ -57,10 +58,6 @@ end
 
 s.subspec 'GestureControl' do |ss|
     ss.source_files = 'SJVideoPlayer/GestureControl/*.{h,m}'
-end
-
-s.subspec 'Loading' do |ss|
-    ss.source_files = 'SJVideoPlayer/Loading/*.{h,m}'
 end
 
 s.subspec 'MoreSetting' do |ss|

@@ -633,8 +633,8 @@ inline static NSString *_formatWithSec(NSInteger sec) {
     _registrar.willResignActive = ^(SJVideoPlayerRegistrar * _Nonnull registrar) {
         __strong typeof(_self) self = _self;
         if ( !self ) return;
-        [self _pause];
         self.lockScreen = YES;
+        [self _pause];
     };
     
     _registrar.didBecomeActive = ^(SJVideoPlayerRegistrar * _Nonnull registrar) {
@@ -725,11 +725,13 @@ inline static NSString *_formatWithSec(NSInteger sec) {
             case SJVideoPlayerPlayState_Buffing:
             case SJVideoPlayerPlayState_Playing: {
                 [self pause];
+                self.userClickedPause = YES;
             }
                 break;
             case SJVideoPlayerPlayState_Pause:
             case SJVideoPlayerPlayState_PlayEnd: {
                 [self play];
+                self.userClickedPause = NO;
             }
                 break;
             case SJVideoPlayerPlayState_PlayFailed:
@@ -917,10 +919,12 @@ inline static NSString *_formatWithSec(NSInteger sec) {
             
         case SJVideoPlayControlViewTag_Play: {
             [self play];
+            self.userClickedPause = NO;
         }
             break;
         case SJVideoPlayControlViewTag_Pause: {
             [self pause];
+            self.userClickedPause = YES;
         }
             break;
         case SJVideoPlayControlViewTag_Replay: {
@@ -1461,6 +1465,10 @@ static BOOL _isLoading;
 
 @implementation SJVideoPlayer (Control)
 
+- (BOOL)userPaused {
+    return self.userClickedPause;
+}
+
 - (BOOL)play {
     if ( !self.asset ) return NO;
     self.userClickedPause = NO;
@@ -1473,7 +1481,6 @@ static BOOL _isLoading;
 
 - (BOOL)pause {
     if ( !self.asset ) return NO;
-    self.userClickedPause = YES;
     _sjAnima(^{
         [self _pauseState];
     });

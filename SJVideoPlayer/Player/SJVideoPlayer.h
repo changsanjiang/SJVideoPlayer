@@ -137,6 +137,14 @@ NS_ASSUME_NONNULL_BEGIN
 
 @interface SJVideoPlayer (Control)
 
+/*!
+ *  The user clicked paused.
+ *
+ *  `用户`点击暂停或者双击暂停的时候, 会设置它.
+ *  当我们调用`pause`主动暂停, 不会设置`userPaused`,
+ **/
+@property (nonatomic, assign, readonly) BOOL userPaused;
+
 - (BOOL)play;
 
 - (BOOL)pause;

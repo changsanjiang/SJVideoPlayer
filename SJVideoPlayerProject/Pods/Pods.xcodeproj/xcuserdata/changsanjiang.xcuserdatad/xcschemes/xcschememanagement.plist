@@ -24,20 +24,35 @@
 			<key>orderHint</key>
 			<integer>4</integer>
 		</dict>
-		<key>SJSlider.xcscheme</key>
+		<key>SJObserverHelper.xcscheme</key>
 		<dict>
 			<key>orderHint</key>
 			<integer>5</integer>
 		</dict>
-		<key>SJUIFactory.xcscheme</key>
+		<key>SJOrentationObserver.xcscheme</key>
 		<dict>
 			<key>orderHint</key>
 			<integer>6</integer>
 		</dict>
-		<key>SJVideoPlayerBackGR.xcscheme</key>
+		<key>SJPrompt.xcscheme</key>
 		<dict>
 			<key>orderHint</key>
 			<integer>7</integer>
+		</dict>
+		<key>SJSlider.xcscheme</key>
+		<dict>
+			<key>orderHint</key>
+			<integer>8</integer>
+		</dict>
+		<key>SJUIFactory.xcscheme</key>
+		<dict>
+			<key>orderHint</key>
+			<integer>9</integer>
+		</dict>
+		<key>SJVideoPlayerBackGR.xcscheme</key>
+		<dict>
+			<key>orderHint</key>
+			<integer>10</integer>
 		</dict>
 	</dict>
 </dict>

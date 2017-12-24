@@ -29,7 +29,7 @@ static NSString *const PlayerTableViewCellID = @"PlayerTableViewCell";
 
     [self.tableView registerClass:NSClassFromString(PlayerTableViewCellID) forCellReuseIdentifier:PlayerTableViewCellID];
     
-    self.tableView.rowHeight = 200;
+    self.tableView.rowHeight = 240;
 }
 
 - (void)didReceiveMemoryWarning {

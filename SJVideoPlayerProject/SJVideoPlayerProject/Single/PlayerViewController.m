@@ -32,6 +32,8 @@
         make.height.equalTo(Player.view.mas_width).multipliedBy(9.0f / 16);
     }];
     
+//    Player.generatePreviewImages = NO;
+    
     Player.placeholder = [UIImage imageNamed:@"test"];
     Player.asset = [[SJVideoPlayerAssetCarrier alloc] initWithAssetURL:[NSURL URLWithString:@"http://vod.lanwuzhe.com/d09d3a5f9ba4491fa771cd63294ad349%2F0831eae12c51428fa7aed3825c511370-5287d2089db37e62345123a1be272f8b.mp4"] beginTime:10];
     

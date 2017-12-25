@@ -45,29 +45,39 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (void)playWithURL:(NSURL *)playURL;
 
-// unit: sec.
+/*!
+ *  unit: sec.
+ *
+ *  单位是秒.
+ **/
 - (void)playWithURL:(NSURL *)playURL jumpedToTime:(NSTimeInterval)time;
 
 /*!
  *  Video URL
- *
- *  视频播放地址
  */
 @property (nonatomic, strong, readwrite, nullable) NSURL *assetURL;
 
 /*!
  *  Create It By Video URL.
+ *
+ *  创建一个播放资源.
+ *  如果在`tableView或者collectionView`中播放, 使用它来初始化播放资源.
+ *  它也可以直接从某个时刻开始播放. 单位是秒.
  **/
 @property (nonatomic, strong, readwrite, nullable) SJVideoPlayerAssetCarrier *asset;
 
 /*!
  *  clicked More button to display items.
- */
+ *
+ *  点击更多按钮, 弹出来的选项.
+ **/
 @property (nonatomic, strong, readwrite, nullable) NSArray<SJVideoPlayerMoreSetting *> *moreSettings;
 
+/*!
+ *  配置播放器, 注意: 这个`block`在子线程运行.
+ **/
 - (void)settingPlayer:(void(^)(SJVideoPlayerSettings *settings))block;
-
-- (void)resetSetting;
+- (void)resetSetting; // 重置配置
 
 /*!
  *  rate
@@ -84,13 +94,18 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic, copy, readwrite, nullable) void(^rateChanged)(SJVideoPlayer *player);
 
 /*!
+ *  Call when the rate changes.
+ *
+ *  调速时调用.
  *  当滑动内部的`rate slider`时候调用. 外部改变`rate`不会调用.
  **/
 @property (nonatomic, copy, readwrite, nullable) void(^internallyChangedRate)(SJVideoPlayer *player, float rate);
 
 /*!
  *  loading show this.
- */
+ *
+ *  占位图. 初始化播放loading的时候显示.
+ **/
 - (void)setPlaceholder:(UIImage *)placeholder;
 
 /*!
@@ -103,14 +118,14 @@ NS_ASSUME_NONNULL_BEGIN
 /*!
  *  default is YES.
  *
- *  是否自动生成预览视图, 默认是 YES.
+ *  是否自动生成预览视图, 默认是 YES. 如果为NO, 则预览按钮将不会显示.
  */
 @property (nonatomic, assign, readwrite) BOOL generatePreviewImages;
 
 /*!
  *  clicked back btn exe block.
  *
- *  点击返回按钮的回调
+ *  点击返回按钮的回调.
  */
 @property (nonatomic, copy, readwrite) void(^clickedBackEvent)(SJVideoPlayer *player);
 
@@ -140,8 +155,10 @@ NS_ASSUME_NONNULL_BEGIN
 /*!
  *  The user clicked paused.
  *
- *  `用户`点击暂停或者双击暂停的时候, 会设置它.
- *  当我们调用`pause`主动暂停, 不会设置`userPaused`,
+ *  用户点击暂停或者双击暂停的时候, 会设置它.
+ *  当我们调用`pause`, 不会设置它.
+ *  可以根据这个状态, 来判断是我们调用的pause, 还是用户主动pause的.
+ *  当返回播放界面时, 如果我们调用pause, 则可以使用play, 使其继续播放.
  **/
 @property (nonatomic, assign, readonly) BOOL userPaused;
 
@@ -151,20 +168,41 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (void)stop;
 
+/*!
+ *  停止旋转.
+ *
+ *  相当于 `player.disableRotation = YES;` .
+ **/
 - (void)stopRotation;
 
+/*!
+ *  开启旋转.
+ *
+ *  相当于 `player.disableRotation = NO;` .
+ **/
 - (void)enableRotation;
 
+/*!
+ *  跳转到指定位置, 不建议使用
+ *  如果要跳转到某个位置, 可以在初始化时, 设置`SJVideoPlayerAssetCarrier`的`beginTime`.
+ **/
 - (void)jumpedToTime:(NSTimeInterval)time completionHandler:(void (^ __nullable)(BOOL finished))completionHandler;
 
 - (void)seekToTime:(CMTime)time completionHandler:(void (^ __nullable)(BOOL finished))completionHandler;
 
-- (UIImage *)screenshot;
+/*!
+ *  获取当前截图
+ **/
+- (UIImage *__nullable)screenshot;
 
 /*!
  *  unit sec.
+ *
+ *  当前播放时间.
  */
 - (NSTimeInterval)currentTime;
+
+- (NSTimeInterval)totalTime;
 
 @end
 

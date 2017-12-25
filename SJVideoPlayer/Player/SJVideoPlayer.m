@@ -396,6 +396,8 @@ inline static NSString *_formatWithSec(NSInteger sec) {
     
     [self _unknownState];
     
+    self.rate = 1;
+    
     return self;
 }
 
@@ -532,7 +534,7 @@ inline static NSString *_formatWithSec(NSInteger sec) {
     _moreSettingFooterViewModel.initialPlayerRateValue = ^float{
         __strong typeof(_self) self = _self;
         if ( !self ) return 0;
-       return self.asset.player.rate;
+       return self.rate;
     };
     
     _moreSettingView.footerViewModel = _moreSettingFooterViewModel;
@@ -987,7 +989,6 @@ inline static NSString *_formatWithSec(NSInteger sec) {
     self.hiddenMoreSecondarySettingView = YES;
     self.controlView.bottomProgressSlider.value = 0;
     self.controlView.bottomProgressSlider.bufferProgress = 0;
-    self.rate = 1;
     if ( self.moreSettingFooterViewModel.volumeChanged ) {
         self.moreSettingFooterViewModel.volumeChanged(self.volBrigControl.volume);
     }
@@ -1515,6 +1516,10 @@ inline static NSString *_formatWithSec(NSInteger sec) {
 
 - (NSTimeInterval)currentTime {
     return self.asset.currentTime;
+}
+
+- (NSTimeInterval)totalTime {
+    return self.asset.duration;
 }
 
 - (void)stopRotation {

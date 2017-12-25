@@ -28,7 +28,11 @@
     self = [super init];
     if ( !self ) return nil;
     [self brightnessView];
-    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(volumeDidChange) name:MPMusicPlayerControllerVolumeDidChangeNotification object:nil];
+    [[NSNotificationCenter defaultCenter] addObserver:self
+                                             selector:@selector(volumeDidChange)
+                                                 name:@"AVSystemController_SystemVolumeDidChangeNotification"
+                                               object:nil];
+    _volume = [MPMusicPlayerController applicationMusicPlayer].volume;
     return self;
 }
 
@@ -37,7 +41,7 @@
 }
 
 - (void)dealloc {
-    [[NSNotificationCenter defaultCenter] removeObserver:self name:MPMusicPlayerControllerVolumeDidChangeNotification object:nil];
+    [[NSNotificationCenter defaultCenter] removeObserver:self];
 }
 
 - (SJVideoPlayerTipsView *)brightnessView {

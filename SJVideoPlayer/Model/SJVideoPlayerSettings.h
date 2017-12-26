@@ -26,18 +26,27 @@ extern NSNotificationName const SJSettingsPlayerNotification;
 @property (nonatomic, strong, readwrite) UIImage *lockBtnImage;
 @property (nonatomic, strong, readwrite) UIImage *unlockBtnImage;
 
-// MARK: slider
+// MARK: progress slider
+/// 轨迹
 @property (nonatomic, strong, readwrite) UIColor *progress_traceColor;
+/// 轨道
 @property (nonatomic, strong, readwrite) UIColor *progress_trackColor;
+/// 拇指图片
 @property (nonatomic, strong, readwrite) UIImage *progress_thumbImage;
+/// 缓冲颜色
 @property (nonatomic, strong, readwrite) UIColor *progress_bufferColor;
+/// 轨道高度
 @property (nonatomic, assign, readwrite) float progress_traceHeight;
 
+// MARK:  more slider
+/// 轨迹
 @property (nonatomic, strong, readwrite) UIColor *more_traceColor;
+/// 轨道
 @property (nonatomic, strong, readwrite) UIColor *more_trackColor;
-@property (nonatomic, assign, readwrite) float more_traceHeight;
+/// 轨道高度
+@property (nonatomic, assign, readwrite) float more_trackHeight;
 
-// MARK: Loading
+// MARK: loading
 @property (nonatomic, strong, readwrite) UIColor *loadingLineColor;
 
 @end

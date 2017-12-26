@@ -11,6 +11,7 @@
 #import <Masonry/Masonry.h>
 #import <SJUIFactory/SJUIFactory.h>
 #import "SJVideoPlayerControlViewEnumHeader.h"
+#import "SJVideoPlayerSettings.h"
 
 @interface SJVideoPlayerMoreSettingsFooterSlidersView ()<SJSliderDelegate>
 
@@ -25,8 +26,8 @@
 @end
 
 @interface SJVideoPlayerMoreSettingsFooterSlidersView (DBObservers)
-- (void)_SJVideoPlayerMoreSettingsFooterSlidersViewObservers;
-- (void)_SJVideoPlayerMoreSettingsFooterSlidersViewRemoveObservers;
+- (void)_moreObservers;
+- (void)_moreRemoveObservser;
 @end
 
 @implementation SJVideoPlayerMoreSettingsFooterSlidersView
@@ -42,13 +43,31 @@
 - (instancetype)initWithFrame:(CGRect)frame {
     self = [super initWithFrame:frame];
     if ( !self ) return nil;
-    [self _SJVideoPlayerMoreSettingsFooterSlidersViewSetupUI];
-    [self _SJVideoPlayerMoreSettingsFooterSlidersViewObservers];
+    [self _moreSetupViews];
+    [self _moreObservers];
+    [self _moreInstallNotifications];
     return self;
 }
 
+- (void)_moreInstallNotifications {
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(settingsPlayerNotification:) name:SJSettingsPlayerNotification object:nil];
+}
+
+- (void)_moreRemoveNotifications {
+    [[NSNotificationCenter defaultCenter] removeObserver:self];
+}
+
+- (void)settingsPlayerNotification:(NSNotification *)notif {
+    SJVideoPlayerSettings *settings = notif.object;
+    _volumeSlider.trackHeight = _brightnessSlider.trackHeight = _rateSlider.trackHeight = settings.more_trackHeight;
+    _volumeSlider.trackImageView.backgroundColor = _brightnessSlider.trackImageView.backgroundColor = _rateSlider.trackImageView.backgroundColor = settings.more_trackColor;
+    _volumeSlider.traceImageView.backgroundColor = _brightnessSlider.traceImageView.backgroundColor = _rateSlider.traceImageView.backgroundColor = settings.more_traceColor;
+}
+
 - (void)dealloc {
-    [self _SJVideoPlayerMoreSettingsFooterSlidersViewRemoveObservers];
+    [self _moreRemoveNotifications];
+    [self _moreRemoveObservser];
+    
 }
 
 - (void)setModel:(SJMoreSettingsFooterViewModel *)model {
@@ -78,7 +97,7 @@
     if ( model.initialPlayerRateValue )self.rateSlider.value = model.initialPlayerRateValue();
 }
 
-- (void)_SJVideoPlayerMoreSettingsFooterSlidersViewSetupUI {
+- (void)_moreSetupViews {
     
     UIView *volumeBackgroundView = [UIView new];
     UIView *brightnessBackgroundView = [UIView new];
@@ -242,13 +261,13 @@
 @implementation SJVideoPlayerMoreSettingsFooterSlidersView (DBObservers)
 
 
-- (void)_SJVideoPlayerMoreSettingsFooterSlidersViewObservers {
+- (void)_moreObservers {
     [self.volumeSlider addObserver:self forKeyPath:@"value" options:NSKeyValueObservingOptionNew context:nil];
     [self.rateSlider addObserver:self forKeyPath:@"value" options:NSKeyValueObservingOptionNew context:nil];
     [self.brightnessSlider addObserver:self forKeyPath:@"value" options:NSKeyValueObservingOptionNew context:nil];
 }
 
-- (void)_SJVideoPlayerMoreSettingsFooterSlidersViewRemoveObservers {
+- (void)_moreRemoveObservser {
     [self.volumeSlider removeObserver:self forKeyPath:@"value"];
     [self.rateSlider removeObserver:self forKeyPath:@"value"];
     [self.brightnessSlider removeObserver:self forKeyPath:@"value"];

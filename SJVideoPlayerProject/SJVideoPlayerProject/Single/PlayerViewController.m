@@ -34,6 +34,12 @@
     
 //    Player.generatePreviewImages = NO;
     
+    [Player settingPlayer:^(SJVideoPlayerSettings * _Nonnull settings) {
+        settings.more_trackHeight = 5;
+        settings.more_trackColor = [UIColor whiteColor];
+        settings.more_traceColor = [UIColor orangeColor];
+    }];
+    
     Player.placeholder = [UIImage imageNamed:@"test"];
     Player.asset = [[SJVideoPlayerAssetCarrier alloc] initWithAssetURL:[NSURL URLWithString:@"http://video.cdn.lanwuzhe.com/usertrend/166162-1513873330.mp4"] beginTime:10];
     

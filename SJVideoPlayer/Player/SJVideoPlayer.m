@@ -74,6 +74,7 @@ inline static NSString *_formatWithSec(NSInteger sec) {
 @property (nonatomic, strong, readonly) SJVolBrigControl *volBrigControl;
 @property (nonatomic, strong, readonly) SJPlayerGestureControl *gestureControl;
 @property (nonatomic, strong, readonly) SJLoadingView *loadingView;
+@property (nonatomic, strong, readonly) dispatch_queue_t workQueue;
 
 
 @property (nonatomic, assign, readwrite) SJVideoPlayerPlayState state;
@@ -360,6 +361,7 @@ inline static NSString *_formatWithSec(NSInteger sec) {
     SJVolBrigControl *_volBrigControl;
     SJLoadingView *_loadingView;
     SJPlayerGestureControl *_gestureControl;
+    dispatch_queue_t _workQueue;
 }
 
 + (instancetype)sharedPlayer {
@@ -399,6 +401,21 @@ inline static NSString *_formatWithSec(NSInteger sec) {
     self.rate = 1;
     
     return self;
+}
+
+- (dispatch_queue_t)workQueue {
+    if ( _workQueue ) return _workQueue;
+    _workQueue = dispatch_queue_create("com.SJVideoPlayer.workQueue", DISPATCH_QUEUE_SERIAL);
+    return _workQueue;
+}
+
+- (void)_addOperation:(void(^)(SJVideoPlayer *player))block {
+    __weak typeof(self) _self = self;
+    dispatch_async(self.workQueue, ^{
+        __strong typeof(_self) self = _self;
+        if ( !self ) return;
+        if ( block ) block(self);
+    });
 }
 
 - (SJVideoPlayerPresentView *)presentView {
@@ -1335,12 +1352,12 @@ inline static NSString *_formatWithSec(NSInteger sec) {
 }
 
 - (void)settingPlayer:(void (^)(SJVideoPlayerSettings * _Nonnull))block {
-    dispatch_async(dispatch_get_global_queue(0, 0), ^{
-        if ( block ) block([self settings]);
+    [self _addOperation:^(SJVideoPlayer *player) {
+        if ( block ) block([player settings]);
         dispatch_async(dispatch_get_main_queue(), ^{
-            [[NSNotificationCenter defaultCenter] postNotificationName:SJSettingsPlayerNotification object:[self settings]];
+            [[NSNotificationCenter defaultCenter] postNotificationName:SJSettingsPlayerNotification object:[player settings]];
         });
-    });
+    }];
 }
 
 - (SJVideoPlayerSettings *)settings {
@@ -1369,7 +1386,7 @@ inline static NSString *_formatWithSec(NSInteger sec) {
     setting.progress_traceHeight = 3;
     setting.more_traceColor = [UIColor greenColor];
     setting.more_trackColor = [UIColor whiteColor];
-    setting.more_traceHeight = 5;
+    setting.more_trackHeight = 5;
     setting.loadingLineColor = [UIColor whiteColor];
 }
 

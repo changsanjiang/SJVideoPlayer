@@ -7,6 +7,7 @@
 //
 
 #import "AppDelegate.h"
+#import "SJVideoPlayer.h"
 
 @interface AppDelegate ()
 
@@ -25,6 +26,7 @@
     
     [UIApplication sharedApplication].statusBarOrientation = UIInterfaceOrientationPortrait;
     [UIApplication sharedApplication].statusBarHidden = NO;
+    
     // Override point for customization after application launch.
     return YES;
 }

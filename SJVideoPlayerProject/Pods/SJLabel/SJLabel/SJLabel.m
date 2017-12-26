@@ -10,14 +10,17 @@
 #import <CoreText/CoreText.h>
 #import "SJCTData.h"
 #import "SJCTFrameParser.h"
-#import "SJCTFrameParserConfig.h"
+#import "SJStringParserConfig.h"
 #import "SJCTImageData.h"
+#import <SJAttributesFactory/SJAttributesFactoryHeader.h>
 
-@interface SJLabel ()
-
-@property (nonatomic, strong, readonly) SJCTFrameParserConfig *config;
+@interface SJLabel ()<UIGestureRecognizerDelegate>
 
 @property (nonatomic, strong) SJCTData *drawData;
+
+@property (nonatomic, strong, readonly) SJStringParserConfig *config;
+
+@property (nonatomic, strong) UITapGestureRecognizer *tap;
 
 @end
 
@@ -38,7 +41,7 @@
     
     self = [super initWithFrame:CGRectZero];
     if ( !self ) return nil;
-    _config = [self __defaultConfig];
+    _config = [SJStringParserConfig defaultConfig];
     self.backgroundColor = [UIColor clearColor];
     self.text = text;
     self.font = font;
@@ -49,41 +52,23 @@
     return self;
 }
 
-- (void)layoutSubviews {
-    [super layoutSubviews];
+- (void)layoutSublayersOfLayer:(CALayer *)layer {
+    if ( 0 == _preferredMaxLayoutWidth &&
+        0 != layer.bounds.size.width ) {
+        _config.maxWidth = floor(layer.bounds.size.width);
+    }
+    [self _considerUpdating];
     [self invalidateIntrinsicContentSize];
+    [super layoutSublayersOfLayer:layer];
 }
 
 - (CGSize)intrinsicContentSize {
-    if ( !self.superview ) return CGSizeZero;
-    if ( nil == _drawData ) return CGSizeZero;
-    if ( 0 == _text.length && 0 == _attributedText.length ) return CGSizeZero;
-    __block CGFloat width = self.superview.bounds.size.width;
-    if ( 0 != width ) {
-        [self.superview.constraints enumerateObjectsUsingBlock:^(__kindof NSLayoutConstraint * _Nonnull obj, NSUInteger idx, BOOL * _Nonnull stop) {
-            if ( obj.firstItem != self ) return;
-            if ( obj.firstAttribute == NSLayoutAttributeLeft ||
-                obj.firstAttribute == NSLayoutAttributeLeading ) {
-                width -= obj.constant;
-            }
-            else if ( obj.firstAttribute == NSLayoutAttributeRight ||
-                     obj.firstAttribute == NSLayoutAttributeTrailing ) {
-                width += obj.constant;
-            }
-            else if ( obj.firstAttribute == NSLayoutAttributeWidth ) {
-                if ( 0 != obj.constant ) width = obj.constant;
-            }
-        }];
-        _config.maxWidth = width;
-    }
-    [self _considerUpdating];
-    return CGSizeMake(_config.maxWidth, _drawData.height_t);
+    return CGSizeMake(_drawData.width, _drawData.height_t);
 }
 
 - (void)drawRect:(CGRect)rect {
     [super drawRect:rect];
     if ( _drawData ) {
-//        NSLog(@"%zd - %s - %@", __LINE__, __func__, NSStringFromCGSize(rect.size));
         CGContextRef context = UIGraphicsGetCurrentContext();
         CGContextSetTextMatrix(context, CGAffineTransformIdentity);
         CGContextTranslateCTM(context, 0, _drawData.height_t);
@@ -92,30 +77,49 @@
     }
 }
 
-- (void)_setupGestures {
-    UITapGestureRecognizer *tap = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(handleTapGesture:)];
-    self.userInteractionEnabled = YES;
-    [self addGestureRecognizer:tap];
+- (void)sizeToFit {
+    self.bounds = (CGRect){CGPointZero, CGSizeMake(_drawData.width, _drawData.height)};
 }
 
-- (void)handleTapGesture:(UITapGestureRecognizer *)tap {
-    CGPoint point = [tap locationInView:self];
-    [_drawData touchIndexWithPoint:point];
+- (void)_setupGestures {
+    _tap = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(handleTapGesture:)];
+    self.userInteractionEnabled = YES;
+    _tap.delegate = self;
+    [self addGestureRecognizer:_tap];
 }
+
+- (BOOL)gestureRecognizerShouldBegin:(UIGestureRecognizer *)gestureRecognizer {
+    if ( gestureRecognizer != _tap ) return YES;
+    if ( !_drawData ) return NO;
+    
+    CGPoint point = [gestureRecognizer locationInView:self];
+    signed long index = [_drawData touchIndexWithPoint:point];
+    __block BOOL action = NO;
+    if ( index != kCFNotFound && index < _drawData.attrStr.length ) {
+        NSRange range = NSMakeRange(0, 0);
+        NSDictionary<NSAttributedStringKey, id> *attributes = [_drawData.attrStr attributesAtIndex:index effectiveRange:&range];
+        id value = attributes[SJActionAttributeName];
+        if ( value ) {
+            void(^block)(NSRange range, NSAttributedString *str) = value;
+            action = YES;
+            block(range, [_drawData.attrStr attributedSubstringFromRange:range]);
+        }
+    }
+    return action;
+}
+
+- (void)handleTapGesture:(UITapGestureRecognizer *)tap {}
 
 
 #pragma mark - Private
 
 - (void)_considerUpdating {
-    if ( 0 == _text.length && 0 == _attributedText.length ) {
-        _drawData = nil;
+    if ( _text ) {
+        self.drawData = [SJCTFrameParser parserContent:_text config:_config];
     }
-    else {
-        if ( _text ) _drawData = [SJCTFrameParser parserContent:_text config:_config];
-        if ( _attributedText ) _drawData = [SJCTFrameParser parserAttributedStr:_attributedText config:_config];
-        [_drawData needsDrawing];
+    else if ( _attributedText ) {
+        self.drawData = [SJCTFrameParser parserAttributedStr:_attributedText config:_config];
     }
-    [self.layer setNeedsDisplay];
 }
 
 #pragma mark - Property
@@ -172,6 +176,11 @@
     return self.config.textColor;
 }
 
+- (void)setPreferredMaxLayoutWidth:(CGFloat)preferredMaxLayoutWidth {
+    _preferredMaxLayoutWidth = preferredMaxLayoutWidth;
+    self.config.maxWidth = preferredMaxLayoutWidth;
+}
+
 - (void)setLineSpacing:(CGFloat)lineSpacing {
     if ( lineSpacing == _config.lineSpacing ) return;
     self.config.lineSpacing = lineSpacing;
@@ -186,16 +195,30 @@
     return ceil(_drawData.height_t);
 }
 
-- (SJCTFrameParserConfig *)__defaultConfig {
-    SJCTFrameParserConfig *defaultConfig = [SJCTFrameParserConfig new];
-    defaultConfig.maxWidth = CGFLOAT_MAX;
-    defaultConfig.font = [UIFont systemFontOfSize:14];
-    defaultConfig.textColor = [UIColor blackColor];
-    defaultConfig.lineSpacing = 0;
-    defaultConfig.textAlignment = NSTextAlignmentLeft;
-    defaultConfig.numberOfLines = 1;
-    defaultConfig.lineBreakMode = NSLineBreakByTruncatingTail;
-    return defaultConfig;
++ (SJCTData *)parserContent:(NSString *)content config:(SJStringParserConfig *)config {
+    return [SJCTFrameParser parserContent:content config:config];
+}
+
++ (SJCTData *)parserAttributedStr:(NSAttributedString *)content maxWidth:(CGFloat)maxWidth numberOfLines:(NSUInteger)numberOfLines lineSpacing:(CGFloat)lineSpacing {
+    SJCTFrameParserConfig *config = [SJCTFrameParserConfig defaultConfig];
+    config.maxWidth = maxWidth;
+    config.numberOfLines = numberOfLines;
+    config.lineSpacing = lineSpacing;
+    return [SJCTFrameParser parserAttributedStr:content config:config];
+}
+
++ (SJCTData *)parserAttributedStr:(NSAttributedString *)content config:(SJCTFrameParserConfig *)config {
+    return [SJCTFrameParser parserAttributedStr:content config:config];
+}
+
+- (void)setDrawData:(SJCTData *)drawData {
+    if ( drawData != _drawData ) {
+        _drawData = drawData;
+        [self invalidateIntrinsicContentSize];
+        [_drawData needsDrawing];
+        [self.layer setNeedsDisplay];
+    }
 }
 
 @end
+

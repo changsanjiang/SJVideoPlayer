@@ -8,11 +8,11 @@
 
 #import <UIKit/UIKit.h>
 
-@class SJCTData, SJCTFrameParserConfig;
+@class SJCTData, SJCTFrameParserConfig, SJStringParserConfig;
 
 @interface SJCTFrameParser : NSObject
 
-+ (SJCTData *)parserContent:(NSString *)content config:(SJCTFrameParserConfig *)config;
++ (SJCTData *)parserContent:(NSString *)content config:(SJStringParserConfig *)config;
 
 + (SJCTData *)parserAttributedStr:(NSAttributedString *)content config:(SJCTFrameParserConfig *)config;
 

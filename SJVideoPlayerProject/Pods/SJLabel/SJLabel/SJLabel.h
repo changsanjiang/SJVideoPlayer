@@ -12,6 +12,8 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
+@class SJCTData, SJStringParserConfig, SJCTFrameParserConfig;
+
 @interface SJLabel : UIView
 
 /*!
@@ -51,12 +53,29 @@ NS_ASSUME_NONNULL_BEGIN
  **/
 @property (nonatomic, strong, null_resettable) UIColor *textColor;
 
+@property(nonatomic) CGFloat preferredMaxLayoutWidth;
+
 /*!
  *  default is 0.
  **/
 @property (nonatomic) CGFloat lineSpacing;
 
 @property (nonatomic, readonly) CGFloat height;
+
+
+#pragma mark -
++ (SJCTData *)parserContent:(NSString *)content
+                     config:(SJStringParserConfig *)config;
+
++ (SJCTData *)parserAttributedStr:(NSAttributedString *)content
+                         maxWidth:(CGFloat)maxWidth
+                    numberOfLines:(NSUInteger)numberOfLines
+                      lineSpacing:(CGFloat)lineSpacing;
+
++ (SJCTData *)parserAttributedStr:(NSAttributedString *)content
+                           config:(SJCTFrameParserConfig *)config;
+
+- (void)setDrawData:(SJCTData * _Nullable)drawData;
 
 @end
 

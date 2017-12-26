@@ -28,7 +28,7 @@
     if ( !self ) return nil;
     [self.layer addSublayer:self.gradientLayer];
     self.gradientLayer.mask = self.shapeLayer;
-    self.gradientLayer.opacity = 0.001;
+    self.alpha = 0.001;
     self.speed = 1;
     self.lineWidth = 2;
     self.lineColor = [UIColor whiteColor];
@@ -45,6 +45,7 @@
 }
 
 - (void)setLineColor:(UIColor *)lineColor {
+    if ( !lineColor ) return;
     _lineColor = lineColor;
     _gradientLayer.colors = @[
                               (id)[UIColor colorWithWhite:0.001 alpha:0.001].CGColor,
@@ -60,7 +61,7 @@
 - (void)start {
     if ( _animating ) return;
     _animating = YES;
-    _gradientLayer.opacity = 1;
+    self.alpha = 1;
     CABasicAnimation *rotationAnim = [CABasicAnimation animationWithKeyPath:@"transform.rotation.z"];
     rotationAnim.toValue = [NSNumber numberWithFloat:2 * M_PI];
     rotationAnim.duration = _speed;
@@ -71,7 +72,7 @@
 - (void)stop {
     if ( !_animating ) return;
     _animating = NO;
-    _gradientLayer.opacity = 0.001;
+    self.alpha = 0.001;
     [_gradientLayer removeAllAnimations];
 }
 

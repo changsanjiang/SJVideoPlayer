@@ -135,6 +135,7 @@
     if ( self.fullScreen ) n_ori = UIDeviceOrientationPortrait;
     else n_ori = UIDeviceOrientationLandscapeLeft;
     
+    
     if ( n_ori == [UIDevice currentDevice].orientation ) {
         self.fullScreen = !self.fullScreen;
     }
@@ -143,4 +144,5 @@
     }
     return YES;
 }
+
 @end

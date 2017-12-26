@@ -10,8 +10,17 @@
 
 @implementation SJCTFrameParserConfig
 
++ (instancetype)defaultConfig {
+    SJCTFrameParserConfig *defaultConfig = [SJCTFrameParserConfig new];
+    defaultConfig.maxWidth = [UIScreen mainScreen].bounds.size.width;
+    defaultConfig.lineSpacing = 0;
+    defaultConfig.numberOfLines = 1;
+//    defaultConfig.lineBreakMode = NSLineBreakByTruncatingTail;
+    return defaultConfig;
+}
+
 + (CGFloat)fontSize:(UIFont *)font {
     return [[font.fontDescriptor objectForKey:UIFontDescriptorSizeAttribute] doubleValue];
-}
+} 
 
 @end

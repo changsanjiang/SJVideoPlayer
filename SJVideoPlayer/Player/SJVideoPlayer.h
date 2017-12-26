@@ -155,10 +155,9 @@ NS_ASSUME_NONNULL_BEGIN
 /*!
  *  The user clicked paused.
  *
- *  用户点击暂停或者双击暂停的时候, 会设置它.
- *  当我们调用`pause`, 不会设置它.
+ *  用户点击暂停或者双击暂停的时候, 会设置它. 当我们调用`pause`, 不会设置它.
  *  可以根据这个状态, 来判断是我们调用的pause, 还是用户主动pause的.
- *  当返回播放界面时, 如果我们调用pause, 则可以使用play, 使其继续播放.
+ *  当返回播放界面时, 如果是我们自己调用`pause`, 则可以使用`play`, 使其继续播放.
  **/
 @property (nonatomic, assign, readonly) BOOL userPaused;
 

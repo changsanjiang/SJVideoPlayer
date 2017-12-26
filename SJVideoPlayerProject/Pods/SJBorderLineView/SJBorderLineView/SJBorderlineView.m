@@ -43,6 +43,27 @@
 
 - (void)layoutSubviews {
     [super layoutSubviews];
+    [self update];
+}
+
+- (void)setLineColor:(UIColor *)lineColor {
+    _lineColor = lineColor;
+}
+
+- (void)setSide:(SJBorderlineSide)side {
+    _side = side;
+}
+
+- (void)setLineWidth:(CGFloat)lineWidth {
+    _lineWidth = lineWidth;
+}
+
+- (void)setStartMargin:(CGFloat)startMargin endMargin:(CGFloat)endMargin {
+    _startMargin = startMargin;
+    _endMargin = endMargin;
+}
+
+- (void)update {
     if ( 0 == _side ) return;
     
     if ( SJBorderlineSideAll == ( _side & SJBorderlineSideAll ) ) {
@@ -91,27 +112,6 @@
     self.shapeLayer.lineWidth = _lineWidth;
     self.shapeLayer.strokeColor = _lineColor.CGColor;
     [_bezierPath removeAllPoints];
-}
-
-- (void)setLineColor:(UIColor *)lineColor {
-    _lineColor = lineColor;
-}
-
-- (void)setSide:(SJBorderlineSide)side {
-    _side = side;
-}
-
-- (void)setLineWidth:(CGFloat)lineWidth {
-    _lineWidth = lineWidth;
-}
-
-- (void)setStartMargin:(CGFloat)startMargin endMargin:(CGFloat)endMargin {
-    _startMargin = startMargin;
-    _endMargin = endMargin;
-}
-
-- (void)update {
-    [self layoutSubviews];
 }
 
 @synthesize shapeLayer = _shapeLayer;

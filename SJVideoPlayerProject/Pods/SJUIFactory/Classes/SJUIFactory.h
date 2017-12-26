@@ -8,6 +8,8 @@
 
 #import <UIKit/UIKit.h>
 
+@class SJLabel;
+
 extern CGSize SJScreen_Size(void);
 extern float SJScreen_W(void);
 extern float SJScreen_H(void);
@@ -71,6 +73,14 @@ extern BOOL SJ_is_iPhoneX(void);
                      lineColor:(UIColor *)color;
 
 + (UIView *)shadowViewWithCornerRadius:(CGFloat)cornerRadius;
+
+@end
+
+#pragma mark -
+@interface SJShapeViewFactory : NSObject
+
++ (UIView *)viewWithCornerRadius:(CGFloat)cornerRaius
+                 backgroundColor:(UIColor *)backgroundColor;
 
 @end
 
@@ -186,6 +196,49 @@ estimatedSectionFooterHeight:(CGFloat)estimatedSectionFooterHeight;
                       attrStr:(NSAttributedString *)attrStr;
 
 @end
+
+
+#pragma mark -
+/*!
+ *  textColor if nil, it will be set black.
+ *  font if nil, it will be set 14.
+ **/
+@interface SJSJLabelFactory : NSObject
+
++ (SJLabel *)labelWithFont:(UIFont *)font;
+
++ (SJLabel *)labelWithFont:(UIFont *)font
+                 textColor:(UIColor *)textColor;
+
++ (SJLabel *)labelWithFont:(UIFont *)font
+                 textColor:(UIColor *)textColor
+                 alignment:(NSTextAlignment)alignment;
+
++ (SJLabel *)labelWithText:(NSString *)text;
+
++ (SJLabel *)labelWithText:(NSString *)text
+                 textColor:(UIColor *)textColor;
+
++ (SJLabel *)labelWithText:(NSString *)text
+                 textColor:(UIColor *)textColor
+                      font:(UIFont *)font;
+
++ (SJLabel *)labelWithText:(NSString *)text
+                 textColor:(UIColor *)textColor
+                 alignment:(NSTextAlignment)alignment;
+
++ (SJLabel *)labelWithText:(NSString *)text
+                 textColor:(UIColor *)textColor
+                 alignment:(NSTextAlignment)alignment
+                      font:(UIFont *)font;
+
++ (SJLabel *)attributeLabel;
+
++ (SJLabel *)labelWithAttrStr:(NSAttributedString *)attrStr;
+
++ (SJLabel *)labelWithAttrStr:(NSAttributedString *)attrStr userInteractionEnabled:(BOOL)bol;
+@end
+
 
 
 #pragma mark -
@@ -485,3 +538,12 @@ estimatedSectionFooterHeight:(CGFloat)estimatedSectionFooterHeight;
                                          camera:(void(^)(UIImage *selectedImage))cameraBlock;
 @end
 
+
+
+#pragma mark -
+
+@interface SJDrawUIView : UIView
+
+@property (nonatomic, copy, readwrite) void(^drawBlock)(SJDrawUIView *view);
+
+@end

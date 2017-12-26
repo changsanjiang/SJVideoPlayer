@@ -54,6 +54,9 @@
 		77EACC1F1FF28B4800E2B3AE /* IMG_0478.PNG in Resources */ = {isa = PBXBuildFile; fileRef = 77EACC1C1FF28B4700E2B3AE /* IMG_0478.PNG */; };
 		77EACC201FF28B4800E2B3AE /* IMG_0472.PNG in Resources */ = {isa = PBXBuildFile; fileRef = 77EACC1D1FF28B4800E2B3AE /* IMG_0472.PNG */; };
 		77EACC211FF28B4800E2B3AE /* IMG_0473.PNG in Resources */ = {isa = PBXBuildFile; fileRef = 77EACC1E1FF28B4800E2B3AE /* IMG_0473.PNG */; };
+		77EACC251FF28E5300E2B3AE /* IMG_0479.PNG in Resources */ = {isa = PBXBuildFile; fileRef = 77EACC221FF28E5200E2B3AE /* IMG_0479.PNG */; };
+		77EACC261FF28E5300E2B3AE /* IMG_0481.PNG in Resources */ = {isa = PBXBuildFile; fileRef = 77EACC231FF28E5200E2B3AE /* IMG_0481.PNG */; };
+		77EACC271FF28E5300E2B3AE /* IMG_0480.PNG in Resources */ = {isa = PBXBuildFile; fileRef = 77EACC241FF28E5200E2B3AE /* IMG_0480.PNG */; };
 		77EDB3591FD2CA550075A014 /* sample.mp4 in Resources */ = {isa = PBXBuildFile; fileRef = 77EDB3581FD2CA550075A014 /* sample.mp4 */; };
 		B009175F0CF36E1274CC84A3 /* libPods-SJVideoPlayerProject.a in Frameworks */ = {isa = PBXBuildFile; fileRef = A53C6944FFDAC5FD9DA4750E /* libPods-SJVideoPlayerProject.a */; };
 /* End PBXBuildFile section */
@@ -148,6 +151,9 @@
 		77EACC1C1FF28B4700E2B3AE /* IMG_0478.PNG */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = IMG_0478.PNG; sourceTree = "<group>"; };
 		77EACC1D1FF28B4800E2B3AE /* IMG_0472.PNG */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = IMG_0472.PNG; sourceTree = "<group>"; };
 		77EACC1E1FF28B4800E2B3AE /* IMG_0473.PNG */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = IMG_0473.PNG; sourceTree = "<group>"; };
+		77EACC221FF28E5200E2B3AE /* IMG_0479.PNG */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = IMG_0479.PNG; sourceTree = "<group>"; };
+		77EACC231FF28E5200E2B3AE /* IMG_0481.PNG */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = IMG_0481.PNG; sourceTree = "<group>"; };
+		77EACC241FF28E5200E2B3AE /* IMG_0480.PNG */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = IMG_0480.PNG; sourceTree = "<group>"; };
 		77EDB3581FD2CA550075A014 /* sample.mp4 */ = {isa = PBXFileReference; lastKnownFileType = file; path = sample.mp4; sourceTree = "<group>"; };
 		A53C6944FFDAC5FD9DA4750E /* libPods-SJVideoPlayerProject.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-SJVideoPlayerProject.a"; sourceTree = BUILT_PRODUCTS_DIR; };
 		CF7AAE46F079AA385055F66D /* Pods-SJVideoPlayerProject.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-SJVideoPlayerProject.release.xcconfig"; path = "Pods/Target Support Files/Pods-SJVideoPlayerProject/Pods-SJVideoPlayerProject.release.xcconfig"; sourceTree = "<group>"; };
@@ -432,6 +438,9 @@
 				77EACC1D1FF28B4800E2B3AE /* IMG_0472.PNG */,
 				77EACC1E1FF28B4800E2B3AE /* IMG_0473.PNG */,
 				77EACC1C1FF28B4700E2B3AE /* IMG_0478.PNG */,
+				77EACC221FF28E5200E2B3AE /* IMG_0479.PNG */,
+				77EACC241FF28E5200E2B3AE /* IMG_0480.PNG */,
+				77EACC231FF28E5200E2B3AE /* IMG_0481.PNG */,
 				774B25261FCEBA5D002113CC /* LaunchScreen.storyboard */,
 				774B25291FCEBA5D002113CC /* Info.plist */,
 				774B252A1FCEBA5D002113CC /* main.m */,
@@ -516,8 +525,11 @@
 				77EACC211FF28B4800E2B3AE /* IMG_0473.PNG in Resources */,
 				777D315A1FD8F0010075E5FD /* SJVideoPlayer.bundle in Resources */,
 				774B25251FCEBA5D002113CC /* Assets.xcassets in Resources */,
+				77EACC251FF28E5300E2B3AE /* IMG_0479.PNG in Resources */,
 				774B25231FCEBA5D002113CC /* Main.storyboard in Resources */,
 				778E24EC1FD97DF9008D0DD3 /* README.md in Resources */,
+				77EACC261FF28E5300E2B3AE /* IMG_0481.PNG in Resources */,
+				77EACC271FF28E5300E2B3AE /* IMG_0480.PNG in Resources */,
 				77EACC201FF28B4800E2B3AE /* IMG_0472.PNG in Resources */,
 				774B25591FCED554002113CC /* test.png in Resources */,
 			);

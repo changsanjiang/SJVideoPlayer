@@ -7,7 +7,6 @@
 //
 
 #import "SJCTData.h"
-#import "SJAttributesFactoryHeader.h"
 
 @interface SJLineModel : NSObject
 @property (nonatomic, assign) CGPoint origin;
@@ -41,6 +40,9 @@
 
 @interface SJCTData ()
 @property (nonatomic, strong, readonly) NSMutableArray<SJLineModel *> *drawingLinesM;
+@property (nonatomic, assign, readwrite) BOOL inited;
+@property (nonatomic, assign, readwrite) BOOL truncated;
+@property (nonatomic, assign, readwrite) NSInteger truncatedLineLocation;
 @end
 
 @implementation SJCTData
@@ -77,7 +79,8 @@
 }
 
 - (void)needsDrawing {
-    [_drawingLinesM removeAllObjects];
+    if ( _inited ) return;
+    _inited = YES;
     NSUInteger numberOfLines = _config.numberOfLines;
     CTFrameRef frameRef = _frameRef;
     CFArrayRef linesArr = CTFrameGetLines(frameRef);
@@ -86,7 +89,7 @@
     CGPoint baseLineOrigins[numberOfLines];
     CTFrameGetLineOrigins(frameRef, CFRangeMake(0, numberOfLines), baseLineOrigins);
     
-//    CGFloat lineH = ABS(_config.font.descender) + _config.font.ascender + _config.font.leading + _config.lineSpacing;
+    //    CGFloat lineH = ABS(_config.font.descender) + _config.font.ascender + _config.font.leading + _config.lineSpacing;
     for ( CFIndex lineIndex = 0 ; lineIndex < numberOfLines ; lineIndex ++ ) {
         
         CGPoint lineOrigin = baseLineOrigins[lineIndex];
@@ -111,31 +114,32 @@
         CFRange lastLineRange = CTLineGetStringRange(CFArrayGetValueAtIndex(linesArr, lastLineIndex));
         
         CTLineTruncationType truncationType = kCTLineTruncationEnd;
-        NSUInteger truncationAttributePosition = lastLineRange.location + lastLineRange.length - 1;
+        NSInteger truncationAttributePosition = lastLineRange.location + lastLineRange.length - 1;
         
         NSDictionary *lastAttributes = [_attrStr attributesAtIndex:truncationAttributePosition effectiveRange:NULL];
         NSAttributedString *ellipsisAttrStr = [[NSAttributedString alloc] initWithString:@"\u2026" attributes:lastAttributes];
         CTLineRef ellipsisLineRef = CTLineCreateWithAttributedString((CFAttributedStringRef)ellipsisAttrStr);
         
-        NSMutableAttributedString *lastLineAttrStr =
+        NSMutableAttributedString *lastAttrStr =
         [[_attrStr attributedSubstringFromRange:NSMakeRange(lastLineRange.location, lastLineRange.length)] mutableCopy];
         
-        if (lastLineRange.length > 0) {
-            [lastLineAttrStr deleteCharactersInRange:NSMakeRange(lastLineRange.length - 1, 1)];
+        if ( lastLineRange.length > 0 ) {
+            [lastAttrStr deleteCharactersInRange:NSMakeRange(lastLineRange.length - 1, 1)];
         }
-        [lastLineAttrStr appendAttributedString:ellipsisAttrStr];
+        [lastAttrStr appendAttributedString:ellipsisAttrStr];
         
         
-        CTLineRef truncationLine = CTLineCreateWithAttributedString((CFAttributedStringRef)lastLineAttrStr);
-        CTLineRef truncatedLine = CTLineCreateTruncatedLine(truncationLine,
+        CTLineRef truncationLine = CTLineCreateWithAttributedString((CFAttributedStringRef)lastAttrStr);
+        CTLineRef truncatedLine = CTLineCreateTruncatedLine( truncationLine,
                                                             _config.maxWidth,
                                                             truncationType,
-                                                            ellipsisLineRef);
+                                                            ellipsisLineRef );
         if ( !truncatedLine ) {
-            // If the line is not as wide as the truncationToken, truncatedLine is NULL
-            truncatedLine = CFRetain(ellipsisLineRef);
+            CFRelease(truncationLine);
+            CFRelease(ellipsisLineRef);
+            return;
         }
-    
+        
         SJLineModel *recordLine = _drawingLinesM.lastObject;
         recordLine.line = truncatedLine;
         
@@ -160,6 +164,9 @@
             position.origin.y -= ( _height - _height_t );
             obj.imagePosition = position;
         }];
+        
+        _truncated = YES;
+        _truncatedLineLocation = lastLineRange.location;
     }
     else {
         _height_t = _height;
@@ -184,20 +191,17 @@
         CGPoint origin = obj.origin;
         origin.y = _height_t - origin.y;
         CGFloat head = origin.y - obj.ascent;
-        CGFloat tail = origin.y + obj.descent + obj.leading;
+        CGFloat tail = origin.y + ABS(obj.descent) + obj.leading;
         
         if ( point.y > head && point.y < tail ) {
             *stop = YES;
             index = CTLineGetStringIndexForPosition(obj.line, point);
-            [_attrStr enumerateAttribute:SJActionAttributeName inRange:NSMakeRange(0, _attrStr.length) options:NSAttributedStringEnumerationLongestEffectiveRangeNotRequired usingBlock:^(id  _Nullable value, NSRange range, BOOL * _Nonnull stop) {
-                if ( index > range.location && index < range.location + range.length ) {
-                    *stop = YES;
-                    void(^block)(NSRange range, NSAttributedString *str) = value;
-                    if ( block ) block(range, [_attrStr attributedSubstringFromRange:range]);
-                }
-            }];
+            if ( idx + 1 == _drawingLinesM.count ) {
+                if ( _truncated ) index += _truncatedLineLocation;
+            }
         }
     }];
     return index;
 }
 @end
+

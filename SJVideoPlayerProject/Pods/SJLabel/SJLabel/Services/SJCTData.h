@@ -14,6 +14,7 @@
 @interface SJCTData : NSObject<NSCopying>
 
 @property (nonatomic, assign) CTFrameRef frameRef;
+@property (nonatomic, assign) CGFloat width;
 @property (nonatomic, assign) CGFloat height;
 @property (nonatomic, assign) CGFloat height_t;
 @property (nonatomic, strong) NSArray<SJCTImageData *> *imageDataArray;

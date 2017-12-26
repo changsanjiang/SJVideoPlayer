@@ -9,6 +9,7 @@
 #import "SJUIFactory.h"
 #import "UIImagePickerController+Extension.h"
 #import "UIView+SJUIFactory.h"
+#import <SJLabel/SJLabel.h>
 
 CGSize SJScreen_Size(void) {
     return [UIScreen mainScreen].bounds.size;
@@ -117,14 +118,13 @@ static void _SJ_Round(UIView *view, float cornerRadius) {
 }
 
 + (void)commonShadowWithLayer:(CALayer *)layer {
-    layer.shadowColor = [UIColor colorWithWhite:0 alpha:0.2].CGColor;
+    layer.shadowColor = [UIColor colorWithWhite:0.9 alpha:1].CGColor;
     layer.shadowOpacity = 1;
-    layer.shadowOffset = CGSizeMake(0, 0.2);
+    layer.shadowOffset = CGSizeMake(0.2, 0.2);
     layer.masksToBounds = NO;
 }
 
 + (void)commonShadowWithView:(UIView *)view size:(CGSize)size {
-    [self commonShadowWithView:view];
     [self commonShadowWithView:view size:size cornerRadius:0];
 }
 
@@ -246,6 +246,18 @@ static void _SJ_Round(UIView *view, float cornerRadius) {
 
 @end
 
+
+@implementation SJShapeViewFactory
+
++ (UIView *)viewWithCornerRadius:(CGFloat)cornerRaius
+                 backgroundColor:(UIColor *)backgroundColor {
+    SJShadowView *view = [SJShadowView new];
+    view.cornerRadius = cornerRaius;
+    view.backgroundColor = backgroundColor;
+    return view;
+}
+
+@end
 
 
 #pragma mark - UIScrollView
@@ -473,6 +485,74 @@ estimatedSectionFooterHeight:(CGFloat)estimatedSectionFooterHeight {
         label.font = font;
     }
     [label sizeToFit];
+}
+
+@end
+
+
+
+@implementation SJSJLabelFactory
+
++ (SJLabel *)labelWithFont:(UIFont *)font {
+    return [self labelWithFont:font textColor:nil];
+}
+
++ (SJLabel *)labelWithFont:(UIFont *)font
+                 textColor:(UIColor *)textColor {
+    return [self labelWithFont:font textColor:textColor alignment:NSTextAlignmentLeft];
+}
+
++ (SJLabel *)labelWithFont:(UIFont *)font
+                 textColor:(UIColor *)textColor
+                 alignment:(NSTextAlignment)alignment {
+    return [self labelWithText:nil textColor:textColor alignment:alignment font:font];
+}
+
++ (SJLabel *)labelWithText:(NSString *)text {
+    return [self labelWithText:text textColor:nil];
+}
+
++ (SJLabel *)labelWithText:(NSString *)text
+                 textColor:(UIColor *)textColor {
+    return [self labelWithText:text textColor:nil alignment:NSTextAlignmentLeft];
+}
+
++ (SJLabel *)labelWithText:(NSString *)text
+                 textColor:(UIColor *)textColor
+                      font:(UIFont *)font {
+    return [self labelWithText:text textColor:textColor alignment:NSTextAlignmentLeft font:font];
+}
+
++ (SJLabel *)labelWithText:(NSString *)text
+                 textColor:(UIColor *)textColor
+                 alignment:(NSTextAlignment)alignment {
+    return [self labelWithText:text textColor:textColor alignment:alignment font:nil];
+}
+
++ (SJLabel *)labelWithText:(NSString *)text
+                 textColor:(UIColor *)textColor
+                 alignment:(NSTextAlignment)alignment
+                      font:(UIFont *)font {
+    SJLabel *label = [[SJLabel alloc] initWithText:text font:font textColor:textColor lineSpacing:0 userInteractionEnabled:NO];
+    label.textAlignment = alignment;
+    return label;
+}
+
++ (SJLabel *)attributeLabel {
+    return [self labelWithAttrStr:nil];
+}
+
++ (SJLabel *)labelWithAttrStr:(NSAttributedString *)attrStr {
+    return [self labelWithAttrStr:attrStr userInteractionEnabled:NO];
+}
+
++ (SJLabel *)labelWithAttrStr:(NSAttributedString *)attrStr userInteractionEnabled:(BOOL)bol {
+    SJLabel *label = [SJLabel new];
+    label.numberOfLines = 0;
+    label.attributedText = attrStr;
+    label.userInteractionEnabled = bol;
+    label.backgroundColor = [UIColor clearColor];
+    return label;
 }
 
 @end
@@ -759,7 +839,7 @@ estimatedSectionFooterHeight:(CGFloat)estimatedSectionFooterHeight {
 }
 
 + (UIImageView *)imageViewWithViewMode:(UIViewContentMode)mode {
-    return [self imageViewWithImageName:nil];
+    return [self imageViewWithImageName:nil viewMode:mode];
 }
 
 + (UIImageView *)imageViewWithImageName:(NSString *)imageName
@@ -1050,5 +1130,17 @@ estimatedSectionFooterHeight:(CGFloat)estimatedSectionFooterHeight {
 - (void)imagePickerControllerDidCancel:(UIImagePickerController *)picker {
     [picker dismissViewControllerAnimated:YES completion:nil];
 }
+@end
+
+
+#pragma mark - SJDrawView
+
+@implementation SJDrawUIView
+
+- (void)drawRect:(CGRect)rect {
+    [super drawRect:rect];
+    if ( _drawBlock ) _drawBlock(self);
+}
+
 @end
 

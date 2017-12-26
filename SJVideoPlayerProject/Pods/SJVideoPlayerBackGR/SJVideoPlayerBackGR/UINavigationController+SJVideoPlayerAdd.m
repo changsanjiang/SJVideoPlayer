@@ -62,12 +62,15 @@ static NSMutableArray<UIImage *> * SJ_screenshotImagesM;
     [[self class] SJ_resetScreenshotImage];
 }
 
+static __weak UIWindow *_window;
 - (void)SJ_updateScreenshot {
     // get scrrenshort
-    id appDelegate = [UIApplication sharedApplication].delegate;
-    UIWindow *window = [appDelegate valueForKey:@"window"];
-    UIGraphicsBeginImageContextWithOptions(CGSizeMake(window.frame.size.width, window.frame.size.height), YES, 0);
-    [window.layer renderInContext:UIGraphicsGetCurrentContext()];
+    if ( !_window ) {
+        id appDelegate = [UIApplication sharedApplication].delegate;
+        _window = [appDelegate valueForKey:@"window"];
+    }
+    UIGraphicsBeginImageContextWithOptions(_window.bounds.size, YES, 0);
+    [_window drawViewHierarchyInRect:_window.bounds afterScreenUpdates:false];
     UIImage *viewImage = UIGraphicsGetImageFromCurrentImageContext();
     UIGraphicsEndImageContext();
     
@@ -310,9 +313,10 @@ static __weak UIViewController *_tmpShowViewController;
 
 - (BOOL)gestureRecognizerShouldBegin:(UIPanGestureRecognizer *)gestureRecognizer {
     if ( self.childViewControllers.count <= 1 ) return NO;
+    if ( [[self.navigationController valueForKey:@"_isTransitioning"] boolValue] ) return NO;
     CGPoint point = [gestureRecognizer locationInView:gestureRecognizer.view];
     if ( [self isFadeAreaWithPoint:point] ) return NO;
-
+    
     CGPoint translate = [gestureRecognizer translationInView:self.view];
     BOOL possible = translate.x > 0 && translate.y == 0;
     if ( possible ) return YES;

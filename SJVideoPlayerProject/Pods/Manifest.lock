@@ -1,22 +1,27 @@
 PODS:
   - Masonry (1.1.0)
-  - SJAttributesFactory (1.1.13)
-  - SJBorderLineView (0.0.5)
-  - SJLoadingView (0.0.1)
+  - SJAttributesFactory (1.1.14)
+  - SJBorderLineView (0.0.6)
+  - SJLabel (1.1.0):
+    - SJAttributesFactory
+    - SJLabel/Services (= 1.1.0)
+  - SJLabel/Services (1.1.0):
+    - SJAttributesFactory
+  - SJLoadingView (0.0.3)
   - SJObserverHelper (1.0.3)
-  - SJOrentationObserver (0.0.4):
-    - SJOrentationObserver/Category (= 0.0.4)
-  - SJOrentationObserver/Category (0.0.4)
+  - SJOrentationObserver (0.0.5):
+    - SJOrentationObserver/Category (= 0.0.5)
+  - SJOrentationObserver/Category (0.0.5)
   - SJPrompt (1.0.1):
     - Masonry
-  - SJSlider (1.0.1):
+  - SJSlider (1.0.2):
     - Masonry
-  - SJUIFactory (0.0.8):
-    - SJAttributesFactory
-    - SJUIFactory/Category (= 0.0.8)
-  - SJUIFactory/Category (0.0.8):
-    - SJAttributesFactory
-  - SJVideoPlayerBackGR (1.0.15):
+  - SJUIFactory (0.0.9):
+    - SJLabel
+    - SJUIFactory/Category (= 0.0.9)
+  - SJUIFactory/Category (0.0.9):
+    - SJLabel
+  - SJVideoPlayerBackGR (1.0.17):
     - SJObserverHelper
 
 DEPENDENCIES:
@@ -31,16 +36,17 @@ DEPENDENCIES:
 
 SPEC CHECKSUMS:
   Masonry: 678fab65091a9290e40e2832a55e7ab731aad201
-  SJAttributesFactory: dc143ec95966aa1caf78674bf56905968a9a0c21
-  SJBorderLineView: 5f7bf13a55a30ad4d19c5f085ad0567304702e61
-  SJLoadingView: 72dda8fe96ff9d1a9c17dcb6d4438b331fdeba7a
+  SJAttributesFactory: 10af803585a072a7d6273b87cb12f729f15b89a6
+  SJBorderLineView: 5878e67fb57e812a2d5d029ca666068784b5448a
+  SJLabel: 887e2e0ade1c93dd9e1c4af9c1248bf6dd16dea7
+  SJLoadingView: e3286c8ba831ba3e6ff636897ab4cd39f01858be
   SJObserverHelper: b270d707cd18ab76538596aa4e98cf798c9e9868
-  SJOrentationObserver: 0ff8ffedd31e6b32fb5aca5568db38d68ebee75b
+  SJOrentationObserver: f5d5df501bb4f9c2de24fa54ba56b4663b94531f
   SJPrompt: eaecd94f2055a12d25090967dbad3f21da011626
-  SJSlider: 04a793058a0599a39f4bf1aaea602e3fac838c6e
-  SJUIFactory: d91d57830cfbf0b1385ad75f26d3a54147671a9f
-  SJVideoPlayerBackGR: 9565fb9bd75b2c556f0e85573880e3e61d043285
+  SJSlider: 669eb96319014a303a77baed4cc24aa0d0113f14
+  SJUIFactory: bf2413b9fc9bf76d39381b9ff48df454819244f5
+  SJVideoPlayerBackGR: 565fc549e0aaa9f669f47259e56c066a66eb6247
 
 PODFILE CHECKSUM: 04ca93bae53c8a64e9b57eea53d39b895938f7db
 
-COCOAPODS: 1.4.0.rc.1
+COCOAPODS: 1.3.1

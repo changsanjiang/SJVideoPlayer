@@ -11,12 +11,13 @@
 #import "SJCTImageData.h"
 #import "SJCTFrameParserConfig.h"
 #import <CoreText/CoreText.h>
+#import "SJStringParserConfig.h"
 
 typedef NSString * NSAttributedStringKey NS_EXTENSIBLE_STRING_ENUM;
 
 @implementation SJCTFrameParser
 
-+ (NSDictionary *)_attributesWithConfig:(SJCTFrameParserConfig *)config {
++ (NSDictionary *)_attributesWithConfig:(SJStringParserConfig *)config {
     CTFontRef fontRef = CTFontCreateWithName((CFStringRef)config.font.fontName, [SJCTFrameParserConfig fontSize:config.font], NULL);
     CGFloat lineSpacing = config.lineSpacing;
     CTTextAlignment textAlignment = kCTTextAlignmentLeft;
@@ -46,32 +47,53 @@ typedef NSString * NSAttributedStringKey NS_EXTENSIBLE_STRING_ENUM;
     return dict;
 }
 
-+ (SJCTData *)parserContent:(NSString *)content config:(SJCTFrameParserConfig *)config {
++ (SJCTData *)parserContent:(NSString *)content config:(SJStringParserConfig *)config {
     NSDictionary *attributes = [self _attributesWithConfig:config];
     NSAttributedString *attrStr = [[NSAttributedString alloc] initWithString:content attributes:attributes];
     return [self parserAttributedStr:attrStr config:config];
 }
 
 + (SJCTData *)parserAttributedStr:(NSAttributedString *)attrStr config:(SJCTFrameParserConfig *)config {
+
     NSMutableAttributedString *attrStrM = attrStr.mutableCopy;
     NSArray<SJCTImageData *> *imageDataArray =
     [self _findingImageDataWithAttrStr:attrStr findingBlock:^(NSRange range, NSTextAttachment *attachment) {
-        [attrStrM replaceCharactersInRange:range withAttributedString:[self _replaceWithAttachment:attachment config:config]];
+        NSDictionary *dict = [attrStr attributesAtIndex:range.location effectiveRange:NULL];
+        CTRunDelegateCallbacks callbacks;
+        memset(&callbacks, 0, sizeof(CTRunDelegateCallbacks));
+        callbacks.version = kCTRunDelegateVersion1;
+        callbacks.getAscent = ascentCallback;
+        callbacks.getDescent = descentCallback;
+        callbacks.getWidth = widthCallback;
+        CTRunDelegateRef delegate = CTRunDelegateCreate(&callbacks, (__bridge void *)(attachment));
+        
+        unichar objectReplacementChar = 0xFFFC;
+        NSString *content = [NSString stringWithCharacters:&objectReplacementChar length:1];
+        NSDictionary *attributes = dict;
+        NSMutableAttributedString *space =
+        [[NSMutableAttributedString alloc] initWithString:content attributes:attributes];
+        CFAttributedStringSetAttribute((CFMutableAttributedStringRef)space,
+                                       CFRangeMake(0, 1),
+                                       kCTRunDelegateAttributeName,
+                                       delegate);
+        CFRelease(delegate);
+        [attrStrM replaceCharactersInRange:range withAttributedString:space];
     }];
     
     CTFramesetterRef framesetterRef =
     CTFramesetterCreateWithAttributedString((CFAttributedStringRef)attrStrM);
     
     CGFloat width = config.maxWidth;
-    CGFloat height = [self _contentHeightWithFramesetter:framesetterRef width:width];
+    CGSize size = [self _contentSizeWithFramesetter:framesetterRef width:width];
     
-    CTFrameRef frameRef = [self _createFrameRefWithFramesetter:framesetterRef constraints:CGSizeMake(width, height)];
+    CTFrameRef frameRef = [self _createFrameRefWithFramesetter:framesetterRef constraints:size];
     
     [self _findingImagesPositionWithFrameRef:frameRef imagesDataArrary:imageDataArray];
     
     SJCTData *ctdata = [SJCTData new];
+    ctdata.width = size.width;
     ctdata.frameRef = frameRef;
-    ctdata.height = height;
+    ctdata.height = size.height;
     ctdata.imageDataArray = imageDataArray;
     ctdata.attrStr = attrStr;
     ctdata.config = config;
@@ -194,33 +216,10 @@ static CGFloat widthCallback(void* ref){
     return [(__bridge NSTextAttachment *)ref bounds].size.width;
 }
 
-+ (NSAttributedString *)_replaceWithAttachment:(NSTextAttachment *)attachment
-                                          config:(SJCTFrameParserConfig *)config {
-    CTRunDelegateCallbacks callbacks;
-    memset(&callbacks, 0, sizeof(CTRunDelegateCallbacks));
-    callbacks.version = kCTRunDelegateVersion1;
-    callbacks.getAscent = ascentCallback;
-    callbacks.getDescent = descentCallback;
-    callbacks.getWidth = widthCallback;
-    CTRunDelegateRef delegate = CTRunDelegateCreate(&callbacks, (__bridge void *)(attachment));
-    
-    unichar objectReplacementChar = 0xFFFC;
-    NSString *content = [NSString stringWithCharacters:&objectReplacementChar length:1];
-    NSDictionary *attributes = [self _attributesWithConfig:config];
-    NSMutableAttributedString *space =
-    [[NSMutableAttributedString alloc] initWithString:content attributes:attributes];
-    CFAttributedStringSetAttribute((CFMutableAttributedStringRef)space,
-                                   CFRangeMake(0, 1),
-                                   kCTRunDelegateAttributeName,
-                                   delegate);
-    CFRelease(delegate);
-    return space;
-}
-
-+ (CGFloat)_contentHeightWithFramesetter:(CTFramesetterRef)framesetter width:(CGFloat)maxWidth {
++ (CGSize)_contentSizeWithFramesetter:(CTFramesetterRef)framesetter width:(CGFloat)maxWidth {
     CGSize constraints = CGSizeMake(maxWidth, CGFLOAT_MAX);
     CGSize contentSize = CTFramesetterSuggestFrameSizeWithConstraints(framesetter, CFRangeMake(0, 0), NULL, constraints, NULL);
-    return ceil(contentSize.height);
+    return CGSizeMake(ceil(contentSize.width), ceil(contentSize.height));
 }
 
 @end

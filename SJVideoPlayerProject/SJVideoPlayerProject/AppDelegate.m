@@ -16,6 +16,13 @@
 
 
 - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions {
+    
+    _window = [[UIWindow alloc] initWithFrame:[UIScreen mainScreen].bounds];
+    _window.backgroundColor = [UIColor whiteColor];
+    UIStoryboard *sb = [UIStoryboard storyboardWithName:@"Main" bundle:nil];
+    _window.rootViewController = [sb instantiateInitialViewController];
+    [_window makeKeyAndVisible];
+    
     [UIApplication sharedApplication].statusBarOrientation = UIInterfaceOrientationPortrait;
     [UIApplication sharedApplication].statusBarHidden = NO;
     // Override point for customization after application launch.

@@ -413,6 +413,7 @@ inline static NSString *_formatWithSec(NSInteger sec) {
         CGFloat width = [UIScreen mainScreen].bounds.size.width * 0.4;
         CGFloat height = width * bounds.size.height / bounds.size.width;
         CGSize size = CGSizeMake(width, height);
+        _self.controlView.draggingProgressView.size = size;
         [_self.asset generatedPreviewImagesWithMaxItemSize:size completion:^(SJVideoPlayerAssetCarrier * _Nonnull asset, NSArray<SJVideoPreviewModel *> * _Nullable images, NSError * _Nullable error) {
             if ( error ) {
                 _sjErrorLog(@"Generate Preview Image Failed!");
@@ -752,8 +753,10 @@ inline static NSString *_formatWithSec(NSInteger sec) {
                 _sjAnima(^{
                     _sjShowViews(@[self.controlView.draggingProgressView]);
                 });
-                self.controlView.draggingProgressView.progressSlider.value = self.asset.progress;
-                self.controlView.draggingProgressView.progressLabel.text = _formatWithSec(self.asset.currentTime);
+                if ( self.orentation.fullScreen ) self.controlView.draggingProgressView.hiddenProgressSlider = NO;
+                else self.controlView.draggingProgressView.hiddenProgressSlider = YES;
+                
+                self.controlView.draggingProgressView.progress = self.asset.progress;
                 self.hideControl = YES;
             }
                 break;
@@ -786,8 +789,7 @@ inline static NSString *_formatWithSec(NSInteger sec) {
         if ( !self ) return;
         switch (direction) {
             case SJPanDirection_H: {
-                self.controlView.draggingProgressView.progressSlider.value += translate.x * 0.003;
-                self.controlView.draggingProgressView.progressLabel.text =  _formatWithSec(self.asset.duration * self.controlView.draggingProgressView.progressSlider.value);
+                self.controlView.draggingProgressView.progress += translate.x * 0.003;
             }
                 break;
             case SJPanDirection_V: {
@@ -818,11 +820,14 @@ inline static NSString *_formatWithSec(NSInteger sec) {
                 _sjAnima(^{
                     _sjHiddenViews(@[_self.controlView.draggingProgressView]);
                 });
-                [_self jumpedToTime:_self.controlView.draggingProgressView.progressSlider.value * _self.asset.duration completionHandler:^(BOOL finished) {
+                [_self jumpedToTime:_self.controlView.draggingProgressView.progress * _self.asset.duration completionHandler:^(BOOL finished) {
                     __strong typeof(_self) self = _self;
                     if ( !self ) return;
                     [self play];
                 }];
+                dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(0.25 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
+                    _self.controlView.draggingProgressView.hiddenProgressSlider = NO;
+                });
             }
                 break;
             case SJPanDirection_V:{
@@ -841,6 +846,7 @@ inline static NSString *_formatWithSec(NSInteger sec) {
     };
 }
 
+
 #pragma mark ======================================================
 
 - (void)sliderWillBeginDragging:(SJSlider *)slider {
@@ -853,8 +859,9 @@ inline static NSString *_formatWithSec(NSInteger sec) {
                 _sjShowViews(@[self.controlView.draggingProgressView]);
             });
             [self _cancelDelayHiddenControl];
-            self.controlView.draggingProgressView.progressSlider.value = slider.value;
-            self.controlView.draggingProgressView.progressLabel.text = _formatWithSec(currentTime);
+            self.controlView.draggingProgressView.progress = slider.value;
+            if ( self.orentation.fullScreen ) self.controlView.draggingProgressView.hiddenProgressSlider = NO;
+            else self.controlView.draggingProgressView.hiddenProgressSlider = YES;
         }
             break;
             
@@ -868,9 +875,7 @@ inline static NSString *_formatWithSec(NSInteger sec) {
         case SJVideoPlaySliderTag_Progress: {
             NSInteger currentTime = slider.value * self.asset.duration;
             [self _refreshingTimeLabelWithCurrentTime:currentTime duration:self.asset.duration];
-            
-            self.controlView.draggingProgressView.progressSlider.value = slider.value;
-            self.controlView.draggingProgressView.progressLabel.text =  _formatWithSec(self.asset.duration * slider.value);
+            self.controlView.draggingProgressView.progress = slider.value;
         }
             break;
             
@@ -891,6 +896,9 @@ inline static NSString *_formatWithSec(NSInteger sec) {
                 [self _delayHiddenControl];
                 _sjAnima(^{
                     _sjHiddenViews(@[self.controlView.draggingProgressView]);
+                });
+                dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(0.25 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
+                    self.controlView.draggingProgressView.hiddenProgressSlider = NO;
                 });
             }];
         }

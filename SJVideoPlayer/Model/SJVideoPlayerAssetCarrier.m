@@ -38,6 +38,7 @@
 }
 
 @property (nonatomic, strong, readwrite) AVAssetImageGenerator *imageGenerator;
+@property (nonatomic, strong, readwrite) AVAssetImageGenerator *tmp_imageGenerator;
 @property (nonatomic, assign, readwrite) BOOL hasBeenGeneratedPreviewImages;
 @property (nonatomic, strong, readwrite) NSArray<SJVideoPreviewModel *> *generatedPreviewImages;
 @property (nonatomic, assign, readwrite) BOOL removedScrollObserver;
@@ -196,7 +197,6 @@
 }
 
 - (UIImage *)screenshot {
-    if ( !_playerItem || !_asset ) return nil;
     CMTime time = _playerItem.currentTime;
     AVAssetImageGenerator *generator = [AVAssetImageGenerator assetImageGeneratorWithAsset:_asset];
     generator.appliesPreferredTrackTransform = YES;
@@ -204,6 +204,35 @@
     UIImage *image = [UIImage imageWithCGImage:imgRef];
     CGImageRelease(imgRef);
     return image;
+}
+
+- (void)screenshotWithTime:(NSTimeInterval)t
+                completion:(void(^)(SJVideoPlayerAssetCarrier *asset, SJVideoPreviewModel *images, NSError *__nullable error))block {
+    return [self screenshotWithTime:t size:CGSizeZero completion:block];
+}
+
+- (void)screenshotWithTime:(NSTimeInterval)t
+                      size:(CGSize)size
+                completion:(void(^)(SJVideoPlayerAssetCarrier *asset, SJVideoPreviewModel *images, NSError *__nullable error))block {
+    if ( !_playerItem || !_asset ) return;
+    [_tmp_imageGenerator cancelAllCGImageGeneration];
+    
+    CMTime time = CMTimeMakeWithSeconds(t, NSEC_PER_SEC);
+    _tmp_imageGenerator = [AVAssetImageGenerator assetImageGeneratorWithAsset:_asset];
+    _tmp_imageGenerator.appliesPreferredTrackTransform = YES;
+    _tmp_imageGenerator.maximumSize = size;
+    __weak typeof(self) _self = self;
+    [_tmp_imageGenerator generateCGImagesAsynchronouslyForTimes:@[[NSValue valueWithCMTime:time]] completionHandler:^(CMTime requestedTime, CGImageRef  _Nullable imageRef, CMTime actualTime, AVAssetImageGeneratorResult result, NSError * _Nullable error) {
+        if ( result == AVAssetImageGeneratorSucceeded ) {
+            UIImage *image = [UIImage imageWithCGImage:imageRef];
+            if ( block ) block(self, [SJVideoPreviewModel previewModelWithImage:image localTime:actualTime], nil);
+        }
+        else if ( result == AVAssetImageGeneratorFailed ) {
+            __strong typeof(_self) self = _self;
+            if ( !self ) return;
+            if ( block ) block(self, nil, error);
+        }
+    }];
 }
 
 - (NSTimeInterval)duration {

@@ -17,6 +17,14 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (UIImage * __nullable)screenshot;
 
+- (void)screenshotWithTime:(NSTimeInterval)time
+                completion:(void(^)(SJVideoPlayerAssetCarrier *asset, SJVideoPreviewModel * __nullable images, NSError *__nullable error))block;
+
+- (void)screenshotWithTime:(NSTimeInterval)time
+                      size:(CGSize)size
+                completion:(void(^)(SJVideoPlayerAssetCarrier *asset, SJVideoPreviewModel * __nullable images, NSError *__nullable error))block;
+
+
 - (instancetype)initWithAssetURL:(NSURL *)assetURL;
 
 /// unit is sec.

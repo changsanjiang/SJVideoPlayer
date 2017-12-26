@@ -53,6 +53,7 @@
 		77A4394F1FDD887A008BD092 /* SJPlayerGestureControl.m in Sources */ = {isa = PBXBuildFile; fileRef = 77A4394E1FDD8879008BD092 /* SJPlayerGestureControl.m */; };
 		77A439521FDD8FAC008BD092 /* SJVolBrigControl.m in Sources */ = {isa = PBXBuildFile; fileRef = 77A439511FDD8FAB008BD092 /* SJVolBrigControl.m */; };
 		77A439551FDD8FD1008BD092 /* SJVideoPlayerTipsView.m in Sources */ = {isa = PBXBuildFile; fileRef = 77A439541FDD8FD1008BD092 /* SJVideoPlayerTipsView.m */; };
+		77EACC1B1FF2882E00E2B3AE /* text1.PNG in Resources */ = {isa = PBXBuildFile; fileRef = 77EACC1A1FF2882E00E2B3AE /* text1.PNG */; };
 		77EDB3591FD2CA550075A014 /* sample.mp4 in Resources */ = {isa = PBXBuildFile; fileRef = 77EDB3581FD2CA550075A014 /* sample.mp4 */; };
 		B009175F0CF36E1274CC84A3 /* libPods-SJVideoPlayerProject.a in Frameworks */ = {isa = PBXBuildFile; fileRef = A53C6944FFDAC5FD9DA4750E /* libPods-SJVideoPlayerProject.a */; };
 /* End PBXBuildFile section */
@@ -146,6 +147,7 @@
 		77A439511FDD8FAB008BD092 /* SJVolBrigControl.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SJVolBrigControl.m; sourceTree = "<group>"; };
 		77A439531FDD8FD1008BD092 /* SJVideoPlayerTipsView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SJVideoPlayerTipsView.h; sourceTree = "<group>"; };
 		77A439541FDD8FD1008BD092 /* SJVideoPlayerTipsView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SJVideoPlayerTipsView.m; sourceTree = "<group>"; };
+		77EACC1A1FF2882E00E2B3AE /* text1.PNG */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = text1.PNG; sourceTree = "<group>"; };
 		77EDB3581FD2CA550075A014 /* sample.mp4 */ = {isa = PBXFileReference; lastKnownFileType = file; path = sample.mp4; sourceTree = "<group>"; };
 		A53C6944FFDAC5FD9DA4750E /* libPods-SJVideoPlayerProject.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-SJVideoPlayerProject.a"; sourceTree = BUILT_PRODUCTS_DIR; };
 		CF7AAE46F079AA385055F66D /* Pods-SJVideoPlayerProject.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-SJVideoPlayerProject.release.xcconfig"; path = "Pods/Target Support Files/Pods-SJVideoPlayerProject/Pods-SJVideoPlayerProject.release.xcconfig"; sourceTree = "<group>"; };
@@ -425,6 +427,7 @@
 			children = (
 				774B25581FCED554002113CC /* test.png */,
 				77EDB3581FD2CA550075A014 /* sample.mp4 */,
+				77EACC1A1FF2882E00E2B3AE /* text1.PNG */,
 				774B25211FCEBA5D002113CC /* Main.storyboard */,
 				774B25241FCEBA5D002113CC /* Assets.xcassets */,
 				774B25261FCEBA5D002113CC /* LaunchScreen.storyboard */,
@@ -515,6 +518,7 @@
 				774B25231FCEBA5D002113CC /* Main.storyboard in Resources */,
 				778E24EC1FD97DF9008D0DD3 /* README.md in Resources */,
 				778E24F01FD97E85008D0DD3 /* IMG_0454.PNG in Resources */,
+				77EACC1B1FF2882E00E2B3AE /* text1.PNG in Resources */,
 				774B25591FCED554002113CC /* test.png in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

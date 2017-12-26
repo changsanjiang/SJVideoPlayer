@@ -43,6 +43,11 @@
     return self;
 }
 
+- (void)setAsset:(SJVideoPlayerAssetCarrier *)asset {
+    _asset = asset;
+    _draggingProgressView.asset = asset;
+}
+
 #pragma mark
 
 - (void)_controlSetupView {

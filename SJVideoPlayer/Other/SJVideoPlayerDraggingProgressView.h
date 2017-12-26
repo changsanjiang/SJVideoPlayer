@@ -10,12 +10,17 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
-@class SJSlider;
+@class SJVideoPlayerAssetCarrier;
 
 @interface SJVideoPlayerDraggingProgressView : SJVideoPlayerBaseView
 
-@property (nonatomic, strong, readonly) UILabel *progressLabel;
-@property (nonatomic, strong, readonly) SJSlider *progressSlider;
+@property (nonatomic, assign) float progress;
+
+@property (nonatomic, weak, readwrite, nullable) SJVideoPlayerAssetCarrier *asset;
+
+@property (nonatomic, assign) BOOL hiddenProgressSlider;
+
+@property (nonatomic, assign) CGSize size;
 
 @end
 

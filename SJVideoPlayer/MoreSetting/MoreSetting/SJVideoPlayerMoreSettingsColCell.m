@@ -41,9 +41,13 @@
         if ( model.image ) {
             worker.insert(model.image, 0, CGPointZero, model.image.size);
         }
-
+        
         if ( model.title ) {
-            worker.insert([NSString stringWithFormat:@"\n%@", model.title], -1);;
+            worker.insert([NSString stringWithFormat:@"%@", model.title], -1);;
+        }
+        
+        if ( model.image && model.title ) {
+            worker.insert(@"\n", worker.lastInsertedRange.location);
         }
         
         worker

@@ -32,6 +32,11 @@
 			<key>orderHint</key>
 			<integer>3</integer>
 		</dict>
+		<key>SJLoadingView.xcscheme</key>
+		<dict>
+			<key>orderHint</key>
+			<integer>11</integer>
+		</dict>
 		<key>SJObserverHelper.xcscheme</key>
 		<dict>
 			<key>isShown</key>

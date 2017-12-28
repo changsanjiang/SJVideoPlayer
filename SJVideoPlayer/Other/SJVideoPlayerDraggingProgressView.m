@@ -10,7 +10,7 @@
 #import <SJUIFactory/SJUIFactory.h>
 #import "SJVideoPlayerResources.h"
 #import <Masonry/Masonry.h>
-#import "SJVideoPlayerAssetCarrier.h"
+#import <SJVideoPlayerAssetCarrier/SJVideoPlayerAssetCarrier.h>
 #import <SJSlider/SJSlider.h>
 
 inline static NSString *_formatWithSec(NSInteger sec) {

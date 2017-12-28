@@ -8,19 +8,16 @@
 
 #import <UIKit/UIKit.h>
 
+NS_ASSUME_NONNULL_BEGIN
+
 @interface SJVideoPlayerTipsView : UIView
 
 @property (nonatomic, strong, readonly) UILabel *titleLabel;
-
-@property (nonatomic, strong, readwrite) UIImage *normalShowImage;
-
-@property (nonatomic, strong, readwrite) UIImage *minShowImage;
-
-@property (nonatomic, strong, readonly) UILabel *minShowTitleLabel;
-
-/*!
- *  value 0 ... 1.0
- */
+/// 0..1
 @property (nonatomic, assign, readwrite) CGFloat value;
+@property (nonatomic, strong, readwrite, nullable) UIImage *image;
 
 @end
+
+NS_ASSUME_NONNULL_END
+

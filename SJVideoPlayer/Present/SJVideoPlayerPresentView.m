@@ -8,7 +8,7 @@
 
 #import "SJVideoPlayerPresentView.h"
 #import <AVFoundation/AVPlayerLayer.h>
-#import "SJVideoPlayerAssetCarrier.h"
+#import <SJVideoPlayerAssetCarrier/SJVideoPlayerAssetCarrier.h>
 
 @interface SJVideoPlayerPresentView ()
 @end

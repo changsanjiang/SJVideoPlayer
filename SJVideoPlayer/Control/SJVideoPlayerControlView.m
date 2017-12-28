@@ -7,8 +7,7 @@
 //
 
 #import "SJVideoPlayerControlView.h"
-#import "SJVideoPlayerAssetCarrier.h"
-#import "SJVideoPreviewModel.h"
+#import <SJVideoPlayerAssetCarrier/SJVideoPlayerAssetCarrier.h>
 #import <Masonry/Masonry.h>
 #import "SJVideoPlayerResources.h"
 

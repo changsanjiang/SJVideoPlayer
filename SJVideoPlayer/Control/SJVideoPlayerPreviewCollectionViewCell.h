@@ -7,9 +7,10 @@
 //
 
 #import <UIKit/UIKit.h>
-#import "SJVideoPreviewModel.h"
 
 NS_ASSUME_NONNULL_BEGIN
+
+@class SJVideoPreviewModel;
 
 @interface SJVideoPlayerPreviewCollectionViewCell : UICollectionViewCell
 

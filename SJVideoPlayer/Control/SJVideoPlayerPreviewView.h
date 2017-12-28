@@ -7,9 +7,10 @@
 //
 
 #import "SJVideoPlayerBaseView.h"
-#import "SJVideoPreviewModel.h"
 
 NS_ASSUME_NONNULL_BEGIN
+
+@class SJVideoPreviewModel;
 
 @protocol SJVideoPlayerPreviewViewDelegate;
 

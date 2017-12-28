@@ -1,7 +1,7 @@
 # SJLoadingView
 
 ### Loading View:
-<img src="https://github.com/changsanjiang/SJLoadingView/blob/master/Demo/SJLoadingViewProject/ex1.gif" />
+<img src="https://github.com/changsanjiang/SJLoadingView/blob/master/Demo/SJLoadingViewProject/ex.gif" />
 
 ### Use
 

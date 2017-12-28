@@ -8,7 +8,7 @@
 
 #import "SJVolBrigControl.h"
 #import "SJVideoPlayerTipsView.h"
-#import "SJVideoPlayerResources.h"
+#import "SJVolBrigResource.h"
 #import <MediaPlayer/MPMusicPlayerController.h>
 
 #pragma clang diagnostic push
@@ -49,9 +49,9 @@
         _brightnessView = [SJVideoPlayerTipsView new];
         _brightnessView.titleLabel.text = @"亮度";
         dispatch_async(dispatch_get_global_queue(0, 0), ^{
-            UIImage *image = [SJVideoPlayerResources imageNamed:@"sj_video_player_brightness"];
+            UIImage *image = [SJVolBrigResource imageNamed:@"sj_video_player_brightness"];
             dispatch_async(dispatch_get_main_queue(), ^{
-                _brightnessView.normalShowImage = image;
+                _brightnessView.image = image;
             });
         });
     }
@@ -81,3 +81,4 @@
 
 @end
 #pragma clang diagnostic pop
+

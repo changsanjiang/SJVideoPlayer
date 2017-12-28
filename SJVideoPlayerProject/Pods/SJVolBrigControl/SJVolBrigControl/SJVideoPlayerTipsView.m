@@ -7,23 +7,16 @@
 //
 
 #import "SJVideoPlayerTipsView.h"
-#import <SJUIFactory/SJUIFactory.h>
 #import <SJBorderLineView/SJBorderlineView.h>
 #import <Masonry/Masonry.h>
-
-#define SJThemeColor [UIColor colorWithRed:1 / 255.0 \
-                                     green:0 / 255.0 \
-                                      blue:13 / 255.0 \
-                                     alpha:1]
+#import "SJVolBrigResource.h"
 
 @interface SJVideoPlayerTipsView ()
 
+@property (nonatomic, strong, readonly) UIColor *themeColor;
 @property (nonatomic, strong, readonly) UIVisualEffectView *bottomMaskView;
-
 @property (nonatomic, strong, readonly) UIView *tipsContainerView;
-
 @property (nonatomic, strong, readonly) NSArray<UIView *> *tipsViewsArr;
-
 @property (nonatomic, strong, readonly) UIImageView *imageView;
 
 @end
@@ -36,42 +29,38 @@
 @synthesize imageView = _imageView;
 @synthesize tipsContainerView = _tipsContainerView;
 @synthesize tipsViewsArr = _tipsViewsArr;
-@synthesize minShowTitleLabel = _minShowTitleLabel;
 
 - (instancetype)initWithFrame:(CGRect)frame {
+    frame.size = CGSizeMake(155, 155);
     self = [super initWithFrame:frame];
     if ( !self ) return nil;
-    [self _SJVideoPlayerTipsViewSetupUI];
+    [self _tipsViewSetupUI];
     return self;
 }
 
 - (void)setValue:(CGFloat)value {
     _value = value;
-    
     CGFloat showTipsCount = value * _tipsViewsArr.count;
-    
     for ( NSInteger i = 0 ; i < _tipsViewsArr.count ; i ++ ) { _tipsViewsArr[i].hidden = i >= showTipsCount; }
-    
-    if ( 0 == value ) _imageView.image = _minShowImage;
-    else _imageView.image = _normalShowImage;
-    
     _tipsContainerView.hidden = (0 == value);
-    
-    _minShowTitleLabel.hidden = !_tipsContainerView.hidden;
+}
+
+- (void)setImage:(UIImage *)image {
+    _image = image;
+    _imageView.image = image;
 }
 
 // MARK: UI
 
-- (void)_SJVideoPlayerTipsViewSetupUI {
+- (void)_tipsViewSetupUI {
     
     self.layer.cornerRadius = 8;
-    self.clipsToBounds = YES;
+    self.layer.masksToBounds = YES;
     
     [self addSubview:self.bottomMaskView];
     [self addSubview:self.titleLabel];
     [self addSubview:self.imageView];
     [self addSubview:self.tipsContainerView];
-    [self addSubview:self.minShowTitleLabel];
     
     [_bottomMaskView mas_makeConstraints:^(MASConstraintMaker *make) {
         make.edges.equalTo(_bottomMaskView.superview);
@@ -110,10 +99,6 @@
             }];
         }
     }];
-    
-    [_minShowTitleLabel mas_makeConstraints:^(MASConstraintMaker *make) {
-        make.center.equalTo(_tipsContainerView);
-    }];
 }
 
 - (UIVisualEffectView *)bottomMaskView {
@@ -125,40 +110,51 @@
 
 - (UILabel *)titleLabel {
     if ( _titleLabel ) return _titleLabel;
-    _titleLabel = [SJUILabelFactory labelWithText:@"" textColor:SJThemeColor alignment:NSTextAlignmentCenter font:[UIFont boldSystemFontOfSize:14]];
+    _titleLabel = [UILabel new];
+    _titleLabel.font = [UIFont boldSystemFontOfSize:14];
+    _titleLabel.textColor = self.themeColor;
+    _titleLabel.textAlignment = NSTextAlignmentCenter;
     return _titleLabel;
 }
 
 - (UIImageView *)imageView {
     if ( _imageView ) return _imageView;
-    _imageView = [SJUIImageViewFactory imageViewWithImageName:@"" viewMode:UIViewContentModeScaleAspectFit];
+    _imageView = [UIImageView new];
+    _imageView.contentMode = UIViewContentModeScaleAspectFit;
     return _imageView;
 }
 
 - (UIView *)tipsContainerView {
     if ( _tipsContainerView ) return _tipsContainerView;
     _tipsContainerView = [UIView new];
-    _tipsContainerView.backgroundColor = SJThemeColor;
+    _tipsContainerView.backgroundColor = self.themeColor;
     return _tipsContainerView;
 }
 
 - (NSArray<UIView *> *)tipsViewsArr {
     if ( _tipsViewsArr ) return _tipsViewsArr;
     NSMutableArray<UIView *> *tipsArrM = [NSMutableArray new];
-    for ( int i = 0 ; i < 16 ; i ++ ) {
-        SJBorderlineView *view = [SJBorderlineView borderlineViewWithSide:SJBorderlineSideAll startMargin:0 endMargin:0 lineColor:SJThemeColor backgroundColor:[UIColor whiteColor]];
+    short maxNum = 16;
+    for ( short i = 0 ; i < maxNum ; i ++ ) {
+        SJBorderlineView *view = nil;
+        if ( maxNum - 1 != i ) {
+            view = [SJBorderlineView borderlineViewWithSide:SJBorderlineSideTop | SJBorderlineSideLeading | SJBorderlineSideBottom startMargin:0 endMargin:0 lineColor:self.themeColor backgroundColor:[UIColor whiteColor]];
+        }
+        else {
+            view = [SJBorderlineView borderlineViewWithSide:SJBorderlineSideAll startMargin:0 endMargin:0 lineColor:self.themeColor backgroundColor:[UIColor whiteColor]];
+        }
         [tipsArrM addObject:view];
         view.hidden = YES;
     }
     _tipsViewsArr = tipsArrM;
     return _tipsViewsArr;
-}
+} 
 
-- (UILabel *)minShowTitleLabel {
-    if ( _minShowTitleLabel  ) return _minShowTitleLabel;
-    _minShowTitleLabel = [SJUILabelFactory labelWithText:@"" textColor:SJThemeColor alignment:NSTextAlignmentCenter font:[UIFont systemFontOfSize:12]];
-    _minShowTitleLabel.hidden = YES;
-    return _minShowTitleLabel;
+#pragma mark -
+- (UIColor *)themeColor {
+    return [UIColor colorWithRed:1 / 255.0
+                           green:0 / 255.0
+                            blue:13 / 255.0
+                           alpha:1];
 }
-
 @end

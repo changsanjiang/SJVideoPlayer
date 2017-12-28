@@ -7,19 +7,18 @@
 //
 
 #import "SJVideoPlayer.h"
-#import "SJVideoPlayerAssetCarrier.h"
+#import <SJVideoPlayerAssetCarrier/SJVideoPlayerAssetCarrier.h>
 #import <Masonry/Masonry.h>
 #import "SJVideoPlayerPresentView.h"
 #import "SJVideoPlayerControlView.h"
 #import <AVFoundation/AVFoundation.h>
 #import <objc/message.h>
 #import "SJVideoPlayerResources.h"
-#import <MediaPlayer/MPVolumeView.h>
 #import "SJVideoPlayerMoreSettingsView.h"
 #import "SJVideoPlayerMoreSettingSecondaryView.h"
 #import <SJOrentationObserver/SJOrentationObserver.h>
 #import "SJVideoPlayerRegistrar.h"
-#import "SJVolBrigControl.h"
+#import <SJVolBrigControl/SJVolBrigControl.h>
 #import "SJTimerControl.h"
 #import "SJVideoPlayerView.h"
 #import <SJLoadingView/SJLoadingView.h>
@@ -1034,18 +1033,7 @@ inline static NSString *_formatWithSec(NSInteger sec) {
     _sjAnima(^{
         self.hideControl = NO;
     });
-    if ( 0 != self.asset.beginTime && !self.asset.jumped ) {
-        __weak typeof(self) _self = self;
-        [self jumpedToTime:self.asset.beginTime completionHandler:^(BOOL finished) {
-            __strong typeof(_self) self = _self;
-            if ( !self ) return;
-            self.asset.jumped = YES;
-            if ( self.autoplay ) [self play];
-        }];
-    }
-    else {
-        if ( self.autoplay && !self.userClickedPause ) [self play];
-    }
+    if ( self.autoplay && !self.userClickedPause ) [self play];
 }
 
 - (void)_refreshingTimeLabelWithCurrentTime:(NSTimeInterval)currentTime duration:(NSTimeInterval)duration {

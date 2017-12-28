@@ -33,9 +33,4 @@ typedef NS_ENUM(NSUInteger, SJVideoPlaySliderTag) {
     SJVideoPlaySliderTag_Dragging,
 };
 
-
-//#define SJ_S_W ([UIScreen mainScreen].bounds.size.width)
-//#define SJ_S_H ([UIScreen mainScreen].bounds.size.height)
-//#define SJ_is_iPhone_X (MIN(SJ_S_W, SJ_S_H) / MAX(SJ_S_W, SJ_S_H) == 1125.0 / 2436)
-
 #endif /* SJVideoPlayerControlViewEnumHeader_h */

@@ -13,12 +13,12 @@
 /*!
  *  Refresh interval for timed observations of AVPlayer
  */
-#define SJREFRESH_INTERVAL (0.5)
+static float const __TimeRefreshInterval = 0.5;
 
 /*!
  *  0.0 - 1.0
  */
-#define SJPreImgGenerateInterval (0.05)
+static float const __GeneratePreImgInterval = 0.05;
 
 
 @interface SJTmpObj : NSObject
@@ -31,6 +31,7 @@
 }
 @end
 
+#pragma mark -
 
 @interface SJVideoPlayerAssetCarrier () {
     id _timeObserver;
@@ -42,6 +43,7 @@
 @property (nonatomic, assign, readwrite) BOOL hasBeenGeneratedPreviewImages;
 @property (nonatomic, strong, readwrite) NSArray<SJVideoPreviewModel *> *generatedPreviewImages;
 @property (nonatomic, assign, readwrite) BOOL removedScrollObserver;
+@property (nonatomic, assign, readwrite) BOOL jumped;
 
 @end
 
@@ -58,16 +60,16 @@
 }
 
 - (instancetype)initWithAssetURL:(NSURL *)assetURL
-                      scrollView:(UIScrollView * __nullable)scrollView
-                       indexPath:(NSIndexPath * __nullable)indexPath
+                      scrollView:(__unsafe_unretained UIScrollView * __nullable)scrollView
+                       indexPath:(__weak NSIndexPath * __nullable)indexPath
                     superviewTag:(NSInteger)superviewTag {
     return [self initWithAssetURL:assetURL beginTime:0 scrollView:scrollView indexPath:indexPath superviewTag:superviewTag];
 }
 
 - (instancetype)initWithAssetURL:(NSURL *)assetURL
                        beginTime:(NSTimeInterval)beginTime
-                      scrollView:(UIScrollView *__unsafe_unretained)scrollView
-                       indexPath:(NSIndexPath *__weak)indexPath
+                      scrollView:(__unsafe_unretained UIScrollView *__nullable)scrollView
+                       indexPath:(__weak NSIndexPath *__nullable)indexPath
                     superviewTag:(NSInteger)superviewTag {
     self = [super init];
     if ( !self ) return nil;
@@ -76,6 +78,7 @@
     _player = [AVPlayer playerWithPlayerItem:_playerItem];
     _assetURL = assetURL;
     _beginTime = beginTime;
+    if ( 0 == _beginTime ) _jumped = YES;
     _scrollView = scrollView;
     _indexPath = indexPath;
     _superviewTag = superviewTag;
@@ -86,7 +89,7 @@
 }
 
 - (void)_addTimeObserver {
-    CMTime interval = CMTimeMakeWithSeconds(SJREFRESH_INTERVAL, NSEC_PER_SEC);
+    CMTime interval = CMTimeMakeWithSeconds(__TimeRefreshInterval, NSEC_PER_SEC);
     __weak typeof(self) _self = self;
     _timeObserver =
     [self.player addPeriodicTimeObserverForInterval:interval queue:dispatch_get_main_queue() usingBlock:^(CMTime time) {
@@ -121,7 +124,25 @@
 - (void)observeValueForKeyPath:(NSString *)keyPath ofObject:(id)object change:(NSDictionary<NSKeyValueChangeKey,id> *)change context:(void *)context {
     dispatch_async(dispatch_get_main_queue(), ^{
         if ( [keyPath isEqualToString:@"status"] ) {
-            if ( self.playerItemStateChanged ) self.playerItemStateChanged(self, self.playerItem.status);
+            if ( !_jumped &&
+                 AVPlayerItemStatusReadyToPlay == self.playerItem.status &&
+                 0 != self.beginTime ) {
+                // begin time
+                if ( _beginTime > self.duration ) return ;
+                CMTime time = CMTimeMakeWithSeconds(_beginTime, NSEC_PER_SEC);
+                __weak typeof(self) _self = self;
+                [self.playerItem seekToTime:time completionHandler:^(BOOL finished) {
+                    __strong typeof(_self) self = _self;
+                    if ( !self ) return;
+                    self.jumped = YES;
+                    dispatch_async(dispatch_get_main_queue(), ^{
+                        if ( self.playerItemStateChanged ) self.playerItemStateChanged(self, self.playerItem.status);
+                    });
+                }];
+            }
+            else {
+                if ( self.playerItemStateChanged ) self.playerItemStateChanged(self, self.playerItem.status);
+            }
         }
         else if ( [keyPath isEqualToString:@"loadedTimeRanges"] ) {
             if ( 0 == CMTimeGetSeconds(_playerItem.duration) ) return;
@@ -153,9 +174,9 @@
     NSMutableArray<NSValue *> *timesM = [NSMutableArray new];
     NSInteger seconds = (long)_asset.duration.value / _asset.duration.timescale;
     if ( 0 == seconds || isnan(seconds) ) return;
-    if ( SJPreImgGenerateInterval > 1.0 || SJPreImgGenerateInterval <= 0 ) return;
-    __block short maxCount = (short)floorf(1.0 / SJPreImgGenerateInterval);
-    short interval = (short)floor(seconds * SJPreImgGenerateInterval);
+    if ( __GeneratePreImgInterval > 1.0 || __GeneratePreImgInterval <= 0 ) return;
+    __block short maxCount = (short)floorf(1.0 / __GeneratePreImgInterval);
+    short interval = (short)floor(seconds * __GeneratePreImgInterval);
     for ( int i = 0 ; i < maxCount ; i ++ ) {
         CMTime time = CMTimeMake(i * interval, 1);
         NSValue *tV = [NSValue valueWithCMTime:time];
@@ -259,7 +280,7 @@
     if ( _deallocCallBlock ) _deallocCallBlock(self);
 }
 
-#pragma mark
+#pragma mark 
 - (void)_injectTmpObjToScrollView {
     SJTmpObj *obj = [SJTmpObj new];
     __weak typeof(self) _self = self;
@@ -277,6 +298,21 @@
     [_scrollView removeObserver:self forKeyPath:@"contentOffset"];
     _scrollView = nil;
     _removedScrollObserver = YES;
+}
+
+@end
+
+
+#pragma mark -
+
+
+@implementation SJVideoPreviewModel
+
++ (instancetype)previewModelWithImage:(UIImage *)image localTime:(CMTime)time {
+    SJVideoPreviewModel *model = [self new];
+    model -> _image = image;
+    model -> _localTime = time;
+    return model;
 }
 
 @end

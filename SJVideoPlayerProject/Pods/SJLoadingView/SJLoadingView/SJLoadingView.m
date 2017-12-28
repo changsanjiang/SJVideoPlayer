@@ -14,6 +14,7 @@
 @property (nonatomic, strong, readonly) CAShapeLayer *shapeLayer;
 @property (nonatomic, assign) CGFloat lineWidth;
 @property (nonatomic, assign, getter=isAnimating) BOOL animating;
+@property (nonatomic, assign) BOOL strokeShow;
 
 @end
 
@@ -61,6 +62,7 @@
 - (void)start {
     if ( _animating ) return;
     _animating = YES;
+    if ( _animType == SJLoadingType_FadeOut ) [self _strokeAnim_Show];
     self.alpha = 1;
     CABasicAnimation *rotationAnim = [CABasicAnimation animationWithKeyPath:@"transform.rotation.z"];
     rotationAnim.toValue = [NSNumber numberWithFloat:2 * M_PI];
@@ -69,10 +71,39 @@
     [_gradientLayer addAnimation:rotationAnim forKey:@"rotation"];
 }
 
+- (void)_strokeAnim_Show {
+    _strokeShow = YES;
+    CAKeyframeAnimation *strokeAnim = [CAKeyframeAnimation animationWithKeyPath:@"strokeEnd"];
+    strokeAnim.values = @[@(_shapeLayer.strokeStart), @(_shapeLayer.strokeEnd)];
+    strokeAnim.duration = _speed * 1.5;
+    strokeAnim.delegate = self;
+    strokeAnim.removedOnCompletion = NO;
+    strokeAnim.fillMode = kCAFillModeForwards;
+    [_shapeLayer addAnimation:strokeAnim forKey:@"strokeAnim"];
+}
+
+- (void)_strokeAnim_Dismiss {
+    _strokeShow = NO;
+    CAKeyframeAnimation *strokeAnim = [CAKeyframeAnimation animationWithKeyPath:@"strokeEnd"];
+    strokeAnim.values = @[@(_shapeLayer.strokeEnd), @(_shapeLayer.strokeStart)];
+    strokeAnim.duration = _speed * 1.5;
+    strokeAnim.delegate = self;
+    strokeAnim.removedOnCompletion = NO;
+    strokeAnim.fillMode = kCAFillModeForwards;
+    [_shapeLayer addAnimation:strokeAnim forKey:@"strokeAnim"];
+}
+
+- (void)animationDidStop:(CAAnimation *)anim finished:(BOOL)flag {
+    if ( !_animating ) return;
+    if ( _strokeShow ) [self _strokeAnim_Dismiss];
+    else [self _strokeAnim_Show];
+}
+
 - (void)stop {
     if ( !_animating ) return;
     _animating = NO;
     self.alpha = 0.001;
+    [_shapeLayer removeAllAnimations];
     [_gradientLayer removeAllAnimations];
 }
 
@@ -100,6 +131,9 @@
     _shapeLayer = [CAShapeLayer layer];
     _shapeLayer.strokeColor = [UIColor blueColor].CGColor;
     _shapeLayer.fillColor = [UIColor clearColor].CGColor;
+    _shapeLayer.strokeStart = 0.15;
+    _shapeLayer.strokeEnd = 0.8;
+    _shapeLayer.lineCap = @"round";
     return _shapeLayer;
 }
 

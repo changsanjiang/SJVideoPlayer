@@ -5,11 +5,12 @@
 //  Created by BlueDancer on 2017/11/29.
 //  Copyright © 2017年 SanJiang. All rights reserved.
 //
+//  Address: https://github.com/changsanjiang/SJVideoPlayer
 
 #import <UIKit/UIKit.h>
 #import <AVFoundation/AVFoundation.h>
 #import "SJVideoPlayerState.h"
-#import "SJVideoPlayerAssetCarrier.h"
+#import <SJVideoPlayerAssetCarrier/SJVideoPlayerAssetCarrier.h>
 #import "SJVideoPlayerMoreSettingSecondary.h"
 #import "SJVideoPlayerSettings.h"
 #import <SJPrompt/SJPrompt.h>

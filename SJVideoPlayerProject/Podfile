@@ -14,4 +14,6 @@ target 'SJVideoPlayerProject' do
   pod 'SJPrompt'
   pod 'SJOrentationObserver'
   pod 'SJLoadingView'
+  pod 'SJVideoPlayerAssetCarrier'
+  pod 'SJVolBrigControl'
 end

@@ -179,9 +179,6 @@ inline static NSString *_formatWithSec(NSInteger sec) {
 }
 
 - (void)_unknownState {
-    // show
-    _sjShowViews(@[self.presentView.placeholderImageView,]);
-    
     // hidden
     _sjHiddenViews(@[self.controlView]);
     
@@ -190,8 +187,7 @@ inline static NSString *_formatWithSec(NSInteger sec) {
 
 - (void)_prepareState {
     // show
-    _sjShowViews(@[self.controlView,
-                   self.presentView.placeholderImageView]);
+    _sjShowViews(@[self.controlView]);
     
     // hidden
     self.controlView.previewView.hidden = YES;
@@ -228,7 +224,6 @@ inline static NSString *_formatWithSec(NSInteger sec) {
     
     // hidden
     _sjHiddenViews(@[
-                     self.presentView.placeholderImageView,
                      self.controlView.bottomControlView.playBtn,
                      self.controlView.centerControlView.replayBtn,
                      ]);
@@ -422,10 +417,10 @@ inline static NSString *_formatWithSec(NSInteger sec) {
     _presentView = [SJVideoPlayerPresentView new];
     _presentView.clipsToBounds = YES;
     __weak typeof(self) _self = self;
-    _presentView.readyForDisplay = ^(SJVideoPlayerPresentView * _Nonnull view) {
+    _presentView.readyForDisplay = ^(SJVideoPlayerPresentView * _Nonnull view, CGRect videoRect) {
         if ( _self.asset.hasBeenGeneratedPreviewImages ) { return ; }
         if ( !_self.generatePreviewImages ) return;
-        CGRect bounds = view.avLayer.videoRect;
+        CGRect bounds = videoRect;
         CGFloat width = [UIScreen mainScreen].bounds.size.width * 0.4;
         CGFloat height = width * bounds.size.height / bounds.size.width;
         CGSize size = CGSizeMake(width, height);
@@ -1087,6 +1082,12 @@ inline static NSString *_formatWithSec(NSInteger sec) {
     });
 }
 
+- (void)setState:(SJVideoPlayerPlayState)state {
+    if ( state == _state ) return;
+    _state = state;
+    self.presentView.state = state;
+}
+
 @end
 
 
@@ -1379,7 +1380,7 @@ inline static NSString *_formatWithSec(NSInteger sec) {
 }
 
 - (void)setPlaceholder:(UIImage *)placeholder {
-    self.presentView.placeholderImageView.image = placeholder;
+    self.presentView.placeholder = placeholder;
 }
 
 - (void)setAutoplay:(BOOL)autoplay {
@@ -1419,15 +1420,6 @@ inline static NSString *_formatWithSec(NSInteger sec) {
 }
 
 - (void (^)(SJVideoPlayer * _Nonnull, BOOL))rotatedScreen {
-    return objc_getAssociatedObject(self, _cmd);
-}
-
-- (void)setVideoGravity:(AVLayerVideoGravity)videoGravity {
-    objc_setAssociatedObject(self, @selector(videoGravity), videoGravity, OBJC_ASSOCIATION_RETAIN_NONATOMIC);
-    _presentView.videoGravity = videoGravity;
-}
-
-- (AVLayerVideoGravity)videoGravity {
     return objc_getAssociatedObject(self, _cmd);
 }
 

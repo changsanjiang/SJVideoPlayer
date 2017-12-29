@@ -144,8 +144,6 @@ NS_ASSUME_NONNULL_BEGIN
  **/
 @property (nonatomic, copy, readwrite, nullable) void(^rotatedScreen)(SJVideoPlayer *player, BOOL isFullScreen);
 
-@property (nonatomic, strong, readwrite) AVLayerVideoGravity videoGravity;
-
 @end
 
 

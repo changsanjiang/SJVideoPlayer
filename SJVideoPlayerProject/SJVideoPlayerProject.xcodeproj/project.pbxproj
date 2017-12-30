@@ -7,6 +7,8 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		7706E1231FF74B24006E0B56 /* loading.gif in Resources */ = {isa = PBXBuildFile; fileRef = 7706E1221FF74B24006E0B56 /* loading.gif */; };
+		7706E1251FF74C42006E0B56 /* slider.gif in Resources */ = {isa = PBXBuildFile; fileRef = 7706E1241FF74C42006E0B56 /* slider.gif */; };
 		774B251D1FCEBA5D002113CC /* AppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = 774B251C1FCEBA5D002113CC /* AppDelegate.m */; };
 		774B25201FCEBA5D002113CC /* ViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 774B251F1FCEBA5D002113CC /* ViewController.m */; };
 		774B25231FCEBA5D002113CC /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 774B25211FCEBA5D002113CC /* Main.storyboard */; };
@@ -59,6 +61,8 @@
 
 /* Begin PBXFileReference section */
 		3D9B385C4F414458155F268D /* Pods-SJVideoPlayerProject.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-SJVideoPlayerProject.debug.xcconfig"; path = "Pods/Target Support Files/Pods-SJVideoPlayerProject/Pods-SJVideoPlayerProject.debug.xcconfig"; sourceTree = "<group>"; };
+		7706E1221FF74B24006E0B56 /* loading.gif */ = {isa = PBXFileReference; lastKnownFileType = image.gif; path = loading.gif; sourceTree = "<group>"; };
+		7706E1241FF74C42006E0B56 /* slider.gif */ = {isa = PBXFileReference; lastKnownFileType = image.gif; path = slider.gif; sourceTree = "<group>"; };
 		774B25181FCEBA5D002113CC /* SJVideoPlayerProject.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = SJVideoPlayerProject.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		774B251B1FCEBA5D002113CC /* AppDelegate.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = AppDelegate.h; sourceTree = "<group>"; };
 		774B251C1FCEBA5D002113CC /* AppDelegate.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = AppDelegate.m; sourceTree = "<group>"; };
@@ -413,6 +417,8 @@
 				77EACC221FF28E5200E2B3AE /* IMG_0479.PNG */,
 				77EACC241FF28E5200E2B3AE /* IMG_0480.PNG */,
 				77EACC231FF28E5200E2B3AE /* IMG_0481.PNG */,
+				7706E1221FF74B24006E0B56 /* loading.gif */,
+				7706E1241FF74C42006E0B56 /* slider.gif */,
 				774B25261FCEBA5D002113CC /* LaunchScreen.storyboard */,
 				774B25291FCEBA5D002113CC /* Info.plist */,
 				774B252A1FCEBA5D002113CC /* main.m */,
@@ -491,6 +497,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				77EDB3591FD2CA550075A014 /* sample.mp4 in Resources */,
+				7706E1251FF74C42006E0B56 /* slider.gif in Resources */,
 				77EACC1F1FF28B4800E2B3AE /* IMG_0478.PNG in Resources */,
 				774B25281FCEBA5D002113CC /* LaunchScreen.storyboard in Resources */,
 				777D30D71FD8E8240075E5FD /* SJVideoPlayer.podspec in Resources */,
@@ -502,6 +509,7 @@
 				778E24EC1FD97DF9008D0DD3 /* README.md in Resources */,
 				77EACC261FF28E5300E2B3AE /* IMG_0481.PNG in Resources */,
 				77EACC271FF28E5300E2B3AE /* IMG_0480.PNG in Resources */,
+				7706E1231FF74B24006E0B56 /* loading.gif in Resources */,
 				77EACC201FF28B4800E2B3AE /* IMG_0472.PNG in Resources */,
 				774B25591FCED554002113CC /* test.png in Resources */,
 			);

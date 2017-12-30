@@ -6,7 +6,7 @@ pod 'SJVideoPlayer'
 # 抽离出的组件
 ### [加载视图](https://github.com/changsanjiang/SJLoadingView)
 <img src="https://github.com/changsanjiang/SJVideoPlayer/blob/master/SJVideoPlayerProject/SJVideoPlayerProject/loading.gif" />
-### [全屏返回手势](https://github.com/changsanjiang/SJVideoPlayerBackGR)
+### [全屏返回手势](https://github.com/changsanjiang/SJVideoPlayerBackGR)<br/>
 1. 适配 scrollView.
 2. 支持盲区. 指定区域不触发全屏手势. 可指定Frame或者View.
 3. 支持切换. 系统边缘手势与全屏手势随意切换.

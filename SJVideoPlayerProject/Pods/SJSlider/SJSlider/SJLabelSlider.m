@@ -55,7 +55,7 @@
     label.textAlignment = NSTextAlignmentCenter;
     label.textColor = [UIColor blackColor];
     label.font = [UIFont systemFontOfSize:12];
-    label.text = @"00";
+    label.text = @"0";
     [label sizeToFit];
     return label;
 }

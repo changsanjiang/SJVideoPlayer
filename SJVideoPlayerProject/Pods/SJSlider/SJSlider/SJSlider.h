@@ -12,66 +12,85 @@
 
 @interface SJSlider : UIView
 
+@property (nonatomic, weak) id <SJSliderDelegate>delegate;
+
 /*!
  *  default is YES.
+ *
+ *  是否切园角. 默认切.
  */
 @property (nonatomic, assign, readwrite) BOOL isRound;
 
 /*!
- *  轨道
+ *  track height. default is 8.0;
+ *
+ *  轨道高度.
+ */
+@property (nonatomic, assign, readwrite) CGFloat trackHeight;
+
+/*!
  *  this is view, If you don't want to set up photos, You can set the background color.
+ *
+ *  轨道, 你可以设置图片或者将他当做`view`, 设置背景颜色来使用. 以下`trace` & `thumb` 相同.
  */
 @property (nonatomic, strong, readonly) UIImageView *trackImageView;
 
 /*!
- *  走过的痕迹
  *  this is view, If you don't want to set up photos, You can set the background color.
+ *
+ *  走过的痕迹.
  */
 @property (nonatomic, strong, readonly) UIImageView *traceImageView;
 
 /*!
- *  拇指
  *  If you do not set the image, it will not display.
+ *  With `fixThumb`, Set the spacing the thumb is beyond the border.
+ *
+ *  拇指, 不设置它, 将不会创建.
+ *  可以通过`fixThumb`, 来修正拇指超出边界的间距.
  */
 @property (nonatomic, strong, readonly) UIImageView *thumbImageView;
 
-- (void)setThumbCornerRadius:(CGFloat)thumbCornerRadius size:(CGSize)size;
+/*!
+ *  Set the spacing the thumb is beyond the border. default is 0.0.
+ *
+ *  修正 拇指超出边界的间距. 默认是 0.
+ **/
+@property (nonatomic, assign, readwrite) CGFloat fixThumb;
+
+
+- (void)setThumbCornerRadius:(CGFloat)thumbCornerRadius
+                        size:(CGSize)size;
+
+- (void)setThumbCornerRadius:(CGFloat)thumbCornerRadius
+                        size:(CGSize)size
+        thumbBackgroundColor:(UIColor *)thumbBackgroundColor;
 
 /*!
- *  当前进度值
  *  current Value
  */
 @property (nonatomic, assign, readwrite) CGFloat value;
 
 /*!
- *  设置轨道高度. 
- *  default is 8.0;
- */
-@property (nonatomic, assign, readwrite) CGFloat trackHeight;
-
-/*!
- *  最小值. 
  *  default is 0.0;
  */
 @property (nonatomic, assign, readwrite) CGFloat minValue;
 
 /*!
- *  最大值. 
  *  default is 1.0;
  */
 @property (nonatomic, assign, readwrite) CGFloat maxValue;
 
-@property (nonatomic, weak) id <SJSliderDelegate>delegate;
-
 /*!
- *  触动手势
  *  If you don't want to use this gesture, you can disable it
  *  pan.enable = NO.
  */
 @property (nonatomic, strong, readonly) UIPanGestureRecognizer *pan;
 
 /*!
- *  slider是否被拖拽
+ *  The state of dragging.
+ *
+ *  是否在拖拽.
  */
 @property (nonatomic, assign, readonly) BOOL isDragging;
 
@@ -127,6 +146,7 @@
 @property (nonatomic, assign, readwrite) CGFloat bufferProgress;
 
 @end
+
 
 
 #pragma mark - Delegate

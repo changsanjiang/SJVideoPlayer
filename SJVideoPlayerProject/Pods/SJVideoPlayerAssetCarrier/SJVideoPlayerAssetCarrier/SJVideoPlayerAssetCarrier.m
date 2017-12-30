@@ -113,6 +113,7 @@ static float const __GeneratePreImgInterval = 0.05;
 
 - (void)_observing {
     [_playerItem addObserver:self forKeyPath:@"status" options:NSKeyValueObservingOptionNew context:nil];
+    [_playerItem addObserver:self forKeyPath:@"presentationSize" options:NSKeyValueObservingOptionNew context:nil];
     [_playerItem addObserver:self forKeyPath:@"loadedTimeRanges" options:NSKeyValueObservingOptionNew context:nil];
     [_playerItem addObserver:self forKeyPath:@"playbackBufferEmpty" options:NSKeyValueObservingOptionNew context:nil];
     if ( _scrollView ) {
@@ -123,6 +124,7 @@ static float const __GeneratePreImgInterval = 0.05;
 
 - (void)observeValueForKeyPath:(NSString *)keyPath ofObject:(id)object change:(NSDictionary<NSKeyValueChangeKey,id> *)change context:(void *)context {
     dispatch_async(dispatch_get_main_queue(), ^{
+        
         if ( [keyPath isEqualToString:@"status"] ) {
             if ( !_jumped &&
                  AVPlayerItemStatusReadyToPlay == self.playerItem.status &&
@@ -151,6 +153,9 @@ static float const __GeneratePreImgInterval = 0.05;
         }
         else if ( [keyPath isEqualToString:@"playbackBufferEmpty"] ) {
             if ( self.beingBuffered ) self.beingBuffered([self _loadedTimeSecs] <= self.currentTime + 5);
+        }
+        else if ( [keyPath isEqualToString:@"presentationSize"] ) {
+            if ( self.presentationSize ) self.presentationSize(self, self.playerItem.presentationSize);
         }
         if ( [keyPath isEqualToString:@"contentOffset"] ) {
             if ( self.scrollViewDidScroll ) self.scrollViewDidScroll(self);
@@ -276,6 +281,7 @@ static float const __GeneratePreImgInterval = 0.05;
     [_playerItem removeObserver:self forKeyPath:@"status"];
     [_playerItem removeObserver:self forKeyPath:@"playbackBufferEmpty"];
     [_playerItem removeObserver:self forKeyPath:@"loadedTimeRanges"];
+    [_playerItem removeObserver:self forKeyPath:@"presentationSize"];
     if ( !_removedScrollObserver ) [self _removingScrollViewObserver];
     if ( _deallocCallBlock ) _deallocCallBlock(self);
 }

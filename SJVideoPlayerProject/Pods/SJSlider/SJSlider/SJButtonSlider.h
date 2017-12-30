@@ -8,6 +8,13 @@
 
 #import "SJCommonSlider.h"
 
+/*!
+ *  two button each on the left and right.
+ *  You can adjust the spacing by setting `spacing`.
+ *
+ *  两个按钮, 分别在左边和右边.
+ *  你可以设置父类中的`spacing`, 来调整他们之间的间距.
+ **/
 @interface SJButtonSlider : SJCommonSlider
 
 @property (nonatomic, strong, readonly) UIButton *leftBtn;

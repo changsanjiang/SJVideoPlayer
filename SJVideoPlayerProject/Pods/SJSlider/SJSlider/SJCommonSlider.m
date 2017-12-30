@@ -25,7 +25,16 @@
     self = [super initWithFrame:frame];
     if ( !self ) return nil;
     [self _c_setupView];
+    self.spacing = 4;
     return self;
+}
+
+- (void)setSpacing:(float)spacing {
+    _spacing = spacing;
+    [_slider mas_updateConstraints:^(MASConstraintMaker *make) {
+        make.leading.equalTo(_leftContainerView.mas_trailing).offset(spacing);
+        make.trailing.equalTo(_rightContainerView.mas_leading).offset(-spacing);
+    }];
 }
 
 - (void)_c_setupView {
@@ -45,8 +54,6 @@
     
     [_slider mas_makeConstraints:^(MASConstraintMaker *make) {
         make.top.bottom.offset(0);
-        make.leading.equalTo(_leftContainerView.mas_trailing).offset(4);
-        make.trailing.equalTo(_rightContainerView.mas_leading).offset(-4);
     }];
     
     [_rightContainerView mas_makeConstraints:^(MASConstraintMaker *make) {

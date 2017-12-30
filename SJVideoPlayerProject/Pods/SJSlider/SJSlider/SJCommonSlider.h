@@ -9,7 +9,17 @@
 #import <UIKit/UIKit.h>
 #import "SJSlider.h"
 
+/*!
+ *  two view each on the left and right.
+ *  You can adjust the spacing by setting `spacing`.
+ *
+ *  两个视图, 分别在左边和右边.
+ *  你可以设置`spacing`, 来调整他们之间的间距.
+ **/
 @interface SJCommonSlider : UIView
+
+// default is 4.
+@property (nonatomic, assign, readwrite) float spacing;
 
 @property (nonatomic, strong, readonly) UIView *leftContainerView;
 @property (nonatomic, strong, readonly) SJSlider *slider;

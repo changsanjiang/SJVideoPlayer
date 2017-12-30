@@ -60,8 +60,8 @@
 }
 
 - (void)setVolume:(float)volume {
-    if ( isnan(volume) || volume < 0 ) volume = 0;
-    else if ( volume > 1 ) volume = 1;
+    if ( isnan(volume) || volume < 0 ) volume = 0.001;
+    else if ( volume > 1 ) volume = 0.999;
     _volume = volume;
     [[MPMusicPlayerController applicationMusicPlayer] setVolume:volume];
 }

@@ -41,7 +41,6 @@ s.subspec 'Player' do |ss|
     ss.source_files = 'SJVideoPlayer/Player/*.{h,m}'
     ss.dependency 'SJVideoPlayer/Control'
     ss.dependency 'SJVideoPlayer/MoreSetting'
-    ss.dependency 'SJVideoPlayer/VolBrigControl'
     ss.dependency 'SJVideoPlayer/Present'
     ss.dependency 'SJVideoPlayer/Registrar'
     ss.dependency 'SJVideoPlayer/TimerControl'
@@ -63,11 +62,6 @@ end
 
 s.subspec 'MoreSetting' do |ss|
     ss.source_files = 'SJVideoPlayer/MoreSetting/*/**.{h,m}'
-    ss.dependency 'SJVideoPlayer/Other'
-end
-
-s.subspec 'VolBrigControl' do |ss|
-    ss.source_files = 'SJVideoPlayer/VolBrigControl/*.{h,m}'
     ss.dependency 'SJVideoPlayer/Other'
 end
 

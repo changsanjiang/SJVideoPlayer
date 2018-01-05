@@ -1033,7 +1033,9 @@ inline static NSString *_formatWithSec(NSInteger sec) {
     _sjAnima(^{
         self.hideControl = NO;
     });
-    if ( self.autoplay && !self.userClickedPause && !self.suspend ) [self play];
+    if ( self.autoplay && !self.userClickedPause && !self.suspend ) {
+        [self play];
+    }
 }
 
 - (void)_refreshingTimeLabelWithCurrentTime:(NSTimeInterval)currentTime duration:(NSTimeInterval)duration {
@@ -1121,7 +1123,6 @@ inline static NSString *_formatWithSec(NSInteger sec) {
 }
 
 - (void)setAsset:(SJVideoPlayerAssetCarrier *)asset {
-    [self stop];
     objc_setAssociatedObject(self, @selector(asset), asset, OBJC_ASSOCIATION_RETAIN_NONATOMIC);
     if ( !asset ) return;
     _presentView.asset = asset;
@@ -1477,35 +1478,34 @@ inline static NSString *_formatWithSec(NSInteger sec) {
 }
 
 - (BOOL)play {
+    self.suspend = NO;
     if ( !self.asset ) return NO;
     self.userClickedPause = NO;
     _sjAnima(^{
         [self _playState];
     });
     [self _play];
-    self.suspend = NO;
     return YES;
 }
 
 - (BOOL)pause {
+    self.suspend = YES; 
     if ( !self.asset ) return NO;
     _sjAnima(^{
         [self _pauseState];
     });
     [self _pause];
     if ( !self.playOnCell || self.orentation.fullScreen ) [self showTitle:@"已暂停"];
-    self.suspend = YES;
     return YES;
 }
 
 - (void)stop {
+    self.suspend = NO;
+    if ( !self.asset ) return;
     _sjAnima(^{
         [self _unknownState];
     });
-    if ( !self.asset ) return;
-    [self _pause];
     [self _clearAsset];
-    self.suspend = NO;
 }
 
 - (void)jumpedToTime:(NSTimeInterval)time completionHandler:(void (^ __nullable)(BOOL finished))completionHandler {

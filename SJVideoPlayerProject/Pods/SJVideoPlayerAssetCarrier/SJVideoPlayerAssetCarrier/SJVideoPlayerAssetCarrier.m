@@ -294,6 +294,9 @@ static float const __GeneratePreImgScale = 0.05;
 }
 
 - (void)dealloc {
+    [_tmp_imageGenerator cancelAllCGImageGeneration];
+    [self cancelPreviewImagesGeneration];
+    [_player pause];
     [_player removeTimeObserver:_timeObserver];
     [[NSNotificationCenter defaultCenter] removeObserver:_itemEndObserver name:AVPlayerItemDidPlayToEndTimeNotification object:nil];
     [_playerItem removeObserver:self forKeyPath:@"status"];

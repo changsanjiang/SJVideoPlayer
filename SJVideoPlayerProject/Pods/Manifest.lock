@@ -16,14 +16,14 @@ PODS:
   - SJOrentationObserver/Category (0.0.5)
   - SJPrompt (1.0.1):
     - Masonry
-  - SJSlider (1.1.3):
+  - SJSlider (1.1.4):
     - Masonry
   - SJUIFactory (0.0.9):
     - SJLabel
     - SJUIFactory/Category (= 0.0.9)
   - SJUIFactory/Category (0.0.9):
     - SJLabel
-  - SJVideoPlayerAssetCarrier (0.0.3)
+  - SJVideoPlayerAssetCarrier (0.0.4)
   - SJVolBrigControl (0.0.2):
     - Masonry
     - SJBorderLineView
@@ -54,9 +54,9 @@ SPEC CHECKSUMS:
   SJObserverHelper: b270d707cd18ab76538596aa4e98cf798c9e9868
   SJOrentationObserver: f5d5df501bb4f9c2de24fa54ba56b4663b94531f
   SJPrompt: eaecd94f2055a12d25090967dbad3f21da011626
-  SJSlider: 3dbcce053fec35fcb75da92c46d4f182f81f8603
+  SJSlider: 9695edb174815e221e30cc0ee99a135695b8c877
   SJUIFactory: bf2413b9fc9bf76d39381b9ff48df454819244f5
-  SJVideoPlayerAssetCarrier: 28658d73e025d6d209713b1272a8a16ccf1bab89
+  SJVideoPlayerAssetCarrier: 29bfbe9e23038ea80803f038a849b6d4ce136f28
   SJVolBrigControl: eecc0b8ce4090159b928730b8b32d001b9090982
 
 PODFILE CHECKSUM: ad72e2ba2c5b2a7302b1d6301c4eacd126eb0035

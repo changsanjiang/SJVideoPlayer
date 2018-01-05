@@ -70,10 +70,6 @@
 
 
 @interface SJContainerView : UIView
-/*!
- *  default is YES.
- */
-@property (nonatomic, assign, readwrite) BOOL isRound;
 
 @end
 
@@ -92,32 +88,7 @@
     self.clipsToBounds = YES;
 }
 
-- (void)layoutSubviews {
-    [super layoutSubviews];
-    if ( _isRound ) self.layer.cornerRadius = MIN(self.csj_w, self.csj_h) * 0.5;
-    else self.layer.cornerRadius = 0;
-}
-
-- (void)setIsRound:(BOOL)isRound {
-    _isRound = isRound;
-    if ( _isRound ) self.layer.cornerRadius = MIN(self.csj_w, self.csj_h) * 0.5;
-    else self.layer.cornerRadius = 0;
-}
-
 @end
-
-
-
-// MARK: 观察处理
-
-@interface SJSlider (DBObservers)
-
-- (void)_SJSliderObservers;
-
-- (void)_SJSliderRemoveObservers;
-
-@end
-
 
 
 
@@ -151,8 +122,6 @@
     self = [super initWithFrame:frame];
     if ( !self ) return nil;
     
-    [self _SJSliderObservers];
-    
     [self _SJSliderSetupUI];
     
     [self _SJSliderInitialize];
@@ -167,7 +136,9 @@
 
 - (void)setIsRound:(BOOL)isRound {
     _isRound = isRound;
-    _containerView.isRound = isRound;
+    
+    if ( isRound ) self.containerView.layer.cornerRadius = self.trackHeight * 0.5;
+    else self.containerView.layer.cornerRadius = 0.0;
 }
 
 - (void)setThumbCornerRadius:(CGFloat)thumbCornerRadius size:(CGSize)size {
@@ -211,6 +182,9 @@
     [self.containerView mas_updateConstraints:^(MASConstraintMaker *make) {
         make.height.offset(trackHeight);
     }];
+    
+    if ( self.isRound ) self.containerView.layer.cornerRadius = self.trackHeight * 0.5;
+    else self.containerView.layer.cornerRadius = 0.0;
 }
 
 - (void)setValue:(CGFloat)value {
@@ -218,6 +192,20 @@
     if      ( value < _minValue ) value = _minValue;
     else if ( value > _maxValue ) value = _maxValue;
     _value = value;
+    
+    CGFloat sub = _maxValue - _minValue;
+    if ( sub == 0 ) return;
+    
+    [_containerView.constraints enumerateObjectsWithOptions:NSEnumerationReverse usingBlock:^(__kindof NSLayoutConstraint * _Nonnull obj, NSUInteger idx, BOOL * _Nonnull stop) {
+        if ( obj.firstItem == _traceImageView ) {
+            if ( obj.firstAttribute == NSLayoutAttributeWidth ) {
+                [_containerView removeConstraint:obj];
+            }
+        }
+    }];
+    
+    NSLayoutConstraint *traceWidthConstraint = [NSLayoutConstraint constraintWithItem:_traceImageView attribute:NSLayoutAttributeWidth relatedBy:NSLayoutRelationEqual toItem:_containerView attribute:NSLayoutAttributeWidth multiplier:(_value - _minValue) / sub + 0.001 constant:0];
+    [_containerView addConstraint:traceWidthConstraint];
 }
 
 - (void)setMinValue:(CGFloat)minValue {
@@ -234,7 +222,6 @@
 
 - (void)dealloc {
     NSLog(@"%s", __func__);
-    [self _SJSliderRemoveObservers];
 }
 
 
@@ -350,7 +337,7 @@
     
     _thumbTrailingConstraint = [NSLayoutConstraint constraintWithItem:_thumbImageView attribute:NSLayoutAttributeTrailing relatedBy:NSLayoutRelationLessThanOrEqual toItem:_containerView attribute:NSLayoutAttributeTrailing multiplier:1 constant:_fixThumb];
     _thumbTrailingConstraint.priority = UILayoutPriorityRequired;
-
+    
     [self addConstraint:_thumbLeadingConstraint];
     [self addConstraint:centerYConstraint];
     [self addConstraint:_thumbCenterXConstraint];
@@ -369,38 +356,6 @@
     imageView.contentMode = UIViewContentModeCenter;
     imageView.clipsToBounds = YES;
     return imageView;
-}
-
-@end
-
-
-#pragma mark -
-
-@implementation SJSlider (DBObservers)
-
-- (void)_SJSliderObservers {
-    [self addObserver:self forKeyPath:@"value" options:NSKeyValueObservingOptionNew context:nil];
-}
-
-- (void)_SJSliderRemoveObservers {
-    [self removeObserver:self forKeyPath:@"value"];
-}
-
-- (void)observeValueForKeyPath:(NSString *)keyPath ofObject:(id)object change:(NSDictionary<NSKeyValueChangeKey,id> *)change context:(void *)context  {
-    if ( ![keyPath isEqualToString:@"value"] ) return;
-    CGFloat sub = _maxValue - _minValue;
-    if ( sub == 0 ) return;
-
-    [self.containerView.constraints enumerateObjectsWithOptions:NSEnumerationReverse usingBlock:^(__kindof NSLayoutConstraint * _Nonnull obj, NSUInteger idx, BOOL * _Nonnull stop) {
-        if ( obj.firstItem == _traceImageView ) {
-            if ( obj.firstAttribute == NSLayoutAttributeWidth ) {
-                [self.containerView removeConstraint:obj];
-            }
-        }
-    }];
-
-    NSLayoutConstraint *traceWidthConstraint = [NSLayoutConstraint constraintWithItem:self.traceImageView attribute:NSLayoutAttributeWidth relatedBy:NSLayoutRelationEqual toItem:self.containerView attribute:NSLayoutAttributeWidth multiplier:(_value - _minValue) / sub + 0.001 constant:0];
-    [self.containerView addConstraint:traceWidthConstraint];
 }
 
 @end
@@ -453,18 +408,22 @@
     return [objc_getAssociatedObject(self, _cmd) floatValue];
 }
 
-static NSLayoutConstraint *bufferProgressWidthConstraint;
 - (void)setBufferProgress:(CGFloat)bufferProgress {
     if ( isnan(bufferProgress) ) return;
     if      ( bufferProgress > 1 ) bufferProgress = 1;
     else if ( bufferProgress < 0 ) bufferProgress = 0;
     objc_setAssociatedObject(self, @selector(bufferProgress), @(bufferProgress), OBJC_ASSOCIATION_RETAIN_NONATOMIC);
     dispatch_async(dispatch_get_main_queue(), ^{
-        if ( !self.bufferProgressView.superview ) return ;
-        if ( bufferProgressWidthConstraint ) {
-            [self.containerView removeConstraint:bufferProgressWidthConstraint];
-        }
-        bufferProgressWidthConstraint = [NSLayoutConstraint constraintWithItem:[self bufferProgressView] attribute:NSLayoutAttributeWidth relatedBy:NSLayoutRelationEqual toItem:[self containerView] attribute:NSLayoutAttributeWidth multiplier:bufferProgress constant:0];
+        UIView *bufferProgressView = [self bufferProgressView];
+        if ( !bufferProgressView.superview ) return ;
+        [self.containerView.constraints enumerateObjectsWithOptions:NSEnumerationReverse usingBlock:^(__kindof NSLayoutConstraint * _Nonnull obj, NSUInteger idx, BOOL * _Nonnull stop) {
+            if ( obj.firstItem == bufferProgressView ) {
+                if ( obj.firstAttribute == NSLayoutAttributeWidth ) {
+                    [self.containerView removeConstraint:obj];
+                }
+            }
+        }];
+        NSLayoutConstraint *bufferProgressWidthConstraint = [NSLayoutConstraint constraintWithItem:bufferProgressView attribute:NSLayoutAttributeWidth relatedBy:NSLayoutRelationEqual toItem:self.containerView attribute:NSLayoutAttributeWidth multiplier:bufferProgress constant:0];
         [self.containerView addConstraint:bufferProgressWidthConstraint];
     });
 }

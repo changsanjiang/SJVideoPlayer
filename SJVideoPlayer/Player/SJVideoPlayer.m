@@ -1501,11 +1501,16 @@ inline static NSString *_formatWithSec(NSInteger sec) {
 }
 
 - (void)jumpedToTime:(NSTimeInterval)time completionHandler:(void (^ __nullable)(BOOL finished))completionHandler {
+    if ( isnan(time) ) { return;}
     CMTime seekTime = CMTimeMakeWithSeconds(time, NSEC_PER_SEC);
     [self seekToTime:seekTime completionHandler:completionHandler];
 }
 
 - (void)seekToTime:(CMTime)time completionHandler:(void (^ __nullable)(BOOL finished))completionHandler {
+    if ( 1 == CMTimeCompare(time, self.asset.playerItem.duration) ) {
+        if ( completionHandler ) completionHandler(NO);
+        return;
+    }
     [self _startLoading];
     __weak typeof(self) _self = self;
     [self.asset.playerItem seekToTime:time completionHandler:^(BOOL finished) {

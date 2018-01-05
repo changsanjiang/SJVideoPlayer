@@ -2,6 +2,8 @@ PODS:
   - Masonry (1.1.0)
   - SJAttributesFactory (1.1.14)
   - SJBorderLineView (0.0.6)
+  - SJFullscreenPopGesture (1.1.4):
+    - SJObserverHelper
   - SJLabel (1.1.1):
     - SJAttributesFactory
     - SJLabel/Services (= 1.1.1)
@@ -22,8 +24,6 @@ PODS:
   - SJUIFactory/Category (0.0.9):
     - SJLabel
   - SJVideoPlayerAssetCarrier (0.0.3)
-  - SJVideoPlayerBackGR (1.1.3):
-    - SJObserverHelper
   - SJVolBrigControl (0.0.2):
     - Masonry
     - SJBorderLineView
@@ -35,19 +35,20 @@ PODS:
 DEPENDENCIES:
   - Masonry
   - SJBorderLineView
+  - SJFullscreenPopGesture
   - SJLoadingView
   - SJOrentationObserver
   - SJPrompt
   - SJSlider
   - SJUIFactory
   - SJVideoPlayerAssetCarrier
-  - SJVideoPlayerBackGR
   - SJVolBrigControl
 
 SPEC CHECKSUMS:
   Masonry: 678fab65091a9290e40e2832a55e7ab731aad201
   SJAttributesFactory: 10af803585a072a7d6273b87cb12f729f15b89a6
   SJBorderLineView: 5878e67fb57e812a2d5d029ca666068784b5448a
+  SJFullscreenPopGesture: eb9689bce59fce0bb61c04bc6d68342ec99ca514
   SJLabel: e0edc41dece3341ce99e5522d8c65d269c770ac7
   SJLoadingView: c3ff03e4b363a5b6a3ba0634d6bb9ce2647faf07
   SJObserverHelper: b270d707cd18ab76538596aa4e98cf798c9e9868
@@ -56,9 +57,8 @@ SPEC CHECKSUMS:
   SJSlider: 3dbcce053fec35fcb75da92c46d4f182f81f8603
   SJUIFactory: bf2413b9fc9bf76d39381b9ff48df454819244f5
   SJVideoPlayerAssetCarrier: 28658d73e025d6d209713b1272a8a16ccf1bab89
-  SJVideoPlayerBackGR: d8e6dda98c8c7615509c1707548371ae1379ea67
   SJVolBrigControl: eecc0b8ce4090159b928730b8b32d001b9090982
 
-PODFILE CHECKSUM: cc6e1f321a21ad85e68e8c06f4728868a6f29112
+PODFILE CHECKSUM: ad72e2ba2c5b2a7302b1d6301c4eacd126eb0035
 
 COCOAPODS: 1.4.0.rc.1

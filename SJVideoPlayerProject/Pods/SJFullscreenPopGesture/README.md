@@ -1,6 +1,9 @@
-# SJVideoPlayerBackGR
+# SJFullscreenPopGesture
 自定义全屏返回手势. 系统原生手势和自定义手势随意切换. 适用于带有视频播放器的App.    
-Customize full-screen return gestures. System native gestures and custom gestures are free to switch. App for App with video player.    
+Customize full-screen pop gesture. System native gestures and custom gestures are free to switch. App for App with video player.    
+
+### Sample
+<img src="https://github.com/changsanjiang/SJVideoPlayerBackGR/blob/master/SJBackGRProject/SJBackGRProject/GestrueSample.gif" width="40%">    
 
 ### 功能
 - 全屏手势(兼容scrollView, 当scrollView.contentOffset.x==0时, 触发全屏手势).
@@ -10,7 +13,7 @@ Customize full-screen return gestures. System native gestures and custom gesture
 
 ### Use
 ```
-pod 'SJVideoPlayerBackGR'
+pod 'SJFullscreenPopGesture'
 ```
 
 如果好用, 兄弟, 给个 Star 吧.
@@ -46,10 +49,6 @@ pod 'SJVideoPlayerBackGR'
     self.sj_fadeAreaViews = @[_btn, _view2];
 }
 ```
-
-### Example
-<img src="https://github.com/changsanjiang/SJVideoPlayerBackGR/blob/master/SJBackGRProject/SJBackGRProject/GestrueSample.gif" width="40%">    
-
 
 ### 天朝
 

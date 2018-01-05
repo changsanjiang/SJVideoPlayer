@@ -18,7 +18,7 @@ static float const __TimeRefreshInterval = 0.5;
 /*!
  *  0.0 - 1.0
  */
-static float const __GeneratePreImgInterval = 0.05;
+static float const __GeneratePreImgScale = 0.05;
 
 
 @interface SJTmpObj : NSObject
@@ -127,13 +127,12 @@ static float const __GeneratePreImgInterval = 0.05;
         
         if ( [keyPath isEqualToString:@"status"] ) {
             if ( !_jumped &&
-                 AVPlayerItemStatusReadyToPlay == self.playerItem.status &&
-                 0 != self.beginTime ) {
+                AVPlayerItemStatusReadyToPlay == self.playerItem.status &&
+                0 != self.beginTime ) {
                 // begin time
                 if ( _beginTime > self.duration ) return ;
-                CMTime time = CMTimeMakeWithSeconds(_beginTime, NSEC_PER_SEC);
                 __weak typeof(self) _self = self;
-                [self.playerItem seekToTime:time completionHandler:^(BOOL finished) {
+                [self jumpedToTime:_beginTime completionHandler:^(BOOL finished) {
                     __strong typeof(_self) self = _self;
                     if ( !self ) return;
                     self.jumped = YES;
@@ -172,55 +171,6 @@ static float const __GeneratePreImgInterval = 0.05;
 }
 
 #pragma mark -
-- (void)generatedPreviewImagesWithMaxItemSize:(CGSize)itemSize completion:(void (^)(SJVideoPlayerAssetCarrier * _Nonnull, NSArray<SJVideoPreviewModel *> * _Nullable, NSError * _Nullable))block {
-    
-    if ( !_asset ) return;
-    if ( 0 == _asset.duration.timescale ) return;
-    NSMutableArray<NSValue *> *timesM = [NSMutableArray new];
-    NSInteger seconds = (long)_asset.duration.value / _asset.duration.timescale;
-    if ( 0 == seconds || isnan(seconds) ) return;
-    if ( __GeneratePreImgInterval > 1.0 || __GeneratePreImgInterval <= 0 ) return;
-    __block short maxCount = (short)floorf(1.0 / __GeneratePreImgInterval);
-    short interval = (short)floor(seconds * __GeneratePreImgInterval);
-    for ( int i = 0 ; i < maxCount ; i ++ ) {
-        CMTime time = CMTimeMake(i * interval, 1);
-        NSValue *tV = [NSValue valueWithCMTime:time];
-        if ( tV ) [timesM addObject:tV];
-    }
-    __weak typeof(self) _self = self;
-    NSMutableArray <SJVideoPreviewModel *> *imagesM = [NSMutableArray new];
-    _imageGenerator = [AVAssetImageGenerator assetImageGeneratorWithAsset:_asset];
-    _imageGenerator.appliesPreferredTrackTransform = YES;
-    _imageGenerator.maximumSize = itemSize;
-    [_imageGenerator generateCGImagesAsynchronouslyForTimes:timesM completionHandler:^(CMTime requestedTime, CGImageRef  _Nullable imageRef, CMTime actualTime, AVAssetImageGeneratorResult result, NSError * _Nullable error) {
-
-        if ( result == AVAssetImageGeneratorSucceeded ) {
-            UIImage *image = [UIImage imageWithCGImage:imageRef];
-            SJVideoPreviewModel *model = [SJVideoPreviewModel previewModelWithImage:image localTime:actualTime];
-            if ( model ) [imagesM addObject:model];
-        }
-        else if ( result == AVAssetImageGeneratorFailed ) {
-            __strong typeof(_self) self = _self;
-            if ( !self ) return;
-            if ( block ) block(self, nil, error);
-            [self.imageGenerator cancelAllCGImageGeneration];
-        }
-        if ( --maxCount == 0 ) {
-            dispatch_async(dispatch_get_main_queue(), ^{
-                if ( 0 == imagesM.count ) return;
-                __strong typeof(_self) self = _self;
-                if ( !self ) return;
-                self.hasBeenGeneratedPreviewImages = YES;
-                self.generatedPreviewImages = imagesM;
-                if ( block ) block(self, imagesM, nil);
-            });
-        }
-    }];
-}
-
-- (void)cancelPreviewImagesGeneration {
-    [_imageGenerator cancelAllCGImageGeneration];
-}
 
 - (UIImage *)screenshot {
     CMTime time = _playerItem.currentTime;
@@ -261,6 +211,74 @@ static float const __GeneratePreImgInterval = 0.05;
     }];
 }
 
+#pragma mark -
+- (void)generatedPreviewImagesWithMaxItemSize:(CGSize)itemSize completion:(void (^)(SJVideoPlayerAssetCarrier * _Nonnull, NSArray<SJVideoPreviewModel *> * _Nullable, NSError * _Nullable))block {
+    
+    if ( !_asset ) return;
+    if ( 0 == _asset.duration.timescale ) return;
+    NSMutableArray<NSValue *> *timesM = [NSMutableArray new];
+    NSInteger seconds = (long)_asset.duration.value / _asset.duration.timescale;
+    if ( 0 == seconds || isnan(seconds) ) return;
+    if ( __GeneratePreImgScale > 1.0 || __GeneratePreImgScale <= 0 ) return;
+    __block short maxCount = (short)floorf(1.0 / __GeneratePreImgScale);
+    short interval = (short)floor(seconds * __GeneratePreImgScale);
+    for ( int i = 0 ; i < maxCount ; i ++ ) {
+        CMTime time = CMTimeMake(i * interval, 1);
+        NSValue *tV = [NSValue valueWithCMTime:time];
+        if ( tV ) [timesM addObject:tV];
+    }
+    __weak typeof(self) _self = self;
+    NSMutableArray <SJVideoPreviewModel *> *imagesM = [NSMutableArray new];
+    _imageGenerator = [AVAssetImageGenerator assetImageGeneratorWithAsset:_asset];
+    _imageGenerator.appliesPreferredTrackTransform = YES;
+    _imageGenerator.maximumSize = itemSize;
+    [_imageGenerator generateCGImagesAsynchronouslyForTimes:timesM completionHandler:^(CMTime requestedTime, CGImageRef  _Nullable imageRef, CMTime actualTime, AVAssetImageGeneratorResult result, NSError * _Nullable error) {
+        
+        if ( result == AVAssetImageGeneratorSucceeded ) {
+            UIImage *image = [UIImage imageWithCGImage:imageRef];
+            SJVideoPreviewModel *model = [SJVideoPreviewModel previewModelWithImage:image localTime:actualTime];
+            if ( model ) [imagesM addObject:model];
+        }
+        else if ( result == AVAssetImageGeneratorFailed ) {
+            __strong typeof(_self) self = _self;
+            if ( !self ) return;
+            if ( block ) block(self, nil, error);
+            [self.imageGenerator cancelAllCGImageGeneration];
+        }
+        if ( --maxCount == 0 ) {
+            dispatch_async(dispatch_get_main_queue(), ^{
+                if ( 0 == imagesM.count ) return;
+                __strong typeof(_self) self = _self;
+                if ( !self ) return;
+                self.hasBeenGeneratedPreviewImages = YES;
+                self.generatedPreviewImages = imagesM;
+                if ( block ) block(self, imagesM, nil);
+            });
+        }
+    }];
+}
+
+- (void)cancelPreviewImagesGeneration {
+    [_imageGenerator cancelAllCGImageGeneration];
+}
+
+- (void)jumpedToTime:(NSTimeInterval)time completionHandler:(void (^ __nullable)(BOOL finished))completionHandler {
+    if ( isnan(time) ) { return;}
+    CMTime seekTime = CMTimeMakeWithSeconds(time, NSEC_PER_SEC);
+    [self seekToTime:seekTime completionHandler:completionHandler];
+}
+
+- (void)seekToTime:(CMTime)time completionHandler:(void (^ __nullable)(BOOL finished))completionHandler {
+    if ( 1 == CMTimeCompare(time, _playerItem.duration) ) {
+        if ( completionHandler ) completionHandler(NO);
+        return;
+    }
+    
+    [_playerItem seekToTime:time completionHandler:^(BOOL finished) {
+        if ( completionHandler ) completionHandler(finished);
+    }];
+}
+
 - (NSTimeInterval)duration {
     return CMTimeGetSeconds(_playerItem.duration);
 }
@@ -286,7 +304,7 @@ static float const __GeneratePreImgInterval = 0.05;
     if ( _deallocCallBlock ) _deallocCallBlock(self);
 }
 
-#pragma mark 
+#pragma mark
 - (void)_injectTmpObjToScrollView {
     SJTmpObj *obj = [SJTmpObj new];
     __weak typeof(self) _self = self;
@@ -322,3 +340,4 @@ static float const __GeneratePreImgInterval = 0.05;
 }
 
 @end
+

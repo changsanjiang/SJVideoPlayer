@@ -81,6 +81,7 @@ inline static NSString *_formatWithSec(NSInteger sec) {
 @property (nonatomic, assign, readwrite) BOOL hiddenMoreSecondarySettingView;
 @property (nonatomic, assign, readwrite) BOOL hiddenLeftControlView;
 @property (nonatomic, assign, readwrite) BOOL userClickedPause;
+@property (nonatomic, assign, readwrite) BOOL suspend; // Set it when the [`pause` + `play` + `stop`] is called.
 @property (nonatomic, assign, readwrite) BOOL playOnCell;
 @property (nonatomic, assign, readwrite) BOOL scrollIn;
 @property (nonatomic, strong, readwrite) NSError *error;
@@ -1032,7 +1033,7 @@ inline static NSString *_formatWithSec(NSInteger sec) {
     _sjAnima(^{
         self.hideControl = NO;
     });
-    if ( self.autoplay && !self.userClickedPause ) [self play];
+    if ( self.autoplay && !self.userClickedPause && !self.suspend ) [self play];
 }
 
 - (void)_refreshingTimeLabelWithCurrentTime:(NSTimeInterval)currentTime duration:(NSTimeInterval)duration {
@@ -1482,6 +1483,7 @@ inline static NSString *_formatWithSec(NSInteger sec) {
         [self _playState];
     });
     [self _play];
+    self.suspend = NO;
     return YES;
 }
 
@@ -1492,6 +1494,7 @@ inline static NSString *_formatWithSec(NSInteger sec) {
     });
     [self _pause];
     if ( !self.playOnCell || self.orentation.fullScreen ) [self showTitle:@"已暂停"];
+    self.suspend = YES;
     return YES;
 }
 
@@ -1502,6 +1505,7 @@ inline static NSString *_formatWithSec(NSInteger sec) {
     if ( !self.asset ) return;
     [self _pause];
     [self _clearAsset];
+    self.suspend = NO;
 }
 
 - (void)jumpedToTime:(NSTimeInterval)time completionHandler:(void (^ __nullable)(BOOL finished))completionHandler {
@@ -1511,13 +1515,9 @@ inline static NSString *_formatWithSec(NSInteger sec) {
 }
 
 - (void)seekToTime:(CMTime)time completionHandler:(void (^ __nullable)(BOOL finished))completionHandler {
-    if ( 1 == CMTimeCompare(time, self.asset.playerItem.duration) ) {
-        if ( completionHandler ) completionHandler(NO);
-        return;
-    }
     [self _startLoading];
     __weak typeof(self) _self = self;
-    [self.asset.playerItem seekToTime:time completionHandler:^(BOOL finished) {
+    [self.asset seekToTime:time completionHandler:^(BOOL finished) {
         __strong typeof(_self) self = _self;
         if ( !self ) return;
         [self _stopLoading];

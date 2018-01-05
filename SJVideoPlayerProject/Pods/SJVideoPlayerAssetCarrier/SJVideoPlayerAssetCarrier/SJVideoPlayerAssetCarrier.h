@@ -70,6 +70,12 @@ NS_ASSUME_NONNULL_BEGIN
 - (void)cancelPreviewImagesGeneration;
 
 
+#pragma mark - seek to time
+- (void)jumpedToTime:(NSTimeInterval)time completionHandler:(void (^ __nullable)(BOOL finished))completionHandler;
+
+- (void)seekToTime:(CMTime)time completionHandler:(void (^ __nullable)(BOOL finished))completionHandler;
+
+
 #pragma mark - properties
 @property (nonatomic, strong, readonly) AVURLAsset *asset;
 @property (nonatomic, strong, readonly) AVPlayerItem *playerItem;
@@ -97,3 +103,4 @@ NS_ASSUME_NONNULL_BEGIN
 @end
 
 NS_ASSUME_NONNULL_END
+

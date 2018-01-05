@@ -47,7 +47,6 @@
     self.font = font;
     self.textColor = textColor;
     self.lineSpacing = lineSpacing;
-    [self _setupGestures];
     self.userInteractionEnabled = userInteractionEnabled;
     return self;
 }
@@ -77,38 +76,31 @@
     }
 }
 
+- (void)touchesBegan:(NSSet<UITouch *> *)touches withEvent:(UIEvent *)event {
+    __block BOOL action = NO;
+    if ( _drawData ) {
+        CGPoint point = [touches.anyObject locationInView:self];
+        signed long index = [_drawData touchIndexWithPoint:point];
+        if ( index != kCFNotFound && index < _drawData.attrStr.length ) {
+            NSRange range = NSMakeRange(0, 0);
+            NSDictionary<NSAttributedStringKey, id> *attributes = [_drawData.attrStr attributesAtIndex:index effectiveRange:&range];
+            id value = attributes[SJActionAttributeName];
+            if ( value ) {
+                void(^block)(NSRange range, NSAttributedString *str) = value;
+                action = YES;
+                block(range, [_drawData.attrStr attributedSubstringFromRange:range]);
+            }
+        }
+    }
+    
+    if ( !action ) {
+        [super touchesBegan:touches withEvent:event];
+    }
+}
+
 - (void)sizeToFit {
     self.bounds = (CGRect){CGPointZero, CGSizeMake(_drawData.width, _drawData.height)};
 }
-
-- (void)_setupGestures {
-    _tap = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(handleTapGesture:)];
-    self.userInteractionEnabled = YES;
-    _tap.delegate = self;
-    [self addGestureRecognizer:_tap];
-}
-
-- (BOOL)gestureRecognizerShouldBegin:(UIGestureRecognizer *)gestureRecognizer {
-    if ( gestureRecognizer != _tap ) return YES;
-    if ( !_drawData ) return NO;
-    
-    CGPoint point = [gestureRecognizer locationInView:self];
-    signed long index = [_drawData touchIndexWithPoint:point];
-    __block BOOL action = NO;
-    if ( index != kCFNotFound && index < _drawData.attrStr.length ) {
-        NSRange range = NSMakeRange(0, 0);
-        NSDictionary<NSAttributedStringKey, id> *attributes = [_drawData.attrStr attributesAtIndex:index effectiveRange:&range];
-        id value = attributes[SJActionAttributeName];
-        if ( value ) {
-            void(^block)(NSRange range, NSAttributedString *str) = value;
-            action = YES;
-            block(range, [_drawData.attrStr attributedSubstringFromRange:range]);
-        }
-    }
-    return action;
-}
-
-- (void)handleTapGesture:(UITapGestureRecognizer *)tap {}
 
 
 #pragma mark - Private

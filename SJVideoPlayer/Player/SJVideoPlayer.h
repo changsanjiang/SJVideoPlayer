@@ -21,6 +21,10 @@ NS_ASSUME_NONNULL_BEGIN
 
 + (instancetype)sharedPlayer;
 
++ (instancetype)player;
+
+- (instancetype)init;
+
 /*!
  *  present View. support autoLayout.
  *

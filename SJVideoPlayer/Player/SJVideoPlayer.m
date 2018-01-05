@@ -367,6 +367,10 @@ inline static NSString *_formatWithSec(NSInteger sec) {
     return _instance;
 }
 
++ (instancetype)player {
+    return [[self alloc] init];
+}
+
 #pragma mark
 
 - (instancetype)init {

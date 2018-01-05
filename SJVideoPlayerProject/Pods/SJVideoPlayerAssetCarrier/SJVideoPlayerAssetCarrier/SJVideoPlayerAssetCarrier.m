@@ -308,6 +308,7 @@ static float const __GeneratePreImgScale = 0.05;
 }
 
 #pragma mark
+
 - (void)_injectTmpObjToScrollView {
     SJTmpObj *obj = [SJTmpObj new];
     __weak typeof(self) _self = self;

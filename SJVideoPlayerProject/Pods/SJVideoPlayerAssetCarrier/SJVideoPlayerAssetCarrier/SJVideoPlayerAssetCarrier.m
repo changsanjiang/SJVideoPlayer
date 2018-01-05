@@ -44,6 +44,7 @@ static float const __GeneratePreImgScale = 0.05;
 @property (nonatomic, strong, readwrite) NSArray<SJVideoPreviewModel *> *generatedPreviewImages;
 @property (nonatomic, assign, readwrite) BOOL removedScrollObserver;
 @property (nonatomic, assign, readwrite) BOOL jumped;
+@property (nonatomic, strong, readwrite) AVPlayerItemVideoOutput *output;
 
 @end
 
@@ -294,6 +295,9 @@ static float const __GeneratePreImgScale = 0.05;
 }
 
 - (void)dealloc {
+    [_tmp_imageGenerator cancelAllCGImageGeneration];
+    [self cancelPreviewImagesGeneration];
+    [_player pause];
     [_player removeTimeObserver:_timeObserver];
     [[NSNotificationCenter defaultCenter] removeObserver:_itemEndObserver name:AVPlayerItemDidPlayToEndTimeNotification object:nil];
     [_playerItem removeObserver:self forKeyPath:@"status"];
@@ -305,6 +309,7 @@ static float const __GeneratePreImgScale = 0.05;
 }
 
 #pragma mark
+
 - (void)_injectTmpObjToScrollView {
     SJTmpObj *obj = [SJTmpObj new];
     __weak typeof(self) _self = self;

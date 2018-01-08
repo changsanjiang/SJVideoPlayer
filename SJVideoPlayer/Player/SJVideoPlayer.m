@@ -1123,6 +1123,7 @@ inline static NSString *_formatWithSec(NSInteger sec) {
 }
 
 - (void)setAsset:(SJVideoPlayerAssetCarrier *)asset {
+    [self stop];
     objc_setAssociatedObject(self, @selector(asset), asset, OBJC_ASSOCIATION_RETAIN_NONATOMIC);
     if ( !asset ) return;
     _presentView.asset = asset;
@@ -1489,7 +1490,7 @@ inline static NSString *_formatWithSec(NSInteger sec) {
 }
 
 - (BOOL)pause {
-    self.suspend = YES; 
+    self.suspend = YES;
     if ( !self.asset ) return NO;
     _sjAnima(^{
         [self _pauseState];
@@ -1575,3 +1576,4 @@ inline static NSString *_formatWithSec(NSInteger sec) {
 }
 
 @end
+

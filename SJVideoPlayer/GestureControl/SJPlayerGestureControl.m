@@ -54,6 +54,7 @@
     if ( _singleTap ) return _singleTap;
     _singleTap = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(handleSingleTap:)];
     _singleTap.delegate = self;
+    _singleTap.delaysTouchesBegan = YES;
     return _singleTap;
 }
 - (UITapGestureRecognizer *)doubleTap {
@@ -61,12 +62,14 @@
     _doubleTap = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(handleDoubleTap:)];
     _doubleTap.numberOfTapsRequired = 2;
     _doubleTap.delegate = self;
+    _doubleTap.delaysTouchesBegan = YES;
     return _doubleTap;
 }
 - (UIPanGestureRecognizer *)panGR {
     if ( _panGR ) return _panGR;
     _panGR = [[UIPanGestureRecognizer alloc] initWithTarget:self action:@selector(handlePan:)];
     _panGR.delegate = self;
+    _panGR.delaysTouchesBegan = YES;
     return _panGR;
 }
 
@@ -122,4 +125,3 @@
 }
 
 @end
-

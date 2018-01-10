@@ -14,13 +14,44 @@
 #import "SJCTImageData.h"
 #import <SJAttributesFactory/SJAttributesFactoryHeader.h>
 
+
+
+
+@interface SJDisplayLayer : CALayer
+
+- (void)setDrawData:(SJCTData *)drawData;
+
+@end
+
+@implementation SJDisplayLayer
+
+- (instancetype)initWithLayer:(id)layer {
+    self = [super initWithLayer:layer];
+    if ( !self ) return nil;
+    self.contentsGravity = kCAGravityResizeAspect;
+    return self;
+}
+
+- (void)setDrawData:(SJCTData *)drawData  {
+    [CATransaction begin];
+    [CATransaction setDisableActions:YES];
+    self.bounds = CGRectMake(0, 0, drawData.config.maxWidth, drawData.height_t);
+    self.position = CGPointMake(drawData.config.maxWidth * 0.5, drawData.height_t * 0.5);
+    self.contents = drawData.contents;
+    [CATransaction commit];
+}
+
+@end
+
+#pragma mark -
+
 @interface SJLabel ()<UIGestureRecognizerDelegate>
 
-@property (nonatomic, strong) SJCTData *drawData;
-
 @property (nonatomic, strong, readonly) SJStringParserConfig *config;
+@property (nonatomic, strong) SJDisplayLayer *displayLayer;
 
-@property (nonatomic, strong) UITapGestureRecognizer *tap;
+@property (nonatomic, strong) SJCTData *textDrawData;
+@property (nonatomic, strong) SJCTData *attrTextDrawData;
 
 @end
 
@@ -29,8 +60,12 @@
 @synthesize text = _text;
 @synthesize config = _config;
 
+- (instancetype)initWithFrame:(CGRect)frame {
+    return [self init];
+}
+
 - (instancetype)init {
-    return [self initWithText:nil font:nil textColor:nil lineSpacing:8 userInteractionEnabled:NO];
+    return [self initWithText:nil font:nil textColor:nil lineSpacing:0 userInteractionEnabled:NO];
 }
 
 - (instancetype)initWithText:(NSString * __nullable)text
@@ -48,32 +83,30 @@
     self.textColor = textColor;
     self.lineSpacing = lineSpacing;
     self.userInteractionEnabled = userInteractionEnabled;
+    [self.layer addSublayer:_displayLayer = [SJDisplayLayer layer]];
     return self;
 }
 
-- (void)layoutSublayersOfLayer:(CALayer *)layer {
+- (void)layoutSubviews {
+    [super layoutSubviews];
     if ( 0 == _preferredMaxLayoutWidth &&
-        0 != layer.bounds.size.width ) {
-        _config.maxWidth = floor(layer.bounds.size.width);
+         0 != self.bounds.size.width ) {
+        _config.maxWidth = floor(self.bounds.size.width);
     }
     [self _considerUpdating];
-    [self invalidateIntrinsicContentSize];
-    [super layoutSublayersOfLayer:layer];
 }
 
 - (CGSize)intrinsicContentSize {
-    return CGSizeMake(_drawData.width, _drawData.height_t);
-}
-
-- (void)drawRect:(CGRect)rect {
-    [super drawRect:rect];
     if ( _drawData ) {
-        CGContextRef context = UIGraphicsGetCurrentContext();
-        CGContextSetTextMatrix(context, CGAffineTransformIdentity);
-        CGContextTranslateCTM(context, 0, _drawData.height_t);
-        CGContextScaleCTM(context, 1.0, -1.0);
-        [_drawData drawingWithContext:context];
+        return CGSizeMake(_drawData.width, _drawData.height_t);
     }
+    else if ( _attributedText ) {
+        return CGSizeMake(_attrTextDrawData.width, _attrTextDrawData.height_t);
+    }
+    else if ( _text ) {
+        return CGSizeMake(_textDrawData.width, _textDrawData.height_t);
+    }
+    return CGSizeZero;
 }
 
 - (void)touchesBegan:(NSSet<UITouch *> *)touches withEvent:(UIEvent *)event {
@@ -102,29 +135,16 @@
     self.bounds = (CGRect){CGPointZero, CGSizeMake(_drawData.width, _drawData.height)};
 }
 
-
-#pragma mark - Private
-
-- (void)_considerUpdating {
-    if ( _text ) {
-        self.drawData = [SJCTFrameParser parserContent:_text config:_config];
-    }
-    else if ( _attributedText ) {
-        self.drawData = [SJCTFrameParser parserAttributedStr:_attributedText config:_config];
-    }
-}
-
 #pragma mark - Property
 
 - (void)setText:(NSString *)text {
+    if ( [text isEqualToString:_text] ) return;
     _text = text.copy;
-    _attributedText = nil;
     [self _considerUpdating];
 }
 
 - (void)setAttributedText:(NSAttributedString *)attributedText {
     _attributedText = attributedText.copy;
-    _text = nil;
     [self _considerUpdating];
 }
 
@@ -203,14 +223,40 @@
     return [SJCTFrameParser parserAttributedStr:content config:config];
 }
 
-- (void)setDrawData:(SJCTData *)drawData {
-    if ( drawData != _drawData ) {
-        _drawData = drawData;
-        [self invalidateIntrinsicContentSize];
-        [_drawData needsDrawing];
-        [self.layer setNeedsDisplay];
+#pragma mark - Private
+
+- (void)_considerUpdating {
+    if ( _drawData ) {
+        
+    }
+    else if ( _attributedText ) {
+        self.attrTextDrawData = [SJCTFrameParser parserAttributedStr:_attributedText config:_config];
+    }
+    else if ( _text ) {
+        self.textDrawData = [SJCTFrameParser parserContent:_text config:_config];
     }
 }
 
-@end
+- (void)setTextDrawData:(SJCTData *)textDrawData {
+    if ( textDrawData == _textDrawData ) return;
+    _textDrawData = textDrawData;
+    [self _setContentsWithDrawData:textDrawData];
+}
 
+- (void)setAttrTextDrawData:(SJCTData *)attrTextDrawData {
+    if ( attrTextDrawData == _attrTextDrawData ) return;
+    _attrTextDrawData = attrTextDrawData;
+    [self _setContentsWithDrawData:attrTextDrawData];
+}
+
+- (void)setDrawData:(SJCTData *)drawData {
+    if ( drawData == _drawData ) return;
+    _drawData = drawData;
+    [self _setContentsWithDrawData:drawData];
+}
+
+- (void)_setContentsWithDrawData:(SJCTData *)drawData {
+    [self invalidateIntrinsicContentSize];
+    [_displayLayer setDrawData:drawData];
+}
+@end

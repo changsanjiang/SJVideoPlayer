@@ -8,10 +8,14 @@
 
 #import "SJCTFrameParserConfig.h"
 
+NS_ASSUME_NONNULL_BEGIN
+
 @interface SJStringParserConfig : SJCTFrameParserConfig
 
-@property (nonatomic, strong) UIFont *font;
-@property (nonatomic, strong) UIColor *textColor;
+@property (nonatomic, strong, null_resettable) UIFont *font;
+@property (nonatomic, strong, null_resettable) UIColor *textColor;
 @property (nonatomic, assign) NSTextAlignment textAlignment;
 
 @end
+
+NS_ASSUME_NONNULL_END

@@ -2,12 +2,12 @@ PODS:
   - Masonry (1.1.0)
   - SJAttributesFactory (1.1.14)
   - SJBorderLineView (0.0.6)
-  - SJFullscreenPopGesture (1.1.4):
+  - SJFullscreenPopGesture (1.1.6):
     - SJObserverHelper
-  - SJLabel (1.1.1):
+  - SJLabel (1.1.5):
     - SJAttributesFactory
-    - SJLabel/Services (= 1.1.1)
-  - SJLabel/Services (1.1.1):
+    - SJLabel/Services (= 1.1.5)
+  - SJLabel/Services (1.1.5):
     - SJAttributesFactory
   - SJLoadingView (1.0.1)
   - SJObserverHelper (1.0.3)
@@ -48,8 +48,8 @@ SPEC CHECKSUMS:
   Masonry: 678fab65091a9290e40e2832a55e7ab731aad201
   SJAttributesFactory: 10af803585a072a7d6273b87cb12f729f15b89a6
   SJBorderLineView: 5878e67fb57e812a2d5d029ca666068784b5448a
-  SJFullscreenPopGesture: eb9689bce59fce0bb61c04bc6d68342ec99ca514
-  SJLabel: e0edc41dece3341ce99e5522d8c65d269c770ac7
+  SJFullscreenPopGesture: ad819409acf46f6db2fd31e7106528ed1f563397
+  SJLabel: d59e1cc34169419fd512923acaa19dfcf791b3c7
   SJLoadingView: c3ff03e4b363a5b6a3ba0634d6bb9ce2647faf07
   SJObserverHelper: b270d707cd18ab76538596aa4e98cf798c9e9868
   SJOrentationObserver: f5d5df501bb4f9c2de24fa54ba56b4663b94531f

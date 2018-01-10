@@ -64,6 +64,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 
 #pragma mark -
+
 + (SJCTData *)parserContent:(NSString *)content
                      config:(SJStringParserConfig *)config;
 
@@ -75,7 +76,7 @@ NS_ASSUME_NONNULL_BEGIN
 + (SJCTData *)parserAttributedStr:(NSAttributedString *)content
                            config:(SJCTFrameParserConfig *)config;
 
-- (void)setDrawData:(SJCTData * _Nullable)drawData;
+@property (nonatomic, strong) SJCTData *drawData;
 
 @end
 

@@ -20,7 +20,7 @@
 @property (nonatomic, strong) NSArray<SJCTImageData *> *imageDataArray;
 @property (nonatomic, strong) NSAttributedString *attrStr;
 @property (nonatomic, strong) SJCTFrameParserConfig *config;
-
+@property (nonatomic, strong) id contents;
 
 - (void)needsDrawing;
 

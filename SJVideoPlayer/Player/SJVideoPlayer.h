@@ -148,6 +148,11 @@ NS_ASSUME_NONNULL_BEGIN
  **/
 @property (nonatomic, copy, readwrite, nullable) void(^rotatedScreen)(SJVideoPlayer *player, BOOL isFullScreen);
 
+/*!
+ *  播放完毕的时候调用.
+ **/
+@property (nonatomic, copy, readwrite, nullable) void(^playDidToEnd)(SJVideoPlayer *player);
+
 @end
 
 

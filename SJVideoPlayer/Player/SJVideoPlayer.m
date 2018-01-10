@@ -1033,6 +1033,7 @@ inline static NSString *_formatWithSec(NSInteger sec) {
     _sjAnima(^{
         self.hideControl = NO;
     });
+
     if ( self.autoplay && !self.userClickedPause && !self.suspend ) {
         [self play];
     }
@@ -1084,7 +1085,7 @@ inline static NSString *_formatWithSec(NSInteger sec) {
         }
         else {
             [self _stopLoading];
-            if ( !self.userClickedPause ) [self play];
+            if ( !self.userClickedPause && !self.suspend ) [self play];
         }
     });
 }
@@ -1123,7 +1124,7 @@ inline static NSString *_formatWithSec(NSInteger sec) {
 }
 
 - (void)setAsset:(SJVideoPlayerAssetCarrier *)asset {
-    [self stop];
+    [self _clear];
     objc_setAssociatedObject(self, @selector(asset), asset, OBJC_ASSOCIATION_RETAIN_NONATOMIC);
     if ( !asset ) return;
     _presentView.asset = asset;
@@ -1164,6 +1165,7 @@ inline static NSString *_formatWithSec(NSInteger sec) {
         __strong typeof(_self) self = _self;
         if ( !self ) return;
         [self _itemPlayEnd];
+        if ( self.playDidToEnd ) self.playDidToEnd(self);
     };
     
     asset.loadedTimeProgress = ^(float progress) {
@@ -1288,7 +1290,10 @@ inline static NSString *_formatWithSec(NSInteger sec) {
     return objc_getAssociatedObject(self, _cmd);
 }
 
-- (void)_clearAsset {
+- (void)_clear {
+    _sjAnima(^{
+        [self _unknownState];
+    });
     if ( self.generatePreviewImages && !self.asset.hasBeenGeneratedPreviewImages ) [self.asset cancelPreviewImagesGeneration];
     objc_setAssociatedObject(self, @selector(asset), nil, OBJC_ASSOCIATION_ASSIGN);
 }
@@ -1430,6 +1435,14 @@ inline static NSString *_formatWithSec(NSInteger sec) {
     return objc_getAssociatedObject(self, _cmd);
 }
 
+- (void)setPlayDidToEnd:(void (^)(SJVideoPlayer * _Nonnull))playDidToEnd {
+    objc_setAssociatedObject(self, @selector(playDidToEnd), playDidToEnd, OBJC_ASSOCIATION_COPY_NONATOMIC);
+}
+
+- (void (^)(SJVideoPlayer * _Nonnull))playDidToEnd {
+    return objc_getAssociatedObject(self, _cmd);
+}
+
 - (void)setRate:(float)rate {
     if ( self.rate == rate ) return;
     objc_setAssociatedObject(self, @selector(rate), @(rate), OBJC_ASSOCIATION_RETAIN_NONATOMIC);
@@ -1480,6 +1493,7 @@ inline static NSString *_formatWithSec(NSInteger sec) {
 
 - (BOOL)play {
     self.suspend = NO;
+    
     if ( !self.asset ) return NO;
     self.userClickedPause = NO;
     _sjAnima(^{
@@ -1491,6 +1505,7 @@ inline static NSString *_formatWithSec(NSInteger sec) {
 
 - (BOOL)pause {
     self.suspend = YES;
+    
     if ( !self.asset ) return NO;
     _sjAnima(^{
         [self _pauseState];
@@ -1502,11 +1517,10 @@ inline static NSString *_formatWithSec(NSInteger sec) {
 
 - (void)stop {
     self.suspend = NO;
+    
     if ( !self.asset ) return;
-    _sjAnima(^{
-        [self _unknownState];
-    });
-    [self _clearAsset];
+    
+    [self _clear];
 }
 
 - (void)jumpedToTime:(NSTimeInterval)time completionHandler:(void (^ __nullable)(BOOL finished))completionHandler {
@@ -1576,4 +1590,3 @@ inline static NSString *_formatWithSec(NSInteger sec) {
 }
 
 @end
-

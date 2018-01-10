@@ -89,8 +89,16 @@
     CGPoint baseLineOrigins[numberOfLines];
     CTFrameGetLineOrigins(frameRef, CFRangeMake(0, numberOfLines), baseLineOrigins);
     
+    
+    // 求出平均行间隔
+    // 行数, 每行高度, 每行间隔
+    
     //    CGFloat lineH = ABS(_config.font.descender) + _config.font.ascender + _config.font.leading + _config.lineSpacing;
     for ( CFIndex lineIndex = 0 ; lineIndex < numberOfLines ; lineIndex ++ ) {
+//        @property (nonatomic, assign) int postion;
+//        @property (nonatomic, assign) CGRect imagePosition; // Core Text Coordinate
+//        哦 我review了一下，我的做法还是有点不一样，我是先求出该段文本的高，再对每一行进行偏移设定，让每一行的平均高度变得一致，而不是单独改变有emoji的行高。所以我这种做法的总高度还是不会变的
+        
         
         CGPoint lineOrigin = baseLineOrigins[lineIndex];
         CTLineRef nextLine = CFArrayGetValueAtIndex(linesArr, lineIndex);
@@ -152,6 +160,7 @@
         [_drawingLinesM enumerateObjectsUsingBlock:^(SJLineModel * _Nonnull obj, NSUInteger idx, BOOL * _Nonnull stop) {
             height += obj.height + _config.lineSpacing;
         }];
+        height -= _config.lineSpacing;
         _height_t = ceil(height);
         
         CGFloat offset = _height - _height_t;
@@ -171,17 +180,30 @@
     else {
         _height_t = _height;
     }
+    
+    CGRect rect = CGRectMake(0.0f, 0.0f, _config.maxWidth, _height_t);
+    UIGraphicsBeginImageContextWithOptions(rect.size, NO, 0);
+    CGContextRef context = UIGraphicsGetCurrentContext();
+    CGContextSetTextMatrix(context, CGAffineTransformIdentity);
+    CGContextTranslateCTM(context, 0, _height_t);
+    CGContextScaleCTM(context, 1.0, -1.0);
+    [self drawingWithContext:context];
+    UIImage *image = UIGraphicsGetImageFromCurrentImageContext();
+    UIGraphicsEndImageContext();
+    self.contents = (__bridge id)image.CGImage;
 }
 
 - (void)drawingWithContext:(CGContextRef)context {
-    [_drawingLinesM enumerateObjectsUsingBlock:^(SJLineModel * _Nonnull obj, NSUInteger idx, BOOL * _Nonnull stop) {
-        CGContextSetTextPosition(context, obj.origin.x, obj.origin.y);
-        CTLineDraw(obj.line, context);
-    }];
-    
-    for ( SJCTImageData *imageData in _imageDataArray ) {
-        UIImage *image = imageData.imageAttachment.image;
-        if ( image ) { CGContextDrawImage(context, imageData.imagePosition, image.CGImage);}
+    @autoreleasepool {
+        [_drawingLinesM enumerateObjectsUsingBlock:^(SJLineModel * _Nonnull obj, NSUInteger idx, BOOL * _Nonnull stop) {
+            CGContextSetTextPosition(context, obj.origin.x, obj.origin.y);
+            CTLineDraw(obj.line, context);
+        }];
+        
+        for ( SJCTImageData *imageData in _imageDataArray ) {
+            UIImage *image = imageData.imageAttachment.image;
+            if ( image ) { CGContextDrawImage(context, imageData.imagePosition, image.CGImage);}
+        }
     }
 }
 

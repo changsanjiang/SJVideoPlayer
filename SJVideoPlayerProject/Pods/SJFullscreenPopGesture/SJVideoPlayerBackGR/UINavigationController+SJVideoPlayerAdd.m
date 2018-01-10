@@ -48,10 +48,19 @@ static NSMutableArray<UIImage *> * SJ_screenshotImagesM;
 }
 
 - (void)SJ_dismissViewControllerAnimated:(BOOL)flag completion:(void (^)(void))completion {
-    if ( self.navigationController && self.presentingViewController ) {
-        // reset image
-        [self SJ_dumpingScreenshotWithNum:(NSInteger)self.navigationController.childViewControllers.count - 1]; // 由于最顶层的视图还未截取, 所以这里 - 1. 以下相同.
-        [self SJ_resetScreenshotImage];
+    if ( [self isKindOfClass:[UIImagePickerController class]] ) {
+        if ( 0 != self.childViewControllers.count ) {
+            // 由于最顶层的视图还未截取, 所以这里 - 1. 以下相同.
+            [self SJ_dumpingScreenshotWithNum:(NSInteger)self.navigationController.childViewControllers.count - 1];
+            // reset image
+            [self SJ_resetScreenshotImage];
+        }
+    }
+    else if ( self.navigationController && self.presentingViewController ) {
+        if ( 0 != self.navigationController.childViewControllers ) {
+            [self SJ_dumpingScreenshotWithNum:(NSInteger)self.navigationController.childViewControllers.count - 1];
+            [self SJ_resetScreenshotImage];
+        }
     }
     
     // call origin method
@@ -132,7 +141,6 @@ static __weak UIWindow *_window;
 @implementation UINavigationController (SJExtension)
 
 + (void)load {
-    
     static dispatch_once_t onceToken;
     dispatch_once(&onceToken, ^{
         // App launching
@@ -191,9 +199,6 @@ static __weak UIWindow *_window;
     self.view.layer.shadowColor = [UIColor colorWithWhite:0 alpha:0.2].CGColor;
     self.view.layer.shadowRadius = 1;
     self.view.layer.shadowOpacity = 1;
-    
-    // delegate
-    self.delegate = (id)[UINavigationController class];
 }
 
 // observer
@@ -211,13 +216,9 @@ static __weak UIWindow *_window;
 }
 
 // Push
-static UINavigationControllerOperation _navOperation;
 - (void)SJ_pushViewController:(UIViewController *)viewController animated:(BOOL)animated {
-    _navOperation = UINavigationControllerOperationPush;
-    
     if ( self.interactivePopGestureRecognizer &&
         !self.isObserver ) [self SJ_navSettings];
-    
     // push update screenshot
     [self SJ_updateScreenshot];
     // call origin method
@@ -226,45 +227,31 @@ static UINavigationControllerOperation _navOperation;
 
 // Pop
 - (UIViewController *)SJ_popViewControllerAnimated:(BOOL)animated {
-    _navOperation = UINavigationControllerOperationPop;
+    // reset
+    [self SJ_resetScreenshotImage];
     // call origin method
     return [self SJ_popViewControllerAnimated:animated];
 }
 
 // Pop To RootView Controller
 - (NSArray<UIViewController *> *)SJ_popToRootViewControllerAnimated:(BOOL)animated {
-    _navOperation = UINavigationControllerOperationPop;
     [self SJ_dumpingScreenshotWithNum:((NSInteger)self.childViewControllers.count - 1) - 1];
+    // reset
+    [self SJ_resetScreenshotImage];
     return [self SJ_popToRootViewControllerAnimated:animated];
 }
 
 // Pop To View Controller
 - (NSArray<UIViewController *> *)SJ_popToViewController:(UIViewController *)viewController animated:(BOOL)animated {
-    _navOperation = UINavigationControllerOperationPop;
     [self.childViewControllers enumerateObjectsUsingBlock:^(__kindof UIViewController * _Nonnull obj, NSUInteger idx, BOOL * _Nonnull stop) {
         if ( viewController != obj ) return;
         *stop = YES;
         // 由于数组索引从 0 开始, 所以这里 idx + 1, 以下相同
         [self SJ_dumpingScreenshotWithNum:((NSInteger)self.childViewControllers.count - 1) - ((NSInteger)idx + 1)];
     }];
-    return [self SJ_popToViewController:viewController animated:animated];
-}
-
-// navController delegate
-static __weak UIViewController *_tmpShowViewController;
-+ (void)navigationController:(UINavigationController *)navigationController willShowViewController:(UIViewController *)viewController animated:(BOOL)animated {
-    if ( _navOperation == UINavigationControllerOperationPush ) { return;}
-    _tmpShowViewController = viewController;
-}
-
-+ (void)navigationController:(UINavigationController *)navigationController didShowViewController:(UIViewController *)viewController animated:(BOOL)animated {
-    if ( _navOperation != UINavigationControllerOperationPop ) return;
-    if ( _tmpShowViewController != viewController ) return;
-    
     // reset
     [self SJ_resetScreenshotImage];
-    _tmpShowViewController = nil;
-    _navOperation = UINavigationControllerOperationNone;
+    return [self SJ_popToViewController:viewController animated:animated];
 }
 
 @end
@@ -390,7 +377,7 @@ static __weak UIViewController *_tmpShowViewController;
     UIWindow *window = self.view.window;
     [window.subviews enumerateObjectsWithOptions:NSEnumerationReverse usingBlock:^(__kindof UIView * _Nonnull obj, NSUInteger idx, BOOL * _Nonnull stop) {
         if ( [obj isMemberOfClass:NSClassFromString(@"UITransitionView")] ||
-             [obj isMemberOfClass:NSClassFromString(@"UILayoutContainerView")] ) {
+            [obj isMemberOfClass:NSClassFromString(@"UILayoutContainerView")] ) {
             *stop = YES;
             [window insertSubview:self.SJ_screenshotView belowSubview:obj];
         }

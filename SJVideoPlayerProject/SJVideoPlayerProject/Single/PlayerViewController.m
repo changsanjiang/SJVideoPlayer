@@ -80,7 +80,6 @@
         }
     };
     
-    
     /// 配置`更多页面`展示的`item`
     [self _setPlayerMoreSettingItems];
     
@@ -90,10 +89,15 @@
         _videoPlayer.asset = [[SJVideoPlayerAssetCarrier alloc] initWithAssetURL:[NSURL URLWithString:@"http://pu.latin5.com/bd1c831d-7024-4b17-a03e-e8ab89bb2a4b.m3u8"]];
         _networked = YES;
     });
+    
+    
+    NSLog(@"vc = %@, player = %@", self, _videoPlayer);
+    
     // Do any additional setup after loading the view.
 }
 
 - (void)dealloc {
+    
     /// 销毁
     [self.videoPlayer stop];
 }

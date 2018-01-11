@@ -1,34 +1,35 @@
 //
-//  PlayerTableViewCell.m
+//  PlayerCollectionViewCell.m
 //  SJVideoPlayerProject
 //
-//  Created by BlueDancer on 2017/12/6.
-//  Copyright © 2017年 SanJiang. All rights reserved.
+//  Created by 畅三江 on 2018/1/11.
+//  Copyright © 2018年 SanJiang. All rights reserved.
 //
 
-#import "PlayerTableViewCell.h"
+#import "PlayerCollectionViewCell.h"
 #import <SJUIFactory/SJUIFactory.h>
 #import <Masonry.h>
 
-@interface PlayerTableViewCell ()
+@interface PlayerCollectionViewCell ()
 
 @property (nonatomic, strong, readonly) UIImageView *playImageView;
 
 @end
 
-@implementation PlayerTableViewCell
+@implementation PlayerCollectionViewCell
 @synthesize playImageView = _playImageView;
 @synthesize backgroundImageView = _backgroundImageView;
 
-+ (CGFloat)height {
-    return 200;
++ (CGSize)itemSize {
+    CGFloat w = SJScreen_W() - 44;
+    CGFloat h = w * 9.0 / 16;
+    return CGSizeMake(w, h);
 }
 
-- (instancetype)initWithStyle:(UITableViewCellStyle)style reuseIdentifier:(NSString *)reuseIdentifier {
-    self = [super initWithStyle:style reuseIdentifier:reuseIdentifier];
+- (instancetype)initWithFrame:(CGRect)frame {
+    self = [super initWithFrame:frame];
     if ( !self ) return nil;
     [self setupView];
-    self.selectionStyle = UITableViewCellSelectionStyleNone;
     return self;
 }
 
@@ -49,8 +50,8 @@
 }
 
 - (void)handleTap {
-    if ( [_delegate respondsToSelector:@selector(clickedPlayOnTabCell:)] ) {
-        [_delegate clickedPlayOnTabCell:self];
+    if ( [_delegate respondsToSelector:@selector(clickedPlayOnColCell:)] ) {
+        [_delegate clickedPlayOnColCell:self];
     }
 }
 

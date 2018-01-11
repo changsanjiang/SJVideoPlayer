@@ -14,6 +14,8 @@ NS_ASSUME_NONNULL_BEGIN
 
 @interface PlayerTableViewCell : UITableViewCell
 
++ (CGFloat)height;
+
 @property (nonatomic, weak, readwrite, nullable) id<PlayerTableViewCellDelegate> delegate;
 
 @property (nonatomic, strong, readonly) UIImageView *backgroundImageView;

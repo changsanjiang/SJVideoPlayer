@@ -357,6 +357,7 @@ inline static NSString *_formatWithSec(NSInteger sec) {
     SJLoadingView *_loadingView;
     SJPlayerGestureControl *_gestureControl;
     dispatch_queue_t _workQueue;
+    SJVideoPlayerAssetCarrier *_asset;
 }
 
 + (instancetype)sharedPlayer {
@@ -402,6 +403,10 @@ inline static NSString *_formatWithSec(NSInteger sec) {
     return self;
 }
 
+- (void)dealloc {
+    NSLog(@"%s", __func__);
+}
+
 - (dispatch_queue_t)workQueue {
     if ( _workQueue ) return _workQueue;
     _workQueue = dispatch_queue_create("com.SJVideoPlayer.workQueue", DISPATCH_QUEUE_SERIAL);
@@ -431,12 +436,12 @@ inline static NSString *_formatWithSec(NSInteger sec) {
         CGSize size = CGSizeMake(width, height);
         _self.controlView.draggingProgressView.size = size;
         [_self.asset generatedPreviewImagesWithMaxItemSize:size completion:^(SJVideoPlayerAssetCarrier * _Nonnull asset, NSArray<SJVideoPreviewModel *> * _Nullable images, NSError * _Nullable error) {
+            __strong typeof(_self) self = _self;
+            if ( !self ) return;
             if ( error ) {
                 _sjErrorLog(@"Generate Preview Image Failed!");
             }
             else {
-                __strong typeof(_self) self = _self;
-                if ( !self ) return;
                 if ( self.orentation.fullScreen ) {
                     _sjAnima(^{
                         _sjShowViews(@[self.controlView.topControlView.previewBtn]);
@@ -595,6 +600,21 @@ inline static NSString *_formatWithSec(NSInteger sec) {
     if ( _orentation ) return _orentation;
     _orentation = [[SJOrentationObserver alloc] initWithTarget:self.presentView container:self.view];
     __weak typeof(self) _self = self;
+    _orentation.rotationCondition = ^BOOL(SJOrentationObserver * _Nonnull observer) {
+        __strong typeof(_self) self = _self;
+        if ( !self ) return NO;
+        switch (self.state) {
+            case SJVideoPlayerPlayState_Unknown:
+            case SJVideoPlayerPlayState_Prepare:
+            case SJVideoPlayerPlayState_PlayFailed: return NO;
+            default: break;
+        }
+        if ( self.playOnCell && !self.scrollIn ) return NO;
+        if ( self.disableRotation ) return NO;
+        if ( self.isLockedScrren ) return NO;
+        return YES;
+    };
+    
     _orentation.orientationChanged = ^(SJOrentationObserver * _Nonnull observer) {
         __strong typeof(_self) self = _self;
         if ( !self ) return;
@@ -628,20 +648,6 @@ inline static NSString *_formatWithSec(NSInteger sec) {
         if ( self.rotatedScreen ) self.rotatedScreen(self, observer.isFullScreen);
     };
     
-    _orentation.rotationCondition = ^BOOL(SJOrentationObserver * _Nonnull observer) {
-        __strong typeof(_self) self = _self;
-        if ( !self ) return NO;
-        switch (self.state) {
-            case SJVideoPlayerPlayState_Unknown:
-            case SJVideoPlayerPlayState_Prepare:
-            case SJVideoPlayerPlayState_PlayFailed: return NO;
-            default: break;
-        }
-        if ( self.playOnCell && !self.scrollIn ) return NO;
-        if ( self.disableRotation ) return NO;
-        if ( self.isLockedScrren ) return NO;
-        return YES;
-    };
     return _orentation;
 }
 
@@ -759,7 +765,6 @@ inline static NSString *_formatWithSec(NSInteger sec) {
         }
     };
     
-    static __weak UIView *target = nil;
     _gestureControl.beganPan = ^(SJPlayerGestureControl * _Nonnull control, SJPanDirection direction, SJPanLocation location) {
         __strong typeof(_self) self = _self;
         if ( !self ) return;
@@ -858,7 +863,6 @@ inline static NSString *_formatWithSec(NSInteger sec) {
                 break;
             case SJPanDirection_Unknown: break;
         }
-        target = nil;
     };
 }
 
@@ -1125,8 +1129,9 @@ inline static NSString *_formatWithSec(NSInteger sec) {
 
 - (void)setAsset:(SJVideoPlayerAssetCarrier *)asset {
     [self _clear];
-    objc_setAssociatedObject(self, @selector(asset), asset, OBJC_ASSOCIATION_RETAIN_NONATOMIC);
+    _asset = asset;
     if ( !asset ) return;
+    _view.alpha = 1;
     _presentView.asset = asset;
     _controlView.asset = asset;
     
@@ -1180,13 +1185,8 @@ inline static NSString *_formatWithSec(NSInteger sec) {
         [self _buffering];
     };
     
-    asset.deallocCallBlock = ^(SJVideoPlayerAssetCarrier * _Nonnull asset) {
-        __strong typeof(_self) self = _self;
-        if ( !self ) return;
-        self.view.alpha = 1;
-    };
-    
     if ( asset.indexPath ) {
+        /// 默认滑入
         self.playOnCell = YES;
         self.scrollIn = YES;
     }
@@ -1196,13 +1196,11 @@ inline static NSString *_formatWithSec(NSInteger sec) {
     }
     
     if ( asset.scrollView ) {
-        /// 默认滑入
-        self.scrollIn = YES;
-        
         /// 滑入
         asset.scrollIn = ^(SJVideoPlayerAssetCarrier * _Nonnull asset, UIView * _Nonnull superview) {
             __strong typeof(_self) self = _self;
             if ( !self ) return;
+            if ( self.scrollIn ) return;
             self.scrollIn = YES;
             self.hideControl = NO;
             self.view.alpha = 1;
@@ -1213,37 +1211,23 @@ inline static NSString *_formatWithSec(NSInteger sec) {
                     make.edges.equalTo(self.view.superview);
                 }];
             }
+            if ( !self.userPaused ) [self play];
         };
         
         /// 滑出
         asset.scrollOut = ^(SJVideoPlayerAssetCarrier * _Nonnull asset) {
             __strong typeof(_self) self = _self;
             if ( !self ) return;
+            if ( !self.scrollIn ) return;
             self.scrollIn = NO;
             self.view.alpha = 0.001;
-            [self pause];
-        };
-    }
-    
-    if ( asset.parentScrollView ) {
-        asset.parentScrollIn = ^(SJVideoPlayerAssetCarrier * _Nonnull asset) {
-            __strong typeof(_self) self = _self;
-            if ( !self ) return;
-            self.scrollIn = YES;
-            if ( !self.userPaused ) [self play];
-        };
-        
-        asset.parentScrollOut = ^(SJVideoPlayerAssetCarrier * _Nonnull asset) {
-            __strong typeof(_self) self = _self;
-            if ( !self ) return;
-            self.scrollIn = NO;
             [self pause];
         };
     }
 }
 
 - (SJVideoPlayerAssetCarrier *)asset {
-    return objc_getAssociatedObject(self, _cmd);
+    return _asset;
 }
 
 - (void)_clear {
@@ -1251,7 +1235,7 @@ inline static NSString *_formatWithSec(NSInteger sec) {
         [self _unknownState];
     });
     if ( self.generatePreviewImages && !self.asset.hasBeenGeneratedPreviewImages ) [self.asset cancelPreviewImagesGeneration];
-    objc_setAssociatedObject(self, @selector(asset), nil, OBJC_ASSOCIATION_ASSIGN);
+    _asset = nil;
 }
 
 - (void)setMoreSettings:(NSArray<SJVideoPlayerMoreSetting *> *)moreSettings {

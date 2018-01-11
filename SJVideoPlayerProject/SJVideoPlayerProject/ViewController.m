@@ -9,6 +9,8 @@
 #import "ViewController.h"
 #import "PlayerViewController.h"
 #import "PlayerTableViewController.h"
+#import "PlayerCollectionViewController.h"
+#import "NestedTableViewController.h"
 
 @interface ViewController ()
 
@@ -28,6 +30,14 @@
 
 - (IBAction)pushTable:(id)sender {
     [self.navigationController pushViewController:[[PlayerTableViewController alloc] init] animated:YES];
+}
+
+- (IBAction)pushCollection:(id)sender {
+    [self.navigationController pushViewController:[[PlayerCollectionViewController alloc] init] animated:YES];
+}
+
+- (IBAction)pushNested:(id)sender {
+    [self.navigationController pushViewController:[[NestedTableViewController alloc] init] animated:YES];
 }
 
 - (void)didReceiveMemoryWarning {

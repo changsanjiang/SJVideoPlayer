@@ -57,6 +57,11 @@
 		77EACC261FF28E5300E2B3AE /* IMG_0481.PNG in Resources */ = {isa = PBXBuildFile; fileRef = 77EACC231FF28E5200E2B3AE /* IMG_0481.PNG */; };
 		77EACC271FF28E5300E2B3AE /* IMG_0480.PNG in Resources */ = {isa = PBXBuildFile; fileRef = 77EACC241FF28E5200E2B3AE /* IMG_0480.PNG */; };
 		77EDB3591FD2CA550075A014 /* sample.mp4 in Resources */ = {isa = PBXBuildFile; fileRef = 77EDB3581FD2CA550075A014 /* sample.mp4 */; };
+		A68A6CB02007CA7100771FEE /* timg.png in Resources */ = {isa = PBXBuildFile; fileRef = A68A6CAF2007CA7100771FEE /* timg.png */; };
+		A6F4E9742007A12400716B9C /* PlayerCollectionViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = A6F4E9732007A12400716B9C /* PlayerCollectionViewController.m */; };
+		A6F4E9772007A13C00716B9C /* PlayerCollectionViewCell.m in Sources */ = {isa = PBXBuildFile; fileRef = A6F4E9762007A13C00716B9C /* PlayerCollectionViewCell.m */; };
+		A6F4E97B2007A78400716B9C /* NestedTableViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = A6F4E97A2007A78400716B9C /* NestedTableViewController.m */; };
+		A6F4E97E2007A7EC00716B9C /* NestedTableViewCell.m in Sources */ = {isa = PBXBuildFile; fileRef = A6F4E97D2007A7EC00716B9C /* NestedTableViewCell.m */; };
 		B009175F0CF36E1274CC84A3 /* libPods-SJVideoPlayerProject.a in Frameworks */ = {isa = PBXBuildFile; fileRef = A53C6944FFDAC5FD9DA4750E /* libPods-SJVideoPlayerProject.a */; };
 /* End PBXBuildFile section */
 
@@ -150,6 +155,15 @@
 		77EACC241FF28E5200E2B3AE /* IMG_0480.PNG */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = IMG_0480.PNG; sourceTree = "<group>"; };
 		77EDB3581FD2CA550075A014 /* sample.mp4 */ = {isa = PBXFileReference; lastKnownFileType = file; path = sample.mp4; sourceTree = "<group>"; };
 		A53C6944FFDAC5FD9DA4750E /* libPods-SJVideoPlayerProject.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-SJVideoPlayerProject.a"; sourceTree = BUILT_PRODUCTS_DIR; };
+		A68A6CAF2007CA7100771FEE /* timg.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = timg.png; sourceTree = "<group>"; };
+		A6F4E9722007A12400716B9C /* PlayerCollectionViewController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = PlayerCollectionViewController.h; sourceTree = "<group>"; };
+		A6F4E9732007A12400716B9C /* PlayerCollectionViewController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = PlayerCollectionViewController.m; sourceTree = "<group>"; };
+		A6F4E9752007A13C00716B9C /* PlayerCollectionViewCell.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = PlayerCollectionViewCell.h; sourceTree = "<group>"; };
+		A6F4E9762007A13C00716B9C /* PlayerCollectionViewCell.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = PlayerCollectionViewCell.m; sourceTree = "<group>"; };
+		A6F4E9792007A78400716B9C /* NestedTableViewController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = NestedTableViewController.h; sourceTree = "<group>"; };
+		A6F4E97A2007A78400716B9C /* NestedTableViewController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = NestedTableViewController.m; sourceTree = "<group>"; };
+		A6F4E97C2007A7EC00716B9C /* NestedTableViewCell.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = NestedTableViewCell.h; sourceTree = "<group>"; };
+		A6F4E97D2007A7EC00716B9C /* NestedTableViewCell.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = NestedTableViewCell.m; sourceTree = "<group>"; };
 		CF7AAE46F079AA385055F66D /* Pods-SJVideoPlayerProject.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-SJVideoPlayerProject.release.xcconfig"; path = "Pods/Target Support Files/Pods-SJVideoPlayerProject/Pods-SJVideoPlayerProject.release.xcconfig"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -211,6 +225,8 @@
 				774B251F1FCEBA5D002113CC /* ViewController.m */,
 				778E24F11FD97E93008D0DD3 /* Single */,
 				775A7C2A1FD7EC8000BE1EE2 /* TableView */,
+				A6F4E9702007A10B00716B9C /* CollectionView */,
+				A6F4E9782007A76200716B9C /* Nested */,
 				777D30DB1FD8F0010075E5FD /* SJVideoPlayer */,
 				778E24F21FD97EB6008D0DD3 /* Asset */,
 			);
@@ -409,6 +425,7 @@
 		778E24F21FD97EB6008D0DD3 /* Asset */ = {
 			isa = PBXGroup;
 			children = (
+				A68A6CAF2007CA7100771FEE /* timg.png */,
 				774B25581FCED554002113CC /* test.png */,
 				77B795781FFF6B9F000D8F6C /* test1.png */,
 				77EDB3581FD2CA550075A014 /* sample.mp4 */,
@@ -436,6 +453,28 @@
 				77A4394E1FDD8879008BD092 /* SJPlayerGestureControl.m */,
 			);
 			path = GestureControl;
+			sourceTree = "<group>";
+		};
+		A6F4E9702007A10B00716B9C /* CollectionView */ = {
+			isa = PBXGroup;
+			children = (
+				A6F4E9722007A12400716B9C /* PlayerCollectionViewController.h */,
+				A6F4E9732007A12400716B9C /* PlayerCollectionViewController.m */,
+				A6F4E9752007A13C00716B9C /* PlayerCollectionViewCell.h */,
+				A6F4E9762007A13C00716B9C /* PlayerCollectionViewCell.m */,
+			);
+			path = CollectionView;
+			sourceTree = "<group>";
+		};
+		A6F4E9782007A76200716B9C /* Nested */ = {
+			isa = PBXGroup;
+			children = (
+				A6F4E9792007A78400716B9C /* NestedTableViewController.h */,
+				A6F4E97A2007A78400716B9C /* NestedTableViewController.m */,
+				A6F4E97C2007A7EC00716B9C /* NestedTableViewCell.h */,
+				A6F4E97D2007A7EC00716B9C /* NestedTableViewCell.m */,
+			);
+			path = Nested;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -501,6 +540,7 @@
 			files = (
 				77EDB3591FD2CA550075A014 /* sample.mp4 in Resources */,
 				7706E1251FF74C42006E0B56 /* slider.gif in Resources */,
+				A68A6CB02007CA7100771FEE /* timg.png in Resources */,
 				77EACC1F1FF28B4800E2B3AE /* IMG_0478.PNG in Resources */,
 				774B25281FCEBA5D002113CC /* LaunchScreen.storyboard in Resources */,
 				777D30D71FD8E8240075E5FD /* SJVideoPlayer.podspec in Resources */,
@@ -580,20 +620,24 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				A6F4E97B2007A78400716B9C /* NestedTableViewController.m in Sources */,
 				777D31571FD8F0010075E5FD /* SJVideoPlayerView.m in Sources */,
 				775A7C261FD7EC5000BE1EE2 /* PlayerTableViewController.m in Sources */,
 				777D315D1FD8F0010075E5FD /* SJTimerControl.m in Sources */,
 				777D31501FD8F0010075E5FD /* SJVideoPlayerMoreSettingSecondaryColCell.m in Sources */,
 				777D31541FD8F0010075E5FD /* SJVideoPlayerControlMaskView.m in Sources */,
 				777D313F1FD8F0010075E5FD /* SJVideoPlayerBottomControlView.m in Sources */,
+				A6F4E9772007A13C00716B9C /* PlayerCollectionViewCell.m in Sources */,
 				777D31441FD8F0010075E5FD /* SJVideoPlayerControlView.m in Sources */,
 				77A4394F1FDD887A008BD092 /* SJPlayerGestureControl.m in Sources */,
 				777D314A1FD8F0010075E5FD /* SJVideoPlayerMoreSettingSecondary.m in Sources */,
 				777D31511FD8F0010075E5FD /* SJVideoPlayerMoreSettingSecondaryView.m in Sources */,
 				777D31451FD8F0010075E5FD /* SJVideoPlayerTopControlView.m in Sources */,
 				777D31411FD8F0010075E5FD /* SJVideoPlayerLeftControlView.m in Sources */,
+				A6F4E9742007A12400716B9C /* PlayerCollectionViewController.m in Sources */,
 				777D314F1FD8F0010075E5FD /* SJVideoPlayerMoreSettingsView.m in Sources */,
 				775A7C291FD7EC7C00BE1EE2 /* PlayerTableViewCell.m in Sources */,
+				A6F4E97E2007A7EC00716B9C /* NestedTableViewCell.m in Sources */,
 				777D31431FD8F0010075E5FD /* SJVideoPlayerPreviewView.m in Sources */,
 				774B25201FCEBA5D002113CC /* ViewController.m in Sources */,
 				777D31421FD8F0010075E5FD /* SJVideoPlayerPreviewCollectionViewCell.m in Sources */,
@@ -754,8 +798,8 @@
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				PRODUCT_BUNDLE_IDENTIFIER = com.sanjiang.videoplayer;
 				PRODUCT_NAME = "$(TARGET_NAME)";
-				PROVISIONING_PROFILE = "acd2453e-e396-4ccf-bf56-508276824c6c";
-				PROVISIONING_PROFILE_SPECIFIER = SanJiangDevelopment;
+				PROVISIONING_PROFILE = "a317fe74-1a78-4494-b955-994f23dd28be";
+				PROVISIONING_PROFILE_SPECIFIER = sanjiang17macDev;
 				TARGETED_DEVICE_FAMILY = "1,2";
 			};
 			name = Debug;

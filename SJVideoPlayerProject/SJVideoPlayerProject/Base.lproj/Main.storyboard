@@ -32,13 +32,31 @@
                                     <action selector="pushTable:" destination="BYZ-38-t0r" eventType="touchUpInside" id="IzR-pX-mik"/>
                                 </connections>
                             </button>
+                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="LRe-SK-jOQ">
+                                <rect key="frame" x="154" y="413" width="69" height="30"/>
+                                <state key="normal" title="Collection"/>
+                                <connections>
+                                    <action selector="pushCollection:" destination="BYZ-38-t0r" eventType="touchUpInside" id="m8I-Bv-8az"/>
+                                </connections>
+                            </button>
+                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="gbR-Ag-b7A">
+                                <rect key="frame" x="163" y="451" width="50" height="30"/>
+                                <state key="normal" title="Nested"/>
+                                <connections>
+                                    <action selector="pushNested:" destination="BYZ-38-t0r" eventType="touchUpInside" id="1pQ-z4-LUv"/>
+                                </connections>
+                            </button>
                         </subviews>
                         <color key="backgroundColor" red="1" green="1" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                         <constraints>
                             <constraint firstItem="cMv-Nn-BvR" firstAttribute="centerX" secondItem="8bC-Xf-vdC" secondAttribute="centerX" id="5ds-d9-8g3"/>
                             <constraint firstItem="cMv-Nn-BvR" firstAttribute="centerY" secondItem="8bC-Xf-vdC" secondAttribute="centerY" id="6LX-mQ-5Me"/>
+                            <constraint firstItem="LRe-SK-jOQ" firstAttribute="top" secondItem="oXB-PJ-2Km" secondAttribute="bottom" constant="16" id="J5o-I7-y7W"/>
                             <constraint firstItem="oXB-PJ-2Km" firstAttribute="top" secondItem="cMv-Nn-BvR" secondAttribute="bottom" constant="18.5" id="QIN-YJ-8W5"/>
+                            <constraint firstItem="gbR-Ag-b7A" firstAttribute="centerX" secondItem="LRe-SK-jOQ" secondAttribute="centerX" id="UCa-hA-mBR"/>
+                            <constraint firstItem="gbR-Ag-b7A" firstAttribute="top" secondItem="LRe-SK-jOQ" secondAttribute="bottom" constant="8" id="W3O-IJ-42e"/>
                             <constraint firstItem="oXB-PJ-2Km" firstAttribute="centerX" secondItem="cMv-Nn-BvR" secondAttribute="centerX" id="mDw-AF-PvN"/>
+                            <constraint firstItem="LRe-SK-jOQ" firstAttribute="centerX" secondItem="oXB-PJ-2Km" secondAttribute="centerX" id="xIB-Ze-Z59"/>
                         </constraints>
                         <viewLayoutGuide key="safeArea" id="6Tk-OE-BBY"/>
                     </view>

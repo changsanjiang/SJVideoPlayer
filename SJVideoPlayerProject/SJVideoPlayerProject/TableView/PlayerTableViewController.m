@@ -29,7 +29,7 @@ static NSString *const PlayerTableViewCellID = @"PlayerTableViewCell";
 
     [self.tableView registerClass:NSClassFromString(PlayerTableViewCellID) forCellReuseIdentifier:PlayerTableViewCellID];
     
-    self.tableView.rowHeight = 200;
+    self.tableView.rowHeight = [PlayerTableViewCell height];
 }
 
 - (void)didReceiveMemoryWarning {
@@ -76,17 +76,20 @@ static NSString *const PlayerTableViewCellID = @"PlayerTableViewCell";
 
 - (void)_removeOldPlayer {
     // clear old player
-    SJVideoPlayer *oldPlayer = _videoPlayer;
-    if ( !oldPlayer ) return;
-    // fade out
-    if ( oldPlayer ) {
-        [UIView animateWithDuration:0.5 animations:^{
-            oldPlayer.view.alpha = 0.001;
-        } completion:^(BOOL finished) {
-            [oldPlayer stop];
-            [oldPlayer.view removeFromSuperview];
-        }];
-    }
+//    SJVideoPlayer *oldPlayer = _videoPlayer;
+//    if ( !oldPlayer ) {
+//        NSLog(@"---------------");
+//        return;
+//    }
+//    // fade out
+//    if ( oldPlayer ) {
+//        [UIView animateWithDuration:0.5 animations:^{
+//            oldPlayer.view.alpha = 0.001;
+//        } completion:^(BOOL finished) {
+//            [oldPlayer stop];
+//            [oldPlayer.view removeFromSuperview];
+//        }];
+//    }
 }
 
 - (void)_createNewPlayerWithView:(UIView *)view

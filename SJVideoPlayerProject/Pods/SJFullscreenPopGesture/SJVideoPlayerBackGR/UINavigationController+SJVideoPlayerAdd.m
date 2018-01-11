@@ -306,7 +306,7 @@ static __weak UIWindow *_window;
 }
 
 - (BOOL)SJ_considerScrollView:(UIScrollView *)subScrollView otherGestureRecognizer:(UIGestureRecognizer *)otherGestureRecognizer {
-    if ( 0 != subScrollView.contentOffset.x ) return NO;
+    if ( 0 != subScrollView.contentOffset.x + subScrollView.contentInset.left ) return NO;
     
     CGPoint translate = [self.sj_pan translationInView:self.view];
     if ( translate.x <= 0 ) return NO;

@@ -32,6 +32,16 @@
 			<key>orderHint</key>
 			<integer>3</integer>
 		</dict>
+		<key>SJFullscreenPopGesture.xcscheme</key>
+		<dict>
+			<key>orderHint</key>
+			<integer>12</integer>
+		</dict>
+		<key>SJLabel.xcscheme</key>
+		<dict>
+			<key>orderHint</key>
+			<integer>13</integer>
+		</dict>
 		<key>SJLoadingView.xcscheme</key>
 		<dict>
 			<key>isShown</key>
@@ -74,12 +84,22 @@
 			<key>orderHint</key>
 			<integer>9</integer>
 		</dict>
+		<key>SJVideoPlayerAssetCarrier.xcscheme</key>
+		<dict>
+			<key>orderHint</key>
+			<integer>14</integer>
+		</dict>
 		<key>SJVideoPlayerBackGR.xcscheme</key>
 		<dict>
 			<key>isShown</key>
 			<false/>
 			<key>orderHint</key>
 			<integer>10</integer>
+		</dict>
+		<key>SJVolBrigControl.xcscheme</key>
+		<dict>
+			<key>orderHint</key>
+			<integer>15</integer>
 		</dict>
 	</dict>
 	<key>SuppressBuildableAutocreation</key>

@@ -91,9 +91,10 @@
     UIResponder *responder = self.nextResponder;
     while ( ![responder isKindOfClass:[UIViewController class]] ) {
         responder = responder.nextResponder;
-        if ( [responder isMemberOfClass:[UIResponder class]] ) return nil;
+        if ( [responder isMemberOfClass:[UIResponder class]] || !responder ) return nil;
     }
     return (UIViewController *)responder;
 }
 
 @end
+

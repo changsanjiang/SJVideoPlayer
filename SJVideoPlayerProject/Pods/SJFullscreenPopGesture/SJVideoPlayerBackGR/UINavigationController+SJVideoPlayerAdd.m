@@ -49,26 +49,16 @@ static NSMutableArray<UIImage *> * SJ_screenshotImagesM;
 
 - (void)SJ_dismissViewControllerAnimated:(BOOL)flag completion:(void (^)(void))completion {
     if ( [self isKindOfClass:[UIImagePickerController class]] ) {
-        if ( 0 != self.childViewControllers.count ) {
-            // 由于最顶层的视图还未截取, 所以这里 - 1. 以下相同.
-            [self SJ_dumpingScreenshotWithNum:(NSInteger)self.navigationController.childViewControllers.count - 1];
-            // reset image
-            [self SJ_resetScreenshotImage];
-        }
+        [self SJ_dumpingScreenshotWithNum:(NSInteger)self.childViewControllers.count - 1];
     }
     else if ( self.navigationController && self.presentingViewController ) {
         if ( 0 != self.navigationController.childViewControllers ) {
-            [self SJ_dumpingScreenshotWithNum:(NSInteger)self.navigationController.childViewControllers.count - 1];
-            [self SJ_resetScreenshotImage];
+            [self SJ_dumpingScreenshotWithNum:(NSInteger)self.navigationController.childViewControllers.count];
         }
     }
     
     // call origin method
     [self SJ_dismissViewControllerAnimated:flag completion:completion];
-}
-
-- (void)SJ_resetScreenshotImage {
-    [[self class] SJ_resetScreenshotImage];
 }
 
 static __weak UIWindow *_window;
@@ -93,6 +83,9 @@ static __weak UIWindow *_window;
 - (void)SJ_dumpingScreenshotWithNum:(NSInteger)num {
     if ( num <= 0 || num >= self.SJ_screenshotImagesM.count ) return;
     [self.SJ_screenshotImagesM removeObjectsInRange:NSMakeRange(self.SJ_screenshotImagesM.count - num, num)];
+    
+    // update screenshotImage
+    [self.SJ_screenshotView setImage:[self.SJ_screenshotImagesM lastObject]];
 }
 
 - (SJScreenshotView *)SJ_screenshotView {
@@ -118,13 +111,6 @@ static __weak UIWindow *_window;
     if ( SJ_screenshotImagesM ) return SJ_screenshotImagesM;
     SJ_screenshotImagesM = [NSMutableArray array];
     return SJ_screenshotImagesM;
-}
-
-+ (void)SJ_resetScreenshotImage {
-    // remove last screenshot
-    [self.SJ_screenshotImagesM removeLastObject];
-    // update screenshotImage
-    [self.SJ_screenshotView setImage:[self.SJ_screenshotImagesM lastObject]];
 }
 
 @end
@@ -228,16 +214,14 @@ static __weak UIWindow *_window;
 // Pop
 - (UIViewController *)SJ_popViewControllerAnimated:(BOOL)animated {
     // reset
-    [self SJ_resetScreenshotImage];
+    [self SJ_dumpingScreenshotWithNum:1];
     // call origin method
     return [self SJ_popViewControllerAnimated:animated];
 }
 
 // Pop To RootView Controller
 - (NSArray<UIViewController *> *)SJ_popToRootViewControllerAnimated:(BOOL)animated {
-    [self SJ_dumpingScreenshotWithNum:((NSInteger)self.childViewControllers.count - 1) - 1];
-    // reset
-    [self SJ_resetScreenshotImage];
+    [self SJ_dumpingScreenshotWithNum:(NSInteger)self.childViewControllers.count - 1];
     return [self SJ_popToRootViewControllerAnimated:animated];
 }
 
@@ -246,11 +230,8 @@ static __weak UIWindow *_window;
     [self.childViewControllers enumerateObjectsUsingBlock:^(__kindof UIViewController * _Nonnull obj, NSUInteger idx, BOOL * _Nonnull stop) {
         if ( viewController != obj ) return;
         *stop = YES;
-        // 由于数组索引从 0 开始, 所以这里 idx + 1, 以下相同
-        [self SJ_dumpingScreenshotWithNum:((NSInteger)self.childViewControllers.count - 1) - ((NSInteger)idx + 1)];
+        [self SJ_dumpingScreenshotWithNum:(NSInteger)self.childViewControllers.count - 1 - (NSInteger)idx];
     }];
-    // reset
-    [self SJ_resetScreenshotImage];
     return [self SJ_popToViewController:viewController animated:animated];
 }
 
@@ -503,5 +484,3 @@ static __weak UIWindow *_window;
 }
 
 @end
-
-

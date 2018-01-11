@@ -30,7 +30,15 @@ NS_ASSUME_NONNULL_BEGIN
                        beginTime:(NSTimeInterval)beginTime
                       scrollView:(__unsafe_unretained UIScrollView *__nullable)scrollView
                        indexPath:(__weak NSIndexPath *__nullable)indexPath
-                    superviewTag:(NSInteger)superviewTag;
+                    superviewTag:(NSInteger)superviewTag; // video player parent `view tag`
+
+- (instancetype)initWithAssetURL:(NSURL *)assetURL
+                       beginTime:(NSTimeInterval)beginTime
+                      scrollView:(__unsafe_unretained UIScrollView *__nullable)scrollView
+                       indexPath:(__weak NSIndexPath *__nullable)indexPath
+                    superviewTag:(NSInteger)superviewTag
+                parentScrollView:(__unsafe_unretained UIScrollView *__nullable)parentScrollView // _scrollView parent `scrollview`.
+                  superIndexPath:(NSIndexPath *__nullable)superIndexPath;
 
 
 #pragma mark - screenshot
@@ -61,6 +69,14 @@ NS_ASSUME_NONNULL_BEGIN
 
 @property (nonatomic, copy, readwrite, nullable) void(^presentationSize)(SJVideoPlayerAssetCarrier *asset, CGSize size);
 
+@property (nonatomic, copy, readwrite, nullable) void(^scrollIn)(SJVideoPlayerAssetCarrier *asset, UIView *superView);
+
+@property (nonatomic, copy, readwrite, nullable) void(^scrollOut)(SJVideoPlayerAssetCarrier *asset);
+/// `_scrollView parent scrollview`
+@property (nonatomic, copy, readwrite, nullable) void(^parentScrollIn)(SJVideoPlayerAssetCarrier *asset);
+/// `_scrollView parent scrollview`
+@property (nonatomic, copy, readwrite, nullable) void(^parentScrollOut)(SJVideoPlayerAssetCarrier *asset);
+
 
 #pragma mark - preview images
 @property (nonatomic, assign, readonly) BOOL hasBeenGeneratedPreviewImages;
@@ -88,6 +104,8 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic, weak, readonly, nullable) NSIndexPath *indexPath;
 @property (nonatomic, assign, readonly) NSInteger superviewTag;
 @property (nonatomic, unsafe_unretained, readonly, nullable) UIScrollView *scrollView;
+@property (nonatomic, unsafe_unretained, readonly, nullable) UIScrollView *parentScrollView; // _scrollView parent `scrollview`.
+@property (nonatomic, weak, readonly, nullable) NSIndexPath *superIndexPath;
 
 @end
 

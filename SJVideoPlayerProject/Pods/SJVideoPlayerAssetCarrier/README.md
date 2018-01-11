@@ -1,22 +1,31 @@
 # SJVideoPlayerAssetCarrier
 
 ```Objective-C
+
     - (instancetype)initWithAssetURL:(NSURL *)assetURL;
 
     /// unit is sec.
     - (instancetype)initWithAssetURL:(NSURL *)assetURL
-                           beginTime:(NSTimeInterval)beginTime;
+    beginTime:(NSTimeInterval)beginTime;
 
     - (instancetype)initWithAssetURL:(NSURL *)assetURL
-                          scrollView:(__unsafe_unretained UIScrollView * __nullable)scrollView
-                           indexPath:(__weak NSIndexPath * __nullable)indexPath
-                        superviewTag:(NSInteger)superviewTag;
+    scrollView:(__unsafe_unretained UIScrollView * __nullable)scrollView
+    indexPath:(__weak NSIndexPath * __nullable)indexPath
+    superviewTag:(NSInteger)superviewTag;
 
     - (instancetype)initWithAssetURL:(NSURL *)assetURL
-                           beginTime:(NSTimeInterval)beginTime
-                          scrollView:(__unsafe_unretained UIScrollView *__nullable)scrollView
-                           indexPath:(__weak NSIndexPath *__nullable)indexPath
-                        superviewTag:(NSInteger)superviewTag;
+    beginTime:(NSTimeInterval)beginTime
+    scrollView:(__unsafe_unretained UIScrollView *__nullable)scrollView
+    indexPath:(__weak NSIndexPath *__nullable)indexPath
+    superviewTag:(NSInteger)superviewTag; // video player parent `view tag`
+
+    - (instancetype)initWithAssetURL:(NSURL *)assetURL
+    beginTime:(NSTimeInterval)beginTime
+    scrollView:(__unsafe_unretained UIScrollView *__nullable)scrollView
+    indexPath:(__weak NSIndexPath *__nullable)indexPath
+    superviewTag:(NSInteger)superviewTag
+    parentScrollView:(__unsafe_unretained UIScrollView *__nullable)parentScrollView // _scrollView parent `scrollview`.
+    superIndexPath:(NSIndexPath *__nullable)superIndexPath;
 
 
     #pragma mark - screenshot
@@ -45,6 +54,16 @@
 
     @property (nonatomic, copy, readwrite, nullable) void(^scrollViewDidScroll)(SJVideoPlayerAssetCarrier *asset);
 
+    @property (nonatomic, copy, readwrite, nullable) void(^presentationSize)(SJVideoPlayerAssetCarrier *asset, CGSize size);
+
+    @property (nonatomic, copy, readwrite, nullable) void(^scrollIn)(SJVideoPlayerAssetCarrier *asset, UIView *superView);
+
+    @property (nonatomic, copy, readwrite, nullable) void(^scrollOut)(SJVideoPlayerAssetCarrier *asset);
+    /// `_scrollView parent scrollview`
+    @property (nonatomic, copy, readwrite, nullable) void(^parentScrollIn)(SJVideoPlayerAssetCarrier *asset);
+    /// `_scrollView parent scrollview`
+    @property (nonatomic, copy, readwrite, nullable) void(^parentScrollOut)(SJVideoPlayerAssetCarrier *asset);
+
 
     #pragma mark - preview images
     @property (nonatomic, assign, readonly) BOOL hasBeenGeneratedPreviewImages;
@@ -52,6 +71,12 @@
     - (void)generatedPreviewImagesWithMaxItemSize:(CGSize)itemSize
     completion:(void(^)(SJVideoPlayerAssetCarrier *asset, NSArray<SJVideoPreviewModel *> *__nullable images, NSError *__nullable error))block;
     - (void)cancelPreviewImagesGeneration;
+
+
+    #pragma mark - seek to time
+    - (void)jumpedToTime:(NSTimeInterval)time completionHandler:(void (^ __nullable)(BOOL finished))completionHandler;
+
+    - (void)seekToTime:(CMTime)time completionHandler:(void (^ __nullable)(BOOL finished))completionHandler;
 
 
     #pragma mark - properties
@@ -66,4 +91,6 @@
     @property (nonatomic, weak, readonly, nullable) NSIndexPath *indexPath;
     @property (nonatomic, assign, readonly) NSInteger superviewTag;
     @property (nonatomic, unsafe_unretained, readonly, nullable) UIScrollView *scrollView;
+    @property (nonatomic, unsafe_unretained, readonly, nullable) UIScrollView *parentScrollView; // _scrollView parent `scrollview`.
+    @property (nonatomic, weak, readonly, nullable) NSIndexPath *superIndexPath;
 ```

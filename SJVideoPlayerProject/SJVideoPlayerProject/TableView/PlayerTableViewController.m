@@ -11,12 +11,12 @@
 #import "PlayerTableViewCell.h"
 #import <Masonry.h>
 
-#define TabPlayer  [SJVideoPlayer sharedPlayer]
-
 
 static NSString *const PlayerTableViewCellID = @"PlayerTableViewCell";
 
-@interface PlayerTableViewController ()
+@interface PlayerTableViewController ()<PlayerTableViewCellDelegate>
+
+@property (nonatomic, strong, readwrite) SJVideoPlayer *videoPlayer;
 
 @end
 
@@ -37,13 +37,18 @@ static NSString *const PlayerTableViewCellID = @"PlayerTableViewCell";
     // Dispose of any resources that can be recreated.
 }
 
+- (void)viewWillAppear:(BOOL)animated {
+    [super viewWillAppear:animated];
+    _videoPlayer.disableRotation = NO;
+}
+
 - (void)viewWillDisappear:(BOOL)animated {
     [super viewWillDisappear:animated];
-//    [TabPlayer stop];
+    _videoPlayer.disableRotation = YES;
 }
 
 - (void)dealloc {
-    [TabPlayer stop];
+    [_videoPlayer stop];
 }
 
 #pragma mark - Table view data source
@@ -57,22 +62,53 @@ static NSString *const PlayerTableViewCellID = @"PlayerTableViewCell";
 }
 
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath {
-    UITableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:PlayerTableViewCellID forIndexPath:indexPath];
+    PlayerTableViewCell *cell = (PlayerTableViewCell *)[tableView dequeueReusableCellWithIdentifier:PlayerTableViewCellID forIndexPath:indexPath];
+    cell.delegate = self;
     return cell;
 }
 
-- (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath {
-    if (  TabPlayer.asset.indexPath != indexPath ) {
-        PlayerTableViewCell *cell = [tableView cellForRowAtIndexPath:indexPath];
-        [cell.backgroundImageView addSubview:TabPlayer.view];
-        
-        [TabPlayer.view mas_makeConstraints:^(MASConstraintMaker *make) {
-            make.edges.equalTo(TabPlayer.view.superview);
+- (void)clickedPlayOnTabCell:(PlayerTableViewCell *)cell {
+    [self _removeOldPlayer];
+    
+    
+    [self _createNewPlayerWithView:cell.backgroundImageView indexPath:[self.tableView indexPathForCell:cell] tag:cell.backgroundImageView.tag videoURLStr:@"http://video.cdn.lanwuzhe.com/usertrend/166162-1513873330.mp4"];
+}
+
+- (void)_removeOldPlayer {
+    // clear old player
+    SJVideoPlayer *oldPlayer = _videoPlayer;
+    if ( !oldPlayer ) return;
+    // fade out
+    if ( oldPlayer ) {
+        [UIView animateWithDuration:0.5 animations:^{
+            oldPlayer.view.alpha = 0.001;
+        } completion:^(BOOL finished) {
+            [oldPlayer stop];
+            [oldPlayer.view removeFromSuperview];
         }];
-        
-        SJVideoPlayerAssetCarrier *asset = [[SJVideoPlayerAssetCarrier alloc] initWithAssetURL:[NSURL URLWithString:@"http://video.cdn.lanwuzhe.com/usertrend/166162-1513873330.mp4"] scrollView:tableView indexPath:indexPath superviewTag:cell.backgroundImageView.tag];
-        TabPlayer.asset = asset;
     }
+}
+
+- (void)_createNewPlayerWithView:(UIView *)view
+                       indexPath:(NSIndexPath *)indexPath
+                             tag:(NSInteger)tag
+                     videoURLStr:(NSString *)videoURLStr {
+    // create new player
+    _videoPlayer = [SJVideoPlayer player];
+    _videoPlayer.view.alpha = 0.001;
+    [view addSubview:_videoPlayer.view];
+    [_videoPlayer.view mas_remakeConstraints:^(MASConstraintMaker *make) {
+        make.edges.offset(0);
+    }];
+    
+    // fade in
+    [UIView animateWithDuration:0.5 animations:^{
+        _videoPlayer.view.alpha = 1;
+    }];
+    
+    _videoPlayer.asset = [[SJVideoPlayerAssetCarrier alloc] initWithAssetURL:[NSURL URLWithString:videoURLStr] scrollView:self.tableView indexPath:indexPath superviewTag:tag];
+    
+    _videoPlayer.autoplay = YES;
 }
 
 @end

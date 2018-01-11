@@ -2,12 +2,12 @@ PODS:
   - Masonry (1.1.0)
   - SJAttributesFactory (1.1.14)
   - SJBorderLineView (0.0.6)
-  - SJFullscreenPopGesture (1.1.6):
+  - SJFullscreenPopGesture (1.2.0):
     - SJObserverHelper
-  - SJLabel (1.1.5):
+  - SJLabel (1.1.6):
     - SJAttributesFactory
-    - SJLabel/Services (= 1.1.5)
-  - SJLabel/Services (1.1.5):
+    - SJLabel/Services (= 1.1.6)
+  - SJLabel/Services (1.1.6):
     - SJAttributesFactory
   - SJLoadingView (1.0.1)
   - SJObserverHelper (1.0.3)
@@ -18,12 +18,12 @@ PODS:
     - Masonry
   - SJSlider (1.1.4):
     - Masonry
-  - SJUIFactory (0.0.9):
+  - SJUIFactory (0.0.10):
     - SJLabel
-    - SJUIFactory/Category (= 0.0.9)
-  - SJUIFactory/Category (0.0.9):
+    - SJUIFactory/Category (= 0.0.10)
+  - SJUIFactory/Category (0.0.10):
     - SJLabel
-  - SJVideoPlayerAssetCarrier (0.0.4)
+  - SJVideoPlayerAssetCarrier (0.0.5)
   - SJVolBrigControl (0.0.2):
     - Masonry
     - SJBorderLineView
@@ -48,15 +48,15 @@ SPEC CHECKSUMS:
   Masonry: 678fab65091a9290e40e2832a55e7ab731aad201
   SJAttributesFactory: 10af803585a072a7d6273b87cb12f729f15b89a6
   SJBorderLineView: 5878e67fb57e812a2d5d029ca666068784b5448a
-  SJFullscreenPopGesture: ad819409acf46f6db2fd31e7106528ed1f563397
-  SJLabel: d59e1cc34169419fd512923acaa19dfcf791b3c7
+  SJFullscreenPopGesture: 22339ecc03686c6441050878ea49eed276b40b07
+  SJLabel: d56eac67f5654168320b99817bf08a962a28397c
   SJLoadingView: c3ff03e4b363a5b6a3ba0634d6bb9ce2647faf07
   SJObserverHelper: b270d707cd18ab76538596aa4e98cf798c9e9868
   SJOrentationObserver: f5d5df501bb4f9c2de24fa54ba56b4663b94531f
   SJPrompt: eaecd94f2055a12d25090967dbad3f21da011626
   SJSlider: 9695edb174815e221e30cc0ee99a135695b8c877
-  SJUIFactory: bf2413b9fc9bf76d39381b9ff48df454819244f5
-  SJVideoPlayerAssetCarrier: 29bfbe9e23038ea80803f038a849b6d4ce136f28
+  SJUIFactory: 47f8e1b9ec68333ea1a24799801d1d0b32e57b96
+  SJVideoPlayerAssetCarrier: a4f70981e5bdeb5ead74461172ec1e963e92f343
   SJVolBrigControl: eecc0b8ce4090159b928730b8b32d001b9090982
 
 PODFILE CHECKSUM: ad72e2ba2c5b2a7302b1d6301c4eacd126eb0035

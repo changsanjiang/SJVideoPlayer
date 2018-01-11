@@ -547,3 +547,4 @@ estimatedSectionFooterHeight:(CGFloat)estimatedSectionFooterHeight;
 @property (nonatomic, copy, readwrite) void(^drawBlock)(SJDrawUIView *view);
 
 @end
+

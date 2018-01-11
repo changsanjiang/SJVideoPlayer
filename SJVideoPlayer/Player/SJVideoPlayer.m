@@ -1195,96 +1195,52 @@ inline static NSString *_formatWithSec(NSInteger sec) {
         self.scrollIn = NO;
     }
     
-    asset.scrollViewDidScroll = ^(SJVideoPlayerAssetCarrier * _Nonnull asset) {
-        __strong typeof(_self) self = _self;
-        if ( !self ) return;
-        if ( [asset.scrollView isKindOfClass:[UITableView class]] ) {
-            UITableView *tableView = (UITableView *)asset.scrollView;
-            __block BOOL visable = NO;
-            [tableView.indexPathsForVisibleRows enumerateObjectsUsingBlock:^(NSIndexPath * _Nonnull obj, NSUInteger idx, BOOL * _Nonnull stop) {
-                if ( [obj compare:self.asset.indexPath] == NSOrderedSame ) {
-                    visable = YES;
-                    *stop = YES;
-                }
-            }];
-            if ( visable ) {
-                if ( YES == self.scrollIn ) return;
-                /// 滑入时
-                self.scrollIn = YES;
-                self.view.alpha = 1;
-                UITableViewCell *cell = [tableView cellForRowAtIndexPath:self.asset.indexPath];
-                UIView *superview = [cell.contentView viewWithTag:self.asset.superviewTag];
-                if ( superview && self.view.superview != superview ) {
-                    [self.view removeFromSuperview];
-                    [superview addSubview:self.view];
-                    [self.view mas_remakeConstraints:^(MASConstraintMaker *make) {
-                        make.edges.equalTo(self.view.superview);
-                    }];
-                }
-            }
-            else {
-                if ( NO == self.scrollIn ) return;
-                /// 滑出时
-                self.scrollIn = NO;
-                self.view.alpha = 0.001;
-                [self pause];
-                self.hideControl = NO;
-            }
-        }
-        else if ( [asset.scrollView isKindOfClass:[UICollectionView class]] ) {
-            UICollectionView *collectionView = (UICollectionView *)asset.scrollView;
-            UICollectionViewCell *cell = [collectionView cellForItemAtIndexPath:self.asset.indexPath];
-            if ( [collectionView.visibleCells containsObject:cell] ) {
-                if ( YES == self.scrollIn ) return;
-                /// 滑入时
-                self.scrollIn = YES;
-                self.view.alpha = 1;
+    if ( asset.scrollView ) {
+        /// 默认滑入
+        self.scrollIn = YES;
+        
+        /// 滑入
+        asset.scrollIn = ^(SJVideoPlayerAssetCarrier * _Nonnull asset, UIView * _Nonnull superview) {
+            __strong typeof(_self) self = _self;
+            if ( !self ) return;
+            self.scrollIn = YES;
+            self.hideControl = NO;
+            self.view.alpha = 1;
+            if ( superview && self.view.superview != superview ) {
                 [self.view removeFromSuperview];
-                UICollectionViewCell *cell = [collectionView cellForItemAtIndexPath:self.asset.indexPath];
-                UIView *superview = [cell.contentView viewWithTag:self.asset.superviewTag];
-                if ( superview && self.view.superview != superview ) {
-                    [self.view removeFromSuperview];
-                    [superview addSubview:self.view];
-                    [self.view mas_remakeConstraints:^(MASConstraintMaker *make) {
-                        make.edges.equalTo(self.view.superview);
-                    }];
-                }
+                [superview addSubview:self.view];
+                [self.view mas_remakeConstraints:^(MASConstraintMaker *make) {
+                    make.edges.equalTo(self.view.superview);
+                }];
             }
-            else {
-                if ( NO == self.scrollIn ) return;
-                /// 滑出时
-                self.scrollIn = NO;
-                self.view.alpha = 0.001;
-                [self pause];
-                self.hideControl = NO;
-            }
-        }
-    };
+        };
+        
+        /// 滑出
+        asset.scrollOut = ^(SJVideoPlayerAssetCarrier * _Nonnull asset) {
+            __strong typeof(_self) self = _self;
+            if ( !self ) return;
+            self.scrollIn = NO;
+            self.view.alpha = 0.001;
+            [self pause];
+        };
+    }
+    
+    if ( asset.parentScrollView ) {
+        asset.parentScrollIn = ^(SJVideoPlayerAssetCarrier * _Nonnull asset) {
+            __strong typeof(_self) self = _self;
+            if ( !self ) return;
+            self.scrollIn = YES;
+            if ( !self.userPaused ) [self play];
+        };
+        
+        asset.parentScrollOut = ^(SJVideoPlayerAssetCarrier * _Nonnull asset) {
+            __strong typeof(_self) self = _self;
+            if ( !self ) return;
+            self.scrollIn = NO;
+            [self pause];
+        };
+    }
 }
-
-//static __weak UIView *tmpView = nil;
-//- (UIView *)_getSuperviewWithContentView:(UIView *)contentView tag:(NSInteger)tag {
-//    if ( contentView.tag == tag ) return contentView;
-//
-//    [self _searchingWithView:contentView tag:tag];
-//    UIView *target = tmpView;
-//    tmpView = nil;
-//    return target;
-//}
-//
-//- (void)_searchingWithView:(UIView *)view tag:(NSInteger)tag {
-//    if ( tmpView ) return;
-//    [view.subviews enumerateObjectsUsingBlock:^(__kindof UIView * _Nonnull obj, NSUInteger idx, BOOL * _Nonnull stop) {
-//        if ( obj.tag == tag ) {
-//            *stop = YES;
-//            tmpView = obj;
-//        }
-//        else {
-//            [self _searchingWithView:obj tag:tag];
-//        }
-//    }];
-//    return;
-//}
 
 - (SJVideoPlayerAssetCarrier *)asset {
     return objc_getAssociatedObject(self, _cmd);

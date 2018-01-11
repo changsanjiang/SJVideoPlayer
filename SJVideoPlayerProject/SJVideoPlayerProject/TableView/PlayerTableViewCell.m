@@ -44,11 +44,18 @@
     }];
 }
 
+- (void)handleTap {
+    if ( [_delegate respondsToSelector:@selector(clickedPlayOnTabCell:)] ) {
+        [_delegate clickedPlayOnTabCell:self];
+    }
+}
+
 - (UIImageView *)backgroundImageView {
     if ( _backgroundImageView ) return _backgroundImageView;
     _backgroundImageView = [SJUIImageViewFactory imageViewWithImageName:@"placeholder" viewMode:UIViewContentModeScaleAspectFill];
     _backgroundImageView.tag = 100;
     _backgroundImageView.userInteractionEnabled = YES;
+    [_backgroundImageView addGestureRecognizer:[[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(handleTap)]];
     return _backgroundImageView;
 }
 - (UIImageView *)playImageView {

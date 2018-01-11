@@ -37,6 +37,8 @@ static NSString * const PlayerCollectionViewCellID = @"PlayerCollectionViewCell"
 - (void)viewDidLoad {
     [super viewDidLoad];
     
+    self.title = @"CollectionView";
+
     // Uncomment the following line to preserve selection between presentations
     // self.clearsSelectionOnViewWillAppear = NO;
     
@@ -101,19 +103,15 @@ static NSString * const PlayerCollectionViewCellID = @"PlayerCollectionViewCell"
 
 - (void)_removeOldPlayer {
     // clear old player
-    __weak SJVideoPlayer *oldPlayer = _videoPlayer;
+    SJVideoPlayer *oldPlayer = _videoPlayer;
     if ( !oldPlayer ) return;
     // fade out
-    if ( oldPlayer ) {
-        [UIView animateWithDuration:0.5 animations:^{
-            oldPlayer.view.alpha = 0.001;
-        } completion:^(BOOL finished) {
-            if ( oldPlayer ) {
-                [oldPlayer stop];
-                [oldPlayer.view removeFromSuperview];
-            }
-        }];
-    }
+    [UIView animateWithDuration:0.5 animations:^{
+        oldPlayer.view.alpha = 0.001;
+    } completion:^(BOOL finished) {
+        [oldPlayer stop];
+        [oldPlayer.view removeFromSuperview];
+    }];
 }
 
 - (void)_createNewPlayerWithView:(UIView *)view

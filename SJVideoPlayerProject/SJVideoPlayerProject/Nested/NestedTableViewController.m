@@ -26,6 +26,8 @@ static NSString *const NestedTableViewCellID = @"NestedTableViewCell";
 - (void)viewDidLoad {
     [super viewDidLoad];
     
+    self.title = @"Nested scrollView(嵌套view)";
+    
     self.view.backgroundColor = [UIColor whiteColor];
     
     [self.tableView registerClass:NSClassFromString(NestedTableViewCellID) forCellReuseIdentifier:NestedTableViewCellID];
@@ -90,16 +92,12 @@ static NSString *const NestedTableViewCellID = @"NestedTableViewCell";
     if ( !oldPlayer ) { return;}
     
 //     fade out
-    if ( oldPlayer ) {
-        [UIView animateWithDuration:0.5 animations:^{
-            oldPlayer.view.alpha = 0.001;
-        } completion:^(BOOL finished) {
-            if ( oldPlayer ) {
-                [oldPlayer stop];
-                [oldPlayer.view removeFromSuperview];
-            }
-        }];
-    }
+    [UIView animateWithDuration:0.5 animations:^{
+        oldPlayer.view.alpha = 0.001;
+    } completion:^(BOOL finished) {
+        [oldPlayer stop];
+        [oldPlayer.view removeFromSuperview];
+    }];
 }
 
 - (void)_createNewPlayerWithPlayerSuperView:(UIView *)playerSuperView

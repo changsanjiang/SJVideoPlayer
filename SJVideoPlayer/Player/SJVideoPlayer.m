@@ -404,7 +404,7 @@ inline static NSString *_formatWithSec(NSInteger sec) {
 }
 
 - (void)dealloc {
-    NSLog(@"%s", __func__);
+    NSLog(@"%s - %zd", __func__, __LINE__);
 }
 
 - (dispatch_queue_t)workQueue {
@@ -414,10 +414,7 @@ inline static NSString *_formatWithSec(NSInteger sec) {
 }
 
 - (void)_addOperation:(void(^)(SJVideoPlayer *player))block {
-    __weak typeof(self) _self = self;
     dispatch_async(self.workQueue, ^{
-        __strong typeof(_self) self = _self;
-        if ( !self ) return;
         if ( block ) block(self);
     });
 }
@@ -1077,13 +1074,18 @@ inline static NSString *_formatWithSec(NSInteger sec) {
 }
 
 - (void)_buffering {
-    if ( self.state == SJVideoPlayerPlayState_PlayEnd ) return;
+    if ( _state == SJVideoPlayerPlayState_PlayEnd ||
+         _state == SJVideoPlayerPlayState_Unknown ||
+         !_asset ) return;
     if ( self.userClickedPause ) return;
     
     [self _startLoading];
     [self _pause];
     self.state = SJVideoPlayerPlayState_Buffing;
+    __weak typeof(self) _self = self;
     dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(2 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
+        __strong typeof(_self) self = _self;
+        if ( !self ) return ;
         if ( !self.asset.playerItem.isPlaybackLikelyToKeepUp ) {
             [self _buffering];
         }
@@ -1184,7 +1186,7 @@ inline static NSString *_formatWithSec(NSInteger sec) {
         if ( !self ) return;
         [self _buffering];
     };
-    
+
     if ( asset.indexPath ) {
         /// 默认滑入
         self.playOnCell = YES;
@@ -1194,7 +1196,7 @@ inline static NSString *_formatWithSec(NSInteger sec) {
         self.playOnCell = NO;
         self.scrollIn = NO;
     }
-    
+
     if ( asset.scrollView ) {
         /// 滑入
         asset.scrollIn = ^(SJVideoPlayerAssetCarrier * _Nonnull asset, UIView * _Nonnull superview) {
@@ -1213,7 +1215,7 @@ inline static NSString *_formatWithSec(NSInteger sec) {
             }
             if ( !self.userPaused ) [self play];
         };
-        
+
         /// 滑出
         asset.scrollOut = ^(SJVideoPlayerAssetCarrier * _Nonnull asset) {
             __strong typeof(_self) self = _self;

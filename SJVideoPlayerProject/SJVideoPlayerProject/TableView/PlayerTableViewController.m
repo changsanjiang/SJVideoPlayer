@@ -25,6 +25,8 @@ static NSString *const PlayerTableViewCellID = @"PlayerTableViewCell";
 - (void)viewDidLoad {
     [super viewDidLoad];
     
+    self.title = @"TableView";
+    
     self.view.backgroundColor = [UIColor whiteColor];
 
     [self.tableView registerClass:NSClassFromString(PlayerTableViewCellID) forCellReuseIdentifier:PlayerTableViewCellID];
@@ -75,21 +77,19 @@ static NSString *const PlayerTableViewCellID = @"PlayerTableViewCell";
 }
 
 - (void)_removeOldPlayer {
-    // clear old player
-//    SJVideoPlayer *oldPlayer = _videoPlayer;
-//    if ( !oldPlayer ) {
-//        NSLog(@"---------------");
-//        return;
-//    }
-//    // fade out
-//    if ( oldPlayer ) {
-//        [UIView animateWithDuration:0.5 animations:^{
-//            oldPlayer.view.alpha = 0.001;
-//        } completion:^(BOOL finished) {
-//            [oldPlayer stop];
-//            [oldPlayer.view removeFromSuperview];
-//        }];
-//    }
+//     clear old player
+    SJVideoPlayer *oldPlayer = _videoPlayer;
+    if ( !oldPlayer ) {
+        return;
+    }
+//     fade out
+    [UIView animateWithDuration:0.5 animations:^{
+        oldPlayer.view.alpha = 0.001;
+    } completion:^(BOOL finished) {
+        [oldPlayer stop];
+        [oldPlayer.view removeFromSuperview];
+    }];
+
 }
 
 - (void)_createNewPlayerWithView:(UIView *)view

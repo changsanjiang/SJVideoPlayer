@@ -2,7 +2,7 @@ PODS:
   - Masonry (1.1.0)
   - SJAttributesFactory (1.1.14)
   - SJBorderLineView (0.0.6)
-  - SJFullscreenPopGesture (1.2.0):
+  - SJFullscreenPopGesture (1.2.1):
     - SJObserverHelper
   - SJLabel (1.1.6):
     - SJAttributesFactory
@@ -23,7 +23,7 @@ PODS:
     - SJUIFactory/Category (= 0.0.10)
   - SJUIFactory/Category (0.0.10):
     - SJLabel
-  - SJVideoPlayerAssetCarrier (0.0.5)
+  - SJVideoPlayerAssetCarrier (0.0.6)
   - SJVolBrigControl (0.0.2):
     - Masonry
     - SJBorderLineView
@@ -48,7 +48,7 @@ SPEC CHECKSUMS:
   Masonry: 678fab65091a9290e40e2832a55e7ab731aad201
   SJAttributesFactory: 10af803585a072a7d6273b87cb12f729f15b89a6
   SJBorderLineView: 5878e67fb57e812a2d5d029ca666068784b5448a
-  SJFullscreenPopGesture: 22339ecc03686c6441050878ea49eed276b40b07
+  SJFullscreenPopGesture: 9e2f82a0ac4857ad554ef684c104aaa780d292a4
   SJLabel: d56eac67f5654168320b99817bf08a962a28397c
   SJLoadingView: c3ff03e4b363a5b6a3ba0634d6bb9ce2647faf07
   SJObserverHelper: b270d707cd18ab76538596aa4e98cf798c9e9868
@@ -56,7 +56,7 @@ SPEC CHECKSUMS:
   SJPrompt: eaecd94f2055a12d25090967dbad3f21da011626
   SJSlider: 9695edb174815e221e30cc0ee99a135695b8c877
   SJUIFactory: 47f8e1b9ec68333ea1a24799801d1d0b32e57b96
-  SJVideoPlayerAssetCarrier: a4f70981e5bdeb5ead74461172ec1e963e92f343
+  SJVideoPlayerAssetCarrier: ed9f923bab1eac4fe821729576ef5cb29d532ed7
   SJVolBrigControl: eecc0b8ce4090159b928730b8b32d001b9090982
 
 PODFILE CHECKSUM: ad72e2ba2c5b2a7302b1d6301c4eacd126eb0035

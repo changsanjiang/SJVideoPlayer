@@ -14,9 +14,9 @@
             buildForAnalyzing = "YES">
             <BuildableReference
                BuildableIdentifier = "primary"
-               BlueprintIdentifier = "681A7E2206CBBE1655E1BE9773DB714A"
-               BuildableName = "libPods-SJVideoPlayerProject.a"
-               BlueprintName = "Pods-SJVideoPlayerProject"
+               BlueprintIdentifier = "E9FC91AC44289476DE28F1E3E8E85678"
+               BuildableName = "libSJVideoPlayerAssetCarrier.a"
+               BlueprintName = "SJVideoPlayerAssetCarrier"
                ReferencedContainer = "container:Pods.xcodeproj">
             </BuildableReference>
          </BuildActionEntry>
@@ -47,9 +47,9 @@
       <MacroExpansion>
          <BuildableReference
             BuildableIdentifier = "primary"
-            BlueprintIdentifier = "681A7E2206CBBE1655E1BE9773DB714A"
-            BuildableName = "libPods-SJVideoPlayerProject.a"
-            BlueprintName = "Pods-SJVideoPlayerProject"
+            BlueprintIdentifier = "E9FC91AC44289476DE28F1E3E8E85678"
+            BuildableName = "libSJVideoPlayerAssetCarrier.a"
+            BlueprintName = "SJVideoPlayerAssetCarrier"
             ReferencedContainer = "container:Pods.xcodeproj">
          </BuildableReference>
       </MacroExpansion>

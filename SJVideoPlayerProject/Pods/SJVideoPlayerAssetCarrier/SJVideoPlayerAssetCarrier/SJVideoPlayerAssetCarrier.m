@@ -98,6 +98,7 @@ static float const __GeneratePreImgScale = 0.05;
     _scrollViewTag = scrollViewTag;
     _parentScrollView = parentScrollView;
     _parentIndexPath = parentIndexPath;
+    _player.actionAtItemEnd = AVPlayerActionAtItemEndPause;
     [self _addTimeObserver];
     [self _addItemPlayEndObserver];
     [self _observing];

@@ -79,17 +79,10 @@ static NSString *const PlayerTableViewCellID = @"PlayerTableViewCell";
 - (void)_removeOldPlayer {
 //     clear old player
     SJVideoPlayer *oldPlayer = _videoPlayer;
-    if ( !oldPlayer ) {
-        return;
-    }
-//     fade out
-    [UIView animateWithDuration:0.5 animations:^{
-        oldPlayer.view.alpha = 0.001;
-    } completion:^(BOOL finished) {
-        [oldPlayer stop];
-        [oldPlayer.view removeFromSuperview];
-    }];
+    if ( !oldPlayer ) { return; }
 
+    // stop and fade out
+    [oldPlayer stopAndFadeOut];
 }
 
 - (void)_createNewPlayerWithView:(UIView *)view

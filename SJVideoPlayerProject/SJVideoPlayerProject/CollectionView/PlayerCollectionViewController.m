@@ -98,20 +98,14 @@ static NSString * const PlayerCollectionViewCellID = @"PlayerCollectionViewCell"
 - (void)clickedPlayOnColCell:(PlayerCollectionViewCell *)cell {
     [self _removeOldPlayer];
 
-    [self _createNewPlayerWithView:cell.backgroundImageView indexPath:[self.collectionView indexPathForCell:cell] tag:cell.backgroundImageView.tag videoURLStr:@"http://video.cdn.lanwuzhe.com/usertrend/166162-1513873330.mp4"];
+    [self _createNewPlayerWithView:cell.backgroundImageView indexPath:[self.collectionView indexPathForCell:cell] tag:cell.backgroundImageView.tag videoURLStr:@"http://pu.latin5.com/bd1c831d-7024-4b17-a03e-e8ab89bb2a4b.m3u8"];
 }
 
 - (void)_removeOldPlayer {
     // clear old player
     SJVideoPlayer *oldPlayer = _videoPlayer;
     if ( !oldPlayer ) return;
-    // fade out
-    [UIView animateWithDuration:0.5 animations:^{
-        oldPlayer.view.alpha = 0.001;
-    } completion:^(BOOL finished) {
-        [oldPlayer stop];
-        [oldPlayer.view removeFromSuperview];
-    }];
+    [oldPlayer stopAndFadeOut];
 }
 
 - (void)_createNewPlayerWithView:(UIView *)view

@@ -77,27 +77,29 @@ static NSString *const NestedTableViewCellID = @"NestedTableViewCell";
     [self _removeOldPlayer];
     
     [self _createNewPlayerWithPlayerSuperView:colCell.backgroundImageView
-                                  assetURLStr:@"http://video.cdn.lanwuzhe.com/usertrend/166162-1513873330.mp4" beginTime:0
+                                  assetURLStr:@"http://pu.latin5.com/bd1c831d-7024-4b17-a03e-e8ab89bb2a4b.m3u8" beginTime:0
                                    scrollView:collectionView
                                     indexPath:[collectionView indexPathForCell:colCell]
                                  superviewTag:colCell.backgroundImageView.tag
                                 scrollViewTag:collectionView.tag
                              parentScrollView:self.tableView
                               parentIndexPath:[self.tableView indexPathForCell:tabCell]];
+    
+//    __weak typeof(self) _self = self;
+//    dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(1 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
+//        __strong typeof(_self) self = _self;
+//        if ( !self ) return ;
+//        [self clickedPlayWithNestedTabCell:tabCell col:collectionView colCell:colCell];
+//    });
 }
 
 - (void)_removeOldPlayer {
-//    clear old player
+    // clear old player
     SJVideoPlayer *oldPlayer = _videoPlayer;
     if ( !oldPlayer ) { return;}
     
-//     fade out
-    [UIView animateWithDuration:0.5 animations:^{
-        oldPlayer.view.alpha = 0.001;
-    } completion:^(BOOL finished) {
-        [oldPlayer stop];
-        [oldPlayer.view removeFromSuperview];
-    }];
+    // fade out
+    [oldPlayer stopAndFadeOut];
 }
 
 - (void)_createNewPlayerWithPlayerSuperView:(UIView *)playerSuperView

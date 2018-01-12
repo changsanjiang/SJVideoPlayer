@@ -84,6 +84,7 @@ inline static NSString *_formatWithSec(NSInteger sec) {
 @property (nonatomic, assign, readwrite) BOOL suspend; // Set it when the [`pause` + `play` + `stop`] is called.
 @property (nonatomic, assign, readwrite) BOOL playOnCell;
 @property (nonatomic, assign, readwrite) BOOL scrollIn;
+@property (nonatomic, assign, readwrite) BOOL stopped;
 @property (nonatomic, strong, readwrite) NSError *error;
 
 - (void)_play;
@@ -387,7 +388,10 @@ inline static NSString *_formatWithSec(NSInteger sec) {
     [self view];
     [self orentation];
     [self volBrig];
+    __weak typeof(self) _self = self;
     [self settingPlayer:^(SJVideoPlayerSettings * _Nonnull settings) {
+        __strong typeof(_self) self = _self;
+        if ( !self ) return ;
         [self resetSetting];
     }];
     [self registrar];
@@ -425,30 +429,37 @@ inline static NSString *_formatWithSec(NSInteger sec) {
     _presentView.clipsToBounds = YES;
     __weak typeof(self) _self = self;
     _presentView.readyForDisplay = ^(SJVideoPlayerPresentView * _Nonnull view, CGRect videoRect) {
-        if ( _self.asset.hasBeenGeneratedPreviewImages ) { return ; }
-        if ( !_self.generatePreviewImages ) return;
-        CGRect bounds = videoRect;
-        CGFloat width = [UIScreen mainScreen].bounds.size.width * 0.4;
-        CGFloat height = width * bounds.size.height / bounds.size.width;
-        CGSize size = CGSizeMake(width, height);
-        _self.controlView.draggingProgressView.size = size;
-        [_self.asset generatedPreviewImagesWithMaxItemSize:size completion:^(SJVideoPlayerAssetCarrier * _Nonnull asset, NSArray<SJVideoPreviewModel *> * _Nullable images, NSError * _Nullable error) {
-            __strong typeof(_self) self = _self;
-            if ( !self ) return;
-            if ( error ) {
-                _sjErrorLog(@"Generate Preview Image Failed!");
-            }
-            else {
-                if ( self.orentation.fullScreen ) {
-                    _sjAnima(^{
-                        _sjShowViews(@[self.controlView.topControlView.previewBtn]);
-                    });
-                }
-                self.controlView.previewView.previewImages = images;
-            }
-        }];
+        __strong typeof(_self) self = _self;
+        if ( !self ) return ;
+        [self _generatedPreviewImagesWithVideoRect:videoRect];
     };
     return _presentView;
+}
+
+- (void)_generatedPreviewImagesWithVideoRect:(CGRect)videoRect {
+    if ( self.asset.hasBeenGeneratedPreviewImages ) { return ; }
+    if ( !self.generatePreviewImages ) return;
+    CGRect bounds = videoRect;
+    CGFloat width = [UIScreen mainScreen].bounds.size.width * 0.4;
+    CGFloat height = width * bounds.size.height / bounds.size.width;
+    CGSize size = CGSizeMake(width, height);
+    self.controlView.draggingProgressView.size = size;
+    __weak typeof(self) _self = self;
+    [self.asset generatedPreviewImagesWithMaxItemSize:size completion:^(SJVideoPlayerAssetCarrier * _Nonnull asset, NSArray<SJVideoPreviewModel *> * _Nullable images, NSError * _Nullable error) {
+        __strong typeof(_self) self = _self;
+        if ( !self ) return;
+        if ( error ) {
+            _sjErrorLog(@"Generate Preview Image Failed!");
+        }
+        else {
+            if ( self.orentation.fullScreen ) {
+                _sjAnima(^{
+                    _sjShowViews(@[self.controlView.topControlView.previewBtn]);
+                });
+            }
+            self.controlView.previewView.previewImages = images;
+        }
+    }];
 }
 
 - (SJVideoPlayerControlView *)controlView {
@@ -595,12 +606,13 @@ inline static NSString *_formatWithSec(NSInteger sec) {
 
 - (SJOrentationObserver *)orentation {
     if ( _orentation ) return _orentation;
-    _orentation = [[SJOrentationObserver alloc] initWithTarget:self.presentView container:self.view];
+    _orentation = [[SJOrentationObserver alloc] initWithTarget:_presentView container:self.view];
     __weak typeof(self) _self = self;
     _orentation.rotationCondition = ^BOOL(SJOrentationObserver * _Nonnull observer) {
         __strong typeof(_self) self = _self;
         if ( !self ) return NO;
-        switch (self.state) {
+        if ( self.stopped ) return NO;
+        switch ( self.state ) {
             case SJVideoPlayerPlayState_Unknown:
             case SJVideoPlayerPlayState_Prepare:
             case SJVideoPlayerPlayState_PlayFailed: return NO;
@@ -1050,6 +1062,7 @@ inline static NSString *_formatWithSec(NSInteger sec) {
 }
 
 - (void)_itemPlayEnd {
+    [self _pause];
     [self jumpedToTime:0 completionHandler:nil];
     [self _playEndState];
 }
@@ -1074,11 +1087,13 @@ inline static NSString *_formatWithSec(NSInteger sec) {
 }
 
 - (void)_buffering {
-    if ( _state == SJVideoPlayerPlayState_PlayEnd ||
-         _state == SJVideoPlayerPlayState_Unknown ||
-         !_asset ) return;
-    if ( self.userClickedPause ) return;
-    
+    if ( !self.asset ||
+         self.userClickedPause ||
+         self.state == SJVideoPlayerPlayState_PlayFailed ||
+         self.state == SJVideoPlayerPlayState_PlayEnd ||
+         self.state == SJVideoPlayerPlayState_Unknown ||
+         self.state == SJVideoPlayerPlayState_Playing ) return;
+
     [self _startLoading];
     [self _pause];
     self.state = SJVideoPlayerPlayState_Buffing;
@@ -1086,12 +1101,19 @@ inline static NSString *_formatWithSec(NSInteger sec) {
     dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(2 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
         __strong typeof(_self) self = _self;
         if ( !self ) return ;
+        if ( !self.asset ||
+             self.userClickedPause ||
+             self.state == SJVideoPlayerPlayState_PlayFailed ||
+             self.state == SJVideoPlayerPlayState_PlayEnd ||
+             self.state == SJVideoPlayerPlayState_Unknown ||
+             self.state == SJVideoPlayerPlayState_Playing ) return;
+
         if ( !self.asset.playerItem.isPlaybackLikelyToKeepUp ) {
             [self _buffering];
         }
         else {
             [self _stopLoading];
-            if ( !self.userClickedPause && !self.suspend ) [self play];
+            if ( !self.suspend ) [self play];
         }
     });
 }
@@ -1099,7 +1121,7 @@ inline static NSString *_formatWithSec(NSInteger sec) {
 - (void)setState:(SJVideoPlayerPlayState)state {
     if ( state == _state ) return;
     _state = state;
-    self.presentView.state = state;
+    _presentView.state = state;
 }
 
 @end
@@ -1153,7 +1175,11 @@ inline static NSString *_formatWithSec(NSInteger sec) {
                 }
                     break;
                 case AVPlayerItemStatusReadyToPlay: {
-                    [self performSelector:@selector(_itemReadyToPlay) withObject:nil afterDelay:1];
+                    dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(1 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
+                        __strong typeof(_self) self = _self;
+                        if ( !self ) return ;
+                        [self _itemReadyToPlay];
+                    });
                 }
                     break;
             }
@@ -1184,6 +1210,7 @@ inline static NSString *_formatWithSec(NSInteger sec) {
     asset.beingBuffered = ^(BOOL state) {
         __strong typeof(_self) self = _self;
         if ( !self ) return;
+        if ( self.state == SJVideoPlayerPlayState_Buffing ) return;
         [self _buffering];
     };
 
@@ -1233,10 +1260,8 @@ inline static NSString *_formatWithSec(NSInteger sec) {
 }
 
 - (void)_clear {
-    _sjAnima(^{
-        [self _unknownState];
-    });
-    if ( self.generatePreviewImages && !_asset.hasBeenGeneratedPreviewImages ) [_asset cancelPreviewImagesGeneration];
+    if ( self.generatePreviewImages &&
+         !_asset.hasBeenGeneratedPreviewImages ) [_asset cancelPreviewImagesGeneration];
     [_asset.player pause];
     _presentView.asset = nil;
     _controlView.asset = nil;
@@ -1337,7 +1362,7 @@ inline static NSString *_formatWithSec(NSInteger sec) {
 }
 
 - (void)setPlaceholder:(UIImage *)placeholder {
-    self.presentView.placeholder = placeholder;
+    _presentView.placeholder = placeholder;
 }
 
 - (void)setAutoplay:(BOOL)autoplay {
@@ -1438,12 +1463,15 @@ inline static NSString *_formatWithSec(NSInteger sec) {
 
 - (BOOL)play {
     self.suspend = NO;
+    self.stopped = NO;
     
     if ( !self.asset ) return NO;
     self.userClickedPause = NO;
-    _sjAnima(^{
-        [self _playState];
-    });
+    if ( self.state != SJVideoPlayerPlayState_Playing ) {
+        _sjAnima(^{
+            [self _playState];
+        });
+    }
     [self _play];
     return YES;
 }
@@ -1452,9 +1480,11 @@ inline static NSString *_formatWithSec(NSInteger sec) {
     self.suspend = YES;
     
     if ( !self.asset ) return NO;
-    _sjAnima(^{
-        [self _pauseState];
-    });
+    if ( self.state != SJVideoPlayerPlayState_Pause ) {
+        _sjAnima(^{
+            [self _pauseState];
+        });
+    }
     [self _pause];
     if ( !self.playOnCell || self.orentation.fullScreen ) [self showTitle:@"已暂停"];
     return YES;
@@ -1462,10 +1492,35 @@ inline static NSString *_formatWithSec(NSInteger sec) {
 
 - (void)stop {
     self.suspend = NO;
+    self.stopped = YES;
     
     if ( !self.asset ) return;
-    
+    if ( self.state != SJVideoPlayerPlayState_Unknown ) {
+        _sjAnima(^{
+            [self _unknownState];
+        });
+    }
     [self _clear];
+}
+
+- (void)stopAndFadeOut {
+    self.suspend = NO;
+    self.stopped = YES;
+    // state
+    if ( self.state != SJVideoPlayerPlayState_Unknown ) {
+        _sjAnima(^{
+            [self _unknownState];
+        });
+    }
+    // pause
+    [self _pause];
+    // fade out
+    [UIView animateWithDuration:0.5 animations:^{
+        self.view.alpha = 0.001;
+    } completion:^(BOOL finished) {
+        [self stop];
+        [_view removeFromSuperview];
+    }];
 }
 
 - (void)jumpedToTime:(NSTimeInterval)time completionHandler:(void (^ __nullable)(BOOL finished))completionHandler {
@@ -1513,7 +1568,7 @@ inline static NSString *_formatWithSec(NSInteger sec) {
 - (SJPrompt *)prompt {
     SJPrompt *prompt = objc_getAssociatedObject(self, _cmd);
     if ( prompt ) return prompt;
-    prompt = [SJPrompt promptWithPresentView:self.presentView];
+    prompt = [SJPrompt promptWithPresentView:_presentView];
     prompt.update(^(SJPromptConfig * _Nonnull config) {
         config.cornerRadius = 4;
         config.font = [UIFont systemFontOfSize:12];

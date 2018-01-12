@@ -175,6 +175,9 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (void)stop;
 
+/// 停止播放并淡出
+- (void)stopAndFadeOut;
+
 /*!
  *  停止旋转.
  *

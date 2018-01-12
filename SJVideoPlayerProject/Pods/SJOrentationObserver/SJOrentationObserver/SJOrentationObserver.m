@@ -59,6 +59,8 @@
 }
 
 - (void)setFullScreen:(BOOL)fullScreen {
+    if ( !_view || !_targetSuperview ) return;
+
     if ( self.rotationCondition ) {
         if ( !self.rotationCondition(self) ) return;
     }

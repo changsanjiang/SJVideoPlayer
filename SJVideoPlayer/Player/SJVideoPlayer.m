@@ -1236,7 +1236,10 @@ inline static NSString *_formatWithSec(NSInteger sec) {
     _sjAnima(^{
         [self _unknownState];
     });
-    if ( self.generatePreviewImages && !self.asset.hasBeenGeneratedPreviewImages ) [self.asset cancelPreviewImagesGeneration];
+    if ( self.generatePreviewImages && !_asset.hasBeenGeneratedPreviewImages ) [_asset cancelPreviewImagesGeneration];
+    [_asset.player pause];
+    _presentView.asset = nil;
+    _controlView.asset = nil;
     _asset = nil;
 }
 

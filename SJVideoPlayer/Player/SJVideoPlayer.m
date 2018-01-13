@@ -676,6 +676,10 @@ inline static NSString *_formatWithSec(NSInteger sec) {
         __strong typeof(_self) self = _self;
         if ( !self ) return;
         self.lockScreen = NO;
+        if ( self.playOnCell && !self.scrollIn ) return;
+        if ( self.state == SJVideoPlayerPlayState_PlayEnd ||
+             self.state == SJVideoPlayerPlayState_Unknown ||
+             self.state == SJVideoPlayerPlayState_PlayFailed ) return;
         if ( !self.userClickedPause ) [self play];
     };
     
@@ -1590,3 +1594,4 @@ inline static NSString *_formatWithSec(NSInteger sec) {
 }
 
 @end
+

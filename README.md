@@ -4,7 +4,10 @@ pod 'SJVideoPlayer'
 ```
 
 # Example
-<img src="https://github.com/changsanjiang/SJVideoPlayer/blob/master/SJVideoPlayerProject/SJVideoPlayerProject/single.gif" width=200 /><img src="https://github.com/changsanjiang/SJVideoPlayer/blob/master/SJVideoPlayerProject/SJVideoPlayerProject/table.gif" width=200 /><img src="https://github.com/changsanjiang/SJVideoPlayer/blob/master/SJVideoPlayerProject/SJVideoPlayerProject/nested.gif" width=200 /><img src="https://github.com/changsanjiang/SJVideoPlayer/blob/master/SJVideoPlayerProject/SJVideoPlayerProject/collection.gif" width=200 />
+<img src="https://github.com/changsanjiang/SJVideoPlayer/blob/master/SJVideoPlayerProject/SJVideoPlayerProject/single.gif" width=200 style="float:left" />
+<img src="https://github.com/changsanjiang/SJVideoPlayer/blob/master/SJVideoPlayerProject/SJVideoPlayerProject/table.gif" width=200 style="float:left" />
+<img src="https://github.com/changsanjiang/SJVideoPlayer/blob/master/SJVideoPlayerProject/SJVideoPlayerProject/nested.gif" width=200 style="float:left" />
+<img src="https://github.com/changsanjiang/SJVideoPlayer/blob/master/SJVideoPlayerProject/SJVideoPlayerProject/collection.gif" width=200 style="float:left" />
 
 # 抽离出的组件
 ### [加载视图](https://github.com/changsanjiang/SJLoadingView)
@@ -40,3 +43,5 @@ pod 'SJVideoPlayer'
 ```Objective-C
  Player.asset = [[SJVideoPlayerAssetCarrier alloc] initWithAssetURL:[NSURL URLWithString:@"http://....."] beginTime:10];
 ```
+
+

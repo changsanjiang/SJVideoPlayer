@@ -16,7 +16,7 @@ NS_ASSUME_NONNULL_BEGIN
  *  Target is rotationView.
  *  Container is superview.
  **/
-- (instancetype)initWithTarget:(__weak UIView *)view container:(__weak UIView *)targetSuperview;
+- (instancetype)initWithTarget:(UIView *)view container:(UIView *)targetSuperview;
 
 @property (nonatomic, assign, readonly, getter=isFullScreen) BOOL fullScreen;
 /// 旋转时间, default is 0.3

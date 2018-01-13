@@ -311,6 +311,9 @@ static void _SJ_Round(UIView *view, float cornerRadius) {
     tableView.showsHorizontalScrollIndicator = NO;
     tableView.delegate = delegate;
     tableView.dataSource = dataSource;
+    tableView.estimatedRowHeight = 0;
+    tableView.estimatedSectionHeaderHeight = 0;
+    tableView.estimatedSectionFooterHeight = 0;
     return tableView;
 }
 

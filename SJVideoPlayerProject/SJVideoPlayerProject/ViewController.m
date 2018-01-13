@@ -11,6 +11,7 @@
 #import "PlayerTableViewController.h"
 #import "PlayerCollectionViewController.h"
 #import "NestedTableViewController.h"
+#import "SJVideoListViewController.h"
 
 @interface ViewController ()
 
@@ -38,6 +39,9 @@
 
 - (IBAction)pushNested:(id)sender {
     [self.navigationController pushViewController:[[NestedTableViewController alloc] init] animated:YES];
+}
+- (IBAction)demo:(id)sender {
+    [self.navigationController pushViewController:[[SJVideoListViewController alloc] init] animated:YES];
 }
 
 - (void)didReceiveMemoryWarning {

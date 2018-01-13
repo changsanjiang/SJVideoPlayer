@@ -61,6 +61,10 @@
 		77EACC261FF28E5300E2B3AE /* IMG_0481.PNG in Resources */ = {isa = PBXBuildFile; fileRef = 77EACC231FF28E5200E2B3AE /* IMG_0481.PNG */; };
 		77EACC271FF28E5300E2B3AE /* IMG_0480.PNG in Resources */ = {isa = PBXBuildFile; fileRef = 77EACC241FF28E5200E2B3AE /* IMG_0480.PNG */; };
 		77EDB3591FD2CA550075A014 /* sample.mp4 in Resources */ = {isa = PBXBuildFile; fileRef = 77EDB3581FD2CA550075A014 /* sample.mp4 */; };
+		A6441092200A3FA9006FD832 /* SJVideoListViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = A6441091200A3FA9006FD832 /* SJVideoListViewController.m */; };
+		A6441095200A3FBA006FD832 /* SJVideoListTableViewCell.m in Sources */ = {isa = PBXBuildFile; fileRef = A6441094200A3FBA006FD832 /* SJVideoListTableViewCell.m */; };
+		A6441098200A406E006FD832 /* SJVideoModel.m in Sources */ = {isa = PBXBuildFile; fileRef = A6441097200A406E006FD832 /* SJVideoModel.m */; };
+		A644109D200A74FA006FD832 /* table2.gif in Resources */ = {isa = PBXBuildFile; fileRef = A644109C200A74FA006FD832 /* table2.gif */; };
 		A68A6CB02007CA7100771FEE /* timg.png in Resources */ = {isa = PBXBuildFile; fileRef = A68A6CAF2007CA7100771FEE /* timg.png */; };
 		A6F4E9742007A12400716B9C /* PlayerCollectionViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = A6F4E9732007A12400716B9C /* PlayerCollectionViewController.m */; };
 		A6F4E9772007A13C00716B9C /* PlayerCollectionViewCell.m in Sources */ = {isa = PBXBuildFile; fileRef = A6F4E9762007A13C00716B9C /* PlayerCollectionViewCell.m */; };
@@ -163,6 +167,13 @@
 		77EACC241FF28E5200E2B3AE /* IMG_0480.PNG */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = IMG_0480.PNG; sourceTree = "<group>"; };
 		77EDB3581FD2CA550075A014 /* sample.mp4 */ = {isa = PBXFileReference; lastKnownFileType = file; path = sample.mp4; sourceTree = "<group>"; };
 		A53C6944FFDAC5FD9DA4750E /* libPods-SJVideoPlayerProject.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-SJVideoPlayerProject.a"; sourceTree = BUILT_PRODUCTS_DIR; };
+		A6441090200A3FA9006FD832 /* SJVideoListViewController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = SJVideoListViewController.h; sourceTree = "<group>"; };
+		A6441091200A3FA9006FD832 /* SJVideoListViewController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = SJVideoListViewController.m; sourceTree = "<group>"; };
+		A6441093200A3FBA006FD832 /* SJVideoListTableViewCell.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = SJVideoListTableViewCell.h; sourceTree = "<group>"; };
+		A6441094200A3FBA006FD832 /* SJVideoListTableViewCell.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = SJVideoListTableViewCell.m; sourceTree = "<group>"; };
+		A6441096200A406E006FD832 /* SJVideoModel.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = SJVideoModel.h; sourceTree = "<group>"; };
+		A6441097200A406E006FD832 /* SJVideoModel.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = SJVideoModel.m; sourceTree = "<group>"; };
+		A644109C200A74FA006FD832 /* table2.gif */ = {isa = PBXFileReference; lastKnownFileType = image.gif; path = table2.gif; sourceTree = "<group>"; };
 		A68A6CAF2007CA7100771FEE /* timg.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = timg.png; sourceTree = "<group>"; };
 		A6F4E9722007A12400716B9C /* PlayerCollectionViewController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = PlayerCollectionViewController.h; sourceTree = "<group>"; };
 		A6F4E9732007A12400716B9C /* PlayerCollectionViewController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = PlayerCollectionViewController.m; sourceTree = "<group>"; };
@@ -231,10 +242,9 @@
 				774B251C1FCEBA5D002113CC /* AppDelegate.m */,
 				774B251E1FCEBA5D002113CC /* ViewController.h */,
 				774B251F1FCEBA5D002113CC /* ViewController.m */,
-				778E24F11FD97E93008D0DD3 /* Single */,
-				775A7C2A1FD7EC8000BE1EE2 /* TableView */,
-				A6F4E9702007A10B00716B9C /* CollectionView */,
-				A6F4E9782007A76200716B9C /* Nested */,
+				A644108C200A3F89006FD832 /* TableView_Demo */,
+				A6F4E9782007A76200716B9C /* Nested_Demo */,
+				A644109B200A7289006FD832 /* OtherDemo */,
 				777D30DB1FD8F0010075E5FD /* SJVideoPlayer */,
 				778E24F21FD97EB6008D0DD3 /* Asset */,
 			);
@@ -437,6 +447,7 @@
 				77A47E8B2008DEBE001EBE14 /* nested.gif */,
 				77A47E892008DEBD001EBE14 /* single.gif */,
 				77A47E882008DEBD001EBE14 /* table.gif */,
+				A644109C200A74FA006FD832 /* table2.gif */,
 				A68A6CAF2007CA7100771FEE /* timg.png */,
 				774B25581FCED554002113CC /* test.png */,
 				77B795781FFF6B9F000D8F6C /* test1.png */,
@@ -467,6 +478,53 @@
 			path = GestureControl;
 			sourceTree = "<group>";
 		};
+		A644108C200A3F89006FD832 /* TableView_Demo */ = {
+			isa = PBXGroup;
+			children = (
+				A644108D200A3F89006FD832 /* Controller */,
+				A644108E200A3F89006FD832 /* Model */,
+				A644108F200A3F89006FD832 /* View */,
+			);
+			path = TableView_Demo;
+			sourceTree = "<group>";
+		};
+		A644108D200A3F89006FD832 /* Controller */ = {
+			isa = PBXGroup;
+			children = (
+				A6441090200A3FA9006FD832 /* SJVideoListViewController.h */,
+				A6441091200A3FA9006FD832 /* SJVideoListViewController.m */,
+			);
+			path = Controller;
+			sourceTree = "<group>";
+		};
+		A644108E200A3F89006FD832 /* Model */ = {
+			isa = PBXGroup;
+			children = (
+				A6441096200A406E006FD832 /* SJVideoModel.h */,
+				A6441097200A406E006FD832 /* SJVideoModel.m */,
+			);
+			path = Model;
+			sourceTree = "<group>";
+		};
+		A644108F200A3F89006FD832 /* View */ = {
+			isa = PBXGroup;
+			children = (
+				A6441093200A3FBA006FD832 /* SJVideoListTableViewCell.h */,
+				A6441094200A3FBA006FD832 /* SJVideoListTableViewCell.m */,
+			);
+			path = View;
+			sourceTree = "<group>";
+		};
+		A644109B200A7289006FD832 /* OtherDemo */ = {
+			isa = PBXGroup;
+			children = (
+				778E24F11FD97E93008D0DD3 /* Single */,
+				775A7C2A1FD7EC8000BE1EE2 /* TableView */,
+				A6F4E9702007A10B00716B9C /* CollectionView */,
+			);
+			path = OtherDemo;
+			sourceTree = "<group>";
+		};
 		A6F4E9702007A10B00716B9C /* CollectionView */ = {
 			isa = PBXGroup;
 			children = (
@@ -478,7 +536,7 @@
 			path = CollectionView;
 			sourceTree = "<group>";
 		};
-		A6F4E9782007A76200716B9C /* Nested */ = {
+		A6F4E9782007A76200716B9C /* Nested_Demo */ = {
 			isa = PBXGroup;
 			children = (
 				A6F4E9792007A78400716B9C /* NestedTableViewController.h */,
@@ -486,7 +544,7 @@
 				A6F4E97C2007A7EC00716B9C /* NestedTableViewCell.h */,
 				A6F4E97D2007A7EC00716B9C /* NestedTableViewCell.m */,
 			);
-			path = Nested;
+			path = Nested_Demo;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -561,6 +619,7 @@
 				777D30D71FD8E8240075E5FD /* SJVideoPlayer.podspec in Resources */,
 				77B795791FFF6B9F000D8F6C /* test1.png in Resources */,
 				77A47E8D2008DEBE001EBE14 /* single.gif in Resources */,
+				A644109D200A74FA006FD832 /* table2.gif in Resources */,
 				77EACC211FF28B4800E2B3AE /* IMG_0473.PNG in Resources */,
 				777D315A1FD8F0010075E5FD /* SJVideoPlayer.bundle in Resources */,
 				774B25251FCEBA5D002113CC /* Assets.xcassets in Resources */,
@@ -643,6 +702,7 @@
 				777D31501FD8F0010075E5FD /* SJVideoPlayerMoreSettingSecondaryColCell.m in Sources */,
 				777D31541FD8F0010075E5FD /* SJVideoPlayerControlMaskView.m in Sources */,
 				777D313F1FD8F0010075E5FD /* SJVideoPlayerBottomControlView.m in Sources */,
+				A6441092200A3FA9006FD832 /* SJVideoListViewController.m in Sources */,
 				A6F4E9772007A13C00716B9C /* PlayerCollectionViewCell.m in Sources */,
 				777D31441FD8F0010075E5FD /* SJVideoPlayerControlView.m in Sources */,
 				77A4394F1FDD887A008BD092 /* SJPlayerGestureControl.m in Sources */,
@@ -652,6 +712,7 @@
 				777D31411FD8F0010075E5FD /* SJVideoPlayerLeftControlView.m in Sources */,
 				A6F4E9742007A12400716B9C /* PlayerCollectionViewController.m in Sources */,
 				777D314F1FD8F0010075E5FD /* SJVideoPlayerMoreSettingsView.m in Sources */,
+				A6441095200A3FBA006FD832 /* SJVideoListTableViewCell.m in Sources */,
 				775A7C291FD7EC7C00BE1EE2 /* PlayerTableViewCell.m in Sources */,
 				A6F4E97E2007A7EC00716B9C /* NestedTableViewCell.m in Sources */,
 				777D31431FD8F0010075E5FD /* SJVideoPlayerPreviewView.m in Sources */,
@@ -664,6 +725,7 @@
 				774B251D1FCEBA5D002113CC /* AppDelegate.m in Sources */,
 				777D31471FD8F0010075E5FD /* SJMoreSettingsFooterViewModel.m in Sources */,
 				777D31491FD8F0010075E5FD /* SJVideoPlayerMoreSetting.m in Sources */,
+				A6441098200A406E006FD832 /* SJVideoModel.m in Sources */,
 				777D314B1FD8F0010075E5FD /* SJVideoPlayerSettings.m in Sources */,
 				777D31521FD8F0010075E5FD /* SJVideoPlayerMoreSettingsSecondaryHeaderView.m in Sources */,
 				777D31401FD8F0010075E5FD /* SJVideoPlayerCenterControlView.m in Sources */,
@@ -814,8 +876,8 @@
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				PRODUCT_BUNDLE_IDENTIFIER = com.sanjiang.videoplayer;
 				PRODUCT_NAME = "$(TARGET_NAME)";
-				PROVISIONING_PROFILE = "acd2453e-e396-4ccf-bf56-508276824c6c";
-				PROVISIONING_PROFILE_SPECIFIER = SanJiangDevelopment;
+				PROVISIONING_PROFILE = "a317fe74-1a78-4494-b955-994f23dd28be";
+				PROVISIONING_PROFILE_SPECIFIER = sanjiang17macDev;
 				TARGETED_DEVICE_FAMILY = "1,2";
 			};
 			name = Debug;

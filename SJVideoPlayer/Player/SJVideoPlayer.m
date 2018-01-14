@@ -166,7 +166,7 @@ inline static NSString *_formatWithSec(NSInteger sec) {
 }
 
 - (void)setHideControl:(BOOL)hideControl {
-    if ( self.isHiddenControl == hideControl ) return;
+//    if ( self.isHiddenControl == hideControl ) return;
     objc_setAssociatedObject(self, @selector(isHiddenControl), @(hideControl), OBJC_ASSOCIATION_RETAIN_NONATOMIC);
     [self.timerControl reset];
     if ( hideControl ) [self _hideControlState];

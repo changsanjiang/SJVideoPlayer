@@ -13,6 +13,7 @@
 #import "SJVideoModel.h"
 #import "SJVideoPlayer.h"
 #import <SJFullscreenPopGesture/UIViewController+SJVideoPlayerAdd.h>
+#import <UIView+SJUIFactory.h>
 
 static NSString *const SJVideoListTableViewCellID = @"SJVideoListTableViewCell";
 
@@ -22,6 +23,10 @@ static NSString *const SJVideoListTableViewCellID = @"SJVideoListTableViewCell";
 @property (nonatomic, strong) NSArray<SJVideoModel *> *videosM;
 @property (nonatomic, strong) SJVideoPlayer *videoPlayer;
 @property (nonatomic, assign) BOOL isFullScreen;
+@property (nonatomic, assign) BOOL controlViewDisplayed;
+
+@property (nonatomic, strong) UIActivityIndicatorView *indicator;
+
 @end
 
 @implementation SJVideoListViewController
@@ -31,20 +36,27 @@ static NSString *const SJVideoListTableViewCellID = @"SJVideoListTableViewCell";
 - (void)viewDidLoad {
     [super viewDidLoad];
     
+    // setup views
+    [self _videoListSetupViews];
+    
+    self.tableView.alpha = 0.001;
+    
     // prepare test data.
+    [self.indicator startAnimating];
     __weak typeof(self) _self = self;
     dispatch_async(dispatch_get_global_queue(0, 0), ^{
-        __strong typeof(_self) self = _self;
-        if ( !self ) return ;
         NSArray<SJVideoModel *> *videos = [SJVideoModel videoModels];
         dispatch_async(dispatch_get_main_queue(), ^{
+            __strong typeof(_self) self = _self;
+            if ( !self ) return;
+            [self.indicator stopAnimating];
             self.videosM = videos;
+            [UIView animateWithDuration:0.25 animations:^{
+                self.tableView.alpha = 1;
+            }];
             [self.tableView reloadData];
         });
     });
-    
-    // setup views
-    [self _videoListSetupViews];
     
     // pop gesture
     self.sj_viewWillBeginDragging = ^(SJVideoListViewController *vc) {
@@ -59,9 +71,26 @@ static NSString *const SJVideoListTableViewCellID = @"SJVideoListTableViewCell";
     // Do any additional setup after loading the view.
 }
 
+- (void)dealloc {
+    [_videoPlayer stop];
+}
+
+#pragma mark -
+- (UIActivityIndicatorView *)indicator {
+    if ( _indicator ) return _indicator;
+    _indicator = [[UIActivityIndicatorView alloc] initWithActivityIndicatorStyle:UIActivityIndicatorViewStyleWhiteLarge];
+    _indicator.csj_size = CGSizeMake(80, 80);
+    _indicator.center = self.view.center;
+    _indicator.backgroundColor = [UIColor colorWithWhite:0.000 alpha:0.670];
+    _indicator.clipsToBounds = YES;
+    _indicator.layer.cornerRadius = 6;
+    [self.view addSubview:_indicator];
+    return _indicator;
+}
 #pragma mark -
 
 - (void)_videoListSetupViews {
+    self.view.backgroundColor = [UIColor whiteColor];
     [self.view addSubview:self.tableView];
     [_tableView mas_makeConstraints:^(MASConstraintMaker *make) {
         make.edges.offset(0);
@@ -110,6 +139,15 @@ static NSString *const SJVideoListTableViewCellID = @"SJVideoListTableViewCell";
         __strong typeof(_self) self = _self;
         if ( !self ) return ;
         self.isFullScreen = isFullScreen;
+        [self setNeedsStatusBarAppearanceUpdate];
+    };
+    
+    // Call when the control view is hidden or displayed.
+    _videoPlayer.controlViewDisplayStatus = ^(SJVideoPlayer * _Nonnull player, BOOL displayed) {
+        __strong typeof(_self) self = _self;
+        if ( !self ) return;
+        self.controlViewDisplayed = displayed;
+        [self setNeedsStatusBarAppearanceUpdate];
     };
     
     // fade in
@@ -125,13 +163,13 @@ static NSString *const SJVideoListTableViewCellID = @"SJVideoListTableViewCell";
                                            superviewTag:playerParentView.tag];
 }
 
-- (void)setIsFullScreen:(BOOL)isFullScreen {
-    _isFullScreen = isFullScreen;
-    [self setNeedsStatusBarAppearanceUpdate];
+- (BOOL)prefersStatusBarHidden {
+    if ( _isFullScreen ) return !_controlViewDisplayed; // 全屏播放时, 使状态栏根据控制层显示或隐藏
+    return NO;
 }
 
 - (UIStatusBarStyle)preferredStatusBarStyle {
-    if ( _isFullScreen ) return UIStatusBarStyleLightContent;
+    if ( _isFullScreen ) return UIStatusBarStyleLightContent; // 全屏播放时, 使状态栏变成白色
     return UIStatusBarStyleDefault;
 }
 

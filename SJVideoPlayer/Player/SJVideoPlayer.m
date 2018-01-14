@@ -166,7 +166,7 @@ inline static NSString *_formatWithSec(NSInteger sec) {
 }
 
 - (void)setHideControl:(BOOL)hideControl {
-    //    if ( self.isHiddenControl == hideControl ) return;
+    if ( self.isHiddenControl == hideControl ) return;
     objc_setAssociatedObject(self, @selector(isHiddenControl), @(hideControl), OBJC_ASSOCIATION_RETAIN_NONATOMIC);
     [self.timerControl reset];
     if ( hideControl ) [self _hideControlState];
@@ -174,6 +174,7 @@ inline static NSString *_formatWithSec(NSInteger sec) {
         [self _showControlState];
         [self _delayHiddenControl];
     }
+    if ( self.controlViewDisplayStatus ) self.controlViewDisplayStatus(self, !hideControl);
 }
 
 - (BOOL)isHiddenControl {
@@ -1417,6 +1418,14 @@ inline static NSString *_formatWithSec(NSInteger sec) {
     return objc_getAssociatedObject(self, _cmd);
 }
 
+- (void)setControlViewDisplayStatus:(void (^)(SJVideoPlayer * _Nonnull, BOOL))controlViewDisplayStatus {
+    objc_setAssociatedObject(self, @selector(controlViewDisplayStatus), controlViewDisplayStatus, OBJC_ASSOCIATION_COPY_NONATOMIC);
+}
+
+- (void (^)(SJVideoPlayer * _Nonnull, BOOL))controlViewDisplayStatus {
+    return objc_getAssociatedObject(self, _cmd);
+}
+
 - (void)setRate:(float)rate {
     if ( self.rate == rate ) return;
     objc_setAssociatedObject(self, @selector(rate), @(rate), OBJC_ASSOCIATION_RETAIN_NONATOMIC);
@@ -1487,6 +1496,7 @@ inline static NSString *_formatWithSec(NSInteger sec) {
     if ( self.state != SJVideoPlayerPlayState_Pause ) {
         _sjAnima(^{
             [self _pauseState];
+            self.hideControl = NO;
         });
     }
     [self _pause];

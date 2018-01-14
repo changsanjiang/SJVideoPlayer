@@ -153,6 +153,13 @@ NS_ASSUME_NONNULL_BEGIN
  **/
 @property (nonatomic, copy, readwrite, nullable) void(^playDidToEnd)(SJVideoPlayer *player);
 
+/*!
+ *  Call when the control view is hidden or displayed.
+ *
+ *  控制层隐藏或显示的时候调用.
+ **/
+@property (nonatomic, copy, readwrite, nullable) void(^controlViewDisplayStatus)(SJVideoPlayer *player, BOOL displayed);
+
 @end
 
 

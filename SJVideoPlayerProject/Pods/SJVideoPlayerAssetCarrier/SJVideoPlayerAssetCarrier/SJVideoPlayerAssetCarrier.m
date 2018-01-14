@@ -63,7 +63,7 @@ static float const __GeneratePreImgScale = 0.05;
 
 - (instancetype)initWithAssetURL:(NSURL *)assetURL
                       scrollView:(__unsafe_unretained UIScrollView * __nullable)scrollView
-                       indexPath:(__weak NSIndexPath * __nullable)indexPath
+                       indexPath:(NSIndexPath * __nullable)indexPath
                     superviewTag:(NSInteger)superviewTag {
     return [self initWithAssetURL:assetURL beginTime:0 scrollView:scrollView indexPath:indexPath superviewTag:superviewTag];
 }
@@ -71,15 +71,25 @@ static float const __GeneratePreImgScale = 0.05;
 - (instancetype)initWithAssetURL:(NSURL *)assetURL
                        beginTime:(NSTimeInterval)beginTime
                       scrollView:(__unsafe_unretained UIScrollView *__nullable)scrollView
-                       indexPath:(__weak NSIndexPath *__nullable)indexPath
+                       indexPath:(NSIndexPath *__nullable)indexPath
                     superviewTag:(NSInteger)superviewTag {
     return [self initWithAssetURL:assetURL beginTime:beginTime scrollView:scrollView indexPath:indexPath superviewTag:superviewTag scrollViewTag:0 parentScrollView:nil parentIndexPath:nil];
 }
 
 - (instancetype)initWithAssetURL:(NSURL *)assetURL
+                      scrollView:(__unsafe_unretained UIScrollView *__nullable)scrollView
+                       indexPath:(NSIndexPath *__nullable)indexPath
+                    superviewTag:(NSInteger)superviewTag
+                   scrollViewTag:(NSInteger)scrollViewTag // _scrollView `tag`
+                parentScrollView:(__unsafe_unretained UIScrollView *__nullable)parentScrollView // _scrollView parent `scrollview`.
+                 parentIndexPath:(NSIndexPath *__nullable)parentIndexPath {
+    return [self initWithAssetURL:assetURL beginTime:0 scrollView:scrollView indexPath:indexPath superviewTag:superviewTag scrollViewTag:scrollViewTag parentScrollView:parentScrollView parentIndexPath:parentIndexPath];
+}
+
+- (instancetype)initWithAssetURL:(NSURL *)assetURL
                        beginTime:(NSTimeInterval)beginTime
                       scrollView:(__unsafe_unretained UIScrollView *__nullable)scrollView
-                       indexPath:(__weak NSIndexPath *__nullable)indexPath
+                       indexPath:(NSIndexPath *__nullable)indexPath
                     superviewTag:(NSInteger)superviewTag
                    scrollViewTag:(NSInteger)scrollViewTag
                 parentScrollView:(__unsafe_unretained UIScrollView *__nullable)parentScrollView
@@ -139,6 +149,7 @@ static float const __GeneratePreImgScale = 0.05;
     
     if ( _scrollView ) {
         [_scrollView addObserver:self forKeyPath:@"contentOffset" options:NSKeyValueObservingOptionNew context:nil];
+        [_scrollView.panGestureRecognizer addObserver:self forKeyPath:@"state" options:NSKeyValueObservingOptionNew context:nil];
         __weak typeof(self) _self = self;
         [self _injectTmpObjToScrollView:_scrollView deallocCallBlock:^(SJTmpObj *obj) {
             obj.deallocCallBlock = ^(SJTmpObj *obj) {
@@ -153,6 +164,7 @@ static float const __GeneratePreImgScale = 0.05;
     
     if ( _parentScrollView ) {
         [_parentScrollView addObserver:self forKeyPath:@"contentOffset" options:NSKeyValueObservingOptionNew context:nil];
+        [_parentScrollView.panGestureRecognizer addObserver:self forKeyPath:@"state" options:NSKeyValueObservingOptionNew context:nil];
         __weak typeof(self) _self = self;
         [self _injectTmpObjToScrollView:_parentScrollView deallocCallBlock:^(SJTmpObj *obj) {
             __strong typeof(_self) self = _self;
@@ -166,8 +178,32 @@ static float const __GeneratePreImgScale = 0.05;
 
 - (void)observeValueForKeyPath:(NSString *)keyPath ofObject:(id)object change:(NSDictionary<NSKeyValueChangeKey,id> *)change context:(void *)context {
     dispatch_async(dispatch_get_main_queue(), ^{
-        
-        if ( [keyPath isEqualToString:@"status"] ) {
+        if ( [keyPath isEqualToString:@"contentOffset"] ) {
+            [self _scrollViewDidScroll:object];
+        }
+        else if ( [keyPath isEqualToString:@"state"] ) {
+            UIGestureRecognizerState state = [change[NSKeyValueChangeNewKey] integerValue];
+            switch ( state ) {
+                case UIGestureRecognizerStateChanged: break;
+                case UIGestureRecognizerStatePossible: break;
+                case UIGestureRecognizerStateBegan: {
+                    if ( _touchedScrollView ) _touchedScrollView(self, YES);
+                }
+                    break;
+                case UIGestureRecognizerStateEnded:
+                case UIGestureRecognizerStateFailed:
+                case UIGestureRecognizerStateCancelled: {
+                    if ( _touchedScrollView ) _touchedScrollView(self, NO);
+                }
+                    break;
+            }
+        }
+        else if ( [keyPath isEqualToString:@"loadedTimeRanges"] ) {
+            if ( 0 == CMTimeGetSeconds(_playerItem.duration) ) return;
+            CGFloat progress = [self _loadedTimeSecs] / CMTimeGetSeconds(_playerItem.duration);
+            if ( self.loadedTimeProgress ) self.loadedTimeProgress(progress);
+        }
+        else if ( [keyPath isEqualToString:@"status"] ) {
             if ( !_jumped &&
                 AVPlayerItemStatusReadyToPlay == self.playerItem.status &&
                 0 != self.beginTime ) {
@@ -187,19 +223,11 @@ static float const __GeneratePreImgScale = 0.05;
                 if ( self.playerItemStateChanged ) self.playerItemStateChanged(self, self.playerItem.status);
             }
         }
-        else if ( [keyPath isEqualToString:@"loadedTimeRanges"] ) {
-            if ( 0 == CMTimeGetSeconds(_playerItem.duration) ) return;
-            CGFloat progress = [self _loadedTimeSecs] / CMTimeGetSeconds(_playerItem.duration);
-            if ( self.loadedTimeProgress ) self.loadedTimeProgress(progress);
-        }
         else if ( [keyPath isEqualToString:@"playbackBufferEmpty"] ) {
             if ( self.beingBuffered ) self.beingBuffered([self _loadedTimeSecs] <= self.currentTime + 5);
         }
         else if ( [keyPath isEqualToString:@"presentationSize"] ) {
             if ( self.presentationSize ) self.presentationSize(self, self.playerItem.presentationSize);
-        }
-        if ( [keyPath isEqualToString:@"contentOffset"] ) {
-            [self _scrollViewDidScroll:object];
         }
     });
 }
@@ -241,13 +269,13 @@ static float const __GeneratePreImgScale = 0.05;
     _tmp_imageGenerator.maximumSize = size;
     __weak typeof(self) _self = self;
     [_tmp_imageGenerator generateCGImagesAsynchronouslyForTimes:@[[NSValue valueWithCMTime:time]] completionHandler:^(CMTime requestedTime, CGImageRef  _Nullable imageRef, CMTime actualTime, AVAssetImageGeneratorResult result, NSError * _Nullable error) {
+        __strong typeof(_self) self = _self;
+        if ( !self ) return;
         if ( result == AVAssetImageGeneratorSucceeded ) {
             UIImage *image = [UIImage imageWithCGImage:imageRef];
             if ( block ) block(self, [SJVideoPreviewModel previewModelWithImage:image localTime:actualTime], nil);
         }
         else if ( result == AVAssetImageGeneratorFailed ) {
-            __strong typeof(_self) self = _self;
-            if ( !self ) return;
             if ( block ) block(self, nil, error);
         }
     }];
@@ -264,7 +292,7 @@ static float const __GeneratePreImgScale = 0.05;
     if ( __GeneratePreImgScale > 1.0 || __GeneratePreImgScale <= 0 ) return;
     __block short maxCount = (short)floorf(1.0 / __GeneratePreImgScale);
     short interval = (short)floor(seconds * __GeneratePreImgScale);
-    for ( int i = 0 ; i < maxCount ; i ++ ) {
+    for ( short i = 0 ; i < maxCount ; i ++ ) {
         CMTime time = CMTimeMake(i * interval, 1);
         NSValue *tV = [NSValue valueWithCMTime:time];
         if ( tV ) [timesM addObject:tV];
@@ -345,8 +373,8 @@ static float const __GeneratePreImgScale = 0.05;
     [_playerItem removeObserver:self forKeyPath:@"playbackBufferEmpty"];
     [_playerItem removeObserver:self forKeyPath:@"loadedTimeRanges"];
     [_playerItem removeObserver:self forKeyPath:@"presentationSize"];
-    if ( !_removedScrollObserver ) [self _removingScrollViewObserver];
-    if ( !_removedParentScrollObserver ) [self _removingParentScrollViewObserver];
+    if ( _scrollView && !_removedScrollObserver ) [self _removingScrollViewObserver];
+    if ( _parentScrollView && !_removedParentScrollObserver ) [self _removingParentScrollViewObserver];
 }
 
 #pragma mark
@@ -358,7 +386,7 @@ static float const __GeneratePreImgScale = 0.05;
     }
     
     
-    // new method
+    // new method(v0.0.5)
     NSIndexPath *indexPath = nil;
     if ( scrollView == _scrollView ) {
         indexPath = _indexPath;
@@ -457,12 +485,14 @@ static float const __GeneratePreImgScale = 0.05;
 
 - (void)_removingScrollViewObserver {
     [_scrollView removeObserver:self forKeyPath:@"contentOffset"];
+    [_scrollView.panGestureRecognizer removeObserver:self forKeyPath:@"state"];
     _scrollView = nil;
     _removedScrollObserver = YES;
 }
 
 - (void)_removingParentScrollViewObserver {
     [_parentScrollView removeObserver:self forKeyPath:@"contentOffset"];
+    [_parentScrollView.panGestureRecognizer removeObserver:self forKeyPath:@"state"];
     _parentScrollView = nil;
     _removedParentScrollObserver = YES;
 }

@@ -14,6 +14,8 @@ NS_ASSUME_NONNULL_BEGIN
 
 @protocol NestedTableViewCellDelegate;
 
+
+
 @interface NestedTableViewCell : UITableViewCell
 
 + (CGFloat)height;
@@ -22,13 +24,24 @@ NS_ASSUME_NONNULL_BEGIN
 
 @end
 
+
+
 @protocol NestedTableViewCellDelegate <NSObject>
 
 @optional
-- (void)clickedPlayWithNestedTabCell:(NestedTableViewCell *)tabCell
-                                 col:(UICollectionView *)collectionView
-                             colCell:(PlayerCollectionViewCell *)colCell;
 
+/**
+ 点击播放, 回调的代理方法
+
+ @param tabCell `NestedTableViewCell`
+ @param playerParentView `需要添加播放器的视图`
+ @param indexPath `collection Cell的`indexPath`
+ @param collectionView `tabCell`内部嵌套的`collectionview`
+ */
+- (void)clickedPlayWithNestedTabCell:(NestedTableViewCell *)tabCell
+                    playerParentView:(UIView *)playerParentView
+                           indexPath:(NSIndexPath *__nullable)indexPath
+                      collectionView:(UICollectionView *)collectionView;
 @end
 
 NS_ASSUME_NONNULL_END

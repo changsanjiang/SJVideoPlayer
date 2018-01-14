@@ -530,8 +530,6 @@
 			children = (
 				A6F4E9722007A12400716B9C /* PlayerCollectionViewController.h */,
 				A6F4E9732007A12400716B9C /* PlayerCollectionViewController.m */,
-				A6F4E9752007A13C00716B9C /* PlayerCollectionViewCell.h */,
-				A6F4E9762007A13C00716B9C /* PlayerCollectionViewCell.m */,
 			);
 			path = CollectionView;
 			sourceTree = "<group>";
@@ -543,6 +541,8 @@
 				A6F4E97A2007A78400716B9C /* NestedTableViewController.m */,
 				A6F4E97C2007A7EC00716B9C /* NestedTableViewCell.h */,
 				A6F4E97D2007A7EC00716B9C /* NestedTableViewCell.m */,
+				A6F4E9752007A13C00716B9C /* PlayerCollectionViewCell.h */,
+				A6F4E9762007A13C00716B9C /* PlayerCollectionViewCell.m */,
 			);
 			path = Nested_Demo;
 			sourceTree = "<group>";

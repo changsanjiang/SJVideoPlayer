@@ -48,6 +48,7 @@ static NSString *const PlayerCollectionViewCellID = @"PlayerCollectionViewCell";
     _collectionView.dataSource = self;
     [_collectionView registerClass:NSClassFromString(PlayerCollectionViewCellID) forCellWithReuseIdentifier:PlayerCollectionViewCellID];
     
+#warning should be set it tag. 应该设置它的`tag`. 请不要设置为0.
     _collectionView.tag = 101;
     
     return _collectionView;
@@ -63,9 +64,13 @@ static NSString *const PlayerCollectionViewCellID = @"PlayerCollectionViewCell";
     return cell;
 }
 
-- (void)clickedPlayOnColCell:(PlayerCollectionViewCell *)cell {
-    if ( [_delegate respondsToSelector:@selector(clickedPlayWithNestedTabCell:col:colCell:)] ) {
-        [_delegate clickedPlayWithNestedTabCell:self col:_collectionView colCell:cell];
+- (void)clickedPlayOnColCell:(PlayerCollectionViewCell *)colCell {
+    if ( [_delegate respondsToSelector:@selector(clickedPlayWithNestedTabCell:playerParentView:indexPath:collectionView:)] ) {
+        
+        [_delegate clickedPlayWithNestedTabCell:self
+                               playerParentView:colCell.backgroundImageView
+                                      indexPath:[self.collectionView indexPathForCell:colCell]
+                                 collectionView:self.collectionView];
     }
 }
 @end

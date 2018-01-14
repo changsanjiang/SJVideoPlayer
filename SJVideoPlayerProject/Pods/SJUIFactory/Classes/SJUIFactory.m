@@ -333,6 +333,9 @@ static void _SJ_Round(UIView *view, float cornerRadius) {
     tableView.showsHorizontalScrollIndicator = NO;
     tableView.delegate = delegate;
     tableView.dataSource = dataSource;
+    tableView.estimatedRowHeight = 0;
+    tableView.estimatedSectionHeaderHeight = 0;
+    tableView.estimatedSectionFooterHeight = 0;
     if ( style == UITableViewStyleGrouped ) tableView.tableHeaderView = [[UIView alloc] initWithFrame:CGRectMake(0, 0, 0, 0.001)];
     return tableView;
 }
@@ -908,6 +911,13 @@ estimatedSectionFooterHeight:(CGFloat)estimatedSectionFooterHeight {
 
 + (UIImageView *)imageViewWithCornerRadius:(float)cornerRadius {
     return [self imageViewWithCornerRadius:cornerRadius imageName:nil];
+}
+
++ (UIImageView *)imageViewWithCornerRadius:(float)cornerRadius
+                           backgroundColor:(UIColor *)backgroundColor {
+    UIImageView *imageView = [self imageViewWithCornerRadius:cornerRadius];
+    imageView.backgroundColor = backgroundColor;
+    return imageView;
 }
 
 + (UIImageView *)imageViewWithCornerRadius:(float)cornerRadius

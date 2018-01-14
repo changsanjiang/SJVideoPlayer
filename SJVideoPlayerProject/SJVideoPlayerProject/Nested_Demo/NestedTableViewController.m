@@ -11,6 +11,7 @@
 #import "NestedTableViewCell.h"
 #import "PlayerCollectionViewCell.h"
 #import <Masonry.h>
+#import <SJFullscreenPopGesture/UIViewController+SJVideoPlayerAdd.h>
 
 
 static NSString *const NestedTableViewCellID = @"NestedTableViewCell";
@@ -18,6 +19,8 @@ static NSString *const NestedTableViewCellID = @"NestedTableViewCell";
 @interface NestedTableViewController ()<NestedTableViewCellDelegate>
 
 @property (nonatomic, strong, readwrite) SJVideoPlayer *videoPlayer;
+@property (nonatomic, assign) BOOL isFullScreen;
+@property (nonatomic, assign) BOOL controlViewDisplayed;
 
 @end
 
@@ -27,31 +30,29 @@ static NSString *const NestedTableViewCellID = @"NestedTableViewCell";
     [super viewDidLoad];
     
     self.title = @"Nested scrollView(嵌套view)";
-    
     self.view.backgroundColor = [UIColor whiteColor];
-    
     [self.tableView registerClass:NSClassFromString(NestedTableViewCellID) forCellReuseIdentifier:NestedTableViewCellID];
-    
     self.tableView.rowHeight = [NestedTableViewCell height];
+    
+    
+    // begin pop
+    __weak typeof(self) _self = self;
+    self.sj_viewWillBeginDragging = ^(__kindof UIViewController *vc) {
+        __strong typeof(_self) self = _self;
+        if ( !self ) return;
+        self.videoPlayer.disableRotation = YES;
+    };
+    
+    self.sj_viewDidEndDragging = ^(__kindof UIViewController *vc) {
+        __strong typeof(_self) self = _self;
+        if ( !self ) return;
+        self.videoPlayer.disableRotation = NO;
+    };
 }
 
 - (void)didReceiveMemoryWarning {
     [super didReceiveMemoryWarning];
     // Dispose of any resources that can be recreated.
-}
-
-- (void)viewWillAppear:(BOOL)animated {
-    [super viewWillAppear:animated];
-    _videoPlayer.disableRotation = NO;
-}
-
-- (void)viewWillDisappear:(BOOL)animated {
-    [super viewWillDisappear:animated];
-    _videoPlayer.disableRotation = YES;
-}
-
-- (void)dealloc {
-    [_videoPlayer stop];
 }
 
 #pragma mark - Table view data source
@@ -70,72 +71,69 @@ static NSString *const NestedTableViewCellID = @"NestedTableViewCell";
     return cell;
 }
 
+#pragma mark - TabCell Delegate
+
 - (void)clickedPlayWithNestedTabCell:(NestedTableViewCell *)tabCell
-                                 col:(UICollectionView *)collectionView
-                             colCell:(PlayerCollectionViewCell *)colCell {
+                    playerParentView:(UIView *)playerParentView
+                           indexPath:(NSIndexPath *)indexPath
+                      collectionView:(UICollectionView *)collectionView {
     
-    [self _removeOldPlayer];
+    // old player fade out
+    [_videoPlayer stopAndFadeOut];
     
-    [self _createNewPlayerWithPlayerSuperView:colCell.backgroundImageView
-                                  assetURLStr:@"http://pu.latin5.com/bd1c831d-7024-4b17-a03e-e8ab89bb2a4b.m3u8" beginTime:0
-                                   scrollView:collectionView
-                                    indexPath:[collectionView indexPathForCell:colCell]
-                                 superviewTag:colCell.backgroundImageView.tag
-                                scrollViewTag:collectionView.tag
-                             parentScrollView:self.tableView
-                              parentIndexPath:[self.tableView indexPathForCell:tabCell]];
-    
-//    __weak typeof(self) _self = self;
-//    dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(1 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
-//        __strong typeof(_self) self = _self;
-//        if ( !self ) return ;
-//        [self clickedPlayWithNestedTabCell:tabCell col:collectionView colCell:colCell];
-//    });
-}
-
-- (void)_removeOldPlayer {
-    // clear old player
-    SJVideoPlayer *oldPlayer = _videoPlayer;
-    if ( !oldPlayer ) { return;}
-    
-    // fade out
-    [oldPlayer stopAndFadeOut];
-}
-
-- (void)_createNewPlayerWithPlayerSuperView:(UIView *)playerSuperView
-                                assetURLStr:(NSString *)assetURLStr
-                                  beginTime:(NSTimeInterval)beginTime
-                                 scrollView:(__unsafe_unretained UIScrollView *__nullable)scrollView
-                                  indexPath:(__weak NSIndexPath *__nullable)indexPath
-                               superviewTag:(NSInteger)superviewTag
-                              scrollViewTag:(NSInteger)scrollViewTag
-                           parentScrollView:(__unsafe_unretained UIScrollView *__nullable)parentScrollView
-                            parentIndexPath:(NSIndexPath *__nullable)parentIndexPath {
     // create new player
     _videoPlayer = [SJVideoPlayer player];
     _videoPlayer.view.alpha = 0.001;
-    [playerSuperView addSubview:_videoPlayer.view];
+    [playerParentView addSubview:_videoPlayer.view];
     [_videoPlayer.view mas_remakeConstraints:^(MASConstraintMaker *make) {
         make.edges.offset(0);
     }];
+    
     
     // fade in
     [UIView animateWithDuration:0.5 animations:^{
         _videoPlayer.view.alpha = 1;
     }];
     
+    // create asset
+    NSURL *playURL = [NSURL URLWithString:@"http://video.cdn.lanwuzhe.com/usertrend/166162-1513873330.mp4"];
     _videoPlayer.asset =
-    [[SJVideoPlayerAssetCarrier alloc] initWithAssetURL:[NSURL URLWithString:assetURLStr]
-                                              beginTime:0
-                                             scrollView:scrollView
+    [[SJVideoPlayerAssetCarrier alloc] initWithAssetURL:playURL
+                                             scrollView:collectionView
                                               indexPath:indexPath
-                                           superviewTag:superviewTag
-                                          scrollViewTag:scrollViewTag
-                                       parentScrollView:parentScrollView
-                                        parentIndexPath:parentIndexPath];
+                                           superviewTag:playerParentView.tag
+                                          scrollViewTag:collectionView.tag
+                                       parentScrollView:self.tableView
+                                        parentIndexPath:[self.tableView indexPathForCell:tabCell]];
     
-    _videoPlayer.autoplay = YES;
+    // setting player
+    __weak typeof(self) _self = self;
+    _videoPlayer.rotatedScreen = ^(SJVideoPlayer * _Nonnull player, BOOL isFullScreen) {
+        __strong typeof(_self) self = _self;
+        if ( !self ) return ;
+        [self setNeedsStatusBarAppearanceUpdate];
+    };
+    
+    // Call when the control view is hidden or displayed.
+    _videoPlayer.controlViewDisplayStatus = ^(SJVideoPlayer * _Nonnull player, BOOL displayed) {
+        __strong typeof(_self) self = _self;
+        if ( !self ) return;
+        [self setNeedsStatusBarAppearanceUpdate];
+    };
 }
 
+#pragma mark -
+
+- (BOOL)prefersStatusBarHidden {
+    // 全屏播放时, 使状态栏根据控制层显示或隐藏
+    if ( _videoPlayer.isFullScreen ) return !_videoPlayer.controlViewDisplayed;
+    return NO;
+}
+
+- (UIStatusBarStyle)preferredStatusBarStyle {
+    // 全屏播放时, 使状态栏变成白色
+    if ( _videoPlayer.isFullScreen ) return UIStatusBarStyleLightContent;
+    return UIStatusBarStyleDefault;
+}
 @end
 

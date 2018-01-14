@@ -22,9 +22,6 @@ static NSString *const SJVideoListTableViewCellID = @"SJVideoListTableViewCell";
 @property (nonatomic, strong, readonly) UITableView *tableView;
 @property (nonatomic, strong) NSArray<SJVideoModel *> *videosM;
 @property (nonatomic, strong) SJVideoPlayer *videoPlayer;
-@property (nonatomic, assign) BOOL isFullScreen;
-@property (nonatomic, assign) BOOL controlViewDisplayed;
-
 @property (nonatomic, strong) UIActivityIndicatorView *indicator;
 
 @end
@@ -69,10 +66,6 @@ static NSString *const SJVideoListTableViewCellID = @"SJVideoListTableViewCell";
         vc.videoPlayer.disableRotation = NO;
     };
     // Do any additional setup after loading the view.
-}
-
-- (void)dealloc {
-    [_videoPlayer stop];
 }
 
 #pragma mark -
@@ -138,7 +131,6 @@ static NSString *const SJVideoListTableViewCellID = @"SJVideoListTableViewCell";
     _videoPlayer.rotatedScreen = ^(SJVideoPlayer * _Nonnull player, BOOL isFullScreen) {
         __strong typeof(_self) self = _self;
         if ( !self ) return ;
-        self.isFullScreen = isFullScreen;
         [self setNeedsStatusBarAppearanceUpdate];
     };
     
@@ -146,7 +138,6 @@ static NSString *const SJVideoListTableViewCellID = @"SJVideoListTableViewCell";
     _videoPlayer.controlViewDisplayStatus = ^(SJVideoPlayer * _Nonnull player, BOOL displayed) {
         __strong typeof(_self) self = _self;
         if ( !self ) return;
-        self.controlViewDisplayed = displayed;
         [self setNeedsStatusBarAppearanceUpdate];
     };
     
@@ -164,12 +155,14 @@ static NSString *const SJVideoListTableViewCellID = @"SJVideoListTableViewCell";
 }
 
 - (BOOL)prefersStatusBarHidden {
-    if ( _isFullScreen ) return !_controlViewDisplayed; // 全屏播放时, 使状态栏根据控制层显示或隐藏
+    // 全屏播放时, 使状态栏根据控制层显示或隐藏
+    if ( _videoPlayer.isFullScreen ) return !_videoPlayer.controlViewDisplayed;
     return NO;
 }
 
 - (UIStatusBarStyle)preferredStatusBarStyle {
-    if ( _isFullScreen ) return UIStatusBarStyleLightContent; // 全屏播放时, 使状态栏变成白色
+    // 全屏播放时, 使状态栏变成白色
+    if ( _videoPlayer.isFullScreen ) return UIStatusBarStyleLightContent;
     return UIStatusBarStyleDefault;
 }
 

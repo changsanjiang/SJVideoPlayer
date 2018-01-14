@@ -23,19 +23,27 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (instancetype)initWithAssetURL:(NSURL *)assetURL
                       scrollView:(__unsafe_unretained UIScrollView * __nullable)scrollView
-                       indexPath:(__weak NSIndexPath * __nullable)indexPath
+                       indexPath:(NSIndexPath * __nullable)indexPath
                     superviewTag:(NSInteger)superviewTag;
 
 - (instancetype)initWithAssetURL:(NSURL *)assetURL
                        beginTime:(NSTimeInterval)beginTime
                       scrollView:(__unsafe_unretained UIScrollView *__nullable)scrollView
-                       indexPath:(__weak NSIndexPath *__nullable)indexPath
+                       indexPath:(NSIndexPath *__nullable)indexPath
                     superviewTag:(NSInteger)superviewTag; // video player parent `view tag`
+
+- (instancetype)initWithAssetURL:(NSURL *)assetURL
+                      scrollView:(__unsafe_unretained UIScrollView *__nullable)scrollView
+                       indexPath:(NSIndexPath *__nullable)indexPath
+                    superviewTag:(NSInteger)superviewTag
+                   scrollViewTag:(NSInteger)scrollViewTag // _scrollView `tag`
+                parentScrollView:(__unsafe_unretained UIScrollView *__nullable)parentScrollView // _scrollView parent `scrollview`.
+                 parentIndexPath:(NSIndexPath *__nullable)parentIndexPath;
 
 - (instancetype)initWithAssetURL:(NSURL *)assetURL
                        beginTime:(NSTimeInterval)beginTime
                       scrollView:(__unsafe_unretained UIScrollView *__nullable)scrollView
-                       indexPath:(__weak NSIndexPath *__nullable)indexPath
+                       indexPath:(NSIndexPath *__nullable)indexPath
                     superviewTag:(NSInteger)superviewTag
                    scrollViewTag:(NSInteger)scrollViewTag // _scrollView `tag`
                 parentScrollView:(__unsafe_unretained UIScrollView *__nullable)parentScrollView // _scrollView parent `scrollview`.
@@ -53,7 +61,7 @@ NS_ASSUME_NONNULL_BEGIN
                 completion:(void(^)(SJVideoPlayerAssetCarrier *asset, SJVideoPreviewModel * __nullable images, NSError *__nullable error))block;
 
 
-#pragma mark - blocks
+#pragma mark - player status
 @property (nonatomic, copy, readwrite, nullable) void(^playerItemStateChanged)(SJVideoPlayerAssetCarrier *asset, AVPlayerItemStatus status);
 
 @property (nonatomic, copy, readwrite, nullable) void(^playTimeChanged)(SJVideoPlayerAssetCarrier *asset, NSTimeInterval currentTime, NSTimeInterval duration);
@@ -64,6 +72,10 @@ NS_ASSUME_NONNULL_BEGIN
 /// 缓冲已为空, 开始缓冲
 @property (nonatomic, copy, readwrite, nullable) void(^beingBuffered)(BOOL state);
 
+
+#pragma mark - scroll view
+@property (nonatomic, copy, readwrite, nullable) void(^touchedScrollView)(SJVideoPlayerAssetCarrier *asset, BOOL tracking);
+
 @property (nonatomic, copy, readwrite, nullable) void(^scrollViewDidScroll)(SJVideoPlayerAssetCarrier *asset);
 
 @property (nonatomic, copy, readwrite, nullable) void(^presentationSize)(SJVideoPlayerAssetCarrier *asset, CGSize size);
@@ -71,6 +83,7 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic, copy, readwrite, nullable) void(^scrollIn)(SJVideoPlayerAssetCarrier *asset, UIView *superView);
 
 @property (nonatomic, copy, readwrite, nullable) void(^scrollOut)(SJVideoPlayerAssetCarrier *asset);
+
 
 #pragma mark - preview images
 @property (nonatomic, assign, readonly) BOOL hasBeenGeneratedPreviewImages;
@@ -105,7 +118,7 @@ NS_ASSUME_NONNULL_BEGIN
 @end
 
 
-#pragma mark -
+#pragma mark - preview model
 @interface SJVideoPreviewModel : NSObject
 
 @property (nonatomic, strong, readonly) UIImage *image;

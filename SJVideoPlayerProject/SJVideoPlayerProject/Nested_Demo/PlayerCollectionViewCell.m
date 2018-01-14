@@ -58,9 +58,10 @@
 - (UIImageView *)backgroundImageView {
     if ( _backgroundImageView ) return _backgroundImageView;
     _backgroundImageView = [SJUIImageViewFactory imageViewWithImageName:@"placeholder" viewMode:UIViewContentModeScaleAspectFill];
-    _backgroundImageView.tag = 100;
     _backgroundImageView.userInteractionEnabled = YES;
     [_backgroundImageView addGestureRecognizer:[[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(handleTap)]];
+#warning should be set it tag. 应该设置它的`tag`. 请不要设置为0.
+    _backgroundImageView.tag = 101;
     return _backgroundImageView;
 }
 - (UIImageView *)playImageView {

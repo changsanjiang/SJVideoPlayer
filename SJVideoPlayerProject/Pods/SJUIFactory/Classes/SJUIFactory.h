@@ -457,6 +457,9 @@ estimatedSectionFooterHeight:(CGFloat)estimatedSectionFooterHeight;
 + (UIImageView *)imageViewWithCornerRadius:(float)cornerRadius;
 
 + (UIImageView *)imageViewWithCornerRadius:(float)cornerRadius
+                           backgroundColor:(UIColor *)backgroundColor;
+
++ (UIImageView *)imageViewWithCornerRadius:(float)cornerRadius
                                  imageName:(NSString *)imageName;
 
 + (UIImageView *)imageViewWithCornerRadius:(float)cornerRadius

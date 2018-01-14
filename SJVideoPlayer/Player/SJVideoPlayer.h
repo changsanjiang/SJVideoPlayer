@@ -41,12 +41,33 @@ NS_ASSUME_NONNULL_BEGIN
 
 @property (nonatomic, assign, readonly) SJVideoPlayerPlayState state;
 
+/*!
+ *  获取当前截图
+ **/
+- (UIImage *__nullable)screenshot;
+
+/*!
+ *  unit sec.
+ *
+ *  当前播放时间.
+ */
+- (NSTimeInterval)currentTime;
+
+- (NSTimeInterval)totalTime;
+
 @end
 
 
 #pragma mark - 
 
 @interface SJVideoPlayer (Setting)
+
+/*!
+ *  clicked back btn exe block.
+ *
+ *  点击返回按钮的回调.
+ */
+@property (nonatomic, copy, readwrite) void(^clickedBackEvent)(SJVideoPlayer *player);
 
 - (void)playWithURL:(NSURL *)playURL;
 
@@ -85,13 +106,6 @@ NS_ASSUME_NONNULL_BEGIN
 - (void)resetSetting; // 重置配置
 
 /*!
- *  rate
- *
- *  0.5..1.5
- **/
-@property (nonatomic, assign, readwrite) float rate;
-
-/*!
  *  Call when the rate changes.
  *
  *  调速时调用.
@@ -105,6 +119,7 @@ NS_ASSUME_NONNULL_BEGIN
  *  当滑动内部的`rate slider`时候调用. 外部改变`rate`不会调用.
  **/
 @property (nonatomic, copy, readwrite, nullable) void(^internallyChangedRate)(SJVideoPlayer *player, float rate);
+@property (nonatomic, assign, readwrite) float rate; /// 0.5 .. 1.5
 
 /*!
  *  loading show this.
@@ -128,13 +143,6 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic, assign, readwrite) BOOL generatePreviewImages;
 
 /*!
- *  clicked back btn exe block.
- *
- *  点击返回按钮的回调.
- */
-@property (nonatomic, copy, readwrite) void(^clickedBackEvent)(SJVideoPlayer *player);
-
-/*!
  *  Whether screen rotation is disabled. default is NO.
  *
  *  是否禁用屏幕旋转, 默认是NO.
@@ -147,6 +155,7 @@ NS_ASSUME_NONNULL_BEGIN
  *  屏幕旋转的时候调用.
  **/
 @property (nonatomic, copy, readwrite, nullable) void(^rotatedScreen)(SJVideoPlayer *player, BOOL isFullScreen);
+@property (nonatomic, assign, readonly) BOOL isFullScreen; // 是否全屏
 
 /*!
  *  播放完毕的时候调用.
@@ -156,9 +165,10 @@ NS_ASSUME_NONNULL_BEGIN
 /*!
  *  Call when the control view is hidden or displayed.
  *
- *  控制层隐藏或显示的时候调用.
+ *  控制视图隐藏或显示的时候调用.
  **/
 @property (nonatomic, copy, readwrite, nullable) void(^controlViewDisplayStatus)(SJVideoPlayer *player, BOOL displayed);
+@property (nonatomic, assign, readonly) BOOL controlViewDisplayed; // 控制视图是否显示
 
 @end
 
@@ -206,20 +216,6 @@ NS_ASSUME_NONNULL_BEGIN
 - (void)jumpedToTime:(NSTimeInterval)time completionHandler:(void (^ __nullable)(BOOL finished))completionHandler;
 
 - (void)seekToTime:(CMTime)time completionHandler:(void (^ __nullable)(BOOL finished))completionHandler;
-
-/*!
- *  获取当前截图
- **/
-- (UIImage *__nullable)screenshot;
-
-/*!
- *  unit sec.
- *
- *  当前播放时间.
- */
-- (NSTimeInterval)currentTime;
-
-- (NSTimeInterval)totalTime;
 
 @end
 

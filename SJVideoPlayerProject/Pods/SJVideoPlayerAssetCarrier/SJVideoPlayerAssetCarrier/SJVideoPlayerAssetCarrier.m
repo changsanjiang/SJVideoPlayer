@@ -74,27 +74,45 @@ static float const __GeneratePreImgScale = 0.05;
                       scrollView:(__unsafe_unretained UIScrollView *__nullable)scrollView
                        indexPath:(NSIndexPath *__nullable)indexPath
                     superviewTag:(NSInteger)superviewTag {
-    return [self initWithAssetURL:assetURL beginTime:beginTime scrollView:scrollView indexPath:indexPath superviewTag:superviewTag scrollViewTag:0 parentScrollView:nil parentIndexPath:nil];
+    return [self initWithAssetURL:assetURL beginTime:beginTime indexPath:indexPath superviewTag:superviewTag scrollViewIndexPath:nil scrollViewTag:0 scrollView:scrollView rootScrollView:nil];
 }
 
 - (instancetype)initWithAssetURL:(NSURL *)assetURL
-                      scrollView:(__unsafe_unretained UIScrollView *__nullable)scrollView
                        indexPath:(NSIndexPath *__nullable)indexPath
                     superviewTag:(NSInteger)superviewTag
-                   scrollViewTag:(NSInteger)scrollViewTag // _scrollView `tag`
-                parentScrollView:(__unsafe_unretained UIScrollView *__nullable)parentScrollView // _scrollView parent `scrollview`.
-                 parentIndexPath:(NSIndexPath *__nullable)parentIndexPath {
-    return [self initWithAssetURL:assetURL beginTime:0 scrollView:scrollView indexPath:indexPath superviewTag:superviewTag scrollViewTag:scrollViewTag parentScrollView:parentScrollView parentIndexPath:parentIndexPath];
+             scrollViewIndexPath:(NSIndexPath *__nullable)scrollViewIndexPath
+                   scrollViewTag:(NSInteger)scrollViewTag
+                  rootScrollView:(__unsafe_unretained UIScrollView *__nullable)rootScrollView {
+    return [self initWithAssetURL:assetURL beginTime:0 indexPath:indexPath superviewTag:superviewTag scrollViewIndexPath:scrollViewIndexPath scrollViewTag:scrollViewTag rootScrollView:rootScrollView];
 }
 
 - (instancetype)initWithAssetURL:(NSURL *)assetURL
                        beginTime:(NSTimeInterval)beginTime
-                      scrollView:(__unsafe_unretained UIScrollView *__nullable)scrollView
                        indexPath:(NSIndexPath *__nullable)indexPath
                     superviewTag:(NSInteger)superviewTag
+             scrollViewIndexPath:(NSIndexPath *__nullable)scrollViewIndexPath
                    scrollViewTag:(NSInteger)scrollViewTag
-                parentScrollView:(__unsafe_unretained UIScrollView *__nullable)parentScrollView
-                 parentIndexPath:(NSIndexPath *__nullable)parentIndexPath {
+                  rootScrollView:(__unsafe_unretained UIScrollView *__nullable)rootScrollView {
+    UIScrollView *scrollView = nil;
+    if ( rootScrollView && 0 != scrollViewTag ) {
+        if ( [rootScrollView isKindOfClass:[UITableView class]] ) {
+            scrollView = [[(UITableView *)rootScrollView cellForRowAtIndexPath:scrollViewIndexPath] viewWithTag:scrollViewTag];
+        }
+        else if ( [rootScrollView isKindOfClass:[UICollectionView class]] ) {
+            scrollView = [[(UICollectionView *)rootScrollView cellForItemAtIndexPath:scrollViewIndexPath] viewWithTag:scrollViewTag];
+        }
+    }
+    return [self initWithAssetURL:assetURL beginTime:beginTime indexPath:indexPath superviewTag:superviewTag scrollViewIndexPath:scrollViewIndexPath scrollViewTag:scrollViewTag scrollView:scrollView rootScrollView:rootScrollView];
+}
+
+- (instancetype)initWithAssetURL:(NSURL *)assetURL
+                       beginTime:(NSTimeInterval)beginTime
+                       indexPath:(NSIndexPath *__nullable)indexPath
+                    superviewTag:(NSInteger)superviewTag
+             scrollViewIndexPath:(NSIndexPath *__nullable)scrollViewIndexPath
+                   scrollViewTag:(NSInteger)scrollViewTag
+                      scrollView:(__unsafe_unretained UIScrollView *__nullable)scrollView
+                  rootScrollView:(__unsafe_unretained UIScrollView *__nullable)rootScrollView {
     self = [super init];
     if ( !self ) return nil;
     _asset = [AVURLAsset assetWithURL:assetURL];
@@ -107,8 +125,8 @@ static float const __GeneratePreImgScale = 0.05;
     _indexPath = indexPath;
     _superviewTag = superviewTag;
     _scrollViewTag = scrollViewTag;
-    _parentScrollView = parentScrollView;
-    _parentIndexPath = parentIndexPath;
+    _rootScrollView = rootScrollView;
+    _scrollViewIndexPath = scrollViewIndexPath;
     _player.actionAtItemEnd = AVPlayerActionAtItemEndPause;
     [self _addTimeObserver];
     [self _addItemPlayEndObserver];
@@ -160,13 +178,13 @@ static float const __GeneratePreImgScale = 0.05;
         }];
     }
     
-    if ( _parentScrollView ) {
+    if ( _rootScrollView ) {
         __weak typeof(self) _self = self;
-        [self _observeScrollView:_parentScrollView deallocCallBlock:^(SJTmpObj *obj) {
+        [self _observeScrollView:_rootScrollView deallocCallBlock:^(SJTmpObj *obj) {
             __strong typeof(_self) self = _self;
             if ( !self ) return;
             if ( !self.removedParentScrollObserver ) {
-                [self _removingParentScrollViewObserver];
+                [self _removingrootScrollViewObserver];
             }
         }];
     }
@@ -370,7 +388,7 @@ static float const __GeneratePreImgScale = 0.05;
     [_playerItem removeObserver:self forKeyPath:@"loadedTimeRanges"];
     [_playerItem removeObserver:self forKeyPath:@"presentationSize"];
     if ( _scrollView && !_removedScrollObserver ) [self _removingScrollViewObserver];
-    if ( _parentScrollView && !_removedParentScrollObserver ) [self _removingParentScrollViewObserver];
+    if ( _rootScrollView && !_removedParentScrollObserver ) [self _removingrootScrollViewObserver];
 }
 
 #pragma mark
@@ -388,7 +406,7 @@ static float const __GeneratePreImgScale = 0.05;
         indexPath = _indexPath;
     }
     else {
-        indexPath = _parentIndexPath;
+        indexPath = _scrollViewIndexPath;
     }
     
     if ( [scrollView isKindOfClass:[UITableView class]] ) {
@@ -400,7 +418,7 @@ static float const __GeneratePreImgScale = 0.05;
                 *stop = YES;
             }
         }];
-        if ( scrollView == _parentScrollView ) {
+        if ( scrollView == _rootScrollView ) {
             if ( visable == self.parent_scrollIn_bool ) return;
             self.parent_scrollIn_bool = visable;
             if ( visable ) [self _updateScrollView];
@@ -411,7 +429,7 @@ static float const __GeneratePreImgScale = 0.05;
         UICollectionView *collectionView = (UICollectionView *)scrollView;
         UICollectionViewCell *cell = [collectionView cellForItemAtIndexPath:indexPath];
         bool visable = [collectionView.visibleCells containsObject:cell];
-        if ( scrollView == _parentScrollView ) {
+        if ( scrollView == _rootScrollView ) {
             if ( visable == self.parent_scrollIn_bool ) return;
             self.parent_scrollIn_bool = visable;
             if ( visable ) [self _updateScrollView];
@@ -432,14 +450,14 @@ static float const __GeneratePreImgScale = 0.05;
 
 - (void)_updateScrollView {
     UIScrollView *newScrollView = nil;
-    if      ( [_parentScrollView isKindOfClass:[UITableView class]] ) {
-        UITableView *parent = (UITableView *)_parentScrollView;
-        UITableViewCell *parentCell = [parent cellForRowAtIndexPath:_parentIndexPath];
+    if      ( [_rootScrollView isKindOfClass:[UITableView class]] ) {
+        UITableView *parent = (UITableView *)_rootScrollView;
+        UITableViewCell *parentCell = [parent cellForRowAtIndexPath:_scrollViewIndexPath];
         newScrollView = [parentCell viewWithTag:_scrollViewTag];
     }
-    else if ( [_parentScrollView isKindOfClass:[UICollectionView class]] ) {
-        UICollectionView *parent = (UICollectionView *)_parentScrollView;
-        UICollectionViewCell *parentCell = [parent cellForItemAtIndexPath:_parentIndexPath];
+    else if ( [_rootScrollView isKindOfClass:[UICollectionView class]] ) {
+        UICollectionView *parent = (UICollectionView *)_rootScrollView;
+        UICollectionViewCell *parentCell = [parent cellForItemAtIndexPath:_scrollViewIndexPath];
         newScrollView = [parentCell viewWithTag:_scrollViewTag];
     }
     
@@ -478,7 +496,7 @@ static float const __GeneratePreImgScale = 0.05;
 }
 
 - (void)_observeScrollView:(UIScrollView *)scrollView deallocCallBlock:(void(^)(SJTmpObj *obj))block {
-    if      ( scrollView == _parentScrollView ) _removedParentScrollObserver = NO;
+    if      ( scrollView == _rootScrollView ) _removedParentScrollObserver = NO;
     else if ( scrollView == _scrollView ) _removedScrollObserver = NO;
     [scrollView addObserver:self forKeyPath:@"contentOffset" options:NSKeyValueObservingOptionNew context:nil];
     [scrollView.panGestureRecognizer addObserver:self forKeyPath:@"state" options:NSKeyValueObservingOptionNew context:nil];
@@ -500,10 +518,10 @@ static float const __GeneratePreImgScale = 0.05;
     _removedScrollObserver = YES;
 }
 
-- (void)_removingParentScrollViewObserver {
-    [_parentScrollView removeObserver:self forKeyPath:@"contentOffset"];
-    [_parentScrollView.panGestureRecognizer removeObserver:self forKeyPath:@"state"];
-    _parentScrollView = nil;
+- (void)_removingrootScrollViewObserver {
+    [_rootScrollView removeObserver:self forKeyPath:@"contentOffset"];
+    [_rootScrollView.panGestureRecognizer removeObserver:self forKeyPath:@"state"];
+    _rootScrollView = nil;
     _removedParentScrollObserver = YES;
 }
 @end

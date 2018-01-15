@@ -22,33 +22,30 @@ NS_ASSUME_NONNULL_BEGIN
                        beginTime:(NSTimeInterval)beginTime;
 
 - (instancetype)initWithAssetURL:(NSURL *)assetURL
-                      scrollView:(__unsafe_unretained UIScrollView * __nullable)scrollView
-                       indexPath:(NSIndexPath * __nullable)indexPath
-                    superviewTag:(NSInteger)superviewTag;
-
-- (instancetype)initWithAssetURL:(NSURL *)assetURL
                        beginTime:(NSTimeInterval)beginTime
                       scrollView:(__unsafe_unretained UIScrollView *__nullable)scrollView
                        indexPath:(NSIndexPath *__nullable)indexPath
                     superviewTag:(NSInteger)superviewTag; // video player parent `view tag`
 
 - (instancetype)initWithAssetURL:(NSURL *)assetURL
-                      scrollView:(__unsafe_unretained UIScrollView *__nullable)scrollView
+                       beginTime:(NSTimeInterval)beginTime
                        indexPath:(NSIndexPath *__nullable)indexPath
                     superviewTag:(NSInteger)superviewTag
-                   scrollViewTag:(NSInteger)scrollViewTag // _scrollView `tag`
-                parentScrollView:(__unsafe_unretained UIScrollView *__nullable)parentScrollView // _scrollView parent `scrollview`.
-                 parentIndexPath:(NSIndexPath *__nullable)parentIndexPath;
+             scrollViewIndexPath:(NSIndexPath *__nullable)scrollViewIndexPath
+                   scrollViewTag:(NSInteger)scrollViewTag
+                  rootScrollView:(__unsafe_unretained UIScrollView *__nullable)rootScrollView;
 
 - (instancetype)initWithAssetURL:(NSURL *)assetURL
-                       beginTime:(NSTimeInterval)beginTime
-                      scrollView:(__unsafe_unretained UIScrollView *__nullable)scrollView
+                      scrollView:(__unsafe_unretained UIScrollView * __nullable)scrollView
+                       indexPath:(NSIndexPath * __nullable)indexPath
+                    superviewTag:(NSInteger)superviewTag;
+
+- (instancetype)initWithAssetURL:(NSURL *)assetURL
                        indexPath:(NSIndexPath *__nullable)indexPath
                     superviewTag:(NSInteger)superviewTag
-                   scrollViewTag:(NSInteger)scrollViewTag // _scrollView `tag`
-                parentScrollView:(__unsafe_unretained UIScrollView *__nullable)parentScrollView // _scrollView parent `scrollview`.
-                 parentIndexPath:(NSIndexPath *__nullable)parentIndexPath;
-
+             scrollViewIndexPath:(NSIndexPath *__nullable)scrollViewIndexPath
+                   scrollViewTag:(NSInteger)scrollViewTag
+                  rootScrollView:(__unsafe_unretained UIScrollView *__nullable)rootScrollView;
 
 #pragma mark - screenshot
 - (UIImage * __nullable)screenshot;
@@ -111,9 +108,9 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic, strong, readonly, nullable) NSIndexPath *indexPath;
 @property (nonatomic, assign, readonly) NSInteger superviewTag;
 @property (nonatomic, unsafe_unretained, readonly, nullable) UIScrollView *scrollView;
-@property (nonatomic, unsafe_unretained, readonly, nullable) UIScrollView *parentScrollView; // _scrollView parent `scrollview`.
-@property (nonatomic, strong, readonly, nullable) NSIndexPath *parentIndexPath;
 @property (nonatomic, assign, readonly) NSInteger scrollViewTag; // _scrollView `tag`
+@property (nonatomic, strong, readonly, nullable) NSIndexPath *scrollViewIndexPath;
+@property (nonatomic, unsafe_unretained, readonly, nullable) UIScrollView *rootScrollView;
 
 @end
 

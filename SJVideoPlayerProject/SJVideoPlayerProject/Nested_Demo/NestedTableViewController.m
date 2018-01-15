@@ -94,17 +94,16 @@ static NSString *const NestedTableViewCellID = @"NestedTableViewCell";
     [UIView animateWithDuration:0.5 animations:^{
         _videoPlayer.view.alpha = 1;
     }];
-    
+
     // create asset
     NSURL *playURL = [NSURL URLWithString:@"http://video.cdn.lanwuzhe.com/usertrend/166162-1513873330.mp4"];
     _videoPlayer.asset =
     [[SJVideoPlayerAssetCarrier alloc] initWithAssetURL:playURL
-                                             scrollView:collectionView
                                               indexPath:indexPath
                                            superviewTag:playerParentView.tag
+                                    scrollViewIndexPath:[self.tableView indexPathForCell:tabCell]
                                           scrollViewTag:collectionView.tag
-                                       parentScrollView:self.tableView
-                                        parentIndexPath:[self.tableView indexPathForCell:tabCell]];
+                                         rootScrollView:self.tableView];
     
     // setting player
     __weak typeof(self) _self = self;

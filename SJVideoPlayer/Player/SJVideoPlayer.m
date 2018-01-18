@@ -1195,7 +1195,7 @@ inline static NSString *_formatWithSec(NSInteger sec) {
     [self _clear];
     _asset = asset;
     if ( !asset || !asset.assetURL ) return;
-    self.rate = 1;
+    [self _resetRate];
     _view.alpha = 1;
     _presentView.asset = asset;
     _controlView.asset = asset;
@@ -1467,6 +1467,10 @@ inline static NSString *_formatWithSec(NSInteger sec) {
 
 - (BOOL)controlViewDisplayed {
     return !self.isHiddenControl;
+}
+
+- (void)_resetRate {
+    objc_setAssociatedObject(self, @selector(rate), @(1), OBJC_ASSOCIATION_RETAIN_NONATOMIC);
 }
 
 - (void)setRate:(float)rate {

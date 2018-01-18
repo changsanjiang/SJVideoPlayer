@@ -408,8 +408,6 @@ inline static NSString *_formatWithSec(NSInteger sec) {
     
     [self _unknownState];
     
-    self.rate = 1;
-    
     return self;
 }
 
@@ -1103,6 +1101,7 @@ inline static NSString *_formatWithSec(NSInteger sec) {
 - (void)_play {
     [self _stopLoading];
     [self.asset.player play];
+    self.asset.player.rate = self.rate;
 }
 
 - (void)_pause {
@@ -1196,6 +1195,7 @@ inline static NSString *_formatWithSec(NSInteger sec) {
     [self _clear];
     _asset = asset;
     if ( !asset || !asset.assetURL ) return;
+    self.rate = 1;
     _view.alpha = 1;
     _presentView.asset = asset;
     _controlView.asset = asset;
@@ -1478,8 +1478,7 @@ inline static NSString *_formatWithSec(NSInteger sec) {
     _sjAnima(^{
         [self _playState];
     });
-    if ( self.moreSettingFooterViewModel.playerRateChanged )
-        self.moreSettingFooterViewModel.playerRateChanged(rate);
+    if ( self.moreSettingFooterViewModel.playerRateChanged ) self.moreSettingFooterViewModel.playerRateChanged(rate);
     if ( self.rateChanged ) self.rateChanged(self);
 }
 
@@ -1635,4 +1634,3 @@ inline static NSString *_formatWithSec(NSInteger sec) {
 }
 
 @end
-

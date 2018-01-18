@@ -9,6 +9,7 @@
 #import "SJVideoPlayerPresentView.h"
 #import <AVFoundation/AVPlayerLayer.h>
 #import <SJVideoPlayerAssetCarrier/SJVideoPlayerAssetCarrier.h>
+#import <Masonry/Masonry.h>
 
 @interface SJVideoPlayerPresentView ()
 
@@ -92,9 +93,9 @@
 - (void)_presentSetupView {
     self.backgroundColor = [UIColor blackColor];
     [self addSubview:self.placeholderImageView];
-    _placeholderImageView.translatesAutoresizingMaskIntoConstraints = NO;
-    [self addConstraints:[NSLayoutConstraint constraintsWithVisualFormat:@"V:|[_placeholderImageView]|" options:NSLayoutFormatAlignAllTop | NSLayoutFormatAlignAllBottom metrics:nil views:NSDictionaryOfVariableBindings(_placeholderImageView)]];
-    [self addConstraints:[NSLayoutConstraint constraintsWithVisualFormat:@"H:|[_placeholderImageView]|" options:NSLayoutFormatAlignAllLeading | NSLayoutFormatAlignAllTrailing metrics:nil views:NSDictionaryOfVariableBindings(_placeholderImageView)]];
+    [_placeholderImageView mas_makeConstraints:^(MASConstraintMaker *make) {
+        make.edges.offset(0);
+    }];
 }
 
 - (UIImageView *)placeholderImageView {

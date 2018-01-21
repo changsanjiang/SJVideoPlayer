@@ -34,7 +34,6 @@ s.subspec 'Base' do |ss|
     ss.source_files = 'SJVideoPlayer/Base/*.{h,m}'
     ss.dependency 'SJVideoPlayer/Header'
     ss.dependency 'SJVideoPlayer/Model'
-    ss.dependency 'SJVideoPlayer/Resource'
 end
 
 s.subspec 'Player' do |ss|
@@ -49,6 +48,7 @@ end
 
 s.subspec 'Model' do |ss|
     ss.source_files = 'SJVideoPlayer/Model/*.{h,m}'
+    ss.dependency 'SJVideoPlayer/Resource'
 end
 
 s.subspec 'Control' do |ss|

@@ -13,6 +13,15 @@ extern NSNotificationName const SJSettingsPlayerNotification;
 @class UIImage, UIColor;
 
 @interface SJVideoPlayerSettings : NSObject
+
+/// shared
++ (instancetype)commonSettings;
+
+- (void)reset;
+
+// MARK: placeholder
+@property (nonatomic, strong, readwrite) UIImage *placeholder;
+
 // MARK: btns
 @property (nonatomic, strong, readwrite) UIImage *backBtnImage;
 @property (nonatomic, strong, readwrite) UIImage *playBtnImage;
@@ -31,8 +40,11 @@ extern NSNotificationName const SJSettingsPlayerNotification;
 @property (nonatomic, strong, readwrite) UIColor *progress_traceColor;
 /// 轨道
 @property (nonatomic, strong, readwrite) UIColor *progress_trackColor;
-/// 拇指图片
+/// 拇指图片, 也可设置`progress_thumbSize`.(图片优先)
 @property (nonatomic, strong, readwrite) UIImage *progress_thumbImage;
+/// 拇指大小, 也可设置`progress_thumbImage`. default is 0.
+@property (nonatomic, assign, readwrite) float progress_thumbSize;
+@property (nonatomic, assign, readwrite) UIColor *progress_thumbColor;
 /// 缓冲颜色
 @property (nonatomic, strong, readwrite) UIColor *progress_bufferColor;
 /// 轨道高度

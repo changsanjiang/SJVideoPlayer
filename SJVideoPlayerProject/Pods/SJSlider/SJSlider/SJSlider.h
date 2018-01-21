@@ -44,19 +44,10 @@
 
 /*!
  *  If you do not set the image, it will not display.
- *  With `fixThumb`, Set the spacing the thumb is beyond the border.
  *
  *  拇指, 不设置它, 将不会创建.
- *  可以通过`fixThumb`, 来修正拇指超出边界的间距.
  */
 @property (nonatomic, strong, readonly) UIImageView *thumbImageView;
-
-/*!
- *  Set the spacing the thumb is beyond the border. default is 0.0.
- *
- *  修正 拇指超出边界的间距. 默认是 0.
- **/
-@property (nonatomic, assign, readwrite) CGFloat fixThumb;
 
 
 - (void)setThumbCornerRadius:(CGFloat)thumbCornerRadius
@@ -70,6 +61,7 @@
  *  current Value
  */
 @property (nonatomic, assign, readwrite) CGFloat value;
+- (void)setValue:(CGFloat)value animated:(BOOL)animated;
 
 /*!
  *  default is 0.0;

@@ -212,6 +212,7 @@
     _attentionBtn = [SJUIButtonFactory roundButtonWithTitle:@"关注" titleColor:[UIColor blueColor] font:[UIFont systemFontOfSize:14] backgroundColor:[UIColor whiteColor] target:nil sel:NULL tag:0];
     _attentionBtn.layer.borderColor = [UIColor blueColor].CGColor;
     _attentionBtn.layer.borderWidth = 0.6;
+    _attentionBtn.layer.cornerRadius = 15;
     return _attentionBtn;
 }
 - (SJLabel *)contentLabel {

@@ -1,1 +1,1 @@
-../../../SJFullscreenPopGesture/SJVideoPlayerBackGR/SJScreenshotView.h
+../../../SJFullscreenPopGesture/SJFullscreenPopGesture/View/SJScreenshotView.h

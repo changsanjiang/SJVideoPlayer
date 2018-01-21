@@ -8,6 +8,8 @@
 
 #import <UIKit/UIKit.h>
 
+NS_ASSUME_NONNULL_BEGIN
+
 @interface SJCTFrameParserConfig : NSObject
 
 + (instancetype)defaultConfig;
@@ -17,6 +19,6 @@
 @property (nonatomic, assign) NSUInteger numberOfLines;
 //@property (nonatomic, assign) NSLineBreakMode lineBreakMode;
 
-+ (CGFloat)fontSize:(UIFont *)font;
-
 @end
+
+NS_ASSUME_NONNULL_END

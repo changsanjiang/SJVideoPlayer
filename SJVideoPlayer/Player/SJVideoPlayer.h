@@ -63,6 +63,14 @@ NS_ASSUME_NONNULL_BEGIN
 @interface SJVideoPlayer (Setting)
 
 /*!
+ *  Configure the player, Note: This `block` is run on the child thread.
+ *
+ *  配置播放器, 注意: 这个`block`在子线程运行.
+ **/
+@property (class, nonatomic, copy, readonly) void(^update)(void(^block)(SJVideoPlayerSettings *commonSettings));
++ (void)resetSetting; // 重置配置
+
+/*!
  *  clicked back btn exe block.
  *
  *  点击返回按钮的回调.
@@ -98,12 +106,6 @@ NS_ASSUME_NONNULL_BEGIN
  *  点击更多按钮, 弹出来的选项.
  **/
 @property (nonatomic, strong, readwrite, nullable) NSArray<SJVideoPlayerMoreSetting *> *moreSettings;
-
-/*!
- *  配置播放器, 注意: 这个`block`在子线程运行.
- **/
-- (void)settingPlayer:(void(^)(SJVideoPlayerSettings *settings))block;
-- (void)resetSetting; // 重置配置
 
 /*!
  *  Call when the rate changes.

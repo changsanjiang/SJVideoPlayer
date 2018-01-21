@@ -10,20 +10,13 @@
 #import <objc/message.h>
 #import "UIViewController+SJVideoPlayerAdd.h"
 #import "SJScreenshotView.h"
-#import <SJObserverHelper/NSObject+SJObserverHelper.h>
 
-#define SJ_Shift        (-[UIScreen mainScreen].bounds.size.width * 0.382)
-
-
-
-#pragma mark -
+// MARK:
 
 static SJScreenshotView *SJ_screenshotView;
 static NSMutableArray<UIImage *> * SJ_screenshotImagesM;
 
-
-
-#pragma mark - UIViewController
+// MARK: UIViewController
 
 @interface UIViewController (SJExtension)
 
@@ -48,44 +41,37 @@ static NSMutableArray<UIImage *> * SJ_screenshotImagesM;
 }
 
 - (void)SJ_dismissViewControllerAnimated:(BOOL)flag completion:(void (^)(void))completion {
-    if ( [self isKindOfClass:[UIImagePickerController class]] ) {
+    if ( [self isKindOfClass:[UIImagePickerController class]] ) { /// nav
         [self SJ_dumpingScreenshotWithNum:(NSInteger)self.childViewControllers.count - 1];
     }
-    else if ( self.navigationController && self.presentingViewController ) {
-        if ( 0 != self.navigationController.childViewControllers ) {
-            [self SJ_dumpingScreenshotWithNum:(NSInteger)self.navigationController.childViewControllers.count];
-        }
+    else if ( self.navigationController &&
+              self.presentingViewController &&
+              0 != self.navigationController.childViewControllers ) {
+        [self SJ_dumpingScreenshotWithNum:(NSInteger)self.navigationController.childViewControllers.count];
     }
     
     // call origin method
     [self SJ_dismissViewControllerAnimated:flag completion:completion];
 }
 
-static __weak UIWindow *_window;
+static UIWindow *SJ_window;
 - (void)SJ_updateScreenshot {
-    // get scrrenshort
-    if ( !_window ) {
-        id appDelegate = [UIApplication sharedApplication].delegate;
-        _window = [appDelegate valueForKey:@"window"];
+    if ( !SJ_window ) {
+        SJ_window = [(id)[UIApplication sharedApplication].delegate valueForKey:@"window"];
+        NSAssert(SJ_window, @"Window was not found and cannot continue!");
     }
-    UIGraphicsBeginImageContextWithOptions(_window.bounds.size, YES, 0);
-    [_window drawViewHierarchyInRect:_window.bounds afterScreenUpdates:NO];
+    UIGraphicsBeginImageContextWithOptions(SJ_window.bounds.size, YES, 0);
+    [SJ_window drawViewHierarchyInRect:SJ_window.bounds afterScreenUpdates:NO];
     UIImage *viewImage = UIGraphicsGetImageFromCurrentImageContext();
     UIGraphicsEndImageContext();
     
     // add to container
     [self.SJ_screenshotImagesM addObject:viewImage];
-    
-    // change screenshotImage
-    [self.SJ_screenshotView setImage:viewImage];
 }
 
 - (void)SJ_dumpingScreenshotWithNum:(NSInteger)num {
     if ( num <= 0 || num >= self.SJ_screenshotImagesM.count ) return;
     [self.SJ_screenshotImagesM removeObjectsInRange:NSMakeRange(self.SJ_screenshotImagesM.count - num, num)];
-    
-    // update screenshotImage
-    [self.SJ_screenshotView setImage:[self.SJ_screenshotImagesM lastObject]];
 }
 
 - (SJScreenshotView *)SJ_screenshotView {
@@ -103,7 +89,6 @@ static __weak UIWindow *_window;
     CGFloat width = MIN(bounds.size.width, bounds.size.height);
     CGFloat height = MAX(bounds.size.width, bounds.size.height);
     SJ_screenshotView.frame = CGRectMake(0, 0, width, height);
-    SJ_screenshotView.hidden = YES;
     return SJ_screenshotView;
 }
 
@@ -117,12 +102,20 @@ static __weak UIWindow *_window;
 
 
 
-#pragma mark - UINavigationController
+// MARK: UINavigationController
 @interface UINavigationController (SJExtension)<UINavigationControllerDelegate>
 
-@property (nonatomic, assign, readwrite) BOOL isObserver;
+@property (nonatomic, assign, readwrite) BOOL SJ_tookOver;
 
 @end
+
+
+@interface UINavigationController (SJVideoPlayerAdd)<UIGestureRecognizerDelegate>
+
+@property (nonatomic, strong, readonly) UIPanGestureRecognizer *SJ_pan;
+
+@end
+
 
 @implementation UINavigationController (SJExtension)
 
@@ -156,66 +149,41 @@ static __weak UIWindow *_window;
     });
 }
 
-- (void)setIsObserver:(BOOL)isObserver {
-    objc_setAssociatedObject(self, @selector(isObserver), @(isObserver), OBJC_ASSOCIATION_RETAIN_NONATOMIC);
-}
-
-- (BOOL)isObserver {
-    return [objc_getAssociatedObject(self, _cmd) boolValue];
-}
-
 // App launching
 + (void)SJ_addscreenshotImageViewToWindow {
     UIWindow *window = [(id)[UIApplication sharedApplication].delegate valueForKey:@"window"];
     NSAssert(window, @"Window was not found and cannot continue!");
     [window insertSubview:self.SJ_screenshotView atIndex:0];
+    self.SJ_screenshotView.hidden = YES;
 }
 
 - (void)SJ_navSettings {
-    self.isObserver = YES;
-    
-    [self.interactivePopGestureRecognizer sj_addObserver:self forKeyPath:@"state"];
-    
-    // use custom gesture
-    self.useNativeGesture = NO;
+    self.SJ_tookOver = YES;
+    self.interactivePopGestureRecognizer.enabled = NO;
+    [self.view addGestureRecognizer:self.SJ_pan];
     
     // border shadow
-    self.view.layer.shadowPath = [UIBezierPath bezierPathWithRect:self.view.bounds].CGPath;
-    self.view.layer.shadowOffset = CGSizeMake(-1, 0);
-    self.view.layer.shadowColor = [UIColor colorWithWhite:0 alpha:0.2].CGColor;
-    self.view.layer.shadowRadius = 1;
+    [CATransaction begin];
+    [CATransaction setDisableActions:YES];
+    self.view.layer.shadowOffset = CGSizeMake(0.5, 0);
+    self.view.layer.shadowColor = [UIColor colorWithWhite:0.2 alpha:1].CGColor;
     self.view.layer.shadowOpacity = 1;
-}
-
-// observer
-- (void)observeValueForKeyPath:(NSString *)keyPath ofObject:(UIScreenEdgePanGestureRecognizer *)gesture change:(NSDictionary<NSKeyValueChangeKey,id> *)change context:(void *)context {
-    switch ( gesture.state ) {
-        case UIGestureRecognizerStateBegan:
-        case UIGestureRecognizerStateChanged:
-            break;
-        default: {
-            // update
-            self.useNativeGesture = self.useNativeGesture;
-        }
-            break;
-    }
+    self.view.layer.shadowRadius = 2;
+    self.view.layer.shadowPath = [UIBezierPath bezierPathWithRect:self.view.bounds].CGPath;
+    [CATransaction commit];
 }
 
 // Push
 - (void)SJ_pushViewController:(UIViewController *)viewController animated:(BOOL)animated {
     if ( self.interactivePopGestureRecognizer &&
-        !self.isObserver ) [self SJ_navSettings];
-    // push update screenshot
+        !self.SJ_tookOver ) [self SJ_navSettings];
     [self SJ_updateScreenshot];
-    // call origin method
-    [self SJ_pushViewController:viewController animated:animated];
+    [self SJ_pushViewController:viewController animated:animated]; // note: If Crash, please confirm that `viewController 'is ` UIViewController'(`UINavigationController` cannot be pushed).
 }
 
 // Pop
 - (UIViewController *)SJ_popViewControllerAnimated:(BOOL)animated {
-    // reset
     [self SJ_dumpingScreenshotWithNum:1];
-    // call origin method
     return [self SJ_popViewControllerAnimated:animated];
 }
 
@@ -235,6 +203,14 @@ static __weak UIWindow *_window;
     return [self SJ_popToViewController:viewController animated:animated];
 }
 
+- (void)setSJ_tookOver:(BOOL)SJ_tookOver {
+    objc_setAssociatedObject(self, @selector(SJ_tookOver), @(SJ_tookOver), OBJC_ASSOCIATION_RETAIN_NONATOMIC);
+}
+
+- (BOOL)SJ_tookOver {
+    return [objc_getAssociatedObject(self, _cmd) boolValue];
+}
+
 @end
 
 
@@ -242,35 +218,37 @@ static __weak UIWindow *_window;
 
 
 
-#pragma mark - Gesture
+// MARK: Gesture
+
 @implementation UINavigationController (SJVideoPlayerAdd)
 
-- (UIPanGestureRecognizer *)sj_pan {
-    UIPanGestureRecognizer *sj_pan = objc_getAssociatedObject(self, _cmd);
-    if ( sj_pan ) return sj_pan;
-    sj_pan = [[UIPanGestureRecognizer alloc] initWithTarget:self action:@selector(SJ_handlePanGR:)];
-    [self.view addGestureRecognizer:sj_pan];
-    sj_pan.delegate = self;
-    objc_setAssociatedObject(self, _cmd, sj_pan, OBJC_ASSOCIATION_RETAIN_NONATOMIC);
-    return sj_pan;
+- (UIPanGestureRecognizer *)SJ_pan {
+    UIPanGestureRecognizer *SJ_pan = objc_getAssociatedObject(self, _cmd);
+    if ( SJ_pan ) return SJ_pan;
+    SJ_pan = [[UIPanGestureRecognizer alloc] initWithTarget:self action:@selector(SJ_handlePanGR:)];
+    SJ_pan.delegate = self;
+    objc_setAssociatedObject(self, _cmd, SJ_pan, OBJC_ASSOCIATION_RETAIN_NONATOMIC);
+    return SJ_pan;
 }
 
-- (BOOL)isFadeAreaWithPoint:(CGPoint)point {
-    if ( !self.topViewController.sj_fadeAreaViews && !self.topViewController.sj_fadeArea ) return NO;
+- (BOOL)SJ_isFadeAreaWithPoint:(CGPoint)point {
     __block BOOL isFadeArea = NO;
     UIView *view = self.topViewController.view;
     if ( 0 != self.topViewController.sj_fadeArea ) {
         [self.topViewController.sj_fadeArea enumerateObjectsUsingBlock:^(NSValue * _Nonnull obj, NSUInteger idx, BOOL * _Nonnull stop) {
-            CGRect rect = [self.view convertRect:[obj CGRectValue] fromView:view];
+            CGRect rect = [obj CGRectValue];
+            if ( !self.isNavigationBarHidden ) rect = [self.view convertRect:rect fromView:view];
             if ( !CGRectContainsPoint(rect, point) ) return ;
             isFadeArea = YES;
             *stop = YES;
         }];
     }
     
-    if ( !isFadeArea && 0 != self.topViewController.sj_fadeAreaViews.count ) {
+    if ( !isFadeArea &&
+         0 != self.topViewController.sj_fadeAreaViews.count ) {
         [self.topViewController.sj_fadeAreaViews enumerateObjectsUsingBlock:^(UIView * _Nonnull obj, NSUInteger idx, BOOL * _Nonnull stop) {
-            CGRect rect = [self.view convertRect:obj.frame fromView:view];
+            CGRect rect = obj.frame;
+            if ( !self.isNavigationBarHidden ) rect = [self.view convertRect:rect fromView:view];
             if ( !CGRectContainsPoint(rect, point) ) return ;
             isFadeArea = YES;
             *stop = YES;
@@ -279,47 +257,76 @@ static __weak UIWindow *_window;
     return isFadeArea;
 }
 
+- (BOOL)gestureRecognizer:(UIGestureRecognizer *)gestureRecognizer shouldReceiveTouch:(UITouch *)touch {
+    if ( self.topViewController.sj_DisableGestures ||
+         self.childViewControllers.count <= 1 ||
+         [[self valueForKey:@"_isTransitioning"] boolValue] ) return NO;
+    return YES;
+}
+
 - (BOOL)gestureRecognizerShouldBegin:(UIPanGestureRecognizer *)gestureRecognizer {
-    if ( self.childViewControllers.count <= 1 ) return NO;
-    if ( [[self.navigationController valueForKey:@"_isTransitioning"] boolValue] ) return NO;
-    CGPoint point = [gestureRecognizer locationInView:gestureRecognizer.view];
-    if ( [self isFadeAreaWithPoint:point] ) return NO;
-    
+    if ( [self SJ_isFadeAreaWithPoint:[gestureRecognizer locationInView:gestureRecognizer.view]] ) return NO;
     CGPoint translate = [gestureRecognizer translationInView:self.view];
-    BOOL possible = translate.x > 0 && translate.y == 0;
-    if ( possible ) return YES;
+    if ( translate.x > 0 && 0 == translate.y ) return YES;
     else return NO;
 }
 
 - (BOOL)gestureRecognizer:(UIGestureRecognizer *)gestureRecognizer shouldRecognizeSimultaneouslyWithGestureRecognizer:(UIGestureRecognizer *)otherGestureRecognizer {
-    if ([otherGestureRecognizer isMemberOfClass:NSClassFromString(@"UIScrollViewPanGestureRecognizer")] ||
-        [otherGestureRecognizer isMemberOfClass:NSClassFromString(@"UIScrollViewPagingSwipeGestureRecognizer")]) {
-        if ( [otherGestureRecognizer.view isKindOfClass:[UIScrollView class]] ) {
-            return [self SJ_considerScrollView:(UIScrollView *)otherGestureRecognizer.view otherGestureRecognizer:otherGestureRecognizer];
-        }
+    if ( UIGestureRecognizerStateFailed ==  gestureRecognizer.state ||
+         UIGestureRecognizerStateCancelled == gestureRecognizer.state ) return YES;
+    else if ( ([otherGestureRecognizer isMemberOfClass:NSClassFromString(@"UIScrollViewPanGestureRecognizer")] ||
+               [otherGestureRecognizer isMemberOfClass:NSClassFromString(@"UIScrollViewPagingSwipeGestureRecognizer")])
+            && [otherGestureRecognizer.view isKindOfClass:[UIScrollView class]] ) {
+        return [self SJ_considerScrollView:(UIScrollView *)otherGestureRecognizer.view
+                         gestureRecognizer:gestureRecognizer
+                    otherGestureRecognizer:otherGestureRecognizer];
     }
-    
-    if ( [otherGestureRecognizer isKindOfClass:NSClassFromString(@"UIPanGestureRecognizer")] ) {
-        return NO;
-    }
-    return YES;
+    else if ( [otherGestureRecognizer isKindOfClass:[UIPanGestureRecognizer class]] ) return NO;
+    else return YES;
 }
 
-- (BOOL)SJ_considerScrollView:(UIScrollView *)subScrollView otherGestureRecognizer:(UIGestureRecognizer *)otherGestureRecognizer {
-    if ( 0 != subScrollView.contentOffset.x + subScrollView.contentInset.left ) return NO;
-    
-    CGPoint translate = [self.sj_pan translationInView:self.view];
-    if ( translate.x <= 0 ) return NO;
+- (BOOL)SJ_considerScrollView:(UIScrollView *)subScrollView gestureRecognizer:(UIGestureRecognizer *)gestureRecognizer otherGestureRecognizer:(UIGestureRecognizer *)otherGestureRecognizer {
+    if ( [subScrollView isKindOfClass:NSClassFromString(@"_UIQueuingScrollView")] ) {
+        return [self SJ_considerQueuingScrollView:subScrollView gestureRecognizer:gestureRecognizer otherGestureRecognizer:otherGestureRecognizer];
+    }
+    else if ( 0 != subScrollView.contentOffset.x + subScrollView.contentInset.left ) return NO;
+    else if ( [(UIPanGestureRecognizer *)gestureRecognizer translationInView:self.view].x <= 0 ) return NO;
     else {
         [otherGestureRecognizer setValue:@(UIGestureRecognizerStateCancelled) forKey:@"state"];
         return YES;
     }
 }
 
+- (BOOL)SJ_considerQueuingScrollView:(UIScrollView *)scrollView gestureRecognizer:(UIGestureRecognizer *)gestureRecognizer otherGestureRecognizer:(UIGestureRecognizer *)otherGestureRecognizer {
+    UIPageViewController *pageVC = [self SJ_findingPageViewControllerWithQueueingScrollView:scrollView];
+    if ( !pageVC ) return NO;
+    
+    id<UIPageViewControllerDataSource> dataSource = pageVC.dataSource;
+    if ( !pageVC.dataSource ||
+         0 == pageVC.viewControllers.count ) return NO;
+    else if ( [dataSource pageViewController:pageVC viewControllerBeforeViewController:pageVC.viewControllers.firstObject] ) {
+        [gestureRecognizer setValue:@(UIGestureRecognizerStateCancelled) forKey:@"state"];
+        return YES;
+    }
+    else {
+        [otherGestureRecognizer setValue:@(UIGestureRecognizerStateCancelled) forKey:@"state"];
+        return NO;
+    }
+}
+
+- (UIPageViewController *)SJ_findingPageViewControllerWithQueueingScrollView:(UIScrollView *)scrollView {
+    UIResponder *responder = scrollView.nextResponder;
+    while ( ![responder isKindOfClass:[UIPageViewController class]] ) {
+        responder = responder.nextResponder;
+        if ( [responder isMemberOfClass:[UIResponder class]] || !responder ) break;
+    }
+    return (UIPageViewController *)responder;
+}
+
 - (void)SJ_handlePanGR:(UIPanGestureRecognizer *)pan {
     CGFloat offset = [pan translationInView:self.view].x;
-    
-    switch (pan.state) {
+    switch ( pan.state ) {
+        case UIGestureRecognizerStatePossible: break;
         case UIGestureRecognizerStateBegan: {
             [self SJ_ViewWillBeginDragging];
         }
@@ -329,7 +336,6 @@ static __weak UIWindow *_window;
             [self SJ_ViewDidDrag:offset];
         }
             break;
-        case UIGestureRecognizerStatePossible:
         case UIGestureRecognizerStateEnded:
         case UIGestureRecognizerStateCancelled:
         case UIGestureRecognizerStateFailed: {
@@ -339,18 +345,7 @@ static __weak UIWindow *_window;
     }
 }
 
-- (UIScrollView *)SJ_findingPossibleRootScrollView {
-    __block UIScrollView *scrollView = nil;
-    [self.topViewController.view.subviews enumerateObjectsUsingBlock:^(__kindof UIView * _Nonnull obj, NSUInteger idx, BOOL * _Nonnull stop) {
-        if ( ![obj isKindOfClass:[UIScrollView class]] ) return;
-        *stop = YES;
-        scrollView = obj;
-    }];
-    return scrollView;
-}
-
 - (void)SJ_ViewWillBeginDragging {
-    
     // resign keybord
     [self.view endEditing:YES];
     
@@ -358,64 +353,50 @@ static __weak UIWindow *_window;
     UIWindow *window = self.view.window;
     [window.subviews enumerateObjectsWithOptions:NSEnumerationReverse usingBlock:^(__kindof UIView * _Nonnull obj, NSUInteger idx, BOOL * _Nonnull stop) {
         if ( [obj isMemberOfClass:NSClassFromString(@"UITransitionView")] ||
-            [obj isMemberOfClass:NSClassFromString(@"UILayoutContainerView")] ) {
+             [obj isMemberOfClass:NSClassFromString(@"UILayoutContainerView")] ) {
             *stop = YES;
             [window insertSubview:self.SJ_screenshotView belowSubview:obj];
         }
     }];
     
     self.SJ_screenshotView.hidden = NO;
-    
-    [self SJ_findingPossibleRootScrollView].scrollEnabled = NO;
-    
-    // begin animation
-    self.SJ_screenshotView.transform = CGAffineTransformMakeTranslation(SJ_Shift, 0);
-    
-    // call block
+    [self.SJ_screenshotView setImage:self.SJ_screenshotImagesM.lastObject];
+    [self.SJ_screenshotView beginTransition];
     if ( self.topViewController.sj_viewWillBeginDragging ) self.topViewController.sj_viewWillBeginDragging(self.topViewController);
 }
 
 - (void)SJ_ViewDidDrag:(CGFloat)offset {
     self.view.transform = CGAffineTransformMakeTranslation(offset, 0);
-    
-    // continuous animation
-    CGFloat rate = offset / self.view.frame.size.width;
-    self.SJ_screenshotView.transform = CGAffineTransformMakeTranslation(SJ_Shift - SJ_Shift * rate, 0);
-    [self.SJ_screenshotView setShadeAlpha:1 - rate];
-    
-    // call block
+    [self.SJ_screenshotView transitioningWithOffset:offset];
     if ( self.topViewController.sj_viewDidDrag ) self.topViewController.sj_viewDidDrag(self.topViewController);
 }
 
 - (void)SJ_ViewDidEndDragging:(CGFloat)offset {
-    [self SJ_findingPossibleRootScrollView].scrollEnabled = YES;
+    CGFloat maxWidth = self.view.frame.size.width;
+    if ( 0 == maxWidth ) return;
+    CGFloat rate = offset / maxWidth;
+    CGFloat maxOffset = self.scMaxOffset;
+    BOOL pull = rate > maxOffset;
+    NSTimeInterval duration = 0.25;
+    if ( !pull ) duration = duration * ( offset / (maxOffset * maxWidth) ) + 0.05;
     
-    CGFloat rate = offset / self.view.frame.size.width;
-    if ( rate < self.scMaxOffset ) {
-        [UIView animateWithDuration:0.25 animations:^{
-            self.view.transform = CGAffineTransformIdentity;
-            // reset status
-            self.SJ_screenshotView.transform = CGAffineTransformMakeTranslation(SJ_Shift, 0);
-            [self.SJ_screenshotView setShadeAlpha:1];
-        } completion:^(BOOL finished) {
-            self.SJ_screenshotView.hidden = YES;
-        }];
-    }
-    else {
-        [UIView animateWithDuration:0.25 animations:^{
+    [UIView animateWithDuration:duration animations:^{
+        if ( pull ) {
             self.view.transform = CGAffineTransformMakeTranslation(self.view.frame.size.width, 0);
-            // finished animation
-            self.SJ_screenshotView.transform = CGAffineTransformMakeTranslation(0, 0);
-            [self.SJ_screenshotView setShadeAlpha:0.001];
-        } completion:^(BOOL finished) {
+            [self.SJ_screenshotView finishedTransition];
+        }
+        else {
+            self.view.transform = CGAffineTransformIdentity;
+            [self.SJ_screenshotView reset];
+        }
+    } completion:^(BOOL finished) {
+        if ( pull ) {
             [self popViewControllerAnimated:NO];
             self.view.transform = CGAffineTransformIdentity;
-            self.SJ_screenshotView.hidden = YES;
-        }];
-    }
-    
-    // call block
-    if ( self.topViewController.sj_viewDidEndDragging ) self.topViewController.sj_viewDidEndDragging(self.topViewController);
+        }
+        self.SJ_screenshotView.hidden = YES;
+        if ( self.topViewController.sj_viewDidEndDragging ) self.topViewController.sj_viewDidEndDragging(self.topViewController);
+    }];
 }
 
 @end
@@ -426,9 +407,21 @@ static __weak UIWindow *_window;
 
 
 
-#pragma mark - Settings
+// MARK: Settings
 
 @implementation UINavigationController (Settings)
+
+- (void)setSj_transitionMode:(SJScreenshotTransitionMode)sj_transitionMode {
+    self.SJ_screenshotView.transitionMode = sj_transitionMode;
+}
+
+- (SJScreenshotTransitionMode)sj_transitionMode {
+    return self.SJ_screenshotView.transitionMode;
+}
+
+- (UIGestureRecognizerState)sj_fullscreenGestureState {
+    return self.SJ_pan.state;
+}
 
 - (void)setSj_backgroundColor:(UIColor *)sj_backgroundColor {
     objc_setAssociatedObject(self, @selector(sj_backgroundColor), sj_backgroundColor, OBJC_ASSOCIATION_RETAIN_NONATOMIC);
@@ -448,39 +441,6 @@ static __weak UIWindow *_window;
     float offset = [objc_getAssociatedObject(self, _cmd) floatValue];
     if ( 0 == offset ) return 0.35;
     else return offset;
-}
-
-- (void)setUseNativeGesture:(BOOL)useNativeGesture {
-    if ( self.sj_DisableGestures ) return;
-    objc_setAssociatedObject(self, @selector(useNativeGesture), @(useNativeGesture), OBJC_ASSOCIATION_RETAIN_NONATOMIC);
-    switch (self.interactivePopGestureRecognizer.state) {
-        case UIGestureRecognizerStateBegan:
-        case UIGestureRecognizerStateChanged:  break;
-        default: {
-            self.interactivePopGestureRecognizer.enabled = useNativeGesture;
-            self.sj_pan.enabled = !useNativeGesture;
-        }
-            break;
-    }
-}
-
-- (BOOL)useNativeGesture {
-    return [objc_getAssociatedObject(self, _cmd) boolValue];
-}
-
-- (void)setSj_DisableGestures:(BOOL)sj_DisableGestures {
-    if ( sj_DisableGestures == self.sj_DisableGestures ) return;
-    objc_setAssociatedObject(self, @selector(sj_DisableGestures), @(sj_DisableGestures), OBJC_ASSOCIATION_RETAIN_NONATOMIC);
-    if ( self.useNativeGesture ) {
-        self.interactivePopGestureRecognizer.enabled = !sj_DisableGestures;
-    }
-    else {
-        self.sj_pan.enabled = !sj_DisableGestures;
-    }
-}
-
-- (BOOL)sj_DisableGestures {
-    return [objc_getAssociatedObject(self, _cmd) boolValue];
 }
 
 @end

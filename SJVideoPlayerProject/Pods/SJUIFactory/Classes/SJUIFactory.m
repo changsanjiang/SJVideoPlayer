@@ -42,11 +42,9 @@ static void _SJ_Round(UIView *view, float cornerRadius) {
     [CATransaction setDisableActions:YES];
     if ( 0 != cornerRadius ) {
         view.layer.mask = [SJUIFactory shapeLayerWithSize:view.bounds.size cornerRadius:cornerRadius];
-        view.layer.cornerRadius = cornerRadius;
     }
     else {
         view.layer.mask = [SJUIFactory roundShapeLayerWithSize:view.bounds.size];
-        view.layer.cornerRadius = MIN(view.bounds.size.width, view.bounds.size.height) * 0.5;
     }
     [CATransaction commit];
 }
@@ -143,6 +141,7 @@ static void _SJ_Round(UIView *view, float cornerRadius) {
 
 + (void)commonShadowWithView:(UIView *)view size:(CGSize)size cornerRadius:(CGFloat)cornerRadius {
     [self commonShadowWithView:view];
+    view.layer.cornerRadius = cornerRadius;
     view.layer.shadowPath = [UIBezierPath bezierPathWithRoundedRect:(CGRect){CGPointZero, size} cornerRadius:cornerRadius].CGPath;
 }
 
@@ -179,6 +178,7 @@ static void _SJ_Round(UIView *view, float cornerRadius) {
     shapelayer.bounds = bounds;
     shapelayer.position = CGPointMake(size.width * 0.5, size.height * 0.5);
     shapelayer.path = [UIBezierPath bezierPathWithRoundedRect:bounds cornerRadius:cornerRadius].CGPath;
+    shapelayer.fillColor = [UIColor blackColor].CGColor;
     return shapelayer;
 }
 
@@ -208,14 +208,6 @@ static void _SJ_Round(UIView *view, float cornerRadius) {
 + (UIView *)viewWithBackgroundColor:(UIColor *)backgroundColor frame:(CGRect)frame {
     UIView *view = [UIView new];
     [self _settingView:view backgroundColor:backgroundColor frame:frame];
-    return view;
-}
-
-+ (UIView *)viewWithCornerRadius:(float)cornerRadius
-                 backgroundColor:(UIColor *)backgroundColor {
-    SJRoundView *view = [SJRoundView new];
-    view.cornerRadius = cornerRadius;
-    view.backgroundColor = backgroundColor;
     return view;
 }
 
@@ -262,10 +254,10 @@ static void _SJ_Round(UIView *view, float cornerRadius) {
 
 @implementation SJShapeViewFactory
 
-+ (UIView *)viewWithCornerRadius:(CGFloat)cornerRaius
++ (UIView *)viewWithCornerRadius:(float)cornerRadius
                  backgroundColor:(UIColor *)backgroundColor {
-    SJShadowView *view = [SJShadowView new];
-    view.cornerRadius = cornerRaius;
+    SJRoundView *view = [SJRoundView new];
+    view.cornerRadius = cornerRadius;
     view.backgroundColor = backgroundColor;
     return view;
 }
@@ -324,7 +316,7 @@ static void _SJ_Round(UIView *view, float cornerRadius) {
           showsVerticalScrollIndicator:(BOOL)showsVerticalScrollIndicator
                               delegate:(id<UITableViewDelegate>)delegate
                             dataSource:(id<UITableViewDataSource>)dataSource {
-    if ( [subClass isKindOfClass:[UITableView class]] ) return nil;
+    if ( ![subClass isSubclassOfClass:[UITableView class]] ) return nil;
     UITableView *tableView = [[subClass alloc] initWithFrame:CGRectZero style:style];
     if ( !backgroundColor ) backgroundColor = [UIColor clearColor];
     tableView.backgroundColor = backgroundColor;
@@ -812,7 +804,7 @@ estimatedSectionFooterHeight:(CGFloat)estimatedSectionFooterHeight {
     SJRoundButton *btn = [SJRoundButton new];
     btn.cornerRadius = cornerRadius;
     btn.backgroundColor = backgroundColor;
-    [btn addTarget:target action:sel forControlEvents:UIControlEventTouchUpInside];
+    if ( target ) [btn addTarget:target action:sel forControlEvents:UIControlEventTouchUpInside];
     btn.tag = tag;
     return btn;
 }
@@ -1085,6 +1077,15 @@ estimatedSectionFooterHeight:(CGFloat)estimatedSectionFooterHeight {
                                             msg:(NSString *)msg
                                    photoLibrary:(void(^)(UIImage *selectedImage))photoLibraryBlock
                                          camera:(void(^)(UIImage *selectedImage))cameraBlock {
+    [self alterPickerViewControllerWithController:controller alertTitle:title msg:msg actions:nil photoLibrary:photoLibraryBlock camera:cameraBlock];
+}
+
+- (void)alterPickerViewControllerWithController:(UIViewController *)controller
+                                     alertTitle:(NSString *)title
+                                            msg:(NSString *)msg
+                                        actions:(NSArray<UIAlertAction *> *)otherActions
+                                   photoLibrary:(void(^)(UIImage *selectedImage))photoLibraryBlock
+                                         camera:(void(^)(UIImage *selectedImage))cameraBlock {
     NSMutableArray<NSString *> *titlesM = [NSMutableArray new];
     NSMutableArray<void(^)(void)> *actionsM = [NSMutableArray new];
     
@@ -1127,7 +1128,11 @@ estimatedSectionFooterHeight:(CGFloat)estimatedSectionFooterHeight {
         return;
     }
     
-    UIAlertController *alertController = [UIAlertController alertControllerWithTitle:title message:msg preferredStyle:UIAlertControllerStyleActionSheet];
+    UIAlertController *alertController = [UIAlertController alertControllerWithTitle: 0 == title.length ? nil : title message:0 == msg.length ? nil : msg preferredStyle:UIAlertControllerStyleActionSheet];
+    
+    [otherActions enumerateObjectsUsingBlock:^(UIAlertAction * _Nonnull action, NSUInteger idx, BOOL * _Nonnull stop) {
+        [alertController addAction:action];
+    }];
     
     // actions
     [titlesM enumerateObjectsUsingBlock:^(NSString * _Nonnull obj, NSUInteger idx, BOOL * _Nonnull stop) {

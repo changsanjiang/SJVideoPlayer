@@ -34,6 +34,12 @@
     if ( !self ) return nil;
     [self _presentSetupView];
     [self _addObserver];
+    __weak typeof(self) _self = self;
+    self.setting = ^(SJVideoPlayerSettings * _Nonnull setting) {
+        __strong typeof(_self) self = _self;
+        if ( !self ) return;
+        self.placeholder = setting.placeholder;
+    };
     return self;
 }
 

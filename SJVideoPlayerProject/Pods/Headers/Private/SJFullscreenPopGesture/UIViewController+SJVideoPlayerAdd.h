@@ -1,1 +1,1 @@
-../../../SJFullscreenPopGesture/SJVideoPlayerBackGR/UIViewController+SJVideoPlayerAdd.h
+../../../SJFullscreenPopGesture/SJFullscreenPopGesture/UIViewController+SJVideoPlayerAdd.h

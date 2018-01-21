@@ -12,6 +12,8 @@ NS_ASSUME_NONNULL_BEGIN
 
 @interface SJStringParserConfig : SJCTFrameParserConfig
 
++ (UIFont *)defaultFont;
+
 @property (nonatomic, strong, null_resettable) UIFont *font;
 @property (nonatomic, strong, null_resettable) UIColor *textColor;
 @property (nonatomic, assign) NSTextAlignment textAlignment;

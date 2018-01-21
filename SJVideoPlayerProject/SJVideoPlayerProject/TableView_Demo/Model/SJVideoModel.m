@@ -8,7 +8,6 @@
 
 #import "SJVideoModel.h"
 #import "SJVideoListTableViewCell.h"
-#import <SJCTFrameParser.h>
 #import <SJStringParserConfig.h>
 #import <SJCTData.h>
 
@@ -22,12 +21,12 @@
     config.textColor = textColor;
     config.numberOfLines = numberOfLines;
     config.maxWidth = maxWidth;
-    _contentData = [SJCTFrameParser parserContent:content config:config];
+    _contentData = [[SJCTData alloc] initWithString:content config:config];
     return self;
 }
 
 - (CGFloat)contentHeight {
-    return ceil(_contentData.height_t);
+    return ceil(_contentData.height);
 }
 @end
 

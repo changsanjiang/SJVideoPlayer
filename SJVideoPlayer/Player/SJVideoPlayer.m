@@ -13,7 +13,6 @@
 #import "SJVideoPlayerControlView.h"
 #import <AVFoundation/AVFoundation.h>
 #import <objc/message.h>
-#import "SJVideoPlayerResources.h"
 #import "SJVideoPlayerMoreSettingsView.h"
 #import "SJVideoPlayerMoreSettingSecondaryView.h"
 #import <SJOrentationObserver/SJOrentationObserver.h>
@@ -74,7 +73,7 @@ inline static NSString *_formatWithSec(NSInteger sec) {
 @property (nonatomic, strong, readonly) SJVolBrigControl *volBrigControl;
 @property (nonatomic, strong, readonly) SJPlayerGestureControl *gestureControl;
 @property (nonatomic, strong, readonly) SJLoadingView *loadingView;
-@property (nonatomic, strong, readonly) dispatch_queue_t workQueue;
+@property (class, nonatomic, strong, readonly) dispatch_queue_t workQueue;
 
 
 @property (nonatomic, assign, readwrite) SJVideoPlayerPlayState state;
@@ -83,7 +82,7 @@ inline static NSString *_formatWithSec(NSInteger sec) {
 @property (nonatomic, assign, readwrite) BOOL hiddenLeftControlView;
 @property (nonatomic, assign, readwrite) BOOL userClickedPause;
 @property (nonatomic, assign, readwrite) BOOL suspend; // Set it when the [`pause` + `play` + `stop`] is called.
-@property (nonatomic, assign, readwrite) BOOL playOnCell;
+@property (nonatomic, assign, readonly)  BOOL playOnCell;
 @property (nonatomic, assign, readwrite) BOOL scrollIn;
 @property (nonatomic, assign, readwrite) BOOL touchedScrollView;
 @property (nonatomic, assign, readwrite) BOOL stopped; // Set it when the [`play` + `stop`] is called.
@@ -310,15 +309,13 @@ inline static NSString *_formatWithSec(NSInteger sec) {
         if ( self.isLockedScrren ) self.hiddenLeftControlView = NO;
         else self.hiddenLeftControlView = YES;
     }
-#pragma clang diagnostic push
-#pragma clang diagnostic ignored "-Wdeprecated-declarations"
+
     if ( self.orentation.fullScreen ) {
-        [[UIApplication sharedApplication] setStatusBarHidden:YES animated:YES];
+        [[UIApplication sharedApplication] setStatusBarHidden:YES withAnimation:UIStatusBarAnimationFade];
     }
     else {
-        [[UIApplication sharedApplication] setStatusBarHidden:NO animated:YES];
+        [[UIApplication sharedApplication] setStatusBarHidden:NO withAnimation:UIStatusBarAnimationFade];
     }
-#pragma clang diagnostic pop
 }
 
 - (void)_showControlState {
@@ -338,11 +335,7 @@ inline static NSString *_formatWithSec(NSInteger sec) {
     
     self.hiddenLeftControlView = !self.orentation.fullScreen;
     
-    
-#pragma clang diagnostic push
-#pragma clang diagnostic ignored "-Wdeprecated-declarations"
-    [[UIApplication sharedApplication] setStatusBarHidden:NO animated:YES];
-#pragma clang diagnostic pop
+    [[UIApplication sharedApplication] setStatusBarHidden:NO withAnimation:UIStatusBarAnimationFade];
 }
 
 @end
@@ -394,12 +387,6 @@ inline static NSString *_formatWithSec(NSInteger sec) {
     [self view];
     [self orentation];
     [self volBrig];
-    __weak typeof(self) _self = self;
-    [self settingPlayer:^(SJVideoPlayerSettings * _Nonnull settings) {
-        __strong typeof(_self) self = _self;
-        if ( !self ) return ;
-        [self resetSetting];
-    }];
     [self registrar];
     
     // default values
@@ -408,6 +395,7 @@ inline static NSString *_formatWithSec(NSInteger sec) {
     
     [self _unknownState];
     
+    SJVideoPlayer.update(^(SJVideoPlayerSettings * _Nonnull commonSettings) {});
     return self;
 }
 
@@ -429,17 +417,21 @@ inline static NSString *_formatWithSec(NSInteger sec) {
     return _asset.duration;
 }
 
-#pragma mark -
-
-- (dispatch_queue_t)workQueue {
-    if ( _workQueue ) return _workQueue;
-    _workQueue = dispatch_queue_create("com.SJVideoPlayer.workQueue", DISPATCH_QUEUE_SERIAL);
-    return _workQueue;
+- (BOOL)playOnCell {
+    return _asset.indexPath ? YES : NO;
 }
 
-- (void)_addOperation:(void(^)(SJVideoPlayer *player))block {
-    dispatch_async(self.workQueue, ^{
-        if ( block ) block(self);
+#pragma mark -
+static dispatch_queue_t videoPlayerWorkQueue;
++ (dispatch_queue_t)workQueue {
+    if ( videoPlayerWorkQueue ) return videoPlayerWorkQueue;
+    videoPlayerWorkQueue = dispatch_queue_create("com.SJVideoPlayer.workQueue", DISPATCH_QUEUE_SERIAL);
+    return videoPlayerWorkQueue;
+}
+
++ (void)_addOperation:(void(^)(void))block {
+    dispatch_async([self workQueue], ^{
+        if ( block ) block();
     });
 }
 
@@ -813,12 +805,12 @@ inline static NSString *_formatWithSec(NSInteger sec) {
                 [self _pause];
                 _sjAnima(^{
                     _sjShowViews(@[self.controlView.draggingProgressView]);
+                    self.hideControl = YES;
                 });
                 if ( self.orentation.fullScreen ) self.controlView.draggingProgressView.hiddenProgressSlider = NO;
                 else self.controlView.draggingProgressView.hiddenProgressSlider = YES;
                 
                 self.controlView.draggingProgressView.progress = self.asset.progress;
-                self.hideControl = YES;
             }
                 break;
             case SJPanDirection_V: {
@@ -850,6 +842,9 @@ inline static NSString *_formatWithSec(NSInteger sec) {
         if ( !self ) return;
         switch (direction) {
             case SJPanDirection_H: {
+                _sjAnima(^{
+                    self.hideControl = YES;
+                });
                 self.controlView.draggingProgressView.progress += translate.x * 0.003;
             }
                 break;
@@ -1089,7 +1084,9 @@ inline static NSString *_formatWithSec(NSInteger sec) {
 }
 
 - (void)_refreshingTimeProgressSliderWithCurrentTime:(NSTimeInterval)currentTime duration:(NSTimeInterval)duration {
-    self.controlView.bottomProgressSlider.value = self.controlView.bottomControlView.progressSlider.value = currentTime / duration;
+    CGFloat value = currentTime / duration;
+    [self.controlView.bottomProgressSlider setValue:value animated:YES];
+    [self.controlView.bottomControlView.progressSlider setValue:value animated:NO];
 }
 
 - (void)_itemPlayEnd {
@@ -1257,11 +1254,9 @@ inline static NSString *_formatWithSec(NSInteger sec) {
 
     if ( asset.indexPath ) {
         /// 默认滑入
-        self.playOnCell = YES;
         self.scrollIn = YES;
     }
     else {
-        self.playOnCell = NO;
         self.scrollIn = NO;
     }
 
@@ -1371,46 +1366,39 @@ inline static NSString *_formatWithSec(NSInteger sec) {
 }
 
 - (void)settingPlayer:(void (^)(SJVideoPlayerSettings * _Nonnull))block {
-    [self _addOperation:^(SJVideoPlayer *player) {
-        if ( block ) block([player settings]);
-        dispatch_async(dispatch_get_main_queue(), ^{
-            [[NSNotificationCenter defaultCenter] postNotificationName:SJSettingsPlayerNotification object:[player settings]];
-        });
-    }];
+//    [self _addOperation:^(SJVideoPlayer *player) {
+//        if ( block ) block([player commonSettings]);
+//        dispatch_async(dispatch_get_main_queue(), ^{
+//            [[NSNotificationCenter defaultCenter] postNotificationName:SJSettingsPlayerNotification object:[player commonSettings]];
+//        });
+//    }];
 }
 
-- (SJVideoPlayerSettings *)settings {
-    SJVideoPlayerSettings *setting = objc_getAssociatedObject(self, _cmd);
-    if ( setting ) return setting;
-    setting = [SJVideoPlayerSettings new];
-    objc_setAssociatedObject(self, _cmd, setting, OBJC_ASSOCIATION_RETAIN_NONATOMIC);
-    return setting;
+- (SJVideoPlayerSettings *)commonSettings {
+    return [SJVideoPlayerSettings commonSettings];
 }
 
-- (void)resetSetting {
-    SJVideoPlayerSettings *setting = self.settings;
-    setting.backBtnImage = [SJVideoPlayerResources imageNamed:@"sj_video_player_back"];
-    setting.moreBtnImage = [SJVideoPlayerResources imageNamed:@"sj_video_player_more"];
-    setting.previewBtnImage = [SJVideoPlayerResources imageNamed:@""];
-    setting.playBtnImage = [SJVideoPlayerResources imageNamed:@"sj_video_player_play"];
-    setting.pauseBtnImage = [SJVideoPlayerResources imageNamed:@"sj_video_player_pause"];
-    setting.fullBtnImage = [SJVideoPlayerResources imageNamed:@"sj_video_player_fullscreen"];
-    setting.lockBtnImage = [SJVideoPlayerResources imageNamed:@"sj_video_player_lock"];
-    setting.unlockBtnImage = [SJVideoPlayerResources imageNamed:@"sj_video_player_unlock"];
-    setting.replayBtnImage = [SJVideoPlayerResources imageNamed:@"sj_video_player_replay"];
-    setting.replayBtnTitle = @"重播";
-    setting.progress_traceColor = [UIColor orangeColor];
-    setting.progress_bufferColor = [UIColor colorWithWhite:0 alpha:0.2];
-    setting.progress_trackColor =  [UIColor whiteColor];
-    setting.progress_traceHeight = 3;
-    setting.more_traceColor = [UIColor greenColor];
-    setting.more_trackColor = [UIColor whiteColor];
-    setting.more_trackHeight = 5;
-    setting.loadingLineColor = [UIColor whiteColor];
++ (void (^)(void (^ _Nonnull)(SJVideoPlayerSettings * _Nonnull)))update {
+    return ^ (void(^block)(SJVideoPlayerSettings *settings)) {
+        [self _addOperation:^ {
+            if ( !block ) return;
+            block([SJVideoPlayerSettings commonSettings]);
+            dispatch_async(dispatch_get_main_queue(), ^{
+                [[NSNotificationCenter defaultCenter] postNotificationName:SJSettingsPlayerNotification
+                                                                    object:[SJVideoPlayerSettings commonSettings]];
+            });
+        }];
+    };
+}
+
++ (void)resetSetting {
+    [[SJVideoPlayerSettings commonSettings] reset];
 }
 
 - (void)setPlaceholder:(UIImage *)placeholder {
-    _presentView.placeholder = placeholder;
+    SJVideoPlayer.update(^(SJVideoPlayerSettings * _Nonnull commonSettings) {
+        commonSettings.placeholder = placeholder;
+    });
 }
 
 - (void)setAutoplay:(BOOL)autoplay {

@@ -63,27 +63,11 @@ static float const __GeneratePreImgScale = 0.05;
 }
 
 - (instancetype)initWithAssetURL:(NSURL *)assetURL
-                      scrollView:(__unsafe_unretained UIScrollView * __nullable)scrollView
-                       indexPath:(NSIndexPath * __nullable)indexPath
-                    superviewTag:(NSInteger)superviewTag {
-    return [self initWithAssetURL:assetURL beginTime:0 scrollView:scrollView indexPath:indexPath superviewTag:superviewTag];
-}
-
-- (instancetype)initWithAssetURL:(NSURL *)assetURL
                        beginTime:(NSTimeInterval)beginTime
                       scrollView:(__unsafe_unretained UIScrollView *__nullable)scrollView
                        indexPath:(NSIndexPath *__nullable)indexPath
                     superviewTag:(NSInteger)superviewTag {
     return [self initWithAssetURL:assetURL beginTime:beginTime indexPath:indexPath superviewTag:superviewTag scrollViewIndexPath:nil scrollViewTag:0 scrollView:scrollView rootScrollView:nil];
-}
-
-- (instancetype)initWithAssetURL:(NSURL *)assetURL
-                       indexPath:(NSIndexPath *__nullable)indexPath
-                    superviewTag:(NSInteger)superviewTag
-             scrollViewIndexPath:(NSIndexPath *__nullable)scrollViewIndexPath
-                   scrollViewTag:(NSInteger)scrollViewTag
-                  rootScrollView:(__unsafe_unretained UIScrollView *__nullable)rootScrollView {
-    return [self initWithAssetURL:assetURL beginTime:0 indexPath:indexPath superviewTag:superviewTag scrollViewIndexPath:scrollViewIndexPath scrollViewTag:scrollViewTag rootScrollView:rootScrollView];
 }
 
 - (instancetype)initWithAssetURL:(NSURL *)assetURL
@@ -103,6 +87,22 @@ static float const __GeneratePreImgScale = 0.05;
         }
     }
     return [self initWithAssetURL:assetURL beginTime:beginTime indexPath:indexPath superviewTag:superviewTag scrollViewIndexPath:scrollViewIndexPath scrollViewTag:scrollViewTag scrollView:scrollView rootScrollView:rootScrollView];
+}
+
+- (instancetype)initWithAssetURL:(NSURL *)assetURL
+                      scrollView:(__unsafe_unretained UIScrollView * __nullable)scrollView
+                       indexPath:(NSIndexPath * __nullable)indexPath
+                    superviewTag:(NSInteger)superviewTag {
+    return [self initWithAssetURL:assetURL beginTime:0 scrollView:scrollView indexPath:indexPath superviewTag:superviewTag];
+}
+
+- (instancetype)initWithAssetURL:(NSURL *)assetURL
+                       indexPath:(NSIndexPath *__nullable)indexPath
+                    superviewTag:(NSInteger)superviewTag
+             scrollViewIndexPath:(NSIndexPath *__nullable)scrollViewIndexPath
+                   scrollViewTag:(NSInteger)scrollViewTag
+                  rootScrollView:(__unsafe_unretained UIScrollView *__nullable)rootScrollView {
+    return [self initWithAssetURL:assetURL beginTime:0 indexPath:indexPath superviewTag:superviewTag scrollViewIndexPath:scrollViewIndexPath scrollViewTag:scrollViewTag rootScrollView:rootScrollView];
 }
 
 - (instancetype)initWithAssetURL:(NSURL *)assetURL

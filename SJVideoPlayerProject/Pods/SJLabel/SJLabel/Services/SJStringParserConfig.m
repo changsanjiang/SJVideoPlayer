@@ -10,6 +10,10 @@
 
 @implementation SJStringParserConfig
 
++ (UIFont *)defaultFont {
+    return [UIFont systemFontOfSize:14];
+}
+
 + (SJStringParserConfig *)defaultConfig {
     SJStringParserConfig *defaultConfig = [SJStringParserConfig new];
     defaultConfig.maxWidth = [UIScreen mainScreen].bounds.size.width;
@@ -20,7 +24,7 @@
 }
 
 - (UIFont *)font {
-    if ( !_font ) return [UIFont systemFontOfSize:14];
+    if ( !_font ) return [[self class] defaultFont];
     return _font;
 }
 

@@ -10,17 +10,20 @@
 #import <UIKit/UIKit.h>
 #import "SJCTImageData.h"
 #import "SJCTFrameParserConfig.h"
+#import "SJStringParserConfig.h"
 
-@interface SJCTData : NSObject<NSCopying>
+@interface SJCTData : NSObject
 
-@property (nonatomic, assign) CTFrameRef frameRef;
-@property (nonatomic, assign) CGFloat width;
-@property (nonatomic, assign) CGFloat height;
-@property (nonatomic, assign) CGFloat height_t;
-@property (nonatomic, strong) NSArray<SJCTImageData *> *imageDataArray;
-@property (nonatomic, strong) NSAttributedString *attrStr;
-@property (nonatomic, strong) SJCTFrameParserConfig *config;
-@property (nonatomic, strong) id contents;
+- (instancetype)initWithString:(NSString *)string config:(SJStringParserConfig *)config;
+- (instancetype)initWithAttributedString:(NSAttributedString *)attrStr config:(SJCTFrameParserConfig *)config;
+
+@property (nonatomic, assign, readonly) CTFrameRef frameRef;
+@property (nonatomic, strong, readonly) NSArray<SJCTImageData *> *imageDataArray;
+@property (nonatomic, strong, readonly) NSAttributedString *attrStr;
+@property (nonatomic, strong, readonly) SJCTFrameParserConfig *config;
+@property (nonatomic, assign, readonly) CGFloat width;
+@property (nonatomic, assign, readonly) CGFloat height;
+@property (nonatomic, strong, readonly) id contents;
 
 - (void)needsDrawing;
 

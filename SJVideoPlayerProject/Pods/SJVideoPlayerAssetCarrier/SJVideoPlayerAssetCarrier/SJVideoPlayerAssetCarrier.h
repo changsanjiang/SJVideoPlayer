@@ -19,16 +19,16 @@ NS_ASSUME_NONNULL_BEGIN
 
 /// unit is sec.
 - (instancetype)initWithAssetURL:(NSURL *)assetURL
-                       beginTime:(NSTimeInterval)beginTime;
+                       beginTime:(NSTimeInterval)beginTime; // unit is sec.
 
 - (instancetype)initWithAssetURL:(NSURL *)assetURL
-                       beginTime:(NSTimeInterval)beginTime
+                       beginTime:(NSTimeInterval)beginTime // unit is sec.
                       scrollView:(__unsafe_unretained UIScrollView *__nullable)scrollView
                        indexPath:(NSIndexPath *__nullable)indexPath
                     superviewTag:(NSInteger)superviewTag; // video player parent `view tag`
 
 - (instancetype)initWithAssetURL:(NSURL *)assetURL
-                       beginTime:(NSTimeInterval)beginTime
+                       beginTime:(NSTimeInterval)beginTime // unit is sec.
                        indexPath:(NSIndexPath *__nullable)indexPath
                     superviewTag:(NSInteger)superviewTag
              scrollViewIndexPath:(NSIndexPath *__nullable)scrollViewIndexPath

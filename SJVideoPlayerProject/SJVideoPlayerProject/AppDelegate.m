@@ -27,10 +27,33 @@
     [UIApplication sharedApplication].statusBarOrientation = UIInterfaceOrientationPortrait;
     [UIApplication sharedApplication].statusBarHidden = NO;
     
+    
+    [self _settingVideoPlayer];
+    
     // Override point for customization after application launch.
     return YES;
 }
 
+/// 全局配置播放器样式. 所有播放器对象均采用此`setting`.
+- (void)_settingVideoPlayer {
+
+    SJVideoPlayer.update(^(SJVideoPlayerSettings * _Nonnull commonSettings) {
+        // note: 注意这个block 是在子线程进行.
+        
+        /// 设置占位图
+        commonSettings.placeholder = [UIImage imageNamed:@"test1"];
+        
+        // 也可以设置其他部分的.
+        
+        /// 设置 更多页面中`slider`的样式.
+        commonSettings.more_trackColor = [UIColor whiteColor];
+        commonSettings.more_traceColor = [UIColor orangeColor];
+        
+        /// 设置 进度条之类的
+//        commonSettings.progress_thumbSize = 8;
+//        commonSettings.progress_thumbColor = [UIColor orangeColor];
+    });
+}
 
 - (void)applicationWillResignActive:(UIApplication *)application {
     // Sent when the application is about to move from active to inactive state. This can occur for certain types of temporary interruptions (such as an incoming phone call or SMS message) or when the user quits the application and it begins the transition to the background state.

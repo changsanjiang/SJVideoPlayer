@@ -9,17 +9,15 @@
 #import "SJLabel.h"
 #import <CoreText/CoreText.h>
 #import "SJCTData.h"
-#import "SJCTFrameParser.h"
 #import "SJStringParserConfig.h"
 #import "SJCTImageData.h"
 #import <SJAttributesFactory/SJAttributesFactoryHeader.h>
 
 
-
-
 @interface SJDisplayLayer : CALayer
 
 @property (nonatomic, strong) SJCTData *drawData;
+@property (nonatomic, assign) BOOL directing;
 
 @end
 
@@ -36,8 +34,8 @@
     _drawData = drawData;
     [CATransaction begin];
     [CATransaction setDisableActions:YES];
-    self.bounds = CGRectMake(0, 0, drawData.config.maxWidth, drawData.height_t);
-    self.position = CGPointMake(drawData.config.maxWidth * 0.5, drawData.height_t * 0.5);
+    self.bounds = CGRectMake(0, 0, drawData.config.maxWidth, drawData.height);
+    self.position = CGPointMake(drawData.config.maxWidth * 0.5, drawData.height * 0.5);
     self.contents = drawData.contents;
     [CATransaction commit];
 }
@@ -99,13 +97,13 @@
 
 - (CGSize)intrinsicContentSize {
     if ( _drawData ) {
-        return CGSizeMake(_drawData.width, _drawData.height_t);
+        return CGSizeMake(_drawData.width, _drawData.height);
     }
     else if ( _attributedText ) {
-        return CGSizeMake(_attrTextDrawData.width, _attrTextDrawData.height_t);
+        return CGSizeMake(_attrTextDrawData.width, _attrTextDrawData.height);
     }
     else if ( _text ) {
-        return CGSizeMake(_textDrawData.width, _textDrawData.height_t);
+        return CGSizeMake(_textDrawData.width, _textDrawData.height);
     }
     return CGSizeZero;
 }
@@ -169,6 +167,11 @@
     return self.config.numberOfLines;
 }
 
+- (void)setBackgroundColor:(UIColor *)backgroundColor {
+    _displayLayer.backgroundColor = backgroundColor.CGColor;
+    [super setBackgroundColor:backgroundColor];
+}
+
 - (void)setFont:(UIFont *)font {
     if ( !font || font == _config.font || [font isEqual:_config.font] ) return;
     self.config.font = font;
@@ -205,11 +208,11 @@
 }
 
 - (CGFloat)height {
-    return ceil(_drawData.height_t);
+    return ceil(_drawData.height);
 }
 
 + (SJCTData *)parserContent:(NSString *)content config:(SJStringParserConfig *)config {
-    return [SJCTFrameParser parserContent:content config:config];
+    return [[SJCTData alloc] initWithString:content config:config];
 }
 
 + (SJCTData *)parserAttributedStr:(NSAttributedString *)content maxWidth:(CGFloat)maxWidth numberOfLines:(NSUInteger)numberOfLines lineSpacing:(CGFloat)lineSpacing {
@@ -217,11 +220,11 @@
     config.maxWidth = maxWidth;
     config.numberOfLines = numberOfLines;
     config.lineSpacing = lineSpacing;
-    return [SJCTFrameParser parserAttributedStr:content config:config];
+    return [[SJCTData alloc] initWithAttributedString:content config:config];
 }
 
 + (SJCTData *)parserAttributedStr:(NSAttributedString *)content config:(SJCTFrameParserConfig *)config {
-    return [SJCTFrameParser parserAttributedStr:content config:config];
+    return [[SJCTData alloc] initWithAttributedString:content config:config];
 }
 
 #pragma mark - Private
@@ -231,10 +234,10 @@
         
     }
     else if ( _attributedText ) {
-        self.attrTextDrawData = [SJCTFrameParser parserAttributedStr:_attributedText config:_config];
+        self.attrTextDrawData = [[SJCTData alloc] initWithAttributedString:_attributedText config:_config];
     }
     else if ( _text ) {
-        self.textDrawData = [SJCTFrameParser parserContent:_text config:_config];
+        self.textDrawData = [[SJCTData alloc] initWithString:_text config:_config];
     }
 }
 
@@ -257,9 +260,8 @@
 }
 
 - (void)_setContentsWithDrawData:(SJCTData *)drawData {
+    [drawData needsDrawing];
     [self invalidateIntrinsicContentSize];
     [_displayLayer setDrawData:drawData];
 }
 @end
-
-

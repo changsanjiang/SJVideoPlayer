@@ -19,8 +19,4 @@
     return defaultConfig;
 }
 
-+ (CGFloat)fontSize:(UIFont *)font {
-    return [[font.fontDescriptor objectForKey:UIFontDescriptorSizeAttribute] doubleValue];
-} 
-
 @end

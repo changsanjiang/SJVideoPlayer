@@ -48,19 +48,7 @@
     [_videoPlayer.view mas_makeConstraints:^(MASConstraintMaker *make) {
         make.edges.offset(0);
     }];
-    
-    
-    /// 配置
-    [_videoPlayer settingPlayer:^(SJVideoPlayerSettings * _Nonnull settings) {
-        /// 设置 更多页面中`slider`的样式, 也可以设置其他部分的.
-        settings.more_trackHeight = 5;
-        settings.more_trackColor = [UIColor whiteColor];
-        settings.more_traceColor = [UIColor orangeColor];
-    }];
-    
-    /// 占位图
-    _videoPlayer.placeholder = [UIImage imageNamed:@"test1"];
-    
+        
     /// 点击返回按钮执行的block.
     __weak typeof(self) _self = self;
     _videoPlayer.clickedBackEvent = ^(SJVideoPlayer * _Nonnull player) {

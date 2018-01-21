@@ -41,7 +41,12 @@
         [self.fullBtn setImage:setting.fullBtnImage forState:UIControlStateNormal];
         self.progressSlider.traceImageView.backgroundColor = setting.progress_traceColor;
         self.progressSlider.trackImageView.backgroundColor = setting.progress_trackColor;
-        self.progressSlider.thumbImageView.image = setting.progress_thumbImage;
+        if ( setting.progress_thumbImage ) {
+            self.progressSlider.thumbImageView.image = setting.progress_thumbImage;
+        }
+        else if ( setting.progress_thumbSize ) {
+            [self.progressSlider setThumbCornerRadius:setting.progress_thumbSize * 0.5 size:CGSizeMake(setting.progress_thumbSize, setting.progress_thumbSize) thumbBackgroundColor:setting.progress_thumbColor];
+        }
         self.progressSlider.bufferProgressColor = setting.progress_bufferColor;
         self.progressSlider.trackHeight = setting.progress_traceHeight;
     };

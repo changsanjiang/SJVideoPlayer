@@ -10,4 +10,17 @@
 
 @implementation SJCTImageData
 
+- (instancetype)initWithImageAttachment:(NSTextAttachment *)imageAttachment position:(int)position bounds:(CGRect)bounds {
+    self = [super init];
+    if ( !self ) return nil;
+    _imageAttachment = imageAttachment;
+    _position = position;
+    _bounds = bounds;
+    return self;
+}
+
+- (void)setImagePosition:(CGRect)imagePosition {
+    _imagePosition = imagePosition;
+}
+
 @end

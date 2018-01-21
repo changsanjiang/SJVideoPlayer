@@ -23,6 +23,7 @@
 #import <SJLoadingView/SJLoadingView.h>
 #import "SJPlayerGestureControl.h"
 #import <SJUIFactory/SJUIFactory.h>
+#import "SJVideoPlayerDraggingProgressView.h"
 
 #define MoreSettingWidth (MAX([UIScreen mainScreen].bounds.size.width, [UIScreen mainScreen].bounds.size.height) * 0.382)
 
@@ -50,18 +51,13 @@ inline static void _sjAnima(void(^block)(void)) {
     }
 }
 
-inline static NSString *_formatWithSec(NSInteger sec) {
-    NSInteger seconds = sec % 60;
-    NSInteger minutes = sec / 60;
-    return [NSString stringWithFormat:@"%02ld:%02ld", (long)minutes, (long)seconds];
-}
-
-
 
 
 #pragma mark -
 
 @interface SJVideoPlayer ()<SJVideoPlayerControlViewDelegate, SJSliderDelegate>
+
+@property (class, nonatomic, strong, readonly) dispatch_queue_t workQueue;
 
 @property (nonatomic, strong, readonly) SJVideoPlayerPresentView *presentView;
 @property (nonatomic, strong, readonly) SJVideoPlayerControlView *controlView;
@@ -73,7 +69,8 @@ inline static NSString *_formatWithSec(NSInteger sec) {
 @property (nonatomic, strong, readonly) SJVolBrigControl *volBrigControl;
 @property (nonatomic, strong, readonly) SJPlayerGestureControl *gestureControl;
 @property (nonatomic, strong, readonly) SJLoadingView *loadingView;
-@property (class, nonatomic, strong, readonly) dispatch_queue_t workQueue;
+@property (nonatomic, strong, readonly) SJVideoPlayerDraggingProgressView *draggingProgressView;
+
 
 
 @property (nonatomic, assign, readwrite) SJVideoPlayerPlayState state;
@@ -187,7 +184,7 @@ inline static NSString *_formatWithSec(NSInteger sec) {
 
 - (void)_unknownState {
     // hidden
-    _sjHiddenViews(@[self.controlView]);
+    _sjHiddenViews(@[self.controlView, self.draggingProgressView]);
     
     self.state = SJVideoPlayerPlayState_Unknown;
 }
@@ -199,7 +196,7 @@ inline static NSString *_formatWithSec(NSInteger sec) {
     // hidden
     self.controlView.previewView.hidden = YES;
     _sjHiddenViews(@[
-                     self.controlView.draggingProgressView,
+                     self.draggingProgressView,
                      self.controlView.topControlView.previewBtn,
                      self.controlView.leftControlView.lockBtn,
                      self.controlView.centerControlView.failedBtn,
@@ -231,6 +228,7 @@ inline static NSString *_formatWithSec(NSInteger sec) {
     
     // hidden
     _sjHiddenViews(@[
+                     self.draggingProgressView,
                      self.controlView.bottomControlView.playBtn,
                      self.controlView.centerControlView.replayBtn,
                      ]);
@@ -358,6 +356,7 @@ inline static NSString *_formatWithSec(NSInteger sec) {
     SJPlayerGestureControl *_gestureControl;
     dispatch_queue_t _workQueue;
     SJVideoPlayerAssetCarrier *_asset;
+    SJVideoPlayerDraggingProgressView *_draggingProgressView;
 }
 
 + (instancetype)sharedPlayer {
@@ -444,6 +443,7 @@ static dispatch_queue_t videoPlayerWorkQueue;
     [_view addSubview:self.presentView];
     [_presentView addSubview:self.controlView];
     [_controlView addSubview:self.moreSettingView];
+    [_presentView addSubview:self.draggingProgressView];
     [_controlView addSubview:self.moreSecondarySettingView];
     [self gesturesHandleWithTargetView:_controlView];
     self.hiddenMoreSettingView = YES;
@@ -457,6 +457,10 @@ static dispatch_queue_t videoPlayerWorkQueue;
     
     [_controlView mas_makeConstraints:^(MASConstraintMaker *make) {
         make.edges.equalTo(_controlView.superview);
+    }];
+    
+    [_draggingProgressView mas_makeConstraints:^(MASConstraintMaker *make) {
+        make.center.offset(0);
     }];
     
     [_moreSettingView mas_makeConstraints:^(MASConstraintMaker *make) {
@@ -498,7 +502,6 @@ static dispatch_queue_t videoPlayerWorkQueue;
         CGFloat width = [UIScreen mainScreen].bounds.size.width * 0.4;
         CGFloat height = width * bounds.size.height / bounds.size.width;
         CGSize size = CGSizeMake(width, height);
-        self.controlView.draggingProgressView.size = size;
         [self.asset generatedPreviewImagesWithMaxItemSize:size completion:^(SJVideoPlayerAssetCarrier * _Nonnull asset, NSArray<SJVideoPreviewModel *> * _Nullable images, NSError * _Nullable error) {
             __strong typeof(_self) self = _self;
             if ( !self ) return;
@@ -736,6 +739,12 @@ static dispatch_queue_t videoPlayerWorkQueue;
     return _volBrigControl;
 }
 
+- (SJVideoPlayerDraggingProgressView *)draggingProgressView {
+    if ( _draggingProgressView ) return _draggingProgressView;
+    _draggingProgressView = [[SJVideoPlayerDraggingProgressView alloc] initWithOrentationObserver:self.orentation];
+    return _draggingProgressView;
+}
+
 - (void)gesturesHandleWithTargetView:(UIView *)targetView {
     
     _gestureControl = [[SJPlayerGestureControl alloc] initWithTargetView:targetView];
@@ -804,13 +813,10 @@ static dispatch_queue_t videoPlayerWorkQueue;
             case SJPanDirection_H: {
                 [self _pause];
                 _sjAnima(^{
-                    _sjShowViews(@[self.controlView.draggingProgressView]);
+                    _sjShowViews(@[self.draggingProgressView]);
                     self.hideControl = YES;
                 });
-                if ( self.orentation.fullScreen ) self.controlView.draggingProgressView.hiddenProgressSlider = NO;
-                else self.controlView.draggingProgressView.hiddenProgressSlider = YES;
-                
-                self.controlView.draggingProgressView.progress = self.asset.progress;
+                self.draggingProgressView.progress = self.asset.progress;
             }
                 break;
             case SJPanDirection_V: {
@@ -845,7 +851,7 @@ static dispatch_queue_t videoPlayerWorkQueue;
                 _sjAnima(^{
                     self.hideControl = YES;
                 });
-                self.controlView.draggingProgressView.progress += translate.x * 0.003;
+                self.draggingProgressView.progress += translate.x * 0.003;
             }
                 break;
             case SJPanDirection_V: {
@@ -871,19 +877,18 @@ static dispatch_queue_t videoPlayerWorkQueue;
     };
     
     _gestureControl.endedPan = ^(SJPlayerGestureControl * _Nonnull control, SJPanDirection direction, SJPanLocation location) {
+        __strong typeof(_self) self = _self;
+        if ( !self ) return;
         switch ( direction ) {
             case SJPanDirection_H:{
                 _sjAnima(^{
-                    _sjHiddenViews(@[_self.controlView.draggingProgressView]);
+                    _sjHiddenViews(@[self.draggingProgressView]);
                 });
-                [_self jumpedToTime:_self.controlView.draggingProgressView.progress * _self.asset.duration completionHandler:^(BOOL finished) {
+                [self jumpedToTime:self.draggingProgressView.progress * self.asset.duration completionHandler:^(BOOL finished) {
                     __strong typeof(_self) self = _self;
                     if ( !self ) return;
                     [self play];
                 }];
-                dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(0.25 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
-                    _self.controlView.draggingProgressView.hiddenProgressSlider = NO;
-                });
             }
                 break;
             case SJPanDirection_V:{
@@ -911,12 +916,10 @@ static dispatch_queue_t videoPlayerWorkQueue;
             NSInteger currentTime = slider.value * self.asset.duration;
             [self _refreshingTimeLabelWithCurrentTime:currentTime duration:self.asset.duration];
             _sjAnima(^{
-                _sjShowViews(@[self.controlView.draggingProgressView]);
+                _sjShowViews(@[self.draggingProgressView]);
             });
             [self _cancelDelayHiddenControl];
-            self.controlView.draggingProgressView.progress = slider.value;
-            if ( self.orentation.fullScreen ) self.controlView.draggingProgressView.hiddenProgressSlider = NO;
-            else self.controlView.draggingProgressView.hiddenProgressSlider = YES;
+            self.draggingProgressView.progress = slider.value;
         }
             break;
             
@@ -930,7 +933,7 @@ static dispatch_queue_t videoPlayerWorkQueue;
         case SJVideoPlaySliderTag_Progress: {
             NSInteger currentTime = slider.value * self.asset.duration;
             [self _refreshingTimeLabelWithCurrentTime:currentTime duration:self.asset.duration];
-            self.controlView.draggingProgressView.progress = slider.value;
+            self.draggingProgressView.progress = slider.value;
         }
             break;
             
@@ -949,12 +952,6 @@ static dispatch_queue_t videoPlayerWorkQueue;
                 if ( !self ) return;
                 [self play];
                 [self _delayHiddenControl];
-                _sjAnima(^{
-                    _sjHiddenViews(@[self.controlView.draggingProgressView]);
-                });
-                dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(0.25 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
-                    self.controlView.draggingProgressView.hiddenProgressSlider = NO;
-                });
             }];
         }
             break;
@@ -1079,8 +1076,8 @@ static dispatch_queue_t videoPlayerWorkQueue;
 }
 
 - (void)_refreshingTimeLabelWithCurrentTime:(NSTimeInterval)currentTime duration:(NSTimeInterval)duration {
-    self.controlView.bottomControlView.currentTimeLabel.text = _formatWithSec(currentTime);
-    self.controlView.bottomControlView.durationTimeLabel.text = _formatWithSec(duration);
+    self.controlView.bottomControlView.currentTimeLabel.text = [self.asset timeString:currentTime];
+    self.controlView.bottomControlView.durationTimeLabel.text = [self.asset timeString:duration];
 }
 
 - (void)_refreshingTimeProgressSliderWithCurrentTime:(NSTimeInterval)currentTime duration:(NSTimeInterval)duration {
@@ -1196,6 +1193,7 @@ static dispatch_queue_t videoPlayerWorkQueue;
     _view.alpha = 1;
     _presentView.asset = asset;
     _controlView.asset = asset;
+    _draggingProgressView.asset = asset;
     
     [self _itemPrepareToPlay];
     
@@ -1514,11 +1512,9 @@ static dispatch_queue_t videoPlayerWorkQueue;
     
     if ( !self.asset ) return NO;
     self.userClickedPause = NO;
-    if ( self.state != SJVideoPlayerPlayState_Playing ) {
-        _sjAnima(^{
-            [self _playState];
-        });
-    }
+    _sjAnima(^{
+        [self _playState];
+    });
     [self _play];
     return YES;
 }
@@ -1527,12 +1523,10 @@ static dispatch_queue_t videoPlayerWorkQueue;
     self.suspend = YES;
     
     if ( !self.asset ) return NO;
-    if ( self.state != SJVideoPlayerPlayState_Pause ) {
-        _sjAnima(^{
-            [self _pauseState];
-            self.hideControl = NO;
-        });
-    }
+    _sjAnima(^{
+        [self _pauseState];
+        self.hideControl = NO;
+    });
     [self _pause];
     if ( !self.playOnCell || self.orentation.fullScreen ) [self showTitle:@"已暂停"];
     return YES;
@@ -1543,11 +1537,9 @@ static dispatch_queue_t videoPlayerWorkQueue;
     self.stopped = YES;
     
     if ( !self.asset ) return;
-    if ( self.state != SJVideoPlayerPlayState_Unknown ) {
-        _sjAnima(^{
-            [self _unknownState];
-        });
-    }
+    _sjAnima(^{
+        [self _unknownState];
+    });
     [self _clear];
 }
 
@@ -1555,11 +1547,9 @@ static dispatch_queue_t videoPlayerWorkQueue;
     self.suspend = NO;
     self.stopped = YES;
     // state
-    if ( self.state != SJVideoPlayerPlayState_Unknown ) {
-        _sjAnima(^{
-            [self _unknownState];
-        });
-    }
+    _sjAnima(^{
+        [self _unknownState];
+    });
     // pause
     [self _pause];
     // fade out

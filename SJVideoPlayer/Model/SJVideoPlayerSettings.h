@@ -22,6 +22,10 @@ extern NSNotificationName const SJSettingsPlayerNotification;
 // MARK: placeholder
 @property (nonatomic, strong, readwrite) UIImage *placeholder;
 
+// MARK: fast/forward
+@property (nonatomic, strong, readwrite) UIImage *fastImage;
+@property (nonatomic, strong, readwrite) UIImage *forwardImage;
+
 // MARK: btns
 @property (nonatomic, strong, readwrite) UIImage *backBtnImage;
 @property (nonatomic, strong, readwrite) UIImage *playBtnImage;

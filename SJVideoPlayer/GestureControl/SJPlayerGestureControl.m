@@ -13,10 +13,11 @@
 @property (nonatomic, strong, readonly) UITapGestureRecognizer *singleTap;
 @property (nonatomic, strong, readonly) UITapGestureRecognizer *doubleTap;
 @property (nonatomic, strong, readonly) UIPanGestureRecognizer *panGR;
-
-@property (nonatomic, weak, readwrite) UIView *targetView;
 @property (nonatomic, assign, readwrite) SJPanDirection panDirection;
 @property (nonatomic, assign, readwrite) SJPanLocation panLocation;
+@property (nonatomic, assign, readwrite) SJPanMovingDirection panMovingDirection;
+
+@property (nonatomic, weak, readwrite) UIView *targetView;
 
 @end
 
@@ -87,6 +88,8 @@
     
     switch (pan.state) {
         case UIGestureRecognizerStateBegan:{
+            self.panMovingDirection = SJPanMovingDirection_Unkown;
+            
             CGPoint locationPoint = [pan locationInView:pan.view];
             if ( locationPoint.x > _targetView.bounds.size.width / 2 ) {
                 self.panLocation = SJPanLocation_Right;
@@ -109,6 +112,19 @@
         }
             break;
         case UIGestureRecognizerStateChanged:{
+            switch ( _panDirection ) {
+                case SJPanDirection_H: {
+                    if ( translate.x > 0 ) self.panMovingDirection = SJPanMovingDirection_Right;
+                    else if ( translate.y < 0 ) self.panMovingDirection = SJPanMovingDirection_Left;
+                }
+                    break;
+                case SJPanDirection_V: {
+                    if ( translate.y > 0 ) self.panMovingDirection = SJPanMovingDirection_Bottom;
+                    else self.panMovingDirection = SJPanMovingDirection_Top;
+                }
+                    break;
+                case SJPanDirection_Unknown: break;
+            }
             if ( _changedPan ) _changedPan(self, _panDirection, _panLocation, translate);
         }
             break;
@@ -124,5 +140,8 @@
     [pan setTranslation:CGPointZero inView:pan.view];
 }
 
-@end
+- (void)setPanMovingDirection:(SJPanMovingDirection)panMovingDirection {
+    _panMovingDirection = panMovingDirection;
+}
 
+@end

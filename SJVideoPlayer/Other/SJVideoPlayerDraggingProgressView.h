@@ -10,17 +10,15 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
-@class SJVideoPlayerAssetCarrier;
+@class SJVideoPlayerAssetCarrier, SJOrentationObserver;
 
 @interface SJVideoPlayerDraggingProgressView : SJVideoPlayerBaseView
 
-@property (nonatomic, assign) float progress;
+- (instancetype)initWithOrentationObserver:(__weak SJOrentationObserver *)orentationObserver;
 
-@property (nonatomic, weak, readwrite, nullable) SJVideoPlayerAssetCarrier *asset;
+@property (nonatomic, weak, readwrite) SJVideoPlayerAssetCarrier *asset;
 
-@property (nonatomic, assign) BOOL hiddenProgressSlider;
-
-@property (nonatomic, assign) CGSize size;
+@property (nonatomic) float progress;
 
 @end
 

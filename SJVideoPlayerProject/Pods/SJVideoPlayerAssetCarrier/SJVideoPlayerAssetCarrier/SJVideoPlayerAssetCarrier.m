@@ -524,6 +524,15 @@ static float const __GeneratePreImgScale = 0.05;
     _rootScrollView = nil;
     _removedParentScrollObserver = YES;
 }
+
+- (NSString *)timeString:(NSInteger)secs {
+    NSInteger hours, seconds, minutes;
+    hours = secs / (60 * 60);
+    seconds = secs % 60;
+    minutes = secs / 60;
+    if ( 0 == hours ) return [NSString stringWithFormat:@"%02ld:%02ld", minutes, seconds];
+    else return [NSString stringWithFormat:@"%02ld:%02ld:%02ld", hours, minutes, seconds];
+}
 @end
 
 

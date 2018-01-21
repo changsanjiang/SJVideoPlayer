@@ -21,7 +21,6 @@
 @synthesize leftControlView = _leftControlView;
 @synthesize centerControlView = _centerControlView;
 @synthesize bottomControlView = _bottomControlView;
-@synthesize draggingProgressView = _draggingProgressView;
 
 - (instancetype)initWithFrame:(CGRect)frame {
     self = [super initWithFrame:frame];
@@ -42,15 +41,10 @@
     return self;
 }
 
-- (void)setAsset:(SJVideoPlayerAssetCarrier *)asset {
-    _asset = asset;
-    _draggingProgressView.asset = asset;
-}
-
 #pragma mark
 
 - (void)_controlSetupView {
-    [self.containerView addSubview:self.draggingProgressView];
+
     [self.containerView addSubview:self.topControlView];
     [self.containerView addSubview:self.leftControlView];
     [self.containerView addSubview:self.centerControlView];
@@ -92,9 +86,6 @@
         make.height.offset(1);
     }];
     
-    [_draggingProgressView mas_makeConstraints:^(MASConstraintMaker *make) {
-        make.edges.equalTo(_draggingProgressView.superview);
-    }];
 }
 
 - (SJVideoPlayerTopControlView *)topControlView {
@@ -119,12 +110,6 @@
     if ( _bottomControlView ) return _bottomControlView;
     _bottomControlView = [SJVideoPlayerBottomControlView new];
     return _bottomControlView;
-}
-
-- (SJVideoPlayerDraggingProgressView *)draggingProgressView {
-    if ( _draggingProgressView ) return _draggingProgressView;
-    _draggingProgressView = [SJVideoPlayerDraggingProgressView new];
-    return _draggingProgressView;
 }
 
 #pragma mark

@@ -24,6 +24,8 @@ NSNotificationName const SJSettingsPlayerNotification = @"SJSettingsPlayerNotifi
 }
 
 - (void)reset {
+    self.fastImage = [SJVideoPlayerResources imageNamed:@"sj_video_player_fast"];
+    self.forwardImage = [SJVideoPlayerResources imageNamed:@"sj_video_player_forward"];
     self.backBtnImage = [SJVideoPlayerResources imageNamed:@"sj_video_player_back"];
     self.moreBtnImage = [SJVideoPlayerResources imageNamed:@"sj_video_player_more"];
     self.previewBtnImage = [SJVideoPlayerResources imageNamed:@""];

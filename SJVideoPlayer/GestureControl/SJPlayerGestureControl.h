@@ -22,6 +22,14 @@ typedef NS_ENUM(NSUInteger, SJPanLocation) {
     SJPanLocation_Right,
 };
 
+typedef NS_ENUM(NSUInteger, SJPanMovingDirection) {
+    SJPanMovingDirection_Unkown,
+    SJPanMovingDirection_Top,
+    SJPanMovingDirection_Left,
+    SJPanMovingDirection_Bottom,
+    SJPanMovingDirection_Right,
+};
+
 @interface SJPlayerGestureControl : NSObject
 
 - (instancetype)initWithTargetView:(__weak UIView *)view;
@@ -34,6 +42,9 @@ typedef NS_ENUM(NSUInteger, SJPanLocation) {
 @property (nonatomic, copy, readwrite, nullable) void(^changedPan)(SJPlayerGestureControl *control, SJPanDirection direction, SJPanLocation location, CGPoint translate);
 @property (nonatomic, copy, readwrite, nullable) void(^endedPan)(SJPlayerGestureControl *control, SJPanDirection direction, SJPanLocation location);
 
+@property (nonatomic, assign, readonly) SJPanDirection panDirection;
+@property (nonatomic, assign, readonly) SJPanLocation panLocation;
+@property (nonatomic, assign, readonly) SJPanMovingDirection panMovingDirection;
 @end
 
 NS_ASSUME_NONNULL_END

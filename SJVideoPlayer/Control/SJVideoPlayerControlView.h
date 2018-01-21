@@ -13,7 +13,6 @@
 #import "SJVideoPlayerBottomControlView.h"
 #import "SJVideoPlayerCenterControlView.h"
 #import "SJVideoPlayerPreviewView.h"
-#import "SJVideoPlayerDraggingProgressView.h"
 
 
 #define SJControlTopH (100)
@@ -38,7 +37,6 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic, strong, readonly) SJVideoPlayerCenterControlView *centerControlView;
 @property (nonatomic, strong, readonly) SJVideoPlayerBottomControlView *bottomControlView;
 @property (nonatomic, strong, readonly) SJSlider *bottomProgressSlider;
-@property (nonatomic, strong, readonly) SJVideoPlayerDraggingProgressView *draggingProgressView;
 
 @end
 

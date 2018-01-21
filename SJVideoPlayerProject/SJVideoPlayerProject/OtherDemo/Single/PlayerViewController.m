@@ -57,15 +57,19 @@
         [self.videoPlayer stop];
         [self.navigationController popViewControllerAnimated:YES];
     };
-    
-    /// 屏幕旋转的时候调用
+
+    // setting player
     _videoPlayer.rotatedScreen = ^(SJVideoPlayer * _Nonnull player, BOOL isFullScreen) {
-        if ( isFullScreen ) {
-            [UIApplication sharedApplication].statusBarStyle = UIStatusBarStyleLightContent;
-        }
-        else {
-            [UIApplication sharedApplication].statusBarStyle = UIStatusBarStyleDefault;
-        }
+        __strong typeof(_self) self = _self;
+        if ( !self ) return ;
+        [self setNeedsStatusBarAppearanceUpdate]; // 显示或隐藏状态栏
+    };
+    
+    // Call when the control view is hidden or displayed.
+    _videoPlayer.controlViewDisplayStatus = ^(SJVideoPlayer * _Nonnull player, BOOL displayed) {
+        __strong typeof(_self) self = _self;
+        if ( !self ) return;
+        [self setNeedsStatusBarAppearanceUpdate]; // 改变状态栏style
     };
     
     /// 配置`更多页面`展示的`item`
@@ -161,5 +165,19 @@
     SJVideoPlayerMoreSetting.titleFontSize = 10;
     
     videoPlayer.moreSettings = @[share, download, collection];
+}
+
+#pragma mark -
+
+- (BOOL)prefersStatusBarHidden {
+    // 全屏播放时, 使状态栏根据控制层显示或隐藏
+    if ( _videoPlayer.isFullScreen ) return !_videoPlayer.controlViewDisplayed;
+    return NO;
+}
+
+- (UIStatusBarStyle)preferredStatusBarStyle {
+    // 全屏播放时, 使状态栏变成白色
+    if ( _videoPlayer.isFullScreen ) return UIStatusBarStyleLightContent;
+    return UIStatusBarStyleDefault;
 }
 @end

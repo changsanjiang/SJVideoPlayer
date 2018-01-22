@@ -40,7 +40,7 @@ extern NSNotificationName const SJSettingsPlayerNotification;
 @property (nonatomic, strong, readwrite) UIImage *unlockBtnImage;
 
 // MARK: progress slider
-/// 轨迹
+/// 轨迹, 走过的痕迹
 @property (nonatomic, strong, readwrite) UIColor *progress_traceColor;
 /// 轨道
 @property (nonatomic, strong, readwrite) UIColor *progress_trackColor;

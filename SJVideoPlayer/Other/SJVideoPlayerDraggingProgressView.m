@@ -13,6 +13,7 @@
 #import <SJSlider/SJSlider.h>
 #import <SJOrentationObserver/SJOrentationObserver.h>
 #import <SJVideoPlayerAssetCarrier/SJVideoPlayerAssetCarrier.h>
+#import <SJObserverHelper/NSObject+SJObserverHelper.h>
 
 typedef NS_ENUM(NSUInteger, SJVideoPlayerDraggingProgressViewStyle) {
     SJVideoPlayerDraggingProgressViewStyleArrowProgress,
@@ -64,16 +65,12 @@ typedef NS_ENUM(NSUInteger, SJVideoPlayerDraggingProgressViewStyle) {
         self.fastImage = setting.fastImage;
         self.forwardImage = setting.forwardImage;
         self.placeholder = setting.placeholder;
-        self.progressSlider.traceImageView.backgroundColor = setting.progress_traceColor;
+        self.currentTimeLabel.textColor = self.progressSlider.traceImageView.backgroundColor = setting.progress_traceColor;
         self.progressSlider.trackImageView.backgroundColor = setting.progress_trackColor;
     };
     
     [SJUIFactory boundaryProtectedWithView:self];
     return self;
-}
-
-- (void)dealloc {
-    [self _dragginRemoveObserve];
 }
 
 - (CGSize)intrinsicContentSize {
@@ -85,7 +82,7 @@ typedef NS_ENUM(NSUInteger, SJVideoPlayerDraggingProgressViewStyle) {
         }
             break;
         case SJVideoPlayerDraggingProgressViewStylePreviewProgress: {
-            CGFloat width = SJScreen_W() * ( 100.0 / 375);
+            CGFloat width = SJScreen_W() * ( 120.0 / 375);
             CGFloat height = width * 3 / 4;
             return CGSizeMake(width, height);
         }
@@ -125,7 +122,7 @@ typedef NS_ENUM(NSUInteger, SJVideoPlayerDraggingProgressViewStyle) {
             _previewImageView.hidden = NO;
             _progressSlider.hidden = YES;
             [_directionImageView mas_remakeConstraints:^(MASConstraintMaker *make) {
-                make.width.offset(20);
+                make.width.offset(10.0 / 375 * SJScreen_W());
                 make.centerY.equalTo(_spritTimeLabel);
                 make.centerX.equalTo(self).multipliedBy(0.25);
             }];
@@ -168,36 +165,40 @@ typedef NS_ENUM(NSUInteger, SJVideoPlayerDraggingProgressViewStyle) {
         self.directionImageView.image = self.fastImage;
     }
     
-    
-    if ( _orentationObserver.isFullScreen ) {
-        __weak typeof(self) _self = self;
-        [_asset screenshotWithTime:secs size:CGSizeMake(self.previewImageView.bounds.size.width * 2, self.previewImageView.bounds.size.height * 2) completion:^(SJVideoPlayerAssetCarrier * _Nonnull asset, SJVideoPreviewModel * _Nullable images, NSError * _Nullable error) {
-            if ( error ) return;
-            dispatch_async(dispatch_get_main_queue(), ^{
-                __strong typeof(_self) self = _self;
-                if ( !self ) return ;
-                self.previewImageView.image = images.image;
-            });
-        }];
-    }
-    else {
-        _progressSlider.value = progress;
+    switch ( _style ) {
+        case SJVideoPlayerDraggingProgressViewStyleArrowProgress: {
+            _progressSlider.value = progress;
+        }
+            break;
+        case SJVideoPlayerDraggingProgressViewStylePreviewProgress: {
+            __weak typeof(self) _self = self;
+            [_asset screenshotWithTime:secs size:CGSizeMake(self.previewImageView.bounds.size.width * 2, self.previewImageView.bounds.size.height * 2) completion:^(SJVideoPlayerAssetCarrier * _Nonnull asset, SJVideoPreviewModel * _Nullable images, NSError * _Nullable error) {
+                if ( error ) return;
+                dispatch_async(dispatch_get_main_queue(), ^{
+                    __strong typeof(_self) self = _self;
+                    if ( !self ) return ;
+                    self.previewImageView.image = images.image;
+                });
+            }];
+        }
+            break;
     }
 }
 
 - (void)_draggingAddObserve {
-    [self.orentationObserver addObserver:self forKeyPath:@"fullScreen" options:NSKeyValueObservingOptionNew context:nil];
-}
-
-- (void)_dragginRemoveObserve {
-    [self.orentationObserver removeObserver:self forKeyPath:@"fullScreen"];
+    [self.orentationObserver sj_addObserver:self forKeyPath:@"fullScreen"];
 }
 
 - (void)observeValueForKeyPath:(NSString *)keyPath ofObject:(id)object change:(NSDictionary<NSKeyValueChangeKey,id> *)change context:(void *)context {
     if ( [keyPath isEqualToString:@"fullScreen"] ) {
+        if ( [self _isM3U8] ) return;
         if ( self.orentationObserver.isFullScreen ) self.style = SJVideoPlayerDraggingProgressViewStylePreviewProgress;
         else self.style = SJVideoPlayerDraggingProgressViewStyleArrowProgress;
     }
+}
+
+- (BOOL)_isM3U8 {
+    return [self.asset.assetURL.lastPathComponent hasSuffix:@".m3u8"];
 }
 
 #pragma mark -
@@ -206,10 +207,10 @@ typedef NS_ENUM(NSUInteger, SJVideoPlayerDraggingProgressViewStyle) {
     
     [self addSubview:self.progressSlider];
     [self addSubview:self.directionImageView];
-    [self addSubview:self.previewImageView];
     [self addSubview:self.currentTimeLabel];
     [self addSubview:self.spritTimeLabel];
     [self addSubview:self.durationTimeLabel];
+    [self addSubview:self.previewImageView];
     
     [SJUIFactory regulate:self cornerRadius:8];
     self.backgroundColor = [UIColor colorWithWhite:0 alpha:0.8];
@@ -244,14 +245,14 @@ typedef NS_ENUM(NSUInteger, SJVideoPlayerDraggingProgressViewStyle) {
 
 - (UIImageView *)previewImageView {
     if ( _previewImageView ) return _previewImageView;
-    _previewImageView = [SJShapeImageViewFactory imageViewWithCornerRadius:8];
-    _previewImageView.contentMode = UIViewContentModeScaleAspectFit;
+    _previewImageView = [SJUIImageViewFactory imageViewWithViewMode:UIViewContentModeScaleAspectFit];
+    [SJUIFactory regulate:_previewImageView cornerRadius:8];
     return _previewImageView;
 }
 
 - (UILabel *)currentTimeLabel {
     if ( _currentTimeLabel ) return _currentTimeLabel;
-    _currentTimeLabel = [SJUILabelFactory labelWithFont:[UIFont systemFontOfSize:12]];
+    _currentTimeLabel = [SJUILabelFactory labelWithFont:[UIFont systemFontOfSize:13]];
     return _currentTimeLabel;
 }
 

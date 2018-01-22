@@ -55,9 +55,6 @@
 		A6441095200A3FBA006FD832 /* SJVideoListTableViewCell.m in Sources */ = {isa = PBXBuildFile; fileRef = A6441094200A3FBA006FD832 /* SJVideoListTableViewCell.m */; };
 		A6441098200A406E006FD832 /* SJVideoModel.m in Sources */ = {isa = PBXBuildFile; fileRef = A6441097200A406E006FD832 /* SJVideoModel.m */; };
 		A644109D200A74FA006FD832 /* table2.gif in Resources */ = {isa = PBXBuildFile; fileRef = A644109C200A74FA006FD832 /* table2.gif */; };
-		A6956B44201512F50049D6E9 /* moreSettings.gif in Resources */ = {isa = PBXBuildFile; fileRef = A6956B41201512F50049D6E9 /* moreSettings.gif */; };
-		A6956B45201512F50049D6E9 /* gesture.gif in Resources */ = {isa = PBXBuildFile; fileRef = A6956B42201512F50049D6E9 /* gesture.gif */; };
-		A6956B46201512F50049D6E9 /* preview1.gif in Resources */ = {isa = PBXBuildFile; fileRef = A6956B43201512F50049D6E9 /* preview1.gif */; };
 		A6F4E9742007A12400716B9C /* PlayerCollectionViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = A6F4E9732007A12400716B9C /* PlayerCollectionViewController.m */; };
 		A6F4E9772007A13C00716B9C /* PlayerCollectionViewCell.m in Sources */ = {isa = PBXBuildFile; fileRef = A6F4E9762007A13C00716B9C /* PlayerCollectionViewCell.m */; };
 		A6F4E97B2007A78400716B9C /* NestedTableViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = A6F4E97A2007A78400716B9C /* NestedTableViewController.m */; };
@@ -156,9 +153,6 @@
 		A6441096200A406E006FD832 /* SJVideoModel.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = SJVideoModel.h; sourceTree = "<group>"; };
 		A6441097200A406E006FD832 /* SJVideoModel.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = SJVideoModel.m; sourceTree = "<group>"; };
 		A644109C200A74FA006FD832 /* table2.gif */ = {isa = PBXFileReference; lastKnownFileType = image.gif; path = table2.gif; sourceTree = "<group>"; };
-		A6956B41201512F50049D6E9 /* moreSettings.gif */ = {isa = PBXFileReference; lastKnownFileType = image.gif; path = moreSettings.gif; sourceTree = "<group>"; };
-		A6956B42201512F50049D6E9 /* gesture.gif */ = {isa = PBXFileReference; lastKnownFileType = image.gif; path = gesture.gif; sourceTree = "<group>"; };
-		A6956B43201512F50049D6E9 /* preview1.gif */ = {isa = PBXFileReference; lastKnownFileType = image.gif; path = preview1.gif; sourceTree = "<group>"; };
 		A6F4E9722007A12400716B9C /* PlayerCollectionViewController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = PlayerCollectionViewController.h; sourceTree = "<group>"; };
 		A6F4E9732007A12400716B9C /* PlayerCollectionViewController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = PlayerCollectionViewController.m; sourceTree = "<group>"; };
 		A6F4E9752007A13C00716B9C /* PlayerCollectionViewCell.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = PlayerCollectionViewCell.h; sourceTree = "<group>"; };
@@ -427,9 +421,6 @@
 		778E24F21FD97EB6008D0DD3 /* Asset */ = {
 			isa = PBXGroup;
 			children = (
-				A6956B42201512F50049D6E9 /* gesture.gif */,
-				A6956B41201512F50049D6E9 /* moreSettings.gif */,
-				A6956B43201512F50049D6E9 /* preview1.gif */,
 				77A47E8B2008DEBE001EBE14 /* nested.gif */,
 				A644109C200A74FA006FD832 /* table2.gif */,
 				77B795781FFF6B9F000D8F6C /* test1.png */,
@@ -584,10 +575,7 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				A6956B44201512F50049D6E9 /* moreSettings.gif in Resources */,
 				77EDB3591FD2CA550075A014 /* sample.mp4 in Resources */,
-				A6956B45201512F50049D6E9 /* gesture.gif in Resources */,
-				A6956B46201512F50049D6E9 /* preview1.gif in Resources */,
 				7706E1251FF74C42006E0B56 /* slider.gif in Resources */,
 				77A47E8F2008DEBE001EBE14 /* nested.gif in Resources */,
 				774B25281FCEBA5D002113CC /* LaunchScreen.storyboard in Resources */,

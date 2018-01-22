@@ -1096,6 +1096,7 @@ static dispatch_queue_t videoPlayerWorkQueue;
     [self _stopLoading];
     [self.asset.player play];
     self.asset.player.rate = self.rate;
+    self.moreSettingFooterViewModel.playerRateChanged(self.rate);
 }
 
 - (void)_pause {

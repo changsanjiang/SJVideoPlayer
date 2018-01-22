@@ -98,7 +98,7 @@
     }];
     
     [_progressSlider mas_makeConstraints:^(MASConstraintMaker *make) {
-        make.leading.equalTo(_playBtn.mas_trailing).offset(86 + 8);
+        make.leading.equalTo(_durationTimeLabel.mas_trailing).offset(12);
         make.height.centerY.equalTo(_playBtn);
         make.trailing.equalTo(_fullBtn.mas_leading).offset(-8);
     }];
@@ -109,10 +109,8 @@
         make.trailing.offset(0);
     }];
     
-    
-    [SJUIFactory boundaryProtectedWithView:_currentTimeLabel];
-    [SJUIFactory boundaryProtectedWithView:_separateLabel];
-    [SJUIFactory boundaryProtectedWithView:_durationTimeLabel];
+    [SJUIFactory boundaryProtectedWithView:_fullBtn];
+    [SJUIFactory boundaryProtectedWithView:_playBtn];
     [SJUIFactory boundaryProtectedWithView:_progressSlider];
 }
 
@@ -144,19 +142,19 @@
 
 - (UILabel *)separateLabel {
     if ( _separateLabel ) return _separateLabel;
-    _separateLabel = [SJUILabelFactory labelWithText:@"/" textColor:[UIColor whiteColor] alignment:NSTextAlignmentCenter font:[UIFont systemFontOfSize:13]];
+    _separateLabel = [SJUILabelFactory labelWithText:@"/" textColor:[UIColor whiteColor] alignment:NSTextAlignmentCenter font:[UIFont systemFontOfSize:12]];
     return _separateLabel;
 }
 
 - (UILabel *)durationTimeLabel {
     if ( _durationTimeLabel ) return _durationTimeLabel;
-    _durationTimeLabel = [SJUILabelFactory labelWithText:@"00:00" textColor:[UIColor whiteColor] alignment:NSTextAlignmentCenter font:[UIFont systemFontOfSize:13]];
+    _durationTimeLabel = [SJUILabelFactory labelWithText:@"00:00" textColor:[UIColor whiteColor] alignment:NSTextAlignmentCenter font:self.separateLabel.font];
     return _durationTimeLabel;
 }
 
 - (UILabel *)currentTimeLabel {
     if ( _currentTimeLabel ) return _currentTimeLabel;
-    _currentTimeLabel = [SJUILabelFactory labelWithText:@"00:00" textColor:[UIColor whiteColor] alignment:NSTextAlignmentCenter font:[UIFont systemFontOfSize:13]];
+    _currentTimeLabel = [SJUILabelFactory labelWithText:@"00:00" textColor:[UIColor whiteColor] alignment:NSTextAlignmentCenter font:self.separateLabel.font];
     return _currentTimeLabel;
 }
 

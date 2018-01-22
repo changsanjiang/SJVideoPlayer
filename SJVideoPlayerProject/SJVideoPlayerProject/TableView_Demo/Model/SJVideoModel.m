@@ -60,7 +60,7 @@
         [[SJVideoModel alloc] initWithTitle:titles[arc4random() % titles.count]
                                  createTime:date.timeIntervalSince1970 - arc4random() % 100000
                                     creator:users[arc4random() % users.count]
-                                 playURLStr:@"http://pu.latin5.com/bd1c831d-7024-4b17-a03e-e8ab89bb2a4b.m3u8"
+                                 playURLStr:@"http://blurdancer-video.oss-cn-shanghai.aliyuncs.com/usertrend/120718-1515947072.mp4"
                                 coverURLStr:coverURLStrs[arc4random() % coverURLStrs.count]];
         
         model.contentHelper = [SJVideoListTableViewCell helperWithContent:model.title];

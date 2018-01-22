@@ -18,6 +18,7 @@
 		774B25571FCED47B002113CC /* PlayerViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 774B25561FCED47B002113CC /* PlayerViewController.m */; };
 		775A7C261FD7EC5000BE1EE2 /* PlayerTableViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 775A7C251FD7EC5000BE1EE2 /* PlayerTableViewController.m */; };
 		775A7C291FD7EC7C00BE1EE2 /* PlayerTableViewCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 775A7C281FD7EC7C00BE1EE2 /* PlayerTableViewCell.m */; };
+		776F3BDF2015967700C23949 /* preview.gif in Resources */ = {isa = PBXBuildFile; fileRef = 776F3BDE2015967700C23949 /* preview.gif */; };
 		777D30D71FD8E8240075E5FD /* SJVideoPlayer.podspec in Resources */ = {isa = PBXBuildFile; fileRef = 777D30D61FD8E8240075E5FD /* SJVideoPlayer.podspec */; };
 		777D313B1FD8F0010075E5FD /* SJVideoPlayerBaseView.m in Sources */ = {isa = PBXBuildFile; fileRef = 777D30DE1FD8F0010075E5FD /* SJVideoPlayerBaseView.m */; };
 		777D313F1FD8F0010075E5FD /* SJVideoPlayerBottomControlView.m in Sources */ = {isa = PBXBuildFile; fileRef = 777D30E91FD8F0010075E5FD /* SJVideoPlayerBottomControlView.m */; };
@@ -82,6 +83,7 @@
 		775A7C251FD7EC5000BE1EE2 /* PlayerTableViewController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = PlayerTableViewController.m; sourceTree = "<group>"; };
 		775A7C271FD7EC7C00BE1EE2 /* PlayerTableViewCell.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = PlayerTableViewCell.h; sourceTree = "<group>"; };
 		775A7C281FD7EC7C00BE1EE2 /* PlayerTableViewCell.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = PlayerTableViewCell.m; sourceTree = "<group>"; };
+		776F3BDE2015967700C23949 /* preview.gif */ = {isa = PBXFileReference; lastKnownFileType = image.gif; path = preview.gif; sourceTree = "<group>"; };
 		777D30D61FD8E8240075E5FD /* SJVideoPlayer.podspec */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = SJVideoPlayer.podspec; path = ../SJVideoPlayer.podspec; sourceTree = "<group>"; };
 		777D30DD1FD8F0010075E5FD /* SJVideoPlayerBaseView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SJVideoPlayerBaseView.h; sourceTree = "<group>"; };
 		777D30DE1FD8F0010075E5FD /* SJVideoPlayerBaseView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SJVideoPlayerBaseView.m; sourceTree = "<group>"; };
@@ -421,6 +423,7 @@
 		778E24F21FD97EB6008D0DD3 /* Asset */ = {
 			isa = PBXGroup;
 			children = (
+				776F3BDE2015967700C23949 /* preview.gif */,
 				77A47E8B2008DEBE001EBE14 /* nested.gif */,
 				A644109C200A74FA006FD832 /* table2.gif */,
 				77B795781FFF6B9F000D8F6C /* test1.png */,
@@ -583,6 +586,7 @@
 				77B795791FFF6B9F000D8F6C /* test1.png in Resources */,
 				A644109D200A74FA006FD832 /* table2.gif in Resources */,
 				777D315A1FD8F0010075E5FD /* SJVideoPlayer.bundle in Resources */,
+				776F3BDF2015967700C23949 /* preview.gif in Resources */,
 				774B25251FCEBA5D002113CC /* Assets.xcassets in Resources */,
 				774B25231FCEBA5D002113CC /* Main.storyboard in Resources */,
 				778E24EC1FD97DF9008D0DD3 /* README.md in Resources */,

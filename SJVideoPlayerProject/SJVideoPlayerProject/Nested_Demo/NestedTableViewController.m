@@ -96,7 +96,7 @@ static NSString *const NestedTableViewCellID = @"NestedTableViewCell";
     }];
 
     // create asset
-    NSURL *playURL = [NSURL URLWithString:@"http://video.cdn.lanwuzhe.com/usertrend/166162-1513873330.mp4"];
+    NSURL *playURL = [NSURL URLWithString:@"http://blurdancer-video.oss-cn-shanghai.aliyuncs.com/usertrend/120718-1515947072.mp4"];
     _videoPlayer.asset =
     [[SJVideoPlayerAssetCarrier alloc] initWithAssetURL:playURL
                                               indexPath:indexPath

@@ -11,9 +11,11 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
-@class SJVideoPlayerMoreSettingsFooterSlidersView, SJVideoPlayerMoreSetting, SJSlider;
+@class SJVideoPlayerMoreSettingsFooterSlidersView, SJVideoPlayerMoreSetting, SJSlider, SJOrentationObserver;
 
 @interface SJVideoPlayerMoreSettingsView : UIView
+
+- (instancetype)initWithOrentationObserver:(__weak SJOrentationObserver *)orentationObserver;
 
 @property (nonatomic, strong, readwrite, nullable) NSArray<SJVideoPlayerMoreSetting *> *moreSettings;
 

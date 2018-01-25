@@ -530,8 +530,8 @@ static float const __GeneratePreImgScale = 0.05;
     hours = secs / (60 * 60);
     seconds = secs % 60;
     minutes = secs / 60;
-    if ( 0 == hours ) return [NSString stringWithFormat:@"%02ld:%02ld", minutes, seconds];
-    else return [NSString stringWithFormat:@"%02ld:%02ld:%02ld", hours, minutes, seconds];
+    if ( 0 == hours ) return [NSString stringWithFormat:@"%02zd:%02zd", (long)minutes, (long)seconds];
+    else return [NSString stringWithFormat:@"%02zd:%02zd:%02zd", (long)hours, (long)minutes, (long)seconds];
 }
 @end
 

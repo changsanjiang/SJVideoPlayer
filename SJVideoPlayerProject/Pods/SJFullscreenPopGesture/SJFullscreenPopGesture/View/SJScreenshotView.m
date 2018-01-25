@@ -13,6 +13,7 @@
 @property (nonatomic, strong, readonly) UIView *containerView;
 @property (nonatomic, assign, readonly) CGFloat shift;
 @property (nonatomic, strong, readonly) UIView *shadeView;
+@property (nonatomic, weak) UIView *beforeSnapshot;
 
 @end
 
@@ -29,7 +30,7 @@
     return self;
 }
 
-- (void)beginTransition  {
+- (void)beginTransitionWithSnapshot:(UIView *)snapshot {
     switch ( _transitionMode ) {
         case SJScreenshotTransitionModeShifting: {
             self.transform = CGAffineTransformMakeTranslation( self.shift, 0 );
@@ -44,6 +45,13 @@
         }
             break;
     }
+    
+    UIView *before = self.containerView.subviews.firstObject;
+    if ( snapshot && snapshot != before ) {
+        if ( before != self.shadeView ) [before removeFromSuperview];
+        [self.containerView insertSubview:snapshot atIndex:0];
+    }
+    self.beforeSnapshot = snapshot;
 }
 
 - (void)transitioningWithOffset:(CGFloat)offset {
@@ -66,7 +74,17 @@
 }
 
 - (void)reset {
-    [self beginTransition];
+    self.transform = CGAffineTransformMakeTranslation( self.shift, 0 );
+    CGFloat width = self.frame.size.width;
+    
+    switch ( _transitionMode ) {
+        case SJScreenshotTransitionModeShifting: break;
+        case SJScreenshotTransitionModeShadeAndShifting: {
+            _shadeView.transform = CGAffineTransformMakeTranslation( - (self.shift + width), 0 );
+            _shadeView.alpha = 1;
+        }
+            break;
+    }
 }
 
 - (void)finishedTransition {
@@ -78,6 +96,7 @@
 // MARK:
 
 - (void)_SJScreenshotViewSetupUI {
+    [self addSubview:[UIView new]];
     [self addSubview:self.containerView];
     [_containerView addSubview:self.shadeView];
 }

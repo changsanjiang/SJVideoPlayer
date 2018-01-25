@@ -38,7 +38,7 @@
             }
             
             worker
-            .font([UIFont systemFontOfSize:16])
+            .font(setting.replayBtnFont)
             .fontColor([UIColor whiteColor])
             .alignment(NSTextAlignmentCenter)
             .lineSpacing(6);

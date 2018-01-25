@@ -9,6 +9,7 @@
 #import "UIViewController+SJVideoPlayerAdd.h"
 #import "UINavigationController+SJVideoPlayerAdd.h"
 #import <objc/message.h>
+#import <WebKit/WKWebView.h>
 
 @implementation UIViewController (SJVideoPlayerAdd)
 
@@ -18,6 +19,15 @@
 
 - (void)setSj_fadeArea:(NSArray<NSValue *> *)sj_fadeArea {
     objc_setAssociatedObject(self, @selector(sj_fadeArea), sj_fadeArea, OBJC_ASSOCIATION_RETAIN_NONATOMIC);
+}
+
+- (WKWebView *)sj_considerWebView {
+    return objc_getAssociatedObject(self, _cmd);
+}
+
+- (void)setSj_considerWebView:(WKWebView *)sj_considerWebView {
+    sj_considerWebView.allowsBackForwardNavigationGestures = YES;
+    objc_setAssociatedObject(self, @selector(sj_considerWebView), sj_considerWebView, OBJC_ASSOCIATION_ASSIGN);
 }
 
 - (NSArray<NSValue *> *)sj_fadeArea {

@@ -10,6 +10,8 @@
 #import "SJVideoPlayerMoreSettingsFooterSlidersView.h"
 #import <Masonry/Masonry.h>
 #import <SJSlider/SJSlider.h>
+#import <SJOrentationObserver/SJOrentationObserver.h>
+#import <SJObserverHelper/NSObject+SJObserverHelper.h>
 
 static NSString *const SJVideoPlayerMoreSettingsColCellID = @"SJVideoPlayerMoreSettingsColCell";
 
@@ -17,6 +19,8 @@ static NSString *const SJVideoPlayerMoreSettingsFooterSlidersViewID = @"SJVideoP
 
 
 @interface SJVideoPlayerMoreSettingsView ()<UICollectionViewDataSource, UICollectionViewDelegate>
+
+@property (nonatomic, weak, readonly) SJOrentationObserver *orentationObserver;
 
 @property (nonatomic, strong, readonly) UICollectionView *colView;
 
@@ -28,12 +32,26 @@ static NSString *const SJVideoPlayerMoreSettingsFooterSlidersViewID = @"SJVideoP
 
 @synthesize colView = _colView;
 
-- (instancetype)initWithFrame:(CGRect)frame {
-    self = [super initWithFrame:frame];
+- (instancetype)initWithOrentationObserver:(SJOrentationObserver * _Nonnull __weak)orentationObserver {
+    self = [super initWithFrame:CGRectZero];
     if ( !self ) return nil;
-    [self _SJVideoPlayerMoreSettingsViewSetupUI];
+    _orentationObserver = orentationObserver;
+    [self _moreSettingsViewSetupUI];
+    [self _moreSettingsAddObserve];
     return self;
 }
+
+- (void)_moreSettingsAddObserve {
+    [self.orentationObserver sj_addObserver:self forKeyPath:@"fullScreen"];
+}
+
+- (void)observeValueForKeyPath:(NSString *)keyPath ofObject:(id)object change:(NSDictionary<NSKeyValueChangeKey,id> *)change context:(void *)context {
+    if ( [keyPath isEqualToString:@"fullScreen"] ) {
+        if ( _orentationObserver.fullScreen ) [self.colView reloadData];
+    }
+}
+
+#pragma mark -
 
 - (void)setMoreSettings:(NSArray<SJVideoPlayerMoreSetting *> *)moreSettings {
     _moreSettings = moreSettings;
@@ -45,7 +63,7 @@ static NSString *const SJVideoPlayerMoreSettingsFooterSlidersViewID = @"SJVideoP
     _footerView.model = footerViewModel;
 }
 
-- (void)_SJVideoPlayerMoreSettingsViewSetupUI {
+- (void)_moreSettingsViewSetupUI {
     self.backgroundColor = [UIColor colorWithWhite:0 alpha:0.85];
     [self addSubview:self.colView];
     [_colView mas_makeConstraints:^(MASConstraintMaker *make) {
@@ -57,12 +75,12 @@ static NSString *const SJVideoPlayerMoreSettingsFooterSlidersViewID = @"SJVideoP
     if ( _colView ) return _colView;
     UICollectionViewFlowLayout *flowLayout = [[UICollectionViewFlowLayout alloc] init];
     flowLayout.scrollDirection = UICollectionViewScrollDirectionVertical;
-    flowLayout.footerReferenceSize = CGSizeMake(0, 200);
     _colView = [[UICollectionView alloc] initWithFrame:CGRectZero collectionViewLayout:flowLayout];
     [_colView registerClass:NSClassFromString(SJVideoPlayerMoreSettingsColCellID) forCellWithReuseIdentifier:SJVideoPlayerMoreSettingsColCellID];
     [_colView registerClass:NSClassFromString(SJVideoPlayerMoreSettingsFooterSlidersViewID) forSupplementaryViewOfKind:UICollectionElementKindSectionFooter withReuseIdentifier:SJVideoPlayerMoreSettingsFooterSlidersViewID];
     _colView.dataSource = self;
     _colView.delegate = self;
+    _colView.contentInset = UIEdgeInsetsMake(20, 0, 0, 0);
     return _colView;
 }
 
@@ -91,11 +109,6 @@ static NSString *const SJVideoPlayerMoreSettingsFooterSlidersViewID = @"SJVideoP
     return CGSizeMake( width, width);
 }
 
-- (UIEdgeInsets)collectionView:(UICollectionView *)collectionView layout:(UICollectionViewLayout*)collectionViewLayout insetForSectionAtIndex:(NSInteger)section {
-    if ( 0 == section ) return UIEdgeInsetsMake(20, 0, 0, 0);
-    return UIEdgeInsetsMake(0, 0, 0, 0);
-}
-
 - (CGFloat)collectionView:(UICollectionView *)collectionView layout:(UICollectionViewLayout*)collectionViewLayout minimumInteritemSpacingForSectionAtIndex:(NSInteger)section {
     return 0;
 }
@@ -104,4 +117,8 @@ static NSString *const SJVideoPlayerMoreSettingsFooterSlidersViewID = @"SJVideoP
     return 0;
 }
 
+- (CGSize)collectionView:(UICollectionView *)collectionView layout:(UICollectionViewLayout*)collectionViewLayout referenceSizeForFooterInSection:(NSInteger)section {
+    if ( 0 == _moreSettings.count ) return CGSizeMake(self.bounds.size.width, [UIScreen mainScreen].bounds.size.height - 2 * (collectionView.contentInset.top + collectionView.contentInset.bottom));
+    return CGSizeMake(self.bounds.size.width, [SJVideoPlayerMoreSettingsFooterSlidersView height]);
+}
 @end

@@ -29,11 +29,11 @@
     [self.rightContainerView addSubview:self.rightlabel];
     
     [_leftLabel mas_makeConstraints:^(MASConstraintMaker *make) {
-        make.edges.equalTo(_leftLabel.superview);
+        make.center.equalTo(_leftLabel.superview);
     }];
     
     [_rightlabel mas_makeConstraints:^(MASConstraintMaker *make) {
-        make.edges.equalTo(_rightlabel.superview);
+        make.center.equalTo(_rightlabel.superview);
     }];
 }
 
@@ -51,7 +51,6 @@
 
 - (UILabel *)_createLabel {
     UILabel *label = [UILabel new];
-    label.adjustsFontSizeToFitWidth = YES;
     label.textAlignment = NSTextAlignmentCenter;
     label.textColor = [UIColor blackColor];
     label.font = [UIFont systemFontOfSize:12];

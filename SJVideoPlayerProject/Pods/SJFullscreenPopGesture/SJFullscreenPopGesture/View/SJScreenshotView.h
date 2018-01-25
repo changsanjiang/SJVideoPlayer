@@ -17,7 +17,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 @property (nonatomic, strong, readwrite, nullable) UIImage *image;
 
-- (void)beginTransition;
+- (void)beginTransitionWithSnapshot:(UIView *)snapshot;
 
 - (void)transitioningWithOffset:(CGFloat)offset;
 

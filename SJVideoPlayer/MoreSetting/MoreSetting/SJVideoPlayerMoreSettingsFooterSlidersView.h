@@ -13,6 +13,8 @@ NS_ASSUME_NONNULL_BEGIN
 
 @interface SJVideoPlayerMoreSettingsFooterSlidersView : UICollectionReusableView
 
++ (CGFloat)height;
+
 @property (nonatomic, weak, readwrite) SJMoreSettingsFooterViewModel *model;
 
 @end

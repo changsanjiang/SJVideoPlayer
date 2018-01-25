@@ -10,7 +10,7 @@
 
 extern NSNotificationName const SJSettingsPlayerNotification;
 
-@class UIImage, UIColor;
+@class UIImage, UIColor, UIFont;
 
 @interface SJVideoPlayerSettings : NSObject
 
@@ -18,6 +18,9 @@ extern NSNotificationName const SJSettingsPlayerNotification;
 + (instancetype)commonSettings;
 
 - (void)reset;
+
+// MARK: loading
+@property (nonatomic, strong, readwrite) UIColor *loadingLineColor;
 
 // MARK: placeholder
 @property (nonatomic, strong, readwrite) UIImage *placeholder;
@@ -32,7 +35,7 @@ extern NSNotificationName const SJSettingsPlayerNotification;
 @property (nonatomic, strong, readwrite) UIImage *pauseBtnImage;
 @property (nonatomic, strong, readwrite) UIImage *replayBtnImage;
 @property (nonatomic, strong, readwrite) NSString *replayBtnTitle;
-@property (nonatomic, assign, readwrite) float replayBtnFontSize;
+@property (nonatomic, strong, readwrite) UIFont *replayBtnFont;
 @property (nonatomic, strong, readwrite) UIImage *fullBtnImage;
 @property (nonatomic, strong, readwrite) UIImage *previewBtnImage;
 @property (nonatomic, strong, readwrite) UIImage *moreBtnImage;
@@ -62,7 +65,11 @@ extern NSNotificationName const SJSettingsPlayerNotification;
 /// 轨道高度
 @property (nonatomic, assign, readwrite) float more_trackHeight;
 
-// MARK: loading
-@property (nonatomic, strong, readwrite) UIColor *loadingLineColor;
+@property (nonatomic, strong, readwrite) UIImage *more_minRateImage;
+@property (nonatomic, strong, readwrite) UIImage *more_maxRateImage;
+@property (nonatomic, strong, readwrite) UIImage *more_minVolumeImage;
+@property (nonatomic, strong, readwrite) UIImage *more_maxVolumeImage;
+@property (nonatomic, strong, readwrite) UIImage *more_minBrightnessImage;
+@property (nonatomic, strong, readwrite) UIImage *more_maxBrightnessImage;
 
 @end

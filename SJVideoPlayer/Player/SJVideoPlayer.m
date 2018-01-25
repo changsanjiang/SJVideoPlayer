@@ -499,7 +499,7 @@ static dispatch_queue_t videoPlayerWorkQueue;
         if ( self.asset.hasBeenGeneratedPreviewImages ) { return ; }
         if ( !self.generatePreviewImages ) return;
         CGRect bounds = videoRect;
-        CGFloat width = [UIScreen mainScreen].bounds.size.width * 0.4;
+        CGFloat width = SJScreen_W() * 0.6;
         CGFloat height = width * bounds.size.height / bounds.size.width;
         CGSize size = CGSizeMake(width, height);
         [self.asset generatedPreviewImagesWithMaxItemSize:size completion:^(SJVideoPlayerAssetCarrier * _Nonnull asset, NSArray<SJVideoPreviewModel *> * _Nullable images, NSError * _Nullable error) {
@@ -530,7 +530,7 @@ static dispatch_queue_t videoPlayerWorkQueue;
 
 - (SJVideoPlayerMoreSettingsView *)moreSettingView {
     if ( _moreSettingView ) return _moreSettingView;
-    _moreSettingView = [SJVideoPlayerMoreSettingsView new];
+    _moreSettingView = [[SJVideoPlayerMoreSettingsView alloc] initWithOrentationObserver:self.orentation];
     _moreSettingView.backgroundColor = [UIColor blackColor];
     return _moreSettingView;
 }
@@ -552,6 +552,7 @@ static dispatch_queue_t videoPlayerWorkQueue;
         if ( !self ) return;
         if ( !self.asset ) return;
         self.rate = rate;
+        [self showTitle:[NSString stringWithFormat:@"%.0f %%", self.rate * 100]];
         if ( self.internallyChangedRate ) self.internallyChangedRate(self, rate);
     };
     
@@ -916,6 +917,7 @@ static dispatch_queue_t videoPlayerWorkQueue;
             NSInteger currentTime = slider.value * self.asset.duration;
             [self _refreshingTimeLabelWithCurrentTime:currentTime duration:self.asset.duration];
             _sjAnima(^{
+                self.hideControl = YES;
                 _sjShowViews(@[self.draggingProgressView]);
             });
             [self _cancelDelayHiddenControl];
@@ -1464,11 +1466,11 @@ static dispatch_queue_t videoPlayerWorkQueue;
     if ( self.rate == rate ) return;
     objc_setAssociatedObject(self, @selector(rate), @(rate), OBJC_ASSOCIATION_RETAIN_NONATOMIC);
     if ( !self.asset ) return;
-    self.asset.player.rate = rate;
     self.userClickedPause = NO;
     _sjAnima(^{
         [self _playState];
     });
+    self.asset.player.rate = rate;
     if ( self.moreSettingFooterViewModel.playerRateChanged ) self.moreSettingFooterViewModel.playerRateChanged(rate);
     if ( self.rateChanged ) self.rateChanged(self);
 }

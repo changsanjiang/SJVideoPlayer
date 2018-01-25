@@ -144,7 +144,6 @@
     
     [self _SJSliderPanGR];
     
-    
     return self;
 }
 
@@ -180,6 +179,7 @@
     }
     self.thumbImageView.layer.cornerRadius = thumbCornerRadius;
     self.thumbImageView.backgroundColor = thumbBackgroundColor;
+    [self _updateLayout];
 }
 
 - (void)setTrackHeight:(CGFloat)trackHeight {
@@ -194,11 +194,11 @@
 }
 
 - (void)setValue:(CGFloat)value {
-    CGFloat oldValue = _value;
     if ( isnan(value) ) return;
+    if ( value == _value ) return;
     if      ( value < _minValue ) value = _minValue;
     else if ( value > _maxValue ) value = _maxValue;
-    if ( oldValue == value ) return;
+    else if ( _minValue > _maxValue ) value = 0;
     _value = value;
     [self _updateLayout];
 }
@@ -219,7 +219,6 @@
 - (void)_updateLayout {
     CGFloat sub = _maxValue - _minValue;
     if ( sub <= 0 ) return;
-    
     [_containerView.constraints enumerateObjectsWithOptions:NSEnumerationReverse usingBlock:^(__kindof NSLayoutConstraint * _Nonnull obj, NSUInteger idx, BOOL * _Nonnull stop) {
         if ( obj.firstItem == _traceImageView ) {
             if ( obj.firstAttribute == NSLayoutAttributeWidth ) {
@@ -262,8 +261,6 @@
 - (void)_SJSliderInitialize {
     
     self.trackHeight = 8.0;
-    self.minValue = 0.0;
-    self.maxValue = 1.0;
     self.borderWidth = 0.4;
     self.borderColor = [UIColor lightGrayColor];
     self.isRound = YES;
@@ -272,6 +269,9 @@
     self.bufferProgress = 0;
     self.bufferProgressColor = [UIColor grayColor];
     
+    _minValue = 0.0;
+    _maxValue = 1.0;
+    [self _updateLayout];
 }
 
 - (void)_SJSliderPanGR {
@@ -407,6 +407,7 @@
         CGFloat constant = imageView.bounds.size.width * 0.4;
         self.thumbLeadingConstraint.constant = -constant;
         self.thumbTrailingConstraint.constant = -constant;
+        [self _updateLayout];
     }];
     
     [_thumbImageView setContentHuggingPriority:UILayoutPriorityRequired forAxis:UILayoutConstraintAxisHorizontal];
@@ -475,29 +476,27 @@
 
 - (void)setBufferProgress:(CGFloat)bufferProgress {
     if ( isnan(bufferProgress) ) return;
-    if      ( bufferProgress > 1 ) bufferProgress = 1;
+    bufferProgress += 0.001;
+    if      ( bufferProgress >= 1 ) bufferProgress = 1;
     else if ( bufferProgress < 0 ) bufferProgress = 0;
     objc_setAssociatedObject(self, @selector(bufferProgress), @(bufferProgress), OBJC_ASSOCIATION_RETAIN_NONATOMIC);
-    dispatch_async(dispatch_get_main_queue(), ^{
-        UIView *bufferProgressView = [self bufferProgressView];
-        if ( !bufferProgressView.superview ) return ;
-        [self.containerView.constraints enumerateObjectsWithOptions:NSEnumerationReverse usingBlock:^(__kindof NSLayoutConstraint * _Nonnull obj, NSUInteger idx, BOOL * _Nonnull stop) {
-            if ( obj.firstItem == bufferProgressView ) {
-                if ( obj.firstAttribute == NSLayoutAttributeWidth ) {
-                    [self.containerView removeConstraint:obj];
-                }
+    UIView *bufferProgressView = [self bufferProgressView];
+    if ( !bufferProgressView.superview ) return ;
+    [self.containerView.constraints enumerateObjectsWithOptions:NSEnumerationReverse usingBlock:^(__kindof NSLayoutConstraint * _Nonnull obj, NSUInteger idx, BOOL * _Nonnull stop) {
+        if ( obj.firstItem == bufferProgressView ) {
+            if ( obj.firstAttribute == NSLayoutAttributeWidth ) {
+                [self.containerView removeConstraint:obj];
             }
-        }];
-        NSLayoutConstraint *bufferProgressWidthConstraint =
-        [NSLayoutConstraint constraintWithItem:bufferProgressView
-                                     attribute:NSLayoutAttributeWidth
-                                     relatedBy:NSLayoutRelationEqual
-                                        toItem:self.containerView
-                                     attribute:NSLayoutAttributeWidth
-                                    multiplier:bufferProgress constant:0];
-        [self.containerView addConstraint:bufferProgressWidthConstraint];
-        [self _anima];
-    });
+        }
+    }];
+    NSLayoutConstraint *bufferProgressWidthConstraint =
+    [NSLayoutConstraint constraintWithItem:bufferProgressView
+                                 attribute:NSLayoutAttributeWidth
+                                 relatedBy:NSLayoutRelationEqual
+                                    toItem:self.containerView
+                                 attribute:NSLayoutAttributeWidth
+                                multiplier:bufferProgress constant:0];
+    [self.containerView addConstraint:bufferProgressWidthConstraint];
 }
 
 - (UIView *)bufferProgressView {

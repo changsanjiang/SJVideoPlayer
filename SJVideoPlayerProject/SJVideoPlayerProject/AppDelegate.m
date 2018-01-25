@@ -47,7 +47,6 @@
         
         /// 设置 更多页面中`slider`的样式.
         commonSettings.more_trackColor = [UIColor whiteColor];
-        commonSettings.progress_traceColor = commonSettings.more_traceColor = [UIColor orangeColor];
         commonSettings.progress_trackColor = [UIColor colorWithWhite:0.4 alpha:1];
         commonSettings.progress_bufferColor = [UIColor whiteColor];
     });

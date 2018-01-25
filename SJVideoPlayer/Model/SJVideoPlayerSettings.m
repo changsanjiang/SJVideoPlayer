@@ -7,6 +7,7 @@
 //
 
 #import "SJVideoPlayerSettings.h"
+#import <UIKit/UIKit.h>
 #import "SJVideoPlayerResources.h"
 
 NSNotificationName const SJSettingsPlayerNotification = @"SJSettingsPlayerNotification";
@@ -24,6 +25,7 @@ NSNotificationName const SJSettingsPlayerNotification = @"SJSettingsPlayerNotifi
 }
 
 - (void)reset {
+    self.loadingLineColor = [UIColor whiteColor];
     self.fastImage = [SJVideoPlayerResources imageNamed:@"sj_video_player_fast"];
     self.forwardImage = [SJVideoPlayerResources imageNamed:@"sj_video_player_forward"];
     self.backBtnImage = [SJVideoPlayerResources imageNamed:@"sj_video_player_back"];
@@ -36,15 +38,21 @@ NSNotificationName const SJSettingsPlayerNotification = @"SJSettingsPlayerNotifi
     self.unlockBtnImage = [SJVideoPlayerResources imageNamed:@"sj_video_player_unlock"];
     self.replayBtnImage = [SJVideoPlayerResources imageNamed:@"sj_video_player_replay"];
     self.replayBtnTitle = @"重播";
-    self.progress_traceColor = [UIColor orangeColor];
+    self.replayBtnFont = [UIFont boldSystemFontOfSize:14];
+    self.progress_traceColor = [UIColor colorWithRed:2 / 256.0 green:141 / 256.0 blue:140 / 256.0 alpha:1];
     self.progress_bufferColor = [UIColor colorWithWhite:0 alpha:0.2];
     self.progress_trackColor =  [UIColor whiteColor];
     self.progress_traceHeight = 3;
     self.progress_thumbColor = self.progress_traceColor;
-    self.more_traceColor = [UIColor greenColor];
+    self.more_traceColor = self.progress_traceColor;
     self.more_trackColor = [UIColor whiteColor];
     self.more_trackHeight = 5;
-    self.loadingLineColor = [UIColor whiteColor];
+    self.more_minRateImage = [SJVideoPlayerResources imageNamed:@"sj_video_player_minRate"];
+    self.more_maxRateImage = [SJVideoPlayerResources imageNamed:@"sj_video_player_maxRate"];
+    self.more_minVolumeImage = [SJVideoPlayerResources imageNamed:@"sj_video_player_minVolume"];
+    self.more_maxVolumeImage = [SJVideoPlayerResources imageNamed:@"sj_video_player_maxVolume"];
+    self.more_minBrightnessImage = [SJVideoPlayerResources imageNamed:@"sj_video_player_minBrightness"];
+    self.more_maxBrightnessImage = [SJVideoPlayerResources imageNamed:@"sj_video_player_maxBrightness"];
 }
 
 @end

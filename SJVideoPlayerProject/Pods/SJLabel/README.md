@@ -16,38 +16,17 @@ pod 'SJLabel'
 ### Sample
 ```Objective-C
 
-_attrStr = [SJAttributesFactory producingWithTask:^(SJAttributeWorker * _Nonnull worker) {
-            worker.insertText(@"我被班主任杨老师叫到办公室，当时上课铃刚响，杨老师过来找我，我挺奇怪的，什么事啊，可以连课都不上？", 0);
-            worker.font([UIFont boldSystemFontOfSize:22]);
-            worker.lineSpacing(8);
-            
-            worker.regexp(@"我", ^(SJAttributeWorker * _Nonnull regexp) {
-                regexp.nextFontColor([UIColor yellowColor]);
-                regexp.nextUnderline(NSUnderlineStyleSingle, [UIColor yellowColor]);
+/// add `attributedString` some action
+- (void)addAction {
+    attrStr.actionDelegate = self;
+    attrStr.addAction(@"我们"); // 所有的`我们`添加点击事件, 回调将在代理方法中回调.
+    attrStr.addAction(@"[活动链接]"); // 所有的`[活动链接]`添加点击事件, 回调将在代理方法中回调.
+}
 
-                // action 1
-                regexp.nextAction(^(NSRange range, NSAttributedString * _Nonnull matched) {
-                    NSLog(@"`%@` clicked", matched.string);
-                });
-            });
-            
-            __weak typeof(self) _self = self;
-            worker.regexp(@"杨老师", ^(SJAttributeWorker * _Nonnull regexp) {
-                regexp.nextFontColor([UIColor redColor]);
-                
-                // action 2
-                regexp.next(SJActionAttributeName, ^(NSRange range, NSAttributedString *str) {
-                    NSLog(@"`%@` clicked", str.string);
-                    
-                    __strong typeof(_self) self = _self;
-                    if ( !self ) return;
-                    UIViewController *vc = [UIViewController new];
-                    vc.title = str.string;
-                    vc.view.backgroundColor = [UIColor greenColor];
-                    [self.navigationController pushViewController:vc animated:YES];
-                });
-            });
-        }];
+/// delegate method
+- (void)attributedString:(NSAttributedString *)attrStr action:(NSAttributedString *)action {
+    NSLog(@"%@", action.string);
+}
 ```
 
 

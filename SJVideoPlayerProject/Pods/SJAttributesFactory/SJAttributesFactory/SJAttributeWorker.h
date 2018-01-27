@@ -5,242 +5,235 @@
 //  Created by 畅三江 on 2017/11/12.
 //  Copyright © 2017年 畅三江. All rights reserved.
 //
+//  Project Address: https://github.com/changsanjiang/SJAttributesFactory
+//  Email:  changsanjiange@gmail.com
+//
 
 #import <UIKit/UIKit.h>
-#import "SJAttributedStringKeys.h"
+#import "SJAttributesRecorder.h"
+
+typedef NSString * NSAttributedStringKey NS_EXTENSIBLE_STRING_ENUM;
+
+@class SJBorderAttribute, SJUnderlineAttribute, SJAttributeWorker;
 
 NS_ASSUME_NONNULL_BEGIN
 
-@interface SJAttributeWorker : NSObject
+/*!
+ *
+ *  make attributed string:
+ *   NSAttributedString *attrStr = sj_makeAttributesString(^(SJAttributeWorker * _Nonnull make) {
+ *
+ *       // set font , text color.
+ *       make.font([UIFont boldSystemFontOfSize:14]).textColor([UIColor blueColor]);
+ *
+ *       // insert text.
+ *       make.insert(@"叶秋笑了笑，抬手取下了衔在嘴角的烟头。银白的烟灰已经结成了长长一串，但在叶秋挥舞着鼠标敲打着键盘施展操作的过程中却没有被震落分毫.", 0);
+ *
+ *       // regexp matching
+ *       make.regexp(@"叶秋", ^(SJAttributesRangeOperator * _Nonnull matched) {
+ *
+ *           // set matched text textColor.
+ *           matched.textColor([UIColor redColor]);
+ *
+ *           // add underLine
+ *           matched.underLine([SJUnderlineAttribute underLineWithStyle:NSUnderlineStyleSingle | NSUnderlinePatternSolid color:[UIColor orangeColor]]);
+ *       });
+ *   });
+ **/
+extern NSMutableAttributedString *sj_makeAttributesString(void(^block)(SJAttributeWorker *make));
+
+#pragma mark -
+@interface SJAttributesRangeOperator: NSObject
+@property (nonatomic, strong, readonly) SJAttributesRecorder *recorder;
+@end
+
+
+#pragma mark -
+
+@interface SJAttributeWorker : SJAttributesRangeOperator
 
 - (instancetype)init NS_DESIGNATED_INITIALIZER;
 
-- (NSAttributedString *)endTask;
+@property (nonatomic, assign, readonly) NSRange range;
 
-#pragma mark - All
+- (NSMutableAttributedString *)endTask;
+
+- (NSMutableAttributedString *)endTaskAndComplete:(void(^)(SJAttributeWorker *worker))block;
+
 /*!
- *  Setting the whole may affect the local range properties,
- *  please set the whole first, and then set the local range properties.
+ *  default font.
  *
- *  设置整体可能会影响局部范围属性, 请先设置整体, 然后再设置局部范围属性.
- *  也可不设置整体, 只设置局部属性.
+ *  default is UIFont.systemFont(ofSize: 14)
  **/
-/// 整体 字体
-@property (nonatomic, copy, readonly) SJAttributeWorker *(^font)(UIFont *font);
-/// 整体 放大
-@property (nonatomic, copy, readonly) SJAttributeWorker *(^expansion)(float expansion);
-/// 整体 字体颜色
-@property (nonatomic, copy, readonly) SJAttributeWorker *(^fontColor)(UIColor *fontColor);
-/// 整体 字体阴影
-@property (nonatomic, copy, readonly) SJAttributeWorker *(^shadow)(NSShadow *shadow);
-/// 整体 背景颜色
-@property (nonatomic, copy, readonly) SJAttributeWorker *(^backgroundColor)(UIColor *color);
-/// 整体 每行间隔
-@property (nonatomic, copy, readonly) SJAttributeWorker *(^lineSpacing)(float spacing);
-/// 整体 段后间隔(\n)
-@property (nonatomic, copy, readonly) SJAttributeWorker *(^paragraphSpacing)(float paragraphSpacing);
-/// 整体 段前间隔(\n)
-@property (nonatomic, copy, readonly) SJAttributeWorker *(^paragraphSpacingBefore)(float paragraphSpacingBefore);
-/// 首行头缩进
-@property (nonatomic, copy, readonly) SJAttributeWorker *(^firstLineHeadIndent)(float padding);
-/// 左缩进
-@property (nonatomic, copy, readonly) SJAttributeWorker *(^headIndent)(float headIndent);
-/// 右缩进(正值从左算起, 负值从右算起)
-@property (nonatomic, copy, readonly) SJAttributeWorker *(^tailIndent)(float tailIndent);
-/// 整体 字间隔
-@property (nonatomic, copy, readonly) SJAttributeWorker *(^letterSpacing)(float spacing);
-/// 整体 对齐方式
-@property (nonatomic, copy, readonly) SJAttributeWorker *(^alignment)(NSTextAlignment alignment);
-/// line break mode
-@property (nonatomic, copy, readonly) SJAttributeWorker *(^lineBreakMode)(NSLineBreakMode mode);
+@property (nonatomic, strong) UIFont *defaultFont;
+
 /*!
- *  整体 添加下划线
- *  ex:
- *  worker.underline(NSUnderlineByWord |
- *                   NSUnderlinePatternSolid |
- *                   NSUnderlineStyleDouble, [UIColor blueColor])
- **/
-@property (nonatomic, copy, readonly) SJAttributeWorker *(^underline)(NSUnderlineStyle style, UIColor *color);
-/*!
- *  整体 添加删除线
- *  ex:
- *  worker.strikethrough(NSUnderlineByWord |
- *                       NSUnderlinePatternSolid |
- *                       NSUnderlineStyleDouble, [UIColor blueColor])
- **/
-@property (nonatomic, copy, readonly) SJAttributeWorker *(^strikethrough)(NSUnderlineStyle style, UIColor *color);
-/// border 如果大于0, 则显示的是空心字体. 如果小于0, 则显示实心字体(就像正常字体那样, 只不过是描边了).
-@property (nonatomic, copy, readonly) SJAttributeWorker *(^stroke)(float border, UIColor *color);
-/// 整体 凸版
-@property (nonatomic, copy, readonly) SJAttributeWorker *(^letterpress)(void);
-/// 整体 链接
-@property (nonatomic, copy, readonly) SJAttributeWorker *(^link)(void);
-/// 整体 段落样式
-@property (nonatomic, copy, readonly) SJAttributeWorker *(^paragraphStyle)(NSParagraphStyle *style);
-/// 整体 倾斜. 建议值 -1 到 1 之间.
-@property (nonatomic, copy, readonly) SJAttributeWorker *(^obliqueness)(float obliqueness);
-/// key: NSAttributedStringKey
-@property (nonatomic, copy, readonly) SJAttributeWorker *(^addAttribute)(NSAttributedStringKey key, id value);
-/// 点击触发动作(需要配合 SJLabel 使用)
-@property (nonatomic, copy, readonly) SJAttributeWorker *(^action)(void(^task)(NSRange range, NSAttributedString *matched));
-
-
-
-#pragma mark - Range
-/*!
- *  range Edit 1:
- *  [SJAttributesFactory alteringStr:@"I am a bad man!" task:^(SJAttributeWorker * _Nonnull worker) {
- *      worker.alteringRange(NSMakeRange(0, 1), ^(SJAttributeWorker * _Nonnull range) {
- *           range
- *              .nextFont([UIFont boldSystemFontOfSize:30])
- *              .nextFontColor([UIColor orangeColor]);
- *      });
- *  }];
- **/
-@property (nonatomic, copy, readonly) SJAttributeWorker *(^rangeEdit)(NSRange range, void(^task)(SJAttributeWorker *range));
-/*!
- *  range Edit 2:
- *  [SJAttributesFactory alteringStr:[NSString stringWithFormat:@"%@%@%@", pre, mid, end] task:^(SJAttributeWorker * _Nonnull worker) {
- *      worker
- *      .nextFont([UIFont boldSystemFontOfSize:12])
- *      .nextFontColor([UIColor yellowColor])
- *      .nextAlignment(NSTextAlignmentRight)
- *      .range(NSMakeRange(pre.length, mid.length));  // -->>>>> must set it up.
- *  }];
- **/
-@property (nonatomic, copy, readonly) void(^range)(NSRange range);
-/// 指定范围内的 字体
-@property (nonatomic, copy, readonly) SJAttributeWorker *(^nextFont)(UIFont *font);
-/// 指定范围内的 字体放大
-@property (nonatomic, copy, readonly) SJAttributeWorker *(^nextExpansion)(float nextExpansion);
-/// 指定范围内的 字体颜色
-@property (nonatomic, copy, readonly) SJAttributeWorker *(^nextFontColor)(UIColor *fontColor);
-/// 指定范围内的 阴影
-@property (nonatomic, copy, readonly) SJAttributeWorker *(^nextShadow)(NSShadow *shadow);
-/// 指定范围内的 背景颜色
-@property (nonatomic, copy, readonly) SJAttributeWorker *(^nextBackgroundColor)(UIColor *color);
-/// 指定范围内的 字间隔
-@property (nonatomic, copy, readonly) SJAttributeWorker *(^nextLetterSpacing)(float spacing);
-/// 指定范围内的 行间隔
-@property (nonatomic, copy, readonly) SJAttributeWorker *(^nextLineSpacing)(float lineSpacing);
-/// 指定范围内的 段后间隔(\n)
-@property (nonatomic, copy, readonly) SJAttributeWorker *(^nextParagraphSpacing)(float paragraphSpacing);
-/// 指定范围内的 段前间隔(\n)
-@property (nonatomic, copy, readonly) SJAttributeWorker *(^nextParagraphSpacingBefore)(float paragraphSpacingBefore);
-/// 指定范围内的 首行头缩进
-@property (nonatomic, copy, readonly) SJAttributeWorker *(^nextFirstLineHeadIndent)(float padding);
-/// 指定范围内的 左缩进
-@property (nonatomic, copy, readonly) SJAttributeWorker *(^nextHeadIndent)(float headIndent);
-/// 指定范围内的 右缩进(正值从左算起, 负值从右算起)
-@property (nonatomic, copy, readonly) SJAttributeWorker *(^nextTailIndent)(float tailIndent);
-/// 指定范围内的 对齐方式
-@property (nonatomic, copy, readonly) SJAttributeWorker *(^nextAlignment)(NSTextAlignment alignment);
-/// 指定范围内的 下划线
-@property (nonatomic, copy, readonly) SJAttributeWorker *(^nextUnderline)(NSUnderlineStyle style, UIColor *color);
-/// 指定范围内的 删除线
-@property (nonatomic, copy, readonly) SJAttributeWorker *(^nextStrikethough)(NSUnderlineStyle style, UIColor *color);
-/// 指定范围内的 填充. 效果同 storke.
-@property (nonatomic, copy, readonly) SJAttributeWorker *(^nextStroke)(float border, UIColor *color);
-/// 指定范围内的 凸版
-@property (nonatomic, copy, readonly) SJAttributeWorker *(^nextLetterpress)(void);
-/// 指定范围内为链接
-@property (nonatomic, copy, readonly) SJAttributeWorker *(^nextLink)(void);
-/// 指定范围内上下的偏移量. 正值向上, 负数向下.
-@property (nonatomic, copy, readonly) SJAttributeWorker *(^nextOffset)(float offset);
-/// 指定范围内倾斜. 建议值 -1 到 1 之间.
-@property (nonatomic, copy, readonly) SJAttributeWorker *(^nextObliqueness)(float obliqueness);
-/// attrKey: NSAttributedStringKey
-@property (nonatomic, copy, readonly) SJAttributeWorker *(^next)(NSAttributedStringKey attrKey, id value);
-/// Action, 需要使用 SJLabel
-@property (nonatomic, copy, readonly) SJAttributeWorker *(^nextAction)(void(^task)(NSRange range, NSAttributedString *matched));
-
-
-
-#pragma mark - Insert
-/*!
- *  Insert a image at the specified position.
- *  You can get the length of the text through [worker.length].
- *  If index = -1, it will be inserted at the end of the text.
+ *  default textColor.
  *
- *  可以通过 worker.length 来获取文本的length
- *  指定位置 插入图片.
- *  如果 index = -1, 将会插到文本最后
+ *  default is UIColor.black
+ **/
+@property (nonatomic, strong) UIColor *defaultTextColor;
+
+/*!
+ *  range editing. can be used it with `regexp` method.
+ *
+ *  范围编辑, 可以配合正则使用.
+ **/
+@property (nonatomic, copy, readonly) SJAttributeWorker *(^rangeEdit)(NSRange range, void (^task)(SJAttributesRangeOperator *rangeOperator));
+
+/*!
+ *  get sub attributedString by `range`.
+ *
+ *  按照范围获取文本
+ **/
+@property (nonatomic, copy, readonly) NSAttributedString *(^subAttrStr)(NSRange subRange);
+
+@end
+
+
+
+
+#pragma mark - 正则 - regexp
+@interface SJAttributeWorker(Regexp)
+/*!
+ *  regular expression.
+ *
+ *  正则匹配
+ **/
+@property (nonatomic, copy, readonly) SJAttributeWorker *(^regexp)(NSString *regStr, void(^matchedTask)(SJAttributesRangeOperator *matched));
+/*!
+ *  regular expression. value is [NSRange].
+ *
+ *  正则匹配
+ **/
+@property (nonatomic, copy, readonly) SJAttributeWorker *(^regexp_r)(NSString *regStr, void(^matchedTask)(NSArray<NSValue *> *matchedRanges), BOOL reverse);
+
+@end
+
+
+
+
+#pragma mark - 大小 - size
+@interface SJAttributeWorker(Size)
+@property (nonatomic, copy, readonly) CGSize(^size)(void);
+@property (nonatomic, copy, readonly) CGSize(^sizeByRange)(NSRange range);
+@property (nonatomic, copy, readonly) CGSize(^sizeByWidth)(double maxWidth);
+@property (nonatomic, copy, readonly) CGSize(^sizeByHeight)(double maxHeight);
+@end
+
+
+
+
+#pragma mark - 插入 - insert
+@interface SJAttributeWorker(Insert)
+/*!
+ *  the range of the last inserted text.
+ *
+ *  最近一次插入的文本的范围.
+ **/
+@property (nonatomic, assign, readonly) NSRange lastInsertedRange;
+/*!
+ *  editing the latest text.
+ *
+ *  编辑最后插入的文本.
+ **/
+@property (nonatomic, copy, readonly) SJAttributeWorker *(^lastInserted)(void(^task)(SJAttributesRangeOperator *lastOperator));
+/*!
+ *  add attribute of `key, value, range`.
+ *
+ *  添加
+ **/
+@property (nonatomic, copy, readonly) SJAttributeWorker *(^add)(NSAttributedStringKey key, id value, NSRange range);
+/*!
+ *  insert text, `-1` indicates the insertion to the end.
+ *
+ *  插入文本, `-1` 表示插入到最后
+ **/
+@property (nonatomic, copy, readonly) SJAttributeWorker *(^insertText)(NSString *text, NSInteger index);
+/*!
+ *  insert image, `-1` indicates the insertion to the end.
+ *
+ *  插入图片, `-1` 表示插入到最后
  **/
 @property (nonatomic, copy, readonly) SJAttributeWorker *(^insertImage)(UIImage *image, NSInteger index, CGPoint offset, CGSize size);
 /*!
- *  You can get the length of the text through [worker.length].
- *  If index = -1, it will be inserted at the end of the text.
+ *  inset text, `-1` indicates the insertion to the end.
  *
- *  可以通过 worker.length 来获取文本的length
- *  指定位置 插入文本.
- *  如果 index = -1, 将会插到文本最后.
+ *  插入文本, `-1` 表示插入到最后
  **/
-@property (nonatomic, copy, readonly) SJAttributeWorker *(^insertAttr)(NSAttributedString *attrStr, NSInteger index);
+@property (nonatomic, copy, readonly) SJAttributeWorker *(^insertAttrStr)(NSAttributedString *text, NSInteger index);
+
 /*!
- *  You can get the length of the text through [worker.length].
- *  If index = -1, it will be inserted at the end of the text.
+ *  inset text or image, `-1` indicates the insertion to the end.
  *
- *  可以通过 worker.length 来获取文本的length
- *  指定位置 插入文本.
- *  如果 index = -1, 将会插到文本最后
+ *  插入, `-1` 表示插入到最后
  **/
-@property (nonatomic, copy, readonly) SJAttributeWorker *(^insertText)(NSString *text, NSInteger index);
-/**
- *  insert = NSString or NSAttributedString or UIImage
- *  insert(string, 0)
- *  insert(attributedString, 0)
- *  insert([UIImage imageNamed:name], 10, CGPointMake(0, -20), CGSizeMake(50, 50))
- */
 @property (nonatomic, copy, readonly) SJAttributeWorker *(^insert)(id strOrAttrStrOrImg, NSInteger index, ...);
-/*!
- *  worker.insert(@" recur ", worker.lastInsertedRange.location);
- *  worker.lastInserted(^(SJAttributeWorker * _Nonnull worker) {
- *      worker
- *      .nextFont([UIFont systemFontOfSize:30])
- *      .nextFontColor([UIColor redColor]);
- *  });
- */
-@property (nonatomic, copy, readonly) SJAttributeWorker *(^lastInserted)(void(^rangeTask)(SJAttributeWorker *worker));
-@property (nonatomic, assign, readonly) NSRange lastInsertedRange;
 
-#pragma mark - Replace
-/// value == NSString Or NSAttributedString
-@property (nonatomic, copy, readonly) SJAttributeWorker *(^replace)(NSRange range, id strOrAttrStr);
-/// oldPart and newPart == NSString Or NSAttributedString
-@property (nonatomic, copy, readonly) SJAttributeWorker *(^replaceIt)(id oldPart, id newPart);
+@end
 
 
-#pragma mark - Remove
-/// 指定范围 删除文本
-@property (nonatomic, copy, readonly) SJAttributeWorker *(^removeText)(NSRange range);
-/// 指定范围 删除属性
-@property (nonatomic, copy, readonly) SJAttributeWorker *(^removeAttribute)(NSAttributedStringKey key, NSRange range);
-/// 除字体大小, 清除文本其他属性
-@property (nonatomic, copy, readonly) void (^clean)(void);
+
+#pragma mark - 替换 - replace
+@interface SJAttributeWorker(Replace)
+@property (nonatomic, copy, readonly) void(^replace)(NSRange range, id strOrAttrStrOrImg, ...);
+@end
 
 
-#pragma mark - Regular Expression
-/// 正则匹配
-@property (nonatomic, copy, readonly) SJAttributeWorker *(^regexp)(NSString *ex, void(^task)(SJAttributeWorker *regexp));
-/// 正则匹配
-@property (nonatomic, copy, readonly) SJAttributeWorker *(^regexpRanges)(NSString *ex, void(^task)(NSArray<NSValue *> *ranges));
+
+#pragma mark - 删除 - remove
+@interface SJAttributeWorker(Delete)
+@property (nonatomic, copy, readonly) void(^removeText)(NSRange range);
+@property (nonatomic, copy, readonly) void(^removeAttribute)(NSAttributedStringKey key, NSRange range);
+@property (nonatomic, copy, readonly) void(^removeAttributes)(NSRange range);
+@end
 
 
-#pragma mark - Other
-/// 获取当前文本的长度
-@property (nonatomic, assign, readonly) NSInteger length;
-/// 获取指定范围的宽度. (必须设置过字体)
-@property (nonatomic, copy, readonly) CGFloat(^width)(NSRange range);
-/// 获取指定范围的大小. (必须设置过字体)
-@property (nonatomic, copy, readonly) CGSize(^size)(NSRange range);
-/// 获取指定范围的大小. (必须设置过字体)
-@property (nonatomic, copy, readonly) CGRect(^boundsByMaxWidth)(CGFloat maxWidth);
-/// 获取指定范围的大小. (必须设置过字体)
-@property (nonatomic, copy, readonly) CGRect(^boundsByMaxHeight)(CGFloat maxHeight);
-/// 获取指定范围的文本
-@property (nonatomic, copy, readonly) NSAttributedString *(^attrStrByRange)(NSRange range);
+
+#pragma mark - 属性 - property
+@interface SJAttributesRangeOperator(Property)
+
+/// 字体
+@property (nonatomic, copy, readonly) SJAttributesRangeOperator *(^font)(UIFont *font);
+/// 文本颜色
+@property (nonatomic, copy, readonly) SJAttributesRangeOperator *(^textColor)(UIColor *color);
+/// 放大, 扩大
+@property (nonatomic, copy, readonly) SJAttributesRangeOperator *(^expansion)(double expansion);
+/// 阴影
+@property (nonatomic, copy, readonly) SJAttributesRangeOperator *(^shadow)(NSShadow *shadow);
+/// 背景颜色
+@property (nonatomic, copy, readonly) SJAttributesRangeOperator *(^backgroundColor)(UIColor *color);
+/// 下划线
+@property (nonatomic, copy, readonly) SJAttributesRangeOperator *(^underLine)(NSUnderlineStyle style, UIColor *color);
+/// 删除线
+@property (nonatomic, copy, readonly) SJAttributesRangeOperator *(^strikethrough)(NSUnderlineStyle style, UIColor *color);
+/// 边界`border`
+@property (nonatomic, copy, readonly) SJAttributesRangeOperator *(^border)(SJBorderAttribute *border);
+/// 倾斜(-1 ... 1)
+@property (nonatomic, copy, readonly) SJAttributesRangeOperator *(^obliqueness)(double obliqueness);
+/// 字间隔
+@property (nonatomic, copy, readonly) SJAttributesRangeOperator *(^letterSpacing)(double letterSpacing);
+/// 上下偏移
+@property (nonatomic, copy, readonly) SJAttributesRangeOperator *(^offset)(double offset);
+/// 链接
+@property (nonatomic, copy, readonly) SJAttributesRangeOperator *(^isLink)(void);
+/// 段落 style
+@property (nonatomic, copy, readonly) SJAttributesRangeOperator *(^paragraphStyle)(NSParagraphStyle *style);
+/// 行间隔
+@property (nonatomic, copy, readonly) SJAttributesRangeOperator *(^lineSpacing)(double lineSpacing);
+/// 段后间隔(\n)
+@property (nonatomic, copy, readonly) SJAttributesRangeOperator *(^paragraphSpacing)(double paragraphSpacing);
+/// 段前间隔(\n)
+@property (nonatomic, copy, readonly) SJAttributesRangeOperator *(^paragraphSpacingBefore)(double paragraphSpacingBefore);
+/// 首行头缩进
+@property (nonatomic, copy, readonly) SJAttributesRangeOperator *(^firstLineHeadIndent)(double firstLineHeadIndent);
+/// 左缩进
+@property (nonatomic, copy, readonly) SJAttributesRangeOperator *(^headIndent)(double headIndent);
+/// 右缩进(正值从左算起, 负值从右算起)
+@property (nonatomic, copy, readonly) SJAttributesRangeOperator *(^tailIndent)(double tailIndent);
+/// 对齐方式
+@property (nonatomic, copy, readonly) SJAttributesRangeOperator *(^alignment)(NSTextAlignment alignment);
 
 @end
 
 NS_ASSUME_NONNULL_END
-

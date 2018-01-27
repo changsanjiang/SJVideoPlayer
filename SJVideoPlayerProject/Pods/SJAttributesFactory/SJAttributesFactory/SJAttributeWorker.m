@@ -8,804 +8,514 @@
 
 #import "SJAttributeWorker.h"
 #import <CoreText/CoreText.h>
+#import <objc/message.h>
+#import "SJAttributesRecorder.h"
 
-@interface NSString (SJAdd)
+NS_ASSUME_NONNULL_BEGIN
+
+NSMutableAttributedString *sj_makeAttributesString(void(^block)(SJAttributeWorker *make)) {
+    SJAttributeWorker *worker = [SJAttributeWorker new];
+    block(worker);
+    return worker.endTask;
+}
+
+inline static BOOL _rangeContains(NSRange range, NSRange subRange) {
+    return range.location <= subRange.location && range.length >= subRange.length;
+}
+
+inline static void _errorLog(NSString *msg, NSString * __nullable target) {
+    NSLog(@"\n__Error__: %@\nTarget: %@", msg, target);
+}
+
+#pragma mark -
+
+@interface SJAttributesRangeOperator ()
+@property (nonatomic, strong) SJAttributesRecorder *recorder;
 @end
 
-@implementation NSString (SJAdd)
-- (NSString *)string {
-    return self;
+@implementation SJAttributesRangeOperator
+- (SJAttributesRecorder *)recorder {
+    if ( _recorder ) return _recorder;
+    _recorder = [SJAttributesRecorder new];
+    return _recorder;
 }
 @end
 
+#pragma mark -
 
 @interface SJAttributeWorker ()
 
-@property (nonatomic, strong, readonly) NSMutableAttributedString *attrM;
-@property (nonatomic, strong, readonly) NSMutableParagraphStyle *style;
-@property (nonatomic, strong, readonly) NSMutableDictionary<NSValue *, NSParagraphStyle *> *localParagraphStyleDictM;
-
-@property (nonatomic, assign, readwrite) NSRange lastInsertedRange;
-
-@property (nonatomic, strong, readwrite) UIFont *r_nextFont;
-@property (nonatomic, strong, readwrite) NSNumber *r_nextExpansion;
-@property (nonatomic, strong, readwrite) UIColor *r_nextFontColor;
-@property (nonatomic, strong, readwrite) NSShadow *r_nextShadow;
-@property (nonatomic, strong, readwrite) NSNumber *r_nextUnderline;
-@property (nonatomic, strong, readwrite) UIColor *r_nextUnderlineColor;
-@property (nonatomic, strong, readwrite) NSNumber *r_nextStrikethough;
-@property (nonatomic, strong, readwrite) UIColor *r_nextStrikethoughColor;
-@property (nonatomic, strong, readwrite) UIColor *r_nextBackgroundColor;
-@property (nonatomic, strong, readwrite) NSNumber *r_nextLetterSpacing;
-@property (nonatomic, strong, readwrite) NSMutableDictionary<NSString *, NSNumber *> *r_paragraphStylePropertiesM;
-@property (nonatomic, strong, readwrite) NSNumber *r_nextStrokeBorder;
-@property (nonatomic, strong, readwrite) UIColor *r_nextStrokeColor;
-@property (nonatomic, assign, readwrite) BOOL r_nextLetterpress;
-@property (nonatomic, assign, readwrite) BOOL r_nextLink;
-@property (nonatomic, strong, readwrite) NSNumber *r_nextOffset;
-@property (nonatomic, strong, readwrite) NSNumber *r_nextObliqueness;
-@property (nonatomic, strong, readwrite) NSString *r_nextKey;
-@property (nonatomic, strong, readwrite) id r_nextValue;
-@property (nonatomic, copy, readwrite) void(^r_task)(NSRange range, NSAttributedString *matched);
+@property (nonatomic, strong, readonly) NSMutableAttributedString *attrStr;
+@property (nonatomic, strong, readonly) NSMutableArray<SJAttributesRangeOperator *> *rangeOperatorsM;
 
 @end
 
 @implementation SJAttributeWorker
 
-@synthesize attrM = _attrM;
-@synthesize style = _style;
-@synthesize localParagraphStyleDictM = _localParagraphStyleDictM;
-
 - (instancetype)init {
     self = [super init];
     if ( !self ) return nil;
-    [self prepareWork];
+    _defaultFont = [UIFont systemFontOfSize:14];
+    _defaultTextColor = [UIColor blackColor];
+    _attrStr = [NSMutableAttributedString new];
+    _rangeOperatorsM = [NSMutableArray array];
     return self;
 }
 
-- (void)prepareWork {
-    _attrM = [NSMutableAttributedString new];
+- (NSRange)range {
+    return NSMakeRange(0, self.attrStr.length);
 }
 
-- (NSAttributedString *)endTask {
-    [self _finishingOperation];
-    return _attrM;
+- (void)pauseTask {
+    [self endTask];
 }
 
-#pragma mark -
-- (void)_finishingOperation {
-    if ( _style ) self.paragraphStyle(_style);
-    if ( _localParagraphStyleDictM ) {
-        [_localParagraphStyleDictM enumerateKeysAndObjectsUsingBlock:^(NSValue * _Nonnull key, NSParagraphStyle * _Nonnull obj, BOOL * _Nonnull stop) {
-            NSRange range = [key rangeValue];
-            if ( _rangeContains(_rangeAll(_attrM), range) ) [_attrM addAttribute:NSParagraphStyleAttributeName value:obj range:range];
-        }];
-    }
+- (NSMutableAttributedString *)endTask {
+    if ( 0 == self.attrStr.length ) return self.attrStr;
+    if ( nil == self.recorder.font ) self.recorder.font = self.defaultFont;
+    if ( nil == self.recorder.textColor ) self.recorder.textColor = self.defaultTextColor;
+
+    [self.recorder addAttributes:self.attrStr];
+    [self.rangeOperatorsM enumerateObjectsUsingBlock:^(SJAttributesRangeOperator * _Nonnull obj, NSUInteger idx, BOOL * _Nonnull stop) {
+        [obj.recorder addAttributes:self.attrStr];
+    }];
+    return self.attrStr;
 }
 
-- (void)_pauseTask {
-    [self _finishingOperation];
+- (NSMutableAttributedString *)endTaskAndComplete:(void(^)(SJAttributeWorker *worker))block; {
+    [self endTask];
+    if ( block ) block(self);
+    return self.attrStr;
 }
 
-#pragma mark -
-- (SJAttributeWorker *(^)(UIFont *font))font {
-    return ^ SJAttributeWorker *(UIFont *font) {
-        if ( !font ) {
-            _errorLog(@"Added Attribute Failed! param `font` is Empty!", _attrM.string);
+/// 范围编辑. 可以配合正则使用.
+- (SJAttributeWorker * _Nonnull (^)(NSRange, void (^ _Nonnull)(SJAttributesRangeOperator * _Nonnull)))rangeEdit {
+    return ^ SJAttributeWorker *(NSRange range, void(^task)(SJAttributesRangeOperator *matched)) {
+        if ( !_rangeContains(self.range, range) ) {
+            _errorLog(@"Edit Failed! param 'range' is unlawfulness!", self.attrStr.string);
             return self;
         }
-        [_attrM addAttribute:NSFontAttributeName value:font range:_rangeAll(_attrM)];
+        SJAttributesRangeOperator *rangeOperator = [self _getRangeOperatorWithRange:range];
+        task(rangeOperator);
         return self;
     };
 }
 
-- (SJAttributeWorker *(^)(float))expansion {
-    return ^ SJAttributeWorker *(float expansion) {
-        [_attrM addAttribute:NSExpansionAttributeName value:@(expansion) range:_rangeAll(_attrM)];
-        return self;
-    };
-}
-
-- (SJAttributeWorker *(^)(UIColor *))fontColor {
-    return ^ SJAttributeWorker *(UIColor *fontColor) {
-        if ( !fontColor ) fontColor = [UIColor clearColor];
-        [_attrM addAttribute:NSForegroundColorAttributeName value:fontColor range:_rangeAll(_attrM)];
-        return self;
-    };
-}
-
-- (SJAttributeWorker *(^)(NSShadow *))shadow {
-    return ^ SJAttributeWorker *(NSShadow *shadow) {
-        if ( !shadow ) {
-            _errorLog(@"Added Attribute Failed! param `shadow` is Empty!", _attrM.string);
-            return self;
+/// sub attr str
+- (NSAttributedString * _Nonnull (^)(NSRange))subAttrStr {
+    return ^ NSAttributedString *(NSRange subRange) {
+        if ( !_rangeContains(self.range, subRange) ) {
+            _errorLog(@"Get `subAttributedString` Failed! param 'range' is unlawfulness!", self.attrStr.string);
+            return nil;
         }
-        [_attrM addAttribute:NSShadowAttributeName value:shadow range:_rangeAll(_attrM)];
-        return self;
+        [self pauseTask];
+        return [self.attrStr attributedSubstringFromRange:subRange];
     };
 }
 
-- (SJAttributeWorker *(^)(UIColor *))backgroundColor {
-    return ^ SJAttributeWorker *(UIColor *color) {
-        if ( !color ) color = [UIColor clearColor];
-        [_attrM addAttribute:NSBackgroundColorAttributeName value:color range:_rangeAll(_attrM)];
-        return self;
-    };
-}
-
-- (SJAttributeWorker *(^)(float))lineSpacing {
-    return ^ SJAttributeWorker *(float lineSpacing) {
-        self.style.lineSpacing = lineSpacing;
-        return self;
-    };
-}
-
-- (SJAttributeWorker * _Nonnull (^)(float))paragraphSpacing {
-    return ^ SJAttributeWorker *(float paragraphSpacing) {
-        self.style.paragraphSpacing = paragraphSpacing;
-        return self;
-    };
-}
-
-- (SJAttributeWorker * _Nonnull (^)(float))paragraphSpacingBefore {
-    return ^ SJAttributeWorker *(float paragraphSpacingBefore) {
-        self.style.paragraphSpacingBefore = paragraphSpacingBefore;
-        return self;
-    };
-}
-
-- (SJAttributeWorker * _Nonnull (^)(float))firstLineHeadIndent {
-    return ^ SJAttributeWorker *(float firstLineHeadIndent) {
-        self.style.firstLineHeadIndent = firstLineHeadIndent;
-        return self;
-    };
-}
-
-- (SJAttributeWorker * _Nonnull (^)(float))headIndent {
-    return ^ SJAttributeWorker *(float headIndent) {
-        self.style.headIndent = headIndent;
-        return self;
-    };
-}
-
-- (SJAttributeWorker * _Nonnull (^)(float))tailIndent {
-    return ^ SJAttributeWorker *(float tailIndent) {
-        self.style.tailIndent = tailIndent;
-        return self;
-    };
-}
-
-- (SJAttributeWorker *(^)(float))letterSpacing {
-    return ^ SJAttributeWorker *(float spacing) {
-        [_attrM addAttribute:NSKernAttributeName value:@(spacing) range:_rangeAll(_attrM)];
-        return self;
-    };
-}
-
-- (SJAttributeWorker *(^)(NSTextAlignment))alignment {
-    return ^ SJAttributeWorker *(NSTextAlignment alignment) {
-        self.style.alignment = alignment;
-        return self;
-    };
-}
-
-- (SJAttributeWorker * _Nonnull (^)(NSLineBreakMode))lineBreakMode {
-    return ^ SJAttributeWorker *(NSLineBreakMode mode) {
-        self.style.lineBreakMode = mode;
-        return self;
-    };
-}
-
-- (SJAttributeWorker * _Nonnull (^)(NSUnderlineStyle, UIColor * _Nonnull))underline {
-    return ^ SJAttributeWorker *(NSUnderlineStyle style, UIColor *color) {
-        if ( !color ) color = [UIColor clearColor];
-        [_attrM addAttribute:NSUnderlineStyleAttributeName value:@(style) range:_rangeAll(_attrM)];
-        [_attrM addAttribute:NSUnderlineColorAttributeName value:color range:_rangeAll(_attrM)];
-        return self;
-    };
-}
-
-- (SJAttributeWorker * _Nonnull (^)(NSUnderlineStyle, UIColor * _Nonnull))strikethrough {
-    return ^ SJAttributeWorker *(NSUnderlineStyle style, UIColor *color) {
-        if ( !color ) color = [UIColor clearColor];
-        [_attrM addAttribute:NSStrikethroughStyleAttributeName value:@(style) range:_rangeAll(_attrM)];
-        [_attrM addAttribute:NSStrikethroughColorAttributeName value:color range:_rangeAll(_attrM)];
-        return self;
-    };
-}
-
-- (SJAttributeWorker *(^)(float, UIColor *))stroke {
-    return ^ SJAttributeWorker *(float border, UIColor *color) {
-        if ( !color ) color = [UIColor clearColor];
-        [_attrM addAttribute:NSStrokeWidthAttributeName value:@(border) range:_rangeAll(_attrM)];
-        [_attrM addAttribute:NSStrokeColorAttributeName value:color range:_rangeAll(_attrM)];
-        return self;
-    };
-}
-
-- (SJAttributeWorker *(^)(void))letterpress {
-    return ^ SJAttributeWorker *(void) {
-        [_attrM addAttribute:NSTextEffectAttributeName value:NSTextEffectLetterpressStyle range:_rangeAll(_attrM)];
-        return self;
-    };
-}
-
-- (SJAttributeWorker * _Nonnull (^)(void))link {
-    return ^ SJAttributeWorker *(void) {
-        [_attrM addAttribute:NSLinkAttributeName value:@(1) range:_rangeAll(_attrM)];
-        return self;
-    };
-}
-
-- (SJAttributeWorker *(^)(NSParagraphStyle *))paragraphStyle {
-    return ^ SJAttributeWorker *(NSParagraphStyle *style) {
-        if ( !style ) {
-            _errorLog(@"Added Attribute Failed! param `style` is Empty!", _attrM.string);
-            return self;
+- (SJAttributesRangeOperator *)_getRangeOperatorWithRange:(NSRange)range {
+    __block SJAttributesRangeOperator *rangeOperator = nil;
+    [self.rangeOperatorsM enumerateObjectsUsingBlock:^(SJAttributesRangeOperator * _Nonnull obj, NSUInteger idx, BOOL * _Nonnull stop) {
+        NSRange objRange = obj.recorder.range;
+        if ( objRange.location == range.location && objRange.length == range.length ) {
+            rangeOperator = obj;
+            *stop = YES;
         }
-        [_attrM addAttribute:NSParagraphStyleAttributeName value:style range:_rangeAll(_attrM)];
-        return self;
-    };
-}
-
-- (SJAttributeWorker *(^)(float))obliqueness {
-    return ^ SJAttributeWorker *(float obliqueness) {
-        [_attrM addAttribute:NSObliquenessAttributeName value:@(obliqueness) range:_rangeAll(_attrM)];
-        return self;
-    };
-}
-
-- (SJAttributeWorker * _Nonnull (^)(NSString * _Nonnull, id _Nonnull))addAttribute {
-    return ^ SJAttributeWorker *(NSString *key, id value) {
-        if ( !key || !value ) {
-            _errorLog(@"Added Attribute Failed! param `key or value` is Empty!", _attrM.string);
-            return self;
+    }];
+    
+    if ( rangeOperator ) return rangeOperator;
+    
+    [self.rangeOperatorsM enumerateObjectsUsingBlock:^(SJAttributesRangeOperator * _Nonnull obj, NSUInteger idx, BOOL * _Nonnull stop) {
+        NSRange objRange = obj.recorder.range;
+        if ( objRange.location <= range.location && objRange.length >= range.length ) {
+            rangeOperator = [SJAttributesRangeOperator new];
+            rangeOperator.recorder = obj.recorder.copy;
+            rangeOperator.recorder.range = range;
+            [self.rangeOperatorsM addObject:rangeOperator];
+            *stop = YES;
         }
-        [_attrM addAttribute:key value:value range:_rangeAll(_attrM)];
-        return self;
-    };
+    }];
+    
+    if ( rangeOperator ) return rangeOperator;
+    
+    rangeOperator = [SJAttributesRangeOperator new];
+    rangeOperator.recorder.range = range;
+    [self.rangeOperatorsM addObject:rangeOperator];
+    return rangeOperator;
 }
+@end
 
-- (SJAttributeWorker * _Nonnull (^)(void (^ _Nonnull)(NSRange range, NSAttributedString *matched)))action {
-    return ^ SJAttributeWorker *(void(^action)(NSRange range, NSAttributedString *matched)) {
-        if ( !action ) {
-            _errorLog(@"Added `Action` Attribute Failed! param `task` is Empty!", _attrM.string);
-            return self;
-        }
-        [_attrM addAttribute:SJActionAttributeName value:action range:_rangeAll(_attrM)];
-        return self;
-    };
-}
-
-#pragma mark -
-
-- (SJAttributeWorker * _Nonnull (^)(NSRange, void (^ _Nonnull)(SJAttributeWorker * _Nonnull)))rangeEdit {
-    return ^ SJAttributeWorker *(NSRange range, void(^task)(SJAttributeWorker *rangeWorker)) {
-        task(self);
-        self.range(range);
-        return self;
-    };
-}
-
-- (void (^)(NSRange))range {
-    return ^(NSRange range) {
-        if ( !_rangeContains(_rangeAll(_attrM), range) ) {
-            _errorLog(@"Added Attribute Failed! param 'range' is unlawful!", _attrM.string);
-            return;
-        }
-        if ( _r_nextFont ) {
-            [_attrM addAttribute:NSFontAttributeName value:_r_nextFont range:range];
-            _r_nextFont = nil;
-        }
-        if ( nil != _r_nextExpansion ) {
-            [_attrM addAttribute:NSExpansionAttributeName value:_r_nextExpansion range:range];
-            _r_nextExpansion = nil;
-        }
-        if ( _r_nextFontColor ) {
-            [_attrM addAttribute:NSForegroundColorAttributeName value:_r_nextFontColor range:range];
-            _r_nextFontColor = nil;
-        }
-        if ( nil != _r_nextUnderline ) {
-            [_attrM addAttribute:NSUnderlineStyleAttributeName value:_r_nextUnderline range:range];
-            _r_nextUnderline = nil;
-        }
-        if ( _r_nextUnderlineColor ) {
-            [_attrM addAttribute:NSUnderlineColorAttributeName value:_r_nextUnderlineColor range:range];
-            _r_nextUnderlineColor = nil;
-        }
-        if ( _r_nextBackgroundColor ) {
-            [_attrM addAttribute:NSBackgroundColorAttributeName value:_r_nextBackgroundColor range:range];
-            _r_nextBackgroundColor = nil;
-        }
-        if ( nil != _r_nextLetterSpacing ) {
-            [_attrM addAttribute:NSKernAttributeName value:_r_nextLetterSpacing range:range];
-            _r_nextLetterSpacing = nil;
-        }
-        if ( nil != _r_nextStrikethough ) {
-            [_attrM addAttribute:NSStrikethroughStyleAttributeName value:_r_nextStrikethough range:range];
-            _r_nextStrikethough = nil;
-        }
-        if ( _r_nextStrikethoughColor ) {
-            [_attrM addAttribute:NSStrikethroughColorAttributeName value:_r_nextStrikethoughColor range:range];
-            _r_nextStrikethoughColor = nil;
-        }
-        if ( nil != _r_nextStrokeBorder ) {
-            [_attrM addAttribute:NSStrokeWidthAttributeName value:_r_nextStrokeBorder range:range];
-            _r_nextStrokeBorder = nil;
-        }
-        if ( _r_nextStrokeColor ) {
-            [_attrM addAttribute:NSStrokeColorAttributeName value:_r_nextStrokeColor range:range];
-            _r_nextStrokeColor = nil;
-        }
-        if ( _r_nextLetterpress ) {
-            [_attrM addAttribute:NSTextEffectAttributeName value:NSTextEffectLetterpressStyle range:range];
-            _r_nextLetterpress = NO;
-        }
-        if ( _r_paragraphStylePropertiesM ) {
-            NSMutableParagraphStyle *styleM = [NSMutableParagraphStyle new];
-            [styleM setValuesForKeysWithDictionary:_r_paragraphStylePropertiesM];
-            [self.localParagraphStyleDictM setObject:styleM forKey:[NSValue valueWithRange:range]];
-            _r_paragraphStylePropertiesM = nil;
-        }
-        if ( _r_nextLink ) {
-            [_attrM addAttribute:NSLinkAttributeName value:@(1) range:range];
-            _r_nextLink = NO;
-        }
-        if ( nil != _r_nextOffset ) {
-            [_attrM addAttribute:NSBaselineOffsetAttributeName value:_r_nextOffset range:range];
-            _r_nextOffset = nil;
-        }
-        if ( nil != _r_nextObliqueness ) {
-            [_attrM addAttribute:NSObliquenessAttributeName value:_r_nextObliqueness range:range];
-            _r_nextObliqueness = nil;
-        }
-        if ( _r_nextShadow ) {
-            [_attrM addAttribute:NSShadowAttributeName value:_r_nextShadow range:range];
-            _r_nextShadow = nil;
-        }
-        if ( _r_nextKey && _r_nextValue ) {
-            [_attrM addAttribute:_r_nextKey value:_r_nextValue range:range];
-            _r_nextKey = nil;
-            _r_nextValue = nil;
-        }
-        if ( _r_task ) {
-            [_attrM addAttribute:SJActionAttributeName value:_r_task range:range];
-            _r_task = nil;
-        }
-    };
-}
-
-- (SJAttributeWorker *(^)(UIFont *font))nextFont {
-    return ^ SJAttributeWorker *(UIFont *font) {
-        if ( !font ) {
-            _errorLog(@"Added Attribute Failed! param `nextFont` is Empty!", _attrM.string);
-            return self;
-        }
-        _r_nextFont = font;
-        return self;
-    };
-}
-
-- (SJAttributeWorker *(^)(float))nextExpansion {
-    return ^ SJAttributeWorker *(float expansion) {
-        _r_nextExpansion = @(expansion);
-        return self;
-    };
-}
-
-- (SJAttributeWorker *(^)(UIColor *color))nextFontColor {
-    return ^ SJAttributeWorker *(UIColor *fontColor) {
-        if ( !fontColor ) fontColor = [UIColor clearColor];
-        _r_nextFontColor = fontColor;
-        return self;
-    };
-}
-
-- (SJAttributeWorker *(^)(NSShadow *))nextShadow {
-    return ^ SJAttributeWorker *(NSShadow *nextShadow) {
-        if ( !nextShadow ) {
-            _errorLog(@"Added Attribute Failed! param `nextShadow` is Empty!", _attrM.string);
-            return self;
-        }
-        _r_nextShadow = nextShadow;
-        return self;
-    };
-}
-
-- (SJAttributeWorker *(^)(UIColor *))nextBackgroundColor {
-    return ^ SJAttributeWorker *(UIColor *color) {
-        if ( !color ) color = [UIColor clearColor];
-        _r_nextBackgroundColor = color;
-        return self;
-    };
-}
-
-- (SJAttributeWorker *(^)(float))nextLetterSpacing {
-    return ^ SJAttributeWorker *(float spacing) {
-        _r_nextLetterSpacing = @(spacing);
-        return self;
-    };
-}
-
-- (SJAttributeWorker * _Nonnull (^)(float))nextLineSpacing {
-    return ^ SJAttributeWorker *(float nextLineSpacing) {
-        self.r_paragraphStylePropertiesM[@"lineSpacing"] = @(nextLineSpacing);
-        return self;
-    };
-}
-
-- (SJAttributeWorker * _Nonnull (^)(float))nextParagraphSpacing {
-    return ^ SJAttributeWorker *(float nextParagraphSpacing) {
-        self.r_paragraphStylePropertiesM[@"paragraphSpacing"] = @(nextParagraphSpacing);
-        return self;
-    };
-}
-
-- (SJAttributeWorker * _Nonnull (^)(float))nextParagraphSpacingBefore {
-    return ^ SJAttributeWorker *(float nextParagraphSpacingBefore) {
-        self.r_paragraphStylePropertiesM[@"paragraphSpacingBefore"] = @(nextParagraphSpacingBefore);
-        return self;
-    };
-}
-
-- (SJAttributeWorker * _Nonnull (^)(float))nextFirstLineHeadIndent {
-    return ^ SJAttributeWorker *(float nextFirstLineHeadIndent) {
-        self.r_paragraphStylePropertiesM[@"firstLineHeadIndent"] = @(nextFirstLineHeadIndent);
-        return self;
-    };
-}
-
-- (SJAttributeWorker * _Nonnull (^)(float))nextHeadIndent {
-    return ^ SJAttributeWorker *(float nextHeadIndent) {
-        self.r_paragraphStylePropertiesM[@"headIndent"] = @(nextHeadIndent);
-        return self;
-    };
-}
-
-- (SJAttributeWorker * _Nonnull (^)(float))nextTailIndent {
-    return ^ SJAttributeWorker *(float nextTailIndent) {
-        self.r_paragraphStylePropertiesM[@"tailIndent"] = @(nextTailIndent);
-        return self;
-    };
-}
-
-- (SJAttributeWorker * _Nonnull (^)(NSTextAlignment))nextAlignment {
-    return ^ SJAttributeWorker *(NSTextAlignment nextAlignment) {
-        self.r_paragraphStylePropertiesM[@"alignment"] = @(nextAlignment);
-        return self;
-    };
-}
-
-- (SJAttributeWorker * _Nonnull (^)(NSUnderlineStyle, UIColor * _Nonnull))nextUnderline {
-    return ^ SJAttributeWorker *(NSUnderlineStyle style, UIColor *color) {
-        if ( !color ) color = [UIColor clearColor];
-        _r_nextUnderline = @(style);
-        _r_nextUnderlineColor = color;
-        return self;
-    };
-}
-
-- (SJAttributeWorker * _Nonnull (^)(NSUnderlineStyle, UIColor * _Nonnull))nextStrikethough {
-    return ^ SJAttributeWorker *(NSUnderlineStyle style, UIColor *color) {
-        if ( !color ) color = [UIColor clearColor];
-        _r_nextStrikethough = @(style);
-        _r_nextStrikethoughColor = color;
-        return self;
-    };
-}
-
-- (SJAttributeWorker *(^)(float, UIColor *))nextStroke {
-    return ^ SJAttributeWorker *(float border, UIColor *color){
-        if ( !color ) color = [UIColor clearColor];
-        _r_nextStrokeBorder = @(border);
-        _r_nextStrokeColor = color;
-        return self;
-    };
-}
-
-- (SJAttributeWorker *(^)(void))nextLetterpress {
-    return ^ SJAttributeWorker *(void) {
-        _r_nextLetterpress = YES;
-        return self;
-    };
-}
-
-- (SJAttributeWorker *(^)(void))nextLink {
-    return ^ SJAttributeWorker *(void) {
-        _r_nextLink = YES;
-        return self;
-    };
-}
-
-- (SJAttributeWorker *(^)(float))nextOffset {
-    return ^ SJAttributeWorker *(float nextOffset) {
-        _r_nextOffset = @(nextOffset);
-        return self;
-    };
-}
-
-- (SJAttributeWorker *(^)(float))nextObliqueness {
-    return ^ SJAttributeWorker *(float nextObliqueness) {
-        _r_nextObliqueness = @(nextObliqueness);
-        return self;
-    };
-}
-
-- (SJAttributeWorker * _Nonnull (^)(NSString * _Nonnull, id _Nonnull))next {
-    return ^ SJAttributeWorker *(NSString *key, id value) {
-        _r_nextKey = key;
-        _r_nextValue = value;
-        return self;
-    };
-}
-
-- (SJAttributeWorker * _Nonnull (^)(void (^ _Nonnull)(NSRange range, NSAttributedString *matched)))nextAction {
-    return ^ SJAttributeWorker *(void(^task)(NSRange range, NSAttributedString *matched)) {
-        _r_task = task;
-        return self;
-    };
-}
-
-#pragma mark -
-
-- (SJAttributeWorker *(^)(UIImage *, NSInteger, CGPoint, CGSize))insertImage {
-    return ^ SJAttributeWorker *(UIImage *image, NSInteger index, CGPoint offset, CGSize size) {
-        if ( !image ) {
-            _errorLog(@"Insert Failed! param `image` is Empty!", _attrM.string);
-            return self;
-        }
-        
-        if ( -1 == index || index > _attrM.length ) index = _attrM.length;
-        
-        NSTextAttachment *attachment = [[NSTextAttachment alloc] initWithData:nil ofType:nil];
-        attachment.image = image;
-        attachment.bounds = CGRectMake(offset.x, offset.y, size.width, size.height);
-        self.insertAttr([NSAttributedString attributedStringWithAttachment:attachment], index);
-        return self;
-    };
-}
-
-- (SJAttributeWorker * _Nonnull (^)(NSAttributedString * _Nonnull, NSInteger))insertAttr {
-    return ^ SJAttributeWorker *(NSAttributedString *attr, NSInteger index) {
-        if ( !attr ) {
-            _errorLog(@"Insert Failed! param `attr` is Empty!", _attrM.string);
-            return self;
-        }
-        if ( -1 == index || index > _attrM.length ) index = _attrM.length;
-        [_attrM insertAttributedString:attr atIndex:index];
-        _lastInsertedRange = NSMakeRange(index, attr.length);
-        return self;
-    };
-}
-
-- (SJAttributeWorker * _Nonnull (^)(NSString * _Nonnull, NSInteger))insertText {
-    return ^ SJAttributeWorker *(NSString *text, NSInteger index) {
-        if ( !text ) {
-            _errorLog(@"Insert Failed! param `text` is Empty!", _attrM.string);
-            return self;
-        }
-        if ( -1 == index || index > _attrM.length ) index = _attrM.length;
-        self.insertAttr([[NSAttributedString alloc] initWithString:text], index);
-        return self;
-    };
-}
-
-- (SJAttributeWorker * _Nonnull (^)(id, NSInteger, ...))insert {
-    return ^ SJAttributeWorker *(id insert, NSInteger index, ...) {
-        va_list args;
-        va_start(args, index);
-        if      ( [insert isKindOfClass:[NSString class]] ) {
-            self.insertText(insert, index);
-        }
-        else if ( [insert isKindOfClass:[NSAttributedString class]] ) {
-            self.insertAttr(insert, index);
-        }
-        else if ( [insert isKindOfClass:[UIImage class]] ) {
-            self.insertImage(insert, index, va_arg(args, CGPoint), va_arg(args, CGSize));
-        }
-        va_end(args);
-        return self;
-    };
-}
-
-- (SJAttributeWorker * _Nonnull (^)(void (^ _Nonnull)(SJAttributeWorker * _Nonnull)))lastInserted {
-    return ^ SJAttributeWorker *(void(^task)(SJAttributeWorker *worker)) {
-        return self.rangeEdit(_lastInsertedRange, task);
-    };
-}
-
-- (SJAttributeWorker * _Nonnull (^)(NSRange, id value))replace {
-    return ^ SJAttributeWorker *(NSRange range, id value) {
-        if ( 0 == [value length] ) {
-            _errorLog(@"Added Attribute Failed! param `value` is Empty!", _attrM.string);
-            return self;
-        }
-        if ( [value isKindOfClass:[NSString class]] ) {
-            [_attrM replaceCharactersInRange:range withString:value];
-        }
-        else if ( [value isKindOfClass:[NSAttributedString class]] ) {
-            [_attrM replaceCharactersInRange:range withAttributedString:value];
-        }
-        return self;
-    };
-}
-
-- (SJAttributeWorker * _Nonnull (^)(id _Nonnull, id _Nonnull))replaceIt {
-    return ^ SJAttributeWorker *(id oldValue, id newValue) {
-        if ( !_isStrOrAttrStr(oldValue) ) return self;
-        if ( !_isStrOrAttrStr(newValue) ) return self;
-        self.regexpRanges([oldValue string], ^(NSArray<NSValue *> * _Nonnull ranges) {
-            [ranges enumerateObjectsWithOptions:NSEnumerationReverse usingBlock:^(NSValue * _Nonnull obj, NSUInteger idx, BOOL * _Nonnull stop) {
-                self.replace([obj rangeValue], newValue);
+#pragma mark - regular
+@implementation SJAttributeWorker(Regexp)
+/// 正则匹配
+- (SJAttributeWorker * _Nonnull (^)(NSString * _Nonnull, void (^ _Nonnull)(SJAttributesRangeOperator * _Nonnull)))regexp {
+    return ^ SJAttributeWorker *(NSString *regStr, void(^task)(SJAttributesRangeOperator *matched)) {
+        return self.regexp_r(regStr, ^(NSArray<NSValue *> * _Nonnull matchedRanges) {
+            [matchedRanges enumerateObjectsUsingBlock:^(NSValue * _Nonnull obj, NSUInteger idx, BOOL * _Nonnull stop) {
+                NSRange matchedRange = [obj rangeValue];
+                self.rangeEdit(matchedRange, task);
             }];
-        });
-        return self;
+        }, YES);
     };
 }
-
-- (SJAttributeWorker * _Nonnull (^)(NSRange))removeText {
-    return ^ SJAttributeWorker *(NSRange range) {
-        if ( !_rangeContains(_rangeAll(_attrM), range) ) {
-            _errorLog(@"Delete Text Failed! param 'range' is unlawful!", _attrM.string);
-            return self;
-        }
-        [_attrM deleteCharactersInRange:range];
-        return self;
-    };
-}
-
-- (SJAttributeWorker * _Nonnull (^)(NSAttributedStringKey _Nonnull, NSRange))removeAttribute {
-    return ^ SJAttributeWorker *(NSAttributedStringKey key, NSRange range) {
-        if ( 0 == key.length ) {
-            _errorLog(@"Remove Attr Failed! param 'key' is Empty!", _attrM.string);
-            return self;
-        }
-        if ( !_rangeContains(_rangeAll(_attrM), range) ) {
-            _errorLog(@"Remove Attr Failed! param 'range' is unlawful!", _attrM.string);
-            return self;
-        }
-        [_attrM removeAttribute:key range:range];
-        return self;
-    };
-}
-
-- (void (^)(void))clean {
-    return ^ () {
-        [_attrM enumerateAttributesInRange:_rangeAll(_attrM) options:NSAttributedStringEnumerationReverse usingBlock:^(NSDictionary<NSAttributedStringKey,id> * _Nonnull attrs, NSRange range, BOOL * _Nonnull stop) {
-            [attrs enumerateKeysAndObjectsUsingBlock:^(NSAttributedStringKey  _Nonnull key, id  _Nonnull obj, BOOL * _Nonnull stop) {
-                // 字体大小保持不变
-                if ( [key isEqualToString:NSFontAttributeName] ) return;
-                self.removeAttribute(key, range);
-            }];
+/// 正则匹配. [NSRange]
+- (SJAttributeWorker * _Nonnull (^)(NSString * _Nonnull, void (^ _Nonnull)(NSArray<NSValue *> * _Nonnull), BOOL reverse))regexp_r {
+    return ^ SJAttributeWorker *(NSString *regStr, void(^task)(NSArray<NSValue *> *ranges), BOOL reverse) {
+        NSMutableArray<NSValue *> *rangesM = [NSMutableArray array];
+        NSRegularExpression *regex = [NSRegularExpression regularExpressionWithPattern:regStr options:kNilOptions error:nil];
+        [regex enumerateMatchesInString:self.attrStr.string options:NSMatchingWithoutAnchoringBounds range:self.range usingBlock:^(NSTextCheckingResult * _Nullable result, NSMatchingFlags flags, BOOL * _Nonnull stop) {
+            if ( result ) { [rangesM addObject:[NSValue valueWithRange:result.range]];}
         }];
-    };
-}
-
-#pragma mark -
-- (SJAttributeWorker * _Nonnull (^)(NSString * _Nonnull, void (^ _Nonnull)(SJAttributeWorker *)))regexp {
-    return ^ SJAttributeWorker *(NSString *ex, void(^task)(SJAttributeWorker *worker)) {
-        self.regexpRanges(ex, ^(NSArray<NSValue *> * __nullable ranges) {
-            [ranges enumerateObjectsUsingBlock:^(NSValue * _Nonnull obj, NSUInteger idx, BOOL * _Nonnull stop) {
-                task(self);
-                self.range(obj.rangeValue);
-            }];
-        });
-        return self;
-    };
-}
-
-- (SJAttributeWorker * _Nonnull (^)(NSString * _Nonnull, void (^ _Nonnull)(NSArray<NSValue *> *)))regexpRanges {
-    return ^ SJAttributeWorker *(NSString *ex, void(^task)(NSArray<NSValue *> *ranges)) {
-        NSMutableArray<NSValue *> *rangesM = [NSMutableArray new];
-        if ( 0 == ex.length ) {
-            _errorLog([NSString stringWithFormat:@"Exe Regular Expression Failed! param `ex` is empty!"], _attrM.string);
-            task(rangesM);
-            return self;
+        if ( reverse ) {
+            NSMutableArray<NSValue *> *reverseM = [NSMutableArray array];
+            [rangesM enumerateObjectsWithOptions:NSEnumerationReverse usingBlock:^(NSValue * _Nonnull obj, NSUInteger idx, BOOL * _Nonnull stop) { [reverseM addObject:obj];}];
+            rangesM = reverseM;
         }
-        NSRegularExpression *regex = [NSRegularExpression regularExpressionWithPattern:ex options:kNilOptions error:nil];
-        [regex enumerateMatchesInString:_attrM.string options:NSMatchingWithoutAnchoringBounds range:_rangeAll(_attrM) usingBlock:^(NSTextCheckingResult * _Nullable result, NSMatchingFlags flags, BOOL * _Nonnull stop) {
-            [rangesM addObject:[NSValue valueWithRange:result.range]];
-        }];
         task(rangesM);
         return self;
     };
 }
 
-#pragma mark -
-inline static BOOL _isStrOrAttrStr(id target) {
-    return [target isKindOfClass:[NSString class]] || [target isKindOfClass:[NSAttributedString class]];
-}
+@end
 
-#pragma mark - Other
-- (NSInteger)length {
-    return _attrM.length;
-}
 
-- (CGFloat (^)(NSRange))width {
-    return ^ CGFloat (NSRange range) {
-        return self.size(range).width;
+#pragma mark - size
+@implementation SJAttributeWorker(Size)
+
+- (CGSize (^)(void))size {
+    return ^ CGSize() {
+        return [self sizeWithAttrString:self.attrStr width:CGFLOAT_MAX height:CGFLOAT_MAX];
     };
 }
 
-- (CGSize (^)(NSRange))size {
-    return ^ CGSize (NSRange range) {
-        return [self boundsWithWidth:CGFLOAT_MAX height:CGFLOAT_MAX range:range].size;
+- (CGSize (^)(NSRange))sizeByRange {
+    return ^ CGSize (NSRange byRange) {
+        return [self sizeWithAttrString:self.subAttrStr(byRange) width:CGFLOAT_MAX height:CGFLOAT_MAX];
     };
 }
-
-- (CGRect (^)(CGFloat))boundsByMaxWidth {
-    return ^ CGRect (CGFloat maxWidth) {
-        return [self boundsWithWidth:maxWidth height:CGFLOAT_MAX range:_rangeAll(_attrM)];
+- (CGSize (^)(double))sizeByHeight {
+    return ^ CGSize (double height) {
+        return [self sizeWithAttrString:self.attrStr width:CGFLOAT_MAX height:height];
     };
 }
-
-- (CGRect (^)(CGFloat))boundsByMaxHeight {
-    return ^ CGRect (CGFloat maxHeight) {
-        return [self boundsWithWidth:CGFLOAT_MAX height:maxHeight range:_rangeAll(_attrM)];
+- (CGSize (^)(double))sizeByWidth {
+    return ^ CGSize (double width) {
+        return [self sizeWithAttrString:self.attrStr width:width height:CGFLOAT_MAX];
     };
 }
-
-- (CGRect)boundsWithWidth:(CGFloat)width height:(CGFloat)height range:(NSRange)range {
-    NSAttributedString *attr = self.attrStrByRange(range);
-    [attr enumerateAttributesInRange:_rangeAll(attr) options:NSAttributedStringEnumerationReverse usingBlock:^(NSDictionary<NSAttributedStringKey,id> * _Nonnull attrs, NSRange range, BOOL * _Nonnull stop) {
-        __block BOOL isSetFont = NO;
-        [attrs enumerateKeysAndObjectsUsingBlock:^(NSAttributedStringKey  _Nonnull key, id  _Nonnull obj, BOOL * _Nonnull stop) {
-            if ( ![key isEqualToString:NSFontAttributeName] ) return;
-            isSetFont = YES;
-            *stop = YES;
-        }];
-        
-        if ( !isSetFont ) _errorLog([NSString stringWithFormat:@"Get Bounds Failed! You need to set it font! \nRange = %@", NSStringFromRange(range)], _attrM.string);
-    }];
-    CGRect bounds = [attr boundingRectWithSize:CGSizeMake(width, height) options:NSStringDrawingUsesLineFragmentOrigin | NSStringDrawingUsesFontLeading context:nil];
+- (CGSize)sizeWithAttrString:(NSAttributedString *)attrStr width:(double)width height:(double)height {
+    if ( 0 == attrStr ) {
+        _errorLog(@"Get `size` Failed! param 'attrStr' is empty!", nil);
+        return CGSizeZero;
+    }
+    [self pauseTask];
+    CGRect bounds = [attrStr boundingRectWithSize:CGSizeMake(width, height) options:NSStringDrawingUsesLineFragmentOrigin | NSStringDrawingUsesFontLeading context:nil];
     bounds.size.width = ceil(bounds.size.width);
     bounds.size.height = ceil(bounds.size.height);
-    return bounds;
+    return bounds.size;
 }
+@end
 
-- (NSAttributedString * _Nonnull (^)(NSRange))attrStrByRange {
-    return ^ NSAttributedString *(NSRange range) {
-        if ( !_rangeContains(_rangeAll(_attrM), range) ) {
-            _errorLog(@"Get AttrStr Failed! param 'range' is unlawful!", _attrM.string);
-            return nil;
-        }
-        [self _pauseTask];
-        NSAttributedString *attr = [_attrM attributedSubstringFromRange:range];
-        return attr;
+
+
+#pragma mark - insert
+@implementation SJAttributeWorker(Insert)
+
+- (void)setLastInsertedRange:(NSRange)lastInsertedRange {
+    objc_setAssociatedObject(self, @selector(lastInsertedRange), [NSValue valueWithRange:lastInsertedRange], OBJC_ASSOCIATION_RETAIN_NONATOMIC);
+}
+- (NSRange)lastInsertedRange {
+    return [objc_getAssociatedObject(self, _cmd) rangeValue];
+}
+- (SJAttributeWorker * _Nonnull (^)(void (^ _Nonnull)(SJAttributesRangeOperator * _Nonnull)))lastInserted {
+    return ^ SJAttributeWorker *(void(^task)(SJAttributesRangeOperator *lastOperator)) {
+        return self.rangeEdit(self.lastInsertedRange, task);
     };
 }
-
-#pragma mark -
-
-inline static NSRange _rangeAll(NSAttributedString *attr) {
-    return NSMakeRange(0, attr.length);
+- (SJAttributeWorker * _Nonnull (^)(NSAttributedStringKey _Nonnull, id _Nonnull, NSRange))add {
+    return ^ SJAttributeWorker *(NSAttributedStringKey key, id value, NSRange range) {
+        if ( !key || !value ) {
+            _errorLog(@"Added Attribute Failed! param `key or value` is Empty!", self.attrStr.string);
+            return self;
+        }
+        [self.attrStr addAttribute:key value:value range:range];
+        return self;
+    };
 }
-
-inline static BOOL _rangeContains(NSRange range, NSRange range2) {
-    return range.location <= range2.location && range.length >= range2.length;
+- (SJAttributeWorker * _Nonnull (^)(NSString * _Nonnull, NSInteger))insertText {
+    return ^ SJAttributeWorker *(NSString *text, NSInteger idx) {
+        if ( 0 == text.length ) {
+            _errorLog(@"inset `text` Failed! param `text` is Empty!", self.attrStr.string);
+            return self;
+        }
+        return self.insertAttrStr([[NSAttributedString alloc] initWithString:text], idx);
+    };
 }
-
-inline static void _errorLog(NSString *msg, NSString *target) {
-    NSLog(@"\n__Error__: %@\nTarget: %@", msg, target);
+- (SJAttributeWorker * _Nonnull (^)(UIImage * _Nonnull, NSInteger, CGPoint, CGSize))insertImage {
+    return ^ SJAttributeWorker *(UIImage *image, NSInteger idx, CGPoint offset, CGSize size) {
+        if ( nil == image ) {
+            _errorLog(@"inset `image` Failed! param `image` is Empty!", self.attrStr.string);
+            return self;
+        }
+        NSTextAttachment *attachment = [NSTextAttachment new];
+        attachment.image = image;
+        attachment.bounds = (CGRect){offset, size};
+        return self.insertAttrStr([NSAttributedString attributedStringWithAttachment:attachment], idx);
+    };
 }
-
-- (NSMutableParagraphStyle *)style {
-    if ( _style ) return _style;
-    _style = [NSMutableParagraphStyle new];
-    return _style;
+- (SJAttributeWorker * _Nonnull (^)(NSAttributedString * _Nonnull, NSInteger))insertAttrStr {
+    return ^ SJAttributeWorker *(NSAttributedString *text, NSInteger idx) {
+        if ( 0 == text.length ) {
+            _errorLog(@"inset `text` Failed! param `text` is Empty!", self.attrStr.string);
+            return self;
+        }
+        if ( -1 == idx || idx > self.attrStr.length ) {
+            idx = self.attrStr.length;
+        }
+        self.lastInsertedRange = NSMakeRange(idx, text.length);
+        [self.attrStr insertAttributedString:text atIndex:idx];
+        return self;
+    };
 }
-
-- (NSMutableDictionary<NSString *, NSNumber *> *)r_paragraphStylePropertiesM {
-    if ( _r_paragraphStylePropertiesM ) return _r_paragraphStylePropertiesM;
-    _r_paragraphStylePropertiesM = [NSMutableDictionary new];
-    return _r_paragraphStylePropertiesM;
+- (SJAttributeWorker * _Nonnull (^)(id _Nonnull, NSInteger, ...))insert {
+    return ^ SJAttributeWorker *(id strOrAttrStrOrImg, NSInteger idx, ...) {
+        va_list args;
+        va_start(args, idx);
+        if      ( [strOrAttrStrOrImg isKindOfClass:[NSString class]] ) {
+            self.insertText(strOrAttrStrOrImg, idx);
+        }
+        else if ( [strOrAttrStrOrImg isKindOfClass:[NSAttributedString class]] ) {
+            self.insertAttrStr(strOrAttrStrOrImg, idx);
+        }
+        else if ( [strOrAttrStrOrImg isKindOfClass:[UIImage class]] ) {
+            self.insertImage(strOrAttrStrOrImg, idx, va_arg(args, CGPoint), va_arg(args, CGSize));
+        }
+        else {
+            _errorLog(@"inset `text` Failed! param `strOrAttrStrOrImg` is Unlawfulness!", self.attrStr.string);
+        }
+        va_end(args);
+        return self;
+    };
 }
+@end
 
-- (NSMutableDictionary<NSValue *,NSParagraphStyle *> *)localParagraphStyleDictM {
-    if ( _localParagraphStyleDictM ) return _localParagraphStyleDictM;
-    _localParagraphStyleDictM = [NSMutableDictionary new];
-    return _localParagraphStyleDictM;
+
+
+
+#pragma mark - replace
+@implementation SJAttributeWorker(Replace)
+- (void (^)(NSRange, id _Nonnull, ...))replace {
+    return ^ void (NSRange range, id strOrAttrStrOrImg, ...) {
+        if ( !_rangeContains(self.range, range) ) {
+            _errorLog(@"Replace Failed! param 'range' is unlawfulness!", self.attrStr.string);
+            return;
+        }
+        va_list args;
+        va_start(args, strOrAttrStrOrImg);
+        if      ( [strOrAttrStrOrImg isKindOfClass:[NSString class]] ) {
+            [self.attrStr replaceCharactersInRange:range withString:strOrAttrStrOrImg];
+        }
+        else if ( [strOrAttrStrOrImg isKindOfClass:[NSAttributedString class]] ) {
+            [self.attrStr replaceCharactersInRange:range withAttributedString:strOrAttrStrOrImg];
+        }
+        else if ( [strOrAttrStrOrImg isKindOfClass:[UIImage class]] ) {
+            NSTextAttachment *attachment = [NSTextAttachment new];
+            attachment.image = strOrAttrStrOrImg;
+            attachment.bounds = (CGRect){va_arg(args, CGPoint), va_arg(args, CGSize)};
+            [self.attrStr replaceCharactersInRange:range withAttributedString:[NSAttributedString attributedStringWithAttachment:attachment]];
+        }
+        else {
+            _errorLog(@"inset `text` Failed! param `strOrAttrStrOrImg` is Unlawfulness!", self.attrStr.string);
+        }
+        va_end(args);
+    };
+}
+@end
+
+
+#pragma mark - delete
+@implementation SJAttributeWorker(Delete)
+//@property (nonatomic, copy, readonly) void(^removeText)(NSRange range);
+//@property (nonatomic, copy, readonly) void(^removeAttribute)(NSAttributedStringKey key, NSRange range);
+//@property (nonatomic, copy, readonly) void(^removeAttributes)(NSRange range);
+- (void (^)(NSRange))removeText {
+    return ^ (NSRange range) {
+        if ( !_rangeContains(self.range, range) ) {
+            _errorLog(@"Remove Failed! param 'range' is unlawfulness!", self.attrStr.string);
+        }
+        else {
+            [self.attrStr deleteCharactersInRange:range];
+        }
+    };
+}
+- (void (^)(NSAttributedStringKey _Nonnull, NSRange))removeAttribute {
+    return ^ (NSAttributedStringKey key, NSRange range) {
+        if ( !_rangeContains(self.range, range) ) {
+            _errorLog(@"Remove Failed! param 'range' is unlawfulness!", self.attrStr.string);
+        }
+        else {
+            [self.attrStr removeAttribute:key range:range];
+        }
+    };
+}
+- (void (^)(NSRange))removeAttributes {
+    return ^ (NSRange range) {
+        if ( !_rangeContains(self.range, range) ) {
+            _errorLog(@"Remove Failed! param 'range' is unlawfulness!", self.attrStr.string);
+        }
+        else {
+            NSString *subAttrStr = self.subAttrStr(range).string;
+            self.replace(range, subAttrStr);
+        }
+    };
+}
+@end
+
+
+#pragma mark - property
+@implementation SJAttributesRangeOperator(Property)
+
+/// 字体
+- (SJAttributesRangeOperator * _Nonnull (^)(UIFont * _Nonnull))font {
+    return ^ SJAttributesRangeOperator *(UIFont *font) {
+        self.recorder.font = font;
+        return self;
+    };
+}
+/// 文本颜色
+- (SJAttributesRangeOperator * _Nonnull (^)(UIColor * _Nonnull))textColor {
+    return ^ SJAttributesRangeOperator *(UIColor *textColor) {
+        self.recorder.textColor = textColor;
+        return self;
+    };
+}
+/// 放大, 扩大
+- (SJAttributesRangeOperator * _Nonnull (^)(double))expansion {
+    return ^ SJAttributesRangeOperator *(double expansion) {
+        self.recorder.expansion = expansion;
+        return self;
+    };
+}
+/// 阴影
+- (SJAttributesRangeOperator * _Nonnull (^)(NSShadow * _Nonnull))shadow {
+    return ^ SJAttributesRangeOperator *(NSShadow *shadow) {
+        self.recorder.shadow = shadow;
+        return self;
+    };
+}
+/// 背景颜色
+- (SJAttributesRangeOperator * _Nonnull (^)(UIColor * _Nonnull))backgroundColor {
+    return ^ SJAttributesRangeOperator *(UIColor *color) {
+        self.recorder.backgroundColor = color;
+        return self;
+    };
+}
+/// 下划线
+- (SJAttributesRangeOperator * _Nonnull (^)(NSUnderlineStyle, UIColor * _Nonnull))underLine {
+    return ^ SJAttributesRangeOperator *(NSUnderlineStyle style, UIColor *color) {
+        self.recorder.underLine = [SJUnderlineAttribute underLineWithStyle:style color:color];
+        return self;
+    };
+}
+/// 删除线
+- (SJAttributesRangeOperator * _Nonnull (^)(NSUnderlineStyle, UIColor * _Nonnull))strikethrough {
+    return ^ SJAttributesRangeOperator *(NSUnderlineStyle style, UIColor *color) {
+        self.recorder.strikethrough = [SJUnderlineAttribute underLineWithStyle:style color:color];
+        return self;
+    };
+}
+/// 边界`border`
+- (SJAttributesRangeOperator * _Nonnull (^)(SJBorderAttribute * _Nonnull))border {
+    return ^ SJAttributesRangeOperator *(SJBorderAttribute *border) {
+        self.recorder.border = border;
+        return self;
+    };
+}
+/// 倾斜(-1 ... 1)
+- (SJAttributesRangeOperator * _Nonnull (^)(double))obliqueness {
+    return ^ SJAttributesRangeOperator *(double obliqueness) {
+        self.recorder.obliqueness = obliqueness;
+        return self;
+    };
+}
+/// 字间隔
+- (SJAttributesRangeOperator * _Nonnull (^)(double))letterSpacing {
+    return ^ SJAttributesRangeOperator *(double letterSpacing) {
+        self.recorder.letterSpacing = letterSpacing;
+        return self;
+    };
+}
+/// 上下偏移
+- (SJAttributesRangeOperator * _Nonnull (^)(double))offset {
+    return ^ SJAttributesRangeOperator *(double offset) {
+        self.recorder.offset = offset;
+        return self;
+    };
+}
+/// 链接
+- (SJAttributesRangeOperator * _Nonnull (^)(void))isLink {
+    return ^ SJAttributesRangeOperator *() {
+        self.recorder.link = YES;
+        return self;
+    };
+}
+/// 段落 style
+- (SJAttributesRangeOperator * _Nonnull (^)(NSParagraphStyle * _Nonnull))paragraphStyle {
+    return ^ SJAttributesRangeOperator *(NSParagraphStyle *style) {
+        self.recorder.paragraphStyleM = style.mutableCopy;
+        return self;
+    };
+}
+/// 行间隔
+- (SJAttributesRangeOperator * _Nonnull (^)(double))lineSpacing {
+    return ^ SJAttributesRangeOperator *(double lineSpacing) {
+        self.recorder.lineSpacing = lineSpacing;
+        return self;
+    };
+}
+/// 段后间隔(\n)
+- (SJAttributesRangeOperator * _Nonnull (^)(double))paragraphSpacing {
+    return ^ SJAttributesRangeOperator *(double paragraphSpacing) {
+        self.recorder.paragraphSpacing = paragraphSpacing;
+        return self;
+    };
+}
+/// 段前间隔(\n)
+- (SJAttributesRangeOperator * _Nonnull (^)(double))paragraphSpacingBefore {
+    return ^ SJAttributesRangeOperator *(double paragraphSpacingBefore) {
+        self.recorder.paragraphSpacingBefore = paragraphSpacingBefore;
+        return self;
+    };
+}
+/// 首行头缩进
+- (SJAttributesRangeOperator * _Nonnull (^)(double))firstLineHeadIndent {
+    return ^ SJAttributesRangeOperator *(double firstLineHeadIndent) {
+        self.recorder.firstLineHeadIndent = firstLineHeadIndent;
+        return self;
+    };
+}
+/// 左缩进
+- (SJAttributesRangeOperator * _Nonnull (^)(double))headIndent {
+    return ^ SJAttributesRangeOperator *(double headIndent) {
+        self.recorder.headIndent = headIndent;
+        return self;
+    };
+}
+/// 右缩进(正值从左算起, 负值从右算起)
+- (SJAttributesRangeOperator * _Nonnull (^)(double))tailIndent {
+    return ^ SJAttributesRangeOperator *(double tailIndent) {
+        self.recorder.tailIndent = tailIndent;
+        return self;
+    };
+}
+/// 对齐方式
+- (SJAttributesRangeOperator * _Nonnull (^)(NSTextAlignment))alignment {
+    return ^ SJAttributesRangeOperator *(NSTextAlignment alignment) {
+        self.recorder.alignment = alignment;
+        return self;
+    };
 }
 
 @end
 
+NS_ASSUME_NONNULL_END

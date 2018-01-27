@@ -7,10 +7,10 @@
 //
 
 #import "SJVideoPlayerCenterControlView.h"
-#import <SJUIFactory/SJUIFactoryHeader.h>
 #import "SJVideoPlayerResources.h"
 #import <Masonry/Masonry.h>
-#import <SJAttributesFactory/SJAttributesFactoryHeader.h>
+#import <SJAttributesFactory/SJAttributeWorker.h>
+#import <SJUIFactory/SJUIFactory.h>
 
 @interface SJVideoPlayerCenterControlView ()
 
@@ -28,21 +28,22 @@
     self.setting = ^(SJVideoPlayerSettings * _Nonnull setting) {
         __strong typeof(_self) self = _self;
         if ( !self ) return;
-        [self.replayBtn setAttributedTitle:[SJAttributesFactory producingWithTask:^(SJAttributeWorker * _Nonnull worker) {
+        [self.replayBtn setAttributedTitle:sj_makeAttributesString(^(SJAttributeWorker * _Nonnull make) {
             if ( setting.replayBtnImage ) {
-                worker.insert(setting.replayBtnImage, 0, CGPointZero, setting.replayBtnImage.size);
+                make.insert(setting.replayBtnImage, 0, CGPointZero, setting.replayBtnImage.size);
             }
             
             if ( setting.replayBtnTitle ) {
-                worker.insert([NSString stringWithFormat:@"\n%@", setting.replayBtnTitle], -1);
+                make.insert([NSString stringWithFormat:@"\n%@", setting.replayBtnTitle], -1);
             }
             
-            worker
+            make
             .font(setting.replayBtnFont)
-            .fontColor([UIColor whiteColor])
+            .textColor([UIColor whiteColor])
             .alignment(NSTextAlignmentCenter)
             .lineSpacing(6);
-        }] forState:UIControlStateNormal];
+
+        }) forState:UIControlStateNormal];
     };
     return self;
 }

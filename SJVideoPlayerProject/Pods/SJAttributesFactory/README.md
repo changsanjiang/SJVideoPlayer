@@ -4,7 +4,7 @@
   pod 'SJAttributesFactory'
 ```
 ### 最新动态:
-- 增加了一个可以匹配点击动作的 Label.
+- [增加了一个可以匹配点击动作的 Label](https://github.com/changsanjiang/SJLabel).
 
 ### 最近更新:
 - 添加了一个编辑最近(lastInserted)插入的文本的方法.
@@ -24,8 +24,9 @@
 附 富文本属性:
 http://www.jianshu.com/p/ebbcfc24f9cb
 ___
-### 可匹配点击的Label:
+### [可匹配点击的Label](https://github.com/changsanjiang/SJLabel):
 <img src="https://github.com/changsanjiang/SJAttributesFactory/blob/master/Demo/SJAttributesFactory/action.gif" />
+<img src="https://github.com/changsanjiang/SJLabel/blob/master/Demo/SJLabel/ex2.gif" />
 
 ### 上下图文效果:
 ![上下图文.jpg](http://upload-images.jianshu.io/upload_images/2318691-e92f48d24e29ae61.jpg?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240)
@@ -56,15 +57,11 @@ before:
 ```
 now:
 ```Objective-C
-[SJAttributesFactory alteringStr:@"9999" task:^(SJAttributesFactory * _Nonnull worker) {
-        worker
-        .insertText(@"\n", 0)
-        .insertImage([UIImage imageNamed:@"sample2"], CGPointZero, CGSizeMake(50, 50), 0)
-        .lineSpacing(8) // 加点行间隔
-        .alignment(NSTextAlignmentCenter)
-        .font([UIFont boldSystemFontOfSize:14])
-        .fontColor([UIColor whiteColor]);
-    }];
+    sj_makeAttributesString(^(SJAttributeWorker * _Nonnull make) {
+        make.insert([UIImage imageNamed:@"sample2"], 0, CGPointZero, CGSizeMake(50, 50));
+        make.insert(@"\n999", -1).alignment(NSTextAlignmentCenter).lineSpacing(8);
+        [self updateConstraintsWithSize:make.size()];
+    });
 ```
 ___
 
@@ -93,15 +90,16 @@ before:
 ```
 now:
 ```Objective-C
-    [SJAttributesFactory alteringStr:@"故事:可以解释为旧事、旧业、先例、典故等涵义,同时,也是文学体裁的一种,侧重于事情过程的描述,强调情节跌宕起伏,从而阐发道理或者价值观。" task:^(SJAttributesFactory * _Nonnull worker) {
-        worker.nextFont([UIFont boldSystemFontOfSize:14]).range(NSMakeRange(0, 3));
-        CGFloat startW = worker.width(NSMakeRange(0, 3));
-
-        worker
-        .firstLineHeadIndent(8)
-        .headIndent(startW + 8)
-        .tailIndent(-8);       
-    }];
+    sj_makeAttributesString(^(SJAttributeWorker * _Nonnull make) {
+        make.insert(@"故事:", 0);
+        CGSize lastSize = make.size();
+        // 左缩进
+        make.headIndent(lastSize.width);
+        // 右缩进
+        make.tailIndent(-12);
+        
+        make.insert(@"可以解释为旧事、旧业、先例、典故等涵义,同时,也是文学体裁的一种,侧重于事情过程的描述,强调情节跌宕起伏,从而阐发道理或者价值观。", -1);
+    });
 ```
 ___
 ### 下划线 + 删除线
@@ -130,10 +128,14 @@ before:
 ```
 now:
 ```Objective-C
-    [SJAttributesFactory alteringStr:@"$ 999" task:^(SJAttributesFactory * _Nonnull worker) {
-        worker.font([UIFont systemFontOfSize:40]);
-        worker.underline(NSUnderlineByWord | NSUnderlinePatternSolid | NSUnderlineStyleDouble, [UIColor yellowColor]).strikethrough(NSUnderlineByWord | NSUnderlinePatternSolid | NSUnderlineStyleDouble, [UIColor redColor]);
-    }];
+    sj_makeAttributesString(^(SJAttributeWorker * _Nonnull make) {
+        make.insert(@"$ 999", 0).font([UIFont systemFontOfSize:40]);
+        // 下划线
+        make.underLine([UIFont boldSystemFontOfSize:40]).underLine([SJUnderlineAttribute underLineWithStyle:NSUnderlineStyleSingle | NSUnderlinePatternSolid color:[UIColor yellowColor]]);
+        // 删除线
+        make.strikethrough([SJUnderlineAttribute underLineWithStyle:NSUnderlineStyleSingle | NSUnderlinePatternSolid color:[UIColor redColor]]);
+        [self updateConstraintsWithSize:make.size()];
+    });
 ```
 ___
 

@@ -9,6 +9,7 @@
 #import <UIKit/UIView.h>
 #import <UIKit/NSText.h>
 #import <UIKit/NSParagraphStyle.h>
+#import "NSMutableAttributedString+ActionDelegate.h"
 
 NS_ASSUME_NONNULL_BEGIN
 

@@ -7,6 +7,7 @@
 //
 
 #import "SJCTData.h"
+#import "NSMutableAttributedString+ActionDelegate.h"
 
 typedef NSString * NSAttributedStringKey NS_EXTENSIBLE_STRING_ENUM;
 
@@ -170,6 +171,7 @@ typedef NSString * NSAttributedStringKey NS_EXTENSIBLE_STRING_ENUM;
 
 - (void)_parserImageData {
     NSMutableAttributedString *attrStrM = _attrStr.mutableCopy;
+    attrStrM.actionDelegate = _attrStr.actionDelegate;
     NSMutableArray<SJCTImageData *> *imagesAttM = [NSMutableArray new];
     
     [_attrStr enumerateAttribute:NSAttachmentAttributeName inRange:NSMakeRange(0, _attrStr.length) options:NSAttributedStringEnumerationReverse usingBlock:^(NSTextAttachment * _Nullable value, NSRange range, BOOL * _Nonnull stop) {

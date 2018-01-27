@@ -10,8 +10,6 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
-@class SJLabel;
-
 extern CGSize SJScreen_Size(void);
 extern float SJScreen_W(void);
 extern float SJScreen_H(void);
@@ -197,47 +195,6 @@ estimatedSectionFooterHeight:(CGFloat)estimatedSectionFooterHeight;
 
 @end
 
-
-#pragma mark -
-/*!
- *  textColor if nil, it will be set black.
- *  font if nil, it will be set 14.
- **/
-@interface SJSJLabelFactory : NSObject
-
-+ (SJLabel *)labelWithFont:(UIFont * __nullable )font;
-
-+ (SJLabel *)labelWithFont:(UIFont * __nullable )font
-                 textColor:(UIColor * __nullable )textColor;
-
-+ (SJLabel *)labelWithFont:(UIFont * __nullable )font
-                 textColor:(UIColor * __nullable )textColor
-                 alignment:(NSTextAlignment)alignment;
-
-+ (SJLabel *)labelWithText:(NSString * __nullable )text;
-
-+ (SJLabel *)labelWithText:(NSString * __nullable )text
-                 textColor:(UIColor * __nullable )textColor;
-
-+ (SJLabel *)labelWithText:(NSString * __nullable )text
-                 textColor:(UIColor * __nullable )textColor
-                      font:(UIFont * __nullable )font;
-
-+ (SJLabel *)labelWithText:(NSString * __nullable )text
-                 textColor:(UIColor * __nullable )textColor
-                 alignment:(NSTextAlignment)alignment;
-
-+ (SJLabel *)labelWithText:(NSString * __nullable )text
-                 textColor:(UIColor * __nullable )textColor
-                 alignment:(NSTextAlignment)alignment
-                      font:(UIFont * __nullable )font;
-
-+ (SJLabel *)attributeLabel;
-
-+ (SJLabel *)labelWithAttrStr:(NSAttributedString * __nullable )attrStr;
-
-+ (SJLabel *)labelWithAttrStr:(NSAttributedString * __nullable )attrStr userInteractionEnabled:(BOOL)bol;
-@end
 
 
 

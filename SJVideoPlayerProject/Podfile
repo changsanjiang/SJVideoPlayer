@@ -17,4 +17,6 @@ target 'SJVideoPlayerProject' do
   pod 'SJVideoPlayerAssetCarrier'
   pod 'SJVolBrigControl'
   pod 'SJObserverHelper'
+  pod 'SJAttributesFactory'
+  pod 'SJLabel'
 end

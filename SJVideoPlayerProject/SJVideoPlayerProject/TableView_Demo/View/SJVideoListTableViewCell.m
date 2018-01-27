@@ -10,7 +10,7 @@
 #import "SJVideoModel.h"
 #import <Masonry.h>
 #import <SJUIFactory/SJUIFactory.h>
-#import <SJLabel.h>
+#import <SJLabel/SJLabel.h>
 
 @interface SJVideoListTableViewCell()
 

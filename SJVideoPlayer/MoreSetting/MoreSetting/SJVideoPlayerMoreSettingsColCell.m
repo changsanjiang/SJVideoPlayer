@@ -9,8 +9,8 @@
 #import "SJVideoPlayerMoreSettingsColCell.h"
 #import <Masonry/Masonry.h>
 #import "SJVideoPlayerMoreSetting.h"
-#import <SJAttributesFactory/SJAttributesFactoryHeader.h>
-#import <SJUIFactory/SJUIFactoryHeader.h>
+#import <SJAttributesFactory/SJAttributeWorker.h>
+#import <SJUIFactory/SJUIFactory.h>
 
 @interface SJVideoPlayerMoreSettingsColCell ()
 
@@ -37,25 +37,25 @@
 - (void)setModel:(SJVideoPlayerMoreSetting *)model {
     _model = model;
 
-    [_itemBtn setAttributedTitle:[SJAttributesFactory producingWithTask:^(SJAttributeWorker * _Nonnull worker) {
+    [_itemBtn setAttributedTitle:sj_makeAttributesString(^(SJAttributeWorker * _Nonnull make) {
         if ( model.image ) {
-            worker.insert(model.image, 0, CGPointZero, model.image.size);
+            make.insert(model.image, 0, CGPointZero, model.image.size);
         }
         
         if ( model.title ) {
-            worker.insert([NSString stringWithFormat:@"%@", model.title], -1);;
+            make.insert([NSString stringWithFormat:@"%@", model.title], -1);;
         }
         
         if ( model.image && model.title ) {
-            worker.insert(@"\n", worker.lastInsertedRange.location);
+            make.insert(@"\n", make.lastInsertedRange.location);
         }
         
-        worker
+        make
         .font([UIFont systemFontOfSize:[SJVideoPlayerMoreSetting titleFontSize]])
-        .fontColor([SJVideoPlayerMoreSetting titleColor])
+        .textColor([SJVideoPlayerMoreSetting titleColor])
         .alignment(NSTextAlignmentCenter)
         .lineSpacing(6);
-    }] forState:UIControlStateNormal];
+    }) forState:UIControlStateNormal];
 }
 
 - (void)_SJVideoPlayerMoreSettingsColCellSetupUI {

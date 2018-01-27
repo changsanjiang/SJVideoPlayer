@@ -11,8 +11,6 @@
 #import "SJCTData.h"
 #import "SJStringParserConfig.h"
 #import "SJCTImageData.h"
-#import <SJAttributesFactory/SJAttributesFactoryHeader.h>
-
 
 @interface SJDisplayLayer : CALayer
 
@@ -116,11 +114,11 @@
         if ( index != kCFNotFound && index < _displayLayer.drawData.attrStr.length ) {
             NSRange range = NSMakeRange(0, 0);
             NSDictionary<NSAttributedStringKey, id> *attributes = [_displayLayer.drawData.attrStr attributesAtIndex:index effectiveRange:&range];
-            id value = attributes[SJActionAttributeName];
-            if ( value ) {
-                void(^block)(NSRange range, NSAttributedString *str) = value;
-                action = YES;
-                block(range, [_displayLayer.drawData.attrStr attributedSubstringFromRange:range]);
+            NSAttributedString *actionStr = [_displayLayer.drawData.attrStr attributedSubstringFromRange:range];
+            if ( attributes[SJActionAttributedStringKey] ) {
+                if ( [_displayLayer.drawData.attrStr.actionDelegate respondsToSelector:@selector(attributedString:action:)] ) {
+                    [_displayLayer.drawData.attrStr.actionDelegate attributedString:_displayLayer.drawData.attrStr action:actionStr];
+                }
             }
         }
     }
@@ -143,7 +141,8 @@
 }
 
 - (void)setAttributedText:(NSAttributedString *)attributedText {
-    _attributedText = attributedText.copy;
+    _attributedText = attributedText.mutableCopy;
+    _attributedText.actionDelegate = attributedText.actionDelegate;
     [self _considerUpdating];
 }
 

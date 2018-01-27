@@ -8,7 +8,6 @@
 
 #import "SJVideoPlayerMoreSettingSecondaryView.h"
 #import <Masonry/Masonry.h>
-#import <SJAttributesFactory/SJAttributesFactoryHeader.h>
 #import "SJVideoPlayerMoreSettingsSecondaryHeaderView.h"
 #import "SJVideoPlayerMoreSettingSecondary.h"
 

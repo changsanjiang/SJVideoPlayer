@@ -1,7 +1,14 @@
 # SJVideoPlayer
+### installation
 ```ruby
 pod 'SJVideoPlayer' 
 ```
+___
+
+# example
+<img src="https://github.com/changsanjiang/SJVideoPlayer/blob/master/SJVideoPlayerProject/SJVideoPlayerProject/ex.gif" />
+
+___
 
 ### play
 ```Objective-C

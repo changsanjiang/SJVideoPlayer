@@ -20,10 +20,10 @@ NSMutableAttributedString *sj_makeAttributesString(void(^block)(SJAttributeWorke
 }
 
 inline static BOOL _rangeContains(NSRange range, NSRange subRange) {
-    return range.location <= subRange.location && range.length >= subRange.length;
+    return range.location <= subRange.location && range.length >= subRange.location + subRange.length;
 }
 
-inline static void _errorLog(NSString *msg, NSString * __nullable target) {
+inline static void _errorLog(NSString *msg, id __nullable target) {
     NSLog(@"\n__Error__: %@\nTarget: %@", msg, target);
 }
 
@@ -64,6 +64,10 @@ inline static void _errorLog(NSString *msg, NSString * __nullable target) {
 
 - (NSRange)range {
     return NSMakeRange(0, self.attrStr.length);
+}
+
+- (NSInteger)length {
+    return self.attrStr.length;
 }
 
 - (void)pauseTask {
@@ -127,7 +131,7 @@ inline static void _errorLog(NSString *msg, NSString * __nullable target) {
     
     [self.rangeOperatorsM enumerateObjectsUsingBlock:^(SJAttributesRangeOperator * _Nonnull obj, NSUInteger idx, BOOL * _Nonnull stop) {
         NSRange objRange = obj.recorder.range;
-        if ( objRange.location <= range.location && objRange.length >= range.length ) {
+        if ( _rangeContains(objRange, range) ) {
             rangeOperator = [SJAttributesRangeOperator new];
             rangeOperator.recorder = obj.recorder.copy;
             rangeOperator.recorder.range = range;
@@ -397,8 +401,15 @@ inline static void _errorLog(NSString *msg, NSString * __nullable target) {
     };
 }
 /// 阴影
-- (SJAttributesRangeOperator * _Nonnull (^)(NSShadow * _Nonnull))shadow {
-    return ^ SJAttributesRangeOperator *(NSShadow *shadow) {
+- (SJAttributesRangeOperator * _Nonnull (^)(CGSize, CGFloat, UIColor * _Nonnull))shadow {
+    return ^ SJAttributesRangeOperator *(CGSize shadowOffset, CGFloat shadowBlurRadius, UIColor *shadowColor) {
+        if ( nil != self.recorder.backgroundColor ) {
+            _errorLog(@"`shadow`会与`backgroundColor`冲突, 设置了`backgroundColor`后, `shadow`将不会显示.", [NSValue valueWithRange:self.recorder.range]);
+        }
+        NSShadow *shadow = [NSShadow new];
+        shadow.shadowOffset = shadowOffset;
+        shadow.shadowBlurRadius = shadowBlurRadius;
+        shadow.shadowColor = shadowColor;
         self.recorder.shadow = shadow;
         return self;
     };
@@ -406,6 +417,9 @@ inline static void _errorLog(NSString *msg, NSString * __nullable target) {
 /// 背景颜色
 - (SJAttributesRangeOperator * _Nonnull (^)(UIColor * _Nonnull))backgroundColor {
     return ^ SJAttributesRangeOperator *(UIColor *color) {
+        if ( nil != self.recorder.shadow ) {
+            _errorLog(@"`shadow`会与`backgroundColor`冲突, 设置了`backgroundColor`后, `shadow`将不会显示.", [NSValue valueWithRange:self.recorder.range]);
+        }
         self.recorder.backgroundColor = color;
         return self;
     };
@@ -425,9 +439,9 @@ inline static void _errorLog(NSString *msg, NSString * __nullable target) {
     };
 }
 /// 边界`border`
-- (SJAttributesRangeOperator * _Nonnull (^)(SJBorderAttribute * _Nonnull))border {
-    return ^ SJAttributesRangeOperator *(SJBorderAttribute *border) {
-        self.recorder.border = border;
+- (SJAttributesRangeOperator * _Nonnull (^)(UIColor * _Nonnull, double))stroke {
+    return ^ SJAttributesRangeOperator *(UIColor * color, double stroke) {
+        self.recorder.stroke = [SJStrokeAttribute strokeWithValue:stroke color:color];
         return self;
     };
 }
@@ -515,7 +529,13 @@ inline static void _errorLog(NSString *msg, NSString * __nullable target) {
         return self;
     };
 }
-
+/// 截断模式
+- (SJAttributesRangeOperator * _Nonnull (^)(NSLineBreakMode))lineBreakMode {
+    return ^ SJAttributesRangeOperator *(NSLineBreakMode lineBreakMode) {
+        self.recorder.lineBreakMode = lineBreakMode;
+        return self;
+    };
+}
 @end
 
 NS_ASSUME_NONNULL_END

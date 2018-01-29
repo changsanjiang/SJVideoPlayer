@@ -138,6 +138,8 @@
 }
 
 - (void)_setupViews {
+    
+    self.clipsToBounds = NO;
     self.selectionStyle = UITableViewCellSelectionStyleNone;
     [self.contentView addSubview:self.avatarImageView];
     [self.contentView addSubview:self.nameLabel];

@@ -18,7 +18,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 @property (nonatomic, weak, readwrite) SJVideoPlayerAssetCarrier *asset;
 
-@property (nonatomic) float progress;
+@property (nonatomic, readwrite) float progress;
 
 @end
 

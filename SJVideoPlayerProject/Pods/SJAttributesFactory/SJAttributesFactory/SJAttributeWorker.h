@@ -14,29 +14,29 @@
 
 typedef NSString * NSAttributedStringKey NS_EXTENSIBLE_STRING_ENUM;
 
-@class SJBorderAttribute, SJUnderlineAttribute, SJAttributeWorker;
+@class SJAttributeWorker;
 
 NS_ASSUME_NONNULL_BEGIN
 
 /*!
- *
  *  make attributed string:
+ 
  *   NSAttributedString *attrStr = sj_makeAttributesString(^(SJAttributeWorker * _Nonnull make) {
- *
+ 
  *       // set font , text color.
- *       make.font([UIFont boldSystemFontOfSize:14]).textColor([UIColor blueColor]);
- *
- *       // insert text.
- *       make.insert(@"叶秋笑了笑，抬手取下了衔在嘴角的烟头。银白的烟灰已经结成了长长一串，但在叶秋挥舞着鼠标敲打着键盘施展操作的过程中却没有被震落分毫.", 0);
- *
- *       // regexp matching
- *       make.regexp(@"叶秋", ^(SJAttributesRangeOperator * _Nonnull matched) {
- *
- *           // set matched text textColor.
- *           matched.textColor([UIColor redColor]);
- *
- *           // add underLine
- *           matched.underLine([SJUnderlineAttribute underLineWithStyle:NSUnderlineStyleSingle | NSUnderlinePatternSolid color:[UIColor orangeColor]]);
+ *       make.font([UIFont boldSystemFontOfSize:14]).textColor([UIColor blackColor]);
+ 
+ *       // inset text
+ *       make.insert(@"@迷你世界联机 :@江叔 用小淘气耍赖野人#迷你世界#", 0);
+ 
+ *       make.regexp(@"[@][^@]+\\s", ^(SJAttributesRangeOperator * _Nonnull matched) {
+ *           matched.textColor([UIColor purpleColor]);
+ *          // some code
+ *       });
+ 
+ *       make.regexp(@"[#][^#]+#", ^(SJAttributesRangeOperator * _Nonnull matched) {
+ *          matched.textColor([UIColor orangeColor]);
+ *          // some code
  *       });
  *   });
  **/
@@ -87,6 +87,8 @@ extern NSMutableAttributedString *sj_makeAttributesString(void(^block)(SJAttribu
  *  按照范围获取文本
  **/
 @property (nonatomic, copy, readonly) NSAttributedString *(^subAttrStr)(NSRange subRange);
+
+@property (nonatomic, assign, readonly) NSInteger length;
 
 @end
 
@@ -199,21 +201,21 @@ extern NSMutableAttributedString *sj_makeAttributesString(void(^block)(SJAttribu
 @property (nonatomic, copy, readonly) SJAttributesRangeOperator *(^textColor)(UIColor *color);
 /// 放大, 扩大
 @property (nonatomic, copy, readonly) SJAttributesRangeOperator *(^expansion)(double expansion);
-/// 阴影
-@property (nonatomic, copy, readonly) SJAttributesRangeOperator *(^shadow)(NSShadow *shadow);
+/// 阴影. note: `shadow`会与`backgroundColor`冲突, 设置了`backgroundColor`后, `shadow`将不会显示.
+@property (nonatomic, copy, readonly) SJAttributesRangeOperator *(^shadow)(CGSize shadowOffset, CGFloat shadowBlurRadius, UIColor *shadowColor);
 /// 背景颜色
 @property (nonatomic, copy, readonly) SJAttributesRangeOperator *(^backgroundColor)(UIColor *color);
 /// 下划线
 @property (nonatomic, copy, readonly) SJAttributesRangeOperator *(^underLine)(NSUnderlineStyle style, UIColor *color);
 /// 删除线
 @property (nonatomic, copy, readonly) SJAttributesRangeOperator *(^strikethrough)(NSUnderlineStyle style, UIColor *color);
-/// 边界`border`
-@property (nonatomic, copy, readonly) SJAttributesRangeOperator *(^border)(SJBorderAttribute *border);
+/// 边界
+@property (nonatomic, copy, readonly) SJAttributesRangeOperator *(^stroke)(UIColor *color, double stroke);
 /// 倾斜(-1 ... 1)
 @property (nonatomic, copy, readonly) SJAttributesRangeOperator *(^obliqueness)(double obliqueness);
 /// 字间隔
 @property (nonatomic, copy, readonly) SJAttributesRangeOperator *(^letterSpacing)(double letterSpacing);
-/// 上下偏移
+/// 上下偏移, 正值向上, 负值向下
 @property (nonatomic, copy, readonly) SJAttributesRangeOperator *(^offset)(double offset);
 /// 链接
 @property (nonatomic, copy, readonly) SJAttributesRangeOperator *(^isLink)(void);
@@ -233,6 +235,8 @@ extern NSMutableAttributedString *sj_makeAttributesString(void(^block)(SJAttribu
 @property (nonatomic, copy, readonly) SJAttributesRangeOperator *(^tailIndent)(double tailIndent);
 /// 对齐方式
 @property (nonatomic, copy, readonly) SJAttributesRangeOperator *(^alignment)(NSTextAlignment alignment);
+/// 截断模式
+@property (nonatomic, copy, readonly) SJAttributesRangeOperator *(^lineBreakMode)(NSLineBreakMode lineBreakMode);
 
 @end
 

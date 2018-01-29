@@ -9,8 +9,24 @@
 #import "SJAttributesRecorder.h"
 #import <objc/message.h>
 
-@implementation SJBorderAttribute
-+ (instancetype)borderWithValue:(double)value color:(UIColor *)color {
+static NSArray<NSString *> *csj_propertyList(Class cls) {
+    NSMutableArray <NSString *> *namesArrM = [NSMutableArray array];
+    unsigned int outCount = 0;
+    objc_property_t *propertyList = class_copyPropertyList(cls, &outCount);
+    if ( propertyList != NULL && outCount > 0 ) {
+        for ( int i = 0; i < outCount; i ++ ) {
+            objc_property_t property = propertyList[i];
+            const char *name  = property_getName(property);
+            NSString *nameStr = [NSString stringWithUTF8String:name];
+            [namesArrM addObject:nameStr];
+        }
+    }
+    free(propertyList);
+    return namesArrM.copy;
+}
+
+@implementation SJStrokeAttribute
++ (instancetype)strokeWithValue:(double)value color:(UIColor *)color {
     return [[self alloc] initWithValue:value color:color];
 }
 - (instancetype)initWithValue:(double)value color:(UIColor *)color {
@@ -19,6 +35,16 @@
     _value = value;
     _color = color;
     return self;
+}
+- (id)copyWithZone:(NSZone *)zone {
+    SJStrokeAttribute *newBorder = [SJStrokeAttribute new];
+    [csj_propertyList([self class]) enumerateObjectsUsingBlock:^(NSString * _Nonnull obj, NSUInteger idx, BOOL * _Nonnull stop) {
+        [newBorder setValue:[[self valueForKey:obj] copy] forKey:obj];
+    }];
+    return newBorder;
+}
+- (id)mutableCopyWithZone:(NSZone *)zone {
+    return [self copyWithZone:zone];
 }
 @end
 
@@ -34,13 +60,26 @@
     _color = color;
     return self;
 }
+- (id)copyWithZone:(NSZone *)zone {
+    SJUnderlineAttribute *newUnderline = [SJUnderlineAttribute new];
+    [csj_propertyList([self class]) enumerateObjectsUsingBlock:^(NSString * _Nonnull obj, NSUInteger idx, BOOL * _Nonnull stop) {
+        [newUnderline setValue:[[self valueForKey:obj] copy] forKey:obj];
+    }];
+    return newUnderline;
+}
+- (id)mutableCopyWithZone:(NSZone *)zone {
+    return [self copyWithZone:zone];
+}
 @end
 
 #pragma mark -
 @implementation SJAttributesRecorder {
    NSMutableParagraphStyle * _paragraphStyleM;
 }
-
+- (void)setParagraphStyleM:(NSMutableParagraphStyle *)paragraphStyleM {
+    if ( [paragraphStyleM isMemberOfClass:[NSParagraphStyle class]] ) paragraphStyleM = paragraphStyleM.mutableCopy;
+    _paragraphStyleM = paragraphStyleM;
+}
 - (NSMutableParagraphStyle *)paragraphStyleM {
     if ( _paragraphStyleM ) return _paragraphStyleM;
     _paragraphStyleM = [NSParagraphStyle defaultParagraphStyle].mutableCopy;
@@ -66,6 +105,9 @@
 
 - (void)setAlignment:(double)alignment {self.paragraphStyleM.alignment = alignment;}
 - (double)alignment {return self.paragraphStyleM.alignment;}
+
+- (void)setLineBreakMode:(NSLineBreakMode)lineBreakMode {self.paragraphStyleM.lineBreakMode = lineBreakMode;}
+- (NSLineBreakMode)lineBreakMode {return self.paragraphStyleM.lineBreakMode;}
 
 - (void)addAttributes:(NSMutableAttributedString *)attrStr {
     NSRange range = self.range;
@@ -95,9 +137,9 @@
         [attrStr addAttribute:NSStrikethroughStyleAttributeName value:@(self.strikethrough.value) range:range];
         [attrStr addAttribute:NSStrikethroughColorAttributeName value:self.strikethrough.color range:range];
     }
-    if ( nil != self.border ) {
-        [attrStr addAttribute:NSStrokeWidthAttributeName value:@(self.border.value) range:range];
-        [attrStr addAttribute:NSStrokeColorAttributeName value:self.border.color range:range];
+    if ( nil != self.stroke ) {
+        [attrStr addAttribute:NSStrokeWidthAttributeName value:@(self.stroke.value) range:range];
+        [attrStr addAttribute:NSStrokeColorAttributeName value:self.stroke.color range:range];
     }
     if ( 0 != self.obliqueness ) {
         [attrStr addAttribute:NSObliquenessAttributeName value:@(self.obliqueness) range:range];
@@ -117,26 +159,9 @@
 }
 - (id)copyWithZone:(NSZone *)zone {
     SJAttributesRecorder *newRecorder = [SJAttributesRecorder new];
-    [[self csj_propertyList] enumerateObjectsUsingBlock:^(NSString * _Nonnull obj, NSUInteger idx, BOOL * _Nonnull stop) {
+    [csj_propertyList([self class]) enumerateObjectsUsingBlock:^(NSString * _Nonnull obj, NSUInteger idx, BOOL * _Nonnull stop) {
         [newRecorder setValue:[[self valueForKey:obj] copy] forKey:obj];
     }];
     return newRecorder;
 }
-
-- (NSArray<NSString *> *)csj_propertyList {
-    NSMutableArray <NSString *> *namesArrM = [NSMutableArray array];
-    unsigned int outCount = 0;
-    objc_property_t *propertyList = class_copyPropertyList([self class], &outCount);
-    if ( propertyList != NULL && outCount > 0 ) {
-        for ( int i = 0; i < outCount; i ++ ) {
-            objc_property_t property = propertyList[i];
-            const char *name  = property_getName(property);
-            NSString *nameStr = [NSString stringWithUTF8String:name];
-            [namesArrM addObject:nameStr];
-        }
-    }
-    free(propertyList);
-    return namesArrM.copy;
-}
-
 @end

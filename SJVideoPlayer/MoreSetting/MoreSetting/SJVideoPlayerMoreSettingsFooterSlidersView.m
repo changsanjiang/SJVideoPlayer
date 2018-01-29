@@ -121,7 +121,7 @@
     
     [_brightnessSlider mas_makeConstraints:^(MASConstraintMaker *make) {
         make.center.offset(0);
-        make.width.equalTo(self).multipliedBy(0.9);
+        make.width.equalTo(self);
         make.height.offset([[self class] itemHeight]);
     }];
     

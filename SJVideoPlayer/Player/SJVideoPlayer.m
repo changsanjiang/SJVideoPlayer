@@ -51,7 +51,15 @@ inline static void _sjAnima(void(^block)(void)) {
     }
 }
 
-
+inline static void _sjAnima_Complete(void(^block)(void), void(^complete)(void)) {
+    if ( block ) {
+        [UIView animateWithDuration:0.3 animations:^{
+            block();
+        } completion:^(BOOL finished) {
+            if ( complete ) complete();
+        }];
+    }
+}
 
 #pragma mark -
 
@@ -442,9 +450,9 @@ static dispatch_queue_t videoPlayerWorkQueue;
     _view.backgroundColor = [UIColor blackColor];
     [_view addSubview:self.presentView];
     [_presentView addSubview:self.controlView];
-    [_controlView addSubview:self.moreSettingView];
+    [_presentView addSubview:self.moreSettingView];
+    [_presentView addSubview:self.moreSecondarySettingView];
     [_presentView addSubview:self.draggingProgressView];
-    [_controlView addSubview:self.moreSecondarySettingView];
     [self gesturesHandleWithTargetView:_controlView];
     self.hiddenMoreSettingView = YES;
     self.hiddenMoreSecondarySettingView = YES;
@@ -643,17 +651,26 @@ static dispatch_queue_t videoPlayerWorkQueue;
         return YES;
     };
     
+    _orentation.orientationWillChange = ^(SJOrentationObserver * _Nonnull observer) {
+        __strong typeof(_self) self = _self;
+        if ( !self ) return;
+        _sjAnima(^{
+            self.hiddenMoreSecondarySettingView = YES;
+            self.hiddenMoreSettingView = YES;
+            self.hideControl = YES;
+            if ( !observer.isFullScreen ) self.hiddenLeftControlView = YES;
+            self.controlView.previewView.hidden = YES;
+        });
+    };
+    
     _orentation.orientationChanged = ^(SJOrentationObserver * _Nonnull observer) {
         __strong typeof(_self) self = _self;
         if ( !self ) return;
-        self.hideControl = NO;
-        _sjAnima(^{
-            self.controlView.previewView.hidden = YES;
-            self.hiddenMoreSecondarySettingView = YES;
-            self.hiddenMoreSettingView = YES;
-            self.hiddenLeftControlView = !observer.isFullScreen;
+        _sjAnima_Complete(^{
+            self.hideControl = NO;
             if ( observer.isFullScreen ) {
-                _sjShowViews(@[self.controlView.topControlView.moreBtn,]);
+                self.hiddenLeftControlView = NO;
+                _sjShowViews(@[self.controlView.topControlView.moreBtn]);
                 if ( self.asset.hasBeenGeneratedPreviewImages ) {
                     _sjShowViews(@[self.controlView.topControlView.previewBtn]);
                 }
@@ -676,8 +693,9 @@ static dispatch_queue_t videoPlayerWorkQueue;
                     }];
                 }
             }
+        }, ^{
+            if ( self.rotatedScreen ) self.rotatedScreen(self, observer.isFullScreen);
         });
-        if ( self.rotatedScreen ) self.rotatedScreen(self, observer.isFullScreen);
     };
     
     return _orentation;

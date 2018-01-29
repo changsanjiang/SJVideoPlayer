@@ -128,12 +128,7 @@ static NSString *const SJVideoListTableViewCellID = @"SJVideoListTableViewCell";
     
     // setting player
     __weak typeof(self) _self = self;
-    _videoPlayer.rotatedScreen = ^(SJVideoPlayer * _Nonnull player, BOOL isFullScreen) {
-        __strong typeof(_self) self = _self;
-        if ( !self ) return ;
-        [self setNeedsStatusBarAppearanceUpdate];
-    };
-    
+
     // Call when the control view is hidden or displayed.
     _videoPlayer.controlViewDisplayStatus = ^(SJVideoPlayer * _Nonnull player, BOOL displayed) {
         __strong typeof(_self) self = _self;
@@ -154,11 +149,6 @@ static NSString *const SJVideoListTableViewCellID = @"SJVideoListTableViewCell";
                                            superviewTag:playerParentView.tag];
 }
 
-- (BOOL)prefersStatusBarHidden {
-    // 全屏播放时, 使状态栏根据控制层显示或隐藏
-    if ( _videoPlayer.isFullScreen ) return !_videoPlayer.controlViewDisplayed;
-    return NO;
-}
 
 - (UIStatusBarStyle)preferredStatusBarStyle {
     // 全屏播放时, 使状态栏变成白色

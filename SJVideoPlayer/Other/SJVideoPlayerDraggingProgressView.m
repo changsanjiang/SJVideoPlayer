@@ -78,13 +78,13 @@ typedef NS_ENUM(NSUInteger, SJVideoPlayerDraggingProgressViewStyle) {
         case SJVideoPlayerDraggingProgressViewStyleArrowProgress: {
             CGFloat width = SJScreen_W() * (150.0 / 375);
             CGFloat height = width * 8 / 15;
-            return CGSizeMake(width, height);
+            return CGSizeMake(ceil(width), ceil(height));
         }
             break;
         case SJVideoPlayerDraggingProgressViewStylePreviewProgress: {
             CGFloat width = SJScreen_W() * ( 120.0 / 375);
             CGFloat height = width * 3 / 4;
-            return CGSizeMake(width, height);
+            return CGSizeMake(ceil(width), ceil(height));
         }
             break;
     }
@@ -269,4 +269,3 @@ typedef NS_ENUM(NSUInteger, SJVideoPlayerDraggingProgressViewStyle) {
 }
 
 @end
-

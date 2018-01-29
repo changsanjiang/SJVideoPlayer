@@ -33,7 +33,7 @@ NSAttributedStringKey const SJActionAttributedStringKey = @"SJActionAttributedSt
         self.regexp(regStr, NO, ^(NSArray<NSValue *> * _Nullable matchedRanges) {
             [matchedRanges enumerateObjectsUsingBlock:^(NSValue * _Nonnull obj, NSUInteger idx, BOOL * _Nonnull stop) {
                 NSRange range = obj.rangeValue;
-                [self addAttribute:SJActionAttributedStringKey value:@(YES) range:range];
+                [self addAttribute:SJActionAttributedStringKey value:obj range:range];
             }];
         });
     };

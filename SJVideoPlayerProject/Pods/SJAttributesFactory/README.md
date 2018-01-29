@@ -1,12 +1,126 @@
 # SJAttributesFactory
 
-```ruby
-  pod 'SJAttributesFactory'
-```
 ### 最新动态:
-- [增加了一个可以匹配点击动作的 Label](https://github.com/changsanjiang/SJLabel).
+- 发布v2版本, 优化了v1版本的操作不便之处, 移除了多余代码. [1/28/2018]
+
+### OC
+```ruby
+pod 'SJAttributesFactory'
+```
+___
+
+### Swift
+```ruby
+pod 'SJAttributesStringMaker'
+```
+___
+
+### 关于v1版本
+
+```ruby
+ // 抱歉各位, 由于结构调整, `v1`和`v2`版本差距较大, 大家可以如下方式, 继续使用`v1`版本的.
+ pod 'SJAttributesFactory', '1.1.14'
+```
+___
+
+### regular expression
+<img src="https://github.com/changsanjiang/SJAttributesFactory/blob/master/Demo/SJAttributesFactory/regular.jpeg" />
+
+```Objective-C
+    sj_makeAttributesString(^(SJAttributeWorker * _Nonnull make) {
+        make.insert(@"@迷你世界联机 :@江叔 用小淘气耍赖野人#迷你世界#", 0);
+        
+        make.regexp(@"[@][^\\s]+\\s", ^(SJAttributesRangeOperator * _Nonnull matched) {
+            matched.textColor([UIColor purpleColor]);
+        });
+        make.regexp(@"[#][^#]+#", ^(SJAttributesRangeOperator * _Nonnull matched) {
+            matched.textColor([UIColor orangeColor]);
+        });
+    });
+
+```
+___
+
+### common method
+<img src="https://github.com/changsanjiang/SJAttributesFactory/blob/master/Demo/SJAttributesFactory/common.jpeg" />
+
+```Objective-C
+    sj_makeAttributesString(^(SJAttributeWorker * _Nonnull make) {
+        make.insert(@"叶秋笑了笑，抬手取下了衔在嘴角的烟头。", 0);
+        
+        make
+        .font([UIFont boldSystemFontOfSize:40])                       // 设置字体
+        .textColor([UIColor blackColor])                              // 设置文本颜色
+        .underLine(NSUnderlineStyleSingle, [UIColor orangeColor])     // 设置下划线
+        .strikethrough(NSUnderlineStyleSingle, [UIColor orangeColor]) // 设置删除线
+//        .shadow(CGSizeMake(0.5, 0.5), 0, [UIColor redColor])        // 设置阴影
+//        .backgroundColor([UIColor whiteColor])                      // 设置文本背景颜色
+        .stroke([UIColor greenColor], 1)                              // 字体边缘的颜色, 设置后, 字体会镂空
+//        .offset(-10)                                                // 上下偏移
+        .obliqueness(0.3)                                             //  倾斜
+        .letterSpacing(4)                                             // 字体间隔
+        .lineSpacing(4)                                               // 行间隔
+        .alignment(NSTextAlignmentCenter)                             // 对其方式
+        ;
+        
+        [self updateConstraintsWithSize:make.sizeByWidth(self.view.bounds.size.width - 80)];
+    });
+```
+___
+
+### size
+```Objective-C
+@interface SJAttributeWorker(Size)
+@property (nonatomic, copy, readonly) CGSize(^size)(void);
+@property (nonatomic, copy, readonly) CGSize(^sizeByRange)(NSRange range);
+@property (nonatomic, copy, readonly) CGSize(^sizeByWidth)(double maxWidth);
+@property (nonatomic, copy, readonly) CGSize(^sizeByHeight)(double maxHeight);
+@end
+```
+___
+
+### insert
+```Objective-C
+@interface SJAttributeWorker(Insert)
+
+@property (nonatomic, assign, readonly) NSRange lastInsertedRange;
+
+@property (nonatomic, copy, readonly) SJAttributeWorker *(^lastInserted)(void(^task)(SJAttributesRangeOperator *lastOperator));
+
+@property (nonatomic, copy, readonly) SJAttributeWorker *(^add)(NSAttributedStringKey key, id value, NSRange range);
+
+@property (nonatomic, copy, readonly) SJAttributeWorker *(^insertText)(NSString *text, NSInteger index);
+
+@property (nonatomic, copy, readonly) SJAttributeWorker *(^insertImage)(UIImage *image, NSInteger index, CGPoint offset, CGSize size);
+
+@property (nonatomic, copy, readonly) SJAttributeWorker *(^insertAttrStr)(NSAttributedString *text, NSInteger index);
+
+@property (nonatomic, copy, readonly) SJAttributeWorker *(^insert)(id strOrAttrStrOrImg, NSInteger index, ...);
+
+@end
+```
+___
+
+### replace
+```Objective-C
+@interface SJAttributeWorker(Replace)
+@property (nonatomic, copy, readonly) void(^replace)(NSRange range, id strOrAttrStrOrImg, ...);
+@end
+```
+___
+
+### remove
+```Objective-C
+@interface SJAttributeWorker(Delete)
+@property (nonatomic, copy, readonly) void(^removeText)(NSRange range);
+@property (nonatomic, copy, readonly) void(^removeAttribute)(NSAttributedStringKey key, NSRange range);
+@property (nonatomic, copy, readonly) void(^removeAttributes)(NSRange range);
+@end
+```
+___
 
 ### 最近更新:
+- [增加了一个可以匹配点击动作的 Label](https://github.com/changsanjiang/SJLabel).
 - 添加了一个编辑最近(lastInserted)插入的文本的方法.
 - 完善参数错误的相关提示
 - 修复了insert方法插入-1时的Bug
@@ -18,126 +132,8 @@
 - 修复了Size方法的Bug
 - 增加了对范围段落Style编辑的方法
 - 改变了项目结构, 使其更合逻辑(变更较大)
-- 新增可变参(insert)插入方法   
+- 新增可变参(insert)插入方法
 
+### advert -- [可匹配点击的Label](https://github.com/changsanjiang/SJLabel):
 
-附 富文本属性:
-http://www.jianshu.com/p/ebbcfc24f9cb
-___
-### [可匹配点击的Label](https://github.com/changsanjiang/SJLabel):
 <img src="https://github.com/changsanjiang/SJAttributesFactory/blob/master/Demo/SJAttributesFactory/action.gif" />
-<img src="https://github.com/changsanjiang/SJLabel/blob/master/Demo/SJLabel/ex2.gif" />
-
-### 上下图文效果:
-![上下图文.jpg](http://upload-images.jianshu.io/upload_images/2318691-e92f48d24e29ae61.jpg?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240)
-
-before:
-```Objective-C
-   // 文本字典
-    NSDictionary *titleDict = @{NSFontAttributeName: [UIFont systemFontOfSize:fontSize],
-                                NSForegroundColorAttributeName: titleColor};
-    NSDictionary *spacingDict = @{NSFontAttributeName: [UIFont systemFontOfSize:spacing]};
-
-    // 图片文本
-    NSTextAttachment *attachment = [[NSTextAttachment alloc] init];
-    attachment.image = image;
-    attachment.bounds = CGRectMake(0, 0, imageW, imageH);
-    NSAttributedString *imageText = [NSAttributedString attributedStringWithAttachment:attachment];
-
-    // 换行文本
-    NSAttributedString *lineText = [[NSAttributedString alloc] initWithString:@"\n\n" attributes:spacingDict];
-
-    // 按钮文字
-    NSAttributedString *text = [[NSAttributedString alloc] initWithString:title attributes:titleDict];
-
-    // 合并文字
-    NSMutableAttributedString *attM = [[NSMutableAttributedString alloc] initWithAttributedString:imageText];
-    [attM appendAttributedString:lineText];
-    [attM appendAttributedString:text];
-```
-now:
-```Objective-C
-    sj_makeAttributesString(^(SJAttributeWorker * _Nonnull make) {
-        make.insert([UIImage imageNamed:@"sample2"], 0, CGPointZero, CGSizeMake(50, 50));
-        make.insert(@"\n999", -1).alignment(NSTextAlignmentCenter).lineSpacing(8);
-        [self updateConstraintsWithSize:make.size()];
-    });
-```
-___
-
-### 左缩进 + 右缩进
-![左缩进 + 右缩进.jpeg](http://upload-images.jianshu.io/upload_images/2318691-9823aa20d6789463.jpeg?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240)
-
-before:
-```Objective-C
-    NSString *str = @"故事:可以解释为旧事、旧业、先例、典故等涵义,同时,也是文学体裁的一种,侧重于事情过程的描述,强调情节跌宕起伏,从而阐发道理或者价值观。";
-
-    NSMutableAttributedString *attrM = [[NSMutableAttributedString alloc] initWithString:str];
-    [attrM addAttribute:NSFontAttributeName
-                  value:[UIFont boldSystemFontOfSize:14]
-                  range:NSMakeRange(0, 3)];
-    NSMutableParagraphStyle *style = [NSMutableParagraphStyle new];
-    style.firstLineHeadIndent = 8;
-    style.headIndent = [[attrM attributedSubstringFromRange:NSMakeRange(0, 3)]
-                                       boundingRectWithSize:CGSizeMake(CGFLOAT_MAX, CGFLOAT_MAX)
-                                                    options:NSStringDrawingUsesLineFragmentOrigin | NSStringDrawingUsesFontLeading
-     context:nil].size.width + style.firstLineHeadIndent;
-
-    style.tailIndent = -8;
-    [attrM addAttribute:NSParagraphStyleAttributeName
-                  value:style
-                  range:NSMakeRange(0, str.length)];
-```
-now:
-```Objective-C
-    sj_makeAttributesString(^(SJAttributeWorker * _Nonnull make) {
-        make.insert(@"故事:", 0);
-        CGSize lastSize = make.size();
-        // 左缩进
-        make.headIndent(lastSize.width);
-        // 右缩进
-        make.tailIndent(-12);
-        
-        make.insert(@"可以解释为旧事、旧业、先例、典故等涵义,同时,也是文学体裁的一种,侧重于事情过程的描述,强调情节跌宕起伏,从而阐发道理或者价值观。", -1);
-    });
-```
-___
-### 下划线 + 删除线
-![下划线 + 删除线.jpg](http://upload-images.jianshu.io/upload_images/2318691-f9babe81194300fa.jpg?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240)
-
-before:
-```Objective-C
-    NSString *price = @"$ 999";
-    NSMutableAttributedString *attrM = [[NSMutableAttributedString alloc] initWithString:price];
-    NSRange range = NSMakeRange(0, price.length);
-    [attrM addAttribute:NSFontAttributeName
-                  value:[UIFont systemFontOfSize:40]
-                  range:range];
-    [attrM addAttribute:NSUnderlineStyleAttributeName
-                  value:@(NSUnderlineByWord | NSUnderlinePatternSolid | NSUnderlineStyleDouble)
-                  range:range];
-    [attrM addAttribute:NSUnderlineColorAttributeName
-                  value:[UIColor yellowColor]
-                  range:range];
-    [attrM addAttribute:NSStrikethroughStyleAttributeName
-                  value:@(NSUnderlineByWord | NSUnderlinePatternSolid | NSUnderlineStyleDouble)
-                  range:range];
-    [attrM addAttribute:NSStrikethroughColorAttributeName
-                  value:[UIColor redColor]
-                  range:range];
-```
-now:
-```Objective-C
-    sj_makeAttributesString(^(SJAttributeWorker * _Nonnull make) {
-        make.insert(@"$ 999", 0).font([UIFont systemFontOfSize:40]);
-        // 下划线
-        make.underLine([UIFont boldSystemFontOfSize:40]).underLine([SJUnderlineAttribute underLineWithStyle:NSUnderlineStyleSingle | NSUnderlinePatternSolid color:[UIColor yellowColor]]);
-        // 删除线
-        make.strikethrough([SJUnderlineAttribute underLineWithStyle:NSUnderlineStyleSingle | NSUnderlinePatternSolid color:[UIColor redColor]]);
-        [self updateConstraintsWithSize:make.size()];
-    });
-```
-___
-
-## Other
-![ex.gif](http://upload-images.jianshu.io/upload_images/2318691-9b547ad5a35710f6.gif?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240)

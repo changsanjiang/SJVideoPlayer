@@ -18,8 +18,11 @@ NS_ASSUME_NONNULL_BEGIN
 @interface SJVideoPlayerPresentView : SJVideoPlayerBaseView
 
 @property (nonatomic, weak, readwrite, nullable) SJVideoPlayerAssetCarrier *asset;
+
 @property (nonatomic, copy, readwrite, nullable) void(^readyForDisplay)(SJVideoPlayerPresentView *view, CGRect videoRect);
+
 @property (nonatomic, strong, readwrite, nullable) UIImage *placeholder;
+
 @property (nonatomic, assign, readwrite) SJVideoPlayerPlayState state;
 
 @end

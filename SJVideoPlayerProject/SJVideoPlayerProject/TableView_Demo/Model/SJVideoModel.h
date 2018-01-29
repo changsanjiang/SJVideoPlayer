@@ -7,6 +7,7 @@
 //
 
 #import <UIKit/UIKit.h>
+#import <NSMutableAttributedString+ActionDelegate.h>
 
 @class SJCTData;
 
@@ -18,6 +19,9 @@
 - (instancetype)initWithContent:(NSString *)content
                            font:(UIFont *)font
                       textColor:(UIColor *)textColor
+                  numberOfLines:(NSUInteger)numberOfLines
+                       maxWidth:(float)maxWidth;
+- (instancetype)initWithAttrStr:(NSAttributedString *)attrStr
                   numberOfLines:(NSUInteger)numberOfLines
                        maxWidth:(float)maxWidth;
 @end
@@ -40,7 +44,7 @@
 
 @interface SJVideoModel : NSObject
 
-+ (NSArray<SJVideoModel *> *)videoModels;
++ (NSArray<SJVideoModel *> *)videoModelsWithActionDelegate:(id<NSAttributedStringActionDelegate>)actionDelegate;
 
 @property (nonatomic, strong) SJVideoHelper *contentHelper;
 @property (nonatomic, strong) SJVideoHelper *nicknameHelper;

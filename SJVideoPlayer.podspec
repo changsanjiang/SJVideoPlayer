@@ -45,6 +45,7 @@ s.subspec 'Player' do |ss|
     ss.dependency 'SJVideoPlayer/Registrar'
     ss.dependency 'SJVideoPlayer/TimerControl'
     ss.dependency 'SJVideoPlayer/GestureControl'
+    ss.dependency 'SJVideoPlayer/DraggingProgress'
 end
 
 s.subspec 'Model' do |ss|
@@ -86,6 +87,10 @@ end
 
 s.subspec 'Resource' do |ss|
     ss.source_files = 'SJVideoPlayer/Resource/*.{h,m}'
+end
+
+s.subspec 'DraggingProgress' do |ss|
+    ss.source_files = 'SJVideoPlayer/DraggingProgress/*.{h,m}'
 end
 
 end

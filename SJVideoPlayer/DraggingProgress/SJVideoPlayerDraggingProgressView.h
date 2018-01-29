@@ -16,7 +16,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (instancetype)initWithOrentationObserver:(__weak SJOrentationObserver *)orentationObserver;
 
-@property (nonatomic, weak, readwrite) SJVideoPlayerAssetCarrier *asset;
+@property (nonatomic, weak, readwrite, nullable) SJVideoPlayerAssetCarrier *asset;
 
 @property (nonatomic, readwrite) float progress;
 

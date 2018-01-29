@@ -14,10 +14,11 @@
 #import "SJVideoPlayer.h"
 #import <SJFullscreenPopGesture/UIViewController+SJVideoPlayerAdd.h>
 #import <UIView+SJUIFactory.h>
+#import <NSMutableAttributedString+ActionDelegate.h>
 
 static NSString *const SJVideoListTableViewCellID = @"SJVideoListTableViewCell";
 
-@interface SJVideoListViewController ()<UITableViewDelegate, UITableViewDataSource, SJVideoListTableViewCellDelegate>
+@interface SJVideoListViewController ()<UITableViewDelegate, UITableViewDataSource, SJVideoListTableViewCellDelegate, NSAttributedStringActionDelegate>
 
 @property (nonatomic, strong, readonly) UITableView *tableView;
 @property (nonatomic, strong) NSArray<SJVideoModel *> *videosM;
@@ -42,7 +43,7 @@ static NSString *const SJVideoListTableViewCellID = @"SJVideoListTableViewCell";
     [self.indicator startAnimating];
     __weak typeof(self) _self = self;
     dispatch_async(dispatch_get_global_queue(0, 0), ^{
-        NSArray<SJVideoModel *> *videos = [SJVideoModel videoModels];
+        NSArray<SJVideoModel *> *videos = [SJVideoModel videoModelsWithActionDelegate:self];
         dispatch_async(dispatch_get_main_queue(), ^{
             __strong typeof(_self) self = _self;
             if ( !self ) return;
@@ -169,6 +170,13 @@ static NSString *const SJVideoListTableViewCellID = @"SJVideoListTableViewCell";
     // 全屏播放时, 使状态栏变成白色
     if ( _videoPlayer.isFullScreen ) return UIStatusBarStyleLightContent;
     return UIStatusBarStyleDefault;
+}
+
+#pragma mark - other
+- (void)attributedString:(NSAttributedString *)attrStr action:(NSAttributedString *)action {
+    UIViewController *vc = [[self class] new];
+    vc.title = action.string;
+    [self.navigationController pushViewController:vc animated:YES];
 }
 
 @end

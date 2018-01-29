@@ -11,6 +11,7 @@
 #import <Masonry.h>
 #import <SJUIFactory/SJUIFactory.h>
 #import <SJLabel/SJLabel.h>
+#import <SJAttributeWorker.h>
 
 @interface SJVideoListTableViewCell()
 
@@ -93,8 +94,26 @@
     return helper;
 }
 
-+ (SJVideoHelper *)helperWithContent:(NSString *)content {
-    SJVideoHelper *helper = [[SJVideoHelper alloc] initWithContent:content font:[UIFont systemFontOfSize:14] textColor:[UIColor blackColor] numberOfLines:0 maxWidth:[self contentMaxWidth]];
++ (SJVideoHelper *)helperWithContent:(NSString *)content
+                      actionDelegate:(id<NSAttributedStringActionDelegate>)actionDelegate {
+    // `action str regular`
+    NSString *actionStrRexp = @"([@][^\\s]+\\s)|([#][^#]+#)|((http)[^\\s]+\\s)";
+    
+    // make `attributes string`
+    NSMutableAttributedString *attrStr = sj_makeAttributesString(^(SJAttributeWorker * _Nonnull make) {
+        make.insert(content, 0);
+        make.font([UIFont boldSystemFontOfSize:14]).textColor([UIColor blackColor]);
+        make.regexp(actionStrRexp, ^(SJAttributesRangeOperator * _Nonnull matched) {
+            matched.textColor([UIColor purpleColor]);
+        });
+    });
+    
+    // set attrStr `action delegate`
+    attrStr.actionDelegate = actionDelegate;
+    attrStr.addAction(actionStrRexp);
+    
+    // record
+    SJVideoHelper *helper = [[SJVideoHelper alloc] initWithAttrStr:attrStr numberOfLines:0 maxWidth:[self contentMaxWidth]];
     return helper;
 }
 
@@ -221,6 +240,7 @@
     if ( _contentLabel ) return _contentLabel;
     _contentLabel = [SJLabel new];
     _contentLabel.numberOfLines = 0;
+    _contentLabel.userInteractionEnabled = YES;
     _contentLabel.preferredMaxLayoutWidth = [[self class] contentMaxWidth];
     return _contentLabel;
 }

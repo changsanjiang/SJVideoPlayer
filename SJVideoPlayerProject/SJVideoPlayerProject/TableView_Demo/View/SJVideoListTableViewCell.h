@@ -7,6 +7,7 @@
 //
 
 #import <UIKit/UIKit.h>
+#import <NSMutableAttributedString+ActionDelegate.h>
 
 @class SJVideoModel, SJVideoHelper;
 
@@ -22,7 +23,7 @@
 // helpers
 + (SJVideoHelper *)helperWithCreateTime:(NSTimeInterval)createTime;
 + (SJVideoHelper *)helperWithNickname:(NSString *)nickname;
-+ (SJVideoHelper *)helperWithContent:(NSString *)content;
++ (SJVideoHelper *)helperWithContent:(NSString *)content actionDelegate:(id<NSAttributedStringActionDelegate>)actionDelegate;
 
 // data source
 @property (nonatomic, strong) SJVideoModel *model;

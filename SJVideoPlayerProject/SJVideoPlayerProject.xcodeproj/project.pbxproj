@@ -193,6 +193,15 @@
 			name = Frameworks;
 			sourceTree = "<group>";
 		};
+		774A5667201F32B000CD6ACC /* DraggingProgress */ = {
+			isa = PBXGroup;
+			children = (
+				777D31221FD8F0010075E5FD /* SJVideoPlayerDraggingProgressView.h */,
+				777D31231FD8F0010075E5FD /* SJVideoPlayerDraggingProgressView.m */,
+			);
+			path = DraggingProgress;
+			sourceTree = "<group>";
+		};
 		774B250F1FCEBA5D002113CC = {
 			isa = PBXGroup;
 			children = (
@@ -244,6 +253,8 @@
 			isa = PBXGroup;
 			children = (
 				777D315F1FD8F44E0075E5FD /* SJPlayer.h */,
+				777D31261FD8F0010075E5FD /* Player */,
+				774A5667201F32B000CD6ACC /* DraggingProgress */,
 				777D30DC1FD8F0010075E5FD /* Base */,
 				777D30E61FD8F0010075E5FD /* Control */,
 				77A4394C1FDD8879008BD092 /* GestureControl */,
@@ -251,7 +262,6 @@
 				777D31001FD8F0010075E5FD /* Model */,
 				777D310D1FD8F0010075E5FD /* MoreSetting */,
 				777D311F1FD8F0010075E5FD /* Other */,
-				777D31261FD8F0010075E5FD /* Player */,
 				777D31291FD8F0010075E5FD /* Present */,
 				777D312C1FD8F0010075E5FD /* Registrar */,
 				777D312F1FD8F0010075E5FD /* Resource */,
@@ -355,8 +365,6 @@
 			children = (
 				777D31201FD8F0010075E5FD /* SJVideoPlayerControlMaskView.h */,
 				777D31211FD8F0010075E5FD /* SJVideoPlayerControlMaskView.m */,
-				777D31221FD8F0010075E5FD /* SJVideoPlayerDraggingProgressView.h */,
-				777D31231FD8F0010075E5FD /* SJVideoPlayerDraggingProgressView.m */,
 			);
 			path = Other;
 			sourceTree = "<group>";

@@ -5,6 +5,9 @@
 //  Created by BlueDancer on 2017/12/5.
 //  Copyright © 2017年 SanJiang. All rights reserved.
 //
+//  https://github.com/changsanjiang/SJOrentationObserver
+//  changsanjiang@gmail.com
+//
 
 #import <UIKit/UIKit.h>
 

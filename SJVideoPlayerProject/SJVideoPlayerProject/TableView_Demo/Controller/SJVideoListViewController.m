@@ -126,10 +126,18 @@ static NSString *const SJVideoListTableViewCellID = @"SJVideoListTableViewCell";
         make.edges.offset(0);
     }];
     
+    _videoPlayer.generatePreviewImages = NO;
+    
     // setting player
     __weak typeof(self) _self = self;
 
-    // Call when the control view is hidden or displayed.
+    _videoPlayer.willRotateScreen = ^(SJVideoPlayer * _Nonnull player, BOOL isFullScreen) {
+        __strong typeof(_self) self = _self;
+        if ( !self ) return ;
+        [self setNeedsStatusBarAppearanceUpdate];
+    };
+    
+    // Call when the `control view` is `hidden` or `displayed`.
     _videoPlayer.controlViewDisplayStatus = ^(SJVideoPlayer * _Nonnull player, BOOL displayed) {
         __strong typeof(_self) self = _self;
         if ( !self ) return;
@@ -149,6 +157,13 @@ static NSString *const SJVideoListTableViewCellID = @"SJVideoListTableViewCell";
                                            superviewTag:playerParentView.tag];
 }
 
+#pragma mark -
+
+- (BOOL)prefersStatusBarHidden {
+    // 全屏播放时, 使状态栏根据控制层显示或隐藏
+    if ( _videoPlayer.isFullScreen ) return !_videoPlayer.controlViewDisplayed;
+    return NO;
+}
 
 - (UIStatusBarStyle)preferredStatusBarStyle {
     // 全屏播放时, 使状态栏变成白色

@@ -55,7 +55,6 @@
 		A6441092200A3FA9006FD832 /* SJVideoListViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = A6441091200A3FA9006FD832 /* SJVideoListViewController.m */; };
 		A6441095200A3FBA006FD832 /* SJVideoListTableViewCell.m in Sources */ = {isa = PBXBuildFile; fileRef = A6441094200A3FBA006FD832 /* SJVideoListTableViewCell.m */; };
 		A6441098200A406E006FD832 /* SJVideoModel.m in Sources */ = {isa = PBXBuildFile; fileRef = A6441097200A406E006FD832 /* SJVideoModel.m */; };
-		A644109D200A74FA006FD832 /* table2.gif in Resources */ = {isa = PBXBuildFile; fileRef = A644109C200A74FA006FD832 /* table2.gif */; };
 		A6F4E9742007A12400716B9C /* PlayerCollectionViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = A6F4E9732007A12400716B9C /* PlayerCollectionViewController.m */; };
 		A6F4E9772007A13C00716B9C /* PlayerCollectionViewCell.m in Sources */ = {isa = PBXBuildFile; fileRef = A6F4E9762007A13C00716B9C /* PlayerCollectionViewCell.m */; };
 		A6F4E97B2007A78400716B9C /* NestedTableViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = A6F4E97A2007A78400716B9C /* NestedTableViewController.m */; };
@@ -154,7 +153,6 @@
 		A6441094200A3FBA006FD832 /* SJVideoListTableViewCell.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = SJVideoListTableViewCell.m; sourceTree = "<group>"; };
 		A6441096200A406E006FD832 /* SJVideoModel.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = SJVideoModel.h; sourceTree = "<group>"; };
 		A6441097200A406E006FD832 /* SJVideoModel.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = SJVideoModel.m; sourceTree = "<group>"; };
-		A644109C200A74FA006FD832 /* table2.gif */ = {isa = PBXFileReference; lastKnownFileType = image.gif; path = table2.gif; sourceTree = "<group>"; };
 		A6F4E9722007A12400716B9C /* PlayerCollectionViewController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = PlayerCollectionViewController.h; sourceTree = "<group>"; };
 		A6F4E9732007A12400716B9C /* PlayerCollectionViewController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = PlayerCollectionViewController.m; sourceTree = "<group>"; };
 		A6F4E9752007A13C00716B9C /* PlayerCollectionViewCell.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = PlayerCollectionViewCell.h; sourceTree = "<group>"; };
@@ -425,7 +423,6 @@
 			children = (
 				776F3BDE2015967700C23949 /* preview.gif */,
 				77A47E8B2008DEBE001EBE14 /* nested.gif */,
-				A644109C200A74FA006FD832 /* table2.gif */,
 				77B795781FFF6B9F000D8F6C /* test1.png */,
 				77EDB3581FD2CA550075A014 /* sample.mp4 */,
 				774B25211FCEBA5D002113CC /* Main.storyboard */,
@@ -584,7 +581,6 @@
 				774B25281FCEBA5D002113CC /* LaunchScreen.storyboard in Resources */,
 				777D30D71FD8E8240075E5FD /* SJVideoPlayer.podspec in Resources */,
 				77B795791FFF6B9F000D8F6C /* test1.png in Resources */,
-				A644109D200A74FA006FD832 /* table2.gif in Resources */,
 				777D315A1FD8F0010075E5FD /* SJVideoPlayer.bundle in Resources */,
 				776F3BDF2015967700C23949 /* preview.gif in Resources */,
 				774B25251FCEBA5D002113CC /* Assets.xcassets in Resources */,

@@ -3,9 +3,139 @@
 pod 'SJVideoPlayer' 
 ```
 
-# Example
-<img src="https://github.com/changsanjiang/SJVideoPlayer/blob/master/SJVideoPlayerProject/SJVideoPlayerProject/preview.gif" />
-<img src="https://github.com/changsanjiang/SJVideoPlayer/blob/master/SJVideoPlayerProject/SJVideoPlayerProject/table2.gif" width=350 /> <img src="https://github.com/changsanjiang/SJVideoPlayer/blob/master/SJVideoPlayerProject/SJVideoPlayerProject/nested.gif" width=350 />
+### play
+```Objective-C
+    Player.asset = [[SJVideoPlayerAssetCarrier alloc] initWithAssetURL:[NSURL URLWithString:@"http://....."] beginTime:10];
+```
+___
+
+### play on the table or collection view
+```Objective-C
+    Player.asset =
+    [[SJVideoPlayerAssetCarrier alloc] initWithAssetURL:[NSURL URLWithString:cell.model.playURLStr]
+                                             scrollView:self.tableView
+                                              indexPath:[self.tableView indexPathForCell:cell]
+                                           superviewTag:playerParentView.tag];
+```
+___
+
+### play on the nested table or collection view
+```Objective-C
+    Player.asset =
+    [[SJVideoPlayerAssetCarrier alloc] initWithAssetURL:playURL
+                                              indexPath:indexPath
+                                           superviewTag:playerParentView.tag
+                                    scrollViewIndexPath:embeddedScrollViewIndexPath
+                                          scrollViewTag:embeddedScrollView.tag
+                                         rootScrollView:self.tableView];
+```
+___
+
+### play method
+```Objective-C
+@property (nonatomic, strong, readwrite, nullable) SJVideoPlayerAssetCarrier *asset;
+
+- (void)playWithURL:(NSURL *)playURL jumpedToTime:(NSTimeInterval)time;
+
+@property (nonatomic, strong, readwrite, nullable) NSURL *assetURL;
+
+- (void)playWithURL:(NSURL *)playURL;
+
+- (UIImage *__nullable)screenshot;
+
+- (NSTimeInterval)currentTime;
+
+- (NSTimeInterval)totalTime;
+
+```
+___
+
+### prompt method
+```Objective-C
+
+@property (nonatomic, strong, readonly) SJPrompt *prompt;
+
+- (void)showTitle:(NSString *)title;
+
+- (void)showTitle:(NSString *)title duration:(NSTimeInterval)duration;
+
+- (void)hiddenTitle;
+```
+___
+
+### control method
+```Objective-C
+
+@property (nonatomic, assign, readonly) BOOL userPaused;
+
+@property (nonatomic, assign, readwrite, getter=isAutoplay) BOOL autoplay;
+
+- (BOOL)play;
+
+- (BOOL)pause;
+
+- (void)stop;
+
+- (void)stopAndFadeOut;
+
+@property (nonatomic, copy, readwrite, nullable) void(^playDidToEnd)(SJVideoPlayer *player);
+
+- (void)jumpedToTime:(NSTimeInterval)time completionHandler:(void (^ __nullable)(BOOL finished))completionHandler;
+
+- (void)seekToTime:(CMTime)time completionHandler:(void (^ __nullable)(BOOL finished))completionHandler;
+
+```
+___
+
+### screen rotation method
+```Objective-C
+
+@property (nonatomic, assign, readwrite) BOOL disableRotation;
+
+@property (nonatomic, copy, readwrite, nullable) void(^willRotateScreen)(SJVideoPlayer *player, BOOL isFullScreen);
+
+@property (nonatomic, copy, readwrite, nullable) void(^rotatedScreen)(SJVideoPlayer *player, BOOL isFullScreen);
+
+@property (nonatomic, assign, readonly) BOOL isFullScreen;
+
+```
+___
+
+### setting method
+```Objective-C
+
+- (void)setPlaceholder:(UIImage *)placeholder;
+
+@property (nonatomic, copy, readwrite) void(^clickedBackEvent)(SJVideoPlayer *player);
+
+@property (class, nonatomic, copy, readonly) void(^update)(void(^block)(SJVideoPlayerSettings *commonSettings));
+
++ (void)resetSetting; // 重置配置, 恢复默认设置
+
+@property (nonatomic, strong, readwrite, nullable) NSArray<SJVideoPlayerMoreSetting *> *moreSettings;
+
+@property (nonatomic, assign, readwrite) BOOL generatePreviewImages;
+
+```
+___
+
+### rate method
+```Objective-C
+
+@property (nonatomic, assign, readwrite) float rate; /// 0.5 .. 1.5
+- (void)resetRate;
+
+@property (nonatomic, copy, readwrite, nullable) void(^rateChanged)(SJVideoPlayer *player);
+
+@property (nonatomic, copy, readwrite, nullable) void(^internallyChangedRate)(SJVideoPlayer *player, float rate);
+
+```
+___
+
+# example
+<img src="https://github.com/changsanjiang/SJVideoPlayer/blob/master/SJVideoPlayerProject/SJVideoPlayerProject/preview.gif" /> <img src="https://github.com/changsanjiang/SJVideoPlayer/blob/master/SJVideoPlayerProject/SJVideoPlayerProject/nested.gif" width=350 />
+
+___
 
 # 抽离出的组件
 ### [加载视图](https://github.com/changsanjiang/SJLoadingView)
@@ -34,9 +164,4 @@ pod 'SJVideoPlayer'
 
 ### 其他组件陆续抽离中...
 
-### Use
-```Objective-C
- Player.asset = [[SJVideoPlayerAssetCarrier alloc] initWithAssetURL:[NSURL URLWithString:@"http://....."] beginTime:10];
-```
-
-
+___

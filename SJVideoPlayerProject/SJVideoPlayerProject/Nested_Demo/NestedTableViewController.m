@@ -97,17 +97,20 @@ static NSString *const NestedTableViewCellID = @"NestedTableViewCell";
 
     // create asset
     NSURL *playURL = [NSURL URLWithString:@"http://blurdancer-video.oss-cn-shanghai.aliyuncs.com/usertrend/120718-1515947072.mp4"];
+    
+    NSIndexPath *embeddedScrollViewIndexPath = [self.tableView indexPathForCell:tabCell];
+    UIView *embeddedScrollView = collectionView;
     _videoPlayer.asset =
     [[SJVideoPlayerAssetCarrier alloc] initWithAssetURL:playURL
                                               indexPath:indexPath
                                            superviewTag:playerParentView.tag
-                                    scrollViewIndexPath:[self.tableView indexPathForCell:tabCell]
-                                          scrollViewTag:collectionView.tag
+                                    scrollViewIndexPath:embeddedScrollViewIndexPath
+                                          scrollViewTag:embeddedScrollView.tag
                                          rootScrollView:self.tableView];
     
     // setting player
     __weak typeof(self) _self = self;
-    _videoPlayer.rotatedScreen = ^(SJVideoPlayer * _Nonnull player, BOOL isFullScreen) {
+    _videoPlayer.willRotateScreen = ^(SJVideoPlayer * _Nonnull player, BOOL isFullScreen) {
         __strong typeof(_self) self = _self;
         if ( !self ) return ;
         [self setNeedsStatusBarAppearanceUpdate];

@@ -159,7 +159,7 @@
     [_nameLabel mas_makeConstraints:^(MASConstraintMaker *make) {
         make.leading.equalTo(_avatarImageView.mas_trailing).offset(8);
         make.bottom.equalTo(_avatarImageView.mas_centerY);
-        make.trailing.equalTo(_attentionBtn.mas_leadingMargin);
+        make.trailing.equalTo(_attentionBtn.mas_leading).offset(-8);
     }];
     
     [_createTimeLabel mas_makeConstraints:^(MASConstraintMaker *make) {

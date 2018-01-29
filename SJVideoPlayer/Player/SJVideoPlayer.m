@@ -330,6 +330,18 @@ inline static void _sjAnima_Complete(void(^block)(void), void(^complete)(void)) 
     _sjHiddenViews(@[self.controlView.bottomProgressSlider]);
     self.controlView.previewView.hidden = YES;
     
+    if ( !self.orentation.isFullScreen ) {
+        _sjHiddenViews(@[self.controlView.topControlView.previewBtn, self.controlView.topControlView.moreBtn]);
+    }
+    else  {
+        if ( self.generatePreviewImages &&
+             self.asset.generatedPreviewImages ) {
+            _sjShowViews(@[self.controlView.topControlView.previewBtn]);
+        }
+
+        _sjShowViews(@[self.controlView.topControlView.moreBtn]);
+    }
+    
     // transform show
     if ( self.playOnCell && !self.orentation.fullScreen ) {
         self.controlView.topControlView.transform = CGAffineTransformMakeTranslation(0, -SJControlTopH);
@@ -410,18 +422,6 @@ inline static void _sjAnima_Complete(void(^block)(void), void(^complete)(void)) 
     self.state = SJVideoPlayerPlayState_Unknown;
     [self stop];
     NSLog(@"%s - %zd", __func__, __LINE__);
-}
-
-- (UIImage *)screenshot {
-    return [_asset screenshot];
-}
-
-- (NSTimeInterval)currentTime {
-    return _asset.currentTime;
-}
-
-- (NSTimeInterval)totalTime {
-    return _asset.duration;
 }
 
 - (BOOL)playOnCell {
@@ -651,7 +651,7 @@ static dispatch_queue_t videoPlayerWorkQueue;
         return YES;
     };
     
-    _orentation.orientationWillChange = ^(SJOrentationObserver * _Nonnull observer) {
+    _orentation.orientationWillChange = ^(SJOrentationObserver * _Nonnull observer, BOOL isFullScreen) {
         __strong typeof(_self) self = _self;
         if ( !self ) return;
         _sjAnima(^{
@@ -660,20 +660,15 @@ static dispatch_queue_t videoPlayerWorkQueue;
             self.hideControl = YES;
             if ( !observer.isFullScreen ) self.hiddenLeftControlView = YES;
             self.controlView.previewView.hidden = YES;
+            if ( self.willRotateScreen ) self.willRotateScreen(self, isFullScreen);
         });
     };
     
-    _orentation.orientationChanged = ^(SJOrentationObserver * _Nonnull observer) {
+    _orentation.orientationChanged = ^(SJOrentationObserver * _Nonnull observer, BOOL isFullScreen) {
         __strong typeof(_self) self = _self;
         if ( !self ) return;
         _sjAnima_Complete(^{
-            self.hideControl = NO;
             if ( observer.isFullScreen ) {
-                self.hiddenLeftControlView = NO;
-                _sjShowViews(@[self.controlView.topControlView.moreBtn]);
-                if ( self.asset.hasBeenGeneratedPreviewImages ) {
-                    _sjShowViews(@[self.controlView.topControlView.previewBtn]);
-                }
                 // `iPhone_X` remake constraints.
                 if ( SJ_is_iPhoneX() ) {
                     [self.controlView mas_remakeConstraints:^(MASConstraintMaker *make) {
@@ -684,8 +679,6 @@ static dispatch_queue_t videoPlayerWorkQueue;
                 }
             }
             else {
-                _sjHiddenViews(@[self.controlView.topControlView.moreBtn,
-                                 self.controlView.topControlView.previewBtn,]);
                 // `iPhone_X` remake constraints.
                 if ( SJ_is_iPhoneX() ) {
                     [self.controlView mas_remakeConstraints:^(MASConstraintMaker *make) {
@@ -1174,21 +1167,9 @@ static dispatch_queue_t videoPlayerWorkQueue;
 @end
 
 
+#pragma mark - 播放
 
-
-
-#pragma mark -
-
-@implementation SJVideoPlayer (Setting)
-
-- (void)setClickedBackEvent:(void (^)(SJVideoPlayer *player))clickedBackEvent {
-    objc_setAssociatedObject(self, @selector(clickedBackEvent), clickedBackEvent, OBJC_ASSOCIATION_COPY_NONATOMIC);
-}
-
-- (void (^)(SJVideoPlayer * _Nonnull))clickedBackEvent {
-    return objc_getAssociatedObject(self, _cmd);
-}
-
+@implementation SJVideoPlayer (Play)
 - (void)playWithURL:(NSURL *)playURL {
     [self playWithURL:playURL jumpedToTime:0];
 }
@@ -1210,7 +1191,7 @@ static dispatch_queue_t videoPlayerWorkQueue;
     [self _clear];
     _asset = asset;
     if ( !asset || !asset.assetURL ) return;
-    [self _resetRate];
+    [self resetRate];
     _view.alpha = 1;
     _presentView.asset = asset;
     _controlView.asset = asset;
@@ -1270,7 +1251,7 @@ static dispatch_queue_t videoPlayerWorkQueue;
         if ( self.state == SJVideoPlayerPlayState_Buffing ) return;
         [self _buffering];
     };
-
+    
     if ( asset.indexPath ) {
         /// 默认滑入
         self.scrollIn = YES;
@@ -1278,7 +1259,7 @@ static dispatch_queue_t videoPlayerWorkQueue;
     else {
         self.scrollIn = NO;
     }
-
+    
     // scroll view
     if ( asset.scrollView ) {
         /// 滑入
@@ -1296,10 +1277,10 @@ static dispatch_queue_t videoPlayerWorkQueue;
                     make.edges.equalTo(self.view.superview);
                 }];
             }
-//            if ( !self.userPaused &&
-//                 self.state != SJVideoPlayerPlayState_PlayEnd ) [self play];
+            //            if ( !self.userPaused &&
+            //                 self.state != SJVideoPlayerPlayState_PlayEnd ) [self play];
         };
-
+        
         /// 滑出
         asset.scrollOut = ^(SJVideoPlayerAssetCarrier * _Nonnull asset) {
             __strong typeof(_self) self = _self;
@@ -1308,7 +1289,7 @@ static dispatch_queue_t videoPlayerWorkQueue;
             self.scrollIn = NO;
             self.view.alpha = 0.001;
             if ( !self.userPaused &&
-                 self.state != SJVideoPlayerPlayState_PlayEnd ) [self pause];
+                self.state != SJVideoPlayerPlayState_PlayEnd ) [self pause];
         };
         
         ///
@@ -1324,10 +1305,144 @@ static dispatch_queue_t videoPlayerWorkQueue;
     return _asset;
 }
 
+- (UIImage *)screenshot {
+    return [_asset screenshot];
+}
+
+- (NSTimeInterval)currentTime {
+    return _asset.currentTime;
+}
+
+- (NSTimeInterval)totalTime {
+    return _asset.duration;
+}
+
 - (void)_clear {
     _presentView.asset = nil;
     _controlView.asset = nil;
     _asset = nil;
+}
+
+@end
+
+
+#pragma mark - 控制
+
+@implementation SJVideoPlayer (Control)
+
+- (BOOL)userPaused {
+    return self.userClickedPause;
+}
+
+- (void)setAutoplay:(BOOL)autoplay {
+    objc_setAssociatedObject(self, @selector(isAutoplay), @(autoplay), OBJC_ASSOCIATION_RETAIN_NONATOMIC);
+}
+
+- (BOOL)isAutoplay {
+    return [objc_getAssociatedObject(self, _cmd) boolValue];
+}
+
+- (BOOL)play {
+    self.suspend = NO;
+    self.stopped = NO;
+    
+    if ( !self.asset ) return NO;
+    self.userClickedPause = NO;
+    _sjAnima(^{
+        [self _playState];
+    });
+    [self _play];
+    return YES;
+}
+
+- (BOOL)pause {
+    self.suspend = YES;
+    
+    if ( !self.asset ) return NO;
+    _sjAnima(^{
+        [self _pauseState];
+        self.hideControl = NO;
+    });
+    [self _pause];
+    if ( !self.playOnCell || self.orentation.fullScreen ) [self showTitle:@"已暂停"];
+    return YES;
+}
+
+- (void)stop {
+    self.suspend = NO;
+    self.stopped = YES;
+    
+    if ( !self.asset ) return;
+    _sjAnima(^{
+        [self _unknownState];
+    });
+    [self _clear];
+}
+
+- (void)stopAndFadeOut {
+    self.suspend = NO;
+    self.stopped = YES;
+    // state
+    _sjAnima(^{
+        [self _unknownState];
+    });
+    // pause
+    [self _pause];
+    // fade out
+    [UIView animateWithDuration:0.5 animations:^{
+        self.view.alpha = 0.001;
+    } completion:^(BOOL finished) {
+        [self stop];
+        [_view removeFromSuperview];
+    }];
+}
+
+- (void)setPlayDidToEnd:(void (^)(SJVideoPlayer * _Nonnull))playDidToEnd {
+    objc_setAssociatedObject(self, @selector(playDidToEnd), playDidToEnd, OBJC_ASSOCIATION_COPY_NONATOMIC);
+}
+
+- (void (^)(SJVideoPlayer * _Nonnull))playDidToEnd {
+    return objc_getAssociatedObject(self, _cmd);
+}
+
+- (void)jumpedToTime:(NSTimeInterval)time completionHandler:(void (^ __nullable)(BOOL finished))completionHandler {
+    if ( isnan(time) ) { return;}
+    CMTime seekTime = CMTimeMakeWithSeconds(time, NSEC_PER_SEC);
+    [self seekToTime:seekTime completionHandler:completionHandler];
+}
+
+- (void)seekToTime:(CMTime)time completionHandler:(void (^ __nullable)(BOOL finished))completionHandler {
+    [self _startLoading];
+    __weak typeof(self) _self = self;
+    [self.asset seekToTime:time completionHandler:^(BOOL finished) {
+        __strong typeof(_self) self = _self;
+        if ( !self ) return;
+        [self _stopLoading];
+        if ( completionHandler ) completionHandler(finished);
+    }];
+}
+
+- (void)stopRotation {
+    self.disableRotation = YES;
+}
+
+- (void)enableRotation {
+    self.disableRotation = NO;
+}
+
+@end
+
+
+#pragma mark - 配置
+
+@implementation SJVideoPlayer (Setting)
+
+- (void)setClickedBackEvent:(void (^)(SJVideoPlayer *player))clickedBackEvent {
+    objc_setAssociatedObject(self, @selector(clickedBackEvent), clickedBackEvent, OBJC_ASSOCIATION_COPY_NONATOMIC);
+}
+
+- (void (^)(SJVideoPlayer * _Nonnull))clickedBackEvent {
+    return objc_getAssociatedObject(self, _cmd);
 }
 
 - (void)setMoreSettings:(NSArray<SJVideoPlayerMoreSetting *> *)moreSettings {
@@ -1420,14 +1535,6 @@ static dispatch_queue_t videoPlayerWorkQueue;
     });
 }
 
-- (void)setAutoplay:(BOOL)autoplay {
-    objc_setAssociatedObject(self, @selector(isAutoplay), @(autoplay), OBJC_ASSOCIATION_RETAIN_NONATOMIC);
-}
-
-- (BOOL)isAutoplay {
-    return [objc_getAssociatedObject(self, _cmd) boolValue];
-}
-
 - (void)setGeneratePreviewImages:(BOOL)generatePreviewImages {
     objc_setAssociatedObject(self, @selector(generatePreviewImages), @(generatePreviewImages), OBJC_ASSOCIATION_RETAIN_NONATOMIC);
 }
@@ -1436,49 +1543,13 @@ static dispatch_queue_t videoPlayerWorkQueue;
     return [objc_getAssociatedObject(self, _cmd) boolValue];
 }
 
-- (void)setDisableRotation:(BOOL)disableRotation {
-    objc_setAssociatedObject(self, @selector(disableRotation), @(disableRotation), OBJC_ASSOCIATION_RETAIN_NONATOMIC);
-}
+@end
 
-- (BOOL)disableRotation {
-    return [objc_getAssociatedObject(self, _cmd) boolValue];
-}
 
-- (void)setRotatedScreen:(void (^)(SJVideoPlayer * _Nonnull, BOOL))rotatedScreen {
-    objc_setAssociatedObject(self, @selector(rotatedScreen), rotatedScreen, OBJC_ASSOCIATION_COPY_NONATOMIC);
-}
 
-- (void (^)(SJVideoPlayer * _Nonnull, BOOL))rotatedScreen {
-    return objc_getAssociatedObject(self, _cmd);
-}
+#pragma mark - 调速
 
-- (BOOL)isFullScreen {
-    return self.orentation.isFullScreen;
-}
-
-- (void)setPlayDidToEnd:(void (^)(SJVideoPlayer * _Nonnull))playDidToEnd {
-    objc_setAssociatedObject(self, @selector(playDidToEnd), playDidToEnd, OBJC_ASSOCIATION_COPY_NONATOMIC);
-}
-
-- (void (^)(SJVideoPlayer * _Nonnull))playDidToEnd {
-    return objc_getAssociatedObject(self, _cmd);
-}
-
-- (void)setControlViewDisplayStatus:(void (^)(SJVideoPlayer * _Nonnull, BOOL))controlViewDisplayStatus {
-    objc_setAssociatedObject(self, @selector(controlViewDisplayStatus), controlViewDisplayStatus, OBJC_ASSOCIATION_COPY_NONATOMIC);
-}
-
-- (void (^)(SJVideoPlayer * _Nonnull, BOOL))controlViewDisplayStatus {
-    return objc_getAssociatedObject(self, _cmd);
-}
-
-- (BOOL)controlViewDisplayed {
-    return !self.isHiddenControl;
-}
-
-- (void)_resetRate {
-    objc_setAssociatedObject(self, @selector(rate), @(1), OBJC_ASSOCIATION_RETAIN_NONATOMIC);
-}
+@implementation SJVideoPlayer (Rate)
 
 - (void)setRate:(float)rate {
     if ( self.rate == rate ) return;
@@ -1495,6 +1566,10 @@ static dispatch_queue_t videoPlayerWorkQueue;
 
 - (float)rate {
     return [objc_getAssociatedObject(self, _cmd) floatValue];
+}
+
+- (void)resetRate {
+    objc_setAssociatedObject(self, @selector(rate), @(1), OBJC_ASSOCIATION_RETAIN_NONATOMIC);
 }
 
 - (void)setRateChanged:(void (^)(SJVideoPlayer * _Nonnull))rateChanged {
@@ -1516,99 +1591,61 @@ static dispatch_queue_t videoPlayerWorkQueue;
 @end
 
 
+#pragma mark - 屏幕旋转
 
+@implementation SJVideoPlayer (Rotation)
 
-
-#pragma mark -
-
-@implementation SJVideoPlayer (Control)
-
-- (BOOL)userPaused {
-    return self.userClickedPause;
+- (void)setDisableRotation:(BOOL)disableRotation {
+    objc_setAssociatedObject(self, @selector(disableRotation), @(disableRotation), OBJC_ASSOCIATION_RETAIN_NONATOMIC);
 }
 
-- (BOOL)play {
-    self.suspend = NO;
-    self.stopped = NO;
-    
-    if ( !self.asset ) return NO;
-    self.userClickedPause = NO;
-    _sjAnima(^{
-        [self _playState];
-    });
-    [self _play];
-    return YES;
+- (BOOL)disableRotation {
+    return [objc_getAssociatedObject(self, _cmd) boolValue];
 }
 
-- (BOOL)pause {
-    self.suspend = YES;
-    
-    if ( !self.asset ) return NO;
-    _sjAnima(^{
-        [self _pauseState];
-        self.hideControl = NO;
-    });
-    [self _pause];
-    if ( !self.playOnCell || self.orentation.fullScreen ) [self showTitle:@"已暂停"];
-    return YES;
+- (void)setWillRotateScreen:(void (^)(SJVideoPlayer * _Nonnull, BOOL))willRotateScreen {
+    objc_setAssociatedObject(self, @selector(willRotateScreen), willRotateScreen, OBJC_ASSOCIATION_COPY_NONATOMIC);
 }
 
-- (void)stop {
-    self.suspend = NO;
-    self.stopped = YES;
-    
-    if ( !self.asset ) return;
-    _sjAnima(^{
-        [self _unknownState];
-    });
-    [self _clear];
+- (void (^)(SJVideoPlayer * _Nonnull, BOOL))willRotateScreen {
+    return objc_getAssociatedObject(self, _cmd);
 }
 
-- (void)stopAndFadeOut {
-    self.suspend = NO;
-    self.stopped = YES;
-    // state
-    _sjAnima(^{
-        [self _unknownState];
-    });
-    // pause
-    [self _pause];
-    // fade out
-    [UIView animateWithDuration:0.5 animations:^{
-        self.view.alpha = 0.001;
-    } completion:^(BOOL finished) {
-        [self stop];
-        [_view removeFromSuperview];
-    }];
+- (void)setRotatedScreen:(void (^)(SJVideoPlayer * _Nonnull, BOOL))rotatedScreen {
+    objc_setAssociatedObject(self, @selector(rotatedScreen), rotatedScreen, OBJC_ASSOCIATION_COPY_NONATOMIC);
 }
 
-- (void)jumpedToTime:(NSTimeInterval)time completionHandler:(void (^ __nullable)(BOOL finished))completionHandler {
-    if ( isnan(time) ) { return;}
-    CMTime seekTime = CMTimeMakeWithSeconds(time, NSEC_PER_SEC);
-    [self seekToTime:seekTime completionHandler:completionHandler];
+- (void (^)(SJVideoPlayer * _Nonnull, BOOL))rotatedScreen {
+    return objc_getAssociatedObject(self, _cmd);
 }
 
-- (void)seekToTime:(CMTime)time completionHandler:(void (^ __nullable)(BOOL finished))completionHandler {
-    [self _startLoading];
-    __weak typeof(self) _self = self;
-    [self.asset seekToTime:time completionHandler:^(BOOL finished) {
-        __strong typeof(_self) self = _self;
-        if ( !self ) return;
-        [self _stopLoading];
-        if ( completionHandler ) completionHandler(finished);
-    }];
-}
-
-- (void)stopRotation {
-    self.disableRotation = YES;
-}
-
-- (void)enableRotation {
-    self.disableRotation = NO;
+- (BOOL)isFullScreen {
+    return self.orentation.isFullScreen;
 }
 
 @end
 
+
+#pragma mark - 控制视图
+
+@implementation SJVideoPlayer (ControlView)
+
+- (void)setControlViewDisplayStatus:(void (^)(SJVideoPlayer * _Nonnull, BOOL))controlViewDisplayStatus {
+    objc_setAssociatedObject(self, @selector(controlViewDisplayStatus), controlViewDisplayStatus, OBJC_ASSOCIATION_COPY_NONATOMIC);
+}
+
+- (void (^)(SJVideoPlayer * _Nonnull, BOOL))controlViewDisplayStatus {
+    return objc_getAssociatedObject(self, _cmd);
+}
+
+- (BOOL)controlViewDisplayed {
+    return !self.isHiddenControl;
+}
+
+@end
+
+
+#pragma mark - 提示
 
 @implementation SJVideoPlayer (Prompt)
 

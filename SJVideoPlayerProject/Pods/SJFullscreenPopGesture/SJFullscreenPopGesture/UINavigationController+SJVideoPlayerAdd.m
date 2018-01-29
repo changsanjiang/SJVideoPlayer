@@ -361,14 +361,7 @@ static inline void SJ_updateScreenshot() {
     [self.view endEditing:YES];
     
     // Move the `screenshot` to the bottom of the `obj`.
-    UIWindow *window = self.view.window;
-    [window.subviews enumerateObjectsWithOptions:NSEnumerationReverse usingBlock:^(__kindof UIView * _Nonnull obj, NSUInteger idx, BOOL * _Nonnull stop) {
-        if ( [obj isMemberOfClass:NSClassFromString(@"UITransitionView")] ||
-             [obj isMemberOfClass:NSClassFromString(@"UILayoutContainerView")] ) {
-            *stop = YES;
-            [window insertSubview:self.SJ_screenshotView belowSubview:obj];
-        }
-    }];
+    [self.view.superview insertSubview:self.SJ_screenshotView atIndex:0];
     
     self.SJ_screenshotView.hidden = NO;
     [self.SJ_screenshotView beginTransitionWithSnapshot:self.SJ_snapshotsM.lastObject];

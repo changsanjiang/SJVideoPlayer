@@ -5,6 +5,9 @@
 //  Created by BlueDancer on 2017/12/5.
 //  Copyright © 2017年 SanJiang. All rights reserved.
 //
+//  https://github.com/changsanjiang/SJOrentationObserver
+//  changsanjiang@gmail.com
+//
 
 #import "SJOrentationObserver.h"
 #import <Masonry/Masonry.h>
@@ -68,12 +71,10 @@
     
     if ( self.isTransitioning ) return;
     
-    
     UIInterfaceOrientation statusBarOrientation = [UIApplication sharedApplication].statusBarOrientation;
     UIDeviceOrientation deviceOrientation = [UIDevice currentDevice].orientation;
     if ( (UIDeviceOrientation)statusBarOrientation == deviceOrientation ) return;
     
-    _fullScreen = fullScreen;
     self.transitioning = YES;
     
     CGAffineTransform transform = CGAffineTransformIdentity;
@@ -105,31 +106,29 @@
         self.transitioning = NO;
         return;
     }
-    
-    CGRect fix = _view.frame;
-    
-    if ( UIInterfaceOrientationPortrait != ori ) {
+
+    [UIApplication sharedApplication].statusBarOrientation = ori;
+
+    if ( !_fullScreen && UIInterfaceOrientationPortrait != ori ) {
+        CGRect fix = _view.frame;
         fix.origin = [[UIApplication sharedApplication].keyWindow convertPoint:CGPointZero fromView:_targetSuperview];
-    }
-    else {
-        CGPoint point = [[UIApplication sharedApplication].keyWindow convertPoint:CGPointZero fromView:_targetSuperview];
-        fix.origin = CGPointMake(-point.x, -point.y);
+        [superview addSubview:_view];
+        _view.frame = fix;
     }
     
-    _view.frame = fix;
-    
-    [superview addSubview:_view];
-    _view.translatesAutoresizingMaskIntoConstraints = NO;
     [_view mas_remakeConstraints:^(MASConstraintMaker *make) {
         if ( UIInterfaceOrientationPortrait == ori ) {
-            make.edges.equalTo(self.targetSuperview);
+            CGRect rect = [[UIApplication sharedApplication].keyWindow convertRect:self.targetSuperview.bounds fromView:self.targetSuperview];
+            make.size.mas_equalTo(rect.size);
+            make.top.offset(rect.origin.y);
+            make.leading.offset(rect.origin.x);
         }
         else {
             CGFloat width = [UIScreen mainScreen].bounds.size.width;
             CGFloat height = [UIScreen mainScreen].bounds.size.height;
             CGFloat max = MAX(width, height);
             CGFloat min = MIN(width, height);
-            make.center.offset(0);
+            make.center.mas_equalTo(CGPointZero);
             make.size.mas_offset(CGSizeMake(max, min));
         }
     }];
@@ -137,13 +136,19 @@
     if ( _orientationWillChange ) _orientationWillChange(self);
     
     [UIView animateWithDuration:_duration animations:^{
-        _view.transform = transform;
+        [_view setTransform:transform];
         [_view.superview layoutIfNeeded];
     } completion:^(BOOL finished) {
         self.transitioning = NO;
+        _fullScreen = fullScreen;
+        if ( UIInterfaceOrientationPortrait == ori ) {
+            [superview addSubview:_view];
+            [_view mas_remakeConstraints:^(MASConstraintMaker *make) {
+                make.edges.equalTo(self.targetSuperview);
+            }];
+        }
         if ( _orientationChanged ) _orientationChanged(self);
     }];
-    [[UIApplication sharedApplication] setStatusBarOrientation:ori animated:YES];
 }
 
 - (BOOL)_changeOrientation {
@@ -162,4 +167,3 @@
 }
 
 @end
-

@@ -27,9 +27,9 @@ NS_ASSUME_NONNULL_BEGIN
 /// 旋转条件, 返回 YES 才会旋转, 默认为 nil.
 @property (nonatomic, copy, readwrite, nullable) BOOL(^rotationCondition)(SJOrentationObserver *observer);
 
-@property (nonatomic, copy, readwrite, nullable) void(^orientationWillChange)(SJOrentationObserver *observer);
+@property (nonatomic, copy, readwrite, nullable) void(^orientationWillChange)(SJOrentationObserver *observer, BOOL isFullScreen);
 
-@property (nonatomic, copy, readwrite, nullable) void(^orientationChanged)(SJOrentationObserver *observer);
+@property (nonatomic, copy, readwrite, nullable) void(^orientationChanged)(SJOrentationObserver *observer, BOOL isFullScreen);
 
 - (BOOL)_changeOrientation;
 

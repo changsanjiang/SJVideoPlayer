@@ -13,10 +13,10 @@ PODS:
     - SJLabel/Category
   - SJLoadingView (1.0.1)
   - SJObserverHelper (1.0.3)
-  - SJOrentationObserver (1.0.1):
+  - SJOrentationObserver (1.0.2):
     - Masonry
-    - SJOrentationObserver/Category (= 1.0.1)
-  - SJOrentationObserver/Category (1.0.1):
+    - SJOrentationObserver/Category (= 1.0.2)
+  - SJOrentationObserver/Category (1.0.2):
     - Masonry
   - SJPrompt (1.0.1):
     - Masonry
@@ -42,7 +42,7 @@ DEPENDENCIES:
   - SJLabel
   - SJLoadingView
   - SJObserverHelper
-  - SJOrentationObserver
+  - SJOrentationObserver (= 1.0.2)
   - SJPrompt
   - SJSlider
   - SJUIFactory
@@ -57,13 +57,13 @@ SPEC CHECKSUMS:
   SJLabel: e66ad920bd503a69fdcc0318dec62f9e4a5105af
   SJLoadingView: c3ff03e4b363a5b6a3ba0634d6bb9ce2647faf07
   SJObserverHelper: b270d707cd18ab76538596aa4e98cf798c9e9868
-  SJOrentationObserver: 5374e2fb3c05634249cf7595a91806a95147da76
+  SJOrentationObserver: 1a54e118c16a96c27489d5d80b5e0bfb55a0f506
   SJPrompt: eaecd94f2055a12d25090967dbad3f21da011626
   SJSlider: 9498746518f0002b244d67238a55c02e3a2aafbe
   SJUIFactory: 3b73bc10a2de3cedd7856480bdde177ed9fc6843
   SJVideoPlayerAssetCarrier: 0111a5bcd2743ed307f0f0cabd44bbdd135f9644
   SJVolBrigControl: a12dbf222d0412b4fd48f3c454d62486f39a9158
 
-PODFILE CHECKSUM: 5044ef8c398be9a62175501dbc2bb184d9dd79d3
+PODFILE CHECKSUM: 53746c98c2b5e7f12e38a41fce7413e887683798
 
 COCOAPODS: 1.4.0

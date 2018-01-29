@@ -106,15 +106,19 @@
         self.transitioning = NO;
         return;
     }
-
+    
+    
     [UIApplication sharedApplication].statusBarOrientation = ori;
-
+    
     if ( !_fullScreen && UIInterfaceOrientationPortrait != ori ) {
         CGRect fix = _view.frame;
         fix.origin = [[UIApplication sharedApplication].keyWindow convertPoint:CGPointZero fromView:_targetSuperview];
         [superview addSubview:_view];
         _view.frame = fix;
     }
+    
+    // update
+    _fullScreen = fullScreen;
     
     [_view mas_remakeConstraints:^(MASConstraintMaker *make) {
         if ( UIInterfaceOrientationPortrait == ori ) {
@@ -133,21 +137,20 @@
         }
     }];
     
-    if ( _orientationWillChange ) _orientationWillChange(self);
+    if ( _orientationWillChange ) _orientationWillChange(self, fullScreen);
     
     [UIView animateWithDuration:_duration animations:^{
         [_view setTransform:transform];
         [_view.superview layoutIfNeeded];
     } completion:^(BOOL finished) {
         self.transitioning = NO;
-        _fullScreen = fullScreen;
         if ( UIInterfaceOrientationPortrait == ori ) {
             [superview addSubview:_view];
             [_view mas_remakeConstraints:^(MASConstraintMaker *make) {
                 make.edges.equalTo(self.targetSuperview);
             }];
         }
-        if ( _orientationChanged ) _orientationChanged(self);
+        if ( _orientationChanged ) _orientationChanged(self, fullScreen);
     }];
 }
 

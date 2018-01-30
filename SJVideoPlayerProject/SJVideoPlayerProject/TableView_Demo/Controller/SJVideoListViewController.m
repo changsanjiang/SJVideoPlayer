@@ -151,8 +151,8 @@ static NSString *const SJVideoListTableViewCellID = @"SJVideoListTableViewCell";
     }];
     
     // set asset
-    _videoPlayer.asset =
-    [[SJVideoPlayerAssetCarrier alloc] initWithAssetURL:[NSURL URLWithString:cell.model.playURLStr]
+    _videoPlayer.URLAsset =
+    [[SJVideoPlayerURLAsset alloc] initWithAssetURL:[NSURL URLWithString:cell.model.playURLStr]
                                              scrollView:self.tableView
                                               indexPath:[self.tableView indexPathForCell:cell]
                                            superviewTag:playerParentView.tag];

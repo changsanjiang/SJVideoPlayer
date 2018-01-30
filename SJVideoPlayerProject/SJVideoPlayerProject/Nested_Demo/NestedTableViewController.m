@@ -100,8 +100,8 @@ static NSString *const NestedTableViewCellID = @"NestedTableViewCell";
     
     NSIndexPath *embeddedScrollViewIndexPath = [self.tableView indexPathForCell:tabCell];
     UIView *embeddedScrollView = collectionView;
-    _videoPlayer.asset =
-    [[SJVideoPlayerAssetCarrier alloc] initWithAssetURL:playURL
+    _videoPlayer.URLAsset =
+    [[SJVideoPlayerURLAsset alloc] initWithAssetURL:playURL
                                               indexPath:indexPath
                                            superviewTag:playerParentView.tag
                                     scrollViewIndexPath:embeddedScrollViewIndexPath

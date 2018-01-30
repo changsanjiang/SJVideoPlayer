@@ -125,7 +125,7 @@ static NSString * const PlayerCollectionViewCellID = @"PlayerCollectionViewCell"
         _videoPlayer.view.alpha = 1;
     }];
     
-    _videoPlayer.asset = [[SJVideoPlayerAssetCarrier alloc] initWithAssetURL:[NSURL URLWithString:videoURLStr] scrollView:self.collectionView indexPath:indexPath superviewTag:tag];
+    _videoPlayer.URLAsset = [[SJVideoPlayerURLAsset alloc] initWithAssetURL:[NSURL URLWithString:videoURLStr] scrollView:self.collectionView indexPath:indexPath superviewTag:tag];
     
     _videoPlayer.autoplay = YES;
 }

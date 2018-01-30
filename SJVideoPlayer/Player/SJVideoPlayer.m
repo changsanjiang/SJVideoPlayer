@@ -79,8 +79,7 @@ inline static void _sjAnima_Complete(void(^block)(void), void(^complete)(void)) 
 @property (nonatomic, strong, readonly) SJLoadingView *loadingView;
 @property (nonatomic, strong, readonly) SJVideoPlayerDraggingProgressView *draggingProgressView;
 
-
-
+@property (nonatomic, strong, readwrite) SJVideoPlayerAssetCarrier *asset;
 @property (nonatomic, assign, readwrite) SJVideoPlayerPlayState state;
 @property (nonatomic, assign, readwrite) BOOL hiddenMoreSettingView;
 @property (nonatomic, assign, readwrite) BOOL hiddenMoreSecondarySettingView;
@@ -374,8 +373,8 @@ inline static void _sjAnima_Complete(void(^block)(void), void(^complete)(void)) 
     SJVolBrigControl *_volBrigControl;
     SJLoadingView *_loadingView;
     SJPlayerGestureControl *_gestureControl;
-    dispatch_queue_t _workQueue;
     SJVideoPlayerAssetCarrier *_asset;
+    dispatch_queue_t _workQueue;
     SJVideoPlayerDraggingProgressView *_draggingProgressView;
 }
 
@@ -425,7 +424,7 @@ inline static void _sjAnima_Complete(void(^block)(void), void(^complete)(void)) 
 }
 
 - (BOOL)playOnCell {
-    return _asset.indexPath ? YES : NO;
+    return self.asset.indexPath ? YES : NO;
 }
 
 #pragma mark -
@@ -1164,29 +1163,7 @@ static dispatch_queue_t videoPlayerWorkQueue;
     _presentView.state = state;
 }
 
-@end
-
-
-#pragma mark - 播放
-
-@implementation SJVideoPlayer (Play)
-- (void)playWithURL:(NSURL *)playURL {
-    [self playWithURL:playURL jumpedToTime:0];
-}
-
-// unit: sec.
-- (void)playWithURL:(NSURL *)playURL jumpedToTime:(NSTimeInterval)time {
-    self.asset = [[SJVideoPlayerAssetCarrier alloc] initWithAssetURL:playURL beginTime:time];
-}
-
-- (void)setAssetURL:(NSURL *)assetURL {
-    [self playWithURL:assetURL jumpedToTime:0];
-}
-
-- (NSURL *)assetURL {
-    return self.asset.assetURL;
-}
-
+#pragma mark - asset
 - (void)setAsset:(SJVideoPlayerAssetCarrier *)asset {
     [self _clear];
     _asset = asset;
@@ -1305,6 +1282,44 @@ static dispatch_queue_t videoPlayerWorkQueue;
     return _asset;
 }
 
+- (void)_clear {
+    _presentView.asset = nil;
+    _controlView.asset = nil;
+    _asset = nil;
+}
+@end
+
+
+#pragma mark - 播放
+
+@implementation SJVideoPlayer (Play)
+
+- (void)setURLAsset:(SJVideoPlayerURLAsset *)URLAsset {
+    objc_setAssociatedObject(self, @selector(URLAsset), URLAsset, OBJC_ASSOCIATION_RETAIN_NONATOMIC);
+    [self setAsset:[URLAsset valueForKey:@"asset"]];
+}
+
+- (SJVideoPlayerURLAsset *)URLAsset {
+    return objc_getAssociatedObject(self, _cmd);
+}
+
+- (void)playWithURL:(NSURL *)playURL {
+    [self playWithURL:playURL jumpedToTime:0];
+}
+
+// unit: sec.
+- (void)playWithURL:(NSURL *)playURL jumpedToTime:(NSTimeInterval)time {
+    self.asset = [[SJVideoPlayerAssetCarrier alloc] initWithAssetURL:playURL beginTime:time];
+}
+
+- (void)setAssetURL:(NSURL *)assetURL {
+    [self playWithURL:assetURL jumpedToTime:0];
+}
+
+- (NSURL *)assetURL {
+    return self.asset.assetURL;
+}
+
 - (UIImage *)screenshot {
     return [_asset screenshot];
 }
@@ -1315,12 +1330,6 @@ static dispatch_queue_t videoPlayerWorkQueue;
 
 - (NSTimeInterval)totalTime {
     return _asset.duration;
-}
-
-- (void)_clear {
-    _presentView.asset = nil;
-    _controlView.asset = nil;
-    _asset = nil;
 }
 
 @end

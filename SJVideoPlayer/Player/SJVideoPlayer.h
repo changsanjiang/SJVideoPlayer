@@ -12,10 +12,10 @@
 #import <UIKit/UIKit.h>
 #import <AVFoundation/AVFoundation.h>
 #import "SJVideoPlayerState.h"
-#import <SJVideoPlayerAssetCarrier/SJVideoPlayerAssetCarrier.h>
 #import "SJVideoPlayerMoreSettingSecondary.h"
 #import "SJVideoPlayerSettings.h"
 #import <SJPrompt/SJPrompt.h>
+#import "SJVideoPlayerURLAsset.h"
 
 NS_ASSUME_NONNULL_BEGIN
 
@@ -62,7 +62,7 @@ NS_ASSUME_NONNULL_BEGIN
  *  如果在 `tableView` 或者 `collectionView` 中播放, 使用它来初始化播放资源.
  *  它也可以直接从某个时刻开始播放. 单位是秒.
  **/
-@property (nonatomic, strong, readwrite, nullable) SJVideoPlayerAssetCarrier *asset;
+@property (nonatomic, strong, readwrite, nullable) SJVideoPlayerURLAsset *URLAsset;
 
 /*!
  *  unit: sec.

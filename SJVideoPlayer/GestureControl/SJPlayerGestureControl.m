@@ -13,6 +13,7 @@
 @property (nonatomic, strong, readonly) UITapGestureRecognizer *singleTap;
 @property (nonatomic, strong, readonly) UITapGestureRecognizer *doubleTap;
 @property (nonatomic, strong, readonly) UIPanGestureRecognizer *panGR;
+@property (nonatomic, strong, readonly) UIPinchGestureRecognizer *pinchGR;
 @property (nonatomic, assign, readwrite) SJPanDirection panDirection;
 @property (nonatomic, assign, readwrite) SJPanLocation panLocation;
 @property (nonatomic, assign, readwrite) SJPanMovingDirection panMovingDirection;
@@ -26,6 +27,7 @@
 @synthesize singleTap = _singleTap;
 @synthesize doubleTap = _doubleTap;
 @synthesize panGR = _panGR;
+@synthesize pinchGR = _pinchGR;
 
 - (instancetype)initWithTargetView:(UIView *)view {
     self = [super init];
@@ -44,10 +46,21 @@
     [_targetView addGestureRecognizer:_singleTap];
     [_targetView addGestureRecognizer:_doubleTap];
     [_targetView addGestureRecognizer:_panGR];
+    [_targetView addGestureRecognizer:self.pinchGR];
 }
 
 - (BOOL)gestureRecognizerShouldBegin:(UIGestureRecognizer *)gestureRecognizer {
+    if ( gestureRecognizer == self.pinchGR ) {
+        if ( self.pinchGR.numberOfTouches <= 1 ) return NO;
+    }
     if ( _triggerCondition ) return _triggerCondition(self, gestureRecognizer);
+    return YES;
+}
+
+- (BOOL)gestureRecognizer:(UIGestureRecognizer *)gestureRecognizer shouldRecognizeSimultaneouslyWithGestureRecognizer:(UIGestureRecognizer *)otherGestureRecognizer {
+    if ( gestureRecognizer.numberOfTouches >= 2 ) {
+        return NO;
+    }
     return YES;
 }
 
@@ -72,6 +85,13 @@
     _panGR.delegate = self;
     _panGR.delaysTouchesBegan = YES;
     return _panGR;
+}
+- (UIPinchGestureRecognizer *)pinchGR {
+    if ( _pinchGR ) return _pinchGR;
+    _pinchGR = [[UIPinchGestureRecognizer alloc] initWithTarget:self action:@selector(handlePinch:)];
+    _pinchGR.delegate = self;
+    _pinchGR.delaysTouchesBegan = YES;
+    return _pinchGR;
 }
 
 - (void)handleSingleTap:(UITapGestureRecognizer *)tap {
@@ -140,6 +160,16 @@
     [pan setTranslation:CGPointZero inView:pan.view];
 }
 
+- (void)handlePinch:(UIPinchGestureRecognizer *)pinch {
+    switch ( pinch.state ) {
+        case UIGestureRecognizerStateEnded: {
+            if ( self.pinched ) self.pinched(self, pinch.scale);
+        }
+            break;
+        default:
+            break;
+    }
+}
 - (void)setPanMovingDirection:(SJPanMovingDirection)panMovingDirection {
     _panMovingDirection = panMovingDirection;
 }

@@ -25,6 +25,8 @@ NS_ASSUME_NONNULL_BEGIN
 
 @property (nonatomic, assign, readwrite) SJVideoPlayerPlayState state;
 
+@property (nonatomic, copy) AVLayerVideoGravity videoGravity;
+
 @end
 
 NS_ASSUME_NONNULL_END

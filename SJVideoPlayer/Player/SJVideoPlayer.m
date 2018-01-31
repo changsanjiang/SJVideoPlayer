@@ -538,14 +538,12 @@ static dispatch_queue_t videoPlayerWorkQueue;
 - (SJVideoPlayerMoreSettingsView *)moreSettingView {
     if ( _moreSettingView ) return _moreSettingView;
     _moreSettingView = [[SJVideoPlayerMoreSettingsView alloc] initWithOrentationObserver:self.orentation];
-    _moreSettingView.backgroundColor = [UIColor blackColor];
     return _moreSettingView;
 }
 
 - (SJVideoPlayerMoreSettingSecondaryView *)moreSecondarySettingView {
     if ( _moreSecondarySettingView ) return _moreSecondarySettingView;
     _moreSecondarySettingView = [SJVideoPlayerMoreSettingSecondaryView new];
-    _moreSecondarySettingView.backgroundColor = [UIColor blackColor];
     _moreSettingFooterViewModel = [SJMoreSettingsFooterViewModel new];
     __weak typeof(self) _self = self;
     _moreSettingFooterViewModel.needChangeBrightness = ^(float brightness) {
@@ -874,7 +872,7 @@ static dispatch_queue_t videoPlayerWorkQueue;
                     }
                         break;
                     case SJPanLocation_Right: {
-                        CGFloat value = translate.y * 0.015;
+                        CGFloat value = translate.y * 0.008;
                         self.volBrigControl.volume -= value;
                     }
                         break;
@@ -913,6 +911,17 @@ static dispatch_queue_t videoPlayerWorkQueue;
             }
                 break;
             case SJPanDirection_Unknown: break;
+        }
+    };
+    
+    _gestureControl.pinched = ^(SJPlayerGestureControl * _Nonnull control, float scale) {
+        __strong typeof(_self) self = _self;
+        if ( !self ) return;
+        if ( scale > 1 ) {
+            self.presentView.videoGravity = AVLayerVideoGravityResizeAspectFill;
+        }
+        else {
+            self.presentView.videoGravity = AVLayerVideoGravityResizeAspect;
         }
     };
 }

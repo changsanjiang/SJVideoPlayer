@@ -94,6 +94,14 @@
     }];
 }
 
+- (void)setVideoGravity:(AVLayerVideoGravity)videoGravity {
+    [self avLayer].videoGravity = videoGravity;
+}
+
+- (AVLayerVideoGravity)videoGravity {
+    return [self avLayer].videoGravity;
+}
+
 #pragma mark -
 
 - (void)_presentSetupView {

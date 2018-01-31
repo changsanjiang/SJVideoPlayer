@@ -48,7 +48,7 @@ static NSString *const SJVideoPlayerMoreSettingsSecondaryHeaderViewID = @"SJVide
 // MARK: UI
 
 - (void)_SJVideoPlayerMoreSettingTwoSettingsViewSetupUI {
-    self.backgroundColor = [UIColor colorWithWhite:0 alpha:0.85];
+    self.backgroundColor = [UIColor colorWithWhite:0 alpha:0.5];
     [self addSubview:self.colView];
     [_colView mas_makeConstraints:^(MASConstraintMaker *make) {
         make.edges.equalTo(_colView.superview);

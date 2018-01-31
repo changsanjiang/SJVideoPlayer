@@ -303,7 +303,7 @@ static inline void SJ_updateScreenshot() {
     else if ( 0 != subScrollView.contentOffset.x + subScrollView.contentInset.left ) return NO;
     else if ( [(UIPanGestureRecognizer *)gestureRecognizer translationInView:self.view].x <= 0 ) return NO;
     else {
-        [otherGestureRecognizer setValue:@(UIGestureRecognizerStateCancelled) forKey:@"state"];
+        [self _sjCancellGesture:otherGestureRecognizer];
         return YES;
     }
 }
@@ -316,11 +316,11 @@ static inline void SJ_updateScreenshot() {
     if ( !pageVC.dataSource ||
          0 == pageVC.viewControllers.count ) return NO;
     else if ( [dataSource pageViewController:pageVC viewControllerBeforeViewController:pageVC.viewControllers.firstObject] ) {
-        [gestureRecognizer setValue:@(UIGestureRecognizerStateCancelled) forKey:@"state"];
+        [self _sjCancellGesture:gestureRecognizer];
         return YES;
     }
     else {
-        [otherGestureRecognizer setValue:@(UIGestureRecognizerStateCancelled) forKey:@"state"];
+        [self _sjCancellGesture:otherGestureRecognizer];
         return NO;
     }
 }
@@ -343,7 +343,6 @@ static inline void SJ_updateScreenshot() {
         }
             break;
         case UIGestureRecognizerStateChanged: {
-            if ( offset < 0 ) return;
             [self SJ_ViewDidDrag:offset];
         }
             break;
@@ -369,10 +368,9 @@ static inline void SJ_updateScreenshot() {
 }
 
 - (void)SJ_ViewDidDrag:(CGFloat)offset {
-    [UIView animateWithDuration:0.1 animations:^{
-        self.view.transform = CGAffineTransformMakeTranslation(offset, 0);
-        [self.SJ_screenshotView transitioningWithOffset:offset];
-    }];
+    if ( offset < 0 ) offset = 0;
+    self.view.transform = CGAffineTransformMakeTranslation(offset, 0);
+    [self.SJ_screenshotView transitioningWithOffset:offset];
     if ( self.topViewController.sj_viewDidDrag ) self.topViewController.sj_viewDidDrag(self.topViewController);
 }
 
@@ -404,6 +402,9 @@ static inline void SJ_updateScreenshot() {
     }];
 }
 
+- (void)_sjCancellGesture:(UIGestureRecognizer *)gesture {
+    [gesture setValue:@(UIGestureRecognizerStateCancelled) forKey:@"state"];
+}
 @end
 
 

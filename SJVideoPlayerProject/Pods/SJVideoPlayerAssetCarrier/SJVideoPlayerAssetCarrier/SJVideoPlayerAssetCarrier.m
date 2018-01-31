@@ -214,7 +214,7 @@ static float const __GeneratePreImgScale = 0.05;
         }
         else if ( [keyPath isEqualToString:@"loadedTimeRanges"] ) {
             if ( 0 == CMTimeGetSeconds(_playerItem.duration) ) return;
-            CGFloat progress = [self _loadedTimeSecs] / CMTimeGetSeconds(_playerItem.duration);
+            float progress = [self _loadedTimeSecs] / CMTimeGetSeconds(_playerItem.duration);
             if ( self.loadedTimeProgress ) self.loadedTimeProgress(progress);
         }
         else if ( [keyPath isEqualToString:@"status"] ) {
@@ -246,11 +246,11 @@ static float const __GeneratePreImgScale = 0.05;
     });
 }
 
-- (NSInteger)_loadedTimeSecs {
+- (Float64)_loadedTimeSecs {
     CMTimeRange loadTimeRange = [_playerItem.loadedTimeRanges.firstObject CMTimeRangeValue];
     CMTime startTime = loadTimeRange.start;
     CMTime rangeDuration  = loadTimeRange.duration;
-    NSInteger seconds = CMTimeGetSeconds(startTime) + CMTimeGetSeconds(rangeDuration);
+    Float64 seconds = CMTimeGetSeconds(startTime) + CMTimeGetSeconds(rangeDuration);
     return seconds;
 }
 
@@ -530,8 +530,8 @@ static float const __GeneratePreImgScale = 0.05;
     hours = secs / (60 * 60);
     seconds = secs % 60;
     minutes = secs / 60;
-    if ( 0 == hours ) return [NSString stringWithFormat:@"%02zd:%02zd", (long)minutes, (long)seconds];
-    else return [NSString stringWithFormat:@"%02zd:%02zd:%02zd", (long)hours, (long)minutes, (long)seconds];
+    if ( 0 == hours ) return [NSString stringWithFormat:@"%02zd:%02zd", minutes, seconds];
+    else return [NSString stringWithFormat:@"%02zd:%02zd:%02zd", hours, minutes, seconds];
 }
 @end
 

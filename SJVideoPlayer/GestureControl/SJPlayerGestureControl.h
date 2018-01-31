@@ -41,6 +41,7 @@ typedef NS_ENUM(NSUInteger, SJPanMovingDirection) {
 @property (nonatomic, copy, readwrite, nullable) void(^beganPan)(SJPlayerGestureControl *control, SJPanDirection direction, SJPanLocation location);
 @property (nonatomic, copy, readwrite, nullable) void(^changedPan)(SJPlayerGestureControl *control, SJPanDirection direction, SJPanLocation location, CGPoint translate);
 @property (nonatomic, copy, readwrite, nullable) void(^endedPan)(SJPlayerGestureControl *control, SJPanDirection direction, SJPanLocation location);
+@property (nonatomic, copy, readwrite, nullable) void(^pinched)(SJPlayerGestureControl *control, float scale);
 
 @property (nonatomic, assign, readonly) SJPanDirection panDirection;
 @property (nonatomic, assign, readonly) SJPanLocation panLocation;

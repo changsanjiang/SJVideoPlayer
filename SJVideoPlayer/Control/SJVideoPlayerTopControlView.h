@@ -18,6 +18,7 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic, strong, readonly) UIButton *backBtn;
 @property (nonatomic, strong, readonly) UIButton *previewBtn;
 @property (nonatomic, strong, readonly) UIButton *moreBtn;
+@property (nonatomic, strong, readonly) UILabel *titleLabel;
 
 @end
 

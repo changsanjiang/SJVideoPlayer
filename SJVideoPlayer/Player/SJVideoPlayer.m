@@ -24,6 +24,7 @@
 #import "SJPlayerGestureControl.h"
 #import <SJUIFactory/SJUIFactory.h>
 #import "SJVideoPlayerDraggingProgressView.h"
+#import <SJAttributesFactory/SJAttributeWorker.h>
 
 #define MoreSettingWidth (MAX([UIScreen mainScreen].bounds.size.width, [UIScreen mainScreen].bounds.size.height) * 0.382)
 
@@ -331,6 +332,7 @@ inline static void _sjAnima_Complete(void(^block)(void), void(^complete)(void)) 
     
     if ( !self.orentation.isFullScreen ) {
         _sjHiddenViews(@[self.controlView.topControlView.previewBtn, self.controlView.topControlView.moreBtn]);
+        self.controlView.topControlView.titleLabel.hidden = YES;
     }
     else  {
         if ( self.generatePreviewImages &&
@@ -339,6 +341,7 @@ inline static void _sjAnima_Complete(void(^block)(void), void(^complete)(void)) 
         }
 
         _sjShowViews(@[self.controlView.topControlView.moreBtn]);
+        self.controlView.topControlView.titleLabel.hidden = NO;
     }
     
     // transform show
@@ -1094,6 +1097,15 @@ static dispatch_queue_t videoPlayerWorkQueue;
     if ( self.autoplay && !self.userClickedPause && !self.suspend ) {
         [self play];
     }
+    
+    if ( 0 != self.URLAsset.title.length ) {
+        self.controlView.topControlView.titleLabel.attributedText = sj_makeAttributesString(^(SJAttributeWorker * _Nonnull make) {
+            make.insert(self.URLAsset.title, 0);
+            make.font([SJVideoPlayerSettings commonSettings].titleFont).textColor([SJVideoPlayerSettings commonSettings].titleColor);
+            make.shadow(CGSizeMake(0.5, 0.5), 1, [UIColor blackColor]);
+        });
+    }
+    else self.controlView.topControlView.titleLabel.attributedText = nil;
 }
 
 - (void)_refreshingTimeLabelWithCurrentTime:(NSTimeInterval)currentTime duration:(NSTimeInterval)duration {
@@ -1515,15 +1527,6 @@ static dispatch_queue_t videoPlayerWorkQueue;
 
 - (NSArray<SJVideoPlayerMoreSetting *> *)moreSettings {
     return objc_getAssociatedObject(self, _cmd);
-}
-
-- (void)settingPlayer:(void (^)(SJVideoPlayerSettings * _Nonnull))block {
-//    [self _addOperation:^(SJVideoPlayer *player) {
-//        if ( block ) block([player commonSettings]);
-//        dispatch_async(dispatch_get_main_queue(), ^{
-//            [[NSNotificationCenter defaultCenter] postNotificationName:SJSettingsPlayerNotification object:[player commonSettings]];
-//        });
-//    }];
 }
 
 - (SJVideoPlayerSettings *)commonSettings {

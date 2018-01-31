@@ -20,10 +20,10 @@
 
 @implementation SJVideoPlayerTopControlView
 @synthesize controlMaskView = _controlMaskView;
-
 @synthesize backBtn = _backBtn;
 @synthesize previewBtn = _previewBtn;
 @synthesize moreBtn = _moreBtn;
+@synthesize titleLabel = _titleLabel;
 
 - (instancetype)initWithFrame:(CGRect)frame {
     self = [super initWithFrame:frame];
@@ -41,6 +41,8 @@
         else {
             [self.previewBtn setTitle:@"预览" forState:UIControlStateNormal];
         }
+        self.titleLabel.font = setting.titleFont;
+        self.titleLabel.textColor = setting.titleColor;
     };
     return self;
 }
@@ -55,6 +57,7 @@
     [self.containerView addSubview:self.backBtn];
     [self.containerView addSubview:self.previewBtn];
     [self.containerView addSubview:self.moreBtn];
+    [self.containerView addSubview:self.titleLabel];
     
     [_controlMaskView mas_makeConstraints:^(MASConstraintMaker *make) {
         make.edges.equalTo(_controlMaskView.superview);
@@ -74,6 +77,12 @@
     [_moreBtn mas_makeConstraints:^(MASConstraintMaker *make) {
         make.size.bottom.equalTo(_backBtn);
         make.trailing.offset(-8);
+    }];
+    
+    [_titleLabel mas_makeConstraints:^(MASConstraintMaker *make) {
+        make.leading.equalTo(_backBtn.mas_trailing);
+        make.centerY.equalTo(_backBtn);
+        make.trailing.equalTo(_previewBtn.mas_leading);
     }];
 }
 
@@ -95,6 +104,11 @@
     return _moreBtn;
 }
 
+- (UILabel *)titleLabel {
+    if ( _titleLabel ) return _titleLabel;
+    _titleLabel = [UILabel new];
+    return _titleLabel;
+}
 
 - (SJVideoPlayerControlMaskView *)controlMaskView {
     if ( _controlMaskView ) return _controlMaskView;

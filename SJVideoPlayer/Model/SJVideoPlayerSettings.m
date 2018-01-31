@@ -26,6 +26,8 @@ NSNotificationName const SJSettingsPlayerNotification = @"SJSettingsPlayerNotifi
 
 - (void)reset {
     self.loadingLineColor = [UIColor whiteColor];
+    self.titleFont = [UIFont boldSystemFontOfSize:14];
+    self.titleColor = [UIColor whiteColor];
     self.fastImage = [SJVideoPlayerResources imageNamed:@"sj_video_player_fast"];
     self.forwardImage = [SJVideoPlayerResources imageNamed:@"sj_video_player_forward"];
     self.backBtnImage = [SJVideoPlayerResources imageNamed:@"sj_video_player_back"];

@@ -156,6 +156,8 @@ static NSString *const SJVideoListTableViewCellID = @"SJVideoListTableViewCell";
                                              scrollView:self.tableView
                                               indexPath:[self.tableView indexPathForCell:cell]
                                            superviewTag:playerParentView.tag];
+    
+    _videoPlayer.URLAsset.title = @"DIY心情转盘 #手工##手工制作#";
 }
 
 #pragma mark -

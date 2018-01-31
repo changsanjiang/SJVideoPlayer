@@ -58,6 +58,10 @@
 }
 
 - (BOOL)gestureRecognizer:(UIGestureRecognizer *)gestureRecognizer shouldRecognizeSimultaneouslyWithGestureRecognizer:(UIGestureRecognizer *)otherGestureRecognizer {
+    if ( otherGestureRecognizer != self.singleTap &&
+         otherGestureRecognizer != self.doubleTap &&
+         otherGestureRecognizer != self.panGR &&
+         otherGestureRecognizer != self.pinchGR ) return NO;
     if ( gestureRecognizer.numberOfTouches >= 2 ) {
         return NO;
     }

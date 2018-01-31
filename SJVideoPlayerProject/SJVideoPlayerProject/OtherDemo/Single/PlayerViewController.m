@@ -79,10 +79,11 @@
     /// 模拟网络请求
     dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(1 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
         _videoPlayer.URLAsset = [[SJVideoPlayerURLAsset alloc] initWithAssetURL:[[NSBundle mainBundle] URLForResource:@"sample" withExtension:@"mp4"]];
+        _videoPlayer.URLAsset.title = @"DIY心情转盘 #手工##手工制作#";
         _networked = YES;
     });
     
-    
+
     NSLog(@"vc = %@, player = %@", self, _videoPlayer);
     
     // Do any additional setup after loading the view.

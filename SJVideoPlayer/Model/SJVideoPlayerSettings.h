@@ -19,6 +19,12 @@ extern NSNotificationName const SJSettingsPlayerNotification;
 
 - (void)reset;
 
+// MARK: title
+/// 标题字体, 默认是 [UIFont boldSystemFontOfSize:14]
+@property (nonatomic, strong, readwrite) UIFont *titleFont;
+/// 标题颜色, 默认是 [UIColor whiteColor]
+@property (nonatomic, strong, readwrite) UIColor *titleColor;
+
 // MARK: loading
 @property (nonatomic, strong, readwrite) UIColor *loadingLineColor;
 

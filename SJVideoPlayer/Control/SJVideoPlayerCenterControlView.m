@@ -7,7 +7,6 @@
 //
 
 #import "SJVideoPlayerCenterControlView.h"
-#import "SJVideoPlayerResources.h"
 #import <Masonry/Masonry.h>
 #import <SJAttributesFactory/SJAttributeWorker.h>
 #import <SJUIFactory/SJUIFactory.h>
@@ -35,11 +34,14 @@
             
             if ( setting.replayBtnTitle ) {
                 make.insert([NSString stringWithFormat:@"\n%@", setting.replayBtnTitle], -1);
+                make.lastInserted(^(SJAttributesRangeOperator * _Nonnull lastOperator) {
+                    lastOperator
+                    .font(setting.replayBtnFont)
+                    .textColor([UIColor whiteColor]);
+                });
             }
             
             make
-            .font(setting.replayBtnFont)
-            .textColor([UIColor whiteColor])
             .alignment(NSTextAlignmentCenter)
             .lineSpacing(6);
 

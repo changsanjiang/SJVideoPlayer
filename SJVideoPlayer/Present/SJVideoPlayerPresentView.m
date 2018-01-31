@@ -75,7 +75,7 @@
 
 - (void)setState:(SJVideoPlayerPlayState)state {
     _state = state;
-    [UIView animateWithDuration:0.25 animations:^{
+    [UIView animateWithDuration:0.5 animations:^{
         switch ( state ) {
             case SJVideoPlayerPlayState_Unknown:
             case SJVideoPlayerPlayState_Prepare: {

@@ -8,7 +8,6 @@
 
 #import "SJVideoPlayerLeftControlView.h"
 #import <SJUIFactory/SJUIFactoryHeader.h>
-#import "SJVideoPlayerResources.h"
 #import <Masonry/Masonry.h>
 
 @interface SJVideoPlayerLeftControlView ()

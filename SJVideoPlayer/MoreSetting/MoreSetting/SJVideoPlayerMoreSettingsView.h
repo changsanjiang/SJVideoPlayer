@@ -6,14 +6,14 @@
 //  Copyright © 2017年 SanJiang. All rights reserved.
 //
 
-#import <UIKit/UIKit.h>
+#import "SJVideoPlayerBaseView.h"
 #import "SJMoreSettingsFooterViewModel.h"
 
 NS_ASSUME_NONNULL_BEGIN
 
 @class SJVideoPlayerMoreSettingsFooterSlidersView, SJVideoPlayerMoreSetting, SJSlider, SJOrentationObserver;
 
-@interface SJVideoPlayerMoreSettingsView : UIView
+@interface SJVideoPlayerMoreSettingsView : SJVideoPlayerBaseView
 
 - (instancetype)initWithOrentationObserver:(__weak SJOrentationObserver *)orentationObserver;
 

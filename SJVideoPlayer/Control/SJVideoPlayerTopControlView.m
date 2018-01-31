@@ -8,7 +8,6 @@
 
 #import "SJVideoPlayerTopControlView.h"
 #import <SJUIFactory/SJUIFactory.h>
-#import "SJVideoPlayerResources.h"
 #import <Masonry/Masonry.h>
 #import "SJVideoPlayerControlMaskView.h"
 
@@ -64,9 +63,8 @@
     }];
     
     [_backBtn mas_makeConstraints:^(MASConstraintMaker *make) {
-        make.top.offset(20);
         make.size.offset(49);
-        make.leading.offset(0);
+        make.leading.bottom.offset(0);
     }];
     
     [_previewBtn mas_makeConstraints:^(MASConstraintMaker *make) {

@@ -41,7 +41,7 @@
         // note: 注意这个block 是在子线程进行.
         
         /// 设置占位图
-        commonSettings.placeholder = [UIImage imageNamed:@"test1"];
+        commonSettings.placeholder = [UIImage imageNamed:@"placeholder"];
         
         // 也可以设置其他部分的.
         

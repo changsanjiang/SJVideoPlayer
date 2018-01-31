@@ -8,7 +8,6 @@
 
 #import "SJVideoPlayerBottomControlView.h"
 #import <SJUIFactory/SJUIFactory.h>
-#import "SJVideoPlayerResources.h"
 #import <Masonry/Masonry.h>
 #import "SJVideoPlayerControlMaskView.h"
 
@@ -73,9 +72,8 @@
     }];
 
     [_playBtn mas_makeConstraints:^(MASConstraintMaker *make) {
-        make.leading.offset(0);
+        make.top.leading.offset(0);
         make.size.offset(49);
-        make.bottom.offset(-8);
     }];
     
     [_pauseBtn mas_makeConstraints:^(MASConstraintMaker *make) {
@@ -142,7 +140,7 @@
 
 - (UILabel *)separateLabel {
     if ( _separateLabel ) return _separateLabel;
-    _separateLabel = [SJUILabelFactory labelWithText:@"/" textColor:[UIColor whiteColor] alignment:NSTextAlignmentCenter font:[UIFont systemFontOfSize:12]];
+    _separateLabel = [SJUILabelFactory labelWithText:@"/" textColor:[UIColor whiteColor] alignment:NSTextAlignmentCenter font:[UIFont systemFontOfSize:10]];
     return _separateLabel;
 }
 

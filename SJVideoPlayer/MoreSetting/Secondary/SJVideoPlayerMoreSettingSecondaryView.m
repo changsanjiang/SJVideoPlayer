@@ -37,6 +37,12 @@ static NSString *const SJVideoPlayerMoreSettingsSecondaryHeaderViewID = @"SJVide
     self = [super initWithFrame:frame];
     if ( !self ) return nil;
     [self _SJVideoPlayerMoreSettingTwoSettingsViewSetupUI];
+    __weak typeof(self) _self = self;
+    self.setting = ^(SJVideoPlayerSettings * _Nonnull setting) {
+        __strong typeof(_self) self = _self;
+        if ( !self ) return;
+        self.colView.backgroundColor = self.backgroundColor = setting.moreBackgroundColor;
+    };
     return self;
 }
 
@@ -48,7 +54,6 @@ static NSString *const SJVideoPlayerMoreSettingsSecondaryHeaderViewID = @"SJVide
 // MARK: UI
 
 - (void)_SJVideoPlayerMoreSettingTwoSettingsViewSetupUI {
-    self.colView.backgroundColor = self.backgroundColor = [UIColor colorWithWhite:0 alpha:0.5];
     [self addSubview:self.colView];
     [_colView mas_makeConstraints:^(MASConstraintMaker *make) {
         make.edges.equalTo(_colView.superview);

@@ -15,18 +15,15 @@
 #import "SJVideoPlayerPreviewView.h"
 
 
-#define SJControlTopH (100)
-#define SJControlLeftH (49)
-#define SJControlBottomH (100)
-
-
 NS_ASSUME_NONNULL_BEGIN
 
-@class SJVideoPreviewModel, SJVideoPlayerAssetCarrier;
+@class SJVideoPreviewModel, SJVideoPlayerAssetCarrier, SJOrentationObserver;
 
 @protocol SJVideoPlayerControlViewDelegate;
 
 @interface SJVideoPlayerControlView : SJVideoPlayerBaseView
+
+- (instancetype)initWithOrentationObserver:(__weak SJOrentationObserver *)orentationObserver;
 
 @property (nonatomic, weak, readwrite, nullable) id<SJVideoPlayerControlViewDelegate> delegate;
 @property (nonatomic, weak, readwrite, nullable) SJVideoPlayerAssetCarrier *asset;
@@ -37,6 +34,10 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic, strong, readonly) SJVideoPlayerCenterControlView *centerControlView;
 @property (nonatomic, strong, readonly) SJVideoPlayerBottomControlView *bottomControlView;
 @property (nonatomic, strong, readonly) SJSlider *bottomProgressSlider;
+
+@property (nonatomic, assign, readonly) CGFloat topViewHeight;
+@property (nonatomic, assign, readonly) CGFloat leftViewWidth;
+@property (nonatomic, assign, readonly) CGFloat bottomViewHeight;
 
 @end
 

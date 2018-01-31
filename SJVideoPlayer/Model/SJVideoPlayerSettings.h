@@ -19,23 +19,26 @@ extern NSNotificationName const SJSettingsPlayerNotification;
 
 - (void)reset;
 
-// MARK: title
-/// 标题字体, 默认是 [UIFont boldSystemFontOfSize:14]
-@property (nonatomic, strong, readwrite) UIFont *titleFont;
-/// 标题颜色, 默认是 [UIColor whiteColor]
-@property (nonatomic, strong, readwrite) UIColor *titleColor;
 
-// MARK: loading
+#pragma mark - title
+@property (nonatomic, strong, readwrite) UIFont *titleFont; // 标题字体, default is [UIFont boldSystemFontOfSize:14]
+@property (nonatomic, strong, readwrite) UIColor *titleColor; // 标题颜色, default is [UIColor whiteColor]
+
+
+#pragma mark - loading
 @property (nonatomic, strong, readwrite) UIColor *loadingLineColor;
 
-// MARK: placeholder
+
+#pragma mark - placeholder
 @property (nonatomic, strong, readwrite) UIImage *placeholder;
 
-// MARK: fast/forward
+
+#pragma mark - fast/forward
 @property (nonatomic, strong, readwrite) UIImage *fastImage;
 @property (nonatomic, strong, readwrite) UIImage *forwardImage;
 
-// MARK: btns
+
+#pragma mark - btns
 @property (nonatomic, strong, readwrite) UIImage *backBtnImage;
 @property (nonatomic, strong, readwrite) UIImage *playBtnImage;
 @property (nonatomic, strong, readwrite) UIImage *pauseBtnImage;
@@ -48,7 +51,8 @@ extern NSNotificationName const SJSettingsPlayerNotification;
 @property (nonatomic, strong, readwrite) UIImage *lockBtnImage;
 @property (nonatomic, strong, readwrite) UIImage *unlockBtnImage;
 
-// MARK: progress slider
+
+#pragma mark - progress slider
 /// 轨迹, 走过的痕迹
 @property (nonatomic, strong, readwrite) UIColor *progress_traceColor;
 /// 轨道
@@ -63,7 +67,9 @@ extern NSNotificationName const SJSettingsPlayerNotification;
 /// 轨道高度
 @property (nonatomic, assign, readwrite) float progress_traceHeight;
 
-// MARK:  more slider
+
+#pragma mark - more view
+@property (nonatomic, strong, readwrite) UIColor *moreBackgroundColor;
 /// 轨迹
 @property (nonatomic, strong, readwrite) UIColor *more_traceColor;
 /// 轨道

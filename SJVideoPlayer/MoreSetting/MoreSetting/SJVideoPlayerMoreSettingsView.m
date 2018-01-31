@@ -38,6 +38,12 @@ static NSString *const SJVideoPlayerMoreSettingsFooterSlidersViewID = @"SJVideoP
     _orentationObserver = orentationObserver;
     [self _moreSettingsViewSetupUI];
     [self _moreSettingsAddObserve];
+    __weak typeof(self) _self = self;
+    self.setting = ^(SJVideoPlayerSettings * _Nonnull setting) {
+        __strong typeof(_self) self = _self;
+        if ( !self ) return;
+        self.colView.backgroundColor = self.backgroundColor = setting.moreBackgroundColor;
+    };
     return self;
 }
 
@@ -64,7 +70,6 @@ static NSString *const SJVideoPlayerMoreSettingsFooterSlidersViewID = @"SJVideoP
 }
 
 - (void)_moreSettingsViewSetupUI {
-    self.colView.backgroundColor = self.backgroundColor = [UIColor colorWithWhite:0 alpha:0.5];
     [self addSubview:self.colView];
     [_colView mas_makeConstraints:^(MASConstraintMaker *make) {
         make.edges.equalTo(_colView.superview);

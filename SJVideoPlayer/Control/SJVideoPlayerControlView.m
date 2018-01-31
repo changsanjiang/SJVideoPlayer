@@ -9,9 +9,11 @@
 #import "SJVideoPlayerControlView.h"
 #import <SJVideoPlayerAssetCarrier/SJVideoPlayerAssetCarrier.h>
 #import <Masonry/Masonry.h>
-#import "SJVideoPlayerResources.h"
+#import <SJObserverHelper/NSObject+SJObserverHelper.h>
+#import <SJOrentationObserver/SJOrentationObserver.h>
 
 @interface SJVideoPlayerControlView()<SJVideoPlayerTopControlViewDelegate, SJVideoPlayerLeftControlViewDelegate, SJVideoPlayerCenterControlViewDelegate, SJVideoPlayerBottomControlViewDelegate, SJVideoPlayerPreviewViewDelegate>
+@property (nonatomic, weak, readonly) SJOrentationObserver *orentationObserver;
 @end
 
 @implementation SJVideoPlayerControlView
@@ -21,10 +23,12 @@
 @synthesize leftControlView = _leftControlView;
 @synthesize centerControlView = _centerControlView;
 @synthesize bottomControlView = _bottomControlView;
+@synthesize orentationObserver = _orentationObserver;
 
-- (instancetype)initWithFrame:(CGRect)frame {
-    self = [super initWithFrame:frame];
+- (instancetype)initWithOrentationObserver:(__weak SJOrentationObserver *)orentationObserver {
+    self = [super initWithFrame:CGRectZero];
     if ( !self ) return nil;
+    _orentationObserver = orentationObserver;
     [self _controlSetupView];
     _topControlView.delegate = self;
     _leftControlView.delegate = self;
@@ -38,9 +42,27 @@
         self.bottomProgressSlider.traceImageView.backgroundColor = setting.progress_traceColor;
         self.bottomProgressSlider.trackImageView.backgroundColor = setting.progress_trackColor;
     };
+    [self _controlAddObserve];
     return self;
 }
 
+#pragma mark
+
+- (void)_controlAddObserve {
+    [self.orentationObserver sj_addObserver:self forKeyPath:@"fullScreen"];
+}
+
+- (void)observeValueForKeyPath:(NSString *)keyPath ofObject:(id)object change:(NSDictionary<NSKeyValueChangeKey,id> *)change context:(void *)context {
+    if ( [keyPath isEqualToString:@"fullScreen"] ) {
+        NSLog(@"%f", self.topViewHeight);
+        [self.topControlView mas_updateConstraints:^(MASConstraintMaker *make) {
+            make.height.offset(self.topViewHeight);
+        }];
+        [self.bottomControlView mas_updateConstraints:^(MASConstraintMaker *make) {
+            make.height.offset(self.bottomViewHeight);
+        }];
+    }
+}
 #pragma mark
 
 - (void)_controlSetupView {
@@ -55,7 +77,7 @@
     [_topControlView mas_makeConstraints:^(MASConstraintMaker *make) {
         make.top.offset(0);
         make.leading.trailing.offset(0);
-        make.height.offset(SJControlTopH);
+        make.height.offset(self.topViewHeight);
     }];
     
     [_previewView mas_makeConstraints:^(MASConstraintMaker *make) {
@@ -65,7 +87,7 @@
     }];
     
     [_leftControlView mas_makeConstraints:^(MASConstraintMaker *make) {
-        make.size.offset(SJControlLeftH);
+        make.size.offset(self.leftViewWidth);
         make.leading.offset(0);
         make.centerY.offset(0);
     }];
@@ -78,7 +100,7 @@
     
     [_bottomControlView mas_makeConstraints:^(MASConstraintMaker *make) {
         make.bottom.leading.trailing.offset(0);
-        make.height.offset(SJControlBottomH);
+        make.height.offset(self.bottomViewHeight);
     }];
     
     [_bottomProgressSlider mas_makeConstraints:^(MASConstraintMaker *make) {
@@ -152,4 +174,14 @@
     return _bottomProgressSlider;
 }
 
+#pragma mark -
+- (CGFloat)topViewHeight {
+    return !self.orentationObserver.isFullScreen ? 49 : 72;
+}
+- (CGFloat)leftViewWidth {
+    return 49;
+}
+- (CGFloat)bottomViewHeight {
+    return !self.orentationObserver.isFullScreen ? 49 : 60;
+}
 @end

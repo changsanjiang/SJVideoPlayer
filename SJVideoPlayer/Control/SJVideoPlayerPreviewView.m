@@ -8,7 +8,6 @@
 
 #import "SJVideoPlayerPreviewView.h"
 #import <SJUIFactory/SJUIFactory.h>
-#import "SJVideoPlayerResources.h"
 #import <Masonry/Masonry.h>
 #import <SJVideoPlayerAssetCarrier/SJVideoPlayerAssetCarrier.h>
 

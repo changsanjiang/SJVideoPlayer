@@ -8,7 +8,6 @@
 
 #import "SJVideoPlayerDraggingProgressView.h"
 #import <SJUIFactory/SJUIFactory.h>
-#import "SJVideoPlayerResources.h"
 #import <Masonry/Masonry.h>
 #import <SJSlider/SJSlider.h>
 #import <SJOrentationObserver/SJOrentationObserver.h>

@@ -308,8 +308,8 @@ inline static void _sjAnima_Complete(void(^block)(void), void(^complete)(void)) 
     self.controlView.previewView.hidden = YES;
     
     // transform hidden
-    self.controlView.topControlView.transform = CGAffineTransformMakeTranslation(0, -SJControlTopH);
-    self.controlView.bottomControlView.transform = CGAffineTransformMakeTranslation(0, SJControlBottomH);
+    self.controlView.topControlView.transform = CGAffineTransformMakeTranslation(0, -self.controlView.topViewHeight);
+    self.controlView.bottomControlView.transform = CGAffineTransformMakeTranslation(0, self.controlView.bottomViewHeight);
     
     if ( self.orentation.fullScreen ) {
         if ( self.isLockedScrren ) self.hiddenLeftControlView = NO;
@@ -346,7 +346,7 @@ inline static void _sjAnima_Complete(void(^block)(void), void(^complete)(void)) 
     
     // transform show
     if ( self.playOnCell && !self.orentation.fullScreen ) {
-        self.controlView.topControlView.transform = CGAffineTransformMakeTranslation(0, -SJControlTopH);
+        self.controlView.topControlView.transform = CGAffineTransformMakeTranslation(0, -self.controlView.topViewHeight);
     }
     else {
         self.controlView.topControlView.transform = CGAffineTransformIdentity;
@@ -406,7 +406,6 @@ inline static void _sjAnima_Complete(void(^block)(void), void(^complete)(void)) 
     }
     
     [self view];
-    [self orentation];
     [self volBrig];
     [self registrar];
     
@@ -533,7 +532,7 @@ static dispatch_queue_t videoPlayerWorkQueue;
 
 - (SJVideoPlayerControlView *)controlView {
     if ( _controlView ) return _controlView;
-    _controlView = [SJVideoPlayerControlView new];
+    _controlView = [[SJVideoPlayerControlView alloc] initWithOrentationObserver:self.orentation];
     _controlView.clipsToBounds = YES;
     return _controlView;
 }
@@ -620,7 +619,7 @@ static dispatch_queue_t videoPlayerWorkQueue;
     if ( hiddenLeftControlView == _hiddenLeftControlView ) return;
     _hiddenLeftControlView = hiddenLeftControlView;
     if ( _hiddenLeftControlView ) {
-        self.controlView.leftControlView.transform = CGAffineTransformMakeTranslation(-SJControlLeftH, 0);
+        self.controlView.leftControlView.transform = CGAffineTransformMakeTranslation(-self.controlView.leftViewWidth, 0);
     }
     else {
         self.controlView.leftControlView.transform =  CGAffineTransformIdentity;

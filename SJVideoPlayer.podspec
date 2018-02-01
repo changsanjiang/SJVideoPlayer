@@ -91,6 +91,7 @@ end
 
 s.subspec 'DraggingProgress' do |ss|
     ss.source_files = 'SJVideoPlayer/DraggingProgress/*.{h,m}'
+    ss.dependency 'SJVideoPlayer/Base'
 end
 
 end

@@ -152,7 +152,7 @@ static NSString *const SJVideoListTableViewCellID = @"SJVideoListTableViewCell";
     
     // set asset
     _videoPlayer.URLAsset =
-    [[SJVideoPlayerURLAsset alloc] initWithAssetURL:[NSURL URLWithString:cell.model.playURLStr]
+    [[SJVideoPlayerURLAsset alloc] initWithAssetURL:[NSURL URLWithString:@"http://hjzq54sgy3st45j8hub.exp.bcevod.com/mda-hkhjsv8110uk6kby/mda-hkhjsv8110uk6kby.m3u8"]
                                              scrollView:self.tableView
                                               indexPath:[self.tableView indexPathForCell:cell]
                                            superviewTag:playerParentView.tag];

@@ -1120,7 +1120,7 @@ static dispatch_queue_t videoPlayerWorkQueue;
 
 - (void)_itemPlayEnd {
     [self _pause];
-    [self jumpedToTime:0 completionHandler:nil];
+//    [self jumpedToTime:0 completionHandler:nil];
     [self _playEndState];
 }
 

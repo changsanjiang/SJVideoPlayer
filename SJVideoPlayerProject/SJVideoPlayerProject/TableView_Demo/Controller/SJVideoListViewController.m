@@ -185,14 +185,12 @@ static NSString *const SJVideoListTableViewCellID = @"SJVideoListTableViewCell";
 #pragma mark -
 
 - (BOOL)prefersStatusBarHidden {
-    // 全屏播放时, 使状态栏根据控制层显示或隐藏
-    if ( _videoPlayer.isFullScreen ) return !_videoPlayer.controlViewDisplayed;
+    if ( _videoPlayer.isFullScreen ) return !_videoPlayer.controlViewDisplayed; // 全屏播放时, 使状态栏根据视频的控制层显示或隐藏
     return NO;
 }
 
 - (UIStatusBarStyle)preferredStatusBarStyle {
-    // 全屏播放时, 使状态栏变成白色
-    if ( _videoPlayer.isFullScreen ) return UIStatusBarStyleLightContent;
+    if ( _videoPlayer.isFullScreen ) return UIStatusBarStyleLightContent; // 全屏播放时, 使状态栏变成白色
     return UIStatusBarStyleDefault;
 }
 

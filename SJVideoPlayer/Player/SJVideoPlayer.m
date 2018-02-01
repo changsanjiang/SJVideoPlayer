@@ -653,10 +653,10 @@ static dispatch_queue_t videoPlayerWorkQueue;
     _orentation.orientationWillChange = ^(SJOrentationObserver * _Nonnull observer, BOOL isFullScreen) {
         __strong typeof(_self) self = _self;
         if ( !self ) return;
+        self.hideControl = YES;
         _sjAnima(^{
             self.hiddenMoreSecondarySettingView = YES;
             self.hiddenMoreSettingView = YES;
-            self.hideControl = YES;
             if ( !observer.isFullScreen ) self.hiddenLeftControlView = YES;
             self.controlView.previewView.hidden = YES;
             if ( self.willRotateScreen ) self.willRotateScreen(self, isFullScreen);
@@ -767,8 +767,8 @@ static dispatch_queue_t videoPlayerWorkQueue;
         if ( self.isLockedScrren ) return NO;
         CGPoint point = [gesture locationInView:gesture.view];
         if ( CGRectContainsPoint(self.moreSettingView.frame, point) ||
-            CGRectContainsPoint(self.moreSecondarySettingView.frame, point) ||
-            CGRectContainsPoint(self.controlView.previewView.frame, point) ) {
+             CGRectContainsPoint(self.moreSecondarySettingView.frame, point) ||
+             CGRectContainsPoint(self.controlView.previewView.frame, point) ) {
             return NO;
         }
         if ( [gesture isKindOfClass:[UIPanGestureRecognizer class]] &&
@@ -803,16 +803,16 @@ static dispatch_queue_t videoPlayerWorkQueue;
             case SJVideoPlayerPlayState_Buffing:
             case SJVideoPlayerPlayState_Playing: {
                 [self pause];
-                self.userClickedPause = YES;
+                self.userClickedPause = YES;    // 用户点击的暂停
             }
                 break;
             case SJVideoPlayerPlayState_Pause: {
-                [self play];
+                [self play];                    // 用户点击的播放
             }
                 break;
             case SJVideoPlayerPlayState_PlayEnd: {
                 [self jumpedToTime:0 completionHandler:^(BOOL finished) {
-                   [self play];
+                   [self play];                 // 用户点击的播放
                 }];
             }
                 break;
@@ -1009,12 +1009,12 @@ static dispatch_queue_t videoPlayerWorkQueue;
             
         case SJVideoPlayControlViewTag_Play: {
             [self play];
-            self.userClickedPause = NO;
+            self.userClickedPause = NO; // 用户点击的播放
         }
             break;
         case SJVideoPlayControlViewTag_Pause: {
             [self pause];
-            self.userClickedPause = YES;
+            self.userClickedPause = YES; // 用户点击的暂停
         }
             break;
         case SJVideoPlayControlViewTag_Replay: {
@@ -1105,8 +1105,8 @@ static dispatch_queue_t videoPlayerWorkQueue;
     
     if ( 0 != self.URLAsset.title.length ) {
         self.controlView.topControlView.titleLabel.attributedText = sj_makeAttributesString(^(SJAttributeWorker * _Nonnull make) {
-            make.insert(self.URLAsset.title, 0);
             make.font([SJVideoPlayerSettings commonSettings].titleFont).textColor([SJVideoPlayerSettings commonSettings].titleColor);
+            make.insert(self.URLAsset.title, 0);
             make.shadow(CGSizeMake(0.5, 0.5), 1, [UIColor blackColor]);
         });
     }

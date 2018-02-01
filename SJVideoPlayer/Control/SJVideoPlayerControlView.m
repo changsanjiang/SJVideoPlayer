@@ -175,7 +175,7 @@
 
 #pragma mark -
 - (CGFloat)topViewHeight {
-    return !self.orentationObserver.isFullScreen ? 49 : 72;
+    return !self.orentationObserver.isFullScreen ? 55 : 72;
 }
 - (CGFloat)leftViewWidth {
     return 49;

@@ -83,7 +83,7 @@
     [_currentTimeLabel mas_makeConstraints:^(MASConstraintMaker *make) {
         make.centerY.equalTo(_separateLabel);
         make.leading.equalTo(_playBtn.mas_trailing).offset(0);
-        make.width.equalTo(_durationTimeLabel);
+        make.width.equalTo(_durationTimeLabel).offset(8);
     }];
     
     [_separateLabel mas_makeConstraints:^(MASConstraintMaker *make) {
@@ -110,6 +110,7 @@
     
     [SJUIFactory boundaryProtectedWithView:_fullBtn];
     [SJUIFactory boundaryProtectedWithView:_playBtn];
+    [SJUIFactory boundaryProtectedWithView:_durationTimeLabel];
     [SJUIFactory boundaryProtectedWithView:_progressSlider];
 }
 
@@ -147,13 +148,13 @@
 
 - (UILabel *)durationTimeLabel {
     if ( _durationTimeLabel ) return _durationTimeLabel;
-    _durationTimeLabel = [SJUILabelFactory labelWithText:nil textColor:[UIColor whiteColor] alignment:NSTextAlignmentRight font:[UIFont systemFontOfSize:self.separateLabel.font.pointSize + 1]];
+    _durationTimeLabel = [SJUILabelFactory labelWithText:nil textColor:[UIColor whiteColor] alignment:NSTextAlignmentLeft font:[UIFont systemFontOfSize:self.separateLabel.font.pointSize + 1]];
     return _durationTimeLabel;
 }
 
 - (UILabel *)currentTimeLabel {
     if ( _currentTimeLabel ) return _currentTimeLabel;
-    _currentTimeLabel = [SJUILabelFactory labelWithText:nil textColor:[UIColor whiteColor] alignment:NSTextAlignmentCenter font:[UIFont systemFontOfSize:self.separateLabel.font.pointSize + 1]];
+    _currentTimeLabel = [SJUILabelFactory labelWithText:nil textColor:[UIColor whiteColor] alignment:NSTextAlignmentRight font:[UIFont systemFontOfSize:self.separateLabel.font.pointSize + 1]];
     return _currentTimeLabel;
 }
 

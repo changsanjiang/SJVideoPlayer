@@ -54,7 +54,6 @@
 
 - (void)observeValueForKeyPath:(NSString *)keyPath ofObject:(id)object change:(NSDictionary<NSKeyValueChangeKey,id> *)change context:(void *)context {
     if ( [keyPath isEqualToString:@"fullScreen"] ) {
-        NSLog(@"%f", self.topViewHeight);
         [self.topControlView mas_updateConstraints:^(MASConstraintMaker *make) {
             make.height.offset(self.topViewHeight);
         }];

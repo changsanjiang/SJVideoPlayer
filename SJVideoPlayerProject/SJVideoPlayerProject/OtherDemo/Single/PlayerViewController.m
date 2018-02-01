@@ -83,7 +83,7 @@
 //        _videoPlayer.URLAsset = [[SJVideoPlayerURLAsset alloc] initWithAssetURL:[[[NSBundle mainBundle] URLForResource:@"sample" withExtension:@"mp4"]]];
         
         // 播放网络
-        self.videoPlayer.URLAsset = [[SJVideoPlayerURLAsset alloc] initWithAssetURL:[NSURL URLWithString:@"http://video.cdn.lanwuzhe.com/usertrend/166162-1513873330.mp4"]];
+        self.videoPlayer.URLAsset = [[SJVideoPlayerURLAsset alloc] initWithAssetURL:[NSURL URLWithString:@"http://rec.app.lanwuzhe.com/recordings/z1.lanwuzhe.2071517398365077/1517398365_1517484765.m3u8"]];
         
         // 设置标题
         self.videoPlayer.URLAsset.title = @"DIY心情转盘 #手工##手工制作#";

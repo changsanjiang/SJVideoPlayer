@@ -147,7 +147,7 @@
 
 - (UILabel *)durationTimeLabel {
     if ( _durationTimeLabel ) return _durationTimeLabel;
-    _durationTimeLabel = [SJUILabelFactory labelWithText:nil textColor:[UIColor whiteColor] alignment:NSTextAlignmentCenter font:[UIFont systemFontOfSize:self.separateLabel.font.pointSize + 1]];
+    _durationTimeLabel = [SJUILabelFactory labelWithText:nil textColor:[UIColor whiteColor] alignment:NSTextAlignmentRight font:[UIFont systemFontOfSize:self.separateLabel.font.pointSize + 1]];
     return _durationTimeLabel;
 }
 

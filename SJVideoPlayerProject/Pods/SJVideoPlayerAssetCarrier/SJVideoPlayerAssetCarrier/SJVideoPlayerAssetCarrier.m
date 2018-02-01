@@ -526,12 +526,19 @@ static float const __GeneratePreImgScale = 0.05;
 }
 
 - (NSString *)timeString:(NSInteger)secs {
+    NSInteger min = 60;
+    NSInteger hour = 60 * min;
+    
     NSInteger hours, seconds, minutes;
-    hours = secs / (60 * 60);
+    hours = secs / hour;
+    minutes = (secs - hours * hour) / 60;
     seconds = secs % 60;
-    minutes = secs / 60;
-    if ( 0 == hours ) return [NSString stringWithFormat:@"%02zd:%02zd", minutes, seconds];
-    else return [NSString stringWithFormat:@"%02zd:%02zd:%02zd", hours, minutes, seconds];
+    if ( self.duration < hour ) {
+        return [NSString stringWithFormat:@"%02zd:%02zd", minutes, seconds];
+    }
+    else {
+        return [NSString stringWithFormat:@"%02zd:%02zd:%02zd", hours, minutes, seconds];
+    }
 }
 @end
 

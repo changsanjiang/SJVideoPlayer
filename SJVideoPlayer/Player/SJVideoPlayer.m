@@ -331,15 +331,15 @@ inline static void _sjAnima_Complete(void(^block)(void), void(^complete)(void)) 
     self.controlView.previewView.hidden = YES;
     
     if ( !self.orentation.isFullScreen ) {
-        _sjHiddenViews(@[self.controlView.topControlView.previewBtn, self.controlView.topControlView.moreBtn]);
-        self.controlView.topControlView.titleLabel.hidden = YES;
+        _sjHiddenViews(@[self.controlView.topControlView.previewBtn,
+                         self.controlView.topControlView.moreBtn]);
+        self.controlView.topControlView.titleLabel.hidden = !self.URLAsset.alwaysShowTitle;
     }
     else  {
         if ( self.generatePreviewImages &&
              self.asset.generatedPreviewImages ) {
             _sjShowViews(@[self.controlView.topControlView.previewBtn]);
         }
-
         _sjShowViews(@[self.controlView.topControlView.moreBtn]);
         self.controlView.topControlView.titleLabel.hidden = NO;
     }

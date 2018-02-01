@@ -17,7 +17,6 @@
 @property (nonatomic, strong) SJVideoPlayer *videoPlayer;
 @property (nonatomic, strong) UIView *playerView;
 @property (nonatomic, strong) UIButton *pushBtn;
-@property (nonatomic, assign) BOOL networked;
 
 @end
 
@@ -75,48 +74,45 @@
     /// 配置`更多页面`展示的`item`
     [self _setPlayerMoreSettingItems];
     
-//    [NSURL URLWithString:@"http://video.cdn.lanwuzhe.com/usertrend/166162-1513873330.mp4"]
+    
     /// 模拟网络请求
     dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(1 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
-        _videoPlayer.URLAsset = [[SJVideoPlayerURLAsset alloc] initWithAssetURL:[[NSBundle mainBundle] URLForResource:@"sample" withExtension:@"mp4"]];
-        _videoPlayer.URLAsset.title = @"DIY心情转盘 #手工##手工制作#";
-        _networked = YES;
+        __strong typeof(_self) self = _self;
+        if ( !self ) return;
+        // 播放本地
+//        _videoPlayer.URLAsset = [[SJVideoPlayerURLAsset alloc] initWithAssetURL:[[[NSBundle mainBundle] URLForResource:@"sample" withExtension:@"mp4"]]];
+        
+        // 播放网络
+        self.videoPlayer.URLAsset = [[SJVideoPlayerURLAsset alloc] initWithAssetURL:[NSURL URLWithString:@"http://video.cdn.lanwuzhe.com/usertrend/166162-1513873330.mp4"]];
+        
+        // 设置标题
+        self.videoPlayer.URLAsset.title = @"DIY心情转盘 #手工##手工制作#";
+        
+        // 是否一直显示标题
+        self.videoPlayer.URLAsset.alwaysShowTitle = YES;
     });
     
-
     NSLog(@"vc = %@, player = %@", self, _videoPlayer);
     
     // Do any additional setup after loading the view.
 }
 
-- (void)dealloc {
-    
-    /// 销毁
-    [self.videoPlayer stop];
-}
-
 - (void)viewWillAppear:(BOOL)animated {
     [super viewWillAppear:animated];
     [self.navigationController setNavigationBarHidden:YES animated:YES];
-    
-    /// 启用旋转
-    self.videoPlayer.disableRotation = NO;
-    
-    /// 是否需要播放
-    if ( _networked && !self.videoPlayer.userPaused ) [self.videoPlayer play];
+    _videoPlayer.disableRotation = NO;  // 界面将要显示的时候, 恢复旋转.
 }
 
 - (void)viewWillDisappear:(BOOL)animated {
     [super viewWillDisappear:animated];
     [self.navigationController setNavigationBarHidden:NO animated:YES];
-    
-    /// 禁用旋转
-    self.videoPlayer.disableRotation = YES;
-
-    /// 手动调用暂停
-    [self.videoPlayer pause];
+    _videoPlayer.disableRotation = YES; // 界面将要消失的时候, 禁止旋转. (考虑用户体验)
 }
 
+- (void)viewDidDisappear:(BOOL)animated {
+    [super viewDidDisappear:animated];
+    [_videoPlayer pause];   // 界面消失的时候, 暂停播放
+}
 
 #pragma mark -
 

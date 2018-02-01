@@ -59,13 +59,14 @@ static NSString *const SJVideoListTableViewCellID = @"SJVideoListTableViewCell";
     // pop gesture
     self.sj_viewWillBeginDragging = ^(SJVideoListViewController *vc) {
         // video player stop roatation
-        vc.videoPlayer.disableRotation = YES;
+        vc.videoPlayer.disableRotation = YES;   // 触发全屏手势时, 禁止播放器旋转
     };
     
     self.sj_viewDidEndDragging = ^(SJVideoListViewController *vc) {
         // video player enable roatation
-        vc.videoPlayer.disableRotation = NO;
+        vc.videoPlayer.disableRotation = NO;    // 恢复
     };
+    
     // Do any additional setup after loading the view.
 }
 
@@ -101,6 +102,7 @@ static NSString *const SJVideoListTableViewCellID = @"SJVideoListTableViewCell";
     [self.view addSubview:_indicator];
     return _indicator;
 }
+
 #pragma mark -
 
 - (void)_videoListSetupViews {

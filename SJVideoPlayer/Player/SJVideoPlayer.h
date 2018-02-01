@@ -254,8 +254,8 @@ NS_ASSUME_NONNULL_BEGIN
  *
  *  屏幕旋转的时候调用.
  **/
-@property (nonatomic, copy, readwrite, nullable) void(^willRotateScreen)(SJVideoPlayer *player, BOOL isFullScreen);
-@property (nonatomic, copy, readwrite, nullable) void(^rotatedScreen)(SJVideoPlayer *player, BOOL isFullScreen);
+@property (nonatomic, copy, readwrite, nullable) void(^willRotateScreen)(SJVideoPlayer *player, BOOL isFullScreen); // 将要旋转
+@property (nonatomic, copy, readwrite, nullable) void(^rotatedScreen)(SJVideoPlayer *player, BOOL isFullScreen); // 已旋转
 @property (nonatomic, assign, readonly) BOOL isFullScreen; //  是否全屏
 
 @end

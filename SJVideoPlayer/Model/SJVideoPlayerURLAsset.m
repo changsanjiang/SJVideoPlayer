@@ -77,3 +77,5 @@
 }
 
 @end
+
+NSString * const kSJVideoPlayerAssetKey = @"asset";

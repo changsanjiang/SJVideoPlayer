@@ -48,4 +48,6 @@ NS_ASSUME_NONNULL_BEGIN
 
 @end
 
+extern NSString * const kSJVideoPlayerAssetKey;
+
 NS_ASSUME_NONNULL_END

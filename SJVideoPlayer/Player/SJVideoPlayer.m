@@ -1017,7 +1017,9 @@ static dispatch_queue_t videoPlayerWorkQueue;
             _sjAnima(^{
                 if ( !self.isLockedScrren ) self.hideControl = NO;
             });
-            [self play];
+            [self jumpedToTime:0 completionHandler:^(BOOL finished) {
+                [self play];
+            }];
         }
             break;
         case SJVideoPlayControlViewTag_Preview: {
@@ -1316,7 +1318,7 @@ static dispatch_queue_t videoPlayerWorkQueue;
 
 - (void)setURLAsset:(SJVideoPlayerURLAsset *)URLAsset {
     objc_setAssociatedObject(self, @selector(URLAsset), URLAsset, OBJC_ASSOCIATION_RETAIN_NONATOMIC);
-    [self setAsset:[URLAsset valueForKey:@"asset"]];
+    [self setAsset:[URLAsset valueForKey:kSJVideoPlayerAssetKey]];
 }
 
 - (SJVideoPlayerURLAsset *)URLAsset {
@@ -1329,7 +1331,7 @@ static dispatch_queue_t videoPlayerWorkQueue;
 
 // unit: sec.
 - (void)playWithURL:(NSURL *)playURL jumpedToTime:(NSTimeInterval)time {
-    self.asset = [[SJVideoPlayerAssetCarrier alloc] initWithAssetURL:playURL beginTime:time];
+    self.URLAsset = [[SJVideoPlayerURLAsset alloc] initWithAssetURL:playURL beginTime:time];
 }
 
 - (void)setAssetURL:(NSURL *)assetURL {

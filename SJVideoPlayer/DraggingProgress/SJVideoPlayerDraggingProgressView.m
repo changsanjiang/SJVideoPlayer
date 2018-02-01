@@ -95,7 +95,6 @@ typedef NS_ENUM(NSUInteger, SJVideoPlayerDraggingProgressViewStyle) {
     switch ( _style = style ) {
         case SJVideoPlayerDraggingProgressViewStyleArrowProgress: {
             _previewImageView.hidden = YES;
-            _progressSlider.hidden = NO;
             [_directionImageView mas_remakeConstraints:^(MASConstraintMaker *make) {
                 make.top.offset(0);
                 make.bottom.equalTo(self.mas_centerY);
@@ -119,7 +118,6 @@ typedef NS_ENUM(NSUInteger, SJVideoPlayerDraggingProgressViewStyle) {
         case SJVideoPlayerDraggingProgressViewStylePreviewProgress: {
             _previewImageView.image = self.placeholder;
             _previewImageView.hidden = NO;
-            _progressSlider.hidden = YES;
             [_directionImageView mas_remakeConstraints:^(MASConstraintMaker *make) {
                 make.width.offset(10.0 / 375 * SJScreen_W());
                 make.centerY.equalTo(_spritTimeLabel);
@@ -136,6 +134,13 @@ typedef NS_ENUM(NSUInteger, SJVideoPlayerDraggingProgressViewStyle) {
                 make.leading.offset(8);
                 make.bottom.trailing.offset(-8);
                 make.height.equalTo(_previewImageView.mas_width).multipliedBy(9.0 / 16);
+            }];
+            
+            [_progressSlider mas_remakeConstraints:^(MASConstraintMaker *make) {
+                make.width.equalTo(_durationTimeLabel).multipliedBy(1.2);
+                make.top.equalTo(_currentTimeLabel.mas_bottom).offset(4);
+                make.centerX.equalTo(_spritTimeLabel);
+                make.height.offset(3);
             }];
         }
             break;
@@ -164,11 +169,10 @@ typedef NS_ENUM(NSUInteger, SJVideoPlayerDraggingProgressViewStyle) {
         self.directionImageView.image = self.fastImage;
     }
     
+    _progressSlider.value = progress;
+    
     switch ( _style ) {
-        case SJVideoPlayerDraggingProgressViewStyleArrowProgress: {
-            _progressSlider.value = progress;
-        }
-            break;
+        case SJVideoPlayerDraggingProgressViewStyleArrowProgress: break;
         case SJVideoPlayerDraggingProgressViewStylePreviewProgress: {
             __weak typeof(self) _self = self;
             [_asset screenshotWithTime:secs size:CGSizeMake(self.previewImageView.bounds.size.width * 2, self.previewImageView.bounds.size.height * 2) completion:^(SJVideoPlayerAssetCarrier * _Nonnull asset, SJVideoPreviewModel * _Nullable images, NSError * _Nullable error) {

@@ -58,14 +58,14 @@
 }
 
 - (void)_bottomSetupView {
-    [self.containerView addSubview:self.controlMaskView];
-    [self.containerView addSubview:self.playBtn];
-    [self.containerView addSubview:self.pauseBtn];
-    [self.containerView addSubview:self.currentTimeLabel];
-    [self.containerView addSubview:self.separateLabel];
-    [self.containerView addSubview:self.durationTimeLabel];
-    [self.containerView addSubview:self.progressSlider];
-    [self.containerView addSubview:self.fullBtn];
+    [self addSubview:self.controlMaskView];
+    [self addSubview:self.playBtn];
+    [self addSubview:self.pauseBtn];
+    [self addSubview:self.currentTimeLabel];
+    [self addSubview:self.separateLabel];
+    [self addSubview:self.durationTimeLabel];
+    [self addSubview:self.progressSlider];
+    [self addSubview:self.fullBtn];
     
     [_controlMaskView mas_makeConstraints:^(MASConstraintMaker *make) {
         make.edges.equalTo(_controlMaskView.superview);
@@ -83,6 +83,7 @@
     [_currentTimeLabel mas_makeConstraints:^(MASConstraintMaker *make) {
         make.centerY.equalTo(_separateLabel);
         make.leading.equalTo(_playBtn.mas_trailing).offset(0);
+        make.width.equalTo(_durationTimeLabel);
     }];
     
     [_separateLabel mas_makeConstraints:^(MASConstraintMaker *make) {
@@ -146,13 +147,13 @@
 
 - (UILabel *)durationTimeLabel {
     if ( _durationTimeLabel ) return _durationTimeLabel;
-    _durationTimeLabel = [SJUILabelFactory labelWithText:@"00:00" textColor:[UIColor whiteColor] alignment:NSTextAlignmentCenter font:self.separateLabel.font];
+    _durationTimeLabel = [SJUILabelFactory labelWithText:nil textColor:[UIColor whiteColor] alignment:NSTextAlignmentCenter font:[UIFont systemFontOfSize:self.separateLabel.font.pointSize + 1]];
     return _durationTimeLabel;
 }
 
 - (UILabel *)currentTimeLabel {
     if ( _currentTimeLabel ) return _currentTimeLabel;
-    _currentTimeLabel = [SJUILabelFactory labelWithText:@"00:00" textColor:[UIColor whiteColor] alignment:NSTextAlignmentCenter font:self.separateLabel.font];
+    _currentTimeLabel = [SJUILabelFactory labelWithText:nil textColor:[UIColor whiteColor] alignment:NSTextAlignmentCenter font:[UIFont systemFontOfSize:self.separateLabel.font.pointSize + 1]];
     return _currentTimeLabel;
 }
 

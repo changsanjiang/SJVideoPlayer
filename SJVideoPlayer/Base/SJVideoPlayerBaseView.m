@@ -17,7 +17,6 @@
 - (instancetype)initWithFrame:(CGRect)frame {
     self = [super initWithFrame:frame];
     if ( !self ) return nil;
-    [self _baseSetupView];
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(settingsPlayerNotification:) name:SJSettingsPlayerNotification object:nil];
     return self;
 }
@@ -30,16 +29,13 @@
     [[NSNotificationCenter defaultCenter] removeObserver:self];
 }
 
-- (void)_baseSetupView {
+- (UIView *)containerView {
+    if ( _containerView ) return _containerView;
+    _containerView = [SJUIViewFactory viewWithBackgroundColor:nil];
     [self addSubview:self.containerView];
     [_containerView mas_makeConstraints:^(MASConstraintMaker *make) {
         make.edges.equalTo(_containerView.superview);
     }];
-}
-
-- (UIView *)containerView {
-    if ( _containerView ) return _containerView;
-    _containerView = [SJUIViewFactory viewWithBackgroundColor:nil];
     return _containerView;
 }
 

@@ -806,10 +806,14 @@ static dispatch_queue_t videoPlayerWorkQueue;
                 self.userClickedPause = YES;
             }
                 break;
-            case SJVideoPlayerPlayState_Pause:
-            case SJVideoPlayerPlayState_PlayEnd: {
+            case SJVideoPlayerPlayState_Pause: {
                 [self play];
-                self.userClickedPause = NO;
+            }
+                break;
+            case SJVideoPlayerPlayState_PlayEnd: {
+                [self jumpedToTime:0 completionHandler:^(BOOL finished) {
+                   [self play];
+                }];
             }
                 break;
             case SJVideoPlayerPlayState_PlayFailed:

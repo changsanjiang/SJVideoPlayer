@@ -69,6 +69,26 @@ static NSString *const SJVideoListTableViewCellID = @"SJVideoListTableViewCell";
     // Do any additional setup after loading the view.
 }
 
+- (void)viewWillAppear:(BOOL)animated {
+    [super viewWillAppear:animated];
+    _videoPlayer.disableRotation = NO;  // 恢复旋转
+}
+
+- (void)viewWillDisappear:(BOOL)animated {
+    [super viewWillDisappear:animated];
+    _videoPlayer.disableRotation = YES; // 消失的时候, 禁止播放器旋转
+}
+
+- (void)viewDidAppear:(BOOL)animated {
+    [super viewDidAppear:animated];
+    if ( !_videoPlayer.userPaused ) [_videoPlayer play]; // 是否恢复播放
+}
+
+- (void)viewDidDisappear:(BOOL)animated {
+    [super viewDidDisappear:animated];
+    [_videoPlayer pause];   // 消失的时候, 暂停播放
+}
+
 #pragma mark -
 - (UIActivityIndicatorView *)indicator {
     if ( _indicator ) return _indicator;

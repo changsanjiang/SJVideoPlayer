@@ -1,0 +1,1 @@
+../../../SJFullscreenPopGesture/SJFullscreenPopGesture/UINavigationController+SJVideoPlayerAdd.h

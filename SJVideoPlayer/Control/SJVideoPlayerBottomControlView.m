@@ -82,7 +82,7 @@
     
     [_currentTimeLabel mas_makeConstraints:^(MASConstraintMaker *make) {
         make.centerY.equalTo(_separateLabel);
-        make.leading.equalTo(_playBtn.mas_trailing).offset(0);
+        make.leading.equalTo(_playBtn.mas_trailing).offset(-8);
         make.width.equalTo(_durationTimeLabel).offset(8);
     }];
     

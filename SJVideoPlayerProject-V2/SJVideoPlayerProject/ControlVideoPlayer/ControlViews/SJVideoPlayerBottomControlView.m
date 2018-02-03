@@ -11,6 +11,7 @@
 #import <SJUIFactory/SJUIFactory.h>
 #import <Masonry/Masonry.h>
 #import "SJVideoPlayerControlMaskView.h"
+#import "UIView+SJVideoPlayerSetting.h"
 
 @interface SJVideoPlayerBottomControlView ()
 
@@ -39,24 +40,7 @@
     self = [super initWithFrame:frame];
     if ( !self ) return nil;
     [self _bottomSetupView];
-//    __weak typeof(self) _self = self;
-//    self.setting = ^(SJVideoPlayerSettings * _Nonnull setting) {
-//        __strong typeof(_self) self = _self;
-//        if ( !self ) return;
-//        [self.playBtn setImage:setting.playBtnImage forState:UIControlStateNormal];
-//        [self.pauseBtn setImage:setting.pauseBtnImage forState:UIControlStateNormal];
-//        [self.fullBtn setImage:setting.fullBtnImage forState:UIControlStateNormal];
-//        self.progressSlider.traceImageView.backgroundColor = setting.progress_traceColor;
-//        self.progressSlider.trackImageView.backgroundColor = setting.progress_trackColor;
-//        if ( setting.progress_thumbImage ) {
-//            self.progressSlider.thumbImageView.image = setting.progress_thumbImage;
-//        }
-//        else if ( setting.progress_thumbSize ) {
-//            [self.progressSlider setThumbCornerRadius:setting.progress_thumbSize * 0.5 size:CGSizeMake(setting.progress_thumbSize, setting.progress_thumbSize) thumbBackgroundColor:setting.progress_thumbColor];
-//        }
-//        self.progressSlider.bufferProgressColor = setting.progress_bufferColor;
-//        self.progressSlider.trackHeight = setting.progress_traceHeight;
-//    };
+    [self _bottomSetting];
     return self;
 }
 
@@ -172,4 +156,24 @@
     return _controlMaskView;
 }
 
+- (void)_bottomSetting {
+    __weak typeof(self) _self = self;
+    self.settingRecroder = [[SJVideoPlayerControlSettingRecorder alloc] initWithSettings:^(SJVideoPlayerSettings * _Nonnull setting) {
+        __strong typeof(_self) self = _self;
+        if ( !self ) return;
+        [self.playBtn setImage:setting.playBtnImage forState:UIControlStateNormal];
+        [self.pauseBtn setImage:setting.pauseBtnImage forState:UIControlStateNormal];
+        [self.fullBtn setImage:setting.fullBtnImage forState:UIControlStateNormal];
+        self.progressSlider.traceImageView.backgroundColor = setting.progress_traceColor;
+        self.progressSlider.trackImageView.backgroundColor = setting.progress_trackColor;
+        if ( setting.progress_thumbImage ) {
+            self.progressSlider.thumbImageView.image = setting.progress_thumbImage;
+        }
+        else if ( setting.progress_thumbSize ) {
+            [self.progressSlider setThumbCornerRadius:setting.progress_thumbSize * 0.5 size:CGSizeMake(setting.progress_thumbSize, setting.progress_thumbSize) thumbBackgroundColor:setting.progress_thumbColor];
+        }
+        self.progressSlider.bufferProgressColor = setting.progress_bufferColor;
+        self.progressSlider.trackHeight = setting.progress_traceHeight;
+    }];
+}
 @end

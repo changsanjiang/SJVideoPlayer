@@ -410,7 +410,7 @@ NS_ASSUME_NONNULL_END
 
 NS_ASSUME_NONNULL_BEGIN
 @interface _SJVideoPlayerControlDisplayRecorder ()
-@property (nonatomic) BOOL displayStatus;
+@property (nonatomic) BOOL displayState;
 @property (nonatomic, weak, readonly) SJVideoPlayer *videoPlayer;
 @property (nonatomic, strong, readonly) SJTimerControl *timerControl;
 @property (nonatomic, assign, readonly) BOOL imped;
@@ -432,28 +432,28 @@ NS_ASSUME_NONNULL_END
 - (void)observeValueForKeyPath:(NSString *)keyPath ofObject:(id)object change:(NSDictionary<NSKeyValueChangeKey,id> *)change context:(void *)context {
     if      ( SJVideoPlayerPlayState_Paused == self.videoPlayer.state ) {
         [self.timerControl clear];
-        [self _callDelegateMethodWithStatus:_displayStatus = YES];
+        [self _callDelegateMethodWithStatus:_displayState = YES];
     }
     else if ( SJVideoPlayerPlayState_Playing == self.videoPlayer.state &&
-              self.displayStatus) {
+              self.displayState) {
         [self.timerControl start];
     }
 }
 
 - (void)considerDisplay {
-    if ( self.displayStatus ) [self needHidden];
+    if ( self.displayState ) [self needHidden];
     else [self needDisplay];
 }
 
 - (void)needDisplay {
     [self.timerControl start];
-    _displayStatus = YES;
+    _displayState = YES;
     [self _callDelegateMethodWithStatus:YES];
 }
 
 - (void)needHidden {
     [self.timerControl clear];
-    _displayStatus = NO;
+    _displayState = NO;
     [self _callDelegateMethodWithStatus:NO];
 }
 
@@ -464,7 +464,7 @@ NS_ASSUME_NONNULL_END
     _timerControl.exeBlock = ^(SJTimerControl * _Nonnull control) {
         __strong typeof(_self) self = _self;
         if ( !self ) return;
-        if ( self.displayStatus ) [self needHidden];
+        if ( self.displayState ) [self needHidden];
         else [control clear];
     };
     return _timerControl;
@@ -472,12 +472,12 @@ NS_ASSUME_NONNULL_END
 
 #pragma mark -
 - (void)_callDelegateMethodWithStatus:(BOOL)status {
-    if ( self.imped ) [self.videoPlayer.controlViewDelegate videoPlayer:self.videoPlayer needChangeControlLayerDisplayStatus:status];
+    if ( self.imped ) [self.videoPlayer.controlViewDelegate videoPlayer:self.videoPlayer controlLayerNeedChangeDisplayState:status];
 }
 
 - (BOOL)imped {
     if ( _imped ) return _imped;
-    _imped = [self.videoPlayer.controlViewDelegate respondsToSelector:@selector(videoPlayer:needChangeControlLayerDisplayStatus:)];
+    _imped = [self.videoPlayer.controlViewDelegate respondsToSelector:@selector(videoPlayer:controlLayerNeedChangeDisplayState:)];
     return _imped;
 }
 @end

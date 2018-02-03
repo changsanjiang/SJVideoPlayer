@@ -9,8 +9,9 @@
 #import "SJVideoPlayerControlView.h"
 #import "SJVideoPlayerBottomControlView.h"
 #import <Masonry/Masonry.h>
+#import "SJVideoPlayer.h"
 
-@interface SJVideoPlayerControlView ()
+@interface SJVideoPlayerControlView ()<SJVideoPlayerControlViewDelegate>
 
 @property (nonatomic, strong, readonly) SJVideoPlayerBottomControlView *bottomControlView;
 
@@ -25,6 +26,11 @@
     if ( !self ) return nil;
     [self _controlViewSetupView];
     return self;
+}
+
+- (void)setVideoPlayer:(SJVideoPlayer *)videoPlayer {
+    _videoPlayer = videoPlayer;
+    _videoPlayer.controlViewDelegate = self;
 }
 
 - (void)_controlViewSetupView {
@@ -47,9 +53,9 @@
     return self;
 }
 
-- (void)videoPlayer:(SJVideoPlayer *)videoPlayer needChangeControlLayerDisplayStatus:(BOOL)displayStatus {
+- (void)videoPlayer:(SJVideoPlayer *)videoPlayer controlLayerNeedChangeDisplayState:(BOOL)displayState {
     [UIView animateWithDuration:0.3 animations:^{
-        if ( displayStatus ) {
+        if ( displayState ) {
             _bottomControlView.transform = CGAffineTransformIdentity;
         }
         else {

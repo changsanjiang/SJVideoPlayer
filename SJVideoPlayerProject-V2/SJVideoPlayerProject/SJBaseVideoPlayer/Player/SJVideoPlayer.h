@@ -59,8 +59,9 @@ NS_ASSUME_NONNULL_BEGIN
 @required
 - (UIView *)controlView;
 
+
 @optional
-- (void)videoPlayer:(SJVideoPlayer *)videoPlayer needChangeControlLayerDisplayStatus:(BOOL)displayStatus;
+- (void)videoPlayer:(SJVideoPlayer *)videoPlayer controlLayerNeedChangeDisplayState:(BOOL)displayState;
 
 @end
 

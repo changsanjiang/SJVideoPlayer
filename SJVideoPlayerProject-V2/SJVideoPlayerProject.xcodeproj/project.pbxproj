@@ -7,6 +7,10 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		775C0A3020256DAD0008EDA7 /* SJVideoPlayer.bundle in Resources */ = {isa = PBXBuildFile; fileRef = 775C0A2D20256DAD0008EDA7 /* SJVideoPlayer.bundle */; };
+		775C0A3120256DAD0008EDA7 /* SJVideoPlayerResources.m in Sources */ = {isa = PBXBuildFile; fileRef = 775C0A2F20256DAD0008EDA7 /* SJVideoPlayerResources.m */; };
+		775C0A3820256E590008EDA7 /* SJVideoPlayerSettings.m in Sources */ = {isa = PBXBuildFile; fileRef = 775C0A3620256E590008EDA7 /* SJVideoPlayerSettings.m */; };
+		775C0A3B20256E9E0008EDA7 /* UIView+SJVideoPlayerSetting.m in Sources */ = {isa = PBXBuildFile; fileRef = 775C0A3A20256E9E0008EDA7 /* UIView+SJVideoPlayerSetting.m */; };
 		7772459E202454FE00C3F227 /* AppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = 7772459D202454FE00C3F227 /* AppDelegate.m */; };
 		777245A1202454FE00C3F227 /* ViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 777245A0202454FE00C3F227 /* ViewController.m */; };
 		777245A4202454FE00C3F227 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 777245A2202454FE00C3F227 /* Main.storyboard */; };
@@ -28,6 +32,13 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		775C0A2D20256DAD0008EDA7 /* SJVideoPlayer.bundle */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.plug-in"; path = SJVideoPlayer.bundle; sourceTree = "<group>"; };
+		775C0A2E20256DAD0008EDA7 /* SJVideoPlayerResources.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SJVideoPlayerResources.h; sourceTree = "<group>"; };
+		775C0A2F20256DAD0008EDA7 /* SJVideoPlayerResources.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SJVideoPlayerResources.m; sourceTree = "<group>"; };
+		775C0A3620256E590008EDA7 /* SJVideoPlayerSettings.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = SJVideoPlayerSettings.m; path = ../Model/SJVideoPlayerSettings.m; sourceTree = "<group>"; };
+		775C0A3720256E590008EDA7 /* SJVideoPlayerSettings.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = SJVideoPlayerSettings.h; path = ../Model/SJVideoPlayerSettings.h; sourceTree = "<group>"; };
+		775C0A3920256E9E0008EDA7 /* UIView+SJVideoPlayerSetting.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "UIView+SJVideoPlayerSetting.h"; sourceTree = "<group>"; };
+		775C0A3A20256E9E0008EDA7 /* UIView+SJVideoPlayerSetting.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = "UIView+SJVideoPlayerSetting.m"; sourceTree = "<group>"; };
 		77724599202454FE00C3F227 /* SJVideoPlayerProject.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = SJVideoPlayerProject.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		7772459C202454FE00C3F227 /* AppDelegate.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = AppDelegate.h; sourceTree = "<group>"; };
 		7772459D202454FE00C3F227 /* AppDelegate.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = AppDelegate.m; sourceTree = "<group>"; };
@@ -85,6 +96,39 @@
 			name = Frameworks;
 			sourceTree = "<group>";
 		};
+		775C0A2A20256C030008EDA7 /* ControlViews */ = {
+			isa = PBXGroup;
+			children = (
+				777245FF20247FE600C3F227 /* SJVideoPlayerBottomControlView.h */,
+				7772460020247FE600C3F227 /* SJVideoPlayerBottomControlView.m */,
+			);
+			path = ControlViews;
+			sourceTree = "<group>";
+		};
+		775C0A2B20256C1B0008EDA7 /* Mask */ = {
+			isa = PBXGroup;
+			children = (
+				777245F6202471B700C3F227 /* SJVideoPlayerControlMaskView.h */,
+				777245F7202471B700C3F227 /* SJVideoPlayerControlMaskView.m */,
+			);
+			path = Mask;
+			sourceTree = "<group>";
+		};
+		775C0A2C20256DAD0008EDA7 /* Resource */ = {
+			isa = PBXGroup;
+			children = (
+				775C0A3920256E9E0008EDA7 /* UIView+SJVideoPlayerSetting.h */,
+				775C0A3A20256E9E0008EDA7 /* UIView+SJVideoPlayerSetting.m */,
+				775C0A3720256E590008EDA7 /* SJVideoPlayerSettings.h */,
+				775C0A3620256E590008EDA7 /* SJVideoPlayerSettings.m */,
+				775C0A2D20256DAD0008EDA7 /* SJVideoPlayer.bundle */,
+				775C0A2E20256DAD0008EDA7 /* SJVideoPlayerResources.h */,
+				775C0A2F20256DAD0008EDA7 /* SJVideoPlayerResources.m */,
+			);
+			name = Resource;
+			path = ../../../SJVideoPlayer/Resource;
+			sourceTree = "<group>";
+		};
 		77724590202454FE00C3F227 = {
 			isa = PBXGroup;
 			children = (
@@ -112,7 +156,7 @@
 				7772459F202454FE00C3F227 /* ViewController.h */,
 				777245A0202454FE00C3F227 /* ViewController.m */,
 				777245BB2024568000C3F227 /* Demo */,
-				777245E0202470D300C3F227 /* Control */,
+				777245E0202470D300C3F227 /* ControlVideoPlayer */,
 				777245B6202455FF00C3F227 /* SJBaseVideoPlayer */,
 				777245A2202454FE00C3F227 /* Main.storyboard */,
 				777245A5202454FF00C3F227 /* Assets.xcassets */,
@@ -208,17 +252,16 @@
 			path = TimerControl;
 			sourceTree = "<group>";
 		};
-		777245E0202470D300C3F227 /* Control */ = {
+		777245E0202470D300C3F227 /* ControlVideoPlayer */ = {
 			isa = PBXGroup;
 			children = (
-				777245F6202471B700C3F227 /* SJVideoPlayerControlMaskView.h */,
-				777245F7202471B700C3F227 /* SJVideoPlayerControlMaskView.m */,
 				777245E5202470D300C3F227 /* SJVideoPlayerControlView.h */,
 				777245E6202470D300C3F227 /* SJVideoPlayerControlView.m */,
-				777245FF20247FE600C3F227 /* SJVideoPlayerBottomControlView.h */,
-				7772460020247FE600C3F227 /* SJVideoPlayerBottomControlView.m */,
+				775C0A2C20256DAD0008EDA7 /* Resource */,
+				775C0A2B20256C1B0008EDA7 /* Mask */,
+				775C0A2A20256C030008EDA7 /* ControlViews */,
 			);
-			path = Control;
+			path = ControlVideoPlayer;
 			sourceTree = "<group>";
 		};
 		7A115FC5F1A4A6D0867F667B /* Pods */ = {
@@ -291,6 +334,7 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				775C0A3020256DAD0008EDA7 /* SJVideoPlayer.bundle in Resources */,
 				777245A9202454FF00C3F227 /* LaunchScreen.storyboard in Resources */,
 				777245A6202454FF00C3F227 /* Assets.xcassets in Resources */,
 				777245B32024556600C3F227 /* Podfile in Resources */,
@@ -361,13 +405,16 @@
 			files = (
 				777245F1202470D300C3F227 /* SJVideoPlayerControlView.m in Sources */,
 				777245A1202454FE00C3F227 /* ViewController.m in Sources */,
+				775C0A3B20256E9E0008EDA7 /* UIView+SJVideoPlayerSetting.m in Sources */,
 				777245D520246AAA00C3F227 /* SJTimerControl.m in Sources */,
+				775C0A3820256E590008EDA7 /* SJVideoPlayerSettings.m in Sources */,
 				777245CA2024597E00C3F227 /* SJVideoPlayerPresentView.m in Sources */,
 				777245BA202455FF00C3F227 /* SJPlayerGestureControl.m in Sources */,
 				777245C6202458A200C3F227 /* SJVideoPlayerURLAsset.m in Sources */,
 				777245AC202454FF00C3F227 /* main.m in Sources */,
 				777245FE20247DB200C3F227 /* SJVideoPlayer.m in Sources */,
 				777245CE202459A700C3F227 /* UIView+SJVideoPlayerAdd.m in Sources */,
+				775C0A3120256DAD0008EDA7 /* SJVideoPlayerResources.m in Sources */,
 				777245F8202471B700C3F227 /* SJVideoPlayerControlMaskView.m in Sources */,
 				7772460120247FE600C3F227 /* SJVideoPlayerBottomControlView.m in Sources */,
 				7772459E202454FE00C3F227 /* AppDelegate.m in Sources */,

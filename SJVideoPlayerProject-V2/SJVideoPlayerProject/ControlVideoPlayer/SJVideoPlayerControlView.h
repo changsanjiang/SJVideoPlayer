@@ -7,11 +7,14 @@
 //
 
 #import <UIKit/UIKit.h>
-#import "SJVideoPlayer.h"
+
+@class SJVideoPlayer;
 
 NS_ASSUME_NONNULL_BEGIN
 
-@interface SJVideoPlayerControlView : UIView <SJVideoPlayerControlViewDelegate>
+@interface SJVideoPlayerControlView : UIView
+
+@property (nonatomic, weak, readwrite, nullable) SJVideoPlayer *videoPlayer;
 
 @end
 

@@ -528,13 +528,12 @@ NS_ASSUME_NONNULL_END
 
 - (void)setLocked:(BOOL)locked {
     objc_setAssociatedObject(self, @selector(isLocked), @(locked), OBJC_ASSOCIATION_RETAIN_NONATOMIC);
-    if ( [self.controlViewDelegate respondsToSelector:@selector(videoPlayer:lockStateDidChange:)] ) {
-        [self.controlViewDelegate videoPlayer:self lockStateDidChange:locked];
-    }
+    if ( locked ) [self.displayRecorder needHidden];
+    else [self.displayRecorder needDisplay];
 }
 
 - (BOOL)isLocked {
-    return objc_getAssociatedObject(self, _cmd);
+    return [objc_getAssociatedObject(self, _cmd) boolValue];
 }
 
 - (void)setAutoPlay:(BOOL)autoPlay {
@@ -625,18 +624,20 @@ NS_ASSUME_NONNULL_END
     self = [super init];
     if ( !self ) return nil;
     _videoPlayer = videoPlayer;
-    [_videoPlayer sj_addObserver:self forKeyPath:@"state"];
+    [_videoPlayer sj_addObserver:self forKeyPath:@"state"]; 
     return self;
 }
 
 - (void)observeValueForKeyPath:(NSString *)keyPath ofObject:(id)object change:(NSDictionary<NSKeyValueChangeKey,id> *)change context:(void *)context {
-    if      ( SJVideoPlayerPlayState_Paused == self.videoPlayer.state ) {
-        [self.timerControl clear];
-        [self _callDelegateMethodWithStatus:_displayState = YES];
-    }
-    else if ( SJVideoPlayerPlayState_Playing == self.videoPlayer.state &&
-              self.displayState) {
-        [self.timerControl start];
+    if ( [keyPath isEqualToString:@"state"] ) {
+        if      ( SJVideoPlayerPlayState_Paused == self.videoPlayer.state ) {
+            [self needDisplay];
+            [self.timerControl clear];
+        }
+        else if ( SJVideoPlayerPlayState_Playing == self.videoPlayer.state &&
+                 self.displayState ) {
+            [self.timerControl start];
+        }
     }
 }
 
@@ -677,12 +678,12 @@ NS_ASSUME_NONNULL_END
 
 #pragma mark -
 - (void)_callDelegateMethodWithStatus:(BOOL)status {
-    if ( self.imped ) [self.videoPlayer.controlViewDelegate videoPlayer:self.videoPlayer controlLayerNeedChangeDisplayState:status];
+    if ( self.imped ) [self.videoPlayer.controlViewDelegate videoPlayer:self.videoPlayer controlLayerNeedChangeDisplayState:status locked:self.videoPlayer.locked];
 }
 
 - (BOOL)imped {
     if ( _imped ) return _imped;
-    _imped = [self.videoPlayer.controlViewDelegate respondsToSelector:@selector(videoPlayer:controlLayerNeedChangeDisplayState:)];
+    _imped = [self.videoPlayer.controlViewDelegate respondsToSelector:@selector(videoPlayer:controlLayerNeedChangeDisplayState:locked:)];
     return _imped;
 }
 @end

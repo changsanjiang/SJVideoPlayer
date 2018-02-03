@@ -28,6 +28,7 @@
     if ( !self ) return nil;
     [self _leftSetupView];
     [self _leftSettingHelper];
+    self.lockState = NO;
     return self;
 }
 
@@ -38,6 +39,20 @@
 - (void)clickedBtn:(UIButton *)btn {
     if ( ![_delegate respondsToSelector:@selector(leftControlView:clickedBtnTag:)] ) return;
     [_delegate leftControlView:self clickedBtnTag:btn.tag];
+}
+
+- (void)setLockState:(BOOL)lockState {
+    _lockState = lockState;
+    [UIView animateWithDuration:0.25 animations:^{
+        if ( lockState ) {
+            self.lockBtn.alpha = 1;
+            self.unlockBtn.alpha = 0.001;
+        }
+        else {
+            self.lockBtn.alpha = 0.001;
+            self.unlockBtn.alpha = 1;
+        }
+    }];
 }
 
 - (void)_leftSetupView {

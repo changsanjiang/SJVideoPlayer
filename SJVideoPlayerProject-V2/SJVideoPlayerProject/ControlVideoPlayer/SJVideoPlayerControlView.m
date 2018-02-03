@@ -17,7 +17,7 @@
 #import "UIView+SJVideoPlayerSetting.h"
 #import "SJVideoPlayerLeftControlView.h"
 
-@interface SJVideoPlayerControlView ()<SJVideoPlayerControlDelegate, SJVideoPlayerControlDataSource, SJVideoPlayerBottomControlViewDelegate>
+@interface SJVideoPlayerControlView ()<SJVideoPlayerControlDelegate, SJVideoPlayerControlDataSource,  SJVideoPlayerLeftControlViewDelegate, SJVideoPlayerBottomControlViewDelegate>
 
 @property (nonatomic, assign) BOOL initialized;
 
@@ -81,12 +81,13 @@
         make.centerY.offset(0);
     }];
     
+    _leftControlView.transform = CGAffineTransformMakeTranslation(-_leftControlView.intrinsicContentSize.width, 0);
+    
     [_bottomControlView mas_makeConstraints:^(MASConstraintMaker *make) {
         make.leading.bottom.trailing.offset(0);
     }];
     
     _bottomControlView.transform = CGAffineTransformMakeTranslation(0, _bottomControlView.intrinsicContentSize.height);
-    
     
     [_draggingProgressView mas_makeConstraints:^(MASConstraintMaker *make) {
         make.center.offset(0);
@@ -106,8 +107,23 @@
 - (SJVideoPlayerLeftControlView *)leftControlView {
     if ( _leftControlView ) return _leftControlView;
     _leftControlView = [SJVideoPlayerLeftControlView new];
+    _leftControlView.delegate = self;
     return _leftControlView;
 }
+
+- (void)leftControlView:(SJVideoPlayerLeftControlView *)view clickedBtnTag:(SJVideoPlayerLeftViewTag)tag {
+    switch ( tag ) {
+        case SJVideoPlayerLeftViewTag_Lock: {
+            self.videoPlayer.locked = NO;  // 点击锁定按钮, 解锁
+        }
+            break;
+        case SJVideoPlayerLeftViewTag_Unlock: {
+            self.videoPlayer.locked = YES; // 点击解锁按钮, 锁定
+        }
+            break;
+    }
+}
+
 
 #pragma mark - 底部视图
 - (SJVideoPlayerBottomControlView *)bottomControlView {
@@ -131,8 +147,6 @@
             [self.videoPlayer rotation];
         }
             break;
-        default:
-            break;
     }
 }
 
@@ -147,13 +161,24 @@
     return self.initialized; // 在初始化期间不显示控制层
 }
 
-- (void)videoPlayer:(SJVideoPlayer *)videoPlayer controlLayerNeedChangeDisplayState:(BOOL)displayState {
+- (void)videoPlayer:(SJVideoPlayer *)videoPlayer controlLayerNeedChangeDisplayState:(BOOL)displayState locked:(BOOL)isLocked {
+    NSLog(@"%zd - %s", __LINE__, __func__);
+    self.leftControlView.lockState = isLocked;
+    
     [UIView animateWithDuration:0.3 animations:^{
-        if ( displayState ) {
-            _bottomControlView.transform = CGAffineTransformIdentity;
+        if ( isLocked ) {
+            _leftControlView.transform = CGAffineTransformIdentity;
+            _bottomControlView.transform = CGAffineTransformMakeTranslation(0, _bottomControlView.intrinsicContentSize.height);
         }
         else {
-            _bottomControlView.transform = CGAffineTransformMakeTranslation(0, _bottomControlView.intrinsicContentSize.height);
+            if ( displayState ) {
+                _bottomControlView.transform = CGAffineTransformIdentity;
+                _leftControlView.transform = CGAffineTransformIdentity;
+            }
+            else {
+                _bottomControlView.transform = CGAffineTransformMakeTranslation(0, _bottomControlView.intrinsicContentSize.height);
+                _leftControlView.transform = CGAffineTransformMakeTranslation(-_leftControlView.intrinsicContentSize.width, 0);
+            }
         }
     }];
 }
@@ -179,6 +204,10 @@
     self.bottomControlView.fullscreen = isFull;
 }
 
+- (void)videoPlayer:(SJVideoPlayer *)videoPlayer lockStateDidChange:(BOOL)isLocked {
+    self.leftControlView.lockState = isLocked;
+}
+
 #pragma mark gesture
 - (void)horizontalGestureWillBeginDragging:(SJVideoPlayer *)videoPlayer {
     [UIView animateWithDuration:0.25 animations:^{
@@ -186,7 +215,7 @@
     }];
     
     [self.draggingProgressView setCurrentTimeStr:videoPlayer.currentTimeStr totalTimeStr:videoPlayer.totalTimeStr];
-    [self videoPlayer:videoPlayer controlLayerNeedChangeDisplayState:NO];
+    [self videoPlayer:videoPlayer controlLayerNeedChangeDisplayState:NO locked:self.videoPlayer.locked];
 }
 
 - (void)videoPlayer:(SJVideoPlayer *)videoPlayer horizontalGestureDidDrag:(CGFloat)translation {
@@ -220,6 +249,7 @@
     // load default setting
     __weak typeof(self) _self = self;
     
+    // load default setting
 //    [SJVideoPlayer loadDefaultSettingAndCompletion:^{
 //        __strong typeof(_self) self = _self;
 //        if ( !self ) return;
@@ -228,7 +258,6 @@
 //    }];
     
     // or update
-    
     [SJVideoPlayer update:^(SJVideoPlayerSettings * _Nonnull commonSettings) {
         // update common settings
         commonSettings.more_trackColor = [UIColor whiteColor];
@@ -238,7 +267,7 @@
         __strong typeof(_self) self = _self;
         if ( !self ) return;
         self.initialized = YES; // 初始化已完成, 在初始化期间不显示控制层.
-        [self videoPlayer:self.videoPlayer controlLayerNeedChangeDisplayState:YES]; // 显示控制层
+        [self videoPlayer:self.videoPlayer controlLayerNeedChangeDisplayState:YES locked:self.videoPlayer.locked]; // 显示控制层
     }];
 }
 @end

@@ -61,7 +61,7 @@ NS_ASSUME_NONNULL_BEGIN
  @param videoPlayer `video player`.
  @param displayState `display or hidden`.
  */
-- (void)videoPlayer:(SJVideoPlayer *)videoPlayer controlLayerNeedChangeDisplayState:(BOOL)displayState;
+- (void)videoPlayer:(SJVideoPlayer *)videoPlayer controlLayerNeedChangeDisplayState:(BOOL)displayState locked:(BOOL)isLocked;
 
 /**
  play time did change.
@@ -81,14 +81,6 @@ NS_ASSUME_NONNULL_BEGIN
  @param isFull `small or full`
  */
 - (void)videoPlayer:(SJVideoPlayer *)videoPlayer willRotateView:(BOOL)isFull;
-
-/**
- view is locked. The player view will lose its response.
-
- @param videoPlayer `video player`
- @param isLocked `yes or no`
- */
-- (void)videoPlayer:(SJVideoPlayer *)videoPlayer lockStateDidChange:(BOOL)isLocked;
 
 - (void)horizontalGestureWillBeginDragging:(SJVideoPlayer *)videoPlayer;
 - (void)videoPlayer:(SJVideoPlayer *)videoPlayer horizontalGestureDidDrag:(CGFloat)translation;

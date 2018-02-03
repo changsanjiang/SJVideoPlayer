@@ -48,7 +48,10 @@
 - (CGSize)intrinsicContentSize {
     if ( SJ_is_iPhoneX() && _fullscreen )
          return CGSizeMake(SJScreen_Max(), 60);
-    else return CGSizeMake(SJScreen_Min(), 49);
+    else {
+        if ( _fullscreen ) return CGSizeMake(SJScreen_Max(), 49);
+        else return CGSizeMake(SJScreen_Min(), 49);
+    }
 }
 
 - (void)setPlayState:(BOOL)playState {

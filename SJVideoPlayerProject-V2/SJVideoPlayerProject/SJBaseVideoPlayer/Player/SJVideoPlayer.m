@@ -630,13 +630,13 @@ NS_ASSUME_NONNULL_END
 
 - (void)observeValueForKeyPath:(NSString *)keyPath ofObject:(id)object change:(NSDictionary<NSKeyValueChangeKey,id> *)change context:(void *)context {
     if ( [keyPath isEqualToString:@"state"] ) {
+        
         if      ( SJVideoPlayerPlayState_Paused == self.videoPlayer.state ) {
-            [self needDisplay];
-            [self.timerControl clear];
+            [self _keepDisplay];
         }
         else if ( SJVideoPlayerPlayState_Playing == self.videoPlayer.state &&
                  self.displayState ) {
-            [self.timerControl start];
+            [self needDisplay];
         }
     }
 }
@@ -650,6 +650,11 @@ NS_ASSUME_NONNULL_END
     [self.timerControl start];
     _displayState = YES;
     [self _callDelegateMethodWithStatus:YES];
+}
+
+- (void)_keepDisplay {
+    [self needDisplay];
+    [self.timerControl clear];
 }
 
 - (void)needHidden {

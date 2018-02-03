@@ -29,8 +29,10 @@ NS_ASSUME_NONNULL_BEGIN
  *  The specified area does not trigger gestures. It does not affect other ViewControllers.
  *  In the array is subview frame.
  *  @[@(self.label.frame)]
+ *  It is useful only when the gesture type is set to `SJFullscreenPopGestureType_Full`.
  *
  *  指定区域不触发手势. see `sj_fadeAreaViews` method
+ *  只有设置 手势类型为 `SJFullscreenPopGestureType_Full` 的时候有用.
  **/
 @property (nonatomic, strong, readwrite, nullable) NSArray<NSValue *> *sj_fadeArea;
 
@@ -38,8 +40,10 @@ NS_ASSUME_NONNULL_BEGIN
  *  The specified area does not trigger gestures. It does not affect other ViewControllers.
  *  In the array is subview.
  *  @[@(self.label)]
+ *  It is useful only when the gesture type is set to `SJFullscreenPopGestureType_Full`.
  *
  *  指定区域不触发手势.
+ *  只有设置 手势类型为 `SJFullscreenPopGestureType_Full` 的时候有用.
  **/
 @property (nonatomic, strong, readwrite, nullable) NSArray<UIView *> *sj_fadeAreaViews;
 

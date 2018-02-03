@@ -76,6 +76,9 @@
     return self;
 }
 
+- (BOOL)isM3u8 {
+    return [self.asset.assetURL.absoluteString containsString:@".m3u8"];
+}
 @end
 
 NSString * const kSJVideoPlayerAssetKey = @"asset";

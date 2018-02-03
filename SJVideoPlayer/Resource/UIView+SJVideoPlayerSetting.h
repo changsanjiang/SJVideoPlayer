@@ -13,7 +13,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 @interface SJVideoPlayerControlSettingRecorder : NSObject
 
-- (instancetype)initWithSettings:(void (^)(SJVideoPlayerSettings *))settings;
+- (instancetype)initWithSettings:(void (^)(SJVideoPlayerSettings *setting))settings;
 
 @end
 

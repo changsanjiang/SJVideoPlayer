@@ -32,7 +32,9 @@ NS_ASSUME_NONNULL_BEGIN
 
 + (void)resetSetting; // 重置配置, 恢复默认设置
 
-+ (void)setting:(void(^__nullable)(SJVideoPlayerSettings *commonSettings))block completion:(void(^__nullable)(void))completeBlock;
++ (void)update:(void(^__nullable)(SJVideoPlayerSettings *commonSettings))block completion:(void(^__nullable)(void))completeBlock;
+
++ (void)loadDefaultSettingAndCompletion:(void(^__nullable)(void))completeBlock;
 
 @end
 

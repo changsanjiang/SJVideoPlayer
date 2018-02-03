@@ -289,19 +289,22 @@
     switch (pan.state) {
         case UIGestureRecognizerStateBegan: {
             _isDragging = YES;
-            if ( ![self.delegate respondsToSelector:@selector(sliderWillBeginDragging:)] ) break;
-            [self.delegate sliderWillBeginDragging:self];
+            if ( [self.delegate respondsToSelector:@selector(sliderWillBeginDragging:)] ) {
+                [self.delegate sliderWillBeginDragging:self];
+            }
         }
         case UIGestureRecognizerStateChanged: {
-            if ( ![self.delegate respondsToSelector:@selector(sliderDidDrag:)] ) break;
-            [self.delegate sliderDidDrag:self];
+            if ( [self.delegate respondsToSelector:@selector(sliderDidDrag:)] ) {
+                [self.delegate sliderDidDrag:self];
+            }
         }
             break;
         case UIGestureRecognizerStateEnded:
         case UIGestureRecognizerStateFailed:
         case UIGestureRecognizerStateCancelled: {
-            if ( ![self.delegate respondsToSelector:@selector(sliderDidEndDragging:)] ) break;
-            [self.delegate sliderDidEndDragging:self];
+            if ( [self.delegate respondsToSelector:@selector(sliderDidEndDragging:)] ) {
+                [self.delegate sliderDidEndDragging:self];
+            }
             _isDragging = NO;
         }
             break;

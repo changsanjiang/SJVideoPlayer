@@ -84,7 +84,7 @@ NS_ASSUME_NONNULL_END
         __strong typeof(_self) self = _self;
         if ( !self ) return;
         if ( [self.controlViewDelegate respondsToSelector:@selector(videoPlayer:currentTimeStr:totalTimeStr:)] ) {
-            [self.controlViewDelegate videoPlayer:self currentTimeStr:[asset timeString:currentTime] totalTimeStr:[asset timeString:duration]];
+            [self.controlViewDelegate videoPlayer:self currentTimeStr:self.currentTimeStr totalTimeStr:self.totalTimeStr];
         }
     };
 }
@@ -97,6 +97,13 @@ NS_ASSUME_NONNULL_END
     [_controlViewDataSource.controlView mas_makeConstraints:^(MASConstraintMaker *make) {
         make.edges.offset(0);
     }];
+}
+
+- (void)setPlaceholder:(UIImage *)placeholder {
+    _placeholder = placeholder;
+    dispatch_async(dispatch_get_main_queue(), ^{
+        self.presentView.placeholder = placeholder;
+    });
 }
 
 #pragma mark -
@@ -185,8 +192,8 @@ NS_ASSUME_NONNULL_END
         __strong typeof(_self) self = _self;
         if ( !self ) return;
         [self.displayRecorder needHidden];
-        if ( [self.controlViewDelegate respondsToSelector:@selector(videoPlayer:willRotateScreen:)] ) {
-            [self.controlViewDelegate videoPlayer:self willRotateScreen:isFullScreen];
+        if ( [self.controlViewDelegate respondsToSelector:@selector(videoPlayer:willRotateView:)] ) {
+            [self.controlViewDelegate videoPlayer:self willRotateView:isFullScreen];
         }
     };
     
@@ -225,7 +232,9 @@ NS_ASSUME_NONNULL_END
         if ( !self ) return;
         switch (direction) {
             case SJPanDirection_H: {
-                
+                if ( [self.controlViewDelegate respondsToSelector:@selector(horizontalGestureWillBeginDragging:)] ) {
+                    [self.controlViewDelegate horizontalGestureWillBeginDragging:self];
+                }
             }
                 break;
             case SJPanDirection_V: {
@@ -255,7 +264,9 @@ NS_ASSUME_NONNULL_END
         if ( !self ) return;
         switch (direction) {
             case SJPanDirection_H: {
-                
+                if ( [self.controlViewDelegate respondsToSelector:@selector(videoPlayer:horizontalGestureDidDrag:)] ) {
+                    [self.controlViewDelegate videoPlayer:self horizontalGestureDidDrag:translate.x * 0.003];
+                }
             }
                 break;
             case SJPanDirection_V: {
@@ -285,7 +296,9 @@ NS_ASSUME_NONNULL_END
         if ( !self ) return;
         switch ( direction ) {
             case SJPanDirection_H:{
-                
+                if ( [self.controlViewDelegate respondsToSelector:@selector(horizontalGestureDidEndDragging:)] ) {
+                    [self.controlViewDelegate horizontalGestureDidEndDragging:self];
+                }
             }
                 break;
             case SJPanDirection_V:{
@@ -354,6 +367,8 @@ NS_ASSUME_NONNULL_END
         default:
             break;
     }
+    
+    _presentView.playState = state;
 }
 
 - (void)clear {
@@ -365,24 +380,6 @@ NS_ASSUME_NONNULL_END
 #pragma mark - 播放
 
 @implementation SJVideoPlayer (Play)
-
-/*!
- *  unit sec.
- *
- *  当前播放时间.
- */
-- (NSTimeInterval)currentTime {
-    return self.asset.currentTime;
-}
-
-/*!
- *  unit sec.
- *
- *  当前视频的全部播放时间.
- **/
-- (NSTimeInterval)totalTime {
-    return self.asset.duration;
-}
 
 - (void)setAssetURL:(NSURL *)assetURL {
     [self playWithURL:assetURL];
@@ -427,6 +424,53 @@ NS_ASSUME_NONNULL_END
     self.URLAsset = [[SJVideoPlayerURLAsset alloc] initWithAssetURL:playURL beginTime:time];
 }
 
+@end
+
+
+#pragma mark - 时间
+
+@implementation SJVideoPlayer (Time)
+
+- (NSString *)timeStringWithSeconds:(NSInteger)secs {
+    return [self.asset timeString:secs];
+}
+
+/*!
+ *  unit sec.
+ *
+ *  当前播放时间.
+ */
+- (NSTimeInterval)currentTime {
+    return self.asset.currentTime;
+}
+
+/*!
+ *  unit sec.
+ *
+ *  当前视频的全部播放时间.
+ **/
+- (NSTimeInterval)totalTime {
+    return self.asset.duration;
+}
+
+- (NSString *)currentTimeStr {
+    return [self timeStringWithSeconds:self.currentTime];
+}
+
+- (NSString *)totalTimeStr {
+    return [self timeStringWithSeconds:self.totalTime];
+}
+
+- (void)jumpedToTime:(NSTimeInterval)time completionHandler:(void (^)(BOOL))completionHandler {
+    if ( isnan(time) ) { return;}
+    CMTime seekTime = CMTimeMakeWithSeconds(time, NSEC_PER_SEC);
+    __weak typeof(self) _self = self;
+    [self.asset seekToTime:seekTime completionHandler:^(BOOL finished) {
+        __strong typeof(_self) self = _self;
+        if ( !self ) return;
+        if ( completionHandler ) completionHandler(finished);
+    }];
+}
 @end
 
 
@@ -476,8 +520,8 @@ NS_ASSUME_NONNULL_END
 
 - (void)setLocked:(BOOL)locked {
     objc_setAssociatedObject(self, @selector(isLocked), @(locked), OBJC_ASSOCIATION_RETAIN_NONATOMIC);
-    if ( [self.controlViewDelegate respondsToSelector:@selector(videoPlayer:changedLockState:)] ) {
-        [self.controlViewDelegate videoPlayer:self changedLockState:locked];
+    if ( [self.controlViewDelegate respondsToSelector:@selector(videoPlayer:lockStateDidChange:)] ) {
+        [self.controlViewDelegate videoPlayer:self lockStateDidChange:locked];
     }
 }
 
@@ -525,16 +569,6 @@ NS_ASSUME_NONNULL_END
     }];
 }
 
-- (void)jumpedToTime:(NSTimeInterval)time completionHandler:(void (^)(BOOL))completionHandler {
-    if ( isnan(time) ) { return;}
-    CMTime seekTime = CMTimeMakeWithSeconds(time, NSEC_PER_SEC);
-    __weak typeof(self) _self = self;
-    [self.asset seekToTime:seekTime completionHandler:^(BOOL finished) {
-        __strong typeof(_self) self = _self;
-        if ( !self ) return;
-        if ( completionHandler ) completionHandler(finished);
-    }];
-}
 @end
 
 
@@ -548,16 +582,16 @@ NS_ASSUME_NONNULL_END
 
 - (void)screenshotWithTime:(NSTimeInterval)time
                 completion:(void(^)(SJVideoPlayer *videoPlayer, UIImage * __nullable image, NSError *__nullable error))block {
-    [self.asset screenshotWithTime:time completion:^(SJVideoPlayerAssetCarrier * _Nonnull asset, SJVideoPreviewModel * _Nullable images, NSError * _Nullable error) {
-        if ( block ) block(self, images.image, error);
-    }];;
+    [self screenshotWithTime:time size:CGSizeZero completion:block];
 }
 
 - (void)screenshotWithTime:(NSTimeInterval)time
                       size:(CGSize)size
                 completion:(void(^)(SJVideoPlayer *videoPlayer, UIImage * __nullable image, NSError *__nullable error))block {
     [self.asset screenshotWithTime:time size:size completion:^(SJVideoPlayerAssetCarrier * _Nonnull asset, SJVideoPreviewModel * _Nullable images, NSError * _Nullable error) {
-        if ( block ) block(self, images.image, error);
+        dispatch_async(dispatch_get_main_queue(), ^{
+            if ( block ) block(self, images.image, error);
+        });
     }];
 }
 

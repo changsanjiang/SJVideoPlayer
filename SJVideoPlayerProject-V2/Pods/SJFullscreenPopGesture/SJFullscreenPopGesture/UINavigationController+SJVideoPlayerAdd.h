@@ -11,7 +11,15 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
+// default is `SJFullscreenPopGestureType_EdgeLeft`.
+typedef NS_ENUM(NSUInteger, SJFullscreenPopGestureType) {
+    SJFullscreenPopGestureType_EdgeLeft,    // 默认, 屏幕左边缘触发手势
+    SJFullscreenPopGestureType_Full,        // 全屏触发手势
+};
+
 @interface UINavigationController (Settings)
+
+@property (nonatomic, readwrite) SJFullscreenPopGestureType sj_gestureType;
 
 @property (nonatomic, readwrite) SJScreenshotTransitionMode sj_transitionMode;
 
@@ -26,6 +34,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 /*!
  *  default is 0.35. The proportion of pop gesture offset.
+ *  It is useful only when the gesture type is set to `SJFullscreenPopGestureType_Full`.
  *
  *  0.0 .. 1.0
  *  偏移多少, 触发pop.

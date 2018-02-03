@@ -30,6 +30,8 @@ NS_ASSUME_NONNULL_BEGIN
 
 @property (nonatomic, strong, readonly, nullable) NSError *error;
 
+@property (nonatomic, strong, nullable) UIImage *placeholder;       // 占位图
+
 @end
 
 
@@ -52,13 +54,43 @@ NS_ASSUME_NONNULL_BEGIN
 @protocol SJVideoPlayerControlDelegate <NSObject>
 
 @optional
+
+/**
+ control layer want to display.
+
+ @param videoPlayer `video player`.
+ @param displayState `display or hidden`.
+ */
 - (void)videoPlayer:(SJVideoPlayer *)videoPlayer controlLayerNeedChangeDisplayState:(BOOL)displayState;
 
+/**
+ play time did change.
+
+ @param videoPlayer `video player`
+ @param currentTimeStr `current time string.  formatter: 00:00 or 00:00:00`
+ @param totalTimeStr `duration time string. formatter: 00:00 or 00:00:00`
+ */
 - (void)videoPlayer:(SJVideoPlayer *)videoPlayer currentTimeStr:(NSString *)currentTimeStr totalTimeStr:(NSString *)totalTimeStr;
 
-- (void)videoPlayer:(SJVideoPlayer *)videoPlayer willRotateScreen:(BOOL)isFullScreen;
+/**
+ player view will rotate.
 
-- (void)videoPlayer:(SJVideoPlayer *)videoPlayer changedLockState:(BOOL)isLocked;
+ @param videoPlayer `video player`
+ @param isFull `small or full`
+ */
+- (void)videoPlayer:(SJVideoPlayer *)videoPlayer willRotateView:(BOOL)isFull;
+
+/**
+ view is locked. The player view will lose its response.
+
+ @param videoPlayer `video player`
+ @param isLocked `yes or no`
+ */
+- (void)videoPlayer:(SJVideoPlayer *)videoPlayer lockStateDidChange:(BOOL)isLocked;
+
+- (void)horizontalGestureWillBeginDragging:(SJVideoPlayer *)videoPlayer;
+- (void)videoPlayer:(SJVideoPlayer *)videoPlayer horizontalGestureDidDrag:(CGFloat)translation;
+- (void)horizontalGestureDidEndDragging:(SJVideoPlayer *)videoPlayer;
 
 @end
 
@@ -67,10 +99,6 @@ NS_ASSUME_NONNULL_BEGIN
 
 @interface SJVideoPlayer (Play)
 
-@property (nonatomic, readonly) NSTimeInterval currentTime;
-
-@property (nonatomic, readonly) NSTimeInterval totalTime;
-
 @property (nonatomic, strong, readwrite, nullable) NSURL *assetURL;
 
 @property (nonatomic, strong, readwrite, nullable) SJVideoPlayerURLAsset *URLAsset;
@@ -78,6 +106,23 @@ NS_ASSUME_NONNULL_BEGIN
 - (void)playWithURL:(NSURL *)playURL;
 
 - (void)playWithURL:(NSURL *)playURL jumpedToTime:(NSTimeInterval)time;
+
+@end
+
+
+#pragma mark - 时间
+
+@interface SJVideoPlayer (Time)
+
+- (NSString *)timeStringWithSeconds:(NSInteger)secs;
+
+@property (nonatomic, readonly) NSTimeInterval currentTime;
+@property (nonatomic, readonly) NSTimeInterval totalTime;
+
+@property (nonatomic, strong, readonly) NSString *currentTimeStr;
+@property (nonatomic, strong, readonly) NSString *totalTimeStr;
+
+- (void)jumpedToTime:(NSTimeInterval)secs completionHandler:(void (^ __nullable)(BOOL finished))completionHandler; // unit is sec. 单位是秒.
 
 @end
 
@@ -98,9 +143,6 @@ NS_ASSUME_NONNULL_BEGIN
 - (void)stop;
 
 - (void)replay;
-
-- (void)jumpedToTime:(NSTimeInterval)time
-   completionHandler:(void (^ __nullable)(BOOL finished))completionHandler; // unit is sec. 单位是秒.
 
 @end
 

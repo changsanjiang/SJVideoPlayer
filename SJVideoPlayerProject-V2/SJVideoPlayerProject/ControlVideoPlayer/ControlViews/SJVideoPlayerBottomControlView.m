@@ -40,9 +40,14 @@
     self = [super initWithFrame:frame];
     if ( !self ) return nil;
     [self _bottomSetupView];
-    [self _bottomSetting];
+    [self _bottomSettingHelper];
     self.playState = NO;
     return self;
+}
+
+- (CGSize)intrinsicContentSize {
+    if ( _fullscreen ) return CGSizeMake(SJScreen_Max(), 60);
+    else return CGSizeMake(SJScreen_Min(), 49);
 }
 
 - (void)setPlayState:(BOOL)playState {
@@ -59,8 +64,17 @@
     }];
 }
 
+- (void)setFullscreen:(BOOL)fullscreen {
+    _fullscreen = fullscreen;
+    [self invalidateIntrinsicContentSize];
+}
+
 - (BOOL)isDragging {
     return self.progressSlider.isDragging;
+}
+
+- (void)setCurrentTimeStr:(NSString *)currentTimeStr {
+    self.currentTimeLabel.text = currentTimeStr;
 }
 
 - (void)setCurrentTimeStr:(NSString *)currentTimeStr totalTimeStr:(NSString *)totalTimeStr {
@@ -149,6 +163,7 @@
     _progressSlider = [SJSlider new];
     _progressSlider.tag = 0;
     _progressSlider.enableBufferProgress = YES;
+    _progressSlider.pan.enabled = NO;
     return _progressSlider;
 }
 
@@ -183,7 +198,7 @@
 }
 
 #pragma mark -
-- (void)_bottomSetting {
+- (void)_bottomSettingHelper {
     __weak typeof(self) _self = self;
     self.settingRecroder = [[SJVideoPlayerControlSettingRecorder alloc] initWithSettings:^(SJVideoPlayerSettings * _Nonnull setting) {
         __strong typeof(_self) self = _self;

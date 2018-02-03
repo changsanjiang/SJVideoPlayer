@@ -10,15 +10,20 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
-@class SJVideoPlayerAssetCarrier, SJOrentationObserver;
+typedef NS_ENUM(NSUInteger, SJVideoPlayerDraggingProgressViewStyle) {
+    SJVideoPlayerDraggingProgressViewStyleArrowProgress,
+    SJVideoPlayerDraggingProgressViewStylePreviewProgress,
+};
 
 @interface SJVideoPlayerDraggingProgressView : UIView
 
-- (instancetype)initWithOrentationObserver:(__weak SJOrentationObserver *)orentationObserver;
-
-@property (nonatomic, weak, readwrite, nullable) SJVideoPlayerAssetCarrier *asset;
+@property (nonatomic, readwrite) SJVideoPlayerDraggingProgressViewStyle style;
 
 @property (nonatomic, readwrite) float progress;
+
+- (void)setCurrentTimeStr:(NSString *)currentTimeStr;
+- (void)setCurrentTimeStr:(NSString *)currentTimeStr totalTimeStr:(NSString *)totalTimeStr;
+- (void)setPreviewImage:(UIImage *)image;
 
 @end
 

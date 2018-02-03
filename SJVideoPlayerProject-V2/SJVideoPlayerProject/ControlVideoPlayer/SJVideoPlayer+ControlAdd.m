@@ -40,7 +40,7 @@ static dispatch_queue_t videoPlayerWorkQueue;
     [[SJVideoPlayerSettings commonSettings] reset];
 }
 
-+ (void)setting:(void(^)(SJVideoPlayerSettings *commonSettings))block completion:(void(^)(void))completeBlock {
++ (void)update:(void(^)(SJVideoPlayerSettings *commonSettings))block completion:(void(^)(void))completeBlock {
     [self _addOperation:^{
         if ( block ) block([SJVideoPlayerSettings commonSettings]);
         dispatch_async(dispatch_get_main_queue(), ^{
@@ -51,4 +51,9 @@ static dispatch_queue_t videoPlayerWorkQueue;
     }];
 }
 
++ (void)loadDefaultSettingAndCompletion:(void(^__nullable)(void))completeBlock {
+    [self update:^(SJVideoPlayerSettings * _Nonnull commonSettings) {
+        [self resetSetting];
+    } completion:completeBlock];
+}
 @end

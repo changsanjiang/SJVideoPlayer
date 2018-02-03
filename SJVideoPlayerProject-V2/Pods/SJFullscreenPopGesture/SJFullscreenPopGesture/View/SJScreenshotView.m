@@ -33,19 +33,19 @@
 - (void)beginTransitionWithSnapshot:(UIView *)snapshot {
     switch ( _transitionMode ) {
         case SJScreenshotTransitionModeShifting: {
-            self.transform = CGAffineTransformMakeTranslation( self.shift, 0 );
+            self.containerView.transform = CGAffineTransformMakeTranslation( self.shift, 0 );
             _shadeView.alpha = 0.001;
         }
             break;
         case SJScreenshotTransitionModeShadeAndShifting: {
-            self.transform = CGAffineTransformMakeTranslation( self.shift, 0 );
+            self.containerView.transform = CGAffineTransformMakeTranslation( self.shift, 0 );
             CGFloat width = self.frame.size.width;
             _shadeView.transform = CGAffineTransformMakeTranslation( - (self.shift + width), 0 );
             _shadeView.alpha = 1;
         }
             break;
     }
-    
+
     UIView *before = self.containerView.subviews.firstObject;
     if ( snapshot && snapshot != before ) {
         if ( before != self.shadeView ) [before removeFromSuperview];
@@ -60,12 +60,12 @@
     switch ( _transitionMode ) {
         case SJScreenshotTransitionModeShifting: {
             CGFloat rate = offset / width;
-            self.transform = CGAffineTransformMakeTranslation( self.shift * ( 1 - rate ), 0 );
+            self.containerView.transform = CGAffineTransformMakeTranslation( self.shift * ( 1 - rate ), 0 );
         }
             break;
         case SJScreenshotTransitionModeShadeAndShifting: {
             CGFloat rate = offset / width;
-            self.transform = CGAffineTransformMakeTranslation( self.shift * ( 1 - rate ), 0 );
+            self.containerView.transform = CGAffineTransformMakeTranslation( self.shift * ( 1 - rate ), 0 );
             _shadeView.alpha = 1 - rate;
             _shadeView.transform = CGAffineTransformMakeTranslation( - (self.shift + width) + (self.shift * rate) + offset, 0 );
         }
@@ -74,9 +74,9 @@
 }
 
 - (void)reset {
-    self.transform = CGAffineTransformMakeTranslation( self.shift, 0 );
+    self.containerView.transform = CGAffineTransformMakeTranslation( self.shift, 0 );
     CGFloat width = self.frame.size.width;
-    
+
     switch ( _transitionMode ) {
         case SJScreenshotTransitionModeShifting: break;
         case SJScreenshotTransitionModeShadeAndShifting: {
@@ -88,7 +88,7 @@
 }
 
 - (void)finishedTransition {
-    self.transform = CGAffineTransformIdentity;
+    self.containerView.transform = CGAffineTransformIdentity;
     _shadeView.transform = CGAffineTransformIdentity;
     _shadeView.alpha = 0.001;
 }
@@ -96,19 +96,12 @@
 // MARK:
 
 - (void)_SJScreenshotViewSetupUI {
-    [self addSubview:[UIView new]];
     [self addSubview:self.containerView];
     [_containerView addSubview:self.shadeView];
-}
-
-- (void)layoutSubviews {
-    [super layoutSubviews];
-    _shadeView.frame = _containerView.frame = self.bounds;
-}
-
-- (void)setImage:(UIImage *)image {
-    _image = image;
-    self.layer.contents = (id)image.CGImage;
+    CGRect bounds = [UIScreen mainScreen].bounds;
+    CGFloat width = MIN(bounds.size.width, bounds.size.height);
+    CGFloat height = MAX(bounds.size.width, bounds.size.height);
+    self.shadeView.frame = self.containerView.frame = CGRectMake(0, 0, width, height);
 }
 
 - (UIView *)containerView {

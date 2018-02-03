@@ -21,16 +21,15 @@ extern NSNotificationName const SJSettingsPlayerNotification;
 
 
 #pragma mark - title
-@property (nonatomic, strong, readwrite) UIFont *titleFont; // 标题字体, default is [UIFont boldSystemFontOfSize:14]
+@property (nonatomic, strong, readwrite) UIFont *titleFont;   // 标题字体, default is [UIFont boldSystemFontOfSize:14]
 @property (nonatomic, strong, readwrite) UIColor *titleColor; // 标题颜色, default is [UIColor whiteColor]
 
 
+#pragma mark - placeholder
+@property (nonatomic, strong) UIImage *placeholder;
+
 #pragma mark - loading
 @property (nonatomic, strong, readwrite) UIColor *loadingLineColor;
-
-
-#pragma mark - placeholder
-@property (nonatomic, strong, readwrite) UIImage *placeholder;
 
 
 #pragma mark - fast/forward

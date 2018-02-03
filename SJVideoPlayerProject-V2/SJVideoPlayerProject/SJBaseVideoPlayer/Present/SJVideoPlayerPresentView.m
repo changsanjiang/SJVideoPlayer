@@ -71,10 +71,10 @@ NS_ASSUME_NONNULL_END
     _placeholderImageView.image = placeholder;
 }
 
-- (void)setState:(SJVideoPlayerPlayState)state {
-    _state = state;
+- (void)setPlayState:(SJVideoPlayerPlayState)playState {
+    _playState = playState;
     [UIView animateWithDuration:0.5 animations:^{
-        switch ( state ) {
+        switch ( playState ) {
             case SJVideoPlayerPlayState_Unknown:
             case SJVideoPlayerPlayState_Prepare: {
                 _placeholderImageView.alpha = 1;

@@ -21,13 +21,12 @@
     self = [super init];
     if ( !self ) return nil;
     _settings = settings;
+    [[NSNotificationCenter defaultCenter] addObserver:self
+                                             selector:@selector(settingsPlayerNotification:)
+                                                 name:SJSettingsPlayerNotification
+                                               object:nil];
     return self;
 }
-
-- (void)_installSettingNotification {
-    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(settingsPlayerNotification:) name:SJSettingsPlayerNotification object:nil];
-}
-
 - (void)settingsPlayerNotification:(NSNotification *)notifi {
     if ( self.settings ) self.settings(notifi.object);
 }

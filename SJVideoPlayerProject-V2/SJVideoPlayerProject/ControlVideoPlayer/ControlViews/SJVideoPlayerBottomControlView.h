@@ -8,6 +8,33 @@
 
 #import <UIKit/UIKit.h>
 
+NS_ASSUME_NONNULL_BEGIN
+
+typedef NS_ENUM(NSUInteger, SJVideoPlayerBottomViewTag) {
+    SJVideoPlayerBottomViewTag_Play,
+    SJVideoPlayerBottomViewTag_Pause,
+    SJVideoPlayerBottomViewTag_Full,
+};
+
+@protocol SJVideoPlayerBottomControlViewDelegate;
+
 @interface SJVideoPlayerBottomControlView : UIView
 
+@property (nonatomic, weak, readwrite, nullable) id<SJVideoPlayerBottomControlViewDelegate> delegate;
+
+@property (nonatomic, assign) BOOL playState;
+
+@property (nonatomic, readonly) BOOL isDragging;
+
+- (void)setCurrentTimeStr:(NSString *)currentTimeStr totalTimeStr:(NSString *)totalTimeStr;
+
 @end
+
+@protocol SJVideoPlayerBottomControlViewDelegate <NSObject>
+			
+@optional
+- (void)bottomView:(SJVideoPlayerBottomControlView *)view clickedBtnTag:(SJVideoPlayerBottomViewTag)tag;
+
+@end
+
+NS_ASSUME_NONNULL_END

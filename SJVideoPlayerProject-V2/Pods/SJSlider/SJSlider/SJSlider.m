@@ -300,9 +300,9 @@
         case UIGestureRecognizerStateEnded:
         case UIGestureRecognizerStateFailed:
         case UIGestureRecognizerStateCancelled: {
+            _isDragging = NO;
             if ( ![self.delegate respondsToSelector:@selector(sliderDidEndDragging:)] ) break;
             [self.delegate sliderDidEndDragging:self];
-            _isDragging = NO;
         }
             break;
         default:

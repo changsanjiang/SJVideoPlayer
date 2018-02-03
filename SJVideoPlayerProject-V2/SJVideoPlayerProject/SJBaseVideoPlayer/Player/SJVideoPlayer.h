@@ -12,7 +12,7 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
-@protocol SJVideoPlayerControlViewDelegate;
+@protocol SJVideoPlayerControlDelegate, SJVideoPlayerControlDataSource;
 
 @interface SJVideoPlayer : NSObject
 
@@ -20,21 +20,74 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (instancetype)init;
 
-@property (nonatomic, weak, nullable) id <SJVideoPlayerControlViewDelegate> controlViewDelegate;
+@property (nonatomic, weak, nullable) id <SJVideoPlayerControlDataSource> controlViewDataSource;
+
+@property (nonatomic, weak, nullable) id <SJVideoPlayerControlDelegate> controlViewDelegate;
 
 @property (nonatomic, strong, readonly) UIView *view;
+
 @property (nonatomic, assign, readonly) SJVideoPlayerPlayState state;
 
 @property (nonatomic, strong, readonly, nullable) NSError *error;
 
-@property (nonatomic, strong, readwrite, nullable) SJVideoPlayerURLAsset *URLAsset;
+@end
+
+
+#pragma mark - DataSource
+
+@protocol SJVideoPlayerControlDataSource <NSObject>
+
+@required
+- (UIView *)controlView;
+
+- (BOOL)controlLayerDisplayCondition;
+
+@optional
 
 @end
 
 
-#pragma mark - 控制
+#pragma mark - Delegate
+
+@protocol SJVideoPlayerControlDelegate <NSObject>
+
+@optional
+- (void)videoPlayer:(SJVideoPlayer *)videoPlayer controlLayerNeedChangeDisplayState:(BOOL)displayState;
+
+- (void)videoPlayer:(SJVideoPlayer *)videoPlayer currentTimeStr:(NSString *)currentTimeStr totalTimeStr:(NSString *)totalTimeStr;
+
+- (void)videoPlayer:(SJVideoPlayer *)videoPlayer willRotateScreen:(BOOL)isFullScreen;
+
+- (void)videoPlayer:(SJVideoPlayer *)videoPlayer changedLockState:(BOOL)isLocked;
+
+@end
+
+
+#pragma mark - 播放
+
+@interface SJVideoPlayer (Play)
+
+@property (nonatomic, readonly) NSTimeInterval currentTime;
+
+@property (nonatomic, readonly) NSTimeInterval totalTime;
+
+@property (nonatomic, strong, readwrite, nullable) NSURL *assetURL;
+
+@property (nonatomic, strong, readwrite, nullable) SJVideoPlayerURLAsset *URLAsset;
+
+- (void)playWithURL:(NSURL *)playURL;
+
+- (void)playWithURL:(NSURL *)playURL jumpedToTime:(NSTimeInterval)time;
+
+@end
+
+
+#pragma mark - 播放控制
 
 @interface SJVideoPlayer (Control)
+
+/// 锁定播放器. 所有交互事件将不会触发.
+@property (nonatomic, assign, readwrite, getter=isLocked) BOOL locked;
 
 @property (nonatomic, assign, readwrite, getter=isAutoPlay) BOOL autoPlay; // default is YES.
 
@@ -52,18 +105,48 @@ NS_ASSUME_NONNULL_BEGIN
 @end
 
 
-#pragma mark - Delegate
+#pragma mark - 屏幕旋转
 
-@protocol SJVideoPlayerControlViewDelegate <NSObject>
+@interface SJVideoPlayer (Rotation)
 
-@required
-- (UIView *)controlView;
+/*!
+ *  Whether screen rotation is disabled. default is NO.
+ *
+ *  是否禁用屏幕旋转, 默认是NO.
+ */
+@property (nonatomic, assign, readwrite) BOOL disableRotation;
 
+/*!
+ *  Call when the screen is rotated.
+ *
+ *  屏幕旋转的时候调用.
+ **/
+@property (nonatomic, copy, readwrite, nullable) void(^willRotateScreen)(SJVideoPlayer *player, BOOL isFullScreen); // 将要旋转
 
-@optional
-- (void)videoPlayer:(SJVideoPlayer *)videoPlayer controlLayerNeedChangeDisplayState:(BOOL)displayState;
+@property (nonatomic, copy, readwrite, nullable) void(^rotatedScreen)(SJVideoPlayer *player, BOOL isFullScreen); // 已旋转
+
+@property (nonatomic, assign, readonly) BOOL isFullScreen;
+
+/// 旋转
+- (void)rotation;
 
 @end
 
-NS_ASSUME_NONNULL_END
 
+#pragma mark - 截图
+
+@interface SJVideoPlayer (Screenshot)
+
+- (UIImage * __nullable)screenshot;
+
+- (void)screenshotWithTime:(NSTimeInterval)time
+                completion:(void(^)(SJVideoPlayer *videoPlayer, UIImage * __nullable image, NSError *__nullable error))block;
+
+- (void)screenshotWithTime:(NSTimeInterval)time
+                      size:(CGSize)size
+                completion:(void(^)(SJVideoPlayer *videoPlayer, UIImage * __nullable image, NSError *__nullable error))block;
+
+@end
+
+
+NS_ASSUME_NONNULL_END

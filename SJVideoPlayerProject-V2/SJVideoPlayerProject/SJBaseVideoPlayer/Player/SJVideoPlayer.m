@@ -74,21 +74,27 @@ NS_ASSUME_NONNULL_END
 
 #pragma mark -
 
-- (void)setURLAsset:(SJVideoPlayerURLAsset *)URLAsset {
-    _URLAsset = URLAsset;
-    self.asset = [URLAsset valueForKey:kSJVideoPlayerAssetKey];
+- (void)setAsset:(SJVideoPlayerAssetCarrier *)asset {
+    _asset = asset;
     self.presentView.asset = self.asset;
     [self _itemPrepareToPlay];
+    
+    __weak typeof(self) _self = self;
+    self.asset.playTimeChanged = ^(SJVideoPlayerAssetCarrier * _Nonnull asset, NSTimeInterval currentTime, NSTimeInterval duration) {
+        __strong typeof(_self) self = _self;
+        if ( !self ) return;
+        if ( [self.controlViewDelegate respondsToSelector:@selector(videoPlayer:currentTimeStr:totalTimeStr:)] ) {
+            [self.controlViewDelegate videoPlayer:self currentTimeStr:[asset timeString:currentTime] totalTimeStr:[asset timeString:duration]];
+        }
+    };
 }
 
-- (void)setControlViewDelegate:(id<SJVideoPlayerControlViewDelegate>)controlViewDelegate {
-    if ( controlViewDelegate == _controlViewDelegate ) return;
-    [_controlViewDelegate.controlView removeFromSuperview];
-    
-    _controlViewDelegate = controlViewDelegate;
-    
-    [self.controlContentView addSubview:_controlViewDelegate.controlView];
-    [_controlViewDelegate.controlView mas_makeConstraints:^(MASConstraintMaker *make) {
+- (void)setControlViewDataSource:(id<SJVideoPlayerControlDataSource>)controlViewDataSource {
+    if ( controlViewDataSource == _controlViewDataSource ) return;
+    [_controlViewDataSource.controlView removeFromSuperview];
+    _controlViewDataSource = controlViewDataSource;
+    [self.controlContentView addSubview:_controlViewDataSource.controlView];
+    [_controlViewDataSource.controlView mas_makeConstraints:^(MASConstraintMaker *make) {
         make.edges.offset(0);
     }];
 }
@@ -169,6 +175,9 @@ NS_ASSUME_NONNULL_END
     __weak typeof(self) _self = self;
     
     _orentationObserver.rotationCondition = ^BOOL(SJOrentationObserver * _Nonnull observer) {
+        __strong typeof(_self) self = _self;
+        if ( !self ) return NO;
+        if ( self.isLocked ) return NO;
         return YES;
     };
     
@@ -176,6 +185,9 @@ NS_ASSUME_NONNULL_END
         __strong typeof(_self) self = _self;
         if ( !self ) return;
         [self.displayRecorder needHidden];
+        if ( [self.controlViewDelegate respondsToSelector:@selector(videoPlayer:willRotateScreen:)] ) {
+            [self.controlViewDelegate videoPlayer:self willRotateScreen:isFullScreen];
+        }
     };
     
     return _orentationObserver;
@@ -187,6 +199,7 @@ NS_ASSUME_NONNULL_END
     _gestureControl.triggerCondition = ^BOOL(SJPlayerGestureControl * _Nonnull control, SJPlayerGestureType type, UIGestureRecognizer * _Nonnull gesture) {
         __strong typeof(_self) self = _self;
         if ( !self ) return NO;
+        if ( self.isLocked ) return NO;
         if ( SJVideoPlayerPlayState_Unknown == self.state ||
              SJVideoPlayerPlayState_Prepare == self.state ||
              SJVideoPlayerPlayState_PlayFailed == self.state ) return NO;
@@ -349,9 +362,128 @@ NS_ASSUME_NONNULL_END
 @end
 
 
+#pragma mark - 播放
+
+@implementation SJVideoPlayer (Play)
+
+/*!
+ *  unit sec.
+ *
+ *  当前播放时间.
+ */
+- (NSTimeInterval)currentTime {
+    return self.asset.currentTime;
+}
+
+/*!
+ *  unit sec.
+ *
+ *  当前视频的全部播放时间.
+ **/
+- (NSTimeInterval)totalTime {
+    return self.asset.duration;
+}
+
+- (void)setAssetURL:(NSURL *)assetURL {
+    [self playWithURL:assetURL];
+}
+
+/*!
+ *  Video URL
+ */
+- (NSURL *)assetURL {
+    return self.asset.assetURL;
+}
+
+/*!
+ *  Create It By Video URL.
+ *
+ *  创建一个播放资源.
+ *  如果在 `tableView` 或者 `collectionView` 中播放, 使用它来初始化播放资源.
+ *  它也可以直接从某个时刻开始播放. 单位是秒.
+ **/
+- (void)setURLAsset:(SJVideoPlayerURLAsset *)URLAsset {
+    objc_setAssociatedObject(self, @selector(URLAsset), URLAsset, OBJC_ASSOCIATION_RETAIN_NONATOMIC);
+    self.asset = [URLAsset valueForKey:kSJVideoPlayerAssetKey];
+}
+
+- (SJVideoPlayerURLAsset *)URLAsset {
+    return objc_getAssociatedObject(self, _cmd);
+}
+
+/*!
+ *  Video URL
+ **/
+- (void)playWithURL:(NSURL *)playURL {
+    [self playWithURL:playURL jumpedToTime:0];
+}
+
+/*!
+ *  unit: sec.
+ *
+ *  单位是秒.
+ **/
+- (void)playWithURL:(NSURL *)playURL jumpedToTime:(NSTimeInterval)time {
+    self.URLAsset = [[SJVideoPlayerURLAsset alloc] initWithAssetURL:playURL beginTime:time];
+}
+
+@end
+
+
+#pragma mark - 屏幕旋转
+
+@implementation SJVideoPlayer (Rotation)
+
+- (void)setDisableRotation:(BOOL)disableRotation {
+    objc_setAssociatedObject(self, @selector(disableRotation), @(disableRotation), OBJC_ASSOCIATION_RETAIN_NONATOMIC);
+}
+
+- (BOOL)disableRotation {
+    return [objc_getAssociatedObject(self, _cmd) boolValue];
+}
+
+- (void)setWillRotateScreen:(void (^)(SJVideoPlayer * _Nonnull, BOOL))willRotateScreen {
+    objc_setAssociatedObject(self, @selector(willRotateScreen), willRotateScreen, OBJC_ASSOCIATION_COPY_NONATOMIC);
+}
+
+- (void (^)(SJVideoPlayer * _Nonnull, BOOL))willRotateScreen {
+    return objc_getAssociatedObject(self, _cmd);
+}
+
+- (void)setRotatedScreen:(void (^)(SJVideoPlayer * _Nonnull, BOOL))rotatedScreen {
+    objc_setAssociatedObject(self, @selector(rotatedScreen), rotatedScreen, OBJC_ASSOCIATION_COPY_NONATOMIC);
+}
+
+- (void (^)(SJVideoPlayer * _Nonnull, BOOL))rotatedScreen {
+    return objc_getAssociatedObject(self, _cmd);
+}
+
+- (BOOL)isFullScreen {
+    return self.orentationObserver.isFullScreen;
+}
+
+/// 旋转
+- (void)rotation {
+    [self.orentationObserver _changeOrientation];
+}
+
+@end
+
+
 #pragma mark - 控制
 
 @implementation SJVideoPlayer (Control)
+
+- (void)setLocked:(BOOL)locked {
+    objc_setAssociatedObject(self, @selector(isLocked), @(locked), OBJC_ASSOCIATION_RETAIN_NONATOMIC);
+    if ( [self.controlViewDelegate respondsToSelector:@selector(videoPlayer:changedLockState:)] ) {
+        [self.controlViewDelegate videoPlayer:self changedLockState:locked];
+    }
+}
+
+- (BOOL)isLocked {
+    return objc_getAssociatedObject(self, _cmd);
+}
 
 - (void)setAutoPlay:(BOOL)autoPlay {
     objc_setAssociatedObject(self, @selector(isAutoPlay), @(autoPlay), OBJC_ASSOCIATION_RETAIN_NONATOMIC);
@@ -403,6 +535,32 @@ NS_ASSUME_NONNULL_END
         if ( completionHandler ) completionHandler(finished);
     }];
 }
+@end
+
+
+#pragma mark - 截图
+
+@implementation SJVideoPlayer (Screenshot)
+
+- (UIImage * __nullable)screenshot {
+    return [self.asset screenshot];
+}
+
+- (void)screenshotWithTime:(NSTimeInterval)time
+                completion:(void(^)(SJVideoPlayer *videoPlayer, UIImage * __nullable image, NSError *__nullable error))block {
+    [self.asset screenshotWithTime:time completion:^(SJVideoPlayerAssetCarrier * _Nonnull asset, SJVideoPreviewModel * _Nullable images, NSError * _Nullable error) {
+        if ( block ) block(self, images.image, error);
+    }];;
+}
+
+- (void)screenshotWithTime:(NSTimeInterval)time
+                      size:(CGSize)size
+                completion:(void(^)(SJVideoPlayer *videoPlayer, UIImage * __nullable image, NSError *__nullable error))block {
+    [self.asset screenshotWithTime:time size:size completion:^(SJVideoPlayerAssetCarrier * _Nonnull asset, SJVideoPreviewModel * _Nullable images, NSError * _Nullable error) {
+        if ( block ) block(self, images.image, error);
+    }];
+}
+
 @end
 
 
@@ -464,8 +622,13 @@ NS_ASSUME_NONNULL_END
     _timerControl.exeBlock = ^(SJTimerControl * _Nonnull control) {
         __strong typeof(_self) self = _self;
         if ( !self ) return;
-        if ( self.displayState ) [self needHidden];
-        else [control clear];
+        if ( !self.videoPlayer.controlViewDataSource.controlLayerDisplayCondition ) {
+            [control reset];
+        }
+        else {
+            if ( self.displayState ) [self needHidden];
+            else [control clear];
+        }
     };
     return _timerControl;
 }

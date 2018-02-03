@@ -38,6 +38,7 @@
 
 @property (nonatomic, strong) NSTimer *timer;
 @property (nonatomic, assign) short point;
+@property (nonatomic, assign) BOOL resetState;
 
 @end
 
@@ -62,11 +63,11 @@
     __weak typeof(self) _self = self;
     _timer = [NSTimer timer_timerWithTimeInterval:1 block:^(NSTimer *timer) {
         __strong typeof(_self) self = _self;
-        if ( !self ) return ;
-
+        if ( !self ) return ; 
         if ( 0 == --self.point ) {
             if ( self.exeBlock ) self.exeBlock(self);
-            [self clear];
+            if ( !self.resetState ) [self clear];
+            self.resetState = NO;
         }
     } repeats:YES];
     [[NSRunLoop currentRunLoop] addTimer:_timer forMode:NSRunLoopCommonModes];
@@ -79,4 +80,8 @@
     _point = _interval;
 }
 
+- (void)reset {
+    _point = _interval;
+    _resetState = YES;
+}
 @end

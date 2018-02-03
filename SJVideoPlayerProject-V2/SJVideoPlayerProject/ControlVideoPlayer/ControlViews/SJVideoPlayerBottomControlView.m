@@ -41,13 +41,39 @@
     if ( !self ) return nil;
     [self _bottomSetupView];
     [self _bottomSetting];
+    self.playState = NO;
     return self;
 }
 
-- (void)clickedBtn:(UIButton *)btn {
-//    if ( ![_delegate respondsToSelector:@selector(bottomControlView:clickedBtnTag:)] ) return;
-//    [_delegate bottomControlView:self clickedBtnTag:btn.tag];
+- (void)setPlayState:(BOOL)playState {
+    _playState = playState;
+    [UIView animateWithDuration:0.3 animations:^{
+        if ( playState ) {
+            self.playBtn.alpha = 0.001;
+            self.pauseBtn.alpha = 1;
+        }
+        else {
+            self.playBtn.alpha = 1;
+            self.pauseBtn.alpha = 0.001;
+        }
+    }];
 }
+
+- (BOOL)isDragging {
+    return self.progressSlider.isDragging;
+}
+
+- (void)setCurrentTimeStr:(NSString *)currentTimeStr totalTimeStr:(NSString *)totalTimeStr {
+    self.currentTimeLabel.text = currentTimeStr;
+    self.durationTimeLabel.text = totalTimeStr;
+}
+
+- (void)clickedBtn:(UIButton *)btn {
+    if ( ![_delegate respondsToSelector:@selector(bottomView:clickedBtnTag:)] ) return;
+    [_delegate bottomView:self clickedBtnTag:btn.tag];
+}
+
+#pragma mark -
 
 - (void)_bottomSetupView {
     [self addSubview:self.controlMaskView];
@@ -108,13 +134,13 @@
 
 - (UIButton *)playBtn {
     if ( _playBtn ) return _playBtn;
-    _playBtn = [SJUIButtonFactory buttonWithImageName:nil target:self sel:@selector(clickedBtn:) tag:0];
+    _playBtn = [SJUIButtonFactory buttonWithImageName:nil target:self sel:@selector(clickedBtn:) tag:SJVideoPlayerBottomViewTag_Play];
     return _playBtn;
 }
 
 - (UIButton *)pauseBtn {
     if ( _pauseBtn ) return _pauseBtn;
-    _pauseBtn = [SJUIButtonFactory buttonWithImageName:nil target:self sel:@selector(clickedBtn:) tag:0];
+    _pauseBtn = [SJUIButtonFactory buttonWithImageName:nil target:self sel:@selector(clickedBtn:) tag:SJVideoPlayerBottomViewTag_Pause];
     return _pauseBtn;
 }
 
@@ -128,7 +154,7 @@
 
 - (UIButton *)fullBtn {
     if ( _fullBtn ) return _fullBtn;
-    _fullBtn = [SJUIButtonFactory buttonWithImageName:nil target:self sel:@selector(clickedBtn:) tag:0];
+    _fullBtn = [SJUIButtonFactory buttonWithImageName:nil target:self sel:@selector(clickedBtn:) tag:SJVideoPlayerBottomViewTag_Full];
     return _fullBtn;
 }
 
@@ -140,13 +166,13 @@
 
 - (UILabel *)durationTimeLabel {
     if ( _durationTimeLabel ) return _durationTimeLabel;
-    _durationTimeLabel = [SJUILabelFactory labelWithText:nil textColor:[UIColor whiteColor] alignment:NSTextAlignmentLeft font:[UIFont systemFontOfSize:self.separateLabel.font.pointSize + 1]];
+    _durationTimeLabel = [SJUILabelFactory labelWithText:@"00:00" textColor:[UIColor whiteColor] alignment:NSTextAlignmentLeft font:[UIFont systemFontOfSize:self.separateLabel.font.pointSize + 1]];
     return _durationTimeLabel;
 }
 
 - (UILabel *)currentTimeLabel {
     if ( _currentTimeLabel ) return _currentTimeLabel;
-    _currentTimeLabel = [SJUILabelFactory labelWithText:nil textColor:[UIColor whiteColor] alignment:NSTextAlignmentRight font:[UIFont systemFontOfSize:self.separateLabel.font.pointSize + 1]];
+    _currentTimeLabel = [SJUILabelFactory labelWithText:@"00:00" textColor:[UIColor whiteColor] alignment:NSTextAlignmentRight font:[UIFont systemFontOfSize:self.separateLabel.font.pointSize + 1]];
     return _currentTimeLabel;
 }
 
@@ -156,6 +182,7 @@
     return _controlMaskView;
 }
 
+#pragma mark -
 - (void)_bottomSetting {
     __weak typeof(self) _self = self;
     self.settingRecroder = [[SJVideoPlayerControlSettingRecorder alloc] initWithSettings:^(SJVideoPlayerSettings * _Nonnull setting) {

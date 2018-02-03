@@ -87,6 +87,14 @@ NS_ASSUME_NONNULL_END
             [self.controlViewDelegate videoPlayer:self currentTimeStr:self.currentTimeStr totalTimeStr:self.totalTimeStr];
         }
     };
+    
+    self.asset.loadedTimeProgress = ^(float progress) {
+        __strong typeof(_self) self = _self;
+        if ( !self ) return;
+        if ( [self.controlViewDelegate respondsToSelector:@selector(videoPlayer:loadedTimeProgress:)] ) {
+            [self.controlViewDelegate videoPlayer:self loadedTimeProgress:progress];
+        }
+    };
 }
 
 - (void)setControlViewDataSource:(id<SJVideoPlayerControlDataSource>)controlViewDataSource {

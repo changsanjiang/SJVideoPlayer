@@ -46,7 +46,8 @@
 }
 
 - (CGSize)intrinsicContentSize {
-    if ( _fullscreen ) return CGSizeMake(SJScreen_Max(), 60);
+    if ( SJ_is_iPhoneX() && _fullscreen )
+         return CGSizeMake(SJScreen_Max(), 60);
     else return CGSizeMake(SJScreen_Min(), 49);
 }
 
@@ -85,6 +86,22 @@
 - (void)clickedBtn:(UIButton *)btn {
     if ( ![_delegate respondsToSelector:@selector(bottomView:clickedBtnTag:)] ) return;
     [_delegate bottomView:self clickedBtnTag:btn.tag];
+}
+
+- (void)setProgress:(float)progress {
+    self.progressSlider.value = progress;
+}
+
+- (float)progress {
+    return self.progressSlider.value;
+}
+
+- (void)setBufferProgress:(float)bufferProgress {
+    self.progressSlider.bufferProgress = bufferProgress;
+}
+
+- (float)bufferProgress {
+    return self.progressSlider.bufferProgress;
 }
 
 #pragma mark -

@@ -72,6 +72,8 @@ NS_ASSUME_NONNULL_BEGIN
  */
 - (void)videoPlayer:(SJVideoPlayer *)videoPlayer currentTimeStr:(NSString *)currentTimeStr totalTimeStr:(NSString *)totalTimeStr;
 
+- (void)videoPlayer:(SJVideoPlayer *)videoPlayer loadedTimeProgress:(float)progress;
+
 /**
  player view will rotate.
 

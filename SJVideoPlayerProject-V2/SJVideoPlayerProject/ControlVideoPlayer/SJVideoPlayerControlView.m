@@ -160,6 +160,11 @@
 
 - (void)videoPlayer:(SJVideoPlayer *)videoPlayer currentTimeStr:(NSString *)currentTimeStr totalTimeStr:(NSString *)totalTimeStr {
     [self.bottomControlView setCurrentTimeStr:currentTimeStr totalTimeStr:totalTimeStr];
+    self.bottomControlView.progress = videoPlayer.currentTime / videoPlayer.totalTime;
+}
+
+- (void)videoPlayer:(SJVideoPlayer *)videoPlayer loadedTimeProgress:(float)progress {
+    self.bottomControlView.bufferProgress = progress;
 }
 
 - (void)videoPlayer:(SJVideoPlayer *)videoPlayer willRotateView:(BOOL)isFull {

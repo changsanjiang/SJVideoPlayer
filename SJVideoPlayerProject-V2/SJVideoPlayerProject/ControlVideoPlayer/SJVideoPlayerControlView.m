@@ -15,6 +15,7 @@
 #import "SJVideoPlayer+ControlAdd.h"
 #import "SJVideoPlayerDraggingProgressView.h"
 #import "UIView+SJVideoPlayerSetting.h"
+#import <SJSlider/SJSlider.h>
 #import "SJVideoPlayerLeftControlView.h"
 
 @interface SJVideoPlayerControlView ()<SJVideoPlayerControlDelegate, SJVideoPlayerControlDataSource,  SJVideoPlayerLeftControlViewDelegate, SJVideoPlayerBottomControlViewDelegate>
@@ -24,6 +25,7 @@
 @property (nonatomic, strong, readonly) SJVideoPlayerDraggingProgressView *draggingProgressView;
 @property (nonatomic, strong, readonly) SJVideoPlayerLeftControlView *leftControlView;
 @property (nonatomic, strong, readonly) SJVideoPlayerBottomControlView *bottomControlView;
+@property (nonatomic, strong, readonly) SJSlider *bottomSlider;
 
 @end
 
@@ -32,12 +34,13 @@
 @synthesize draggingProgressView = _draggingProgressView;
 @synthesize leftControlView = _leftControlView;
 @synthesize bottomControlView = _bottomControlView;
+@synthesize bottomSlider = _bottomSlider;
 
 - (instancetype)initWithFrame:(CGRect)frame {
     self = [super initWithFrame:frame];
     if ( !self ) return nil;
     [self _controlViewSetupView];
-    [self _controlViewLoadDefaultSetting];
+    [self _controlViewLoadSetting];
     return self;
 }
 
@@ -76,6 +79,8 @@
     [self addSubview:self.bottomControlView];
     [self addSubview:self.draggingProgressView];
     
+    [self addSubview:self.bottomSlider];
+    
     [_leftControlView mas_makeConstraints:^(MASConstraintMaker *make) {
         make.leading.offset(0);
         make.centerY.offset(0);
@@ -93,6 +98,14 @@
         make.center.offset(0);
     }];
     _draggingProgressView.alpha = 0.001;
+    
+    
+    [_bottomSlider mas_makeConstraints:^(MASConstraintMaker *make) {
+        make.leading.bottom.trailing.offset(0);
+        make.height.offset(2);
+    }];
+    
+    _bottomSlider.alpha = 0.001;
 }
 
 #pragma mark - 拖拽视图
@@ -150,6 +163,14 @@
     }
 }
 
+- (SJSlider *)bottomSlider {
+    if ( _bottomSlider ) return _bottomSlider;
+    _bottomSlider = [SJSlider new];
+    _bottomSlider.pan.enabled = NO;
+    _bottomSlider.trackHeight = 2;
+    return _bottomSlider;
+}
+
 #pragma mark - 播放器代理方法
 
 - (UIView *)controlView {
@@ -162,7 +183,7 @@
 }
 
 - (void)videoPlayer:(SJVideoPlayer *)videoPlayer controlLayerNeedChangeDisplayState:(BOOL)displayState locked:(BOOL)isLocked {
-    NSLog(@"%zd - %s", __LINE__, __func__);
+    
     self.leftControlView.lockState = isLocked;
     
     [UIView animateWithDuration:0.3 animations:^{
@@ -244,7 +265,7 @@
 
 
 #pragma mark - load default setting
-- (void)_controlViewLoadDefaultSetting {
+- (void)_controlViewLoadSetting {
     
     // load default setting
     __weak typeof(self) _self = self;
@@ -268,6 +289,13 @@
         if ( !self ) return;
         self.initialized = YES; // 初始化已完成, 在初始化期间不显示控制层.
         [self videoPlayer:self.videoPlayer controlLayerNeedChangeDisplayState:YES locked:self.videoPlayer.locked]; // 显示控制层
+    }];
+    
+    
+    self.settingRecroder = [[SJVideoPlayerControlSettingRecorder alloc] initWithSettings:^(SJVideoPlayerSettings * _Nonnull setting) {
+        __strong typeof(_self) self = _self;
+        if ( !self ) return;
+        
     }];
 }
 @end

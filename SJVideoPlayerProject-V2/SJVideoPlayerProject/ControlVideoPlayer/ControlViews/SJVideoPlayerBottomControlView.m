@@ -181,7 +181,6 @@
 - (SJSlider *)progressSlider {
     if ( _progressSlider ) return _progressSlider;
     _progressSlider = [SJSlider new];
-    _progressSlider.tag = 0;
     _progressSlider.enableBufferProgress = YES;
     _progressSlider.pan.enabled = NO;
     return _progressSlider;

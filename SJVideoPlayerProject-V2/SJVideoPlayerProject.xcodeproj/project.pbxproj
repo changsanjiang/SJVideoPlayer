@@ -32,6 +32,7 @@
 		777245F8202471B700C3F227 /* SJVideoPlayerControlMaskView.m in Sources */ = {isa = PBXBuildFile; fileRef = 777245F7202471B700C3F227 /* SJVideoPlayerControlMaskView.m */; };
 		777245FE20247DB200C3F227 /* SJVideoPlayer.m in Sources */ = {isa = PBXBuildFile; fileRef = 777245FD20247DB200C3F227 /* SJVideoPlayer.m */; };
 		7772460120247FE600C3F227 /* SJVideoPlayerBottomControlView.m in Sources */ = {isa = PBXBuildFile; fileRef = 7772460020247FE600C3F227 /* SJVideoPlayerBottomControlView.m */; };
+		A6D70DEC20269C7F00FF1BCA /* SJVideoPlayerTopControlView.m in Sources */ = {isa = PBXBuildFile; fileRef = A6D70DEB20269C7F00FF1BCA /* SJVideoPlayerTopControlView.m */; };
 		E347C56DAE7DB37C77C02CAE /* libPods-SJVideoPlayerProject.a in Frameworks */ = {isa = PBXBuildFile; fileRef = D25A29D45BC1D9B5A2123EA7 /* libPods-SJVideoPlayerProject.a */; };
 /* End PBXBuildFile section */
 
@@ -83,6 +84,8 @@
 		777245FF20247FE600C3F227 /* SJVideoPlayerBottomControlView.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = SJVideoPlayerBottomControlView.h; sourceTree = "<group>"; };
 		7772460020247FE600C3F227 /* SJVideoPlayerBottomControlView.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = SJVideoPlayerBottomControlView.m; sourceTree = "<group>"; };
 		907E2465E3D42BCCC603ADA4 /* Pods-SJVideoPlayerProject.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-SJVideoPlayerProject.release.xcconfig"; path = "Pods/Target Support Files/Pods-SJVideoPlayerProject/Pods-SJVideoPlayerProject.release.xcconfig"; sourceTree = "<group>"; };
+		A6D70DEA20269C7F00FF1BCA /* SJVideoPlayerTopControlView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SJVideoPlayerTopControlView.h; sourceTree = "<group>"; };
+		A6D70DEB20269C7F00FF1BCA /* SJVideoPlayerTopControlView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SJVideoPlayerTopControlView.m; sourceTree = "<group>"; };
 		D25A29D45BC1D9B5A2123EA7 /* libPods-SJVideoPlayerProject.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-SJVideoPlayerProject.a"; sourceTree = BUILT_PRODUCTS_DIR; };
 		D7BDD5808F28DCDF40AF19AC /* Pods-SJVideoPlayerProject.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-SJVideoPlayerProject.debug.xcconfig"; path = "Pods/Target Support Files/Pods-SJVideoPlayerProject/Pods-SJVideoPlayerProject.debug.xcconfig"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
@@ -110,6 +113,8 @@
 		775C0A2A20256C030008EDA7 /* ControlViews */ = {
 			isa = PBXGroup;
 			children = (
+				A6D70DEA20269C7F00FF1BCA /* SJVideoPlayerTopControlView.h */,
+				A6D70DEB20269C7F00FF1BCA /* SJVideoPlayerTopControlView.m */,
 				777245FF20247FE600C3F227 /* SJVideoPlayerBottomControlView.h */,
 				7772460020247FE600C3F227 /* SJVideoPlayerBottomControlView.m */,
 				775C0A532025C0880008EDA7 /* SJVideoPlayerLeftControlView.h */,
@@ -441,6 +446,7 @@
 				777245FE20247DB200C3F227 /* SJVideoPlayer.m in Sources */,
 				777245CE202459A700C3F227 /* UIView+SJVideoPlayerAdd.m in Sources */,
 				775C0A5D2025C9C60008EDA7 /* SJVideoPlayerResources.m in Sources */,
+				A6D70DEC20269C7F00FF1BCA /* SJVideoPlayerTopControlView.m in Sources */,
 				777245F8202471B700C3F227 /* SJVideoPlayerControlMaskView.m in Sources */,
 				7772460120247FE600C3F227 /* SJVideoPlayerBottomControlView.m in Sources */,
 				775C0A552025C0880008EDA7 /* SJVideoPlayerLeftControlView.m in Sources */,

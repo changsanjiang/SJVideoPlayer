@@ -17,12 +17,14 @@
 #import "UIView+SJVideoPlayerSetting.h"
 #import <SJSlider/SJSlider.h>
 #import "SJVideoPlayerLeftControlView.h"
+#import "SJVideoPlayerTopControlView.h"
 
-@interface SJVideoPlayerControlView ()<SJVideoPlayerControlDelegate, SJVideoPlayerControlDataSource,  SJVideoPlayerLeftControlViewDelegate, SJVideoPlayerBottomControlViewDelegate>
+@interface SJVideoPlayerControlView ()<SJVideoPlayerControlDelegate, SJVideoPlayerControlDataSource, SJVideoPlayerLeftControlViewDelegate, SJVideoPlayerBottomControlViewDelegate, SJVideoPlayerTopControlViewDelegate>
 
 @property (nonatomic, assign) BOOL initialized;
 
 @property (nonatomic, strong, readonly) SJVideoPlayerDraggingProgressView *draggingProgressView;
+@property (nonatomic, strong, readonly) SJVideoPlayerTopControlView *topControlView;
 @property (nonatomic, strong, readonly) SJVideoPlayerLeftControlView *leftControlView;
 @property (nonatomic, strong, readonly) SJVideoPlayerBottomControlView *bottomControlView;
 @property (nonatomic, strong, readonly) SJSlider *bottomSlider;
@@ -32,6 +34,7 @@
 @implementation SJVideoPlayerControlView
 
 @synthesize draggingProgressView = _draggingProgressView;
+@synthesize topControlView = _topControlView;
 @synthesize leftControlView = _leftControlView;
 @synthesize bottomControlView = _bottomControlView;
 @synthesize bottomSlider = _bottomSlider;
@@ -75,11 +78,16 @@
 
 #pragma mark - setup views
 - (void)_controlViewSetupView {
+    [self addSubview:self.topControlView];
     [self addSubview:self.leftControlView];
     [self addSubview:self.bottomControlView];
     [self addSubview:self.draggingProgressView];
     
     [self addSubview:self.bottomSlider];
+    
+    [_topControlView mas_makeConstraints:^(MASConstraintMaker *make) {
+        make.top.leading.trailing.offset(0);
+    }];
     
     [_leftControlView mas_makeConstraints:^(MASConstraintMaker *make) {
         make.leading.offset(0);
@@ -114,6 +122,18 @@
     _draggingProgressView = [SJVideoPlayerDraggingProgressView new];
     [_draggingProgressView setPreviewImage:[UIImage imageNamed:@"placeholder"]];
     return _draggingProgressView;
+}
+
+#pragma mark - 顶部视图
+- (SJVideoPlayerTopControlView *)topControlView {
+    if ( _topControlView ) return _topControlView;
+    _topControlView = [SJVideoPlayerTopControlView new];
+    _topControlView.delegate = self;
+    return _topControlView;
+}
+
+- (void)topControlView:(SJVideoPlayerTopControlView *)view clickedBtnTag:(SJVideoPlayerTopViewTag)tag {
+    
 }
 
 #pragma mark - 左侧视图
@@ -231,6 +251,7 @@
     
     // update layout
     self.bottomControlView.fullscreen = isFull;
+    self.topControlView.fullscreen = isFull;
 }
 
 - (void)videoPlayer:(SJVideoPlayer *)videoPlayer lockStateDidChange:(BOOL)isLocked {

@@ -12,8 +12,6 @@ NS_ASSUME_NONNULL_BEGIN
 
 @interface SJVideoPlayerURLAsset : NSObject
 
-@property (nonatomic, copy, readwrite, nullable) NSString *title;
-@property (nonatomic, assign, readwrite) BOOL alwaysShowTitle; // default is `NO`(小屏的时候不显示, 全屏的时候显示标题)
 @property (nonatomic, assign, readonly) BOOL isM3u8;
 
 - (instancetype)initWithAssetURL:(NSURL *)assetURL;

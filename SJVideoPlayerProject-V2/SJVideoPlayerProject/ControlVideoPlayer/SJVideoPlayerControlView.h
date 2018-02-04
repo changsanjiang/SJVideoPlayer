@@ -7,6 +7,7 @@
 //
 
 #import <UIKit/UIKit.h>
+#import "SJVideoPlayerURLAsset+SJControlAdd.h"
 
 @class SJVideoPlayer;
 

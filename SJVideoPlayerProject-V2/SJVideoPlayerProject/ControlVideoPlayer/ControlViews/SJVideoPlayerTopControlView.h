@@ -26,6 +26,8 @@ typedef NS_ENUM(NSUInteger, SJVideoPlayerTopViewTag) {
 
 @property (nonatomic, copy, nullable) NSString *title;
 
+@property (nonatomic) BOOL alwaysShowTitle;
+
 @end
 
 @protocol SJVideoPlayerTopControlViewDelegate <NSObject>

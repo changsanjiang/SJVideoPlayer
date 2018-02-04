@@ -35,6 +35,7 @@
 		A6D70DEF2026A52100FF1BCA /* SJVideoPlayerPreviewView.m in Sources */ = {isa = PBXBuildFile; fileRef = A6D70DEE2026A52100FF1BCA /* SJVideoPlayerPreviewView.m */; };
 		A6D70DF32026A6E200FF1BCA /* SJVideoPlayerPreviewCollectionViewCell.m in Sources */ = {isa = PBXBuildFile; fileRef = A6D70DF22026A6E200FF1BCA /* SJVideoPlayerPreviewCollectionViewCell.m */; };
 		A6D70DF92026B67F00FF1BCA /* SJVideoPlayer+UpdateSetting.m in Sources */ = {isa = PBXBuildFile; fileRef = A6D70DF82026B67F00FF1BCA /* SJVideoPlayer+UpdateSetting.m */; };
+		A6D70DFC2026F18400FF1BCA /* SJVideoPlayerURLAsset+SJControlAdd.m in Sources */ = {isa = PBXBuildFile; fileRef = A6D70DFB2026F18400FF1BCA /* SJVideoPlayerURLAsset+SJControlAdd.m */; };
 		E347C56DAE7DB37C77C02CAE /* libPods-SJVideoPlayerProject.a in Frameworks */ = {isa = PBXBuildFile; fileRef = D25A29D45BC1D9B5A2123EA7 /* libPods-SJVideoPlayerProject.a */; };
 /* End PBXBuildFile section */
 
@@ -93,6 +94,8 @@
 		A6D70DF22026A6E200FF1BCA /* SJVideoPlayerPreviewCollectionViewCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = SJVideoPlayerPreviewCollectionViewCell.m; path = ../../../../SJVideoPlayer/Control/SJVideoPlayerPreviewCollectionViewCell.m; sourceTree = "<group>"; };
 		A6D70DF72026B67F00FF1BCA /* SJVideoPlayer+UpdateSetting.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "SJVideoPlayer+UpdateSetting.h"; sourceTree = "<group>"; };
 		A6D70DF82026B67F00FF1BCA /* SJVideoPlayer+UpdateSetting.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = "SJVideoPlayer+UpdateSetting.m"; sourceTree = "<group>"; };
+		A6D70DFA2026F18400FF1BCA /* SJVideoPlayerURLAsset+SJControlAdd.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "SJVideoPlayerURLAsset+SJControlAdd.h"; sourceTree = "<group>"; };
+		A6D70DFB2026F18400FF1BCA /* SJVideoPlayerURLAsset+SJControlAdd.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = "SJVideoPlayerURLAsset+SJControlAdd.m"; sourceTree = "<group>"; };
 		D25A29D45BC1D9B5A2123EA7 /* libPods-SJVideoPlayerProject.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-SJVideoPlayerProject.a"; sourceTree = BUILT_PRODUCTS_DIR; };
 		D7BDD5808F28DCDF40AF19AC /* Pods-SJVideoPlayerProject.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-SJVideoPlayerProject.debug.xcconfig"; path = "Pods/Target Support Files/Pods-SJVideoPlayerProject/Pods-SJVideoPlayerProject.debug.xcconfig"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
@@ -208,12 +211,12 @@
 		777245B6202455FF00C3F227 /* SJBaseVideoPlayer */ = {
 			isa = PBXGroup;
 			children = (
+				777245BF2024579100C3F227 /* Player */,
 				777245D220246AAA00C3F227 /* TimerControl */,
 				777245CF202459F200C3F227 /* Header */,
 				777245CB2024599200C3F227 /* Category */,
 				777245C72024597E00C3F227 /* Present */,
 				777245C3202458A200C3F227 /* Model */,
-				777245BF2024579100C3F227 /* Player */,
 				777245B7202455FF00C3F227 /* GestureControl */,
 			);
 			path = SJBaseVideoPlayer;
@@ -296,6 +299,8 @@
 			children = (
 				A6D70DF72026B67F00FF1BCA /* SJVideoPlayer+UpdateSetting.h */,
 				A6D70DF82026B67F00FF1BCA /* SJVideoPlayer+UpdateSetting.m */,
+				A6D70DFA2026F18400FF1BCA /* SJVideoPlayerURLAsset+SJControlAdd.h */,
+				A6D70DFB2026F18400FF1BCA /* SJVideoPlayerURLAsset+SJControlAdd.m */,
 				777245E5202470D300C3F227 /* SJVideoPlayerControlView.h */,
 				777245E6202470D300C3F227 /* SJVideoPlayerControlView.m */,
 				775C0A562025C9C60008EDA7 /* Resource */,
@@ -449,6 +454,7 @@
 				777245F1202470D300C3F227 /* SJVideoPlayerControlView.m in Sources */,
 				777245A1202454FE00C3F227 /* ViewController.m in Sources */,
 				777245D520246AAA00C3F227 /* SJTimerControl.m in Sources */,
+				A6D70DFC2026F18400FF1BCA /* SJVideoPlayerURLAsset+SJControlAdd.m in Sources */,
 				777245CA2024597E00C3F227 /* SJVideoPlayerPresentView.m in Sources */,
 				777245BA202455FF00C3F227 /* SJPlayerGestureControl.m in Sources */,
 				777245C6202458A200C3F227 /* SJVideoPlayerURLAsset.m in Sources */,

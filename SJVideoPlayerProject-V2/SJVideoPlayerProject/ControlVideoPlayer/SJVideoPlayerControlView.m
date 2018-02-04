@@ -353,6 +353,9 @@ typedef NS_ENUM(NSUInteger, SJDisappearType) {
 
 - (void)videoPlayer:(SJVideoPlayer *)videoPlayer controlLayerNeedChangeDisplayState:(BOOL)displayState locked:(BOOL)isLocked {
     
+    self.topControlView.alwaysShowTitle = self.videoPlayer.URLAsset.alwaysShowTitle;
+    self.topControlView.title = self.videoPlayer.URLAsset.title;
+    
     self.leftControlView.lockState = isLocked;
     
     [UIView animateWithDuration:0.3 animations:^{

@@ -35,6 +35,7 @@
     if ( !self ) return nil;
     [self _topSetupViews];
     [self _topSettingHelper];
+    self.fullscreen = NO;
     return self;
 }
 
@@ -58,9 +59,27 @@
     else {
         self.previewBtn.hidden = YES;
     }
+    
+    if ( fullscreen || self.alwaysShowTitle ) {
+        self.titleLabel.hidden = NO;
+    }
+    else {
+        self.titleLabel.hidden = YES;
+    }
+}
+
+- (void)setAlwaysShowTitle:(BOOL)alwaysShowTitle {
+    _alwaysShowTitle = alwaysShowTitle;
+    if ( _fullscreen || alwaysShowTitle ) {
+        self.titleLabel.hidden = NO;
+    }
+    else {
+        self.titleLabel.hidden = YES;
+    }
 }
 
 - (void)setTitle:(NSString *)title {
+    if ( [title isEqualToString:_title]  ) return;
     _title = title;
     _titleLabel.attributedText = sj_makeAttributesString(^(SJAttributeWorker * _Nonnull make) {
         make.font(self.titleLabel.font).textColor(self.titleLabel.textColor);

@@ -482,46 +482,6 @@ NS_ASSUME_NONNULL_END
 @end
 
 
-#pragma mark - 屏幕旋转
-
-@implementation SJVideoPlayer (Rotation)
-
-- (void)setDisableRotation:(BOOL)disableRotation {
-    objc_setAssociatedObject(self, @selector(disableRotation), @(disableRotation), OBJC_ASSOCIATION_RETAIN_NONATOMIC);
-}
-
-- (BOOL)disableRotation {
-    return [objc_getAssociatedObject(self, _cmd) boolValue];
-}
-
-- (void)setWillRotateScreen:(void (^)(SJVideoPlayer * _Nonnull, BOOL))willRotateScreen {
-    objc_setAssociatedObject(self, @selector(willRotateScreen), willRotateScreen, OBJC_ASSOCIATION_COPY_NONATOMIC);
-}
-
-- (void (^)(SJVideoPlayer * _Nonnull, BOOL))willRotateScreen {
-    return objc_getAssociatedObject(self, _cmd);
-}
-
-- (void)setRotatedScreen:(void (^)(SJVideoPlayer * _Nonnull, BOOL))rotatedScreen {
-    objc_setAssociatedObject(self, @selector(rotatedScreen), rotatedScreen, OBJC_ASSOCIATION_COPY_NONATOMIC);
-}
-
-- (void (^)(SJVideoPlayer * _Nonnull, BOOL))rotatedScreen {
-    return objc_getAssociatedObject(self, _cmd);
-}
-
-- (BOOL)isFullScreen {
-    return self.orentationObserver.isFullScreen;
-}
-
-/// 旋转
-- (void)rotation {
-    [self.orentationObserver _changeOrientation];
-}
-
-@end
-
-
 #pragma mark - 控制
 
 @implementation SJVideoPlayer (Control)
@@ -579,6 +539,46 @@ NS_ASSUME_NONNULL_END
 @end
 
 
+#pragma mark - 屏幕旋转
+
+@implementation SJVideoPlayer (Rotation)
+
+/// 旋转
+- (void)rotation {
+    [self.orentationObserver _changeOrientation];
+}
+
+- (void)setDisableRotation:(BOOL)disableRotation {
+    objc_setAssociatedObject(self, @selector(disableRotation), @(disableRotation), OBJC_ASSOCIATION_RETAIN_NONATOMIC);
+}
+
+- (BOOL)disableRotation {
+    return [objc_getAssociatedObject(self, _cmd) boolValue];
+}
+
+- (void)setWillRotateScreen:(void (^)(SJVideoPlayer * _Nonnull, BOOL))willRotateScreen {
+    objc_setAssociatedObject(self, @selector(willRotateScreen), willRotateScreen, OBJC_ASSOCIATION_COPY_NONATOMIC);
+}
+
+- (void (^)(SJVideoPlayer * _Nonnull, BOOL))willRotateScreen {
+    return objc_getAssociatedObject(self, _cmd);
+}
+
+- (void)setRotatedScreen:(void (^)(SJVideoPlayer * _Nonnull, BOOL))rotatedScreen {
+    objc_setAssociatedObject(self, @selector(rotatedScreen), rotatedScreen, OBJC_ASSOCIATION_COPY_NONATOMIC);
+}
+
+- (void (^)(SJVideoPlayer * _Nonnull, BOOL))rotatedScreen {
+    return objc_getAssociatedObject(self, _cmd);
+}
+
+- (BOOL)isFullScreen {
+    return self.orentationObserver.isFullScreen;
+}
+
+@end
+
+
 #pragma mark - 截图
 
 @implementation SJVideoPlayer (Screenshot)
@@ -599,6 +599,13 @@ NS_ASSUME_NONNULL_END
         dispatch_async(dispatch_get_main_queue(), ^{
             if ( block ) block(self, images.image, error);
         });
+    }];
+}
+
+- (void)generatedPreviewImagesWithMaxItemSize:(CGSize)itemSize
+                                   completion:(void(^)(SJVideoPlayer *player, NSArray<id<SJVideoPlayerPreviewInfo>> *__nullable images, NSError *__nullable error))block {
+    [self.asset generatedPreviewImagesWithMaxItemSize:itemSize completion:^(SJVideoPlayerAssetCarrier * _Nonnull asset, NSArray<SJVideoPreviewModel *> * _Nullable images, NSError * _Nullable error) {
+        if ( block ) block(self, (id)images, error);
     }];
 }
 

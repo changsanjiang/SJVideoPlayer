@@ -12,7 +12,7 @@
 #import <SJUIFactory/SJUIFactory.h>
 #import "SJVideoPlayerControlView.h"
 
-@interface PlayerViewController ()
+@interface PlayerViewController ()<SJVideoPlayerControlViewDelegate>
 
 @property (nonatomic, strong) SJVideoPlayer *videoPlayer;
 @property (nonatomic, strong) SJVideoPlayerControlView *controlView;
@@ -43,10 +43,15 @@
     // control layer
     _controlView = [SJVideoPlayerControlView new];
     _controlView.videoPlayer = _videoPlayer;
+    _controlView.delegate = self;
     
     
     self.view.backgroundColor = [UIColor whiteColor];
     // Do any additional setup after loading the view.
+}
+
+- (void)clickedBackBtnOnControlView:(SJVideoPlayerControlView *)controlView {
+    [self.navigationController popViewControllerAnimated:YES];
 }
 
 - (void)viewWillAppear:(BOOL)animated {

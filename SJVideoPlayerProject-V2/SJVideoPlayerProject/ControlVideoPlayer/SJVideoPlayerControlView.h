@@ -12,9 +12,19 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
+@protocol SJVideoPlayerControlViewDelegate;
+
 @interface SJVideoPlayerControlView : UIView
 
+@property (nonatomic, weak, readwrite, nullable) id<SJVideoPlayerControlViewDelegate> delegate;
 @property (nonatomic, weak, readwrite, nullable) SJVideoPlayer *videoPlayer;
+
+@end
+
+@protocol SJVideoPlayerControlViewDelegate <NSObject>
+
+@required
+- (void)clickedBackBtnOnControlView:(SJVideoPlayerControlView *)controlView;
 
 @end
 

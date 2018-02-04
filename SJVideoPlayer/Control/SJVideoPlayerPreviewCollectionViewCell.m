@@ -9,7 +9,6 @@
 #import "SJVideoPlayerPreviewCollectionViewCell.h"
 #import <SJUIFactory/SJUIFactory.h>
 #import <Masonry/Masonry.h>
-#import <SJVideoPlayerAssetCarrier/SJVideoPlayerAssetCarrier.h>
 
 @interface SJVideoPlayerPreviewCollectionViewCell ()
 
@@ -28,7 +27,7 @@
     return self;
 }
 
-- (void)setModel:(SJVideoPreviewModel *)model {
+- (void)setModel:(id<SJVideoPlayerPreviewInfo>)model {
     _model = model;
     _imageView.image = model.image;
 }
@@ -42,7 +41,7 @@
 
 - (UIImageView *)imageView {
     if ( _imageView ) return _imageView;
-    _imageView = [SJUIImageViewFactory imageViewWithImageName:@"" viewMode:UIViewContentModeScaleAspectFill];
+    _imageView = [SJUIImageViewFactory imageViewWithViewMode:UIViewContentModeScaleAspectFill];
     return _imageView;
 }
 @end

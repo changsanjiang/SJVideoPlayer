@@ -88,6 +88,8 @@
     [_topControlView mas_makeConstraints:^(MASConstraintMaker *make) {
         make.top.leading.trailing.offset(0);
     }];
+    _topControlView.transform = CGAffineTransformMakeTranslation(0, -_topControlView.intrinsicContentSize.height);
+    
     
     [_leftControlView mas_makeConstraints:^(MASConstraintMaker *make) {
         make.leading.offset(0);
@@ -133,7 +135,25 @@
 }
 
 - (void)topControlView:(SJVideoPlayerTopControlView *)view clickedBtnTag:(SJVideoPlayerTopViewTag)tag {
-    
+    switch ( tag ) {
+        case SJVideoPlayerTopViewTag_Back: {
+            if ( _videoPlayer.isFullScreen ) [_videoPlayer rotation];
+            else {
+                if ( [self.delegate respondsToSelector:@selector(clickedBackBtnOnControlView:)] ) {
+                    [self.delegate clickedBackBtnOnControlView:self];
+                }
+            }
+        }
+            break;
+        case SJVideoPlayerTopViewTag_More: {
+            
+        }
+            break;
+        case SJVideoPlayerTopViewTag_Preview: {
+            
+        }
+            break;
+    }
 }
 
 #pragma mark - 左侧视图
@@ -208,15 +228,18 @@
     
     [UIView animateWithDuration:0.3 animations:^{
         if ( isLocked ) {
+            _topControlView.transform = CGAffineTransformMakeTranslation(0, -_topControlView.intrinsicContentSize.height);
             _leftControlView.transform = CGAffineTransformIdentity;
             _bottomControlView.transform = CGAffineTransformMakeTranslation(0, _bottomControlView.intrinsicContentSize.height);
         }
         else {
             if ( displayState ) {
+                _topControlView.transform = CGAffineTransformIdentity;
                 _bottomControlView.transform = CGAffineTransformIdentity;
                 _leftControlView.transform = CGAffineTransformIdentity;
             }
             else {
+                _topControlView.transform = CGAffineTransformMakeTranslation(0, -_topControlView.intrinsicContentSize.height);
                 _bottomControlView.transform = CGAffineTransformMakeTranslation(0, _bottomControlView.intrinsicContentSize.height);
                 _leftControlView.transform = CGAffineTransformMakeTranslation(-_leftControlView.intrinsicContentSize.width, 0);
             }

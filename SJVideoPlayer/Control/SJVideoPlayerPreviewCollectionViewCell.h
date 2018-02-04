@@ -7,14 +7,13 @@
 //
 
 #import <UIKit/UIKit.h>
+#import "SJVideoPlayerPreviewInfo.h"
 
 NS_ASSUME_NONNULL_BEGIN
 
-@class SJVideoPreviewModel;
-
 @interface SJVideoPlayerPreviewCollectionViewCell : UICollectionViewCell
 
-@property (nonatomic, strong, readwrite, nullable) SJVideoPreviewModel *model;
+@property (nonatomic, strong, readwrite, nullable) id<SJVideoPlayerPreviewInfo> model;
 
 @end
 

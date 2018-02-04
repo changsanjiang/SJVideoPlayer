@@ -9,6 +9,7 @@
 #import <Foundation/Foundation.h>
 #import "SJVideoPlayerURLAsset.h"
 #import "SJVideoPlayerState.h"
+#import "SJVideoPlayerPreviewInfo.h"
 
 NS_ASSUME_NONNULL_BEGIN
 
@@ -128,7 +129,7 @@ NS_ASSUME_NONNULL_BEGIN
 @end
 
 
-#pragma mark - 播放控制
+#pragma mark - 控制
 
 @interface SJVideoPlayer (Control)
 
@@ -152,6 +153,9 @@ NS_ASSUME_NONNULL_BEGIN
 
 @interface SJVideoPlayer (Rotation)
 
+/// 旋转
+- (void)rotation;
+
 /*!
  *  Whether screen rotation is disabled. default is NO.
  *
@@ -170,9 +174,6 @@ NS_ASSUME_NONNULL_BEGIN
 
 @property (nonatomic, assign, readonly) BOOL isFullScreen;
 
-/// 旋转
-- (void)rotation;
-
 @end
 
 
@@ -188,6 +189,9 @@ NS_ASSUME_NONNULL_BEGIN
 - (void)screenshotWithTime:(NSTimeInterval)time
                       size:(CGSize)size
                 completion:(void(^)(SJVideoPlayer *videoPlayer, UIImage * __nullable image, NSError *__nullable error))block;
+
+- (void)generatedPreviewImagesWithMaxItemSize:(CGSize)itemSize
+                                   completion:(void(^)(SJVideoPlayer *player, NSArray<id<SJVideoPlayerPreviewInfo>> *__nullable images, NSError *__nullable error))block;
 
 @end
 

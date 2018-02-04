@@ -19,6 +19,7 @@
 #import "SJVideoPlayerLeftControlView.h"
 #import "SJVideoPlayerTopControlView.h"
 #import "SJVideoPlayerPreviewView.h"
+#import "SJVideoPlayerMoreSettingsView.h"
 #import <objc/message.h>
 
 
@@ -111,6 +112,7 @@ typedef NS_ENUM(NSUInteger, SJDisappearType) {
 @property (nonatomic, strong, readonly) SJVideoPlayerLeftControlView *leftControlView;
 @property (nonatomic, strong, readonly) SJVideoPlayerBottomControlView *bottomControlView;
 @property (nonatomic, strong, readonly) SJSlider *bottomSlider;
+@property (nonatomic, strong, readonly) SJVideoPlayerMoreSettingsView *moreSettingsView;
 
 @end
 
@@ -122,6 +124,7 @@ typedef NS_ENUM(NSUInteger, SJDisappearType) {
 @synthesize leftControlView = _leftControlView;
 @synthesize bottomControlView = _bottomControlView;
 @synthesize bottomSlider = _bottomSlider;
+@synthesize moreSettingsView = _moreSettingsView;
 
 - (instancetype)initWithFrame:(CGRect)frame {
     self = [super initWithFrame:frame];
@@ -171,6 +174,7 @@ typedef NS_ENUM(NSUInteger, SJDisappearType) {
     [self addSubview:self.draggingProgressView];
     [self addSubview:self.bottomSlider];
     [self addSubview:self.previewView];
+    [self addSubview:self.moreSettingsView];
     
     [_topControlView mas_makeConstraints:^(MASConstraintMaker *make) {
         make.top.leading.trailing.offset(0);
@@ -199,6 +203,10 @@ typedef NS_ENUM(NSUInteger, SJDisappearType) {
         make.leading.trailing.offset(0);
     }];
     
+    [_moreSettingsView mas_makeConstraints:^(MASConstraintMaker *make) {
+        make.top.trailing.offset(0);
+    }];
+    
     [self _setControlViewsDisappearValues];
     
     [_bottomSlider disappear];
@@ -207,6 +215,7 @@ typedef NS_ENUM(NSUInteger, SJDisappearType) {
     [_leftControlView disappear];
     [_bottomControlView disappear];
     [_previewView disappear];
+    [_moreSettingsView disappear];
 }
 
 - (void)_setControlViewsDisappearValues {
@@ -216,6 +225,7 @@ typedef NS_ENUM(NSUInteger, SJDisappearType) {
     _leftControlView.disappearTransform = CGAffineTransformMakeTranslation(-_leftControlView.intrinsicContentSize.width, 0);
     _bottomControlView.disappearTransform = CGAffineTransformMakeTranslation(0, _bottomControlView.intrinsicContentSize.height);
     _previewView.disappearTransform = CGAffineTransformMakeScale(1, 0.001);
+    _moreSettingsView.disappearTransform = CGAffineTransformMakeTranslation(_moreSettingsView.intrinsicContentSize.width, 0);
 }
 
 #pragma mark - 预览视图
@@ -268,7 +278,10 @@ typedef NS_ENUM(NSUInteger, SJDisappearType) {
         }
             break;
         case SJVideoPlayerTopViewTag_More: {
-            
+            [UIView animateWithDuration:0.3 animations:^{
+                if ( !self.moreSettingsView.appearState ) [self.moreSettingsView appear];
+                else [self.moreSettingsView disappear];
+            }];
         }
             break;
         case SJVideoPlayerTopViewTag_Preview: {
@@ -334,6 +347,15 @@ typedef NS_ENUM(NSUInteger, SJDisappearType) {
     _bottomSlider.pan.enabled = NO;
     _bottomSlider.trackHeight = 2;
     return _bottomSlider;
+}
+
+
+#pragma mark - `更多`视图
+
+- (SJVideoPlayerMoreSettingsView *)moreSettingsView {
+    if ( _moreSettingsView ) return _moreSettingsView;
+    _moreSettingsView = [SJVideoPlayerMoreSettingsView new];
+    return _moreSettingsView;
 }
 
 #pragma mark - 播放器代理

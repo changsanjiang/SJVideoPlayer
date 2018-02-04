@@ -18,11 +18,81 @@
 #import <SJSlider/SJSlider.h>
 #import "SJVideoPlayerLeftControlView.h"
 #import "SJVideoPlayerTopControlView.h"
+#import "SJVideoPlayerPreviewView.h"
+#import <objc/message.h>
 
-@interface SJVideoPlayerControlView ()<SJVideoPlayerControlDelegate, SJVideoPlayerControlDataSource, SJVideoPlayerLeftControlViewDelegate, SJVideoPlayerBottomControlViewDelegate, SJVideoPlayerTopControlViewDelegate>
+
+typedef NS_ENUM(NSUInteger, SJDisappearType) {
+    SJDisappearType_Transform,
+    SJDisappearType_Alpha,
+};
+
+@interface UIView (SJControlAdd)
+
+@property (nonatomic, assign) SJDisappearType disappearType;
+
+@property (nonatomic, assign) CGAffineTransform disappearTransform;
+
+- (void)appear;
+
+- (void)disappear;
+
+@end
+
+@implementation UIView (SJControlAdd)
+
+- (void)setDisappearTransform:(CGAffineTransform)disappearTransform {
+    objc_setAssociatedObject(self, @selector(disappearTransform), [NSValue valueWithCGAffineTransform:disappearTransform], OBJC_ASSOCIATION_RETAIN_NONATOMIC);
+}
+
+- (CGAffineTransform)disappearTransform {
+    return [(NSValue *)objc_getAssociatedObject(self, _cmd) CGAffineTransformValue];
+}
+
+- (void)setDisappearType:(SJDisappearType)disappearType {
+    objc_setAssociatedObject(self, @selector(disappearType), @(disappearType), OBJC_ASSOCIATION_RETAIN_NONATOMIC);
+}
+
+- (SJDisappearType)disappearType {
+    return [objc_getAssociatedObject(self, _cmd) integerValue];
+}
+
+- (void)appear {
+    switch ( self.disappearType ) {
+        case SJDisappearType_Transform: {
+            self.transform = CGAffineTransformIdentity;
+        }
+            break;
+        case SJDisappearType_Alpha: {
+            self.alpha = 1;
+        }
+            break;
+    }
+}
+
+- (void)disappear {
+    switch ( self.disappearType ) {
+        case SJDisappearType_Transform: {
+            self.transform = self.disappearTransform;
+        }
+            break;
+        case SJDisappearType_Alpha: {
+            self.alpha = 0.001;
+        }
+            break;
+    }
+}
+
+@end
+
+
+#pragma mark -
+
+@interface SJVideoPlayerControlView ()<SJVideoPlayerControlDelegate, SJVideoPlayerControlDataSource, SJVideoPlayerLeftControlViewDelegate, SJVideoPlayerBottomControlViewDelegate, SJVideoPlayerTopControlViewDelegate, SJVideoPlayerPreviewViewDelegate>
 
 @property (nonatomic, assign) BOOL initialized;
 
+@property (nonatomic, strong, readonly) SJVideoPlayerPreviewView *previewView;
 @property (nonatomic, strong, readonly) SJVideoPlayerDraggingProgressView *draggingProgressView;
 @property (nonatomic, strong, readonly) SJVideoPlayerTopControlView *topControlView;
 @property (nonatomic, strong, readonly) SJVideoPlayerLeftControlView *leftControlView;
@@ -33,6 +103,7 @@
 
 @implementation SJVideoPlayerControlView
 
+@synthesize previewView = _previewView;
 @synthesize draggingProgressView = _draggingProgressView;
 @synthesize topControlView = _topControlView;
 @synthesize leftControlView = _leftControlView;
@@ -78,6 +149,7 @@
 
 #pragma mark - setup views
 - (void)_controlViewSetupView {
+    
     [self addSubview:self.topControlView];
     [self addSubview:self.leftControlView];
     [self addSubview:self.bottomControlView];
@@ -88,34 +160,52 @@
     [_topControlView mas_makeConstraints:^(MASConstraintMaker *make) {
         make.top.leading.trailing.offset(0);
     }];
-    _topControlView.transform = CGAffineTransformMakeTranslation(0, -_topControlView.intrinsicContentSize.height);
-    
     
     [_leftControlView mas_makeConstraints:^(MASConstraintMaker *make) {
         make.leading.offset(0);
         make.centerY.offset(0);
     }];
     
-    _leftControlView.transform = CGAffineTransformMakeTranslation(-_leftControlView.intrinsicContentSize.width, 0);
-    
     [_bottomControlView mas_makeConstraints:^(MASConstraintMaker *make) {
         make.leading.bottom.trailing.offset(0);
     }];
     
-    _bottomControlView.transform = CGAffineTransformMakeTranslation(0, _bottomControlView.intrinsicContentSize.height);
-    
     [_draggingProgressView mas_makeConstraints:^(MASConstraintMaker *make) {
         make.center.offset(0);
     }];
-    _draggingProgressView.alpha = 0.001;
-    
     
     [_bottomSlider mas_makeConstraints:^(MASConstraintMaker *make) {
         make.leading.bottom.trailing.offset(0);
         make.height.offset(2);
     }];
     
-    _bottomSlider.alpha = 0.001;
+    [self _setControlViewsDisappearValues];
+    
+    [_bottomSlider disappear];
+    [_draggingProgressView disappear];
+    [_topControlView disappear];
+    [_leftControlView disappear];
+    [_bottomControlView disappear];
+}
+
+- (void)_setControlViewsDisappearValues {
+    _bottomSlider.disappearType = SJDisappearType_Alpha;
+    _draggingProgressView.disappearType = SJDisappearType_Alpha;
+    _topControlView.disappearTransform = CGAffineTransformMakeTranslation(0, -_topControlView.intrinsicContentSize.height);
+    _leftControlView.disappearTransform = CGAffineTransformMakeTranslation(-_leftControlView.intrinsicContentSize.width, 0);
+    _bottomControlView.disappearTransform = CGAffineTransformMakeTranslation(0, _bottomControlView.intrinsicContentSize.height);
+}
+
+#pragma mark - 预览视图
+- (SJVideoPlayerPreviewView *)previewView {
+    if ( _previewView ) return _previewView;
+    _previewView = [SJVideoPlayerPreviewView new];
+    _previewView.delegate = self;
+    return _previewView;
+}
+
+- (void)previewView:(SJVideoPlayerPreviewView *)view didSelectItem:(id<SJVideoPlayerPreviewInfo>)item {
+    
 }
 
 #pragma mark - 拖拽视图
@@ -228,28 +318,28 @@
     
     [UIView animateWithDuration:0.3 animations:^{
         if ( isLocked ) {
-            _topControlView.transform = CGAffineTransformMakeTranslation(0, -_topControlView.intrinsicContentSize.height);
-            _leftControlView.transform = CGAffineTransformIdentity;
-            _bottomControlView.transform = CGAffineTransformMakeTranslation(0, _bottomControlView.intrinsicContentSize.height);
+            [_leftControlView appear];
+            [_topControlView disappear];
+            [_bottomControlView disappear];
         }
         else {
             if ( displayState ) {
-                _topControlView.transform = CGAffineTransformIdentity;
-                _bottomControlView.transform = CGAffineTransformIdentity;
-                _leftControlView.transform = CGAffineTransformIdentity;
+                [_topControlView appear];
+                [_bottomControlView appear];
+                [_leftControlView appear];
             }
             else {
-                _topControlView.transform = CGAffineTransformMakeTranslation(0, -_topControlView.intrinsicContentSize.height);
-                _bottomControlView.transform = CGAffineTransformMakeTranslation(0, _bottomControlView.intrinsicContentSize.height);
-                _leftControlView.transform = CGAffineTransformMakeTranslation(-_leftControlView.intrinsicContentSize.width, 0);
+                [_topControlView disappear];
+                [_bottomControlView disappear];
+                [_leftControlView disappear];
             }
         }
         
         if ( displayState ) {
-            self.bottomSlider.alpha = 0.001;
+            [self.bottomSlider disappear];
         }
         else {
-            self.bottomSlider.alpha = 1;
+            [self.bottomSlider appear];
         }
     }];
 }
@@ -275,6 +365,13 @@
     // update layout
     self.bottomControlView.fullscreen = isFull;
     self.topControlView.fullscreen = isFull;
+    
+    // update
+    [self _setControlViewsDisappearValues];
+    
+    [_topControlView disappear];
+    [_leftControlView disappear];
+    [_bottomControlView disappear];
 }
 
 - (void)videoPlayer:(SJVideoPlayer *)videoPlayer lockStateDidChange:(BOOL)isLocked {
@@ -284,7 +381,7 @@
 #pragma mark gesture
 - (void)horizontalGestureWillBeginDragging:(SJVideoPlayer *)videoPlayer {
     [UIView animateWithDuration:0.25 animations:^{
-       self.draggingProgressView.alpha = 1;
+        [self.draggingProgressView appear];
     }];
     
     [self.draggingProgressView setCurrentTimeStr:videoPlayer.currentTimeStr totalTimeStr:videoPlayer.totalTimeStr];
@@ -307,7 +404,7 @@
 
 - (void)horizontalGestureDidEndDragging:(SJVideoPlayer *)videoPlayer {
     [UIView animateWithDuration:0.25 animations:^{
-       self.draggingProgressView.alpha = 0.001;
+        [self.draggingProgressView disappear];
     }];
     
     [self.videoPlayer jumpedToTime:self.draggingProgressView.progress * videoPlayer.totalTime completionHandler:^(BOOL finished) {

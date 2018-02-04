@@ -19,6 +19,8 @@ NS_ASSUME_NONNULL_BEGIN
 
 @property (nonatomic, strong, readwrite) NSArray<id<SJVideoPlayerPreviewInfo>> *previewImages;
 
+@property (nonatomic) BOOL fullscreen;
+
 @end
 
 @protocol SJVideoPlayerPreviewViewDelegate <NSObject>

@@ -28,6 +28,12 @@ static NSString *SJVideoPlayerPreviewCollectionViewCellID = @"SJVideoPlayerPrevi
     return self;
 }
 
+- (CGSize)intrinsicContentSize {
+    CGFloat height = SJScreen_Min() * 0.25;
+    if ( _fullscreen ) return CGSizeMake(SJScreen_Max(), height);
+    else return CGSizeMake(SJScreen_Min(), height);
+}
+
 - (void)setPreviewImages:(NSArray<id<SJVideoPlayerPreviewInfo>> *)previewImages {
     _previewImages = previewImages;
     [_collectionView reloadData];
@@ -47,6 +53,11 @@ static NSString *SJVideoPlayerPreviewCollectionViewCellID = @"SJVideoPlayerPrevi
 
 - (BOOL)isHidden {
     return self.alpha != 1;
+}
+
+- (void)setFullscreen:(BOOL)fullscreen {
+    _fullscreen = fullscreen;
+    [self invalidateIntrinsicContentSize];
 }
 
 #pragma mark

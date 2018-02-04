@@ -60,6 +60,7 @@ NS_ASSUME_NONNULL_BEGIN
 
  @param videoPlayer `video player`.
  @param displayState `display or hidden`.
+ @param isLocked `Lock state. if locked, All interactive events should not be triggered.`
  */
 - (void)videoPlayer:(SJVideoPlayer *)videoPlayer controlLayerNeedChangeDisplayState:(BOOL)displayState locked:(BOOL)isLocked;
 
@@ -72,6 +73,12 @@ NS_ASSUME_NONNULL_BEGIN
  */
 - (void)videoPlayer:(SJVideoPlayer *)videoPlayer currentTimeStr:(NSString *)currentTimeStr totalTimeStr:(NSString *)totalTimeStr;
 
+/**
+ loaded time progress.
+
+ @param videoPlayer `video player`
+ @param progress `progress`
+ */
 - (void)videoPlayer:(SJVideoPlayer *)videoPlayer loadedTimeProgress:(float)progress;
 
 /**

@@ -201,12 +201,20 @@
                 _leftControlView.transform = CGAffineTransformMakeTranslation(-_leftControlView.intrinsicContentSize.width, 0);
             }
         }
+        
+        if ( displayState ) {
+            self.bottomSlider.alpha = 0.001;
+        }
+        else {
+            self.bottomSlider.alpha = 1;
+        }
     }];
 }
 
 - (void)videoPlayer:(SJVideoPlayer *)videoPlayer currentTimeStr:(NSString *)currentTimeStr totalTimeStr:(NSString *)totalTimeStr {
     [self.bottomControlView setCurrentTimeStr:currentTimeStr totalTimeStr:totalTimeStr];
     self.bottomControlView.progress = videoPlayer.currentTime / videoPlayer.totalTime;
+    self.bottomSlider.value = self.bottomControlView.progress;
 }
 
 - (void)videoPlayer:(SJVideoPlayer *)videoPlayer loadedTimeProgress:(float)progress {
@@ -295,7 +303,8 @@
     self.settingRecroder = [[SJVideoPlayerControlSettingRecorder alloc] initWithSettings:^(SJVideoPlayerSettings * _Nonnull setting) {
         __strong typeof(_self) self = _self;
         if ( !self ) return;
-        
+        self.bottomSlider.traceImageView.backgroundColor = setting.progress_traceColor;
+        self.bottomSlider.trackImageView.backgroundColor = setting.progress_trackColor;
     }];
 }
 @end

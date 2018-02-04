@@ -73,10 +73,6 @@
     [self invalidateIntrinsicContentSize];
 }
 
-- (BOOL)isDragging {
-    return self.progressSlider.isDragging;
-}
-
 - (void)setCurrentTimeStr:(NSString *)currentTimeStr {
     self.currentTimeLabel.text = currentTimeStr;
 }

@@ -1,14 +1,14 @@
 //
-//  SJVideoPlayer+ControlAdd.m
+//  SJVideoPlayer+UpdateSetting.m
 //  SJVideoPlayerProject
 //
-//  Created by BlueDancer on 2018/2/3.
+//  Created by 畅三江 on 2018/2/4.
 //  Copyright © 2018年 SanJiang. All rights reserved.
 //
 
-#import "SJVideoPlayer+ControlAdd.h"
+#import "SJVideoPlayer+UpdateSetting.h"
 
-@implementation SJVideoPlayer (ControlAdd)
+@implementation SJVideoPlayer (UpdateSetting)
 
 static dispatch_queue_t videoPlayerWorkQueue;
 + (dispatch_queue_t)workQueue {

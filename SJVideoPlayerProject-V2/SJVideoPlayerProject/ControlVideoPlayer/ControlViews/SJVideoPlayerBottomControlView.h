@@ -26,8 +26,6 @@ typedef NS_ENUM(NSUInteger, SJVideoPlayerBottomViewTag) {
 
 @property (nonatomic) BOOL fullscreen;
 
-@property (nonatomic, readonly) BOOL isDragging;
-
 @property (nonatomic) float progress;
 
 @property (nonatomic) float bufferProgress;

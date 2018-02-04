@@ -43,7 +43,11 @@ NS_ASSUME_NONNULL_BEGIN
 @required
 - (UIView *)controlView;
 
+// 控制层将要显示之前会调用这个方法, 如果返回NO, 将不调用`videoPlayer:controlLayerNeedChangeDisplayState:locked:`.
 - (BOOL)controlLayerDisplayCondition;
+
+// 控制层将要隐藏之前会调用这个方法, 如果返回NO, 将不调用`videoPlayer:controlLayerNeedChangeDisplayState:locked:`.
+- (BOOL)controlLayerConcealCondition;
 
 @optional
 
@@ -56,6 +60,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 @optional
 
+#pragma mark
 /**
  control layer want to display.
 
@@ -65,6 +70,8 @@ NS_ASSUME_NONNULL_BEGIN
  */
 - (void)videoPlayer:(SJVideoPlayer *)videoPlayer controlLayerNeedChangeDisplayState:(BOOL)displayState locked:(BOOL)isLocked;
 
+
+#pragma mark
 /**
  play time did change.
 
@@ -82,6 +89,8 @@ NS_ASSUME_NONNULL_BEGIN
  */
 - (void)videoPlayer:(SJVideoPlayer *)videoPlayer loadedTimeProgress:(float)progress;
 
+
+#pragma mark
 /**
  player view will rotate.
 
@@ -90,9 +99,15 @@ NS_ASSUME_NONNULL_BEGIN
  */
 - (void)videoPlayer:(SJVideoPlayer *)videoPlayer willRotateView:(BOOL)isFull;
 
+
+#pragma mark
 - (void)horizontalGestureWillBeginDragging:(SJVideoPlayer *)videoPlayer;
 - (void)videoPlayer:(SJVideoPlayer *)videoPlayer horizontalGestureDidDrag:(CGFloat)translation;
 - (void)horizontalGestureDidEndDragging:(SJVideoPlayer *)videoPlayer;
+
+
+#pragma mark
+- (void)videoPlayer:(SJVideoPlayer *)videoPlayer presentationSize:(CGSize)size;
 
 @end
 
@@ -125,6 +140,8 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic, strong, readonly) NSString *totalTimeStr;
 
 - (void)jumpedToTime:(NSTimeInterval)secs completionHandler:(void (^ __nullable)(BOOL finished))completionHandler; // unit is sec. 单位是秒.
+
+- (void)seekToTime:(CMTime)time completionHandler:(void (^ __nullable)(BOOL finished))completionHandler;
 
 @end
 
@@ -180,6 +197,8 @@ NS_ASSUME_NONNULL_BEGIN
 #pragma mark - 截图
 
 @interface SJVideoPlayer (Screenshot)
+
+@property (nonatomic, copy, readwrite, nullable) void(^presentationSize)(SJVideoPlayer *videoPlayer, CGSize size);
 
 - (UIImage * __nullable)screenshot;
 

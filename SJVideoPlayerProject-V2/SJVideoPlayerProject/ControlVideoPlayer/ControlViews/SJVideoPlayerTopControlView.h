@@ -24,10 +24,15 @@ typedef NS_ENUM(NSUInteger, SJVideoPlayerTopViewTag) {
 
 @property (nonatomic) BOOL fullscreen;
 
+@property (nonatomic, copy, nullable) NSString *title;
+
 @end
 
 @protocol SJVideoPlayerTopControlViewDelegate <NSObject>
-			
+
+@required
+- (BOOL)hasBeenGeneratedPreviewImages;
+
 @optional
 - (void)topControlView:(SJVideoPlayerTopControlView *)view clickedBtnTag:(SJVideoPlayerTopViewTag)tag;
 

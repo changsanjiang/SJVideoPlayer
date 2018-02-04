@@ -11,6 +11,7 @@
 #import <Masonry/Masonry.h>
 #import "SJVideoPlayerControlMaskView.h"
 #import "UIView+SJVideoPlayerSetting.h"
+#import <SJAttributesFactory/SJAttributeWorker.h>
 
 @interface SJVideoPlayerTopControlView ()
 
@@ -49,6 +50,23 @@
 - (void)setFullscreen:(BOOL)fullscreen {
     _fullscreen = fullscreen;
     [self invalidateIntrinsicContentSize];
+    self.moreBtn.hidden = !fullscreen;
+    
+    if ( [self.delegate hasBeenGeneratedPreviewImages] ) {
+        self.previewBtn.hidden = !fullscreen;
+    }
+    else {
+        self.previewBtn.hidden = YES;
+    }
+}
+
+- (void)setTitle:(NSString *)title {
+    _title = title;
+    _titleLabel.attributedText = sj_makeAttributesString(^(SJAttributeWorker * _Nonnull make) {
+        make.font(self.titleLabel.font).textColor(self.titleLabel.textColor);
+        make.insert(title, 0);
+        make.shadow(CGSizeMake(0.5, 0.5), 1, [UIColor blackColor]);
+    });
 }
 
 - (void)clickedBtn:(UIButton *)btn {
@@ -87,6 +105,8 @@
         make.centerY.equalTo(_backBtn);
         make.trailing.equalTo(_previewBtn.mas_leading);
     }];
+    
+    self.moreBtn.hidden = self.previewBtn.hidden = YES;
 }
 
 - (UIButton *)backBtn {
@@ -135,6 +155,7 @@
         }
         self.titleLabel.font = setting.titleFont;
         self.titleLabel.textColor = setting.titleColor;
+        if ( 0 != self.title.length ) self.title = self.title;
     }];
 }
 @end

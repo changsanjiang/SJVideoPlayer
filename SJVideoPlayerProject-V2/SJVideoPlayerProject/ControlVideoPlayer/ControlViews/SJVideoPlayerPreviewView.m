@@ -39,22 +39,6 @@ static NSString *SJVideoPlayerPreviewCollectionViewCellID = @"SJVideoPlayerPrevi
     [_collectionView reloadData];
 }
 
-- (void)setHidden:(BOOL)hidden {
-    if ( hidden == self.isHidden ) return;
-    if ( !hidden ) {
-        self.alpha = 1;
-        self.transform = CGAffineTransformIdentity;
-    }
-    else {
-        self.alpha = 0.001;
-        self.transform = CGAffineTransformMakeScale(1, 0.001);
-    }
-}
-
-- (BOOL)isHidden {
-    return self.alpha != 1;
-}
-
 - (void)setFullscreen:(BOOL)fullscreen {
     _fullscreen = fullscreen;
     [self invalidateIntrinsicContentSize];

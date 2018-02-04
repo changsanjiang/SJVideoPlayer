@@ -20,6 +20,20 @@
 #import <SJObserverHelper/NSObject+SJObserverHelper.h>
 
 
+@interface SJVideoPlayerAssetCarrier (SJVideoPlayerAdd)
+@property (nonatomic, assign) CGSize videoPresentationSize;
+@end
+
+@implementation SJVideoPlayerAssetCarrier (SJVideoPlayerAdd)
+- (void)setVideoPresentationSize:(CGSize)videoPresentationSize {
+    objc_setAssociatedObject(self, @selector(videoPresentationSize), [NSValue valueWithCGSize:videoPresentationSize], OBJC_ASSOCIATION_RETAIN_NONATOMIC);
+}
+- (CGSize)videoPresentationSize {
+    return [objc_getAssociatedObject(self, _cmd) CGSizeValue];
+}
+@end
+
+
 NS_ASSUME_NONNULL_BEGIN
 @interface _SJVideoPlayerControlDisplayRecorder : NSObject
 - (instancetype)initWithVideoPlayer:(SJVideoPlayer *)videoPlayer;
@@ -133,6 +147,17 @@ NS_ASSUME_NONNULL_END
         }
     };
     
+    self.asset.presentationSize = ^(SJVideoPlayerAssetCarrier * _Nonnull asset, CGSize size) {
+        __strong typeof(_self) self = _self;
+        if ( !self ) return ;
+        if ( CGSizeEqualToSize(asset.videoPresentationSize, size) ) return;
+        if ( self.presentationSize ) self.presentationSize(self, size);
+        asset.videoPresentationSize = size;
+        if ( [self.controlViewDelegate respondsToSelector:@selector(videoPlayer:presentationSize:)] ) {
+            [self.controlViewDelegate videoPlayer:self presentationSize:size];
+        }
+    };
+    
     self.state = SJVideoPlayerPlayState_Prepare;
 }
 
@@ -171,7 +196,7 @@ NS_ASSUME_NONNULL_END
 
 - (SJVideoPlayerPresentView *)presentView {
     if ( _presentView ) return _presentView;
-    _presentView = [SJVideoPlayerPresentView new];
+    _presentView = [SJVideoPlayerPresentView new]; 
     return _presentView;
 }
 
@@ -472,8 +497,12 @@ NS_ASSUME_NONNULL_END
 - (void)jumpedToTime:(NSTimeInterval)time completionHandler:(void (^)(BOOL))completionHandler {
     if ( isnan(time) ) { return;}
     CMTime seekTime = CMTimeMakeWithSeconds(time, NSEC_PER_SEC);
+    [self seekToTime:seekTime completionHandler:completionHandler];
+}
+
+- (void)seekToTime:(CMTime)time completionHandler:(void (^ __nullable)(BOOL finished))completionHandler {
     __weak typeof(self) _self = self;
-    [self.asset seekToTime:seekTime completionHandler:^(BOOL finished) {
+    [self.asset seekToTime:time completionHandler:^(BOOL finished) {
         __strong typeof(_self) self = _self;
         if ( !self ) return;
         if ( completionHandler ) completionHandler(finished);
@@ -583,6 +612,14 @@ NS_ASSUME_NONNULL_END
 
 @implementation SJVideoPlayer (Screenshot)
 
+- (void)setPresentationSize:(void (^)(SJVideoPlayer * _Nonnull, CGSize))presentationSize {
+    objc_setAssociatedObject(self, @selector(presentationSize), presentationSize, OBJC_ASSOCIATION_COPY_NONATOMIC);
+}
+
+- (void (^)(SJVideoPlayer * _Nonnull, CGSize))presentationSize {
+    return objc_getAssociatedObject(self, _cmd);
+}
+
 - (UIImage * __nullable)screenshot {
     return [self.asset screenshot];
 }
@@ -677,7 +714,8 @@ NS_ASSUME_NONNULL_END
     _timerControl.exeBlock = ^(SJTimerControl * _Nonnull control) {
         __strong typeof(_self) self = _self;
         if ( !self ) return;
-        if ( !self.videoPlayer.controlViewDataSource.controlLayerDisplayCondition ) {
+        if ( !self.videoPlayer.controlViewDataSource.controlLayerDisplayCondition ||
+             !self.videoPlayer.controlViewDataSource.controlLayerConcealCondition ) {
             [control reset];
         }
         else {

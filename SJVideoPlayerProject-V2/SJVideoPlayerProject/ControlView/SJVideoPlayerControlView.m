@@ -24,6 +24,7 @@
 #import "SJMoreSettingsSlidersViewModel.h"
 #import "SJVideoPlayerMoreSetting+SJControlAdd.h"
 #import "SJVideoPlayerMoreSettingSecondary.h"
+#import "SJVideoPlayerCenterControlView.h"
 #import <SJLoadingView/SJLoadingView.h>
 #import <objc/message.h>
 
@@ -115,7 +116,7 @@ NS_ASSUME_NONNULL_END
 #pragma mark -
 
 NS_ASSUME_NONNULL_BEGIN
-@interface SJVideoPlayerControlView ()<SJVideoPlayerControlDelegate, SJVideoPlayerControlDataSource, SJVideoPlayerLeftControlViewDelegate, SJVideoPlayerBottomControlViewDelegate, SJVideoPlayerTopControlViewDelegate, SJVideoPlayerPreviewViewDelegate>
+@interface SJVideoPlayerControlView ()<SJVideoPlayerControlDelegate, SJVideoPlayerControlDataSource, SJVideoPlayerLeftControlViewDelegate, SJVideoPlayerBottomControlViewDelegate, SJVideoPlayerTopControlViewDelegate, SJVideoPlayerPreviewViewDelegate, SJVideoPlayerCenterControlViewDelegate>
 
 @property (nonatomic, assign) BOOL initialized;
 @property (nonatomic, assign) BOOL hasBeenGeneratedPreviewImages;
@@ -125,6 +126,7 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic, strong, readonly) SJVideoPlayerDraggingProgressView *draggingProgressView;
 @property (nonatomic, strong, readonly) SJVideoPlayerTopControlView *topControlView;
 @property (nonatomic, strong, readonly) SJVideoPlayerLeftControlView *leftControlView;
+@property (nonatomic, strong, readonly) SJVideoPlayerCenterControlView *centerControlView;
 @property (nonatomic, strong, readonly) SJVideoPlayerBottomControlView *bottomControlView;
 @property (nonatomic, strong, readonly) SJSlider *bottomSlider;
 @property (nonatomic, strong, readonly) SJVideoPlayerMoreSettingsView *moreSettingsView;
@@ -144,6 +146,7 @@ NS_ASSUME_NONNULL_END
 @synthesize draggingProgressView = _draggingProgressView;
 @synthesize topControlView = _topControlView;
 @synthesize leftControlView = _leftControlView;
+@synthesize centerControlView = _centerControlView;
 @synthesize bottomControlView = _bottomControlView;
 @synthesize bottomSlider = _bottomSlider;
 @synthesize moreSettingsView = _moreSettingsView;
@@ -198,6 +201,7 @@ NS_ASSUME_NONNULL_END
     
     [self addSubview:self.topControlView];
     [self addSubview:self.leftControlView];
+    [self addSubview:self.centerControlView];
     [self addSubview:self.bottomControlView];
     [self addSubview:self.draggingProgressView];
     [self addSubview:self.bottomSlider];
@@ -213,6 +217,10 @@ NS_ASSUME_NONNULL_END
     [_leftControlView mas_makeConstraints:^(MASConstraintMaker *make) {
         make.leading.offset(0);
         make.centerY.offset(0);
+    }];
+    
+    [_centerControlView mas_makeConstraints:^(MASConstraintMaker *make) {
+        make.center.offset(0);
     }];
     
     [_bottomControlView mas_makeConstraints:^(MASConstraintMaker *make) {
@@ -253,6 +261,7 @@ NS_ASSUME_NONNULL_END
     [_draggingProgressView disappear];
     [_topControlView disappear];
     [_leftControlView disappear];
+    [_centerControlView disappear];
     [_bottomControlView disappear];
     [_previewView disappear];
     [_moreSettingsView disappear];
@@ -262,6 +271,7 @@ NS_ASSUME_NONNULL_END
 - (void)_setControlViewsDisappearType {
     _topControlView.disappearType = SJDisappearType_Transform;
     _leftControlView.disappearType = SJDisappearType_Transform;
+    _centerControlView.disappearType = SJDisappearType_Alpha;
     _bottomControlView.disappearType = SJDisappearType_Transform;
     _bottomSlider.disappearType = SJDisappearType_Alpha;
     _previewView.disappearType = SJDisappearType_All;
@@ -368,6 +378,29 @@ NS_ASSUME_NONNULL_END
     view.lockState = self.videoPlayer.lockedScreen;
 }
 
+
+#pragma mark - 中间视图
+- (SJVideoPlayerCenterControlView *)centerControlView {
+    if ( _centerControlView ) return _centerControlView;
+    _centerControlView = [SJVideoPlayerCenterControlView new];
+    _centerControlView.delegate = self;
+    return _centerControlView;
+}
+
+- (void)centerControlView:(SJVideoPlayerCenterControlView *)view clickedBtnTag:(SJVideoPlayerCenterViewTag)tag {
+    switch ( tag ) {
+        case SJVideoPlayerCenterViewTag_Replay: {
+            [self.videoPlayer replay];
+        }
+            break;
+        case SJVideoPlayerCenterViewTag_Failed: {
+            self.videoPlayer.URLAsset = self.videoPlayer.URLAsset;
+        }
+            break;
+        default:
+            break;
+    }
+}
 
 #pragma mark - 底部视图
 - (SJVideoPlayerBottomControlView *)bottomControlView {
@@ -791,6 +824,19 @@ NS_ASSUME_NONNULL_END
             break;
         default:
             break;
+    }
+    
+    if ( SJVideoPlayerPlayState_PlayFailed == state || SJVideoPlayerPlayState_PlayEnd == state ) {
+        [UIView animateWithDuration:0.3 animations:^{
+            [self.centerControlView appear];
+        }];
+        if ( SJVideoPlayerPlayState_PlayFailed == state ) [self.centerControlView failedState];
+        else [self.centerControlView replayState];
+    }
+    else if ( self.centerControlView.appearState ) {
+        [UIView animateWithDuration:0.3 animations:^{
+            [self.centerControlView disappear];
+        }];
     }
 }
 

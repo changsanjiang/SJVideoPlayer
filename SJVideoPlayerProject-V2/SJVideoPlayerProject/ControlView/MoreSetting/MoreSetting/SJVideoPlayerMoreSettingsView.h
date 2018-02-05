@@ -11,7 +11,7 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
-@class SJVideoPlayerMoreSettingsFooterSlidersView, SJVideoPlayerMoreSetting;
+@class SJVideoPlayerMoreSetting;
 
 @interface SJVideoPlayerMoreSettingsView : UIView
 

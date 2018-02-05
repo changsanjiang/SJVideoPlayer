@@ -45,6 +45,7 @@ static NSString *const SJVideoPlayerMoreSettingsFooterViewID = @"SJVideoPlayerMo
 - (SJVideoPlayerMoreSettingsSlidersView *)slidersView {
     if ( _slidersView ) return _slidersView;
     _slidersView = [SJVideoPlayerMoreSettingsSlidersView new];
+    _slidersView.frame = (CGRect){CGPointZero, _slidersView.intrinsicContentSize};
     return _slidersView;
 }
 
@@ -60,6 +61,8 @@ static NSString *const SJVideoPlayerMoreSettingsFooterViewID = @"SJVideoPlayerMo
     [_colView mas_makeConstraints:^(MASConstraintMaker *make) {
         make.edges.equalTo(_colView.superview);
     }];
+    
+    [self slidersView];
 }
 
 - (UICollectionView *)colView {

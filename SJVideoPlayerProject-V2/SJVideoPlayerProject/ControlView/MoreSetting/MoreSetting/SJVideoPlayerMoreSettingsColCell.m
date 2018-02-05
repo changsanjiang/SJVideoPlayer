@@ -42,11 +42,11 @@
             make.insert(model.image, 0, CGPointZero, model.image.size);
         }
         
-        if ( model.title ) {
+        if ( 0 != model.title.length ) {
             make.insert([NSString stringWithFormat:@"%@", model.title], -1);;
         }
         
-        if ( model.image && model.title ) {
+        if ( model.image && 0 != model.title.length ) {
             make.insert(@"\n", make.lastInsertedRange.location);
         }
         

@@ -42,24 +42,6 @@
     return self;
 }
 
-- (void)_footerSettings {
-    __weak typeof(self) _self = self;
-    self.settingRecroder = [[SJVideoPlayerControlSettingRecorder alloc] initWithSettings:^(SJVideoPlayerSettings * _Nonnull setting) {
-        __strong typeof(_self) self = _self;
-        if ( !self ) return;
-        self.volumeSlider.slider.trackHeight = self.brightnessSlider.slider.trackHeight = self.rateSlider.slider.trackHeight = setting.more_trackHeight;
-        self.volumeSlider.slider.trackImageView.backgroundColor = self.brightnessSlider.slider.trackImageView.backgroundColor = self.rateSlider.slider.trackImageView.backgroundColor = setting.more_trackColor;
-        self.volumeSlider.slider.traceImageView.backgroundColor = self.brightnessSlider.slider.traceImageView.backgroundColor = self.rateSlider.slider.traceImageView.backgroundColor = setting.more_traceColor;
-        
-        [self.rateSlider.leftBtn setBackgroundImage:setting.more_minRateImage forState:UIControlStateNormal];
-        [self.rateSlider.rightBtn setBackgroundImage:setting.more_maxRateImage forState:UIControlStateNormal];
-        [self.volumeSlider.leftBtn setBackgroundImage:setting.more_minVolumeImage forState:UIControlStateNormal];
-        [self.volumeSlider.rightBtn setBackgroundImage:setting.more_maxVolumeImage forState:UIControlStateNormal];
-        [self.brightnessSlider.leftBtn setBackgroundImage:setting.more_minBrightnessImage forState:UIControlStateNormal];
-        [self.brightnessSlider.rightBtn setBackgroundImage:setting.more_maxBrightnessImage forState:UIControlStateNormal];
-    }];
-}
-
 - (void)setModel:(SJMoreSettingsSlidersViewModel *)model {
     _model = model;
     __weak typeof(self) _self = self;
@@ -186,4 +168,21 @@
     }
 }
 
+- (void)_footerSettings {
+    __weak typeof(self) _self = self;
+    self.settingRecroder = [[SJVideoPlayerControlSettingRecorder alloc] initWithSettings:^(SJVideoPlayerSettings * _Nonnull setting) {
+        __strong typeof(_self) self = _self;
+        if ( !self ) return;
+        self.volumeSlider.slider.trackHeight = self.brightnessSlider.slider.trackHeight = self.rateSlider.slider.trackHeight = setting.more_trackHeight;
+        self.volumeSlider.slider.trackImageView.backgroundColor = self.brightnessSlider.slider.trackImageView.backgroundColor = self.rateSlider.slider.trackImageView.backgroundColor = setting.more_trackColor;
+        self.volumeSlider.slider.traceImageView.backgroundColor = self.brightnessSlider.slider.traceImageView.backgroundColor = self.rateSlider.slider.traceImageView.backgroundColor = setting.more_traceColor;
+        
+        [self.rateSlider.leftBtn setBackgroundImage:setting.more_minRateImage forState:UIControlStateNormal];
+        [self.rateSlider.rightBtn setBackgroundImage:setting.more_maxRateImage forState:UIControlStateNormal];
+        [self.volumeSlider.leftBtn setBackgroundImage:setting.more_minVolumeImage forState:UIControlStateNormal];
+        [self.volumeSlider.rightBtn setBackgroundImage:setting.more_maxVolumeImage forState:UIControlStateNormal];
+        [self.brightnessSlider.leftBtn setBackgroundImage:setting.more_minBrightnessImage forState:UIControlStateNormal];
+        [self.brightnessSlider.rightBtn setBackgroundImage:setting.more_maxBrightnessImage forState:UIControlStateNormal];
+    }];
+}
 @end

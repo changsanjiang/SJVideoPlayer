@@ -363,8 +363,8 @@
 			isa = PBXGroup;
 			children = (
 				A6D70DFF2026F6B200FF1BCA /* SJVideoPlayerMoreSettingsFooterSlidersView.h */,
-				A6D70E002026F6B200FF1BCA /* SJVideoPlayerMoreSettingsColCell.h */,
 				A6D70E022026F6B200FF1BCA /* SJVideoPlayerMoreSettingsFooterSlidersView.m */,
+				A6D70E002026F6B200FF1BCA /* SJVideoPlayerMoreSettingsColCell.h */,
 				A6D70E032026F6B200FF1BCA /* SJVideoPlayerMoreSettingsColCell.m */,
 				A6D70E042026F6B200FF1BCA /* SJVideoPlayerMoreSettingsView.h */,
 				A6D70E012026F6B200FF1BCA /* SJVideoPlayerMoreSettingsView.m */,

@@ -20,13 +20,14 @@
 #import "SJVideoPlayerTopControlView.h"
 #import "SJVideoPlayerPreviewView.h"
 #import "SJVideoPlayerMoreSettingsView.h"
+#import "SJMoreSettingsFooterViewModel.h"
 #import <objc/message.h>
 
 
 typedef NS_ENUM(NSUInteger, SJDisappearType) {
-    SJDisappearType_Transform = 0,
-    SJDisappearType_Alpha = 1 << 0,
-    SJDisappearType_All = 1 << 1,
+    SJDisappearType_Transform = 1 << 0,
+    SJDisappearType_Alpha = 1 << 1,
+    SJDisappearType_All = 1 << 2,
 };
 
 @interface UIView (SJControlAdd)
@@ -70,14 +71,14 @@ typedef NS_ENUM(NSUInteger, SJDisappearType) {
 }
 
 - (void)appear {
-    [self __change:YES];
+    [self __changeState:YES];
 }
 
 - (void)disappear {
-    [self __change:NO];
+    [self __changeState:NO];
 }
 
-- (void)__change:(BOOL)show {
+- (void)__changeState:(BOOL)show {
     
     if ( SJDisappearType_All == (self.disappearType & SJDisappearType_All) ) {
         self.disappearType = SJDisappearType_Alpha | SJDisappearType_Transform;
@@ -112,6 +113,7 @@ typedef NS_ENUM(NSUInteger, SJDisappearType) {
 
 @property (nonatomic, assign) BOOL initialized;
 @property (nonatomic, assign) BOOL hasBeenGeneratedPreviewImages;
+@property (nonatomic, strong) SJMoreSettingsFooterViewModel *footerViewModel;
 
 @property (nonatomic, strong, readonly) SJVideoPlayerPreviewView *previewView;
 @property (nonatomic, strong, readonly) SJVideoPlayerDraggingProgressView *draggingProgressView;
@@ -124,7 +126,7 @@ typedef NS_ENUM(NSUInteger, SJDisappearType) {
 @end
 
 @implementation SJVideoPlayerControlView {
-    BOOL _controlLayerAppeared;
+    BOOL _controlLayerAppearedState;
 }
 
 @synthesize previewView = _previewView;
@@ -134,6 +136,7 @@ typedef NS_ENUM(NSUInteger, SJDisappearType) {
 @synthesize bottomControlView = _bottomControlView;
 @synthesize bottomSlider = _bottomSlider;
 @synthesize moreSettingsView = _moreSettingsView;
+@synthesize footerViewModel = _footerViewModel;
 
 - (instancetype)initWithFrame:(CGRect)frame {
     self = [super initWithFrame:frame];
@@ -219,7 +222,8 @@ typedef NS_ENUM(NSUInteger, SJDisappearType) {
         make.top.trailing.offset(0);
     }];
     
-    [self _setControlViewsDisappearValues];
+    [self _setControlViewsDisappearType];
+    [self _setControlViewsDisappearValue];
     
     [_bottomSlider disappear];
     [_draggingProgressView disappear];
@@ -230,9 +234,17 @@ typedef NS_ENUM(NSUInteger, SJDisappearType) {
     [_moreSettingsView disappear];
 }
 
-- (void)_setControlViewsDisappearValues {
+- (void)_setControlViewsDisappearType {
+    _topControlView.disappearType = SJDisappearType_Transform;
+    _leftControlView.disappearType = SJDisappearType_Transform;
+    _bottomControlView.disappearType = SJDisappearType_Transform;
     _bottomSlider.disappearType = SJDisappearType_Alpha;
+    _previewView.disappearType = SJDisappearType_All;
+    _moreSettingsView.disappearType = SJDisappearType_Transform;
     _draggingProgressView.disappearType = SJDisappearType_Alpha;
+}
+
+- (void)_setControlViewsDisappearValue {
     _topControlView.disappearTransform = CGAffineTransformMakeTranslation(0, -_topControlView.intrinsicContentSize.height);
     _leftControlView.disappearTransform = CGAffineTransformMakeTranslation(-_leftControlView.intrinsicContentSize.width, 0);
     _bottomControlView.disappearTransform = CGAffineTransformMakeTranslation(0, _bottomControlView.intrinsicContentSize.height);
@@ -246,7 +258,6 @@ typedef NS_ENUM(NSUInteger, SJDisappearType) {
     _previewView = [SJVideoPlayerPreviewView new];
     _previewView.delegate = self;
     _previewView.backgroundColor = [UIColor colorWithWhite:0 alpha:0.4];
-    _previewView.disappearType = SJDisappearType_All;
     return _previewView;
 }
 
@@ -342,7 +353,8 @@ typedef NS_ENUM(NSUInteger, SJDisappearType) {
 - (void)bottomView:(SJVideoPlayerBottomControlView *)view clickedBtnTag:(SJVideoPlayerBottomViewTag)tag {
     switch ( tag ) {
         case SJVideoPlayerBottomViewTag_Play: {
-            [self.videoPlayer play];
+            if ( self.videoPlayer.state == SJVideoPlayerPlayState_PlayEnd ) [self.videoPlayer replay];
+            else [self.videoPlayer play];
         }
             break;
         case SJVideoPlayerBottomViewTag_Pause: {
@@ -361,7 +373,6 @@ typedef NS_ENUM(NSUInteger, SJDisappearType) {
     _bottomSlider = [SJSlider new];
     _bottomSlider.pan.enabled = NO;
     _bottomSlider.trackHeight = 1;
-    _bottomSlider.disappearType = SJDisappearType_Alpha;
     return _bottomSlider;
 }
 
@@ -374,6 +385,52 @@ typedef NS_ENUM(NSUInteger, SJDisappearType) {
     return _moreSettingsView;
 }
 
+- (SJMoreSettingsFooterViewModel *)footerViewModel {
+    if ( _footerViewModel ) return _footerViewModel;
+    _footerViewModel = [SJMoreSettingsFooterViewModel new];
+    return _footerViewModel;
+}
+
+#pragma mark - 加载配置
+
+- (void)_controlViewLoadSetting {
+    
+    // load default setting
+    __weak typeof(self) _self = self;
+    
+    // 1. load default setting
+    
+    //    [SJVideoPlayer loadDefaultSettingAndCompletion:^{
+    //        __strong typeof(_self) self = _self;
+    //        if ( !self ) return;
+    //        self.initialized = YES;
+    //        [self videoPlayer:self.videoPlayer controlLayerNeedAppear:YES];
+    //    }];
+    
+    // 2. or update
+    [SJVideoPlayer update:^(SJVideoPlayerSettings * _Nonnull commonSettings) {
+        // update common settings
+        commonSettings.more_trackColor = [UIColor whiteColor];
+        commonSettings.progress_trackColor = [UIColor colorWithWhite:0.4 alpha:1];
+        commonSettings.progress_bufferColor = [UIColor whiteColor];
+        // .... other settings ....
+        // .... .... .... .... ....
+    } completion:^{
+        __strong typeof(_self) self = _self;
+        if ( !self ) return;
+        self.initialized = YES; // 初始化已完成, 在初始化期间不显示控制层.
+        [self controlLayerNeedAppear:self.videoPlayer]; // 显示控制层
+    }];
+    
+    
+    self.settingRecroder = [[SJVideoPlayerControlSettingRecorder alloc] initWithSettings:^(SJVideoPlayerSettings * _Nonnull setting) {
+        __strong typeof(_self) self = _self;
+        if ( !self ) return;
+        self.bottomSlider.traceImageView.backgroundColor = setting.progress_traceColor;
+        self.bottomSlider.trackImageView.backgroundColor = setting.progress_bufferColor;
+    }];
+}
+
 
 #pragma mark - Video Player Control Data Source
 
@@ -381,12 +438,12 @@ typedef NS_ENUM(NSUInteger, SJDisappearType) {
     return self;
 }
 
-- (void)setControlLayerAppeared:(BOOL)controlLayerAppeared {
-    _controlLayerAppeared = controlLayerAppeared;
+- (void)setControlLayerAppearedState:(BOOL)controlLayerAppearedState {
+    _controlLayerAppearedState = controlLayerAppearedState;
 }
 
-- (BOOL)controlLayerAppeared {
-    return _controlLayerAppeared;
+- (BOOL)controlLayerAppearedState {
+    return _controlLayerAppearedState;
 }
 
 - (BOOL)controlLayerAppearCondition {
@@ -416,11 +473,12 @@ typedef NS_ENUM(NSUInteger, SJDisappearType) {
         if ( _moreSettingsView.appearState ) [_moreSettingsView disappear];
         [_topControlView appear];
         [_bottomControlView appear];
-        [_leftControlView appear];
+        if ( videoPlayer.isFullScreen ) [_leftControlView appear]; // 如果是小屏, 则不显示锁屏按钮
+        else [_leftControlView disappear];
         [_bottomSlider disappear];
     }];
     
-    self.controlLayerAppeared = YES;
+    self.controlLayerAppearedState = YES;
 }
 
 - (void)controlLayerNeedDisappear:(SJVideoPlayer *)videoPlayer {
@@ -432,7 +490,7 @@ typedef NS_ENUM(NSUInteger, SJDisappearType) {
         [_bottomSlider appear];
     }];
     
-    self.controlLayerAppeared = NO;
+    self.controlLayerAppearedState = NO;
 }
 
 - (void)lockedVideoPlayer:(SJVideoPlayer *)videoPlayer {
@@ -469,7 +527,7 @@ typedef NS_ENUM(NSUInteger, SJDisappearType) {
     self.topControlView.fullscreen = isFull;
     
     // update
-    [self _setControlViewsDisappearValues];
+    [self _setControlViewsDisappearValue];
     
     [_topControlView disappear];
     [_leftControlView disappear];
@@ -481,7 +539,7 @@ typedef NS_ENUM(NSUInteger, SJDisappearType) {
 }
 
 #pragma mark gesture
-- (void)horizontalGestureWillBeginDragging:(SJVideoPlayer *)videoPlayer {
+- (void)horizontalDirectionWillBeginDragging:(SJVideoPlayer *)videoPlayer {
     [UIView animateWithDuration:0.25 animations:^{
         [self.draggingProgressView appear];
     }];
@@ -490,7 +548,7 @@ typedef NS_ENUM(NSUInteger, SJDisappearType) {
     [self controlLayerNeedDisappear:videoPlayer];
 }
 
-- (void)videoPlayer:(SJVideoPlayer *)videoPlayer horizontalGestureDidDrag:(CGFloat)translation {
+- (void)videoPlayer:(SJVideoPlayer *)videoPlayer horizontalDirectionDidDrag:(CGFloat)translation {
     self.draggingProgressView.progress += translation;
     [self.draggingProgressView setCurrentTimeStr:[videoPlayer timeStringWithSeconds:self.draggingProgressView.progress * videoPlayer.totalTime]];
     if ( videoPlayer.isFullScreen && !videoPlayer.URLAsset.isM3u8 ) {
@@ -504,7 +562,7 @@ typedef NS_ENUM(NSUInteger, SJDisappearType) {
     }
 }
 
-- (void)horizontalGestureDidEndDragging:(SJVideoPlayer *)videoPlayer {
+- (void)horizontalDirectionDidEndDragging:(SJVideoPlayer *)videoPlayer {
     [UIView animateWithDuration:0.25 animations:^{
         [self.draggingProgressView disappear];
     }];
@@ -532,42 +590,15 @@ typedef NS_ENUM(NSUInteger, SJDisappearType) {
     }];
 }
 
-#pragma mark - load default setting
-- (void)_controlViewLoadSetting {
-    
-    // load default setting
-    __weak typeof(self) _self = self;
-    
-    // 1. load default setting
-    
-//    [SJVideoPlayer loadDefaultSettingAndCompletion:^{
-//        __strong typeof(_self) self = _self;
-//        if ( !self ) return;
-//        self.initialized = YES;
-//        [self videoPlayer:self.videoPlayer controlLayerNeedAppear:YES];
-//    }];
-    
-    // 2. or update
-    [SJVideoPlayer update:^(SJVideoPlayerSettings * _Nonnull commonSettings) {
-        // update common settings
-        commonSettings.more_trackColor = [UIColor whiteColor];
-        commonSettings.progress_trackColor = [UIColor colorWithWhite:0.4 alpha:1];
-        commonSettings.progress_bufferColor = [UIColor whiteColor];
-        // .... other settings ....
-        // .... .... .... .... ....
-    } completion:^{
-        __strong typeof(_self) self = _self;
-        if ( !self ) return;
-        self.initialized = YES; // 初始化已完成, 在初始化期间不显示控制层.
-        [self controlLayerNeedAppear:self.videoPlayer]; // 显示控制层
-    }];
-    
-    
-    self.settingRecroder = [[SJVideoPlayerControlSettingRecorder alloc] initWithSettings:^(SJVideoPlayerSettings * _Nonnull setting) {
-        __strong typeof(_self) self = _self;
-        if ( !self ) return;
-        self.bottomSlider.traceImageView.backgroundColor = setting.progress_traceColor;
-        self.bottomSlider.trackImageView.backgroundColor = setting.progress_bufferColor;
-    }];
+- (void)videoPlayer:(SJVideoPlayer *)videoPlayer volumeChanged:(float)volume {
+    if ( _footerViewModel.volumeChanged ) _footerViewModel.volumeChanged(volume);
+}
+
+- (void)videoPlayer:(SJVideoPlayer *)videoPlayer brightnessChanged:(float)brightness {
+    if ( _footerViewModel.brightnessChanged ) _footerViewModel.brightnessChanged(brightness);
+}
+
+- (void)videoPlayer:(SJVideoPlayer *)videoPlayer rateChanged:(float)rate {
+    if ( _footerViewModel.playerRateChanged ) _footerViewModel.playerRateChanged(rate);
 }
 @end

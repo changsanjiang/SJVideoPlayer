@@ -114,8 +114,7 @@ NS_ASSUME_NONNULL_END
     self.asset.playDidToEnd = ^(SJVideoPlayerAssetCarrier * _Nonnull asset) {
         __strong typeof(_self) self = _self;
         if ( !self ) return ;
-        
-        
+        [self _itemPlayDidToEnd];
     };
 }
 
@@ -127,6 +126,17 @@ NS_ASSUME_NONNULL_END
     [_controlViewDataSource.controlView mas_makeConstraints:^(MASConstraintMaker *make) {
         make.edges.offset(0);
     }];
+}
+
+- (void)setControlViewDelegate:(id<SJVideoPlayerControlDelegate>)controlViewDelegate {
+    _controlViewDelegate = controlViewDelegate;
+    
+    if ( [controlViewDelegate respondsToSelector:@selector(videoPlayer:volumeChanged:)] ) {
+        [controlViewDelegate videoPlayer:self volumeChanged:_volBrigControl.volume];
+    }
+    if ( [controlViewDelegate respondsToSelector:@selector(videoPlayer:brightnessChanged:)] ) {
+        [controlViewDelegate videoPlayer:self brightnessChanged:_volBrigControl.brightness];
+    }
 }
 
 - (void)setPlaceholder:(UIImage *)placeholder {
@@ -180,6 +190,11 @@ NS_ASSUME_NONNULL_END
     
     [self play];
     [self.displayRecorder needDisplay];
+}
+
+- (void)_itemPlayDidToEnd {
+    
+    self.state = SJVideoPlayerPlayState_PlayEnd;
 }
 
 #pragma mark -
@@ -274,8 +289,8 @@ NS_ASSUME_NONNULL_END
         if ( !self ) return;
         switch (direction) {
             case SJPanDirection_H: {
-                if ( [self.controlViewDelegate respondsToSelector:@selector(horizontalGestureWillBeginDragging:)] ) {
-                    [self.controlViewDelegate horizontalGestureWillBeginDragging:self];
+                if ( [self.controlViewDelegate respondsToSelector:@selector(horizontalDirectionWillBeginDragging:)] ) {
+                    [self.controlViewDelegate horizontalDirectionWillBeginDragging:self];
                 }
             }
                 break;
@@ -306,8 +321,8 @@ NS_ASSUME_NONNULL_END
         if ( !self ) return;
         switch (direction) {
             case SJPanDirection_H: {
-                if ( [self.controlViewDelegate respondsToSelector:@selector(videoPlayer:horizontalGestureDidDrag:)] ) {
-                    [self.controlViewDelegate videoPlayer:self horizontalGestureDidDrag:translate.x * 0.003];
+                if ( [self.controlViewDelegate respondsToSelector:@selector(videoPlayer:horizontalDirectionDidDrag:)] ) {
+                    [self.controlViewDelegate videoPlayer:self horizontalDirectionDidDrag:translate.x * 0.003];
                 }
             }
                 break;
@@ -338,8 +353,8 @@ NS_ASSUME_NONNULL_END
         if ( !self ) return;
         switch ( direction ) {
             case SJPanDirection_H:{
-                if ( [self.controlViewDelegate respondsToSelector:@selector(horizontalGestureDidEndDragging:)] ) {
-                    [self.controlViewDelegate horizontalGestureDidEndDragging:self];
+                if ( [self.controlViewDelegate respondsToSelector:@selector(horizontalDirectionDidEndDragging:)] ) {
+                    [self.controlViewDelegate horizontalDirectionDidEndDragging:self];
                 }
             }
                 break;
@@ -366,6 +381,23 @@ NS_ASSUME_NONNULL_END
 - (SJVolBrigControl *)volBrigControl {
     if ( _volBrigControl ) return _volBrigControl;
     _volBrigControl = [[SJVolBrigControl alloc] init];
+    __weak typeof(self) _self = self;
+    _volBrigControl.volumeChanged = ^(float volume) {
+        __strong typeof(_self) self = _self;
+        if ( !self ) return;
+        if ( [self.controlViewDelegate respondsToSelector:@selector(videoPlayer:volumeChanged:)] ) {
+            [self.controlViewDelegate videoPlayer:self volumeChanged:volume];
+        }
+    };
+
+    _volBrigControl.brightnessChanged = ^(float brightness) {
+        __strong typeof(_self) self = _self;
+        if ( !self ) return;
+        if ( [self.controlViewDelegate respondsToSelector:@selector(videoPlayer:brightnessChanged:)] ) {
+            [self.controlViewDelegate videoPlayer:self brightnessChanged:brightness];
+        }
+    };
+
     return _volBrigControl;
 }
 - (_SJVideoPlayerControlDisplayRecorder *)displayRecorder {
@@ -668,7 +700,7 @@ NS_ASSUME_NONNULL_END
 
 NS_ASSUME_NONNULL_BEGIN
 @interface _SJVideoPlayerControlDisplayRecorder ()
-@property (nonatomic, readonly) BOOL displayState;
+@property (nonatomic, readonly) BOOL appearState;
 @property (nonatomic, weak, readonly) SJVideoPlayer *videoPlayer;
 @property (nonatomic, strong, readonly) SJTimerControl *timerControl;
 @end
@@ -692,7 +724,7 @@ NS_ASSUME_NONNULL_END
             [self _keepDisplay];
         }
         else if ( SJVideoPlayerPlayState_Playing == self.videoPlayer.state &&
-                 self.displayState ) {
+                 self.appearState ) {
             [self needDisplay];
         }
     }
@@ -707,7 +739,7 @@ NS_ASSUME_NONNULL_END
 }
 
 - (void)considerDisplay {
-    if ( self.displayState ) [self needHidden];
+    if ( self.appearState ) [self needHidden];
     else [self needDisplay];
 }
 
@@ -733,13 +765,14 @@ NS_ASSUME_NONNULL_END
     _timerControl.exeBlock = ^(SJTimerControl * _Nonnull control) {
         __strong typeof(_self) self = _self;
         if ( !self ) return;
-        
+
+        // 是否达到触发时机, 如果没达到时机, 则保持状态.
         if ( !self.videoPlayer.controlViewDataSource.controlLayerAppearCondition ||
              !self.videoPlayer.controlViewDataSource.controlLayerDisappearCondition ) {
             [control reset];
         }
         else {
-            if ( self.displayState ) [self needHidden];
+            if ( self.appearState ) [self needHidden];
             else [control clear];
         }
         
@@ -757,7 +790,7 @@ NS_ASSUME_NONNULL_END
     }
 }
 
-- (BOOL)displayState {
-    return self.videoPlayer.controlViewDataSource.controlLayerAppeared;
+- (BOOL)appearState {
+    return self.videoPlayer.controlViewDataSource.controlLayerAppearedState;
 }
 @end

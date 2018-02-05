@@ -36,83 +36,6 @@ NS_ASSUME_NONNULL_BEGIN
 @end
 
 
-#pragma mark - DataSource
-
-@protocol SJVideoPlayerControlDataSource <NSObject>
-
-@required
-- (UIView *)controlView;
-
-@property (nonatomic, assign) BOOL controlLayerAppeared; // 控制层的显示状态, `YES`则表示已经显示.
-
-- (BOOL)controlLayerAppearCondition; // 控制层将要显示之前会调用这个方法, 如果返回NO, 将不调用`controlLayerNeedAppear:`
-
-- (BOOL)controlLayerDisappearCondition; // 控制层将要隐藏之前会调用这个方法, 如果返回NO, 将不调用`controlLayerNeedDisappear:`
-
-- (BOOL)triggerGesturesCondition:(CGPoint)location; // 触发手势之前会调用这个方法, 如果返回NO, 将不调用手势相关的代理方法.
-
-@optional
-
-@end
-
-
-#pragma mark - Delegate
-
-@protocol SJVideoPlayerControlDelegate <NSObject>
-
-@optional
-
-#pragma mark
-
-- (void)controlLayerNeedAppear:(SJVideoPlayer *)videoPlayer;        // 控制层需要显示
-
-- (void)controlLayerNeedDisappear:(SJVideoPlayer *)videoPlayer;     // 控制层需要隐藏
-
-- (void)lockedVideoPlayer:(SJVideoPlayer *)videoPlayer;             // 播放器被锁定, 此时将会不旋转, 不会触发手势相关事件
-
-- (void)unlockedVideoPlayer:(SJVideoPlayer *)videoPlayer;           // 播放器被解锁
-
-#pragma mark
-/**
- play time did change. time unit is sec.
-
- @param videoPlayer `video player`
- @param currentTimeStr `current time string.  formatter: 00:00 or 00:00:00`
- @param totalTimeStr `duration time string. formatter: 00:00 or 00:00:00`
- */
-- (void)videoPlayer:(SJVideoPlayer *)videoPlayer currentTime:(NSTimeInterval)currentTime currentTimeStr:(NSString *)currentTimeStr totalTime:(NSTimeInterval)totalTime totalTimeStr:(NSString *)totalTimeStr;
-
-/**
- loaded time progress.
-
- @param videoPlayer `video player`
- @param progress `progress`
- */
-- (void)videoPlayer:(SJVideoPlayer *)videoPlayer loadedTimeProgress:(float)progress;
-
-
-#pragma mark
-/**
- player view will rotate.
-
- @param videoPlayer `video player`
- @param isFull `small or full`
- */
-- (void)videoPlayer:(SJVideoPlayer *)videoPlayer willRotateView:(BOOL)isFull;
-
-
-#pragma mark
-- (void)horizontalGestureWillBeginDragging:(SJVideoPlayer *)videoPlayer;
-- (void)videoPlayer:(SJVideoPlayer *)videoPlayer horizontalGestureDidDrag:(CGFloat)translation;
-- (void)horizontalGestureDidEndDragging:(SJVideoPlayer *)videoPlayer;
-
-
-#pragma mark
-- (void)videoPlayer:(SJVideoPlayer *)videoPlayer presentationSize:(CGSize)size;
-
-@end
-
-
 #pragma mark - 播放
 
 @interface SJVideoPlayer (Play)
@@ -212,6 +135,66 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (void)generatedPreviewImagesWithMaxItemSize:(CGSize)itemSize
                                    completion:(void(^)(SJVideoPlayer *player, NSArray<id<SJVideoPlayerPreviewInfo>> *__nullable images, NSError *__nullable error))block;
+
+@end
+
+
+#pragma mark - DataSource
+
+@protocol SJVideoPlayerControlDataSource <NSObject>
+
+@required
+
+@property (nonatomic, assign) BOOL controlLayerAppearedState; // 控制层的显示状态, `YES`表示已经显示.
+
+- (UIView *)controlView;
+
+- (BOOL)controlLayerAppearCondition; // 控制层将要显示之前会调用这个方法, 如果返回NO, 将不调用`controlLayerNeedAppear:`
+
+- (BOOL)controlLayerDisappearCondition; // 控制层将要隐藏之前会调用这个方法, 如果返回NO, 将不调用`controlLayerNeedDisappear:`
+
+- (BOOL)triggerGesturesCondition:(CGPoint)location; // 触发手势之前会调用这个方法, 如果返回NO, 将不调用手势相关的代理方法.
+
+@optional
+
+@end
+
+
+#pragma mark - Delegate
+
+@protocol SJVideoPlayerControlDelegate <NSObject>
+
+@optional
+
+- (void)controlLayerNeedAppear:(SJVideoPlayer *)videoPlayer;        // 控制层需要显示
+
+- (void)controlLayerNeedDisappear:(SJVideoPlayer *)videoPlayer;     // 控制层需要隐藏
+
+- (void)lockedVideoPlayer:(SJVideoPlayer *)videoPlayer;             // 播放器被锁屏, 此时将会不旋转, 不会触发手势相关事件
+
+- (void)unlockedVideoPlayer:(SJVideoPlayer *)videoPlayer;           // 播放器被解锁
+
+- (void)videoPlayer:(SJVideoPlayer *)videoPlayer
+        currentTime:(NSTimeInterval)currentTime currentTimeStr:(NSString *)currentTimeStr
+          totalTime:(NSTimeInterval)totalTime totalTimeStr:(NSString *)totalTimeStr;
+
+- (void)videoPlayer:(SJVideoPlayer *)videoPlayer loadedTimeProgress:(float)progress; // 缓冲的进度
+
+- (void)videoPlayer:(SJVideoPlayer *)videoPlayer willRotateView:(BOOL)isFull;   // 播放器将要旋转屏幕, `isFull`如果为`YES`, 则全屏
+
+- (void)videoPlayer:(SJVideoPlayer *)videoPlayer volumeChanged:(float)volume;   // 声音被改变
+
+- (void)videoPlayer:(SJVideoPlayer *)videoPlayer brightnessChanged:(float)brightness;   // 亮度被改变
+
+- (void)videoPlayer:(SJVideoPlayer *)videoPlayer rateChanged:(float)rate;   // 播放速度被改变
+
+- (void)horizontalDirectionWillBeginDragging:(SJVideoPlayer *)videoPlayer;    // 水平方向开始拖动
+
+- (void)videoPlayer:(SJVideoPlayer *)videoPlayer horizontalDirectionDidDrag:(CGFloat)translation; // 水平方向拖动中
+
+- (void)horizontalDirectionDidEndDragging:(SJVideoPlayer *)videoPlayer;   // 水平方向拖动结束
+
+- (void)videoPlayer:(SJVideoPlayer *)videoPlayer presentationSize:(CGSize)size;
 
 @end
 

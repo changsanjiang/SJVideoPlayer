@@ -20,9 +20,12 @@
 #import "SJVideoPlayerTopControlView.h"
 #import "SJVideoPlayerPreviewView.h"
 #import "SJVideoPlayerMoreSettingsView.h"
-#import "SJMoreSettingsFooterViewModel.h"
+#import "SJVideoPlayerMoreSettingSecondaryView.h"
+#import "SJMoreSettingsSlidersViewModel.h"
+#import "SJVideoPlayerMoreSetting+SJControlAdd.h"
+#import "SJVideoPlayerMoreSettingSecondary.h"
+#import <SJLoadingView/SJLoadingView.h>
 #import <objc/message.h>
-
 
 typedef NS_ENUM(NSUInteger, SJDisappearType) {
     SJDisappearType_Transform = 1 << 0,
@@ -30,6 +33,7 @@ typedef NS_ENUM(NSUInteger, SJDisappearType) {
     SJDisappearType_All = 1 << 2,
 };
 
+NS_ASSUME_NONNULL_BEGIN
 @interface UIView (SJControlAdd)
 
 @property (nonatomic, assign) SJDisappearType disappearType;
@@ -43,6 +47,7 @@ typedef NS_ENUM(NSUInteger, SJDisappearType) {
 - (void)disappear;
 
 @end
+NS_ASSUME_NONNULL_END
 
 @implementation UIView (SJControlAdd)
 
@@ -109,11 +114,12 @@ typedef NS_ENUM(NSUInteger, SJDisappearType) {
 
 #pragma mark -
 
+NS_ASSUME_NONNULL_BEGIN
 @interface SJVideoPlayerControlView ()<SJVideoPlayerControlDelegate, SJVideoPlayerControlDataSource, SJVideoPlayerLeftControlViewDelegate, SJVideoPlayerBottomControlViewDelegate, SJVideoPlayerTopControlViewDelegate, SJVideoPlayerPreviewViewDelegate>
 
 @property (nonatomic, assign) BOOL initialized;
 @property (nonatomic, assign) BOOL hasBeenGeneratedPreviewImages;
-@property (nonatomic, strong) SJMoreSettingsFooterViewModel *footerViewModel;
+@property (nonatomic, strong) SJMoreSettingsSlidersViewModel *footerViewModel;
 
 @property (nonatomic, strong, readonly) SJVideoPlayerPreviewView *previewView;
 @property (nonatomic, strong, readonly) SJVideoPlayerDraggingProgressView *draggingProgressView;
@@ -122,8 +128,13 @@ typedef NS_ENUM(NSUInteger, SJDisappearType) {
 @property (nonatomic, strong, readonly) SJVideoPlayerBottomControlView *bottomControlView;
 @property (nonatomic, strong, readonly) SJSlider *bottomSlider;
 @property (nonatomic, strong, readonly) SJVideoPlayerMoreSettingsView *moreSettingsView;
+@property (nonatomic, strong, readonly) SJVideoPlayerMoreSettingSecondaryView *moreSecondarySettingView;
+@property (nonatomic, strong, readonly) SJLoadingView *loadingView;
+
+@property (nonatomic, strong, readwrite, nullable) NSArray<SJVideoPlayerMoreSetting *> *moreSettings;
 
 @end
+NS_ASSUME_NONNULL_END
 
 @implementation SJVideoPlayerControlView {
     BOOL _controlLayerAppearedState;
@@ -136,23 +147,30 @@ typedef NS_ENUM(NSUInteger, SJDisappearType) {
 @synthesize bottomControlView = _bottomControlView;
 @synthesize bottomSlider = _bottomSlider;
 @synthesize moreSettingsView = _moreSettingsView;
+@synthesize moreSecondarySettingView = _moreSecondarySettingView;
 @synthesize footerViewModel = _footerViewModel;
+@synthesize loadingView = _loadingView;
 
 - (instancetype)initWithFrame:(CGRect)frame {
     self = [super initWithFrame:frame];
     if ( !self ) return nil;
     [self _controlViewSetupView];
     [self _controlViewLoadSetting];
-    self.generatePreviewImages = YES;
+    [self _controlViewInstallNotifications];
+    // default values
+    _generatePreviewImages = YES;
     return self;
 }
 
 - (void)setVideoPlayer:(SJVideoPlayer *)videoPlayer {
     if ( _videoPlayer == videoPlayer ) return;
     _videoPlayer = videoPlayer;
-    _videoPlayer.controlViewDelegate = self;
-    _videoPlayer.controlViewDataSource = self;
-    [_videoPlayer sj_addObserver:self forKeyPath:@"state"];
+    dispatch_async(dispatch_get_main_queue(), ^{
+        _videoPlayer.controlViewDelegate = self;
+        _videoPlayer.controlViewDataSource = self;
+        [_videoPlayer sj_addObserver:self forKeyPath:@"state"];
+        self.moreSettings = _videoPlayer.moreSettings;
+    });
 }
 
 - (void)observeValueForKeyPath:(NSString *)keyPath ofObject:(id)object change:(NSDictionary<NSKeyValueChangeKey,id> *)change context:(void *)context {
@@ -178,6 +196,19 @@ typedef NS_ENUM(NSUInteger, SJDisappearType) {
     }
 }
 
+#pragma mark -
+
+- (void)_controlViewInstallNotifications {
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(videoPlayerSetMoreSettings:) name:SJVideoPlayerSetMoreSettingsNotification object:nil];
+}
+
+- (void)dealloc {
+    [[NSNotificationCenter defaultCenter] removeObserver:self];
+}
+
+- (void)videoPlayerSetMoreSettings:(NSNotification *)notifi {
+    self.moreSettings = notifi.object;
+}
 
 #pragma mark - setup views
 - (void)_controlViewSetupView {
@@ -189,6 +220,8 @@ typedef NS_ENUM(NSUInteger, SJDisappearType) {
     [self addSubview:self.bottomSlider];
     [self addSubview:self.previewView];
     [self addSubview:self.moreSettingsView];
+    [self addSubview:self.moreSecondarySettingView];
+    [self addSubview:self.loadingView];
     
     [_topControlView mas_makeConstraints:^(MASConstraintMaker *make) {
         make.top.leading.trailing.offset(0);
@@ -222,6 +255,14 @@ typedef NS_ENUM(NSUInteger, SJDisappearType) {
         make.size.mas_offset(_moreSettingsView.intrinsicContentSize);
     }];
     
+    [_moreSecondarySettingView mas_makeConstraints:^(MASConstraintMaker *make) {
+        make.edges.equalTo(_moreSettingsView);
+    }];
+    
+    [_loadingView mas_makeConstraints:^(MASConstraintMaker *make) {
+        make.center.offset(0);
+    }];
+
     [self _setControlViewsDisappearType];
     [self _setControlViewsDisappearValue];
     
@@ -232,6 +273,7 @@ typedef NS_ENUM(NSUInteger, SJDisappearType) {
     [_bottomControlView disappear];
     [_previewView disappear];
     [_moreSettingsView disappear];
+    [_moreSecondarySettingView disappear];
 }
 
 - (void)_setControlViewsDisappearType {
@@ -241,6 +283,7 @@ typedef NS_ENUM(NSUInteger, SJDisappearType) {
     _bottomSlider.disappearType = SJDisappearType_Alpha;
     _previewView.disappearType = SJDisappearType_All;
     _moreSettingsView.disappearType = SJDisappearType_Transform;
+    _moreSecondarySettingView.disappearType = SJDisappearType_Transform;
     _draggingProgressView.disappearType = SJDisappearType_Alpha;
 }
 
@@ -250,6 +293,7 @@ typedef NS_ENUM(NSUInteger, SJDisappearType) {
     _bottomControlView.disappearTransform = CGAffineTransformMakeTranslation(0, _bottomControlView.intrinsicContentSize.height);
     _previewView.disappearTransform = CGAffineTransformMakeScale(1, 0.001);
     _moreSettingsView.disappearTransform = CGAffineTransformMakeTranslation(_moreSettingsView.intrinsicContentSize.width, 0);
+    _moreSecondarySettingView.disappearTransform = CGAffineTransformMakeTranslation(_moreSecondarySettingView.intrinsicContentSize.width, 0);
 }
 
 #pragma mark - 预览视图
@@ -377,8 +421,7 @@ typedef NS_ENUM(NSUInteger, SJDisappearType) {
 }
 
 
-#pragma mark - `更多`视图
-
+#pragma mark - 一级`更多`视图
 - (SJVideoPlayerMoreSettingsView *)moreSettingsView {
     if ( _moreSettingsView ) return _moreSettingsView;
     _moreSettingsView = [SJVideoPlayerMoreSettingsView new];
@@ -386,9 +429,9 @@ typedef NS_ENUM(NSUInteger, SJDisappearType) {
     return _moreSettingsView;
 }
 
-- (SJMoreSettingsFooterViewModel *)footerViewModel {
+- (SJMoreSettingsSlidersViewModel *)footerViewModel {
     if ( _footerViewModel ) return _footerViewModel;
-    _footerViewModel = [SJMoreSettingsFooterViewModel new];
+    _footerViewModel = [SJMoreSettingsSlidersViewModel new];
     
     __weak typeof(self) _self = self;
     _footerViewModel.initialBrightnessValue = ^float{
@@ -429,6 +472,79 @@ typedef NS_ENUM(NSUInteger, SJDisappearType) {
     return _footerViewModel;
 }
 
+- (void)setMoreSettings:(NSArray<SJVideoPlayerMoreSetting *> *)moreSettings {
+    if ( moreSettings == _moreSettings ) return;
+    _moreSettings = moreSettings;
+    NSMutableSet<SJVideoPlayerMoreSetting *> *moreSettingsM = [NSMutableSet new];
+    [moreSettings enumerateObjectsUsingBlock:^(SJVideoPlayerMoreSetting * _Nonnull obj, NSUInteger idx, BOOL * _Nonnull stop) {
+        [self _addSetting:obj container:moreSettingsM];
+    }];
+    [moreSettingsM enumerateObjectsUsingBlock:^(SJVideoPlayerMoreSetting * _Nonnull obj, BOOL * _Nonnull stop) {
+        [self _dressSetting:obj];
+    }];
+    
+    self.moreSettingsView.moreSettings = moreSettings;
+}
+
+- (void)_addSetting:(SJVideoPlayerMoreSetting *)setting container:(NSMutableSet<SJVideoPlayerMoreSetting *> *)moreSttingsM {
+    [moreSttingsM addObject:setting];
+    if ( !setting.showTowSetting ) return;
+    [setting.twoSettingItems enumerateObjectsUsingBlock:^(SJVideoPlayerMoreSettingSecondary * _Nonnull obj, NSUInteger idx, BOOL * _Nonnull stop) {
+        [self _addSetting:(SJVideoPlayerMoreSetting *)obj container:moreSttingsM];
+    }];
+}
+
+- (void)_dressSetting:(SJVideoPlayerMoreSetting *)setting {
+    if ( !setting.clickedExeBlock ) return;
+    __weak typeof(self) _self = self;
+    if ( setting.isShowTowSetting ) {
+        setting._exeBlock = ^(SJVideoPlayerMoreSetting * _Nonnull setting) {
+            __strong typeof(_self) self = _self;
+            if ( !self ) return;
+            [UIView animateWithDuration:0.3 animations:^{
+                [self.moreSettingsView disappear];
+                [self.moreSecondarySettingView appear];
+            }];
+            self.moreSecondarySettingView.twoLevelSettings = setting;
+            setting.clickedExeBlock(setting);
+        };
+    }
+    else {
+        setting._exeBlock = ^(SJVideoPlayerMoreSetting * _Nonnull setting) {
+            __strong typeof(_self) self = _self;
+            if ( !self ) return;
+            [UIView animateWithDuration:0.3 animations:^{
+                [self.moreSettingsView disappear];
+                [self.moreSecondarySettingView disappear];
+            }];
+            setting.clickedExeBlock(setting);
+        };
+    }
+}
+
+
+#pragma mark - 二级`更多`视图
+- (SJVideoPlayerMoreSettingSecondaryView *)moreSecondarySettingView {
+    if ( _moreSecondarySettingView ) return _moreSecondarySettingView;
+    _moreSecondarySettingView = [SJVideoPlayerMoreSettingSecondaryView new];
+    return _moreSecondarySettingView;
+}
+
+
+#pragma mark - loading 视图
+- (SJLoadingView *)loadingView {
+    if ( _loadingView ) return _loadingView;
+    _loadingView = [SJLoadingView new];
+    __weak typeof(self) _self = self;
+    _loadingView.settingRecroder = [[SJVideoPlayerControlSettingRecorder alloc] initWithSettings:^(SJVideoPlayerSettings * _Nonnull setting) {
+        __strong typeof(_self) self = _self;
+        if ( !self ) return;
+        self.loadingView.lineColor = setting.loadingLineColor;
+    }];
+    return _loadingView;
+}
+
+
 #pragma mark - 加载配置
 
 - (void)_controlViewLoadSetting {
@@ -466,6 +582,7 @@ typedef NS_ENUM(NSUInteger, SJDisappearType) {
         if ( !self ) return;
         self.bottomSlider.traceImageView.backgroundColor = setting.progress_traceColor;
         self.bottomSlider.trackImageView.backgroundColor = setting.progress_bufferColor;
+        self.videoPlayer.placeholder = setting.placeholder;
     }];
 }
 
@@ -508,15 +625,17 @@ typedef NS_ENUM(NSUInteger, SJDisappearType) {
     self.topControlView.title = self.videoPlayer.URLAsset.title;
     
     [UIView animateWithDuration:0.3 animations:^{
-        if ( _moreSettingsView.appearState ) [_moreSettingsView disappear];
         [_topControlView appear];
         [_bottomControlView appear];
         if ( videoPlayer.isFullScreen ) [_leftControlView appear];
-        else [_leftControlView disappear]; // 如果是小屏, 则不显示锁屏按钮
+        else [_leftControlView disappear];  // 如果是小屏, 则不显示锁屏按钮
         [_bottomSlider disappear];
+        
+        if ( _moreSettingsView.appearState ) [_moreSettingsView disappear];
+        if ( _moreSecondarySettingView.appearState ) [_moreSecondarySettingView disappear];
     }];
     
-    self.controlLayerAppearedState = YES;
+    self.controlLayerAppearedState = YES;   // update state
 }
 
 - (void)controlLayerNeedDisappear:(SJVideoPlayer *)videoPlayer {
@@ -528,7 +647,7 @@ typedef NS_ENUM(NSUInteger, SJDisappearType) {
         [_bottomSlider appear];
     }];
     
-    self.controlLayerAppearedState = NO;
+    self.controlLayerAppearedState = NO;    // update state
 }
 
 - (void)lockedVideoPlayer:(SJVideoPlayer *)videoPlayer {
@@ -550,6 +669,14 @@ typedef NS_ENUM(NSUInteger, SJDisappearType) {
 
 - (void)videoPlayer:(SJVideoPlayer *)videoPlayer loadedTimeProgress:(float)progress {
     self.bottomControlView.bufferProgress = progress;
+}
+
+- (void)startLoading:(SJVideoPlayer *)videoPlayer {
+    [self.loadingView start];
+}
+
+- (void)loadCompletion:(SJVideoPlayer *)videoPlayer {
+    [self.loadingView stop];
 }
 
 - (void)videoPlayer:(SJVideoPlayer *)videoPlayer willRotateView:(BOOL)isFull {
@@ -575,7 +702,6 @@ typedef NS_ENUM(NSUInteger, SJDisappearType) {
     self.leftControlView.lockState = isLocked;
 }
 
-#pragma mark gesture
 - (void)horizontalDirectionWillBeginDragging:(SJVideoPlayer *)videoPlayer {
     [UIView animateWithDuration:0.25 animations:^{
         [self.draggingProgressView appear];
@@ -637,6 +763,7 @@ typedef NS_ENUM(NSUInteger, SJDisappearType) {
 }
 
 - (void)videoPlayer:(SJVideoPlayer *)videoPlayer rateChanged:(float)rate {
+    [videoPlayer showTitle:[NSString stringWithFormat:@"%.0f %%", rate * 100]];
     if ( _footerViewModel.playerRateChanged ) _footerViewModel.playerRateChanged(rate);
 }
 @end

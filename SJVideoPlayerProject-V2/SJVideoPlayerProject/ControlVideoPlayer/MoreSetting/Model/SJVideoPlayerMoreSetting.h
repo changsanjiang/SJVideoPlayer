@@ -14,8 +14,6 @@ NS_ASSUME_NONNULL_BEGIN
 
 @interface SJVideoPlayerMoreSetting : NSObject
 
-// MARK: ... This --> Class methods
-
 /*!
  *  SJVideoPlayerMoreSetting.titleColor = [UIColor whiteColor];
  *
@@ -32,9 +30,6 @@ NS_ASSUME_NONNULL_BEGIN
  */
 @property (class, nonatomic, assign) float titleFontSize;
 
-
-// MARK: ... This --> Instance Methods.   show 1 level interface
-
 @property (nonatomic, strong, nullable) NSString *title;
 @property (nonatomic, strong, nullable) UIImage *image;
 @property (nonatomic, copy) void(^clickedExeBlock)(SJVideoPlayerMoreSetting *model);
@@ -42,9 +37,6 @@ NS_ASSUME_NONNULL_BEGIN
 - (instancetype)initWithTitle:(NSString *__nullable)title
                         image:(UIImage *__nullable)image
               clickedExeBlock:(void(^)(SJVideoPlayerMoreSetting *model))block;
-
-
-// MARK: ... This --> Instance Methods.   show 2 level interface
 
 @property (nonatomic, assign, getter=isShowTowSetting) BOOL showTowSetting;
 @property (nonatomic, strong) NSString *twoSettingTopTitle;

@@ -8,9 +8,9 @@
 
 #import "SJVideoPlayerMoreSettingsColCell.h"
 #import <Masonry/Masonry.h>
-#import "SJVideoPlayerMoreSetting.h"
 #import <SJAttributesFactory/SJAttributeWorker.h>
 #import <SJUIFactory/SJUIFactory.h>
+#import "SJVideoPlayerMoreSetting+SJControlAdd.h"
 
 @interface SJVideoPlayerMoreSettingsColCell ()
 
@@ -31,7 +31,7 @@
 }
 
 - (void)clickedBtn:(UIButton *)btn {
-    if ( self.model.clickedExeBlock ) self.model.clickedExeBlock(self.model);
+    if ( self.model._exeBlock ) self.model._exeBlock(self.model);
 }
 
 - (void)setModel:(SJVideoPlayerMoreSetting *)model {

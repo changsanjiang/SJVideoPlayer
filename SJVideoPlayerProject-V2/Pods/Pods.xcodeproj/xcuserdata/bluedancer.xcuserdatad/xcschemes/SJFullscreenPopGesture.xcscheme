@@ -14,7 +14,7 @@
             buildForAnalyzing = "YES">
             <BuildableReference
                BuildableIdentifier = "primary"
-               BlueprintIdentifier = "1B7FF6029201D783C4C350DFB8832157"
+               BlueprintIdentifier = "A6DF33FA931C776FF8DC3FBF88FB4623"
                BuildableName = "libSJFullscreenPopGesture.a"
                BlueprintName = "SJFullscreenPopGesture"
                ReferencedContainer = "container:Pods.xcodeproj">
@@ -47,7 +47,7 @@
       <MacroExpansion>
          <BuildableReference
             BuildableIdentifier = "primary"
-            BlueprintIdentifier = "1B7FF6029201D783C4C350DFB8832157"
+            BlueprintIdentifier = "A6DF33FA931C776FF8DC3FBF88FB4623"
             BuildableName = "libSJFullscreenPopGesture.a"
             BlueprintName = "SJFullscreenPopGesture"
             ReferencedContainer = "container:Pods.xcodeproj">

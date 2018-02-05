@@ -7,26 +7,27 @@
 //
 
 #import "SJVideoPlayerMoreSettingsView.h"
-#import "SJVideoPlayerMoreSettingsFooterSlidersView.h"
+#import "SJVideoPlayerMoreSettingsSlidersView.h"
 #import <Masonry/Masonry.h>
 #import "UIView+SJVideoPlayerSetting.h"
 #import <SJUIFactory/SJUIFactory.h>
+#import "SJVideoPlayerMoreSettingsFooterView.h"
 
 static NSString *const SJVideoPlayerMoreSettingsColCellID = @"SJVideoPlayerMoreSettingsColCell";
 
-static NSString *const SJVideoPlayerMoreSettingsFooterSlidersViewID = @"SJVideoPlayerMoreSettingsFooterSlidersView";
+static NSString *const SJVideoPlayerMoreSettingsFooterViewID = @"SJVideoPlayerMoreSettingsFooterView";
 
 
 @interface SJVideoPlayerMoreSettingsView ()<UICollectionViewDataSource, UICollectionViewDelegate>
 
 @property (nonatomic, strong, readonly) UICollectionView *colView;
+@property (nonatomic, strong, readonly) SJVideoPlayerMoreSettingsSlidersView *slidersView;
 
 @end
 
-@implementation SJVideoPlayerMoreSettingsView {
-    SJVideoPlayerMoreSettingsFooterSlidersView *_footerView;
-}
+@implementation SJVideoPlayerMoreSettingsView
 
+@synthesize slidersView = _slidersView;
 @synthesize colView = _colView;
 
 - (instancetype)initWithFrame:(CGRect)frame {
@@ -34,29 +35,24 @@ static NSString *const SJVideoPlayerMoreSettingsFooterSlidersViewID = @"SJVideoP
     if ( !self ) return nil;
     [self _moreSettingsViewSetupUI];
     [self _moreSettingsHelper];
-    [SJUIFactory boundaryProtectedWithView:self];
     return self;
 }
 
 - (CGSize)intrinsicContentSize {
-    return CGSizeMake(SJScreen_Max() * 0.382, SJScreen_Min());
+    return CGSizeMake(ceil(SJScreen_Max() * 0.382), SJScreen_Min());
 }
 
-//- (void)setFullscreen:(BOOL)fullscreen {
-//    _fullscreen = fullscreen;
-//    [self.colView reloadData];
-//}
+- (SJVideoPlayerMoreSettingsSlidersView *)slidersView {
+    if ( _slidersView ) return _slidersView;
+    _slidersView = [SJVideoPlayerMoreSettingsSlidersView new];
+    return _slidersView;
+}
 
 #pragma mark -
 
 - (void)setMoreSettings:(NSArray<SJVideoPlayerMoreSetting *> *)moreSettings {
     _moreSettings = moreSettings;
     [self.colView reloadData];
-}
-
-- (void)setFooterViewModel:(SJMoreSettingsFooterViewModel *)footerViewModel {
-    _footerViewModel = footerViewModel;
-    _footerView.model = footerViewModel;
 }
 
 - (void)_moreSettingsViewSetupUI {
@@ -72,7 +68,7 @@ static NSString *const SJVideoPlayerMoreSettingsFooterSlidersViewID = @"SJVideoP
     flowLayout.scrollDirection = UICollectionViewScrollDirectionVertical;
     _colView = [[UICollectionView alloc] initWithFrame:CGRectZero collectionViewLayout:flowLayout];
     [_colView registerClass:NSClassFromString(SJVideoPlayerMoreSettingsColCellID) forCellWithReuseIdentifier:SJVideoPlayerMoreSettingsColCellID];
-    [_colView registerClass:NSClassFromString(SJVideoPlayerMoreSettingsFooterSlidersViewID) forSupplementaryViewOfKind:UICollectionElementKindSectionFooter withReuseIdentifier:SJVideoPlayerMoreSettingsFooterSlidersViewID];
+    [_colView registerClass:NSClassFromString(SJVideoPlayerMoreSettingsFooterViewID) forSupplementaryViewOfKind:UICollectionElementKindSectionFooter withReuseIdentifier:SJVideoPlayerMoreSettingsFooterViewID];
     _colView.dataSource = self;
     _colView.delegate = self;
     _colView.contentInset = UIEdgeInsetsMake(20, 0, 0, 0);
@@ -94,9 +90,13 @@ static NSString *const SJVideoPlayerMoreSettingsFooterSlidersViewID = @"SJVideoP
 }
 
 - (UICollectionReusableView *)collectionView:(UICollectionView *)collectionView viewForSupplementaryElementOfKind:(NSString *)kind atIndexPath:(NSIndexPath *)indexPath {
-    _footerView = [collectionView dequeueReusableSupplementaryViewOfKind:kind withReuseIdentifier:SJVideoPlayerMoreSettingsFooterSlidersViewID forIndexPath:indexPath];
-    _footerView.model = _footerViewModel;
-    return _footerView;
+    SJVideoPlayerMoreSettingsFooterView *footerView = [collectionView dequeueReusableSupplementaryViewOfKind:kind withReuseIdentifier:SJVideoPlayerMoreSettingsFooterViewID forIndexPath:indexPath];
+    [footerView addSubview:self.slidersView];
+    [_slidersView mas_makeConstraints:^(MASConstraintMaker *make) {
+        make.edges.offset(0);
+    }];
+    self.slidersView.model = self.footerViewModel;
+    return footerView;
 }
 
 - (CGSize)collectionView:(UICollectionView *)collectionView layout:(UICollectionViewLayout*)collectionViewLayout sizeForItemAtIndexPath:(NSIndexPath *)indexPath {
@@ -114,7 +114,7 @@ static NSString *const SJVideoPlayerMoreSettingsFooterSlidersViewID = @"SJVideoP
 
 - (CGSize)collectionView:(UICollectionView *)collectionView layout:(UICollectionViewLayout*)collectionViewLayout referenceSizeForFooterInSection:(NSInteger)section {
     if ( 0 == _moreSettings.count ) return CGSizeMake(self.intrinsicContentSize.width, self.intrinsicContentSize.height - 2 * (collectionView.contentInset.top + collectionView.contentInset.bottom));
-    return CGSizeMake(self.intrinsicContentSize.width, [SJVideoPlayerMoreSettingsFooterSlidersView height]);
+    return self.slidersView.intrinsicContentSize;
 }
 
 #pragma mark -

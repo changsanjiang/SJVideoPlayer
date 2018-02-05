@@ -29,7 +29,7 @@ static NSString *SJVideoPlayerPreviewCollectionViewCellID = @"SJVideoPlayerPrevi
 }
 
 - (CGSize)intrinsicContentSize {
-    CGFloat height = SJScreen_Min() * 0.25;
+    CGFloat height = ceil(SJScreen_Min() * 0.25);
     if ( _fullscreen ) return CGSizeMake(SJScreen_Max(), height);
     else return CGSizeMake(SJScreen_Min(), height);
 }
@@ -62,6 +62,7 @@ static NSString *SJVideoPlayerPreviewCollectionViewCellID = @"SJVideoPlayerPrevi
     _collectionView.delegate = self;
     _collectionView.dataSource = self;
     [_collectionView registerClass:NSClassFromString(SJVideoPlayerPreviewCollectionViewCellID) forCellWithReuseIdentifier:SJVideoPlayerPreviewCollectionViewCellID];
+    _collectionView.contentInset = UIEdgeInsetsMake(8, 8, 8, 8);
     return _collectionView;
 }
 
@@ -78,13 +79,9 @@ static NSString *SJVideoPlayerPreviewCollectionViewCellID = @"SJVideoPlayerPrevi
 - (CGSize)collectionView:(UICollectionView *)collectionView layout:(UICollectionViewLayout*)collectionViewLayout sizeForItemAtIndexPath:(NSIndexPath *)indexPath {
     CGSize imageSize = _previewImages.firstObject.image.size;
     CGFloat rate = imageSize.width / imageSize.height;
-    CGFloat height = _collectionView.frame.size.height - 16;
+    CGFloat height = self.intrinsicContentSize.height - (collectionView.contentInset.top + collectionView.contentInset.bottom);
     CGFloat width = rate * height;
-    return CGSizeMake(width, height);
-}
-
-- (UIEdgeInsets)collectionView:(UICollectionView *)collectionView layout:(UICollectionViewLayout*)collectionViewLayout insetForSectionAtIndex:(NSInteger)section {
-    return UIEdgeInsetsMake(8, 8, 8, 8);
+    return CGSizeMake( width, height );
 }
 
 - (CGFloat)collectionView:(UICollectionView *)collectionView layout:(UICollectionViewLayout*)collectionViewLayout minimumLineSpacingForSectionAtIndex:(NSInteger)section {

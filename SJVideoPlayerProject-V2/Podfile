@@ -16,4 +16,6 @@ target 'SJVideoPlayerProject' do
     pod 'SJSlider'
     pod 'SJAttributesFactory'
     pod 'SJObserverHelper'
+    pod 'SJPrompt'
+    pod 'SJLoadingView'
 end

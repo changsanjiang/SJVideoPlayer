@@ -7,7 +7,7 @@
 //
 
 #import <UIKit/UIKit.h>
-#import "SJMoreSettingsFooterViewModel.h"
+#import "SJMoreSettingsSlidersViewModel.h"
 
 NS_ASSUME_NONNULL_BEGIN
 
@@ -17,7 +17,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 @property (nonatomic, strong, readwrite, nullable) NSArray<SJVideoPlayerMoreSetting *> *moreSettings;
 
-@property (nonatomic, strong, readwrite, nullable) SJMoreSettingsFooterViewModel *footerViewModel;
+@property (nonatomic, strong, readwrite, nullable) SJMoreSettingsSlidersViewModel *footerViewModel;
 
 @property (nonatomic) BOOL fullscreen;
 

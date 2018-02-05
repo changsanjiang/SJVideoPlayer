@@ -10,6 +10,8 @@
 #import <Masonry/Masonry.h>
 #import "SJVideoPlayerMoreSettingsSecondaryHeaderView.h"
 #import "SJVideoPlayerMoreSettingSecondary.h"
+#import <SJUIFactory/SJUIFactory.h>
+#import "UIView+SJVideoPlayerSetting.h"
 
 @interface SJVideoPlayerMoreSettingSecondaryView (ColDataSourceMethods)<UICollectionViewDataSource>
 @end
@@ -36,14 +38,13 @@ static NSString *const SJVideoPlayerMoreSettingsSecondaryHeaderViewID = @"SJVide
 - (instancetype)initWithFrame:(CGRect)frame {
     self = [super initWithFrame:frame];
     if ( !self ) return nil;
-    [self _SJVideoPlayerMoreSettingTwoSettingsViewSetupUI];
-//    __weak typeof(self) _self = self;
-//    self.setting = ^(SJVideoPlayerSettings * _Nonnull setting) {
-//        __strong typeof(_self) self = _self;
-//        if ( !self ) return;
-//        self.colView.backgroundColor = self.backgroundColor = setting.moreBackgroundColor;
-//    };
+    [self _secondarySettingSetupUI];
+    [self _secondarySettingHelper];
     return self;
+}
+
+- (CGSize)intrinsicContentSize {
+    return CGSizeMake(ceil(SJScreen_Max() * 0.382), SJScreen_Min());
 }
 
 - (void)setTwoLevelSettings:(SJVideoPlayerMoreSetting *)twoLevelSettings {
@@ -51,14 +52,11 @@ static NSString *const SJVideoPlayerMoreSettingsSecondaryHeaderViewID = @"SJVide
     [self.colView reloadData];
 }
 
-// MARK: UI
-
-- (void)_SJVideoPlayerMoreSettingTwoSettingsViewSetupUI {
+- (void)_secondarySettingSetupUI {
     [self addSubview:self.colView];
     [_colView mas_makeConstraints:^(MASConstraintMaker *make) {
         make.edges.equalTo(_colView.superview);
     }];
-    
 }
 
 - (UICollectionView *)colView {
@@ -66,6 +64,8 @@ static NSString *const SJVideoPlayerMoreSettingsSecondaryHeaderViewID = @"SJVide
     UICollectionViewFlowLayout *flowLayout = [[UICollectionViewFlowLayout alloc] init];
     flowLayout.scrollDirection = UICollectionViewScrollDirectionVertical;
     flowLayout.headerReferenceSize = CGSizeMake(0, [SJVideoPlayerMoreSettingSecondary topTitleFontSize] * 1.2 + 20);
+    flowLayout.minimumLineSpacing = 0;
+    flowLayout.minimumInteritemSpacing = 0;
     _colView = [[UICollectionView alloc] initWithFrame:CGRectZero collectionViewLayout:flowLayout];
     [_colView registerClass:NSClassFromString(SJVideoPlayerMoreSettingSecondaryColCellID) forCellWithReuseIdentifier:SJVideoPlayerMoreSettingSecondaryColCellID];
     [_colView registerClass:NSClassFromString(SJVideoPlayerMoreSettingsSecondaryHeaderViewID) forSupplementaryViewOfKind:UICollectionElementKindSectionHeader withReuseIdentifier:SJVideoPlayerMoreSettingsSecondaryHeaderViewID];
@@ -73,6 +73,15 @@ static NSString *const SJVideoPlayerMoreSettingsSecondaryHeaderViewID = @"SJVide
     _colView.delegate = self;
     
     return _colView;
+}
+
+- (void)_secondarySettingHelper {
+    __weak typeof(self) _self = self;
+    self.settingRecroder = [[SJVideoPlayerControlSettingRecorder alloc] initWithSettings:^(SJVideoPlayerSettings * _Nonnull setting) {
+        __strong typeof(_self) self = _self;
+        if ( !self ) return;
+        self.colView.backgroundColor = self.backgroundColor = setting.moreBackgroundColor;
+    }];
 }
 
 @end
@@ -108,20 +117,11 @@ static NSString *const SJVideoPlayerMoreSettingsSecondaryHeaderViewID = @"SJVide
 @implementation SJVideoPlayerMoreSettingSecondaryView (UICollectionViewDelegateMethods)
 
 - (CGSize)collectionView:(UICollectionView *)collectionView layout:(UICollectionViewLayout*)collectionViewLayout sizeForItemAtIndexPath:(NSIndexPath *)indexPath {
-    CGFloat width = floor(self.frame.size.width / 3);
-    return CGSizeMake( width, width);
+    CGFloat width = floor( self.intrinsicContentSize.width / 3);
+    return CGSizeMake( width, width );
 }
 
 - (UIEdgeInsets)collectionView:(UICollectionView *)collectionView layout:(UICollectionViewLayout*)collectionViewLayout insetForSectionAtIndex:(NSInteger)section {
     return UIEdgeInsetsMake(0, 0, 0, 0);
 }
-
-- (CGFloat)collectionView:(UICollectionView *)collectionView layout:(UICollectionViewLayout*)collectionViewLayout minimumInteritemSpacingForSectionAtIndex:(NSInteger)section {
-    return 0;
-}
-
-- (CGFloat)collectionView:(UICollectionView *)collectionView layout:(UICollectionViewLayout*)collectionViewLayout minimumLineSpacingForSectionAtIndex:(NSInteger)section {
-    return 0;
-}
-
 @end

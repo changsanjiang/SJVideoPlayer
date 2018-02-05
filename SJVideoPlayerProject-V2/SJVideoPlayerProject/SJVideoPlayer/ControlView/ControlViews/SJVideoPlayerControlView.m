@@ -12,7 +12,6 @@
 #import "SJVideoPlayer.h"
 #import <SJObserverHelper/NSObject+SJObserverHelper.h>
 #import "SJVideoPlayerSettings.h"
-#import "SJVideoPlayer+UpdateSetting.h"
 #import "SJVideoPlayerDraggingProgressView.h"
 #import "UIView+SJVideoPlayerSetting.h"
 #import <SJSlider/SJSlider.h>
@@ -27,100 +26,17 @@
 #import "SJVideoPlayerCenterControlView.h"
 #import <SJLoadingView/SJLoadingView.h>
 #import <objc/message.h>
-
-typedef NS_ENUM(NSUInteger, SJDisappearType) {
-    SJDisappearType_Transform = 1 << 0,
-    SJDisappearType_Alpha = 1 << 1,
-    SJDisappearType_All = 1 << 2,
-};
-
-NS_ASSUME_NONNULL_BEGIN
-@interface UIView (SJControlAdd)
-
-@property (nonatomic, assign) SJDisappearType disappearType;
-
-@property (nonatomic, assign) CGAffineTransform disappearTransform;
-
-@property (nonatomic, assign) BOOL appearState; // appear is `YES`, disappear is `NO`.
-
-- (void)appear;
-
-- (void)disappear;
-
-@end
-NS_ASSUME_NONNULL_END
-
-@implementation UIView (SJControlAdd)
-
-- (void)setDisappearTransform:(CGAffineTransform)disappearTransform {
-    objc_setAssociatedObject(self, @selector(disappearTransform), [NSValue valueWithCGAffineTransform:disappearTransform], OBJC_ASSOCIATION_RETAIN_NONATOMIC);
-}
-
-- (CGAffineTransform)disappearTransform {
-    return [(NSValue *)objc_getAssociatedObject(self, _cmd) CGAffineTransformValue];
-}
-
-- (void)setDisappearType:(SJDisappearType)disappearType {
-    objc_setAssociatedObject(self, @selector(disappearType), @(disappearType), OBJC_ASSOCIATION_RETAIN_NONATOMIC);
-}
-
-- (SJDisappearType)disappearType {
-    return [objc_getAssociatedObject(self, _cmd) integerValue];
-}
-
-- (void)setAppearState:(BOOL)appearState {
-    objc_setAssociatedObject(self, @selector(appearState), @(appearState), OBJC_ASSOCIATION_RETAIN_NONATOMIC);
-}
-
-- (BOOL)appearState {
-    return [objc_getAssociatedObject(self, _cmd) boolValue];
-}
-
-- (void)appear {
-    [self __changeState:YES];
-}
-
-- (void)disappear {
-    [self __changeState:NO];
-}
-
-- (void)__changeState:(BOOL)show {
-    
-    if ( SJDisappearType_All == (self.disappearType & SJDisappearType_All) ) {
-        self.disappearType = SJDisappearType_Alpha | SJDisappearType_Transform;
-    }
-    
-    if ( SJDisappearType_Transform == (self.disappearType & SJDisappearType_Transform) ) {
-        if ( show ) {
-            self.transform = CGAffineTransformIdentity;
-        }
-        else {
-            self.transform = self.disappearTransform;
-        }
-    }
-    
-    if ( SJDisappearType_Alpha == (self.disappearType & SJDisappearType_Alpha) ) {
-        if ( show ) {
-            self.alpha = 1;
-        }
-        else {
-            self.alpha = 0.001;
-        }
-    }
-    self.appearState = show;
-}
-
-@end
+#import "UIView+SJControlAdd.h"
 
 
 #pragma mark -
 
 NS_ASSUME_NONNULL_BEGIN
-@interface SJVideoPlayerControlView ()<SJVideoPlayerControlDelegate, SJVideoPlayerControlDataSource, SJVideoPlayerLeftControlViewDelegate, SJVideoPlayerBottomControlViewDelegate, SJVideoPlayerTopControlViewDelegate, SJVideoPlayerPreviewViewDelegate, SJVideoPlayerCenterControlViewDelegate>
+@interface SJVideoPlayerControlView ()<SJVideoPlayerLeftControlViewDelegate, SJVideoPlayerBottomControlViewDelegate, SJVideoPlayerTopControlViewDelegate, SJVideoPlayerPreviewViewDelegate, SJVideoPlayerCenterControlViewDelegate>
 
 @property (nonatomic, assign) BOOL initialized;
 @property (nonatomic, assign) BOOL hasBeenGeneratedPreviewImages;
-@property (nonatomic, strong) SJMoreSettingsSlidersViewModel *footerViewModel;
+@property (nonatomic, strong, readonly) SJMoreSettingsSlidersViewModel *footerViewModel;
 
 @property (nonatomic, strong, readonly) SJVideoPlayerPreviewView *previewView;
 @property (nonatomic, strong, readonly) SJVideoPlayerDraggingProgressView *draggingProgressView;
@@ -133,7 +49,7 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic, strong, readonly) SJVideoPlayerMoreSettingSecondaryView *moreSecondarySettingView;
 @property (nonatomic, strong, readonly) SJLoadingView *loadingView;
 
-@property (nonatomic, strong, readwrite, nullable) NSArray<SJVideoPlayerMoreSetting *> *moreSettings;
+@property (nonatomic, weak, readwrite, nullable) SJVideoPlayer *videoPlayer;
 
 @end
 NS_ASSUME_NONNULL_END
@@ -154,47 +70,25 @@ NS_ASSUME_NONNULL_END
 @synthesize footerViewModel = _footerViewModel;
 @synthesize loadingView = _loadingView;
 
-- (instancetype)initWithVideoPlayer:(SJVideoPlayer * _Nonnull __weak)videoPlayer {
-    self = [self initWithFrame:CGRectZero];
-    if ( !self ) return nil;
-    self.videoPlayer = videoPlayer;
-    return self;
-}
-
 - (instancetype)initWithFrame:(CGRect)frame {
     self = [super initWithFrame:frame];
     if ( !self ) return nil;
     [self _controlViewSetupView];
     [self _controlViewLoadSetting];
-    [self _controlViewInstallNotifications];
     // default values
     _generatePreviewImages = YES;
     return self;
 }
 
-- (void)setVideoPlayer:(SJVideoPlayer *)videoPlayer {
-    if ( _videoPlayer == videoPlayer ) return;
-    _videoPlayer = videoPlayer;
-    dispatch_async(dispatch_get_main_queue(), ^{
-        _videoPlayer.controlViewDelegate = self;
-        _videoPlayer.controlViewDataSource = self;
-        self.moreSettings = _videoPlayer.moreSettings;
-    });
-}
+//
+//- (void)setVideoPlayer:(SJVideoPlayer *)videoPlayer {
+//    if ( videoPlayer == _videoPlayer ) return;
+//    _videoPlayer = videoPlayer;
+//    _videoPlayer.controlViewDelegate = self;
+//    _videoPlayer.controlViewDataSource = self;
+//    self.moreSettings = _videoPlayer.moreSettings;
+//}
 
-#pragma mark -
-
-- (void)_controlViewInstallNotifications {
-    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(videoPlayerSetMoreSettings:) name:SJVideoPlayerSetMoreSettingsNotification object:nil];
-}
-
-- (void)dealloc {
-    [[NSNotificationCenter defaultCenter] removeObserver:self];
-}
-
-- (void)videoPlayerSetMoreSettings:(NSNotification *)notifi {
-    self.moreSettings = notifi.object;
-}
 
 #pragma mark - setup views
 - (void)_controlViewSetupView {
@@ -299,7 +193,6 @@ NS_ASSUME_NONNULL_END
 }
 
 - (void)previewView:(SJVideoPlayerPreviewView *)view didSelectItem:(id<SJVideoPlayerPreviewInfo>)item {
-    CMTimeShow(item.localTime);
     __weak typeof(self) _self = self;
     [_videoPlayer seekToTime:item.localTime completionHandler:^(BOOL finished) {
         __strong typeof(_self) self = _self;
@@ -340,7 +233,7 @@ NS_ASSUME_NONNULL_END
         }
             break;
         case SJVideoPlayerTopViewTag_More: {
-            [self controlLayerNeedDisappear:self.videoPlayer];
+            [self controlLayerNeedDisappear:_videoPlayer];
             [UIView animateWithDuration:0.3 animations:^{
                 [self.moreSettingsView appear];
             }];
@@ -367,15 +260,15 @@ NS_ASSUME_NONNULL_END
 - (void)leftControlView:(SJVideoPlayerLeftControlView *)view clickedBtnTag:(SJVideoPlayerLeftViewTag)tag {
     switch ( tag ) {
         case SJVideoPlayerLeftViewTag_Lock: {
-            self.videoPlayer.lockedScreen = NO;  // 点击锁定按钮, 解锁
+            _videoPlayer.lockedScreen = NO;  // 点击锁定按钮, 解锁
         }
             break;
         case SJVideoPlayerLeftViewTag_Unlock: {
-            self.videoPlayer.lockedScreen = YES; // 点击解锁按钮, 锁定
+            _videoPlayer.lockedScreen = YES; // 点击解锁按钮, 锁定
         }
             break;
     }
-    view.lockState = self.videoPlayer.lockedScreen;
+    view.lockState = _videoPlayer.lockedScreen;
 }
 
 
@@ -390,11 +283,11 @@ NS_ASSUME_NONNULL_END
 - (void)centerControlView:(SJVideoPlayerCenterControlView *)view clickedBtnTag:(SJVideoPlayerCenterViewTag)tag {
     switch ( tag ) {
         case SJVideoPlayerCenterViewTag_Replay: {
-            [self.videoPlayer replay];
+            [_videoPlayer replay];
         }
             break;
         case SJVideoPlayerCenterViewTag_Failed: {
-            self.videoPlayer.URLAsset = self.videoPlayer.URLAsset;
+            _videoPlayer.URLAsset = self.videoPlayer.URLAsset;
         }
             break;
         default:
@@ -605,29 +498,19 @@ NS_ASSUME_NONNULL_END
     // load default setting
     __weak typeof(self) _self = self;
     
-    // 1. load default setting
-    
-//    [SJVideoPlayer loadDefaultSettingAndCompletion:^{
-//        __strong typeof(_self) self = _self;
-//        if ( !self ) return;
-//        self.initialized = YES;
-//        [self videoPlayer:self.videoPlayer controlLayerNeedAppear:YES];
-//    }];
-    
-    // 2. or update
-    [SJVideoPlayer update:^(SJVideoPlayerSettings * _Nonnull commonSettings) {
+    SJVideoPlayer.update(^(SJVideoPlayerSettings * _Nonnull commonSettings) {
         // update common settings
         commonSettings.more_trackColor = [UIColor whiteColor];
         commonSettings.progress_trackColor = [UIColor colorWithWhite:0.4 alpha:1];
         commonSettings.progress_bufferColor = [UIColor whiteColor];
         // .... other settings ....
         // .... .... .... .... ....
-    } completion:^{
-        __strong typeof(_self) self = _self;
-        if ( !self ) return;
-        self.initialized = YES; // 初始化已完成, 这个变量是用来在初始化期间不显示控制层.
-    }];
-    
+        dispatch_async(dispatch_get_main_queue(), ^{
+            __strong typeof(_self) self = _self;
+            if ( !self ) return;
+            self.initialized = YES; // 初始化已完成, 这个变量是用来在初始化期间不显示控制层.
+        });
+    });
     
     self.settingRecroder = [[SJVideoPlayerControlSettingRecorder alloc] initWithSettings:^(SJVideoPlayerSettings * _Nonnull setting) {
         __strong typeof(_self) self = _self;
@@ -640,6 +523,10 @@ NS_ASSUME_NONNULL_END
 
 
 #pragma mark - Video Player Control Data Source
+
+- (void)installedControlViewToVideoPlayer:(SJVideoPlayer *)videoPlayer {
+    self.videoPlayer = videoPlayer;
+}
 
 - (UIView *)controlView {
     return self;

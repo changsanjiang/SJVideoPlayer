@@ -25,7 +25,6 @@ static NSString *const SJVideoListTableViewCellID = @"SJVideoListTableViewCell";
 @property (nonatomic, strong) NSArray<SJVideoModel *> *videosM;
 @property (nonatomic, strong) SJVideoPlayer *videoPlayer;
 @property (nonatomic, strong) UIActivityIndicatorView *indicator;
-@property (nonatomic, strong) SJVideoPlayerControlView *controlView;
 
 @end
 
@@ -181,10 +180,6 @@ static NSString *const SJVideoListTableViewCellID = @"SJVideoListTableViewCell";
     
     _videoPlayer.URLAsset.title = @"DIY心情转盘 #手工##手工制作#";
     
-    
-    
-    _controlView.generatePreviewImages = NO;
-    _controlView = [[SJVideoPlayerControlView alloc] initWithVideoPlayer:_videoPlayer];
 }
 
 #pragma mark -

@@ -19,6 +19,7 @@
 #import "SJTimerControl.h"
 #import <SJObserverHelper/NSObject+SJObserverHelper.h>
 #import "SJVideoPlayerRegistrar.h"
+#import "SJVideoPlayerControlView.h"
 
 @interface SJVideoPlayerAssetCarrier (SJVideoPlayerAdd)
 @property (nonatomic, assign) CGSize videoPresentationSize;
@@ -46,8 +47,17 @@ NS_ASSUME_NONNULL_END
 
 #pragma mark -
 
+static inline SJVideoPlayerControlView *_defaultControlView(void) {
+    static SJVideoPlayerControlView *defaultControlView;
+    if ( !defaultControlView ) {
+        defaultControlView = [SJVideoPlayerControlView new];
+        SJVideoPlayer.update(^(SJVideoPlayerSettings * _Nonnull commonSettings) {});
+    }
+    return defaultControlView;
+}
+
 NS_ASSUME_NONNULL_BEGIN
-@interface SJVideoPlayer () {
+@interface SJVideoPlayer ()<SJVideoPlayerControlViewDelegate> {
     UIView *_view;
     SJVideoPlayerPresentView *_presentView;
     UIView *_controlContentView;
@@ -82,11 +92,26 @@ NS_ASSUME_NONNULL_END
 
 @implementation SJVideoPlayer
 
++ (instancetype)sharedPlayer {
+    static id _instance;
+    static dispatch_once_t onceToken;
+    dispatch_once(&onceToken, ^{
+        _instance = [self new];
+    });
+    return _instance;
+}
+
 + (instancetype)player {
     return [[self alloc] init];
 }
 
 - (instancetype)init {
+    SJVideoPlayerControlView *defaultControlView = _defaultControlView();
+    return [self initWithControlViewDataSource:defaultControlView controlViewDelegate:defaultControlView];
+}
+
+- (instancetype)initWithControlViewDataSource:(id<SJVideoPlayerControlDataSource>)controlViewDataSource
+                          controlViewDelegate:(id<SJVideoPlayerControlDelegate>)controlViewDelegate {
     self = [super init];
     if ( !self ) return nil;
     self.autoPlay = YES;
@@ -94,6 +119,9 @@ NS_ASSUME_NONNULL_END
     [[AVAudioSession sharedInstance] setCategory: AVAudioSessionCategoryPlayback error:&error];
     if ( error ) NSLog(@"%@", error.userInfo);
     [self registrar];
+    [self view];
+    self.controlViewDataSource = controlViewDataSource;
+    self.controlViewDelegate = controlViewDelegate;
     return self;
 }
 
@@ -225,8 +253,6 @@ NS_ASSUME_NONNULL_END
             [self.controlViewDelegate videoPlayer:self presentationSize:size];
         }
     };
-
-    if ( self.asset.rateChanged ) self.asset.rateChanged(asset, 1);
 }
 
 - (void)setControlViewDataSource:(id<SJVideoPlayerControlDataSource>)controlViewDataSource {
@@ -238,23 +264,24 @@ NS_ASSUME_NONNULL_END
     [_controlViewDataSource.controlView mas_makeConstraints:^(MASConstraintMaker *make) {
         make.edges.offset(0);
     }];
+    
+    if ( [self.controlViewDataSource respondsToSelector:@selector(installedControlViewToVideoPlayer:)] ) {
+        [self.controlViewDataSource installedControlViewToVideoPlayer:self];
+    }
 }
 
 - (void)setControlViewDelegate:(id<SJVideoPlayerControlDelegate>)controlViewDelegate {
+    if ( controlViewDelegate == _controlViewDelegate ) return;
     _controlViewDelegate = controlViewDelegate;
-    
-    dispatch_async(dispatch_get_main_queue(), ^{
-        if ( [controlViewDelegate respondsToSelector:@selector(videoPlayer:volumeChanged:)] ) {
-            [controlViewDelegate videoPlayer:self volumeChanged:_volBrigControl.volume];
-        }
-        if ( [controlViewDelegate respondsToSelector:@selector(videoPlayer:brightnessChanged:)] ) {
-            [controlViewDelegate videoPlayer:self brightnessChanged:_volBrigControl.brightness];
-        }
-        if ( SJVideoPlayerPlayState_Prepare == self.state && [controlViewDelegate respondsToSelector:@selector(startLoading:)] ) {
-            [controlViewDelegate startLoading:self];
-        }
-    });
-
+    if ( [controlViewDelegate respondsToSelector:@selector(videoPlayer:volumeChanged:)] ) {
+        [controlViewDelegate videoPlayer:self volumeChanged:_volBrigControl.volume];
+    }
+    if ( [controlViewDelegate respondsToSelector:@selector(videoPlayer:brightnessChanged:)] ) {
+        [controlViewDelegate videoPlayer:self brightnessChanged:_volBrigControl.brightness];
+    }
+    if ( SJVideoPlayerPlayState_Prepare == self.state && [controlViewDelegate respondsToSelector:@selector(startLoading:)] ) {
+        [controlViewDelegate startLoading:self];
+    }
 }
 
 - (void)setPlaceholder:(UIImage *)placeholder {
@@ -297,8 +324,8 @@ NS_ASSUME_NONNULL_END
 }
 
 - (void)_itemPlayDidToEnd {
-    
     self.state = SJVideoPlayerPlayState_PlayEnd;
+    if ( self.playDidToEnd ) self.playDidToEnd(self);
 }
 
 - (void)_itemBuffering {
@@ -681,6 +708,10 @@ NS_ASSUME_NONNULL_END
     self.asset = nil;
 }
 
+- (void)clickedBackBtnOnControlView:(nonnull SJVideoPlayerControlView *)controlView {
+    if ( self.clickedBackEvent ) self.clickedBackEvent(self);
+}
+
 @end
 
 
@@ -867,9 +898,7 @@ NS_ASSUME_NONNULL_END
     self.suspend = NO;
     self.stopped = YES;
     [self.asset.player pause];
-    [UIView animateWithDuration:0.5 animations:^{
-        self.view.alpha = 0.001;
-    } completion:^(BOOL finished) {
+    [self.view sj_fadeOutAndCompletion:^(UIView *view) {
         [self stop];
         [_view removeFromSuperview];
     }];
@@ -913,6 +942,14 @@ NS_ASSUME_NONNULL_END
 
 - (void)resetRate {
     self.asset.rate = 1;
+}
+
+- (void)setPlayDidToEnd:(void (^)(SJVideoPlayer * _Nonnull))playDidToEnd {
+    objc_setAssociatedObject(self, @selector(playDidToEnd), playDidToEnd, OBJC_ASSOCIATION_COPY_NONATOMIC);
+}
+
+- (void (^)(SJVideoPlayer * _Nonnull))playDidToEnd {
+    return objc_getAssociatedObject(self, _cmd);
 }
 
 @end
@@ -998,6 +1035,69 @@ NS_ASSUME_NONNULL_END
         if ( !self ) return;
         if ( block ) block(self, (id)images, error);
     }];
+}
+
+@end
+
+
+#pragma mark - 配置
+
+@implementation SJVideoPlayer (Setting)
+
+- (void)setClickedBackEvent:(void (^)(SJVideoPlayer * _Nonnull))clickedBackEvent {
+    objc_setAssociatedObject(self, @selector(clickedBackEvent), clickedBackEvent, OBJC_ASSOCIATION_COPY_NONATOMIC);
+}
+
+- (void (^)(SJVideoPlayer * _Nonnull))clickedBackEvent {
+    return objc_getAssociatedObject(self, _cmd);
+}
+
+static dispatch_queue_t videoPlayerWorkQueue;
++ (dispatch_queue_t)workQueue {
+    if ( videoPlayerWorkQueue ) return videoPlayerWorkQueue;
+    videoPlayerWorkQueue = dispatch_queue_create("com.SJVideoPlayer.workQueue", DISPATCH_QUEUE_SERIAL);
+    return videoPlayerWorkQueue;
+}
+
++ (void)_addOperation:(void(^)(void))block {
+    dispatch_async([self workQueue], ^{
+        if ( block ) block();
+    });
+}
+
++ (void (^)(void (^ _Nonnull)(SJVideoPlayerSettings * _Nonnull)))update {
+    return ^ (void(^block)(SJVideoPlayerSettings *settings)) {
+        if ( !block ) return;
+        [self _addOperation:^ {
+            block([SJVideoPlayerSettings commonSettings]);
+            dispatch_async(dispatch_get_main_queue(), ^{
+                [[NSNotificationCenter defaultCenter] postNotificationName:SJSettingsPlayerNotification
+                                                                    object:[SJVideoPlayerSettings commonSettings]];
+            });
+        }];
+    };
+}
+
++ (void)resetSetting {
+    SJVideoPlayer.update(^(SJVideoPlayerSettings * _Nonnull commonSettings) {
+        [commonSettings reset];
+    });
+}
+
+- (void)setMoreSettings:(NSArray<SJVideoPlayerMoreSetting *> *)moreSettings {
+    _defaultControlView().moreSettings = moreSettings;
+}
+
+- (NSArray<SJVideoPlayerMoreSetting *> *)moreSettings {
+    return _defaultControlView().moreSettings;
+}
+
+- (void)setGeneratePreviewImages:(BOOL)generatePreviewImages {
+    _defaultControlView().generatePreviewImages = YES;
+}
+
+- (BOOL)generatePreviewImages {
+    return _defaultControlView().generatePreviewImages;
 }
 
 @end

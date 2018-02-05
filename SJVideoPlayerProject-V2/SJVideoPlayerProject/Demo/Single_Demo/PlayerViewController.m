@@ -12,12 +12,10 @@
 #import <SJUIFactory/SJUIFactory.h>
 #import "SJVideoPlayerControlView.h"
 #import "SJVideoPlayerMoreSettingSecondary.h"
-#import "SJVideoPlayer+UpdateSetting.h"
 
-@interface PlayerViewController ()<SJVideoPlayerControlViewDelegate>
+@interface PlayerViewController ()
 
 @property (nonatomic, strong) SJVideoPlayer *videoPlayer;
-@property (nonatomic, strong) SJVideoPlayerControlView *controlView;
 
 @end
 
@@ -38,11 +36,6 @@
     // video asset
     _videoPlayer.URLAsset = [[SJVideoPlayerURLAsset alloc] initWithTitle:@"DIY #平遥牛肉##精品#" alwaysShowTitle:YES assetURL:[NSURL URLWithString:@"http://vod.lanwuzhe.com/b12ad5034df14bedbdf0e5654cbf7224/6fc3ba23d31743ea8b3c0192c1b83f86-5287d2089db37e62345123a1be272f8b.mp4?video="]];
 
-    // control layer
-    _controlView = [SJVideoPlayerControlView new];
-    _controlView.videoPlayer = _videoPlayer;
-    _controlView.delegate = self;
-    
     self.view.backgroundColor = [UIColor whiteColor];
     
     

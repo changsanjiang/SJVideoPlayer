@@ -81,11 +81,15 @@
 - (void)setTitle:(NSString *)title {
     if ( [title isEqualToString:_title]  ) return;
     _title = title;
-    _titleLabel.attributedText = sj_makeAttributesString(^(SJAttributeWorker * _Nonnull make) {
-        make.font(self.titleLabel.font).textColor(self.titleLabel.textColor);
-        make.insert(title, 0);
-        make.shadow(CGSizeMake(0.5, 0.5), 1, [UIColor blackColor]);
-    });
+    NSAttributedString *attrStr = nil;
+    if ( 0 != title.length ) {
+        sj_makeAttributesString(^(SJAttributeWorker * _Nonnull make) {
+            make.font(self.titleLabel.font).textColor(self.titleLabel.textColor);
+            make.insert(title, 0);
+            make.shadow(CGSizeMake(0.5, 0.5), 1, [UIColor blackColor]);
+        });
+    }
+    _titleLabel.attributedText = attrStr;
 }
 
 - (void)clickedBtn:(UIButton *)btn {

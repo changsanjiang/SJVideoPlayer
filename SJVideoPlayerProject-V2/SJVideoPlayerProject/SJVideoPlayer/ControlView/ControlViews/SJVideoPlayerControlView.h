@@ -7,24 +7,20 @@
 //
 
 #import <UIKit/UIKit.h>
-#import "SJVideoPlayerURLAsset+SJControlAdd.h"
-#import "SJVideoPlayer+SJControlAdd.h"
+#import "SJVideoPlayerControlDataSource.h"
 
-@class SJVideoPlayer;
+@class SJVideoPlayer, SJVideoPlayerMoreSetting;
 
 NS_ASSUME_NONNULL_BEGIN
 
 @protocol SJVideoPlayerControlViewDelegate;
 
-@interface SJVideoPlayerControlView : UIView
-
-- (instancetype)initWithVideoPlayer:(__weak SJVideoPlayer *)videoPlayer;
+@interface SJVideoPlayerControlView : UIView<SJVideoPlayerControlDelegate, SJVideoPlayerControlDataSource>
 
 @property (nonatomic, weak, readwrite, nullable) id<SJVideoPlayerControlViewDelegate> delegate;
 
-@property (nonatomic, weak, readwrite, nullable) SJVideoPlayer *videoPlayer;
-
 @property (nonatomic, assign, readwrite) BOOL generatePreviewImages; // 是否自动生成预览视图, 默认是 YES. 如果为NO, 则预览按钮将不会显示.
+@property (nonatomic, strong, readwrite, nullable) NSArray<SJVideoPlayerMoreSetting *> *moreSettings;
 
 @end
 

@@ -11,14 +11,14 @@
 @implementation UIView (SJVideoPlayerAdd)
 
 - (void)sj_fadeIn {
-    [self sj_fadeInWithCompletion:nil];
+    [self sj_fadeInAndCompletion:nil];
 }
 
 - (void)sj_fadeOut {
-    [self sj_fadeOutWithCompletion:nil];
+    [self sj_fadeOutAndCompletion:nil];
 }
 
-- (void)sj_fadeInWithCompletion:(void(^)(UIView *view))block {
+- (void)sj_fadeInAndCompletion:(void(^)(UIView *view))block {
     self.alpha = 0.001;
     [UIView animateWithDuration:0.3 animations:^{
         self.alpha = 1;
@@ -27,7 +27,7 @@
     }];
 }
 
-- (void)sj_fadeOutWithCompletion:(void(^)(UIView *view))block {
+- (void)sj_fadeOutAndCompletion:(void(^)(UIView *view))block {
     self.alpha = 1;
     [UIView animateWithDuration:0.3 animations:^{
         self.alpha = 0.001;

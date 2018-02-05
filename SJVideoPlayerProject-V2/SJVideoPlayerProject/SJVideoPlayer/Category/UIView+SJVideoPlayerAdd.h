@@ -14,8 +14,8 @@
 
 - (void)sj_fadeOut;
 
-- (void)sj_fadeInWithCompletion:(void(^)(UIView *view))block;
+- (void)sj_fadeInAndCompletion:(void(^)(UIView *view))block;
 
-- (void)sj_fadeOutWithCompletion:(void(^)(UIView *view))block;
+- (void)sj_fadeOutAndCompletion:(void(^)(UIView *view))block;
 
 @end

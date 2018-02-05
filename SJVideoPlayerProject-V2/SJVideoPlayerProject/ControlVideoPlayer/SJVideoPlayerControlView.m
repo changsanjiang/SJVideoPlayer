@@ -24,8 +24,9 @@
 
 
 typedef NS_ENUM(NSUInteger, SJDisappearType) {
-    SJDisappearType_Transform,
-    SJDisappearType_Alpha,
+    SJDisappearType_Transform = 0,
+    SJDisappearType_Alpha = 1 << 0,
+    SJDisappearType_All = 1 << 1,
 };
 
 @interface UIView (SJControlAdd)
@@ -69,31 +70,37 @@ typedef NS_ENUM(NSUInteger, SJDisappearType) {
 }
 
 - (void)appear {
-    switch ( self.disappearType ) {
-        case SJDisappearType_Transform: {
-            self.transform = CGAffineTransformIdentity;
-        }
-            break;
-        case SJDisappearType_Alpha: {
-            self.alpha = 1;
-        }
-            break;
-    }
-    self.appearState = YES;
+    [self __change:YES];
 }
 
 - (void)disappear {
-    switch ( self.disappearType ) {
-        case SJDisappearType_Transform: {
+    [self __change:NO];
+}
+
+- (void)__change:(BOOL)show {
+    
+    if ( SJDisappearType_All == (self.disappearType & SJDisappearType_All) ) {
+        self.disappearType = SJDisappearType_Alpha | SJDisappearType_Transform;
+    }
+    
+    if ( SJDisappearType_Transform == (self.disappearType & SJDisappearType_Transform) ) {
+        if ( show ) {
+            self.transform = CGAffineTransformIdentity;
+        }
+        else {
             self.transform = self.disappearTransform;
         }
-            break;
-        case SJDisappearType_Alpha: {
+    }
+    
+    if ( SJDisappearType_Alpha == (self.disappearType & SJDisappearType_Alpha) ) {
+        if ( show ) {
+            self.alpha = 1;
+        }
+        else {
             self.alpha = 0.001;
         }
-            break;
     }
-    self.appearState = NO;
+    self.appearState = show;
 }
 
 @end
@@ -116,7 +123,9 @@ typedef NS_ENUM(NSUInteger, SJDisappearType) {
 
 @end
 
-@implementation SJVideoPlayerControlView
+@implementation SJVideoPlayerControlView {
+    BOOL _controlLayerAppeared;
+}
 
 @synthesize previewView = _previewView;
 @synthesize draggingProgressView = _draggingProgressView;
@@ -147,7 +156,7 @@ typedef NS_ENUM(NSUInteger, SJDisappearType) {
     if ( [keyPath isEqualToString:@"state"] ) {
         switch ( _videoPlayer.state ) {
             case SJVideoPlayerPlayState_Prepare: {
-                self.generatePreviewImages = NO;
+                self.hasBeenGeneratedPreviewImages = NO;
             }
                 break;
             case SJVideoPlayerPlayState_Paused:
@@ -197,12 +206,13 @@ typedef NS_ENUM(NSUInteger, SJDisappearType) {
     
     [_bottomSlider mas_makeConstraints:^(MASConstraintMaker *make) {
         make.leading.bottom.trailing.offset(0);
-        make.height.offset(2);
+        make.height.offset(1);
     }];
     
     [_previewView mas_makeConstraints:^(MASConstraintMaker *make) {
         make.top.equalTo(_topControlView.mas_bottom);
         make.leading.trailing.offset(0);
+        make.height.offset(_previewView.intrinsicContentSize.height);
     }];
     
     [_moreSettingsView mas_makeConstraints:^(MASConstraintMaker *make) {
@@ -236,10 +246,12 @@ typedef NS_ENUM(NSUInteger, SJDisappearType) {
     _previewView = [SJVideoPlayerPreviewView new];
     _previewView.delegate = self;
     _previewView.backgroundColor = [UIColor colorWithWhite:0 alpha:0.4];
+    _previewView.disappearType = SJDisappearType_All;
     return _previewView;
 }
 
 - (void)previewView:(SJVideoPlayerPreviewView *)view didSelectItem:(id<SJVideoPlayerPreviewInfo>)item {
+    CMTimeShow(item.localTime);
     __weak typeof(self) _self = self;
     [_videoPlayer seekToTime:item.localTime completionHandler:^(BOOL finished) {
         __strong typeof(_self) self = _self;
@@ -280,11 +292,9 @@ typedef NS_ENUM(NSUInteger, SJDisappearType) {
         }
             break;
         case SJVideoPlayerTopViewTag_More: {
+            [self controlLayerNeedDisappear:self.videoPlayer];
             [UIView animateWithDuration:0.3 animations:^{
                 [self.moreSettingsView appear];
-                [self.topControlView disappear];
-                [self.leftControlView disappear];
-                [self.bottomControlView disappear];
             }];
         }
             break;
@@ -317,6 +327,7 @@ typedef NS_ENUM(NSUInteger, SJDisappearType) {
         }
             break;
     }
+    view.lockState = self.videoPlayer.locked;
 }
 
 
@@ -349,7 +360,8 @@ typedef NS_ENUM(NSUInteger, SJDisappearType) {
     if ( _bottomSlider ) return _bottomSlider;
     _bottomSlider = [SJSlider new];
     _bottomSlider.pan.enabled = NO;
-    _bottomSlider.trackHeight = 2;
+    _bottomSlider.trackHeight = 1;
+    _bottomSlider.disappearType = SJDisappearType_Alpha;
     return _bottomSlider;
 }
 
@@ -362,50 +374,76 @@ typedef NS_ENUM(NSUInteger, SJDisappearType) {
     return _moreSettingsView;
 }
 
-#pragma mark - 播放器代理
+
+#pragma mark - Video Player Control Data Source
 
 - (UIView *)controlView {
     return self;
 }
 
-- (BOOL)controlLayerDisplayCondition {
+- (void)setControlLayerAppeared:(BOOL)controlLayerAppeared {
+    _controlLayerAppeared = controlLayerAppeared;
+}
+
+- (BOOL)controlLayerAppeared {
+    return _controlLayerAppeared;
+}
+
+- (BOOL)controlLayerAppearCondition {
     return self.initialized;                                // 在初始化期间不显示控制层
 }
 
-- (BOOL)controlLayerConcealCondition {
+- (BOOL)controlLayerDisappearCondition {
     if ( self.previewView.appearState ) return NO;          // 如果预览视图显示, 则不隐藏控制层
     return YES;
 }
 
-- (void)videoPlayer:(SJVideoPlayer *)videoPlayer controlLayerNeedChangeDisplayState:(BOOL)displayState locked:(BOOL)isLocked {
-    
+- (BOOL)triggerGesturesCondition:(CGPoint)location {
+    if ( CGRectContainsPoint(self.moreSettingsView.frame, location) ||
+//         CGRectContainsPoint(self.moreSecondarySettingView.frame, location) ||
+         CGRectContainsPoint(self.previewView.frame, location) ) return NO;
+    return YES;
+}
+
+
+#pragma mark - Video Player Control Delegate
+
+- (void)controlLayerNeedAppear:(SJVideoPlayer *)videoPlayer {
     self.topControlView.alwaysShowTitle = self.videoPlayer.URLAsset.alwaysShowTitle;
     self.topControlView.title = self.videoPlayer.URLAsset.title;
     
-    self.leftControlView.lockState = isLocked;
-    
     [UIView animateWithDuration:0.3 animations:^{
-        
-        if ( self.moreSettingsView.appearState ) {
-            [self.moreSettingsView disappear];
-        }
-        
-        if ( displayState ) {
-            [_topControlView appear];
-            [_bottomControlView appear];
-            [_leftControlView appear];
-            [_bottomSlider disappear];
-        }
-        else {
-            [_topControlView disappear];
-            [_bottomControlView disappear];
-            [_leftControlView disappear];
-            [_previewView disappear];
-            [_bottomSlider appear];
-        }
-        
-        if ( isLocked ) [_leftControlView appear];
+        if ( _moreSettingsView.appearState ) [_moreSettingsView disappear];
+        [_topControlView appear];
+        [_bottomControlView appear];
+        [_leftControlView appear];
+        [_bottomSlider disappear];
     }];
+    
+    self.controlLayerAppeared = YES;
+}
+
+- (void)controlLayerNeedDisappear:(SJVideoPlayer *)videoPlayer {
+    [UIView animateWithDuration:0.3 animations:^{
+        [_topControlView disappear];
+        [_bottomControlView disappear];
+        [_leftControlView disappear];
+        [_previewView disappear];
+        [_bottomSlider appear];
+    }];
+    
+    self.controlLayerAppeared = NO;
+}
+
+- (void)lockedVideoPlayer:(SJVideoPlayer *)videoPlayer {
+    [self controlLayerNeedDisappear:videoPlayer];
+    [UIView animateWithDuration:0.3 animations:^{
+        [_leftControlView appear];
+    }];
+}
+
+- (void)unlockedVideoPlayer:(SJVideoPlayer *)videoPlayer {
+    [self controlLayerNeedAppear:videoPlayer];
 }
 
 - (void)videoPlayer:(SJVideoPlayer *)videoPlayer currentTimeStr:(NSString *)currentTimeStr totalTimeStr:(NSString *)totalTimeStr {
@@ -449,7 +487,7 @@ typedef NS_ENUM(NSUInteger, SJDisappearType) {
     }];
     
     [self.draggingProgressView setCurrentTimeStr:videoPlayer.currentTimeStr totalTimeStr:videoPlayer.totalTimeStr];
-    [self videoPlayer:videoPlayer controlLayerNeedChangeDisplayState:NO locked:self.videoPlayer.locked];
+    [self controlLayerNeedDisappear:videoPlayer];
 }
 
 - (void)videoPlayer:(SJVideoPlayer *)videoPlayer horizontalGestureDidDrag:(CGFloat)translation {
@@ -479,7 +517,7 @@ typedef NS_ENUM(NSUInteger, SJDisappearType) {
 - (void)videoPlayer:(SJVideoPlayer *)videoPlayer presentationSize:(CGSize)size {
     if ( !self.generatePreviewImages ) return;
     CGFloat scale = size.width / size.height;
-    CGSize previewItemSize = CGSizeMake(scale * self.previewView.intrinsicContentSize.height, self.previewView.intrinsicContentSize.height);
+    CGSize previewItemSize = CGSizeMake(scale * self.previewView.intrinsicContentSize.height * 2, self.previewView.intrinsicContentSize.height * 2);
     __weak typeof(self) _self = self;
     [videoPlayer generatedPreviewImagesWithMaxItemSize:previewItemSize completion:^(SJVideoPlayer * _Nonnull player, NSArray<id<SJVideoPlayerPreviewInfo>> * _Nullable images, NSError * _Nullable error) {
         __strong typeof(_self) self = _self;
@@ -506,7 +544,7 @@ typedef NS_ENUM(NSUInteger, SJDisappearType) {
 //        __strong typeof(_self) self = _self;
 //        if ( !self ) return;
 //        self.initialized = YES;
-//        [self videoPlayer:self.videoPlayer controlLayerNeedChangeDisplayState:YES];
+//        [self videoPlayer:self.videoPlayer controlLayerNeedAppear:YES];
 //    }];
     
     // 2. or update
@@ -521,7 +559,7 @@ typedef NS_ENUM(NSUInteger, SJDisappearType) {
         __strong typeof(_self) self = _self;
         if ( !self ) return;
         self.initialized = YES; // 初始化已完成, 在初始化期间不显示控制层.
-        [self videoPlayer:self.videoPlayer controlLayerNeedChangeDisplayState:YES locked:self.videoPlayer.locked]; // 显示控制层
+        [self controlLayerNeedAppear:self.videoPlayer]; // 显示控制层
     }];
     
     

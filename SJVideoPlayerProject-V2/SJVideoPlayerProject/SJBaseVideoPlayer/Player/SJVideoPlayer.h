@@ -43,11 +43,16 @@ NS_ASSUME_NONNULL_BEGIN
 @required
 - (UIView *)controlView;
 
-// 控制层将要显示之前会调用这个方法, 如果返回NO, 将不调用`videoPlayer:controlLayerNeedChangeDisplayState:locked:`.
-- (BOOL)controlLayerDisplayCondition;
+@property (nonatomic, assign) BOOL controlLayerAppeared;
 
-// 控制层将要隐藏之前会调用这个方法, 如果返回NO, 将不调用`videoPlayer:controlLayerNeedChangeDisplayState:locked:`.
-- (BOOL)controlLayerConcealCondition;
+// 控制层将要显示之前会调用这个方法, 如果返回NO, 将不调用`controlLayerNeedAppear:`
+- (BOOL)controlLayerAppearCondition;
+
+// 控制层将要隐藏之前会调用这个方法, 如果返回NO, 将不调用`controlLayerNeedDisappear:`
+- (BOOL)controlLayerDisappearCondition;
+
+// 触发手势之前会调用这个方法
+- (BOOL)triggerGesturesCondition:(CGPoint)location;
 
 @optional
 
@@ -61,15 +66,14 @@ NS_ASSUME_NONNULL_BEGIN
 @optional
 
 #pragma mark
-/**
- control layer want to display.
 
- @param videoPlayer `video player`.
- @param displayState `display or hidden`.
- @param isLocked `Lock state. if locked, All interactive events should not be triggered.`
- */
-- (void)videoPlayer:(SJVideoPlayer *)videoPlayer controlLayerNeedChangeDisplayState:(BOOL)displayState locked:(BOOL)isLocked;
+- (void)controlLayerNeedAppear:(SJVideoPlayer *)videoPlayer;
 
+- (void)controlLayerNeedDisappear:(SJVideoPlayer *)videoPlayer;
+
+- (void)lockedVideoPlayer:(SJVideoPlayer *)videoPlayer;
+
+- (void)unlockedVideoPlayer:(SJVideoPlayer *)videoPlayer;
 
 #pragma mark
 /**

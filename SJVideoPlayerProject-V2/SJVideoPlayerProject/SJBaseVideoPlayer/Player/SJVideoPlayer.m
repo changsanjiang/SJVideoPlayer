@@ -251,6 +251,7 @@ NS_ASSUME_NONNULL_END
         if ( SJVideoPlayerPlayState_Unknown == self.state ||
              SJVideoPlayerPlayState_Prepare == self.state ||
              SJVideoPlayerPlayState_PlayFailed == self.state ) return NO;
+        if ( ![self.controlViewDataSource triggerGesturesCondition:[gesture locationInView:gesture.view]] ) return NO;
         return YES;
     };
     
@@ -527,8 +528,12 @@ NS_ASSUME_NONNULL_END
 
 - (void)setLocked:(BOOL)locked {
     objc_setAssociatedObject(self, @selector(isLocked), @(locked), OBJC_ASSOCIATION_RETAIN_NONATOMIC);
-    if ( locked ) [self.displayRecorder needHidden];
-    else [self.displayRecorder needDisplay];
+    if      ( locked && [self.controlViewDelegate respondsToSelector:@selector(lockedVideoPlayer:)] ) {
+        [self.controlViewDelegate lockedVideoPlayer:self];
+    }
+    else if ( !locked && [self.controlViewDelegate respondsToSelector:@selector(unlockedVideoPlayer:)] ) {
+        [self.controlViewDelegate unlockedVideoPlayer:self];
+    }
 }
 
 - (BOOL)isLocked {
@@ -663,22 +668,21 @@ NS_ASSUME_NONNULL_END
 
 NS_ASSUME_NONNULL_BEGIN
 @interface _SJVideoPlayerControlDisplayRecorder ()
-@property (nonatomic) BOOL displayState;
+@property (nonatomic, readonly) BOOL displayState;
 @property (nonatomic, weak, readonly) SJVideoPlayer *videoPlayer;
 @property (nonatomic, strong, readonly) SJTimerControl *timerControl;
-@property (nonatomic, assign, readonly) BOOL imped;
 @end
 NS_ASSUME_NONNULL_END
 
 @implementation _SJVideoPlayerControlDisplayRecorder
 @synthesize timerControl = _timerControl;
-@synthesize imped = _imped;
 
 - (instancetype)initWithVideoPlayer:(SJVideoPlayer *)videoPlayer {
     self = [super init];
     if ( !self ) return nil;
     _videoPlayer = videoPlayer;
-    [_videoPlayer sj_addObserver:self forKeyPath:@"state"]; 
+    [_videoPlayer sj_addObserver:self forKeyPath:@"state"];
+    [_videoPlayer sj_addObserver:self forKeyPath:@"locked"];
     return self;
 }
 
@@ -692,6 +696,14 @@ NS_ASSUME_NONNULL_END
             [self needDisplay];
         }
     }
+    else if ( [keyPath isEqualToString:@"locked"] ) {
+        if ( _videoPlayer.locked ) {
+            [self.timerControl clear];
+        }
+        else {
+            [self.timerControl start];
+        }
+    }
 }
 
 - (void)considerDisplay {
@@ -701,7 +713,6 @@ NS_ASSUME_NONNULL_END
 
 - (void)needDisplay {
     [self.timerControl start];
-    _displayState = YES;
     [self _callDelegateMethodWithStatus:YES];
 }
 
@@ -712,7 +723,6 @@ NS_ASSUME_NONNULL_END
 
 - (void)needHidden {
     [self.timerControl clear];
-    _displayState = NO;
     [self _callDelegateMethodWithStatus:NO];
 }
 
@@ -723,26 +733,31 @@ NS_ASSUME_NONNULL_END
     _timerControl.exeBlock = ^(SJTimerControl * _Nonnull control) {
         __strong typeof(_self) self = _self;
         if ( !self ) return;
-        if ( !self.videoPlayer.controlViewDataSource.controlLayerDisplayCondition ||
-             !self.videoPlayer.controlViewDataSource.controlLayerConcealCondition ) {
+        
+        if ( !self.videoPlayer.controlViewDataSource.controlLayerAppearCondition ||
+             !self.videoPlayer.controlViewDataSource.controlLayerDisappearCondition ) {
             [control reset];
         }
         else {
             if ( self.displayState ) [self needHidden];
             else [control clear];
         }
+        
     };
     return _timerControl;
 }
 
 #pragma mark -
 - (void)_callDelegateMethodWithStatus:(BOOL)status {
-    if ( self.imped ) [self.videoPlayer.controlViewDelegate videoPlayer:self.videoPlayer controlLayerNeedChangeDisplayState:status locked:self.videoPlayer.locked];
+    if      ( status && [self.videoPlayer.controlViewDelegate respondsToSelector:@selector(controlLayerNeedAppear:)] ) {
+        [self.videoPlayer.controlViewDelegate controlLayerNeedAppear:self.videoPlayer];
+    }
+    else if ( !status && [self.videoPlayer.controlViewDelegate respondsToSelector:@selector(controlLayerNeedDisappear:)] ) {
+        [self.videoPlayer.controlViewDelegate controlLayerNeedDisappear:self.videoPlayer];
+    }
 }
 
-- (BOOL)imped {
-    if ( _imped ) return _imped;
-    _imped = [self.videoPlayer.controlViewDelegate respondsToSelector:@selector(videoPlayer:controlLayerNeedChangeDisplayState:locked:)];
-    return _imped;
+- (BOOL)displayState {
+    return self.videoPlayer.controlViewDataSource.controlLayerAppeared;
 }
 @end

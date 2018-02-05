@@ -159,7 +159,7 @@ typedef NS_ENUM(NSUInteger, SJDisappearType) {
     if ( [keyPath isEqualToString:@"state"] ) {
         switch ( _videoPlayer.state ) {
             case SJVideoPlayerPlayState_Prepare: {
-                self.hasBeenGeneratedPreviewImages = NO;
+
             }
                 break;
             case SJVideoPlayerPlayState_Paused:
@@ -219,7 +219,7 @@ typedef NS_ENUM(NSUInteger, SJDisappearType) {
     
     [_moreSettingsView mas_makeConstraints:^(MASConstraintMaker *make) {
         make.top.trailing.offset(0);
-        make.height.offset(_moreSettingsView.intrinsicContentSize.height);
+        make.size.mas_offset(_moreSettingsView.intrinsicContentSize);
     }];
     
     [self _setControlViewsDisappearType];
@@ -618,11 +618,12 @@ typedef NS_ENUM(NSUInteger, SJDisappearType) {
         __strong typeof(_self) self = _self;
         if ( !self ) return ;
         if ( error ) {
-            
+            NSLog(@"Generate Preview Image Failed! error: %@", error);
         }
         else {
             self.hasBeenGeneratedPreviewImages = YES;
             self.previewView.previewImages = images;
+            self.topControlView.fullscreen = player.isFullScreen;
         }
     }];
 }

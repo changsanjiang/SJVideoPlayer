@@ -631,7 +631,7 @@ NS_ASSUME_NONNULL_END
 
 - (BOOL)triggerGesturesCondition:(CGPoint)location {
     if ( CGRectContainsPoint(self.moreSettingsView.frame, location) ||
-//         CGRectContainsPoint(self.moreSecondarySettingView.frame, location) ||
+         CGRectContainsPoint(self.moreSecondarySettingView.frame, location) ||
          CGRectContainsPoint(self.previewView.frame, location) ) return NO;
     return YES;
 }

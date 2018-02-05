@@ -105,11 +105,11 @@ NS_ASSUME_NONNULL_END
 
 - (void)setAsset:(SJVideoPlayerAssetCarrier *)asset {
     _asset = asset;
+    if ( !asset ) return;
     self.presentView.asset = self.asset;
     [self _itemPrepareToPlay];
     
     __weak typeof(self) _self = self;
-    
     self.asset.playerItemStateChanged = ^(SJVideoPlayerAssetCarrier * _Nonnull asset, AVPlayerItemStatus status) {
         __strong typeof(_self) self = _self;
         if ( !self ) return;
@@ -233,6 +233,7 @@ NS_ASSUME_NONNULL_END
     if ( controlViewDataSource == _controlViewDataSource ) return;
     [_controlViewDataSource.controlView removeFromSuperview];
     _controlViewDataSource = controlViewDataSource;
+    _controlViewDataSource.controlView.clipsToBounds = YES;
     [self.controlContentView addSubview:_controlViewDataSource.controlView];
     [_controlViewDataSource.controlView mas_makeConstraints:^(MASConstraintMaker *make) {
         make.edges.offset(0);
@@ -407,13 +408,21 @@ NS_ASSUME_NONNULL_END
         __strong typeof(_self) self = _self;
         if ( !self ) return;
         [self.displayRecorder needHidden];
+        if ( [self.controlViewDelegate respondsToSelector:@selector(videoPlayer:willRotateView:)] ) {
+            [self.controlViewDelegate videoPlayer:self willRotateView:isFullScreen];
+        }
+    };
+    
+    _orentationObserver.orientationChanged = ^(SJOrentationObserver * _Nonnull observer, BOOL isFullScreen) {
+        __strong typeof(_self) self = _self;
+        if ( !self ) return;
         if ( isFullScreen ) {
             // `iPhone_X` remake constraints.
             if ( SJ_is_iPhoneX() ) {
                 [self.controlViewDataSource.controlView mas_remakeConstraints:^(MASConstraintMaker *make) {
                     make.center.offset(0);
-                    make.height.equalTo(self.view);
-                    make.width.equalTo(self.view).multipliedBy(16.0f / 9);
+                    make.height.equalTo(self.controlViewDataSource.controlView.superview);
+                    make.width.equalTo(self.controlViewDataSource.controlView.mas_height).multipliedBy(16 / 9.0f);
                 }];
             }
         }
@@ -421,13 +430,11 @@ NS_ASSUME_NONNULL_END
             // `iPhone_X` remake constraints.
             if ( SJ_is_iPhoneX() ) {
                 [self.controlViewDataSource.controlView mas_remakeConstraints:^(MASConstraintMaker *make) {
-                    make.edges.equalTo(self.view);
+                    make.edges.offset(0);
                 }];
             }
         }
-        if ( [self.controlViewDelegate respondsToSelector:@selector(videoPlayer:willRotateView:)] ) {
-            [self.controlViewDelegate videoPlayer:self willRotateView:isFullScreen];
-        }
+        if ( self.rotatedScreen ) self.rotatedScreen(self, observer.isFullScreen);
     };
     
     return _orentationObserver;
@@ -439,14 +446,19 @@ NS_ASSUME_NONNULL_END
     _gestureControl.triggerCondition = ^BOOL(SJPlayerGestureControl * _Nonnull control, SJPlayerGestureType type, UIGestureRecognizer * _Nonnull gesture) {
         __strong typeof(_self) self = _self;
         if ( !self ) return NO;
+        
         if ( self.isLockedScreen ) return NO;
+        
         if ( SJVideoPlayerPlayState_Unknown == self.state ||
              SJVideoPlayerPlayState_Prepare == self.state ||
              SJVideoPlayerPlayState_PlayFailed == self.state ) return NO;
+        
         if ( SJPlayerGestureType_Pan == type &&
              self.playOnCell &&
-             !self.orentationObserver.fullScreen ) return NO;
+             !self.orentationObserver.isFullScreen ) return NO;
+        
         if ( ![self.controlViewDataSource triggerGesturesCondition:[gesture locationInView:gesture.view]] ) return NO;
+        
         return YES;
     };
     
@@ -594,7 +606,7 @@ NS_ASSUME_NONNULL_END
         __strong typeof(_self) self = _self;
         if ( !self ) return;
         self.lockedScreen = YES;
-        [self pause];
+        if ( self.state != SJVideoPlayerPlayState_Paused ) [self.asset.player pause];
     };
     
     _registrar.didBecomeActive = ^(SJVideoPlayerRegistrar * _Nonnull registrar) {
@@ -659,13 +671,10 @@ NS_ASSUME_NONNULL_END
             break;
     }
     
-    dispatch_async(dispatch_get_main_queue(), ^{
-        _presentView.playState = state;
-        if ( [self.controlViewDelegate respondsToSelector:@selector(videoPlayer:stateChanged:)] ) {
-            [self.controlViewDelegate videoPlayer:self stateChanged:state];
-        }
-    });
-
+    _presentView.playState = state;
+    if ( [self.controlViewDelegate respondsToSelector:@selector(videoPlayer:stateChanged:)] ) {
+        [self.controlViewDelegate videoPlayer:self stateChanged:state];
+    }
 }
 
 - (void)clear {

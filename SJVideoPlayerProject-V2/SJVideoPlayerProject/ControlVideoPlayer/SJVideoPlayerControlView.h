@@ -18,6 +18,8 @@ NS_ASSUME_NONNULL_BEGIN
 
 @interface SJVideoPlayerControlView : UIView
 
+- (instancetype)initWithVideoPlayer:(__weak SJVideoPlayer *)videoPlayer;
+
 @property (nonatomic, weak, readwrite, nullable) id<SJVideoPlayerControlViewDelegate> delegate;
 
 @property (nonatomic, weak, readwrite, nullable) SJVideoPlayer *videoPlayer;

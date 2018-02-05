@@ -58,6 +58,8 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (NSString *)timeStringWithSeconds:(NSInteger)secs;
 
+@property (nonatomic, readonly) float progress;
+
 @property (nonatomic, readonly) NSTimeInterval currentTime;
 @property (nonatomic, readonly) NSTimeInterval totalTime;
 
@@ -75,16 +77,27 @@ NS_ASSUME_NONNULL_BEGIN
 
 @interface SJVideoPlayer (Control)
 
-/// 锁定播放器. 所有交互事件将不会触发.
-@property (nonatomic, readwrite, getter=isLocked) BOOL locked;
+/*!
+ *  The user clicked paused.
+ *
+ *  这个状态用来判断是我们调用的pause, 还是用户主动pause的.
+ *  当调用`pause`, 会设置为`NO`. 而调用`pauseForUser`, 会设置为`YES`.
+ **/
+@property (nonatomic, assign, readonly) BOOL userPaused;
+
+- (void)pauseForUser; // 调用这个方法, 表示用户暂停.
+
+@property (nonatomic, readwrite, getter=isLockedScreen) BOOL lockedScreen; // 锁定播放器. 所有交互事件将不会触发.
 
 @property (nonatomic, readwrite, getter=isAutoPlay) BOOL autoPlay; // default is YES.
 
 - (BOOL)play;
 
-- (BOOL)pause;
+- (BOOL)pause; // 调用这个方法, 表示开发者暂停.
 
 - (void)stop;
+
+- (void)stopAndFadeOut; // 停止播放并淡出
 
 - (void)replay;
 
@@ -133,6 +146,14 @@ NS_ASSUME_NONNULL_BEGIN
 
 @end
 
+
+#pragma mark - 在`tableView`或`collectionView`上播放
+
+@interface SJVideoPlayer (ScrollView)
+
+@property (nonatomic, assign, readonly)  BOOL playOnCell;
+
+@end
 
 #pragma mark - 提示
 
@@ -209,11 +230,21 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (void)horizontalDirectionWillBeginDragging:(SJVideoPlayer *)videoPlayer;    // 水平方向开始拖动.
 
-- (void)videoPlayer:(SJVideoPlayer *)videoPlayer horizontalDirectionDidDrag:(CGFloat)translation; // 水平方向拖动中.
+- (void)videoPlayer:(SJVideoPlayer *)videoPlayer horizontalDirectionDidDrag:(CGFloat)translation; // 水平方向拖动中. `translation`为此次增加的值.
 
 - (void)horizontalDirectionDidEndDragging:(SJVideoPlayer *)videoPlayer;   // 水平方向拖动结束.
 
 - (void)videoPlayer:(SJVideoPlayer *)videoPlayer presentationSize:(CGSize)size;
+
+- (void)videoPlayerWillAppearInScrollView:(SJVideoPlayer *)videoPlayer;     
+
+- (void)videoPlayerWillDisappearInScrollView:(SJVideoPlayer *)videoPlayer;
+
+- (void)videoPlayer:(SJVideoPlayer *)videoPlayer stateChanged:(SJVideoPlayerPlayState)state;
+
+- (void)scrollViewWillDisplayVideoPlayer:(SJVideoPlayer *)videoPlayer; // 如果是在`tableView`或者`collectionView`上播放, 这个方法会在播放器滚入界面时调用.
+
+- (void)scrollViewDidEndDisplayingVideoPlayer:(SJVideoPlayer *)videoPlayer; // 如果是在`tableView`或者`collectionView`上播放, 这个方法会在播放器离开界面时调用.
 
 @end
 

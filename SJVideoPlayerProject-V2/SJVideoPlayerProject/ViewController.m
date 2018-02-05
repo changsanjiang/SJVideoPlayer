@@ -8,6 +8,7 @@
 
 #import "ViewController.h"
 #import "PlayerViewController.h"
+#import "SJVideoListViewController.h"
 
 @interface ViewController ()
 
@@ -27,6 +28,10 @@
 
 - (IBAction)pushDemo:(id)sender {
     PlayerViewController *vc = [PlayerViewController new];
+    [self.navigationController pushViewController:vc animated:YES];
+}
+- (IBAction)pushTableViewDemo:(id)sender {
+    SJVideoListViewController *vc = [SJVideoListViewController new];
     [self.navigationController pushViewController:vc animated:YES];
 }
 

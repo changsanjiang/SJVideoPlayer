@@ -18,4 +18,5 @@ target 'SJVideoPlayerProject' do
     pod 'SJObserverHelper'
     pod 'SJPrompt'
     pod 'SJLoadingView'
+    pod 'SJLabel'
 end

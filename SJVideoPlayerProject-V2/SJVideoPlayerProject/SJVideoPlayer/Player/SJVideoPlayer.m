@@ -18,7 +18,7 @@
 #import <objc/message.h>
 #import "SJTimerControl.h"
 #import <SJObserverHelper/NSObject+SJObserverHelper.h>
-
+#import "SJVideoPlayerRegistrar.h"
 
 @interface SJVideoPlayerAssetCarrier (SJVideoPlayerAdd)
 @property (nonatomic, assign) CGSize videoPresentationSize;
@@ -55,12 +55,19 @@ NS_ASSUME_NONNULL_BEGIN
     SJPlayerGestureControl *_gestureControl;
     SJVolBrigControl *_volBrigControl;
     _SJVideoPlayerControlDisplayRecorder *_displayRecorder;
+    SJVideoPlayerRegistrar *_registrar;
 }
 
+@property (nonatomic, assign, readwrite) BOOL userClickedPause;
 @property (nonatomic, assign, readwrite) SJVideoPlayerPlayState state;
 @property (nonatomic, strong, readwrite, nullable) NSError *error;
 @property (nonatomic, strong, readwrite, nullable) SJVideoPlayerAssetCarrier *asset;
+@property (nonatomic, assign, readwrite) BOOL scrollIn;
+@property (nonatomic, assign, readwrite) BOOL touchedScrollView; // 如果为`YES`, 则不旋转
+@property (nonatomic, assign, readwrite) BOOL suspend; // Set it when the [`pause` + `play` + `stop`] is called.
+@property (nonatomic, assign, readwrite) BOOL stopped; // Set it when the [`play` + `stop`] is called.
 
+@property (nonatomic, strong, readonly) SJVideoPlayerRegistrar *registrar;
 @property (nonatomic, strong, readonly) UIView *controlContentView;
 @property (nonatomic, strong, readonly) SJVideoPlayerPresentView *presentView;
 @property (nonatomic, strong, readonly) SJOrentationObserver *orentationObserver;
@@ -83,7 +90,15 @@ NS_ASSUME_NONNULL_END
     self = [super init];
     if ( !self ) return nil;
     self.autoPlay = YES;
+    NSError *error = nil;
+    [[AVAudioSession sharedInstance] setCategory: AVAudioSessionCategoryPlayback error:&error];
+    if ( error ) NSLog(@"%@", error.userInfo);
+    [self registrar];
     return self;
+}
+
+- (void)dealloc {
+    [self stop];
 }
 
 #pragma mark -
@@ -106,11 +121,7 @@ NS_ASSUME_NONNULL_END
             }
                 break;
             case AVPlayerItemStatusReadyToPlay: {
-                dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(1 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
-                    __strong typeof(_self) self = _self;
-                    if ( !self ) return;
-                    [self _itemReadyToPlay];
-                });
+                [self _itemReadyToPlay];
             }
                 break;
         }
@@ -123,13 +134,13 @@ NS_ASSUME_NONNULL_END
             [self.controlViewDelegate videoPlayer:self currentTime:currentTime currentTimeStr:self.currentTimeStr totalTime:duration totalTimeStr:self.totalTimeStr];
         }
     };
-    
+
     self.asset.playDidToEnd = ^(SJVideoPlayerAssetCarrier * _Nonnull asset) {
         __strong typeof(_self) self = _self;
         if ( !self ) return ;
         [self _itemPlayDidToEnd];
     };
-    
+
     self.asset.loadedTimeProgress = ^(float progress) {
         __strong typeof(_self) self = _self;
         if ( !self ) return;
@@ -137,14 +148,14 @@ NS_ASSUME_NONNULL_END
             [self.controlViewDelegate videoPlayer:self loadedTimeProgress:progress];
         }
     };
-    
+
     asset.beingBuffered = ^(BOOL state) {
         __strong typeof(_self) self = _self;
         if ( !self ) return;
         if ( self.state == SJVideoPlayerPlayState_Buffing ) return;
         [self _itemBuffering];
     };
-    
+
     self.asset.rateChanged = ^(SJVideoPlayerAssetCarrier * _Nonnull asset, float rate) {
         __strong typeof(_self) self = _self;
         if ( !self ) return;
@@ -152,7 +163,58 @@ NS_ASSUME_NONNULL_END
             [self.controlViewDelegate videoPlayer:self rateChanged:rate];
         }
     };
-    
+
+    if ( asset.indexPath ) {
+        /// 默认滑入
+        self.scrollIn = YES;
+    }
+    else {
+        self.scrollIn = NO;
+    }
+
+    // scroll view
+    if ( asset.scrollView ) {
+        /// 滑入
+        asset.scrollIn = ^(SJVideoPlayerAssetCarrier * _Nonnull asset, UIView * _Nonnull superview) {
+            __strong typeof(_self) self = _self;
+            if ( !self ) return;
+            if ( self.scrollIn ) return;
+            self.scrollIn = YES;
+            [self.displayRecorder needDisplay];
+            if ( superview && self.view.superview != superview ) {
+                [self.view removeFromSuperview];
+                [superview addSubview:self.view];
+                [self.view mas_remakeConstraints:^(MASConstraintMaker *make) {
+                    make.edges.equalTo(self.view.superview);
+                }];
+            }
+
+            if ( [self.controlViewDelegate respondsToSelector:@selector(scrollViewWillDisplayVideoPlayer:)] ) {
+                [self.controlViewDelegate scrollViewWillDisplayVideoPlayer:self];
+            }
+            //            if ( !self.userPaused &&
+            //                 self.state != SJVideoPlayerPlayState_PlayEnd ) [self play];
+        };
+
+        /// 滑出
+        asset.scrollOut = ^(SJVideoPlayerAssetCarrier * _Nonnull asset) {
+            __strong typeof(_self) self = _self;
+            if ( !self ) return;
+            if ( !self.scrollIn ) return;
+            self.scrollIn = NO;
+            if ( [self.controlViewDelegate respondsToSelector:@selector(scrollViewDidEndDisplayingVideoPlayer:)] ) {
+                [self.controlViewDelegate scrollViewDidEndDisplayingVideoPlayer:self];
+            }
+        };
+
+        ///
+        asset.touchedScrollView = ^(SJVideoPlayerAssetCarrier * _Nonnull asset, BOOL tracking) {
+            __strong typeof(_self) self = _self;
+            if ( !self ) return;
+            self.touchedScrollView = tracking;
+        };
+    }
+
     self.asset.presentationSize = ^(SJVideoPlayerAssetCarrier * _Nonnull asset, CGSize size) {
         __strong typeof(_self) self = _self;
         if ( !self ) return ;
@@ -164,7 +226,7 @@ NS_ASSUME_NONNULL_END
         }
     };
 
-    self.asset.rateChanged(asset, 1);
+    if ( self.asset.rateChanged ) self.asset.rateChanged(asset, 1);
 }
 
 - (void)setControlViewDataSource:(id<SJVideoPlayerControlDataSource>)controlViewDataSource {
@@ -197,6 +259,7 @@ NS_ASSUME_NONNULL_END
 - (void)setPlaceholder:(UIImage *)placeholder {
     _placeholder = placeholder;
     dispatch_async(dispatch_get_main_queue(), ^{
+        self.view.alpha = 1;
         self.presentView.placeholder = placeholder;
     });
 }
@@ -207,6 +270,7 @@ NS_ASSUME_NONNULL_END
         [self.controlViewDelegate startLoading:self];
     }
     
+    self.userClickedPause = NO;
     self.state = SJVideoPlayerPlayState_Prepare;
 }
 
@@ -219,6 +283,10 @@ NS_ASSUME_NONNULL_END
 - (void)_itemReadyToPlay {
     if ( !self.autoPlay ) return;
     
+    if ( !self.userClickedPause && !self.suspend ) {
+        [self play];
+    }
+
     if ( [self.controlViewDelegate respondsToSelector:@selector(loadCompletion:)] ) {
         [self.controlViewDelegate loadCompletion:self];
     }
@@ -233,35 +301,40 @@ NS_ASSUME_NONNULL_END
 }
 
 - (void)_itemBuffering {
-//    if ( !self.asset ||
-//        self.userClickedPause ||
-//        self.state == SJVideoPlayerPlayState_PlayFailed ||
-//        self.state == SJVideoPlayerPlayState_PlayEnd ||
-//        self.state == SJVideoPlayerPlayState_Unknown ||
-//        self.state == SJVideoPlayerPlayState_Playing ) return;
-//
-//    [self _startLoading];
-//    [self _pause];
-//    self.state = SJVideoPlayerPlayState_Buffing;
-//    __weak typeof(self) _self = self;
-//    dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(2 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
-//        __strong typeof(_self) self = _self;
-//        if ( !self ) return ;
-//        if ( !self.asset ||
-//            self.userClickedPause ||
-//            self.state == SJVideoPlayerPlayState_PlayFailed ||
-//            self.state == SJVideoPlayerPlayState_PlayEnd ||
-//            self.state == SJVideoPlayerPlayState_Unknown ||
-//            self.state == SJVideoPlayerPlayState_Playing ) return;
-//
-//        if ( !self.asset.playerItem.isPlaybackLikelyToKeepUp ) {
-//            [self _itemBuffering];
-//        }
-//        else {
-//            [self _stopLoading];
-//            if ( !self.suspend ) [self play];
-//        }
-//    });
+    if ( !self.asset ||
+         self.userClickedPause ||
+         self.state == SJVideoPlayerPlayState_PlayFailed ||
+         self.state == SJVideoPlayerPlayState_PlayEnd ||
+         self.state == SJVideoPlayerPlayState_Unknown ||
+         self.state == SJVideoPlayerPlayState_Playing ) return;
+
+    if ( [self.controlViewDelegate respondsToSelector:@selector(startLoading:)] ) {
+        [self.controlViewDelegate startLoading:self];
+    }
+
+    [self.asset.player pause];
+    self.state = SJVideoPlayerPlayState_Buffing;
+    __weak typeof(self) _self = self;
+    dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(2 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
+        __strong typeof(_self) self = _self;
+        if ( !self ) return ;
+        if ( !self.asset ||
+             self.userClickedPause ||
+             self.state == SJVideoPlayerPlayState_PlayFailed ||
+             self.state == SJVideoPlayerPlayState_PlayEnd ||
+             self.state == SJVideoPlayerPlayState_Unknown ||
+             self.state == SJVideoPlayerPlayState_Playing ) return;
+
+        if ( !self.asset.playerItem.isPlaybackLikelyToKeepUp ) {
+            [self _itemBuffering];
+        }
+        else {
+            if ( [self.controlViewDelegate respondsToSelector:@selector(loadCompletion:)] ) {
+                [self.controlViewDelegate loadCompletion:self];
+            }
+            if ( !self.suspend ) [self play];
+        }
+    });
 }
 #pragma mark -
 - (UIView *)view {
@@ -280,8 +353,15 @@ NS_ASSUME_NONNULL_END
     
     [self orentationObserver];
     [self gestureControl];
+    [self addTapGR];
     return _view;
 }
+
+- (void)addTapGR {
+    UITapGestureRecognizer *tap = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(handleTapGR:)];
+    [self.view addGestureRecognizer:tap];
+}
+- (void)handleTapGR:(UITapGestureRecognizer *)tap {}
 
 - (SJVideoPlayerPresentView *)presentView {
     if ( _presentView ) return _presentView;
@@ -291,7 +371,7 @@ NS_ASSUME_NONNULL_END
 
 - (UIView *)controlContentView {
     if ( _controlContentView ) return _controlContentView;
-    _controlContentView = [UIControl new];
+    _controlContentView = [UIView new];
     _controlContentView.clipsToBounds = YES;
     return _controlContentView;
 }
@@ -306,7 +386,20 @@ NS_ASSUME_NONNULL_END
     _orentationObserver.rotationCondition = ^BOOL(SJOrentationObserver * _Nonnull observer) {
         __strong typeof(_self) self = _self;
         if ( !self ) return NO;
-        if ( self.isLocked ) return NO;
+        if ( self.stopped ) {
+            if ( observer.isFullScreen ) return YES;
+            else return NO;
+        }
+        if ( self.touchedScrollView ) return NO;
+        switch ( self.state ) {
+            case SJVideoPlayerPlayState_Unknown:
+            case SJVideoPlayerPlayState_Prepare:
+            case SJVideoPlayerPlayState_PlayFailed: return NO;
+            default: break;
+        }
+        if ( self.playOnCell && !self.scrollIn ) return NO;
+        if ( self.disableRotation ) return NO;
+        if ( self.isLockedScreen ) return NO;
         return YES;
     };
     
@@ -314,6 +407,24 @@ NS_ASSUME_NONNULL_END
         __strong typeof(_self) self = _self;
         if ( !self ) return;
         [self.displayRecorder needHidden];
+        if ( isFullScreen ) {
+            // `iPhone_X` remake constraints.
+            if ( SJ_is_iPhoneX() ) {
+                [self.controlViewDataSource.controlView mas_remakeConstraints:^(MASConstraintMaker *make) {
+                    make.center.offset(0);
+                    make.height.equalTo(self.view);
+                    make.width.equalTo(self.view).multipliedBy(16.0f / 9);
+                }];
+            }
+        }
+        else {
+            // `iPhone_X` remake constraints.
+            if ( SJ_is_iPhoneX() ) {
+                [self.controlViewDataSource.controlView mas_remakeConstraints:^(MASConstraintMaker *make) {
+                    make.edges.equalTo(self.view);
+                }];
+            }
+        }
         if ( [self.controlViewDelegate respondsToSelector:@selector(videoPlayer:willRotateView:)] ) {
             [self.controlViewDelegate videoPlayer:self willRotateView:isFullScreen];
         }
@@ -328,10 +439,13 @@ NS_ASSUME_NONNULL_END
     _gestureControl.triggerCondition = ^BOOL(SJPlayerGestureControl * _Nonnull control, SJPlayerGestureType type, UIGestureRecognizer * _Nonnull gesture) {
         __strong typeof(_self) self = _self;
         if ( !self ) return NO;
-        if ( self.isLocked ) return NO;
+        if ( self.isLockedScreen ) return NO;
         if ( SJVideoPlayerPlayState_Unknown == self.state ||
              SJVideoPlayerPlayState_Prepare == self.state ||
              SJVideoPlayerPlayState_PlayFailed == self.state ) return NO;
+        if ( SJPlayerGestureType_Pan == type &&
+             self.playOnCell &&
+             !self.orentationObserver.fullScreen ) return NO;
         if ( ![self.controlViewDataSource triggerGesturesCondition:[gesture locationInView:gesture.view]] ) return NO;
         return YES;
     };
@@ -347,7 +461,7 @@ NS_ASSUME_NONNULL_END
         if ( !self ) return;
         if ( SJVideoPlayerPlayState_Paused == self.state ) [self play];
         else if ( SJVideoPlayerPlayState_PlayEnd == self.state ) [self replay];
-        else [self pause];
+        else [self pauseForUser]; //  用户暂停
     };
     
     _gestureControl.beganPan = ^(SJPlayerGestureControl * _Nonnull control, SJPanDirection direction, SJPanLocation location) {
@@ -471,6 +585,43 @@ NS_ASSUME_NONNULL_END
     _displayRecorder = [[_SJVideoPlayerControlDisplayRecorder alloc] initWithVideoPlayer:self];
     return _displayRecorder;
 }
+- (SJVideoPlayerRegistrar *)registrar {
+    if ( _registrar ) return _registrar;
+    _registrar = [SJVideoPlayerRegistrar new];
+    
+    __weak typeof(self) _self = self;
+    _registrar.willResignActive = ^(SJVideoPlayerRegistrar * _Nonnull registrar) {
+        __strong typeof(_self) self = _self;
+        if ( !self ) return;
+        self.lockedScreen = YES;
+        [self pause];
+    };
+    
+    _registrar.didBecomeActive = ^(SJVideoPlayerRegistrar * _Nonnull registrar) {
+        __strong typeof(_self) self = _self;
+        if ( !self ) return;
+        self.lockedScreen = NO;
+        if ( self.playOnCell && !self.scrollIn ) return;
+        if ( self.state == SJVideoPlayerPlayState_PlayEnd ||
+             self.state == SJVideoPlayerPlayState_Unknown ||
+             self.state == SJVideoPlayerPlayState_PlayFailed ) return;
+        if ( !self.userClickedPause ) [self play];
+    };
+    
+    _registrar.oldDeviceUnavailable = ^(SJVideoPlayerRegistrar * _Nonnull registrar) {
+        __strong typeof(_self) self = _self;
+        if ( !self ) return;
+        if ( !self.userClickedPause ) [self play];
+    };
+    
+    //    _registrar.categoryChange = ^(SJVideoPlayerRegistrar * _Nonnull registrar) {
+    //        __strong typeof(_self) self = _self;
+    //        if ( !self ) return;
+    //
+    //    };
+    
+    return _registrar;
+}
 
 #pragma mark -
 - (void)setState:(SJVideoPlayerPlayState)state {
@@ -508,12 +659,19 @@ NS_ASSUME_NONNULL_END
             break;
     }
     
-    _presentView.playState = state;
+    dispatch_async(dispatch_get_main_queue(), ^{
+        _presentView.playState = state;
+        if ( [self.controlViewDelegate respondsToSelector:@selector(videoPlayer:stateChanged:)] ) {
+            [self.controlViewDelegate videoPlayer:self stateChanged:state];
+        }
+    });
+
 }
 
 - (void)clear {
     self.asset = nil;
 }
+
 @end
 
 
@@ -577,6 +735,11 @@ NS_ASSUME_NONNULL_END
     return [self.asset timeString:secs];
 }
 
+- (float)progress {
+    if ( 0 == self.totalTime ) return 0;
+    return self.currentTime / self.totalTime;
+}
+
 /*!
  *  unit sec.
  *
@@ -630,17 +793,26 @@ NS_ASSUME_NONNULL_END
 
 @implementation SJVideoPlayer (Control)
 
-- (void)setLocked:(BOOL)locked {
-    objc_setAssociatedObject(self, @selector(isLocked), @(locked), OBJC_ASSOCIATION_RETAIN_NONATOMIC);
-    if      ( locked && [self.controlViewDelegate respondsToSelector:@selector(lockedVideoPlayer:)] ) {
+- (BOOL)userPaused {
+    return self.userClickedPause;
+}
+
+- (void)pauseForUser {
+    [self pause];
+    self.userClickedPause = YES;
+}
+
+- (void)setLockedScreen:(BOOL)lockedScreen {
+    objc_setAssociatedObject(self, @selector(isLockedScreen), @(lockedScreen), OBJC_ASSOCIATION_RETAIN_NONATOMIC);
+    if      ( lockedScreen && [self.controlViewDelegate respondsToSelector:@selector(lockedVideoPlayer:)] ) {
         [self.controlViewDelegate lockedVideoPlayer:self];
     }
-    else if ( !locked && [self.controlViewDelegate respondsToSelector:@selector(unlockedVideoPlayer:)] ) {
+    else if ( !lockedScreen && [self.controlViewDelegate respondsToSelector:@selector(unlockedVideoPlayer:)] ) {
         [self.controlViewDelegate unlockedVideoPlayer:self];
     }
 }
 
-- (BOOL)isLocked {
+- (BOOL)isLockedScreen {
     return [objc_getAssociatedObject(self, _cmd) boolValue];
 }
 
@@ -653,6 +825,10 @@ NS_ASSUME_NONNULL_END
 }
 
 - (BOOL)play {
+    self.suspend = NO;
+    self.stopped = NO;
+    
+    self.userClickedPause = NO;
     if ( !self.asset ) return NO;
     [self.asset.player play];
     self.state = SJVideoPlayerPlayState_Playing;
@@ -660,17 +836,34 @@ NS_ASSUME_NONNULL_END
 }
 
 - (BOOL)pause {
+    self.suspend = YES;
+    self.userClickedPause = NO;
+    
     if ( !self.asset ) return NO;
     [self.asset.player pause];
-    self.state = SJVideoPlayerPlayState_Paused;
+    if ( SJVideoPlayerPlayState_PlayEnd != self.state ) self.state = SJVideoPlayerPlayState_Paused;
     return YES;
 }
 
 - (void)stop {
+    self.suspend = NO;
+    self.stopped = YES;
+
     if ( !self.asset ) return;
-    
     [self clear];
     self.state = SJVideoPlayerPlayState_Unknown;
+}
+
+- (void)stopAndFadeOut {
+    self.suspend = NO;
+    self.stopped = YES;
+    [self.asset.player pause];
+    [UIView animateWithDuration:0.5 animations:^{
+        self.view.alpha = 0.001;
+    } completion:^(BOOL finished) {
+        [self stop];
+        [_view removeFromSuperview];
+    }];
 }
 
 - (void)replay {
@@ -790,9 +983,21 @@ NS_ASSUME_NONNULL_END
 - (void)generatedPreviewImagesWithMaxItemSize:(CGSize)itemSize
                                    completion:(void(^)(SJVideoPlayer *player, NSArray<id<SJVideoPlayerPreviewInfo>> *__nullable images, NSError *__nullable error))block {
     itemSize = CGSizeMake(ceil(itemSize.width), ceil(itemSize.height));
+    __weak typeof(self) _self = self;
     [self.asset generatedPreviewImagesWithMaxItemSize:itemSize completion:^(SJVideoPlayerAssetCarrier * _Nonnull asset, NSArray<SJVideoPreviewModel *> * _Nullable images, NSError * _Nullable error) {
+        __strong typeof(_self) self = _self;
+        if ( !self ) return;
         if ( block ) block(self, (id)images, error);
     }];
+}
+
+@end
+
+
+@implementation SJVideoPlayer (ScrollView)
+
+- (BOOL)playOnCell {
+    return self.asset.indexPath ? YES : NO;
 }
 
 @end
@@ -862,7 +1067,7 @@ NS_ASSUME_NONNULL_END
         }
     }
     else if ( [keyPath isEqualToString:@"locked"] ) {
-        if ( _videoPlayer.locked ) {
+        if ( _videoPlayer.isLockedScreen ) {
             [self.timerControl clear];
         }
         else {
@@ -901,7 +1106,8 @@ NS_ASSUME_NONNULL_END
 
         // 是否达到触发时机, 如果没达到时机, 则保持状态.
         if ( !self.videoPlayer.controlViewDataSource.controlLayerAppearCondition ||
-             !self.videoPlayer.controlViewDataSource.controlLayerDisappearCondition ) {
+             !self.videoPlayer.controlViewDataSource.controlLayerDisappearCondition ||
+             ( self.appearState && SJVideoPlayerPlayState_Paused == self.videoPlayer.state ) ) {
             [control reset];
         }
         else {

@@ -41,6 +41,11 @@ typedef NS_ENUM(NSUInteger, SJVideoPlayerBottomViewTag) {
 @optional
 - (void)bottomView:(SJVideoPlayerBottomControlView *)view clickedBtnTag:(SJVideoPlayerBottomViewTag)tag;
 
+- (void)sliderWillBeginDraggingForBottomView:(SJVideoPlayerBottomControlView *)view;
+
+- (void)bottomView:(SJVideoPlayerBottomControlView *)view sliderDidDrag:(CGFloat)value;
+
+- (void)sliderDidEndDraggingForBottomView:(SJVideoPlayerBottomControlView *)view;
 @end
 
 NS_ASSUME_NONNULL_END

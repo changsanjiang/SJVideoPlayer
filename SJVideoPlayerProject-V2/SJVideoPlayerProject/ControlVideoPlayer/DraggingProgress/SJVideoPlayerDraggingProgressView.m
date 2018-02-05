@@ -70,6 +70,7 @@
     switch ( _style = style ) {
         case SJVideoPlayerDraggingProgressViewStyleArrowProgress: {
             _previewImageView.hidden = YES;
+            _progressSlider.trackHeight = 3;
             [_directionImageView mas_remakeConstraints:^(MASConstraintMaker *make) {
                 make.top.offset(0);
                 make.bottom.equalTo(self.mas_centerY);
@@ -92,6 +93,7 @@
             break;
         case SJVideoPlayerDraggingProgressViewStylePreviewProgress: {
             _previewImageView.hidden = NO;
+            _progressSlider.trackHeight = 1;
             [_directionImageView mas_remakeConstraints:^(MASConstraintMaker *make) {
                 make.width.offset(10.0 / 375 * SJScreen_W());
                 make.centerY.equalTo(_spritTimeLabel);

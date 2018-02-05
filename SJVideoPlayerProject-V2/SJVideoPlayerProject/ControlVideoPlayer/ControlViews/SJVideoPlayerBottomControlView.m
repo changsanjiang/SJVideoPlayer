@@ -13,7 +13,7 @@
 #import "SJVideoPlayerControlMaskView.h"
 #import "UIView+SJVideoPlayerSetting.h"
 
-@interface SJVideoPlayerBottomControlView ()
+@interface SJVideoPlayerBottomControlView ()<SJSliderDelegate>
 
 @property (nonatomic, strong, readonly) UIButton *playBtn;
 @property (nonatomic, strong, readonly) UIButton *pauseBtn;
@@ -88,6 +88,7 @@
 }
 
 - (void)setProgress:(float)progress {
+    if ( self.progressSlider.isDragging ) return;
     self.progressSlider.value = progress;
 }
 
@@ -178,8 +179,26 @@
     if ( _progressSlider ) return _progressSlider;
     _progressSlider = [SJSlider new];
     _progressSlider.enableBufferProgress = YES;
-    _progressSlider.pan.enabled = NO;
+    _progressSlider.delegate = self;
     return _progressSlider;
+}
+
+- (void)sliderWillBeginDragging:(SJSlider *)slider {
+    if ( [self.delegate respondsToSelector:@selector(sliderWillBeginDraggingForBottomView:)] ) {
+        [self.delegate sliderWillBeginDraggingForBottomView:self];
+    }
+}
+
+- (void)sliderDidDrag:(SJSlider *)slider {
+    if ( [self.delegate respondsToSelector:@selector(bottomView:sliderDidDrag:)] ) {
+        [self.delegate bottomView:self sliderDidDrag:slider.value];
+    }
+}
+
+- (void)sliderDidEndDragging:(SJSlider *)slider {
+    if ( [self.delegate respondsToSelector:@selector(sliderDidEndDraggingForBottomView:)] ) {
+        [self.delegate sliderDidEndDraggingForBottomView:self];
+    }
 }
 
 - (UIButton *)fullBtn {

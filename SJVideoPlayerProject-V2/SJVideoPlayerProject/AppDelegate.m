@@ -14,8 +14,14 @@
 
 @implementation AppDelegate
 
+static void handler(NSException *exception) {
+    NSLog(@"%@", exception.callStackSymbols);
+}
 
 - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions {
+    
+    NSSetUncaughtExceptionHandler(&handler);
+    
     _window = [[UIWindow alloc] initWithFrame:[UIScreen mainScreen].bounds];
     _window.backgroundColor = [UIColor whiteColor];
     UIStoryboard *sb = [UIStoryboard storyboardWithName:@"Main" bundle:nil];

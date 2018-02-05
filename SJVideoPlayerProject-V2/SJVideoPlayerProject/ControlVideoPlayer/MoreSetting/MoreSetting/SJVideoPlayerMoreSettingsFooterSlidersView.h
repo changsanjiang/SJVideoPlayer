@@ -15,7 +15,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 + (CGFloat)height;
 
-@property (nonatomic, weak, readwrite) SJMoreSettingsFooterViewModel *model;
+@property (nonatomic, weak, readwrite, nullable) SJMoreSettingsFooterViewModel *model;
 
 @end
 

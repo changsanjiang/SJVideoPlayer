@@ -116,6 +116,16 @@ NS_ASSUME_NONNULL_END
         if ( !self ) return ;
         [self _itemPlayDidToEnd];
     };
+    
+    self.asset.rateChanged = ^(SJVideoPlayerAssetCarrier * _Nonnull asset, float rate) {
+        __strong typeof(_self) self = _self;
+        if ( !self ) return;
+        if ( [self.controlViewDelegate respondsToSelector:@selector(videoPlayer:rateChanged:)] ) {
+            [self.controlViewDelegate videoPlayer:self rateChanged:rate];
+        }
+    };
+
+    self.asset.rateChanged(asset, 1);
 }
 
 - (void)setControlViewDataSource:(id<SJVideoPlayerControlDataSource>)controlViewDataSource {
@@ -131,12 +141,15 @@ NS_ASSUME_NONNULL_END
 - (void)setControlViewDelegate:(id<SJVideoPlayerControlDelegate>)controlViewDelegate {
     _controlViewDelegate = controlViewDelegate;
     
-    if ( [controlViewDelegate respondsToSelector:@selector(videoPlayer:volumeChanged:)] ) {
-        [controlViewDelegate videoPlayer:self volumeChanged:_volBrigControl.volume];
-    }
-    if ( [controlViewDelegate respondsToSelector:@selector(videoPlayer:brightnessChanged:)] ) {
-        [controlViewDelegate videoPlayer:self brightnessChanged:_volBrigControl.brightness];
-    }
+    dispatch_async(dispatch_get_main_queue(), ^{
+        if ( [controlViewDelegate respondsToSelector:@selector(videoPlayer:volumeChanged:)] ) {
+            [controlViewDelegate videoPlayer:self volumeChanged:_volBrigControl.volume];
+        }
+        if ( [controlViewDelegate respondsToSelector:@selector(videoPlayer:brightnessChanged:)] ) {
+            [controlViewDelegate videoPlayer:self brightnessChanged:_volBrigControl.brightness];
+        }
+    });
+
 }
 
 - (void)setPlaceholder:(UIImage *)placeholder {
@@ -610,6 +623,35 @@ NS_ASSUME_NONNULL_END
         if ( !self ) return;
         [self play];
     }];
+}
+
+- (void)setVolume:(float)volume {
+    self.volBrigControl.volume = volume;
+}
+
+- (float)volume {
+    return self.volBrigControl.volume;
+}
+
+- (void)setBrightness:(float)brightness {
+    self.volBrigControl.brightness = brightness;
+}
+
+- (float)brightness {
+    return self.volBrigControl.brightness;
+}
+
+- (void)setRate:(float)rate {
+    self.asset.rate = rate;
+}
+
+- (float)rate {
+    if ( nil == self.asset ) return 1;
+    return self.asset.rate;
+}
+
+- (void)resetRate {
+    self.asset.rate = 1;
 }
 
 @end

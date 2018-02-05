@@ -34,6 +34,7 @@ static NSString *const SJVideoPlayerMoreSettingsFooterSlidersViewID = @"SJVideoP
     if ( !self ) return nil;
     [self _moreSettingsViewSetupUI];
     [self _moreSettingsHelper];
+    [SJUIFactory boundaryProtectedWithView:self];
     return self;
 }
 
@@ -41,10 +42,10 @@ static NSString *const SJVideoPlayerMoreSettingsFooterSlidersViewID = @"SJVideoP
     return CGSizeMake(SJScreen_Max() * 0.382, SJScreen_Min());
 }
 
-- (void)setFullscreen:(BOOL)fullscreen {
-    _fullscreen = fullscreen;
-    [self.colView reloadData];
-}
+//- (void)setFullscreen:(BOOL)fullscreen {
+//    _fullscreen = fullscreen;
+//    [self.colView reloadData];
+//}
 
 #pragma mark -
 

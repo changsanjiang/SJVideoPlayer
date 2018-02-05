@@ -75,9 +75,9 @@ NS_ASSUME_NONNULL_BEGIN
 @interface SJVideoPlayer (Control)
 
 /// 锁定播放器. 所有交互事件将不会触发.
-@property (nonatomic, assign, readwrite, getter=isLocked) BOOL locked;
+@property (nonatomic, readwrite, getter=isLocked) BOOL locked;
 
-@property (nonatomic, assign, readwrite, getter=isAutoPlay) BOOL autoPlay; // default is YES.
+@property (nonatomic, readwrite, getter=isAutoPlay) BOOL autoPlay; // default is YES.
 
 - (BOOL)play;
 
@@ -86,6 +86,11 @@ NS_ASSUME_NONNULL_BEGIN
 - (void)stop;
 
 - (void)replay;
+
+@property (nonatomic, readwrite) float volume;
+@property (nonatomic, readwrite) float brightness;
+@property (nonatomic, readwrite) float rate;
+- (void)resetRate;
 
 @end
 

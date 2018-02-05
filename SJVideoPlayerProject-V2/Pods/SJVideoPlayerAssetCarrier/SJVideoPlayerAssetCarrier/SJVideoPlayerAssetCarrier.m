@@ -135,6 +135,7 @@ static float const __GeneratePreImgScale = 0.05;
     // default value
     _scrollIn_bool = YES;
     _parent_scrollIn_bool = YES;
+    _rate = 1;
     return self;
 }
 
@@ -357,8 +358,11 @@ static float const __GeneratePreImgScale = 0.05;
         if ( completionHandler ) completionHandler(NO);
         return;
     }
-    
+    __weak typeof(self) _self = self;
     [_playerItem seekToTime:time completionHandler:^(BOOL finished) {
+        __strong typeof(_self) self = _self;
+        if ( !self ) return;
+        self.player.rate = self.rate;
         if ( completionHandler ) completionHandler(finished);
     }];
 }
@@ -376,6 +380,15 @@ static float const __GeneratePreImgScale = 0.05;
     if ( 0 == duration ) return 0;
     else return self.currentTime / duration;
 }
+
+#pragma mark -
+- (void)setRate:(float)rate {
+    _rate = rate;
+    _player.rate = rate;
+    if ( _rateChanged ) _rateChanged(self, rate);
+}
+
+#pragma mark -
 
 - (void)dealloc {
     [_tmp_imageGenerator cancelAllCGImageGeneration];

@@ -215,11 +215,11 @@ typedef NS_ENUM(NSUInteger, SJDisappearType) {
     [_previewView mas_makeConstraints:^(MASConstraintMaker *make) {
         make.top.equalTo(_topControlView.mas_bottom);
         make.leading.trailing.offset(0);
-        make.height.offset(_previewView.intrinsicContentSize.height);
     }];
     
     [_moreSettingsView mas_makeConstraints:^(MASConstraintMaker *make) {
         make.top.trailing.offset(0);
+        make.height.offset(_moreSettingsView.intrinsicContentSize.height);
     }];
     
     [self _setControlViewsDisappearType];
@@ -382,12 +382,50 @@ typedef NS_ENUM(NSUInteger, SJDisappearType) {
 - (SJVideoPlayerMoreSettingsView *)moreSettingsView {
     if ( _moreSettingsView ) return _moreSettingsView;
     _moreSettingsView = [SJVideoPlayerMoreSettingsView new];
+    _moreSettingsView.footerViewModel = self.footerViewModel;
     return _moreSettingsView;
 }
 
 - (SJMoreSettingsFooterViewModel *)footerViewModel {
     if ( _footerViewModel ) return _footerViewModel;
     _footerViewModel = [SJMoreSettingsFooterViewModel new];
+    
+    __weak typeof(self) _self = self;
+    _footerViewModel.initialBrightnessValue = ^float{
+        __strong typeof(_self) self = _self;
+        if ( !self ) return 0;
+        return self.videoPlayer.brightness;
+    };
+    
+    _footerViewModel.initialVolumeValue = ^float{
+        __strong typeof(_self) self = _self;
+        if ( !self ) return 0;
+        return self.videoPlayer.volume;
+    };
+    
+    _footerViewModel.initialPlayerRateValue = ^float{
+        __strong typeof(_self) self = _self;
+        if ( !self ) return 1;
+        return self.videoPlayer.rate;
+    };
+    
+    _footerViewModel.needChangeVolume = ^(float volume) {
+        __strong typeof(_self) self = _self;
+        if ( !self ) return;
+        self.videoPlayer.volume = volume;
+    };
+    
+    _footerViewModel.needChangeBrightness = ^(float brightness) {
+        __strong typeof(_self) self = _self;
+        if ( !self ) return;
+        self.videoPlayer.brightness = brightness;
+    };
+    
+    _footerViewModel.needChangePlayerRate = ^(float rate) {
+        __strong typeof(_self) self = _self;
+        if ( !self ) return;
+        self.videoPlayer.rate = rate;
+    };
     return _footerViewModel;
 }
 
@@ -473,8 +511,8 @@ typedef NS_ENUM(NSUInteger, SJDisappearType) {
         if ( _moreSettingsView.appearState ) [_moreSettingsView disappear];
         [_topControlView appear];
         [_bottomControlView appear];
-        if ( videoPlayer.isFullScreen ) [_leftControlView appear]; // 如果是小屏, 则不显示锁屏按钮
-        else [_leftControlView disappear];
+        if ( videoPlayer.isFullScreen ) [_leftControlView appear];
+        else [_leftControlView disappear]; // 如果是小屏, 则不显示锁屏按钮
         [_bottomSlider disappear];
     }];
     
@@ -526,12 +564,11 @@ typedef NS_ENUM(NSUInteger, SJDisappearType) {
     self.bottomControlView.fullscreen = isFull;
     self.topControlView.fullscreen = isFull;
     
-    // update
-    [self _setControlViewsDisappearValue];
+    [self _setControlViewsDisappearValue]; // update. `reset`.
     
-    [_topControlView disappear];
-    [_leftControlView disappear];
-    [_bottomControlView disappear];
+    [self controlLayerNeedDisappear:videoPlayer];
+    
+    if ( _moreSettingsView.appearState ) [_moreSettingsView disappear];
 }
 
 - (void)videoPlayer:(SJVideoPlayer *)videoPlayer lockStateDidChange:(BOOL)isLocked {

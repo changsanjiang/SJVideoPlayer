@@ -97,8 +97,8 @@ NS_ASSUME_NONNULL_END
     self.asset.playTimeChanged = ^(SJVideoPlayerAssetCarrier * _Nonnull asset, NSTimeInterval currentTime, NSTimeInterval duration) {
         __strong typeof(_self) self = _self;
         if ( !self ) return;
-        if ( [self.controlViewDelegate respondsToSelector:@selector(videoPlayer:currentTimeStr:totalTimeStr:)] ) {
-            [self.controlViewDelegate videoPlayer:self currentTimeStr:self.currentTimeStr totalTimeStr:self.totalTimeStr];
+        if ( [self.controlViewDelegate respondsToSelector:@selector(videoPlayer:currentTime:currentTimeStr:totalTime:totalTimeStr:)] ) {
+            [self.controlViewDelegate videoPlayer:self currentTime:currentTime currentTimeStr:self.currentTimeStr totalTime:duration totalTimeStr:self.totalTimeStr];
         }
     };
     

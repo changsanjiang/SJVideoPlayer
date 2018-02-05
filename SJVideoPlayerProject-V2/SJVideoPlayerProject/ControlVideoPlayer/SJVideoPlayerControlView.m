@@ -446,9 +446,9 @@ typedef NS_ENUM(NSUInteger, SJDisappearType) {
     [self controlLayerNeedAppear:videoPlayer];
 }
 
-- (void)videoPlayer:(SJVideoPlayer *)videoPlayer currentTimeStr:(NSString *)currentTimeStr totalTimeStr:(NSString *)totalTimeStr {
+- (void)videoPlayer:(SJVideoPlayer *)videoPlayer currentTime:(NSTimeInterval)currentTime currentTimeStr:(nonnull NSString *)currentTimeStr totalTime:(NSTimeInterval)totalTime totalTimeStr:(nonnull NSString *)totalTimeStr {
     [self.bottomControlView setCurrentTimeStr:currentTimeStr totalTimeStr:totalTimeStr];
-    self.bottomControlView.progress = videoPlayer.currentTime / videoPlayer.totalTime;
+    self.bottomControlView.progress = currentTime / totalTime;
     self.bottomSlider.value = self.bottomControlView.progress;
 }
 

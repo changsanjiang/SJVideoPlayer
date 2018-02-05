@@ -43,16 +43,13 @@ NS_ASSUME_NONNULL_BEGIN
 @required
 - (UIView *)controlView;
 
-@property (nonatomic, assign) BOOL controlLayerAppeared;
+@property (nonatomic, assign) BOOL controlLayerAppeared; // 控制层的显示状态, `YES`则表示已经显示.
 
-// 控制层将要显示之前会调用这个方法, 如果返回NO, 将不调用`controlLayerNeedAppear:`
-- (BOOL)controlLayerAppearCondition;
+- (BOOL)controlLayerAppearCondition; // 控制层将要显示之前会调用这个方法, 如果返回NO, 将不调用`controlLayerNeedAppear:`
 
-// 控制层将要隐藏之前会调用这个方法, 如果返回NO, 将不调用`controlLayerNeedDisappear:`
-- (BOOL)controlLayerDisappearCondition;
+- (BOOL)controlLayerDisappearCondition; // 控制层将要隐藏之前会调用这个方法, 如果返回NO, 将不调用`controlLayerNeedDisappear:`
 
-// 触发手势之前会调用这个方法
-- (BOOL)triggerGesturesCondition:(CGPoint)location;
+- (BOOL)triggerGesturesCondition:(CGPoint)location; // 触发手势之前会调用这个方法, 如果返回NO, 将不调用手势相关的代理方法.
 
 @optional
 
@@ -67,23 +64,23 @@ NS_ASSUME_NONNULL_BEGIN
 
 #pragma mark
 
-- (void)controlLayerNeedAppear:(SJVideoPlayer *)videoPlayer;
+- (void)controlLayerNeedAppear:(SJVideoPlayer *)videoPlayer;        // 控制层需要显示
 
-- (void)controlLayerNeedDisappear:(SJVideoPlayer *)videoPlayer;
+- (void)controlLayerNeedDisappear:(SJVideoPlayer *)videoPlayer;     // 控制层需要隐藏
 
-- (void)lockedVideoPlayer:(SJVideoPlayer *)videoPlayer;
+- (void)lockedVideoPlayer:(SJVideoPlayer *)videoPlayer;             // 播放器被锁定, 此时将会不旋转, 不会触发手势相关事件
 
-- (void)unlockedVideoPlayer:(SJVideoPlayer *)videoPlayer;
+- (void)unlockedVideoPlayer:(SJVideoPlayer *)videoPlayer;           // 播放器被解锁
 
 #pragma mark
 /**
- play time did change.
+ play time did change. time unit is sec.
 
  @param videoPlayer `video player`
  @param currentTimeStr `current time string.  formatter: 00:00 or 00:00:00`
  @param totalTimeStr `duration time string. formatter: 00:00 or 00:00:00`
  */
-- (void)videoPlayer:(SJVideoPlayer *)videoPlayer currentTimeStr:(NSString *)currentTimeStr totalTimeStr:(NSString *)totalTimeStr;
+- (void)videoPlayer:(SJVideoPlayer *)videoPlayer currentTime:(NSTimeInterval)currentTime currentTimeStr:(NSString *)currentTimeStr totalTime:(NSTimeInterval)totalTime totalTimeStr:(NSString *)totalTimeStr;
 
 /**
  loaded time progress.

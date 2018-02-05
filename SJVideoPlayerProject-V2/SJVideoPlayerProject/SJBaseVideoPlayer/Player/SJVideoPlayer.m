@@ -109,6 +109,14 @@ NS_ASSUME_NONNULL_END
             [self.controlViewDelegate videoPlayer:self loadedTimeProgress:progress];
         }
     };
+    
+    
+    self.asset.playDidToEnd = ^(SJVideoPlayerAssetCarrier * _Nonnull asset) {
+        __strong typeof(_self) self = _self;
+        if ( !self ) return ;
+        
+        
+    };
 }
 
 - (void)setControlViewDataSource:(id<SJVideoPlayerControlDataSource>)controlViewDataSource {
@@ -434,7 +442,9 @@ NS_ASSUME_NONNULL_END
  **/
 - (void)setURLAsset:(SJVideoPlayerURLAsset *)URLAsset {
     objc_setAssociatedObject(self, @selector(URLAsset), URLAsset, OBJC_ASSOCIATION_RETAIN_NONATOMIC);
-    self.asset = [URLAsset valueForKey:kSJVideoPlayerAssetKey];
+    dispatch_async(dispatch_get_main_queue(), ^{
+        self.asset = [URLAsset valueForKey:kSJVideoPlayerAssetKey];
+    });
 }
 
 - (SJVideoPlayerURLAsset *)URLAsset {
@@ -674,7 +684,6 @@ NS_ASSUME_NONNULL_END
 
 - (void)observeValueForKeyPath:(NSString *)keyPath ofObject:(id)object change:(NSDictionary<NSKeyValueChangeKey,id> *)change context:(void *)context {
     if ( [keyPath isEqualToString:@"state"] ) {
-        
         if      ( SJVideoPlayerPlayState_Paused == self.videoPlayer.state ) {
             [self _keepDisplay];
         }

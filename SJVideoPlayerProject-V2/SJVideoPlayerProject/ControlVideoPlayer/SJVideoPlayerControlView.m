@@ -150,7 +150,9 @@ typedef NS_ENUM(NSUInteger, SJDisappearType) {
                 self.generatePreviewImages = NO;
             }
                 break;
-            case SJVideoPlayerPlayState_Paused: {
+            case SJVideoPlayerPlayState_Paused:
+            case SJVideoPlayerPlayState_PlayFailed:
+            case SJVideoPlayerPlayState_PlayEnd: {
                 self.bottomControlView.playState = NO;
             }
                 break;
@@ -279,8 +281,10 @@ typedef NS_ENUM(NSUInteger, SJDisappearType) {
             break;
         case SJVideoPlayerTopViewTag_More: {
             [UIView animateWithDuration:0.3 animations:^{
-                if ( !self.moreSettingsView.appearState ) [self.moreSettingsView appear];
-                else [self.moreSettingsView disappear];
+                [self.moreSettingsView appear];
+                [self.topControlView disappear];
+                [self.leftControlView disappear];
+                [self.bottomControlView disappear];
             }];
         }
             break;
@@ -381,6 +385,11 @@ typedef NS_ENUM(NSUInteger, SJDisappearType) {
     self.leftControlView.lockState = isLocked;
     
     [UIView animateWithDuration:0.3 animations:^{
+        
+        if ( self.moreSettingsView.appearState ) {
+            [self.moreSettingsView disappear];
+        }
+        
         if ( displayState ) {
             [_topControlView appear];
             [_bottomControlView appear];

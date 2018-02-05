@@ -112,8 +112,8 @@ static NSString *const SJVideoPlayerMoreSettingsFooterSlidersViewID = @"SJVideoP
 }
 
 - (CGSize)collectionView:(UICollectionView *)collectionView layout:(UICollectionViewLayout*)collectionViewLayout referenceSizeForFooterInSection:(NSInteger)section {
-    if ( 0 == _moreSettings.count ) return CGSizeMake(self.bounds.size.width, [UIScreen mainScreen].bounds.size.height - 2 * (collectionView.contentInset.top + collectionView.contentInset.bottom));
-    return CGSizeMake(self.bounds.size.width, [SJVideoPlayerMoreSettingsFooterSlidersView height]);
+    if ( 0 == _moreSettings.count ) return CGSizeMake(self.intrinsicContentSize.width, self.intrinsicContentSize.height - 2 * (collectionView.contentInset.top + collectionView.contentInset.bottom));
+    return CGSizeMake(self.intrinsicContentSize.width, [SJVideoPlayerMoreSettingsFooterSlidersView height]);
 }
 
 #pragma mark -

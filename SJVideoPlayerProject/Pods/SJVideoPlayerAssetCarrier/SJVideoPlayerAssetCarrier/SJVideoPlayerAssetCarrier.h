@@ -47,6 +47,15 @@ NS_ASSUME_NONNULL_BEGIN
                    scrollViewTag:(NSInteger)scrollViewTag
                   rootScrollView:(__unsafe_unretained UIScrollView *__nullable)rootScrollView;
 
+- (instancetype)initWithAssetURL:(NSURL *)assetURL
+                       beginTime:(NSTimeInterval)beginTime
+                       indexPath:(NSIndexPath *__nullable)indexPath
+                    superviewTag:(NSInteger)superviewTag
+             scrollViewIndexPath:(NSIndexPath *__nullable)scrollViewIndexPath
+                   scrollViewTag:(NSInteger)scrollViewTag
+                      scrollView:(__unsafe_unretained UIScrollView *__nullable)scrollView
+                  rootScrollView:(__unsafe_unretained UIScrollView *__nullable)rootScrollView;
+
 #pragma mark - screenshot
 - (UIImage * __nullable)screenshot;
 

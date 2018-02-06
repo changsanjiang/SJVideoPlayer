@@ -1,8 +1,8 @@
 //
-//  SJVideoPlayerMoreSetting+SJControlAdd.h
+//  SJVideoPlayerMoreSetting+Exe.h
 //  SJVideoPlayerProject
 //
-//  Created by BlueDancer on 2018/2/5.
+//  Created by BlueDancer on 2018/2/6.
 //  Copyright © 2018年 SanJiang. All rights reserved.
 //
 
@@ -10,7 +10,7 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
-@interface SJVideoPlayerMoreSetting (SJControlAdd)
+@interface SJVideoPlayerMoreSetting (Exe)
 
 @property (nonatomic, copy, nullable) void(^_exeBlock)(SJVideoPlayerMoreSetting *setting);
 

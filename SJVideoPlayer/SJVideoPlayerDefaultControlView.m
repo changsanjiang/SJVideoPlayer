@@ -1,12 +1,12 @@
 //
-//  SJVideoPlayerControlView.m
+//  SJVideoPlayerDefaultControlView.m
 //  SJVideoPlayerProject
 //
-//  Created by BlueDancer on 2017/11/29.
-//  Copyright © 2017年 SanJiang. All rights reserved.
+//  Created by BlueDancer on 2018/2/6.
+//  Copyright © 2018年 SanJiang. All rights reserved.
 //
 
-#import "SJVideoPlayerControlView.h"
+#import "SJVideoPlayerDefaultControlView.h"
 #import "SJVideoPlayerBottomControlView.h"
 #import <Masonry/Masonry.h>
 #import "SJVideoPlayer.h"
@@ -21,7 +21,7 @@
 #import "SJVideoPlayerMoreSettingsView.h"
 #import "SJVideoPlayerMoreSettingSecondaryView.h"
 #import "SJMoreSettingsSlidersViewModel.h"
-#import "SJVideoPlayerMoreSetting+SJControlAdd.h"
+#import "SJVideoPlayerMoreSetting+Exe.h"
 #import "SJVideoPlayerMoreSettingSecondary.h"
 #import "SJVideoPlayerCenterControlView.h"
 #import <SJLoadingView/SJLoadingView.h>
@@ -32,7 +32,7 @@
 #pragma mark -
 
 NS_ASSUME_NONNULL_BEGIN
-@interface SJVideoPlayerControlView ()<SJVideoPlayerLeftControlViewDelegate, SJVideoPlayerBottomControlViewDelegate, SJVideoPlayerTopControlViewDelegate, SJVideoPlayerPreviewViewDelegate, SJVideoPlayerCenterControlViewDelegate>
+@interface SJVideoPlayerDefaultControlView ()<SJVideoPlayerLeftControlViewDelegate, SJVideoPlayerBottomControlViewDelegate, SJVideoPlayerTopControlViewDelegate, SJVideoPlayerPreviewViewDelegate, SJVideoPlayerCenterControlViewDelegate>
 
 @property (nonatomic, assign) BOOL hasBeenGeneratedPreviewImages;
 @property (nonatomic, strong, readonly) SJMoreSettingsSlidersViewModel *footerViewModel;
@@ -53,7 +53,7 @@ NS_ASSUME_NONNULL_BEGIN
 @end
 NS_ASSUME_NONNULL_END
 
-@implementation SJVideoPlayerControlView {
+@implementation SJVideoPlayerDefaultControlView {
     BOOL _controlLayerAppearedState;
 }
 
@@ -80,7 +80,9 @@ NS_ASSUME_NONNULL_END
 }
 
 - (void)dealloc {
+#ifndef DEBUG
     NSLog(@"%zd - %s", __LINE__, __func__);
+#endif
 }
 
 #pragma mark - setup views
@@ -280,7 +282,7 @@ NS_ASSUME_NONNULL_END
         }
             break;
         case SJVideoPlayerCenterViewTag_Failed: {
-            _videoPlayer.URLAsset = self.videoPlayer.URLAsset;
+            [_videoPlayer refresh];
         }
             break;
         default:
@@ -596,6 +598,13 @@ NS_ASSUME_NONNULL_END
             [self.centerControlView disappear];
         }];
     }
+}
+
+- (void)videoPlayer:(SJVideoPlayer *)videoPlayer playFailed:(NSError *)error {
+#ifndef DEBUG
+    NSLog(@"%@", error);
+#endif
+    [self.loadingView stop];
 }
 #pragma mark 进度
 /// 播放进度回调.

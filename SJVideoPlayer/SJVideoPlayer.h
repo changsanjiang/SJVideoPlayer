@@ -61,6 +61,8 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (void)playWithURL:(NSURL *)playURL jumpedToTime:(NSTimeInterval)time;
 
+- (void)refresh;
+
 @end
 
 

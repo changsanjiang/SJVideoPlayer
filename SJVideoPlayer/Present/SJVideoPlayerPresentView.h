@@ -7,16 +7,14 @@
 //
 
 #import <UIKit/UIKit.h>
-#import <AVFoundation/AVFoundation.h>
+#import <AVFoundation/AVPlayer.h>
 #import "SJVideoPlayerState.h"
 
 NS_ASSUME_NONNULL_BEGIN
 
-@class SJVideoPlayerAssetCarrier;
-
 @interface SJVideoPlayerPresentView : UIView
 
-@property (nonatomic, weak, nullable) SJVideoPlayerAssetCarrier *asset;
+@property (nonatomic, strong, nullable) AVPlayer *player;
 
 @property (nonatomic, copy, nullable) void(^readyForDisplay)(SJVideoPlayerPresentView *view, CGRect videoRect);
 

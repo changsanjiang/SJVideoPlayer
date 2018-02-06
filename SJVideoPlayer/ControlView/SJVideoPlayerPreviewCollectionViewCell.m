@@ -9,7 +9,6 @@
 #import "SJVideoPlayerPreviewCollectionViewCell.h"
 #import <SJUIFactory/SJUIFactory.h>
 #import <Masonry/Masonry.h>
-#import <SJVideoPlayerAssetCarrier/SJVideoPlayerAssetCarrier.h>
 
 @interface SJVideoPlayerPreviewCollectionViewCell ()
 
@@ -28,7 +27,7 @@
     return self;
 }
 
-- (void)setModel:(SJVideoPreviewModel *)model {
+- (void)setModel:(id<SJVideoPlayerPreviewInfo>)model {
     _model = model;
     _imageView.image = model.image;
 }

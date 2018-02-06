@@ -8,7 +8,6 @@
 
 #import "SJVideoPlayerPresentView.h"
 #import <AVFoundation/AVPlayerLayer.h>
-#import <SJVideoPlayerAssetCarrier/SJVideoPlayerAssetCarrier.h>
 #import <Masonry/Masonry.h>
 
 NS_ASSUME_NONNULL_BEGIN
@@ -48,6 +47,9 @@ NS_ASSUME_NONNULL_END
 }
 
 - (void)dealloc {
+#ifndef DEBUG
+    NSLog(@"%zd - %s", __LINE__, __func__);
+#endif
     [self.avLayer removeObserver:self forKeyPath:@"readyForDisplay"];
 }
 
@@ -59,10 +61,9 @@ NS_ASSUME_NONNULL_END
 
 #pragma mark -
 
-- (void)setAsset:(SJVideoPlayerAssetCarrier *)asset {
-    if ( asset == _asset ) return;
-    _asset = asset;
-    self.avLayer.player = asset.player;
+- (void)setPlayer:(AVPlayer *)player {
+    if ( player == _player ) return;
+    self.avLayer.player = player;
 }
 
 - (void)setPlaceholder:(UIImage *)placeholder {

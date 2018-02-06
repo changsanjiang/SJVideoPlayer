@@ -58,6 +58,8 @@
 
 - (void)videoPlayer:(SJVideoPlayer *)videoPlayer stateChanged:(SJVideoPlayerPlayState)state;  // 播放状态改变.
 
+- (void)videoPlayer:(SJVideoPlayer *)videoPlayer playFailed:(NSError *)error; // 播放报错
+
 #pragma mark - 进度
 - (void)videoPlayer:(SJVideoPlayer *)videoPlayer
         currentTime:(NSTimeInterval)currentTime currentTimeStr:(NSString *)currentTimeStr

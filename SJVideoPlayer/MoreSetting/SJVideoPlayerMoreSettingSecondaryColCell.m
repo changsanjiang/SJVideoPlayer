@@ -10,7 +10,7 @@
 #import <Masonry/Masonry.h>
 #import <SJAttributesFactory/SJAttributeWorker.h>
 #import <SJUIFactory/SJUIFactory.h>
-#import "SJVideoPlayerMoreSetting+SJControlAdd.h"
+#import "SJVideoPlayerMoreSetting+Exe.h"
 #import "SJVideoPlayerMoreSettingSecondary.h"
 
 @interface SJVideoPlayerMoreSettingSecondaryColCell ()

@@ -19,7 +19,7 @@
 #import "SJTimerControl.h"
 #import <SJObserverHelper/NSObject+SJObserverHelper.h>
 #import "SJVideoPlayerRegistrar.h"
-#import "SJVideoPlayerControlView.h"
+#import "SJVideoPlayerDefaultControlView.h"
 
 @interface SJVideoPlayerAssetCarrier (SJVideoPlayerAdd)
 @property (nonatomic, assign) CGSize videoPresentationSize;
@@ -48,7 +48,7 @@ NS_ASSUME_NONNULL_END
 #pragma mark -
 
 NS_ASSUME_NONNULL_BEGIN
-@interface SJVideoPlayer ()<SJVideoPlayerControlViewDelegate> {
+@interface SJVideoPlayer ()<SJVideoPlayerDefaultControlViewDelegate> {
     UIView *_view;
     SJVideoPlayerPresentView *_presentView;
     UIView *_controlContentView;
@@ -57,7 +57,7 @@ NS_ASSUME_NONNULL_BEGIN
     SJVolBrigControl *_volBrigControl;
     _SJVideoPlayerControlDisplayRecorder *_displayRecorder;
     SJVideoPlayerRegistrar *_registrar;
-    SJVideoPlayerControlView *_defaultControlView;
+    SJVideoPlayerDefaultControlView *_defaultControlView;
 }
 
 @property (nonatomic, assign, readwrite) BOOL userClickedPause;
@@ -77,7 +77,7 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic, strong, readonly) SJPlayerGestureControl *gestureControl;
 @property (nonatomic, strong, readonly) SJVolBrigControl *volBrigControl;
 @property (nonatomic, strong, readonly) _SJVideoPlayerControlDisplayRecorder *displayRecorder;
-@property (nonatomic, strong, readonly) SJVideoPlayerControlView *defaultControlView;
+@property (nonatomic, strong, readonly) SJVideoPlayerDefaultControlView *defaultControlView;
 
 - (void)clear;
 
@@ -121,6 +121,9 @@ NS_ASSUME_NONNULL_END
 }
 
 - (void)dealloc {
+#ifndef DEBUG
+    NSLog(@"%zd - %s", __LINE__, __func__);
+#endif
     [self stop];
 }
 
@@ -129,7 +132,7 @@ NS_ASSUME_NONNULL_END
 - (void)setAsset:(SJVideoPlayerAssetCarrier *)asset {
     _asset = asset;
     if ( !asset ) return;
-    self.presentView.asset = self.asset;
+    self.presentView.player = self.asset.player;
     [self _itemPrepareToPlay];
     
     __weak typeof(self) _self = self;
@@ -664,9 +667,9 @@ NS_ASSUME_NONNULL_END
     return _registrar;
 }
 
-- (SJVideoPlayerControlView *)defaultControlView {
+- (SJVideoPlayerDefaultControlView *)defaultControlView {
     if ( _defaultControlView ) return _defaultControlView;
-    _defaultControlView = [SJVideoPlayerControlView new];
+    _defaultControlView = [SJVideoPlayerDefaultControlView new];
     _defaultControlView.delegate = self;
     return _defaultControlView;
 }
@@ -674,6 +677,7 @@ NS_ASSUME_NONNULL_END
 #pragma mark -
 - (void)setState:(SJVideoPlayerPlayState)state {
     _state = state;
+#if 0
     switch ( state ) {
         case SJVideoPlayerPlayState_Unknown: {
             NSLog(@"状态: 未知");
@@ -706,18 +710,24 @@ NS_ASSUME_NONNULL_END
         default:
             break;
     }
-    
+#endif
     _presentView.playState = state;
     if ( [self.controlViewDelegate respondsToSelector:@selector(videoPlayer:stateChanged:)] ) {
         [self.controlViewDelegate videoPlayer:self stateChanged:state];
     }
+    if ( SJVideoPlayerPlayState_PlayFailed == state ) {
+        if ( [self.controlViewDelegate respondsToSelector:@selector(videoPlayer:playFailed:)] ) {
+            [self.controlViewDelegate videoPlayer:self playFailed:self.error];
+        }
+    }
 }
 
 - (void)clear {
+    self.presentView.player = nil;
     self.asset = nil;
 }
 
-- (void)clickedBackBtnOnControlView:(nonnull SJVideoPlayerControlView *)controlView {
+- (void)clickedBackBtnOnControlView:(nonnull SJVideoPlayerDefaultControlView *)controlView {
     if ( self.clickedBackEvent ) self.clickedBackEvent(self);
 }
 
@@ -771,6 +781,11 @@ NS_ASSUME_NONNULL_END
  **/
 - (void)playWithURL:(NSURL *)playURL jumpedToTime:(NSTimeInterval)time {
     self.URLAsset = [[SJVideoPlayerURLAsset alloc] initWithAssetURL:playURL beginTime:time];
+}
+
+- (void)refresh {
+    if ( !self.asset ) return;
+    self.asset = [[SJVideoPlayerAssetCarrier alloc] initWithAssetURL:self.asset.assetURL beginTime:self.asset.beginTime indexPath:self.asset.indexPath superviewTag:self.asset.superviewTag scrollViewIndexPath:self.asset.scrollViewIndexPath scrollViewTag:self.asset.scrollViewTag scrollView:self.asset.scrollView rootScrollView:self.asset.rootScrollView];
 }
 
 @end

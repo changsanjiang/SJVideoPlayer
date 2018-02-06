@@ -19,10 +19,10 @@
 
 @required
 /*!
- *  方法调用流程如下:
- *  if ( appear state == NO ) {                     // 1. `controlLayerAppearedState`
- *      if ( appear condition == YES ) {            // 2. `controlLayerAppearCondition`
- *          need appear ...                         // 3. `controlLayerNeedAppear:`
+ *  方法逻辑流程如下:
+ *  if ( control layer appear state == NO ) {       // 1. call `controlLayerAppearedState`
+ *      if ( appear condition == YES ) {            // 2. call `controlLayerAppearCondition`
+ *          need appear ...                         // 3. call `controlLayerNeedAppear:`
  *      }
  *  }
  *  else {
@@ -39,7 +39,7 @@
 
 - (BOOL)controlLayerDisappearCondition; // 控制层需要隐藏之前会调用这个方法, 如果返回NO, 将不调用`controlLayerNeedDisappear:`.
 
-- (BOOL)triggerGesturesCondition:(CGPoint)location; // 触发手势之前会调用这个方法, 如果返回NO, 将不调用手势相关的代理方法.
+- (BOOL)triggerGesturesCondition:(CGPoint)location; // 触发手势之前会调用这个方法, 如果返回NO, 将不调用水平手势相关的代理方法.
 
 @optional
 - (void)installedControlViewToVideoPlayer:(SJVideoPlayer *)videoPlayer; // 安装完控制层的回调.
@@ -53,51 +53,55 @@
 
 @optional
 
+#pragma mark - 播放之前/状态
+- (void)videoPlayer:(SJVideoPlayer *)videoPlayer prepareToPlay:(SJVideoPlayerURLAsset *)asset;  // 当设置播放资源时调用.
+
+- (void)videoPlayer:(SJVideoPlayer *)videoPlayer stateChanged:(SJVideoPlayerPlayState)state;  // 播放状态改变.
+
+#pragma mark - 进度
+- (void)videoPlayer:(SJVideoPlayer *)videoPlayer
+        currentTime:(NSTimeInterval)currentTime currentTimeStr:(NSString *)currentTimeStr
+          totalTime:(NSTimeInterval)totalTime totalTimeStr:(NSString *)totalTimeStr;    // 播放进度回调.
+
+- (void)videoPlayer:(SJVideoPlayer *)videoPlayer loadedTimeProgress:(float)progress; // 缓冲的进度.
+
+- (void)startLoading:(SJVideoPlayer *)videoPlayer;  // 开始缓冲.
+
+- (void)loadCompletion:(SJVideoPlayer *)videoPlayer;  // 缓冲完成.
+
+#pragma mark - 显示/消失
 - (void)controlLayerNeedAppear:(SJVideoPlayer *)videoPlayer;        // 控制层需要显示.
 
 - (void)controlLayerNeedDisappear:(SJVideoPlayer *)videoPlayer;     // 控制层需要隐藏.
 
-- (void)lockedVideoPlayer:(SJVideoPlayer *)videoPlayer;             // 播放器被锁屏, 此时将会不旋转, 不会触发手势相关事件.
+- (void)videoPlayerWillAppearInScrollView:(SJVideoPlayer *)videoPlayer;   //  在`tableView`或`collectionView`上将要显示的时候调用.
 
-- (void)unlockedVideoPlayer:(SJVideoPlayer *)videoPlayer;           // 播放器被解锁.
+- (void)videoPlayerWillDisappearInScrollView:(SJVideoPlayer *)videoPlayer;   //  在`tableView`或`collectionView`上将要消失的时候调用.
 
-- (void)videoPlayer:(SJVideoPlayer *)videoPlayer prepareToPlay:(SJVideoPlayerURLAsset *)asset;
+#pragma mark - 锁屏
+- (void)lockedVideoPlayer:(SJVideoPlayer *)videoPlayer;             // 播放器被锁屏, 此时将不旋转, 不触发手势相关事件.
 
-- (void)videoPlayer:(SJVideoPlayer *)videoPlayer
-        currentTime:(NSTimeInterval)currentTime currentTimeStr:(NSString *)currentTimeStr
-          totalTime:(NSTimeInterval)totalTime totalTimeStr:(NSString *)totalTimeStr;
+- (void)unlockedVideoPlayer:(SJVideoPlayer *)videoPlayer;           // 播放器解除锁屏.
 
-- (void)videoPlayer:(SJVideoPlayer *)videoPlayer loadedTimeProgress:(float)progress; // 缓冲的进度.
-
-- (void)startLoading:(SJVideoPlayer *)videoPlayer;  // 开始缓冲
-
-- (void)loadCompletion:(SJVideoPlayer *)videoPlayer;  // 缓冲完成
-
+#pragma mark - 屏幕旋转
 - (void)videoPlayer:(SJVideoPlayer *)videoPlayer willRotateView:(BOOL)isFull;   // 播放器将要旋转屏幕, `isFull`如果为`YES`, 则全屏.
 
+#pragma mark - 音量 / 亮度 / 播放速度
 - (void)videoPlayer:(SJVideoPlayer *)videoPlayer volumeChanged:(float)volume;   // 声音被改变.
 
 - (void)videoPlayer:(SJVideoPlayer *)videoPlayer brightnessChanged:(float)brightness;   // 亮度被改变.
 
 - (void)videoPlayer:(SJVideoPlayer *)videoPlayer rateChanged:(float)rate;   // 播放速度被改变.
 
+#pragma mark - 水平手势
 - (void)horizontalDirectionWillBeginDragging:(SJVideoPlayer *)videoPlayer;    // 水平方向开始拖动.
 
 - (void)videoPlayer:(SJVideoPlayer *)videoPlayer horizontalDirectionDidDrag:(CGFloat)translation; // 水平方向拖动中. `translation`为此次增加的值.
 
 - (void)horizontalDirectionDidEndDragging:(SJVideoPlayer *)videoPlayer;   // 水平方向拖动结束.
 
+#pragma mark - size
 - (void)videoPlayer:(SJVideoPlayer *)videoPlayer presentationSize:(CGSize)size;
-
-- (void)videoPlayerWillAppearInScrollView:(SJVideoPlayer *)videoPlayer;
-
-- (void)videoPlayerWillDisappearInScrollView:(SJVideoPlayer *)videoPlayer;
-
-- (void)videoPlayer:(SJVideoPlayer *)videoPlayer stateChanged:(SJVideoPlayerPlayState)state;
-
-- (void)scrollViewWillDisplayVideoPlayer:(SJVideoPlayer *)videoPlayer; // 如果是在`tableView`或者`collectionView`上播放, 这个方法会在播放器滚入界面时调用.
-
-- (void)scrollViewDidEndDisplayingVideoPlayer:(SJVideoPlayer *)videoPlayer; // 如果是在`tableView`或者`collectionView`上播放, 这个方法会在播放器离开界面时调用.
 
 @end
 

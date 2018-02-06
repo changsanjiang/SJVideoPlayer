@@ -213,8 +213,8 @@ NS_ASSUME_NONNULL_END
                 }];
             }
 
-            if ( [self.controlViewDelegate respondsToSelector:@selector(scrollViewWillDisplayVideoPlayer:)] ) {
-                [self.controlViewDelegate scrollViewWillDisplayVideoPlayer:self];
+            if ( [self.controlViewDelegate respondsToSelector:@selector(videoPlayerWillAppearInScrollView:)] ) {
+                [self.controlViewDelegate videoPlayerWillAppearInScrollView:self];
             }
             //            if ( !self.userPaused &&
             //                 self.state != SJVideoPlayerPlayState_PlayEnd ) [self play];
@@ -226,8 +226,8 @@ NS_ASSUME_NONNULL_END
             if ( !self ) return;
             if ( !self.scrollIn ) return;
             self.scrollIn = NO;
-            if ( [self.controlViewDelegate respondsToSelector:@selector(scrollViewDidEndDisplayingVideoPlayer:)] ) {
-                [self.controlViewDelegate scrollViewDidEndDisplayingVideoPlayer:self];
+            if ( [self.controlViewDelegate respondsToSelector:@selector(videoPlayerWillDisappearInScrollView:)] ) {
+                [self.controlViewDelegate videoPlayerWillDisappearInScrollView:self];
             }
         };
 
@@ -667,6 +667,7 @@ NS_ASSUME_NONNULL_END
 - (SJVideoPlayerControlView *)defaultControlView {
     if ( _defaultControlView ) return _defaultControlView;
     _defaultControlView = [SJVideoPlayerControlView new];
+    _defaultControlView.delegate = self;
     return _defaultControlView;
 }
 

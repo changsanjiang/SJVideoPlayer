@@ -420,12 +420,12 @@
 		A6E6D3022028BE9B00CB9BAE /* Model */ = {
 			isa = PBXGroup;
 			children = (
+				A6E6D3062028BE9B00CB9BAE /* SJVideoPlayerMoreSetting+SJControlAdd.m */,
 				A6E6D3032028BE9B00CB9BAE /* SJVideoPlayerMoreSetting+SJControlAdd.h */,
+				A6E6D3082028BE9B00CB9BAE /* UIView+SJControlAdd.h */,
 				A6E6D3042028BE9B00CB9BAE /* UIView+SJControlAdd.m */,
 				A6E6D3052028BE9B00CB9BAE /* SJVideoPlayerURLAsset+SJControlAdd.h */,
-				A6E6D3062028BE9B00CB9BAE /* SJVideoPlayerMoreSetting+SJControlAdd.m */,
 				A6E6D3072028BE9B00CB9BAE /* SJVideoPlayerURLAsset+SJControlAdd.m */,
-				A6E6D3082028BE9B00CB9BAE /* UIView+SJControlAdd.h */,
 			);
 			path = Model;
 			sourceTree = "<group>";

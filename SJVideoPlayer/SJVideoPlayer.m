@@ -41,6 +41,7 @@ NS_ASSUME_NONNULL_BEGIN
 - (void)considerDisplay;
 - (void)needDisplay;
 - (void)needHidden;
+- (void)clear;
 @end
 NS_ASSUME_NONNULL_END
 
@@ -1265,6 +1266,10 @@ NS_ASSUME_NONNULL_END
 - (void)needHidden {
     [self.timerControl clear];
     [self _callDelegateMethodWithStatus:NO];
+}
+
+- (void)clear {
+    [self.timerControl clear];
 }
 
 - (SJTimerControl *)timerControl {

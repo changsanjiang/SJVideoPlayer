@@ -639,7 +639,7 @@ NS_ASSUME_NONNULL_END
 /// 控制层需要显示.
 - (void)controlLayerNeedAppear:(SJVideoPlayer *)videoPlayer {
     [UIView animateWithDuration:0.3 animations:^{
-        if ( videoPlayer.playOnCell ) {
+        if ( videoPlayer.playOnCell && !videoPlayer.isFullScreen ) {
             if ( videoPlayer.URLAsset.alwaysShowTitle ) [_topControlView appear];
             else [_topControlView disappear];
         }

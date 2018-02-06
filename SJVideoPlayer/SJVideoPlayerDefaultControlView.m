@@ -639,8 +639,7 @@ NS_ASSUME_NONNULL_END
 /// 控制层需要显示.
 - (void)controlLayerNeedAppear:(SJVideoPlayer *)videoPlayer {
     [UIView animateWithDuration:0.3 animations:^{
-        if      ( videoPlayer.isFullScreen ) [_topControlView appear];
-        else if ( videoPlayer.playOnCell ) {
+        if ( videoPlayer.playOnCell ) {
             if ( videoPlayer.URLAsset.alwaysShowTitle ) [_topControlView appear];
             else [_topControlView disappear];
         }
@@ -716,6 +715,7 @@ NS_ASSUME_NONNULL_END
     [self controlLayerNeedDisappear:videoPlayer];
     
     if ( _moreSettingsView.appearState ) [_moreSettingsView disappear];
+    if ( _moreSecondarySettingView.appearState ) [_moreSecondarySettingView disappear];
 }
 
 #pragma mark 音量 / 亮度 / 播放速度

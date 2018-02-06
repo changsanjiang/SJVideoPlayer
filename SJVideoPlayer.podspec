@@ -25,7 +25,7 @@ s.dependency 'SJVideoPlayerAssetCarrier'
 s.dependency 'SJVolBrigControl'
 s.dependency 'SJObserverHelper'
 
-#s.source_files = 'SJVideoPlayer/*.{h,m}'
+s.source_files = 'SJVideoPlayer/*.{h,m}'
 
 s.subspec 'Header' do |ss|
     ss.source_files = 'SJVideoPlayer/Header/*.{h}'

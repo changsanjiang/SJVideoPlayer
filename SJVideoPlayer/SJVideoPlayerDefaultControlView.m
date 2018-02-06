@@ -200,7 +200,6 @@ NS_ASSUME_NONNULL_END
 - (SJVideoPlayerDraggingProgressView *)draggingProgressView {
     if ( _draggingProgressView ) return _draggingProgressView;
     _draggingProgressView = [SJVideoPlayerDraggingProgressView new];
-    [_draggingProgressView setPreviewImage:[UIImage imageNamed:@"placeholder"]];
     return _draggingProgressView;
 }
 

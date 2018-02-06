@@ -56,6 +56,7 @@ static NSString *SJVideoPlayerPreviewCollectionViewCellID = @"SJVideoPlayerPrevi
 - (UICollectionView *)collectionView {
     if ( _collectionView ) return _collectionView;
     UICollectionViewFlowLayout *layout = [UICollectionViewFlowLayout new];
+    layout.minimumInteritemSpacing = 0;
     layout.scrollDirection = UICollectionViewScrollDirectionHorizontal;
     _collectionView = [[UICollectionView alloc] initWithFrame:CGRectZero collectionViewLayout:layout];
     _collectionView.backgroundColor = [UIColor clearColor];
@@ -79,17 +80,13 @@ static NSString *SJVideoPlayerPreviewCollectionViewCellID = @"SJVideoPlayerPrevi
 - (CGSize)collectionView:(UICollectionView *)collectionView layout:(UICollectionViewLayout*)collectionViewLayout sizeForItemAtIndexPath:(NSIndexPath *)indexPath {
     CGSize imageSize = _previewImages.firstObject.image.size;
     CGFloat rate = imageSize.width / imageSize.height;
-    CGFloat height = self.intrinsicContentSize.height - (collectionView.contentInset.top + collectionView.contentInset.bottom);
-    CGFloat width = rate * height;
+    CGFloat height = floor(self.intrinsicContentSize.height - (collectionView.contentInset.top + collectionView.contentInset.bottom));
+    CGFloat width = floor(rate * height);
     return CGSizeMake( width, height );
 }
 
 - (CGFloat)collectionView:(UICollectionView *)collectionView layout:(UICollectionViewLayout*)collectionViewLayout minimumLineSpacingForSectionAtIndex:(NSInteger)section {
     return 8;
-}
-
-- (CGFloat)collectionView:(UICollectionView *)collectionView layout:(UICollectionViewLayout*)collectionViewLayout minimumInteritemSpacingForSectionAtIndex:(NSInteger)section {
-    return 0;
 }
 
 - (void)collectionView:(UICollectionView *)collectionView didSelectItemAtIndexPath:(NSIndexPath *)indexPath {

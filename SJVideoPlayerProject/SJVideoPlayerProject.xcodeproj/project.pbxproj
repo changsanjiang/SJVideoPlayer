@@ -433,10 +433,10 @@
 		A6E6D3092028BE9B00CB9BAE /* Preview */ = {
 			isa = PBXGroup;
 			children = (
-				A6E6D30A2028BE9B00CB9BAE /* SJVideoPlayerPreviewView.m */,
 				A6E6D30B2028BE9B00CB9BAE /* SJVideoPlayerPreviewCollectionViewCell.h */,
-				A6E6D30C2028BE9B00CB9BAE /* SJVideoPlayerPreviewView.h */,
 				A6E6D30D2028BE9B00CB9BAE /* SJVideoPlayerPreviewCollectionViewCell.m */,
+				A6E6D30C2028BE9B00CB9BAE /* SJVideoPlayerPreviewView.h */,
+				A6E6D30A2028BE9B00CB9BAE /* SJVideoPlayerPreviewView.m */,
 			);
 			path = Preview;
 			sourceTree = "<group>";

@@ -68,6 +68,7 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic, assign, readwrite) BOOL touchedScrollView; // 如果为`YES`, 则不旋转
 @property (nonatomic, assign, readwrite) BOOL suspend; // Set it when the [`pause` + `play` + `stop`] is called.
 @property (nonatomic, assign, readwrite) BOOL stopped; // Set it when the [`play` + `stop`] is called.
+@property (nonatomic, assign, readwrite) BOOL resignActive; // app 进入后台, 进入前台时会设置
 
 @property (nonatomic, strong, readonly) SJVideoPlayerRegistrar *registrar;
 @property (nonatomic, strong, readonly) UIView *controlContentView;
@@ -98,7 +99,7 @@ NS_ASSUME_NONNULL_END
     return [[self alloc] init];
 }
 
-- (instancetype)init { 
+- (instancetype)init {
     return [self initWithControlViewDataSource:nil controlViewDelegate:nil];
 }
 
@@ -427,6 +428,7 @@ NS_ASSUME_NONNULL_END
         if ( self.playOnCell && !self.scrollIn ) return NO;
         if ( self.disableRotation ) return NO;
         if ( self.isLockedScreen ) return NO;
+        if ( self.resignActive ) return NO;
         return YES;
     };
     
@@ -632,14 +634,14 @@ NS_ASSUME_NONNULL_END
     _registrar.willResignActive = ^(SJVideoPlayerRegistrar * _Nonnull registrar) {
         __strong typeof(_self) self = _self;
         if ( !self ) return;
-        self.lockedScreen = YES;
+        self.resignActive = YES;
         if ( self.state != SJVideoPlayerPlayState_Paused ) [self.asset.player pause];
     };
     
     _registrar.didBecomeActive = ^(SJVideoPlayerRegistrar * _Nonnull registrar) {
         __strong typeof(_self) self = _self;
         if ( !self ) return;
-        self.lockedScreen = NO;
+        self.resignActive = NO;
         if ( self.playOnCell && !self.scrollIn ) return;
         if ( self.state == SJVideoPlayerPlayState_PlayEnd ||
              self.state == SJVideoPlayerPlayState_Unknown ||
@@ -846,6 +848,7 @@ NS_ASSUME_NONNULL_END
     else if ( !lockedScreen && [self.controlViewDelegate respondsToSelector:@selector(unlockedVideoPlayer:)] ) {
         [self.controlViewDelegate unlockedVideoPlayer:self];
     }
+    if ( self.controlViewDisplayStatus ) self.controlViewDisplayStatus(self, !lockedScreen);
 }
 
 - (BOOL)isLockedScreen {
@@ -1012,7 +1015,7 @@ NS_ASSUME_NONNULL_END
 }
 
 - (BOOL)controlViewDisplayed {
-    return !self.controlViewDataSource.controlLayerAppearedState;
+    return self.controlViewDataSource.controlLayerAppearedState;
 }
 
 @end

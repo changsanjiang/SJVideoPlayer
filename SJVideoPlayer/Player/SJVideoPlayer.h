@@ -31,12 +31,12 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (instancetype)init;   // 使用默认的控制层
 
-- (instancetype)initWithControlViewDataSource:(id<SJVideoPlayerControlDataSource>)controlViewDataSource
-                          controlViewDelegate:(id<SJVideoPlayerControlDelegate>)controlViewDelegate;    // 指定控制层
+- (instancetype)initWithControlViewDataSource:(nullable id<SJVideoPlayerControlDataSource> )controlViewDataSource
+                          controlViewDelegate:(nullable id<SJVideoPlayerControlDelegate>)controlViewDelegate;    // 指定控制层
 
-@property (nonatomic, weak, nullable) id <SJVideoPlayerControlDataSource> controlViewDataSource;
+@property (nonatomic, weak, readonly) id <SJVideoPlayerControlDataSource> controlViewDataSource;
 
-@property (nonatomic, weak, nullable) id <SJVideoPlayerControlDelegate> controlViewDelegate;
+@property (nonatomic, weak, readonly) id <SJVideoPlayerControlDelegate> controlViewDelegate;
 
 @property (nonatomic, strong, readonly) UIView *view;   // 播放器视图
 

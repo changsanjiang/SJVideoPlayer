@@ -15,7 +15,11 @@ NS_ASSUME_NONNULL_BEGIN
 /// default is 3;
 @property (nonatomic, assign, readwrite) short interval;
 
-- (void)start:(void(^)(SJTimerControl *control))block;
+@property (nonatomic, copy, readwrite, nullable) void(^exeBlock)(SJTimerControl *control);
+
+- (void)start;
+
+- (void)clear;
 
 - (void)reset;
 

@@ -14,7 +14,7 @@ typedef NS_ENUM(NSUInteger, SJVideoPlayerPlayState) {
     SJVideoPlayerPlayState_Prepare,
     SJVideoPlayerPlayState_Playing,
     SJVideoPlayerPlayState_Buffing,
-    SJVideoPlayerPlayState_Pause,
+    SJVideoPlayerPlayState_Paused,
     SJVideoPlayerPlayState_PlayEnd,
     SJVideoPlayerPlayState_PlayFailed,
 };

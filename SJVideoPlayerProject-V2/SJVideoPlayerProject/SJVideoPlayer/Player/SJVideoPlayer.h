@@ -116,6 +116,7 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic, readwrite) float brightness;
 @property (nonatomic, readwrite) float rate; // 0.5...2
 - (void)resetRate;
+@property (nonatomic, copy, readwrite, nullable) void(^rateChanged)(SJVideoPlayer *player);
 
 @property (nonatomic, copy, readwrite, nullable) void(^playDidToEnd)(SJVideoPlayer *player); // 播放完毕
 
@@ -135,6 +136,22 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic, copy, readwrite, nullable) void(^rotatedScreen)(SJVideoPlayer *player, BOOL isFullScreen);    // 已旋转
 
 @property (nonatomic, assign, readonly) BOOL isFullScreen;  // 是否全屏
+
+@end
+
+
+#pragma mark - 控制视图
+
+@interface SJVideoPlayer (ControlView)
+
+/*!
+ *  Call when the control view is hidden or displayed.
+ *
+ *  控制视图隐藏或显示的时候调用.
+ **/
+@property (nonatomic, copy, readwrite, nullable) void(^controlViewDisplayStatus)(SJVideoPlayer *player, BOOL displayed);
+
+@property (nonatomic, assign, readonly) BOOL controlViewDisplayed; // 控制视图是否显示
 
 @end
 

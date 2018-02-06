@@ -95,6 +95,12 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (void)seekToTime:(CMTime)time completionHandler:(void (^ __nullable)(BOOL finished))completionHandler;
 
+
+#pragma mark - rate
+@property (nonatomic, assign) float rate; // default is 1.0
+@property (nonatomic, copy, readwrite, nullable) void(^rateChanged)(SJVideoPlayerAssetCarrier *asset, float rate);
+
+
 #pragma mark - other
 - (NSString *)timeString:(NSInteger)secs;
 

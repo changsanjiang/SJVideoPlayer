@@ -9,23 +9,22 @@
 #import <UIKit/UIKit.h>
 #import <AVFoundation/AVFoundation.h>
 #import "SJVideoPlayerState.h"
-#import "SJVideoPlayerBaseView.h"
 
 NS_ASSUME_NONNULL_BEGIN
 
 @class SJVideoPlayerAssetCarrier;
 
-@interface SJVideoPlayerPresentView : SJVideoPlayerBaseView
+@interface SJVideoPlayerPresentView : UIView
 
-@property (nonatomic, weak, readwrite, nullable) SJVideoPlayerAssetCarrier *asset;
+@property (nonatomic, weak, nullable) SJVideoPlayerAssetCarrier *asset;
 
-@property (nonatomic, copy, readwrite, nullable) void(^readyForDisplay)(SJVideoPlayerPresentView *view, CGRect videoRect);
+@property (nonatomic, copy, nullable) void(^readyForDisplay)(SJVideoPlayerPresentView *view, CGRect videoRect);
 
-@property (nonatomic, strong, readwrite, nullable) UIImage *placeholder;
+@property (nonatomic, strong, nullable) UIImage *placeholder;
 
-@property (nonatomic, assign, readwrite) SJVideoPlayerPlayState state;
+@property (nonatomic, copy) AVLayerVideoGravity videoGravity; // default is AVLayerVideoGravityResizeAspect.
 
-@property (nonatomic, copy, readwrite) AVLayerVideoGravity videoGravity; // default is AVLayerVideoGravityResizeAspect.
+@property (nonatomic) SJVideoPlayerPlayState playState;
 
 @end
 

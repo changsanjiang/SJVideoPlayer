@@ -11,11 +11,15 @@
 #import <SJVideoPlayerAssetCarrier/SJVideoPlayerAssetCarrier.h>
 #import <Masonry/Masonry.h>
 
+NS_ASSUME_NONNULL_BEGIN
+
 @interface SJVideoPlayerPresentView ()
 
 @property (nonatomic, strong, readonly) UIImageView *placeholderImageView;
 
 @end
+
+NS_ASSUME_NONNULL_END
 
 @implementation SJVideoPlayerPresentView
 
@@ -34,12 +38,6 @@
     if ( !self ) return nil;
     [self _presentSetupView];
     [self _addObserver];
-    __weak typeof(self) _self = self;
-    self.setting = ^(SJVideoPlayerSettings * _Nonnull setting) {
-        __strong typeof(_self) self = _self;
-        if ( !self ) return;
-        self.placeholder = setting.placeholder;
-    };
     return self;
 }
 
@@ -73,10 +71,10 @@
     _placeholderImageView.image = placeholder;
 }
 
-- (void)setState:(SJVideoPlayerPlayState)state {
-    _state = state;
+- (void)setPlayState:(SJVideoPlayerPlayState)playState {
+    _playState = playState;
     [UIView animateWithDuration:0.5 animations:^{
-        switch ( state ) {
+        switch ( playState ) {
             case SJVideoPlayerPlayState_Unknown:
             case SJVideoPlayerPlayState_Prepare: {
                 _placeholderImageView.alpha = 1;
@@ -87,7 +85,7 @@
             }
                 break;
             case SJVideoPlayerPlayState_Buffing:
-            case SJVideoPlayerPlayState_Pause:
+            case SJVideoPlayerPlayState_Paused:
             case SJVideoPlayerPlayState_PlayEnd:
             case SJVideoPlayerPlayState_PlayFailed: break;
         }
@@ -95,7 +93,7 @@
 }
 
 - (void)setVideoGravity:(AVLayerVideoGravity)videoGravity {
-    [self avLayer].videoGravity = videoGravity;
+    [self avLayer].videoGravity = videoGravity.copy;
 }
 
 - (AVLayerVideoGravity)videoGravity {

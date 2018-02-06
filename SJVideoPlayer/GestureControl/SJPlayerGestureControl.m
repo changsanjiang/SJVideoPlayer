@@ -53,7 +53,12 @@
     if ( gestureRecognizer == self.pinchGR ) {
         if ( self.pinchGR.numberOfTouches <= 1 ) return NO;
     }
-    if ( _triggerCondition ) return _triggerCondition(self, gestureRecognizer);
+    SJPlayerGestureType type = SJPlayerGestureType_Unknown;
+    if ( gestureRecognizer == self.singleTap ) type = SJPlayerGestureType_SingleTap;
+    else if ( gestureRecognizer == self.doubleTap ) type = SJPlayerGestureType_DoubleTap;
+    else if ( gestureRecognizer == self.panGR ) type = SJPlayerGestureType_Pan;
+    else if ( gestureRecognizer == self.pinchGR ) type = SJPlayerGestureType_Pinch;
+    if ( _triggerCondition ) return _triggerCondition(self, type, gestureRecognizer);
     return YES;
 }
 

@@ -120,6 +120,7 @@ NS_ASSUME_NONNULL_END
     if ( error ) NSLog(@"%@", error.userInfo);
     [self registrar];
     [self view];
+    if ( _defaultControlView() == controlViewDataSource ) _defaultControlView().delegate = self;
     self.controlViewDataSource = controlViewDataSource;
     self.controlViewDelegate = controlViewDelegate;
     return self;
@@ -190,6 +191,7 @@ NS_ASSUME_NONNULL_END
         if ( [self.controlViewDelegate respondsToSelector:@selector(videoPlayer:rateChanged:)] ) {
             [self.controlViewDelegate videoPlayer:self rateChanged:rate];
         }
+        if ( self.rateChanged ) self.rateChanged(self);
     };
 
     if ( asset.indexPath ) {
@@ -300,6 +302,10 @@ NS_ASSUME_NONNULL_END
     
     self.userClickedPause = NO;
     self.state = SJVideoPlayerPlayState_Prepare;
+    
+    if ( [self.controlViewDelegate respondsToSelector:@selector(videoPlayer:prepareToPlay:)] ) {
+        [self.controlViewDelegate videoPlayer:self prepareToPlay:self.URLAsset];
+    }
 }
 
 - (void)_itemPlayFailed {
@@ -438,6 +444,7 @@ NS_ASSUME_NONNULL_END
         if ( [self.controlViewDelegate respondsToSelector:@selector(videoPlayer:willRotateView:)] ) {
             [self.controlViewDelegate videoPlayer:self willRotateView:isFullScreen];
         }
+        if ( self.willRotateScreen ) self.willRotateScreen(self, isFullScreen);
     };
     
     _orentationObserver.orientationChanged = ^(SJOrentationObserver * _Nonnull observer, BOOL isFullScreen) {
@@ -780,20 +787,10 @@ NS_ASSUME_NONNULL_END
     return self.currentTime / self.totalTime;
 }
 
-/*!
- *  unit sec.
- *
- *  当前播放时间.
- */
 - (NSTimeInterval)currentTime {
     return self.asset.currentTime;
 }
 
-/*!
- *  unit sec.
- *
- *  当前视频的全部播放时间.
- **/
 - (NSTimeInterval)totalTime {
     return self.asset.duration;
 }
@@ -944,6 +941,14 @@ NS_ASSUME_NONNULL_END
     self.asset.rate = 1;
 }
 
+- (void)setRateChanged:(void (^)(SJVideoPlayer * _Nonnull))rateChanged {
+    objc_setAssociatedObject(self, @selector(rateChanged), rateChanged, OBJC_ASSOCIATION_COPY_NONATOMIC);
+}
+
+- (void (^)(SJVideoPlayer * _Nonnull))rateChanged {
+    return objc_getAssociatedObject(self, _cmd);
+}
+
 - (void)setPlayDidToEnd:(void (^)(SJVideoPlayer * _Nonnull))playDidToEnd {
     objc_setAssociatedObject(self, @selector(playDidToEnd), playDidToEnd, OBJC_ASSOCIATION_COPY_NONATOMIC);
 }
@@ -990,6 +995,25 @@ NS_ASSUME_NONNULL_END
 
 - (BOOL)isFullScreen {
     return self.orentationObserver.isFullScreen;
+}
+
+@end
+
+
+#pragma mark - 控制视图
+
+@implementation SJVideoPlayer (ControlView)
+
+- (void)setControlViewDisplayStatus:(void (^)(SJVideoPlayer * _Nonnull, BOOL))controlViewDisplayStatus {
+    objc_setAssociatedObject(self, @selector(controlViewDisplayStatus), controlViewDisplayStatus, OBJC_ASSOCIATION_COPY_NONATOMIC);
+}
+
+- (void (^)(SJVideoPlayer * _Nonnull, BOOL))controlViewDisplayStatus {
+    return objc_getAssociatedObject(self, _cmd);
+}
+
+- (BOOL)controlViewDisplayed {
+    return !self.controlViewDataSource.controlLayerAppearedState;
 }
 
 @end
@@ -1236,6 +1260,8 @@ NS_ASSUME_NONNULL_END
     else if ( !status && [self.videoPlayer.controlViewDelegate respondsToSelector:@selector(controlLayerNeedDisappear:)] ) {
         [self.videoPlayer.controlViewDelegate controlLayerNeedDisappear:self.videoPlayer];
     }
+    
+    if ( _videoPlayer.controlViewDisplayStatus ) _videoPlayer.controlViewDisplayStatus(_videoPlayer, status);
 }
 
 - (BOOL)appearState {

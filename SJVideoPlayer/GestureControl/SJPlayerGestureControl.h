@@ -10,6 +10,14 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
+typedef NS_ENUM(NSUInteger, SJPlayerGestureType) {
+    SJPlayerGestureType_Unknown,
+    SJPlayerGestureType_SingleTap,
+    SJPlayerGestureType_DoubleTap,
+    SJPlayerGestureType_Pan,
+    SJPlayerGestureType_Pinch
+};
+
 typedef NS_ENUM(NSUInteger, SJPanDirection) {
     SJPanDirection_Unknown,
     SJPanDirection_V,
@@ -34,7 +42,7 @@ typedef NS_ENUM(NSUInteger, SJPanMovingDirection) {
 
 - (instancetype)initWithTargetView:(__weak UIView *)view;
 
-@property (nonatomic, copy, readwrite, nullable) BOOL(^triggerCondition)(SJPlayerGestureControl *control, UIGestureRecognizer *gesture);
+@property (nonatomic, copy, readwrite, nullable) BOOL(^triggerCondition)(SJPlayerGestureControl *control, SJPlayerGestureType type, UIGestureRecognizer *gesture);
 
 @property (nonatomic, copy, readwrite, nullable) void(^singleTapped)(SJPlayerGestureControl *control);
 @property (nonatomic, copy, readwrite, nullable) void(^doubleTapped)(SJPlayerGestureControl *control);

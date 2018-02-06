@@ -127,7 +127,7 @@ static NSString * const PlayerCollectionViewCellID = @"PlayerCollectionViewCell"
     
     _videoPlayer.URLAsset = [[SJVideoPlayerURLAsset alloc] initWithAssetURL:[NSURL URLWithString:videoURLStr] scrollView:self.collectionView indexPath:indexPath superviewTag:tag];
     
-    _videoPlayer.autoplay = YES;
+    _videoPlayer.autoPlay = YES;
 }
 
 @end

@@ -34,10 +34,16 @@
     }];
     
     // video asset
-    _videoPlayer.URLAsset = [[SJVideoPlayerURLAsset alloc] initWithTitle:@"DIY #平遥牛肉##精品#" alwaysShowTitle:YES assetURL:[NSURL URLWithString:@"http://vod.lanwuzhe.com/b12ad5034df14bedbdf0e5654cbf7224/6fc3ba23d31743ea8b3c0192c1b83f86-5287d2089db37e62345123a1be272f8b.mp4?video="]];
+    _videoPlayer.URLAsset = [[SJVideoPlayerURLAsset alloc] initWithTitle:@"DIY #平遥牛肉##精品#" alwaysShowTitle:NO assetURL:[NSURL URLWithString:@"http://vod.lanwuzhe.com/b12ad5034df14bedbdf0e5654cbf7224/6fc3ba23d31743ea8b3c0192c1b83f86-5287d2089db37e62345123a1be272f8b.mp4?video="]];
+    
+    __weak typeof(self) _self = self;
+    _videoPlayer.clickedBackEvent = ^(SJVideoPlayer * _Nonnull player) {
+        __strong typeof(_self) self = _self;
+        if ( !self ) return ;
+        [self.navigationController popViewControllerAnimated:YES];
+    };
 
     self.view.backgroundColor = [UIColor whiteColor];
-    
     
     SJVideoPlayer.update(^(SJVideoPlayerSettings * _Nonnull commonSettings) {
         commonSettings.placeholder = [UIImage imageNamed:@"placeholder"];

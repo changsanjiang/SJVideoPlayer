@@ -38,6 +38,7 @@
 
 @property (nonatomic, strong) NSTimer *timer;
 @property (nonatomic, assign) short point;
+@property (nonatomic, assign) BOOL resetState;
 
 @end
 
@@ -56,27 +57,31 @@
     _point = interval;
 }
 
-- (void)start:(void(^)(SJTimerControl *control))block {
-    dispatch_async(dispatch_get_main_queue(), ^{
-        [self reset];
-        __weak typeof(self) _self = self;
-        _timer = [NSTimer timer_timerWithTimeInterval:1 block:^(NSTimer *timer) {
-            __strong typeof(_self) self = _self;
-            if ( !self ) return ;
-            if ( 0 == --self.point ) {
-                if ( block ) block(self);
-                self.point = self.interval;
-            }
-        } repeats:YES];
-        [[NSRunLoop currentRunLoop] addTimer:_timer forMode:NSRunLoopCommonModes];
-        [_timer setFireDate:[NSDate dateWithTimeIntervalSinceNow:1]];
-    });
+- (void)start {
+    [self clear];
+    
+    __weak typeof(self) _self = self;
+    _timer = [NSTimer timer_timerWithTimeInterval:1 block:^(NSTimer *timer) {
+        __strong typeof(_self) self = _self;
+        if ( !self ) return ; 
+        if ( 0 == --self.point ) {
+            if ( self.exeBlock ) self.exeBlock(self);
+            if ( !self.resetState ) [self clear];
+            self.resetState = NO;
+        }
+    } repeats:YES];
+    [[NSRunLoop currentRunLoop] addTimer:_timer forMode:NSRunLoopCommonModes];
+    [_timer setFireDate:[NSDate dateWithTimeIntervalSinceNow:1]];
 }
 
-- (void)reset {
+- (void)clear {
     [_timer invalidate];
     _timer = nil;
     _point = _interval;
 }
 
+- (void)reset {
+    _point = _interval;
+    _resetState = YES;
+}
 @end

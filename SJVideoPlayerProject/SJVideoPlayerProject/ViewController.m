@@ -43,6 +43,8 @@
 - (IBAction)demo:(id)sender {
     [self.navigationController pushViewController:[[SJVideoListViewController alloc] init] animated:YES];
 }
+- (IBAction)test:(id)sender {
+}
 
 - (void)didReceiveMemoryWarning {
     [super didReceiveMemoryWarning];

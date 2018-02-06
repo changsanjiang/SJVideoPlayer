@@ -23,9 +23,9 @@ NS_ASSUME_NONNULL_BEGIN
 
 @property (nonatomic, assign) BOOL appearState; // appear is `YES`, disappear is `NO`.
 
-- (void)appear;
+- (void)appear; // Animatable. 可动画的.
 
-- (void)disappear;
+- (void)disappear;  // Animatable. 可动画的.
 
 @end
 NS_ASSUME_NONNULL_END

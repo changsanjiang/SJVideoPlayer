@@ -474,6 +474,10 @@ NS_ASSUME_NONNULL_END
                 }];
             }
         }
+        
+        if ( [self.controlViewDelegate respondsToSelector:@selector(videoPlayer:didEndRotation:)] ) {
+            [self.controlViewDelegate videoPlayer:self didEndRotation:isFullScreen];
+        }
         if ( self.rotatedScreen ) self.rotatedScreen(self, observer.isFullScreen);
     };
     

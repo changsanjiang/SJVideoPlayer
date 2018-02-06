@@ -716,6 +716,14 @@ NS_ASSUME_NONNULL_END
     
     if ( _moreSettingsView.appearState ) [_moreSettingsView disappear];
     if ( _moreSecondarySettingView.appearState ) [_moreSecondarySettingView disappear];
+    [self.bottomSlider disappear];
+}
+
+/// 播放器完成旋转.
+- (void)videoPlayer:(SJVideoPlayer *)videoPlayer didEndRotation:(BOOL)isFull {
+    [UIView animateWithDuration:0.3 animations:^{
+       [self.bottomSlider appear];
+    }];
 }
 
 #pragma mark 音量 / 亮度 / 播放速度

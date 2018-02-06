@@ -16,8 +16,10 @@
 
 @property (nonatomic, assign, readwrite, getter=isFullScreen) BOOL fullScreen;
 
+@property (nonatomic, strong, readonly) UIView *blackView;
 @property (nonatomic, strong, readwrite) UIView *view;
 @property (nonatomic, strong, readwrite) UIView *targetSuperview;
+@property (nonatomic, assign, readwrite) UIDeviceOrientation beforeOrientation;
 
 @property (nonatomic, assign, readwrite, getter=isTransitioning) BOOL transitioning;
 
@@ -32,10 +34,14 @@
     _view = view;
     _targetSuperview = targetSuperview;
     _duration = 0.3;
+    _blackView = [UIView new];
+    _blackView.backgroundColor = [UIColor blackColor];
+    _beforeOrientation = UIDeviceOrientationPortrait;
     return self;
 }
 
 - (void)dealloc {
+    [_blackView removeFromSuperview];
     [[NSNotificationCenter defaultCenter] removeObserver:self name:UIDeviceOrientationDidChangeNotification object:nil];
 }
 
@@ -71,9 +77,11 @@
     
     if ( self.isTransitioning ) return;
     
-    UIInterfaceOrientation statusBarOrientation = [UIApplication sharedApplication].statusBarOrientation;
+//    UIInterfaceOrientation statusBarOrientation = [UIApplication sharedApplication].statusBarOrientation;
     UIDeviceOrientation deviceOrientation = [UIDevice currentDevice].orientation;
-    if ( (UIDeviceOrientation)statusBarOrientation == deviceOrientation ) return;
+//    if ( (UIDeviceOrientation)statusBarOrientation == deviceOrientation ) return;
+    if ( deviceOrientation == _beforeOrientation ) return;
+    _beforeOrientation = deviceOrientation;
     
     self.transitioning = YES;
     
@@ -85,6 +93,7 @@
             ori = UIInterfaceOrientationPortrait;
             transform = CGAffineTransformIdentity;
             superview = self.targetSuperview;
+            [_blackView removeFromSuperview];
         }
             break;
         case UIDeviceOrientationLandscapeLeft: {
@@ -107,9 +116,6 @@
         return;
     }
     
-    
-    [UIApplication sharedApplication].statusBarOrientation = ori;
-    
     if ( !_fullScreen && UIInterfaceOrientationPortrait != ori ) {
         CGRect fix = _view.frame;
         fix.origin = [[UIApplication sharedApplication].keyWindow convertPoint:CGPointZero fromView:_targetSuperview];
@@ -120,6 +126,8 @@
     // update
     _fullScreen = fullScreen;
     
+    [UIApplication sharedApplication].statusBarOrientation = ori;
+
     [_view mas_remakeConstraints:^(MASConstraintMaker *make) {
         if ( UIInterfaceOrientationPortrait == ori ) {
             CGRect rect = [[UIApplication sharedApplication].keyWindow convertRect:self.targetSuperview.bounds fromView:self.targetSuperview];
@@ -137,6 +145,7 @@
         }
     }];
     
+    
     if ( _orientationWillChange ) _orientationWillChange(self, fullScreen);
     
     [UIView animateWithDuration:_duration animations:^{
@@ -149,6 +158,12 @@
             [_view mas_remakeConstraints:^(MASConstraintMaker *make) {
                 make.edges.equalTo(self.targetSuperview);
             }];
+        }
+        else {
+            self.blackView.bounds = _view.bounds;
+            self.blackView.center = _view.center;
+            self.blackView.transform = _view.transform;
+            [superview insertSubview:self.blackView belowSubview:_view];
         }
         if ( _orientationChanged ) _orientationChanged(self, fullScreen);
     }];

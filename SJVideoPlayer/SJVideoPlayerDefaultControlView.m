@@ -758,7 +758,9 @@ NS_ASSUME_NONNULL_END
         __strong typeof(_self) self = _self;
         if ( !self ) return ;
         if ( error ) {
+#ifndef DEBUG
             NSLog(@"Generate Preview Image Failed! error: %@", error);
+#endif
         }
         else {
             self.hasBeenGeneratedPreviewImages = YES;

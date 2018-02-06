@@ -89,6 +89,8 @@
 - (void)videoPlayer:(SJVideoPlayer *)videoPlayer willRotateView:(BOOL)isFull;   // 播放器将要旋转屏幕, `isFull`如果为`YES`, 则全屏.
 
 #pragma mark - 音量 / 亮度 / 播放速度
+- (void)videoPlayer:(SJVideoPlayer *)videoPlayer muteChanged:(BOOL)mute; // 静音开关变更
+
 - (void)videoPlayer:(SJVideoPlayer *)videoPlayer volumeChanged:(float)volume;   // 声音被改变.
 
 - (void)videoPlayer:(SJVideoPlayer *)videoPlayer brightnessChanged:(float)brightness;   // 亮度被改变.

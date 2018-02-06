@@ -91,6 +91,8 @@ NS_ASSUME_NONNULL_BEGIN
 
 @interface SJVideoPlayer (Control)
 
+@property (nonatomic, readwrite) BOOL mute; // default is no. 静音.
+
 /*!
  *  The user clicked paused.
  *

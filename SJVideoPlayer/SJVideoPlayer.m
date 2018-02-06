@@ -132,6 +132,7 @@ NS_ASSUME_NONNULL_END
 - (void)setAsset:(SJVideoPlayerAssetCarrier *)asset {
     _asset = asset;
     if ( !asset ) return;
+    if ( self.mute ) self.mute = YES; // update
     self.presentView.player = self.asset.player;
     [self _itemPrepareToPlay];
     
@@ -323,7 +324,13 @@ NS_ASSUME_NONNULL_END
     }
     
     [self play];
-    [self.displayRecorder needDisplay];
+    
+    __weak typeof(self) _self = self;
+    dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(1 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
+        __strong typeof(_self) self = _self;
+        if ( !self ) return;
+        [self.displayRecorder needDisplay];
+    });
 }
 
 - (void)_itemPlayDidToEnd {
@@ -846,6 +853,19 @@ NS_ASSUME_NONNULL_END
 #pragma mark - 控制
 
 @implementation SJVideoPlayer (Control)
+
+- (void)setMute:(BOOL)mute {
+    if ( mute == self.mute ) return;
+    objc_setAssociatedObject(self, @selector(mute), @(mute), OBJC_ASSOCIATION_RETAIN_NONATOMIC);
+    self.asset.player.volume = !mute;
+    if ( [self.controlViewDelegate respondsToSelector:@selector(videoPlayer:muteChanged:)] ) {
+        [self.controlViewDelegate videoPlayer:self muteChanged:mute];
+    }
+}
+
+- (BOOL)mute {
+    return [objc_getAssociatedObject(self, _cmd) boolValue];
+}
 
 - (BOOL)userPaused {
     return self.userClickedPause;

@@ -123,6 +123,13 @@ NS_ASSUME_NONNULL_BEGIN
 
 @property (nonatomic, copy, readwrite, nullable) void(^playDidToEnd)(SJVideoPlayer *player); // 播放完毕
 
+/*!
+ *  clicked back btn exe block.
+ *
+ *  点击`返回`按钮的回调.
+ */
+@property (nonatomic, copy, readwrite) void(^clickedBackEvent)(SJVideoPlayer *player);
+
 @end
 
 
@@ -185,13 +192,6 @@ NS_ASSUME_NONNULL_BEGIN
 @interface SJVideoPlayer (Setting)
 
 /*!
- *  clicked back btn exe block.
- *
- *  点击`返回`按钮的回调.
- */
-@property (nonatomic, copy, readwrite) void(^clickedBackEvent)(SJVideoPlayer *player);
-
-/*!
  *  Configure the player, Note: This `block` is run on the child thread.
  *
  *  配置播放器, 注意: 这个`block`在子线程运行.
@@ -231,6 +231,7 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic, assign, readonly)  BOOL playOnCell;
 
 @end
+
 
 #pragma mark - 提示
 

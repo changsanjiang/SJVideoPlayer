@@ -514,6 +514,7 @@ NS_ASSUME_NONNULL_END
 
 #pragma mark - Video Player Control Data Source
 
+/// 播放器安装完控制层的回调.
 - (void)installedControlViewToVideoPlayer:(SJVideoPlayer *)videoPlayer {
     self.videoPlayer = videoPlayer;
 }
@@ -526,19 +527,23 @@ NS_ASSUME_NONNULL_END
     _controlLayerAppearedState = controlLayerAppearedState;
 }
 
+/// 返回控制层的显示状态. 如果返回`YES`, 将会调用`controlLayerDisappearCondition`, 否则, 调用`controlLayerAppearCondition`.
 - (BOOL)controlLayerAppearedState {
     return _controlLayerAppearedState;
 }
 
+/// 控制层需要显示之前会调用这个方法, 如果返回NO, 将不调用`controlLayerNeedAppear:`.
 - (BOOL)controlLayerAppearCondition {
     return YES;
 }
 
+/// 控制层需要隐藏之前会调用这个方法, 如果返回NO, 将不调用`controlLayerNeedDisappear:`.
 - (BOOL)controlLayerDisappearCondition {
     if ( self.previewView.appearState ) return NO;          // 如果预览视图显示, 则不隐藏控制层
     return YES;
 }
 
+/// 触发手势之前会调用这个方法, 如果返回NO, 将不调用水平手势相关的代理方法.
 - (BOOL)triggerGesturesCondition:(CGPoint)location {
     if ( CGRectContainsPoint(self.moreSettingsView.frame, location) ||
          CGRectContainsPoint(self.moreSecondarySettingView.frame, location) ||

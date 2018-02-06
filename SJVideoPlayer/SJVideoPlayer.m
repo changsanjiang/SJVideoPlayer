@@ -975,6 +975,14 @@ NS_ASSUME_NONNULL_END
     return objc_getAssociatedObject(self, _cmd);
 }
 
+- (void)setClickedBackEvent:(void (^)(SJVideoPlayer * _Nonnull))clickedBackEvent {
+    objc_setAssociatedObject(self, @selector(clickedBackEvent), clickedBackEvent, OBJC_ASSOCIATION_COPY_NONATOMIC);
+}
+
+- (void (^)(SJVideoPlayer * _Nonnull))clickedBackEvent {
+    return objc_getAssociatedObject(self, _cmd);
+}
+
 @end
 
 
@@ -1085,14 +1093,6 @@ NS_ASSUME_NONNULL_END
 #pragma mark - 配置
 
 @implementation SJVideoPlayer (Setting)
-
-- (void)setClickedBackEvent:(void (^)(SJVideoPlayer * _Nonnull))clickedBackEvent {
-    objc_setAssociatedObject(self, @selector(clickedBackEvent), clickedBackEvent, OBJC_ASSOCIATION_COPY_NONATOMIC);
-}
-
-- (void (^)(SJVideoPlayer * _Nonnull))clickedBackEvent {
-    return objc_getAssociatedObject(self, _cmd);
-}
 
 static dispatch_queue_t videoPlayerWorkQueue;
 + (dispatch_queue_t)workQueue {

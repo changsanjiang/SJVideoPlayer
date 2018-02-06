@@ -18,6 +18,9 @@
 @protocol SJVideoPlayerControlDataSource <NSObject>
 
 @required
+
+- (UIView *)controlView;
+
 /*!
  *  方法逻辑流程如下:
  *  if ( control layer appear state == NO ) {       // 1. call `controlLayerAppearedState`
@@ -31,9 +34,7 @@
  *      }
  *  }
  **/
-@property (nonatomic, assign) BOOL controlLayerAppearedState; // 返回控制层的显示状态. 如果返回`YES`, 将会调用`controlLayerDisappearCondition`, 否则, 调用`controlLayerAppearCondition`.
-
-- (UIView *)controlView;
+- (BOOL)controlLayerAppearedState;      // 返回控制层的显示状态. 如果返回`YES`, 将会调用`controlLayerDisappearCondition`, 否则, 调用`controlLayerAppearCondition`.
 
 - (BOOL)controlLayerAppearCondition;    // 控制层需要显示之前会调用这个方法, 如果返回NO, 将不调用`controlLayerNeedAppear:`.
 

@@ -79,15 +79,9 @@ NS_ASSUME_NONNULL_END
     return self;
 }
 
-//
-//- (void)setVideoPlayer:(SJVideoPlayer *)videoPlayer {
-//    if ( videoPlayer == _videoPlayer ) return;
-//    _videoPlayer = videoPlayer;
-//    _videoPlayer.controlViewDelegate = self;
-//    _videoPlayer.controlViewDataSource = self;
-//    self.moreSettings = _videoPlayer.moreSettings;
-//}
-
+- (void)dealloc {
+    NSLog(@"%zd - %s", __LINE__, __func__);
+}
 
 #pragma mark - setup views
 - (void)_controlViewSetupView {

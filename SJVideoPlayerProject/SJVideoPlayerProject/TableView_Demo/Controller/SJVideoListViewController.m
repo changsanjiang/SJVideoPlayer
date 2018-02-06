@@ -24,6 +24,7 @@ static NSString *const SJVideoListTableViewCellID = @"SJVideoListTableViewCell";
 @property (nonatomic, strong) NSArray<SJVideoModel *> *videosM;
 @property (nonatomic, strong) SJVideoPlayer *videoPlayer;
 @property (nonatomic, strong) UIActivityIndicatorView *indicator;
+@property (nonatomic, assign) BOOL showTitle;
 
 @end
 
@@ -31,8 +32,13 @@ static NSString *const SJVideoListTableViewCellID = @"SJVideoListTableViewCell";
 
 @synthesize tableView = _tableView;
 
+- (void)dealloc {
+    NSLog(@"%zd - %s", __LINE__, __func__);
+}
+
 - (void)viewDidLoad {
     [super viewDidLoad];
+    [self _setRightNavItems_Test];
     
     // setup views
     [self _videoListSetupViews];
@@ -43,6 +49,7 @@ static NSString *const SJVideoListTableViewCellID = @"SJVideoListTableViewCell";
     [self.indicator startAnimating];
     __weak typeof(self) _self = self;
     dispatch_async(dispatch_get_global_queue(0, 0), ^{
+        // 生成测试数据
         NSArray<SJVideoModel *> *videos = [SJVideoModel videoModelsWithActionDelegate:self];
         dispatch_async(dispatch_get_main_queue(), ^{
             __strong typeof(_self) self = _self;
@@ -68,6 +75,23 @@ static NSString *const SJVideoListTableViewCellID = @"SJVideoListTableViewCell";
     };
     
     // Do any additional setup after loading the view.
+}
+
+// 测试
+- (void)_setRightNavItems_Test {
+    UIBarButtonItem *show = [[UIBarButtonItem alloc] initWithTitle:@"ShowTitle" style:UIBarButtonItemStyleDone target:self action:@selector(show_Title)];
+    UIBarButtonItem *hidden = [[UIBarButtonItem alloc] initWithTitle:@"HiddenTitle" style:UIBarButtonItemStyleDone target:self action:@selector(hidden_Title)];
+    self.navigationItem.rightBarButtonItems = @[show, hidden];
+}
+
+- (void)show_Title {
+    self.showTitle = YES;
+    [self clickedPlayOnTabCell:self.tableView.visibleCells.firstObject playerParentView:[self.tableView.visibleCells.firstObject valueForKey:@"coverImageView"]];
+}
+
+- (void)hidden_Title {
+    self.showTitle = NO;
+    [self clickedPlayOnTabCell:self.tableView.visibleCells.firstObject playerParentView:[self.tableView.visibleCells.firstObject valueForKey:@"coverImageView"]];
 }
 
 - (void)viewWillAppear:(BOOL)animated {
@@ -180,6 +204,7 @@ static NSString *const SJVideoListTableViewCellID = @"SJVideoListTableViewCell";
                                            superviewTag:playerParentView.tag];
     
     _videoPlayer.URLAsset.title = @"DIY心情转盘 #手工##手工制作#";
+    _videoPlayer.URLAsset.alwaysShowTitle = self.showTitle;
 }
 
 #pragma mark -

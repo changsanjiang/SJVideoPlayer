@@ -1,1 +1,0 @@
-../../../SJPrompt/SJPrompt/SJPromptConfig.h

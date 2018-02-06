@@ -446,8 +446,8 @@
 			children = (
 				A6E6D3132028BE9B00CB9BAE /* SJVideoPlayerControlView.h */,
 				A6E6D3172028BE9B00CB9BAE /* SJVideoPlayerControlView.m */,
-				A6E6D3112028BE9B00CB9BAE /* SJVideoPlayerTopControlView.m */,
 				A6E6D3142028BE9B00CB9BAE /* SJVideoPlayerTopControlView.h */,
+				A6E6D3112028BE9B00CB9BAE /* SJVideoPlayerTopControlView.m */,
 				A6E6D3122028BE9B00CB9BAE /* SJVideoPlayerLeftControlView.m */,
 				A6E6D3182028BE9B00CB9BAE /* SJVideoPlayerLeftControlView.h */,
 				A6E6D30F2028BE9B00CB9BAE /* SJVideoPlayerCenterControlView.h */,

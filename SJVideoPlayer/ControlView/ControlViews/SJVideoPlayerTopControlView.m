@@ -89,9 +89,18 @@
         
         // title label layout
         [_titleLabel mas_remakeConstraints:^(MASConstraintMaker *make) {
-            make.leading.equalTo(_backBtn.mas_centerX);
+            make.leading.equalTo(_backBtn.mas_centerX).offset(-8);
             make.centerY.equalTo(_backBtn);
-            make.trailing.equalTo(_moreBtn.mas_centerX);
+            make.trailing.equalTo(_moreBtn.mas_centerX).offset(8);
+        }];
+    }
+    else {
+        _backBtn.hidden = NO;
+        
+        [_titleLabel mas_makeConstraints:^(MASConstraintMaker *make) {
+            make.leading.equalTo(_backBtn.mas_trailing);
+            make.centerY.equalTo(_backBtn);
+            make.trailing.equalTo(_previewBtn.mas_leading);
         }];
     }
     
@@ -102,17 +111,6 @@
     self.moreBtn.hidden = YES;
 }
 
-
-//- (void)setAlwaysShowTitle:(BOOL)alwaysShowTitle {
-//    _alwaysShowTitle = alwaysShowTitle;
-//    if ( _fullscreen || alwaysShowTitle ) {
-//        self.titleLabel.hidden = NO;
-//    }
-//    else {
-//        self.titleLabel.hidden = YES;
-//    }
-//}
-//
 - (void)setTitle:(NSString *)title {
     if ( [title isEqualToString:_title]  ) return;
     _title = title;
@@ -126,11 +124,6 @@
     }
     _titleLabel.attributedText = attrStr;
 }
-//
-//- (void)setPlayOnCell:(BOOL)playOnCell {
-//    _playOnCell = playOnCell;
-//    self.fullscreen = self.fullscreen;
-//}
 
 - (void)clickedBtn:(UIButton *)btn {
     if ( ![_delegate respondsToSelector:@selector(topControlView:clickedBtnTag:)] ) return;

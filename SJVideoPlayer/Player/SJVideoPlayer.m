@@ -47,15 +47,6 @@ NS_ASSUME_NONNULL_END
 
 #pragma mark -
 
-static inline SJVideoPlayerControlView *_defaultControlView(void) {
-    static SJVideoPlayerControlView *defaultControlView;
-    if ( !defaultControlView ) {
-        defaultControlView = [SJVideoPlayerControlView new];
-        SJVideoPlayer.update(^(SJVideoPlayerSettings * _Nonnull commonSettings) {});
-    }
-    return defaultControlView;
-}
-
 NS_ASSUME_NONNULL_BEGIN
 @interface SJVideoPlayer ()<SJVideoPlayerControlViewDelegate> {
     UIView *_view;
@@ -66,6 +57,7 @@ NS_ASSUME_NONNULL_BEGIN
     SJVolBrigControl *_volBrigControl;
     _SJVideoPlayerControlDisplayRecorder *_displayRecorder;
     SJVideoPlayerRegistrar *_registrar;
+    SJVideoPlayerControlView *_defaultControlView;
 }
 
 @property (nonatomic, assign, readwrite) BOOL userClickedPause;
@@ -84,6 +76,7 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic, strong, readonly) SJPlayerGestureControl *gestureControl;
 @property (nonatomic, strong, readonly) SJVolBrigControl *volBrigControl;
 @property (nonatomic, strong, readonly) _SJVideoPlayerControlDisplayRecorder *displayRecorder;
+@property (nonatomic, strong, readonly) SJVideoPlayerControlView *defaultControlView;
 
 - (void)clear;
 
@@ -105,9 +98,8 @@ NS_ASSUME_NONNULL_END
     return [[self alloc] init];
 }
 
-- (instancetype)init {
-    SJVideoPlayerControlView *defaultControlView = _defaultControlView();
-    return [self initWithControlViewDataSource:defaultControlView controlViewDelegate:defaultControlView];
+- (instancetype)init { 
+    return [self initWithControlViewDataSource:nil controlViewDelegate:nil];
 }
 
 - (instancetype)initWithControlViewDataSource:(id<SJVideoPlayerControlDataSource>)controlViewDataSource
@@ -120,7 +112,8 @@ NS_ASSUME_NONNULL_END
     if ( error ) NSLog(@"%@", error.userInfo);
     [self registrar];
     [self view];
-    if ( _defaultControlView() == controlViewDataSource ) _defaultControlView().delegate = self;
+    if ( nil == controlViewDataSource ) controlViewDataSource = self.defaultControlView;
+    if ( nil == controlViewDelegate ) controlViewDelegate = self.defaultControlView;
     self.controlViewDataSource = controlViewDataSource;
     self.controlViewDelegate = controlViewDelegate;
     return self;
@@ -669,6 +662,12 @@ NS_ASSUME_NONNULL_END
     return _registrar;
 }
 
+- (SJVideoPlayerControlView *)defaultControlView {
+    if ( _defaultControlView ) return _defaultControlView;
+    _defaultControlView = [SJVideoPlayerControlView new];
+    return _defaultControlView;
+}
+
 #pragma mark -
 - (void)setState:(SJVideoPlayerPlayState)state {
     _state = state;
@@ -1109,19 +1108,19 @@ static dispatch_queue_t videoPlayerWorkQueue;
 }
 
 - (void)setMoreSettings:(NSArray<SJVideoPlayerMoreSetting *> *)moreSettings {
-    _defaultControlView().moreSettings = moreSettings;
+    _defaultControlView.moreSettings = moreSettings;
 }
 
 - (NSArray<SJVideoPlayerMoreSetting *> *)moreSettings {
-    return _defaultControlView().moreSettings;
+    return _defaultControlView.moreSettings;
 }
 
 - (void)setGeneratePreviewImages:(BOOL)generatePreviewImages {
-    _defaultControlView().generatePreviewImages = YES;
+    _defaultControlView.generatePreviewImages = YES;
 }
 
 - (BOOL)generatePreviewImages {
-    return _defaultControlView().generatePreviewImages;
+    return _defaultControlView.generatePreviewImages;
 }
 
 @end

@@ -22,10 +22,10 @@
 - (UIView *)controlView;
 
 /*!
- *  方法逻辑流程如下:
- *  if ( control layer appear state == NO ) {       // 1. call `controlLayerAppearedState`
- *      if ( appear condition == YES ) {            // 2. call `controlLayerAppearCondition`
- *          need appear ...                         // 3. call `controlLayerNeedAppear:`
+ *  方法逻辑流程是这样的:
+ *  if ( control layer appear state == NO ) {       // 1. call `controlLayerAppearedState` method.
+ *      if ( appear condition == YES ) {            // 2. call `controlLayerAppearCondition` method.
+ *          need appear ...                         // 3. call `controlLayerNeedAppear:` method.
  *      }
  *  }
  *  else {

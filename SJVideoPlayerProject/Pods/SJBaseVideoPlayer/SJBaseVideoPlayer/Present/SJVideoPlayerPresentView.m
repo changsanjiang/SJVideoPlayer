@@ -36,27 +36,15 @@ NS_ASSUME_NONNULL_END
     self = [super initWithFrame:frame];
     if ( !self ) return nil;
     [self _presentSetupView];
-    [self _addObserver];
     return self;
 }
 
 #pragma mark -
 
-- (void)_addObserver {
-    [self.avLayer addObserver:self forKeyPath:@"readyForDisplay" options:NSKeyValueObservingOptionNew context:nil];
-}
-
 - (void)dealloc {
 #ifndef DEBUG
     NSLog(@"%zd - %s", __LINE__, __func__);
 #endif
-    [self.avLayer removeObserver:self forKeyPath:@"readyForDisplay"];
-}
-
-- (void)observeValueForKeyPath:(NSString *)keyPath ofObject:(id)object change:(NSDictionary<NSKeyValueChangeKey,id> *)change context:(void *)context {
-    if ( [keyPath isEqualToString:@"readyForDisplay"] ) {
-        if ( self.readyForDisplay ) self.readyForDisplay(self, self.avLayer.videoRect);
-    }
 }
 
 #pragma mark -

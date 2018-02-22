@@ -7,7 +7,7 @@
 //
 
 #import <Foundation/Foundation.h>
-#import "SJVideoPlayerControlDataSource.h"
+#import <SJBaseVideoPlayer/SJBaseVideoPlayer.h>
 
 @class SJVideoPlayer, SJVideoPlayerMoreSetting;
 
@@ -15,7 +15,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 @protocol SJVideoPlayerDefaultControlViewDelegate;
 
-@interface SJVideoPlayerDefaultControlView : UIView<SJVideoPlayerControlDelegate, SJVideoPlayerControlDataSource>
+@interface SJVideoPlayerDefaultControlView : UIView<SJVideoPlayerControlLayerDelegate, SJVideoPlayerControlLayerDataSource>
 
 @property (nonatomic, weak, readwrite, nullable) id<SJVideoPlayerDefaultControlViewDelegate> delegate;
 

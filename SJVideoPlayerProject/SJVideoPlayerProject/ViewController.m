@@ -21,7 +21,7 @@
 
 - (void)viewDidLoad {
     [super viewDidLoad];
-    self.view.backgroundColor = [UIColor blackColor];
+//    self.view.backgroundColor = [UIColor blackColor];
     // Do any additional setup after loading the view, typically from a nib.
 }
 
@@ -40,9 +40,11 @@
 - (IBAction)pushNested:(id)sender {
     [self.navigationController pushViewController:[[NestedTableViewController alloc] init] animated:YES];
 }
+
 - (IBAction)demo:(id)sender {
     [self.navigationController pushViewController:[[SJVideoListViewController alloc] init] animated:YES];
 }
+
 - (IBAction)test:(id)sender {
 }
 

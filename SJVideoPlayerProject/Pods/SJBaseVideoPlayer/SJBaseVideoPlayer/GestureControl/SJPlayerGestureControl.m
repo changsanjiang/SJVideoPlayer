@@ -116,7 +116,7 @@
     CGPoint translate = [pan translationInView:pan.view];
     
     switch (pan.state) {
-        case UIGestureRecognizerStateBegan:{
+        case UIGestureRecognizerStateBegan: {
             self.panMovingDirection = SJPanMovingDirection_Unkown;
             
             CGPoint locationPoint = [pan locationInView:pan.view];
@@ -140,7 +140,7 @@
             if ( _beganPan ) _beganPan(self, _panDirection, _panLocation);
         }
             break;
-        case UIGestureRecognizerStateChanged:{
+        case UIGestureRecognizerStateChanged: {
             switch ( _panDirection ) {
                 case SJPanDirection_H: {
                     if ( translate.x > 0 ) self.panMovingDirection = SJPanMovingDirection_Right;
@@ -159,7 +159,7 @@
             break;
         case UIGestureRecognizerStateFailed:
         case UIGestureRecognizerStateCancelled:
-        case UIGestureRecognizerStateEnded:{
+        case UIGestureRecognizerStateEnded: {
             if ( _endedPan ) _endedPan(self, _panDirection, _panLocation);
         }
             break;

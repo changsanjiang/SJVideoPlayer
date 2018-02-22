@@ -143,7 +143,6 @@ NS_ASSUME_NONNULL_END
         make.center.offset(0);
     }];
 
-    [self _setControlViewsDisappearType];
     [self _setControlViewsDisappearValue];
     
     [_bottomSlider disappear];
@@ -157,25 +156,31 @@ NS_ASSUME_NONNULL_END
     [_moreSecondarySettingView disappear];
 }
 
-- (void)_setControlViewsDisappearType {
-    _topControlView.disappearType = SJDisappearType_Transform;
-    _leftControlView.disappearType = SJDisappearType_Transform;
-    _centerControlView.disappearType = SJDisappearType_Alpha;
-    _bottomControlView.disappearType = SJDisappearType_Transform;
-    _bottomSlider.disappearType = SJDisappearType_Alpha;
-    _previewView.disappearType = SJDisappearType_All;
-    _moreSettingsView.disappearType = SJDisappearType_Transform;
-    _moreSecondarySettingView.disappearType = SJDisappearType_Transform;
-    _draggingProgressView.disappearType = SJDisappearType_Alpha;
-}
-
 - (void)_setControlViewsDisappearValue {
+    
+    _topControlView.disappearType = SJDisappearType_Transform;
     _topControlView.disappearTransform = CGAffineTransformMakeTranslation(0, -_topControlView.intrinsicContentSize.height);
+
+    _leftControlView.disappearType = SJDisappearType_Transform;
     _leftControlView.disappearTransform = CGAffineTransformMakeTranslation(-_leftControlView.intrinsicContentSize.width, 0);
+
+    _centerControlView.disappearType = SJDisappearType_Alpha;
+
+    _bottomControlView.disappearType = SJDisappearType_Transform;
     _bottomControlView.disappearTransform = CGAffineTransformMakeTranslation(0, _bottomControlView.intrinsicContentSize.height);
+
+    _bottomSlider.disappearType = SJDisappearType_Alpha;
+    
+    _previewView.disappearType = SJDisappearType_All;
     _previewView.disappearTransform = CGAffineTransformMakeScale(1, 0.001);
+
+    _moreSettingsView.disappearType = SJDisappearType_Transform;
     _moreSettingsView.disappearTransform = CGAffineTransformMakeTranslation(_moreSettingsView.intrinsicContentSize.width, 0);
+
+    _moreSecondarySettingView.disappearType = SJDisappearType_Transform;
     _moreSecondarySettingView.disappearTransform = CGAffineTransformMakeTranslation(_moreSecondarySettingView.intrinsicContentSize.width, 0);
+
+    _draggingProgressView.disappearType = SJDisappearType_Alpha;
 }
 
 #pragma mark - 预览视图

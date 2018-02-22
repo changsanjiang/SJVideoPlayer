@@ -26,7 +26,7 @@ extern NSNotificationName const SJSettingsPlayerNotification;
 
 
 #pragma mark - placeholder
-@property (nonatomic, strong) UIImage *placeholder;
+@property (nonatomic, strong, readwrite) UIImage *placeholder;
 
 #pragma mark - loading
 @property (nonatomic, strong, readwrite) UIColor *loadingLineColor;

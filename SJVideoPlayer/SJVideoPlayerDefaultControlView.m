@@ -53,9 +53,7 @@ NS_ASSUME_NONNULL_BEGIN
 @end
 NS_ASSUME_NONNULL_END
 
-@implementation SJVideoPlayerDefaultControlView {
-    BOOL _controlLayerAppearedState;
-}
+@implementation SJVideoPlayerDefaultControlView
 
 @synthesize previewView = _previewView;
 @synthesize draggingProgressView = _draggingProgressView;
@@ -232,13 +230,14 @@ NS_ASSUME_NONNULL_END
         }
             break;
         case SJVideoPlayerTopViewTag_More: {
-            [self controlLayerNeedDisappear:_videoPlayer];
+            [_videoPlayer controlLayerNeedDisappear];
             [UIView animateWithDuration:0.3 animations:^{
                 [self.moreSettingsView appear];
             }];
         }
             break;
         case SJVideoPlayerTopViewTag_Preview: {
+            if ( self.previewView.appearState )  [self.videoPlayer controlLayerNeedAppear];
             [UIView animateWithDuration:0.3 animations:^{
                 if ( !self.previewView.appearState ) [self.previewView appear];
                 else [self.previewView disappear];
@@ -326,7 +325,7 @@ NS_ASSUME_NONNULL_END
     }];
     
     [self.draggingProgressView setCurrentTimeStr:self.videoPlayer.currentTimeStr totalTimeStr:self.videoPlayer.totalTimeStr];
-    [self controlLayerNeedDisappear:self.videoPlayer];
+    [_videoPlayer controlLayerNeedDisappear];
     self.draggingProgressView.progress = self.videoPlayer.progress;
 }
 
@@ -512,6 +511,7 @@ NS_ASSUME_NONNULL_END
         self.bottomSlider.traceImageView.backgroundColor = setting.progress_traceColor;
         self.bottomSlider.trackImageView.backgroundColor = setting.progress_bufferColor;
         self.videoPlayer.placeholder = setting.placeholder;
+        [self.draggingProgressView setPreviewImage:setting.placeholder];
     }];
 }
 
@@ -525,20 +525,6 @@ NS_ASSUME_NONNULL_END
 
 - (UIView *)controlView {
     return self;
-}
-
-- (void)setControlLayerAppearedState:(BOOL)controlLayerAppearedState {
-    _controlLayerAppearedState = controlLayerAppearedState;
-}
-
-/// 返回控制层的显示状态. 如果返回`YES`, 将会调用`controlLayerDisappearCondition`, 否则, 调用`controlLayerAppearCondition`.
-- (BOOL)controlLayerAppearedState {
-    return _controlLayerAppearedState;
-}
-
-/// 控制层需要显示之前会调用这个方法, 如果返回NO, 将不调用`controlLayerNeedAppear:`.
-- (BOOL)controlLayerAppearCondition {
-    return YES;
 }
 
 /// 控制层需要隐藏之前会调用这个方法, 如果返回NO, 将不调用`controlLayerNeedDisappear:`.
@@ -577,6 +563,16 @@ NS_ASSUME_NONNULL_END
 /// 播放状态改变.
 - (void)videoPlayer:(SJVideoPlayer *)videoPlayer stateChanged:(SJVideoPlayerPlayState)state {
     switch ( state ) {
+        case SJVideoPlayerPlayState_Unknown: {
+            [videoPlayer controlLayerNeedDisappear];
+            self.topControlView.model.title = nil;
+            [self.topControlView update];
+            self.bottomSlider.value = 0;
+            self.bottomControlView.progress = 0;
+            self.bottomControlView.bufferProgress = 0;
+            [self.bottomControlView setCurrentTimeStr:@"00:00" totalTimeStr:@"00:00"];
+        }
+            break;
         case SJVideoPlayerPlayState_Prepare: {
             
         }
@@ -591,7 +587,9 @@ NS_ASSUME_NONNULL_END
             self.bottomControlView.playState = YES;
         }
             break;
-        default:
+        case SJVideoPlayerPlayState_Buffing: {
+            
+        }
             break;
     }
     
@@ -658,8 +656,6 @@ NS_ASSUME_NONNULL_END
         if ( _moreSettingsView.appearState ) [_moreSettingsView disappear];
         if ( _moreSecondarySettingView.appearState ) [_moreSecondarySettingView disappear];
     }];
-    
-    self.controlLayerAppearedState = YES;   // update state
 }
 
 /// 控制层需要隐藏.
@@ -671,8 +667,6 @@ NS_ASSUME_NONNULL_END
         [_previewView disappear];
         [_bottomSlider appear];
     }];
-    
-    self.controlLayerAppearedState = NO;    // update state
 }
 
 ///  在`tableView`或`collectionView`上将要显示的时候调用.
@@ -689,7 +683,7 @@ NS_ASSUME_NONNULL_END
 #pragma mark 锁屏
 /// 播放器被锁屏, 此时将不旋转, 不触发手势相关事件.
 - (void)lockedVideoPlayer:(SJVideoPlayer *)videoPlayer {
-    [self controlLayerNeedDisappear:videoPlayer];
+    [videoPlayer controlLayerNeedDisappear];
     [UIView animateWithDuration:0.3 animations:^{
         [_leftControlView appear];
     }];
@@ -697,7 +691,7 @@ NS_ASSUME_NONNULL_END
 
 /// 播放器解除锁屏.
 - (void)unlockedVideoPlayer:(SJVideoPlayer *)videoPlayer {
-    [self controlLayerNeedAppear:videoPlayer];
+    [videoPlayer controlLayerNeedAppear];
 }
 
 #pragma mark 屏幕旋转
@@ -717,7 +711,7 @@ NS_ASSUME_NONNULL_END
     
     [self _setControlViewsDisappearValue]; // update. `reset`.
     
-    [self controlLayerNeedDisappear:videoPlayer];
+    [videoPlayer controlLayerNeedDisappear];
     
     if ( _moreSettingsView.appearState ) [_moreSettingsView disappear];
     if ( _moreSecondarySettingView.appearState ) [_moreSecondarySettingView disappear];

@@ -90,15 +90,15 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (BOOL)play;
 
-@property (nonatomic, assign, readonly) BOOL userPaused; // 区分是用户暂停的, 还是开发者暂停的
 - (BOOL)pause;                                           // 调用此方法, 表示开发者暂停.
 - (void)pauseForUser;                                    // 调用此方法, 表示用户暂停.
+@property (nonatomic, assign, readonly) BOOL userPaused; // 区分是用户暂停的, 还是开发者暂停的
 
 - (void)stop;
 
 - (void)stopAndFadeOut; // 停止播放并淡出
 
-- (void)replay;
+- (void)replay; 
 
 @property (nonatomic, readwrite) float volume;
 
@@ -111,6 +111,30 @@ NS_ASSUME_NONNULL_BEGIN
 - (void)resetRate;
 
 @property (nonatomic, copy, readwrite, nullable) void(^playDidToEnd)(__kindof SJBaseVideoPlayer *player); // 播放完毕
+
+@end
+
+
+#pragma mark - 控制层
+
+@interface SJBaseVideoPlayer (ControlLayer)
+
+@property (nonatomic, readwrite) BOOL enableControlLayerDisplayController; // default is YES. 是否开启控制层[显示/隐藏]的管理器
+@property (nonatomic, readonly) BOOL controlLayerAppeared; // 控制层是否显示
+@property (nonatomic, copy, readwrite, nullable) void(^controlLayerAppearStateChanged)(__kindof SJBaseVideoPlayer *player, BOOL state);
+
+- (void)controlLayerNeedAppear;
+- (void)controlLayerNeedDisappear;
+
+// 控制层是否显示
+@property (nonatomic, readonly) BOOL controlViewDisplayed NS_DEPRECATED(2_0, 2_0, 2_0, 2_0, "use `controlLayerAppeared`");
+
+/*!
+ *  Call when the control view is appear or disappear.
+ *
+ *  控制视图隐藏或显示的时候调用.
+ **/
+@property (nonatomic, copy, readwrite, nullable) void(^controlViewDisplayStatus)(__kindof SJBaseVideoPlayer *player, BOOL displayed) NS_DEPRECATED(2_0, 2_0, 2_0, 2_0, "use `controlLayerAppearStateChanged`");
 
 @end
 
@@ -193,29 +217,15 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (UIView *)controlView;
 
-/*!
- *  方法逻辑流程是这样的:
- *  if ( control layer appear state == NO ) {       // 1. call `controlLayerAppearedState` method.
- *      if ( appear condition == YES ) {            // 2. call `controlLayerAppearCondition` method.
- *          need appear ...                         // 3. call `controlLayerNeedAppear:` method.
- *      }
- *  }
- *  else {
- *      if ( disappear condition == YES ) {         // `controlLayerDisappearCondition`
- *          need disappear ...                      // `controlLayerNeedDisappear:`
- *      }
- *  }
- **/
-- (BOOL)controlLayerAppearedState;      // 请返回控制层的显示状态. 如果控制层显示, 将会调用`controlLayerDisappearCondition`, 反之, 调用`controlLayerAppearCondition`.
+/// 控制层需要隐藏之前会调用这个方法, 如果返回NO, 将不调用`controlLayerNeedDisappear:`.
+- (BOOL)controlLayerDisappearCondition;
 
-- (BOOL)controlLayerAppearCondition;    // 控制层需要显示之前会调用这个方法, 如果返回NO, 将不调用`controlLayerNeedAppear:`.
-
-- (BOOL)controlLayerDisappearCondition; // 控制层需要隐藏之前会调用这个方法, 如果返回NO, 将不调用`controlLayerNeedDisappear:`.
-
-- (BOOL)triggerGesturesCondition:(CGPoint)location; // 触发手势之前会调用这个方法, 如果返回NO, 将不调用水平手势相关的代理方法.
+/// 触发手势之前会调用这个方法, 如果返回NO, 将不调用水平手势相关的代理方法.
+- (BOOL)triggerGesturesCondition:(CGPoint)location;
 
 @optional
-- (void)installedControlViewToVideoPlayer:(SJBaseVideoPlayer *)videoPlayer; // 安装完控制层的回调.
+/// 安装完控制层的回调.
+- (void)installedControlViewToVideoPlayer:(SJBaseVideoPlayer *)videoPlayer;
 
 @end
 
@@ -225,57 +235,79 @@ NS_ASSUME_NONNULL_BEGIN
 @optional
 
 #pragma mark - 播放之前/状态
-- (void)videoPlayer:(SJBaseVideoPlayer *)videoPlayer prepareToPlay:(SJVideoPlayerURLAsset *)asset;  // 当设置播放资源时调用.
+/// 当设置播放资源时调用.
+- (void)videoPlayer:(SJBaseVideoPlayer *)videoPlayer prepareToPlay:(SJVideoPlayerURLAsset *)asset;
 
-- (void)videoPlayer:(SJBaseVideoPlayer *)videoPlayer stateChanged:(SJVideoPlayerPlayState)state;  // 播放状态改变.
+/// 播放状态改变.
+- (void)videoPlayer:(SJBaseVideoPlayer *)videoPlayer stateChanged:(SJVideoPlayerPlayState)state;  
 
-- (void)videoPlayer:(SJBaseVideoPlayer *)videoPlayer playFailed:(NSError *)error; // 播放报错
+/// 播放报错
+- (void)videoPlayer:(SJBaseVideoPlayer *)videoPlayer playFailed:(NSError *)error;
 
 #pragma mark - 进度
+/// 播放进度回调.
 - (void)videoPlayer:(SJBaseVideoPlayer *)videoPlayer
         currentTime:(NSTimeInterval)currentTime currentTimeStr:(NSString *)currentTimeStr
-          totalTime:(NSTimeInterval)totalTime totalTimeStr:(NSString *)totalTimeStr;    // 播放进度回调.
+          totalTime:(NSTimeInterval)totalTime totalTimeStr:(NSString *)totalTimeStr;
 
-- (void)videoPlayer:(SJBaseVideoPlayer *)videoPlayer loadedTimeProgress:(float)progress; // 缓冲的进度.
+/// 缓冲的进度.
+- (void)videoPlayer:(SJBaseVideoPlayer *)videoPlayer loadedTimeProgress:(float)progress;
 
-- (void)startLoading:(SJBaseVideoPlayer *)videoPlayer;  // 开始缓冲.
+/// 开始缓冲.
+- (void)startLoading:(SJBaseVideoPlayer *)videoPlayer;
 
-- (void)loadCompletion:(SJBaseVideoPlayer *)videoPlayer;  // 缓冲完成.
+/// 缓冲完成.
+- (void)loadCompletion:(SJBaseVideoPlayer *)videoPlayer;
 
 #pragma mark - 显示/消失
-- (void)controlLayerNeedAppear:(SJBaseVideoPlayer *)videoPlayer;        // 控制层需要显示.
+/// 控制层需要显示.
+- (void)controlLayerNeedAppear:(SJBaseVideoPlayer *)videoPlayer;
 
-- (void)controlLayerNeedDisappear:(SJBaseVideoPlayer *)videoPlayer;     // 控制层需要隐藏.
+/// 控制层需要隐藏.
+- (void)controlLayerNeedDisappear:(SJBaseVideoPlayer *)videoPlayer;
 
-- (void)videoPlayerWillAppearInScrollView:(SJBaseVideoPlayer *)videoPlayer;   //  在`tableView`或`collectionView`上将要显示的时候调用.
+///  在`tableView`或`collectionView`上将要显示的时候调用.
+- (void)videoPlayerWillAppearInScrollView:(SJBaseVideoPlayer *)videoPlayer;
 
-- (void)videoPlayerWillDisappearInScrollView:(SJBaseVideoPlayer *)videoPlayer;   //  在`tableView`或`collectionView`上将要消失的时候调用.
+///  在`tableView`或`collectionView`上将要消失的时候调用.
+- (void)videoPlayerWillDisappearInScrollView:(SJBaseVideoPlayer *)videoPlayer;
 
 #pragma mark - 锁屏
-- (void)lockedVideoPlayer:(SJBaseVideoPlayer *)videoPlayer;             // 播放器被锁屏, 此时将不旋转, 不触发手势相关事件.
+/// 播放器被锁屏, 此时将不旋转, 不触发手势相关事件.
+- (void)lockedVideoPlayer:(SJBaseVideoPlayer *)videoPlayer;
 
-- (void)unlockedVideoPlayer:(SJBaseVideoPlayer *)videoPlayer;           // 播放器解除锁屏.
+/// 播放器解除锁屏.
+- (void)unlockedVideoPlayer:(SJBaseVideoPlayer *)videoPlayer;
 
 #pragma mark - 屏幕旋转
-- (void)videoPlayer:(SJBaseVideoPlayer *)videoPlayer willRotateView:(BOOL)isFull;   // 播放器将要旋转屏幕, `isFull`如果为`YES`, 则全屏.
+/// 播放器将要旋转屏幕, `isFull`如果为`YES`, 则全屏.
+- (void)videoPlayer:(SJBaseVideoPlayer *)videoPlayer willRotateView:(BOOL)isFull;
 
-- (void)videoPlayer:(SJBaseVideoPlayer *)videoPlayer didEndRotation:(BOOL)isFull;     // 旋转完毕.
+/// 旋转完毕.
+- (void)videoPlayer:(SJBaseVideoPlayer *)videoPlayer didEndRotation:(BOOL)isFull;
 
 #pragma mark - 音量 / 亮度 / 播放速度
-- (void)videoPlayer:(SJBaseVideoPlayer *)videoPlayer muteChanged:(BOOL)mute; // 静音开关变更
+/// 静音开关变更
+- (void)videoPlayer:(SJBaseVideoPlayer *)videoPlayer muteChanged:(BOOL)mute;
 
-- (void)videoPlayer:(SJBaseVideoPlayer *)videoPlayer volumeChanged:(float)volume;   // 声音被改变.
+/// 声音被改变.
+- (void)videoPlayer:(SJBaseVideoPlayer *)videoPlayer volumeChanged:(float)volume;
 
-- (void)videoPlayer:(SJBaseVideoPlayer *)videoPlayer brightnessChanged:(float)brightness;   // 亮度被改变.
+/// 亮度被改变.
+- (void)videoPlayer:(SJBaseVideoPlayer *)videoPlayer brightnessChanged:(float)brightness;
 
-- (void)videoPlayer:(SJBaseVideoPlayer *)videoPlayer rateChanged:(float)rate;   // 播放速度被改变.
+/// 播放速度被改变.
+- (void)videoPlayer:(SJBaseVideoPlayer *)videoPlayer rateChanged:(float)rate;
 
 #pragma mark - 水平手势
-- (void)horizontalDirectionWillBeginDragging:(SJBaseVideoPlayer *)videoPlayer;    // 水平方向开始拖动.
+/// 水平方向开始拖动.
+- (void)horizontalDirectionWillBeginDragging:(SJBaseVideoPlayer *)videoPlayer;
 
-- (void)videoPlayer:(SJBaseVideoPlayer *)videoPlayer horizontalDirectionDidDrag:(CGFloat)translation; // 水平方向拖动中. `translation`为此次增加的值.
+/// 水平方向拖动中. `translation`为此次增加的值.
+- (void)videoPlayer:(SJBaseVideoPlayer *)videoPlayer horizontalDirectionDidDrag:(CGFloat)translation;
 
-- (void)horizontalDirectionDidEndDragging:(SJBaseVideoPlayer *)videoPlayer;   // 水平方向拖动结束.
+/// 水平方向拖动结束.
+- (void)horizontalDirectionDidEndDragging:(SJBaseVideoPlayer *)videoPlayer;
 
 #pragma mark - size
 - (void)videoPlayer:(SJBaseVideoPlayer *)videoPlayer presentationSize:(CGSize)size;

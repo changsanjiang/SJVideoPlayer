@@ -46,7 +46,7 @@ NS_ASSUME_NONNULL_BEGIN
                         image:(UIImage *__nullable)image
                showTowSetting:(BOOL)showTowSetting                                      // show
            twoSettingTopTitle:(NSString *)twoSettingTopTitle                            // top title
-              twoSettingItems:(NSArray<SJVideoPlayerMoreSettingSecondary *> *)items    // items
+              twoSettingItems:(NSArray<SJVideoPlayerMoreSettingSecondary *> *)items     // items
               clickedExeBlock:(void(^)(SJVideoPlayerMoreSetting *model))block;
 
 @end

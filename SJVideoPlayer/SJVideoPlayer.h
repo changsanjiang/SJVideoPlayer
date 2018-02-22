@@ -31,9 +31,9 @@ NS_ASSUME_NONNULL_BEGIN
 @end
 
 
-#pragma mark - 默认控制层配置
+#pragma mark - 配置`默认控制层`
 
-@interface SJVideoPlayer (DefaultControlLayer)
+@interface SJVideoPlayer (SettingDefaultControlLayer)
 
 /*!
  *  default is YES.
@@ -48,15 +48,6 @@ NS_ASSUME_NONNULL_BEGIN
  *  点击`返回`按钮的回调.
  */
 @property (nonatomic, copy, readwrite) void(^clickedBackEvent)(SJVideoPlayer *player);
-
-/*!
- *  Call when the control view is hidden or displayed.
- *
- *  控制视图隐藏或显示的时候调用.
- **/
-@property (nonatomic, copy, readwrite, nullable) void(^controlViewDisplayStatus)(SJVideoPlayer *player, BOOL displayed);
-
-@property (nonatomic, assign, readonly) BOOL controlViewDisplayed; // 控制层是否显示
 
 /*!
  *  Configure the player, Note: This `block` is run on the child thread.

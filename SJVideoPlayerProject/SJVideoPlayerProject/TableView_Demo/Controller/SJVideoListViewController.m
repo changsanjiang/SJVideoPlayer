@@ -185,7 +185,7 @@ static NSString *const SJVideoListTableViewCellID = @"SJVideoListTableViewCell";
     };
     
     // Call when the `control view` is `hidden` or `displayed`.
-    _videoPlayer.controlViewDisplayStatus = ^(SJVideoPlayer * _Nonnull player, BOOL displayed) {
+    _videoPlayer.controlLayerAppearStateChanged = ^(SJVideoPlayer * _Nonnull player, BOOL displayed) {
         __strong typeof(_self) self = _self;
         if ( !self ) return;
         [self setNeedsStatusBarAppearanceUpdate];
@@ -210,7 +210,7 @@ static NSString *const SJVideoListTableViewCellID = @"SJVideoListTableViewCell";
 #pragma mark -
 
 - (BOOL)prefersStatusBarHidden {
-    if ( _videoPlayer.isFullScreen ) return !_videoPlayer.controlViewDisplayed; // 全屏播放时, 使状态栏根据视频的控制层显示或隐藏
+    if ( _videoPlayer.isFullScreen ) return !_videoPlayer.controlLayerAppeared; // 全屏播放时, 使状态栏根据视频的控制层显示或隐藏
     return NO;
 }
 

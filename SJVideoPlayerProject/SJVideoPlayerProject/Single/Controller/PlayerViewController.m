@@ -30,17 +30,11 @@
     [self _playerVCSetupViews];
     [self _playerVCAccessNetwork];
     
-    
-    self.sj_viewWillBeginDragging = ^(PlayerViewController * _Nonnull vc) {
-        vc.videoPlayer.disableRotation = YES;
-    }; // 全屏手势触发时, 禁止播放器旋转
-    
-    
-    self.sj_viewDidEndDragging = ^(PlayerViewController * _Nonnull vc) {
-        vc.videoPlayer.disableRotation = NO;
-    }; // 恢复
-    
     // Do any additional setup after loading the view.
+}
+
+- (void)dealloc {
+    [_videoPlayer stop];
 }
 
 - (void)viewWillAppear:(BOOL)animated {
@@ -83,7 +77,7 @@
     
     self.view.backgroundColor = [UIColor whiteColor];
     
-    _videoPlayer = [SJVideoPlayer player];
+    _videoPlayer = [SJVideoPlayer sharedPlayer];
     [self.view addSubview:_videoPlayer.view];
     
     [_videoPlayer.view mas_makeConstraints:^(MASConstraintMaker *make) {
@@ -92,7 +86,17 @@
         make.height.equalTo(_videoPlayer.view.mas_width).multipliedBy(9 / 16.0f);
     }];
     
-    [self _settingPlayer];
+    self.sj_viewWillBeginDragging = ^(PlayerViewController * _Nonnull vc) {
+        vc.videoPlayer.disableRotation = YES; // 全屏手势触发时, 禁止播放器旋转
+    };
+    
+    
+    self.sj_viewDidEndDragging = ^(PlayerViewController * _Nonnull vc) {
+        vc.videoPlayer.disableRotation = NO; // 恢复
+    };
+    
+    
+    [self _settingPlayer]; // 配置 默认的控制层
 }
 
 - (void)_settingPlayer {
@@ -102,22 +106,22 @@
         __strong typeof(_self) self = _self;
         if ( !self ) return;
         [self.videoPlayer stop];
-        [self.navigationController popViewControllerAnimated:YES];
-    }; // 点击返回按钮执行的block.
+        [self.navigationController popViewControllerAnimated:YES]; // 点击返回按钮执行的block.
+    };
     
     
     _videoPlayer.rotatedScreen = ^(SJVideoPlayer * _Nonnull player, BOOL isFullScreen) {
         __strong typeof(_self) self = _self;
         if ( !self ) return ;
-        [self setNeedsStatusBarAppearanceUpdate];
-    }; // 屏幕旋转的时候, 更新状态栏状态
+        [self setNeedsStatusBarAppearanceUpdate]; // 屏幕旋转的时候, 更新状态栏状态
+    };
     
     
-    _videoPlayer.controlViewDisplayStatus = ^(SJVideoPlayer * _Nonnull player, BOOL displayed) {
+    _videoPlayer.controlLayerAppearStateChanged = ^(SJVideoPlayer * _Nonnull player, BOOL displayed) {
         __strong typeof(_self) self = _self;
         if ( !self ) return;
-        [self setNeedsStatusBarAppearanceUpdate];
-    }; // 控制层显示的时候, 更新状态栏状态
+        [self setNeedsStatusBarAppearanceUpdate]; // 控制层显示的时候, 更新状态栏状态
+    };
     
     _videoPlayer.moreSettings = self.items.moreSettings;  // 配置`更多页面`展示的`item`
 }
@@ -161,7 +165,7 @@
 
 - (BOOL)prefersStatusBarHidden {
     // 全屏播放时, 使状态栏根据控制层显示或隐藏
-    if ( _videoPlayer.isFullScreen ) return !_videoPlayer.controlViewDisplayed;
+    if ( _videoPlayer.isFullScreen ) return !_videoPlayer.controlLayerAppeared;
     return NO;
 }
 

@@ -7,18 +7,7 @@
 //
 
 #import "SJVideoPlayer.h"
-#import <SJVideoPlayerAssetCarrier/SJVideoPlayerAssetCarrier.h>
-#import "SJVideoPlayerPresentView.h"
-#import <Masonry/Masonry.h>
-#import <SJUIFactory/SJUIFactory.h>
-#import <SJOrentationObserver/SJOrentationObserver.h>
-#import "SJPlayerGestureControl.h"
-#import <SJVolBrigControl/SJVolBrigControl.h>
-#import "UIView+SJVideoPlayerAdd.h"
 #import <objc/message.h>
-#import "SJTimerControl.h"
-#import <SJObserverHelper/NSObject+SJObserverHelper.h>
-#import "SJVideoPlayerRegistrar.h"
 #import "SJVideoPlayerDefaultControlView.h"
 
 #pragma mark -
@@ -83,7 +72,7 @@ NS_ASSUME_NONNULL_END
 
 #pragma mark - 默认控制层
 
-@implementation SJVideoPlayer (DefaultControlLayer)
+@implementation SJVideoPlayer (SettingDefaultControlLayer)
 
 static dispatch_queue_t videoPlayerWorkQueue;
 + (dispatch_queue_t)workQueue {
@@ -139,18 +128,6 @@ static dispatch_queue_t videoPlayerWorkQueue;
 
 - (void (^)(SJVideoPlayer * _Nonnull))clickedBackEvent {
     return objc_getAssociatedObject(self, _cmd);
-}
-
-- (void)setControlViewDisplayStatus:(void (^)(SJVideoPlayer * _Nonnull, BOOL))controlViewDisplayStatus {
-    objc_setAssociatedObject(self, @selector(controlViewDisplayStatus), controlViewDisplayStatus, OBJC_ASSOCIATION_COPY_NONATOMIC);
-}
-
-- (void (^)(SJVideoPlayer * _Nonnull, BOOL))controlViewDisplayStatus {
-    return objc_getAssociatedObject(self, _cmd);
-}
-
-- (BOOL)controlViewDisplayed {
-    return self.controlLayerDataSource.controlLayerAppearedState;
 }
 
 @end

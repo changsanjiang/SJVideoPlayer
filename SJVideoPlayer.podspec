@@ -28,8 +28,6 @@ s.subspec 'ControlView' do |ss|
     ss.source_files = 'SJVideoPlayer/ControlView/*.{h,m}'
     ss.dependency 'SJVideoPlayer/Resource'
     ss.dependency 'SJVideoPlayer/MoreSetting'
-    ss.dependency 'SJVideoPlayer/Header'
-    ss.dependency 'SJVideoPlayer/Model'
 end
 
 s.subspec 'MoreSetting' do |ss|

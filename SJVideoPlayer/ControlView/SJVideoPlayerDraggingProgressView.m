@@ -10,7 +10,6 @@
 #import <SJUIFactory/SJUIFactory.h>
 #import <Masonry/Masonry.h>
 #import <SJSlider/SJSlider.h>
-#import <SJVideoPlayerAssetCarrier/SJVideoPlayerAssetCarrier.h>
 #import "UIView+SJVideoPlayerSetting.h"
 
 @interface SJVideoPlayerDraggingProgressView ()

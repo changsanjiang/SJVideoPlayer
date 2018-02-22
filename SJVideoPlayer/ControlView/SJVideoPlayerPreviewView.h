@@ -7,7 +7,7 @@
 //
 
 #import <UIKit/UIKit.h>
-#import "SJVideoPlayerPreviewInfo.h"
+#import <SJBaseVideoPlayer/SJVideoPlayerPreviewInfo.h>
 
 NS_ASSUME_NONNULL_BEGIN
 

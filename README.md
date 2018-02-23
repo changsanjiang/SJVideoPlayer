@@ -7,7 +7,7 @@
 # 有默认控制层的播放器
 pod 'SJVideoPlayer'
 
-# 基础控制层, 不含控制层, 如果需要自定义控制层, 可以使用它.
+# 基础播放器, 不含控制层, 如果需要自定义控制层, 可以使用它.
 pod 'SJBaseVideoPlayer'
 ```
 - [基础播放器, 不含控制层](https://github.com/changsanjiang/SJBaseVideoPlayer)

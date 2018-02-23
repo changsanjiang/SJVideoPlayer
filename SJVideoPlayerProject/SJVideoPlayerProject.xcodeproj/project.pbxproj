@@ -33,7 +33,7 @@
 		77A47E8F2008DEBE001EBE14 /* nested.gif in Resources */ = {isa = PBXBuildFile; fileRef = 77A47E8B2008DEBE001EBE14 /* nested.gif */; };
 		77E754362040056F00A5AF44 /* FullViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 77E754352040056F00A5AF44 /* FullViewController.m */; };
 		77E754382040135000A5AF44 /* sample.mp4 in Resources */ = {isa = PBXBuildFile; fileRef = 77E754372040135000A5AF44 /* sample.mp4 */; };
-		77F4EFF720402056004748F6 /* SJVideoPlayerHelper.m in Sources */ = {isa = PBXBuildFile; fileRef = 77F4EFF620402056004748F6 /* SJVideoPlayerHelper.m */; };
+		77F4EFFA204029E3004748F6 /* SJSharedVideoPlayerHelper.m in Sources */ = {isa = PBXBuildFile; fileRef = 77F4EFF9204029E3004748F6 /* SJSharedVideoPlayerHelper.m */; };
 		A6441092200A3FA9006FD832 /* SJVideoListViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = A6441091200A3FA9006FD832 /* SJVideoListViewController.m */; };
 		A6441095200A3FBA006FD832 /* SJVideoListTableViewCell.m in Sources */ = {isa = PBXBuildFile; fileRef = A6441094200A3FBA006FD832 /* SJVideoListTableViewCell.m */; };
 		A6441098200A406E006FD832 /* SJVideoModel.m in Sources */ = {isa = PBXBuildFile; fileRef = A6441097200A406E006FD832 /* SJVideoModel.m */; };
@@ -107,8 +107,8 @@
 		77E754342040056F00A5AF44 /* FullViewController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = FullViewController.h; sourceTree = "<group>"; };
 		77E754352040056F00A5AF44 /* FullViewController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = FullViewController.m; sourceTree = "<group>"; };
 		77E754372040135000A5AF44 /* sample.mp4 */ = {isa = PBXFileReference; lastKnownFileType = file; path = sample.mp4; sourceTree = "<group>"; };
-		77F4EFF520402056004748F6 /* SJVideoPlayerHelper.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = SJVideoPlayerHelper.h; sourceTree = "<group>"; };
-		77F4EFF620402056004748F6 /* SJVideoPlayerHelper.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = SJVideoPlayerHelper.m; sourceTree = "<group>"; };
+		77F4EFF8204029E3004748F6 /* SJSharedVideoPlayerHelper.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = SJSharedVideoPlayerHelper.h; sourceTree = "<group>"; };
+		77F4EFF9204029E3004748F6 /* SJSharedVideoPlayerHelper.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = SJSharedVideoPlayerHelper.m; sourceTree = "<group>"; };
 		A53C6944FFDAC5FD9DA4750E /* libPods-SJVideoPlayerProject.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-SJVideoPlayerProject.a"; sourceTree = BUILT_PRODUCTS_DIR; };
 		A6441090200A3FA9006FD832 /* SJVideoListViewController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = SJVideoListViewController.h; sourceTree = "<group>"; };
 		A6441091200A3FA9006FD832 /* SJVideoListViewController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = SJVideoListViewController.m; sourceTree = "<group>"; };
@@ -203,6 +203,8 @@
 			children = (
 				772005752029BBC7009F0190 /* SJMoreSettingItems.h */,
 				772005762029BBC7009F0190 /* SJMoreSettingItems.m */,
+				77F4EFF8204029E3004748F6 /* SJSharedVideoPlayerHelper.h */,
+				77F4EFF9204029E3004748F6 /* SJSharedVideoPlayerHelper.m */,
 			);
 			path = Model;
 			sourceTree = "<group>";
@@ -367,8 +369,6 @@
 		778E24F11FD97E93008D0DD3 /* Single_单例 */ = {
 			isa = PBXGroup;
 			children = (
-				77F4EFF520402056004748F6 /* SJVideoPlayerHelper.h */,
-				77F4EFF620402056004748F6 /* SJVideoPlayerHelper.m */,
 				772005712029B5CB009F0190 /* Controller */,
 				772005702029B5C7009F0190 /* View */,
 				7720056F2029B5C0009F0190 /* Model */,
@@ -688,7 +688,6 @@
 				A6441095200A3FBA006FD832 /* SJVideoListTableViewCell.m in Sources */,
 				A6E6D3682028BE9B00CB9BAE /* SJVideoPlayerMoreSettingsSecondaryHeaderView.m in Sources */,
 				A6E6D34F2028BE9B00CB9BAE /* SJVideoPlayerControlMaskView.m in Sources */,
-				77F4EFF720402056004748F6 /* SJVideoPlayerHelper.m in Sources */,
 				775C0AC820295C660008EDA7 /* SJVideoPlayerSettings.m in Sources */,
 				775A7C291FD7EC7C00BE1EE2 /* PlayerTableViewCell.m in Sources */,
 				A6E6D3582028BE9B00CB9BAE /* SJVideoPlayerCenterControlView.m in Sources */,
@@ -706,6 +705,7 @@
 				A6E6D3672028BE9B00CB9BAE /* SJVideoPlayerMoreSettingSecondaryView.m in Sources */,
 				A6E6D3552028BE9B00CB9BAE /* SJVideoPlayerTopControlView.m in Sources */,
 				A6E6D3652028BE9B00CB9BAE /* SJVideoPlayerMoreSettingsFooterView.m in Sources */,
+				77F4EFFA204029E3004748F6 /* SJSharedVideoPlayerHelper.m in Sources */,
 				774B252B1FCEBA5D002113CC /* main.m in Sources */,
 				772005772029BBC7009F0190 /* SJMoreSettingItems.m in Sources */,
 				774B251D1FCEBA5D002113CC /* AppDelegate.m in Sources */,

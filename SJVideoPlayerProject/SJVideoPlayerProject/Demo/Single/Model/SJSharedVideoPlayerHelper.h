@@ -1,5 +1,5 @@
 //
-//  SJVideoPlayerHelper.h
+//  SJSharedVideoPlayerHelper.h
 //  SJVideoPlayerProject
 //
 //  Created by BlueDancer on 2018/2/23.
@@ -10,14 +10,14 @@
 #import "SJVideoPlayer.h"
 
 NS_ASSUME_NONNULL_BEGIN
-@protocol SJVideoPlayerHelperUseProtocol;
+@protocol SJSharedVideoPlayerHelperUseProtocol;
 
 
-@interface SJVideoPlayerHelper : NSObject
+@interface SJSharedVideoPlayerHelper : NSObject
 
 + (instancetype)sharedHelper;
 
-@property (nonatomic, weak, readwrite, nullable) UIViewController<SJVideoPlayerHelperUseProtocol> *viewController;
+@property (nonatomic, weak, readwrite, nullable) UIViewController<SJSharedVideoPlayerHelperUseProtocol> *viewController;
 
 @property (nonatomic, copy, readonly) void(^vc_viewWillAppearExeBlock)(void);
 @property (nonatomic, copy, readonly) void(^vc_viewWillDisappearExeBlock)(void);
@@ -29,11 +29,9 @@ NS_ASSUME_NONNULL_BEGIN
 @end
 
 
-@protocol SJVideoPlayerHelperUseProtocol <NSObject>
+@protocol SJSharedVideoPlayerHelperUseProtocol <NSObject>
 
 @required
-
-- (SJVideoPlayer *)videoPlayer;
 
 - (void)dealloc;
 
@@ -49,3 +47,4 @@ NS_ASSUME_NONNULL_BEGIN
 @end
 
 NS_ASSUME_NONNULL_END
+

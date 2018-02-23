@@ -1,23 +1,23 @@
 
 //
-//  SJVideoPlayerHelper.m
+//  SJSharedVideoPlayerHelper.m
 //  SJVideoPlayerProject
 //
 //  Created by BlueDancer on 2018/2/23.
 //  Copyright © 2018年 SanJiang. All rights reserved.
 //
 
-#import "SJVideoPlayerHelper.h"
+#import "SJSharedVideoPlayerHelper.h"
 #import <UIViewController+SJVideoPlayerAdd.h>
 #import "SJMoreSettingItems.h"
 
-@interface SJVideoPlayerHelper ()<SJMoreSettingItemsDelegate>
+@interface SJSharedVideoPlayerHelper ()<SJMoreSettingItemsDelegate>
 
 @property (nonatomic, strong, readonly) SJMoreSettingItems *items;
 
 @end
 
-@implementation SJVideoPlayerHelper
+@implementation SJSharedVideoPlayerHelper
 @synthesize items = _items;
 
 + (instancetype)sharedHelper {
@@ -29,34 +29,20 @@
     return _instance;
 }
 
-- (void)setViewController:(UIViewController<SJVideoPlayerHelperUseProtocol> *)viewController {
-    if ( viewController == _viewController ) return;
-    _viewController = viewController;
-    
-    // 配置控制器
-    __weak typeof(self) _self = self;
-    viewController.sj_viewWillBeginDragging = ^(UIViewController * _Nonnull vc) {
-        __strong typeof(_self) self = _self;
-        if ( !self ) return;
-        self.viewController.videoPlayer.disableRotation = YES; // 全屏手势触发时, 禁止播放器旋转
-    };
-    
-    viewController.sj_viewDidEndDragging = ^(UIViewController * _Nonnull vc) {
-        __strong typeof(_self) self = _self;
-        if ( !self ) return;
-        self.viewController.videoPlayer.disableRotation = NO; // 恢复
-    };
-    
-    
+- (instancetype)init {
+    self = [super init];
+    if ( !self ) return nil;
     // 配置播放器
-    viewController.videoPlayer.clickedBackEvent = ^(SJVideoPlayer * _Nonnull player) {
+    __weak typeof(self) _self = self;
+    [SJVideoPlayer sharedPlayer].clickedBackEvent = ^(SJVideoPlayer * _Nonnull player) {
         __strong typeof(_self) self = _self;
         if ( !self ) return;
+        if ( !self.viewController ) return;
         [player stop];
         [self.viewController.navigationController popViewControllerAnimated:YES];
     };
     
-    viewController.videoPlayer.rotatedScreen = ^(SJVideoPlayer * _Nonnull player, BOOL isFullScreen) {
+    [SJVideoPlayer sharedPlayer].rotatedScreen = ^(SJVideoPlayer * _Nonnull player, BOOL isFullScreen) {
         __strong typeof(_self) self = _self;
         if ( !self ) return ;
         if ( !self.viewController ) return;
@@ -65,7 +51,7 @@
         }];
     };
     
-    viewController.videoPlayer.controlLayerAppearStateChanged = ^(SJVideoPlayer * _Nonnull player, BOOL displayed) {
+    [SJVideoPlayer sharedPlayer].controlLayerAppearStateChanged = ^(SJVideoPlayer * _Nonnull player, BOOL displayed) {
         __strong typeof(_self) self = _self;
         if ( !self ) return;
         if ( !self.viewController ) return;
@@ -74,7 +60,26 @@
         }];
     };
     
-    viewController.videoPlayer.moreSettings = self.items.moreSettings;  // 配置`更多页面`展示的`item`
+    [SJVideoPlayer sharedPlayer].moreSettings = self.items.moreSettings;  // 配置`更多页面`展示的`item`
+    return self;
+}
+
+- (void)setViewController:(UIViewController<SJSharedVideoPlayerHelperUseProtocol> *)viewController {
+    if ( viewController == _viewController ) return;
+    _viewController = viewController;
+    
+    __weak typeof(self) _self = self;
+    viewController.sj_viewWillBeginDragging = ^(UIViewController * _Nonnull vc) {
+        __strong typeof(_self) self = _self;
+        if ( !self ) return;
+        [SJVideoPlayer sharedPlayer].disableRotation = YES; // 全屏手势触发时, 禁止播放器旋转
+    };
+    
+    viewController.sj_viewDidEndDragging = ^(UIViewController * _Nonnull vc) {
+        __strong typeof(_self) self = _self;
+        if ( !self ) return;
+        [SJVideoPlayer sharedPlayer].disableRotation = NO; // 恢复
+    };
 }
 
 - (void (^)(void))vc_viewWillAppearExeBlock {
@@ -82,7 +87,7 @@
     return ^ () {
         __strong typeof(_self) self = _self;
         if ( !self ) return;
-        self.viewController.videoPlayer.disableRotation = NO;  // 界面将要显示的时候, 恢复旋转.
+        [SJVideoPlayer sharedPlayer].disableRotation = NO;  // 界面将要显示的时候, 恢复旋转.
     };
 }
 
@@ -91,7 +96,7 @@
     return ^ () {
         __strong typeof(_self) self = _self;
         if ( !self ) return;
-        self.viewController.videoPlayer.disableRotation = YES; // 界面将要消失的时候, 禁止旋转. (考虑用户体验)
+        [SJVideoPlayer sharedPlayer].disableRotation = YES; // 界面将要消失的时候, 禁止旋转. (考虑用户体验)
     };
 }
 
@@ -100,7 +105,7 @@
     return ^ () {
         __strong typeof(_self) self = _self;
         if ( !self ) return;
-        [self.viewController.videoPlayer pause];   // 界面消失的时候, 暂停播放
+        [[SJVideoPlayer sharedPlayer] pause];   // 界面消失的时候, 暂停播放
     };
 }
 
@@ -109,8 +114,8 @@
     return ^ () {
         __strong typeof(_self) self = _self;
         if ( !self ) return;
-        [self.viewController.videoPlayer stop];
-        self.viewController.videoPlayer.disableRotation = NO;  // 如果是单例, 恢复旋转. 以免在其他地方使用时, 播放器不旋转.
+        [[SJVideoPlayer sharedPlayer] stop];
+        [SJVideoPlayer sharedPlayer].disableRotation = NO;  // 如果是单例, 恢复旋转. 以免在其他地方使用时, 播放器不旋转.
     };
 }
 
@@ -120,7 +125,7 @@
         __strong typeof(_self) self = _self;
         if ( !self ) return NO;
         // 全屏播放时, 使状态栏根据控制层显示或隐藏
-        if ( self.viewController.videoPlayer.isFullScreen ) return !self.viewController.videoPlayer.controlLayerAppeared;
+        if ( [SJVideoPlayer sharedPlayer].isFullScreen ) return ![SJVideoPlayer sharedPlayer].controlLayerAppeared;
         return NO;
     };
 }
@@ -131,7 +136,7 @@
         __strong typeof(_self) self = _self;
         if ( !self ) return UIStatusBarStyleDefault;
         // 全屏播放时, 使状态栏变成白色
-        if ( self.viewController.videoPlayer.isFullScreen ) return UIStatusBarStyleLightContent;
+        if ( [SJVideoPlayer sharedPlayer].isFullScreen ) return UIStatusBarStyleLightContent;
         return UIStatusBarStyleDefault;
     };
 }
@@ -149,15 +154,15 @@
 - (void)clickedShareItem:(SJSharePlatform)platform {
     switch ( platform ) {
         case SJSharePlatform_Wechat: {
-            [self.viewController.videoPlayer showTitle:@"分享到微信"];
+            [[SJVideoPlayer sharedPlayer] showTitle:@"分享到微信"];
         }
             break;
         case SJSharePlatform_Weibo: {
-            [self.viewController.videoPlayer showTitle:@"分享到微博"];
+            [[SJVideoPlayer sharedPlayer] showTitle:@"分享到微博"];
         }
             break;
         case SJSharePlatform_QQ: {
-            [self.viewController.videoPlayer showTitle:@"分享到QQ"];
+            [[SJVideoPlayer sharedPlayer] showTitle:@"分享到QQ"];
         }
             break;
         case SJSharePlatform_Unknown: break;
@@ -165,11 +170,12 @@
 }
 
 - (void)clickedDownloadItem {
-    [self.viewController.videoPlayer showTitle:@"点击下载"];
+    [[SJVideoPlayer sharedPlayer] showTitle:@"点击下载"];
 }
 
 - (void)clickedCollectItem {
-    [self.viewController.videoPlayer showTitle:@"点击收藏"];
+    [[SJVideoPlayer sharedPlayer] showTitle:@"点击收藏"];
 }
 
 @end
+

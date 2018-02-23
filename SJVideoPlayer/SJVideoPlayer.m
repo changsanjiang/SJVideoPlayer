@@ -45,10 +45,6 @@ NS_ASSUME_NONNULL_END
                           controlLayerDelegate:(nullable id<SJVideoPlayerControlLayerDelegate>)controlLayerDelegate {
     self = [super init];
     if ( !self ) return nil;
-    self.autoPlay = YES;
-    NSError *error = nil;
-    [[AVAudioSession sharedInstance] setCategory: AVAudioSessionCategoryPlayback error:&error];
-    if ( error ) NSLog(@"%@", error.userInfo);
     if ( nil == controlLayerDataSource ) controlLayerDataSource = self.defaultControlView;
     if ( nil == controlLayerDelegate ) controlLayerDelegate = self.defaultControlView;
     self.controlLayerDataSource = controlLayerDataSource;

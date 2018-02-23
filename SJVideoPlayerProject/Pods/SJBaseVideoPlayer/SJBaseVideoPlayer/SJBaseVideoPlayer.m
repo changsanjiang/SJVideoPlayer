@@ -175,6 +175,7 @@ NS_ASSUME_NONNULL_END
             [self.controlLayerDelegate videoPlayer:self rateChanged:rate];
         }
         if ( self.rateChanged ) self.rateChanged(self);
+        if ( SJVideoPlayerPlayState_PlayEnd == self.state ) [self replay];
     };
     
     if ( asset.indexPath ) {
@@ -894,7 +895,7 @@ NS_ASSUME_NONNULL_END
     
     self.userClickedPause = NO;
     if ( !self.asset ) return NO;
-    [self.asset.player play];
+    if ( 0 == self.asset.player.rate ) [self.asset.player play];
     self.state = SJVideoPlayerPlayState_Playing;
     return YES;
 }

@@ -5,6 +5,13 @@ pod 'SJVideoPlayer'
 ```
 ___
 
+### base video player
+```ruby
+# a lightweight, non controlled player.
+pod 'SJBaseVideoPlayer'
+```
+___
+
 # example
 <img src="https://github.com/changsanjiang/SJVideoPlayer/blob/master/SJVideoPlayerProject/SJVideoPlayerProject/ex.gif" />
 

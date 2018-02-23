@@ -358,6 +358,7 @@ static float const __GeneratePreImgScale = 0.05;
         if ( completionHandler ) completionHandler(NO);
         return;
     }
+    [_playerItem cancelPendingSeeks];
     __weak typeof(self) _self = self;
     [_playerItem seekToTime:time completionHandler:^(BOOL finished) {
         __strong typeof(_self) self = _self;

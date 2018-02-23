@@ -13,19 +13,34 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
+/// 支持的方向
+typedef NS_ENUM(NSUInteger, SJSupportedRotateViewOrientation) {
+    SJSupportedRotateViewOrientation_All,
+    SJSupportedRotateViewOrientation_Portrait = 1 << 0,
+    SJSupportedRotateViewOrientation_LandscapeLeft = 1 << 1,  // UIDeviceOrientationLandscapeLeft
+    SJSupportedRotateViewOrientation_LandscapeRight = 1 << 2, // UIDeviceOrientationLandscapeRight
+};
+
+/// 旋转方向
+typedef NS_ENUM(NSUInteger, SJRotateViewOrientation) {
+    SJRotateViewOrientation_Portrait,
+    SJRotateViewOrientation_LandscapeLeft,  // UIDeviceOrientationLandscapeLeft
+    SJRotateViewOrientation_LandscapeRight, // UIDeviceOrientationLandscapeRight
+};
+
 @interface SJOrentationObserver : NSObject
 
-/*!
- *  Target is rotationView.
- *  Container is superview.
- **/
-- (instancetype)initWithTarget:(UIView *)view container:(UIView *)targetSuperview;
+- (instancetype)initWithTarget:(UIView *)rotateView container:(UIView *)rotateViewSuperView;
+
+@property (nonatomic, readwrite) SJSupportedRotateViewOrientation supportedRotateViewOrientation; // 旋转支持的方向, 默认全部支持
+
+@property (nonatomic, readwrite) SJRotateViewOrientation rotateOrientation; // 旋转到指定方向
 
 @property (nonatomic, assign, readonly, getter=isFullScreen) BOOL fullScreen;
-/// 旋转时间, default is 0.3
-@property (nonatomic, assign, readwrite) float duration;
-/// 旋转条件, 返回 YES 才会旋转, 默认为 nil.
-@property (nonatomic, copy, readwrite, nullable) BOOL(^rotationCondition)(SJOrentationObserver *observer);
+
+@property (nonatomic, assign, readwrite) float duration; // 旋转时间, default is 0.25
+
+@property (nonatomic, copy, readwrite, nullable) BOOL(^rotationCondition)(SJOrentationObserver *observer); // 旋转条件, 返回 YES 才会旋转, 默认为 nil.
 
 @property (nonatomic, copy, readwrite, nullable) void(^orientationWillChange)(SJOrentationObserver *observer, BOOL isFullScreen);
 
@@ -36,3 +51,5 @@ NS_ASSUME_NONNULL_BEGIN
 @end
 
 NS_ASSUME_NONNULL_END
+
+

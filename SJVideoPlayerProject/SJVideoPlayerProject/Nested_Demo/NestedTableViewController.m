@@ -96,7 +96,7 @@ static NSString *const NestedTableViewCellID = @"NestedTableViewCell";
     }];
 
     // create asset
-    NSURL *playURL = [NSURL URLWithString:@"http://blurdancer-video.oss-cn-shanghai.aliyuncs.com/usertrend/120718-1515947072.mp4"];
+    NSURL *playURL = [NSURL URLWithString:@"http://blurdancer-video.oss-cn-shanghai.aliyuncs.com/usertrend/207-1519355428.mp4"];
     
     NSIndexPath *embeddedScrollViewIndexPath = [self.tableView indexPathForCell:tabCell];
     UIView *embeddedScrollView = collectionView;
@@ -113,14 +113,18 @@ static NSString *const NestedTableViewCellID = @"NestedTableViewCell";
     _videoPlayer.willRotateScreen = ^(SJVideoPlayer * _Nonnull player, BOOL isFullScreen) {
         __strong typeof(_self) self = _self;
         if ( !self ) return ;
-        [self setNeedsStatusBarAppearanceUpdate];
+        [UIView animateWithDuration:0.25 animations:^{
+            [self setNeedsStatusBarAppearanceUpdate];
+        }];
     };
     
     // Call when the control view is hidden or displayed.
     _videoPlayer.controlLayerAppearStateChanged = ^(SJVideoPlayer * _Nonnull player, BOOL displayed) {
         __strong typeof(_self) self = _self;
         if ( !self ) return;
-        [self setNeedsStatusBarAppearanceUpdate];
+        [UIView animateWithDuration:0.25 animations:^{
+            [self setNeedsStatusBarAppearanceUpdate];
+        }];
     };
 }
 

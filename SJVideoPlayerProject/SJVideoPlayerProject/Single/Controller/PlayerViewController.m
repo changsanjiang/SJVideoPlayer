@@ -113,14 +113,18 @@
     _videoPlayer.rotatedScreen = ^(SJVideoPlayer * _Nonnull player, BOOL isFullScreen) {
         __strong typeof(_self) self = _self;
         if ( !self ) return ;
-        [self setNeedsStatusBarAppearanceUpdate]; // 屏幕旋转的时候, 更新状态栏状态
+        [UIView animateWithDuration:0.25 animations:^{
+            [self setNeedsStatusBarAppearanceUpdate]; // 屏幕旋转的时候, 更新状态栏状态
+        }];
     };
     
     
     _videoPlayer.controlLayerAppearStateChanged = ^(SJVideoPlayer * _Nonnull player, BOOL displayed) {
         __strong typeof(_self) self = _self;
         if ( !self ) return;
-        [self setNeedsStatusBarAppearanceUpdate]; // 控制层显示的时候, 更新状态栏状态
+        [UIView animateWithDuration:0.25 animations:^{
+            [self setNeedsStatusBarAppearanceUpdate]; // 控制层显示的时候, 更新状态栏状态
+        }];
     };
     
     _videoPlayer.moreSettings = self.items.moreSettings;  // 配置`更多页面`展示的`item`

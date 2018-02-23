@@ -20,7 +20,7 @@
 
 - (void)sj_fadeInAndCompletion:(void(^)(UIView *view))block {
     self.alpha = 0.001;
-    [UIView animateWithDuration:0.3 animations:^{
+    [UIView animateWithDuration:0.25 animations:^{
         self.alpha = 1;
     } completion:^(BOOL finished) {
         if ( block ) block(self);
@@ -29,7 +29,7 @@
 
 - (void)sj_fadeOutAndCompletion:(void(^)(UIView *view))block {
     self.alpha = 1;
-    [UIView animateWithDuration:0.3 animations:^{
+    [UIView animateWithDuration:0.25 animations:^{
         self.alpha = 0.001;
     } completion:^(BOOL finished) {
         if ( block ) block(self);

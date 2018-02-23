@@ -181,14 +181,18 @@ static NSString *const SJVideoListTableViewCellID = @"SJVideoListTableViewCell";
     _videoPlayer.willRotateScreen = ^(SJVideoPlayer * _Nonnull player, BOOL isFullScreen) {
         __strong typeof(_self) self = _self;
         if ( !self ) return ;
-        [self setNeedsStatusBarAppearanceUpdate];
+        [UIView animateWithDuration:0.25 animations:^{
+           [self setNeedsStatusBarAppearanceUpdate];
+        }];
     };
     
     // Call when the `control view` is `hidden` or `displayed`.
     _videoPlayer.controlLayerAppearStateChanged = ^(SJVideoPlayer * _Nonnull player, BOOL displayed) {
         __strong typeof(_self) self = _self;
         if ( !self ) return;
-        [self setNeedsStatusBarAppearanceUpdate];
+        [UIView animateWithDuration:0.25 animations:^{
+            [self setNeedsStatusBarAppearanceUpdate];
+        }];
     };
     
     // fade in
@@ -198,7 +202,7 @@ static NSString *const SJVideoListTableViewCellID = @"SJVideoListTableViewCell";
     
     // set asset
     _videoPlayer.URLAsset =
-    [[SJVideoPlayerURLAsset alloc] initWithAssetURL:[NSURL URLWithString:@"http://vod.lanwuzhe.com/b12ad5034df14bedbdf0e5654cbf7224/6fc3ba23d31743ea8b3c0192c1b83f86-5287d2089db37e62345123a1be272f8b.mp4?video="]
+    [[SJVideoPlayerURLAsset alloc] initWithAssetURL:[NSURL URLWithString:@"http://blurdancer-video.oss-cn-shanghai.aliyuncs.com/usertrend/207-1519355428.mp4"]
                                              scrollView:self.tableView
                                               indexPath:[self.tableView indexPathForCell:cell]
                                            superviewTag:playerParentView.tag];

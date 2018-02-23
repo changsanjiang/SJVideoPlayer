@@ -1,15 +1,15 @@
 PODS:
   - Masonry (1.1.0)
   - SJAttributesFactory (2.0.2)
-  - SJBaseVideoPlayer (1.0.0.3):
+  - SJBaseVideoPlayer (1.0.0.5):
     - Masonry
-    - SJBaseVideoPlayer/Category (= 1.0.0.3)
-    - SJBaseVideoPlayer/GestureControl (= 1.0.0.3)
-    - SJBaseVideoPlayer/Header (= 1.0.0.3)
-    - SJBaseVideoPlayer/Model (= 1.0.0.3)
-    - SJBaseVideoPlayer/Present (= 1.0.0.3)
-    - SJBaseVideoPlayer/Registrar (= 1.0.0.3)
-    - SJBaseVideoPlayer/TimerControl (= 1.0.0.3)
+    - SJBaseVideoPlayer/Category (= 1.0.0.5)
+    - SJBaseVideoPlayer/GestureControl (= 1.0.0.5)
+    - SJBaseVideoPlayer/Header (= 1.0.0.5)
+    - SJBaseVideoPlayer/Model (= 1.0.0.5)
+    - SJBaseVideoPlayer/Present (= 1.0.0.5)
+    - SJBaseVideoPlayer/Registrar (= 1.0.0.5)
+    - SJBaseVideoPlayer/TimerControl (= 1.0.0.5)
     - SJBorderLineView
     - SJFullscreenPopGesture
     - SJObserverHelper
@@ -18,17 +18,7 @@ PODS:
     - SJUIFactory
     - SJVideoPlayerAssetCarrier
     - SJVolBrigControl
-  - SJBaseVideoPlayer/Category (1.0.0.3):
-    - Masonry
-    - SJBorderLineView
-    - SJFullscreenPopGesture
-    - SJObserverHelper
-    - SJOrentationObserver
-    - SJPrompt
-    - SJUIFactory
-    - SJVideoPlayerAssetCarrier
-    - SJVolBrigControl
-  - SJBaseVideoPlayer/GestureControl (1.0.0.3):
+  - SJBaseVideoPlayer/Category (1.0.0.5):
     - Masonry
     - SJBorderLineView
     - SJFullscreenPopGesture
@@ -38,7 +28,7 @@ PODS:
     - SJUIFactory
     - SJVideoPlayerAssetCarrier
     - SJVolBrigControl
-  - SJBaseVideoPlayer/Header (1.0.0.3):
+  - SJBaseVideoPlayer/GestureControl (1.0.0.5):
     - Masonry
     - SJBorderLineView
     - SJFullscreenPopGesture
@@ -48,7 +38,7 @@ PODS:
     - SJUIFactory
     - SJVideoPlayerAssetCarrier
     - SJVolBrigControl
-  - SJBaseVideoPlayer/Model (1.0.0.3):
+  - SJBaseVideoPlayer/Header (1.0.0.5):
     - Masonry
     - SJBorderLineView
     - SJFullscreenPopGesture
@@ -58,7 +48,17 @@ PODS:
     - SJUIFactory
     - SJVideoPlayerAssetCarrier
     - SJVolBrigControl
-  - SJBaseVideoPlayer/Present (1.0.0.3):
+  - SJBaseVideoPlayer/Model (1.0.0.5):
+    - Masonry
+    - SJBorderLineView
+    - SJFullscreenPopGesture
+    - SJObserverHelper
+    - SJOrentationObserver
+    - SJPrompt
+    - SJUIFactory
+    - SJVideoPlayerAssetCarrier
+    - SJVolBrigControl
+  - SJBaseVideoPlayer/Present (1.0.0.5):
     - Masonry
     - SJBaseVideoPlayer/Header
     - SJBorderLineView
@@ -69,7 +69,7 @@ PODS:
     - SJUIFactory
     - SJVideoPlayerAssetCarrier
     - SJVolBrigControl
-  - SJBaseVideoPlayer/Registrar (1.0.0.3):
+  - SJBaseVideoPlayer/Registrar (1.0.0.5):
     - Masonry
     - SJBorderLineView
     - SJFullscreenPopGesture
@@ -79,7 +79,7 @@ PODS:
     - SJUIFactory
     - SJVideoPlayerAssetCarrier
     - SJVolBrigControl
-  - SJBaseVideoPlayer/TimerControl (1.0.0.3):
+  - SJBaseVideoPlayer/TimerControl (1.0.0.5):
     - Masonry
     - SJBorderLineView
     - SJFullscreenPopGesture
@@ -101,10 +101,10 @@ PODS:
     - SJLabel/Category
   - SJLoadingView (1.0.1)
   - SJObserverHelper (1.0.3)
-  - SJOrentationObserver (1.0.3):
+  - SJOrentationObserver (1.0.4):
     - Masonry
-    - SJOrentationObserver/Category (= 1.0.3)
-  - SJOrentationObserver/Category (1.0.3):
+    - SJOrentationObserver/Category (= 1.0.4)
+  - SJOrentationObserver/Category (1.0.4):
     - Masonry
   - SJPrompt (1.0.1):
     - Masonry
@@ -141,13 +141,13 @@ DEPENDENCIES:
 SPEC CHECKSUMS:
   Masonry: 678fab65091a9290e40e2832a55e7ab731aad201
   SJAttributesFactory: 01f680bab9e318b0bd11ddff58155a2c7475f2c3
-  SJBaseVideoPlayer: 7f63d45f5ba84d9c44b987572d651130eae2caba
+  SJBaseVideoPlayer: 977a1422a5d398a5c9375b8c5e5219a5ca80b32e
   SJBorderLineView: 5878e67fb57e812a2d5d029ca666068784b5448a
   SJFullscreenPopGesture: 0bcca1aaae21d4b033fb2fa69b7b7393429e4979
   SJLabel: e66ad920bd503a69fdcc0318dec62f9e4a5105af
   SJLoadingView: c3ff03e4b363a5b6a3ba0634d6bb9ce2647faf07
   SJObserverHelper: b270d707cd18ab76538596aa4e98cf798c9e9868
-  SJOrentationObserver: 420e0f67e5290f7dd86f192d629866fa0c0c183d
+  SJOrentationObserver: 2f589253807edb87fbb7d461ea6b05404a1c6f22
   SJPrompt: eaecd94f2055a12d25090967dbad3f21da011626
   SJSlider: f59c30fc668a5bd3b7063b9e3e133959aa7a34f8
   SJUIFactory: 3b73bc10a2de3cedd7856480bdde177ed9fc6843

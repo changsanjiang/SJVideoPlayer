@@ -5,23 +5,21 @@
 //  Created by BlueDancer on 2017/12/5.
 //  Copyright © 2017年 SanJiang. All rights reserved.
 //
-//  https://github.com/changsanjiang/SJOrentationObserver
-//  changsanjiang@gmail.com
-//
 
 #import "SJOrentationObserver.h"
 #import <Masonry/Masonry.h>
 
-@interface SJOrentationObserver ()
 
-@property (nonatomic, assign, readwrite, getter=isFullScreen) BOOL fullScreen;
+@interface SJOrentationObserver ()
 
 @property (nonatomic, strong, readonly) UIView *blackView;
 @property (nonatomic, strong, readwrite) UIView *view;
 @property (nonatomic, strong, readwrite) UIView *targetSuperview;
-@property (nonatomic, assign, readwrite) UIDeviceOrientation beforeOrientation;
 
-@property (nonatomic, assign, readwrite, getter=isTransitioning) BOOL transitioning;
+@property (nonatomic, readwrite, getter=isTransitioning) BOOL transitioning;
+
+@property (nonatomic, readonly) SJSupportedRotateViewOrientation supported_Ori;
+@property (nonatomic, readwrite) UIDeviceOrientation currentOrientation;
 
 @end
 
@@ -33,16 +31,23 @@
     [self _observerDeviceOrientation];
     _view = view;
     _targetSuperview = targetSuperview;
-    _duration = 0.3;
+    _duration = 0.25;
     _blackView = [UIView new];
     _blackView.backgroundColor = [UIColor blackColor];
-    _beforeOrientation = UIDeviceOrientationPortrait;
+    _rotateOrientation = SJRotateViewOrientation_Portrait;
+    _currentOrientation = UIDeviceOrientationPortrait;
     return self;
 }
 
 - (void)dealloc {
     [_blackView removeFromSuperview];
     [[NSNotificationCenter defaultCenter] removeObserver:self name:UIDeviceOrientationDidChangeNotification object:nil];
+}
+
+- (SJSupportedRotateViewOrientation)supported_Ori {
+    SJSupportedRotateViewOrientation supported = self.supportedRotateViewOrientation;
+    if ( SJSupportedRotateViewOrientation_All == supported ) supported = SJSupportedRotateViewOrientation_Portrait | SJSupportedRotateViewOrientation_LandscapeRight | SJSupportedRotateViewOrientation_LandscapeLeft;
+    return supported;
 }
 
 - (void)_observerDeviceOrientation {
@@ -55,20 +60,49 @@
 
 - (void)_handleDeviceOrientationChange {
     switch ( [UIDevice currentDevice].orientation ) {
-        case UIDeviceOrientationPortrait: {
-            self.fullScreen = NO;
-        }
-            break;
+        case UIDeviceOrientationPortrait:
         case UIDeviceOrientationLandscapeLeft:
         case UIDeviceOrientationLandscapeRight: {
-            self.fullScreen = YES;
+            self.currentOrientation = [UIDevice currentDevice].orientation;
+        }
+            break;
+        case UIDeviceOrientationFaceUp:
+        case UIDeviceOrientationPortraitUpsideDown:
+        case UIDeviceOrientationFaceDown:
+        case UIDeviceOrientationUnknown: break;
+    }
+    
+    SJSupportedRotateViewOrientation supported = self.supported_Ori;
+    switch ( [UIDevice currentDevice].orientation ) {
+        case UIDeviceOrientationPortrait: {
+            if ( SJSupportedRotateViewOrientation_Portrait == (supported & SJSupportedRotateViewOrientation_Portrait) ) {
+                self.rotateOrientation = SJRotateViewOrientation_Portrait;
+            }
+        }
+            break;
+        case UIDeviceOrientationLandscapeLeft: {
+            if ( SJSupportedRotateViewOrientation_LandscapeLeft == (supported & SJSupportedRotateViewOrientation_LandscapeLeft) ) {
+                self.rotateOrientation = SJRotateViewOrientation_LandscapeLeft;
+            }
+        }
+            break;
+        case UIDeviceOrientationLandscapeRight: {
+            if ( SJSupportedRotateViewOrientation_LandscapeRight == (supported & SJSupportedRotateViewOrientation_LandscapeRight) ) {
+                self.rotateOrientation = SJRotateViewOrientation_LandscapeRight;
+            }
         }
             break;
         default: break;
     }
 }
 
-- (void)setFullScreen:(BOOL)fullScreen {
+- (BOOL)isFullScreen {
+    return (SJRotateViewOrientation_LandscapeLeft == self.rotateOrientation ||
+            SJRotateViewOrientation_LandscapeRight == self.rotateOrientation );
+}
+
+- (void)setRotateOrientation:(SJRotateViewOrientation)rotateOrientation {
+    if ( rotateOrientation == _rotateOrientation ) return;
     if ( !_view || !_targetSuperview ) return;
     
     if ( self.rotationCondition ) {
@@ -77,38 +111,32 @@
     
     if ( self.isTransitioning ) return;
     
-//    UIInterfaceOrientation statusBarOrientation = [UIApplication sharedApplication].statusBarOrientation;
-    UIDeviceOrientation deviceOrientation = [UIDevice currentDevice].orientation;
-//    if ( (UIDeviceOrientation)statusBarOrientation == deviceOrientation ) return;
-    if ( deviceOrientation == _beforeOrientation ) return;
-    _beforeOrientation = deviceOrientation;
-    
     self.transitioning = YES;
     
     CGAffineTransform transform = CGAffineTransformIdentity;
     UIView *superview = nil;
     UIInterfaceOrientation ori = UIInterfaceOrientationUnknown;
-    switch ( [UIDevice currentDevice].orientation ) {
-        case UIDeviceOrientationPortrait: {
+    
+    switch ( rotateOrientation ) {
+        case SJRotateViewOrientation_LandscapeRight: {
+            ori = UIInterfaceOrientationLandscapeLeft;
+            transform = CGAffineTransformMakeRotation(-M_PI_2);
+            superview = [UIApplication sharedApplication].keyWindow;
+        }
+            break;
+        case SJRotateViewOrientation_LandscapeLeft: {
+            ori = UIInterfaceOrientationLandscapeRight;
+            transform = CGAffineTransformMakeRotation(M_PI_2);
+            superview = [UIApplication sharedApplication].keyWindow;
+        }
+            break;
+        case SJRotateViewOrientation_Portrait: {
             ori = UIInterfaceOrientationPortrait;
             transform = CGAffineTransformIdentity;
             superview = self.targetSuperview;
             [_blackView removeFromSuperview];
         }
             break;
-        case UIDeviceOrientationLandscapeLeft: {
-            ori = UIInterfaceOrientationLandscapeRight;
-            transform = CGAffineTransformMakeRotation(M_PI_2);
-            superview = [UIApplication sharedApplication].keyWindow;
-        }
-            break;
-        case UIDeviceOrientationLandscapeRight: {
-            ori = UIInterfaceOrientationLandscapeLeft;
-            transform = CGAffineTransformMakeRotation(-M_PI_2);
-            superview = [UIApplication sharedApplication].keyWindow;
-        }
-            break;
-        default: break;
     }
     
     if ( !superview || UIInterfaceOrientationUnknown == ori ) {
@@ -116,7 +144,7 @@
         return;
     }
     
-    if ( !_fullScreen && UIInterfaceOrientationPortrait != ori ) {
+    if ( _rotateOrientation == SJRotateViewOrientation_Portrait && UIInterfaceOrientationPortrait != ori ) {
         CGRect fix = _view.frame;
         fix.origin = [[UIApplication sharedApplication].keyWindow convertPoint:CGPointZero fromView:_targetSuperview];
         [superview addSubview:_view];
@@ -124,10 +152,10 @@
     }
     
     // update
-    _fullScreen = fullScreen;
+    _rotateOrientation = rotateOrientation;
     
     [UIApplication sharedApplication].statusBarOrientation = ori;
-
+    
     [_view mas_remakeConstraints:^(MASConstraintMaker *make) {
         if ( UIInterfaceOrientationPortrait == ori ) {
             CGRect rect = [[UIApplication sharedApplication].keyWindow convertRect:self.targetSuperview.bounds fromView:self.targetSuperview];
@@ -146,7 +174,7 @@
     }];
     
     
-    if ( _orientationWillChange ) _orientationWillChange(self, fullScreen);
+    if ( _orientationWillChange ) _orientationWillChange(self, self.isFullScreen);
     
     [UIView animateWithDuration:_duration animations:^{
         [_view setTransform:transform];
@@ -165,21 +193,42 @@
             self.blackView.transform = _view.transform;
             [superview insertSubview:self.blackView belowSubview:_view];
         }
-        if ( _orientationChanged ) _orientationChanged(self, fullScreen);
+        if ( _orientationChanged ) _orientationChanged(self, self.isFullScreen);
     }];
 }
 
 - (BOOL)_changeOrientation {
     if ( self.isTransitioning ) return NO;
-    UIDeviceOrientation n_ori = UIDeviceOrientationUnknown;
-    if ( self.fullScreen ) n_ori = UIDeviceOrientationPortrait;
-    else n_ori = UIDeviceOrientationLandscapeLeft;
-    
-    if ( n_ori == [UIDevice currentDevice].orientation ) {
-        self.fullScreen = !self.fullScreen;
+    SJSupportedRotateViewOrientation supported = self.supported_Ori;
+    if ( self.isFullScreen &&
+         SJSupportedRotateViewOrientation_Portrait == (supported & SJSupportedRotateViewOrientation_Portrait) ) {
+        self.rotateOrientation = SJRotateViewOrientation_Portrait;
     }
     else {
-        [[UIDevice currentDevice] setValue:@(n_ori) forKey:@"orientation"];
+        // 当前设备朝哪个方向, 就转到那个方向.
+        switch ( self.currentOrientation ) {
+            case UIDeviceOrientationLandscapeLeft: {
+                if ( SJSupportedRotateViewOrientation_LandscapeLeft == (supported & SJSupportedRotateViewOrientation_LandscapeLeft) ) {
+                    self.rotateOrientation = SJRotateViewOrientation_LandscapeLeft;
+                }
+            }
+                break;
+            case UIDeviceOrientationLandscapeRight: {
+                if ( SJSupportedRotateViewOrientation_LandscapeRight == (supported & SJSupportedRotateViewOrientation_LandscapeRight) ) {
+                    self.rotateOrientation = SJRotateViewOrientation_LandscapeRight;
+                }
+            }
+                break;
+            default: {
+                if ( SJSupportedRotateViewOrientation_LandscapeLeft == (supported & SJSupportedRotateViewOrientation_LandscapeLeft) ) {
+                    self.rotateOrientation = SJRotateViewOrientation_LandscapeLeft;
+                }
+                else if ( SJSupportedRotateViewOrientation_LandscapeRight == (supported & SJSupportedRotateViewOrientation_LandscapeRight) ) {
+                    self.rotateOrientation = SJRotateViewOrientation_LandscapeRight;
+                }
+            }
+                break;
+        }
     }
     return YES;
 }

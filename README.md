@@ -12,6 +12,7 @@ pod 'SJBaseVideoPlayer'
 ```
 - [基础播放器, 不含控制层](https://github.com/changsanjiang/SJBaseVideoPlayer)
 
+如果大家有好的控制层, 可以推上来, 我合并到播放器里.
 ___
 
 ### play
@@ -159,15 +160,19 @@ ___
 
 @interface SJBaseVideoPlayer (Rotation)
 
+@property (nonatomic, readwrite) SJSupportedRotateViewOrientation supportedRotateViewOrientation; // 播放器旋转支持的方向, 默认为`SJSupportedRotateViewOrientation_All`
+
+@property (nonatomic, readwrite) SJRotateViewOrientation rotateOrientation; // 直接旋转到指定方向, 可指定为`横屏播放`. 默认是`竖屏`.
+
 - (void)rotation; // 旋转
 
-@property (nonatomic, assign, readwrite) BOOL disableRotation; // 禁止播放器旋转
+@property (nonatomic, readwrite) BOOL disableRotation; // 禁止播放器旋转
 
 @property (nonatomic, copy, readwrite, nullable) void(^willRotateScreen)(__kindof SJBaseVideoPlayer *player, BOOL isFullScreen); // 将要旋转的时候调用
 
 @property (nonatomic, copy, readwrite, nullable) void(^rotatedScreen)(__kindof SJBaseVideoPlayer *player, BOOL isFullScreen);    // 已旋转
 
-@property (nonatomic, assign, readonly) BOOL isFullScreen;  // 是否全屏
+@property (nonatomic, readonly) BOOL isFullScreen;  // 是否全屏
 
 @end
 ```

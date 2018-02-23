@@ -70,7 +70,6 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic, assign, readwrite) BOOL scrollIn;
 @property (nonatomic, assign, readwrite) BOOL touchedScrollView; // 如果为`YES`, 则不旋转
 @property (nonatomic, assign, readwrite) BOOL suspend; // Set it when the [`pause` || `play` || `stop`] is called.
-@property (nonatomic, assign, readwrite) BOOL stopped; // Set it when the [`play` || `stop`] is called.
 @property (nonatomic, assign, readwrite) BOOL resignActive; // app 进入后台, 进入前台时会设置
 
 @property (nonatomic, strong, readonly) SJVideoPlayerRegistrar *registrar;
@@ -99,7 +98,7 @@ NS_ASSUME_NONNULL_END
     [[AVAudioSession sharedInstance] setCategory:AVAudioSessionCategoryPlayback error:&error];
     if ( error ) NSLog(@"%@", error.userInfo);
     self.autoPlay = YES;
-    self.enableControlLayerDisplayController = YES;
+    self.enableControlLayerDisplayController = YES; 
     [self registrar];
     [self view];
     return self;
@@ -133,7 +132,7 @@ NS_ASSUME_NONNULL_END
             }
                 break;
             case AVPlayerItemStatusReadyToPlay: {
-                [self _itemReadyToPlay];
+                if ( !self.resignActive ) [self _itemReadyToPlay];
             }
                 break;
         }
@@ -415,17 +414,7 @@ NS_ASSUME_NONNULL_END
     _orentationObserver.rotationCondition = ^BOOL(SJOrentationObserver * _Nonnull observer) {
         __strong typeof(_self) self = _self;
         if ( !self ) return NO;
-        if ( self.stopped ) {
-            if ( observer.isFullScreen ) return YES;
-            else return NO;
-        }
         if ( self.touchedScrollView ) return NO;
-        switch ( self.state ) {
-            case SJVideoPlayerPlayState_Unknown:
-            case SJVideoPlayerPlayState_Prepare:
-            case SJVideoPlayerPlayState_PlayFailed: return NO;
-            default: break;
-        }
         if ( self.playOnCell && !self.scrollIn ) return NO;
         if ( self.disableRotation ) return NO;
         if ( self.isLockedScreen ) return NO;
@@ -888,7 +877,6 @@ NS_ASSUME_NONNULL_END
 
 - (BOOL)play {
     self.suspend = NO;
-    self.stopped = NO;
     
     self.userClickedPause = NO;
     if ( !self.asset ) return NO;
@@ -909,7 +897,6 @@ NS_ASSUME_NONNULL_END
 
 - (void)stop {
     self.suspend = NO;
-    self.stopped = YES;
     
     if ( !self.asset ) return;
     [self clearAsset];
@@ -918,7 +905,6 @@ NS_ASSUME_NONNULL_END
 
 - (void)stopAndFadeOut {
     self.suspend = NO;
-    self.stopped = YES;
     [self.asset.player pause];
     [self.view sj_fadeOutAndCompletion:^(UIView *view) {
         [self stop];
@@ -1035,6 +1021,25 @@ NS_ASSUME_NONNULL_END
 #pragma mark - 屏幕旋转
 
 @implementation SJBaseVideoPlayer (Rotation)
+
+- (void)setSupportedRotateViewOrientation:(SJSupportedRotateViewOrientation)supportedRotateViewOrientation {
+    self.orentationObserver.supportedRotateViewOrientation = supportedRotateViewOrientation;
+}
+
+- (SJSupportedRotateViewOrientation)supportedRotateViewOrientation {
+    return self.orentationObserver.supportedRotateViewOrientation;
+}
+
+- (void)setRotateOrientation:(SJRotateViewOrientation)rotateOrientation {
+    dispatch_async(dispatch_get_main_queue(), ^{
+        self.orentationObserver.rotateOrientation = rotateOrientation;
+    });
+
+}
+
+- (SJRotateViewOrientation)rotateOrientation {
+    return self.orentationObserver.rotateOrientation;
+}
 
 /// 旋转
 - (void)rotation {

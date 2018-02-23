@@ -198,6 +198,8 @@
 }
 
 - (BOOL)_changeOrientation {
+    NSLog(@"1 %zd - %s", __LINE__, __func__);
+    
     if ( self.isTransitioning ) return NO;
     SJSupportedRotateViewOrientation supported = self.supported_Ori;
     if ( self.isFullScreen &&
@@ -230,6 +232,7 @@
                 break;
         }
     }
+    NSLog(@"2 %zd - %s", __LINE__, __func__);
     return YES;
 }
 

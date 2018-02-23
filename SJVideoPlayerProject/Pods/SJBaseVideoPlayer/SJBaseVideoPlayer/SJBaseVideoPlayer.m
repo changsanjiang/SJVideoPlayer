@@ -414,6 +414,7 @@ NS_ASSUME_NONNULL_END
     _orentationObserver.rotationCondition = ^BOOL(SJOrentationObserver * _Nonnull observer) {
         __strong typeof(_self) self = _self;
         if ( !self ) return NO;
+        if ( !self.view.superview ) return NO;
         if ( self.touchedScrollView ) return NO;
         if ( self.playOnCell && !self.scrollIn ) return NO;
         if ( self.disableRotation ) return NO;

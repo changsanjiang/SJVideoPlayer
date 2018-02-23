@@ -35,6 +35,7 @@
 
 - (void)dealloc {
     [_videoPlayer stop];
+    _videoPlayer.disableRotation = NO;  // 恢复
 }
 
 - (void)viewWillAppear:(BOOL)animated {

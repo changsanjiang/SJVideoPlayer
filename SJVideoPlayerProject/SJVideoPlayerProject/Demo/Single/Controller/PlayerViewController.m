@@ -16,6 +16,7 @@
 
 @property (nonatomic, strong, readonly) UIView *playerBackgroundView;
 @property (nonatomic, strong, readonly) UIButton *nextVCBtn;
+@property (nonatomic, strong, readonly) UIButton *otherVideoBtn;
 @property (nonatomic, strong) SJVideoPlayerURLAsset *asset; // 由于这个`VC`使用的是播放器单例, 所以需要记录`asset`, 以便再次进入该控制器时, 继续播放该资源.
 
 @end
@@ -24,6 +25,7 @@
 
 @synthesize playerBackgroundView = _playerBackgroundView;
 @synthesize nextVCBtn = _nextVCBtn;
+@synthesize otherVideoBtn = _otherVideoBtn;
 
  #pragma mark - 生命周期函数
 
@@ -100,6 +102,12 @@
     [_nextVCBtn mas_makeConstraints:^(MASConstraintMaker *make) {
         make.center.offset(0);
     }];
+    
+    [self.view addSubview:self.otherVideoBtn];
+    [_otherVideoBtn mas_makeConstraints:^(MASConstraintMaker *make) {
+        make.top.equalTo(_nextVCBtn.mas_bottom).offset(20);
+        make.centerX.equalTo(_nextVCBtn);
+    }];
 }
 
 - (UIView *)playerBackgroundView {
@@ -114,11 +122,31 @@
                                          titleColor:[UIColor blueColor]
                                                font:[UIFont boldSystemFontOfSize:17]
                                              target:self sel:@selector(pushNextVC)];
-    [_nextVCBtn sizeToFit];
     return _nextVCBtn;
 }
 
 - (void)pushNextVC {
     [self.navigationController pushViewController:[[self class] new] animated:YES];
+}
+
+- (UIButton *)otherVideoBtn {
+    if ( _otherVideoBtn ) return _otherVideoBtn;
+    _otherVideoBtn = [SJUIButtonFactory buttonWithTitle:@"Other"
+                                             titleColor:[UIColor blueColor]
+                                                   font:[UIFont boldSystemFontOfSize:17]
+                                                 target:self sel:@selector(playOtherVideo)];
+    return _otherVideoBtn;
+}
+
+- (void)playOtherVideo {
+    NSArray<NSURL *> *URLStrs = @[
+                                  [[NSBundle mainBundle] URLForResource:@"sample" withExtension:@"mp4"],
+                                  [NSURL URLWithString:@"http://video.cdn.lanwuzhe.com/usertrend/166162-1513873330.mp4"]
+                                  ];
+    self.asset = /* 记录资源, 以便返回该界面时, 继续播放他 */
+    [[SJVideoPlayerURLAsset alloc] initWithTitle:@"[火影忍者傅人传]#火影#"
+                                 alwaysShowTitle:YES
+                                        assetURL:URLStrs[arc4random() % 2]/*随机取一个播放的URL*/];
+    [SJVideoPlayer sharedPlayer].URLAsset = self.asset;
 }
 @end

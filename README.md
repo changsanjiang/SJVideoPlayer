@@ -5,9 +5,9 @@ pod 'SJVideoPlayer'
 ```
 ___
 
-### base video player
+### [base video player](https://github.com/changsanjiang/SJBaseVideoPlayer)
 ```ruby
-# a lightweight, non controlled player.
+# a lightweight, non controlled player. 轻量级的, 没有控制层的播放器.
 pod 'SJBaseVideoPlayer'
 ```
 ___

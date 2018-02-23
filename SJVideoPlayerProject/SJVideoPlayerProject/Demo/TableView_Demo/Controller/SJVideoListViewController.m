@@ -38,6 +38,9 @@ static NSString *const SJVideoListTableViewCellID = @"SJVideoListTableViewCell";
 
 - (void)viewDidLoad {
     [super viewDidLoad];
+    
+    self.showTitle = YES; // 测试用, 总是显示视频标题
+    
     [self _setRightNavItems_Test];
     
     // setup views
@@ -159,7 +162,7 @@ static NSString *const SJVideoListTableViewCellID = @"SJVideoListTableViewCell";
     return cell;
 }
 
-#pragma mark
+#pragma mark - 播放 video
 
 - (void)clickedPlayOnTabCell:(SJVideoListTableViewCell *)cell playerParentView:(UIView *)playerParentView {
     // old player fade out

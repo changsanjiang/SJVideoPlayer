@@ -121,10 +121,7 @@ NS_ASSUME_NONNULL_END
         [[SJVideoPlayer sharedPlayer] stop];    // stop
         
         if ( asset ) {
-            [SJVideoPlayer sharedPlayer].URLAsset = asset;
-            [[SJVideoPlayer sharedPlayer] jumpedToTime:vc.sj_currentTime completionHandler:^(BOOL finished) {
-                [[SJVideoPlayer sharedPlayer] play];
-            }];
+            [SJVideoPlayer sharedPlayer].URLAsset = asset;  // 继续播放记录的 asset.
         }
     };
 }

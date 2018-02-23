@@ -16,7 +16,7 @@
 
 @property (nonatomic, strong, readonly) UIView *playerBackgroundView;
 @property (nonatomic, strong, readonly) UIButton *nextVCBtn;
-@property (nonatomic, strong) SJVideoPlayerURLAsset *asset;
+@property (nonatomic, strong) SJVideoPlayerURLAsset *asset; // 由于使用的是播放器单例, 所以需要记录 asset, 以便再次进入该控制器时, 继续播放. 
 
 @end
 

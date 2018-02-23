@@ -31,8 +31,6 @@
 }
 
 - (void)dealloc {
-    NSLog(@"%zd - %s", __LINE__, __func__);
-
     [SJSharedVideoPlayerHelper sharedHelper].vc_DeallocExeBlock();
 }
 
@@ -63,7 +61,7 @@
     return [SJSharedVideoPlayerHelper sharedHelper].vc_preferredStatusBarStyleExeBlock();
 }
 
-#pragma mark - networking
+#pragma mark -
 
 - (void)_playerVCAccessNetwork {
     // 模拟网络延时
@@ -74,9 +72,6 @@
                                             assetURL:[[NSBundle mainBundle] URLForResource:@"sample" withExtension:@"mp4"]];
     });
 }
-
-
-#pragma mark - setup views
 
 - (void)_playerVCSetupViews {
     self.view.backgroundColor = [UIColor whiteColor];

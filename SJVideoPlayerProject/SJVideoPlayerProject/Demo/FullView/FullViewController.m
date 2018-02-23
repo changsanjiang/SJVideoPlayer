@@ -28,7 +28,7 @@
     }];
     
     // 播放
-    [SJVideoPlayer sharedPlayer].assetURL = [NSURL URLWithString:@"http://blurdancer-video.oss-cn-shanghai.aliyuncs.com/usertrend/207-1519355428.mp4"];
+    [SJVideoPlayer sharedPlayer].assetURL = [[NSBundle mainBundle] URLForResource:@"sample" withExtension:@"mp4"];
     
     // supported orientation. 设置旋转支持的方向.
     [SJVideoPlayer sharedPlayer].supportedRotateViewOrientation = SJSupportedRotateViewOrientation_All;

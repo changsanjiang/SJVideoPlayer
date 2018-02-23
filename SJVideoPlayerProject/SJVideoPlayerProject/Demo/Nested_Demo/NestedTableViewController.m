@@ -96,7 +96,7 @@ static NSString *const NestedTableViewCellID = @"NestedTableViewCell";
     }];
 
     // create asset
-    NSURL *playURL = [NSURL URLWithString:@"http://blurdancer-video.oss-cn-shanghai.aliyuncs.com/usertrend/207-1519355428.mp4"];
+    NSURL *playURL = [[NSBundle mainBundle] URLForResource:@"sample" withExtension:@"mp4"];
     
     NSIndexPath *embeddedScrollViewIndexPath = [self.tableView indexPathForCell:tabCell];
     UIView *embeddedScrollView = collectionView;

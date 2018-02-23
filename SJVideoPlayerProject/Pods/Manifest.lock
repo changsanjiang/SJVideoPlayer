@@ -1,15 +1,15 @@
 PODS:
   - Masonry (1.1.0)
   - SJAttributesFactory (2.0.2)
-  - SJBaseVideoPlayer (1.0.0):
+  - SJBaseVideoPlayer (1.0.0.2):
     - Masonry
-    - SJBaseVideoPlayer/Category (= 1.0.0)
-    - SJBaseVideoPlayer/GestureControl (= 1.0.0)
-    - SJBaseVideoPlayer/Header (= 1.0.0)
-    - SJBaseVideoPlayer/Model (= 1.0.0)
-    - SJBaseVideoPlayer/Present (= 1.0.0)
-    - SJBaseVideoPlayer/Registrar (= 1.0.0)
-    - SJBaseVideoPlayer/TimerControl (= 1.0.0)
+    - SJBaseVideoPlayer/Category (= 1.0.0.2)
+    - SJBaseVideoPlayer/GestureControl (= 1.0.0.2)
+    - SJBaseVideoPlayer/Header (= 1.0.0.2)
+    - SJBaseVideoPlayer/Model (= 1.0.0.2)
+    - SJBaseVideoPlayer/Present (= 1.0.0.2)
+    - SJBaseVideoPlayer/Registrar (= 1.0.0.2)
+    - SJBaseVideoPlayer/TimerControl (= 1.0.0.2)
     - SJBorderLineView
     - SJFullscreenPopGesture
     - SJObserverHelper
@@ -18,17 +18,7 @@ PODS:
     - SJUIFactory
     - SJVideoPlayerAssetCarrier
     - SJVolBrigControl
-  - SJBaseVideoPlayer/Category (1.0.0):
-    - Masonry
-    - SJBorderLineView
-    - SJFullscreenPopGesture
-    - SJObserverHelper
-    - SJOrentationObserver
-    - SJPrompt
-    - SJUIFactory
-    - SJVideoPlayerAssetCarrier
-    - SJVolBrigControl
-  - SJBaseVideoPlayer/GestureControl (1.0.0):
+  - SJBaseVideoPlayer/Category (1.0.0.2):
     - Masonry
     - SJBorderLineView
     - SJFullscreenPopGesture
@@ -38,7 +28,7 @@ PODS:
     - SJUIFactory
     - SJVideoPlayerAssetCarrier
     - SJVolBrigControl
-  - SJBaseVideoPlayer/Header (1.0.0):
+  - SJBaseVideoPlayer/GestureControl (1.0.0.2):
     - Masonry
     - SJBorderLineView
     - SJFullscreenPopGesture
@@ -48,7 +38,7 @@ PODS:
     - SJUIFactory
     - SJVideoPlayerAssetCarrier
     - SJVolBrigControl
-  - SJBaseVideoPlayer/Model (1.0.0):
+  - SJBaseVideoPlayer/Header (1.0.0.2):
     - Masonry
     - SJBorderLineView
     - SJFullscreenPopGesture
@@ -58,7 +48,17 @@ PODS:
     - SJUIFactory
     - SJVideoPlayerAssetCarrier
     - SJVolBrigControl
-  - SJBaseVideoPlayer/Present (1.0.0):
+  - SJBaseVideoPlayer/Model (1.0.0.2):
+    - Masonry
+    - SJBorderLineView
+    - SJFullscreenPopGesture
+    - SJObserverHelper
+    - SJOrentationObserver
+    - SJPrompt
+    - SJUIFactory
+    - SJVideoPlayerAssetCarrier
+    - SJVolBrigControl
+  - SJBaseVideoPlayer/Present (1.0.0.2):
     - Masonry
     - SJBaseVideoPlayer/Header
     - SJBorderLineView
@@ -69,7 +69,7 @@ PODS:
     - SJUIFactory
     - SJVideoPlayerAssetCarrier
     - SJVolBrigControl
-  - SJBaseVideoPlayer/Registrar (1.0.0):
+  - SJBaseVideoPlayer/Registrar (1.0.0.2):
     - Masonry
     - SJBorderLineView
     - SJFullscreenPopGesture
@@ -79,7 +79,7 @@ PODS:
     - SJUIFactory
     - SJVideoPlayerAssetCarrier
     - SJVolBrigControl
-  - SJBaseVideoPlayer/TimerControl (1.0.0):
+  - SJBaseVideoPlayer/TimerControl (1.0.0.2):
     - Masonry
     - SJBorderLineView
     - SJFullscreenPopGesture
@@ -113,7 +113,7 @@ PODS:
   - SJUIFactory (0.0.14):
     - SJUIFactory/Category (= 0.0.14)
   - SJUIFactory/Category (0.0.14)
-  - SJVideoPlayerAssetCarrier (1.0.4)
+  - SJVideoPlayerAssetCarrier (1.0.5.1)
   - SJVolBrigControl (0.0.3):
     - Masonry
     - SJBorderLineView
@@ -141,7 +141,7 @@ DEPENDENCIES:
 SPEC CHECKSUMS:
   Masonry: 678fab65091a9290e40e2832a55e7ab731aad201
   SJAttributesFactory: 01f680bab9e318b0bd11ddff58155a2c7475f2c3
-  SJBaseVideoPlayer: 42ef445fc89aa1336557af53bb0ecd115f27fd1f
+  SJBaseVideoPlayer: 7b6e9a6f001a018b53740566c111abccc5dbd8ed
   SJBorderLineView: 5878e67fb57e812a2d5d029ca666068784b5448a
   SJFullscreenPopGesture: 0bcca1aaae21d4b033fb2fa69b7b7393429e4979
   SJLabel: e66ad920bd503a69fdcc0318dec62f9e4a5105af
@@ -151,7 +151,7 @@ SPEC CHECKSUMS:
   SJPrompt: eaecd94f2055a12d25090967dbad3f21da011626
   SJSlider: f59c30fc668a5bd3b7063b9e3e133959aa7a34f8
   SJUIFactory: 3b73bc10a2de3cedd7856480bdde177ed9fc6843
-  SJVideoPlayerAssetCarrier: b23c766ce593eeec81077cf246f0850c4e2e258c
+  SJVideoPlayerAssetCarrier: f3e04e93bd4be2dede9f44051f11ef2226f9bfeb
   SJVolBrigControl: a12dbf222d0412b4fd48f3c454d62486f39a9158
 
 PODFILE CHECKSUM: 638b047532b343a07ba90e8dc8fad3a4b139ecca

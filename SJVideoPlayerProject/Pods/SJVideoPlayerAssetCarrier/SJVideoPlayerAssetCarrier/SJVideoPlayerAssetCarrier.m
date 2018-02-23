@@ -117,7 +117,6 @@ static float const __GeneratePreImgScale = 0.05;
     if ( !self ) return nil;
     _asset = [AVURLAsset assetWithURL:assetURL];
     _playerItem = [AVPlayerItem playerItemWithAsset:_asset automaticallyLoadedAssetKeys:@[@"duration"]];
-    _player = [AVPlayer playerWithPlayerItem:_playerItem];
     _assetURL = assetURL;
     _beginTime = beginTime;
     if ( 0 == _beginTime ) _jumped = YES;
@@ -128,14 +127,14 @@ static float const __GeneratePreImgScale = 0.05;
     _rootScrollView = rootScrollView;
     _scrollViewIndexPath = scrollViewIndexPath;
     _player.actionAtItemEnd = AVPlayerActionAtItemEndPause;
-    [self _addTimeObserver];
-    [self _addItemPlayEndObserver];
-    [self _observing];
-    
     // default value
     _scrollIn_bool = YES;
     _parent_scrollIn_bool = YES;
     _rate = 1;
+
+    // observe
+    [self _observing];
+    _player = [AVPlayer playerWithPlayerItem:_playerItem];
     return self;
 }
 
@@ -219,6 +218,19 @@ static float const __GeneratePreImgScale = 0.05;
             if ( self.loadedTimeProgress ) self.loadedTimeProgress(progress);
         }
         else if ( [keyPath isEqualToString:@"status"] ) {
+            /*!
+                 AVPlayerItemStatusUnknown 该状态表示当前媒体还未载入并且还不在播放队列中.
+                 将`AVPlayerItem`与一个`AVPlayer`对象进行关联就开始将媒体放入队列中, 但是在具体内容可以播放前, 需要等待对象的状态由`unknown`变为`readyToPlay`.
+                 我们可以通过`KVO`来监听`status`的改变.
+             
+                 AVPlayerItemStatusReadyToPlay,
+                 AVPlayerItemStatusFailed
+             **/
+            if ( AVPlayerItemStatusReadyToPlay == self.playerItem.status ) {
+                [self _addTimeObserver];
+                [self _addItemPlayEndObserver];
+            }
+            
             if ( !_jumped &&
                 AVPlayerItemStatusReadyToPlay == self.playerItem.status &&
                 0 != self.beginTime ) {
@@ -510,6 +522,7 @@ static float const __GeneratePreImgScale = 0.05;
 }
 
 - (void)_observeScrollView:(UIScrollView *)scrollView deallocCallBlock:(void(^)(SJTmpObj *obj))block {
+    if ( !scrollView ) return;
     if      ( scrollView == _rootScrollView ) _removedParentScrollObserver = NO;
     else if ( scrollView == _scrollView ) _removedScrollObserver = NO;
     [scrollView addObserver:self forKeyPath:@"contentOffset" options:NSKeyValueObservingOptionNew context:nil];
@@ -520,6 +533,7 @@ static float const __GeneratePreImgScale = 0.05;
 }
 
 - (void)_injectTmpObjToScrollView:(UIScrollView *)scrollView deallocCallBlock:(void(^)(SJTmpObj *obj))block {
+    if ( !scrollView ) return;
     SJTmpObj *obj = [SJTmpObj new];
     obj.deallocCallBlock = block;
     objc_setAssociatedObject(scrollView, _cmd, obj, OBJC_ASSOCIATION_RETAIN_NONATOMIC);

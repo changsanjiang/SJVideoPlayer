@@ -1133,6 +1133,10 @@ NS_ASSUME_NONNULL_END
     return self.asset.indexPath ? YES : NO;
 }
 
+- (BOOL)scrollIntoTheCell {
+    return self.scrollIn;
+}
+
 @end
 
 

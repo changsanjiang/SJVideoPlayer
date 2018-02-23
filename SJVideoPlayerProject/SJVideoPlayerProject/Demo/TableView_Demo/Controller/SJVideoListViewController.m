@@ -109,7 +109,7 @@ static NSString *const SJVideoListTableViewCellID = @"SJVideoListTableViewCell";
 
 - (void)viewDidAppear:(BOOL)animated {
     [super viewDidAppear:animated];
-    if ( !_videoPlayer.userPaused ) [_videoPlayer play]; // 是否恢复播放
+    if ( !_videoPlayer.userPaused && _videoPlayer.scrollIntoTheCell ) [_videoPlayer play]; // 是否恢复播放
 }
 
 - (void)viewDidDisappear:(BOOL)animated {

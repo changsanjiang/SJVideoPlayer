@@ -187,7 +187,8 @@ NS_ASSUME_NONNULL_BEGIN
 
 @interface SJBaseVideoPlayer (ScrollView)
 
-@property (nonatomic, assign, readonly)  BOOL playOnCell;
+@property (nonatomic, assign, readonly) BOOL playOnCell;            // 是在cell上播放
+@property (nonatomic, assign, readonly) BOOL scrollIntoTheCell;     // 播放器滚进了单元格中
 
 @end
 

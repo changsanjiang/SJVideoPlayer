@@ -201,7 +201,7 @@
     if ( self.isTransitioning ) return NO;
     SJSupportedRotateViewOrientation supported = self.supported_Ori;
     if ( self.isFullScreen &&
-         SJSupportedRotateViewOrientation_Portrait == (supported & SJSupportedRotateViewOrientation_Portrait) ) {
+        SJSupportedRotateViewOrientation_Portrait == (supported & SJSupportedRotateViewOrientation_Portrait) ) {
         self.rotateOrientation = SJRotateViewOrientation_Portrait;
     }
     else {

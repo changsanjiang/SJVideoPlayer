@@ -12,6 +12,7 @@
 #import "PlayerCollectionViewController.h"
 #import "NestedTableViewController.h"
 #import "SJVideoListViewController.h"
+#import "FullViewController.h"
 
 @interface ViewController ()
 
@@ -43,6 +44,10 @@
 
 - (IBAction)demo:(id)sender {
     [self.navigationController pushViewController:[[SJVideoListViewController alloc] init] animated:YES];
+}
+
+- (IBAction)fullView:(id)sender {
+    [self.navigationController pushViewController:[[FullViewController alloc] init] animated:YES];
 }
 
 - (IBAction)test:(id)sender {

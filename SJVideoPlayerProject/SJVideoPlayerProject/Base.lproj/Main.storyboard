@@ -47,6 +47,14 @@
                                     <action selector="test:" destination="BYZ-38-t0r" eventType="touchUpInside" id="8gL-hF-Hrz"/>
                                 </connections>
                             </button>
+                            <button opaque="NO" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="Ehn-QU-Eed">
+                                <rect key="frame" x="159" y="464" width="62" height="30"/>
+                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                <state key="normal" title="全屏播放"/>
+                                <connections>
+                                    <action selector="fullView:" destination="BYZ-38-t0r" eventType="touchUpInside" id="Fb6-Zz-1in"/>
+                                </connections>
+                            </button>
                         </subviews>
                         <color key="backgroundColor" red="1" green="1" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                         <constraints>

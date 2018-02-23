@@ -19,29 +19,29 @@
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
                             <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="gbR-Ag-b7A">
-                                <rect key="frame" x="162.5" y="350.5" width="50" height="30"/>
-                                <state key="normal" title="Nested"/>
+                                <rect key="frame" x="136.5" y="350.5" width="102" height="30"/>
+                                <state key="normal" title="Nested_嵌套的"/>
                                 <connections>
                                     <action selector="pushNested:" destination="BYZ-38-t0r" eventType="touchUpInside" id="1pQ-z4-LUv"/>
                                 </connections>
                             </button>
                             <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="New-u4-aTv">
-                                <rect key="frame" x="167.5" y="388.5" width="41" height="30"/>
-                                <state key="normal" title="Demo"/>
+                                <rect key="frame" x="153.5" y="388.5" width="69" height="30"/>
+                                <state key="normal" title="TableView"/>
                                 <connections>
                                     <action selector="demo:" destination="BYZ-38-t0r" eventType="touchUpInside" id="4Om-EQ-1Sy"/>
                                 </connections>
                             </button>
                             <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="mF3-mW-pav">
-                                <rect key="frame" x="138" y="426" width="101" height="30"/>
-                                <state key="normal" title="ViewController"/>
+                                <rect key="frame" x="149" y="426" width="79" height="30"/>
+                                <state key="normal" title="Single_单例"/>
                                 <connections>
                                     <action selector="push:" destination="BYZ-38-t0r" eventType="touchUpInside" id="3t4-xO-YZt"/>
                                 </connections>
                             </button>
                             <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="Ehn-QU-Eed">
                                 <rect key="frame" x="157.5" y="464" width="62" height="30"/>
-                                <state key="normal" title="全屏播放"/>
+                                <state key="normal" title="Full_全屏"/>
                                 <connections>
                                     <action selector="fullView:" destination="BYZ-38-t0r" eventType="touchUpInside" id="Fb6-Zz-1in"/>
                                 </connections>

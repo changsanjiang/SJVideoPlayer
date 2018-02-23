@@ -10,12 +10,33 @@
 #import "SJSharedVideoPlayerHelper.h"
 #import <UIViewController+SJVideoPlayerAdd.h>
 #import "SJMoreSettingItems.h"
+#import <Masonry.h>
+#import <objc/message.h>
 
+@interface UIViewController (SJSharedVideoPlayerHelperAdd)
+@property (nonatomic, assign) NSTimeInterval sj_currentTime; // 记录该控制器, 视频播放过的时间, 以便下次返回时, 跳转到该进度播放.
+@end
+
+@implementation UIViewController (SJSharedVideoPlayerHelperAdd)
+- (void)setSj_currentTime:(NSTimeInterval)sj_currentTime {
+    objc_setAssociatedObject(self, @selector(sj_currentTime), @(sj_currentTime), OBJC_ASSOCIATION_RETAIN_NONATOMIC);
+}
+- (NSTimeInterval)sj_currentTime {
+    return [objc_getAssociatedObject(self, _cmd) doubleValue];
+}
+@end
+
+
+#pragma mark -
+
+NS_ASSUME_NONNULL_BEGIN
 @interface SJSharedVideoPlayerHelper ()<SJMoreSettingItemsDelegate>
 
 @property (nonatomic, strong, readonly) SJMoreSettingItems *items;
+@property (nonatomic, weak, readwrite, nullable) UIViewController<SJSharedVideoPlayerHelperUseProtocol> *viewController;
 
 @end
+NS_ASSUME_NONNULL_END
 
 @implementation SJSharedVideoPlayerHelper
 @synthesize items = _items;
@@ -32,6 +53,7 @@
 - (instancetype)init {
     self = [super init];
     if ( !self ) return nil;
+    
     /// 配置单例播放器
     __weak typeof(self) _self = self;
     // 点击返回按钮执行的block.
@@ -83,28 +105,38 @@
     };
 }
 
-- (void (^)(void))vc_viewWillAppearExeBlock {
-    return ^ () {
+- (void (^)(UIViewController<SJSharedVideoPlayerHelperUseProtocol> * _Nonnull, SJVideoPlayerURLAsset * _Nullable))vc_viewWillAppearExeBlock {
+    __weak typeof(self) _self = self;
+    return ^ (UIViewController<SJSharedVideoPlayerHelperUseProtocol> *vc, SJVideoPlayerURLAsset *asset) {
+        __strong typeof(_self) self = _self;
+        if ( !self ) return;
         [SJVideoPlayer sharedPlayer].disableRotation = NO;  // 界面将要显示的时候, 恢复旋转.
+        [vc.playerBackgroundView addSubview:[SJVideoPlayer sharedPlayer].view];
+        [[SJVideoPlayer sharedPlayer].view mas_remakeConstraints:^(MASConstraintMaker *make) {
+            make.edges.offset(0);
+        }];
+        
+        self.viewController = vc;
+
+        [[SJVideoPlayer sharedPlayer] stop];    // stop
+        
+        if ( asset ) {
+            [SJVideoPlayer sharedPlayer].URLAsset = asset;
+            [[SJVideoPlayer sharedPlayer] jumpedToTime:vc.sj_currentTime completionHandler:^(BOOL finished) {
+                [[SJVideoPlayer sharedPlayer] play];
+            }];
+        }
     };
 }
 
 - (void (^)(void))vc_viewWillDisappearExeBlock {
+    __weak typeof(self) _self = self;
     return ^ () {
-        [SJVideoPlayer sharedPlayer].disableRotation = YES; // 界面将要消失的时候, 禁止旋转. (考虑用户体验)
-    };
-}
-
-- (void (^)(void))vc_viewDidDisappearExeBlock {
-    return ^ () {
-        [[SJVideoPlayer sharedPlayer] pause];   // 界面消失的时候, 暂停播放
-    };
-}
-
-- (void (^)(void))vc_DeallocExeBlock {
-    return ^ () {
-        [[SJVideoPlayer sharedPlayer] stop];
-        [SJVideoPlayer sharedPlayer].disableRotation = NO;  // 如果是单例, 恢复旋转. 以免在其他地方使用时, 播放器不旋转.
+        __strong typeof(_self) self = _self;
+        if ( !self ) return;
+        self.viewController.sj_currentTime = [SJVideoPlayer sharedPlayer].currentTime;
+        [SJVideoPlayer sharedPlayer].disableRotation = YES;  // 界面将要消失的时候, 禁止旋转. (考虑用户体验)
+        [[SJVideoPlayer sharedPlayer] pause];                // 界面将要消失的时候, 暂停或者stop.都可以
     };
 }
 

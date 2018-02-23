@@ -13,16 +13,14 @@ NS_ASSUME_NONNULL_BEGIN
 @protocol SJSharedVideoPlayerHelperUseProtocol;
 
 
+#pragma mark -
+
 @interface SJSharedVideoPlayerHelper : NSObject
 
 + (instancetype)sharedHelper;
 
-@property (nonatomic, weak, readwrite, nullable) UIViewController<SJSharedVideoPlayerHelperUseProtocol> *viewController;
-
-@property (nonatomic, copy, readonly) void(^vc_viewWillAppearExeBlock)(void);
+@property (nonatomic, copy, readonly) void(^vc_viewWillAppearExeBlock)(UIViewController<SJSharedVideoPlayerHelperUseProtocol> *vc, SJVideoPlayerURLAsset * __nullable asset);
 @property (nonatomic, copy, readonly) void(^vc_viewWillDisappearExeBlock)(void);
-@property (nonatomic, copy, readonly) void(^vc_viewDidDisappearExeBlock)(void);
-@property (nonatomic, copy, readonly) void(^vc_DeallocExeBlock)(void);
 @property (nonatomic, copy, readonly) BOOL(^vc_prefersStatusBarHiddenExeBlock)(void);
 @property (nonatomic, copy, readonly) UIStatusBarStyle(^vc_preferredStatusBarStyleExeBlock)(void);
 
@@ -33,13 +31,11 @@ NS_ASSUME_NONNULL_BEGIN
 
 @required
 
-- (void)dealloc;
+- (UIView *)playerBackgroundView;
 
 - (void)viewWillAppear:(BOOL)animated;
 
 - (void)viewWillDisappear:(BOOL)animated;
-
-- (void)viewDidDisappear:(BOOL)animated;
 
 - (BOOL)prefersStatusBarHidden;
 

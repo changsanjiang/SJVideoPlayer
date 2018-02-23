@@ -40,6 +40,9 @@ NS_ASSUME_NONNULL_END
     self = [super init];
     if ( !self ) return nil;
     
+    // 设置更多视图中的`items`
+    [SJVideoPlayer sharedPlayer].moreSettings = self.items.moreSettings;  // 配置`更多页面`展示的`item`
+
     /// 配置单例播放器
     __weak typeof(self) _self = self;
     // 点击返回按钮执行的block.
@@ -70,9 +73,6 @@ NS_ASSUME_NONNULL_END
             [self.viewController setNeedsStatusBarAppearanceUpdate]; // 控制层显示的时候, 更新状态栏状态
         }];
     };
-    
-    // 更多视图中的`items`
-    [SJVideoPlayer sharedPlayer].moreSettings = self.items.moreSettings;  // 配置`更多页面`展示的`item`
     return self;
 }
 

@@ -68,7 +68,10 @@
 
 - (void)_playerVCAccessNetwork {
     // 模拟网络延时
+    __weak typeof(self) _self = self;
     dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(0.5 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
+        __strong typeof(_self) self = _self;
+        if ( !self ) return;
         NSArray<NSURL *> *URLStrs = @[
                                       [[NSBundle mainBundle] URLForResource:@"sample" withExtension:@"mp4"],
                                       [NSURL URLWithString:@"http://video.cdn.lanwuzhe.com/usertrend/166162-1513873330.mp4"]

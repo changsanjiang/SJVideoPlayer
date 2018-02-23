@@ -1,2 +1,2 @@
 # SJBaseVideoPlayer
-video player. volume, brightness, rate, play, pause, stop, seekToTime, present. 
+video player. rotation, volume, brightness, rate, play, pause, stop, seekToTime, present.

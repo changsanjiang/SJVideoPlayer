@@ -5,7 +5,8 @@
 //  Created by BlueDancer on 2018/2/2.
 //  Copyright © 2018年 SanJiang. All rights reserved.
 //
-//  https://github.com/changsanjiang/SJBaseVideoPlayer
+//  https://github.com/changsanjiang/SJBaseVideoPlayer  没有控制层的播放器(如果想自定义控制层, 可以使用它)
+//  https://github.com/changsanjiang/SJVideoPlayer      有默认控制层的播放器
 //  changsanjiang@gmail.com
 //
 

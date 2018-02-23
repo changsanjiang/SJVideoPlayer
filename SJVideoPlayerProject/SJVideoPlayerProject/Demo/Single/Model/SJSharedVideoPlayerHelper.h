@@ -19,8 +19,11 @@ NS_ASSUME_NONNULL_BEGIN
 
 + (instancetype)sharedHelper;
 
+// 控制器声明周期相关
 @property (nonatomic, copy, readonly) void(^vc_viewWillAppearExeBlock)(UIViewController<SJSharedVideoPlayerHelperUseProtocol> *vc, SJVideoPlayerURLAsset * __nullable asset);
 @property (nonatomic, copy, readonly) void(^vc_viewWillDisappearExeBlock)(void);
+
+// 状态栏相关
 @property (nonatomic, copy, readonly) BOOL(^vc_prefersStatusBarHiddenExeBlock)(void);
 @property (nonatomic, copy, readonly) UIStatusBarStyle(^vc_preferredStatusBarStyleExeBlock)(void);
 
@@ -31,7 +34,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 @required
 
-- (UIView *)playerBackgroundView;
+- (UIView *)playerBackgroundView;   // 播放器的父视图
 
 - (void)viewWillAppear:(BOOL)animated;
 

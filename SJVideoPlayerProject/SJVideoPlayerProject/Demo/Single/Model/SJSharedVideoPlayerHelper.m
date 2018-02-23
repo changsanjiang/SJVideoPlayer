@@ -11,20 +11,6 @@
 #import <UIViewController+SJVideoPlayerAdd.h>
 #import "SJMoreSettingItems.h"
 #import <Masonry.h>
-#import <objc/message.h>
-
-@interface UIViewController (SJSharedVideoPlayerHelperAdd)
-@property (nonatomic, assign) NSTimeInterval sj_currentTime; // 记录该控制器, 视频播放过的时间, 以便下次返回时, 跳转到该进度播放.
-@end
-
-@implementation UIViewController (SJSharedVideoPlayerHelperAdd)
-- (void)setSj_currentTime:(NSTimeInterval)sj_currentTime {
-    objc_setAssociatedObject(self, @selector(sj_currentTime), @(sj_currentTime), OBJC_ASSOCIATION_RETAIN_NONATOMIC);
-}
-- (NSTimeInterval)sj_currentTime {
-    return [objc_getAssociatedObject(self, _cmd) doubleValue];
-}
-@end
 
 
 #pragma mark -
@@ -131,9 +117,8 @@ NS_ASSUME_NONNULL_END
     return ^ () {
         __strong typeof(_self) self = _self;
         if ( !self ) return;
-        self.viewController.sj_currentTime = [SJVideoPlayer sharedPlayer].currentTime;
         [SJVideoPlayer sharedPlayer].disableRotation = YES;  // 界面将要消失的时候, 禁止旋转. (考虑用户体验)
-        [[SJVideoPlayer sharedPlayer] pause];                // 界面将要消失的时候, 暂停或者stop.都可以
+        [[SJVideoPlayer sharedPlayer] stop];                 // 界面将要消失的时候, 暂停或者stop都可以. 最好是stop. 这样可以清空播放器的资源.
     };
 }
 

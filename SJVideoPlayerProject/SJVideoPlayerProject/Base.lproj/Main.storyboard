@@ -19,44 +19,53 @@
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
                             <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="gbR-Ag-b7A">
-                                <rect key="frame" x="136.5" y="350.5" width="102" height="30"/>
+                                <rect key="frame" x="136" y="356" width="102" height="30"/>
                                 <state key="normal" title="Nested_嵌套的"/>
                                 <connections>
                                     <action selector="pushNested:" destination="BYZ-38-t0r" eventType="touchUpInside" id="1pQ-z4-LUv"/>
                                 </connections>
                             </button>
                             <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="New-u4-aTv">
-                                <rect key="frame" x="153.5" y="388.5" width="69" height="30"/>
+                                <rect key="frame" x="153" y="318.5" width="69" height="30"/>
                                 <state key="normal" title="TableView"/>
                                 <connections>
                                     <action selector="demo:" destination="BYZ-38-t0r" eventType="touchUpInside" id="4Om-EQ-1Sy"/>
                                 </connections>
                             </button>
                             <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="mF3-mW-pav">
-                                <rect key="frame" x="149" y="426" width="79" height="30"/>
+                                <rect key="frame" x="148" y="394" width="79" height="30"/>
                                 <state key="normal" title="Single_单例"/>
                                 <connections>
                                     <action selector="push:" destination="BYZ-38-t0r" eventType="touchUpInside" id="3t4-xO-YZt"/>
                                 </connections>
                             </button>
                             <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="Ehn-QU-Eed">
-                                <rect key="frame" x="157.5" y="464" width="62" height="30"/>
+                                <rect key="frame" x="156" y="432" width="62" height="30"/>
                                 <state key="normal" title="Full_全屏"/>
                                 <connections>
                                     <action selector="fullView:" destination="BYZ-38-t0r" eventType="touchUpInside" id="Fb6-Zz-1in"/>
                                 </connections>
                             </button>
+                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="wr7-x4-Iha">
+                                <rect key="frame" x="120" y="280" width="135" height="30"/>
+                                <state key="normal" title="PageViewController"/>
+                                <connections>
+                                    <action selector="pageViewControlller:" destination="BYZ-38-t0r" eventType="touchUpInside" id="ChB-bK-MB9"/>
+                                </connections>
+                            </button>
                         </subviews>
                         <color key="backgroundColor" red="1" green="1" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                         <constraints>
-                            <constraint firstItem="mF3-mW-pav" firstAttribute="centerX" secondItem="New-u4-aTv" secondAttribute="centerX" id="4TE-c5-fLg"/>
-                            <constraint firstItem="Ehn-QU-Eed" firstAttribute="centerX" secondItem="mF3-mW-pav" secondAttribute="centerX" id="BOi-Wk-fWy"/>
-                            <constraint firstItem="gbR-Ag-b7A" firstAttribute="centerX" secondItem="6Tk-OE-BBY" secondAttribute="centerX" id="DdQ-16-UFd"/>
-                            <constraint firstItem="New-u4-aTv" firstAttribute="centerX" secondItem="gbR-Ag-b7A" secondAttribute="centerX" id="FCL-J0-fil"/>
-                            <constraint firstItem="gbR-Ag-b7A" firstAttribute="centerY" secondItem="6Tk-OE-BBY" secondAttribute="centerY" id="P1G-73-Ixs"/>
-                            <constraint firstItem="New-u4-aTv" firstAttribute="top" secondItem="gbR-Ag-b7A" secondAttribute="bottom" constant="8" id="qTW-Hg-qNR"/>
-                            <constraint firstItem="mF3-mW-pav" firstAttribute="top" secondItem="New-u4-aTv" secondAttribute="bottom" constant="7.5" id="rls-HF-wBB"/>
-                            <constraint firstItem="Ehn-QU-Eed" firstAttribute="top" secondItem="mF3-mW-pav" secondAttribute="bottom" constant="8" id="w0h-Dx-XpB"/>
+                            <constraint firstItem="wr7-x4-Iha" firstAttribute="centerX" secondItem="New-u4-aTv" secondAttribute="centerX" id="Akh-SC-P3Z"/>
+                            <constraint firstItem="Ehn-QU-Eed" firstAttribute="centerX" secondItem="mF3-mW-pav" secondAttribute="centerX" id="DO8-Vy-uqP"/>
+                            <constraint firstItem="New-u4-aTv" firstAttribute="top" secondItem="wr7-x4-Iha" secondAttribute="bottom" constant="8.5" id="Glg-vr-Sdi"/>
+                            <constraint firstItem="New-u4-aTv" firstAttribute="centerX" secondItem="8bC-Xf-vdC" secondAttribute="centerX" id="Ovw-8S-Txw"/>
+                            <constraint firstItem="mF3-mW-pav" firstAttribute="top" secondItem="gbR-Ag-b7A" secondAttribute="bottom" constant="8" id="Vxh-Mf-6D8"/>
+                            <constraint firstItem="mF3-mW-pav" firstAttribute="centerX" secondItem="gbR-Ag-b7A" secondAttribute="centerX" id="X3u-xq-mtn"/>
+                            <constraint firstItem="Ehn-QU-Eed" firstAttribute="top" secondItem="mF3-mW-pav" secondAttribute="bottom" constant="8" id="gVN-qc-Z0T"/>
+                            <constraint firstItem="gbR-Ag-b7A" firstAttribute="centerX" secondItem="8bC-Xf-vdC" secondAttribute="centerX" id="nod-jp-BOt"/>
+                            <constraint firstItem="gbR-Ag-b7A" firstAttribute="top" secondItem="New-u4-aTv" secondAttribute="bottom" constant="7.5" id="nxx-Nh-Zhu"/>
+                            <constraint firstItem="New-u4-aTv" firstAttribute="centerY" secondItem="8bC-Xf-vdC" secondAttribute="centerY" id="sbH-4p-dCq"/>
                         </constraints>
                         <viewLayoutGuide key="safeArea" id="6Tk-OE-BBY"/>
                     </view>

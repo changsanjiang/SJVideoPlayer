@@ -13,6 +13,8 @@
 #import "NestedTableViewController.h"
 #import "SJVideoListViewController.h"
 #import "FullViewController.h"
+#import "TestPageViewController.h"
+#import <SJFullscreenPopGesture/UINavigationController+SJVideoPlayerAdd.h>
 
 @interface ViewController ()
 
@@ -22,7 +24,9 @@
 
 - (void)viewDidLoad {
     [super viewDidLoad];
-//    self.view.backgroundColor = [UIColor blackColor];
+    self.navigationController.sj_gestureType = SJFullscreenPopGestureType_Full;
+    self.navigationController.sj_backgroundColor = [UIColor whiteColor];
+    // self.view.backgroundColor = [UIColor blackColor];
     // Do any additional setup after loading the view, typically from a nib.
 }
 
@@ -49,6 +53,11 @@
 - (IBAction)fullView:(id)sender {
     [self.navigationController pushViewController:[[FullViewController alloc] init] animated:YES];
 }
+
+- (IBAction)pageViewControlller:(id)sender {
+    [self.navigationController pushViewController:[[TestPageViewController alloc] init] animated:YES];
+}
+
 
 - (IBAction)test:(id)sender {
 }

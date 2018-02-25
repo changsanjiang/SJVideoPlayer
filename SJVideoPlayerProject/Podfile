@@ -20,4 +20,5 @@ target 'SJVideoPlayerProject' do
   pod 'SJAttributesFactory'
   pod 'SJLabel'
   pod 'SJBaseVideoPlayer'
+  pod 'SJScrollEntriesView'
 end

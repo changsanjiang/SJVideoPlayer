@@ -108,6 +108,8 @@ PODS:
     - Masonry
   - SJPrompt (1.0.1):
     - Masonry
+  - SJScrollEntriesView (1.0.8):
+    - Masonry
   - SJSlider (1.2.4.1):
     - Masonry
   - SJUIFactory (0.0.14):
@@ -133,6 +135,7 @@ DEPENDENCIES:
   - SJObserverHelper
   - SJOrentationObserver
   - SJPrompt
+  - SJScrollEntriesView
   - SJSlider
   - SJUIFactory
   - SJVideoPlayerAssetCarrier
@@ -149,11 +152,12 @@ SPEC CHECKSUMS:
   SJObserverHelper: b270d707cd18ab76538596aa4e98cf798c9e9868
   SJOrentationObserver: 4639af80226950ffafa456b003d7af0816e040be
   SJPrompt: eaecd94f2055a12d25090967dbad3f21da011626
+  SJScrollEntriesView: 2875f2780574aca3b970af51180669df956ef1f7
   SJSlider: f59c30fc668a5bd3b7063b9e3e133959aa7a34f8
   SJUIFactory: 3b73bc10a2de3cedd7856480bdde177ed9fc6843
   SJVideoPlayerAssetCarrier: f3e04e93bd4be2dede9f44051f11ef2226f9bfeb
   SJVolBrigControl: a12dbf222d0412b4fd48f3c454d62486f39a9158
 
-PODFILE CHECKSUM: 638b047532b343a07ba90e8dc8fad3a4b139ecca
+PODFILE CHECKSUM: 12c4357d820d93639690846839913011e8795fa7
 
 COCOAPODS: 1.4.0

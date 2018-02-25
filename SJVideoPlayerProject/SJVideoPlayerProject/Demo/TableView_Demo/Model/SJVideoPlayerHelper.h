@@ -18,9 +18,9 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (instancetype)initWithViewController:(__weak UIViewController<SJVideoPlayerHelperUseProtocol> *)viewController;
 
-@property (nonatomic, copy, readonly) void(^vc_viewWillAppearExeBlock)(void);
+@property (nonatomic, copy, readonly) void(^vc_viewDidAppearExeBlock)(void);
 
-@property (nonatomic, copy, readonly) void(^vc_viewWillDisappearExeBlock)(void);
+@property (nonatomic, copy, readonly) void(^vc_viewDidDisappearExeBlock)(void);
 
 @property (nonatomic, copy, readonly) BOOL(^vc_prefersStatusBarHiddenExeBlock)(void);
 
@@ -32,9 +32,9 @@ NS_ASSUME_NONNULL_BEGIN
 
 @required
 
-- (void)viewWillAppear:(BOOL)animated;
+- (void)viewDidAppear:(BOOL)animated;
 
-- (void)viewWillDisappear:(BOOL)animated;
+- (void)viewDidDisappear:(BOOL)animated;
 
 - (BOOL)prefersStatusBarHidden;
 

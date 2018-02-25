@@ -47,6 +47,7 @@ static NSString *const SJVideoListTableViewCellID = @"SJVideoListTableViewCell";
     [self _videoListSetupViews];
     
     [self.indicator startAnimating];
+    
     // prepare test data.
     __weak typeof(self) _self = self;
     dispatch_async(dispatch_get_global_queue(0, 0), ^{

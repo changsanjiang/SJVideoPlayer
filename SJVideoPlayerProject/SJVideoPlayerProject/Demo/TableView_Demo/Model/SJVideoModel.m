@@ -63,7 +63,7 @@
     
     
     // prepare test data
-    for ( int i = 0 ; i < 300 ; ++ i ) {
+    for ( int i = 0 ; i < 88 ; ++ i ) {
         SJVideoModel *model =
         [[SJVideoModel alloc] initWithTitle:titles[arc4random() % titles.count]
                                  createTime:date.timeIntervalSince1970 - arc4random() % 100000

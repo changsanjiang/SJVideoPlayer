@@ -15,7 +15,7 @@
 #import "UIViewController+SJVideoPlayerAdd.h"
 #import "SJVideoListViewController.h"
 
-static NSInteger const vcCount = 5;
+static NSInteger const vcCount = 9;
 
 @interface TestPageViewController ()<UIPageViewControllerDelegate, UIPageViewControllerDataSource, SJScrollEntriesViewDelegate>
 

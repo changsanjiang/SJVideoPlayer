@@ -98,7 +98,7 @@ NS_ASSUME_NONNULL_END
     return ^ () {
         __strong typeof(_self) self = _self;
         if ( !self ) return;
-        self.videoPlayer.disableRotation = NO;    // 界面将要显示的时候, 恢复旋转.
+        self.videoPlayer.disableRotation = NO;    // 界面显示的时候, 恢复旋转.
     };
 }
 
@@ -107,8 +107,8 @@ NS_ASSUME_NONNULL_END
     return ^ () {
         __strong typeof(_self) self = _self;
         if ( !self ) return;
-        self.videoPlayer.disableRotation = YES;   // 界面将要消失的时候, 禁止旋转.
-        [self.videoPlayer pause];                 // 界面将要消失的时候, 暂停
+        self.videoPlayer.disableRotation = YES;   // 界面消失的时候, 禁止旋转.
+        [self.videoPlayer pause];                 // 界面消失的时候, 暂停
     };
 }
 

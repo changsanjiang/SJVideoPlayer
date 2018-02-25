@@ -11,7 +11,7 @@
 #import <UIViewController+SJVideoPlayerAdd.h>
 #import "SJMoreSettingItems.h"
 #import <Masonry.h>
-
+#import "SJVideoPlayer.h"
 
 #pragma mark -
 
@@ -138,6 +138,11 @@ NS_ASSUME_NONNULL_END
     };
 }
 
+- (void (^)(void))vc_deallocExeBlock {
+    return ^() {
+        [SJVideoPlayer sharedPlayer].disableRotation = NO;      // 恢复
+    };
+}
 
 #pragma mark - 配置播放器`更多页面`展示的`item`
 

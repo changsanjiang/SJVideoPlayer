@@ -1037,7 +1037,6 @@ NS_ASSUME_NONNULL_END
     dispatch_async(dispatch_get_main_queue(), ^{
         self.orentationObserver.rotateOrientation = rotateOrientation;
     });
-
 }
 
 - (SJRotateViewOrientation)rotateOrientation {

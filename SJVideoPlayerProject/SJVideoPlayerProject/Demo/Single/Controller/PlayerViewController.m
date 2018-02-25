@@ -40,6 +40,7 @@
 
 - (void)dealloc {
     NSLog(@"%zd - %s", __LINE__, __func__);
+    [SJSharedVideoPlayerHelper sharedHelper].vc_deallocExeBlock();
 }
 
 - (void)viewWillAppear:(BOOL)animated {
@@ -53,9 +54,6 @@
     [self.navigationController setNavigationBarHidden:NO animated:YES];
     [SJSharedVideoPlayerHelper sharedHelper].vc_viewWillDisappearExeBlock();                // 这些代码都是固定的, 所以就抽成了一个block, 传入必要参数即可.
 }
-
-
-#pragma mark - apple methods
 
 - (BOOL)prefersStatusBarHidden {
     return [SJSharedVideoPlayerHelper sharedHelper].vc_prefersStatusBarHiddenExeBlock();    // 这些代码都是固定的, 所以就抽成了一个block, 传入必要参数即可.

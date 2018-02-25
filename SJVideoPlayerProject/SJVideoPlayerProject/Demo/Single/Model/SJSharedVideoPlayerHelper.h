@@ -7,9 +7,9 @@
 //
 
 #import <UIKit/UIKit.h>
-#import "SJVideoPlayer.h"
 
 NS_ASSUME_NONNULL_BEGIN
+@class SJVideoPlayerURLAsset;
 @protocol SJSharedVideoPlayerHelperUseProtocol;
 
 
@@ -19,15 +19,15 @@ NS_ASSUME_NONNULL_BEGIN
 
 + (instancetype)sharedHelper;
 
-// 控制器生命周期相关
-@property (nonatomic, copy, readonly) void(^vc_viewWillAppearExeBlock)(UIViewController<SJSharedVideoPlayerHelperUseProtocol> *vc, SJVideoPlayerURLAsset * __nullable asset);   
+@property (nonatomic, copy, readonly) void(^vc_viewWillAppearExeBlock)(UIViewController<SJSharedVideoPlayerHelperUseProtocol> *vc, SJVideoPlayerURLAsset * __nullable asset);
 
 @property (nonatomic, copy, readonly) void(^vc_viewWillDisappearExeBlock)(void);
 
-// 状态栏相关
 @property (nonatomic, copy, readonly) BOOL(^vc_prefersStatusBarHiddenExeBlock)(void);
 
 @property (nonatomic, copy, readonly) UIStatusBarStyle(^vc_preferredStatusBarStyleExeBlock)(void);
+
+@property (nonatomic, copy, readonly) void(^vc_deallocExeBlock)(void);
 
 @end
 
@@ -41,6 +41,8 @@ NS_ASSUME_NONNULL_BEGIN
 - (void)viewWillAppear:(BOOL)animated;
 
 - (void)viewWillDisappear:(BOOL)animated;
+
+- (void)dealloc;
 
 - (BOOL)prefersStatusBarHidden;
 

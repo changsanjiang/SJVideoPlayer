@@ -12,25 +12,27 @@
 #import "SJVideoListTableViewCell.h"
 #import "SJVideoModel.h"
 #import "SJVideoPlayer.h"
-#import <SJFullscreenPopGesture/UIViewController+SJVideoPlayerAdd.h>
+#import "SJVideoPlayerHelper.h"
 #import <UIView+SJUIFactory.h>
 #import <NSMutableAttributedString+ActionDelegate.h>
 
 static NSString *const SJVideoListTableViewCellID = @"SJVideoListTableViewCell";
 
-@interface SJVideoListViewController ()<UITableViewDelegate, UITableViewDataSource, SJVideoListTableViewCellDelegate, NSAttributedStringActionDelegate>
+@interface SJVideoListViewController ()<UITableViewDelegate, UITableViewDataSource, SJVideoListTableViewCellDelegate, NSAttributedStringActionDelegate, SJVideoPlayerHelperUseProtocol>
 
+@property (nonatomic, strong, readonly) UIActivityIndicatorView *indicator;
 @property (nonatomic, strong, readonly) UITableView *tableView;
+@property (nonatomic, strong, readonly) SJVideoPlayerHelper *videoPlayerHelper;
+
 @property (nonatomic, strong) NSArray<SJVideoModel *> *videosM;
-@property (nonatomic, strong) SJVideoPlayer *videoPlayer;
-@property (nonatomic, strong) UIActivityIndicatorView *indicator;
-@property (nonatomic, assign) BOOL showTitle;
 
 @end
 
 @implementation SJVideoListViewController
 
+@synthesize indicator = _indicator;
 @synthesize tableView = _tableView;
+@synthesize videoPlayerHelper = _videoPlayerHelper;
 
 - (void)dealloc {
     NSLog(@"%zd - %s", __LINE__, __func__);
@@ -39,20 +41,16 @@ static NSString *const SJVideoListTableViewCellID = @"SJVideoListTableViewCell";
 - (void)viewDidLoad {
     [super viewDidLoad];
     
-    self.showTitle = YES; // 测试用, 总是显示视频标题
-    
-    [self _setRightNavItems_Test];
-    
     // setup views
     [self _videoListSetupViews];
     
     self.tableView.alpha = 0.001;
     
-    // prepare test data.
     [self.indicator startAnimating];
+    // prepare test data.
     __weak typeof(self) _self = self;
     dispatch_async(dispatch_get_global_queue(0, 0), ^{
-        // 生成测试数据
+        // some test data
         NSArray<SJVideoModel *> *videos = [SJVideoModel videoModelsWithActionDelegate:self];
         dispatch_async(dispatch_get_main_queue(), ^{
             __strong typeof(_self) self = _self;
@@ -65,69 +63,46 @@ static NSString *const SJVideoListTableViewCellID = @"SJVideoListTableViewCell";
             [self.tableView reloadData];
         });
     });
-    
-    // pop gesture
-    self.sj_viewWillBeginDragging = ^(SJVideoListViewController *vc) {
-        // video player stop roatation
-        vc.videoPlayer.disableRotation = YES;   // 触发全屏手势时, 禁止播放器旋转
-    };
-    
-    self.sj_viewDidEndDragging = ^(SJVideoListViewController *vc) {
-        // video player enable roatation
-        vc.videoPlayer.disableRotation = NO;    // 恢复
-    };
-    
+
     // Do any additional setup after loading the view.
 }
 
-// 测试
-- (void)_setRightNavItems_Test {
-    UIBarButtonItem *show = [[UIBarButtonItem alloc] initWithTitle:@"ShowTitle" style:UIBarButtonItemStyleDone target:self action:@selector(show_Title)];
-    UIBarButtonItem *hidden = [[UIBarButtonItem alloc] initWithTitle:@"HiddenTitle" style:UIBarButtonItemStyleDone target:self action:@selector(hidden_Title)];
-    self.navigationItem.rightBarButtonItems = @[show, hidden];
+// lazy load
+- (SJVideoPlayerHelper *)videoPlayerHelper {
+    if ( _videoPlayerHelper ) return _videoPlayerHelper;
+    _videoPlayerHelper = [[SJVideoPlayerHelper alloc] initWithViewController:self];
+    return _videoPlayerHelper;
 }
 
-- (void)show_Title {
-    self.showTitle = YES;
-    [self clickedPlayOnTabCell:self.tableView.visibleCells.firstObject playerParentView:[self.tableView.visibleCells.firstObject valueForKey:@"coverImageView"]];
-}
-
-- (void)hidden_Title {
-    self.showTitle = NO;
-    [self clickedPlayOnTabCell:self.tableView.visibleCells.firstObject playerParentView:[self.tableView.visibleCells.firstObject valueForKey:@"coverImageView"]];
+- (void)clickedPlayOnTabCell:(SJVideoListTableViewCell *)cell playerParentView:(UIView *)playerParentView {
+    
+    SJVideoPlayerURLAsset *asset =
+    [[SJVideoPlayerURLAsset alloc] initWithAssetURL:[[NSBundle mainBundle] URLForResource:@"sample" withExtension:@"mp4"]
+                                         scrollView:self.tableView
+                                          indexPath:[self.tableView indexPathForCell:cell]
+                                       superviewTag:playerParentView.tag];
+    asset.title = @"DIY心情转盘 #手工##手工制作#";
+    asset.alwaysShowTitle = YES;
+    
+    [self.videoPlayerHelper playWithAsset:asset playerParentView:playerParentView];
 }
 
 - (void)viewWillAppear:(BOOL)animated {
     [super viewWillAppear:animated];
-    _videoPlayer.disableRotation = NO;  // 恢复旋转
+    self.videoPlayerHelper.vc_viewWillAppearExeBlock();
 }
 
 - (void)viewWillDisappear:(BOOL)animated {
     [super viewWillDisappear:animated];
-    _videoPlayer.disableRotation = YES; // 消失的时候, 禁止播放器旋转
+    self.videoPlayerHelper.vc_viewWillDisappearExeBlock();
 }
 
-- (void)viewDidAppear:(BOOL)animated {
-    [super viewDidAppear:animated];
-    if ( !_videoPlayer.userPaused && _videoPlayer.scrollIntoTheCell ) [_videoPlayer play]; // 是否恢复播放
+- (BOOL)prefersStatusBarHidden {
+    return self.videoPlayerHelper.vc_prefersStatusBarHiddenExeBlock();
 }
 
-- (void)viewDidDisappear:(BOOL)animated {
-    [super viewDidDisappear:animated];
-    [_videoPlayer pause];   // 消失的时候, 暂停播放
-}
-
-#pragma mark -
-- (UIActivityIndicatorView *)indicator {
-    if ( _indicator ) return _indicator;
-    _indicator = [[UIActivityIndicatorView alloc] initWithActivityIndicatorStyle:UIActivityIndicatorViewStyleWhiteLarge];
-    _indicator.csj_size = CGSizeMake(80, 80);
-    _indicator.center = self.view.center;
-    _indicator.backgroundColor = [UIColor colorWithWhite:0.000 alpha:0.670];
-    _indicator.clipsToBounds = YES;
-    _indicator.layer.cornerRadius = 6;
-    [self.view addSubview:_indicator];
-    return _indicator;
+- (UIStatusBarStyle)preferredStatusBarStyle {
+    return self.videoPlayerHelper.vc_preferredStatusBarStyleExeBlock();
 }
 
 #pragma mark -
@@ -138,6 +113,18 @@ static NSString *const SJVideoListTableViewCellID = @"SJVideoListTableViewCell";
     [_tableView mas_makeConstraints:^(MASConstraintMaker *make) {
         make.edges.offset(0);
     }];
+}
+
+- (UIActivityIndicatorView *)indicator {
+    if ( _indicator ) return _indicator;
+    _indicator = [[UIActivityIndicatorView alloc] initWithActivityIndicatorStyle:UIActivityIndicatorViewStyleWhiteLarge];
+    _indicator.csj_size = CGSizeMake(80, 80);
+    _indicator.center = self.view.center;
+    _indicator.backgroundColor = [UIColor colorWithWhite:0.000 alpha:0.670];
+    _indicator.clipsToBounds = YES;
+    _indicator.layer.cornerRadius = 6;
+    [self.view addSubview:_indicator];
+    return _indicator;
 }
 
 - (UITableView *)tableView {
@@ -160,70 +147,6 @@ static NSString *const SJVideoListTableViewCellID = @"SJVideoListTableViewCell";
     cell.model = _videosM[indexPath.row];
     cell.delegate = self;
     return cell;
-}
-
-#pragma mark - 播放 video
-
-- (void)clickedPlayOnTabCell:(SJVideoListTableViewCell *)cell playerParentView:(UIView *)playerParentView {
-    // old player fade out
-    [_videoPlayer stopAndFadeOut];
-    
-    // create new player
-    _videoPlayer = [SJVideoPlayer player];
-    _videoPlayer.view.alpha = 0.001;
-    [playerParentView addSubview:_videoPlayer.view];
-    [_videoPlayer.view mas_remakeConstraints:^(MASConstraintMaker *make) {
-        make.edges.offset(0);
-    }];
-    
-    _videoPlayer.generatePreviewImages = NO;
-    
-    // setting player
-    __weak typeof(self) _self = self;
-
-    _videoPlayer.willRotateScreen = ^(SJVideoPlayer * _Nonnull player, BOOL isFullScreen) {
-        __strong typeof(_self) self = _self;
-        if ( !self ) return ;
-        [UIView animateWithDuration:0.25 animations:^{
-           [self setNeedsStatusBarAppearanceUpdate];
-        }];
-    };
-    
-    // Call when the `control view` is `hidden` or `displayed`.
-    _videoPlayer.controlLayerAppearStateChanged = ^(SJVideoPlayer * _Nonnull player, BOOL displayed) {
-        __strong typeof(_self) self = _self;
-        if ( !self ) return;
-        [UIView animateWithDuration:0.25 animations:^{
-            [self setNeedsStatusBarAppearanceUpdate];
-        }];
-    };
-    
-    // fade in
-    [UIView animateWithDuration:0.5 animations:^{
-        _videoPlayer.view.alpha = 1;
-    }];
-    
-    // set asset
-    _videoPlayer.URLAsset =
-    [[SJVideoPlayerURLAsset alloc] initWithAssetURL:[[NSBundle mainBundle] URLForResource:@"sample" withExtension:@"mp4"]
-                                             scrollView:self.tableView
-                                              indexPath:[self.tableView indexPathForCell:cell]
-                                           superviewTag:playerParentView.tag];
-    
-    _videoPlayer.URLAsset.title = @"DIY心情转盘 #手工##手工制作#";
-    _videoPlayer.URLAsset.alwaysShowTitle = self.showTitle;
-}
-
-#pragma mark -
-
-- (BOOL)prefersStatusBarHidden {
-    if ( _videoPlayer.isFullScreen ) return !_videoPlayer.controlLayerAppeared; // 全屏播放时, 使状态栏根据视频的控制层显示或隐藏
-    return NO;
-}
-
-- (UIStatusBarStyle)preferredStatusBarStyle {
-    if ( _videoPlayer.isFullScreen ) return UIStatusBarStyleLightContent; // 全屏播放时, 使状态栏变成白色
-    return UIStatusBarStyleDefault;
 }
 
 #pragma mark - other

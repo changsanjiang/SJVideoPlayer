@@ -160,9 +160,7 @@ static inline void SJ_updateScreenshot() {
 - (void)SJ_navSettings {
     self.SJ_tookOver = YES;
     self.interactivePopGestureRecognizer.enabled = NO;
-    [self.view addGestureRecognizer:self.SJ_pan];
-    [self.view addGestureRecognizer:self.SJ_edgePan];
-    self.sj_gestureType = self.SJ_selectedType;
+    self.SJ_selectedType = self.SJ_selectedType;    // need update
     
     // border shadow
     [CATransaction begin];
@@ -229,6 +227,7 @@ static inline void SJ_updateScreenshot() {
     if ( SJ_pan ) return SJ_pan;
     SJ_pan = [[UIPanGestureRecognizer alloc] initWithTarget:self action:@selector(SJ_handlePanGR:)];
     SJ_pan.delegate = self;
+    SJ_pan.delaysTouchesBegan = YES;
     objc_setAssociatedObject(self, _cmd, SJ_pan, OBJC_ASSOCIATION_RETAIN_NONATOMIC);
     return SJ_pan;
 }
@@ -238,6 +237,7 @@ static inline void SJ_updateScreenshot() {
     if ( SJ_edgePan ) return SJ_edgePan;
     SJ_edgePan = [[UIScreenEdgePanGestureRecognizer alloc] initWithTarget:self action:@selector(SJ_handlePanGR:)];
     SJ_edgePan.delegate = self;
+    SJ_edgePan.delaysTouchesBegan = YES;
     SJ_edgePan.edges = UIRectEdgeLeft;
     objc_setAssociatedObject(self, _cmd, SJ_edgePan, OBJC_ASSOCIATION_RETAIN_NONATOMIC);
     return SJ_edgePan;
@@ -245,6 +245,18 @@ static inline void SJ_updateScreenshot() {
 
 - (void)setSJ_selectedType:(SJFullscreenPopGestureType)SJ_selectedType {
     objc_setAssociatedObject(self, @selector(SJ_selectedType), @(SJ_selectedType), OBJC_ASSOCIATION_RETAIN_NONATOMIC);
+    switch ( SJ_selectedType ) {
+        case SJFullscreenPopGestureType_EdgeLeft: {
+            [self.view addGestureRecognizer:self.SJ_edgePan];
+            [self.view removeGestureRecognizer:self.SJ_pan];
+        }
+            break;
+        case SJFullscreenPopGestureType_Full: {
+            [self.view addGestureRecognizer:self.SJ_pan];
+            [self.view removeGestureRecognizer:self.SJ_edgePan];
+        }
+            break;
+    }
 }
 
 - (SJFullscreenPopGestureType)SJ_selectedType {
@@ -271,7 +283,7 @@ static inline void SJ_updateScreenshot() {
 
 - (BOOL)gestureRecognizer:(UIGestureRecognizer *)gestureRecognizer shouldRecognizeSimultaneouslyWithGestureRecognizer:(UIGestureRecognizer *)otherGestureRecognizer {
     if ( UIGestureRecognizerStateFailed ==  gestureRecognizer.state ||
-        UIGestureRecognizerStateCancelled == gestureRecognizer.state ) return YES;
+         UIGestureRecognizerStateCancelled == gestureRecognizer.state ) return NO;
     else if ( ([otherGestureRecognizer isMemberOfClass:NSClassFromString(@"UIScrollViewPanGestureRecognizer")] ||
                [otherGestureRecognizer isMemberOfClass:NSClassFromString(@"UIScrollViewPagingSwipeGestureRecognizer")])
              && [otherGestureRecognizer.view isKindOfClass:[UIScrollView class]] ) {
@@ -279,8 +291,12 @@ static inline void SJ_updateScreenshot() {
                          gestureRecognizer:gestureRecognizer
                     otherGestureRecognizer:otherGestureRecognizer];
     }
-    else if ( [otherGestureRecognizer isKindOfClass:[UIPanGestureRecognizer class]] ) return NO;
-    else return YES;
+    else if ( [otherGestureRecognizer isKindOfClass:[UIPanGestureRecognizer class]] )  {
+        return NO;  // pop手势不触发
+    }
+    
+    // 除 pan 手势, 其他手势同时触发
+    return YES;
 }
 
 #pragma mark -
@@ -299,7 +315,7 @@ static inline void SJ_updateScreenshot() {
     }
     
     if ( !isFadeArea &&
-        0 != self.topViewController.sj_fadeAreaViews.count ) {
+         0 != self.topViewController.sj_fadeAreaViews.count ) {
         [self.topViewController.sj_fadeAreaViews enumerateObjectsUsingBlock:^(UIView * _Nonnull obj, NSUInteger idx, BOOL * _Nonnull stop) {
             CGRect rect = obj.frame;
             if ( !self.isNavigationBarHidden ) rect = [self.view convertRect:rect fromView:view];
@@ -311,35 +327,35 @@ static inline void SJ_updateScreenshot() {
     return isFadeArea;
 }
 
-- (BOOL)SJ_considerScrollView:(UIScrollView *)subScrollView gestureRecognizer:(UIGestureRecognizer *)gestureRecognizer otherGestureRecognizer:(UIGestureRecognizer *)otherGestureRecognizer {
-    if ( [subScrollView isKindOfClass:NSClassFromString(@"_UIQueuingScrollView")] ) {
-        return [self SJ_considerQueuingScrollView:subScrollView gestureRecognizer:gestureRecognizer otherGestureRecognizer:otherGestureRecognizer];
+- (BOOL)SJ_considerScrollView:(UIScrollView *)scrollView gestureRecognizer:(UIGestureRecognizer *)gestureRecognizer otherGestureRecognizer:(UIGestureRecognizer *)otherGestureRecognizer {
+    if ( [scrollView isKindOfClass:NSClassFromString(@"_UIQueuingScrollView")] ) {
+        return [self SJ_considerQueuingScrollView:scrollView gestureRecognizer:gestureRecognizer otherGestureRecognizer:otherGestureRecognizer];
     }
-    else if ( 0 != subScrollView.contentOffset.x + subScrollView.contentInset.left ) return NO;
-    else if ( [(UIPanGestureRecognizer *)gestureRecognizer translationInView:self.view].x <= 0 ) return NO;
-    else {
+    
+    if ( 0 == scrollView.contentOffset.x + scrollView.contentInset.left && !scrollView.decelerating ) {
         [self _sjCancellGesture:otherGestureRecognizer];
         return YES;
     }
+    
+    return NO;
 }
 
 - (BOOL)SJ_considerQueuingScrollView:(UIScrollView *)scrollView gestureRecognizer:(UIGestureRecognizer *)gestureRecognizer otherGestureRecognizer:(UIGestureRecognizer *)otherGestureRecognizer {
     UIPageViewController *pageVC = [self SJ_findingPageViewControllerWithQueueingScrollView:scrollView];
-    if ( !pageVC ) {
-        [self _sjCancellGesture:gestureRecognizer];
-        return NO;
+
+    id<UIPageViewControllerDataSource> dataSource = pageVC.dataSource;
+    UIViewController *beforeViewController = nil;
+    
+    if ( 0 != pageVC.viewControllers.count ) {
+        beforeViewController = [dataSource pageViewController:pageVC viewControllerBeforeViewController:pageVC.viewControllers.firstObject];
     }
     
-    id<UIPageViewControllerDataSource> dataSource = pageVC.dataSource;
-    if ( !pageVC.dataSource ||
-         0 == pageVC.viewControllers.count ) return NO;
-    else if ( [dataSource pageViewController:pageVC viewControllerBeforeViewController:pageVC.viewControllers.firstObject] ) {
-        [self _sjCancellGesture:gestureRecognizer];
-        return YES;
+    if ( beforeViewController || scrollView.decelerating ) {
+        return NO;
     }
     else {
         [self _sjCancellGesture:otherGestureRecognizer];
-        return NO;
+        return YES;
     }
 }
 
@@ -438,23 +454,10 @@ static inline void SJ_updateScreenshot() {
 
 - (void)setSj_gestureType:(SJFullscreenPopGestureType)sj_gestureType {
     self.SJ_selectedType = sj_gestureType;
-    objc_setAssociatedObject(self, @selector(sj_gestureType), @(sj_gestureType), OBJC_ASSOCIATION_RETAIN_NONATOMIC);
-    switch ( sj_gestureType ) {
-        case SJFullscreenPopGestureType_EdgeLeft: {
-            self.SJ_pan.enabled = NO;
-            self.SJ_edgePan.enabled = YES;
-        }
-            break;
-        case SJFullscreenPopGestureType_Full: {
-            self.SJ_pan.enabled = YES;
-            self.SJ_edgePan.enabled = NO;
-        }
-            break;
-    }
 }
 
 - (SJFullscreenPopGestureType)sj_gestureType {
-    return [objc_getAssociatedObject(self, _cmd) integerValue];
+    return self.SJ_selectedType;
 }
 
 - (void)setSj_transitionMode:(SJScreenshotTransitionMode)sj_transitionMode {
@@ -466,7 +469,16 @@ static inline void SJ_updateScreenshot() {
 }
 
 - (UIGestureRecognizerState)sj_fullscreenGestureState {
-    return self.SJ_pan.state;
+    UIGestureRecognizer *gesture = nil;
+    switch ( self.SJ_selectedType ) {
+        case SJFullscreenPopGestureType_Full:
+            gesture = self.SJ_pan;
+            break;
+        case SJFullscreenPopGestureType_EdgeLeft:
+            gesture = self.SJ_edgePan;
+            break;
+    }
+    return gesture.state;
 }
 
 - (void)setSj_backgroundColor:(UIColor *)sj_backgroundColor {

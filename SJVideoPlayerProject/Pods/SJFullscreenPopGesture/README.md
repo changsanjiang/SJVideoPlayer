@@ -2,11 +2,34 @@
 Fullscreen pop gesture. It is very suitable for the application of the video player.    
 全屏返回手势.  对带有视频播放器的App非常适用.
 
-### Use
+### Objective-C
 ```ruby
 pod 'SJFullscreenPopGesture'
 ```
 ___
+
+### Swift
+```ruby
+pod 'SJNavigationPopGesture'
+```
+And
+
+```swift
+
+func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplicationLaunchOptionsKey: Any]?) -> Bool {
+
+    // you need call it
+    // app 启动的时候, 需要调用这个方法
+    
+    SJNavigationPopGesture.install()
+
+    // ...
+
+    return true
+}
+```
+___
+
 
 ### Features
 - Fullscreen Pop Gesture. Gestures are perfectly handled in UIScrollView And UIPageViewController.

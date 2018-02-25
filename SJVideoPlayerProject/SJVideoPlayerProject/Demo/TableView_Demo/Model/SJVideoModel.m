@@ -22,6 +22,7 @@
     config.numberOfLines = numberOfLines;
     config.maxWidth = maxWidth;
     _contentData = [[SJCTData alloc] initWithString:content config:config];
+    [_contentData needsDrawing];
     return self;
 }
 - (instancetype)initWithAttrStr:(NSAttributedString *)attrStr numberOfLines:(NSUInteger)numberOfLines maxWidth:(float)maxWidth {
@@ -31,6 +32,7 @@
     config.numberOfLines = numberOfLines;
     config.maxWidth = maxWidth;
     _contentData = [[SJCTData alloc] initWithAttributedString:attrStr config:config];
+    [_contentData needsDrawing];
     return self;
 }
 

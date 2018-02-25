@@ -74,19 +74,6 @@ static NSString *const SJVideoListTableViewCellID = @"SJVideoListTableViewCell";
     return _videoPlayerHelper;
 }
 
-- (void)clickedPlayOnTabCell:(SJVideoListTableViewCell *)cell playerParentView:(UIView *)playerParentView {
-    
-    SJVideoPlayerURLAsset *asset =
-    [[SJVideoPlayerURLAsset alloc] initWithAssetURL:[[NSBundle mainBundle] URLForResource:@"sample" withExtension:@"mp4"]
-                                         scrollView:self.tableView
-                                          indexPath:[self.tableView indexPathForCell:cell]
-                                       superviewTag:playerParentView.tag];
-    asset.title = @"DIY心情转盘 #手工##手工制作#";
-    asset.alwaysShowTitle = YES;
-    
-    [self.videoPlayerHelper playWithAsset:asset playerParentView:playerParentView];
-}
-
 - (void)viewWillAppear:(BOOL)animated {
     [super viewWillAppear:animated];
     self.videoPlayerHelper.vc_viewWillAppearExeBlock();
@@ -103,6 +90,19 @@ static NSString *const SJVideoListTableViewCellID = @"SJVideoListTableViewCell";
 
 - (UIStatusBarStyle)preferredStatusBarStyle {
     return self.videoPlayerHelper.vc_preferredStatusBarStyleExeBlock();
+}
+
+- (void)clickedPlayOnTabCell:(SJVideoListTableViewCell *)cell playerParentView:(UIView *)playerParentView {
+    
+    SJVideoPlayerURLAsset *asset =
+    [[SJVideoPlayerURLAsset alloc] initWithAssetURL:[[NSBundle mainBundle] URLForResource:@"sample" withExtension:@"mp4"]
+                                         scrollView:self.tableView
+                                          indexPath:[self.tableView indexPathForCell:cell]
+                                       superviewTag:playerParentView.tag];
+    asset.title = @"DIY心情转盘 #手工##手工制作#";
+    asset.alwaysShowTitle = YES;
+    
+    [self.videoPlayerHelper playWithAsset:asset playerParentView:playerParentView];
 }
 
 #pragma mark -

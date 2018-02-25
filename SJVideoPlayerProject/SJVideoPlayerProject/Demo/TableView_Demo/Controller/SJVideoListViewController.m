@@ -20,9 +20,9 @@ static NSString *const SJVideoListTableViewCellID = @"SJVideoListTableViewCell";
 
 @interface SJVideoListViewController ()<UITableViewDelegate, UITableViewDataSource, SJVideoListTableViewCellDelegate, NSAttributedStringActionDelegate, SJVideoPlayerHelperUseProtocol>
 
+@property (nonatomic, strong, readonly) SJVideoPlayerHelper *videoPlayerHelper;
 @property (nonatomic, strong, readonly) UIActivityIndicatorView *indicator;
 @property (nonatomic, strong, readonly) UITableView *tableView;
-@property (nonatomic, strong, readonly) SJVideoPlayerHelper *videoPlayerHelper;
 
 @property (nonatomic, strong) NSArray<SJVideoModel *> *videosM;
 
@@ -46,8 +46,6 @@ static NSString *const SJVideoListTableViewCellID = @"SJVideoListTableViewCell";
     // setup views
     [self _videoListSetupViews];
     
-    self.tableView.alpha = 0.001;
-    
     [self.indicator startAnimating];
     // prepare test data.
     __weak typeof(self) _self = self;
@@ -57,12 +55,9 @@ static NSString *const SJVideoListTableViewCellID = @"SJVideoListTableViewCell";
         dispatch_async(dispatch_get_main_queue(), ^{
             __strong typeof(_self) self = _self;
             if ( !self ) return;
-            [self.indicator stopAnimating];
             self.videosM = videos;
-            [UIView animateWithDuration:0.25 animations:^{
-                self.tableView.alpha = 1;
-            }];
             [self.tableView reloadData];
+            [self.indicator stopAnimating];
         });
     });
 

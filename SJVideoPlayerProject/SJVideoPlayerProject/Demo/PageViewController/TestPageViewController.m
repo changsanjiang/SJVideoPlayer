@@ -75,6 +75,15 @@ static NSInteger const vcCount = 9;
 }
 
 #pragma mark -
+
+- (BOOL)prefersStatusBarHidden {
+    return self.pageViewController.viewControllers.firstObject.prefersStatusBarHidden;
+}
+
+- (UIStatusBarStyle)preferredStatusBarStyle {
+    return self.pageViewController.viewControllers.firstObject.preferredStatusBarStyle;
+}
+
 - (UIPageViewController *)pageViewController {
     if ( _pageViewController ) return _pageViewController;
     _pageViewController = [[UIPageViewController alloc] initWithTransitionStyle:UIPageViewControllerTransitionStyleScroll navigationOrientation:UIPageViewControllerNavigationOrientationHorizontal options:@{UIPageViewControllerOptionInterPageSpacingKey:@(2)}];
@@ -107,7 +116,6 @@ static NSInteger const vcCount = 9;
     self.dataViewControllersDictM[@(index)] = vc;
     return self.dataViewControllersDictM[@(index)];
 }
-
 - (NSMutableDictionary< NSNumber *, UIViewController *> *)dataViewControllersDictM {
     NSMutableDictionary< NSNumber *, UIViewController *> *dataViewControllersDictM = objc_getAssociatedObject(self, _cmd);
     if ( dataViewControllersDictM ) return dataViewControllersDictM;

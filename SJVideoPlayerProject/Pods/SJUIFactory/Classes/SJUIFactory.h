@@ -15,15 +15,14 @@ extern float SJScreen_W(void);
 extern float SJScreen_H(void);
 extern float SJScreen_Min(void);
 extern float SJScreen_Max(void);
+extern BOOL SJ_is_iPhone5(void);
+extern BOOL SJ_is_iPhone6(void);
+extern BOOL SJ_is_iPhone6_P(void);
 extern BOOL SJ_is_iPhoneX(void);
 
 #pragma mark -
 
 @interface SJUIFactory : NSObject
-
-+ (UIFont *_Nullable)getFontWithViewHeight:(CGFloat)height;
-
-+ (UIFont *_Nullable)getBoldFontWithViewHeight:(CGFloat)height;
 
 + (void)commonShadowWithView:(UIView *)view;
 
@@ -42,6 +41,10 @@ extern BOOL SJ_is_iPhoneX(void);
 + (CAShapeLayer *)shapeLayerWithSize:(CGSize)size cornerRadius:(float)cornerRadius;
 
 + (CAShapeLayer *)commonShadowShapeLayerWithSize:(CGSize)size cornerRadius:(float)radius;
+
++ (UIFont *_Nullable)getFontWithViewHeight:(CGFloat)height;
+
++ (UIFont *_Nullable)getBoldFontWithViewHeight:(CGFloat)height;
 
 @end
 
@@ -480,6 +483,11 @@ estimatedSectionFooterHeight:(CGFloat)estimatedSectionFooterHeight;
 @interface SJUITextViewFactory : NSObject
 
 + (UITextView *)textViewWithTextColor:(UIColor * __nullable )textColor
+                      backgroundColor:(UIColor * __nullable )backgroundColor
+                                 font:(UIFont * __nullable )font;
+
++ (__kindof UITextView *)textViewWithSubClass:(Class)cls
+                           textColor:(UIColor * __nullable )textColor
                       backgroundColor:(UIColor * __nullable )backgroundColor
                                  font:(UIFont * __nullable )font;
 

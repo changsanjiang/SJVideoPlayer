@@ -123,7 +123,7 @@
     }
     
     if ( !action ) {
-        [super touchesBegan:touches withEvent:event];
+        [super touchesEnded:touches withEvent:event];
     }
 }
 

@@ -247,7 +247,9 @@ static float const __GeneratePreImgScale = 0.05;
                 }];
             }
             else {
-                if ( self.playerItemStateChanged ) self.playerItemStateChanged(self, self.playerItem.status);
+                dispatch_async(dispatch_get_main_queue(), ^{
+                    if ( self.playerItemStateChanged ) self.playerItemStateChanged(self, self.playerItem.status);
+                });
             }
         }
         else if ( [keyPath isEqualToString:@"playbackBufferEmpty"] ) {
@@ -366,7 +368,7 @@ static float const __GeneratePreImgScale = 0.05;
 }
 
 - (void)seekToTime:(CMTime)time completionHandler:(void (^ __nullable)(BOOL finished))completionHandler {
-    if ( 1 == CMTimeCompare(time, _playerItem.duration) ) {
+    if ( 1 == CMTimeCompare(time, _playerItem.duration) || AVPlayerStatusReadyToPlay != _playerItem.status ) {
         if ( completionHandler ) completionHandler(NO);
         return;
     }

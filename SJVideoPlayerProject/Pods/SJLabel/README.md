@@ -8,7 +8,6 @@ pod 'SJLabel'
 ___
 
 ### Example
-<img src="https://github.com/changsanjiang/SJAttributesFactory/blob/master/Demo/SJAttributesFactory/action.gif" />
 
 ```Objective-C
 - (void)test {
@@ -29,4 +28,8 @@ ___
     NSLog(@"%@", action.string);
 }
 ```
+<img src="https://github.com/changsanjiang/SJAttributesFactory/blob/master/Demo/SJAttributesFactory/action.gif" />
+
 ___
+
+

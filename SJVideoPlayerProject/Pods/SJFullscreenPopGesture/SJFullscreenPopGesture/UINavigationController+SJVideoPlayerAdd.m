@@ -288,7 +288,7 @@ static inline void SJ_updateScreenshot() {
                [otherGestureRecognizer isMemberOfClass:NSClassFromString(@"UIScrollViewPagingSwipeGestureRecognizer")])
              && [otherGestureRecognizer.view isKindOfClass:[UIScrollView class]] ) {
         return [self SJ_considerScrollView:(UIScrollView *)otherGestureRecognizer.view
-                         gestureRecognizer:gestureRecognizer
+                         gestureRecognizer:(UIPanGestureRecognizer *)gestureRecognizer
                     otherGestureRecognizer:otherGestureRecognizer];
     }
     else if ( [otherGestureRecognizer isKindOfClass:[UIPanGestureRecognizer class]] )  {
@@ -327,16 +327,16 @@ static inline void SJ_updateScreenshot() {
     return isFadeArea;
 }
 
-- (BOOL)SJ_considerScrollView:(UIScrollView *)scrollView gestureRecognizer:(UIGestureRecognizer *)gestureRecognizer otherGestureRecognizer:(UIGestureRecognizer *)otherGestureRecognizer {
+- (BOOL)SJ_considerScrollView:(UIScrollView *)scrollView gestureRecognizer:(UIPanGestureRecognizer *)gestureRecognizer otherGestureRecognizer:(UIGestureRecognizer *)otherGestureRecognizer {
     if ( [scrollView isKindOfClass:NSClassFromString(@"_UIQueuingScrollView")] ) {
         return [self SJ_considerQueuingScrollView:scrollView gestureRecognizer:gestureRecognizer otherGestureRecognizer:otherGestureRecognizer];
     }
     
-    if ( 0 == scrollView.contentOffset.x + scrollView.contentInset.left && !scrollView.decelerating ) {
+    CGPoint translate = [gestureRecognizer translationInView:self.view];
+    if ( 0 == scrollView.contentOffset.x + scrollView.contentInset.left && !scrollView.decelerating && translate.x > 0 && 0 == translate.y ) {
         [self _sjCancellGesture:otherGestureRecognizer];
         return YES;
     }
-    
     return NO;
 }
 

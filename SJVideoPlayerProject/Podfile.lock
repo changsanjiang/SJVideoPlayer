@@ -90,14 +90,14 @@ PODS:
     - SJVideoPlayerAssetCarrier
     - SJVolBrigControl
   - SJBorderLineView (0.0.6)
-  - SJFullscreenPopGesture (1.3.7.1):
-    - SJFullscreenPopGesture/View (= 1.3.7.1)
-  - SJFullscreenPopGesture/View (1.3.7.1)
-  - SJLabel (1.2.6):
-    - SJLabel/Category (= 1.2.6)
-    - SJLabel/Services (= 1.2.6)
-  - SJLabel/Category (1.2.6)
-  - SJLabel/Services (1.2.6):
+  - SJFullscreenPopGesture (1.3.7.2):
+    - SJFullscreenPopGesture/View (= 1.3.7.2)
+  - SJFullscreenPopGesture/View (1.3.7.2)
+  - SJLabel (1.2.6.1):
+    - SJLabel/Category (= 1.2.6.1)
+    - SJLabel/Services (= 1.2.6.1)
+  - SJLabel/Category (1.2.6.1)
+  - SJLabel/Services (1.2.6.1):
     - SJLabel/Category
   - SJLoadingView (1.0.1)
   - SJObserverHelper (1.0.3)
@@ -112,10 +112,10 @@ PODS:
     - Masonry
   - SJSlider (1.2.4.1):
     - Masonry
-  - SJUIFactory (0.0.14):
-    - SJUIFactory/Category (= 0.0.14)
-  - SJUIFactory/Category (0.0.14)
-  - SJVideoPlayerAssetCarrier (1.0.5.1)
+  - SJUIFactory (0.0.15):
+    - SJUIFactory/Category (= 0.0.15)
+  - SJUIFactory/Category (0.0.15)
+  - SJVideoPlayerAssetCarrier (1.0.5.2)
   - SJVolBrigControl (0.0.3):
     - Masonry
     - SJBorderLineView
@@ -146,16 +146,16 @@ SPEC CHECKSUMS:
   SJAttributesFactory: 01f680bab9e318b0bd11ddff58155a2c7475f2c3
   SJBaseVideoPlayer: 4b1a0b56bdcb906da66ce2164c20196594f7ad77
   SJBorderLineView: 5878e67fb57e812a2d5d029ca666068784b5448a
-  SJFullscreenPopGesture: a1d78c4e0749e6330c5ad55e5b7c8c169d08344f
-  SJLabel: e66ad920bd503a69fdcc0318dec62f9e4a5105af
+  SJFullscreenPopGesture: cd46395d8487000b3c1b4fbac2c8747f34de7fc1
+  SJLabel: 159cd5eff4cc575390bf26316af634615218e3b7
   SJLoadingView: c3ff03e4b363a5b6a3ba0634d6bb9ce2647faf07
   SJObserverHelper: b270d707cd18ab76538596aa4e98cf798c9e9868
   SJOrentationObserver: 4639af80226950ffafa456b003d7af0816e040be
   SJPrompt: eaecd94f2055a12d25090967dbad3f21da011626
   SJScrollEntriesView: 2875f2780574aca3b970af51180669df956ef1f7
   SJSlider: f59c30fc668a5bd3b7063b9e3e133959aa7a34f8
-  SJUIFactory: 3b73bc10a2de3cedd7856480bdde177ed9fc6843
-  SJVideoPlayerAssetCarrier: f3e04e93bd4be2dede9f44051f11ef2226f9bfeb
+  SJUIFactory: 36f08c8bef27b2f6f123f7c3df1c1aeb1b750742
+  SJVideoPlayerAssetCarrier: 962d636c1b094a39f852fb9b0a1b0cf318e3a603
   SJVolBrigControl: a12dbf222d0412b4fd48f3c454d62486f39a9158
 
 PODFILE CHECKSUM: 12c4357d820d93639690846839913011e8795fa7

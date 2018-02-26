@@ -78,7 +78,7 @@ NS_ASSUME_NONNULL_END
 }
 
 - (void)dealloc {
-#ifndef DEBUG
+#ifdef DEBUG
     NSLog(@"%zd - %s", __LINE__, __func__);
 #endif
 }
@@ -608,7 +608,7 @@ NS_ASSUME_NONNULL_END
 }
 
 - (void)videoPlayer:(SJVideoPlayer *)videoPlayer playFailed:(NSError *)error {
-#ifndef DEBUG
+#ifdef DEBUG
     NSLog(@"%@", error);
 #endif
     [self.loadingView stop];
@@ -769,7 +769,7 @@ NS_ASSUME_NONNULL_END
         __strong typeof(_self) self = _self;
         if ( !self ) return ;
         if ( error ) {
-#ifndef DEBUG
+#ifdef DEBUG
             NSLog(@"Generate Preview Image Failed! error: %@", error);
 #endif
         }

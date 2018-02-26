@@ -42,7 +42,7 @@ NS_ASSUME_NONNULL_END
 #pragma mark -
 
 - (void)dealloc {
-#ifndef DEBUG
+#ifdef DEBUG
     NSLog(@"%zd - %s", __LINE__, __func__);
 #endif
 }

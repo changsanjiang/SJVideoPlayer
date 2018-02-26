@@ -30,6 +30,18 @@ float SJScreen_Max(void) {
     return MAX(SJScreen_W(), SJScreen_H());
 }
 
+BOOL SJ_is_iPhone5(void) {
+    return [UIScreen instancesRespondToSelector:@selector(currentMode)] ? CGSizeEqualToSize(CGSizeMake(640, 1136), [[UIScreen mainScreen] currentMode].size) : NO;
+}
+
+BOOL SJ_is_iPhone6(void) {
+    return [UIScreen instancesRespondToSelector:@selector(currentMode)] ? CGSizeEqualToSize(CGSizeMake(750, 1334), [[UIScreen mainScreen] currentMode].size) : NO;
+}
+
+BOOL SJ_is_iPhone6_P(void) {
+    return [UIScreen instancesRespondToSelector:@selector(currentMode)] ? CGSizeEqualToSize(CGSizeMake(1125, 2001), [[UIScreen mainScreen] currentMode].size) : NO;
+}
+
 BOOL SJ_is_iPhoneX(void) {
     CGFloat s1 = ((float)((int)(SJScreen_Min() / SJScreen_Max() * 100))) / 100;
     CGFloat s2 = ((float)((int)(1125.0 / 2436 * 100))) / 100;;
@@ -975,7 +987,14 @@ estimatedSectionFooterHeight:(CGFloat)estimatedSectionFooterHeight {
 + (UITextView *)textViewWithTextColor:(UIColor *)textColor
                       backgroundColor:(UIColor *)backgroundColor
                                  font:(UIFont *)font {
-    UITextView *textView = [UITextView new];
+    return [self textViewWithSubClass:[UITextView class] textColor:textColor backgroundColor:backgroundColor font:font];
+}
+
++ (__kindof UITextView *)textViewWithSubClass:(Class)cls
+                           textColor:(UIColor * __nullable )textColor
+                     backgroundColor:(UIColor * __nullable )backgroundColor
+                                font:(UIFont * __nullable )font {
+    UITextView *textView = [cls new];
     textView.textColor = textColor;
     textView.backgroundColor = backgroundColor;
     textView.font = font;

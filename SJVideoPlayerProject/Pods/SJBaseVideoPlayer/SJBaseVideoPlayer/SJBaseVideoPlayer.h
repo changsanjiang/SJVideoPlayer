@@ -27,9 +27,9 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (instancetype)init;
 
-@property (nonatomic, weak, readwrite) id <SJVideoPlayerControlLayerDataSource> controlLayerDataSource;
+@property (nonatomic, weak, readwrite, nullable) id <SJVideoPlayerControlLayerDataSource> controlLayerDataSource;
 
-@property (nonatomic, weak, readwrite) id <SJVideoPlayerControlLayerDelegate> controlLayerDelegate;
+@property (nonatomic, weak, readwrite, nullable) id <SJVideoPlayerControlLayerDelegate> controlLayerDelegate;
 
 @property (nonatomic, strong, readonly) UIView *view;                   // 播放器视图
 

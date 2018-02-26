@@ -105,9 +105,10 @@ NS_ASSUME_NONNULL_END
 }
 
 - (void)dealloc {
-#ifndef DEBUG
+#ifdef DEBUG
     NSLog(@"%zd - %s", __LINE__, __func__);
 #endif
+    [_presentView removeFromSuperview];
     [self stop];
 }
 
@@ -913,6 +914,11 @@ NS_ASSUME_NONNULL_END
         [self stop];
         [_view removeFromSuperview];
     }];
+}
+
+- (void)stopAndRemovePresentView {
+    [self stop];
+    [self.presentView removeFromSuperview];
 }
 
 - (void)replay {

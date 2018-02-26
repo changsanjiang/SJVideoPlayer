@@ -58,11 +58,16 @@ NS_ASSUME_NONNULL_END
     
     // create new player
     _videoPlayer = [SJVideoPlayer player];
-    _videoPlayer.view.alpha = 0.001;
     
     [playerParentView addSubview:_videoPlayer.view];
     [_videoPlayer.view mas_remakeConstraints:^(MASConstraintMaker *make) {
         make.edges.offset(0);
+    }];
+    
+    // fade in
+    _videoPlayer.view.alpha = 0.001;
+    [UIView animateWithDuration:0.5 animations:^{
+        _videoPlayer.view.alpha = 1;
     }];
     
     // setting player
@@ -83,11 +88,6 @@ NS_ASSUME_NONNULL_END
             [self.viewController setNeedsStatusBarAppearanceUpdate];
         }];
     };
-    
-    // fade in
-    [UIView animateWithDuration:0.5 animations:^{
-        _videoPlayer.view.alpha = 1;
-    }];
     
     // set asset
     _videoPlayer.URLAsset = asset;

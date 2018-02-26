@@ -114,7 +114,7 @@ static NSInteger const vcCount = 9;
     vc = [SJVideoListViewController new];
     vc.index = index;
     self.dataViewControllersDictM[@(index)] = vc;
-    return self.dataViewControllersDictM[@(index)];
+    return vc;
 }
 - (NSMutableDictionary< NSNumber *, UIViewController *> *)dataViewControllersDictM {
     NSMutableDictionary< NSNumber *, UIViewController *> *dataViewControllersDictM = objc_getAssociatedObject(self, _cmd);

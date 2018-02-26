@@ -103,8 +103,11 @@ NS_ASSUME_NONNULL_BEGIN
 - (void)replay; 
 
 @property (nonatomic, readwrite) float volume;
+@property (nonatomic, readwrite) BOOL disableVolumeSetting;
 
 @property (nonatomic, readwrite) float brightness;
+
+@property (nonatomic, readwrite) BOOL disableBrightnessSetting;
 
 @property (nonatomic, readwrite) float rate; // 0.5...2
 

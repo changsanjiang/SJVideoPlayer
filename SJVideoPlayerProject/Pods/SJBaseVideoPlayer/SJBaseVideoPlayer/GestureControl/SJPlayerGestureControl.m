@@ -58,6 +58,13 @@
     else if ( gestureRecognizer == self.doubleTap ) type = SJPlayerGestureType_DoubleTap;
     else if ( gestureRecognizer == self.panGR ) type = SJPlayerGestureType_Pan;
     else if ( gestureRecognizer == self.pinchGR ) type = SJPlayerGestureType_Pinch;
+    CGPoint locationPoint = [gestureRecognizer locationInView:gestureRecognizer.view];
+    if ( locationPoint.x > _targetView.bounds.size.width / 2 ) {
+        self.panLocation = SJPanLocation_Right;
+    }
+    else {
+        self.panLocation = SJPanLocation_Left;
+    }
     if ( _triggerCondition ) return _triggerCondition(self, type, gestureRecognizer);
     return YES;
 }
@@ -118,14 +125,6 @@
     switch (pan.state) {
         case UIGestureRecognizerStateBegan: {
             self.panMovingDirection = SJPanMovingDirection_Unkown;
-            
-            CGPoint locationPoint = [pan locationInView:pan.view];
-            if ( locationPoint.x > _targetView.bounds.size.width / 2 ) {
-                self.panLocation = SJPanLocation_Right;
-            }
-            else {
-                self.panLocation = SJPanLocation_Left;
-            }
             
             CGPoint velocity = [pan velocityInView:pan.view];
             CGFloat x = fabs(velocity.x);

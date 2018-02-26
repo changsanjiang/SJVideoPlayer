@@ -32,7 +32,6 @@ static NSString *const SJVideoListTableViewCellID = @"SJVideoListTableViewCell";
 
 @synthesize indicator = _indicator;
 @synthesize tableView = _tableView;
-@synthesize videoPlayerHelper = _videoPlayerHelper;
 
 - (void)dealloc {
     NSLog(@"%zd - %s", __LINE__, __func__);
@@ -49,6 +48,7 @@ static NSString *const SJVideoListTableViewCellID = @"SJVideoListTableViewCell";
     [self.indicator startAnimating];
     
     // prepare test data.
+    self.tableView.alpha = 0.001;
     __weak typeof(self) _self = self;
     dispatch_async(dispatch_get_global_queue(0, 0), ^{
         // some test data
@@ -59,6 +59,9 @@ static NSString *const SJVideoListTableViewCellID = @"SJVideoListTableViewCell";
             self.videosM = videos;
             [self.tableView reloadData];
             [self.indicator stopAnimating];
+            [UIView animateWithDuration:0.3 animations:^{
+                self.tableView.alpha = 1;
+            }];
         });
     });
 
@@ -66,6 +69,7 @@ static NSString *const SJVideoListTableViewCellID = @"SJVideoListTableViewCell";
 }
 
 // lazy load
+@synthesize videoPlayerHelper = _videoPlayerHelper;
 - (SJVideoPlayerHelper *)videoPlayerHelper {
     if ( _videoPlayerHelper ) return _videoPlayerHelper;
     _videoPlayerHelper = [[SJVideoPlayerHelper alloc] initWithViewController:self];

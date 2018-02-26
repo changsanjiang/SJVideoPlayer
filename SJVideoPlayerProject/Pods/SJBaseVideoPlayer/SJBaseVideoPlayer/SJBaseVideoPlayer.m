@@ -486,7 +486,19 @@ NS_ASSUME_NONNULL_END
         
         if ( self.controlLayerDataSource &&
             ![self.controlLayerDataSource triggerGesturesCondition:[gesture locationInView:gesture.view]] ) return NO;
-        
+        if ( type == SJPlayerGestureType_Pan ) {
+            switch ( control.panLocation ) {
+                case SJPanLocation_Unknown: break;
+                case SJPanLocation_Left: {
+                    if ( self.disableBrightnessSetting ) return NO;
+                }
+                    break;
+                case SJPanLocation_Right: {
+                    if ( self.disableVolumeSetting ) return NO;
+                }
+                    break;
+            }
+        }
         return YES;
     };
     
@@ -916,11 +928,6 @@ NS_ASSUME_NONNULL_END
     }];
 }
 
-- (void)stopAndRemovePresentView {
-    [self stop];
-    [self.presentView removeFromSuperview];
-}
-
 - (void)replay {
     if ( !self.asset ) return;
     [self pause];
@@ -933,6 +940,7 @@ NS_ASSUME_NONNULL_END
 }
 
 - (void)setVolume:(float)volume {
+    if ( self.disableVolumeSetting ) return;
     self.volBrigControl.volume = volume;
 }
 
@@ -940,12 +948,29 @@ NS_ASSUME_NONNULL_END
     return self.volBrigControl.volume;
 }
 
+- (void)setDisableVolumeSetting:(BOOL)disableVolumeSetting {
+    objc_setAssociatedObject(self, @selector(disableVolumeSetting), @(disableVolumeSetting), OBJC_ASSOCIATION_RETAIN_NONATOMIC);
+}
+
+- (BOOL)disableVolumeSetting {
+    return [objc_getAssociatedObject(self, _cmd) boolValue];
+}
+
 - (void)setBrightness:(float)brightness {
+    if ( self.disableBrightnessSetting ) return;
     self.volBrigControl.brightness = brightness;
 }
 
 - (float)brightness {
     return self.volBrigControl.brightness;
+}
+
+- (void)setDisableBrightnessSetting:(BOOL)disableBrightnessSetting {
+    objc_setAssociatedObject(self, @selector(disableBrightnessSetting), @(disableBrightnessSetting), OBJC_ASSOCIATION_RETAIN_NONATOMIC);
+}
+
+- (BOOL)disableBrightnessSetting {
+    return [objc_getAssociatedObject(self, _cmd) boolValue];
 }
 
 - (void)setRate:(float)rate {

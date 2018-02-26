@@ -42,3 +42,30 @@ NS_ASSUME_NONNULL_BEGIN
 @end
 
 NS_ASSUME_NONNULL_END
+
+/*
+@synthesize videoPlayerHelper = _videoPlayerHelper;
+- (SJVideoPlayerHelper *)videoPlayerHelper {
+    if ( _videoPlayerHelper ) return _videoPlayerHelper;
+    _videoPlayerHelper = [[SJVideoPlayerHelper alloc] initWithViewController:self];
+    return _videoPlayerHelper;
+}
+
+- (void)viewDidAppear:(BOOL)animated {
+    [super viewDidAppear:animated];
+    self.videoPlayerHelper.vc_viewDidAppearExeBlock();
+}
+
+- (void)viewDidDisappear:(BOOL)animated {
+    [super viewDidDisappear:animated];
+    self.videoPlayerHelper.vc_viewDidDisappearExeBlock();
+}
+
+- (BOOL)prefersStatusBarHidden {
+    return self.videoPlayerHelper.vc_prefersStatusBarHiddenExeBlock();
+}
+
+- (UIStatusBarStyle)preferredStatusBarStyle {
+    return self.videoPlayerHelper.vc_preferredStatusBarStyleExeBlock();
+}
+*/

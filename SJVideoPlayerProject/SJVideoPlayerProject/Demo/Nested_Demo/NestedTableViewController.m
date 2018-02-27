@@ -45,9 +45,14 @@ static NSString *const NestedTableViewCellID = @"NestedTableViewCell";
     return _videoPlayerHelper;
 }
 
-- (void)viewDidAppear:(BOOL)animated {
-    [super viewDidAppear:animated];
-    self.videoPlayerHelper.vc_viewDidAppearExeBlock();
+- (void)viewWillAppear:(BOOL)animated {
+    [super viewWillAppear:animated];
+    self.videoPlayerHelper.vc_viewWillAppearExeBlock();
+}
+
+- (void)viewWillDisappear:(BOOL)animated {
+    [super viewWillDisappear:animated];
+    self.videoPlayerHelper.vc_viewWillDisappearExeBlock();
 }
 
 - (void)viewDidDisappear:(BOOL)animated {

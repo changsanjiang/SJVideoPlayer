@@ -93,7 +93,7 @@ NS_ASSUME_NONNULL_END
     _videoPlayer.URLAsset = asset;
 }
 
-- (void (^)(void))vc_viewDidAppearExeBlock {
+- (void (^)(void))vc_viewWillAppearExeBlock {
     __weak typeof(self) _self = self;
     return ^ () {
         __strong typeof(_self) self = _self;

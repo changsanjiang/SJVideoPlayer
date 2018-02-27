@@ -18,7 +18,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (instancetype)initWithViewController:(__weak UIViewController<SJVideoPlayerHelperUseProtocol> *)viewController;
 
-@property (nonatomic, copy, readonly) void(^vc_viewDidAppearExeBlock)(void);
+@property (nonatomic, copy, readonly) void(^vc_viewWillAppearExeBlock)(void);
 
 @property (nonatomic, copy, readonly) void(^vc_viewWillDisappearExeBlock)(void);
 
@@ -34,7 +34,9 @@ NS_ASSUME_NONNULL_BEGIN
 
 @required
 
-- (void)viewDidAppear:(BOOL)animated;
+- (void)viewWillAppear:(BOOL)animated;
+
+- (void)viewWillDisappear:(BOOL)animated;
 
 - (void)viewDidDisappear:(BOOL)animated;
 
@@ -53,9 +55,9 @@ NS_ASSUME_NONNULL_END
     return _videoPlayerHelper;
 }
 
-- (void)viewDidAppear:(BOOL)animated {
-    [super viewDidAppear:animated];
-    self.videoPlayerHelper.vc_viewDidAppearExeBlock();
+- (void)viewWillAppear:(BOOL)animated {
+    [super viewWillAppear:animated];
+    self.videoPlayerHelper.vc_viewWillAppearExeBlock();
 }
 
 - (void)viewWillDisappear:(BOOL)animated {

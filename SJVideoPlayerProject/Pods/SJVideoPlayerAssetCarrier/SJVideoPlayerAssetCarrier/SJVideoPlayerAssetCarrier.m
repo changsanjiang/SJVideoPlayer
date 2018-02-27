@@ -138,6 +138,23 @@ static float const __GeneratePreImgScale = 0.05;
     return self;
 }
 
+#pragma mark - Play On The Table Header View.
+- (instancetype)initWithAssetURL:(NSURL *)assetURL
+    tableHeaderOfPlayerSuperView:(__weak UIView *)superView
+                       tableView:(UITableView *)tableView {
+    return [self initWithAssetURL:assetURL beginTime:0 tableHeaderOfPlayerSuperView:superView tableView:tableView];
+}
+
+- (instancetype)initWithAssetURL:(NSURL *)assetURL
+                       beginTime:(NSTimeInterval)beginTime
+    tableHeaderOfPlayerSuperView:(__weak UIView *)superView
+                       tableView:(UITableView *)tableView {
+    self = [self initWithAssetURL:assetURL beginTime:beginTime scrollView:tableView indexPath:nil superviewTag:0];
+    if ( !self ) return nil;
+    _tableHeaderOfPlayerSuperView = superView;
+    return self;
+}
+
 - (void)_addTimeObserver {
     CMTime interval = CMTimeMakeWithSeconds(__TimeRefreshInterval, NSEC_PER_SEC);
     __weak typeof(self) _self = self;
@@ -422,13 +439,29 @@ static float const __GeneratePreImgScale = 0.05;
 #pragma mark
 
 - (void)_scrollViewDidScroll:(UIScrollView *)scrollView {
-    // old method(v0.0.4 below)
     if ( scrollView == _scrollView ) {
         if ( _scrollViewDidScroll ) _scrollViewDidScroll(self);
     }
     
-    
-    // new method(v0.0.5)
+    if ( self.tableHeaderOfPlayerSuperView ) {
+        [self playOnHeader_scrollViewDidScroll:scrollView];
+    }
+    else {
+        [self playOnCell_scrollViewDidScroll:scrollView];
+    }
+}
+
+- (void)playOnHeader_scrollViewDidScroll:(UIScrollView *)scrollView {
+    CGFloat offsetY = scrollView.contentOffset.y;
+    if ( offsetY > self.tableHeaderOfPlayerSuperView.frame.size.height ) {
+        self.scrollIn_bool = NO;
+    }
+    else {
+        self.scrollIn_bool = YES;
+    }
+}
+
+- (void)playOnCell_scrollViewDidScroll:(UIScrollView *)scrollView {
     NSIndexPath *indexPath = nil;
     if ( scrollView == _scrollView ) {
         indexPath = _indexPath;

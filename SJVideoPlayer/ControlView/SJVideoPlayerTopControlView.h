@@ -21,7 +21,7 @@ typedef NS_ENUM(NSUInteger, SJVideoPlayerTopViewTag) {
 
 @property (nonatomic) BOOL fullscreen;
 @property (nonatomic) BOOL alwaysShowTitle;
-@property (nonatomic) BOOL playOnCell;
+@property (nonatomic) BOOL playOnScrollView;
 @property (nonatomic, copy, nullable) NSString *title;
 
 @end

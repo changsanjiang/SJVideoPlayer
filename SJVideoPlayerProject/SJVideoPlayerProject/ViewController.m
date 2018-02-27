@@ -15,6 +15,7 @@
 #import "FullViewController.h"
 #import "TestPageViewController.h"
 #import <SJFullscreenPopGesture/UINavigationController+SJVideoPlayerAdd.h>
+#import "TableViewHeaderDemoViewController.h"
 
 @interface ViewController ()
 
@@ -58,6 +59,9 @@
     [self.navigationController pushViewController:[[TestPageViewController alloc] init] animated:YES];
 }
 
+- (IBAction)tableViewHeader:(id)sender {
+    [self.navigationController pushViewController:[[TableViewHeaderDemoViewController alloc] init] animated:YES];
+}
 
 - (IBAction)test:(id)sender {
 }

@@ -550,7 +550,7 @@ NS_ASSUME_NONNULL_END
     // reset
     self.topControlView.model.alwaysShowTitle = asset.alwaysShowTitle;
     self.topControlView.model.title = asset.title;
-    self.topControlView.model.playOnCell = videoPlayer.playOnCell;
+    self.topControlView.model.playOnScrollView = videoPlayer.playOnScrollView;
     self.topControlView.model.fullscreen = videoPlayer.isFullScreen;
     [self.topControlView update];
     
@@ -642,7 +642,7 @@ NS_ASSUME_NONNULL_END
 /// 控制层需要显示.
 - (void)controlLayerNeedAppear:(SJVideoPlayer *)videoPlayer {
     [UIView animateWithDuration:0.3 animations:^{
-        if ( videoPlayer.playOnCell && !videoPlayer.isFullScreen ) {
+        if ( videoPlayer.playOnScrollView && !videoPlayer.isFullScreen ) {
             if ( videoPlayer.URLAsset.alwaysShowTitle ) [_topControlView appear];
             else [_topControlView disappear];
         }

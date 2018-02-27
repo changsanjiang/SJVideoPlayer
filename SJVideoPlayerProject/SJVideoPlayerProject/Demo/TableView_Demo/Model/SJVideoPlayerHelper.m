@@ -91,6 +91,7 @@ NS_ASSUME_NONNULL_END
     
     // set asset
     _videoPlayer.URLAsset = asset;
+    
 }
 
 - (void (^)(void))vc_viewWillAppearExeBlock {

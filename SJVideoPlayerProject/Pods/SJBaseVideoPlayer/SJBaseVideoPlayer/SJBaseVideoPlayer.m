@@ -180,9 +180,8 @@ NS_ASSUME_NONNULL_END
         if ( SJVideoPlayerPlayState_PlayEnd == self.state ) [self replay];
     };
     
-    if ( asset.indexPath ) {
-        /// 默认滑入
-        self.scrollIn = YES;
+    if ( asset.scrollView ) {
+        self.scrollIn = YES; // default is yes
     }
     else {
         self.scrollIn = NO;
@@ -419,7 +418,7 @@ NS_ASSUME_NONNULL_END
         if ( !self ) return NO;
         if ( !self.view.superview ) return NO;
         if ( self.touchedScrollView ) return NO;
-        if ( self.playOnCell && !self.scrollIn ) return NO;
+        if ( self.playOnScrollView && !self.scrollIn ) return NO;
         if ( self.disableRotation ) return NO;
         if ( self.isLockedScreen ) return NO;
         if ( self.resignActive ) return NO;
@@ -474,6 +473,40 @@ NS_ASSUME_NONNULL_END
         __strong typeof(_self) self = _self;
         if ( !self ) return NO;
         
+        SJDisablePlayerGestureTypes disableTypes = self.disableGestureTypes;
+        if ( SJDisablePlayerGestureTypes_All == (disableTypes & SJDisablePlayerGestureTypes_All)  ) {
+            disableTypes = SJDisablePlayerGestureTypes_Pan | SJDisablePlayerGestureTypes_Pinch | SJDisablePlayerGestureTypes_DoubleTap | SJDisablePlayerGestureTypes_SingleTap;
+        }
+        
+        switch (type) {
+            case SJPlayerGestureType_Unknown: break;
+            case SJPlayerGestureType_Pan: {
+                if ( SJDisablePlayerGestureTypes_Pan == (disableTypes & SJDisablePlayerGestureTypes_Pan ) ) {
+                    return NO;
+                }
+            }
+                break;
+                
+            case SJPlayerGestureType_Pinch: {
+                if ( SJDisablePlayerGestureTypes_Pinch == (disableTypes & SJDisablePlayerGestureTypes_Pinch ) ) {
+                    return NO;
+                }
+            }
+                break;
+            case SJPlayerGestureType_DoubleTap: {
+                if ( SJDisablePlayerGestureTypes_DoubleTap == (disableTypes & SJDisablePlayerGestureTypes_DoubleTap) ) {
+                    return NO;
+                }
+            }
+                break;
+            case SJPlayerGestureType_SingleTap: {
+                if ( SJDisablePlayerGestureTypes_SingleTap == (disableTypes & SJDisablePlayerGestureTypes_SingleTap ) ) {
+                    return NO;
+                }
+            }
+                break;
+        }
+        
         if ( self.isLockedScreen ) return NO;
         
         if ( SJVideoPlayerPlayState_Unknown == self.state ||
@@ -481,7 +514,7 @@ NS_ASSUME_NONNULL_END
             SJVideoPlayerPlayState_PlayFailed == self.state ) return NO;
         
         if ( SJPlayerGestureType_Pan == type &&
-            self.playOnCell &&
+            self.playOnScrollView &&
             !self.orentationObserver.isFullScreen ) return NO;
         
         if ( self.controlLayerDataSource &&
@@ -653,7 +686,7 @@ NS_ASSUME_NONNULL_END
         __strong typeof(_self) self = _self;
         if ( !self ) return;
         self.resignActive = NO;
-        if ( self.playOnCell && !self.scrollIn ) return;
+        if ( self.playOnScrollView && !self.scrollIn ) return;
         if ( self.state == SJVideoPlayerPlayState_PlayEnd ||
             self.state == SJVideoPlayerPlayState_Unknown ||
             self.state == SJVideoPlayerPlayState_PlayFailed ) return;
@@ -1005,6 +1038,21 @@ NS_ASSUME_NONNULL_END
 @end
 
 
+#pragma mark - Gesture
+
+@implementation SJBaseVideoPlayer (GestureControl)
+
+- (void)setDisableGestureTypes:(SJDisablePlayerGestureTypes)disableGestureTypes {
+    objc_setAssociatedObject(self, @selector(disableGestureTypes), @(disableGestureTypes), OBJC_ASSOCIATION_RETAIN_NONATOMIC);
+}
+
+- (SJDisablePlayerGestureTypes)disableGestureTypes {
+    return [objc_getAssociatedObject(self, _cmd) integerValue];
+}
+
+@end
+
+
 #pragma mark - 控制层
 
 @implementation SJBaseVideoPlayer (ControlLayer)
@@ -1159,12 +1207,20 @@ NS_ASSUME_NONNULL_END
 
 @implementation SJBaseVideoPlayer (ScrollView)
 
+- (BOOL)playOnScrollView {
+    return self.asset.scrollView;
+}
+
+- (BOOL)isScrollAppeared {
+    return self.scrollIn;
+}
+
 - (BOOL)playOnCell {
     return self.asset.indexPath ? YES : NO;
 }
 
 - (BOOL)scrollIntoTheCell {
-    return self.scrollIn;
+    return self.isScrollAppeared;
 }
 
 @end

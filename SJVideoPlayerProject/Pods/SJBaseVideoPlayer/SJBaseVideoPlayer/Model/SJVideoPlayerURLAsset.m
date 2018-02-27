@@ -76,6 +76,23 @@
     return self;
 }
 
+#pragma mark - Play On The Table Header View.
+- (instancetype)initWithAssetURL:(NSURL *)assetURL
+    tableHeaderOfPlayerSuperView:(__weak UIView *)superView
+                       tableView:(UITableView *)tableView {
+    return [self initWithAssetURL:assetURL beginTime:0 tableHeaderOfPlayerSuperView:superView tableView:tableView];
+}
+
+- (instancetype)initWithAssetURL:(NSURL *)assetURL
+                       beginTime:(NSTimeInterval)beginTime
+    tableHeaderOfPlayerSuperView:(__weak UIView *)superView
+                       tableView:(UITableView *)tableView {
+    self = [super init];
+    if ( !self ) return nil;
+    self.asset = [[SJVideoPlayerAssetCarrier alloc] initWithAssetURL:assetURL beginTime:beginTime tableHeaderOfPlayerSuperView:superView tableView:tableView];
+    return self;
+}
+
 - (BOOL)isM3u8 {
     return [self.asset.assetURL.absoluteString containsString:@".m3u8"];
 }

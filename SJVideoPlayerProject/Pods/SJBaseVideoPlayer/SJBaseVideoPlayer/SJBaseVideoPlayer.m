@@ -1208,7 +1208,7 @@ NS_ASSUME_NONNULL_END
 @implementation SJBaseVideoPlayer (ScrollView)
 
 - (BOOL)playOnScrollView {
-    return self.asset.scrollView;
+    return self.asset.scrollView ? YES : NO;
 }
 
 - (BOOL)isScrollAppeared {

@@ -1,15 +1,15 @@
 PODS:
   - Masonry (1.1.0)
   - SJAttributesFactory (2.0.2)
-  - SJBaseVideoPlayer (1.0.1):
+  - SJBaseVideoPlayer (1.0.1.1):
     - Masonry
-    - SJBaseVideoPlayer/Category (= 1.0.1)
-    - SJBaseVideoPlayer/GestureControl (= 1.0.1)
-    - SJBaseVideoPlayer/Header (= 1.0.1)
-    - SJBaseVideoPlayer/Model (= 1.0.1)
-    - SJBaseVideoPlayer/Present (= 1.0.1)
-    - SJBaseVideoPlayer/Registrar (= 1.0.1)
-    - SJBaseVideoPlayer/TimerControl (= 1.0.1)
+    - SJBaseVideoPlayer/Category (= 1.0.1.1)
+    - SJBaseVideoPlayer/GestureControl (= 1.0.1.1)
+    - SJBaseVideoPlayer/Header (= 1.0.1.1)
+    - SJBaseVideoPlayer/Model (= 1.0.1.1)
+    - SJBaseVideoPlayer/Present (= 1.0.1.1)
+    - SJBaseVideoPlayer/Registrar (= 1.0.1.1)
+    - SJBaseVideoPlayer/TimerControl (= 1.0.1.1)
     - SJBorderLineView
     - SJFullscreenPopGesture
     - SJObserverHelper
@@ -18,17 +18,7 @@ PODS:
     - SJUIFactory
     - SJVideoPlayerAssetCarrier
     - SJVolBrigControl
-  - SJBaseVideoPlayer/Category (1.0.1):
-    - Masonry
-    - SJBorderLineView
-    - SJFullscreenPopGesture
-    - SJObserverHelper
-    - SJOrentationObserver
-    - SJPrompt
-    - SJUIFactory
-    - SJVideoPlayerAssetCarrier
-    - SJVolBrigControl
-  - SJBaseVideoPlayer/GestureControl (1.0.1):
+  - SJBaseVideoPlayer/Category (1.0.1.1):
     - Masonry
     - SJBorderLineView
     - SJFullscreenPopGesture
@@ -38,7 +28,7 @@ PODS:
     - SJUIFactory
     - SJVideoPlayerAssetCarrier
     - SJVolBrigControl
-  - SJBaseVideoPlayer/Header (1.0.1):
+  - SJBaseVideoPlayer/GestureControl (1.0.1.1):
     - Masonry
     - SJBorderLineView
     - SJFullscreenPopGesture
@@ -48,7 +38,7 @@ PODS:
     - SJUIFactory
     - SJVideoPlayerAssetCarrier
     - SJVolBrigControl
-  - SJBaseVideoPlayer/Model (1.0.1):
+  - SJBaseVideoPlayer/Header (1.0.1.1):
     - Masonry
     - SJBorderLineView
     - SJFullscreenPopGesture
@@ -58,7 +48,17 @@ PODS:
     - SJUIFactory
     - SJVideoPlayerAssetCarrier
     - SJVolBrigControl
-  - SJBaseVideoPlayer/Present (1.0.1):
+  - SJBaseVideoPlayer/Model (1.0.1.1):
+    - Masonry
+    - SJBorderLineView
+    - SJFullscreenPopGesture
+    - SJObserverHelper
+    - SJOrentationObserver
+    - SJPrompt
+    - SJUIFactory
+    - SJVideoPlayerAssetCarrier
+    - SJVolBrigControl
+  - SJBaseVideoPlayer/Present (1.0.1.1):
     - Masonry
     - SJBaseVideoPlayer/Header
     - SJBorderLineView
@@ -69,7 +69,7 @@ PODS:
     - SJUIFactory
     - SJVideoPlayerAssetCarrier
     - SJVolBrigControl
-  - SJBaseVideoPlayer/Registrar (1.0.1):
+  - SJBaseVideoPlayer/Registrar (1.0.1.1):
     - Masonry
     - SJBorderLineView
     - SJFullscreenPopGesture
@@ -79,7 +79,7 @@ PODS:
     - SJUIFactory
     - SJVideoPlayerAssetCarrier
     - SJVolBrigControl
-  - SJBaseVideoPlayer/TimerControl (1.0.1):
+  - SJBaseVideoPlayer/TimerControl (1.0.1.1):
     - Masonry
     - SJBorderLineView
     - SJFullscreenPopGesture
@@ -115,7 +115,7 @@ PODS:
   - SJUIFactory (0.0.15):
     - SJUIFactory/Category (= 0.0.15)
   - SJUIFactory/Category (0.0.15)
-  - SJVideoPlayerAssetCarrier (1.0.5.2)
+  - SJVideoPlayerAssetCarrier (1.0.6)
   - SJVolBrigControl (0.0.3):
     - Masonry
     - SJBorderLineView
@@ -144,7 +144,7 @@ DEPENDENCIES:
 SPEC CHECKSUMS:
   Masonry: 678fab65091a9290e40e2832a55e7ab731aad201
   SJAttributesFactory: 01f680bab9e318b0bd11ddff58155a2c7475f2c3
-  SJBaseVideoPlayer: bc1337f454f9b96aeaecfcfdd576e1415a6ed225
+  SJBaseVideoPlayer: 50c88d108160bc8c261b64ce60d8ff4968abff48
   SJBorderLineView: 5878e67fb57e812a2d5d029ca666068784b5448a
   SJFullscreenPopGesture: cd46395d8487000b3c1b4fbac2c8747f34de7fc1
   SJLabel: 159cd5eff4cc575390bf26316af634615218e3b7
@@ -155,7 +155,7 @@ SPEC CHECKSUMS:
   SJScrollEntriesView: 2875f2780574aca3b970af51180669df956ef1f7
   SJSlider: f59c30fc668a5bd3b7063b9e3e133959aa7a34f8
   SJUIFactory: 36f08c8bef27b2f6f123f7c3df1c1aeb1b750742
-  SJVideoPlayerAssetCarrier: 962d636c1b094a39f852fb9b0a1b0cf318e3a603
+  SJVideoPlayerAssetCarrier: ca95e3abbcfd00e9613992b52f4416ccf6d3b990
   SJVolBrigControl: a12dbf222d0412b4fd48f3c454d62486f39a9158
 
 PODFILE CHECKSUM: 12c4357d820d93639690846839913011e8795fa7

@@ -68,7 +68,7 @@ static NSString *const SJVideoListTableViewCellID = @"SJVideoListTableViewCell";
     // Do any additional setup after loading the view.
 }
 
-// lazy load
+// please lazy load
 @synthesize videoPlayerHelper = _videoPlayerHelper;
 - (SJVideoPlayerHelper *)videoPlayerHelper {
     if ( _videoPlayerHelper ) return _videoPlayerHelper;
@@ -79,6 +79,11 @@ static NSString *const SJVideoListTableViewCellID = @"SJVideoListTableViewCell";
 - (void)viewDidAppear:(BOOL)animated {
     [super viewDidAppear:animated];
     self.videoPlayerHelper.vc_viewDidAppearExeBlock();
+}
+
+- (void)viewWillDisappear:(BOOL)animated {
+    [super viewWillDisappear:animated];
+    self.videoPlayerHelper.vc_viewWillDisappearExeBlock();
 }
 
 - (void)viewDidDisappear:(BOOL)animated {

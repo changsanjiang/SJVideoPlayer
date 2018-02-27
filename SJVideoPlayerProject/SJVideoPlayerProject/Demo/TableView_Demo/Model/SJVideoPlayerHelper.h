@@ -20,6 +20,8 @@ NS_ASSUME_NONNULL_BEGIN
 
 @property (nonatomic, copy, readonly) void(^vc_viewDidAppearExeBlock)(void);
 
+@property (nonatomic, copy, readonly) void(^vc_viewWillDisappearExeBlock)(void);
+
 @property (nonatomic, copy, readonly) void(^vc_viewDidDisappearExeBlock)(void);
 
 @property (nonatomic, copy, readonly) BOOL(^vc_prefersStatusBarHiddenExeBlock)(void);
@@ -54,6 +56,11 @@ NS_ASSUME_NONNULL_END
 - (void)viewDidAppear:(BOOL)animated {
     [super viewDidAppear:animated];
     self.videoPlayerHelper.vc_viewDidAppearExeBlock();
+}
+
+- (void)viewWillDisappear:(BOOL)animated {
+    [super viewWillDisappear:animated];
+    self.videoPlayerHelper.vc_viewWillDisappearExeBlock();
 }
 
 - (void)viewDidDisappear:(BOOL)animated {

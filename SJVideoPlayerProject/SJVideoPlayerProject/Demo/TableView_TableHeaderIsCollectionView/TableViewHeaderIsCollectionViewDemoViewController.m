@@ -1,12 +1,12 @@
 //
-//  TableViewHeaderDemoViewController.m
+//  TableViewHeaderIsCollectionViewDemoViewController.m
 //  SJVideoPlayerProject
 //
-//  Created by BlueDancer on 2018/2/27.
+//  Created by BlueDancer on 2018/2/28.
 //  Copyright © 2018年 SanJiang. All rights reserved.
 //
 
-#import "TableViewHeaderDemoViewController.h"
+#import "TableViewHeaderIsCollectionViewDemoViewController.h"
 #import <SJUIFactory.h>
 #import <Masonry.h>
 #import "SJVideoListTableViewCell.h"
@@ -15,22 +15,22 @@
 #import "SJVideoPlayerHelper.h"
 #import <UIView+SJUIFactory.h>
 #import <NSMutableAttributedString+ActionDelegate.h>
-#import "TableHeaderView.h"
+#import "TableHeaderCollectionView.h"
 
 static NSString *const SJVideoListTableViewCellID = @"SJVideoListTableViewCell";
 
-@interface TableViewHeaderDemoViewController ()<UITableViewDelegate, UITableViewDataSource, SJVideoListTableViewCellDelegate, NSAttributedStringActionDelegate, SJVideoPlayerHelperUseProtocol>
+@interface TableViewHeaderIsCollectionViewDemoViewController ()<UITableViewDelegate, UITableViewDataSource, SJVideoListTableViewCellDelegate, NSAttributedStringActionDelegate, SJVideoPlayerHelperUseProtocol>
 
 @property (nonatomic, strong, readonly) SJVideoPlayerHelper *videoPlayerHelper;
 @property (nonatomic, strong, readonly) UIActivityIndicatorView *indicator;
 @property (nonatomic, strong, readonly) UITableView *tableView;
-@property (nonatomic, strong, readonly) TableHeaderView *tableHeaderView;
+@property (nonatomic, strong, readonly) TableHeaderCollectionView *tableHeaderView;
 
 @property (nonatomic, strong) NSArray<SJVideoModel *> *videosM;
 
 @end
 
-@implementation TableViewHeaderDemoViewController
+@implementation TableViewHeaderIsCollectionViewDemoViewController
 
 @synthesize indicator = _indicator;
 @synthesize tableView = _tableView;
@@ -139,20 +139,23 @@ static NSString *const SJVideoListTableViewCellID = @"SJVideoListTableViewCell";
     return _indicator;
 }
 
-- (TableHeaderView *)tableHeaderView {
+- (TableHeaderCollectionView *)tableHeaderView {
     if ( _tableHeaderView ) return _tableHeaderView;
-    _tableHeaderView = [SJUIViewFactory viewWithSubClass:[TableHeaderView class] backgroundColor:[UIColor lightGrayColor] frame:CGRectMake(0, 0, SJScreen_W(), SJScreen_W())];
+    _tableHeaderView = [SJUIViewFactory viewWithSubClass:[TableHeaderCollectionView class] backgroundColor:[UIColor lightGrayColor] frame:CGRectMake(0, 0, SJScreen_W(), [TableHeaderCollectionView height])];
     __weak typeof(self) _self = self;
-    _tableHeaderView.clickedPlayBtn = ^(TableHeaderView * _Nonnull view) {
+    _tableHeaderView.clickedPlayBtnExeBlock = ^(TableHeaderCollectionView *view, UICollectionView *collectionView, NSIndexPath *indexPath, UIView *videoPlayerSuperView) {
         __strong typeof(_self) self = _self;
         if ( !self ) return;
         SJVideoPlayerURLAsset *asset =
         [[SJVideoPlayerURLAsset alloc] initWithAssetURL:[NSURL URLWithString:@"http://vod.lanwuzhe.com/d57eed43d9a344e486b79ae505fb9044/18b1aeb398e04ffaa9de48f223dcf0ca-5287d2089db37e62345123a1be272f8b.mp4?video="]
                                               beginTime:0
-                           playerSuperViewOfTableHeader:view
-                                              tableView:self.tableView];
+                            collectionViewOfTableHeader:collectionView
+                                collectionCellIndexPath:indexPath
+                                     playerSuperViewTag:videoPlayerSuperView.tag
+                                          rootTableView:self.tableView];
+        
         asset.title = @"DIY心情转盘 #手工##手工制作#";
-        [self.videoPlayerHelper playWithAsset:asset playerParentView:view];
+        [self.videoPlayerHelper playWithAsset:asset playerParentView:videoPlayerSuperView];
     };
     return _tableHeaderView;
 }
@@ -187,3 +190,4 @@ static NSString *const SJVideoListTableViewCellID = @"SJVideoListTableViewCell";
 }
 
 @end
+

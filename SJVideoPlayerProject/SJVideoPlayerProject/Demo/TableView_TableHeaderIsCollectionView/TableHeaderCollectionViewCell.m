@@ -1,29 +1,27 @@
 //
-//  PlayerCollectionViewCell.m
+//  TableHeaderCollectionViewCell.m
 //  SJVideoPlayerProject
 //
-//  Created by 畅三江 on 2018/1/11.
+//  Created by BlueDancer on 2018/2/28.
 //  Copyright © 2018年 SanJiang. All rights reserved.
 //
 
-#import "PlayerCollectionViewCell.h"
+#import "TableHeaderCollectionViewCell.h"
 #import <SJUIFactory/SJUIFactory.h>
 #import <Masonry.h>
 
-@interface PlayerCollectionViewCell ()
+@interface TableHeaderCollectionViewCell ()
 
 @property (nonatomic, strong, readonly) UIImageView *playImageView;
 
 @end
 
-@implementation PlayerCollectionViewCell
+@implementation TableHeaderCollectionViewCell
 @synthesize playImageView = _playImageView;
 @synthesize backgroundImageView = _backgroundImageView;
 
 + (CGSize)itemSize {
-    CGFloat w = SJScreen_W() - 44;
-    CGFloat h = w * 9.0 / 16;
-    return CGSizeMake(w, h);
+    return CGSizeMake(SJScreen_W(), SJScreen_W());
 }
 
 - (instancetype)initWithFrame:(CGRect)frame {
@@ -37,16 +35,18 @@
     [self.contentView addSubview:self.backgroundImageView];
     [_backgroundImageView addSubview:self.playImageView];
     [_backgroundImageView mas_makeConstraints:^(MASConstraintMaker *make) {
-        make.centerX.offset(0);
-        make.top.offset(8);
-        make.bottom.offset(-8);
-        make.width.equalTo(_backgroundImageView.mas_height).multipliedBy(16.0 / 9);
+        make.edges.mas_offset(UIEdgeInsetsMake(8, 8, 8, 8));
     }];
     
     [_playImageView mas_makeConstraints:^(MASConstraintMaker *make) {
         make.center.offset(0);
         make.size.offset(25);
     }];
+    
+    _backgroundImageView.backgroundColor =  [UIColor colorWithRed:arc4random() % 256 / 255.0
+                                                            green:arc4random() % 256 / 255.0
+                                                             blue:arc4random() % 256 / 255.0
+                                                            alpha:1];
 }
 
 - (void)handleTap {
@@ -57,11 +57,10 @@
 
 - (UIImageView *)backgroundImageView {
     if ( _backgroundImageView ) return _backgroundImageView;
-    _backgroundImageView = [SJUIImageViewFactory imageViewWithImageName:@"placeholder" viewMode:UIViewContentModeScaleAspectFill];
+    _backgroundImageView = [SJUIImageViewFactory imageViewWithViewMode:UIViewContentModeScaleAspectFill];
     _backgroundImageView.userInteractionEnabled = YES;
     [_backgroundImageView addGestureRecognizer:[[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(handleTap)]];
-#warning should be set it tag. 应该设置它的`tag`. 请不要设置为0.
-    _backgroundImageView.tag = 101;
+    _backgroundImageView.tag = 101; // set it tag.
     return _backgroundImageView;
 }
 - (UIImageView *)playImageView {
@@ -70,3 +69,4 @@
     return _playImageView;
 }
 @end
+

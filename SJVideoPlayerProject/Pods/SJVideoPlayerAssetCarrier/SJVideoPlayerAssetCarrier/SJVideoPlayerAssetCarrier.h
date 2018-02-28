@@ -18,37 +18,117 @@ NS_ASSUME_NONNULL_BEGIN
 #pragma mark -
 - (instancetype)initWithAssetURL:(NSURL *)assetURL;
 
+/**
+ player in a view.
+ 
+ @param assetURL                        assetURL
+ @param beginTime                       begin time. unit is sec.
+ @return instance
+ */
 - (instancetype)initWithAssetURL:(NSURL *)assetURL
-                       beginTime:(NSTimeInterval)beginTime; // unit is sec.
+                       beginTime:(NSTimeInterval)beginTime;
 
-#pragma mark - TableView || CollectionView
-- (instancetype)initWithAssetURL:(NSURL *)assetURL
-                       beginTime:(NSTimeInterval)beginTime // unit is sec.
-                      scrollView:(__unsafe_unretained UIScrollView *__nullable)scrollView
-                       indexPath:(NSIndexPath *__nullable)indexPath
-                    superviewTag:(NSInteger)superviewTag; // video player parent `view tag`
+#pragma mark - Cell
 
-- (instancetype)initWithAssetURL:(NSURL *)assetURL
-                       beginTime:(NSTimeInterval)beginTime // unit is sec.
-                       indexPath:(NSIndexPath *__nullable)indexPath
-                    superviewTag:(NSInteger)superviewTag
-             scrollViewIndexPath:(NSIndexPath *__nullable)scrollViewIndexPath
-                   scrollViewTag:(NSInteger)scrollViewTag
-                  rootScrollView:(__unsafe_unretained UIScrollView *__nullable)rootScrollView;
+/**
+ table or collection cell. player in a tableOrCollection cell.
 
+ @param assetURL                        assetURL.
+ @param tableOrCollectionView           tableView or collectionView.
+ @param indexPath                       cell indexPath.
+ @param superviewTag                    player superView tag.
+ @return instance
+ */
 - (instancetype)initWithAssetURL:(NSURL *)assetURL
-                      scrollView:(__unsafe_unretained UIScrollView * __nullable)scrollView
+                      scrollView:(__unsafe_unretained UIScrollView * __nullable)tableOrCollectionView
                        indexPath:(NSIndexPath * __nullable)indexPath
                     superviewTag:(NSInteger)superviewTag;
 
-#pragma mark - Nested
+/**
+ table or collection cell. player in a tableOrCollection cell.
+
+ @param assetURL                        assetURL.
+ @param beginTime                       begin time. unit is sec.
+ @param tableOrCollectionView           tableView or collectionView.
+ @param indexPath                       cell indexPath.
+ @param superviewTag                    player superView tag.
+ @return instance
+ */
 - (instancetype)initWithAssetURL:(NSURL *)assetURL
+                       beginTime:(NSTimeInterval)beginTime
+                      scrollView:(__unsafe_unretained UIScrollView *__nullable)tableOrCollectionView
+                       indexPath:(NSIndexPath *__nullable)indexPath
+                    superviewTag:(NSInteger)superviewTag;
+
+#pragma mark - Table Header View.
+
+/**
+ table header view. player in a table header view.
+ 
+ @param assetURL                        assetURL.
+ @param beginTime                       begin time. unit is sec.
+ @param superView                       table header view.
+ @param tableView                       table view.
+ @return instance
+ */
+- (instancetype)initWithAssetURL:(NSURL *)assetURL
+                       beginTime:(NSTimeInterval)beginTime
+    playerSuperViewOfTableHeader:(__weak UIView *)superView
+                       tableView:(UITableView *)tableView;
+
+/**
+ table header view. player in a collection view cell, and this collection view in a table header view.
+ 
+ @param assetURL                        assetURL
+ @param beginTime                       begin time. unit is sec.
+ @param collectionView                  collection view. this view in a table header view.
+ @param indexPath                       cell indexPath.
+ @param playerSuperViewTag              player superView tag.
+ @param rootTableView                   tableView
+ @return instance
+ */
+- (instancetype)initWithAssetURL:(NSURL *)assetURL
+                       beginTime:(NSTimeInterval)beginTime
+     collectionViewOfTableHeader:(__weak UICollectionView *)collectionView
+         collectionCellIndexPath:(NSIndexPath *)indexPath
+              playerSuperViewTag:(NSInteger)playerSuperViewTag
+                   rootTableView:(UITableView *)rootTableView;
+
+#pragma mark - Nested
+
+/**
+ table or collection cell. player in a collection cell. and this collectionView in a tableView.
+ 
+ @param assetURL                        assetURL.
+ @param beginTime                       begin time. unit is sec.
+ @param indexPath                       collection cell indexPath.
+ @param superviewTag                    player superView tag.
+ @param scrollViewIndexPath             collection view of indexPath in a tableView.
+ @param scrollViewTag                   collection view tag.
+ @param rootScrollView                  table view.
+ @return instance
+ */
+- (instancetype)initWithAssetURL:(NSURL *)assetURL
+                       beginTime:(NSTimeInterval)beginTime // unit is sec.
                        indexPath:(NSIndexPath *__nullable)indexPath
                     superviewTag:(NSInteger)superviewTag
              scrollViewIndexPath:(NSIndexPath *__nullable)scrollViewIndexPath
                    scrollViewTag:(NSInteger)scrollViewTag
                   rootScrollView:(__unsafe_unretained UIScrollView *__nullable)rootScrollView;
 
+/**
+ table or collection cell. player in a collection cell. and this collectionView in a tableView.
+ 
+ @param assetURL                        assetURL.
+ @param beginTime                       begin time. unit is sec.
+ @param indexPath                       collection cell indexPath.
+ @param superviewTag                    player superView tag.
+ @param scrollViewIndexPath             collection view of indexPath in a tableView.
+ @param scrollViewTag                   collection view tag.
+ @param scrollView                      collection view.
+ @param rootScrollView                  table view.
+ @return instance
+ */
 - (instancetype)initWithAssetURL:(NSURL *)assetURL
                        beginTime:(NSTimeInterval)beginTime
                        indexPath:(NSIndexPath *__nullable)indexPath
@@ -57,17 +137,6 @@ NS_ASSUME_NONNULL_BEGIN
                    scrollViewTag:(NSInteger)scrollViewTag
                       scrollView:(__unsafe_unretained UIScrollView *__nullable)scrollView
                   rootScrollView:(__unsafe_unretained UIScrollView *__nullable)rootScrollView;
-
-#pragma mark - Play On The Table Header View.
-- (instancetype)initWithAssetURL:(NSURL *)assetURL
-    tableHeaderOfPlayerSuperView:(__weak UIView *)superView
-                       tableView:(UITableView *)tableView;
-
-- (instancetype)initWithAssetURL:(NSURL *)assetURL
-                       beginTime:(NSTimeInterval)beginTime
-    tableHeaderOfPlayerSuperView:(__weak UIView *)superView
-                       tableView:(UITableView *)tableView;
-
 
 
 #pragma mark - screenshot
@@ -142,7 +211,7 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic, assign, readonly) NSInteger scrollViewTag; // _scrollView `tag`
 @property (nonatomic, strong, readonly, nullable) NSIndexPath *scrollViewIndexPath;
 @property (nonatomic, unsafe_unretained, readonly, nullable) UIScrollView *rootScrollView;
-@property (nonatomic, weak, readonly, nullable) UIView *tableHeaderOfPlayerSuperView;
+@property (nonatomic, weak, readonly, nullable) UIView *playerSuperViewOfTableHeader;
 
 @end
 

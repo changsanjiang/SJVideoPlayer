@@ -60,10 +60,18 @@
                                     <action selector="tableViewHeader:" destination="BYZ-38-t0r" eventType="touchUpInside" id="jPz-Vu-dYV"/>
                                 </connections>
                             </button>
+                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="BUy-1v-vW5">
+                                <rect key="frame" x="69" y="508" width="237" height="30"/>
+                                <state key="normal" title="TableView_HeaderIsCollectionView"/>
+                                <connections>
+                                    <action selector="tableHeaderIsCollectionView:" destination="BYZ-38-t0r" eventType="touchUpInside" id="65y-UE-MY8"/>
+                                </connections>
+                            </button>
                         </subviews>
                         <color key="backgroundColor" red="1" green="1" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                         <constraints>
                             <constraint firstItem="wr7-x4-Iha" firstAttribute="centerX" secondItem="New-u4-aTv" secondAttribute="centerX" id="Akh-SC-P3Z"/>
+                            <constraint firstItem="BUy-1v-vW5" firstAttribute="centerX" secondItem="jUw-fL-Eph" secondAttribute="centerX" id="BEe-TA-SJ5"/>
                             <constraint firstItem="Ehn-QU-Eed" firstAttribute="centerX" secondItem="mF3-mW-pav" secondAttribute="centerX" id="DO8-Vy-uqP"/>
                             <constraint firstItem="New-u4-aTv" firstAttribute="top" secondItem="wr7-x4-Iha" secondAttribute="bottom" constant="8.5" id="Glg-vr-Sdi"/>
                             <constraint firstItem="New-u4-aTv" firstAttribute="centerX" secondItem="8bC-Xf-vdC" secondAttribute="centerX" id="Ovw-8S-Txw"/>
@@ -74,6 +82,7 @@
                             <constraint firstItem="jUw-fL-Eph" firstAttribute="top" secondItem="Ehn-QU-Eed" secondAttribute="bottom" constant="8" id="gag-90-DCJ"/>
                             <constraint firstItem="gbR-Ag-b7A" firstAttribute="centerX" secondItem="8bC-Xf-vdC" secondAttribute="centerX" id="nod-jp-BOt"/>
                             <constraint firstItem="gbR-Ag-b7A" firstAttribute="top" secondItem="New-u4-aTv" secondAttribute="bottom" constant="7.5" id="nxx-Nh-Zhu"/>
+                            <constraint firstItem="BUy-1v-vW5" firstAttribute="top" secondItem="jUw-fL-Eph" secondAttribute="bottom" constant="8" id="rW9-gt-oJT"/>
                             <constraint firstItem="New-u4-aTv" firstAttribute="centerY" secondItem="8bC-Xf-vdC" secondAttribute="centerY" id="sbH-4p-dCq"/>
                         </constraints>
                         <viewLayoutGuide key="safeArea" id="6Tk-OE-BBY"/>

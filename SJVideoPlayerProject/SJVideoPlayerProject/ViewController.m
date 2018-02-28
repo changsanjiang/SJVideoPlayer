@@ -16,6 +16,7 @@
 #import "TestPageViewController.h"
 #import <SJFullscreenPopGesture/UINavigationController+SJVideoPlayerAdd.h>
 #import "TableViewHeaderDemoViewController.h"
+#import "TableViewHeaderIsCollectionViewDemoViewController.h"
 
 @interface ViewController ()
 
@@ -27,6 +28,7 @@
     [super viewDidLoad];
     self.navigationController.sj_gestureType = SJFullscreenPopGestureType_Full;
     self.navigationController.sj_backgroundColor = [UIColor whiteColor];
+
     // self.view.backgroundColor = [UIColor blackColor];
     // Do any additional setup after loading the view, typically from a nib.
 }
@@ -61,6 +63,10 @@
 
 - (IBAction)tableViewHeader:(id)sender {
     [self.navigationController pushViewController:[[TableViewHeaderDemoViewController alloc] init] animated:YES];
+}
+
+- (IBAction)tableHeaderIsCollectionView:(id)sender {
+    [self.navigationController pushViewController:[[TableViewHeaderIsCollectionViewDemoViewController alloc] init] animated:YES];
 }
 
 - (IBAction)test:(id)sender {

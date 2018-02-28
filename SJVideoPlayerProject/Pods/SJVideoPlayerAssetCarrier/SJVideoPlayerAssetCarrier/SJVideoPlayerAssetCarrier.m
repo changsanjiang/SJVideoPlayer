@@ -51,6 +51,7 @@ static float const __GeneratePreImgScale = 0.05;
 @end
 
 @implementation SJVideoPlayerAssetCarrier
+#pragma mark -
 
 - (instancetype)initWithAssetURL:(NSURL *)assetURL {
     return [self initWithAssetURL:assetURL beginTime:0];
@@ -62,6 +63,15 @@ static float const __GeneratePreImgScale = 0.05;
     return [self initWithAssetURL:assetURL beginTime:beginTime scrollView:nil indexPath:nil superviewTag:0];
 }
 
+#pragma mark - Cell
+
+- (instancetype)initWithAssetURL:(NSURL *)assetURL
+                      scrollView:(__unsafe_unretained UIScrollView * __nullable)scrollView
+                       indexPath:(NSIndexPath * __nullable)indexPath
+                    superviewTag:(NSInteger)superviewTag {
+    return [self initWithAssetURL:assetURL beginTime:0 scrollView:scrollView indexPath:indexPath superviewTag:superviewTag];
+}
+
 - (instancetype)initWithAssetURL:(NSURL *)assetURL
                        beginTime:(NSTimeInterval)beginTime
                       scrollView:(__unsafe_unretained UIScrollView *__nullable)scrollView
@@ -69,6 +79,43 @@ static float const __GeneratePreImgScale = 0.05;
                     superviewTag:(NSInteger)superviewTag {
     return [self initWithAssetURL:assetURL beginTime:beginTime indexPath:indexPath superviewTag:superviewTag scrollViewIndexPath:nil scrollViewTag:0 scrollView:scrollView rootScrollView:nil];
 }
+
+#pragma mark - Table Header View.
+
+- (instancetype)initWithAssetURL:(NSURL *)assetURL
+                       beginTime:(NSTimeInterval)beginTime
+    playerSuperViewOfTableHeader:(__weak UIView *)superView
+                       tableView:(UITableView *)tableView {
+    self = [self initWithAssetURL:assetURL
+                        beginTime:beginTime
+                       scrollView:tableView
+                        indexPath:nil
+                     superviewTag:0];
+    if ( !self ) return nil;
+    _playerSuperViewOfTableHeader = superView;
+    return self;
+}
+
+- (instancetype)initWithAssetURL:(NSURL *)assetURL
+                       beginTime:(NSTimeInterval)beginTime
+     collectionViewOfTableHeader:(__weak UICollectionView *)collectionView
+         collectionCellIndexPath:(NSIndexPath *)indexPath
+              playerSuperViewTag:(NSInteger)playerSuperViewTag
+                   rootTableView:(UITableView *)rootTableView {
+    self = [self initWithAssetURL:assetURL
+                        beginTime:beginTime
+                        indexPath:indexPath
+                     superviewTag:playerSuperViewTag
+              scrollViewIndexPath:nil
+                    scrollViewTag:0
+                       scrollView:collectionView
+                   rootScrollView:rootTableView];
+    if ( !self ) return nil;
+    _playerSuperViewOfTableHeader = collectionView;
+    return self;
+}
+
+#pragma mark - Nested
 
 - (instancetype)initWithAssetURL:(NSURL *)assetURL
                        beginTime:(NSTimeInterval)beginTime
@@ -87,22 +134,6 @@ static float const __GeneratePreImgScale = 0.05;
         }
     }
     return [self initWithAssetURL:assetURL beginTime:beginTime indexPath:indexPath superviewTag:superviewTag scrollViewIndexPath:scrollViewIndexPath scrollViewTag:scrollViewTag scrollView:scrollView rootScrollView:rootScrollView];
-}
-
-- (instancetype)initWithAssetURL:(NSURL *)assetURL
-                      scrollView:(__unsafe_unretained UIScrollView * __nullable)scrollView
-                       indexPath:(NSIndexPath * __nullable)indexPath
-                    superviewTag:(NSInteger)superviewTag {
-    return [self initWithAssetURL:assetURL beginTime:0 scrollView:scrollView indexPath:indexPath superviewTag:superviewTag];
-}
-
-- (instancetype)initWithAssetURL:(NSURL *)assetURL
-                       indexPath:(NSIndexPath *__nullable)indexPath
-                    superviewTag:(NSInteger)superviewTag
-             scrollViewIndexPath:(NSIndexPath *__nullable)scrollViewIndexPath
-                   scrollViewTag:(NSInteger)scrollViewTag
-                  rootScrollView:(__unsafe_unretained UIScrollView *__nullable)rootScrollView {
-    return [self initWithAssetURL:assetURL beginTime:0 indexPath:indexPath superviewTag:superviewTag scrollViewIndexPath:scrollViewIndexPath scrollViewTag:scrollViewTag rootScrollView:rootScrollView];
 }
 
 - (instancetype)initWithAssetURL:(NSURL *)assetURL
@@ -135,23 +166,6 @@ static float const __GeneratePreImgScale = 0.05;
     // observe
     [self _observing];
     _player = [AVPlayer playerWithPlayerItem:_playerItem];
-    return self;
-}
-
-#pragma mark - Play On The Table Header View.
-- (instancetype)initWithAssetURL:(NSURL *)assetURL
-    tableHeaderOfPlayerSuperView:(__weak UIView *)superView
-                       tableView:(UITableView *)tableView {
-    return [self initWithAssetURL:assetURL beginTime:0 tableHeaderOfPlayerSuperView:superView tableView:tableView];
-}
-
-- (instancetype)initWithAssetURL:(NSURL *)assetURL
-                       beginTime:(NSTimeInterval)beginTime
-    tableHeaderOfPlayerSuperView:(__weak UIView *)superView
-                       tableView:(UITableView *)tableView {
-    self = [self initWithAssetURL:assetURL beginTime:beginTime scrollView:tableView indexPath:nil superviewTag:0];
-    if ( !self ) return nil;
-    _tableHeaderOfPlayerSuperView = superView;
     return self;
 }
 
@@ -443,7 +457,7 @@ static float const __GeneratePreImgScale = 0.05;
         if ( _scrollViewDidScroll ) _scrollViewDidScroll(self);
     }
     
-    if ( self.tableHeaderOfPlayerSuperView ) {
+    if ( self.playerSuperViewOfTableHeader ) {
         [self playOnHeader_scrollViewDidScroll:scrollView];
     }
     else {
@@ -452,12 +466,23 @@ static float const __GeneratePreImgScale = 0.05;
 }
 
 - (void)playOnHeader_scrollViewDidScroll:(UIScrollView *)scrollView {
-    CGFloat offsetY = scrollView.contentOffset.y;
-    if ( offsetY > self.tableHeaderOfPlayerSuperView.frame.size.height ) {
-        self.scrollIn_bool = NO;
+    if ( [self.playerSuperViewOfTableHeader isKindOfClass:[UICollectionView class]] &&
+         scrollView == self.playerSuperViewOfTableHeader ) {
+        UICollectionView *collectionView = (UICollectionView *)scrollView;
+        UICollectionViewCell *cell = [collectionView cellForItemAtIndexPath:self.indexPath];
+        bool visable = [collectionView.visibleCells containsObject:cell];
+        self.scrollIn_bool = visable;
     }
     else {
-        self.scrollIn_bool = YES;
+        CGFloat offsetY = scrollView.contentOffset.y;
+        if ( offsetY < self.playerSuperViewOfTableHeader.frame.size.height ) {
+            UICollectionView *collectionView = (UICollectionView *)self.scrollView;
+            UICollectionViewCell *cell = [collectionView cellForItemAtIndexPath:self.indexPath];
+            self.scrollIn_bool = [collectionView.visibleCells containsObject:cell];
+        }
+        else {
+            self.scrollIn_bool = NO;
+        }
     }
 }
 

@@ -23,6 +23,9 @@
 		775A7C291FD7EC7C00BE1EE2 /* PlayerTableViewCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 775A7C281FD7EC7C00BE1EE2 /* PlayerTableViewCell.m */; };
 		775B1FFF204555B200264AB9 /* TableViewHeaderDemoViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 775B1FFE204555B200264AB9 /* TableViewHeaderDemoViewController.m */; };
 		775B200E20455A2800264AB9 /* TableHeaderView.m in Sources */ = {isa = PBXBuildFile; fileRef = 775B200D20455A2800264AB9 /* TableHeaderView.m */; };
+		775B201620465D6200264AB9 /* TableViewHeaderIsCollectionViewDemoViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 775B201520465D6200264AB9 /* TableViewHeaderIsCollectionViewDemoViewController.m */; };
+		775B201920465E1500264AB9 /* TableHeaderCollectionView.m in Sources */ = {isa = PBXBuildFile; fileRef = 775B201820465E1500264AB9 /* TableHeaderCollectionView.m */; };
+		775B201C2046682E00264AB9 /* TableHeaderCollectionViewCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 775B201B2046682E00264AB9 /* TableHeaderCollectionViewCell.m */; };
 		775C0AC620295C660008EDA7 /* SJVideoPlayer.bundle in Resources */ = {isa = PBXBuildFile; fileRef = 775C0ABF20295C660008EDA7 /* SJVideoPlayer.bundle */; };
 		775C0AC720295C660008EDA7 /* SJVideoPlayerResources.m in Sources */ = {isa = PBXBuildFile; fileRef = 775C0AC120295C660008EDA7 /* SJVideoPlayerResources.m */; };
 		775C0AC820295C660008EDA7 /* SJVideoPlayerSettings.m in Sources */ = {isa = PBXBuildFile; fileRef = 775C0AC320295C660008EDA7 /* SJVideoPlayerSettings.m */; };
@@ -99,6 +102,12 @@
 		775B1FFE204555B200264AB9 /* TableViewHeaderDemoViewController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = TableViewHeaderDemoViewController.m; sourceTree = "<group>"; };
 		775B200C20455A2800264AB9 /* TableHeaderView.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = TableHeaderView.h; sourceTree = "<group>"; };
 		775B200D20455A2800264AB9 /* TableHeaderView.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = TableHeaderView.m; sourceTree = "<group>"; };
+		775B201420465D6200264AB9 /* TableViewHeaderIsCollectionViewDemoViewController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = TableViewHeaderIsCollectionViewDemoViewController.h; sourceTree = "<group>"; };
+		775B201520465D6200264AB9 /* TableViewHeaderIsCollectionViewDemoViewController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = TableViewHeaderIsCollectionViewDemoViewController.m; sourceTree = "<group>"; };
+		775B201720465E1500264AB9 /* TableHeaderCollectionView.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = TableHeaderCollectionView.h; sourceTree = "<group>"; };
+		775B201820465E1500264AB9 /* TableHeaderCollectionView.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = TableHeaderCollectionView.m; sourceTree = "<group>"; };
+		775B201A2046682E00264AB9 /* TableHeaderCollectionViewCell.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = TableHeaderCollectionViewCell.h; sourceTree = "<group>"; };
+		775B201B2046682E00264AB9 /* TableHeaderCollectionViewCell.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = TableHeaderCollectionViewCell.m; sourceTree = "<group>"; };
 		775C0ABF20295C660008EDA7 /* SJVideoPlayer.bundle */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.plug-in"; path = SJVideoPlayer.bundle; sourceTree = "<group>"; };
 		775C0AC020295C660008EDA7 /* SJVideoPlayerResources.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SJVideoPlayerResources.h; sourceTree = "<group>"; };
 		775C0AC120295C660008EDA7 /* SJVideoPlayerResources.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SJVideoPlayerResources.m; sourceTree = "<group>"; };
@@ -299,6 +308,19 @@
 			path = TableViewHeader;
 			sourceTree = "<group>";
 		};
+		775B201320465D2900264AB9 /* TableView_TableHeaderIsCollectionView */ = {
+			isa = PBXGroup;
+			children = (
+				775B201420465D6200264AB9 /* TableViewHeaderIsCollectionViewDemoViewController.h */,
+				775B201520465D6200264AB9 /* TableViewHeaderIsCollectionViewDemoViewController.m */,
+				775B201720465E1500264AB9 /* TableHeaderCollectionView.h */,
+				775B201820465E1500264AB9 /* TableHeaderCollectionView.m */,
+				775B201A2046682E00264AB9 /* TableHeaderCollectionViewCell.h */,
+				775B201B2046682E00264AB9 /* TableHeaderCollectionViewCell.m */,
+			);
+			path = TableView_TableHeaderIsCollectionView;
+			sourceTree = "<group>";
+		};
 		775C0AB720295B6D0008EDA7 /* Mask */ = {
 			isa = PBXGroup;
 			children = (
@@ -462,6 +484,7 @@
 			children = (
 				A644108C200A3F89006FD832 /* TableView */,
 				775B1FFC204555A300264AB9 /* TableViewHeader */,
+				775B201320465D2900264AB9 /* TableView_TableHeaderIsCollectionView */,
 				77DA95172042C029007A9EE8 /* PageViewController */,
 				A6F4E9782007A76200716B9C /* Nested_嵌套的 */,
 				778E24F11FD97E93008D0DD3 /* Single_单例 */,
@@ -561,6 +584,8 @@
 			children = (
 				A6F4E9722007A12400716B9C /* PlayerCollectionViewController.h */,
 				A6F4E9732007A12400716B9C /* PlayerCollectionViewController.m */,
+				A6F4E9752007A13C00716B9C /* PlayerCollectionViewCell.h */,
+				A6F4E9762007A13C00716B9C /* PlayerCollectionViewCell.m */,
 			);
 			path = CollectionView;
 			sourceTree = "<group>";
@@ -572,8 +597,6 @@
 				A6F4E97A2007A78400716B9C /* NestedTableViewController.m */,
 				A6F4E97C2007A7EC00716B9C /* NestedTableViewCell.h */,
 				A6F4E97D2007A7EC00716B9C /* NestedTableViewCell.m */,
-				A6F4E9752007A13C00716B9C /* PlayerCollectionViewCell.h */,
-				A6F4E9762007A13C00716B9C /* PlayerCollectionViewCell.m */,
 			);
 			name = "Nested_嵌套的";
 			path = Nested_Demo;
@@ -729,6 +752,7 @@
 				A6E6D35F2028BE9B00CB9BAE /* SJMoreSettingsSlidersViewModel.m in Sources */,
 				A6E6D3542028BE9B00CB9BAE /* SJVideoPlayerPreviewCollectionViewCell.m in Sources */,
 				A6F4E9772007A13C00716B9C /* PlayerCollectionViewCell.m in Sources */,
+				775B201C2046682E00264AB9 /* TableHeaderCollectionViewCell.m in Sources */,
 				A6E6D3632028BE9B00CB9BAE /* SJVideoPlayerMoreSettingsSlidersView.m in Sources */,
 				A6F4E9742007A12400716B9C /* PlayerCollectionViewController.m in Sources */,
 				77DA95232042C260007A9EE8 /* TestItem.m in Sources */,
@@ -759,8 +783,10 @@
 				77F4EFFA204029E3004748F6 /* SJSharedVideoPlayerHelper.m in Sources */,
 				774B252B1FCEBA5D002113CC /* main.m in Sources */,
 				772005772029BBC7009F0190 /* SJMoreSettingItems.m in Sources */,
+				775B201920465E1500264AB9 /* TableHeaderCollectionView.m in Sources */,
 				774B251D1FCEBA5D002113CC /* AppDelegate.m in Sources */,
 				775C0AD7202962180008EDA7 /* SJVideoPlayerDefaultControlView.m in Sources */,
+				775B201620465D6200264AB9 /* TableViewHeaderIsCollectionViewDemoViewController.m in Sources */,
 				775B1FFF204555B200264AB9 /* TableViewHeaderDemoViewController.m in Sources */,
 				A6441098200A406E006FD832 /* SJVideoModel.m in Sources */,
 				774B25571FCED47B002113CC /* PlayerViewController.m in Sources */,

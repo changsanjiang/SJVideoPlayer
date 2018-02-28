@@ -79,7 +79,8 @@
         self.asset = /* 记录资源, 以便返回该界面时, 继续播放他 */
         [[SJVideoPlayerURLAsset alloc] initWithTitle:@"DIY心情转盘 #手工##手工制作#"
                                      alwaysShowTitle:YES
-                                            assetURL:URLStrs[arc4random() % 2]/*随机取一个播放的URL*/];
+                                            assetURL:URLStrs[arc4random() % 2]/*随机取一个播放的URL*/
+                                           beginTime:0];
         [SJVideoPlayer sharedPlayer].URLAsset = self.asset;
     });
 }
@@ -144,7 +145,8 @@
     self.asset = /* 记录资源, 以便返回该界面时, 继续播放他 */
     [[SJVideoPlayerURLAsset alloc] initWithTitle:@"[火影忍者傅人传]#火影#"
                                  alwaysShowTitle:YES
-                                        assetURL:URLStrs[arc4random() % 2]/*随机取一个播放的URL*/];
+                                        assetURL:URLStrs[arc4random() % 2]/*随机取一个播放的URL*/
+                                       beginTime:0];
     [SJVideoPlayer sharedPlayer].URLAsset = self.asset;
 }
 @end

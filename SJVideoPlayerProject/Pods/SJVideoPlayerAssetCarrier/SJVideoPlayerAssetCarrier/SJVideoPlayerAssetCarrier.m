@@ -476,9 +476,14 @@ static float const __GeneratePreImgScale = 0.05;
     else {
         CGFloat offsetY = scrollView.contentOffset.y;
         if ( offsetY < self.playerSuperViewOfTableHeader.frame.size.height ) {
-            UICollectionView *collectionView = (UICollectionView *)self.scrollView;
-            UICollectionViewCell *cell = [collectionView cellForItemAtIndexPath:self.indexPath];
-            self.scrollIn_bool = [collectionView.visibleCells containsObject:cell];
+            if ( [self.scrollView isKindOfClass:[UITableView class]] ) {
+                self.scrollIn_bool = YES;
+            }
+            else {
+                UICollectionView *collectionView = (UICollectionView *)self.scrollView;
+                UICollectionViewCell *cell = [collectionView cellForItemAtIndexPath:self.indexPath];
+                self.scrollIn_bool = [collectionView.visibleCells containsObject:cell];
+            }
         }
         else {
             self.scrollIn_bool = NO;

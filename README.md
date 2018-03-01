@@ -1,18 +1,17 @@
 # SJVideoPlayer
 
-如果缺少API, 可以邮箱联系我 changsanjiang@gmail.com
+If lack of interface or any suggestions, please email me( changsanjiang@gmail.com ).
 
-### installation
+### Installation
 ```ruby
-# 有默认控制层的播放器
+# Player with default control layer.
 pod 'SJVideoPlayer'
 
-# 基础播放器, 不含控制层, 如果需要自定义控制层, 可以使用它.
+# The base player, without the control layer, can be used if you need a custom control layer.
 pod 'SJBaseVideoPlayer'
 ```
-- [基础播放器, 不含控制层](https://github.com/changsanjiang/SJBaseVideoPlayer)
+- [Base Video Player](https://github.com/changsanjiang/SJBaseVideoPlayer)
 
-如果大家有好的控制层, 可以推上来, 我合并到播放器里.
 ___
 
 ## Interface

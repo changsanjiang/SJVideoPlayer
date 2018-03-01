@@ -15,6 +15,11 @@ pod 'SJBaseVideoPlayer'
 如果大家有好的控制层, 可以推上来, 我合并到播放器里.
 ___
 
+## interface
+
+<img src="https://github.com/changsanjiang/SJBaseVideoPlayer/blob/master/Project/SJBaseVideoPlayer.png" />
+___
+
 ### play
 ```Objective-C
     Player.asset = [[SJVideoPlayerAssetCarrier alloc] initWithAssetURL:[NSURL URLWithString:@"http://....."] beginTime:10];

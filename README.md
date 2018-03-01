@@ -16,7 +16,6 @@ pod 'SJBaseVideoPlayer'
 ___
 
 ## interface
-
 <img src="https://github.com/changsanjiang/SJBaseVideoPlayer/blob/master/Project/SJBaseVideoPlayer.png" />
 
 ___

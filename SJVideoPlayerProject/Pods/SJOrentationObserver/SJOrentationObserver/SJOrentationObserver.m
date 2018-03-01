@@ -178,7 +178,7 @@
     
     [UIView animateWithDuration:_duration animations:^{
         [_view setTransform:transform];
-        [_view.superview layoutIfNeeded];
+        [_view layoutIfNeeded];
     } completion:^(BOOL finished) {
         self.transitioning = NO;
         if ( UIInterfaceOrientationPortrait == ori ) {

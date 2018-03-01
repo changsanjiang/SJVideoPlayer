@@ -101,10 +101,10 @@ PODS:
     - SJLabel/Category
   - SJLoadingView (1.0.1)
   - SJObserverHelper (1.0.3)
-  - SJOrentationObserver (1.0.4.2):
+  - SJOrentationObserver (1.0.5):
     - Masonry
-    - SJOrentationObserver/Category (= 1.0.4.2)
-  - SJOrentationObserver/Category (1.0.4.2):
+    - SJOrentationObserver/Category (= 1.0.5)
+  - SJOrentationObserver/Category (1.0.5):
     - Masonry
   - SJPrompt (1.0.1):
     - Masonry
@@ -150,7 +150,7 @@ SPEC CHECKSUMS:
   SJLabel: 159cd5eff4cc575390bf26316af634615218e3b7
   SJLoadingView: c3ff03e4b363a5b6a3ba0634d6bb9ce2647faf07
   SJObserverHelper: b270d707cd18ab76538596aa4e98cf798c9e9868
-  SJOrentationObserver: a14eabdc50e8b33239659eea0a147f3a52e97bd4
+  SJOrentationObserver: aacbb5eb1187b4b0180e409cc9358b0bbe5f5758
   SJPrompt: eaecd94f2055a12d25090967dbad3f21da011626
   SJScrollEntriesView: 2875f2780574aca3b970af51180669df956ef1f7
   SJSlider: f59c30fc668a5bd3b7063b9e3e133959aa7a34f8

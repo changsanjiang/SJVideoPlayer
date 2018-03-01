@@ -940,6 +940,7 @@ NS_ASSUME_NONNULL_END
     
     if ( !self.asset ) return NO;
     [self.asset.player pause];
+
     if ( SJVideoPlayerPlayState_PlayEnd != self.state ) self.state = SJVideoPlayerPlayState_Paused;
     return YES;
 }

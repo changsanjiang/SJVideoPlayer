@@ -60,9 +60,11 @@ NS_ASSUME_NONNULL_END
     _videoPlayer = [SJVideoPlayer player];
     
     [playerParentView addSubview:_videoPlayer.view];
-    [_videoPlayer.view mas_remakeConstraints:^(MASConstraintMaker *make) {
-        make.edges.offset(0);
-    }];
+//    [_videoPlayer.view mas_remakeConstraints:^(MASConstraintMaker *make) {
+//        make.edges.offset(0);
+//    }];
+
+    _videoPlayer.view.frame = playerParentView.bounds;
     
     // fade in
     _videoPlayer.view.alpha = 0.001;

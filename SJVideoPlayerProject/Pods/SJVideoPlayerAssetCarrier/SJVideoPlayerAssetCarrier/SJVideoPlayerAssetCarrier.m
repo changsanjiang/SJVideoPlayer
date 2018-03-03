@@ -148,6 +148,7 @@ static float const __GeneratePreImgScale = 0.05;
     if ( !self ) return nil;
     _asset = [AVURLAsset assetWithURL:assetURL];
     _playerItem = [AVPlayerItem playerItemWithAsset:_asset automaticallyLoadedAssetKeys:@[@"duration"]];
+    _player = [AVPlayer playerWithPlayerItem:_playerItem];
     _assetURL = assetURL;
     _beginTime = beginTime;
     if ( 0 == _beginTime ) _jumped = YES;
@@ -162,6 +163,9 @@ static float const __GeneratePreImgScale = 0.05;
     _scrollIn_bool = YES;
     _parent_scrollIn_bool = YES;
     _rate = 1;
+    
+    // observe
+    [self _observing];
     /*!
      AVPlayerItemStatusUnknown 该状态表示当前媒体还未载入并且还不在播放队列中.
      将`AVPlayerItem`与一个`AVPlayer`对象进行关联就开始将媒体放入队列中, 但是在具体内容可以播放前, 需要等待对象的状态由`unknown`变为`readyToPlay`.
@@ -172,10 +176,6 @@ static float const __GeneratePreImgScale = 0.05;
      **/
     [self _addTimeObserver];
     [self _addItemPlayEndObserver];
-    
-    // observe
-    [self _observing];
-    _player = [AVPlayer playerWithPlayerItem:_playerItem];
     return self;
 }
 

@@ -103,7 +103,7 @@
 
 - (UIVisualEffectView *)bottomMaskView {
     if ( _bottomMaskView ) return _bottomMaskView;
-    UIBlurEffect *effect = [UIBlurEffect effectWithStyle:UIBlurEffectStyleLight];
+    UIBlurEffect *effect = [UIBlurEffect effectWithStyle:UIBlurEffectStyleExtraLight];
     _bottomMaskView = [[UIVisualEffectView alloc] initWithEffect:effect];
     return _bottomMaskView;
 }

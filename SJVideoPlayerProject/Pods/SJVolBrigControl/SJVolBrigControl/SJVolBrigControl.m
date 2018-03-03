@@ -47,11 +47,12 @@
 - (SJVideoPlayerTipsView *)brightnessView {
     if ( !_brightnessView ) {
         _brightnessView = [SJVideoPlayerTipsView new];
-        _brightnessView.titleLabel.text = @"亮度";
         dispatch_async(dispatch_get_global_queue(0, 0), ^{
             UIImage *image = [SJVolBrigResource imageNamed:@"sj_video_player_brightness"];
+            NSString *brightnessText = [SJVolBrigResource localizedStringForKey:SJVolBrigControlBrightnessText];
             dispatch_async(dispatch_get_main_queue(), ^{
                 _brightnessView.image = image;
+                _brightnessView.titleLabel.text = brightnessText;
             });
         });
     }

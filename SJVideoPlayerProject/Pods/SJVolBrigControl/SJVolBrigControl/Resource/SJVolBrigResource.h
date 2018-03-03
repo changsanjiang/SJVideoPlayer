@@ -6,9 +6,11 @@
 //  Copyright © 2017年 SanJiang. All rights reserved.
 //
 
-#import <Foundation/Foundation.h>
+#import <UIKit/UIKit.h>
 
 NS_ASSUME_NONNULL_BEGIN
+
+UIKIT_EXTERN NSString *const SJVolBrigControlBrightnessText;
 
 @class UIImage;
 
@@ -17,6 +19,8 @@ NS_ASSUME_NONNULL_BEGIN
 + (UIImage * __nullable)imageNamed:(NSString *)name;
 
 + (NSString *)bundleComponentWithImageName:(NSString *)imageName;
+
++ (NSString *)localizedStringForKey:(NSString *)key;
 
 @end
 

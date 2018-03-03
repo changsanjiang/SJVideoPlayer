@@ -162,6 +162,16 @@ static float const __GeneratePreImgScale = 0.05;
     _scrollIn_bool = YES;
     _parent_scrollIn_bool = YES;
     _rate = 1;
+    /*!
+     AVPlayerItemStatusUnknown 该状态表示当前媒体还未载入并且还不在播放队列中.
+     将`AVPlayerItem`与一个`AVPlayer`对象进行关联就开始将媒体放入队列中, 但是在具体内容可以播放前, 需要等待对象的状态由`unknown`变为`readyToPlay`.
+     我们可以通过`KVO`来监听`status`的改变.
+     
+     AVPlayerItemStatusReadyToPlay,
+     AVPlayerItemStatusFailed
+     **/
+    [self _addTimeObserver];
+    [self _addItemPlayEndObserver];
     
     // observe
     [self _observing];
@@ -187,9 +197,7 @@ static float const __GeneratePreImgScale = 0.05;
     [[NSNotificationCenter defaultCenter] addObserverForName:AVPlayerItemDidPlayToEndTimeNotification object:self.playerItem queue:[NSOperationQueue mainQueue] usingBlock:^(NSNotification * _Nonnull note) {
         __strong typeof(_self) self = _self;
         if ( !self ) return;
-        if ( self.playDidToEnd && floor(self.currentTime) == floor(self.duration) ) {
-            self.playDidToEnd(self);
-        }
+        if ( self.playDidToEnd ) self.playDidToEnd(self);
     }];
 }
 
@@ -251,18 +259,6 @@ static float const __GeneratePreImgScale = 0.05;
             if ( self.loadedTimeProgress ) self.loadedTimeProgress(progress);
         }
         else if ( [keyPath isEqualToString:@"status"] ) {
-            /*!
-             AVPlayerItemStatusUnknown 该状态表示当前媒体还未载入并且还不在播放队列中.
-             将`AVPlayerItem`与一个`AVPlayer`对象进行关联就开始将媒体放入队列中, 但是在具体内容可以播放前, 需要等待对象的状态由`unknown`变为`readyToPlay`.
-             我们可以通过`KVO`来监听`status`的改变.
-             
-             AVPlayerItemStatusReadyToPlay,
-             AVPlayerItemStatusFailed
-             **/
-            if ( AVPlayerItemStatusReadyToPlay == self.playerItem.status ) {
-                [self _addTimeObserver];
-                [self _addItemPlayEndObserver];
-            }
             
             if ( !_jumped &&
                 AVPlayerItemStatusReadyToPlay == self.playerItem.status &&
@@ -447,7 +443,7 @@ static float const __GeneratePreImgScale = 0.05;
     [self cancelPreviewImagesGeneration];
     [_player pause];
     [_player removeTimeObserver:_timeObserver];
-    [[NSNotificationCenter defaultCenter] removeObserver:_itemEndObserver name:AVPlayerItemDidPlayToEndTimeNotification object:nil];
+    [[NSNotificationCenter defaultCenter] removeObserver:_itemEndObserver name:AVPlayerItemDidPlayToEndTimeNotification object:self.playerItem];
     [_playerItem removeObserver:self forKeyPath:@"status"];
     [_playerItem removeObserver:self forKeyPath:@"playbackBufferEmpty"];
     [_playerItem removeObserver:self forKeyPath:@"loadedTimeRanges"];

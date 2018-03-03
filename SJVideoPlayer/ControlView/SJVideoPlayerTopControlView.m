@@ -213,6 +213,7 @@
         }
         else {
             [self.previewBtn setTitle:setting.previewBtnTitle forState:UIControlStateNormal];
+            self.previewBtn.titleLabel.font = setting.previewBtnFont;
         }
         self.titleLabel.font = setting.titleFont;
         self.titleLabel.textColor = setting.titleColor;

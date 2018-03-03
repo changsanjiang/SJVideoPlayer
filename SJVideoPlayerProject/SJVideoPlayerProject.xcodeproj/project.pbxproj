@@ -26,7 +26,6 @@
 		775B201620465D6200264AB9 /* TableViewHeaderIsCollectionViewDemoViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 775B201520465D6200264AB9 /* TableViewHeaderIsCollectionViewDemoViewController.m */; };
 		775B201920465E1500264AB9 /* TableHeaderCollectionView.m in Sources */ = {isa = PBXBuildFile; fileRef = 775B201820465E1500264AB9 /* TableHeaderCollectionView.m */; };
 		775B201C2046682E00264AB9 /* TableHeaderCollectionViewCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 775B201B2046682E00264AB9 /* TableHeaderCollectionViewCell.m */; };
-		775B20242046B51100264AB9 /* TGCommentVC.m in Sources */ = {isa = PBXBuildFile; fileRef = 775B20232046B51100264AB9 /* TGCommentVC.m */; };
 		775C0AC620295C660008EDA7 /* SJVideoPlayer.bundle in Resources */ = {isa = PBXBuildFile; fileRef = 775C0ABF20295C660008EDA7 /* SJVideoPlayer.bundle */; };
 		775C0AC720295C660008EDA7 /* SJVideoPlayerResources.m in Sources */ = {isa = PBXBuildFile; fileRef = 775C0AC120295C660008EDA7 /* SJVideoPlayerResources.m */; };
 		775C0AC820295C660008EDA7 /* SJVideoPlayerSettings.m in Sources */ = {isa = PBXBuildFile; fileRef = 775C0AC320295C660008EDA7 /* SJVideoPlayerSettings.m */; };
@@ -109,7 +108,6 @@
 		775B201820465E1500264AB9 /* TableHeaderCollectionView.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = TableHeaderCollectionView.m; sourceTree = "<group>"; };
 		775B201A2046682E00264AB9 /* TableHeaderCollectionViewCell.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = TableHeaderCollectionViewCell.h; sourceTree = "<group>"; };
 		775B201B2046682E00264AB9 /* TableHeaderCollectionViewCell.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = TableHeaderCollectionViewCell.m; sourceTree = "<group>"; };
-		775B20232046B51100264AB9 /* TGCommentVC.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = TGCommentVC.m; path = ../../../../../Downloads/TGCommentVC.m; sourceTree = "<group>"; };
 		775C0ABF20295C660008EDA7 /* SJVideoPlayer.bundle */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.plug-in"; path = SJVideoPlayer.bundle; sourceTree = "<group>"; };
 		775C0AC020295C660008EDA7 /* SJVideoPlayerResources.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SJVideoPlayerResources.h; sourceTree = "<group>"; };
 		775C0AC120295C660008EDA7 /* SJVideoPlayerResources.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SJVideoPlayerResources.m; sourceTree = "<group>"; };
@@ -277,7 +275,6 @@
 		774B251A1FCEBA5D002113CC /* SJVideoPlayerProject */ = {
 			isa = PBXGroup;
 			children = (
-				775B20232046B51100264AB9 /* TGCommentVC.m */,
 				774B251B1FCEBA5D002113CC /* AppDelegate.h */,
 				774B251C1FCEBA5D002113CC /* AppDelegate.m */,
 				774B251E1FCEBA5D002113CC /* ViewController.h */,
@@ -766,7 +763,6 @@
 				775A7C291FD7EC7C00BE1EE2 /* PlayerTableViewCell.m in Sources */,
 				77DA951F2042C04B007A9EE8 /* UIViewController+TestAdd.m in Sources */,
 				77DA951E2042C04B007A9EE8 /* TestPageViewController.m in Sources */,
-				775B20242046B51100264AB9 /* TGCommentVC.m in Sources */,
 				A6E6D3582028BE9B00CB9BAE /* SJVideoPlayerCenterControlView.m in Sources */,
 				A6E6D3602028BE9B00CB9BAE /* SJVideoPlayerMoreSetting.m in Sources */,
 				775B200E20455A2800264AB9 /* TableHeaderView.m in Sources */,

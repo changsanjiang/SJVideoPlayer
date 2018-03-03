@@ -23,6 +23,7 @@ extern NSNotificationName const SJSettingsPlayerNotification;
 
 @property (nonatomic, strong, readonly) NSString *previewBtnTitle;
 @property (nonatomic, strong, readwrite, nullable) UIImage *previewBtnImage;
+@property (nonatomic, strong, readwrite) UIFont *previewBtnFont;        // default is [UIFont boldSystemFontOfSize:12].
 
 @property (nonatomic, strong, readonly) NSString *replayBtnTitle;
 @property (nonatomic, strong, readwrite) UIImage *replayBtnImage;       // default is `sj_video_player_replay`.

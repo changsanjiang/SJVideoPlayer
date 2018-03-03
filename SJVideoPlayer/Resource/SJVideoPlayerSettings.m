@@ -58,6 +58,7 @@ NSNotificationName const SJSettingsPlayerNotification = @"SJSettingsPlayerNotifi
     self.replayBtnFont = [UIFont boldSystemFontOfSize:12];
     self.replayBtnTitleColor = [UIColor whiteColor];
     _previewBtnTitle = [SJVideoPlayerResources localizedStringForKey:SJVideoPlayer_PreviewText];
+    self.previewBtnFont = [UIFont boldSystemFontOfSize:12];
     _playFailedBtnTitle = [SJVideoPlayerResources localizedStringForKey:SJVideoPlayer_PlayFailedText];
     self.playFailedBtnFont = [UIFont boldSystemFontOfSize:12];
     self.playFailedBtnTitleColor = [UIColor whiteColor];

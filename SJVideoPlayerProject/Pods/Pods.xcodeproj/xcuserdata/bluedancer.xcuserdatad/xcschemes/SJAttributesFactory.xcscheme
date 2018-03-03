@@ -14,7 +14,7 @@
             buildForAnalyzing = "YES">
             <BuildableReference
                BuildableIdentifier = "primary"
-               BlueprintIdentifier = "D3E559585772E7D64571B484B004EB9B"
+               BlueprintIdentifier = "08F21F9D13067E720E6CFB50FD074EBC"
                BuildableName = "libSJAttributesFactory.a"
                BlueprintName = "SJAttributesFactory"
                ReferencedContainer = "container:Pods.xcodeproj">
@@ -47,7 +47,7 @@
       <MacroExpansion>
          <BuildableReference
             BuildableIdentifier = "primary"
-            BlueprintIdentifier = "D3E559585772E7D64571B484B004EB9B"
+            BlueprintIdentifier = "08F21F9D13067E720E6CFB50FD074EBC"
             BuildableName = "libSJAttributesFactory.a"
             BlueprintName = "SJAttributesFactory"
             ReferencedContainer = "container:Pods.xcodeproj">

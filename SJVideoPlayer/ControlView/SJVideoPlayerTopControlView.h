@@ -34,6 +34,8 @@ typedef NS_ENUM(NSUInteger, SJVideoPlayerTopViewTag) {
 
 @property (nonatomic, strong, readonly) SJVideoPlayerTopControlModel *model;
 
+@property (nonatomic, strong, readonly) NSString *previewTitle;
+
 - (void)update;
 
 @end

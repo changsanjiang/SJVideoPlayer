@@ -65,7 +65,7 @@
 
 - (UIButton *)failedBtn {
     if ( _failedBtn ) return _failedBtn;
-    _failedBtn = [SJUIButtonFactory buttonWithTitle:@"加载失败,点击重试" titleColor:[UIColor whiteColor] font:[UIFont systemFontOfSize:14] backgroundColor:nil target:self sel:@selector(clickedBtn:) tag:SJVideoPlayerCenterViewTag_Failed];
+    _failedBtn = [SJUIButtonFactory buttonWithImageName:@"" target:self sel:@selector(clickedBtn:) tag:SJVideoPlayerCenterViewTag_Failed];
     return _failedBtn;
 }
 - (UIButton *)replayBtn {
@@ -80,6 +80,7 @@
     self.settingRecroder = [[SJVideoPlayerControlSettingRecorder alloc] initWithSettings:^(SJVideoPlayerSettings * _Nonnull setting) {
         __strong typeof(_self) self = _self;
         if ( !self ) return;
+        
         [self.replayBtn setAttributedTitle:sj_makeAttributesString(^(SJAttributeWorker * _Nonnull make) {
             if ( setting.replayBtnImage ) {
                 make.insert(setting.replayBtnImage, 0, CGPointZero, setting.replayBtnImage.size);
@@ -93,14 +94,33 @@
                 make.lastInserted(^(SJAttributesRangeOperator * _Nonnull lastOperator) {
                     lastOperator
                     .font(setting.replayBtnFont)
-                    .textColor([UIColor whiteColor]);
+                    .textColor(setting.replayBtnTitleColor);
                 });
             }
-            
-            
-            
             make.alignment(NSTextAlignmentCenter).lineSpacing(6);
         }) forState:UIControlStateNormal];
+        
+        
+        [self.failedBtn setAttributedTitle:sj_makeAttributesString(^(SJAttributeWorker * _Nonnull make) {
+            if ( setting.playFailedBtnImage ) {
+                make.insert(setting.playFailedBtnImage, 0, CGPointZero, setting.playFailedBtnImage.size);
+            }
+            if ( setting.playFailedBtnImage && 0 != setting.playFailedBtnTitle.length ) {
+                make.insertText(@"\n", -1);
+            }
+            
+            if ( 0 != setting.playFailedBtnTitle.length ) {
+                make.insert([NSString stringWithFormat:@"%@", setting.playFailedBtnTitle], -1);
+                make.lastInserted(^(SJAttributesRangeOperator * _Nonnull lastOperator) {
+                    lastOperator
+                    .font(setting.playFailedBtnFont)
+                    .textColor(setting.playFailedBtnTitleColor);
+                });
+            }
+            make.alignment(NSTextAlignmentCenter).lineSpacing(6);
+        }) forState:UIControlStateNormal];
+
     }];
 }
+
 @end

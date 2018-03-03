@@ -8,10 +8,16 @@
 
 #import <UIKit/UIKit.h>
 
+UIKIT_EXTERN NSString *const SJVideoPlayer_ReplayText;
+UIKIT_EXTERN NSString *const SJVideoPlayer_PreviewText;
+UIKIT_EXTERN NSString *const SJVideoPlayer_PlayFailedText;
+
 @interface SJVideoPlayerResources : NSObject
 
 + (UIImage *)imageNamed:(NSString *)name;
 
 + (NSString *)bundleComponentWithImageName:(NSString *)imageName;
+
++ (NSString *)localizedStringForKey:(NSString *)key;
 
 @end

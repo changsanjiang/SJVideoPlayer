@@ -39,8 +39,6 @@ NSNotificationName const SJSettingsPlayerNotification = @"SJSettingsPlayerNotifi
     self.lockBtnImage = [SJVideoPlayerResources imageNamed:@"sj_video_player_lock"];
     self.unlockBtnImage = [SJVideoPlayerResources imageNamed:@"sj_video_player_unlock"];
     self.replayBtnImage = [SJVideoPlayerResources imageNamed:@"sj_video_player_replay"];
-    self.replayBtnTitle = @"重播";
-    self.replayBtnFont = [UIFont boldSystemFontOfSize:12];
     self.progress_traceColor = [UIColor colorWithRed:2 / 256.0 green:141 / 256.0 blue:140 / 256.0 alpha:1];
     self.progress_bufferColor = [UIColor colorWithWhite:0 alpha:0.2];
     self.progress_trackColor =  [UIColor whiteColor];
@@ -56,6 +54,13 @@ NSNotificationName const SJSettingsPlayerNotification = @"SJSettingsPlayerNotifi
     self.more_maxVolumeImage = [SJVideoPlayerResources imageNamed:@"sj_video_player_maxVolume"];
     self.more_minBrightnessImage = [SJVideoPlayerResources imageNamed:@"sj_video_player_minBrightness"];
     self.more_maxBrightnessImage = [SJVideoPlayerResources imageNamed:@"sj_video_player_maxBrightness"];
+    _replayBtnTitle = [SJVideoPlayerResources localizedStringForKey:SJVideoPlayer_ReplayText];
+    self.replayBtnFont = [UIFont boldSystemFontOfSize:12];
+    self.replayBtnTitleColor = [UIColor whiteColor];
+    _previewBtnTitle = [SJVideoPlayerResources localizedStringForKey:SJVideoPlayer_PreviewText];
+    _playFailedBtnTitle = [SJVideoPlayerResources localizedStringForKey:SJVideoPlayer_PlayFailedText];
+    self.playFailedBtnFont = [UIFont boldSystemFontOfSize:12];
+    self.playFailedBtnTitleColor = [UIColor whiteColor];
 }
 
 @end

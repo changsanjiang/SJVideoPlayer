@@ -15,6 +15,24 @@
 
 @implementation AppDelegate
 
+/// 全局配置播放器样式. 所有播放器对象均采用此`setting`.
+/// Configure players globally. This is the setting for all player objects.
+- (void)_settingVideoPlayer {
+    
+    SJVideoPlayer.update(^(SJVideoPlayerSettings * _Nonnull commonSettings) {
+        // note: 注意这个block 是在子线程进行.
+        
+        /// 设置占位图
+        commonSettings.placeholder = [UIImage imageNamed:@"placeholder"];
+        
+        // 也可以设置其他部分的.
+        
+        /// 设置 更多页面中`slider`的样式.
+        commonSettings.more_trackColor = [UIColor whiteColor];
+        commonSettings.progress_trackColor = [UIColor colorWithWhite:0.4 alpha:1];
+        commonSettings.progress_bufferColor = [UIColor whiteColor];
+    });
+}
 
 - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions {
     
@@ -34,23 +52,6 @@
     return YES;
 }
 
-/// 全局配置播放器样式. 所有播放器对象均采用此`setting`.
-- (void)_settingVideoPlayer {
-
-    SJVideoPlayer.update(^(SJVideoPlayerSettings * _Nonnull commonSettings) {
-        // note: 注意这个block 是在子线程进行.
-        
-        /// 设置占位图
-        commonSettings.placeholder = [UIImage imageNamed:@"placeholder"];
-        
-        // 也可以设置其他部分的.
-        
-        /// 设置 更多页面中`slider`的样式.
-        commonSettings.more_trackColor = [UIColor whiteColor];
-        commonSettings.progress_trackColor = [UIColor colorWithWhite:0.4 alpha:1];
-        commonSettings.progress_bufferColor = [UIColor whiteColor];
-    });
-}
 
 - (void)applicationWillResignActive:(UIApplication *)application {
     // Sent when the application is about to move from active to inactive state. This can occur for certain types of temporary interruptions (such as an incoming phone call or SMS message) or when the user quits the application and it begins the transition to the background state.

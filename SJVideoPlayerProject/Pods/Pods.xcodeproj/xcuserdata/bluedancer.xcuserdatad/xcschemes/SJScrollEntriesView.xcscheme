@@ -14,7 +14,7 @@
             buildForAnalyzing = "YES">
             <BuildableReference
                BuildableIdentifier = "primary"
-               BlueprintIdentifier = "44E7490F765BFFED4E449D7C84DFE2DE"
+               BlueprintIdentifier = "5C4AAAAD96DBC17441617AB481433447"
                BuildableName = "libSJScrollEntriesView.a"
                BlueprintName = "SJScrollEntriesView"
                ReferencedContainer = "container:Pods.xcodeproj">
@@ -47,7 +47,7 @@
       <MacroExpansion>
          <BuildableReference
             BuildableIdentifier = "primary"
-            BlueprintIdentifier = "44E7490F765BFFED4E449D7C84DFE2DE"
+            BlueprintIdentifier = "5C4AAAAD96DBC17441617AB481433447"
             BuildableName = "libSJScrollEntriesView.a"
             BlueprintName = "SJScrollEntriesView"
             ReferencedContainer = "container:Pods.xcodeproj">

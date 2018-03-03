@@ -8,6 +8,8 @@
 
 #import <Foundation/Foundation.h>
 
+NS_ASSUME_NONNULL_BEGIN
+
 extern NSNotificationName const SJSettingsPlayerNotification;
 
 @class UIImage, UIColor, UIFont;
@@ -19,17 +21,30 @@ extern NSNotificationName const SJSettingsPlayerNotification;
 
 - (void)reset;
 
+@property (nonatomic, strong, readonly) NSString *previewBtnTitle;
+@property (nonatomic, strong, readwrite, nullable) UIImage *previewBtnImage;
+
+@property (nonatomic, strong, readonly) NSString *replayBtnTitle;
+@property (nonatomic, strong, readwrite) UIImage *replayBtnImage;       // default is `sj_video_player_replay`.
+@property (nonatomic, strong, readwrite) UIFont *replayBtnFont;         // default is [UIFont boldSystemFontOfSize:12].
+@property (nonatomic, strong, readwrite) UIColor *replayBtnTitleColor;  // default is white.
+
+
+@property (nonatomic, strong, readonly) NSString *playFailedBtnTitle;
+@property (nonatomic, strong, readwrite, nullable) UIImage *playFailedBtnImage;     // default is nil.
+@property (nonatomic, strong, readwrite) UIFont *playFailedBtnFont;                 // default is [UIFont boldSystemFontOfSize:12].
+@property (nonatomic, strong, readwrite) UIColor *playFailedBtnTitleColor;          // default is white.
 
 #pragma mark - title
-@property (nonatomic, strong, readwrite) UIFont *titleFont;   // 标题字体, default is [UIFont boldSystemFontOfSize:14]
-@property (nonatomic, strong, readwrite) UIColor *titleColor; // 标题颜色, default is [UIColor whiteColor]
+@property (nonatomic, strong, readwrite) UIFont *titleFont;   // video title font, default is [UIFont boldSystemFontOfSize:14]
+@property (nonatomic, strong, readwrite) UIColor *titleColor; // video title color, default is [UIColor whiteColor]
 
 
 #pragma mark - placeholder
-@property (nonatomic, strong, readwrite) UIImage *placeholder;
+@property (nonatomic, strong, readwrite, nullable) UIImage *placeholder;
 
 #pragma mark - loading
-@property (nonatomic, strong, readwrite) UIColor *loadingLineColor;
+@property (nonatomic, strong, readwrite) UIColor *loadingLineColor; // default is white.
 
 
 #pragma mark - fast/forward
@@ -41,11 +56,7 @@ extern NSNotificationName const SJSettingsPlayerNotification;
 @property (nonatomic, strong, readwrite) UIImage *backBtnImage;
 @property (nonatomic, strong, readwrite) UIImage *playBtnImage;
 @property (nonatomic, strong, readwrite) UIImage *pauseBtnImage;
-@property (nonatomic, strong, readwrite) UIImage *replayBtnImage;
-@property (nonatomic, strong, readwrite) NSString *replayBtnTitle;
-@property (nonatomic, strong, readwrite) UIFont *replayBtnFont;
 @property (nonatomic, strong, readwrite) UIImage *fullBtnImage;
-@property (nonatomic, strong, readwrite) UIImage *previewBtnImage;
 @property (nonatomic, strong, readwrite) UIImage *moreBtnImage;
 @property (nonatomic, strong, readwrite) UIImage *lockBtnImage;
 @property (nonatomic, strong, readwrite) UIImage *unlockBtnImage;
@@ -57,10 +68,10 @@ extern NSNotificationName const SJSettingsPlayerNotification;
 /// 轨道
 @property (nonatomic, strong, readwrite) UIColor *progress_trackColor;
 /// 拇指图片, 也可设置`progress_thumbSize`.(图片优先)
-@property (nonatomic, strong, readwrite) UIImage *progress_thumbImage;
-/// 拇指大小, 也可设置`progress_thumbImage`. default is 0.
-@property (nonatomic, assign, readwrite) float progress_thumbSize;
-@property (nonatomic, assign, readwrite) UIColor *progress_thumbColor;
+@property (nonatomic, strong, readwrite, nullable) UIImage *progress_thumbImage;
+/// 拇指大小, 也可设置`progress_thumbImage`.
+@property (nonatomic, assign, readwrite) float progress_thumbSize; // default is 0.
+@property (nonatomic, strong, readwrite, nullable) UIColor *progress_thumbColor;
 /// 缓冲颜色
 @property (nonatomic, strong, readwrite) UIColor *progress_bufferColor;
 /// 轨道高度
@@ -84,3 +95,4 @@ extern NSNotificationName const SJSettingsPlayerNotification;
 @property (nonatomic, strong, readwrite) UIImage *more_maxBrightnessImage;
 
 @end
+NS_ASSUME_NONNULL_END

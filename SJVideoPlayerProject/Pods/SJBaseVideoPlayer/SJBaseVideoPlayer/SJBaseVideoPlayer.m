@@ -19,6 +19,7 @@
 #import <SJObserverHelper/NSObject+SJObserverHelper.h>
 #import "SJVideoPlayerRegistrar.h"
 #import "SJVideoPlayerPresentView.h"
+#import <Reachability/Reachability.h>
 
 @interface SJVideoPlayerAssetCarrier (SJBaseVideoPlayerAdd)
 @property (nonatomic, assign) CGSize videoPresentationSize;

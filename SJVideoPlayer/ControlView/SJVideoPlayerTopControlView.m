@@ -60,6 +60,11 @@
     else [self _smallscreenState];
 }
 
+- (void)setPreviewTitle:(NSString * _Nonnull)previewTitle {
+    _previewTitle = previewTitle;
+    [_previewBtn setTitle:previewTitle forState:UIControlStateNormal];
+}
+
 - (void)_fullscreenState {
     // back btn
     self.backBtn.hidden = NO;
@@ -207,7 +212,7 @@
             [self.previewBtn setImage:setting.previewBtnImage forState:UIControlStateNormal];
         }
         else {
-            [self.previewBtn setTitle:@"预览" forState:UIControlStateNormal];
+            [self.previewBtn setTitle:setting.previewBtnTitle forState:UIControlStateNormal];
         }
         self.titleLabel.font = setting.titleFont;
         self.titleLabel.textColor = setting.titleColor;

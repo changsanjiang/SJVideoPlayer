@@ -100,7 +100,6 @@ static NSString *const SJVideoListTableViewCellID = @"SJVideoListTableViewCell";
 }
 
 - (void)clickedPlayOnTabCell:(SJVideoListTableViewCell *)cell playerParentView:(UIView *)playerParentView {
-    
     SJVideoPlayerURLAsset *asset =
     [[SJVideoPlayerURLAsset alloc] initWithAssetURL:[[NSBundle mainBundle] URLForResource:@"sample" withExtension:@"mp4"]
                                          scrollView:self.tableView

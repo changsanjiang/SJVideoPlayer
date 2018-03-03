@@ -21,4 +21,5 @@ target 'SJVideoPlayerProject' do
   pod 'SJLabel'
   pod 'SJBaseVideoPlayer'
   pod 'SJScrollEntriesView'
+  pod 'Reachability'
 end

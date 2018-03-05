@@ -66,6 +66,8 @@ typedef NS_ENUM(NSUInteger, SJDisablePlayerGestureTypes) {
 
 - (void)refresh;
 
+@property (nonatomic, copy, readwrite, nullable) void(^assetDeallocExeBlock)(__kindof SJBaseVideoPlayer *videoPlayer);
+
 @end
 
 

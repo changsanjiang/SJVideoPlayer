@@ -19,7 +19,6 @@
 #import <SJObserverHelper/NSObject+SJObserverHelper.h>
 #import "SJVideoPlayerRegistrar.h"
 #import "SJVideoPlayerPresentView.h"
-#import <Reachability/Reachability.h>
 
 @interface SJVideoPlayerAssetCarrier (SJBaseVideoPlayerAdd)
 @property (nonatomic, assign) CGSize videoPresentationSize;
@@ -109,6 +108,7 @@ NS_ASSUME_NONNULL_END
 #ifdef DEBUG
     NSLog(@"%zd - %s", __LINE__, __func__);
 #endif
+    if ( self.assetDeallocExeBlock ) self.assetDeallocExeBlock(self);
     [_presentView removeFromSuperview];
     [self stop];
 }
@@ -123,7 +123,7 @@ NS_ASSUME_NONNULL_END
     [self _itemPrepareToPlay];
     
     __weak typeof(self) _self = self;
-    self.asset.playerItemStateChanged = ^(SJVideoPlayerAssetCarrier * _Nonnull asset, AVPlayerItemStatus status) {
+    asset.playerItemStateChanged = ^(SJVideoPlayerAssetCarrier * _Nonnull asset, AVPlayerItemStatus status) {
         __strong typeof(_self) self = _self;
         if ( !self ) return;
         if ( self.state == SJVideoPlayerPlayState_PlayEnd ) return;
@@ -140,9 +140,9 @@ NS_ASSUME_NONNULL_END
         }
     };
     
-    self.asset.playerItemStateChanged(asset, asset.playerItem.status);
+    asset.playerItemStateChanged(asset, asset.playerItem.status);
     
-    self.asset.playTimeChanged = ^(SJVideoPlayerAssetCarrier * _Nonnull asset, NSTimeInterval currentTime, NSTimeInterval duration) {
+    asset.playTimeChanged = ^(SJVideoPlayerAssetCarrier * _Nonnull asset, NSTimeInterval currentTime, NSTimeInterval duration) {
         __strong typeof(_self) self = _self;
         if ( !self ) return;
         if ( [self.controlLayerDelegate respondsToSelector:@selector(videoPlayer:currentTime:currentTimeStr:totalTime:totalTimeStr:)] ) {
@@ -150,13 +150,13 @@ NS_ASSUME_NONNULL_END
         }
     };
     
-    self.asset.playDidToEnd = ^(SJVideoPlayerAssetCarrier * _Nonnull asset) {
+    asset.playDidToEnd = ^(SJVideoPlayerAssetCarrier * _Nonnull asset) {
         __strong typeof(_self) self = _self;
         if ( !self ) return ;
         [self _itemPlayDidToEnd];
     };
     
-    self.asset.loadedTimeProgress = ^(float progress) {
+    asset.loadedTimeProgress = ^(float progress) {
         __strong typeof(_self) self = _self;
         if ( !self ) return;
         if ( [self.controlLayerDelegate respondsToSelector:@selector(videoPlayer:loadedTimeProgress:)] ) {
@@ -171,7 +171,7 @@ NS_ASSUME_NONNULL_END
         [self _itemBuffering];
     };
     
-    self.asset.rateChanged = ^(SJVideoPlayerAssetCarrier * _Nonnull asset, float rate) {
+    asset.rateChanged = ^(SJVideoPlayerAssetCarrier * _Nonnull asset, float rate) {
         __strong typeof(_self) self = _self;
         if ( !self ) return;
         if ( [self.controlLayerDelegate respondsToSelector:@selector(videoPlayer:rateChanged:)] ) {
@@ -231,7 +231,7 @@ NS_ASSUME_NONNULL_END
         };
     }
     
-    self.asset.presentationSize = ^(SJVideoPlayerAssetCarrier * _Nonnull asset, CGSize size) {
+    asset.presentationSize = ^(SJVideoPlayerAssetCarrier * _Nonnull asset, CGSize size) {
         __strong typeof(_self) self = _self;
         if ( !self ) return ;
         if ( CGSizeEqualToSize(self.asset.videoPresentationSize, size) ) return;
@@ -241,6 +241,15 @@ NS_ASSUME_NONNULL_END
             [self.controlLayerDelegate videoPlayer:self presentationSize:size];
         }
     };
+    
+    if ( self.assetDeallocExeBlock ) {
+        __weak typeof(self) _self = self;
+        asset.deallocExeBlock = ^(SJVideoPlayerAssetCarrier * _Nonnull asset) {
+            __strong typeof(_self) self = _self;
+            if ( !self ) return ;
+            self.assetDeallocExeBlock(self);
+        };
+    }
 }
 
 - (void)setControlLayerDataSource:(id<SJVideoPlayerControlLayerDataSource>)controlLayerDataSource {
@@ -818,8 +827,17 @@ NS_ASSUME_NONNULL_END
 
 - (void)refresh {
     if ( !self.asset ) return;
-    [self.URLAsset setValue:[[SJVideoPlayerAssetCarrier alloc] initWithAssetURL:self.asset.assetURL beginTime:self.asset.beginTime indexPath:self.asset.indexPath superviewTag:self.asset.superviewTag scrollViewIndexPath:self.asset.scrollViewIndexPath scrollViewTag:self.asset.scrollViewTag scrollView:self.asset.scrollView rootScrollView:self.asset.rootScrollView] forKey:kSJVideoPlayerAssetKey];
-    self.asset = [self.URLAsset valueForKey:kSJVideoPlayerAssetKey];
+    self.state = SJVideoPlayerPlayState_Unknown;
+    [self.asset refreshAVPlayer];
+    self.presentView.player = self.asset.player;
+}
+
+- (void)setAssetDeallocExeBlock:(void (^)(__kindof SJBaseVideoPlayer * _Nonnull))assetDeallocExeBlock {
+    objc_setAssociatedObject(self, @selector(assetDeallocExeBlock), assetDeallocExeBlock, OBJC_ASSOCIATION_COPY_NONATOMIC);
+}
+
+- (void (^)(__kindof SJBaseVideoPlayer * _Nonnull))assetDeallocExeBlock {
+    return objc_getAssociatedObject(self, _cmd);
 }
 
 @end
@@ -941,7 +959,6 @@ NS_ASSUME_NONNULL_END
     
     if ( !self.asset ) return NO;
     [self.asset.player pause];
-
     if ( SJVideoPlayerPlayState_PlayEnd != self.state ) self.state = SJVideoPlayerPlayState_Paused;
     return YES;
 }

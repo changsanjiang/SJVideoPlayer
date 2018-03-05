@@ -92,7 +92,7 @@ static float const __GeneratePreImgScale = 0.05;
                         indexPath:nil
                      superviewTag:0];
     if ( !self ) return nil;
-    _playerSuperViewOfTableHeader = superView;
+    _tableHeaderSubView = superView;
     return self;
 }
 
@@ -111,7 +111,7 @@ static float const __GeneratePreImgScale = 0.05;
                        scrollView:collectionView
                    rootScrollView:rootTableView];
     if ( !self ) return nil;
-    _playerSuperViewOfTableHeader = collectionView;
+    _tableHeaderSubView = collectionView;
     return self;
 }
 
@@ -146,26 +146,46 @@ static float const __GeneratePreImgScale = 0.05;
                   rootScrollView:(__unsafe_unretained UIScrollView *__nullable)rootScrollView {
     self = [super init];
     if ( !self ) return nil;
-    _asset = [AVURLAsset assetWithURL:assetURL];
-    _playerItem = [AVPlayerItem playerItemWithAsset:_asset automaticallyLoadedAssetKeys:@[@"duration"]];
-    _player = [AVPlayer playerWithPlayerItem:_playerItem];
     _assetURL = assetURL;
-    _beginTime = beginTime;
-    if ( 0 == _beginTime ) _jumped = YES;
+    _beginTime = beginTime; if ( 0 == _beginTime ) _jumped = YES;
     _scrollView = scrollView;
     _indexPath = indexPath;
     _superviewTag = superviewTag;
     _scrollViewTag = scrollViewTag;
     _rootScrollView = rootScrollView;
     _scrollViewIndexPath = scrollViewIndexPath;
-    _player.actionAtItemEnd = AVPlayerActionAtItemEndPause;
     // default value
     _scrollIn_bool = YES;
     _parent_scrollIn_bool = YES;
     _rate = 1;
     
-    // observe
-    [self _observing];
+    [self _initializeAVPlayer];
+    [self _itemObserving];
+    [self _scrollViewObserving];
+    return self;
+}
+
+- (void)_initializeAVPlayer {
+    _asset = [AVURLAsset assetWithURL:_assetURL];
+    _playerItem = [AVPlayerItem playerItemWithAsset:_asset automaticallyLoadedAssetKeys:@[@"duration"]];
+    _player = [AVPlayer playerWithPlayerItem:_playerItem];
+    _player.actionAtItemEnd = AVPlayerActionAtItemEndPause;
+}
+
+- (void)_clearAVPlayer {
+    [_playerItem removeObserver:self forKeyPath:@"status"];
+    [_playerItem removeObserver:self forKeyPath:@"playbackBufferEmpty"];
+    [_playerItem removeObserver:self forKeyPath:@"loadedTimeRanges"];
+    [_playerItem removeObserver:self forKeyPath:@"presentationSize"];
+    [_playerItem removeObserver:self forKeyPath:@"duration"];
+    [_tmp_imageGenerator cancelAllCGImageGeneration];
+    [self cancelPreviewImagesGeneration];
+    if ( 0 != _player.rate ) [_player pause];
+    [_player removeTimeObserver:_timeObserver]; _timeObserver = nil;
+    [[NSNotificationCenter defaultCenter] removeObserver:_itemEndObserver name:AVPlayerItemDidPlayToEndTimeNotification object:self.playerItem]; _itemEndObserver = nil;
+}
+
+- (void)_itemObserving {
     /*!
      AVPlayerItemStatusUnknown 该状态表示当前媒体还未载入并且还不在播放队列中.
      将`AVPlayerItem`与一个`AVPlayer`对象进行关联就开始将媒体放入队列中, 但是在具体内容可以播放前, 需要等待对象的状态由`unknown`变为`readyToPlay`.
@@ -174,12 +194,12 @@ static float const __GeneratePreImgScale = 0.05;
      AVPlayerItemStatusReadyToPlay,
      AVPlayerItemStatusFailed
      **/
-    [self _addTimeObserver];
-    [self _addItemPlayEndObserver];
-    return self;
-}
-
-- (void)_addTimeObserver {
+    [_playerItem addObserver:self forKeyPath:@"status" options:NSKeyValueObservingOptionNew context:nil];
+    [_playerItem addObserver:self forKeyPath:@"playbackBufferEmpty" options:NSKeyValueObservingOptionNew context:nil];
+    [_playerItem addObserver:self forKeyPath:@"loadedTimeRanges" options:NSKeyValueObservingOptionNew context:nil];
+    [_playerItem addObserver:self forKeyPath:@"presentationSize" options:NSKeyValueObservingOptionNew context:nil];
+    [_playerItem addObserver:self forKeyPath:@"duration" options:NSKeyValueObservingOptionNew context:nil];
+    
     CMTime interval = CMTimeMakeWithSeconds(__TimeRefreshInterval, NSEC_PER_SEC);
     __weak typeof(self) _self = self;
     _timeObserver =
@@ -189,10 +209,8 @@ static float const __GeneratePreImgScale = 0.05;
         NSTimeInterval currentTime = CMTimeGetSeconds(time);
         if ( self.playTimeChanged ) self.playTimeChanged(self, currentTime, self.duration);
     }];
-}
-
-- (void)_addItemPlayEndObserver {
-    __weak typeof(self) _self = self;
+    
+    
     _itemEndObserver =
     [[NSNotificationCenter defaultCenter] addObserverForName:AVPlayerItemDidPlayToEndTimeNotification object:self.playerItem queue:[NSOperationQueue mainQueue] usingBlock:^(NSNotification * _Nonnull note) {
         __strong typeof(_self) self = _self;
@@ -201,13 +219,7 @@ static float const __GeneratePreImgScale = 0.05;
     }];
 }
 
-- (void)_observing {
-    [_playerItem addObserver:self forKeyPath:@"status" options:NSKeyValueObservingOptionNew context:nil];
-    [_playerItem addObserver:self forKeyPath:@"presentationSize" options:NSKeyValueObservingOptionNew context:nil];
-    [_playerItem addObserver:self forKeyPath:@"loadedTimeRanges" options:NSKeyValueObservingOptionNew context:nil];
-    [_playerItem addObserver:self forKeyPath:@"playbackBufferEmpty" options:NSKeyValueObservingOptionNew context:nil];
-    [_playerItem addObserver:self forKeyPath:@"duration" options:NSKeyValueObservingOptionNew context:nil];
-    
+- (void)_scrollViewObserving {
     if ( _scrollView ) {
         __weak typeof(self) _self = self;
         [self _observeScrollView:_scrollView deallocCallBlock:^(SJTmpObj *obj) {
@@ -259,7 +271,6 @@ static float const __GeneratePreImgScale = 0.05;
             if ( self.loadedTimeProgress ) self.loadedTimeProgress(progress);
         }
         else if ( [keyPath isEqualToString:@"status"] ) {
-            
             if ( !_jumped &&
                 AVPlayerItemStatusReadyToPlay == self.playerItem.status &&
                 0 != self.beginTime ) {
@@ -276,9 +287,7 @@ static float const __GeneratePreImgScale = 0.05;
                 }];
             }
             else {
-                dispatch_async(dispatch_get_main_queue(), ^{
-                    if ( self.playerItemStateChanged ) self.playerItemStateChanged(self, self.playerItem.status);
-                });
+                if ( self.playerItemStateChanged ) self.playerItemStateChanged(self, self.playerItem.status);
             }
         }
         else if ( [keyPath isEqualToString:@"duration"] ) {
@@ -439,18 +448,10 @@ static float const __GeneratePreImgScale = 0.05;
 #pragma mark -
 
 - (void)dealloc {
-    [_tmp_imageGenerator cancelAllCGImageGeneration];
-    [self cancelPreviewImagesGeneration];
-    [_player pause];
-    [_player removeTimeObserver:_timeObserver];
-    [[NSNotificationCenter defaultCenter] removeObserver:_itemEndObserver name:AVPlayerItemDidPlayToEndTimeNotification object:self.playerItem];
-    [_playerItem removeObserver:self forKeyPath:@"status"];
-    [_playerItem removeObserver:self forKeyPath:@"playbackBufferEmpty"];
-    [_playerItem removeObserver:self forKeyPath:@"loadedTimeRanges"];
-    [_playerItem removeObserver:self forKeyPath:@"presentationSize"];
-    [_playerItem removeObserver:self forKeyPath:@"duration"];
+    [self _clearAVPlayer];
     if ( _scrollView && !_removedScrollObserver ) [self _removingScrollViewObserver];
     if ( _rootScrollView && !_removedParentScrollObserver ) [self _removingrootScrollViewObserver];
+    if ( _deallocExeBlock ) _deallocExeBlock(self);
 }
 
 #pragma mark
@@ -460,7 +461,7 @@ static float const __GeneratePreImgScale = 0.05;
         if ( _scrollViewDidScroll ) _scrollViewDidScroll(self);
     }
     
-    if ( self.playerSuperViewOfTableHeader ) {
+    if ( self.tableHeaderSubView ) {
         [self playOnHeader_scrollViewDidScroll:scrollView];
     }
     else {
@@ -469,8 +470,8 @@ static float const __GeneratePreImgScale = 0.05;
 }
 
 - (void)playOnHeader_scrollViewDidScroll:(UIScrollView *)scrollView {
-    if ( [self.playerSuperViewOfTableHeader isKindOfClass:[UICollectionView class]] &&
-        scrollView == self.playerSuperViewOfTableHeader ) {
+    if ( [self.tableHeaderSubView isKindOfClass:[UICollectionView class]] &&
+        scrollView == self.tableHeaderSubView ) {
         UICollectionView *collectionView = (UICollectionView *)scrollView;
         UICollectionViewCell *cell = [collectionView cellForItemAtIndexPath:self.indexPath];
         bool visable = [collectionView.visibleCells containsObject:cell];
@@ -478,7 +479,7 @@ static float const __GeneratePreImgScale = 0.05;
     }
     else {
         CGFloat offsetY = scrollView.contentOffset.y;
-        if ( offsetY < self.playerSuperViewOfTableHeader.frame.size.height ) {
+        if ( offsetY < self.tableHeaderSubView.frame.size.height ) {
             if ( [self.scrollView isKindOfClass:[UITableView class]] ) {
                 self.scrollIn_bool = YES;
             }
@@ -636,6 +637,13 @@ static float const __GeneratePreImgScale = 0.05;
         return [NSString stringWithFormat:@"%02zd:%02zd:%02zd", hours, minutes, seconds];
     }
 }
+
+- (void)refreshAVPlayer {
+    [self _clearAVPlayer];
+    [self _initializeAVPlayer];
+    [self _itemObserving];
+}
+
 @end
 
 

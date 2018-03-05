@@ -37,7 +37,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 /**
  table or collection cell. player in a tableOrCollection cell.
-
+ 
  @param assetURL                        assetURL.
  @param tableOrCollectionView           tableView or collectionView.
  @param indexPath                       cell indexPath.
@@ -51,7 +51,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 /**
  table or collection cell. player in a tableOrCollection cell.
-
+ 
  @param assetURL                        assetURL.
  @param beginTime                       begin time. unit is sec.
  @param tableOrCollectionView           tableView or collectionView.
@@ -200,6 +200,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 #pragma mark - other
 - (NSString *)timeString:(NSInteger)secs;
+@property (nonatomic, copy, readwrite, nullable) void(^deallocExeBlock)(SJVideoPlayerAssetCarrier *asset);
 
 #pragma mark - properties
 @property (nonatomic, strong, readonly) AVURLAsset *asset;
@@ -216,8 +217,9 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic, assign, readonly) NSInteger scrollViewTag; // _scrollView `tag`
 @property (nonatomic, strong, readonly, nullable) NSIndexPath *scrollViewIndexPath;
 @property (nonatomic, unsafe_unretained, readonly, nullable) UIScrollView *rootScrollView;
-@property (nonatomic, weak, readonly, nullable) UIView *playerSuperViewOfTableHeader;
+@property (nonatomic, weak, readonly, nullable) UIView *tableHeaderSubView;
 
+- (void)refreshAVPlayer;
 @end
 
 
@@ -232,4 +234,3 @@ NS_ASSUME_NONNULL_BEGIN
 @end
 
 NS_ASSUME_NONNULL_END
-

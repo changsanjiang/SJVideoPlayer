@@ -3,4 +3,4 @@
 "SJVideoPlayer_PlayFailedText" = "加載失敗,點擊重試";
 
 "SJVideoPlayer_NotReachablePrompt" = "網絡不穩定，請檢查網絡";
-"SJVideoPlayer_ReachableViaWWANPrompt" = "目前沒有使用WiFi, 請監控數據使用情況";
+"SJVideoPlayer_ReachableViaWWANPrompt" = "當前非WiFi環境, 請注意流量消耗";

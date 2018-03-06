@@ -256,6 +256,12 @@ NS_ASSUME_NONNULL_END
         }
     };
     
+    if ( !CGSizeEqualToSize(asset.videoPresentationSize, CGSizeZero) ) {
+        CGSize size = asset.videoPresentationSize;
+        asset.videoPresentationSize = CGSizeZero; // clear
+        asset.presentationSize(asset, size);
+    }
+
     if ( self.assetDeallocExeBlock ) {
         __weak typeof(self) _self = self;
         asset.deallocExeBlock = ^(SJVideoPlayerAssetCarrier * _Nonnull asset) {
@@ -803,11 +809,6 @@ NS_ASSUME_NONNULL_END
     if ( [self.controlLayerDelegate respondsToSelector:@selector(videoPlayer:stateChanged:)] ) {
         [self.controlLayerDelegate videoPlayer:self stateChanged:state];
     }
-    if ( SJVideoPlayerPlayState_PlayFailed == state ) {
-        if ( [self.controlLayerDelegate respondsToSelector:@selector(videoPlayer:playFailed:)] ) {
-            [self.controlLayerDelegate videoPlayer:self playFailed:self.error];
-        }
-    }
 }
 
 - (void)clearAsset {
@@ -871,9 +872,18 @@ NS_ASSUME_NONNULL_END
 
 - (void)refresh {
     if ( !self.asset ) return;
-    self.state = SJVideoPlayerPlayState_Unknown;
-    [self.asset refreshAVPlayer];
-    self.presentView.player = self.asset.player;
+    self.state = SJVideoPlayerPlayState_Buffing;
+    __weak typeof(self) _self = self;
+    dispatch_async(dispatch_get_global_queue(0, 0), ^{
+        __strong typeof(_self) self = _self;
+        if ( !self ) return;
+        [self.asset refreshAVPlayer];
+        dispatch_async(dispatch_get_main_queue(), ^{
+            __strong typeof(_self) self = _self;
+            if ( !self ) return;
+            self.presentView.player = self.asset.player;
+        });
+    });
 }
 
 - (void)setAssetDeallocExeBlock:(void (^)(__kindof SJBaseVideoPlayer * _Nonnull))assetDeallocExeBlock {

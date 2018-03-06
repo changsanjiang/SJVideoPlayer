@@ -15,7 +15,6 @@ NS_ASSUME_NONNULL_BEGIN
 
 @interface SJVideoPlayerHelper ()
 
-@property (nonatomic, weak, readwrite) UIViewController *viewController;
 @property (nonatomic, strong, readwrite) SJVideoPlayer *videoPlayer;
 
 @end
@@ -31,7 +30,7 @@ NS_ASSUME_NONNULL_END
     return self;
 }
 
-- (void)setViewController:(UIViewController *)viewController {
+- (void)setViewController:(UIViewController<SJVideoPlayerHelperUseProtocol> *)viewController {
     if ( viewController == _viewController ) return;
     _viewController = viewController;
     
@@ -48,7 +47,7 @@ NS_ASSUME_NONNULL_END
         __strong typeof(_self) self = _self;
         if ( !self ) return;
         // video player enable roatation
-        self.videoPlayer.disableRotation = NO;    // 恢复
+        self.videoPlayer.disableRotation = NO;    // 恢复旋转
     };
 }
 
@@ -87,8 +86,18 @@ NS_ASSUME_NONNULL_END
         }];
     };
     
+    _videoPlayer.clickedBackEvent = ^(SJVideoPlayer * _Nonnull player) {
+        __strong typeof(_self) self = _self;
+        if ( !self ) return;
+        [self.viewController.navigationController popViewControllerAnimated:YES];
+    };
+    
     // set asset
     _videoPlayer.URLAsset = asset;
+}
+
+- (SJVideoPlayerURLAsset *)asset {
+    return self.videoPlayer.URLAsset;
 }
 
 - (void (^)(void))vc_viewWillAppearExeBlock {
@@ -99,6 +108,19 @@ NS_ASSUME_NONNULL_END
         self.videoPlayer.disableRotation = NO;    // 界面显示的时候, 恢复旋转.
     };
 }
+
+- (void (^)(void))vc_viewDidAppearExeBlock {
+    __weak typeof(self) _self = self;
+    return ^ () {
+        __strong typeof(_self) self = _self;
+        if ( !self ) return;
+        // fade in
+        [UIView animateWithDuration:0.6 animations:^{
+            self.videoPlayer.view.alpha = 1;
+        }];
+        if ( self.asset.converted ) [self.asset convertToOriginal];     // 如果资源被转化成其他类型, 恢复原样
+        if ( self.videoPlayer.isScrollAppeared ) [self.videoPlayer play];
+    };}
 
 - (void (^)(void))vc_viewWillDisappearExeBlock {
     __weak typeof(self) _self = self;
@@ -115,6 +137,7 @@ NS_ASSUME_NONNULL_END
         __strong typeof(_self) self = _self;
         if ( !self ) return;
         [self.videoPlayer pause];                 // 界面消失的时候, 暂停
+        self.videoPlayer.view.alpha = 0.001;      // hidden
     };
 }
 

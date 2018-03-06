@@ -293,9 +293,6 @@ typedef NS_ENUM(NSInteger, SJNetworkStatus) {
 /// 播放状态改变.
 - (void)videoPlayer:(SJBaseVideoPlayer *)videoPlayer stateChanged:(SJVideoPlayerPlayState)state;  
 
-/// 播放报错
-- (void)videoPlayer:(SJBaseVideoPlayer *)videoPlayer playFailed:(NSError *)error;
-
 #pragma mark - 进度
 /// 播放进度回调.
 - (void)videoPlayer:(SJBaseVideoPlayer *)videoPlayer

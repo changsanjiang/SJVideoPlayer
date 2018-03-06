@@ -31,6 +31,33 @@ static float const __GeneratePreImgScale = 0.05;
 }
 @end
 
+@interface SJAssetUIKitEctype: NSObject
+@property (nonatomic, strong) NSIndexPath *indexPath;
+@property (nonatomic, assign) NSInteger superviewTag;
+@property (nonatomic, unsafe_unretained) UIScrollView *scrollView;
+@property (nonatomic, assign) NSInteger scrollViewTag; // _scrollView `tag`
+@property (nonatomic, strong) NSIndexPath *scrollViewIndexPath;
+@property (nonatomic, unsafe_unretained) UIScrollView *rootScrollView;
+@property (nonatomic, weak) UIView *tableHeaderSubView;
+@property (nonatomic, assign) BOOL scrollIn_bool;
+@property (nonatomic, assign) BOOL parent_scrollIn_bool;
+
+@property (nonatomic, copy, readwrite) void(^playerItemStateChanged)(SJVideoPlayerAssetCarrier *asset, AVPlayerItemStatus status);
+@property (nonatomic, copy, readwrite) void(^playTimeChanged)(SJVideoPlayerAssetCarrier *asset, NSTimeInterval currentTime, NSTimeInterval duration);
+@property (nonatomic, copy, readwrite) void(^playDidToEnd)(SJVideoPlayerAssetCarrier *asset);
+@property (nonatomic, copy, readwrite) void(^loadedTimeProgress)(float progress);
+@property (nonatomic, copy, readwrite) void(^beingBuffered)(BOOL state);
+@property (nonatomic, copy, readwrite) void(^touchedScrollView)(SJVideoPlayerAssetCarrier *asset, BOOL tracking);
+@property (nonatomic, copy, readwrite) void(^scrollViewDidScroll)(SJVideoPlayerAssetCarrier *asset);
+@property (nonatomic, copy, readwrite) void(^presentationSize)(SJVideoPlayerAssetCarrier *asset, CGSize size);
+@property (nonatomic, copy, readwrite) void(^scrollIn)(SJVideoPlayerAssetCarrier *asset, UIView *superView);
+@property (nonatomic, copy, readwrite) void(^scrollOut)(SJVideoPlayerAssetCarrier *asset);
+@property (nonatomic, copy, readwrite) void(^rateChanged)(SJVideoPlayerAssetCarrier *asset, float rate);
+
+@end
+@implementation SJAssetUIKitEctype
+@end
+
 #pragma mark -
 
 @interface SJVideoPlayerAssetCarrier () {
@@ -47,7 +74,8 @@ static float const __GeneratePreImgScale = 0.05;
 @property (nonatomic, assign, readwrite) BOOL removedScrollObserver;
 @property (nonatomic, assign, readwrite) BOOL removedParentScrollObserver;
 @property (nonatomic, assign, readwrite) BOOL parent_scrollIn_bool;
-
+@property (nonatomic, strong, readwrite, nullable) SJAssetUIKitEctype *ectype;
+@property (nonatomic, assign, readwrite) CGSize maxItemSize;
 @end
 
 @implementation SJVideoPlayerAssetCarrier
@@ -170,19 +198,10 @@ static float const __GeneratePreImgScale = 0.05;
     _playerItem = [AVPlayerItem playerItemWithAsset:_asset automaticallyLoadedAssetKeys:@[@"duration"]];
     _player = [AVPlayer playerWithPlayerItem:_playerItem];
     _player.actionAtItemEnd = AVPlayerActionAtItemEndPause;
-}
-
-- (void)_clearAVPlayer {
-    [_playerItem removeObserver:self forKeyPath:@"status"];
-    [_playerItem removeObserver:self forKeyPath:@"playbackBufferEmpty"];
-    [_playerItem removeObserver:self forKeyPath:@"loadedTimeRanges"];
-    [_playerItem removeObserver:self forKeyPath:@"presentationSize"];
-    [_playerItem removeObserver:self forKeyPath:@"duration"];
-    [_tmp_imageGenerator cancelAllCGImageGeneration];
-    [self cancelPreviewImagesGeneration];
-    if ( 0 != _player.rate ) [_player pause];
-    [_player removeTimeObserver:_timeObserver]; _timeObserver = nil;
-    [[NSNotificationCenter defaultCenter] removeObserver:_itemEndObserver name:AVPlayerItemDidPlayToEndTimeNotification object:self.playerItem]; _itemEndObserver = nil;
+    
+    if ( @available(iOS 10.0, *) ) {
+        _player.automaticallyWaitsToMinimizeStalling = YES;
+    }
 }
 
 - (void)_itemObserving {
@@ -353,6 +372,10 @@ static float const __GeneratePreImgScale = 0.05;
 
 #pragma mark -
 - (void)generatedPreviewImagesWithMaxItemSize:(CGSize)itemSize completion:(void (^)(SJVideoPlayerAssetCarrier * _Nonnull, NSArray<SJVideoPreviewModel *> * _Nullable, NSError * _Nullable))block {
+    if ( self.hasBeenGeneratedPreviewImages && CGSizeEqualToSize(itemSize, self.maxItemSize) ) {
+        if ( block ) block(self, self.generatedPreviewImages, nil);
+        return;
+    }
     
     if ( !_asset ) return;
     if ( 0 == _asset.duration.timescale ) return;
@@ -392,6 +415,7 @@ static float const __GeneratePreImgScale = 0.05;
                 if ( !self ) return;
                 self.hasBeenGeneratedPreviewImages = YES;
                 self.generatedPreviewImages = imagesM;
+                self.maxItemSize = itemSize;
                 if ( block ) block(self, imagesM, nil);
             });
         }
@@ -642,6 +666,140 @@ static float const __GeneratePreImgScale = 0.05;
     [self _clearAVPlayer];
     [self _initializeAVPlayer];
     [self _itemObserving];
+}
+
+- (void)convertToOriginal {
+    if ( !_ectype ) return;
+    [self _convertingWithBlock:^{
+        _indexPath = _ectype.indexPath;
+        _superviewTag = _ectype.superviewTag;
+        _scrollView = _ectype.scrollView;
+        _scrollViewTag = _ectype.scrollViewTag;
+        _scrollViewIndexPath = _ectype.scrollViewIndexPath;
+        _rootScrollView = _ectype.rootScrollView;
+        _tableHeaderSubView = _ectype.tableHeaderSubView;
+        _scrollIn_bool = _ectype.scrollIn_bool;
+        _parent_scrollIn_bool = _ectype.parent_scrollIn_bool;
+        
+        _playerItemStateChanged = _ectype.playerItemStateChanged;
+        _playTimeChanged = _ectype.playTimeChanged;
+        _playDidToEnd = _ectype.playDidToEnd;
+        _loadedTimeProgress = _ectype.loadedTimeProgress;
+        _beingBuffered = _ectype.beingBuffered;
+        _touchedScrollView = _ectype.touchedScrollView;
+        _scrollViewDidScroll = _ectype.scrollViewDidScroll;
+        _presentationSize = _ectype.presentationSize;
+        _scrollIn = _ectype.scrollIn;
+        _scrollOut = _ectype.scrollOut;
+        _rateChanged = _ectype.rateChanged;
+    }];
+    _converted = NO;
+}
+
+- (void)_clearAVPlayer {
+    [_playerItem removeObserver:self forKeyPath:@"status"];
+    [_playerItem removeObserver:self forKeyPath:@"playbackBufferEmpty"];
+    [_playerItem removeObserver:self forKeyPath:@"loadedTimeRanges"];
+    [_playerItem removeObserver:self forKeyPath:@"presentationSize"];
+    [_playerItem removeObserver:self forKeyPath:@"duration"];
+    [_tmp_imageGenerator cancelAllCGImageGeneration];
+    [self cancelPreviewImagesGeneration];
+    if ( 0 != _player.rate ) [_player pause];
+    [_player removeTimeObserver:_timeObserver]; _timeObserver = nil;
+    [[NSNotificationCenter defaultCenter] removeObserver:_itemEndObserver name:AVPlayerItemDidPlayToEndTimeNotification object:self.playerItem]; _itemEndObserver = nil;
+}
+
+- (void)_clearUIKit {
+    if ( !_ectype ) {
+        _ectype = [SJAssetUIKitEctype new];
+        _ectype.indexPath = _indexPath;
+        _ectype.superviewTag = _superviewTag;
+        _ectype.scrollView = _scrollView;
+        _ectype.scrollViewTag = _scrollViewTag;
+        _ectype.scrollViewIndexPath = _scrollViewIndexPath;
+        _ectype.rootScrollView = _rootScrollView;
+        _ectype.tableHeaderSubView = _tableHeaderSubView;
+        _ectype.scrollIn_bool = _scrollIn_bool;
+        _ectype.parent_scrollIn_bool = _parent_scrollIn_bool;
+        
+        _ectype.playerItemStateChanged = _playerItemStateChanged;
+        _ectype.playTimeChanged = _playTimeChanged;
+        _ectype.playDidToEnd = _playDidToEnd;
+        _ectype.loadedTimeProgress = _loadedTimeProgress;
+        _ectype.beingBuffered = _beingBuffered;
+        _ectype.touchedScrollView = _touchedScrollView;
+        _ectype.scrollViewDidScroll = _scrollViewDidScroll;
+        _ectype.presentationSize = _presentationSize;
+        _ectype.scrollIn = _scrollIn;
+        _ectype.scrollOut = _scrollOut;
+        _ectype.rateChanged = _rateChanged;
+    }
+    [self _removingScrollViewObserver];
+    [self _removingrootScrollViewObserver];
+    _indexPath = nil;
+    _superviewTag = 0;
+    _scrollView = nil;
+    _scrollViewTag = 0;
+    _scrollViewIndexPath = nil;
+    _rootScrollView = nil;
+    _tableHeaderSubView = nil;
+    _scrollIn_bool = YES;
+    _parent_scrollIn_bool = YES;
+}
+
+- (void)convertToUIView {
+    [self _convertingWithBlock:nil];
+}
+
+- (void)convertToCellWithTableOrCollectionView:(__unsafe_unretained UIScrollView *)tableOrCollectionView
+                                        indexPath:(NSIndexPath *)indexPath
+                               playerSuperviewTag:(NSInteger)superviewTag {
+    [self _convertingWithBlock:^{
+        _indexPath = indexPath;
+        _superviewTag = superviewTag;
+        _scrollView = tableOrCollectionView;
+    }];
+}
+
+- (void)convertToTableHeaderViewWithPlayerSuperView:(__weak UIView *)superView
+                                             tableView:(__unsafe_unretained UITableView *)tableView {
+    [self _convertingWithBlock:^{
+        _tableHeaderSubView = superView;
+        _scrollView = tableView;
+    }];
+}
+
+- (void)convertToTableHeaderViewWithCollectionView:(__weak UICollectionView *)collectionView
+                              collectionCellIndexPath:(NSIndexPath *)indexPath
+                                   playerSuperViewTag:(NSInteger)playerSuperViewTag
+                                        rootTableView:(__unsafe_unretained UITableView *)rootTableView {
+    [self _convertingWithBlock:^{
+        _scrollView = collectionView;
+        _indexPath = indexPath;
+        _superviewTag = playerSuperViewTag;
+        _rootScrollView = rootTableView;
+    }];
+}
+
+- (void)convertToCellWithIndexPath:(NSIndexPath *)indexPath
+                         superviewTag:(NSInteger)superviewTag
+              collectionViewIndexPath:(NSIndexPath *)collectionViewIndexPath
+                    collectionViewTag:(NSInteger)collectionViewTag
+                        rootTableView:(__unsafe_unretained UITableView *)rootTableView {
+    [self _convertingWithBlock:^{
+        _indexPath = indexPath;
+        _superviewTag = superviewTag;
+        _scrollView = [[rootTableView cellForRowAtIndexPath:collectionViewIndexPath] viewWithTag:collectionViewTag];
+        _scrollViewTag = collectionViewTag;
+        _rootScrollView = rootTableView;
+    }];
+}
+
+- (void)_convertingWithBlock:(void(^)(void))block {
+    [self _clearUIKit];
+    if ( block ) block();
+    [self _scrollViewObserving];
+    _converted = YES;
 }
 
 @end

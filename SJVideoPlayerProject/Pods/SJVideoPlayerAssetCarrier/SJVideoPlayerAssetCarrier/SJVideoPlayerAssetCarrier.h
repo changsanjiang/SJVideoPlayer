@@ -25,6 +25,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 /**
  player in a view.
+ video player -> UIView
  
  @param assetURL                        assetURL
  @param beginTime                       begin time. unit is sec.
@@ -37,6 +38,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 /**
  table or collection cell. player in a tableOrCollection cell.
+ video player -> cell -> table || collection view
  
  @param assetURL                        assetURL.
  @param tableOrCollectionView           tableView or collectionView.
@@ -51,6 +53,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 /**
  table or collection cell. player in a tableOrCollection cell.
+ video player -> cell -> table || collection view
  
  @param assetURL                        assetURL.
  @param beginTime                       begin time. unit is sec.
@@ -69,6 +72,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 /**
  table header view. player in a table header view.
+ video player -> table header view -> table view
  
  @param assetURL                        assetURL.
  @param beginTime                       begin time. unit is sec.
@@ -79,10 +83,11 @@ NS_ASSUME_NONNULL_BEGIN
 - (instancetype)initWithAssetURL:(NSURL *)assetURL
                        beginTime:(NSTimeInterval)beginTime
     playerSuperViewOfTableHeader:(__weak UIView *)superView
-                       tableView:(UITableView *)tableView;
+                       tableView:(__unsafe_unretained UITableView *)tableView;
 
 /**
  table header view. player in a collection view cell, and this collection view in a table header view.
+ video player -> cell -> collection view -> table header view -> table view
  
  @param assetURL                        assetURL
  @param beginTime                       begin time. unit is sec.
@@ -97,7 +102,7 @@ NS_ASSUME_NONNULL_BEGIN
      collectionViewOfTableHeader:(__weak UICollectionView *)collectionView
          collectionCellIndexPath:(NSIndexPath *)indexPath
               playerSuperViewTag:(NSInteger)playerSuperViewTag
-                   rootTableView:(UITableView *)rootTableView;
+                   rootTableView:(__unsafe_unretained UITableView *)rootTableView;
 
 #pragma mark - Nested
 
@@ -182,6 +187,7 @@ NS_ASSUME_NONNULL_BEGIN
 #pragma mark - preview images
 @property (nonatomic, assign, readonly) BOOL hasBeenGeneratedPreviewImages;
 @property (nonatomic, strong, readonly) NSArray<SJVideoPreviewModel *> *generatedPreviewImages;
+@property (nonatomic, assign, readonly) CGSize maxItemSize;
 - (void)generatedPreviewImagesWithMaxItemSize:(CGSize)itemSize
                                    completion:(void(^)(SJVideoPlayerAssetCarrier *asset, NSArray<SJVideoPreviewModel *> *__nullable images, NSError *__nullable error))block;
 - (void)cancelPreviewImagesGeneration;
@@ -202,7 +208,73 @@ NS_ASSUME_NONNULL_BEGIN
 - (NSString *)timeString:(NSInteger)secs;
 @property (nonatomic, copy, readwrite, nullable) void(^deallocExeBlock)(SJVideoPlayerAssetCarrier *asset);
 
+
+#pragma mark - Refresh & Convert
+
+- (void)refreshAVPlayer;
+
+- (void)convertToOriginal; // 还原
+
+/**
+ *  player in a view.
+ *
+ *  video player -> UIView
+ **/
+- (void)convertToUIView;
+
+/**
+ *  table or collection cell. player in a tableOrCollection cell.
+ *
+ *  video player -> cell -> table || collection view
+ *
+ **/
+- (void)convertToCellWithTableOrCollectionView:(__unsafe_unretained UIScrollView *)tableOrCollectionView
+                                        indexPath:(NSIndexPath *)indexPath
+                               playerSuperviewTag:(NSInteger)superviewTag;
+
+/**
+ *  table header view. player in a table header view.
+ *
+ *  video player -> table header view -> table view
+ *
+ **/
+- (void)convertToTableHeaderViewWithPlayerSuperView:(__weak UIView *)superView
+                                             tableView:(__unsafe_unretained UITableView *)tableView;
+
+/**
+ *  table header view. player in a collection view cell, and this collection view in a table header view.
+ *
+ *  video player -> cell -> collection view -> table header view -> table view
+ *
+ **/
+- (void)convertToTableHeaderViewWithCollectionView:(__weak UICollectionView *)collectionView
+                              collectionCellIndexPath:(NSIndexPath *)indexPath
+                                   playerSuperViewTag:(NSInteger)playerSuperViewTag
+                                        rootTableView:(__unsafe_unretained UITableView *)rootTableView;
+
+/**
+ *  collection cell. player in a collection cell. and this collectionView in a tableView.
+ *
+ *  video player -> collection cell -> collection view -> table cell -> table view.
+ *
+ **/
+- (void)convertToCellWithIndexPath:(NSIndexPath *)indexPath
+                         superviewTag:(NSInteger)superviewTag
+              collectionViewIndexPath:(NSIndexPath *)collectionViewIndexPath
+                    collectionViewTag:(NSInteger)collectionViewTag
+                        rootTableView:(__unsafe_unretained UITableView *)rootTableView;
+
+
+
+
+
+
+
+
+
+
 #pragma mark - properties
+@property (nonatomic, assign, readonly) BOOL converted;
 @property (nonatomic, strong, readonly) AVURLAsset *asset;
 @property (nonatomic, strong, readonly) AVPlayerItem *playerItem;
 @property (nonatomic, strong, readonly) AVPlayer *player;
@@ -219,7 +291,6 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic, unsafe_unretained, readonly, nullable) UIScrollView *rootScrollView;
 @property (nonatomic, weak, readonly, nullable) UIView *tableHeaderSubView;
 
-- (void)refreshAVPlayer;
 @end
 
 

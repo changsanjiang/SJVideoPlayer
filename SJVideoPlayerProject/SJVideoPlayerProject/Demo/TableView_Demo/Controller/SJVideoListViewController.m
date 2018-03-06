@@ -15,6 +15,7 @@
 #import "SJVideoPlayerHelper.h"
 #import <UIView+SJUIFactory.h>
 #import <NSMutableAttributedString+ActionDelegate.h>
+#import "DemoPlayerViewController.h"
 
 static NSString *const SJVideoListTableViewCellID = @"SJVideoListTableViewCell";
 
@@ -23,8 +24,8 @@ static NSString *const SJVideoListTableViewCellID = @"SJVideoListTableViewCell";
 @property (nonatomic, strong, readonly) SJVideoPlayerHelper *videoPlayerHelper;
 @property (nonatomic, strong, readonly) UIActivityIndicatorView *indicator;
 @property (nonatomic, strong, readonly) UITableView *tableView;
-
-@property (nonatomic, strong) NSArray<SJVideoModel *> *videosM;
+@property (nonatomic, strong) NSIndexPath *playedIndexPath;
+@property (nonatomic, strong) NSArray<SJVideoModel *> *videos;
 
 @end
 
@@ -39,14 +40,11 @@ static NSString *const SJVideoListTableViewCellID = @"SJVideoListTableViewCell";
 
 - (void)viewDidLoad {
     [super viewDidLoad];
-    
-    self.view.backgroundColor = [UIColor whiteColor];
-    
+
     // setup views
     [self _videoListSetupViews];
     
     [self.indicator startAnimating];
-    
     // prepare test data.
     self.tableView.alpha = 0.001;
     __weak typeof(self) _self = self;
@@ -56,7 +54,7 @@ static NSString *const SJVideoListTableViewCellID = @"SJVideoListTableViewCell";
         dispatch_async(dispatch_get_main_queue(), ^{
             __strong typeof(_self) self = _self;
             if ( !self ) return;
-            self.videosM = videos;
+            self.videos = videos;
             [self.tableView reloadData];
             [self.indicator stopAnimating];
             [UIView animateWithDuration:0.3 animations:^{
@@ -81,6 +79,11 @@ static NSString *const SJVideoListTableViewCellID = @"SJVideoListTableViewCell";
     self.videoPlayerHelper.vc_viewWillAppearExeBlock();
 }
 
+- (void)viewDidAppear:(BOOL)animated {
+    [super viewDidAppear:animated];
+    self.videoPlayerHelper.vc_viewDidAppearExeBlock();
+}
+
 - (void)viewWillDisappear:(BOOL)animated {
     [super viewWillDisappear:animated];
     self.videoPlayerHelper.vc_viewWillDisappearExeBlock();
@@ -100,6 +103,7 @@ static NSString *const SJVideoListTableViewCellID = @"SJVideoListTableViewCell";
 }
 
 - (void)clickedPlayOnTabCell:(SJVideoListTableViewCell *)cell playerParentView:(UIView *)playerParentView {
+    self.playedIndexPath = [self.tableView indexPathForCell:cell];
     SJVideoPlayerURLAsset *asset =
     [[SJVideoPlayerURLAsset alloc] initWithAssetURL:[[NSBundle mainBundle] URLForResource:@"sample" withExtension:@"mp4"]
                                          scrollView:self.tableView
@@ -109,6 +113,15 @@ static NSString *const SJVideoListTableViewCellID = @"SJVideoListTableViewCell";
     asset.alwaysShowTitle = YES;
     
     [self.videoPlayerHelper playWithAsset:asset playerParentView:playerParentView];
+}
+
+- (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath {
+    SJVideoPlayerURLAsset *asset = nil;
+    if ( [self.playedIndexPath isEqual:indexPath] ) {
+        asset = self.videoPlayerHelper.asset;
+    }
+    DemoPlayerViewController *vc = [[DemoPlayerViewController alloc] initWithVideo:self.videos[indexPath.row] asset:asset];
+    [self.navigationController pushViewController:vc animated:YES];
 }
 
 #pragma mark -
@@ -141,16 +154,16 @@ static NSString *const SJVideoListTableViewCellID = @"SJVideoListTableViewCell";
 }
 
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section {
-    return _videosM.count;
+    return _videos.count;
 }
 
 - (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath {
-    return [SJVideoListTableViewCell heightWithContentHeight:_videosM[indexPath.row].contentHelper.contentHeight];
+    return [SJVideoListTableViewCell heightWithContentHeight:_videos[indexPath.row].contentHelper.contentHeight];
 }
 
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath {
     SJVideoListTableViewCell * cell = (SJVideoListTableViewCell *)[tableView dequeueReusableCellWithIdentifier:SJVideoListTableViewCellID forIndexPath:indexPath];
-    cell.model = _videosM[indexPath.row];
+    cell.model = _videos[indexPath.row];
     cell.delegate = self;
     return cell;
 }

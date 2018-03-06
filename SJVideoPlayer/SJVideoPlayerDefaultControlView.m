@@ -224,7 +224,16 @@ NS_ASSUME_NONNULL_END
 - (void)topControlView:(SJVideoPlayerTopControlView *)view clickedBtnTag:(SJVideoPlayerTopViewTag)tag {
     switch ( tag ) {
         case SJVideoPlayerTopViewTag_Back: {
-            if ( _videoPlayer.isFullScreen ) [_videoPlayer rotation];
+            if ( _videoPlayer.isFullScreen ) {
+                SJSupportedRotateViewOrientation supported = _videoPlayer.supportedRotateViewOrientation;
+                if ( supported == SJSupportedRotateViewOrientation_All ) {
+                    supported  = SJSupportedRotateViewOrientation_Portrait | SJSupportedRotateViewOrientation_LandscapeLeft | SJSupportedRotateViewOrientation_LandscapeRight;
+                }
+                
+                if ( SJSupportedRotateViewOrientation_Portrait == (supported & SJSupportedRotateViewOrientation_Portrait) ) {
+                    [_videoPlayer rotation];
+                }
+            }
             else {
                 if ( [self.delegate respondsToSelector:@selector(clickedBackBtnOnControlView:)] ) {
                     [self.delegate clickedBackBtnOnControlView:self];
@@ -535,6 +544,7 @@ NS_ASSUME_NONNULL_END
 /// 控制层需要隐藏之前会调用这个方法, 如果返回NO, 将不调用`controlLayerNeedDisappear:`.
 - (BOOL)controlLayerDisappearCondition {
     if ( self.previewView.appearState ) return NO;          // 如果预览视图显示, 则不隐藏控制层
+    if ( SJVideoPlayerPlayState_PlayFailed == self.videoPlayer.state ) return NO;
     return YES;
 }
 
@@ -600,6 +610,18 @@ NS_ASSUME_NONNULL_END
             break;
     }
     
+    if ( SJVideoPlayerPlayState_PlayFailed == state ) {
+#ifdef DEBUG
+        NSLog(@"SJVideoPlayerLog: %@", videoPlayer.error);
+#endif
+        [self.loadingView stop];
+        
+        [self.topControlView appear];
+        [self.leftControlView disappear];
+        [self.bottomControlView disappear];
+
+    }
+    
     if ( SJVideoPlayerPlayState_PlayFailed == state || SJVideoPlayerPlayState_PlayEnd == state ) {
         [UIView animateWithDuration:0.3 animations:^{
             [self.centerControlView appear];
@@ -614,12 +636,6 @@ NS_ASSUME_NONNULL_END
     }
 }
 
-- (void)videoPlayer:(SJVideoPlayer *)videoPlayer playFailed:(NSError *)error {
-#ifdef DEBUG
-    NSLog(@"SJVideoPlayerLog: %@", error);
-#endif
-    [self.loadingView stop];
-}
 #pragma mark 进度
 /// 播放进度回调.
 - (void)videoPlayer:(SJVideoPlayer *)videoPlayer
@@ -649,30 +665,44 @@ NS_ASSUME_NONNULL_END
 /// 控制层需要显示.
 - (void)controlLayerNeedAppear:(SJVideoPlayer *)videoPlayer {
     [UIView animateWithDuration:0.3 animations:^{
-        if ( videoPlayer.playOnScrollView && !videoPlayer.isFullScreen ) {
-            if ( videoPlayer.URLAsset.alwaysShowTitle ) [_topControlView appear];
-            else [_topControlView disappear];
+        if ( SJVideoPlayerPlayState_PlayFailed != videoPlayer.state ) {
+            if ( videoPlayer.playOnScrollView && !videoPlayer.isFullScreen ) {
+                if ( videoPlayer.URLAsset.alwaysShowTitle ) [_topControlView appear];
+                else [_topControlView disappear];
+            }
+            else [_topControlView appear];
+            
+            [_bottomControlView appear];
+            if ( videoPlayer.isFullScreen ) [_leftControlView appear];
+            else [_leftControlView disappear];  // 如果是小屏, 则不显示锁屏按钮
+            [_bottomSlider disappear];
+            
+            if ( _moreSettingsView.appearState ) [_moreSettingsView disappear];
+            if ( _moreSecondarySettingView.appearState ) [_moreSecondarySettingView disappear];
         }
-        else [_topControlView appear];
-        
-        [_bottomControlView appear];
-        if ( videoPlayer.isFullScreen ) [_leftControlView appear];
-        else [_leftControlView disappear];  // 如果是小屏, 则不显示锁屏按钮
-        [_bottomSlider disappear];
-        
-        if ( _moreSettingsView.appearState ) [_moreSettingsView disappear];
-        if ( _moreSecondarySettingView.appearState ) [_moreSecondarySettingView disappear];
+        else {
+            [_topControlView appear];
+            [_leftControlView disappear];
+            [_bottomControlView disappear];
+        }
     }];
 }
 
 /// 控制层需要隐藏.
 - (void)controlLayerNeedDisappear:(SJVideoPlayer *)videoPlayer {
     [UIView animateWithDuration:0.3 animations:^{
-        [_topControlView disappear];
-        [_bottomControlView disappear];
-        [_leftControlView disappear];
-        [_previewView disappear];
-        [_bottomSlider appear];
+        if ( SJVideoPlayerPlayState_PlayFailed != videoPlayer.state ) {
+            [_topControlView disappear];
+            [_bottomControlView disappear];
+            [_leftControlView disappear];
+            [_previewView disappear];
+            [_bottomSlider appear];
+        }
+        else {
+            [_topControlView appear];
+            [_leftControlView disappear];
+            [_bottomControlView disappear];
+        }
     }];
 }
 

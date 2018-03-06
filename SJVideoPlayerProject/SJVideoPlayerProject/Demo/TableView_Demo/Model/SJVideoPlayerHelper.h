@@ -14,11 +14,19 @@ NS_ASSUME_NONNULL_BEGIN
 
 @interface SJVideoPlayerHelper : NSObject
 
-- (void)playWithAsset:(SJVideoPlayerURLAsset *)asset playerParentView:(UIView *)playerParentView;
-
+/// return instance
 - (instancetype)initWithViewController:(__weak UIViewController<SJVideoPlayerHelperUseProtocol> *)viewController;
 
+@property (nonatomic, weak, readwrite) UIViewController<SJVideoPlayerHelperUseProtocol> *viewController;
+
+/// play an asset.
+- (void)playWithAsset:(SJVideoPlayerURLAsset *)asset playerParentView:(UIView *)playerParentView;
+
+@property (nonatomic, strong, readonly, nullable) SJVideoPlayerURLAsset *asset;
+
 @property (nonatomic, copy, readonly) void(^vc_viewWillAppearExeBlock)(void);
+
+@property (nonatomic, copy, readonly) void(^vc_viewDidAppearExeBlock)(void);
 
 @property (nonatomic, copy, readonly) void(^vc_viewWillDisappearExeBlock)(void);
 
@@ -38,16 +46,21 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (void)viewWillDisappear:(BOOL)animated;
 
+- (void)viewDidAppear:(BOOL)animated;
+
 - (void)viewDidDisappear:(BOOL)animated;
 
 - (BOOL)prefersStatusBarHidden;
 
 - (UIStatusBarStyle)preferredStatusBarStyle;
+
 @end
 
 NS_ASSUME_NONNULL_END
 
 /*
+@property (nonatomic, strong, readonly) SJVideoPlayerHelper *videoPlayerHelper;
+ 
 @synthesize videoPlayerHelper = _videoPlayerHelper;
 - (SJVideoPlayerHelper *)videoPlayerHelper {
     if ( _videoPlayerHelper ) return _videoPlayerHelper;

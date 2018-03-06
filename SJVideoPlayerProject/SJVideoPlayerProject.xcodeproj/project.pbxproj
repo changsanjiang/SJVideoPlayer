@@ -8,6 +8,7 @@
 
 /* Begin PBXBuildFile section */
 		77033C10204D45BB008F1ED5 /* SJVideoPlayerReachabilityPromptView.m in Sources */ = {isa = PBXBuildFile; fileRef = 77033C0F204D45BB008F1ED5 /* SJVideoPlayerReachabilityPromptView.m */; };
+		77033C14204E7611008F1ED5 /* DemoPlayerViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 77033C13204E7611008F1ED5 /* DemoPlayerViewController.m */; };
 		7706E1231FF74B24006E0B56 /* loading.gif in Resources */ = {isa = PBXBuildFile; fileRef = 7706E1221FF74B24006E0B56 /* loading.gif */; };
 		7706E1251FF74C42006E0B56 /* slider.gif in Resources */ = {isa = PBXBuildFile; fileRef = 7706E1241FF74C42006E0B56 /* slider.gif */; };
 		772005772029BBC7009F0190 /* SJMoreSettingItems.m in Sources */ = {isa = PBXBuildFile; fileRef = 772005762029BBC7009F0190 /* SJMoreSettingItems.m */; };
@@ -79,6 +80,8 @@
 		3D9B385C4F414458155F268D /* Pods-SJVideoPlayerProject.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-SJVideoPlayerProject.debug.xcconfig"; path = "Pods/Target Support Files/Pods-SJVideoPlayerProject/Pods-SJVideoPlayerProject.debug.xcconfig"; sourceTree = "<group>"; };
 		77033C0E204D45BB008F1ED5 /* SJVideoPlayerReachabilityPromptView.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = SJVideoPlayerReachabilityPromptView.h; sourceTree = "<group>"; };
 		77033C0F204D45BB008F1ED5 /* SJVideoPlayerReachabilityPromptView.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = SJVideoPlayerReachabilityPromptView.m; sourceTree = "<group>"; };
+		77033C12204E7611008F1ED5 /* DemoPlayerViewController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = DemoPlayerViewController.h; sourceTree = "<group>"; };
+		77033C13204E7611008F1ED5 /* DemoPlayerViewController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = DemoPlayerViewController.m; sourceTree = "<group>"; };
 		7706E1221FF74B24006E0B56 /* loading.gif */ = {isa = PBXFileReference; lastKnownFileType = image.gif; path = loading.gif; sourceTree = "<group>"; };
 		7706E1241FF74C42006E0B56 /* slider.gif */ = {isa = PBXFileReference; lastKnownFileType = image.gif; path = slider.gif; sourceTree = "<group>"; };
 		772005752029BBC7009F0190 /* SJMoreSettingItems.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = SJMoreSettingItems.h; sourceTree = "<group>"; };
@@ -226,6 +229,15 @@
 				A53C6944FFDAC5FD9DA4750E /* libPods-SJVideoPlayerProject.a */,
 			);
 			name = Frameworks;
+			sourceTree = "<group>";
+		};
+		77033C11204E75F3008F1ED5 /* ViewController */ = {
+			isa = PBXGroup;
+			children = (
+				77033C12204E7611008F1ED5 /* DemoPlayerViewController.h */,
+				77033C13204E7611008F1ED5 /* DemoPlayerViewController.m */,
+			);
+			path = ViewController;
 			sourceTree = "<group>";
 		};
 		7720056F2029B5C0009F0190 /* Model */ = {
@@ -495,6 +507,7 @@
 				778E24F11FD97E93008D0DD3 /* Single_单例 */,
 				77E754322040054800A5AF44 /* Full_全屏播放 */,
 				A644109B200A7289006FD832 /* OtherDemo */,
+				77033C11204E75F3008F1ED5 /* ViewController */,
 			);
 			path = Demo;
 			sourceTree = "<group>";
@@ -790,6 +803,7 @@
 				774B252B1FCEBA5D002113CC /* main.m in Sources */,
 				772005772029BBC7009F0190 /* SJMoreSettingItems.m in Sources */,
 				775B201920465E1500264AB9 /* TableHeaderCollectionView.m in Sources */,
+				77033C14204E7611008F1ED5 /* DemoPlayerViewController.m in Sources */,
 				774B251D1FCEBA5D002113CC /* AppDelegate.m in Sources */,
 				775C0AD7202962180008EDA7 /* SJVideoPlayerDefaultControlView.m in Sources */,
 				775B201620465D6200264AB9 /* TableViewHeaderIsCollectionViewDemoViewController.m in Sources */,

@@ -1369,7 +1369,7 @@ NS_ASSUME_NONNULL_END
     if ( [keyPath isEqualToString:@"state"] ) {
         if      ( SJVideoPlayerPlayState_Paused == self.videoPlayer.state ||
                  SJVideoPlayerPlayState_PlayEnd == self.videoPlayer.state ) {
-            [self _keepDisplay];
+            if ( !self.videoPlayer.isLockedScreen ) [self _keepDisplay];
         }
         else if ( SJVideoPlayerPlayState_Playing == self.videoPlayer.state &&
                  self.controlLayerAppearedState ) {

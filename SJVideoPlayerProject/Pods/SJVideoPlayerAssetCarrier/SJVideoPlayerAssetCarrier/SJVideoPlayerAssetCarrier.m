@@ -186,14 +186,21 @@ static float const __GeneratePreImgScale = 0.05;
     _scrollIn_bool = YES;
     _parent_scrollIn_bool = YES;
     _rate = 1;
-    
-    [self _initializeAVPlayer];
-    [self _itemObserving];
+
+    __weak typeof(self) _self = self;
+    dispatch_async(dispatch_get_global_queue(0, 0), ^{
+        __strong typeof(_self) self = _self;
+        if ( !self ) return;
+        [self _initializeAVPlayer];
+        [self _itemObserving];
+    });
+
     [self _scrollViewObserving];
     return self;
 }
 
 - (void)_initializeAVPlayer {
+    
     _asset = [AVURLAsset assetWithURL:_assetURL];
     _playerItem = [AVPlayerItem playerItemWithAsset:_asset automaticallyLoadedAssetKeys:@[@"duration"]];
     _player = [AVPlayer playerWithPlayerItem:_playerItem];
@@ -327,6 +334,15 @@ static float const __GeneratePreImgScale = 0.05;
     CMTime rangeDuration  = loadTimeRange.duration;
     Float64 seconds = CMTimeGetSeconds(startTime) + CMTimeGetSeconds(rangeDuration);
     return seconds;
+}
+
+#pragma mark -
+
+- (void)setPresentationSize:(void (^)(SJVideoPlayerAssetCarrier * _Nonnull, CGSize))presentationSize {
+    _presentationSize = [presentationSize copy];
+    if ( !CGSizeEqualToSize(_playerItem.presentationSize, CGSizeZero) ) {
+        if ( presentationSize ) presentationSize(self, _playerItem.presentationSize);
+    }
 }
 
 #pragma mark -
@@ -663,9 +679,14 @@ static float const __GeneratePreImgScale = 0.05;
 }
 
 - (void)refreshAVPlayer {
-    [self _clearAVPlayer];
-    [self _initializeAVPlayer];
-    [self _itemObserving];
+    __weak typeof(self) _self = self;
+    dispatch_async(dispatch_get_global_queue(0, 0), ^{
+        __strong typeof(_self) self = _self;
+        if ( !self ) return;
+        [self _clearAVPlayer];
+        [self _initializeAVPlayer];
+        [self _itemObserving];
+    });
 }
 
 - (void)convertToOriginal {

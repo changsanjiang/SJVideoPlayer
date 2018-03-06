@@ -49,6 +49,8 @@ NS_ASSUME_NONNULL_BEGIN
  */
 @property (nonatomic, copy, readwrite) void(^clickedBackEvent)(SJVideoPlayer *player);
 
+@property (nonatomic, assign, readwrite) BOOL disableNetworkStatusChangePrompt; // default is NO. 是否禁止网路状态变化提示. 默认为No.
+
 /*!
  *  Configure the player, Note: This `block` is run on the child thread.
  *

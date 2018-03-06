@@ -33,8 +33,11 @@
     // supported orientation. 设置旋转支持的方向.
     [SJVideoPlayer sharedPlayer].supportedRotateViewOrientation = SJSupportedRotateViewOrientation_All;
     
-    // 将播放器旋转成横屏.(因为播放器默认是竖屏的)
+    // 将播放器旋转成横屏.(播放器默认是竖屏的), 带动画
     [SJVideoPlayer sharedPlayer].rotateOrientation = SJRotateViewOrientation_LandscapeLeft; // 请注意: 是`SJRotateViewOrientation_LandscapeLeft` 而不是 `SJSupportedRotateViewOrientation_LandscapeLeft`
+    
+    // 将播放器旋转成横屏.(播放器默认是竖屏的), 不带动画
+//    [[SJVideoPlayer sharedPlayer] rotate:SJRotateViewOrientation_LandscapeLeft animated:NO];
     
     // Do any additional setup after loading the view.
 }

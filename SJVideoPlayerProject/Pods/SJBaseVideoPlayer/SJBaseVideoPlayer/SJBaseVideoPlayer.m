@@ -52,6 +52,17 @@ NS_ASSUME_NONNULL_END
 #pragma mark -
 
 NS_ASSUME_NONNULL_BEGIN
+@interface _SJReachabilityObserver : NSObject
++ (instancetype)sharedInstance;
+@property (nonatomic, assign, readonly) SJNetworkStatus networkStatus;
+@property (nonatomic, copy, readwrite, nullable) void(^reachabilityChangedExeBlock)(_SJReachabilityObserver *observer, SJNetworkStatus status);
+@end
+NS_ASSUME_NONNULL_END
+
+
+#pragma mark -
+
+NS_ASSUME_NONNULL_BEGIN
 @interface SJBaseVideoPlayer () {
     UIView *_view;
     SJVideoPlayerPresentView *_presentView;
@@ -61,6 +72,7 @@ NS_ASSUME_NONNULL_BEGIN
     SJVolBrigControl *_volBrigControl;
     _SJBaseVideoPlayerControlDisplayRecorder *_displayRecorder;
     SJVideoPlayerRegistrar *_registrar;
+    _SJReachabilityObserver *_reachabilityObserver;
 }
 
 @property (nonatomic, assign, readwrite) BOOL userClickedPause;
@@ -79,6 +91,7 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic, strong, readonly) SJPlayerGestureControl *gestureControl;
 @property (nonatomic, strong, readonly) SJVolBrigControl *volBrigControl;
 @property (nonatomic, strong, readonly) _SJBaseVideoPlayerControlDisplayRecorder *displayRecorder;
+@property (nonatomic, strong, readonly) _SJReachabilityObserver *reachabilityObserver;
 
 - (void)clearAsset;
 
@@ -98,17 +111,18 @@ NS_ASSUME_NONNULL_END
     [[AVAudioSession sharedInstance] setCategory:AVAudioSessionCategoryPlayback error:&error];
     if ( error ) NSLog(@"%@", error.userInfo);
     self.autoPlay = YES;
-    self.enableControlLayerDisplayController = YES; 
+    self.enableControlLayerDisplayController = YES;
     [self registrar];
     [self view];
+    [self reachabilityObserver];
     return self;
 }
 
 - (void)dealloc {
 #ifdef DEBUG
-    NSLog(@"%zd - %s", __LINE__, __func__);
+    NSLog(@"SJVideoPlayerLog: %zd - %s", __LINE__, __func__);
 #endif
-    if ( self.assetDeallocExeBlock ) self.assetDeallocExeBlock(self);
+    if ( self.asset && self.assetDeallocExeBlock ) self.assetDeallocExeBlock(self);
     [_presentView removeFromSuperview];
     [self stop];
 }
@@ -718,6 +732,36 @@ NS_ASSUME_NONNULL_END
     return _registrar;
 }
 
+- (_SJReachabilityObserver *)reachabilityObserver {
+    if ( _reachabilityObserver ) return _reachabilityObserver;
+    _reachabilityObserver = [_SJReachabilityObserver sharedInstance];
+    __weak typeof(self) _self = self;
+    _reachabilityObserver.reachabilityChangedExeBlock = ^(_SJReachabilityObserver * _Nonnull observer, SJNetworkStatus status) {
+        __strong typeof(_self) self = _self;
+        if ( !self ) return;
+        if ( [self.controlLayerDelegate respondsToSelector:@selector(videoPlayer:reachabilityChanged:)] ) {
+            [self.controlLayerDelegate videoPlayer:self reachabilityChanged:status];
+        }
+#if 0
+        switch (status) {
+            case SJNetworkStatus_NotReachable: {
+                NSLog(@"网络状态: 无发连接网络");
+            }
+                break;
+            case SJNetworkStatus_ReachableViaWiFi: {
+                NSLog(@"网络状态: WiFi");
+            }
+                break;
+            case SJNetworkStatus_ReachableViaWWAN: {
+                NSLog(@"网络状态: WWAN");
+            }
+                break;
+        }
+#endif
+    };
+    return _reachabilityObserver;
+}
+
 #pragma mark -
 - (void)setState:(SJVideoPlayerPlayState)state {
     _state = state;
@@ -838,6 +882,17 @@ NS_ASSUME_NONNULL_END
 
 - (void (^)(__kindof SJBaseVideoPlayer * _Nonnull))assetDeallocExeBlock {
     return objc_getAssociatedObject(self, _cmd);
+}
+
+@end
+
+
+#pragma mark - Network
+
+@implementation SJBaseVideoPlayer (Network)
+
+- (SJNetworkStatus)networkStatus {
+    return self.reachabilityObserver.networkStatus;
 }
 
 @end
@@ -1146,6 +1201,10 @@ NS_ASSUME_NONNULL_END
     [self.orentationObserver _changeOrientation];
 }
 
+- (void)rotate:(SJRotateViewOrientation)orientation animated:(BOOL)animated {
+    [self.orentationObserver rotate:orientation animated:animated];
+}
+
 - (void)setDisableRotation:(BOOL)disableRotation {
     objc_setAssociatedObject(self, @selector(disableRotation), @(disableRotation), OBJC_ASSOCIATION_RETAIN_NONATOMIC);
 }
@@ -1385,4 +1444,52 @@ NS_ASSUME_NONNULL_END
     }
 }
 
+@end
+
+
+#pragma mark -
+
+#import <Reachability/Reachability.h>
+
+NS_ASSUME_NONNULL_BEGIN
+@interface _SJReachabilityObserver ()
+@property (nonatomic, strong, readonly) Reachability *reachability;
+@end
+NS_ASSUME_NONNULL_END
+
+@implementation _SJReachabilityObserver
+
++ (instancetype)sharedInstance {
+    static id _instance;
+    static dispatch_once_t onceToken;
+    dispatch_once(&onceToken, ^{
+        _instance = [self new];
+    });
+    return _instance;
+}
+
+- (instancetype)init {
+    self = [super init];
+    if ( !self ) return nil;
+    _reachability = [Reachability reachabilityForInternetConnection];
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(_reachabilityChangedNotification) name:kReachabilityChangedNotification object:_reachability];
+    [_reachability startNotifier];
+    return self;
+}
+
+- (void)_reachabilityChangedNotification {
+    if ( self.reachabilityChangedExeBlock ) {
+        SJNetworkStatus status = (NSInteger)[self.reachability currentReachabilityStatus];
+        self.reachabilityChangedExeBlock(self, status);
+    }
+}
+
+- (SJNetworkStatus)networkStatus {
+    return (NSInteger)[self.reachability currentReachabilityStatus];
+}
+
+- (void)dealloc {
+    [_reachability stopNotifier];
+    [[NSNotificationCenter defaultCenter] removeObserver:self name:kReachabilityChangedNotification object:_reachability];
+}
 @end

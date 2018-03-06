@@ -11,6 +11,8 @@
 UIKIT_EXTERN NSString *const SJVideoPlayer_ReplayText;
 UIKIT_EXTERN NSString *const SJVideoPlayer_PreviewText;
 UIKIT_EXTERN NSString *const SJVideoPlayer_PlayFailedText;
+UIKIT_EXTERN NSString *const SJVideoPlayer_NotReachablePrompt;
+UIKIT_EXTERN NSString *const SJVideoPlayer_ReachableViaWWANPrompt;
 
 @interface SJVideoPlayerResources : NSObject
 

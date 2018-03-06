@@ -25,6 +25,8 @@ NSNotificationName const SJSettingsPlayerNotification = @"SJSettingsPlayerNotifi
 }
 
 - (void)reset {
+    _notReachablePrompt = [SJVideoPlayerResources localizedStringForKey:SJVideoPlayer_NotReachablePrompt];
+    _reachableViaWWANPrompt = [SJVideoPlayerResources localizedStringForKey:SJVideoPlayer_ReachableViaWWANPrompt];
     self.loadingLineColor = [UIColor whiteColor];
     self.titleFont = [UIFont boldSystemFontOfSize:14];
     self.titleColor = [UIColor whiteColor];

@@ -21,6 +21,10 @@ extern NSNotificationName const SJSettingsPlayerNotification;
 
 - (void)reset;
 
+@property (nonatomic, strong, readonly) NSString *notReachablePrompt;
+@property (nonatomic, strong, readonly) NSString *reachableViaWWANPrompt;
+
+
 @property (nonatomic, strong, readonly) NSString *previewBtnTitle;
 @property (nonatomic, strong, readwrite, nullable) UIImage *previewBtnImage;
 @property (nonatomic, strong, readwrite) UIFont *previewBtnFont;        // default is [UIFont boldSystemFontOfSize:12].

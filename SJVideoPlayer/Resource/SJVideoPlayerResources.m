@@ -11,6 +11,8 @@
 NSString *const SJVideoPlayer_ReplayText = @"SJVideoPlayer_ReplayText";
 NSString *const SJVideoPlayer_PreviewText = @"SJVideoPlayer_PreviewText";
 NSString *const SJVideoPlayer_PlayFailedText = @"SJVideoPlayer_PlayFailedText";
+NSString *const SJVideoPlayer_NotReachablePrompt = @"SJVideoPlayer_NotReachablePrompt";
+NSString *const SJVideoPlayer_ReachableViaWWANPrompt = @"SJVideoPlayer_ReachableViaWWANPrompt";
 
 @implementation SJVideoPlayerResources
 

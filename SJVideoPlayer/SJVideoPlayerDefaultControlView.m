@@ -50,6 +50,9 @@ NS_ASSUME_NONNULL_BEGIN
 
 @property (nonatomic, weak, readwrite, nullable) SJVideoPlayer *videoPlayer;
 
+@property (nonatomic, strong, readwrite, nullable) NSString *notReachablePrompt;
+@property (nonatomic, strong, readwrite, nullable) NSString *reachableViaWWANPrompt;
+
 @end
 NS_ASSUME_NONNULL_END
 
@@ -79,7 +82,7 @@ NS_ASSUME_NONNULL_END
 
 - (void)dealloc {
 #ifdef DEBUG
-    NSLog(@"%zd - %s", __LINE__, __func__);
+    NSLog(@"SJVideoPlayerLog: %zd - %s", __LINE__, __func__);
 #endif
 }
 
@@ -512,6 +515,8 @@ NS_ASSUME_NONNULL_END
         self.bottomSlider.trackImageView.backgroundColor = setting.progress_bufferColor;
         self.videoPlayer.placeholder = setting.placeholder;
         [self.draggingProgressView setPreviewImage:setting.placeholder];
+        self.notReachablePrompt = setting.notReachablePrompt;
+        self.reachableViaWWANPrompt = setting.reachableViaWWANPrompt;
     }];
 }
 
@@ -558,6 +563,8 @@ NS_ASSUME_NONNULL_END
     self.bottomControlView.progress = 0;
     self.bottomControlView.bufferProgress = 0;
     [self.bottomControlView setCurrentTimeStr:@"00:00" totalTimeStr:@"00:00"];
+    
+    [self _promptWithNetworkStatus:videoPlayer.networkStatus];
 }
 
 /// 播放状态改变.
@@ -609,7 +616,7 @@ NS_ASSUME_NONNULL_END
 
 - (void)videoPlayer:(SJVideoPlayer *)videoPlayer playFailed:(NSError *)error {
 #ifdef DEBUG
-    NSLog(@"%@", error);
+    NSLog(@"SJVideoPlayerLog: %@", error);
 #endif
     [self.loadingView stop];
 }
@@ -770,7 +777,7 @@ NS_ASSUME_NONNULL_END
         if ( !self ) return ;
         if ( error ) {
 #ifdef DEBUG
-            NSLog(@"Generate Preview Image Failed! error: %@", error);
+            NSLog(@"SJVideoPlayerLog: Generate Preview Image Failed! error: %@", error);
 #endif
         }
         else {
@@ -780,5 +787,30 @@ NS_ASSUME_NONNULL_END
             [self.topControlView update];
         }
     }];
+}
+
+#pragma mark - Network
+- (void)videoPlayer:(SJBaseVideoPlayer *)videoPlayer reachabilityChanged:(SJNetworkStatus)status {
+    [self _promptWithNetworkStatus:status];
+}
+
+- (void)_promptWithNetworkStatus:(SJNetworkStatus)status {
+    if ( self.disableNetworkStatusChangePrompt ) return;
+    if ( [self.videoPlayer.assetURL isFileURL] ) return; // return when is local video.
+    
+    switch ( status ) {
+        case SJNetworkStatus_NotReachable: {
+            [self.videoPlayer showTitle:self.notReachablePrompt duration:3];
+        }
+            break;
+        case SJNetworkStatus_ReachableViaWWAN: {
+            [self.videoPlayer showTitle:self.reachableViaWWANPrompt duration:3];
+        }
+            break;
+        case SJNetworkStatus_ReachableViaWiFi: {
+            
+        }
+            break;
+    }
 }
 @end

@@ -28,6 +28,13 @@ typedef NS_ENUM(NSUInteger, SJDisablePlayerGestureTypes) {
     SJDisablePlayerGestureTypes_All = 1 << 4
 };
 
+typedef NS_ENUM(NSInteger, SJNetworkStatus) {
+    SJNetworkStatus_NotReachable = 0,
+    SJNetworkStatus_ReachableViaWWAN = 1,
+    SJNetworkStatus_ReachableViaWiFi = 2
+};
+
+
 @protocol SJVideoPlayerControlLayerDataSource, SJVideoPlayerControlLayerDelegate;
 
 
@@ -41,7 +48,7 @@ typedef NS_ENUM(NSUInteger, SJDisablePlayerGestureTypes) {
 
 @property (nonatomic, weak, readwrite, nullable) id <SJVideoPlayerControlLayerDelegate> controlLayerDelegate;
 
-@property (nonatomic, strong, readonly) UIView *view;                   // 播放器视图
+@property (nonatomic, strong, readonly) UIView *view;                   // video player view.
 
 @property (nonatomic, assign, readonly) SJVideoPlayerPlayState state;   // 播放状态
 
@@ -66,7 +73,16 @@ typedef NS_ENUM(NSUInteger, SJDisablePlayerGestureTypes) {
 
 - (void)refresh;
 
-@property (nonatomic, copy, readwrite, nullable) void(^assetDeallocExeBlock)(__kindof SJBaseVideoPlayer *videoPlayer);
+@property (nonatomic, copy, readwrite, nullable) void(^assetDeallocExeBlock)(__kindof SJBaseVideoPlayer *videoPlayer);  
+
+@end
+
+
+#pragma mark - Network
+
+@interface SJBaseVideoPlayer (Network)
+
+@property (nonatomic, assign, readonly) SJNetworkStatus networkStatus;
 
 @end
 
@@ -131,7 +147,7 @@ typedef NS_ENUM(NSUInteger, SJDisablePlayerGestureTypes) {
 @end
 
 
-#pragma mark - Gesture
+#pragma mark - 手势
 
 @interface SJBaseVideoPlayer (GestureControl)
 
@@ -168,19 +184,22 @@ typedef NS_ENUM(NSUInteger, SJDisablePlayerGestureTypes) {
 
 @interface SJBaseVideoPlayer (Rotation)
 
-@property (nonatomic, readwrite) SJSupportedRotateViewOrientation supportedRotateViewOrientation; // 播放器旋转支持的方向, 默认为`SJSupportedRotateViewOrientation_All`
+@property (nonatomic, readwrite) BOOL disableRotation; // 是否禁止旋转.
 
-@property (nonatomic, readwrite) SJRotateViewOrientation rotateOrientation; // 直接旋转到指定方向, 可指定为`横屏播放`. 默认是`竖屏`.
+@property (nonatomic, readonly) BOOL isFullScreen;
 
-- (void)rotation; // 旋转
+@property (nonatomic, readwrite) SJSupportedRotateViewOrientation supportedRotateViewOrientation; // 旋转支持的方向, 默认为`SJSupportedRotateViewOrientation_All`
 
-@property (nonatomic, readwrite) BOOL disableRotation; // 禁止播放器旋转
+@property (nonatomic, readwrite) SJRotateViewOrientation rotateOrientation; // rotate to the specified orientation, Animated. 可指定为`横屏播放`. 默认是`竖屏`.
 
 @property (nonatomic, copy, readwrite, nullable) void(^willRotateScreen)(__kindof SJBaseVideoPlayer *player, BOOL isFullScreen); // 将要旋转的时候调用
 
-@property (nonatomic, copy, readwrite, nullable) void(^rotatedScreen)(__kindof SJBaseVideoPlayer *player, BOOL isFullScreen);    // 已旋转
+@property (nonatomic, copy, readwrite, nullable) void(^rotatedScreen)(__kindof SJBaseVideoPlayer *player, BOOL isFullScreen);    // 已旋转调用
 
-@property (nonatomic, readonly) BOOL isFullScreen;  // 是否全屏
+
+- (void)rotate:(SJRotateViewOrientation)orientation animated:(BOOL)animated;  // rotate to the specified orientation.
+
+- (void)rotation; // Animated.
 
 @end
 
@@ -344,6 +363,10 @@ typedef NS_ENUM(NSUInteger, SJDisablePlayerGestureTypes) {
 
 #pragma mark - size
 - (void)videoPlayer:(SJBaseVideoPlayer *)videoPlayer presentationSize:(CGSize)size;
+
+#pragma mark - Network
+/// 网络状态变更
+- (void)videoPlayer:(SJBaseVideoPlayer *)videoPlayer reachabilityChanged:(SJNetworkStatus)status;
 
 @end
 

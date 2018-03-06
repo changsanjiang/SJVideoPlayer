@@ -196,6 +196,13 @@
 			remoteGlobalIDString = 2B4D2E9223902CC17136C629FE09354A;
 			remoteInfo = SJOrentationObserver;
 		};
+		0F958A8730B457011D189C9C1640B020 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = D41D8CD98F00B204E9800998ECF8427E /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 0878FE74493CDEF0031DEC7F63EFD7F8;
+			remoteInfo = Reachability;
+		};
 		109E7838CEEE3371CFEF7396914DC36E /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = D41D8CD98F00B204E9800998ECF8427E /* Project object */;
@@ -1773,6 +1780,7 @@
 			);
 			dependencies = (
 				3475795884A8B74E45E15CE4F2B5FB02 /* PBXTargetDependency */,
+				B85DB485DBB22F4B46F346D4224EF86B /* PBXTargetDependency */,
 				76E40BB31D29A46F9FD487AEA4CF0A6C /* PBXTargetDependency */,
 				E78DCF539FC51C361AC7C038935F8ACF /* PBXTargetDependency */,
 				16C325346A43B0E10DC98F391458BDF1 /* PBXTargetDependency */,
@@ -2227,6 +2235,12 @@
 			name = SJVolBrigControl;
 			target = B15109371ACABB53228FAD7FFC884C85 /* SJVolBrigControl */;
 			targetProxy = 4E31E129079CC42630486906CB6062A1 /* PBXContainerItemProxy */;
+		};
+		B85DB485DBB22F4B46F346D4224EF86B /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			name = Reachability;
+			target = 0878FE74493CDEF0031DEC7F63EFD7F8 /* Reachability */;
+			targetProxy = 0F958A8730B457011D189C9C1640B020 /* PBXContainerItemProxy */;
 		};
 		BA02E1BF4E91F547F3E990FCD09BD1AB /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;

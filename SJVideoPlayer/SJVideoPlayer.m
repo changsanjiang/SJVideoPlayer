@@ -126,4 +126,11 @@ static dispatch_queue_t videoPlayerWorkQueue;
     return objc_getAssociatedObject(self, _cmd);
 }
 
+- (void)setDisableNetworkStatusChangePrompt:(BOOL)disableNetworkStatusChangePrompt {
+    self.defaultControlView.disableNetworkStatusChangePrompt = disableNetworkStatusChangePrompt;
+}
+
+- (BOOL)disableNetworkStatusChangePrompt {
+    return self.defaultControlView.disableNetworkStatusChangePrompt;
+}
 @end

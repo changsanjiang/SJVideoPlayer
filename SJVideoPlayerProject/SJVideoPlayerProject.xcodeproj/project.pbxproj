@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		77033C10204D45BB008F1ED5 /* SJVideoPlayerReachabilityPromptView.m in Sources */ = {isa = PBXBuildFile; fileRef = 77033C0F204D45BB008F1ED5 /* SJVideoPlayerReachabilityPromptView.m */; };
 		7706E1231FF74B24006E0B56 /* loading.gif in Resources */ = {isa = PBXBuildFile; fileRef = 7706E1221FF74B24006E0B56 /* loading.gif */; };
 		7706E1251FF74C42006E0B56 /* slider.gif in Resources */ = {isa = PBXBuildFile; fileRef = 7706E1241FF74C42006E0B56 /* slider.gif */; };
 		772005772029BBC7009F0190 /* SJMoreSettingItems.m in Sources */ = {isa = PBXBuildFile; fileRef = 772005762029BBC7009F0190 /* SJMoreSettingItems.m */; };
@@ -76,6 +77,8 @@
 
 /* Begin PBXFileReference section */
 		3D9B385C4F414458155F268D /* Pods-SJVideoPlayerProject.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-SJVideoPlayerProject.debug.xcconfig"; path = "Pods/Target Support Files/Pods-SJVideoPlayerProject/Pods-SJVideoPlayerProject.debug.xcconfig"; sourceTree = "<group>"; };
+		77033C0E204D45BB008F1ED5 /* SJVideoPlayerReachabilityPromptView.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = SJVideoPlayerReachabilityPromptView.h; sourceTree = "<group>"; };
+		77033C0F204D45BB008F1ED5 /* SJVideoPlayerReachabilityPromptView.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = SJVideoPlayerReachabilityPromptView.m; sourceTree = "<group>"; };
 		7706E1221FF74B24006E0B56 /* loading.gif */ = {isa = PBXFileReference; lastKnownFileType = image.gif; path = loading.gif; sourceTree = "<group>"; };
 		7706E1241FF74C42006E0B56 /* slider.gif */ = {isa = PBXFileReference; lastKnownFileType = image.gif; path = slider.gif; sourceTree = "<group>"; };
 		772005752029BBC7009F0190 /* SJMoreSettingItems.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = SJMoreSettingItems.h; sourceTree = "<group>"; };
@@ -363,6 +366,8 @@
 				A6E6D3162028BE9B00CB9BAE /* SJVideoPlayerCenterControlView.m */,
 				A6E6D3102028BE9B00CB9BAE /* SJVideoPlayerBottomControlView.h */,
 				A6E6D3152028BE9B00CB9BAE /* SJVideoPlayerBottomControlView.m */,
+				77033C0E204D45BB008F1ED5 /* SJVideoPlayerReachabilityPromptView.h */,
+				77033C0F204D45BB008F1ED5 /* SJVideoPlayerReachabilityPromptView.m */,
 			);
 			name = ControlViews;
 			sourceTree = "<group>";
@@ -771,6 +776,7 @@
 				775C0AC920295C660008EDA7 /* UIView+SJVideoPlayerSetting.m in Sources */,
 				A6E6D3522028BE9B00CB9BAE /* SJVideoPlayerURLAsset+SJControlAdd.m in Sources */,
 				A6E6D3502028BE9B00CB9BAE /* UIView+SJControlAdd.m in Sources */,
+				77033C10204D45BB008F1ED5 /* SJVideoPlayerReachabilityPromptView.m in Sources */,
 				A6E6D3562028BE9B00CB9BAE /* SJVideoPlayerLeftControlView.m in Sources */,
 				A6F4E97E2007A7EC00716B9C /* NestedTableViewCell.m in Sources */,
 				774B25201FCEBA5D002113CC /* ViewController.m in Sources */,

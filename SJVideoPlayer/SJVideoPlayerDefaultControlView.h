@@ -23,6 +23,8 @@ NS_ASSUME_NONNULL_BEGIN
 
 @property (nonatomic, strong, readwrite, nullable) NSArray<SJVideoPlayerMoreSetting *> *moreSettings;
 
+@property (nonatomic, assign, readwrite) BOOL disableNetworkStatusChangePrompt; // default is no.
+
 @end
 
 @protocol SJVideoPlayerDefaultControlViewDelegate <NSObject>

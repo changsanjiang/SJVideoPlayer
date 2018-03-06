@@ -13,7 +13,6 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
-/// 支持的方向
 typedef NS_ENUM(NSUInteger, SJSupportedRotateViewOrientation) {
     SJSupportedRotateViewOrientation_All,
     SJSupportedRotateViewOrientation_Portrait = 1 << 0,
@@ -21,7 +20,6 @@ typedef NS_ENUM(NSUInteger, SJSupportedRotateViewOrientation) {
     SJSupportedRotateViewOrientation_LandscapeRight = 1 << 2, // UIDeviceOrientationLandscapeRight
 };
 
-/// 旋转方向
 typedef NS_ENUM(NSUInteger, SJRotateViewOrientation) {
     SJRotateViewOrientation_Portrait,
     SJRotateViewOrientation_LandscapeLeft,  // UIDeviceOrientationLandscapeLeft
@@ -30,26 +28,28 @@ typedef NS_ENUM(NSUInteger, SJRotateViewOrientation) {
 
 @interface SJOrentationObserver : NSObject
 
+@property (nonatomic, copy, readwrite, nullable) BOOL(^rotationCondition)(SJOrentationObserver *observer); // rotate condition, u must set this block, return yes to trigger the rotation. 返回 YES 才会旋转.
+
+- (instancetype)initWithTarget:(UIView *)rotateView container:(UIView *)rotateViewSuperView rotationCondition:(BOOL(^)(SJOrentationObserver *observer))rotationCondition;
+
 - (instancetype)initWithTarget:(UIView *)rotateView container:(UIView *)rotateViewSuperView;
 
-@property (nonatomic, readwrite) SJSupportedRotateViewOrientation supportedRotateViewOrientation; // 旋转支持的方向, 默认全部支持
+@property (nonatomic, assign, readwrite) float duration; // rotate duration, default is 0.25
 
-@property (nonatomic, readwrite) SJRotateViewOrientation rotateOrientation; // 旋转到指定方向
+@property (nonatomic, readwrite) SJSupportedRotateViewOrientation supportedRotateViewOrientation;
+
+@property (nonatomic, readwrite) SJRotateViewOrientation rotateOrientation; // rotate to the specified orientation, Animated.
 
 @property (nonatomic, assign, readonly, getter=isFullScreen) BOOL fullScreen;
-
-@property (nonatomic, assign, readwrite) float duration; // 旋转时间, default is 0.25
-
-@property (nonatomic, copy, readwrite, nullable) BOOL(^rotationCondition)(SJOrentationObserver *observer); // 旋转条件, 返回 YES 才会旋转, 默认为 nil.
 
 @property (nonatomic, copy, readwrite, nullable) void(^orientationWillChange)(SJOrentationObserver *observer, BOOL isFullScreen);
 
 @property (nonatomic, copy, readwrite, nullable) void(^orientationChanged)(SJOrentationObserver *observer, BOOL isFullScreen);
 
-- (BOOL)_changeOrientation;
+- (BOOL)_changeOrientation; // Animated.
+
+- (void)rotate:(SJRotateViewOrientation)orientation animated:(BOOL)animated;  // rotate to the specified orientation.
 
 @end
 
 NS_ASSUME_NONNULL_END
-
-

@@ -113,6 +113,73 @@
 - (BOOL)isM3u8 {
     return [self.asset.assetURL.absoluteString containsString:@".m3u8"];
 }
+
+- (BOOL)converted {
+    return self.asset.converted;
+}
+
+- (void)convertToOriginal {
+    [self.asset convertToOriginal];
+}
+
+/**
+ *  player in a view.
+ *
+ *  video player -> UIView
+ **/
+- (void)convertToUIView {
+    [self.asset convertToUIView];
+}
+
+/**
+ *  table or collection cell. player in a tableOrCollection cell.
+ *
+ *  video player -> cell -> table || collection view
+ *
+ **/
+- (void)convertToCellWithTableOrCollectionView:(__unsafe_unretained UIScrollView *)tableOrCollectionView
+                                     indexPath:(NSIndexPath *)indexPath
+                            playerSuperviewTag:(NSInteger)superviewTag {
+    [self.asset convertToCellWithTableOrCollectionView:tableOrCollectionView indexPath:indexPath playerSuperviewTag:superviewTag];
+}
+
+/**
+ *  table header view. player in a table header view.
+ *
+ *  video player -> table header view -> table view
+ *
+ **/
+- (void)convertToTableHeaderViewWithPlayerSuperView:(__weak UIView *)superView
+                                          tableView:(__unsafe_unretained UITableView *)tableView {
+    [self.asset convertToTableHeaderViewWithPlayerSuperView:superView tableView:tableView];
+}
+
+/**
+ *  table header view. player in a collection view cell, and this collection view in a table header view.
+ *
+ *  video player -> cell -> collection view -> table header view -> table view
+ *
+ **/
+- (void)convertToTableHeaderViewWithCollectionView:(__weak UICollectionView *)collectionView
+                           collectionCellIndexPath:(NSIndexPath *)indexPath
+                                playerSuperViewTag:(NSInteger)playerSuperViewTag
+                                     rootTableView:(__unsafe_unretained UITableView *)rootTableView {
+    [self.asset convertToTableHeaderViewWithCollectionView:collectionView collectionCellIndexPath:indexPath playerSuperViewTag:playerSuperViewTag rootTableView:rootTableView];
+}
+
+/**
+ *  collection cell. player in a collection cell. and this collectionView in a tableView.
+ *
+ *  video player -> collection cell -> collection view -> table cell -> table view.
+ *
+ **/
+- (void)convertToCellWithIndexPath:(NSIndexPath *)indexPath
+                      superviewTag:(NSInteger)superviewTag
+           collectionViewIndexPath:(NSIndexPath *)collectionViewIndexPath
+                 collectionViewTag:(NSInteger)collectionViewTag
+                     rootTableView:(__unsafe_unretained UITableView *)rootTableView {
+    [self.asset convertToCellWithIndexPath:indexPath superviewTag:superviewTag collectionViewIndexPath:collectionViewIndexPath collectionViewTag:collectionViewTag rootTableView:rootTableView];
+}
 @end
 
 NSString * const kSJVideoPlayerAssetKey = @"asset";

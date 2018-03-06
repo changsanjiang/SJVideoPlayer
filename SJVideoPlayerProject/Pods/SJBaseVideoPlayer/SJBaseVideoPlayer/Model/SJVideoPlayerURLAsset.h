@@ -14,6 +14,59 @@ NS_ASSUME_NONNULL_BEGIN
 
 @property (nonatomic, assign, readonly) BOOL isM3u8;
 
+@property (nonatomic, assign, readonly) BOOL converted; // 是否被转化过.
+
+- (void)convertToOriginal; // 还原
+
+/**
+ *  player in a view.
+ *
+ *  video player -> UIView
+ **/
+- (void)convertToUIView;
+
+/**
+ *  table or collection cell. player in a tableOrCollection cell.
+ *
+ *  video player -> cell -> table || collection view
+ *
+ **/
+- (void)convertToCellWithTableOrCollectionView:(__unsafe_unretained UIScrollView *)tableOrCollectionView
+                                     indexPath:(NSIndexPath *)indexPath
+                            playerSuperviewTag:(NSInteger)superviewTag;
+
+/**
+ *  table header view. player in a table header view.
+ *
+ *  video player -> table header view -> table view
+ *
+ **/
+- (void)convertToTableHeaderViewWithPlayerSuperView:(__weak UIView *)superView
+                                          tableView:(__unsafe_unretained UITableView *)tableView;
+
+/**
+ *  table header view. player in a collection view cell, and this collection view in a table header view.
+ *
+ *  video player -> cell -> collection view -> table header view -> table view
+ *
+ **/
+- (void)convertToTableHeaderViewWithCollectionView:(__weak UICollectionView *)collectionView
+                           collectionCellIndexPath:(NSIndexPath *)indexPath
+                                playerSuperViewTag:(NSInteger)playerSuperViewTag
+                                     rootTableView:(__unsafe_unretained UITableView *)rootTableView;
+
+/**
+ *  collection cell. player in a collection cell. and this collectionView in a tableView.
+ *
+ *  video player -> collection cell -> collection view -> table cell -> table view.
+ *
+ **/
+- (void)convertToCellWithIndexPath:(NSIndexPath *)indexPath
+                      superviewTag:(NSInteger)superviewTag
+           collectionViewIndexPath:(NSIndexPath *)collectionViewIndexPath
+                 collectionViewTag:(NSInteger)collectionViewTag
+                     rootTableView:(__unsafe_unretained UITableView *)rootTableView;
+
 #pragma mark -
 
 - (instancetype)initWithAssetURL:(NSURL *)assetURL;

@@ -251,13 +251,6 @@
 			path = Model;
 			sourceTree = "<group>";
 		};
-		772005702029B5C7009F0190 /* View */ = {
-			isa = PBXGroup;
-			children = (
-			);
-			path = View;
-			sourceTree = "<group>";
-		};
 		772005712029B5CB009F0190 /* Controller */ = {
 			isa = PBXGroup;
 			children = (
@@ -438,7 +431,6 @@
 			isa = PBXGroup;
 			children = (
 				772005712029B5CB009F0190 /* Controller */,
-				772005702029B5C7009F0190 /* View */,
 				7720056F2029B5C0009F0190 /* Model */,
 			);
 			name = "Single_单例";

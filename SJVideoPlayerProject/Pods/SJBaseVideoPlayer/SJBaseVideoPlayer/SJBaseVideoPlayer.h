@@ -414,6 +414,31 @@ typedef NS_ENUM(NSInteger, SJNetworkStatus) {
 
 
 
+#pragma mark - 输出
+
+@interface SJBaseVideoPlayer (Export)
+
+/**
+ export session.
+ 
+ @param beginTime           unit is sec.
+ @param endTime             unit is sec.
+ @param presetName 	        default is `AVAssetExportPresetMediumQuality`.
+ @param progress            progress
+ @param completion 	        completion
+ @param failure 	        failure
+ */
+- (void)exportWithBeginTime:(NSTimeInterval)beginTime
+                    endTime:(NSTimeInterval)endTime
+                 presetName:(nullable NSString *)presetName
+                   progress:(void(^)(__kindof SJBaseVideoPlayer *videoPlayer, float progress))progress
+                 completion:(void(^)(__kindof SJBaseVideoPlayer *videoPlayer, SJVideoPlayerURLAsset *asset, NSURL *fileURL, UIImage *thumbImage))completion
+                    failure:(void(^)(__kindof SJBaseVideoPlayer *videoPlayer, NSError *error))failure;
+
+@end
+
+
+
 #pragma mark - 在`tableView`或`collectionView`上播放
 
 @interface SJBaseVideoPlayer (ScrollView)

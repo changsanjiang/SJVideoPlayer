@@ -199,6 +199,18 @@ NS_ASSUME_NONNULL_BEGIN
 - (void)cancelPreviewImagesGeneration;
 
 
+#pragma mark - export
+
+/**
+ preset name default is `AVAssetExportPresetMediumQuality`.
+ */
+- (void)exportWithBeginTime:(NSTimeInterval)beginTime
+                    endTime:(NSTimeInterval)endTime
+                 presetName:(nullable NSString *)presetName
+                   progress:(void(^)(SJVideoPlayerAssetCarrier *asset, float progress))progress
+                 completion:(void(^)(SJVideoPlayerAssetCarrier *asset, AVAsset *sandboxAsset, NSURL *fileURL, UIImage *thumbImage))completion
+                    failure:(void(^)(SJVideoPlayerAssetCarrier *asset, NSError *error))failure;
+
 #pragma mark - seek to time
 - (void)jumpedToTime:(NSTimeInterval)time completionHandler:(void (^ __nullable)(BOOL finished))completionHandler;
 

@@ -1264,6 +1264,35 @@ NS_ASSUME_NONNULL_END
 @end
 
 
+#pragma mark - 输出
+
+@implementation SJBaseVideoPlayer (Export)
+
+- (void)exportWithBeginTime:(NSTimeInterval)beginTime
+                    endTime:(NSTimeInterval)endTime
+                 presetName:(nullable NSString *)presetName
+                   progress:(void(^)(__kindof SJBaseVideoPlayer *videoPlayer, float progress))pro
+                 completion:(void(^)(__kindof SJBaseVideoPlayer *videoPlayer, SJVideoPlayerURLAsset *asset, NSURL *fileURL, UIImage *thumbImage))completion
+                    failure:(void(^)(__kindof SJBaseVideoPlayer *videoPlayer, NSError *error))failure {
+    __weak typeof(self) _self = self;
+    [self.asset exportWithBeginTime:beginTime endTime:endTime presetName:presetName progress:^(SJVideoPlayerAssetCarrier * _Nonnull asset, float progress) {
+        __strong typeof(_self) self = _self;
+        if ( !self ) return;
+        if ( pro ) pro(self, progress);
+    } completion:^(SJVideoPlayerAssetCarrier * _Nonnull asset, AVAsset * _Nonnull sandboxAsset, NSURL * _Nonnull fileURL, UIImage * _Nonnull thumbImage) {
+        __strong typeof(_self) self = _self;
+        if ( !self ) return;
+        if ( completion ) completion(self, [[SJVideoPlayerURLAsset alloc] initWithAssetURL:fileURL], fileURL, thumbImage);
+    } failure:^(SJVideoPlayerAssetCarrier * _Nonnull asset, NSError * _Nonnull error) {
+        __strong typeof(_self) self = _self;
+        if ( !self ) return;
+        if ( failure ) failure(self, error);
+    }];
+}
+
+@end
+
+
 #pragma mark - 在`tableView`或`collectionView`上播放
 
 @implementation SJBaseVideoPlayer (ScrollView)

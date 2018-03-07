@@ -133,10 +133,17 @@ NS_ASSUME_NONNULL_END
     _asset = asset;
     if ( !asset ) return;
     if ( self.mute ) self.mute = YES; // update
-    self.presentView.player = self.asset.player;
     [self _itemPrepareToPlay];
     
     __weak typeof(self) _self = self;
+    asset.loadedPlayerExeBlock = ^(SJVideoPlayerAssetCarrier * _Nonnull asset) {
+        __strong typeof(_self) self = _self;
+        if ( !self ) return;
+        self.presentView.player = asset.player;
+    };
+    
+    if ( asset.player ) asset.loadedPlayerExeBlock(asset);
+    
     asset.playerItemStateChanged = ^(SJVideoPlayerAssetCarrier * _Nonnull asset, AVPlayerItemStatus status) {
         __strong typeof(_self) self = _self;
         if ( !self ) return;
@@ -878,11 +885,6 @@ NS_ASSUME_NONNULL_END
         __strong typeof(_self) self = _self;
         if ( !self ) return;
         [self.asset refreshAVPlayer];
-        dispatch_async(dispatch_get_main_queue(), ^{
-            __strong typeof(_self) self = _self;
-            if ( !self ) return;
-            self.presentView.player = self.asset.player;
-        });
     });
 }
 

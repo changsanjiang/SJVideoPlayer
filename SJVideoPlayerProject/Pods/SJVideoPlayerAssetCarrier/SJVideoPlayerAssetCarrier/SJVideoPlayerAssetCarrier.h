@@ -161,6 +161,8 @@ NS_ASSUME_NONNULL_BEGIN
 
 
 #pragma mark - player status
+@property (nonatomic, copy, readwrite, nullable) void(^loadedPlayerExeBlock)(SJVideoPlayerAssetCarrier *asset);
+
 @property (nonatomic, copy, readwrite, nullable) void(^playerItemStateChanged)(SJVideoPlayerAssetCarrier *asset, AVPlayerItemStatus status);
 
 @property (nonatomic, copy, readwrite, nullable) void(^playTimeChanged)(SJVideoPlayerAssetCarrier *asset, NSTimeInterval currentTime, NSTimeInterval duration);

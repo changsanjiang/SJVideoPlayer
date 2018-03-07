@@ -28,10 +28,23 @@
 #import <objc/message.h>
 #import "UIView+SJControlAdd.h"
 
-
 #pragma mark -
 
 NS_ASSUME_NONNULL_BEGIN
+
+typedef void(^Block)(void);
+
+static NSTimeInterval CommonAnimaDuration = 0.25;
+
+inline static void UIView_Animations(NSTimeInterval duration, Block __nullable animations, Block __nullable completion);
+
+@interface _SJAnimationContext : NSObject
+@property (nonatomic, copy, nullable) Block completion;
+- (instancetype)initWithCompletion:(nullable Block)completion;
+@end
+
+
+#pragma mark -
 @interface SJVideoPlayerDefaultControlView ()<SJVideoPlayerLeftControlViewDelegate, SJVideoPlayerBottomControlViewDelegate, SJVideoPlayerTopControlViewDelegate, SJVideoPlayerPreviewViewDelegate, SJVideoPlayerCenterControlViewDelegate>
 
 @property (nonatomic, assign) BOOL hasBeenGeneratedPreviewImages;
@@ -229,31 +242,30 @@ NS_ASSUME_NONNULL_END
                 if ( supported == SJSupportedRotateViewOrientation_All ) {
                     supported  = SJSupportedRotateViewOrientation_Portrait | SJSupportedRotateViewOrientation_LandscapeLeft | SJSupportedRotateViewOrientation_LandscapeRight;
                 }
-                
                 if ( SJSupportedRotateViewOrientation_Portrait == (supported & SJSupportedRotateViewOrientation_Portrait) ) {
                     [_videoPlayer rotation];
+                    return;
                 }
             }
-            else {
-                if ( [self.delegate respondsToSelector:@selector(clickedBackBtnOnControlView:)] ) {
-                    [self.delegate clickedBackBtnOnControlView:self];
-                }
+            
+            if ( [self.delegate respondsToSelector:@selector(clickedBackBtnOnControlView:)] ) {
+                [self.delegate clickedBackBtnOnControlView:self];
             }
         }
             break;
         case SJVideoPlayerTopViewTag_More: {
             [_videoPlayer controlLayerNeedDisappear];
-            [UIView animateWithDuration:0.3 animations:^{
+            UIView_Animations(CommonAnimaDuration, ^{
                 [self.moreSettingsView appear];
-            }];
+            }, nil);
         }
             break;
         case SJVideoPlayerTopViewTag_Preview: {
             if ( self.previewView.appearState )  [self.videoPlayer controlLayerNeedAppear];
-            [UIView animateWithDuration:0.3 animations:^{
+            UIView_Animations(CommonAnimaDuration, ^{
                 if ( !self.previewView.appearState ) [self.previewView appear];
                 else [self.previewView disappear];
-            }];
+            }, nil);
         }
             break;
     }
@@ -332,9 +344,9 @@ NS_ASSUME_NONNULL_END
 }
 
 - (void)sliderWillBeginDraggingForBottomView:(SJVideoPlayerBottomControlView *)view {
-    [UIView animateWithDuration:0.25 animations:^{
+    UIView_Animations(CommonAnimaDuration, ^{
         [self.draggingProgressView appear];
-    }];
+    }, nil);
     
     [self.draggingProgressView setCurrentTimeStr:self.videoPlayer.currentTimeStr totalTimeStr:self.videoPlayer.totalTimeStr];
     [_videoPlayer controlLayerNeedDisappear];
@@ -356,10 +368,10 @@ NS_ASSUME_NONNULL_END
 }
 
 - (void)sliderDidEndDraggingForBottomView:(SJVideoPlayerBottomControlView *)view {
-    [UIView animateWithDuration:0.25 animations:^{
+    UIView_Animations(CommonAnimaDuration, ^{
         [self.draggingProgressView disappear];
-    }];
-    
+    }, nil);
+
     __weak typeof(self) _self = self;
     [self.videoPlayer jumpedToTime:self.draggingProgressView.progress * self.videoPlayer.totalTime completionHandler:^(BOOL finished) {
         __strong typeof(_self) self = _self;
@@ -457,10 +469,10 @@ NS_ASSUME_NONNULL_END
         setting._exeBlock = ^(SJVideoPlayerMoreSetting * _Nonnull setting) {
             __strong typeof(_self) self = _self;
             if ( !self ) return;
-            [UIView animateWithDuration:0.3 animations:^{
+            UIView_Animations(CommonAnimaDuration, ^{
                 [self.moreSettingsView disappear];
                 [self.moreSecondarySettingView appear];
-            }];
+            }, nil);
             self.moreSecondarySettingView.twoLevelSettings = setting;
             setting.clickedExeBlock(setting);
         };
@@ -469,10 +481,10 @@ NS_ASSUME_NONNULL_END
         setting._exeBlock = ^(SJVideoPlayerMoreSetting * _Nonnull setting) {
             __strong typeof(_self) self = _self;
             if ( !self ) return;
-            [UIView animateWithDuration:0.3 animations:^{
+            UIView_Animations(CommonAnimaDuration, ^{
                 [self.moreSettingsView disappear];
                 [self.moreSecondarySettingView disappear];
-            }];
+            }, nil);
             setting.clickedExeBlock(setting);
         };
     }
@@ -565,7 +577,7 @@ NS_ASSUME_NONNULL_END
     // reset
     self.topControlView.model.alwaysShowTitle = asset.alwaysShowTitle;
     self.topControlView.model.title = asset.title;
-    self.topControlView.model.playOnScrollView = videoPlayer.playOnScrollView;
+    self.topControlView.model.isPlayOnScrollView = videoPlayer.isPlayOnScrollView;
     self.topControlView.model.fullscreen = videoPlayer.isFullScreen;
     [self.topControlView update];
     
@@ -623,16 +635,16 @@ NS_ASSUME_NONNULL_END
     }
     
     if ( SJVideoPlayerPlayState_PlayFailed == state || SJVideoPlayerPlayState_PlayEnd == state ) {
-        [UIView animateWithDuration:0.3 animations:^{
+        UIView_Animations(CommonAnimaDuration, ^{
             [self.centerControlView appear];
-        }];
+        }, nil);
         if ( SJVideoPlayerPlayState_PlayFailed == state ) [self.centerControlView failedState];
         else [self.centerControlView replayState];
     }
     else if ( self.centerControlView.appearState ) {
-        [UIView animateWithDuration:0.3 animations:^{
+        UIView_Animations(CommonAnimaDuration, ^{
             [self.centerControlView disappear];
-        }];
+        }, nil);
     }
 }
 
@@ -656,6 +668,10 @@ NS_ASSUME_NONNULL_END
     [self.loadingView start];
 }
 
+- (void)cancelLoading:(__kindof SJBaseVideoPlayer *)videoPlayer {
+    [self.loadingView stop];
+}
+
 /// 缓冲完成.
 - (void)loadCompletion:(SJVideoPlayer *)videoPlayer {
     [self.loadingView stop];
@@ -664,9 +680,9 @@ NS_ASSUME_NONNULL_END
 #pragma mark 显示/消失
 /// 控制层需要显示.
 - (void)controlLayerNeedAppear:(SJVideoPlayer *)videoPlayer {
-    [UIView animateWithDuration:0.3 animations:^{
+    UIView_Animations(CommonAnimaDuration, ^{
         if ( SJVideoPlayerPlayState_PlayFailed != videoPlayer.state ) {
-            if ( videoPlayer.playOnScrollView && !videoPlayer.isFullScreen ) {
+            if ( videoPlayer.isPlayOnScrollView && !videoPlayer.isFullScreen ) {
                 if ( videoPlayer.URLAsset.alwaysShowTitle ) [_topControlView appear];
                 else [_topControlView disappear];
             }
@@ -685,12 +701,12 @@ NS_ASSUME_NONNULL_END
             [_leftControlView disappear];
             [_bottomControlView disappear];
         }
-    }];
+    }, nil);
 }
 
 /// 控制层需要隐藏.
 - (void)controlLayerNeedDisappear:(SJVideoPlayer *)videoPlayer {
-    [UIView animateWithDuration:0.3 animations:^{
+    UIView_Animations(CommonAnimaDuration, ^{
         if ( SJVideoPlayerPlayState_PlayFailed != videoPlayer.state ) {
             [_topControlView disappear];
             [_bottomControlView disappear];
@@ -703,7 +719,7 @@ NS_ASSUME_NONNULL_END
             [_leftControlView disappear];
             [_bottomControlView disappear];
         }
-    }];
+    }, nil);
 }
 
 ///  在`tableView`或`collectionView`上将要显示的时候调用.
@@ -721,9 +737,9 @@ NS_ASSUME_NONNULL_END
 /// 播放器被锁屏, 此时将不旋转, 不触发手势相关事件.
 - (void)lockedVideoPlayer:(SJVideoPlayer *)videoPlayer {
     [videoPlayer controlLayerNeedDisappear];
-    [UIView animateWithDuration:0.3 animations:^{
+    UIView_Animations(CommonAnimaDuration, ^{
         [_leftControlView appear];
-    }];
+    }, nil);
 }
 
 /// 播放器解除锁屏.
@@ -757,9 +773,9 @@ NS_ASSUME_NONNULL_END
 
 /// 播放器完成旋转.
 - (void)videoPlayer:(SJVideoPlayer *)videoPlayer didEndRotation:(BOOL)isFull {
-    [UIView animateWithDuration:0.3 animations:^{
-       [self.bottomSlider appear];
-    }];
+    UIView_Animations(CommonAnimaDuration, ^{
+        [self.bottomSlider appear];
+    }, nil);
 }
 
 #pragma mark 音量 / 亮度 / 播放速度
@@ -844,3 +860,32 @@ NS_ASSUME_NONNULL_END
     }
 }
 @end
+
+
+#pragma mark - other
+
+@implementation _SJAnimationContext
+- (instancetype)initWithCompletion:(nullable Block)completion {
+    self = [super init];
+    if ( !self ) return nil;
+    _completion = completion;
+    return self;
+}
+- (void)dealloc {
+    if ( _completion ) _completion();
+}
+@end
+
+inline static void UIView_Animations(NSTimeInterval duration, Block __nullable animations, Block __nullable completion) {
+    if ( completion ) {
+        _SJAnimationContext *context = [[_SJAnimationContext alloc] initWithCompletion:completion];
+        [UIView beginAnimations:nil context:(void *)context];
+        [UIView setAnimationDelegate:context];
+    }
+    else {
+        [UIView beginAnimations:nil context:NULL];
+    }
+    [UIView setAnimationDuration:duration];
+    if ( animations ) animations();
+        [UIView commitAnimations];
+}

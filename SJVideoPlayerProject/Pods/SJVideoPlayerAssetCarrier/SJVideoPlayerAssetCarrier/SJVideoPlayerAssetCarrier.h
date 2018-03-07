@@ -108,7 +108,8 @@ NS_ASSUME_NONNULL_BEGIN
 
 /**
  table or collection cell. player in a collection cell. and this collectionView in a tableView.
- 
+ video player -> collection cell -> collection view -> table cell -> table view.
+
  @param assetURL                        assetURL.
  @param beginTime                       begin time. unit is sec.
  @param indexPath                       collection cell indexPath.
@@ -128,7 +129,8 @@ NS_ASSUME_NONNULL_BEGIN
 
 /**
  table or collection cell. player in a collection cell. and this collectionView in a tableView.
- 
+ video player -> collection cell -> collection view -> table cell -> table view.
+
  @param assetURL                        assetURL.
  @param beginTime                       begin time. unit is sec.
  @param indexPath                       collection cell indexPath.
@@ -171,7 +173,9 @@ NS_ASSUME_NONNULL_BEGIN
 /// 缓冲进度回调
 @property (nonatomic, copy, readwrite, nullable) void(^loadedTimeProgress)(float progress);
 /// 缓冲已为空, 开始缓冲
-@property (nonatomic, copy, readwrite, nullable) void(^beingBuffered)(BOOL state);
+@property (nonatomic, copy, readwrite, nullable) void(^startBuffering)(SJVideoPlayerAssetCarrier *asset);
+@property (nonatomic, copy, readwrite, nullable) void(^completeBuffer)(SJVideoPlayerAssetCarrier *asset);
+@property (nonatomic, copy, readwrite, nullable) void(^cancelledBuffer)(SJVideoPlayerAssetCarrier *asset);
 
 
 #pragma mark - scroll view

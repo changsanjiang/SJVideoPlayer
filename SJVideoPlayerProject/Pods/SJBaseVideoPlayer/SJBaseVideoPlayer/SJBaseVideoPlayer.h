@@ -48,43 +48,126 @@ typedef NS_ENUM(NSInteger, SJNetworkStatus) {
 
 @property (nonatomic, weak, readwrite, nullable) id <SJVideoPlayerControlLayerDelegate> controlLayerDelegate;
 
-@property (nonatomic, strong, readonly) UIView *view;                   // video player view.
+@property (nonatomic, strong, readonly) UIView *view;
 
-@property (nonatomic, assign, readonly) SJVideoPlayerPlayState state;   // 播放状态
+/**
+ play state.
+ 
+ If this value is changed, the delegate method will be called.  - (void)videoPlayer:(__kindof SJBaseVideoPlayer *)videoPlayer stateChanged:(SJVideoPlayerPlayState)state;
+ 
+ readonly.
+ */
+@property (nonatomic, readonly) SJVideoPlayerPlayState state;
 
-@property (nonatomic, strong, readonly, nullable) NSError *error;       // 播放报错的error
+@property (nonatomic, strong, readonly, nullable) NSError *error;
 
-@property (nonatomic, strong, nullable) UIImage *placeholder;           // 占位图
+@property (nonatomic, strong, nullable) UIImage *placeholder;
 
 @end
+
+
+
 
 
 #pragma mark - 播放
 
 @interface SJBaseVideoPlayer (Play)
 
-@property (nonatomic, strong, readwrite, nullable) NSURL *assetURL;
+/**
+ Create an asset to play. (Any of the following initialization)
+ 
+ 1.  video player -> UIView
+ 2.  video player -> cell            -> table Or collection view
+ 3.  video player -> table header    -> table view
+ 4.  video player -> cell            -> collection view -> table header -> table view
+ 5.  video player -> collection cell -> collection view -> table cell   -> table view
+ 
+ If this value is changed, the delegate method will be called. - (void)videoPlayer:(__kindof SJBaseVideoPlayer *)videoPlayer prepareToPlay:(SJVideoPlayerURLAsset *)asset
+ 
+ readwrite.
+ */
+@property (nonatomic, strong, nullable) SJVideoPlayerURLAsset *URLAsset;
 
-@property (nonatomic, strong, readwrite, nullable) SJVideoPlayerURLAsset *URLAsset;
+/**
+ The current asset URL. nullable.
+ 
+ readwrite.
+ */
+@property (nonatomic, strong, readwrite, nullable) NSURL *assetURL;
 
 - (void)playWithURL:(NSURL *)playURL;
 
-- (void)playWithURL:(NSURL *)playURL jumpedToTime:(NSTimeInterval)time;
+- (void)playWithURL:(NSURL *)playURL jumpedToTime:(NSTimeInterval)time; // unit is sec.
 
+/**
+ Refresh current asset.
+ */
 - (void)refresh;
 
-@property (nonatomic, copy, readwrite, nullable) void(^assetDeallocExeBlock)(__kindof SJBaseVideoPlayer *videoPlayer);  
+/**
+ The block invoked When an asset is dealloc.
+ For example, you can record its playback progress(videoPlayer.progress).
+ 
+ readwrite.
+ */
+@property (nonatomic, copy, nullable) void(^assetDeallocExeBlock)(__kindof SJBaseVideoPlayer *videoPlayer);
 
 @end
+
+
+
 
 
 #pragma mark - Network
 
 @interface SJBaseVideoPlayer (Network)
 
-@property (nonatomic, assign, readonly) SJNetworkStatus networkStatus;
+@property (nonatomic, readonly) SJNetworkStatus networkStatus;
 
 @end
+
+
+
+
+
+#pragma mark - 提示
+
+@interface SJBaseVideoPlayer (Prompt)
+
+/**
+ prompt.update(^(SJPromptConfig * _Nonnull config) {
+    config.cornerRadius = 4;                    // default cornerRadius.
+    config.font = [UIFont systemFontOfSize:12]; // default font.
+ });
+ 
+ readonly.
+ */
+@property (nonatomic, strong, readonly) SJPrompt *prompt;
+
+/**
+ The middle of the player view shows the specified title. duration default is 1.0.
+
+ @param title       prompt.
+ */
+- (void)showTitle:(NSString *)title;
+
+/**
+ The middle of the view shows the specified title.
+
+ @param title       prompt.
+ @param duration    prompt duration. duration if value set -1, prompt will always show.
+ */
+- (void)showTitle:(NSString *)title duration:(NSTimeInterval)duration;
+
+/**
+ Hidden Prompt.
+ */
+- (void)hiddenTitle;
+
+@end
+
+
+
 
 
 #pragma mark - 时间
@@ -108,15 +191,35 @@ typedef NS_ENUM(NSInteger, SJNetworkStatus) {
 @end
 
 
+
+
+
 #pragma mark - 控制
 
 @interface SJBaseVideoPlayer (Control)
 
-@property (nonatomic, readwrite) BOOL mute; // default is no. 静音.
+/**
+ Whether to mute, if set to yes, the sound service will not work. default is NO.
+ If this value is changed, the delegate method will be called. - (void)videoPlayer:(__kindof SJBaseVideoPlayer *)videoPlayer muteChanged:(BOOL)mute;
 
-@property (nonatomic, readwrite, getter=isLockedScreen) BOOL lockedScreen; // 锁定播放器. 所有交互事件将不会触发.
+ readwrite.
+ */
+@property (nonatomic) BOOL mute;
 
-@property (nonatomic, readwrite, getter=isAutoPlay) BOOL autoPlay; // 自动播放. default is YES.
+/**
+ Lock the player. Gesture Interaction will not trigger. default is NO.
+ If this value is changed, the delegate method will be called. - (void)lockedVideoPlayer:(__kindof SJBaseVideoPlayer *)videoPlayer;
+ 
+ readwrite.
+ */
+@property (nonatomic, getter=isLockedScreen) BOOL lockedScreen;
+
+/**
+ When set an asset, whether to start playing immediately. default is YES.
+ 
+ readwrite.
+ */
+@property (nonatomic, getter=isAutoPlay) BOOL autoPlay;
 
 - (BOOL)play;
 
@@ -126,7 +229,7 @@ typedef NS_ENUM(NSInteger, SJNetworkStatus) {
 
 - (void)stop;
 
-- (void)stopAndFadeOut; // 停止播放并淡出
+- (void)stopAndFadeOut;
 
 - (void)replay; 
 
@@ -137,14 +240,15 @@ typedef NS_ENUM(NSInteger, SJNetworkStatus) {
 @property (nonatomic, readwrite) BOOL disableBrightnessSetting;
 
 @property (nonatomic, readwrite) float rate; // 0.5...2
-
 @property (nonatomic, copy, readwrite, nullable) void(^rateChanged)(__kindof SJBaseVideoPlayer *player);
-
 - (void)resetRate;
 
 @property (nonatomic, copy, readwrite, nullable) void(^playDidToEnd)(__kindof SJBaseVideoPlayer *player); // 播放完毕
 
 @end
+
+
+
 
 
 #pragma mark - 手势
@@ -156,52 +260,134 @@ typedef NS_ENUM(NSInteger, SJNetworkStatus) {
 @end
 
 
+
+
+
 #pragma mark - 控制层
 
 @interface SJBaseVideoPlayer (ControlLayer)
 
-@property (nonatomic, readwrite) BOOL enableControlLayerDisplayController; // default is YES. 是否开启控制层[显示/隐藏]的管理器
-@property (nonatomic, readonly) BOOL controlLayerAppeared; // 控制层是否显示
-@property (nonatomic, copy, readwrite, nullable) void(^controlLayerAppearStateChanged)(__kindof SJBaseVideoPlayer *player, BOOL state);
+/**
+ Whether to open the control layer [Appear / Disappear] Manager. default is YES.
+ 
+ readwrite.
+ */
+@property (nonatomic) BOOL enableControlLayerDisplayController;
 
+/**
+ YES -> Appear.
+ NO  -> Disappear.
+ 
+ readonly.
+ */
+@property (nonatomic, readonly) BOOL controlLayerAppeared;
+
+/**
+ The block invoked When Control layer state changed.
+ 
+ readwrite.
+ */
+@property (nonatomic, copy, nullable) void(^controlLayerAppearStateChanged)(__kindof SJBaseVideoPlayer *player, BOOL state);
+
+/**
+ This method will call the control layer delegate method.
+ 
+ - (void)controlLayerNeedAppear:(__kindof SJBaseVideoPlayer *)videoPlayer;
+ */
 - (void)controlLayerNeedAppear;
+
+/**
+ This method will call the control layer delegate method.
+ 
+ - (void)controlLayerNeedDisappear:(__kindof SJBaseVideoPlayer *)videoPlayer;
+ */
 - (void)controlLayerNeedDisappear;
 
-// 控制层是否显示
-@property (nonatomic, readonly) BOOL controlViewDisplayed NS_DEPRECATED(2_0, 2_0, 2_0, 2_0, "use `controlLayerAppeared`");
 
-/*!
- *  Call when the control view is appear or disappear.
- *
- *  控制视图隐藏或显示的时候调用.
- **/
+@property (nonatomic, readonly) BOOL controlViewDisplayed NS_DEPRECATED(2_0, 2_0, 2_0, 2_0, "use `controlLayerAppeared`");
 @property (nonatomic, copy, readwrite, nullable) void(^controlViewDisplayStatus)(__kindof SJBaseVideoPlayer *player, BOOL displayed) NS_DEPRECATED(2_0, 2_0, 2_0, 2_0, "use `controlLayerAppearStateChanged`");
 
 @end
+
+
+
 
 
 #pragma mark - 屏幕旋转
 
 @interface SJBaseVideoPlayer (Rotation)
 
-@property (nonatomic, readwrite) BOOL disableRotation; // 是否禁止旋转.
-
+/**
+ When Orientation is LandscapeLeft or LandscapeRight, this value is YES.
+ 
+ readonly.
+ */
 @property (nonatomic, readonly) BOOL isFullScreen;
 
-@property (nonatomic, readwrite) SJSupportedRotateViewOrientation supportedRotateViewOrientation; // 旋转支持的方向, 默认为`SJSupportedRotateViewOrientation_All`
+/**
+ Whether to disable rotation.
+ 
+ readwrite.
+ You can disable the player rotation when appropriate.
+ For example when the controller is about to disappear.
+ */
+@property (nonatomic) BOOL disableRotation;
 
-@property (nonatomic, readwrite) SJRotateViewOrientation rotateOrientation; // rotate to the specified orientation, Animated. 可指定为`横屏播放`. 默认是`竖屏`.
+/**
+ This is the player supports orientation when autorotation. default is `SJSupportedRotateViewOrientation_All`.
+ 
+ readwrite.
+ */
+@property (nonatomic) SJSupportedRotateViewOrientation supportedRotateViewOrientation;
 
-@property (nonatomic, copy, readwrite, nullable) void(^willRotateScreen)(__kindof SJBaseVideoPlayer *player, BOOL isFullScreen); // 将要旋转的时候调用
+/**
+ Rotate to the specified orientation, Animated.
+ Any value of SJRotateViewOrientation.
+ 
+ readwrite.
+ */
+@property (nonatomic) SJRotateViewOrientation rotateOrientation;
 
-@property (nonatomic, copy, readwrite, nullable) void(^rotatedScreen)(__kindof SJBaseVideoPlayer *player, BOOL isFullScreen);    // 已旋转调用
+/**
+ The block invoked When player will rotate.
+ 
+ readwrite.
+ */
+@property (nonatomic, copy, nullable) void(^willRotateScreen)(__kindof SJBaseVideoPlayer *player, BOOL isFullScreen);
 
+/**
+ The block invoked when player rotated.
+ 
+ readwrite.
+ */
+@property (nonatomic, copy, nullable) void(^rotatedScreen)(__kindof SJBaseVideoPlayer *player, BOOL isFullScreen);
 
-- (void)rotate:(SJRotateViewOrientation)orientation animated:(BOOL)animated;  // rotate to the specified orientation.
+/**
+ Autorotation. Animated.
+ */
+- (void)rotation;
 
-- (void)rotation; // Animated.
+/**
+ Rotate to the specified orientation.
+ 
+ @param orientation     Any value of SJRotateViewOrientation.
+ @param animated        Whether or not animation.
+ */
+- (void)rotate:(SJRotateViewOrientation)orientation animated:(BOOL)animated;
+
+/**
+ Rotate to the specified orientation.
+ 
+ @param orientation     Any value of SJRotateViewOrientation.
+ @param animated        Whether or not animation.
+ @param block           The block invoked when player rotated.
+ */
+- (void)rotate:(SJRotateViewOrientation)orientation animated:(BOOL)animated completion:(void (^ _Nullable)(__kindof SJBaseVideoPlayer *player))block;
 
 @end
+
+
+
 
 
 #pragma mark - 截图
@@ -225,39 +411,33 @@ typedef NS_ENUM(NSInteger, SJNetworkStatus) {
 @end
 
 
+
+
+
 #pragma mark - 在`tableView`或`collectionView`上播放
 
 @interface SJBaseVideoPlayer (ScrollView)
 
-@property (nonatomic, assign, readonly) BOOL playOnScrollView;      // 是否在scrollView上播放
-@property (nonatomic, assign, readonly) BOOL isScrollAppeared;      // 播放器滚动到显示的状态.
+/**
+ Whether to play on scrollView.
+ 
+ readonly.
+ */
+@property (nonatomic, readonly) BOOL isPlayOnScrollView;
 
-@property (nonatomic, assign, readonly) BOOL playOnCell NS_DEPRECATED(2_0, 2_0, 2_0, 2_0, "use `playOnScrollView`");            // 是在cell上播放
+/**
+ Whether the player is appeared when playing on scrollView. Because scrollview may be scrolled.
+ 
+ readonly.
+ */
+@property (nonatomic, readonly) BOOL isScrollAppeared;
+
+
+@property (nonatomic, assign, readonly) BOOL playOnCell NS_DEPRECATED(2_0, 2_0, 2_0, 2_0, "use `isPlayOnScrollView`");            // 是在cell上播放
 @property (nonatomic, assign, readonly) BOOL scrollIntoTheCell NS_DEPRECATED(2_0, 2_0, 2_0, 2_0, "use `isScrollAppeared`");     // 播放器滚进了单元格中
-
 @end
 
 
-#pragma mark - 提示
-
-@interface SJBaseVideoPlayer (Prompt)
-
-/*!
- *  prompt.update(^(SJPromptConfig * _Nonnull config) {
-        config.cornerRadius = 4;                    // default cornerRadius.
-        config.font = [UIFont systemFontOfSize:12]; // default font.
-    });
- *
- **/
-@property (nonatomic, strong, readonly) SJPrompt *prompt;
-
-- (void)showTitle:(NSString *)title; // duration default is 1.0
-
-- (void)showTitle:(NSString *)title duration:(NSTimeInterval)duration; // duration if value set -1, promptView will always show.
-
-- (void)hiddenTitle;
-
-@end
 
 
 
@@ -269,101 +449,129 @@ typedef NS_ENUM(NSInteger, SJNetworkStatus) {
 
 - (UIView *)controlView;
 
-/// 控制层需要隐藏之前会调用这个方法, 如果返回NO, 将不调用`controlLayerNeedDisappear:`.
+/**
+ This method is called before the control layer needs to be hidden, and `controlLayerNeedDisappear:` will not be called if NO is returned.
+ 控制层需要隐藏之前会调用这个方法, 如果返回NO, 将不调用`controlLayerNeedDisappear:`
+ */
 - (BOOL)controlLayerDisappearCondition;
 
-/// 触发手势之前会调用这个方法, 如果返回NO, 将不调用水平手势相关的代理方法.
+/**
+ This method is called before the gesture is triggered. If NO is returned, the proxy method associated with the horizontal gesture is not called.
+ 触发手势之前会调用这个方法, 如果返回NO, 将不调用水平手势相关的代理方法.
+ */
 - (BOOL)triggerGesturesCondition:(CGPoint)location;
 
 @optional
-/// 安装完控制层的回调.
-- (void)installedControlViewToVideoPlayer:(SJBaseVideoPlayer *)videoPlayer;
+/**
+ Call it When installed control view to player view.
+ */
+- (void)installedControlViewToVideoPlayer:(__kindof SJBaseVideoPlayer *)videoPlayer;
 
 @end
 
 
 @protocol SJVideoPlayerControlLayerDelegate <NSObject>
 
+@required
+/**
+ This method will be called when the control layer needs to be appear. You should do some appear work here.
+ */
+- (void)controlLayerNeedAppear:(__kindof SJBaseVideoPlayer *)videoPlayer;
+
+/**
+ This method will be called when the control layer needs to be disappear. You should do some disappear work here.
+ */
+- (void)controlLayerNeedDisappear:(__kindof SJBaseVideoPlayer *)videoPlayer;
+
+/**
+ Call it when `tableView` or` collectionView` is about to appear. Because scrollview may be scrolled.
+ */
+- (void)videoPlayerWillAppearInScrollView:(__kindof SJBaseVideoPlayer *)videoPlayer;
+
+/**
+ Call it when `tableView` or` collectionView` is about to disappear. Because scrollview may be scrolled.
+ */
+- (void)videoPlayerWillDisappearInScrollView:(__kindof SJBaseVideoPlayer *)videoPlayer;
+
+
+
 @optional
 
 #pragma mark - 播放之前/状态
-/// 当设置播放资源时调用.
-- (void)videoPlayer:(SJBaseVideoPlayer *)videoPlayer prepareToPlay:(SJVideoPlayerURLAsset *)asset;
 
-/// 播放状态改变.
-- (void)videoPlayer:(SJBaseVideoPlayer *)videoPlayer stateChanged:(SJVideoPlayerPlayState)state;  
+- (void)videoPlayer:(__kindof SJBaseVideoPlayer *)videoPlayer prepareToPlay:(SJVideoPlayerURLAsset *)asset;
+
+- (void)videoPlayer:(__kindof SJBaseVideoPlayer *)videoPlayer stateChanged:(SJVideoPlayerPlayState)state;
 
 #pragma mark - 进度
-/// 播放进度回调.
-- (void)videoPlayer:(SJBaseVideoPlayer *)videoPlayer
+
+- (void)videoPlayer:(__kindof SJBaseVideoPlayer *)videoPlayer
         currentTime:(NSTimeInterval)currentTime currentTimeStr:(NSString *)currentTimeStr
           totalTime:(NSTimeInterval)totalTime totalTimeStr:(NSString *)totalTimeStr;
 
-/// 缓冲的进度.
-- (void)videoPlayer:(SJBaseVideoPlayer *)videoPlayer loadedTimeProgress:(float)progress;
+/**
+ Call it When buffer progress changed.
+ 缓冲进度改变的时候调用.
+ */
+- (void)videoPlayer:(__kindof SJBaseVideoPlayer *)videoPlayer loadedTimeProgress:(float)progress;
 
-/// 开始缓冲.
-- (void)startLoading:(SJBaseVideoPlayer *)videoPlayer;
+- (void)startLoading:(__kindof SJBaseVideoPlayer *)videoPlayer;
 
-/// 缓冲完成.
-- (void)loadCompletion:(SJBaseVideoPlayer *)videoPlayer;
+- (void)cancelLoading:(__kindof SJBaseVideoPlayer *)videoPlayer;
 
-#pragma mark - 显示/消失
-/// 控制层需要显示.
-- (void)controlLayerNeedAppear:(SJBaseVideoPlayer *)videoPlayer;
-
-/// 控制层需要隐藏.
-- (void)controlLayerNeedDisappear:(SJBaseVideoPlayer *)videoPlayer;
-
-///  在`tableView`或`collectionView`上将要显示的时候调用.
-- (void)videoPlayerWillAppearInScrollView:(SJBaseVideoPlayer *)videoPlayer;
-
-///  在`tableView`或`collectionView`上将要消失的时候调用.
-- (void)videoPlayerWillDisappearInScrollView:(SJBaseVideoPlayer *)videoPlayer;
+/**
+ Call it when stop load.
+ */
+- (void)loadCompletion:(__kindof SJBaseVideoPlayer *)videoPlayer;
 
 #pragma mark - 锁屏
-/// 播放器被锁屏, 此时将不旋转, 不触发手势相关事件.
-- (void)lockedVideoPlayer:(SJBaseVideoPlayer *)videoPlayer;
+/**
+ Call it when set videoPlayer.lockedScreen == YES.
+ */
+- (void)lockedVideoPlayer:(__kindof SJBaseVideoPlayer *)videoPlayer;
 
-/// 播放器解除锁屏.
-- (void)unlockedVideoPlayer:(SJBaseVideoPlayer *)videoPlayer;
+/**
+ Call it when set videoPlayer.lockedScreen == NO.
+ */
+- (void)unlockedVideoPlayer:(__kindof SJBaseVideoPlayer *)videoPlayer;
 
 #pragma mark - 屏幕旋转
-/// 播放器将要旋转屏幕, `isFull`如果为`YES`, 则全屏.
-- (void)videoPlayer:(SJBaseVideoPlayer *)videoPlayer willRotateView:(BOOL)isFull;
+/**
+ Call it when player will rotate the screen, `isFull` if YES, then full screen.
+ */
+- (void)videoPlayer:(__kindof SJBaseVideoPlayer *)videoPlayer willRotateView:(BOOL)isFull;
 
-/// 旋转完毕.
-- (void)videoPlayer:(SJBaseVideoPlayer *)videoPlayer didEndRotation:(BOOL)isFull;
+/**
+ Call it when player rotated screen.
+ */
+- (void)videoPlayer:(__kindof SJBaseVideoPlayer *)videoPlayer didEndRotation:(BOOL)isFull;
 
 #pragma mark - 音量 / 亮度 / 播放速度
-/// 静音开关变更
-- (void)videoPlayer:(SJBaseVideoPlayer *)videoPlayer muteChanged:(BOOL)mute;
 
-/// 声音被改变.
-- (void)videoPlayer:(SJBaseVideoPlayer *)videoPlayer volumeChanged:(float)volume;
+- (void)videoPlayer:(__kindof SJBaseVideoPlayer *)videoPlayer muteChanged:(BOOL)mute;
 
-/// 亮度被改变.
-- (void)videoPlayer:(SJBaseVideoPlayer *)videoPlayer brightnessChanged:(float)brightness;
+- (void)videoPlayer:(__kindof SJBaseVideoPlayer *)videoPlayer volumeChanged:(float)volume;
 
-/// 播放速度被改变.
-- (void)videoPlayer:(SJBaseVideoPlayer *)videoPlayer rateChanged:(float)rate;
+- (void)videoPlayer:(__kindof SJBaseVideoPlayer *)videoPlayer brightnessChanged:(float)brightness;
+
+- (void)videoPlayer:(__kindof SJBaseVideoPlayer *)videoPlayer rateChanged:(float)rate;
 
 #pragma mark - 水平手势
 /// 水平方向开始拖动.
-- (void)horizontalDirectionWillBeginDragging:(SJBaseVideoPlayer *)videoPlayer;
+- (void)horizontalDirectionWillBeginDragging:(__kindof SJBaseVideoPlayer *)videoPlayer;
 
 /// 水平方向拖动中. `translation`为此次增加的值.
-- (void)videoPlayer:(SJBaseVideoPlayer *)videoPlayer horizontalDirectionDidDrag:(CGFloat)translation;
+- (void)videoPlayer:(__kindof SJBaseVideoPlayer *)videoPlayer horizontalDirectionDidDrag:(CGFloat)translation;
 
 /// 水平方向拖动结束.
-- (void)horizontalDirectionDidEndDragging:(SJBaseVideoPlayer *)videoPlayer;
+- (void)horizontalDirectionDidEndDragging:(__kindof SJBaseVideoPlayer *)videoPlayer;
 
 #pragma mark - size
-- (void)videoPlayer:(SJBaseVideoPlayer *)videoPlayer presentationSize:(CGSize)size;
+- (void)videoPlayer:(__kindof SJBaseVideoPlayer *)videoPlayer presentationSize:(CGSize)size;
 
 #pragma mark - Network
 /// 网络状态变更
-- (void)videoPlayer:(SJBaseVideoPlayer *)videoPlayer reachabilityChanged:(SJNetworkStatus)status;
+- (void)videoPlayer:(__kindof SJBaseVideoPlayer *)videoPlayer reachabilityChanged:(SJNetworkStatus)status;
 
 @end
 

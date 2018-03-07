@@ -21,6 +21,8 @@
 @property (nonatomic, readonly) SJSupportedRotateViewOrientation supported_Ori;
 @property (nonatomic, readwrite) UIDeviceOrientation currentOrientation;
 
+@property (nonatomic, copy, nullable) void(^completion)(SJOrentationObserver *observer);
+
 @end
 
 @implementation SJOrentationObserver
@@ -153,6 +155,10 @@ static UIWindow *__window;
 }
 
 - (void)rotate:(SJRotateViewOrientation)orientation animated:(BOOL)animated {
+    [self rotate:orientation animated:animated completion:nil];
+}
+
+- (void)rotate:(SJRotateViewOrientation)orientation animated:(BOOL)animated completion:(void (^)(SJOrentationObserver * _Nonnull))block {
     if ( orientation == _rotateOrientation ) return;
     
     if ( !_view || !_targetSuperview ) return;
@@ -234,6 +240,8 @@ static UIWindow *__window;
     [_view setTransform:transform];
     [_view.superview layoutIfNeeded];
     [UIView commitAnimations];
+    
+    self.completion = [block copy];
 }
 
 - (void)_animationDidStop {
@@ -251,5 +259,9 @@ static UIWindow *__window;
         [__window insertSubview:self.blackView belowSubview:_view];
     }
     if ( _orientationChanged ) _orientationChanged(self, self.isFullScreen);
+    if ( self.completion ) {
+        self.completion(self);
+        self.completion = nil;
+    }
 }
 @end

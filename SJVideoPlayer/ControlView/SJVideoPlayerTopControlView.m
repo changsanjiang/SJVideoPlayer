@@ -71,7 +71,7 @@
 
     // title label layout
     self.title = self.model.title;
-    if ( self.model.playOnScrollView && self.model.alwaysShowTitle ) {
+    if ( self.model.isPlayOnScrollView && self.model.alwaysShowTitle ) {
         [_titleLabel mas_remakeConstraints:^(MASConstraintMaker *make) {
             make.leading.equalTo(_backBtn.mas_trailing);
             make.centerY.equalTo(_backBtn);
@@ -88,7 +88,7 @@
 
 - (void)_smallscreenState {
     self.title = self.model.title;
-    if ( self.model.playOnScrollView && self.model.alwaysShowTitle ) {
+    if ( self.model.isPlayOnScrollView && self.model.alwaysShowTitle ) {
         // back btn
         _backBtn.hidden = YES;
         

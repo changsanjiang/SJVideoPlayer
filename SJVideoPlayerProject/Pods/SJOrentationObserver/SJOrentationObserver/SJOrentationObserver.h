@@ -50,6 +50,7 @@ typedef NS_ENUM(NSUInteger, SJRotateViewOrientation) {
 
 - (void)rotate:(SJRotateViewOrientation)orientation animated:(BOOL)animated;  // rotate to the specified orientation.
 
+- (void)rotate:(SJRotateViewOrientation)orientation animated:(BOOL)animated completion:(void(^__nullable)(SJOrentationObserver *observer))block;  // rotate to the specified orientation.
 @end
 
 NS_ASSUME_NONNULL_END

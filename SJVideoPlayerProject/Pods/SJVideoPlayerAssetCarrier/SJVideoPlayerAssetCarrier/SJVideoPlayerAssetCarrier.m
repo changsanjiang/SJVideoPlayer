@@ -31,6 +31,12 @@ static float const __GeneratePreImgScale = 0.05;
 }
 @end
 
+@interface NSTimer (SJAssetAdd)
++ (NSTimer *)assetAdd_timerWithTimeInterval:(NSTimeInterval)ti
+                                      block:(void(^)(NSTimer *timer))block
+                                    repeats:(BOOL)repeats;
+@end
+
 @interface SJAssetUIKitEctype: NSObject
 @property (nonatomic, strong) NSIndexPath *indexPath;
 @property (nonatomic, assign) NSInteger superviewTag;
@@ -46,7 +52,9 @@ static float const __GeneratePreImgScale = 0.05;
 @property (nonatomic, copy, readwrite) void(^playTimeChanged)(SJVideoPlayerAssetCarrier *asset, NSTimeInterval currentTime, NSTimeInterval duration);
 @property (nonatomic, copy, readwrite) void(^playDidToEnd)(SJVideoPlayerAssetCarrier *asset);
 @property (nonatomic, copy, readwrite) void(^loadedTimeProgress)(float progress);
-@property (nonatomic, copy, readwrite) void(^beingBuffered)(BOOL state);
+@property (nonatomic, copy, readwrite) void(^startBuffering)(SJVideoPlayerAssetCarrier *asset);
+@property (nonatomic, copy, readwrite) void(^completeBuffer)(SJVideoPlayerAssetCarrier *asset);
+@property (nonatomic, copy, readwrite) void(^cancelledBuffer)(SJVideoPlayerAssetCarrier *asset);
 @property (nonatomic, copy, readwrite) void(^touchedScrollView)(SJVideoPlayerAssetCarrier *asset, BOOL tracking);
 @property (nonatomic, copy, readwrite) void(^scrollViewDidScroll)(SJVideoPlayerAssetCarrier *asset);
 @property (nonatomic, copy, readwrite) void(^presentationSize)(SJVideoPlayerAssetCarrier *asset, CGSize size);
@@ -63,6 +71,7 @@ static float const __GeneratePreImgScale = 0.05;
 @interface SJVideoPlayerAssetCarrier () {
     id _timeObserver;
     id _itemEndObserver;
+    NSTimer *_bufferRefreshTimer;
 }
 
 @property (nonatomic, strong, readwrite) AVAssetImageGenerator *imageGenerator;
@@ -76,9 +85,13 @@ static float const __GeneratePreImgScale = 0.05;
 @property (nonatomic, assign, readwrite) BOOL parent_scrollIn_bool;
 @property (nonatomic, strong, readwrite, nullable) SJAssetUIKitEctype *ectype;
 @property (nonatomic, assign, readwrite) CGSize maxItemSize;
+@property (nonatomic, assign, readwrite) BOOL beginBuffer;
+@property (nonatomic, strong, readwrite) NSTimer *bufferRefreshTimer;
+
 @end
 
 @implementation SJVideoPlayerAssetCarrier
+
 #pragma mark -
 
 - (instancetype)initWithAssetURL:(NSURL *)assetURL {
@@ -322,12 +335,28 @@ static float const __GeneratePreImgScale = 0.05;
             _duration = CMTimeGetSeconds(_playerItem.duration);
         }
         else if ( [keyPath isEqualToString:@"playbackBufferEmpty"] ) {
-            if ( self.beingBuffered ) self.beingBuffered([self _loadedTimeSecs] <= self.currentTime + 5);
+            [self _itemPlaybackBufferEmptyStateChanged];
         }
         else if ( [keyPath isEqualToString:@"presentationSize"] ) {
             if ( self.presentationSize ) self.presentationSize(self, self.playerItem.presentationSize);
         }
     });
+}
+
+#pragma mark - handle buffer
+
+- (void)_itemPlaybackBufferEmptyStateChanged {
+    if ( self.beginBuffer ) return;
+    NSTimeInterval duration = floor(self.duration);
+    NSTimeInterval close_currentTime = floor(self.currentTime) + 5;
+    NSTimeInterval loadedTimeSecs = floor([self _loadedTimeSecs]);
+    NSTimeInterval prepare = close_currentTime < duration ? close_currentTime : duration;
+    BOOL factor = loadedTimeSecs >= prepare; // 如果缓存超过5秒
+    if ( factor ) return;
+    self.beginBuffer = YES;
+    if ( self.startBuffering ) self.startBuffering(self);
+    [self.bufferRefreshTimer setFireDate:[NSDate dateWithTimeIntervalSinceNow:2]];
+    [[NSRunLoop currentRunLoop] addTimer:self.bufferRefreshTimer forMode:NSRunLoopCommonModes];
 }
 
 - (Float64)_loadedTimeSecs {
@@ -336,6 +365,36 @@ static float const __GeneratePreImgScale = 0.05;
     CMTime rangeDuration  = loadTimeRange.duration;
     Float64 seconds = CMTimeGetSeconds(startTime) + CMTimeGetSeconds(rangeDuration);
     return seconds;
+}
+
+- (NSTimer *)bufferRefreshTimer {
+    if ( _bufferRefreshTimer ) return _bufferRefreshTimer;
+    __weak typeof(self) _self = self;
+    _bufferRefreshTimer = [NSTimer assetAdd_timerWithTimeInterval:2 block:^(NSTimer *timer) {
+        __strong typeof(_self) self = _self;
+        if ( !self ) return;
+        NSTimeInterval duration = floor(self.duration);
+        NSTimeInterval close_currentTime = floor(self.currentTime) + 5;
+        NSTimeInterval loadedTimeSecs = floor([self _loadedTimeSecs]);
+        NSTimeInterval prepare = close_currentTime < duration ? close_currentTime : duration;
+        BOOL factor = loadedTimeSecs >= prepare;
+        if ( factor ) {
+            [self _cleanBufferTimer];
+            self.beginBuffer = NO;
+            if ( self.completeBuffer ) self.completeBuffer(self);
+        }
+    } repeats:YES];
+    return _bufferRefreshTimer;
+}
+
+- (void)_cleanBufferTimer {
+    if ( _bufferRefreshTimer ) {
+        [_bufferRefreshTimer invalidate];
+        _bufferRefreshTimer = nil;
+        dispatch_async(dispatch_get_main_queue(), ^{
+            if ( _cancelledBuffer ) _cancelledBuffer(self);
+        });
+    }
 }
 
 #pragma mark -
@@ -703,7 +762,9 @@ static float const __GeneratePreImgScale = 0.05;
         _playTimeChanged = _ectype.playTimeChanged;
         _playDidToEnd = _ectype.playDidToEnd;
         _loadedTimeProgress = _ectype.loadedTimeProgress;
-        _beingBuffered = _ectype.beingBuffered;
+        _startBuffering = _ectype.startBuffering;
+        _completeBuffer = _ectype.completeBuffer;
+        _cancelledBuffer = _ectype.cancelledBuffer;
         _touchedScrollView = _ectype.touchedScrollView;
         _scrollViewDidScroll = _ectype.scrollViewDidScroll;
         _presentationSize = _ectype.presentationSize;
@@ -725,6 +786,8 @@ static float const __GeneratePreImgScale = 0.05;
     if ( 0 != _player.rate ) [_player pause];
     [_player removeTimeObserver:_timeObserver]; _timeObserver = nil;
     [[NSNotificationCenter defaultCenter] removeObserver:_itemEndObserver name:AVPlayerItemDidPlayToEndTimeNotification object:self.playerItem]; _itemEndObserver = nil;
+    _beginBuffer = NO;
+    [self _cleanBufferTimer];
 }
 
 - (void)_clearUIKit {
@@ -744,7 +807,9 @@ static float const __GeneratePreImgScale = 0.05;
         _ectype.playTimeChanged = _playTimeChanged;
         _ectype.playDidToEnd = _playDidToEnd;
         _ectype.loadedTimeProgress = _loadedTimeProgress;
-        _ectype.beingBuffered = _beingBuffered;
+        _ectype.startBuffering = _startBuffering;
+        _ectype.completeBuffer = _completeBuffer;
+        _ectype.cancelledBuffer = _cancelledBuffer;
         _ectype.touchedScrollView = _touchedScrollView;
         _ectype.scrollViewDidScroll = _scrollViewDidScroll;
         _ectype.presentationSize = _presentationSize;
@@ -833,6 +898,26 @@ static float const __GeneratePreImgScale = 0.05;
     model -> _image = image;
     model -> _localTime = time;
     return model;
+}
+
+@end
+
+
+@implementation NSTimer (SJAssetAdd)
++ (NSTimer *)assetAdd_timerWithTimeInterval:(NSTimeInterval)ti
+                                      block:(void(^)(NSTimer *timer))block
+                                    repeats:(BOOL)repeats {
+    NSTimer *timer = [NSTimer timerWithTimeInterval:ti
+                                             target:self
+                                           selector:@selector(assetAdd_exeBlock:)
+                                           userInfo:block
+                                            repeats:repeats];
+    return timer;
+}
+
++ (void)assetAdd_exeBlock:(NSTimer *)timer {
+    void(^block)(NSTimer *timer) = timer.userInfo;
+    if ( block ) block(timer);
 }
 
 @end

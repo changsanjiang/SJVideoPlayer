@@ -89,12 +89,12 @@
 }
 
 - (UIStatusBarStyle)preferredStatusBarStyle {
-    return self.videoPlayerHelper.vc_preferredStatusBarStyleExeBlock();
+    return UIStatusBarStyleLightContent;
 }
 
 #pragma mark -
 - (void)_demoVCSetupViews {
-    self.view.backgroundColor = [UIColor whiteColor];
+    self.view.backgroundColor = [UIColor blackColor];
     [self.view addSubview:self.playerSuperView];
     [_playerSuperView mas_makeConstraints:^(MASConstraintMaker *make) {
         make.top.offset(SJ_is_iPhoneX() ? 34 : 20);

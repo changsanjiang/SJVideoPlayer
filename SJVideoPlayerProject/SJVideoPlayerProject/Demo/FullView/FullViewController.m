@@ -41,14 +41,14 @@
 //           self.videoPlayer.rotateOrientation = SJRotateViewOrientation_Portrait;
 //            [self.navigationController popViewControllerAnimated:YES];
 //        }];
-        
+        [self.navigationController popViewControllerAnimated:YES];
     };
     
     // 播放
     _videoPlayer.assetURL = [[NSBundle mainBundle] URLForResource:@"sample" withExtension:@"mp4"];
     
     // supported orientation. 设置旋转支持的方向.
-    _videoPlayer.supportedRotateViewOrientation = SJSupportedRotateViewOrientation_LandscapeLeft | SJSupportedRotateViewOrientation_LandscapeRight;
+    _videoPlayer.supportedRotateViewOrientation = SJSupportedRotateViewOrientation_All;
     
     // 将播放器旋转成横屏.(播放器默认是竖屏的), 带动画
     _videoPlayer.rotateOrientation = SJRotateViewOrientation_LandscapeLeft; // 请注意: 是`SJRotateViewOrientation_LandscapeLeft` 而不是 `SJSupportedRotateViewOrientation_LandscapeLeft`

@@ -70,7 +70,7 @@
         [[SJVideoModel alloc] initWithTitle:titles[arc4random() % titles.count]
                                  createTime:date.timeIntervalSince1970 - arc4random() % 100000
                                     creator:users[arc4random() % users.count]
-                                 playURLStr:@"http://blurdancer-video.oss-cn-shanghai.aliyuncs.com/usertrend/120718-1515947072.mp4"
+                                 playURLStr:@"http://video.cdn.lanwuzhe.com/14945858406905f0c"
                                 coverURLStr:coverURLStrs[arc4random() % coverURLStrs.count]];
         // 昵称
         model.nicknameHelper = [SJVideoListTableViewCell helperWithNickname:model.creator.nickname];

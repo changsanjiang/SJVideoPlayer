@@ -1274,6 +1274,11 @@ NS_ASSUME_NONNULL_END
                    progress:(void(^)(__kindof SJBaseVideoPlayer *videoPlayer, float progress))pro
                  completion:(void(^)(__kindof SJBaseVideoPlayer *videoPlayer, SJVideoPlayerURLAsset *asset, NSURL *fileURL, UIImage *thumbImage))completion
                     failure:(void(^)(__kindof SJBaseVideoPlayer *videoPlayer, NSError *error))failure {
+    if ( !self.asset.loadedPlayer ) {
+        NSError *error = [NSError errorWithDomain:NSCocoaErrorDomain code:-1 userInfo:@{@"msg":@"Resources are being initialized and cannot be exported."}];
+        if ( failure ) failure(self, error);
+        return;
+    }
     __weak typeof(self) _self = self;
     [self.asset exportWithBeginTime:beginTime endTime:endTime presetName:presetName progress:^(SJVideoPlayerAssetCarrier * _Nonnull asset, float progress) {
         __strong typeof(_self) self = _self;

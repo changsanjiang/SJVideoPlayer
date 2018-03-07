@@ -55,54 +55,11 @@
     
     NSLog(@"%@", NSHomeDirectory());
     
-    dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(5 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
-        NSLog(@"%zd - %s", __LINE__, __func__);
-        [self export];
-    });
-    
     // Do any additional setup after loading the view.
 }
 
 - (void)export {
-    AVAsset *asset = [(SJVideoPlayerAssetCarrier *)[self.asset valueForKey:kSJVideoPlayerAssetKey] asset];
-    AVMutableComposition *compositionM = [AVMutableComposition composition];
     
-    AVMutableCompositionTrack *audioTrackM = [compositionM addMutableTrackWithMediaType:AVMediaTypeAudio preferredTrackID:kCMPersistentTrackID_Invalid];
-    AVMutableCompositionTrack *videoTrackM = [compositionM addMutableTrackWithMediaType:AVMediaTypeVideo preferredTrackID:kCMPersistentTrackID_Invalid];
-    
-    //    if ( 1 >= direction ) videoTrackM.preferredTransform = CGAffineTransformMakeRotation(M_PI_2);
-    
-    CMTimeRange cutRange = CMTimeRangeMake(kCMTimeZero, asset.duration);
-    
-    AVAssetTrack *assetAudioTrack = [asset tracksWithMediaType:AVMediaTypeAudio].firstObject;
-    AVAssetTrack *assetVideoTrack = [asset tracksWithMediaType:AVMediaTypeVideo].firstObject;
-
-    NSError *error;
-    [audioTrackM insertTimeRange:cutRange ofTrack:assetAudioTrack atTime:kCMTimeZero error:&error];
-    if ( error ) {
-        NSLog(@"裁剪出错 error = %@", error);
-        return;
-    }
-    [videoTrackM insertTimeRange:cutRange ofTrack:assetVideoTrack atTime:kCMTimeZero error:&error];
-    if ( error ) {
-        NSLog(@"裁剪出错 error = %@", error);
-        return;
-    }
-    [self exportAssets:compositionM presetName:AVAssetExportPresetHighestQuality completionHandle:nil];
-}
-
-- (void)exportAssets:(AVAsset *)asset presetName:(NSString *)presetName completionHandle:(void(^)(AVAsset *sandBoxAsset, UIImage *previewImage))block {
-    NSURL *exportURL = [[[NSFileManager defaultManager] URLsForDirectory:NSDocumentDirectory inDomains:NSUserDomainMask].firstObject URLByAppendingPathComponent:@"_re_.mp4"];
-    if ( [[NSFileManager defaultManager] fileExistsAtPath:[exportURL.absoluteString substringFromIndex:7]] ) {
-        [[NSFileManager defaultManager] removeItemAtURL:exportURL error:nil];
-    }
-    AVAssetExportSession *stoppedExportSession = [AVAssetExportSession exportSessionWithAsset:asset presetName:presetName];
-    stoppedExportSession.outputURL = exportURL;
-    stoppedExportSession.shouldOptimizeForNetworkUse = YES;
-    stoppedExportSession.outputFileType = AVFileTypeMPEG4;
-    [stoppedExportSession exportAsynchronouslyWithCompletionHandler:^{
-        NSLog(@"%zd - %s - %zd - %@", __LINE__, __func__, stoppedExportSession.status, stoppedExportSession.error);
-    }];
 }
 
 #pragma mark -

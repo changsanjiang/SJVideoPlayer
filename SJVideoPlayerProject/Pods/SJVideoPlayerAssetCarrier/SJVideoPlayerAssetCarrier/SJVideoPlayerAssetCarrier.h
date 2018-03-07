@@ -292,7 +292,8 @@ NS_ASSUME_NONNULL_BEGIN
 
 
 #pragma mark - properties
-@property (nonatomic, assign, readonly) BOOL converted;
+@property (nonatomic, assign, readonly, getter=isLoadedPlayer) BOOL loadedPlayer;
+@property (nonatomic, assign, readonly, getter=isConverted) BOOL converted;
 @property (nonatomic, strong, readonly) AVURLAsset *asset;
 @property (nonatomic, strong, readonly) AVPlayerItem *playerItem;
 @property (nonatomic, strong, readonly) AVPlayer *player;

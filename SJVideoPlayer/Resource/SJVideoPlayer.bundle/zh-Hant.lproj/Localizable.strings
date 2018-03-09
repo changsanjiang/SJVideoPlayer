@@ -4,3 +4,5 @@
 
 "SJVideoPlayer_NotReachablePrompt" = "網絡不穩定，請檢查網絡";
 "SJVideoPlayer_ReachableViaWWANPrompt" = "當前非WiFi環境, 請注意流量消耗";
+
+"SJVideoPlayer_CancelBtnTitle" = "取消";

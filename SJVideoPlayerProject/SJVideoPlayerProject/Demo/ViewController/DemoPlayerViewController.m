@@ -43,7 +43,7 @@
     
     if ( !self.asset ) {
         // create new asset
-        SJVideoPlayerURLAsset *asset = [[SJVideoPlayerURLAsset alloc] initWithAssetURL:[NSURL URLWithString:@"http://video.cdn.lanwuzhe.com/usertrend/166162-1513873330.mp4"]];
+        SJVideoPlayerURLAsset *asset = [[SJVideoPlayerURLAsset alloc] initWithAssetURL:[NSURL URLWithString:@"http://rec.app.lanwuzhe.com/recordings/z1.lanwuzhe.80291520464538364/1520467590_1520553990.m3u8"]];
         asset.title = self.video.title;
         asset.alwaysShowTitle = YES;
         self.asset = asset;

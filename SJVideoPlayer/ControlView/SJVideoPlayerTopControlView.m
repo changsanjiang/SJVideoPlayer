@@ -71,13 +71,11 @@
 
     // title label layout
     self.title = self.model.title;
-    if ( self.model.isPlayOnScrollView && self.model.alwaysShowTitle ) {
-        [_titleLabel mas_remakeConstraints:^(MASConstraintMaker *make) {
-            make.leading.equalTo(_backBtn.mas_trailing);
-            make.centerY.equalTo(_backBtn);
-            make.trailing.equalTo(_previewBtn.mas_leading);
-        }];
-    }
+    [_titleLabel mas_remakeConstraints:^(MASConstraintMaker *make) {
+        make.leading.equalTo(_backBtn.mas_trailing);
+        make.centerY.equalTo(_backBtn);
+        make.trailing.equalTo(_previewBtn.mas_leading);
+    }];
     
     // preview btn
     if ( [self.delegate hasBeenGeneratedPreviewImages] ) self.previewBtn.hidden = NO;
@@ -102,10 +100,10 @@
     else {
         _backBtn.hidden = NO;
         
-        [_titleLabel mas_makeConstraints:^(MASConstraintMaker *make) {
+        [_titleLabel mas_remakeConstraints:^(MASConstraintMaker *make) {
             make.leading.equalTo(_backBtn.mas_trailing);
             make.centerY.equalTo(_backBtn);
-            make.trailing.equalTo(_previewBtn.mas_leading);
+            make.trailing.equalTo(_moreBtn.mas_centerX).offset(8);
         }];
     }
     
@@ -168,6 +166,10 @@
     }];
     
     self.moreBtn.hidden = self.previewBtn.hidden = YES;
+    
+    [SJUIFactory boundaryProtectedWithView:_backBtn];
+    [SJUIFactory boundaryProtectedWithView:_moreBtn];
+    [SJUIFactory boundaryProtectedWithView:_previewBtn];
 }
 
 - (UIButton *)backBtn {

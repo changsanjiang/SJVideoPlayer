@@ -15,6 +15,7 @@
 #import "SJVideoPlayerMoreSetting.h"
 #import "SJVideoPlayerURLAsset+SJControlAdd.h"
 #import "SJVideoPlayerMoreSettingSecondary.h"
+#import "SJFilmEditingResultShareItem.h"
 
 NS_ASSUME_NONNULL_BEGIN
 
@@ -73,6 +74,8 @@ NS_ASSUME_NONNULL_BEGIN
  *  点击`更多(右上角的三个点)`按钮, 弹出来的选项.
  **/
 @property (nonatomic, strong, readwrite, nullable) NSArray<SJVideoPlayerMoreSetting *> *moreSettings;
+
+@property (nonatomic, strong, readwrite, nullable) NSArray<SJFilmEditingResultShareItem *> *filmEditingResultShareItems;
 
 @end
 

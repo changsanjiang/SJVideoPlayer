@@ -290,6 +290,7 @@ typedef NS_ENUM(NSInteger, SJNetworkStatus) {
 @property (nonatomic, copy, nullable) void(^controlLayerAppearStateChanged)(__kindof SJBaseVideoPlayer *player, BOOL state);
 
 /**
+ When you want to appear the control layer, you should call this method to appear.
  This method will call the control layer delegate method.
  
  - (void)controlLayerNeedAppear:(__kindof SJBaseVideoPlayer *)videoPlayer;
@@ -297,6 +298,7 @@ typedef NS_ENUM(NSInteger, SJNetworkStatus) {
 - (void)controlLayerNeedAppear;
 
 /**
+ When you want to disappear the control layer, you should call this method to disappear.
  This method will call the control layer delegate method.
  
  - (void)controlLayerNeedDisappear:(__kindof SJBaseVideoPlayer *)videoPlayer;
@@ -497,7 +499,7 @@ typedef NS_ENUM(NSInteger, SJNetworkStatus) {
 
 @protocol SJVideoPlayerControlLayerDelegate <NSObject>
 
-@required
+@optional
 /**
  This method will be called when the control layer needs to be appear. You should do some appear work here.
  */
@@ -518,9 +520,6 @@ typedef NS_ENUM(NSInteger, SJNetworkStatus) {
  */
 - (void)videoPlayerWillDisappearInScrollView:(__kindof SJBaseVideoPlayer *)videoPlayer;
 
-
-
-@optional
 
 #pragma mark - 播放之前/状态
 

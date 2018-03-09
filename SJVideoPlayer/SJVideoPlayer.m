@@ -110,6 +110,14 @@ static dispatch_queue_t videoPlayerWorkQueue;
     return _defaultControlView.moreSettings;
 }
 
+- (void)setFilmEditingResultShareItems:(NSArray<SJFilmEditingResultShareItem *> *)items {
+    _defaultControlView.filmEditingResultShareItems = items;
+}
+
+- (NSArray<SJFilmEditingResultShareItem *> *)filmEditingResultShareItems {
+    return _defaultControlView.filmEditingResultShareItems;
+}
+
 - (void)setGeneratePreviewImages:(BOOL)generatePreviewImages {
     _defaultControlView.generatePreviewImages = YES;
 }

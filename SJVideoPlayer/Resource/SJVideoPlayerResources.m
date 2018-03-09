@@ -13,6 +13,7 @@ NSString *const SJVideoPlayer_PreviewText = @"SJVideoPlayer_PreviewText";
 NSString *const SJVideoPlayer_PlayFailedText = @"SJVideoPlayer_PlayFailedText";
 NSString *const SJVideoPlayer_NotReachablePrompt = @"SJVideoPlayer_NotReachablePrompt";
 NSString *const SJVideoPlayer_ReachableViaWWANPrompt = @"SJVideoPlayer_ReachableViaWWANPrompt";
+NSString *const SJVideoPlayer_CancelBtnTitle = @"SJVideoPlayer_CancelBtnTitle";
 
 @implementation SJVideoPlayerResources
 

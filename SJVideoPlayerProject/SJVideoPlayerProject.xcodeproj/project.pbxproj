@@ -11,6 +11,10 @@
 		77033C14204E7611008F1ED5 /* DemoPlayerViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 77033C13204E7611008F1ED5 /* DemoPlayerViewController.m */; };
 		7706E1231FF74B24006E0B56 /* loading.gif in Resources */ = {isa = PBXBuildFile; fileRef = 7706E1221FF74B24006E0B56 /* loading.gif */; };
 		7706E1251FF74C42006E0B56 /* slider.gif in Resources */ = {isa = PBXBuildFile; fileRef = 7706E1241FF74C42006E0B56 /* slider.gif */; };
+		77154E822050D040009E51D7 /* SJVideoPlayerRightControlView.m in Sources */ = {isa = PBXBuildFile; fileRef = 77154E812050D040009E51D7 /* SJVideoPlayerRightControlView.m */; };
+		77154E8E205255C8009E51D7 /* SJVideoPlayerFilmEditingControlView.m in Sources */ = {isa = PBXBuildFile; fileRef = 77154E8D205255C8009E51D7 /* SJVideoPlayerFilmEditingControlView.m */; };
+		77154E9120526391009E51D7 /* SJVideoPlayerFilmEditingResultView.m in Sources */ = {isa = PBXBuildFile; fileRef = 77154E9020526391009E51D7 /* SJVideoPlayerFilmEditingResultView.m */; };
+		77154E9720526DAC009E51D7 /* SJFilmEditingResultShareItem.m in Sources */ = {isa = PBXBuildFile; fileRef = 77154E9620526DAC009E51D7 /* SJFilmEditingResultShareItem.m */; };
 		772005772029BBC7009F0190 /* SJMoreSettingItems.m in Sources */ = {isa = PBXBuildFile; fileRef = 772005762029BBC7009F0190 /* SJMoreSettingItems.m */; };
 		772DC3C7202201E500EC4725 /* placeholder.png in Resources */ = {isa = PBXBuildFile; fileRef = 772DC3C6202201E400EC4725 /* placeholder.png */; };
 		774A5669201F3C5E00CD6ACC /* ex.gif in Resources */ = {isa = PBXBuildFile; fileRef = 774A5668201F3C5E00CD6ACC /* ex.gif */; };
@@ -84,6 +88,14 @@
 		77033C13204E7611008F1ED5 /* DemoPlayerViewController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = DemoPlayerViewController.m; sourceTree = "<group>"; };
 		7706E1221FF74B24006E0B56 /* loading.gif */ = {isa = PBXFileReference; lastKnownFileType = image.gif; path = loading.gif; sourceTree = "<group>"; };
 		7706E1241FF74C42006E0B56 /* slider.gif */ = {isa = PBXFileReference; lastKnownFileType = image.gif; path = slider.gif; sourceTree = "<group>"; };
+		77154E802050D040009E51D7 /* SJVideoPlayerRightControlView.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = SJVideoPlayerRightControlView.h; sourceTree = "<group>"; };
+		77154E812050D040009E51D7 /* SJVideoPlayerRightControlView.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = SJVideoPlayerRightControlView.m; sourceTree = "<group>"; };
+		77154E8C205255C8009E51D7 /* SJVideoPlayerFilmEditingControlView.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = SJVideoPlayerFilmEditingControlView.h; sourceTree = "<group>"; };
+		77154E8D205255C8009E51D7 /* SJVideoPlayerFilmEditingControlView.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = SJVideoPlayerFilmEditingControlView.m; sourceTree = "<group>"; };
+		77154E8F20526391009E51D7 /* SJVideoPlayerFilmEditingResultView.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = SJVideoPlayerFilmEditingResultView.h; sourceTree = "<group>"; };
+		77154E9020526391009E51D7 /* SJVideoPlayerFilmEditingResultView.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = SJVideoPlayerFilmEditingResultView.m; sourceTree = "<group>"; };
+		77154E9520526DAC009E51D7 /* SJFilmEditingResultShareItem.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = SJFilmEditingResultShareItem.h; sourceTree = "<group>"; };
+		77154E9620526DAC009E51D7 /* SJFilmEditingResultShareItem.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = SJFilmEditingResultShareItem.m; sourceTree = "<group>"; };
 		772005752029BBC7009F0190 /* SJMoreSettingItems.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = SJMoreSettingItems.h; sourceTree = "<group>"; };
 		772005762029BBC7009F0190 /* SJMoreSettingItems.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = SJMoreSettingItems.m; sourceTree = "<group>"; };
 		772DC3C6202201E400EC4725 /* placeholder.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = placeholder.png; sourceTree = "<group>"; };
@@ -345,6 +357,8 @@
 				A6E6D3042028BE9B00CB9BAE /* UIView+SJControlAdd.m */,
 				A6E6D3052028BE9B00CB9BAE /* SJVideoPlayerURLAsset+SJControlAdd.h */,
 				A6E6D3072028BE9B00CB9BAE /* SJVideoPlayerURLAsset+SJControlAdd.m */,
+				77154E9520526DAC009E51D7 /* SJFilmEditingResultShareItem.h */,
+				77154E9620526DAC009E51D7 /* SJFilmEditingResultShareItem.m */,
 			);
 			name = Model;
 			sourceTree = "<group>";
@@ -371,8 +385,14 @@
 				A6E6D3162028BE9B00CB9BAE /* SJVideoPlayerCenterControlView.m */,
 				A6E6D3102028BE9B00CB9BAE /* SJVideoPlayerBottomControlView.h */,
 				A6E6D3152028BE9B00CB9BAE /* SJVideoPlayerBottomControlView.m */,
+				77154E802050D040009E51D7 /* SJVideoPlayerRightControlView.h */,
+				77154E812050D040009E51D7 /* SJVideoPlayerRightControlView.m */,
 				77033C0E204D45BB008F1ED5 /* SJVideoPlayerReachabilityPromptView.h */,
 				77033C0F204D45BB008F1ED5 /* SJVideoPlayerReachabilityPromptView.m */,
+				77154E8C205255C8009E51D7 /* SJVideoPlayerFilmEditingControlView.h */,
+				77154E8D205255C8009E51D7 /* SJVideoPlayerFilmEditingControlView.m */,
+				77154E8F20526391009E51D7 /* SJVideoPlayerFilmEditingResultView.h */,
+				77154E9020526391009E51D7 /* SJVideoPlayerFilmEditingResultView.m */,
 			);
 			name = ControlViews;
 			sourceTree = "<group>";
@@ -764,6 +784,7 @@
 				A6F4E9772007A13C00716B9C /* PlayerCollectionViewCell.m in Sources */,
 				775B201C2046682E00264AB9 /* TableHeaderCollectionViewCell.m in Sources */,
 				A6E6D3632028BE9B00CB9BAE /* SJVideoPlayerMoreSettingsSlidersView.m in Sources */,
+				77154E9120526391009E51D7 /* SJVideoPlayerFilmEditingResultView.m in Sources */,
 				A6F4E9742007A12400716B9C /* PlayerCollectionViewController.m in Sources */,
 				77DA95232042C260007A9EE8 /* TestItem.m in Sources */,
 				A6441095200A3FBA006FD832 /* SJVideoListTableViewCell.m in Sources */,
@@ -783,10 +804,12 @@
 				A6E6D3502028BE9B00CB9BAE /* UIView+SJControlAdd.m in Sources */,
 				77033C10204D45BB008F1ED5 /* SJVideoPlayerReachabilityPromptView.m in Sources */,
 				A6E6D3562028BE9B00CB9BAE /* SJVideoPlayerLeftControlView.m in Sources */,
+				77154E822050D040009E51D7 /* SJVideoPlayerRightControlView.m in Sources */,
 				A6F4E97E2007A7EC00716B9C /* NestedTableViewCell.m in Sources */,
 				774B25201FCEBA5D002113CC /* ViewController.m in Sources */,
 				A6E6D35A2028BE9B00CB9BAE /* SJVideoPlayerDraggingProgressView.m in Sources */,
 				A6E6D3662028BE9B00CB9BAE /* SJVideoPlayerMoreSettingSecondaryColCell.m in Sources */,
+				77154E9720526DAC009E51D7 /* SJFilmEditingResultShareItem.m in Sources */,
 				775C0AC720295C660008EDA7 /* SJVideoPlayerResources.m in Sources */,
 				A6E6D3672028BE9B00CB9BAE /* SJVideoPlayerMoreSettingSecondaryView.m in Sources */,
 				A6E6D3552028BE9B00CB9BAE /* SJVideoPlayerTopControlView.m in Sources */,
@@ -803,6 +826,7 @@
 				A6441098200A406E006FD832 /* SJVideoModel.m in Sources */,
 				774B25571FCED47B002113CC /* PlayerViewController.m in Sources */,
 				77E754362040056F00A5AF44 /* FullViewController.m in Sources */,
+				77154E8E205255C8009E51D7 /* SJVideoPlayerFilmEditingControlView.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -940,14 +964,14 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CODE_SIGN_STYLE = Manual;
-				DEVELOPMENT_TEAM = DB5B5F2RH5;
+				DEVELOPMENT_TEAM = U5A7L7SMNP;
 				INFOPLIST_FILE = SJVideoPlayerProject/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 8.0;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				PRODUCT_BUNDLE_IDENTIFIER = com.sanjiang.videoPlayer;
 				PRODUCT_NAME = "$(TARGET_NAME)";
-				PROVISIONING_PROFILE = "acd2453e-e396-4ccf-bf56-508276824c6c";
-				PROVISIONING_PROFILE_SPECIFIER = SanJiangDevelopment;
+				PROVISIONING_PROFILE = "ca8186e4-0d11-4c23-9f2f-50f3a29199fd";
+				PROVISIONING_PROFILE_SPECIFIER = WildcardProfile;
 				TARGETED_DEVICE_FAMILY = "1,2";
 			};
 			name = Debug;

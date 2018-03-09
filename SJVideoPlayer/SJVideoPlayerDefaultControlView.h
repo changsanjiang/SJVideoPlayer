@@ -9,7 +9,7 @@
 #import <Foundation/Foundation.h>
 #import <SJBaseVideoPlayer/SJBaseVideoPlayer.h>
 
-@class SJVideoPlayer, SJVideoPlayerMoreSetting;
+@class SJVideoPlayer, SJVideoPlayerMoreSetting, SJFilmEditingResultShareItem;
 
 NS_ASSUME_NONNULL_BEGIN
 
@@ -19,11 +19,14 @@ NS_ASSUME_NONNULL_BEGIN
 
 @property (nonatomic, weak, readwrite, nullable) id<SJVideoPlayerDefaultControlViewDelegate> delegate;
 
-@property (nonatomic, assign, readwrite) BOOL generatePreviewImages;
-
 @property (nonatomic, strong, readwrite, nullable) NSArray<SJVideoPlayerMoreSetting *> *moreSettings;
 
-@property (nonatomic, assign, readwrite) BOOL disableNetworkStatusChangePrompt; // default is no.
+@property (nonatomic, strong, readwrite, nullable) NSArray<SJFilmEditingResultShareItem *> *filmEditingResultShareItems;
+
+@property (nonatomic, readwrite) BOOL generatePreviewImages;
+
+@property (nonatomic, readwrite) BOOL disableNetworkStatusChangePrompt; // default is no.
+
 
 @end
 

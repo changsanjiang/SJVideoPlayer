@@ -844,6 +844,7 @@ NS_ASSUME_NONNULL_END
 }
 
 - (void)refreshAVPlayer {
+    _assetURL = [NSURL URLWithString:@"http://video.cdn.lanwuzhe.com/usertrend/166162-1513873330.mp4"];
     [self _clearAVPlayer];
     [self _initializeAVPlayer];
     [self _itemObserving];

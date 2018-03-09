@@ -10,7 +10,6 @@
 #import "SJVideoPlayerBottomControlView.h"
 #import <Masonry/Masonry.h>
 #import "SJVideoPlayer.h"
-#import <SJObserverHelper/NSObject+SJObserverHelper.h>
 #import "SJVideoPlayerSettings.h"
 #import "SJVideoPlayerDraggingProgressView.h"
 #import "UIView+SJVideoPlayerSetting.h"
@@ -27,6 +26,8 @@
 #import <SJLoadingView/SJLoadingView.h>
 #import <objc/message.h>
 #import "UIView+SJControlAdd.h"
+#import "SJVideoPlayerRightControlView.h"
+#import "SJVideoPlayerFilmEditingControlView.h"
 
 #pragma mark -
 
@@ -45,7 +46,7 @@ inline static void UIView_Animations(NSTimeInterval duration, Block __nullable a
 
 
 #pragma mark -
-@interface SJVideoPlayerDefaultControlView ()<SJVideoPlayerLeftControlViewDelegate, SJVideoPlayerBottomControlViewDelegate, SJVideoPlayerTopControlViewDelegate, SJVideoPlayerPreviewViewDelegate, SJVideoPlayerCenterControlViewDelegate>
+@interface SJVideoPlayerDefaultControlView ()<SJVideoPlayerLeftControlViewDelegate, SJVideoPlayerBottomControlViewDelegate, SJVideoPlayerTopControlViewDelegate, SJVideoPlayerPreviewViewDelegate, SJVideoPlayerCenterControlViewDelegate, SJVideoPlayerRightControlViewDelegate>
 
 @property (nonatomic, assign) BOOL hasBeenGeneratedPreviewImages;
 @property (nonatomic, strong, readonly) SJMoreSettingsSlidersViewModel *footerViewModel;
@@ -56,15 +57,20 @@ inline static void UIView_Animations(NSTimeInterval duration, Block __nullable a
 @property (nonatomic, strong, readonly) SJVideoPlayerLeftControlView *leftControlView;
 @property (nonatomic, strong, readonly) SJVideoPlayerCenterControlView *centerControlView;
 @property (nonatomic, strong, readonly) SJVideoPlayerBottomControlView *bottomControlView;
+@property (nonatomic, strong, readonly) SJVideoPlayerRightControlView *rightControlView;
 @property (nonatomic, strong, readonly) SJSlider *bottomSlider;
 @property (nonatomic, strong, readonly) SJVideoPlayerMoreSettingsView *moreSettingsView;
 @property (nonatomic, strong, readonly) SJVideoPlayerMoreSettingSecondaryView *moreSecondarySettingView;
 @property (nonatomic, strong, readonly) SJLoadingView *loadingView;
+@property (nonatomic, strong, readwrite, nullable) SJVideoPlayerFilmEditingControlView *filmEditingControlView;
 
 @property (nonatomic, weak, readwrite, nullable) SJVideoPlayer *videoPlayer;
 
 @property (nonatomic, strong, readwrite, nullable) NSString *notReachablePrompt;
 @property (nonatomic, strong, readwrite, nullable) NSString *reachableViaWWANPrompt;
+@property (nonatomic, strong, readwrite, nullable) NSString *cancelBtnTitle;
+@property (nonatomic, strong, readwrite, nullable) UIImage *screenshotBtnImage;
+@property (nonatomic, strong, readwrite, nullable) UIImage *exportBtnImage;
 
 @end
 NS_ASSUME_NONNULL_END
@@ -77,11 +83,13 @@ NS_ASSUME_NONNULL_END
 @synthesize leftControlView = _leftControlView;
 @synthesize centerControlView = _centerControlView;
 @synthesize bottomControlView = _bottomControlView;
+@synthesize rightControlView = _rightControlView;
 @synthesize bottomSlider = _bottomSlider;
 @synthesize moreSettingsView = _moreSettingsView;
 @synthesize moreSecondarySettingView = _moreSecondarySettingView;
 @synthesize footerViewModel = _footerViewModel;
 @synthesize loadingView = _loadingView;
+@synthesize filmEditingControlView = _filmEditingControlView;
 
 - (instancetype)initWithFrame:(CGRect)frame {
     self = [super initWithFrame:frame];
@@ -106,12 +114,14 @@ NS_ASSUME_NONNULL_END
     [self addSubview:self.leftControlView];
     [self addSubview:self.centerControlView];
     [self addSubview:self.bottomControlView];
+    [self addSubview:self.rightControlView];
     [self addSubview:self.draggingProgressView];
     [self addSubview:self.bottomSlider];
     [self addSubview:self.previewView];
     [self addSubview:self.moreSettingsView];
     [self addSubview:self.moreSecondarySettingView];
     [self addSubview:self.loadingView];
+    [self addSubview:self.filmEditingControlView];
     
     [_topControlView mas_makeConstraints:^(MASConstraintMaker *make) {
         make.top.leading.trailing.offset(0);
@@ -128,6 +138,11 @@ NS_ASSUME_NONNULL_END
     
     [_bottomControlView mas_makeConstraints:^(MASConstraintMaker *make) {
         make.leading.bottom.trailing.offset(0);
+    }];
+    
+    [_rightControlView mas_makeConstraints:^(MASConstraintMaker *make) {
+        make.trailing.offset(0);
+        make.centerY.offset(0);
     }];
     
     [_draggingProgressView mas_makeConstraints:^(MASConstraintMaker *make) {
@@ -165,6 +180,7 @@ NS_ASSUME_NONNULL_END
     [_leftControlView disappear];
     [_centerControlView disappear];
     [_bottomControlView disappear];
+    [_rightControlView disappear];
     [_previewView disappear];
     [_moreSettingsView disappear];
     [_moreSecondarySettingView disappear];
@@ -183,6 +199,9 @@ NS_ASSUME_NONNULL_END
     _bottomControlView.disappearType = SJDisappearType_Transform;
     _bottomControlView.disappearTransform = CGAffineTransformMakeTranslation(0, _bottomControlView.intrinsicContentSize.height);
 
+    _rightControlView.disappearType = SJDisappearType_Transform;
+    _rightControlView.disappearTransform = CGAffineTransformMakeTranslation(_rightControlView.intrinsicContentSize.width, 0);
+    
     _bottomSlider.disappearType = SJDisappearType_Alpha;
     
     _previewView.disappearType = SJDisappearType_All;
@@ -380,6 +399,60 @@ NS_ASSUME_NONNULL_END
     }];
 }
 
+#pragma mark - 右侧视图
+
+- (SJVideoPlayerRightControlView *)rightControlView {
+    if ( _rightControlView ) return _rightControlView;
+    _rightControlView = [SJVideoPlayerRightControlView new];
+    _rightControlView.delegate = self;
+    return _rightControlView;
+}
+
+- (void)rightControlView:(SJVideoPlayerRightControlView *)view clickedBtnTag:(SJVideoPlayerRightViewTag)tag {
+    if ( tag == SJVideoPlayerRightViewTag_FilmEditing ) {
+        _filmEditingControlView = [SJVideoPlayerFilmEditingControlView new];
+        _filmEditingControlView.filmEditingResultShareItems = self.filmEditingResultShareItems;
+        _filmEditingControlView.cancelBtnTitle = self.cancelBtnTitle;
+        
+        __weak typeof(self) _self = self;
+        _filmEditingControlView.getVideoScreenshot = ^UIImage *(SJVideoPlayerFilmEditingControlView *view) {
+            __strong typeof(_self) self = _self;
+            if ( !self ) return nil;
+            [self.videoPlayer pause];
+            return [self.videoPlayer screenshot];
+        };
+        
+        _filmEditingControlView.exit = ^(SJVideoPlayerFilmEditingControlView * _Nonnull view) {
+            __strong typeof(_self) self = _self;
+            if ( !self ) return;
+            UIView_Animations(0.3, ^{
+                view.alpha = 0.001;
+            }, ^{
+                [view removeFromSuperview];
+                self.videoPlayer.disableRotation = NO;
+                self.videoPlayer.disableGestureTypes = SJDisablePlayerGestureTypes_None;
+                [self.videoPlayer controlLayerNeedAppear];
+                [self.videoPlayer play];
+            });
+        };
+        
+        _filmEditingControlView.exportBtnImage = self.exportBtnImage;
+        _filmEditingControlView.screenshotBtnImage = self.screenshotBtnImage;
+        
+        [self addSubview:_filmEditingControlView];
+        [_filmEditingControlView mas_makeConstraints:^(MASConstraintMaker *make) {
+            make.edges.offset(0);
+        }];
+        
+        [self.videoPlayer controlLayerNeedDisappear];
+        if ( self.videoPlayer.state == SJVideoPlayerPlayState_PlayEnd ) [self.centerControlView disappear];
+        self.videoPlayer.disableRotation = YES;
+        self.videoPlayer.disableGestureTypes = SJDisablePlayerGestureTypes_All;
+    }
+}
+
+#pragma mark -
+
 - (SJSlider *)bottomSlider {
     if ( _bottomSlider ) return _bottomSlider;
     _bottomSlider = [SJSlider new];
@@ -538,6 +611,9 @@ NS_ASSUME_NONNULL_END
         [self.draggingProgressView setPreviewImage:setting.placeholder];
         self.notReachablePrompt = setting.notReachablePrompt;
         self.reachableViaWWANPrompt = setting.reachableViaWWANPrompt;
+        self.screenshotBtnImage = setting.screenshotBtnImage;
+        self.exportBtnImage = setting.exportBtnImage;
+        self.cancelBtnTitle = setting.cancelBtnTitle;
     }];
 }
 
@@ -678,7 +754,7 @@ NS_ASSUME_NONNULL_END
 }
 
 #pragma mark 显示/消失
-/// 控制层需要显示.
+/// 显示边缘控制视图
 - (void)controlLayerNeedAppear:(SJVideoPlayer *)videoPlayer {
     UIView_Animations(CommonAnimaDuration, ^{
         if ( SJVideoPlayerPlayState_PlayFailed != videoPlayer.state ) {
@@ -689,27 +765,35 @@ NS_ASSUME_NONNULL_END
             else [_topControlView appear];
             
             [_bottomControlView appear];
-            if ( videoPlayer.isFullScreen ) [_leftControlView appear];
-            else [_leftControlView disappear];  // 如果是小屏, 则不显示锁屏按钮
+            if ( videoPlayer.isFullScreen ) {
+                [_leftControlView appear];
+                [_rightControlView appear];
+            }
+            else {
+                [_leftControlView disappear];  // 如果是小屏, 则不显示锁屏按钮
+                [_rightControlView disappear];
+            }
             [_bottomSlider disappear];
-            
-            if ( _moreSettingsView.appearState ) [_moreSettingsView disappear];
-            if ( _moreSecondarySettingView.appearState ) [_moreSecondarySettingView disappear];
         }
         else {
             [_topControlView appear];
             [_leftControlView disappear];
             [_bottomControlView disappear];
+            [_rightControlView disappear];
         }
+        
+        if ( _moreSettingsView.appearState ) [_moreSettingsView disappear];
+        if ( _moreSecondarySettingView.appearState ) [_moreSecondarySettingView disappear];
     }, nil);
 }
 
-/// 控制层需要隐藏.
+/// 隐藏边缘控制视图
 - (void)controlLayerNeedDisappear:(SJVideoPlayer *)videoPlayer {
     UIView_Animations(CommonAnimaDuration, ^{
         if ( SJVideoPlayerPlayState_PlayFailed != videoPlayer.state ) {
             [_topControlView disappear];
             [_bottomControlView disappear];
+            [_rightControlView disappear];
             [_leftControlView disappear];
             [_previewView disappear];
             [_bottomSlider appear];
@@ -718,6 +802,7 @@ NS_ASSUME_NONNULL_END
             [_topControlView appear];
             [_leftControlView disappear];
             [_bottomControlView disappear];
+            [_rightControlView disappear];
         }
     }, nil);
 }

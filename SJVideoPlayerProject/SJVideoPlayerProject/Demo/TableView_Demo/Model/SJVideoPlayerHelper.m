@@ -10,6 +10,7 @@
 #import <SJFullscreenPopGesture/UIViewController+SJVideoPlayerAdd.h>
 #import "SJVideoPlayer.h"
 #import <Masonry/Masonry.h>
+#import "SJFilmEditingResultShareItem.h"
 
 NS_ASSUME_NONNULL_BEGIN
 
@@ -94,6 +95,30 @@ NS_ASSUME_NONNULL_END
     
     // set asset
     _videoPlayer.URLAsset = asset;
+    
+    void(^clickedExeBlock)(SJFilmEditingResultShareItem *item, UIImage *image, NSURL * __nullable exportedVideoURL) = ^(SJFilmEditingResultShareItem * _Nonnull item, UIImage * _Nonnull image, NSURL * _Nullable exportedVideoURL) {
+        __strong typeof(_self) self = _self;
+        if ( !self ) return;
+        [self.videoPlayer showTitle:[NSString stringWithFormat:@"Clicked %@", item.title]];
+    };
+    
+    
+    void(^saveToAlbumBlock)(SJFilmEditingResultShareItem *item, UIImage *image, NSURL * __nullable exportedVideoURL) = ^(SJFilmEditingResultShareItem * _Nonnull item, UIImage * _Nonnull image, NSURL * _Nullable exportedVideoURL) {
+        __strong typeof(_self) self = _self;
+        if ( !self ) return;
+        [self.videoPlayer showTitle:@"Saving" duration:-1];
+        UIImageWriteToSavedPhotosAlbum(image, self, @selector(image:didFinishSavingWithError:contextInfo:), NULL);
+    };
+    
+    SJFilmEditingResultShareItem *qq = [[SJFilmEditingResultShareItem alloc] initWithTitle:@"QQ" image:[UIImage imageNamed:@"qq"] clickToDisappear:YES clickedExeBlock:clickedExeBlock];
+    SJFilmEditingResultShareItem *wechat = [[SJFilmEditingResultShareItem alloc] initWithTitle:@"Wechat" image:[UIImage imageNamed:@"wechat"] clickToDisappear:YES clickedExeBlock:clickedExeBlock];
+    SJFilmEditingResultShareItem *weibo = [[SJFilmEditingResultShareItem alloc] initWithTitle:@"Weibo" image:[UIImage imageNamed:@"weibo"] clickToDisappear:YES clickedExeBlock:clickedExeBlock];
+    SJFilmEditingResultShareItem *savoToAlbum = [[SJFilmEditingResultShareItem alloc] initWithTitle:@"Album" image:[UIImage imageNamed:@"album"] clickToDisappear:NO clickedExeBlock:saveToAlbumBlock];
+    _videoPlayer.filmEditingResultShareItems = @[qq, wechat, weibo, savoToAlbum];
+}
+
+- (void)image:(UIImage *)image didFinishSavingWithError:(NSError *)error contextInfo:(void *)contextInfo {
+    [self.videoPlayer showTitle:@"Saved successfully"];
 }
 
 - (SJVideoPlayerURLAsset *)asset {

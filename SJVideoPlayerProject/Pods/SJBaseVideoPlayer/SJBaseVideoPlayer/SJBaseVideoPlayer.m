@@ -446,7 +446,6 @@ NS_ASSUME_NONNULL_END
     _orentationObserver.orientationWillChange = ^(SJOrentationObserver * _Nonnull observer, BOOL isFullScreen) {
         __strong typeof(_self) self = _self;
         if ( !self ) return;
-        [self.displayRecorder layerDisappear];
         if ( [self.controlLayerDelegate respondsToSelector:@selector(videoPlayer:willRotateView:)] ) {
             [self.controlLayerDelegate videoPlayer:self willRotateView:isFullScreen];
         }
@@ -759,7 +758,7 @@ NS_ASSUME_NONNULL_END
 #pragma mark -
 - (void)setState:(SJVideoPlayerPlayState)state {
     _state = state;
-#if 0
+#if 1
     switch ( state ) {
         case SJVideoPlayerPlayState_Unknown: {
             NSLog(@"状态: 未知");
@@ -909,6 +908,7 @@ NS_ASSUME_NONNULL_END
 }
 
 - (void)seekToTime:(CMTime)time completionHandler:(void (^ __nullable)(BOOL finished))completionHandler {
+    self.state = SJVideoPlayerPlayState_Buffing;
     if ( [self.controlLayerDelegate respondsToSelector:@selector(startLoading:)] ) {
         [self.controlLayerDelegate startLoading:self];
     }
@@ -1369,23 +1369,12 @@ NS_ASSUME_NONNULL_END
     self = [super init];
     if ( !self ) return nil;
     _videoPlayer = videoPlayer;
-    [_videoPlayer sj_addObserver:self forKeyPath:@"state"];
     [_videoPlayer sj_addObserver:self forKeyPath:@"locked"];
     return self;
 }
 
 - (void)observeValueForKeyPath:(NSString *)keyPath ofObject:(id)object change:(NSDictionary<NSKeyValueChangeKey,id> *)change context:(void *)context {
-    if ( [keyPath isEqualToString:@"state"] ) {
-        if      ( SJVideoPlayerPlayState_Paused == self.videoPlayer.state ||
-                 SJVideoPlayerPlayState_PlayEnd == self.videoPlayer.state ) {
-            if ( !self.videoPlayer.isLockedScreen ) [self _keepDisplay];
-        }
-        else if ( SJVideoPlayerPlayState_Playing == self.videoPlayer.state &&
-                 self.controlLayerAppearedState ) {
-            [self layerAppear];
-        }
-    }
-    else if ( [keyPath isEqualToString:@"locked"] ) {
+    if ( [keyPath isEqualToString:@"locked"] ) {
         if ( _videoPlayer.isLockedScreen ) {
             [self.controlHiddenTimer clear];
         }
@@ -1408,11 +1397,6 @@ NS_ASSUME_NONNULL_END
 
 - (void)layerAppear {
     [self _changing:YES];
-}
-
-- (void)_keepDisplay {
-    [self layerAppear];                      // 显示
-    [self.controlHiddenTimer clear];         // 清除timer, 使其一直显示
 }
 
 - (void)layerDisappear {
@@ -1439,7 +1423,6 @@ NS_ASSUME_NONNULL_END
 - (void)_changing:(BOOL)status {
     if ( !self.isEnabled ) return;
     if ( !self.videoPlayer.controlLayerDataSource ) return;
-
     self.controlLayerAppearedState = status;
     if ( status ) [self.controlHiddenTimer start];
     else [self.controlHiddenTimer clear];

@@ -30,7 +30,6 @@ typedef NS_ENUM(NSUInteger, SJVideoPlayerBottomViewTag) {
 
 @property (nonatomic) float bufferProgress;
 
-
 - (void)setCurrentTimeStr:(NSString *)currentTimeStr;
 - (void)setCurrentTimeStr:(NSString *)currentTimeStr totalTimeStr:(NSString *)totalTimeStr;
 

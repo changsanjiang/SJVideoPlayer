@@ -64,6 +64,10 @@ NSNotificationName const SJSettingsPlayerNotification = @"SJSettingsPlayerNotifi
     _playFailedBtnTitle = [SJVideoPlayerResources localizedStringForKey:SJVideoPlayer_PlayFailedText];
     self.playFailedBtnFont = [UIFont boldSystemFontOfSize:12];
     self.playFailedBtnTitleColor = [UIColor whiteColor];
+    self.filmEditingBtnImage = [SJVideoPlayerResources imageNamed:@"sj_video_player_film_editing"];
+    self.screenshotBtnImage = [SJVideoPlayerResources imageNamed:@"sj_video_player_screenshot"];
+    self.exportBtnImage = [SJVideoPlayerResources imageNamed:@"sj_video_player_export"];
+    _cancelBtnTitle = [SJVideoPlayerResources localizedStringForKey:SJVideoPlayer_CancelBtnTitle];
 }
 
 @end

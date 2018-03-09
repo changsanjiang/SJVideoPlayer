@@ -21,9 +21,17 @@ extern NSNotificationName const SJSettingsPlayerNotification;
 
 - (void)reset;
 
+#pragma mark - film editing
+@property (nonatomic, strong, readonly) NSString *cancelBtnTitle;
+@property (nonatomic, strong, readwrite) UIImage *screenshotBtnImage;
+@property (nonatomic, strong, readwrite) UIImage *exportBtnImage;
+@property (nonatomic, strong, readwrite) UIImage *recordEndBtnImage;
+@property (nonatomic, strong, readonly) NSString *recordTipsText;
+
+
+#pragma mark - network
 @property (nonatomic, strong, readonly) NSString *notReachablePrompt;
 @property (nonatomic, strong, readonly) NSString *reachableViaWWANPrompt;
-@property (nonatomic, strong, readonly) NSString *cancelBtnTitle;
 
 
 @property (nonatomic, strong, readonly) NSString *previewBtnTitle;
@@ -67,8 +75,6 @@ extern NSNotificationName const SJSettingsPlayerNotification;
 @property (nonatomic, strong, readwrite) UIImage *lockBtnImage;
 @property (nonatomic, strong, readwrite) UIImage *unlockBtnImage;
 @property (nonatomic, strong, readwrite) UIImage *filmEditingBtnImage;
-@property (nonatomic, strong, readwrite) UIImage *screenshotBtnImage;
-@property (nonatomic, strong, readwrite) UIImage *exportBtnImage;
 
 
 #pragma mark - progress slider

@@ -14,6 +14,8 @@ UIKIT_EXTERN NSString *const SJVideoPlayer_PlayFailedText;
 UIKIT_EXTERN NSString *const SJVideoPlayer_NotReachablePrompt;
 UIKIT_EXTERN NSString *const SJVideoPlayer_ReachableViaWWANPrompt;
 UIKIT_EXTERN NSString *const SJVideoPlayer_CancelBtnTitle;
+UIKIT_EXTERN NSString *const SJVideoPlayer_RecordTipsText;
+
 
 @interface SJVideoPlayerResources : NSObject
 

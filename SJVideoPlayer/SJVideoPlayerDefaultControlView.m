@@ -65,12 +65,7 @@ inline static void UIView_Animations(NSTimeInterval duration, Block __nullable a
 @property (nonatomic, strong, readwrite, nullable) SJVideoPlayerFilmEditingControlView *filmEditingControlView;
 
 @property (nonatomic, weak, readwrite, nullable) SJVideoPlayer *videoPlayer;
-
-@property (nonatomic, strong, readwrite, nullable) NSString *notReachablePrompt;
-@property (nonatomic, strong, readwrite, nullable) NSString *reachableViaWWANPrompt;
-@property (nonatomic, strong, readwrite, nullable) NSString *cancelBtnTitle;
-@property (nonatomic, strong, readwrite, nullable) UIImage *screenshotBtnImage;
-@property (nonatomic, strong, readwrite, nullable) UIImage *exportBtnImage;
+@property (nonatomic, strong, readwrite, nullable) SJVideoPlayerSettings *settings;
 
 @end
 NS_ASSUME_NONNULL_END
@@ -412,7 +407,12 @@ NS_ASSUME_NONNULL_END
     if ( tag == SJVideoPlayerRightViewTag_FilmEditing ) {
         _filmEditingControlView = [SJVideoPlayerFilmEditingControlView new];
         _filmEditingControlView.filmEditingResultShareItems = self.filmEditingResultShareItems;
-        _filmEditingControlView.cancelBtnTitle = self.cancelBtnTitle;
+        
+        _filmEditingControlView.exportBtnImage = self.settings.exportBtnImage;
+        _filmEditingControlView.screenshotBtnImage = self.settings.screenshotBtnImage;
+        _filmEditingControlView.cancelBtnTitle = self.settings.cancelBtnTitle;
+        _filmEditingControlView.recordTipsText = self.settings.recordTipsText;
+        _filmEditingControlView.recordEndBtnImage = self.settings.recordEndBtnImage;
         
         __weak typeof(self) _self = self;
         _filmEditingControlView.getVideoScreenshot = ^UIImage *(SJVideoPlayerFilmEditingControlView *view) {
@@ -425,7 +425,7 @@ NS_ASSUME_NONNULL_END
         _filmEditingControlView.exit = ^(SJVideoPlayerFilmEditingControlView * _Nonnull view) {
             __strong typeof(_self) self = _self;
             if ( !self ) return;
-            UIView_Animations(0.3, ^{
+            UIView_Animations(0.5, ^{
                 view.alpha = 0.001;
             }, ^{
                 [view removeFromSuperview];
@@ -436,15 +436,13 @@ NS_ASSUME_NONNULL_END
             });
         };
         
-        _filmEditingControlView.exportBtnImage = self.exportBtnImage;
-        _filmEditingControlView.screenshotBtnImage = self.screenshotBtnImage;
-        
         [self addSubview:_filmEditingControlView];
         [_filmEditingControlView mas_makeConstraints:^(MASConstraintMaker *make) {
             make.edges.offset(0);
         }];
         
         [self.videoPlayer controlLayerNeedDisappear];
+        [self.bottomSlider disappear];
         if ( self.videoPlayer.state == SJVideoPlayerPlayState_PlayEnd ) [self.centerControlView disappear];
         self.videoPlayer.disableRotation = YES;
         self.videoPlayer.disableGestureTypes = SJDisablePlayerGestureTypes_All;
@@ -609,11 +607,7 @@ NS_ASSUME_NONNULL_END
         self.bottomSlider.trackImageView.backgroundColor = setting.progress_bufferColor;
         self.videoPlayer.placeholder = setting.placeholder;
         [self.draggingProgressView setPreviewImage:setting.placeholder];
-        self.notReachablePrompt = setting.notReachablePrompt;
-        self.reachableViaWWANPrompt = setting.reachableViaWWANPrompt;
-        self.screenshotBtnImage = setting.screenshotBtnImage;
-        self.exportBtnImage = setting.exportBtnImage;
-        self.cancelBtnTitle = setting.cancelBtnTitle;
+        self.settings = setting;
     }];
 }
 
@@ -931,11 +925,11 @@ NS_ASSUME_NONNULL_END
     
     switch ( status ) {
         case SJNetworkStatus_NotReachable: {
-            [self.videoPlayer showTitle:self.notReachablePrompt duration:3];
+            [self.videoPlayer showTitle:self.settings.notReachablePrompt duration:3];
         }
             break;
         case SJNetworkStatus_ReachableViaWWAN: {
-            [self.videoPlayer showTitle:self.reachableViaWWANPrompt duration:3];
+            [self.videoPlayer showTitle:self.settings.reachableViaWWANPrompt duration:3];
         }
             break;
         case SJNetworkStatus_ReachableViaWiFi: {

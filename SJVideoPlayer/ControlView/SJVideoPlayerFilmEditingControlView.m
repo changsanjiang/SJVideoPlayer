@@ -13,12 +13,14 @@
 #import "UIView+SJControlAdd.h"
 #import "SJVideoPlayerFilmEditingResultView.h"
 #import "SJFilmEditingResultShareItem.h"
+#import "SJVideoPlayerFilmEditingRecordView.h"
 
 @interface SJVideoPlayerFilmEditingControlView ()
 
 @property (nonatomic, strong, readonly) UIButton *screenshotBtn;
 @property (nonatomic, strong, readonly) UIButton *exportBtn;
 @property (nonatomic, strong, readonly) SJVideoPlayerFilmEditingResultView *resultView;
+@property (nonatomic, strong, readonly) SJVideoPlayerFilmEditingRecordView *recordView;
 @property (nonatomic, strong, readonly) UITapGestureRecognizer *tapGR;
 
 @end
@@ -28,6 +30,7 @@
 @synthesize screenshotBtn = _screenshotBtn;
 @synthesize exportBtn = _exportBtn;
 @synthesize resultView = _resultView;
+@synthesize recordView = _recordView;
 @synthesize tapGR = _tapGR;
 
 - (instancetype)initWithFrame:(CGRect)frame {
@@ -38,11 +41,13 @@
 }
 
 - (void)clickedBtn:(UIButton *)btn {
-    self.resultView.frame = self.bounds;
-    _resultView.alpha = 0.001;
-    [self addSubview:_resultView];
     switch ( btn.tag ) {
         case SJVideoPlayerFilmEditingViewTag_Screenshot: {
+            self.resultView.cancelBtnTitle = _cancelBtnTitle;
+            _resultView.filmEditingResultShareItems = _filmEditingResultShareItems;
+            _resultView.alpha = 0.001;
+            [self addSubview:_resultView];
+
             [UIView animateWithDuration:0.2 animations:^{
                 self.backgroundColor = [UIColor colorWithWhite:1 alpha:0.8];
             } completion:^(BOOL finished) {
@@ -53,18 +58,29 @@
                     [_resultView startAnimation];
                 }];
             }];
-            [self.exportBtn disappear];
-            [self.screenshotBtn disappear];
             _resultView.image = self.getVideoScreenshot(self);
         }
             break;
         case SJVideoPlayerFilmEditingViewTag_Export: {
+            self.recordView.tipsText = _recordTipsText;
+            _recordView.cancelBtnTitle = _cancelBtnTitle;
+            _recordView.recordEndBtnImage = _recordEndBtnImage;
+            _recordView.alpha = 0.001;
+            [self addSubview:_recordView];
             
+            [UIView animateWithDuration:0.25 animations:^{
+                _recordView.alpha = 1;
+            } completion:^(BOOL finished) {
+                [_recordView startRecord];
+            }];
         }
             break;
         default:
             break;
     }
+    
+    [_exportBtn disappear];
+    [_screenshotBtn disappear];
 }
 
 - (void)setExportBtnImage:(UIImage *)exportBtnImage {
@@ -75,16 +91,6 @@
     [self.screenshotBtn setImage:screenshotBtnImage forState:UIControlStateNormal];
 }
 
-- (void)setFilmEditingResultShareItems:(NSArray<SJFilmEditingResultShareItem *> *)items {
-    _filmEditingResultShareItems = items;
-    self.resultView.filmEditingResultShareItems = items;
-}
-
-- (void)setCancelBtnTitle:(NSString *)cancelBtnTitle {
-    _cancelBtnTitle = cancelBtnTitle;
-    self.resultView.cancelBtnTitle = cancelBtnTitle;
-}
-
 - (UITapGestureRecognizer *)tapGR {
     if ( _tapGR ) return _tapGR;
     _tapGR = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(handleTapGR)];
@@ -93,7 +99,8 @@
 
 - (void)handleTapGR {
     CGPoint location = [_tapGR locationInView:self];
-    if ( !CGRectContainsPoint(_resultView.frame, location) ) {
+    if ( !CGRectContainsPoint(_resultView.frame, location) &&
+         !CGRectContainsPoint(_recordView.frame, location)) {
         if ( self.exit ) self.exit(self);
     }
 }
@@ -102,8 +109,7 @@
 - (void)_setupViews {
     [self addSubview:self.screenshotBtn];
     [self addSubview:self.exportBtn];
-    
-    [self addGestureRecognizer:self.tapGR];
+    [self addGestureRecognizer:self.tapGR]; // gesture
     
     [_screenshotBtn mas_makeConstraints:^(MASConstraintMaker *make) {
         make.trailing.offset(0);
@@ -132,7 +138,13 @@
             [_exportBtn appear];
         }];
     });
-    
+}
+
+- (SJVideoPlayerFilmEditingRecordView *)recordView {
+    if ( _recordView ) return _recordView;
+    _recordView = [[SJVideoPlayerFilmEditingRecordView alloc] initWithFrame:self.bounds];
+    _recordView.backgroundColor = [UIColor clearColor];
+    return _recordView;
 }
 
 - (UIButton *)screenshotBtn {

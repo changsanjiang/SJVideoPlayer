@@ -68,6 +68,8 @@ NSNotificationName const SJSettingsPlayerNotification = @"SJSettingsPlayerNotifi
     self.screenshotBtnImage = [SJVideoPlayerResources imageNamed:@"sj_video_player_screenshot"];
     self.exportBtnImage = [SJVideoPlayerResources imageNamed:@"sj_video_player_export"];
     _cancelBtnTitle = [SJVideoPlayerResources localizedStringForKey:SJVideoPlayer_CancelBtnTitle];
+    self.recordEndBtnImage = [SJVideoPlayerResources imageNamed:@"sj_video_player_record_end"];
+    _recordTipsText = [SJVideoPlayerResources localizedStringForKey:SJVideoPlayer_RecordTipsText];
 }
 
 @end

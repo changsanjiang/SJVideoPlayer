@@ -118,7 +118,7 @@ NS_ASSUME_NONNULL_END
 }
 
 - (void)image:(UIImage *)image didFinishSavingWithError:(NSError *)error contextInfo:(void *)contextInfo {
-    [self.videoPlayer showTitle:@"Saved successfully"];
+    [self.videoPlayer showTitle:@"Saved successfully" duration:2];
 }
 
 - (SJVideoPlayerURLAsset *)asset {

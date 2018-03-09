@@ -173,4 +173,5 @@
     _imageView = [SJUIImageViewFactory imageViewWithViewMode:UIViewContentModeScaleAspectFit];
     return _imageView;
 }
+
 @end

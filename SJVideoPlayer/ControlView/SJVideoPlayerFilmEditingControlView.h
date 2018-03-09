@@ -24,6 +24,8 @@ typedef NS_ENUM(NSUInteger, SJVideoPlayerFilmEditingViewTag) {
 @property (nonatomic, strong, nullable) UIImage *screenshotBtnImage;
 @property (nonatomic, strong, nullable) UIImage *exportBtnImage;
 @property (nonatomic, strong, nullable) NSString *cancelBtnTitle;
+@property (nonatomic, strong, nullable) UIImage *recordEndBtnImage;
+@property (nonatomic, strong, nullable) NSString *recordTipsText;
 
 @end
 NS_ASSUME_NONNULL_END

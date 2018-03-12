@@ -97,14 +97,7 @@ NS_ASSUME_NONNULL_END
     _s_resultView.operationFailedPrompt = _operationFailedPrompt;
     _s_resultView.alpha = 0.001;
     [self addSubview:_s_resultView];
-    
-    __weak typeof(self) _self = self;
-    _s_resultView.clickedCancleBtn = ^(SJVideoPlayerFilmEditingResultView * _Nonnull view) {
-        __strong typeof(_self) self = _self;
-        if ( !self ) return;
-        if ( self.exit ) self.exit(self);
-    };
-    
+
     [UIView animateWithDuration:0.2 animations:^{
         self.backgroundColor = [UIColor colorWithWhite:1 alpha:0.8];
     } completion:^(BOOL finished) {

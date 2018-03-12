@@ -758,7 +758,7 @@ NS_ASSUME_NONNULL_END
 #pragma mark -
 - (void)setState:(SJVideoPlayerPlayState)state {
     _state = state;
-#if 1
+#if 0
     switch ( state ) {
         case SJVideoPlayerPlayState_Unknown: {
             NSLog(@"状态: 未知");

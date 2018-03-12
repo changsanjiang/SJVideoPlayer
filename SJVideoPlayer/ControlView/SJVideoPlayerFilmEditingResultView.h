@@ -24,7 +24,6 @@ typedef NS_ENUM(NSUInteger, SJVideoPlayerFilmEditingResultViewType) {
 @property (nonatomic, strong, nullable) SJFilmEditingResultShare *resultShare;
 @property (nonatomic, strong, nullable) NSString *cancelBtnTitle;
 @property (nonatomic, strong, nullable) UIImage *image;
-@property (nonatomic, copy, nullable) void(^clickedCancleBtn)(SJVideoPlayerFilmEditingResultView *view);
 
 @property (nonatomic, strong, nullable) NSString *uploadingPrompt;
 @property (nonatomic, strong, nullable) NSString *exportingPrompt;

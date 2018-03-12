@@ -39,6 +39,8 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (void)clickedItem:(SJFilmEditingResultShareItem *)item;
 
+- (void)clickedCancelButton;
+
 @end
 
 @interface SJFilmEditingResultUploader : NSObject

@@ -499,7 +499,7 @@ typedef NS_ENUM(NSInteger, SJNetworkStatus) {
 
 @protocol SJVideoPlayerControlLayerDelegate <NSObject>
 
-@optional
+@required
 /**
  This method will be called when the control layer needs to be appear. You should do some appear work here.
  */
@@ -510,6 +510,8 @@ typedef NS_ENUM(NSInteger, SJNetworkStatus) {
  */
 - (void)controlLayerNeedDisappear:(__kindof SJBaseVideoPlayer *)videoPlayer;
 
+
+@optional
 /**
  Call it when `tableView` or` collectionView` is about to appear. Because scrollview may be scrolled.
  */

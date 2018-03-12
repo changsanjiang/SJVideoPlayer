@@ -225,11 +225,10 @@ NS_ASSUME_NONNULL_END
 - (void)exitFilmEditingCompletion:(void(^ __nullable)(SJVideoPlayerDefaultControlView *))completion {
     if ( _filmEditingControlView ) {
         UIView_Animations(0.5, ^{
-            _filmEditingControlView.alpha = 0.001;
+            [_filmEditingControlView disappear];
         }, ^{
             self.videoPlayer.disableRotation = NO;
             self.videoPlayer.disableGestureTypes = SJDisablePlayerGestureTypes_None;
-            [self.videoPlayer controlLayerNeedAppear];
             [self.videoPlayer play];
             [_filmEditingControlView removeFromSuperview];
             _filmEditingControlView = nil;  // clear
@@ -471,8 +470,12 @@ NS_ASSUME_NONNULL_END
             if ( self.videoPlayer.state == SJVideoPlayerPlayState_PlayEnd ) {
                 [self.videoPlayer replay];
             }
+            else if ( self.videoPlayer.state == SJVideoPlayerPlayState_Paused ) {
+                [self.videoPlayer play];
+            }
         };
         
+        _filmEditingControlView.disappearType = SJDisappearType_Alpha;
         _filmEditingControlView.resultShare = self.filmEditingResultShare;
         _filmEditingControlView.exportBtnImage = self.settings.exportBtnImage;
         _filmEditingControlView.screenshotBtnImage = self.settings.screenshotBtnImage;

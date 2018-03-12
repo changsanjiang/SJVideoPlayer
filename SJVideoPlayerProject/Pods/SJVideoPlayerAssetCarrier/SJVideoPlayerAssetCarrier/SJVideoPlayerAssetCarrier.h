@@ -82,7 +82,7 @@ NS_ASSUME_NONNULL_BEGIN
  */
 - (instancetype)initWithAssetURL:(NSURL *)assetURL
                        beginTime:(NSTimeInterval)beginTime
-    playerSuperViewOfTableHeader:(__weak UIView *)superView
+    playerSuperViewOfTableHeader:(__unsafe_unretained UIView *)superView
                        tableView:(__unsafe_unretained UITableView *)tableView;
 
 /**
@@ -99,7 +99,7 @@ NS_ASSUME_NONNULL_BEGIN
  */
 - (instancetype)initWithAssetURL:(NSURL *)assetURL
                        beginTime:(NSTimeInterval)beginTime
-     collectionViewOfTableHeader:(__weak UICollectionView *)collectionView
+     collectionViewOfTableHeader:(__unsafe_unretained UICollectionView *)collectionView
          collectionCellIndexPath:(NSIndexPath *)indexPath
               playerSuperViewTag:(NSInteger)playerSuperViewTag
                    rootTableView:(__unsafe_unretained UITableView *)rootTableView;
@@ -265,7 +265,7 @@ NS_ASSUME_NONNULL_BEGIN
  *  video player -> cell -> collection view -> table header view -> table view
  *
  **/
-- (void)convertToTableHeaderViewWithCollectionView:(__weak UICollectionView *)collectionView
+- (void)convertToTableHeaderViewWithCollectionView:(__unsafe_unretained UICollectionView *)collectionView
                               collectionCellIndexPath:(NSIndexPath *)indexPath
                                    playerSuperViewTag:(NSInteger)playerSuperViewTag
                                         rootTableView:(__unsafe_unretained UITableView *)rootTableView;

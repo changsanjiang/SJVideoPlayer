@@ -74,7 +74,9 @@
 
 - (void)clickedBtn:(UIButton *)btn {
     if ( btn == self.cancelBtn ) {
-        if ( _clickedCancleBtn ) _clickedCancleBtn(self);
+        if ( [self.resultShare.delegate respondsToSelector:@selector(clickedCancelButton)] ) {
+            [self.resultShare.delegate clickedCancelButton];
+        }
     }
 }
 
@@ -237,7 +239,7 @@
 - (UIButton *)cancelBtn {
     if ( _cancelBtn ) return _cancelBtn;
     _cancelBtn = [SJShapeButtonFactory buttonWithCornerRadius:15 title:nil titleColor:[UIColor whiteColor] target:self sel:@selector(clickedBtn:)];
-    _cancelBtn.backgroundColor = [UIColor colorWithWhite:0.15 alpha:1];
+    _cancelBtn.backgroundColor = [UIColor colorWithWhite:0 alpha:0.5];
     _cancelBtn.titleLabel.font = [UIFont systemFontOfSize:11];
     return _cancelBtn;
 }

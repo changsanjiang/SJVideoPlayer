@@ -23,6 +23,8 @@ static NSString *kSJFilmEditingResultShareItemAlbumTitle = @"Album";
 
 @property (nonatomic, strong, readwrite) SJVideoPlayer *videoPlayer;
 @property (nonatomic, strong, readonly) SJFilmEditingResultUploader *uploader;
+@property (nonatomic, strong, readonly) SJFilmEditingResultShare *resultShare;
+@property (nonatomic, readwrite) BOOL savedToAblum;
 
 @end
 
@@ -30,6 +32,7 @@ NS_ASSUME_NONNULL_END
 
 @implementation SJVideoPlayerHelper
 @synthesize uploader = _uploader;
+@synthesize resultShare = _resultShare;
 
 - (instancetype)initWithViewController:(__weak UIViewController<SJVideoPlayerHelperUseProtocol> *)viewController {
     self = [super init];
@@ -77,6 +80,11 @@ NS_ASSUME_NONNULL_END
     
     // setting player
     __weak typeof(self) _self = self;
+    
+    _videoPlayer.prompt.update(^(SJPromptConfig * _Nonnull config) {
+        config.backgroundColor = [UIColor colorWithWhite:0 alpha:0.618];
+    });
+    
     _videoPlayer.willRotateScreen = ^(SJVideoPlayer * _Nonnull player, BOOL isFullScreen) {
         __strong typeof(_self) self = _self;
         if ( !self ) return ;
@@ -105,15 +113,21 @@ NS_ASSUME_NONNULL_END
     
     // show right control view.
     _videoPlayer.enableFilmEditing = YES;
+    _videoPlayer.filmEditingResultShare = self.resultShare;
+}
+
+- (SJFilmEditingResultShare *)resultShare {
+    if ( _resultShare ) return _resultShare;
     SJFilmEditingResultShareItem *qq = [[SJFilmEditingResultShareItem alloc] initWithTitle:kSJFilmEditingResultShareItemQQTitle image:[UIImage imageNamed:@"qq"]];
     SJFilmEditingResultShareItem *wechat = [[SJFilmEditingResultShareItem alloc] initWithTitle:kSJFilmEditingResultShareItemWechatTitle image:[UIImage imageNamed:@"wechat"]];
     SJFilmEditingResultShareItem *weibo = [[SJFilmEditingResultShareItem alloc] initWithTitle:kSJFilmEditingResultShareItemWeiboTitle image:[UIImage imageNamed:@"weibo"]];
     SJFilmEditingResultShareItem *savoToAlbum = [[SJFilmEditingResultShareItem alloc] initWithTitle:kSJFilmEditingResultShareItemAlbumTitle image:[UIImage imageNamed:@"album"]];
-
-    SJFilmEditingResultShare *resultShare = [[SJFilmEditingResultShare alloc] initWithShateItems:@[qq, wechat, weibo, savoToAlbum]];
-    resultShare.delegate = self;
-    self.videoPlayer.filmEditingResultShare = resultShare;
+    _resultShare = [[SJFilmEditingResultShare alloc] initWithShateItems:@[qq, wechat, weibo, savoToAlbum]];
+    _resultShare.delegate = self;
+    return _resultShare;
 }
+
+#pragma mark - delegate methods
 
 - (SJFilmEditingResultUploader *)successfulExportedVideo:(NSURL *)sandboxURL screenshot:(UIImage *)screenshot {
     
@@ -142,6 +156,7 @@ NS_ASSUME_NONNULL_END
     _uploader.failed = NO;
     _uploader.exportedVideoURL = nil;
     _uploader.screenshot = nil;
+    _savedToAblum = NO;
     
     // update new value.
     self.uploader.exportedVideoURL = sandboxURL;
@@ -157,7 +172,8 @@ NS_ASSUME_NONNULL_END
     
     
     // some test code..
-    return [self successfulExportedVideo:[NSURL URLWithString:@""] screenshot:[UIImage new]];
+    NSURL *url = nil;
+    return [self successfulExportedVideo:url screenshot:screenshot];
 }
 
 - (void)_uploadWithImage:(UIImage *)image progress:(void(^)(float progress))progressBlock completion:(void(^)(NSString *URLStr))completion failed:(void(^)(void))failed {
@@ -194,7 +210,14 @@ NS_ASSUME_NONNULL_END
     }
     
     if ( item.title == kSJFilmEditingResultShareItemAlbumTitle ) {
+        if ( self.savedToAblum ) {
+            [self.videoPlayer showTitle:@"Saved"];
+            
+            return;
+        }
+        
         [self.videoPlayer showTitle:@"Saving" duration:-1];
+        
         if ( self.uploader.exportedVideoURL ) {
             UISaveVideoAtPathToSavedPhotosAlbum(self.uploader.exportedVideoURL.path, self, @selector(video:didFinishSavingWithError:contextInfo:), NULL);
         }
@@ -204,17 +227,29 @@ NS_ASSUME_NONNULL_END
     }
     else {
         [self.videoPlayer showTitle:[NSString stringWithFormat:@"Clicked %@", item.title]];
-    }
-    
-    __weak typeof(self) _self = self;
-    [self.videoPlayer exitFilmEditingCompletion:^(SJVideoPlayer * _Nonnull player) {
-        [player rotate:SJRotateViewOrientation_Portrait animated:YES completion:^(__kindof SJBaseVideoPlayer * _Nonnull player) {
-            __strong typeof(_self) self = _self;
-            if ( !self ) return;
-            UIViewController *newVC = [[self.viewController class] new];
-            [self.viewController.navigationController pushViewController:newVC animated:YES];
+        __weak typeof(self) _self = self;
+        // exit editing
+        [self.videoPlayer exitFilmEditingCompletion:^(SJVideoPlayer * _Nonnull player) {
+            // rotate
+            [player rotate:SJRotateViewOrientation_Portrait animated:YES completion:^(__kindof SJBaseVideoPlayer * _Nonnull player) {
+                __strong typeof(_self) self = _self;
+                if ( !self ) return;
+                // push
+                UIViewController *newVC = [[self.viewController class] new];
+                [self.viewController.navigationController pushViewController:newVC animated:YES];
+            }];
         }];
-    }];
+
+    }
+}
+
+- (void)clickedCancelButton {
+    if ( !self.uploader.uploaded ) {
+        [self.videoPlayer showTitle:@"Uploading, please wait."];
+    }
+    else {
+        [self.videoPlayer exitFilmEditingCompletion:nil];
+    }
 }
 
 // Save video to album SEL.
@@ -223,6 +258,7 @@ NS_ASSUME_NONNULL_END
         [self.videoPlayer showTitle:@"Save failed" duration:2];
     }
     else {
+        self.savedToAblum = YES;
         [self.videoPlayer showTitle:@"Save successfully" duration:2];
     }
 }
@@ -233,6 +269,7 @@ NS_ASSUME_NONNULL_END
         [self.videoPlayer showTitle:@"Save failed" duration:2];
     }
     else {
+        self.savedToAblum = YES;
         [self.videoPlayer showTitle:@"Save successfully" duration:2];
     }
 }

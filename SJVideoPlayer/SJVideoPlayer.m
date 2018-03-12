@@ -149,4 +149,10 @@ static dispatch_queue_t videoPlayerWorkQueue;
 - (BOOL)enableFilmEditing {
     return self.defaultControlView.enableFilmEditing;
 }
+
+- (void)exitFilmEditingCompletion:(void(^__nullable)(SJVideoPlayer *player))completion {
+    [self.defaultControlView exitFilmEditingCompletion:^(SJVideoPlayerDefaultControlView * _Nonnull view) {
+        if ( completion ) completion(self);
+    }];
+}
 @end

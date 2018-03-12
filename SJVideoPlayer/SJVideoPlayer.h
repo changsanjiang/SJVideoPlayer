@@ -82,10 +82,13 @@ NS_ASSUME_NONNULL_BEGIN
 
 /**
     If yes, the player will display the right control view.
+    But if the format of the video is m3u8, it does not work.
  */
 @property (nonatomic, assign, readwrite) BOOL enableFilmEditing;
 
 @property (nonatomic, strong, readwrite, nullable) SJFilmEditingResultShare *filmEditingResultShare;
+
+- (void)exitFilmEditingCompletion:(void(^__nullable)(SJVideoPlayer *player))completion;
 
 @end
 

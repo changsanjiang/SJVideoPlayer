@@ -205,6 +205,16 @@ NS_ASSUME_NONNULL_END
     else {
         [self.videoPlayer showTitle:[NSString stringWithFormat:@"Clicked %@", item.title]];
     }
+    
+    __weak typeof(self) _self = self;
+    [self.videoPlayer exitFilmEditingCompletion:^(SJVideoPlayer * _Nonnull player) {
+        [player rotate:SJRotateViewOrientation_Portrait animated:YES completion:^(__kindof SJBaseVideoPlayer * _Nonnull player) {
+            __strong typeof(_self) self = _self;
+            if ( !self ) return;
+            UIViewController *newVC = [[self.viewController class] new];
+            [self.viewController.navigationController pushViewController:newVC animated:YES];
+        }];
+    }];
 }
 
 // Save video to album SEL.

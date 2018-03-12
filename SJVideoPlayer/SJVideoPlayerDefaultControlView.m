@@ -222,6 +222,25 @@ NS_ASSUME_NONNULL_END
     }
 }
 
+- (void)exitFilmEditingCompletion:(void(^ __nullable)(SJVideoPlayerDefaultControlView *))completion {
+    if ( _filmEditingControlView ) {
+        UIView_Animations(0.5, ^{
+            _filmEditingControlView.alpha = 0.001;
+        }, ^{
+            self.videoPlayer.disableRotation = NO;
+            self.videoPlayer.disableGestureTypes = SJDisablePlayerGestureTypes_None;
+            [self.videoPlayer controlLayerNeedAppear];
+            [self.videoPlayer play];
+            [_filmEditingControlView removeFromSuperview];
+            _filmEditingControlView = nil;  // clear
+            if ( completion ) completion(self);
+        });
+    }
+    else {
+        if ( completion ) completion(self);
+    }
+}
+
 #pragma mark - 预览视图
 - (SJVideoPlayerPreviewView *)previewView {
     if ( _previewView ) return _previewView;
@@ -428,16 +447,7 @@ NS_ASSUME_NONNULL_END
         _filmEditingControlView.exit = ^(SJVideoPlayerFilmEditingControlView * _Nonnull view) {
             __strong typeof(_self) self = _self;
             if ( !self ) return;
-            UIView_Animations(0.5, ^{
-                view.alpha = 0.001;
-            }, ^{
-                [view removeFromSuperview];
-                self.videoPlayer.disableRotation = NO;
-                self.videoPlayer.disableGestureTypes = SJDisablePlayerGestureTypes_None;
-                [self.videoPlayer controlLayerNeedAppear];
-                [self.videoPlayer play];
-                self.filmEditingControlView = nil;  // clear
-            });
+            [self exitFilmEditingCompletion:nil];
         };
         
         _filmEditingControlView.recordCompleteExeBlock = ^void (SJVideoPlayerFilmEditingControlView * _Nonnull filmEditingView, short duration) {

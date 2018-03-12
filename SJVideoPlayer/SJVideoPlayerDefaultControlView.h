@@ -29,6 +29,8 @@ NS_ASSUME_NONNULL_BEGIN
 
 @property (nonatomic, readwrite) BOOL enableFilmEditing;
 
+- (void)exitFilmEditingCompletion:(void(^ __nullable)(SJVideoPlayerDefaultControlView *view))completion;
+
 @end
 
 @protocol SJVideoPlayerDefaultControlViewDelegate <NSObject>

@@ -17,6 +17,9 @@ NSString *const SJVideoPlayer_CancelBtnTitle = @"SJVideoPlayer_CancelBtnTitle";
 NSString *const SJVideoPlayer_WaitingForRecordingTipsText = @"SJVideoPlayer_WaitingForRecordingTipsText";
 NSString *const SJVideoPlayer_RecordTipsText = @"SJVideoPlayer_RecordTipsText";
 NSString *const SJVideoPlayer_VideoPlayDidToEndText = @"SJVideoPlayer_VideoPlayDidToEndText";
+NSString *const SJVideoPlayer_UploadingPrompt = @"SJVideoPlayer_UploadingPrompt";
+NSString *const SJVideoPlayer_ExportingPrompt = @"SJVideoPlayer_ExportingPrompt";
+NSString *const SJVideoPlayer_OperationFailedPrompt = @"SJVideoPlayer_OperationFailedPrompt";
 
 @implementation SJVideoPlayerResources
 

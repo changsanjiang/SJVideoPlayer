@@ -80,17 +80,8 @@
 
 - (void)clickedItemBtn:(UIButton *)btn {
     SJFilmEditingResultShareItem *item = self.resultShare.filmEditingResultShareItems[btn.tag];
-    if ( [self.resultShare.delegate respondsToSelector:@selector(clickedItem:screenshot:recordedVideoFileURL:)] ) {
-        switch ( _type ) {
-            case SJVideoPlayerFilmEditingResultViewType_Screenshot: {
-                [self.resultShare.delegate clickedItem:item screenshot:self.image recordedVideoFileURL:nil];
-            }
-                break;
-            case SJVideoPlayerFilmEditingResultViewType_Video: {
-                [self.resultShare.delegate clickedItem:item screenshot:nil recordedVideoFileURL:self.exportedVideoURL];
-            }
-                break;
-        }
+    if ( [self.resultShare.delegate respondsToSelector:@selector(clickedItem:)] ) {
+        [self.resultShare.delegate clickedItem:item];
     }
 }
 
@@ -111,12 +102,12 @@
 
 - (void)setRecordedVideoExportProgress:(float)recordedVideoExportProgress {
     _recordedVideoExportProgress = recordedVideoExportProgress;
-    _progressLabel.text = [NSString stringWithFormat:@"截取中: %.0f%%", recordedVideoExportProgress * 100];
+    _progressLabel.text = [NSString stringWithFormat:@"%@: %.0f%%", self.exportingPrompt, recordedVideoExportProgress * 100];
 }
 
 - (void)setExportFailed:(BOOL)exportFailed {
     _exportFailed = exportFailed;
-    _progressLabel.text = @"操作失败";
+    _progressLabel.text = self.operationFailedPrompt;
 }
 
 - (void)setCancelBtnTitle:(NSString *)cancelBtnTitle {
@@ -135,7 +126,7 @@
     dispatch_async(dispatch_get_main_queue(), ^{
         if ( [keyPath isEqualToString:@"progress"] ) {
             float progress = self.uploader.progress;
-            _progressLabel.text = [NSString stringWithFormat:@"上传中: %.0f%%", progress * 100];
+            _progressLabel.text = [NSString stringWithFormat:@"%@: %.0f%%", self.uploadingPrompt, progress * 100];
             [_uploadProgressView mas_remakeConstraints:^(MASConstraintMaker *make) {
                 make.top.bottom.trailing.offset(0);
                 make.width.equalTo(_imageView).multipliedBy(1 - progress);
@@ -147,7 +138,7 @@
             }];
         }
         else if ( [keyPath isEqualToString:@"failed"] ) {
-            self.progressLabel.text = @"操作失败";
+            self.progressLabel.text = self.operationFailedPrompt;
         }
     });
 }

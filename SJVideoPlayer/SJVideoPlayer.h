@@ -36,24 +36,28 @@ NS_ASSUME_NONNULL_BEGIN
 
 @interface SJVideoPlayer (SettingDefaultControlLayer)
 
-/*!
- *  default is YES.
+/**
+ *  Whether to generate a preview view. default is YES.
  *
  *  是否自动生成预览视图, 默认是 YES. 如果为NO, 则预览按钮将不会显示.
  */
 @property (nonatomic, assign, readwrite) BOOL generatePreviewImages;
 
-/*!
+/**
  *  clicked back btn exe block.
  *
  *  点击`返回`按钮的回调.
  */
 @property (nonatomic, copy, readwrite) void(^clickedBackEvent)(SJVideoPlayer *player);
 
+
+/**
+    If yes, the player will prompt the user when the network status changes.
+ */
 @property (nonatomic, assign, readwrite) BOOL disableNetworkStatusChangePrompt; // default is NO. 是否禁止网路状态变化提示. 默认为No.
 
-/*!
- *  Configure the player, Note: This `block` is run on the child thread.
+/**
+ *  Configure the player, Note: T his `block` is run on the child thread.
  *
  *  配置播放器, 注意: 这个`block`在子线程运行.
  *
@@ -68,12 +72,18 @@ NS_ASSUME_NONNULL_BEGIN
 @property (class, nonatomic, copy, readonly) void(^update)(void(^block)(SJVideoPlayerSettings *commonSettings));
 + (void)resetSetting; // 重置配置, 恢复默认设置
 
-/*!
+/**
  *  clicked More button to display items.
  *
  *  点击`更多(右上角的三个点)`按钮, 弹出来的选项.
  **/
 @property (nonatomic, strong, readwrite, nullable) NSArray<SJVideoPlayerMoreSetting *> *moreSettings;
+
+
+/**
+    If yes, the player will display the right control view.
+ */
+@property (nonatomic, assign, readwrite) BOOL enableFilmEditing;
 
 @property (nonatomic, strong, readwrite, nullable) SJFilmEditingResultShare *filmEditingResultShare;
 

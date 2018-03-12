@@ -27,6 +27,8 @@ NS_ASSUME_NONNULL_BEGIN
 
 @property (nonatomic, readwrite) BOOL disableNetworkStatusChangePrompt; // default is no.
 
+@property (nonatomic, readwrite) BOOL enableFilmEditing;
+
 @end
 
 @protocol SJVideoPlayerDefaultControlViewDelegate <NSObject>

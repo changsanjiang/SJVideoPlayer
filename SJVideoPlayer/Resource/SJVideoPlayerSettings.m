@@ -72,6 +72,9 @@ NSNotificationName const SJSettingsPlayerNotification = @"SJSettingsPlayerNotifi
     _recordTipsText = [SJVideoPlayerResources localizedStringForKey:SJVideoPlayer_RecordTipsText];
     _waitingForRecordingTipsText = [SJVideoPlayerResources localizedStringForKey:SJVideoPlayer_WaitingForRecordingTipsText];
     _videoPlayDidToEndText = [SJVideoPlayerResources localizedStringForKey:SJVideoPlayer_VideoPlayDidToEndText];
+    _uploadingPrompt = [SJVideoPlayerResources localizedStringForKey:SJVideoPlayer_UploadingPrompt];
+    _exportingPrompt = [SJVideoPlayerResources localizedStringForKey:SJVideoPlayer_ExportingPrompt];
+    _operationFailedPrompt = [SJVideoPlayerResources localizedStringForKey:SJVideoPlayer_OperationFailedPrompt];
 }
 
 @end

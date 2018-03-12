@@ -565,11 +565,12 @@ NS_ASSUME_NONNULL_END
     AVAssetTrack *assetVideoTrack = [asset tracksWithMediaType:AVMediaTypeVideo].firstObject;
     NSError *error;
     [audioTrackM insertTimeRange:cutRange ofTrack:assetAudioTrack atTime:kCMTimeZero error:&error];
-    if ( error ) { NSLog(@"Exprot Failed: error = %@", error); if ( failure ) failure(self, error); return;}
+    if ( error ) { NSLog(@"Export Failed: error = %@", error); if ( failure ) failure(self, error); return;}
     [videoTrackM insertTimeRange:cutRange ofTrack:assetVideoTrack atTime:kCMTimeZero error:&error];
-    if ( error ) { NSLog(@"Exprot Failed: error = %@", error); if ( failure ) failure(self, error); return;}
+    if ( error ) { NSLog(@"Export Failed: error = %@", error); if ( failure ) failure(self, error); return;}
     
-    NSURL *exportURL = [[[NSFileManager defaultManager] URLsForDirectory:NSDocumentDirectory inDomains:NSUserDomainMask].firstObject URLByAppendingPathComponent:[NSString stringWithFormat:@"Export_%zd.mp4", [NSDate date].timeIntervalSince1970]];
+    NSURL *exportURL = [[[NSFileManager defaultManager] URLsForDirectory:NSDocumentDirectory inDomains:NSUserDomainMask].firstObject URLByAppendingPathComponent:@"Export.mp4"];
+    [[NSFileManager defaultManager] removeItemAtURL:exportURL error:nil];
     _exportSession = [AVAssetExportSession exportSessionWithAsset:compositionM presetName:presetName];
     _exportSession.outputURL = exportURL;
     _exportSession.shouldOptimizeForNetworkUse = YES;
@@ -843,7 +844,6 @@ NS_ASSUME_NONNULL_END
 }
 
 - (void)refreshAVPlayer {
-    _assetURL = [NSURL URLWithString:@"http://video.cdn.lanwuzhe.com/usertrend/166162-1513873330.mp4"];
     [self _clearAVPlayer];
     [self _initializeAVPlayer];
     [self _itemObserving];

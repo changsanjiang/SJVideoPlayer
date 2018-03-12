@@ -14,6 +14,9 @@ NS_ASSUME_NONNULL_BEGIN
 
 @protocol SJFilmEditingResultShareDelegate;
 
+
+
+
 @interface SJFilmEditingResultShare : NSObject
 
 - (instancetype)initWithShateItems:(NSArray<SJFilmEditingResultShareItem *> *)filmEditingResultShareItems;
@@ -32,15 +35,16 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (SJFilmEditingResultUploader *)successfulScreenshot:(UIImage *)screenshot;
 
-- (SJFilmEditingResultUploader *)successfulExportedVideo:(NSURL *)fileURL screenshot:(UIImage *)screenshot;
+- (SJFilmEditingResultUploader *)successfulExportedVideo:(NSURL *)sandboxURL screenshot:(UIImage *)screenshot;
 
-- (void)clickedItem:(SJFilmEditingResultShareItem *)item
-         screenshot:(nullable UIImage *)screenshot
-recordedVideoFileURL:(nullable NSURL *)recordedVideoFileURL;
+- (void)clickedItem:(SJFilmEditingResultShareItem *)item;
 
 @end
 
 @interface SJFilmEditingResultUploader : NSObject
+
+@property (nonatomic, strong, nullable) UIImage *screenshot;
+@property (nonatomic, strong, nullable) NSURL *exportedVideoURL;
 
 @property (nonatomic) float progress;
 @property (nonatomic) BOOL uploaded;

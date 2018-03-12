@@ -141,4 +141,12 @@ static dispatch_queue_t videoPlayerWorkQueue;
 - (BOOL)disableNetworkStatusChangePrompt {
     return self.defaultControlView.disableNetworkStatusChangePrompt;
 }
+
+- (void)setEnableFilmEditing:(BOOL)enableFilmEditing {
+    self.defaultControlView.enableFilmEditing = enableFilmEditing;
+}
+
+- (BOOL)enableFilmEditing {
+    return self.defaultControlView.enableFilmEditing;
+}
 @end

@@ -26,9 +26,14 @@ extern NSNotificationName const SJSettingsPlayerNotification;
 @property (nonatomic, strong, readonly) NSString *cancelBtnTitle;
 @property (nonatomic, strong, readonly) NSString *waitingForRecordingTipsText;
 @property (nonatomic, strong, readonly) NSString *recordTipsText;
+@property (nonatomic, strong, readonly) NSString *uploadingPrompt;
+@property (nonatomic, strong, readonly) NSString *exportingPrompt;
+@property (nonatomic, strong, readonly) NSString *operationFailedPrompt;
+
 @property (nonatomic, strong, readwrite) UIImage *screenshotBtnImage;
 @property (nonatomic, strong, readwrite) UIImage *exportBtnImage;
 @property (nonatomic, strong, readwrite) UIImage *recordEndBtnImage;
+
 
 
 #pragma mark - network

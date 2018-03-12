@@ -17,6 +17,9 @@ UIKIT_EXTERN NSString *const SJVideoPlayer_CancelBtnTitle;
 UIKIT_EXTERN NSString *const SJVideoPlayer_WaitingForRecordingTipsText;
 UIKIT_EXTERN NSString *const SJVideoPlayer_RecordTipsText;
 UIKIT_EXTERN NSString *const SJVideoPlayer_VideoPlayDidToEndText;
+UIKIT_EXTERN NSString *const SJVideoPlayer_UploadingPrompt;
+UIKIT_EXTERN NSString *const SJVideoPlayer_ExportingPrompt;
+UIKIT_EXTERN NSString *const SJVideoPlayer_OperationFailedPrompt;
 
 @interface SJVideoPlayerResources : NSObject
 

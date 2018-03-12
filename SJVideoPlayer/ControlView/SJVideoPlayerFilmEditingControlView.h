@@ -21,6 +21,8 @@ typedef NS_ENUM(NSUInteger, SJVideoPlayerFilmEditingViewTag) {
 @property (nonatomic, strong, nullable) SJFilmEditingResultShare *resultShare;
 @property (nonatomic, copy, nullable) UIImage *(^getVideoScreenshot)(SJVideoPlayerFilmEditingControlView *view);
 @property (nonatomic, copy, nullable) void(^exit)(SJVideoPlayerFilmEditingControlView *view);
+@property (nonatomic, copy, nullable) void(^startRecordingExeBlock)(SJVideoPlayerFilmEditingControlView *view);
+
 
 #pragma mark - common
 @property (nonatomic, strong, nullable) NSString *cancelBtnTitle;
@@ -37,6 +39,9 @@ typedef NS_ENUM(NSUInteger, SJVideoPlayerFilmEditingViewTag) {
 @property (nonatomic, strong, nullable) UIImage *recordEndBtnImage;
 @property (nonatomic, strong, nullable) NSString *waitingForRecordingTipsText;
 @property (nonatomic, strong, nullable) NSString *recordTipsText;
+@property (nonatomic, strong, nullable) NSString *uploadingPrompt;
+@property (nonatomic, strong, nullable) NSString *exportingPrompt;
+@property (nonatomic, strong, nullable) NSString *operationFailedPrompt;
 
 @end
 NS_ASSUME_NONNULL_END

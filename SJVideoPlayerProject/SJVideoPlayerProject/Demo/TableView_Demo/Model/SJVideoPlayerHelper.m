@@ -14,6 +14,11 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
+static NSString *kSJFilmEditingResultShareItemQQTitle = @"QQ";
+static NSString *kSJFilmEditingResultShareItemWechatTitle = @"Wechat";
+static NSString *kSJFilmEditingResultShareItemWeiboTitle = @"Weibo";
+static NSString *kSJFilmEditingResultShareItemAlbumTitle = @"Album";
+
 @interface SJVideoPlayerHelper ()<SJFilmEditingResultShareDelegate>
 
 @property (nonatomic, strong, readwrite) SJVideoPlayer *videoPlayer;
@@ -97,22 +102,24 @@ NS_ASSUME_NONNULL_END
     
     // set asset
     _videoPlayer.URLAsset = asset;
-
-    SJFilmEditingResultShareItem *qq = [[SJFilmEditingResultShareItem alloc] initWithTitle:@"QQ" image:[UIImage imageNamed:@"qq"]];
-    SJFilmEditingResultShareItem *wechat = [[SJFilmEditingResultShareItem alloc] initWithTitle:@"Wechat" image:[UIImage imageNamed:@"wechat"]];
-    SJFilmEditingResultShareItem *weibo = [[SJFilmEditingResultShareItem alloc] initWithTitle:@"Weibo" image:[UIImage imageNamed:@"weibo"]];
-    SJFilmEditingResultShareItem *savoToAlbum = [[SJFilmEditingResultShareItem alloc] initWithTitle:@"Album" image:[UIImage imageNamed:@"album"]];
+    
+    // show right control view.
+    _videoPlayer.enableFilmEditing = YES;
+    SJFilmEditingResultShareItem *qq = [[SJFilmEditingResultShareItem alloc] initWithTitle:kSJFilmEditingResultShareItemQQTitle image:[UIImage imageNamed:@"qq"]];
+    SJFilmEditingResultShareItem *wechat = [[SJFilmEditingResultShareItem alloc] initWithTitle:kSJFilmEditingResultShareItemWechatTitle image:[UIImage imageNamed:@"wechat"]];
+    SJFilmEditingResultShareItem *weibo = [[SJFilmEditingResultShareItem alloc] initWithTitle:kSJFilmEditingResultShareItemWeiboTitle image:[UIImage imageNamed:@"weibo"]];
+    SJFilmEditingResultShareItem *savoToAlbum = [[SJFilmEditingResultShareItem alloc] initWithTitle:kSJFilmEditingResultShareItemAlbumTitle image:[UIImage imageNamed:@"album"]];
 
     SJFilmEditingResultShare *resultShare = [[SJFilmEditingResultShare alloc] initWithShateItems:@[qq, wechat, weibo, savoToAlbum]];
     resultShare.delegate = self;
     self.videoPlayer.filmEditingResultShare = resultShare;
 }
 
-- (SJFilmEditingResultUploader *)successfulExportedVideo:(NSURL *)fileURL screenshot:(UIImage *)screenshot {
+- (SJFilmEditingResultUploader *)successfulExportedVideo:(NSURL *)sandboxURL screenshot:(UIImage *)screenshot {
     
     // sample upload code...
     __weak typeof(self) _self = self;
-    [self _uploadWithFileURL:fileURL progress:^(float progress) {
+    [self _uploadWithFileURL:sandboxURL progress:^(float progress) {
         __strong typeof(_self) self = _self;
         if ( !self ) return;
         self.uploader.progress = progress;          // need update this property when uploading.
@@ -129,16 +136,25 @@ NS_ASSUME_NONNULL_END
         [self.videoPlayer showTitle:@"Upload Failed"];
     }];
     
-    // refresh old value.
+    // clear old value.
     _uploader.progress = 0;
     _uploader.uploaded = NO;
     _uploader.failed = NO;
+    _uploader.exportedVideoURL = nil;
+    _uploader.screenshot = nil;
+    
+    // update new value.
+    self.uploader.exportedVideoURL = sandboxURL;
+    self.uploader.screenshot = screenshot;
     return self.uploader;
 }
 
 - (SJFilmEditingResultUploader *)successfulScreenshot:(UIImage *)screenshot {
     // need call your upload code..
     // need call your upload code..
+    
+    self.uploader.screenshot = screenshot;
+    
     
     // some test code..
     return [self successfulExportedVideo:[NSURL URLWithString:@""] screenshot:[UIImage new]];
@@ -170,14 +186,20 @@ NS_ASSUME_NONNULL_END
     }
 }
 
-- (void)clickedItem:(SJFilmEditingResultShareItem *)item screenshot:(nullable UIImage *)screenshot recordedVideoFileURL:(nullable NSURL *)recordedVideoFileURL {
-    if ( [item.title isEqualToString:@"Album"] ) {
+- (void)clickedItem:(SJFilmEditingResultShareItem *)item {
+    
+    if ( self.uploader.uploaded == NO ) {
+        [self.videoPlayer showTitle:@"Uploading, please wait."];
+        return;
+    }
+    
+    if ( item.title == kSJFilmEditingResultShareItemAlbumTitle ) {
         [self.videoPlayer showTitle:@"Saving" duration:-1];
-        if ( recordedVideoFileURL ) {
-            UISaveVideoAtPathToSavedPhotosAlbum(recordedVideoFileURL.path, self, @selector(video:didFinishSavingWithError:contextInfo:), NULL);
+        if ( self.uploader.exportedVideoURL ) {
+            UISaveVideoAtPathToSavedPhotosAlbum(self.uploader.exportedVideoURL.path, self, @selector(video:didFinishSavingWithError:contextInfo:), NULL);
         }
         else {
-            UIImageWriteToSavedPhotosAlbum(screenshot, self, @selector(image:didFinishSavingWithError:contextInfo:), NULL);
+            UIImageWriteToSavedPhotosAlbum(self.uploader.screenshot, self, @selector(image:didFinishSavingWithError:contextInfo:), NULL);
         }
     }
     else {

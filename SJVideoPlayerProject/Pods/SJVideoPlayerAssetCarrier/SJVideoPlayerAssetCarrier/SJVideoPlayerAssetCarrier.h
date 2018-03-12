@@ -192,7 +192,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 #pragma mark - preview images
 @property (nonatomic, assign, readonly) BOOL hasBeenGeneratedPreviewImages;
-@property (nonatomic, strong, readonly) NSArray<SJVideoPreviewModel *> *generatedPreviewImages;
+@property (nonatomic, strong, readonly, nullable) NSArray<SJVideoPreviewModel *> *generatedPreviewImages;
 @property (nonatomic, assign, readonly) CGSize maxItemSize;
 - (void)generatedPreviewImagesWithMaxItemSize:(CGSize)itemSize
                                    completion:(void(^)(SJVideoPlayerAssetCarrier *asset, NSArray<SJVideoPreviewModel *> *__nullable images, NSError *__nullable error))block;
@@ -208,8 +208,8 @@ NS_ASSUME_NONNULL_BEGIN
                     endTime:(NSTimeInterval)endTime
                  presetName:(nullable NSString *)presetName
                    progress:(void(^)(SJVideoPlayerAssetCarrier *asset, float progress))progress
-                 completion:(void(^)(SJVideoPlayerAssetCarrier *asset, AVAsset *sandboxAsset, NSURL *fileURL, UIImage *thumbImage))completion
-                    failure:(void(^)(SJVideoPlayerAssetCarrier *asset, NSError *error))failure;
+                 completion:(void(^)(SJVideoPlayerAssetCarrier *asset, AVAsset * __nullable sandboxAsset, NSURL * __nullable fileURL, UIImage * __nullable thumbImage))completion
+                    failure:(void(^)(SJVideoPlayerAssetCarrier *asset, NSError * __nullable error))failure;
 
 #pragma mark - seek to time
 - (void)jumpedToTime:(NSTimeInterval)time completionHandler:(void (^ __nullable)(BOOL finished))completionHandler;

@@ -58,6 +58,8 @@ NS_ASSUME_NONNULL_END
             break;
             // export
         case SJVideoPlayerFilmEditingViewTag_Export: {
+            if ( _startRecordingExeBlock ) _startRecordingExeBlock(self);
+
             _isRecording = YES;
             self.recordView.tipsText = _recordTipsText;
             _recordView.waitingForRecordingTipsText = _waitingForRecordingTipsText;
@@ -90,6 +92,9 @@ NS_ASSUME_NONNULL_END
     _s_resultView.frame = self.bounds;
     _s_resultView.cancelBtnTitle = _cancelBtnTitle;
     _s_resultView.resultShare = _resultShare;
+    _s_resultView.uploadingPrompt = _uploadingPrompt;
+    _s_resultView.exportingPrompt = _exportingPrompt;
+    _s_resultView.operationFailedPrompt = _operationFailedPrompt;
     _s_resultView.alpha = 0.001;
     [self addSubview:_s_resultView];
     

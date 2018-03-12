@@ -109,7 +109,6 @@ NS_ASSUME_NONNULL_END
     [self addSubview:self.leftControlView];
     [self addSubview:self.centerControlView];
     [self addSubview:self.bottomControlView];
-    [self addSubview:self.rightControlView];
     [self addSubview:self.draggingProgressView];
     [self addSubview:self.bottomSlider];
     [self addSubview:self.previewView];
@@ -133,11 +132,6 @@ NS_ASSUME_NONNULL_END
     
     [_bottomControlView mas_makeConstraints:^(MASConstraintMaker *make) {
         make.leading.bottom.trailing.offset(0);
-    }];
-    
-    [_rightControlView mas_makeConstraints:^(MASConstraintMaker *make) {
-        make.trailing.offset(0);
-        make.centerY.offset(0);
     }];
     
     [_draggingProgressView mas_makeConstraints:^(MASConstraintMaker *make) {
@@ -175,7 +169,6 @@ NS_ASSUME_NONNULL_END
     [_leftControlView disappear];
     [_centerControlView disappear];
     [_bottomControlView disappear];
-    [_rightControlView disappear];
     [_previewView disappear];
     [_moreSettingsView disappear];
     [_moreSecondarySettingView disappear];
@@ -209,6 +202,24 @@ NS_ASSUME_NONNULL_END
     _moreSecondarySettingView.disappearTransform = CGAffineTransformMakeTranslation(_moreSecondarySettingView.intrinsicContentSize.width, 0);
 
     _draggingProgressView.disappearType = SJDisappearType_Alpha;
+}
+
+- (void)setEnableFilmEditing:(BOOL)enableFilmEditing {
+    _enableFilmEditing = enableFilmEditing;
+    if ( enableFilmEditing ) {
+        [self insertSubview:self.rightControlView aboveSubview:self.bottomControlView];
+        [_rightControlView mas_makeConstraints:^(MASConstraintMaker *make) {
+            make.trailing.offset(0);
+            make.centerY.offset(0);
+        }];
+        _rightControlView.disappearType = SJDisappearType_Transform;
+        _rightControlView.disappearTransform = CGAffineTransformMakeTranslation(_rightControlView.intrinsicContentSize.width, 0);
+        
+        if ( !self.videoPlayer.controlLayerAppeared ) [_rightControlView disappear];
+    }
+    else {
+        [_rightControlView removeFromSuperview];
+    }
 }
 
 #pragma mark - 预览视图
@@ -444,6 +455,14 @@ NS_ASSUME_NONNULL_END
             }];
         };
         
+        _filmEditingControlView.startRecordingExeBlock = ^(SJVideoPlayerFilmEditingControlView * _Nonnull view) {
+            __strong typeof(_self) self = _self;
+            if ( !self ) return;
+            if ( self.videoPlayer.state == SJVideoPlayerPlayState_PlayEnd ) {
+                [self.videoPlayer replay];
+            }
+        };
+        
         _filmEditingControlView.resultShare = self.filmEditingResultShare;
         _filmEditingControlView.exportBtnImage = self.settings.exportBtnImage;
         _filmEditingControlView.screenshotBtnImage = self.settings.screenshotBtnImage;
@@ -451,6 +470,9 @@ NS_ASSUME_NONNULL_END
         _filmEditingControlView.waitingForRecordingTipsText = self.settings.waitingForRecordingTipsText;
         _filmEditingControlView.recordTipsText = self.settings.recordTipsText;
         _filmEditingControlView.recordEndBtnImage = self.settings.recordEndBtnImage;
+        _filmEditingControlView.uploadingPrompt = self.settings.uploadingPrompt;
+        _filmEditingControlView.exportingPrompt = self.settings.exportingPrompt;
+        _filmEditingControlView.operationFailedPrompt = self.settings.operationFailedPrompt;
         
         [self addSubview:_filmEditingControlView];
         [_filmEditingControlView mas_makeConstraints:^(MASConstraintMaker *make) {
@@ -666,6 +688,7 @@ NS_ASSUME_NONNULL_END
     self.topControlView.model.isPlayOnScrollView = videoPlayer.isPlayOnScrollView;
     self.topControlView.model.fullscreen = videoPlayer.isFullScreen;
     [self.topControlView update];
+    _rightControlView.hidden = asset.isM3u8;
     
     self.bottomSlider.value = 0;
     self.bottomControlView.progress = 0;

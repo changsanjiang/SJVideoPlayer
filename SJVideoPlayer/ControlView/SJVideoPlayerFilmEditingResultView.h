@@ -26,11 +26,13 @@ typedef NS_ENUM(NSUInteger, SJVideoPlayerFilmEditingResultViewType) {
 @property (nonatomic, strong, nullable) UIImage *image;
 @property (nonatomic, copy, nullable) void(^clickedCancleBtn)(SJVideoPlayerFilmEditingResultView *view);
 
+@property (nonatomic, strong, nullable) NSString *uploadingPrompt;
+@property (nonatomic, strong, nullable) NSString *exportingPrompt;
+@property (nonatomic, strong, nullable) NSString *operationFailedPrompt;
 #pragma mark - record
 @property (nonatomic, readwrite) BOOL exportFailed;
 @property (nonatomic, readwrite) float recordedVideoExportProgress;
 @property (nonatomic, strong, nullable) NSURL *exportedVideoURL;
-
 - (void)showResultWithCompletion:(void (^ __nullable)(void))block;
 
 @end

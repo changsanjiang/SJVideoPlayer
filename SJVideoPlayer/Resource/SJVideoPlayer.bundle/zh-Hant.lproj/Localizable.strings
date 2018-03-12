@@ -6,4 +6,6 @@
 "SJVideoPlayer_ReachableViaWWANPrompt" = "當前非WiFi環境, 請注意流量消耗";
 
 "SJVideoPlayer_CancelBtnTitle" = "取消";
+"SJVideoPlayer_WaitingForRecordingTipsText" = "錄製中，請稍等...";
 "SJVideoPlayer_RecordTipsText" = "點擊右側按鈕完成錄製";
+"SJVideoPlayer_VideoPlayDidToEndText" = "視頻播放完畢";

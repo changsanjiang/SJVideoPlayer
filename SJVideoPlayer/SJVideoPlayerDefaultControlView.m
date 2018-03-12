@@ -411,6 +411,7 @@ NS_ASSUME_NONNULL_END
         _filmEditingControlView.exportBtnImage = self.settings.exportBtnImage;
         _filmEditingControlView.screenshotBtnImage = self.settings.screenshotBtnImage;
         _filmEditingControlView.cancelBtnTitle = self.settings.cancelBtnTitle;
+        _filmEditingControlView.waitingForRecordingTipsText = self.settings.waitingForRecordingTipsText;
         _filmEditingControlView.recordTipsText = self.settings.recordTipsText;
         _filmEditingControlView.recordEndBtnImage = self.settings.recordEndBtnImage;
         
@@ -433,6 +434,7 @@ NS_ASSUME_NONNULL_END
                 self.videoPlayer.disableGestureTypes = SJDisablePlayerGestureTypes_None;
                 [self.videoPlayer controlLayerNeedAppear];
                 [self.videoPlayer play];
+                self.filmEditingControlView = nil;
             });
         };
         
@@ -715,6 +717,13 @@ NS_ASSUME_NONNULL_END
         UIView_Animations(CommonAnimaDuration, ^{
             [self.centerControlView disappear];
         }, nil);
+    }
+    
+    if ( SJVideoPlayerPlayState_PlayEnd == state ) {
+        if ( _filmEditingControlView && _filmEditingControlView.isRecording ) {
+            [videoPlayer showTitle:self.settings.videoPlayDidToEndText duration:2];
+            [_filmEditingControlView stopRecording];
+        }
     }
 }
 

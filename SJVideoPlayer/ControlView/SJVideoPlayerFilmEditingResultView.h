@@ -13,10 +13,11 @@ NS_ASSUME_NONNULL_BEGIN
 
 @interface SJVideoPlayerFilmEditingResultView : UIView
 
+@property (nonatomic, strong, nullable) NSArray<SJFilmEditingResultShareItem *> *filmEditingResultShareItems;
 @property (nonatomic, strong, nullable) NSString *cancelBtnTitle;
 @property (nonatomic, strong, nullable) UIImage *image;
 @property (nonatomic, copy, nullable) void(^clickedCancleBtn)(SJVideoPlayerFilmEditingResultView *view);
-@property (nonatomic, strong, nullable) NSArray<SJFilmEditingResultShareItem *> *filmEditingResultShareItems;
+@property (nonatomic, readwrite) float recordedVideoExportProgress;
 
 - (void)startAnimation;
 

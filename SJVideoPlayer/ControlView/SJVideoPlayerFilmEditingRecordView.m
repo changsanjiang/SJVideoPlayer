@@ -50,26 +50,38 @@
     return self;
 }
 
+- (void)dealloc {
+#ifdef DEBUG
+    NSLog(@"SJVideoPlayerLog: %zd - %s", __LINE__, __func__);
+#endif
+}
+
 - (void)startRecord {
+    self.tipsLabel.text = self.waitingForRecordingTipsText;
     [[NSRunLoop currentRunLoop] addTimer:self.countDownTimer forMode:NSRunLoopCommonModes];
     [self.countDownTimer setFireDate:[NSDate dateWithTimeIntervalSinceNow:1]];
 }
 
 - (void)clickedBtn:(UIButton *)btn {
+    [self _clearTimer];
     if ( btn == self.cancelBtn ) {
         if ( _exit ) _exit(self);
-        _currentTime = 0;
-        [_countDownTimer invalidate];
-        _countDownTimer = nil;
     }
+    else if ( btn == self.recrodBtn ) {
+        if ( _completeExeBlock ) _completeExeBlock(self, _currentTime);
+    }
+}
+
+- (void)_clearTimer {
+    [_countDownTimer invalidate];
+    _countDownTimer = nil;
+    _currentTime = 0;
 }
 
 - (void)countDownRefresh:(NSTimer *)timer {
     if ( _currentTime == _time ) {
-        if ( _completeExeBlock ) _completeExeBlock(self);
-        _currentTime = 0;
-        [_countDownTimer invalidate];
-        _countDownTimer = nil;
+        if ( _completeExeBlock ) _completeExeBlock(self, _currentTime);
+        [self _clearTimer];
         return;
     }
     ++_currentTime;
@@ -79,6 +91,13 @@
     seconds = _currentTime % 60;
     _progressLabel.text = [NSString stringWithFormat:@"%02zd:%02zd/02:00", minutes, seconds];
     _progressSlider.value = _currentTime * 1.0f / _time;
+    
+    if ( _currentTime == 3 ) {
+        self.tipsLabel.text = self.tipsText;
+        [UIView animateWithDuration:0.3 animations:^{
+            _recrodBtn.alpha = 1;
+        }];
+    }
 }
 
 - (void)setRecordEndBtnImage:(UIImage *)recordEndBtnImage {
@@ -91,6 +110,11 @@
     [_cancelBtn setTitle:cancelBtnTitle forState:UIControlStateNormal];
 }
 
+- (void)setWaitingForRecordingTipsText:(NSString *)waitingForRecordingTipsText {
+    _waitingForRecordingTipsText = waitingForRecordingTipsText;
+    self.tipsLabel.text = waitingForRecordingTipsText;
+}
+
 - (void)setTipsText:(NSString *)tipsText {
     _tipsText = tipsText;
     self.tipsLabel.text = tipsText;
@@ -100,6 +124,7 @@
     [self.progressContainerView mas_updateConstraints:^(MASConstraintMaker *make) {
         make.width.offset(width);
     }];
+    self.tipsLabel.text = nil;
 }
 
 #pragma mark -
@@ -111,6 +136,8 @@
     [self.progressContainerView addSubview:self.progressLabel];
     [self.progressContainerView addSubview:self.tipsLabel];
     [self.progressContainerView addSubview:self.progressSlider];
+    
+    self.recrodBtn.alpha = 0.001;
     
     [_cancelBtn mas_makeConstraints:^(MASConstraintMaker *make) {
         make.leading.offset(12);

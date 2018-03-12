@@ -45,6 +45,12 @@
     self.imageView.image = image;
 }
 
+- (void)dealloc {
+#ifdef DEBUG
+    NSLog(@"SJVideoPlayerLog: %zd - %s", __LINE__, __func__);
+#endif
+}
+
 - (void)setCancelBtnTitle:(NSString *)cancelBtnTitle {
     _cancelBtnTitle = cancelBtnTitle;
     [_cancelBtn setTitle:cancelBtnTitle forState:UIControlStateNormal];

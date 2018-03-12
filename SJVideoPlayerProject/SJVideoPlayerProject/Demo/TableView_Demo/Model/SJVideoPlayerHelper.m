@@ -108,75 +108,66 @@ NS_ASSUME_NONNULL_END
     self.videoPlayer.filmEditingResultShare = resultShare;
 }
 
-- (SJFilmEditingResultUploader *)successfulScreenshot:(UIImage *)screenshot {
-    __weak typeof(self) _self = self;
-    [self _uploadWithImage:screenshot progress:^(float progress) {
-        __strong typeof(_self) self = _self;
-        if ( !self ) return;
-        self.uploader.progress = progress;  // update progress
-    } completion:^{
-        __strong typeof(_self) self = _self;
-        if ( !self ) return;
-        self.uploader.progress = 1;
-        self.uploader.uploaded = YES;       // completed upload
-    } failed:^{
-        __strong typeof(_self) self = _self;
-        if ( !self ) return;
-        self.uploader.failed = YES;         // upload failed
-    }];
+- (SJFilmEditingResultUploader *)successfulExportedVideo:(NSURL *)fileURL screenshot:(UIImage *)screenshot {
     
-    _uploader.progress = 0;
-    _uploader.uploaded = NO;
-    return self.uploader;
-}
-
-- (void)_uploadWithImage:(UIImage *)image progress:(void(^)(float progress))progressBlock completion:(void(^)(void))completion failed:(void(^)(void))failed {
-    // your upload code ..
-    
-    // test
-    __block float progress = 0;
-    for ( int i = 1 ; i <= 10 ; ++i ) {
-        dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(0.2 * i * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
-            progressBlock(progress = i * 0.1);
-            if ( progress == 1 ) completion();
-        });
-    }
-}
-
-- (void)_uploadWithFileURL:(NSURL *)fileURL progress:(void(^)(float progress))progressBlock completion:(void(^)(void))completion failed:(void(^)(void))failed {
-    // your upload code ..
-    
-    
-    // test
-    __block float progress = 0;
-    for ( int i = 1 ; i <= 10 ; ++i ) {
-        dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(0.2 * i * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
-            progressBlock(progress = i * 0.1);
-            if ( progress == 1 ) completion();
-        });
-    }
-}
-
-- (SJFilmEditingResultUploader *)successfulExportedVideo:(NSURL *)fileURL {
+    // sample upload code...
     __weak typeof(self) _self = self;
     [self _uploadWithFileURL:fileURL progress:^(float progress) {
         __strong typeof(_self) self = _self;
         if ( !self ) return;
-        self.uploader.progress = progress;
-    } completion:^{
+        self.uploader.progress = progress;          // need update this property when uploading.
+    } completion:^(NSString *URLStr){
         __strong typeof(_self) self = _self;
         if ( !self ) return;
         self.uploader.progress = 1;
-        self.uploader.uploaded = YES;
+        self.uploader.uploaded = YES;               // need update this property when uploaded.
+        [self.videoPlayer showTitle:@"Upload Successful"];
     } failed:^{
         __strong typeof(_self) self = _self;
         if ( !self ) return;
-        self.uploader.failed = YES;
+        self.uploader.failed = YES;                 // need update this property when failed.
+        [self.videoPlayer showTitle:@"Upload Failed"];
     }];
     
+    // refresh old value.
     _uploader.progress = 0;
     _uploader.uploaded = NO;
+    _uploader.failed = NO;
     return self.uploader;
+}
+
+- (SJFilmEditingResultUploader *)successfulScreenshot:(UIImage *)screenshot {
+    // need call your upload code..
+    // need call your upload code..
+    
+    // some test code..
+    return [self successfulExportedVideo:[NSURL URLWithString:@""] screenshot:[UIImage new]];
+}
+
+- (void)_uploadWithImage:(UIImage *)image progress:(void(^)(float progress))progressBlock completion:(void(^)(NSString *URLStr))completion failed:(void(^)(void))failed {
+    
+    // your upload code ..
+    // your upload code ..
+    // your upload code ..
+    
+    // some test code..
+    [self _uploadWithFileURL:nil progress:progressBlock completion:completion failed:failed];
+}
+
+- (void)_uploadWithFileURL:(NSURL *)fileURL progress:(void(^)(float progress))progressBlock completion:(void(^)(NSString *URLStr))completion failed:(void(^)(void))failed {
+    
+    // your upload code ..
+    // your upload code ..
+    // your upload code ..
+    
+    // some test code..
+    __block float progress = 0;
+    for ( int i = 1 ; i <= 10 ; ++i ) {
+        dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(0.2 * i * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
+            progressBlock(progress = i * 0.1);
+            if ( progress == 1 ) completion(@"http://www.github.com");
+        });
+    }
 }
 
 - (void)clickedItem:(SJFilmEditingResultShareItem *)item screenshot:(nullable UIImage *)screenshot recordedVideoFileURL:(nullable NSURL *)recordedVideoFileURL {
@@ -194,6 +185,7 @@ NS_ASSUME_NONNULL_END
     }
 }
 
+// Save video to album SEL.
 - (void)video:(NSString *)videoPath didFinishSavingWithError:(NSError *)error contextInfo:(void *)contextInfo {
     if ( error ) {
         [self.videoPlayer showTitle:@"Save failed" duration:2];
@@ -203,6 +195,7 @@ NS_ASSUME_NONNULL_END
     }
 }
 
+// Save image to album SEL.
 - (void)image:(UIImage *)image didFinishSavingWithError:(NSError *)error contextInfo:(void *)contextInfo {
     if ( error ) {
         [self.videoPlayer showTitle:@"Save failed" duration:2];

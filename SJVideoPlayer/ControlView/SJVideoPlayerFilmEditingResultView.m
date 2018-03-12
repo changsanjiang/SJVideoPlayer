@@ -104,8 +104,8 @@
 
 - (void)setExportedVideoURL:(NSURL *)exportedVideoURL {
     _exportedVideoURL = exportedVideoURL;
-    if ( [self.resultShare.delegate respondsToSelector:@selector(successfulExportedVideo:)] ) {
-        self.uploader = [self.resultShare.delegate successfulExportedVideo:exportedVideoURL];
+    if ( [self.resultShare.delegate respondsToSelector:@selector(successfulExportedVideo:screenshot:)] ) {
+        self.uploader = [self.resultShare.delegate successfulExportedVideo:exportedVideoURL screenshot:self.image];
     }
 }
 
@@ -147,7 +147,7 @@
             }];
         }
         else if ( [keyPath isEqualToString:@"failed"] ) {
-            
+            self.progressLabel.text = @"操作失败";
         }
     });
 }

@@ -32,7 +32,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (SJFilmEditingResultUploader *)successfulScreenshot:(UIImage *)screenshot;
 
-- (SJFilmEditingResultUploader *)successfulExportedVideo:(NSURL *)fileURL;
+- (SJFilmEditingResultUploader *)successfulExportedVideo:(NSURL *)fileURL screenshot:(UIImage *)screenshot;
 
 - (void)clickedItem:(SJFilmEditingResultShareItem *)item
          screenshot:(nullable UIImage *)screenshot

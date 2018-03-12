@@ -14,15 +14,17 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
-@interface SJVideoPlayerHelper ()
+@interface SJVideoPlayerHelper ()<SJFilmEditingResultShareDelegate>
 
 @property (nonatomic, strong, readwrite) SJVideoPlayer *videoPlayer;
+@property (nonatomic, strong, readonly) SJFilmEditingResultUploader *uploader;
 
 @end
 
 NS_ASSUME_NONNULL_END
 
 @implementation SJVideoPlayerHelper
+@synthesize uploader = _uploader;
 
 - (instancetype)initWithViewController:(__weak UIViewController<SJVideoPlayerHelperUseProtocol> *)viewController {
     self = [super init];
@@ -95,26 +97,110 @@ NS_ASSUME_NONNULL_END
     
     // set asset
     _videoPlayer.URLAsset = asset;
-    
-    void(^clickedExeBlock)(SJFilmEditingResultShareItem *item, UIImage *image, NSURL * __nullable exportedVideoURL) = ^(SJFilmEditingResultShareItem * _Nonnull item, UIImage * _Nonnull image, NSURL * _Nullable exportedVideoURL) {
+
+    SJFilmEditingResultShareItem *qq = [[SJFilmEditingResultShareItem alloc] initWithTitle:@"QQ" image:[UIImage imageNamed:@"qq"]];
+    SJFilmEditingResultShareItem *wechat = [[SJFilmEditingResultShareItem alloc] initWithTitle:@"Wechat" image:[UIImage imageNamed:@"wechat"]];
+    SJFilmEditingResultShareItem *weibo = [[SJFilmEditingResultShareItem alloc] initWithTitle:@"Weibo" image:[UIImage imageNamed:@"weibo"]];
+    SJFilmEditingResultShareItem *savoToAlbum = [[SJFilmEditingResultShareItem alloc] initWithTitle:@"Album" image:[UIImage imageNamed:@"album"]];
+
+    SJFilmEditingResultShare *resultShare = [[SJFilmEditingResultShare alloc] initWithShateItems:@[qq, wechat, weibo, savoToAlbum]];
+    resultShare.delegate = self;
+    self.videoPlayer.filmEditingResultShare = resultShare;
+}
+
+- (SJFilmEditingResultUploader *)successfulScreenshot:(UIImage *)screenshot {
+    __weak typeof(self) _self = self;
+    [self _uploadWithImage:screenshot progress:^(float progress) {
         __strong typeof(_self) self = _self;
         if ( !self ) return;
-        [self.videoPlayer showTitle:[NSString stringWithFormat:@"Clicked %@", item.title]];
-    };
-    
-    
-    void(^saveToAlbumBlock)(SJFilmEditingResultShareItem *item, UIImage *image, NSURL * __nullable exportedVideoURL) = ^(SJFilmEditingResultShareItem * _Nonnull item, UIImage * _Nonnull image, NSURL * _Nullable exportedVideoURL) {
+        self.uploader.progress = progress;  // update progress
+    } completion:^{
         __strong typeof(_self) self = _self;
         if ( !self ) return;
+        self.uploader.progress = 1;
+        self.uploader.uploaded = YES;       // completed upload
+    } failed:^{
+        __strong typeof(_self) self = _self;
+        if ( !self ) return;
+        self.uploader.failed = YES;         // upload failed
+    }];
+    
+    _uploader.progress = 0;
+    _uploader.uploaded = NO;
+    return self.uploader;
+}
+
+- (void)_uploadWithImage:(UIImage *)image progress:(void(^)(float progress))progressBlock completion:(void(^)(void))completion failed:(void(^)(void))failed {
+    // your upload code ..
+    
+    // test
+    __block float progress = 0;
+    for ( int i = 1 ; i <= 10 ; ++i ) {
+        dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(0.2 * i * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
+            progressBlock(progress = i * 0.1);
+            if ( progress == 1 ) completion();
+        });
+    }
+}
+
+- (void)_uploadWithFileURL:(NSURL *)fileURL progress:(void(^)(float progress))progressBlock completion:(void(^)(void))completion failed:(void(^)(void))failed {
+    // your upload code ..
+    
+    
+    // test
+    __block float progress = 0;
+    for ( int i = 1 ; i <= 10 ; ++i ) {
+        dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(0.2 * i * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
+            progressBlock(progress = i * 0.1);
+            if ( progress == 1 ) completion();
+        });
+    }
+}
+
+- (SJFilmEditingResultUploader *)successfulExportedVideo:(NSURL *)fileURL {
+    __weak typeof(self) _self = self;
+    [self _uploadWithFileURL:fileURL progress:^(float progress) {
+        __strong typeof(_self) self = _self;
+        if ( !self ) return;
+        self.uploader.progress = progress;
+    } completion:^{
+        __strong typeof(_self) self = _self;
+        if ( !self ) return;
+        self.uploader.progress = 1;
+        self.uploader.uploaded = YES;
+    } failed:^{
+        __strong typeof(_self) self = _self;
+        if ( !self ) return;
+        self.uploader.failed = YES;
+    }];
+    
+    _uploader.progress = 0;
+    _uploader.uploaded = NO;
+    return self.uploader;
+}
+
+- (void)clickedItem:(SJFilmEditingResultShareItem *)item screenshot:(nullable UIImage *)screenshot recordedVideoFileURL:(nullable NSURL *)recordedVideoFileURL {
+    if ( [item.title isEqualToString:@"Album"] ) {
         [self.videoPlayer showTitle:@"Saving" duration:-1];
-        UIImageWriteToSavedPhotosAlbum(image, self, @selector(image:didFinishSavingWithError:contextInfo:), NULL);
-    };
-    
-    SJFilmEditingResultShareItem *qq = [[SJFilmEditingResultShareItem alloc] initWithTitle:@"QQ" image:[UIImage imageNamed:@"qq"] clickToDisappear:YES clickedExeBlock:clickedExeBlock];
-    SJFilmEditingResultShareItem *wechat = [[SJFilmEditingResultShareItem alloc] initWithTitle:@"Wechat" image:[UIImage imageNamed:@"wechat"] clickToDisappear:YES clickedExeBlock:clickedExeBlock];
-    SJFilmEditingResultShareItem *weibo = [[SJFilmEditingResultShareItem alloc] initWithTitle:@"Weibo" image:[UIImage imageNamed:@"weibo"] clickToDisappear:YES clickedExeBlock:clickedExeBlock];
-    SJFilmEditingResultShareItem *savoToAlbum = [[SJFilmEditingResultShareItem alloc] initWithTitle:@"Album" image:[UIImage imageNamed:@"album"] clickToDisappear:NO clickedExeBlock:saveToAlbumBlock];
-    _videoPlayer.filmEditingResultShareItems = @[qq, wechat, weibo, savoToAlbum];
+        if ( recordedVideoFileURL ) {
+            UISaveVideoAtPathToSavedPhotosAlbum(recordedVideoFileURL.path, self, @selector(video:didFinishSavingWithError:contextInfo:), NULL);
+        }
+        else {
+            UIImageWriteToSavedPhotosAlbum(screenshot, self, @selector(image:didFinishSavingWithError:contextInfo:), NULL);
+        }
+    }
+    else {
+        [self.videoPlayer showTitle:[NSString stringWithFormat:@"Clicked %@", item.title]];
+    }
+}
+
+- (void)video:(NSString *)videoPath didFinishSavingWithError:(NSError *)error contextInfo:(void *)contextInfo {
+    if ( error ) {
+        [self.videoPlayer showTitle:@"Save failed" duration:2];
+    }
+    else {
+        [self.videoPlayer showTitle:@"Save successfully" duration:2];
+    }
 }
 
 - (void)image:(UIImage *)image didFinishSavingWithError:(NSError *)error contextInfo:(void *)contextInfo {
@@ -125,6 +211,8 @@ NS_ASSUME_NONNULL_END
         [self.videoPlayer showTitle:@"Save successfully" duration:2];
     }
 }
+
+#pragma mark -
 
 - (SJVideoPlayerURLAsset *)asset {
     return self.videoPlayer.URLAsset;
@@ -187,4 +275,10 @@ NS_ASSUME_NONNULL_END
     };
 }
 
+#pragma mark -
+- (SJFilmEditingResultUploader *)uploader {
+    if ( _uploader ) return _uploader;
+    _uploader = [SJFilmEditingResultUploader new];
+    return _uploader;
+}
 @end

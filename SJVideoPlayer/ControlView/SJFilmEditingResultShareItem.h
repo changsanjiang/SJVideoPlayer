@@ -10,27 +10,53 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
+@class SJFilmEditingResultShareItem, SJFilmEditingResultUploader;
+
+@protocol SJFilmEditingResultShareDelegate;
+
+@interface SJFilmEditingResultShare : NSObject
+
+- (instancetype)initWithShateItems:(NSArray<SJFilmEditingResultShareItem *> *)filmEditingResultShareItems;
+
+@property (nonatomic, weak, readwrite, nullable) id<SJFilmEditingResultShareDelegate> delegate;
+
+@property (nonatomic, strong, readonly) NSArray<SJFilmEditingResultShareItem *> *filmEditingResultShareItems;
+
+@end
+
+
+
+#pragma mark -
+
+@protocol SJFilmEditingResultShareDelegate <NSObject>
+
+- (SJFilmEditingResultUploader *)successfulScreenshot:(UIImage *)screenshot;
+
+- (SJFilmEditingResultUploader *)successfulExportedVideo:(NSURL *)fileURL;
+
+- (void)clickedItem:(SJFilmEditingResultShareItem *)item
+         screenshot:(nullable UIImage *)screenshot
+recordedVideoFileURL:(nullable NSURL *)recordedVideoFileURL;
+
+@end
+
+@interface SJFilmEditingResultUploader : NSObject
+
+@property (nonatomic) float progress;
+@property (nonatomic) BOOL uploaded;
+@property (nonatomic) BOOL failed;
+
+@end
+
+
+
 @interface SJFilmEditingResultShareItem : NSObject
 
-
-/**
- initialize
-
- @param title                       item title
- @param image                       item image
- @param yesOrNo                     Whether to exit. If YES, FilmEditingView exit when clicked item.
- @param clickedExeBlock             Clicked item exe block.
- @return instance
- */
 - (instancetype)initWithTitle:(NSString *)title
-                        image:(UIImage *)image
-             clickToDisappear:(BOOL)yesOrNo
-              clickedExeBlock:(void(^)(SJFilmEditingResultShareItem *filmEditingResultShareItem, UIImage *image, NSURL * __nullable exportedVideoURL))clickedExeBlock;
+                        image:(UIImage *)image;
 
 @property (nonatomic, strong, readonly) NSString *title;
 @property (nonatomic, strong, readonly) UIImage *image;
-@property (nonatomic, assign, readonly) BOOL clickToDisappear;
-@property (nonatomic, strong, readonly) void(^clickedExeBlock)(SJFilmEditingResultShareItem *filmEditingResultShareItem, UIImage *image, NSURL * __nullable exportedVideoURL);
 
 @end
 NS_ASSUME_NONNULL_END

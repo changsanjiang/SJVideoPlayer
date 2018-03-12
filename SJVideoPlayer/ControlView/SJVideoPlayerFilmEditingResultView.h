@@ -9,17 +9,29 @@
 #import <UIKit/UIKit.h>
 
 NS_ASSUME_NONNULL_BEGIN
-@class SJFilmEditingResultShareItem;
+@class SJFilmEditingResultShare;
+
+typedef NS_ENUM(NSUInteger, SJVideoPlayerFilmEditingResultViewType) {
+    SJVideoPlayerFilmEditingResultViewType_Screenshot,
+    SJVideoPlayerFilmEditingResultViewType_Video,
+};
 
 @interface SJVideoPlayerFilmEditingResultView : UIView
 
-@property (nonatomic, strong, nullable) NSArray<SJFilmEditingResultShareItem *> *filmEditingResultShareItems;
+- (instancetype)initWithType:(SJVideoPlayerFilmEditingResultViewType)type;
+
+@property (nonatomic, readonly) SJVideoPlayerFilmEditingResultViewType type;
+@property (nonatomic, strong, nullable) SJFilmEditingResultShare *resultShare;
 @property (nonatomic, strong, nullable) NSString *cancelBtnTitle;
 @property (nonatomic, strong, nullable) UIImage *image;
 @property (nonatomic, copy, nullable) void(^clickedCancleBtn)(SJVideoPlayerFilmEditingResultView *view);
-@property (nonatomic, readwrite) float recordedVideoExportProgress;
 
-- (void)startAnimation;
+#pragma mark - record
+@property (nonatomic, readwrite) BOOL exportFailed;
+@property (nonatomic, readwrite) float recordedVideoExportProgress;
+@property (nonatomic, strong, nullable) NSURL *exportedVideoURL;
+
+- (void)showResultWithCompletion:(void (^ __nullable)(void))block;
 
 @end
 NS_ASSUME_NONNULL_END

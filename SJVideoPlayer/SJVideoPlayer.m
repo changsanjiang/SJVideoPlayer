@@ -110,12 +110,12 @@ static dispatch_queue_t videoPlayerWorkQueue;
     return _defaultControlView.moreSettings;
 }
 
-- (void)setFilmEditingResultShareItems:(NSArray<SJFilmEditingResultShareItem *> *)items {
-    _defaultControlView.filmEditingResultShareItems = items;
+- (void)setFilmEditingResultShare:(SJFilmEditingResultShare *)filmEditingResultShare {
+    _defaultControlView.filmEditingResultShare = filmEditingResultShare;
 }
 
-- (NSArray<SJFilmEditingResultShareItem *> *)filmEditingResultShareItems {
-    return _defaultControlView.filmEditingResultShareItems;
+- (SJFilmEditingResultShare *)filmEditingResultShare {
+    return _defaultControlView.filmEditingResultShare;
 }
 
 - (void)setGeneratePreviewImages:(BOOL)generatePreviewImages {

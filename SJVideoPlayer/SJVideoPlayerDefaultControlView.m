@@ -405,17 +405,8 @@ NS_ASSUME_NONNULL_END
 
 - (void)rightControlView:(SJVideoPlayerRightControlView *)view clickedBtnTag:(SJVideoPlayerRightViewTag)tag {
     if ( tag == SJVideoPlayerRightViewTag_FilmEditing ) {
-        _filmEditingControlView = [SJVideoPlayerFilmEditingControlView new];
-        _filmEditingControlView.filmEditingResultShareItems = self.filmEditingResultShareItems;
-        
-        _filmEditingControlView.exportBtnImage = self.settings.exportBtnImage;
-        _filmEditingControlView.screenshotBtnImage = self.settings.screenshotBtnImage;
-        _filmEditingControlView.cancelBtnTitle = self.settings.cancelBtnTitle;
-        _filmEditingControlView.waitingForRecordingTipsText = self.settings.waitingForRecordingTipsText;
-        _filmEditingControlView.recordTipsText = self.settings.recordTipsText;
-        _filmEditingControlView.recordEndBtnImage = self.settings.recordEndBtnImage;
-        
         __weak typeof(self) _self = self;
+        _filmEditingControlView = [SJVideoPlayerFilmEditingControlView new];
         _filmEditingControlView.getVideoScreenshot = ^UIImage *(SJVideoPlayerFilmEditingControlView *view) {
             __strong typeof(_self) self = _self;
             if ( !self ) return nil;
@@ -434,9 +425,32 @@ NS_ASSUME_NONNULL_END
                 self.videoPlayer.disableGestureTypes = SJDisablePlayerGestureTypes_None;
                 [self.videoPlayer controlLayerNeedAppear];
                 [self.videoPlayer play];
-                self.filmEditingControlView = nil;
+                self.filmEditingControlView = nil;  // clear
             });
         };
+        
+        _filmEditingControlView.recordCompleteExeBlock = ^void (SJVideoPlayerFilmEditingControlView * _Nonnull filmEditingView, short duration) {
+            __strong typeof(_self) self = _self;
+            if ( !self ) return;
+            NSTimeInterval beginTime = self.videoPlayer.currentTime - duration;
+            NSTimeInterval endTime = self.videoPlayer.currentTime;
+            [self.videoPlayer exportWithBeginTime:beginTime endTime:endTime presetName:nil progress:^(__kindof SJBaseVideoPlayer * _Nonnull videoPlayer, float progress) {
+                filmEditingView.recordedVideoExportProgress = progress;
+            } completion:^(__kindof SJBaseVideoPlayer * _Nonnull videoPlayer, SJVideoPlayerURLAsset * _Nonnull asset, NSURL * _Nonnull fileURL, UIImage * _Nonnull thumbImage) {
+                filmEditingView.recordedVideoExportProgress = 1;
+                filmEditingView.exportedVideoURL = fileURL;
+            } failure:^(__kindof SJBaseVideoPlayer * _Nonnull videoPlayer, NSError * _Nonnull error) {
+                filmEditingView.exportFailed = YES;
+            }];
+        };
+        
+        _filmEditingControlView.resultShare = self.filmEditingResultShare;
+        _filmEditingControlView.exportBtnImage = self.settings.exportBtnImage;
+        _filmEditingControlView.screenshotBtnImage = self.settings.screenshotBtnImage;
+        _filmEditingControlView.cancelBtnTitle = self.settings.cancelBtnTitle;
+        _filmEditingControlView.waitingForRecordingTipsText = self.settings.waitingForRecordingTipsText;
+        _filmEditingControlView.recordTipsText = self.settings.recordTipsText;
+        _filmEditingControlView.recordEndBtnImage = self.settings.recordEndBtnImage;
         
         [self addSubview:_filmEditingControlView];
         [_filmEditingControlView mas_makeConstraints:^(MASConstraintMaker *make) {
@@ -722,7 +736,7 @@ NS_ASSUME_NONNULL_END
     if ( SJVideoPlayerPlayState_PlayEnd == state ) {
         if ( _filmEditingControlView && _filmEditingControlView.isRecording ) {
             [videoPlayer showTitle:self.settings.videoPlayDidToEndText duration:2];
-            [_filmEditingControlView stopRecording];
+            [_filmEditingControlView completeRecording];
         }
     }
 }

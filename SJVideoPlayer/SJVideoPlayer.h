@@ -75,7 +75,7 @@ NS_ASSUME_NONNULL_BEGIN
  **/
 @property (nonatomic, strong, readwrite, nullable) NSArray<SJVideoPlayerMoreSetting *> *moreSettings;
 
-@property (nonatomic, strong, readwrite, nullable) NSArray<SJFilmEditingResultShareItem *> *filmEditingResultShareItems;
+@property (nonatomic, strong, readwrite, nullable) SJFilmEditingResultShare *filmEditingResultShare;
 
 @end
 

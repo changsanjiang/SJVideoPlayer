@@ -15,21 +15,23 @@
 #import "SJFilmEditingResultShareItem.h"
 #import "SJVideoPlayerFilmEditingRecordView.h"
 
+NS_ASSUME_NONNULL_BEGIN
 @interface SJVideoPlayerFilmEditingControlView ()
 
 @property (nonatomic, strong, readonly) UIButton *screenshotBtn;
 @property (nonatomic, strong, readonly) UIButton *exportBtn;
-@property (nonatomic, strong, readonly) SJVideoPlayerFilmEditingResultView *resultView;
+@property (nonatomic, strong, nullable) SJVideoPlayerFilmEditingResultView *s_resultView;
 @property (nonatomic, strong, readonly) SJVideoPlayerFilmEditingRecordView *recordView;
 @property (nonatomic, strong, readonly) UITapGestureRecognizer *tapGR;
 
 @end
+NS_ASSUME_NONNULL_END
 
 @implementation SJVideoPlayerFilmEditingControlView
 
 @synthesize screenshotBtn = _screenshotBtn;
 @synthesize exportBtn = _exportBtn;
-@synthesize resultView = _resultView;
+@synthesize s_resultView = _s_resultView;
 @synthesize recordView = _recordView;
 @synthesize tapGR = _tapGR;
 
@@ -48,11 +50,13 @@
 
 - (void)clickedBtn:(UIButton *)btn {
     switch ( btn.tag ) {
+            // screenshot
         case SJVideoPlayerFilmEditingViewTag_Screenshot: {
             _isRecording = NO;
-            [self _result];
+            [self _showResultWithType:SJVideoPlayerFilmEditingResultViewType_Screenshot];
         }
             break;
+            // export
         case SJVideoPlayerFilmEditingViewTag_Export: {
             _isRecording = YES;
             self.recordView.tipsText = _recordTipsText;
@@ -61,11 +65,10 @@
             _recordView.recordEndBtnImage = _recordEndBtnImage;
             _recordView.alpha = 0.001;
             [self addSubview:_recordView];
-            
             [UIView animateWithDuration:0.25 animations:^{
                 _recordView.alpha = 1;
             } completion:^(BOOL finished) {
-                [_recordView startRecord];
+                [_recordView start];
             }];
         }
             break;
@@ -77,25 +80,44 @@
     [_screenshotBtn disappear];
 }
 
-- (void)_result {
-    self.resultView.cancelBtnTitle = _cancelBtnTitle;
-    _resultView.filmEditingResultShareItems = _filmEditingResultShareItems;
-    _resultView.alpha = 0.001;
-    [self addSubview:_resultView];
+- (void)completeRecording {
+    [_recordView stop];
+    [self _showResultWithType:SJVideoPlayerFilmEditingResultViewType_Video];
+}
+
+- (void)_showResultWithType:(SJVideoPlayerFilmEditingResultViewType)type{
+    _s_resultView = [[SJVideoPlayerFilmEditingResultView alloc] initWithType:type];
+    _s_resultView.frame = self.bounds;
+    _s_resultView.cancelBtnTitle = _cancelBtnTitle;
+    _s_resultView.resultShare = _resultShare;
+    _s_resultView.alpha = 0.001;
+    [self addSubview:_s_resultView];
+    
+    __weak typeof(self) _self = self;
+    _s_resultView.clickedCancleBtn = ^(SJVideoPlayerFilmEditingResultView * _Nonnull view) {
+        __strong typeof(_self) self = _self;
+        if ( !self ) return;
+        if ( self.exit ) self.exit(self);
+    };
     
     [UIView animateWithDuration:0.2 animations:^{
         self.backgroundColor = [UIColor colorWithWhite:1 alpha:0.8];
     } completion:^(BOOL finished) {
         [UIView animateWithDuration:0.3 animations:^{
             self.backgroundColor = [UIColor clearColor];
-            _resultView.alpha = 1;
+            _s_resultView.alpha = 1;
         } completion:^(BOOL finished) {
-            [_resultView startAnimation];
+            [_s_resultView showResultWithCompletion:^{
+                if ( type == SJVideoPlayerFilmEditingResultViewType_Video ) {
+                    if ( self.recordCompleteExeBlock ) self.recordCompleteExeBlock(self, _recordView.currentTime);
+                }
+            }];
         }];
     }];
-    _resultView.image = self.getVideoScreenshot(self);
+    _s_resultView.image = self.getVideoScreenshot(self);
 }
 
+#pragma mark -
 - (void)setExportBtnImage:(UIImage *)exportBtnImage {
     [self.exportBtn setImage:exportBtnImage forState:UIControlStateNormal];
 }
@@ -105,11 +127,27 @@
 }
 
 - (void)setRecordedVideoExportProgress:(float)recordedVideoExportProgress {
-    self.resultView.recordedVideoExportProgress = recordedVideoExportProgress;
+    _s_resultView.recordedVideoExportProgress = recordedVideoExportProgress;
 }
 
 - (float)recordedVideoExportProgress {
-    return _resultView.recordedVideoExportProgress;
+    return _s_resultView.recordedVideoExportProgress;
+}
+
+- (void)setExportFailed:(BOOL)exportFailed {
+    _s_resultView.exportFailed = exportFailed;
+}
+
+- (BOOL)exportFailed {
+    return _s_resultView.exportFailed;
+}
+
+- (void)setExportedVideoURL:(NSURL *)exportedVideoURL {
+    _s_resultView.exportedVideoURL = exportedVideoURL;
+}
+
+- (NSURL *)exportedVideoURL {
+    return _s_resultView.exportedVideoURL;
 }
 
 - (UITapGestureRecognizer *)tapGR {
@@ -120,14 +158,10 @@
 
 - (void)handleTapGR {
     CGPoint location = [_tapGR locationInView:self];
-    if ( !CGRectContainsPoint(_resultView.frame, location) &&
+    if ( !CGRectContainsPoint(_s_resultView.frame, location) &&
          !CGRectContainsPoint(_recordView.frame, location)) {
         if ( self.exit ) self.exit(self);
     }
-}
-
-- (void)stopRecording {
-    [self _result];
 }
 
 #pragma mark -
@@ -152,7 +186,7 @@
     _screenshotBtn.disappearTransform = CGAffineTransformMakeTranslation(49, 0);
     _exportBtn.disappearType = SJDisappearType_Transform;
     _exportBtn.disappearTransform = CGAffineTransformMakeTranslation(49, 0);
-    _resultView.disappearType = SJDisappearType_Alpha;
+    _s_resultView.disappearType = SJDisappearType_Alpha;
     
     [_screenshotBtn disappear];
     [_exportBtn disappear];
@@ -177,33 +211,21 @@
     return _exportBtn;
 }
 
-- (SJVideoPlayerFilmEditingResultView *)resultView {
-    if ( _resultView ) return _resultView;
-    _resultView = [[SJVideoPlayerFilmEditingResultView alloc] initWithFrame:self.bounds];
-    __weak typeof(self) _self = self;
-    _resultView.clickedCancleBtn = ^(SJVideoPlayerFilmEditingResultView * _Nonnull view) {
-        __strong typeof(_self) self = _self;
-        if ( !self ) return;
-        if ( self.exit ) self.exit(self);
-    };
-    return _resultView;
-}
-
 - (SJVideoPlayerFilmEditingRecordView *)recordView {
     if ( _recordView ) return _recordView;
     _recordView = [[SJVideoPlayerFilmEditingRecordView alloc] initWithFrame:self.bounds];
     _recordView.backgroundColor = [UIColor clearColor];
     __weak typeof(self) _self = self;
-    _recordView.exit = ^(SJVideoPlayerFilmEditingRecordView * _Nonnull view) {
+    _recordView.clickedCancleBtnExeBlock = ^(SJVideoPlayerFilmEditingRecordView * _Nonnull view) {
         __strong typeof(_self) self = _self;
         if ( !self ) return ;
         if ( self.exit ) self.exit(self);
     };
     
-    _recordView.completeExeBlock = ^(SJVideoPlayerFilmEditingRecordView * _Nonnull view, short duration) {
+    _recordView.clickedCompleteBtnExeBlock = ^(SJVideoPlayerFilmEditingRecordView * _Nonnull view) {
         __strong typeof(_self) self = _self;
         if ( !self ) return;
-        [self stopRecording];
+        [self completeRecording];
     };
     return _recordView;
 }

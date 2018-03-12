@@ -25,8 +25,8 @@
 @property (nonatomic, strong, readonly) SJSlider *progressSlider;
 @property (nonatomic, strong, readonly) NSTimer *countDownTimer;
 
-@property (nonatomic, assign, readwrite) short currentTime; // sec.
-@property (nonatomic, assign, readonly) short time; // 60 * 2, sec.
+@property (nonatomic, readwrite) short currentTime; // sec.
+@property (nonatomic, readonly) short time; // 60 * 2, sec.
 
 @end
 
@@ -42,7 +42,6 @@
 - (instancetype)initWithFrame:(CGRect)frame {
     self = [super initWithFrame:frame];
     if ( !self ) return nil;
-    _currentTime = 0;
     _time = 60 * 2;
 
     [self _setupViews];
@@ -56,32 +55,35 @@
 #endif
 }
 
-- (void)startRecord {
+- (void)start {
+    _currentTime = 0;
     self.tipsLabel.text = self.waitingForRecordingTipsText;
     [[NSRunLoop currentRunLoop] addTimer:self.countDownTimer forMode:NSRunLoopCommonModes];
     [self.countDownTimer setFireDate:[NSDate dateWithTimeIntervalSinceNow:1]];
 }
 
-- (void)clickedBtn:(UIButton *)btn {
+- (void)stop {
     [self _clearTimer];
+}
+
+- (void)clickedBtn:(UIButton *)btn {
+    [self stop];
     if ( btn == self.cancelBtn ) {
-        if ( _exit ) _exit(self);
+        if ( _clickedCancleBtnExeBlock ) _clickedCancleBtnExeBlock(self);
     }
     else if ( btn == self.recrodBtn ) {
-        if ( _completeExeBlock ) _completeExeBlock(self, _currentTime);
+        if ( _clickedCompleteBtnExeBlock ) _clickedCompleteBtnExeBlock(self);
     }
 }
 
 - (void)_clearTimer {
     [_countDownTimer invalidate];
     _countDownTimer = nil;
-    _currentTime = 0;
 }
 
 - (void)countDownRefresh:(NSTimer *)timer {
     if ( _currentTime == _time ) {
-        if ( _completeExeBlock ) _completeExeBlock(self, _currentTime);
-        [self _clearTimer];
+        [self stop];
         return;
     }
     ++_currentTime;

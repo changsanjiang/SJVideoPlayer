@@ -8,15 +8,26 @@
 
 #import "SJFilmEditingResultShareItem.h"
 
+@implementation SJFilmEditingResultShare
+
+- (instancetype)initWithShateItems:(NSArray<SJFilmEditingResultShareItem *> *)filmEditingResultShareItems {
+    self = [super init];
+    if ( !self ) return nil;
+    _filmEditingResultShareItems = filmEditingResultShareItems;
+    return self;
+}
+@end
+
 @implementation SJFilmEditingResultShareItem
 
-- (instancetype)initWithTitle:(NSString *)title image:(UIImage *)image clickToDisappear:(BOOL)yesOrNo clickedExeBlock:(void (^)(SJFilmEditingResultShareItem *filmEditingResultShareItem, UIImage *image, NSURL * __nullable exportedVideoURL))clickedExeBlock {
+- (instancetype)initWithTitle:(NSString *)title image:(UIImage *)image {
     self = [super init];
     if ( !self ) return nil;
     _title = title;
     _image = image;
-    _clickToDisappear = yesOrNo;
-    _clickedExeBlock = [clickedExeBlock copy];
     return self;
 }
+@end
+
+@implementation SJFilmEditingResultUploader
 @end

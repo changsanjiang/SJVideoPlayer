@@ -576,14 +576,13 @@ NS_ASSUME_NONNULL_END
     _exportSession.outputFileType = AVFileTypeMPEG4;
     
     __weak typeof(self) _self = self;
-    _refreshProgressTimer = [NSTimer assetAdd_timerWithTimeInterval:0.5 block:^(NSTimer *timer) {
+    _refreshProgressTimer = [NSTimer assetAdd_timerWithTimeInterval:0.1 block:^(NSTimer *timer) {
         __strong typeof(_self) self = _self;
         if ( !self ) return;
-        NSLog(@"%zd - %s", __LINE__, __func__);
         if ( progress ) progress(self, self.exportSession.progress);
     } repeats:YES];
     [[NSRunLoop currentRunLoop] addTimer:_refreshProgressTimer forMode:NSRunLoopCommonModes];
-    [_refreshProgressTimer setFireDate:[NSDate dateWithTimeIntervalSinceNow:0.5]];
+    [_refreshProgressTimer setFireDate:[NSDate dateWithTimeIntervalSinceNow:0.1]];
     
     [_exportSession exportAsynchronouslyWithCompletionHandler:^{
         __strong typeof(_self) self = _self;

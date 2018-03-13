@@ -14,7 +14,7 @@
 #import "SJVideoPlayerFilmEditingResultView.h"
 #import "SJFilmEditingResultShareItem.h"
 #import "SJVideoPlayerFilmEditingRecordView.h"
-#import <NSObject+SJObserverHelper.h>
+#import <SJObserverHelper/NSObject+SJObserverHelper.h>
 
 NS_ASSUME_NONNULL_BEGIN
 @interface SJVideoPlayerFilmEditingControlView ()

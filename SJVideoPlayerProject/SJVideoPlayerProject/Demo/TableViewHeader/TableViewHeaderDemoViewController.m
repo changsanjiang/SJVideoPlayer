@@ -68,6 +68,18 @@ static NSString *const SJVideoListTableViewCellID = @"SJVideoListTableViewCell";
         });
     });
     
+    // table header btn clicked event.
+    self.tableHeaderView.clickedPlayBtn = ^(TableHeaderView * _Nonnull view) {
+        __strong typeof(_self) self = _self;
+        if ( !self ) return;
+        SJVideoPlayerURLAsset *asset =
+        [[SJVideoPlayerURLAsset alloc] initWithAssetURL:[NSURL URLWithString:@"http://vod.lanwuzhe.com/d57eed43d9a344e486b79ae505fb9044/18b1aeb398e04ffaa9de48f223dcf0ca-5287d2089db37e62345123a1be272f8b.mp4?video="]
+                                              beginTime:0
+                           playerSuperViewOfTableHeader:view
+                                              tableView:self.tableView];
+        asset.title = @"DIY心情转盘 #手工##手工制作#";
+        [self.videoPlayerHelper playWithAsset:asset playerParentView:view];
+    };
     // Do any additional setup after loading the view.
 }
 
@@ -104,6 +116,7 @@ static NSString *const SJVideoListTableViewCellID = @"SJVideoListTableViewCell";
 
 - (void)clickedPlayOnTabCell:(SJVideoListTableViewCell *)cell playerParentView:(UIView *)playerParentView {
     
+    /// this is play in cell.
     SJVideoPlayerURLAsset *asset =
     [[SJVideoPlayerURLAsset alloc] initWithAssetURL:[[NSBundle mainBundle] URLForResource:@"sample" withExtension:@"mp4"]
                                          scrollView:self.tableView
@@ -142,18 +155,6 @@ static NSString *const SJVideoListTableViewCellID = @"SJVideoListTableViewCell";
 - (TableHeaderView *)tableHeaderView {
     if ( _tableHeaderView ) return _tableHeaderView;
     _tableHeaderView = [SJUIViewFactory viewWithSubClass:[TableHeaderView class] backgroundColor:[UIColor lightGrayColor] frame:CGRectMake(0, 0, SJScreen_W(), SJScreen_W())];
-    __weak typeof(self) _self = self;
-    _tableHeaderView.clickedPlayBtn = ^(TableHeaderView * _Nonnull view) {
-        __strong typeof(_self) self = _self;
-        if ( !self ) return;
-        SJVideoPlayerURLAsset *asset =
-        [[SJVideoPlayerURLAsset alloc] initWithAssetURL:[NSURL URLWithString:@"http://vod.lanwuzhe.com/d57eed43d9a344e486b79ae505fb9044/18b1aeb398e04ffaa9de48f223dcf0ca-5287d2089db37e62345123a1be272f8b.mp4?video="]
-                                              beginTime:0
-                           playerSuperViewOfTableHeader:view
-                                              tableView:self.tableView];
-        asset.title = @"DIY心情转盘 #手工##手工制作#";
-        [self.videoPlayerHelper playWithAsset:asset playerParentView:view];
-    };
     return _tableHeaderView;
 }
 

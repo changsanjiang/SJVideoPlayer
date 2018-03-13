@@ -113,6 +113,7 @@ NS_ASSUME_NONNULL_END
     [self registrar];
     [self view];
     [self reachabilityObserver];
+    self.videoGravity = AVLayerVideoGravityResizeAspect;
     return self;
 }
 
@@ -335,6 +336,14 @@ NS_ASSUME_NONNULL_END
 - (void)setPlaceholder:(UIImage *)placeholder {
     _placeholder = placeholder;
     self.presentView.placeholder = placeholder;
+}
+
+- (void)setVideoGravity:(AVLayerVideoGravity)videoGravity {
+    self.presentView.videoGravity = videoGravity;
+}
+
+- (AVLayerVideoGravity)videoGravity {
+    return self.presentView.videoGravity;
 }
 
 #pragma mark -

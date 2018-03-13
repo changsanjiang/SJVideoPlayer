@@ -33,6 +33,8 @@ NS_ASSUME_NONNULL_BEGIN
 
 @protocol SJFilmEditingResultShareDelegate <NSObject>
 
+- (void)prepareToExport;   // 准备导出, 可以做一些准备工作.
+
 - (SJFilmEditingResultUploader *)successfulScreenshot:(UIImage *)screenshot;
 
 - (SJFilmEditingResultUploader *)successfulExportedVideo:(NSURL *)sandboxURL screenshot:(UIImage *)screenshot;

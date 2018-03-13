@@ -21,6 +21,8 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic, copy, nullable) void(^clickedCompleteBtnExeBlock)(SJVideoPlayerFilmEditingRecordView *view);
 
 - (void)start;
+- (void)pause;
+- (void)resume;
 - (void)stop;
 
 @end

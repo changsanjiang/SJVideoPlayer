@@ -467,6 +467,7 @@ NS_ASSUME_NONNULL_END
         _filmEditingControlView.startRecordingExeBlock = ^(SJVideoPlayerFilmEditingControlView * _Nonnull view) {
             __strong typeof(_self) self = _self;
             if ( !self ) return;
+            self.videoPlayer.videoGravity = AVLayerVideoGravityResizeAspect;
             if ( self.videoPlayer.state == SJVideoPlayerPlayState_PlayEnd ) {
                 [self.videoPlayer replay];
             }

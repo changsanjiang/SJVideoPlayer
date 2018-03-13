@@ -62,6 +62,16 @@
     [self.countDownTimer setFireDate:[NSDate dateWithTimeIntervalSinceNow:1]];
 }
 
+- (void)pause {
+    [self stop];
+}
+
+- (void)resume {
+    NSTimeInterval currentTime = _currentTime;
+    [self start];
+    _currentTime = currentTime;
+}
+
 - (void)stop {
     [self _clearTimer];
 }

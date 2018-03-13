@@ -26,8 +26,6 @@
 @property (nonatomic, strong, readonly) UILabel *progressLabel;
 @property (nonatomic, strong, readonly) UIView *uploadProgressView;
 
-@property (nonatomic, weak, readwrite) SJFilmEditingResultUploader *uploader;
-
 @end
 
 @implementation SJVideoPlayerFilmEditingResultView
@@ -66,40 +64,25 @@
         self.itemsContainerView.alpha = 1;
     } completion:^(BOOL finished) {
         if ( block ) block();
-        if ( _type == SJVideoPlayerFilmEditingResultViewType_Screenshot && [self.resultShare.delegate respondsToSelector:@selector(successfulScreenshot:)] ) {
-            self.uploader = [self.resultShare.delegate successfulScreenshot:self.image];
-        }
     }];
 }
 
 - (void)clickedBtn:(UIButton *)btn {
     if ( btn == self.cancelBtn ) {
-        if ( [self.resultShare.delegate respondsToSelector:@selector(clickedCancelButton)] ) {
-            [self.resultShare.delegate clickedCancelButton];
-        }
+        if ( _clickedCancelBtnExeBlock ) _clickedCancelBtnExeBlock(self);        
     }
 }
 
 - (void)clickedItemBtn:(UIButton *)btn {
-    SJFilmEditingResultShareItem *item = self.resultShare.filmEditingResultShareItems[btn.tag];
-    if ( [self.resultShare.delegate respondsToSelector:@selector(clickedItem:)] ) {
-        [self.resultShare.delegate clickedItem:item];
-    }
+    SJFilmEditingResultShareItem *item = _items[btn.tag];
+    if ( _clickedItemExeBlock ) _clickedItemExeBlock(self, item);
 }
 
 #pragma mark -
-
 - (void)setImage:(UIImage *)image {
     _image = image;
     self.layer.contents = (id)image.CGImage;
     self.imageView.image = image;
-}
-
-- (void)setExportedVideoURL:(NSURL *)exportedVideoURL {
-    _exportedVideoURL = exportedVideoURL;
-    if ( [self.resultShare.delegate respondsToSelector:@selector(successfulExportedVideo:screenshot:)] ) {
-        self.uploader = [self.resultShare.delegate successfulExportedVideo:exportedVideoURL screenshot:self.image];
-    }
 }
 
 - (void)setRecordedVideoExportProgress:(float)recordedVideoExportProgress {
@@ -145,9 +128,9 @@
     });
 }
 
-- (void)setResultShare:(SJFilmEditingResultShare *)resultShare {
-    _resultShare = resultShare;
-    [resultShare.filmEditingResultShareItems enumerateObjectsUsingBlock:^(SJFilmEditingResultShareItem * _Nonnull obj, NSUInteger idx, BOOL * _Nonnull stop) {
+- (void)setItems:(NSArray<SJFilmEditingResultShareItem *> *)items {
+    _items = items;
+    [_items enumerateObjectsUsingBlock:^(SJFilmEditingResultShareItem * _Nonnull obj, NSUInteger idx, BOOL * _Nonnull stop) {
         UIButton *btn = [SJUIButtonFactory buttonWithAttributeTitle:sj_makeAttributesString(^(SJAttributeWorker * _Nonnull make) {
             make.insertImage(obj.image, 0, CGPointZero, CGSizeMake(40, 40));
             make.insertText(@"\n", -1);
@@ -163,7 +146,7 @@
                 make.top.bottom.offset(0);
             }];
         }
-        else if ( idx != (int)resultShare.filmEditingResultShareItems.count - 1 ) {
+        else if ( idx != (int)_items.count - 1 ) {
             UIButton *beforeBtn = self.itemsContainerView.subviews[(int)idx - 1];
             [btn mas_makeConstraints:^(MASConstraintMaker *make) {
                 make.leading.equalTo(beforeBtn.mas_trailing).offset(20);

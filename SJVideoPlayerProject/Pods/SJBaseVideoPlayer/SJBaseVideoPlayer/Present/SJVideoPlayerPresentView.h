@@ -18,7 +18,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 @property (nonatomic, strong, nullable) UIImage *placeholder;
 
-@property (nonatomic, copy) AVLayerVideoGravity videoGravity; // default is AVLayerVideoGravityResizeAspect.
+@property (nonatomic, strong) AVLayerVideoGravity videoGravity; // default is AVLayerVideoGravityResizeAspect.
 
 @property (nonatomic) SJVideoPlayerPlayState playState;
 

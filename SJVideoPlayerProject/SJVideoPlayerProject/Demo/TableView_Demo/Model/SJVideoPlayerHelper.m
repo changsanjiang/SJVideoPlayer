@@ -129,6 +129,16 @@ NS_ASSUME_NONNULL_END
 
 #pragma mark - delegate methods
 
+- (void)prepareToExport {
+    // clear old value.
+    _uploader.progress = 0;             // 上传进度清零
+    _uploader.uploaded = NO;
+    _uploader.failed = NO;
+    _uploader.exportedVideoURL = nil;
+    _uploader.screenshot = nil;
+    _savedToAblum = NO;
+}
+
 - (SJFilmEditingResultUploader *)successfulExportedVideo:(NSURL *)sandboxURL screenshot:(UIImage *)screenshot {
     
     // sample upload code...
@@ -149,14 +159,6 @@ NS_ASSUME_NONNULL_END
         self.uploader.failed = YES;                 // need update this property when failed.
         [self.videoPlayer showTitle:@"Upload Failed"];
     }];
-    
-    // clear old value.
-    _uploader.progress = 0;
-    _uploader.uploaded = NO;
-    _uploader.failed = NO;
-    _uploader.exportedVideoURL = nil;
-    _uploader.screenshot = nil;
-    _savedToAblum = NO;
     
     // update new value.
     self.uploader.exportedVideoURL = sandboxURL;

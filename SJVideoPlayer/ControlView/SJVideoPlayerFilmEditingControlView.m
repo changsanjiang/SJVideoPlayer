@@ -14,6 +14,7 @@
 #import "SJVideoPlayerFilmEditingResultView.h"
 #import "SJFilmEditingResultShareItem.h"
 #import "SJVideoPlayerFilmEditingRecordView.h"
+#import <NSObject+SJObserverHelper.h>
 
 NS_ASSUME_NONNULL_BEGIN
 @interface SJVideoPlayerFilmEditingControlView ()
@@ -23,6 +24,7 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic, strong, nullable) SJVideoPlayerFilmEditingResultView *s_resultView;
 @property (nonatomic, strong, readonly) SJVideoPlayerFilmEditingRecordView *recordView;
 @property (nonatomic, strong, readonly) UITapGestureRecognizer *tapGR;
+@property (nonatomic, weak, readwrite) SJFilmEditingResultUploader *uploader;
 
 @end
 NS_ASSUME_NONNULL_END
@@ -49,6 +51,7 @@ NS_ASSUME_NONNULL_END
 }
 
 - (void)clickedBtn:(UIButton *)btn {
+    [self _prepareToExport];
     switch ( btn.tag ) {
             // screenshot
         case SJVideoPlayerFilmEditingViewTag_Screenshot: {
@@ -58,9 +61,9 @@ NS_ASSUME_NONNULL_END
             break;
             // export
         case SJVideoPlayerFilmEditingViewTag_Export: {
-            if ( _startRecordingExeBlock ) _startRecordingExeBlock(self);
-
+            _isPausedRecord = NO;
             _isRecording = YES;
+            if ( _startRecordingExeBlock ) _startRecordingExeBlock(self);
             self.recordView.tipsText = _recordTipsText;
             _recordView.waitingForRecordingTipsText = _waitingForRecordingTipsText;
             _recordView.cancelBtnTitle = _cancelBtnTitle;
@@ -74,28 +77,59 @@ NS_ASSUME_NONNULL_END
             }];
         }
             break;
-        default:
-            break;
     }
     
     [_exportBtn disappear];
     [_screenshotBtn disappear];
 }
 
+- (void)pauseRecording {
+    _isPausedRecord = YES;
+    [_recordView pause];
+}
+
+- (void)resumeRecording {
+    _isPausedRecord = NO;
+    [_recordView resume];
+}
+
 - (void)completeRecording {
+    _isPausedRecord = NO;
     [_recordView stop];
     [self _showResultWithType:SJVideoPlayerFilmEditingResultViewType_Video];
+}
+
+- (void)_prepareToExport {
+    if ( [self.resultShare.delegate respondsToSelector:@selector(prepareToExport)] ) {
+        [self.resultShare.delegate prepareToExport];
+    }
 }
 
 - (void)_showResultWithType:(SJVideoPlayerFilmEditingResultViewType)type{
     _s_resultView = [[SJVideoPlayerFilmEditingResultView alloc] initWithType:type];
     _s_resultView.frame = self.bounds;
     _s_resultView.cancelBtnTitle = _cancelBtnTitle;
-    _s_resultView.resultShare = _resultShare;
     _s_resultView.uploadingPrompt = _uploadingPrompt;
     _s_resultView.exportingPrompt = _exportingPrompt;
     _s_resultView.operationFailedPrompt = _operationFailedPrompt;
     _s_resultView.alpha = 0.001;
+    _s_resultView.image = self.getVideoScreenshot(self);
+    _s_resultView.items = self.resultShare.filmEditingResultShareItems;
+    __weak typeof(self) _self = self;
+    _s_resultView.clickedCancelBtnExeBlock = ^(SJVideoPlayerFilmEditingResultView * _Nonnull view) {
+        __strong typeof(_self) self = _self;
+        if ( !self ) return;
+        if ( [self.resultShare.delegate respondsToSelector:@selector(clickedCancelButton)] ) {
+            [self.resultShare.delegate clickedCancelButton];
+        }
+    };
+    _s_resultView.clickedItemExeBlock = ^(SJVideoPlayerFilmEditingResultView * _Nonnull view, SJFilmEditingResultShareItem * _Nonnull item) {
+        __strong typeof(_self) self = _self;
+        if ( !self ) return;
+        if ( [self.resultShare.delegate respondsToSelector:@selector(clickedItem:)] ) {
+            [self.resultShare.delegate clickedItem:item];
+        }
+    };
     [self addSubview:_s_resultView];
 
     [UIView animateWithDuration:0.2 animations:^{
@@ -109,10 +143,12 @@ NS_ASSUME_NONNULL_END
                 if ( type == SJVideoPlayerFilmEditingResultViewType_Video ) {
                     if ( self.recordCompleteExeBlock ) self.recordCompleteExeBlock(self, _recordView.currentTime);
                 }
+                if ( type == SJVideoPlayerFilmEditingResultViewType_Screenshot && [_resultShare.delegate respondsToSelector:@selector(successfulScreenshot:)] ) {
+                    self.uploader = [self.resultShare.delegate successfulScreenshot:_s_resultView.image];
+                }
             }];
         }];
     }];
-    _s_resultView.image = self.getVideoScreenshot(self);
 }
 
 #pragma mark -
@@ -133,6 +169,7 @@ NS_ASSUME_NONNULL_END
 }
 
 - (void)setExportFailed:(BOOL)exportFailed {
+    [_recordView stop];
     _s_resultView.exportFailed = exportFailed;
 }
 
@@ -141,11 +178,10 @@ NS_ASSUME_NONNULL_END
 }
 
 - (void)setExportedVideoURL:(NSURL *)exportedVideoURL {
-    _s_resultView.exportedVideoURL = exportedVideoURL;
-}
-
-- (NSURL *)exportedVideoURL {
-    return _s_resultView.exportedVideoURL;
+    _exportedVideoURL = exportedVideoURL;
+    if ( [self.resultShare.delegate respondsToSelector:@selector(successfulExportedVideo:screenshot:)] ) {
+        self.uploader = [self.resultShare.delegate successfulExportedVideo:exportedVideoURL screenshot:self.s_resultView.image];
+    }
 }
 
 - (UITapGestureRecognizer *)tapGR {
@@ -160,6 +196,14 @@ NS_ASSUME_NONNULL_END
          !CGRectContainsPoint(_recordView.frame, location)) {
         if ( self.exit ) self.exit(self);
     }
+}
+
+- (void)setUploader:(SJFilmEditingResultUploader *)uploader {
+    _s_resultView.uploader = uploader;
+}
+
+- (SJFilmEditingResultUploader *)uploader {
+    return _s_resultView.uploader;
 }
 
 #pragma mark -

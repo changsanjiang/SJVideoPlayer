@@ -63,6 +63,13 @@ typedef NS_ENUM(NSInteger, SJNetworkStatus) {
 
 @property (nonatomic, strong, nullable) UIImage *placeholder;
 
+/**
+ default is `AVLayerVideoGravityResizeAspect`.
+ 
+ readwrite.
+ */
+@property (nonatomic, strong) AVLayerVideoGravity videoGravity;
+
 @end
 
 

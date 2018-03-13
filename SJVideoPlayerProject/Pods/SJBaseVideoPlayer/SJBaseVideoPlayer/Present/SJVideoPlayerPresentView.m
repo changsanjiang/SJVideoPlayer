@@ -82,7 +82,8 @@ NS_ASSUME_NONNULL_END
 }
 
 - (void)setVideoGravity:(AVLayerVideoGravity)videoGravity {
-    [self avLayer].videoGravity = videoGravity.copy;
+    if ( videoGravity == self.videoGravity ) return;
+    [self avLayer].videoGravity = videoGravity;
 }
 
 - (AVLayerVideoGravity)videoGravity {

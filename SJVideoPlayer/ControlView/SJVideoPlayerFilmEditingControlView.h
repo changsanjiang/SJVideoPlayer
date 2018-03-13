@@ -29,9 +29,13 @@ typedef NS_ENUM(NSUInteger, SJVideoPlayerFilmEditingViewTag) {
 @property (nonatomic, strong, nullable) UIImage *screenshotBtnImage;
 @property (nonatomic, strong, nullable) UIImage *exportBtnImage;
 
+
 #pragma mark - record
-- (void)completeRecording;
 @property (nonatomic, readonly) BOOL isRecording;
+@property (nonatomic, readonly) BOOL isPausedRecord;
+- (void)pauseRecording;
+- (void)resumeRecording;
+- (void)completeRecording;
 @property (nonatomic, copy, nullable) void(^recordCompleteExeBlock)(SJVideoPlayerFilmEditingControlView *view, short duration);
 @property (nonatomic, readwrite) float recordedVideoExportProgress;
 @property (nonatomic, readwrite) BOOL exportFailed;

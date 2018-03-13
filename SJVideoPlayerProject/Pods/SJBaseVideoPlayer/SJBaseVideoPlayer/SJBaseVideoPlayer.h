@@ -586,8 +586,12 @@ typedef NS_ENUM(NSInteger, SJNetworkStatus) {
 /// 水平方向开始拖动.
 - (void)horizontalDirectionWillBeginDragging:(__kindof SJBaseVideoPlayer *)videoPlayer;
 
-/// 水平方向拖动中. `translation`为此次增加的值.
-- (void)videoPlayer:(__kindof SJBaseVideoPlayer *)videoPlayer horizontalDirectionDidDrag:(CGFloat)translation;
+/**
+ @param progress drag progress
+ */
+- (void)videoPlayer:(__kindof SJBaseVideoPlayer *)videoPlayer horizontalDirectionDidMove:(CGFloat)progress;
+
+- (void)videoPlayer:(__kindof SJBaseVideoPlayer *)videoPlayer horizontalDirectionDidDrag:(CGFloat)translation NS_DEPRECATED(2_0, 2_0, 2_0, 2_0, "use `videoPlayer:horizontalDirectionDidMove:`");
 
 /// 水平方向拖动结束.
 - (void)horizontalDirectionDidEndDragging:(__kindof SJBaseVideoPlayer *)videoPlayer;

@@ -939,9 +939,7 @@ NS_ASSUME_NONNULL_END
     [self sliderWillBeginDraggingForBottomView:self.bottomControlView];
 }
 
-/// 水平方向拖动中. `translation`为此次增加的值.
-- (void)videoPlayer:(SJVideoPlayer *)videoPlayer horizontalDirectionDidDrag:(CGFloat)translation {
-    CGFloat progress = self.draggingProgressView.progress + translation;
+- (void)videoPlayer:(__kindof SJBaseVideoPlayer *)videoPlayer horizontalDirectionDidMove:(CGFloat)progress {
     [self bottomView:self.bottomControlView sliderDidDrag:progress];
 }
 

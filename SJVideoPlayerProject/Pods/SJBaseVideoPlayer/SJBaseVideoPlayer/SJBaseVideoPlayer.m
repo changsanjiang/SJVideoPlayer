@@ -566,11 +566,17 @@ NS_ASSUME_NONNULL_END
         else [self pauseForUser]; //  用户暂停
     };
     
+    static CGFloat __increment;
+    static NSTimeInterval __currentTime;
+    static NSTimeInterval __totalTime;
     _gestureControl.beganPan = ^(SJPlayerGestureControl * _Nonnull control, SJPanDirection direction, SJPanLocation location) {
         __strong typeof(_self) self = _self;
         if ( !self ) return;
         switch (direction) {
             case SJPanDirection_H: {
+                __increment = 0;
+                __currentTime = self.currentTime;
+                __totalTime = self.totalTime;
                 if ( [self.controlLayerDelegate respondsToSelector:@selector(horizontalDirectionWillBeginDragging:)] ) {
                     [self.controlLayerDelegate horizontalDirectionWillBeginDragging:self];
                 }
@@ -603,8 +609,16 @@ NS_ASSUME_NONNULL_END
         if ( !self ) return;
         switch (direction) {
             case SJPanDirection_H: {
-                if ( [self.controlLayerDelegate respondsToSelector:@selector(videoPlayer:horizontalDirectionDidDrag:)] ) {
+                if ( [self.controlLayerDelegate respondsToSelector:@selector(videoPlayer:horizontalDirectionDidMove:)] ) {
+                    __increment += translate.x;
+                    CGFloat progress = (__currentTime + __increment) / __totalTime;
+                    [self.controlLayerDelegate videoPlayer:self horizontalDirectionDidMove:progress];
+                }
+                else if ( [self.controlLayerDelegate respondsToSelector:@selector(videoPlayer:horizontalDirectionDidDrag:)] ) {
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wdeprecated-declarations"
                     [self.controlLayerDelegate videoPlayer:self horizontalDirectionDidDrag:translate.x * 0.003];
+#pragma clang diagnostic pop
                 }
             }
                 break;

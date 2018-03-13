@@ -209,10 +209,14 @@ NS_ASSUME_NONNULL_END
         return;
     }
     
+    if ( self.uploader.failed == YES ) {
+        [self.videoPlayer showTitle:@"Can't continue! The operation failed!"];
+        return;
+    }
+    
     if ( item.title == kSJFilmEditingResultShareItemAlbumTitle ) {
         if ( self.savedToAblum ) {
             [self.videoPlayer showTitle:@"Saved"];
-            
             return;
         }
         

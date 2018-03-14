@@ -129,7 +129,7 @@ NS_ASSUME_NONNULL_END
 
 #pragma mark - delegate methods
 
-- (void)prepareToExport {
+- (SJFilmEditingResultUploader *)prepareToExport {
     // clear old value.
     _uploader.progress = 0;             // 上传进度清零
     _uploader.uploaded = NO;
@@ -137,9 +137,10 @@ NS_ASSUME_NONNULL_END
     _uploader.exportedVideoURL = nil;
     _uploader.screenshot = nil;
     _savedToAblum = NO;
+    return self.uploader;
 }
 
-- (SJFilmEditingResultUploader *)successfulExportedVideo:(NSURL *)sandboxURL screenshot:(UIImage *)screenshot {
+- (void)successfulExportedVideo:(NSURL *)sandboxURL screenshot:(UIImage *)screenshot {
     
     // sample upload code...
     __weak typeof(self) _self = self;
@@ -163,10 +164,9 @@ NS_ASSUME_NONNULL_END
     // update new value.
     self.uploader.exportedVideoURL = sandboxURL;
     self.uploader.screenshot = screenshot;
-    return self.uploader;
 }
 
-- (SJFilmEditingResultUploader *)successfulScreenshot:(UIImage *)screenshot {
+- (void)successfulScreenshot:(UIImage *)screenshot {
     // need call your upload code..
     // need call your upload code..
     
@@ -175,7 +175,7 @@ NS_ASSUME_NONNULL_END
     
     // some test code..
     NSURL *url = nil;
-    return [self successfulExportedVideo:url screenshot:screenshot];
+    [self successfulExportedVideo:url screenshot:screenshot];
 }
 
 - (void)_uploadWithImage:(UIImage *)image progress:(void(^)(float progress))progressBlock completion:(void(^)(NSString *URLStr))completion failed:(void(^)(void))failed {
@@ -250,7 +250,10 @@ NS_ASSUME_NONNULL_END
 }
 
 - (void)clickedCancelButton {
-    if ( !self.uploader.uploaded ) {
+    if ( self.uploader.failed ) {
+        [self.videoPlayer exitFilmEditingCompletion:nil];
+    }
+    else if ( !self.uploader.uploaded ) {
         [self.videoPlayer showTitle:@"Uploading, please wait."];
     }
     else {

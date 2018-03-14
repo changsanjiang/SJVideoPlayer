@@ -9,6 +9,20 @@
 //  https://github.com/changsanjiang/SJVideoPlayer      有默认控制层的播放器
 //  changsanjiang@gmail.com
 //
+/**
+ *  Play
+ *  Network
+ *  Prompt
+ *  Time
+ *  Control
+ *  GestureControl
+ *  ControlLayer
+ *  Rotation
+ *  Screenshot
+ *  Export
+ *  ScrollView
+ *  ControlLayerProtocol
+ */
 
 #import <UIKit/UIKit.h>
 #import "SJVideoPlayerURLAsset.h"
@@ -227,6 +241,14 @@ typedef NS_ENUM(NSInteger, SJNetworkStatus) {
  readwrite.
  */
 @property (nonatomic, getter=isAutoPlay) BOOL autoPlay;
+
+/**
+ If Yes, player will be called pause method When Received `UIApplicationWillResignActiveNotification` notification.
+ default is YES.
+ 
+ readwrite.
+ */
+@property (nonatomic) BOOL pauseWhenAppResignActive;
 
 - (BOOL)play;
 
@@ -475,7 +497,7 @@ typedef NS_ENUM(NSInteger, SJNetworkStatus) {
 
 
 
-#pragma mark - Protocol
+#pragma mark - ControlLayerProtocol
 
 @protocol SJVideoPlayerControlLayerDataSource <NSObject>
 

@@ -553,6 +553,10 @@ NS_ASSUME_NONNULL_END
                    progress:(void(^)(SJVideoPlayerAssetCarrier *asset, float progress))progress
                  completion:(void(^)(SJVideoPlayerAssetCarrier *asset, AVAsset *sandboxAsset, NSURL *fileURL, UIImage *thumbImage))completion
                     failure:(void(^)(SJVideoPlayerAssetCarrier *asset, NSError *error))failure {
+    if ( endTime - beginTime <= 0 ) {
+        if ( failure ) failure(self, [NSError errorWithDomain:NSCocoaErrorDomain code:-1 userInfo:@{@"msg":@"Error: Start time is greater than end time!"}]);
+        return;
+    }
     if ( !presetName ) presetName = AVAssetExportPresetMediumQuality;
     [_exportSession cancelExport];
     [self _cleanRefreshProgressTimer];
@@ -560,7 +564,7 @@ NS_ASSUME_NONNULL_END
     AVMutableComposition *compositionM = [AVMutableComposition composition];
     AVMutableCompositionTrack *audioTrackM = [compositionM addMutableTrackWithMediaType:AVMediaTypeAudio preferredTrackID:kCMPersistentTrackID_Invalid];
     AVMutableCompositionTrack *videoTrackM = [compositionM addMutableTrackWithMediaType:AVMediaTypeVideo preferredTrackID:kCMPersistentTrackID_Invalid];
-    CMTimeRange cutRange = CMTimeRangeMake(CMTimeMakeWithSeconds(beginTime, NSEC_PER_SEC), CMTimeMakeWithSeconds(endTime, NSEC_PER_SEC));
+    CMTimeRange cutRange = CMTimeRangeMake(CMTimeMakeWithSeconds(beginTime, NSEC_PER_SEC), CMTimeMakeWithSeconds(endTime - beginTime, NSEC_PER_SEC));
     AVAssetTrack *assetAudioTrack = [asset tracksWithMediaType:AVMediaTypeAudio].firstObject;
     AVAssetTrack *assetVideoTrack = [asset tracksWithMediaType:AVMediaTypeVideo].firstObject;
     NSError *error;

@@ -7,7 +7,6 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		77033C10204D45BB008F1ED5 /* SJVideoPlayerReachabilityPromptView.m in Sources */ = {isa = PBXBuildFile; fileRef = 77033C0F204D45BB008F1ED5 /* SJVideoPlayerReachabilityPromptView.m */; };
 		77033C14204E7611008F1ED5 /* DemoPlayerViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 77033C13204E7611008F1ED5 /* DemoPlayerViewController.m */; };
 		7706E1231FF74B24006E0B56 /* loading.gif in Resources */ = {isa = PBXBuildFile; fileRef = 7706E1221FF74B24006E0B56 /* loading.gif */; };
 		7706E1251FF74C42006E0B56 /* slider.gif in Resources */ = {isa = PBXBuildFile; fileRef = 7706E1241FF74C42006E0B56 /* slider.gif */; };
@@ -84,8 +83,6 @@
 
 /* Begin PBXFileReference section */
 		3D9B385C4F414458155F268D /* Pods-SJVideoPlayerProject.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-SJVideoPlayerProject.debug.xcconfig"; path = "Pods/Target Support Files/Pods-SJVideoPlayerProject/Pods-SJVideoPlayerProject.debug.xcconfig"; sourceTree = "<group>"; };
-		77033C0E204D45BB008F1ED5 /* SJVideoPlayerReachabilityPromptView.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = SJVideoPlayerReachabilityPromptView.h; sourceTree = "<group>"; };
-		77033C0F204D45BB008F1ED5 /* SJVideoPlayerReachabilityPromptView.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = SJVideoPlayerReachabilityPromptView.m; sourceTree = "<group>"; };
 		77033C12204E7611008F1ED5 /* DemoPlayerViewController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = DemoPlayerViewController.h; sourceTree = "<group>"; };
 		77033C13204E7611008F1ED5 /* DemoPlayerViewController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = DemoPlayerViewController.m; sourceTree = "<group>"; };
 		7706E1221FF74B24006E0B56 /* loading.gif */ = {isa = PBXFileReference; lastKnownFileType = image.gif; path = loading.gif; sourceTree = "<group>"; };
@@ -392,8 +389,6 @@
 				A6E6D3152028BE9B00CB9BAE /* SJVideoPlayerBottomControlView.m */,
 				77154E802050D040009E51D7 /* SJVideoPlayerRightControlView.h */,
 				77154E812050D040009E51D7 /* SJVideoPlayerRightControlView.m */,
-				77033C0E204D45BB008F1ED5 /* SJVideoPlayerReachabilityPromptView.h */,
-				77033C0F204D45BB008F1ED5 /* SJVideoPlayerReachabilityPromptView.m */,
 				77154E8C205255C8009E51D7 /* SJVideoPlayerFilmEditingControlView.h */,
 				77154E8D205255C8009E51D7 /* SJVideoPlayerFilmEditingControlView.m */,
 				77154E8F20526391009E51D7 /* SJVideoPlayerFilmEditingResultView.h */,
@@ -812,7 +807,6 @@
 				775C0AC920295C660008EDA7 /* UIView+SJVideoPlayerSetting.m in Sources */,
 				A6E6D3522028BE9B00CB9BAE /* SJVideoPlayerURLAsset+SJControlAdd.m in Sources */,
 				A6E6D3502028BE9B00CB9BAE /* UIView+SJControlAdd.m in Sources */,
-				77033C10204D45BB008F1ED5 /* SJVideoPlayerReachabilityPromptView.m in Sources */,
 				A6E6D3562028BE9B00CB9BAE /* SJVideoPlayerLeftControlView.m in Sources */,
 				77154E822050D040009E51D7 /* SJVideoPlayerRightControlView.m in Sources */,
 				A6F4E97E2007A7EC00716B9C /* NestedTableViewCell.m in Sources */,

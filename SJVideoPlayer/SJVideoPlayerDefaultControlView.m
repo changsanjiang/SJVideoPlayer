@@ -39,12 +39,6 @@ static NSTimeInterval CommonAnimaDuration = 0.25;
 
 inline static void UIView_Animations(NSTimeInterval duration, Block __nullable animations, Block __nullable completion);
 
-@interface _SJAnimationContext : NSObject
-@property (nonatomic, copy, nullable) Block completion;
-- (instancetype)initWithCompletion:(nullable Block)completion;
-@end
-
-
 #pragma mark -
 @interface SJVideoPlayerDefaultControlView ()<SJVideoPlayerLeftControlViewDelegate, SJVideoPlayerBottomControlViewDelegate, SJVideoPlayerTopControlViewDelegate, SJVideoPlayerPreviewViewDelegate, SJVideoPlayerCenterControlViewDelegate, SJVideoPlayerRightControlViewDelegate>
 
@@ -93,6 +87,7 @@ NS_ASSUME_NONNULL_END
     [self _controlViewLoadSetting];
     // default values
     _generatePreviewImages = YES;
+    [self _controlViewInstallNotifications];
     return self;
 }
 
@@ -100,6 +95,29 @@ NS_ASSUME_NONNULL_END
 #ifdef DEBUG
     NSLog(@"SJVideoPlayerLog: %zd - %s", __LINE__, __func__);
 #endif
+    [[NSNotificationCenter defaultCenter] removeObserver:self];
+}
+
+- (void)_controlViewInstallNotifications {
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(applicationWillResignActive) name:UIApplicationWillResignActiveNotification object:nil];
+    
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(applicationDidBecomeActive) name:UIApplicationDidBecomeActiveNotification object:nil];
+}
+
+- (void)applicationWillResignActive {
+    if ( _filmEditingControlView.recordStatus == SJVideoPlayerFilmEditingRecrodStatus_Recording ) {
+        [_filmEditingControlView pauseRecording];
+        [self.videoPlayer pauseForUser];
+    }
+}
+
+- (void)applicationDidBecomeActive {
+    if ( _filmEditingControlView.recordStatus == SJVideoPlayerFilmEditingRecrodStatus_Paused ) {
+        [_filmEditingControlView resumeRecording];
+    }
+    else if ( _filmEditingControlView.recordStatus == SJVideoPlayerFilmEditingRecrodStatus_Finished ) {
+        [self.videoPlayer pauseForUser];
+    }
 }
 
 #pragma mark - setup views
@@ -639,19 +657,10 @@ NS_ASSUME_NONNULL_END
 #pragma mark - 加载配置
 
 - (void)_controlViewLoadSetting {
+    // load setting
+    SJVideoPlayer.update(^(SJVideoPlayerSettings * _Nonnull commonSettings) {});
     
-    // load default setting
     __weak typeof(self) _self = self;
-    
-    SJVideoPlayer.update(^(SJVideoPlayerSettings * _Nonnull commonSettings) {
-        // update common settings
-        commonSettings.more_trackColor = [UIColor whiteColor];
-        commonSettings.progress_trackColor = [UIColor colorWithWhite:0.4 alpha:1];
-        commonSettings.progress_bufferColor = [UIColor whiteColor];
-        // .... other settings ....
-        // .... .... .... .... ....
-    });
-    
     self.settingRecroder = [[SJVideoPlayerControlSettingRecorder alloc] initWithSettings:^(SJVideoPlayerSettings * _Nonnull setting) {
         __strong typeof(_self) self = _self;
         if ( !self ) return;
@@ -771,7 +780,7 @@ NS_ASSUME_NONNULL_END
     }
     
     if ( SJVideoPlayerPlayState_PlayEnd == state ) {
-        if ( _filmEditingControlView && _filmEditingControlView.isRecording ) {
+        if ( _filmEditingControlView && _filmEditingControlView.recordStatus == SJVideoPlayerFilmEditingRecrodStatus_Recording ) {
             [videoPlayer showTitle:self.settings.videoPlayDidToEndText duration:2];
             [_filmEditingControlView completeRecording];
         }
@@ -1000,6 +1009,11 @@ NS_ASSUME_NONNULL_END
 
 
 #pragma mark - other
+
+@interface _SJAnimationContext : NSObject
+@property (nonatomic, copy, nullable) Block completion;
+- (instancetype)initWithCompletion:(nullable Block)completion;
+@end
 
 @implementation _SJAnimationContext
 - (instancetype)initWithCompletion:(nullable Block)completion {

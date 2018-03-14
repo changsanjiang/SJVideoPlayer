@@ -25,6 +25,7 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic, strong, readonly) SJVideoPlayerFilmEditingRecordView *recordView;
 @property (nonatomic, strong, readonly) UITapGestureRecognizer *tapGR;
 @property (nonatomic, weak, readwrite) SJFilmEditingResultUploader *uploader;
+@property (nonatomic, readwrite) SJVideoPlayerFilmEditingRecrodStatus recordStatus;
 
 @end
 NS_ASSUME_NONNULL_END
@@ -55,14 +56,13 @@ NS_ASSUME_NONNULL_END
     switch ( btn.tag ) {
             // screenshot
         case SJVideoPlayerFilmEditingViewTag_Screenshot: {
-            _isRecording = NO;
+            _recordStatus = SJVideoPlayerFilmEditingRecrodStatus_Unknown;
             [self _showResultWithType:SJVideoPlayerFilmEditingResultViewType_Screenshot];
         }
             break;
             // export
         case SJVideoPlayerFilmEditingViewTag_Export: {
-            _isPausedRecord = NO;
-            _isRecording = YES;
+            _recordStatus = SJVideoPlayerFilmEditingRecrodStatus_Recording;
             if ( _startRecordingExeBlock ) _startRecordingExeBlock(self);
             self.recordView.tipsText = _recordTipsText;
             _recordView.waitingForRecordingTipsText = _waitingForRecordingTipsText;
@@ -84,24 +84,24 @@ NS_ASSUME_NONNULL_END
 }
 
 - (void)pauseRecording {
-    _isPausedRecord = YES;
+    _recordStatus = SJVideoPlayerFilmEditingRecrodStatus_Paused;
     [_recordView pause];
 }
 
 - (void)resumeRecording {
-    _isPausedRecord = NO;
+    _recordStatus = SJVideoPlayerFilmEditingRecrodStatus_Recording;
     [_recordView resume];
 }
 
 - (void)completeRecording {
-    _isPausedRecord = NO;
+    _recordStatus = SJVideoPlayerFilmEditingRecrodStatus_Finished;
     [_recordView stop];
     [self _showResultWithType:SJVideoPlayerFilmEditingResultViewType_Video];
 }
 
 - (void)_prepareToExport {
     if ( [self.resultShare.delegate respondsToSelector:@selector(prepareToExport)] ) {
-        [self.resultShare.delegate prepareToExport];
+        self.uploader = [self.resultShare.delegate prepareToExport];
     }
 }
 
@@ -115,6 +115,8 @@ NS_ASSUME_NONNULL_END
     _s_resultView.alpha = 0.001;
     _s_resultView.image = self.getVideoScreenshot(self);
     _s_resultView.items = self.resultShare.filmEditingResultShareItems;
+    _s_resultView.uploader = self.uploader;
+
     __weak typeof(self) _self = self;
     _s_resultView.clickedCancelBtnExeBlock = ^(SJVideoPlayerFilmEditingResultView * _Nonnull view) {
         __strong typeof(_self) self = _self;
@@ -144,7 +146,7 @@ NS_ASSUME_NONNULL_END
                     if ( self.recordCompleteExeBlock ) self.recordCompleteExeBlock(self, _recordView.currentTime);
                 }
                 if ( type == SJVideoPlayerFilmEditingResultViewType_Screenshot && [_resultShare.delegate respondsToSelector:@selector(successfulScreenshot:)] ) {
-                    self.uploader = [self.resultShare.delegate successfulScreenshot:_s_resultView.image];
+                    [self.resultShare.delegate successfulScreenshot:_s_resultView.image];
                 }
             }];
         }];
@@ -171,6 +173,7 @@ NS_ASSUME_NONNULL_END
 - (void)setExportFailed:(BOOL)exportFailed {
     [_recordView stop];
     _s_resultView.exportFailed = exportFailed;
+    self.uploader.failed = exportFailed;
 }
 
 - (BOOL)exportFailed {
@@ -180,7 +183,7 @@ NS_ASSUME_NONNULL_END
 - (void)setExportedVideoURL:(NSURL *)exportedVideoURL {
     _exportedVideoURL = exportedVideoURL;
     if ( [self.resultShare.delegate respondsToSelector:@selector(successfulExportedVideo:screenshot:)] ) {
-        self.uploader = [self.resultShare.delegate successfulExportedVideo:exportedVideoURL screenshot:self.s_resultView.image];
+        [self.resultShare.delegate successfulExportedVideo:exportedVideoURL screenshot:self.s_resultView.image];
     }
 }
 
@@ -199,11 +202,8 @@ NS_ASSUME_NONNULL_END
 }
 
 - (void)setUploader:(SJFilmEditingResultUploader *)uploader {
+    _uploader = uploader;
     _s_resultView.uploader = uploader;
-}
-
-- (SJFilmEditingResultUploader *)uploader {
-    return _s_resultView.uploader;
 }
 
 #pragma mark -

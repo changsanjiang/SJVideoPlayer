@@ -31,7 +31,7 @@
 }
 
 - (CGSize)intrinsicContentSize {
-    return CGSizeMake(ceil(SJScreen_Max() * 0.382), [[self class] itemHeight] * 3);
+    return CGSizeMake(ceil(SJScreen_Max() * 0.4), [[self class] itemHeight] * 3);
 }
 
 - (instancetype)initWithFrame:(CGRect)frame {
@@ -126,7 +126,7 @@
 
 - (SJButtonSlider *)slider {
     SJButtonSlider *slider = [SJButtonSlider new];
-    slider.spacing = 4;
+    slider.spacing = -6;
     return slider;
 }
 

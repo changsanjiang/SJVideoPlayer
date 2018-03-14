@@ -130,8 +130,6 @@ NS_ASSUME_NONNULL_END
     [self addSubview:self.draggingProgressView];
     [self addSubview:self.bottomSlider];
     [self addSubview:self.previewView];
-    [self addSubview:self.moreSettingsView];
-    [self addSubview:self.moreSecondarySettingView];
     [self addSubview:self.loadingView];
     [self addSubview:self.filmEditingControlView];
     
@@ -169,10 +167,6 @@ NS_ASSUME_NONNULL_END
     [_moreSettingsView mas_makeConstraints:^(MASConstraintMaker *make) {
         make.top.trailing.offset(0);
         make.size.mas_offset(_moreSettingsView.intrinsicContentSize);
-    }];
-    
-    [_moreSecondarySettingView mas_makeConstraints:^(MASConstraintMaker *make) {
-        make.edges.equalTo(_moreSettingsView);
     }];
     
     [_loadingView mas_makeConstraints:^(MASConstraintMaker *make) {
@@ -213,10 +207,10 @@ NS_ASSUME_NONNULL_END
     _previewView.disappearType = SJDisappearType_All;
     _previewView.disappearTransform = CGAffineTransformMakeScale(1, 0.001);
 
-    _moreSettingsView.disappearType = SJDisappearType_Transform;
+    self.moreSettingsView.disappearType = SJDisappearType_Transform;
     _moreSettingsView.disappearTransform = CGAffineTransformMakeTranslation(_moreSettingsView.intrinsicContentSize.width, 0);
 
-    _moreSecondarySettingView.disappearType = SJDisappearType_Transform;
+    self.moreSecondarySettingView.disappearType = SJDisappearType_Transform;
     _moreSecondarySettingView.disappearTransform = CGAffineTransformMakeTranslation(_moreSecondarySettingView.intrinsicContentSize.width, 0);
 
     _draggingProgressView.disappearType = SJDisappearType_Alpha;
@@ -315,9 +309,16 @@ NS_ASSUME_NONNULL_END
         }
             break;
         case SJVideoPlayerTopViewTag_More: {
+            if ( !_moreSettingsView.superview ) {
+                [self addSubview:_moreSettingsView];
+                [_moreSettingsView mas_makeConstraints:^(MASConstraintMaker *make) {
+                    make.top.trailing.offset(0);
+                    make.size.mas_offset(_moreSettingsView.intrinsicContentSize);
+                }];
+            }
             [_videoPlayer controlLayerNeedDisappear];
             UIView_Animations(CommonAnimaDuration, ^{
-                [self.moreSettingsView appear];
+                [_moreSettingsView appear];
             }, nil);
         }
             break;
@@ -610,6 +611,12 @@ NS_ASSUME_NONNULL_END
         setting._exeBlock = ^(SJVideoPlayerMoreSetting * _Nonnull setting) {
             __strong typeof(_self) self = _self;
             if ( !self ) return;
+            if ( !self.moreSecondarySettingView.superview ) {
+                [self addSubview:self.moreSecondarySettingView];
+                [self.moreSecondarySettingView mas_makeConstraints:^(MASConstraintMaker *make) {
+                    make.edges.equalTo(self.moreSettingsView);
+                }];
+            }
             UIView_Animations(CommonAnimaDuration, ^{
                 [self.moreSettingsView disappear];
                 [self.moreSecondarySettingView appear];

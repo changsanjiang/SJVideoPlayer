@@ -44,7 +44,7 @@ static NSString *const SJVideoPlayerMoreSettingsSecondaryHeaderViewID = @"SJVide
 }
 
 - (CGSize)intrinsicContentSize {
-    return CGSizeMake(ceil(SJScreen_Max() * 0.382), SJScreen_Min());
+    return CGSizeMake(ceil(SJScreen_Max() * 0.4), SJScreen_Min());
 }
 
 - (void)setTwoLevelSettings:(SJVideoPlayerMoreSetting *)twoLevelSettings {

@@ -39,7 +39,7 @@ static NSString *const SJVideoPlayerMoreSettingsFooterViewID = @"SJVideoPlayerMo
 }
 
 - (CGSize)intrinsicContentSize {
-    return CGSizeMake(ceil(SJScreen_Max() * 0.382), SJScreen_Min());
+    return CGSizeMake(ceil(SJScreen_Max() * 0.4), SJScreen_Min());
 }
 
 - (SJVideoPlayerMoreSettingsSlidersView *)slidersView {
@@ -104,7 +104,7 @@ static NSString *const SJVideoPlayerMoreSettingsFooterViewID = @"SJVideoPlayerMo
 
 - (CGSize)collectionView:(UICollectionView *)collectionView layout:(UICollectionViewLayout*)collectionViewLayout sizeForItemAtIndexPath:(NSIndexPath *)indexPath {
     CGFloat width = floor(self.intrinsicContentSize.width / 3);
-    return CGSizeMake( width, width );
+    return CGSizeMake( width, width);
 }
 
 - (CGFloat)collectionView:(UICollectionView *)collectionView layout:(UICollectionViewLayout*)collectionViewLayout minimumInteritemSpacingForSectionAtIndex:(NSInteger)section {

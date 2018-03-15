@@ -17,6 +17,7 @@
 #import <SJFullscreenPopGesture/UINavigationController+SJVideoPlayerAdd.h>
 #import "TableViewHeaderDemoViewController.h"
 #import "TableViewHeaderIsCollectionViewDemoViewController.h"
+#import "AboutKeyboardViewController.h"
 
 @interface ViewController ()
 
@@ -31,6 +32,10 @@
 
     // self.view.backgroundColor = [UIColor blackColor];
     // Do any additional setup after loading the view, typically from a nib.
+}
+
+- (IBAction)aboutKeyboard:(id)sender {
+    [self.navigationController pushViewController:[[AboutKeyboardViewController alloc] init] animated:YES];
 }
 
 - (IBAction)push:(id)sender {

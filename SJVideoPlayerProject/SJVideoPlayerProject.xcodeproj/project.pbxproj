@@ -43,6 +43,7 @@
 		777D30D71FD8E8240075E5FD /* SJVideoPlayer.podspec in Resources */ = {isa = PBXBuildFile; fileRef = 777D30D61FD8E8240075E5FD /* SJVideoPlayer.podspec */; };
 		778E24EC1FD97DF9008D0DD3 /* README.md in Resources */ = {isa = PBXBuildFile; fileRef = 778E24EB1FD97DF9008D0DD3 /* README.md */; };
 		7790AC7620594B3E00F8DF48 /* SJVideoPlayerMoreSettingsFooterView.m in Sources */ = {isa = PBXBuildFile; fileRef = 7790AC7420594B3E00F8DF48 /* SJVideoPlayerMoreSettingsFooterView.m */; };
+		7790AC7A205A58BF00F8DF48 /* AboutKeyboardViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 7790AC79205A58BF00F8DF48 /* AboutKeyboardViewController.m */; };
 		77A47E8F2008DEBE001EBE14 /* nested.gif in Resources */ = {isa = PBXBuildFile; fileRef = 77A47E8B2008DEBE001EBE14 /* nested.gif */; };
 		77DA95162042B8EC007A9EE8 /* SJVideoPlayerHelper.m in Sources */ = {isa = PBXBuildFile; fileRef = 77DA95142042B8EB007A9EE8 /* SJVideoPlayerHelper.m */; };
 		77DA951E2042C04B007A9EE8 /* TestPageViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 77DA95192042C04A007A9EE8 /* TestPageViewController.m */; };
@@ -144,6 +145,8 @@
 		778E24EB1FD97DF9008D0DD3 /* README.md */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = net.daringfireball.markdown; name = README.md; path = ../README.md; sourceTree = "<group>"; };
 		7790AC7420594B3E00F8DF48 /* SJVideoPlayerMoreSettingsFooterView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SJVideoPlayerMoreSettingsFooterView.m; sourceTree = "<group>"; };
 		7790AC7520594B3E00F8DF48 /* SJVideoPlayerMoreSettingsFooterView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SJVideoPlayerMoreSettingsFooterView.h; sourceTree = "<group>"; };
+		7790AC78205A58BF00F8DF48 /* AboutKeyboardViewController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = AboutKeyboardViewController.h; sourceTree = "<group>"; };
+		7790AC79205A58BF00F8DF48 /* AboutKeyboardViewController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = AboutKeyboardViewController.m; sourceTree = "<group>"; };
 		77A47E8B2008DEBE001EBE14 /* nested.gif */ = {isa = PBXFileReference; lastKnownFileType = image.gif; path = nested.gif; sourceTree = "<group>"; };
 		77DA95142042B8EB007A9EE8 /* SJVideoPlayerHelper.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SJVideoPlayerHelper.m; sourceTree = "<group>"; };
 		77DA95152042B8EC007A9EE8 /* SJVideoPlayerHelper.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SJVideoPlayerHelper.h; sourceTree = "<group>"; };
@@ -301,6 +304,7 @@
 				774B251C1FCEBA5D002113CC /* AppDelegate.m */,
 				774B251E1FCEBA5D002113CC /* ViewController.h */,
 				774B251F1FCEBA5D002113CC /* ViewController.m */,
+				7790AC77205A58B000F8DF48 /* AboutKeyboard */,
 				77E754332040054F00A5AF44 /* Demo */,
 				A6E6D2EE2028BE9B00CB9BAE /* SJVideoPlayer */,
 				778E24F21FD97EB6008D0DD3 /* Asset */,
@@ -477,6 +481,15 @@
 				774B252A1FCEBA5D002113CC /* main.m */,
 			);
 			name = Asset;
+			sourceTree = "<group>";
+		};
+		7790AC77205A58B000F8DF48 /* AboutKeyboard */ = {
+			isa = PBXGroup;
+			children = (
+				7790AC78205A58BF00F8DF48 /* AboutKeyboardViewController.h */,
+				7790AC79205A58BF00F8DF48 /* AboutKeyboardViewController.m */,
+			);
+			path = AboutKeyboard;
 			sourceTree = "<group>";
 		};
 		77C11C8520295C1900228199 /* DraggingProgress */ = {
@@ -795,6 +808,7 @@
 				A6441095200A3FBA006FD832 /* SJVideoListTableViewCell.m in Sources */,
 				A6E6D3682028BE9B00CB9BAE /* SJVideoPlayerMoreSettingsSecondaryHeaderView.m in Sources */,
 				A6E6D34F2028BE9B00CB9BAE /* SJVideoPlayerControlMaskView.m in Sources */,
+				7790AC7A205A58BF00F8DF48 /* AboutKeyboardViewController.m in Sources */,
 				775C0AC820295C660008EDA7 /* SJVideoPlayerSettings.m in Sources */,
 				775A7C291FD7EC7C00BE1EE2 /* PlayerTableViewCell.m in Sources */,
 				7737522A2052AE7D0000E4E7 /* SJVideoPlayerFilmEditingRecordView.m in Sources */,

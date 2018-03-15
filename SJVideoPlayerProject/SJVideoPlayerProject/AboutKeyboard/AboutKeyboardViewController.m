@@ -47,9 +47,9 @@
     [_videoPlayer.controlLayerDataSource.controlView addSubview:_textView];
     [_textView mas_makeConstraints:^(MASConstraintMaker *make) {
         make.center.offset(0);
-        make.size.offset(200);
+        make.width.offset(200);
+        make.height.offset(30);
     }];
-    
     
     __weak typeof(self) _self = self;
     _videoPlayer.willRotateScreen = ^(__kindof SJBaseVideoPlayer * _Nonnull player, BOOL isFullScreen) {
@@ -106,6 +106,5 @@
 - (UIInterfaceOrientation)preferredInterfaceOrientationForPresentation {
     return _orientation;
 }
-
 
 @end

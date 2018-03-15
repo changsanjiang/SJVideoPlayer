@@ -35,6 +35,22 @@
     return [objc_getAssociatedObject(self, _cmd) boolValue];
 }
 
+- (void)setAppearExeBlock:(void (^)(__kindof UIView * _Nonnull))appearExeBlock {
+    objc_setAssociatedObject(self, @selector(appearExeBlock), appearExeBlock, OBJC_ASSOCIATION_COPY_NONATOMIC);
+}
+
+- (void (^)(__kindof UIView * _Nonnull))appearExeBlock {
+    return objc_getAssociatedObject(self, _cmd);
+}
+
+- (void)setDisappearExeBlock:(void (^)(__kindof UIView * _Nonnull))disappearExeBlock {
+    objc_setAssociatedObject(self, @selector(disappearExeBlock), disappearExeBlock, OBJC_ASSOCIATION_COPY_NONATOMIC);
+}
+
+- (void (^)(__kindof UIView * _Nonnull))disappearExeBlock {
+    return objc_getAssociatedObject(self, _cmd);
+}
+
 - (void)appear {
     [self __changeState:YES];
 }
@@ -65,6 +81,14 @@
             self.alpha = 0.001;
         }
     }
+    
+    if ( show ) {
+        if ( self.appearExeBlock ) self.appearExeBlock(self);
+    }
+    else {
+        if ( self.disappearExeBlock ) self.disappearExeBlock(self);
+    }
+    
     self.appearState = show;
 }
 

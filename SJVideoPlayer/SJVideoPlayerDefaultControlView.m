@@ -28,6 +28,8 @@
 #import "UIView+SJControlAdd.h"
 #import "SJVideoPlayerRightControlView.h"
 #import "SJVideoPlayerFilmEditingControlView.h"
+#import "SJVideoPlayerControlMaskView.h"
+#import <SJUIFactory/SJUIFactory.h>
 
 #pragma mark -
 
@@ -45,12 +47,15 @@ inline static void UIView_Animations(NSTimeInterval duration, Block __nullable a
 @property (nonatomic, assign) BOOL hasBeenGeneratedPreviewImages;
 @property (nonatomic, strong, readonly) SJMoreSettingsSlidersViewModel *footerViewModel;
 
+@property (nonatomic, strong, readonly) UIView *containerView;
 @property (nonatomic, strong, readonly) SJVideoPlayerPreviewView *previewView;
 @property (nonatomic, strong, readonly) SJVideoPlayerDraggingProgressView *draggingProgressView;
 @property (nonatomic, strong, readonly) SJVideoPlayerTopControlView *topControlView;
+@property (nonatomic, strong, readonly) SJVideoPlayerControlMaskView *topControlMaskView;
 @property (nonatomic, strong, readonly) SJVideoPlayerLeftControlView *leftControlView;
 @property (nonatomic, strong, readonly) SJVideoPlayerCenterControlView *centerControlView;
 @property (nonatomic, strong, readonly) SJVideoPlayerBottomControlView *bottomControlView;
+@property (nonatomic, strong, readonly) SJVideoPlayerControlMaskView *bottomControlMaskView;
 @property (nonatomic, strong, readonly) SJVideoPlayerRightControlView *rightControlView;
 @property (nonatomic, strong, readonly) SJSlider *bottomSlider;
 @property (nonatomic, strong, readonly) SJVideoPlayerMoreSettingsView *moreSettingsView;
@@ -67,6 +72,7 @@ NS_ASSUME_NONNULL_END
 @implementation SJVideoPlayerDefaultControlView
 
 @synthesize previewView = _previewView;
+@synthesize containerView = _containerView;
 @synthesize draggingProgressView = _draggingProgressView;
 @synthesize topControlView = _topControlView;
 @synthesize leftControlView = _leftControlView;
@@ -79,6 +85,8 @@ NS_ASSUME_NONNULL_END
 @synthesize footerViewModel = _footerViewModel;
 @synthesize loadingView = _loadingView;
 @synthesize filmEditingControlView = _filmEditingControlView;
+@synthesize topControlMaskView = _topControlMaskView;
+@synthesize bottomControlMaskView = _bottomControlMaskView;
 
 - (instancetype)initWithFrame:(CGRect)frame {
     self = [super initWithFrame:frame];
@@ -123,18 +131,31 @@ NS_ASSUME_NONNULL_END
 #pragma mark - setup views
 - (void)_controlViewSetupView {
     
-    [self addSubview:self.topControlView];
-    [self addSubview:self.leftControlView];
-    [self addSubview:self.centerControlView];
-    [self addSubview:self.bottomControlView];
-    [self addSubview:self.draggingProgressView];
-    [self addSubview:self.bottomSlider];
-    [self addSubview:self.previewView];
-    [self addSubview:self.loadingView];
-    [self addSubview:self.filmEditingControlView];
+    [self addSubview:self.topControlMaskView];
+    [self addSubview:self.bottomControlMaskView];
+    [self addSubview:self.containerView];
+    
+    [self.containerView addSubview:self.topControlView];
+    [self.containerView addSubview:self.leftControlView];
+    [self.containerView addSubview:self.centerControlView];
+    [self.containerView addSubview:self.bottomControlView];
+    [self.containerView addSubview:self.draggingProgressView];
+    [self.containerView addSubview:self.bottomSlider];
+    [self.containerView addSubview:self.previewView];
+    [self.containerView addSubview:self.loadingView];
+    [self.containerView addSubview:self.filmEditingControlView];
+    
+    [_topControlMaskView mas_makeConstraints:^(MASConstraintMaker *make) {
+        make.top.leading.trailing.offset(0);
+        make.height.equalTo(_topControlView);
+    }];
     
     [_topControlView mas_makeConstraints:^(MASConstraintMaker *make) {
         make.top.leading.trailing.offset(0);
+    }];
+    
+    [_containerView mas_makeConstraints:^(MASConstraintMaker *make) {
+        make.edges.offset(0);
     }];
     
     [_leftControlView mas_makeConstraints:^(MASConstraintMaker *make) {
@@ -144,6 +165,11 @@ NS_ASSUME_NONNULL_END
     
     [_centerControlView mas_makeConstraints:^(MASConstraintMaker *make) {
         make.center.offset(0);
+    }];
+    
+    [_bottomControlMaskView mas_makeConstraints:^(MASConstraintMaker *make) {
+        make.leading.bottom.trailing.offset(0);
+        make.height.equalTo(_bottomControlView);
     }];
     
     [_bottomControlView mas_makeConstraints:^(MASConstraintMaker *make) {
@@ -188,16 +214,41 @@ NS_ASSUME_NONNULL_END
 
 - (void)_setControlViewsDisappearValue {
     
-    _topControlView.disappearType = SJDisappearType_Transform;
-    _topControlView.disappearTransform = CGAffineTransformMakeTranslation(0, -_topControlView.intrinsicContentSize.height);
+    __weak typeof(self) _self = self;
+    _topControlView.appearExeBlock = ^(__kindof UIView * _Nonnull view) {
+        __strong typeof(_self) self = _self;
+        if ( !self ) return;
+        [self.topControlMaskView appear];
+    };
+    
+    _topControlView.disappearExeBlock = ^(__kindof UIView * _Nonnull view) {
+        __strong typeof(_self) self = _self;
+        if ( !self ) return;
+        [self.topControlMaskView disappear];
+    };
+    
+    _bottomControlView.appearExeBlock = ^(__kindof UIView * _Nonnull view) {
+        __strong typeof(_self) self = _self;
+        if ( !self ) return;
+        [self.bottomControlMaskView appear];
+    };
+    
+    _bottomControlView.disappearExeBlock = ^(__kindof UIView * _Nonnull view) {
+        __strong typeof(_self) self = _self;
+        if ( !self ) return;
+        [self.bottomControlMaskView disappear];
+    };
+    
+    _topControlMaskView.disappearType = _topControlView.disappearType = SJDisappearType_Transform;
+    _topControlMaskView.disappearTransform = _topControlView.disappearTransform = CGAffineTransformMakeTranslation(0, -_topControlView.intrinsicContentSize.height);
 
     _leftControlView.disappearType = SJDisappearType_Transform;
     _leftControlView.disappearTransform = CGAffineTransformMakeTranslation(-_leftControlView.intrinsicContentSize.width, 0);
 
     _centerControlView.disappearType = SJDisappearType_Alpha;
 
-    _bottomControlView.disappearType = SJDisappearType_Transform;
-    _bottomControlView.disappearTransform = CGAffineTransformMakeTranslation(0, _bottomControlView.intrinsicContentSize.height);
+    _bottomControlMaskView.disappearType = _bottomControlView.disappearType = SJDisappearType_Transform;
+    _bottomControlMaskView.disappearTransform = _bottomControlView.disappearTransform = CGAffineTransformMakeTranslation(0, _bottomControlView.intrinsicContentSize.height);
 
     _rightControlView.disappearType = SJDisappearType_Transform;
     _rightControlView.disappearTransform = CGAffineTransformMakeTranslation(_rightControlView.intrinsicContentSize.width, 0);
@@ -219,7 +270,7 @@ NS_ASSUME_NONNULL_END
 - (void)setEnableFilmEditing:(BOOL)enableFilmEditing {
     _enableFilmEditing = enableFilmEditing;
     if ( enableFilmEditing ) {
-        [self insertSubview:self.rightControlView aboveSubview:self.bottomControlView];
+        [self.containerView insertSubview:self.rightControlView aboveSubview:self.bottomControlView];
         [_rightControlView mas_makeConstraints:^(MASConstraintMaker *make) {
             make.trailing.offset(0);
             make.centerY.offset(0);
@@ -250,6 +301,13 @@ NS_ASSUME_NONNULL_END
     else {
         if ( completion ) completion(self);
     }
+}
+
+- (UIView *)containerView {
+    if ( _containerView ) return _containerView;
+    _containerView = [UIView new];
+    _containerView.clipsToBounds = YES;
+    return _containerView;
 }
 
 #pragma mark - 预览视图
@@ -283,6 +341,12 @@ NS_ASSUME_NONNULL_END
     _topControlView = [SJVideoPlayerTopControlView new];
     _topControlView.delegate = self;
     return _topControlView;
+}
+
+- (SJVideoPlayerControlMaskView *)topControlMaskView {
+    if ( _topControlMaskView ) return _topControlMaskView;
+    _topControlMaskView = [[SJVideoPlayerControlMaskView alloc] initWithStyle:SJMaskStyle_top];
+    return _topControlMaskView;
 }
 
 - (BOOL)hasBeenGeneratedPreviewImages {
@@ -385,6 +449,12 @@ NS_ASSUME_NONNULL_END
     _bottomControlView = [SJVideoPlayerBottomControlView new];
     _bottomControlView.delegate = self;
     return _bottomControlView;
+}
+
+- (SJVideoPlayerControlMaskView *)bottomControlMaskView {
+    if ( _bottomControlMaskView ) return _bottomControlMaskView;
+    _bottomControlMaskView = [[SJVideoPlayerControlMaskView alloc] initWithStyle:SJMaskStyle_bottom];
+    return _bottomControlMaskView;
 }
 
 - (void)bottomView:(SJVideoPlayerBottomControlView *)view clickedBtnTag:(SJVideoPlayerBottomViewTag)tag {
@@ -929,6 +999,24 @@ NS_ASSUME_NONNULL_END
 
 /// 播放器完成旋转.
 - (void)videoPlayer:(SJVideoPlayer *)videoPlayer didEndRotation:(BOOL)isFull {
+    if ( isFull ) {
+        // `iPhone_X` remake constraints.
+        if ( SJ_is_iPhoneX() ) {
+            [self.containerView mas_remakeConstraints:^(MASConstraintMaker *make) {
+                make.center.offset(0);
+                make.height.equalTo(self.containerView.superview);
+                make.width.equalTo(self.containerView.mas_height).multipliedBy(16 / 9.0f);
+            }];
+        }
+    }
+    else {
+        // `iPhone_X` remake constraints.
+        if ( SJ_is_iPhoneX() ) {
+            [self.containerView mas_remakeConstraints:^(MASConstraintMaker *make) {
+                make.edges.offset(0);
+            }];
+        }
+    }
     UIView_Animations(CommonAnimaDuration, ^{
         [self.bottomSlider appear];
     }, nil);

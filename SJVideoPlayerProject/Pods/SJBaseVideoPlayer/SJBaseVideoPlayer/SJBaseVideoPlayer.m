@@ -303,9 +303,8 @@ NS_ASSUME_NONNULL_END
 
 - (void)setControlLayerDataSource:(id<SJVideoPlayerControlLayerDataSource>)controlLayerDataSource {
     if ( controlLayerDataSource == _controlLayerDataSource ) return;
-    if ( _controlContentView ) {
-        [_controlLayerDataSource.controlView removeFromSuperview];
-    }
+
+    [_controlLayerDataSource.controlView removeFromSuperview];
     
     _controlLayerDataSource = controlLayerDataSource;
     
@@ -475,25 +474,6 @@ NS_ASSUME_NONNULL_END
     _orentationObserver.orientationChanged = ^(SJOrentationObserver * _Nonnull observer, BOOL isFullScreen) {
         __strong typeof(_self) self = _self;
         if ( !self ) return;
-        if ( isFullScreen ) {
-            // `iPhone_X` remake constraints.
-            if ( SJ_is_iPhoneX() ) {
-                [self.controlLayerDataSource.controlView mas_remakeConstraints:^(MASConstraintMaker *make) {
-                    make.center.offset(0);
-                    make.height.equalTo(self.controlLayerDataSource.controlView.superview);
-                    make.width.equalTo(self.controlLayerDataSource.controlView.mas_height).multipliedBy(16 / 9.0f);
-                }];
-            }
-        }
-        else {
-            // `iPhone_X` remake constraints.
-            if ( SJ_is_iPhoneX() ) {
-                [self.controlLayerDataSource.controlView mas_remakeConstraints:^(MASConstraintMaker *make) {
-                    make.edges.offset(0);
-                }];
-            }
-        }
-        
         if ( [self.controlLayerDelegate respondsToSelector:@selector(videoPlayer:didEndRotation:)] ) {
             [self.controlLayerDelegate videoPlayer:self didEndRotation:isFullScreen];
         }

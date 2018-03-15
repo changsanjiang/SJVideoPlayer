@@ -22,12 +22,10 @@
 @property (nonatomic, strong, readonly) UILabel *durationTimeLabel;
 @property (nonatomic, strong, readonly) SJSlider *progressSlider;
 @property (nonatomic, strong, readonly) UIButton *fullBtn;
-@property (nonatomic, strong, readonly) SJVideoPlayerControlMaskView *controlMaskView;
 
 @end
 
 @implementation SJVideoPlayerBottomControlView
-@synthesize controlMaskView = _controlMaskView;
 @synthesize separateLabel = _separateLabel;
 @synthesize durationTimeLabel = _durationTimeLabel;
 @synthesize playBtn = _playBtn;
@@ -107,7 +105,6 @@
 #pragma mark -
 
 - (void)_bottomSetupView {
-    [self addSubview:self.controlMaskView];
     [self addSubview:self.playBtn];
     [self addSubview:self.pauseBtn];
     [self addSubview:self.currentTimeLabel];
@@ -115,10 +112,6 @@
     [self addSubview:self.durationTimeLabel];
     [self addSubview:self.progressSlider];
     [self addSubview:self.fullBtn];
-    
-    [_controlMaskView mas_makeConstraints:^(MASConstraintMaker *make) {
-        make.edges.equalTo(_controlMaskView.superview);
-    }];
     
     [_playBtn mas_makeConstraints:^(MASConstraintMaker *make) {
         make.top.leading.offset(0);
@@ -223,12 +216,6 @@
     if ( _currentTimeLabel ) return _currentTimeLabel;
     _currentTimeLabel = [SJUILabelFactory labelWithText:@"00:00" textColor:[UIColor whiteColor] alignment:NSTextAlignmentRight font:[UIFont systemFontOfSize:self.separateLabel.font.pointSize + 1]];
     return _currentTimeLabel;
-}
-
-- (SJVideoPlayerControlMaskView *)controlMaskView {
-    if ( _controlMaskView ) return _controlMaskView;
-    _controlMaskView = [[SJVideoPlayerControlMaskView alloc] initWithStyle:SJMaskStyle_bottom];
-    return _controlMaskView;
 }
 
 #pragma mark -

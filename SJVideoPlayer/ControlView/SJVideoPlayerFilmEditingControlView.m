@@ -106,6 +106,8 @@ NS_ASSUME_NONNULL_END
 }
 
 - (void)_showResultWithType:(SJVideoPlayerFilmEditingResultViewType)type{
+    [_recordView removeFromSuperview];
+    
     _s_resultView = [[SJVideoPlayerFilmEditingResultView alloc] initWithType:type];
     _s_resultView.frame = self.bounds;
     _s_resultView.cancelBtnTitle = _cancelBtnTitle;
@@ -213,20 +215,20 @@ NS_ASSUME_NONNULL_END
     [self addGestureRecognizer:self.tapGR]; // gesture
     
     [_screenshotBtn mas_makeConstraints:^(MASConstraintMaker *make) {
-        make.trailing.offset(0);
+        make.trailing.offset(SJ_is_iPhoneX() ? -34 : 0);
         make.size.offset(49);
         make.bottom.equalTo(self.mas_centerY);
     }];
     
     [_exportBtn mas_makeConstraints:^(MASConstraintMaker *make) {
-        make.trailing.offset(0);
+        make.trailing.equalTo(_screenshotBtn);
         make.size.equalTo(_screenshotBtn);
         make.top.equalTo(self.mas_centerY);
     }];
     
-    _screenshotBtn.disappearType = SJDisappearType_Transform;
+    _screenshotBtn.disappearType = SJDisappearType_All;
     _screenshotBtn.disappearTransform = CGAffineTransformMakeTranslation(49, 0);
-    _exportBtn.disappearType = SJDisappearType_Transform;
+    _exportBtn.disappearType = SJDisappearType_All;
     _exportBtn.disappearTransform = CGAffineTransformMakeTranslation(49, 0);
     _s_resultView.disappearType = SJDisappearType_Alpha;
     

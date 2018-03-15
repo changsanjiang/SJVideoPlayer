@@ -23,6 +23,10 @@ NS_ASSUME_NONNULL_BEGIN
 
 @property (nonatomic, assign) BOOL appearState; // appear is `YES`, disappear is `NO`.
 
+@property (nonatomic, copy, nullable) void(^appearExeBlock)(__kindof UIView *view);
+
+@property (nonatomic, copy, nullable) void(^disappearExeBlock)(__kindof UIView *view);
+
 - (void)appear; // Animatable. 可动画的.
 
 - (void)disappear;  // Animatable. 可动画的.

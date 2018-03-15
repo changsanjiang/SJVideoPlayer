@@ -9,13 +9,11 @@
 #import "SJVideoPlayerTopControlView.h"
 #import <SJUIFactory/SJUIFactory.h>
 #import <Masonry/Masonry.h>
-#import "SJVideoPlayerControlMaskView.h"
 #import "UIView+SJVideoPlayerSetting.h"
 #import <SJAttributesFactory/SJAttributeWorker.h>
 
 @interface SJVideoPlayerTopControlView ()
 
-@property (nonatomic, strong, readonly) SJVideoPlayerControlMaskView *controlMaskView;
 @property (nonatomic, strong, readonly) UIButton *backBtn;
 @property (nonatomic, strong, readonly) UIButton *previewBtn;
 @property (nonatomic, strong, readonly) UIButton *moreBtn;
@@ -25,7 +23,6 @@
 @end
 
 @implementation SJVideoPlayerTopControlView
-@synthesize controlMaskView = _controlMaskView;
 @synthesize backBtn = _backBtn;
 @synthesize previewBtn = _previewBtn;
 @synthesize moreBtn = _moreBtn;
@@ -134,15 +131,11 @@
 }
 
 - (void)_topSetupViews {
-    [self addSubview:self.controlMaskView];
+
     [self addSubview:self.backBtn];
     [self addSubview:self.previewBtn];
     [self addSubview:self.moreBtn];
     [self addSubview:self.titleLabel];
-    
-    [_controlMaskView mas_makeConstraints:^(MASConstraintMaker *make) {
-        make.edges.equalTo(_controlMaskView.superview);
-    }];
     
     [_backBtn mas_makeConstraints:^(MASConstraintMaker *make) {
         make.size.offset(49);
@@ -194,12 +187,6 @@
     if ( _titleLabel ) return _titleLabel;
     _titleLabel = [UILabel new];
     return _titleLabel;
-}
-
-- (SJVideoPlayerControlMaskView *)controlMaskView {
-    if ( _controlMaskView ) return _controlMaskView;
-    _controlMaskView = [[SJVideoPlayerControlMaskView alloc] initWithStyle:SJMaskStyle_top];
-    return _controlMaskView;
 }
 
 #pragma mark -

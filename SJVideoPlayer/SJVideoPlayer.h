@@ -5,7 +5,12 @@
 //  Created by BlueDancer on 2018/2/2.
 //  Copyright © 2018年 SanJiang. All rights reserved.
 //
+//  The base player, without the control layer, can be used if you need a custom control layer.
+//  https://github.com/changsanjiang/SJBaseVideoPlayer
+//
+//  Player with default control layer.
 //  https://github.com/changsanjiang/SJVideoPlayer
+//
 //  changsanjiang@gmail.com
 //
 

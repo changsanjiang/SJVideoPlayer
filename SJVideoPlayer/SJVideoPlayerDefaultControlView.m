@@ -409,17 +409,17 @@ NS_ASSUME_NONNULL_END
     UIView_Animations(CommonAnimaDuration, ^{
         [self.draggingProgressView appear];
     }, nil);
-    
-    [self.draggingProgressView setCurrentTimeStr:self.videoPlayer.currentTimeStr totalTimeStr:self.videoPlayer.totalTimeStr];
+    [self.draggingProgressView setTimeShiftStr:self.videoPlayer.currentTimeStr totalTimeStr:self.videoPlayer.totalTimeStr];
     [_videoPlayer controlLayerNeedDisappear];
-    self.draggingProgressView.progress = self.videoPlayer.progress;
+    self.draggingProgressView.playProgress = self.videoPlayer.progress;
+    self.draggingProgressView.shiftProgress = self.videoPlayer.progress;
 }
 
 - (void)bottomView:(SJVideoPlayerBottomControlView *)view sliderDidDrag:(CGFloat)progress {
-    self.draggingProgressView.progress = progress;
-    [self.draggingProgressView setCurrentTimeStr:[self.videoPlayer timeStringWithSeconds:self.draggingProgressView.progress * self.videoPlayer.totalTime]];
+    self.draggingProgressView.shiftProgress = progress;
+    [self.draggingProgressView setTimeShiftStr:[self.videoPlayer timeStringWithSeconds:self.draggingProgressView.shiftProgress * self.videoPlayer.totalTime]];
     if ( self.videoPlayer.isFullScreen && !self.videoPlayer.URLAsset.isM3u8 ) {
-        NSTimeInterval secs = self.draggingProgressView.progress * self.videoPlayer.totalTime;
+        NSTimeInterval secs = self.draggingProgressView.shiftProgress * self.videoPlayer.totalTime;
         __weak typeof(self) _self = self;
         [self.videoPlayer screenshotWithTime:secs size:CGSizeMake(self.draggingProgressView.frame.size.width * 2, self.draggingProgressView.frame.size.height * 2) completion:^(SJVideoPlayer * _Nonnull videoPlayer, UIImage * _Nullable image, NSError * _Nullable error) {
             __strong typeof(_self) self = _self;
@@ -435,7 +435,7 @@ NS_ASSUME_NONNULL_END
     }, nil);
 
     __weak typeof(self) _self = self;
-    [self.videoPlayer jumpedToTime:self.draggingProgressView.progress * self.videoPlayer.totalTime completionHandler:^(BOOL finished) {
+    [self.videoPlayer jumpedToTime:self.draggingProgressView.shiftProgress * self.videoPlayer.totalTime completionHandler:^(BOOL finished) {
         __strong typeof(_self) self = _self;
         if ( !self ) return;
         [self.videoPlayer play];
@@ -802,6 +802,7 @@ NS_ASSUME_NONNULL_END
     [self.bottomControlView setCurrentTimeStr:currentTimeStr totalTimeStr:totalTimeStr];
     self.bottomControlView.progress = currentTime / totalTime;
     self.bottomSlider.value = self.bottomControlView.progress;
+    if ( self.draggingProgressView.appearState ) self.draggingProgressView.playProgress = videoPlayer.progress;
 }
 
 /// 缓冲的进度.

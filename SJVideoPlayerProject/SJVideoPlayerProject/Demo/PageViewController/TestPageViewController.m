@@ -54,6 +54,16 @@ static NSInteger const vcCount = 9;
     // Do any additional setup after loading the view.
 }
 
+- (BOOL)prefersStatusBarHidden {
+    return self.pageViewController.viewControllers.firstObject.prefersStatusBarHidden;
+}
+
+- (UIStatusBarStyle)preferredStatusBarStyle {
+    return self.pageViewController.viewControllers.firstObject.preferredStatusBarStyle;
+}
+
+#pragma mark -
+
 - (SJScrollEntriesView *)titlesView {
     if ( _titlesView ) return _titlesView;
     SJScrollEntriesViewSettings *settins = [SJScrollEntriesViewSettings defaultSettings];
@@ -75,15 +85,6 @@ static NSInteger const vcCount = 9;
 }
 
 #pragma mark -
-
-- (BOOL)prefersStatusBarHidden {
-    return self.pageViewController.viewControllers.firstObject.prefersStatusBarHidden;
-}
-
-- (UIStatusBarStyle)preferredStatusBarStyle {
-    return self.pageViewController.viewControllers.firstObject.preferredStatusBarStyle;
-}
-
 - (UIPageViewController *)pageViewController {
     if ( _pageViewController ) return _pageViewController;
     _pageViewController = [[UIPageViewController alloc] initWithTransitionStyle:UIPageViewControllerTransitionStyleScroll navigationOrientation:UIPageViewControllerNavigationOrientationHorizontal options:@{UIPageViewControllerOptionInterPageSpacingKey:@(2)}];

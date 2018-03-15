@@ -162,7 +162,6 @@ NS_ASSUME_NONNULL_END
     };
     
     asset.playerItemStateChanged(asset, asset.playerItem.status);
-    
     asset.playTimeChanged = ^(SJVideoPlayerAssetCarrier * _Nonnull asset, NSTimeInterval currentTime, NSTimeInterval duration) {
         __strong typeof(_self) self = _self;
         if ( !self ) return;
@@ -184,6 +183,8 @@ NS_ASSUME_NONNULL_END
             [self.controlLayerDelegate videoPlayer:self loadedTimeProgress:progress];
         }
     };
+    
+    asset.loadedTimeProgress(asset.loadedTimeProgressValue);
     
     asset.startBuffering = ^(SJVideoPlayerAssetCarrier * _Nonnull asset) {
         __strong typeof(_self) self = _self;

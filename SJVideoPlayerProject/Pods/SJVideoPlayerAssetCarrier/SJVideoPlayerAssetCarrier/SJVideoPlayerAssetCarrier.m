@@ -335,6 +335,7 @@ NS_ASSUME_NONNULL_END
         else if ( [keyPath isEqualToString:@"loadedTimeRanges"] ) {
             if ( 0 == self.duration ) return;
             float progress = [self _loadedTimeSecs] / self.duration;
+            _loadedTimeProgressValue = progress;
             if ( self.loadedTimeProgress ) self.loadedTimeProgress(progress);
         }
         else if ( [keyPath isEqualToString:@"status"] ) {

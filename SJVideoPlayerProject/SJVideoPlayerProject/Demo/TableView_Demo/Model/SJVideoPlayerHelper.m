@@ -70,7 +70,9 @@ NS_ASSUME_NONNULL_END
     _videoPlayer = [SJVideoPlayer player];
     
     [playerParentView addSubview:_videoPlayer.view];
-    _videoPlayer.view.frame = playerParentView.bounds;
+    [_videoPlayer.view mas_makeConstraints:^(MASConstraintMaker *make) {
+        make.edges.offset(0);
+    }];
     
     // fade in
     _videoPlayer.view.alpha = 0.001;
@@ -114,6 +116,10 @@ NS_ASSUME_NONNULL_END
     // show right control view.
     _videoPlayer.enableFilmEditing = YES;
     _videoPlayer.filmEditingResultShare = self.resultShare;
+}
+
+- (void)clearAsset {
+    _videoPlayer.URLAsset = nil;
 }
 
 - (SJFilmEditingResultShare *)resultShare {
@@ -289,27 +295,29 @@ NS_ASSUME_NONNULL_END
     return self.videoPlayer.URLAsset;
 }
 
-- (void (^)(void))vc_viewWillAppearExeBlock {
-    __weak typeof(self) _self = self;
-    return ^ () {
-        __strong typeof(_self) self = _self;
-        if ( !self ) return;
-        self.videoPlayer.disableRotation = NO;    // 界面显示的时候, 恢复旋转.
-    };
-}
-
 - (void (^)(void))vc_viewDidAppearExeBlock {
     __weak typeof(self) _self = self;
     return ^ () {
         __strong typeof(_self) self = _self;
         if ( !self ) return;
-        // fade in
-        [UIView animateWithDuration:0.6 animations:^{
-            self.videoPlayer.view.alpha = 1;
-        }];
-        if ( self.asset.converted ) [self.asset convertToOriginal];     // 如果资源被转化成其他类型, 恢复原样
-        if ( self.videoPlayer.isScrollAppeared ) [self.videoPlayer play];
-    };}
+        
+        self.videoPlayer.disableRotation = NO;
+        
+        if ( [self.viewController respondsToSelector:@selector(convertedAsset)] ) {
+            if ( ![self.viewController convertedAsset] ) [self.asset convertToOriginal];
+        }
+        else {
+            [self.asset convertToOriginal];
+        }
+        
+        if ( self.videoPlayer.isPlayOnScrollView ) {
+            if ( self.videoPlayer.isScrollAppeared ) [self.videoPlayer play];
+        }
+        else {
+            [self.videoPlayer play];
+        }
+    };
+}
 
 - (void (^)(void))vc_viewWillDisappearExeBlock {
     __weak typeof(self) _self = self;
@@ -317,6 +325,9 @@ NS_ASSUME_NONNULL_END
         __strong typeof(_self) self = _self;
         if ( !self ) return;
         self.videoPlayer.disableRotation = YES;   // 界面将要消失的时候, 禁止旋转.
+        if ( [self.viewController respondsToSelector:@selector(convertedAsset)] ) {
+            if ( [self.viewController convertedAsset] ) [self clearAsset];
+        }
     };
 }
 
@@ -325,8 +336,7 @@ NS_ASSUME_NONNULL_END
     return ^ () {
         __strong typeof(_self) self = _self;
         if ( !self ) return;
-        [self.videoPlayer pause];                 // 界面消失的时候, 暂停
-        self.videoPlayer.view.alpha = 0.001;      // hidden
+        if ( !self.asset.converted ) [self.videoPlayer pause];
     };
 }
 

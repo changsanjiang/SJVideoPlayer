@@ -22,9 +22,9 @@ NS_ASSUME_NONNULL_BEGIN
 /// play an asset.
 - (void)playWithAsset:(SJVideoPlayerURLAsset *)asset playerParentView:(UIView *)playerParentView;
 
-@property (nonatomic, strong, readonly, nullable) SJVideoPlayerURLAsset *asset;
+- (void)clearAsset;
 
-@property (nonatomic, copy, readonly) void(^vc_viewWillAppearExeBlock)(void);
+@property (nonatomic, strong, readonly, nullable) SJVideoPlayerURLAsset *asset;
 
 @property (nonatomic, copy, readonly) void(^vc_viewDidAppearExeBlock)(void);
 
@@ -42,8 +42,6 @@ NS_ASSUME_NONNULL_BEGIN
 
 @required
 
-- (void)viewWillAppear:(BOOL)animated;
-
 - (void)viewWillDisappear:(BOOL)animated;
 
 - (void)viewDidAppear:(BOOL)animated;
@@ -54,40 +52,9 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (UIStatusBarStyle)preferredStatusBarStyle;
 
+@optional
+- (BOOL)convertedAsset;
+
 @end
 
 NS_ASSUME_NONNULL_END
-
-/*
-@property (nonatomic, strong, readonly) SJVideoPlayerHelper *videoPlayerHelper;
- 
-@synthesize videoPlayerHelper = _videoPlayerHelper;
-- (SJVideoPlayerHelper *)videoPlayerHelper {
-    if ( _videoPlayerHelper ) return _videoPlayerHelper;
-    _videoPlayerHelper = [[SJVideoPlayerHelper alloc] initWithViewController:self];
-    return _videoPlayerHelper;
-}
-
-- (void)viewWillAppear:(BOOL)animated {
-    [super viewWillAppear:animated];
-    self.videoPlayerHelper.vc_viewWillAppearExeBlock();
-}
-
-- (void)viewWillDisappear:(BOOL)animated {
-    [super viewWillDisappear:animated];
-    self.videoPlayerHelper.vc_viewWillDisappearExeBlock();
-}
-
-- (void)viewDidDisappear:(BOOL)animated {
-    [super viewDidDisappear:animated];
-    self.videoPlayerHelper.vc_viewDidDisappearExeBlock();
-}
-
-- (BOOL)prefersStatusBarHidden {
-    return self.videoPlayerHelper.vc_prefersStatusBarHiddenExeBlock();
-}
-
-- (UIStatusBarStyle)preferredStatusBarStyle {
-    return self.videoPlayerHelper.vc_preferredStatusBarStyleExeBlock();
-}
-*/

@@ -22,6 +22,7 @@
 @property (nonatomic, strong, readonly) SJVideoPlayerHelper *videoPlayerHelper;
 @property (nonatomic, strong) SJVideoModel *video;
 @property (nonatomic, strong) SJVideoPlayerURLAsset *asset;
+@property (nonatomic, assign) BOOL convertedAsset;
 
 @end
 
@@ -33,33 +34,28 @@
     self = [super init];
     if ( !self ) return nil;
     _video = video;
-    _asset = asset;
+    if ( asset ) {
+        _asset = asset;
+        [_asset convertToUIView];   // 将资源转化为在UIView上播放.
+        _convertedAsset = YES;
+    }
+    else {
+        asset = [[SJVideoPlayerURLAsset alloc] initWithAssetURL:[NSURL URLWithString:self.video.playURLStr]];
+        asset.title = self.video.title;
+        asset.alwaysShowTitle = YES;
+        _asset = asset;
+    }
     return self;
 }
 
 - (void)viewDidLoad {
     [super viewDidLoad];
+    
     [self _demoVCSetupViews];
     
-    if ( !self.asset ) {
-        // create new asset
-        SJVideoPlayerURLAsset *asset = [[SJVideoPlayerURLAsset alloc] initWithAssetURL:[NSURL URLWithString:@"http://rec.app.lanwuzhe.com/recordings/z1.lanwuzhe.80291520464538364/1520467590_1520553990.m3u8"]];
-        asset.title = self.video.title;
-        asset.alwaysShowTitle = YES;
-        self.asset = asset;
-    }
-    else {
-        [self.asset convertToUIView];   // 将资源转化为在UIView上播放.
-    }
-    
-    
-    NSLog(@"%@", NSHomeDirectory());
+    [self.videoPlayerHelper playWithAsset:_asset playerParentView:self.playerSuperView];
     
     // Do any additional setup after loading the view.
-}
-
-- (void)export {
-    
 }
 
 #pragma mark -
@@ -71,15 +67,18 @@
     return _videoPlayerHelper;
 }
 
+- (BOOL)convertedAsset {
+    return _convertedAsset;
+}
+
 - (void)viewWillAppear:(BOOL)animated {
     [super viewWillAppear:animated];
     [self.navigationController setNavigationBarHidden:YES animated:YES];
-    self.videoPlayerHelper.vc_viewWillAppearExeBlock();
 }
 
 - (void)viewDidAppear:(BOOL)animated {
     [super viewDidAppear:animated];
-    [self.videoPlayerHelper playWithAsset:self.asset playerParentView:self.playerSuperView];
+    self.videoPlayerHelper.vc_viewDidAppearExeBlock();
 }
 
 - (void)viewWillDisappear:(BOOL)animated {
@@ -117,5 +116,4 @@
     _playerSuperView = [SJUIViewFactory viewWithBackgroundColor:[UIColor blackColor]];
     return _playerSuperView;
 }
-
 @end

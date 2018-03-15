@@ -18,8 +18,8 @@
 @property (nonatomic, strong, readonly) UIImageView *directionImageView;
 @property (nonatomic, strong, readonly) UIImageView *previewImageView;
 
-@property (nonatomic, strong, readonly) UILabel *currentTimeLabel;
-@property (nonatomic, strong, readonly) UILabel *spritTimeLabel;
+@property (nonatomic, strong, readonly) UILabel *shiftTimeLabel;
+@property (nonatomic, strong, readonly) UILabel *spritTimeLabel;    // `/`
 @property (nonatomic, strong, readonly) UILabel *durationTimeLabel;
 
 @property (nonatomic, strong) UIImage *fastImage;
@@ -33,7 +33,7 @@
 @synthesize previewImageView = _previewImageView;
 @synthesize progressSlider = _progressSlider;
 
-@synthesize currentTimeLabel = _currentTimeLabel;
+@synthesize shiftTimeLabel = _shiftTimeLabel;
 @synthesize spritTimeLabel = _spritTimeLabel;
 @synthesize durationTimeLabel = _durationTimeLabel;
 
@@ -92,7 +92,7 @@
             break;
         case SJVideoPlayerDraggingProgressViewStylePreviewProgress: {
             _previewImageView.hidden = NO;
-            _progressSlider.trackHeight = 1;
+            _progressSlider.trackHeight = 2;
             [_directionImageView mas_remakeConstraints:^(MASConstraintMaker *make) {
                 make.width.offset(10.0 / 375 * SJScreen_W());
                 make.centerY.equalTo(_spritTimeLabel);
@@ -112,8 +112,8 @@
             }];
             
             [_progressSlider mas_remakeConstraints:^(MASConstraintMaker *make) {
-                make.width.equalTo(_durationTimeLabel).multipliedBy(1.2);
-                make.top.equalTo(_currentTimeLabel.mas_bottom).offset(4);
+                make.width.equalTo(_durationTimeLabel).multipliedBy(2);
+                make.top.equalTo(_shiftTimeLabel.mas_bottom).offset(4);
                 make.centerX.equalTo(_spritTimeLabel);
                 make.height.offset(3);
             }];
@@ -124,52 +124,44 @@
     [self invalidateIntrinsicContentSize];
 }
 
-- (void)setProgress:(float)progress {
-    if ( progress > 1 ) progress = 1;
-    else if ( progress < 0 ) progress = 0;
-    else if ( isnan(progress) ) return;
+- (void)setShiftProgress:(float)shiftProgress {
+    if      ( shiftProgress > 1 ) shiftProgress = 1;
+    else if ( shiftProgress < 0 ) shiftProgress = 0;
+    else if ( isnan(shiftProgress) ) return;
     
-    float beforeProgress = _progress;
+    float beforeShiftProgress = _shiftProgress;
     
-    _progress = progress;
+    _shiftProgress = shiftProgress;
     
-    if ( beforeProgress > _progress ) {
-        self.directionImageView.image = self.forwardImage;
+    if ( beforeShiftProgress > _shiftProgress ) {
+        _directionImageView.image = _forwardImage;
     }
-    else if ( beforeProgress < _progress ) {
-        self.directionImageView.image = self.fastImage;
+    else if ( beforeShiftProgress < _shiftProgress ) {
+        _directionImageView.image = _fastImage;
     }
     
-    _progressSlider.value = progress;
-    
-//    switch ( _style ) {
-//        case SJVideoPlayerDraggingProgressViewStyleArrowProgress: break;
-//        case SJVideoPlayerDraggingProgressViewStylePreviewProgress: {
-//            __weak typeof(self) _self = self;
-//            [_asset screenshotWithTime:secs size:CGSizeMake(self.previewImageView.bounds.size.width * 2, self.previewImageView.bounds.size.height * 2) completion:^(SJVideoPlayerAssetCarrier * _Nonnull asset, SJVideoPreviewModel * _Nullable images, NSError * _Nullable error) {
-//                if ( error ) return;
-//                dispatch_async(dispatch_get_main_queue(), ^{
-//                    __strong typeof(_self) self = _self;
-//                    if ( !self ) return ;
-//                    self.previewImageView.image = images.image;
-//                });
-//            }];
-//        }
-//            break;
-//    }
+    _progressSlider.value = shiftProgress;
 }
 
-- (void)setCurrentTimeStr:(NSString *)currentTimeStr {
-    self.currentTimeLabel.text = currentTimeStr;
+- (void)setPlayProgress:(float)playProgress {
+    _progressSlider.bufferProgress = playProgress;
 }
 
-- (void)setCurrentTimeStr:(NSString *)currentTimeStr totalTimeStr:(NSString *)totalTimeStr {
-    self.currentTimeLabel.text = currentTimeStr;
-    self.durationTimeLabel.text = totalTimeStr;
+- (float)playProgress {
+    return _progressSlider.bufferProgress;
+}
+
+- (void)setTimeShiftStr:(NSString *)shiftTimeStr {
+    _shiftTimeLabel.text = shiftTimeStr;
+}
+
+- (void)setTimeShiftStr:(NSString *)shiftTimeStr totalTimeStr:(NSString *)totalTimeStr {
+    _shiftTimeLabel.text = shiftTimeStr;
+    _durationTimeLabel.text = totalTimeStr;
 }
 
 - (void)setPreviewImage:(UIImage *)image {
-    self.previewImageView.image = image;
+    _previewImageView.image = image;
 }
 #pragma mark -
 
@@ -177,7 +169,7 @@
     
     [self addSubview:self.progressSlider];
     [self addSubview:self.directionImageView];
-    [self addSubview:self.currentTimeLabel];
+    [self addSubview:self.shiftTimeLabel];
     [self addSubview:self.spritTimeLabel];
     [self addSubview:self.durationTimeLabel];
     [self addSubview:self.previewImageView];
@@ -185,8 +177,8 @@
     [SJUIFactory regulate:self cornerRadius:8];
     self.backgroundColor = [UIColor colorWithWhite:0 alpha:0.8];
     self.style = SJVideoPlayerDraggingProgressViewStyleArrowProgress;
-    
-    [_currentTimeLabel mas_makeConstraints:^(MASConstraintMaker *make) {
+
+    [_shiftTimeLabel mas_makeConstraints:^(MASConstraintMaker *make) {
         make.right.equalTo(_spritTimeLabel.mas_left);
         make.centerY.equalTo(_spritTimeLabel);
     }];
@@ -195,13 +187,13 @@
         make.left.equalTo(_spritTimeLabel.mas_right);
         make.centerY.equalTo(_spritTimeLabel);
     }];
-    
 }
 
 - (SJSlider *)progressSlider {
     if ( _progressSlider ) return _progressSlider;
     _progressSlider = [SJSlider new];
     _progressSlider.trackHeight = 3;
+    _progressSlider.enableBufferProgress = YES;
     _progressSlider.pan.enabled = NO; 
     return _progressSlider;
 }
@@ -219,21 +211,21 @@
     return _previewImageView;
 }
 
-- (UILabel *)currentTimeLabel {
-    if ( _currentTimeLabel ) return _currentTimeLabel;
-    _currentTimeLabel = [SJUILabelFactory labelWithFont:[UIFont systemFontOfSize:13]];
-    return _currentTimeLabel;
+- (UILabel *)shiftTimeLabel {
+    if ( _shiftTimeLabel ) return _shiftTimeLabel;
+    _shiftTimeLabel = [SJUILabelFactory labelWithFont:[UIFont systemFontOfSize:13]];
+    return _shiftTimeLabel;
 }
 
 - (UILabel *)spritTimeLabel {
     if ( _spritTimeLabel ) return _spritTimeLabel;
-    _spritTimeLabel = [SJUILabelFactory labelWithText:@"/" textColor:[UIColor whiteColor] font:self.currentTimeLabel.font];
+    _spritTimeLabel = [SJUILabelFactory labelWithText:@"/" textColor:[UIColor whiteColor] font:self.shiftTimeLabel.font];
     return _spritTimeLabel;
 }
 
 - (UILabel *)durationTimeLabel {
     if ( _durationTimeLabel ) return _durationTimeLabel;
-    _durationTimeLabel = [SJUILabelFactory labelWithFont:self.currentTimeLabel.font textColor:[UIColor whiteColor]];
+    _durationTimeLabel = [SJUILabelFactory labelWithFont:self.shiftTimeLabel.font textColor:[UIColor whiteColor]];
     return _durationTimeLabel;
 }
 
@@ -245,8 +237,9 @@
         if ( !self ) return ;
         self.fastImage = setting.fastImage;
         self.forwardImage = setting.forwardImage;
-        self.currentTimeLabel.textColor = self.progressSlider.traceImageView.backgroundColor = setting.progress_traceColor;
+        self.shiftTimeLabel.textColor = self.progressSlider.traceImageView.backgroundColor = setting.progress_traceColor;
         self.progressSlider.trackImageView.backgroundColor = setting.progress_trackColor;
+        self.progressSlider.bufferProgressColor = setting.progress_bufferColor;
     }];
 }
 @end

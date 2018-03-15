@@ -74,9 +74,8 @@ static NSString *const SJVideoListTableViewCellID = @"SJVideoListTableViewCell";
     return _videoPlayerHelper;
 }
 
-- (void)viewWillAppear:(BOOL)animated {
-    [super viewWillAppear:animated];
-    self.videoPlayerHelper.vc_viewWillAppearExeBlock();
+- (BOOL)convertedAsset {
+    return NO;
 }
 
 - (void)viewDidAppear:(BOOL)animated {

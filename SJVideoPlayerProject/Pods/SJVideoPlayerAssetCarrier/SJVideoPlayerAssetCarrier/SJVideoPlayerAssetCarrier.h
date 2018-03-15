@@ -172,6 +172,8 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic, copy, readwrite, nullable) void(^playDidToEnd)(SJVideoPlayerAssetCarrier *asset);
 /// 缓冲进度回调
 @property (nonatomic, copy, readwrite, nullable) void(^loadedTimeProgress)(float progress);
+@property (nonatomic, readonly) float loadedTimeProgressValue;
+
 /// 缓冲已为空, 开始缓冲
 @property (nonatomic, copy, readwrite, nullable) void(^startBuffering)(SJVideoPlayerAssetCarrier *asset);
 @property (nonatomic, copy, readwrite, nullable) void(^completeBuffer)(SJVideoPlayerAssetCarrier *asset);

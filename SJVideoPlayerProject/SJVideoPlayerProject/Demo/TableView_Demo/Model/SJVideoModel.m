@@ -68,6 +68,7 @@
     for ( int i = 0 ; i < 88 ; ++ i ) {
         SJVideoModel *model =
         [[SJVideoModel alloc] initWithTitle:titles[arc4random() % titles.count]
+                                    videoId:i
                                  createTime:date.timeIntervalSince1970 - arc4random() % 100000
                                     creator:users[arc4random() % users.count]
                                  playURLStr:@"http://video.cdn.lanwuzhe.com/14945858406905f0c"
@@ -84,10 +85,11 @@
     return testVideosM;
 }
 
-- (instancetype)initWithTitle:(NSString *)title createTime:(NSTimeInterval)createTime creator:(SJUserModel *)creator playURLStr:(NSString *)playURLStr coverURLStr:(NSString *)coverURLStr {
+- (instancetype)initWithTitle:(NSString *)title videoId:(NSInteger)videoId createTime:(NSTimeInterval)createTime creator:(SJUserModel *)creator playURLStr:(NSString *)playURLStr coverURLStr:(NSString *)coverURLStr {
     self = [super init];
     if ( !self ) return nil;
     _title = title;
+    _videoId = videoId;
     _createTime = createTime;
     _creator = creator;
     _playURLStr = playURLStr;

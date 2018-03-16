@@ -74,6 +74,13 @@
                                     <action selector="aboutKeyboard:" destination="BYZ-38-t0r" eventType="touchUpInside" id="nV1-W8-fzu"/>
                                 </connections>
                             </button>
+                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="pDO-Qo-Vfp">
+                                <rect key="frame" x="294" y="617" width="69" height="30"/>
+                                <state key="normal" title="Download"/>
+                                <connections>
+                                    <action selector="download:" destination="BYZ-38-t0r" eventType="touchUpInside" id="Gf1-t9-rtJ"/>
+                                </connections>
+                            </button>
                         </subviews>
                         <color key="backgroundColor" red="1" green="1" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                         <constraints>
@@ -90,9 +97,11 @@
                             <constraint firstItem="jUw-fL-Eph" firstAttribute="top" secondItem="New-u4-aTv" secondAttribute="bottom" constant="8" id="Ya1-fd-eG9"/>
                             <constraint firstItem="mF3-mW-pav" firstAttribute="centerX" secondItem="gbR-Ag-b7A" secondAttribute="centerX" id="cNv-OZ-hAM"/>
                             <constraint firstItem="Ehn-QU-Eed" firstAttribute="centerX" secondItem="mF3-mW-pav" secondAttribute="centerX" id="eNs-UA-aSY"/>
+                            <constraint firstItem="6Tk-OE-BBY" firstAttribute="bottom" secondItem="pDO-Qo-Vfp" secondAttribute="bottom" constant="20" id="n07-HJ-Kj7"/>
                             <constraint firstItem="BUy-1v-vW5" firstAttribute="top" secondItem="jUw-fL-Eph" secondAttribute="bottom" constant="8" id="s1c-w9-tHA"/>
                             <constraint firstItem="gbR-Ag-b7A" firstAttribute="centerX" secondItem="wr7-x4-Iha" secondAttribute="centerX" id="tQP-rt-0aS"/>
                             <constraint firstItem="wr7-x4-Iha" firstAttribute="top" secondItem="BUy-1v-vW5" secondAttribute="bottom" constant="8" id="uaL-18-8Hu"/>
+                            <constraint firstItem="6Tk-OE-BBY" firstAttribute="trailing" secondItem="pDO-Qo-Vfp" secondAttribute="trailing" constant="12" id="uqU-tD-CZV"/>
                         </constraints>
                         <viewLayoutGuide key="safeArea" id="6Tk-OE-BBY"/>
                     </view>

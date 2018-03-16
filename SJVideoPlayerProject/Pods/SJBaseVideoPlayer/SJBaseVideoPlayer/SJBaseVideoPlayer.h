@@ -391,6 +391,14 @@ typedef NS_ENUM(NSInteger, SJNetworkStatus) {
 @property (nonatomic) SJRotateViewOrientation rotateOrientation;
 
 /**
+ The current orientation of the player.
+ Default is UIInterfaceOrientationPortrait.
+ 
+ readonly.
+ */
+@property (nonatomic, readonly) UIInterfaceOrientation currentOrientation;
+
+/**
  The block invoked When player will rotate.
  
  readwrite.

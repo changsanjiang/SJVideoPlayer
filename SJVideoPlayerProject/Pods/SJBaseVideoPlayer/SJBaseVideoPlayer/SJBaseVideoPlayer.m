@@ -1197,6 +1197,25 @@ NS_ASSUME_NONNULL_END
     return self.orentationObserver.rotateOrientation;
 }
 
+- (UIInterfaceOrientation)currentOrientation {
+    UIInterfaceOrientation orientation = UIInterfaceOrientationUnknown;
+    switch ( self.rotateOrientation ) {
+        case SJRotateViewOrientation_Portrait: {
+            orientation = UIInterfaceOrientationPortrait;
+        }
+            break;
+        case SJRotateViewOrientation_LandscapeLeft: {
+            orientation = UIInterfaceOrientationLandscapeRight;
+        }
+            break;
+        case SJRotateViewOrientation_LandscapeRight: {
+            orientation = UIInterfaceOrientationLandscapeLeft;
+        }
+            break;
+    }
+    return orientation;
+}
+
 - (void)rotation {
     [self.orentationObserver _changeOrientation];
 }

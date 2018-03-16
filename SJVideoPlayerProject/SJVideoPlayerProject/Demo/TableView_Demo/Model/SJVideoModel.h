@@ -50,6 +50,7 @@
 @property (nonatomic, strong) SJVideoHelper *nicknameHelper;
 @property (nonatomic, strong) SJVideoHelper *createTimeHelper;
 
+@property (nonatomic, assign, readonly) NSInteger videoId;
 @property (nonatomic, strong, readonly) NSString *title;
 @property (nonatomic, assign, readonly) NSTimeInterval createTime;
 @property (nonatomic, strong, readonly) SJUserModel *creator;
@@ -57,6 +58,7 @@
 @property (nonatomic, strong, readonly) NSString *coverURLStr;
 
 - (instancetype)initWithTitle:(NSString *)title
+                      videoId:(NSInteger)videoId
                    createTime:(NSTimeInterval)createTime
                       creator:(SJUserModel *)creator
                    playURLStr:(NSString *)playURLStr

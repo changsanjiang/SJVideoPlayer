@@ -870,9 +870,10 @@ NS_ASSUME_NONNULL_END
         currentTime:(NSTimeInterval)currentTime currentTimeStr:(NSString *)currentTimeStr
           totalTime:(NSTimeInterval)totalTime totalTimeStr:(NSString *)totalTimeStr {
     [self.bottomControlView setCurrentTimeStr:currentTimeStr totalTimeStr:totalTimeStr];
-    self.bottomControlView.progress = currentTime / totalTime;
-    self.bottomSlider.value = self.bottomControlView.progress;
-    if ( self.draggingProgressView.appearState ) self.draggingProgressView.playProgress = videoPlayer.progress;
+    float progress = videoPlayer.progress;
+    self.bottomControlView.progress = progress;
+    self.bottomSlider.value = progress;
+    if ( self.draggingProgressView.appearState ) self.draggingProgressView.playProgress = progress;
 }
 
 /// 缓冲的进度.

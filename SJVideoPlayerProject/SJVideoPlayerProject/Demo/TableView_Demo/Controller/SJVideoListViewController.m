@@ -103,17 +103,12 @@ static NSString *const SJVideoListTableViewCellID = @"SJVideoListTableViewCell";
 
 - (void)clickedPlayOnTabCell:(SJVideoListTableViewCell *)cell playerParentView:(UIView *)playerParentView {
     self.playedIndexPath = [self.tableView indexPathForCell:cell];
-//    SJVideoPlayerURLAsset *asset =
-//    [[SJVideoPlayerURLAsset alloc] initWithAssetURL:[[NSBundle mainBundle] URLForResource:@"sample" withExtension:@"mp4"]
-//                                         scrollView:self.tableView
-//                                          indexPath:[self.tableView indexPathForCell:cell]
-//                                       superviewTag:playerParentView.tag];
     SJVideoPlayerURLAsset *asset =
-    [[SJVideoPlayerURLAsset alloc] initWithAssetURL:[NSURL URLWithString:@"http://video.cdn.lanwuzhe.com/14945858406905f0c"]
+    [[SJVideoPlayerURLAsset alloc] initWithAssetURL:[[NSBundle mainBundle] URLForResource:@"sample" withExtension:@"mp4"]
                                          scrollView:self.tableView
                                           indexPath:[self.tableView indexPathForCell:cell]
                                        superviewTag:playerParentView.tag];
-    asset.title = @"DIY心情转盘 #手工##手工制作#";
+    asset.title = @"DIY心情转盘 #手工##手工制作##卖包子喽##1块1个##卖完就撤#";
     asset.alwaysShowTitle = YES;
     
     [self.videoPlayerHelper playWithAsset:asset playerParentView:playerParentView];

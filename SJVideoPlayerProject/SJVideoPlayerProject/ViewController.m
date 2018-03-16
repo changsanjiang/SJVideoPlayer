@@ -18,6 +18,7 @@
 #import "TableViewHeaderDemoViewController.h"
 #import "TableViewHeaderIsCollectionViewDemoViewController.h"
 #import "AboutKeyboardViewController.h"
+#import "DowloadViewController.h"
 
 @interface ViewController ()
 
@@ -29,8 +30,6 @@
     [super viewDidLoad];
     self.navigationController.sj_gestureType = SJFullscreenPopGestureType_Full;
     self.navigationController.sj_backgroundColor = [UIColor whiteColor];
-
-    // self.view.backgroundColor = [UIColor blackColor];
     // Do any additional setup after loading the view, typically from a nib.
 }
 
@@ -72,6 +71,10 @@
 
 - (IBAction)tableHeaderIsCollectionView:(id)sender {
     [self.navigationController pushViewController:[[TableViewHeaderIsCollectionViewDemoViewController alloc] init] animated:YES];
+}
+
+- (IBAction)download:(id)sender {
+    [self.navigationController pushViewController:[[DowloadViewController alloc] init] animated:YES];
 }
 
 - (IBAction)test:(id)sender {

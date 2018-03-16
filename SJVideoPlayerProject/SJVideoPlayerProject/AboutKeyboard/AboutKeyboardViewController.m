@@ -30,59 +30,36 @@
 
 - (void)viewDidLoad {
     [super viewDidLoad];
+    self.view.backgroundColor = [UIColor whiteColor];
     
-    self.videoPlayer = [SJVideoPlayer player];
-    [self.view addSubview:self.videoPlayer.view];
-    [self.videoPlayer.view mas_makeConstraints:^(MASConstraintMaker *make) {
-        make.top.offset(SJ_is_iPhoneX() ? 34 : 20);
-        make.leading.trailing.offset(0);
-        make.height.equalTo(self.videoPlayer.view.mas_width).multipliedBy(9 / 16.0f);
-    }];
-    
-    self.videoPlayer.assetURL = [[NSBundle mainBundle] URLForResource:@"sample" withExtension:@"mp4"];
-    
+    _videoPlayer = [SJVideoPlayer player];
+    [self.view addSubview:_videoPlayer.view];
     _textView = [SJUITextViewFactory textViewWithTextColor:[UIColor blackColor] backgroundColor:[UIColor greenColor] font:[UIFont boldSystemFontOfSize:14]];
     _textView.text = @"Please Enter...";
-    
+    [_textView becomeFirstResponder];
     [_videoPlayer.controlLayerDataSource.controlView addSubview:_textView];
+    
+    [_videoPlayer.view mas_makeConstraints:^(MASConstraintMaker *make) {
+        make.top.offset(SJ_is_iPhoneX() ? 34 : 20);
+        make.leading.trailing.offset(0);
+        make.height.equalTo(_videoPlayer.view.mas_width).multipliedBy(9 / 16.0f);
+    }];
+    
     [_textView mas_makeConstraints:^(MASConstraintMaker *make) {
         make.center.offset(0);
         make.width.offset(200);
         make.height.offset(30);
     }];
     
+    _videoPlayer.assetURL = [[NSBundle mainBundle] URLForResource:@"sample" withExtension:@"mp4"];
+    
     __weak typeof(self) _self = self;
     _videoPlayer.willRotateScreen = ^(__kindof SJBaseVideoPlayer * _Nonnull player, BOOL isFullScreen) {
         __strong typeof(_self) self = _self;
         if ( !self ) return;
-        
-        [self.textView resignFirstResponder];
-        
-        switch ( player.rotateOrientation ) {
-            case SJRotateViewOrientation_Portrait: {
-                self.orientation = UIInterfaceOrientationPortrait;
-            }
-                break;
-            case SJRotateViewOrientation_LandscapeLeft: {
-                self.orientation = UIInterfaceOrientationLandscapeRight;
-            }
-                break;
-            case SJRotateViewOrientation_LandscapeRight: {
-                self.orientation = UIInterfaceOrientationLandscapeLeft;
-            }
-                break;
-        }
+        [self.textView resignFirstResponder];       // text view resignFirstResponder.
     };
     
-    // test
-    _videoPlayer.controlLayerAppearStateChanged = ^(__kindof SJBaseVideoPlayer * _Nonnull player, BOOL state) {
-        __strong typeof(_self) self = _self;
-        if ( !self ) return;
-        
-        [self.textView resignFirstResponder];
-    };
-    
-    // Do any additional setup after loading the view.
 }
 
 - (void)viewWillAppear:(BOOL)animated {
@@ -95,16 +72,13 @@
     [self.navigationController setNavigationBarHidden:NO animated:YES];
 }
 
-- (BOOL)shouldAutorotate {
-    return NO;
-}
-
+#pragma mark - about keyboard orientation
 - (UIInterfaceOrientationMask)supportedInterfaceOrientations {
     return UIInterfaceOrientationMaskAllButUpsideDown;
 }
 
 - (UIInterfaceOrientation)preferredInterfaceOrientationForPresentation {
-    return _orientation;
+    return _videoPlayer.currentOrientation;
 }
 
 @end

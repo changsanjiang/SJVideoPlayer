@@ -140,7 +140,7 @@ NS_ASSUME_NONNULL_END
     }];
 }
 - (void)async_requestMediasWithStatus:(SJMediaDownloadStatus)status
-                           completion:(void(^)(SJMediaDownloader *downloader, NSArray<id<SJMediaEntity>> * __nullable media))completionBlock {
+                           completion:(void(^)(SJMediaDownloader *downloader, NSArray<id<SJMediaEntity>> * __nullable medias))completionBlock {
     __weak typeof(self) _self = self;
     [self async_exeBlock:^{
         __strong typeof(_self) self = _self;
@@ -345,7 +345,6 @@ NS_ASSUME_NONNULL_END
         __strong typeof(_self) self = _self;
         if ( !self ) return;
         __block SJMediaEntity *entity = nil;
-        __weak typeof(self) _self = self;
         void(^pausedBlock)(void) = ^ {
             __strong typeof(_self) self = _self;
             if ( !self ) return;
@@ -358,7 +357,7 @@ NS_ASSUME_NONNULL_END
             else {
                 entity.downloadStatus = SJMediaDownloadStatus_Paused;
                 [entity postStatus];
-                [self sync_insertOrReplaceMediaWithEntity:self.currentEntity];
+                [self sync_insertOrReplaceMediaWithEntity:entity];
                 if ( entity.mediaId == self.currentEntity.mediaId ) self.currentEntity = nil;
                 if ( block ) block();
             }
@@ -384,10 +383,20 @@ NS_ASSUME_NONNULL_END
 
 - (void)async_pauseAllDownloadsCompletion:(void(^ __nullable)(void))block {
     __weak typeof(self) _self = self;
-    [self async_exeBlock:^{
+    [self async_requestMediasWithStatus:SJMediaDownloadStatus_Waiting completion:^(SJMediaDownloader * _Nonnull downloader, NSArray<id<SJMediaEntity>> * _Nullable medias) {
         __strong typeof(_self) self = _self;
         if ( !self ) return;
-        
+        [medias enumerateObjectsUsingBlock:^(SJMediaEntity *obj, NSUInteger idx, BOOL * _Nonnull stop) {
+            if ( obj.mediaId != self.currentEntity.mediaId ) {
+                if ( obj.downloadStatus != SJMediaDownloadStatus_Paused &&
+                     obj.downloadStatus != SJMediaDownloadStatus_Finished ) {
+                    obj.downloadStatus = SJMediaDownloadStatus_Paused;
+                    [obj postStatus];
+                    [self sync_insertOrReplaceMediaWithEntity:obj];
+                }
+            }
+        }];
+        [self async_pauseWithMediaID:self.currentEntity.mediaId completion:block];
     }];
 }
 

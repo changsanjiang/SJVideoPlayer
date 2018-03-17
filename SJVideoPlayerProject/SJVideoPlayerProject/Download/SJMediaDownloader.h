@@ -60,7 +60,7 @@ typedef NS_ENUM(NSUInteger, SJMediaDownloadStatus) {
 - (void)async_requestMediaWithID:(NSInteger)mediaId completion:(void(^)(SJMediaDownloader *downloader, id<SJMediaEntity> __nullable media))completionBlock;
 
 - (void)async_requestMediasWithStatus:(SJMediaDownloadStatus)status
-                           completion:(void(^)(SJMediaDownloader *downloader, NSArray<id<SJMediaEntity>> * __nullable media))completionBlock;
+                           completion:(void(^)(SJMediaDownloader *downloader, NSArray<id<SJMediaEntity>> * __nullable medias))completionBlock;
 
 - (void)async_exeBlock:(void(^)(void))block;
 

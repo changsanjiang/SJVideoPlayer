@@ -156,7 +156,7 @@ NS_ASSUME_NONNULL_END
 }
 - (void)sync_requestNextDownloadMedia {
     if ( self.currentEntity ) return;
-    NSString *sql = [NSString stringWithFormat:@"SELECT *FROM 'SJMediaEntity' WHERE downloadStatus =  %zd ORDER BY 'downloadTime';", SJMediaDownloadStatus_Waiting];
+    NSString *sql = [NSString stringWithFormat:@"SELECT *FROM 'SJMediaEntity' WHERE downloadStatus =  %zd ORDER BY downloadTime;", SJMediaDownloadStatus_Waiting];
     SJMediaEntity *next = sql_query(self.database, sql.UTF8String, [SJMediaEntity class]).firstObject;
     if ( !next ) return;
     [self sync_downloadWithMedia:next];

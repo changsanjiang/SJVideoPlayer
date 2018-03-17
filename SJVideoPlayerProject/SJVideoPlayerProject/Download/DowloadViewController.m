@@ -150,6 +150,7 @@ static NSString *const DownloadTableViewCellID = @"DownloadTableViewCell";
 
 - (void)clear {
     [_videoList enumerateObjectsUsingBlock:^(SJVideo * _Nonnull obj, NSUInteger idx, BOOL * _Nonnull stop) {
+        obj.filePath = nil;
         [[SJMediaDownloader shared] async_deleteWithMediaID:obj.mediaId completion:nil];
     }];
 }
@@ -201,6 +202,7 @@ static NSString *const DownloadTableViewCellID = @"DownloadTableViewCell";
     [[SJMediaDownloader shared] async_pauseWithMediaID:cell.model.mediaId completion:nil];
 }
 - (void)clickedCancelBtnOnTabCell:(DownloadTableViewCell *)cell {
+    cell.model.filePath = nil;
     [[SJMediaDownloader shared] async_deleteWithMediaID:cell.model.mediaId completion:nil];
 }
 @end

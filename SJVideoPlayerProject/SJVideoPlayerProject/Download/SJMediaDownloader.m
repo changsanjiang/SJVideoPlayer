@@ -382,8 +382,8 @@ NS_ASSUME_NONNULL_END
         void(^deleted)(void) = ^ {
             __strong typeof(_self) self = _self;
             if ( !self ) return;
-            if ( [[NSFileManager defaultManager] fileExistsAtPath:entity.resumePath] ) {
-                [[NSFileManager defaultManager] removeItemAtPath:entity.resumePath error:nil];
+            if ( [[NSFileManager defaultManager] fileExistsAtPath:entity.filePath] ) {
+                [[NSFileManager defaultManager] removeItemAtPath:[entity.filePath stringByDeletingLastPathComponent] error:nil];
             }
             entity.downloadStatus = SJMediaDownloadStatus_Deleted;
             [self sync_deleteMediaWithEntity:entity];

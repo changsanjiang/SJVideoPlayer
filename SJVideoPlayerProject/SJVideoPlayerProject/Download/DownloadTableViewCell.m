@@ -66,7 +66,6 @@
             [self.delegate tabCell:self clickedPlayBtnAtCoverImageView:_coverImageView];
         }
     }
-        
 }
 - (void)setModel:(SJVideo *)model {
     _model = model;
@@ -92,7 +91,7 @@
     
     [_coverImageView mas_makeConstraints:^(MASConstraintMaker *make) {
         make.top.leading.offset(8);
-        make.width.offset(200 * 375 / SJScreen_Min());
+        make.width.offset(150 * 375 / SJScreen_Min());
         make.height.equalTo(_coverImageView.mas_width).multipliedBy(9 / 16.0f);
     }];
     

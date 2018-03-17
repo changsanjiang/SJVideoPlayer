@@ -81,7 +81,7 @@ static NSString *const DownloadTableViewCellID = @"DownloadTableViewCell";
         URL = [NSURL fileURLWithPath:cell.model.filePath];
     }
     else {
-        URL = [NSURL fileURLWithPath:cell.model.playURLStr];
+        URL = [NSURL URLWithString:cell.model.playURLStr];
     }
     
     SJVideoPlayerURLAsset *asset =

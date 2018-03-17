@@ -413,7 +413,7 @@ NS_ASSUME_NONNULL_END
             if ( [[NSFileManager defaultManager] fileExistsAtPath:entity.filePath] ) {
                 [[NSFileManager defaultManager] removeItemAtPath:[entity.filePath stringByDeletingLastPathComponent] error:nil];
             }
-            else if ( [[NSFileManager defaultManager] fileExistsAtPath:entity.resumePath] ) {
+            if ( [[NSFileManager defaultManager] fileExistsAtPath:entity.resumePath] ) {
                 [[NSFileManager defaultManager] removeItemAtPath:entity.resumePath error:nil];
             }
             entity.downloadStatus = SJMediaDownloadStatus_Deleted;

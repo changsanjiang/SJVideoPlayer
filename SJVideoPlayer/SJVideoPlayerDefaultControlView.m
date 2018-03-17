@@ -525,10 +525,13 @@ NS_ASSUME_NONNULL_END
     if ( tag == SJVideoPlayerRightViewTag_FilmEditing ) {
         __weak typeof(self) _self = self;
         _filmEditingControlView = [SJVideoPlayerFilmEditingControlView new];
+        BOOL pausedToKeepAppearState = self.videoPlayer.pausedToKeepAppearState;
+        self.videoPlayer.pausedToKeepAppearState = NO;
         _filmEditingControlView.getVideoScreenshot = ^UIImage *(SJVideoPlayerFilmEditingControlView *view) {
             __strong typeof(_self) self = _self;
             if ( !self ) return nil;
             [self.videoPlayer pause];
+            self.videoPlayer.pausedToKeepAppearState = pausedToKeepAppearState;
             return [self.videoPlayer screenshot];
         };
         

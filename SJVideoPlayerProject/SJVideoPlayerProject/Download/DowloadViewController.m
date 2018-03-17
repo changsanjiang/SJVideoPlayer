@@ -18,7 +18,7 @@
 
 static NSString *const DownloadTableViewCellID = @"DownloadTableViewCell";
 
-@interface DowloadViewController ()<UITableViewDelegate, UITableViewDataSource, DownloadTableViewCellDelegate>
+@interface DowloadViewController ()<UITableViewDelegate, UITableViewDataSource, DownloadTableViewCellDelegate, SJVideoPlayerHelperUseProtocol>
 
 @property (nonatomic, strong, readonly) UITableView *tableView;
 @property (nonatomic, strong) NSArray<SJVideo *> *videoList;
@@ -38,8 +38,51 @@ static NSString *const DownloadTableViewCellID = @"DownloadTableViewCell";
     
     [self prepareTestData];
     
+    [self _installNotifications];
+    
     // Do any additional setup after loading the view.
 }
+
+- (void)dealloc {
+    [[NSNotificationCenter defaultCenter] removeObserver:self];
+}
+
+#pragma mark - downloader
+
+- (void)_installNotifications {
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(mediaDownloadProgress:) name:SJMediaDownloadProgressNotification object:nil];
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(mediaDownloadStatusChanged:) name:SJMediaDownloadStatusChangedNotification object:nil];
+}
+
+- (void)mediaDownloadProgress:(NSNotification *)notifi {
+    id<SJMediaEntity> entity = notifi.object;
+    [_videoList enumerateObjectsUsingBlock:^(SJVideo * _Nonnull obj, NSUInteger idx, BOOL * _Nonnull stop) {
+        if ( obj.mediaId != entity.mediaId ) return ;
+        *stop = YES;
+        obj.downloadProgress = entity.downloadProgress;
+        
+        dispatch_async(dispatch_get_main_queue(), ^{
+            DownloadTableViewCell *cell = [self.tableView cellForRowAtIndexPath:[NSIndexPath indexPathForRow:idx inSection:0]];
+            [cell updateProgress];
+        });
+    }];
+}
+
+- (void)mediaDownloadStatusChanged:(NSNotification *)notifi {
+    id<SJMediaEntity> entity = notifi.object;
+    [_videoList enumerateObjectsUsingBlock:^(SJVideo * _Nonnull obj, NSUInteger idx, BOOL * _Nonnull stop) {
+        if ( obj.mediaId != entity.mediaId ) return ;
+        *stop = YES;
+        obj.downloadStatus = entity.downloadStatus;
+        if ( entity.downloadStatus == SJMediaDownloadStatus_Finished ) obj.filePath = entity.filePath;
+        dispatch_async(dispatch_get_main_queue(), ^{
+            DownloadTableViewCell *cell = [self.tableView cellForRowAtIndexPath:[NSIndexPath indexPathForRow:idx inSection:0]];
+            [cell updateStatus];
+        });
+    }];
+}
+
+#pragma mark - video player helper
 // please lazy load
 @synthesize videoPlayerHelper = _videoPlayerHelper;
 - (SJVideoPlayerHelper *)videoPlayerHelper {

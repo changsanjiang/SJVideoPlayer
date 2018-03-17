@@ -19,6 +19,8 @@ NS_ASSUME_NONNULL_BEGIN
 
 @property (nonatomic, strong) SJVideo *model;
 
+- (void)updateProgress;
+- (void)updateStatus;
 @end
 
 @protocol DownloadTableViewCellDelegate <NSObject>

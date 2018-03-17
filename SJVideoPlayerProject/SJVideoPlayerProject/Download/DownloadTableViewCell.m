@@ -42,12 +42,7 @@
     self = [super initWithStyle:style reuseIdentifier:reuseIdentifier];
     if ( !self ) return nil;
     [self _setupViews];
-    [self _installNotifications];
     return self;
-}
-
-- (void)dealloc {
-    [[NSNotificationCenter defaultCenter] removeObserver:self];
 }
 
 - (void)clickedBtn:(UIButton *)btn {
@@ -73,37 +68,12 @@
     }
         
 }
-
 - (void)setModel:(SJVideo *)model {
     _model = model;
     _coverImageView.image = [UIImage imageNamed:model.testCoverImage];
     _titleLabel.text = model.title;
-    [self setProgressStrWithProgress:model.downloadProgress];
-    [self setDownloadStatusStrWithStatus:model.downloadStatus];
-}
-
-- (void)_installNotifications {
-    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(mediaDownloadProgress:) name:SJMediaDownloadProgressNotification object:nil];
-    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(mediaDownloadStatusChanged:) name:SJMediaDownloadStatusChangedNotification object:nil];
-}
-
-- (void)mediaDownloadProgress:(NSNotification *)notifi {
-    id<SJMediaEntity> entity = notifi.object;
-    if ( entity.mediaId != _model.mediaId ) return;
-    _model.downloadProgress = entity.downloadProgress;
-    dispatch_async(dispatch_get_main_queue(), ^{
-        [self setProgressStrWithProgress:[entity downloadProgress]];
-    });
-}
-
-- (void)mediaDownloadStatusChanged:(NSNotification *)notifi {
-    id<SJMediaEntity> entity = notifi.object;
-    if ( entity.mediaId != _model.mediaId ) return;
-    _model.downloadStatus = entity.downloadStatus;
-    dispatch_async(dispatch_get_main_queue(), ^{
-        if ( entity.downloadStatus == SJMediaDownloadStatus_Finished ) _model.filePath = entity.filePath;
-        [self setDownloadStatusStrWithStatus:[entity downloadStatus]];
-    });
+    [self updateStatus];
+    [self updateProgress];
 }
 #pragma mark -
 - (void)_setupViews {
@@ -223,13 +193,12 @@
 }
 
 #pragma mark -
-- (void)setProgressStrWithProgress:(float)progress {
-    _progressLabel.text = [NSString stringWithFormat:@"Progress: %.0f%%", progress * 100];
+- (void)updateProgress {
+    _progressLabel.text = [NSString stringWithFormat:@"Progress: %.0f%%", _model.downloadProgress * 100];
 }
-
-- (void)setDownloadStatusStrWithStatus:(SJMediaDownloadStatus)status {
+- (void)updateStatus {
     NSString *prompt = nil;
-    switch ( status ) {
+    switch ( _model.downloadStatus ) {
         case SJMediaDownloadStatus_Unknown: {
             prompt = @"Unknown";
         }
@@ -279,7 +248,7 @@
         }
             break;
     }
-
+    
     _statusLabel.text = [NSString stringWithFormat:@"Status: %@", prompt];
 }
 @end

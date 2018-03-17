@@ -139,6 +139,16 @@ NS_ASSUME_NONNULL_END
         if ( completionBlock ) completionBlock(self, sql_query(self.database, sqlStr.UTF8String, [SJMediaEntity class]).firstObject);
     }];
 }
+- (void)async_requestMediasWithStatus:(SJMediaDownloadStatus)status
+                           completion:(void(^)(SJMediaDownloader *downloader, NSArray<id<SJMediaEntity>> * __nullable media))completionBlock {
+    __weak typeof(self) _self = self;
+    [self async_exeBlock:^{
+        __strong typeof(_self) self = _self;
+        if ( !self ) return;
+        NSString *sql = [NSString stringWithFormat:@"SELECT *FROM 'SJMediaEntity' WHERE downloadStatus = %zd ORDER BY downloadTime;", status];
+        if ( completionBlock ) completionBlock(self, sql_query(self.database, sql.UTF8String, [SJMediaEntity class]));
+    }];
+}
 - (void)async_exeBlock:(void(^)(void))block {
     [self.taskQueue addOperationWithBlock:^{
         if ( block ) block();
@@ -369,6 +379,15 @@ NS_ASSUME_NONNULL_END
                 pausedBlock();
             }];
         }
+    }];
+}
+
+- (void)async_pauseAllDownloadsCompletion:(void(^ __nullable)(void))block {
+    __weak typeof(self) _self = self;
+    [self async_exeBlock:^{
+        __strong typeof(_self) self = _self;
+        if ( !self ) return;
+        
     }];
 }
 

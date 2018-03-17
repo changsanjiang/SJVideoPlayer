@@ -197,6 +197,7 @@ NS_ASSUME_NONNULL_END
             next.downloadStatus = SJMediaDownloadStatus_Finished;
             [next postStatus];
             [self sync_insertOrReplaceMediaWithEntity:next];
+            self.currentEntity = nil;
             [self sync_requestNextDownloadMedia];
         }
         else {
@@ -211,6 +212,7 @@ NS_ASSUME_NONNULL_END
                 next.downloadStatus = status;
                 [next postStatus];
                 [self sync_insertOrReplaceMediaWithEntity:next];
+                self.currentEntity = nil;
                 [self sync_requestNextDownloadMedia];
             };
             
@@ -252,8 +254,6 @@ NS_ASSUME_NONNULL_END
                     break;
             }
         }
-        
-        self.currentEntity = nil;
     };
 }
 - (void)async_suspendWithTask:(NSURLSessionDownloadTask *)task entity:( SJMediaEntity *)entity completion:(void(^ __nullable)(BOOL saved))block {

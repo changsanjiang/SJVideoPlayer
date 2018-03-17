@@ -53,7 +53,7 @@ NS_ASSUME_NONNULL_BEGIN
 - (UIStatusBarStyle)preferredStatusBarStyle;
 
 @optional
-- (BOOL)convertedAsset;
+- (BOOL)needConvertAsset;
 
 @end
 

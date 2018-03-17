@@ -23,6 +23,7 @@
 		773AFC67205BA86F003B2CAC /* DownloadTableViewCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 773AFC66205BA86F003B2CAC /* DownloadTableViewCell.m */; };
 		773AFC6D205BCD9E003B2CAC /* SJVideo.m in Sources */ = {isa = PBXBuildFile; fileRef = 773AFC6C205BCD9E003B2CAC /* SJVideo.m */; };
 		773AFC70205CADC5003B2CAC /* SJVideo+DownloadAdd.m in Sources */ = {isa = PBXBuildFile; fileRef = 773AFC6F205CADC5003B2CAC /* SJVideo+DownloadAdd.m */; };
+		773AFC74205D139C003B2CAC /* SJVideoPlayerTVControlView.m in Sources */ = {isa = PBXBuildFile; fileRef = 773AFC73205D139C003B2CAC /* SJVideoPlayerTVControlView.m */; };
 		774A5669201F3C5E00CD6ACC /* ex.gif in Resources */ = {isa = PBXBuildFile; fileRef = 774A5668201F3C5E00CD6ACC /* ex.gif */; };
 		774B251D1FCEBA5D002113CC /* AppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = 774B251C1FCEBA5D002113CC /* AppDelegate.m */; };
 		774B25201FCEBA5D002113CC /* ViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 774B251F1FCEBA5D002113CC /* ViewController.m */; };
@@ -117,6 +118,8 @@
 		773AFC6C205BCD9E003B2CAC /* SJVideo.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SJVideo.m; sourceTree = "<group>"; };
 		773AFC6E205CADC5003B2CAC /* SJVideo+DownloadAdd.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "SJVideo+DownloadAdd.h"; sourceTree = "<group>"; };
 		773AFC6F205CADC5003B2CAC /* SJVideo+DownloadAdd.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = "SJVideo+DownloadAdd.m"; sourceTree = "<group>"; };
+		773AFC72205D139C003B2CAC /* SJVideoPlayerTVControlView.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = SJVideoPlayerTVControlView.h; sourceTree = "<group>"; };
+		773AFC73205D139C003B2CAC /* SJVideoPlayerTVControlView.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = SJVideoPlayerTVControlView.m; sourceTree = "<group>"; };
 		774A5668201F3C5E00CD6ACC /* ex.gif */ = {isa = PBXFileReference; lastKnownFileType = image.gif; path = ex.gif; sourceTree = "<group>"; };
 		774B25181FCEBA5D002113CC /* SJVideoPlayerProject.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = SJVideoPlayerProject.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		774B251B1FCEBA5D002113CC /* AppDelegate.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = AppDelegate.h; sourceTree = "<group>"; };
@@ -297,6 +300,13 @@
 			children = (
 				773AFC5F205BA67B003B2CAC /* SJMediaDownloader.h */,
 				773AFC60205BA67C003B2CAC /* SJMediaDownloader.m */,
+			);
+			path = Download;
+			sourceTree = "<group>";
+		};
+		773AFC71205D06DE003B2CAC /* Download */ = {
+			isa = PBXGroup;
+			children = (
 				773AFC6B205BCD9E003B2CAC /* SJVideo.h */,
 				773AFC6C205BCD9E003B2CAC /* SJVideo.m */,
 				773AFC6E205CADC5003B2CAC /* SJVideo+DownloadAdd.h */,
@@ -336,8 +346,8 @@
 				774B251C1FCEBA5D002113CC /* AppDelegate.m */,
 				774B251E1FCEBA5D002113CC /* ViewController.h */,
 				774B251F1FCEBA5D002113CC /* ViewController.m */,
+				773AFC71205D06DE003B2CAC /* Download */,
 				7790AC77205A58B000F8DF48 /* AboutKeyboard */,
-				773AFC5E205BA675003B2CAC /* Download */,
 				77E754332040054F00A5AF44 /* Demo */,
 				A6E6D2EE2028BE9B00CB9BAE /* SJVideoPlayer */,
 				778E24F21FD97EB6008D0DD3 /* Asset */,
@@ -629,6 +639,9 @@
 				A6E6D3492028BE9B00CB9BAE /* SJVideoPlayer.m */,
 				775C0AD5202962180008EDA7 /* SJVideoPlayerDefaultControlView.h */,
 				775C0AD6202962180008EDA7 /* SJVideoPlayerDefaultControlView.m */,
+				773AFC72205D139C003B2CAC /* SJVideoPlayerTVControlView.h */,
+				773AFC73205D139C003B2CAC /* SJVideoPlayerTVControlView.m */,
+				773AFC5E205BA675003B2CAC /* Download */,
 				775C0ABE20295C660008EDA7 /* Resource */,
 				A6E6D3242028BE9B00CB9BAE /* MoreSetting */,
 				A6E6D2FE2028BE9B00CB9BAE /* ControlView */,
@@ -850,6 +863,7 @@
 				7737522A2052AE7D0000E4E7 /* SJVideoPlayerFilmEditingRecordView.m in Sources */,
 				77DA951F2042C04B007A9EE8 /* UIViewController+TestAdd.m in Sources */,
 				773AFC6D205BCD9E003B2CAC /* SJVideo.m in Sources */,
+				773AFC74205D139C003B2CAC /* SJVideoPlayerTVControlView.m in Sources */,
 				77DA951E2042C04B007A9EE8 /* TestPageViewController.m in Sources */,
 				A6E6D3582028BE9B00CB9BAE /* SJVideoPlayerCenterControlView.m in Sources */,
 				A6E6D3602028BE9B00CB9BAE /* SJVideoPlayerMoreSetting.m in Sources */,

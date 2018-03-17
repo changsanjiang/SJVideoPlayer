@@ -22,7 +22,7 @@
 @property (nonatomic, strong, readonly) SJVideoPlayerHelper *videoPlayerHelper;
 @property (nonatomic, strong) SJVideoModel *video;
 @property (nonatomic, strong) SJVideoPlayerURLAsset *asset;
-@property (nonatomic, assign) BOOL convertedAsset;
+@property (nonatomic, assign) BOOL needConvertAsset;
 
 @end
 
@@ -37,7 +37,7 @@
     if ( asset ) {
         _asset = asset;
         [_asset convertToUIView];   // 将资源转化为在UIView上播放.
-        _convertedAsset = YES;
+        _needConvertAsset = YES;
     }
     else {
         asset = [[SJVideoPlayerURLAsset alloc] initWithAssetURL:[NSURL URLWithString:self.video.playURLStr]];
@@ -67,8 +67,8 @@
     return _videoPlayerHelper;
 }
 
-- (BOOL)convertedAsset {
-    return _convertedAsset;
+- (BOOL)needConvertAsset {
+    return _needConvertAsset;
 }
 
 - (void)viewWillAppear:(BOOL)animated {

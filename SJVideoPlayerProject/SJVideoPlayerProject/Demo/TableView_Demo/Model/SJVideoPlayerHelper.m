@@ -116,6 +116,8 @@ NS_ASSUME_NONNULL_END
     // show right control view.
     _videoPlayer.enableFilmEditing = YES;
     _videoPlayer.filmEditingResultShare = self.resultShare;
+    
+    _videoPlayer.pausedToKeepAppearState = YES;
 }
 
 - (void)clearAsset {
@@ -303,8 +305,8 @@ NS_ASSUME_NONNULL_END
         
         self.videoPlayer.disableRotation = NO;
         
-        if ( [self.viewController respondsToSelector:@selector(convertedAsset)] ) {
-            if ( ![self.viewController convertedAsset] ) [self.asset convertToOriginal];
+        if ( [self.viewController respondsToSelector:@selector(needConvertAsset)] ) {
+            if ( [self.viewController needConvertAsset] == NO ) [self.asset convertToOriginal];
         }
         else {
             [self.asset convertToOriginal];
@@ -325,8 +327,8 @@ NS_ASSUME_NONNULL_END
         __strong typeof(_self) self = _self;
         if ( !self ) return;
         self.videoPlayer.disableRotation = YES;   // 界面将要消失的时候, 禁止旋转.
-        if ( [self.viewController respondsToSelector:@selector(convertedAsset)] ) {
-            if ( [self.viewController convertedAsset] ) [self clearAsset];
+        if ( [self.viewController respondsToSelector:@selector(needConvertAsset)] ) {
+            if ( [self.viewController needConvertAsset] ) [self clearAsset];
         }
     };
 }

@@ -855,7 +855,7 @@ NS_ASSUME_NONNULL_END
 }
 
 - (void)convertToOriginal {
-    if ( !_ectype ) return;
+    if ( !_converted ) return;
     [self _convertingWithBlock:^{
         _indexPath = _ectype.indexPath;
         _superviewTag = _ectype.superviewTag;

@@ -43,6 +43,8 @@ NS_ASSUME_NONNULL_BEGIN
 - (void)considerChangeState;
 - (void)layerAppear;
 - (void)layerDisappear;
+@property (nonatomic) BOOL pausedToKeepAppearState;
+
 @end
 NS_ASSUME_NONNULL_END
 
@@ -91,6 +93,8 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic, strong, readonly) _SJControlLayerAppearStateManager *displayRecorder;
 @property (nonatomic, strong, readonly) _SJReachabilityObserver *reachabilityObserver;
 
+@property (nonatomic, assign) BOOL converted;
+
 - (void)clearAsset;
 
 @end
@@ -119,16 +123,27 @@ NS_ASSUME_NONNULL_END
 #ifdef DEBUG
     NSLog(@"SJVideoPlayerLog: %zd - %s", __LINE__, __func__);
 #endif
-    if ( self.asset && self.assetDeallocExeBlock ) self.assetDeallocExeBlock(self);
+
     [_presentView removeFromSuperview];
-    [self stop];
+    [_view removeFromSuperview];
+    
+    if ( _converted ) {
+        [self pause];
+    }
+    else {
+        if ( self.asset && self.assetDeallocExeBlock ) self.assetDeallocExeBlock(self);
+        [self stop];
+    }
 }
 
 #pragma mark -
 
 - (void)setAsset:(SJVideoPlayerAssetCarrier *)asset {
     _asset = asset;
+    
     if ( !asset ) return;
+    
+    _converted = asset.converted;
     
     if ( self.mute ) self.mute = YES; // update
     
@@ -142,7 +157,7 @@ NS_ASSUME_NONNULL_END
         self.presentView.player = asset.player;
     };
     
-    if ( asset.player ) asset.loadedPlayerExeBlock(asset);
+    if ( asset.loadedPlayer ) asset.loadedPlayerExeBlock(asset);
     
     asset.playerItemStateChanged = ^(SJVideoPlayerAssetCarrier * _Nonnull asset, AVPlayerItemStatus status) {
         __strong typeof(_self) self = _self;
@@ -162,6 +177,7 @@ NS_ASSUME_NONNULL_END
     };
     
     asset.playerItemStateChanged(asset, asset.playerItem.status);
+    
     asset.playTimeChanged = ^(SJVideoPlayerAssetCarrier * _Nonnull asset, NSTimeInterval currentTime, NSTimeInterval duration) {
         __strong typeof(_self) self = _self;
         if ( !self ) return;
@@ -184,7 +200,7 @@ NS_ASSUME_NONNULL_END
         }
     };
     
-    asset.loadedTimeProgress(asset.loadedTimeProgressValue);
+    if ( 0 != asset.loadedTimeProgressValue ) asset.loadedTimeProgress(asset.loadedTimeProgressValue);
     
     asset.startBuffering = ^(SJVideoPlayerAssetCarrier * _Nonnull asset) {
         __strong typeof(_self) self = _self;
@@ -811,6 +827,9 @@ NS_ASSUME_NONNULL_END
     }
 #endif
     _presentView.playState = state;
+    
+    if ( state == SJVideoPlayerPlayState_Paused && self.pausedToKeepAppearState ) [self.displayRecorder layerAppear];
+    
     if ( [self.controlLayerDelegate respondsToSelector:@selector(videoPlayer:stateChanged:)] ) {
         [self.controlLayerDelegate videoPlayer:self stateChanged:state];
     }
@@ -1004,8 +1023,10 @@ NS_ASSUME_NONNULL_END
     
     self.userClickedPause = NO;
     if ( !self.asset ) return NO;
-    if ( 0 == self.asset.player.rate ) [self.asset.player play];
-    self.state = SJVideoPlayerPlayState_Playing;
+    if ( SJVideoPlayerPlayState_PlayEnd != self.state ) {
+        if ( 0 == self.asset.player.rate ) [self.asset.player play];
+        self.state = SJVideoPlayerPlayState_Playing;
+    }
     return YES;
 }
 
@@ -1172,6 +1193,12 @@ NS_ASSUME_NONNULL_END
     return self.controlLayerAppeared;
 }
 
+- (void)setPausedToKeepAppearState:(BOOL)pausedToKeepAppearState {
+    self.displayRecorder.pausedToKeepAppearState = pausedToKeepAppearState;
+}
+- (BOOL)pausedToKeepAppearState {
+    return self.displayRecorder.pausedToKeepAppearState;
+}
 @end
 
 
@@ -1444,10 +1471,13 @@ NS_ASSUME_NONNULL_END
 }
 
 - (void)layerAppear {
+    if ( _pausedToKeepAppearState && self.videoPlayer.state == SJVideoPlayerPlayState_Paused ) [self.controlHiddenTimer clear];
+    else [self.controlHiddenTimer start];
     [self _changing:YES];
 }
 
 - (void)layerDisappear {
+    [self.controlHiddenTimer clear];
     [self _changing:NO];
 }
 
@@ -1472,8 +1502,6 @@ NS_ASSUME_NONNULL_END
     if ( !self.isEnabled ) return;
     if ( !self.videoPlayer.controlLayerDataSource ) return;
     self.controlLayerAppearedState = status;
-    if ( status ) [self.controlHiddenTimer start];
-    else [self.controlHiddenTimer clear];
     
     if ( status && [self.videoPlayer.controlLayerDelegate respondsToSelector:@selector(controlLayerNeedAppear:)] ) {
         [_videoPlayer.controlLayerDelegate controlLayerNeedAppear:_videoPlayer];

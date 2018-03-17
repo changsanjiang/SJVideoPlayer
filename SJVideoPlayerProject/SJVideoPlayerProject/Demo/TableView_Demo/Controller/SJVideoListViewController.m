@@ -74,7 +74,7 @@ static NSString *const SJVideoListTableViewCellID = @"SJVideoListTableViewCell";
     return _videoPlayerHelper;
 }
 
-- (BOOL)convertedAsset {
+- (BOOL)needConvertAsset {
     return NO;
 }
 

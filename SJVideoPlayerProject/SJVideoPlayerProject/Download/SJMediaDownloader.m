@@ -305,7 +305,10 @@ NS_ASSUME_NONNULL_END
         __strong typeof(_self) self = _self;
         if ( !self ) return;
         if ( media.downloadStatus == SJMediaDownloadStatus_Downloading ||
-             media.downloadStatus == SJMediaDownloadStatus_Waiting ) {
+             media.downloadStatus == SJMediaDownloadStatus_Waiting ||
+             media.downloadStatus == SJMediaDownloadStatus_Finished ) {
+            if ( entity ) entity(media);
+            return;
         }
         else if ( !media ) {
             media = [SJMediaEntity new];
@@ -322,6 +325,7 @@ NS_ASSUME_NONNULL_END
             [media postStatus];
             [self sync_insertOrReplaceMediaWithEntity:media];
         }
+        
         if ( entity ) entity(media);
         if ( !self.currentEntity ) [self sync_downloadWithMedia:media];
     }];

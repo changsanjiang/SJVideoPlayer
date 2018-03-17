@@ -36,7 +36,7 @@
     _video = video;
     if ( asset ) {
         _asset = asset;
-        [_asset convertToUIView];   // 将资源转化为在UIView上播放.
+        [_asset convertToUIView];   // 将资源转化为在UIView上播放. (播放器在self.view上播放)
         _needConvertAsset = YES;
     }
     else {

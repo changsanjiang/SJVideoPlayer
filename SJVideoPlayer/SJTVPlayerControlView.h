@@ -1,5 +1,5 @@
 //
-//  SJVideoPlayerTVControlView.h
+//  SJTVPlayerControlView.h
 //  SJVideoPlayerProject
 //
 //  Created by BlueDancer on 2018/3/17.
@@ -8,6 +8,6 @@
 
 #import <Foundation/Foundation.h>
 
-@interface SJVideoPlayerTVControlView : NSObject
+@interface SJTVPlayerControlView : NSObject
 
 @end

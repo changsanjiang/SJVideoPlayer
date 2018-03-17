@@ -11,6 +11,7 @@
 #import "SJVideoPlayer.h"
 #import <Masonry/Masonry.h>
 #import "SJFilmEditingResultShareItem.h"
+#import "SJMoreSettingItems.h"
 
 NS_ASSUME_NONNULL_BEGIN
 
@@ -19,9 +20,10 @@ static NSString *kSJFilmEditingResultShareItemWechatTitle = @"Wechat";
 static NSString *kSJFilmEditingResultShareItemWeiboTitle = @"Weibo";
 static NSString *kSJFilmEditingResultShareItemAlbumTitle = @"Album";
 
-@interface SJVideoPlayerHelper ()<SJFilmEditingResultShareDelegate>
+@interface SJVideoPlayerHelper ()<SJFilmEditingResultShareDelegate, SJMoreSettingItemsDelegate>
 
 @property (nonatomic, strong, readwrite) SJVideoPlayer *videoPlayer;
+@property (nonatomic, strong, readonly) SJMoreSettingItems *items;
 @property (nonatomic, strong, readonly) SJFilmEditingResultUploader *uploader;
 @property (nonatomic, strong, readonly) SJFilmEditingResultShare *resultShare;
 @property (nonatomic, readwrite) BOOL savedToAblum;
@@ -118,6 +120,8 @@ NS_ASSUME_NONNULL_END
     _videoPlayer.filmEditingResultShare = self.resultShare;
     
     _videoPlayer.pausedToKeepAppearState = YES;
+    
+    _videoPlayer.moreSettings = self.items.moreSettings;
 }
 
 - (void)clearAsset {
@@ -356,6 +360,41 @@ NS_ASSUME_NONNULL_END
         if ( self.videoPlayer.isFullScreen ) return UIStatusBarStyleLightContent;
         return UIStatusBarStyleDefault;
     };
+}
+
+#pragma mark -
+@synthesize items = _items;
+- (SJMoreSettingItems *)items {
+    if ( _items ) return _items;
+    _items = [SJMoreSettingItems new];
+    _items.delegate = self;
+    return _items;
+}
+
+- (void)clickedShareItem:(SJSharePlatform)platform {
+    switch ( platform ) {
+        case SJSharePlatform_Wechat: {
+            [_videoPlayer showTitle:@"分享到微信"];
+        }
+            break;
+        case SJSharePlatform_Weibo: {
+            [_videoPlayer showTitle:@"分享到微博"];
+        }
+            break;
+        case SJSharePlatform_QQ: {
+            [_videoPlayer showTitle:@"分享到QQ"];
+        }
+            break;
+        case SJSharePlatform_Unknown: break;
+    }
+}
+
+- (void)clickedDownloadItem {
+    [_videoPlayer showTitle:@"点击下载"];
+}
+
+- (void)clickedCollectItem {
+    [_videoPlayer showTitle:@"点击收藏"];
 }
 
 #pragma mark -

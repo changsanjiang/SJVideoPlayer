@@ -413,11 +413,14 @@ NS_ASSUME_NONNULL_END
             if ( [[NSFileManager defaultManager] fileExistsAtPath:entity.filePath] ) {
                 [[NSFileManager defaultManager] removeItemAtPath:[entity.filePath stringByDeletingLastPathComponent] error:nil];
             }
+            else if ( [[NSFileManager defaultManager] fileExistsAtPath:entity.resumePath] ) {
+                [[NSFileManager defaultManager] removeItemAtPath:entity.resumePath error:nil];
+            }
             entity.downloadStatus = SJMediaDownloadStatus_Deleted;
-            [self sync_deleteMediaWithEntity:entity];
             [entity postStatus];
             entity.downloadProgress = 0;
             [entity postProgress];
+            [self sync_deleteMediaWithEntity:entity];
             if ( entity == self.currentEntity ) self.currentEntity = nil;
             if ( block ) block();
         };
@@ -427,7 +430,6 @@ NS_ASSUME_NONNULL_END
                 entity = self.currentEntity;
                 self.currentEntity.task.cancelledBlock = deleted;
                 [self.currentEntity.task cancel];
-
             }
             else {
                 entity = self.currentEntity;

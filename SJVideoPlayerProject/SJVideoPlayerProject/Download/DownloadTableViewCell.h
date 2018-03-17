@@ -27,6 +27,6 @@ NS_ASSUME_NONNULL_BEGIN
 - (void)clickedDownloadBtnOnTabCell:(DownloadTableViewCell *)cell;
 - (void)clickedPauseBtnOnTabCell:(DownloadTableViewCell *)cell;
 - (void)clickedCancelBtnOnTabCell:(DownloadTableViewCell *)cell;
-
+- (void)tabCell:(DownloadTableViewCell *)cell clickedPlayBtnAtCoverImageView:(UIImageView *)coverImageView;
 @end
 NS_ASSUME_NONNULL_END

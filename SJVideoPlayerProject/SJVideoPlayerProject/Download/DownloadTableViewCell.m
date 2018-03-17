@@ -15,6 +15,7 @@
 @interface DownloadTableViewCell ()
 
 @property (nonatomic, strong, readonly) UIImageView *coverImageView;
+@property (nonatomic, strong, readonly) UIButton *playBtn;
 @property (nonatomic, strong, readonly) UILabel *titleLabel;
 @property (nonatomic, strong, readonly) UILabel *progressLabel;
 @property (nonatomic, strong, readonly) UILabel *statusLabel;
@@ -28,6 +29,7 @@
 
 @implementation DownloadTableViewCell
 @synthesize downloadBtn = _downloadBtn;
+@synthesize playBtn = _playBtn;
 @synthesize pauseBtn = _pauseBtn;
 @synthesize cancelBtn = _cancelBtn;
 @synthesize coverImageView = _coverImageView;
@@ -64,6 +66,12 @@
             [self.delegate clickedCancelBtnOnTabCell:self];
         }
     }
+    else if ( btn == self.playBtn ) {
+        if ( [self.delegate respondsToSelector:@selector(tabCell:clickedPlayBtnAtCoverImageView:)] ) {
+            [self.delegate tabCell:self clickedPlayBtnAtCoverImageView:_coverImageView];
+        }
+    }
+        
 }
 
 - (void)setModel:(SJVideo *)model {
@@ -93,6 +101,7 @@
     if ( entity.mediaId != _model.mediaId ) return;
     _model.downloadStatus = entity.downloadStatus;
     dispatch_async(dispatch_get_main_queue(), ^{
+        if ( entity.downloadStatus == SJMediaDownloadStatus_Finished ) _model.filePath = entity.filePath;
         [self setDownloadStatusStrWithStatus:[entity downloadStatus]];
     });
 }
@@ -102,6 +111,7 @@
     self.selectionStyle = UITableViewCellSelectionStyleNone;
 
     [self.contentView addSubview:self.coverImageView];
+    [self.coverImageView addSubview:self.playBtn];
     [self.contentView addSubview:self.titleLabel];
     [self.contentView addSubview:self.progressLabel];
     [self.contentView addSubview:self.statusLabel];
@@ -112,8 +122,12 @@
     
     [_coverImageView mas_makeConstraints:^(MASConstraintMaker *make) {
         make.top.leading.offset(8);
-        make.width.offset(100 * 375 / SJScreen_Min());
+        make.width.offset(200 * 375 / SJScreen_Min());
         make.height.equalTo(_coverImageView.mas_width).multipliedBy(9 / 16.0f);
+    }];
+    
+    [_playBtn mas_makeConstraints:^(MASConstraintMaker *make) {
+        make.edges.offset(0);
     }];
     
     [_titleLabel mas_makeConstraints:^(MASConstraintMaker *make) {
@@ -159,7 +173,14 @@
 - (UIImageView *)coverImageView {
     if ( _coverImageView ) return _coverImageView;
     _coverImageView = [SJUIImageViewFactory imageViewWithBackgroundColor:[UIColor colorWithWhite:0.9 alpha:1] viewMode:UIViewContentModeScaleAspectFill];
+    _coverImageView.userInteractionEnabled = YES;
+    _coverImageView.tag = 101;
     return _coverImageView;
+}
+- (UIButton *)playBtn {
+    if ( _playBtn ) return _playBtn;
+    _playBtn = [SJUIButtonFactory buttonWithImageName:@"play" target:self sel:@selector(clickedBtn:) tag:0];
+    return _playBtn;
 }
 - (UILabel *)titleLabel {
     if ( _titleLabel ) return _titleLabel;

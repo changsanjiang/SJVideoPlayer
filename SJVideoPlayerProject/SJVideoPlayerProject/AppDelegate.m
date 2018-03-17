@@ -36,6 +36,8 @@
 
 - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions {
     
+    NSLog(@"%@", NSHomeDirectory());
+    
     _window = [[UIWindow alloc] initWithFrame:[UIScreen mainScreen].bounds];
     _window.backgroundColor = [UIColor whiteColor];
     UIStoryboard *sb = [UIStoryboard storyboardWithName:@"Main" bundle:nil];

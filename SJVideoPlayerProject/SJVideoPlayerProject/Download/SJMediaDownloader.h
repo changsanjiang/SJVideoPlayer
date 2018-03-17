@@ -64,8 +64,7 @@ typedef NS_ENUM(NSUInteger, SJMediaDownloadStatus) {
 #pragma mark -
 - (void)async_downloadWithID:(NSInteger)mediaId
                        title:(NSString * __nullable)title
-                 mediaURLStr:(NSString *)mediaURLStr
-                   tmpEntity:(void(^ __nullable)(id<SJMediaEntity> entiry))entity;
+                 mediaURLStr:(NSString *)mediaURLStr;
 
 - (void)async_pauseWithMediaID:(NSInteger)mediaId completion:(void(^ __nullable)(void))block;
 

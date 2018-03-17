@@ -13,6 +13,8 @@
 #import "DownloadTableViewCell.h"
 #import "SJVideo.h"
 #import "SJVideo+DownloadAdd.h"
+#import "SJVideoPlayer.h"
+#import "SJVideoPlayerHelper.h"
 
 static NSString *const DownloadTableViewCellID = @"DownloadTableViewCell";
 
@@ -20,6 +22,7 @@ static NSString *const DownloadTableViewCellID = @"DownloadTableViewCell";
 
 @property (nonatomic, strong, readonly) UITableView *tableView;
 @property (nonatomic, strong) NSArray<SJVideo *> *videoList;
+@property (nonatomic, strong, readonly) SJVideoPlayerHelper *videoPlayerHelper;
 
 @end
 
@@ -37,7 +40,60 @@ static NSString *const DownloadTableViewCellID = @"DownloadTableViewCell";
     
     // Do any additional setup after loading the view.
 }
+// please lazy load
+@synthesize videoPlayerHelper = _videoPlayerHelper;
+- (SJVideoPlayerHelper *)videoPlayerHelper {
+    if ( _videoPlayerHelper ) return _videoPlayerHelper;
+    _videoPlayerHelper = [[SJVideoPlayerHelper alloc] initWithViewController:self];
+    return _videoPlayerHelper;
+}
 
+- (BOOL)convertedAsset {
+    return NO;
+}
+
+- (void)viewDidAppear:(BOOL)animated {
+    [super viewDidAppear:animated];
+    self.videoPlayerHelper.vc_viewDidAppearExeBlock();
+}
+
+- (void)viewWillDisappear:(BOOL)animated {
+    [super viewWillDisappear:animated];
+    self.videoPlayerHelper.vc_viewWillDisappearExeBlock();
+}
+
+- (void)viewDidDisappear:(BOOL)animated {
+    [super viewDidDisappear:animated];
+    self.videoPlayerHelper.vc_viewDidDisappearExeBlock();
+}
+
+- (BOOL)prefersStatusBarHidden {
+    return self.videoPlayerHelper.vc_prefersStatusBarHiddenExeBlock();
+}
+
+- (UIStatusBarStyle)preferredStatusBarStyle {
+    return self.videoPlayerHelper.vc_preferredStatusBarStyleExeBlock();
+}
+
+- (void)tabCell:(DownloadTableViewCell *)cell clickedPlayBtnAtCoverImageView:(UIImageView *)coverImageView {
+    NSURL *URL = nil;
+    if ( cell.model.filePath ) {
+        URL = [NSURL fileURLWithPath:cell.model.filePath];
+    }
+    else {
+        URL = [NSURL fileURLWithPath:cell.model.playURLStr];
+    }
+    
+    SJVideoPlayerURLAsset *asset =
+    [[SJVideoPlayerURLAsset alloc] initWithAssetURL:URL
+                                         scrollView:self.tableView
+                                          indexPath:[self.tableView indexPathForCell:cell]
+                                       superviewTag:coverImageView.tag];
+    asset.title = cell.model.title;
+    asset.alwaysShowTitle = YES;
+
+    [self.videoPlayerHelper playWithAsset:asset playerParentView:coverImageView];
+}
 #pragma mark -
 - (void)_setupViews {
     [self.view addSubview:self.tableView];
@@ -95,7 +151,7 @@ static NSString *const DownloadTableViewCellID = @"DownloadTableViewCell";
     return cell;
 }
 - (void)clickedDownloadBtnOnTabCell:(DownloadTableViewCell *)cell {
-    [[SJMediaDownloader shared] async_downloadWithID:cell.model.mediaId title:cell.model.title mediaURLStr:cell.model.playURLStr tmpEntity:nil];
+    [[SJMediaDownloader shared] async_downloadWithID:cell.model.mediaId title:cell.model.title mediaURLStr:cell.model.playURLStr];
 }
 - (void)clickedPauseBtnOnTabCell:(DownloadTableViewCell *)cell {
     [[SJMediaDownloader shared] async_pauseWithMediaID:cell.model.mediaId completion:nil];

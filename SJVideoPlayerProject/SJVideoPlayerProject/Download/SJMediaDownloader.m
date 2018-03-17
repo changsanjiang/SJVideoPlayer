@@ -123,7 +123,7 @@ NS_ASSUME_NONNULL_END
 #pragma clang diagnostic ignored "-Wmismatched-parameter-types"
 - (void)async_requestMediasCompletion:(void(^)(SJMediaDownloader *downloader, NSArray<SJMediaEntity *> *medias))completionBlock {
     __weak typeof(self) _self = self;
-    [self.taskQueue addOperationWithBlock:^{
+    [self async_exeBlock:^{
         __strong typeof(_self) self = _self;
         if ( !self ) return;
         if ( completionBlock ) completionBlock(self, sql_query(self.database, "SELECT *FROM 'SJMediaEntity';", [SJMediaEntity class]));
@@ -132,7 +132,7 @@ NS_ASSUME_NONNULL_END
 - (void)async_requestMediaWithID:(NSInteger)mediaId
                       completion:(void(^)(SJMediaDownloader *downloader, SJMediaEntity *media))completionBlock {
     __weak typeof(self) _self = self;
-    [self.taskQueue addOperationWithBlock:^{
+    [self async_exeBlock:^{
         __strong typeof(_self) self = _self;
         if ( !self ) return;
         NSString *sqlStr = [NSString stringWithFormat:@"SELECT *FROM 'SJMediaEntity' WHERE mediaId = %zd;", mediaId];
@@ -188,12 +188,12 @@ NS_ASSUME_NONNULL_END
         NSLog(@"%@\n ----- %zd", error, next.downloadStatus);
 #endif
         if ( location ) {
-            NSString *relativePath = [NSString stringWithFormat:@"%@", next.URLHashStr];
-            NSString *saveFolder = [[SJMediaEntity rootFolder] stringByAppendingPathComponent:[NSString stringWithFormat:@"%@", relativePath]];
+            NSString *folder = [NSString stringWithFormat:@"%@", next.URLHashStr];
+            NSString *saveFolder = [[SJMediaEntity rootFolder] stringByAppendingPathComponent:[NSString stringWithFormat:@"%@", folder]];
             NSString *savePath = [saveFolder stringByAppendingPathComponent:[NSString stringWithFormat:@"%@.%@", next.URLHashStr, next.format]];
             [[NSFileManager defaultManager] createDirectoryAtPath:saveFolder withIntermediateDirectories:YES attributes:nil error:nil];
             [[NSFileManager defaultManager] moveItemAtPath:location.path toPath:savePath error:nil];
-            next.relativePath = relativePath;
+            next.relativePath = [folder stringByAppendingPathComponent:savePath.lastPathComponent];
             next.downloadStatus = SJMediaDownloadStatus_Finished;
             [next postStatus];
             [self sync_insertOrReplaceMediaWithEntity:next];
@@ -299,7 +299,7 @@ NS_ASSUME_NONNULL_END
     return _downloadSession;
 }
 
-- (void)async_downloadWithID:(NSInteger)mediaId title:(NSString * __nullable)title mediaURLStr:(NSString *)mediaURLStr tmpEntity:(void(^ __nullable)(id<SJMediaEntity> entiry))entity {
+- (void)async_downloadWithID:(NSInteger)mediaId title:(NSString * __nullable)title mediaURLStr:(NSString *)mediaURLStr {
     __weak typeof(self) _self = self;
     [self async_requestMediaWithID:mediaId completion:^(SJMediaDownloader * _Nonnull downloader, SJMediaEntity * media) {
         __strong typeof(_self) self = _self;
@@ -307,7 +307,6 @@ NS_ASSUME_NONNULL_END
         if ( media.downloadStatus == SJMediaDownloadStatus_Downloading ||
              media.downloadStatus == SJMediaDownloadStatus_Waiting ||
              media.downloadStatus == SJMediaDownloadStatus_Finished ) {
-            if ( entity ) entity(media);
             return;
         }
         else if ( !media ) {
@@ -326,7 +325,6 @@ NS_ASSUME_NONNULL_END
             [self sync_insertOrReplaceMediaWithEntity:media];
         }
         
-        if ( entity ) entity(media);
         if ( !self.currentEntity ) [self sync_downloadWithMedia:media];
     }];
 }
@@ -356,6 +354,7 @@ NS_ASSUME_NONNULL_END
             }
             [self sync_requestNextDownloadMedia];
         };
+        
         
         if ( self.currentEntity && self.currentEntity.mediaId == mediaId && self.currentEntity.downloadStatus == SJMediaDownloadStatus_Downloading ) {
             entity = self.currentEntity;

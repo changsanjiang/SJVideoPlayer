@@ -16,6 +16,8 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (instancetype)initWithVideo:(SJVideoModel *)video asset:(SJVideoPlayerURLAsset *__nullable)asset;
 
+- (instancetype)initWithVideo:(SJVideoModel *)video beginTime:(NSTimeInterval)beginTime;
+
 @end
 
 NS_ASSUME_NONNULL_END

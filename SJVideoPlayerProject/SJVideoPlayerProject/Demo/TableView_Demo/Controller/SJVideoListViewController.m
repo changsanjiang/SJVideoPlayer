@@ -104,7 +104,8 @@ static NSString *const SJVideoListTableViewCellID = @"SJVideoListTableViewCell";
 - (void)clickedPlayOnTabCell:(SJVideoListTableViewCell *)cell playerParentView:(UIView *)playerParentView {
     self.playedIndexPath = [self.tableView indexPathForCell:cell];
     SJVideoPlayerURLAsset *asset =
-    [[SJVideoPlayerURLAsset alloc] initWithAssetURL:[[NSBundle mainBundle] URLForResource:@"sample" withExtension:@"mp4"]
+//    [[SJVideoPlayerURLAsset alloc] initWithAssetURL:[[NSBundle mainBundle] URLForResource:@"sample" withExtension:@"mp4"]
+    [[SJVideoPlayerURLAsset alloc] initWithAssetURL:[NSURL URLWithString:@"http://video.cdn.lanwuzhe.com/14945858406905f0c"]
                                          scrollView:self.tableView
                                           indexPath:[self.tableView indexPathForCell:cell]
                                        superviewTag:playerParentView.tag];

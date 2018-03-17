@@ -93,8 +93,6 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic, strong, readonly) _SJControlLayerAppearStateManager *displayRecorder;
 @property (nonatomic, strong, readonly) _SJReachabilityObserver *reachabilityObserver;
 
-@property (nonatomic, assign) BOOL converted;
-
 - (void)clearAsset;
 
 @end
@@ -125,15 +123,9 @@ NS_ASSUME_NONNULL_END
 #endif
 
     [_presentView removeFromSuperview];
-    [_view removeFromSuperview];
-    
-    if ( _converted ) {
-        [self pause];
-    }
-    else {
-        if ( self.asset && self.assetDeallocExeBlock ) self.assetDeallocExeBlock(self);
-        [self stop];
-    }
+//    [_view removeFromSuperview];
+    if ( self.asset && self.assetDeallocExeBlock ) self.assetDeallocExeBlock(self);
+    [self stop];
 }
 
 #pragma mark -
@@ -143,7 +135,7 @@ NS_ASSUME_NONNULL_END
     
     if ( !asset ) return;
     
-    _converted = asset.converted;
+//    _converted = asset.converted;
     
     if ( self.mute ) self.mute = YES; // update
     

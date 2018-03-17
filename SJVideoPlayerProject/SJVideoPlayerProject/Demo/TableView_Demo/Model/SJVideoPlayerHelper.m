@@ -301,6 +301,14 @@ NS_ASSUME_NONNULL_END
     return self.videoPlayer.URLAsset;
 }
 
+- (NSTimeInterval)currentTime {
+    return self.videoPlayer.currentTime;
+}
+
+- (NSTimeInterval)totalTime {
+    return self.videoPlayer.totalTime;
+}
+
 - (void (^)(void))vc_viewDidAppearExeBlock {
     __weak typeof(self) _self = self;
     return ^ () {

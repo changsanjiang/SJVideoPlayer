@@ -25,6 +25,8 @@ NS_ASSUME_NONNULL_BEGIN
 - (void)clearAsset;
 
 @property (nonatomic, strong, readonly, nullable) SJVideoPlayerURLAsset *asset;
+@property (nonatomic, readonly) NSTimeInterval currentTime;
+@property (nonatomic, readonly) NSTimeInterval totalTime;
 
 @property (nonatomic, copy, readonly) void(^vc_viewDidAppearExeBlock)(void);
 

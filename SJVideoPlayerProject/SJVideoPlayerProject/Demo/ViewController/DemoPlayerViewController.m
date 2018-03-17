@@ -48,6 +48,16 @@
     return self;
 }
 
+- (instancetype)initWithVideo:(SJVideoModel *)video beginTime:(NSTimeInterval)beginTime {
+    self = [super init];
+    if ( !self ) return nil;
+    _video = video;
+    _asset = [[SJVideoPlayerURLAsset alloc] initWithAssetURL:[NSURL URLWithString:self.video.playURLStr] beginTime:beginTime];
+    _asset.title = self.video.title;
+    _asset.alwaysShowTitle = YES;
+    return self;
+}
+
 - (void)viewDidLoad {
     [super viewDidLoad];
     

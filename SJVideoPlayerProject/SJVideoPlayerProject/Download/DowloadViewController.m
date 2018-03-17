@@ -38,7 +38,7 @@ static NSString *const DownloadTableViewCellID = @"DownloadTableViewCell";
     
     [self prepareTestData];
     
-    [self _installNotifications];
+    [self _installDownloaderNotifications];
     
     // Do any additional setup after loading the view.
 }
@@ -49,7 +49,7 @@ static NSString *const DownloadTableViewCellID = @"DownloadTableViewCell";
 
 #pragma mark - downloader
 
-- (void)_installNotifications {
+- (void)_installDownloaderNotifications {
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(mediaDownloadProgress:) name:SJMediaDownloadProgressNotification object:nil];
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(mediaDownloadStatusChanged:) name:SJMediaDownloadStatusChangedNotification object:nil];
 }
@@ -74,7 +74,8 @@ static NSString *const DownloadTableViewCellID = @"DownloadTableViewCell";
         if ( obj.mediaId != entity.mediaId ) return ;
         *stop = YES;
         obj.downloadStatus = entity.downloadStatus;
-        if ( entity.downloadStatus == SJMediaDownloadStatus_Finished ) obj.filePath = entity.filePath;
+        obj.filePath = entity.filePath;
+        
         dispatch_async(dispatch_get_main_queue(), ^{
             DownloadTableViewCell *cell = [self.tableView cellForRowAtIndexPath:[NSIndexPath indexPathForRow:idx inSection:0]];
             [cell updateStatus];

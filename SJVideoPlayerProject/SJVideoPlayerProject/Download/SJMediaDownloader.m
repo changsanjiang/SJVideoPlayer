@@ -480,12 +480,9 @@ NS_ASSUME_NONNULL_END
     _URLHashStr = [NSString stringWithFormat:@"%zd", [_URLStr hash]];
     return _URLHashStr;
 }
-@synthesize format = _format;
 - (NSString *)format {
-    if ( !_URLStr ) return nil;
-    if ( _format ) return _format;
-    _format = [_URLStr.lastPathComponent componentsSeparatedByString:@"."].lastObject;
-    return _format;
+    if ( _URLStr.pathExtension.length != 0 )  return _URLStr.pathExtension;
+    else return @"mp4";
 }
 @synthesize URL = _URL;
 - (NSURL *)URL {

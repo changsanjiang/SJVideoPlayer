@@ -187,7 +187,6 @@ NS_ASSUME_NONNULL_END
 #if DEBUG_CONDITION
         NSLog(@"%@\n ----- %zd", error, next.downloadStatus);
 #endif
-        self.currentEntity = nil;
         if ( location ) {
             NSString *relativePath = [NSString stringWithFormat:@"%@", next.URLHashStr];
             NSString *saveFolder = [[SJMediaEntity rootFolder] stringByAppendingPathComponent:[NSString stringWithFormat:@"%@", relativePath]];
@@ -224,7 +223,6 @@ NS_ASSUME_NONNULL_END
                     break;
                 case SJMediaDownloadErrorCode_Cancelled: {
                     if ( task.cancelledBlock ) task.cancelledBlock();
-                    [self sync_requestNextDownloadMedia];
                 }
                     break;
                 case SJMediaDownloadErrorCode_ConnectionWasLost: {
@@ -254,9 +252,11 @@ NS_ASSUME_NONNULL_END
                     break;
             }
         }
+        
+        self.currentEntity = nil;
     };
 }
-- (void)async_suspendWithTask:(NSURLSessionDownloadTask *)task entity:( SJMediaEntity *)entity completion:(void(^)(BOOL saved))block {
+- (void)async_suspendWithTask:(NSURLSessionDownloadTask *)task entity:( SJMediaEntity *)entity completion:(void(^ __nullable)(BOOL saved))block {
     __weak typeof(self) _self = self;
     [task cancelByProducingResumeData:^(NSData * _Nullable resumeData) {
         __strong typeof(_self) self = _self;
@@ -268,9 +268,6 @@ NS_ASSUME_NONNULL_END
             }
             [resumeData writeToFile:entity.resumePath atomically:YES];
         }
-        [self async_exeBlock:^{
-           if ( block ) block(resumeData != nil);
-        }];
     }];
 }
 - (void)sync_insertOrReplaceMediaWithEntity:(SJMediaEntity *)entity {
@@ -350,23 +347,16 @@ NS_ASSUME_NONNULL_END
                 entity.downloadStatus = SJMediaDownloadStatus_Paused;
                 [entity postStatus];
                 [self sync_insertOrReplaceMediaWithEntity:self.currentEntity];
-                if ( entity == self.currentEntity ) self.currentEntity = nil;
+                if ( entity.mediaId == self.currentEntity.mediaId ) self.currentEntity = nil;
                 if ( block ) block();
             }
             [self sync_requestNextDownloadMedia];
         };
         
-        if ( self.currentEntity && self.currentEntity.mediaId == mediaId ) {
-            [self async_suspendWithTask:self.currentEntity.task entity:self.currentEntity completion:^(BOOL saved) {
-                __strong typeof(_self) self = _self;
-                if ( !self ) return;
-                if ( !saved ) {
-                    self.currentEntity.downloadProgress = 0;
-                    [self.currentEntity postProgress];
-                }
-                entity = self.currentEntity;
-                pausedBlock();
-            }];
+        if ( self.currentEntity && self.currentEntity.mediaId == mediaId && self.currentEntity.downloadStatus == SJMediaDownloadStatus_Downloading ) {
+            entity = self.currentEntity;
+            self.currentEntity.task.cancelledBlock = pausedBlock;
+            [self async_suspendWithTask:self.currentEntity.task entity:self.currentEntity completion:^(BOOL saved) {}];
         }
         else {
             [self async_requestMediaWithID:mediaId completion:^(SJMediaDownloader * _Nonnull downloader, SJMediaEntity *media) {

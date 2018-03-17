@@ -9,11 +9,13 @@
 #import <Foundation/Foundation.h>
 
 @interface SJVideo : NSObject
-
-+ (NSArray<SJVideo *> *)testVideos;
-
 @property (nonatomic, assign, readonly) NSInteger mediaId;
 @property (nonatomic, strong, readonly) NSString *title;
 @property (nonatomic, strong, readonly) NSString *playURLStr;
+@property (nonatomic, strong, readonly) NSString *coverURLStr;
+
+// test
++ (NSArray<SJVideo *> *)testVideos;
+@property (nonatomic, strong, readonly) NSString *testCoverImage;
 
 @end

@@ -28,6 +28,7 @@
     _mediaId = Id;
     _title = title;
     _playURLStr = playURLStr;
+    _testCoverImage = @"helun";
     return self;
 }
 @end

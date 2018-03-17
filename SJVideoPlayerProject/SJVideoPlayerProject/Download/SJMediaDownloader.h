@@ -36,9 +36,12 @@ typedef NS_ENUM(NSUInteger, SJMediaDownloadStatus) {
     SJMediaDownloadStatus_Finished,
     SJMediaDownloadStatus_Paused,
     SJMediaDownloadStatus_Failed,
-    SJMediaDownloadStatus_Cancelled,
+    SJMediaDownloadStatus_Deleted,
+    SJMediaDownloadStatus_BadURL,
     SJMediaDownloadStatus_TimeOut,
+    SJMediaDownloadStatus_UnsupportedURL,
     SJMediaDownloadStatus_ConnectionWasLost,
+    SJMediaDownloadStatus_NotConnectedToInternet,
 };
 
 @protocol SJMediaEntity;
@@ -56,26 +59,29 @@ typedef NS_ENUM(NSUInteger, SJMediaDownloadStatus) {
 
 - (void)async_requestMediaWithID:(NSInteger)mediaId completion:(void(^)(SJMediaDownloader *downloader, id<SJMediaEntity> __nullable media))completionBlock;
 
+- (void)async_exeBlock:(void(^)(void))block;
+
 #pragma mark -
 - (void)async_downloadWithID:(NSInteger)mediaId
                        title:(NSString * __nullable)title
                  mediaURLStr:(NSString *)mediaURLStr
                    tmpEntity:(void(^ __nullable)(id<SJMediaEntity> entiry))entity;
 
-- (void)async_pauseWithMediaID:(NSInteger)mediaId completion:(void(^)(void))block;
+- (void)async_pauseWithMediaID:(NSInteger)mediaId completion:(void(^ __nullable)(void))block;
 
-- (void)async_deleteWithMediaID:(NSInteger)mediaId completion:(void(^)(void))block;
+- (void)async_deleteWithMediaID:(NSInteger)mediaId completion:(void(^ __nullable)(void))block;
 
 @end
 
 @protocol SJMediaEntity <NSObject>
 
 @property (nonatomic, assign, readonly) NSInteger mediaId;
+@property (nonatomic, strong, readonly) NSString *URLStr;
 @property (nonatomic, assign, readonly) SJMediaDownloadStatus downloadStatus;
 @property (nonatomic, strong, readonly, nullable) NSString *title;
-@property (nonatomic, strong, readonly) NSString *URLStr;
+@property (nonatomic, strong, readonly, nullable) NSString *coverURLStr;
 @property (nonatomic, strong, readonly, nullable) NSString *filePath;
-@property (nonatomic, assign, readonly) float progress;
+@property (nonatomic, assign, readonly) float downloadProgress;
 
 @end
 

@@ -11,11 +11,22 @@
 NS_ASSUME_NONNULL_BEGIN
 @class  SJVideo;
 
+@protocol DownloadTableViewCellDelegate;
+
 @interface DownloadTableViewCell : UITableViewCell
 
-+ (CGFloat)height;
+@property (nonatomic, weak, readwrite, nullable) id<DownloadTableViewCellDelegate> delegate;
 
 @property (nonatomic, strong) SJVideo *model;
+
+@end
+
+@protocol DownloadTableViewCellDelegate <NSObject>
+			
+@optional
+- (void)clickedDownloadBtnOnTabCell:(DownloadTableViewCell *)cell;
+- (void)clickedPauseBtnOnTabCell:(DownloadTableViewCell *)cell;
+- (void)clickedCancelBtnOnTabCell:(DownloadTableViewCell *)cell;
 
 @end
 NS_ASSUME_NONNULL_END

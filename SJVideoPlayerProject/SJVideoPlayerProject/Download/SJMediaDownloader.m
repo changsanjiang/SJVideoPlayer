@@ -19,24 +19,27 @@ inline static bool sql_exe(sqlite3 *database, const char *sql);
 inline static NSArray<id> *sql_query(sqlite3 *database, const char *sql, Class cls);
 
 typedef NS_ENUM(NSInteger, SJMediaDownloadErrorCode) {
-    SJMediaDownloadErrorCode_Unknown,
-    SJMediaDownloadErrorCode_Cancelled = -999,
-    SJMediaDownloadErrorCode_TimeOut = -1001,
-    SJMediaDownloadErrorCode_ConnectionWasLost = -1005,
+    SJMediaDownloadErrorCode_Unknown = NSURLErrorUnknown,
+    SJMediaDownloadErrorCode_Cancelled = NSURLErrorCancelled,
+    SJMediaDownloadErrorCode_BadURL = NSURLErrorBadURL,
+    SJMediaDownloadErrorCode_TimeOut = NSURLErrorTimedOut,
+    SJMediaDownloadErrorCode_UnsupportedURL = NSURLErrorUnsupportedURL,
+    SJMediaDownloadErrorCode_ConnectionWasLost = NSURLErrorNetworkConnectionLost,
+    SJMediaDownloadErrorCode_NotConnectedToInternet = NSURLErrorNotConnectedToInternet,
 };
 
 @interface SJMediaEntity : NSObject <SJMediaEntity>
-@property (nonatomic, assign) SJMediaDownloadStatus downloadStatus;
 @property (nonatomic, assign) NSInteger mediaId;
 @property (nonatomic, strong) NSString *URLStr;
-@property (nonatomic, assign) NSTimeInterval downloadTime;  // 插入数据库的时间
-@property (nonatomic, assign) float progress;
-
+@property (nonatomic, assign) SJMediaDownloadStatus downloadStatus;
 @property (nonatomic, strong, nullable) NSString *title;
+@property (nonatomic, strong, nullable) NSString *coverURLStr;
+@property (nonatomic, assign) NSTimeInterval downloadTime;  // 插入数据库的时间
+@property (nonatomic, assign) float downloadProgress;
+
 @property (class, nonatomic, strong, readonly) NSString *rootFolder;
 @property (class, nonatomic, assign) BOOL startNotifi;
 @property (nonatomic, weak, nullable) NSURLSessionDownloadTask *task;
-@property (nonatomic, copy, nullable) void(^cancel)(void);
 @property (nonatomic, strong, nullable) NSString *relativePath;
 @property (nonatomic, strong, readonly) NSString *URLHashStr;
 @property (nonatomic, strong, readonly) NSString *resumePath;
@@ -52,6 +55,7 @@ typedef NS_ENUM(NSInteger, SJMediaDownloadErrorCode) {
 @interface NSURLSessionTask (SJDownloaderAdd)
 @property (nonatomic, copy, nullable) void(^downloadProgressBlock)(__kindof NSURLSessionTask *task, float progress);;
 @property (nonatomic, copy, nullable) void(^endDownloadHandleBlock)(__kindof NSURLSessionTask *task, NSURL *__nullable location, NSError *__nullable error);
+@property (nonatomic, copy, nullable) void(^cancelledBlock)(void);
 @end
 
 @interface SJMediaDownloader ()
@@ -135,11 +139,19 @@ NS_ASSUME_NONNULL_END
         if ( completionBlock ) completionBlock(self, sql_query(self.database, sqlStr.UTF8String, [SJMediaEntity class]).firstObject);
     }];
 }
+- (void)async_exeBlock:(void(^)(void))block {
+    [self.taskQueue addOperationWithBlock:^{
+        if ( block ) block();
+    }];
+}
 - (void)sync_requestNextDownloadMedia {
     if ( self.currentEntity ) return;
-    NSString *sql = [NSString stringWithFormat:@"SELECT *FROM 'SJMediaEntity' WHERE status =  %zd ORDER BY 'downloadTime';", SJMediaDownloadStatus_Waiting];
+    NSString *sql = [NSString stringWithFormat:@"SELECT *FROM 'SJMediaEntity' WHERE downloadStatus =  %zd ORDER BY 'downloadTime';", SJMediaDownloadStatus_Waiting];
     SJMediaEntity *next = sql_query(self.database, sql.UTF8String, [SJMediaEntity class]).firstObject;
     if ( !next ) return;
+    [self sync_downloadWithMedia:next];
+}
+- (void)sync_downloadWithMedia:(SJMediaEntity *)next {
     self.currentEntity = next;
     next.downloadStatus = SJMediaDownloadStatus_Downloading;
     [next postStatus];
@@ -164,7 +176,7 @@ NS_ASSUME_NONNULL_END
     next.task = task;
     
     task.downloadProgressBlock = ^(__kindof NSURLSessionTask * _Nonnull task, float progress) {
-        next.progress = progress;
+        next.downloadProgress = progress;
         [next postProgress];
     };
     
@@ -189,64 +201,86 @@ NS_ASSUME_NONNULL_END
             [self sync_requestNextDownloadMedia];
         }
         else {
+            __block SJMediaDownloadStatus status = SJMediaDownloadStatus_Unknown;
+            void(^suspendExeBlock)(BOOL saved) = ^ (BOOL saved) {
+                __strong typeof(_self) self = _self;
+                if ( !self ) return;
+                if ( !saved ) {
+                    next.downloadProgress = 0;
+                    [next postProgress];
+                }
+                next.downloadStatus = status;
+                [next postStatus];
+                [self sync_insertOrReplaceMediaWithEntity:next];
+                [self sync_requestNextDownloadMedia];
+            };
+            
             switch ( (SJMediaDownloadErrorCode)error.code ) {
                 case SJMediaDownloadErrorCode_Unknown: break;
                 case SJMediaDownloadErrorCode_TimeOut: {
-                    [self async_suspendWithTask:task entity:next status:SJMediaDownloadStatus_TimeOut completion:^{
-                        __strong typeof(_self) self = _self;
-                        if ( !self ) return;
-                        [self sync_requestNextDownloadMedia];
-                    }];
+                    status = SJMediaDownloadErrorCode_TimeOut;
+                    [self async_suspendWithTask:task entity:next completion:suspendExeBlock];
                 }
                     break;
                 case SJMediaDownloadErrorCode_Cancelled: {
-                    if ( next.cancel ) next.cancel();
-                    next.cancel = nil;
-                    if ( next.downloadStatus == SJMediaDownloadStatus_Paused ) [self sync_insertOrReplaceMediaWithEntity:next];
-                    else [self sync_deleteMediaWithEntity:next];
+                    if ( task.cancelledBlock ) task.cancelledBlock();
                     [self sync_requestNextDownloadMedia];
                 }
                     break;
                 case SJMediaDownloadErrorCode_ConnectionWasLost: {
-                    [self async_suspendWithTask:task entity:next status:SJMediaDownloadStatus_ConnectionWasLost completion:^{
-                        __strong typeof(_self) self = _self;
-                        if ( !self ) return;
-                        [self sync_requestNextDownloadMedia];
-                    }];
+                    status = SJMediaDownloadStatus_ConnectionWasLost;
+                    [self async_suspendWithTask:task entity:next completion:suspendExeBlock];
+                }
+                    break;
+                case SJMediaDownloadErrorCode_UnsupportedURL: {
+                    status = SJMediaDownloadStatus_UnsupportedURL;
+                    [self async_suspendWithTask:task entity:next completion:suspendExeBlock];
+                }
+                    break;
+                case SJMediaDownloadErrorCode_BadURL: {
+                    status = SJMediaDownloadStatus_BadURL;
+                    [self async_suspendWithTask:task entity:next completion:suspendExeBlock];
+                }
+                    break;
+                case SJMediaDownloadErrorCode_NotConnectedToInternet: {
+                    status = SJMediaDownloadStatus_NotConnectedToInternet;
+                    [self async_suspendWithTask:task entity:next completion:suspendExeBlock];
+                }
+                    break;
+                default: {
+                    status = SJMediaDownloadStatus_Failed;
+                    [self async_suspendWithTask:task entity:next completion:suspendExeBlock];
                 }
                     break;
             }
         }
     };
 }
-- (void)async_suspendWithTask:(NSURLSessionDownloadTask *)task entity:( SJMediaEntity *)entity status:(SJMediaDownloadStatus)status completion:(void(^)(void))block {
+- (void)async_suspendWithTask:(NSURLSessionDownloadTask *)task entity:( SJMediaEntity *)entity completion:(void(^)(BOOL saved))block {
     __weak typeof(self) _self = self;
     [task cancelByProducingResumeData:^(NSData * _Nullable resumeData) {
         __strong typeof(_self) self = _self;
         if ( !self ) return;
-        NSString *folder = [entity.resumePath stringByDeletingLastPathComponent];
-        if ( ![[NSFileManager defaultManager] fileExistsAtPath:folder] ) {
-            [[NSFileManager defaultManager] createDirectoryAtPath:folder withIntermediateDirectories:YES attributes:nil error:nil];
+        if ( resumeData ) {
+            NSString *folder = [entity.resumePath stringByDeletingLastPathComponent];
+            if ( ![[NSFileManager defaultManager] fileExistsAtPath:folder] ) {
+                [[NSFileManager defaultManager] createDirectoryAtPath:folder withIntermediateDirectories:YES attributes:nil error:nil];
+            }
+            [resumeData writeToFile:entity.resumePath atomically:YES];
         }
-        [resumeData writeToFile:entity.resumePath atomically:YES];
-        entity.downloadStatus = status;
-        [entity postStatus];
-        [self sync_insertOrReplaceMediaWithEntity:entity];
-        [self.taskQueue addOperationWithBlock:^{
-            __strong typeof(_self) self = _self;
-            if ( !self ) return;
-            if ( block ) block();
+        [self async_exeBlock:^{
+           if ( block ) block(resumeData != nil);
         }];
     }];
 }
 - (void)sync_insertOrReplaceMediaWithEntity:(SJMediaEntity *)entity {
-    sql_exe(self.database, [NSString stringWithFormat:@"INSERT OR REPLACE INTO 'SJMediaEntity' VALUES (%zd, '%@', %zd, '%@', '%ld', '%@');", entity.mediaId, entity.title, entity.downloadStatus, entity.URLStr, time(NULL), entity.relativePath].UTF8String);
+    sql_exe(self.database, [NSString stringWithFormat:@"INSERT OR REPLACE INTO 'SJMediaEntity' VALUES (%zd, '%@', %zd, '%@', '%ld', '%@', %f);", entity.mediaId, entity.title, entity.downloadStatus, entity.URLStr, time(NULL), entity.relativePath, entity.downloadProgress].UTF8String);
 }
 - (void)sync_deleteMediaWithEntity:(SJMediaEntity *)entity {
     sql_exe(self.database, [NSString stringWithFormat:@"DELETE FROM 'SJMediaEntity' WHERE mediaId = %zd;", entity.mediaId].UTF8String);
 }
 - (void)initializeDatabase {
-    sql_exe(self.database, "CREATE TABLE IF NOT EXISTS SJMediaEntity ( 'mediaId' INTEGER PRIMARY KEY, 'title' TEXT, 'status' INTEGER, 'URLStr' TEXT, 'downloadTime' INTEGER, 'relativePath' TEXT);");
+    sql_exe(self.database, "CREATE TABLE IF NOT EXISTS SJMediaEntity ( 'mediaId' INTEGER PRIMARY KEY, 'title' TEXT, 'downloadStatus' INTEGER, 'URLStr' TEXT, 'downloadTime' INTEGER, 'relativePath' TEXT, 'downloadProgress' FLOAT);");
 }
 @synthesize database = _database;
 - (sqlite3 *)database {
@@ -282,87 +316,111 @@ NS_ASSUME_NONNULL_END
             media.title = title;
             media.URLStr = mediaURLStr;
             media.downloadStatus = SJMediaDownloadStatus_Waiting;
+            [media postStatus];
             [self sync_insertOrReplaceMediaWithEntity:media];
         }
         else if ( media.downloadStatus != SJMediaDownloadStatus_Finished ) {
+            if ( media.downloadStatus == SJMediaDownloadStatus_UnsupportedURL ) media.URLStr = mediaURLStr;
             media.downloadStatus = SJMediaDownloadStatus_Waiting;
             [media postStatus];
             [self sync_insertOrReplaceMediaWithEntity:media];
         }
         if ( entity ) entity(media);
-        [self sync_requestNextDownloadMedia];
+        if ( !self.currentEntity ) [self sync_downloadWithMedia:media];
     }];
 }
 
 - (void)async_pauseWithMediaID:(NSInteger)mediaId completion:(void(^)(void))block {
     __weak typeof(self) _self = self;
-    [self.taskQueue addOperationWithBlock:^{
+    [self async_exeBlock:^{
         __strong typeof(_self) self = _self;
         if ( !self ) return;
-        if ( self.currentEntity && self.currentEntity.mediaId == mediaId ) {
-            if ( self.currentEntity.downloadStatus == SJMediaDownloadStatus_Waiting ) {
-                self.currentEntity.downloadStatus = SJMediaDownloadStatus_Paused;
-                [self sync_insertOrReplaceMediaWithEntity:self.currentEntity];
-                [self sync_requestNextDownloadMedia];
-                [self.currentEntity postStatus];
-                if ( block ) block();
-            }
-            else if ( self.currentEntity.downloadStatus == SJMediaDownloadStatus_Downloading ) {
-                [self async_suspendWithTask:self.currentEntity.task entity:self.currentEntity status:SJMediaDownloadStatus_Paused completion:^{
-                    if ( block ) block();
-                }];
-            }
-            return;
-        }
-        // else
-        [self async_requestMediaWithID:mediaId completion:^(SJMediaDownloader * _Nonnull downloader, SJMediaEntity *media) {
+        __block SJMediaEntity *entity = nil;
+        __weak typeof(self) _self = self;
+        void(^pausedBlock)(void) = ^ {
             __strong typeof(_self) self = _self;
             if ( !self ) return;
-            if ( media.downloadStatus == SJMediaDownloadStatus_Finished ) {
+            if ( entity.downloadStatus == SJMediaDownloadStatus_Paused ) {
+                if ( block ) block();
+            }
+            else if ( entity.downloadStatus == SJMediaDownloadStatus_Finished ) {
                 NSLog(@"文件已下载, 无法暂停");
             }
             else {
-                media.downloadStatus = SJMediaDownloadStatus_Paused;
-                [self sync_insertOrReplaceMediaWithEntity:media];
-                [self.currentEntity postStatus];
+                entity.downloadStatus = SJMediaDownloadStatus_Paused;
+                [entity postStatus];
+                [self sync_insertOrReplaceMediaWithEntity:self.currentEntity];
+                if ( entity == self.currentEntity ) self.currentEntity = nil;
                 if ( block ) block();
             }
-        }];
+            [self sync_requestNextDownloadMedia];
+        };
+        
+        if ( self.currentEntity && self.currentEntity.mediaId == mediaId ) {
+            [self async_suspendWithTask:self.currentEntity.task entity:self.currentEntity completion:^(BOOL saved) {
+                __strong typeof(_self) self = _self;
+                if ( !self ) return;
+                if ( !saved ) {
+                    self.currentEntity.downloadProgress = 0;
+                    [self.currentEntity postProgress];
+                }
+                entity = self.currentEntity;
+                pausedBlock();
+            }];
+        }
+        else {
+            [self async_requestMediaWithID:mediaId completion:^(SJMediaDownloader * _Nonnull downloader, SJMediaEntity *media) {
+                __strong typeof(_self) self = _self;
+                if ( !self ) return;
+                entity = media;
+                pausedBlock();
+            }];
+        }
     }];
 }
 
 - (void)async_deleteWithMediaID:(NSInteger)mediaId completion:(void(^)(void))block {
     __weak typeof(self) _self = self;
-    [self.taskQueue addOperationWithBlock:^{
+    [self async_exeBlock:^{
         __strong typeof(_self) self = _self;
         if ( !self ) return;
-        if ( self.currentEntity && self.currentEntity.mediaId == mediaId ) {
-            if ( self.currentEntity.downloadStatus == SJMediaDownloadStatus_Downloading ) {
-                self.currentEntity.cancel = ^{
-                    __strong typeof(_self) self = _self;
-                    if ( !self ) return;
-                    [self sync_deleteMediaWithEntity:self.currentEntity];
-                    if ( block ) block();
-                };
-                self.currentEntity.downloadStatus = SJMediaDownloadStatus_Cancelled;
-                [self.currentEntity.task cancel];
-            }
-            else {
-                [self sync_deleteMediaWithEntity:self.currentEntity];
-                if ( block ) block();
-            }
-            return;
-        }
-        // else
-        [self async_requestMediaWithID:mediaId completion:^(SJMediaDownloader * _Nonnull downloader, SJMediaEntity *media) {
+        
+        __block SJMediaEntity *entity = nil;
+        void(^deleted)(void) = ^ {
             __strong typeof(_self) self = _self;
             if ( !self ) return;
-            if ( [[NSFileManager defaultManager] fileExistsAtPath:media.resumePath] ) {
-                [[NSFileManager defaultManager] removeItemAtPath:media.resumePath error:nil];
+            if ( [[NSFileManager defaultManager] fileExistsAtPath:entity.resumePath] ) {
+                [[NSFileManager defaultManager] removeItemAtPath:entity.resumePath error:nil];
             }
-            [self sync_deleteMediaWithEntity:media];
+            entity.downloadStatus = SJMediaDownloadStatus_Deleted;
+            [self sync_deleteMediaWithEntity:entity];
+            [entity postStatus];
+            entity.downloadProgress = 0;
+            [entity postProgress];
+            if ( entity == self.currentEntity ) self.currentEntity = nil;
             if ( block ) block();
-        }];
+        };
+        
+        if ( self.currentEntity && self.currentEntity.mediaId == mediaId ) {
+            if ( self.currentEntity.task ) {
+                entity = self.currentEntity;
+                self.currentEntity.task.cancelledBlock = deleted;
+                [self.currentEntity.task cancel];
+
+            }
+            else {
+                entity = self.currentEntity;
+                deleted();
+            }
+        }
+        else {
+            [self async_requestMediaWithID:mediaId completion:^(SJMediaDownloader * _Nonnull downloader, SJMediaEntity *media) {
+                __strong typeof(_self) self = _self;
+                if ( !self ) return;
+                entity = media;
+                deleted();
+            }];
+        }
     }];
 }
 #pragma mark -
@@ -387,7 +445,7 @@ NS_ASSUME_NONNULL_END
     if ( downloadTask.endDownloadHandleBlock ) downloadTask.endDownloadHandleBlock(downloadTask, location, nil);
 }
 - (void)URLSession:(NSURLSession *)session task:(NSURLSessionTask *)task didCompleteWithError:(NSError *)error {
-    if ( task.endDownloadHandleBlock ) task.endDownloadHandleBlock(task, nil, error);
+    if ( error ) if ( task.endDownloadHandleBlock ) task.endDownloadHandleBlock(task, nil, error);
 }
 - (void)URLSession:(NSURLSession *)session downloadTask:(NSURLSessionDownloadTask *)downloadTask didResumeAtOffset:(int64_t)fileOffset expectedTotalBytes:(int64_t)expectedTotalBytes {
 #if DEBUG_CONDITION
@@ -407,6 +465,12 @@ NS_ASSUME_NONNULL_END
     objc_setAssociatedObject(self, @selector(endDownloadHandleBlock), endDownloadHandleBlock, OBJC_ASSOCIATION_COPY_NONATOMIC);
 }
 - (void (^__nullable)(__kindof NSURLSessionTask * _Nonnull, NSURL * _Nullable, NSError * _Nullable))endDownloadHandleBlock {
+    return objc_getAssociatedObject(self, _cmd);
+}
+- (void)setCancelledBlock:(void (^)(void))cancelledBlock {
+    objc_setAssociatedObject(self, @selector(cancelledBlock), cancelledBlock, OBJC_ASSOCIATION_COPY_NONATOMIC);
+}
+- (void (^__nullable)(void))cancelledBlock {
     return objc_getAssociatedObject(self, _cmd);
 }
 @end

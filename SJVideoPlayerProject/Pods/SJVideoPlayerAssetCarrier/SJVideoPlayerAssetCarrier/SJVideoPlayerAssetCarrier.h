@@ -13,12 +13,15 @@
 
 #import <UIKit/UIKit.h>
 #import <AVFoundation/AVFoundation.h>
+#import "SJViewHierarchyStack.h"
 
 NS_ASSUME_NONNULL_BEGIN
 
 @class SJVideoPreviewModel;
 
 @interface SJVideoPlayerAssetCarrier : NSObject
+
+@property (nonatomic, assign, readonly) SJViewHierarchyStack viewHierarchyStack;
 
 #pragma mark -
 - (instancetype)initWithAssetURL:(NSURL *)assetURL;

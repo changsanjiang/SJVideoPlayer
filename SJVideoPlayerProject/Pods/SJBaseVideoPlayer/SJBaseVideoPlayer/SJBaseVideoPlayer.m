@@ -1089,6 +1089,7 @@ NS_ASSUME_NONNULL_END
 
 - (void)setRate:(float)rate {
     self.asset.rate = rate;
+    [self play];
 }
 
 - (float)rate {

@@ -7,6 +7,7 @@
 //
 
 #import <UIKit/UIKit.h>
+#import <SJVideoPlayerAssetCarrier/SJViewHierarchyStack.h>
 
 NS_ASSUME_NONNULL_BEGIN
 
@@ -15,6 +16,8 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic, assign, readonly) BOOL isM3u8;
 
 @property (nonatomic, assign, readonly) BOOL converted; // 是否被转换过.
+
+@property (nonatomic, assign, readonly) SJViewHierarchyStack viewHierarchyStack;
 
 #pragma mark -
 

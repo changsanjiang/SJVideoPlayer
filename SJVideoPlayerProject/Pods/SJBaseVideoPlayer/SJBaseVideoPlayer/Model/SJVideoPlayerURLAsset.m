@@ -122,6 +122,10 @@
     [self.asset convertToOriginal];
 }
 
+- (SJViewHierarchyStack)viewHierarchyStack {
+    return self.asset.viewHierarchyStack;
+}
+
 /**
  *  player in a view.
  *

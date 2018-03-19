@@ -29,6 +29,7 @@ static float const __GeneratePreImgScale = 0.05;
 @end
 
 @interface SJAssetUIKitEctype: NSObject
+@property (nonatomic, assign) SJViewHierarchyStack viewHierarchyStack;
 @property (nonatomic, strong) NSIndexPath *indexPath;
 @property (nonatomic, assign) NSInteger superviewTag;
 @property (nonatomic, unsafe_unretained) UIScrollView *scrollView;
@@ -67,7 +68,7 @@ NS_ASSUME_NONNULL_BEGIN
     NSTimer *_bufferRefreshTimer;
     NSTimer *_refreshProgressTimer;
 }
-
+@property (nonatomic, assign, readwrite) SJViewHierarchyStack viewHierarchyStack;
 @property (nonatomic, strong, readwrite, nullable) AVAssetImageGenerator *imageGenerator;
 @property (nonatomic, strong, readwrite, nullable) AVAssetImageGenerator *tmp_imageGenerator;
 @property (nonatomic, assign, readwrite) BOOL hasBeenGeneratedPreviewImages;
@@ -105,7 +106,7 @@ NS_ASSUME_NONNULL_END
                       scrollView:(__unsafe_unretained UIScrollView * __nullable)scrollView
                        indexPath:(NSIndexPath * __nullable)indexPath
                     superviewTag:(NSInteger)superviewTag {
-    return [self initWithAssetURL:assetURL beginTime:0 scrollView:scrollView indexPath:indexPath superviewTag:superviewTag];
+    return [self initWithAssetURL:assetURL beginTime:0 indexPath:indexPath superviewTag:superviewTag scrollViewIndexPath:nil scrollViewTag:0 scrollView:scrollView rootScrollView:nil];
 }
 
 - (instancetype)initWithAssetURL:(NSURL *)assetURL
@@ -129,6 +130,7 @@ NS_ASSUME_NONNULL_END
                      superviewTag:0];
     if ( !self ) return nil;
     _tableHeaderSubView = superView;
+    _viewHierarchyStack = SJViewHierarchyStack_TableHeaderView;
     return self;
 }
 
@@ -148,6 +150,7 @@ NS_ASSUME_NONNULL_END
                    rootScrollView:rootTableView];
     if ( !self ) return nil;
     _tableHeaderSubView = collectionView;
+    _viewHierarchyStack = SJViewHierarchyStack_NestedInTableHeaderView;
     return self;
 }
 
@@ -170,6 +173,7 @@ NS_ASSUME_NONNULL_END
         }
     }
     return [self initWithAssetURL:assetURL beginTime:beginTime indexPath:indexPath superviewTag:superviewTag scrollViewIndexPath:scrollViewIndexPath scrollViewTag:scrollViewTag scrollView:scrollView rootScrollView:rootScrollView];
+
 }
 
 - (instancetype)initWithAssetURL:(NSURL *)assetURL
@@ -204,6 +208,10 @@ NS_ASSUME_NONNULL_END
     });
     
     [self _scrollViewObserving];
+    
+    if ( _rootScrollView && _scrollView ) _viewHierarchyStack = SJViewHierarchyStack_NestedInTableView;
+    else if ( _scrollView ) _viewHierarchyStack = SJViewHierarchyStack_ScrollView;
+    else _viewHierarchyStack = SJViewHierarchyStack_View;
     return self;
 }
 
@@ -790,6 +798,7 @@ NS_ASSUME_NONNULL_END
 - (void)convertToOriginal {
     if ( !_converted ) return;
     [self _convertingWithBlock:^{
+        _viewHierarchyStack = _ectype.viewHierarchyStack;
         _indexPath = _ectype.indexPath;
         _superviewTag = _ectype.superviewTag;
         _scrollView = _ectype.scrollView;
@@ -820,6 +829,7 @@ NS_ASSUME_NONNULL_END
 - (void)_clearUIKit {
     if ( !_ectype ) {
         _ectype = [SJAssetUIKitEctype new];
+        _ectype.viewHierarchyStack = _viewHierarchyStack;
         _ectype.indexPath = _indexPath;
         _ectype.superviewTag = _superviewTag;
         _ectype.scrollView = _scrollView;
@@ -857,7 +867,9 @@ NS_ASSUME_NONNULL_END
 }
 
 - (void)convertToUIView {
-    [self _convertingWithBlock:nil];
+    [self _convertingWithBlock:^{
+        _viewHierarchyStack = SJViewHierarchyStack_View;
+    }];
 }
 
 - (void)convertToCellWithTableOrCollectionView:(__unsafe_unretained UIScrollView *)tableOrCollectionView
@@ -867,6 +879,7 @@ NS_ASSUME_NONNULL_END
         _indexPath = indexPath;
         _superviewTag = superviewTag;
         _scrollView = tableOrCollectionView;
+        _viewHierarchyStack = SJViewHierarchyStack_ScrollView;
     }];
 }
 
@@ -875,6 +888,7 @@ NS_ASSUME_NONNULL_END
     [self _convertingWithBlock:^{
         _tableHeaderSubView = superView;
         _scrollView = tableView;
+        _viewHierarchyStack = SJViewHierarchyStack_TableHeaderView;
     }];
 }
 
@@ -887,6 +901,7 @@ NS_ASSUME_NONNULL_END
         _indexPath = indexPath;
         _superviewTag = playerSuperViewTag;
         _rootScrollView = rootTableView;
+        _viewHierarchyStack = SJViewHierarchyStack_NestedInTableHeaderView;
     }];
 }
 
@@ -901,6 +916,7 @@ NS_ASSUME_NONNULL_END
         _scrollView = [[rootTableView cellForRowAtIndexPath:collectionViewIndexPath] viewWithTag:collectionViewTag];
         _scrollViewTag = collectionViewTag;
         _rootScrollView = rootTableView;
+        _viewHierarchyStack = SJViewHierarchyStack_NestedInTableView;
     }];
 }
 
@@ -910,7 +926,6 @@ NS_ASSUME_NONNULL_END
     [self _scrollViewObserving];
     _converted = YES;
 }
-
 @end
 
 

@@ -108,23 +108,30 @@ NS_ASSUME_NONNULL_END
 
 - (void)_controlViewInstallNotifications {
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(applicationWillResignActive) name:UIApplicationWillResignActiveNotification object:nil];
-    
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(applicationDidBecomeActive) name:UIApplicationDidBecomeActiveNotification object:nil];
+}
+
+- (void)pauseAndDeterAppear {
+    BOOL old = self.videoPlayer.pausedToKeepAppearState;
+    self.videoPlayer.pausedToKeepAppearState = NO;              // Deter Appear
+    [self.videoPlayer pause];
+    self.videoPlayer.pausedToKeepAppearState = old;             // resume
 }
 
 - (void)applicationWillResignActive {
     if ( _filmEditingControlView.recordStatus == SJVideoPlayerFilmEditingRecrodStatus_Recording ) {
         [_filmEditingControlView pauseRecording];
-        [self.videoPlayer pauseForUser];
+        [self pauseAndDeterAppear];
     }
 }
 
 - (void)applicationDidBecomeActive {
     if ( _filmEditingControlView.recordStatus == SJVideoPlayerFilmEditingRecrodStatus_Paused ) {
         [_filmEditingControlView resumeRecording];
+        [self.videoPlayer play];
     }
     else if ( _filmEditingControlView.recordStatus == SJVideoPlayerFilmEditingRecrodStatus_Finished ) {
-        [self.videoPlayer pauseForUser];
+        [self pauseAndDeterAppear];
     }
 }
 
@@ -525,13 +532,10 @@ NS_ASSUME_NONNULL_END
     if ( tag == SJVideoPlayerRightViewTag_FilmEditing ) {
         __weak typeof(self) _self = self;
         _filmEditingControlView = [SJVideoPlayerFilmEditingControlView new];
-        BOOL pausedToKeepAppearState = self.videoPlayer.pausedToKeepAppearState;
-        self.videoPlayer.pausedToKeepAppearState = NO;
         _filmEditingControlView.getVideoScreenshot = ^UIImage *(SJVideoPlayerFilmEditingControlView *view) {
             __strong typeof(_self) self = _self;
             if ( !self ) return nil;
-            [self.videoPlayer pause];
-            self.videoPlayer.pausedToKeepAppearState = pausedToKeepAppearState;
+            [self pauseAndDeterAppear];
             return [self.videoPlayer screenshot];
         };
         

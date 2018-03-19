@@ -28,7 +28,7 @@ typedef NS_ENUM(NSInteger, SJMediaDownloadErrorCode) {
     SJMediaDownloadErrorCode_NotConnectedToInternet = NSURLErrorNotConnectedToInternet,
 };
 
-@interface SJMediaEntity : NSObject <SJMediaEntity>
+@interface SJMediaEntity : NSObject <SJMediaEntity, NSCopying>
 @property (nonatomic, assign) NSInteger mediaId;
 @property (nonatomic, strong) NSString *URLStr;
 @property (nonatomic, assign) SJMediaDownloadStatus downloadStatus;
@@ -60,6 +60,7 @@ typedef NS_ENUM(NSInteger, SJMediaDownloadErrorCode) {
 
 @interface SJMediaDownloader ()
 @property (nonatomic, strong, readwrite, nullable) SJMediaEntity *currentEntity;
+@property (nonatomic, strong, readonly, nullable) SJMediaEntity *currentEntity_copy;
 @property (nonatomic, strong, readonly) NSOperationQueue *taskQueue;
 @property (nonatomic, strong, readonly) NSURLSession *downloadSession;
 @property (nonatomic, assign, readonly) sqlite3 *database;
@@ -278,6 +279,9 @@ NS_ASSUME_NONNULL_END
             }
             [resumeData writeToFile:entity.resumePath atomically:YES];
         }
+        [self async_exeBlock:^{
+           if ( block ) block(resumeData != nil);
+        }];
     }];
 }
 - (void)sync_insertOrReplaceMediaWithEntity:(SJMediaEntity *)entity {
@@ -455,8 +459,17 @@ NS_ASSUME_NONNULL_END
 
 - (void)applicationWillTerminate {
     [_downloadSession invalidateAndCancel];
+    if ( _currentEntity.downloadStatus != SJMediaDownloadStatus_Finished ) {
+        self.currentEntity_copy.downloadStatus = SJMediaDownloadStatus_Paused;
+        [self sync_insertOrReplaceMediaWithEntity:self.currentEntity_copy];
+    }
 }
 
+@synthesize currentEntity_copy = _currentEntity_copy;
+- (void)setCurrentEntity:(SJMediaEntity *)currentEntity {
+    _currentEntity = currentEntity;
+    _currentEntity_copy = currentEntity.copy;
+}
 @end
 
 @implementation SJMediaDownloader (DownloadServer)
@@ -552,6 +565,28 @@ NS_ASSUME_NONNULL_END
 - (void)postProgress {
     if ( [SJMediaEntity startNotifi] ) [[NSNotificationCenter defaultCenter] postNotificationName:SJMediaDownloadProgressNotification object:self];
 }
+- (id)copyWithZone:(NSZone *)zone {
+    SJMediaEntity *new = [SJMediaEntity new];
+    [ivar_list([self class]) enumerateObjectsUsingBlock:^(NSString * _Nonnull obj, NSUInteger idx, BOOL * _Nonnull stop) {
+        [new setValue:[self valueForKey:obj] forKey:obj];
+    }];
+    return new;
+}
+static NSArray<NSString *> *ivar_list(Class cls) {
+    NSMutableArray *invarListArrM = [NSMutableArray array];
+    unsigned int outCount = 0;
+    Ivar *ivarList = class_copyIvarList(cls, &outCount);
+    if (ivarList != NULL && outCount > 0) {
+        for (int i = 0; i < outCount; i ++) {
+            const char *name = ivar_getName(ivarList[i]);
+            NSString *nameStr = [NSString stringWithUTF8String:name];
+            [invarListArrM addObject:nameStr];
+        }
+    }
+    free(ivarList);
+    return invarListArrM;
+}
+
 @end
 
 static NSArray <id> *sql_data(sqlite3_stmt *stmt, Class cls);

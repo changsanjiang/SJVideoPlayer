@@ -248,6 +248,8 @@
             break;
     }
     
+    NSLog(@"%@", prompt);
+    
     _statusLabel.text = [NSString stringWithFormat:@"Status: %@", prompt];
 }
 @end

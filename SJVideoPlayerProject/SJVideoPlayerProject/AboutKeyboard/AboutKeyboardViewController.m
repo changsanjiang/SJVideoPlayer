@@ -51,7 +51,10 @@
         make.height.offset(30);
     }];
     
-    _videoPlayer.assetURL = [[NSBundle mainBundle] URLForResource:@"sample" withExtension:@"mp4"];
+    dispatch_async(dispatch_get_global_queue(0, 0), ^{
+        _videoPlayer.assetURL = [[NSBundle mainBundle] URLForResource:@"sample" withExtension:@"mp4"];
+    });
+
     
     __weak typeof(self) _self = self;
     _videoPlayer.willRotateScreen = ^(__kindof SJBaseVideoPlayer * _Nonnull player, BOOL isFullScreen) {

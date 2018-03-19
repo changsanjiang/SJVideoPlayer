@@ -35,4 +35,9 @@ s.subspec 'MoreSetting' do |ss|
     ss.dependency 'SJVideoPlayer/Resource'
 end
 
+s.subspec 'Download' do |ss|
+ss.source_files = 'SJVideoPlayer/Download/*.{h,m}'
+ss.ios.library = 'sqlite3'
+end
+
 end

@@ -13,7 +13,7 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
-#define DEBUG_CONDITION 1
+#define DEBUG_CONDITION 0
 
 inline static bool sql_exe(sqlite3 *database, const char *sql);
 inline static NSArray<id> *sql_query(sqlite3 *database, const char *sql, Class cls);
@@ -39,14 +39,16 @@ typedef NS_ENUM(NSInteger, SJMediaDownloadErrorCode) {
 
 @property (class, nonatomic, strong, readonly) NSString *rootFolder;
 @property (class, nonatomic, assign) BOOL startNotifi;
-@property (nonatomic, weak, nullable) NSURLSessionDownloadTask *task;
-@property (nonatomic, strong, nullable) NSString *relativePath;
-@property (nonatomic, strong, readonly) NSString *URLHashStr;
-@property (nonatomic, strong, readonly) NSString *resumePath;
-@property (nonatomic, strong, readonly) NSString *format;
 @property (nonatomic, strong, readonly) NSURL *URL;
+@property (nonatomic, weak, nullable) NSURLSessionDownloadTask *task;
+@property (nonatomic, strong, readonly) NSString *URLHashStr;
 - (void)postStatus;
 - (void)postProgress;
+
+@property (nonatomic, strong, nullable) NSString *relativePath;
+@property (nonatomic, strong, readonly) NSString *resumePath;
+@property (nonatomic, strong, readonly) NSString *format;
+
 @end
 
 @interface SJMediaDownloader (DownloadServer)<NSURLSessionDownloadDelegate>
@@ -96,8 +98,8 @@ NS_ASSUME_NONNULL_END
 }
 
 - (BOOL)addSkipBackupAttributeToItemAtPath:(NSString *)path {
-    const char* filePath = [path fileSystemRepresentation];
-    const char* attrName = "com.apple.MobileBackup";
+    const char *filePath = [path fileSystemRepresentation];
+    const char *attrName = "com.apple.MobileBackup";
     u_int8_t attrValue = 1;
     int result = setxattr(filePath, attrName, &attrValue, sizeof(attrValue), 0, 0);
     return result == 0;
@@ -193,7 +195,7 @@ NS_ASSUME_NONNULL_END
         if ( !self ) return;
         next.downloadProgress = progress;
         [next postProgress];
-        [self async_updateDownloadProgressWithEntity:next];
+        [self sync_updateDownloadProgressWithEntity:next];
     };
     
     task.endDownloadHandleBlock = ^(NSURLSessionDownloadTask * _Nonnull task, NSURL * _Nullable location, NSError * _Nullable error) {
@@ -294,20 +296,15 @@ NS_ASSUME_NONNULL_END
 - (void)sync_insertOrReplaceMediaWithEntity:(SJMediaEntity *)entity {
     sql_exe(self.database, [NSString stringWithFormat:@"INSERT OR REPLACE INTO 'SJMediaEntity' VALUES (%zd, '%@', %zd, '%@', '%ld', '%@', %f);", entity.mediaId, entity.title, entity.downloadStatus, entity.URLStr, time(NULL), entity.relativePath, entity.downloadProgress].UTF8String);
 }
-- (void)async_updateDownloadProgressWithEntity:(SJMediaEntity *)entity {
-    __weak typeof(self) _self = self;
-    [self async_exeBlock:^{
-        __strong typeof(_self) self = _self;
-        if ( !self ) return;
-        NSString *sql = [NSString stringWithFormat:@"UPDATE 'SJMediaEntity' SET 'downloadProgress' = %f WHERE 'mediaId' = %zd;", entity.downloadProgress, entity.mediaId];
-        sql_exe(self.database, sql.UTF8String);
-    }];
+- (void)sync_updateDownloadProgressWithEntity:(SJMediaEntity *)entity {
+    NSString *sql = [NSString stringWithFormat:@"UPDATE 'SJMediaEntity' SET 'downloadProgress' = %f WHERE 'mediaId' = %zd;", entity.downloadProgress, entity.mediaId];
+    sql_exe(self.database, sql.UTF8String);
 }
 - (void)sync_deleteMediaWithEntity:(SJMediaEntity *)entity {
     sql_exe(self.database, [NSString stringWithFormat:@"DELETE FROM 'SJMediaEntity' WHERE mediaId = %zd;", entity.mediaId].UTF8String);
 }
 - (void)initializeDatabase {
-    sql_exe(self.database, "CREATE TABLE IF NOT EXISTS SJMediaEntity ( 'mediaId' INTEGER PRIMARY KEY, 'title' TEXT, 'downloadStatus' INTEGER, 'URLStr' TEXT, 'downloadTime' INTEGER, 'relativePath' TEXT, 'downloadProgress' FLOAT);");
+    sql_exe(self.database, "CREATE TABLE IF NOT EXISTS SJMediaEntity ('mediaId' INTEGER PRIMARY KEY, 'title' TEXT, 'downloadStatus' INTEGER, 'URLStr' TEXT, 'downloadTime' INTEGER, 'relativePath' TEXT, 'downloadProgress' FLOAT);");
 }
 @synthesize database = _database;
 - (sqlite3 *)database {
@@ -468,6 +465,17 @@ NS_ASSUME_NONNULL_END
 }
 #pragma mark -
 
+
+#pragma mark -
+- (unsigned long long)fileSize {
+    __block unsigned long long size = 0;
+    NSString *rootFolder = [SJMediaEntity rootFolder];
+    [[[NSFileManager defaultManager] subpathsAtPath:rootFolder] enumerateObjectsUsingBlock:^(NSString * _Nonnull obj, NSUInteger idx, BOOL * _Nonnull stop) {
+        size += [[NSFileManager defaultManager] attributesOfItemAtPath:[rootFolder stringByAppendingPathComponent:obj] error:nil].fileSize;
+    }];
+    return size;
+}
+
 #pragma mark -
 - (void)installNotifications {
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(applicationWillTerminate) name:UIApplicationWillTerminateNotification object:nil];
@@ -606,14 +614,12 @@ static NSArray<NSString *> *ivar_list(Class cls) {
 @end
 
 static NSArray <id> *sql_data(sqlite3_stmt *stmt, Class cls);
-
 inline static bool sql_exe(sqlite3 *database, const char *sql) {
     char *error = NULL;
     bool r = (SQLITE_OK == sqlite3_exec(database, sql, NULL, NULL, &error));
     if ( error != NULL ) { NSLog(@"Error ==> \n SQL  : %s\n Error: %s", sql, error); sqlite3_free(error);}
     return r;
 }
-
 inline static NSArray<id> *sql_query(sqlite3 *database, const char *sql, Class cls) {
     sqlite3_stmt *pstmt;
     int result = sqlite3_prepare_v2(database, sql, -1, &pstmt, NULL);
@@ -622,7 +628,6 @@ inline static NSArray<id> *sql_query(sqlite3 *database, const char *sql, Class c
     sqlite3_finalize(pstmt);
     return dataArr;
 }
-
 static NSArray <id> *sql_data(sqlite3_stmt *stmt, Class cls) {
     NSMutableArray *dataArrM = [[NSMutableArray alloc] init];
     while ( sqlite3_step(stmt) == SQLITE_ROW ) {

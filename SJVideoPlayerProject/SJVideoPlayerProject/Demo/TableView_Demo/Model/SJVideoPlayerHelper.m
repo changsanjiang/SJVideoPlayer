@@ -12,6 +12,7 @@
 #import <Masonry/Masonry.h>
 #import "SJFilmEditingResultShareItem.h"
 #import "SJMoreSettingItems.h"
+#import "SJMediaDownloader.h"
 
 NS_ASSUME_NONNULL_BEGIN
 

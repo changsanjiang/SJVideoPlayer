@@ -75,6 +75,12 @@ typedef NS_ENUM(NSUInteger, SJMediaDownloadStatus) {
 
 - (void)async_deleteWithMediaID:(NSInteger)mediaId completion:(void(^ __nullable)(void))block;
 
+#pragma mark -
+/**
+ The file’s size, in bytes.
+ */
+- (unsigned long long)fileSize;
+
 @end
 
 @protocol SJMediaEntity <NSObject>

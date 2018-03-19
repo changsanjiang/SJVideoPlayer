@@ -44,28 +44,15 @@ static NSString *const DownloadTableViewCellID = @"DownloadTableViewCell";
 }
 
 - (void)dealloc {
+    [[SJMediaDownloader shared] stopNotifier];
     [[NSNotificationCenter defaultCenter] removeObserver:self];
 }
 
 #pragma mark - downloader
 
 - (void)_installDownloaderNotifications {
-    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(mediaDownloadProgress:) name:SJMediaDownloadProgressNotification object:nil];
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(mediaDownloadStatusChanged:) name:SJMediaDownloadStatusChangedNotification object:nil];
-}
-
-- (void)mediaDownloadProgress:(NSNotification *)notifi {
-    id<SJMediaEntity> entity = notifi.object;
-    [_videoList enumerateObjectsUsingBlock:^(SJVideo * _Nonnull obj, NSUInteger idx, BOOL * _Nonnull stop) {
-        if ( obj.mediaId != entity.mediaId ) return ;
-        *stop = YES;
-        obj.downloadProgress = entity.downloadProgress;
-        
-        dispatch_async(dispatch_get_main_queue(), ^{
-            DownloadTableViewCell *cell = [self.tableView cellForRowAtIndexPath:[NSIndexPath indexPathForRow:idx inSection:0]];
-            [cell updateProgress];
-        });
-    }];
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(mediaDownloadProgress:) name:SJMediaDownloadProgressNotification object:nil];
 }
 
 - (void)mediaDownloadStatusChanged:(NSNotification *)notifi {
@@ -79,6 +66,20 @@ static NSString *const DownloadTableViewCellID = @"DownloadTableViewCell";
         dispatch_async(dispatch_get_main_queue(), ^{
             DownloadTableViewCell *cell = [self.tableView cellForRowAtIndexPath:[NSIndexPath indexPathForRow:idx inSection:0]];
             [cell updateStatus];
+        });
+    }];
+}
+
+- (void)mediaDownloadProgress:(NSNotification *)notifi {
+    id<SJMediaEntity> entity = notifi.object;
+    [_videoList enumerateObjectsUsingBlock:^(SJVideo * _Nonnull obj, NSUInteger idx, BOOL * _Nonnull stop) {
+        if ( obj.mediaId != entity.mediaId ) return ;
+        *stop = YES;
+        obj.downloadProgress = entity.downloadProgress;
+        
+        dispatch_async(dispatch_get_main_queue(), ^{
+            DownloadTableViewCell *cell = [self.tableView cellForRowAtIndexPath:[NSIndexPath indexPathForRow:idx inSection:0]];
+            [cell updateProgress];
         });
     }];
 }

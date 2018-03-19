@@ -532,7 +532,7 @@ typedef NS_ENUM(NSInteger, SJNetworkStatus) {
 - (UIView *)controlView;
 
 /**
- This method is called before the control layer needs to be hidden, and `controlLayerNeedDisappear:` will not be called if return NO.
+ This method is called before the control layer needs to be hidden, and `controlLayerNeedDisappear:` will not be called if NO is returned.
  控制层需要隐藏之前会调用这个方法, 如果返回NO, 将不调用`controlLayerNeedDisappear:`
  */
 - (BOOL)controlLayerDisappearCondition;

@@ -121,10 +121,8 @@ NS_ASSUME_NONNULL_END
 #ifdef DEBUG
     NSLog(@"SJVideoPlayerLog: %zd - %s", __LINE__, __func__);
 #endif
-
-    [_presentView removeFromSuperview];
-//    [_view removeFromSuperview];
     if ( self.asset && self.assetDeallocExeBlock ) self.assetDeallocExeBlock(self);
+    [_presentView removeFromSuperview];
     [self stop];
 }
 
@@ -132,10 +130,7 @@ NS_ASSUME_NONNULL_END
 
 - (void)setAsset:(SJVideoPlayerAssetCarrier *)asset {
     _asset = asset;
-    
     if ( !asset ) return;
-    
-//    _converted = asset.converted;
     
     if ( self.mute ) self.mute = YES; // update
     
@@ -1015,10 +1010,8 @@ NS_ASSUME_NONNULL_END
     
     self.userClickedPause = NO;
     if ( !self.asset ) return NO;
-    if ( SJVideoPlayerPlayState_PlayEnd != self.state ) {
-        if ( 0 == self.asset.player.rate ) [self.asset.player play];
-        self.state = SJVideoPlayerPlayState_Playing;
-    }
+    if ( 0 == self.asset.player.rate ) [self.asset.player play];
+    self.state = SJVideoPlayerPlayState_Playing;
     return YES;
 }
 

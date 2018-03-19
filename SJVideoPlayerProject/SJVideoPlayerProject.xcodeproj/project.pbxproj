@@ -18,7 +18,6 @@
 		772DC3C7202201E500EC4725 /* placeholder.png in Resources */ = {isa = PBXBuildFile; fileRef = 772DC3C6202201E400EC4725 /* placeholder.png */; };
 		7737522A2052AE7D0000E4E7 /* SJVideoPlayerFilmEditingRecordView.m in Sources */ = {isa = PBXBuildFile; fileRef = 773752292052AE7D0000E4E7 /* SJVideoPlayerFilmEditingRecordView.m */; };
 		7737522D2056A1850000E4E7 /* ex2.gif in Resources */ = {isa = PBXBuildFile; fileRef = 7737522B2056A1850000E4E7 /* ex2.gif */; };
-		773AFC61205BA67C003B2CAC /* SJMediaDownloader.m in Sources */ = {isa = PBXBuildFile; fileRef = 773AFC60205BA67C003B2CAC /* SJMediaDownloader.m */; };
 		773AFC64205BA7C1003B2CAC /* DowloadViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 773AFC63205BA7C1003B2CAC /* DowloadViewController.m */; };
 		773AFC67205BA86F003B2CAC /* DownloadTableViewCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 773AFC66205BA86F003B2CAC /* DownloadTableViewCell.m */; };
 		773AFC6D205BCD9E003B2CAC /* SJVideo.m in Sources */ = {isa = PBXBuildFile; fileRef = 773AFC6C205BCD9E003B2CAC /* SJVideo.m */; };
@@ -107,8 +106,6 @@
 		773752282052AE7D0000E4E7 /* SJVideoPlayerFilmEditingRecordView.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = SJVideoPlayerFilmEditingRecordView.h; sourceTree = "<group>"; };
 		773752292052AE7D0000E4E7 /* SJVideoPlayerFilmEditingRecordView.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = SJVideoPlayerFilmEditingRecordView.m; sourceTree = "<group>"; };
 		7737522B2056A1850000E4E7 /* ex2.gif */ = {isa = PBXFileReference; lastKnownFileType = image.gif; path = ex2.gif; sourceTree = "<group>"; };
-		773AFC5F205BA67B003B2CAC /* SJMediaDownloader.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SJMediaDownloader.h; sourceTree = "<group>"; };
-		773AFC60205BA67C003B2CAC /* SJMediaDownloader.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SJMediaDownloader.m; sourceTree = "<group>"; };
 		773AFC62205BA7C1003B2CAC /* DowloadViewController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = DowloadViewController.h; sourceTree = "<group>"; };
 		773AFC63205BA7C1003B2CAC /* DowloadViewController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = DowloadViewController.m; sourceTree = "<group>"; };
 		773AFC65205BA86F003B2CAC /* DownloadTableViewCell.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = DownloadTableViewCell.h; sourceTree = "<group>"; };
@@ -290,15 +287,6 @@
 				774B25561FCED47B002113CC /* PlayerViewController.m */,
 			);
 			path = Controller;
-			sourceTree = "<group>";
-		};
-		773AFC5E205BA675003B2CAC /* Download */ = {
-			isa = PBXGroup;
-			children = (
-				773AFC5F205BA67B003B2CAC /* SJMediaDownloader.h */,
-				773AFC60205BA67C003B2CAC /* SJMediaDownloader.m */,
-			);
-			path = Download;
 			sourceTree = "<group>";
 		};
 		773AFC71205D06DE003B2CAC /* Download_下载 */ = {
@@ -639,7 +627,6 @@
 				A6E6D3492028BE9B00CB9BAE /* SJVideoPlayer.m */,
 				775C0AD5202962180008EDA7 /* SJVideoPlayerDefaultControlView.h */,
 				775C0AD6202962180008EDA7 /* SJVideoPlayerDefaultControlView.m */,
-				773AFC5E205BA675003B2CAC /* Download */,
 				775C0ABE20295C660008EDA7 /* Resource */,
 				A6E6D3242028BE9B00CB9BAE /* MoreSetting */,
 				A6E6D2FE2028BE9B00CB9BAE /* ControlView */,
@@ -839,7 +826,6 @@
 				A6E6D3572028BE9B00CB9BAE /* SJVideoPlayerBottomControlView.m in Sources */,
 				775C0AD420295E790008EDA7 /* SJVideoPlayerMoreSetting+Exe.m in Sources */,
 				A6E6D3612028BE9B00CB9BAE /* SJVideoPlayerMoreSettingSecondary.m in Sources */,
-				773AFC61205BA67C003B2CAC /* SJMediaDownloader.m in Sources */,
 				A6E6D3532028BE9B00CB9BAE /* SJVideoPlayerPreviewView.m in Sources */,
 				A6E6D36C2028BE9B00CB9BAE /* SJVideoPlayer.m in Sources */,
 				A6E6D3622028BE9B00CB9BAE /* SJVideoPlayerMoreSettingsView.m in Sources */,

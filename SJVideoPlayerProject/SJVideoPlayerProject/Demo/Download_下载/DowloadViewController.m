@@ -9,7 +9,7 @@
 #import "DowloadViewController.h"
 #import <SJUIFactory/SJUIFactory.h>
 #import <Masonry/Masonry.h>
-#import "SJMediaDownloader.h"
+#import <SJMediaDownloader.h>
 #import "DownloadTableViewCell.h"
 #import "SJVideo.h"
 #import "SJVideo+DownloadAdd.h"

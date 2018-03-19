@@ -289,7 +289,7 @@ NS_ASSUME_NONNULL_END
             [resumeData writeToFile:entity.resumePath atomically:YES];
         }
         [self async_exeBlock:^{
-           if ( block ) block(resumeData != nil);
+            if ( block ) block(resumeData != nil);
         }];
     }];
 }
@@ -332,8 +332,8 @@ NS_ASSUME_NONNULL_END
         __strong typeof(_self) self = _self;
         if ( !self ) return;
         if ( media.downloadStatus == SJMediaDownloadStatus_Downloading ||
-             media.downloadStatus == SJMediaDownloadStatus_Waiting ||
-             media.downloadStatus == SJMediaDownloadStatus_Finished ) {
+            media.downloadStatus == SJMediaDownloadStatus_Waiting ||
+            media.downloadStatus == SJMediaDownloadStatus_Finished ) {
             return;
         }
         else if ( !media ) {
@@ -384,8 +384,13 @@ NS_ASSUME_NONNULL_END
         
         if ( self.currentEntity.task && self.currentEntity.mediaId == mediaId && self.currentEntity.downloadStatus == SJMediaDownloadStatus_Downloading ) {
             entity = self.currentEntity;
-            self.currentEntity.task.cancelledBlock = pausedBlock;
-            [self async_suspendWithTask:self.currentEntity.task entity:self.currentEntity completion:^(BOOL saved) {}];
+            if ( self.currentEntity.task.state != NSURLSessionTaskStateCanceling ) {
+                self.currentEntity.task.cancelledBlock = pausedBlock;
+                [self async_suspendWithTask:self.currentEntity.task entity:self.currentEntity completion:^(BOOL saved) {}];
+            }
+            else {
+                pausedBlock();
+            }
         }
         else {
             [self async_requestMediaWithID:mediaId completion:^(SJMediaDownloader * _Nonnull downloader, SJMediaEntity *media) {
@@ -406,7 +411,7 @@ NS_ASSUME_NONNULL_END
         [medias enumerateObjectsUsingBlock:^(SJMediaEntity *obj, NSUInteger idx, BOOL * _Nonnull stop) {
             if ( obj.mediaId != self.currentEntity.mediaId ) {
                 if ( obj.downloadStatus != SJMediaDownloadStatus_Paused &&
-                     obj.downloadStatus != SJMediaDownloadStatus_Finished ) {
+                    obj.downloadStatus != SJMediaDownloadStatus_Finished ) {
                     obj.downloadStatus = SJMediaDownloadStatus_Paused;
                     [obj postStatus];
                     [self sync_insertOrReplaceMediaWithEntity:obj];
@@ -666,3 +671,4 @@ static NSArray <id> *sql_data(sqlite3_stmt *stmt, Class cls) {
 NSNotificationName const SJMediaDownloadProgressNotification = @"SJMediaDownloadProgressNotification";
 NSString *const kSJMediaDownloadProgressKey = @"kSJMediaDownloadProgressKey";
 NSNotificationName const SJMediaDownloadStatusChangedNotification = @"SJMediaDownloadStatusChangedNotification";
+

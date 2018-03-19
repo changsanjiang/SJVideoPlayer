@@ -163,9 +163,6 @@ NS_ASSUME_NONNULL_END
     [self sync_downloadWithMedia:next];
 }
 - (void)sync_downloadWithMedia:(SJMediaEntity *)next {
-    self.currentEntity = next;
-    next.downloadStatus = SJMediaDownloadStatus_Downloading;
-    [next postStatus];
     NSURLSessionDownloadTask *task = nil;
     NSData *resumeData = [NSData dataWithContentsOfFile:next.resumePath];
     if ( resumeData ) {
@@ -182,6 +179,10 @@ NS_ASSUME_NONNULL_END
     }
     
     [task resume];
+    self.currentEntity = next;
+    next.downloadStatus = SJMediaDownloadStatus_Downloading;
+    [next postStatus];
+    [self sync_insertOrReplaceMediaWithEntity:next];
     
     /// task
     next.task = task;
@@ -196,7 +197,9 @@ NS_ASSUME_NONNULL_END
         __strong typeof(_self) self = _self;
         if ( !self ) return;
 #if DEBUG_CONDITION
-        NSLog(@"%@\n ----- %zd", error, next.downloadStatus);
+        if ( error ) {
+            NSLog(@"Error ==> %@\n----- %zd", error, next.downloadStatus);
+        }
 #endif
         if ( location ) {
             NSString *folder = [NSString stringWithFormat:@"%@", next.URLHashStr];
@@ -259,6 +262,7 @@ NS_ASSUME_NONNULL_END
                 }
                     break;
                 default: {
+                    [[NSFileManager defaultManager] removeItemAtPath:next.resumePath error:nil];
                     status = SJMediaDownloadStatus_Failed;
                     [self async_suspendWithTask:task entity:next completion:suspendExeBlock];
                 }
@@ -369,7 +373,7 @@ NS_ASSUME_NONNULL_END
         };
         
         
-        if ( self.currentEntity && self.currentEntity.mediaId == mediaId && self.currentEntity.downloadStatus == SJMediaDownloadStatus_Downloading ) {
+        if ( self.currentEntity.task && self.currentEntity.mediaId == mediaId && self.currentEntity.downloadStatus == SJMediaDownloadStatus_Downloading ) {
             entity = self.currentEntity;
             self.currentEntity.task.cancelledBlock = pausedBlock;
             [self async_suspendWithTask:self.currentEntity.task entity:self.currentEntity completion:^(BOOL saved) {}];

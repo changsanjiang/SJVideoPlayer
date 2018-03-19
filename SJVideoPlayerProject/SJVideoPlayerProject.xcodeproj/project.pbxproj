@@ -301,7 +301,7 @@
 			path = Download;
 			sourceTree = "<group>";
 		};
-		773AFC71205D06DE003B2CAC /* Download */ = {
+		773AFC71205D06DE003B2CAC /* Download_下载 */ = {
 			isa = PBXGroup;
 			children = (
 				773AFC6B205BCD9E003B2CAC /* SJVideo.h */,
@@ -313,7 +313,7 @@
 				773AFC65205BA86F003B2CAC /* DownloadTableViewCell.h */,
 				773AFC66205BA86F003B2CAC /* DownloadTableViewCell.m */,
 			);
-			path = Download;
+			path = "Download_下载";
 			sourceTree = "<group>";
 		};
 		774B250F1FCEBA5D002113CC = {
@@ -343,8 +343,6 @@
 				774B251C1FCEBA5D002113CC /* AppDelegate.m */,
 				774B251E1FCEBA5D002113CC /* ViewController.h */,
 				774B251F1FCEBA5D002113CC /* ViewController.m */,
-				773AFC71205D06DE003B2CAC /* Download */,
-				7790AC77205A58B000F8DF48 /* AboutKeyboard */,
 				77E754332040054F00A5AF44 /* Demo */,
 				A6E6D2EE2028BE9B00CB9BAE /* SJVideoPlayer */,
 				778E24F21FD97EB6008D0DD3 /* Asset */,
@@ -363,7 +361,7 @@
 			path = TableView;
 			sourceTree = "<group>";
 		};
-		775B1FFC204555A300264AB9 /* TableViewHeader */ = {
+		775B1FFC204555A300264AB9 /* TableViewHeader_在TableHeaderView上播放 */ = {
 			isa = PBXGroup;
 			children = (
 				775B1FFD204555B200264AB9 /* TableViewHeaderDemoViewController.h */,
@@ -371,10 +369,11 @@
 				775B200C20455A2800264AB9 /* TableHeaderView.h */,
 				775B200D20455A2800264AB9 /* TableHeaderView.m */,
 			);
+			name = "TableViewHeader_在TableHeaderView上播放";
 			path = TableViewHeader;
 			sourceTree = "<group>";
 		};
-		775B201320465D2900264AB9 /* TableView_TableHeaderIsCollectionView */ = {
+		775B201320465D2900264AB9 /* TableView_TableHeaderIsCollectionView_在TableHeaderView上播放 */ = {
 			isa = PBXGroup;
 			children = (
 				775B201420465D6200264AB9 /* TableViewHeaderIsCollectionViewDemoViewController.h */,
@@ -384,6 +383,7 @@
 				775B201A2046682E00264AB9 /* TableHeaderCollectionViewCell.h */,
 				775B201B2046682E00264AB9 /* TableHeaderCollectionViewCell.m */,
 			);
+			name = "TableView_TableHeaderIsCollectionView_在TableHeaderView上播放";
 			path = TableView_TableHeaderIsCollectionView;
 			sourceTree = "<group>";
 		};
@@ -523,12 +523,13 @@
 			name = Asset;
 			sourceTree = "<group>";
 		};
-		7790AC77205A58B000F8DF48 /* AboutKeyboard */ = {
+		7790AC77205A58B000F8DF48 /* AboutKeyboard_关于键盘方向 */ = {
 			isa = PBXGroup;
 			children = (
 				7790AC78205A58BF00F8DF48 /* AboutKeyboardViewController.h */,
 				7790AC79205A58BF00F8DF48 /* AboutKeyboardViewController.m */,
 			);
+			name = "AboutKeyboard_关于键盘方向";
 			path = AboutKeyboard;
 			sourceTree = "<group>";
 		};
@@ -567,27 +568,29 @@
 		77E754332040054F00A5AF44 /* Demo */ = {
 			isa = PBXGroup;
 			children = (
-				A644108C200A3F89006FD832 /* TableView */,
-				775B1FFC204555A300264AB9 /* TableViewHeader */,
-				775B201320465D2900264AB9 /* TableView_TableHeaderIsCollectionView */,
+				7790AC77205A58B000F8DF48 /* AboutKeyboard_关于键盘方向 */,
+				A644108C200A3F89006FD832 /* TableView_在TableCell上播放 */,
+				775B1FFC204555A300264AB9 /* TableViewHeader_在TableHeaderView上播放 */,
+				775B201320465D2900264AB9 /* TableView_TableHeaderIsCollectionView_在TableHeaderView上播放 */,
 				77DA95172042C029007A9EE8 /* PageViewController */,
 				A6F4E9782007A76200716B9C /* Nested_嵌套的 */,
 				778E24F11FD97E93008D0DD3 /* Single_单例 */,
 				77E754322040054800A5AF44 /* Full_全屏播放 */,
 				A644109B200A7289006FD832 /* OtherDemo */,
 				77033C11204E75F3008F1ED5 /* ViewController */,
+				773AFC71205D06DE003B2CAC /* Download_下载 */,
 			);
 			path = Demo;
 			sourceTree = "<group>";
 		};
-		A644108C200A3F89006FD832 /* TableView */ = {
+		A644108C200A3F89006FD832 /* TableView_在TableCell上播放 */ = {
 			isa = PBXGroup;
 			children = (
 				A644108D200A3F89006FD832 /* Controller */,
 				A644108E200A3F89006FD832 /* Model */,
 				A644108F200A3F89006FD832 /* View */,
 			);
-			name = TableView;
+			name = "TableView_在TableCell上播放";
 			path = TableView_Demo;
 			sourceTree = "<group>";
 		};

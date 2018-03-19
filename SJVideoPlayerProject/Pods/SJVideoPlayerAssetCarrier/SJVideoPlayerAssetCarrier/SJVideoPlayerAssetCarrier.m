@@ -9,6 +9,7 @@
 #import "SJVideoPlayerAssetCarrier.h"
 #import <UIKit/UIKit.h>
 #import <objc/message.h>
+#import <SJObserverHelper/NSObject+SJObserverHelper.h>
 
 /*!
  *  Refresh interval for timed observations of AVPlayer
@@ -20,16 +21,6 @@ static float const __TimeRefreshInterval = 0.5;
  */
 static float const __GeneratePreImgScale = 0.05;
 
-
-@interface SJTmpObj : NSObject
-@property (nonatomic, copy) void(^deallocCallBlock)(SJTmpObj *obj);
-@end
-
-@implementation SJTmpObj
-- (void)dealloc {
-    if ( _deallocCallBlock ) _deallocCallBlock(self);
-}
-@end
 
 @interface NSTimer (SJAssetAdd)
 + (NSTimer *)assetAdd_timerWithTimeInterval:(NSTimeInterval)ti
@@ -83,8 +74,6 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic, strong, readwrite, nullable) NSArray<SJVideoPreviewModel *> *generatedPreviewImages;
 @property (nonatomic, assign, readwrite) BOOL jumped;
 @property (nonatomic, assign, readwrite) BOOL scrollIn_bool;
-@property (nonatomic, assign, readwrite) BOOL removedScrollObserver;
-@property (nonatomic, assign, readwrite) BOOL removedParentScrollObserver;
 @property (nonatomic, assign, readwrite) BOOL parent_scrollIn_bool;
 @property (nonatomic, strong, readwrite, nullable) SJAssetUIKitEctype *ectype;
 @property (nonatomic, assign, readwrite) CGSize maxItemSize;
@@ -219,7 +208,6 @@ NS_ASSUME_NONNULL_END
 }
 
 - (void)_initializeAVPlayer {
-    
     _asset = [AVURLAsset assetWithURL:_assetURL];
     _playerItem = [AVPlayerItem playerItemWithAsset:_asset automaticallyLoadedAssetKeys:@[@"duration"]];
     _player = [AVPlayer playerWithPlayerItem:_playerItem];
@@ -287,27 +275,8 @@ NS_ASSUME_NONNULL_END
 }
 
 - (void)_scrollViewObserving {
-    if ( _scrollView ) {
-        __weak typeof(self) _self = self;
-        [self _observeScrollView:_scrollView deallocCallBlock:^(SJTmpObj *obj) {
-            __strong typeof(_self) self = _self;
-            if ( !self ) return;
-            if ( !self.removedScrollObserver ) {
-                [self _removingScrollViewObserver];
-            }
-        }];
-    }
-    
-    if ( _rootScrollView ) {
-        __weak typeof(self) _self = self;
-        [self _observeScrollView:_rootScrollView deallocCallBlock:^(SJTmpObj *obj) {
-            __strong typeof(_self) self = _self;
-            if ( !self ) return;
-            if ( !self.removedParentScrollObserver ) {
-                [self _removingrootScrollViewObserver];
-            }
-        }];
-    }
+    if ( _scrollView ) [self _observeScrollView:_scrollView];
+    if ( _rootScrollView ) [self _observeScrollView:_rootScrollView];
 }
 
 - (void)observeValueForKeyPath:(NSString *)keyPath ofObject:(id)object change:(NSDictionary<NSKeyValueChangeKey,id> *)change context:(void *)context {
@@ -594,7 +563,7 @@ NS_ASSUME_NONNULL_END
         __strong typeof(_self) self = _self;
         if ( !self ) return;
         if ( self.exportSession.status == AVAssetExportSessionStatusCancelled ||
-             self.exportSession.status == AVAssetExportSessionStatusCompleted ||
+            self.exportSession.status == AVAssetExportSessionStatusCompleted ||
             self.exportSession.status == AVAssetExportSessionStatusFailed ) {
             [self _cleanRefreshProgressTimer];
         }
@@ -659,14 +628,13 @@ NS_ASSUME_NONNULL_END
 
 - (void)dealloc {
     [self _clearAVPlayer];
-    if ( _scrollView && !_removedScrollObserver ) [self _removingScrollViewObserver];
-    if ( _rootScrollView && !_removedParentScrollObserver ) [self _removingrootScrollViewObserver];
     if ( _deallocExeBlock ) _deallocExeBlock(self);
 }
 
 #pragma mark
 
 - (void)_scrollViewDidScroll:(UIScrollView *)scrollView {
+    if ( !_scrollView ) return;
     if ( scrollView == _scrollView ) {
         if ( _scrollViewDidScroll ) _scrollViewDidScroll(self);
     }
@@ -768,21 +736,11 @@ NS_ASSUME_NONNULL_END
     
     if ( !newScrollView || newScrollView == _scrollView ) return;
     
-    // remove observer
-    [self _removingScrollViewObserver];
-    
     // set new scrollview
     _scrollView = newScrollView;
     
     // add observer
-    __weak typeof(self) _self = self;
-    [self _observeScrollView:newScrollView deallocCallBlock:^(SJTmpObj *obj) {
-        __strong typeof(_self) self = _self;
-        if ( !self ) return;
-        if ( !self.removedScrollObserver ) {
-            [self _removingScrollViewObserver];
-        }
-    }];
+    [self _observeScrollView:newScrollView];
 }
 
 - (UIView *)_getVideoPlayerSuperView {
@@ -800,36 +758,9 @@ NS_ASSUME_NONNULL_END
     return superView;
 }
 
-- (void)_observeScrollView:(UIScrollView *)scrollView deallocCallBlock:(void(^)(SJTmpObj *obj))block {
-    if ( !scrollView ) return;
-    if      ( scrollView == _rootScrollView ) _removedParentScrollObserver = NO;
-    else if ( scrollView == _scrollView ) _removedScrollObserver = NO;
-    [scrollView addObserver:self forKeyPath:@"contentOffset" options:NSKeyValueObservingOptionNew context:nil];
-    [scrollView.panGestureRecognizer addObserver:self forKeyPath:@"state" options:NSKeyValueObservingOptionNew context:nil];
-    [self _injectTmpObjToScrollView:scrollView deallocCallBlock:^(SJTmpObj *obj) {
-        obj.deallocCallBlock = block;
-    }];
-}
-
-- (void)_injectTmpObjToScrollView:(UIScrollView *)scrollView deallocCallBlock:(void(^)(SJTmpObj *obj))block {
-    if ( !scrollView ) return;
-    SJTmpObj *obj = [SJTmpObj new];
-    obj.deallocCallBlock = block;
-    objc_setAssociatedObject(scrollView, _cmd, obj, OBJC_ASSOCIATION_RETAIN_NONATOMIC);
-}
-
-- (void)_removingScrollViewObserver {
-    [_scrollView removeObserver:self forKeyPath:@"contentOffset"];
-    [_scrollView.panGestureRecognizer removeObserver:self forKeyPath:@"state"];
-    _scrollView = nil;
-    _removedScrollObserver = YES;
-}
-
-- (void)_removingrootScrollViewObserver {
-    [_rootScrollView removeObserver:self forKeyPath:@"contentOffset"];
-    [_rootScrollView.panGestureRecognizer removeObserver:self forKeyPath:@"state"];
-    _rootScrollView = nil;
-    _removedParentScrollObserver = YES;
+- (void)_observeScrollView:(UIScrollView *)scrollView {
+    [scrollView sj_addObserver:self forKeyPath:@"contentOffset"];
+    [scrollView.panGestureRecognizer sj_addObserver:self forKeyPath:@"state"];
 }
 
 - (NSString *)timeString:(NSInteger)secs {
@@ -849,9 +780,11 @@ NS_ASSUME_NONNULL_END
 }
 
 - (void)refreshAVPlayer {
-    [self _clearAVPlayer];
-    [self _initializeAVPlayer];
-    [self _itemObserving];
+    @synchronized(self) {
+        [self _clearAVPlayer];
+        [self _initializeAVPlayer];
+        [self _itemObserving];
+    }
 }
 
 - (void)convertToOriginal {
@@ -911,8 +844,7 @@ NS_ASSUME_NONNULL_END
         _ectype.scrollOut = _scrollOut;
         _ectype.rateChanged = _rateChanged;
     }
-    [self _removingScrollViewObserver];
-    [self _removingrootScrollViewObserver];
+    
     _indexPath = nil;
     _superviewTag = 0;
     _scrollView = nil;

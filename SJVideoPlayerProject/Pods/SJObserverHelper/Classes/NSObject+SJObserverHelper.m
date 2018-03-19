@@ -18,9 +18,7 @@
 
 @implementation SJObserverHelper
 - (void)dealloc {
-    if ( _factor ) {
-        [_target removeObserver:_observer forKeyPath:_keyPath];
-    }
+    if ( _factor ) [_target removeObserver:_observer forKeyPath:_keyPath];
 }
 @end
 

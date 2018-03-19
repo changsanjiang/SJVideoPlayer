@@ -324,13 +324,6 @@ NS_ASSUME_NONNULL_END
         else {
             [self.asset convertToOriginal];
         }
-        
-        if ( self.videoPlayer.isPlayOnScrollView ) {
-            if ( self.videoPlayer.isScrollAppeared ) [self.videoPlayer play];
-        }
-        else {
-            [self.videoPlayer play];
-        }
     };
 }
 
@@ -340,6 +333,7 @@ NS_ASSUME_NONNULL_END
         __strong typeof(_self) self = _self;
         if ( !self ) return;
         self.videoPlayer.disableRotation = YES;   // 界面将要消失的时候, 禁止旋转.
+    
         if ( [self.viewController respondsToSelector:@selector(needConvertAsset)] ) {
             if ( [self.viewController needConvertAsset] ) [self clearAsset];
         }

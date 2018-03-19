@@ -187,12 +187,15 @@ NS_ASSUME_NONNULL_END
     /// task
     next.task = task;
     
+    __weak typeof(self) _self = self;
     task.downloadProgressBlock = ^(__kindof NSURLSessionTask * _Nonnull task, float progress) {
+        __strong typeof(_self) self = _self;
+        if ( !self ) return;
         next.downloadProgress = progress;
         [next postProgress];
+        [self async_updateDownloadProgressWithEntity:next];
     };
     
-    __weak typeof(self) _self = self;
     task.endDownloadHandleBlock = ^(NSURLSessionDownloadTask * _Nonnull task, NSURL * _Nullable location, NSError * _Nullable error) {
         __strong typeof(_self) self = _self;
         if ( !self ) return;
@@ -290,6 +293,15 @@ NS_ASSUME_NONNULL_END
 }
 - (void)sync_insertOrReplaceMediaWithEntity:(SJMediaEntity *)entity {
     sql_exe(self.database, [NSString stringWithFormat:@"INSERT OR REPLACE INTO 'SJMediaEntity' VALUES (%zd, '%@', %zd, '%@', '%ld', '%@', %f);", entity.mediaId, entity.title, entity.downloadStatus, entity.URLStr, time(NULL), entity.relativePath, entity.downloadProgress].UTF8String);
+}
+- (void)async_updateDownloadProgressWithEntity:(SJMediaEntity *)entity {
+    __weak typeof(self) _self = self;
+    [self async_exeBlock:^{
+        __strong typeof(_self) self = _self;
+        if ( !self ) return;
+        NSString *sql = [NSString stringWithFormat:@"UPDATE 'SJMediaEntity' SET 'downloadProgress' = %f WHERE 'mediaId' = %zd;", entity.downloadProgress, entity.mediaId];
+        sql_exe(self.database, sql.UTF8String);
+    }];
 }
 - (void)sync_deleteMediaWithEntity:(SJMediaEntity *)entity {
     sql_exe(self.database, [NSString stringWithFormat:@"DELETE FROM 'SJMediaEntity' WHERE mediaId = %zd;", entity.mediaId].UTF8String);

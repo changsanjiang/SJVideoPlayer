@@ -324,6 +324,13 @@ NS_ASSUME_NONNULL_END
         else {
             [self.asset convertToOriginal];
         }
+        
+        if ( self.videoPlayer.isPlayOnScrollView  ) {
+            if ( self.videoPlayer.isScrollAppeared ) [self.videoPlayer play];
+        }
+        else {
+            [self.videoPlayer play];
+        }
     };
 }
 

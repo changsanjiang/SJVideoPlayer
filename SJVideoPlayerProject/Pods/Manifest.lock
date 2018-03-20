@@ -111,9 +111,9 @@ PODS:
     - SJVideoPlayerAssetCarrier
     - SJVolBrigControl
   - SJBorderLineView (0.0.6)
-  - SJFullscreenPopGesture (1.3.7.2):
-    - SJFullscreenPopGesture/View (= 1.3.7.2)
-  - SJFullscreenPopGesture/View (1.3.7.2)
+  - SJFullscreenPopGesture (1.3.7.3):
+    - SJFullscreenPopGesture/View (= 1.3.7.3)
+  - SJFullscreenPopGesture/View (1.3.7.3)
   - SJLabel (1.2.6.1):
     - SJLabel/Category (= 1.2.6.1)
     - SJLabel/Services (= 1.2.6.1)
@@ -170,7 +170,7 @@ SPEC CHECKSUMS:
   SJAttributesFactory: 01f680bab9e318b0bd11ddff58155a2c7475f2c3
   SJBaseVideoPlayer: 82d44583bff1642681d52430c4c3925a5a73727a
   SJBorderLineView: 5878e67fb57e812a2d5d029ca666068784b5448a
-  SJFullscreenPopGesture: cd46395d8487000b3c1b4fbac2c8747f34de7fc1
+  SJFullscreenPopGesture: f16c9f31a32aa741d6f79d56952572bdd07860b8
   SJLabel: 159cd5eff4cc575390bf26316af634615218e3b7
   SJLoadingView: c3ff03e4b363a5b6a3ba0634d6bb9ce2647faf07
   SJObserverHelper: b270d707cd18ab76538596aa4e98cf798c9e9868

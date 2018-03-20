@@ -283,19 +283,19 @@ static inline void SJ_updateScreenshot() {
 
 - (BOOL)gestureRecognizer:(UIGestureRecognizer *)gestureRecognizer shouldRecognizeSimultaneouslyWithGestureRecognizer:(UIGestureRecognizer *)otherGestureRecognizer {
     if ( UIGestureRecognizerStateFailed ==  gestureRecognizer.state ||
-         UIGestureRecognizerStateCancelled == gestureRecognizer.state ) return NO;
+        UIGestureRecognizerStateCancelled == gestureRecognizer.state ) return NO;
+    
     else if ( ([otherGestureRecognizer isMemberOfClass:NSClassFromString(@"UIScrollViewPanGestureRecognizer")] ||
-               [otherGestureRecognizer isMemberOfClass:NSClassFromString(@"UIScrollViewPagingSwipeGestureRecognizer")])
-             && [otherGestureRecognizer.view isKindOfClass:[UIScrollView class]] ) {
+          [otherGestureRecognizer isMemberOfClass:NSClassFromString(@"UIScrollViewPagingSwipeGestureRecognizer")])
+       && [otherGestureRecognizer.view isKindOfClass:[UIScrollView class]] ) {
         return [self SJ_considerScrollView:(UIScrollView *)otherGestureRecognizer.view
                          gestureRecognizer:(UIPanGestureRecognizer *)gestureRecognizer
                     otherGestureRecognizer:otherGestureRecognizer];
     }
-    else if ( [otherGestureRecognizer isKindOfClass:[UIPanGestureRecognizer class]] )  {
-        return NO;  // pop手势不触发
-    }
     
-    // 除 pan 手势, 其他手势同时触发
+    else if ( [otherGestureRecognizer isKindOfClass:[UIPanGestureRecognizer class]] ) {
+        return NO;
+    }
     return YES;
 }
 

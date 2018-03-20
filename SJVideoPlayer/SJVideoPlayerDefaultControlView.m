@@ -998,6 +998,7 @@ NS_ASSUME_NONNULL_END
     
     [self _setControlViewsDisappearValue]; // update. `reset`.
     
+    if ( _previewView.appearState ) [_previewView disappear];
     if ( _moreSettingsView.appearState ) [_moreSettingsView disappear];
     if ( _moreSecondarySettingView.appearState ) [_moreSecondarySettingView disappear];
     [self.bottomSlider disappear];
@@ -1030,9 +1031,6 @@ NS_ASSUME_NONNULL_END
             }];
         }
     }
-    UIView_Animations(CommonAnimaDuration, ^{
-        [self.bottomSlider appear];
-    }, nil);
 }
 
 #pragma mark 音量 / 亮度 / 播放速度

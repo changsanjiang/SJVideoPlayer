@@ -15,6 +15,7 @@
 @interface SJVideoModel : NSObject
 
 + (NSArray<SJVideoModel *> *)videoModelsWithTapActionDelegate:(id<NSAttributedStringTappedDelegate>)actionDelegate;
++ (NSArray<SJVideoModel *> *)lightweightVideoModelsWithTapActionDelegate:(id<NSAttributedStringTappedDelegate>)actionDelegate;
 
 @property (nonatomic, assign) NSInteger videoId;
 @property (nonatomic, strong) SJUserModel *creator;

@@ -9,7 +9,7 @@
 #import "LightweightViewController.h"
 #import <SJUIFactory.h>
 #import <Masonry.h>
-#import "SJVideoListTableViewCell.h"
+#import "LightweightTableViewCell.h"
 #import "SJVideoModel.h"
 #import "SJVideoPlayer.h"
 #import "SJVideoPlayerHelper.h"
@@ -17,9 +17,9 @@
 #import "DemoPlayerViewController.h"
 #import "YYTapActionLabel.h"
 
-static NSString *const SJVideoListTableViewCellID = @"SJVideoListTableViewCell";
+static NSString *const LightweightTableViewCellID = @"LightweightTableViewCell";
 
-@interface LightweightViewController ()<UITableViewDelegate, UITableViewDataSource, SJVideoListTableViewCellDelegate, NSAttributedStringTappedDelegate, SJVideoPlayerHelperUseProtocol>
+@interface LightweightViewController ()<UITableViewDelegate, UITableViewDataSource, LightweightTableViewCellDelegate, NSAttributedStringTappedDelegate, SJVideoPlayerHelperUseProtocol>
 
 @property (nonatomic, strong, readonly) SJVideoPlayerHelper *videoPlayerHelper;
 @property (nonatomic, strong, readonly) UIActivityIndicatorView *indicator;
@@ -50,7 +50,7 @@ static NSString *const SJVideoListTableViewCellID = @"SJVideoListTableViewCell";
     __weak typeof(self) _self = self;
     dispatch_async(dispatch_get_global_queue(0, 0), ^{
         // some test data
-        NSArray<SJVideoModel *> *videos = [SJVideoModel videoModelsWithTapActionDelegate:self];
+        NSArray<SJVideoModel *> *videos = [SJVideoModel lightweightVideoModelsWithTapActionDelegate:self];
         dispatch_async(dispatch_get_main_queue(), ^{
             __strong typeof(_self) self = _self;
             if ( !self ) return;
@@ -101,7 +101,7 @@ static NSString *const SJVideoListTableViewCellID = @"SJVideoListTableViewCell";
     return self.videoPlayerHelper.vc_preferredStatusBarStyleExeBlock();
 }
 
-- (void)clickedPlayOnTabCell:(SJVideoListTableViewCell *)cell playerParentView:(UIView *)playerParentView {
+- (void)clickedPlayOnTabCell:(LightweightTableViewCell *)cell playerParentView:(UIView *)playerParentView {
     self.playedIndexPath = [self.tableView indexPathForCell:cell];
     SJVideoPlayerURLAsset *asset =
     //    [[SJVideoPlayerURLAsset alloc] initWithAssetURL:[[NSBundle mainBundle] URLForResource:@"sample" withExtension:@"mp4"]
@@ -149,7 +149,7 @@ static NSString *const SJVideoListTableViewCellID = @"SJVideoListTableViewCell";
 - (UITableView *)tableView {
     if ( _tableView ) return _tableView;
     _tableView = [SJUITableViewFactory tableViewWithStyle:UITableViewStylePlain backgroundColor:[UIColor whiteColor] separatorStyle:UITableViewCellSeparatorStyleNone showsVerticalScrollIndicator:YES delegate:self dataSource:self];
-    [_tableView registerClass:NSClassFromString(SJVideoListTableViewCellID) forCellReuseIdentifier:SJVideoListTableViewCellID];
+    [_tableView registerClass:NSClassFromString(LightweightTableViewCellID) forCellReuseIdentifier:LightweightTableViewCellID];
     return _tableView;
 }
 
@@ -158,11 +158,11 @@ static NSString *const SJVideoListTableViewCellID = @"SJVideoListTableViewCell";
 }
 
 - (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath {
-    return [SJVideoListTableViewCell heightWithContentHeight:_videos[indexPath.row].videoContentLayout.textBoundingSize.height];
+    return [LightweightTableViewCell heightWithContentHeight:_videos[indexPath.row].videoContentLayout.textBoundingSize.height];
 }
 
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath {
-    SJVideoListTableViewCell * cell = (SJVideoListTableViewCell *)[tableView dequeueReusableCellWithIdentifier:SJVideoListTableViewCellID forIndexPath:indexPath];
+    LightweightTableViewCell * cell = (LightweightTableViewCell *)[tableView dequeueReusableCellWithIdentifier:LightweightTableViewCellID forIndexPath:indexPath];
     cell.model = _videos[indexPath.row];
     cell.delegate = self;
     return cell;

@@ -19,6 +19,7 @@
 #import "TableViewHeaderIsCollectionViewDemoViewController.h"
 #import "AboutKeyboardViewController.h"
 #import "DowloadViewController.h"
+#import "LightweightViewController.h"
 
 @interface ViewController ()
 
@@ -75,6 +76,10 @@
 
 - (IBAction)download:(id)sender {
     [self.navigationController pushViewController:[[DowloadViewController alloc] init] animated:YES];
+}
+
+- (IBAction)lightweight:(id)sender {
+    [self.navigationController pushViewController:[[LightweightViewController alloc] init] animated:YES];
 }
 
 - (IBAction)test:(id)sender {

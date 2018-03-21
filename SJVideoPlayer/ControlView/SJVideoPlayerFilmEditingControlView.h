@@ -16,11 +16,11 @@ typedef NS_ENUM(NSUInteger, SJVideoPlayerFilmEditingViewTag) {
     SJVideoPlayerFilmEditingViewTag_Export,
 };
 
-typedef NS_ENUM(NSUInteger, SJVideoPlayerFilmEditingRecrodStatus) {
-    SJVideoPlayerFilmEditingRecrodStatus_Unknown,
-    SJVideoPlayerFilmEditingRecrodStatus_Recording,
-    SJVideoPlayerFilmEditingRecrodStatus_Finished,
-    SJVideoPlayerFilmEditingRecrodStatus_Paused,
+typedef NS_ENUM(NSUInteger, SJVideoPlayerFilmEditingStatus) {
+    SJVideoPlayerFilmEditingStatus_Unknown,
+    SJVideoPlayerFilmEditingStatus_Recording,
+    SJVideoPlayerFilmEditingStatus_Finished, // screenshot finished || record finished
+    SJVideoPlayerFilmEditingStatus_Paused,
 };
 
 @interface SJVideoPlayerFilmEditingControlView : UIView
@@ -38,7 +38,7 @@ typedef NS_ENUM(NSUInteger, SJVideoPlayerFilmEditingRecrodStatus) {
 
 
 #pragma mark - record
-@property (nonatomic, readonly) SJVideoPlayerFilmEditingRecrodStatus recordStatus;
+@property (nonatomic, readonly) SJVideoPlayerFilmEditingStatus recordStatus;
 - (void)pauseRecording;
 - (void)resumeRecording;
 - (void)completeRecording;

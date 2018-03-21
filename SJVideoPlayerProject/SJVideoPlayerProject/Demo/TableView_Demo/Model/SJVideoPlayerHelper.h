@@ -9,10 +9,17 @@
 #import <UIKit/UIKit.h>
 
 NS_ASSUME_NONNULL_BEGIN
+typedef NS_ENUM(NSUInteger, SJVideoPlayerType) {
+    SJVideoPlayerType_Default,
+    SJVideoPlayerType_Lightweight,
+};
+
 @class SJVideoPlayerURLAsset;
 @protocol SJVideoPlayerHelperUseProtocol;
 
 @interface SJVideoPlayerHelper : NSObject
+
+- (instancetype)initWithViewController:(__weak UIViewController<SJVideoPlayerHelperUseProtocol> *)viewController playerType:(SJVideoPlayerType)playerType;
 
 /// return instance
 - (instancetype)initWithViewController:(__weak UIViewController<SJVideoPlayerHelperUseProtocol> *)viewController;
@@ -27,6 +34,7 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic, strong, readonly, nullable) SJVideoPlayerURLAsset *asset;
 @property (nonatomic, readonly) NSTimeInterval currentTime;
 @property (nonatomic, readonly) NSTimeInterval totalTime;
+@property (nonatomic, strong, readonly) NSURL *currentPlayURL;
 
 @property (nonatomic, copy, readonly) void(^vc_viewDidAppearExeBlock)(void);
 

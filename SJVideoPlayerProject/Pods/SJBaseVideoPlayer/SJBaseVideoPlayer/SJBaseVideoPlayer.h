@@ -315,11 +315,20 @@ typedef NS_ENUM(NSInteger, SJNetworkStatus) {
 @property (nonatomic) BOOL enableControlLayerDisplayController;
 
 /**
- When the player paused, Whether to keep the appear state. default is NO.
+ When the player paused, Whether to keep the appear state.
+ default is NO.
  
  readwrite.
  */
 @property (nonatomic) BOOL pausedToKeepAppearState;
+
+/**
+ When play failed, Whether to kepp the appear state.
+ default is YES.
+ 
+ readwrite.
+ */
+@property (nonatomic) BOOL playFailedToKeepAppearState;
 
 /**
  YES -> Appear.
@@ -616,6 +625,13 @@ typedef NS_ENUM(NSInteger, SJNetworkStatus) {
  */
 - (void)unlockedVideoPlayer:(__kindof SJBaseVideoPlayer *)videoPlayer;
 
+#pragma mark - This Tap gesture triggered when player locked screen.
+
+/**
+ If player locked(videoPlayer.lockedScreen == YES), When the user tapped on the player this method will be called.
+ */
+- (void)tappedPlayerOnTheLockedState:(__kindof SJBaseVideoPlayer *)videoPlayer;
+
 #pragma mark - 屏幕旋转
 /**
  Call it when player will rotate the screen, `isFull` if YES, then full screen.
@@ -657,7 +673,6 @@ typedef NS_ENUM(NSInteger, SJNetworkStatus) {
 #pragma mark - Network
 /// 网络状态变更
 - (void)videoPlayer:(__kindof SJBaseVideoPlayer *)videoPlayer reachabilityChanged:(SJNetworkStatus)status;
-
 @end
 
 NS_ASSUME_NONNULL_END

@@ -34,6 +34,33 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (instancetype)initWithControlLayerDataSource:(nullable id<SJVideoPlayerControlLayerDataSource> )controlLayerDataSource
                           controlLayerDelegate:(nullable id<SJVideoPlayerControlLayerDelegate>)controlLayerDelegate;    // 指定控制层
+
+/**
+ A lightweight player with simple functions.
+ 一个具有简单功能的播放器.
+ 
+ @return player
+ */
++ (instancetype)lightweightPlayer;
+
+
+/**
+ Clicked back btn exe block.
+ 点击`返回`按钮的回调.
+ 
+ readwrite.
+ */
+@property (nonatomic, copy, readwrite) void(^clickedBackEvent)(SJVideoPlayer *player);
+
+
+/**
+ If yes, the player will prompt the user when the network status changes.
+ 是否禁止网络状态变化时的提示, 默认是NO.
+ 
+ readwrite.
+ */
+@property (nonatomic) BOOL disableNetworkStatusChangePrompt; // default is NO. 是否禁止网路状态变化提示. 默认为No.
+
 @end
 
 
@@ -45,21 +72,10 @@ NS_ASSUME_NONNULL_BEGIN
  *  Whether to generate a preview view. default is YES.
  *
  *  是否自动生成预览视图, 默认是 YES. 如果为NO, 则预览按钮将不会显示.
- */
-@property (nonatomic, assign, readwrite) BOOL generatePreviewImages;
-
-/**
- *  clicked back btn exe block.
  *
- *  点击`返回`按钮的回调.
+ *  readwrite.
  */
-@property (nonatomic, copy, readwrite) void(^clickedBackEvent)(SJVideoPlayer *player);
-
-
-/**
-    If yes, the player will prompt the user when the network status changes.
- */
-@property (nonatomic, assign, readwrite) BOOL disableNetworkStatusChangePrompt; // default is NO. 是否禁止网路状态变化提示. 默认为No.
+@property (nonatomic) BOOL generatePreviewImages;
 
 /**
  *  Configure the player, Note: T his `block` is run on the child thread.
@@ -81,17 +97,23 @@ NS_ASSUME_NONNULL_BEGIN
  *  clicked More button to display items.
  *
  *  点击`更多(右上角的三个点)`按钮, 弹出来的选项.
+ *
+ *  readwrite.
  **/
-@property (nonatomic, strong, readwrite, nullable) NSArray<SJVideoPlayerMoreSetting *> *moreSettings;
-
+@property (nonatomic, strong, nullable) NSArray<SJVideoPlayerMoreSetting *> *moreSettings;
 
 /**
-    If yes, the player will display the right control view.
-    But if the format of the video is m3u8, it does not work.
+ If yes, the player will display the right control view.
+ But if the format of the video is m3u8, it does not work.
+ 
+ readwrite.
  */
-@property (nonatomic, assign, readwrite) BOOL enableFilmEditing;
+@property (nonatomic) BOOL enableFilmEditing;
 
-@property (nonatomic, strong, readwrite, nullable) SJFilmEditingResultShare *filmEditingResultShare;
+/**
+ readwrite.
+ */
+@property (nonatomic, strong, nullable) SJFilmEditingResultShare *filmEditingResultShare;
 
 - (void)exitFilmEditingCompletion:(void(^__nullable)(SJVideoPlayer *player))completion;
 

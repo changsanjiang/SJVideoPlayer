@@ -38,6 +38,7 @@ NSNotificationName const SJSettingsPlayerNotification = @"SJSettingsPlayerNotifi
     self.playBtnImage = [SJVideoPlayerResources imageNamed:@"sj_video_player_play"];
     self.pauseBtnImage = [SJVideoPlayerResources imageNamed:@"sj_video_player_pause"];
     self.fullBtnImage = [SJVideoPlayerResources imageNamed:@"sj_video_player_fullscreen"];
+    self.shrinkscreenImage = [SJVideoPlayerResources imageNamed:@"sj_video_player_shrinkscreen"];
     self.lockBtnImage = [SJVideoPlayerResources imageNamed:@"sj_video_player_lock"];
     self.unlockBtnImage = [SJVideoPlayerResources imageNamed:@"sj_video_player_unlock"];
     self.replayBtnImage = [SJVideoPlayerResources imageNamed:@"sj_video_player_replay"];

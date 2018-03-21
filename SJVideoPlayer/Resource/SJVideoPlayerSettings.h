@@ -78,6 +78,7 @@ extern NSNotificationName const SJSettingsPlayerNotification;
 @property (nonatomic, strong, readwrite) UIImage *playBtnImage;
 @property (nonatomic, strong, readwrite) UIImage *pauseBtnImage;
 @property (nonatomic, strong, readwrite) UIImage *fullBtnImage;
+@property (nonatomic, strong, readwrite) UIImage *shrinkscreenImage;
 @property (nonatomic, strong, readwrite) UIImage *moreBtnImage;
 @property (nonatomic, strong, readwrite) UIImage *lockBtnImage;
 @property (nonatomic, strong, readwrite) UIImage *unlockBtnImage;

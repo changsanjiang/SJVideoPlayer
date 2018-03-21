@@ -28,6 +28,7 @@ NS_ASSUME_NONNULL_BEGIN
 @interface NSAttributedString (SJAddDelegate)
 
 @property (nonatomic, weak, readwrite, nullable) id<NSAttributedStringTappedDelegate> tappedDelegate;
+@property (nonatomic, strong, nullable) id object;
 
 @end
 
@@ -46,13 +47,16 @@ NS_ASSUME_NONNULL_BEGIN
  */
 @property (nonatomic, copy, readonly) void(^addTapAction)(NSString *regStr);
 
+
 @end
 
 #pragma mark -
 @protocol NSAttributedStringTappedDelegate<NSObject>
 
-@optional
 - (void)attributedString:(NSAttributedString *)attrStr tappedStr:(NSAttributedString *)tappedStr;
+
+@optional
+- (void)tappedOtherPlacesOfAttributedString:(NSAttributedString *)attrStr;
 
 @end
 NS_ASSUME_NONNULL_END

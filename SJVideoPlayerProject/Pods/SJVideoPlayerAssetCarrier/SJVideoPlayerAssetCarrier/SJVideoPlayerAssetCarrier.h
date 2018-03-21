@@ -229,6 +229,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 #pragma mark - other
 - (NSString *)timeString:(NSInteger)secs;
+@property (nonatomic, copy, readwrite, nullable) void(^convertToOriginalExeBlock)(SJVideoPlayerAssetCarrier *asset);
 @property (nonatomic, copy, readwrite, nullable) void(^deallocExeBlock)(SJVideoPlayerAssetCarrier *asset);
 
 

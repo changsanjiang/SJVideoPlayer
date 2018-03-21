@@ -30,19 +30,17 @@
 #import "SJVideoPlayerFilmEditingControlView.h"
 #import "SJVideoPlayerControlMaskView.h"
 #import <SJUIFactory/SJUIFactory.h>
+#import "SJVideoPlayerAnimationHeader.h"
+#import <SJBaseVideoPlayer/SJTimerControl.h>
 
 #pragma mark -
 
 NS_ASSUME_NONNULL_BEGIN
 
-typedef void(^Block)(void);
-
-static NSTimeInterval CommonAnimaDuration = 0.25;
-
-inline static void UIView_Animations(NSTimeInterval duration, Block __nullable animations, Block __nullable completion);
-
 #pragma mark -
-@interface SJVideoPlayerDefaultControlView ()<SJVideoPlayerLeftControlViewDelegate, SJVideoPlayerBottomControlViewDelegate, SJVideoPlayerTopControlViewDelegate, SJVideoPlayerPreviewViewDelegate, SJVideoPlayerCenterControlViewDelegate, SJVideoPlayerRightControlViewDelegate>
+@interface SJVideoPlayerDefaultControlView ()<SJVideoPlayerLeftControlViewDelegate, SJVideoPlayerBottomControlViewDelegate, SJVideoPlayerTopControlViewDelegate, SJVideoPlayerPreviewViewDelegate, SJVideoPlayerCenterControlViewDelegate, SJVideoPlayerRightControlViewDelegate> {
+    SJTimerControl *_lockStateTappedTimerControl;
+}
 
 @property (nonatomic, assign) BOOL hasBeenGeneratedPreviewImages;
 @property (nonatomic, strong, readonly) SJMoreSettingsSlidersViewModel *footerViewModel;
@@ -61,6 +59,7 @@ inline static void UIView_Animations(NSTimeInterval duration, Block __nullable a
 @property (nonatomic, strong, readonly) SJVideoPlayerMoreSettingsView *moreSettingsView;
 @property (nonatomic, strong, readonly) SJVideoPlayerMoreSettingSecondaryView *moreSecondarySettingView;
 @property (nonatomic, strong, readonly) SJLoadingView *loadingView;
+@property (nonatomic, strong, readonly) SJTimerControl *lockStateTappedTimerControl;
 @property (nonatomic, strong, readwrite, nullable) SJVideoPlayerFilmEditingControlView *filmEditingControlView;
 
 @property (nonatomic, weak, readwrite, nullable) SJVideoPlayer *videoPlayer;
@@ -119,18 +118,18 @@ NS_ASSUME_NONNULL_END
 }
 
 - (void)applicationWillResignActive {
-    if ( _filmEditingControlView.recordStatus == SJVideoPlayerFilmEditingRecrodStatus_Recording ) {
+    if ( _filmEditingControlView.recordStatus == SJVideoPlayerFilmEditingStatus_Recording ) {
         [_filmEditingControlView pauseRecording];
         [self pauseAndDeterAppear];
     }
 }
 
 - (void)applicationDidBecomeActive {
-    if ( _filmEditingControlView.recordStatus == SJVideoPlayerFilmEditingRecrodStatus_Paused ) {
+    if ( _filmEditingControlView.recordStatus == SJVideoPlayerFilmEditingStatus_Paused ) {
         [_filmEditingControlView resumeRecording];
         [self.videoPlayer play];
     }
-    else if ( _filmEditingControlView.recordStatus == SJVideoPlayerFilmEditingRecrodStatus_Finished ) {
+    else if ( _filmEditingControlView.recordStatus == SJVideoPlayerFilmEditingStatus_Finished ) {
         [self pauseAndDeterAppear];
     }
 }
@@ -294,7 +293,7 @@ NS_ASSUME_NONNULL_END
 
 - (void)exitFilmEditingCompletion:(void(^ __nullable)(SJVideoPlayerDefaultControlView *))completion {
     if ( _filmEditingControlView ) {
-        UIView_Animations(0.5, ^{
+        UIView_Animations(CommonAnimaDuration, ^{
             [_filmEditingControlView disappear];
         }, ^{
             self.videoPlayer.disableRotation = NO;
@@ -373,10 +372,7 @@ NS_ASSUME_NONNULL_END
                     return;
                 }
             }
-            
-            if ( [self.delegate respondsToSelector:@selector(clickedBackBtnOnControlView:)] ) {
-                [self.delegate clickedBackBtnOnControlView:self];
-            }
+            if ( _videoPlayer.clickedBackEvent ) _videoPlayer.clickedBackEvent(_videoPlayer);
         }
             break;
         case SJVideoPlayerTopViewTag_More: {
@@ -423,7 +419,6 @@ NS_ASSUME_NONNULL_END
         }
             break;
     }
-    view.lockState = _videoPlayer.lockedScreen;
 }
 
 
@@ -542,7 +537,9 @@ NS_ASSUME_NONNULL_END
         _filmEditingControlView.exit = ^(SJVideoPlayerFilmEditingControlView * _Nonnull view) {
             __strong typeof(_self) self = _self;
             if ( !self ) return;
-            [self exitFilmEditingCompletion:nil];
+            [self exitFilmEditingCompletion:^(SJVideoPlayerDefaultControlView * _Nonnull view) {
+                [self.videoPlayer controlLayerNeedAppear];
+            }];
         };
         
         _filmEditingControlView.recordCompleteExeBlock = ^void (SJVideoPlayerFilmEditingControlView * _Nonnull filmEditingView, short duration) {
@@ -756,7 +753,21 @@ NS_ASSUME_NONNULL_END
     }];
 }
 
-
+#pragma mark -
+- (SJTimerControl *)lockStateTappedTimerControl {
+    if ( _lockStateTappedTimerControl ) return _lockStateTappedTimerControl;
+    _lockStateTappedTimerControl = [[SJTimerControl alloc] init];
+    __weak typeof(self) _self = self;
+    _lockStateTappedTimerControl.exeBlock = ^(SJTimerControl * _Nonnull control) {
+        __strong typeof(_self) self = _self;
+        if ( !self ) return;
+        [control clear];
+        UIView_Animations(CommonAnimaDuration, ^{
+            if ( self.leftControlView.appearState ) [self.leftControlView disappear];
+        }, nil);
+    };
+    return _lockStateTappedTimerControl;
+}
 #pragma mark - Video Player Control Data Source
 
 /// 播放器安装完控制层的回调.
@@ -833,7 +844,11 @@ NS_ASSUME_NONNULL_END
         }
             break;
         case SJVideoPlayerPlayState_Buffing: {
-            
+            if ( self.centerControlView.appearState ) {
+                UIView_Animations(CommonAnimaDuration, ^{
+                    [self.centerControlView disappear];
+                }, nil);
+            }
         }
             break;
     }
@@ -843,28 +858,15 @@ NS_ASSUME_NONNULL_END
         NSLog(@"SJVideoPlayerLog: %@", videoPlayer.error);
 #endif
         [self.loadingView stop];
-        
-        [self.topControlView appear];
-        [self.leftControlView disappear];
-        [self.bottomControlView disappear];
-
     }
     
-    if ( SJVideoPlayerPlayState_PlayFailed == state || SJVideoPlayerPlayState_PlayEnd == state ) {
+    if ( SJVideoPlayerPlayState_PlayEnd ==  state ) {
         UIView_Animations(CommonAnimaDuration, ^{
             [self.centerControlView appear];
+            [self.centerControlView replayState];
         }, nil);
-        if ( SJVideoPlayerPlayState_PlayFailed == state ) [self.centerControlView failedState];
-        else [self.centerControlView replayState];
-    }
-    else if ( self.centerControlView.appearState ) {
-        UIView_Animations(CommonAnimaDuration, ^{
-            [self.centerControlView disappear];
-        }, nil);
-    }
-    
-    if ( SJVideoPlayerPlayState_PlayEnd == state ) {
-        if ( _filmEditingControlView && _filmEditingControlView.recordStatus == SJVideoPlayerFilmEditingRecrodStatus_Recording ) {
+        
+        if ( _filmEditingControlView && _filmEditingControlView.recordStatus == SJVideoPlayerFilmEditingStatus_Recording ) {
             [videoPlayer showTitle:self.settings.videoPlayDidToEndText duration:2];
             [_filmEditingControlView completeRecording];
         }
@@ -906,7 +908,16 @@ NS_ASSUME_NONNULL_END
 /// 显示边缘控制视图
 - (void)controlLayerNeedAppear:(SJVideoPlayer *)videoPlayer {
     UIView_Animations(CommonAnimaDuration, ^{
-        if ( SJVideoPlayerPlayState_PlayFailed != videoPlayer.state ) {
+        if ( SJVideoPlayerPlayState_PlayFailed == videoPlayer.state ) {
+            [_centerControlView failedState];
+            [_centerControlView appear];
+            [_topControlView appear];
+            [_leftControlView disappear];
+            [_bottomControlView disappear];
+            [_rightControlView disappear];
+        }
+        else {
+            // top
             if ( videoPlayer.isPlayOnScrollView && !videoPlayer.isFullScreen ) {
                 if ( videoPlayer.URLAsset.alwaysShowTitle ) [_topControlView appear];
                 else [_topControlView disappear];
@@ -914,6 +925,7 @@ NS_ASSUME_NONNULL_END
             else [_topControlView appear];
             
             [_bottomControlView appear];
+            
             if ( videoPlayer.isFullScreen ) {
                 [_leftControlView appear];
                 [_rightControlView appear];
@@ -923,12 +935,8 @@ NS_ASSUME_NONNULL_END
                 [_rightControlView disappear];
             }
             [_bottomSlider disappear];
-        }
-        else {
-            [_topControlView appear];
-            [_leftControlView disappear];
-            [_bottomControlView disappear];
-            [_rightControlView disappear];
+            
+            if ( videoPlayer.state != SJVideoPlayerPlayState_PlayEnd ) [_centerControlView disappear];
         }
         
         if ( _moreSettingsView.appearState ) [_moreSettingsView disappear];
@@ -943,7 +951,8 @@ NS_ASSUME_NONNULL_END
             [_topControlView disappear];
             [_bottomControlView disappear];
             [_rightControlView disappear];
-            [_leftControlView disappear];
+            if ( !videoPlayer.isLockedScreen ) [_leftControlView disappear];
+            else [_leftControlView appear];
             [_previewView disappear];
             [_bottomSlider appear];
         }
@@ -970,15 +979,26 @@ NS_ASSUME_NONNULL_END
 #pragma mark 锁屏
 /// 播放器被锁屏, 此时将不旋转, 不触发手势相关事件.
 - (void)lockedVideoPlayer:(SJVideoPlayer *)videoPlayer {
+    _leftControlView.lockState = YES;
+    [self.lockStateTappedTimerControl start];
     [videoPlayer controlLayerNeedDisappear];
-    UIView_Animations(CommonAnimaDuration, ^{
-        [_leftControlView appear];
-    }, nil);
 }
 
 /// 播放器解除锁屏.
 - (void)unlockedVideoPlayer:(SJVideoPlayer *)videoPlayer {
+    _leftControlView.lockState = NO;
+    [self.lockStateTappedTimerControl clear];
     [videoPlayer controlLayerNeedAppear];
+}
+
+/// 如果播放器锁屏, 当用户点击的时候, 这个方法会触发
+- (void)tappedPlayerOnTheLockedState:(__kindof SJBaseVideoPlayer *)videoPlayer {
+    UIView_Animations(CommonAnimaDuration, ^{
+        if ( _leftControlView.appearState ) [_leftControlView disappear];
+        else [_leftControlView appear];
+    }, nil);
+    if ( _leftControlView.appearState ) [_lockStateTappedTimerControl start];
+    else [_lockStateTappedTimerControl clear];
 }
 
 #pragma mark 屏幕旋转
@@ -1094,7 +1114,7 @@ NS_ASSUME_NONNULL_END
 }
 
 - (void)_promptWithNetworkStatus:(SJNetworkStatus)status {
-    if ( self.disableNetworkStatusChangePrompt ) return;
+    if ( self.videoPlayer.disableNetworkStatusChangePrompt ) return;
     if ( [self.videoPlayer.assetURL isFileURL] ) return; // return when is local video.
     
     switch ( status ) {
@@ -1112,38 +1132,5 @@ NS_ASSUME_NONNULL_END
             break;
     }
 }
+
 @end
-
-
-#pragma mark - other
-
-@interface _SJAnimationContext : NSObject
-@property (nonatomic, copy, nullable) Block completion;
-- (instancetype)initWithCompletion:(nullable Block)completion;
-@end
-
-@implementation _SJAnimationContext
-- (instancetype)initWithCompletion:(nullable Block)completion {
-    self = [super init];
-    if ( !self ) return nil;
-    _completion = completion;
-    return self;
-}
-- (void)dealloc {
-    if ( _completion ) _completion();
-}
-@end
-
-inline static void UIView_Animations(NSTimeInterval duration, Block __nullable animations, Block __nullable completion) {
-    if ( completion ) {
-        _SJAnimationContext *context = [[_SJAnimationContext alloc] initWithCompletion:completion];
-        [UIView beginAnimations:nil context:(void *)context];
-        [UIView setAnimationDelegate:context];
-    }
-    else {
-        [UIView beginAnimations:nil context:NULL];
-    }
-    [UIView setAnimationDuration:duration];
-    if ( animations ) animations();
-        [UIView commitAnimations];
-}

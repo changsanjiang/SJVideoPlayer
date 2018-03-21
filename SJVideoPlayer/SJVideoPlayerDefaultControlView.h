@@ -13,11 +13,7 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
-@protocol SJVideoPlayerDefaultControlViewDelegate;
-
 @interface SJVideoPlayerDefaultControlView : UIView<SJVideoPlayerControlLayerDelegate, SJVideoPlayerControlLayerDataSource>
-
-@property (nonatomic, weak, readwrite, nullable) id<SJVideoPlayerDefaultControlViewDelegate> delegate;
 
 @property (nonatomic, strong, readwrite, nullable) NSArray<SJVideoPlayerMoreSetting *> *moreSettings;
 
@@ -25,18 +21,9 @@ NS_ASSUME_NONNULL_BEGIN
 
 @property (nonatomic, readwrite) BOOL generatePreviewImages;
 
-@property (nonatomic, readwrite) BOOL disableNetworkStatusChangePrompt; // default is no.
-
 @property (nonatomic, readwrite) BOOL enableFilmEditing;
 
 - (void)exitFilmEditingCompletion:(void(^ __nullable)(SJVideoPlayerDefaultControlView *view))completion;
-
-@end
-
-@protocol SJVideoPlayerDefaultControlViewDelegate <NSObject>
-
-@required
-- (void)clickedBackBtnOnControlView:(SJVideoPlayerDefaultControlView *)controlView;
 
 @end
 

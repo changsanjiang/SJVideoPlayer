@@ -81,6 +81,8 @@
             self.alpha = 0.001;
         }
     }
+
+    self.appearState = show;
     
     if ( show ) {
         if ( self.appearExeBlock ) self.appearExeBlock(self);
@@ -88,8 +90,7 @@
     else {
         if ( self.disappearExeBlock ) self.disappearExeBlock(self);
     }
-    
-    self.appearState = show;
+
 }
 
 @end

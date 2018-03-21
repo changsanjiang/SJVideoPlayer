@@ -47,6 +47,9 @@
                     [attributedText.tappedDelegate attributedString:attributedText tappedStr:[attributedText attributedSubstringFromRange:range]];
                 }
             }
+            else if ( [attributedText.tappedDelegate respondsToSelector:@selector(tappedOtherPlacesOfAttributedString:)] ) {
+                [attributedText.tappedDelegate tappedOtherPlacesOfAttributedString:attributedText];
+            }
         };;
     }
     [super setTextLayout:textLayout];
@@ -116,6 +119,14 @@
 }
 
 - (id<NSAttributedStringTappedDelegate>)tappedDelegate {
+    return objc_getAssociatedObject(self, _cmd);
+}
+
+- (void)setObject:(id)object {
+    objc_setAssociatedObject(self, @selector(object), object, OBJC_ASSOCIATION_RETAIN_NONATOMIC);
+}
+
+- (id)object {
     return objc_getAssociatedObject(self, _cmd);
 }
 

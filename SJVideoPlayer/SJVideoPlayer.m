@@ -9,12 +9,14 @@
 #import "SJVideoPlayer.h"
 #import <objc/message.h>
 #import "SJVideoPlayerDefaultControlView.h"
+#import "SJLightweightControlLayer.h"
 
 #pragma mark -
 
 NS_ASSUME_NONNULL_BEGIN
-@interface SJVideoPlayer ()<SJVideoPlayerDefaultControlViewDelegate> {
+@interface SJVideoPlayer () {
     SJVideoPlayerDefaultControlView *_defaultControlView;
+    SJLightweightControlLayer *_lightweightControlLayer;
 }
 
 @property (nonatomic, strong, readonly) SJVideoPlayerDefaultControlView *defaultControlView;
@@ -55,12 +57,30 @@ NS_ASSUME_NONNULL_END
 - (SJVideoPlayerDefaultControlView *)defaultControlView {
     if ( _defaultControlView ) return _defaultControlView;
     _defaultControlView = [SJVideoPlayerDefaultControlView new];
-    _defaultControlView.delegate = self;
     return _defaultControlView;
 }
 
 - (void)clickedBackBtnOnControlView:(nonnull SJVideoPlayerDefaultControlView *)controlView {
     if ( self.clickedBackEvent ) self.clickedBackEvent(self);
+}
+
++ (instancetype)lightweightPlayer {
+    SJVideoPlayer *videoPlayer = [[self alloc] _init];
+    videoPlayer.controlLayerDataSource = videoPlayer.lightweightControlLayer;
+    videoPlayer.controlLayerDelegate = videoPlayer.lightweightControlLayer;
+    return videoPlayer;
+}
+
+- (SJLightweightControlLayer *)lightweightControlLayer {
+    if ( _lightweightControlLayer ) return _lightweightControlLayer;
+    _lightweightControlLayer = [SJLightweightControlLayer new];
+    return _lightweightControlLayer;
+}
+
+- (instancetype)_init {
+    self = [super init];
+    if ( self ) {}
+    return self;
 }
 
 @end
@@ -124,22 +144,6 @@ static dispatch_queue_t videoPlayerWorkQueue;
 
 - (BOOL)generatePreviewImages {
     return _defaultControlView.generatePreviewImages;
-}
-
-- (void)setClickedBackEvent:(void (^)(SJVideoPlayer * _Nonnull))clickedBackEvent {
-    objc_setAssociatedObject(self, @selector(clickedBackEvent), clickedBackEvent, OBJC_ASSOCIATION_COPY_NONATOMIC);
-}
-
-- (void (^)(SJVideoPlayer * _Nonnull))clickedBackEvent {
-    return objc_getAssociatedObject(self, _cmd);
-}
-
-- (void)setDisableNetworkStatusChangePrompt:(BOOL)disableNetworkStatusChangePrompt {
-    self.defaultControlView.disableNetworkStatusChangePrompt = disableNetworkStatusChangePrompt;
-}
-
-- (BOOL)disableNetworkStatusChangePrompt {
-    return self.defaultControlView.disableNetworkStatusChangePrompt;
 }
 
 - (void)setEnableFilmEditing:(BOOL)enableFilmEditing {

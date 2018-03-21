@@ -1,12 +1,12 @@
 //
-//  TableViewHeaderDemoViewController.m
+//  LightweightViewController.m
 //  SJVideoPlayerProject
 //
-//  Created by BlueDancer on 2018/2/27.
+//  Created by BlueDancer on 2018/3/21.
 //  Copyright © 2018年 SanJiang. All rights reserved.
 //
 
-#import "TableViewHeaderDemoViewController.h"
+#import "LightweightViewController.h"
 #import <SJUIFactory.h>
 #import <Masonry.h>
 #import "SJVideoListTableViewCell.h"
@@ -14,28 +14,25 @@
 #import "SJVideoPlayer.h"
 #import "SJVideoPlayerHelper.h"
 #import <UIView+SJUIFactory.h>
-#import "TableHeaderView.h"
 #import "DemoPlayerViewController.h"
 #import "YYTapActionLabel.h"
 
 static NSString *const SJVideoListTableViewCellID = @"SJVideoListTableViewCell";
 
-@interface TableViewHeaderDemoViewController ()<UITableViewDelegate, UITableViewDataSource, SJVideoListTableViewCellDelegate, NSAttributedStringTappedDelegate, SJVideoPlayerHelperUseProtocol>
+@interface LightweightViewController ()<UITableViewDelegate, UITableViewDataSource, SJVideoListTableViewCellDelegate, NSAttributedStringTappedDelegate, SJVideoPlayerHelperUseProtocol>
 
 @property (nonatomic, strong, readonly) SJVideoPlayerHelper *videoPlayerHelper;
 @property (nonatomic, strong, readonly) UIActivityIndicatorView *indicator;
 @property (nonatomic, strong, readonly) UITableView *tableView;
-@property (nonatomic, strong, readonly) TableHeaderView *tableHeaderView;
-
-@property (nonatomic, strong) NSArray<SJVideoModel *> *videosM;
+@property (nonatomic, strong) NSIndexPath *playedIndexPath;
+@property (nonatomic, strong) NSArray<SJVideoModel *> *videos;
 
 @end
 
-@implementation TableViewHeaderDemoViewController
+@implementation LightweightViewController
 
 @synthesize indicator = _indicator;
 @synthesize tableView = _tableView;
-@synthesize tableHeaderView = _tableHeaderView;
 
 - (void)dealloc {
     NSLog(@"%zd - %s", __LINE__, __func__);
@@ -44,13 +41,10 @@ static NSString *const SJVideoListTableViewCellID = @"SJVideoListTableViewCell";
 - (void)viewDidLoad {
     [super viewDidLoad];
     
-    self.view.backgroundColor = [UIColor whiteColor];
-    
     // setup views
     [self _videoListSetupViews];
     
     [self.indicator startAnimating];
-    
     // prepare test data.
     self.tableView.alpha = 0.001;
     __weak typeof(self) _self = self;
@@ -60,7 +54,7 @@ static NSString *const SJVideoListTableViewCellID = @"SJVideoListTableViewCell";
         dispatch_async(dispatch_get_main_queue(), ^{
             __strong typeof(_self) self = _self;
             if ( !self ) return;
-            self.videosM = videos;
+            self.videos = videos;
             [self.tableView reloadData];
             [self.indicator stopAnimating];
             [UIView animateWithDuration:0.3 animations:^{
@@ -69,18 +63,6 @@ static NSString *const SJVideoListTableViewCellID = @"SJVideoListTableViewCell";
         });
     });
     
-    // table header btn clicked event.
-    self.tableHeaderView.clickedPlayBtn = ^(TableHeaderView * _Nonnull view) {
-        __strong typeof(_self) self = _self;
-        if ( !self ) return;
-        SJVideoPlayerURLAsset *asset =
-        [[SJVideoPlayerURLAsset alloc] initWithAssetURL:[NSURL URLWithString:@"http://vod.lanwuzhe.com/d57eed43d9a344e486b79ae505fb9044/18b1aeb398e04ffaa9de48f223dcf0ca-5287d2089db37e62345123a1be272f8b.mp4?video="]
-                                              beginTime:0
-                           playerSuperViewOfTableHeader:view
-                                              tableView:self.tableView];
-        asset.title = @"DIY心情转盘 #手工##手工制作#";
-        [self.videoPlayerHelper playWithAsset:asset playerParentView:view];
-    };
     // Do any additional setup after loading the view.
 }
 
@@ -88,8 +70,12 @@ static NSString *const SJVideoListTableViewCellID = @"SJVideoListTableViewCell";
 @synthesize videoPlayerHelper = _videoPlayerHelper;
 - (SJVideoPlayerHelper *)videoPlayerHelper {
     if ( _videoPlayerHelper ) return _videoPlayerHelper;
-    _videoPlayerHelper = [[SJVideoPlayerHelper alloc] initWithViewController:self];
+    _videoPlayerHelper = [[SJVideoPlayerHelper alloc] initWithViewController:self playerType:SJVideoPlayerType_Lightweight];
     return _videoPlayerHelper;
+}
+
+- (BOOL)needConvertAsset {
+    return NO;
 }
 
 - (void)viewDidAppear:(BOOL)animated {
@@ -116,17 +102,26 @@ static NSString *const SJVideoListTableViewCellID = @"SJVideoListTableViewCell";
 }
 
 - (void)clickedPlayOnTabCell:(SJVideoListTableViewCell *)cell playerParentView:(UIView *)playerParentView {
-    
-    /// this is play in cell.
+    self.playedIndexPath = [self.tableView indexPathForCell:cell];
     SJVideoPlayerURLAsset *asset =
-    [[SJVideoPlayerURLAsset alloc] initWithAssetURL:[[NSBundle mainBundle] URLForResource:@"sample" withExtension:@"mp4"]
+    //    [[SJVideoPlayerURLAsset alloc] initWithAssetURL:[[NSBundle mainBundle] URLForResource:@"sample" withExtension:@"mp4"]
+    [[SJVideoPlayerURLAsset alloc] initWithAssetURL:[NSURL URLWithString:@"http://video.cdn.lanwuzhe.com/14945858406905f0c"]
                                          scrollView:self.tableView
                                           indexPath:[self.tableView indexPathForCell:cell]
                                        superviewTag:playerParentView.tag];
-    asset.title = @"DIY心情转盘 #手工##手工制作#";
+    asset.title = @"DIY心情转盘 #手工##手工制作##卖包子喽##1块1个##卖完就撤#";
     asset.alwaysShowTitle = YES;
     
     [self.videoPlayerHelper playWithAsset:asset playerParentView:playerParentView];
+}
+
+- (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath {
+    SJVideoPlayerURLAsset *asset = nil;
+    if ( [self.playedIndexPath isEqual:indexPath] ) {
+        asset = self.videoPlayerHelper.asset;
+    }
+    DemoPlayerViewController *vc = [[DemoPlayerViewController alloc] initWithVideo:self.videos[indexPath.row] asset:asset];
+    [self.navigationController pushViewController:vc animated:YES];
 }
 
 #pragma mark -
@@ -137,8 +132,6 @@ static NSString *const SJVideoListTableViewCellID = @"SJVideoListTableViewCell";
     [_tableView mas_makeConstraints:^(MASConstraintMaker *make) {
         make.edges.offset(0);
     }];
-    
-    self.tableView.tableHeaderView = self.tableHeaderView;
 }
 
 - (UIActivityIndicatorView *)indicator {
@@ -153,12 +146,6 @@ static NSString *const SJVideoListTableViewCellID = @"SJVideoListTableViewCell";
     return _indicator;
 }
 
-- (TableHeaderView *)tableHeaderView {
-    if ( _tableHeaderView ) return _tableHeaderView;
-    _tableHeaderView = [SJUIViewFactory viewWithSubClass:[TableHeaderView class] backgroundColor:[UIColor lightGrayColor] frame:CGRectMake(0, 0, SJScreen_W(), SJScreen_W())];
-    return _tableHeaderView;
-}
-
 - (UITableView *)tableView {
     if ( _tableView ) return _tableView;
     _tableView = [SJUITableViewFactory tableViewWithStyle:UITableViewStylePlain backgroundColor:[UIColor whiteColor] separatorStyle:UITableViewCellSeparatorStyleNone showsVerticalScrollIndicator:YES delegate:self dataSource:self];
@@ -167,16 +154,16 @@ static NSString *const SJVideoListTableViewCellID = @"SJVideoListTableViewCell";
 }
 
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section {
-    return _videosM.count;
+    return _videos.count;
 }
 
 - (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath {
-    return [SJVideoListTableViewCell heightWithContentHeight:_videosM[indexPath.row].videoContentLayout.textBoundingSize.height];
+    return [SJVideoListTableViewCell heightWithContentHeight:_videos[indexPath.row].videoContentLayout.textBoundingSize.height];
 }
 
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath {
     SJVideoListTableViewCell * cell = (SJVideoListTableViewCell *)[tableView dequeueReusableCellWithIdentifier:SJVideoListTableViewCellID forIndexPath:indexPath];
-    cell.model = _videosM[indexPath.row];
+    cell.model = _videos[indexPath.row];
     cell.delegate = self;
     return cell;
 }
@@ -198,3 +185,4 @@ static NSString *const SJVideoListTableViewCellID = @"SJVideoListTableViewCell";
     [self.navigationController pushViewController:vc animated:YES];
 }
 @end
+

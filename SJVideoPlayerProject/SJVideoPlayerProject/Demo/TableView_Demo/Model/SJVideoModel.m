@@ -46,16 +46,17 @@
         
         // make video title layout
         [SJVideoListTableViewCell sync_makeVideoContent:^(CGFloat contentMaxWidth, UIFont *font, UIColor *textColor) {
-            NSString *actionStrRexp = @"([@][^\\s]+\\s)|([#][^#]+#)|((http)[^\\s]+\\s)"; // `string regular`
+            NSString *rexp = @"([@][^\\s]+\\s)|([#][^#]+#)|((http)[^\\s]+\\s)"; // `string regular`
             NSMutableAttributedString *attrStr = sj_makeAttributesString(^(SJAttributeWorker * _Nonnull make) {
                 make.font(font).textColor(textColor);
                 make.insert(model.title, 0);
-                make.regexp(actionStrRexp, ^(SJAttributesRangeOperator * _Nonnull matched) {
+                make.regexp(rexp, ^(SJAttributesRangeOperator * _Nonnull matched) {
                     matched.textColor([UIColor purpleColor]);
                 });
             });
-            attrStr.addTapAction(actionStrRexp);
+            attrStr.addTapAction(rexp);
             attrStr.tappedDelegate = actionDelegate;
+            attrStr.object = model;
             model.videoContentLayout = sj_layout(contentMaxWidth, attrStr);
         }];
         

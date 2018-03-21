@@ -46,6 +46,6 @@
 @property (nonatomic, strong, readonly) NSString *nickname;
 @property (nonatomic, strong, readonly) NSString *avatar;
 
-- (instancetype)initWithNickname:(NSString *)nickName avatar:(NSString *)avatar;
+- (instancetype)initWithNickname:(NSString *)nickname avatar:(NSString *)avatar;
 
 @end

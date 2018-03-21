@@ -25,7 +25,7 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic, strong, readonly) SJVideoPlayerFilmEditingRecordView *recordView;
 @property (nonatomic, strong, readonly) UITapGestureRecognizer *tapGR;
 @property (nonatomic, weak, readwrite) SJFilmEditingResultUploader *uploader;
-@property (nonatomic, readwrite) SJVideoPlayerFilmEditingRecrodStatus recordStatus;
+@property (nonatomic, readwrite) SJVideoPlayerFilmEditingStatus recordStatus;
 
 @end
 NS_ASSUME_NONNULL_END
@@ -56,13 +56,13 @@ NS_ASSUME_NONNULL_END
     switch ( btn.tag ) {
             // screenshot
         case SJVideoPlayerFilmEditingViewTag_Screenshot: {
-            _recordStatus = SJVideoPlayerFilmEditingRecrodStatus_Unknown;
+            _recordStatus = SJVideoPlayerFilmEditingStatus_Finished;
             [self _showResultWithType:SJVideoPlayerFilmEditingResultViewType_Screenshot];
         }
             break;
             // export
         case SJVideoPlayerFilmEditingViewTag_Export: {
-            _recordStatus = SJVideoPlayerFilmEditingRecrodStatus_Recording;
+            _recordStatus = SJVideoPlayerFilmEditingStatus_Recording;
             if ( _startRecordingExeBlock ) _startRecordingExeBlock(self);
             self.recordView.tipsText = _recordTipsText;
             _recordView.waitingForRecordingTipsText = _waitingForRecordingTipsText;
@@ -84,17 +84,17 @@ NS_ASSUME_NONNULL_END
 }
 
 - (void)pauseRecording {
-    _recordStatus = SJVideoPlayerFilmEditingRecrodStatus_Paused;
+    _recordStatus = SJVideoPlayerFilmEditingStatus_Paused;
     [_recordView pause];
 }
 
 - (void)resumeRecording {
-    _recordStatus = SJVideoPlayerFilmEditingRecrodStatus_Recording;
+    _recordStatus = SJVideoPlayerFilmEditingStatus_Recording;
     [_recordView resume];
 }
 
 - (void)completeRecording {
-    _recordStatus = SJVideoPlayerFilmEditingRecrodStatus_Finished;
+    _recordStatus = SJVideoPlayerFilmEditingStatus_Finished;
     [_recordView stop];
     [self _showResultWithType:SJVideoPlayerFilmEditingResultViewType_Video];
 }

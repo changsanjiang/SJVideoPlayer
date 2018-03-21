@@ -175,4 +175,13 @@ static NSString *const SJVideoListTableViewCellID = @"SJVideoListTableViewCell";
     [self.navigationController pushViewController:vc animated:YES];
 }
 
+- (void)tappedOtherPlacesOfAttributedString:(NSAttributedString *)attrStr {
+    SJVideoModel *model = attrStr.object;
+    SJVideoPlayerURLAsset *asset = nil;
+    if ( [self.videoPlayerHelper.currentPlayURL.absoluteString isEqualToString:model.playURLStr] ) {
+        asset = self.videoPlayerHelper.asset;
+    }
+    DemoPlayerViewController *vc = [[DemoPlayerViewController alloc] initWithVideo:model asset:asset];
+    [self.navigationController pushViewController:vc animated:YES];
+}
 @end

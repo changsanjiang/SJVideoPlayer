@@ -275,7 +275,6 @@ NS_ASSUME_NONNULL_END
     [[NSNotificationCenter defaultCenter] removeObserver:_itemEndObserver name:AVPlayerItemDidPlayToEndTimeNotification object:self.playerItem]; _itemEndObserver = nil;
     _beginBuffer = NO;
     [self _cleanBufferTimer];
-    if ( _cancelledBuffer ) _cancelledBuffer(self);
     [_exportSession cancelExport];
     _exportSession = nil;
     _loadedPlayer = NO;
@@ -824,6 +823,7 @@ NS_ASSUME_NONNULL_END
         _rateChanged = _ectype.rateChanged;
     }];
     _converted = NO;
+    if ( _convertToOriginalExeBlock ) _convertToOriginalExeBlock(self);
 }
 
 - (void)_clearUIKit {
@@ -923,7 +923,7 @@ NS_ASSUME_NONNULL_END
 - (void)_convertingWithBlock:(void(^)(void))block {
     [self _clearUIKit];
     if ( block ) block();
-    [self _scrollViewObserving];
+    [self _scrollViewObserving]; 
     _converted = YES;
 }
 @end

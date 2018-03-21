@@ -29,6 +29,8 @@ static NSString *kSJFilmEditingResultShareItemAlbumTitle = @"Album";
 @property (nonatomic, strong, readonly) SJFilmEditingResultShare *resultShare;
 @property (nonatomic, readwrite) BOOL savedToAblum;
 
+@property (nonatomic, assign) SJVideoPlayerType playerType;
+
 @end
 
 NS_ASSUME_NONNULL_END
@@ -38,8 +40,13 @@ NS_ASSUME_NONNULL_END
 @synthesize resultShare = _resultShare;
 
 - (instancetype)initWithViewController:(__weak UIViewController<SJVideoPlayerHelperUseProtocol> *)viewController {
+    return [self initWithViewController:viewController playerType:0];
+}
+
+- (instancetype)initWithViewController:(__weak UIViewController<SJVideoPlayerHelperUseProtocol> *)viewController playerType:(SJVideoPlayerType)playerType {
     self = [super init];
     if ( !self ) return nil;
+    self.playerType = playerType;
     self.viewController = viewController;
     return self;
 }
@@ -70,7 +77,16 @@ NS_ASSUME_NONNULL_END
     [_videoPlayer stopAndFadeOut];
     
     // create new player
-    _videoPlayer = [SJVideoPlayer player];
+    switch ( _playerType ) {
+        case SJVideoPlayerType_Default: {
+            _videoPlayer = [SJVideoPlayer player];
+        }
+            break;
+        case SJVideoPlayerType_Lightweight: {
+            _videoPlayer = [SJVideoPlayer lightweightPlayer];
+        }
+            break;
+    }
     
     [playerParentView addSubview:_videoPlayer.view];
     [_videoPlayer.view mas_makeConstraints:^(MASConstraintMaker *make) {
@@ -308,6 +324,10 @@ NS_ASSUME_NONNULL_END
 
 - (NSTimeInterval)totalTime {
     return self.videoPlayer.totalTime;
+}
+
+- (NSURL *)currentPlayURL {
+    return self.videoPlayer.assetURL;
 }
 
 - (void (^)(void))vc_viewDidAppearExeBlock {

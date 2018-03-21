@@ -49,6 +49,15 @@
     if ( block ) block([self contentMaxWidth], [UIFont boldSystemFontOfSize:14], [UIColor blackColor]);
 }
 
++ (void)sync_makeNickName:(void (^)(CGFloat contentMaxWidth, UIFont *font, UIColor *textColor))block {
+    if ( block ) block([self nicknameMaxWidth], [UIFont boldSystemFontOfSize:14], [UIColor blackColor]);
+}
+
++ (void)sync_makeCreateTime:(void (^)(CGFloat contentMaxWidth, UIFont *font, UIColor *textColor))block {
+    if ( block ) block([self nicknameMaxWidth], [UIFont boldSystemFontOfSize:12], [UIColor blackColor]);
+}
+
+
 + (CGFloat)heightWithContentHeight:(CGFloat)contentHeight {
     return 14 + 44 + 8 + contentHeight + 8 + ([self contentMaxWidth] * 9 / 16.0f) + 8;
 }
@@ -81,13 +90,12 @@
     _model = model;
     _avatarImageView.image = [UIImage imageNamed:model.creator.avatar];
     _coverImageView.image = [UIImage imageNamed:model.coverURLStr];
-    _nameLabel.text = model.creator.nickname;
-    _createTimeLabel.text = model.createTimeStr;
-    _contentLabel.attributedText = model.attributedTitle;
+    _nameLabel.textLayout = model.nicknameLayout;
+    _createTimeLabel.textLayout = model.createTimeLayout;
+    _contentLabel.textLayout = model.videoContentLayout;
 }
 
 - (void)_setupViews {
-    
     self.clipsToBounds = NO;
     self.selectionStyle = UITableViewCellSelectionStyleNone;
     [self.contentView addSubview:self.avatarImageView];
@@ -176,20 +184,23 @@
     _contentLabel.numberOfLines = 0;
     _contentLabel.userInteractionEnabled = YES;
     _contentLabel.preferredMaxLayoutWidth = [[self class] contentMaxWidth];
+    _contentLabel.displaysAsynchronously = YES;
+    _contentLabel.ignoreCommonProperties = YES;
     return _contentLabel;
 }
 - (YYLabel *)nameLabel {
     if ( _nameLabel ) return _nameLabel;
     _nameLabel = [YYLabel new];
     _nameLabel.preferredMaxLayoutWidth = [[self class] nicknameMaxWidth];
-    _nameLabel.font = [UIFont boldSystemFontOfSize:14];
+    _nameLabel.displaysAsynchronously = YES;
+    _nameLabel.ignoreCommonProperties = YES;
     return _nameLabel;
 }
 - (YYLabel *)createTimeLabel {
     if ( _createTimeLabel ) return _createTimeLabel;
     _createTimeLabel = [YYLabel new];
-    _createTimeLabel.font = [UIFont systemFontOfSize:12];
-    _createTimeLabel.textColor = [UIColor lightGrayColor];
+    _createTimeLabel.displaysAsynchronously = YES;
+    _createTimeLabel.ignoreCommonProperties = YES;
     return _createTimeLabel;
 }
 - (UIView *)separatorLine {

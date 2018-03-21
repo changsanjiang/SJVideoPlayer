@@ -21,6 +21,10 @@
 
 + (void)sync_makeVideoContent:(void(^)(CGFloat contentMaxWidth, UIFont *font, UIColor *textColor))block;
 
++ (void)sync_makeNickName:(void (^)(CGFloat contentMaxWidth, UIFont *font, UIColor *textColor))block;
+
++ (void)sync_makeCreateTime:(void (^)(CGFloat contentMaxWidth, UIFont *font, UIColor *textColor))block;
+
 // data source
 @property (nonatomic, strong) SJVideoModel *model;
 

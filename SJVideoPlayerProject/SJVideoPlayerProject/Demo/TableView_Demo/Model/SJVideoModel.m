@@ -53,14 +53,26 @@
                 make.regexp(actionStrRexp, ^(SJAttributesRangeOperator * _Nonnull matched) {
                     matched.textColor([UIColor purpleColor]);
                 });
-                
-                model -> _contentHeight = make.sizeByWidth(contentMaxWidth).height;
             });
             attrStr.addTapAction(actionStrRexp);
             attrStr.tappedDelegate = actionDelegate;
-            
-            model -> _attributedTitle = attrStr;
-            model -> _createTimeStr = sj_processTime(model.createTime, [NSDate date].timeIntervalSince1970); // this test time
+            model.videoContentLayout = sj_layout(contentMaxWidth, attrStr);
+        }];
+        
+        [SJVideoListTableViewCell sync_makeNickName:^(CGFloat contentMaxWidth, UIFont *font, UIColor *textColor) {
+            NSMutableAttributedString *attrStr = sj_makeAttributesString(^(SJAttributeWorker * _Nonnull make) {
+                make.font(font).textColor(textColor);
+                make.insert(model.creator.nickname, 0);
+            });
+            model.nicknameLayout = sj_layout(contentMaxWidth, attrStr);
+        }];
+        
+        [SJVideoListTableViewCell sync_makeCreateTime:^(CGFloat contentMaxWidth, UIFont *font, UIColor *textColor) {
+            NSMutableAttributedString *attrStr = sj_makeAttributesString(^(SJAttributeWorker * _Nonnull make) {
+                make.font(font).textColor(textColor);
+                make.insert(sj_processTime(model.createTime, [NSDate date].timeIntervalSince1970), 0) ; // this test time
+            });
+            model.createTimeLayout = sj_layout(contentMaxWidth, attrStr);
         }];
         
         [testVideosM addObject:model];
@@ -78,6 +90,24 @@
     _playURLStr = playURLStr;
     _coverURLStr = coverURLStr;
     return self;
+}
+
+- (void)setVideoContentLayout:(YYTextLayout *)videoContentLayout {
+    _videoContentLayout = videoContentLayout;
+}
+- (void)setNicknameLayout:(YYTextLayout *)nicknameLayout {
+    _nicknameLayout = nicknameLayout;
+}
+- (void)setCreateTimeLayout:(YYTextLayout *)createTimeLayout {
+    _createTimeLayout = createTimeLayout;
+}
+
+static YYTextLayout *sj_layout(CGFloat contentMaxWidth, NSAttributedString *attrStr) {
+    YYTextContainer *container = [YYTextContainer new];
+    container.size = CGSizeMake(contentMaxWidth, CGFLOAT_MAX);
+    container.maximumNumberOfRows = 0;
+    YYTextLayout *layout = [YYTextLayout sj_layoutWithContainer:container text:attrStr];
+    return layout;
 }
 
 static NSString *sj_processTime(NSTimeInterval createDate, NSTimeInterval nowDate) {

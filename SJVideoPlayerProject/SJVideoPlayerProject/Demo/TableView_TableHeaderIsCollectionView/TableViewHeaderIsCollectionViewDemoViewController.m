@@ -172,7 +172,7 @@ static NSString *const SJVideoListTableViewCellID = @"SJVideoListTableViewCell";
 }
 
 - (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath {
-    return [SJVideoListTableViewCell heightWithContentHeight:_videosM[indexPath.row].contentHeight];
+    return [SJVideoListTableViewCell heightWithContentHeight:_videosM[indexPath.row].videoContentLayout.textBoundingSize.height];
 }
 
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath {

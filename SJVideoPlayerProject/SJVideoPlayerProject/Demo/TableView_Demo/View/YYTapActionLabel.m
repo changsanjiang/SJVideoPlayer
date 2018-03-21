@@ -13,26 +13,20 @@
 #import <objc/message.h>
 
 @interface YYTapActionLabel ()
-@property (nonatomic, strong, readwrite, nullable) NSMutableAttributedString *tap_attributedText;
-@property (nonatomic, weak, readwrite, nullable) id<NSAttributedStringTappedDelegate> tappedDelegate;
 @end
 
 @implementation YYTapActionLabel
 
 - (void)setAttributedText:(NSAttributedString *)attributedText {
-    _tap_attributedText = nil;
-    _tappedDelegate = nil;
     if ( attributedText.tappedDelegate && [attributedText isKindOfClass:[NSMutableAttributedString class]] ) {
-        _tap_attributedText = (NSMutableAttributedString *)attributedText;
-        _tappedDelegate = attributedText.tappedDelegate;
         __weak typeof(self) _self = self;
         self.textTapAction = ^(UIView *containerView, NSAttributedString *text, NSRange range, CGRect rect) {
             __strong typeof(_self) self = _self;
             if ( !self ) return;
             if ( range.location >= text.length ) return;
             if ( [text attribute:YYTextBindingAttributeName atIndex:range.location effectiveRange:NULL] ) {
-                if ( [self.tappedDelegate respondsToSelector:@selector(attributedString:tappedStr:)] ) {
-                    [self.tappedDelegate attributedString:self.tap_attributedText tappedStr:[self.tap_attributedText attributedSubstringFromRange:range]];
+                if ( [attributedText.tappedDelegate respondsToSelector:@selector(attributedString:tappedStr:)] ) {
+                    [attributedText.tappedDelegate attributedString:attributedText tappedStr:[attributedText attributedSubstringFromRange:range]];
                 }
             }
         };;
@@ -40,6 +34,41 @@
     [super setAttributedText:attributedText];
 }
 
+- (void)setTextLayout:(YYTextLayout *)textLayout {
+    NSAttributedString *attributedText = textLayout.tapActionAttributedString;
+    if ( attributedText ) {
+        __weak typeof(self) _self = self;
+        self.textTapAction = ^(UIView *containerView, NSAttributedString *text, NSRange range, CGRect rect) {
+            __strong typeof(_self) self = _self;
+            if ( !self ) return;
+            if ( range.location >= text.length ) return;
+            if ( [text attribute:YYTextBindingAttributeName atIndex:range.location effectiveRange:NULL] ) {
+                if ( [attributedText.tappedDelegate respondsToSelector:@selector(attributedString:tappedStr:)] ) {
+                    [attributedText.tappedDelegate attributedString:attributedText tappedStr:[attributedText attributedSubstringFromRange:range]];
+                }
+            }
+        };;
+    }
+    [super setTextLayout:textLayout];
+}
+
+@end
+
+@implementation YYTextLayout(SJAdd)
+
++ (YYTextLayout *)sj_layoutWithContainer:(YYTextContainer *)container text:(NSAttributedString *)text {
+    YYTextLayout *layout = [self layoutWithContainer:container text:text];
+    if ( text.tappedDelegate && [text isKindOfClass:[NSMutableAttributedString class]] ) {
+        layout.tapActionAttributedString = text;
+    }
+    return layout;
+}
+- (void)setTapActionAttributedString:(NSAttributedString * _Nullable)tapActionAttributedString {
+    objc_setAssociatedObject(self, @selector(tapActionAttributedString), tapActionAttributedString, OBJC_ASSOCIATION_RETAIN_NONATOMIC);
+}
+- (NSAttributedString *)tapActionAttributedString {
+    return objc_getAssociatedObject(self, _cmd);
+}
 @end
 
 @implementation NSMutableAttributedString (SJAdd)

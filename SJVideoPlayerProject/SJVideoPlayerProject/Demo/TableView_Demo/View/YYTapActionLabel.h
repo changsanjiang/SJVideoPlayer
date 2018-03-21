@@ -9,13 +9,21 @@
 #import "YYLabel.h"
 
 NS_ASSUME_NONNULL_BEGIN
+@protocol NSAttributedStringTappedDelegate;
 
 @interface YYTapActionLabel : YYLabel
 
 @end
 
+@interface YYTextLayout(SJAdd)
+
++ (YYTextLayout *)sj_layoutWithContainer:(YYTextContainer *)container text:(NSAttributedString *)text;
+
+@property (nonatomic, strong, readonly, nullable) NSAttributedString *tapActionAttributedString;
+
+@end
+
 #pragma mark -
-@protocol NSAttributedStringTappedDelegate;
 
 @interface NSAttributedString (SJAddDelegate)
 

@@ -8,7 +8,7 @@
 
 #import <UIKit/UIKit.h>
 
-@class SJUserModel;
+@class SJUserModel, YYTextLayout;
 
 @protocol NSAttributedStringTappedDelegate;
 
@@ -32,9 +32,9 @@
 
 
 #pragma mark -
-@property (nonatomic, strong, readonly) NSAttributedString *attributedTitle;
-@property (nonatomic, assign, readonly) CGFloat contentHeight;
-@property (nonatomic, strong, readonly) NSString *createTimeStr;
+@property (nonatomic, strong, readonly) YYTextLayout *videoContentLayout;
+@property (nonatomic, strong, readonly) YYTextLayout *nicknameLayout;
+@property (nonatomic, strong, readonly) YYTextLayout *createTimeLayout;
 @end
 
 #pragma mark -

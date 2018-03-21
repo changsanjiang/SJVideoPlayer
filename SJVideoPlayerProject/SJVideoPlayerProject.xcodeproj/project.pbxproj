@@ -12,6 +12,7 @@
 		7706E1251FF74C42006E0B56 /* slider.gif in Resources */ = {isa = PBXBuildFile; fileRef = 7706E1241FF74C42006E0B56 /* slider.gif */; };
 		7706FC8C20628BC3006A828B /* SJLightweightCenterControlView.m in Sources */ = {isa = PBXBuildFile; fileRef = 7706FC8B20628BC3006A828B /* SJLightweightCenterControlView.m */; };
 		7706FC932062A96E006A828B /* LightweightViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 7706FC922062A96E006A828B /* LightweightViewController.m */; };
+		7706FC962062ABA8006A828B /* LightweightTableViewCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 7706FC952062ABA8006A828B /* LightweightTableViewCell.m */; };
 		77154E822050D040009E51D7 /* SJVideoPlayerRightControlView.m in Sources */ = {isa = PBXBuildFile; fileRef = 77154E812050D040009E51D7 /* SJVideoPlayerRightControlView.m */; };
 		77154E8E205255C8009E51D7 /* SJVideoPlayerFilmEditingControlView.m in Sources */ = {isa = PBXBuildFile; fileRef = 77154E8D205255C8009E51D7 /* SJVideoPlayerFilmEditingControlView.m */; };
 		77154E9120526391009E51D7 /* SJVideoPlayerFilmEditingResultView.m in Sources */ = {isa = PBXBuildFile; fileRef = 77154E9020526391009E51D7 /* SJVideoPlayerFilmEditingResultView.m */; };
@@ -104,6 +105,8 @@
 		7706FC8B20628BC3006A828B /* SJLightweightCenterControlView.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = SJLightweightCenterControlView.m; sourceTree = "<group>"; };
 		7706FC912062A96E006A828B /* LightweightViewController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = LightweightViewController.h; sourceTree = "<group>"; };
 		7706FC922062A96E006A828B /* LightweightViewController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = LightweightViewController.m; sourceTree = "<group>"; };
+		7706FC942062ABA8006A828B /* LightweightTableViewCell.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = LightweightTableViewCell.h; sourceTree = "<group>"; };
+		7706FC952062ABA8006A828B /* LightweightTableViewCell.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = LightweightTableViewCell.m; sourceTree = "<group>"; };
 		77154E802050D040009E51D7 /* SJVideoPlayerRightControlView.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = SJVideoPlayerRightControlView.h; sourceTree = "<group>"; };
 		77154E812050D040009E51D7 /* SJVideoPlayerRightControlView.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = SJVideoPlayerRightControlView.m; sourceTree = "<group>"; };
 		77154E8C205255C8009E51D7 /* SJVideoPlayerFilmEditingControlView.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = SJVideoPlayerFilmEditingControlView.h; sourceTree = "<group>"; };
@@ -298,6 +301,8 @@
 			children = (
 				7706FC912062A96E006A828B /* LightweightViewController.h */,
 				7706FC922062A96E006A828B /* LightweightViewController.m */,
+				7706FC942062ABA8006A828B /* LightweightTableViewCell.h */,
+				7706FC952062ABA8006A828B /* LightweightTableViewCell.m */,
 			);
 			path = "Lightweight_轻量级播放器";
 			sourceTree = "<group>";
@@ -408,15 +413,6 @@
 			path = TableView_TableHeaderIsCollectionView;
 			sourceTree = "<group>";
 		};
-		775C0AB720295B6D0008EDA7 /* Mask */ = {
-			isa = PBXGroup;
-			children = (
-				A6E6D3012028BE9B00CB9BAE /* SJVideoPlayerControlMaskView.h */,
-				A6E6D3002028BE9B00CB9BAE /* SJVideoPlayerControlMaskView.m */,
-			);
-			name = Mask;
-			sourceTree = "<group>";
-		};
 		775C0AB820295B770008EDA7 /* Model */ = {
 			isa = PBXGroup;
 			children = (
@@ -476,6 +472,8 @@
 				779A4E7C2062568C0041D8BE /* SJVideoPlayerAnimationHeader.m */,
 				775C0AC420295C660008EDA7 /* UIView+SJVideoPlayerSetting.h */,
 				775C0AC520295C660008EDA7 /* UIView+SJVideoPlayerSetting.m */,
+				A6E6D3012028BE9B00CB9BAE /* SJVideoPlayerControlMaskView.h */,
+				A6E6D3002028BE9B00CB9BAE /* SJVideoPlayerControlMaskView.m */,
 			);
 			path = Resource;
 			sourceTree = "<group>";
@@ -698,7 +696,6 @@
 				775C0ABA20295B9A0008EDA7 /* ControlViews */,
 				775C0AB920295B8B0008EDA7 /* Preview */,
 				775C0AB820295B770008EDA7 /* Model */,
-				775C0AB720295B6D0008EDA7 /* Mask */,
 			);
 			path = ControlView;
 			sourceTree = "<group>";
@@ -930,6 +927,7 @@
 				779A4E6D20624E370041D8BE /* SJLightweightControlLayer.m in Sources */,
 				77F4EFFA204029E3004748F6 /* SJSharedVideoPlayerHelper.m in Sources */,
 				774B252B1FCEBA5D002113CC /* main.m in Sources */,
+				7706FC962062ABA8006A828B /* LightweightTableViewCell.m in Sources */,
 				772005772029BBC7009F0190 /* SJMoreSettingItems.m in Sources */,
 				775B201920465E1500264AB9 /* TableHeaderCollectionView.m in Sources */,
 				77033C14204E7611008F1ED5 /* DemoPlayerViewController.m in Sources */,

@@ -477,13 +477,13 @@ NS_ASSUME_NONNULL_BEGIN
     return _centerControlView;
 }
 
-- (void)centerControlView:(SJLightweightCenterControlView *)view clickedBtnTag:(SJVideoPlayerCenterViewTag)tag {
+- (void)centerControlView:(SJLightweightCenterControlView *)view clickedBtnTag:(SJLightweightCenterControlViewTag)tag {
     switch ( tag ) {
-        case SJVideoPlayerCenterViewTag_Replay: {
+        case SJLightweightCenterControlViewTag_Replay: {
             [_videoPlayer replay];
         }
             break;
-        case SJVideoPlayerCenterViewTag_Failed: {
+        case SJLightweightCenterControlViewTag_Failed: {
             [_videoPlayer refresh];
         }
             break;

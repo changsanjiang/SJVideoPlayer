@@ -65,12 +65,12 @@
 
 - (UIButton *)failedBtn {
     if ( _failedBtn ) return _failedBtn;
-    _failedBtn = [SJUIButtonFactory buttonWithImageName:@"" target:self sel:@selector(clickedBtn:) tag:SJVideoPlayerCenterViewTag_Failed];
+    _failedBtn = [SJUIButtonFactory buttonWithImageName:@"" target:self sel:@selector(clickedBtn:) tag:SJLightweightCenterControlViewTag_Failed];
     return _failedBtn;
 }
 - (UIButton *)replayBtn {
     if ( _replayBtn ) return _replayBtn;
-    _replayBtn = [SJUIButtonFactory buttonWithImageName:@"" target:self sel:@selector(clickedBtn:) tag:SJVideoPlayerCenterViewTag_Replay];
+    _replayBtn = [SJUIButtonFactory buttonWithImageName:@"" target:self sel:@selector(clickedBtn:) tag:SJLightweightCenterControlViewTag_Replay];
     _replayBtn.titleLabel.numberOfLines = 0;
     return _replayBtn;
 }

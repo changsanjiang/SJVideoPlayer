@@ -10,9 +10,9 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
-typedef NS_ENUM(NSUInteger, SJVideoPlayerCenterViewTag) {
-    SJVideoPlayerCenterViewTag_Failed,
-    SJVideoPlayerCenterViewTag_Replay,
+typedef NS_ENUM(NSUInteger, SJLightweightCenterControlViewTag) {
+    SJLightweightCenterControlViewTag_Failed,
+    SJLightweightCenterControlViewTag_Replay,
 };
 
 @protocol SJLightweightCenterControlViewDelegate;
@@ -30,7 +30,7 @@ typedef NS_ENUM(NSUInteger, SJVideoPlayerCenterViewTag) {
 @protocol SJLightweightCenterControlViewDelegate <NSObject>
 
 @optional
-- (void)centerControlView:(SJLightweightCenterControlView *)view clickedBtnTag:(SJVideoPlayerCenterViewTag)tag;
+- (void)centerControlView:(SJLightweightCenterControlView *)view clickedBtnTag:(SJLightweightCenterControlViewTag)tag;
 
 @end
 

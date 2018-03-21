@@ -35,4 +35,9 @@ s.subspec 'MoreSetting' do |ss|
     ss.dependency 'SJVideoPlayer/Resource'
 end
 
+s.subspec 'LightweightControlView' do |ss|
+    ss.source_files = 'SJVideoPlayer/LightweightControlView/*.{h,m}'
+    ss.dependency 'SJVideoPlayer/Resource'
+end
+
 end

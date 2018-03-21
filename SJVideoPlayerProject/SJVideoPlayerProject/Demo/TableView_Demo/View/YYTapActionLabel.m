@@ -81,7 +81,7 @@
                 if ( [self attribute:YYTextBindingAttributeName atIndex:range.location effectiveRange:NULL] ) return;
                 YYTextBinding *binding = [YYTextBinding bindingWithDeleteConfirm:YES];
                 [self yy_setTextBinding:binding range:range];
-                //                [self setTextBinding:binding range:range];
+//                [self setTextBinding:binding range:range];
             }];
         });
     };

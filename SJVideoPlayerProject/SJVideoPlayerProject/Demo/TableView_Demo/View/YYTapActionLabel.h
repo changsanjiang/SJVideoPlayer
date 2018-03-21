@@ -36,7 +36,7 @@ NS_ASSUME_NONNULL_BEGIN
 @interface NSMutableAttributedString (SJAdd)
 
 /**
- *  add some tap action. see `NSAttributedStringTappedDelegate` & `YYTapActionLabel`.
+ *  add some tap action. see `NSAttributedStringTappedDelegate` & use `YYTapActionLabel`.
  *
  *  attrStr.tappedDelegate = self;
  *  attrStr.addTapAction(@"我们");       // 所有的`我们`添加点击事件, 回调将在代理方法`NSAttributedStringActionDelegate`中回调.

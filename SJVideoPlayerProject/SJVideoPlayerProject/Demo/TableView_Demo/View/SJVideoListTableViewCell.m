@@ -45,21 +45,20 @@
     return SJScreen_W() - 12 * 2;
 }
 
-+ (void)sync_makeVideoContent:(void(^)(CGFloat contentMaxWidth, UIFont *font, UIColor *textColor))block {
++ (void)sync_makeVideoContent:(SJTextAppearance)block {
     if ( block ) block([self contentMaxWidth], [UIFont boldSystemFontOfSize:14], [UIColor blackColor]);
 }
 
-+ (void)sync_makeNickName:(void (^)(CGFloat contentMaxWidth, UIFont *font, UIColor *textColor))block {
++ (void)sync_makeNickname:(SJTextAppearance)block {
     if ( block ) block([self nicknameMaxWidth], [UIFont boldSystemFontOfSize:14], [UIColor blackColor]);
 }
 
-+ (void)sync_makeCreateTime:(void (^)(CGFloat contentMaxWidth, UIFont *font, UIColor *textColor))block {
++ (void)sync_makeCreateTime:(SJTextAppearance)block {
     if ( block ) block([self nicknameMaxWidth], [UIFont boldSystemFontOfSize:12], [UIColor blackColor]);
 }
 
-
 + (CGFloat)heightWithContentHeight:(CGFloat)contentHeight {
-    return 14 + 44 + 8 + contentHeight + 8 + ([self contentMaxWidth] * 9 / 16.0f) + 8;
+    return 14 + 44 + 8 + contentHeight + 8 + (SJScreen_W() * 9 / 16.0f) + 8;
 }
 
 
@@ -140,7 +139,7 @@
     
     [_coverImageView mas_makeConstraints:^(MASConstraintMaker *make) {
         make.top.equalTo(_contentLabel.mas_bottom).offset(8);
-        make.leading.trailing.equalTo(_contentLabel);
+        make.leading.trailing.offset(0);
         make.height.equalTo(_coverImageView.mas_width).multipliedBy(9.0f / 16);
     }];
     

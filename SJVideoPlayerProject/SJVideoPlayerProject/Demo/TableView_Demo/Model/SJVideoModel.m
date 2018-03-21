@@ -15,6 +15,7 @@
 
 @implementation SJVideoModel
 
+/// test test test test test
 + (NSArray<SJVideoModel *> *)videoModelsWithTapActionDelegate:(id<NSAttributedStringTappedDelegate>)actionDelegate {
     NSArray<SJUserModel *> *users = [SJUserModel userModels];
     NSArray<NSString *> *titles =
@@ -34,7 +35,7 @@
     
     
     // prepare test data
-    for ( int i = 0 ; i < 88 ; ++ i ) {
+    for ( int i = 0 ; i < 100 ; ++ i ) {
         SJVideoModel *model =
         [[SJVideoModel alloc] initWithTitle:titles[arc4random() % titles.count]
                                     videoId:i
@@ -43,10 +44,9 @@
                                  playURLStr:@"http://video.cdn.lanwuzhe.com/14945858406905f0c"
                                 coverURLStr:coverURLStrs[arc4random() % coverURLStrs.count]];
         
+        // make video title layout
         [SJVideoListTableViewCell sync_makeVideoContent:^(CGFloat contentMaxWidth, UIFont *font, UIColor *textColor) {
-            // `string regular`
-            NSString *actionStrRexp = @"([@][^\\s]+\\s)|([#][^#]+#)|((http)[^\\s]+\\s)";
-            // make `attributes string`
+            NSString *actionStrRexp = @"([@][^\\s]+\\s)|([#][^#]+#)|((http)[^\\s]+\\s)"; // `string regular`
             NSMutableAttributedString *attrStr = sj_makeAttributesString(^(SJAttributeWorker * _Nonnull make) {
                 make.font(font).textColor(textColor);
                 make.insert(model.title, 0);
@@ -59,7 +59,8 @@
             model.videoContentLayout = sj_layout(contentMaxWidth, attrStr);
         }];
         
-        [SJVideoListTableViewCell sync_makeNickName:^(CGFloat contentMaxWidth, UIFont *font, UIColor *textColor) {
+        // make nickname layout
+        [SJVideoListTableViewCell sync_makeNickname:^(CGFloat contentMaxWidth, UIFont *font, UIColor *textColor) {
             NSMutableAttributedString *attrStr = sj_makeAttributesString(^(SJAttributeWorker * _Nonnull make) {
                 make.font(font).textColor(textColor);
                 make.insert(model.creator.nickname, 0);
@@ -67,10 +68,12 @@
             model.nicknameLayout = sj_layout(contentMaxWidth, attrStr);
         }];
         
+        // make video create time layout
         [SJVideoListTableViewCell sync_makeCreateTime:^(CGFloat contentMaxWidth, UIFont *font, UIColor *textColor) {
             NSMutableAttributedString *attrStr = sj_makeAttributesString(^(SJAttributeWorker * _Nonnull make) {
                 make.font(font).textColor(textColor);
-                make.insert(sj_processTime(model.createTime, [NSDate date].timeIntervalSince1970), 0) ; // this test time
+                // this test time
+                make.insert(sj_processTime(model.createTime, [NSDate date].timeIntervalSince1970), 0) ;
             });
             model.createTimeLayout = sj_layout(contentMaxWidth, attrStr);
         }];
@@ -175,10 +178,10 @@ static NSString *sj_processTime(NSTimeInterval createDate, NSTimeInterval nowDat
     return testUsersM;
 }
 
-- (instancetype)initWithNickname:(NSString *)nickName avatar:(NSString *)avatar {
+- (instancetype)initWithNickname:(NSString *)nickname avatar:(NSString *)avatar {
     self = [super init];
     if ( !self ) return nil;
-    _nickname = nickName;
+    _nickname = nickname;
     _avatar = avatar;
     return self;
 }

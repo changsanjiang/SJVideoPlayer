@@ -8,31 +8,30 @@
 
 #import <UIKit/UIKit.h>
 
+NS_ASSUME_NONNULL_BEGIN
 @class SJVideoModel;
-
 @protocol SJVideoListTableViewCellDelegate, NSAttributedStringTappedDelegate;
+
+typedef void(^SJTextAppearance)(CGFloat maxWidth, UIFont *font, UIColor *textColor);
 
 @interface SJVideoListTableViewCell : UITableViewCell
 
-@property (nonatomic, weak) id<SJVideoListTableViewCellDelegate> delegate;
-
-// cell height
 + (CGFloat)heightWithContentHeight:(CGFloat)contentHeight;
 
-+ (void)sync_makeVideoContent:(void(^)(CGFloat contentMaxWidth, UIFont *font, UIColor *textColor))block;
++ (void)sync_makeVideoContent:(SJTextAppearance)block;
 
-+ (void)sync_makeNickName:(void (^)(CGFloat contentMaxWidth, UIFont *font, UIColor *textColor))block;
++ (void)sync_makeNickname:(SJTextAppearance)block;
 
-+ (void)sync_makeCreateTime:(void (^)(CGFloat contentMaxWidth, UIFont *font, UIColor *textColor))block;
++ (void)sync_makeCreateTime:(SJTextAppearance)block;
 
-// data source
-@property (nonatomic, strong) SJVideoModel *model;
+@property (nonatomic, strong, nullable) SJVideoModel *model;
+@property (nonatomic, weak, nullable) id<SJVideoListTableViewCellDelegate> delegate;
 
 @end
+
 
 @protocol SJVideoListTableViewCellDelegate <NSObject>
-
 @optional
 - (void)clickedPlayOnTabCell:(SJVideoListTableViewCell *)cell playerParentView:(UIView *)playerParentView;
-
 @end
+NS_ASSUME_NONNULL_END

@@ -109,7 +109,7 @@ static NSString *const LightweightTableViewCellID = @"LightweightTableViewCell";
                                          scrollView:self.tableView
                                           indexPath:[self.tableView indexPathForCell:cell]
                                        superviewTag:playerParentView.tag];
-    asset.title = @"DIY心情转盘 #手工##手工制作##卖包子喽##1块1个##卖完就撤#";
+    asset.title = cell.model.title;
     asset.alwaysShowTitle = YES;
     
     [self.videoPlayerHelper playWithAsset:asset playerParentView:playerParentView];

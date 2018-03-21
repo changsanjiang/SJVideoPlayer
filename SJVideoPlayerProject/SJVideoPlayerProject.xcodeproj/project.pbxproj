@@ -48,6 +48,7 @@
 		778E24EC1FD97DF9008D0DD3 /* README.md in Resources */ = {isa = PBXBuildFile; fileRef = 778E24EB1FD97DF9008D0DD3 /* README.md */; };
 		7790AC7620594B3E00F8DF48 /* SJVideoPlayerMoreSettingsFooterView.m in Sources */ = {isa = PBXBuildFile; fileRef = 7790AC7420594B3E00F8DF48 /* SJVideoPlayerMoreSettingsFooterView.m */; };
 		7790AC7A205A58BF00F8DF48 /* AboutKeyboardViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 7790AC79205A58BF00F8DF48 /* AboutKeyboardViewController.m */; };
+		779A4E6720622C6B0041D8BE /* YYTapActionLabel.m in Sources */ = {isa = PBXBuildFile; fileRef = 779A4E6620622C6B0041D8BE /* YYTapActionLabel.m */; };
 		77A47E8F2008DEBE001EBE14 /* nested.gif in Resources */ = {isa = PBXBuildFile; fileRef = 77A47E8B2008DEBE001EBE14 /* nested.gif */; };
 		77DA95162042B8EC007A9EE8 /* SJVideoPlayerHelper.m in Sources */ = {isa = PBXBuildFile; fileRef = 77DA95142042B8EB007A9EE8 /* SJVideoPlayerHelper.m */; };
 		77DA951E2042C04B007A9EE8 /* TestPageViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 77DA95192042C04A007A9EE8 /* TestPageViewController.m */; };
@@ -159,6 +160,8 @@
 		7790AC7520594B3E00F8DF48 /* SJVideoPlayerMoreSettingsFooterView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SJVideoPlayerMoreSettingsFooterView.h; sourceTree = "<group>"; };
 		7790AC78205A58BF00F8DF48 /* AboutKeyboardViewController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = AboutKeyboardViewController.h; sourceTree = "<group>"; };
 		7790AC79205A58BF00F8DF48 /* AboutKeyboardViewController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = AboutKeyboardViewController.m; sourceTree = "<group>"; };
+		779A4E6520622C6B0041D8BE /* YYTapActionLabel.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = YYTapActionLabel.h; sourceTree = "<group>"; };
+		779A4E6620622C6B0041D8BE /* YYTapActionLabel.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = YYTapActionLabel.m; sourceTree = "<group>"; };
 		77A47E8B2008DEBE001EBE14 /* nested.gif */ = {isa = PBXFileReference; lastKnownFileType = image.gif; path = nested.gif; sourceTree = "<group>"; };
 		77DA95142042B8EB007A9EE8 /* SJVideoPlayerHelper.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SJVideoPlayerHelper.m; sourceTree = "<group>"; };
 		77DA95152042B8EC007A9EE8 /* SJVideoPlayerHelper.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SJVideoPlayerHelper.h; sourceTree = "<group>"; };
@@ -605,6 +608,8 @@
 		A644108F200A3F89006FD832 /* View */ = {
 			isa = PBXGroup;
 			children = (
+				779A4E6520622C6B0041D8BE /* YYTapActionLabel.h */,
+				779A4E6620622C6B0041D8BE /* YYTapActionLabel.m */,
 				A6441093200A3FBA006FD832 /* SJVideoListTableViewCell.h */,
 				A6441094200A3FBA006FD832 /* SJVideoListTableViewCell.m */,
 			);
@@ -820,6 +825,7 @@
 			files = (
 				7790AC7620594B3E00F8DF48 /* SJVideoPlayerMoreSettingsFooterView.m in Sources */,
 				773AFC70205CADC5003B2CAC /* SJVideo+DownloadAdd.m in Sources */,
+				779A4E6720622C6B0041D8BE /* YYTapActionLabel.m in Sources */,
 				A6F4E97B2007A78400716B9C /* NestedTableViewController.m in Sources */,
 				775A7C261FD7EC5000BE1EE2 /* PlayerTableViewController.m in Sources */,
 				A6441092200A3FA9006FD832 /* SJVideoListViewController.m in Sources */,

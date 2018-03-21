@@ -14,12 +14,12 @@
 #import "SJVideoPlayer.h"
 #import "SJVideoPlayerHelper.h"
 #import <UIView+SJUIFactory.h>
-#import <NSMutableAttributedString+ActionDelegate.h>
 #import "TableHeaderView.h"
+#import "YYTapActionLabel.h"
 
 static NSString *const SJVideoListTableViewCellID = @"SJVideoListTableViewCell";
 
-@interface TableViewHeaderDemoViewController ()<UITableViewDelegate, UITableViewDataSource, SJVideoListTableViewCellDelegate, NSAttributedStringActionDelegate, SJVideoPlayerHelperUseProtocol>
+@interface TableViewHeaderDemoViewController ()<UITableViewDelegate, UITableViewDataSource, SJVideoListTableViewCellDelegate, NSAttributedStringTappedDelegate, SJVideoPlayerHelperUseProtocol>
 
 @property (nonatomic, strong, readonly) SJVideoPlayerHelper *videoPlayerHelper;
 @property (nonatomic, strong, readonly) UIActivityIndicatorView *indicator;
@@ -55,7 +55,7 @@ static NSString *const SJVideoListTableViewCellID = @"SJVideoListTableViewCell";
     __weak typeof(self) _self = self;
     dispatch_async(dispatch_get_global_queue(0, 0), ^{
         // some test data
-        NSArray<SJVideoModel *> *videos = [SJVideoModel videoModelsWithActionDelegate:self];
+        NSArray<SJVideoModel *> *videos = [SJVideoModel videoModelsWithTapActionDelegate:self];
         dispatch_async(dispatch_get_main_queue(), ^{
             __strong typeof(_self) self = _self;
             if ( !self ) return;
@@ -170,7 +170,7 @@ static NSString *const SJVideoListTableViewCellID = @"SJVideoListTableViewCell";
 }
 
 - (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath {
-    return [SJVideoListTableViewCell heightWithContentHeight:_videosM[indexPath.row].contentHelper.contentHeight];
+    return [SJVideoListTableViewCell heightWithContentHeight:_videosM[indexPath.row].contentHeight];
 }
 
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath {
@@ -181,9 +181,9 @@ static NSString *const SJVideoListTableViewCellID = @"SJVideoListTableViewCell";
 }
 
 #pragma mark - other
-- (void)attributedString:(NSAttributedString *)attrStr action:(NSAttributedString *)action {
+- (void)attributedString:(NSAttributedString *)attrStr tappedStr:(NSAttributedString *)tappedStr {
     UIViewController *vc = [[self class] new];
-    vc.title = action.string;
+    vc.title = tappedStr.string;
     [self.navigationController pushViewController:vc animated:YES];
 }
 

@@ -7,11 +7,10 @@
 //
 
 #import <UIKit/UIKit.h>
-#import <NSMutableAttributedString+ActionDelegate.h>
 
-@class SJVideoModel, SJVideoHelper;
+@class SJVideoModel;
 
-@protocol SJVideoListTableViewCellDelegate;
+@protocol SJVideoListTableViewCellDelegate, NSAttributedStringTappedDelegate;
 
 @interface SJVideoListTableViewCell : UITableViewCell
 
@@ -20,10 +19,7 @@
 // cell height
 + (CGFloat)heightWithContentHeight:(CGFloat)contentHeight;
 
-// helpers
-+ (SJVideoHelper *)helperWithCreateTime:(NSTimeInterval)createTime;
-+ (SJVideoHelper *)helperWithNickname:(NSString *)nickname;
-+ (SJVideoHelper *)helperWithContent:(NSString *)content actionDelegate:(id<NSAttributedStringActionDelegate>)actionDelegate;
++ (void)sync_makeVideoContent:(void(^)(CGFloat contentMaxWidth, UIFont *font, UIColor *textColor))block;
 
 // data source
 @property (nonatomic, strong) SJVideoModel *model;

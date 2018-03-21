@@ -14,7 +14,7 @@
             buildForAnalyzing = "YES">
             <BuildableReference
                BuildableIdentifier = "primary"
-               BlueprintIdentifier = "8796BB06CC81C754149DA703ED9881F1"
+               BlueprintIdentifier = "04D539517DBA7314EF7D182171240495"
                BuildableName = "libSJObserverHelper.a"
                BlueprintName = "SJObserverHelper"
                ReferencedContainer = "container:Pods.xcodeproj">
@@ -47,7 +47,7 @@
       <MacroExpansion>
          <BuildableReference
             BuildableIdentifier = "primary"
-            BlueprintIdentifier = "8796BB06CC81C754149DA703ED9881F1"
+            BlueprintIdentifier = "04D539517DBA7314EF7D182171240495"
             BuildableName = "libSJObserverHelper.a"
             BlueprintName = "SJObserverHelper"
             ReferencedContainer = "container:Pods.xcodeproj">

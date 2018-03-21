@@ -14,7 +14,7 @@
             buildForAnalyzing = "YES">
             <BuildableReference
                BuildableIdentifier = "primary"
-               BlueprintIdentifier = "2B4D2E9223902CC17136C629FE09354A"
+               BlueprintIdentifier = "4ADFD25154FD0DA2ECBDCB14F4B5CBCA"
                BuildableName = "libSJOrentationObserver.a"
                BlueprintName = "SJOrentationObserver"
                ReferencedContainer = "container:Pods.xcodeproj">
@@ -47,7 +47,7 @@
       <MacroExpansion>
          <BuildableReference
             BuildableIdentifier = "primary"
-            BlueprintIdentifier = "2B4D2E9223902CC17136C629FE09354A"
+            BlueprintIdentifier = "4ADFD25154FD0DA2ECBDCB14F4B5CBCA"
             BuildableName = "libSJOrentationObserver.a"
             BlueprintName = "SJOrentationObserver"
             ReferencedContainer = "container:Pods.xcodeproj">

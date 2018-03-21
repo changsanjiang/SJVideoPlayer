@@ -18,8 +18,8 @@ target 'SJVideoPlayerProject' do
   pod 'SJVolBrigControl'
   pod 'SJObserverHelper'
   pod 'SJAttributesFactory'
-  pod 'SJLabel'
   pod 'SJBaseVideoPlayer'
   pod 'SJScrollEntriesView'
   pod 'Reachability'
+  pod 'YYText'
 end

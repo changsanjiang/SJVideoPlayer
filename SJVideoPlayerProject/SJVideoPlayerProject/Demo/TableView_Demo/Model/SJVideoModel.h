@@ -7,23 +7,34 @@
 //
 
 #import <UIKit/UIKit.h>
-#import <NSMutableAttributedString+ActionDelegate.h>
 
-@class SJCTData;
+@class SJUserModel;
 
-@interface SJVideoHelper : NSObject
+@protocol NSAttributedStringTappedDelegate;
 
-@property (nonatomic, strong, readonly) SJCTData *contentData;
+@interface SJVideoModel : NSObject
+
++ (NSArray<SJVideoModel *> *)videoModelsWithTapActionDelegate:(id<NSAttributedStringTappedDelegate>)actionDelegate;
+
+@property (nonatomic, assign) NSInteger videoId;
+@property (nonatomic, strong) SJUserModel *creator;
+@property (nonatomic, strong) NSString *title;
+@property (nonatomic, assign) NSTimeInterval createTime;
+@property (nonatomic, strong) NSString *playURLStr;
+@property (nonatomic, strong) NSString *coverURLStr;
+
+- (instancetype)initWithTitle:(NSString *)title
+                      videoId:(NSInteger)videoId
+                   createTime:(NSTimeInterval)createTime
+                      creator:(SJUserModel *)creator
+                   playURLStr:(NSString *)playURLStr
+                  coverURLStr:(NSString *)coverURLStr;
+
+
+#pragma mark -
+@property (nonatomic, strong, readonly) NSAttributedString *attributedTitle;
 @property (nonatomic, assign, readonly) CGFloat contentHeight;
-
-- (instancetype)initWithContent:(NSString *)content
-                           font:(UIFont *)font
-                      textColor:(UIColor *)textColor
-                  numberOfLines:(NSUInteger)numberOfLines
-                       maxWidth:(float)maxWidth;
-- (instancetype)initWithAttrStr:(NSAttributedString *)attrStr
-                  numberOfLines:(NSUInteger)numberOfLines
-                       maxWidth:(float)maxWidth;
+@property (nonatomic, strong, readonly) NSString *createTimeStr;
 @end
 
 #pragma mark -
@@ -36,32 +47,5 @@
 @property (nonatomic, strong, readonly) NSString *avatar;
 
 - (instancetype)initWithNickname:(NSString *)nickName avatar:(NSString *)avatar;
-
-@end
-
-
-#pragma mark -
-
-@interface SJVideoModel : NSObject
-
-+ (NSArray<SJVideoModel *> *)videoModelsWithActionDelegate:(id<NSAttributedStringActionDelegate>)actionDelegate;
-
-@property (nonatomic, strong) SJVideoHelper *contentHelper;
-@property (nonatomic, strong) SJVideoHelper *nicknameHelper;
-@property (nonatomic, strong) SJVideoHelper *createTimeHelper;
-
-@property (nonatomic, assign, readonly) NSInteger videoId;
-@property (nonatomic, strong, readonly) NSString *title;
-@property (nonatomic, assign, readonly) NSTimeInterval createTime;
-@property (nonatomic, strong, readonly) SJUserModel *creator;
-@property (nonatomic, strong, readonly) NSString *playURLStr;
-@property (nonatomic, strong, readonly) NSString *coverURLStr;
-
-- (instancetype)initWithTitle:(NSString *)title
-                      videoId:(NSInteger)videoId
-                   createTime:(NSTimeInterval)createTime
-                      creator:(SJUserModel *)creator
-                   playURLStr:(NSString *)playURLStr
-                  coverURLStr:(NSString *)coverURLStr;
 
 @end

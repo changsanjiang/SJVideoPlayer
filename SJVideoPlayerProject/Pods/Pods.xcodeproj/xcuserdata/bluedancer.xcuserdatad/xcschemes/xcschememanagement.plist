@@ -39,11 +39,6 @@
 			<key>isShown</key>
 			<false/>
 		</dict>
-		<key>SJLabel.xcscheme</key>
-		<dict>
-			<key>isShown</key>
-			<false/>
-		</dict>
 		<key>SJLoadingView.xcscheme</key>
 		<dict>
 			<key>isShown</key>
@@ -85,6 +80,11 @@
 			<false/>
 		</dict>
 		<key>SJVolBrigControl.xcscheme</key>
+		<dict>
+			<key>isShown</key>
+			<false/>
+		</dict>
+		<key>YYText.xcscheme</key>
 		<dict>
 			<key>isShown</key>
 			<false/>

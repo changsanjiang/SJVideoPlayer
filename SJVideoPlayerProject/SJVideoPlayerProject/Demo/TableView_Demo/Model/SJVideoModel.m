@@ -8,45 +8,14 @@
 
 #import "SJVideoModel.h"
 #import "SJVideoListTableViewCell.h"
-#import <SJStringParserConfig.h>
-#import <SJCTData.h>
-
-@implementation SJVideoHelper
-
-- (instancetype)initWithContent:(NSString *)content font:(id)font textColor:(id)textColor numberOfLines:(NSUInteger)numberOfLines maxWidth:(float)maxWidth {
-    self = [super init];
-    if ( !self ) return nil;
-    SJStringParserConfig *config = [SJStringParserConfig defaultConfig];
-    config.font = font;
-    config.textColor = textColor;
-    config.numberOfLines = numberOfLines;
-    config.maxWidth = maxWidth;
-    _contentData = [[SJCTData alloc] initWithString:content config:config];
-    [_contentData needsDrawing];
-    return self;
-}
-- (instancetype)initWithAttrStr:(NSAttributedString *)attrStr numberOfLines:(NSUInteger)numberOfLines maxWidth:(float)maxWidth {
-    self = [super init];
-    if ( !self ) return nil;
-    SJCTFrameParserConfig *config = [SJCTFrameParserConfig defaultConfig];
-    config.numberOfLines = numberOfLines;
-    config.maxWidth = maxWidth;
-    _contentData = [[SJCTData alloc] initWithAttributedString:attrStr config:config];
-    [_contentData needsDrawing];
-    return self;
-}
-
-- (CGFloat)contentHeight {
-    return ceil(_contentData.height);
-}
-@end
-
+#import <SJAttributeWorker.h>
+#import "YYTapActionLabel.h"
 
 #pragma mark -
 
 @implementation SJVideoModel
 
-+ (NSArray<SJVideoModel *> *)videoModelsWithActionDelegate:(id<NSAttributedStringActionDelegate>)actionDelegate {
++ (NSArray<SJVideoModel *> *)videoModelsWithTapActionDelegate:(id<NSAttributedStringTappedDelegate>)actionDelegate {
     NSArray<SJUserModel *> *users = [SJUserModel userModels];
     NSArray<NSString *> *titles =
   @[@"DIY心情转盘 #手工##手工制作#",
@@ -73,13 +42,27 @@
                                     creator:users[arc4random() % users.count]
                                  playURLStr:@"http://video.cdn.lanwuzhe.com/14945858406905f0c"
                                 coverURLStr:coverURLStrs[arc4random() % coverURLStrs.count]];
-        // 昵称
-        model.nicknameHelper = [SJVideoListTableViewCell helperWithNickname:model.creator.nickname];
-        // 创建时间
-        model.createTimeHelper = [SJVideoListTableViewCell helperWithCreateTime:model.createTime];
-        // 发布内容
-        model.contentHelper = [SJVideoListTableViewCell helperWithContent:model.title actionDelegate:actionDelegate];
-
+        
+        [SJVideoListTableViewCell sync_makeVideoContent:^(CGFloat contentMaxWidth, UIFont *font, UIColor *textColor) {
+            // `string regular`
+            NSString *actionStrRexp = @"([@][^\\s]+\\s)|([#][^#]+#)|((http)[^\\s]+\\s)";
+            // make `attributes string`
+            NSMutableAttributedString *attrStr = sj_makeAttributesString(^(SJAttributeWorker * _Nonnull make) {
+                make.font(font).textColor(textColor);
+                make.insert(model.title, 0);
+                make.regexp(actionStrRexp, ^(SJAttributesRangeOperator * _Nonnull matched) {
+                    matched.textColor([UIColor purpleColor]);
+                });
+                
+                model -> _contentHeight = make.sizeByWidth(contentMaxWidth).height;
+            });
+            attrStr.addTapAction(actionStrRexp);
+            attrStr.tappedDelegate = actionDelegate;
+            
+            model -> _attributedTitle = attrStr;
+            model -> _createTimeStr = sj_processTime(model.createTime, [NSDate date].timeIntervalSince1970); // this test time
+        }];
+        
         [testVideosM addObject:model];
     }
     return testVideosM;
@@ -95,6 +78,45 @@
     _playURLStr = playURLStr;
     _coverURLStr = coverURLStr;
     return self;
+}
+
+static NSString *sj_processTime(NSTimeInterval createDate, NSTimeInterval nowDate) {
+    
+    double value = nowDate - createDate;
+    
+    if ( value < 0 ) {
+        return @"火星时间";
+    }
+    
+    NSInteger year  = value / 31104000;
+    NSInteger month = value / 2592000;
+    NSInteger week  = value / 604800;
+    NSInteger day   = value / 86400;
+    NSInteger hour  = value / 3600;
+    NSInteger min   = value / 60;
+    
+    if ( year > 0 ) {
+        return [NSString stringWithFormat:@"%zd年前", year];
+    }
+    else if ( month > 0 ) {
+        return [NSString stringWithFormat:@"%zd月前", month];
+    }
+    else if ( week > 0 ) {
+        return [NSString stringWithFormat:@"%zd周前", week];
+    }
+    else if ( day > 0 ) {
+        return [NSString stringWithFormat:@"%zd天前", day];
+    }
+    else if ( hour > 0 ) {
+        return [NSString stringWithFormat:@"%zd小时前", hour];
+    }
+    else if ( min > 0 ) {
+        return [NSString stringWithFormat:@"%zd分钟前", min];
+    }
+    else {
+        return @"刚刚";
+    }
+    return @"";
 }
 @end
 

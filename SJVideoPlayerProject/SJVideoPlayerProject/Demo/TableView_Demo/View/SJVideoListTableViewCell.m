@@ -10,18 +10,18 @@
 #import "SJVideoModel.h"
 #import <Masonry.h>
 #import <SJUIFactory/SJUIFactory.h>
-#import <SJLabel/SJLabel.h>
 #import <SJAttributeWorker.h>
+#import "YYTapActionLabel.h"
 
 @interface SJVideoListTableViewCell()
 
 @property (nonatomic, strong, readonly) UIImageView *avatarImageView;
-@property (nonatomic, strong, readonly) SJLabel *nameLabel;
+@property (nonatomic, strong, readonly) YYLabel *nameLabel;
 @property (nonatomic, strong, readonly) UIButton *attentionBtn;
-@property (nonatomic, strong, readonly) SJLabel *contentLabel;
+@property (nonatomic, strong, readonly) YYTapActionLabel *contentLabel;
 @property (nonatomic, strong, readonly) UIImageView *coverImageView;
 @property (nonatomic, strong, readonly) UIImageView *playImageView;
-@property (nonatomic, strong, readonly) SJLabel *createTimeLabel;
+@property (nonatomic, strong, readonly) YYLabel *createTimeLabel;
 @property (nonatomic, strong, readonly) UIView *separatorLine;
 
 @property (nonatomic, strong, readonly) UIColor *commonColor;
@@ -45,76 +45,8 @@
     return SJScreen_W() - 12 * 2;
 }
 
-+ (NSString *)sj_processTimeWithCreateDate:(NSTimeInterval)createDate nowDate:(NSTimeInterval)nowDate {
-    
-    double value = nowDate - createDate;
-    
-    if ( value < 0 ) {
-        return @"火星时间";
-    }
-    
-    NSInteger year  = value / 31104000;
-    NSInteger month = value / 2592000;
-    NSInteger week  = value / 604800;
-    NSInteger day   = value / 86400;
-    NSInteger hour  = value / 3600;
-    NSInteger min   = value / 60;
-    
-    if ( year > 0 ) {
-        return [NSString stringWithFormat:@"%zd年前", year];
-    }
-    else if ( month > 0 ) {
-        return [NSString stringWithFormat:@"%zd月前", month];
-    }
-    else if ( week > 0 ) {
-        return [NSString stringWithFormat:@"%zd周前", week];
-    }
-    else if ( day > 0 ) {
-        return [NSString stringWithFormat:@"%zd天前", day];
-    }
-    else if ( hour > 0 ) {
-        return [NSString stringWithFormat:@"%zd小时前", hour];
-    }
-    else if ( min > 0 ) {
-        return [NSString stringWithFormat:@"%zd分钟前", min];
-    }
-    else {
-        return @"刚刚";
-    }
-    return @"";
-}
-
-+ (SJVideoHelper *)helperWithCreateTime:(NSTimeInterval)createTime {
-    SJVideoHelper *helper = [[SJVideoHelper alloc] initWithContent:[self sj_processTimeWithCreateDate:createTime nowDate:[NSDate date].timeIntervalSince1970] font:[UIFont systemFontOfSize:12] textColor:[UIColor lightGrayColor] numberOfLines:1 maxWidth:[self nicknameMaxWidth]];
-    return helper;
-}
-
-+ (SJVideoHelper *)helperWithNickname:(NSString *)nickname; {
-    SJVideoHelper *helper = [[SJVideoHelper alloc] initWithContent:nickname font:[UIFont boldSystemFontOfSize:14] textColor:[UIColor blackColor] numberOfLines:1 maxWidth:[self nicknameMaxWidth]];
-    return helper;
-}
-
-+ (SJVideoHelper *)helperWithContent:(NSString *)content
-                      actionDelegate:(id<NSAttributedStringActionDelegate>)actionDelegate {
-    // `action str regular`
-    NSString *actionStrRexp = @"([@][^\\s]+\\s)|([#][^#]+#)|((http)[^\\s]+\\s)";
-    
-    // make `attributes string`
-    NSMutableAttributedString *attrStr = sj_makeAttributesString(^(SJAttributeWorker * _Nonnull make) {
-        make.insert(content, 0);
-        make.font([UIFont boldSystemFontOfSize:14]).textColor([UIColor blackColor]);
-        make.regexp(actionStrRexp, ^(SJAttributesRangeOperator * _Nonnull matched) {
-            matched.textColor([UIColor purpleColor]);
-        });
-    });
-    
-    // set attrStr `action delegate`
-    attrStr.actionDelegate = actionDelegate;
-    attrStr.addAction(actionStrRexp);
-    
-    // record
-    SJVideoHelper *helper = [[SJVideoHelper alloc] initWithAttrStr:attrStr numberOfLines:0 maxWidth:[self contentMaxWidth]];
-    return helper;
++ (void)sync_makeVideoContent:(void(^)(CGFloat contentMaxWidth, UIFont *font, UIColor *textColor))block {
+    if ( block ) block([self contentMaxWidth], [UIFont boldSystemFontOfSize:14], [UIColor blackColor]);
 }
 
 + (CGFloat)heightWithContentHeight:(CGFloat)contentHeight {
@@ -122,9 +54,7 @@
 }
 
 
-
 #pragma mark -
-
 
 - (instancetype)initWithStyle:(UITableViewCellStyle)style reuseIdentifier:(NSString *)reuseIdentifier {
     self = [super initWithStyle:style reuseIdentifier:reuseIdentifier];
@@ -135,6 +65,7 @@
 }
 
 - (void)_addTapGesture {
+#warning should be set it tag. 应该设置它的`tag`. 请不要设置为0.
     _coverImageView.userInteractionEnabled = YES;
     _coverImageView.tag = 101;
     [_coverImageView addGestureRecognizer:[[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(handleTap:)]];
@@ -150,10 +81,9 @@
     _model = model;
     _avatarImageView.image = [UIImage imageNamed:model.creator.avatar];
     _coverImageView.image = [UIImage imageNamed:model.coverURLStr];
-    
-    _nameLabel.drawData = model.nicknameHelper.contentData;
-    _contentLabel.drawData = model.contentHelper.contentData;
-    _createTimeLabel.drawData = model.createTimeHelper.contentData;
+    _nameLabel.text = model.creator.nickname;
+    _createTimeLabel.text = model.createTimeStr;
+    _contentLabel.attributedText = model.attributedTitle;
 }
 
 - (void)_setupViews {
@@ -222,12 +152,6 @@
     _avatarImageView = [SJShapeImageViewFactory roundImageViewWithBackgroundColor:self.commonColor];
     return _avatarImageView;
 }
-- (SJLabel *)nameLabel {
-    if ( _nameLabel ) return _nameLabel;
-    _nameLabel = [SJLabel new];
-    _nameLabel.preferredMaxLayoutWidth = [[self class] nicknameMaxWidth];
-    return _nameLabel;
-}
 - (UIButton *)attentionBtn {
     if ( _attentionBtn ) return _attentionBtn;
     _attentionBtn = [SJUIButtonFactory roundButtonWithTitle:@"关注" titleColor:[UIColor blueColor] font:[UIFont systemFontOfSize:14] backgroundColor:[UIColor whiteColor] target:nil sel:NULL tag:0];
@@ -235,14 +159,6 @@
     _attentionBtn.layer.borderWidth = 0.6;
     _attentionBtn.layer.cornerRadius = 15;
     return _attentionBtn;
-}
-- (SJLabel *)contentLabel {
-    if ( _contentLabel ) return _contentLabel;
-    _contentLabel = [SJLabel new];
-    _contentLabel.numberOfLines = 0;
-    _contentLabel.userInteractionEnabled = YES;
-    _contentLabel.preferredMaxLayoutWidth = [[self class] contentMaxWidth];
-    return _contentLabel;
 }
 - (UIImageView *)coverImageView {
     if ( _coverImageView ) return _coverImageView;
@@ -254,10 +170,26 @@
     _playImageView = [SJUIImageViewFactory imageViewWithImageName:@"play"];
     return _playImageView;
 }
-- (SJLabel *)createTimeLabel {
-    if ( _createTimeLabel ) return _createTimeLabel;
-    _createTimeLabel = [SJLabel new];
+- (YYTapActionLabel *)contentLabel {
+    if ( _contentLabel ) return _contentLabel;
+    _contentLabel = [YYTapActionLabel new];
+    _contentLabel.numberOfLines = 0;
+    _contentLabel.userInteractionEnabled = YES;
+    _contentLabel.preferredMaxLayoutWidth = [[self class] contentMaxWidth];
+    return _contentLabel;
+}
+- (YYLabel *)nameLabel {
+    if ( _nameLabel ) return _nameLabel;
+    _nameLabel = [YYLabel new];
     _nameLabel.preferredMaxLayoutWidth = [[self class] nicknameMaxWidth];
+    _nameLabel.font = [UIFont boldSystemFontOfSize:14];
+    return _nameLabel;
+}
+- (YYLabel *)createTimeLabel {
+    if ( _createTimeLabel ) return _createTimeLabel;
+    _createTimeLabel = [YYLabel new];
+    _createTimeLabel.font = [UIFont systemFontOfSize:12];
+    _createTimeLabel.textColor = [UIColor lightGrayColor];
     return _createTimeLabel;
 }
 - (UIView *)separatorLine {

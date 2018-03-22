@@ -14,6 +14,7 @@
 		7706FC932062A96E006A828B /* LightweightViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 7706FC922062A96E006A828B /* LightweightViewController.m */; };
 		7706FC962062ABA8006A828B /* LightweightTableViewCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 7706FC952062ABA8006A828B /* LightweightTableViewCell.m */; };
 		7706FC99206341E8006A828B /* SJLightweightTopItem.m in Sources */ = {isa = PBXBuildFile; fileRef = 7706FC98206341E8006A828B /* SJLightweightTopItem.m */; };
+		7706FCC82063D125006A828B /* Group.jpeg in Resources */ = {isa = PBXBuildFile; fileRef = 7706FCC72063D125006A828B /* Group.jpeg */; };
 		77154E822050D040009E51D7 /* SJVideoPlayerRightControlView.m in Sources */ = {isa = PBXBuildFile; fileRef = 77154E812050D040009E51D7 /* SJVideoPlayerRightControlView.m */; };
 		77154E8E205255C8009E51D7 /* SJVideoPlayerFilmEditingControlView.m in Sources */ = {isa = PBXBuildFile; fileRef = 77154E8D205255C8009E51D7 /* SJVideoPlayerFilmEditingControlView.m */; };
 		77154E9120526391009E51D7 /* SJVideoPlayerFilmEditingResultView.m in Sources */ = {isa = PBXBuildFile; fileRef = 77154E9020526391009E51D7 /* SJVideoPlayerFilmEditingResultView.m */; };
@@ -110,6 +111,7 @@
 		7706FC952062ABA8006A828B /* LightweightTableViewCell.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = LightweightTableViewCell.m; sourceTree = "<group>"; };
 		7706FC97206341E8006A828B /* SJLightweightTopItem.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = SJLightweightTopItem.h; sourceTree = "<group>"; };
 		7706FC98206341E8006A828B /* SJLightweightTopItem.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = SJLightweightTopItem.m; sourceTree = "<group>"; };
+		7706FCC72063D125006A828B /* Group.jpeg */ = {isa = PBXFileReference; lastKnownFileType = image.jpeg; path = Group.jpeg; sourceTree = "<group>"; };
 		77154E802050D040009E51D7 /* SJVideoPlayerRightControlView.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = SJVideoPlayerRightControlView.h; sourceTree = "<group>"; };
 		77154E812050D040009E51D7 /* SJVideoPlayerRightControlView.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = SJVideoPlayerRightControlView.m; sourceTree = "<group>"; };
 		77154E8C205255C8009E51D7 /* SJVideoPlayerFilmEditingControlView.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = SJVideoPlayerFilmEditingControlView.h; sourceTree = "<group>"; };
@@ -536,6 +538,7 @@
 				772DC3C6202201E400EC4725 /* placeholder.png */,
 				77A47E8B2008DEBE001EBE14 /* nested.gif */,
 				774A5668201F3C5E00CD6ACC /* ex.gif */,
+				7706FCC72063D125006A828B /* Group.jpeg */,
 				774B25211FCEBA5D002113CC /* Main.storyboard */,
 				774B25241FCEBA5D002113CC /* Assets.xcassets */,
 				7706E1221FF74B24006E0B56 /* loading.gif */,
@@ -801,6 +804,7 @@
 				7737522D2056A1850000E4E7 /* ex2.gif in Resources */,
 				774A5669201F3C5E00CD6ACC /* ex.gif in Resources */,
 				775C0AC620295C660008EDA7 /* SJVideoPlayer.bundle in Resources */,
+				7706FCC82063D125006A828B /* Group.jpeg in Resources */,
 				7706E1251FF74C42006E0B56 /* slider.gif in Resources */,
 				77A47E8F2008DEBE001EBE14 /* nested.gif in Resources */,
 				774B25281FCEBA5D002113CC /* LaunchScreen.storyboard in Resources */,

@@ -45,3 +45,8 @@ ___
 * [Prompt](https://github.com/changsanjiang/SJPrompt)
 * [UI Factory](https://github.com/changsanjiang/SJUIFactory)
 ___
+
+## Contact
+* Email: changsanjiang@gmail.com
+* QQ: 1779609779
+* QQGroup: 719616775 <img src="https://github.com/changsanjiang/SJVideoPlayer/blob/master/SJVideoPlayerProject/SJVideoPlayerProject/Group.jpeg" width="200"  />

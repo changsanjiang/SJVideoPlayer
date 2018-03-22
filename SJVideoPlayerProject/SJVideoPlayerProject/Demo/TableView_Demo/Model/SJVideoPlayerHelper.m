@@ -138,45 +138,48 @@ NS_ASSUME_NONNULL_END
     // set asset
     _videoPlayer.URLAsset = asset;
     
-    // show right control view.
-    _videoPlayer.enableFilmEditing = YES;
-    _videoPlayer.filmEditingResultShare = self.resultShare;
-    
     _videoPlayer.pausedToKeepAppearState = YES;
-    
-    _videoPlayer.moreSettings = self.items.moreSettings;
-    
-    
-    // setting lightweight control layer top items
-    if ( _playerType == SJVideoPlayerType_Lightweight ) {
-        _videoPlayer.topControlItems = self.topControlItems;
-        __weak typeof(self) _self = self;
-        _videoPlayer.clickedTopControlItemExeBlock = ^(SJVideoPlayer * _Nonnull player, SJLightweightTopItem * _Nonnull item) {
-            __strong typeof(_self) self = _self;
-            if ( !self ) return;
-            
-            void(^promptHiddenExeBlock)(SJVideoPlayer *player) = ^(SJVideoPlayer *player) {
-                /// test test test test test test
-                [player rotate:SJRotateViewOrientation_Portrait animated:YES completion:^(__kindof SJBaseVideoPlayer * _Nonnull player) {
-                    __strong typeof(_self) self = _self;
-                    if ( !self ) return;
-                    [self.viewController.navigationController pushViewController:[[self.viewController class] new] animated:YES];
-                }];
+
+    switch ( _playerType ) {
+        case SJVideoPlayerType_Lightweight: {
+            // setting lightweight control layer top items
+            _videoPlayer.topControlItems = self.topControlItems;
+            __weak typeof(self) _self = self;
+            _videoPlayer.clickedTopControlItemExeBlock = ^(SJVideoPlayer * _Nonnull player, SJLightweightTopItem * _Nonnull item) {
+                __strong typeof(_self) self = _self;
+                if ( !self ) return;
+                void(^promptHiddenExeBlock)(SJVideoPlayer *player) = ^(SJVideoPlayer *player) {
+                    /// test test test test test test
+                    [player rotate:SJRotateViewOrientation_Portrait animated:YES completion:^(__kindof SJBaseVideoPlayer * _Nonnull player) {
+                        __strong typeof(_self) self = _self;
+                        if ( !self ) return;
+                        [self.viewController.navigationController pushViewController:[[self.viewController class] new] animated:YES];
+                    }];
+                };
+                
+                NSString *prompt = nil;
+                switch ( (SJLightweightTopItemFlag)item.flag ) {
+                    case SJLightweightTopItemFlag_Share: {
+                        prompt = @"clicked share";
+                    }
+                        break;
+                    case SJLightweightTopItemFlag_Download: {
+                        prompt = @"clicked download";
+                    }
+                        break;
+                }
+                [player showTitle:prompt duration:0.5 hiddenExeBlock:promptHiddenExeBlock];
             };
+        }
+            break;
+        case SJVideoPlayerType_Default: {
+            // show right control view.
+            _videoPlayer.enableFilmEditing = YES;
+            _videoPlayer.filmEditingResultShare = self.resultShare;
             
-            NSString *prompt = nil;
-            switch ( (SJLightweightTopItemFlag)item.flag ) {
-                case SJLightweightTopItemFlag_Share: {
-                    prompt = @"clicked share";
-                }
-                    break;
-                case SJLightweightTopItemFlag_Download: {
-                    prompt = @"clicked download";
-                }
-                    break;
-            }
-            [player showTitle:prompt duration:0.5 hiddenExeBlock:promptHiddenExeBlock];
-        };
+            _videoPlayer.moreSettings = self.items.moreSettings;
+        }
+            break;
     }
 }
 

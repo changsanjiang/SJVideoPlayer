@@ -74,7 +74,7 @@ static NSString *const LightweightTableViewCellID = @"LightweightTableViewCell";
     return _videoPlayerHelper;
 }
 
-- (BOOL)needConvertAsset {
+- (BOOL)needConvertExternalAsset {
     return NO;
 }
 

@@ -93,7 +93,7 @@ static NSString *const DownloadTableViewCellID = @"DownloadTableViewCell";
     return _videoPlayerHelper;
 }
 
-- (BOOL)needConvertAsset {
+- (BOOL)needConvertExternalAsset {
     return NO;
 }
 

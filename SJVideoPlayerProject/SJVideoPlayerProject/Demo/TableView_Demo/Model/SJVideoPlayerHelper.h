@@ -63,7 +63,7 @@ typedef NS_ENUM(NSUInteger, SJVideoPlayerType) {
 - (UIStatusBarStyle)preferredStatusBarStyle;
 
 @optional
-- (BOOL)needConvertAsset;
+- (BOOL)needConvertExternalAsset; // 是否需要转换外部传入的资源.
 
 @end
 

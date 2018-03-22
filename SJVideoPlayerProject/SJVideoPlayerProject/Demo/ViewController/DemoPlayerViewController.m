@@ -22,7 +22,7 @@
 @property (nonatomic, strong, readonly) SJVideoPlayerHelper *videoPlayerHelper;
 @property (nonatomic, strong) SJVideoModel *video;
 @property (nonatomic, strong) SJVideoPlayerURLAsset *asset;
-@property (nonatomic, assign) BOOL needConvertAsset;
+@property (nonatomic, assign) BOOL needConvertExternalAsset;
 
 @end
 
@@ -37,13 +37,14 @@
     if ( asset ) {
         _asset = asset;
         [_asset convertToUIView];   // 将资源转化为在UIView上播放. (播放器在self.view上播放)
-        _needConvertAsset = YES;
+        _needConvertExternalAsset = YES;
     }
     else {
         asset = [[SJVideoPlayerURLAsset alloc] initWithAssetURL:[NSURL URLWithString:self.video.playURLStr]];
         asset.title = self.video.title;
         asset.alwaysShowTitle = YES;
         _asset = asset;
+        _needConvertExternalAsset = NO;
     }
     return self;
 }
@@ -77,8 +78,13 @@
     return _videoPlayerHelper;
 }
 
-- (BOOL)needConvertAsset {
-    return _needConvertAsset;
+/**
+ 是否需要转换外部传入的资源.
+ 例如这个控制器, 播放是在UIView上播放, 需要将其外部资源转换为在UIView上播放的资源`[asset convertToUIView];`
+ `- (instancetype)initWithVideo:(SJVideoModel *)video asset:(SJVideoPlayerURLAsset *__nullable)asset`
+ */
+- (BOOL)needConvertExternalAsset {
+    return _needConvertExternalAsset;
 }
 
 - (void)viewWillAppear:(BOOL)animated {

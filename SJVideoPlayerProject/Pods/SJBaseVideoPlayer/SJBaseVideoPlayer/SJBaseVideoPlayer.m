@@ -20,6 +20,9 @@
 #import "SJVideoPlayerPresentView.h"
 
 @interface SJVideoPlayerAssetCarrier (SJBaseVideoPlayerAdd)
+/**
+ 视频的真实大小, 播放未准备好之前或者播放音频时该值为CGSizeZero.
+ */
 @property (nonatomic, assign) CGSize videoPresentationSize;
 @end
 
@@ -36,16 +39,61 @@
 #pragma mark -
 
 NS_ASSUME_NONNULL_BEGIN
+
+/**
+ 管理类: 控制层显示与隐藏
+ */
 @interface _SJControlLayerAppearStateManager : NSObject
-@property (nonatomic, getter=isEnabled) BOOL enabled;
-@property (nonatomic, readonly) BOOL controlLayerAppearedState;
-@property (nonatomic, readonly) BOOL initialization;
+
+/**
+ 初始化构造方法
+ */
 - (instancetype)initWithVideoPlayer:(SJBaseVideoPlayer *)videoPlayer;
+
+/**
+ 是否开启管理类去管理控制层的显示与隐藏. 见 `videoPlayer.enableControlLayerDisplayController`
+ */
+@property (nonatomic, getter=isEnabled) BOOL enabled;
+
+/**
+ 控制层的显示状态. YES -> appear, NO -> disappear.
+ */
+@property (nonatomic, readonly) BOOL controlLayerAppearedState;
+
+/**
+ 在视频第一次播放之前, 控制层会默认在1秒后显示. 如果在这1秒期间, 用户点击触发显示控制层, 则这个值为YES. 否则1秒显示控制层后, 才会设置这个值为YES.
+ 这个属性用于是否1秒后显示控制层.
+ */
+@property (nonatomic, readonly) BOOL initialization;
+
+/**
+ 当单击手势触发时, 会调用这个方法. 考虑是否显示或隐藏控制层, 或不做任何事情.
+ */
 - (void)considerChangeState;
+
+/**
+ 在`self.enabled == YES`的情况下, 立即显示控制层.
+ */
 - (void)layerAppear;
+
+/**
+ 在`self.enabled == YES`的情况下, 立即隐藏控制层.
+ */
 - (void)layerDisappear;
+
+/**
+ 重置`self.initialization`, 当播放新的资源时, 改方法会被调用.
+ */
 - (void)resetInitialization;
+
+/**
+ 当播放被暂停时, 是否保持控制层一直显示.  见 `videoPlayer.pausedToKeepAppearState`.
+ */
 @property (nonatomic) BOOL pausedToKeepAppearState;
+
+/**
+ 当播放失败时, 是否保持控制层一直显示. 见 `videoPlayer.playFailedToKeepAppearState`
+ */
 @property (nonatomic) BOOL playFailedToKeepAppearState;
 
 @end
@@ -55,9 +103,25 @@ NS_ASSUME_NONNULL_END
 #pragma mark -
 
 NS_ASSUME_NONNULL_BEGIN
+
+/**
+ 管理类: 监测 网络状态
+ */
 @interface _SJReachabilityObserver : NSObject
+
+/**
+ 网络状态只需一个监测对象即可, 所以将其作为单例使用.
+ */
 + (instancetype)sharedInstance;
+
+/**
+ 当前的网络状态.
+ */
 @property (nonatomic, assign, readonly) SJNetworkStatus networkStatus;
+
+/**
+ 当网络状态变更时, 将会调用这个Block.
+ */
 @property (nonatomic, copy, readwrite, nullable) void(^reachabilityChangedExeBlock)(_SJReachabilityObserver *observer, SJNetworkStatus status);
 @end
 NS_ASSUME_NONNULL_END
@@ -66,6 +130,10 @@ NS_ASSUME_NONNULL_END
 #pragma mark -
 
 NS_ASSUME_NONNULL_BEGIN
+
+/**
+ Base Video Player
+ */
 @interface SJBaseVideoPlayer () {
     UIView *_view;
     SJVideoPlayerPresentView *_presentView;
@@ -79,26 +147,105 @@ NS_ASSUME_NONNULL_BEGIN
     UITapGestureRecognizer *_lockStateTapGesture;
 }
 
+/**
+ 标识是用户暂停的, 还是开发者主动暂停的
+ 场景:
+ 当返回到播放界面时, 可以根据这个状态来处理是否播放
+ 如果是开发者暂停的, 则可以根据业务需求继续播放, 还是暂停
+ 如果是用户暂停, 体验好一点的话就继续暂停的, 你也可以继续播放
+ */
 @property (nonatomic, assign, readwrite) BOOL userClickedPause;
+
+/**
+ 当前播放器播放视频的状态
+ */
 @property (nonatomic, assign, readwrite) SJVideoPlayerPlayState state;
+
+/**
+ 当前播放如果出错, 可以查看这个error
+ */
 @property (nonatomic, strong, readwrite, nullable) NSError *error;
+
+/**
+ 当前播放的资源载体,
+ */
 @property (nonatomic, strong, readwrite, nullable) SJVideoPlayerAssetCarrier *asset;
+
+/**
+ 当播放器在TableView或者CollectionView中播放时, 播放器可能被滚动到窗口之外, 这个属性是用来标识是否滚入到窗口中. YES 表示在窗口中, 否则相反.
+ */
 @property (nonatomic, assign, readwrite) BOOL scrollIn;
+
+/**
+ 当用户触摸到TableView或者ScrollView时, 这个值为YES.
+ 这个值用于旋转的条件之一, 如果用户触摸在TableView或者ScrollView上时, 将不开启旋转.
+ */
 @property (nonatomic, assign, readwrite) BOOL touchedScrollView; // 如果为`YES`, 则不旋转
+
+/**
+ 这个值用户播放控制.
+ 场景:
+ 当在播放界面, 播放资源未加载完成还未播放时, 用户就跳入到下一个界面, 当资源加载完开始播放时, 就会出现这种尴尬的情况, 播放器不在当前页面播放...
+ 一般情况下, 我们会在viewWillAppear这些生命周期函数中写一些控制播放的方法, 所以我把切入点放到了这三个方法[`pause` || `play` || `stop`]
+ 当`suspend==YES`时, 播放器将不会进行播放
+ */
 @property (nonatomic, assign, readwrite) BOOL suspend; // Set it when the [`pause` || `play` || `stop`] is called.
+
+/**
+ App是否进入后台.
+ 当进入后台时, 将会禁止播放器旋转, 并依据这个属性`videoPlayer.pauseWhenAppResignActive`来暂停播放.
+ */
 @property (nonatomic, assign, readwrite) BOOL resignActive; // app 进入后台, 进入前台时会设置
 
+/**
+ 管理对象: 监听 App在前台, 后台, 耳机插拔的通知
+ */
 @property (nonatomic, strong, readonly) SJVideoPlayerRegistrar *registrar;
+
+/**
+ 控制层的父视图
+ */
 @property (nonatomic, strong, readonly) UIView *controlContentView;
+
+/**
+ 视频画面的呈现层
+ */
 @property (nonatomic, strong, readonly) SJVideoPlayerPresentView *presentView;
+
+/**
+ 管理对象: 指定旋转及管理视图的自动旋转
+ */
 @property (nonatomic, strong, readonly) SJOrentationObserver *orentationObserver;
+
+/**
+ 管理对象: 单击+双击+上下左右移动+捏合手势
+ */
 @property (nonatomic, strong, readonly) SJPlayerGestureControl *gestureControl;
+
+/**
+ 管理对象: 音量+声音
+ */
 @property (nonatomic, strong, readonly) SJVolBrigControl *volBrigControl;
+
+/**
+ 管理对象: 控制层的显示与隐藏
+ */
 @property (nonatomic, strong, readonly) _SJControlLayerAppearStateManager *displayRecorder;
+
+/**
+ 管理对象: 网络状态监测
+ */
 @property (nonatomic, strong, readonly) _SJReachabilityObserver *reachabilityObserver;
 
+/**
+ 锁屏状态下触发的手势.
+ 当播放器被锁屏时, 用户单击后, 会触发这个手势, 调用`controlLayerDelegate`的方法: `tappedPlayerOnTheLockedState:`
+ */
 @property (nonatomic, strong, readonly) UITapGestureRecognizer *lockStateTapGesture;
 
+/**
+ 清理资源
+ */
 - (void)clearAsset;
 
 @end
@@ -114,6 +261,7 @@ NS_ASSUME_NONNULL_END
     self = [super init];
     if ( !self ) return nil;
     NSError *error = nil;
+    // 使播放器在静音状态下也能放出声音
     [[AVAudioSession sharedInstance] setCategory:AVAudioSessionCategoryPlayback error:&error];
     if ( error ) NSLog(@"%@", error.userInfo);
     self.autoPlay = YES;
@@ -245,16 +393,13 @@ NS_ASSUME_NONNULL_END
         if ( SJVideoPlayerPlayState_PlayEnd == self.state ) [self replay];
     };
     
-    if ( asset.scrollView ) {
-        self.scrollIn = YES; // default is yes
-    }
-    else {
-        self.scrollIn = NO;
-    }
+    BOOL isPlayOnScrollView = [asset.scrollView isKindOfClass:[UIScrollView class]];
     
-    // scroll view
-    if ( [asset.scrollView isKindOfClass:[UIScrollView class]] ) {
-        /// 滑入
+    self.scrollIn = isPlayOnScrollView;
+    
+    if ( isPlayOnScrollView ) {
+        
+        // 进入窗口
         asset.scrollIn = ^(SJVideoPlayerAssetCarrier * _Nonnull asset, UIView * _Nonnull superview) {
             __strong typeof(_self) self = _self;
             if ( !self ) return;
@@ -272,11 +417,12 @@ NS_ASSUME_NONNULL_END
             if ( [self.controlLayerDelegate respondsToSelector:@selector(videoPlayerWillAppearInScrollView:)] ) {
                 [self.controlLayerDelegate videoPlayerWillAppearInScrollView:self];
             }
+            // 这里不再使用, 由代理去决定是否播放
             //            if ( !self.userPaused &&
             //                 self.state != SJVideoPlayerPlayState_PlayEnd ) [self play];
         };
         
-        /// 滑出
+        // 退出窗口
         asset.scrollOut = ^(SJVideoPlayerAssetCarrier * _Nonnull asset) {
             __strong typeof(_self) self = _self;
             if ( !self ) return;
@@ -287,7 +433,7 @@ NS_ASSUME_NONNULL_END
             }
         };
         
-        ///
+        // 触摸着
         asset.touchedScrollView = ^(SJVideoPlayerAssetCarrier * _Nonnull asset, BOOL tracking) {
             __strong typeof(_self) self = _self;
             if ( !self ) return;
@@ -311,7 +457,7 @@ NS_ASSUME_NONNULL_END
         asset.videoPresentationSize = CGSizeZero;   // clear
         asset.presentationSize(asset, size);        // reset
     }
-
+    
     if ( self.assetDeallocExeBlock ) {
         __weak typeof(self) _self = self;
         asset.deallocExeBlock = ^(SJVideoPlayerAssetCarrier * _Nonnull asset) {
@@ -1032,10 +1178,10 @@ NS_ASSUME_NONNULL_END
 }
 
 - (BOOL)play {
+    self.suspend = NO;
+
     if ( self.state ==  SJVideoPlayerPlayState_PlayFailed ||
          self.state == SJVideoPlayerPlayState_Unknown ) return NO;
-    
-    self.suspend = NO;
     
     self.userClickedPause = NO;
     if ( !self.asset ) return NO;
@@ -1045,12 +1191,12 @@ NS_ASSUME_NONNULL_END
 }
 
 - (BOOL)pause {
+    self.suspend = YES;
+    
     if ( self.state ==  SJVideoPlayerPlayState_PlayFailed ||
          self.state == SJVideoPlayerPlayState_Unknown ) return NO;
     
-    self.suspend = YES;
     self.userClickedPause = NO;
-    
     if ( !self.asset ) return NO;
     [self.asset.player pause];
     if ( SJVideoPlayerPlayState_PlayEnd != self.state ) self.state = SJVideoPlayerPlayState_Paused;
@@ -1058,15 +1204,17 @@ NS_ASSUME_NONNULL_END
 }
 
 - (void)stop {
-    self.suspend = NO;
+    self.suspend = YES;
+    
+    self.state = SJVideoPlayerPlayState_Unknown;
     
     if ( !self.asset ) return;
     [self clearAsset];
-    self.state = SJVideoPlayerPlayState_Unknown;
 }
 
 - (void)stopAndFadeOut {
-    self.suspend = NO;
+    self.suspend = YES;
+    
     [self.asset.player pause];
     [self.view sj_fadeOutAndCompletion:^(UIView *view) {
         [self stop];

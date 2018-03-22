@@ -183,7 +183,7 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic, assign, readwrite) BOOL touchedScrollView; // 如果为`YES`, 则不旋转
 
 /**
- 这个值用户播放控制.
+ 这个值用于播放控制.
  场景:
  当在播放界面, 播放资源未加载完成还未播放时, 用户就跳入到下一个界面, 当资源加载完开始播放时, 就会出现这种尴尬的情况, 播放器不在当前页面播放...
  一般情况下, 我们会在viewWillAppear这些生命周期函数中写一些控制播放的方法, 所以我把切入点放到了这三个方法[`pause` || `play` || `stop`]

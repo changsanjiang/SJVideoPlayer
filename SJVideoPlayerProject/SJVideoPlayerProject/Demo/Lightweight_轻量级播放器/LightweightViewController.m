@@ -104,8 +104,8 @@ static NSString *const LightweightTableViewCellID = @"LightweightTableViewCell";
 - (void)clickedPlayOnTabCell:(LightweightTableViewCell *)cell playerParentView:(UIView *)playerParentView {
     self.playedIndexPath = [self.tableView indexPathForCell:cell];
     SJVideoPlayerURLAsset *asset =
-    //    [[SJVideoPlayerURLAsset alloc] initWithAssetURL:[[NSBundle mainBundle] URLForResource:@"sample" withExtension:@"mp4"]
-    [[SJVideoPlayerURLAsset alloc] initWithAssetURL:[NSURL URLWithString:@"http://video.cdn.lanwuzhe.com/14945858406905f0c"]
+        [[SJVideoPlayerURLAsset alloc] initWithAssetURL:[[NSBundle mainBundle] URLForResource:@"sample" withExtension:@"mp4"]
+//    [[SJVideoPlayerURLAsset alloc] initWithAssetURL:[NSURL URLWithString:@"http://video.cdn.lanwuzhe.com/14945858406905f0c"]
                                          scrollView:self.tableView
                                           indexPath:[self.tableView indexPathForCell:cell]
                                        superviewTag:playerParentView.tag];
@@ -181,7 +181,7 @@ static NSString *const LightweightTableViewCellID = @"LightweightTableViewCell";
     if ( [self.videoPlayerHelper.currentPlayURL.absoluteString isEqualToString:model.playURLStr] ) {
         asset = self.videoPlayerHelper.asset;
     }
-    DemoPlayerViewController *vc = [[DemoPlayerViewController alloc] initWithVideo:model asset:asset];
+    DemoPlayerViewController *vc = [[DemoPlayerViewController alloc] initWithVideo:model asset:self.videoPlayerHelper.asset];
     [self.navigationController pushViewController:vc animated:YES];
 }
 @end

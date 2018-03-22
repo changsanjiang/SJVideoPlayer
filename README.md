@@ -14,6 +14,12 @@ pod 'SJBaseVideoPlayer'
 
 ___
 
+### Recently updated
+* Added a lightweight control layer(3/22/2018)
+- <img src="https://github.com/changsanjiang/SJVideoPlayerAssetCarrier/blob/master/Demo/SJVideoPlayerAssetCarrier/ex12.gif" />
+
+___
+
 ## Interface
 <img src="https://github.com/changsanjiang/SJBaseVideoPlayer/blob/master/Project/SJBaseVideoPlayer.png" />
 

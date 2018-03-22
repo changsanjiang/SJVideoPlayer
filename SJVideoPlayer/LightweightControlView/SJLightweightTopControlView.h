@@ -10,6 +10,8 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
+@class SJLightweightTopItem;
+
 @interface SJLightweightTopControlModel : NSObject
 @property (nonatomic) BOOL alwaysShowTitle;
 @property (nonatomic) BOOL isPlayOnScrollView;
@@ -26,7 +28,9 @@ NS_ASSUME_NONNULL_BEGIN
 
 @property (nonatomic, strong, readonly) SJLightweightTopControlModel *model;
 
-- (void)needUpdateTitle;
+- (void)needUpdateLayout;
+
+@property (nonatomic, strong, nullable) NSArray<SJLightweightTopItem *> *topItems;
 
 @property (nonatomic, strong, readonly) UIButton *backBtn;
 
@@ -37,5 +41,6 @@ NS_ASSUME_NONNULL_BEGIN
 @optional
 - (void)clickedBackBtnOnTopControlView:(SJLightweightTopControlView *)view;
 
+- (void)topControlView:(SJLightweightTopControlView *)view clickedItem:(SJLightweightTopItem *)item;
 @end
 NS_ASSUME_NONNULL_END

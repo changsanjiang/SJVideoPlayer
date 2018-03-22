@@ -21,6 +21,7 @@
 #import "SJVideoPlayerURLAsset+SJControlAdd.h"
 #import "SJVideoPlayerMoreSettingSecondary.h"
 #import "SJFilmEditingResultShareItem.h"
+#import "SJLightweightTopItem.h"
 
 NS_ASSUME_NONNULL_BEGIN
 
@@ -64,7 +65,18 @@ NS_ASSUME_NONNULL_BEGIN
 @end
 
 
-#pragma mark - 配置`默认控制层`
+#pragma mark - Setting lightweight control layer
+
+@interface SJVideoPlayer (SettingLightweightControlLayer)
+
+@property (nonatomic, copy, nullable) NSArray<SJLightweightTopItem *> *topControlItems;
+
+@property (nonatomic, copy, nullable) void(^clickedTopControlItemExeBlock)(SJVideoPlayer *player, SJLightweightTopItem *item);
+
+@end
+
+
+#pragma mark - Setting default control layer
 
 @interface SJVideoPlayer (SettingDefaultControlLayer)
 

@@ -62,7 +62,7 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic, strong, readonly) SJTimerControl *lockStateTappedTimerControl;
 @property (nonatomic, strong, readwrite, nullable) SJVideoPlayerFilmEditingControlView *filmEditingControlView;
 
-@property (nonatomic, weak, readwrite, nullable) SJVideoPlayer *videoPlayer;
+@property (nonatomic, weak, readwrite, nullable) SJVideoPlayer *videoPlayer;    // need weak ref.
 @property (nonatomic, strong, readwrite, nullable) SJVideoPlayerSettings *settings;
 
 @end
@@ -801,6 +801,7 @@ NS_ASSUME_NONNULL_END
 /// 当设置播放资源时调用.
 - (void)videoPlayer:(SJVideoPlayer *)videoPlayer prepareToPlay:(SJVideoPlayerURLAsset *)asset {
     // reset
+    
     self.topControlView.model.alwaysShowTitle = asset.alwaysShowTitle;
     self.topControlView.model.title = asset.title;
     self.topControlView.model.isPlayOnScrollView = videoPlayer.isPlayOnScrollView;

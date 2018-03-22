@@ -86,7 +86,29 @@ NS_ASSUME_NONNULL_END
 @end
 
 
-#pragma mark - 默认控制层
+#pragma mark -
+
+@implementation SJVideoPlayer (SettingLightweightControlLayer)
+
+- (void)setTopControlItems:(NSArray<SJLightweightTopItem *> *)topControlItems {
+    objc_setAssociatedObject(self, @selector(topControlItems), topControlItems, OBJC_ASSOCIATION_COPY_NONATOMIC);
+}
+
+- (NSArray<SJLightweightTopItem *> *)topControlItems {
+    return objc_getAssociatedObject(self, _cmd);
+}
+
+- (void)setClickedTopControlItemExeBlock:(void (^)(SJVideoPlayer * _Nonnull, SJLightweightTopItem * _Nonnull))clickedTopControlItemExeBlock {
+    objc_setAssociatedObject(self, @selector(clickedTopControlItemExeBlock), clickedTopControlItemExeBlock, OBJC_ASSOCIATION_COPY_NONATOMIC);
+}
+
+- (void (^)(SJVideoPlayer * _Nonnull, SJLightweightTopItem * _Nonnull))clickedTopControlItemExeBlock {
+    return objc_getAssociatedObject(self, _cmd);
+}
+@end
+
+
+#pragma mark -
 
 @implementation SJVideoPlayer (SettingDefaultControlLayer)
 

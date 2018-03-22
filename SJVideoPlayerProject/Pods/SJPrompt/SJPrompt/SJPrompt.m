@@ -15,6 +15,7 @@
 @property (nonatomic, strong, readonly) UIView *backgroundView;
 @property (nonatomic, strong, readonly) UILabel *promptLabel;
 @property (nonatomic, strong, readonly) SJPromptConfig *config;
+@property (nonatomic, copy) void(^hiddenExeBlock)(SJPrompt *prompt);
 
 @end
 
@@ -59,6 +60,11 @@
 }
 
 - (void)showTitle:(NSString *)title duration:(NSTimeInterval)duration {
+    [self showTitle:title duration:duration hiddenExeBlock:nil];
+}
+
+- (void)showTitle:(NSString *)title duration:(NSTimeInterval)duration hiddenExeBlock:(void(^)(SJPrompt *prompt))hiddenExeBlock {
+    _hiddenExeBlock = [hiddenExeBlock copy];
     if ( !_presentView ) return;
     CGFloat maxWdith = 0 != self.config.maxWidth ? self.config.maxWidth : _presentView.frame.size.width * 0.6;
     CGSize size = [self _sizeForTitle:title constraints:CGSizeMake(maxWdith, CGFLOAT_MAX)];
@@ -85,6 +91,8 @@
 - (void)_hidden {
     [UIView animateWithDuration:0.25 animations:^{
         self.backgroundView.alpha = 0.001;
+    } completion:^(BOOL finished) {
+        if ( _hiddenExeBlock ) {_hiddenExeBlock(self); _hiddenExeBlock = nil;}
     }];
 }
 

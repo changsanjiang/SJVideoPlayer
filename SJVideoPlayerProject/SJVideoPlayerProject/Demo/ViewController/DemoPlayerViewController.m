@@ -73,7 +73,7 @@
 @synthesize videoPlayerHelper = _videoPlayerHelper;
 - (SJVideoPlayerHelper *)videoPlayerHelper {
     if ( _videoPlayerHelper ) return _videoPlayerHelper;
-    _videoPlayerHelper = [[SJVideoPlayerHelper alloc] initWithViewController:self];
+    _videoPlayerHelper = [[SJVideoPlayerHelper alloc] initWithViewController:self playerType:SJVideoPlayerType_Lightweight];
     return _videoPlayerHelper;
 }
 

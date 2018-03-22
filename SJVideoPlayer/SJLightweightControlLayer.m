@@ -43,7 +43,7 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic, strong, readonly) SJVideoPlayerControlMaskView *bottomMaskView;
 @property (nonatomic, strong, readonly) SJVideoPlayerDraggingProgressView *draggingProgressView;
 
-@property (nonatomic, strong, nullable) SJVideoPlayer *videoPlayer;
+@property (nonatomic, weak, nullable) SJVideoPlayer *videoPlayer;   // need weak ref.
 @property (nonatomic, strong, readonly) SJLoadingView *loadingView;
 @property (nonatomic, strong, readonly) SJSlider *bottomSlider;
 @property (nonatomic, strong, nullable) SJVideoPlayerSettings *settings;
@@ -68,6 +68,34 @@ NS_ASSUME_NONNULL_BEGIN
     return self;
 }
 
+
+- (void)videoPlayer:(SJVideoPlayer *)videoPlayer prepareToPlay:(SJVideoPlayerURLAsset *)asset {
+    // back btn
+    if ( videoPlayer.isPlayOnScrollView ) {
+        [_backBtn removeFromSuperview];
+        _backBtn = nil;
+    }
+    else {
+        if ( !_backBtn.superview ) {
+            [self.containerView addSubview:self.backBtn];
+            _backBtn.disappearType = SJDisappearType_Alpha;
+            [_backBtn mas_remakeConstraints:^(MASConstraintMaker *make) {
+                make.edges.equalTo(_topControlView.backBtn);
+            }];
+        }
+    }
+    self.topControlView.topItems = videoPlayer.topControlItems;
+    self.topControlView.model.isPlayOnScrollView = videoPlayer.isPlayOnScrollView;
+    self.topControlView.model.alwaysShowTitle = asset.alwaysShowTitle;
+    self.topControlView.model.title = asset.title;
+    [self.topControlView needUpdateLayout];
+    
+    self.bottomSlider.value = 0;
+    self.bottomControlView.progress = 0;
+    self.bottomControlView.bufferProgress = 0;
+    [self.bottomControlView setCurrentTimeStr:videoPlayer.currentTimeStr totalTimeStr:videoPlayer.totalTimeStr];
+}
+
 - (BOOL)controlLayerDisappearCondition {
     return YES;
 }
@@ -82,7 +110,8 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (void)controlLayerNeedAppear:(nonnull __kindof SJBaseVideoPlayer *)videoPlayer {
     UIView_Animations(CommonAnimaDuration, ^{
-
+        if ( videoPlayer.isFullScreen ) [_backBtn appear];
+        
         if ( SJVideoPlayerPlayState_PlayFailed == videoPlayer.state ) {
             [_centerControlView failedState];
             [_centerControlView appear];
@@ -119,6 +148,8 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (void)controlLayerNeedDisappear:(nonnull __kindof SJBaseVideoPlayer *)videoPlayer {
     UIView_Animations(CommonAnimaDuration, ^{
+        if ( videoPlayer.isFullScreen ) [_backBtn disappear];
+        
         if ( SJVideoPlayerPlayState_PlayFailed != videoPlayer.state ) {
             [_topControlView disappear];
             [_bottomControlView disappear];
@@ -148,7 +179,7 @@ NS_ASSUME_NONNULL_BEGIN
         case SJVideoPlayerPlayState_Unknown: {
             [videoPlayer controlLayerNeedDisappear];
             self.topControlView.model.title = nil;
-            [self.topControlView needUpdateTitle];
+            [self.topControlView needUpdateLayout];
             self.bottomSlider.value = 0;
             self.bottomControlView.progress = 0;
             self.bottomControlView.bufferProgress = 0;
@@ -187,30 +218,6 @@ NS_ASSUME_NONNULL_BEGIN
     }
 }
 
-- (void)videoPlayer:(SJVideoPlayer *)videoPlayer prepareToPlay:(SJVideoPlayerURLAsset *)asset {
-    self.backBtn.hidden = videoPlayer.isPlayOnScrollView;
-    if ( videoPlayer.isPlayOnScrollView ) {
-        [_backBtn removeFromSuperview];
-    }
-    else {
-        if ( !_backBtn.superview ) {
-            [self.containerView addSubview:self.backBtn];
-            [_backBtn mas_remakeConstraints:^(MASConstraintMaker *make) {
-                make.edges.equalTo(_topControlView.backBtn);
-            }];
-        }
-    }
-    self.topControlView.model.isPlayOnScrollView = videoPlayer.isPlayOnScrollView;
-    self.topControlView.model.alwaysShowTitle = asset.alwaysShowTitle;
-    self.topControlView.model.title = asset.title;
-    [self.topControlView needUpdateTitle];
-
-    self.bottomSlider.value = 0;
-    self.bottomControlView.progress = 0;
-    self.bottomControlView.bufferProgress = 0;
-    [self.bottomControlView setCurrentTimeStr:videoPlayer.currentTimeStr totalTimeStr:videoPlayer.totalTimeStr];
-}
-
 - (void)videoPlayer:(SJVideoPlayer *)videoPlayer
         currentTime:(NSTimeInterval)currentTime currentTimeStr:(NSString *)currentTimeStr
           totalTime:(NSTimeInterval)totalTime totalTimeStr:(NSString *)totalTimeStr {
@@ -226,6 +233,13 @@ NS_ASSUME_NONNULL_BEGIN
 }
 
 - (void)videoPlayer:(__kindof SJBaseVideoPlayer *)videoPlayer willRotateView:(BOOL)isFull {
+    if ( _backBtn ) {
+        if ( videoPlayer.isFullScreen ) [_backBtn disappear];
+        else if ( !videoPlayer.isPlayOnScrollView ) [_backBtn appear];
+        else [_backBtn disappear];
+    }
+    
+    
     if ( isFull && !videoPlayer.URLAsset.isM3u8 ) {
         _draggingProgressView.style = SJVideoPlayerDraggingProgressViewStylePreviewProgress;
     }
@@ -234,7 +248,7 @@ NS_ASSUME_NONNULL_BEGIN
     }
     
     _topControlView.isFullscreen = isFull;
-    [_topControlView needUpdateTitle];
+    [_topControlView needUpdateLayout];
     
     UIView_Animations(CommonAnimaDuration, ^{
         [self.controlView layoutIfNeeded];
@@ -437,6 +451,9 @@ NS_ASSUME_NONNULL_BEGIN
     _topControlView = [SJLightweightTopControlView new];
     _topControlView.delegate = self;
     return _topControlView;
+}
+- (void)topControlView:(SJLightweightTopControlView *)view clickedItem:(SJLightweightTopItem *)item {
+    if ( _videoPlayer.clickedTopControlItemExeBlock ) _videoPlayer.clickedTopControlItemExeBlock(_videoPlayer, item);
 }
 - (void)clickedBackBtnOnTopControlView:(SJLightweightTopControlView *)view {
     if ( _videoPlayer.isFullScreen ) {

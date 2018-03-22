@@ -191,6 +191,8 @@ typedef NS_ENUM(NSInteger, SJNetworkStatus) {
  */
 - (void)showTitle:(NSString *)title duration:(NSTimeInterval)duration;
 
+- (void)showTitle:(NSString *)title duration:(NSTimeInterval)duration hiddenExeBlock:(void(^__nullable)(__kindof SJBaseVideoPlayer *player))hiddenExeBlock;
+
 /**
  Hidden Prompt.
  */

@@ -1444,6 +1444,15 @@ NS_ASSUME_NONNULL_END
     [self.prompt showTitle:title duration:duration];
 }
 
+- (void)showTitle:(NSString *)title duration:(NSTimeInterval)duration hiddenExeBlock:(void (^)(__kindof SJBaseVideoPlayer * _Nonnull))hiddenExeBlock {
+    __weak typeof(self) _self = self;
+    [self.prompt showTitle:title duration:duration hiddenExeBlock:^(SJPrompt * _Nonnull prompt) {
+        __strong typeof(_self) self = _self;
+        if ( !self ) return;
+        if ( hiddenExeBlock ) hiddenExeBlock(self);
+    }];
+}
+
 - (void)hiddenTitle {
     [self.prompt hidden];
 }

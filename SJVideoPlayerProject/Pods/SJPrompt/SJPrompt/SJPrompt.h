@@ -32,6 +32,8 @@ NS_ASSUME_NONNULL_BEGIN
  */
 - (void)showTitle:(NSString *)title duration:(NSTimeInterval)duration;
 
+- (void)showTitle:(NSString *)title duration:(NSTimeInterval)duration hiddenExeBlock:(void(^__nullable)(SJPrompt *prompt))hiddenExeBlock;
+
 - (void)hidden;
 
 @end

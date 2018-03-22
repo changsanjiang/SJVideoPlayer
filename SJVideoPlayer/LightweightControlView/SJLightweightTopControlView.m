@@ -11,6 +11,40 @@
 #import <Masonry/Masonry.h>
 #import "UIView+SJVideoPlayerSetting.h"
 #import <SJAttributesFactory/SJAttributeWorker.h>
+#import "SJLightweightTopItem.h"
+#import <objc/message.h>
+
+NS_ASSUME_NONNULL_BEGIN
+@interface SJLightweightTopTmp : NSObject
+
+- (instancetype)initWithItem:(SJLightweightTopItem *)item;
+
+@property (nonatomic, strong, readonly) SJLightweightTopItem *item;
+
+@property (nonatomic, copy, nullable) void(^updatedExeBlock)(SJLightweightTopTmp *tmp);
+
+@end
+
+@implementation SJLightweightTopTmp
+
+- (instancetype)initWithItem:(SJLightweightTopItem *)item {
+    self = [super init];
+    if ( !self ) return nil;
+    _item = item;
+    [item addObserver:self forKeyPath:kLightweightTopItemImageNameKeyPath options:NSKeyValueObservingOptionNew context:nil];
+    return self;
+}
+
+- (void)observeValueForKeyPath:(nullable NSString *)keyPath ofObject:(nullable id)object change:(nullable NSDictionary<NSKeyValueChangeKey, id> *)change context:(nullable void *)context {
+    if ( [keyPath isEqualToString:kLightweightTopItemImageNameKeyPath] ) {
+        if ( _updatedExeBlock ) _updatedExeBlock(self);
+    }
+}
+
+- (void)dealloc {
+    [_item removeObserver:self forKeyPath:kLightweightTopItemImageNameKeyPath];
+}
+@end
 
 @interface SJLightweightTopControlView () {
     SJLightweightTopControlModel *_model;
@@ -18,6 +52,7 @@
 
 @property (nonatomic, strong, readonly) UILabel *titleLabel;
 @property (nonatomic, strong, readonly) UIView *itemsContainerView;
+@property (nonatomic, strong, readwrite, nullable) NSArray<SJLightweightTopTmp *> *observerItems;
 
 @end
 
@@ -49,7 +84,57 @@
     [self invalidateIntrinsicContentSize];
 }
 
-- (void)needUpdateTitle {
+- (void)setTopItems:(NSArray<SJLightweightTopItem *> * __nullable)topItems {
+    if ( topItems == _topItems ) return;
+    _observerItems = nil;
+    
+    _topItems = topItems;
+    
+    [_itemsContainerView.subviews enumerateObjectsWithOptions:NSEnumerationReverse usingBlock:^(__kindof UIView * _Nonnull obj, NSUInteger idx, BOOL * _Nonnull stop) {
+        [obj removeFromSuperview];
+    }];
+    
+    NSMutableArray<SJLightweightTopTmp *> *observerItemsM = [NSMutableArray array];
+    [topItems enumerateObjectsUsingBlock:^(SJLightweightTopItem * _Nonnull obj, NSUInteger idx, BOOL * _Nonnull stop) {
+        UIButton *btn = [SJUIButtonFactory buttonWithImageName:obj.imageName target:self sel:@selector(clickedTopItem:) tag:idx];
+        [_itemsContainerView addSubview:btn];
+        if ( idx == 0 ) {
+            [btn mas_makeConstraints:^(MASConstraintMaker *make) {
+                make.leading.bottom.offset(0);
+                make.size.offset(44);
+            }];
+        }
+        else {
+            UIButton *beforeBtn = _itemsContainerView.subviews[(int)idx - 1];
+            [btn mas_makeConstraints:^(MASConstraintMaker *make) {
+                make.size.bottom.equalTo(beforeBtn);
+                make.leading.equalTo(beforeBtn.mas_trailing);
+                if ( idx == (int)topItems.count - 1 ) {
+                    make.trailing.offset(0);
+                }
+            }];
+        }
+        // update image
+        SJLightweightTopTmp *observer = [[SJLightweightTopTmp alloc] initWithItem:obj];
+        observer.updatedExeBlock = ^(SJLightweightTopTmp * _Nonnull tmp) {
+            [btn setImage:[UIImage imageNamed:tmp.item.imageName] forState:UIControlStateNormal];
+        };
+        [observerItemsM addObject:observer];
+    }];
+    
+    _observerItems = observerItemsM;
+}
+
+- (void)clickedTopItem:(UIButton *)btn {
+    if ( [self.delegate respondsToSelector:@selector(topControlView:clickedItem:)] ) {
+        [self.delegate topControlView:self clickedItem:_topItems[btn.tag]];
+    }
+}
+
+- (void)needUpdateLayout {
+    
+    self.itemsContainerView.hidden = (!_isFullscreen && self.model.isPlayOnScrollView);
+    
     if ( self.isFullscreen ) {
         self.titleLabel.hidden = NO;
     }
@@ -156,3 +241,4 @@
 
 @implementation SJLightweightTopControlModel
 @end
+NS_ASSUME_NONNULL_END

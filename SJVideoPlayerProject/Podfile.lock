@@ -116,10 +116,10 @@ PODS:
   - SJFullscreenPopGesture/View (1.3.7.3)
   - SJLoadingView (1.0.1)
   - SJObserverHelper (1.0.3)
-  - SJOrentationObserver (1.0.6.1):
+  - SJOrentationObserver (1.0.6.2):
     - Masonry
-    - SJOrentationObserver/Category (= 1.0.6.1)
-  - SJOrentationObserver/Category (1.0.6.1):
+    - SJOrentationObserver/Category (= 1.0.6.2)
+  - SJOrentationObserver/Category (1.0.6.2):
     - Masonry
   - SJPrompt (1.0.2):
     - Masonry
@@ -168,7 +168,7 @@ SPEC CHECKSUMS:
   SJFullscreenPopGesture: f16c9f31a32aa741d6f79d56952572bdd07860b8
   SJLoadingView: c3ff03e4b363a5b6a3ba0634d6bb9ce2647faf07
   SJObserverHelper: b270d707cd18ab76538596aa4e98cf798c9e9868
-  SJOrentationObserver: 7e7b9e96bed9e72f71b81e8a2fc2fabe5a2eab72
+  SJOrentationObserver: cfcbfb353f486e7a96544c2e34e3e2bed1674325
   SJPrompt: 48d97333ac5f0f9c7e6922c366953f9764a028e1
   SJScrollEntriesView: 2875f2780574aca3b970af51180669df956ef1f7
   SJSlider: f59c30fc668a5bd3b7063b9e3e133959aa7a34f8

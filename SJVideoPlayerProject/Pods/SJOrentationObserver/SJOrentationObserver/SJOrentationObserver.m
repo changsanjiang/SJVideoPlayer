@@ -159,9 +159,9 @@ static UIWindow *__window;
 }
 
 - (void)rotate:(SJRotateViewOrientation)orientation animated:(BOOL)animated completion:(void (^)(SJOrentationObserver * _Nonnull))block {
-    if ( orientation == _rotateOrientation ) return;
-    
     if ( !_view || !_targetSuperview ) return;
+
+    if ( orientation == _rotateOrientation ) { if ( block ) block(self); return; }
     
     if ( self.rotationCondition ) { if ( !self.rotationCondition(self) ) return; }
     

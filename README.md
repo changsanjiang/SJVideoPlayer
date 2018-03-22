@@ -15,7 +15,7 @@ pod 'SJBaseVideoPlayer'
 ___
 
 ### Recently updated
-* Added a new control layer(3/22/2018), The difference with the default control layer is that it is lightweight.
+* Added a new control layer(3/22/2018), The difference with the default control layer is that it's lightweight.
 ```Objective-C
 _videoPlayer = [SJVideoPlayer lightweightPlayer];
 ```

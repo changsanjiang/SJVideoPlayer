@@ -8,6 +8,14 @@
 
 #import <UIKit/UIKit.h>
 
+/**
+ 集成播放器的时候, 可以直接将这个类拖入到你的项目中.
+ 
+ 你可以在 SJVideoPlayerHelper.m 里, 将不需要的功能删除掉即可.
+ 关于 vc 的一些方法, 我都封装到 block 里面了, 所以直接调用 helper 的对应方法即可.
+ 例如 viewDidAppear 的时候, 请调用一下 helper.vc_viewDidAppearExeBlock() 即可.
+ */
+
 NS_ASSUME_NONNULL_BEGIN
 typedef NS_ENUM(NSUInteger, SJVideoPlayerType) {
     SJVideoPlayerType_Default,

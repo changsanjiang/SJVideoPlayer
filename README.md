@@ -14,22 +14,14 @@ pod 'SJBaseVideoPlayer'
 
 ___
 
-### Recently updated
-* Added a new control layer(3/22/2018), The difference with the default control layer is that it's lightweight.
-- <img src="https://github.com/changsanjiang/SJVideoPlayerAssetCarrier/blob/master/Demo/SJVideoPlayerAssetCarrier/ex12.gif" />
-
-```Objective-C
-_videoPlayer = [SJVideoPlayer lightweightPlayer];
-```
-___
-
 ## Interface
 <img src="https://github.com/changsanjiang/SJBaseVideoPlayer/blob/master/Project/SJBaseVideoPlayer.png" />
 
 ___
 
 ## Example
-<img src="https://github.com/changsanjiang/SJVideoPlayer/blob/master/SJVideoPlayerProject/SJVideoPlayerProject/preview.gif" /> <img src="https://github.com/changsanjiang/SJVideoPlayer/blob/master/SJVideoPlayerProject/SJVideoPlayerProject/nested.gif" width=350 /> <img src="https://github.com/changsanjiang/SJVideoPlayer/blob/master/SJVideoPlayerProject/SJVideoPlayerProject/ex2.gif" width=350 />
+<img src="https://github.com/changsanjiang/SJVideoPlayer/blob/master/SJVideoPlayerProject/SJVideoPlayerProject/play.gif" />
+<img src="https://github.com/changsanjiang/SJVideoPlayer/blob/master/SJVideoPlayerProject/SJVideoPlayerProject/export.gif" />
 
 ___
 

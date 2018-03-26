@@ -14,6 +14,19 @@ pod 'SJBaseVideoPlayer'
 
 ___
 
+## Features
+- [x] Based on AVPlayer
+- [x] Support play with online URL and local file
+- [x] Automatic rotation. You can also manage the rotation manually.
+- [x] Support in TableHeaderView | TableViewCell | CollectionViewCell playing video
+- [x] Export video
+- [x] Adjust brightness by slide vertical at left side of screen
+- [x] Adjust volume by slide vertical at right side of screen
+- [x] Slide horizontal to fast forward and rewind
+- [x] Full screen mode to drag the slider control progress, display video preview
+- [x] Download
+___
+
 ## Interface
 <img src="https://github.com/changsanjiang/SJBaseVideoPlayer/blob/master/Project/SJBaseVideoPlayer.png" />
 

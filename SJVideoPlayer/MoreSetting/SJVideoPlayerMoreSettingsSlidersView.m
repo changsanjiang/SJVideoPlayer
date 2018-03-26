@@ -179,7 +179,7 @@
         if ( setting.more_thumbImage ) {
             self.brightnessSlider.slider.thumbImageView.image = self.volumeSlider.slider.thumbImageView.image = self.rateSlider.slider.thumbImageView.image = setting.more_thumbImage;
         }
-        else if ( 0 != setting.more_thumbImage ) {
+        else if ( 0 != setting.more_thumbSize ) {
             CGFloat radius = setting.more_thumbSize * 0.5;
             CGSize size = CGSizeMake(setting.more_thumbSize, setting.more_thumbSize);
             [self.rateSlider.slider setThumbCornerRadius:radius size:size thumbBackgroundColor:setting.progress_thumbColor];

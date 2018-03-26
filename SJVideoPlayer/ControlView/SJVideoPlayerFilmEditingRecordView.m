@@ -108,7 +108,7 @@
     if ( _currentTime == 3 ) {
         self.tipsLabel.text = self.tipsText;
         [UIView animateWithDuration:0.3 animations:^{
-            _recrodBtn.alpha = 1;
+            self->_recrodBtn.alpha = 1;
         }];
     }
 }

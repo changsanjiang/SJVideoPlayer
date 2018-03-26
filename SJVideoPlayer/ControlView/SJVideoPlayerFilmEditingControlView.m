@@ -72,9 +72,9 @@ NS_ASSUME_NONNULL_END
             _recordView.alpha = 0.001;
             [self addSubview:_recordView];
             [UIView animateWithDuration:0.25 animations:^{
-                _recordView.alpha = 1;
+                self->_recordView.alpha = 1;
             } completion:^(BOOL finished) {
-                [_recordView start];
+                [self->_recordView start];
             }];
         }
             break;
@@ -142,14 +142,14 @@ NS_ASSUME_NONNULL_END
     } completion:^(BOOL finished) {
         [UIView animateWithDuration:0.3 animations:^{
             self.backgroundColor = [UIColor clearColor];
-            _s_resultView.alpha = 1;
+            self->_s_resultView.alpha = 1;
         } completion:^(BOOL finished) {
-            [_s_resultView showResultWithCompletion:^{
+            [self->_s_resultView showResultWithCompletion:^{
                 if ( type == SJVideoPlayerFilmEditingResultViewType_Video ) {
-                    if ( self.recordCompleteExeBlock ) self.recordCompleteExeBlock(self, _recordView.currentTime);
+                    if ( self.recordCompleteExeBlock ) self.recordCompleteExeBlock(self, self->_recordView.currentTime);
                 }
-                if ( type == SJVideoPlayerFilmEditingResultViewType_Screenshot && [_resultShare.delegate respondsToSelector:@selector(successfulScreenshot:)] ) {
-                    [self.resultShare.delegate successfulScreenshot:_s_resultView.image];
+                if ( type == SJVideoPlayerFilmEditingResultViewType_Screenshot && [self->_resultShare.delegate respondsToSelector:@selector(successfulScreenshot:)] ) {
+                    [self.resultShare.delegate successfulScreenshot:self->_s_resultView.image];
                 }
             }];
         }];
@@ -238,8 +238,8 @@ NS_ASSUME_NONNULL_END
     
     dispatch_async(dispatch_get_main_queue(), ^{
         [UIView animateWithDuration:0.25 animations:^{
-            [_screenshotBtn appear];
-            [_exportBtn appear];
+            [self->_screenshotBtn appear];
+            [self->_exportBtn appear];
         }];
     });
 }

@@ -112,57 +112,57 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (void)controlLayerNeedAppear:(nonnull __kindof SJBaseVideoPlayer *)videoPlayer {
     UIView_Animations(CommonAnimaDuration, ^{
-        if ( videoPlayer.isFullScreen ) [_backBtn appear];
+        if ( videoPlayer.isFullScreen ) [self->_backBtn appear];
         
         if ( SJVideoPlayerPlayState_PlayFailed == videoPlayer.state ) {
-            [_centerControlView failedState];
-            [_centerControlView appear];
-            [_topControlView appear];
-            [_leftControlView disappear];
-            [_bottomControlView disappear];
+            [self->_centerControlView failedState];
+            [self->_centerControlView appear];
+            [self->_topControlView appear];
+            [self->_leftControlView disappear];
+            [self->_bottomControlView disappear];
         }
         else {
-            [_topControlView appear];
-            if ( videoPlayer.isFullScreen ) [_leftControlView appear];
-            else [_leftControlView disappear];
-            [_bottomControlView appear];
-            [_bottomSlider disappear];
+            [self->_topControlView appear];
+            if ( videoPlayer.isFullScreen ) [self->_leftControlView appear];
+            else [self->_leftControlView disappear];
+            [self->_bottomControlView appear];
+            [self->_bottomSlider disappear];
             
             
             // top
             if ( videoPlayer.isPlayOnScrollView && !videoPlayer.isFullScreen ) {
-                if ( videoPlayer.URLAsset.alwaysShowTitle ) [_topControlView appear];
-                else [_topControlView disappear];
+                if ( videoPlayer.URLAsset.alwaysShowTitle ) [self->_topControlView appear];
+                else [self->_topControlView disappear];
             }
-            else [_topControlView appear];
+            else [self->_topControlView appear];
             
-            [_bottomControlView appear];
+            [self->_bottomControlView appear];
             
-            if ( videoPlayer.isFullScreen ) [_leftControlView appear];
-            else [_leftControlView disappear];  // 如果是小屏, 则不显示锁屏按钮
+            if ( videoPlayer.isFullScreen ) [self->_leftControlView appear];
+            else [self->_leftControlView disappear];  // 如果是小屏, 则不显示锁屏按钮
             
-            [_bottomSlider disappear];
+            [self->_bottomSlider disappear];
             
-            if ( videoPlayer.state != SJVideoPlayerPlayState_PlayEnd ) [_centerControlView disappear];
+            if ( videoPlayer.state != SJVideoPlayerPlayState_PlayEnd ) [self->_centerControlView disappear];
         }
     }, nil);
 }
 
 - (void)controlLayerNeedDisappear:(nonnull __kindof SJBaseVideoPlayer *)videoPlayer {
     UIView_Animations(CommonAnimaDuration, ^{
-        if ( videoPlayer.isFullScreen ) [_backBtn disappear];
+        if ( videoPlayer.isFullScreen ) [self->_backBtn disappear];
         
         if ( SJVideoPlayerPlayState_PlayFailed != videoPlayer.state ) {
-            [_topControlView disappear];
-            [_bottomControlView disappear];
-            if ( !videoPlayer.isLockedScreen ) [_leftControlView disappear];
-            else [_leftControlView appear];
-            [_bottomSlider appear];
+            [self->_topControlView disappear];
+            [self->_bottomControlView disappear];
+            if ( !videoPlayer.isLockedScreen ) [self->_leftControlView disappear];
+            else [self->_leftControlView appear];
+            [self->_bottomSlider appear];
         }
         else {
-            [_topControlView appear];
-            [_leftControlView disappear];
-            [_bottomControlView disappear];
+            [self->_topControlView appear];
+            [self->_leftControlView disappear];
+            [self->_bottomControlView disappear];
         }
     }, nil);
 }
@@ -316,8 +316,8 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (void)tappedPlayerOnTheLockedState:(__kindof SJBaseVideoPlayer *)videoPlayer {
     UIView_Animations(CommonAnimaDuration, ^{
-        if ( _leftControlView.appearState ) [_leftControlView disappear];
-        else [_leftControlView appear];
+        if ( self->_leftControlView.appearState ) [self->_leftControlView disappear];
+        else [self->_leftControlView appear];
     }, nil);
     if ( _leftControlView.appearState ) [_lockStateTappedTimerControl start];
     else [_lockStateTappedTimerControl clear];

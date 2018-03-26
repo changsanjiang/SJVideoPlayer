@@ -112,8 +112,8 @@
     dispatch_async(dispatch_get_main_queue(), ^{
         if ( [keyPath isEqualToString:@"progress"] ) {
             float progress = self.uploader.progress;
-            _progressLabel.text = [NSString stringWithFormat:@"%@: %.0f%%", self.uploadingPrompt, progress * 100];
-            [_uploadProgressView mas_remakeConstraints:^(MASConstraintMaker *make) {
+            self->_progressLabel.text = [NSString stringWithFormat:@"%@: %.0f%%", self.uploadingPrompt, progress * 100];
+            [self->_uploadProgressView mas_remakeConstraints:^(MASConstraintMaker *make) {
                 make.top.bottom.trailing.offset(0);
                 make.width.equalTo(self->_imageView).multipliedBy(1 - progress);
             }];
@@ -147,7 +147,7 @@
                 make.top.bottom.offset(0);
             }];
         }
-        else if ( idx != (int)_items.count - 1 ) {
+        else if ( idx != (int)self->_items.count - 1 ) {
             UIButton *beforeBtn = self.itemsContainerView.subviews[(int)idx - 1];
             [btn mas_makeConstraints:^(MASConstraintMaker *make) {
                 make.leading.equalTo(beforeBtn.mas_trailing).offset(20);

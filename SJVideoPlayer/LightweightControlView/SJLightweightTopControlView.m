@@ -99,7 +99,7 @@ NS_ASSUME_NONNULL_BEGIN
     NSMutableArray<SJLightweightTopTmp *> *observerItemsM = [NSMutableArray array];
     [topItems enumerateObjectsUsingBlock:^(SJLightweightTopItem * _Nonnull obj, NSUInteger idx, BOOL * _Nonnull stop) {
         UIButton *btn = [SJUIButtonFactory buttonWithImageName:obj.imageName target:self sel:@selector(clickedTopItem:) tag:idx];
-        [_itemsContainerView addSubview:btn];
+        [self->_itemsContainerView addSubview:btn];
         if ( idx == 0 ) {
             [btn mas_makeConstraints:^(MASConstraintMaker *make) {
                 make.leading.bottom.offset(0);
@@ -107,7 +107,7 @@ NS_ASSUME_NONNULL_BEGIN
             }];
         }
         else {
-            UIButton *beforeBtn = _itemsContainerView.subviews[(int)idx - 1];
+            UIButton *beforeBtn = self->_itemsContainerView.subviews[(int)idx - 1];
             [btn mas_makeConstraints:^(MASConstraintMaker *make) {
                 make.size.bottom.equalTo(beforeBtn);
                 make.leading.equalTo(beforeBtn.mas_trailing);

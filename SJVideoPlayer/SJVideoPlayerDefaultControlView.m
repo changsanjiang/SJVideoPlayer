@@ -198,7 +198,7 @@ NS_ASSUME_NONNULL_END
     
     [_moreSettingsView mas_makeConstraints:^(MASConstraintMaker *make) {
         make.top.trailing.offset(0);
-        make.size.mas_offset(_moreSettingsView.intrinsicContentSize);
+        make.size.mas_offset(self->_moreSettingsView.intrinsicContentSize);
     }];
     
     [_loadingView mas_makeConstraints:^(MASConstraintMaker *make) {
@@ -294,13 +294,13 @@ NS_ASSUME_NONNULL_END
 - (void)exitFilmEditingCompletion:(void(^ __nullable)(SJVideoPlayerDefaultControlView *))completion {
     if ( _filmEditingControlView ) {
         UIView_Animations(CommonAnimaDuration, ^{
-            [_filmEditingControlView disappear];
+            [self->_filmEditingControlView disappear];
         }, ^{
             self.videoPlayer.disableRotation = NO;
             self.videoPlayer.disableGestureTypes = SJDisablePlayerGestureTypes_None;
             [self.videoPlayer play];
-            [_filmEditingControlView removeFromSuperview];
-            _filmEditingControlView = nil;  // clear
+            [self->_filmEditingControlView removeFromSuperview];
+            self->_filmEditingControlView = nil;  // clear
             if ( completion ) completion(self);
         });
     }
@@ -380,12 +380,12 @@ NS_ASSUME_NONNULL_END
                 [self addSubview:_moreSettingsView];
                 [_moreSettingsView mas_makeConstraints:^(MASConstraintMaker *make) {
                     make.top.trailing.offset(0);
-                    make.size.mas_offset(_moreSettingsView.intrinsicContentSize);
+                    make.size.mas_offset(self->_moreSettingsView.intrinsicContentSize);
                 }];
             }
             [_videoPlayer controlLayerNeedDisappear];
             UIView_Animations(CommonAnimaDuration, ^{
-                [_moreSettingsView appear];
+                [self->_moreSettingsView appear];
             }, nil);
         }
             break;
@@ -909,38 +909,38 @@ NS_ASSUME_NONNULL_END
 - (void)controlLayerNeedAppear:(SJVideoPlayer *)videoPlayer {
     UIView_Animations(CommonAnimaDuration, ^{
         if ( SJVideoPlayerPlayState_PlayFailed == videoPlayer.state ) {
-            [_centerControlView failedState];
-            [_centerControlView appear];
-            [_topControlView appear];
-            [_leftControlView disappear];
-            [_bottomControlView disappear];
-            [_rightControlView disappear];
+            [self->_centerControlView failedState];
+            [self->_centerControlView appear];
+            [self->_topControlView appear];
+            [self->_leftControlView disappear];
+            [self->_bottomControlView disappear];
+            [self->_rightControlView disappear];
         }
         else {
             // top
             if ( videoPlayer.isPlayOnScrollView && !videoPlayer.isFullScreen ) {
-                if ( videoPlayer.URLAsset.alwaysShowTitle ) [_topControlView appear];
-                else [_topControlView disappear];
+                if ( videoPlayer.URLAsset.alwaysShowTitle ) [self->_topControlView appear];
+                else [self->_topControlView disappear];
             }
-            else [_topControlView appear];
+            else [self->_topControlView appear];
             
-            [_bottomControlView appear];
+            [self->_bottomControlView appear];
             
             if ( videoPlayer.isFullScreen ) {
-                [_leftControlView appear];
-                [_rightControlView appear];
+                [self->_leftControlView appear];
+                [self->_rightControlView appear];
             }
             else {
-                [_leftControlView disappear];  // 如果是小屏, 则不显示锁屏按钮
-                [_rightControlView disappear];
+                [self->_leftControlView disappear];  // 如果是小屏, 则不显示锁屏按钮
+                [self->_rightControlView disappear];
             }
-            [_bottomSlider disappear];
+            [self->_bottomSlider disappear];
             
-            if ( videoPlayer.state != SJVideoPlayerPlayState_PlayEnd ) [_centerControlView disappear];
+            if ( videoPlayer.state != SJVideoPlayerPlayState_PlayEnd ) [self->_centerControlView disappear];
         }
         
-        if ( _moreSettingsView.appearState ) [_moreSettingsView disappear];
-        if ( _moreSecondarySettingView.appearState ) [_moreSecondarySettingView disappear];
+        if ( self->_moreSettingsView.appearState ) [self->_moreSettingsView disappear];
+        if ( self->_moreSecondarySettingView.appearState ) [self->_moreSecondarySettingView disappear];
     }, nil);
 }
 
@@ -948,19 +948,19 @@ NS_ASSUME_NONNULL_END
 - (void)controlLayerNeedDisappear:(SJVideoPlayer *)videoPlayer {
     UIView_Animations(CommonAnimaDuration, ^{
         if ( SJVideoPlayerPlayState_PlayFailed != videoPlayer.state ) {
-            [_topControlView disappear];
-            [_bottomControlView disappear];
-            [_rightControlView disappear];
-            if ( !videoPlayer.isLockedScreen ) [_leftControlView disappear];
-            else [_leftControlView appear];
-            [_previewView disappear];
-            [_bottomSlider appear];
+            [self->_topControlView disappear];
+            [self->_bottomControlView disappear];
+            [self->_rightControlView disappear];
+            if ( !videoPlayer.isLockedScreen ) [self->_leftControlView disappear];
+            else [self->_leftControlView appear];
+            [self->_previewView disappear];
+            [self->_bottomSlider appear];
         }
         else {
-            [_topControlView appear];
-            [_leftControlView disappear];
-            [_bottomControlView disappear];
-            [_rightControlView disappear];
+            [self->_topControlView appear];
+            [self->_leftControlView disappear];
+            [self->_bottomControlView disappear];
+            [self->_rightControlView disappear];
         }
     }, nil);
 }
@@ -994,8 +994,8 @@ NS_ASSUME_NONNULL_END
 /// 如果播放器锁屏, 当用户点击的时候, 这个方法会触发
 - (void)tappedPlayerOnTheLockedState:(__kindof SJBaseVideoPlayer *)videoPlayer {
     UIView_Animations(CommonAnimaDuration, ^{
-        if ( _leftControlView.appearState ) [_leftControlView disappear];
-        else [_leftControlView appear];
+        if ( self->_leftControlView.appearState ) [self->_leftControlView disappear];
+        else [self->_leftControlView appear];
     }, nil);
     if ( _leftControlView.appearState ) [_lockStateTappedTimerControl start];
     else [_lockStateTappedTimerControl clear];

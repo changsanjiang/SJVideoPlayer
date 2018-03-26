@@ -63,11 +63,11 @@
     [self addSubview:self.tipsContainerView];
     
     [_bottomMaskView mas_makeConstraints:^(MASConstraintMaker *make) {
-        make.edges.equalTo(_bottomMaskView.superview);
+        make.edges.equalTo(self->_bottomMaskView.superview);
     }];
     
     [_titleLabel mas_makeConstraints:^(MASConstraintMaker *make) {
-        make.centerX.equalTo(_titleLabel.superview);
+        make.centerX.equalTo(self->_titleLabel.superview);
         make.top.offset(12);
     }];
     
@@ -83,7 +83,7 @@
     }];
     
     [self.tipsViewsArr enumerateObjectsUsingBlock:^(UIView * _Nonnull obj, NSUInteger idx, BOOL * _Nonnull stop) {
-        [_tipsContainerView addSubview:obj];
+        [self->_tipsContainerView addSubview:obj];
         if ( 0 == idx ) {
             [obj mas_makeConstraints:^(MASConstraintMaker *make) {
                 make.leading.top.bottom.offset(0);
@@ -91,7 +91,7 @@
             }];
         }
         else {
-            UIView *beforeView = _tipsViewsArr[idx - 1];
+            UIView *beforeView = self->_tipsViewsArr[idx - 1];
             [obj mas_makeConstraints:^(MASConstraintMaker *make) {
                 make.top.bottom.offset(0);
                 make.leading.equalTo(beforeView.mas_trailing).offset(0);

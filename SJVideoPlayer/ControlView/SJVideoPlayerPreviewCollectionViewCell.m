@@ -10,8 +10,7 @@
 #import <SJUIFactory/SJUIFactory.h>
 #import <Masonry/Masonry.h>
 
-#pragma clang diagnostic push
-#pragma clang diagnostic ignored "-Wimplicit-retain-self"
+
 
 @interface SJVideoPlayerPreviewCollectionViewCell ()
 
@@ -38,7 +37,7 @@
 - (void)_collectionSetupView {
     [self.contentView addSubview:self.imageView];
     [_imageView mas_makeConstraints:^(MASConstraintMaker *make) {
-        make.edges.equalTo(_imageView.superview);
+        make.edges.equalTo(self->_imageView.superview);
     }];
 }
 
@@ -48,4 +47,3 @@
     return _imageView;
 }
 @end
-#pragma clang diagnostic pop

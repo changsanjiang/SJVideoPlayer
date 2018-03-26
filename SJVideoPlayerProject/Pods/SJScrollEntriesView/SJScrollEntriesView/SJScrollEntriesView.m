@@ -92,7 +92,7 @@
 - (void)_updateLineLocationWithBtn:(UIButton *)btn {
     [self.lineView mas_remakeConstraints:^(MASConstraintMaker *make) {
         make.centerX.equalTo(btn);
-        make.width.equalTo(btn).multipliedBy(_settings.lineScale);
+        make.width.equalTo(btn).multipliedBy(self.settings.lineScale);
         make.bottom.offset(0);
         make.height.offset(self.settings.lineHeight);
     }];
@@ -129,7 +129,7 @@
     __block CGFloat realMaxWidth = 0;
     NSMutableArray<NSNumber *> *itemsWidthM = [NSMutableArray array];
     [_items enumerateObjectsUsingBlock:^(id<SJScrollEntriesViewUserProtocol>  _Nonnull obj, NSUInteger idx, BOOL * _Nonnull stop) {
-        CGFloat width = [self sizeForTitle:obj.title size:CGSizeMake(CGFLOAT_MAX, 44)].width + _settings.itemSpacing;
+        CGFloat width = [self sizeForTitle:obj.title size:CGSizeMake(CGFLOAT_MAX, 44)].width + self.settings.itemSpacing;
         realMaxWidth += width;
         [itemsWidthM addObject:@(width)];
     }];
@@ -145,7 +145,7 @@
     
     // constraints
     [items enumerateObjectsUsingBlock:^(UIButton * _Nonnull obj, NSUInteger idx, BOOL * _Nonnull stop) {
-        [_scrollView addSubview:obj];
+        [self.scrollView addSubview:obj];
         CGFloat width = [itemsWidthM[idx] floatValue];
         if ( idx == 0 ) {
             [obj mas_makeConstraints:^(MASConstraintMaker *make) {

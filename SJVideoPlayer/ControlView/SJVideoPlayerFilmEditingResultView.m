@@ -16,8 +16,7 @@
 #import "SJFilmEditingResultShareItem.h"
 #import <SJObserverHelper/NSObject+SJObserverHelper.h>
 
-#pragma clang diagnostic push
-#pragma clang diagnostic ignored "-Wimplicit-retain-self"
+
 @interface SJVideoPlayerFilmEditingResultView ()
 
 @property (nonatomic, strong, readonly) UIButton *cancelBtn;
@@ -58,7 +57,7 @@
         make.centerX.offset(0);
         make.centerY.equalTo(self.mas_centerY).multipliedBy(0.82);
         make.width.equalTo(self).multipliedBy(0.4);
-        make.height.equalTo(_imageView.mas_width).multipliedBy(9 / 16.0);
+        make.height.equalTo(self->_imageView.mas_width).multipliedBy(9 / 16.0);
     }];
     
     [UIView animateWithDuration:0.5 animations:^{
@@ -116,7 +115,7 @@
             _progressLabel.text = [NSString stringWithFormat:@"%@: %.0f%%", self.uploadingPrompt, progress * 100];
             [_uploadProgressView mas_remakeConstraints:^(MASConstraintMaker *make) {
                 make.top.bottom.trailing.offset(0);
-                make.width.equalTo(_imageView).multipliedBy(1 - progress);
+                make.width.equalTo(self->_imageView).multipliedBy(1 - progress);
             }];
         }
         else if ( [keyPath isEqualToString:@"uploaded"] ) {
@@ -144,7 +143,7 @@
         [self.itemsContainerView addSubview:btn];
         if ( idx == 0 ) {
             [btn mas_makeConstraints:^(MASConstraintMaker *make) {
-                make.leading.equalTo(_itemsContainerView);
+                make.leading.equalTo(self->_itemsContainerView);
                 make.top.bottom.offset(0);
             }];
         }
@@ -187,7 +186,7 @@
         make.leading.offset(12);
         make.top.offset(12);
         make.height.offset(26);
-        make.width.equalTo(_cancelBtn.mas_height).multipliedBy(2.8);
+        make.width.equalTo(self->_cancelBtn.mas_height).multipliedBy(2.8);
     }];
     
     [_imageView mas_makeConstraints:^(MASConstraintMaker *make) {
@@ -196,7 +195,7 @@
     
     [_itemsContainerView mas_makeConstraints:^(MASConstraintMaker *make) {
         make.centerX.offset(0);
-        make.top.equalTo(_imageView.mas_bottom);
+        make.top.equalTo(self->_imageView.mas_bottom);
         make.bottom.equalTo(self);
     }];
     
@@ -247,4 +246,3 @@
     return _uploadProgressView;
 }
 @end
-#pragma clang diagnostic pop

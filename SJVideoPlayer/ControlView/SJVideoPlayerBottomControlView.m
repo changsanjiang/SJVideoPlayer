@@ -12,8 +12,7 @@
 #import <Masonry/Masonry.h>
 #import "SJVideoPlayerControlMaskView.h"
 #import "UIView+SJVideoPlayerSetting.h"
-#pragma clang diagnostic push
-#pragma clang diagnostic ignored "-Wimplicit-retain-self"
+
 
 @interface SJVideoPlayerBottomControlView ()<SJSliderDelegate>
 
@@ -121,34 +120,34 @@
     }];
     
     [_pauseBtn mas_makeConstraints:^(MASConstraintMaker *make) {
-        make.edges.equalTo(_playBtn);
+        make.edges.equalTo(self->_playBtn);
     }];
     
     [_currentTimeLabel mas_makeConstraints:^(MASConstraintMaker *make) {
-        make.centerY.equalTo(_separateLabel);
-        make.leading.equalTo(_playBtn.mas_trailing).offset(-8);
-        make.width.equalTo(_durationTimeLabel).offset(8);
+        make.centerY.equalTo(self->_separateLabel);
+        make.leading.equalTo(self->_playBtn.mas_trailing).offset(-8);
+        make.width.equalTo(self->_durationTimeLabel).offset(8);
     }];
     
     [_separateLabel mas_makeConstraints:^(MASConstraintMaker *make) {
-        make.centerY.equalTo(_playBtn);
-        make.leading.equalTo(_currentTimeLabel.mas_trailing);
+        make.centerY.equalTo(self->_playBtn);
+        make.leading.equalTo(self->_currentTimeLabel.mas_trailing);
     }];
     
     [_durationTimeLabel mas_makeConstraints:^(MASConstraintMaker *make) {
-        make.leading.equalTo(_separateLabel.mas_trailing);
-        make.centerY.equalTo(_separateLabel);
+        make.leading.equalTo(self->_separateLabel.mas_trailing);
+        make.centerY.equalTo(self->_separateLabel);
     }];
     
     [_progressSlider mas_makeConstraints:^(MASConstraintMaker *make) {
-        make.leading.equalTo(_durationTimeLabel.mas_trailing).offset(12);
-        make.height.centerY.equalTo(_playBtn);
-        make.trailing.equalTo(_fullBtn.mas_leading).offset(-8);
+        make.leading.equalTo(self->_durationTimeLabel.mas_trailing).offset(12);
+        make.height.centerY.equalTo(self->_playBtn);
+        make.trailing.equalTo(self->_fullBtn.mas_leading).offset(-8);
     }];
     
     [_fullBtn mas_makeConstraints:^(MASConstraintMaker *make) {
-        make.size.equalTo(_playBtn);
-        make.centerY.equalTo(_playBtn);
+        make.size.equalTo(self->_playBtn);
+        make.centerY.equalTo(self->_playBtn);
         make.trailing.offset(0);
     }];
     
@@ -242,4 +241,3 @@
     }];
 }
 @end
-#pragma clang diagnostic pop

@@ -51,8 +51,8 @@
             UIImage *image = [SJVolBrigResource imageNamed:@"sj_video_player_brightness"];
             NSString *brightnessText = [SJVolBrigResource localizedStringForKey:SJVolBrigControlBrightnessText];
             dispatch_async(dispatch_get_main_queue(), ^{
-                _brightnessView.image = image;
-                _brightnessView.titleLabel.text = brightnessText;
+                self->_brightnessView.image = image;
+                self->_brightnessView.titleLabel.text = brightnessText;
             });
         });
     }
@@ -82,4 +82,3 @@
 
 @end
 #pragma clang diagnostic pop
-

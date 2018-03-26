@@ -94,7 +94,7 @@
     [_playerBackgroundView mas_makeConstraints:^(MASConstraintMaker *make) {
         make.top.offset(SJ_is_iPhoneX() ? 34 : 20);
         make.leading.trailing.offset(0);
-        make.height.equalTo(_playerBackgroundView.mas_width).multipliedBy(9 / 16.0f);
+        make.height.equalTo(self->_playerBackgroundView.mas_width).multipliedBy(9 / 16.0f);
     }];
     
     [self.view addSubview:self.nextVCBtn];
@@ -104,8 +104,8 @@
     
     [self.view addSubview:self.otherVideoBtn];
     [_otherVideoBtn mas_makeConstraints:^(MASConstraintMaker *make) {
-        make.top.equalTo(_nextVCBtn.mas_bottom).offset(20);
-        make.centerX.equalTo(_nextVCBtn);
+        make.top.equalTo(self->_nextVCBtn.mas_bottom).offset(20);
+        make.centerX.equalTo(self->_nextVCBtn);
     }];
 }
 

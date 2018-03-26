@@ -25,8 +25,7 @@
 #import <SJBaseVideoPlayer/SJTimerControl.h>
 
 NS_ASSUME_NONNULL_BEGIN
-#pragma clang diagnostic push
-#pragma clang diagnostic ignored "-Wimplicit-retain-self"
+
 
 @interface SJLightweightControlLayer () <SJLightweightBottomControlViewDelegate, SJLightweightLeftControlViewDelegate, SJLightweightTopControlViewDelegate, SJLightweightCenterControlViewDelegate> {
     UIView *_controlView;
@@ -83,7 +82,7 @@ NS_ASSUME_NONNULL_BEGIN
             [self.containerView addSubview:self.backBtn];
             _backBtn.disappearType = SJDisappearType_Alpha;
             [_backBtn mas_remakeConstraints:^(MASConstraintMaker *make) {
-                make.edges.equalTo(_topControlView.backBtn);
+                make.edges.equalTo(self->_topControlView.backBtn);
             }];
         }
     }
@@ -362,12 +361,12 @@ NS_ASSUME_NONNULL_BEGIN
     [self.containerView addSubview:self.centerControlView];
     
     [_topMaskView mas_makeConstraints:^(MASConstraintMaker *make) {
-        make.height.equalTo(_topControlView);
+        make.height.equalTo(self->_topControlView);
         make.top.leading.trailing.offset(0);
     }];
     
     [_bottomMaskView mas_makeConstraints:^(MASConstraintMaker *make) {
-        make.height.equalTo(_bottomControlView);
+        make.height.equalTo(self->_bottomControlView);
         make.leading.bottom.trailing.offset(0);
     }];
     
@@ -657,5 +656,4 @@ NS_ASSUME_NONNULL_BEGIN
     return _lockStateTappedTimerControl;
 }
 @end
-#pragma clang diagnostic pop
 NS_ASSUME_NONNULL_END

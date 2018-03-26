@@ -9,6 +9,7 @@
 #import "SJCommonSlider.h"
 #import <Masonry/Masonry.h>
 
+
 @interface SJCommonSlider ()
 
 @property (nonatomic, strong, readonly) UIView *containerView;
@@ -32,8 +33,8 @@
 - (void)setSpacing:(float)spacing {
     _spacing = spacing;
     [_slider mas_updateConstraints:^(MASConstraintMaker *make) {
-        make.leading.equalTo(_leftContainerView.mas_trailing).offset(spacing);
-        make.trailing.equalTo(_rightContainerView.mas_leading).offset(-spacing);
+        make.leading.equalTo(self->_leftContainerView.mas_trailing).offset(spacing);
+        make.trailing.equalTo(self->_rightContainerView.mas_leading).offset(-spacing);
     }];
 }
 
@@ -48,8 +49,8 @@
     }];
     
     [_leftContainerView mas_makeConstraints:^(MASConstraintMaker *make) {
-        make.top.leading.bottom.equalTo(_leftContainerView.superview);
-        make.width.equalTo(_leftContainerView.mas_height);
+        make.top.leading.bottom.equalTo(self->_leftContainerView.superview);
+        make.width.equalTo(self->_leftContainerView.mas_height);
     }];
     
     [_slider mas_makeConstraints:^(MASConstraintMaker *make) {
@@ -57,8 +58,8 @@
     }];
     
     [_rightContainerView mas_makeConstraints:^(MASConstraintMaker *make) {
-        make.top.trailing.bottom.equalTo(_rightContainerView.superview);
-        make.width.equalTo(_rightContainerView.mas_height);
+        make.top.trailing.bottom.equalTo(self->_rightContainerView.superview);
+        make.width.equalTo(self->_rightContainerView.mas_height);
     }];
 }
 

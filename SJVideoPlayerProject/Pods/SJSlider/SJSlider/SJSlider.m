@@ -15,6 +15,7 @@
 
 
 
+
 @interface UIView (SJExtension)
 @property (nonatomic, assign) CGFloat csj_x;
 @property (nonatomic, assign) CGFloat csj_y;
@@ -220,9 +221,9 @@
     CGFloat sub = _maxValue - _minValue;
     if ( sub <= 0 ) return;
     [_containerView.constraints enumerateObjectsWithOptions:NSEnumerationReverse usingBlock:^(__kindof NSLayoutConstraint * _Nonnull obj, NSUInteger idx, BOOL * _Nonnull stop) {
-        if ( obj.firstItem == _traceImageView ) {
+        if ( obj.firstItem == self->_traceImageView ) {
             if ( obj.firstAttribute == NSLayoutAttributeWidth ) {
-                [_containerView removeConstraint:obj];
+                [self->_containerView removeConstraint:obj];
             }
         }
     }];
@@ -555,4 +556,3 @@
 }
 
 @end
-

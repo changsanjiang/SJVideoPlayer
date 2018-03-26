@@ -92,7 +92,7 @@
     [UIView animateWithDuration:0.25 animations:^{
         self.backgroundView.alpha = 0.001;
     } completion:^(BOOL finished) {
-        if ( _hiddenExeBlock ) {_hiddenExeBlock(self); _hiddenExeBlock = nil;}
+        if ( self->_hiddenExeBlock ) {self->_hiddenExeBlock(self); self->_hiddenExeBlock = nil;}
     }];
 }
 

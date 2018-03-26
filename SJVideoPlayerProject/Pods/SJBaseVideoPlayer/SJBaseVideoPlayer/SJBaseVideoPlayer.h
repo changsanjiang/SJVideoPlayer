@@ -11,7 +11,11 @@
 //  Player with default control layer.
 //  https://github.com/changsanjiang/SJVideoPlayer
 //
-//  changsanjiang@gmail.com
+//  If you have suggestions or bugs, please contact me
+//  如有建议或Bug, 还请联系我
+
+//  Email:  changsanjiang@gmail.com
+//  QQ:     1779609779
 //
 
 /**
@@ -39,7 +43,15 @@
 #import <SJOrentationObserver/SJOrentationObserver.h>
 
 NS_ASSUME_NONNULL_BEGIN
+@protocol SJVideoPlayerControlLayerDataSource, SJVideoPlayerControlLayerDelegate;
 
+/**
+ This enumeration lists some of the gesture types that the player has by default.
+ When you don't want to use one of these gestures, you can set it like this:
+ 
+ 这个枚举列出了播放器默认拥有的一些手势类型, 当你不想使用其中某个手势时, 可以像下面这样设置:
+ _videoPlayer.disableGestureTypes = SJDisablePlayerGestureTypes_SingleTap | SJDisablePlayerGestureTypes_DoubleTap | ...;
+ */
 typedef NS_ENUM(NSUInteger, SJDisablePlayerGestureTypes) {
     SJDisablePlayerGestureTypes_None,
     SJDisablePlayerGestureTypes_SingleTap = 1 << 0,
@@ -49,15 +61,21 @@ typedef NS_ENUM(NSUInteger, SJDisablePlayerGestureTypes) {
     SJDisablePlayerGestureTypes_All = 1 << 4
 };
 
+
+/**
+ This enumeration lists the three state values of the network.
+ It is used to identify the current network state. You can obtain the current network state as follows:
+ 
+ 这个枚举列出了网络的3种状态值, 用来标识当前的网络状态, 你可以像下面这样获取当前的网络状态:
+ ```
+ _videoPlayer.networkStatus;
+ ```
+ */
 typedef NS_ENUM(NSInteger, SJNetworkStatus) {
     SJNetworkStatus_NotReachable = 0,
     SJNetworkStatus_ReachableViaWWAN = 1,
     SJNetworkStatus_ReachableViaWiFi = 2
 };
-
-
-@protocol SJVideoPlayerControlLayerDataSource, SJVideoPlayerControlLayerDelegate;
-
 
 @interface SJBaseVideoPlayer : NSObject
 
@@ -65,23 +83,63 @@ typedef NS_ENUM(NSInteger, SJNetworkStatus) {
 
 - (instancetype)init;
 
-@property (nonatomic, weak, readwrite, nullable) id <SJVideoPlayerControlLayerDataSource> controlLayerDataSource;
-
-@property (nonatomic, weak, readwrite, nullable) id <SJVideoPlayerControlLayerDelegate> controlLayerDelegate;
-
+/**
+ This is the player view. you can use it to present video.
+ 这个是播放器视图, 你可以用它去呈现视频.
+ 
+ readonly.
+ */
 @property (nonatomic, strong, readonly) UIView *view;
+
+/**
+ This is a data source object for the control layer.
+ It must implement the methods defined in the SJVideoPlayerControlLayerDataSource protocol.
+ The data source is not retained.
+ 
+ 这个是关于控制层的数据源对象, 它必须实现 SJVideoPlayerControlLayerDataSource 协议里面定义的方法.
+ 
+ weak. readwrite.
+ */
+@property (nonatomic, weak, nullable) id <SJVideoPlayerControlLayerDataSource> controlLayerDataSource;
+
+/**
+ This is about the delegate object of the control layer.
+ Some interactive events of the player will call the method defined in SJVideoPlayerControlLayerDelegate.
+ The delegate is not retained.
+ 
+ 这个是关于控制层的代理对象, 播放器的一些交互事件会调用定义在 SJVideoPlayerControlLayerDelegate 中的方法.
+ 
+ weak. readwrite.
+ */
+@property (nonatomic, weak, nullable) id <SJVideoPlayerControlLayerDelegate> controlLayerDelegate;
 
 /**
  play state.
  
- If this value is changed, the delegate method will be called.  - (void)videoPlayer:(__kindof SJBaseVideoPlayer *)videoPlayer stateChanged:(SJVideoPlayerPlayState)state;
+ If this value is changed, the delegate method will be called.
+ - (void)videoPlayer:(__kindof SJBaseVideoPlayer *)videoPlayer stateChanged:(SJVideoPlayerPlayState)state;
+ 
+ 播放状态, 当状态发生改变时, 将会调用代理方法.
  
  readonly.
  */
 @property (nonatomic, readonly) SJVideoPlayerPlayState state;
 
+/**
+ The error when the video play failed, you can view the error details through this error.
+ 播放失败时的错误, 你可以通过这个error来查看报错详情.
+ 
+ readonly.
+ */
 @property (nonatomic, strong, readonly, nullable) NSError *error;
 
+
+/**
+ The placeholder image when loading video.
+ 加载视频时的占位图.
+ 
+ readwrite.
+ */
 @property (nonatomic, strong, nullable) UIImage *placeholder;
 
 /**
@@ -295,6 +353,27 @@ typedef NS_ENUM(NSInteger, SJNetworkStatus) {
 
 #pragma mark - 手势
 
+/**
+ 播放器的手势介绍:
+ base video player 默认会存在四种手势, Single Tap, double Tap, Pan, Pinch.
+ 
+ SingleTap
+ 单击手势
+ 当用户单击播放器时, 播放器会调用显示或隐藏控制层的相关代理方法. 见 `controlLayerDelegate`
+ 
+ DoubleTap
+ 双击手势
+ 双击会触发暂停或播放的操作
+ 
+ Pan
+ 移动手势
+ 当用户水平滑动时, 会触发控制层相应的代理方法. 见 `controlLayerDelegate`
+ 当用户垂直滑动时, 如果在屏幕左边, 则会触发调整亮度的操作, 并显示亮度提示视图. 如果在屏幕右边, 则会触发调整声音的操作, 并显示系统音量提示视图
+ 
+ Pinch
+ 捏合手势
+ 当用户做放大或收缩触发该手势时, 会设置播放器显示模式`Aspect`或`AspectFill`.
+ */
 @interface SJBaseVideoPlayer (GestureControl)
 
 @property (nonatomic, readwrite) SJDisablePlayerGestureTypes disableGestureTypes;
@@ -549,8 +628,8 @@ typedef NS_ENUM(NSInteger, SJNetworkStatus) {
 - (BOOL)controlLayerDisappearCondition;
 
 /**
- This method is called before the gesture is triggered. If NO is returned, the proxy method associated with the horizontal gesture is not called.
- 触发手势之前会调用这个方法, 如果返回NO, 将不调用水平手势相关的代理方法.
+ This method is called before the gesture is triggered. If NO is returned, will not trigger gestures.
+ 触发手势之前会调用这个方法, 如果返回NO, 将不会触发手势.
  */
 - (BOOL)triggerGesturesCondition:(CGPoint)location;
 

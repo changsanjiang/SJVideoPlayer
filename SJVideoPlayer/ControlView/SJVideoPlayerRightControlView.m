@@ -11,8 +11,7 @@
 #import <Masonry/Masonry.h>
 #import <SJUIFactory/SJUIFactory.h>
 
-#pragma clang diagnostic push
-#pragma clang diagnostic ignored "-Wimplicit-retain-self"
+
 @interface SJVideoPlayerRightControlView ()
 
 @property (nonatomic, strong, readonly) UIButton *editingBtn;
@@ -44,7 +43,7 @@
     [self addSubview:self.editingBtn];
     
     [_editingBtn mas_makeConstraints:^(MASConstraintMaker *make) {
-        make.edges.equalTo(_editingBtn.superview);
+        make.edges.equalTo(self->_editingBtn.superview);
     }];
 }
 
@@ -64,5 +63,3 @@
     }];
 }
 @end
-
-#pragma clang diagnostic pop

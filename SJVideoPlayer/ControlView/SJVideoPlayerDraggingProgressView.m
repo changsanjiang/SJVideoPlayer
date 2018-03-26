@@ -12,8 +12,7 @@
 #import <SJSlider/SJSlider.h>
 #import "UIView+SJVideoPlayerSetting.h"
 
-#pragma clang diagnostic push
-#pragma clang diagnostic ignored "-Wimplicit-retain-self"
+
 @interface SJVideoPlayerDraggingProgressView ()
 
 @property (nonatomic, strong, readonly) SJSlider *progressSlider;
@@ -87,7 +86,7 @@
             
             [_spritTimeLabel mas_remakeConstraints:^(MASConstraintMaker *make) {
                 make.centerX.offset(0);
-                make.top.equalTo(_progressSlider.mas_bottom);
+                make.top.equalTo(self->_progressSlider.mas_bottom);
                 make.bottom.offset(0);
             }];
         }
@@ -97,26 +96,26 @@
             _progressSlider.trackHeight = 2;
             [_directionImageView mas_remakeConstraints:^(MASConstraintMaker *make) {
                 make.width.offset(10.0 / 375 * SJScreen_W());
-                make.centerY.equalTo(_spritTimeLabel);
+                make.centerY.equalTo(self->_spritTimeLabel);
                 make.centerX.equalTo(self).multipliedBy(0.25);
             }];
             
             [_spritTimeLabel mas_remakeConstraints:^(MASConstraintMaker *make) {
                 make.centerX.offset(0);
                 make.top.offset(0);
-                make.bottom.equalTo(_previewImageView.mas_top);
+                make.bottom.equalTo(self->_previewImageView.mas_top);
             }];
             
             [_previewImageView mas_remakeConstraints:^(MASConstraintMaker *make) {
                 make.leading.offset(8);
                 make.bottom.trailing.offset(-8);
-                make.height.equalTo(_previewImageView.mas_width).multipliedBy(9.0 / 16);
+                make.height.equalTo(self->_previewImageView.mas_width).multipliedBy(9.0 / 16);
             }];
             
             [_progressSlider mas_remakeConstraints:^(MASConstraintMaker *make) {
-                make.width.equalTo(_durationTimeLabel).multipliedBy(2);
-                make.top.equalTo(_shiftTimeLabel.mas_bottom).offset(4);
-                make.centerX.equalTo(_spritTimeLabel);
+                make.width.equalTo(self->_durationTimeLabel).multipliedBy(2);
+                make.top.equalTo(self->_shiftTimeLabel.mas_bottom).offset(4);
+                make.centerX.equalTo(self->_spritTimeLabel);
                 make.height.offset(3);
             }];
         }
@@ -181,13 +180,13 @@
     self.style = SJVideoPlayerDraggingProgressViewStyleArrowProgress;
 
     [_shiftTimeLabel mas_makeConstraints:^(MASConstraintMaker *make) {
-        make.right.equalTo(_spritTimeLabel.mas_left);
-        make.centerY.equalTo(_spritTimeLabel);
+        make.right.equalTo(self->_spritTimeLabel.mas_left);
+        make.centerY.equalTo(self->_spritTimeLabel);
     }];
     
     [_durationTimeLabel mas_makeConstraints:^(MASConstraintMaker *make) {
-        make.left.equalTo(_spritTimeLabel.mas_right);
-        make.centerY.equalTo(_spritTimeLabel);
+        make.left.equalTo(self->_spritTimeLabel.mas_right);
+        make.centerY.equalTo(self->_spritTimeLabel);
     }];
 }
 
@@ -245,4 +244,3 @@
     }];
 }
 @end
-#pragma clang diagnostic pop

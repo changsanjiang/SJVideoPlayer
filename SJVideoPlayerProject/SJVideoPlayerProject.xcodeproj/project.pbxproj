@@ -745,7 +745,6 @@
 				774B25141FCEBA5D002113CC /* Sources */,
 				774B25151FCEBA5D002113CC /* Frameworks */,
 				774B25161FCEBA5D002113CC /* Resources */,
-				6F7E00D5C7982C2BBB189F4D /* [CP] Embed Pods Frameworks */,
 				6F020F0E59CA2CF7E5ABB436 /* [CP] Copy Pods Resources */,
 			);
 			buildRules = (
@@ -830,21 +829,6 @@
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
 			shellScript = "\"${SRCROOT}/Pods/Target Support Files/Pods-SJVideoPlayerProject/Pods-SJVideoPlayerProject-resources.sh\"\n";
-			showEnvVarsInLog = 0;
-		};
-		6F7E00D5C7982C2BBB189F4D /* [CP] Embed Pods Frameworks */ = {
-			isa = PBXShellScriptBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			inputPaths = (
-			);
-			name = "[CP] Embed Pods Frameworks";
-			outputPaths = (
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-			shellPath = /bin/sh;
-			shellScript = "\"${SRCROOT}/Pods/Target Support Files/Pods-SJVideoPlayerProject/Pods-SJVideoPlayerProject-frameworks.sh\"\n";
 			showEnvVarsInLog = 0;
 		};
 		D1ACB20B513A6404B95A0029 /* [CP] Check Pods Manifest.lock */ = {

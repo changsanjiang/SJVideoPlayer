@@ -12,8 +12,7 @@
 #import <SJUIFactory/SJUIFactory.h>
 #import "SJVideoPlayerMoreSetting+Exe.h"
 
-#pragma clang diagnostic push
-#pragma clang diagnostic ignored "-Wimplicit-retain-self"
+
 @interface SJVideoPlayerMoreSettingsColCell ()
 
 @property (nonatomic, strong, readonly) UIButton *itemBtn;
@@ -63,7 +62,7 @@
 - (void)_SJVideoPlayerMoreSettingsColCellSetupUI {
     [self.contentView addSubview:self.itemBtn];
     [_itemBtn mas_makeConstraints:^(MASConstraintMaker *make) {
-        make.edges.equalTo(_itemBtn.superview);
+        make.edges.equalTo(self->_itemBtn.superview);
     }];
 }
 
@@ -76,4 +75,3 @@
 }
 
 @end
-#pragma clang diagnostic pop

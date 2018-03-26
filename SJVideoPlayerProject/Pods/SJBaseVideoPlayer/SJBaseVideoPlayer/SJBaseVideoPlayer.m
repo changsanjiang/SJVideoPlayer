@@ -1218,7 +1218,7 @@ NS_ASSUME_NONNULL_END
     [self.asset.player pause];
     [self.view sj_fadeOutAndCompletion:^(UIView *view) {
         [self stop];
-        [_view removeFromSuperview];
+        [self->_view removeFromSuperview];
     }];
 }
 

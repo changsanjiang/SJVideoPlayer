@@ -113,7 +113,7 @@
     
     [_coverImageView mas_makeConstraints:^(MASConstraintMaker *make) {
         make.top.leading.trailing.offset(0);
-        make.height.equalTo(_coverImageView.mas_width).multipliedBy(9 / 16.0f);
+        make.height.equalTo(self->_coverImageView.mas_width).multipliedBy(9 / 16.0f);
     }];
     
     [_avatarImageView mas_makeConstraints:^(MASConstraintMaker *make) {
@@ -122,12 +122,12 @@
     }];
     
     [_nameLabel mas_makeConstraints:^(MASConstraintMaker *make) {
-        make.leading.equalTo(_avatarImageView.mas_trailing).offset(6);
-        make.centerY.equalTo(_avatarImageView);
+        make.leading.equalTo(self->_avatarImageView.mas_trailing).offset(6);
+        make.centerY.equalTo(self->_avatarImageView);
     }];
     
     [_attentionBtn mas_makeConstraints:^(MASConstraintMaker *make) {
-        make.centerY.equalTo(_avatarImageView);
+        make.centerY.equalTo(self->_avatarImageView);
         make.trailing.offset(-8);
         make.width.offset(50);
     }];
@@ -137,18 +137,18 @@
     }];
     
     [_createTimeLabel mas_makeConstraints:^(MASConstraintMaker *make) {
-        make.leading.equalTo(_avatarImageView);
-        make.bottom.equalTo(_coverImageView).offset(-8);
+        make.leading.equalTo(self->_avatarImageView);
+        make.bottom.equalTo(self->_coverImageView).offset(-8);
     }];
     
     [_contentContainerView mas_makeConstraints:^(MASConstraintMaker *make) {
-        make.top.equalTo(_coverImageView.mas_bottom);
+        make.top.equalTo(self->_coverImageView.mas_bottom);
         make.leading.bottom.trailing.offset(0);
     }];
     
     [_contentLabel mas_makeConstraints:^(MASConstraintMaker *make) {
         make.top.offset(0);
-        make.bottom.equalTo(_separatorLine.mas_top);
+        make.bottom.equalTo(self->_separatorLine.mas_top);
         make.leading.offset(12);
         make.trailing.offset(-12);
     }];

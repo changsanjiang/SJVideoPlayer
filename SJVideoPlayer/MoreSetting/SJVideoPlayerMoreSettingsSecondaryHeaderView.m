@@ -13,8 +13,7 @@
 #import "SJVideoPlayerMoreSettingSecondaryView.h"
 #import "SJVideoPlayerMoreSettingSecondary.h"
 
-#pragma clang diagnostic push
-#pragma clang diagnostic ignored "-Wimplicit-retain-self"
+
 @interface SJVideoPlayerMoreSettingsSecondaryHeaderView ()
 
 @property (nonatomic, strong, readonly) UIView *line;
@@ -51,7 +50,7 @@
     }];
     
     [_line mas_makeConstraints:^(MASConstraintMaker *make) {
-        make.leading.equalTo(_titleLabel);
+        make.leading.equalTo(self->_titleLabel);
         make.bottom.trailing.offset(0);
         make.height.offset(1);
     }];
@@ -72,4 +71,3 @@
 }
 
 @end
-#pragma clang diagnostic pop

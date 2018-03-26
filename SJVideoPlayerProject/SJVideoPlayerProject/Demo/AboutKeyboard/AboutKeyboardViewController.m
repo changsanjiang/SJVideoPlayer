@@ -42,7 +42,7 @@
     [_videoPlayer.view mas_makeConstraints:^(MASConstraintMaker *make) {
         make.top.offset(SJ_is_iPhoneX() ? 34 : 20);
         make.leading.trailing.offset(0);
-        make.height.equalTo(_videoPlayer.view.mas_width).multipliedBy(9 / 16.0f);
+        make.height.equalTo(self->_videoPlayer.view.mas_width).multipliedBy(9 / 16.0f);
     }];
     
     [_textView mas_makeConstraints:^(MASConstraintMaker *make) {

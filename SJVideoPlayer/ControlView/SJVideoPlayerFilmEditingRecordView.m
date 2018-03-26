@@ -15,8 +15,7 @@
 #import <SJAttributesFactory/SJAttributeWorker.h>
 #import <SJSlider/SJSlider.h>
 
-#pragma clang diagnostic push
-#pragma clang diagnostic ignored "-Wimplicit-retain-self"
+
 @interface SJVideoPlayerFilmEditingRecordView ()
 
 @property (nonatomic, strong, readonly) UIButton *cancelBtn;
@@ -157,7 +156,7 @@
         make.leading.offset(12);
         make.top.offset(12);
         make.height.offset(26);
-        make.width.equalTo(_cancelBtn.mas_height).multipliedBy(2.8);
+        make.width.equalTo(self->_cancelBtn.mas_height).multipliedBy(2.8);
     }];
     
     [_recrodBtn mas_makeConstraints:^(MASConstraintMaker *make) {
@@ -174,18 +173,18 @@
     
     [_progressLabel mas_makeConstraints:^(MASConstraintMaker *make) {
         make.leading.offset(24);
-        make.centerY.equalTo(_progressLabel.superview).multipliedBy(0.618);
+        make.centerY.equalTo(self->_progressLabel.superview).multipliedBy(0.618);
     }];
     
     [_tipsLabel mas_makeConstraints:^(MASConstraintMaker *make) {
         make.trailing.offset(-24);
-        make.centerY.equalTo(_progressLabel);
+        make.centerY.equalTo(self->_progressLabel);
     }];
     
     [_progressSlider mas_makeConstraints:^(MASConstraintMaker *make) {
         make.leading.offset(24);
         make.trailing.offset(-24);
-        make.centerY.equalTo(_progressSlider.superview).multipliedBy(1.382);
+        make.centerY.equalTo(self->_progressSlider.superview).multipliedBy(1.382);
     }];
     
     self.tipsText = @"点击右侧按钮完成录制";
@@ -269,4 +268,3 @@
 }
 
 @end
-#pragma clang diagnostic pop

@@ -28,7 +28,7 @@ NS_ASSUME_NONNULL_BEGIN
      }
  
  */
-@interface YYTextRubyAnnotation : NSObject <NSCopying, NSCoding>
+NS_CLASS_AVAILABLE_IOS(8_0) @interface YYTextRubyAnnotation : NSObject <NSCopying, NSCoding>
 
 /// Specifies how the ruby text and the base text should be aligned relative to each other.
 @property (nonatomic) CTRubyAlignment alignment;

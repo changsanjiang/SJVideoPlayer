@@ -39,7 +39,7 @@
         make.centerX.offset(0);
         make.top.offset(8);
         make.bottom.offset(-8);
-        make.width.equalTo(_backgroundImageView.mas_height).multipliedBy(16.0 / 9);
+        make.width.equalTo(self->_backgroundImageView.mas_height).multipliedBy(16.0 / 9);
     }];
     
     [_playImageView mas_makeConstraints:^(MASConstraintMaker *make) {

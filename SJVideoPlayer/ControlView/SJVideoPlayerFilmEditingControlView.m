@@ -17,8 +17,7 @@
 #import <SJObserverHelper/NSObject+SJObserverHelper.h>
 
 NS_ASSUME_NONNULL_BEGIN
-#pragma clang diagnostic push
-#pragma clang diagnostic ignored "-Wimplicit-retain-self"
+
 @interface SJVideoPlayerFilmEditingControlView ()
 
 @property (nonatomic, strong, readonly) UIButton *screenshotBtn;
@@ -223,8 +222,8 @@ NS_ASSUME_NONNULL_END
     }];
     
     [_exportBtn mas_makeConstraints:^(MASConstraintMaker *make) {
-        make.trailing.equalTo(_screenshotBtn);
-        make.size.equalTo(_screenshotBtn);
+        make.trailing.equalTo(self->_screenshotBtn);
+        make.size.equalTo(self->_screenshotBtn);
         make.top.equalTo(self.mas_centerY);
     }];
     
@@ -276,4 +275,3 @@ NS_ASSUME_NONNULL_END
     return _recordView;
 }
 @end
-#pragma clang diagnostic pop

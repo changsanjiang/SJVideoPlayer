@@ -58,3 +58,10 @@ ___
     b_slider.titleColor = [UIColor whiteColor];
     [self.view addSubview:b_slider];
 ```
+___
+
+## Contact
+* Email: changsanjiang@gmail.com
+* QQ: 1779609779
+* QQGroup: 719616775 
+<img src="https://github.com/changsanjiang/SJVideoPlayer/blob/master/SJVideoPlayerProject/SJVideoPlayerProject/Group.jpeg" width="200"  />

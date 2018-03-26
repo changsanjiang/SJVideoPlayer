@@ -15,8 +15,7 @@
 #import <objc/message.h>
 
 NS_ASSUME_NONNULL_BEGIN
-#pragma clang diagnostic push
-#pragma clang diagnostic ignored "-Wimplicit-retain-self"
+
 
 @interface SJLightweightTopTmp : NSObject
 
@@ -160,16 +159,16 @@ NS_ASSUME_NONNULL_BEGIN
     if ( _isFullscreen || !self.model.isPlayOnScrollView ) {
         _backBtn.hidden = NO;
         [_titleLabel mas_remakeConstraints:^(MASConstraintMaker *make) {
-            make.leading.equalTo(_backBtn.mas_trailing);
-            make.centerY.equalTo(_backBtn);
-            make.trailing.equalTo(_itemsContainerView.mas_leading);
+            make.leading.equalTo(self->_backBtn.mas_trailing);
+            make.centerY.equalTo(self->_backBtn);
+            make.trailing.equalTo(self->_itemsContainerView.mas_leading);
         }];
     }
     else {
         _backBtn.hidden = YES;
         [_titleLabel mas_remakeConstraints:^(MASConstraintMaker *make) {
             make.leading.offset(16);
-            make.centerY.equalTo(_backBtn);
+            make.centerY.equalTo(self->_backBtn);
             make.trailing.offset(-16);
         }];
     }
@@ -192,9 +191,9 @@ NS_ASSUME_NONNULL_BEGIN
     }];
     
     [_titleLabel mas_makeConstraints:^(MASConstraintMaker *make) {
-        make.leading.equalTo(_backBtn.mas_trailing);
-        make.centerY.equalTo(_backBtn);
-        make.trailing.equalTo(_itemsContainerView.mas_leading);
+        make.leading.equalTo(self->_backBtn.mas_trailing);
+        make.centerY.equalTo(self->_backBtn);
+        make.trailing.equalTo(self->_itemsContainerView.mas_leading);
     }];
     
     [_itemsContainerView mas_makeConstraints:^(MASConstraintMaker *make) {
@@ -244,5 +243,4 @@ NS_ASSUME_NONNULL_BEGIN
 
 @implementation SJLightweightTopControlModel
 @end
-#pragma clang diagnostic pop
 NS_ASSUME_NONNULL_END

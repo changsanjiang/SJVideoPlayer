@@ -33,20 +33,23 @@
 }
 
 - (void)audioSessionRouteChangeNotification:(NSNotification*)notifi {
+    __weak typeof(self) _self = self;
     dispatch_async(dispatch_get_main_queue(), ^{
+        __strong typeof(_self) self = _self;
+        if ( !self ) return;
         NSDictionary *interuptionDict = notifi.userInfo;
         NSInteger routeChangeReason = [[interuptionDict valueForKey:AVAudioSessionRouteChangeReasonKey] integerValue];
         switch (routeChangeReason) {
             case AVAudioSessionRouteChangeReasonNewDeviceAvailable: {
-                if ( _newDeviceAvailable ) _newDeviceAvailable(self);
+                if ( self.newDeviceAvailable ) self.newDeviceAvailable(self);
             }
                 break;
             case AVAudioSessionRouteChangeReasonOldDeviceUnavailable: {
-                if ( _oldDeviceUnavailable ) _oldDeviceUnavailable(self);
+                if ( self.oldDeviceUnavailable ) self.oldDeviceUnavailable(self);
             }
                 break;
             case AVAudioSessionRouteChangeReasonCategoryChange: {
-                if ( _categoryChange ) _categoryChange(self);
+                if ( self.categoryChange ) self.categoryChange(self);
             }
                 break;
         }

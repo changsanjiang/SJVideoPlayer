@@ -10,8 +10,7 @@
 #import <SJUIFactory/SJUIFactory.h>
 #import <Masonry/Masonry.h>
 
-#pragma clang diagnostic push
-#pragma clang diagnostic ignored "-Wimplicit-retain-self"
+
 
 static NSString *SJVideoPlayerPreviewCollectionViewCellID = @"SJVideoPlayerPreviewCollectionViewCell";
 
@@ -52,7 +51,7 @@ static NSString *SJVideoPlayerPreviewCollectionViewCellID = @"SJVideoPlayerPrevi
 - (void)_previewSetupView {
     [self addSubview:self.collectionView];
     [_collectionView mas_makeConstraints:^(MASConstraintMaker *make) {
-        make.edges.equalTo(_collectionView.superview);
+        make.edges.equalTo(self->_collectionView.superview);
     }];
 }
 
@@ -98,4 +97,3 @@ static NSString *SJVideoPlayerPreviewCollectionViewCellID = @"SJVideoPlayerPrevi
 }
 
 @end
-#pragma clang diagnostic pop

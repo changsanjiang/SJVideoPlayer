@@ -69,9 +69,9 @@
     // title label layout
     self.title = self.model.title;
     [_titleLabel mas_remakeConstraints:^(MASConstraintMaker *make) {
-        make.leading.equalTo(_backBtn.mas_trailing);
-        make.centerY.equalTo(_backBtn);
-        make.trailing.equalTo(_previewBtn.mas_leading);
+        make.leading.equalTo(self->_backBtn.mas_trailing);
+        make.centerY.equalTo(self->_backBtn);
+        make.trailing.equalTo(self->_previewBtn.mas_leading);
     }];
     
     // preview btn
@@ -89,9 +89,9 @@
         if ( self.model.alwaysShowTitle ) {
             // title label layout
             [_titleLabel mas_remakeConstraints:^(MASConstraintMaker *make) {
-                make.leading.equalTo(_backBtn.mas_centerX).offset(-8);
-                make.centerY.equalTo(_backBtn);
-                make.trailing.equalTo(_moreBtn.mas_centerX).offset(8);
+                make.leading.equalTo(self->_backBtn.mas_centerX).offset(-8);
+                make.centerY.equalTo(self->_backBtn);
+                make.trailing.equalTo(self->_moreBtn.mas_centerX).offset(8);
             }];
         }
     }
@@ -99,9 +99,9 @@
         _backBtn.hidden = NO;
         
         [_titleLabel mas_remakeConstraints:^(MASConstraintMaker *make) {
-            make.leading.equalTo(_backBtn.mas_trailing);
-            make.centerY.equalTo(_backBtn);
-            make.trailing.equalTo(_moreBtn.mas_centerX).offset(8);
+            make.leading.equalTo(self->_backBtn.mas_trailing);
+            make.centerY.equalTo(self->_backBtn);
+            make.trailing.equalTo(self->_moreBtn.mas_centerX).offset(8);
         }];
     }
     
@@ -144,19 +144,19 @@
     }];
     
     [_previewBtn mas_makeConstraints:^(MASConstraintMaker *make) {
-        make.size.bottom.equalTo(_backBtn);
-        make.trailing.equalTo(_moreBtn.mas_leading).offset(-8);
+        make.size.bottom.equalTo(self->_backBtn);
+        make.trailing.equalTo(self->_moreBtn.mas_leading).offset(-8);
     }];
     
     [_moreBtn mas_makeConstraints:^(MASConstraintMaker *make) {
-        make.size.bottom.equalTo(_backBtn);
+        make.size.bottom.equalTo(self->_backBtn);
         make.trailing.offset(-8);
     }];
     
     [_titleLabel mas_makeConstraints:^(MASConstraintMaker *make) {
-        make.leading.equalTo(_backBtn.mas_trailing);
-        make.centerY.equalTo(_backBtn);
-        make.trailing.equalTo(_previewBtn.mas_leading);
+        make.leading.equalTo(self->_backBtn.mas_trailing);
+        make.centerY.equalTo(self->_backBtn);
+        make.trailing.equalTo(self->_previewBtn.mas_leading);
     }];
     
     self.moreBtn.hidden = self.previewBtn.hidden = YES;

@@ -66,11 +66,11 @@ NS_ASSUME_NONNULL_END
         switch ( playState ) {
             case SJVideoPlayerPlayState_Unknown:
             case SJVideoPlayerPlayState_Prepare: {
-                _placeholderImageView.alpha = 1;
+                self->_placeholderImageView.alpha = 1;
             }
                 break;
             case SJVideoPlayerPlayState_Playing: {
-                _placeholderImageView.alpha = 0.001;
+                self->_placeholderImageView.alpha = 0.001;
             }
                 break;
             case SJVideoPlayerPlayState_Buffing:

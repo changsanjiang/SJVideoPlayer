@@ -224,7 +224,7 @@ NS_ASSUME_NONNULL_END
         _player.automaticallyWaitsToMinimizeStalling = YES;
     }
     dispatch_async(dispatch_get_main_queue(), ^{
-        _loadedPlayer = YES;
+        self->_loadedPlayer = YES;
         if ( self.loadedPlayerExeBlock ) self.loadedPlayerExeBlock(self);
     });
 }
@@ -297,13 +297,13 @@ NS_ASSUME_NONNULL_END
                 case UIGestureRecognizerStateChanged: break;
                 case UIGestureRecognizerStatePossible: break;
                 case UIGestureRecognizerStateBegan: {
-                    if ( _touchedScrollView ) _touchedScrollView(self, YES);
+                    if ( self->_touchedScrollView ) self->_touchedScrollView(self, YES);
                 }
                     break;
                 case UIGestureRecognizerStateEnded:
                 case UIGestureRecognizerStateFailed:
                 case UIGestureRecognizerStateCancelled: {
-                    if ( _touchedScrollView ) _touchedScrollView(self, NO);
+                    if ( self->_touchedScrollView ) self->_touchedScrollView(self, NO);
                 }
                     break;
             }
@@ -311,17 +311,17 @@ NS_ASSUME_NONNULL_END
         else if ( [keyPath isEqualToString:@"loadedTimeRanges"] ) {
             if ( 0 == self.duration ) return;
             float progress = [self _loadedTimeSecs] / self.duration;
-            _loadedTimeProgressValue = progress;
+            self->_loadedTimeProgressValue = progress;
             if ( self.loadedTimeProgress ) self.loadedTimeProgress(progress);
         }
         else if ( [keyPath isEqualToString:@"status"] ) {
-            if ( !_jumped &&
+            if ( !self->_jumped &&
                 AVPlayerItemStatusReadyToPlay == self.playerItem.status &&
                 0 != self.beginTime ) {
                 // begin time
-                if ( _beginTime > self.duration ) return ;
+                if ( self->_beginTime > self.duration ) return ;
                 __weak typeof(self) _self = self;
-                [self jumpedToTime:_beginTime completionHandler:^(BOOL finished) {
+                [self jumpedToTime:self->_beginTime completionHandler:^(BOOL finished) {
                     __strong typeof(_self) self = _self;
                     if ( !self ) return;
                     self.jumped = YES;
@@ -335,7 +335,7 @@ NS_ASSUME_NONNULL_END
             }
         }
         else if ( [keyPath isEqualToString:@"duration"] ) {
-            _duration = CMTimeGetSeconds(_playerItem.duration);
+            self->_duration = CMTimeGetSeconds(self->_playerItem.duration);
         }
         else if ( [keyPath isEqualToString:@"playbackBufferEmpty"] ) {
             [self _itemPlaybackBufferEmptyStateChanged];
@@ -797,30 +797,30 @@ NS_ASSUME_NONNULL_END
 - (void)convertToOriginal {
     if ( !_converted ) return;
     [self _convertingWithBlock:^{
-        _viewHierarchyStack = _ectype.viewHierarchyStack;
-        _indexPath = _ectype.indexPath;
-        _superviewTag = _ectype.superviewTag;
-        _scrollView = _ectype.scrollView;
-        _scrollViewTag = _ectype.scrollViewTag;
-        _scrollViewIndexPath = _ectype.scrollViewIndexPath;
-        _rootScrollView = _ectype.rootScrollView;
-        _tableHeaderSubView = _ectype.tableHeaderSubView;
-        _scrollIn_bool = _ectype.scrollIn_bool;
-        _parent_scrollIn_bool = _ectype.parent_scrollIn_bool;
+        self->_viewHierarchyStack = self->_ectype.viewHierarchyStack;
+        self->_indexPath = self->_ectype.indexPath;
+        self->_superviewTag = self->_ectype.superviewTag;
+        self->_scrollView = self->_ectype.scrollView;
+        self->_scrollViewTag = self->_ectype.scrollViewTag;
+        self->_scrollViewIndexPath = self->_ectype.scrollViewIndexPath;
+        self->_rootScrollView = self->_ectype.rootScrollView;
+        self->_tableHeaderSubView = self->_ectype.tableHeaderSubView;
+        self->_scrollIn_bool = self->_ectype.scrollIn_bool;
+        self->_parent_scrollIn_bool = self->_ectype.parent_scrollIn_bool;
         
-        _playerItemStateChanged = _ectype.playerItemStateChanged;
-        _playTimeChanged = _ectype.playTimeChanged;
-        _playDidToEnd = _ectype.playDidToEnd;
-        _loadedTimeProgress = _ectype.loadedTimeProgress;
-        _startBuffering = _ectype.startBuffering;
-        _completeBuffer = _ectype.completeBuffer;
-        _cancelledBuffer = _ectype.cancelledBuffer;
-        _touchedScrollView = _ectype.touchedScrollView;
-        _scrollViewDidScroll = _ectype.scrollViewDidScroll;
-        _presentationSize = _ectype.presentationSize;
-        _scrollIn = _ectype.scrollIn;
-        _scrollOut = _ectype.scrollOut;
-        _rateChanged = _ectype.rateChanged;
+        self->_playerItemStateChanged = self->_ectype.playerItemStateChanged;
+        self->_playTimeChanged = self->_ectype.playTimeChanged;
+        self->_playDidToEnd = self->_ectype.playDidToEnd;
+        self->_loadedTimeProgress = self->_ectype.loadedTimeProgress;
+        self->_startBuffering = self->_ectype.startBuffering;
+        self->_completeBuffer = self->_ectype.completeBuffer;
+        self->_cancelledBuffer = self->_ectype.cancelledBuffer;
+        self->_touchedScrollView = self->_ectype.touchedScrollView;
+        self->_scrollViewDidScroll = self->_ectype.scrollViewDidScroll;
+        self->_presentationSize = self->_ectype.presentationSize;
+        self->_scrollIn = self->_ectype.scrollIn;
+        self->_scrollOut = self->_ectype.scrollOut;
+        self->_rateChanged = self->_ectype.rateChanged;
     }];
     _converted = NO;
     if ( _convertToOriginalExeBlock ) _convertToOriginalExeBlock(self);
@@ -828,31 +828,31 @@ NS_ASSUME_NONNULL_END
 
 - (void)_clearUIKit {
     if ( !_ectype ) {
-        _ectype = [SJAssetUIKitEctype new];
-        _ectype.viewHierarchyStack = _viewHierarchyStack;
-        _ectype.indexPath = _indexPath;
-        _ectype.superviewTag = _superviewTag;
-        _ectype.scrollView = _scrollView;
-        _ectype.scrollViewTag = _scrollViewTag;
-        _ectype.scrollViewIndexPath = _scrollViewIndexPath;
-        _ectype.rootScrollView = _rootScrollView;
-        _ectype.tableHeaderSubView = _tableHeaderSubView;
-        _ectype.scrollIn_bool = _scrollIn_bool;
-        _ectype.parent_scrollIn_bool = _parent_scrollIn_bool;
+        self->_ectype = [SJAssetUIKitEctype new];
+        self->_ectype.viewHierarchyStack = _viewHierarchyStack;
+        self->_ectype.indexPath = _indexPath;
+        self->_ectype.superviewTag = _superviewTag;
+        self->_ectype.scrollView = _scrollView;
+        self->_ectype.scrollViewTag = _scrollViewTag;
+        self->_ectype.scrollViewIndexPath = _scrollViewIndexPath;
+        self->_ectype.rootScrollView = _rootScrollView;
+        self->_ectype.tableHeaderSubView = _tableHeaderSubView;
+        self->_ectype.scrollIn_bool = _scrollIn_bool;
+        self->_ectype.parent_scrollIn_bool = _parent_scrollIn_bool;
         
-        _ectype.playerItemStateChanged = _playerItemStateChanged;
-        _ectype.playTimeChanged = _playTimeChanged;
-        _ectype.playDidToEnd = _playDidToEnd;
-        _ectype.loadedTimeProgress = _loadedTimeProgress;
-        _ectype.startBuffering = _startBuffering;
-        _ectype.completeBuffer = _completeBuffer;
-        _ectype.cancelledBuffer = _cancelledBuffer;
-        _ectype.touchedScrollView = _touchedScrollView;
-        _ectype.scrollViewDidScroll = _scrollViewDidScroll;
-        _ectype.presentationSize = _presentationSize;
-        _ectype.scrollIn = _scrollIn;
-        _ectype.scrollOut = _scrollOut;
-        _ectype.rateChanged = _rateChanged;
+        self->_ectype.playerItemStateChanged = _playerItemStateChanged;
+        self->_ectype.playTimeChanged = _playTimeChanged;
+        self->_ectype.playDidToEnd = _playDidToEnd;
+        self->_ectype.loadedTimeProgress = _loadedTimeProgress;
+        self->_ectype.startBuffering = _startBuffering;
+        self->_ectype.completeBuffer = _completeBuffer;
+        self->_ectype.cancelledBuffer = _cancelledBuffer;
+        self->_ectype.touchedScrollView = _touchedScrollView;
+        self->_ectype.scrollViewDidScroll = _scrollViewDidScroll;
+        self->_ectype.presentationSize = _presentationSize;
+        self->_ectype.scrollIn = _scrollIn;
+        self->_ectype.scrollOut = _scrollOut;
+        self->_ectype.rateChanged = _rateChanged;
     }
     
     _indexPath = nil;
@@ -868,7 +868,7 @@ NS_ASSUME_NONNULL_END
 
 - (void)convertToUIView {
     [self _convertingWithBlock:^{
-        _viewHierarchyStack = SJViewHierarchyStack_View;
+        self->_viewHierarchyStack = SJViewHierarchyStack_View;
     }];
 }
 
@@ -876,19 +876,19 @@ NS_ASSUME_NONNULL_END
                                      indexPath:(NSIndexPath *)indexPath
                             playerSuperviewTag:(NSInteger)superviewTag {
     [self _convertingWithBlock:^{
-        _indexPath = indexPath;
-        _superviewTag = superviewTag;
-        _scrollView = tableOrCollectionView;
-        _viewHierarchyStack = SJViewHierarchyStack_ScrollView;
+        self->_indexPath = indexPath;
+        self->_superviewTag = superviewTag;
+        self->_scrollView = tableOrCollectionView;
+        self->_viewHierarchyStack = SJViewHierarchyStack_ScrollView;
     }];
 }
 
 - (void)convertToTableHeaderViewWithPlayerSuperView:(__weak UIView *)superView
                                           tableView:(__unsafe_unretained UITableView *)tableView {
     [self _convertingWithBlock:^{
-        _tableHeaderSubView = superView;
-        _scrollView = tableView;
-        _viewHierarchyStack = SJViewHierarchyStack_TableHeaderView;
+        self->_tableHeaderSubView = superView;
+        self->_scrollView = tableView;
+        self->_viewHierarchyStack = SJViewHierarchyStack_TableHeaderView;
     }];
 }
 
@@ -897,11 +897,11 @@ NS_ASSUME_NONNULL_END
                                 playerSuperViewTag:(NSInteger)playerSuperViewTag
                                      rootTableView:(__unsafe_unretained UITableView *)rootTableView {
     [self _convertingWithBlock:^{
-        _scrollView = collectionView;
-        _indexPath = indexPath;
-        _superviewTag = playerSuperViewTag;
-        _rootScrollView = rootTableView;
-        _viewHierarchyStack = SJViewHierarchyStack_NestedInTableHeaderView;
+        self->_scrollView = collectionView;
+        self->_indexPath = indexPath;
+        self->_superviewTag = playerSuperViewTag;
+        self->_rootScrollView = rootTableView;
+        self->_viewHierarchyStack = SJViewHierarchyStack_NestedInTableHeaderView;
     }];
 }
 
@@ -911,12 +911,12 @@ NS_ASSUME_NONNULL_END
                  collectionViewTag:(NSInteger)collectionViewTag
                      rootTableView:(__unsafe_unretained UITableView *)rootTableView {
     [self _convertingWithBlock:^{
-        _indexPath = indexPath;
-        _superviewTag = superviewTag;
-        _scrollView = [[rootTableView cellForRowAtIndexPath:collectionViewIndexPath] viewWithTag:collectionViewTag];
-        _scrollViewTag = collectionViewTag;
-        _rootScrollView = rootTableView;
-        _viewHierarchyStack = SJViewHierarchyStack_NestedInTableView;
+        self->_indexPath = indexPath;
+        self->_superviewTag = superviewTag;
+        self->_scrollView = [[rootTableView cellForRowAtIndexPath:collectionViewIndexPath] viewWithTag:collectionViewTag];
+        self->_scrollViewTag = collectionViewTag;
+        self->_rootScrollView = rootTableView;
+        self->_viewHierarchyStack = SJViewHierarchyStack_NestedInTableView;
     }];
 }
 

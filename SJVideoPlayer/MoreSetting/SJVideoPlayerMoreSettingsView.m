@@ -13,8 +13,7 @@
 #import <SJUIFactory/SJUIFactory.h>
 #import "SJVideoPlayerMoreSettingsFooterView.h"
 
-#pragma clang diagnostic push
-#pragma clang diagnostic ignored "-Wimplicit-retain-self"
+
 
 static NSString *const SJVideoPlayerMoreSettingsColCellID = @"SJVideoPlayerMoreSettingsColCell";
 
@@ -62,7 +61,7 @@ static NSString *const SJVideoPlayerMoreSettingsFooterViewID = @"SJVideoPlayerMo
 - (void)_moreSettingsViewSetupUI {
     [self addSubview:self.colView];
     [_colView mas_makeConstraints:^(MASConstraintMaker *make) {
-        make.edges.equalTo(_colView.superview);
+        make.edges.equalTo(self->_colView.superview);
     }];
     
     [self slidersView];
@@ -130,4 +129,3 @@ static NSString *const SJVideoPlayerMoreSettingsFooterViewID = @"SJVideoPlayerMo
     }];
 }
 @end
-#pragma clang diagnostic pop

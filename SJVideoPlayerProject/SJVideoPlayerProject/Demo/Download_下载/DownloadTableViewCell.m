@@ -92,7 +92,7 @@
     [_coverImageView mas_makeConstraints:^(MASConstraintMaker *make) {
         make.top.leading.offset(8);
         make.width.offset(150 * 375 / SJScreen_Min());
-        make.height.equalTo(_coverImageView.mas_width).multipliedBy(9 / 16.0f);
+        make.height.equalTo(self->_coverImageView.mas_width).multipliedBy(9 / 16.0f);
     }];
     
     [_playBtn mas_makeConstraints:^(MASConstraintMaker *make) {
@@ -100,37 +100,37 @@
     }];
     
     [_titleLabel mas_makeConstraints:^(MASConstraintMaker *make) {
-        make.top.equalTo(_coverImageView);
-        make.leading.equalTo(_coverImageView.mas_trailing).offset(8);
+        make.top.equalTo(self->_coverImageView);
+        make.leading.equalTo(self->_coverImageView.mas_trailing).offset(8);
         make.trailing.offset(-8);
     }];
     
     [_progressLabel mas_makeConstraints:^(MASConstraintMaker *make) {
-        make.leading.equalTo(_coverImageView);
-        make.top.equalTo(_coverImageView.mas_bottom).offset(8);
+        make.leading.equalTo(self->_coverImageView);
+        make.top.equalTo(self->_coverImageView.mas_bottom).offset(8);
     }];
     
     [_statusLabel mas_makeConstraints:^(MASConstraintMaker *make) {
-        make.top.equalTo(_progressLabel.mas_bottom).offset(8);
-        make.leading.equalTo(_progressLabel);
+        make.top.equalTo(self->_progressLabel.mas_bottom).offset(8);
+        make.leading.equalTo(self->_progressLabel);
         make.bottom.offset(-8);
     }];
     
     [_line mas_makeConstraints:^(MASConstraintMaker *make) {
-        make.top.equalTo(_statusLabel.mas_bottom).offset(8);
-        make.leading.equalTo(_statusLabel);
+        make.top.equalTo(self->_statusLabel.mas_bottom).offset(8);
+        make.leading.equalTo(self->_statusLabel);
         make.trailing.offset(-8);
         make.height.offset(0.6);
     }];
     
     [_downloadBtn mas_makeConstraints:^(MASConstraintMaker *make) {
-        make.trailing.equalTo(_pauseBtn.mas_leading).offset(-8);
-        make.bottom.equalTo(_pauseBtn);
+        make.trailing.equalTo(self->_pauseBtn.mas_leading).offset(-8);
+        make.bottom.equalTo(self->_pauseBtn);
     }];
     
     [_pauseBtn mas_makeConstraints:^(MASConstraintMaker *make) {
-        make.trailing.equalTo(_cancelBtn.mas_leading).offset(-8);
-        make.bottom.equalTo(_cancelBtn);
+        make.trailing.equalTo(self->_cancelBtn.mas_leading).offset(-8);
+        make.bottom.equalTo(self->_cancelBtn);
     }];
     
     [_cancelBtn mas_makeConstraints:^(MASConstraintMaker *make) {

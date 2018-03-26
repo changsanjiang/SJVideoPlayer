@@ -185,8 +185,8 @@
 
 - (void)_doBlink {
     [UIView animateWithDuration:kBlinkFadeDuration delay:0 options:UIViewAnimationOptionCurveEaseInOut animations: ^{
-        if (_caretView.alpha == 1) _caretView.alpha = 0;
-        else _caretView.alpha = 1;
+        if (self->_caretView.alpha == 1) self->_caretView.alpha = 0;
+        else self->_caretView.alpha = 1;
     } completion:NULL];
 }
 

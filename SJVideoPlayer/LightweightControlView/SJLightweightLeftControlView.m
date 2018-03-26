@@ -11,8 +11,7 @@
 #import <Masonry/Masonry.h>
 #import <SJUIFactory/SJUIFactory.h>
 
-#pragma clang diagnostic push
-#pragma clang diagnostic ignored "-Wimplicit-retain-self"
+
 
 @interface SJLightweightLeftControlView ()
 
@@ -63,11 +62,11 @@
     [self addSubview:self.unlockBtn];
     
     [_lockBtn mas_makeConstraints:^(MASConstraintMaker *make) {
-        make.edges.equalTo(_lockBtn.superview);
+        make.edges.equalTo(self->_lockBtn.superview);
     }];
     
     [_unlockBtn mas_makeConstraints:^(MASConstraintMaker *make) {
-        make.edges.equalTo(_unlockBtn.superview);
+        make.edges.equalTo(self->_unlockBtn.superview);
     }];
 }
 
@@ -94,4 +93,3 @@
     }];
 }
 @end
-#pragma clang diagnostic pop

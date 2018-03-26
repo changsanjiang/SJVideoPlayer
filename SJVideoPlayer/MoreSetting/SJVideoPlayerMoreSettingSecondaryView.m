@@ -13,8 +13,7 @@
 #import <SJUIFactory/SJUIFactory.h>
 #import "UIView+SJVideoPlayerSetting.h"
 
-#pragma clang diagnostic push
-#pragma clang diagnostic ignored "-Wimplicit-retain-self"
+
 @interface SJVideoPlayerMoreSettingSecondaryView (ColDataSourceMethods)<UICollectionViewDataSource>
 @end
 
@@ -57,7 +56,7 @@ static NSString *const SJVideoPlayerMoreSettingsSecondaryHeaderViewID = @"SJVide
 - (void)_secondarySettingSetupUI {
     [self addSubview:self.colView];
     [_colView mas_makeConstraints:^(MASConstraintMaker *make) {
-        make.edges.equalTo(_colView.superview);
+        make.edges.equalTo(self->_colView.superview);
     }];
 }
 
@@ -127,4 +126,3 @@ static NSString *const SJVideoPlayerMoreSettingsSecondaryHeaderViewID = @"SJVide
     return UIEdgeInsetsMake(0, 0, 0, 0);
 }
 @end
-#pragma clang diagnostic pop

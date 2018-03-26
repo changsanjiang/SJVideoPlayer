@@ -113,38 +113,38 @@
     }];
     
     [_nameLabel mas_makeConstraints:^(MASConstraintMaker *make) {
-        make.leading.equalTo(_avatarImageView.mas_trailing).offset(8);
-        make.bottom.equalTo(_avatarImageView.mas_centerY);
-        make.trailing.equalTo(_attentionBtn.mas_leading).offset(-8);
+        make.leading.equalTo(self->_avatarImageView.mas_trailing).offset(8);
+        make.bottom.equalTo(self->_avatarImageView.mas_centerY);
+        make.trailing.equalTo(self->_attentionBtn.mas_leading).offset(-8);
     }];
     
     [_createTimeLabel mas_makeConstraints:^(MASConstraintMaker *make) {
-        make.leading.trailing.equalTo(_nameLabel);
-        make.bottom.equalTo(_avatarImageView);
+        make.leading.trailing.equalTo(self->_nameLabel);
+        make.bottom.equalTo(self->_avatarImageView);
     }];
     
     [_attentionBtn mas_makeConstraints:^(MASConstraintMaker *make) {
         make.trailing.offset(-12);
-        make.centerY.equalTo(_avatarImageView);
+        make.centerY.equalTo(self->_avatarImageView);
         make.width.offset(60);
     }];
     
     [SJUIFactory boundaryProtectedWithView:_attentionBtn];
     
     [_contentLabel mas_makeConstraints:^(MASConstraintMaker *make) {
-        make.top.equalTo(_avatarImageView.mas_bottom).offset(8);
-        make.leading.equalTo(_avatarImageView);
-        make.trailing.equalTo(_attentionBtn);
+        make.top.equalTo(self->_avatarImageView.mas_bottom).offset(8);
+        make.leading.equalTo(self->_avatarImageView);
+        make.trailing.equalTo(self->_attentionBtn);
     }];
     
     [_coverImageView mas_makeConstraints:^(MASConstraintMaker *make) {
-        make.top.equalTo(_contentLabel.mas_bottom).offset(8);
+        make.top.equalTo(self->_contentLabel.mas_bottom).offset(8);
         make.leading.trailing.offset(0);
-        make.height.equalTo(_coverImageView.mas_width).multipliedBy(9.0f / 16);
+        make.height.equalTo(self->_coverImageView.mas_width).multipliedBy(9.0f / 16);
     }];
     
     [_playImageView mas_makeConstraints:^(MASConstraintMaker *make) {
-        make.center.equalTo(_coverImageView);
+        make.center.equalTo(self->_coverImageView);
     }];
     
     [_separatorLine mas_makeConstraints:^(MASConstraintMaker *make) {

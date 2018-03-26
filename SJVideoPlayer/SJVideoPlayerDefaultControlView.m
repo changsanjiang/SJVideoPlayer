@@ -36,8 +36,7 @@
 #pragma mark -
 
 NS_ASSUME_NONNULL_BEGIN
-#pragma clang diagnostic push
-#pragma clang diagnostic ignored "-Wimplicit-retain-self"
+
 #pragma mark -
 @interface SJVideoPlayerDefaultControlView ()<SJVideoPlayerLeftControlViewDelegate, SJVideoPlayerBottomControlViewDelegate, SJVideoPlayerTopControlViewDelegate, SJVideoPlayerPreviewViewDelegate, SJVideoPlayerCenterControlViewDelegate, SJVideoPlayerRightControlViewDelegate> {
     SJTimerControl *_lockStateTappedTimerControl;
@@ -154,7 +153,7 @@ NS_ASSUME_NONNULL_END
     
     [_topControlMaskView mas_makeConstraints:^(MASConstraintMaker *make) {
         make.top.leading.trailing.offset(0);
-        make.height.equalTo(_topControlView);
+        make.height.equalTo(self->_topControlView);
     }];
     
     [_topControlView mas_makeConstraints:^(MASConstraintMaker *make) {
@@ -176,7 +175,7 @@ NS_ASSUME_NONNULL_END
     
     [_bottomControlMaskView mas_makeConstraints:^(MASConstraintMaker *make) {
         make.leading.bottom.trailing.offset(0);
-        make.height.equalTo(_bottomControlView);
+        make.height.equalTo(self->_bottomControlView);
     }];
     
     [_bottomControlView mas_makeConstraints:^(MASConstraintMaker *make) {
@@ -193,7 +192,7 @@ NS_ASSUME_NONNULL_END
     }];
     
     [_previewView mas_makeConstraints:^(MASConstraintMaker *make) {
-        make.top.equalTo(_topControlView.mas_bottom);
+        make.top.equalTo(self->_topControlView.mas_bottom);
         make.leading.trailing.offset(0);
     }];
     
@@ -1135,4 +1134,3 @@ NS_ASSUME_NONNULL_END
 }
 
 @end
-#pragma clang diagnostic pop

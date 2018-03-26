@@ -17,6 +17,8 @@
 #import <SJObserverHelper/NSObject+SJObserverHelper.h>
 
 NS_ASSUME_NONNULL_BEGIN
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wimplicit-retain-self"
 @interface SJVideoPlayerFilmEditingControlView ()
 
 @property (nonatomic, strong, readonly) UIButton *screenshotBtn;
@@ -274,3 +276,4 @@ NS_ASSUME_NONNULL_END
     return _recordView;
 }
 @end
+#pragma clang diagnostic pop

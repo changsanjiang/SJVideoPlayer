@@ -25,6 +25,9 @@
 #import <SJBaseVideoPlayer/SJTimerControl.h>
 
 NS_ASSUME_NONNULL_BEGIN
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wimplicit-retain-self"
+
 @interface SJLightweightControlLayer () <SJLightweightBottomControlViewDelegate, SJLightweightLeftControlViewDelegate, SJLightweightTopControlViewDelegate, SJLightweightCenterControlViewDelegate> {
     UIView *_controlView;
     SJVideoPlayerDraggingProgressView *_draggingProgressView;
@@ -654,5 +657,5 @@ NS_ASSUME_NONNULL_BEGIN
     return _lockStateTappedTimerControl;
 }
 @end
-
+#pragma clang diagnostic pop
 NS_ASSUME_NONNULL_END

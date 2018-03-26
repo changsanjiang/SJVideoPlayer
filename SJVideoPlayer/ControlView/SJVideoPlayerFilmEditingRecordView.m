@@ -15,6 +15,8 @@
 #import <SJAttributesFactory/SJAttributeWorker.h>
 #import <SJSlider/SJSlider.h>
 
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wimplicit-retain-self"
 @interface SJVideoPlayerFilmEditingRecordView ()
 
 @property (nonatomic, strong, readonly) UIButton *cancelBtn;
@@ -267,3 +269,4 @@
 }
 
 @end
+#pragma clang diagnostic pop

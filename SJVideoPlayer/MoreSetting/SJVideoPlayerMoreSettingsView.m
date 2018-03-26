@@ -13,6 +13,9 @@
 #import <SJUIFactory/SJUIFactory.h>
 #import "SJVideoPlayerMoreSettingsFooterView.h"
 
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wimplicit-retain-self"
+
 static NSString *const SJVideoPlayerMoreSettingsColCellID = @"SJVideoPlayerMoreSettingsColCell";
 
 static NSString *const SJVideoPlayerMoreSettingsFooterViewID = @"SJVideoPlayerMoreSettingsFooterView";
@@ -127,3 +130,4 @@ static NSString *const SJVideoPlayerMoreSettingsFooterViewID = @"SJVideoPlayerMo
     }];
 }
 @end
+#pragma clang diagnostic pop

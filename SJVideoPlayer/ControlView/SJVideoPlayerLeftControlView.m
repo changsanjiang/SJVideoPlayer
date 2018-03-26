@@ -11,6 +11,8 @@
 #import <Masonry/Masonry.h>
 #import <SJUIFactory/SJUIFactory.h>
 
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wimplicit-retain-self"
 @interface SJVideoPlayerLeftControlView ()
 
 @property (nonatomic, strong, readonly) UIButton *lockBtn;
@@ -91,3 +93,4 @@
     }];
 }
 @end
+#pragma clang diagnostic pop

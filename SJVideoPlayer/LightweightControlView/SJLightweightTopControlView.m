@@ -15,6 +15,9 @@
 #import <objc/message.h>
 
 NS_ASSUME_NONNULL_BEGIN
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wimplicit-retain-self"
+
 @interface SJLightweightTopTmp : NSObject
 
 - (instancetype)initWithItem:(SJLightweightTopItem *)item;
@@ -241,4 +244,5 @@ NS_ASSUME_NONNULL_BEGIN
 
 @implementation SJLightweightTopControlModel
 @end
+#pragma clang diagnostic pop
 NS_ASSUME_NONNULL_END

@@ -13,6 +13,8 @@
 #import "SJVideoPlayerMoreSettingSecondaryView.h"
 #import "SJVideoPlayerMoreSettingSecondary.h"
 
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wimplicit-retain-self"
 @interface SJVideoPlayerMoreSettingsSecondaryHeaderView ()
 
 @property (nonatomic, strong, readonly) UIView *line;
@@ -70,3 +72,4 @@
 }
 
 @end
+#pragma clang diagnostic pop

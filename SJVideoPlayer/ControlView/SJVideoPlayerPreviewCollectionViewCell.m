@@ -10,6 +10,9 @@
 #import <SJUIFactory/SJUIFactory.h>
 #import <Masonry/Masonry.h>
 
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wimplicit-retain-self"
+
 @interface SJVideoPlayerPreviewCollectionViewCell ()
 
 @property (nonatomic, strong, readonly) UIImageView *imageView;
@@ -45,3 +48,4 @@
     return _imageView;
 }
 @end
+#pragma clang diagnostic pop

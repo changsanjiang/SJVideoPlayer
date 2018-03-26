@@ -10,6 +10,9 @@
 #import <SJUIFactory/SJUIFactory.h>
 #import <Masonry/Masonry.h>
 
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wimplicit-retain-self"
+
 static NSString *SJVideoPlayerPreviewCollectionViewCellID = @"SJVideoPlayerPreviewCollectionViewCell";
 
 @interface SJVideoPlayerPreviewView ()<UICollectionViewDelegate, UICollectionViewDataSource>
@@ -95,3 +98,4 @@ static NSString *SJVideoPlayerPreviewCollectionViewCellID = @"SJVideoPlayerPrevi
 }
 
 @end
+#pragma clang diagnostic pop

@@ -12,6 +12,8 @@
 #import <SJUIFactory/SJUIFactory.h>
 #import "SJVideoPlayerMoreSetting+Exe.h"
 
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wimplicit-retain-self"
 @interface SJVideoPlayerMoreSettingsColCell ()
 
 @property (nonatomic, strong, readonly) UIButton *itemBtn;
@@ -74,3 +76,4 @@
 }
 
 @end
+#pragma clang diagnostic pop

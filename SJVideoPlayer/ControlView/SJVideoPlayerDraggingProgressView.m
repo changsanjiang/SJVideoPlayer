@@ -12,6 +12,8 @@
 #import <SJSlider/SJSlider.h>
 #import "UIView+SJVideoPlayerSetting.h"
 
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wimplicit-retain-self"
 @interface SJVideoPlayerDraggingProgressView ()
 
 @property (nonatomic, strong, readonly) SJSlider *progressSlider;
@@ -243,3 +245,4 @@
     }];
 }
 @end
+#pragma clang diagnostic pop

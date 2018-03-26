@@ -170,7 +170,7 @@
         self.thumbImageView.layer.shadowOffset = CGSizeMake(0.001, 0.2);
         self.thumbImageView.layer.shadowPath = [UIBezierPath bezierPathWithRoundedRect:(CGRect){CGPointZero, size} cornerRadius:thumbCornerRadius].CGPath;
         [self.thumbImageView mas_updateConstraints:^(MASConstraintMaker *make) {
-            make.size.mas_offset(size);
+            make.size.mas_offset(size).priorityHigh();
         }];
     }
     else {

@@ -16,6 +16,8 @@
 #import "SJFilmEditingResultShareItem.h"
 #import <SJObserverHelper/NSObject+SJObserverHelper.h>
 
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wimplicit-retain-self"
 @interface SJVideoPlayerFilmEditingResultView ()
 
 @property (nonatomic, strong, readonly) UIButton *cancelBtn;
@@ -245,3 +247,4 @@
     return _uploadProgressView;
 }
 @end
+#pragma clang diagnostic pop

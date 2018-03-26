@@ -12,6 +12,8 @@
 #import <Masonry/Masonry.h>
 #import "SJVideoPlayerControlMaskView.h"
 #import "UIView+SJVideoPlayerSetting.h"
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wimplicit-retain-self"
 
 @interface SJVideoPlayerBottomControlView ()<SJSliderDelegate>
 
@@ -240,3 +242,4 @@
     }];
 }
 @end
+#pragma clang diagnostic pop

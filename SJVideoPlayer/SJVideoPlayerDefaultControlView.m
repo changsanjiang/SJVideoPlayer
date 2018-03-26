@@ -36,7 +36,8 @@
 #pragma mark -
 
 NS_ASSUME_NONNULL_BEGIN
-
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wimplicit-retain-self"
 #pragma mark -
 @interface SJVideoPlayerDefaultControlView ()<SJVideoPlayerLeftControlViewDelegate, SJVideoPlayerBottomControlViewDelegate, SJVideoPlayerTopControlViewDelegate, SJVideoPlayerPreviewViewDelegate, SJVideoPlayerCenterControlViewDelegate, SJVideoPlayerRightControlViewDelegate> {
     SJTimerControl *_lockStateTappedTimerControl;
@@ -1134,3 +1135,4 @@ NS_ASSUME_NONNULL_END
 }
 
 @end
+#pragma clang diagnostic pop

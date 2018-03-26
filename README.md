@@ -23,7 +23,7 @@ ___
 - [x] Adjust brightness by slide vertical at left side of screen
 - [x] Adjust volume by slide vertical at right side of screen
 - [x] Slide horizontal to fast forward and rewind
-- [x] Full screen mode to drag the slider control progress, display video preview
+- [x] Full screen mode drag will display video preview
 - [x] Download
 ___
 

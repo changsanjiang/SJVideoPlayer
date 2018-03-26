@@ -83,16 +83,17 @@
 
 - (void)_smallscreenState {
     self.title = self.model.title;
-    if ( self.model.isPlayOnScrollView && self.model.alwaysShowTitle ) {
+    if ( self.model.isPlayOnScrollView ) {
         // back btn
         _backBtn.hidden = YES;
-        
-        // title label layout
-        [_titleLabel mas_remakeConstraints:^(MASConstraintMaker *make) {
-            make.leading.equalTo(_backBtn.mas_centerX).offset(-8);
-            make.centerY.equalTo(_backBtn);
-            make.trailing.equalTo(_moreBtn.mas_centerX).offset(8);
-        }];
+        if ( self.model.alwaysShowTitle ) {
+            // title label layout
+            [_titleLabel mas_remakeConstraints:^(MASConstraintMaker *make) {
+                make.leading.equalTo(_backBtn.mas_centerX).offset(-8);
+                make.centerY.equalTo(_backBtn);
+                make.trailing.equalTo(_moreBtn.mas_centerX).offset(8);
+            }];
+        }
     }
     else {
         _backBtn.hidden = NO;

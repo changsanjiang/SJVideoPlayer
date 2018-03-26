@@ -90,7 +90,10 @@ extern NSNotificationName const SJSettingsPlayerNotification;
 @property (nonatomic, strong, readwrite) UIColor *progress_traceColor;
 /// 轨道
 @property (nonatomic, strong, readwrite) UIColor *progress_trackColor;
-/// 拇指图片, 也可设置`progress_thumbSize`.(图片优先)
+/**
+ Thumb image, also can set `progress_thumbSize `. (image is preferred)
+ 拇指图片, 也可设置`progress_thumbSize`.(图片优先)
+ */
 @property (nonatomic, strong, readwrite, nullable) UIImage *progress_thumbImage;
 /// 拇指大小, 也可设置`progress_thumbImage`.
 @property (nonatomic, assign, readwrite) float progress_thumbSize; // default is 0.
@@ -110,6 +113,13 @@ extern NSNotificationName const SJSettingsPlayerNotification;
 /// 轨道高度
 @property (nonatomic, assign, readwrite) float more_trackHeight;
 
+
+/**
+ Thumb image, also can set `more_thumbSize `. (image is preferred)
+ 拇指图片, 也可设置`more_thumbSize`.(图片优先).
+ */
+@property (nonatomic, strong, readwrite, nullable) UIImage *more_thumbImage;
+@property (nonatomic, assign, readwrite) float more_thumbSize; // default is 0.
 @property (nonatomic, strong, readwrite) UIImage *more_minRateImage;
 @property (nonatomic, strong, readwrite) UIImage *more_maxRateImage;
 @property (nonatomic, strong, readwrite) UIImage *more_minVolumeImage;

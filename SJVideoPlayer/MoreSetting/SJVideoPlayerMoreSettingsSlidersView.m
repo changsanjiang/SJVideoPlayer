@@ -176,7 +176,16 @@
         self.volumeSlider.slider.trackHeight = self.brightnessSlider.slider.trackHeight = self.rateSlider.slider.trackHeight = setting.more_trackHeight;
         self.volumeSlider.slider.trackImageView.backgroundColor = self.brightnessSlider.slider.trackImageView.backgroundColor = self.rateSlider.slider.trackImageView.backgroundColor = setting.more_trackColor;
         self.volumeSlider.slider.traceImageView.backgroundColor = self.brightnessSlider.slider.traceImageView.backgroundColor = self.rateSlider.slider.traceImageView.backgroundColor = setting.more_traceColor;
-        
+        if ( setting.more_thumbImage ) {
+            self.brightnessSlider.slider.thumbImageView.image = self.volumeSlider.slider.thumbImageView.image = self.rateSlider.slider.thumbImageView.image = setting.more_thumbImage;
+        }
+        else if ( 0 != setting.more_thumbImage ) {
+            CGFloat radius = setting.more_thumbSize * 0.5;
+            CGSize size = CGSizeMake(setting.more_thumbSize, setting.more_thumbSize);
+            [self.rateSlider.slider setThumbCornerRadius:radius size:size thumbBackgroundColor:setting.progress_thumbColor];
+            [self.volumeSlider.slider setThumbCornerRadius:radius size:size thumbBackgroundColor:setting.progress_thumbColor];
+            [self.brightnessSlider.slider setThumbCornerRadius:radius size:size thumbBackgroundColor:setting.progress_thumbColor];
+        }
         [self.rateSlider.leftBtn setBackgroundImage:setting.more_minRateImage forState:UIControlStateNormal];
         [self.rateSlider.rightBtn setBackgroundImage:setting.more_maxRateImage forState:UIControlStateNormal];
         [self.volumeSlider.leftBtn setBackgroundImage:setting.more_minVolumeImage forState:UIControlStateNormal];

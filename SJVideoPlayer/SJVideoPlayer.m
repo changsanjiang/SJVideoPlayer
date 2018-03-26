@@ -161,7 +161,7 @@ static dispatch_queue_t videoPlayerWorkQueue;
 }
 
 - (void)setGeneratePreviewImages:(BOOL)generatePreviewImages {
-    _defaultControlView.generatePreviewImages = YES;
+    _defaultControlView.generatePreviewImages = generatePreviewImages;
 }
 
 - (BOOL)generatePreviewImages {

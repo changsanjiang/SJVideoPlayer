@@ -801,7 +801,6 @@ NS_ASSUME_NONNULL_END
 /// 当设置播放资源时调用.
 - (void)videoPlayer:(SJVideoPlayer *)videoPlayer prepareToPlay:(SJVideoPlayerURLAsset *)asset {
     // reset
-    
     self.topControlView.model.alwaysShowTitle = asset.alwaysShowTitle;
     self.topControlView.model.title = asset.title;
     self.topControlView.model.isPlayOnScrollView = videoPlayer.isPlayOnScrollView;

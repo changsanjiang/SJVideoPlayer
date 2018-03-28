@@ -874,18 +874,13 @@ NS_ASSUME_NONNULL_END
         __strong typeof(_self) self = _self;
         if ( !self ) return;
         self.resignActive = YES;
-        if ( self.state != SJVideoPlayerPlayState_Paused && self.pauseWhenAppResignActive ) [self.asset.player pause];
+        if ( self.state != SJVideoPlayerPlayState_Paused && self.pauseWhenAppResignActive ) [self pause];
     };
     
     _registrar.didBecomeActive = ^(SJVideoPlayerRegistrar * _Nonnull registrar) {
         __strong typeof(_self) self = _self;
         if ( !self ) return;
         self.resignActive = NO;
-        if ( self.isPlayOnScrollView && !self.scrollIn ) return;
-        if ( self.state == SJVideoPlayerPlayState_PlayEnd ||
-             self.state == SJVideoPlayerPlayState_Unknown ||
-             self.state == SJVideoPlayerPlayState_PlayFailed ) return;
-        if ( !self.userClickedPause ) [self play];
     };
     
     _registrar.oldDeviceUnavailable = ^(SJVideoPlayerRegistrar * _Nonnull registrar) {

@@ -368,6 +368,7 @@
 				774B251C1FCEBA5D002113CC /* AppDelegate.m */,
 				774B251E1FCEBA5D002113CC /* ViewController.h */,
 				774B251F1FCEBA5D002113CC /* ViewController.m */,
+				7794F3AA206B8DEE00BB246D /* VideoPlayerHelper */,
 				77E754332040054F00A5AF44 /* Demo */,
 				A6E6D2EE2028BE9B00CB9BAE /* SJVideoPlayer */,
 				778E24F21FD97EB6008D0DD3 /* Asset */,
@@ -554,6 +555,17 @@
 			path = AboutKeyboard;
 			sourceTree = "<group>";
 		};
+		7794F3AA206B8DEE00BB246D /* VideoPlayerHelper */ = {
+			isa = PBXGroup;
+			children = (
+				77DA95152042B8EC007A9EE8 /* SJVideoPlayerHelper.h */,
+				77DA95142042B8EB007A9EE8 /* SJVideoPlayerHelper.m */,
+				772005752029BBC7009F0190 /* SJMoreSettingItems.h */,
+				772005762029BBC7009F0190 /* SJMoreSettingItems.m */,
+			);
+			path = VideoPlayerHelper;
+			sourceTree = "<group>";
+		};
 		779A4E6E20624EF50041D8BE /* LightweightControlView */ = {
 			isa = PBXGroup;
 			children = (
@@ -643,10 +655,6 @@
 		A644108E200A3F89006FD832 /* Model */ = {
 			isa = PBXGroup;
 			children = (
-				77DA95152042B8EC007A9EE8 /* SJVideoPlayerHelper.h */,
-				77DA95142042B8EB007A9EE8 /* SJVideoPlayerHelper.m */,
-				772005752029BBC7009F0190 /* SJMoreSettingItems.h */,
-				772005762029BBC7009F0190 /* SJMoreSettingItems.m */,
 				A6441096200A406E006FD832 /* SJVideoModel.h */,
 				A6441097200A406E006FD832 /* SJVideoModel.m */,
 			);

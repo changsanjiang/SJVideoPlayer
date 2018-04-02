@@ -48,7 +48,7 @@
 
 - (void)dealloc {
 #ifdef DEBUG
-    NSLog(@"SJVideoPlayerLog: %zd - %s", __LINE__, __func__);
+    NSLog(@"SJVideoPlayerLog: %d - %s", (int)__LINE__, __func__);
 #endif
 }
 

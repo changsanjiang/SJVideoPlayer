@@ -39,7 +39,7 @@
 }
 
 - (void)dealloc {
-    NSLog(@"%zd - %s", __LINE__, __func__);
+    NSLog(@"%d - %s", (int)__LINE__, __func__);
     [SJSharedVideoPlayerHelper sharedHelper].vc_deallocExeBlock();
 }
 

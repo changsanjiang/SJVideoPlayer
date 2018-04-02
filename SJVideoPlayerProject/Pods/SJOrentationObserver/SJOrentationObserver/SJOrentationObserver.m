@@ -10,17 +10,16 @@
 #import <Masonry/Masonry.h>
 
 
-@interface SJOrentationObserver ()
+@interface SJOrentationObserver () {
+    CGRect _portrait;
+}
 
 @property (nonatomic, strong, readonly) UIView *blackView;
 @property (nonatomic, strong, readwrite) UIView *view;
 @property (nonatomic, strong, readwrite) UIView *targetSuperview;
-
 @property (nonatomic, readwrite, getter=isTransitioning) BOOL transitioning;
-
 @property (nonatomic, readonly) SJSupportedRotateViewOrientation supported_Ori;
 @property (nonatomic, readwrite) UIDeviceOrientation currentOrientation;
-
 @property (nonatomic, copy, nullable) void(^completion)(SJOrentationObserver *observer);
 
 @end
@@ -160,76 +159,52 @@ static UIWindow *__window;
 
 - (void)rotate:(SJRotateViewOrientation)orientation animated:(BOOL)animated completion:(void (^)(SJOrentationObserver * _Nonnull))block {
     if ( !_view || !_targetSuperview ) return;
-
-    if ( orientation == _rotateOrientation ) { if ( block ) block(self); return; }
-    
-    if ( self.rotationCondition ) { if ( !self.rotationCondition(self) ) return; }
     
     if ( self.isTransitioning ) return;
     
-    self.transitioning = YES;
+    if ( orientation == _rotateOrientation ) { if ( block ) block(self); return; }
+    
+    if ( _rotationCondition ) { if ( !_rotationCondition(self) ) return; }
+    
+    _transitioning = YES;
     
     CGAffineTransform transform = CGAffineTransformIdentity;
-    UIView *superview = nil;
     UIInterfaceOrientation ori = UIInterfaceOrientationUnknown;
     
     switch ( orientation ) {
         case SJRotateViewOrientation_LandscapeRight: {
             ori = UIInterfaceOrientationLandscapeLeft;
             transform = CGAffineTransformMakeRotation(-M_PI_2);
-            superview = __window;
         }
             break;
         case SJRotateViewOrientation_LandscapeLeft: {
             ori = UIInterfaceOrientationLandscapeRight;
             transform = CGAffineTransformMakeRotation(M_PI_2);
-            superview = __window;
         }
             break;
         case SJRotateViewOrientation_Portrait: {
             ori = UIInterfaceOrientationPortrait;
             transform = CGAffineTransformIdentity;
-            superview = self.targetSuperview;
             [_blackView removeFromSuperview];
         }
             break;
     }
     
-    if ( !superview || UIInterfaceOrientationUnknown == ori ) {
-        self.transitioning = NO;
-        return;
+    SJRotateViewOrientation oldOri = _rotateOrientation;
+    SJRotateViewOrientation newOri = orientation;
+    
+    if ( oldOri == SJRotateViewOrientation_Portrait ) {
+        CGRect frame = [__window convertRect:_view.frame fromView:_targetSuperview];
+        _view.frame = frame;
+        [__window addSubview:_view];
+        _portrait = frame;
     }
     
-    if ( _rotateOrientation == SJRotateViewOrientation_Portrait && UIInterfaceOrientationPortrait != ori ) {
-        CGRect fix = _view.frame;
-        fix.origin = [__window convertPoint:CGPointZero fromView:_targetSuperview];
-        [superview addSubview:_view];
-        _view.frame = fix;
-    }
     
     // update
     _rotateOrientation = orientation;
     
     [UIApplication sharedApplication].statusBarOrientation = ori;
-    
-    [_view mas_remakeConstraints:^(MASConstraintMaker *make) {
-        if ( UIInterfaceOrientationPortrait == ori ) {
-            CGRect rect = [__window convertRect:self.targetSuperview.bounds fromView:self.targetSuperview];
-            make.size.mas_equalTo(rect.size);
-            make.top.offset(rect.origin.y);
-            make.leading.offset(rect.origin.x);
-        }
-        else {
-            CGFloat width = [UIScreen mainScreen].bounds.size.width;
-            CGFloat height = [UIScreen mainScreen].bounds.size.height;
-            CGFloat max = MAX(width, height);
-            CGFloat min = MIN(width, height);
-            make.center.mas_equalTo(CGPointZero);
-            make.size.mas_offset(CGSizeMake(max, min));
-        }
-    }];
-    
-    if ( _orientationWillChange ) _orientationWillChange(self, self.isFullScreen);
     
     [UIView beginAnimations:@"rotation" context:NULL];
     if ( animated ) [UIView setAnimationDuration:_duration];
@@ -237,20 +212,30 @@ static UIWindow *__window;
     [UIView setAnimationDelegate:self];
     [UIView setAnimationDidStopSelector:@selector(_animationDidStop)];
     [UIView setAnimationCurve:UIViewAnimationCurveEaseInOut];
+    if ( newOri == SJRotateViewOrientation_Portrait ) {
+        _view.bounds = CGRectMake(0, 0, _portrait.size.width, _portrait.size.height);
+        _view.center = CGPointMake(_portrait.origin.x + _portrait.size.width * 0.5, _portrait.origin.y + _portrait.size.height * 0.5);
+    }
+    else {
+        CGFloat width = [UIScreen mainScreen].bounds.size.width;
+        CGFloat height = [UIScreen mainScreen].bounds.size.height;
+        CGFloat max = MAX(width, height);
+        CGFloat min = MIN(width, height);
+        _view.bounds = CGRectMake(0, 0, max, min);
+        _view.center = CGPointMake(min * 0.5, max * 0.5);
+    }
     [_view setTransform:transform];
-    [_view.superview layoutIfNeeded];
+    [_view layoutIfNeeded];
     [UIView commitAnimations];
-    
-    self.completion = [block copy];
+    _completion = [block copy];
+    if ( _orientationWillChange ) _orientationWillChange(self, self.isFullScreen);
 }
 
 - (void)_animationDidStop {
-    self.transitioning = NO;
-    if ( UIInterfaceOrientationPortrait == [UIApplication sharedApplication].statusBarOrientation ) {
+    _transitioning = NO;
+    if ( _rotateOrientation == SJRotateViewOrientation_Portrait ) {
         [_targetSuperview addSubview:_view];
-        [_view mas_remakeConstraints:^(MASConstraintMaker *make) {
-            make.edges.equalTo(self.targetSuperview);
-        }];
+        _view.frame = _targetSuperview.bounds;
     }
     else {
         self.blackView.bounds = _view.bounds;
@@ -258,10 +243,9 @@ static UIWindow *__window;
         self.blackView.transform = _view.transform;
         [__window insertSubview:self.blackView belowSubview:_view];
     }
+    
     if ( _orientationChanged ) _orientationChanged(self, self.isFullScreen);
-    if ( self.completion ) {
-        self.completion(self);
-        self.completion = nil;
-    }
+    
+    if ( _completion ) { _completion(self); _completion = nil;}
 }
 @end

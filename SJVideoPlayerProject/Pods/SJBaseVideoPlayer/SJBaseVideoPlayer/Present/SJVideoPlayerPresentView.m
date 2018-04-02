@@ -43,7 +43,7 @@ NS_ASSUME_NONNULL_END
 
 - (void)dealloc {
 #ifdef DEBUG
-    NSLog(@"%zd - %s", __LINE__, __func__);
+    NSLog(@"%d - %s", (int)__LINE__, __func__);
 #endif
 }
 

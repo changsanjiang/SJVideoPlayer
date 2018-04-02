@@ -2,17 +2,17 @@ PODS:
   - Masonry (1.1.0)
   - Reachability (3.2)
   - SJAttributesFactory (2.0.2)
-  - SJBaseVideoPlayer (1.0.6):
+  - SJBaseVideoPlayer (1.0.6.3):
     - Masonry
     - Reachability
-    - SJBaseVideoPlayer/Category (= 1.0.6)
-    - SJBaseVideoPlayer/Download (= 1.0.6)
-    - SJBaseVideoPlayer/GestureControl (= 1.0.6)
-    - SJBaseVideoPlayer/Header (= 1.0.6)
-    - SJBaseVideoPlayer/Model (= 1.0.6)
-    - SJBaseVideoPlayer/Present (= 1.0.6)
-    - SJBaseVideoPlayer/Registrar (= 1.0.6)
-    - SJBaseVideoPlayer/TimerControl (= 1.0.6)
+    - SJBaseVideoPlayer/Category (= 1.0.6.3)
+    - SJBaseVideoPlayer/Download (= 1.0.6.3)
+    - SJBaseVideoPlayer/GestureControl (= 1.0.6.3)
+    - SJBaseVideoPlayer/Header (= 1.0.6.3)
+    - SJBaseVideoPlayer/Model (= 1.0.6.3)
+    - SJBaseVideoPlayer/Present (= 1.0.6.3)
+    - SJBaseVideoPlayer/Registrar (= 1.0.6.3)
+    - SJBaseVideoPlayer/TimerControl (= 1.0.6.3)
     - SJBorderLineView
     - SJFullscreenPopGesture
     - SJObserverHelper
@@ -21,18 +21,7 @@ PODS:
     - SJUIFactory
     - SJVideoPlayerAssetCarrier
     - SJVolBrigControl
-  - SJBaseVideoPlayer/Category (1.0.6):
-    - Masonry
-    - Reachability
-    - SJBorderLineView
-    - SJFullscreenPopGesture
-    - SJObserverHelper
-    - SJOrentationObserver
-    - SJPrompt
-    - SJUIFactory
-    - SJVideoPlayerAssetCarrier
-    - SJVolBrigControl
-  - SJBaseVideoPlayer/Download (1.0.6):
+  - SJBaseVideoPlayer/Category (1.0.6.3):
     - Masonry
     - Reachability
     - SJBorderLineView
@@ -43,7 +32,7 @@ PODS:
     - SJUIFactory
     - SJVideoPlayerAssetCarrier
     - SJVolBrigControl
-  - SJBaseVideoPlayer/GestureControl (1.0.6):
+  - SJBaseVideoPlayer/Download (1.0.6.3):
     - Masonry
     - Reachability
     - SJBorderLineView
@@ -54,7 +43,7 @@ PODS:
     - SJUIFactory
     - SJVideoPlayerAssetCarrier
     - SJVolBrigControl
-  - SJBaseVideoPlayer/Header (1.0.6):
+  - SJBaseVideoPlayer/GestureControl (1.0.6.3):
     - Masonry
     - Reachability
     - SJBorderLineView
@@ -65,7 +54,7 @@ PODS:
     - SJUIFactory
     - SJVideoPlayerAssetCarrier
     - SJVolBrigControl
-  - SJBaseVideoPlayer/Model (1.0.6):
+  - SJBaseVideoPlayer/Header (1.0.6.3):
     - Masonry
     - Reachability
     - SJBorderLineView
@@ -76,7 +65,18 @@ PODS:
     - SJUIFactory
     - SJVideoPlayerAssetCarrier
     - SJVolBrigControl
-  - SJBaseVideoPlayer/Present (1.0.6):
+  - SJBaseVideoPlayer/Model (1.0.6.3):
+    - Masonry
+    - Reachability
+    - SJBorderLineView
+    - SJFullscreenPopGesture
+    - SJObserverHelper
+    - SJOrentationObserver
+    - SJPrompt
+    - SJUIFactory
+    - SJVideoPlayerAssetCarrier
+    - SJVolBrigControl
+  - SJBaseVideoPlayer/Present (1.0.6.3):
     - Masonry
     - Reachability
     - SJBaseVideoPlayer/Header
@@ -88,7 +88,7 @@ PODS:
     - SJUIFactory
     - SJVideoPlayerAssetCarrier
     - SJVolBrigControl
-  - SJBaseVideoPlayer/Registrar (1.0.6):
+  - SJBaseVideoPlayer/Registrar (1.0.6.3):
     - Masonry
     - Reachability
     - SJBorderLineView
@@ -99,7 +99,7 @@ PODS:
     - SJUIFactory
     - SJVideoPlayerAssetCarrier
     - SJVolBrigControl
-  - SJBaseVideoPlayer/TimerControl (1.0.6):
+  - SJBaseVideoPlayer/TimerControl (1.0.6.3):
     - Masonry
     - Reachability
     - SJBorderLineView
@@ -116,10 +116,10 @@ PODS:
   - SJFullscreenPopGesture/View (1.3.7.3)
   - SJLoadingView (1.0.1)
   - SJObserverHelper (1.0.3)
-  - SJOrentationObserver (1.0.6.2):
+  - SJOrentationObserver (1.0.7.1):
     - Masonry
-    - SJOrentationObserver/Category (= 1.0.6.2)
-  - SJOrentationObserver/Category (1.0.6.2):
+    - SJOrentationObserver/Category (= 1.0.7.1)
+  - SJOrentationObserver/Category (1.0.7.1):
     - Masonry
   - SJPrompt (1.0.3):
     - Masonry
@@ -182,12 +182,12 @@ SPEC CHECKSUMS:
   Masonry: 678fab65091a9290e40e2832a55e7ab731aad201
   Reachability: 33e18b67625424e47b6cde6d202dce689ad7af96
   SJAttributesFactory: 01f680bab9e318b0bd11ddff58155a2c7475f2c3
-  SJBaseVideoPlayer: 739b84fd1a7546b76ef432999b690ef72c0b5c6e
+  SJBaseVideoPlayer: 8b45bf3c40033a42d19ed833435cf0ba5d3d43b3
   SJBorderLineView: 5878e67fb57e812a2d5d029ca666068784b5448a
   SJFullscreenPopGesture: f16c9f31a32aa741d6f79d56952572bdd07860b8
   SJLoadingView: c3ff03e4b363a5b6a3ba0634d6bb9ce2647faf07
   SJObserverHelper: b270d707cd18ab76538596aa4e98cf798c9e9868
-  SJOrentationObserver: cfcbfb353f486e7a96544c2e34e3e2bed1674325
+  SJOrentationObserver: ad50cb72c2730d25826c53bf8aa27a50d9f37c08
   SJPrompt: e035486eeffb8a00aefe05e30290086c3138f8f2
   SJScrollEntriesView: 6ad0595721a7152d9c3542ae5f6e1a27dec0f9b4
   SJSlider: 6f82b519e918c4933f834a7badf1603c1b4fc224

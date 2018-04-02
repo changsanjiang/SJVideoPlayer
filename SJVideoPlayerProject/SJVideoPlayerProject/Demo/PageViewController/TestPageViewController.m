@@ -71,7 +71,7 @@ static NSInteger const vcCount = 9;
     _titlesView = [[SJScrollEntriesView alloc] initWithSettings:settins];
     _titlesView.backgroundColor = [UIColor whiteColor];
     NSMutableArray<TestItem *> *arrM = [NSMutableArray array];
-    for ( int i = 0 ; i < vcCount ; ++ i ) [arrM addObject:[[TestItem alloc] initWithTitle:[NSString stringWithFormat:@"%zd", i]]];
+    for ( int i = 0 ; i < vcCount ; ++ i ) [arrM addObject:[[TestItem alloc] initWithTitle:[NSString stringWithFormat:@"%d", (int)i]]];
     [_titlesView setValue:arrM forKey:@"items"];
     _titlesView.delegate = self;
     return _titlesView;

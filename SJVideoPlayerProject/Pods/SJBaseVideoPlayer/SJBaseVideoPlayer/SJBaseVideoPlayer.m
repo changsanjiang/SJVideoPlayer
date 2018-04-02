@@ -36,6 +36,17 @@
 @end
 
 
+@interface SJBaseVideoPlayerView: UIView
+@property (nonatomic, copy, nullable) void(^layoutSubViewsExeBlock)(SJBaseVideoPlayerView *view);
+@end
+
+@implementation SJBaseVideoPlayerView
+- (void)layoutSubviews {
+    [super layoutSubviews];
+    if ( _layoutSubViewsExeBlock ) _layoutSubViewsExeBlock(self);
+}
+@end
+
 #pragma mark -
 
 NS_ASSUME_NONNULL_BEGIN
@@ -274,7 +285,7 @@ NS_ASSUME_NONNULL_END
 
 - (void)dealloc {
 #ifdef DEBUG
-    NSLog(@"SJVideoPlayerLog: %zd - %s", __LINE__, __func__);
+    NSLog(@"SJVideoPlayerLog: %d - %s", (int)__LINE__, __func__);
 #endif
     if ( self.asset && self.assetDeallocExeBlock ) self.assetDeallocExeBlock(self);
     [_presentView removeFromSuperview];
@@ -565,22 +576,29 @@ NS_ASSUME_NONNULL_END
 #pragma mark -
 - (UIView *)view {
     if ( _view ) return _view;
-    _view = [SJUIViewFactory viewWithBackgroundColor:[UIColor blackColor]];
+    _view = [SJBaseVideoPlayerView new];
+    _view.backgroundColor = [UIColor blackColor];
     [_view addSubview:self.presentView];
-    [self.presentView addSubview:self.controlContentView];
-    
-    [self.presentView mas_makeConstraints:^(MASConstraintMaker *make) {
-        make.edges.offset(0);
-    }];
-    
-    [self.controlContentView mas_makeConstraints:^(MASConstraintMaker *make) {
-        make.edges.offset(0);
+
+    __weak typeof(self) _self = self;
+    [(SJBaseVideoPlayerView *)_view setLayoutSubViewsExeBlock:^(SJBaseVideoPlayerView *view) {
+        __strong typeof(_self) self = _self;
+        if ( !self ) return;
+        if ( CGRectIsEmpty(self.presentView.frame) ) {
+            self.presentView.frame = view.bounds;
+            [self.presentView addSubview:self.controlContentView];
+            self.controlContentView.frame = view.bounds;
+//            // need auto layout
+//            [self.controlContentView mas_makeConstraints:^(MASConstraintMaker *make) {
+//                make.edges.offset(0);
+//            }];
+        }
     }];
     
     [self orentationObserver];
     [self gestureControl];
-    [self addInterceptTapGR];       // 防止其他手势不触发导致事件穿透播放器.
     [self reachabilityObserver];
+    [self addInterceptTapGR];
     return _view;
 }
 
@@ -625,6 +643,9 @@ NS_ASSUME_NONNULL_END
     _orentationObserver.orientationWillChange = ^(SJOrentationObserver * _Nonnull observer, BOOL isFullScreen) {
         __strong typeof(_self) self = _self;
         if ( !self ) return;
+        [UIView animateWithDuration:observer.duration animations:^{
+           self.controlContentView.frame = self.presentView.bounds;
+        }];
         if ( [self.controlLayerDelegate respondsToSelector:@selector(videoPlayer:willRotateView:)] ) {
             [self.controlLayerDelegate videoPlayer:self willRotateView:isFullScreen];
         }

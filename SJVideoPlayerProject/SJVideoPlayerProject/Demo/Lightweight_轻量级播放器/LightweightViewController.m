@@ -35,7 +35,7 @@ static NSString *const LightweightTableViewCellID = @"LightweightTableViewCell";
 @synthesize tableView = _tableView;
 
 - (void)dealloc {
-    NSLog(@"%zd - %s", __LINE__, __func__);
+    NSLog(@"%d - %s", (int)__LINE__, __func__);
 }
 
 - (void)viewDidLoad {

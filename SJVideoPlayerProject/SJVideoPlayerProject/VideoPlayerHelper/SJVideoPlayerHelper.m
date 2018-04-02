@@ -102,7 +102,7 @@ NS_ASSUME_NONNULL_END
     // fade in
     _videoPlayer.view.alpha = 0.001;
     [UIView animateWithDuration:0.5 animations:^{
-        _videoPlayer.view.alpha = 1;
+        self->_videoPlayer.view.alpha = 1;
     }];
     
     // setting player

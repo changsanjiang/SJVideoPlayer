@@ -122,7 +122,7 @@ static NSString * const PlayerCollectionViewCellID = @"PlayerCollectionViewCell"
     
     // fade in
     [UIView animateWithDuration:0.5 animations:^{
-        _videoPlayer.view.alpha = 1;
+        self->_videoPlayer.view.alpha = 1;
     }];
     
     _videoPlayer.URLAsset = [[SJVideoPlayerURLAsset alloc] initWithAssetURL:[NSURL URLWithString:videoURLStr] scrollView:self.collectionView indexPath:indexPath superviewTag:tag];

@@ -99,10 +99,10 @@
     }
     ++_currentTime;
     
-    NSInteger seconds, minutes;
+    int seconds, minutes;
     minutes = (_currentTime) / 60;
     seconds = _currentTime % 60;
-    _progressLabel.text = [NSString stringWithFormat:@"%02zd:%02zd/02:00", minutes, seconds];
+    _progressLabel.text = [NSString stringWithFormat:@"%02d:%02d/02:00", minutes, seconds];
     _progressSlider.value = _currentTime * 1.0f / _time;
     
     if ( _currentTime == 3 ) {

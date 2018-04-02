@@ -138,7 +138,7 @@ NS_ASSUME_NONNULL_END
     [self async_exeBlock:^{
         __strong typeof(_self) self = _self;
         if ( !self ) return;
-        NSString *sqlStr = [NSString stringWithFormat:@"SELECT *FROM 'SJMediaEntity' WHERE mediaId = %zd;", mediaId];
+        NSString *sqlStr = [NSString stringWithFormat:@"SELECT *FROM 'SJMediaEntity' WHERE mediaId = %ld;", (long)mediaId];
         if ( completionBlock ) completionBlock(self, sql_query(self.database, sqlStr.UTF8String, [SJMediaEntity class]).firstObject);
     }];
 }
@@ -148,7 +148,7 @@ NS_ASSUME_NONNULL_END
     [self async_exeBlock:^{
         __strong typeof(_self) self = _self;
         if ( !self ) return;
-        NSString *sql = [NSString stringWithFormat:@"SELECT *FROM 'SJMediaEntity' WHERE downloadStatus = %zd ORDER BY downloadTime;", status];
+        NSString *sql = [NSString stringWithFormat:@"SELECT *FROM 'SJMediaEntity' WHERE downloadStatus = %ld ORDER BY downloadTime;", (long)status];
         if ( completionBlock ) completionBlock(self, sql_query(self.database, sql.UTF8String, [SJMediaEntity class]));
     }];
 }
@@ -159,7 +159,7 @@ NS_ASSUME_NONNULL_END
 }
 - (void)sync_requestNextDownloadMedia {
     if ( self.currentEntity ) return;
-    NSString *sql = [NSString stringWithFormat:@"SELECT *FROM 'SJMediaEntity' WHERE downloadStatus =  %zd ORDER BY downloadTime;", SJMediaDownloadStatus_Waiting];
+    NSString *sql = [NSString stringWithFormat:@"SELECT *FROM 'SJMediaEntity' WHERE downloadStatus =  %ld ORDER BY downloadTime;", (long)SJMediaDownloadStatus_Waiting];
     SJMediaEntity *next = sql_query(self.database, sql.UTF8String, [SJMediaEntity class]).firstObject;
     if ( !next ) return;
     [self sync_downloadWithMedia:next];
@@ -294,14 +294,14 @@ NS_ASSUME_NONNULL_END
     }];
 }
 - (void)sync_insertOrReplaceMediaWithEntity:(SJMediaEntity *)entity {
-    sql_exe(self.database, [NSString stringWithFormat:@"INSERT OR REPLACE INTO 'SJMediaEntity' VALUES (%zd, '%@', %zd, '%@', '%ld', '%@', %f);", entity.mediaId, entity.title, entity.downloadStatus, entity.URLStr, time(NULL), entity.relativePath, entity.downloadProgress].UTF8String);
+    sql_exe(self.database, [NSString stringWithFormat:@"INSERT OR REPLACE INTO 'SJMediaEntity' VALUES (%ld, '%@', %ld, '%@', '%ld', '%@', %f);", (long)entity.mediaId, entity.title, (long)entity.downloadStatus, entity.URLStr, time(NULL), entity.relativePath, entity.downloadProgress].UTF8String);
 }
 - (void)sync_updateDownloadProgressWithEntity:(SJMediaEntity *)entity {
-    NSString *sql = [NSString stringWithFormat:@"UPDATE 'SJMediaEntity' SET 'downloadProgress' = %f WHERE 'mediaId' = %zd;", entity.downloadProgress, entity.mediaId];
+    NSString *sql = [NSString stringWithFormat:@"UPDATE 'SJMediaEntity' SET 'downloadProgress' = %f WHERE 'mediaId' = %ld;", entity.downloadProgress, (long)entity.mediaId];
     sql_exe(self.database, sql.UTF8String);
 }
 - (void)sync_deleteMediaWithEntity:(SJMediaEntity *)entity {
-    sql_exe(self.database, [NSString stringWithFormat:@"DELETE FROM 'SJMediaEntity' WHERE mediaId = %zd;", entity.mediaId].UTF8String);
+    sql_exe(self.database, [NSString stringWithFormat:@"DELETE FROM 'SJMediaEntity' WHERE mediaId = %ld;", (long)entity.mediaId].UTF8String);
 }
 - (void)initializeDatabase {
     sql_exe(self.database, "CREATE TABLE IF NOT EXISTS SJMediaEntity ('mediaId' INTEGER PRIMARY KEY, 'title' TEXT, 'downloadStatus' INTEGER, 'URLStr' TEXT, 'downloadTime' INTEGER, 'relativePath' TEXT, 'downloadProgress' FLOAT);");
@@ -549,7 +549,7 @@ NS_ASSUME_NONNULL_END
 - (NSString *)URLHashStr {
     if ( !_URLStr ) return nil;
     if ( _URLHashStr ) return _URLHashStr;
-    _URLHashStr = [NSString stringWithFormat:@"%zd", [_URLStr hash]];
+    _URLHashStr = [NSString stringWithFormat:@"%ld", (long)[_URLStr hash]];
     return _URLHashStr;
 }
 - (NSString *)format {

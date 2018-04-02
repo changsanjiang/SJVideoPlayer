@@ -771,18 +771,18 @@ NS_ASSUME_NONNULL_END
 }
 
 - (NSString *)timeString:(NSInteger)secs {
-    NSInteger min = 60;
-    NSInteger hour = 60 * min;
+    long min = 60;
+    long hour = 60 * min;
     
-    NSInteger hours, seconds, minutes;
+    long hours, seconds, minutes;
     hours = secs / hour;
     minutes = (secs - hours * hour) / 60;
     seconds = secs % 60;
     if ( self.duration < hour ) {
-        return [NSString stringWithFormat:@"%02zd:%02zd", minutes, seconds];
+        return [NSString stringWithFormat:@"%02ld:%02ld", minutes, seconds];
     }
     else {
-        return [NSString stringWithFormat:@"%02zd:%02zd:%02zd", hours, minutes, seconds];
+        return [NSString stringWithFormat:@"%02ld:%02ld:%02ld", hours, minutes, seconds];
     }
 }
 

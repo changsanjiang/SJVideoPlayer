@@ -52,7 +52,7 @@
     }];
     
     dispatch_async(dispatch_get_global_queue(0, 0), ^{
-        _videoPlayer.assetURL = [[NSBundle mainBundle] URLForResource:@"sample" withExtension:@"mp4"];
+        self->_videoPlayer.assetURL = [[NSBundle mainBundle] URLForResource:@"sample" withExtension:@"mp4"];
     });
 
     

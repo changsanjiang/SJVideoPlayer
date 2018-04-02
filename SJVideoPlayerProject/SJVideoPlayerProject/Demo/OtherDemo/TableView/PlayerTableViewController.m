@@ -99,7 +99,7 @@ static NSString *const PlayerTableViewCellID = @"PlayerTableViewCell";
     
     // fade in
     [UIView animateWithDuration:0.5 animations:^{
-        _videoPlayer.view.alpha = 1;
+        self->_videoPlayer.view.alpha = 1;
     }];
     
     _videoPlayer.URLAsset = [[SJVideoPlayerURLAsset alloc] initWithAssetURL:[NSURL URLWithString:videoURLStr] scrollView:self.tableView indexPath:indexPath superviewTag:tag];

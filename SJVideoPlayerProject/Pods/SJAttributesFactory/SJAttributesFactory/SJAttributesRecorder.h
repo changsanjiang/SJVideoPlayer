@@ -51,6 +51,8 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic, assign) double alignment;
 @property (nonatomic, assign) NSLineBreakMode lineBreakMode;
 - (void)addAttributes:(NSMutableAttributedString *)attrStr;
+- (void)removeAttribute:(NSAttributedStringKey)attributedStringKey;
+- (NSArray<NSString *> *)properties;
 @end
 
 NS_ASSUME_NONNULL_END

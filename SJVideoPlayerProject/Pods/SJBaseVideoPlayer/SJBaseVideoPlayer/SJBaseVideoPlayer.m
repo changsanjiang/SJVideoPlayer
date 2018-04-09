@@ -1591,7 +1591,7 @@ NS_ASSUME_NONNULL_END
 - (SJPrompt *)prompt {
     SJPrompt *prompt = objc_getAssociatedObject(self, _cmd);
     if ( prompt ) return prompt;
-    prompt = [SJPrompt promptWithPresentView:self.presentView];
+    prompt = [SJPrompt promptWithPresentView:self.controlContentView];
     prompt.update(^(SJPromptConfig * _Nonnull config) {
         config.cornerRadius = 4;
         config.font = [UIFont systemFontOfSize:12];

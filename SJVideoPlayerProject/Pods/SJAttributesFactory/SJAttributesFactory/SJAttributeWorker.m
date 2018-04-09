@@ -20,7 +20,7 @@ NSMutableAttributedString *sj_makeAttributesString(void(^block)(SJAttributeWorke
 }
 
 inline static BOOL _rangeContains(NSRange range, NSRange subRange) {
-    return range.location <= subRange.location && range.length >= subRange.location + subRange.length;
+    return (range.location <= subRange.location) && (range.location + range.length >= subRange.location + subRange.length);
 }
 
 inline static void _errorLog(NSString *msg, id __nullable target) {
@@ -29,16 +29,20 @@ inline static void _errorLog(NSString *msg, id __nullable target) {
 
 #pragma mark -
 
-@interface SJAttributesRangeOperator ()
-@property (nonatomic, strong) SJAttributesRecorder *recorder;
+@interface __SJKVOHelper: NSObject
+- (instancetype)initWithTarget:(__strong id)target keyPaths:(NSArray<NSString *> *)keyPaths valueChangedExeBlock:(void(^__nullable)(__SJKVOHelper *helper, NSString *keyPath))valueChangedExeBlock;
+@property (nonatomic, strong, readonly) id value_new;
+@property (nonatomic, strong, readonly) id value_old;
+@property (nonatomic, strong, readonly) id target;
+@property (nonatomic, strong, readonly) NSArray<NSString *> *keyPaths;
+@property (nonatomic, copy, nullable) void(^valueChangedExeBlock)(__SJKVOHelper *helper, NSString *keyPath);
 @end
 
-@implementation SJAttributesRangeOperator
-- (SJAttributesRecorder *)recorder {
-    if ( _recorder ) return _recorder;
-    _recorder = [SJAttributesRecorder new];
-    return _recorder;
-}
+#pragma mark -
+
+@interface SJAttributesRangeOperator ()
+@property (nonatomic, strong) __SJKVOHelper *recorderKVOHelper;
+@property (nonatomic, assign) BOOL recorder_value_added;
 @end
 
 #pragma mark -
@@ -59,6 +63,7 @@ inline static void _errorLog(NSString *msg, id __nullable target) {
     _defaultTextColor = [UIColor blackColor];
     _attrStr = [NSMutableAttributedString new];
     _rangeOperatorsM = [NSMutableArray array];
+    self.recorder = [SJAttributesRecorder new];
     return self;
 }
 
@@ -74,16 +79,25 @@ inline static void _errorLog(NSString *msg, id __nullable target) {
     [self endTask];
 }
 
+- (NSMutableAttributedString *)workInProcess {
+    return self.attrStr;
+}
+
 - (NSMutableAttributedString *)endTask {
     if ( 0 == self.attrStr.length ) return self.attrStr;
     if ( nil == self.recorder.font ) self.recorder.font = self.defaultFont;
     if ( nil == self.recorder.textColor ) self.recorder.textColor = self.defaultTextColor;
-
-    [self.recorder addAttributes:self.attrStr];
+    _addAttributes(self, self.attrStr);
     [self.rangeOperatorsM enumerateObjectsUsingBlock:^(SJAttributesRangeOperator * _Nonnull obj, NSUInteger idx, BOOL * _Nonnull stop) {
-        [obj.recorder addAttributes:self.attrStr];
+        _addAttributes(obj, self.attrStr);
     }];
     return self.attrStr;
+}
+
+BOOL _addAttributes(SJAttributesRangeOperator *operator, NSMutableAttributedString *attrStr) {
+    if ( operator.recorder_value_added ) return NO;
+    [operator.recorder addAttributes:attrStr];
+    return operator.recorder_value_added = YES;
 }
 
 - (NSMutableAttributedString *)endTaskAndComplete:(void(^)(SJAttributeWorker *worker))block; {
@@ -99,7 +113,7 @@ inline static void _errorLog(NSString *msg, id __nullable target) {
             _errorLog(@"Edit Failed! param 'range' is unlawfulness!", self.attrStr.string);
             return self;
         }
-        SJAttributesRangeOperator *rangeOperator = [self _getRangeOperatorWithRange:range];
+        SJAttributesRangeOperator *rangeOperator = [self _getOperatorWithRange:range];
         task(rangeOperator);
         return self;
     };
@@ -117,7 +131,7 @@ inline static void _errorLog(NSString *msg, id __nullable target) {
     };
 }
 
-- (SJAttributesRangeOperator *)_getRangeOperatorWithRange:(NSRange)range {
+- (SJAttributesRangeOperator *)_getOperatorWithRange:(NSRange)range {
     __block SJAttributesRangeOperator *rangeOperator = nil;
     [self.rangeOperatorsM enumerateObjectsUsingBlock:^(SJAttributesRangeOperator * _Nonnull obj, NSUInteger idx, BOOL * _Nonnull stop) {
         NSRange objRange = obj.recorder.range;
@@ -143,19 +157,277 @@ inline static void _errorLog(NSString *msg, id __nullable target) {
     if ( rangeOperator ) return rangeOperator;
     
     rangeOperator = [SJAttributesRangeOperator new];
+    rangeOperator.recorder = [SJAttributesRecorder new];
     rangeOperator.recorder.range = range;
     [self.rangeOperatorsM addObject:rangeOperator];
     return rangeOperator;
 }
+
+- (void)_adjustOperatorsWhenRemovingText:(NSRange)deletingRange {
+    NSInteger deletingLinePoint = deletingRange.location + deletingRange.length;
+    [self.rangeOperatorsM enumerateObjectsWithOptions:NSEnumerationReverse usingBlock:^(SJAttributesRangeOperator * _Nonnull obj, NSUInteger idx, BOOL * _Nonnull stop) {
+        NSRange objRange = obj.recorder.range;
+        NSInteger objLinePoint = objRange.location + objRange.length;
+        /**
+                    1                               2
+         -----------|<------------ObjRange--------->|----------------------
+                        3                     4
+         ---------------|<---DeletingRange--->|----------------------------
+         - 1 objRange.location
+         - 2 objLinePoint (objRange.location + objRange.length)
+         - 3 deletingRange.location
+         - 4 deletingLinePoint (deletingRange.location + deletingRange.length)
+         */
+        if ( _rangeContains(deletingRange, objRange) ) {
+            [self.rangeOperatorsM removeObject:obj];
+        }
+        /**
+         -----------|<------------ObjRange--------->|----------------------
+         -------------------|<------------DeletingRange--------->|---------
+         */
+        else if ( objRange.location <= deletingRange.location && deletingRange.location < objLinePoint ) {
+            objRange.length = objLinePoint - deletingRange.location;
+            obj.recorder.range = objRange;  // adjust
+        }
+        /**
+         ----------------------|<------------ObjRange--------->|-----------
+         -----------|<------------DeletingRange--------->|-----------------
+         */
+        else if ( deletingRange.location <= objRange.location && objRange.location < deletingLinePoint ) {
+            objRange.location = deletingRange.location;
+            objRange.length = objLinePoint - deletingLinePoint;
+            obj.recorder.range = objRange;  // adjust
+        }
+        /**
+         -------------------------------|<---ObjRange--->|----------------
+         ---|<---DeletingRange--->|---------------------------------------
+         */
+        else if ( deletingLinePoint < objRange.location ) {
+            objRange.location -= deletingRange.length;
+            obj.recorder.range = objRange;  // adjust
+        }
+        /**
+         ---|<---ObjRange--->|--------------------------------------------
+         -------------------------------|<---DeletingRange--->|-----------
+         */
+//        else {
+        
+//        }
+    }];
+}
+
+- (void)_adjustOperatorsWhenRemovingAttributes:(NSRange)deletingRange {
+    NSInteger deletingLinePoint = deletingRange.location + deletingRange.length;
+    [self.rangeOperatorsM enumerateObjectsWithOptions:NSEnumerationReverse usingBlock:^(SJAttributesRangeOperator * _Nonnull obj, NSUInteger idx, BOOL * _Nonnull stop) {
+        NSRange objRange = obj.recorder.range;
+        NSInteger objLinePoint = objRange.location + objRange.length;
+        if ( _rangeContains(deletingRange, objRange) ) {
+            [self.rangeOperatorsM removeObject:obj];
+        }
+        /**
+         -----------|<------------ObjRange--------->|----------------------
+         -------------------|<------------DeletingRange--------->|---------
+         */
+        else if ( objRange.location <= deletingRange.location && deletingRange.location < objLinePoint ) {
+            objRange.length = deletingRange.location - objRange.location;
+            obj.recorder.range = objRange;  // adjust
+        }
+        /**
+         ----------------------|<------------ObjRange--------->|-----------
+         -----------|<------------DeletingRange--------->|-----------------
+         */
+        else if ( deletingRange.location <= objRange.location && objRange.location < deletingLinePoint ) {
+            objRange.location = deletingLinePoint;
+            objRange.length = objLinePoint - deletingLinePoint;
+            obj.recorder.range = objRange;  // adjust
+        }
+        /**
+         -------------------------------|<---ObjRange--->|----------------
+         ---|<---DeletingRange--->|---------------------------------------
+         */
+//        else if ( deleteingLinePoint < objRange.location ) {
+//        }
+        /**
+         ---|<---ObjRange--->|--------------------------------------------
+         -------------------------------|<---DeletingRange--->|-----------
+         */
+//        else {
+//        }
+    }];
+}
+
+- (void)_adjustOperatorsWhenRemovingAttribute:(NSAttributedStringKey)key deleteingRange:(NSRange)deletingRange {
+    NSInteger deletingLinePoint = deletingRange.location + deletingRange.length;
+    [self.rangeOperatorsM enumerateObjectsWithOptions:NSEnumerationReverse usingBlock:^(SJAttributesRangeOperator * _Nonnull obj, NSUInteger idx, BOOL * _Nonnull stop) {
+        NSRange objRange = obj.recorder.range;
+        NSInteger objLinePoint = objRange.location + objRange.length;
+        if ( _rangeContains(deletingRange, objRange) ) {
+            [obj.recorder removeAttribute:key];
+        }
+        /**
+         -----------|<------------ObjRange--------->|----------------------
+         -------------------|<------------DeletingRange--------->|---------
+         */
+        else if ( objRange.location <= deletingRange.location && deletingRange.location < objLinePoint ) {
+            obj.recorder.range = NSMakeRange(objRange.location, deletingRange.location - objRange.location);   // adjust
+            NSRange range_new = NSMakeRange(deletingRange.location, objLinePoint - deletingRange.location);
+            SJAttributesRangeOperator *operator_new = [self _getOperatorWithRange:range_new];
+            [operator_new.recorder removeAttribute:key];
+        }
+        /**
+         ----------------------|<------------ObjRange--------->|-----------
+         -----------|<------------DeletingRange--------->|-----------------
+         */
+        else if ( deletingRange.location <= objRange.location && objRange.location < deletingLinePoint ) {
+            obj.recorder.range = NSMakeRange(deletingLinePoint, objLinePoint - deletingLinePoint);   // adjust
+            NSRange range_new = NSMakeRange(objRange.location, deletingLinePoint - objRange.location);
+            SJAttributesRangeOperator *operator_new = [self _getOperatorWithRange:range_new];
+            [operator_new.recorder removeAttribute:key];
+        }
+        /**
+         -------------------------------|<---ObjRange--->|----------------
+         ---|<---DeletingRange--->|---------------------------------------
+         */
+//        else if ( deleteingLinePoint < objRange.location ) {
+//        }
+        /**
+         ---|<---ObjRange--->|--------------------------------------------
+         -------------------------------|<---DeletingRange--->|-----------
+         */
+//        else {
+//        }
+    }];
+}
+
+- (void)_adjustOperatorsWhenInsertingText:(NSRange)insertingRange {
+    NSInteger insertingLinePoint = insertingRange.location + insertingRange.length;
+    [self.rangeOperatorsM enumerateObjectsWithOptions:NSEnumerationReverse usingBlock:^(SJAttributesRangeOperator * _Nonnull obj, NSUInteger idx, BOOL * _Nonnull stop) {
+        NSRange objRange = obj.recorder.range;
+        NSInteger objLinePoint = objRange.location + objRange.length;
+        /**
+         -----------|<------------ObjRange--------->|----------------------
+         ---------------|<---InsertingRange--->|---------------------------
+         */
+        if ( _rangeContains(insertingRange, objRange) ) {
+            NSRange leftRange = NSMakeRange(objRange.location, insertingRange.location - objRange.location);
+            NSRange rightRange = NSMakeRange(insertingLinePoint, objRange.length - leftRange.length);
+            if ( leftRange.length != 0 ) [self _getOperatorWithRange:leftRange];
+            if ( rightRange.length != 0 ) {
+                // adjust
+                SJAttributesRangeOperator *operator = [self _getOperatorWithRange:rightRange];
+                operator.recorder = obj.recorder.copy;
+                operator.recorder.range = rightRange;
+            }
+            [self.rangeOperatorsM removeObject:obj];
+        }
+        /**
+         -----------|<------------ObjRange--------->|----------------------
+         -------------------|<------------InsertingRange--------->|--------
+         */
+        else if ( objRange.location <= insertingRange.location && insertingRange.location < objLinePoint ) {
+            NSRange leftRange = NSMakeRange(objRange.location, insertingRange.location - objRange.location);
+            NSRange rightRange = NSMakeRange(insertingLinePoint, objRange.length - leftRange.length);
+            if ( leftRange.length != 0 ) [self _getOperatorWithRange:leftRange];
+            if ( rightRange.length != 0 ) {
+                // adjust
+                SJAttributesRangeOperator *operator = [self _getOperatorWithRange:rightRange];
+                operator.recorder = obj.recorder.copy;
+                operator.recorder.range = rightRange;
+            }
+            [self.rangeOperatorsM removeObject:obj];
+        }
+        /**
+         ----------------------|<------------ObjRange--------->|-----------
+         -----------|<------------InsertingRange--------->|----------------
+         */
+        else if ( insertingRange.location <= objRange.location && objRange.location < insertingLinePoint ) {
+            NSRange range_new = NSMakeRange(insertingLinePoint, objRange.length);
+            obj.recorder.range = range_new;
+        }
+        /**
+         -------------------------------|<---ObjRange--->|----------------
+         ---|<---InsertingRange--->|--------------------------------------
+         */
+        else if ( insertingLinePoint < objRange.location ) {
+            NSRange range_new = NSMakeRange(objRange.location + insertingRange.length, objRange.length);
+            obj.recorder.range = range_new;
+        }
+        /**
+         ---|<---ObjRange--->|--------------------------------------------
+         -------------------------------|<---InsertingRange--->|----------
+         */
+//        else {
+//        }
+    }];
+}
+
+- (void)_adjustOperatorsWhenReplaceCharactersInRange:(NSRange)range_old textLength:(NSInteger)textLength {
+    NSRange range_new = NSMakeRange(range_old.location, textLength);
+    if ( NSEqualRanges(range_old, range_new) ) return;
+    NSInteger range_old_linePoint = range_old.length + range_old.location;
+    NSInteger sub = (NSInteger)range_old.length - (NSInteger)range_new.length;
+
+    NSInteger range_new_linePoint = range_new.length + range_new.location;
+    
+    [self.rangeOperatorsM enumerateObjectsUsingBlock:^(SJAttributesRangeOperator * _Nonnull obj, NSUInteger idx, BOOL * _Nonnull stop) {
+        NSRange objRange = obj.recorder.range;
+        NSInteger objLinePoint = objRange.location + objRange.length;
+
+       /**
+         -----------|<------------ObjRange--------->|----------------------
+         -----------------|<----Range_old---->|----------------------------
+         -----------------|<--Range_new-->|--------------------------------
+         */
+        if ( _rangeContains(objRange, range_old) ) {
+            objRange.length -= sub;
+            obj.recorder.range = objRange;
+        }
+        /**
+         -----------|<------------ObjRange--------->|----------------------
+         -----------------|<------------Range_old------------>|------------
+         -----------------|<--Range_new-->|--------------------------------
+         */
+        else if ( objRange.location <= range_old.location && range_old_linePoint > objLinePoint ) {
+            // 只保留未替换部分
+            obj.recorder.range = NSMakeRange(objRange.location, range_old.location - objRange.location);
+        }
+        /**
+         -----------|<------------ObjRange--------->|----------------------
+         ------|<-------Range_old------>|----------------------------------
+         ------|<--Range_new-->|-------------------------------------------
+         */
+        else if ( range_old.location <= objRange.location && objRange.location < range_old_linePoint ) {
+            obj.recorder.range = NSMakeRange(range_new_linePoint, objLinePoint - range_old_linePoint);
+        }
+        /**
+         -----------------------------------|<---ObjRange--->|-------------
+         ------|<-------Range_old------>|----------------------------------
+         ------|<--Range_new-->|-------------------------------------------
+         */
+        else if ( range_old_linePoint <= objRange.location ) {
+            obj.recorder.range = NSMakeRange(objRange.location - sub, objRange.length);
+        }
+    }];
+}
+
 @end
 
 #pragma mark - regular
 @implementation SJAttributeWorker(Regexp)
+
+- (void)setRegexpOptions:(NSRegularExpressionOptions)regexpOptions {
+    objc_setAssociatedObject(self, @selector(regexpOptions), @(regexpOptions), OBJC_ASSOCIATION_RETAIN_NONATOMIC);
+}
+
+- (NSRegularExpressionOptions)regexpOptions {
+    return [objc_getAssociatedObject(self, _cmd) integerValue];
+}
+
 /// 正则匹配
 - (SJAttributeWorker * _Nonnull (^)(NSString * _Nonnull, void (^ _Nonnull)(SJAttributesRangeOperator * _Nonnull)))regexp {
     return ^ SJAttributeWorker *(NSString *regStr, void(^task)(SJAttributesRangeOperator *matched)) {
         return self.regexp_r(regStr, ^(NSArray<NSValue *> * _Nonnull matchedRanges) {
-            [matchedRanges enumerateObjectsUsingBlock:^(NSValue * _Nonnull obj, NSUInteger idx, BOOL * _Nonnull stop) {
+            [matchedRanges enumerateObjectsWithOptions:NSEnumerationReverse usingBlock:^(NSValue * _Nonnull obj, NSUInteger idx, BOOL * _Nonnull stop) {
                 NSRange matchedRange = [obj rangeValue];
                 self.rangeEdit(matchedRange, task);
             }];
@@ -166,7 +438,7 @@ inline static void _errorLog(NSString *msg, id __nullable target) {
 - (SJAttributeWorker * _Nonnull (^)(NSString * _Nonnull, void (^ _Nonnull)(NSArray<NSValue *> * _Nonnull), BOOL reverse))regexp_r {
     return ^ SJAttributeWorker *(NSString *regStr, void(^task)(NSArray<NSValue *> *ranges), BOOL reverse) {
         NSMutableArray<NSValue *> *rangesM = [NSMutableArray array];
-        NSRegularExpression *regex = [NSRegularExpression regularExpressionWithPattern:regStr options:kNilOptions error:nil];
+        NSRegularExpression *regex = [NSRegularExpression regularExpressionWithPattern:regStr options:self.regexpOptions error:nil];
         [regex enumerateMatchesInString:self.attrStr.string options:NSMatchingWithoutAnchoringBounds range:self.range usingBlock:^(NSTextCheckingResult * _Nullable result, NSMatchingFlags flags, BOOL * _Nonnull stop) {
             if ( result ) { [rangesM addObject:[NSValue valueWithRange:result.range]];}
         }];
@@ -180,6 +452,75 @@ inline static void _errorLog(NSString *msg, id __nullable target) {
     };
 }
 
+- (void (^)(NSString * _Nonnull, id _Nonnull, ...))regexp_replace {
+    return ^ (NSString *regexp, id replaceByStrOrAttrStrOrImg, ...) {
+        CGPoint origin = CGPointZero;
+        CGSize size = CGSizeZero;
+        va_list args;
+        va_start(args, replaceByStrOrAttrStrOrImg);
+        if ( [replaceByStrOrAttrStrOrImg isKindOfClass:[UIImage class]] ) {
+            origin = va_arg(args, CGPoint);
+            size = va_arg(args, CGSize);
+        }
+        self.regexp_r(regexp, ^(NSArray<NSValue *> * _Nonnull matchedRanges) {
+            [matchedRanges enumerateObjectsUsingBlock:^(NSValue * _Nonnull obj, NSUInteger idx, BOOL * _Nonnull stop) {
+                if      ( [replaceByStrOrAttrStrOrImg isKindOfClass:[NSString class]] ||
+                          [replaceByStrOrAttrStrOrImg isKindOfClass:[NSAttributedString class]] ) {
+                    self.replace([obj rangeValue], replaceByStrOrAttrStrOrImg);
+                }
+                else if ( [replaceByStrOrAttrStrOrImg isKindOfClass:[UIImage class]] ) {
+                    self.replace([obj rangeValue], replaceByStrOrAttrStrOrImg, origin, size);
+                }
+                else {
+                    _errorLog(@"inset `text` Failed! param `strOrAttrStrOrImg` is Unlawfulness!", self.attrStr.string);
+                }
+            }];
+        }, YES);
+        va_end(args);
+    };
+}
+
+- (void (^)(NSString * _Nonnull, SJAttributeRegexpInsertPosition, id _Nonnull, ...))regexp_insert {
+    return ^ (NSString *regexp, SJAttributeRegexpInsertPosition position, id insertingStrOrAttrStrOrImg, ...) {
+        va_list args;
+        va_start(args, insertingStrOrAttrStrOrImg);
+        CGPoint origin = CGPointZero;
+        CGSize size = CGSizeZero;
+        if ( [insertingStrOrAttrStrOrImg isKindOfClass:[UIImage class]] ) {
+            origin = va_arg(args, CGPoint);
+            size = va_arg(args, CGSize);
+        }
+        self.regexp_r(regexp, ^(NSArray<NSValue *> * _Nonnull matchedRanges) {
+            [matchedRanges enumerateObjectsUsingBlock:^(NSValue * _Nonnull obj, NSUInteger idx, BOOL * _Nonnull stop) {
+                NSRange objRange = [obj rangeValue];
+                NSInteger index = -1;
+                switch ( position ) {
+                    case SJAttributeRegexpInsertPositionLeft: {
+                        index = objRange.location;
+                    }
+                        break;
+                    case SJAttributeRegexpInsertPositionRight: {
+                        index = objRange.location + objRange.length;
+                    }
+                        break;
+                }
+                if      ( [insertingStrOrAttrStrOrImg isKindOfClass:[NSString class]] ) {
+                    self.insertText(insertingStrOrAttrStrOrImg, index);
+                }
+                else if ( [insertingStrOrAttrStrOrImg isKindOfClass:[NSAttributedString class]] ) {
+                    self.insertAttrStr(insertingStrOrAttrStrOrImg, index);
+                }
+                else if ( [insertingStrOrAttrStrOrImg isKindOfClass:[UIImage class]] ) {
+                    self.insertImage(insertingStrOrAttrStrOrImg, index, origin, size);
+                }
+                else {
+                    _errorLog(@"inset `text` Failed! param `strOrAttrStrOrImg` is Unlawfulness!", self.attrStr.string);
+                }
+            }];
+        }, YES);
+        va_end(args);
+    };
+}
 @end
 
 
@@ -242,6 +583,10 @@ inline static void _errorLog(NSString *msg, id __nullable target) {
             _errorLog(@"Added Attribute Failed! param `key or value` is Empty!", self.attrStr.string);
             return self;
         }
+        if ( !_rangeContains(self.range, range) ) {
+            _errorLog(@"Add Failed! param 'range' is unlawfulness!", self.attrStr.string);
+            return self;
+        }
         [self.attrStr addAttribute:key value:value range:range];
         return self;
     };
@@ -263,6 +608,7 @@ inline static void _errorLog(NSString *msg, id __nullable target) {
         }
         NSTextAttachment *attachment = [NSTextAttachment new];
         attachment.image = image;
+        if ( CGSizeEqualToSize(size, CGSizeZero) ) size = image.size;
         attachment.bounds = (CGRect){offset, size};
         return self.insertAttrStr([NSAttributedString attributedStringWithAttachment:attachment], idx);
     };
@@ -277,6 +623,7 @@ inline static void _errorLog(NSString *msg, id __nullable target) {
             idx = self.attrStr.length;
         }
         self.lastInsertedRange = NSMakeRange(idx, text.length);
+        [self _adjustOperatorsWhenInsertingText:self.lastInsertedRange];
         [self.attrStr insertAttributedString:text atIndex:idx];
         return self;
     };
@@ -314,24 +661,33 @@ inline static void _errorLog(NSString *msg, id __nullable target) {
             _errorLog(@"Replace Failed! param 'range' is unlawfulness!", self.attrStr.string);
             return;
         }
-        va_list args;
-        va_start(args, strOrAttrStrOrImg);
+
+        NSAttributedString *text = nil;
         if      ( [strOrAttrStrOrImg isKindOfClass:[NSString class]] ) {
-            [self.attrStr replaceCharactersInRange:range withString:strOrAttrStrOrImg];
+            text = [[NSAttributedString alloc] initWithString:strOrAttrStrOrImg];
         }
         else if ( [strOrAttrStrOrImg isKindOfClass:[NSAttributedString class]] ) {
-            [self.attrStr replaceCharactersInRange:range withAttributedString:strOrAttrStrOrImg];
+            text = strOrAttrStrOrImg;
         }
         else if ( [strOrAttrStrOrImg isKindOfClass:[UIImage class]] ) {
+            va_list args;
+            va_start(args, strOrAttrStrOrImg);
             NSTextAttachment *attachment = [NSTextAttachment new];
             attachment.image = strOrAttrStrOrImg;
-            attachment.bounds = (CGRect){va_arg(args, CGPoint), va_arg(args, CGSize)};
-            [self.attrStr replaceCharactersInRange:range withAttributedString:[NSAttributedString attributedStringWithAttachment:attachment]];
+            CGPoint origin = va_arg(args, CGPoint);
+            CGSize size = va_arg(args, CGSize); if ( CGSizeEqualToSize(size, CGSizeZero) ) size = attachment.image.size;
+            attachment.bounds = (CGRect){origin, size};
+            text = [NSAttributedString attributedStringWithAttachment:attachment];
+            va_end(args);
         }
         else {
             _errorLog(@"inset `text` Failed! param `strOrAttrStrOrImg` is Unlawfulness!", self.attrStr.string);
         }
-        va_end(args);
+        
+        if ( !text ) return;
+
+        [self.attrStr replaceCharactersInRange:range withAttributedString:text];
+        [self _adjustOperatorsWhenReplaceCharactersInRange:range textLength:[text length]];
     };
 }
 @end
@@ -339,38 +695,36 @@ inline static void _errorLog(NSString *msg, id __nullable target) {
 
 #pragma mark - delete
 @implementation SJAttributeWorker(Delete)
-//@property (nonatomic, copy, readonly) void(^removeText)(NSRange range);
-//@property (nonatomic, copy, readonly) void(^removeAttribute)(NSAttributedStringKey key, NSRange range);
-//@property (nonatomic, copy, readonly) void(^removeAttributes)(NSRange range);
+
 - (void (^)(NSRange))removeText {
     return ^ (NSRange range) {
         if ( !_rangeContains(self.range, range) ) {
             _errorLog(@"Remove Failed! param 'range' is unlawfulness!", self.attrStr.string);
+            return ;
         }
-        else {
-            [self.attrStr deleteCharactersInRange:range];
-        }
+        [self _adjustOperatorsWhenRemovingText:range];
+        [self.attrStr deleteCharactersInRange:range];
     };
 }
 - (void (^)(NSAttributedStringKey _Nonnull, NSRange))removeAttribute {
     return ^ (NSAttributedStringKey key, NSRange range) {
         if ( !_rangeContains(self.range, range) ) {
             _errorLog(@"Remove Failed! param 'range' is unlawfulness!", self.attrStr.string);
+            return ;
         }
-        else {
-            [self.attrStr removeAttribute:key range:range];
-        }
+        [self _adjustOperatorsWhenRemovingAttribute:key deleteingRange:range];
+        [self.attrStr removeAttribute:key range:range];
     };
 }
 - (void (^)(NSRange))removeAttributes {
     return ^ (NSRange range) {
         if ( !_rangeContains(self.range, range) ) {
             _errorLog(@"Remove Failed! param 'range' is unlawfulness!", self.attrStr.string);
+            return ;
         }
-        else {
-            NSString *subAttrStr = self.subAttrStr(range).string;
-            self.replace(range, subAttrStr);
-        }
+        [self _adjustOperatorsWhenRemovingAttributes:range];
+        NSString *subAttrStr = self.subAttrStr(range).string;
+        self.replace(range, subAttrStr);
     };
 }
 @end
@@ -538,4 +892,53 @@ inline static void _errorLog(NSString *msg, id __nullable target) {
 }
 @end
 
+
+#pragma mark -
+@implementation SJAttributesRangeOperator
+- (instancetype)init {
+    self = [super init];
+    if ( !self ) return nil;
+    [self addObserver:self forKeyPath:@"recorder" options:NSKeyValueObservingOptionNew context:nil];
+    return self;
+}
+- (void)observeValueForKeyPath:(NSString *__nullable)keyPath ofObject:(id __nullable)object change:(NSDictionary<NSKeyValueChangeKey,id> * __nullable)change context:(void * __nullable)context {
+    if ( !keyPath ) return;
+    __weak typeof(self) _self = self;
+    self.recorderKVOHelper = [[__SJKVOHelper alloc] initWithTarget:_recorder keyPaths:[_recorder properties] valueChangedExeBlock:^(__SJKVOHelper * _Nonnull helper, NSString * _Nonnull keyPath) {
+        __strong typeof(_self) self = _self;
+        if ( !self ) return;
+        self.recorder_value_added = NO;
+    }];
+}
+- (void)dealloc {
+    [self removeObserver:self forKeyPath:@"recorder"];
+}
+@end
+
+@implementation __SJKVOHelper
+- (instancetype)initWithTarget:(__strong id)target keyPaths:(NSArray<NSString *> *)keyPaths valueChangedExeBlock:(void(^__nullable)(__SJKVOHelper *helper, NSString *keyPath))valueChangedExeBlock {
+    self = [super init];
+    if ( !self ) return nil;
+    _target = target;
+    _keyPaths = keyPaths;
+    _valueChangedExeBlock = [valueChangedExeBlock copy];
+    [_keyPaths enumerateObjectsUsingBlock:^(NSString * _Nonnull obj, NSUInteger idx, BOOL * _Nonnull stop) {
+        [target addObserver:self forKeyPath:obj options:NSKeyValueObservingOptionNew | NSKeyValueObservingOptionOld context:nil];
+    }];
+    return self;
+}
+
+- (void)observeValueForKeyPath:(NSString *__nullable)keyPath ofObject:(id __nullable)object change:(NSDictionary<NSKeyValueChangeKey,id> * __nullable)change context:(void * __nullable)context {
+    if ( !keyPath ) return;
+    _value_new = change[NSKeyValueChangeNewKey];
+    _value_old = change[NSKeyValueChangeOldKey];
+    if ( _valueChangedExeBlock ) _valueChangedExeBlock(self, keyPath);
+}
+
+- (void)dealloc {
+    [_keyPaths enumerateObjectsUsingBlock:^(NSString * _Nonnull obj, NSUInteger idx, BOOL * _Nonnull stop) {
+        [self->_target removeObserver:self forKeyPath:obj];
+    }];
+}
+@end
 NS_ASSUME_NONNULL_END

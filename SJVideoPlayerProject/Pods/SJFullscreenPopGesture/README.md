@@ -116,3 +116,12 @@ ___
 @end
 ```
 ___
+
+## Contact
+* Email: changsanjiang@gmail.com
+* QQ: 1779609779
+* QQGroup: 719616775 
+<img src="https://github.com/changsanjiang/SJVideoPlayer/blob/master/SJVideoPlayerProject/SJVideoPlayerProject/Group.jpeg" width="200"  />
+
+## License
+SJFullscreenPopGesture is available under the MIT license. See the LICENSE file for more info.

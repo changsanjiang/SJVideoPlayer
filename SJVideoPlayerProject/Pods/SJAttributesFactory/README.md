@@ -1,6 +1,8 @@
 # SJAttributesFactory
 
 ### 最新动态:
+- 修复[插入/替换/删除]时RangeOperator未调整的问题, 增加了几个正则相关方法.[4/9/2018]
+- 优化`endTask`方法. 当调用 endTask , 只有记录员的属性发生改变时, 才会重新赋值. [4/4/2018]
 - 发布v2版本, 优化了v1版本的操作不便之处, 移除了多余代码. [1/28/2018]
 
 ### OC
@@ -120,7 +122,6 @@ ___
 ___
 
 ### 最近更新:
-- [增加了一个可以匹配点击动作的 Label](https://github.com/changsanjiang/SJLabel).
 - 添加了一个编辑最近(lastInserted)插入的文本的方法.
 - 完善参数错误的相关提示
 - 修复了insert方法插入-1时的Bug
@@ -134,6 +135,8 @@ ___
 - 改变了项目结构, 使其更合逻辑(变更较大)
 - 新增可变参(insert)插入方法
 
-### advert -- [可匹配点击的Label](https://github.com/changsanjiang/SJLabel):
-
-<img src="https://github.com/changsanjiang/SJAttributesFactory/blob/master/Demo/SJAttributesFactory/action.gif" />
+## Contact
+* Email: changsanjiang@gmail.com
+* QQ: 1779609779
+* QQGroup: 719616775 
+<img src="https://github.com/changsanjiang/SJVideoPlayer/blob/master/SJVideoPlayerProject/SJVideoPlayerProject/Group.jpeg" width="200"  />

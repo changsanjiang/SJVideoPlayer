@@ -6,13 +6,11 @@
 //  Copyright © 2017年 畅三江. All rights reserved.
 //
 //  Project Address: https://github.com/changsanjiang/SJAttributesFactory
-//  Email:  changsanjiange@gmail.com
+//  Email:  changsanjiang@gmail.com
 //
 
 #import <UIKit/UIKit.h>
 #import "SJAttributesRecorder.h"
-
-typedef NSString * NSAttributedStringKey NS_EXTENSIBLE_STRING_ENUM;
 
 @class SJAttributeWorker;
 
@@ -44,7 +42,7 @@ extern NSMutableAttributedString *sj_makeAttributesString(void(^block)(SJAttribu
 
 #pragma mark -
 @interface SJAttributesRangeOperator: NSObject
-@property (nonatomic, strong, readonly) SJAttributesRecorder *recorder;
+@property (nonatomic, strong, nullable) SJAttributesRecorder *recorder;
 @end
 
 
@@ -55,6 +53,8 @@ extern NSMutableAttributedString *sj_makeAttributesString(void(^block)(SJAttribu
 - (instancetype)init NS_DESIGNATED_INITIALIZER;
 
 @property (nonatomic, assign, readonly) NSRange range;
+
+@property (nonatomic, assign, readonly) NSMutableAttributedString *workInProcess;
 
 - (NSMutableAttributedString *)endTask;
 
@@ -93,22 +93,60 @@ extern NSMutableAttributedString *sj_makeAttributesString(void(^block)(SJAttribu
 @end
 
 
-
-
 #pragma mark - 正则 - regexp
 @interface SJAttributeWorker(Regexp)
+
+/**
+ default is kNilOptions
+ */
+@property (nonatomic, readwrite) NSRegularExpressionOptions regexpOptions;
+
+
 /*!
  *  regular expression.
  *
  *  正则匹配
+ *
+ make.regexp(@"Hello", ^(SJAttributesRangeOperator * _Nonnull matched) {
+    matched.font([UIFont systemFontOfSize:18]).textColor([UIColor redColor]);
+ });
  **/
 @property (nonatomic, copy, readonly) SJAttributeWorker *(^regexp)(NSString *regStr, void(^matchedTask)(SJAttributesRangeOperator *matched));
+
+
 /*!
  *  regular expression. value is [NSRange].
  *
  *  正则匹配
+ *
+ make.regexp_r(@"H", ^(NSArray<NSValue *> * _Nonnull matchedRanges) {
+    [matchedRanges enumerateObjectsUsingBlock:^(NSValue * _Nonnull obj, NSUInteger idx, BOOL * _Nonnull stop) {
+        NSRange matchedRange = [obj rangeValue];
+
+        make.replace(matchedRange, @"h");
+        make.insert(@"ello", matchedRange.location + matchedRange.length); // h + ello == hello
+    }];
+ }, YES);
  **/
 @property (nonatomic, copy, readonly) SJAttributeWorker *(^regexp_r)(NSString *regStr, void(^matchedTask)(NSArray<NSValue *> *matchedRanges), BOOL reverse);
+
+
+/**
+ make.regexp_replace(@"Hello", @" World!");
+ make.regexp_replace(@"Hello", [UIImage imageNamed:@"sample2"], CGPointMake(0, 0), CGSizeZero);
+ */
+@property (nonatomic, copy, readonly) void(^regexp_replace)(NSString *regexp, id replaceByStrOrAttrStrOrImg, ...);
+
+
+typedef NS_ENUM(NSUInteger, SJAttributeRegexpInsertPosition) {
+    SJAttributeRegexpInsertPositionLeft,
+    SJAttributeRegexpInsertPositionRight,
+};
+/**
+ make.regexp_insert(@"Hello", SJAttributeRegexpInsertPositionRight, @" World!");
+ make.regexp_insert(@"Hello", SJAttributeRegexpInsertPositionRight, [UIImage imageNamed:@"sample2"], 0, CGPointMake(0, 0), CGSizeZero);
+ */
+@property (nonatomic, copy, readonly) void(^regexp_insert)(NSString *regexp, SJAttributeRegexpInsertPosition position, id insertingStrOrAttrStrOrImg, ...);
 
 @end
 
@@ -138,12 +176,18 @@ extern NSMutableAttributedString *sj_makeAttributesString(void(^block)(SJAttribu
  *  editing the latest text.
  *
  *  编辑最后插入的文本.
+ make.lastInserted(^(SJAttributesRangeOperator * _Nonnull lastOperator) {
+    lastOperator.textColor([UIColor redColor]);
+    lastOperator.font([UIFont boldSystemFontOfSize:17]);
+ });
  **/
 @property (nonatomic, copy, readonly) SJAttributeWorker *(^lastInserted)(void(^task)(SJAttributesRangeOperator *lastOperator));
 /*!
  *  add attribute of `key, value, range`.
  *
  *  添加
+ *
+ make.add(YYTextBackgroundBorderAttributeName, border, range);
  **/
 @property (nonatomic, copy, readonly) SJAttributeWorker *(^add)(NSAttributedStringKey key, id value, NSRange range);
 /*!
@@ -154,8 +198,11 @@ extern NSMutableAttributedString *sj_makeAttributesString(void(^block)(SJAttribu
 @property (nonatomic, copy, readonly) SJAttributeWorker *(^insertText)(NSString *text, NSInteger index);
 /*!
  *  insert image, `-1` indicates the insertion to the end.
+ *  if size == CGSizeZero, the image size will be used.
  *
  *  插入图片, `-1` 表示插入到最后
+ *  如果 size == CGSizeZero, 将使用图片的size
+ make.insert([UIImage imageNamed:@"sample2"], -1, CGPointZero, CGSizeZero);
  **/
 @property (nonatomic, copy, readonly) SJAttributeWorker *(^insertImage)(UIImage *image, NSInteger index, CGPoint offset, CGSize size);
 /*!
@@ -169,6 +216,10 @@ extern NSMutableAttributedString *sj_makeAttributesString(void(^block)(SJAttribu
  *  inset text or image, `-1` indicates the insertion to the end.
  *
  *  插入, `-1` 表示插入到最后
+ *
+ make.insert(@"Hello", -1);
+ make.insert([UIImage imageNamed:@"sample2"], 12, CGPointZero, CGSizeMake(50, 50));
+ make.insert([UIImage imageNamed:@"sample2"], -1, CGPointZero, CGSizeZero);
  **/
 @property (nonatomic, copy, readonly) SJAttributeWorker *(^insert)(id strOrAttrStrOrImg, NSInteger index, ...);
 
@@ -178,6 +229,18 @@ extern NSMutableAttributedString *sj_makeAttributesString(void(^block)(SJAttribu
 
 #pragma mark - 替换 - replace
 @interface SJAttributeWorker(Replace)
+/**
+ make.replace(NSMakeRange(0, 2), @"Hello world!");
+ make.replace(NSMakeRange(0, 2), [UIImage imageNamed:@"name"], CGPointZero, CGSizeZero);
+ 
+ or use regular expression
+ 
+ make.regexp_r(@"[#][^#]+#", ^(NSArray<NSValue *> * _Nonnull matchedRanges) {
+    [matchedRanges enumerateObjectsUsingBlock:^(NSValue * _Nonnull obj, NSUInteger idx, BOOL * _Nonnull stop) {
+        make.replace([obj rangeValue], @"replace the result");
+    }];
+ }, YES);
+ */
 @property (nonatomic, copy, readonly) void(^replace)(NSRange range, id strOrAttrStrOrImg, ...);
 @end
 

@@ -289,7 +289,7 @@ NS_ASSUME_NONNULL_END
             [resumeData writeToFile:entity.resumePath atomically:YES];
         }
         [self async_exeBlock:^{
-           if ( block ) block(resumeData != nil);
+            if ( block ) block(resumeData != nil);
         }];
     }];
 }
@@ -331,12 +331,11 @@ NS_ASSUME_NONNULL_END
     [self async_requestMediaWithID:mediaId completion:^(SJMediaDownloader * _Nonnull downloader, SJMediaEntity * media) {
         __strong typeof(_self) self = _self;
         if ( !self ) return;
-        if ( media.downloadStatus == SJMediaDownloadStatus_Downloading ||
-             media.downloadStatus == SJMediaDownloadStatus_Waiting ||
-             media.downloadStatus == SJMediaDownloadStatus_Finished ) {
-            return;
-        }
-        else if ( !media ) {
+        if ( media.downloadStatus == SJMediaDownloadStatus_Finished ) return;
+        if ( media.downloadStatus == SJMediaDownloadStatus_Waiting && self.currentEntity ) return;
+        if ( media.downloadStatus == SJMediaDownloadStatus_Downloading && self.currentEntity.mediaId == media.mediaId ) return;
+        
+        if ( !media ) {
             media = [SJMediaEntity new];
             media.mediaId = mediaId;
             media.title = title;
@@ -411,7 +410,7 @@ NS_ASSUME_NONNULL_END
         [medias enumerateObjectsUsingBlock:^(SJMediaEntity *obj, NSUInteger idx, BOOL * _Nonnull stop) {
             if ( obj.mediaId != self.currentEntity.mediaId ) {
                 if ( obj.downloadStatus != SJMediaDownloadStatus_Paused &&
-                     obj.downloadStatus != SJMediaDownloadStatus_Finished ) {
+                    obj.downloadStatus != SJMediaDownloadStatus_Finished ) {
                     obj.downloadStatus = SJMediaDownloadStatus_Paused;
                     [obj postStatus];
                     [self sync_insertOrReplaceMediaWithEntity:obj];

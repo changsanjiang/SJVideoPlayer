@@ -52,7 +52,7 @@
 - (void)SJ_dismissViewControllerAnimated:(BOOL)flag completion:(void (^)(void))completion {
 #pragma clang diagnostic push
 #pragma clang diagnostic ignored "-Wdeprecated-declarations"
-    if ( ![self.modalViewController isKindOfClass:[UIAlertController class]] ) {
+    if ( ![self isKindOfClass:[UIAlertController class]] && ![self.modalViewController isKindOfClass:[UIAlertController class]] ) {
         if ( [self isKindOfClass:[UINavigationController class]] &&
             self.presentingViewController ) {
             [self SJ_dumpingScreenshotWithNum:(NSInteger)self.childViewControllers.count];

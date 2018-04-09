@@ -12,6 +12,7 @@
 #import <SJUIFactory/SJUIFactory.h>
 #import <SJAttributeWorker.h>
 #import "YYTapActionLabel.h"
+#import <objc/message.h>
 
 @interface LightweightTableViewCell()
 
@@ -40,30 +41,49 @@
 @synthesize contentContainerView = _contentContainerView;
 @synthesize separatorLine = _separatorLine;
 
-+ (CGFloat)nicknameMaxWidth {
-    return SJScreen_W() - 12 - 44 - 8 * 2 - 60 - 12;
+static const char *kNickName = "kNickName";
+static const char *kCreateTime = "kCreateTime";
+static const char *kVideoTitle = "kVideoTitle";
+
++ (void)sync_makeContentWithVideo:(SJVideoModel *)video tappedDelegate:(id<NSAttributedStringTappedDelegate>)tappedDelegate {
+    YYTextContainer *container;
+    YYTextLayout *textLayout;
+    
+    // nickname
+    container = [YYTextContainer containerWithSize:CGSizeMake(SJScreen_W() - 12 - 44 - 8 * 2 - 60 - 12, CGFLOAT_MAX)];
+    container.maximumNumberOfRows = 1;
+    textLayout = [YYTextLayout layoutWithContainer:container text:sj_makeAttributesString(^(SJAttributeWorker * _Nonnull make) {
+        make.insert(video.creator.nickname, 0).font([UIFont boldSystemFontOfSize:14]).textColor([UIColor whiteColor]);
+    })];
+    objc_setAssociatedObject(video, kNickName, textLayout, OBJC_ASSOCIATION_RETAIN_NONATOMIC);
+    
+    // create time
+    textLayout = [YYTextLayout layoutWithContainer:container text:sj_makeAttributesString(^(SJAttributeWorker * _Nonnull make) {
+        make.insert(sj_processTime(video.createTime, video.serverTime), 0).font([UIFont boldSystemFontOfSize:12]).textColor([UIColor whiteColor]);
+    })];
+    objc_setAssociatedObject(video, kCreateTime, textLayout, OBJC_ASSOCIATION_RETAIN_NONATOMIC);
+    
+    // title
+    container = [YYTextContainer containerWithSize:CGSizeMake(SJScreen_W() - 12 * 2, CGFLOAT_MAX)];
+    textLayout = [YYTextLayout sj_layoutWithContainer:container text:sj_makeAttributesString(^(SJAttributeWorker * _Nonnull make) {
+        NSString *regxp = @"(?:#[^#]+#)|(?:@[^\\s]+\\s)|(?:http[^\\s]+\\s)";
+        
+        make.insert(video.title, 0).font([UIFont boldSystemFontOfSize:14]).textColor([UIColor blackColor]);
+        make.regexp(regxp, ^(SJAttributesRangeOperator * _Nonnull matched) {
+            matched.textColor([UIColor purpleColor]);
+        });
+        // last set tapped delegate
+        make.workInProcess.tappedDelegate = tappedDelegate;
+        make.workInProcess.addTapAction(regxp);
+        make.workInProcess.object = video;
+    })];
+    objc_setAssociatedObject(video, kVideoTitle, textLayout, OBJC_ASSOCIATION_RETAIN_NONATOMIC);
 }
 
-+ (CGFloat)contentMaxWidth {
-    return SJScreen_W() - 12 * 2;
++ (CGFloat)heightWithVideo:(SJVideoModel *)video {
+    YYTextLayout *titleLayout = objc_getAssociatedObject(video, kVideoTitle);
+    return SJScreen_W() * 9 / 16 + titleLayout.textBoundingSize.height + 16;
 }
-
-+ (void)sync_makeVideoContent:(SJTextAppearance)block {
-    if ( block ) block([self contentMaxWidth], [UIFont boldSystemFontOfSize:14], [UIColor blackColor]);
-}
-
-+ (void)sync_makeNickname:(SJTextAppearance)block {
-    if ( block ) block([self nicknameMaxWidth], [UIFont boldSystemFontOfSize:14], [UIColor whiteColor]);
-}
-
-+ (void)sync_makeCreateTime:(SJTextAppearance)block {
-    if ( block ) block([self nicknameMaxWidth], [UIFont boldSystemFontOfSize:12], [UIColor whiteColor]);
-}
-
-+ (CGFloat)heightWithContentHeight:(CGFloat)contentHeight {
-    return SJScreen_W() * 9 / 16 + contentHeight + 16;
-}
-
 
 #pragma mark -
 
@@ -92,9 +112,17 @@
     _model = model;
     _avatarImageView.image = [UIImage imageNamed:model.creator.avatar];
     _coverImageView.image = [UIImage imageNamed:model.coverURLStr];
-    _nameLabel.textLayout = model.nicknameLayout;
-    _createTimeLabel.textLayout = model.createTimeLayout;
-    _contentLabel.textLayout = model.videoContentLayout;
+    _nameLabel.textLayout = objc_getAssociatedObject(model, kNickName);
+    _createTimeLabel.textLayout = objc_getAssociatedObject(model, kCreateTime);
+    _contentLabel.textLayout = objc_getAssociatedObject(model, kVideoTitle);
+    
+    [_nameLabel mas_updateConstraints:^(MASConstraintMaker *make) {
+        make.size.mas_offset(self.nameLabel.textLayout.textBoundingSize);
+    }];
+    
+    [_createTimeLabel mas_updateConstraints:^(MASConstraintMaker *make) {
+        make.size.mas_offset(self.createTimeLabel.textLayout.textBoundingSize);
+    }];
 }
 
 - (void)_setupViews {
@@ -110,6 +138,7 @@
     [_contentContainerView addSubview:self.contentLabel];
     [_contentContainerView addSubview:self.separatorLine];
 
+    
     
     [_coverImageView mas_makeConstraints:^(MASConstraintMaker *make) {
         make.top.leading.trailing.offset(0);
@@ -185,9 +214,7 @@
 - (YYTapActionLabel *)contentLabel {
     if ( _contentLabel ) return _contentLabel;
     _contentLabel = [YYTapActionLabel new];
-    _contentLabel.numberOfLines = 0;
     _contentLabel.userInteractionEnabled = YES;
-    _contentLabel.preferredMaxLayoutWidth = [[self class] contentMaxWidth];
     _contentLabel.displaysAsynchronously = YES;
     _contentLabel.ignoreCommonProperties = YES;
     return _contentLabel;
@@ -195,7 +222,6 @@
 - (YYLabel *)nameLabel {
     if ( _nameLabel ) return _nameLabel;
     _nameLabel = [YYLabel new];
-    _nameLabel.preferredMaxLayoutWidth = [[self class] nicknameMaxWidth];
     _nameLabel.displaysAsynchronously = YES;
     _nameLabel.ignoreCommonProperties = YES;
     return _nameLabel;
@@ -221,5 +247,42 @@
     float value = 230.0 / 255;
     return [UIColor colorWithRed:value green:value blue:value alpha:1];
 }
+static NSString *sj_processTime(NSTimeInterval createDate, NSTimeInterval nowDate) {
+    
+    double value = nowDate - createDate;
+    
+    if ( value < 0 ) {
+        return @"火星时间";
+    }
+    
+    NSInteger year  = value / 31104000;
+    NSInteger month = value / 2592000;
+    NSInteger week  = value / 604800;
+    NSInteger day   = value / 86400;
+    NSInteger hour  = value / 3600;
+    NSInteger min   = value / 60;
+    
+    if ( year > 0 ) {
+        return [NSString stringWithFormat:@"%zd年前", year];
+    }
+    else if ( month > 0 ) {
+        return [NSString stringWithFormat:@"%zd月前", month];
+    }
+    else if ( week > 0 ) {
+        return [NSString stringWithFormat:@"%zd周前", week];
+    }
+    else if ( day > 0 ) {
+        return [NSString stringWithFormat:@"%zd天前", day];
+    }
+    else if ( hour > 0 ) {
+        return [NSString stringWithFormat:@"%zd小时前", hour];
+    }
+    else if ( min > 0 ) {
+        return [NSString stringWithFormat:@"%zd分钟前", min];
+    }
+    else {
+        return @"刚刚";
+    }
+    return @"";
+}
 @end
-

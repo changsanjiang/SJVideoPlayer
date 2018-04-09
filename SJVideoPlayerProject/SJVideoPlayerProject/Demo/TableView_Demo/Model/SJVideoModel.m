@@ -45,40 +45,7 @@
                                  playURLStr:@"http://video.cdn.lanwuzhe.com/14945858406905f0c"
                                 coverURLStr:coverURLStrs[arc4random() % coverURLStrs.count]];
         
-        // make video title layout
-        [SJVideoListTableViewCell sync_makeVideoContent:^(CGFloat contentMaxWidth, UIFont *font, UIColor *textColor) {
-            NSString *rexp = @"([@][^\\s]+\\s)|([#][^#]+#)|((http)[^\\s]+\\s)"; // `string regular`
-            NSMutableAttributedString *attrStr = sj_makeAttributesString(^(SJAttributeWorker * _Nonnull make) {
-                make.font(font).textColor(textColor);
-                make.insert(model.title, 0);
-                make.regexp(rexp, ^(SJAttributesRangeOperator * _Nonnull matched) {
-                    matched.textColor([UIColor purpleColor]);
-                });
-            });
-            attrStr.addTapAction(rexp);
-            attrStr.tappedDelegate = actionDelegate;
-            attrStr.object = model;
-            model.videoContentLayout = sj_layout(contentMaxWidth, attrStr);
-        }];
-        
-        // make nickname layout
-        [SJVideoListTableViewCell sync_makeNickname:^(CGFloat contentMaxWidth, UIFont *font, UIColor *textColor) {
-            NSMutableAttributedString *attrStr = sj_makeAttributesString(^(SJAttributeWorker * _Nonnull make) {
-                make.font(font).textColor(textColor);
-                make.insert(model.creator.nickname, 0);
-            });
-            model.nicknameLayout = sj_layout(contentMaxWidth, attrStr);
-        }];
-        
-        // make video create time layout
-        [SJVideoListTableViewCell sync_makeCreateTime:^(CGFloat contentMaxWidth, UIFont *font, UIColor *textColor) {
-            NSMutableAttributedString *attrStr = sj_makeAttributesString(^(SJAttributeWorker * _Nonnull make) {
-                make.font(font).textColor(textColor);
-                // this test time
-                make.insert(sj_processTime(model.createTime, [NSDate date].timeIntervalSince1970), 0) ;
-            });
-            model.createTimeLayout = sj_layout(contentMaxWidth, attrStr);
-        }];
+        [SJVideoListTableViewCell sync_makeContentWithVideo:model tappedDelegate:actionDelegate];
         
         [testVideosM addObject:model];
     }
@@ -113,40 +80,7 @@
                                  playURLStr:@"http://video.cdn.lanwuzhe.com/14945858406905f0c"
                                 coverURLStr:coverURLStrs[arc4random() % coverURLStrs.count]];
         
-        // make video title layout
-        [LightweightTableViewCell sync_makeVideoContent:^(CGFloat contentMaxWidth, UIFont *font, UIColor *textColor) {
-            NSString *rexp = @"([@][^\\s]+\\s)|([#][^#]+#)|((http)[^\\s]+\\s)"; // `string regular`
-            NSMutableAttributedString *attrStr = sj_makeAttributesString(^(SJAttributeWorker * _Nonnull make) {
-                make.font(font).textColor(textColor);
-                make.insert(model.title, 0);
-                make.regexp(rexp, ^(SJAttributesRangeOperator * _Nonnull matched) {
-                    matched.textColor([UIColor purpleColor]);
-                });
-            });
-            attrStr.addTapAction(rexp);
-            attrStr.tappedDelegate = actionDelegate;
-            attrStr.object = model;
-            model.videoContentLayout = sj_layout(contentMaxWidth, attrStr);
-        }];
-        
-        // make nickname layout
-        [LightweightTableViewCell sync_makeNickname:^(CGFloat contentMaxWidth, UIFont *font, UIColor *textColor) {
-            NSMutableAttributedString *attrStr = sj_makeAttributesString(^(SJAttributeWorker * _Nonnull make) {
-                make.font(font).textColor(textColor);
-                make.insert(model.creator.nickname, 0);
-            });
-            model.nicknameLayout = sj_layout(contentMaxWidth, attrStr);
-        }];
-        
-        // make video create time layout
-        [LightweightTableViewCell sync_makeCreateTime:^(CGFloat contentMaxWidth, UIFont *font, UIColor *textColor) {
-            NSMutableAttributedString *attrStr = sj_makeAttributesString(^(SJAttributeWorker * _Nonnull make) {
-                make.font(font).textColor(textColor);
-                // this test time
-                make.insert(sj_processTime(model.createTime, [NSDate date].timeIntervalSince1970), 0) ;
-            });
-            model.createTimeLayout = sj_layout(contentMaxWidth, attrStr);
-        }];
+        [LightweightTableViewCell sync_makeContentWithVideo:model tappedDelegate:actionDelegate];
         
         [testVideosM addObject:model];
     }
@@ -165,61 +99,8 @@
     return self;
 }
 
-- (void)setVideoContentLayout:(YYTextLayout *)videoContentLayout {
-    _videoContentLayout = videoContentLayout;
-}
-- (void)setNicknameLayout:(YYTextLayout *)nicknameLayout {
-    _nicknameLayout = nicknameLayout;
-}
-- (void)setCreateTimeLayout:(YYTextLayout *)createTimeLayout {
-    _createTimeLayout = createTimeLayout;
-}
-
-static YYTextLayout *sj_layout(CGFloat contentMaxWidth, NSAttributedString *attrStr) {
-    YYTextContainer *container = [YYTextContainer new];
-    container.size = CGSizeMake(contentMaxWidth, CGFLOAT_MAX);
-    container.maximumNumberOfRows = 0;
-    YYTextLayout *layout = [YYTextLayout sj_layoutWithContainer:container text:attrStr];
-    return layout;
-}
-
-static NSString *sj_processTime(NSTimeInterval createDate, NSTimeInterval nowDate) {
-    
-    double value = nowDate - createDate;
-    
-    if ( value < 0 ) {
-        return @"火星时间";
-    }
-    
-    NSInteger year  = value / 31104000;
-    NSInteger month = value / 2592000;
-    NSInteger week  = value / 604800;
-    NSInteger day   = value / 86400;
-    NSInteger hour  = value / 3600;
-    NSInteger min   = value / 60;
-    
-    if ( year > 0 ) {
-        return [NSString stringWithFormat:@"%zd年前", year];
-    }
-    else if ( month > 0 ) {
-        return [NSString stringWithFormat:@"%zd月前", month];
-    }
-    else if ( week > 0 ) {
-        return [NSString stringWithFormat:@"%zd周前", week];
-    }
-    else if ( day > 0 ) {
-        return [NSString stringWithFormat:@"%zd天前", day];
-    }
-    else if ( hour > 0 ) {
-        return [NSString stringWithFormat:@"%zd小时前", hour];
-    }
-    else if ( min > 0 ) {
-        return [NSString stringWithFormat:@"%zd分钟前", min];
-    }
-    else {
-        return @"刚刚";
-    }
-    return @"";
+- (NSTimeInterval)serverTime {
+    return [NSDate date].timeIntervalSince1970;
 }
 @end
 

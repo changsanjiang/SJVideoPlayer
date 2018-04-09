@@ -18,41 +18,31 @@
 @implementation YYTapActionLabel
 
 - (void)setAttributedText:(NSAttributedString *)attributedText {
-    if ( attributedText.tappedDelegate && [attributedText isKindOfClass:[NSMutableAttributedString class]] ) {
-        __weak typeof(self) _self = self;
-        self.textTapAction = ^(UIView *containerView, NSAttributedString *text, NSRange range, CGRect rect) {
-            __strong typeof(_self) self = _self;
-            if ( !self ) return;
-            if ( range.location >= text.length ) return;
-            if ( [text attribute:YYTextBindingAttributeName atIndex:range.location effectiveRange:NULL] ) {
-                if ( [attributedText.tappedDelegate respondsToSelector:@selector(attributedString:tappedStr:)] ) {
-                    [attributedText.tappedDelegate attributedString:attributedText tappedStr:[attributedText attributedSubstringFromRange:range]];
-                }
-            }
-        };;
-    }
+    [self _sjSetTextTapActionWithAttributedText:attributedText];
     [super setAttributedText:attributedText];
 }
 
 - (void)setTextLayout:(YYTextLayout *)textLayout {
-    NSAttributedString *attributedText = textLayout.tapActionAttributedString;
-    if ( attributedText ) {
-        __weak typeof(self) _self = self;
-        self.textTapAction = ^(UIView *containerView, NSAttributedString *text, NSRange range, CGRect rect) {
-            __strong typeof(_self) self = _self;
-            if ( !self ) return;
-            if ( range.location >= text.length ) return;
-            if ( [text attribute:YYTextBindingAttributeName atIndex:range.location effectiveRange:NULL] ) {
-                if ( [attributedText.tappedDelegate respondsToSelector:@selector(attributedString:tappedStr:)] ) {
-                    [attributedText.tappedDelegate attributedString:attributedText tappedStr:[attributedText attributedSubstringFromRange:range]];
-                }
-            }
-            else if ( [attributedText.tappedDelegate respondsToSelector:@selector(tappedOtherPlacesOfAttributedString:)] ) {
-                [attributedText.tappedDelegate tappedOtherPlacesOfAttributedString:attributedText];
-            }
-        };;
-    }
+    [self _sjSetTextTapActionWithAttributedText:textLayout.tapActionAttributedString];
     [super setTextLayout:textLayout];
+}
+
+- (void)_sjSetTextTapActionWithAttributedText:(NSAttributedString *)attributedText {
+    if ( !attributedText.tappedDelegate ) return;
+    __weak typeof(self) _self = self;
+    self.textTapAction = ^(UIView *containerView, NSAttributedString *text, NSRange range, CGRect rect) {
+        __strong typeof(_self) self = _self;
+        if ( !self ) return;
+        if ( range.location >= text.length ) return;
+        if ( [text attribute:YYTextBindingAttributeName atIndex:range.location effectiveRange:NULL] ) {
+            if ( [attributedText.tappedDelegate respondsToSelector:@selector(attributedString:tappedStr:)] ) {
+                [attributedText.tappedDelegate attributedString:attributedText tappedStr:[attributedText attributedSubstringFromRange:range]];
+            }
+        }
+        else if ( [attributedText.tappedDelegate respondsToSelector:@selector(tappedOtherPlacesOfAttributedString:)] ) {
+            [attributedText.tappedDelegate tappedOtherPlacesOfAttributedString:attributedText];
+        }
+    };
 }
 
 @end

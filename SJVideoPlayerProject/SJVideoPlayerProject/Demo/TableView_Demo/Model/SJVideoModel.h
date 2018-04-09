@@ -21,6 +21,7 @@
 @property (nonatomic, strong) SJUserModel *creator;
 @property (nonatomic, strong) NSString *title;
 @property (nonatomic, assign) NSTimeInterval createTime;
+@property (nonatomic, assign) NSTimeInterval serverTime;
 @property (nonatomic, strong) NSString *playURLStr;
 @property (nonatomic, strong) NSString *coverURLStr;
 
@@ -31,11 +32,6 @@
                    playURLStr:(NSString *)playURLStr
                   coverURLStr:(NSString *)coverURLStr;
 
-
-#pragma mark -
-@property (nonatomic, strong, readonly) YYTextLayout *videoContentLayout;
-@property (nonatomic, strong, readonly) YYTextLayout *nicknameLayout;
-@property (nonatomic, strong, readonly) YYTextLayout *createTimeLayout;
 @end
 
 #pragma mark -

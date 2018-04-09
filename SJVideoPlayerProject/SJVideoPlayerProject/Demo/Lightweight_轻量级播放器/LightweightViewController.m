@@ -158,7 +158,7 @@ static NSString *const LightweightTableViewCellID = @"LightweightTableViewCell";
 }
 
 - (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath {
-    return [LightweightTableViewCell heightWithContentHeight:_videos[indexPath.row].videoContentLayout.textBoundingSize.height];
+    return [LightweightTableViewCell heightWithVideo:_videos[indexPath.row]];
 }
 
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath {

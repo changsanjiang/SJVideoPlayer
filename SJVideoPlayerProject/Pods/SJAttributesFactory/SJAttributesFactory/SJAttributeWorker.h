@@ -144,7 +144,7 @@ typedef NS_ENUM(NSUInteger, SJAttributeRegexpInsertPosition) {
 };
 /**
  make.regexp_insert(@"Hello", SJAttributeRegexpInsertPositionRight, @" World!");
- make.regexp_insert(@"Hello", SJAttributeRegexpInsertPositionRight, [UIImage imageNamed:@"sample2"], 0, CGPointMake(0, 0), CGSizeZero);
+ make.regexp_insert(@"Hello", SJAttributeRegexpInsertPositionRight, [UIImage imageNamed:@"sample2"], CGPointMake(0, 0), CGSizeZero);
  */
 @property (nonatomic, copy, readonly) void(^regexp_insert)(NSString *regexp, SJAttributeRegexpInsertPosition position, id insertingStrOrAttrStrOrImg, ...);
 

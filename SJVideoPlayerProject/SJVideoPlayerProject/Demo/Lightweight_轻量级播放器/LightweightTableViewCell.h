@@ -12,17 +12,11 @@ NS_ASSUME_NONNULL_BEGIN
 @class SJVideoModel;
 @protocol LightweightTableViewCellDelegate, NSAttributedStringTappedDelegate;
 
-typedef void(^SJTextAppearance)(CGFloat maxWidth, UIFont *font, UIColor *textColor);
-
 @interface LightweightTableViewCell : UITableViewCell
 
-+ (CGFloat)heightWithContentHeight:(CGFloat)contentHeight;
++ (void)sync_makeContentWithVideo:(SJVideoModel *)model tappedDelegate:(id<NSAttributedStringTappedDelegate>)tappedDelegate;
++ (CGFloat)heightWithVideo:(SJVideoModel *)video;
 
-+ (void)sync_makeVideoContent:(SJTextAppearance)block;
-
-+ (void)sync_makeNickname:(SJTextAppearance)block;
-
-+ (void)sync_makeCreateTime:(SJTextAppearance)block;
 
 @property (nonatomic, strong, nullable) SJVideoModel *model;
 @property (nonatomic, weak, nullable) id<LightweightTableViewCellDelegate> delegate;

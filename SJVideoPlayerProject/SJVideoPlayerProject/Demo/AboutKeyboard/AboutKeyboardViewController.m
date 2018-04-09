@@ -34,10 +34,6 @@
     
     _videoPlayer = [SJVideoPlayer player];
     [self.view addSubview:_videoPlayer.view];
-    _textView = [SJUITextViewFactory textViewWithTextColor:[UIColor blackColor] backgroundColor:[UIColor greenColor] font:[UIFont boldSystemFontOfSize:14]];
-    _textView.text = @"Please Enter...";
-    [_textView becomeFirstResponder];
-    [_videoPlayer.controlLayerDataSource.controlView addSubview:_textView];
     
     [_videoPlayer.view mas_makeConstraints:^(MASConstraintMaker *make) {
         make.top.offset(SJ_is_iPhoneX() ? 34 : 20);
@@ -45,12 +41,7 @@
         make.height.equalTo(self->_videoPlayer.view.mas_width).multipliedBy(9 / 16.0f);
     }];
     
-    [_textView mas_makeConstraints:^(MASConstraintMaker *make) {
-        make.center.offset(0);
-        make.width.offset(200);
-        make.height.offset(30);
-    }];
-    
+
     dispatch_async(dispatch_get_global_queue(0, 0), ^{
         self->_videoPlayer.assetURL = [[NSBundle mainBundle] URLForResource:@"sample" withExtension:@"mp4"];
     });
@@ -63,6 +54,26 @@
         [self.textView resignFirstResponder];       // text view resignFirstResponder.
     };
     
+}
+
+- (void)viewDidAppear:(BOOL)animated {
+    [super viewDidAppear:animated];
+    
+    
+    // test test test test test test test test test test test
+    // test test test test test test test test test test test
+    // test test test test test test test test test test test
+    // test test test test test test test test test test test
+    // test test test test test test test test test test test
+    _textView = [SJUITextViewFactory textViewWithTextColor:[UIColor blackColor] backgroundColor:[UIColor greenColor] font:[UIFont boldSystemFontOfSize:14]];
+    _textView.text = @"Please Enter...";
+    [_textView becomeFirstResponder];
+    [_videoPlayer.controlLayerDataSource.controlView addSubview:_textView];
+    [_textView mas_makeConstraints:^(MASConstraintMaker *make) {
+        make.center.offset(0);
+        make.width.offset(200);
+        make.height.offset(30);
+    }];
 }
 
 - (void)viewWillAppear:(BOOL)animated {

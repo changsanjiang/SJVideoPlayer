@@ -10,6 +10,9 @@
 #import <UIKit/UIKit.h>
 #import <objc/message.h>
 #import <SJObserverHelper/NSObject+SJObserverHelper.h>
+#import <ImageIO/ImageIO.h>
+#import <MobileCoreServices/MobileCoreServices.h>
+
 
 /*!
  *  Refresh interval for timed observations of AVPlayer
@@ -418,6 +421,15 @@ NS_ASSUME_NONNULL_END
     return image;
 }
 
+- (UIImage * __nullable)screenshotWithTime:(CMTime)time {
+    AVAssetImageGenerator *generator = [AVAssetImageGenerator assetImageGeneratorWithAsset:_asset];
+    generator.appliesPreferredTrackTransform = YES;
+    CGImageRef imgRef = [generator copyCGImageAtTime:time actualTime:&time error:nil];
+    UIImage *image = [UIImage imageWithCGImage:imgRef];
+    CGImageRelease(imgRef);
+    return image;
+}
+
 - (void)screenshotWithTime:(NSTimeInterval)t
                 completion:(void(^)(SJVideoPlayerAssetCarrier *asset, SJVideoPreviewModel *images, NSError *__nullable error))block {
     return [self screenshotWithTime:t size:CGSizeZero completion:block];
@@ -473,28 +485,32 @@ NS_ASSUME_NONNULL_END
     _imageGenerator.appliesPreferredTrackTransform = YES;
     _imageGenerator.maximumSize = itemSize;
     [_imageGenerator generateCGImagesAsynchronouslyForTimes:timesM completionHandler:^(CMTime requestedTime, CGImageRef  _Nullable imageRef, CMTime actualTime, AVAssetImageGeneratorResult result, NSError * _Nullable error) {
-        
-        if ( result == AVAssetImageGeneratorSucceeded ) {
-            UIImage *image = [UIImage imageWithCGImage:imageRef];
-            SJVideoPreviewModel *model = [SJVideoPreviewModel previewModelWithImage:image localTime:actualTime];
-            if ( model ) [imagesM addObject:model];
-        }
-        else if ( result == AVAssetImageGeneratorFailed ) {
-            __strong typeof(_self) self = _self;
-            if ( !self ) return;
-            if ( block ) block(self, nil, error);
-            [self.imageGenerator cancelAllCGImageGeneration];
-        }
-        if ( --maxCount == 0 ) {
-            dispatch_async(dispatch_get_main_queue(), ^{
-                if ( 0 == imagesM.count ) return;
-                __strong typeof(_self) self = _self;
-                if ( !self ) return;
-                self.hasBeenGeneratedPreviewImages = YES;
-                self.generatedPreviewImages = imagesM;
-                self.maxItemSize = itemSize;
-                if ( block ) block(self, imagesM, nil);
-            });
+        switch ( result ) {
+            case AVAssetImageGeneratorSucceeded: {
+                UIImage *image = [UIImage imageWithCGImage:imageRef];
+                SJVideoPreviewModel *model = [SJVideoPreviewModel previewModelWithImage:image localTime:actualTime];
+                [imagesM addObject:model];
+                if ( --maxCount != 0 ) return;
+                dispatch_async(dispatch_get_main_queue(), ^{
+                    __strong typeof(_self) self = _self;
+                    if ( !self ) return;
+                    self.hasBeenGeneratedPreviewImages = YES;
+                    self.generatedPreviewImages = imagesM;
+                    self.maxItemSize = itemSize;
+                    if ( block ) block(self, imagesM, nil);
+                });
+            }
+                break;
+            case AVAssetImageGeneratorFailed: {
+                dispatch_async(dispatch_get_main_queue(), ^{
+                    __strong typeof(_self) self = _self;
+                    if ( !self ) return;
+                    [self.imageGenerator cancelAllCGImageGeneration];
+                    if ( block ) block(self, nil, error);
+                });
+            }
+                break;
+            case AVAssetImageGeneratorCancelled: break;
         }
     }];
 }
@@ -602,6 +618,83 @@ NS_ASSUME_NONNULL_END
                 break;
         }
     }];
+}
+
+- (void)generateGifWithBeginTime:(NSTimeInterval)beginTime
+                        duration:(NSTimeInterval)duration
+                     maximumSize:(CGSize)maximumSize
+                        interval:(float)interval
+                     gifSavePath:(NSURL *)gifSavePath
+                      completion:(void(^)(SJVideoPlayerAssetCarrier *asset, NSURL *fileURL, UIImage *thumbnailImage))completion
+                         failure:(void(^)(SJVideoPlayerAssetCarrier *asset, NSError *error))failure {
+    if ( interval == 0 ) interval = 0.1f;
+    __block int count = duration / interval;
+    NSMutableArray<NSValue *> *timesM = [NSMutableArray new];
+    for ( int i = 0 ; i < count ; ++ i ) {
+        [timesM addObject:[NSValue valueWithCMTime:CMTimeMakeWithSeconds(beginTime + i * interval, NSEC_PER_SEC)]];
+    }
+    
+    NSMutableArray<UIImage *> *imagesM = [NSMutableArray new];
+    AVAssetImageGenerator *generator = [AVAssetImageGenerator assetImageGeneratorWithAsset:_asset];
+    generator.appliesPreferredTrackTransform = YES;
+    generator.maximumSize = maximumSize;
+    generator.requestedTimeToleranceBefore = kCMTimeZero;
+    generator.requestedTimeToleranceAfter = kCMTimeZero;
+    
+    __weak typeof(self) _self = self;
+    [generator generateCGImagesAsynchronouslyForTimes:timesM completionHandler:^(CMTime requestedTime, CGImageRef  _Nullable imageRef, CMTime actualTime, AVAssetImageGeneratorResult result, NSError * _Nullable error) {
+        switch ( result ) {
+            case AVAssetImageGeneratorSucceeded: {
+                [imagesM addObject:[UIImage imageWithCGImage:imageRef]];
+                if ( --count != 0 ) return;
+                
+                BOOL result = makeAnimatedGif(imagesM, interval, gifSavePath);
+                dispatch_async(dispatch_get_main_queue(), ^{
+                    __strong typeof(_self) self = _self;
+                    if ( !self ) return;
+                    if ( !result ) {
+                        NSError *error = [NSError errorWithDomain:NSCocoaErrorDomain
+                                                             code:-1
+                                                         userInfo:@{@"msg":@"Generate Gif Failed!"}];
+                        if ( failure ) failure(self, error);
+                    }
+                    else {
+                        if ( completion ) completion(self, gifSavePath, imagesM.firstObject);
+                    }
+                });
+            }
+                break;
+            case AVAssetImageGeneratorFailed: {
+                [generator cancelAllCGImageGeneration];
+                dispatch_async(dispatch_get_main_queue(), ^{
+                    __strong typeof(_self) self = _self;
+                    if ( !self ) return;
+                    if ( failure ) failure(self, error);
+                });
+            }
+                break;
+            case AVAssetImageGeneratorCancelled: break;
+        }
+    }];
+}
+
+static BOOL makeAnimatedGif(NSArray<UIImage *> *images, float delayTime, NSURL *savePath) {
+    delayTime = 0.25f;
+    CGImageDestinationRef destination = CGImageDestinationCreateWithURL((__bridge CFURLRef)savePath, kUTTypeGIF, images.count, NULL);
+    NSDictionary *fileProperties = @{ (__bridge id)kCGImagePropertyGIFDictionary: @{(__bridge id)kCGImagePropertyGIFLoopCount: @(0)} };
+    CGImageDestinationSetProperties(destination, (__bridge CFDictionaryRef)fileProperties);
+    NSDictionary *frameProperties = @{ (__bridge id)kCGImagePropertyGIFDictionary: @{(__bridge id)kCGImagePropertyGIFDelayTime: @(delayTime)} };
+    [images enumerateObjectsUsingBlock:^(UIImage * _Nonnull obj, NSUInteger idx, BOOL * _Nonnull stop) {
+        @autoreleasepool {
+            CGImageDestinationAddImage(destination, obj.CGImage, (__bridge CFDictionaryRef)frameProperties);
+        }
+    }];
+    if (!CGImageDestinationFinalize(destination)) {
+        NSLog(@"Failed to finalize image destination");
+        return NO;
+    }
+    CFRelease(destination);
+    return YES;
 }
 
 - (void)_cleanRefreshProgressTimer {

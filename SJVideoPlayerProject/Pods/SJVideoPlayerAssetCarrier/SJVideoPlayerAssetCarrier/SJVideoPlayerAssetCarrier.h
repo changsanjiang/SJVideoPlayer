@@ -157,6 +157,8 @@ NS_ASSUME_NONNULL_BEGIN
 #pragma mark - screenshot
 - (UIImage * __nullable)screenshot;
 
+- (UIImage * __nullable)screenshotWithTime:(CMTime)time;
+
 - (void)screenshotWithTime:(NSTimeInterval)time
                 completion:(void(^)(SJVideoPlayerAssetCarrier *asset, SJVideoPreviewModel * __nullable images, NSError *__nullable error))block;
 
@@ -201,6 +203,7 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic, assign, readonly) CGSize maxItemSize;
 - (void)generatedPreviewImagesWithMaxItemSize:(CGSize)itemSize
                                    completion:(void(^)(SJVideoPlayerAssetCarrier *asset, NSArray<SJVideoPreviewModel *> *__nullable images, NSError *__nullable error))block;
+
 - (void)cancelPreviewImagesGeneration;
 
 
@@ -215,6 +218,19 @@ NS_ASSUME_NONNULL_BEGIN
                    progress:(void(^)(SJVideoPlayerAssetCarrier *asset, float progress))progress
                  completion:(void(^)(SJVideoPlayerAssetCarrier *asset, AVAsset * __nullable sandboxAsset, NSURL * __nullable fileURL, UIImage * __nullable thumbImage))completion
                     failure:(void(^)(SJVideoPlayerAssetCarrier *asset, NSError * __nullable error))failure;
+
+/**
+ generate gif
+ @param interval        The interval at which the image is captured, Recommended setting 0.1f.
+ */
+- (void)generateGifWithBeginTime:(NSTimeInterval)beginTime
+                        duration:(NSTimeInterval)duration
+                     maximumSize:(CGSize)maximumSize
+                        interval:(float)interval
+                     gifSavePath:(NSURL *)gifSavePath
+                      completion:(void(^)(SJVideoPlayerAssetCarrier *asset, NSURL *fileURL, UIImage *thumbnailImage))completion
+                         failure:(void(^)(SJVideoPlayerAssetCarrier *asset, NSError *error))failure;
+
 
 #pragma mark - seek to time
 - (void)jumpedToTime:(NSTimeInterval)time completionHandler:(void (^ __nullable)(BOOL finished))completionHandler;

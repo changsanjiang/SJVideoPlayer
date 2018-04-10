@@ -591,6 +591,23 @@ BOOL _addAttributes(SJAttributesRangeOperator *operator, NSMutableAttributedStri
         return self;
     };
 }
+- (SJAttributesRangeOperator * _Nonnull (^)(id _Nonnull, ...))append {
+    return ^ SJAttributesRangeOperator *(id strOrImg, ...) {
+        va_list args;
+        va_start(args, strOrImg);
+        if      ( [strOrImg isKindOfClass:[NSString class]] ) {
+            self.insertText(strOrImg, -1);
+        }
+        else if ( [strOrImg isKindOfClass:[UIImage class]] ) {
+            self.insertImage(strOrImg, -1, va_arg(args, CGPoint), va_arg(args, CGSize));
+        }
+        else {
+            _errorLog(@"append `text` Failed! param `strOrImg` is Unlawfulness!", self.attrStr.string);
+        }
+        va_end(args);
+        return [self _getOperatorWithRange:self.lastInsertedRange];
+    };
+}
 - (SJAttributeWorker * _Nonnull (^)(NSString * _Nonnull, NSInteger))insertText {
     return ^ SJAttributeWorker *(NSString *text, NSInteger idx) {
         if ( 0 == text.length ) {

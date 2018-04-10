@@ -373,11 +373,7 @@ NS_ASSUME_NONNULL_END
 }
 
 - (void (^)(void))vc_viewDidAppearExeBlock {
-    __weak typeof(self) _self = self;
     return ^ () {
-        __strong typeof(_self) self = _self;
-        if ( !self ) return;
-        
         self.videoPlayer.disableRotation = NO;
         
         if ( [self.viewController respondsToSelector:@selector(needConvertExternalAsset)] ) {
@@ -397,10 +393,7 @@ NS_ASSUME_NONNULL_END
 }
 
 - (void (^)(void))vc_viewWillDisappearExeBlock {
-    __weak typeof(self) _self = self;
     return ^ () {
-        __strong typeof(_self) self = _self;
-        if ( !self ) return;
         self.videoPlayer.disableRotation = YES;   // 界面将要消失的时候, 禁止旋转.
     
         if ( [self.viewController respondsToSelector:@selector(needConvertExternalAsset)] ) {
@@ -410,10 +403,7 @@ NS_ASSUME_NONNULL_END
 }
 
 - (void (^)(void))vc_viewDidDisappearExeBlock {
-    __weak typeof(self) _self = self;
     return ^ () {
-        __strong typeof(_self) self = _self;
-        if ( !self ) return;
         if ( !self.asset.converted ) [self.videoPlayer pause];
     };
 }

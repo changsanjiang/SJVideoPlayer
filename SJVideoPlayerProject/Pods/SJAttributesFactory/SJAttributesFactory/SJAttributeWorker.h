@@ -24,8 +24,7 @@ NS_ASSUME_NONNULL_BEGIN
  *       // set font , text color.
  *       make.font([UIFont boldSystemFontOfSize:14]).textColor([UIColor blackColor]);
  
- *       // inset text
- *       make.insert(@"@迷你世界联机 :@江叔 用小淘气耍赖野人#迷你世界#", 0);
+ *       make.append(@"@迷你世界联机 :@江叔 用小淘气耍赖野人#迷你世界#");
  
  *       make.regexp(@"[@][^@]+\\s", ^(SJAttributesRangeOperator * _Nonnull matched) {
  *           matched.textColor([UIColor purpleColor]);
@@ -79,7 +78,7 @@ extern NSMutableAttributedString *sj_makeAttributesString(void(^block)(SJAttribu
  *
  *  范围编辑, 可以配合正则使用.
  **/
-@property (nonatomic, copy, readonly) SJAttributeWorker *(^rangeEdit)(NSRange range, void (^task)(SJAttributesRangeOperator *rangeOperator));
+@property (nonatomic, copy, readonly) SJAttributeWorker *(^rangeEdit)(NSRange range, void (^task)(SJAttributesRangeOperator *make));
 
 /*!
  *  get sub attributedString by `range`.
@@ -111,7 +110,7 @@ extern NSMutableAttributedString *sj_makeAttributesString(void(^block)(SJAttribu
     matched.font([UIFont systemFontOfSize:18]).textColor([UIColor redColor]);
  });
  **/
-@property (nonatomic, copy, readonly) SJAttributeWorker *(^regexp)(NSString *regStr, void(^matchedTask)(SJAttributesRangeOperator *matched));
+@property (nonatomic, copy, readonly) SJAttributeWorker *(^regexp)(NSString *regStr, void(^matchedTask)(SJAttributesRangeOperator *make));
 
 
 /*!
@@ -124,7 +123,8 @@ extern NSMutableAttributedString *sj_makeAttributesString(void(^block)(SJAttribu
         NSRange matchedRange = [obj rangeValue];
 
         make.replace(matchedRange, @"h");
-        make.insert(@"ello", matchedRange.location + matchedRange.length); // h + ello == hello
+        NSInteger index = matchedRange.location + matchedRange.length;
+        make.insert(@"ello", index); // h + ello == hello
     }];
  }, YES);
  **/
@@ -133,7 +133,7 @@ extern NSMutableAttributedString *sj_makeAttributesString(void(^block)(SJAttribu
 
 /**
  make.regexp_replace(@"Hello", @" World!");
- make.regexp_replace(@"Hello", [UIImage imageNamed:@"sample2"], CGPointMake(0, 0), CGSizeZero);
+ make.regexp_replace(@"Hello", [UIImage imageNamed:@"sample2"], CGPointZero, CGSizeZero);
  */
 @property (nonatomic, copy, readonly) void(^regexp_replace)(NSString *regexp, id replaceByStrOrAttrStrOrImg, ...);
 
@@ -144,7 +144,7 @@ typedef NS_ENUM(NSUInteger, SJAttributeRegexpInsertPosition) {
 };
 /**
  make.regexp_insert(@"Hello", SJAttributeRegexpInsertPositionRight, @" World!");
- make.regexp_insert(@"Hello", SJAttributeRegexpInsertPositionRight, [UIImage imageNamed:@"sample2"], CGPointMake(0, 0), CGSizeZero);
+ make.regexp_insert(@"Hello", SJAttributeRegexpInsertPositionRight, [UIImage imageNamed:@"sample2"], CGPointZero, CGSizeZero);
  */
 @property (nonatomic, copy, readonly) void(^regexp_insert)(NSString *regexp, SJAttributeRegexpInsertPosition position, id insertingStrOrAttrStrOrImg, ...);
 
@@ -166,6 +166,21 @@ typedef NS_ENUM(NSUInteger, SJAttributeRegexpInsertPosition) {
 
 #pragma mark - 插入 - insert
 @interface SJAttributeWorker(Insert)
+
+#pragma mark - 常用方法
+
+/**
+ append text.
+ 
+ make.append(@"Hello").font([UIFont systemFontOfSize:14]).textColor([UIColor yellowColor]);
+ make.append([UIImage imageNamed:@"sample2"], CGPointZero, CGSizeZero);
+ */
+@property (nonatomic, copy, readonly) SJAttributesRangeOperator *(^append)(id strOrImg, ...);
+
+
+
+
+#pragma mark -
 /*!
  *  the range of the last inserted text.
  *
@@ -173,15 +188,25 @@ typedef NS_ENUM(NSUInteger, SJAttributeRegexpInsertPosition) {
  **/
 @property (nonatomic, assign, readonly) NSRange lastInsertedRange;
 /*!
- *  editing the latest text.
+ *  editing the last inserted text
  *
  *  编辑最后插入的文本.
+ 
  make.lastInserted(^(SJAttributesRangeOperator * _Nonnull lastOperator) {
     lastOperator.textColor([UIColor redColor]);
     lastOperator.font([UIFont boldSystemFontOfSize:17]);
  });
+ 
+ 4/10 2018 : Because someone ignores the `last operator` and uses `make`, I change the `last operator` to `make`
+ 
+ For example: editing the last inserted text.
+ make.lastInserted(^(SJAttributesRangeOperator * _Nonnull make) {
+    // so it's editing the last inserted text
+    make.textColor([UIColor redColor]);
+    make.font([UIFont boldSystemFontOfSize:17]);
+ });
  **/
-@property (nonatomic, copy, readonly) SJAttributeWorker *(^lastInserted)(void(^task)(SJAttributesRangeOperator *lastOperator));
+@property (nonatomic, copy, readonly) SJAttributeWorker *(^lastInserted)(void(^task)(SJAttributesRangeOperator *make));
 /*!
  *  add attribute of `key, value, range`.
  *
@@ -221,7 +246,7 @@ typedef NS_ENUM(NSUInteger, SJAttributeRegexpInsertPosition) {
  make.insert([UIImage imageNamed:@"sample2"], 12, CGPointZero, CGSizeMake(50, 50));
  make.insert([UIImage imageNamed:@"sample2"], -1, CGPointZero, CGSizeZero);
  **/
-@property (nonatomic, copy, readonly) SJAttributeWorker *(^insert)(id strOrAttrStrOrImg, NSInteger index, ...);
+@property (nonatomic, copy, readonly) SJAttributeWorker *(^insert)(id strOrAttrStrOrImg, NSInteger idx, ...);
 
 @end
 

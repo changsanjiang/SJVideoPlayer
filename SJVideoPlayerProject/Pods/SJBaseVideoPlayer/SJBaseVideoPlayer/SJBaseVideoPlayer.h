@@ -582,6 +582,11 @@ typedef NS_ENUM(NSInteger, SJNetworkStatus) {
                  completion:(void(^)(__kindof SJBaseVideoPlayer *videoPlayer, SJVideoPlayerURLAsset *asset, NSURL *fileURL, UIImage *thumbImage))completion
                     failure:(void(^)(__kindof SJBaseVideoPlayer *videoPlayer, NSError *error))failure;
 
+- (void)generateGifWithBeginTime:(NSTimeInterval)beginTime
+                        duration:(NSTimeInterval)duration
+                      completion:(void(^)(__kindof SJBaseVideoPlayer *videoPlayer, NSURL *fileURL, UIImage *thumbnailImage))completion
+                         failure:(void(^)(__kindof SJBaseVideoPlayer *videoPlayer, NSError *error))failure;
+
 @end
 
 

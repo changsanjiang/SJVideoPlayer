@@ -1,7 +1,12 @@
 # SJAttributesFactory
 
 ### 最新动态:
-- 修复[插入/替换/删除]时RangeOperator未调整的问题, 增加了几个正则相关方法.[4/9/2018]
+- 添加了一个[append]方法. [4/10/2018]
+```Objective-C
+    make.append(@"Hello").font([UIFont systemFontOfSize:14]).textColor([UIColor yellowColor]);
+    make.append([UIImage imageNamed:@"sample2"], CGPointZero, CGSizeZero);
+```
+- 修复[插入/替换/删除]时RangeOperator未调整的问题, 增加了几个正则相关方法. [4/9/2018]
 - 优化`endTask`方法. 当调用 endTask , 只有记录员的属性发生改变时, 才会重新赋值. [4/4/2018]
 - 发布v2版本, 优化了v1版本的操作不便之处, 移除了多余代码. [1/28/2018]
 
@@ -17,14 +22,6 @@ pod 'SJAttributesStringMaker'
 ```
 ___
 
-### 关于v1版本
-
-```ruby
- // 抱歉各位, 由于结构调整, `v1`和`v2`版本差距较大, 大家可以如下方式, 继续使用`v1`版本的.
- pod 'SJAttributesFactory', '1.1.14'
-```
-___
-
 ### regular expression
 <img src="https://github.com/changsanjiang/SJAttributesFactory/blob/master/Demo/SJAttributesFactory/regular.jpeg" />
 
@@ -32,10 +29,10 @@ ___
     sj_makeAttributesString(^(SJAttributeWorker * _Nonnull make) {
         make.insert(@"@迷你世界联机 :@江叔 用小淘气耍赖野人#迷你世界#", 0);
         
-        make.regexp(@"[@][^\\s]+\\s", ^(SJAttributesRangeOperator * _Nonnull matched) {
+        make.regexp(@"@\\w+", ^(SJAttributesRangeOperator * _Nonnull matched) {
             matched.textColor([UIColor purpleColor]);
         });
-        make.regexp(@"[#][^#]+#", ^(SJAttributesRangeOperator * _Nonnull matched) {
+        make.regexp(@"#[^#]+#", ^(SJAttributesRangeOperator * _Nonnull matched) {
             matched.textColor([UIColor orangeColor]);
         });
     });

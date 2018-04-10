@@ -1118,7 +1118,7 @@ NS_ASSUME_NONNULL_END
 
 - (void)seekToTime:(CMTime)time completionHandler:(void (^ __nullable)(BOOL finished))completionHandler {
     self.state = SJVideoPlayerPlayState_Buffing;
-    self.asset.startBuffering(self.asset);
+    if ( self.asset.startBuffering ) self.asset.startBuffering(self.asset);
     __weak typeof(self) _self = self;
     [self.asset seekToTime:time completionHandler:^(BOOL finished) {
         __strong typeof(_self) self = _self;
@@ -1551,6 +1551,30 @@ NS_ASSUME_NONNULL_END
         __strong typeof(_self) self = _self;
         if ( !self ) return;
         if ( completion ) completion(self, [[SJVideoPlayerURLAsset alloc] initWithAssetURL:fileURL], fileURL, thumbImage);
+    } failure:^(SJVideoPlayerAssetCarrier * _Nonnull asset, NSError * _Nonnull error) {
+        __strong typeof(_self) self = _self;
+        if ( !self ) return;
+        if ( failure ) failure(self, error);
+    }];
+}
+
+- (void)generateGifWithBeginTime:(NSTimeInterval)beginTime
+                        duration:(NSTimeInterval)duration
+                      completion:(void(^)(__kindof SJBaseVideoPlayer *videoPlayer, NSURL *fileURL, UIImage *thumbnailImage))completion
+                         failure:(void(^)(__kindof SJBaseVideoPlayer *videoPlayer, NSError *error))failure {
+    if ( !self.asset ) {
+        if ( failure ) {
+            failure(self, [NSError errorWithDomain:NSCocoaErrorDomain
+                                              code:-1
+                                          userInfo:@{@"msg":@"Generate Gif Failed! Because `asset` is nil"}]);
+        }
+        return;
+    }
+    __weak typeof(self) _self = self;
+    [self.asset generateGifWithBeginTime:beginTime duration:duration maximumSize:self.asset.videoPresentationSize interval:0.1f gifSavePath:[NSURL fileURLWithPath:[NSTemporaryDirectory() stringByAppendingPathComponent:@"SJGeneratedGif.gif"]]  completion:^(SJVideoPlayerAssetCarrier * _Nonnull asset, NSURL * _Nonnull fileURL, UIImage * _Nonnull thumbnailImage) {
+        __strong typeof(_self) self = _self;
+        if ( !self ) return;
+        if ( completion ) completion(self, fileURL, thumbnailImage);
     } failure:^(SJVideoPlayerAssetCarrier * _Nonnull asset, NSError * _Nonnull error) {
         __strong typeof(_self) self = _self;
         if ( !self ) return;

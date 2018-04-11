@@ -57,12 +57,12 @@
 }
 
 - (void)applicationWillResignActiveNotification {
-    self.state = SJVideoPlayerBackstageState_Forground;
+    self.state = SJVideoPlayerBackstageState_Background;
     if ( _willResignActive ) _willResignActive(self);
 }
 
 - (void)applicationDidBecomeActiveNotification {
-    self.state = SJVideoPlayerBackstageState_Background;
+    self.state = SJVideoPlayerBackstageState_Forground;
     if ( _didBecomeActive ) _didBecomeActive(self);
 }
 

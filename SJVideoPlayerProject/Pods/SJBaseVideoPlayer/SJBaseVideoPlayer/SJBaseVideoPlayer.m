@@ -985,7 +985,7 @@ NS_ASSUME_NONNULL_END
 #endif
     _presentView.playState = state;
     
-    if ( state == SJVideoPlayerPlayState_Paused && self.pausedToKeepAppearState ) [self.displayRecorder layerAppear];
+    if ( state == SJVideoPlayerPlayState_Paused && self.pausedToKeepAppearState && self.registrar.state == SJVideoPlayerBackstageState_Forground ) [self.displayRecorder layerAppear];
     
     if ( [self.controlLayerDelegate respondsToSelector:@selector(videoPlayer:stateChanged:)] ) {
         [self.controlLayerDelegate videoPlayer:self stateChanged:state];

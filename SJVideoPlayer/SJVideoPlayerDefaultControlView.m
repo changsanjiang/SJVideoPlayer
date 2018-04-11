@@ -607,7 +607,7 @@ NS_ASSUME_NONNULL_END
 }
 
 - (void)filmEditingControlView:(SJVideoPlayerFilmEditingControlView *)filmEditingControlView statusChanged:(SJVideoPlayerFilmEditingStatus)status {
-    NSLog(@"--- %d", status);
+    NSLog(@"--- %d", (int)status);
     switch ( status ) {
         case SJVideoPlayerFilmEditingStatus_Unknown: break;
         case SJVideoPlayerFilmEditingStatus_Stopped: break;

@@ -15,13 +15,14 @@
 #import <SJAttributesFactory/SJAttributeWorker.h>
 #import "SJFilmEditingResultShareItem.h"
 #import <SJObserverHelper/NSObject+SJObserverHelper.h>
-
+#import <SJBaseVideoPlayer/SJBaseVideoPlayer.h>
 
 @interface SJVideoPlayerFilmEditingResultView ()
 
 @property (nonatomic, strong, readonly) UIButton *cancelBtn;
 @property (nonatomic, strong, readonly) UIView *fullMaskView;
 @property (nonatomic, strong, readonly) UIImageView *imageView;
+@property (nonatomic, strong, readonly) SJBaseVideoPlayer *videoPlayer;
 @property (nonatomic, strong, readonly) UIView *itemsContainerView;
 
 @property (nonatomic, strong, readonly) UILabel *progressLabel;
@@ -35,6 +36,7 @@
 @synthesize imageView = _imageView;
 @synthesize fullMaskView = _fullMaskView;
 @synthesize itemsContainerView = _itemsContainerView;
+@synthesize videoPlayer = _videoPlayer;
 @synthesize progressLabel = _progressLabel;
 @synthesize uploadProgressView = _uploadProgressView;
 
@@ -53,11 +55,11 @@
 }
 
 - (void)showResultWithCompletion:(void (^)(void))block {
-    [_imageView mas_remakeConstraints:^(MASConstraintMaker *make) {
+    [self.imageView mas_remakeConstraints:^(MASConstraintMaker *make) {
         make.centerX.offset(0);
         make.centerY.equalTo(self.mas_centerY).multipliedBy(0.82);
         make.width.equalTo(self).multipliedBy(0.4);
-        make.height.equalTo(self->_imageView.mas_width).multipliedBy(9 / 16.0);
+        make.height.equalTo(self.imageView.mas_width).multipliedBy(9 / 16.0);
     }];
     
     [UIView animateWithDuration:0.5 animations:^{
@@ -86,9 +88,14 @@
     self.imageView.image = image;
 }
 
-- (void)setRecordedVideoExportProgress:(float)recordedVideoExportProgress {
-    _recordedVideoExportProgress = recordedVideoExportProgress;
-    _progressLabel.text = [NSString stringWithFormat:@"%@: %.0f%%", self.exportingPrompt, recordedVideoExportProgress * 100];
+- (void)setVideoURL:(NSURL *)videoURL {
+    _videoURL = videoURL;
+    [self.videoPlayer playWithURL:videoURL];
+}
+
+- (void)setExportProgress:(float)exportProgress {
+    _exportProgress = exportProgress;
+    _progressLabel.text = [NSString stringWithFormat:@"%@: %.0f%%", self.exportingPrompt, exportProgress * 100];
 }
 
 - (void)setExportFailed:(BOOL)exportFailed {
@@ -115,7 +122,7 @@
             self->_progressLabel.text = [NSString stringWithFormat:@"%@: %.0f%%", self.uploadingPrompt, progress * 100];
             [self->_uploadProgressView mas_remakeConstraints:^(MASConstraintMaker *make) {
                 make.top.bottom.trailing.offset(0);
-                make.width.equalTo(self->_imageView).multipliedBy(1 - progress);
+                make.width.equalTo(self.imageView).multipliedBy(1 - progress);
             }];
         }
         else if ( [keyPath isEqualToString:@"uploaded"] ) {
@@ -172,8 +179,9 @@
     [self addSubview:self.cancelBtn];
     [self addSubview:self.imageView];
     [self addSubview:self.itemsContainerView];
-    [_imageView addSubview:self.uploadProgressView];
-    [_imageView addSubview:self.progressLabel];
+    if ( self.type == SJVideoPlayerFilmEditingResultViewType_Video ) [self.imageView addSubview:self.videoPlayer.view];
+    [self.imageView addSubview:self.uploadProgressView];
+    [self.imageView addSubview:self.progressLabel];
 
     self.itemsContainerView.alpha = 0.001;
     self.contentMode = UIViewContentModeScaleAspectFit;
@@ -189,13 +197,19 @@
         make.width.equalTo(self->_cancelBtn.mas_height).multipliedBy(2.8);
     }];
     
-    [_imageView mas_makeConstraints:^(MASConstraintMaker *make) {
+    [self.imageView mas_makeConstraints:^(MASConstraintMaker *make) {
         make.edges.offset(0);
     }];
     
+    if ( self.type == SJVideoPlayerFilmEditingResultViewType_Video ) {
+        [self.videoPlayer.view mas_makeConstraints:^(MASConstraintMaker *make) {
+            make.edges.equalTo(self.imageView);
+        }];
+    }
+    
     [_itemsContainerView mas_makeConstraints:^(MASConstraintMaker *make) {
         make.centerX.offset(0);
-        make.top.equalTo(self->_imageView.mas_bottom);
+        make.top.equalTo(self.imageView.mas_bottom);
         make.bottom.equalTo(self);
     }];
     
@@ -231,6 +245,7 @@
 - (UIImageView *)imageView {
     if ( _imageView ) return _imageView;
     _imageView = [SJUIImageViewFactory imageViewWithViewMode:UIViewContentModeScaleAspectFit];
+    _imageView.backgroundColor = [UIColor blackColor];
     return _imageView;
 }
 
@@ -244,5 +259,18 @@
     if ( _uploadProgressView ) return _uploadProgressView;
     _uploadProgressView = [SJUIViewFactory viewWithBackgroundColor:[UIColor colorWithWhite:0 alpha:0.5]];
     return _uploadProgressView;
+}
+
+- (SJBaseVideoPlayer *)videoPlayer {
+    if ( _videoPlayer ) return _videoPlayer;
+    _videoPlayer = [SJBaseVideoPlayer new];
+    _videoPlayer.view.backgroundColor = [UIColor clearColor];
+    _videoPlayer.view.subviews.firstObject.backgroundColor = [UIColor clearColor];
+    _videoPlayer.disableRotation = YES;
+    _videoPlayer.disableGestureTypes = SJDisablePlayerGestureTypes_All;
+    _videoPlayer.playDidToEnd = ^(__kindof SJBaseVideoPlayer * _Nonnull player) {
+        [player jumpedToTime:0 completionHandler:nil];
+    };
+    return _videoPlayer;
 }
 @end

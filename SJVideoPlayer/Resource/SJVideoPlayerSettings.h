@@ -24,14 +24,15 @@ extern NSNotificationName const SJSettingsPlayerNotification;
 #pragma mark - film editing
 @property (nonatomic, strong, readonly) NSString *videoPlayDidToEndText;
 @property (nonatomic, strong, readonly) NSString *cancelBtnTitle;
-@property (nonatomic, strong, readonly) NSString *waitingForRecordingTipsText;
-@property (nonatomic, strong, readonly) NSString *recordTipsText;
+@property (nonatomic, strong, readonly) NSString *waitingForRecordingPromptText;
+@property (nonatomic, strong, readonly) NSString *recordPromptText;
 @property (nonatomic, strong, readonly) NSString *uploadingPrompt;
 @property (nonatomic, strong, readonly) NSString *exportingPrompt;
 @property (nonatomic, strong, readonly) NSString *operationFailedPrompt;
 
 @property (nonatomic, strong, readwrite) UIImage *screenshotBtnImage;
 @property (nonatomic, strong, readwrite) UIImage *exportBtnImage;
+@property (nonatomic, strong, readwrite) UIImage *gifBtnImage;
 @property (nonatomic, strong, readwrite) UIImage *recordEndBtnImage;
 
 

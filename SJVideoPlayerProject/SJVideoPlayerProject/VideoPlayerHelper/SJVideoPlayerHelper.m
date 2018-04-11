@@ -237,6 +237,20 @@ NS_ASSUME_NONNULL_END
     self.uploader.screenshot = screenshot;
 }
 
+- (void)successfulGenerateGIF:(NSURL *)sandboxURL screenshot:(UIImage *)screenshot {
+    // need call your upload code..
+    // need call your upload code..
+    
+    self.uploader.screenshot = screenshot;
+    
+    
+    // test test test test test test test test test
+    // test test test test test test test test test
+    // test test test test test test test test test
+    NSURL *url = nil;
+    [self successfulExportedVideo:url screenshot:screenshot];
+}
+
 - (void)successfulScreenshot:(UIImage *)screenshot {
     // need call your upload code..
     // need call your upload code..
@@ -244,7 +258,9 @@ NS_ASSUME_NONNULL_END
     self.uploader.screenshot = screenshot;
     
     
-    // some test code..
+    // test test test test test test test test test
+    // test test test test test test test test test
+    // test test test test test test test test test
     NSURL *url = nil;
     [self successfulExportedVideo:url screenshot:screenshot];
 }

@@ -19,6 +19,7 @@
 		77154E8E205255C8009E51D7 /* SJVideoPlayerFilmEditingControlView.m in Sources */ = {isa = PBXBuildFile; fileRef = 77154E8D205255C8009E51D7 /* SJVideoPlayerFilmEditingControlView.m */; };
 		77154E9120526391009E51D7 /* SJVideoPlayerFilmEditingResultView.m in Sources */ = {isa = PBXBuildFile; fileRef = 77154E9020526391009E51D7 /* SJVideoPlayerFilmEditingResultView.m */; };
 		77154E9720526DAC009E51D7 /* SJFilmEditingResultShareItem.m in Sources */ = {isa = PBXBuildFile; fileRef = 77154E9620526DAC009E51D7 /* SJFilmEditingResultShareItem.m */; };
+		7717E6F8207DE21E00D1D489 /* SJVideoPlayerFilmEditingGenerateGIFView.m in Sources */ = {isa = PBXBuildFile; fileRef = 7717E6F6207DE21D00D1D489 /* SJVideoPlayerFilmEditingGenerateGIFView.m */; };
 		772005772029BBC7009F0190 /* SJMoreSettingItems.m in Sources */ = {isa = PBXBuildFile; fileRef = 772005762029BBC7009F0190 /* SJMoreSettingItems.m */; };
 		772DC3C7202201E500EC4725 /* placeholder.png in Resources */ = {isa = PBXBuildFile; fileRef = 772DC3C6202201E400EC4725 /* placeholder.png */; };
 		7737522A2052AE7D0000E4E7 /* SJVideoPlayerFilmEditingRecordView.m in Sources */ = {isa = PBXBuildFile; fileRef = 773752292052AE7D0000E4E7 /* SJVideoPlayerFilmEditingRecordView.m */; };
@@ -118,6 +119,8 @@
 		77154E9020526391009E51D7 /* SJVideoPlayerFilmEditingResultView.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = SJVideoPlayerFilmEditingResultView.m; sourceTree = "<group>"; };
 		77154E9520526DAC009E51D7 /* SJFilmEditingResultShareItem.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = SJFilmEditingResultShareItem.h; sourceTree = "<group>"; };
 		77154E9620526DAC009E51D7 /* SJFilmEditingResultShareItem.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = SJFilmEditingResultShareItem.m; sourceTree = "<group>"; };
+		7717E6F6207DE21D00D1D489 /* SJVideoPlayerFilmEditingGenerateGIFView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SJVideoPlayerFilmEditingGenerateGIFView.m; sourceTree = "<group>"; };
+		7717E6F7207DE21D00D1D489 /* SJVideoPlayerFilmEditingGenerateGIFView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SJVideoPlayerFilmEditingGenerateGIFView.h; sourceTree = "<group>"; };
 		772005752029BBC7009F0190 /* SJMoreSettingItems.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = SJMoreSettingItems.h; sourceTree = "<group>"; };
 		772005762029BBC7009F0190 /* SJMoreSettingItems.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = SJMoreSettingItems.m; sourceTree = "<group>"; };
 		772DC3C6202201E400EC4725 /* placeholder.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = placeholder.png; sourceTree = "<group>"; };
@@ -188,6 +191,7 @@
 		779A4E7620624F620041D8BE /* SJLightweightLeftControlView.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = SJLightweightLeftControlView.m; sourceTree = "<group>"; };
 		779A4E7B2062568C0041D8BE /* SJVideoPlayerAnimationHeader.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = SJVideoPlayerAnimationHeader.h; sourceTree = "<group>"; };
 		779A4E7C2062568C0041D8BE /* SJVideoPlayerAnimationHeader.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = SJVideoPlayerAnimationHeader.m; sourceTree = "<group>"; };
+		779D28EF207DEFA100B527CE /* SJVideoPlayerFilmEditingStatus.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = SJVideoPlayerFilmEditingStatus.h; sourceTree = "<group>"; };
 		77DA95142042B8EB007A9EE8 /* SJVideoPlayerHelper.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SJVideoPlayerHelper.m; sourceTree = "<group>"; };
 		77DA95152042B8EC007A9EE8 /* SJVideoPlayerHelper.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SJVideoPlayerHelper.h; sourceTree = "<group>"; };
 		77DA95182042C04A007A9EE8 /* TestPageViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TestPageViewController.h; sourceTree = "<group>"; };
@@ -452,10 +456,13 @@
 				77154E812050D040009E51D7 /* SJVideoPlayerRightControlView.m */,
 				77154E8C205255C8009E51D7 /* SJVideoPlayerFilmEditingControlView.h */,
 				77154E8D205255C8009E51D7 /* SJVideoPlayerFilmEditingControlView.m */,
-				77154E8F20526391009E51D7 /* SJVideoPlayerFilmEditingResultView.h */,
-				77154E9020526391009E51D7 /* SJVideoPlayerFilmEditingResultView.m */,
 				773752282052AE7D0000E4E7 /* SJVideoPlayerFilmEditingRecordView.h */,
 				773752292052AE7D0000E4E7 /* SJVideoPlayerFilmEditingRecordView.m */,
+				7717E6F7207DE21D00D1D489 /* SJVideoPlayerFilmEditingGenerateGIFView.h */,
+				7717E6F6207DE21D00D1D489 /* SJVideoPlayerFilmEditingGenerateGIFView.m */,
+				77154E8F20526391009E51D7 /* SJVideoPlayerFilmEditingResultView.h */,
+				77154E9020526391009E51D7 /* SJVideoPlayerFilmEditingResultView.m */,
+				779D28EF207DEFA100B527CE /* SJVideoPlayerFilmEditingStatus.h */,
 			);
 			name = ControlViews;
 			sourceTree = "<group>";
@@ -889,6 +896,7 @@
 				A6F4E9742007A12400716B9C /* PlayerCollectionViewController.m in Sources */,
 				77DA95232042C260007A9EE8 /* TestItem.m in Sources */,
 				A6441095200A3FBA006FD832 /* SJVideoListTableViewCell.m in Sources */,
+				7717E6F8207DE21E00D1D489 /* SJVideoPlayerFilmEditingGenerateGIFView.m in Sources */,
 				A6E6D3682028BE9B00CB9BAE /* SJVideoPlayerMoreSettingsSecondaryHeaderView.m in Sources */,
 				A6E6D34F2028BE9B00CB9BAE /* SJVideoPlayerControlMaskView.m in Sources */,
 				7790AC7A205A58BF00F8DF48 /* AboutKeyboardViewController.m in Sources */,

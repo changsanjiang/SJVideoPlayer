@@ -14,6 +14,7 @@ NS_ASSUME_NONNULL_BEGIN
 typedef NS_ENUM(NSUInteger, SJVideoPlayerFilmEditingResultViewType) {
     SJVideoPlayerFilmEditingResultViewType_Screenshot,
     SJVideoPlayerFilmEditingResultViewType_Video,
+    SJVideoPlayerFilmEditingResultViewType_GIF,
 };
 
 @interface SJVideoPlayerFilmEditingResultView : UIView
@@ -24,6 +25,8 @@ typedef NS_ENUM(NSUInteger, SJVideoPlayerFilmEditingResultViewType) {
 @property (nonatomic, strong, nullable) NSArray<SJFilmEditingResultShareItem *> *items;
 @property (nonatomic, strong, nullable) NSString *cancelBtnTitle;
 @property (nonatomic, strong, nullable) UIImage *image;
+@property (nonatomic, strong, nullable) NSURL *videoURL; // local file
+
 
 @property (nonatomic, weak, readwrite) SJFilmEditingResultUploader *uploader;
 
@@ -32,7 +35,7 @@ typedef NS_ENUM(NSUInteger, SJVideoPlayerFilmEditingResultViewType) {
 @property (nonatomic, strong, nullable) NSString *operationFailedPrompt;
 
 @property (nonatomic, readwrite) BOOL exportFailed;
-@property (nonatomic, readwrite) float recordedVideoExportProgress;
+@property (nonatomic, readwrite) float exportProgress;
 - (void)showResultWithCompletion:(void (^ __nullable)(void))block;
 
 @property (nonatomic, copy, nullable) void(^clickedCancelBtnExeBlock)(SJVideoPlayerFilmEditingResultView *view);

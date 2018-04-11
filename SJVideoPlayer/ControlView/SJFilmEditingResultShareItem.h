@@ -39,6 +39,8 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (void)successfulExportedVideo:(NSURL *)sandboxURL screenshot:(UIImage *)screenshot;
 
+- (void)successfulGenerateGIF:(NSURL *)sandboxURL screenshot:(UIImage *)screenshot;
+
 - (void)clickedItem:(SJFilmEditingResultShareItem *)item;
 
 - (void)clickedCancelButton;

@@ -571,20 +571,21 @@ typedef NS_ENUM(NSInteger, SJNetworkStatus) {
  @param beginTime           unit is sec.
  @param endTime             unit is sec.
  @param presetName 	        default is `AVAssetExportPresetMediumQuality`.
- @param progress            progress
+ @param progressBlock       progressBlock
  @param completion 	        completion
  @param failure 	        failure
  */
 - (void)exportWithBeginTime:(NSTimeInterval)beginTime
                     endTime:(NSTimeInterval)endTime
                  presetName:(nullable NSString *)presetName
-                   progress:(void(^)(__kindof SJBaseVideoPlayer *videoPlayer, float progress))progress
+                   progress:(void(^)(__kindof SJBaseVideoPlayer *videoPlayer, float progress))progressBlock
                  completion:(void(^)(__kindof SJBaseVideoPlayer *videoPlayer, SJVideoPlayerURLAsset *asset, NSURL *fileURL, UIImage *thumbImage))completion
                     failure:(void(^)(__kindof SJBaseVideoPlayer *videoPlayer, NSError *error))failure;
 
-- (void)generateGifWithBeginTime:(NSTimeInterval)beginTime
+- (void)generateGIFWithBeginTime:(NSTimeInterval)beginTime
                         duration:(NSTimeInterval)duration
-                      completion:(void(^)(__kindof SJBaseVideoPlayer *videoPlayer, NSURL *fileURL, UIImage *thumbnailImage))completion
+                        progress:(void(^)(__kindof SJBaseVideoPlayer *videoPlayer, float progress))progressBlock
+                      completion:(void(^)(__kindof SJBaseVideoPlayer *videoPlayer, UIImage *imageGIF, UIImage *thumbnailImage, NSURL *filePath))completion
                          failure:(void(^)(__kindof SJBaseVideoPlayer *videoPlayer, NSError *error))failure;
 
 @end

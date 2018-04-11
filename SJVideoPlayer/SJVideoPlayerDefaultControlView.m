@@ -38,7 +38,7 @@
 NS_ASSUME_NONNULL_BEGIN
 
 #pragma mark -
-@interface SJVideoPlayerDefaultControlView ()<SJVideoPlayerLeftControlViewDelegate, SJVideoPlayerBottomControlViewDelegate, SJVideoPlayerTopControlViewDelegate, SJVideoPlayerPreviewViewDelegate, SJVideoPlayerCenterControlViewDelegate, SJVideoPlayerRightControlViewDelegate> {
+@interface SJVideoPlayerDefaultControlView ()<SJVideoPlayerLeftControlViewDelegate, SJVideoPlayerBottomControlViewDelegate, SJVideoPlayerTopControlViewDelegate, SJVideoPlayerPreviewViewDelegate, SJVideoPlayerCenterControlViewDelegate, SJVideoPlayerRightControlViewDelegate, SJVideoPlayerFilmEditingControlViewDataSource, SJVideoPlayerFilmEditingControlViewDelegate> {
     SJTimerControl *_lockStateTappedTimerControl;
 }
 
@@ -118,18 +118,20 @@ NS_ASSUME_NONNULL_END
 }
 
 - (void)applicationWillResignActive {
-    if ( _filmEditingControlView.recordStatus == SJVideoPlayerFilmEditingStatus_Recording ) {
-        [_filmEditingControlView pauseRecording];
-        [self pauseAndDeterAppear];
+    if ( _filmEditingControlView.status == SJVideoPlayerFilmEditingStatus_Recording ) {
+        [_filmEditingControlView pause];
+        [self.videoPlayer pause];
+        [self.videoPlayer controlLayerNeedDisappear];
     }
 }
 
 - (void)applicationDidBecomeActive {
-    if ( _filmEditingControlView.recordStatus == SJVideoPlayerFilmEditingStatus_Paused ) {
-        [_filmEditingControlView resumeRecording];
+    if ( _filmEditingControlView.status == SJVideoPlayerFilmEditingStatus_Paused ) {
+        [_filmEditingControlView resume];
         [self.videoPlayer play];
+        [self.videoPlayer controlLayerNeedDisappear];
     }
-    else if ( _filmEditingControlView.recordStatus == SJVideoPlayerFilmEditingStatus_Finished ) {
+    else if ( _filmEditingControlView.status == SJVideoPlayerFilmEditingStatus_Stopped ) {
         [self pauseAndDeterAppear];
     }
 }
@@ -525,72 +527,119 @@ NS_ASSUME_NONNULL_END
 
 - (void)rightControlView:(SJVideoPlayerRightControlView *)view clickedBtnTag:(SJVideoPlayerRightViewTag)tag {
     if ( tag == SJVideoPlayerRightViewTag_FilmEditing ) {
-        __weak typeof(self) _self = self;
-        _filmEditingControlView = [SJVideoPlayerFilmEditingControlView new];
-        _filmEditingControlView.getVideoScreenshot = ^UIImage *(SJVideoPlayerFilmEditingControlView *view) {
-            __strong typeof(_self) self = _self;
-            if ( !self ) return nil;
-            [self pauseAndDeterAppear];
-            return [self.videoPlayer screenshot];
-        };
-        
-        _filmEditingControlView.exit = ^(SJVideoPlayerFilmEditingControlView * _Nonnull view) {
-            __strong typeof(_self) self = _self;
-            if ( !self ) return;
-            [self exitFilmEditingCompletion:^(SJVideoPlayerDefaultControlView * _Nonnull view) {
-                [self.videoPlayer controlLayerNeedAppear];
-            }];
-        };
-        
-        _filmEditingControlView.recordCompleteExeBlock = ^void (SJVideoPlayerFilmEditingControlView * _Nonnull filmEditingView, short duration) {
-            __strong typeof(_self) self = _self;
-            if ( !self ) return;
-            NSTimeInterval beginTime = self.videoPlayer.currentTime - duration;
-            NSTimeInterval endTime = self.videoPlayer.currentTime;
-            [self.videoPlayer exportWithBeginTime:beginTime endTime:endTime presetName:nil progress:^(__kindof SJBaseVideoPlayer * _Nonnull videoPlayer, float progress) {
-                filmEditingView.recordedVideoExportProgress = progress;
-            } completion:^(__kindof SJBaseVideoPlayer * _Nonnull videoPlayer, SJVideoPlayerURLAsset * _Nonnull asset, NSURL * _Nonnull fileURL, UIImage * _Nonnull thumbImage) {
-                filmEditingView.recordedVideoExportProgress = 1;
-                filmEditingView.exportedVideoURL = fileURL;
-            } failure:^(__kindof SJBaseVideoPlayer * _Nonnull videoPlayer, NSError * _Nonnull error) {
-                filmEditingView.exportFailed = YES;
-            }];
-        };
-        
-        _filmEditingControlView.startRecordingExeBlock = ^(SJVideoPlayerFilmEditingControlView * _Nonnull view) {
-            __strong typeof(_self) self = _self;
-            if ( !self ) return;
-            self.videoPlayer.videoGravity = AVLayerVideoGravityResizeAspect;
-            if ( self.videoPlayer.state == SJVideoPlayerPlayState_PlayEnd ) {
-                [self.videoPlayer replay];
-            }
-            else if ( self.videoPlayer.state == SJVideoPlayerPlayState_Paused ) {
-                [self.videoPlayer play];
-            }
-        };
-        
-        _filmEditingControlView.disappearType = SJDisappearType_Alpha;
-        _filmEditingControlView.resultShare = self.filmEditingResultShare;
-        _filmEditingControlView.exportBtnImage = self.settings.exportBtnImage;
-        _filmEditingControlView.screenshotBtnImage = self.settings.screenshotBtnImage;
-        _filmEditingControlView.cancelBtnTitle = self.settings.cancelBtnTitle;
-        _filmEditingControlView.waitingForRecordingTipsText = self.settings.waitingForRecordingTipsText;
-        _filmEditingControlView.recordTipsText = self.settings.recordTipsText;
-        _filmEditingControlView.recordEndBtnImage = self.settings.recordEndBtnImage;
-        _filmEditingControlView.uploadingPrompt = self.settings.uploadingPrompt;
-        _filmEditingControlView.exportingPrompt = self.settings.exportingPrompt;
-        _filmEditingControlView.operationFailedPrompt = self.settings.operationFailedPrompt;
-        
-        [self addSubview:_filmEditingControlView];
-        [_filmEditingControlView mas_makeConstraints:^(MASConstraintMaker *make) {
-            make.edges.offset(0);
+        [self _presentFilmEditingControlView];
+    }
+}
+
+- (void)_presentFilmEditingControlView {
+    __weak typeof(self) _self = self;
+    _filmEditingControlView = [SJVideoPlayerFilmEditingControlView new];
+    _filmEditingControlView.dataSource = self;
+    _filmEditingControlView.delegate = self;
+    _filmEditingControlView.resource = (id)self.settings;
+    
+    _filmEditingControlView.exit = ^(SJVideoPlayerFilmEditingControlView * _Nonnull view) {
+        __strong typeof(_self) self = _self;
+        if ( !self ) return;
+        [self exitFilmEditingCompletion:^(SJVideoPlayerDefaultControlView * _Nonnull view) {
+            [self.videoPlayer controlLayerNeedAppear];
         }];
-        
-        [self.videoPlayer controlLayerNeedDisappear];
-        [self.bottomSlider disappear];
-        if ( self.videoPlayer.state == SJVideoPlayerPlayState_PlayEnd ) [self.centerControlView disappear];
-        self.videoPlayer.disableRotation = YES;
-        self.videoPlayer.disableGestureTypes = SJDisablePlayerGestureTypes_All;
+    };
+    
+    _filmEditingControlView.recordCompleteExeBlock = ^void (SJVideoPlayerFilmEditingControlView * _Nonnull filmEditingView, short duration) {
+        __strong typeof(_self) self = _self;
+        if ( !self ) return;
+        NSTimeInterval beginTime = self.videoPlayer.currentTime - duration;
+        NSTimeInterval endTime = self.videoPlayer.currentTime;
+        switch ( filmEditingView.currentOperation ) {
+            case SJVideoPlayerFilmEditingOperation_Screenshot: break;
+            case SJVideoPlayerFilmEditingOperation_Export: {
+                [self.videoPlayer exportWithBeginTime:beginTime endTime:endTime presetName:nil progress:^(__kindof SJBaseVideoPlayer * _Nonnull videoPlayer, float progress) {
+                    filmEditingView.exportProgress = progress;
+                } completion:^(__kindof SJBaseVideoPlayer * _Nonnull videoPlayer, SJVideoPlayerURLAsset * _Nonnull asset, NSURL * _Nonnull fileURL, UIImage * _Nonnull thumbImage) {
+                    filmEditingView.exportedFileURL = fileURL;
+                } failure:^(__kindof SJBaseVideoPlayer * _Nonnull videoPlayer, NSError * _Nonnull error) {
+                    filmEditingView.exportFailed = YES;
+                }];
+            }
+                break;
+            case SJVideoPlayerFilmEditingOperation_GIF: {
+                [self.videoPlayer generateGIFWithBeginTime:beginTime duration:duration progress:^(__kindof SJBaseVideoPlayer * _Nonnull videoPlayer, float progress) {
+                    filmEditingView.exportProgress = progress;
+                } completion:^(__kindof SJBaseVideoPlayer * _Nonnull videoPlayer, UIImage * _Nonnull imageGIF, UIImage * _Nonnull thumbnailImage, NSURL * _Nonnull filePath) {
+                    filmEditingView.exportedFileURL = filePath;
+                } failure:^(__kindof SJBaseVideoPlayer * _Nonnull videoPlayer, NSError * _Nonnull error) {
+                    filmEditingView.exportFailed = YES;
+                }];
+            }
+                break;
+        }
+    };
+    
+    _filmEditingControlView.startRecordingExeBlock = ^(SJVideoPlayerFilmEditingControlView * _Nonnull view) {
+        __strong typeof(_self) self = _self;
+        if ( !self ) return;
+        self.videoPlayer.videoGravity = AVLayerVideoGravityResizeAspect;
+        if ( self.videoPlayer.state == SJVideoPlayerPlayState_PlayEnd ) {
+            [self.videoPlayer replay];
+        }
+        else if ( self.videoPlayer.state == SJVideoPlayerPlayState_Paused ) {
+            [self.videoPlayer play];
+        }
+    };
+    
+    _filmEditingControlView.disappearType = SJDisappearType_Alpha;
+    _filmEditingControlView.resultShare = self.filmEditingResultShare;
+    [self addSubview:_filmEditingControlView];
+    [_filmEditingControlView mas_makeConstraints:^(MASConstraintMaker *make) {
+        make.edges.offset(0);
+    }];
+    
+    [self.videoPlayer controlLayerNeedDisappear];
+    [self.bottomSlider disappear];
+    if ( self.videoPlayer.state == SJVideoPlayerPlayState_PlayEnd ) [self.centerControlView disappear];
+    self.videoPlayer.disableRotation = YES;
+    self.videoPlayer.disableGestureTypes = SJDisablePlayerGestureTypes_All;
+}
+
+- (UIImage *)playerScreenshot {
+    return _videoPlayer.screenshot;
+}
+
+- (void)filmEditingControlView:(SJVideoPlayerFilmEditingControlView *)filmEditingControlView statusChanged:(SJVideoPlayerFilmEditingStatus)status {
+    NSLog(@"--- %d", status);
+    switch ( status ) {
+        case SJVideoPlayerFilmEditingStatus_Unknown: break;
+        case SJVideoPlayerFilmEditingStatus_Stopped: break;
+        case SJVideoPlayerFilmEditingStatus_Recording: {
+            
+        }
+            break;
+        case SJVideoPlayerFilmEditingStatus_Paused: {
+            [self pauseAndDeterAppear];
+        }
+            break;
+        case SJVideoPlayerFilmEditingStatus_PresentResults: {
+            [self pauseAndDeterAppear];
+        }
+            break;
+    }
+}
+
+- (void)filmEditingControlView:(SJVideoPlayerFilmEditingControlView *)filmEditingControlView userSelectedOperation:(SJVideoPlayerFilmEditingOperation)operation {
+    switch ( operation ) {
+        case SJVideoPlayerFilmEditingOperation_GIF: {
+            
+        }
+            break;
+        case SJVideoPlayerFilmEditingOperation_Export: {
+            
+        }
+            break;
+        case SJVideoPlayerFilmEditingOperation_Screenshot: {
+            [self pauseAndDeterAppear];
+        }
+            break;
     }
 }
 
@@ -866,9 +915,9 @@ NS_ASSUME_NONNULL_END
             [self.centerControlView replayState];
         }, nil);
         
-        if ( _filmEditingControlView && _filmEditingControlView.recordStatus == SJVideoPlayerFilmEditingStatus_Recording ) {
+        if ( _filmEditingControlView && _filmEditingControlView.status == SJVideoPlayerFilmEditingStatus_Recording ) {
             [videoPlayer showTitle:self.settings.videoPlayDidToEndText duration:2];
-            [_filmEditingControlView completeRecording];
+            [_filmEditingControlView finalize];
         }
     }
 }

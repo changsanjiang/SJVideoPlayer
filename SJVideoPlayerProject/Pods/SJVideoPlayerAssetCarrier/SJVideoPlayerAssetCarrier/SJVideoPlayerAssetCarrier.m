@@ -61,6 +61,16 @@ static float const __GeneratePreImgScale = 0.05;
 @implementation SJAssetUIKitEctype
 @end
 
+
+#pragma mark -
+
+@interface SJGIFCreator : NSObject
+@property (nonatomic, strong, readonly) UIImage *firstImage;
+- (instancetype)initWithSavePath:(NSURL *)savePath imagesCount:(int)count;
+- (void)addImage:(CGImageRef)imageRef;
+- (BOOL)finalize;
+@end
+
 #pragma mark -
 
 NS_ASSUME_NONNULL_BEGIN
@@ -74,6 +84,8 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic, assign, readwrite) SJViewHierarchyStack viewHierarchyStack;
 @property (nonatomic, strong, readwrite, nullable) AVAssetImageGenerator *imageGenerator;
 @property (nonatomic, strong, readwrite, nullable) AVAssetImageGenerator *tmp_imageGenerator;
+@property (nonatomic, strong, readwrite, nullable) AVAssetImageGenerator *gif_imageGenerator;
+
 @property (nonatomic, assign, readwrite) BOOL hasBeenGeneratedPreviewImages;
 @property (nonatomic, strong, readwrite, nullable) NSArray<SJVideoPreviewModel *> *generatedPreviewImages;
 @property (nonatomic, assign, readwrite) BOOL jumped;
@@ -85,6 +97,7 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic, strong, readonly) NSTimer *bufferRefreshTimer;
 @property (nonatomic, strong, readwrite, nullable) AVAssetExportSession *exportSession;
 @property (nonatomic, strong, readwrite, nullable) NSTimer *refreshProgressTimer;
+@property (nonatomic, strong, nullable) SJGIFCreator *gifCreator;
 
 @end
 NS_ASSUME_NONNULL_END
@@ -272,6 +285,7 @@ NS_ASSUME_NONNULL_END
     [_playerItem removeObserver:self forKeyPath:@"presentationSize"];
     [_playerItem removeObserver:self forKeyPath:@"duration"];
     [_tmp_imageGenerator cancelAllCGImageGeneration];
+    [_gif_imageGenerator cancelAllCGImageGeneration];
     [self cancelPreviewImagesGeneration];
     if ( 0 != _player.rate ) [_player pause];
     [_player removeTimeObserver:_timeObserver]; _timeObserver = nil;
@@ -412,18 +426,14 @@ NS_ASSUME_NONNULL_END
 #pragma mark -
 
 - (UIImage *)screenshot {
-    CMTime time = _playerItem.currentTime;
-    AVAssetImageGenerator *generator = [AVAssetImageGenerator assetImageGeneratorWithAsset:_asset];
-    generator.appliesPreferredTrackTransform = YES;
-    CGImageRef imgRef = [generator copyCGImageAtTime:time actualTime:&time error:nil];
-    UIImage *image = [UIImage imageWithCGImage:imgRef];
-    CGImageRelease(imgRef);
-    return image;
+    return [self screenshotWithTime:_playerItem.currentTime];
 }
 
 - (UIImage * __nullable)screenshotWithTime:(CMTime)time {
     AVAssetImageGenerator *generator = [AVAssetImageGenerator assetImageGeneratorWithAsset:_asset];
     generator.appliesPreferredTrackTransform = YES;
+    generator.requestedTimeToleranceBefore = kCMTimeZero;
+    generator.requestedTimeToleranceAfter = kCMTimeZero;
     CGImageRef imgRef = [generator copyCGImageAtTime:time actualTime:&time error:nil];
     UIImage *image = [UIImage imageWithCGImage:imgRef];
     CGImageRelease(imgRef);
@@ -484,6 +494,8 @@ NS_ASSUME_NONNULL_END
     _imageGenerator = [AVAssetImageGenerator assetImageGeneratorWithAsset:_asset];
     _imageGenerator.appliesPreferredTrackTransform = YES;
     _imageGenerator.maximumSize = itemSize;
+    _imageGenerator.requestedTimeToleranceBefore = kCMTimeZero;
+    _imageGenerator.requestedTimeToleranceAfter = kCMTimeZero;
     [_imageGenerator generateCGImagesAsynchronouslyForTimes:timesM completionHandler:^(CMTime requestedTime, CGImageRef  _Nullable imageRef, CMTime actualTime, AVAssetImageGeneratorResult result, NSError * _Nullable error) {
         switch ( result ) {
             case AVAssetImageGeneratorSucceeded: {
@@ -620,38 +632,47 @@ NS_ASSUME_NONNULL_END
     }];
 }
 
-- (void)generateGifWithBeginTime:(NSTimeInterval)beginTime
+
+#pragma mark - gif
+- (void)generateGIFWithBeginTime:(NSTimeInterval)beginTime
                         duration:(NSTimeInterval)duration
                      maximumSize:(CGSize)maximumSize
                         interval:(float)interval
                      gifSavePath:(NSURL *)gifSavePath
-                      completion:(void(^)(SJVideoPlayerAssetCarrier *asset, NSURL *fileURL, UIImage *thumbnailImage))completion
+                        progress:(void(^)(SJVideoPlayerAssetCarrier *asset, float progress))progressBlock
+                      completion:(void(^)(SJVideoPlayerAssetCarrier *asset, UIImage *imageGIF, UIImage *thumbnailImage))completion
                          failure:(void(^)(SJVideoPlayerAssetCarrier *asset, NSError *error))failure {
-    if ( interval == 0 ) interval = 0.1f;
-    __block int count = duration / interval;
+    if ( interval == 0 ) interval = 0.2f;
+    __block int count = (int)ceil(duration / interval);
     NSMutableArray<NSValue *> *timesM = [NSMutableArray new];
     for ( int i = 0 ; i < count ; ++ i ) {
         [timesM addObject:[NSValue valueWithCMTime:CMTimeMakeWithSeconds(beginTime + i * interval, NSEC_PER_SEC)]];
     }
     
-    NSMutableArray<UIImage *> *imagesM = [NSMutableArray new];
-    AVAssetImageGenerator *generator = [AVAssetImageGenerator assetImageGeneratorWithAsset:_asset];
-    generator.appliesPreferredTrackTransform = YES;
-    generator.maximumSize = maximumSize;
-    generator.requestedTimeToleranceBefore = kCMTimeZero;
-    generator.requestedTimeToleranceAfter = kCMTimeZero;
+    _gif_imageGenerator = [AVAssetImageGenerator assetImageGeneratorWithAsset:_asset];
+    _gif_imageGenerator.appliesPreferredTrackTransform = YES;
+    _gif_imageGenerator.maximumSize = maximumSize;
+    _gif_imageGenerator.requestedTimeToleranceBefore = kCMTimeZero;
+    _gif_imageGenerator.requestedTimeToleranceAfter = kCMTimeZero;
     
+    self.gifCreator = [[SJGIFCreator alloc] initWithSavePath:gifSavePath imagesCount:count];
+    int all = count;
     __weak typeof(self) _self = self;
-    [generator generateCGImagesAsynchronouslyForTimes:timesM completionHandler:^(CMTime requestedTime, CGImageRef  _Nullable imageRef, CMTime actualTime, AVAssetImageGeneratorResult result, NSError * _Nullable error) {
+    [_gif_imageGenerator generateCGImagesAsynchronouslyForTimes:timesM completionHandler:^(CMTime requestedTime, CGImageRef  _Nullable imageRef, CMTime actualTime, AVAssetImageGeneratorResult result, NSError * _Nullable error) {
+        __strong typeof(_self) self = _self;
+        if ( !self ) return;
         switch ( result ) {
             case AVAssetImageGeneratorSucceeded: {
-                [imagesM addObject:[UIImage imageWithCGImage:imageRef]];
+                [self.gifCreator addImage:imageRef];
+                if ( progressBlock ) {
+                    dispatch_async(dispatch_get_main_queue(), ^{
+                        progressBlock(self, 1 - count * 1.0f / all);
+                    });
+                }
                 if ( --count != 0 ) return;
-                
-                BOOL result = makeAnimatedGif(imagesM, interval, gifSavePath);
+                BOOL result = [self.gifCreator finalize];
+                UIImage *image = getImage([NSData dataWithContentsOfURL:gifSavePath], [UIScreen mainScreen].scale);
                 dispatch_async(dispatch_get_main_queue(), ^{
-                    __strong typeof(_self) self = _self;
-                    if ( !self ) return;
                     if ( !result ) {
                         NSError *error = [NSError errorWithDomain:NSCocoaErrorDomain
                                                              code:-1
@@ -659,42 +680,27 @@ NS_ASSUME_NONNULL_END
                         if ( failure ) failure(self, error);
                     }
                     else {
-                        if ( completion ) completion(self, gifSavePath, imagesM.firstObject);
+                        if ( progressBlock ) progressBlock(self, 1);
+                        if ( completion ) completion(self, image, self.gifCreator.firstImage);
+                        self.gifCreator = nil;
                     }
                 });
             }
                 break;
             case AVAssetImageGeneratorFailed: {
-                [generator cancelAllCGImageGeneration];
+                [self.gif_imageGenerator cancelAllCGImageGeneration];
                 dispatch_async(dispatch_get_main_queue(), ^{
-                    __strong typeof(_self) self = _self;
-                    if ( !self ) return;
                     if ( failure ) failure(self, error);
+                    self.gifCreator = nil;
                 });
             }
                 break;
-            case AVAssetImageGeneratorCancelled: break;
+            case AVAssetImageGeneratorCancelled: {
+                self.gifCreator = nil;
+            }
+                break;
         }
     }];
-}
-
-static BOOL makeAnimatedGif(NSArray<UIImage *> *images, float delayTime, NSURL *savePath) {
-    delayTime = 0.25f;
-    CGImageDestinationRef destination = CGImageDestinationCreateWithURL((__bridge CFURLRef)savePath, kUTTypeGIF, images.count, NULL);
-    NSDictionary *fileProperties = @{ (__bridge id)kCGImagePropertyGIFDictionary: @{(__bridge id)kCGImagePropertyGIFLoopCount: @(0)} };
-    CGImageDestinationSetProperties(destination, (__bridge CFDictionaryRef)fileProperties);
-    NSDictionary *frameProperties = @{ (__bridge id)kCGImagePropertyGIFDictionary: @{(__bridge id)kCGImagePropertyGIFDelayTime: @(delayTime)} };
-    [images enumerateObjectsUsingBlock:^(UIImage * _Nonnull obj, NSUInteger idx, BOOL * _Nonnull stop) {
-        @autoreleasepool {
-            CGImageDestinationAddImage(destination, obj.CGImage, (__bridge CFDictionaryRef)frameProperties);
-        }
-    }];
-    if (!CGImageDestinationFinalize(destination)) {
-        NSLog(@"Failed to finalize image destination");
-        return NO;
-    }
-    CFRelease(destination);
-    return YES;
 }
 
 - (void)_cleanRefreshProgressTimer {
@@ -1019,6 +1025,132 @@ static BOOL makeAnimatedGif(NSArray<UIImage *> *images, float delayTime, NSURL *
     [self _scrollViewObserving]; 
     _converted = YES;
 }
+
+
+#pragma mark -
+/**
+ ref: YYKit
+ UIImage(YYAdd)
+ */
+static UIImage *getImage(NSData *data, CGFloat scale) {
+    CGImageSourceRef source = CGImageSourceCreateWithData((__bridge CFTypeRef)(data), NULL);
+    if (!source) return nil;
+    
+    size_t count = CGImageSourceGetCount(source);
+    if (count <= 1) {
+        CFRelease(source);
+        return [UIImage imageWithData:data scale:scale];
+    }
+    
+    NSUInteger frames[count];
+    double oneFrameTime = 1 / 50.0; // 50 fps
+    NSTimeInterval totalTime = 0;
+    NSUInteger totalFrame = 0;
+    NSUInteger gcdFrame = 0;
+    for (size_t i = 0; i < count; i++) {
+        NSTimeInterval delay = _yy_CGImageSourceGetGIFFrameDelayAtIndex(source, i);
+        totalTime += delay;
+        NSInteger frame = lrint(delay / oneFrameTime);
+        if (frame < 1) frame = 1;
+        frames[i] = frame;
+        totalFrame += frames[i];
+        if (i == 0) gcdFrame = frames[i];
+        else {
+            NSUInteger frame = frames[i], tmp;
+            if (frame < gcdFrame) {
+                tmp = frame; frame = gcdFrame; gcdFrame = tmp;
+            }
+            while (true) {
+                tmp = frame % gcdFrame;
+                if (tmp == 0) break;
+                frame = gcdFrame;
+                gcdFrame = tmp;
+            }
+        }
+    }
+    NSMutableArray *array = [NSMutableArray new];
+    for (size_t i = 0; i < count; i++) {
+        CGImageRef imageRef = CGImageSourceCreateImageAtIndex(source, i, NULL);
+        if (!imageRef) {
+            CFRelease(source);
+            return nil;
+        }
+        size_t width = CGImageGetWidth(imageRef);
+        size_t height = CGImageGetHeight(imageRef);
+        if (width == 0 || height == 0) {
+            CFRelease(source);
+            CFRelease(imageRef);
+            return nil;
+        }
+        
+        CGImageAlphaInfo alphaInfo = CGImageGetAlphaInfo(imageRef) & kCGBitmapAlphaInfoMask;
+        BOOL hasAlpha = NO;
+        if (alphaInfo == kCGImageAlphaPremultipliedLast ||
+            alphaInfo == kCGImageAlphaPremultipliedFirst ||
+            alphaInfo == kCGImageAlphaLast ||
+            alphaInfo == kCGImageAlphaFirst) {
+            hasAlpha = YES;
+        }
+        // BGRA8888 (premultiplied) or BGRX8888
+        // same as UIGraphicsBeginImageContext() and -[UIView drawRect:]
+        CGBitmapInfo bitmapInfo = kCGBitmapByteOrder32Host;
+        bitmapInfo |= hasAlpha ? kCGImageAlphaPremultipliedFirst : kCGImageAlphaNoneSkipFirst;
+        CGColorSpaceRef space = CGColorSpaceCreateDeviceRGB();
+        CGContextRef context = CGBitmapContextCreate(NULL, width, height, 8, 0, space, bitmapInfo);
+        CGColorSpaceRelease(space);
+        if (!context) {
+            CFRelease(source);
+            CFRelease(imageRef);
+            return nil;
+        }
+        CGContextDrawImage(context, CGRectMake(0, 0, width, height), imageRef); // decode
+        CGImageRef decoded = CGBitmapContextCreateImage(context);
+        CFRelease(context);
+        if (!decoded) {
+            CFRelease(source);
+            CFRelease(imageRef);
+            return nil;
+        }
+        UIImage *image = [UIImage imageWithCGImage:decoded scale:scale orientation:UIImageOrientationUp];
+        CGImageRelease(imageRef);
+        CGImageRelease(decoded);
+        if (!image) {
+            CFRelease(source);
+            return nil;
+        }
+        for (size_t j = 0, max = frames[i] / gcdFrame; j < max; j++) {
+            [array addObject:image];
+        }
+    }
+    CFRelease(source);
+    UIImage *image = [UIImage animatedImageWithImages:array duration:totalTime];
+    return image;
+}
+
+/**
+ ref: YYKit
+ UIImage(YYAdd)
+ */
+static NSTimeInterval _yy_CGImageSourceGetGIFFrameDelayAtIndex(CGImageSourceRef source, size_t index) {
+    NSTimeInterval delay = 0;
+    CFDictionaryRef dic = CGImageSourceCopyPropertiesAtIndex(source, index, NULL);
+    if (dic) {
+        CFDictionaryRef dicGIF = CFDictionaryGetValue(dic, kCGImagePropertyGIFDictionary);
+        if (dicGIF) {
+            NSNumber *num = CFDictionaryGetValue(dicGIF, kCGImagePropertyGIFUnclampedDelayTime);
+            if (num.doubleValue <= __FLT_EPSILON__) {
+                num = CFDictionaryGetValue(dicGIF, kCGImagePropertyGIFDelayTime);
+            }
+            delay = num.doubleValue;
+        }
+        CFRelease(dic);
+    }
+    
+    // http://nullsleep.tumblr.com/post/16524517190/animated-gif-minimum-frame-delay-browser-compatibility
+    if (delay < 0.02) delay = 0.1;
+    return delay;
+}
+
 @end
 
 
@@ -1054,4 +1186,39 @@ static BOOL makeAnimatedGif(NSArray<UIImage *> *images, float delayTime, NSURL *
     if ( block ) block(timer);
 }
 
+@end
+
+
+#pragma mark -
+@interface SJGIFCreator ()
+@property (nonatomic) CGImageDestinationRef destination;
+@property (nonatomic, strong, readonly) NSDictionary *frameProperties;
+@end
+@implementation SJGIFCreator
+- (instancetype)initWithSavePath:(NSURL *)savePath imagesCount:(int)count {
+    self = [super init];
+    if ( !self ) return nil;
+    [[NSFileManager defaultManager] removeItemAtURL:savePath error:nil];
+    _destination = CGImageDestinationCreateWithURL((__bridge CFURLRef)savePath, kUTTypeGIF, count, NULL);
+    NSDictionary *fileProperties = @{ (__bridge id)kCGImagePropertyGIFDictionary: @{(__bridge id)kCGImagePropertyGIFLoopCount: @(0)} };
+    CGImageDestinationSetProperties(_destination, (__bridge CFDictionaryRef)fileProperties);
+    _frameProperties = @{ (__bridge id)kCGImagePropertyGIFDictionary: @{(__bridge id)kCGImagePropertyGIFDelayTime: @(0.25f)} };
+    return self;
+}
+- (void)addImage:(CGImageRef)imageRef {
+    if ( !_firstImage ) _firstImage = [UIImage imageWithCGImage:imageRef];
+    CGImageDestinationAddImage(_destination, imageRef, (__bridge CFDictionaryRef)_frameProperties);
+//    @autoreleasepool {
+//    }
+}
+- (BOOL)finalize {
+    BOOL result = CGImageDestinationFinalize(_destination);
+    CFRelease(_destination);
+    _destination = NULL;
+    return result;
+}
+
+- (void)dealloc {
+    if ( _destination != NULL ) CFRelease(_destination);
+}
 @end

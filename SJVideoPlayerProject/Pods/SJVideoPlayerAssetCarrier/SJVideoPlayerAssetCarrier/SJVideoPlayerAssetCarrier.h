@@ -223,12 +223,13 @@ NS_ASSUME_NONNULL_BEGIN
  generate gif
  @param interval        The interval at which the image is captured, Recommended setting 0.1f.
  */
-- (void)generateGifWithBeginTime:(NSTimeInterval)beginTime
+- (void)generateGIFWithBeginTime:(NSTimeInterval)beginTime
                         duration:(NSTimeInterval)duration
                      maximumSize:(CGSize)maximumSize
                         interval:(float)interval
                      gifSavePath:(NSURL *)gifSavePath
-                      completion:(void(^)(SJVideoPlayerAssetCarrier *asset, NSURL *fileURL, UIImage *thumbnailImage))completion
+                        progress:(void(^)(SJVideoPlayerAssetCarrier *asset, float progress))progressBlock
+                      completion:(void(^)(SJVideoPlayerAssetCarrier *asset, UIImage *imageGIF, UIImage *thumbnailImage))completion
                          failure:(void(^)(SJVideoPlayerAssetCarrier *asset, NSError *error))failure;
 
 

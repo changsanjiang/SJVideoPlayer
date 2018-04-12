@@ -11,7 +11,6 @@
 #import "SJVideoPlayerFilmEditingCommonHeader.h"
 
 NS_ASSUME_NONNULL_BEGIN
-@class SJFilmEditingResultShare;
 
 @interface SJVideoPlayerFilmEditingControlView : UIView
 
@@ -26,10 +25,6 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic) BOOL disableScreenshot;   // default is NO
 @property (nonatomic) BOOL disableRecord;       // default is NO
 @property (nonatomic) BOOL disableGIF;          // default is NO
-
-
-#pragma mark - result share items
-@property (nonatomic, strong, nullable) SJFilmEditingResultShare *resultShare;
 
 
 #pragma mark -

@@ -33,16 +33,11 @@
 #import "SJVideoPlayerAnimationHeader.h"
 #import <SJBaseVideoPlayer/SJTimerControl.h>
 #import <SJBaseVideoPlayer/SJVideoPlayerRegistrar.h>
+#import "SJVideoPlayerPropertyRecorder.h"
 
 #pragma mark -
 
 NS_ASSUME_NONNULL_BEGIN
-
-@interface SJVideoPlayerPropertyRecorder : NSObject
-- (instancetype)initWithVideoPlayer:(__kindof SJBaseVideoPlayer *)videoPlayer;
-@property (nonatomic) BOOL disableRotation;
-@property (nonatomic) SJDisablePlayerGestureTypes disableGestureTypes;
-@end
 
 #pragma mark -
 @interface SJVideoPlayerDefaultControlView ()<SJVideoPlayerLeftControlViewDelegate, SJVideoPlayerBottomControlViewDelegate, SJVideoPlayerTopControlViewDelegate, SJVideoPlayerPreviewViewDelegate, SJVideoPlayerCenterControlViewDelegate, SJVideoPlayerRightControlViewDelegate, SJVideoPlayerFilmEditingControlViewDataSource, SJVideoPlayerFilmEditingControlViewDelegate> {
@@ -168,6 +163,7 @@ NS_ASSUME_NONNULL_END
     
     [self _promptWithNetworkStatus:videoPlayer.networkStatus];
     self.propertyRecorder = [[SJVideoPlayerPropertyRecorder alloc] initWithVideoPlayer:videoPlayer];
+    self.enableFilmEditing = videoPlayer.enableFilmEditing;
 }
 
 #pragma mark - Control layer appear / disappear
@@ -506,7 +502,6 @@ NS_ASSUME_NONNULL_END
     [self.containerView addSubview:self.bottomSlider];
     [self.containerView addSubview:self.previewView];
     [self.containerView addSubview:self.loadingView];
-    [self.containerView addSubview:self.filmEditingControlView];
     
     [_topControlMaskView mas_makeConstraints:^(MASConstraintMaker *make) {
         make.top.leading.trailing.offset(0);
@@ -628,24 +623,6 @@ NS_ASSUME_NONNULL_END
     _moreSecondarySettingView.disappearTransform = CGAffineTransformMakeTranslation(_moreSecondarySettingView.intrinsicContentSize.width, 0);
 
     _draggingProgressView.disappearType = SJDisappearType_Alpha;
-}
-
-- (void)setEnableFilmEditing:(BOOL)enableFilmEditing {
-    _enableFilmEditing = enableFilmEditing;
-    if ( enableFilmEditing ) {
-        [self.containerView insertSubview:self.rightControlView aboveSubview:self.bottomControlView];
-        [_rightControlView mas_makeConstraints:^(MASConstraintMaker *make) {
-            make.trailing.offset(0);
-            make.centerY.offset(0);
-        }];
-        _rightControlView.disappearType = SJDisappearType_Transform;
-        _rightControlView.disappearTransform = CGAffineTransformMakeTranslation(_rightControlView.intrinsicContentSize.width, 0);
-        
-        if ( !self.videoPlayer.controlLayerAppeared ) [_rightControlView disappear];
-    }
-    else {
-        [_rightControlView removeFromSuperview];
-    }
 }
 
 - (UIView *)containerView {
@@ -858,6 +835,7 @@ NS_ASSUME_NONNULL_END
     if ( _rightControlView ) return _rightControlView;
     _rightControlView = [SJVideoPlayerRightControlView new];
     _rightControlView.delegate = self;
+    _rightControlView.filmEditingBtnImage = self.settings.filmEditingBtnImage;
     return _rightControlView;
 }
 
@@ -868,6 +846,26 @@ NS_ASSUME_NONNULL_END
 }
 
 #pragma mark - Right Film Editing
+
+- (void)setEnableFilmEditing:(BOOL)enableFilmEditing {
+    if ( enableFilmEditing == _enableFilmEditing ) return;
+    _enableFilmEditing = enableFilmEditing;
+    if ( enableFilmEditing ) {
+        [self.containerView insertSubview:self.rightControlView aboveSubview:self.bottomControlView];
+        [_rightControlView mas_makeConstraints:^(MASConstraintMaker *make) {
+            make.trailing.offset(0);
+            make.centerY.offset(0);
+        }];
+        _rightControlView.disappearType = SJDisappearType_Transform;
+        _rightControlView.disappearTransform = CGAffineTransformMakeTranslation(_rightControlView.intrinsicContentSize.width, 0);
+        
+        if ( !self.videoPlayer.controlLayerAppeared ) [_rightControlView disappear];
+    }
+    else {
+        [_rightControlView removeFromSuperview];
+        _rightControlView = nil;
+    }
+}
 
 - (SJVideoPlayerRegistrar *)registrar {
     if ( _registrar ) return _registrar;
@@ -908,7 +906,7 @@ NS_ASSUME_NONNULL_END
 }
 
 - (NSArray<SJFilmEditingResultShareItem *> *)resultShareItems {
-    return self.videoPlayer.resultShareItems;
+    return self.videoPlayer.filmEditingConfig.resultShareItems;
 }
 
 - (SJVideoPlayerURLAsset *)currentPalyAsset {
@@ -919,14 +917,13 @@ NS_ASSUME_NONNULL_END
     [self registrar];
     _filmEditingControlView = [SJVideoPlayerFilmEditingControlView new];
     _filmEditingControlView.dataSource = self;
-    _filmEditingControlView.uploader = self.videoPlayer.resultUploader;
+    _filmEditingControlView.uploader = self.videoPlayer.filmEditingConfig.resultUploader;
     _filmEditingControlView.delegate = self;
     _filmEditingControlView.resource = (id)self.settings;
-    _filmEditingControlView.disableScreenshot = self.videoPlayer.disableScreenshot;
-    _filmEditingControlView.disableRecord = self.videoPlayer.disableRecord;
-    _filmEditingControlView.disableGIF = self.videoPlayer.disableGIF;
+    _filmEditingControlView.disableScreenshot = self.videoPlayer.filmEditingConfig.disableScreenshot;
+    _filmEditingControlView.disableRecord = self.videoPlayer.filmEditingConfig.disableRecord;
+    _filmEditingControlView.disableGIF = self.videoPlayer.filmEditingConfig.disableGIF;
     _filmEditingControlView.disappearType = SJDisappearType_Alpha;
-    _filmEditingControlView.resultShare = self.filmEditingResultShare;
     [self addSubview:_filmEditingControlView];
     [_filmEditingControlView mas_makeConstraints:^(MASConstraintMaker *make) {
         make.edges.offset(0);
@@ -1042,7 +1039,7 @@ NS_ASSUME_NONNULL_END
 }
 
 - (void)filmEditingControlView:(SJVideoPlayerFilmEditingControlView *)filmEditingControlView userClickedResultShareItem:(SJFilmEditingResultShareItem *)item result:(nonnull id<SJVideoPlayerFilmEditingResult>)result {
-    if ( self.videoPlayer.clickedResultShareItemExeBlock ) self.videoPlayer.clickedResultShareItemExeBlock(self.videoPlayer, item, result);
+    if ( self.videoPlayer.filmEditingConfig.clickedResultShareItemExeBlock ) self.videoPlayer.filmEditingConfig.clickedResultShareItemExeBlock(self.videoPlayer, item, result);
 }
 
 - (void)userTappedBlankAreaAtFilmEditingControlView:(SJVideoPlayerFilmEditingControlView *)filmEditingControlView {
@@ -1205,6 +1202,7 @@ NS_ASSUME_NONNULL_END
         self.bottomSlider.traceImageView.backgroundColor = setting.progress_traceColor;
         self.bottomSlider.trackImageView.backgroundColor = setting.progress_bufferColor;
         self.videoPlayer.placeholder = setting.placeholder;
+        if ( self.enableFilmEditing ) self.rightControlView.filmEditingBtnImage = setting.filmEditingBtnImage;
         [self.draggingProgressView setPreviewImage:setting.placeholder];
         self.settings = setting;
     }];
@@ -1224,15 +1222,5 @@ NS_ASSUME_NONNULL_END
         }, nil);
     };
     return _lockStateTappedTimerControl;
-}
-@end
-
-@implementation SJVideoPlayerPropertyRecorder
-- (instancetype)initWithVideoPlayer:(__kindof SJBaseVideoPlayer *)videoPlayer {
-    self = [super init];
-    if ( !self ) return nil;
-    _disableRotation = videoPlayer.disableRotation;
-    _disableGestureTypes = videoPlayer.disableGestureTypes;
-    return self;
 }
 @end

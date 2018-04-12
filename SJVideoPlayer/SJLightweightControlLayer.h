@@ -14,4 +14,6 @@
  */
 @interface SJLightweightControlLayer : NSObject<SJVideoPlayerControlLayerDelegate, SJVideoPlayerControlLayerDataSource>
 
+- (void)dismissFilmEditingViewCompletion:(void(^ __nullable)(SJLightweightControlLayer *layer))completion;
+
 @end

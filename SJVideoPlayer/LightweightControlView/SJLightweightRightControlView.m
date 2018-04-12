@@ -1,23 +1,23 @@
 //
-//  SJVideoPlayerRightControlView.m
+//  SJLightweightRightControlView.m
 //  SJVideoPlayerProject
 //
-//  Created by BlueDancer on 2018/3/8.
+//  Created by BlueDancer on 2018/4/12.
 //  Copyright © 2018年 SanJiang. All rights reserved.
 //
 
-#import "SJVideoPlayerRightControlView.h"
+#import "SJLightweightRightControlView.h"
 #import <Masonry/Masonry.h>
 #import <SJUIFactory/SJUIFactory.h>
 
 
-@interface SJVideoPlayerRightControlView ()
+@interface SJLightweightRightControlView ()
 
 @property (nonatomic, strong, readonly) UIButton *editingBtn;
 
 @end
 
-@implementation SJVideoPlayerRightControlView
+@implementation SJLightweightRightControlView
 
 @synthesize editingBtn = _editingBtn;
 

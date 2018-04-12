@@ -19,6 +19,8 @@ typedef NS_ENUM(NSUInteger, SJVideoPlayerRightViewTag) {
 
 @property (nonatomic, weak, readwrite, nullable) id<SJVideoPlayerRightControlViewDelegate> delegate;
 
+@property (nonatomic, strong, nullable) UIImage *filmEditingBtnImage;
+
 @end
 
 @protocol SJVideoPlayerRightControlViewDelegate <NSObject>

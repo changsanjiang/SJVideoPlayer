@@ -23,6 +23,7 @@
 #import "SJFilmEditingResultShareItem.h"
 #import "SJLightweightTopItem.h"
 #import "SJVideoPlayerFilmEditingCommonHeader.h"
+#import "SJVideoPlayerFilmEditingConfig.h"
 
 NS_ASSUME_NONNULL_BEGIN
 
@@ -133,22 +134,12 @@ NS_ASSUME_NONNULL_BEGIN
  */
 @property (nonatomic) BOOL enableFilmEditing;
 
-@property (nonatomic, strong, nullable) NSArray<SJFilmEditingResultShareItem *> *resultShareItems;
-@property (nonatomic, weak, nullable) id<SJVideoPlayerFilmEditingResultUpload> resultUploader;
-@property (nonatomic, copy, nullable) void(^clickedResultShareItemExeBlock)(SJVideoPlayer *player, SJFilmEditingResultShareItem * item, id<SJVideoPlayerFilmEditingResult> result);
-
-@property (nonatomic) BOOL disableScreenshot;   // default is NO
-@property (nonatomic) BOOL disableRecord;       // default is NO
-@property (nonatomic) BOOL disableGIF;          // default is NO
+@property (nonatomic, strong, readonly) SJVideoPlayerFilmEditingConfig *filmEditingConfig;
 
 - (void)dismissFilmEditingViewCompletion:(void(^__nullable)(SJVideoPlayer *player))completionBlock;
 
 
-
-
-
-- (void)exitFilmEditingCompletion:(void(^__nullable)(SJVideoPlayer *player))completion NS_DEPRECATED(2_0, 2_0, 2_0, 2_0, "use `dismissFilmEditingViewCompletion:`");;
-
+- (void)exitFilmEditingCompletion:(void(^__nullable)(SJVideoPlayer *player))completion NS_DEPRECATED(2_0, 2_0, 2_0, 2_0, "use `dismissFilmEditingViewCompletion:`");
 @end
 
 NS_ASSUME_NONNULL_END

@@ -16,6 +16,7 @@
 #import "SJFilmEditingResultShareItem.h"
 #import <SJObserverHelper/NSObject+SJObserverHelper.h>
 #import <SJBaseVideoPlayer/SJBaseVideoPlayer.h>
+#import <SJBaseVideoPlayer/SJVideoPlayerRegistrar.h>
 
 @interface SJVideoPlayerFilmEditingResultView ()
 
@@ -28,6 +29,8 @@
 @property (nonatomic, strong, readonly) UILabel *progressLabel;
 @property (nonatomic, strong, readonly) UIView *uploadProgressView;
 
+@property (nonatomic, strong, readonly) SJVideoPlayerRegistrar *registrar;
+
 @end
 
 @implementation SJVideoPlayerFilmEditingResultView
@@ -39,12 +42,14 @@
 @synthesize videoPlayer = _videoPlayer;
 @synthesize progressLabel = _progressLabel;
 @synthesize uploadProgressView = _uploadProgressView;
+@synthesize registrar = _registrar;
 
 - (instancetype)initWithType:(SJVideoPlayerFilmEditingResultViewType)type {
     self = [super initWithFrame:CGRectZero];
     if ( !self ) return nil;
     _type = type;
     [self _setupViews];
+    [self registrar];
     return self;
 }
 
@@ -271,6 +276,25 @@
     _videoPlayer.playDidToEnd = ^(__kindof SJBaseVideoPlayer * _Nonnull player) {
         [player jumpedToTime:0 completionHandler:nil];
     };
+    
     return _videoPlayer;
+}
+
+- (SJVideoPlayerRegistrar *)registrar {
+    if ( _registrar ) return _registrar;
+    _registrar = [[SJVideoPlayerRegistrar alloc] init];
+    __weak typeof(self) _self = self;
+    _registrar.didBecomeActive = ^(SJVideoPlayerRegistrar * _Nonnull registrar) {
+        __strong typeof(_self) self = _self;
+        if ( !self ) return;
+        [self.videoPlayer play];
+    };
+    
+    _registrar.newDeviceAvailable = ^(SJVideoPlayerRegistrar * _Nonnull registrar) {
+        __strong typeof(_self) self = _self;
+        if ( !self ) return;
+        [self.videoPlayer play];
+    };
+    return _registrar;
 }
 @end

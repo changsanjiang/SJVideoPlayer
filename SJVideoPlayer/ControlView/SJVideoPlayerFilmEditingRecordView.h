@@ -24,7 +24,8 @@ NS_ASSUME_NONNULL_BEGIN
 - (void)start;
 - (void)pause;
 - (void)resume;
-- (void)stop;
+- (void)cancel;
+- (void)finished;
 
 @property (nonatomic, copy, nullable) void(^statusChangedExeBlock)(__kindof UIView *view, SJVideoPlayerFilmEditingStatus status);
 

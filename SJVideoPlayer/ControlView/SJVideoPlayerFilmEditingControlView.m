@@ -115,8 +115,6 @@ NS_ASSUME_NONNULL_END
 
 #pragma mark -
 - (SJVideoPlayerFilmEditingStatus)status {
-    if ( _showResultView ) return SJVideoPlayerFilmEditingStatus_PresentResults;
-    
     switch ( self.currentOperation ) {
         case SJVideoPlayerFilmEditingOperation_GIF: {
             return _generateGIFView.status;
@@ -127,6 +125,7 @@ NS_ASSUME_NONNULL_END
         }
             break;
         case SJVideoPlayerFilmEditingOperation_Screenshot: {
+            if ( _showResultView ) return SJVideoPlayerFilmEditingStatus_Finished;
             return SJVideoPlayerFilmEditingStatus_Unknown;
         }
             break;
@@ -161,14 +160,33 @@ NS_ASSUME_NONNULL_END
     }
 }
 
-- (void)finalize {
+- (void)cancel {
     switch ( self.currentOperation ) {
         case SJVideoPlayerFilmEditingOperation_GIF: {
-            [_generateGIFView stop];
+            [_generateGIFView cancel];
         }
             break;
         case SJVideoPlayerFilmEditingOperation_Export: {
-            [_recordView stop];
+            [_recordView cancel];
+        }
+            break;
+        case SJVideoPlayerFilmEditingOperation_Screenshot: {
+            if ( [self.delegate respondsToSelector:@selector(filmEditingControlView:statusChanged:)] ) {
+                [self.delegate filmEditingControlView:self statusChanged:SJVideoPlayerFilmEditingStatus_Cancelled];
+            }
+        }
+            break;
+    }
+}
+
+- (void)finalize {
+    switch ( self.currentOperation ) {
+        case SJVideoPlayerFilmEditingOperation_GIF: {
+            [_generateGIFView finished];
+        }
+            break;
+        case SJVideoPlayerFilmEditingOperation_Export: {
+            [_recordView finished];
         }
             break;
         case SJVideoPlayerFilmEditingOperation_Screenshot: break;
@@ -183,8 +201,6 @@ NS_ASSUME_NONNULL_END
 }
 
 - (void)_showResultWithType:(SJVideoPlayerFilmEditingResultViewType)type{
-    [self statusChanged:SJVideoPlayerFilmEditingStatus_PresentResults];
-    
     [_recordView removeFromSuperview];
     [_generateGIFView removeFromSuperview];
     
@@ -271,7 +287,6 @@ NS_ASSUME_NONNULL_END
 }
 
 - (void)setExportFailed:(BOOL)exportFailed {
-    [_recordView stop];
     _showResultView.exportFailed = exportFailed;
     self.uploader.failed = exportFailed;
 }
@@ -312,7 +327,9 @@ NS_ASSUME_NONNULL_END
     CGPoint location = [_tapGR locationInView:self];
     if ( !CGRectContainsPoint(_showResultView.frame, location) &&
          !CGRectContainsPoint(_recordView.frame, location)) {
-        if ( self.exit ) self.exit(self);
+        if ( [self.delegate respondsToSelector:@selector(userTappedBlankAreaAtFilmEditingControlView:)] ) {
+            [self.delegate userTappedBlankAreaAtFilmEditingControlView:self];
+        }
     }
 }
 
@@ -435,7 +452,7 @@ NS_ASSUME_NONNULL_END
     _recordView.clickedCancleBtnExeBlock = ^(SJVideoPlayerFilmEditingRecordView * _Nonnull view) {
         __strong typeof(_self) self = _self;
         if ( !self ) return ;
-        if ( self.exit ) self.exit(self);
+        [view cancel];
     };
     
     _recordView.clickedCompleteBtnExeBlock = ^(SJVideoPlayerFilmEditingRecordView * _Nonnull view) {
@@ -466,7 +483,7 @@ NS_ASSUME_NONNULL_END
     _generateGIFView.clickedCancleBtnExeBlock = ^(SJVideoPlayerFilmEditingGenerateGIFView * _Nonnull view) {
         __strong typeof(_self) self = _self;
         if ( !self ) return ;
-        if ( self.exit ) self.exit(self);
+        [view cancel];
     };
     
     _generateGIFView.clickedCompleteBtnExeBlock = ^(SJVideoPlayerFilmEditingGenerateGIFView * _Nonnull view) {

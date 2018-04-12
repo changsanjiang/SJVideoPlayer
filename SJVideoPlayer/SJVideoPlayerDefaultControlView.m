@@ -131,7 +131,7 @@ NS_ASSUME_NONNULL_END
         [self.videoPlayer play];
         [self.videoPlayer controlLayerNeedDisappear];
     }
-    else if ( _filmEditingControlView.status == SJVideoPlayerFilmEditingStatus_Stopped ) {
+    else if ( _filmEditingControlView.status == SJVideoPlayerFilmEditingStatus_Cancelled ) {
         [self pauseAndDeterAppear];
     }
 }
@@ -290,24 +290,6 @@ NS_ASSUME_NONNULL_END
     }
     else {
         [_rightControlView removeFromSuperview];
-    }
-}
-
-- (void)exitFilmEditingCompletion:(void(^ __nullable)(SJVideoPlayerDefaultControlView *))completion {
-    if ( _filmEditingControlView ) {
-        UIView_Animations(CommonAnimaDuration, ^{
-            [self->_filmEditingControlView disappear];
-        }, ^{
-            self.videoPlayer.disableRotation = NO;
-            self.videoPlayer.disableGestureTypes = SJDisablePlayerGestureTypes_None;
-            [self.videoPlayer play];
-            [self->_filmEditingControlView removeFromSuperview];
-            self->_filmEditingControlView = nil;  // clear
-            if ( completion ) completion(self);
-        });
-    }
-    else {
-        if ( completion ) completion(self);
     }
 }
 
@@ -538,14 +520,6 @@ NS_ASSUME_NONNULL_END
     _filmEditingControlView.delegate = self;
     _filmEditingControlView.resource = (id)self.settings;
     
-    _filmEditingControlView.exit = ^(SJVideoPlayerFilmEditingControlView * _Nonnull view) {
-        __strong typeof(_self) self = _self;
-        if ( !self ) return;
-        [self exitFilmEditingCompletion:^(SJVideoPlayerDefaultControlView * _Nonnull view) {
-            [self.videoPlayer controlLayerNeedAppear];
-        }];
-    };
-    
     _filmEditingControlView.recordCompleteExeBlock = ^void (SJVideoPlayerFilmEditingControlView * _Nonnull filmEditingView, short duration) {
         __strong typeof(_self) self = _self;
         if ( !self ) return;
@@ -610,7 +584,7 @@ NS_ASSUME_NONNULL_END
     NSLog(@"--- %d", (int)status);
     switch ( status ) {
         case SJVideoPlayerFilmEditingStatus_Unknown: break;
-        case SJVideoPlayerFilmEditingStatus_Stopped: break;
+        case SJVideoPlayerFilmEditingStatus_Cancelled: break;
         case SJVideoPlayerFilmEditingStatus_Recording: {
             
         }
@@ -619,7 +593,7 @@ NS_ASSUME_NONNULL_END
             [self pauseAndDeterAppear];
         }
             break;
-        case SJVideoPlayerFilmEditingStatus_PresentResults: {
+        case SJVideoPlayerFilmEditingStatus_Finished: {
             [self pauseAndDeterAppear];
         }
             break;
@@ -640,6 +614,30 @@ NS_ASSUME_NONNULL_END
             [self pauseAndDeterAppear];
         }
             break;
+    }
+}
+
+- (void)userTappedBlankAreaAtFilmEditingControlView:(SJVideoPlayerFilmEditingControlView *)filmEditingControlView {
+    [self exitFilmEditingCompletion:^(SJVideoPlayerDefaultControlView * _Nonnull view) {
+        [self.videoPlayer controlLayerNeedAppear];
+    }];
+}
+
+- (void)exitFilmEditingCompletion:(void(^ __nullable)(SJVideoPlayerDefaultControlView *))completion {
+    if ( _filmEditingControlView ) {
+        UIView_Animations(CommonAnimaDuration, ^{
+            [self->_filmEditingControlView disappear];
+        }, ^{
+            self.videoPlayer.disableRotation = NO;
+            self.videoPlayer.disableGestureTypes = SJDisablePlayerGestureTypes_None;
+            [self.videoPlayer play];
+            [self->_filmEditingControlView removeFromSuperview];
+            self->_filmEditingControlView = nil;  // clear
+            if ( completion ) completion(self);
+        });
+    }
+    else {
+        if ( completion ) completion(self);
     }
 }
 

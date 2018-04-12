@@ -13,9 +13,9 @@
 typedef NS_ENUM(NSUInteger, SJVideoPlayerFilmEditingStatus) {
     SJVideoPlayerFilmEditingStatus_Unknown,
     SJVideoPlayerFilmEditingStatus_Recording,
-    SJVideoPlayerFilmEditingStatus_Stopped,
+    SJVideoPlayerFilmEditingStatus_Cancelled,
     SJVideoPlayerFilmEditingStatus_Paused,
-    SJVideoPlayerFilmEditingStatus_PresentResults,
+    SJVideoPlayerFilmEditingStatus_Finished,
 };
 
 

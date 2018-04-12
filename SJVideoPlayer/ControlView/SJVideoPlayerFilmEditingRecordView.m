@@ -76,9 +76,14 @@
     _currentTime = currentTime;
 }
 
-- (void)stop {
+- (void)cancel {
     [self _clearTimer];
-    self.status = SJVideoPlayerFilmEditingStatus_Stopped;
+    self.status = SJVideoPlayerFilmEditingStatus_Cancelled;
+}
+
+- (void)finished {
+    [self _clearTimer];
+    self.status = SJVideoPlayerFilmEditingStatus_Finished;
 }
 
 - (void)setStatus:(SJVideoPlayerFilmEditingStatus)status {
@@ -88,7 +93,6 @@
 }
 
 - (void)clickedBtn:(UIButton *)btn {
-    [self stop];
     if ( btn == self.cancelBtn ) {
         if ( _clickedCancleBtnExeBlock ) _clickedCancleBtnExeBlock(self);
     }
@@ -104,7 +108,7 @@
 
 - (void)countDownRefresh:(NSTimer *)timer {
     if ( _currentTime == _time ) {
-        [self stop];
+        [self finished];
         if ( self.clickedCompleteBtnExeBlock ) self.clickedCompleteBtnExeBlock(self);
         return;
     }

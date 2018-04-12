@@ -31,15 +31,12 @@ typedef NS_ENUM(NSUInteger, SJVideoPlayerFilmEditingOperation) {
 
 
 @property (nonatomic, readonly) SJVideoPlayerFilmEditingOperation currentOperation; // user selected operation.
-@property (nonatomic, readonly) SJVideoPlayerFilmEditingStatus status;
 
 @property (nonatomic) BOOL disableScreenshot;   // default is NO
 @property (nonatomic) BOOL disableRecord;       // default is NO
 @property (nonatomic) BOOL disableGIF;          // default is NO
 
 @property (nonatomic, strong, nullable) SJFilmEditingResultShare *resultShare;
-@property (nonatomic, copy, nullable) void(^exit)(SJVideoPlayerFilmEditingControlView *view);
-
 
 #pragma mark -
 @property (nonatomic, strong, nullable) NSURL *exportedFileURL;
@@ -48,9 +45,11 @@ typedef NS_ENUM(NSUInteger, SJVideoPlayerFilmEditingOperation) {
 
 
 #pragma mark -
-- (void)pause;
-- (void)resume;
-- (void)finalize;
+@property (nonatomic, readonly) SJVideoPlayerFilmEditingStatus status;
+- (void)pause;      // call delegate method `filmEditingControlView:statusChanged:`
+- (void)resume;     // call delegate method `filmEditingControlView:statusChanged:`
+- (void)cancel;     // call delegate method `filmEditingControlView:statusChanged:`
+- (void)finalize;   // call delegate method `filmEditingControlView:statusChanged:`
 
 #pragma mark - record
 @property (nonatomic, copy, nullable) void(^startRecordingExeBlock)(SJVideoPlayerFilmEditingControlView *view);
@@ -69,6 +68,10 @@ typedef NS_ENUM(NSUInteger, SJVideoPlayerFilmEditingOperation) {
 
 - (void)filmEditingControlView:(SJVideoPlayerFilmEditingControlView *)filmEditingControlView statusChanged:(SJVideoPlayerFilmEditingStatus)status;
 
+/// 用户点击空白区域
+- (void)userTappedBlankAreaAtFilmEditingControlView:(SJVideoPlayerFilmEditingControlView *)filmEditingControlView;
+
+/// 用户选择其中一个操作 --> [截屏/导出视频/导出GIF]
 - (void)filmEditingControlView:(SJVideoPlayerFilmEditingControlView *)filmEditingControlView userSelectedOperation:(SJVideoPlayerFilmEditingOperation)operation;
 
 @end

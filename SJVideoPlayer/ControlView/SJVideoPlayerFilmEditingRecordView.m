@@ -26,7 +26,7 @@
 @property (nonatomic, strong, readonly) SJSlider *progressSlider;
 @property (nonatomic, strong, readonly) NSTimer *countDownTimer;
 
-@property (nonatomic, readwrite) short currentTime; // sec.
+@property (nonatomic, readwrite) short duration; // sec.
 @property (nonatomic, readonly) short time; // 60 * 2, sec.
 
 @property (nonatomic) SJVideoPlayerFilmEditingStatus status;
@@ -58,7 +58,7 @@
 }
 
 - (void)start {
-    _currentTime = 0;
+    _duration = 0;
     self.promptLabel.text = self.waitingForRecordingPromptText;
     [[NSRunLoop currentRunLoop] addTimer:self.countDownTimer forMode:NSRunLoopCommonModes];
     [self.countDownTimer setFireDate:[NSDate dateWithTimeIntervalSinceNow:1]];
@@ -71,9 +71,9 @@
 }
 
 - (void)resume {
-    NSTimeInterval currentTime = _currentTime;
+    NSTimeInterval duration = _duration;
     [self start];
-    _currentTime = currentTime;
+    _duration = duration;
 }
 
 - (void)cancel {
@@ -107,20 +107,20 @@
 }
 
 - (void)countDownRefresh:(NSTimer *)timer {
-    if ( _currentTime == _time ) {
+    if ( _duration == _time ) {
         [self finished];
         if ( self.clickedCompleteBtnExeBlock ) self.clickedCompleteBtnExeBlock(self);
         return;
     }
-    ++_currentTime;
+    ++_duration;
     
     int seconds, minutes;
-    minutes = (_currentTime) / 60;
-    seconds = _currentTime % 60;
+    minutes = (_duration) / 60;
+    seconds = _duration % 60;
     _progressLabel.text = [NSString stringWithFormat:@"%02d:%02d/02:00", minutes, seconds];
-    _progressSlider.value = _currentTime * 1.0f / _time;
+    _progressSlider.value = _duration * 1.0f / _time;
     
-    if ( _currentTime == 3 ) {
+    if ( _duration == 3 ) {
         self.promptLabel.text = self.recordPromptText;
         [UIView animateWithDuration:0.3 animations:^{
             self->_recrodBtn.alpha = 1;
@@ -170,7 +170,7 @@
     [_cancelBtn mas_makeConstraints:^(MASConstraintMaker *make) {
         make.leading.offset(12);
         make.top.offset(12);
-        make.height.offset(26);
+        make.height.offset(30);
         make.width.equalTo(self->_cancelBtn.mas_height).multipliedBy(2.8);
     }];
     
@@ -207,7 +207,7 @@
     if ( _cancelBtn ) return _cancelBtn;
     _cancelBtn = [SJShapeButtonFactory buttonWithCornerRadius:15 title:nil titleColor:[UIColor whiteColor] target:self sel:@selector(clickedBtn:)];
     _cancelBtn.backgroundColor = [UIColor colorWithWhite:0 alpha:0.618];
-    _cancelBtn.titleLabel.font = [UIFont systemFontOfSize:11];
+    _cancelBtn.titleLabel.font = [UIFont systemFontOfSize:12];
     return _cancelBtn;
 }
 

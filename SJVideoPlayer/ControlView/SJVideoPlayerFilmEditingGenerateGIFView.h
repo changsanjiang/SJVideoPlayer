@@ -14,6 +14,8 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic, readonly) SJVideoPlayerFilmEditingStatus status;
 @property (nonatomic, readonly) int maxDuration; // sec. 8s.
 @property (nonatomic, readonly) int countDown;
+@property (nonatomic, readonly) int duration;
+
 
 @property (nonatomic, strong, nullable) NSString *cancelBtnTitle;
 @property (nonatomic, strong, nullable) NSString *waitingForRecordingPromptText;

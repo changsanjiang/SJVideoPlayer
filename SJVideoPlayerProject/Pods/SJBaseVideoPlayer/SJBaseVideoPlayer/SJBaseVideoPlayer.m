@@ -1531,7 +1531,7 @@ NS_ASSUME_NONNULL_END
                     endTime:(NSTimeInterval)endTime
                  presetName:(nullable NSString *)presetName
                    progress:(void(^)(__kindof SJBaseVideoPlayer *videoPlayer, float progress))progressBlock
-                 completion:(void(^)(__kindof SJBaseVideoPlayer *videoPlayer, SJVideoPlayerURLAsset *asset, NSURL *fileURL, UIImage *thumbImage))completion
+                 completion:(void(^)(__kindof SJBaseVideoPlayer *videoPlayer, NSURL *fileURL, UIImage *thumbnailImage))completion
                     failure:(void(^)(__kindof SJBaseVideoPlayer *videoPlayer, NSError *error))failure {
     if ( !self.asset.loadedPlayer ) {
         NSError *error = [NSError errorWithDomain:NSCocoaErrorDomain code:-1 userInfo:@{@"msg":@"Resources are being initialized and cannot be exported."}];
@@ -1546,12 +1546,16 @@ NS_ASSUME_NONNULL_END
     } completion:^(SJVideoPlayerAssetCarrier * _Nonnull asset, AVAsset * _Nonnull sandboxAsset, NSURL * _Nonnull fileURL, UIImage * _Nonnull thumbImage) {
         __strong typeof(_self) self = _self;
         if ( !self ) return;
-        if ( completion ) completion(self, [[SJVideoPlayerURLAsset alloc] initWithAssetURL:fileURL], fileURL, thumbImage);
+        if ( completion ) completion(self, fileURL, thumbImage);
     } failure:^(SJVideoPlayerAssetCarrier * _Nonnull asset, NSError * _Nonnull error) {
         __strong typeof(_self) self = _self;
         if ( !self ) return;
         if ( failure ) failure(self, error);
     }];
+}
+
+- (void)cancelExportOperation {
+    [self.asset cancelExportOperation];
 }
 
 - (void)generateGIFWithBeginTime:(NSTimeInterval)beginTime
@@ -1583,6 +1587,9 @@ NS_ASSUME_NONNULL_END
     }];
 }
 
+- (void)cancelGenerateGIFOperation {
+    [self.asset cancelGenerateGIFOperation];
+}
 @end
 
 
@@ -1636,6 +1643,19 @@ NS_ASSUME_NONNULL_END
 - (void)showTitle:(NSString *)title duration:(NSTimeInterval)duration hiddenExeBlock:(void (^)(__kindof SJBaseVideoPlayer * _Nonnull))hiddenExeBlock {
     __weak typeof(self) _self = self;
     [self.prompt showTitle:title duration:duration hiddenExeBlock:^(SJPrompt * _Nonnull prompt) {
+        __strong typeof(_self) self = _self;
+        if ( !self ) return;
+        if ( hiddenExeBlock ) hiddenExeBlock(self);
+    }];
+}
+
+- (void)showAttributedString:(NSAttributedString *)attributedString duration:(NSTimeInterval)duration {
+    [self showAttributedString:attributedString duration:duration hiddenExeBlock:nil];
+}
+
+- (void)showAttributedString:(NSAttributedString *)attributedString duration:(NSTimeInterval)duration hiddenExeBlock:(void(^__nullable)(__kindof SJBaseVideoPlayer *player))hiddenExeBlock {
+    __weak typeof(self) _self = self;
+    [self.prompt showAttributedString:attributedString duration:duration hiddenExeBlock:^(SJPrompt * _Nonnull prompt) {
         __strong typeof(_self) self = _self;
         if ( !self ) return;
         if ( hiddenExeBlock ) hiddenExeBlock(self);

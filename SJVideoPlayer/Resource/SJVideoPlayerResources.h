@@ -18,6 +18,7 @@ UIKIT_EXTERN NSString *const SJVideoPlayer_WaitingForRecordingPromptText;
 UIKIT_EXTERN NSString *const SJVideoPlayer_RecordPromptText;
 UIKIT_EXTERN NSString *const SJVideoPlayer_VideoPlayDidToEndText;
 UIKIT_EXTERN NSString *const SJVideoPlayer_UploadingPrompt;
+UIKIT_EXTERN NSString *const SJVideoPlayer_UploadSuccessfullyPrompt;
 UIKIT_EXTERN NSString *const SJVideoPlayer_ExportingPrompt;
 UIKIT_EXTERN NSString *const SJVideoPlayer_OperationFailedPrompt;
 

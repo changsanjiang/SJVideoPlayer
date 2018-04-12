@@ -251,6 +251,10 @@ typedef NS_ENUM(NSInteger, SJNetworkStatus) {
 
 - (void)showTitle:(NSString *)title duration:(NSTimeInterval)duration hiddenExeBlock:(void(^__nullable)(__kindof SJBaseVideoPlayer *player))hiddenExeBlock;
 
+- (void)showAttributedString:(NSAttributedString *)attributedString duration:(NSTimeInterval)duration;
+
+- (void)showAttributedString:(NSAttributedString *)attributedString duration:(NSTimeInterval)duration hiddenExeBlock:(void(^__nullable)(__kindof SJBaseVideoPlayer *player))hiddenExeBlock;
+
 /**
  Hidden Prompt.
  */
@@ -579,14 +583,18 @@ typedef NS_ENUM(NSInteger, SJNetworkStatus) {
                     endTime:(NSTimeInterval)endTime
                  presetName:(nullable NSString *)presetName
                    progress:(void(^)(__kindof SJBaseVideoPlayer *videoPlayer, float progress))progressBlock
-                 completion:(void(^)(__kindof SJBaseVideoPlayer *videoPlayer, SJVideoPlayerURLAsset *asset, NSURL *fileURL, UIImage *thumbImage))completion
+                 completion:(void(^)(__kindof SJBaseVideoPlayer *videoPlayer, NSURL *fileURL, UIImage *thumbnailImage))completion
                     failure:(void(^)(__kindof SJBaseVideoPlayer *videoPlayer, NSError *error))failure;
+
+- (void)cancelExportOperation;
 
 - (void)generateGIFWithBeginTime:(NSTimeInterval)beginTime
                         duration:(NSTimeInterval)duration
                         progress:(void(^)(__kindof SJBaseVideoPlayer *videoPlayer, float progress))progressBlock
                       completion:(void(^)(__kindof SJBaseVideoPlayer *videoPlayer, UIImage *imageGIF, UIImage *thumbnailImage, NSURL *filePath))completion
                          failure:(void(^)(__kindof SJBaseVideoPlayer *videoPlayer, NSError *error))failure;
+
+- (void)cancelGenerateGIFOperation;
 
 @end
 

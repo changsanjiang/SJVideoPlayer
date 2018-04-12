@@ -22,6 +22,7 @@
 #import "SJVideoPlayerMoreSettingSecondary.h"
 #import "SJFilmEditingResultShareItem.h"
 #import "SJLightweightTopItem.h"
+#import "SJVideoPlayerFilmEditingCommonHeader.h"
 
 NS_ASSUME_NONNULL_BEGIN
 
@@ -114,20 +115,39 @@ NS_ASSUME_NONNULL_BEGIN
  **/
 @property (nonatomic, strong, nullable) NSArray<SJVideoPlayerMoreSetting *> *moreSettings;
 
+@end
+
+
+
+#pragma mark - Film Editing
+
+@interface SJVideoPlayer (FilmEditing)
+
 /**
  If yes, the player will display the right control view.
  But if the format of the video is m3u8, it does not work.
+ 
+ default is  NO.
  
  readwrite.
  */
 @property (nonatomic) BOOL enableFilmEditing;
 
-/**
- readwrite.
- */
-@property (nonatomic, strong, nullable) SJFilmEditingResultShare *filmEditingResultShare;
+@property (nonatomic, strong, nullable) NSArray<SJFilmEditingResultShareItem *> *resultShareItems;
+@property (nonatomic, weak, nullable) id<SJVideoPlayerFilmEditingResultUpload> resultUploader;
+@property (nonatomic, copy, nullable) void(^clickedResultShareItemExeBlock)(SJVideoPlayer *player, SJFilmEditingResultShareItem * item, id<SJVideoPlayerFilmEditingResult> result);
 
-- (void)exitFilmEditingCompletion:(void(^__nullable)(SJVideoPlayer *player))completion;
+@property (nonatomic) BOOL disableScreenshot;   // default is NO
+@property (nonatomic) BOOL disableRecord;       // default is NO
+@property (nonatomic) BOOL disableGIF;          // default is NO
+
+- (void)dismissFilmEditingViewCompletion:(void(^__nullable)(SJVideoPlayer *player))completionBlock;
+
+
+
+
+
+- (void)exitFilmEditingCompletion:(void(^__nullable)(SJVideoPlayer *player))completion NS_DEPRECATED(2_0, 2_0, 2_0, 2_0, "use `dismissFilmEditingViewCompletion:`");;
 
 @end
 

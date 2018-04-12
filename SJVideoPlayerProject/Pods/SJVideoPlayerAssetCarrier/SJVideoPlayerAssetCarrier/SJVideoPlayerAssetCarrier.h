@@ -218,7 +218,7 @@ NS_ASSUME_NONNULL_BEGIN
                    progress:(void(^)(SJVideoPlayerAssetCarrier *asset, float progress))progress
                  completion:(void(^)(SJVideoPlayerAssetCarrier *asset, AVAsset * __nullable sandboxAsset, NSURL * __nullable fileURL, UIImage * __nullable thumbImage))completion
                     failure:(void(^)(SJVideoPlayerAssetCarrier *asset, NSError * __nullable error))failure;
-
+- (void)cancelExportOperation;
 /**
  generate gif
  @param interval        The interval at which the image is captured, Recommended setting 0.1f.
@@ -231,7 +231,7 @@ NS_ASSUME_NONNULL_BEGIN
                         progress:(void(^)(SJVideoPlayerAssetCarrier *asset, float progress))progressBlock
                       completion:(void(^)(SJVideoPlayerAssetCarrier *asset, UIImage *imageGIF, UIImage *thumbnailImage))completion
                          failure:(void(^)(SJVideoPlayerAssetCarrier *asset, NSError *error))failure;
-
+- (void)cancelGenerateGIFOperation;
 
 #pragma mark - seek to time
 - (void)jumpedToTime:(NSTimeInterval)time completionHandler:(void (^ __nullable)(BOOL finished))completionHandler;

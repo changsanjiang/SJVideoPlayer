@@ -285,7 +285,9 @@ NS_ASSUME_NONNULL_END
     [_playerItem removeObserver:self forKeyPath:@"presentationSize"];
     [_playerItem removeObserver:self forKeyPath:@"duration"];
     [_tmp_imageGenerator cancelAllCGImageGeneration];
-    [_gif_imageGenerator cancelAllCGImageGeneration];
+    [self cancelExportOperation];
+    [self cancelGenerateGIFOperation];
+    [self cancelExportOperation];
     [self cancelPreviewImagesGeneration];
     if ( 0 != _player.rate ) [_player pause];
     [_player removeTimeObserver:_timeObserver]; _timeObserver = nil;
@@ -632,6 +634,9 @@ NS_ASSUME_NONNULL_END
     }];
 }
 
+- (void)cancelExportOperation {
+    [_exportSession cancelExport];
+}
 
 #pragma mark - gif
 - (void)generateGIFWithBeginTime:(NSTimeInterval)beginTime
@@ -701,6 +706,10 @@ NS_ASSUME_NONNULL_END
                 break;
         }
     }];
+}
+
+- (void)cancelGenerateGIFOperation {
+    [_gif_imageGenerator cancelAllCGImageGeneration];
 }
 
 - (void)_cleanRefreshProgressTimer {

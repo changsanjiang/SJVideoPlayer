@@ -14,7 +14,6 @@
 #import "UIView+SJControlAdd.h"
 #import <SJAttributesFactory/SJAttributeWorker.h>
 #import "SJFilmEditingResultShareItem.h"
-#import <SJObserverHelper/NSObject+SJObserverHelper.h>
 #import <SJBaseVideoPlayer/SJBaseVideoPlayer.h>
 #import <SJBaseVideoPlayer/SJVideoPlayerRegistrar.h>
 
@@ -27,8 +26,6 @@
 @property (nonatomic, strong, readonly) UIView *itemsContainerView;
 
 @property (nonatomic, strong, readonly) UILabel *progressLabel;
-@property (nonatomic, strong, readonly) UIView *uploadProgressView;
-
 @property (nonatomic, strong, readonly) SJVideoPlayerRegistrar *registrar;
 
 @end
@@ -41,7 +38,6 @@
 @synthesize itemsContainerView = _itemsContainerView;
 @synthesize videoPlayer = _videoPlayer;
 @synthesize progressLabel = _progressLabel;
-@synthesize uploadProgressView = _uploadProgressView;
 @synthesize registrar = _registrar;
 
 - (instancetype)initWithType:(SJVideoPlayerFilmEditingResultViewType)type {
@@ -59,7 +55,7 @@
 #endif
 }
 
-- (void)showResultWithCompletion:(void (^)(void))block {
+- (void)presentResultViewWithCompletion:(void (^)(void))block {
     [self.imageView mas_remakeConstraints:^(MASConstraintMaker *make) {
         make.centerX.offset(0);
         make.centerY.equalTo(self.mas_centerY).multipliedBy(0.82);
@@ -67,7 +63,7 @@
         make.height.equalTo(self.imageView.mas_width).multipliedBy(9 / 16.0);
     }];
     
-    [UIView animateWithDuration:0.5 animations:^{
+    [UIView animateWithDuration:0.6 animations:^{
         [self layoutIfNeeded];
         self.itemsContainerView.alpha = 1;
     } completion:^(BOOL finished) {
@@ -82,68 +78,15 @@
 }
 
 - (void)clickedItemBtn:(UIButton *)btn {
-    SJFilmEditingResultShareItem *item = _items[btn.tag];
-    if ( _clickedItemExeBlock ) _clickedItemExeBlock(self, item);
+    if ( _clickedItemExeBlock ) _clickedItemExeBlock(self, self.shareItems[btn.tag]);
 }
+
 
 #pragma mark -
-- (void)setImage:(UIImage *)image {
-    _image = image;
-    self.layer.contents = (id)image.CGImage;
-    self.imageView.image = image;
-}
 
-- (void)setVideoURL:(NSURL *)videoURL {
-    _videoURL = videoURL;
-    [self.videoPlayer playWithURL:videoURL];
-}
-
-- (void)setExportProgress:(float)exportProgress {
-    _exportProgress = exportProgress;
-    _progressLabel.text = [NSString stringWithFormat:@"%@: %.0f%%", self.exportingPrompt, exportProgress * 100];
-}
-
-- (void)setExportFailed:(BOOL)exportFailed {
-    _exportFailed = exportFailed;
-    _progressLabel.text = self.operationFailedPrompt;
-}
-
-- (void)setCancelBtnTitle:(NSString *)cancelBtnTitle {
-    _cancelBtnTitle = cancelBtnTitle;
-    [_cancelBtn setTitle:cancelBtnTitle forState:UIControlStateNormal];
-}
-
-- (void)setUploader:(SJFilmEditingResultUploader *)uploader {
-    _uploader = uploader;
-    [uploader sj_addObserver:self forKeyPath:@"progress"];
-    [uploader sj_addObserver:self forKeyPath:@"uploaded"];
-    [uploader sj_addObserver:self forKeyPath:@"failed"];
-}
-
-- (void)observeValueForKeyPath:(NSString *)keyPath ofObject:(id)object change:(NSDictionary<NSKeyValueChangeKey,id> *)change context:(void *)context {
-    dispatch_async(dispatch_get_main_queue(), ^{
-        if ( [keyPath isEqualToString:@"progress"] ) {
-            float progress = self.uploader.progress;
-            self->_progressLabel.text = [NSString stringWithFormat:@"%@: %.0f%%", self.uploadingPrompt, progress * 100];
-            [self->_uploadProgressView mas_remakeConstraints:^(MASConstraintMaker *make) {
-                make.top.bottom.trailing.offset(0);
-                make.width.equalTo(self.imageView).multipliedBy(1 - progress);
-            }];
-        }
-        else if ( [keyPath isEqualToString:@"uploaded"] ) {
-            [UIView animateWithDuration:0.25 animations:^{
-               self.progressLabel.alpha = 0.001;
-            }];
-        }
-        else if ( [keyPath isEqualToString:@"failed"] ) {
-            self.progressLabel.text = self.operationFailedPrompt;
-        }
-    });
-}
-
-- (void)setItems:(NSArray<SJFilmEditingResultShareItem *> *)items {
-    _items = items;
-    [_items enumerateObjectsUsingBlock:^(SJFilmEditingResultShareItem * _Nonnull obj, NSUInteger idx, BOOL * _Nonnull stop) {
+- (void)setShareItems:(NSArray<SJFilmEditingResultShareItem *> *)shareItems {
+    _shareItems = shareItems;
+    [shareItems enumerateObjectsUsingBlock:^(SJFilmEditingResultShareItem * _Nonnull obj, NSUInteger idx, BOOL * _Nonnull stop) {
         UIButton *btn = [SJUIButtonFactory buttonWithAttributeTitle:sj_makeAttributesString(^(SJAttributeWorker * _Nonnull make) {
             make.insertImage(obj.image, 0, CGPointZero, CGSizeMake(40, 40));
             make.insertText(@"\n", -1);
@@ -159,7 +102,7 @@
                 make.top.bottom.offset(0);
             }];
         }
-        else if ( idx != (int)self->_items.count - 1 ) {
+        else if ( idx != (int)shareItems.count - 1 ) {
             UIButton *beforeBtn = self.itemsContainerView.subviews[(int)idx - 1];
             [btn mas_makeConstraints:^(MASConstraintMaker *make) {
                 make.leading.equalTo(beforeBtn.mas_trailing).offset(20);
@@ -177,6 +120,57 @@
     }];
 }
 
+- (void)setResource:(id<SJVideoPlayerFilmEditingPromptResource>)resource {
+    _resource = resource;
+    [_cancelBtn setTitle:resource.cancelBtnTitle forState:UIControlStateNormal];
+}
+
+
+#pragma mark -
+- (void)setImage:(UIImage *)image {
+    _image = image;
+    self.layer.contents = (id)image.CGImage;
+    self.imageView.image = image;
+}
+
+- (void)setVideoURL:(NSURL *)videoURL {
+    _videoURL = videoURL;
+    [self.videoPlayer playWithURL:videoURL];
+}
+
+- (void)setExportProgress:(float)exportProgress {
+    _exportProgress = exportProgress;
+    [self _updateProgressText:[NSString stringWithFormat:@"%@: %.0f%%", self.resource.exportingPrompt, exportProgress * 100]];
+}
+
+- (void)setUploadProgress:(float)uploadProgress {
+    _uploadProgress = uploadProgress;
+    [self _updateProgressText:[NSString stringWithFormat:@"%@: %.0f%%", self.resource.uploadingPrompt, uploadProgress * 100]];
+}
+
+- (void)exportEndedWithStatus:(BOOL)exportStatus {
+    if ( !exportStatus ) {
+        [self _updateProgressText:self.resource.operationFailedPrompt];
+    }
+}
+
+- (void)uploadEndedWithStatus:(BOOL)uploadStatus {
+    if ( uploadStatus ) {
+        [self _updateProgressText:self.resource.uploadSuccessfullyPrompt];
+    }
+    else {
+        [self _updateProgressText:self.resource.operationFailedPrompt];
+    }
+}
+
+- (void)_updateProgressText:(NSString *)progressText {
+    _progressLabel.attributedText = sj_makeAttributesString(^(SJAttributeWorker * _Nonnull make) {
+        make.font([UIFont systemFontOfSize:12]).textColor([UIColor whiteColor]);
+        make.append(progressText);
+        make.shadow(CGSizeMake(0.5, 0.5), 1, [UIColor blackColor]);
+    });
+}
+
 #pragma mark -
 
 - (void)_setupViews {
@@ -185,7 +179,6 @@
     [self addSubview:self.imageView];
     [self addSubview:self.itemsContainerView];
     if ( self.type == SJVideoPlayerFilmEditingResultViewType_Video ) [self.imageView addSubview:self.videoPlayer.view];
-    [self.imageView addSubview:self.uploadProgressView];
     [self.imageView addSubview:self.progressLabel];
 
     self.itemsContainerView.alpha = 0.001;
@@ -198,7 +191,7 @@
     [_cancelBtn mas_makeConstraints:^(MASConstraintMaker *make) {
         make.leading.offset(12);
         make.top.offset(12);
-        make.height.offset(26);
+        make.height.offset(30);
         make.width.equalTo(self->_cancelBtn.mas_height).multipliedBy(2.8);
     }];
     
@@ -217,13 +210,9 @@
         make.top.equalTo(self.imageView.mas_bottom);
         make.bottom.equalTo(self);
     }];
-    
-    [_uploadProgressView mas_makeConstraints:^(MASConstraintMaker *make) {
-        make.edges.offset(0);
-    }];
-    
+
     [_progressLabel mas_makeConstraints:^(MASConstraintMaker *make) {
-        make.center.offset(0);
+        make.bottom.trailing.offset(-8);
     }];
 }
 
@@ -243,7 +232,7 @@
     if ( _cancelBtn ) return _cancelBtn;
     _cancelBtn = [SJShapeButtonFactory buttonWithCornerRadius:15 title:nil titleColor:[UIColor whiteColor] target:self sel:@selector(clickedBtn:)];
     _cancelBtn.backgroundColor = [UIColor colorWithWhite:0 alpha:0.5];
-    _cancelBtn.titleLabel.font = [UIFont systemFontOfSize:11];
+    _cancelBtn.titleLabel.font = [UIFont systemFontOfSize:12];
     return _cancelBtn;
 }
 
@@ -256,14 +245,8 @@
 
 - (UILabel *)progressLabel {
     if ( _progressLabel ) return _progressLabel;
-    _progressLabel = [SJUILabelFactory labelWithFont:[UIFont systemFontOfSize:11] textColor:[UIColor whiteColor]];
+    _progressLabel = [SJUILabelFactory attributeLabel];
     return _progressLabel;
-}
-
-- (UIView *)uploadProgressView {
-    if ( _uploadProgressView ) return _uploadProgressView;
-    _uploadProgressView = [SJUIViewFactory viewWithBackgroundColor:[UIColor colorWithWhite:0 alpha:0.5]];
-    return _uploadProgressView;
 }
 
 - (SJBaseVideoPlayer *)videoPlayer {
@@ -276,7 +259,6 @@
     _videoPlayer.playDidToEnd = ^(__kindof SJBaseVideoPlayer * _Nonnull player) {
         [player jumpedToTime:0 completionHandler:nil];
     };
-    
     return _videoPlayer;
 }
 

@@ -7,6 +7,7 @@
 //
 
 #import <UIKit/UIKit.h>
+#import "SJVideoPlayerFilmEditingCommonHeader.h"
 
 /**
  集成播放器的时候, 可以直接将这个类拖入到你的项目中.
@@ -17,13 +18,18 @@
  */
 
 NS_ASSUME_NONNULL_BEGIN
+
+@class SJVideoPlayerURLAsset;
+
+@protocol SJVideoPlayerHelperUseProtocol;
+
 typedef NS_ENUM(NSUInteger, SJVideoPlayerType) {
     SJVideoPlayerType_Default,
     SJVideoPlayerType_Lightweight,
 };
 
-@class SJVideoPlayerURLAsset;
-@protocol SJVideoPlayerHelperUseProtocol;
+
+
 
 @interface SJVideoPlayerHelper : NSObject
 
@@ -33,25 +39,24 @@ typedef NS_ENUM(NSUInteger, SJVideoPlayerType) {
 - (instancetype)initWithViewController:(__weak UIViewController<SJVideoPlayerHelperUseProtocol> *)viewController;
 
 @property (nonatomic, weak, readwrite) UIViewController<SJVideoPlayerHelperUseProtocol> *viewController;
+@property (nonatomic, weak, nullable) id<SJVideoPlayerFilmEditingResultUpload> uploader; //  请设置, 上传 截屏/导出视频/GIF 时使用.
 
 /// play an asset.
 - (void)playWithAsset:(SJVideoPlayerURLAsset *)asset playerParentView:(UIView *)playerParentView;
 
 - (void)clearAsset;
 
-@property (nonatomic, strong, readonly, nullable) SJVideoPlayerURLAsset *asset;
+
+
+
 @property (nonatomic, readonly) NSTimeInterval currentTime;
 @property (nonatomic, readonly) NSTimeInterval totalTime;
 @property (nonatomic, strong, readonly) NSURL *currentPlayURL;
-
+@property (nonatomic, strong, readonly, nullable) SJVideoPlayerURLAsset *asset;
 @property (nonatomic, copy, readonly) void(^vc_viewDidAppearExeBlock)(void);
-
 @property (nonatomic, copy, readonly) void(^vc_viewWillDisappearExeBlock)(void);
-
 @property (nonatomic, copy, readonly) void(^vc_viewDidDisappearExeBlock)(void);
-
 @property (nonatomic, copy, readonly) BOOL(^vc_prefersStatusBarHiddenExeBlock)(void);
-
 @property (nonatomic, copy, readonly) UIStatusBarStyle(^vc_preferredStatusBarStyleExeBlock)(void);
 
 @end

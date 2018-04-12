@@ -16,34 +16,36 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
+static NSString *kSJFilmEditingResultShareItemCopyLinkTitle = @"复制链接";
 static NSString *kSJFilmEditingResultShareItemQQTitle = @"QQ";
-static NSString *kSJFilmEditingResultShareItemWechatTitle = @"Wechat";
-static NSString *kSJFilmEditingResultShareItemWeiboTitle = @"Weibo";
-static NSString *kSJFilmEditingResultShareItemAlbumTitle = @"Album";
+static NSString *kSJFilmEditingResultShareItemQZoneTitle = @"QQ空间";
+static NSString *kSJFilmEditingResultShareItemAlbumTitle = @"保存本地";
+static NSString *kSJFilmEditingResultShareItemWeiboTitle = @"微博";
+static NSString *kSJFilmEditingResultShareItemWechatTitle = @"微信";
+static NSString *kSJFilmEditingResultShareItemWechatTimeLineTitle = @"朋友圈";
 
 typedef NS_ENUM(NSUInteger, SJLightweightTopItemFlag) {
     SJLightweightTopItemFlag_Download,
     SJLightweightTopItemFlag_Share,
 };
 
-@interface SJVideoPlayerHelper ()<SJFilmEditingResultShareDelegate, SJMoreSettingItemsDelegate>
+@interface SJVideoPlayerHelper ()<SJMoreSettingItemsDelegate>
 
 @property (nonatomic, strong, readwrite) SJVideoPlayer *videoPlayer;
 @property (nonatomic, strong, readonly) SJMoreSettingItems *items;
-@property (nonatomic, strong, readonly) SJFilmEditingResultUploader *uploader;
-@property (nonatomic, strong, readonly) SJFilmEditingResultShare *resultShare;
 @property (nonatomic, readwrite) BOOL savedToAblum;
 
 @property (nonatomic, assign) SJVideoPlayerType playerType;
 @property (nonatomic, strong, readonly) NSArray<SJLightweightTopItem *> *topControlItems;
+@property (nonatomic, strong) NSArray<SJFilmEditingResultShareItem *> *resultShareItems;
 
 @end
 
 NS_ASSUME_NONNULL_END
 
+#import "TestUploader.h" // test test test test test
+
 @implementation SJVideoPlayerHelper
-@synthesize uploader = _uploader;
-@synthesize resultShare = _resultShare;
 
 - (instancetype)initWithViewController:(__weak UIViewController<SJVideoPlayerHelperUseProtocol> *)viewController {
     return [self initWithViewController:viewController playerType:0];
@@ -54,6 +56,7 @@ NS_ASSUME_NONNULL_END
     if ( !self ) return nil;
     self.playerType = playerType;
     self.viewController = viewController;
+    self.uploader = [TestUploader sharedManager]; // test test test test test
     return self;
 }
 
@@ -108,10 +111,6 @@ NS_ASSUME_NONNULL_END
     // setting player
     __weak typeof(self) _self = self;
     
-    _videoPlayer.prompt.update(^(SJPromptConfig * _Nonnull config) {
-        config.backgroundColor = [UIColor colorWithWhite:0 alpha:0.618];
-    });
-    
     _videoPlayer.willRotateScreen = ^(SJVideoPlayer * _Nonnull player, BOOL isFullScreen) {
         __strong typeof(_self) self = _self;
         if ( !self ) return ;
@@ -148,6 +147,9 @@ NS_ASSUME_NONNULL_END
             _videoPlayer.clickedTopControlItemExeBlock = ^(SJVideoPlayer * _Nonnull player, SJLightweightTopItem * _Nonnull item) {
                 __strong typeof(_self) self = _self;
                 if ( !self ) return;
+
+                NSLog(@"%d - %s", (int)__LINE__, __func__);
+                
                 void(^promptHiddenExeBlock)(SJVideoPlayer *player) = ^(SJVideoPlayer *player) {
                     /// test test test test test test
                     [player rotate:SJRotateViewOrientation_Portrait animated:YES completion:^(__kindof SJBaseVideoPlayer * _Nonnull player) {
@@ -173,178 +175,77 @@ NS_ASSUME_NONNULL_END
         }
             break;
         case SJVideoPlayerType_Default: {
-            // show right control view.
-            _videoPlayer.enableFilmEditing = YES;
-            _videoPlayer.filmEditingResultShare = self.resultShare;
-            
             _videoPlayer.moreSettings = self.items.moreSettings;
         }
             break;
     }
+    
+    _videoPlayer.enableFilmEditing = YES;
+    _videoPlayer.resultShareItems = self.resultShareItems;
+    _videoPlayer.resultUploader = self.uploader;
+    
+    _videoPlayer.clickedResultShareItemExeBlock = ^(SJVideoPlayer * _Nonnull player, SJFilmEditingResultShareItem * _Nonnull item, id<SJVideoPlayerFilmEditingResult>  _Nonnull result) {
+        __strong typeof(_self) self = _self;
+        if ( !self ) return;
+        
+        NSLog(@"%d - %s", (int)__LINE__, __func__);
+        
+        if ( item.title == kSJFilmEditingResultShareItemAlbumTitle ) {
+            [self _saveResult:result];
+        }
+        else {
+            // test test test
+            [player showTitle:item.title duration:1 hiddenExeBlock:^(__kindof SJBaseVideoPlayer * _Nonnull player) {
+                [player dismissFilmEditingViewCompletion:^(SJVideoPlayer * _Nonnull player) {
+                    [player rotate:SJRotateViewOrientation_Portrait animated:YES completion:^(__kindof SJBaseVideoPlayer * _Nonnull player) {
+                        __strong typeof(_self) self = _self;
+                        if ( !self ) return;
+                        // test test test
+                        [self.viewController.navigationController pushViewController:[[self.viewController class] new] animated:YES];
+                    }];
+                }];
+            }];
+        }
+    };
 }
 
 - (void)clearAsset {
     _videoPlayer.URLAsset = nil;
 }
 
-- (SJFilmEditingResultShare *)resultShare {
-    if ( _resultShare ) return _resultShare;
-    SJFilmEditingResultShareItem *qq = [[SJFilmEditingResultShareItem alloc] initWithTitle:kSJFilmEditingResultShareItemQQTitle image:[UIImage imageNamed:@"qq"]];
-    SJFilmEditingResultShareItem *wechat = [[SJFilmEditingResultShareItem alloc] initWithTitle:kSJFilmEditingResultShareItemWechatTitle image:[UIImage imageNamed:@"wechat"]];
-    SJFilmEditingResultShareItem *weibo = [[SJFilmEditingResultShareItem alloc] initWithTitle:kSJFilmEditingResultShareItemWeiboTitle image:[UIImage imageNamed:@"weibo"]];
-    SJFilmEditingResultShareItem *savoToAlbum = [[SJFilmEditingResultShareItem alloc] initWithTitle:kSJFilmEditingResultShareItemAlbumTitle image:[UIImage imageNamed:@"album"]];
-    _resultShare = [[SJFilmEditingResultShare alloc] initWithShateItems:@[qq, wechat, weibo, savoToAlbum]];
-    _resultShare.delegate = self;
-    return _resultShare;
+@synthesize resultShareItems = _resultShareItems;
+- (NSArray<SJFilmEditingResultShareItem *> *)resultShareItems {
+    if ( _resultShareItems ) return _resultShareItems;
+    SJFilmEditingResultShareItem *save = [[SJFilmEditingResultShareItem alloc] initWithTitle:kSJFilmEditingResultShareItemAlbumTitle image:[UIImage imageNamed:@"result_save"]];
+    /**
+     Whether can clicked When Uploading.
+     上传时, 是否可以点击
+     */
+    save.canAlsoClickedWhenUploading = YES;
+    
+    SJFilmEditingResultShareItem *qq = [[SJFilmEditingResultShareItem alloc] initWithTitle:kSJFilmEditingResultShareItemQQTitle image:[UIImage imageNamed:@"result_qq"]];
+    SJFilmEditingResultShareItem *qzone = [[SJFilmEditingResultShareItem alloc] initWithTitle:kSJFilmEditingResultShareItemQZoneTitle image:[UIImage imageNamed:@"result_qzone"]];
+    SJFilmEditingResultShareItem *wechat = [[SJFilmEditingResultShareItem alloc] initWithTitle:kSJFilmEditingResultShareItemWechatTitle image:[UIImage imageNamed:@"result_wechat_friend"]];
+    SJFilmEditingResultShareItem *wechatTimeLine = [[SJFilmEditingResultShareItem alloc] initWithTitle:kSJFilmEditingResultShareItemWechatTimeLineTitle image:[UIImage imageNamed:@"result_wechat_timeLine"]];
+    SJFilmEditingResultShareItem *weibo = [[SJFilmEditingResultShareItem alloc] initWithTitle:kSJFilmEditingResultShareItemWeiboTitle image:[UIImage imageNamed:@"result_webo"]];
+    SJFilmEditingResultShareItem *linkCopy = [[SJFilmEditingResultShareItem alloc] initWithTitle:kSJFilmEditingResultShareItemCopyLinkTitle image:[UIImage imageNamed:@"result_link_copy"]];
+    _resultShareItems = @[save, qq, qzone, wechat, wechatTimeLine, weibo, linkCopy];
+    return _resultShareItems;
 }
 
 #pragma mark - delegate methods
 
-- (SJFilmEditingResultUploader *)prepareToExport {
-    // clear old value.
-    _uploader.progress = 0;             // 上传进度清零
-    _uploader.uploaded = NO;
-    _uploader.failed = NO;
-    _uploader.exportedVideoURL = nil;
-    _uploader.screenshot = nil;
-    _savedToAblum = NO;
-    return self.uploader;
-}
-
-- (void)successfulExportedVideo:(NSURL *)sandboxURL screenshot:(UIImage *)screenshot {
-    
-    // sample upload code...
-    __weak typeof(self) _self = self;
-    [self _uploadWithFileURL:sandboxURL progress:^(float progress) {
-        __strong typeof(_self) self = _self;
-        if ( !self ) return;
-        self.uploader.progress = progress;          // need update this property when uploading.
-    } completion:^(NSString *URLStr){
-        __strong typeof(_self) self = _self;
-        if ( !self ) return;
-        self.uploader.progress = 1;
-        self.uploader.uploaded = YES;               // need update this property when uploaded.
-        [self.videoPlayer showTitle:@"Upload Successful"];
-    } failed:^{
-        __strong typeof(_self) self = _self;
-        if ( !self ) return;
-        self.uploader.failed = YES;                 // need update this property when failed.
-        [self.videoPlayer showTitle:@"Upload Failed"];
-    }];
-    
-    // update new value.
-    self.uploader.exportedVideoURL = sandboxURL;
-    self.uploader.screenshot = screenshot;
-}
-
-- (void)successfulGenerateGIF:(NSURL *)sandboxURL screenshot:(UIImage *)screenshot {
-    // need call your upload code..
-    // need call your upload code..
-    
-    self.uploader.screenshot = screenshot;
-    
-    
-    // test test test test test test test test test
-    // test test test test test test test test test
-    // test test test test test test test test test
-    NSURL *url = nil;
-    [self successfulExportedVideo:url screenshot:screenshot];
-}
-
-- (void)successfulScreenshot:(UIImage *)screenshot {
-    // need call your upload code..
-    // need call your upload code..
-    
-    self.uploader.screenshot = screenshot;
-    
-    
-    // test test test test test test test test test
-    // test test test test test test test test test
-    // test test test test test test test test test
-    NSURL *url = nil;
-    [self successfulExportedVideo:url screenshot:screenshot];
-}
-
-- (void)_uploadWithImage:(UIImage *)image progress:(void(^)(float progress))progressBlock completion:(void(^)(NSString *URLStr))completion failed:(void(^)(void))failed {
-    
-    // your upload code ..
-    // your upload code ..
-    // your upload code ..
-    
-    // some test code..
-    [self _uploadWithFileURL:nil progress:progressBlock completion:completion failed:failed];
-}
-
-- (void)_uploadWithFileURL:(NSURL *)fileURL progress:(void(^)(float progress))progressBlock completion:(void(^)(NSString *URLStr))completion failed:(void(^)(void))failed {
-    
-    // your upload code ..
-    // your upload code ..
-    // your upload code ..
-    
-    // some test code..
-    __block float progress = 0;
-    for ( int i = 1 ; i <= 10 ; ++i ) {
-        dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(0.2 * i * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
-            progressBlock(progress = i * 0.1);
-            if ( progress == 1 ) completion(@"http://www.github.com");
-        });
-    }
-}
-
-- (void)clickedItem:(SJFilmEditingResultShareItem *)item {
-    
-    if ( self.uploader.uploaded == NO ) {
-        [self.videoPlayer showTitle:@"Uploading, please wait."];
-        return;
-    }
-    
-    if ( self.uploader.failed == YES ) {
-        [self.videoPlayer showTitle:@"Can't continue! The operation failed!"];
-        return;
-    }
-    
-    if ( item.title == kSJFilmEditingResultShareItemAlbumTitle ) {
-        if ( self.savedToAblum ) {
-            [self.videoPlayer showTitle:@"Saved"];
-            return;
+- (void)_saveResult:(id<SJVideoPlayerFilmEditingResult>)result {
+    switch ( result.operation ) {
+        case SJVideoPlayerFilmEditingOperation_Screenshot:
+        case SJVideoPlayerFilmEditingOperation_GIF: {
+            UIImageWriteToSavedPhotosAlbum(result.image, self, @selector(image:didFinishSavingWithError:contextInfo:), NULL);
         }
-        
-        [self.videoPlayer showTitle:@"Saving" duration:-1];
-        
-        if ( self.uploader.exportedVideoURL ) {
-            UISaveVideoAtPathToSavedPhotosAlbum(self.uploader.exportedVideoURL.path, self, @selector(video:didFinishSavingWithError:contextInfo:), NULL);
+            break;
+        case SJVideoPlayerFilmEditingOperation_Export: {
+            UISaveVideoAtPathToSavedPhotosAlbum(result.fileURL.path, self, @selector(video:didFinishSavingWithError:contextInfo:), NULL);
         }
-        else {
-            UIImageWriteToSavedPhotosAlbum(self.uploader.screenshot, self, @selector(image:didFinishSavingWithError:contextInfo:), NULL);
-        }
-    }
-    else {
-        [self.videoPlayer showTitle:[NSString stringWithFormat:@"Clicked %@", item.title]];
-        __weak typeof(self) _self = self;
-        // exit editing
-        [self.videoPlayer exitFilmEditingCompletion:^(SJVideoPlayer * _Nonnull player) {
-            // rotate
-            [player rotate:SJRotateViewOrientation_Portrait animated:YES completion:^(__kindof SJBaseVideoPlayer * _Nonnull player) {
-                __strong typeof(_self) self = _self;
-                if ( !self ) return;
-                // push
-                UIViewController *newVC = [[self.viewController class] new];
-                [self.viewController.navigationController pushViewController:newVC animated:YES];
-            }];
-        }];
-
-    }
-}
-
-- (void)clickedCancelButton {
-    if ( self.uploader.failed ) {
-        [self.videoPlayer exitFilmEditingCompletion:nil];
-    }
-    else if ( !self.uploader.uploaded ) {
-        [self.videoPlayer showTitle:@"Uploading, please wait."];
-    }
-    else {
-        [self.videoPlayer exitFilmEditingCompletion:nil];
+            break;
     }
 }
 
@@ -473,13 +374,6 @@ NS_ASSUME_NONNULL_END
 
 - (void)clickedCollectItem {
     [_videoPlayer showTitle:@"点击收藏"];
-}
-
-#pragma mark -
-- (SJFilmEditingResultUploader *)uploader {
-    if ( _uploader ) return _uploader;
-    _uploader = [SJFilmEditingResultUploader new];
-    return _uploader;
 }
 
 @synthesize topControlItems = _topControlItems;

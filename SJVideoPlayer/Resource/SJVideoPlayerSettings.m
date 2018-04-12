@@ -77,6 +77,7 @@ NSNotificationName const SJSettingsPlayerNotification = @"SJSettingsPlayerNotifi
     _uploadingPrompt = [SJVideoPlayerResources localizedStringForKey:SJVideoPlayer_UploadingPrompt];
     _exportingPrompt = [SJVideoPlayerResources localizedStringForKey:SJVideoPlayer_ExportingPrompt];
     _operationFailedPrompt = [SJVideoPlayerResources localizedStringForKey:SJVideoPlayer_OperationFailedPrompt];
+    _uploadSuccessfullyPrompt = [SJVideoPlayerResources localizedStringForKey:SJVideoPlayer_UploadSuccessfullyPrompt];
 }
 
 @end

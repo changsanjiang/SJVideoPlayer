@@ -53,6 +53,10 @@
     return 8;
 }
 
+- (int)duration {
+    return self.maxDuration - self.countDown;
+}
+
 - (void)start {
     _countDown = self.maxDuration;
     self.promptLabel.text = self.waitingForRecordingPromptText;
@@ -161,7 +165,7 @@
     [_cancelBtn mas_makeConstraints:^(MASConstraintMaker *make) {
         make.leading.offset(12);
         make.top.offset(12);
-        make.height.offset(26);
+        make.height.offset(30);
         make.width.equalTo(self->_cancelBtn.mas_height).multipliedBy(2.8);
     }];
     
@@ -194,7 +198,7 @@
     if ( _cancelBtn ) return _cancelBtn;
     _cancelBtn = [SJShapeButtonFactory buttonWithCornerRadius:15 title:nil titleColor:[UIColor whiteColor] target:self sel:@selector(clickedBtn:)];
     _cancelBtn.backgroundColor = [UIColor colorWithWhite:0 alpha:0.618];
-    _cancelBtn.titleLabel.font = [UIFont systemFontOfSize:11];
+    _cancelBtn.titleLabel.font = [UIFont systemFontOfSize:12];
     return _cancelBtn;
 }
 

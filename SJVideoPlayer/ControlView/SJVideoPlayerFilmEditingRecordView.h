@@ -12,7 +12,7 @@
 NS_ASSUME_NONNULL_BEGIN
 @interface SJVideoPlayerFilmEditingRecordView : UIView
 @property (nonatomic, readonly) SJVideoPlayerFilmEditingStatus status;
-@property (nonatomic, readonly) short currentTime; // sec.
+@property (nonatomic, readonly) short duration; // sec.
 @property (nonatomic, strong, nullable) NSString *waitingForRecordingPromptText;
 @property (nonatomic, strong, nullable) NSString *recordPromptText;
 @property (nonatomic, strong, nullable) UIImage *recordEndBtnImage;

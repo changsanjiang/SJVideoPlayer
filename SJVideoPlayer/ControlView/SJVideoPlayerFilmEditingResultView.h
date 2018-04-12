@@ -7,9 +7,10 @@
 //
 
 #import <UIKit/UIKit.h>
+#import "SJVideoPlayerFilmEditingCommonHeader.h"
 
 NS_ASSUME_NONNULL_BEGIN
-@class SJFilmEditingResultShareItem, SJFilmEditingResultUploader;
+@class SJFilmEditingResultShareItem;
 
 typedef NS_ENUM(NSUInteger, SJVideoPlayerFilmEditingResultViewType) {
     SJVideoPlayerFilmEditingResultViewType_Screenshot,
@@ -17,29 +18,30 @@ typedef NS_ENUM(NSUInteger, SJVideoPlayerFilmEditingResultViewType) {
     SJVideoPlayerFilmEditingResultViewType_GIF,
 };
 
+
 @interface SJVideoPlayerFilmEditingResultView : UIView
 
 - (instancetype)initWithType:(SJVideoPlayerFilmEditingResultViewType)type;
 
-@property (nonatomic, readonly) SJVideoPlayerFilmEditingResultViewType type;
-@property (nonatomic, strong, nullable) NSArray<SJFilmEditingResultShareItem *> *items;
-@property (nonatomic, strong, nullable) NSString *cancelBtnTitle;
-@property (nonatomic, strong, nullable) UIImage *image;
+- (void)presentResultViewWithCompletion:(void (^ __nullable)(void))block;
+@property (nonatomic, strong, nullable) NSArray<SJFilmEditingResultShareItem *> *shareItems;
+@property (nonatomic, weak, nullable) id <SJVideoPlayerFilmEditingPromptResource> resource;
+
 @property (nonatomic, strong, nullable) NSURL *videoURL; // local file
+@property (nonatomic, strong, nullable) UIImage *image;
+@property (nonatomic) float exportProgress;
+@property (nonatomic) float uploadProgress;
 
+- (void)exportEndedWithStatus:(BOOL)exportStatus;
 
-@property (nonatomic, weak, readwrite) SJFilmEditingResultUploader *uploader;
+- (void)uploadEndedWithStatus:(BOOL)uploadStatus;
 
-@property (nonatomic, strong, nullable) NSString *uploadingPrompt;
-@property (nonatomic, strong, nullable) NSString *exportingPrompt;
-@property (nonatomic, strong, nullable) NSString *operationFailedPrompt;
-
-@property (nonatomic, readwrite) BOOL exportFailed;
-@property (nonatomic, readwrite) float exportProgress;
-- (void)showResultWithCompletion:(void (^ __nullable)(void))block;
 
 @property (nonatomic, copy, nullable) void(^clickedCancelBtnExeBlock)(SJVideoPlayerFilmEditingResultView *view);
-@property (nonatomic, copy, nullable) void (^clickedItemExeBlock)(SJVideoPlayerFilmEditingResultView *view, SJFilmEditingResultShareItem *item);
+@property (nonatomic, copy, nullable) void (^clickedItemExeBlock)(SJVideoPlayerFilmEditingResultView *view, SJFilmEditingResultShareItem * item);
+
+@property (nonatomic, readonly) SJVideoPlayerFilmEditingResultViewType type;
 
 @end
+
 NS_ASSUME_NONNULL_END

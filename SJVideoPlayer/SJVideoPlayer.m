@@ -152,20 +152,41 @@ static dispatch_queue_t videoPlayerWorkQueue;
     return _defaultControlView.moreSettings;
 }
 
-- (void)setFilmEditingResultShare:(SJFilmEditingResultShare *)filmEditingResultShare {
-    _defaultControlView.filmEditingResultShare = filmEditingResultShare;
-}
-
-- (SJFilmEditingResultShare *)filmEditingResultShare {
-    return _defaultControlView.filmEditingResultShare;
-}
-
 - (void)setGeneratePreviewImages:(BOOL)generatePreviewImages {
     _defaultControlView.generatePreviewImages = generatePreviewImages;
 }
 
 - (BOOL)generatePreviewImages {
     return _defaultControlView.generatePreviewImages;
+}
+
+@end
+
+
+@implementation SJVideoPlayer (FilmEditing)
+
+- (void)setResultShareItems:(NSArray<SJFilmEditingResultShareItem *> *)resultShareItems {
+    objc_setAssociatedObject(self, @selector(resultShareItems), resultShareItems, OBJC_ASSOCIATION_RETAIN_NONATOMIC);
+}
+
+- (NSArray<SJFilmEditingResultShareItem *> *)resultShareItems {
+    return objc_getAssociatedObject(self, _cmd);
+}
+
+- (void)setResultUploader:(id<SJVideoPlayerFilmEditingResultUpload>)resultUploader {
+    objc_setAssociatedObject(self, @selector(resultUploader), resultUploader, OBJC_ASSOCIATION_ASSIGN);
+}
+
+- (id<SJVideoPlayerFilmEditingResultUpload>)resultUploader {
+    return objc_getAssociatedObject(self, _cmd);
+}
+
+- (void)setClickedResultShareItemExeBlock:(void (^)(SJVideoPlayer * _Nonnull, SJFilmEditingResultShareItem * _Nonnull, id<SJVideoPlayerFilmEditingResult> _Nonnull result))clickedResultShareItemExeBlock {
+    objc_setAssociatedObject(self, @selector(clickedResultShareItemExeBlock), clickedResultShareItemExeBlock, OBJC_ASSOCIATION_COPY_NONATOMIC);
+}
+
+- (void (^)(SJVideoPlayer * _Nonnull, SJFilmEditingResultShareItem * _Nonnull, id<SJVideoPlayerFilmEditingResult> _Nonnull result))clickedResultShareItemExeBlock {
+    return objc_getAssociatedObject(self, _cmd);
 }
 
 - (void)setEnableFilmEditing:(BOOL)enableFilmEditing {
@@ -176,9 +197,37 @@ static dispatch_queue_t videoPlayerWorkQueue;
     return self.defaultControlView.enableFilmEditing;
 }
 
-- (void)exitFilmEditingCompletion:(void(^__nullable)(SJVideoPlayer *player))completion {
-    [self.defaultControlView exitFilmEditingCompletion:^(SJVideoPlayerDefaultControlView * _Nonnull view) {
+- (void)dismissFilmEditingViewCompletion:(void(^__nullable)(SJVideoPlayer *player))completion {
+    [self.defaultControlView dismissFilmEditingViewCompletion:^(SJVideoPlayerDefaultControlView * _Nonnull view) {
         if ( completion ) completion(self);
     }];
+}
+
+- (void)exitFilmEditingCompletion:(void(^__nullable)(SJVideoPlayer *player))completion {
+    [self dismissFilmEditingViewCompletion:completion];
+}
+
+- (void)setDisableScreenshot:(BOOL)disableScreenshot {
+    objc_setAssociatedObject(self, @selector(disableScreenshot), @(disableScreenshot), OBJC_ASSOCIATION_RETAIN_NONATOMIC);
+}
+
+- (BOOL)disableScreenshot {
+    return [objc_getAssociatedObject(self, _cmd) boolValue];
+}
+
+- (void)setDisableRecord:(BOOL)disableRecord {
+    objc_setAssociatedObject(self, @selector(disableRecord), @(disableRecord), OBJC_ASSOCIATION_RETAIN_NONATOMIC);
+}
+
+- (BOOL)disableRecord {
+    return [objc_getAssociatedObject(self, _cmd) boolValue];
+}
+
+- (void)setDisableGIF:(BOOL)disableGIF {
+    objc_setAssociatedObject(self, @selector(disableGIF), @(disableGIF), OBJC_ASSOCIATION_RETAIN_NONATOMIC);
+}
+
+- (BOOL)disableGIF {
+    return [objc_getAssociatedObject(self, _cmd) boolValue];
 }
 @end

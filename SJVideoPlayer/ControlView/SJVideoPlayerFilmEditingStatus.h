@@ -18,13 +18,4 @@ typedef NS_ENUM(NSUInteger, SJVideoPlayerFilmEditingStatus) {
     SJVideoPlayerFilmEditingStatus_Finished,
 };
 
-
-@protocol SJVideoPlayerExportVideoDelegate <NSObject>
-
-- (void)exportedVideo:(NSURL *)sandboxPath thumbnailImage:(UIImage *)thumbnailImage;
-
-- (void)generatedGIF:(NSURL *)sandboxPath image_GIF:(UIImage *)image_GIF thumbnailImage:(UIImage *)thumbnailImage;
-
-@end
-
 #endif /* SJVideoPlayerFilmEditingStatus_h */

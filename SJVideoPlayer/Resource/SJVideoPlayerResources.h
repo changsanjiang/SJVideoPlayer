@@ -20,6 +20,7 @@ UIKIT_EXTERN NSString *const SJVideoPlayer_VideoPlayDidToEndText;
 UIKIT_EXTERN NSString *const SJVideoPlayer_UploadingPrompt;
 UIKIT_EXTERN NSString *const SJVideoPlayer_UploadSuccessfullyPrompt;
 UIKIT_EXTERN NSString *const SJVideoPlayer_ExportingPrompt;
+UIKIT_EXTERN NSString *const SJVideoPlayer_ExportSuccessfullyPrompt;
 UIKIT_EXTERN NSString *const SJVideoPlayer_OperationFailedPrompt;
 
 @interface SJVideoPlayerResources : NSObject

@@ -12,4 +12,5 @@
 "SJVideoPlayer_UploadingPrompt" = "上傳中";
 "SJVideoPlayer_UploadSuccessfullyPrompt" = "上傳成功";
 "SJVideoPlayer_ExportingPrompt" = "導出中";
+"SJVideoPlayer_ExportSuccessfullyPrompt" = "導出成功";
 "SJVideoPlayer_OperationFailedPrompt" = "操作失敗";

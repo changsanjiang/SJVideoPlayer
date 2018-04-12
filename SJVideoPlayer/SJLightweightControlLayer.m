@@ -773,6 +773,10 @@ NS_ASSUME_NONNULL_BEGIN
     return self.videoPlayer.URLAsset;
 }
 
+- (BOOL)resultNeedUpload {
+    return self.videoPlayer.filmEditingConfig.resultNeedUpload;
+}
+
 - (void)_presentFilmEditingControlView {
     [self registrar];
     _filmEditingControlView = [SJVideoPlayerFilmEditingControlView new];

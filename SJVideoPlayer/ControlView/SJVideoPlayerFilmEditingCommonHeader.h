@@ -37,6 +37,7 @@ typedef NS_ENUM(NSUInteger, SJVideoPlayerFilmEditingOperation) {
 
 - (SJVideoPlayerURLAsset *)currentPalyAsset;
 
+- (BOOL)resultNeedUpload;
 @end
 
 
@@ -72,6 +73,7 @@ typedef NS_ENUM(NSUInteger, SJVideoPlayerFilmEditingOperation) {
 @property (nonatomic, strong, readonly) NSString *uploadingPrompt;
 @property (nonatomic, strong, readonly) NSString *uploadSuccessfullyPrompt;
 @property (nonatomic, strong, readonly) NSString *exportingPrompt;
+@property (nonatomic, strong, readonly) NSString *exportSuccessfullyPrompt;
 @property (nonatomic, strong, readonly) NSString *operationFailedPrompt;
 @property (nonatomic, strong, readonly) UIImage *gifBtnImage;
 @end

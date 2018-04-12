@@ -29,6 +29,7 @@ extern NSNotificationName const SJSettingsPlayerNotification;
 @property (nonatomic, strong, readonly) NSString *uploadingPrompt;
 @property (nonatomic, strong, readonly) NSString *uploadSuccessfullyPrompt;
 @property (nonatomic, strong, readonly) NSString *exportingPrompt;
+@property (nonatomic, strong, readonly) NSString *exportSuccessfullyPrompt;
 @property (nonatomic, strong, readonly) NSString *operationFailedPrompt;
 
 @property (nonatomic, strong, readwrite) UIImage *screenshotBtnImage;

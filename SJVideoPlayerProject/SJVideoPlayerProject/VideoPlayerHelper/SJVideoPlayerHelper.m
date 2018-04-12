@@ -181,6 +181,7 @@ NS_ASSUME_NONNULL_END
     }
     
     _videoPlayer.enableFilmEditing = YES;
+    _videoPlayer.filmEditingConfig.resultNeedUpload = NO;
     _videoPlayer.filmEditingConfig.resultShareItems = self.resultShareItems;
     _videoPlayer.filmEditingConfig.resultUploader = self.uploader;
     _videoPlayer.filmEditingConfig.clickedResultShareItemExeBlock = ^(SJVideoPlayer * _Nonnull player, SJFilmEditingResultShareItem * _Nonnull item, id<SJVideoPlayerFilmEditingResult>  _Nonnull result) {

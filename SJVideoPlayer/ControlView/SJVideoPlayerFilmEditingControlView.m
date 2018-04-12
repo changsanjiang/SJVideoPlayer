@@ -274,6 +274,7 @@ NS_ASSUME_NONNULL_END
                     self.result.image = imageGIF;
                     self.result.fileURL = filePath;
                     self.result.currentPlayAsset = self.dataSource.currentPalyAsset;
+                    [resultView exportEndedWithStatus:YES];
                     [self upload:self.result resultView:resultView];
                     
                 } failure:^(id<SJVideoPlayerFilmEditing>  _Nonnull filmEditing, NSError * _Nonnull error) {
@@ -301,6 +302,7 @@ NS_ASSUME_NONNULL_END
                     self.result.thumbnailImage = thumbnailImage;
                     self.result.fileURL = fileURL;
                     self.result.currentPlayAsset = self.dataSource.currentPalyAsset;
+                    [resultView exportEndedWithStatus:YES];
                     [self upload:self.result resultView:resultView];
                     
                 } failure:^(id<SJVideoPlayerFilmEditing>  _Nonnull filmEditing, NSError * _Nonnull error) {
@@ -319,6 +321,7 @@ NS_ASSUME_NONNULL_END
             completion = ^ {
                 self.result.image = self.result.thumbnailImage = resultView.image;
                 self.result.exportState = SJVideoPlayerFilmEditingResultUploadStateSuccessful;
+                [resultView exportEndedWithStatus:YES];
                 [self upload:self.result resultView:resultView];
             };
         }
@@ -342,6 +345,7 @@ NS_ASSUME_NONNULL_END
 }
 
 - (void)upload:(SJVideoPlayerFilmEditingResult *)result  resultView:(SJVideoPlayerFilmEditingResultView *)resultView {
+    if ( !self.dataSource.resultNeedUpload ) return;
     result.uploadState = SJVideoPlayerFilmEditingResultUploadStateUploading;
     __weak typeof(self) _self = self;
     [self.uploader upload:result progress:^(float progress) {
@@ -412,7 +416,7 @@ NS_ASSUME_NONNULL_END
         }
         
         
-        if ( item.canAlsoClickedWhenUploading ) {
+        if ( !self.dataSource.resultNeedUpload || item.canAlsoClickedWhenUploading ) {
             [self.delegate filmEditingControlView:self userClickedResultShareItem:item result:self.result];
             return;
         }

@@ -152,6 +152,9 @@
     if ( !exportStatus ) {
         [self _updateProgressText:self.resource.operationFailedPrompt];
     }
+    else {
+        [self _updateProgressText:self.resource.exportSuccessfullyPrompt];
+    }
 }
 
 - (void)uploadEndedWithStatus:(BOOL)uploadStatus {

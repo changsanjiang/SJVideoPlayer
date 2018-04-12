@@ -20,6 +20,7 @@ ___
 - [x] Automatic rotation. You can also manage the rotation manually.
 - [x] Support in TableHeaderView | TableViewCell | CollectionViewCell playing video
 - [x] Export video
+- [x] Generate GIF
 - [x] Adjust brightness by slide vertical at left side of screen
 - [x] Adjust volume by slide vertical at right side of screen
 - [x] Slide horizontal to fast forward and rewind

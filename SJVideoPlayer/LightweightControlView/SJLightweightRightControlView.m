@@ -52,7 +52,7 @@
 
 - (UIButton *)editingBtn {
     if ( _editingBtn ) return _editingBtn;
-    _editingBtn = [SJUIButtonFactory buttonWithImageName:nil target:self sel:@selector(clickedBtn:) tag:SJVideoPlayerRightViewTag_FilmEditing];
+    _editingBtn = [SJUIButtonFactory buttonWithImageName:nil target:self sel:@selector(clickedBtn:) tag:SJLightweightRightControlViewTag_FilmEditing];
     return _editingBtn;
 }
 @end

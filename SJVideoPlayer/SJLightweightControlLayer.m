@@ -700,8 +700,8 @@ NS_ASSUME_NONNULL_BEGIN
     return _rightControlView;
 }
 
-- (void)rightControlView:(SJLightweightRightControlView *)view clickedBtnTag:(SJVideoPlayerRightViewTag)tag {
-    if ( tag == SJVideoPlayerRightViewTag_FilmEditing ) {
+- (void)rightControlView:(SJLightweightRightControlView *)view clickedBtnTag:(SJLightweightRightControlViewTag)tag {
+    if ( tag == SJLightweightRightControlViewTag_FilmEditing ) {
         [self _presentFilmEditingControlView];
     }
 }

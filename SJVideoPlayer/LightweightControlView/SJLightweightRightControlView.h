@@ -7,8 +7,8 @@
 //
 
 #import <UIKit/UIKit.h>
-typedef NS_ENUM(NSUInteger, SJVideoPlayerRightViewTag) {
-    SJVideoPlayerRightViewTag_FilmEditing,
+typedef NS_ENUM(NSUInteger, SJLightweightRightControlViewTag) {
+    SJLightweightRightControlViewTag_FilmEditing,
 };
 
 @protocol SJLightweightRightControlViewDelegate;
@@ -24,6 +24,6 @@ typedef NS_ENUM(NSUInteger, SJVideoPlayerRightViewTag) {
 @protocol SJLightweightRightControlViewDelegate <NSObject>
 
 @optional
-- (void)rightControlView:(SJLightweightRightControlView *)view clickedBtnTag:(SJVideoPlayerRightViewTag)tag;
+- (void)rightControlView:(SJLightweightRightControlView *)view clickedBtnTag:(SJLightweightRightControlViewTag)tag;
 
 @end

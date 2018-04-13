@@ -714,8 +714,7 @@ NS_ASSUME_NONNULL_BEGIN
             make.trailing.offset(0);
             make.centerY.offset(0);
         }];
-        _rightControlView.disappearType = SJDisappearType_Transform;
-        _rightControlView.disappearTransform = CGAffineTransformMakeTranslation(_rightControlView.intrinsicContentSize.width, 0);
+        _rightControlView.disappearType = SJDisappearType_Alpha;
         
         if ( !self.videoPlayer.controlLayerAppeared ) [_rightControlView disappear];
     }

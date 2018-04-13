@@ -107,6 +107,8 @@ NS_ASSUME_NONNULL_BEGIN
  */
 @property (nonatomic) BOOL playFailedToKeepAppearState;
 
+- (void)start;
+
 @end
 NS_ASSUME_NONNULL_END
 
@@ -1199,6 +1201,7 @@ NS_ASSUME_NONNULL_END
     if ( !self.asset ) return NO;
     if ( 0 == self.asset.player.rate ) [self.asset.player play];
     self.state = SJVideoPlayerPlayState_Playing;
+    [self.displayRecorder start];
     return YES;
 }
 
@@ -1711,6 +1714,11 @@ NS_ASSUME_NONNULL_END
     _enabled = enabled;
     if ( enabled ) [_controlHiddenTimer start];
     else [_controlHiddenTimer clear];
+}
+
+- (void)start {
+    if ( !_enabled ) return;
+    [_controlHiddenTimer start];
 }
 
 - (void)considerChangeState {

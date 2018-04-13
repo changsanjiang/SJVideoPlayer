@@ -18,44 +18,38 @@
  */
 
 NS_ASSUME_NONNULL_BEGIN
-
-@class SJVideoPlayerURLAsset;
-
-@protocol SJVideoPlayerHelperUseProtocol;
-
 typedef NS_ENUM(NSUInteger, SJVideoPlayerType) {
     SJVideoPlayerType_Default,
     SJVideoPlayerType_Lightweight,
 };
 
+@class SJVideoPlayerURLAsset;
+@protocol SJVideoPlayerHelperUseProtocol;
 
 
 
 @interface SJVideoPlayerHelper : NSObject
 
-- (instancetype)initWithViewController:(__weak UIViewController<SJVideoPlayerHelperUseProtocol> *)viewController playerType:(SJVideoPlayerType)playerType;
-
-/// return instance
-- (instancetype)initWithViewController:(__weak UIViewController<SJVideoPlayerHelperUseProtocol> *)viewController;
-
 @property (nonatomic, weak, readwrite) UIViewController<SJVideoPlayerHelperUseProtocol> *viewController;
-@property (nonatomic, weak, nullable) id<SJVideoPlayerFilmEditingResultUpload> uploader; //  请设置, 上传 截屏/导出视频/GIF 时使用.
 
-/// play an asset.
+- (instancetype)initWithViewController:(__weak UIViewController<SJVideoPlayerHelperUseProtocol> *)viewController;
+- (instancetype)initWithViewController:(__weak UIViewController<SJVideoPlayerHelperUseProtocol> *)viewController
+                            playerType:(SJVideoPlayerType)playerType;
+
 - (void)playWithAsset:(SJVideoPlayerURLAsset *)asset playerParentView:(UIView *)playerParentView;
-
 - (void)clearAsset;
 
+@property (nonatomic, weak, nullable) id<SJVideoPlayerFilmEditingResultUpload> uploader; // 上传. 截屏/导出视频/GIF 时使用.
 
-
-
+///
+@property (nonatomic, strong, readonly, nullable) SJVideoPlayerURLAsset *asset;
+@property (nonatomic, strong, readonly) NSURL *currentPlayURL;
 @property (nonatomic, readonly) NSTimeInterval currentTime;
 @property (nonatomic, readonly) NSTimeInterval totalTime;
-@property (nonatomic, strong, readonly) NSURL *currentPlayURL;
-@property (nonatomic, strong, readonly, nullable) SJVideoPlayerURLAsset *asset;
+
+///
 @property (nonatomic, copy, readonly) void(^vc_viewDidAppearExeBlock)(void);
 @property (nonatomic, copy, readonly) void(^vc_viewWillDisappearExeBlock)(void);
-@property (nonatomic, copy, readonly) void(^vc_viewDidDisappearExeBlock)(void);
 @property (nonatomic, copy, readonly) BOOL(^vc_prefersStatusBarHiddenExeBlock)(void);
 @property (nonatomic, copy, readonly) UIStatusBarStyle(^vc_preferredStatusBarStyleExeBlock)(void);
 
@@ -65,18 +59,13 @@ typedef NS_ENUM(NSUInteger, SJVideoPlayerType) {
 
 @required
 
-- (void)viewWillDisappear:(BOOL)animated;
-
 - (void)viewDidAppear:(BOOL)animated;
 
-- (void)viewDidDisappear:(BOOL)animated;
+- (void)viewWillDisappear:(BOOL)animated;
 
 - (BOOL)prefersStatusBarHidden;
 
 - (UIStatusBarStyle)preferredStatusBarStyle;
-
-@optional
-- (BOOL)needConvertExternalAsset; // 是否需要转换外部传入的资源.
 
 @end
 

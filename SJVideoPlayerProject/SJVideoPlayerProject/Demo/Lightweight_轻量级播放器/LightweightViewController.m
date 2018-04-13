@@ -74,10 +74,6 @@ static NSString *const LightweightTableViewCellID = @"LightweightTableViewCell";
     return _videoPlayerHelper;
 }
 
-- (BOOL)needConvertExternalAsset {
-    return NO;
-}
-
 - (void)viewDidAppear:(BOOL)animated {
     [super viewDidAppear:animated];
     self.videoPlayerHelper.vc_viewDidAppearExeBlock();
@@ -88,10 +84,6 @@ static NSString *const LightweightTableViewCellID = @"LightweightTableViewCell";
     self.videoPlayerHelper.vc_viewWillDisappearExeBlock();
 }
 
-- (void)viewDidDisappear:(BOOL)animated {
-    [super viewDidDisappear:animated];
-    self.videoPlayerHelper.vc_viewDidDisappearExeBlock();
-}
 
 - (BOOL)prefersStatusBarHidden {
     return self.videoPlayerHelper.vc_prefersStatusBarHiddenExeBlock();

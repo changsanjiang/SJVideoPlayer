@@ -14,6 +14,7 @@
 #import "SJVideoModel.h"
 #import <AVFoundation/AVFoundation.h>
 #import <SJVideoPlayerAssetCarrier.h>
+#import <SJBaseVideoPlayer/SJBaseVideoPlayer.h>
 
 @interface DemoPlayerViewController ()<SJVideoPlayerHelperUseProtocol>
 
@@ -22,30 +23,24 @@
 @property (nonatomic, strong, readonly) SJVideoPlayerHelper *videoPlayerHelper;
 @property (nonatomic, strong) SJVideoModel *video;
 @property (nonatomic, strong) SJVideoPlayerURLAsset *asset;
-@property (nonatomic, assign) BOOL needConvertExternalAsset;
 
 @end
 
-@implementation DemoPlayerViewController
+@implementation DemoPlayerViewController {
+    SJBaseVideoPlayer *player;
+}
 
 @synthesize playerSuperView = _playerSuperView;
 
 - (instancetype)initWithVideo:(SJVideoModel *)video asset:(SJVideoPlayerURLAsset *__nullable)asset {
+    if ( !asset ) return [self initWithVideo:video beginTime:0];
+    
     self = [super init];
     if ( !self ) return nil;
     _video = video;
-    if ( asset ) {
-        _asset = asset;
-        [_asset convertToUIView];   // 将资源转化为在UIView上播放. (播放器在self.view上播放)
-        _needConvertExternalAsset = YES;
-    }
-    else {
-        asset = [[SJVideoPlayerURLAsset alloc] initWithAssetURL:[NSURL URLWithString:self.video.playURLStr]];
-        asset.title = self.video.title;
-        asset.alwaysShowTitle = YES;
-        _asset = asset;
-        _needConvertExternalAsset = NO;
-    }
+    _asset = [SJVideoPlayerURLAsset assetWithOtherAsset:asset];
+    _asset.title = self.video.title;
+    _asset.alwaysShowTitle = YES;
     return self;
 }
 
@@ -54,7 +49,7 @@
     if ( !self ) return nil;
     _video = video;
     _asset = [[SJVideoPlayerURLAsset alloc] initWithAssetURL:[NSURL URLWithString:self.video.playURLStr] beginTime:beginTime];
-    _asset.title = self.video.title;
+    _asset.title = video.title;
     _asset.alwaysShowTitle = YES;
     return self;
 }
@@ -65,7 +60,6 @@
     [self _demoVCSetupViews];
     
     [self.videoPlayerHelper playWithAsset:_asset playerParentView:self.playerSuperView];
-    
     // Do any additional setup after loading the view.
 }
 
@@ -76,15 +70,6 @@
     if ( _videoPlayerHelper ) return _videoPlayerHelper;
     _videoPlayerHelper = [[SJVideoPlayerHelper alloc] initWithViewController:self playerType:SJVideoPlayerType_Lightweight];
     return _videoPlayerHelper;
-}
-
-/**
- 是否需要转换外部传入的资源.
- 例如这个控制器, 播放是在UIView上播放, 需要将其外部资源转换为在UIView上播放的资源`[asset convertToUIView];`
- `- (instancetype)initWithVideo:(SJVideoModel *)video asset:(SJVideoPlayerURLAsset *__nullable)asset`
- */
-- (BOOL)needConvertExternalAsset {
-    return _needConvertExternalAsset;
 }
 
 - (void)viewWillAppear:(BOOL)animated {
@@ -103,10 +88,6 @@
     self.videoPlayerHelper.vc_viewWillDisappearExeBlock();
 }
 
-- (void)viewDidDisappear:(BOOL)animated {
-    [super viewDidDisappear:animated];
-    self.videoPlayerHelper.vc_viewDidDisappearExeBlock();
-}
 
 - (BOOL)prefersStatusBarHidden {
     return self.videoPlayerHelper.vc_prefersStatusBarHiddenExeBlock();

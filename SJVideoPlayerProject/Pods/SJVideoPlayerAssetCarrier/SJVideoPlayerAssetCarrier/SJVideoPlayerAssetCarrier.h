@@ -17,11 +17,22 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
+@protocol SJVideoPlayerAVAsset <NSObject>
+@property (nonatomic, strong, readonly) AVURLAsset *asset;
+@property (nonatomic, strong, readonly) AVPlayerItem *playerItem;
+@property (nonatomic, strong, readonly) AVPlayer *player;
+@property (nonatomic, strong, readonly) NSURL *assetURL;
+@property (nonatomic, readonly) float rate;
+@end
+
+//@interface
+
 @class SJVideoPreviewModel;
 
-@interface SJVideoPlayerAssetCarrier : NSObject
+@interface SJVideoPlayerAssetCarrier : NSObject<SJVideoPlayerAVAsset>
 
 @property (nonatomic, assign, readonly) SJViewHierarchyStack viewHierarchyStack;
+
 
 #pragma mark -
 - (instancetype)initWithAssetURL:(NSURL *)assetURL;
@@ -112,7 +123,7 @@ NS_ASSUME_NONNULL_BEGIN
 /**
  table or collection cell. player in a collection cell. and this collectionView in a tableView.
  video player -> collection cell -> collection view -> table cell -> table view.
-
+ 
  @param assetURL                        assetURL.
  @param beginTime                       begin time. unit is sec.
  @param indexPath                       collection cell indexPath.
@@ -133,7 +144,7 @@ NS_ASSUME_NONNULL_BEGIN
 /**
  table or collection cell. player in a collection cell. and this collectionView in a tableView.
  video player -> collection cell -> collection view -> table cell -> table view.
-
+ 
  @param assetURL                        assetURL.
  @param beginTime                       begin time. unit is sec.
  @param indexPath                       collection cell indexPath.
@@ -152,6 +163,37 @@ NS_ASSUME_NONNULL_BEGIN
                    scrollViewTag:(NSInteger)scrollViewTag
                       scrollView:(__unsafe_unretained UIScrollView *__nullable)scrollView
                   rootScrollView:(__unsafe_unretained UIScrollView *__nullable)rootScrollView;
+
+
+
+#pragma mark -
+- (instancetype)initWithOtherAsset:(id<SJVideoPlayerAVAsset>)asset;
+- (instancetype)initWithOtherAsset:(id<SJVideoPlayerAVAsset>)asset
+                        scrollView:(__unsafe_unretained UIScrollView * __nullable)tableOrCollectionView
+                         indexPath:(NSIndexPath * __nullable)indexPath
+                      superviewTag:(NSInteger)superviewTag;
+- (instancetype)initWithOtherAsset:(id<SJVideoPlayerAVAsset>)asset
+      playerSuperViewOfTableHeader:(__unsafe_unretained UIView *)superView
+                         tableView:(__unsafe_unretained UITableView *)tableView;
+- (instancetype)initWithOtherAsset:(id<SJVideoPlayerAVAsset>)asset
+       collectionViewOfTableHeader:(__unsafe_unretained UICollectionView *)collectionView
+           collectionCellIndexPath:(NSIndexPath *)indexPath
+                playerSuperViewTag:(NSInteger)playerSuperViewTag
+                     rootTableView:(__unsafe_unretained UITableView *)rootTableView;
+- (instancetype)initWithOtherAsset:(id<SJVideoPlayerAVAsset>)asset
+                         indexPath:(NSIndexPath *__nullable)indexPath
+                      superviewTag:(NSInteger)superviewTag
+               scrollViewIndexPath:(NSIndexPath *__nullable)scrollViewIndexPath
+                     scrollViewTag:(NSInteger)scrollViewTag
+                    rootScrollView:(__unsafe_unretained UIScrollView *__nullable)rootScrollView;
+- (instancetype)initWithOtherAsset:(id<SJVideoPlayerAVAsset>)asset
+                         indexPath:(NSIndexPath *__nullable)indexPath
+                      superviewTag:(NSInteger)superviewTag
+               scrollViewIndexPath:(NSIndexPath *__nullable)scrollViewIndexPath
+                     scrollViewTag:(NSInteger)scrollViewTag
+                        scrollView:(__unsafe_unretained UIScrollView *__nullable)scrollView
+                    rootScrollView:(__unsafe_unretained UIScrollView *__nullable)rootScrollView;
+
 
 
 #pragma mark - screenshot
@@ -250,60 +292,27 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic, copy, readwrite, nullable) void(^deallocExeBlock)(SJVideoPlayerAssetCarrier *asset);
 
 
-#pragma mark - Refresh & Convert
-
+#pragma mark - Refresh
 - (void)refreshAVPlayer;
 
-- (void)convertToOriginal; // 还原
 
-/**
- *  player in a view.
- *
- *  video player -> UIView
- **/
-- (void)convertToUIView;
-
-/**
- *  table or collection cell. player in a tableOrCollection cell.
- *
- *  video player -> cell -> table || collection view
- *
- **/
+#pragma mark - Convert
+- (void)convertToOriginal NS_DEPRECATED(2_0, 2_0, 2_0, 2_0, "use `initWithOtherAsset:`");
+- (void)convertToUIView NS_DEPRECATED(2_0, 2_0, 2_0, 2_0, "use `initWithOtherAsset:`");
 - (void)convertToCellWithTableOrCollectionView:(__unsafe_unretained UIScrollView *)tableOrCollectionView
-                                        indexPath:(NSIndexPath *)indexPath
-                               playerSuperviewTag:(NSInteger)superviewTag;
-
-/**
- *  table header view. player in a table header view.
- *
- *  video player -> table header view -> table view
- *
- **/
+                                     indexPath:(NSIndexPath *)indexPath
+                            playerSuperviewTag:(NSInteger)superviewTag NS_DEPRECATED(2_0, 2_0, 2_0, 2_0, "use `initWithOtherAsset:`");
 - (void)convertToTableHeaderViewWithPlayerSuperView:(__weak UIView *)superView
-                                             tableView:(__unsafe_unretained UITableView *)tableView;
-
-/**
- *  table header view. player in a collection view cell, and this collection view in a table header view.
- *
- *  video player -> cell -> collection view -> table header view -> table view
- *
- **/
+                                          tableView:(__unsafe_unretained UITableView *)tableView NS_DEPRECATED(2_0, 2_0, 2_0, 2_0, "use `initWithOtherAsset:`");
 - (void)convertToTableHeaderViewWithCollectionView:(__unsafe_unretained UICollectionView *)collectionView
-                              collectionCellIndexPath:(NSIndexPath *)indexPath
-                                   playerSuperViewTag:(NSInteger)playerSuperViewTag
-                                        rootTableView:(__unsafe_unretained UITableView *)rootTableView;
-
-/**
- *  collection cell. player in a collection cell. and this collectionView in a tableView.
- *
- *  video player -> collection cell -> collection view -> table cell -> table view.
- *
- **/
+                           collectionCellIndexPath:(NSIndexPath *)indexPath
+                                playerSuperViewTag:(NSInteger)playerSuperViewTag
+                                     rootTableView:(__unsafe_unretained UITableView *)rootTableView NS_DEPRECATED(2_0, 2_0, 2_0, 2_0, "use `initWithOtherAsset:`");
 - (void)convertToCellWithIndexPath:(NSIndexPath *)indexPath
-                         superviewTag:(NSInteger)superviewTag
-              collectionViewIndexPath:(NSIndexPath *)collectionViewIndexPath
-                    collectionViewTag:(NSInteger)collectionViewTag
-                        rootTableView:(__unsafe_unretained UITableView *)rootTableView;
+                      superviewTag:(NSInteger)superviewTag
+           collectionViewIndexPath:(NSIndexPath *)collectionViewIndexPath
+                 collectionViewTag:(NSInteger)collectionViewTag
+                     rootTableView:(__unsafe_unretained UITableView *)rootTableView NS_DEPRECATED(2_0, 2_0, 2_0, 2_0, "use `initWithOtherAsset:`");
 
 
 

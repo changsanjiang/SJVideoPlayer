@@ -8,7 +8,8 @@
 
 #import "SJVideoPlayerURLAsset.h"
 #import <SJVideoPlayerAssetCarrier/SJVideoPlayerAssetCarrier.h>
-
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wdeprecated-declarations"
 @interface SJVideoPlayerURLAsset ()
 
 @property (nonatomic, strong, readwrite) SJVideoPlayerAssetCarrier *asset;
@@ -83,19 +84,6 @@
 }
 
 #pragma mark - Nested
-
-/**
- table or collection cell. player in a collection cell. and this collectionView in a tableView.
- 
- @param assetURL                        assetURL.
- @param beginTime                       begin time. unit is sec.
- @param indexPath                       collection cell indexPath.
- @param superviewTag                    player superView tag.
- @param scrollViewIndexPath             collection view of indexPath in a tableView.
- @param scrollViewTag                   collection view tag.
- @param rootScrollView                  table view.
- @return instance
- */
 - (instancetype)initWithAssetURL:(NSURL *)assetURL
                        beginTime:(NSTimeInterval)beginTime // unit is sec.
                        indexPath:(NSIndexPath *__nullable)indexPath
@@ -108,12 +96,51 @@
     self.asset = [[SJVideoPlayerAssetCarrier alloc] initWithAssetURL:assetURL beginTime:beginTime indexPath:indexPath superviewTag:superviewTag scrollViewIndexPath:scrollViewIndexPath scrollViewTag:scrollViewTag rootScrollView:rootScrollView];
     return self;
 }
-
++ (instancetype)assetWithOtherAsset:(SJVideoPlayerURLAsset *)asset {
+    SJVideoPlayerURLAsset *asset_new = [SJVideoPlayerURLAsset new];
+    asset_new.asset = [[SJVideoPlayerAssetCarrier alloc] initWithOtherAsset:[asset valueForKey:kSJVideoPlayerAssetKey]];
+    return asset_new;
+}
++ (instancetype)assetWithOtherAsset:(SJVideoPlayerURLAsset *)asset
+                         scrollView:(__unsafe_unretained UIScrollView * __nullable)tableOrCollectionView
+                          indexPath:(NSIndexPath * __nullable)indexPath
+                       superviewTag:(NSInteger)superviewTag {
+    SJVideoPlayerURLAsset *asset_new = [SJVideoPlayerURLAsset new];
+    asset_new.asset = [[SJVideoPlayerAssetCarrier alloc] initWithOtherAsset:[asset valueForKey:kSJVideoPlayerAssetKey] scrollView:tableOrCollectionView indexPath:indexPath superviewTag:superviewTag];
+    return asset_new;
+}
++ (instancetype)assetWithOtherAsset:(SJVideoPlayerURLAsset *)asset
+       playerSuperViewOfTableHeader:(__unsafe_unretained UIView *)superView
+                          tableView:(__unsafe_unretained UITableView *)tableView {
+    SJVideoPlayerURLAsset *asset_new = [SJVideoPlayerURLAsset new];
+    asset_new.asset = [[SJVideoPlayerAssetCarrier alloc] initWithOtherAsset:[asset valueForKey:kSJVideoPlayerAssetKey] playerSuperViewOfTableHeader:superView tableView:tableView];
+    return asset_new;
+}
++ (instancetype)assetWithOtherAsset:(SJVideoPlayerURLAsset *)asset
+        collectionViewOfTableHeader:(__unsafe_unretained UICollectionView *)collectionView
+            collectionCellIndexPath:(NSIndexPath *)indexPath
+                 playerSuperViewTag:(NSInteger)playerSuperViewTag
+                      rootTableView:(__unsafe_unretained UITableView *)rootTableView {
+    SJVideoPlayerURLAsset *asset_new = [SJVideoPlayerURLAsset new];
+    asset_new.asset = [[SJVideoPlayerAssetCarrier alloc] initWithOtherAsset:[asset valueForKey:kSJVideoPlayerAssetKey] collectionViewOfTableHeader:collectionView collectionCellIndexPath:indexPath playerSuperViewTag:playerSuperViewTag rootTableView:rootTableView];
+    return asset_new;
+}
++ (instancetype)assetWithOtherAsset:(SJVideoPlayerURLAsset *)asset
+                          indexPath:(NSIndexPath *__nullable)indexPath
+                       superviewTag:(NSInteger)superviewTag
+                scrollViewIndexPath:(NSIndexPath *__nullable)scrollViewIndexPath
+                      scrollViewTag:(NSInteger)scrollViewTag
+                     rootScrollView:(__unsafe_unretained UIScrollView *__nullable)rootScrollView {
+    SJVideoPlayerURLAsset *asset_new = [SJVideoPlayerURLAsset new];
+    asset_new.asset = [[SJVideoPlayerAssetCarrier alloc] initWithOtherAsset:[asset valueForKey:kSJVideoPlayerAssetKey] indexPath:indexPath superviewTag:superviewTag scrollViewIndexPath:scrollViewIndexPath scrollViewTag:scrollViewTag rootScrollView:rootScrollView];
+    return asset_new;
+}
 
 - (BOOL)isM3u8 {
     return [self.asset.assetURL.absoluteString containsString:@".m3u8"];
 }
 
+#pragma mark -
 - (BOOL)converted {
     return self.asset.converted;
 }
@@ -126,57 +153,24 @@
     return self.asset.viewHierarchyStack;
 }
 
-/**
- *  player in a view.
- *
- *  video player -> UIView
- **/
 - (void)convertToUIView {
     [self.asset convertToUIView];
 }
-
-/**
- *  table or collection cell. player in a tableOrCollection cell.
- *
- *  video player -> cell -> table || collection view
- *
- **/
 - (void)convertToCellWithTableOrCollectionView:(__unsafe_unretained UIScrollView *)tableOrCollectionView
                                      indexPath:(NSIndexPath *)indexPath
                             playerSuperviewTag:(NSInteger)superviewTag {
     [self.asset convertToCellWithTableOrCollectionView:tableOrCollectionView indexPath:indexPath playerSuperviewTag:superviewTag];
 }
-
-/**
- *  table header view. player in a table header view.
- *
- *  video player -> table header view -> table view
- *
- **/
 - (void)convertToTableHeaderViewWithPlayerSuperView:(__weak UIView *)superView
                                           tableView:(__unsafe_unretained UITableView *)tableView {
     [self.asset convertToTableHeaderViewWithPlayerSuperView:superView tableView:tableView];
 }
-
-/**
- *  table header view. player in a collection view cell, and this collection view in a table header view.
- *
- *  video player -> cell -> collection view -> table header view -> table view
- *
- **/
 - (void)convertToTableHeaderViewWithCollectionView:(__weak UICollectionView *)collectionView
                            collectionCellIndexPath:(NSIndexPath *)indexPath
                                 playerSuperViewTag:(NSInteger)playerSuperViewTag
                                      rootTableView:(__unsafe_unretained UITableView *)rootTableView {
     [self.asset convertToTableHeaderViewWithCollectionView:collectionView collectionCellIndexPath:indexPath playerSuperViewTag:playerSuperViewTag rootTableView:rootTableView];
 }
-
-/**
- *  collection cell. player in a collection cell. and this collectionView in a tableView.
- *
- *  video player -> collection cell -> collection view -> table cell -> table view.
- *
- **/
 - (void)convertToCellWithIndexPath:(NSIndexPath *)indexPath
                       superviewTag:(NSInteger)superviewTag
            collectionViewIndexPath:(NSIndexPath *)collectionViewIndexPath
@@ -187,3 +181,4 @@
 @end
 
 NSString * const kSJVideoPlayerAssetKey = @"asset";
+#pragma clang diagnostic pop

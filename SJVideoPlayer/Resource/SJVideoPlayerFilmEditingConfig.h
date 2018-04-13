@@ -27,7 +27,7 @@
 /**
  Exported video or whether the image needs to be uploaded.
  
- 导出出来的视频或图片是否需要上传
+ 导出来的视频或图片是否需要上传
  default is YES
  */
 @property (nonatomic) BOOL resultNeedUpload;

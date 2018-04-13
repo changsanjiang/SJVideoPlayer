@@ -16,13 +16,13 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
-static NSString *kSJFilmEditingResultShareItemCopyLinkTitle = @"复制链接";
-static NSString *kSJFilmEditingResultShareItemQQTitle = @"QQ";
-static NSString *kSJFilmEditingResultShareItemQZoneTitle = @"QQ空间";
-static NSString *kSJFilmEditingResultShareItemAlbumTitle = @"保存本地";
-static NSString *kSJFilmEditingResultShareItemWeiboTitle = @"微博";
-static NSString *kSJFilmEditingResultShareItemWechatTitle = @"微信";
 static NSString *kSJFilmEditingResultShareItemWechatTimeLineTitle = @"朋友圈";
+static NSString *kSJFilmEditingResultShareItemCopyLinkTitle = @"复制链接";
+static NSString *kSJFilmEditingResultShareItemAlbumTitle = @"保存本地";
+static NSString *kSJFilmEditingResultShareItemQZoneTitle = @"QQ空间";
+static NSString *kSJFilmEditingResultShareItemWechatTitle = @"微信";
+static NSString *kSJFilmEditingResultShareItemWeiboTitle = @"微博";
+static NSString *kSJFilmEditingResultShareItemQQTitle = @"QQ";
 
 typedef NS_ENUM(NSUInteger, SJLightweightTopItemFlag) {
     SJLightweightTopItemFlag_Download,
@@ -31,13 +31,13 @@ typedef NS_ENUM(NSUInteger, SJLightweightTopItemFlag) {
 
 @interface SJVideoPlayerHelper ()<SJMoreSettingItemsDelegate>
 
-@property (nonatomic, strong, readwrite) SJVideoPlayer *videoPlayer;
-@property (nonatomic, strong, readonly) SJMoreSettingItems *items;
-@property (nonatomic, readwrite) BOOL savedToAblum;
+@property (nonatomic, strong, nullable) SJVideoPlayer *videoPlayer; // current video player
+@property (nonatomic, strong, readonly) SJMoreSettingItems *items;  // 点击更多, 出现的item
+@property (nonatomic) SJVideoPlayerType playerType;
 
-@property (nonatomic, assign) SJVideoPlayerType playerType;
+@property (nonatomic, strong, readonly) NSArray<SJFilmEditingResultShareItem *> *resultShareItems;
 @property (nonatomic, strong, readonly) NSArray<SJLightweightTopItem *> *topControlItems;
-@property (nonatomic, strong) NSArray<SJFilmEditingResultShareItem *> *resultShareItems;
+@property (nonatomic) BOOL savedResult; // 截取出来的result(视频/截图/GIF), 是否保存到了本地
 
 @end
 
@@ -54,9 +54,9 @@ NS_ASSUME_NONNULL_END
 - (instancetype)initWithViewController:(__weak UIViewController<SJVideoPlayerHelperUseProtocol> *)viewController playerType:(SJVideoPlayerType)playerType {
     self = [super init];
     if ( !self ) return nil;
-    self.playerType = playerType;
-    self.viewController = viewController;
     self.uploader = [TestUploader sharedManager]; // test test test test test
+    self.viewController = viewController;
+    self.playerType = playerType;
     return self;
 }
 
@@ -85,7 +85,7 @@ NS_ASSUME_NONNULL_END
     // old player fade out
     [_videoPlayer stopAndFadeOut];
     
-    self.savedToAblum = NO;
+    self.savedResult = NO; // reset
     
     // create new player
     switch ( _playerType ) {
@@ -98,6 +98,11 @@ NS_ASSUME_NONNULL_END
         }
             break;
     }
+    
+    // set asset
+    _videoPlayer.URLAsset = asset;
+    _videoPlayer.pausedToKeepAppearState = YES;
+    
     
     [playerParentView addSubview:_videoPlayer.view];
     [_videoPlayer.view mas_makeConstraints:^(MASConstraintMaker *make) {
@@ -112,6 +117,11 @@ NS_ASSUME_NONNULL_END
     
     // setting player
     __weak typeof(self) _self = self;
+    _videoPlayer.clickedBackEvent = ^(SJVideoPlayer * _Nonnull player) {
+        __strong typeof(_self) self = _self;
+        if ( !self ) return;
+        [self.viewController.navigationController popViewControllerAnimated:YES];
+    };
     
     _videoPlayer.willRotateScreen = ^(SJVideoPlayer * _Nonnull player, BOOL isFullScreen) {
         __strong typeof(_self) self = _self;
@@ -130,17 +140,35 @@ NS_ASSUME_NONNULL_END
         }];
     };
     
-    _videoPlayer.clickedBackEvent = ^(SJVideoPlayer * _Nonnull player) {
+    // 开启截取功能
+    _videoPlayer.enableFilmEditing = YES;
+    //    _videoPlayer.filmEditingConfig.resultNeedUpload = NO;
+    _videoPlayer.filmEditingConfig.resultShareItems = self.resultShareItems;
+    _videoPlayer.filmEditingConfig.resultUploader = self.uploader;
+    _videoPlayer.filmEditingConfig.clickedResultShareItemExeBlock = ^(SJVideoPlayer * _Nonnull player, SJFilmEditingResultShareItem * _Nonnull item, id<SJVideoPlayerFilmEditingResult>  _Nonnull result) {
         __strong typeof(_self) self = _self;
         if ( !self ) return;
-        [self.viewController.navigationController popViewControllerAnimated:YES];
+        
+        NSLog(@"%d - %s", (int)__LINE__, __func__);
+        
+        if ( item.title == kSJFilmEditingResultShareItemAlbumTitle ) {
+            [self _saveResult:result];
+        }
+        else {
+            // test test test
+            [player showTitle:item.title duration:1 hiddenExeBlock:^(__kindof SJBaseVideoPlayer * _Nonnull player) {
+                [player dismissFilmEditingViewCompletion:^(SJVideoPlayer * _Nonnull player) {
+                    [player rotate:SJRotateViewOrientation_Portrait animated:YES completion:^(__kindof SJBaseVideoPlayer * _Nonnull player) {
+                        __strong typeof(_self) self = _self;
+                        if ( !self ) return;
+                        // test test test
+                        [self.viewController.navigationController pushViewController:[[self.viewController class] new] animated:YES];
+                    }];
+                }];
+            }];
+        }
     };
     
-    // set asset
-    _videoPlayer.URLAsset = asset;
-    
-    _videoPlayer.pausedToKeepAppearState = YES;
-
     switch ( _playerType ) {
         case SJVideoPlayerType_Lightweight: {
             // setting lightweight control layer top items
@@ -181,40 +209,13 @@ NS_ASSUME_NONNULL_END
         }
             break;
     }
-    
-    _videoPlayer.enableFilmEditing = YES;
-    _videoPlayer.filmEditingConfig.resultNeedUpload = NO;
-    _videoPlayer.filmEditingConfig.resultShareItems = self.resultShareItems;
-    _videoPlayer.filmEditingConfig.resultUploader = self.uploader;
-    _videoPlayer.filmEditingConfig.clickedResultShareItemExeBlock = ^(SJVideoPlayer * _Nonnull player, SJFilmEditingResultShareItem * _Nonnull item, id<SJVideoPlayerFilmEditingResult>  _Nonnull result) {
-        __strong typeof(_self) self = _self;
-        if ( !self ) return;
-        
-        NSLog(@"%d - %s", (int)__LINE__, __func__);
-        
-        if ( item.title == kSJFilmEditingResultShareItemAlbumTitle ) {
-            [self _saveResult:result];
-        }
-        else {
-            // test test test
-            [player showTitle:item.title duration:1 hiddenExeBlock:^(__kindof SJBaseVideoPlayer * _Nonnull player) {
-                [player dismissFilmEditingViewCompletion:^(SJVideoPlayer * _Nonnull player) {
-                    [player rotate:SJRotateViewOrientation_Portrait animated:YES completion:^(__kindof SJBaseVideoPlayer * _Nonnull player) {
-                        __strong typeof(_self) self = _self;
-                        if ( !self ) return;
-                        // test test test
-                        [self.viewController.navigationController pushViewController:[[self.viewController class] new] animated:YES];
-                    }];
-                }];
-            }];
-        }
-    };
 }
 
 - (void)clearAsset {
     _videoPlayer.URLAsset = nil;
 }
 
+/// 截取出的result(视频/GIF/图片)的操作Items
 @synthesize resultShareItems = _resultShareItems;
 - (NSArray<SJFilmEditingResultShareItem *> *)resultShareItems {
     if ( _resultShareItems ) return _resultShareItems;
@@ -236,9 +237,9 @@ NS_ASSUME_NONNULL_END
 }
 
 #pragma mark - delegate methods
-
+/// 保存截取出来的result(视频/GIF/图片)
 - (void)_saveResult:(id<SJVideoPlayerFilmEditingResult>)result {
-    if ( self.savedToAblum ) {
+    if ( self.savedResult ) {
         [self.videoPlayer showTitle:@"Saved"];
         return;
     }
@@ -256,24 +257,24 @@ NS_ASSUME_NONNULL_END
     }
 }
 
-// Save video to album SEL.
+// Save video to album SEL. 保存好的回调
 - (void)video:(NSString *)videoPath didFinishSavingWithError:(NSError *)error contextInfo:(void *)contextInfo {
     if ( error ) {
         [self.videoPlayer showTitle:@"Save failed" duration:2];
     }
     else {
-        self.savedToAblum = YES;
+        self.savedResult = YES;
         [self.videoPlayer showTitle:@"Save successfully" duration:2];
     }
 }
 
-// Save image to album SEL.
+// Save image to album SEL. 保存好的回调
 - (void)image:(UIImage *)image didFinishSavingWithError:(NSError *)error contextInfo:(void *)contextInfo {
     if ( error ) {
         [self.videoPlayer showTitle:@"Save failed" duration:2];
     }
     else {
-        self.savedToAblum = YES;
+        self.savedResult = YES;
         [self.videoPlayer showTitle:@"Save successfully" duration:2];
     }
 }
@@ -296,21 +297,11 @@ NS_ASSUME_NONNULL_END
     return self.videoPlayer.assetURL;
 }
 
+#pragma mark - 关于视图控制器的一些方法
 - (void (^)(void))vc_viewDidAppearExeBlock {
     return ^ () {
         self.videoPlayer.disableRotation = NO;
-        
-        if ( [self.viewController respondsToSelector:@selector(needConvertExternalAsset)] ) {
-            if ( [self.viewController needConvertExternalAsset] == NO ) [self.asset convertToOriginal];
-        }
-        else {
-            [self.asset convertToOriginal];
-        }
-        
-        if ( self.videoPlayer.isPlayOnScrollView  ) {
-            if ( self.videoPlayer.isScrollAppeared ) [self.videoPlayer play];
-        }
-        else {
+        if ( !self.videoPlayer.isPlayOnScrollView || (self.videoPlayer.isPlayOnScrollView && self.videoPlayer.isScrollAppeared) ) {
             [self.videoPlayer play];
         }
     };
@@ -319,16 +310,7 @@ NS_ASSUME_NONNULL_END
 - (void (^)(void))vc_viewWillDisappearExeBlock {
     return ^ () {
         self.videoPlayer.disableRotation = YES;   // 界面将要消失的时候, 禁止旋转.
-    
-        if ( [self.viewController respondsToSelector:@selector(needConvertExternalAsset)] ) {
-            if ( [self.viewController needConvertExternalAsset] ) [self clearAsset];
-        }
-    };
-}
-
-- (void (^)(void))vc_viewDidDisappearExeBlock {
-    return ^ () {
-        if ( !self.asset.converted ) [self.videoPlayer pause];
+        if ( self.videoPlayer.state != SJVideoPlayerPlayState_Paused ) [self.videoPlayer pause];
     };
 }
 

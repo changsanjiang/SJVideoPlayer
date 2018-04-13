@@ -202,33 +202,124 @@ NS_ASSUME_NONNULL_END
                   rootScrollView:(__unsafe_unretained UIScrollView *__nullable)rootScrollView {
     self = [super init];
     if ( !self ) return nil;
-    _assetURL = assetURL;
-    _beginTime = beginTime; if ( 0 == _beginTime ) _jumped = YES;
+   
+    // views
     _scrollView = scrollView;
     _indexPath = indexPath;
     _superviewTag = superviewTag;
     _scrollViewTag = scrollViewTag;
     _rootScrollView = rootScrollView;
     _scrollViewIndexPath = scrollViewIndexPath;
+    
     // default value
     _scrollIn_bool = YES;
     _parent_scrollIn_bool = YES;
     _rate = 1;
     
-    __weak typeof(self) _self = self;
-    dispatch_async(dispatch_get_global_queue(0, 0), ^{
-        __strong typeof(_self) self = _self;
-        if ( !self ) return;
-        [self _initializeAVPlayer];
-        [self _itemObserving];
-    });
+    // av asset
+    _assetURL = assetURL;
+    _beginTime = beginTime; if ( 0 == _beginTime ) _jumped = YES;
+    if ( _assetURL.absoluteString.length != 0 ) {
+        __weak typeof(self) _self = self;
+        dispatch_async(dispatch_get_global_queue(0, 0), ^{
+            __strong typeof(_self) self = _self;
+            if ( !self ) return;
+            [self _initializeAVPlayer];
+            [self _itemObserving];
+        });
+    }
     
     [self _scrollViewObserving];
     
+    // view stack
     if ( _rootScrollView && _scrollView ) _viewHierarchyStack = SJViewHierarchyStack_NestedInTableView;
     else if ( _scrollView ) _viewHierarchyStack = SJViewHierarchyStack_ScrollView;
     else _viewHierarchyStack = SJViewHierarchyStack_View;
     return self;
+}
+- (instancetype)initWithOtherAsset:(id<SJVideoPlayerAVAsset>)asset {
+    return [self initWithOtherAsset:asset scrollView:nil indexPath:nil superviewTag:0];
+}
+- (instancetype)initWithOtherAsset:(id<SJVideoPlayerAVAsset>)asset
+                        scrollView:(__unsafe_unretained UIScrollView * __nullable)tableOrCollectionView
+                         indexPath:(NSIndexPath * __nullable)indexPath
+                      superviewTag:(NSInteger)superviewTag {
+    return [self initWithOtherAsset:asset indexPath:indexPath superviewTag:superviewTag scrollViewIndexPath:nil scrollViewTag:0 scrollView:tableOrCollectionView rootScrollView:nil];
+}
+- (instancetype)initWithOtherAsset:(id<SJVideoPlayerAVAsset>)asset
+      playerSuperViewOfTableHeader:(__unsafe_unretained UIView *)superView
+                         tableView:(__unsafe_unretained UITableView *)tableView {
+    self = [self initWithOtherAsset:asset
+                         scrollView:tableView
+                          indexPath:nil
+                       superviewTag:0];
+    if ( !self ) return nil;
+    _tableHeaderSubView = superView;
+    _viewHierarchyStack = SJViewHierarchyStack_TableHeaderView;
+    return self;
+}
+- (instancetype)initWithOtherAsset:(id<SJVideoPlayerAVAsset>)asset
+       collectionViewOfTableHeader:(__unsafe_unretained UICollectionView *)collectionView
+           collectionCellIndexPath:(NSIndexPath *)indexPath
+                playerSuperViewTag:(NSInteger)playerSuperViewTag
+                     rootTableView:(__unsafe_unretained UITableView *)rootTableView {
+    self = [self initWithOtherAsset:asset
+                          indexPath:indexPath
+                       superviewTag:playerSuperViewTag
+                scrollViewIndexPath:nil
+                      scrollViewTag:0
+                         scrollView:collectionView
+                     rootScrollView:rootTableView];
+    if ( !self ) return nil;
+    _tableHeaderSubView = collectionView;
+    _viewHierarchyStack = SJViewHierarchyStack_NestedInTableHeaderView;
+    return self;
+    
+}
+- (instancetype)initWithOtherAsset:(id<SJVideoPlayerAVAsset>)asset
+                         indexPath:(NSIndexPath *__nullable)indexPath
+                      superviewTag:(NSInteger)superviewTag
+               scrollViewIndexPath:(NSIndexPath *__nullable)scrollViewIndexPath
+                     scrollViewTag:(NSInteger)scrollViewTag
+                    rootScrollView:(__unsafe_unretained UIScrollView *__nullable)rootScrollView {
+    UIScrollView *scrollView = nil;
+    if ( rootScrollView && 0 != scrollViewTag ) {
+        if ( [rootScrollView isKindOfClass:[UITableView class]] ) {
+            scrollView = [[(UITableView *)rootScrollView cellForRowAtIndexPath:scrollViewIndexPath] viewWithTag:scrollViewTag];
+        }
+        else if ( [rootScrollView isKindOfClass:[UICollectionView class]] ) {
+            scrollView = [[(UICollectionView *)rootScrollView cellForItemAtIndexPath:scrollViewIndexPath] viewWithTag:scrollViewTag];
+        }
+    }
+    return [self initWithOtherAsset:asset indexPath:indexPath superviewTag:superviewTag scrollViewIndexPath:scrollViewIndexPath scrollViewTag:scrollViewTag scrollView:scrollView rootScrollView:rootScrollView];
+}
+- (instancetype)initWithOtherAsset:(id<SJVideoPlayerAVAsset>)asset
+                         indexPath:(NSIndexPath *__nullable)indexPath
+                      superviewTag:(NSInteger)superviewTag
+               scrollViewIndexPath:(NSIndexPath *__nullable)scrollViewIndexPath
+                     scrollViewTag:(NSInteger)scrollViewTag
+                        scrollView:(__unsafe_unretained UIScrollView *__nullable)scrollView
+                    rootScrollView:(__unsafe_unretained UIScrollView *__nullable)rootScrollView {
+    self = [self initWithAssetURL:[NSURL new] beginTime:0 indexPath:indexPath superviewTag:superviewTag scrollViewIndexPath:scrollViewIndexPath scrollViewTag:scrollViewTag scrollView:scrollView rootScrollView:rootScrollView];
+    if ( !self ) return nil;
+    __weak typeof(self) _self = self;
+    dispatch_async(dispatch_get_global_queue(0, 0), ^{
+        __strong typeof(_self) self = _self;
+        if ( !self ) return;
+        [self _settingAVPlayerWithAsset:asset];
+    });
+    return self;
+}
+
+- (void)_settingAVPlayerWithAsset:(id<SJVideoPlayerAVAsset>)asset {
+    _asset = asset.asset;
+    _playerItem = asset.playerItem;
+    _player = asset.player;
+    _rate = asset.rate;
+    _loadedPlayer = YES;
+    if ( self.loadedPlayerExeBlock ) self.loadedPlayerExeBlock(self);
+    [self _itemObserving];
+    [self _updateDuration];
 }
 
 - (void)_initializeAVPlayer {
@@ -335,10 +426,10 @@ NS_ASSUME_NONNULL_END
         }
         else if ( [keyPath isEqualToString:@"status"] ) {
             if ( !self->_jumped &&
-                AVPlayerItemStatusReadyToPlay == self.playerItem.status &&
-                0 != self.beginTime ) {
+                 AVPlayerItemStatusReadyToPlay == self.playerItem.status &&
+                 0 != self.beginTime ) {
                 // begin time
-                if ( self->_beginTime > self.duration ) return ;
+                if ( self.beginTime > self.duration ) return ;
                 __weak typeof(self) _self = self;
                 [self jumpedToTime:self->_beginTime completionHandler:^(BOOL finished) {
                     __strong typeof(_self) self = _self;
@@ -354,7 +445,7 @@ NS_ASSUME_NONNULL_END
             }
         }
         else if ( [keyPath isEqualToString:@"duration"] ) {
-            self->_duration = CMTimeGetSeconds(self->_playerItem.duration);
+            [self _updateDuration];
         }
         else if ( [keyPath isEqualToString:@"playbackBufferEmpty"] ) {
             [self _itemPlaybackBufferEmptyStateChanged];
@@ -718,6 +809,9 @@ NS_ASSUME_NONNULL_END
 }
 
 #pragma mark -
+- (void)_updateDuration {
+    self->_duration = CMTimeGetSeconds(self->_playerItem.duration);
+}
 @synthesize duration = _duration;
 - (NSTimeInterval)duration {
     return _duration;

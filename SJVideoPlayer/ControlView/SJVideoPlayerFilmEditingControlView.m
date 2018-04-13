@@ -105,9 +105,9 @@ NS_ASSUME_NONNULL_END
 
 - (void)setResource:(id<SJVideoPlayerFilmEditingPromptResource>)resource {
     _resource = resource;
-    [_GIFBtn setImage:self.resource.gifBtnImage forState:UIControlStateNormal];
-    [_exportBtn setImage:self.resource.exportBtnImage forState:UIControlStateNormal];
-    [_screenshotBtn setImage:self.resource.screenshotBtnImage forState:UIControlStateNormal];
+    [_GIFBtn setImage:resource.gifBtnImage forState:UIControlStateNormal];
+    [_exportBtn setImage:resource.exportBtnImage forState:UIControlStateNormal];
+    [_screenshotBtn setImage:resource.screenshotBtnImage forState:UIControlStateNormal];
 }
 
 - (void)setCurrentOperation:(SJVideoPlayerFilmEditingOperation)currentOperation {
@@ -473,7 +473,7 @@ NS_ASSUME_NONNULL_END
     [self addGestureRecognizer:self.tapGR]; // gesture
     
     [_btnContainerView mas_makeConstraints:^(MASConstraintMaker *make) {
-        make.trailing.offset(0);
+        make.trailing.offset((SJScreen_Min() * 16 / 9 - SJScreen_Max()) * 0.5);
         make.centerY.offset(0);
     }];
     

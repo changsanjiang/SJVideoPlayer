@@ -853,8 +853,8 @@ NS_ASSUME_NONNULL_END
     if ( enableFilmEditing ) {
         [self.containerView insertSubview:self.rightControlView aboveSubview:self.bottomControlView];
         [_rightControlView mas_makeConstraints:^(MASConstraintMaker *make) {
-            make.trailing.offset(0);
             make.centerY.offset(0);
+            make.trailing.offset(0);
         }];
         _rightControlView.disappearType = SJDisappearType_Transform;
         _rightControlView.disappearTransform = CGAffineTransformMakeTranslation(_rightControlView.intrinsicContentSize.width, 0);
@@ -963,7 +963,6 @@ NS_ASSUME_NONNULL_END
     switch ( status ) {
         case SJVideoPlayerFilmEditingStatus_Unknown: break;
         case SJVideoPlayerFilmEditingStatus_Recording: {
-            self.videoPlayer.videoGravity = AVLayerVideoGravityResizeAspect;
             if ( self.videoPlayer.state == SJVideoPlayerPlayState_PlayEnd ) {
                 [self.videoPlayer replay];
             }
@@ -1012,7 +1011,7 @@ NS_ASSUME_NONNULL_END
 }
 
 - (void)filmEditingControlView:(SJVideoPlayerFilmEditingControlView *)filmEditingControlView userSelectedOperation:(SJVideoPlayerFilmEditingOperation)operation {
-    
+    self.videoPlayer.videoGravity = AVLayerVideoGravityResizeAspect;
     switch ( operation ) {
         case SJVideoPlayerFilmEditingOperation_Screenshot: {
             [self Extension_pauseAndDeterAppear];

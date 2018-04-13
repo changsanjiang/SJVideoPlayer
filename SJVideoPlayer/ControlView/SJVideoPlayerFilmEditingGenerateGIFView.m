@@ -170,7 +170,7 @@
     }];
     
     [_recrodBtn mas_makeConstraints:^(MASConstraintMaker *make) {
-        make.trailing.offset(-34);
+        make.trailing.offset((SJScreen_Min() * 16 / 9 - SJScreen_Max()) * 0.5);
         make.size.offset(49);
         make.centerY.offset(0);
     }];

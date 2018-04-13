@@ -452,8 +452,7 @@ NS_ASSUME_NONNULL_BEGIN
     _draggingProgressView.disappearType = SJDisappearType_Alpha;
     _bottomSlider.disappearType = SJDisappearType_Alpha;
     _centerControlView.disappearType = SJDisappearType_Alpha;
-    _rightControlView.disappearType = SJDisappearType_Transform;
-    _rightControlView.disappearTransform = CGAffineTransformMakeTranslation(_rightControlView.intrinsicContentSize.width, 0);
+    _rightControlView.disappearType = SJDisappearType_Alpha;
 
     __weak typeof(self) _self = self;
     void(^block)(__kindof UIView *view) = ^(__kindof UIView *view) {
@@ -789,7 +788,7 @@ NS_ASSUME_NONNULL_BEGIN
     _filmEditingControlView.disableGIF = self.videoPlayer.filmEditingConfig.disableGIF;
     _filmEditingControlView.disappearType = SJDisappearType_Alpha;
 
-    [self.containerView addSubview:_filmEditingControlView];
+    [self.controlView addSubview:_filmEditingControlView];
     [_filmEditingControlView mas_makeConstraints:^(MASConstraintMaker *make) {
         make.edges.offset(0);
     }];
@@ -824,7 +823,6 @@ NS_ASSUME_NONNULL_BEGIN
     switch ( status ) {
         case SJVideoPlayerFilmEditingStatus_Unknown: break;
         case SJVideoPlayerFilmEditingStatus_Recording: {
-            self.videoPlayer.videoGravity = AVLayerVideoGravityResizeAspect;
             if ( self.videoPlayer.state == SJVideoPlayerPlayState_PlayEnd ) {
                 [self.videoPlayer replay];
             }
@@ -873,7 +871,7 @@ NS_ASSUME_NONNULL_BEGIN
 }
 
 - (void)filmEditingControlView:(SJVideoPlayerFilmEditingControlView *)filmEditingControlView userSelectedOperation:(SJVideoPlayerFilmEditingOperation)operation {
-    
+    self.videoPlayer.videoGravity = AVLayerVideoGravityResizeAspect;
     switch ( operation ) {
         case SJVideoPlayerFilmEditingOperation_Screenshot: {
             [self Extension_pauseAndDeterAppear];

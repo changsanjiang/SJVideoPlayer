@@ -85,6 +85,8 @@ NS_ASSUME_NONNULL_END
     // old player fade out
     [_videoPlayer stopAndFadeOut];
     
+    self.savedToAblum = NO;
+    
     // create new player
     switch ( _playerType ) {
         case SJVideoPlayerType_Default: {
@@ -236,6 +238,11 @@ NS_ASSUME_NONNULL_END
 #pragma mark - delegate methods
 
 - (void)_saveResult:(id<SJVideoPlayerFilmEditingResult>)result {
+    if ( self.savedToAblum ) {
+        [self.videoPlayer showTitle:@"Saved"];
+        return;
+    }
+    
     switch ( result.operation ) {
         case SJVideoPlayerFilmEditingOperation_Screenshot:
         case SJVideoPlayerFilmEditingOperation_GIF: {

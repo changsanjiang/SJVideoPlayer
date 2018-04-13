@@ -10,6 +10,8 @@
 
 @interface SJFilmEditingResultShareItem : NSObject
 - (instancetype)initWithTitle:(NSString *)title image:(UIImage *)image;
+@property (nonatomic, strong) NSString *title;
+@property (nonatomic, strong) UIImage *image;
 /**
  Whether can clicked When Uploading.
  上传时, 是否可以点击
@@ -17,6 +19,4 @@
  default is NO.
  */
 @property (nonatomic) BOOL canAlsoClickedWhenUploading;
-@property (nonatomic, strong) NSString *title;
-@property (nonatomic, strong) UIImage *image;
 @end

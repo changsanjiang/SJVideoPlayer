@@ -16,12 +16,14 @@
 #import <UIView+SJUIFactory.h>
 #import "DemoPlayerViewController.h"
 #import "YYTapActionLabel.h"
+#import "FilmEditingHelper.h"
 
 static NSString *const SJVideoListTableViewCellID = @"SJVideoListTableViewCell";
 
 @interface SJVideoListViewController ()<UITableViewDelegate, UITableViewDataSource, SJVideoListTableViewCellDelegate, NSAttributedStringTappedDelegate, SJVideoPlayerHelperUseProtocol>
 
 @property (nonatomic, strong, readonly) SJVideoPlayerHelper *videoPlayerHelper;
+@property (nonatomic, strong, readonly) FilmEditingHelper *filmEditingHelper;
 @property (nonatomic, strong, readonly) UIActivityIndicatorView *indicator;
 @property (nonatomic, strong, readonly) UITableView *tableView;
 @property (nonatomic, strong) NSIndexPath *playedIndexPath;
@@ -71,7 +73,16 @@ static NSString *const SJVideoListTableViewCellID = @"SJVideoListTableViewCell";
 - (SJVideoPlayerHelper *)videoPlayerHelper {
     if ( _videoPlayerHelper ) return _videoPlayerHelper;
     _videoPlayerHelper = [[SJVideoPlayerHelper alloc] initWithViewController:self];
+    _videoPlayerHelper.enableFilmEditing = YES;
+    _videoPlayerHelper.filmEditingConfig = self.filmEditingHelper.filmEditingConfig;
     return _videoPlayerHelper;
+}
+
+@synthesize filmEditingHelper = _filmEditingHelper;
+- (FilmEditingHelper *)filmEditingHelper {
+    if ( _filmEditingHelper ) return _filmEditingHelper;
+    _filmEditingHelper = [[FilmEditingHelper alloc] initWithViewController:self];
+    return _filmEditingHelper;
 }
 
 - (void)viewDidAppear:(BOOL)animated {

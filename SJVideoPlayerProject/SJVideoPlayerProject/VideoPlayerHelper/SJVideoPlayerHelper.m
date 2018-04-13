@@ -11,39 +11,19 @@
 #import "SJVideoPlayer.h"
 #import <Masonry/Masonry.h>
 #import "SJFilmEditingResultShareItem.h"
-#import "SJMoreSettingItems.h"
+#import <objc/message.h>
 #import "SJMediaDownloader.h"
 
 NS_ASSUME_NONNULL_BEGIN
 
-static NSString *kSJFilmEditingResultShareItemWechatTimeLineTitle = @"朋友圈";
-static NSString *kSJFilmEditingResultShareItemCopyLinkTitle = @"复制链接";
-static NSString *kSJFilmEditingResultShareItemAlbumTitle = @"保存本地";
-static NSString *kSJFilmEditingResultShareItemQZoneTitle = @"QQ空间";
-static NSString *kSJFilmEditingResultShareItemWechatTitle = @"微信";
-static NSString *kSJFilmEditingResultShareItemWeiboTitle = @"微博";
-static NSString *kSJFilmEditingResultShareItemQQTitle = @"QQ";
+@interface SJVideoPlayerHelper ()
 
-typedef NS_ENUM(NSUInteger, SJLightweightTopItemFlag) {
-    SJLightweightTopItemFlag_Download,
-    SJLightweightTopItemFlag_Share,
-};
-
-@interface SJVideoPlayerHelper ()<SJMoreSettingItemsDelegate>
-
-@property (nonatomic, strong, nullable) SJVideoPlayer *videoPlayer; // current video player
-@property (nonatomic, strong, readonly) SJMoreSettingItems *items;  // 点击更多, 出现的item
-@property (nonatomic) SJVideoPlayerType playerType;
-
-@property (nonatomic, strong, readonly) NSArray<SJFilmEditingResultShareItem *> *resultShareItems;
-@property (nonatomic, strong, readonly) NSArray<SJLightweightTopItem *> *topControlItems;
-@property (nonatomic) BOOL savedResult; // 截取出来的result(视频/截图/GIF), 是否保存到了本地
+@property (nonatomic, strong, readwrite, nullable) SJVideoPlayer *videoPlayer;
+@property (nonatomic, assign) SJVideoPlayerType playerType;
 
 @end
 
 NS_ASSUME_NONNULL_END
-
-#import "TestUploader.h" // test test test test test
 
 @implementation SJVideoPlayerHelper
 
@@ -54,9 +34,8 @@ NS_ASSUME_NONNULL_END
 - (instancetype)initWithViewController:(__weak UIViewController<SJVideoPlayerHelperUseProtocol> *)viewController playerType:(SJVideoPlayerType)playerType {
     self = [super init];
     if ( !self ) return nil;
-    self.uploader = [TestUploader sharedManager]; // test test test test test
-    self.viewController = viewController;
     self.playerType = playerType;
+    self.viewController = viewController;
     return self;
 }
 
@@ -81,48 +60,111 @@ NS_ASSUME_NONNULL_END
     };
 }
 
-- (void)playWithAsset:(SJVideoPlayerURLAsset *)asset playerParentView:(nonnull UIView *)playerParentView {
+@end
+
+
+
+
+@implementation SJVideoPlayerHelper (FilmEditing)
+- (void)setFilmEditingConfig:(SJVideoPlayerFilmEditingConfig *)filmEditingConfig {
+    objc_setAssociatedObject(self, @selector(filmEditingConfig), filmEditingConfig, OBJC_ASSOCIATION_RETAIN_NONATOMIC);
+}
+- (SJVideoPlayerFilmEditingConfig *)filmEditingConfig {
+    return objc_getAssociatedObject(self, _cmd);
+}
+- (void)setUploader:(id<SJVideoPlayerFilmEditingResultUpload>)uploader {
+    objc_setAssociatedObject(self, @selector(uploader), uploader, OBJC_ASSOCIATION_RETAIN_NONATOMIC);
+}
+- (id<SJVideoPlayerFilmEditingResultUpload>)uploader {
+    return objc_getAssociatedObject(self, _cmd);
+}
+- (void)setEnableFilmEditing:(BOOL)enableFilmEditing {
+    objc_setAssociatedObject(self, @selector(enableFilmEditing), @(enableFilmEditing), OBJC_ASSOCIATION_RETAIN_NONATOMIC);
+}
+- (BOOL)enableFilmEditing {
+    return [objc_getAssociatedObject(self, _cmd) boolValue];
+}
+@end
+
+
+
+
+#pragma mark -
+@implementation SJVideoPlayerHelper (SJVideoPlayerOperation)
+
+- (void)setDisableRotation:(BOOL)disableRotation {
+    self.videoPlayer.disableRotation = disableRotation;
+}
+
+- (BOOL)disableRotation {
+    return self.videoPlayer.disableRotation;
+}
+
+- (void)setLockScreen:(BOOL)lockScreen {
+    self.videoPlayer.lockedScreen = lockScreen;
+}
+
+- (BOOL)lockScreen {
+    return self.videoPlayer.isLockedScreen;
+}
+
+- (void)setRate:(CGFloat)rate {
+    self.videoPlayer.rate = rate;
+}
+
+- (CGFloat)rate {
+    return self.videoPlayer.rate;
+}
+
+- (void)playWithAsset:(SJVideoPlayerURLAsset *)asset playerParentView:(UIView *)playerParentView {
+    __weak typeof(self) _self = self;
+    
     // old player fade out
     [_videoPlayer stopAndFadeOut];
-    
-    self.savedResult = NO; // reset
     
     // create new player
     switch ( _playerType ) {
         case SJVideoPlayerType_Default: {
             _videoPlayer = [SJVideoPlayer player];
+            _videoPlayer.generatePreviewImages = NO;
         }
             break;
         case SJVideoPlayerType_Lightweight: {
             _videoPlayer = [SJVideoPlayer lightweightPlayer];
+            _videoPlayer.topControlItems = self.topItemsOfLightweightControlLayer;
+            _videoPlayer.clickedTopControlItemExeBlock = ^(SJVideoPlayer * _Nonnull player, SJLightweightTopItem * _Nonnull item) {
+                __strong typeof(_self) self = _self;
+                if ( !self ) return;
+                if ( self.userClickedTopItemOfLightweightControlLayerExeBlock ) self.userClickedTopItemOfLightweightControlLayerExeBlock(self, item);
+            };
         }
-            break;
+           break;
     }
     
-    // set asset
+    // play asset
     _videoPlayer.URLAsset = asset;
     _videoPlayer.pausedToKeepAppearState = YES;
     
-    
+    // add player view to parent view
     [playerParentView addSubview:_videoPlayer.view];
     [_videoPlayer.view mas_makeConstraints:^(MASConstraintMaker *make) {
         make.edges.offset(0);
     }];
     
-    // fade in
+    // player view fade in
     _videoPlayer.view.alpha = 0.001;
     [UIView animateWithDuration:0.5 animations:^{
         self->_videoPlayer.view.alpha = 1;
     }];
     
-    // setting player
-    __weak typeof(self) _self = self;
+    // The block invoked when user clicked back btn
     _videoPlayer.clickedBackEvent = ^(SJVideoPlayer * _Nonnull player) {
         __strong typeof(_self) self = _self;
         if ( !self ) return;
         [self.viewController.navigationController popViewControllerAnimated:YES];
     };
     
+    // The block invoked when the player will rotate screen
     _videoPlayer.willRotateScreen = ^(SJVideoPlayer * _Nonnull player, BOOL isFullScreen) {
         __strong typeof(_self) self = _self;
         if ( !self ) return ;
@@ -131,158 +173,103 @@ NS_ASSUME_NONNULL_END
         }];
     };
     
-    // Call when the `control view` is `hidden` or `displayed`.
+    // The block invoked when the `control view` is `hidden` or `displayed`
     _videoPlayer.controlLayerAppearStateChanged = ^(SJVideoPlayer * _Nonnull player, BOOL displayed) {
         __strong typeof(_self) self = _self;
         if ( !self ) return;
         [UIView animateWithDuration:0.25 animations:^{
             [self.viewController setNeedsStatusBarAppearanceUpdate];
         }];
+        if ( self.controlLayerAppearStateChangedExeBlock ) self.controlLayerAppearStateChangedExeBlock(self, displayed);
     };
     
-    // 开启截取功能
-    _videoPlayer.enableFilmEditing = YES;
-    //    _videoPlayer.filmEditingConfig.resultNeedUpload = NO;
-    _videoPlayer.filmEditingConfig.resultShareItems = self.resultShareItems;
-    _videoPlayer.filmEditingConfig.resultUploader = self.uploader;
-    _videoPlayer.filmEditingConfig.clickedResultShareItemExeBlock = ^(SJVideoPlayer * _Nonnull player, SJFilmEditingResultShareItem * _Nonnull item, id<SJVideoPlayerFilmEditingResult>  _Nonnull result) {
+    // The block invoked when player rate changed
+    _videoPlayer.rateChanged = ^(__kindof SJBaseVideoPlayer * _Nonnull player) {
         __strong typeof(_self) self = _self;
         if ( !self ) return;
-        
-        NSLog(@"%d - %s", (int)__LINE__, __func__);
-        
-        if ( item.title == kSJFilmEditingResultShareItemAlbumTitle ) {
-            [self _saveResult:result];
-        }
-        else {
-            // test test test
-            [player showTitle:item.title duration:1 hiddenExeBlock:^(__kindof SJBaseVideoPlayer * _Nonnull player) {
-                [player dismissFilmEditingViewCompletion:^(SJVideoPlayer * _Nonnull player) {
-                    [player rotate:SJRotateViewOrientation_Portrait animated:YES completion:^(__kindof SJBaseVideoPlayer * _Nonnull player) {
-                        __strong typeof(_self) self = _self;
-                        if ( !self ) return;
-                        // test test test
-                        [self.viewController.navigationController pushViewController:[[self.viewController class] new] animated:YES];
-                    }];
-                }];
-            }];
-        }
+        if ( self.playerRateChangedExeBlock ) self.playerRateChangedExeBlock(self, player.rate);
     };
     
-    switch ( _playerType ) {
-        case SJVideoPlayerType_Lightweight: {
-            // setting lightweight control layer top items
-            _videoPlayer.topControlItems = self.topControlItems;
-            __weak typeof(self) _self = self;
-            _videoPlayer.clickedTopControlItemExeBlock = ^(SJVideoPlayer * _Nonnull player, SJLightweightTopItem * _Nonnull item) {
-                __strong typeof(_self) self = _self;
-                if ( !self ) return;
-
-                NSLog(@"%d - %s", (int)__LINE__, __func__);
-                
-                void(^promptHiddenExeBlock)(SJVideoPlayer *player) = ^(SJVideoPlayer *player) {
-                    /// test test test test test test
-                    [player rotate:SJRotateViewOrientation_Portrait animated:YES completion:^(__kindof SJBaseVideoPlayer * _Nonnull player) {
-                        __strong typeof(_self) self = _self;
-                        if ( !self ) return;
-                        [self.viewController.navigationController pushViewController:[[self.viewController class] new] animated:YES];
-                    }];
-                };
-                
-                NSString *prompt = nil;
-                switch ( (SJLightweightTopItemFlag)item.flag ) {
-                    case SJLightweightTopItemFlag_Share: {
-                        prompt = @"clicked share";
-                    }
-                        break;
-                    case SJLightweightTopItemFlag_Download: {
-                        prompt = @"clicked download";
-                    }
-                        break;
-                }
-                [player showTitle:prompt duration:0.5 hiddenExeBlock:promptHiddenExeBlock];
-            };
-        }
-            break;
-        case SJVideoPlayerType_Default: {
-            _videoPlayer.moreSettings = self.items.moreSettings;
-        }
-            break;
+    // update prompt view background color
+    _videoPlayer.prompt.update(^(SJPromptConfig * _Nonnull config) {
+        config.backgroundColor = [UIColor colorWithWhite:0 alpha:0.76];
+    });
+    
+    if ( self.enableFilmEditing ) {
+        _videoPlayer.enableFilmEditing = YES;
+        _videoPlayer.filmEditingConfig.resultUploader = self.uploader;
+        _videoPlayer.filmEditingConfig.resultNeedUpload = self.filmEditingConfig.resultNeedUpload;
+        _videoPlayer.filmEditingConfig.resultShareItems = self.filmEditingConfig.resultShareItems;
+        _videoPlayer.filmEditingConfig.clickedResultShareItemExeBlock = self.filmEditingConfig.clickedResultShareItemExeBlock;
     }
+}
+
+- (void)clearPlayer {
+    [self.videoPlayer.view removeFromSuperview];
+    _videoPlayer = nil;
 }
 
 - (void)clearAsset {
     _videoPlayer.URLAsset = nil;
 }
 
-/// 截取出的result(视频/GIF/图片)的操作Items
-@synthesize resultShareItems = _resultShareItems;
-- (NSArray<SJFilmEditingResultShareItem *> *)resultShareItems {
-    if ( _resultShareItems ) return _resultShareItems;
-    SJFilmEditingResultShareItem *save = [[SJFilmEditingResultShareItem alloc] initWithTitle:kSJFilmEditingResultShareItemAlbumTitle image:[UIImage imageNamed:@"result_save"]];
-    /**
-     Whether can clicked When Uploading.
-     上传时, 是否可以点击
-     */
-    save.canAlsoClickedWhenUploading = YES;
-    
-    SJFilmEditingResultShareItem *qq = [[SJFilmEditingResultShareItem alloc] initWithTitle:kSJFilmEditingResultShareItemQQTitle image:[UIImage imageNamed:@"result_qq"]];
-    SJFilmEditingResultShareItem *qzone = [[SJFilmEditingResultShareItem alloc] initWithTitle:kSJFilmEditingResultShareItemQZoneTitle image:[UIImage imageNamed:@"result_qzone"]];
-    SJFilmEditingResultShareItem *wechat = [[SJFilmEditingResultShareItem alloc] initWithTitle:kSJFilmEditingResultShareItemWechatTitle image:[UIImage imageNamed:@"result_wechat_friend"]];
-    SJFilmEditingResultShareItem *wechatTimeLine = [[SJFilmEditingResultShareItem alloc] initWithTitle:kSJFilmEditingResultShareItemWechatTimeLineTitle image:[UIImage imageNamed:@"result_wechat_timeLine"]];
-    SJFilmEditingResultShareItem *weibo = [[SJFilmEditingResultShareItem alloc] initWithTitle:kSJFilmEditingResultShareItemWeiboTitle image:[UIImage imageNamed:@"result_webo"]];
-    SJFilmEditingResultShareItem *linkCopy = [[SJFilmEditingResultShareItem alloc] initWithTitle:kSJFilmEditingResultShareItemCopyLinkTitle image:[UIImage imageNamed:@"result_link_copy"]];
-    _resultShareItems = @[save, qq, qzone, wechat, wechatTimeLine, weibo, linkCopy];
-    return _resultShareItems;
+- (void)pause {
+    [_videoPlayer pause];
 }
 
-#pragma mark - delegate methods
-/// 保存截取出来的result(视频/GIF/图片)
-- (void)_saveResult:(id<SJVideoPlayerFilmEditingResult>)result {
-    if ( self.savedResult ) {
-        [self.videoPlayer showTitle:@"Saved"];
-        return;
-    }
-    
-    switch ( result.operation ) {
-        case SJVideoPlayerFilmEditingOperation_Screenshot:
-        case SJVideoPlayerFilmEditingOperation_GIF: {
-            UIImageWriteToSavedPhotosAlbum(result.image, self, @selector(image:didFinishSavingWithError:contextInfo:), NULL);
-        }
-            break;
-        case SJVideoPlayerFilmEditingOperation_Export: {
-            UISaveVideoAtPathToSavedPhotosAlbum(result.fileURL.path, self, @selector(video:didFinishSavingWithError:contextInfo:), NULL);
-        }
-            break;
-    }
+- (void)play {
+    [_videoPlayer play];
 }
 
-// Save video to album SEL. 保存好的回调
-- (void)video:(NSString *)videoPath didFinishSavingWithError:(NSError *)error contextInfo:(void *)contextInfo {
-    if ( error ) {
-        [self.videoPlayer showTitle:@"Save failed" duration:2];
-    }
-    else {
-        self.savedResult = YES;
-        [self.videoPlayer showTitle:@"Save successfully" duration:2];
-    }
-}
+@end
 
-// Save image to album SEL. 保存好的回调
-- (void)image:(UIImage *)image didFinishSavingWithError:(NSError *)error contextInfo:(void *)contextInfo {
-    if ( error ) {
-        [self.videoPlayer showTitle:@"Save failed" duration:2];
-    }
-    else {
-        self.savedResult = YES;
-        [self.videoPlayer showTitle:@"Save successfully" duration:2];
-    }
-}
 
 #pragma mark -
+@implementation SJVideoPlayerHelper (SJVideoPlayerProperty)
+
+- (void)setControlLayerAppearStateChangedExeBlock:(void (^)(SJVideoPlayerHelper * _Nonnull, BOOL))controlLayerAppearStateChangedExeBlock {
+    objc_setAssociatedObject(self, @selector(controlLayerAppearStateChangedExeBlock), controlLayerAppearStateChangedExeBlock, OBJC_ASSOCIATION_COPY_NONATOMIC);
+}
+
+- (void (^)(SJVideoPlayerHelper * _Nonnull, BOOL))controlLayerAppearStateChangedExeBlock {
+    return objc_getAssociatedObject(self, _cmd);
+}
+
+- (void)setPlayerRateChangedExeBlock:(void (^)(SJVideoPlayerHelper * _Nonnull, float))playerRateChangedExeBlock {
+    objc_setAssociatedObject(self, @selector(playerRateChangedExeBlock), playerRateChangedExeBlock, OBJC_ASSOCIATION_COPY_NONATOMIC);
+}
+
+- (void (^)(SJVideoPlayerHelper * _Nonnull, float))playerRateChangedExeBlock {
+    return objc_getAssociatedObject(self, _cmd);
+}
+
+- (void)setTopItemsOfLightweightControlLayer:(NSArray<SJLightweightTopItem *> *)topItemsOfLightweightControlLayer {
+    objc_setAssociatedObject(self, @selector(topItemsOfLightweightControlLayer), topItemsOfLightweightControlLayer, OBJC_ASSOCIATION_RETAIN_NONATOMIC);
+}
+
+- (NSArray<SJLightweightTopItem *> *)topItemsOfLightweightControlLayer {
+    return objc_getAssociatedObject(self, _cmd);
+}
+
+- (void)setUserClickedTopItemOfLightweightControlLayerExeBlock:(void (^)(SJVideoPlayerHelper * _Nonnull, SJLightweightTopItem * _Nonnull))userClickedTopItemOfLightweightControlLayerExeBlock {
+    objc_setAssociatedObject(self, @selector(userClickedTopItemOfLightweightControlLayerExeBlock), userClickedTopItemOfLightweightControlLayerExeBlock, OBJC_ASSOCIATION_COPY_NONATOMIC);
+
+}
+
+- (void (^)(SJVideoPlayerHelper * _Nonnull, SJLightweightTopItem * _Nonnull))userClickedTopItemOfLightweightControlLayerExeBlock {
+    return objc_getAssociatedObject(self, _cmd);
+}
 
 - (SJVideoPlayerURLAsset *)asset {
     return self.videoPlayer.URLAsset;
+}
+
+- (SJPrompt *)prompt {
+    return _videoPlayer.prompt;
+}
+
+- (NSURL *)currentPlayURL {
+    return self.videoPlayer.assetURL;
 }
 
 - (NSTimeInterval)currentTime {
@@ -293,11 +280,14 @@ NS_ASSUME_NONNULL_END
     return self.videoPlayer.totalTime;
 }
 
-- (NSURL *)currentPlayURL {
-    return self.videoPlayer.assetURL;
-}
+@end
 
-#pragma mark - 关于视图控制器的一些方法
+
+
+
+#pragma mark -
+
+@implementation SJVideoPlayerHelper (UIViewControllerHelper)
 - (void (^)(void))vc_viewDidAppearExeBlock {
     return ^ () {
         self.videoPlayer.disableRotation = NO;
@@ -329,51 +319,5 @@ NS_ASSUME_NONNULL_END
         return UIStatusBarStyleDefault;
     };
 }
-
-#pragma mark -
-@synthesize items = _items;
-- (SJMoreSettingItems *)items {
-    if ( _items ) return _items;
-    _items = [SJMoreSettingItems new];
-    _items.delegate = self;
-    return _items;
-}
-
-- (void)clickedShareItem:(SJSharePlatform)platform {
-    switch ( platform ) {
-        case SJSharePlatform_Wechat: {
-            [_videoPlayer showTitle:@"分享到微信"];
-        }
-            break;
-        case SJSharePlatform_Weibo: {
-            [_videoPlayer showTitle:@"分享到微博"];
-        }
-            break;
-        case SJSharePlatform_QQ: {
-            [_videoPlayer showTitle:@"分享到QQ"];
-        }
-            break;
-        case SJSharePlatform_Unknown: break;
-    }
-}
-
-- (void)clickedDownloadItem {
-    [_videoPlayer showTitle:@"点击下载"];
-}
-
-- (void)clickedCollectItem {
-    [_videoPlayer showTitle:@"点击收藏"];
-}
-
-@synthesize topControlItems = _topControlItems;
-- (NSArray<SJLightweightTopItem *> *)topControlItems {
-    if ( _topControlItems ) return _topControlItems;
-    _topControlItems =
-    @[
-      [[SJLightweightTopItem alloc] initWithFlag:SJLightweightTopItemFlag_Share imageName:@"share"],
-      [[SJLightweightTopItem alloc] initWithFlag:SJLightweightTopItemFlag_Download imageName:@"download"],
-      ];
-    return _topControlItems;
-}
-
 @end
+

@@ -167,26 +167,26 @@ NS_ASSUME_NONNULL_BEGIN
 
 
 #pragma mark -
-- (instancetype)initWithOtherAsset:(id<SJVideoPlayerAVAsset>)asset;
-- (instancetype)initWithOtherAsset:(id<SJVideoPlayerAVAsset>)asset
+- (instancetype)initWithOtherAsset:(__weak id<SJVideoPlayerAVAsset>)asset;
+- (instancetype)initWithOtherAsset:(__weak id<SJVideoPlayerAVAsset>)asset
                         scrollView:(__unsafe_unretained UIScrollView * __nullable)tableOrCollectionView
                          indexPath:(NSIndexPath * __nullable)indexPath
                       superviewTag:(NSInteger)superviewTag;
-- (instancetype)initWithOtherAsset:(id<SJVideoPlayerAVAsset>)asset
+- (instancetype)initWithOtherAsset:(__weak id<SJVideoPlayerAVAsset>)asset
       playerSuperViewOfTableHeader:(__unsafe_unretained UIView *)superView
                          tableView:(__unsafe_unretained UITableView *)tableView;
-- (instancetype)initWithOtherAsset:(id<SJVideoPlayerAVAsset>)asset
+- (instancetype)initWithOtherAsset:(__weak id<SJVideoPlayerAVAsset>)asset
        collectionViewOfTableHeader:(__unsafe_unretained UICollectionView *)collectionView
            collectionCellIndexPath:(NSIndexPath *)indexPath
                 playerSuperViewTag:(NSInteger)playerSuperViewTag
                      rootTableView:(__unsafe_unretained UITableView *)rootTableView;
-- (instancetype)initWithOtherAsset:(id<SJVideoPlayerAVAsset>)asset
+- (instancetype)initWithOtherAsset:(__weak id<SJVideoPlayerAVAsset>)asset
                          indexPath:(NSIndexPath *__nullable)indexPath
                       superviewTag:(NSInteger)superviewTag
                scrollViewIndexPath:(NSIndexPath *__nullable)scrollViewIndexPath
                      scrollViewTag:(NSInteger)scrollViewTag
                     rootScrollView:(__unsafe_unretained UIScrollView *__nullable)rootScrollView;
-- (instancetype)initWithOtherAsset:(id<SJVideoPlayerAVAsset>)asset
+- (instancetype)initWithOtherAsset:(__weak id<SJVideoPlayerAVAsset>)asset
                          indexPath:(NSIndexPath *__nullable)indexPath
                       superviewTag:(NSInteger)superviewTag
                scrollViewIndexPath:(NSIndexPath *__nullable)scrollViewIndexPath

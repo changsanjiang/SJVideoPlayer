@@ -98,6 +98,7 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic, strong, readwrite, nullable) AVAssetExportSession *exportSession;
 @property (nonatomic, strong, readwrite, nullable) NSTimer *refreshProgressTimer;
 @property (nonatomic, strong, nullable) SJGIFCreator *gifCreator;
+@property (nonatomic, weak, readonly, nullable) id <SJVideoPlayerAVAsset> otherAsset;
 
 @end
 NS_ASSUME_NONNULL_END
@@ -237,16 +238,16 @@ NS_ASSUME_NONNULL_END
     else _viewHierarchyStack = SJViewHierarchyStack_View;
     return self;
 }
-- (instancetype)initWithOtherAsset:(id<SJVideoPlayerAVAsset>)asset {
+- (instancetype)initWithOtherAsset:(__weak id<SJVideoPlayerAVAsset>)asset {
     return [self initWithOtherAsset:asset scrollView:nil indexPath:nil superviewTag:0];
 }
-- (instancetype)initWithOtherAsset:(id<SJVideoPlayerAVAsset>)asset
+- (instancetype)initWithOtherAsset:(__weak id<SJVideoPlayerAVAsset>)asset
                         scrollView:(__unsafe_unretained UIScrollView * __nullable)tableOrCollectionView
                          indexPath:(NSIndexPath * __nullable)indexPath
                       superviewTag:(NSInteger)superviewTag {
     return [self initWithOtherAsset:asset indexPath:indexPath superviewTag:superviewTag scrollViewIndexPath:nil scrollViewTag:0 scrollView:tableOrCollectionView rootScrollView:nil];
 }
-- (instancetype)initWithOtherAsset:(id<SJVideoPlayerAVAsset>)asset
+- (instancetype)initWithOtherAsset:(__weak id<SJVideoPlayerAVAsset>)asset
       playerSuperViewOfTableHeader:(__unsafe_unretained UIView *)superView
                          tableView:(__unsafe_unretained UITableView *)tableView {
     self = [self initWithOtherAsset:asset
@@ -258,7 +259,7 @@ NS_ASSUME_NONNULL_END
     _viewHierarchyStack = SJViewHierarchyStack_TableHeaderView;
     return self;
 }
-- (instancetype)initWithOtherAsset:(id<SJVideoPlayerAVAsset>)asset
+- (instancetype)initWithOtherAsset:(__weak id<SJVideoPlayerAVAsset>)asset
        collectionViewOfTableHeader:(__unsafe_unretained UICollectionView *)collectionView
            collectionCellIndexPath:(NSIndexPath *)indexPath
                 playerSuperViewTag:(NSInteger)playerSuperViewTag
@@ -276,7 +277,7 @@ NS_ASSUME_NONNULL_END
     return self;
     
 }
-- (instancetype)initWithOtherAsset:(id<SJVideoPlayerAVAsset>)asset
+- (instancetype)initWithOtherAsset:(__weak id<SJVideoPlayerAVAsset>)asset
                          indexPath:(NSIndexPath *__nullable)indexPath
                       superviewTag:(NSInteger)superviewTag
                scrollViewIndexPath:(NSIndexPath *__nullable)scrollViewIndexPath
@@ -293,7 +294,7 @@ NS_ASSUME_NONNULL_END
     }
     return [self initWithOtherAsset:asset indexPath:indexPath superviewTag:superviewTag scrollViewIndexPath:scrollViewIndexPath scrollViewTag:scrollViewTag scrollView:scrollView rootScrollView:rootScrollView];
 }
-- (instancetype)initWithOtherAsset:(id<SJVideoPlayerAVAsset>)asset
+- (instancetype)initWithOtherAsset:(__weak id<SJVideoPlayerAVAsset>)asset
                          indexPath:(NSIndexPath *__nullable)indexPath
                       superviewTag:(NSInteger)superviewTag
                scrollViewIndexPath:(NSIndexPath *__nullable)scrollViewIndexPath
@@ -311,8 +312,9 @@ NS_ASSUME_NONNULL_END
     return self;
 }
 
-- (void)_settingAVPlayerWithAsset:(id<SJVideoPlayerAVAsset>)asset {
+- (void)_settingAVPlayerWithAsset:(__weak id<SJVideoPlayerAVAsset>)asset {
     _isOtherAsset = asset != nil;
+    _otherAsset = asset;
     _asset = asset.asset;
     _playerItem = asset.playerItem;
     _player = asset.player;
@@ -371,7 +373,8 @@ NS_ASSUME_NONNULL_END
 }
 
 - (void)_clearAVPlayer {
-    if ( !_isOtherAsset ) [_player pause];
+    if ( !_otherAsset && 0 != _player.rate ) [_player pause];
+
     [_playerItem removeObserver:self forKeyPath:@"status"];
     [_playerItem removeObserver:self forKeyPath:@"playbackBufferEmpty"];
     [_playerItem removeObserver:self forKeyPath:@"loadedTimeRanges"];
@@ -389,6 +392,8 @@ NS_ASSUME_NONNULL_END
     [_exportSession cancelExport];
     _exportSession = nil;
     _loadedPlayer = NO;
+    _isOtherAsset = NO;
+    _otherAsset = nil;
     [self _cleanRefreshProgressTimer];
 }
 

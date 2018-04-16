@@ -43,6 +43,9 @@ static NSString *const SJVideoListTableViewCellID = @"SJVideoListTableViewCell";
 - (void)viewDidLoad {
     [super viewDidLoad];
 
+//    self.edgesForExtendedLayout = UIRectEdgeNone;
+//    self.automaticallyAdjustsScrollViewInsets = NO;
+    
     // setup views
     [self _videoListSetupViews];
     

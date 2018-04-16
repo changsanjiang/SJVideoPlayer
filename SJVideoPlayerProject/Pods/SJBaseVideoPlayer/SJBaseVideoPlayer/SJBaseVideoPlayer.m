@@ -995,7 +995,6 @@ NS_ASSUME_NONNULL_END
 }
 
 - (void)clearAsset {
-    [self.asset.player pause];
     [self.presentView.player replaceCurrentItemWithPlayerItem:nil];
     self.presentView.player = nil;
     self.asset = nil;

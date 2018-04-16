@@ -1,1 +1,1 @@
-../../../SJFullscreenPopGesture/SJFullscreenPopGesture/View/SJScreenshotTransitionMode.h
+../../../SJFullscreenPopGesture/SJFullscreenPopGesture/SJScreenshotTransitionMode.h

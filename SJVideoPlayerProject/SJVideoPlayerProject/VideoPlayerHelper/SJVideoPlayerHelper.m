@@ -48,7 +48,7 @@ NS_ASSUME_NONNULL_END
     viewController.sj_viewWillBeginDragging = ^(UIViewController *vc) {
         __strong typeof(_self) self = _self;
         if ( !self ) return;
-        // video player stop roatation
+        // video player disable roatation
         self.videoPlayer.disableRotation = YES;   // 触发全屏手势时, 禁止播放器旋转
     };
     

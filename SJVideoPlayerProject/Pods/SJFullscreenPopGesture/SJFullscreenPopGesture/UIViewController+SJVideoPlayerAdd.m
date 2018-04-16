@@ -13,6 +13,14 @@
 
 @implementation UIViewController (SJVideoPlayerAdd)
 
+- (void)setSj_displayMode:(SJPreViewDisplayMode)sj_displayMode {
+    objc_setAssociatedObject(self, @selector(sj_displayMode), @(sj_displayMode), OBJC_ASSOCIATION_RETAIN_NONATOMIC);
+}
+
+- (SJPreViewDisplayMode)sj_displayMode {
+    return [objc_getAssociatedObject(self, _cmd) integerValue];
+}
+
 - (UIGestureRecognizerState)sj_fullscreenGestureState {
     return self.navigationController.sj_fullscreenGestureState;
 }

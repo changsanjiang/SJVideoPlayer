@@ -312,6 +312,7 @@ NS_ASSUME_NONNULL_END
 }
 
 - (void)_settingAVPlayerWithAsset:(id<SJVideoPlayerAVAsset>)asset {
+    _isOtherAsset = asset != nil;
     _asset = asset.asset;
     _playerItem = asset.playerItem;
     _player = asset.player;
@@ -370,6 +371,7 @@ NS_ASSUME_NONNULL_END
 }
 
 - (void)_clearAVPlayer {
+    if ( !_isOtherAsset ) [_player pause];
     [_playerItem removeObserver:self forKeyPath:@"status"];
     [_playerItem removeObserver:self forKeyPath:@"playbackBufferEmpty"];
     [_playerItem removeObserver:self forKeyPath:@"loadedTimeRanges"];
@@ -380,7 +382,6 @@ NS_ASSUME_NONNULL_END
     [self cancelGenerateGIFOperation];
     [self cancelExportOperation];
     [self cancelPreviewImagesGeneration];
-    if ( 0 != _player.rate ) [_player pause];
     [_player removeTimeObserver:_timeObserver]; _timeObserver = nil;
     [[NSNotificationCenter defaultCenter] removeObserver:_itemEndObserver name:AVPlayerItemDidPlayToEndTimeNotification object:self.playerItem]; _itemEndObserver = nil;
     _beginBuffer = NO;

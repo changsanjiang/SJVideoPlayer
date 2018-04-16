@@ -9,108 +9,8 @@
 #import "UINavigationController+SJVideoPlayerAdd.h"
 #import <objc/message.h>
 #import "UIViewController+SJVideoPlayerAdd.h"
-#import "SJScreenshotView.h"
 #import <WebKit/WebKit.h>
-
-// MARK: UIViewController
-
-@interface UIViewController (SJExtension)
-
-@property (nonatomic, strong, readonly) SJScreenshotView *SJ_screenshotView;
-@property (nonatomic, strong, readonly) NSMutableArray<UIView *> * SJ_snapshotsM;
-
-@end
-
-@implementation UIViewController (SJExtension)
-
-+ (void)load {
-    static dispatch_once_t onceToken;
-    dispatch_once(&onceToken, ^{
-        SEL sel[] = {
-            @selector(presentViewController:animated:completion:),
-            @selector(SJ_presentViewController:animated:completion:),
-            @selector(dismissViewControllerAnimated:completion:),
-            @selector(SJ_dismissViewControllerAnimated:completion:)
-        };
-        
-        Class class = [self class];
-        for ( int i = 0 ; i < sizeof(sel) / sizeof(SEL) ; ++ i ) {
-            SEL originalSelector = sel[i];
-            SEL swizzledSelector = sel[++ i];
-            Method originalMethod = class_getInstanceMethod(class, originalSelector);
-            Method swizzledMethod = class_getInstanceMethod(class, swizzledSelector);
-            method_exchangeImplementations(originalMethod, swizzledMethod);
-        }
-    });
-}
-
-- (void)SJ_presentViewController:(UIViewController *)viewControllerToPresent animated:(BOOL)flag completion:(void (^)(void))completion {
-    if ( ![viewControllerToPresent isKindOfClass:[UIAlertController class]] ) SJ_updateScreenshot();
-    [self SJ_presentViewController:viewControllerToPresent animated:flag completion:completion];
-}
-
-- (void)SJ_dismissViewControllerAnimated:(BOOL)flag completion:(void (^)(void))completion {
-#pragma clang diagnostic push
-#pragma clang diagnostic ignored "-Wdeprecated-declarations"
-    if ( ![self isKindOfClass:[UIAlertController class]] && ![self.modalViewController isKindOfClass:[UIAlertController class]] ) {
-        if ( [self isKindOfClass:[UINavigationController class]] &&
-            self.presentingViewController ) {
-            [self SJ_dumpingScreenshotWithNum:(NSInteger)self.childViewControllers.count];
-        }
-        else if ( self.navigationController &&
-                 self.presentingViewController ) { // nav.child + nav
-            [self SJ_dumpingScreenshotWithNum:(NSInteger)self.navigationController.childViewControllers.count + 1];
-        }
-        else {
-            [self SJ_dumpingScreenshotWithNum:1];
-        }
-    }
-#pragma clang diagnostic pop
-    // call origin method
-    [self SJ_dismissViewControllerAnimated:flag completion:completion];
-}
-
-- (void)SJ_dumpingScreenshotWithNum:(NSInteger)num {
-    if ( num <= 0 || num >= self.SJ_snapshotsM.count ) return;
-    [self.SJ_snapshotsM removeObjectsInRange:NSMakeRange(self.SJ_snapshotsM.count - num, num)];
-}
-
-- (SJScreenshotView *)SJ_screenshotView {
-    return [[self class] SJ_screenshotView];
-}
-
-- (NSMutableArray<UIView *> *)SJ_snapshotsM {
-    return [[self class] SJ_snapshotsM];
-}
-
-static SJScreenshotView *SJ_screenshotView;
-+ (SJScreenshotView *)SJ_screenshotView {
-    if ( SJ_screenshotView ) return SJ_screenshotView;
-    SJ_screenshotView = [SJScreenshotView new];
-    CGRect bounds = [UIScreen mainScreen].bounds;
-    CGFloat width = MIN(bounds.size.width, bounds.size.height);
-    CGFloat height = MAX(bounds.size.width, bounds.size.height);
-    SJ_screenshotView.frame = CGRectMake(0, 0, width, height);
-    return SJ_screenshotView;
-}
-
-static NSMutableArray<UIView *> * SJ_snapshotsM;
-+ (NSMutableArray<UIView *> *)SJ_snapshotsM {
-    if ( SJ_snapshotsM ) return SJ_snapshotsM;
-    SJ_snapshotsM = [NSMutableArray array];
-    return SJ_snapshotsM;
-}
-
-static UIWindow *SJ_window;
-static inline void SJ_updateScreenshot() {
-    if ( !SJ_window ) SJ_window = [(id)[UIApplication sharedApplication].delegate valueForKey:@"window"];
-    UIView *view = [SJ_window snapshotViewAfterScreenUpdates:NO];
-    if ( view ) [UIViewController.SJ_snapshotsM addObject:view];
-}
-
-@end
-
-
+#import "SJSnapshotRecorder.h"
 
 // MARK: UINavigationController
 
@@ -138,12 +38,6 @@ static inline void SJ_updateScreenshot() {
         SEL sel[] = {
             @selector(pushViewController:animated:),
             @selector(SJ_pushViewController:animated:),
-            @selector(popViewControllerAnimated:),
-            @selector(SJ_popViewControllerAnimated:),
-            @selector(popToViewController:animated:),
-            @selector(SJ_popToViewController:animated:),
-            @selector(popToRootViewControllerAnimated:),
-            @selector(SJ_popToRootViewControllerAnimated:),
         };
         
         Class nav = [self class];
@@ -177,30 +71,8 @@ static inline void SJ_updateScreenshot() {
 - (void)SJ_pushViewController:(UIViewController *)viewController animated:(BOOL)animated {
     if ( self.interactivePopGestureRecognizer &&
         !self.SJ_tookOver ) [self SJ_navSettings];
-    SJ_updateScreenshot();
+    [[SJSnapshotServer shared] nav:self pushViewController:viewController];
     [self SJ_pushViewController:viewController animated:animated]; // note: If Crash, please confirm that `viewController 'is ` UIViewController'(`UINavigationController` cannot be pushed).
-}
-
-// Pop
-- (UIViewController *)SJ_popViewControllerAnimated:(BOOL)animated {
-    [self SJ_dumpingScreenshotWithNum:1];
-    return [self SJ_popViewControllerAnimated:animated];
-}
-
-// Pop To RootView Controller
-- (NSArray<UIViewController *> *)SJ_popToRootViewControllerAnimated:(BOOL)animated {
-    [self SJ_dumpingScreenshotWithNum:(NSInteger)self.childViewControllers.count - 1];
-    return [self SJ_popToRootViewControllerAnimated:animated];
-}
-
-// Pop To View Controller
-- (NSArray<UIViewController *> *)SJ_popToViewController:(UIViewController *)viewController animated:(BOOL)animated {
-    [self.childViewControllers enumerateObjectsUsingBlock:^(__kindof UIViewController * _Nonnull obj, NSUInteger idx, BOOL * _Nonnull stop) {
-        if ( viewController != obj ) return;
-        *stop = YES;
-        [self SJ_dumpingScreenshotWithNum:(NSInteger)self.childViewControllers.count - 1 - (NSInteger)idx];
-    }];
-    return [self SJ_popToViewController:viewController animated:animated];
 }
 
 - (void)setSJ_tookOver:(BOOL)SJ_tookOver {
@@ -392,12 +264,7 @@ static inline void SJ_updateScreenshot() {
 - (void)SJ_ViewWillBeginDragging:(CGFloat)offset {
     // resign keybord
     [self.view endEditing:YES];
-    
-    // Move the `screenshot` to the bottom
-    [self.view.superview insertSubview:self.SJ_screenshotView atIndex:0];
-    
-    self.SJ_screenshotView.hidden = NO;
-    [self.SJ_screenshotView beginTransitionWithSnapshot:self.SJ_snapshotsM.lastObject];
+    [[SJSnapshotServer shared] nav:self preparePopViewController:self.childViewControllers.lastObject];
     if ( self.topViewController.sj_viewWillBeginDragging ) self.topViewController.sj_viewWillBeginDragging(self.topViewController);
     [self SJ_ViewDidDrag:offset];
 }
@@ -405,7 +272,7 @@ static inline void SJ_updateScreenshot() {
 - (void)SJ_ViewDidDrag:(CGFloat)offset {
     if ( offset < 0 ) offset = 0;
     self.view.transform = CGAffineTransformMakeTranslation(offset, 0);
-    [self.SJ_screenshotView transitioningWithOffset:offset];
+    [[SJSnapshotServer shared] nav:self poppingViewController:self.childViewControllers.lastObject offset:offset];
     if ( self.topViewController.sj_viewDidDrag ) self.topViewController.sj_viewDidDrag(self.topViewController);
 }
 
@@ -419,20 +286,19 @@ static inline void SJ_updateScreenshot() {
     if ( !pop ) duration = duration * ( offset / (maxOffset * maxWidth) ) + 0.05;
     
     [UIView animateWithDuration:duration animations:^{
+        [[SJSnapshotServer shared] nav:self willEndPopViewController:self.childViewControllers.lastObject pop:pop];
         if ( pop ) {
             self.view.transform = CGAffineTransformMakeTranslation(self.view.frame.size.width, 0);
-            [self.SJ_screenshotView finishedTransition];
         }
         else {
             self.view.transform = CGAffineTransformIdentity;
-            [self.SJ_screenshotView reset];
         }
     } completion:^(BOOL finished) {
+        [[SJSnapshotServer shared] nav:self endPopViewController:self.childViewControllers.lastObject];
         if ( pop ) {
             [self popViewControllerAnimated:NO];
             self.view.transform = CGAffineTransformIdentity;
         }
-        self.SJ_screenshotView.hidden = YES;
         if ( self.topViewController.sj_viewDidEndDragging ) self.topViewController.sj_viewDidEndDragging(self.topViewController);
     }];
 }
@@ -461,11 +327,11 @@ static inline void SJ_updateScreenshot() {
 }
 
 - (void)setSj_transitionMode:(SJScreenshotTransitionMode)sj_transitionMode {
-    self.SJ_screenshotView.transitionMode = sj_transitionMode;
+    [SJSnapshotServer shared].transitionMode = sj_transitionMode;
 }
 
 - (SJScreenshotTransitionMode)sj_transitionMode {
-    return self.SJ_screenshotView.transitionMode;
+    return [SJSnapshotServer shared].transitionMode;
 }
 
 - (UIGestureRecognizerState)sj_fullscreenGestureState {

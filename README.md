@@ -18,17 +18,18 @@ pod 'SJBaseVideoPlayer'
 ___
 
 ## Features
-- [x] Based on AVPlayer
-- [x] Support play with online URL and local file
-- [x] Automatic rotation. You can also manage the rotation manually.
-- [x] Support in TableHeaderView | TableViewCell | CollectionViewCell playing video
-- [x] Export video
-- [x] Generate GIF
+- [x] Quick initialization
+- [x] [Support Fullscreen Pop Gesture](https://github.com/changsanjiang/SJFullscreenPopGesture)
+- [x] [Network status change prompt](https://upload-images.jianshu.io/upload_images/2318691-819b9bd24115ae29.gif?imageMogr2/auto-orient/strip)
+- [x] [Support rotation to the orientation you want](https://github.com/changsanjiang/SJBaseVideoPlayer/blob/9e018b7a919e14e2986ba3beda0e47d823768b54/SJBaseVideoPlayer/SJBaseVideoPlayer.h#L459)
+- [x] [Export clips or generate GIF or Screenshot](https://github.com/changsanjiang/SJBaseVideoPlayer/blob/9e018b7a919e14e2986ba3beda0e47d823768b54/SJBaseVideoPlayer/SJBaseVideoPlayer.h#L544)
+- [x] [Custom control layer](https://github.com/changsanjiang/SJBaseVideoPlayer/blob/9e018b7a919e14e2986ba3beda0e47d823768b54/SJBaseVideoPlayer/SJBaseVideoPlayer.h#L630)
+- [x] [Support in TableHeaderView | TableViewCell | CollectionViewCell playing video](https://github.com/changsanjiang/SJBaseVideoPlayer/blob/9e018b7a919e14e2986ba3beda0e47d823768b54/SJBaseVideoPlayer/Model/SJVideoPlayerURLAsset.h#L14)
 - [x] Adjust brightness by slide vertical at left side of screen
 - [x] Adjust volume by slide vertical at right side of screen
 - [x] Slide horizontal to fast forward and rewind
 - [x] Full screen mode drag will display video preview
-- [x] Download
+- [x] [Continue playing, Jumping into the next interface can use the resource initialization of the previous interface](https://github.com/changsanjiang/SJBaseVideoPlayer/blob/9e018b7a919e14e2986ba3beda0e47d823768b54/SJBaseVideoPlayer/Model/SJVideoPlayerURLAsset.h#L133)
 ___
 
 ## Interface

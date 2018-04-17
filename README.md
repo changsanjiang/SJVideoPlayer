@@ -3,7 +3,7 @@
 If lack of interface or any suggestions, please email me( changsanjiang@gmail.com ).
 
 ### 中文介绍
-https://www.jianshu.com/writer#/notebooks/9603042/notes/23358324/preview
+https://www.jianshu.com/p/4c2a493fb4bf
 
 ### Installation
 ```ruby

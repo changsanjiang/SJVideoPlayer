@@ -2,6 +2,9 @@
 
 If lack of interface or any suggestions, please email me( changsanjiang@gmail.com ).
 
+### 中文介绍
+https://www.jianshu.com/writer#/notebooks/9603042/notes/23358324/preview
+
 ### Installation
 ```ruby
 # Player with default control layer.

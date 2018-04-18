@@ -297,6 +297,11 @@ NS_ASSUME_NONNULL_END
 - (void (^)(void))vc_viewWillDisappearExeBlock {
     return ^ () {
         self.videoPlayer.disableRotation = YES;   // 界面将要消失的时候, 禁止旋转.
+    };
+}
+
+- (void (^)(void))vc_viewDidDisappearExeBlock {
+    return ^ () {
         if ( self.videoPlayer.state != SJVideoPlayerPlayState_Paused ) [self.videoPlayer pause];
     };
 }

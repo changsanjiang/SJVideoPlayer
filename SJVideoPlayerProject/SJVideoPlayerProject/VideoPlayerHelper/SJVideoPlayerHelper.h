@@ -116,6 +116,7 @@ NS_ASSUME_NONNULL_BEGIN
 /// You should call it when view will disappear
 @property (nonatomic, copy, readonly) void(^vc_viewWillDisappearExeBlock)(void);
 @property (nonatomic, copy, readonly) BOOL(^vc_prefersStatusBarHiddenExeBlock)(void);
+@property (nonatomic, copy, readonly) void(^vc_viewDidDisappearExeBlock)(void);
 @property (nonatomic, copy, readonly) UIStatusBarStyle(^vc_preferredStatusBarStyleExeBlock)(void);
 @end
 
@@ -132,6 +133,11 @@ NS_ASSUME_NONNULL_BEGIN
 //- (void)viewWillDisappear:(BOOL)animated {
 //    [super viewWillDisappear:animated];
 //    self.videoPlayerHelper.vc_viewWillDisappearExeBlock();
+//}
+//
+//- (void)viewDidDisappear:(BOOL)animated {
+//    [super viewDidDisappear:animated];
+//    self.videoPlayerHelper.vc_viewDidDisappearExeBlock();
 //}
 //
 //- (BOOL)prefersStatusBarHidden {

@@ -472,6 +472,8 @@
 				A6E6D3152028BE9B00CB9BAE /* SJVideoPlayerBottomControlView.m */,
 				77154E802050D040009E51D7 /* SJVideoPlayerRightControlView.h */,
 				77154E812050D040009E51D7 /* SJVideoPlayerRightControlView.m */,
+				7766A62E207F576E008B3C1A /* SJVideoPlayerFilmEditingConfig.h */,
+				7766A62F207F576E008B3C1A /* SJVideoPlayerFilmEditingConfig.m */,
 				77154E8C205255C8009E51D7 /* SJVideoPlayerFilmEditingControlView.h */,
 				77154E8D205255C8009E51D7 /* SJVideoPlayerFilmEditingControlView.m */,
 				773752282052AE7D0000E4E7 /* SJVideoPlayerFilmEditingRecordView.h */,
@@ -502,8 +504,6 @@
 				775C0AC520295C660008EDA7 /* UIView+SJVideoPlayerSetting.m */,
 				A6E6D3012028BE9B00CB9BAE /* SJVideoPlayerControlMaskView.h */,
 				A6E6D3002028BE9B00CB9BAE /* SJVideoPlayerControlMaskView.m */,
-				7766A62E207F576E008B3C1A /* SJVideoPlayerFilmEditingConfig.h */,
-				7766A62F207F576E008B3C1A /* SJVideoPlayerFilmEditingConfig.m */,
 				7766A634207F5E8C008B3C1A /* SJVideoPlayerPropertyRecorder.h */,
 				7766A635207F5E8C008B3C1A /* SJVideoPlayerPropertyRecorder.m */,
 			);

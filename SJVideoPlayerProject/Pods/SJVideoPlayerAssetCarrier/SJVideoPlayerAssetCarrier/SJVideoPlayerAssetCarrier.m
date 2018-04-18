@@ -1002,6 +1002,13 @@ NS_ASSUME_NONNULL_END
     }
 }
 
+- (void)pause {
+    if ( 0 != self.player.rate ) [self.player pause];
+}
+- (void)play {
+    if ( 0 == self.player.rate ) [self.player play];
+}
+
 - (void)convertToOriginal {
     if ( !_converted ) return;
     [self _convertingWithBlock:^{

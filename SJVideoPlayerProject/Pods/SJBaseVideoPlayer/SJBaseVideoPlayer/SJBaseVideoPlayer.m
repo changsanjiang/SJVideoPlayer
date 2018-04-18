@@ -328,7 +328,7 @@ NS_ASSUME_NONNULL_END
             [self.controlLayerDelegate startLoading:self];
         }
         self.state = SJVideoPlayerPlayState_Buffing;
-        [self.asset.player pause];
+        [self.asset pause];
     };
     
     asset.cancelledBuffer = ^(SJVideoPlayerAssetCarrier * _Nonnull asset) {
@@ -643,6 +643,7 @@ NS_ASSUME_NONNULL_END
         if ( !self ) return;
         [UIView animateWithDuration:observer.duration animations:^{
            self.controlContentView.frame = self.presentView.bounds;
+            [self.controlContentView layoutIfNeeded];
         }];
         if ( [self.controlLayerDelegate respondsToSelector:@selector(videoPlayer:willRotateView:)] ) {
             [self.controlLayerDelegate videoPlayer:self willRotateView:isFullScreen];
@@ -997,7 +998,7 @@ NS_ASSUME_NONNULL_END
 - (void)clearAsset {
     [self.presentView.player replaceCurrentItemWithPlayerItem:nil];
     self.presentView.player = nil;
-    self.asset = nil;
+    self.URLAsset = nil;
 }
 
 - (UITapGestureRecognizer *)lockStateTapGesture {
@@ -1027,6 +1028,7 @@ NS_ASSUME_NONNULL_END
 }
 
 - (void)setURLAsset:(SJVideoPlayerURLAsset *)URLAsset {
+    if ( !URLAsset ) {_asset = nil; return;}
     objc_setAssociatedObject(self, @selector(URLAsset), URLAsset, OBJC_ASSOCIATION_RETAIN_NONATOMIC);
     dispatch_async(dispatch_get_main_queue(), ^{
         self.asset = [URLAsset valueForKey:kSJVideoPlayerAssetKey];
@@ -1198,7 +1200,7 @@ NS_ASSUME_NONNULL_END
     
     self.userClickedPause = NO;
     if ( !self.asset ) return NO;
-    if ( 0 == self.asset.player.rate ) [self.asset.player play];
+    [self.asset play];
     self.state = SJVideoPlayerPlayState_Playing;
     [self.displayRecorder start];
     return YES;
@@ -1212,7 +1214,7 @@ NS_ASSUME_NONNULL_END
     
     self.userClickedPause = NO;
     if ( !self.asset ) return NO;
-    [self.asset.player pause];
+    [self.asset pause];
     if ( SJVideoPlayerPlayState_PlayEnd != self.state ) self.state = SJVideoPlayerPlayState_Paused;
     return YES;
 }
@@ -1229,7 +1231,7 @@ NS_ASSUME_NONNULL_END
 - (void)stopAndFadeOut {
     self.suspend = YES;
     
-    [self.asset.player pause];
+    [self.asset pause];
     [self.view sj_fadeOutAndCompletion:^(UIView *view) {
         [self stop];
         [self->_view removeFromSuperview];

@@ -632,12 +632,14 @@ typedef NS_ENUM(NSInteger, SJNetworkStatus) {
 @protocol SJVideoPlayerControlLayerDataSource <NSObject>
 
 @required
-
+/**
+ 请返回控制层的根视图, 这个视图将会添加的播放器视图中.
+ */
 - (UIView *)controlView;
 
 /**
  This method is called before the control layer needs to be hidden, and `controlLayerNeedDisappear:` will not be called if NO is returned.
- 控制层需要隐藏之前会调用这个方法, 如果返回NO, 将不调用`controlLayerNeedDisappear:`
+ 当控制层显示时, 播放器会在一段时间(默认3秒)后尝试隐藏控制层, 此时会调用该方法, 如果返回YES, 则隐藏控制层, 否之.
  */
 - (BOOL)controlLayerDisappearCondition;
 

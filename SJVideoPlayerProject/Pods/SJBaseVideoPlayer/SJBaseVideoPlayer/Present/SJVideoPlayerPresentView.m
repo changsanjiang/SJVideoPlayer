@@ -92,12 +92,14 @@ NS_ASSUME_NONNULL_END
 
 #pragma mark -
 
+- (void)layoutSubviews {
+    [super layoutSubviews];
+    _placeholderImageView.frame = self.bounds;
+}
+
 - (void)_presentSetupView {
     self.backgroundColor = [UIColor blackColor];
     [self addSubview:self.placeholderImageView];
-    [_placeholderImageView mas_makeConstraints:^(MASConstraintMaker *make) {
-        make.edges.offset(0);
-    }];
 }
 
 - (UIImageView *)placeholderImageView {

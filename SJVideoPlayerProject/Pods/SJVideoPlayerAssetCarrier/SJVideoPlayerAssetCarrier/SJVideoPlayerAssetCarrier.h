@@ -38,8 +38,9 @@ NS_ASSUME_NONNULL_BEGIN
 - (instancetype)initWithAssetURL:(NSURL *)assetURL;
 
 /**
- player in a view.
  video player -> UIView
+
+ player in a view.
  
  @param assetURL                        assetURL
  @param beginTime                       begin time. unit is sec.
@@ -51,8 +52,9 @@ NS_ASSUME_NONNULL_BEGIN
 #pragma mark - Cell
 
 /**
- table or collection cell. player in a tableOrCollection cell.
  video player -> cell -> table || collection view
+
+ table or collection cell. player in a tableOrCollection cell.
  
  @param assetURL                        assetURL.
  @param tableOrCollectionView           tableView or collectionView.
@@ -66,8 +68,9 @@ NS_ASSUME_NONNULL_BEGIN
                     superviewTag:(NSInteger)superviewTag;
 
 /**
- table or collection cell. player in a tableOrCollection cell.
  video player -> cell -> table || collection view
+
+ table or collection cell. player in a tableOrCollection cell.
  
  @param assetURL                        assetURL.
  @param beginTime                       begin time. unit is sec.
@@ -85,8 +88,9 @@ NS_ASSUME_NONNULL_BEGIN
 #pragma mark - Table Header View.
 
 /**
- table header view. player in a table header view.
  video player -> table header view -> table view
+
+ table header view. player in a table header view.
  
  @param assetURL                        assetURL.
  @param beginTime                       begin time. unit is sec.
@@ -100,8 +104,9 @@ NS_ASSUME_NONNULL_BEGIN
                        tableView:(__unsafe_unretained UITableView *)tableView;
 
 /**
- table header view. player in a collection view cell, and this collection view in a table header view.
  video player -> cell -> collection view -> table header view -> table view
+
+ table header view. player in a collection view cell, and this collection view in a table header view.
  
  @param assetURL                        assetURL
  @param beginTime                       begin time. unit is sec.
@@ -121,8 +126,9 @@ NS_ASSUME_NONNULL_BEGIN
 #pragma mark - Nested
 
 /**
- table or collection cell. player in a collection cell. and this collectionView in a tableView.
  video player -> collection cell -> collection view -> table cell -> table view.
+ 
+ table or collection cell. player in a collection cell. and this collectionView in a tableView.
  
  @param assetURL                        assetURL.
  @param beginTime                       begin time. unit is sec.
@@ -142,8 +148,9 @@ NS_ASSUME_NONNULL_BEGIN
                   rootScrollView:(__unsafe_unretained UIScrollView *__nullable)rootScrollView;
 
 /**
- table or collection cell. player in a collection cell. and this collectionView in a tableView.
  video player -> collection cell -> collection view -> table cell -> table view.
+
+ table or collection cell. player in a collection cell. and this collectionView in a tableView.
  
  @param assetURL                        assetURL.
  @param beginTime                       begin time. unit is sec.
@@ -167,25 +174,31 @@ NS_ASSUME_NONNULL_BEGIN
 
 
 #pragma mark -
+/// video player -> UIView
 - (instancetype)initWithOtherAsset:(__weak id<SJVideoPlayerAVAsset>)asset;
+/// video player -> cell -> table || collection view
 - (instancetype)initWithOtherAsset:(__weak id<SJVideoPlayerAVAsset>)asset
                         scrollView:(__unsafe_unretained UIScrollView * __nullable)tableOrCollectionView
                          indexPath:(NSIndexPath * __nullable)indexPath
                       superviewTag:(NSInteger)superviewTag;
+/// video player -> table header view -> table view
 - (instancetype)initWithOtherAsset:(__weak id<SJVideoPlayerAVAsset>)asset
       playerSuperViewOfTableHeader:(__unsafe_unretained UIView *)superView
                          tableView:(__unsafe_unretained UITableView *)tableView;
+/// video player -> cell -> collection view -> table header view -> table view
 - (instancetype)initWithOtherAsset:(__weak id<SJVideoPlayerAVAsset>)asset
        collectionViewOfTableHeader:(__unsafe_unretained UICollectionView *)collectionView
            collectionCellIndexPath:(NSIndexPath *)indexPath
                 playerSuperViewTag:(NSInteger)playerSuperViewTag
                      rootTableView:(__unsafe_unretained UITableView *)rootTableView;
+/// video player -> collection cell -> collection view -> table cell -> table view.
 - (instancetype)initWithOtherAsset:(__weak id<SJVideoPlayerAVAsset>)asset
                          indexPath:(NSIndexPath *__nullable)indexPath
                       superviewTag:(NSInteger)superviewTag
                scrollViewIndexPath:(NSIndexPath *__nullable)scrollViewIndexPath
                      scrollViewTag:(NSInteger)scrollViewTag
                     rootScrollView:(__unsafe_unretained UIScrollView *__nullable)rootScrollView;
+/// video player -> collection cell -> collection view -> table cell -> table view.
 - (instancetype)initWithOtherAsset:(__weak id<SJVideoPlayerAVAsset>)asset
                          indexPath:(NSIndexPath *__nullable)indexPath
                       superviewTag:(NSInteger)superviewTag
@@ -295,8 +308,13 @@ NS_ASSUME_NONNULL_BEGIN
 #pragma mark - Refresh
 - (void)refreshAVPlayer;
 
+- (void)pause;
+- (void)play;
+
 
 #pragma mark - Convert
+#pragma mark DEPRECATED
+@property (nonatomic, assign, readonly, getter=isConverted) BOOL converted NS_DEPRECATED(2_0, 2_0, 2_0, 2_0, "use `initWithOtherAsset:`");
 - (void)convertToOriginal NS_DEPRECATED(2_0, 2_0, 2_0, 2_0, "use `initWithOtherAsset:`");
 - (void)convertToUIView NS_DEPRECATED(2_0, 2_0, 2_0, 2_0, "use `initWithOtherAsset:`");
 - (void)convertToCellWithTableOrCollectionView:(__unsafe_unretained UIScrollView *)tableOrCollectionView
@@ -325,7 +343,6 @@ NS_ASSUME_NONNULL_BEGIN
 
 #pragma mark - properties
 @property (nonatomic, assign, readonly, getter=isLoadedPlayer) BOOL loadedPlayer;
-@property (nonatomic, assign, readonly, getter=isConverted) BOOL converted;
 @property (nonatomic, strong, readonly) AVURLAsset *asset;
 @property (nonatomic, strong, readonly) AVPlayerItem *playerItem;
 @property (nonatomic, strong, readonly) AVPlayer *player;
@@ -342,7 +359,6 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic, unsafe_unretained, readonly, nullable) UIScrollView *rootScrollView;
 @property (nonatomic, weak, readonly, nullable) UIView *tableHeaderSubView;
 @property (nonatomic, readonly) BOOL isOtherAsset;
-
 @end
 
 

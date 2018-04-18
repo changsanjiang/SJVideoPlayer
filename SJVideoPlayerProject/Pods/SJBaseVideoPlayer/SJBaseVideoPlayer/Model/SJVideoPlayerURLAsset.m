@@ -140,6 +140,10 @@
     return [self.asset.assetURL.absoluteString containsString:@".m3u8"];
 }
 
+- (id<SJVideoPlayerAssetCarrier>)carrier {
+    return (id)self.asset;
+}
+
 #pragma mark -
 - (BOOL)converted {
     return self.asset.converted;

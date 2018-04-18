@@ -275,6 +275,12 @@
         [self.videoPlayer play];
     };
     
+    _registrar.willResignActive = ^(SJVideoPlayerRegistrar * _Nonnull registrar) {
+        __strong typeof(_self) self = _self;
+        if ( !self ) return;
+        [self.videoPlayer pause];
+    };
+    
     _registrar.newDeviceAvailable = ^(SJVideoPlayerRegistrar * _Nonnull registrar) {
         __strong typeof(_self) self = _self;
         if ( !self ) return;

@@ -38,6 +38,9 @@ typedef NS_ENUM(NSUInteger, SJVideoPlayerFilmEditingOperation) {
 - (SJVideoPlayerURLAsset *)currentPalyAsset;
 
 - (BOOL)resultNeedUpload;
+
+- (BOOL)shouldStartWhenUserSelectedAnOperation:(SJVideoPlayerFilmEditingOperation)selectedOperation;
+
 @end
 
 

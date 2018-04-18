@@ -19,6 +19,22 @@ static NSString *const kSJFilmEditingResultShareItemWechatTitle = @"微信";
 static NSString *const kSJFilmEditingResultShareItemWeiboTitle = @"微博";
 static NSString *const kSJFilmEditingResultShareItemQQTitle = @"QQ";
 
+
+
+@interface SJUploader : NSObject<SJVideoPlayerFilmEditingResultUpload>
+@end
+
+@implementation SJUploader
+- (void)upload:(id<SJVideoPlayerFilmEditingResult>)result progress:(void (^__nullable)(float))progressBlock success:(void (^__nullable)(void))success failure:(void (^__nullable)(NSError * _Nonnull))failure {
+//    [YourUploader upload:]
+}
+- (void)cancelUpload:(id<SJVideoPlayerFilmEditingResult>)result {
+//    [YourUploader cancel:]
+}
+@end
+
+
+
 @interface FilmEditingHelper () {
     NSArray<SJFilmEditingResultShareItem *> *_resultShareItems;
     SJVideoPlayerFilmEditingConfig *_filmEditingConfig;
@@ -27,6 +43,7 @@ static NSString *const kSJFilmEditingResultShareItemQQTitle = @"QQ";
 @property (nonatomic, strong, readonly) NSArray<SJFilmEditingResultShareItem *> *resultShareItems;
 @property (nonatomic, weak, nullable) UIViewController *viewController;
 @property (nonatomic, weak, nullable) SJVideoPlayer *player;
+@property (nonatomic, strong) id<SJVideoPlayerFilmEditingResultUpload> uploader; // 上传. 截屏/导出视频/GIF 时使用.
 
 @end
 
@@ -39,8 +56,24 @@ static NSString *const kSJFilmEditingResultShareItemQQTitle = @"QQ";
     
     __weak typeof(self) _self = self;
     _filmEditingConfig = [SJVideoPlayerFilmEditingConfig new];
+    _filmEditingConfig.resultUploader = self.uploader = [SJUploader new];
     _filmEditingConfig.resultShareItems = self.resultShareItems;
+    // 导出结果是否需要上传
     _filmEditingConfig.resultNeedUpload = NO;
+    // 用户选择某个操作是否应该开始
+    _filmEditingConfig.shouldStartWhenUserSelectedAnOperation = ^BOOL(__kindof SJBaseVideoPlayer *videoPlayer, SJVideoPlayerFilmEditingOperation selectedOperation) {
+        
+//        BOOL isLogout = YES;
+//        if ( isLogout ) {
+//            [videoPlayer showTitle:@"未登录 未登录 未登录 未登录"];
+//            /* some code */
+//            /* some code */
+//            /* some code */
+//            return NO;
+//        }
+        
+        return YES;
+    };
 
     _filmEditingConfig.clickedResultShareItemExeBlock = ^(SJVideoPlayer *player, SJFilmEditingResultShareItem *item, id<SJVideoPlayerFilmEditingResult> result) {
         __strong typeof(_self) self = _self;

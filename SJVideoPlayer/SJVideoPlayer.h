@@ -120,7 +120,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 
 
-#pragma mark - Film Editing
+#pragma mark - Film Editing [GIF/Export/Screenshot]
 
 @interface SJVideoPlayer (FilmEditing)
 

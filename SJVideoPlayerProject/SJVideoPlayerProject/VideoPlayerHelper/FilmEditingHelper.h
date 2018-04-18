@@ -18,7 +18,5 @@ NS_ASSUME_NONNULL_BEGIN
 
 @property (nonatomic, strong, readonly) SJVideoPlayerFilmEditingConfig *filmEditingConfig;
 
-//@property (nonatomic, weak, nullable) id<SJVideoPlayerFilmEditingResultUpload> uploader; // 上传. 截屏/导出视频/GIF 时使用.
-
 @end
 NS_ASSUME_NONNULL_END

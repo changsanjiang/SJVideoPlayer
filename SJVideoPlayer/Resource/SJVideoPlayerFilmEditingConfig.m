@@ -15,4 +15,15 @@
     _resultNeedUpload = YES;
     return self;
 }
+
+- (void)config:(SJVideoPlayerFilmEditingConfig *)otherConfig {
+    self.shouldStartWhenUserSelectedAnOperation = otherConfig.shouldStartWhenUserSelectedAnOperation;
+    self.resultShareItems = otherConfig.resultShareItems;
+    self.clickedResultShareItemExeBlock = otherConfig.clickedResultShareItemExeBlock;
+    self.resultNeedUpload = otherConfig.resultNeedUpload;
+    self.resultUploader = otherConfig.resultUploader;
+    self.disableScreenshot = otherConfig.disableScreenshot;
+    self.disableRecord = otherConfig.disableRecord;
+    self.disableGIF = otherConfig.disableGIF;
+}
 @end

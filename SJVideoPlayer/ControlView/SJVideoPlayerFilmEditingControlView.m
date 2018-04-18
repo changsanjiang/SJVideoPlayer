@@ -86,6 +86,10 @@ NS_ASSUME_NONNULL_END
 }
 
 - (void)clickedBtn:(UIButton *)btn {
+    if ( ![self.dataSource shouldStartWhenUserSelectedAnOperation:btn.tag] ) {
+        return;
+    }
+    
     self.currentOperation = btn.tag;
     switch ( (SJVideoPlayerFilmEditingOperation)btn.tag ) {
         case SJVideoPlayerFilmEditingOperation_Screenshot: {

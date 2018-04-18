@@ -7,12 +7,24 @@
 //
 
 #import <Foundation/Foundation.h>
+#import "SJVideoPlayerFilmEditingCommonHeader.h"
 
 @protocol SJVideoPlayerFilmEditingResult, SJVideoPlayerFilmEditingResultUpload;
 
-@class SJVideoPlayer, SJFilmEditingResultShareItem;
+@class SJBaseVideoPlayer, SJVideoPlayer, SJFilmEditingResultShareItem;
 
 @interface SJVideoPlayerFilmEditingConfig : NSObject
+
+- (void)config:(SJVideoPlayerFilmEditingConfig *)otherConfig;
+
+/**
+ If return YES, Start operation [GIF/Export/Screenshot]
+ The default is YES if this block is nil.
+ 
+ 返回YES, 则开始操作[GIF/Export/Screenshot]
+ 如果这个block为空, 将默认为YES
+ */
+@property (nonatomic, copy, nullable) BOOL (^shouldStartWhenUserSelectedAnOperation)(__kindof SJBaseVideoPlayer *videoPlayer, SJVideoPlayerFilmEditingOperation selectedOperation);
 
 /**
  result View showed share items.

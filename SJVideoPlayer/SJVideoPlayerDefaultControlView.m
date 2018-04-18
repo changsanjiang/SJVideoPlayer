@@ -917,6 +917,13 @@ NS_ASSUME_NONNULL_END
     return self.videoPlayer.filmEditingConfig.resultNeedUpload;
 }
 
+- (BOOL)shouldStartWhenUserSelectedAnOperation:(SJVideoPlayerFilmEditingOperation)selectedOperation {
+    if ( self.videoPlayer.filmEditingConfig.shouldStartWhenUserSelectedAnOperation ) {
+        return self.videoPlayer.filmEditingConfig.shouldStartWhenUserSelectedAnOperation(self.videoPlayer, selectedOperation);
+    }
+    return YES;
+}
+
 - (void)_presentFilmEditingControlView {
     [self registrar];
     _filmEditingControlView = [SJVideoPlayerFilmEditingControlView new];

@@ -197,10 +197,7 @@ NS_ASSUME_NONNULL_END
     
     if ( self.enableFilmEditing ) {
         _videoPlayer.enableFilmEditing = YES;
-        _videoPlayer.filmEditingConfig.resultUploader = self.uploader;
-        _videoPlayer.filmEditingConfig.resultNeedUpload = self.filmEditingConfig.resultNeedUpload;
-        _videoPlayer.filmEditingConfig.resultShareItems = self.filmEditingConfig.resultShareItems;
-        _videoPlayer.filmEditingConfig.clickedResultShareItemExeBlock = self.filmEditingConfig.clickedResultShareItemExeBlock;
+        [_videoPlayer.filmEditingConfig config:self.filmEditingConfig];
     }
 }
 

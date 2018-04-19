@@ -62,8 +62,8 @@ static float const __GeneratePreImgScale = 0.05;
     return self;
 }
 - (BOOL)isShowWithCell:(UIView *)cell playerContainerView:(UIView *)playerContainerView {
-    CGRect convertedRect = [(UIView *)[cell valueForKey:@"contentView"] convertRect:playerContainerView.frame
-                                             toView:cell];
+    CGRect convertedRect = [playerContainerView convertRect:playerContainerView.frame
+                                                                            toView:(UIView *)[cell valueForKey:@"contentView"]];
     convertedRect = [cell convertRect:convertedRect
                                toView:[UIApplication sharedApplication].keyWindow];
     CGRect intersectionRect = CGRectIntersection(convertedRect, _visibleArea);

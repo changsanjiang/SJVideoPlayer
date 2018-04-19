@@ -70,7 +70,7 @@ NS_ASSUME_NONNULL_BEGIN
 #pragma mark readwrite
 @property (nonatomic) BOOL disableRotation;
 @property (nonatomic) BOOL lockScreen;
-@property (nonatomic) CGFloat rate; // if changed, 'SJVideoPlayerHelperUseProtocol -> videoPlayerRateChanged:' will be called.
+@property (nonatomic) CGFloat rate; // if changed, 'playerRateChangedExeBlock' will be called.
 
 // play an asset
 - (void)playWithAsset:(SJVideoPlayerURLAsset *)asset playerParentView:(UIView *)playerParentView;
@@ -152,6 +152,7 @@ NS_ASSUME_NONNULL_BEGIN
 @required
 - (void)viewDidAppear:(BOOL)animated;
 - (void)viewWillDisappear:(BOOL)animated;
+- (void)viewDidDisappear:(BOOL)animated;
 
 - (BOOL)prefersStatusBarHidden;
 - (UIStatusBarStyle)preferredStatusBarStyle;

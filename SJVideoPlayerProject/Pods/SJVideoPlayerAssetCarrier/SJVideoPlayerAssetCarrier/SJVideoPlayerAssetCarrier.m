@@ -31,6 +31,55 @@ static float const __GeneratePreImgScale = 0.05;
                                     repeats:(BOOL)repeats;
 @end
 
+#pragma mark -
+@interface SJPlayerSuperViewHelper : NSObject
+- (instancetype)initWithContentView:(UIView *)contentView;
+@property (nonatomic, weak, readonly, nullable) UIViewController *viewController;
+- (BOOL)isShowWithCell:(UIView *)cell playerContainerView:(UIView *)playerContainerView;
+@end
+
+@interface SJPlayerSuperViewHelper () {
+    CGRect _visibleArea;
+}
+@end
+
+@implementation SJPlayerSuperViewHelper
+- (instancetype)initWithContentView:(UIView *)contentView {
+    self = [super init];
+    if ( !self ) return nil;
+    _viewController = [self csj_viewControllerWithView:contentView];
+    CGRect maxArea = [UIScreen mainScreen].bounds;
+    if ( !_viewController.navigationController.navigationBarHidden ) {
+        CGFloat navBar = _viewController.navigationController.navigationBar.bounds.size.height + [UIApplication sharedApplication].statusBarFrame.size.height;
+        maxArea.origin.y = navBar;
+        maxArea.size.height -= navBar;
+    }
+    if ( !_viewController.tabBarController.tabBar.hidden ) {
+        CGFloat tabBar = _viewController.tabBarController.tabBar.bounds.size.height;
+        maxArea.size.height -= tabBar;
+    }
+    _visibleArea = maxArea;
+    return self;
+}
+- (BOOL)isShowWithCell:(UIView *)cell playerContainerView:(UIView *)playerContainerView {
+    CGRect convertedRect = [(UIView *)[cell valueForKey:@"contentView"] convertRect:playerContainerView.frame
+                                             toView:cell];
+    convertedRect = [cell convertRect:convertedRect
+                               toView:[UIApplication sharedApplication].keyWindow];
+    CGRect intersectionRect = CGRectIntersection(convertedRect, _visibleArea);
+    return !CGRectIsNull(intersectionRect);
+}
+- (UIViewController *)csj_viewControllerWithView:(UIView *)view {
+    UIResponder *responder = view.nextResponder;
+    while ( ![responder isKindOfClass:[UIViewController class]] ) {
+        responder = responder.nextResponder;
+        if ( [responder isMemberOfClass:[UIResponder class]] || !responder ) return nil;
+    }
+    return (UIViewController *)responder;
+}
+@end
+
+#pragma mark - 已弃用
 @interface SJAssetUIKitEctype: NSObject
 @property (nonatomic, assign) SJViewHierarchyStack viewHierarchyStack;
 @property (nonatomic, strong) NSIndexPath *indexPath;
@@ -80,6 +129,7 @@ NS_ASSUME_NONNULL_BEGIN
     id _itemEndObserver;
     NSTimer *_bufferRefreshTimer;
     NSTimer *_refreshProgressTimer;
+    SJPlayerSuperViewHelper *_superViewHelper;
 }
 @property (nonatomic, assign, readwrite) SJViewHierarchyStack viewHierarchyStack;
 @property (nonatomic, strong, readwrite, nullable) AVAssetImageGenerator *imageGenerator;
@@ -99,7 +149,7 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic, strong, readwrite, nullable) NSTimer *refreshProgressTimer;
 @property (nonatomic, strong, nullable) SJGIFCreator *gifCreator;
 @property (nonatomic, weak, readonly, nullable) id <SJVideoPlayerAVAsset> otherAsset;
-
+@property (nonatomic, strong, readonly) SJPlayerSuperViewHelper *superViewHelper;
 @end
 NS_ASSUME_NONNULL_END
 
@@ -865,10 +915,7 @@ NS_ASSUME_NONNULL_END
 - (void)playOnHeader_scrollViewDidScroll:(UIScrollView *)scrollView {
     if ( [self.tableHeaderSubView isKindOfClass:[UICollectionView class]] &&
         scrollView == self.tableHeaderSubView ) {
-        UICollectionView *collectionView = (UICollectionView *)scrollView;
-        UICollectionViewCell *cell = [collectionView cellForItemAtIndexPath:self.indexPath];
-        bool visable = [collectionView.visibleCells containsObject:cell];
-        self.scrollIn_bool = visable;
+        [self playOnCell_scrollViewDidScroll:scrollView];
     }
     else {
         CGFloat offsetY = scrollView.contentOffset.y;
@@ -877,9 +924,7 @@ NS_ASSUME_NONNULL_END
                 self.scrollIn_bool = YES;
             }
             else {
-                UICollectionView *collectionView = (UICollectionView *)self.scrollView;
-                UICollectionViewCell *cell = [collectionView cellForItemAtIndexPath:self.indexPath];
-                self.scrollIn_bool = [collectionView.visibleCells containsObject:cell];
+                [self playOnCell_scrollViewDidScroll:self.scrollView];
             }
         }
         else {
@@ -896,34 +941,36 @@ NS_ASSUME_NONNULL_END
     else {
         indexPath = _scrollViewIndexPath;
     }
-    
+
+    __block BOOL visable = NO;
     if ( [scrollView isKindOfClass:[UITableView class]] ) {
         UITableView *tableView = (UITableView *)scrollView;
-        __block BOOL visable = NO;
         [tableView.indexPathsForVisibleRows enumerateObjectsUsingBlock:^(NSIndexPath * _Nonnull obj, NSUInteger idx, BOOL * _Nonnull stop) {
             if ( [obj compare:indexPath] == NSOrderedSame ) {
-                visable = YES;
                 *stop = YES;
+                if ( self.superViewHelper.viewController ) {
+                    visable = [self.superViewHelper isShowWithCell:[self _getCell] playerContainerView:[self _getContainerView]];
+                }
+                else visable = YES;
             }
         }];
-        if ( scrollView == _rootScrollView ) {
-            if ( visable == self.parent_scrollIn_bool ) return;
-            self.parent_scrollIn_bool = visable;
-            if ( visable ) [self _updateScrollView];
-        }
-        self.scrollIn_bool = self.parent_scrollIn_bool && visable;
     }
     else if ( [scrollView isKindOfClass:[UICollectionView class]] ) {
         UICollectionView *collectionView = (UICollectionView *)scrollView;
         UICollectionViewCell *cell = [collectionView cellForItemAtIndexPath:indexPath];
-        bool visable = [collectionView.visibleCells containsObject:cell];
-        if ( scrollView == _rootScrollView ) {
-            if ( visable == self.parent_scrollIn_bool ) return;
-            self.parent_scrollIn_bool = visable;
-            if ( visable ) [self _updateScrollView];
+        if ( [collectionView.visibleCells containsObject:cell] ) {
+            if ( self.superViewHelper.viewController ) {
+                visable = [self.superViewHelper isShowWithCell:cell playerContainerView:[self _getContainerView]];
+            }
+            else visable = YES;
         }
-        self.scrollIn_bool = self.parent_scrollIn_bool && visable;
     }
+    if ( scrollView == _rootScrollView ) {
+        if ( visable == self.parent_scrollIn_bool ) return;
+        self.parent_scrollIn_bool = visable;
+        if ( visable ) [self _updateScrollView];
+    }
+    self.scrollIn_bool = self.parent_scrollIn_bool && visable;
 }
 
 - (void)setScrollIn_bool:(BOOL)scrollIn_bool {
@@ -971,6 +1018,30 @@ NS_ASSUME_NONNULL_END
         superView = [cell.contentView viewWithTag:_superviewTag];
     }
     return superView;
+}
+
+- (SJPlayerSuperViewHelper *)superViewHelper {
+    if ( _superViewHelper ) return _superViewHelper;
+    UIView *cell = [self _getCell];
+    _superViewHelper = [[SJPlayerSuperViewHelper alloc] initWithContentView:[(UITableViewCell *)cell contentView]];
+    return _superViewHelper;
+}
+
+- (UIView *)_getCell {
+    UIView *cell = nil;
+    if ( [_scrollView isKindOfClass:[UITableView class]] ) {
+        cell = [(UITableView *)_scrollView cellForRowAtIndexPath:_indexPath];
+        
+    }
+    else if ( [_scrollView isKindOfClass:[UICollectionView class]] ) {
+        cell = [(UICollectionView *)_scrollView cellForItemAtIndexPath:_indexPath];
+    }
+    return cell;
+}
+
+- (UIView *)_getContainerView {
+    UIView *cell = [self _getCell];
+    return [cell viewWithTag:_superviewTag];
 }
 
 - (void)_observeScrollView:(UIScrollView *)scrollView {

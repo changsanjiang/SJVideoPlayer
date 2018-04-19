@@ -67,7 +67,7 @@ static NSString *const SJVideoListTableViewCellID = @"SJVideoListTableViewCell";
             }];
         });
     });
-
+    
     // Do any additional setup after loading the view.
 }
 

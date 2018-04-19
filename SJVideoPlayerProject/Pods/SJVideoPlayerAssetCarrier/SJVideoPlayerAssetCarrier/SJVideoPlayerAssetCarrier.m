@@ -40,6 +40,7 @@ static float const __GeneratePreImgScale = 0.05;
 
 @interface SJPlayerSuperViewHelper () {
     CGRect _visibleArea;
+    BOOL _hasTabBar;
 }
 @end
 
@@ -57,15 +58,21 @@ static float const __GeneratePreImgScale = 0.05;
     if ( !_viewController.tabBarController.tabBar.hidden ) {
         CGFloat tabBar = _viewController.tabBarController.tabBar.bounds.size.height;
         maxArea.size.height -= tabBar;
+        _hasTabBar = YES;
     }
     _visibleArea = maxArea;
     return self;
 }
 - (BOOL)isShowWithCell:(UIView *)cell playerContainerView:(UIView *)playerContainerView {
-    CGRect convertedRect = [playerContainerView convertRect:playerContainerView.frame
-                                                                            toView:(UIView *)[cell valueForKey:@"contentView"]];
-    convertedRect = [cell convertRect:convertedRect
-                               toView:[UIApplication sharedApplication].keyWindow];
+    CGRect convertedRect = CGRectZero;
+    if ( _hasTabBar ) {
+        convertedRect = [playerContainerView convertRect:playerContainerView.frame toView:cell];
+        convertedRect = [cell convertRect:convertedRect toView:[UIApplication sharedApplication].keyWindow];
+    }
+    else {
+        convertedRect = [playerContainerView convertRect:playerContainerView.frame
+                                                  toView:nil];
+    }
     CGRect intersectionRect = CGRectIntersection(convertedRect, _visibleArea);
     return !CGRectIsNull(intersectionRect);
 }

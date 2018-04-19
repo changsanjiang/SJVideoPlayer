@@ -205,7 +205,7 @@ NS_ASSUME_NONNULL_END
         }
     }
     return [self initWithAssetURL:assetURL beginTime:beginTime indexPath:indexPath superviewTag:superviewTag scrollViewIndexPath:scrollViewIndexPath scrollViewTag:scrollViewTag scrollView:scrollView rootScrollView:rootScrollView];
-
+    
 }
 
 - (instancetype)initWithAssetURL:(NSURL *)assetURL
@@ -218,7 +218,7 @@ NS_ASSUME_NONNULL_END
                   rootScrollView:(__unsafe_unretained UIScrollView *__nullable)rootScrollView {
     self = [super init];
     if ( !self ) return nil;
-   
+    
     // views
     _scrollView = scrollView;
     _indexPath = indexPath;
@@ -389,7 +389,7 @@ NS_ASSUME_NONNULL_END
 
 - (void)_clearAVPlayer {
     if ( !_otherAsset && 0 != _player.rate ) [_player pause];
-
+    
     [_playerItem removeObserver:self forKeyPath:@"status"];
     [_playerItem removeObserver:self forKeyPath:@"playbackBufferEmpty"];
     [_playerItem removeObserver:self forKeyPath:@"loadedTimeRanges"];
@@ -447,8 +447,8 @@ NS_ASSUME_NONNULL_END
         }
         else if ( [keyPath isEqualToString:@"status"] ) {
             if ( !self->_jumped &&
-                 AVPlayerItemStatusReadyToPlay == self.playerItem.status &&
-                 0 != self.beginTime ) {
+                AVPlayerItemStatusReadyToPlay == self.playerItem.status &&
+                0 != self.beginTime ) {
                 // begin time
                 if ( self.beginTime > self.duration ) return ;
                 __weak typeof(self) _self = self;
@@ -908,7 +908,7 @@ NS_ASSUME_NONNULL_END
     else {
         indexPath = _scrollViewIndexPath;
     }
-
+    
     __block BOOL visable = NO;
     if ( [scrollView isKindOfClass:[UITableView class]] ) {
         UITableView *tableView = (UITableView *)scrollView;
@@ -1169,7 +1169,7 @@ NS_ASSUME_NONNULL_END
 - (void)_convertingWithBlock:(void(^)(void))block {
     [self _clearUIKit];
     if ( block ) block();
-    [self _scrollViewObserving]; 
+    [self _scrollViewObserving];
     _converted = YES;
 }
 
@@ -1355,8 +1355,8 @@ static NSTimeInterval _yy_CGImageSourceGetGIFFrameDelayAtIndex(CGImageSourceRef 
 - (void)addImage:(CGImageRef)imageRef {
     if ( !_firstImage ) _firstImage = [UIImage imageWithCGImage:imageRef];
     CGImageDestinationAddImage(_destination, imageRef, (__bridge CFDictionaryRef)_frameProperties);
-//    @autoreleasepool {
-//    }
+    //    @autoreleasepool {
+    //    }
 }
 - (BOOL)finalize {
     BOOL result = CGImageDestinationFinalize(_destination);

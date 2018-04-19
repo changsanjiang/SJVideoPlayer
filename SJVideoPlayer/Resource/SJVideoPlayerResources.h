@@ -27,8 +27,6 @@ UIKIT_EXTERN NSString *const SJVideoPlayer_OperationFailedPrompt;
 
 + (UIImage *)imageNamed:(NSString *)name;
 
-+ (NSString *)bundleComponentWithImageName:(NSString *)imageName;
-
 + (NSString *)localizedStringForKey:(NSString *)key;
 
 @end

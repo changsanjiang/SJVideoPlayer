@@ -154,7 +154,7 @@ NS_ASSUME_NONNULL_END
     self.topControlView.model.isPlayOnScrollView = videoPlayer.isPlayOnScrollView;
     self.topControlView.model.fullscreen = videoPlayer.isFullScreen;
     [self.topControlView update];
-    _rightControlView.hidden = asset.isM3u8;
+    
     
     self.bottomSlider.value = 0;
     self.bottomControlView.progress = 0;
@@ -164,6 +164,7 @@ NS_ASSUME_NONNULL_END
     [self _promptWithNetworkStatus:videoPlayer.networkStatus];
     self.propertyRecorder = [[SJVideoPlayerPropertyRecorder alloc] initWithVideoPlayer:videoPlayer];
     self.enableFilmEditing = videoPlayer.enableFilmEditing;
+    _rightControlView.hidden = asset.isM3u8;
 }
 
 #pragma mark - Control layer appear / disappear

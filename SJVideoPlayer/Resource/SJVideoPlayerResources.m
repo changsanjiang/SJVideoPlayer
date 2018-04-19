@@ -27,18 +27,14 @@ NSString *const SJVideoPlayer_OperationFailedPrompt = @"SJVideoPlayer_OperationF
 
 + (NSBundle *)bundle {
     static NSBundle *bundle = nil;
-    if ( bundle == nil ) {
+    if ( nil == bundle ) {
         bundle = [NSBundle bundleWithPath:[[NSBundle bundleForClass:[self class]] pathForResource:@"SJVideoPlayer" ofType:@"bundle"]];
     }
     return bundle;
 }
 
 + (UIImage *)imageNamed:(NSString *)name {
-    return [UIImage imageNamed:[self bundleComponentWithImageName:name]];
-}
-
-+ (NSString *)bundleComponentWithImageName:(NSString *)imageName {
-    return [@"SJVideoPlayer.bundle" stringByAppendingPathComponent:imageName];
+    return [UIImage imageNamed:name inBundle:[self bundle] compatibleWithTraitCollection:nil];
 }
 
 + (NSString *)localizedStringForKey:(NSString *)key {

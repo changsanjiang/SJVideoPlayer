@@ -117,9 +117,9 @@ NS_ASSUME_NONNULL_BEGIN
     self.bottomControlView.progress = 0;
     self.bottomControlView.bufferProgress = 0;
     [self.bottomControlView setCurrentTimeStr:videoPlayer.currentTimeStr totalTimeStr:videoPlayer.totalTimeStr];
-    _rightControlView.hidden = asset.isM3u8;
     self.propertyRecorder = [[SJVideoPlayerPropertyRecorder alloc] initWithVideoPlayer:videoPlayer];
     self.enableFilmEditing = videoPlayer.enableFilmEditing;
+    _rightControlView.hidden = asset.isM3u8;
 }
 
 - (BOOL)controlLayerDisappearCondition {

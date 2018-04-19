@@ -33,56 +33,13 @@ static float const __GeneratePreImgScale = 0.05;
 
 #pragma mark -
 @interface SJPlayerSuperViewHelper : NSObject
-- (instancetype)initWithContentView:(UIView *)contentView;
-@property (nonatomic, weak, readonly, nullable) UIViewController *viewController;
-- (BOOL)isShowWithCell:(UIView *)cell playerContainerView:(UIView *)playerContainerView;
+- (BOOL)isShowWithCell:(UIView *)cell playerContainerView:(UIView *)playerContainerView scrollView:(UIScrollView *)scrollView;
 @end
-
-@interface SJPlayerSuperViewHelper () {
-    CGRect _visibleArea;
-    BOOL _hasTabBar;
-}
-@end
-
 @implementation SJPlayerSuperViewHelper
-- (instancetype)initWithContentView:(UIView *)contentView {
-    self = [super init];
-    if ( !self ) return nil;
-    _viewController = [self csj_viewControllerWithView:contentView];
-    CGRect maxArea = [UIScreen mainScreen].bounds;
-    if ( !_viewController.navigationController.navigationBarHidden ) {
-        CGFloat navBar = _viewController.navigationController.navigationBar.bounds.size.height + [UIApplication sharedApplication].statusBarFrame.size.height;
-        maxArea.origin.y = navBar;
-        maxArea.size.height -= navBar;
-    }
-    if ( !_viewController.tabBarController.tabBar.hidden ) {
-        CGFloat tabBar = _viewController.tabBarController.tabBar.bounds.size.height;
-        maxArea.size.height -= tabBar;
-        _hasTabBar = YES;
-    }
-    _visibleArea = maxArea;
-    return self;
-}
-- (BOOL)isShowWithCell:(UIView *)cell playerContainerView:(UIView *)playerContainerView {
-    CGRect convertedRect = CGRectZero;
-    if ( _hasTabBar ) {
-        convertedRect = [playerContainerView convertRect:playerContainerView.frame toView:cell];
-        convertedRect = [cell convertRect:convertedRect toView:[UIApplication sharedApplication].keyWindow];
-    }
-    else {
-        convertedRect = [playerContainerView convertRect:playerContainerView.frame
-                                                  toView:nil];
-    }
-    CGRect intersectionRect = CGRectIntersection(convertedRect, _visibleArea);
+- (BOOL)isShowWithCell:(UIView *)cell playerContainerView:(UIView *)playerContainerView scrollView:(UIScrollView *)scrollView {
+    CGRect convertedRect = [playerContainerView.superview convertRect:playerContainerView.frame toView:scrollView.superview];
+    CGRect intersectionRect = CGRectIntersection(convertedRect, scrollView.frame);
     return !CGRectIsNull(intersectionRect);
-}
-- (UIViewController *)csj_viewControllerWithView:(UIView *)view {
-    UIResponder *responder = view.nextResponder;
-    while ( ![responder isKindOfClass:[UIViewController class]] ) {
-        responder = responder.nextResponder;
-        if ( [responder isMemberOfClass:[UIResponder class]] || !responder ) return nil;
-    }
-    return (UIViewController *)responder;
 }
 @end
 
@@ -157,6 +114,7 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic, strong, nullable) SJGIFCreator *gifCreator;
 @property (nonatomic, weak, readonly, nullable) id <SJVideoPlayerAVAsset> otherAsset;
 @property (nonatomic, strong, readonly) SJPlayerSuperViewHelper *superViewHelper;
+@property (nonatomic, readwrite) CGPoint beforeContentOffset;
 @end
 NS_ASSUME_NONNULL_END
 
@@ -907,6 +865,7 @@ NS_ASSUME_NONNULL_END
 
 - (void)_scrollViewDidScroll:(UIScrollView *)scrollView {
     if ( !_scrollView ) return;
+    if ( CGPointEqualToPoint(_beforeContentOffset, scrollView.contentOffset) ) return;
     if ( scrollView == _scrollView ) {
         if ( _scrollViewDidScroll ) _scrollViewDidScroll(self);
     }
@@ -917,6 +876,7 @@ NS_ASSUME_NONNULL_END
     else {
         [self playOnCell_scrollViewDidScroll:scrollView];
     }
+    _beforeContentOffset = scrollView.contentOffset;
 }
 
 - (void)playOnHeader_scrollViewDidScroll:(UIScrollView *)scrollView {
@@ -955,10 +915,7 @@ NS_ASSUME_NONNULL_END
         [tableView.indexPathsForVisibleRows enumerateObjectsUsingBlock:^(NSIndexPath * _Nonnull obj, NSUInteger idx, BOOL * _Nonnull stop) {
             if ( [obj compare:indexPath] == NSOrderedSame ) {
                 *stop = YES;
-                if ( self.superViewHelper.viewController ) {
-                    visable = [self.superViewHelper isShowWithCell:[self _getCell] playerContainerView:[self _getContainerView]];
-                }
-                else visable = YES;
+                visable = [self.superViewHelper isShowWithCell:[self _getCell] playerContainerView:[self _getContainerView] scrollView:scrollView];
             }
         }];
     }
@@ -966,10 +923,7 @@ NS_ASSUME_NONNULL_END
         UICollectionView *collectionView = (UICollectionView *)scrollView;
         UICollectionViewCell *cell = [collectionView cellForItemAtIndexPath:indexPath];
         if ( [collectionView.visibleCells containsObject:cell] ) {
-            if ( self.superViewHelper.viewController ) {
-                visable = [self.superViewHelper isShowWithCell:cell playerContainerView:[self _getContainerView]];
-            }
-            else visable = YES;
+            visable = [self.superViewHelper isShowWithCell:[self _getCell] playerContainerView:[self _getContainerView] scrollView:scrollView];
         }
     }
     if ( scrollView == _rootScrollView ) {
@@ -1029,8 +983,7 @@ NS_ASSUME_NONNULL_END
 
 - (SJPlayerSuperViewHelper *)superViewHelper {
     if ( _superViewHelper ) return _superViewHelper;
-    UIView *cell = [self _getCell];
-    _superViewHelper = [[SJPlayerSuperViewHelper alloc] initWithContentView:[(UITableViewCell *)cell contentView]];
+    _superViewHelper = [SJPlayerSuperViewHelper new];
     return _superViewHelper;
 }
 

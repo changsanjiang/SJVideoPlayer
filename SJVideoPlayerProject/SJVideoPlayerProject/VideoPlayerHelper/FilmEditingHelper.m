@@ -9,6 +9,9 @@
 #import "FilmEditingHelper.h"
 #import "SJVideoPlayer.h"
 #import <UIKit/UIKit.h>
+#import <AssetsLibrary/AssetsLibrary.h>
+#import <MobileCoreServices/UTCoreTypes.h>
+#import <Photos/Photos.h>
 
 NS_ASSUME_NONNULL_BEGIN
 static NSString *const kSJFilmEditingResultShareItemWechatTimeLineTitle = @"朋友圈";
@@ -143,9 +146,12 @@ static NSString *const kSJFilmEditingResultShareItemQQTitle = @"QQ";
 
 - (void)_saveResult:(id<SJVideoPlayerFilmEditingResult>)result {
     switch ( result.operation ) {
-        case SJVideoPlayerFilmEditingOperation_Screenshot:
-        case SJVideoPlayerFilmEditingOperation_GIF: {
+        case SJVideoPlayerFilmEditingOperation_Screenshot: {
             UIImageWriteToSavedPhotosAlbum(result.image, self, @selector(image:didFinishSavingWithError:contextInfo:), NULL);
+        }
+            break;
+        case SJVideoPlayerFilmEditingOperation_GIF: {
+            [self writeGifImgToAlbum:result];
         }
             break;
         case SJVideoPlayerFilmEditingOperation_Export: {
@@ -154,7 +160,34 @@ static NSString *const kSJFilmEditingResultShareItemQQTitle = @"QQ";
             break;
     }
 }
-
+- (void)writeGifImgToAlbum:(id<SJVideoPlayerFilmEditingResult>)result {
+    if ( @available(iOS 9.0, *) ) {
+        [[PHPhotoLibrary sharedPhotoLibrary] performChanges:^{
+            [PHAssetChangeRequest creationRequestForAssetFromImageAtFileURL:result.fileURL];
+        } completionHandler:^(BOOL success, NSError *error) {
+            if (error) {
+                [self.player showTitle:@"保存失败" duration:2];
+            }else{
+                [self.player showTitle:@"保持成功" duration:2];
+            }
+        }];
+    }
+    else {
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wdeprecated-declarations"
+        ALAssetsLibrary *library = [[ALAssetsLibrary alloc] init];
+        NSDictionary *metadata = @{@"UTI":(__bridge NSString *)kUTTypeGIF};
+        [library writeImageDataToSavedPhotosAlbum:result.data metadata:metadata completionBlock:^(NSURL *assetURL, NSError *error) {
+            if (error) {
+                [self.player showTitle:@"保存失败" duration:2];
+            }
+            else{
+                [self.player showTitle:@"保持成功" duration:2];
+            }
+        }];
+#pragma clang diagnostic pop
+    }
+}
 /// Save video to album SEL. 保存好的回调
 - (void)video:(NSString *)videoPath didFinishSavingWithError:(NSError *)error contextInfo:(void *)contextInfo {
     if ( error ) {

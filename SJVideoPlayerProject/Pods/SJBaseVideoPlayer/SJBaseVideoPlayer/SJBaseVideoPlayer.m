@@ -586,7 +586,6 @@ NS_ASSUME_NONNULL_END
     [(SJBaseVideoPlayerView *)_view setLayoutSubViewsExeBlock:^(SJBaseVideoPlayerView *view) {
         __strong typeof(_self) self = _self;
         if ( !self ) return;
-        NSLog(@"-- %@", NSStringFromCGRect(view.bounds));
         if ( self.presentView.superview == view ) {
             self.presentView.frame = view.bounds;
             [self.presentView addSubview:self.controlContentView];

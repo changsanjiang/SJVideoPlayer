@@ -22,7 +22,7 @@
 - (void)viewDidLoad {
     [super viewDidLoad];
     self.view.backgroundColor = [UIColor whiteColor];
-    _videoPlayer = [SJVideoPlayer sharedPlayer];
+    _videoPlayer = [SJVideoPlayer lightweightPlayer];
     [self.view addSubview:_videoPlayer.view];
     [_videoPlayer.view mas_makeConstraints:^(MASConstraintMaker *make) {
         make.top.offset(SJ_is_iPhoneX() ? 34 : 20);
@@ -45,7 +45,7 @@
     };
     
     // 播放
-    _videoPlayer.assetURL = [[NSBundle mainBundle] URLForResource:@"sample" withExtension:@"mp4"];
+//    _videoPlayer.assetURL = [[NSBundle mainBundle] URLForResource:@"sample" withExtension:@"mp4"];
     
     // supported orientation. 设置旋转支持的方向.
     _videoPlayer.supportedRotateViewOrientation = SJSupportedRotateViewOrientation_All;

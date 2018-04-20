@@ -586,6 +586,7 @@ NS_ASSUME_NONNULL_END
     [(SJBaseVideoPlayerView *)_view setLayoutSubViewsExeBlock:^(SJBaseVideoPlayerView *view) {
         __strong typeof(_self) self = _self;
         if ( !self ) return;
+        NSLog(@"-- %@", NSStringFromCGRect(view.bounds));
         if ( self.presentView.superview == view ) {
             self.presentView.frame = view.bounds;
             [self.presentView addSubview:self.controlContentView];
@@ -1432,13 +1433,15 @@ NS_ASSUME_NONNULL_END
 }
 
 - (void)rotation {
-    // 此方法为无条件旋转, 任何时候都可以旋转
-    // 外界调用此方法, 就是想要旋转, 不管播放器有没有禁止旋转, 我都暂时解开, 最后恢复设置
-    BOOL disableRotation = self.disableRotation;
-    self.disableRotation = NO;
-    [self.orentationObserver _changeOrientation];
-    // 恢复
-    self.disableRotation = disableRotation; // reset
+    dispatch_async(dispatch_get_main_queue(), ^{
+        // 此方法为无条件旋转, 任何时候都可以旋转
+        // 外界调用此方法, 就是想要旋转, 不管播放器有没有禁止旋转, 我都暂时解开, 最后恢复设置
+        BOOL disableRotation = self.disableRotation;
+        self.disableRotation = NO;
+        [self.orentationObserver _changeOrientation];
+        // 恢复
+        self.disableRotation = disableRotation; // reset
+    });
 }
 
 - (void)rotate:(SJRotateViewOrientation)orientation animated:(BOOL)animated {
@@ -1446,15 +1449,17 @@ NS_ASSUME_NONNULL_END
 }
 
 - (void)rotate:(SJRotateViewOrientation)orientation animated:(BOOL)animated completion:(void (^ _Nullable)(__kindof SJBaseVideoPlayer *player))block {
-    BOOL disableRotation = self.disableRotation;
-    self.disableRotation = NO;
-    __weak typeof(self) _self = self;
-    [self.orentationObserver rotate:orientation animated:animated completion:^(SJOrentationObserver * _Nonnull observer) {
-        __strong typeof(_self) self = _self;
-        if ( !self ) return;
-        self.disableRotation = disableRotation; // reset
-        if ( block ) block(self);
-    }];
+    dispatch_async(dispatch_get_main_queue(), ^{
+        BOOL disableRotation = self.disableRotation;
+        self.disableRotation = NO;
+        __weak typeof(self) _self = self;
+        [self.orentationObserver rotate:orientation animated:animated completion:^(SJOrentationObserver * _Nonnull observer) {
+            __strong typeof(_self) self = _self;
+            if ( !self ) return;
+            self.disableRotation = disableRotation; // reset
+            if ( block ) block(self);
+        }];
+    });
 }
 
 - (void)setDisableRotation:(BOOL)disableRotation {

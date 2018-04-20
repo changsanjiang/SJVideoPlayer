@@ -372,13 +372,6 @@ NS_ASSUME_NONNULL_END
     if ( _moreSettingsView.appearState ) [_moreSettingsView disappear];
     if ( _moreSecondarySettingView.appearState ) [_moreSecondarySettingView disappear];
     [self.bottomSlider disappear];
-    
-    if ( videoPlayer.controlLayerAppeared ) {
-        [videoPlayer controlLayerNeedAppear];
-        UIView_Animations(CommonAnimaDuration, ^{
-            [self.containerView layoutIfNeeded];
-        }, nil);
-    }
 }
 
 /// 播放器完成旋转.

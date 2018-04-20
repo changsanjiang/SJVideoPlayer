@@ -283,25 +283,17 @@ NS_ASSUME_NONNULL_BEGIN
     _topControlView.isFullscreen = isFull;
     [_topControlView needUpdateLayout];
     
-    UIView_Animations(CommonAnimaDuration, ^{
-        [self.controlView layoutIfNeeded];
-    }, nil);
-    
-    if ( videoPlayer.controlLayerAppeared ) [videoPlayer controlLayerNeedAppear]; // update
-    
-    if ( isFull ) {
-        // `iPhone_X` remake constraints.
-        if ( SJ_is_iPhoneX() ) {
+    if ( SJ_is_iPhoneX() ) {
+        if ( isFull ) {
+            // `iPhone_X` remake constraints.
             [self.containerView mas_remakeConstraints:^(MASConstraintMaker *make) {
                 make.center.offset(0);
                 make.height.equalTo(self.containerView.superview);
                 make.width.equalTo(self.containerView.mas_height).multipliedBy(16 / 9.0f);
             }];
         }
-    }
-    else {
-        // `iPhone_X` remake constraints.
-        if ( SJ_is_iPhoneX() ) {
+        else {
+            // `iPhone_X` remake constraints.
             [self.containerView mas_remakeConstraints:^(MASConstraintMaker *make) {
                 make.edges.offset(0);
             }];

@@ -299,6 +299,9 @@ NS_ASSUME_NONNULL_BEGIN
             }];
         }
     }
+    
+    
+    if ( videoPlayer.controlLayerAppeared ) [videoPlayer controlLayerNeedAppear]; // update
 }
 
 - (void)horizontalDirectionWillBeginDragging:(SJVideoPlayer *)videoPlayer {

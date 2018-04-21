@@ -41,6 +41,8 @@ typedef NS_ENUM(NSUInteger, SJVideoPlayerFilmEditingOperation) {
 
 - (BOOL)shouldStartWhenUserSelectedAnOperation:(SJVideoPlayerFilmEditingOperation)selectedOperation;
 
+- (CGFloat)operationContainerViewRightOffset;
+
 @end
 
 

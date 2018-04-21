@@ -21,6 +21,7 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic, strong, nullable) NSString *waitingForRecordingPromptText;
 @property (nonatomic, strong, nullable) NSString *recordPromptText;
 @property (nonatomic, strong, nullable) UIImage *recordEndBtnImage;
+@property (nonatomic) float completeBtnRightOffset;
 
 @property (nonatomic, copy, nullable) void(^clickedCancleBtnExeBlock)(SJVideoPlayerFilmEditingGenerateGIFView *view);
 @property (nonatomic, copy, nullable) void(^clickedCompleteBtnExeBlock)(SJVideoPlayerFilmEditingGenerateGIFView *view);

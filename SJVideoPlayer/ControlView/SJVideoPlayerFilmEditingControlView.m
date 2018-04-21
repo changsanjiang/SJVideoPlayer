@@ -107,6 +107,12 @@ NS_ASSUME_NONNULL_END
     [_btnContainerView disappear];
 }
 
+- (void)setDataSource:(id<SJVideoPlayerFilmEditingControlViewDataSource>)dataSource {
+    _dataSource = dataSource;
+    [_btnContainerView mas_updateConstraints:^(MASConstraintMaker *make) {
+        make.trailing.offset([dataSource operationContainerViewRightOffset]);
+    }];
+}
 - (void)setResource:(id<SJVideoPlayerFilmEditingPromptResource>)resource {
     _resource = resource;
     [_GIFBtn setImage:resource.gifBtnImage forState:UIControlStateNormal];
@@ -166,6 +172,7 @@ NS_ASSUME_NONNULL_END
             _generateGIFView.waitingForRecordingPromptText = self.resource.waitingForRecordingPromptText;
             _generateGIFView.cancelBtnTitle = self.resource.cancelBtnTitle;
             _generateGIFView.recordEndBtnImage = self.resource.recordEndBtnImage;
+            _generateGIFView.completeBtnRightOffset = self.dataSource.operationContainerViewRightOffset - 20;
             _generateGIFView.alpha = 0.001;
             [self addSubview:_generateGIFView];
             [UIView animateWithDuration:0.25 animations:^{
@@ -180,6 +187,7 @@ NS_ASSUME_NONNULL_END
             _recordView.waitingForRecordingPromptText = self.resource.waitingForRecordingPromptText;
             _recordView.cancelBtnTitle = self.resource.cancelBtnTitle;
             _recordView.recordEndBtnImage = self.resource.recordEndBtnImage;
+            _recordView.completeBtnRightOffset = self.dataSource.operationContainerViewRightOffset - 20;
             _recordView.alpha = 0.001;
             [self addSubview:_recordView];
             [UIView animateWithDuration:0.25 animations:^{
@@ -477,7 +485,7 @@ NS_ASSUME_NONNULL_END
     [self addGestureRecognizer:self.tapGR]; // gesture
     
     [_btnContainerView mas_makeConstraints:^(MASConstraintMaker *make) {
-        make.trailing.offset((SJScreen_Min() * 16 / 9 - SJScreen_Max()) * 0.5);
+        make.trailing.offset(0);
         make.centerY.offset(0);
     }];
     

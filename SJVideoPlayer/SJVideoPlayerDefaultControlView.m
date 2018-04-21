@@ -372,10 +372,7 @@ NS_ASSUME_NONNULL_END
     if ( _moreSettingsView.appearState ) [_moreSettingsView disappear];
     if ( _moreSecondarySettingView.appearState ) [_moreSecondarySettingView disappear];
     [self.bottomSlider disappear];
-}
-
-/// 播放器完成旋转.
-- (void)videoPlayer:(SJVideoPlayer *)videoPlayer didEndRotation:(BOOL)isFull {
+    
     if ( isFull ) {
         // `iPhone_X` remake constraints.
         if ( SJ_is_iPhoneX() ) {
@@ -394,7 +391,14 @@ NS_ASSUME_NONNULL_END
             }];
         }
     }
+    
+    if ( videoPlayer.controlLayerAppeared ) [videoPlayer controlLayerNeedAppear]; // update
 }
+
+/// 播放器完成旋转.
+//- (void)videoPlayer:(SJVideoPlayer *)videoPlayer didEndRotation:(BOOL)isFull {
+//    
+//}
 
 #pragma mark Player Volume / Brightness / Rate
 /// 声音被改变.
@@ -909,6 +913,10 @@ NS_ASSUME_NONNULL_END
 
 - (BOOL)resultNeedUpload {
     return self.videoPlayer.filmEditingConfig.resultNeedUpload;
+}
+
+- (CGFloat)operationContainerViewRightOffset {
+    return (self.containerView.bounds.size.width - self.bounds.size.width) * 0.5;
 }
 
 - (BOOL)shouldStartWhenUserSelectedAnOperation:(SJVideoPlayerFilmEditingOperation)selectedOperation {

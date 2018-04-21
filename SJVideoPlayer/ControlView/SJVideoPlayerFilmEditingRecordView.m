@@ -19,7 +19,7 @@
 @interface SJVideoPlayerFilmEditingRecordView ()
 
 @property (nonatomic, strong, readonly) UIButton *cancelBtn;
-@property (nonatomic, strong, readonly) UIButton *recrodBtn;
+@property (nonatomic, strong, readonly) UIButton *completeBtn;
 @property (nonatomic, strong, readonly) UIView *progressContainerView;
 @property (nonatomic, strong, readonly) UILabel *progressLabel;
 @property (nonatomic, strong, readonly) UILabel *promptLabel;
@@ -38,7 +38,7 @@
 @synthesize promptLabel = _promptLabel;
 @synthesize progressSlider = _progressSlider;
 @synthesize cancelBtn = _cancelBtn;
-@synthesize recrodBtn = _recrodBtn;
+@synthesize completeBtn = _completeBtn;
 @synthesize countDownTimer = _countDownTimer;
 
 - (instancetype)initWithFrame:(CGRect)frame {
@@ -96,7 +96,7 @@
     if ( btn == self.cancelBtn ) {
         if ( _clickedCancleBtnExeBlock ) _clickedCancleBtnExeBlock(self);
     }
-    else if ( btn == self.recrodBtn ) {
+    else if ( btn == self.completeBtn ) {
         if ( _clickedCompleteBtnExeBlock ) _clickedCompleteBtnExeBlock(self);
     }
 }
@@ -123,14 +123,14 @@
     if ( _duration == 3 ) {
         self.promptLabel.text = self.recordPromptText;
         [UIView animateWithDuration:0.3 animations:^{
-            self->_recrodBtn.alpha = 1;
+            self->_completeBtn.alpha = 1;
         }];
     }
 }
 
 - (void)setRecordEndBtnImage:(UIImage *)recordEndBtnImage {
     _recordEndBtnImage = recordEndBtnImage;
-    [_recrodBtn setImage:recordEndBtnImage forState:UIControlStateNormal];
+    [_completeBtn setImage:recordEndBtnImage forState:UIControlStateNormal];
 }
 
 - (void)setCancelBtnTitle:(NSString *)cancelBtnTitle {
@@ -155,17 +155,23 @@
     self.promptLabel.text = nil;
 }
 
+- (void)setCompleteBtnRightOffset:(float)completeBtnRightOffset {
+    _completeBtnRightOffset = completeBtnRightOffset;
+    [_completeBtn mas_updateConstraints:^(MASConstraintMaker *make) {
+        make.trailing.offset(completeBtnRightOffset);
+    }];
+}
 #pragma mark -
 
 - (void)_setupViews {
     [self addSubview:self.cancelBtn];
-    [self addSubview:self.recrodBtn];
+    [self addSubview:self.completeBtn];
     [self addSubview:self.progressContainerView];
     [self.progressContainerView addSubview:self.progressLabel];
     [self.progressContainerView addSubview:self.promptLabel];
     [self.progressContainerView addSubview:self.progressSlider];
     
-    self.recrodBtn.alpha = 0.001;
+    self.completeBtn.alpha = 0.001;
     
     [_cancelBtn mas_makeConstraints:^(MASConstraintMaker *make) {
         make.leading.offset(12);
@@ -174,8 +180,8 @@
         make.width.equalTo(self->_cancelBtn.mas_height).multipliedBy(2.8);
     }];
     
-    [_recrodBtn mas_makeConstraints:^(MASConstraintMaker *make) {
-        make.trailing.offset((SJScreen_Min() * 16 / 9 - SJScreen_Max()) * 0.5);
+    [_completeBtn mas_makeConstraints:^(MASConstraintMaker *make) {
+        make.trailing.offset(0);
         make.size.offset(49);
         make.centerY.offset(0);
     }];
@@ -211,10 +217,10 @@
     return _cancelBtn;
 }
 
-- (UIButton *)recrodBtn {
-    if ( _recrodBtn ) return _recrodBtn;
-    _recrodBtn = [SJUIButtonFactory buttonWithImageName:@"qq" target:self sel:@selector(clickedBtn:) tag:0];
-    return _recrodBtn;
+- (UIButton *)completeBtn {
+    if ( _completeBtn ) return _completeBtn;
+    _completeBtn = [SJUIButtonFactory buttonWithImageName:@"" target:self sel:@selector(clickedBtn:) tag:0];
+    return _completeBtn;
 }
 
 - (UIView *)progressContainerView {

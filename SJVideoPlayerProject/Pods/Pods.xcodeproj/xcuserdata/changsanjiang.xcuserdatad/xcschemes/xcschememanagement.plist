@@ -117,6 +117,11 @@
 			<key>orderHint</key>
 			<integer>14</integer>
 		</dict>
+		<key>YYText.xcscheme</key>
+		<dict>
+			<key>orderHint</key>
+			<integer>18</integer>
+		</dict>
 	</dict>
 	<key>SuppressBuildableAutocreation</key>
 	<dict/>

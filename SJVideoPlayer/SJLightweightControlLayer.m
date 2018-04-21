@@ -777,6 +777,10 @@ NS_ASSUME_NONNULL_BEGIN
     return YES;
 }
 
+- (CGFloat)operationContainerViewRightOffset {
+    return (self.containerView.bounds.size.width - self.containerView.bounds.size.width) * 0.5;
+}
+
 - (void)_presentFilmEditingControlView {
     [self registrar];
     _filmEditingControlView = [SJVideoPlayerFilmEditingControlView new];

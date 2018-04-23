@@ -778,7 +778,7 @@ NS_ASSUME_NONNULL_BEGIN
 }
 
 - (CGFloat)operationContainerViewRightOffset {
-    return (self.containerView.bounds.size.width - self.containerView.bounds.size.width) * 0.5;
+    return (self.containerView.bounds.size.width - self.controlView.bounds.size.width) * 0.5;
 }
 
 - (void)_presentFilmEditingControlView {

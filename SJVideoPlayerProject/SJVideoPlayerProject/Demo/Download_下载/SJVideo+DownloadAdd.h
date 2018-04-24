@@ -11,10 +11,6 @@
 
 NS_ASSUME_NONNULL_BEGIN
 @interface SJVideo (DownloadAdd)
-
-@property (nonatomic, assign) float downloadProgress;
-@property (nonatomic, assign) SJMediaDownloadStatus downloadStatus;
-@property (nonatomic, strong, nullable) NSString *filePath;
-
+@property (nonatomic, strong) id <SJMediaEntity> entity;
 @end
 NS_ASSUME_NONNULL_END

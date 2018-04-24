@@ -10,28 +10,11 @@
 #import <objc/message.h>
 
 @implementation SJVideo (DownloadAdd)
-
-- (void)setDownloadStatus:(SJMediaDownloadStatus)downloadStatus {
-    objc_setAssociatedObject(self, @selector(downloadStatus), @(downloadStatus), OBJC_ASSOCIATION_RETAIN_NONATOMIC);
+- (void)setEntity:(id<SJMediaEntity>)entity {
+    objc_setAssociatedObject(self, @selector(entity), entity, OBJC_ASSOCIATION_RETAIN_NONATOMIC);
 }
 
-- (SJMediaDownloadStatus)downloadStatus {
-    return [objc_getAssociatedObject(self, _cmd) integerValue];
-}
-
-- (void)setDownloadProgress:(float)downloadProgress {
-    objc_setAssociatedObject(self, @selector(downloadProgress), @(downloadProgress), OBJC_ASSOCIATION_RETAIN_NONATOMIC);
-}
-
-- (float)downloadProgress {
-    return [objc_getAssociatedObject(self, _cmd) floatValue];
-}
-
-- (void)setFilePath:(NSString *)filePath {
-    objc_setAssociatedObject(self, @selector(filePath), filePath, OBJC_ASSOCIATION_RETAIN_NONATOMIC);
-}
-
-- (NSString *)filePath {
+- (id<SJMediaEntity>)entity {
     return objc_getAssociatedObject(self, _cmd);
 }
 @end

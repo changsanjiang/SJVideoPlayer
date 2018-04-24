@@ -140,6 +140,7 @@ NS_ASSUME_NONNULL_END
 
 - (void (^)(void))vc_deallocExeBlock {
     return ^() {
+        [[SJVideoPlayer sharedPlayer] stop];
         [SJVideoPlayer sharedPlayer].disableRotation = NO;      // 恢复
     };
 }

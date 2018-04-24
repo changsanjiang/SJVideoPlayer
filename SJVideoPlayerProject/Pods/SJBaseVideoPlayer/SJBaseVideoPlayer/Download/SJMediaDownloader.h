@@ -50,32 +50,51 @@ typedef NS_ENUM(NSUInteger, SJMediaDownloadStatus) {
 
 + (instancetype)shared;
 
+/// default is NO
 - (void)startNotifier;
 
 - (void)stopNotifier;
 
-#pragma mark -
+#pragma mark
 - (void)async_requestMediasCompletion:(void(^)(SJMediaDownloader *downloader, NSArray<id<SJMediaEntity>> * __nullable medias))completionBlock;
 
-- (void)async_requestMediaWithID:(NSInteger)mediaId completion:(void(^)(SJMediaDownloader *downloader, id<SJMediaEntity> __nullable media))completionBlock;
+- (void)async_requestMediaWithID:(NSInteger)mediaId
+                      completion:(void(^)(SJMediaDownloader *downloader, id<SJMediaEntity> __nullable media))completionBlock;
 
 - (void)async_requestMediasWithStatus:(SJMediaDownloadStatus)status
                            completion:(void(^)(SJMediaDownloader *downloader, NSArray<id<SJMediaEntity>> * __nullable medias))completionBlock;
 
+- (void)async_requestMediasWithStatuses:(NSSet<NSNumber *> *)statuses
+                             completion:(void(^)(SJMediaDownloader *downloader, NSArray<id<SJMediaEntity>> * __nullable medias))completionBlock;
+
 - (void)async_exeBlock:(void(^)(void))block;
 
-#pragma mark -
+#pragma mark download
+- (void)async_downloadWithID:(NSInteger)mediaId
+                 mediaURLStr:(NSString *)mediaURLStr
+                       title:(NSString * __nullable)title
+                 coverURLStr:(NSString * __nullable)coverURLStr;
+
 - (void)async_downloadWithID:(NSInteger)mediaId
                        title:(NSString * __nullable)title
                  mediaURLStr:(NSString *)mediaURLStr;
 
-- (void)async_pauseWithMediaID:(NSInteger)mediaId completion:(void(^ __nullable)(void))block;
+- (void)async_downloadWithID:(NSInteger)mediaId
+                 mediaURLStr:(NSString *)mediaURLStr;
 
-- (void)async_pauseAllDownloadsCompletion:(void(^ __nullable)(void))block;
+#pragma mark pause
+- (void)async_pauseWithMediaID:(NSInteger)mediaId
+                    completion:(void(^ __nullable)(void))block;
 
+- (void)async_pauseAllDownloadsCompletion:(void(^ __nullable)(void))block; // 暂停全部
+
+
+#pragma mark delete or cancel
 - (void)async_deleteWithMediaID:(NSInteger)mediaId completion:(void(^ __nullable)(void))block;
 
-#pragma mark -
+- (void)async_deleteWithMediaIDs:(NSArray<NSNumber *> *)mediaIds completion:(void(^ __nullable)(void))block; // 批量删除
+
+#pragma mark file size
 /**
  The file’s size, in bytes.
  */
@@ -85,14 +104,16 @@ typedef NS_ENUM(NSUInteger, SJMediaDownloadStatus) {
 
 @protocol SJMediaEntity <NSObject>
 
-@property (nonatomic, assign, readonly) NSInteger mediaId;
+@property (nonatomic, readonly) NSInteger mediaId;
 @property (nonatomic, strong, readonly) NSString *URLStr;
-@property (nonatomic, assign, readonly) SJMediaDownloadStatus downloadStatus;
+@property (nonatomic, readonly) SJMediaDownloadStatus downloadStatus;
 @property (nonatomic, strong, readonly, nullable) NSString *title;
 @property (nonatomic, strong, readonly, nullable) NSString *coverURLStr;
 @property (nonatomic, strong, readonly, nullable) NSString *filePath;
-@property (nonatomic, assign, readonly) float downloadProgress;
-
+@property (readonly) long long totalBytesWritten;
+@property (readonly) long long totalBytesExpectedToWrite;
+- (float)downloadProgress;
+@property (nonatomic, readonly) long long speed; // 下载速度, unit is`byte`.
 @end
 
 NS_ASSUME_NONNULL_END

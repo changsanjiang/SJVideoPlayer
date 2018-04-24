@@ -57,29 +57,22 @@ static NSString *const DownloadTableViewCellID = @"DownloadTableViewCell";
 
 - (void)mediaDownloadStatusChanged:(NSNotification *)notifi {
     id<SJMediaEntity> entity = notifi.object;
-    [_videoList enumerateObjectsUsingBlock:^(SJVideo * _Nonnull obj, NSUInteger idx, BOOL * _Nonnull stop) {
-        if ( obj.mediaId != entity.mediaId ) return ;
-        *stop = YES;
-        obj.downloadStatus = entity.downloadStatus;
-        obj.filePath = entity.filePath;
-        
-        dispatch_async(dispatch_get_main_queue(), ^{
-            DownloadTableViewCell *cell = [self.tableView cellForRowAtIndexPath:[NSIndexPath indexPathForRow:idx inSection:0]];
-            [cell updateStatus];
-        });
-    }];
+    [self _updateLayoutWithEntity:entity];
 }
 
 - (void)mediaDownloadProgress:(NSNotification *)notifi {
     id<SJMediaEntity> entity = notifi.object;
+    [self _updateLayoutWithEntity:entity];
+}
+
+- (void)_updateLayoutWithEntity:(id<SJMediaEntity>)entity {
     [_videoList enumerateObjectsUsingBlock:^(SJVideo * _Nonnull obj, NSUInteger idx, BOOL * _Nonnull stop) {
-        if ( obj.mediaId != entity.mediaId ) return ;
+        if ( obj.mediaId != entity.mediaId ) return;
         *stop = YES;
-        obj.downloadProgress = entity.downloadProgress;
-        
+        obj.entity = entity;
         dispatch_async(dispatch_get_main_queue(), ^{
             DownloadTableViewCell *cell = [self.tableView cellForRowAtIndexPath:[NSIndexPath indexPathForRow:idx inSection:0]];
-            [cell updateProgress];
+            [cell update];
         });
     }];
 }
@@ -113,8 +106,8 @@ static NSString *const DownloadTableViewCellID = @"DownloadTableViewCell";
 
 - (void)tabCell:(DownloadTableViewCell *)cell clickedPlayBtnAtCoverImageView:(UIImageView *)coverImageView {
     NSURL *URL = nil;
-    if ( cell.model.filePath ) {
-        URL = [NSURL fileURLWithPath:cell.model.filePath];
+    if ( cell.model.entity.filePath ) {
+        URL = [NSURL fileURLWithPath:cell.model.entity.filePath];
     }
     else {
         URL = [NSURL URLWithString:cell.model.playURLStr];
@@ -142,7 +135,6 @@ static NSString *const DownloadTableViewCellID = @"DownloadTableViewCell";
 
 - (void)clear {
     [_videoList enumerateObjectsUsingBlock:^(SJVideo * _Nonnull obj, NSUInteger idx, BOOL * _Nonnull stop) {
-        obj.filePath = nil;
         [[SJMediaDownloader shared] async_deleteWithMediaID:obj.mediaId completion:nil];
     }];
 }
@@ -151,12 +143,10 @@ static NSString *const DownloadTableViewCellID = @"DownloadTableViewCell";
     NSArray *videoList = [SJVideo testVideos];
     [videoList enumerateObjectsUsingBlock:^(SJVideo * _Nonnull obj, NSUInteger idx, BOOL * _Nonnull stop) {
         [[SJMediaDownloader shared] async_requestMediaWithID:obj.mediaId completion:^(SJMediaDownloader * _Nonnull downloader, id<SJMediaEntity>  _Nullable media) {
-            obj.downloadProgress = media.downloadProgress;
-            obj.downloadStatus = media.downloadStatus;
-            obj.filePath = media.filePath;
+            obj.entity = media;
         }];
     }];
-    
+
     __weak typeof(self) _self = self;
     [[SJMediaDownloader shared] async_exeBlock:^{
         __strong typeof(_self) self = _self;
@@ -194,7 +184,6 @@ static NSString *const DownloadTableViewCellID = @"DownloadTableViewCell";
     [[SJMediaDownloader shared] async_pauseWithMediaID:cell.model.mediaId completion:nil];
 }
 - (void)clickedCancelBtnOnTabCell:(DownloadTableViewCell *)cell {
-    cell.model.filePath = nil;
     [[SJMediaDownloader shared] async_deleteWithMediaID:cell.model.mediaId completion:nil];
 }
 @end

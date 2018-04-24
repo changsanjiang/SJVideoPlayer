@@ -19,6 +19,7 @@
 @property (nonatomic, strong, readonly) UILabel *titleLabel;
 @property (nonatomic, strong, readonly) UILabel *progressLabel;
 @property (nonatomic, strong, readonly) UILabel *statusLabel;
+@property (nonatomic, strong, readonly) UILabel *speedLabel;
 @property (nonatomic, strong, readonly) UIView *line;
 
 @property (nonatomic, strong, readonly) UIButton *downloadBtn;
@@ -36,6 +37,7 @@
 @synthesize titleLabel = _titleLabel;
 @synthesize progressLabel = _progressLabel;
 @synthesize statusLabel = _statusLabel;
+@synthesize speedLabel = _speedLabel;
 @synthesize line = _line;
 
 - (instancetype)initWithStyle:(UITableViewCellStyle)style reuseIdentifier:(NSString *)reuseIdentifier {
@@ -71,8 +73,7 @@
     _model = model;
     _coverImageView.image = [UIImage imageNamed:model.testCoverImage];
     _titleLabel.text = model.title;
-    [self updateStatus];
-    [self updateProgress];
+    [self update];
 }
 #pragma mark -
 - (void)_setupViews {
@@ -84,6 +85,7 @@
     [self.contentView addSubview:self.titleLabel];
     [self.contentView addSubview:self.progressLabel];
     [self.contentView addSubview:self.statusLabel];
+    [self.contentView addSubview:self.speedLabel];
     [self.contentView addSubview:self.line];
     [self.contentView addSubview:self.downloadBtn];
     [self.contentView addSubview:self.pauseBtn];
@@ -113,12 +115,17 @@
     [_statusLabel mas_makeConstraints:^(MASConstraintMaker *make) {
         make.top.equalTo(self->_progressLabel.mas_bottom).offset(8);
         make.leading.equalTo(self->_progressLabel);
+    }];
+    
+    [_speedLabel mas_makeConstraints:^(MASConstraintMaker *make) {
+        make.top.equalTo(self.statusLabel.mas_bottom).offset(8);
+        make.leading.equalTo(self.statusLabel);
         make.bottom.offset(-8);
     }];
     
     [_line mas_makeConstraints:^(MASConstraintMaker *make) {
-        make.top.equalTo(self->_statusLabel.mas_bottom).offset(8);
-        make.leading.equalTo(self->_statusLabel);
+        make.leading.offset(8);
+        make.bottom.offset(0);
         make.trailing.offset(-8);
         make.height.offset(0.6);
     }];
@@ -167,6 +174,11 @@
     _statusLabel = [SJUILabelFactory labelWithFont:[UIFont systemFontOfSize:10] textColor:[UIColor blackColor]];
     return _statusLabel;
 }
+- (UILabel *)speedLabel {
+    if ( _speedLabel ) return _speedLabel;
+    _speedLabel = [SJUILabelFactory labelWithFont:[UIFont systemFontOfSize:10] textColor:[UIColor blackColor]];
+    return _speedLabel;
+}
 - (UIView *)line {
     if ( _line ) return _line;
     _line = [SJUIViewFactory viewWithBackgroundColor:[UIColor colorWithWhite:0.9 alpha:1]];
@@ -192,12 +204,21 @@
 }
 
 #pragma mark -
+- (void)update {
+    [self updateProgress];
+    [self updateStatus];
+}
 - (void)updateProgress {
-    _progressLabel.text = [NSString stringWithFormat:@"Progress: %.0f%%", _model.downloadProgress * 100];
+    float downloadProgress = _model.entity.downloadProgress;
+    _progressLabel.text = [NSString stringWithFormat:@"Progress: %.0f%%", downloadProgress * 100];
+    
+    if ( 1 != downloadProgress )
+         _speedLabel.text = [NSString stringWithFormat:@"Speed: %.02fM", (1.0 * _model.entity.speed) / 1024 / 1024];
+    else _speedLabel.text = @"Speed: 0M";
 }
 - (void)updateStatus {
     NSString *prompt = nil;
-    switch ( _model.downloadStatus ) {
+    switch ( _model.entity.downloadStatus ) {
         case SJMediaDownloadStatus_Unknown: {
             prompt = @"Unknown";
         }

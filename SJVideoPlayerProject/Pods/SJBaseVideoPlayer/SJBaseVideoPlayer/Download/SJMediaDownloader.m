@@ -16,7 +16,9 @@ NS_ASSUME_NONNULL_BEGIN
 #define DEBUG_CONDITION 0
 
 inline static bool sql_exe(sqlite3 *database, const char *sql);
-inline static NSArray<id> *sql_query(sqlite3 *database, const char *sql, Class cls);
+inline static NSArray<id> *sql_query(sqlite3 *database, const char *sql, Class __nullable cls);
+static NSArray<NSString *> *table_fields(sqlite3 *database, const char *table_name);
+static bool table_checkout_field(sqlite3 *database, const char *table_name, const char *field, const char *type);
 
 typedef NS_ENUM(NSInteger, SJMediaDownloadErrorCode) {
     SJMediaDownloadErrorCode_Unknown = NSURLErrorUnknown,
@@ -28,38 +30,77 @@ typedef NS_ENUM(NSInteger, SJMediaDownloadErrorCode) {
     SJMediaDownloadErrorCode_NotConnectedToInternet = NSURLErrorNotConnectedToInternet,
 };
 
+
+@interface NSTimer (SJMediaDownloaderAdd)
++ (NSTimer *)SJMediaDownloaderAdd_timerWithTimeInterval:(NSTimeInterval)ti
+                                                  block:(void(^)(NSTimer *timer))block
+                                                repeats:(BOOL)repeats;
+@end
+
+@implementation NSTimer (SJMediaDownloaderAdd)
++ (NSTimer *)SJMediaDownloaderAdd_timerWithTimeInterval:(NSTimeInterval)ti
+                                                  block:(void(^)(NSTimer *timer))block
+                                                repeats:(BOOL)repeats {
+    NSTimer *timer = [NSTimer timerWithTimeInterval:ti
+                                             target:self
+                                           selector:@selector(assetAdd_exeBlock:)
+                                           userInfo:block
+                                            repeats:repeats];
+    return timer;
+}
+
++ (void)assetAdd_exeBlock:(NSTimer *)timer {
+    void(^block)(NSTimer *timer) = timer.userInfo;
+    if ( block ) block(timer);
+}
+@end
+
+#pragma mark -
 @interface SJMediaEntity : NSObject <SJMediaEntity, NSCopying>
-@property (nonatomic, assign) NSInteger mediaId;
+
+#pragma mark Protocol
+@property (nonatomic) NSInteger mediaId;
 @property (nonatomic, strong) NSString *URLStr;
-@property (nonatomic, assign) SJMediaDownloadStatus downloadStatus;
+@property (nonatomic) SJMediaDownloadStatus downloadStatus;
 @property (nonatomic, strong, nullable) NSString *title;
 @property (nonatomic, strong, nullable) NSString *coverURLStr;
-@property (nonatomic, assign) NSTimeInterval downloadTime;  // 插入数据库的时间
-@property (nonatomic, assign) float downloadProgress;
+@property (nonatomic, strong, readonly, nullable) NSString *filePath;
+@property (nonatomic, readonly) float downloadProgress;
+@property (assign) long long totalBytesWritten;
+- (void)reset; // 重置写入的大小
+@property (assign) long long totalBytesExpectedToWrite;
+@property (nonatomic) long long speed;
 
-@property (class, nonatomic, strong, readonly) NSString *rootFolder;
+
+#pragma mark Notification
 @property (class, nonatomic, assign) BOOL startNotifi;
-@property (nonatomic, strong, readonly) NSURL *URL;
-@property (nonatomic, weak, nullable) NSURLSessionDownloadTask *task;
-@property (nonatomic, strong, readonly) NSString *URLHashStr;
 - (void)postStatus;
 - (void)postProgress;
 
+#pragma mark Folder or File
+@property (class, nonatomic, strong, readonly) NSString *rootFolder;
 @property (nonatomic, strong, nullable) NSString *relativePath;
 @property (nonatomic, strong, readonly) NSString *resumePath;
 @property (nonatomic, strong, readonly) NSString *format;
 
-@end
+#pragma mark Other
+@property (nonatomic, strong, nullable) NSTimer *speedTimer;
+@property (nonatomic) NSTimeInterval downloadTime;  // 插入数据库的时间
+- (NSURL *)URL;
+- (NSString *)URLHashStr;
 
-@interface SJMediaDownloader (DownloadServer)<NSURLSessionDownloadDelegate>
-@end
-
-@interface NSURLSessionTask (SJDownloaderAdd)
-@property (nonatomic, copy, nullable) void(^downloadProgressBlock)(__kindof NSURLSessionTask *task, float progress);;
-@property (nonatomic, copy, nullable) void(^endDownloadHandleBlock)(__kindof NSURLSessionTask *task, NSURL *__nullable location, NSError *__nullable error);
+#pragma mark Task
+@property (nonatomic, weak, nullable) NSURLSessionDownloadTask *task;
+@property (nonatomic, copy, nullable) void(^downloadProgressBlock)(SJMediaEntity *entity, float progress);
+@property (nonatomic, copy, nullable) void(^endDownloadHandleBlock)(SJMediaEntity *entity, NSURL *__nullable location, NSError *__nullable error);
 @property (nonatomic, copy, nullable) void(^cancelledBlock)(void);
 @end
 
+#pragma mark -
+@interface SJMediaDownloader (DownloadServer)<NSURLSessionDownloadDelegate>
+@end
+
+#pragma mark -
 @interface SJMediaDownloader ()
 @property (nonatomic, strong, readwrite, nullable) SJMediaEntity *currentEntity;
 @property (nonatomic, strong, readonly, nullable) SJMediaEntity *currentEntity_copy;
@@ -125,37 +166,51 @@ NS_ASSUME_NONNULL_END
 #pragma clang diagnostic push
 #pragma clang diagnostic ignored "-Wmismatched-parameter-types"
 - (void)async_requestMediasCompletion:(void(^)(SJMediaDownloader *downloader, NSArray<SJMediaEntity *> *medias))completionBlock {
+    if ( !completionBlock ) return;
     __weak typeof(self) _self = self;
     [self async_exeBlock:^{
         __strong typeof(_self) self = _self;
         if ( !self ) return;
-        if ( completionBlock ) completionBlock(self, sql_query(self.database, "SELECT *FROM 'SJMediaEntity';", [SJMediaEntity class]));
+        completionBlock(self, sql_query(self.database, "SELECT *FROM 'SJMediaEntity';", [SJMediaEntity class]));
     }];
 }
 - (void)async_requestMediaWithID:(NSInteger)mediaId
                       completion:(void(^)(SJMediaDownloader *downloader, SJMediaEntity *media))completionBlock {
+    if ( !completionBlock ) return;
     __weak typeof(self) _self = self;
     [self async_exeBlock:^{
         __strong typeof(_self) self = _self;
         if ( !self ) return;
         NSString *sqlStr = [NSString stringWithFormat:@"SELECT *FROM 'SJMediaEntity' WHERE mediaId = %ld;", (long)mediaId];
-        if ( completionBlock ) completionBlock(self, sql_query(self.database, sqlStr.UTF8String, [SJMediaEntity class]).firstObject);
+        completionBlock(self, sql_query(self.database, sqlStr.UTF8String, [SJMediaEntity class]).firstObject);
     }];
 }
 - (void)async_requestMediasWithStatus:(SJMediaDownloadStatus)status
                            completion:(void(^)(SJMediaDownloader *downloader, NSArray<id<SJMediaEntity>> * __nullable medias))completionBlock {
+    [self async_requestMediasWithStatuses:[NSSet setWithObject:@(status)] completion:completionBlock];
+}
+- (void)async_requestMediasWithStatuses:(NSSet<NSNumber *> *)statuses
+                             completion:(void(^)(SJMediaDownloader *downloader, NSArray<id<SJMediaEntity>> * __nullable medias))completionBlock {
+    if ( !completionBlock ) return;
+    if ( statuses.count == 0 ) {
+        completionBlock(self, nil);
+        return;
+    }
     __weak typeof(self) _self = self;
     [self async_exeBlock:^{
         __strong typeof(_self) self = _self;
         if ( !self ) return;
-        NSString *sql = [NSString stringWithFormat:@"SELECT *FROM 'SJMediaEntity' WHERE downloadStatus = %ld ORDER BY downloadTime;", (long)status];
-        if ( completionBlock ) completionBlock(self, sql_query(self.database, sql.UTF8String, [SJMediaEntity class]));
+        NSMutableString *statusesM = [NSMutableString string];
+        [statuses enumerateObjectsUsingBlock:^(NSNumber * _Nonnull obj, BOOL * _Nonnull stop) {
+            [statusesM appendFormat:@"%@,", obj];
+        }];
+        [statusesM deleteCharactersInRange:NSMakeRange(statusesM.length - 1, 1)];
+        NSString *sql = [NSString stringWithFormat:@"SELECT *FROM 'SJMediaEntity' WHERE downloadStatus in (%@) ORDER BY downloadTime;", statusesM];
+        completionBlock(self, sql_query(self.database, sql.UTF8String, [SJMediaEntity class]));
     }];
 }
 - (void)async_exeBlock:(void(^)(void))block {
-    [self.taskQueue addOperationWithBlock:^{
-        if ( block ) block();
-    }];
+    [self.taskQueue addOperationWithBlock:block];
 }
 - (void)sync_requestNextDownloadMedia {
     if ( self.currentEntity ) return;
@@ -190,15 +245,14 @@ NS_ASSUME_NONNULL_END
     next.task = task;
     
     __weak typeof(self) _self = self;
-    task.downloadProgressBlock = ^(__kindof NSURLSessionTask * _Nonnull task, float progress) {
+    next.downloadProgressBlock = ^(SJMediaEntity * _Nonnull entity, float progress) {
         __strong typeof(_self) self = _self;
         if ( !self ) return;
-        next.downloadProgress = progress;
-        [next postProgress];
-        [self sync_updateDownloadProgressWithEntity:next];
+        [entity postProgress];
+        [self sync_updateDownloadProgressWithEntity:entity];
     };
     
-    task.endDownloadHandleBlock = ^(NSURLSessionDownloadTask * _Nonnull task, NSURL * _Nullable location, NSError * _Nullable error) {
+    next.endDownloadHandleBlock = ^(SJMediaEntity * _Nonnull entity, NSURL * _Nullable location, NSError * _Nullable error) {
         __strong typeof(_self) self = _self;
         if ( !self ) return;
 #if DEBUG_CONDITION
@@ -207,15 +261,15 @@ NS_ASSUME_NONNULL_END
         }
 #endif
         if ( location ) {
-            NSString *folder = [NSString stringWithFormat:@"%@", next.URLHashStr];
+            NSString *folder = [NSString stringWithFormat:@"%@", entity.URLHashStr];
             NSString *saveFolder = [[SJMediaEntity rootFolder] stringByAppendingPathComponent:[NSString stringWithFormat:@"%@", folder]];
-            NSString *savePath = [saveFolder stringByAppendingPathComponent:[NSString stringWithFormat:@"%@.%@", next.URLHashStr, next.format]];
+            NSString *savePath = [saveFolder stringByAppendingPathComponent:[NSString stringWithFormat:@"%@.%@", entity.URLHashStr, entity.format]];
             [[NSFileManager defaultManager] createDirectoryAtPath:saveFolder withIntermediateDirectories:YES attributes:nil error:nil];
             [[NSFileManager defaultManager] moveItemAtPath:location.path toPath:savePath error:nil];
-            next.relativePath = [folder stringByAppendingPathComponent:savePath.lastPathComponent];
-            next.downloadStatus = SJMediaDownloadStatus_Finished;
-            [next postStatus];
-            [self sync_insertOrReplaceMediaWithEntity:next];
+            entity.relativePath = [folder stringByAppendingPathComponent:savePath.lastPathComponent];
+            entity.downloadStatus = SJMediaDownloadStatus_Finished;
+            [entity postStatus];
+            [self sync_insertOrReplaceMediaWithEntity:entity];
             self.currentEntity = nil;
             [self sync_requestNextDownloadMedia];
         }
@@ -225,12 +279,12 @@ NS_ASSUME_NONNULL_END
                 __strong typeof(_self) self = _self;
                 if ( !self ) return;
                 if ( !saved ) {
-                    next.downloadProgress = 0;
-                    [next postProgress];
+                    [entity reset];
+                    [entity postProgress];
                 }
-                next.downloadStatus = status;
-                [next postStatus];
-                [self sync_insertOrReplaceMediaWithEntity:next];
+                entity.downloadStatus = status;
+                [entity postStatus];
+                [self sync_insertOrReplaceMediaWithEntity:entity];
                 self.currentEntity = nil;
                 [self sync_requestNextDownloadMedia];
             };
@@ -239,37 +293,37 @@ NS_ASSUME_NONNULL_END
                 case SJMediaDownloadErrorCode_Unknown: break;
                 case SJMediaDownloadErrorCode_TimeOut: {
                     status = SJMediaDownloadErrorCode_TimeOut;
-                    [self async_suspendWithTask:task entity:next completion:suspendExeBlock];
+                    [self async_suspendWithTask:task entity:entity completion:suspendExeBlock];
                 }
                     break;
                 case SJMediaDownloadErrorCode_Cancelled: {
-                    if ( task.cancelledBlock ) task.cancelledBlock();
+                    if ( entity.cancelledBlock ) entity.cancelledBlock();
                 }
                     break;
                 case SJMediaDownloadErrorCode_ConnectionWasLost: {
                     status = SJMediaDownloadStatus_ConnectionWasLost;
-                    [self async_suspendWithTask:task entity:next completion:suspendExeBlock];
+                    [self async_suspendWithTask:task entity:entity completion:suspendExeBlock];
                 }
                     break;
                 case SJMediaDownloadErrorCode_UnsupportedURL: {
                     status = SJMediaDownloadStatus_UnsupportedURL;
-                    [self async_suspendWithTask:task entity:next completion:suspendExeBlock];
+                    [self async_suspendWithTask:task entity:entity completion:suspendExeBlock];
                 }
                     break;
                 case SJMediaDownloadErrorCode_BadURL: {
                     status = SJMediaDownloadStatus_BadURL;
-                    [self async_suspendWithTask:task entity:next completion:suspendExeBlock];
+                    [self async_suspendWithTask:task entity:entity completion:suspendExeBlock];
                 }
                     break;
                 case SJMediaDownloadErrorCode_NotConnectedToInternet: {
                     status = SJMediaDownloadStatus_NotConnectedToInternet;
-                    [self async_suspendWithTask:task entity:next completion:suspendExeBlock];
+                    [self async_suspendWithTask:task entity:entity completion:suspendExeBlock];
                 }
                     break;
                 default: {
-                    [[NSFileManager defaultManager] removeItemAtPath:next.resumePath error:nil];
+                    [[NSFileManager defaultManager] removeItemAtPath:entity.resumePath error:nil];
                     status = SJMediaDownloadStatus_Failed;
-                    [self async_suspendWithTask:task entity:next completion:suspendExeBlock];
+                    [self async_suspendWithTask:task entity:entity completion:suspendExeBlock];
                 }
                     break;
             }
@@ -294,7 +348,7 @@ NS_ASSUME_NONNULL_END
     }];
 }
 - (void)sync_insertOrReplaceMediaWithEntity:(SJMediaEntity *)entity {
-    sql_exe(self.database, [NSString stringWithFormat:@"INSERT OR REPLACE INTO 'SJMediaEntity' VALUES (%ld, '%@', %ld, '%@', '%ld', '%@', %f);", (long)entity.mediaId, entity.title, (long)entity.downloadStatus, entity.URLStr, time(NULL), entity.relativePath, entity.downloadProgress].UTF8String);
+    sql_exe(self.database, [NSString stringWithFormat:@"INSERT OR REPLACE INTO 'SJMediaEntity' VALUES (%ld, '%@', %ld, '%@', '%ld', '%@', %f, '%@', %lld, %lld);", (long)entity.mediaId, entity.title, (long)entity.downloadStatus, entity.URLStr, time(NULL), entity.relativePath, entity.downloadProgress, entity.coverURLStr, entity.totalBytesWritten, entity.totalBytesExpectedToWrite].UTF8String);
 }
 - (void)sync_updateDownloadProgressWithEntity:(SJMediaEntity *)entity {
     NSString *sql = [NSString stringWithFormat:@"UPDATE 'SJMediaEntity' SET 'downloadProgress' = %f WHERE 'mediaId' = %ld;", entity.downloadProgress, (long)entity.mediaId];
@@ -303,9 +357,19 @@ NS_ASSUME_NONNULL_END
 - (void)sync_deleteMediaWithEntity:(SJMediaEntity *)entity {
     sql_exe(self.database, [NSString stringWithFormat:@"DELETE FROM 'SJMediaEntity' WHERE mediaId = %ld;", (long)entity.mediaId].UTF8String);
 }
+#pragma mark -
 - (void)initializeDatabase {
     sql_exe(self.database, "CREATE TABLE IF NOT EXISTS SJMediaEntity ('mediaId' INTEGER PRIMARY KEY, 'title' TEXT, 'downloadStatus' INTEGER, 'URLStr' TEXT, 'downloadTime' INTEGER, 'relativePath' TEXT, 'downloadProgress' FLOAT);");
+    /// 数据库新增字段: -- coverURLStr
+    table_checkout_field(self.database, "SJMediaEntity", "coverURLStr", "TEXT");
+
+    /// 数据库新增字段: -- totalBytesWritten
+    table_checkout_field(self.database, "SJMediaEntity", "totalBytesWritten", "INTEGER");
+    
+    /// 数据库新增字段: -- totalBytesExpectedToWrite
+    table_checkout_field(self.database, "SJMediaEntity", "totalBytesExpectedToWrite", "INTEGER");
 }
+#pragma mark -
 @synthesize database = _database;
 - (sqlite3 *)database {
     if ( _database ) return _database;
@@ -327,6 +391,25 @@ NS_ASSUME_NONNULL_END
 }
 
 - (void)async_downloadWithID:(NSInteger)mediaId title:(NSString * __nullable)title mediaURLStr:(NSString *)mediaURLStr {
+    [self async_downloadWithID:mediaId mediaURLStr:mediaURLStr title:title coverURLStr:nil];
+}
+
+- (void)async_downloadWithID:(NSInteger)mediaId
+                 mediaURLStr:(NSString *)mediaURLStr {
+    [self async_downloadWithID:mediaId mediaURLStr:mediaURLStr title:nil coverURLStr:nil];
+}
+
+- (void)async_downloadWithID:(NSInteger)mediaId
+                 mediaURLStr:(NSString *)mediaURLStr
+                       title:(NSString * __nullable)title
+                 coverURLStr:(NSString * __nullable)coverURLStr {
+    if ( mediaURLStr.length == 0 ) {
+#if DEBUG_CONDITION
+        NSLog(@"下载失败, 原因: 地址为空!");
+#endif
+        return;
+    }
+    
     __weak typeof(self) _self = self;
     [self async_requestMediaWithID:mediaId completion:^(SJMediaDownloader * _Nonnull downloader, SJMediaEntity * media) {
         __strong typeof(_self) self = _self;
@@ -338,8 +421,9 @@ NS_ASSUME_NONNULL_END
         if ( !media ) {
             media = [SJMediaEntity new];
             media.mediaId = mediaId;
-            media.title = title;
             media.URLStr = mediaURLStr;
+            media.title = title;
+            media.coverURLStr = coverURLStr;
             media.downloadStatus = SJMediaDownloadStatus_Waiting;
             [media postStatus];
             [self sync_insertOrReplaceMediaWithEntity:media];
@@ -384,7 +468,7 @@ NS_ASSUME_NONNULL_END
         if ( self.currentEntity.task && self.currentEntity.mediaId == mediaId && self.currentEntity.downloadStatus == SJMediaDownloadStatus_Downloading ) {
             entity = self.currentEntity;
             if ( self.currentEntity.task.state != NSURLSessionTaskStateCanceling ) {
-                self.currentEntity.task.cancelledBlock = pausedBlock;
+                self.currentEntity.cancelledBlock = pausedBlock;
                 [self async_suspendWithTask:self.currentEntity.task entity:self.currentEntity completion:^(BOOL saved) {}];
             }
             else {
@@ -404,6 +488,7 @@ NS_ASSUME_NONNULL_END
 
 - (void)async_pauseAllDownloadsCompletion:(void(^ __nullable)(void))block {
     __weak typeof(self) _self = self;
+    // 1. 先暂停其他的
     [self async_requestMediasWithStatus:SJMediaDownloadStatus_Waiting completion:^(SJMediaDownloader * _Nonnull downloader, NSArray<id<SJMediaEntity>> * _Nullable medias) {
         __strong typeof(_self) self = _self;
         if ( !self ) return;
@@ -417,6 +502,7 @@ NS_ASSUME_NONNULL_END
                 }
             }
         }];
+        // 2. 再暂停当前下载的
         [self async_pauseWithMediaID:self.currentEntity.mediaId completion:block];
     }];
 }
@@ -437,10 +523,10 @@ NS_ASSUME_NONNULL_END
             if ( [[NSFileManager defaultManager] fileExistsAtPath:entity.resumePath] ) {
                 [[NSFileManager defaultManager] removeItemAtPath:entity.resumePath error:nil];
             }
+            [entity reset];
+            [entity postProgress];
             entity.downloadStatus = SJMediaDownloadStatus_Deleted;
             [entity postStatus];
-            entity.downloadProgress = 0;
-            [entity postProgress];
             [self sync_deleteMediaWithEntity:entity];
             if ( entity == self.currentEntity ) self.currentEntity = nil;
             if ( block ) block();
@@ -449,7 +535,7 @@ NS_ASSUME_NONNULL_END
         if ( self.currentEntity && self.currentEntity.mediaId == mediaId ) {
             if ( self.currentEntity.task ) {
                 entity = self.currentEntity;
-                self.currentEntity.task.cancelledBlock = deleted;
+                self.currentEntity.cancelledBlock = deleted;
                 [self.currentEntity.task cancel];
             }
             else {
@@ -467,6 +553,22 @@ NS_ASSUME_NONNULL_END
         }
     }];
 }
+
+- (void)async_deleteWithMediaIDs:(NSArray<NSNumber *> *)mediaIds completion:(void(^ __nullable)(void))block {
+    NSMutableArray<NSNumber *> *mediaIdsM = nil;
+    if ( [mediaIds isKindOfClass:[NSMutableArray class]] ) mediaIdsM = (NSMutableArray *)mediaIds;
+    else mediaIdsM = mediaIds.mutableCopy;
+    
+    __weak typeof(self) _self = self;
+    [self async_deleteWithMediaID:[mediaIdsM.lastObject integerValue] completion:^{
+        __strong typeof(_self) self = _self;
+        if ( !self ) return;
+        [mediaIdsM removeLastObject];
+        if ( mediaIdsM.count != 0 ) [self async_deleteWithMediaIDs:mediaIdsM completion:block];
+        else if ( block ) block();
+    }];
+}
+
 #pragma mark -
 
 
@@ -502,14 +604,15 @@ NS_ASSUME_NONNULL_END
 
 @implementation SJMediaDownloader (DownloadServer)
 - (void)URLSession:(NSURLSession *)session downloadTask:(NSURLSessionDownloadTask *)downloadTask didWriteData:(int64_t)bytesWritten totalBytesWritten:(int64_t)totalBytesWritten totalBytesExpectedToWrite:(int64_t)totalBytesExpectedToWrite {
-    float progress = 1.0 * totalBytesWritten / totalBytesExpectedToWrite;
-    if ( downloadTask.downloadProgressBlock ) downloadTask.downloadProgressBlock(downloadTask, progress);
+    _currentEntity.totalBytesWritten = totalBytesWritten;
+    _currentEntity.totalBytesExpectedToWrite = totalBytesExpectedToWrite;
+    if ( _currentEntity.downloadProgressBlock ) _currentEntity.downloadProgressBlock(_currentEntity, _currentEntity.downloadProgress);
 }
 - (void)URLSession:(nonnull NSURLSession *)session downloadTask:(nonnull NSURLSessionDownloadTask *)downloadTask didFinishDownloadingToURL:(nonnull NSURL *)location {
-    if ( downloadTask.endDownloadHandleBlock ) downloadTask.endDownloadHandleBlock(downloadTask, location, nil);
+    if ( _currentEntity.endDownloadHandleBlock ) _currentEntity.endDownloadHandleBlock(_currentEntity, location, nil);
 }
 - (void)URLSession:(NSURLSession *)session task:(NSURLSessionTask *)task didCompleteWithError:(NSError *)error {
-    if ( error ) if ( task.endDownloadHandleBlock ) task.endDownloadHandleBlock(task, nil, error);
+    if ( error ) if ( _currentEntity.endDownloadHandleBlock ) _currentEntity.endDownloadHandleBlock(_currentEntity, nil, error);
 }
 - (void)URLSession:(NSURLSession *)session downloadTask:(NSURLSessionDownloadTask *)downloadTask didResumeAtOffset:(int64_t)fileOffset expectedTotalBytes:(int64_t)expectedTotalBytes {
 #if DEBUG_CONDITION
@@ -518,35 +621,50 @@ NS_ASSUME_NONNULL_END
 }
 @end
 
-@implementation NSURLSessionTask (SJDownloaderAdd)
-- (void)setDownloadProgressBlock:(void (^ __nullable)(__kindof NSURLSessionTask * _Nonnull, float))downloadProgressBlock {
-    objc_setAssociatedObject(self, @selector(downloadProgressBlock), downloadProgressBlock, OBJC_ASSOCIATION_COPY_NONATOMIC);
-}
-- (void (^ __nullable)(__kindof NSURLSessionTask * _Nonnull, float))downloadProgressBlock {
-    return objc_getAssociatedObject(self, _cmd);
-}
-- (void)setEndDownloadHandleBlock:(void (^__nullable)(__kindof NSURLSessionTask * _Nonnull, NSURL * _Nullable, NSError * _Nullable))endDownloadHandleBlock {
-    objc_setAssociatedObject(self, @selector(endDownloadHandleBlock), endDownloadHandleBlock, OBJC_ASSOCIATION_COPY_NONATOMIC);
-}
-- (void (^__nullable)(__kindof NSURLSessionTask * _Nonnull, NSURL * _Nullable, NSError * _Nullable))endDownloadHandleBlock {
-    return objc_getAssociatedObject(self, _cmd);
-}
-- (void)setCancelledBlock:(void (^)(void))cancelledBlock {
-    objc_setAssociatedObject(self, @selector(cancelledBlock), cancelledBlock, OBJC_ASSOCIATION_COPY_NONATOMIC);
-}
-- (void (^__nullable)(void))cancelledBlock {
-    return objc_getAssociatedObject(self, _cmd);
-}
-@end
 
-@implementation SJMediaEntity
+#pragma mark -
+
+@implementation SJMediaEntity {
+    NSURL *_URL;
+    NSString *_URLHashStr;
+    float _downloadProgress; // 未使用, 占位
+    long long _speed;
+    NSTimer *_speedTimer;
+}
 @synthesize downloadStatus = _downloadStatus;
 @synthesize mediaId = _mediaId;
 @synthesize URLStr = _URLStr;
 @synthesize filePath = _filePath;
-@synthesize URLHashStr = _URLHashStr;
+
+- (void)setTask:(NSURLSessionDownloadTask *)task {
+    _task = task;
+    
+    __weak typeof(self) _self = self;
+    __block long long totalBytesWritten_old = self.totalBytesWritten;
+    _speedTimer = [NSTimer SJMediaDownloaderAdd_timerWithTimeInterval:1 block:^(NSTimer * _Nonnull timer) {
+        __strong typeof(_self) self = _self;
+        if ( !self ) return;
+        long long totalBytesWritten_new = self.totalBytesWritten;
+        long long totalBytesExpectedToWrite = self.totalBytesExpectedToWrite;
+
+        if ( task.state != NSURLSessionTaskStateRunning ||
+             totalBytesWritten_new == totalBytesExpectedToWrite ) {
+            [self _clearSpeedTimer];
+            self.speed = 0;
+            return;
+        }
+
+        self.speed = totalBytesWritten_new - totalBytesWritten_old;
+        totalBytesWritten_old = totalBytesWritten_new;
+    } repeats:YES];
+    
+    dispatch_async(dispatch_get_main_queue(), ^{
+        [[NSRunLoop currentRunLoop] addTimer:self->_speedTimer forMode:NSRunLoopCommonModes];
+        [self->_speedTimer setFireDate:[NSDate dateWithTimeIntervalSinceNow:1]];
+    });
+}
+#pragma mark -
 - (NSString *)URLHashStr {
-    if ( !_URLStr ) return nil;
     if ( _URLHashStr ) return _URLHashStr;
     _URLHashStr = [NSString stringWithFormat:@"%ld", (long)[_URLStr hash]];
     return _URLHashStr;
@@ -555,9 +673,7 @@ NS_ASSUME_NONNULL_END
     if ( _URLStr.pathExtension.length != 0 )  return _URLStr.pathExtension;
     else return @"mp4";
 }
-@synthesize URL = _URL;
 - (NSURL *)URL {
-    if ( !_URLStr ) return nil;
     if ( _URL ) return _URL;
     _URL = [NSURL URLWithString:_URLStr];
     return _URL;
@@ -592,6 +708,17 @@ NS_ASSUME_NONNULL_END
 }
 - (void)postProgress {
     if ( [SJMediaEntity startNotifi] ) [[NSNotificationCenter defaultCenter] postNotificationName:SJMediaDownloadProgressNotification object:self];
+}
+- (float)downloadProgress {
+    if ( _totalBytesExpectedToWrite == 0 ) return 0;
+    return 1.0 * _totalBytesWritten / _totalBytesExpectedToWrite;
+}
+- (void)reset {
+    self.totalBytesWritten = 0;
+}
+- (void)_clearSpeedTimer {
+    [_speedTimer invalidate];
+    _speedTimer = nil;
 }
 - (id)copyWithZone:(NSZone *)zone {
     SJMediaEntity *new = [SJMediaEntity new];
@@ -635,7 +762,9 @@ inline static NSArray<id> *sql_query(sqlite3 *database, const char *sql, Class c
 static NSArray <id> *sql_data(sqlite3_stmt *stmt, Class cls) {
     NSMutableArray *dataArrM = [[NSMutableArray alloc] init];
     while ( sqlite3_step(stmt) == SQLITE_ROW ) {
-        id model = [cls new];
+        id model = nil;
+        if ( cls ) model = [cls new];
+        else model = [NSMutableDictionary new];
         int columnCount = sqlite3_column_count(stmt);
         for ( int i = 0; i < columnCount ; ++ i ) {
             const char *c_key = sqlite3_column_name(stmt, i);
@@ -666,7 +795,26 @@ static NSArray <id> *sql_data(sqlite3_stmt *stmt, Class cls) {
     if ( dataArrM.count == 0 ) return nil;
     return dataArrM.copy;
 }
-
+static NSArray<NSString *> *table_fields(sqlite3 *database, const char *table_name) {
+    const char *sql = [NSString stringWithFormat:@"PRAGMA table_info('%s');", table_name].UTF8String;
+    NSMutableArray<NSString *> *fieldsM = [NSMutableArray new];
+    [sql_query(database, sql, nil) enumerateObjectsUsingBlock:^(id  _Nonnull obj, NSUInteger idx, BOOL * _Nonnull stop) {
+        [fieldsM addObject:obj[@"name"]];
+    }];
+    if ( fieldsM.count == 0 ) return nil;
+    return fieldsM.copy;
+}
+static bool table_checkout_field(sqlite3 *database, const char *table_name, const char *field, const char *type) {
+    NSArray<NSString *> *fields_arr = table_fields(database, table_name);
+    __block BOOL exists = NO;
+    [fields_arr enumerateObjectsUsingBlock:^(NSString * _Nonnull obj, NSUInteger idx, BOOL * _Nonnull stop) {
+        if ( strcmp(obj.UTF8String, field) != 0 ) return ;
+        *stop = exists = YES;
+    }];
+    if ( exists ) return NO;
+    const char *sql = [NSString stringWithFormat:@"ALTER TABLE '%s' ADD \"%s\" %s;", table_name, field, type].UTF8String;
+    return sql_exe(database, sql);
+}
 NSNotificationName const SJMediaDownloadProgressNotification = @"SJMediaDownloadProgressNotification";
 NSString *const kSJMediaDownloadProgressKey = @"kSJMediaDownloadProgressKey";
 NSNotificationName const SJMediaDownloadStatusChangedNotification = @"SJMediaDownloadStatusChangedNotification";

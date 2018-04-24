@@ -45,7 +45,7 @@
     };
     
     // 播放
-//    _videoPlayer.assetURL = [[NSBundle mainBundle] URLForResource:@"sample" withExtension:@"mp4"];
+    _videoPlayer.assetURL = [[NSBundle mainBundle] URLForResource:@"sample" withExtension:@"mp4"];
     
     // supported orientation. 设置旋转支持的方向.
     _videoPlayer.supportedRotateViewOrientation = SJSupportedRotateViewOrientation_All;

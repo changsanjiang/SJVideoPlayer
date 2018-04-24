@@ -1028,8 +1028,8 @@ NS_ASSUME_NONNULL_END
 }
 
 - (void)setURLAsset:(SJVideoPlayerURLAsset *)URLAsset {
-    if ( !URLAsset ) {_asset = nil; return;}
     objc_setAssociatedObject(self, @selector(URLAsset), URLAsset, OBJC_ASSOCIATION_RETAIN_NONATOMIC);
+    if ( !URLAsset ) {_asset = nil; return;}
     dispatch_async(dispatch_get_main_queue(), ^{
         self.asset = [URLAsset valueForKey:kSJVideoPlayerAssetKey];
     });

@@ -72,7 +72,7 @@ static NSString *const LightweightTableViewCellID = @"LightweightTableViewCell";
 @synthesize videoPlayerHelper = _videoPlayerHelper;
 - (SJVideoPlayerHelper *)videoPlayerHelper {
     if ( _videoPlayerHelper ) return _videoPlayerHelper;
-    _videoPlayerHelper = [[SJVideoPlayerHelper alloc] initWithViewController:self];
+    _videoPlayerHelper = [[SJVideoPlayerHelper alloc] initWithViewController:self playerType:SJVideoPlayerType_Lightweight];
     _videoPlayerHelper.enableFilmEditing = YES;
     _videoPlayerHelper.filmEditingConfig = self.filmEditingHelper.filmEditingConfig;
     return _videoPlayerHelper;

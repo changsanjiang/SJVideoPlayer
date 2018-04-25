@@ -12,7 +12,6 @@
 #import <Masonry.h>
 #import <SJScrollEntriesView/SJScrollEntriesView.h>
 #import "TestItem.h"
-#import "UIViewController+SJVideoPlayerAdd.h"
 #import "SJVideoListViewController.h"
 
 static NSInteger const vcCount = 9;

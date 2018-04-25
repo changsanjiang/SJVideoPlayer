@@ -69,6 +69,7 @@ static const char *kVideoTitle = "kVideoTitle";
         make.regexp(regxp, ^(SJAttributesRangeOperator * _Nonnull matched) {
             matched.textColor([UIColor purpleColor]);
         });
+
         // last set tapped delegate
         make.workInProcess.tappedDelegate = tappedDelegate;
         make.workInProcess.addTapAction(regxp);

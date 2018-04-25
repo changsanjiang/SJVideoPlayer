@@ -43,6 +43,8 @@ static NSString *const LightweightTableViewCellID = @"LightweightTableViewCell";
 - (void)viewDidLoad {
     [super viewDidLoad];
     
+    self.edgesForExtendedLayout = UIRectEdgeNone;
+    
     // setup views
     [self _videoListSetupViews];
     
@@ -89,13 +91,14 @@ static NSString *const LightweightTableViewCellID = @"LightweightTableViewCell";
     [super viewDidAppear:animated];
     self.videoPlayerHelper.vc_viewDidAppearExeBlock();
 }
-
 - (void)viewWillDisappear:(BOOL)animated {
     [super viewWillDisappear:animated];
     self.videoPlayerHelper.vc_viewWillDisappearExeBlock();
 }
-
-
+- (void)viewDidDisappear:(BOOL)animated {
+    [super viewDidDisappear:animated];
+    self.videoPlayerHelper.vc_viewDidDisappearExeBlock();
+}
 - (BOOL)prefersStatusBarHidden {
     return self.videoPlayerHelper.vc_prefersStatusBarHiddenExeBlock();
 }

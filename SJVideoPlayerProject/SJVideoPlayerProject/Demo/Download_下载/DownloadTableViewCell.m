@@ -213,8 +213,8 @@
     _progressLabel.text = [NSString stringWithFormat:@"Progress: %.0f%%", downloadProgress * 100];
     
     if ( 1 != downloadProgress )
-         _speedLabel.text = [NSString stringWithFormat:@"Speed: %.02fM", (1.0 * _model.entity.speed) / 1024 / 1024];
-    else _speedLabel.text = @"Speed: 0M";
+         _speedLabel.text = [NSString stringWithFormat:@"Speed: %.02fM/s", (1.0 * _model.entity.speed) / 1024 / 1024];
+    else _speedLabel.text = @"Speed: 0M/s";
 }
 - (void)updateStatus {
     NSString *prompt = nil;

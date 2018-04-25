@@ -101,8 +101,10 @@ static NSString *const SJVideoListTableViewCellID = @"SJVideoListTableViewCell";
     [super viewWillDisappear:animated];
     self.videoPlayerHelper.vc_viewWillDisappearExeBlock();
 }
-
-
+- (void)viewDidDisappear:(BOOL)animated {
+    [super viewDidDisappear:animated];
+    self.videoPlayerHelper.vc_viewDidDisappearExeBlock();
+}
 - (BOOL)prefersStatusBarHidden {
     return self.videoPlayerHelper.vc_prefersStatusBarHiddenExeBlock();
 }

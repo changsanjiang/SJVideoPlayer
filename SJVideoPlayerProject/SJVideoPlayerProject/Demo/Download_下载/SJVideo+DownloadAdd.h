@@ -11,6 +11,7 @@
 
 NS_ASSUME_NONNULL_BEGIN
 @interface SJVideo (DownloadAdd)
-@property (nonatomic, strong) id <SJMediaEntity> entity;
+- (void)addDownloadObserver;
+@property (nonatomic, strong, nullable) id <SJMediaEntity> entity;
 @end
 NS_ASSUME_NONNULL_END

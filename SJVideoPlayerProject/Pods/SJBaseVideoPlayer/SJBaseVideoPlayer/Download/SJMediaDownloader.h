@@ -56,6 +56,8 @@ typedef NS_ENUM(NSUInteger, SJMediaDownloadStatus) {
 - (void)stopNotifier;
 
 #pragma mark
+- (void)async_exeBlock:(void(^)(void))block;
+
 - (void)async_requestMediasCompletion:(void(^)(SJMediaDownloader *downloader, NSArray<id<SJMediaEntity>> * __nullable medias))completionBlock;
 
 - (void)async_requestMediaWithID:(NSInteger)mediaId
@@ -66,8 +68,6 @@ typedef NS_ENUM(NSUInteger, SJMediaDownloadStatus) {
 
 - (void)async_requestMediasWithStatuses:(NSSet<NSNumber *> *)statuses
                              completion:(void(^)(SJMediaDownloader *downloader, NSArray<id<SJMediaEntity>> * __nullable medias))completionBlock;
-
-- (void)async_exeBlock:(void(^)(void))block;
 
 #pragma mark download
 - (void)async_downloadWithID:(NSInteger)mediaId
@@ -113,7 +113,7 @@ typedef NS_ENUM(NSUInteger, SJMediaDownloadStatus) {
 @property (readonly) long long totalBytesWritten;
 @property (readonly) long long totalBytesExpectedToWrite;
 - (float)downloadProgress;
-@property (nonatomic, readonly) long long speed; // 下载速度, unit is`byte`.
+@property (nonatomic, readonly) long long speed; // 下载速度, unit is`byte/s`.
 @end
 
 NS_ASSUME_NONNULL_END

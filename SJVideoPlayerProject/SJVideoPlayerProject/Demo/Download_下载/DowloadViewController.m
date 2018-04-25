@@ -48,13 +48,28 @@ static NSString *const DownloadTableViewCellID = @"DownloadTableViewCell";
     [[NSNotificationCenter defaultCenter] removeObserver:self];
 }
 
-#pragma mark - downloader
+#pragma mark -
+- (void)prepareTestData {
+    NSArray *videoList = [SJVideo testVideos];
+    [videoList enumerateObjectsUsingBlock:^(SJVideo * _Nonnull obj, NSUInteger idx, BOOL * _Nonnull stop) {
+        [obj addDownloadObserver];
+    }];
+    
+    __weak typeof(self) _self = self;
+    [[SJMediaDownloader shared] async_exeBlock:^{
+        dispatch_async(dispatch_get_main_queue(), ^{
+            __strong typeof(_self) self = _self;
+            if ( !self ) return;
+            self.videoList = videoList;
+            [self.tableView reloadData];
+        });
+    }];
+}
 
 - (void)_installDownloaderNotifications {
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(mediaDownloadStatusChanged:) name:SJMediaDownloadStatusChangedNotification object:nil];
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(mediaDownloadProgress:) name:SJMediaDownloadProgressNotification object:nil];
 }
-
 - (void)mediaDownloadStatusChanged:(NSNotification *)notifi {
     id<SJMediaEntity> entity = notifi.object;
     [self _updateLayoutWithEntity:entity];
@@ -69,7 +84,6 @@ static NSString *const DownloadTableViewCellID = @"DownloadTableViewCell";
     [_videoList enumerateObjectsUsingBlock:^(SJVideo * _Nonnull obj, NSUInteger idx, BOOL * _Nonnull stop) {
         if ( obj.mediaId != entity.mediaId ) return;
         *stop = YES;
-        obj.entity = entity;
         dispatch_async(dispatch_get_main_queue(), ^{
             DownloadTableViewCell *cell = [self.tableView cellForRowAtIndexPath:[NSIndexPath indexPathForRow:idx inSection:0]];
             [cell update];
@@ -95,7 +109,10 @@ static NSString *const DownloadTableViewCellID = @"DownloadTableViewCell";
     [super viewWillDisappear:animated];
     self.videoPlayerHelper.vc_viewWillDisappearExeBlock();
 }
-
+- (void)viewDidDisappear:(BOOL)animated {
+    [super viewDidDisappear:animated];
+    self.videoPlayerHelper.vc_viewDidDisappearExeBlock();
+}
 - (BOOL)prefersStatusBarHidden {
     return self.videoPlayerHelper.vc_prefersStatusBarHiddenExeBlock();
 }
@@ -136,25 +153,6 @@ static NSString *const DownloadTableViewCellID = @"DownloadTableViewCell";
 - (void)clear {
     [_videoList enumerateObjectsUsingBlock:^(SJVideo * _Nonnull obj, NSUInteger idx, BOOL * _Nonnull stop) {
         [[SJMediaDownloader shared] async_deleteWithMediaID:obj.mediaId completion:nil];
-    }];
-}
-
-- (void)prepareTestData {
-    NSArray *videoList = [SJVideo testVideos];
-    [videoList enumerateObjectsUsingBlock:^(SJVideo * _Nonnull obj, NSUInteger idx, BOOL * _Nonnull stop) {
-        [[SJMediaDownloader shared] async_requestMediaWithID:obj.mediaId completion:^(SJMediaDownloader * _Nonnull downloader, id<SJMediaEntity>  _Nullable media) {
-            obj.entity = media;
-        }];
-    }];
-
-    __weak typeof(self) _self = self;
-    [[SJMediaDownloader shared] async_exeBlock:^{
-        __strong typeof(_self) self = _self;
-        if ( !self ) return;
-        dispatch_async(dispatch_get_main_queue(), ^{
-            self.videoList = videoList;
-            [self.tableView reloadData];
-        });
     }];
 }
 

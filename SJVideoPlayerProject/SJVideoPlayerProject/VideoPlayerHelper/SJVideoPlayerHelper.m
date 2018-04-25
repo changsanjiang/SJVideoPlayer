@@ -7,7 +7,6 @@
 //
 
 #import "SJVideoPlayerHelper.h"
-#import <SJFullscreenPopGesture/UIViewController+SJVideoPlayerAdd.h>
 #import "SJVideoPlayer.h"
 #import <Masonry/Masonry.h>
 #import "SJFilmEditingResultShareItem.h"
@@ -37,27 +36,6 @@ NS_ASSUME_NONNULL_END
     self.playerType = playerType;
     self.viewController = viewController;
     return self;
-}
-
-- (void)setViewController:(UIViewController<SJVideoPlayerHelperUseProtocol> *)viewController {
-    if ( viewController == _viewController ) return;
-    _viewController = viewController;
-    
-    // pop gesture
-    __weak typeof(self) _self = self;
-    viewController.sj_viewWillBeginDragging = ^(UIViewController *vc) {
-        __strong typeof(_self) self = _self;
-        if ( !self ) return;
-        // video player disable roatation
-        self.videoPlayer.disableRotation = YES;   // 触发全屏手势时, 禁止播放器旋转
-    };
-    
-    viewController.sj_viewDidEndDragging = ^(UIViewController *vc) {
-        __strong typeof(_self) self = _self;
-        if ( !self ) return;
-        // video player enable roatation
-        self.videoPlayer.disableRotation = NO;    // 恢复旋转
-    };
 }
 
 @end

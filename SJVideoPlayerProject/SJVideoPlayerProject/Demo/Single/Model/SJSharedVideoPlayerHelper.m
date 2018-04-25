@@ -8,7 +8,7 @@
 //
 
 #import "SJSharedVideoPlayerHelper.h"
-//#import <UIViewController+SJVideoPlayerAdd.h>
+#import <UIViewController+SJVideoPlayerAdd.h>
 #import "SJMoreSettingItems.h"
 #import <Masonry.h>
 #import "SJVideoPlayer.h"
@@ -80,15 +80,15 @@ NS_ASSUME_NONNULL_END
     if ( viewController == _viewController ) return;
     _viewController = viewController;
     
-//    // 全屏手势触发时, 禁止播放器旋转
-//    viewController.sj_viewWillBeginDragging = ^(UIViewController * _Nonnull vc) {
-//        [SJVideoPlayer sharedPlayer].disableRotation = YES; // 全屏手势触发时, 禁止播放器旋转
-//    };
-//    
-//    // 全屏手势结束时, 恢复播放器旋转
-//    viewController.sj_viewDidEndDragging = ^(UIViewController * _Nonnull vc) {
-//        [SJVideoPlayer sharedPlayer].disableRotation = NO; // 恢复
-//    };
+    // 全屏手势触发时, 禁止播放器旋转
+    viewController.sj_viewWillBeginDragging = ^(UIViewController * _Nonnull vc) {
+        [SJVideoPlayer sharedPlayer].disableRotation = YES; // 全屏手势触发时, 禁止播放器旋转
+    };
+    
+    // 全屏手势结束时, 恢复播放器旋转
+    viewController.sj_viewDidEndDragging = ^(UIViewController * _Nonnull vc) {
+        [SJVideoPlayer sharedPlayer].disableRotation = NO; // 恢复
+    };
 }
 
 - (void (^)(UIViewController<SJSharedVideoPlayerHelperUseProtocol> * _Nonnull, SJVideoPlayerURLAsset * _Nullable))vc_viewWillAppearExeBlock {

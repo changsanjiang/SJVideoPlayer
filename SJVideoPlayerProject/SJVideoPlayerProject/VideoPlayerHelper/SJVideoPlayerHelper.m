@@ -12,6 +12,7 @@
 #import "SJFilmEditingResultShareItem.h"
 #import <objc/message.h>
 #import "SJMediaDownloader.h"
+#import <UIViewController+SJVideoPlayerAdd.h>
 
 NS_ASSUME_NONNULL_BEGIN
 
@@ -37,7 +38,26 @@ NS_ASSUME_NONNULL_END
     self.viewController = viewController;
     return self;
 }
-
+- (void)setViewController:(UIViewController<SJVideoPlayerHelperUseProtocol> *)viewController {
+    if ( viewController == _viewController ) return;
+    _viewController = viewController;
+    
+    // pop gesture
+    __weak typeof(self) _self = self;
+    viewController.sj_viewWillBeginDragging = ^(UIViewController *vc) {
+        __strong typeof(_self) self = _self;
+        if ( !self ) return;
+        // video player disable roatation
+        self.videoPlayer.disableRotation = YES;   // 触发全屏手势时, 禁止播放器旋转
+    };
+    
+    viewController.sj_viewDidEndDragging = ^(UIViewController *vc) {
+        __strong typeof(_self) self = _self;
+        if ( !self ) return;
+        // video player enable roatation
+        self.videoPlayer.disableRotation = NO;    // 恢复旋转
+    };
+}
 @end
 
 

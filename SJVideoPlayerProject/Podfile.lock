@@ -1,10 +1,8 @@
 PODS:
-  - FDFullscreenPopGesture (1.1)
   - Masonry (1.1.0)
   - Reachability (3.2)
   - SJAttributesFactory (2.0.3.2)
   - SJBaseVideoPlayer (1.0.8.4):
-    - FDFullscreenPopGesture
     - Masonry
     - Reachability
     - SJBaseVideoPlayer/Category (= 1.0.8.4)
@@ -16,6 +14,7 @@ PODS:
     - SJBaseVideoPlayer/Registrar (= 1.0.8.4)
     - SJBaseVideoPlayer/TimerControl (= 1.0.8.4)
     - SJBorderLineView
+    - SJFullscreenPopGesture
     - SJObserverHelper
     - SJOrentationObserver
     - SJPrompt
@@ -23,10 +22,10 @@ PODS:
     - SJVideoPlayerAssetCarrier
     - SJVolBrigControl
   - SJBaseVideoPlayer/Category (1.0.8.4):
-    - FDFullscreenPopGesture
     - Masonry
     - Reachability
     - SJBorderLineView
+    - SJFullscreenPopGesture
     - SJObserverHelper
     - SJOrentationObserver
     - SJPrompt
@@ -34,10 +33,10 @@ PODS:
     - SJVideoPlayerAssetCarrier
     - SJVolBrigControl
   - SJBaseVideoPlayer/Download (1.0.8.4):
-    - FDFullscreenPopGesture
     - Masonry
     - Reachability
     - SJBorderLineView
+    - SJFullscreenPopGesture
     - SJObserverHelper
     - SJOrentationObserver
     - SJPrompt
@@ -45,10 +44,10 @@ PODS:
     - SJVideoPlayerAssetCarrier
     - SJVolBrigControl
   - SJBaseVideoPlayer/GestureControl (1.0.8.4):
-    - FDFullscreenPopGesture
     - Masonry
     - Reachability
     - SJBorderLineView
+    - SJFullscreenPopGesture
     - SJObserverHelper
     - SJOrentationObserver
     - SJPrompt
@@ -56,10 +55,10 @@ PODS:
     - SJVideoPlayerAssetCarrier
     - SJVolBrigControl
   - SJBaseVideoPlayer/Header (1.0.8.4):
-    - FDFullscreenPopGesture
     - Masonry
     - Reachability
     - SJBorderLineView
+    - SJFullscreenPopGesture
     - SJObserverHelper
     - SJOrentationObserver
     - SJPrompt
@@ -67,10 +66,10 @@ PODS:
     - SJVideoPlayerAssetCarrier
     - SJVolBrigControl
   - SJBaseVideoPlayer/Model (1.0.8.4):
-    - FDFullscreenPopGesture
     - Masonry
     - Reachability
     - SJBorderLineView
+    - SJFullscreenPopGesture
     - SJObserverHelper
     - SJOrentationObserver
     - SJPrompt
@@ -78,11 +77,11 @@ PODS:
     - SJVideoPlayerAssetCarrier
     - SJVolBrigControl
   - SJBaseVideoPlayer/Present (1.0.8.4):
-    - FDFullscreenPopGesture
     - Masonry
     - Reachability
     - SJBaseVideoPlayer/Header
     - SJBorderLineView
+    - SJFullscreenPopGesture
     - SJObserverHelper
     - SJOrentationObserver
     - SJPrompt
@@ -90,10 +89,10 @@ PODS:
     - SJVideoPlayerAssetCarrier
     - SJVolBrigControl
   - SJBaseVideoPlayer/Registrar (1.0.8.4):
-    - FDFullscreenPopGesture
     - Masonry
     - Reachability
     - SJBorderLineView
+    - SJFullscreenPopGesture
     - SJObserverHelper
     - SJOrentationObserver
     - SJPrompt
@@ -101,10 +100,10 @@ PODS:
     - SJVideoPlayerAssetCarrier
     - SJVolBrigControl
   - SJBaseVideoPlayer/TimerControl (1.0.8.4):
-    - FDFullscreenPopGesture
     - Masonry
     - Reachability
     - SJBorderLineView
+    - SJFullscreenPopGesture
     - SJObserverHelper
     - SJOrentationObserver
     - SJPrompt
@@ -112,6 +111,7 @@ PODS:
     - SJVideoPlayerAssetCarrier
     - SJVolBrigControl
   - SJBorderLineView (0.0.6)
+  - SJFullscreenPopGesture (1.4.0.2)
   - SJLoadingView (1.0.1)
   - SJObserverHelper (1.0.3)
   - SJOrentationObserver (1.0.7.2):
@@ -138,7 +138,6 @@ PODS:
   - YYText (1.0.7)
 
 DEPENDENCIES:
-  - FDFullscreenPopGesture
   - Masonry
   - Reachability
   - SJAttributesFactory
@@ -157,12 +156,12 @@ DEPENDENCIES:
 
 SPEC REPOS:
   https://github.com/CocoaPods/Specs.git:
-    - FDFullscreenPopGesture
     - Masonry
     - Reachability
     - SJAttributesFactory
     - SJBaseVideoPlayer
     - SJBorderLineView
+    - SJFullscreenPopGesture
     - SJLoadingView
     - SJObserverHelper
     - SJOrentationObserver
@@ -175,12 +174,12 @@ SPEC REPOS:
     - YYText
 
 SPEC CHECKSUMS:
-  FDFullscreenPopGesture: a8a620179e3d9c40e8e00256dcee1c1a27c6d0f0
   Masonry: 678fab65091a9290e40e2832a55e7ab731aad201
   Reachability: 33e18b67625424e47b6cde6d202dce689ad7af96
   SJAttributesFactory: 90847f2f6db06fa6ba8d5b7529105ba6d670af4a
-  SJBaseVideoPlayer: da9c8764583f5f0004a4dd111731774097bb2a8d
+  SJBaseVideoPlayer: 6f19c80c52388d338a4a3f87228b5625f0cf08c1
   SJBorderLineView: 5878e67fb57e812a2d5d029ca666068784b5448a
+  SJFullscreenPopGesture: eabbbe43df7b717b43753a462c66b46942634469
   SJLoadingView: c3ff03e4b363a5b6a3ba0634d6bb9ce2647faf07
   SJObserverHelper: b270d707cd18ab76538596aa4e98cf798c9e9868
   SJOrentationObserver: 6bbc7cc07b443f01790fbede013d6ae6f699240a
@@ -192,6 +191,6 @@ SPEC CHECKSUMS:
   SJVolBrigControl: dd639d187bf139b42d795e014edf372501352ea8
   YYText: 5c461d709e24d55a182d1441c41dc639a18a4849
 
-PODFILE CHECKSUM: f9f2f22042c9ad0f8fe237ade68fb4c9d1d82480
+PODFILE CHECKSUM: 19569d0d484acd71a8aa1b10bc09878fc3e08186
 
 COCOAPODS: 1.5.0

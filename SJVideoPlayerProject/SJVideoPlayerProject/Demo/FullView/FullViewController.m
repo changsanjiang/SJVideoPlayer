@@ -34,7 +34,6 @@
     _videoPlayer.clickedBackEvent = ^(SJVideoPlayer * _Nonnull player) {
         __strong typeof(_self) self = _self;
         if ( !self ) return;
-        
 //        [self.videoPlayer rotate:SJRotateViewOrientation_Portrait animated:YES completion:^(__kindof SJBaseVideoPlayer * _Nonnull player) {
 //            __strong typeof(_self) self = _self;
 //            if ( !self ) return;
@@ -45,8 +44,11 @@
     };
     
     // 播放
-    _videoPlayer.assetURL = [[NSBundle mainBundle] URLForResource:@"sample" withExtension:@"mp4"];
-    
+    [_videoPlayer showTitle:@"2秒后开始播放"];
+    dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(2 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
+        self->_videoPlayer.assetURL = [[NSBundle mainBundle] URLForResource:@"sample" withExtension:@"mp4"];
+    });
+
     // supported orientation. 设置旋转支持的方向.
     _videoPlayer.supportedRotateViewOrientation = SJSupportedRotateViewOrientation_All;
     

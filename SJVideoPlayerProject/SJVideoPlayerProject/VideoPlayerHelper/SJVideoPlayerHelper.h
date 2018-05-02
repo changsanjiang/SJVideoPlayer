@@ -86,6 +86,8 @@ NS_ASSUME_NONNULL_BEGIN
 
 @interface SJVideoPlayerHelper (SJVideoPlayerProperty)  // 暴露出来的播放器的一些属性
 #pragma mark readwrite
+/// The block invoked when play did to end
+@property (nonatomic, copy, nullable) void(^playDidToEnd)(SJVideoPlayerHelper *helper);
 /// The block invoked when control layer appear state changed
 @property (nonatomic, copy, nullable) void(^controlLayerAppearStateChangedExeBlock)(SJVideoPlayerHelper *helper, BOOL displayed); // 请配置控制层显示或消失执行的block
 
@@ -109,7 +111,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 
 
-@interface SJVideoPlayerHelper (UIViewControllerHelper)   // 关于视图控制器的一些操作
+@interface SJVideoPlayerHelper (UIViewControllerHelper)   // 关于ViewController的一些操作
 #pragma mark readonly
 /// You should call it when view did appear
 @property (nonatomic, copy, readonly) void(^vc_viewDidAppearExeBlock)(void);

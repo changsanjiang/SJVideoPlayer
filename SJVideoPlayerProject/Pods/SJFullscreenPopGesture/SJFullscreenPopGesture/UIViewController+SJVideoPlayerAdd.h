@@ -14,8 +14,8 @@ NS_ASSUME_NONNULL_BEGIN
 @class WKWebView;
 
 typedef NS_ENUM(NSUInteger, SJPreViewDisplayMode) {
+    SJPreViewDisplayMode_Snapshot,  // 显示模式: 使用截图(默认)
     SJPreViewDisplayMode_Origin,    // 显示模式: 原始视图
-    SJPreViewDisplayMode_Snapshot,  // 显示模式: 使用截图
 };
 
 @interface UIViewController (SJVideoPlayerAdd)

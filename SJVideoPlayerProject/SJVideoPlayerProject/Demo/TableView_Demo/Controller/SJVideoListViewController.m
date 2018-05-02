@@ -17,6 +17,7 @@
 #import "DemoPlayerViewController.h"
 #import "YYTapActionLabel.h"
 #import "FilmEditingHelper.h"
+#import <SJFullscreenPopGesture/UIViewController+SJVideoPlayerAdd.h>
 
 static NSString *const SJVideoListTableViewCellID = @"SJVideoListTableViewCell";
 
@@ -43,8 +44,13 @@ static NSString *const SJVideoListTableViewCellID = @"SJVideoListTableViewCell";
 - (void)viewDidLoad {
     [super viewDidLoad];
 
+    /**
+     显示模式目前有两种: 1. 使用快照(截屏); 2. 使用原始视图(vc.view);
+     SJPreViewDisplayMode_Origin 使用原始视图, 表示当手势返回时, 底部视图使用前一个vc的view;
+     如下:
+     */
+    self.sj_displayMode = SJPreViewDisplayMode_Origin;
     self.view.backgroundColor = [UIColor whiteColor];
-    
 //    self.edgesForExtendedLayout = UIRectEdgeNone;
 //    self.automaticallyAdjustsScrollViewInsets = NO;
     

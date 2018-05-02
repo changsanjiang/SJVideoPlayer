@@ -49,7 +49,7 @@
         self->_videoPlayer.assetURL = [[NSBundle mainBundle] URLForResource:@"sample" withExtension:@"mp4"];
     });
 
-    // supported orientation. 设置旋转支持的方向.
+    // supported orientation . 设置旋转支持的方向.
     _videoPlayer.supportedRotateViewOrientation = SJSupportedRotateViewOrientation_All;
     
     // 将播放器旋转成横屏.(播放器默认是竖屏的), 带动画

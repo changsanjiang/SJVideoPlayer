@@ -99,10 +99,12 @@ static const char *kSJSnapshot = "kSJSnapshot";
                 if ( !vc.automaticallyAdjustsScrollViewInsets || vc.edgesForExtendedLayout == UIRectEdgeNone ) break;
                 UIScrollView *scrollView = [self _searchScrollViewWithTarget:vc.view];
                 if ( !scrollView ) break;
-                // fix frame
-                CGRect frame = preView.frame;
-                frame.origin.y = _nav.navigationBar.frame.origin.y + _nav.navigationBar.frame.size.height;
-                preView.frame = frame;
+                if ( _nav_bar_snapshotView ) {
+                    // fix frame
+                    CGRect frame = preView.frame;
+                    frame.origin.y = _nav.navigationBar.frame.origin.y + _nav.navigationBar.frame.size.height;
+                    preView.frame = frame;
+                }
             }
             
         }

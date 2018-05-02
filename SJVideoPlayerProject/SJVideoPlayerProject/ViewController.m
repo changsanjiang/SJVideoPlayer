@@ -14,12 +14,12 @@
 #import "SJVideoListViewController.h"
 #import "FullViewController.h"
 #import "TestPageViewController.h"
-//#import <SJFullscreenPopGesture/UINavigationController+SJVideoPlayerAdd.h>
 #import "TableViewHeaderDemoViewController.h"
 #import "TableViewHeaderIsCollectionViewDemoViewController.h"
 #import "AboutKeyboardViewController.h"
 #import "DowloadViewController.h"
 #import "LightweightViewController.h"
+#import <SJFullscreenPopGesture/UINavigationController+SJVideoPlayerAdd.h>
 
 @interface ViewController ()
 
@@ -29,9 +29,11 @@
 
 - (void)viewDidLoad {
     [super viewDidLoad];
-//    self.navigationController.sj_gestureType = SJFullscreenPopGestureType_Full;
-//    self.navigationController.sj_backgroundColor = [UIColor whiteColor];
+    
+    self.navigationController.sj_gestureType = SJFullscreenPopGestureType_Full;
+    self.navigationController.sj_backgroundColor = [UIColor whiteColor];
 //    self.navigationController.sj_transitionMode = SJScreenshotTransitionModeShifting;
+    
     // Do any additional setup after loading the view, typically from a nib.
 }
 

@@ -197,6 +197,13 @@ NS_ASSUME_NONNULL_END
         _videoPlayer.enableFilmEditing = YES;
         [_videoPlayer.filmEditingConfig config:self.filmEditingConfig];
     }
+    
+    // The block invoked when play did to end
+    _videoPlayer.playDidToEnd = ^(__kindof SJBaseVideoPlayer * _Nonnull player) {
+        __strong typeof(_self) self = _self;
+        if ( !self ) return;
+        if ( self.playDidToEnd ) self.playDidToEnd(self);
+    };
 }
 
 - (void)clearPlayer {
@@ -221,7 +228,12 @@ NS_ASSUME_NONNULL_END
 
 #pragma mark -
 @implementation SJVideoPlayerHelper (SJVideoPlayerProperty)
-
+- (void)setPlayDidToEnd:(void (^)(SJVideoPlayerHelper * _Nonnull))playDidToEnd {
+    objc_setAssociatedObject(self, @selector(playDidToEnd), playDidToEnd, OBJC_ASSOCIATION_COPY_NONATOMIC);
+}
+- (void (^)(SJVideoPlayerHelper * _Nonnull))playDidToEnd {
+    return objc_getAssociatedObject(self, _cmd);
+}
 - (void)setControlLayerAppearStateChangedExeBlock:(void (^)(SJVideoPlayerHelper * _Nonnull, BOOL))controlLayerAppearStateChangedExeBlock {
     objc_setAssociatedObject(self, @selector(controlLayerAppearStateChangedExeBlock), controlLayerAppearStateChangedExeBlock, OBJC_ASSOCIATION_COPY_NONATOMIC);
 }

@@ -274,6 +274,7 @@ NS_ASSUME_NONNULL_END
     self = [super init];
     if ( !self ) return nil;
     NSError *error = nil;
+        
     // 使播放器在静音状态下也能放出声音
     [[AVAudioSession sharedInstance] setCategory:AVAudioSessionCategoryPlayback error:&error];
     if ( error ) NSLog(@"%@", error.userInfo);
@@ -1394,36 +1395,36 @@ NS_ASSUME_NONNULL_END
 
 @implementation SJBaseVideoPlayer (Rotation)
 
-- (void)setSupportedRotateViewOrientation:(SJSupportedRotateViewOrientation)supportedRotateViewOrientation {
-    self.orentationObserver.supportedRotateViewOrientation = supportedRotateViewOrientation;
+- (void)setSupportedOrientation:(SJAutoRotateSupportedOrientation)supportedOrientation {
+    self.orentationObserver.supportedOrientation = supportedOrientation;
 }
 
-- (SJSupportedRotateViewOrientation)supportedRotateViewOrientation {
-    return self.orentationObserver.supportedRotateViewOrientation;
+- (SJAutoRotateSupportedOrientation)supportedOrientation {
+    return self.orentationObserver.supportedOrientation;
 }
 
-- (void)setRotateOrientation:(SJRotateViewOrientation)rotateOrientation {
+- (void)setOrientation:(SJOrientation)orientation {
     dispatch_async(dispatch_get_main_queue(), ^{
-        self.orentationObserver.rotateOrientation = rotateOrientation;
+        self.orentationObserver.orientation = orientation;
     });
 }
 
-- (SJRotateViewOrientation)rotateOrientation {
-    return self.orentationObserver.rotateOrientation;
+- (SJOrientation)orientation {
+    return self.orentationObserver.orientation;
 }
 
 - (UIInterfaceOrientation)currentOrientation {
     UIInterfaceOrientation orientation = UIInterfaceOrientationUnknown;
-    switch ( self.rotateOrientation ) {
-        case SJRotateViewOrientation_Portrait: {
+    switch ( self.orientation ) {
+        case SJOrientation_Portrait: {
             orientation = UIInterfaceOrientationPortrait;
         }
             break;
-        case SJRotateViewOrientation_LandscapeLeft: {
+        case SJOrientation_LandscapeLeft: {
             orientation = UIInterfaceOrientationLandscapeRight;
         }
             break;
-        case SJRotateViewOrientation_LandscapeRight: {
+        case SJOrientation_LandscapeRight: {
             orientation = UIInterfaceOrientationLandscapeLeft;
         }
             break;
@@ -1431,23 +1432,23 @@ NS_ASSUME_NONNULL_END
     return orientation;
 }
 
-- (void)rotation {
+- (void)rotate {
     dispatch_async(dispatch_get_main_queue(), ^{
         // 此方法为无条件旋转, 任何时候都可以旋转
         // 外界调用此方法, 就是想要旋转, 不管播放器有没有禁止旋转, 我都暂时解开, 最后恢复设置
         BOOL disableRotation = self.disableRotation;
         self.disableRotation = NO;
-        [self.orentationObserver _changeOrientation];
+        [self.orentationObserver rotate];
         // 恢复
         self.disableRotation = disableRotation; // reset
     });
 }
 
-- (void)rotate:(SJRotateViewOrientation)orientation animated:(BOOL)animated {
+- (void)rotate:(SJOrientation)orientation animated:(BOOL)animated {
     [self.orentationObserver rotate:orientation animated:animated];
 }
 
-- (void)rotate:(SJRotateViewOrientation)orientation animated:(BOOL)animated completion:(void (^ _Nullable)(__kindof SJBaseVideoPlayer *player))block {
+- (void)rotate:(SJOrientation)orientation animated:(BOOL)animated completion:(void (^ _Nullable)(__kindof SJBaseVideoPlayer *player))block {
     dispatch_async(dispatch_get_main_queue(), ^{
         BOOL disableRotation = self.disableRotation;
         self.disableRotation = NO;

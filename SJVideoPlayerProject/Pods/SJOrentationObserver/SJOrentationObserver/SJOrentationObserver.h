@@ -13,44 +13,59 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
-typedef NS_ENUM(NSUInteger, SJSupportedRotateViewOrientation) {
-    SJSupportedRotateViewOrientation_All,
-    SJSupportedRotateViewOrientation_Portrait = 1 << 0,
-    SJSupportedRotateViewOrientation_LandscapeLeft = 1 << 1,  // UIDeviceOrientationLandscapeLeft
-    SJSupportedRotateViewOrientation_LandscapeRight = 1 << 2, // UIDeviceOrientationLandscapeRight
+/// Auto rotate supported orientation
+typedef NS_ENUM(NSUInteger, SJAutoRotateSupportedOrientation) {
+    SJAutoRotateSupportedOrientation_All,
+    SJAutoRotateSupportedOrientation_Portrait = 1 << 0,
+    SJAutoRotateSupportedOrientation_LandscapeLeft = 1 << 1,  // UIDeviceOrientationLandscapeLeft
+    SJAutoRotateSupportedOrientation_LandscapeRight = 1 << 2, // UIDeviceOrientationLandscapeRight
 };
 
-typedef NS_ENUM(NSUInteger, SJRotateViewOrientation) {
-    SJRotateViewOrientation_Portrait,
-    SJRotateViewOrientation_LandscapeLeft,  // UIDeviceOrientationLandscapeLeft
-    SJRotateViewOrientation_LandscapeRight, // UIDeviceOrientationLandscapeRight
+typedef NS_ENUM(NSUInteger, SJOrientation) {
+    SJOrientation_Portrait,
+    SJOrientation_LandscapeLeft,  // UIDeviceOrientationLandscapeLeft
+    SJOrientation_LandscapeRight, // UIDeviceOrientationLandscapeRight
 };
 
 @interface SJOrentationObserver : NSObject
-
-@property (nonatomic, copy, readwrite, nullable) BOOL(^rotationCondition)(SJOrentationObserver *observer); // rotate condition, u must set this block, return yes to trigger the rotation. 返回 YES 才会旋转.
 
 - (instancetype)initWithTarget:(UIView *)rotateView container:(UIView *)rotateViewSuperView rotationCondition:(BOOL(^)(SJOrentationObserver *observer))rotationCondition;
 
 - (instancetype)initWithTarget:(UIView *)rotateView container:(UIView *)rotateViewSuperView;
 
-@property (nonatomic, assign, readwrite) float duration; // rotate duration, default is 0.25
+/// The block invoked when orientation will changed, if return YES, auto rotate will be triggered
+@property (nonatomic, copy, nullable) BOOL(^rotationCondition)(SJOrentationObserver *observer);
 
-@property (nonatomic, readwrite) SJSupportedRotateViewOrientation supportedRotateViewOrientation;
+/// Auto rotate supported orientation
+@property (nonatomic) SJAutoRotateSupportedOrientation supportedOrientation;
 
-@property (nonatomic, readwrite) SJRotateViewOrientation rotateOrientation; // rotate to the specified orientation, Animated.
+/// Current Orientation. Can also change it, rotate to the specified orientation. Animated
+@property (nonatomic) SJOrientation orientation;
 
-@property (nonatomic, assign, readonly, getter=isFullScreen) BOOL fullScreen;
+/// If rotating, this value is YES
+@property (nonatomic, readonly, getter=isTransitioning) BOOL transitioning;
 
-@property (nonatomic, copy, readwrite, nullable) void(^orientationWillChange)(SJOrentationObserver *observer, BOOL isFullScreen);
+/// If orientation is landscapeLeft or landscapeRight this value is YES
+@property (nonatomic, readonly, getter=isFullScreen) BOOL fullScreen;
 
-@property (nonatomic, copy, readwrite, nullable) void(^orientationChanged)(SJOrentationObserver *observer, BOOL isFullScreen);
+/// Rotate duration, default is 0.25
+@property (nonatomic) float duration;
 
-- (BOOL)_changeOrientation; // Animated.
+/// The block invoked when orientation will changed
+@property (nonatomic, copy, nullable) void(^orientationWillChange)(SJOrentationObserver *observer, BOOL isFullScreen);
 
-- (void)rotate:(SJRotateViewOrientation)orientation animated:(BOOL)animated;  // rotate to the specified orientation.
+/// The block invoked when orientation changed
+@property (nonatomic, copy, nullable) void(^orientationChanged)(SJOrentationObserver *observer, BOOL isFullScreen);
 
-- (void)rotate:(SJRotateViewOrientation)orientation animated:(BOOL)animated completion:(void(^__nullable)(SJOrentationObserver *observer))block;  // rotate to the specified orientation.
+/// Auto roate, Animated
+- (BOOL)rotate;
+
+/// Rotate to the specified orientation
+- (void)rotate:(SJOrientation)orientation animated:(BOOL)animated;
+
+/// Rotate to the specified orientation
+- (void)rotate:(SJOrientation)orientation animated:(BOOL)animated completion:(void(^__nullable)(SJOrentationObserver *observer))block;  // rotate to the specified orientation.
+
 @end
 
 NS_ASSUME_NONNULL_END

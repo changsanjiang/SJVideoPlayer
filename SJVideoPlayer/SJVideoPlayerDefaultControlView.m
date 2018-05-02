@@ -670,12 +670,12 @@ NS_ASSUME_NONNULL_END
     switch ( tag ) {
         case SJVideoPlayerTopViewTag_Back: {
             if ( _videoPlayer.isFullScreen ) {
-                SJSupportedRotateViewOrientation supported = _videoPlayer.supportedRotateViewOrientation;
-                if ( supported == SJSupportedRotateViewOrientation_All ) {
-                    supported  = SJSupportedRotateViewOrientation_Portrait | SJSupportedRotateViewOrientation_LandscapeLeft | SJSupportedRotateViewOrientation_LandscapeRight;
+                SJAutoRotateSupportedOrientation supported = _videoPlayer.supportedOrientation;
+                if ( supported == SJAutoRotateSupportedOrientation_All ) {
+                    supported  = SJAutoRotateSupportedOrientation_Portrait | SJAutoRotateSupportedOrientation_LandscapeLeft | SJAutoRotateSupportedOrientation_LandscapeRight;
                 }
-                if ( SJSupportedRotateViewOrientation_Portrait == (supported & SJSupportedRotateViewOrientation_Portrait) ) {
-                    [_videoPlayer rotation];
+                if ( SJAutoRotateSupportedOrientation_Portrait == (supported & SJAutoRotateSupportedOrientation_Portrait) ) {
+                    [_videoPlayer rotate];
                     return;
                 }
             }
@@ -778,7 +778,7 @@ NS_ASSUME_NONNULL_END
         }
             break;
         case SJVideoPlayerBottomViewTag_Full: {
-            [self.videoPlayer rotation];
+            [self.videoPlayer rotate];
         }
             break;
     }

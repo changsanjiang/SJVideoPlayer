@@ -8,17 +8,17 @@
 
 #import "SJOrentationObserver.h"
 
+NS_ASSUME_NONNULL_BEGIN
 @interface SJOrentationObserver () {
     CGRect _portrait;
+    UIDeviceOrientation _deviceOrientation;
 }
 
-@property (nonatomic, strong, readonly) UIView *blackView;
-@property (nonatomic, strong, readwrite) UIView *view;
-@property (nonatomic, strong, readwrite) UIView *targetSuperview;
+@property (nonatomic, copy, nullable) void(^rotatedCompletionBlock)(SJOrentationObserver *observer);
 @property (nonatomic, readwrite, getter=isTransitioning) BOOL transitioning;
-@property (nonatomic, readonly) SJSupportedRotateViewOrientation supported_Ori;
-@property (nonatomic, readwrite) UIDeviceOrientation currentOrientation;
-@property (nonatomic, copy, nullable) void(^completion)(SJOrentationObserver *observer);
+@property (nonatomic, strong, readonly) UIView *blackView;
+@property (nonatomic, strong) UIView *targetSuperview;
+@property (nonatomic, strong) UIView *view;
 
 @end
 
@@ -35,8 +35,8 @@ static UIWindow *__window;
     _duration = 0.25;
     _blackView = [UIView new];
     _blackView.backgroundColor = [UIColor blackColor];
-    _rotateOrientation = SJRotateViewOrientation_Portrait;
-    _currentOrientation = UIDeviceOrientationPortrait;
+    _orientation = SJOrientation_Portrait;
+    _deviceOrientation = UIDeviceOrientationPortrait;
     __window = [(id)[UIApplication sharedApplication].delegate valueForKey:@"window"];
     return self;
 }
@@ -53,9 +53,9 @@ static UIWindow *__window;
     [[NSNotificationCenter defaultCenter] removeObserver:self name:UIDeviceOrientationDidChangeNotification object:nil];
 }
 
-- (SJSupportedRotateViewOrientation)supported_Ori {
-    SJSupportedRotateViewOrientation supported = self.supportedRotateViewOrientation;
-    if ( SJSupportedRotateViewOrientation_All == supported ) supported = SJSupportedRotateViewOrientation_Portrait | SJSupportedRotateViewOrientation_LandscapeRight | SJSupportedRotateViewOrientation_LandscapeLeft;
+- (SJAutoRotateSupportedOrientation)supported_Ori {
+    SJAutoRotateSupportedOrientation supported = self.supportedOrientation;
+    if ( SJAutoRotateSupportedOrientation_All == supported ) supported = SJAutoRotateSupportedOrientation_Portrait | SJAutoRotateSupportedOrientation_LandscapeRight | SJAutoRotateSupportedOrientation_LandscapeLeft;
     return supported;
 }
 
@@ -72,7 +72,7 @@ static UIWindow *__window;
         case UIDeviceOrientationPortrait:
         case UIDeviceOrientationLandscapeLeft:
         case UIDeviceOrientationLandscapeRight: {
-            self.currentOrientation = [UIDevice currentDevice].orientation;
+            _deviceOrientation = [UIDevice currentDevice].orientation;
         }
             break;
         case UIDeviceOrientationFaceUp:
@@ -81,23 +81,23 @@ static UIWindow *__window;
         case UIDeviceOrientationUnknown: break;
     }
     
-    SJSupportedRotateViewOrientation supported = self.supported_Ori;
+    SJAutoRotateSupportedOrientation supported = self.supported_Ori;
     switch ( [UIDevice currentDevice].orientation ) {
         case UIDeviceOrientationPortrait: {
-            if ( SJSupportedRotateViewOrientation_Portrait == (supported & SJSupportedRotateViewOrientation_Portrait) ) {
-                self.rotateOrientation = SJRotateViewOrientation_Portrait;
+            if ( SJAutoRotateSupportedOrientation_Portrait == (supported & SJAutoRotateSupportedOrientation_Portrait) ) {
+                self.orientation = SJOrientation_Portrait;
             }
         }
             break;
         case UIDeviceOrientationLandscapeLeft: {
-            if ( SJSupportedRotateViewOrientation_LandscapeLeft == (supported & SJSupportedRotateViewOrientation_LandscapeLeft) ) {
-                self.rotateOrientation = SJRotateViewOrientation_LandscapeLeft;
+            if ( SJAutoRotateSupportedOrientation_LandscapeLeft == (supported & SJAutoRotateSupportedOrientation_LandscapeLeft) ) {
+                self.orientation = SJOrientation_LandscapeLeft;
             }
         }
             break;
         case UIDeviceOrientationLandscapeRight: {
-            if ( SJSupportedRotateViewOrientation_LandscapeRight == (supported & SJSupportedRotateViewOrientation_LandscapeRight) ) {
-                self.rotateOrientation = SJRotateViewOrientation_LandscapeRight;
+            if ( SJAutoRotateSupportedOrientation_LandscapeRight == (supported & SJAutoRotateSupportedOrientation_LandscapeRight) ) {
+                self.orientation = SJOrientation_LandscapeRight;
             }
         }
             break;
@@ -106,43 +106,43 @@ static UIWindow *__window;
 }
 
 - (BOOL)isFullScreen {
-    return (SJRotateViewOrientation_LandscapeLeft == self.rotateOrientation ||
-            SJRotateViewOrientation_LandscapeRight == self.rotateOrientation );
+    return (SJOrientation_LandscapeLeft == self.orientation ||
+            SJOrientation_LandscapeRight == self.orientation );
 }
 
-- (void)setRotateOrientation:(SJRotateViewOrientation)rotateOrientation {
-    if ( rotateOrientation == _rotateOrientation ) return;
-    [self rotate:rotateOrientation animated:YES];
+- (void)setOrientation:(SJOrientation)orientation {
+    if ( orientation == _orientation ) return;
+    [self rotate:orientation animated:YES];
 }
 
-- (BOOL)_changeOrientation {
+- (BOOL)rotate {
     if ( self.isTransitioning ) return NO;
-    SJSupportedRotateViewOrientation supported = self.supported_Ori;
+    SJAutoRotateSupportedOrientation supported = self.supported_Ori;
     if ( self.isFullScreen &&
-        SJSupportedRotateViewOrientation_Portrait == (supported & SJSupportedRotateViewOrientation_Portrait) ) {
-        self.rotateOrientation = SJRotateViewOrientation_Portrait;
+        SJAutoRotateSupportedOrientation_Portrait == (supported & SJAutoRotateSupportedOrientation_Portrait) ) {
+        self.orientation = SJOrientation_Portrait;
     }
     else {
         // 当前设备朝哪个方向, 就转到那个方向.
-        switch ( self.currentOrientation ) {
+        switch ( _deviceOrientation ) {
             case UIDeviceOrientationLandscapeLeft: {
-                if ( SJSupportedRotateViewOrientation_LandscapeLeft == (supported & SJSupportedRotateViewOrientation_LandscapeLeft) ) {
-                    self.rotateOrientation = SJRotateViewOrientation_LandscapeLeft;
+                if ( SJAutoRotateSupportedOrientation_LandscapeLeft == (supported & SJAutoRotateSupportedOrientation_LandscapeLeft) ) {
+                    self.orientation = SJOrientation_LandscapeLeft;
                 }
             }
                 break;
             case UIDeviceOrientationLandscapeRight: {
-                if ( SJSupportedRotateViewOrientation_LandscapeRight == (supported & SJSupportedRotateViewOrientation_LandscapeRight) ) {
-                    self.rotateOrientation = SJRotateViewOrientation_LandscapeRight;
+                if ( SJAutoRotateSupportedOrientation_LandscapeRight == (supported & SJAutoRotateSupportedOrientation_LandscapeRight) ) {
+                    self.orientation = SJOrientation_LandscapeRight;
                 }
             }
                 break;
             default: {
-                if ( SJSupportedRotateViewOrientation_LandscapeLeft == (supported & SJSupportedRotateViewOrientation_LandscapeLeft) ) {
-                    self.rotateOrientation = SJRotateViewOrientation_LandscapeLeft;
+                if ( SJAutoRotateSupportedOrientation_LandscapeLeft == (supported & SJAutoRotateSupportedOrientation_LandscapeLeft) ) {
+                    self.orientation = SJOrientation_LandscapeLeft;
                 }
-                else if ( SJSupportedRotateViewOrientation_LandscapeRight == (supported & SJSupportedRotateViewOrientation_LandscapeRight) ) {
-                    self.rotateOrientation = SJRotateViewOrientation_LandscapeRight;
+                else if ( SJAutoRotateSupportedOrientation_LandscapeRight == (supported & SJAutoRotateSupportedOrientation_LandscapeRight) ) {
+                    self.orientation = SJOrientation_LandscapeRight;
                 }
             }
                 break;
@@ -151,16 +151,16 @@ static UIWindow *__window;
     return YES;
 }
 
-- (void)rotate:(SJRotateViewOrientation)orientation animated:(BOOL)animated {
+- (void)rotate:(SJOrientation)orientation animated:(BOOL)animated {
     [self rotate:orientation animated:animated completion:nil];
 }
 
-- (void)rotate:(SJRotateViewOrientation)orientation animated:(BOOL)animated completion:(void (^)(SJOrentationObserver * _Nonnull))block {
+- (void)rotate:(SJOrientation)orientation animated:(BOOL)animated completion:(void (^__nullable)(SJOrentationObserver * _Nonnull))block {
     if ( !_view || !_targetSuperview ) return;
     
     if ( self.isTransitioning ) return;
     
-    if ( orientation == _rotateOrientation ) { if ( block ) block(self); return; }
+    if ( orientation == _orientation ) { if ( block ) block(self); return; }
     
     if ( _rotationCondition ) { if ( !_rotationCondition(self) ) return; }
     
@@ -170,17 +170,17 @@ static UIWindow *__window;
     UIInterfaceOrientation ori = UIInterfaceOrientationUnknown;
     
     switch ( orientation ) {
-        case SJRotateViewOrientation_LandscapeRight: {
+        case SJOrientation_LandscapeRight: {
             ori = UIInterfaceOrientationLandscapeLeft;
             transform = CGAffineTransformMakeRotation(-M_PI_2);
         }
             break;
-        case SJRotateViewOrientation_LandscapeLeft: {
+        case SJOrientation_LandscapeLeft: {
             ori = UIInterfaceOrientationLandscapeRight;
             transform = CGAffineTransformMakeRotation(M_PI_2);
         }
             break;
-        case SJRotateViewOrientation_Portrait: {
+        case SJOrientation_Portrait: {
             ori = UIInterfaceOrientationPortrait;
             transform = CGAffineTransformIdentity;
             [_blackView removeFromSuperview];
@@ -188,10 +188,10 @@ static UIWindow *__window;
             break;
     }
     
-    SJRotateViewOrientation oldOri = _rotateOrientation;
-    SJRotateViewOrientation newOri = orientation;
+    SJOrientation oldOri = _orientation;
+    SJOrientation newOri = orientation;
     
-    if ( oldOri == SJRotateViewOrientation_Portrait ) {
+    if ( oldOri == SJOrientation_Portrait ) {
         CGRect frame = [__window convertRect:_view.frame fromView:_targetSuperview];
         _view.frame = frame;
         [__window addSubview:_view];
@@ -200,7 +200,7 @@ static UIWindow *__window;
     
     
     // update
-    _rotateOrientation = orientation;
+    _orientation = orientation;
     
     [UIApplication sharedApplication].statusBarOrientation = ori;
     
@@ -210,7 +210,7 @@ static UIWindow *__window;
     [UIView setAnimationDelegate:self];
     [UIView setAnimationDidStopSelector:@selector(_animationDidStop)];
     [UIView setAnimationCurve:UIViewAnimationCurveEaseInOut];
-    if ( newOri == SJRotateViewOrientation_Portrait ) {
+    if ( newOri == SJOrientation_Portrait ) {
         _view.bounds = CGRectMake(0, 0, _portrait.size.width, _portrait.size.height);
         _view.center = CGPointMake(_portrait.origin.x + _portrait.size.width * 0.5, _portrait.origin.y + _portrait.size.height * 0.5);
     }
@@ -224,13 +224,13 @@ static UIWindow *__window;
     }
     [_view setTransform:transform];
     [UIView commitAnimations];
-    _completion = [block copy];
+    _rotatedCompletionBlock = [block copy];
     if ( _orientationWillChange ) _orientationWillChange(self, self.isFullScreen);
 }
 
 - (void)_animationDidStop {
     _transitioning = NO;
-    if ( _rotateOrientation == SJRotateViewOrientation_Portrait ) {
+    if ( _orientation == SJOrientation_Portrait ) {
         [_targetSuperview addSubview:_view];
         _view.frame = _targetSuperview.bounds;
     }
@@ -243,6 +243,7 @@ static UIWindow *__window;
     
     if ( _orientationChanged ) _orientationChanged(self, self.isFullScreen);
     
-    if ( _completion ) { _completion(self); _completion = nil;}
+    if ( _rotatedCompletionBlock ) { _rotatedCompletionBlock(self); _rotatedCompletionBlock = nil;}
 }
 @end
+NS_ASSUME_NONNULL_END

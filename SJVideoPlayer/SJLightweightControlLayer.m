@@ -486,12 +486,12 @@ NS_ASSUME_NONNULL_BEGIN
 }
 - (void)clickedBackBtnOnTopControlView:(SJLightweightTopControlView *)view {
     if ( _videoPlayer.isFullScreen ) {
-        SJSupportedRotateViewOrientation supported = _videoPlayer.supportedRotateViewOrientation;
-        if ( supported == SJSupportedRotateViewOrientation_All ) {
-            supported  = SJSupportedRotateViewOrientation_Portrait | SJSupportedRotateViewOrientation_LandscapeLeft | SJSupportedRotateViewOrientation_LandscapeRight;
+        SJAutoRotateSupportedOrientation supported = _videoPlayer.supportedOrientation;
+        if ( supported == SJAutoRotateSupportedOrientation_All ) {
+            supported  = SJAutoRotateSupportedOrientation_Portrait | SJAutoRotateSupportedOrientation_LandscapeLeft | SJAutoRotateSupportedOrientation_LandscapeRight;
         }
-        if ( SJSupportedRotateViewOrientation_Portrait == (supported & SJSupportedRotateViewOrientation_Portrait) ) {
-            [_videoPlayer rotation];
+        if ( SJAutoRotateSupportedOrientation_Portrait == (supported & SJAutoRotateSupportedOrientation_Portrait) ) {
+            [_videoPlayer rotate];
             return;
         }
     }
@@ -547,7 +547,7 @@ NS_ASSUME_NONNULL_BEGIN
 - (void)bottomControlView:(SJLightweightBottomControlView *)bottomControlView clickedViewTag:(SJLightweightBottomControlViewTag)tag {
     switch ( tag ) {
         case SJLightweightBottomControlViewTag_Full: {
-            [_videoPlayer rotation];
+            [_videoPlayer rotate];
         }
             break;
         case SJLightweightBottomControlViewTag_Play: {

@@ -127,6 +127,14 @@ NS_ASSUME_NONNULL_END
     [self initializeDatabase];
     [self installNotifications];
     [self checkoutRootFolder];
+    
+    [self async_requestMediasWithStatus:SJMediaDownloadStatus_Downloading completion:^(SJMediaDownloader * _Nonnull downloader, NSArray<id<SJMediaEntity>> * _Nullable medias) {
+        [medias enumerateObjectsUsingBlock:^(id<SJMediaEntity>  _Nonnull obj, NSUInteger idx, BOOL * _Nonnull stop) {
+            SJMediaEntity *entity = (id)obj;
+            entity.downloadStatus = SJMediaDownloadStatus_Paused;
+            [self sync_insertOrReplaceMediaWithEntity:entity];
+        }];
+    }];
     return self;
 }
 
@@ -594,10 +602,6 @@ NS_ASSUME_NONNULL_END
 
 - (void)applicationWillTerminate {
     [_downloadSession invalidateAndCancel];
-    if ( _currentEntity.downloadStatus != SJMediaDownloadStatus_Finished ) {
-        self.currentEntity_copy.downloadStatus = SJMediaDownloadStatus_Paused;
-        [self sync_insertOrReplaceMediaWithEntity:self.currentEntity_copy];
-    }
 }
 
 @synthesize currentEntity_copy = _currentEntity_copy;

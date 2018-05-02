@@ -133,7 +133,7 @@ static NSString *const kSJFilmEditingResultShareItemQQTitle = @"QQ";
         // test test test
         [self.player showTitle:item.title duration:1 hiddenExeBlock:^(__kindof SJBaseVideoPlayer * _Nonnull player) {
             [player dismissFilmEditingViewCompletion:^(SJVideoPlayer * _Nonnull player) {
-                [player rotate:SJRotateViewOrientation_Portrait animated:YES completion:^(__kindof SJBaseVideoPlayer * _Nonnull player) {
+                [player rotate:SJOrientation_Portrait animated:YES completion:^(__kindof SJBaseVideoPlayer * _Nonnull player) {
                     __strong typeof(_self) self = _self;
                     if ( !self ) return;
                     // test test test

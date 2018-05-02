@@ -34,10 +34,10 @@
     _videoPlayer.clickedBackEvent = ^(SJVideoPlayer * _Nonnull player) {
         __strong typeof(_self) self = _self;
         if ( !self ) return;
-//        [self.videoPlayer rotate:SJRotateViewOrientation_Portrait animated:YES completion:^(__kindof SJBaseVideoPlayer * _Nonnull player) {
+//        [self.videoPlayer rotate:SJOrientation_Portrait animated:YES completion:^(__kindof SJBaseVideoPlayer * _Nonnull player) {
 //            __strong typeof(_self) self = _self;
 //            if ( !self ) return;
-//           self.videoPlayer.rotateOrientation = SJRotateViewOrientation_Portrait;
+//           self.videoPlayer.orientation = SJOrientation_Portrait;
 //            [self.navigationController popViewControllerAnimated:YES];
 //        }];
         [self.navigationController popViewControllerAnimated:YES];
@@ -50,13 +50,13 @@
     });
 
     // supported orientation . 设置旋转支持的方向.
-    _videoPlayer.supportedRotateViewOrientation = SJSupportedRotateViewOrientation_All;
+    _videoPlayer.supportedOrientation = SJAutoRotateSupportedOrientation_All;
     
     // 将播放器旋转成横屏.(播放器默认是竖屏的), 带动画
-    _videoPlayer.rotateOrientation = SJRotateViewOrientation_LandscapeLeft; // 请注意: 是`SJRotateViewOrientation_LandscapeLeft` 而不是 `SJSupportedRotateViewOrientation_LandscapeLeft`
+    _videoPlayer.orientation = SJOrientation_LandscapeLeft; // 请注意: 是`SJOrientation_LandscapeLeft` 而不是 `SJAutoRotateSupportedOrientation_LandscapeLeft`
     
     // 将播放器旋转成横屏.(播放器默认是竖屏的), 不带动画
-//    [_videoPlayer rotate:SJRotateViewOrientation_LandscapeLeft animated:NO];
+//    [_videoPlayer rotate:SJOrientation_LandscapeLeft animated:NO];
     
 }
 

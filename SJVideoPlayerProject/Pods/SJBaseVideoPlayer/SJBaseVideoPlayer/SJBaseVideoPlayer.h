@@ -477,19 +477,19 @@ typedef NS_ENUM(NSInteger, SJNetworkStatus) {
 @property (nonatomic) BOOL disableRotation;
 
 /**
- This is the player supports orientation when autorotation. default is `SJSupportedRotateViewOrientation_All`.
+ This is the player supports orientation when autorotation. default is `SJAutoRotateSupportedOrientation_All`.
  
  readwrite.
  */
-@property (nonatomic) SJSupportedRotateViewOrientation supportedRotateViewOrientation;
+@property (nonatomic) SJAutoRotateSupportedOrientation supportedOrientation;
 
 /**
  Rotate to the specified orientation, Animated.
- Any value of SJRotateViewOrientation.
+ Any value of SJOrientation.
  
  readwrite.
  */
-@property (nonatomic) SJRotateViewOrientation rotateOrientation;
+@property (nonatomic) SJOrientation orientation;
 
 /**
  The current orientation of the player.
@@ -516,24 +516,24 @@ typedef NS_ENUM(NSInteger, SJNetworkStatus) {
 /**
  Autorotation. Animated.
  */
-- (void)rotation;
+- (void)rotate;
 
 /**
  Rotate to the specified orientation.
  
- @param orientation     Any value of SJRotateViewOrientation.
+ @param orientation     Any value of SJOrientation.
  @param animated        Whether or not animation.
  */
-- (void)rotate:(SJRotateViewOrientation)orientation animated:(BOOL)animated;
+- (void)rotate:(SJOrientation)orientation animated:(BOOL)animated;
 
 /**
  Rotate to the specified orientation.
  
- @param orientation     Any value of SJRotateViewOrientation.
+ @param orientation     Any value of SJOrientation.
  @param animated        Whether or not animation.
  @param block           The block invoked when player rotated.
  */
-- (void)rotate:(SJRotateViewOrientation)orientation animated:(BOOL)animated completion:(void (^ _Nullable)(__kindof SJBaseVideoPlayer *player))block;
+- (void)rotate:(SJOrientation)orientation animated:(BOOL)animated completion:(void (^ _Nullable)(__kindof SJBaseVideoPlayer *player))block;
 
 @end
 

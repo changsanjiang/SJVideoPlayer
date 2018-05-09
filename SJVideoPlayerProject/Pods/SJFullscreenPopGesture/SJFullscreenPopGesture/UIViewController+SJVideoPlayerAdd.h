@@ -13,6 +13,10 @@ NS_ASSUME_NONNULL_BEGIN
 
 @class WKWebView;
 
+/// 返回时, 前视图的显示模式
+///
+/// - snapshot: use screenshot view
+/// - origin: use origin view. If you use it, I will change `edgesForExtendedLayout` to `none` of viewController.
 typedef NS_ENUM(NSUInteger, SJPreViewDisplayMode) {
     SJPreViewDisplayMode_Snapshot,  // 显示模式: 使用截图(默认)
     SJPreViewDisplayMode_Origin,    // 显示模式: 原始视图
@@ -23,6 +27,8 @@ typedef NS_ENUM(NSUInteger, SJPreViewDisplayMode) {
 /**
  Pre view display mode when the pop gesture triggering.
  当手势触发时, 之前视图(将要返回的那个视图)的显示模式, 目前有两种: `SJPreViewDisplayMode_Origin` 使用原视图, `SJPreViewDisplayMode_Snapshot` 使用原视图的快照
+ 
+ If you used `SJPreViewDisplayMode_Origin`, I will change `edgesForExtendedLayout` to `none` of viewController.
  */
 @property (nonatomic) SJPreViewDisplayMode sj_displayMode;
 

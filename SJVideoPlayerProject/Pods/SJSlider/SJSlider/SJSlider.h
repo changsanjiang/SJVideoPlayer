@@ -1,32 +1,24 @@
 //
 //  SJSlider.h
-//  dancebaby
+//  Pods-SJSlider_Example
 //
-//  Created by BlueDancer on 2017/6/12.
-//  Copyright © 2017年 SanJing. All rights reserved.
+//  Created by BlueDancer on 2018/5/9.
 //
 
 #import <UIKit/UIKit.h>
 
+NS_ASSUME_NONNULL_BEGIN
 @protocol SJSliderDelegate;
 
 @interface SJSlider : UIView
 
 @property (nonatomic, weak) id <SJSliderDelegate>delegate;
 
-/*!
- *  default is YES.
- *
- *  是否切园角. 默认切.
- */
-@property (nonatomic, assign, readwrite) BOOL isRound;
+/// Defualt is YES. 是否切园角. 默认YES
+@property (nonatomic, getter=isRound) BOOL round;
 
-/*!
- *  track height. default is 8.0;
- *
- *  轨道高度.
- */
-@property (nonatomic, assign, readwrite) CGFloat trackHeight;
+/// Track height. default is 8.0. 轨道高度
+@property (nonatomic) CGFloat trackHeight;
 
 /*!
  *  this is view, If you don't want to set up photos, You can set the background color.
@@ -60,18 +52,19 @@
 /*!
  *  current Value
  */
-@property (nonatomic, assign, readwrite) CGFloat value;
+@property (nonatomic) CGFloat value;
 - (void)setValue:(CGFloat)value animated:(BOOL)animated;
+@property (nonatomic) CGFloat animaMaxDuration; // default is 0.5.
 
 /*!
  *  default is 0.0;
  */
-@property (nonatomic, assign, readwrite) CGFloat minValue;
+@property (nonatomic) CGFloat minValue;
 
 /*!
  *  default is 1.0;
  */
-@property (nonatomic, assign, readwrite) CGFloat maxValue;
+@property (nonatomic) CGFloat maxValue;
 
 /*!
  *  If you don't want to use this gesture, you can disable it
@@ -91,41 +84,37 @@
 
 
 #pragma mark - Border
-
-
 @interface SJSlider (BorderLine)
 
 /*!
  *  visual border line.
  *  default is NO.
  */
-@property (nonatomic, assign, readwrite) BOOL visualBorder;
+@property (nonatomic) BOOL visualBorder;
 
 /*!
  *  borderColor
  *  default is lightGrayColor.
  */
-@property (nonatomic, strong, readwrite) UIColor *borderColor;
+@property (null_resettable, nonatomic, strong) UIColor *borderColor;
 
 /*!
  *  borderWidth
  *  default is 0.4.
  */
-@property (nonatomic, assign, readwrite) CGFloat borderWidth;
+@property (nonatomic) CGFloat borderWidth;
 
 @end
 
 
 
 #pragma mark - Buffer
-
-
 @interface SJSlider (SJBufferProgress)
 
 /*!
  *  开启缓冲进度. default is NO.
  */
-@property (nonatomic, assign, readwrite) BOOL enableBufferProgress;
+@property (nonatomic) BOOL enableBufferProgress;
 
 /*!
  *  缓冲进度颜色. default is grayColor
@@ -135,7 +124,7 @@
 /*!
  *  缓冲进度
  */
-@property (nonatomic, assign, readwrite) CGFloat bufferProgress;
+@property (nonatomic) CGFloat bufferProgress;
 
 @end
 
@@ -164,3 +153,4 @@
 - (void)sliderDidEndDragging:(SJSlider *)slider;
 
 @end
+NS_ASSUME_NONNULL_END

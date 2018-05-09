@@ -93,20 +93,19 @@ static const char *kSJSnapshot = "kSJSnapshot";
         case SJPreViewDisplayMode_Origin: {
             UIView *preView = _nav.childViewControllers[_index].view;
             [_preViewContainerView insertSubview:preView atIndex:0];
-            
-            if ( @available(iOS 11, *) ) { /**/ break; }
-            else {
-                if ( !vc.automaticallyAdjustsScrollViewInsets || vc.edgesForExtendedLayout == UIRectEdgeNone ) break;
-                UIScrollView *scrollView = [self _searchScrollViewWithTarget:vc.view];
-                if ( !scrollView ) break;
-                if ( _nav_bar_snapshotView ) {
-                    // fix frame
-                    CGRect frame = preView.frame;
-                    frame.origin.y = _nav.navigationBar.frame.origin.y + _nav.navigationBar.frame.size.height;
-                    preView.frame = frame;
-                }
-            }
-            
+//            if ( @available(iOS 11, *) ) { /**/ break; }
+//            else {
+//                if ( !vc.automaticallyAdjustsScrollViewInsets || vc.edgesForExtendedLayout == UIRectEdgeNone ) break;
+//
+//                UIScrollView *scrollView = [self _searchScrollViewWithTarget:vc.view];
+//                if ( !scrollView ) break;
+//                if ( _nav_bar_snapshotView ) {
+//                    // fix frame
+//                    CGRect frame = preView.frame;
+//                    frame.origin.y = _nav.navigationBar.frame.origin.y + _nav.navigationBar.frame.size.height;
+//                    preView.frame = frame;
+//                }
+//            }
         }
             break;
         case SJPreViewDisplayMode_Snapshot: {
@@ -170,6 +169,7 @@ static const char *kSJSnapshot = "kSJSnapshot";
 #pragma mark -
 - (void)nav:(UINavigationController *)nav preparePopViewController:(UIViewController *)viewController {
     SJSnapshotRecorder *recorder = objc_getAssociatedObject(viewController, kSJSnapshot);
+    if ( !recorder ) return;
     [recorder preparePopViewController];
     
     // add recorder view
@@ -191,15 +191,14 @@ static const char *kSJSnapshot = "kSJSnapshot";
 
 - (void)nav:(UINavigationController *)nav poppingViewController:(UIViewController *)viewController offset:(double)offset {
     SJSnapshotRecorder *recorder = objc_getAssociatedObject(viewController, kSJSnapshot);
+    if ( !recorder ) return;
     CGFloat width = recorder.rootView.frame.size.width;
-    if ( 0 == width ) return;
+    CGFloat rate = offset / width;
     switch ( _transitionMode ) {
         case SJScreenshotTransitionModeShifting: {
-            CGFloat rate = offset / width;
             recorder.rootView.transform = CGAffineTransformMakeTranslation( self.shift * ( 1 - rate ), 0 );
         } break;
         case SJScreenshotTransitionModeShadeAndShifting: {
-            CGFloat rate = offset / width;
             recorder.rootView.transform = CGAffineTransformMakeTranslation( self.shift * ( 1 - rate ), 0 );
             recorder.shadeView.alpha = 1 - rate;
             recorder.shadeView.transform = CGAffineTransformMakeTranslation( - (self.shift + width) + (self.shift * rate) + offset, 0 );
@@ -209,6 +208,7 @@ static const char *kSJSnapshot = "kSJSnapshot";
 
 - (void)nav:(UINavigationController *)nav willEndPopViewController:(UIViewController *)viewController pop:(BOOL)pop {
     SJSnapshotRecorder *recorder = objc_getAssociatedObject(viewController, kSJSnapshot);
+    if ( !recorder ) return;
     if ( pop ) {
         recorder.rootView.transform = CGAffineTransformIdentity;
         recorder.shadeView.transform = CGAffineTransformIdentity;
@@ -228,6 +228,7 @@ static const char *kSJSnapshot = "kSJSnapshot";
 
 - (void)nav:(UINavigationController *)nav endPopViewController:(UIViewController *)viewController {
     SJSnapshotRecorder *recorder = objc_getAssociatedObject(viewController, kSJSnapshot);
+    if ( !recorder ) return;
     [recorder endPopViewController];
     [recorder.rootView removeFromSuperview];
 }

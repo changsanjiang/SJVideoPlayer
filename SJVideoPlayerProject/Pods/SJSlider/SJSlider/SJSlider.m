@@ -1,293 +1,115 @@
 //
 //  SJSlider.m
-//  dancebaby
+//  Pods-SJSlider_Example
 //
-//  Created by BlueDancer on 2017/6/12.
-//  Copyright © 2017年 SanJiang. All rights reserved.
+//  Created by BlueDancer on 2018/5/9.
 //
 
 #import "SJSlider.h"
-
-#import <Masonry/Masonry.h>
-
 #import <objc/message.h>
 
-
-
-
-
-@interface UIView (SJExtension)
-@property (nonatomic, assign) CGFloat csj_x;
-@property (nonatomic, assign) CGFloat csj_y;
-@property (nonatomic, assign) CGFloat csj_w;
-@property (nonatomic, assign) CGFloat csj_h;
-@end
-
-
-@implementation UIView (SJExtension)
-- (void)setCsj_x:(CGFloat)csj_x {
-    CGRect frame    = self.frame;
-    frame.origin.x  = csj_x;
-    self.frame      = frame;
-}
-- (CGFloat)csj_x {
-    return self.frame.origin.x;
-}
-
-
-- (void)setCsj_y:(CGFloat)csj_y {
-    CGRect frame    = self.frame;
-    frame.origin.y  = csj_y;
-    self.frame      = frame;
-}
-
-- (CGFloat)csj_y {
-    return self.frame.origin.y;
-}
-
-
-- (void)setCsj_w:(CGFloat)csj_w {
-    CGRect frame        = self.frame;
-    frame.size.width    = csj_w;
-    self.frame          = frame;
-}
-- (CGFloat)csj_w {
-    return self.frame.size.width;
-}
-
-
-- (void)setCsj_h:(CGFloat)csj_h {
-    CGRect frame        = self.frame;
-    frame.size.height   = csj_h;
-    self.frame          = frame;
-}
-- (CGFloat)csj_h {
-    return self.frame.size.height;
-}
-@end
-
-
-
-// MARK:
-
-@interface _SJImageView : UIImageView
-
-@property (nonatomic, copy) void(^layoutedCallBlock)(_SJImageView *imageView);
-
-@end
-
-@implementation _SJImageView
-
-- (void)layoutSubviews {
-    [super layoutSubviews];
-    if ( _layoutedCallBlock ) _layoutedCallBlock(self);
-}
-
-@end
-
-
-@interface SJContainerView : UIView
-
-@end
-
-@implementation SJContainerView
-
-- (instancetype)initWithFrame:(CGRect)frame {
-    self = [super initWithFrame:frame];
-    if ( !self ) return nil;
-    [self _SJContainerViewSetupUI];
-    return self;
-}
-
-// MARK: UI
-
-- (void)_SJContainerViewSetupUI {
-    self.clipsToBounds = YES;
-}
-
-@end
-
-
-
+NS_ASSUME_NONNULL_BEGIN
 @interface SJSlider ()
+@property (nonatomic, strong, readonly) UIView *containerView;
+@end
 
-@property (nonatomic, strong, readonly) SJContainerView *containerView;
-@property (nonatomic, strong, readonly) NSLayoutConstraint *thumbCenterXConstraint;
-@property (nonatomic, strong, readonly) NSLayoutConstraint *thumbLeadingConstraint;
-@property (nonatomic, strong, readonly) NSLayoutConstraint *thumbTrailingConstraint;
+#pragma mark -
+@implementation SJSlider (SJBufferProgress)
 
+- (BOOL)enableBufferProgress {
+    return [objc_getAssociatedObject(self, _cmd) boolValue];
+}
+
+- (void)setEnableBufferProgress:(BOOL)enableBufferProgress {
+    if ( enableBufferProgress == self.enableBufferProgress ) return;
+    objc_setAssociatedObject(self, @selector(enableBufferProgress), @(enableBufferProgress), OBJC_ASSOCIATION_RETAIN_NONATOMIC);
+    
+    dispatch_async(dispatch_get_main_queue(), ^{
+        if ( enableBufferProgress ) {
+            UIView *bufferView = [self bufferProgressView];
+            [self.containerView insertSubview:bufferView aboveSubview:self.trackImageView];
+            bufferView.frame = CGRectMake(0, 0, 0, self.containerView.frame.size.height);
+            CGFloat bufferProgress = self.bufferProgress;
+            if ( 0 != bufferProgress ) [self _needUpdateBufferLayout];
+        }
+        else {
+            [[self bufferProgressView] removeFromSuperview];
+        }
+    });
+}
+
+- (UIColor *)bufferProgressColor {
+    UIColor *bufferProgressColor = objc_getAssociatedObject(self, _cmd);
+    if ( bufferProgressColor ) return bufferProgressColor;
+    return [UIColor grayColor];
+}
+
+- (void)setBufferProgressColor:(UIColor *)bufferProgressColor {
+    if ( !bufferProgressColor ) return;
+    objc_setAssociatedObject(self, @selector(bufferProgressColor), bufferProgressColor, OBJC_ASSOCIATION_RETAIN_NONATOMIC);
+    dispatch_async(dispatch_get_main_queue(), ^{
+        self.bufferProgressView.backgroundColor = bufferProgressColor;
+    });
+}
+
+- (CGFloat)bufferProgress {
+    return [objc_getAssociatedObject(self, _cmd) floatValue];
+}
+
+- (void)setBufferProgress:(CGFloat)bufferProgress {
+    if ( isnan(bufferProgress) ) return;
+    if ( bufferProgress < 0 ) bufferProgress = 0;
+    else if ( bufferProgress > 1 ) bufferProgress = 1;
+    objc_setAssociatedObject(self, @selector(bufferProgress), @(bufferProgress), OBJC_ASSOCIATION_RETAIN_NONATOMIC);
+    [self _needUpdateBufferLayout];
+}
+
+- (UIView *)bufferProgressView {
+    UIView *bufferProgressView = objc_getAssociatedObject(self, _cmd);
+    if ( bufferProgressView ) return bufferProgressView;
+    bufferProgressView = [UIView new];
+    bufferProgressView.backgroundColor = self.bufferProgressColor;
+    objc_setAssociatedObject(self, _cmd, bufferProgressView, OBJC_ASSOCIATION_RETAIN_NONATOMIC);
+    return bufferProgressView;
+}
+
+- (void)_needUpdateBufferLayout {
+    UIView *bufferView = [self bufferProgressView];
+    CGFloat width = self.bufferProgress * self.containerView.frame.size.width;
+    CGRect frame = bufferView.frame;
+    frame.size.height = self.containerView.frame.size.height;
+    frame.size.width = width;
+    bufferView.frame = frame;
+}
 @end
 
 
-
-
-
-
-
+#pragma mark -
 @implementation SJSlider
 
-@synthesize containerView = _containerView;
-@synthesize trackImageView = _trackImageView;
-@synthesize traceImageView = _traceImageView;
-@synthesize thumbImageView = _thumbImageView;
-@synthesize pan = _pan;
-@synthesize thumbCenterXConstraint = _thumbCenterXConstraint;
-@synthesize thumbLeadingConstraint = _thumbLeadingConstraint;
-@synthesize thumbTrailingConstraint = _thumbTrailingConstraint;
-
 - (instancetype)initWithFrame:(CGRect)frame {
     self = [super initWithFrame:frame];
     if ( !self ) return nil;
-    
-    [self _SJSliderSetupUI];
-    
-    [self _SJSliderInitialize];
-    
-    [self _SJSliderPanGR];
-    
+    [self _setupDefaultValues];
+    [self _setupGestrue];
+    [self _setupView];
+    [self _needUpdateContainerCornerRadius];
     return self;
 }
 
-#pragma mark - Setter
-
-- (void)setIsRound:(BOOL)isRound {
-    _isRound = isRound;
-    
-    if ( isRound ) self.containerView.layer.cornerRadius = self.trackHeight * 0.5;
-    else self.containerView.layer.cornerRadius = 0.0;
-}
-
-- (void)setThumbCornerRadius:(CGFloat)thumbCornerRadius size:(CGSize)size {
-    [self setThumbCornerRadius:thumbCornerRadius size:size thumbBackgroundColor:[UIColor greenColor]];
-}
-
-- (void)setThumbCornerRadius:(CGFloat)thumbCornerRadius
-                        size:(CGSize)size
-        thumbBackgroundColor:(UIColor *)thumbBackgroundColor {
-    if ( 0 != thumbCornerRadius ) {
-        self.thumbImageView.layer.masksToBounds = NO;
-        self.thumbImageView.layer.shadowColor = [UIColor colorWithWhite:0.382 alpha:0.614].CGColor;
-        self.thumbImageView.layer.shadowOpacity = 1;
-        self.thumbImageView.layer.shadowOffset = CGSizeMake(0.001, 0.2);
-        self.thumbImageView.layer.shadowPath = [UIBezierPath bezierPathWithRoundedRect:(CGRect){CGPointZero, size} cornerRadius:thumbCornerRadius].CGPath;
-        [self.thumbImageView mas_updateConstraints:^(MASConstraintMaker *make) {
-            make.size.mas_offset(size).priorityHigh();
-        }];
-    }
-    else {
-        [_thumbImageView removeFromSuperview];
-        _thumbImageView = nil;
-    }
-    self.thumbImageView.layer.cornerRadius = thumbCornerRadius;
-    self.thumbImageView.backgroundColor = thumbBackgroundColor;
-    [self _updateLayout];
-}
-
-- (void)setTrackHeight:(CGFloat)trackHeight {
-    if ( trackHeight == _trackHeight ) return;
-    _trackHeight = trackHeight;
-    [self.containerView mas_updateConstraints:^(MASConstraintMaker *make) {
-        make.height.offset(trackHeight);
-    }];
-    
-    if ( self.isRound ) self.containerView.layer.cornerRadius = self.trackHeight * 0.5;
-    else self.containerView.layer.cornerRadius = 0.0;
-}
-
-- (void)setValue:(CGFloat)value {
-    if ( isnan(value) ) return;
-    if ( value == _value ) return;
-    if      ( value < _minValue ) value = _minValue;
-    else if ( value > _maxValue ) value = _maxValue;
-    else if ( _minValue > _maxValue ) value = 0;
-    _value = value;
-    [self _updateLayout];
-}
-
-- (void)setValue:(CGFloat)value animated:(BOOL)animated {
-    self.value = value;
-    if ( animated ) {
-        [self _anima];
-    }
-}
-
-- (void)_anima {
-    [UIView animateWithDuration:0.15 animations:^{
-        [self layoutIfNeeded];
-    }];
-}
-
-- (void)_updateLayout {
-    CGFloat sub = _maxValue - _minValue;
-    if ( sub <= 0 ) return;
-    [_containerView.constraints enumerateObjectsWithOptions:NSEnumerationReverse usingBlock:^(__kindof NSLayoutConstraint * _Nonnull obj, NSUInteger idx, BOOL * _Nonnull stop) {
-        if ( obj.firstItem == self->_traceImageView ) {
-            if ( obj.firstAttribute == NSLayoutAttributeWidth ) {
-                [self->_containerView removeConstraint:obj];
-            }
-        }
-    }];
-    
-    CGFloat baseW = _thumbImageView.bounds.size.width * 0.4;
-    if ( 0 == baseW ) baseW = 0.001;
-    NSLayoutConstraint *traceWidthConstraint =
-    [NSLayoutConstraint constraintWithItem:_traceImageView
-                                 attribute:NSLayoutAttributeWidth
-                                 relatedBy:NSLayoutRelationEqual
-                                    toItem:_containerView
-                                 attribute:NSLayoutAttributeWidth
-                                multiplier:(_value - _minValue) / sub constant:baseW];
-    [_containerView addConstraint:traceWidthConstraint];
-}
-
-- (void)setMinValue:(CGFloat)minValue {
-    _minValue = minValue;
-    self.value = _value;
-}
-
-- (void)setMaxValue:(CGFloat)maxValue {
-    _maxValue = maxValue;
-    self.value = _value;
-}
-
-// MARK: 生命周期
-
-- (void)dealloc {
-    NSLog(@"%s", __func__);
-}
-
-
-// MARK: 初始化参数
-
-- (void)_SJSliderInitialize {
-    
-    self.trackHeight = 8.0;
-    self.borderWidth = 0.4;
-    self.borderColor = [UIColor lightGrayColor];
-    self.isRound = YES;
-    
-    self.enableBufferProgress = NO;
-    self.bufferProgress = 0;
-    self.bufferProgressColor = [UIColor grayColor];
-    
-    _minValue = 0.0;
-    _maxValue = 1.0;
-    [self _updateLayout];
-}
-
-- (void)_SJSliderPanGR {
+#pragma mark
+- (void)_setupGestrue {
     _pan = [[UIPanGestureRecognizer alloc] initWithTarget:self action:@selector(handlePanGR:)];
     [self addGestureRecognizer:_pan];
 }
 
 - (void)handlePanGR:(UIPanGestureRecognizer *)pan {
-    
     CGFloat offset = [pan translationInView:pan.view].x;
-    CGFloat add = ( offset / _containerView.csj_w) * ( _maxValue - _minValue );
+    CGFloat add = ( offset / _containerView.bounds.size.width) * ( _maxValue - _minValue );
     [self setValue:self.value + add animated:YES];
     [pan setTranslation:CGPointZero inView:pan.view];
-    
-    switch (pan.state) {
+
+    switch ( pan.state ) {
         case UIGestureRecognizerStateBegan: {
             _isDragging = YES;
             if ( [self.delegate respondsToSelector:@selector(sliderWillBeginDragging:)] ) {
@@ -316,206 +138,152 @@
 
 #pragma mark -
 
-- (void)_SJSliderSetupUI {
-    self.backgroundColor = [UIColor clearColor];
-    [self addSubview:self.containerView];
-    [self.containerView addSubview:self.trackImageView];
-    [self.containerView addSubview:self.traceImageView];
-    
-    [_containerView mas_makeConstraints:^(MASConstraintMaker *make) {
-        make.leading.trailing.offset(0);
-        make.centerY.offset(0);
-    }];
-    
-    [_trackImageView mas_makeConstraints:^(MASConstraintMaker *make) {
-        make.edges.offset(0);
-    }];
-    
-    [_traceImageView mas_makeConstraints:^(MASConstraintMaker *make) {
-        make.top.bottom.offset(0);
-        make.leading.offset(0).priority(UILayoutPriorityDefaultLow);
-    }];
+- (void)setRound:(BOOL)round {
+    if ( round == _round ) return;
+    _round = round;
+    [self _needUpdateContainerCornerRadius];
 }
 
-- (UIView *)containerView {
-    if ( _containerView ) return _containerView;
-    _containerView = [SJContainerView new];
-    return _containerView;
+- (void)setTrackHeight:(CGFloat)trackHeight {
+    _trackHeight = trackHeight;
+    [self _needUpdateContainerCornerRadius];
 }
 
-- (UIImageView *)trackImageView {
-    if ( _trackImageView ) return _trackImageView;
-    _trackImageView = [self imageViewWithImageStr:@""];
-    _trackImageView.backgroundColor = [UIColor whiteColor];
-    return _trackImageView;
+- (void)setThumbCornerRadius:(CGFloat)thumbCornerRadius
+                        size:(CGSize)size {
+    [self setThumbCornerRadius:thumbCornerRadius size:size thumbBackgroundColor:[UIColor greenColor]];
 }
 
-- (UIImageView *)traceImageView {
-    if ( _traceImageView ) return _traceImageView;
-    _traceImageView = [self imageViewWithImageStr:@""];
-    _traceImageView.frame = CGRectZero;
+- (void)setThumbCornerRadius:(CGFloat)thumbCornerRadius
+                        size:(CGSize)size
+        thumbBackgroundColor:(UIColor *)thumbBackgroundColor {
+    self.thumbImageView.layer.masksToBounds = NO;
+    self.thumbImageView.layer.shadowColor = [UIColor colorWithWhite:0.382 alpha:0.614].CGColor;
+    self.thumbImageView.layer.shadowOpacity = 1;
+    self.thumbImageView.layer.shadowOffset = CGSizeMake(0.001, 0.2);
+    self.thumbImageView.layer.shadowPath = [UIBezierPath bezierPathWithRoundedRect:(CGRect){CGPointZero, size} cornerRadius:thumbCornerRadius].CGPath;
+    self.thumbImageView.layer.cornerRadius = thumbCornerRadius;
+    self.thumbImageView.backgroundColor = thumbBackgroundColor;
+    [self _updateThumbSize:size];
+}
+
+- (void)setValue:(CGFloat)value {
+    [self setValue:value animated:NO];
+}
+
+- (void)setValue:(CGFloat)value_new animated:(BOOL)animated {
+    if ( _minValue > _maxValue ) return;
+    if ( isnan(value_new) ) return;
+    if ( value_new == _value ) return;
+    CGFloat value_old = _value;
+    if      ( value_new < _minValue ) value_new = _minValue;
+    else if ( value_new > _maxValue ) value_new = _maxValue;
+    _value = value_new;
+    
+    if ( animated ) {
+        CGFloat duration = 0;
+        if ( animated ) duration = [self _calculateAnimaDuration:value_new - value_old];
+        [UIView beginAnimations:nil context:NULL];
+        [UIView setAnimationDuration:animated ? duration : 0];
+        [self _needUpdateTraceLayout];
+        [UIView commitAnimations];
+    }
+    else {
+        [self _needUpdateTraceLayout];
+    }
+}
+
+/// add 此次增加的值
+- (CGFloat)_calculateAnimaDuration:(CGFloat)add {
+    add = ABS(add);
+    CGFloat sum = _maxValue - _minValue;
+    CGFloat scale = add / sum;
+    return _animaMaxDuration * scale;
+}
+
+#pragma mark
+- (void)_setupDefaultValues {
+    _animaMaxDuration = 0.5;
+    _trackHeight = 8;
+    _maxValue = 1;
+    _minValue = 0;
+    _round = YES;
+    _value = 0.4;
+}
+
+#pragma mark
+- (void)_setupView {
+    _containerView = [UIView new];
+    _containerView.clipsToBounds = YES;
+    
+    UIImageView *(^makeImageView)(void) = ^UIImageView *{
+        UIImageView *imageView = [UIImageView new];
+        imageView.clipsToBounds = YES;
+        imageView.contentMode = UIViewContentModeCenter;
+        return imageView;
+    };
+    
+    _traceImageView = makeImageView();
+    _trackImageView = makeImageView();
+    _thumbImageView = makeImageView();
+    
+    [self addSubview:_containerView];
+    [_containerView addSubview:self.trackImageView];
+    [_containerView addSubview:self.traceImageView];
+    [self addSubview:self.thumbImageView];
+    
     _traceImageView.backgroundColor = [UIColor greenColor];
-    return _traceImageView;
+    _trackImageView.backgroundColor = [UIColor lightGrayColor];
 }
 
-- (UIImageView *)thumbImageView {
-    if ( _thumbImageView ) return _thumbImageView;
-    _thumbImageView = [self imageViewWithImageStr:@""];
-    [self addSubview:_thumbImageView];
-
-    _thumbImageView.translatesAutoresizingMaskIntoConstraints = NO;
-    NSLayoutConstraint *centerYConstraint =
-    [NSLayoutConstraint constraintWithItem:_thumbImageView
-                                 attribute:NSLayoutAttributeCenterY
-                                 relatedBy:NSLayoutRelationEqual
-                                    toItem:_containerView
-                                 attribute:NSLayoutAttributeCenterY
-                                multiplier:1 constant:0];
-    
-    _thumbCenterXConstraint =
-    [NSLayoutConstraint constraintWithItem:_thumbImageView
-                                 attribute:NSLayoutAttributeCenterX
-                                 relatedBy:NSLayoutRelationEqual
-                                    toItem:_traceImageView
-                                 attribute:NSLayoutAttributeTrailing
-                                multiplier:1 constant:0];
-    _thumbLeadingConstraint.priority = UILayoutPriorityDefaultLow;
-    
-    _thumbLeadingConstraint =
-    [NSLayoutConstraint constraintWithItem:_thumbImageView
-                                 attribute:NSLayoutAttributeLeading
-                                 relatedBy:NSLayoutRelationGreaterThanOrEqual
-                                    toItem:_containerView
-                                 attribute:NSLayoutAttributeLeading
-                                multiplier:1 constant:0];
-    _thumbLeadingConstraint.priority = UILayoutPriorityRequired;
-    
-    _thumbTrailingConstraint =
-    [NSLayoutConstraint constraintWithItem:_thumbImageView
-                                 attribute:NSLayoutAttributeCenterX
-                                 relatedBy:NSLayoutRelationLessThanOrEqual
-                                    toItem:_containerView
-                                 attribute:NSLayoutAttributeTrailing
-                                multiplier:1 constant:0];
-    _thumbTrailingConstraint.priority = UILayoutPriorityRequired;
-    
-    [self addConstraint:_thumbLeadingConstraint];
-    [self addConstraint:centerYConstraint];
-    [self addConstraint:_thumbCenterXConstraint];
-    [self addConstraint:_thumbTrailingConstraint];
-    
-    __weak typeof(self) _self = self;
-    [(_SJImageView *)_thumbImageView setLayoutedCallBlock:^(_SJImageView *imageView) {
-        __strong typeof(_self) self = _self;
-        if ( !self ) return;
-        CGFloat constant = imageView.bounds.size.width * 0.4;
-        self.thumbLeadingConstraint.constant = -constant;
-        self.thumbTrailingConstraint.constant = -constant;
-        [self _updateLayout];
-    }];
-    
-    [_thumbImageView setContentHuggingPriority:UILayoutPriorityRequired forAxis:UILayoutConstraintAxisHorizontal];
-    [_thumbImageView setContentHuggingPriority:UILayoutPriorityRequired forAxis:UILayoutConstraintAxisVertical];
-    [_thumbImageView setContentCompressionResistancePriority:UILayoutPriorityRequired forAxis:UILayoutConstraintAxisHorizontal];
-    [_thumbImageView setContentCompressionResistancePriority:UILayoutPriorityRequired forAxis:UILayoutConstraintAxisVertical];
-    return _thumbImageView;
+- (void)layoutSubviews {
+    [super layoutSubviews];
+    [self _needUpdateContainerLayout];
 }
 
-- (UIImageView *)imageViewWithImageStr:(NSString *)imageStr {
-    UIImageView *imageView = [[_SJImageView alloc] initWithImage:[UIImage imageNamed:imageStr]];
-    imageView.contentMode = UIViewContentModeCenter;
-    imageView.clipsToBounds = YES;
-    return imageView;
+#pragma mark -
+- (void)_needUpdateContainerLayout {
+    CGFloat width = self.frame.size.width;
+    CGFloat height = self.frame.size.height;
+    _containerView.bounds = CGRectMake(0, 0, width, _trackHeight);
+    _containerView.center = CGPointMake(width * 0.5, height * 0.5);
+    [self _needUpdateTrackLayout];
+    if ( self.enableBufferProgress ) [self _needUpdateBufferLayout];
 }
 
+- (void)_needUpdateContainerCornerRadius {
+    if ( _round ) _containerView.layer.cornerRadius = _trackHeight * 0.5;
+    else _containerView.layer.cornerRadius = 0.0;
+}
+
+- (void)_needUpdateTrackLayout {
+    CGFloat width = self.frame.size.width;
+    _trackImageView.frame = CGRectMake(0, 0, width, _trackHeight);
+    [self _needUpdateTraceLayout];
+}
+
+- (void)_needUpdateTraceLayout {
+    CGFloat width = self.frame.size.width;
+    CGFloat sum = _maxValue - _minValue;
+    _traceImageView.frame = CGRectMake(0, 0, width * (_value - _minValue) / sum, _trackHeight);
+    [self _needUpdateThumbLayout];
+}
+
+- (void)_needUpdateThumbLayout {
+    CGFloat width = self.frame.size.width;
+    CGFloat height = self.frame.size.height;
+    CGFloat maxX = CGRectGetMaxX(_traceImageView.frame);
+    CGFloat margin = ceil(_thumbImageView.frame.size.width * 0.382);
+    if ( maxX <= margin ) maxX = margin;
+    else if ( maxX >= width - margin ) maxX = width - margin;
+    _thumbImageView.center = CGPointMake(maxX, height * 0.5);
+}
+
+- (void)_updateThumbSize:(CGSize)size {
+    _thumbImageView.bounds = (CGRect){CGPointZero, size};
+    [self _needUpdateThumbLayout];
+}
 @end
-
-
-
-
-
-#pragma mark - Buffer
-
-@implementation SJSlider (SJBufferProgress)
-
-- (BOOL)enableBufferProgress {
-    return [objc_getAssociatedObject(self, _cmd) boolValue];
-}
-
-- (void)setEnableBufferProgress:(BOOL)enableBufferProgress {
-    if ( enableBufferProgress == self.enableBufferProgress ) return;
-    objc_setAssociatedObject(self, @selector(enableBufferProgress), @(enableBufferProgress), OBJC_ASSOCIATION_RETAIN_NONATOMIC);
-    dispatch_async(dispatch_get_main_queue(), ^{
-        if ( enableBufferProgress ) {
-            [self.containerView insertSubview:[self bufferProgressView] aboveSubview:self.trackImageView];
-            [[self bufferProgressView] mas_makeConstraints:^(MASConstraintMaker *make) {
-                make.top.leading.bottom.offset(0);
-            }];
-            CGFloat bufferProgress = self.bufferProgress;
-            if ( 0 != bufferProgress ) self.bufferProgress = bufferProgress; // update
-        }
-        else {
-            [[self bufferProgressView] removeFromSuperview];
-        }
-    });
-    
-}
-
-- (UIColor *)bufferProgressColor {
-    return objc_getAssociatedObject(self, _cmd);
-}
-
-- (void)setBufferProgressColor:(UIColor *)bufferProgressColor {
-    if ( !bufferProgressColor ) return;
-    objc_setAssociatedObject(self, @selector(bufferProgressColor), bufferProgressColor, OBJC_ASSOCIATION_RETAIN_NONATOMIC);
-    dispatch_async(dispatch_get_main_queue(), ^{
-        self.bufferProgressView.backgroundColor = bufferProgressColor;
-    });
-    
-}
-
-- (CGFloat)bufferProgress {
-    return [objc_getAssociatedObject(self, _cmd) floatValue];
-}
-
-- (void)setBufferProgress:(CGFloat)bufferProgress {
-    if ( isnan(bufferProgress) ) return;
-    bufferProgress += 0.001;
-    if      ( bufferProgress >= 1 ) bufferProgress = 1;
-    else if ( bufferProgress < 0 ) bufferProgress = 0;
-    objc_setAssociatedObject(self, @selector(bufferProgress), @(bufferProgress), OBJC_ASSOCIATION_RETAIN_NONATOMIC);
-    UIView *bufferProgressView = [self bufferProgressView];
-    if ( !bufferProgressView.superview ) return ;
-    [self.containerView.constraints enumerateObjectsWithOptions:NSEnumerationReverse usingBlock:^(__kindof NSLayoutConstraint * _Nonnull obj, NSUInteger idx, BOOL * _Nonnull stop) {
-        if ( obj.firstItem == bufferProgressView ) {
-            if ( obj.firstAttribute == NSLayoutAttributeWidth ) {
-                [self.containerView removeConstraint:obj];
-            }
-        }
-    }];
-    NSLayoutConstraint *bufferProgressWidthConstraint =
-    [NSLayoutConstraint constraintWithItem:bufferProgressView
-                                 attribute:NSLayoutAttributeWidth
-                                 relatedBy:NSLayoutRelationEqual
-                                    toItem:self.containerView
-                                 attribute:NSLayoutAttributeWidth
-                                multiplier:bufferProgress constant:0];
-    [self.containerView addConstraint:bufferProgressWidthConstraint];
-}
-
-- (UIView *)bufferProgressView {
-    UIView *bufferProgressView = objc_getAssociatedObject(self, _cmd);
-    if ( bufferProgressView ) return bufferProgressView;
-    bufferProgressView = [UIView new];
-    objc_setAssociatedObject(self, _cmd, bufferProgressView, OBJC_ASSOCIATION_RETAIN_NONATOMIC);
-    return bufferProgressView;
-}
-
-@end
-
-
-
-#pragma mark - Border
 
 
 @implementation SJSlider (BorderLine)
@@ -537,13 +305,15 @@
     return [objc_getAssociatedObject(self, _cmd) boolValue];
 }
 
-- (void)setBorderColor:(UIColor *)borderColor {
+- (void)setBorderColor:(UIColor * __nullable)borderColor {
     objc_setAssociatedObject(self, @selector(borderColor), borderColor, OBJC_ASSOCIATION_RETAIN_NONATOMIC);
     if ( self.visualBorder ) _containerView.layer.borderColor = borderColor.CGColor;
 }
 
 - (UIColor *)borderColor {
-    return objc_getAssociatedObject(self, _cmd);
+    UIColor *borderColor = objc_getAssociatedObject(self, _cmd);
+    if ( borderColor ) return borderColor;
+    return [UIColor lightGrayColor];
 }
 
 - (void)setBorderWidth:(CGFloat)borderWidth {
@@ -552,7 +322,10 @@
 }
 
 - (CGFloat)borderWidth {
-    return [objc_getAssociatedObject(self, _cmd) doubleValue];
+    CGFloat width = [objc_getAssociatedObject(self, _cmd) doubleValue];
+    if ( width != 0 ) return width;
+    return 0.4;
 }
 
 @end
+NS_ASSUME_NONNULL_END

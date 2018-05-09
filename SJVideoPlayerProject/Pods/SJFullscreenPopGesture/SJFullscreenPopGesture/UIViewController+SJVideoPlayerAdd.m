@@ -15,6 +15,9 @@
 
 - (void)setSj_displayMode:(SJPreViewDisplayMode)sj_displayMode {
     objc_setAssociatedObject(self, @selector(sj_displayMode), @(sj_displayMode), OBJC_ASSOCIATION_RETAIN_NONATOMIC);
+    if ( sj_displayMode == SJPreViewDisplayMode_Origin ) {
+        self.edgesForExtendedLayout = UIRectEdgeNone;
+    }
 }
 
 - (SJPreViewDisplayMode)sj_displayMode {

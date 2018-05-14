@@ -117,7 +117,7 @@ PODS:
   - SJOrentationObserver (1.0.8):
     - SJOrentationObserver/Category (= 1.0.8)
   - SJOrentationObserver/Category (1.0.8)
-  - SJPrompt (1.0.4):
+  - SJPrompt (1.0.4.1):
     - Masonry
   - SJScrollEntriesView (1.0.9):
     - Masonry
@@ -183,7 +183,7 @@ SPEC CHECKSUMS:
   SJLoadingView: c3ff03e4b363a5b6a3ba0634d6bb9ce2647faf07
   SJObserverHelper: b270d707cd18ab76538596aa4e98cf798c9e9868
   SJOrentationObserver: 5ecf09902592d6a22251f35f7ecaa31793cbceff
-  SJPrompt: e3c244e225c962b0962b539208c68b0a78c94012
+  SJPrompt: bc13bb292aa297d6ef31610646f4b4197d74de28
   SJScrollEntriesView: 6ad0595721a7152d9c3542ae5f6e1a27dec0f9b4
   SJSlider: 135450656bdb805b561b097f23dafc9556b8175b
   SJUIFactory: 36f08c8bef27b2f6f123f7c3df1c1aeb1b750742

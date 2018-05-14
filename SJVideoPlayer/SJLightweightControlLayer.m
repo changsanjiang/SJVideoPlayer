@@ -356,6 +356,7 @@ NS_ASSUME_NONNULL_BEGIN
 - (void)_promptWithNetworkStatus:(SJNetworkStatus)status {
     if ( self.videoPlayer.disableNetworkStatusChangePrompt ) return;
     if ( [self.videoPlayer.assetURL isFileURL] ) return; // return when is local video.
+    if ( !self.settings ) return;
     
     switch ( status ) {
         case SJNetworkStatus_NotReachable: {
@@ -665,6 +666,7 @@ NS_ASSUME_NONNULL_BEGIN
         [self.draggingProgressView setPreviewImage:setting.placeholder];
         if ( self.enableFilmEditing ) self.rightControlView.filmEditingBtnImage = setting.filmEditingBtnImage;
         self.settings = setting;
+        [self _promptWithNetworkStatus:self.videoPlayer.networkStatus];
     }];
 }
 

@@ -64,6 +64,7 @@
 }
 
 - (void)showTitle:(NSString *)title duration:(NSTimeInterval)duration hiddenExeBlock:(void(^)(SJPrompt *prompt))hiddenExeBlock {
+    if ( title.length == 0 ) return;
     NSMutableDictionary *attr = [NSMutableDictionary new];
     attr[NSFontAttributeName] = self.config.font;
     [self showAttributedString:[[NSAttributedString alloc] initWithString:title attributes:attr] duration:duration hiddenExeBlock:hiddenExeBlock];

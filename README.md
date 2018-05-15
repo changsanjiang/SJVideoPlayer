@@ -1,4 +1,5 @@
 # SJVideoPlayer
+[![CI Status](https://img.shields.io/travis/changsanjiang/SJVideoPlayer.svg?style=flat)](https://travis-ci.org/changsanjiang/SJVideoPlayer)
 
 If lack of interface or any suggestions, please email me( changsanjiang@gmail.com ).
 

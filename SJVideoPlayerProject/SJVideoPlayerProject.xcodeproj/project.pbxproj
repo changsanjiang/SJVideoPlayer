@@ -187,6 +187,7 @@
 		7766A632207F5C72008B3C1A /* SJLightweightRightControlView.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = SJLightweightRightControlView.m; sourceTree = "<group>"; };
 		7766A634207F5E8C008B3C1A /* SJVideoPlayerPropertyRecorder.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = SJVideoPlayerPropertyRecorder.h; sourceTree = "<group>"; };
 		7766A635207F5E8C008B3C1A /* SJVideoPlayerPropertyRecorder.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = SJVideoPlayerPropertyRecorder.m; sourceTree = "<group>"; };
+		776ECA1320AAFE54002DFF27 /* .travis.yml */ = {isa = PBXFileReference; lastKnownFileType = text; name = .travis.yml; path = ../.travis.yml; sourceTree = "<group>"; };
 		777D30D61FD8E8240075E5FD /* SJVideoPlayer.podspec */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = SJVideoPlayer.podspec; path = ../SJVideoPlayer.podspec; sourceTree = "<group>"; };
 		778E24EB1FD97DF9008D0DD3 /* README.md */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = net.daringfireball.markdown; name = README.md; path = ../README.md; sourceTree = "<group>"; };
 		7790AC7420594B3E00F8DF48 /* SJVideoPlayerMoreSettingsFooterView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SJVideoPlayerMoreSettingsFooterView.m; sourceTree = "<group>"; };
@@ -366,6 +367,7 @@
 			children = (
 				778E24EB1FD97DF9008D0DD3 /* README.md */,
 				777D30D61FD8E8240075E5FD /* SJVideoPlayer.podspec */,
+				776ECA1320AAFE54002DFF27 /* .travis.yml */,
 				774B251A1FCEBA5D002113CC /* SJVideoPlayerProject */,
 				774B25191FCEBA5D002113CC /* Products */,
 				38483D3C905F00D5607D0F77 /* Pods */,

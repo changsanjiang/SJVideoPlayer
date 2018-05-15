@@ -2,6 +2,7 @@
 [![Build Status](https://travis-ci.org/changsanjiang/SJVideoPlayer.svg?branch=master)](https://travis-ci.org/changsanjiang/SJVideoPlayer)
 [![Version](https://img.shields.io/cocoapods/v/SJVideoPlayer.svg?style=flat)](https://cocoapods.org/pods/SJVideoPlayer)
 [![Platform](https://img.shields.io/cocoapods/p/SJVideoPlayer.svg?style=flat)](http://cocoadocs.org/docsets/SJVideoPlayer)
+[![License](https://img.shields.io/github/license/SJVideoPlayer.svg?style=flat)](https://img.shields.io/cocoapods/v/SJVideoPlayer.svg)
 
 If lack of interface or any suggestions, please email me( changsanjiang@gmail.com ).
 

@@ -125,6 +125,7 @@ static NSString *const SJVideoListTableViewCellID = @"SJVideoListTableViewCell";
     SJVideoPlayerURLAsset *asset =
 //    [[SJVideoPlayerURLAsset alloc] initWithAssetURL:[[NSBundle mainBundle] URLForResource:@"sample" withExtension:@"mp4"]
     [[SJVideoPlayerURLAsset alloc] initWithAssetURL:[NSURL URLWithString:@"http://video.cdn.lanwuzhe.com/14945858406905f0c"]
+                                          beginTime:20
                                          scrollView:self.tableView
                                           indexPath:[self.tableView indexPathForCell:cell]
                                        superviewTag:playerParentView.tag];

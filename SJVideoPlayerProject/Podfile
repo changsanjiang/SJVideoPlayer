@@ -9,6 +9,7 @@ target 'SJVideoPlayerProject' do
   pod 'SJUIFactory'
   pod 'Masonry'
   pod 'SJSlider'
+  pod 'SJFullscreenPopGesture'
   pod 'SJBorderLineView'
   pod 'SJPrompt'
   pod 'SJOrentationObserver'

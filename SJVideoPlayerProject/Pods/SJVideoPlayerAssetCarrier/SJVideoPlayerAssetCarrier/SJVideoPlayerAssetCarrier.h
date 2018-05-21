@@ -13,26 +13,13 @@
 
 #import <UIKit/UIKit.h>
 #import <AVFoundation/AVFoundation.h>
-#import "SJViewHierarchyStack.h"
+#import "SJPlayerAVCarrier.h"
 
 NS_ASSUME_NONNULL_BEGIN
 
-@protocol SJVideoPlayerAVAsset <NSObject>
-@property (nonatomic, strong, readonly) AVURLAsset *asset;
-@property (nonatomic, strong, readonly) AVPlayerItem *playerItem;
-@property (nonatomic, strong, readonly) AVPlayer *player;
-@property (nonatomic, strong, readonly) NSURL *assetURL;
-@property (nonatomic, readonly) float rate;
-@end
-
-//@interface
-
 @class SJVideoPreviewModel;
 
-@interface SJVideoPlayerAssetCarrier : NSObject<SJVideoPlayerAVAsset>
-
-@property (nonatomic, assign, readonly) SJViewHierarchyStack viewHierarchyStack;
-
+@interface SJVideoPlayerAssetCarrier : NSObject
 
 #pragma mark -
 - (instancetype)initWithAssetURL:(NSURL *)assetURL;
@@ -175,31 +162,31 @@ NS_ASSUME_NONNULL_BEGIN
 
 #pragma mark -
 /// video player -> UIView
-- (instancetype)initWithOtherAsset:(__weak id<SJVideoPlayerAVAsset>)asset;
+- (instancetype)initWithOtherAsset:(__weak id<SJPlayerAVCarrier>)asset;
 /// video player -> cell -> table || collection view
-- (instancetype)initWithOtherAsset:(__weak id<SJVideoPlayerAVAsset>)asset
+- (instancetype)initWithOtherAsset:(__weak id<SJPlayerAVCarrier>)asset
                         scrollView:(__unsafe_unretained UIScrollView * __nullable)tableOrCollectionView
                          indexPath:(NSIndexPath * __nullable)indexPath
                       superviewTag:(NSInteger)superviewTag;
 /// video player -> table header view -> table view
-- (instancetype)initWithOtherAsset:(__weak id<SJVideoPlayerAVAsset>)asset
+- (instancetype)initWithOtherAsset:(__weak id<SJPlayerAVCarrier>)asset
       playerSuperViewOfTableHeader:(__unsafe_unretained UIView *)superView
                          tableView:(__unsafe_unretained UITableView *)tableView;
 /// video player -> cell -> collection view -> table header view -> table view
-- (instancetype)initWithOtherAsset:(__weak id<SJVideoPlayerAVAsset>)asset
+- (instancetype)initWithOtherAsset:(__weak id<SJPlayerAVCarrier>)asset
        collectionViewOfTableHeader:(__unsafe_unretained UICollectionView *)collectionView
            collectionCellIndexPath:(NSIndexPath *)indexPath
                 playerSuperViewTag:(NSInteger)playerSuperViewTag
                      rootTableView:(__unsafe_unretained UITableView *)rootTableView;
 /// video player -> collection cell -> collection view -> table cell -> table view.
-- (instancetype)initWithOtherAsset:(__weak id<SJVideoPlayerAVAsset>)asset
+- (instancetype)initWithOtherAsset:(__weak id<SJPlayerAVCarrier>)asset
                          indexPath:(NSIndexPath *__nullable)indexPath
                       superviewTag:(NSInteger)superviewTag
                scrollViewIndexPath:(NSIndexPath *__nullable)scrollViewIndexPath
                      scrollViewTag:(NSInteger)scrollViewTag
                     rootScrollView:(__unsafe_unretained UIScrollView *__nullable)rootScrollView;
 /// video player -> collection cell -> collection view -> table cell -> table view.
-- (instancetype)initWithOtherAsset:(__weak id<SJVideoPlayerAVAsset>)asset
+- (instancetype)initWithOtherAsset:(__weak id<SJPlayerAVCarrier>)asset
                          indexPath:(NSIndexPath *__nullable)indexPath
                       superviewTag:(NSInteger)superviewTag
                scrollViewIndexPath:(NSIndexPath *__nullable)scrollViewIndexPath
@@ -301,7 +288,6 @@ NS_ASSUME_NONNULL_BEGIN
 
 #pragma mark - other
 - (NSString *)timeString:(NSInteger)secs;
-@property (nonatomic, copy, readwrite, nullable) void(^convertToOriginalExeBlock)(SJVideoPlayerAssetCarrier *asset);
 @property (nonatomic, copy, readwrite, nullable) void(^deallocExeBlock)(SJVideoPlayerAssetCarrier *asset);
 
 
@@ -312,34 +298,6 @@ NS_ASSUME_NONNULL_BEGIN
 - (void)play;
 
 
-#pragma mark - Convert
-#pragma mark DEPRECATED
-@property (nonatomic, assign, readonly, getter=isConverted) BOOL converted NS_DEPRECATED(2_0, 2_0, 2_0, 2_0, "use `initWithOtherAsset:`");
-- (void)convertToOriginal NS_DEPRECATED(2_0, 2_0, 2_0, 2_0, "use `initWithOtherAsset:`");
-- (void)convertToUIView NS_DEPRECATED(2_0, 2_0, 2_0, 2_0, "use `initWithOtherAsset:`");
-- (void)convertToCellWithTableOrCollectionView:(__unsafe_unretained UIScrollView *)tableOrCollectionView
-                                     indexPath:(NSIndexPath *)indexPath
-                            playerSuperviewTag:(NSInteger)superviewTag NS_DEPRECATED(2_0, 2_0, 2_0, 2_0, "use `initWithOtherAsset:`");
-- (void)convertToTableHeaderViewWithPlayerSuperView:(__weak UIView *)superView
-                                          tableView:(__unsafe_unretained UITableView *)tableView NS_DEPRECATED(2_0, 2_0, 2_0, 2_0, "use `initWithOtherAsset:`");
-- (void)convertToTableHeaderViewWithCollectionView:(__unsafe_unretained UICollectionView *)collectionView
-                           collectionCellIndexPath:(NSIndexPath *)indexPath
-                                playerSuperViewTag:(NSInteger)playerSuperViewTag
-                                     rootTableView:(__unsafe_unretained UITableView *)rootTableView NS_DEPRECATED(2_0, 2_0, 2_0, 2_0, "use `initWithOtherAsset:`");
-- (void)convertToCellWithIndexPath:(NSIndexPath *)indexPath
-                      superviewTag:(NSInteger)superviewTag
-           collectionViewIndexPath:(NSIndexPath *)collectionViewIndexPath
-                 collectionViewTag:(NSInteger)collectionViewTag
-                     rootTableView:(__unsafe_unretained UITableView *)rootTableView NS_DEPRECATED(2_0, 2_0, 2_0, 2_0, "use `initWithOtherAsset:`");
-
-
-
-
-
-
-
-
-
 
 #pragma mark - properties
 @property (nonatomic, assign, readonly, getter=isLoadedPlayer) BOOL loadedPlayer;
@@ -347,7 +305,6 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic, strong, readonly) AVPlayerItem *playerItem;
 @property (nonatomic, strong, readonly) AVPlayer *player;
 @property (nonatomic, strong, readonly) NSURL *assetURL;
-@property (nonatomic, assign, readonly) NSTimeInterval beginTime; // unit is sec.
 @property (nonatomic, assign, readonly) NSTimeInterval duration;  // unit is sec.
 @property (nonatomic, assign, readonly) NSTimeInterval currentTime; // unit is sec.
 @property (nonatomic, assign, readonly) float progress; // 0..1
@@ -361,15 +318,5 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic, readonly) BOOL isOtherAsset;
 @end
 
-
-#pragma mark - preview model
-@interface SJVideoPreviewModel : NSObject
-
-@property (nonatomic, strong, readonly) UIImage *image;
-@property (nonatomic, assign, readonly) CMTime localTime;
-
-+ (instancetype)previewModelWithImage:(UIImage *)image localTime:(CMTime)time;
-
-@end
 
 NS_ASSUME_NONNULL_END

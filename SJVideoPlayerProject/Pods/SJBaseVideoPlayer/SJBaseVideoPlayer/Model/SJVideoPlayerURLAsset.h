@@ -7,7 +7,6 @@
 //
 
 #import <UIKit/UIKit.h>
-#import <SJVideoPlayerAssetCarrier/SJViewHierarchyStack.h>
 
 NS_ASSUME_NONNULL_BEGIN
 
@@ -22,8 +21,6 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic, assign, readonly) BOOL isM3u8;
 
 @property (nonatomic, strong, readonly) id<SJVideoPlayerAssetCarrier> carrier;
-
-@property (nonatomic, assign, readonly) SJViewHierarchyStack viewHierarchyStack;
 
 #pragma mark -
 
@@ -157,33 +154,6 @@ NS_ASSUME_NONNULL_BEGIN
                      rootScrollView:(__unsafe_unretained UIScrollView *__nullable)rootScrollView;
 
 
-
-
-
-
-
-
-
-
-#pragma mark -
-
-- (void)convertToOriginal NS_DEPRECATED(2_0, 2_0, 2_0, 2_0, "use `initWithOtherAsset:`"); // 还原
-- (void)convertToUIView NS_DEPRECATED(2_0, 2_0, 2_0, 2_0, "use `initWithOtherAsset:`");
-- (void)convertToCellWithTableOrCollectionView:(__unsafe_unretained UIScrollView *)tableOrCollectionView
-                                     indexPath:(NSIndexPath *)indexPath
-                            playerSuperviewTag:(NSInteger)superviewTag NS_DEPRECATED(2_0, 2_0, 2_0, 2_0, "use `initWithOtherAsset:`");
-- (void)convertToTableHeaderViewWithPlayerSuperView:(__weak UIView *)superView
-                                          tableView:(__unsafe_unretained UITableView *)tableView NS_DEPRECATED(2_0, 2_0, 2_0, 2_0, "use `initWithOtherAsset:`");
-- (void)convertToTableHeaderViewWithCollectionView:(__weak UICollectionView *)collectionView
-                           collectionCellIndexPath:(NSIndexPath *)indexPath
-                                playerSuperViewTag:(NSInteger)playerSuperViewTag
-                                     rootTableView:(__unsafe_unretained UITableView *)rootTableView NS_DEPRECATED(2_0, 2_0, 2_0, 2_0, "use `initWithOtherAsset:`");
-- (void)convertToCellWithIndexPath:(NSIndexPath *)indexPath
-                      superviewTag:(NSInteger)superviewTag
-           collectionViewIndexPath:(NSIndexPath *)collectionViewIndexPath
-                 collectionViewTag:(NSInteger)collectionViewTag
-                     rootTableView:(__unsafe_unretained UITableView *)rootTableView NS_DEPRECATED(2_0, 2_0, 2_0, 2_0, "use `initWithOtherAsset:`");
-@property (nonatomic, assign, readonly) BOOL converted NS_DEPRECATED(2_0, 2_0, 2_0, 2_0, "use `initWithOtherAsset:`");
 @end
 
 extern NSString * const kSJVideoPlayerAssetKey;

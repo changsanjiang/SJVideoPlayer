@@ -306,13 +306,6 @@ NS_ASSUME_NONNULL_END
     [self _itemPrepareToPlay];
     
     __weak typeof(self) _self = self;
-    
-    asset.convertToOriginalExeBlock = ^(SJVideoPlayerAssetCarrier * _Nonnull asset) {
-        __strong typeof(_self) self = _self;
-        if ( !self ) return;
-        [self _itemPrepareToPlay];
-    };
-    
     asset.loadedPlayerExeBlock = ^(SJVideoPlayerAssetCarrier * _Nonnull asset) {
         __strong typeof(_self) self = _self;
         if ( !self ) return;
@@ -589,7 +582,7 @@ NS_ASSUME_NONNULL_END
         if ( !self ) return;
         if ( self.presentView.superview == view ) {
             self.presentView.frame = view.bounds;
-            [self.presentView addSubview:self.controlContentView];
+            if ( !self.controlContentView.superview ) [self.presentView addSubview:self.controlContentView];
             self.controlContentView.frame = view.bounds;
         }
     }];

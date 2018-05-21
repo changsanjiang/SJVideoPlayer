@@ -143,45 +143,6 @@
 - (id<SJVideoPlayerAssetCarrier>)carrier {
     return (id)self.asset;
 }
-
-#pragma mark -
-- (BOOL)converted {
-    return self.asset.converted;
-}
-
-- (void)convertToOriginal {
-    [self.asset convertToOriginal];
-}
-
-- (SJViewHierarchyStack)viewHierarchyStack {
-    return self.asset.viewHierarchyStack;
-}
-
-- (void)convertToUIView {
-    [self.asset convertToUIView];
-}
-- (void)convertToCellWithTableOrCollectionView:(__unsafe_unretained UIScrollView *)tableOrCollectionView
-                                     indexPath:(NSIndexPath *)indexPath
-                            playerSuperviewTag:(NSInteger)superviewTag {
-    [self.asset convertToCellWithTableOrCollectionView:tableOrCollectionView indexPath:indexPath playerSuperviewTag:superviewTag];
-}
-- (void)convertToTableHeaderViewWithPlayerSuperView:(__weak UIView *)superView
-                                          tableView:(__unsafe_unretained UITableView *)tableView {
-    [self.asset convertToTableHeaderViewWithPlayerSuperView:superView tableView:tableView];
-}
-- (void)convertToTableHeaderViewWithCollectionView:(__weak UICollectionView *)collectionView
-                           collectionCellIndexPath:(NSIndexPath *)indexPath
-                                playerSuperViewTag:(NSInteger)playerSuperViewTag
-                                     rootTableView:(__unsafe_unretained UITableView *)rootTableView {
-    [self.asset convertToTableHeaderViewWithCollectionView:collectionView collectionCellIndexPath:indexPath playerSuperViewTag:playerSuperViewTag rootTableView:rootTableView];
-}
-- (void)convertToCellWithIndexPath:(NSIndexPath *)indexPath
-                      superviewTag:(NSInteger)superviewTag
-           collectionViewIndexPath:(NSIndexPath *)collectionViewIndexPath
-                 collectionViewTag:(NSInteger)collectionViewTag
-                     rootTableView:(__unsafe_unretained UITableView *)rootTableView {
-    [self.asset convertToCellWithIndexPath:indexPath superviewTag:superviewTag collectionViewIndexPath:collectionViewIndexPath collectionViewTag:collectionViewTag rootTableView:rootTableView];
-}
 @end
 
 NSString * const kSJVideoPlayerAssetKey = @"asset";

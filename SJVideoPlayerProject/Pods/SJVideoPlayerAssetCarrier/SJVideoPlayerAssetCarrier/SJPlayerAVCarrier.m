@@ -134,6 +134,7 @@ static NSTimeInterval _getLoadedTimeRange(AVPlayerItem *item) {
 }
 
 - (void)dealloc {
+    NSLog(@"%d - %s", (int)__LINE__, __func__);
     if ( !_isOtherAsset && _player.rate != 0 ) [_player pause];
     
     if ( self.playerItem ) {

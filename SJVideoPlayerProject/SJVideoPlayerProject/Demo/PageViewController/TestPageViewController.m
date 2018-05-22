@@ -13,6 +13,7 @@
 #import <SJScrollEntriesView/SJScrollEntriesView.h>
 #import "TestItem.h"
 #import "SJVideoListViewController.h"
+#import <UIViewController+SJVideoPlayerAdd.h>
 
 static NSInteger const vcCount = 9;
 
@@ -30,6 +31,8 @@ static NSInteger const vcCount = 9;
 
 - (void)viewDidLoad {
     [super viewDidLoad];
+    
+    self.sj_displayMode = SJPreViewDisplayMode_Origin;
     
     self.view.backgroundColor = [UIColor lightGrayColor];
     

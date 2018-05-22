@@ -208,7 +208,7 @@ NS_ASSUME_NONNULL_BEGIN
     _maxValue = 1;
     _minValue = 0;
     _round = YES;
-    _value = 0.4;
+    _value = 0;
 }
 
 #pragma mark

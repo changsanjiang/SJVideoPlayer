@@ -274,7 +274,7 @@ NS_ASSUME_NONNULL_END
     self = [super init];
     if ( !self ) return nil;
     NSError *error = nil;
-        
+    
     // 使播放器在静音状态下也能放出声音
     [[AVAudioSession sharedInstance] setCategory:AVAudioSessionCategoryPlayback error:&error];
     if ( error ) NSLog(@"%@", error.userInfo);
@@ -477,7 +477,7 @@ NS_ASSUME_NONNULL_END
 
 - (void)setControlLayerDataSource:(id<SJVideoPlayerControlLayerDataSource>)controlLayerDataSource {
     if ( controlLayerDataSource == _controlLayerDataSource ) return;
-
+    
     [_controlLayerDataSource.controlView removeFromSuperview];
     
     _controlLayerDataSource = controlLayerDataSource;
@@ -529,7 +529,7 @@ NS_ASSUME_NONNULL_END
 - (void)_itemPrepareToPlay {
     self.userClickedPause = NO;
     self.state = SJVideoPlayerPlayState_Prepare;
-
+    
     if ( [self.controlLayerDelegate respondsToSelector:@selector(videoPlayer:prepareToPlay:)] ) {
         [self.controlLayerDelegate videoPlayer:self prepareToPlay:self.URLAsset];
     }
@@ -575,7 +575,7 @@ NS_ASSUME_NONNULL_END
     _view = [SJBaseVideoPlayerView new];
     _view.backgroundColor = [UIColor blackColor];
     [_view addSubview:self.presentView];
-
+    
     __weak typeof(self) _self = self;
     [(SJBaseVideoPlayerView *)_view setLayoutSubViewsExeBlock:^(SJBaseVideoPlayerView *view) {
         __strong typeof(_self) self = _self;
@@ -586,7 +586,7 @@ NS_ASSUME_NONNULL_END
             self.controlContentView.frame = view.bounds;
         }
     }];
-
+    
     [self orentationObserver];
     [self gestureControl];
     [self reachabilityObserver];
@@ -636,7 +636,7 @@ NS_ASSUME_NONNULL_END
         __strong typeof(_self) self = _self;
         if ( !self ) return;
         [UIView animateWithDuration:observer.duration animations:^{
-           self.controlContentView.frame = self.presentView.bounds;
+            self.controlContentView.frame = self.presentView.bounds;
             [self.controlContentView layoutIfNeeded];
         }];
         if ( [self.controlLayerDelegate respondsToSelector:@selector(videoPlayer:willRotateView:)] ) {
@@ -665,7 +665,7 @@ NS_ASSUME_NONNULL_END
         if ( !self ) return NO;
         
         if ( self.isLockedScreen ) return NO;
-
+        
         SJDisablePlayerGestureTypes disableTypes = self.disableGestureTypes;
         if ( SJDisablePlayerGestureTypes_All == (disableTypes & SJDisablePlayerGestureTypes_All)  ) {
             disableTypes = SJDisablePlayerGestureTypes_Pan | SJDisablePlayerGestureTypes_Pinch | SJDisablePlayerGestureTypes_DoubleTap | SJDisablePlayerGestureTypes_SingleTap;
@@ -701,11 +701,11 @@ NS_ASSUME_NONNULL_END
         }
         
         if ( SJVideoPlayerPlayState_Unknown == self.state ||
-             SJVideoPlayerPlayState_Prepare == self.state ||
-             SJVideoPlayerPlayState_PlayFailed == self.state ) return NO;
+            SJVideoPlayerPlayState_Prepare == self.state ||
+            SJVideoPlayerPlayState_PlayFailed == self.state ) return NO;
         
         if ( SJPlayerGestureType_Pan == type &&
-             self.isPlayOnScrollView &&
+            self.isPlayOnScrollView &&
             !self.orentationObserver.isFullScreen ) return NO;
         
         if ( self.controlLayerDataSource &&
@@ -889,12 +889,18 @@ NS_ASSUME_NONNULL_END
         if ( !self ) return;
         self.resignActive = YES;
         if ( self.state != SJVideoPlayerPlayState_Paused && self.pauseWhenAppResignActive ) [self pause];
+        if ( [self.controlLayerDelegate respondsToSelector:@selector(appWillResignActive:)] ) {
+            [self.controlLayerDelegate appWillResignActive:self];
+        }
     };
     
     _registrar.didBecomeActive = ^(SJVideoPlayerRegistrar * _Nonnull registrar) {
         __strong typeof(_self) self = _self;
         if ( !self ) return;
         self.resignActive = NO;
+        if ( [self.controlLayerDelegate respondsToSelector:@selector(appDidBecomeActive:)] ) {
+            [self.controlLayerDelegate appDidBecomeActive:self];
+        }
     };
     
     _registrar.oldDeviceUnavailable = ^(SJVideoPlayerRegistrar * _Nonnull registrar) {
@@ -1188,9 +1194,9 @@ NS_ASSUME_NONNULL_END
 
 - (BOOL)play {
     self.suspend = NO;
-
+    
     if ( self.state ==  SJVideoPlayerPlayState_PlayFailed ||
-         self.state == SJVideoPlayerPlayState_Unknown ) return NO;
+        self.state == SJVideoPlayerPlayState_Unknown ) return NO;
     
     self.userClickedPause = NO;
     if ( !self.asset ) return NO;
@@ -1204,7 +1210,7 @@ NS_ASSUME_NONNULL_END
     self.suspend = YES;
     
     if ( self.state ==  SJVideoPlayerPlayState_PlayFailed ||
-         self.state == SJVideoPlayerPlayState_Unknown ) return NO;
+        self.state == SJVideoPlayerPlayState_Unknown ) return NO;
     
     self.userClickedPause = NO;
     if ( !self.asset ) return NO;

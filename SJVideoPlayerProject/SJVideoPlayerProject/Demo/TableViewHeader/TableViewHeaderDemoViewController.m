@@ -74,7 +74,7 @@ static NSString *const SJVideoListTableViewCellID = @"SJVideoListTableViewCell";
         __strong typeof(_self) self = _self;
         if ( !self ) return;
         SJVideoPlayerURLAsset *asset =
-        [[SJVideoPlayerURLAsset alloc] initWithAssetURL:[NSURL URLWithString:@"http://vod.lanwuzhe.com/d57eed43d9a344e486b79ae505fb9044/18b1aeb398e04ffaa9de48f223dcf0ca-5287d2089db37e62345123a1be272f8b.mp4?video="]
+        [[SJVideoPlayerURLAsset alloc] initWithAssetURL:[NSURL URLWithString:@"http://video.cdn.lanwuzhe.com/14945858406905f0c"]
                                               beginTime:0
                            playerSuperViewOfTableHeader:view
                                               tableView:self.tableView];

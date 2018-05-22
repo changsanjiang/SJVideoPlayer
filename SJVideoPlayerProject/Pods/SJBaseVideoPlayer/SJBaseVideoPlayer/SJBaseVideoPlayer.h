@@ -770,6 +770,10 @@ typedef NS_ENUM(NSInteger, SJNetworkStatus) {
 #pragma mark - Network
 /// 网络状态变更
 - (void)videoPlayer:(__kindof SJBaseVideoPlayer *)videoPlayer reachabilityChanged:(SJNetworkStatus)status;
+
+#pragma mark -
+- (void)appWillResignActive:(__kindof SJBaseVideoPlayer *)videoPlayer;
+- (void)appDidBecomeActive:(__kindof SJBaseVideoPlayer *)videoPlayer;
 @end
 
 NS_ASSUME_NONNULL_END

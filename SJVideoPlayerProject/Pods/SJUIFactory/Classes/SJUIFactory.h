@@ -83,6 +83,8 @@ extern BOOL SJ_is_iPhoneX(void);
 + (UIView *)viewWithCornerRadius:(float)cornerRadius
                  backgroundColor:(UIColor * __nullable )backgroundColor;
 
++ (UIView *)shadowViewWithCornerRadius:(CGFloat)cornerRadius
+                       backgroundColor:(UIColor * __nullable )backgroundColor;
 @end
 
 
@@ -381,6 +383,13 @@ estimatedSectionFooterHeight:(CGFloat)estimatedSectionFooterHeight;
                               target:(id __nullable )target
                                  sel:(SEL __nullable )sel
                                  tag:(NSInteger)tag;
+
++ (UIButton *)shadowButtonWithCornerRadius:(CGFloat)cornerRadius
+                           backgroundColor:(UIColor *)backgroundColor
+                           attributedTitle:(NSAttributedString *)attributedTitle
+                                    target:(id __nullable )target
+                                       sel:(SEL __nullable )sel
+                                       tag:(NSInteger)tag;
 @end
 
 
@@ -460,14 +469,23 @@ estimatedSectionFooterHeight:(CGFloat)estimatedSectionFooterHeight;
 
 
 
-+ (UITextField *)textFieldWithAttrPlaceholder:(NSAttributedString * __nullable )placeholder
-                                         text:(NSString * __nullable )text
-                                         font:(UIFont * __nullable )font
-                                    textColor:(UIColor * __nullable )textColor
-                                 keyboardType:(UIKeyboardType)keyboardType
-                                returnKeyType:(UIReturnKeyType)returnKeyType
-                              backgroundColor:(UIColor * __nullable )backgroundColor;
++ (__kindof UITextField *)textFieldWithAttrPlaceholder:(NSAttributedString * __nullable )placeholder
+                                                  text:(NSString * __nullable )text
+                                                  font:(UIFont * __nullable )font
+                                             textColor:(UIColor * __nullable )textColor
+                                          keyboardType:(UIKeyboardType)keyboardType
+                                         returnKeyType:(UIReturnKeyType)returnKeyType
+                                       backgroundColor:(UIColor * __nullable )backgroundColor;
 
++ (__kindof UITextField *)textFieldWithAttrPlaceholder:(NSAttributedString * __nullable )placeholder
+                                                  text:(NSString * __nullable )text
+                                                  font:(UIFont * __nullable )font
+                                             textColor:(UIColor * __nullable )textColor
+                                          keyboardType:(UIKeyboardType)keyboardType
+                                         returnKeyType:(UIReturnKeyType)returnKeyType
+                                       backgroundColor:(UIColor * __nullable )backgroundColor
+                                   textChangedExeBlock:(void(^__nullable)(UITextField *textField))textChangeExeBlock
+                                        returnExeBlock:(void(^__nullable)(UITextField *textField))returnExeBlock;
 
 
 + (void)textField:(UITextField *)textField setPlaceholder:(NSString *)placeholder placeholderColor:(UIColor *)placeholderColor;

@@ -50,8 +50,12 @@ NS_ASSUME_NONNULL_END
 #pragma mark -
 
 - (void)setPlayer:(AVPlayer *)player {
-    if ( player == _player ) return;
+    if ( player == self.avLayer.player ) return;
     self.avLayer.player = player;
+}
+
+- (AVPlayer *)player {
+    return self.avLayer.player;
 }
 
 - (void)setPlaceholder:(UIImage *)placeholder {

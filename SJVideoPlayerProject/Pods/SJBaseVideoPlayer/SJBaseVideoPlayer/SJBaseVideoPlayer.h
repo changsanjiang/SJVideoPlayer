@@ -318,12 +318,21 @@ typedef NS_ENUM(NSInteger, SJNetworkStatus) {
 @property (nonatomic, getter=isAutoPlay) BOOL autoPlay;
 
 /**
- If Yes, player will be called pause method When Received `UIApplicationWillResignActiveNotification` notification.
+ If Yes, player will be called pause method When Received `UIApplicationDidEnterBackgroundNotification` notification.
  default is YES.
+ 
+ NO if you set, You need to set up `TARGETS` -> `Capability` -> enable `Background Modes` -> select this mode `Audio, AirPlay, and Picture in Picture`
+ 
+ 
+ 关于后台播放视频, 引用自: https://juejin.im/post/5a38e1a0f265da4327185a26
+ 
+ 当您想在后台播放视频时:
+ 1. 需要设置 videoPlayer.pauseWhenAppDidEnterBackground = NO; (该值默认为YES, 即App进入后台默认暂停).
+ 2. 前往 `TARGETS` -> `Capability` -> enable `Background Modes` -> select this mode `Audio, AirPlay, and Picture in Picture`
  
  readwrite.
  */
-@property (nonatomic) BOOL pauseWhenAppResignActive;
+@property (nonatomic) BOOL pauseWhenAppDidEnterBackground;
 
 - (BOOL)play;
 
@@ -774,6 +783,8 @@ typedef NS_ENUM(NSInteger, SJNetworkStatus) {
 #pragma mark -
 - (void)appWillResignActive:(__kindof SJBaseVideoPlayer *)videoPlayer;
 - (void)appDidBecomeActive:(__kindof SJBaseVideoPlayer *)videoPlayer;
+- (void)appWillEnterForeground:(__kindof SJBaseVideoPlayer *)videoPlayer;
+- (void)appDidEnterBackground:(__kindof SJBaseVideoPlayer *)videoPlayer;
 @end
 
 NS_ASSUME_NONNULL_END

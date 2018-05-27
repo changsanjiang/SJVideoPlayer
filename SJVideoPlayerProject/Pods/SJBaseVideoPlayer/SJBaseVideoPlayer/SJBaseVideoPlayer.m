@@ -205,10 +205,10 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic, assign, readwrite) BOOL suspend; // Set it when the [`pause` || `play` || `stop`] is called.
 
 /**
- App是否进入后台.
- 当进入后台时, 将会禁止播放器旋转, 并依据这个属性`videoPlayer.pauseWhenAppResignActive`来暂停播放.
+ App是否活跃
+ 当不活跃时, 将会禁止播放器旋转
  */
-@property (nonatomic, assign, readwrite) BOOL resignActive; // app 进入后台, 进入前台时会设置
+@property (nonatomic, assign, readwrite) BOOL resignActive;
 
 /**
  管理对象: 监听 App在前台, 后台, 耳机插拔的通知
@@ -273,15 +273,15 @@ NS_ASSUME_NONNULL_END
 - (instancetype)init {
     self = [super init];
     if ( !self ) return nil;
+    self.pauseWhenAppDidEnterBackground = YES; // App进入后台是否暂停播放, 默认yes
     NSError *error = nil;
-    
     // 使播放器在静音状态下也能放出声音
     [[AVAudioSession sharedInstance] setCategory:AVAudioSessionCategoryPlayback error:&error];
     if ( error ) NSLog(@"%@", error.userInfo);
-    self.autoPlay = YES;
-    self.enableControlLayerDisplayController = YES;
-    self.pauseWhenAppResignActive = YES;
-    self.playFailedToKeepAppearState = YES;
+    
+    self.autoPlay = YES; // 是否自动播放, 默认yes
+    self.enableControlLayerDisplayController = YES; // 是否启用控制层管理器, 默认yes
+    self.playFailedToKeepAppearState = YES; // 播放失败是否保持控制层显示, 默认yes
     [self registrar];
     return self;
 }
@@ -883,12 +883,18 @@ NS_ASSUME_NONNULL_END
     if ( _registrar ) return _registrar;
     _registrar = [SJVideoPlayerRegistrar new];
     
+    /**
+     关于后台播放视频, 引用自: https://juejin.im/post/5a38e1a0f265da4327185a26
+     
+     当您想在后台播放视频时:
+     1. 需要设置 videoPlayer.pauseWhenAppDidEnterBackground = NO; 该值默认为YES, 即App进入后台默认暂停.
+     2. 前往 `TARGETS` -> `Capability` -> enable `Background Modes` -> select this mode `Audio, AirPlay, and Picture in Picture`
+     */
     __weak typeof(self) _self = self;
     _registrar.willResignActive = ^(SJVideoPlayerRegistrar * _Nonnull registrar) {
         __strong typeof(_self) self = _self;
         if ( !self ) return;
         self.resignActive = YES;
-        if ( self.state != SJVideoPlayerPlayState_Paused && self.pauseWhenAppResignActive ) [self pause];
         if ( [self.controlLayerDelegate respondsToSelector:@selector(appWillResignActive:)] ) {
             [self.controlLayerDelegate appWillResignActive:self];
         }
@@ -900,6 +906,31 @@ NS_ASSUME_NONNULL_END
         self.resignActive = NO;
         if ( [self.controlLayerDelegate respondsToSelector:@selector(appDidBecomeActive:)] ) {
             [self.controlLayerDelegate appDidBecomeActive:self];
+        }
+    };
+    
+    _registrar.willEnterForeground = ^(SJVideoPlayerRegistrar * _Nonnull registrar) {
+        __strong typeof(_self) self = _self;
+        if ( !self ) return ;
+        if ( !self.presentView.player && self.asset.loadedPlayer ) {
+            self.presentView.player = self.asset.player;
+        }
+        if ( [self.controlLayerDelegate respondsToSelector:@selector(appWillEnterForeground:)] ) {
+            [self.controlLayerDelegate appWillEnterForeground:self];
+        }
+    };
+    
+    _registrar.didEnterBackground = ^(SJVideoPlayerRegistrar * _Nonnull registrar) {
+        __strong typeof(_self) self = _self;
+        if ( !self ) return ;
+        if ( self.pauseWhenAppDidEnterBackground ) {
+            if ( self.state != SJVideoPlayerPlayState_Paused ) [self pause];
+        }
+        else {
+            if ( self.state != SJVideoPlayerPlayState_Paused ) self.presentView.player = nil;
+        }
+        if ( [self.controlLayerDelegate respondsToSelector:@selector(appDidEnterBackground:)] ) {
+            [self.controlLayerDelegate appDidEnterBackground:self];
         }
     };
     
@@ -988,7 +1019,7 @@ NS_ASSUME_NONNULL_END
 #endif
     _presentView.playState = state;
     
-    if ( state == SJVideoPlayerPlayState_Paused && self.pausedToKeepAppearState && self.registrar.state == SJVideoPlayerBackstageState_Forground ) [self.displayRecorder layerAppear];
+    if ( state == SJVideoPlayerPlayState_Paused && self.pausedToKeepAppearState && self.registrar.state == SJVideoPlayerAppState_Forground ) [self.displayRecorder layerAppear];
     
     if ( [self.controlLayerDelegate respondsToSelector:@selector(videoPlayer:stateChanged:)] ) {
         [self.controlLayerDelegate videoPlayer:self stateChanged:state];
@@ -996,8 +1027,10 @@ NS_ASSUME_NONNULL_END
 }
 
 - (void)clearAsset {
-    [self.presentView.player replaceCurrentItemWithPlayerItem:nil];
-    self.presentView.player = nil;
+    if ( !self.asset.isOtherAsset ) {
+        [self.presentView.player replaceCurrentItemWithPlayerItem:nil];
+        self.presentView.player = nil;
+    }
     self.URLAsset = nil;
 }
 
@@ -1184,11 +1217,11 @@ NS_ASSUME_NONNULL_END
     return [objc_getAssociatedObject(self, _cmd) boolValue];
 }
 
-- (void)setPauseWhenAppResignActive:(BOOL)pauseWhenAppResignActive {
-    objc_setAssociatedObject(self, @selector(pauseWhenAppResignActive), @(pauseWhenAppResignActive), OBJC_ASSOCIATION_RETAIN_NONATOMIC);
+- (void)setPauseWhenAppDidEnterBackground:(BOOL)pauseWhenAppDidEnterBackground {
+    objc_setAssociatedObject(self, @selector(pauseWhenAppDidEnterBackground), @(pauseWhenAppDidEnterBackground), OBJC_ASSOCIATION_RETAIN_NONATOMIC);
 }
 
-- (BOOL)pauseWhenAppResignActive {
+- (BOOL)pauseWhenAppDidEnterBackground {
     return [objc_getAssociatedObject(self, _cmd) boolValue];
 }
 

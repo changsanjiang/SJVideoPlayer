@@ -11,7 +11,7 @@
 
 @interface SJVideoPlayerRegistrar ()
 
-@property (nonatomic, assign, readwrite) SJVideoPlayerBackstageState state;
+@property (nonatomic, assign, readwrite) SJVideoPlayerAppState state;
 
 @end
 
@@ -25,6 +25,11 @@
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(applicationWillResignActiveNotification) name:UIApplicationWillResignActiveNotification object:nil];
     
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(applicationDidBecomeActiveNotification) name:UIApplicationDidBecomeActiveNotification object:nil];
+    
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(applicationWillEnterForegroundNotification) name:UIApplicationWillEnterForegroundNotification object:nil];
+    
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(applicationDidEnterBackgroundNotification) name:UIApplicationDidEnterBackgroundNotification object:nil];
+
     return self;
 }
 
@@ -57,13 +62,23 @@
 }
 
 - (void)applicationWillResignActiveNotification {
-    self.state = SJVideoPlayerBackstageState_Background;
+    self.state = SJVideoPlayerAppState_ResignActive;
     if ( _willResignActive ) _willResignActive(self);
 }
 
 - (void)applicationDidBecomeActiveNotification {
-    self.state = SJVideoPlayerBackstageState_Forground;
+    self.state = SJVideoPlayerAppState_BecomeActive;
     if ( _didBecomeActive ) _didBecomeActive(self);
+}
+
+- (void)applicationWillEnterForegroundNotification {
+    self.state = SJVideoPlayerAppState_Forground;
+    if ( _willEnterForeground ) _willEnterForeground(self);
+}
+
+- (void)applicationDidEnterBackgroundNotification {
+    self.state = SJVideoPlayerAppState_Background;
+    if ( _didEnterBackground ) _didEnterBackground(self);
 }
 
 @end

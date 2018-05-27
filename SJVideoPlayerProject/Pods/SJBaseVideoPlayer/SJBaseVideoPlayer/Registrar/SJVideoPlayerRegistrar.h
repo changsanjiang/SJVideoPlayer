@@ -10,18 +10,24 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
-typedef NS_ENUM(NSUInteger, SJVideoPlayerBackstageState) {
-    SJVideoPlayerBackstageState_Forground,  // 从后台进入前台
-    SJVideoPlayerBackstageState_Background, // 从前台进入后台
+typedef NS_ENUM(NSUInteger, SJVideoPlayerAppState) {
+    SJVideoPlayerAppState_ResignActive,
+    SJVideoPlayerAppState_BecomeActive,
+    SJVideoPlayerAppState_Forground,  // 从后台进入前台
+    SJVideoPlayerAppState_Background, // 从前台进入后台
 };
 
 @interface SJVideoPlayerRegistrar : NSObject
 
-@property (nonatomic, assign, readonly) SJVideoPlayerBackstageState state;
+@property (nonatomic, assign, readonly) SJVideoPlayerAppState state;
 
 @property (nonatomic, copy, readwrite, nullable) void(^willResignActive)(SJVideoPlayerRegistrar *registrar);
 
 @property (nonatomic, copy, readwrite, nullable) void(^didBecomeActive)(SJVideoPlayerRegistrar *registrar);
+
+@property (nonatomic, copy, readwrite, nullable) void(^willEnterForeground)(SJVideoPlayerRegistrar *registrar);
+
+@property (nonatomic, copy, readwrite, nullable) void(^didEnterBackground)(SJVideoPlayerRegistrar *registrar);
 
 @property (nonatomic, copy, readwrite, nullable) void(^newDeviceAvailable)(SJVideoPlayerRegistrar *registrar);
 

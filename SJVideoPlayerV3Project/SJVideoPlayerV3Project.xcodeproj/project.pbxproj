@@ -68,6 +68,7 @@
 		A610C0A620BD761F00A3134D /* SJVideoPlayerSwitcher.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = SJVideoPlayerSwitcher.h; sourceTree = "<group>"; };
 		A610C0A720BD761F00A3134D /* SJVideoPlayerSwitcher.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = SJVideoPlayerSwitcher.m; sourceTree = "<group>"; };
 		A610C0A920BD768C00A3134D /* AVFoundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AVFoundation.framework; path = System/Library/Frameworks/AVFoundation.framework; sourceTree = SDKROOT; };
+		A63FFA8620BD8508009C7F59 /* SJDefaultControlLayerType.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = SJDefaultControlLayerType.h; sourceTree = "<group>"; };
 		B18206B987FE680C14F856D4 /* Pods-SJVideoPlayerV3ProjectTests.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-SJVideoPlayerV3ProjectTests.debug.xcconfig"; path = "Pods/Target Support Files/Pods-SJVideoPlayerV3ProjectTests/Pods-SJVideoPlayerV3ProjectTests.debug.xcconfig"; sourceTree = "<group>"; };
 		CC1B9E68A1CBA65B88C79F5D /* Pods-SJVideoPlayerV3ProjectUITests.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-SJVideoPlayerV3ProjectUITests.debug.xcconfig"; path = "Pods/Target Support Files/Pods-SJVideoPlayerV3ProjectUITests/Pods-SJVideoPlayerV3ProjectUITests.debug.xcconfig"; sourceTree = "<group>"; };
 		F2388EDFD8615B195E1CC158 /* Pods-SJVideoPlayerV3ProjectTests.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-SJVideoPlayerV3ProjectTests.release.xcconfig"; path = "Pods/Target Support Files/Pods-SJVideoPlayerV3ProjectTests/Pods-SJVideoPlayerV3ProjectTests.release.xcconfig"; sourceTree = "<group>"; };
@@ -190,6 +191,7 @@
 				A610C0A420BD745800A3134D /* SJVideoPlayer.m */,
 				A610C0A620BD761F00A3134D /* SJVideoPlayerSwitcher.h */,
 				A610C0A720BD761F00A3134D /* SJVideoPlayerSwitcher.m */,
+				A63FFA8620BD8508009C7F59 /* SJDefaultControlLayerType.h */,
 			);
 			path = SJVideoPlayer;
 			sourceTree = "<group>";

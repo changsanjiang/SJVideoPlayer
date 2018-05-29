@@ -127,7 +127,6 @@
 - (void)pushNextVC {
     [self.navigationController pushViewController:[[self class] new] animated:YES];
 }
-
 - (UIButton *)otherVideoBtn {
     if ( _otherVideoBtn ) return _otherVideoBtn;
     _otherVideoBtn = [SJUIButtonFactory buttonWithTitle:@"Other"

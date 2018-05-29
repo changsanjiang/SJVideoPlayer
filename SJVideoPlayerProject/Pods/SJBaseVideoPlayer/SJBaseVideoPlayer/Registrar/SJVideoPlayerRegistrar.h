@@ -35,6 +35,8 @@ typedef NS_ENUM(NSUInteger, SJVideoPlayerAppState) {
 
 @property (nonatomic, copy, readwrite, nullable) void(^categoryChange)(SJVideoPlayerRegistrar *registrar);
 
+@property (nonatomic, copy, readwrite, nullable) void(^audioSessionInterruption)(SJVideoPlayerRegistrar *registrar);
+
 @end
 
 NS_ASSUME_NONNULL_END

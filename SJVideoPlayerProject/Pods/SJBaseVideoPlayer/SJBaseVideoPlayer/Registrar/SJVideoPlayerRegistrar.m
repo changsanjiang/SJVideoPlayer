@@ -30,6 +30,8 @@
     
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(applicationDidEnterBackgroundNotification) name:UIApplicationDidEnterBackgroundNotification object:nil];
 
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(audioSessionInterruptionNotification:) name:AVAudioSessionInterruptionNotification object:[AVAudioSession sharedInstance]];
+
     return self;
 }
 
@@ -81,4 +83,10 @@
     if ( _didEnterBackground ) _didEnterBackground(self);
 }
 
+- (void)audioSessionInterruptionNotification:(NSNotification *)notification{
+    NSDictionary *info = notification.userInfo;
+    if( (AVAudioSessionInterruptionType)[info[AVAudioSessionInterruptionTypeKey] integerValue] == AVAudioSessionInterruptionTypeBegan ) {
+        if ( _audioSessionInterruption ) _audioSessionInterruption(self);
+    }
+}
 @end

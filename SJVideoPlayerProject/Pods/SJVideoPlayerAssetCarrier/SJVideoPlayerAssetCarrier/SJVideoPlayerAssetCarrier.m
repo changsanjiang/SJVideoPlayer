@@ -148,14 +148,14 @@ NS_ASSUME_NONNULL_END
     _scrollViewCarrier.delegate = self;
     return self;
 }
-- (instancetype)initWithOtherAsset:(__weak id<SJPlayerAVCarrier>)asset {
+- (instancetype)initWithOtherAsset:(__weak SJVideoPlayerAssetCarrier *)asset {
     self = [super init];
     if ( !self ) return nil;
-    _AVCarrier = [[SJPlayerAVCarrier alloc] initWithOtherCarrier:asset];
+    _AVCarrier = [[SJPlayerAVCarrier alloc] initWithOtherCarrier:asset.AVCarrier];
     _AVCarrier.delegate = self;
     return self;
 }
-- (instancetype)initWithOtherAsset:(__weak id<SJPlayerAVCarrier>)asset
+- (instancetype)initWithOtherAsset:(__weak SJVideoPlayerAssetCarrier *)asset
                         scrollView:(__unsafe_unretained UIScrollView * __nullable)tableOrCollectionView
                          indexPath:(NSIndexPath * __nullable)indexPath
                       superviewTag:(NSInteger)superviewTag {
@@ -167,7 +167,7 @@ NS_ASSUME_NONNULL_END
                          scrollView:tableOrCollectionView
                      rootScrollView:nil];
 }
-- (instancetype)initWithOtherAsset:(__weak id<SJPlayerAVCarrier>)asset
+- (instancetype)initWithOtherAsset:(__weak SJVideoPlayerAssetCarrier *)asset
       playerSuperViewOfTableHeader:(__unsafe_unretained UIView *)superView
                          tableView:(__unsafe_unretained UITableView *)tableView {
     self = [self initWithOtherAsset:asset];
@@ -177,7 +177,7 @@ NS_ASSUME_NONNULL_END
     _scrollViewCarrier.delegate = self;
     return self;
 }
-- (instancetype)initWithOtherAsset:(__weak id<SJPlayerAVCarrier>)asset
+- (instancetype)initWithOtherAsset:(__weak SJVideoPlayerAssetCarrier *)asset
        collectionViewOfTableHeader:(__unsafe_unretained UICollectionView *)collectionView
            collectionCellIndexPath:(NSIndexPath *)indexPath
                 playerSuperViewTag:(NSInteger)playerSuperViewTag
@@ -192,7 +192,7 @@ NS_ASSUME_NONNULL_END
     return self;
     
 }
-- (instancetype)initWithOtherAsset:(__weak id<SJPlayerAVCarrier>)asset
+- (instancetype)initWithOtherAsset:(__weak SJVideoPlayerAssetCarrier *)asset
                          indexPath:(NSIndexPath *__nullable)indexPath
                       superviewTag:(NSInteger)superviewTag
                scrollViewIndexPath:(NSIndexPath *__nullable)scrollViewIndexPath
@@ -215,7 +215,7 @@ NS_ASSUME_NONNULL_END
                          scrollView:scrollView
                      rootScrollView:rootScrollView];
 }
-- (instancetype)initWithOtherAsset:(__weak id<SJPlayerAVCarrier>)asset
+- (instancetype)initWithOtherAsset:(__weak SJVideoPlayerAssetCarrier *)asset
                          indexPath:(NSIndexPath *__nullable)indexPath
                       superviewTag:(NSInteger)superviewTag
                scrollViewIndexPath:(NSIndexPath *__nullable)scrollViewIndexPath
@@ -367,7 +367,6 @@ NS_ASSUME_NONNULL_END
     return _AVCarrier.isOtherAsset;
 }
 
-
 - (NSString *)timeString:(NSInteger)secs {
     return [_AVCarrier timeString:secs];
 }
@@ -409,9 +408,6 @@ NS_ASSUME_NONNULL_END
 }
 - (NSArray<SJVideoPreviewModel *> *)generatedPreviewImages {
     return _AVCarrier.generatedPreviewImages;
-}
-- (CGSize)maxItemSize {
-    return _AVCarrier.maxItemSize;
 }
 - (void)generatedPreviewImagesWithMaxItemSize:(CGSize)itemSize
                                    completion:(void(^)(SJVideoPlayerAssetCarrier *asset, NSArray<SJVideoPreviewModel *> *__nullable images, NSError *__nullable error))block {

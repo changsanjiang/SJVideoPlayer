@@ -162,31 +162,31 @@ NS_ASSUME_NONNULL_BEGIN
 
 #pragma mark -
 /// video player -> UIView
-- (instancetype)initWithOtherAsset:(__weak id<SJPlayerAVCarrier>)asset;
+- (instancetype)initWithOtherAsset:(__weak SJVideoPlayerAssetCarrier *)asset;
 /// video player -> cell -> table || collection view
-- (instancetype)initWithOtherAsset:(__weak id<SJPlayerAVCarrier>)asset
+- (instancetype)initWithOtherAsset:(__weak SJVideoPlayerAssetCarrier *)asset
                         scrollView:(__unsafe_unretained UIScrollView * __nullable)tableOrCollectionView
                          indexPath:(NSIndexPath * __nullable)indexPath
                       superviewTag:(NSInteger)superviewTag;
 /// video player -> table header view -> table view
-- (instancetype)initWithOtherAsset:(__weak id<SJPlayerAVCarrier>)asset
+- (instancetype)initWithOtherAsset:(__weak SJVideoPlayerAssetCarrier *)asset
       playerSuperViewOfTableHeader:(__unsafe_unretained UIView *)superView
                          tableView:(__unsafe_unretained UITableView *)tableView;
 /// video player -> cell -> collection view -> table header view -> table view
-- (instancetype)initWithOtherAsset:(__weak id<SJPlayerAVCarrier>)asset
+- (instancetype)initWithOtherAsset:(__weak SJVideoPlayerAssetCarrier *)asset
        collectionViewOfTableHeader:(__unsafe_unretained UICollectionView *)collectionView
            collectionCellIndexPath:(NSIndexPath *)indexPath
                 playerSuperViewTag:(NSInteger)playerSuperViewTag
                      rootTableView:(__unsafe_unretained UITableView *)rootTableView;
 /// video player -> collection cell -> collection view -> table cell -> table view.
-- (instancetype)initWithOtherAsset:(__weak id<SJPlayerAVCarrier>)asset
+- (instancetype)initWithOtherAsset:(__weak SJVideoPlayerAssetCarrier *)asset
                          indexPath:(NSIndexPath *__nullable)indexPath
                       superviewTag:(NSInteger)superviewTag
                scrollViewIndexPath:(NSIndexPath *__nullable)scrollViewIndexPath
                      scrollViewTag:(NSInteger)scrollViewTag
                     rootScrollView:(__unsafe_unretained UIScrollView *__nullable)rootScrollView;
 /// video player -> collection cell -> collection view -> table cell -> table view.
-- (instancetype)initWithOtherAsset:(__weak id<SJPlayerAVCarrier>)asset
+- (instancetype)initWithOtherAsset:(__weak SJVideoPlayerAssetCarrier *)asset
                          indexPath:(NSIndexPath *__nullable)indexPath
                       superviewTag:(NSInteger)superviewTag
                scrollViewIndexPath:(NSIndexPath *__nullable)scrollViewIndexPath
@@ -242,7 +242,6 @@ NS_ASSUME_NONNULL_BEGIN
 #pragma mark - preview images
 @property (nonatomic, assign, readonly) BOOL hasBeenGeneratedPreviewImages;
 @property (nonatomic, strong, readonly, nullable) NSArray<SJVideoPreviewModel *> *generatedPreviewImages;
-@property (nonatomic, assign, readonly) CGSize maxItemSize;
 - (void)generatedPreviewImagesWithMaxItemSize:(CGSize)itemSize
                                    completion:(void(^)(SJVideoPlayerAssetCarrier *asset, NSArray<SJVideoPreviewModel *> *__nullable images, NSError *__nullable error))block;
 

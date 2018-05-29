@@ -946,6 +946,11 @@ NS_ASSUME_NONNULL_END
     //
     //    };
     
+    _registrar.audioSessionInterruption = ^(SJVideoPlayerRegistrar * _Nonnull registrar) {
+        __strong typeof(_self) self = _self;
+        if ( !self ) return ;
+        if ( self.state != SJVideoPlayerPlayState_Paused ) [self pause];
+    };
     return _registrar;
 }
 
@@ -1170,7 +1175,7 @@ NS_ASSUME_NONNULL_END
 - (void)setMute:(BOOL)mute {
     if ( mute == self.mute ) return;
     objc_setAssociatedObject(self, @selector(mute), @(mute), OBJC_ASSOCIATION_RETAIN_NONATOMIC);
-    self.asset.player.volume = !mute;
+    self.asset.player.muted = mute;
     if ( [self.controlLayerDelegate respondsToSelector:@selector(videoPlayer:muteChanged:)] ) {
         [self.controlLayerDelegate videoPlayer:self muteChanged:mute];
     }

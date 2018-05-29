@@ -18,6 +18,8 @@
 		A610C08A20BD72A800A3134D /* SJVideoPlayerV3ProjectTests.m in Sources */ = {isa = PBXBuildFile; fileRef = A610C08920BD72A800A3134D /* SJVideoPlayerV3ProjectTests.m */; };
 		A610C09520BD72A800A3134D /* SJVideoPlayerV3ProjectUITests.m in Sources */ = {isa = PBXBuildFile; fileRef = A610C09420BD72A800A3134D /* SJVideoPlayerV3ProjectUITests.m */; };
 		A610C0A520BD745800A3134D /* SJVideoPlayer.m in Sources */ = {isa = PBXBuildFile; fileRef = A610C0A420BD745800A3134D /* SJVideoPlayer.m */; };
+		A610C0A820BD761F00A3134D /* SJVideoPlayerSwitcher.m in Sources */ = {isa = PBXBuildFile; fileRef = A610C0A720BD761F00A3134D /* SJVideoPlayerSwitcher.m */; };
+		A610C0AA20BD768C00A3134D /* AVFoundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = A610C0A920BD768C00A3134D /* AVFoundation.framework */; };
 		EF1E706B60C80A7B1F0E1DC7 /* libPods-SJVideoPlayerV3ProjectTests.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 5E840E04D6752F4164C698CB /* libPods-SJVideoPlayerV3ProjectTests.a */; };
 /* End PBXBuildFile section */
 
@@ -63,6 +65,9 @@
 		A610C09620BD72A800A3134D /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		A610C0A320BD745800A3134D /* SJVideoPlayer.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = SJVideoPlayer.h; sourceTree = "<group>"; };
 		A610C0A420BD745800A3134D /* SJVideoPlayer.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = SJVideoPlayer.m; sourceTree = "<group>"; };
+		A610C0A620BD761F00A3134D /* SJVideoPlayerSwitcher.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = SJVideoPlayerSwitcher.h; sourceTree = "<group>"; };
+		A610C0A720BD761F00A3134D /* SJVideoPlayerSwitcher.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = SJVideoPlayerSwitcher.m; sourceTree = "<group>"; };
+		A610C0A920BD768C00A3134D /* AVFoundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AVFoundation.framework; path = System/Library/Frameworks/AVFoundation.framework; sourceTree = SDKROOT; };
 		B18206B987FE680C14F856D4 /* Pods-SJVideoPlayerV3ProjectTests.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-SJVideoPlayerV3ProjectTests.debug.xcconfig"; path = "Pods/Target Support Files/Pods-SJVideoPlayerV3ProjectTests/Pods-SJVideoPlayerV3ProjectTests.debug.xcconfig"; sourceTree = "<group>"; };
 		CC1B9E68A1CBA65B88C79F5D /* Pods-SJVideoPlayerV3ProjectUITests.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-SJVideoPlayerV3ProjectUITests.debug.xcconfig"; path = "Pods/Target Support Files/Pods-SJVideoPlayerV3ProjectUITests/Pods-SJVideoPlayerV3ProjectUITests.debug.xcconfig"; sourceTree = "<group>"; };
 		F2388EDFD8615B195E1CC158 /* Pods-SJVideoPlayerV3ProjectTests.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-SJVideoPlayerV3ProjectTests.release.xcconfig"; path = "Pods/Target Support Files/Pods-SJVideoPlayerV3ProjectTests/Pods-SJVideoPlayerV3ProjectTests.release.xcconfig"; sourceTree = "<group>"; };
@@ -73,6 +78,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				A610C0AA20BD768C00A3134D /* AVFoundation.framework in Frameworks */,
 				091EF20FA950F588F83FD5AC /* libPods-SJVideoPlayerV3Project.a in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -99,6 +105,7 @@
 		9B3D891A3E92FEA1DB4DB7AF /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				A610C0A920BD768C00A3134D /* AVFoundation.framework */,
 				44D617A58C117FD172A58C30 /* libPods-SJVideoPlayerV3Project.a */,
 				5E840E04D6752F4164C698CB /* libPods-SJVideoPlayerV3ProjectTests.a */,
 				7EDCA49BC05693D04D13E012 /* libPods-SJVideoPlayerV3ProjectUITests.a */,
@@ -181,6 +188,8 @@
 			children = (
 				A610C0A320BD745800A3134D /* SJVideoPlayer.h */,
 				A610C0A420BD745800A3134D /* SJVideoPlayer.m */,
+				A610C0A620BD761F00A3134D /* SJVideoPlayerSwitcher.h */,
+				A610C0A720BD761F00A3134D /* SJVideoPlayerSwitcher.m */,
 			);
 			path = SJVideoPlayer;
 			sourceTree = "<group>";
@@ -396,6 +405,7 @@
 			files = (
 				A610C07520BD72A600A3134D /* ViewController.m in Sources */,
 				A610C08020BD72A700A3134D /* main.m in Sources */,
+				A610C0A820BD761F00A3134D /* SJVideoPlayerSwitcher.m in Sources */,
 				A610C07220BD72A600A3134D /* AppDelegate.m in Sources */,
 				A610C0A520BD745800A3134D /* SJVideoPlayer.m in Sources */,
 			);

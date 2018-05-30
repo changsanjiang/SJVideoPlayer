@@ -16,11 +16,16 @@ NS_ASSUME_NONNULL_BEGIN
  切换到GIF控制层,  就设置 baseVideoPlayer.delegate = GIF控制层
  切换到导出视频的控制层, 就设置 baseVideoPlayer.delegate = 导出视频控制层
  
+ 思路:
  1. 控制层告诉`切换器`需要切换控制层了
- 2. `切换器`通知`delegate`切换控制层
- 3. `delegate`选择好一个控制层交个`切换器` 进行切换
+ 2. `切换器`负责切换控制层
+            2.1 如果`切换器`存在`代理`, 则询问`代理`是否`切换器`自己处理
+            2.2 如果`代理说``切换器`你别不处理, 则让`代理`返回一个控制层
+                2.2.1 如果未返回, 是直接crash还是警告处理?
+ 3. 拿到控制层后, 设置base播放器的delegate和dataSource
  
  
+ 问题:
  1. `控制层`怎么告诉`切换器` .....
  */
 @protocol SJVideoPlayerSwitcherDelegate <NSObject>

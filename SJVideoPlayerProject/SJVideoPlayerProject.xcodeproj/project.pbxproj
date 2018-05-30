@@ -74,6 +74,7 @@
 		A6441092200A3FA9006FD832 /* SJVideoListViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = A6441091200A3FA9006FD832 /* SJVideoListViewController.m */; };
 		A6441095200A3FBA006FD832 /* SJVideoListTableViewCell.m in Sources */ = {isa = PBXBuildFile; fileRef = A6441094200A3FBA006FD832 /* SJVideoListTableViewCell.m */; };
 		A6441098200A406E006FD832 /* SJVideoModel.m in Sources */ = {isa = PBXBuildFile; fileRef = A6441097200A406E006FD832 /* SJVideoModel.m */; };
+		A67E153C20BE7F71002ECC48 /* LandscapeViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = A67E153B20BE7F71002ECC48 /* LandscapeViewController.m */; };
 		A6E6D34F2028BE9B00CB9BAE /* SJVideoPlayerControlMaskView.m in Sources */ = {isa = PBXBuildFile; fileRef = A6E6D3002028BE9B00CB9BAE /* SJVideoPlayerControlMaskView.m */; };
 		A6E6D3502028BE9B00CB9BAE /* UIView+SJControlAdd.m in Sources */ = {isa = PBXBuildFile; fileRef = A6E6D3042028BE9B00CB9BAE /* UIView+SJControlAdd.m */; };
 		A6E6D3522028BE9B00CB9BAE /* SJVideoPlayerURLAsset+SJControlAdd.m in Sources */ = {isa = PBXBuildFile; fileRef = A6E6D3072028BE9B00CB9BAE /* SJVideoPlayerURLAsset+SJControlAdd.m */; };
@@ -229,6 +230,8 @@
 		A6441094200A3FBA006FD832 /* SJVideoListTableViewCell.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = SJVideoListTableViewCell.m; sourceTree = "<group>"; };
 		A6441096200A406E006FD832 /* SJVideoModel.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = SJVideoModel.h; sourceTree = "<group>"; };
 		A6441097200A406E006FD832 /* SJVideoModel.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = SJVideoModel.m; sourceTree = "<group>"; };
+		A67E153A20BE7F71002ECC48 /* LandscapeViewController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = LandscapeViewController.h; sourceTree = "<group>"; };
+		A67E153B20BE7F71002ECC48 /* LandscapeViewController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = LandscapeViewController.m; sourceTree = "<group>"; };
 		A6E6D3002028BE9B00CB9BAE /* SJVideoPlayerControlMaskView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SJVideoPlayerControlMaskView.m; sourceTree = "<group>"; };
 		A6E6D3012028BE9B00CB9BAE /* SJVideoPlayerControlMaskView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SJVideoPlayerControlMaskView.h; sourceTree = "<group>"; };
 		A6E6D3042028BE9B00CB9BAE /* UIView+SJControlAdd.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "UIView+SJControlAdd.m"; sourceTree = "<group>"; };
@@ -664,6 +667,7 @@
 				77033C11204E75F3008F1ED5 /* ViewController */,
 				773AFC71205D06DE003B2CAC /* Download_下载 */,
 				7706FC8D2062A818006A828B /* Lightweight_轻量级播放器 */,
+				A67E153920BE7F01002ECC48 /* OnlyLandscape_仅横屏 */,
 			);
 			path = Demo;
 			sourceTree = "<group>";
@@ -715,6 +719,15 @@
 				A6F4E9702007A10B00716B9C /* CollectionView */,
 			);
 			path = OtherDemo;
+			sourceTree = "<group>";
+		};
+		A67E153920BE7F01002ECC48 /* OnlyLandscape_仅横屏 */ = {
+			isa = PBXGroup;
+			children = (
+				A67E153A20BE7F71002ECC48 /* LandscapeViewController.h */,
+				A67E153B20BE7F71002ECC48 /* LandscapeViewController.m */,
+			);
+			path = "OnlyLandscape_仅横屏";
 			sourceTree = "<group>";
 		};
 		A6E6D2EE2028BE9B00CB9BAE /* SJVideoPlayer */ = {
@@ -968,6 +981,7 @@
 				77F4EFFA204029E3004748F6 /* SJSharedVideoPlayerHelper.m in Sources */,
 				774B252B1FCEBA5D002113CC /* main.m in Sources */,
 				7706FC962062ABA8006A828B /* LightweightTableViewCell.m in Sources */,
+				A67E153C20BE7F71002ECC48 /* LandscapeViewController.m in Sources */,
 				7766A62D207F3C50008B3C1A /* TestUploader.m in Sources */,
 				772005772029BBC7009F0190 /* SJMoreSettingItems.m in Sources */,
 				775B201920465E1500264AB9 /* TableHeaderCollectionView.m in Sources */,

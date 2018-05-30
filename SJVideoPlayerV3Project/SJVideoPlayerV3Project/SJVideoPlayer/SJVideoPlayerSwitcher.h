@@ -17,17 +17,13 @@ NS_ASSUME_NONNULL_BEGIN
  切换到导出视频的控制层, 就设置 baseVideoPlayer.delegate = 导出视频控制层
  
  1. 控制层告诉`切换器`需要切换控制层了
- 
  2. `切换器`通知`delegate`切换控制层
- 
  3. `delegate`选择好一个控制层交个`切换器` 进行切换
  
  
  1. `控制层`怎么告诉`切换器` .....
  */
 @protocol SJVideoPlayerSwitcherDelegate <NSObject>
-
-
 
 @end
 

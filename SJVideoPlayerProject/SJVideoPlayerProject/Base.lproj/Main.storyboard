@@ -1,11 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="13771" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES" initialViewController="p9g-nt-8Rf">
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="14109" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES" initialViewController="p9g-nt-8Rf">
     <device id="retina4_7" orientation="portrait">
         <adaptation id="fullscreen"/>
     </device>
     <dependencies>
         <deployment version="2304" identifier="iOS"/>
-        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="13772"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="14088"/>
         <capability name="Safe area layout guides" minToolsVersion="9.0"/>
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
     </dependencies>
@@ -88,9 +88,17 @@
                                     <action selector="lightweight:" destination="BYZ-38-t0r" eventType="touchUpInside" id="mEo-GL-uV4"/>
                                 </connections>
                             </button>
+                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="RIg-cw-udN">
+                                <rect key="frame" x="164" y="551" width="46" height="30"/>
+                                <state key="normal" title="仅横屏"/>
+                                <connections>
+                                    <action selector="landscape:" destination="BYZ-38-t0r" eventType="touchUpInside" id="KOx-Lm-3ie"/>
+                                </connections>
+                            </button>
                         </subviews>
                         <color key="backgroundColor" red="1" green="1" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                         <constraints>
+                            <constraint firstItem="RIg-cw-udN" firstAttribute="top" secondItem="YcL-vo-yLH" secondAttribute="bottom" constant="15" id="66Z-xX-qcK"/>
                             <constraint firstItem="jUw-fL-Eph" firstAttribute="centerX" secondItem="New-u4-aTv" secondAttribute="centerX" id="6WM-he-EE8"/>
                             <constraint firstItem="wr7-x4-Iha" firstAttribute="centerX" secondItem="BUy-1v-vW5" secondAttribute="centerX" id="7AM-NR-w2T"/>
                             <constraint firstItem="BUy-1v-vW5" firstAttribute="centerX" secondItem="jUw-fL-Eph" secondAttribute="centerX" id="7Os-Sc-2vA"/>
@@ -100,6 +108,7 @@
                             <constraint firstItem="VJz-ra-xAR" firstAttribute="centerX" secondItem="New-u4-aTv" secondAttribute="centerX" id="FbS-Ml-XXH"/>
                             <constraint firstItem="New-u4-aTv" firstAttribute="centerX" secondItem="6Tk-OE-BBY" secondAttribute="centerX" id="KAE-Ba-SeU"/>
                             <constraint firstItem="YcL-vo-yLH" firstAttribute="top" secondItem="pDO-Qo-Vfp" secondAttribute="bottom" constant="15" id="KWz-ie-n2f"/>
+                            <constraint firstItem="RIg-cw-udN" firstAttribute="centerX" secondItem="YcL-vo-yLH" secondAttribute="centerX" id="OcK-wp-7iM"/>
                             <constraint firstItem="gbR-Ag-b7A" firstAttribute="top" secondItem="wr7-x4-Iha" secondAttribute="bottom" constant="8" id="PsK-3t-NIf"/>
                             <constraint firstItem="New-u4-aTv" firstAttribute="top" secondItem="6Tk-OE-BBY" secondAttribute="top" constant="131" id="Qya-bn-FQH"/>
                             <constraint firstItem="mF3-mW-pav" firstAttribute="top" secondItem="gbR-Ag-b7A" secondAttribute="bottom" constant="8" id="S9N-Bi-5Q2"/>

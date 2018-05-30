@@ -32,6 +32,7 @@
         commonSettings.progress_trackColor = [UIColor colorWithWhite:0.4 alpha:1];
         commonSettings.progress_bufferColor = [UIColor whiteColor];
         commonSettings.more_thumbSize = commonSettings.progress_thumbSize = 10;
+        commonSettings.titleColor = [UIColor yellowColor];
     });
 }
 

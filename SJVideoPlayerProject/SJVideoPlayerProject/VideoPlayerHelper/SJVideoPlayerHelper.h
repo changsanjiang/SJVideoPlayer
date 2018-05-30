@@ -16,6 +16,7 @@
 #import "SJVideoPlayerFilmEditingCommonHeader.h"
 #import <SJPrompt/SJPrompt.h>
 #import "SJVideoPlayerURLAsset+SJControlAdd.h"
+#import <SJOrentationObserver/SJOrentationObserver.h>
 
 @class SJVideoPlayerURLAsset, SJLightweightTopItem, SJVideoPlayerFilmEditingConfig;
 
@@ -69,6 +70,8 @@ NS_ASSUME_NONNULL_BEGIN
 @interface SJVideoPlayerHelper (SJVideoPlayerOperation) // 暴露出来的播放器的一些操作
 #pragma mark readwrite
 @property (nonatomic) BOOL disableRotation;
+@property (nonatomic) SJAutoRotateSupportedOrientation supportedOrientation;
+- (void)rotate:(SJOrientation)orientation animated:(BOOL)animated;
 @property (nonatomic) BOOL lockScreen;
 @property (nonatomic) CGFloat rate; // if changed, 'playerRateChangedExeBlock' will be called.
 

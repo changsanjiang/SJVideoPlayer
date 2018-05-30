@@ -98,6 +98,16 @@ NS_ASSUME_NONNULL_END
     return self.videoPlayer.disableRotation;
 }
 
+- (void)setSupportedOrientation:(SJAutoRotateSupportedOrientation)supportedOrientation {
+    self.videoPlayer.supportedOrientation = supportedOrientation;
+}
+
+- (SJAutoRotateSupportedOrientation)supportedOrientation {
+    return self.videoPlayer.supportedOrientation;
+}
+- (void)rotate:(SJOrientation)orientation animated:(BOOL)animated {
+    [self.videoPlayer rotate:orientation animated:animated];
+}
 - (void)setLockScreen:(BOOL)lockScreen {
     self.videoPlayer.lockedScreen = lockScreen;
 }
@@ -203,7 +213,7 @@ NS_ASSUME_NONNULL_END
         __strong typeof(_self) self = _self;
         if ( !self ) return;
         if ( self.playDidToEnd ) self.playDidToEnd(self);
-    };
+    };    
 }
 
 - (void)clearPlayer {

@@ -75,6 +75,7 @@
 		A6441095200A3FBA006FD832 /* SJVideoListTableViewCell.m in Sources */ = {isa = PBXBuildFile; fileRef = A6441094200A3FBA006FD832 /* SJVideoListTableViewCell.m */; };
 		A6441098200A406E006FD832 /* SJVideoModel.m in Sources */ = {isa = PBXBuildFile; fileRef = A6441097200A406E006FD832 /* SJVideoModel.m */; };
 		A67E153C20BE7F71002ECC48 /* LandscapeViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = A67E153B20BE7F71002ECC48 /* LandscapeViewController.m */; };
+		A67E158320BE8FF6002ECC48 /* PortraitViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = A67E158220BE8FF6002ECC48 /* PortraitViewController.m */; };
 		A6E6D34F2028BE9B00CB9BAE /* SJVideoPlayerControlMaskView.m in Sources */ = {isa = PBXBuildFile; fileRef = A6E6D3002028BE9B00CB9BAE /* SJVideoPlayerControlMaskView.m */; };
 		A6E6D3502028BE9B00CB9BAE /* UIView+SJControlAdd.m in Sources */ = {isa = PBXBuildFile; fileRef = A6E6D3042028BE9B00CB9BAE /* UIView+SJControlAdd.m */; };
 		A6E6D3522028BE9B00CB9BAE /* SJVideoPlayerURLAsset+SJControlAdd.m in Sources */ = {isa = PBXBuildFile; fileRef = A6E6D3072028BE9B00CB9BAE /* SJVideoPlayerURLAsset+SJControlAdd.m */; };
@@ -232,6 +233,8 @@
 		A6441097200A406E006FD832 /* SJVideoModel.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = SJVideoModel.m; sourceTree = "<group>"; };
 		A67E153A20BE7F71002ECC48 /* LandscapeViewController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = LandscapeViewController.h; sourceTree = "<group>"; };
 		A67E153B20BE7F71002ECC48 /* LandscapeViewController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = LandscapeViewController.m; sourceTree = "<group>"; };
+		A67E158120BE8FF6002ECC48 /* PortraitViewController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = PortraitViewController.h; sourceTree = "<group>"; };
+		A67E158220BE8FF6002ECC48 /* PortraitViewController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = PortraitViewController.m; sourceTree = "<group>"; };
 		A6E6D3002028BE9B00CB9BAE /* SJVideoPlayerControlMaskView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SJVideoPlayerControlMaskView.m; sourceTree = "<group>"; };
 		A6E6D3012028BE9B00CB9BAE /* SJVideoPlayerControlMaskView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SJVideoPlayerControlMaskView.h; sourceTree = "<group>"; };
 		A6E6D3042028BE9B00CB9BAE /* UIView+SJControlAdd.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "UIView+SJControlAdd.m"; sourceTree = "<group>"; };
@@ -726,6 +729,8 @@
 			children = (
 				A67E153A20BE7F71002ECC48 /* LandscapeViewController.h */,
 				A67E153B20BE7F71002ECC48 /* LandscapeViewController.m */,
+				A67E158120BE8FF6002ECC48 /* PortraitViewController.h */,
+				A67E158220BE8FF6002ECC48 /* PortraitViewController.m */,
 			);
 			path = "OnlyLandscape_仅横屏";
 			sourceTree = "<group>";
@@ -989,6 +994,7 @@
 				774B251D1FCEBA5D002113CC /* AppDelegate.m in Sources */,
 				775C0AD7202962180008EDA7 /* SJVideoPlayerDefaultControlView.m in Sources */,
 				773AFC67205BA86F003B2CAC /* DownloadTableViewCell.m in Sources */,
+				A67E158320BE8FF6002ECC48 /* PortraitViewController.m in Sources */,
 				775B201620465D6200264AB9 /* TableViewHeaderIsCollectionViewDemoViewController.m in Sources */,
 				7706FC932062A96E006A828B /* LightweightViewController.m in Sources */,
 				775B1FFF204555B200264AB9 /* TableViewHeaderDemoViewController.m in Sources */,

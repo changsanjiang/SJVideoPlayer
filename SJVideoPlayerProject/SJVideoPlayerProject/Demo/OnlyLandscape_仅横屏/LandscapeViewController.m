@@ -20,7 +20,7 @@
 
 - (void)viewDidLoad {
     [super viewDidLoad];
-    self.view.backgroundColor = [UIColor orangeColor];
+    self.view.backgroundColor = [UIColor blackColor];
     
     _videoPlayer = [SJVideoPlayer player];
     _videoPlayer.disableRotation = YES;

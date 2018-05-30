@@ -20,7 +20,7 @@
 #import "DowloadViewController.h"
 #import "LightweightViewController.h"
 #import <SJFullscreenPopGesture/UINavigationController+SJVideoPlayerAdd.h>
-#import "LandscapeViewController.h"
+#import "PortraitViewController.h"
 
 @interface ViewController ()
 
@@ -87,7 +87,7 @@
 }
 
 - (IBAction)landscape:(id)sender {
-    [self.navigationController pushViewController:[[LandscapeViewController alloc] init] animated:YES];
+    [self.navigationController pushViewController:[[PortraitViewController alloc] init] animated:YES];
 }
 
 - (IBAction)test:(id)sender {

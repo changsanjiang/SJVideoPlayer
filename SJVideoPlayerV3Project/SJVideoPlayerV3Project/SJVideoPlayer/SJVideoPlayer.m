@@ -10,14 +10,14 @@
 
 @interface SJControlLayerCarrier ()
 @property (nonatomic) SJControlLayerIdentifier identifier;
-@property (nonatomic, weak) id <SJVideoPlayerControlLayerDataSource> dataSource;
-@property (nonatomic, weak) id <SJVideoPlayerControlLayerDelegate> delegate;
+@property (nonatomic, strong) id <SJVideoPlayerControlLayerDataSource> dataSource;
+@property (nonatomic, strong) id <SJVideoPlayerControlLayerDelegate> delegate;
 @end
 
 @implementation SJControlLayerCarrier
 - (instancetype)initWithIdentifier:(SJControlLayerIdentifier)identifier
-                        dataSource:(id<SJVideoPlayerControlLayerDataSource>)dataSource
-                          delegate:(id<SJVideoPlayerControlLayerDelegate>)delegate {
+                        dataSource:(__strong id <SJVideoPlayerControlLayerDataSource>)dataSource
+                          delegate:(__strong id<SJVideoPlayerControlLayerDelegate>)delegate {
     self = [super init];
     if ( !self ) return nil;
     _identifier = identifier;
@@ -41,23 +41,30 @@
     return self;
 }
 
-- (void)appendCarrier:(SJControlLayerCarrier *)carrier {
+- (void)appendControlLayer:(SJControlLayerCarrier *)carrier {
     [self.map setObject:carrier forKey:@(carrier.identifier)];
 }
 
-- (void)deleteCarrierForCarrierIdentifier:(SJControlLayerIdentifier)identifier {
+- (void)deleteControlLayerForIdentifier:(SJControlLayerIdentifier)identifier {
     [self.map removeObjectForKey:@(identifier)];
 }
 
-- (nullable SJControlLayerCarrier *)carrierForIdentifier:(SJControlLayerIdentifier)identifier {
+- (SJControlLayerCarrier *)controlLayerForIdentifier:(SJControlLayerIdentifier)identifier {
     return self.map[@(identifier)];
 }
 
-- (void)changeControlLayerForCarrierIdentitfier:(SJControlLayerIdentifier)identifier {
-    SJControlLayerCarrier *carrier = self.map[@(identifier)];
-    NSParameterAssert(carrier);
-    self.controlLayerDataSource = carrier.dataSource;
-    self.controlLayerDelegate = carrier.delegate;
+- (void)switchControlLayerForIdentitfier:(SJControlLayerIdentifier)identifier {
+    SJControlLayerCarrier *carrier_new = self.map[@(identifier)];
+    NSParameterAssert(carrier_new);
+    [self controlLayerNeedDisappear];
+    
+    __weak typeof(self) _self = self;
+    dispatch_async(dispatch_get_main_queue(), ^{
+        __strong typeof(_self) self = _self;
+        if ( !self ) return ;
+        self.controlLayerDataSource = carrier_new.dataSource;
+        self.controlLayerDelegate = carrier_new.delegate;
+    });
 }
 
 @end

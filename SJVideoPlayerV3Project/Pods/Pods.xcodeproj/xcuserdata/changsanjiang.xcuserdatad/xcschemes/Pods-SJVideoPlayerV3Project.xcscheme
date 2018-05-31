@@ -14,7 +14,7 @@
             buildForArchiving = "YES">
             <BuildableReference
                BuildableIdentifier = "primary"
-               BlueprintIdentifier = "67520C99BF413E8B27E7FE167D4621D0"
+               BlueprintIdentifier = "C7269C19384952EF1728B950843528A4"
                BlueprintName = "Pods-SJVideoPlayerV3Project"
                ReferencedContainer = "container:Pods.xcodeproj"
                BuildableName = "libPods-SJVideoPlayerV3Project.a">

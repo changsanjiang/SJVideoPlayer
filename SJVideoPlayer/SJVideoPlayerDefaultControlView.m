@@ -365,6 +365,11 @@ NS_ASSUME_NONNULL_END
     self.bottomControlView.fullscreen = isFull;
     self.topControlView.model.fullscreen = isFull;
     [self.topControlView update];
+    SJAutoRotateSupportedOrientation supportedOrientation = _videoPlayer.supportedOrientation;
+    if ( supportedOrientation == SJAutoRotateSupportedOrientation_All ) {
+        supportedOrientation = SJAutoRotateSupportedOrientation_Portrait | SJAutoRotateSupportedOrientation_LandscapeLeft | SJAutoRotateSupportedOrientation_LandscapeRight;
+    }
+    _bottomControlView.onlyLandscape = SJAutoRotateSupportedOrientation_Portrait != (SJAutoRotateSupportedOrientation_Portrait & supportedOrientation);
     
     [self _setControlViewsDisappearValue]; // update. `reset`.
     

@@ -23,6 +23,8 @@ typedef NS_ENUM(NSUInteger, SJLightweightBottomControlViewTag) {
 
 @property (nonatomic) BOOL isFullscreen;
 
+@property (nonatomic) BOOL onlyLandscape;
+
 @property (nonatomic) float progress;
 
 @property (nonatomic) float bufferProgress;

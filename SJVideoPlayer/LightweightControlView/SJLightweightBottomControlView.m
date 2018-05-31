@@ -58,6 +58,26 @@
     [self invalidateIntrinsicContentSize];
 }
 
+- (void)setOnlyLandscape:(BOOL)onlyLandscape {
+    if ( onlyLandscape == _onlyLandscape ) return;
+    _onlyLandscape = onlyLandscape;
+    _fullBtn.hidden = onlyLandscape;
+    if ( onlyLandscape ) {
+        [_progressSlider mas_remakeConstraints:^(MASConstraintMaker *make) {
+            make.leading.equalTo(self->_durationTimeLabel.mas_trailing).offset(12);
+            make.height.centerY.equalTo(self->_playBtn);
+            make.trailing.offset(-16);
+        }];
+    }
+    else {
+        [_progressSlider mas_remakeConstraints:^(MASConstraintMaker *make) {
+            make.leading.equalTo(self->_durationTimeLabel.mas_trailing).offset(12);
+            make.height.centerY.equalTo(self->_playBtn);
+            make.trailing.equalTo(self->_fullBtn.mas_leading).offset(-8);
+        }];
+    }
+}
+
 - (void)setStopped:(BOOL)stopped {
     _stopped = stopped;
     [UIView animateWithDuration:0.3 animations:^{

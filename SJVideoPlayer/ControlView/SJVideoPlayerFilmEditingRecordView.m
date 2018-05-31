@@ -71,9 +71,11 @@
 }
 
 - (void)resume {
+    NSString *text = _promptLabel.text;
     NSTimeInterval duration = _duration;
     [self start];
     _duration = duration;
+    if ( _promptLabel.text != text ) _promptLabel.text = text;
 }
 
 - (void)cancel {

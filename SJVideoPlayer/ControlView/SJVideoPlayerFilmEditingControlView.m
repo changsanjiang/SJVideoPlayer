@@ -466,6 +466,7 @@ NS_ASSUME_NONNULL_END
 - (void)handleTapGR {
     CGPoint location = [_tapGR locationInView:self];
     if ( !CGRectContainsPoint(_resultPresentView.frame, location) &&
+         !CGRectContainsPoint(_generateGIFView.frame, location) &&
          !CGRectContainsPoint(_recordView.frame, location)) {
         if ( [self.delegate respondsToSelector:@selector(userTappedBlankAreaAtFilmEditingControlView:)] ) {
             [self.delegate userTappedBlankAreaAtFilmEditingControlView:self];

@@ -21,8 +21,11 @@
 - (void)viewDidLoad {
     [super viewDidLoad];
     self.view.backgroundColor = [UIColor blackColor];
+    self.view.clipsToBounds = YES;
+    
     
     _videoPlayer = [SJVideoPlayer player];
+    _videoPlayer.pausedToKeepAppearState = YES;
     _videoPlayer.disableRotation = YES;
     _videoPlayer.assetURL = [NSURL URLWithString:@"http://video.cdn.lanwuzhe.com/14945858406905f0c"];
     [self.view addSubview:_videoPlayer.view];

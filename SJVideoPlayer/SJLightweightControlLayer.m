@@ -282,7 +282,12 @@ NS_ASSUME_NONNULL_BEGIN
     
     _topControlView.isFullscreen = isFull;
     [_topControlView needUpdateLayout];
-    
+    SJAutoRotateSupportedOrientation supportedOrientation = _videoPlayer.supportedOrientation;
+    if ( supportedOrientation == SJAutoRotateSupportedOrientation_All ) {
+        supportedOrientation = SJAutoRotateSupportedOrientation_Portrait | SJAutoRotateSupportedOrientation_LandscapeLeft | SJAutoRotateSupportedOrientation_LandscapeRight;
+    }
+    _bottomControlView.onlyLandscape = SJAutoRotateSupportedOrientation_Portrait != (SJAutoRotateSupportedOrientation_Portrait & supportedOrientation);
+
     if ( SJ_is_iPhoneX() ) {
         if ( isFull ) {
             // `iPhone_X` remake constraints.

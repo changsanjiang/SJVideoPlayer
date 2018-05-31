@@ -26,6 +26,8 @@ typedef NS_ENUM(NSUInteger, SJVideoPlayerBottomViewTag) {
 
 @property (nonatomic) BOOL fullscreen;
 
+@property (nonatomic) BOOL onlyLandscape;
+
 @property (nonatomic) float progress;
 
 @property (nonatomic) float bufferProgress;

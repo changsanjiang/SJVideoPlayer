@@ -50,7 +50,7 @@
     });
 
     // supported orientation . 设置旋转支持的方向.
-    _videoPlayer.supportedOrientation = SJAutoRotateSupportedOrientation_All;
+    _videoPlayer.supportedOrientation = SJAutoRotateSupportedOrientation_LandscapeLeft;
     
     // 将播放器旋转成横屏.(播放器默认是竖屏的), 带动画
     _videoPlayer.orientation = SJOrientation_LandscapeLeft; // 请注意: 是`SJOrientation_LandscapeLeft` 而不是 `SJAutoRotateSupportedOrientation_LandscapeLeft`
@@ -71,7 +71,14 @@
 
 - (void)viewWillDisappear:(BOOL)animated {
     [super viewWillDisappear:animated];
+    [_videoPlayer pause];
+    /// 还原状态栏的方向
+    [[UIApplication sharedApplication] setStatusBarOrientation:UIInterfaceOrientationPortrait animated:YES];
     [self.navigationController setNavigationBarHidden:NO animated:YES];
+}
+
+- (UIStatusBarStyle)preferredStatusBarStyle {
+    return UIStatusBarStyleLightContent;
 }
 
 @end

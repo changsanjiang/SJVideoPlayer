@@ -11,7 +11,7 @@
 
 @protocol SJVideoPlayerFilmEditingResult, SJVideoPlayerFilmEditingResultUpload;
 
-@class SJBaseVideoPlayer, SJVideoPlayer, SJFilmEditingResultShareItem;
+@class SJBaseVideoPlayer, SJFilmEditingResultShareItem;
 
 @interface SJVideoPlayerFilmEditingConfig : NSObject
 
@@ -34,7 +34,7 @@
 /**
  clicked share item call it.
  */
-@property (nonatomic, copy, nullable) void(^clickedResultShareItemExeBlock)(SJVideoPlayer *player, SJFilmEditingResultShareItem * item, id<SJVideoPlayerFilmEditingResult> result);
+@property (nonatomic, copy, nullable) void(^clickedResultShareItemExeBlock)(__kindof SJBaseVideoPlayer *player, SJFilmEditingResultShareItem * item, id<SJVideoPlayerFilmEditingResult> result);
 
 /**
  Exported video or whether the image needs to be uploaded.

@@ -26,7 +26,7 @@
 }
 @end
 
-NSTimeInterval const CommonAnimaDuration = 0.25;
+NSTimeInterval const CommonAnimaDuration = 0.4;
 
 void UIView_Animations(NSTimeInterval duration, Block __nullable animations, Block __nullable completion) {
     if ( completion ) {

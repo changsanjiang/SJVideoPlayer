@@ -9,6 +9,7 @@
 #import "SJVideoPlayer.h"
 #import <objc/message.h>
 #import "SJVideoPlayerDefaultControlView.h"
+#import <SJFilmEditingControlLayer/SJFilmEditingControlLayer.h>
 
 @interface SJControlLayerCarrier ()
 @property (nonatomic) SJControlLayerIdentifier identifier;
@@ -19,18 +20,22 @@
 @implementation SJControlLayerCarrier
 - (instancetype)initWithIdentifier:(SJControlLayerIdentifier)identifier
                         dataSource:(__strong id <SJVideoPlayerControlLayerDataSource>)dataSource
-                          delegate:(__strong id<SJVideoPlayerControlLayerDelegate>)delegate {
+                          delegate:(__strong id<SJVideoPlayerControlLayerDelegate>)delegate
+                      exitExeBlock:(nonnull void (^)(SJControlLayerCarrier * _Nonnull))exitExeBlock
+                   restartExeBlock:(nonnull void (^)(SJControlLayerCarrier * _Nonnull))restartExeBlock{
     self = [super init];
     if ( !self ) return nil;
     _identifier = identifier;
     _dataSource = dataSource;
     _delegate = delegate;
+    _exitExeBlock = exitExeBlock;
+    _restartExeBlock = restartExeBlock;
     return self;
 }
 @end
 
 
-@interface SJVideoPlayer ()
+@interface SJVideoPlayer ()<SJFilmEditingControlLayerDelegate>
 @property (nonatomic, strong, readonly) NSMutableDictionary *map;
 @end
 
@@ -54,12 +59,37 @@
     if ( !self ) return nil;
     _map = [NSMutableDictionary dictionary];
     
-    SJVideoPlayerDefaultControlView *controlView = [SJVideoPlayerDefaultControlView new];
-    SJControlLayerCarrier *defaultEdge = [[SJControlLayerCarrier alloc] initWithIdentifier:SJDefaultControlLayer_edge
-                                                                                dataSource:controlView
-                                                                                  delegate:controlView];
-    [self appendControlLayer:defaultEdge];
-    [self switchControlLayerForIdentitfier:defaultEdge.identifier];
+    /// edge
+    SJVideoPlayerDefaultControlView *defaultEdge = [SJVideoPlayerDefaultControlView new];
+    SJControlLayerCarrier *defaultEdge_carrier =
+    [[SJControlLayerCarrier alloc] initWithIdentifier:SJControlLayer_Edge dataSource:defaultEdge delegate:defaultEdge exitExeBlock:^(SJControlLayerCarrier * _Nonnull carrier) {
+        [(SJVideoPlayerDefaultControlView *)carrier.dataSource exitControlLayer];
+    } restartExeBlock:^(SJControlLayerCarrier * _Nonnull carrier) {
+        [(SJVideoPlayerDefaultControlView *)carrier.dataSource restartControlLayer];
+    }];
+    
+    [self appendControlLayer:defaultEdge_carrier];
+    self.controlLayerDataSource = defaultEdge;
+    self.controlLayerDelegate = defaultEdge;
+    _currentControlLayerIdentifier = defaultEdge_carrier.identifier;
+    
+    /// film editing
+    SJFilmEditingControlLayer *filmEditing = [SJFilmEditingControlLayer new];
+    filmEditing.delegate = self;
+    SJControlLayerCarrier *filmEditing_carrier =
+    [[SJControlLayerCarrier alloc] initWithIdentifier:SJControlLayer_FilmEditing dataSource:filmEditing delegate:filmEditing exitExeBlock:^(SJControlLayerCarrier * _Nonnull carrier) {
+        [(SJFilmEditingControlLayer *)carrier.dataSource exitControlLayer];
+    } restartExeBlock:^(SJControlLayerCarrier * _Nonnull carrier) {
+        [(SJFilmEditingControlLayer *)carrier.dataSource restartControlLayer];
+    }];
+    [self appendControlLayer:filmEditing_carrier];
+    
+    __weak typeof(self) _self = self;
+    defaultEdge.clickedFilmEditingBtnExeBlock = ^(SJVideoPlayerDefaultControlView * _Nonnull view) {
+        __strong typeof(_self) self = _self;
+        if ( !self ) return ;
+        [self switchControlLayerForIdentitfier:SJControlLayer_FilmEditing];
+    };
     return self;
 }
 
@@ -78,14 +108,40 @@
 - (void)switchControlLayerForIdentitfier:(SJControlLayerIdentifier)identifier {
     SJControlLayerCarrier *carrier_new = self.map[@(identifier)];
     NSParameterAssert(carrier_new);
-    [self controlLayerNeedDisappear];
 
-    [UIView animateWithDuration:0.25 delay:0.25 options:kNilOptions animations:^{
-        self.controlLayerDataSource = carrier_new.dataSource;
-        self.controlLayerDelegate = carrier_new.delegate;
-    } completion:nil];
+    SJControlLayerCarrier *carrier_old = self.map[@(self.currentControlLayerIdentifier)];
+    if ( carrier_old.exitExeBlock ) carrier_old.exitExeBlock(carrier_old);
+    
+    self.controlLayerDataSource = carrier_new.dataSource;
+    self.controlLayerDelegate = carrier_new.delegate;
+    if ( carrier_new.restartExeBlock ) carrier_new.restartExeBlock(carrier_new);
+
     _currentControlLayerIdentifier = carrier_new.identifier;
 }
+/// 用户点击空白区域
+- (void)userTappedBlankAreaOnControlLayer:(SJFilmEditingControlLayer *)controlLayer {
+    [controlLayer cancel];
+}
+
+/// 用户取消操作
+- (void)filmEditingControlLayer:(SJFilmEditingControlLayer *)controlLayer
+                  statusChanged:(SJFilmEditingStatus)status {
+    switch ( status ) {
+        case SJFilmEditingStatus_Unknown:
+            break;
+        case SJFilmEditingStatus_Recording:
+            break;
+        case SJFilmEditingStatus_Paused:
+            break;
+        case SJFilmEditingStatus_Finished:
+            break;
+        case SJFilmEditingStatus_Cancelled: {
+            [self switchControlLayerForIdentitfier:SJControlLayer_Edge];
+        }
+            break;
+    }
+}
+
 
 - (instancetype)initWithControlLayerDataSource:(nullable __weak id<SJVideoPlayerControlLayerDataSource> )controlLayerDataSource
                           controlLayerDelegate:(nullable __weak id<SJVideoPlayerControlLayerDelegate>)controlLayerDelegate     // 指定控制层
@@ -94,9 +150,6 @@
 }
 
 @end
-
-SJControlLayerIdentifier SJDefaultControlLayer_edge = LONG_MAX;
-SJControlLayerIdentifier SJDefaultControlLayer_DraggingPreview = LONG_MAX - 1;
 
 
 @implementation SJVideoPlayer (SettingLightweightControlLayer)
@@ -202,3 +255,8 @@ static dispatch_queue_t videoPlayerWorkQueue;
     [self dismissFilmEditingViewCompletion:completion];
 }
 @end
+
+
+
+SJControlLayerIdentifier SJControlLayer_Edge = LONG_MAX;
+SJControlLayerIdentifier SJControlLayer_FilmEditing = LONG_MAX - 1;

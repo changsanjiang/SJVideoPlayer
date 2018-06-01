@@ -7,7 +7,7 @@
 
 "SJVideoPlayer_CancelBtnTitle" = "取消";
 "SJVideoPlayer_WaitingForRecordingPromptText" = "錄製中，請稍等...";
-"SJVideoPlayer_RecordPromptText" = "點擊右側按鈕完成錄製";
+"SJVideoPlayer_FinishRecordingPromptText" = "點擊右側按鈕完成錄製";
 "SJVideoPlayer_VideoPlayDidToEndText" = "視頻播放完畢";
 "SJVideoPlayer_UploadingPrompt" = "上傳中";
 "SJVideoPlayer_UploadSuccessfullyPrompt" = "上傳成功";

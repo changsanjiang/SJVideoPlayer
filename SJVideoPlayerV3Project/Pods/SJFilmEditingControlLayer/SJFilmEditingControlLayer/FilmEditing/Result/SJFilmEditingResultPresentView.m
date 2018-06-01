@@ -1,23 +1,21 @@
 //
-//  SJVideoPlayerFilmEditingResultView.m
+//  SJFilmEditingResultPresentView.m
 //  SJVideoPlayerProject
 //
 //  Created by BlueDancer on 2018/3/9.
 //  Copyright © 2018年 SanJiang. All rights reserved.
 //
 
-#import "SJVideoPlayerFilmEditingResultView.h"
+#import "SJFilmEditingResultPresentView.h"
+#import "SJFilmEditingResultShareItem.h"
 #import <Masonry/Masonry.h>
 #import <SJUIFactory/SJUIFactory.h>
 #import <SJUIFactory/UIView+SJUIFactory.h>
-#import "UIView+SJVideoPlayerSetting.h"
-#import "UIView+SJControlAdd.h"
-#import <SJAttributesFactory/SJAttributeWorker.h>
-#import "SJFilmEditingResultShareItem.h"
 #import <SJBaseVideoPlayer/SJBaseVideoPlayer.h>
+#import <SJAttributesFactory/SJAttributeWorker.h>
 #import <SJBaseVideoPlayer/SJVideoPlayerRegistrar.h>
 
-@interface SJVideoPlayerFilmEditingResultView ()
+@interface SJFilmEditingResultPresentView ()
 
 @property (nonatomic, strong, readonly) UIButton *cancelBtn;
 @property (nonatomic, strong, readonly) UIView *fullMaskView;
@@ -30,7 +28,7 @@
 
 @end
 
-@implementation SJVideoPlayerFilmEditingResultView
+@implementation SJFilmEditingResultPresentView
 
 @synthesize cancelBtn = _cancelBtn;
 @synthesize imageView = _imageView;
@@ -40,7 +38,7 @@
 @synthesize progressLabel = _progressLabel;
 @synthesize registrar = _registrar;
 
-- (instancetype)initWithType:(SJVideoPlayerFilmEditingResultViewType)type {
+- (instancetype)initWithType:(SJFilmEditingResultPresentViewType)type {
     self = [super initWithFrame:CGRectZero];
     if ( !self ) return nil;
     _type = type;
@@ -120,11 +118,9 @@
     }];
 }
 
-- (void)setResource:(id<SJVideoPlayerFilmEditingPromptResource>)resource {
-    _resource = resource;
-    [_cancelBtn setTitle:resource.cancelBtnTitle forState:UIControlStateNormal];
+- (void)setCancelBtnTitle:(NSString *)cancelBtnTitle {
+    [_cancelBtn setTitle:cancelBtnTitle forState:UIControlStateNormal];
 }
-
 
 #pragma mark -
 - (void)setImage:(UIImage *)image {
@@ -140,29 +136,29 @@
 
 - (void)setExportProgress:(float)exportProgress {
     _exportProgress = exportProgress;
-    [self _updateProgressText:[NSString stringWithFormat:@"%@: %.0f%%", self.resource.exportingPrompt, exportProgress * 100]];
+    [self _updateProgressText:[NSString stringWithFormat:@"%@: %.0f%%", self.exportingPrompt, exportProgress * 100]];
 }
 
 - (void)setUploadProgress:(float)uploadProgress {
     _uploadProgress = uploadProgress;
-    [self _updateProgressText:[NSString stringWithFormat:@"%@: %.0f%%", self.resource.uploadingPrompt, uploadProgress * 100]];
+    [self _updateProgressText:[NSString stringWithFormat:@"%@: %.0f%%", self.uploadingPrompt, uploadProgress * 100]];
 }
 
 - (void)exportEndedWithStatus:(BOOL)exportStatus {
     if ( !exportStatus ) {
-        [self _updateProgressText:self.resource.operationFailedPrompt];
+        [self _updateProgressText:self.operationFailedPrompt];
     }
     else {
-        [self _updateProgressText:self.resource.exportSuccessfullyPrompt];
+        [self _updateProgressText:self.exportSuccessfullyPrompt];
     }
 }
 
 - (void)uploadEndedWithStatus:(BOOL)uploadStatus {
     if ( uploadStatus ) {
-        [self _updateProgressText:self.resource.uploadSuccessfullyPrompt];
+        [self _updateProgressText:self.uploadSuccessfullyPrompt];
     }
     else {
-        [self _updateProgressText:self.resource.operationFailedPrompt];
+        [self _updateProgressText:self.operationFailedPrompt];
     }
 }
 
@@ -181,7 +177,7 @@
     [self addSubview:self.cancelBtn];
     [self addSubview:self.imageView];
     [self addSubview:self.itemsContainerView];
-    if ( self.type == SJVideoPlayerFilmEditingResultViewType_Video ) [self.imageView addSubview:self.videoPlayer.view];
+    if ( self.type == SJFilmEditingResultPresentViewType_Video ) [self.imageView addSubview:self.videoPlayer.view];
     [self.imageView addSubview:self.progressLabel];
 
     self.itemsContainerView.alpha = 0.001;
@@ -193,7 +189,7 @@
     
     [_cancelBtn mas_makeConstraints:^(MASConstraintMaker *make) {
         make.leading.offset(12);
-        make.top.offset(12);
+        make.top.offset(25);
         make.height.offset(30);
         make.width.equalTo(self->_cancelBtn.mas_height).multipliedBy(2.8);
     }];
@@ -202,7 +198,7 @@
         make.edges.offset(0);
     }];
     
-    if ( self.type == SJVideoPlayerFilmEditingResultViewType_Video ) {
+    if ( self.type == SJFilmEditingResultPresentViewType_Video ) {
         [self.videoPlayer.view mas_makeConstraints:^(MASConstraintMaker *make) {
             make.edges.equalTo(self.imageView);
         }];

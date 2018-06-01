@@ -18,6 +18,7 @@ s.dependency 'SJBaseVideoPlayer'
 s.dependency 'SJAttributesFactory'
 s.dependency 'SJLoadingView'
 s.dependency 'SJFullscreenPopGesture'
+s.dependency 'SJFilmEditingControlLayer'
 
 s.source_files = 'SJVideoPlayer/*.{h,m}'
 

@@ -27,7 +27,6 @@
 #import <objc/message.h>
 #import "UIView+SJControlAdd.h"
 #import "SJVideoPlayerRightControlView.h"
-#import "SJVideoPlayerFilmEditingControlView.h"
 #import "SJVideoPlayerControlMaskView.h"
 #import <SJUIFactory/SJUIFactory.h>
 #import "SJVideoPlayerAnimationHeader.h"
@@ -40,7 +39,7 @@
 NS_ASSUME_NONNULL_BEGIN
 
 #pragma mark -
-@interface SJVideoPlayerDefaultControlView ()<SJVideoPlayerLeftControlViewDelegate, SJVideoPlayerBottomControlViewDelegate, SJVideoPlayerTopControlViewDelegate, SJVideoPlayerPreviewViewDelegate, SJVideoPlayerCenterControlViewDelegate, SJVideoPlayerRightControlViewDelegate, SJVideoPlayerFilmEditingControlViewDataSource, SJVideoPlayerFilmEditingControlViewDelegate> {
+@interface SJVideoPlayerDefaultControlView ()<SJVideoPlayerLeftControlViewDelegate, SJVideoPlayerBottomControlViewDelegate, SJVideoPlayerTopControlViewDelegate, SJVideoPlayerPreviewViewDelegate, SJVideoPlayerCenterControlViewDelegate, SJVideoPlayerRightControlViewDelegate> {
     SJTimerControl *_lockStateTappedTimerControl;
 }
 
@@ -64,11 +63,11 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic, strong, readonly) SJVideoPlayerMoreSettingSecondaryView *moreSecondarySettingView;
 @property (nonatomic, strong, readonly) SJLoadingView *loadingView;
 @property (nonatomic, strong, readonly) SJTimerControl *lockStateTappedTimerControl;
-@property (nonatomic, strong, readonly) SJVideoPlayerRegistrar *registrar;
-@property (nonatomic, strong, readwrite, nullable) SJVideoPlayerFilmEditingControlView *filmEditingControlView;
 @property (nonatomic, strong, readwrite, nullable) SJVideoPlayerSettings *settings;
 
 @property (nonatomic, strong, nullable) SJVideoPlayerPropertyRecorder *propertyRecorder;
+
+@property (nonatomic) BOOL needExit;
 
 @end
 NS_ASSUME_NONNULL_END
@@ -88,10 +87,8 @@ NS_ASSUME_NONNULL_END
 @synthesize moreSecondarySettingView = _moreSecondarySettingView;
 @synthesize footerViewModel = _footerViewModel;
 @synthesize loadingView = _loadingView;
-@synthesize filmEditingControlView = _filmEditingControlView;
 @synthesize topControlMaskView = _topControlMaskView;
 @synthesize bottomControlMaskView = _bottomControlMaskView;
-@synthesize registrar = _registrar;
 
 - (instancetype)initWithFrame:(CGRect)frame {
     self = [super initWithFrame:frame];
@@ -109,6 +106,15 @@ NS_ASSUME_NONNULL_END
 #endif
 }
 
+- (void)exitControlLayer {
+    self.needExit = YES;
+    [self.videoPlayer controlLayerNeedDisappear];}
+
+- (void)restartControlLayer {
+    self.needExit = NO;
+    [self.videoPlayer controlLayerNeedAppear];
+}
+
 #pragma mark - Player extension
 
 - (void)Extension_pauseAndDeterAppear {
@@ -123,6 +129,9 @@ NS_ASSUME_NONNULL_END
 /// 播放器安装完控制层的回调.
 - (void)installedControlViewToVideoPlayer:(SJVideoPlayer *)videoPlayer {
     self.videoPlayer = videoPlayer;
+    [videoPlayer controlLayerNeedDisappear];
+    [self videoPlayer:videoPlayer stateChanged:videoPlayer.state];
+    [self videoPlayer:videoPlayer prepareToPlay:videoPlayer.URLAsset];
 }
 
 - (UIView *)controlView {
@@ -156,10 +165,10 @@ NS_ASSUME_NONNULL_END
     [self.topControlView update];
     
     
-    self.bottomSlider.value = 0;
-    self.bottomControlView.progress = 0;
-    self.bottomControlView.bufferProgress = 0;
-    [self.bottomControlView setCurrentTimeStr:@"00:00" totalTimeStr:@"00:00"];
+    self.bottomSlider.value = videoPlayer.progress;
+    self.bottomControlView.progress = videoPlayer.progress;
+    self.bottomControlView.bufferProgress = videoPlayer.bufferProgress;
+    [self.bottomControlView setCurrentTimeStr:videoPlayer.currentTimeStr totalTimeStr:videoPlayer.totalTimeStr];
     
     [self _promptWithNetworkStatus:videoPlayer.networkStatus];
     self.propertyRecorder = [[SJVideoPlayerPropertyRecorder alloc] initWithVideoPlayer:videoPlayer];
@@ -200,6 +209,7 @@ NS_ASSUME_NONNULL_END
             [self->_bottomSlider disappear];
             
             if ( videoPlayer.state != SJVideoPlayerPlayState_PlayEnd ) [self->_centerControlView disappear];
+            else [self->_centerControlView appear];
         }
         
         if ( self->_moreSettingsView.appearState ) [self->_moreSettingsView disappear];
@@ -210,7 +220,16 @@ NS_ASSUME_NONNULL_END
 /// 隐藏边缘控制视图
 - (void)controlLayerNeedDisappear:(SJVideoPlayer *)videoPlayer {
     UIView_Animations(CommonAnimaDuration, ^{
-        if ( SJVideoPlayerPlayState_PlayFailed != videoPlayer.state ) {
+        if ( self.needExit ) {
+            [self->_topControlView disappear];
+            [self->_bottomControlView disappear];
+            [self->_rightControlView disappear];
+            [self->_leftControlView disappear];
+            [self->_previewView disappear];
+            [self->_bottomSlider disappear];
+            [self->_centerControlView disappear];
+        }
+        else if ( SJVideoPlayerPlayState_PlayFailed != videoPlayer.state ) {
             [self->_topControlView disappear];
             [self->_bottomControlView disappear];
             [self->_rightControlView disappear];
@@ -225,7 +244,9 @@ NS_ASSUME_NONNULL_END
             [self->_bottomControlView disappear];
             [self->_rightControlView disappear];
         }
-    }, nil);
+    }, ^{
+        if ( self.needExit ) [self removeFromSuperview];
+    });
 }
 
 ///  在`tableView`或`collectionView`上将要显示的时候调用.
@@ -288,11 +309,6 @@ NS_ASSUME_NONNULL_END
             [self.centerControlView appear];
             [self.centerControlView replayState];
         }, nil);
-        
-        if ( _filmEditingControlView && _filmEditingControlView.status == SJVideoPlayerFilmEditingStatus_Recording ) {
-            [videoPlayer showTitle:self.settings.videoPlayDidToEndText duration:2];
-            [_filmEditingControlView finalize];
-        }
     }
 }
 
@@ -601,18 +617,18 @@ NS_ASSUME_NONNULL_END
         [self.bottomControlMaskView disappear];
     };
     
-    _topControlMaskView.disappearType = _topControlView.disappearType = SJDisappearType_Transform;
+    _topControlMaskView.disappearType = _topControlView.disappearType = SJDisappearType_All;
     _topControlMaskView.disappearTransform = _topControlView.disappearTransform = CGAffineTransformMakeTranslation(0, -_topControlView.intrinsicContentSize.height);
 
-    _leftControlView.disappearType = SJDisappearType_Transform;
+    _leftControlView.disappearType = SJDisappearType_All;
     _leftControlView.disappearTransform = CGAffineTransformMakeTranslation(-_leftControlView.intrinsicContentSize.width, 0);
 
     _centerControlView.disappearType = SJDisappearType_Alpha;
 
-    _bottomControlMaskView.disappearType = _bottomControlView.disappearType = SJDisappearType_Transform;
+    _bottomControlMaskView.disappearType = _bottomControlView.disappearType = SJDisappearType_All;
     _bottomControlMaskView.disappearTransform = _bottomControlView.disappearTransform = CGAffineTransformMakeTranslation(0, _bottomControlView.intrinsicContentSize.height);
 
-    _rightControlView.disappearType = SJDisappearType_Transform;
+    _rightControlView.disappearType = SJDisappearType_All;
     _rightControlView.disappearTransform = CGAffineTransformMakeTranslation(_rightControlView.intrinsicContentSize.width, 0);
     
     _bottomSlider.disappearType = SJDisappearType_Alpha;
@@ -845,7 +861,7 @@ NS_ASSUME_NONNULL_END
 
 - (void)rightControlView:(SJVideoPlayerRightControlView *)view clickedBtnTag:(SJVideoPlayerRightViewTag)tag {
     if ( tag == SJVideoPlayerRightViewTag_FilmEditing ) {
-        [self _presentFilmEditingControlView];
+        if ( _clickedFilmEditingBtnExeBlock ) _clickedFilmEditingBtnExeBlock(self);
     }
 }
 
@@ -869,201 +885,6 @@ NS_ASSUME_NONNULL_END
         [_rightControlView removeFromSuperview];
         _rightControlView = nil;
     }
-}
-
-- (SJVideoPlayerRegistrar *)registrar {
-    if ( _registrar ) return _registrar;
-    _registrar = [SJVideoPlayerRegistrar new];
-    __weak typeof(self) _self = self;
-    _registrar.willResignActive = ^(SJVideoPlayerRegistrar * _Nonnull registrar) {
-        __strong typeof(_self) self = _self;
-        if ( !self ) return;
-        if ( self.filmEditingControlView.status == SJVideoPlayerFilmEditingStatus_Recording ) {
-            [self.filmEditingControlView pause];
-            [self.videoPlayer pause];
-            [self.videoPlayer controlLayerNeedDisappear];
-        }
-    };
-    
-    _registrar.didBecomeActive = ^(SJVideoPlayerRegistrar * _Nonnull registrar) {
-        __strong typeof(_self) self = _self;
-        if ( !self ) return;
-        if ( self.filmEditingControlView.status == SJVideoPlayerFilmEditingStatus_Paused ) {
-            [self.filmEditingControlView resume];
-            [self.videoPlayer play];
-            [self.videoPlayer controlLayerNeedDisappear];
-        }
-        else if ( self.filmEditingControlView.status == SJVideoPlayerFilmEditingStatus_Cancelled ) {
-            [self Extension_pauseAndDeterAppear];
-        }
-        
-    };
-    return _registrar;
-}
-
-- (UIImage *)playerScreenshot {
-    return _videoPlayer.screenshot;
-}
-
-- (id<SJVideoPlayerFilmEditing>)filmEditing {
-    return (id)self.videoPlayer;
-}
-
-- (NSArray<SJFilmEditingResultShareItem *> *)resultShareItems {
-    return self.videoPlayer.filmEditingConfig.resultShareItems;
-}
-
-- (SJVideoPlayerURLAsset *)currentPalyAsset {
-    return self.videoPlayer.URLAsset;
-}
-
-- (BOOL)resultNeedUpload {
-    return self.videoPlayer.filmEditingConfig.resultNeedUpload;
-}
-
-- (CGFloat)operationContainerViewRightOffset {
-    return (self.containerView.bounds.size.width - self.bounds.size.width) * 0.5;
-}
-
-- (BOOL)shouldStartWhenUserSelectedAnOperation:(SJVideoPlayerFilmEditingOperation)selectedOperation {
-    if ( self.videoPlayer.filmEditingConfig.shouldStartWhenUserSelectedAnOperation ) {
-        return self.videoPlayer.filmEditingConfig.shouldStartWhenUserSelectedAnOperation(self.videoPlayer, selectedOperation);
-    }
-    return YES;
-}
-
-- (void)_presentFilmEditingControlView {
-    [self registrar];
-    _filmEditingControlView = [SJVideoPlayerFilmEditingControlView new];
-    _filmEditingControlView.dataSource = self;
-    _filmEditingControlView.uploader = self.videoPlayer.filmEditingConfig.resultUploader;
-    _filmEditingControlView.delegate = self;
-    _filmEditingControlView.resource = (id)self.settings;
-    _filmEditingControlView.disableScreenshot = self.videoPlayer.filmEditingConfig.disableScreenshot;
-    _filmEditingControlView.disableRecord = self.videoPlayer.filmEditingConfig.disableRecord;
-    _filmEditingControlView.disableGIF = self.videoPlayer.filmEditingConfig.disableGIF;
-    _filmEditingControlView.disappearType = SJDisappearType_Alpha;
-    [self addSubview:_filmEditingControlView];
-    [_filmEditingControlView mas_makeConstraints:^(MASConstraintMaker *make) {
-        make.edges.offset(0);
-    }];
-    
-    [self.videoPlayer controlLayerNeedDisappear];
-    [self.bottomSlider disappear];
-    if ( self.videoPlayer.state == SJVideoPlayerPlayState_PlayEnd ) [self.centerControlView disappear];
-    self.videoPlayer.disableRotation = YES;
-    self.videoPlayer.disableGestureTypes = SJDisablePlayerGestureTypes_All;
-}
-
-- (void)dismissFilmEditingViewCompletion:(void(^ __nullable)(SJVideoPlayerDefaultControlView *))completion {
-    if ( _filmEditingControlView ) {
-        UIView_Animations(CommonAnimaDuration, ^{
-            [self.filmEditingControlView disappear];
-        }, ^{
-            self.videoPlayer.disableRotation = self.propertyRecorder.disableRotation;
-            self.videoPlayer.disableGestureTypes = self.propertyRecorder.disableGestureTypes;
-            [self.videoPlayer play];
-            [self.filmEditingControlView removeFromSuperview];
-            self.filmEditingControlView = nil;  // clear
-            self->_registrar = nil;
-            if ( completion ) completion(self);
-        });
-    }
-    else {
-        if ( completion ) completion(self);
-    }
-}
-
-- (void)filmEditingControlView:(SJVideoPlayerFilmEditingControlView *)filmEditingControlView statusChanged:(SJVideoPlayerFilmEditingStatus)status {
-    switch ( status ) {
-        case SJVideoPlayerFilmEditingStatus_Unknown: break;
-        case SJVideoPlayerFilmEditingStatus_Recording: {
-            if ( self.videoPlayer.state == SJVideoPlayerPlayState_PlayEnd ) {
-                [self.videoPlayer replay];
-            }
-            else if ( self.videoPlayer.state == SJVideoPlayerPlayState_Paused ) {
-                [self.videoPlayer play];
-            }
-        }
-            break;
-        case SJVideoPlayerFilmEditingStatus_Cancelled: {
-            [self dismissFilmEditingViewCompletion:^(SJVideoPlayerDefaultControlView * _Nonnull view) {
-                [self.videoPlayer controlLayerNeedAppear];
-            }];
-        }
-            break;
-        case SJVideoPlayerFilmEditingStatus_Paused: {
-            [self Extension_pauseAndDeterAppear];
-        }
-            break;
-        case SJVideoPlayerFilmEditingStatus_Finished: {
-            [self Extension_pauseAndDeterAppear];
-        }
-            break;
-    }
-    
-#ifdef DEBUG
-    switch ( status ) {
-        case SJVideoPlayerFilmEditingStatus_Unknown: break;
-        case SJVideoPlayerFilmEditingStatus_Recording: {
-            NSLog(@"Recording");
-        }
-            break;
-        case SJVideoPlayerFilmEditingStatus_Cancelled: {
-            NSLog(@"Cancelled");
-        }
-            break;
-        case SJVideoPlayerFilmEditingStatus_Paused: {
-            NSLog(@"Paused");
-        }
-            break;
-        case SJVideoPlayerFilmEditingStatus_Finished: {
-            NSLog(@"Finished");
-        }
-            break;
-    }
-#endif
-}
-
-- (void)filmEditingControlView:(SJVideoPlayerFilmEditingControlView *)filmEditingControlView userSelectedOperation:(SJVideoPlayerFilmEditingOperation)operation {
-    self.videoPlayer.videoGravity = AVLayerVideoGravityResizeAspect;
-    switch ( operation ) {
-        case SJVideoPlayerFilmEditingOperation_Screenshot: {
-            [self Extension_pauseAndDeterAppear];
-        }
-            break;
-        case SJVideoPlayerFilmEditingOperation_GIF:
-        case SJVideoPlayerFilmEditingOperation_Export: break;
-    }
-    
-    
-#ifdef DEBUG
-    switch ( operation ) {
-        case SJVideoPlayerFilmEditingOperation_GIF: {
-            NSLog(@"User selected Operation: GIF ");
-        }
-            break;
-        case SJVideoPlayerFilmEditingOperation_Export: {
-            NSLog(@"User selected Operation: Export ");
-        }
-            break;
-        case SJVideoPlayerFilmEditingOperation_Screenshot: {
-            NSLog(@"User selected Operation: Screenshot ");
-        }
-            break;
-    }
-#endif
-    
-}
-
-- (void)filmEditingControlView:(SJVideoPlayerFilmEditingControlView *)filmEditingControlView userClickedResultShareItem:(SJFilmEditingResultShareItem *)item result:(nonnull id<SJVideoPlayerFilmEditingResult>)result {
-    if ( self.videoPlayer.filmEditingConfig.clickedResultShareItemExeBlock ) self.videoPlayer.filmEditingConfig.clickedResultShareItemExeBlock(self.videoPlayer, item, result);
-}
-
-- (void)userTappedBlankAreaAtFilmEditingControlView:(SJVideoPlayerFilmEditingControlView *)filmEditingControlView {
-    [self dismissFilmEditingViewCompletion:^(SJVideoPlayerDefaultControlView * _Nonnull view) {
-        [self.videoPlayer controlLayerNeedAppear];
-    }];
 }
 
 #pragma mark - Bottom slider

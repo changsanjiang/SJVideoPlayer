@@ -7,9 +7,9 @@
 //
 
 #import <Foundation/Foundation.h>
-#import <SJBaseVideoPlayer/SJBaseVideoPlayer.h>
+#import "SJVideoPlayer.h"
 
-@class SJVideoPlayer, SJVideoPlayerMoreSetting, SJFilmEditingResultShare;
+@class SJVideoPlayerMoreSetting, SJFilmEditingResultShare;
 
 NS_ASSUME_NONNULL_BEGIN
 
@@ -22,8 +22,12 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic, readwrite) BOOL generatePreviewImages;
 
 @property (nonatomic, readwrite) BOOL enableFilmEditing;
+@property (nonatomic, copy, nullable) void(^clickedFilmEditingBtnExeBlock)(SJVideoPlayerDefaultControlView *view);
 
 - (void)dismissFilmEditingViewCompletion:(void(^ __nullable)(SJVideoPlayerDefaultControlView *view))completion;
+
+- (void)exitControlLayer;
+- (void)restartControlLayer;
 
 @end
 

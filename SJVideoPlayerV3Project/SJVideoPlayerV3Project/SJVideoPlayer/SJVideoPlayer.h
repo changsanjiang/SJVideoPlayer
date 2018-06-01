@@ -20,6 +20,15 @@ NS_ASSUME_NONNULL_BEGIN
 typedef long SJControlLayerIdentifier;
 @class SJControlLayerCarrier;
 
+
+
+typedef NS_ENUM(NSUInteger, SJControlLayerSwitchingState) {
+    SJControlLayerSwitchingState_Unknown,
+    SJControlLayerSwitchingState_Restart,
+    SJControlLayerSwitchingState_Exit,
+};
+
+
 @interface SJVideoPlayer : SJBaseVideoPlayer
 
 + (instancetype)sharedPlayer;   // 使用默认的控制层
@@ -76,8 +85,8 @@ typedef long SJControlLayerIdentifier;
  切换器关键, 可以无缝接入别的开发者的控制层
  
  */
-extern SJControlLayerIdentifier SJDefaultControlLayer_edge;
-extern SJControlLayerIdentifier SJDefaultControlLayer_DraggingPreview;
+extern SJControlLayerIdentifier SJControlLayer_Edge;
+extern SJControlLayerIdentifier SJControlLayer_FilmEditing;
 
 /// 当前控制层的标识
 @property (nonatomic, readonly) SJControlLayerIdentifier currentControlLayerIdentifier;
@@ -182,12 +191,17 @@ extern SJControlLayerIdentifier SJDefaultControlLayer_DraggingPreview;
 #pragma mark
 @interface SJControlLayerCarrier : NSObject
 - (instancetype)initWithIdentifier:(SJControlLayerIdentifier)identifier
-                        dataSource:(__strong id <SJVideoPlayerControlLayerDataSource>)dataSource
-                          delegate:(__strong id<SJVideoPlayerControlLayerDelegate>)delegate;
+                        dataSource:(id<SJVideoPlayerControlLayerDataSource>)dataSource
+                          delegate:(id<SJVideoPlayerControlLayerDelegate>)delegate
+                      exitExeBlock:(void(^)(SJControlLayerCarrier *carrier))exitExeBlock
+                   restartExeBlock:(void(^)(SJControlLayerCarrier *carrier))restartExeBlock;
 
-@property (nonatomic, readonly) SJControlLayerIdentifier identifier;
 @property (nonatomic, strong, readonly) id <SJVideoPlayerControlLayerDataSource> dataSource;
 @property (nonatomic, strong, readonly) id <SJVideoPlayerControlLayerDelegate> delegate;
+@property (nonatomic, readonly) SJControlLayerIdentifier identifier;
+
+@property (nonatomic, copy, readonly, nullable) void(^exitExeBlock)(SJControlLayerCarrier *carrier);
+@property (nonatomic, copy, readonly, nullable) void(^restartExeBlock)(SJControlLayerCarrier *carrier);
 @end
 
 NS_ASSUME_NONNULL_END

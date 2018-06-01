@@ -69,16 +69,20 @@ NSNotificationName const SJSettingsPlayerNotification = @"SJSettingsPlayerNotifi
     self.screenshotBtnImage = [SJVideoPlayerResources imageNamed:@"sj_video_player_screenshot"];
     self.exportBtnImage = [SJVideoPlayerResources imageNamed:@"sj_video_player_export"];
     self.gifBtnImage = [SJVideoPlayerResources imageNamed:@"sj_video_player_gif"];
-    _cancelBtnTitle = [SJVideoPlayerResources localizedStringForKey:SJVideoPlayer_CancelBtnTitle];
-    self.recordEndBtnImage = [SJVideoPlayerResources imageNamed:@"sj_video_player_record_end"];
-    _recordPromptText = [SJVideoPlayerResources localizedStringForKey:SJVideoPlayer_RecordPromptText];
-    _waitingForRecordingPromptText = [SJVideoPlayerResources localizedStringForKey:SJVideoPlayer_WaitingForRecordingPromptText];
-    _videoPlayDidToEndText = [SJVideoPlayerResources localizedStringForKey:SJVideoPlayer_VideoPlayDidToEndText];
-    _uploadingPrompt = [SJVideoPlayerResources localizedStringForKey:SJVideoPlayer_UploadingPrompt];
-    _exportingPrompt = [SJVideoPlayerResources localizedStringForKey:SJVideoPlayer_ExportingPrompt];
-    _operationFailedPrompt = [SJVideoPlayerResources localizedStringForKey:SJVideoPlayer_OperationFailedPrompt];
-    _uploadSuccessfullyPrompt = [SJVideoPlayerResources localizedStringForKey:SJVideoPlayer_UploadSuccessfullyPrompt];
-    _exportSuccessfullyPrompt = [SJVideoPlayerResources localizedStringForKey:SJVideoPlayer_ExportSuccessfullyPrompt];
+    
+    
+    
+    
+//    _cancelBtnTitle = [SJVideoPlayerResources localizedStringForKey:SJVideoPlayer_CancelBtnTitle];
+//    self.finishRecordingBtnImage = [SJVideoPlayerResources imageNamed:@"sj_video_player_record_end"];
+//    _finishRecordingPromptText = [SJVideoPlayerResources localizedStringForKey:SJVideoPlayer_FinishRecordingPromptText];
+//    _waitingForRecordingPromptText = [SJVideoPlayerResources localizedStringForKey:SJVideoPlayer_WaitingForRecordingPromptText];
+//    _videoPlayDidToEndText = [SJVideoPlayerResources localizedStringForKey:SJVideoPlayer_VideoPlayDidToEndText];
+//    _uploadingPrompt = [SJVideoPlayerResources localizedStringForKey:SJVideoPlayer_UploadingPrompt];
+//    _exportingPrompt = [SJVideoPlayerResources localizedStringForKey:SJVideoPlayer_ExportingPrompt];
+//    _operationFailedPrompt = [SJVideoPlayerResources localizedStringForKey:SJVideoPlayer_OperationFailedPrompt];
+//    _uploadSuccessfullyPrompt = [SJVideoPlayerResources localizedStringForKey:SJVideoPlayer_UploadSuccessfullyPrompt];
+//    _exportSuccessfullyPrompt = [SJVideoPlayerResources localizedStringForKey:SJVideoPlayer_ExportSuccessfullyPrompt];
 }
 
 @end

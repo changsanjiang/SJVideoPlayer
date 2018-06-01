@@ -8,7 +8,8 @@ target 'SJVideoPlayerV3Project' do
  "SJAttributesFactory",
  "SJFullscreenPopGesture",
  "SJLoadingView",
- "SJSlider"
+ "SJSlider",
+ "SJFilmEditingControlLayer"
  ].each {|lib| pod lib}
  
   # Pods for SJVideoPlayerV3Project

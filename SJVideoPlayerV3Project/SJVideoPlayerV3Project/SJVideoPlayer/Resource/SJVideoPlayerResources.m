@@ -13,15 +13,6 @@ NSString *const SJVideoPlayer_PreviewText = @"SJVideoPlayer_PreviewText";
 NSString *const SJVideoPlayer_PlayFailedText = @"SJVideoPlayer_PlayFailedText";
 NSString *const SJVideoPlayer_NotReachablePrompt = @"SJVideoPlayer_NotReachablePrompt";
 NSString *const SJVideoPlayer_ReachableViaWWANPrompt = @"SJVideoPlayer_ReachableViaWWANPrompt";
-NSString *const SJVideoPlayer_CancelBtnTitle = @"SJVideoPlayer_CancelBtnTitle";
-NSString *const SJVideoPlayer_WaitingForRecordingPromptText = @"SJVideoPlayer_WaitingForRecordingPromptText";
-NSString *const SJVideoPlayer_RecordPromptText = @"SJVideoPlayer_RecordPromptText";
-NSString *const SJVideoPlayer_VideoPlayDidToEndText = @"SJVideoPlayer_VideoPlayDidToEndText";
-NSString *const SJVideoPlayer_UploadingPrompt = @"SJVideoPlayer_UploadingPrompt";
-NSString *const SJVideoPlayer_UploadSuccessfullyPrompt = @"SJVideoPlayer_UploadSuccessfullyPrompt";
-NSString *const SJVideoPlayer_ExportingPrompt = @"SJVideoPlayer_ExportingPrompt";
-NSString *const SJVideoPlayer_ExportSuccessfullyPrompt = @"SJVideoPlayer_ExportSuccessfullyPrompt";
-NSString *const SJVideoPlayer_OperationFailedPrompt = @"SJVideoPlayer_OperationFailedPrompt";
 
 @implementation SJVideoPlayerResources
 

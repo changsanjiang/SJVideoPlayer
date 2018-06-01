@@ -25,7 +25,7 @@ extern NSNotificationName const SJSettingsPlayerNotification;
 @property (nonatomic, strong, readonly) NSString *videoPlayDidToEndText;
 @property (nonatomic, strong, readonly) NSString *cancelBtnTitle;
 @property (nonatomic, strong, readonly) NSString *waitingForRecordingPromptText;
-@property (nonatomic, strong, readonly) NSString *recordPromptText;
+@property (nonatomic, strong, readonly) NSString *finishRecordingPromptText;
 @property (nonatomic, strong, readonly) NSString *uploadingPrompt;
 @property (nonatomic, strong, readonly) NSString *uploadSuccessfullyPrompt;
 @property (nonatomic, strong, readonly) NSString *exportingPrompt;
@@ -35,7 +35,7 @@ extern NSNotificationName const SJSettingsPlayerNotification;
 @property (nonatomic, strong, readwrite) UIImage *screenshotBtnImage;
 @property (nonatomic, strong, readwrite) UIImage *exportBtnImage;
 @property (nonatomic, strong, readwrite) UIImage *gifBtnImage;
-@property (nonatomic, strong, readwrite) UIImage *recordEndBtnImage;
+@property (nonatomic, strong, readwrite) UIImage *finishRecordingBtnImage;
 
 
 

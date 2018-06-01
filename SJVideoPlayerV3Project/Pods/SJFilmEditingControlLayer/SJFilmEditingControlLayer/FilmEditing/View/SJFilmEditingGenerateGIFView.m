@@ -1,23 +1,17 @@
 //
-//  SJVideoPlayerFilmEditingGenerateGIFView.m
+//  SJFilmEditingGenerateGIFView.m
 //  SJVideoPlayerProject
 //
 //  Created by BlueDancer on 2018/4/11.
 //  Copyright © 2018年 SanJiang. All rights reserved.
 //
 
-#import "SJVideoPlayerFilmEditingGenerateGIFView.h"
+#import "SJFilmEditingGenerateGIFView.h"
 #import <Masonry/Masonry.h>
 #import <SJUIFactory/SJUIFactory.h>
 #import <SJUIFactory/UIView+SJUIFactory.h>
-#import "UIView+SJVideoPlayerSetting.h"
-#import "UIView+SJControlAdd.h"
-#import <SJAttributesFactory/SJAttributeWorker.h>
-#import <SJSlider/SJSlider.h>
 
-
-@interface SJVideoPlayerFilmEditingGenerateGIFView ()
-
+@interface SJFilmEditingGenerateGIFView ()
 @property (nonatomic, strong, readonly) UIButton *cancelBtn;
 @property (nonatomic, strong, readonly) UIButton *completeBtn;
 @property (nonatomic, strong, readonly) UIView *progressContainerView;
@@ -25,10 +19,10 @@
 @property (nonatomic, strong, readonly) UILabel *promptLabel;
 @property (nonatomic, strong, readonly) NSTimer *countDownTimer;
 
-@property (nonatomic) SJVideoPlayerFilmEditingStatus status;
+@property (nonatomic) SJFilmEditingStatus status;
 @end
 
-@implementation SJVideoPlayerFilmEditingGenerateGIFView
+@implementation SJFilmEditingGenerateGIFView
 @synthesize progressContainerView = _progressContainerView;
 @synthesize timeLabel = _timeLabel;
 @synthesize promptLabel = _promptLabel;
@@ -62,12 +56,12 @@
     self.promptLabel.text = self.waitingForRecordingPromptText;
     [[NSRunLoop currentRunLoop] addTimer:self.countDownTimer forMode:NSRunLoopCommonModes];
     [self.countDownTimer setFireDate:[NSDate dateWithTimeIntervalSinceNow:1]];
-    self.status = SJVideoPlayerFilmEditingStatus_Recording;
+    self.status = SJFilmEditingStatus_Recording;
 }
 
 - (void)pause {
     [self _clearTimer];
-    self.status = SJVideoPlayerFilmEditingStatus_Paused;
+    self.status = SJFilmEditingStatus_Paused;
 }
 
 - (void)resume {
@@ -80,15 +74,15 @@
 
 - (void)cancel {
     [self _clearTimer];
-    self.status = SJVideoPlayerFilmEditingStatus_Cancelled;
+    self.status = SJFilmEditingStatus_Cancelled;
 }
 
 - (void)finished {
     [self _clearTimer];
-    self.status = SJVideoPlayerFilmEditingStatus_Finished;
+    self.status = SJFilmEditingStatus_Finished;
 }
 
-- (void)setStatus:(SJVideoPlayerFilmEditingStatus)status {
+- (void)setStatus:(SJFilmEditingStatus)status {
     if ( status == _status ) return;
     _status = status;
     if ( _statusChangedExeBlock ) _statusChangedExeBlock(self, status);
@@ -119,16 +113,16 @@
     }
     
     if ( _completeBtn.alpha != 1 && self.maxDuration - _countDown >= 2 ) {
-        self.promptLabel.text = self.recordPromptText;
+        self.promptLabel.text = self.finishRecordingPromptText;
         [UIView animateWithDuration:0.25 animations:^{
             self->_completeBtn.alpha = 1;
         }];
     }
 }
 
-- (void)setRecordEndBtnImage:(UIImage *)recordEndBtnImage {
-    _recordEndBtnImage = recordEndBtnImage;
-    [_completeBtn setImage:recordEndBtnImage forState:UIControlStateNormal];
+- (void)setFinishRecordingBtnImage:(UIImage *)finishRecordingBtnImage {
+    _finishRecordingBtnImage = finishRecordingBtnImage;
+    [_completeBtn setImage:finishRecordingBtnImage forState:UIControlStateNormal];
 }
 
 - (void)setCancelBtnTitle:(NSString *)cancelBtnTitle {
@@ -141,9 +135,9 @@
     self.promptLabel.text = waitingForRecordingPromptText;
 }
 
-- (void)setRecordPromptText:(NSString *)recordPromptText {
-    _recordPromptText = recordPromptText;
-    self.promptLabel.text = recordPromptText;
+- (void)setFinishRecordingPromptText:(NSString *)finishRecordingPromptText {
+    _finishRecordingPromptText = finishRecordingPromptText;
+    self.promptLabel.text = finishRecordingPromptText;
     [self.promptLabel sizeToFit];
     [self.timeLabel sizeToFit];
     CGFloat width = 24 * 2 + self.promptLabel.csj_w + self.timeLabel.csj_w + 20;
@@ -153,12 +147,6 @@
     self.promptLabel.text = nil;
 }
 
-- (void)setCompleteBtnRightOffset:(float)completeBtnRightOffset {
-    _completeBtnRightOffset = completeBtnRightOffset;
-    [_completeBtn mas_updateConstraints:^(MASConstraintMaker *make) {
-        make.trailing.offset(completeBtnRightOffset);
-    }];
-}
 #pragma mark -
 
 - (void)_setupViews {
@@ -172,13 +160,14 @@
     
     [_cancelBtn mas_makeConstraints:^(MASConstraintMaker *make) {
         make.leading.offset(12);
-        make.top.offset(12);
+        make.top.offset(25);
         make.height.offset(30);
         make.width.equalTo(self->_cancelBtn.mas_height).multipliedBy(2.8);
     }];
     
+    CGFloat offset = (SJScreen_Max() - 375*16/9.0) *0.5 + 20;
     [_completeBtn mas_makeConstraints:^(MASConstraintMaker *make) {
-        make.trailing.offset(0);
+        make.trailing.offset(SJ_is_iPhoneX() ? -offset :0);
         make.size.offset(49);
         make.centerY.offset(0);
     }];

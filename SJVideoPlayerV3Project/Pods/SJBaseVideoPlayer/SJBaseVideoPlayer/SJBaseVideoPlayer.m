@@ -70,6 +70,7 @@ NS_ASSUME_NONNULL_BEGIN
  控制层的显示状态. YES -> appear, NO -> disappear.
  */
 @property (nonatomic, readonly) BOOL controlLayerAppearedState;
+- (void)setControlLayerAppearedState:(BOOL)controlLayerAppearedState;
 
 /**
  在视频第一次播放之前, 控制层会默认在1秒后显示. 如果在这1秒期间, 用户点击触发显示控制层, 则这个值为YES. 否则1秒显示控制层后, 才会设置这个值为YES.
@@ -477,9 +478,6 @@ NS_ASSUME_NONNULL_END
 
 - (void)setControlLayerDataSource:(id<SJVideoPlayerControlLayerDataSource>)controlLayerDataSource {
     if ( controlLayerDataSource == _controlLayerDataSource ) return;
-    
-    [_controlLayerDataSource.controlView removeFromSuperview];
-    
     _controlLayerDataSource = controlLayerDataSource;
     
     if ( !controlLayerDataSource ) return;
@@ -1131,6 +1129,10 @@ NS_ASSUME_NONNULL_END
     return self.currentTime / self.totalTime;
 }
 
+- (float)bufferProgress {
+    return self.asset.bufferProgress;
+}
+
 - (NSTimeInterval)currentTime {
     return self.asset.currentTime;
 }
@@ -1175,7 +1177,7 @@ NS_ASSUME_NONNULL_END
 - (void)setMute:(BOOL)mute {
     if ( mute == self.mute ) return;
     objc_setAssociatedObject(self, @selector(mute), @(mute), OBJC_ASSOCIATION_RETAIN_NONATOMIC);
-    self.asset.player.volume = !mute;
+    self.asset.player.muted = mute;
     if ( [self.controlLayerDelegate respondsToSelector:@selector(videoPlayer:muteChanged:)] ) {
         [self.controlLayerDelegate videoPlayer:self muteChanged:mute];
     }
@@ -1380,6 +1382,10 @@ NS_ASSUME_NONNULL_END
 - (void)setEnableControlLayerDisplayController:(BOOL)enableControlLayerDisplayController {
     objc_setAssociatedObject(self, @selector(enableControlLayerDisplayController), @(enableControlLayerDisplayController), OBJC_ASSOCIATION_RETAIN_NONATOMIC);
     self.displayRecorder.enabled = enableControlLayerDisplayController;
+}
+
+- (void)setControlLayerAppeared:(BOOL)controlLayerAppeared {
+    [self.displayRecorder setControlLayerAppearedState:controlLayerAppeared];
 }
 
 - (BOOL)controlLayerAppeared {
@@ -1817,16 +1823,18 @@ NS_ASSUME_NONNULL_END
     if ( !self.isEnabled ) return;
     if ( !self.videoPlayer.controlLayerDataSource ) return;
     self.controlLayerAppearedState = status;
-    
     if ( status && [self.videoPlayer.controlLayerDelegate respondsToSelector:@selector(controlLayerNeedAppear:)] ) {
         [_videoPlayer.controlLayerDelegate controlLayerNeedAppear:_videoPlayer];
     }
     else if ( !status && [self.videoPlayer.controlLayerDelegate respondsToSelector:@selector(controlLayerNeedDisappear:)] ) {
         [_videoPlayer.controlLayerDelegate controlLayerNeedDisappear:_videoPlayer];
     }
-    if ( _videoPlayer.controlLayerAppearStateChanged ) _videoPlayer.controlLayerAppearStateChanged(_videoPlayer, status);
 }
 
+- (void)setControlLayerAppearedState:(BOOL)status {
+    _controlLayerAppearedState = status;
+    if ( _videoPlayer.controlLayerAppearStateChanged ) _videoPlayer.controlLayerAppearStateChanged(_videoPlayer, status);
+}
 @end
 
 

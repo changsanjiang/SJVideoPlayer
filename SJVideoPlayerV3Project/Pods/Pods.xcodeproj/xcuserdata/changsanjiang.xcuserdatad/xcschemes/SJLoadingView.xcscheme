@@ -14,7 +14,7 @@
             buildForArchiving = "YES">
             <BuildableReference
                BuildableIdentifier = "primary"
-               BlueprintIdentifier = "3423B30836079942CA24472017A27D2E"
+               BlueprintIdentifier = "CF4E920E8A71145CAB2208E44E28D375"
                BlueprintName = "SJLoadingView"
                ReferencedContainer = "container:Pods.xcodeproj"
                BuildableName = "libSJLoadingView.a">

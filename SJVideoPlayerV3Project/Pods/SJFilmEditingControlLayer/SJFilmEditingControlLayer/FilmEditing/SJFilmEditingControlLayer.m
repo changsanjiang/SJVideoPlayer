@@ -90,42 +90,63 @@ NS_ASSUME_NONNULL_END
     self = [super initWithFrame:frame];
     if ( !self ) return nil;
     [self _setupViews];
-    self.update(^(SJFilmEditingSettings * _Nonnull settings) {});
+    SJFilmEditingControlLayer.update(^(SJFilmEditingSettings * _Nonnull settings) {});
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(settingsUpdateNotification:) name:SJFilmEditingSettingsUpdateNotification object:nil];
     return self;
 }
 
 - (void)dealloc {
+    [[NSNotificationCenter defaultCenter] removeObserver:self];
 #ifdef DEBUG
     NSLog(@"SJVideoPlayerLog: %d - %s", (int)__LINE__, __func__);
 #endif
 }
 
-- (void)exitControlLayer {
-    _videoPlayer.disableRotation = self.propertyRecorder.disableRotation;
-    _videoPlayer.enableControlLayerDisplayController = self.propertyRecorder.enableControlLayerDisplayController;
-    self.propertyRecorder = nil;
+- (void)settingsUpdateNotification:(NSNotification *)notifi {
+    SJFilmEditingSettings *settings = notifi.object;
+    self.settings = settings;
+    [self.GIFBtn setImage:settings.gifBtnImage forState:UIControlStateNormal];
+    [self.exportBtn setImage:settings.exportBtnImage forState:UIControlStateNormal];
+    [self.screenshotBtn setImage:settings.screenshotBtnImage forState:UIControlStateNormal];
+}
+
+- (void)exitControlLayerCompeletionHandler:(nullable void (^)(void))compeletionHandler {
+    /// clean
+    if ( _propertyRecorder ) {
+        _videoPlayer.disableRotation = self.propertyRecorder.disableRotation;
+        _videoPlayer.enableControlLayerDisplayController = self.propertyRecorder.enableControlLayerDisplayController;
+        _propertyRecorder = nil;
+    }
+    _videoPlayer.controlLayerDataSource = nil;
+    _videoPlayer.controlLayerDelegate = nil;
+    _videoPlayer = nil;
+    
+    /// 退出动画
     [UIView animateWithDuration:0.4 animations:^{
         [self disappear];
         [self.btnContainerView disappear];
         [self cancel];
     } completion:^(BOOL finished) {
         [self removeFromSuperview];
+        if ( compeletionHandler ) compeletionHandler();
     }];
 }
 
-- (void)restartControlLayer {
-    [self->_generateGIFView removeFromSuperview];
-    self->_generateGIFView = nil;
-    [self->_recordView removeFromSuperview];
-    self->_recordView = nil;
-    [self->_resultPresentView removeFromSuperview];
-    self->_resultPresentView = nil;
+- (void)restartControlLayerCompeletionHandler:(nullable void (^)(void))compeletionHandler {
+    /// clean
+    [_generateGIFView removeFromSuperview]; _generateGIFView = nil;
+    [_recordView removeFromSuperview]; _recordView = nil;
+    [_resultPresentView removeFromSuperview]; _resultPresentView = nil;
     [self changedStatus:SJFilmEditingStatus_Unknown];
-    self.currentOperation = SJVideoPlayerFilmEditingOperation_Unknown;
+    [self setCurrentOperation:SJVideoPlayerFilmEditingOperation_Unknown];
     [self.btnContainerView disappear];
+    
+    /// 入场动画
     [UIView animateWithDuration:0.4 animations:^{
         [self appear];
         [self.btnContainerView appear];
+    } completion:^(BOOL finished) {
+        if ( compeletionHandler ) compeletionHandler();
     }];
 }
 
@@ -137,7 +158,7 @@ NS_ASSUME_NONNULL_END
     [self _updateLayout];
 }
 
-- (void (^)(void (^ _Nonnull)(SJFilmEditingSettings * _Nonnull)))update {
++ (void (^)(void (^ _Nonnull)(SJFilmEditingSettings * _Nonnull)))update {
     return ^(void(^block)(SJFilmEditingSettings *settings)) {
         __weak typeof(self) _self = self;
         dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
@@ -146,10 +167,7 @@ NS_ASSUME_NONNULL_END
                 __strong typeof(_self) self = _self;
                 if ( !self ) return ;
                 SJFilmEditingSettings *settings = [SJFilmEditingSettings commonSettings];
-                self.settings = settings;
-                [self.GIFBtn setImage:settings.gifBtnImage forState:UIControlStateNormal];
-                [self.exportBtn setImage:settings.exportBtnImage forState:UIControlStateNormal];
-                [self.screenshotBtn setImage:settings.screenshotBtnImage forState:UIControlStateNormal];
+                [[NSNotificationCenter defaultCenter] postNotificationName:SJFilmEditingSettingsUpdateNotification object:settings];
             });
         });
     };
@@ -179,6 +197,7 @@ NS_ASSUME_NONNULL_END
     self.propertyRecorder = [SJFilmEditingVideoPlayerPropertyRecroder new];
     self.propertyRecorder.disableRotation = videoPlayer.disableRotation;
     self.propertyRecorder.enableControlLayerDisplayController = videoPlayer.enableControlLayerDisplayController;
+    
     videoPlayer.disableRotation = YES;
     videoPlayer.enableControlLayerDisplayController = NO;
     [videoPlayer setControlLayerAppeared:NO];
@@ -521,6 +540,7 @@ NS_ASSUME_NONNULL_END
 }
 
 - (SJFilmEditingResultPresentView *)_presentResultViewWithType:(SJFilmEditingResultPresentViewType)type {
+
     [_recordView removeFromSuperview];
     [_generateGIFView removeFromSuperview];
     
@@ -538,7 +558,7 @@ NS_ASSUME_NONNULL_END
     _resultPresentView.clickedCancelBtnExeBlock = ^(SJFilmEditingResultPresentView * _Nonnull view) {
         __strong typeof(_self) self = _self;
         if ( !self ) return;
-        [self cancel];
+        [self _userClickedCancellBtn];
     };
     
     
@@ -756,7 +776,7 @@ NS_ASSUME_NONNULL_END
     _recordView.clickedCancleBtnExeBlock = ^(SJFilmEditingRecordingView * _Nonnull view) {
         __strong typeof(_self) self = _self;
         if ( !self ) return ;
-        [self cancel];
+        [self _userClickedCancellBtn];
     };
     
     _recordView.statusChangedExeBlock = ^(__kindof UIView * _Nonnull view, SJFilmEditingStatus status) {
@@ -788,7 +808,7 @@ NS_ASSUME_NONNULL_END
     _generateGIFView.clickedCancleBtnExeBlock = ^(SJFilmEditingGenerateGIFView * _Nonnull view) {
         __strong typeof(_self) self = _self;
         if ( !self ) return ;
-        [self cancel];
+        [self _userClickedCancellBtn];
     };
     
     _generateGIFView.clickedCompleteBtnExeBlock = ^(SJFilmEditingGenerateGIFView * _Nonnull view) {
@@ -815,6 +835,12 @@ NS_ASSUME_NONNULL_END
 
 - (NSTimeInterval)promptDuration {
     return 2;
+}
+
+- (void)_userClickedCancellBtn {
+    if ( [self.delegate respondsToSelector:@selector(userClickedCancelBtnOnControlLayer:)] ) {
+        [self.delegate userClickedCancelBtnOnControlLayer:self];
+    }
 }
 @end
 

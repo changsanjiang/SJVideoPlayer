@@ -17,19 +17,19 @@ NS_ASSUME_NONNULL_BEGIN
 
 @interface SJFilmEditingControlLayer : UIView<SJVideoPlayerControlLayerDelegate, SJVideoPlayerControlLayerDataSource>
 
-- (void)exitControlLayer;
-- (void)restartControlLayer;
+- (void)restartControlLayerCompeletionHandler:(nullable void(^)(void))compeletionHandler;
+
+- (void)exitControlLayerCompeletionHandler:(nullable void(^)(void))compeletionHandler;
 
 #pragma mark
-
 @property (nonatomic, weak, nullable) id <SJVideoPlayerFilmEditingResultUpload> uploader;
 @property (nonatomic, weak, nullable) id <SJFilmEditingControlLayerDelegate> delegate;
 
-#pragma mark - operation
+#pragma mark
 @property (nonatomic, readonly) SJVideoPlayerFilmEditingOperation currentOperation; // user selected operation.
 
-#pragma mark -
-@property (nonatomic, copy, readonly) void(^update)(void(^block)(SJFilmEditingSettings *settings));
+#pragma mark
+@property (class, nonatomic, copy, readonly) void(^update)(void(^block)(SJFilmEditingSettings *settings));
 @property (nonatomic, strong, nullable) SJVideoPlayerFilmEditingConfig *config;
 @property (nonatomic, readonly) SJFilmEditingStatus status;
 - (void)pause;      // `filmEditingControlLayer:statusChanged:` will be called.

@@ -9,6 +9,8 @@
 #import "SJFilmEditingSettings.h"
 #import "SJFilmEditingResources.h"
 
+NSNotificationName const SJFilmEditingSettingsUpdateNotification = @"SJFilmEditingSettingsUpdateNotification";
+
 @implementation SJFilmEditingSettings
 
 + (instancetype)commonSettings {

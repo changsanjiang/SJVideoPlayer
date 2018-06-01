@@ -8,35 +8,15 @@
 
 #import "SJVideoPlayer.h"
 #import <objc/message.h>
-#import "SJVideoPlayerDefaultControlView.h"
-#import <SJFilmEditingControlLayer/SJFilmEditingControlLayer.h>
 
-@interface SJControlLayerCarrier ()
-@property (nonatomic) SJControlLayerIdentifier identifier;
-@property (nonatomic, strong) id <SJVideoPlayerControlLayerDataSource> dataSource;
-@property (nonatomic, strong) id <SJVideoPlayerControlLayerDelegate> delegate;
-@end
+NS_ASSUME_NONNULL_BEGIN
+@interface SJVideoPlayer ()<SJEdgeControlLayerDelegate, SJFilmEditingControlLayerDelegate>
 
-@implementation SJControlLayerCarrier
-- (instancetype)initWithIdentifier:(SJControlLayerIdentifier)identifier
-                        dataSource:(__strong id <SJVideoPlayerControlLayerDataSource>)dataSource
-                          delegate:(__strong id<SJVideoPlayerControlLayerDelegate>)delegate
-                      exitExeBlock:(nonnull void (^)(SJControlLayerCarrier * _Nonnull))exitExeBlock
-                   restartExeBlock:(nonnull void (^)(SJControlLayerCarrier * _Nonnull))restartExeBlock{
-    self = [super init];
-    if ( !self ) return nil;
-    _identifier = identifier;
-    _dataSource = dataSource;
-    _delegate = delegate;
-    _exitExeBlock = exitExeBlock;
-    _restartExeBlock = restartExeBlock;
-    return self;
-}
-@end
+@property (nonatomic, strong, readonly) SJControlLayerCarrier *defaultEdgeCarrier;
+@property (nonatomic, strong, readonly) SJControlLayerCarrier *defaultFilmEditingCarrier;
 
-
-@interface SJVideoPlayer ()<SJFilmEditingControlLayerDelegate>
-@property (nonatomic, strong, readonly) NSMutableDictionary *map;
+- (nullable SJEdgeControlLayer *)defaultEdgeControlLayer;
+- (nullable SJFilmEditingControlLayer *)defaultFilmEditingControlLayer;
 @end
 
 @implementation SJVideoPlayer
@@ -57,90 +37,11 @@
 - (instancetype)init {
     self = [super init];
     if ( !self ) return nil;
-    _map = [NSMutableDictionary dictionary];
-    
-    /// edge
-    SJVideoPlayerDefaultControlView *defaultEdge = [SJVideoPlayerDefaultControlView new];
-    SJControlLayerCarrier *defaultEdge_carrier =
-    [[SJControlLayerCarrier alloc] initWithIdentifier:SJControlLayer_Edge dataSource:defaultEdge delegate:defaultEdge exitExeBlock:^(SJControlLayerCarrier * _Nonnull carrier) {
-        [(SJVideoPlayerDefaultControlView *)carrier.dataSource exitControlLayer];
-    } restartExeBlock:^(SJControlLayerCarrier * _Nonnull carrier) {
-        [(SJVideoPlayerDefaultControlView *)carrier.dataSource restartControlLayer];
-    }];
-    
-    [self appendControlLayer:defaultEdge_carrier];
-    self.controlLayerDataSource = defaultEdge;
-    self.controlLayerDelegate = defaultEdge;
-    _currentControlLayerIdentifier = defaultEdge_carrier.identifier;
-    
-    /// film editing
-    SJFilmEditingControlLayer *filmEditing = [SJFilmEditingControlLayer new];
-    filmEditing.delegate = self;
-    SJControlLayerCarrier *filmEditing_carrier =
-    [[SJControlLayerCarrier alloc] initWithIdentifier:SJControlLayer_FilmEditing dataSource:filmEditing delegate:filmEditing exitExeBlock:^(SJControlLayerCarrier * _Nonnull carrier) {
-        [(SJFilmEditingControlLayer *)carrier.dataSource exitControlLayer];
-    } restartExeBlock:^(SJControlLayerCarrier * _Nonnull carrier) {
-        [(SJFilmEditingControlLayer *)carrier.dataSource restartControlLayer];
-    }];
-    [self appendControlLayer:filmEditing_carrier];
-    
-    __weak typeof(self) _self = self;
-    defaultEdge.clickedFilmEditingBtnExeBlock = ^(SJVideoPlayerDefaultControlView * _Nonnull view) {
-        __strong typeof(_self) self = _self;
-        if ( !self ) return ;
-        [self switchControlLayerForIdentitfier:SJControlLayer_FilmEditing];
-    };
+    [self.switcher addControlLayer:self.defaultEdgeCarrier];
+    [self.switcher switchControlLayerForIdentitfier:SJControlLayer_Edge toVideoPlayer:self];
     return self;
 }
 
-- (void)appendControlLayer:(SJControlLayerCarrier *)carrier {
-    [self.map setObject:carrier forKey:@(carrier.identifier)];
-}
-
-- (void)deleteControlLayerForIdentifier:(SJControlLayerIdentifier)identifier {
-    [self.map removeObjectForKey:@(identifier)];
-}
-
-- (SJControlLayerCarrier *)controlLayerForIdentifier:(SJControlLayerIdentifier)identifier {
-    return self.map[@(identifier)];
-}
-
-- (void)switchControlLayerForIdentitfier:(SJControlLayerIdentifier)identifier {
-    SJControlLayerCarrier *carrier_new = self.map[@(identifier)];
-    NSParameterAssert(carrier_new);
-
-    SJControlLayerCarrier *carrier_old = self.map[@(self.currentControlLayerIdentifier)];
-    if ( carrier_old.exitExeBlock ) carrier_old.exitExeBlock(carrier_old);
-    
-    self.controlLayerDataSource = carrier_new.dataSource;
-    self.controlLayerDelegate = carrier_new.delegate;
-    if ( carrier_new.restartExeBlock ) carrier_new.restartExeBlock(carrier_new);
-
-    _currentControlLayerIdentifier = carrier_new.identifier;
-}
-/// 用户点击空白区域
-- (void)userTappedBlankAreaOnControlLayer:(SJFilmEditingControlLayer *)controlLayer {
-    [controlLayer cancel];
-}
-
-/// 用户取消操作
-- (void)filmEditingControlLayer:(SJFilmEditingControlLayer *)controlLayer
-                  statusChanged:(SJFilmEditingStatus)status {
-    switch ( status ) {
-        case SJFilmEditingStatus_Unknown:
-            break;
-        case SJFilmEditingStatus_Recording:
-            break;
-        case SJFilmEditingStatus_Paused:
-            break;
-        case SJFilmEditingStatus_Finished:
-            break;
-        case SJFilmEditingStatus_Cancelled: {
-            [self switchControlLayerForIdentitfier:SJControlLayer_Edge];
-        }
-            break;
-    }
-}
 
 
 - (instancetype)initWithControlLayerDataSource:(nullable __weak id<SJVideoPlayerControlLayerDataSource> )controlLayerDataSource
@@ -149,24 +50,97 @@
     return nil;
 }
 
+@synthesize switcher = _switcher;
+- (SJControlLayerSwitcher *)switcher {
+    if ( _switcher ) return _switcher;
+    return _switcher = [[SJControlLayerSwitcher alloc] init];
+}
+
+@synthesize defaultEdgeCarrier = _defaultEdgeCarrier;
+- (SJControlLayerCarrier *)defaultEdgeCarrier {
+    if ( _defaultEdgeCarrier ) return _defaultEdgeCarrier;
+    SJEdgeControlLayer *edgeControlLayer = [SJEdgeControlLayer new];
+    edgeControlLayer.delegate = self;
+    SJControlLayerCarrier *defaultEdgeCarrier =
+    [[SJControlLayerCarrier alloc] initWithIdentifier:SJControlLayer_Edge dataSource:edgeControlLayer delegate:edgeControlLayer exitExeBlock:^(SJControlLayerCarrier * _Nonnull carrier) {
+        [(SJEdgeControlLayer *)carrier.dataSource exitControlLayerCompeletionHandler:nil];
+    } restartExeBlock:^(SJControlLayerCarrier * _Nonnull carrier) {
+        [(SJEdgeControlLayer *)carrier.dataSource restartControlLayerCompeletionHandler:nil];
+    }];
+    return _defaultEdgeCarrier = defaultEdgeCarrier;
+}
+
+- (nullable SJEdgeControlLayer *)defaultEdgeControlLayer {
+    if ( [self.defaultEdgeCarrier.dataSource isKindOfClass:[SJEdgeControlLayer class]] ) {
+        return (id)self.defaultEdgeCarrier.dataSource;
+    }
+    return nil;
+}
+
+- (void)clickedBackBtnOnControlLayer:(SJEdgeControlLayer *)controlLayer {
+    if ( self.clickedBackEvent ) self.clickedBackEvent(self);
+}
+
+- (void)clickedRightBtnOnControlLayer:(SJEdgeControlLayer *)controlLayer {
+    [self.switcher switchControlLayerForIdentitfier:SJControlLayer_FilmEditing toVideoPlayer:self];
+}
+
+#pragma mark
+@synthesize defaultFilmEditingCarrier = _defaultFilmEditingCarrier;
+- (SJControlLayerCarrier *)defaultFilmEditingCarrier {
+    if ( _defaultFilmEditingCarrier ) return _defaultFilmEditingCarrier;
+    SJFilmEditingControlLayer *filmEditingControlLayer = [SJFilmEditingControlLayer new];
+    filmEditingControlLayer.delegate = self;
+    SJControlLayerCarrier *defaultFilmEditingCarrier = [[SJControlLayerCarrier alloc] initWithIdentifier:SJControlLayer_FilmEditing dataSource:filmEditingControlLayer delegate:filmEditingControlLayer exitExeBlock:^(SJControlLayerCarrier * _Nonnull carrier) {
+        [(SJFilmEditingControlLayer *)carrier.dataSource exitControlLayerCompeletionHandler:nil];
+    } restartExeBlock:^(SJControlLayerCarrier * _Nonnull carrier) {
+        [(SJFilmEditingControlLayer *)carrier.dataSource restartControlLayerCompeletionHandler:nil];
+    }];
+    return _defaultFilmEditingCarrier = defaultFilmEditingCarrier;
+}
+
+- (nullable SJFilmEditingControlLayer *)defaultFilmEditingControlLayer {
+    if ( [self.defaultFilmEditingCarrier.dataSource isKindOfClass:[SJEdgeControlLayer class]] ) {
+        return (id)self.defaultFilmEditingCarrier.dataSource;
+    }
+    return nil;
+}
+
+/// 用户点击空白区域
+- (void)userTappedBlankAreaOnControlLayer:(SJFilmEditingControlLayer *)controlLayer {
+    [self.switcher switchControlLayerForIdentitfier:self.switcher.previousIdentifier toVideoPlayer:self];
+}
+
+/// 用户点击了取消按钮
+- (void)userClickedCancelBtnOnControlLayer:(SJFilmEditingControlLayer *)controlLayer {
+    [self.switcher switchControlLayerForIdentitfier:self.switcher.previousIdentifier toVideoPlayer:self];
+}
+
+/// 状态改变的回调
+- (void)filmEditingControlLayer:(SJFilmEditingControlLayer *)controlLayer
+                  statusChanged:(SJFilmEditingStatus)status {
+    
+}
+
 @end
+
 
 
 @implementation SJVideoPlayer (SettingLightweightControlLayer)
 
-- (void)setTopControlItems:(NSArray<SJLightweightTopItem *> *)topControlItems {
+- (void)setTopControlItems:(nullable NSArray<SJLightweightTopItem *> *)topControlItems {
     objc_setAssociatedObject(self, @selector(topControlItems), topControlItems, OBJC_ASSOCIATION_COPY_NONATOMIC);
 }
 
-- (NSArray<SJLightweightTopItem *> *)topControlItems {
+- (nullable NSArray<SJLightweightTopItem *> *)topControlItems {
     return objc_getAssociatedObject(self, _cmd);
 }
 
-- (void)setClickedTopControlItemExeBlock:(void (^)(SJVideoPlayer * _Nonnull, SJLightweightTopItem * _Nonnull))clickedTopControlItemExeBlock {
+- (void)setClickedTopControlItemExeBlock:(nullable void (^)(SJVideoPlayer * _Nonnull, SJLightweightTopItem * _Nonnull))clickedTopControlItemExeBlock {
     objc_setAssociatedObject(self, @selector(clickedTopControlItemExeBlock), clickedTopControlItemExeBlock, OBJC_ASSOCIATION_COPY_NONATOMIC);
 }
 
-- (void (^)(SJVideoPlayer * _Nonnull, SJLightweightTopItem * _Nonnull))clickedTopControlItemExeBlock {
+- (nullable void (^)(SJVideoPlayer * _Nonnull, SJLightweightTopItem * _Nonnull))clickedTopControlItemExeBlock {
     return objc_getAssociatedObject(self, _cmd);
 }
 @end
@@ -208,11 +182,11 @@ static dispatch_queue_t videoPlayerWorkQueue;
     });
 }
 
-- (void)setMoreSettings:(NSArray<SJVideoPlayerMoreSetting *> *)moreSettings {
+- (void)setMoreSettings:(nullable NSArray<SJVideoPlayerMoreSetting *> *)moreSettings {
     
 }
 
-- (NSArray<SJVideoPlayerMoreSetting *> *)moreSettings {
+- (nullable NSArray<SJVideoPlayerMoreSetting *> *)moreSettings {
     return nil;
 }
 
@@ -231,6 +205,10 @@ static dispatch_queue_t videoPlayerWorkQueue;
 
 - (void)setEnableFilmEditing:(BOOL)enableFilmEditing {
     objc_setAssociatedObject(self, @selector(enableFilmEditing), @(enableFilmEditing), OBJC_ASSOCIATION_RETAIN_NONATOMIC);
+    [self defaultEdgeControlLayer].enableFilmEditing = enableFilmEditing;
+    if ( enableFilmEditing ) {
+        [self.switcher addControlLayer:self.defaultFilmEditingCarrier];
+    }
 }
 
 - (BOOL)enableFilmEditing {
@@ -246,17 +224,7 @@ static dispatch_queue_t videoPlayerWorkQueue;
 }
 
 - (void)dismissFilmEditingViewCompletion:(void(^__nullable)(SJVideoPlayer *player))completion {
-    [(SJVideoPlayerDefaultControlView *)self.controlLayerDataSource dismissFilmEditingViewCompletion:^(SJVideoPlayerDefaultControlView * _Nonnull view) {
-        if ( completion ) completion(self);
-    }];
-}
-
-- (void)exitFilmEditingCompletion:(void(^__nullable)(SJVideoPlayer *player))completion {
-    [self dismissFilmEditingViewCompletion:completion];
+    [self.switcher switchControlLayerForIdentitfier:self.switcher.previousIdentifier toVideoPlayer:self];
 }
 @end
-
-
-
-SJControlLayerIdentifier SJControlLayer_Edge = LONG_MAX;
-SJControlLayerIdentifier SJControlLayer_FilmEditing = LONG_MAX - 1;
+NS_ASSUME_NONNULL_END

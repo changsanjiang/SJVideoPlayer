@@ -14,7 +14,7 @@
             buildForArchiving = "YES">
             <BuildableReference
                BuildableIdentifier = "primary"
-               BlueprintIdentifier = "D221315F5952D1F0420911EC680E076E"
+               BlueprintIdentifier = "D509AF9AAF223540EA14DBF299FFCFF3"
                BlueprintName = "SJFilmEditingControlLayer"
                ReferencedContainer = "container:Pods.xcodeproj"
                BuildableName = "libSJFilmEditingControlLayer.a">

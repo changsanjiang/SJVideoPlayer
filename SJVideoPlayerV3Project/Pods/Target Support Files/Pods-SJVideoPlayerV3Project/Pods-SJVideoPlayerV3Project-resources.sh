@@ -92,10 +92,12 @@ EOM
   esac
 }
 if [[ "$CONFIGURATION" == "Debug" ]]; then
+  install_resource "${PODS_ROOT}/SJEdgeControlLayer/SJEdgeControlLayer/Asset/SJVideoPlayer.bundle"
   install_resource "${PODS_ROOT}/SJFilmEditingControlLayer/SJFilmEditingControlLayer/FilmEditing/Asset/SJFilmEditing.bundle"
   install_resource "${PODS_ROOT}/SJVolBrigControl/SJVolBrigControl/Resource/SJVolBrigResource.bundle"
 fi
 if [[ "$CONFIGURATION" == "Release" ]]; then
+  install_resource "${PODS_ROOT}/SJEdgeControlLayer/SJEdgeControlLayer/Asset/SJVideoPlayer.bundle"
   install_resource "${PODS_ROOT}/SJFilmEditingControlLayer/SJFilmEditingControlLayer/FilmEditing/Asset/SJFilmEditing.bundle"
   install_resource "${PODS_ROOT}/SJVolBrigControl/SJVolBrigControl/Resource/SJVolBrigResource.bundle"
 fi

@@ -309,7 +309,7 @@ NS_ASSUME_NONNULL_END
     return ^ () {
         self.videoPlayer.disableRotation = NO;
         if ( !self.videoPlayer.isPlayOnScrollView || (self.videoPlayer.isPlayOnScrollView && self.videoPlayer.isScrollAppeared) ) {
-            [self.videoPlayer play];
+           if ( !self.videoPlayer.userPaused ) [self.videoPlayer play];
         }
     };
 }

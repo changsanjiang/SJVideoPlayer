@@ -102,33 +102,65 @@ PODS:
     - SJVideoPlayerAssetCarrier
     - SJVolBrigControl
   - SJBorderLineView (0.0.6)
-  - SJFilmEditingControlLayer (1.0.1):
+  - SJEdgeControlLayer (0.0.1):
     - SJAttributesFactory
     - SJBaseVideoPlayer
-    - SJFilmEditingControlLayer/Asset (= 1.0.1)
-    - SJFilmEditingControlLayer/Category (= 1.0.1)
-    - SJFilmEditingControlLayer/Header (= 1.0.1)
-    - SJFilmEditingControlLayer/Result (= 1.0.1)
-    - SJFilmEditingControlLayer/View (= 1.0.1)
+    - SJEdgeControlLayer/Asset (= 0.0.1)
+    - SJEdgeControlLayer/EdgeViews (= 0.0.1)
+    - SJEdgeControlLayer/MaskView (= 0.0.1)
+    - SJEdgeControlLayer/MoreSetting (= 0.0.1)
+    - SJLoadingView
     - SJSlider
-  - SJFilmEditingControlLayer/Asset (1.0.1):
+  - SJEdgeControlLayer/Asset (0.0.1):
+    - SJAttributesFactory
+    - SJBaseVideoPlayer
+    - SJLoadingView
+    - SJSlider
+  - SJEdgeControlLayer/EdgeViews (0.0.1):
+    - SJAttributesFactory
+    - SJBaseVideoPlayer
+    - SJEdgeControlLayer/Asset
+    - SJEdgeControlLayer/MaskView
+    - SJLoadingView
+    - SJSlider
+  - SJEdgeControlLayer/MaskView (0.0.1):
+    - SJAttributesFactory
+    - SJBaseVideoPlayer
+    - SJLoadingView
+    - SJSlider
+  - SJEdgeControlLayer/MoreSetting (0.0.1):
+    - SJAttributesFactory
+    - SJBaseVideoPlayer
+    - SJEdgeControlLayer/Asset
+    - SJLoadingView
+    - SJSlider
+  - SJFilmEditingControlLayer (1.0.1.2):
+    - SJAttributesFactory
+    - SJBaseVideoPlayer
+    - SJFilmEditingControlLayer/Asset (= 1.0.1.2)
+    - SJFilmEditingControlLayer/Category (= 1.0.1.2)
+    - SJFilmEditingControlLayer/Header (= 1.0.1.2)
+    - SJFilmEditingControlLayer/Result (= 1.0.1.2)
+    - SJFilmEditingControlLayer/View (= 1.0.1.2)
+    - SJSlider
+  - SJFilmEditingControlLayer/Asset (1.0.1.2):
     - SJAttributesFactory
     - SJBaseVideoPlayer
     - SJSlider
-  - SJFilmEditingControlLayer/Category (1.0.1):
+  - SJFilmEditingControlLayer/Category (1.0.1.2):
     - SJAttributesFactory
     - SJBaseVideoPlayer
     - SJSlider
-  - SJFilmEditingControlLayer/Header (1.0.1):
+  - SJFilmEditingControlLayer/Header (1.0.1.2):
     - SJAttributesFactory
     - SJBaseVideoPlayer
     - SJSlider
-  - SJFilmEditingControlLayer/Result (1.0.1):
+  - SJFilmEditingControlLayer/Result (1.0.1.2):
     - SJAttributesFactory
     - SJBaseVideoPlayer
     - SJFilmEditingControlLayer/Header
     - SJSlider
-  - SJFilmEditingControlLayer/View (1.0.1):
+  - SJFilmEditingControlLayer/View (1.0.1.2):
     - SJAttributesFactory
     - SJBaseVideoPlayer
     - SJFilmEditingControlLayer/Header
@@ -159,6 +191,7 @@ PODS:
 DEPENDENCIES:
   - SJAttributesFactory
   - SJBaseVideoPlayer
+  - SJEdgeControlLayer
   - SJFilmEditingControlLayer
   - SJFullscreenPopGesture
   - SJLoadingView
@@ -171,6 +204,7 @@ SPEC REPOS:
     - SJAttributesFactory
     - SJBaseVideoPlayer
     - SJBorderLineView
+    - SJEdgeControlLayer
     - SJFilmEditingControlLayer
     - SJFullscreenPopGesture
     - SJLoadingView
@@ -188,7 +222,8 @@ SPEC CHECKSUMS:
   SJAttributesFactory: 90847f2f6db06fa6ba8d5b7529105ba6d670af4a
   SJBaseVideoPlayer: 728dfbfeda17865de5be29cd3ffdd5141e53a84e
   SJBorderLineView: 5878e67fb57e812a2d5d029ca666068784b5448a
-  SJFilmEditingControlLayer: 1a0762fbc51678fd46ec29791ac50d7e41fea099
+  SJEdgeControlLayer: 2f0c080e040e1e53cd1771fea355f730de3ad9dc
+  SJFilmEditingControlLayer: 4d395c4a20db97d8fc9bae2b4f5a326ff31781d1
   SJFullscreenPopGesture: 17ce985eef9e45a35ee11b90440502265a9f2362
   SJLoadingView: c3ff03e4b363a5b6a3ba0634d6bb9ce2647faf07
   SJObserverHelper: b270d707cd18ab76538596aa4e98cf798c9e9868
@@ -199,6 +234,6 @@ SPEC CHECKSUMS:
   SJVideoPlayerAssetCarrier: af7f1cd77b9b3eed4176cf861a880d179cabc753
   SJVolBrigControl: 71db3612717f9237d4ab1377ba0b0ee3472e49ff
 
-PODFILE CHECKSUM: 767cd16743e77faa7e8e70fe0fd0eb60277de6a3
+PODFILE CHECKSUM: 2d1fbd1d0a16d9758d7d8eef560605d75ce6452c
 
 COCOAPODS: 1.5.3

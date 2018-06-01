@@ -28,7 +28,10 @@ typedef NS_ENUM(NSUInteger, SJVideoPlayerFilmEditingOperation) {
 /// 用户点击空白区域
 - (void)userTappedBlankAreaOnControlLayer:(SJFilmEditingControlLayer *)controlLayer;
 
-/// 用户取消操作
+/// 用户点击了取消按钮
+- (void)userClickedCancelBtnOnControlLayer:(SJFilmEditingControlLayer *)controlLayer;
+
+/// 状态改变的回调
 - (void)filmEditingControlLayer:(SJFilmEditingControlLayer *)controlLayer
                   statusChanged:(SJFilmEditingStatus)status;
 @end

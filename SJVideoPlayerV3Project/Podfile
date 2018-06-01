@@ -9,7 +9,8 @@ target 'SJVideoPlayerV3Project' do
  "SJFullscreenPopGesture",
  "SJLoadingView",
  "SJSlider",
- "SJFilmEditingControlLayer"
+ "SJFilmEditingControlLayer",
+ "SJEdgeControlLayer"
  ].each {|lib| pod lib}
  
   # Pods for SJVideoPlayerV3Project

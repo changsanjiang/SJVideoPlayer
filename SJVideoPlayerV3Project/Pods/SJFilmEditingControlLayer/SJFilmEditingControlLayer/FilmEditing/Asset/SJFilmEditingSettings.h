@@ -9,6 +9,8 @@
 #import <Foundation/Foundation.h>
 @class UIImage;
 
+extern NSNotificationName const SJFilmEditingSettingsUpdateNotification;
+
 @interface SJFilmEditingSettings : NSObject
 /// shared
 + (instancetype)commonSettings;

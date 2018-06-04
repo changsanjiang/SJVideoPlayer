@@ -40,22 +40,18 @@
     // play
     _videoPlayer.assetURL = [NSURL URLWithString:@"http://video.cdn.lanwuzhe.com/14945858406905f0c"];
     
-//    // create a custom control layer
-//    SJDemoControlLayer *demoControlLayer = [SJDemoControlLayer new];
-//    demoControlLayer.delegate = self;
-//
-//    // create a data carrier and add to switcher
-//    [_videoPlayer.switcher addControlLayer:[[SJControlLayerCarrier alloc] initWithIdentifier:SJControlLayer_Edge dataSource:demoControlLayer delegate:demoControlLayer exitExeBlock:^(SJControlLayerCarrier * _Nonnull carrier) {
-//        [demoControlLayer exitControlLayerCompeletionHandler:nil];
-//    } restartExeBlock:^(SJControlLayerCarrier * _Nonnull carrier) {
-//        [demoControlLayer restartControlLayerCompeletionHandler:nil];
-//    }]];
-//    // switch
-//    [_videoPlayer.switcher switchControlLayerForIdentitfier:SJControlLayer_Edge toVideoPlayer:_videoPlayer];
-    
-    SJVideoPlayer.update(^(SJVideoPlayerSettings * _Nonnull commonSettings) {
-        commonSettings.progress_thumbImage = [UIImage imageNamed:@"thumb"];
-    });
+    // create a custom control layer
+    SJDemoControlLayer *demoControlLayer = [SJDemoControlLayer new];
+    demoControlLayer.delegate = self;
+
+    // create a data carrier and add to switcher
+    [_videoPlayer.switcher addControlLayer:[[SJControlLayerCarrier alloc] initWithIdentifier:SJControlLayer_Edge dataSource:demoControlLayer delegate:demoControlLayer exitExeBlock:^(SJControlLayerCarrier * _Nonnull carrier) {
+        [demoControlLayer exitControlLayerCompeletionHandler:nil];
+    } restartExeBlock:^(SJControlLayerCarrier * _Nonnull carrier) {
+        [demoControlLayer restartControlLayerCompeletionHandler:nil];
+    }]];
+    // switch
+    [_videoPlayer.switcher switchControlLayerForIdentitfier:SJControlLayer_Edge toVideoPlayer:_videoPlayer];
 }
 
 - (void)clickedFilmEditingBtnOnDemoControlLayer:(SJDemoControlLayer *)controlLayer {

@@ -1,6 +1,6 @@
 //
 //  SJVideoPlayer.m
-//  SJVideoPlayerV3Project
+//  SJVideoPlayerProject
 //
 //  Created by 畅三江 on 2018/5/29.
 //  Copyright © 2018年 畅三江. All rights reserved.
@@ -34,14 +34,18 @@ NS_ASSUME_NONNULL_BEGIN
 - (instancetype)init {
     self = [super init];
     if ( !self ) return nil;
+    /// 添加一个控制层
     [self.switcher addControlLayer:self.defaultEdgeCarrier];
+    /// 切换到添加的控制层
     [self.switcher switchControlLayerForIdentitfier:SJControlLayer_Edge toVideoPlayer:self];
     return self;
 }
 
 + (instancetype)lightweightPlayer {
     SJVideoPlayer *videoPlayer = [[SJVideoPlayer alloc] _init];
+    /// 添加一个控制层
     [videoPlayer.switcher addControlLayer:videoPlayer.defaultEdgeLightweightCarrier];
+    /// 切换到添加的控制层
     [videoPlayer.switcher switchControlLayerForIdentitfier:SJControlLayer_Edge toVideoPlayer:videoPlayer];
     return videoPlayer;
 }
@@ -61,8 +65,10 @@ NS_ASSUME_NONNULL_BEGIN
 @synthesize defaultEdgeCarrier = _defaultEdgeCarrier;
 - (SJControlLayerCarrier *)defaultEdgeCarrier {
     if ( _defaultEdgeCarrier ) return _defaultEdgeCarrier;
+    // 创建一个控制层
     SJEdgeControlLayer *edgeControlLayer = [SJEdgeControlLayer new];
     edgeControlLayer.delegate = self;
+    // 创建载体
     SJControlLayerCarrier *defaultEdgeCarrier =
     [[SJControlLayerCarrier alloc] initWithIdentifier:SJControlLayer_Edge dataSource:edgeControlLayer delegate:edgeControlLayer exitExeBlock:^(SJControlLayerCarrier * _Nonnull carrier) {
         [(SJEdgeControlLayer *)carrier.dataSource exitControlLayerCompeletionHandler:nil];
@@ -214,11 +220,11 @@ NS_ASSUME_NONNULL_BEGIN
 }
 
 - (void)setGeneratePreviewImages:(BOOL)generatePreviewImages {
-    objc_setAssociatedObject(self, @selector(generatePreviewImages), @(generatePreviewImages), OBJC_ASSOCIATION_RETAIN_NONATOMIC);
+    [self defaultEdgeControlLayer].generatePreviewImages = generatePreviewImages;
 }
 
 - (BOOL)generatePreviewImages {
-    return [objc_getAssociatedObject(self, _cmd) boolValue];
+    return [self defaultEdgeControlLayer].generatePreviewImages;
 }
 
 @end

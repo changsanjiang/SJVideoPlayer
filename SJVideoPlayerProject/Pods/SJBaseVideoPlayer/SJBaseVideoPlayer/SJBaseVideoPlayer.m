@@ -79,6 +79,11 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic, readonly) BOOL initialization;
 
 /**
+ 重置`self.initialization`, 当播放新的资源时, 该方法会被调用.
+ */
+- (void)resetInitialization;
+
+/**
  当单击手势触发时, 会调用这个方法. 考虑是否显示或隐藏控制层, 或不做任何事情.
  */
 - (void)considerChangeState;
@@ -92,11 +97,6 @@ NS_ASSUME_NONNULL_BEGIN
  在`self.enabled == YES`的情况下, 立即隐藏控制层.
  */
 - (void)layerDisappear;
-
-/**
- 重置`self.initialization`, 当播放新的资源时, 改方法会被调用.
- */
-- (void)resetInitialization;
 
 /**
  当播放被暂停时, 是否保持控制层一直显示.  见 `videoPlayer.pausedToKeepAppearState`.
@@ -557,12 +557,6 @@ NS_ASSUME_NONNULL_END
     }
     
     [self.displayRecorder resetInitialization];
-    __weak typeof(self) _self = self;
-    dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(1 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
-        __strong typeof(_self) self = _self;
-        if ( !self ) return;
-        if ( !self.displayRecorder.initialization && !self.displayRecorder.controlLayerAppearedState ) [self controlLayerNeedAppear];
-    });
 }
 
 - (void)_itemPlayDidToEnd {
@@ -1659,7 +1653,7 @@ NS_ASSUME_NONNULL_END
 @implementation SJBaseVideoPlayer (ScrollView)
 
 - (BOOL)isPlayOnScrollView {
-    return self.asset.scrollView ? YES : NO;
+    return self.asset.isPlayOnScrollView;
 }
 
 - (BOOL)isScrollAppeared {
@@ -1800,6 +1794,12 @@ NS_ASSUME_NONNULL_END
 
 - (void)resetInitialization {
     _initialization = NO;
+    __weak typeof(self) _self = self;
+    dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(1 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
+        __strong typeof(_self) self = _self;
+        if ( !self ) return;
+        if ( !self.initialization && !self.controlLayerAppearedState ) [self layerAppear];
+    });
 }
 
 - (SJTimerControl *)controlHiddenTimer {

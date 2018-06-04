@@ -1,12 +1,12 @@
 //
-//  SJFilmEditingResources.m
-//  SJVideoPlayerV3Project
+//  SJFilmEditingLoader.m
+//  SJVideoPlayerProject
 //
 //  Created by 畅三江 on 2018/5/31.
 //  Copyright © 2018年 畅三江. All rights reserved.
 //
 
-#import "SJFilmEditingResources.h"
+#import "SJFilmEditingLoader.h"
 NSString *const SJVideoPlayer_CancelBtnTitle = @"SJVideoPlayer_CancelBtnTitle";
 NSString *const SJVideoPlayer_WaitingForRecordingPromptText = @"SJVideoPlayer_WaitingForRecordingPromptText";
 NSString *const SJVideoPlayer_FinishRecordingPromptText = @"SJVideoPlayer_FinishRecordingPromptText";
@@ -17,7 +17,7 @@ NSString *const SJVideoPlayer_ExportingPrompt = @"SJVideoPlayer_ExportingPrompt"
 NSString *const SJVideoPlayer_ExportSuccessfullyPrompt = @"SJVideoPlayer_ExportSuccessfullyPrompt";
 NSString *const SJVideoPlayer_OperationFailedPrompt = @"SJVideoPlayer_OperationFailedPrompt";
 
-@implementation SJFilmEditingResources
+@implementation SJFilmEditingLoader
 
 + (NSBundle *)bundle {
     static NSBundle *bundle = nil;

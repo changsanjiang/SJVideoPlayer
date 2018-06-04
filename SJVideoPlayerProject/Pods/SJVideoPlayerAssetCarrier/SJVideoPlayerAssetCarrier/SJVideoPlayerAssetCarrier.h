@@ -316,6 +316,7 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic, unsafe_unretained, readonly, nullable) UIScrollView *rootScrollView;
 @property (nonatomic, weak, readonly, nullable) UIView *tableHeaderSubView;
 @property (nonatomic, readonly) BOOL isOtherAsset;
+@property (nonatomic, readonly) BOOL isPlayOnScrollView;
 @end
 
 

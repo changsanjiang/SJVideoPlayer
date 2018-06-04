@@ -88,6 +88,13 @@
                                     <action selector="landscape:" destination="BYZ-38-t0r" eventType="touchUpInside" id="KOx-Lm-3ie"/>
                                 </connections>
                             </button>
+                            <button opaque="NO" contentMode="scaleToFill" misplaced="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="WmI-e7-ZJu">
+                                <rect key="frame" x="173" y="562" width="30" height="30"/>
+                                <state key="normal" title="VC"/>
+                                <connections>
+                                    <action selector="pushVc:" destination="BYZ-38-t0r" eventType="touchUpInside" id="LdY-TK-nbk"/>
+                                </connections>
+                            </button>
                         </subviews>
                         <color key="backgroundColor" red="1" green="1" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                         <constraints>
@@ -101,11 +108,13 @@
                             <constraint firstItem="New-u4-aTv" firstAttribute="centerX" secondItem="6Tk-OE-BBY" secondAttribute="centerX" id="KAE-Ba-SeU"/>
                             <constraint firstItem="YcL-vo-yLH" firstAttribute="top" secondItem="pDO-Qo-Vfp" secondAttribute="bottom" constant="15" id="KWz-ie-n2f"/>
                             <constraint firstItem="RIg-cw-udN" firstAttribute="centerX" secondItem="YcL-vo-yLH" secondAttribute="centerX" id="OcK-wp-7iM"/>
+                            <constraint firstItem="WmI-e7-ZJu" firstAttribute="top" secondItem="RIg-cw-udN" secondAttribute="bottom" constant="17" id="Ogy-JS-Cau"/>
                             <constraint firstItem="gbR-Ag-b7A" firstAttribute="top" secondItem="wr7-x4-Iha" secondAttribute="bottom" constant="8" id="PsK-3t-NIf"/>
                             <constraint firstItem="New-u4-aTv" firstAttribute="top" secondItem="6Tk-OE-BBY" secondAttribute="top" constant="131" id="Qya-bn-FQH"/>
                             <constraint firstItem="pDO-Qo-Vfp" firstAttribute="centerX" secondItem="Ehn-QU-Eed" secondAttribute="centerX" id="Utm-uI-mvh"/>
                             <constraint firstItem="jUw-fL-Eph" firstAttribute="top" secondItem="New-u4-aTv" secondAttribute="bottom" constant="8" id="Ya1-fd-eG9"/>
                             <constraint firstItem="Ehn-QU-Eed" firstAttribute="top" secondItem="gbR-Ag-b7A" secondAttribute="bottom" constant="10" id="aEA-LO-FeB"/>
+                            <constraint firstItem="WmI-e7-ZJu" firstAttribute="centerX" secondItem="RIg-cw-udN" secondAttribute="centerX" id="mgQ-ZR-xdW"/>
                             <constraint firstItem="YcL-vo-yLH" firstAttribute="centerX" secondItem="pDO-Qo-Vfp" secondAttribute="centerX" id="nrO-XD-8LE"/>
                             <constraint firstItem="Ehn-QU-Eed" firstAttribute="centerX" secondItem="gbR-Ag-b7A" secondAttribute="centerX" id="okR-J5-Ffe"/>
                             <constraint firstItem="BUy-1v-vW5" firstAttribute="top" secondItem="jUw-fL-Eph" secondAttribute="bottom" constant="8" id="s1c-w9-tHA"/>

@@ -1,6 +1,6 @@
 //
 //  SJControlLayerSwitcher.m
-//  SJVideoPlayerV3Project
+//  SJVideoPlayerProject
 //
 //  Created by 畅三江 on 2018/6/1.
 //  Copyright © 2018年 畅三江. All rights reserved.
@@ -38,11 +38,12 @@ NS_ASSUME_NONNULL_BEGIN
     
     videoPlayer.controlLayerDataSource = carrier_new.dataSource;
     videoPlayer.controlLayerDelegate = carrier_new.delegate;
-    if ( carrier_new.restartExeBlock ) carrier_new.restartExeBlock(carrier_new);
     
     _previousIdentifier = _currentIdentifier;
     _currentIdentifier = carrier_new.identifier;
     _videoPlayer = videoPlayer;
+    
+    if ( carrier_new.restartExeBlock ) carrier_new.restartExeBlock(carrier_new);
 }
 
 - (BOOL)switchToPreviousControlLayer {

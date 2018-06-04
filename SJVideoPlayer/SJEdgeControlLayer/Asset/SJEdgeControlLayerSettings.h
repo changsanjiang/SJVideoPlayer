@@ -23,96 +23,76 @@ extern NSNotificationName const SJSettingsPlayerNotification;
 
 - (void)reset;
 
-#pragma mark - network
+#pragma mark loading
+@property (nonatomic, strong, nullable) UIImage *placeholder;
+@property (nonatomic, strong) UIColor *loadingLineColor; // default is white.
+@property (nonatomic, strong) UIImage *fastImage;
+@property (nonatomic, strong) UIImage *forwardImage;
+
+
+#pragma mark network
 @property (nonatomic, strong, readonly) NSString *notReachablePrompt;
 @property (nonatomic, strong, readonly) NSString *reachableViaWWANPrompt;
 
 
+#pragma mark top
+@property (nonatomic, strong) UIImage *backBtnImage;
+@property (nonatomic, strong, nullable) UIImage *previewBtnImage;
+@property (nonatomic, strong) UIFont *previewBtnFont;        // default is [UIFont boldSystemFontOfSize:12].
 @property (nonatomic, strong, readonly) NSString *previewBtnTitle;
-@property (nonatomic, strong, readwrite, nullable) UIImage *previewBtnImage;
-@property (nonatomic, strong, readwrite) UIFont *previewBtnFont;        // default is [UIFont boldSystemFontOfSize:12].
+@property (nonatomic, strong) UIImage *moreBtnImage;
+@property (nonatomic, strong) UIFont *titleFont;   // video title font, default is [UIFont boldSystemFontOfSize:14]
+@property (nonatomic, strong) UIColor *titleColor; // video title color, default is [UIColor whiteColor]
 
+
+#pragma mark left
+@property (nonatomic, strong) UIImage *lockBtnImage;
+@property (nonatomic, strong) UIImage *unlockBtnImage;
+
+
+#pragma mark bottom
+@property (nonatomic, strong) UIImage *playBtnImage;
+@property (nonatomic, strong) UIImage *pauseBtnImage;
+@property (nonatomic, assign) float progress_traceHeight;               // 轨道高度
+@property (nonatomic, strong) UIColor *progress_traceColor;             // 轨迹, 走过的痕迹
+@property (nonatomic, strong) UIColor *progress_trackColor;             // 轨道
+@property (nonatomic, strong) UIColor *progress_bufferColor;            // 缓冲颜色
+@property (nonatomic, strong, nullable) UIImage *progress_thumbImage;
+@property (nonatomic, assign) float progress_thumbSize;                 // default is 0.
+@property (nonatomic, strong, nullable) UIColor *progress_thumbColor;
+@property (nonatomic, strong) UIImage *fullBtnImage;
+@property (nonatomic, strong, nullable) UIImage *shrinkscreenImage;
+
+
+#pragma mark right
+@property (nonatomic, strong) UIImage *filmEditingBtnImage;
+
+
+#pragma mark center
 @property (nonatomic, strong, readonly) NSString *replayBtnTitle;
-@property (nonatomic, strong, readwrite) UIImage *replayBtnImage;       // default is `sj_video_player_replay`.
-@property (nonatomic, strong, readwrite) UIFont *replayBtnFont;         // default is [UIFont boldSystemFontOfSize:12].
-@property (nonatomic, strong, readwrite) UIColor *replayBtnTitleColor;  // default is white.
-
+@property (nonatomic, strong) UIImage *replayBtnImage;       // default is `sj_video_player_replay`.
+@property (nonatomic, strong) UIFont *replayBtnFont;         // default is [UIFont boldSystemFontOfSize:12].
+@property (nonatomic, strong) UIColor *replayBtnTitleColor;  // default is white.
 
 @property (nonatomic, strong, readonly) NSString *playFailedBtnTitle;
-@property (nonatomic, strong, readwrite, nullable) UIImage *playFailedBtnImage;     // default is nil.
-@property (nonatomic, strong, readwrite) UIFont *playFailedBtnFont;                 // default is [UIFont boldSystemFontOfSize:12].
-@property (nonatomic, strong, readwrite) UIColor *playFailedBtnTitleColor;          // default is white.
-
-#pragma mark - title
-@property (nonatomic, strong, readwrite) UIFont *titleFont;   // video title font, default is [UIFont boldSystemFontOfSize:14]
-@property (nonatomic, strong, readwrite) UIColor *titleColor; // video title color, default is [UIColor whiteColor]
+@property (nonatomic, strong, nullable) UIImage *playFailedBtnImage;     // default is nil.
+@property (nonatomic, strong) UIFont *playFailedBtnFont;                 // default is [UIFont boldSystemFontOfSize:12].
+@property (nonatomic, strong) UIColor *playFailedBtnTitleColor;          // default is white.
 
 
-#pragma mark - placeholder
-@property (nonatomic, strong, readwrite, nullable) UIImage *placeholder;
-
-#pragma mark - loading
-@property (nonatomic, strong, readwrite) UIColor *loadingLineColor; // default is white.
-
-
-#pragma mark - fast/forward
-@property (nonatomic, strong, readwrite) UIImage *fastImage;
-@property (nonatomic, strong, readwrite) UIImage *forwardImage;
-
-
-#pragma mark - btns
-@property (nonatomic, strong, readwrite) UIImage *backBtnImage;
-@property (nonatomic, strong, readwrite) UIImage *playBtnImage;
-@property (nonatomic, strong, readwrite) UIImage *pauseBtnImage;
-@property (nonatomic, strong, readwrite) UIImage *fullBtnImage;
-@property (nonatomic, strong, readwrite) UIImage *shrinkscreenImage;
-@property (nonatomic, strong, readwrite) UIImage *moreBtnImage;
-@property (nonatomic, strong, readwrite) UIImage *lockBtnImage;
-@property (nonatomic, strong, readwrite) UIImage *unlockBtnImage;
-@property (nonatomic, strong, readwrite) UIImage *filmEditingBtnImage;
-
-
-#pragma mark - progress slider
-/// 轨迹, 走过的痕迹
-@property (nonatomic, strong, readwrite) UIColor *progress_traceColor;
-/// 轨道
-@property (nonatomic, strong, readwrite) UIColor *progress_trackColor;
-/**
- Thumb image, also can set `progress_thumbSize `. (image is preferred)
- 拇指图片, 也可设置`progress_thumbSize`.(图片优先)
- */
-@property (nonatomic, strong, readwrite, nullable) UIImage *progress_thumbImage;
-/// 拇指大小, 也可设置`progress_thumbImage`.
-@property (nonatomic, assign, readwrite) float progress_thumbSize; // default is 0.
-@property (nonatomic, strong, readwrite, nullable) UIColor *progress_thumbColor;
-/// 缓冲颜色
-@property (nonatomic, strong, readwrite) UIColor *progress_bufferColor;
-/// 轨道高度
-@property (nonatomic, assign, readwrite) float progress_traceHeight;
-
-
-#pragma mark - more view
-@property (nonatomic, strong, readwrite) UIColor *moreBackgroundColor;
-/// 轨迹
-@property (nonatomic, strong, readwrite) UIColor *more_traceColor;
-/// 轨道
-@property (nonatomic, strong, readwrite) UIColor *more_trackColor;
-/// 轨道高度
-@property (nonatomic, assign, readwrite) float more_trackHeight;
-
-
-/**
- Thumb image, also can set `more_thumbSize `. (image is preferred)
- 拇指图片, 也可设置`more_thumbSize`.(图片优先).
- */
-@property (nonatomic, strong, readwrite, nullable) UIImage *more_thumbImage;
-@property (nonatomic, assign, readwrite) float more_thumbSize; // default is 0.
-@property (nonatomic, strong, readwrite) UIImage *more_minRateImage;
-@property (nonatomic, strong, readwrite) UIImage *more_maxRateImage;
-@property (nonatomic, strong, readwrite) UIImage *more_minVolumeImage;
-@property (nonatomic, strong, readwrite) UIImage *more_maxVolumeImage;
-@property (nonatomic, strong, readwrite) UIImage *more_minBrightnessImage;
-@property (nonatomic, strong, readwrite) UIImage *more_maxBrightnessImage;
+#pragma mark more
+@property (nonatomic, strong) UIColor *moreBackgroundColor; // more view background color
+@property (nonatomic, strong) UIColor *more_traceColor;     // sider trace color of more view
+@property (nonatomic, strong) UIColor *more_trackColor;     // sider track color of more view
+@property (nonatomic, assign) float more_trackHeight;       // sider track height of more view
+@property (nonatomic, strong, nullable) UIImage *more_thumbImage;  // sider thumb image of more view
+@property (nonatomic, assign) float more_thumbSize; // default is 0. // sider thumb size of more view
+@property (nonatomic, strong) UIImage *more_minRateImage;
+@property (nonatomic, strong) UIImage *more_maxRateImage;
+@property (nonatomic, strong) UIImage *more_minVolumeImage;
+@property (nonatomic, strong) UIImage *more_maxVolumeImage;
+@property (nonatomic, strong) UIImage *more_minBrightnessImage;
+@property (nonatomic, strong) UIImage *more_maxBrightnessImage;
 
 @end
 NS_ASSUME_NONNULL_END

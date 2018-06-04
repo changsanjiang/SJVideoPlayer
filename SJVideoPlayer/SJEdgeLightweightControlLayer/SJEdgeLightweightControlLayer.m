@@ -87,10 +87,14 @@ NS_ASSUME_NONNULL_BEGIN
 #pragma mark -
 
 - (void)restartControlLayerCompeletionHandler:(nullable void(^)(void))compeletionHandler {
-    [self controlLayerNeedAppear:_videoPlayer compeletionHandler:compeletionHandler];
-    [_videoPlayer setControlLayerAppeared:YES];
+    if ( _videoPlayer.URLAsset ) {
+        [_videoPlayer setControlLayerAppeared:YES];
+        [self controlLayerNeedAppear:_videoPlayer compeletionHandler:compeletionHandler];
+        return;
+    }
+    
+    [_videoPlayer controlLayerNeedDisappear];
 }
-
 - (void)exitControlLayerCompeletionHandler:(nullable void(^)(void))compeletionHandler {
     /// clean
     _videoPlayer.controlLayerDataSource = nil;
@@ -108,6 +112,21 @@ NS_ASSUME_NONNULL_BEGIN
 }
 
 #pragma mark -
+
+- (BOOL)controlLayerDisappearCondition {
+    return YES;
+}
+
+- (BOOL)triggerGesturesCondition:(CGPoint)location {
+    return YES;
+}
+
+- (void)installedControlViewToVideoPlayer:(__kindof SJBaseVideoPlayer *)videoPlayer {
+    _videoPlayer = videoPlayer;
+    
+    [self videoPlayer:videoPlayer stateChanged:videoPlayer.state];
+    [self videoPlayer:videoPlayer prepareToPlay:videoPlayer.URLAsset];
+}
 
 - (void)videoPlayer:(SJBaseVideoPlayer *)videoPlayer prepareToPlay:(SJVideoPlayerURLAsset *)asset {
     // back btn
@@ -130,29 +149,13 @@ NS_ASSUME_NONNULL_BEGIN
     self.topControlView.model.title = asset.title;
     [self.topControlView needUpdateLayout];
     
-    self.bottomSlider.value = 0;
-    self.bottomControlView.progress = 0;
-    self.bottomControlView.bufferProgress = 0;
+    self.bottomSlider.value = videoPlayer.progress;
+    self.bottomControlView.progress = videoPlayer.progress;
+    self.bottomControlView.bufferProgress = videoPlayer.bufferProgress;
     [self.bottomControlView setCurrentTimeStr:videoPlayer.currentTimeStr totalTimeStr:videoPlayer.totalTimeStr];
+    
+    [self _promptWithNetworkStatus:videoPlayer.networkStatus];
     _rightControlView.hidden = asset.isM3u8;
-}
-
-- (BOOL)controlLayerDisappearCondition {
-    return YES;
-}
-
-- (BOOL)triggerGesturesCondition:(CGPoint)location {
-    return YES;
-}
-
-- (void)installedControlViewToVideoPlayer:(__kindof SJBaseVideoPlayer *)videoPlayer {
-    _videoPlayer = videoPlayer;
-    
-    [self videoPlayer:videoPlayer stateChanged:videoPlayer.state];
-    [self videoPlayer:videoPlayer prepareToPlay:videoPlayer.URLAsset];
-    
-    [videoPlayer setControlLayerAppeared:YES];
-    [self controlLayerNeedAppear:videoPlayer];
 }
 
 - (void)controlLayerNeedAppear:(nonnull __kindof SJBaseVideoPlayer *)videoPlayer {

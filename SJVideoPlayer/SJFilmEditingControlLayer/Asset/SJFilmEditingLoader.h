@@ -1,6 +1,6 @@
 //
-//  SJFilmEditingResources.h
-//  SJVideoPlayerV3Project
+//  SJFilmEditingLoader.h
+//  SJVideoPlayerProject
 //
 //  Created by 畅三江 on 2018/5/31.
 //  Copyright © 2018年 畅三江. All rights reserved.
@@ -17,7 +17,7 @@ UIKIT_EXTERN NSString *const SJVideoPlayer_ExportingPrompt;
 UIKIT_EXTERN NSString *const SJVideoPlayer_ExportSuccessfullyPrompt;
 UIKIT_EXTERN NSString *const SJVideoPlayer_OperationFailedPrompt;
 
-@interface SJFilmEditingResources : NSObject
+@interface SJFilmEditingLoader : NSObject
 + (UIImage *)imageNamed:(NSString *)name;
 + (NSString *)localizedStringForKey:(NSString *)key;
 @end

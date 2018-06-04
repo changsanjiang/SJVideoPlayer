@@ -374,6 +374,9 @@ NS_ASSUME_NONNULL_END
     return [_AVCarrier timeString:secs];
 }
 
+- (BOOL)isPlayOnScrollView {
+    return _scrollViewCarrier != nil;
+}
 
 - (UIImage * __nullable)screenshot {
     return [_AVCarrier screenshot];

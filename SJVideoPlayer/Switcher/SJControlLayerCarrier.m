@@ -1,6 +1,6 @@
 //
 //  SJControlLayerCarrier.m
-//  SJVideoPlayerV3Project
+//  SJVideoPlayerProject
 //
 //  Created by 畅三江 on 2018/6/1.
 //  Copyright © 2018年 畅三江. All rights reserved.

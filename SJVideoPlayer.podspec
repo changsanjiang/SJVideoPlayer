@@ -1,7 +1,7 @@
 
 Pod::Spec.new do |s|
     s.name         = 'SJVideoPlayer'
-    s.version      = '2.0.7.8'
+    s.version      = '2.0.8'
     s.summary      = 'video player.'
     s.description  = 'https://github.com/changsanjiang/SJVideoPlayer/blob/master/README.md'
     s.homepage     = 'https://github.com/changsanjiang/SJVideoPlayer'
@@ -58,22 +58,23 @@ Pod::Spec.new do |s|
     end
 
     s.subspec 'SJFilmEditingControlLayer' do |f|
-        f.source_files = 'SJVideoPlayer/SJFilmEditingControlLayer/FilmEditing/*.{h,m}'
+        f.source_files = 'SJVideoPlayer/SJFilmEditingControlLayer/*.{h,m}'
         f.dependency 'SJBaseVideoPlayer'
         f.dependency 'SJSlider'
         f.dependency 'SJAttributesFactory'
 
         f.subspec 'Asset' do |a|
-            a.source_files = 'SJVideoPlayer/SJFilmEditingControlLayer/FilmEditing/Asset/*'
-            a.resource = 'SJVideoPlayer/SJFilmEditingControlLayer/FilmEditing/Asset/SJFilmEditing.bundle'
+            a.source_files = 'SJVideoPlayer/SJFilmEditingControlLayer/Asset/*'
+            a.dependency 'SJVideoPlayer/SJFilmEditingControlLayer/Header'
+            a.resource = 'SJVideoPlayer/SJFilmEditingControlLayer/Asset/SJFilmEditing.bundle'
         end
 
         f.subspec 'Category' do |c|
-            c.source_files = 'SJVideoPlayer/SJFilmEditingControlLayer/FilmEditing/Category/*'
+            c.source_files = 'SJVideoPlayer/SJFilmEditingControlLayer/Category/*'
         end
 
         f.subspec 'Result' do |r|
-            r.source_files = 'SJVideoPlayer/SJFilmEditingControlLayer/FilmEditing/Result/*'
+            r.source_files = 'SJVideoPlayer/SJFilmEditingControlLayer/Result/*'
             r.dependency 'SJVideoPlayer/SJFilmEditingControlLayer/Header'
         end
 
@@ -82,7 +83,7 @@ Pod::Spec.new do |s|
         end
 
         f.subspec 'View' do |v|
-            v.source_files = 'SJVideoPlayer/SJFilmEditingControlLayer/FilmEditing/View/*'
+            v.source_files = 'SJVideoPlayer/SJFilmEditingControlLayer/View/*'
             v.dependency 'SJVideoPlayer/SJFilmEditingControlLayer/Header'
         end
     end

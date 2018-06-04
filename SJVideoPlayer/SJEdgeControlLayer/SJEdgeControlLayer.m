@@ -103,8 +103,15 @@ NS_ASSUME_NONNULL_END
 }
 
 - (void)restartControlLayerCompeletionHandler:(nullable void(^)(void))compeletionHandler {
-    [self controlLayerNeedAppear:_videoPlayer compeletionHandler:compeletionHandler];
-    [_videoPlayer setControlLayerAppeared:YES];
+    if ( _videoPlayer.URLAsset ) {
+        /// 手动纠正控制层状态, 并显示
+        /// 播放器可能会受到外界切换的干扰, 所有这里手动纠正控制层的显示状态
+        [_videoPlayer setControlLayerAppeared:YES];
+        [self controlLayerNeedAppear:_videoPlayer compeletionHandler:compeletionHandler];
+        return;
+    }
+    
+    [_videoPlayer controlLayerNeedDisappear];
 }
 
 - (void)exitControlLayerCompeletionHandler:(nullable void(^)(void))compeletionHandler {
@@ -124,19 +131,6 @@ NS_ASSUME_NONNULL_END
     }, compeletionHandler);
 }
 
-
-
-
-
-
-
-
-
-
-
-
-
-
 #pragma mark - Player extension
 
 - (void)Extension_pauseAndDeterAppear {
@@ -153,9 +147,6 @@ NS_ASSUME_NONNULL_END
     self.videoPlayer = videoPlayer;
     [self videoPlayer:videoPlayer stateChanged:videoPlayer.state];
     [self videoPlayer:videoPlayer prepareToPlay:videoPlayer.URLAsset];
-    
-    [videoPlayer setControlLayerAppeared:YES];
-    [self controlLayerNeedAppear:videoPlayer];
 }
 
 - (UIView *)controlView {
@@ -206,6 +197,10 @@ NS_ASSUME_NONNULL_END
 }
 
 - (void)controlLayerNeedAppear:(SJBaseVideoPlayer *)videoPlayer compeletionHandler:(void(^)(void))compeletionHandler {
+#ifdef DEBUG
+    NSLog(@"%d - %s", (int)__LINE__, __func__);
+#endif
+
     UIView_Animations(CommonAnimaDuration, ^{
         if ( SJVideoPlayerPlayState_PlayFailed == videoPlayer.state ) {
             [self->_centerControlView failedState];
@@ -289,10 +284,7 @@ NS_ASSUME_NONNULL_END
             [self.bottomControlView setCurrentTimeStr:@"00:00" totalTimeStr:@"00:00"];
         }
             break;
-        case SJVideoPlayerPlayState_Prepare: {
-            
-        }
-            break;
+        case SJVideoPlayerPlayState_Prepare:   break;
         case SJVideoPlayerPlayState_Paused:
         case SJVideoPlayerPlayState_PlayFailed:
         case SJVideoPlayerPlayState_PlayEnd: {

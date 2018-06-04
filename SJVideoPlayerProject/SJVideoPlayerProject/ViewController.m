@@ -20,6 +20,7 @@
 #import "LightweightViewController.h"
 #import <SJFullscreenPopGesture/UINavigationController+SJVideoPlayerAdd.h>
 #import "PortraitViewController.h"
+#import "DemoPlayerViewController.h"
 
 @interface ViewController ()
 
@@ -83,6 +84,10 @@
 
 - (IBAction)landscape:(id)sender {
     [self.navigationController pushViewController:[[PortraitViewController alloc] init] animated:YES];
+}
+
+- (IBAction)pushVc:(id)sender {
+    [self.navigationController pushViewController:[[DemoPlayerViewController alloc] init] animated:YES];
 }
 
 - (IBAction)test:(id)sender {

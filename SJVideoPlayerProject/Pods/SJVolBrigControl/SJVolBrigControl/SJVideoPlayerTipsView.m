@@ -7,7 +7,7 @@
 //
 
 #import "SJVideoPlayerTipsView.h"
-#import <SJBorderLineView/SJBorderlineView.h>
+#import "SJBorderLineView.h"
 #import <Masonry/Masonry.h>
 #import "SJVolBrigResource.h"
 
@@ -136,12 +136,12 @@
     NSMutableArray<UIView *> *tipsArrM = [NSMutableArray new];
     short maxNum = 16;
     for ( short i = 0 ; i < maxNum ; i ++ ) {
-        SJBorderlineView *view = nil;
+        SJBorderLineView *view = nil;
         if ( maxNum - 1 != i ) {
-            view = [SJBorderlineView borderlineViewWithSide:SJBorderlineSideTop | SJBorderlineSideLeading | SJBorderlineSideBottom startMargin:0 endMargin:0 lineColor:self.themeColor backgroundColor:[UIColor whiteColor]];
+            view = [SJBorderLineView borderlineViewWithSide:SJBorderLineSideTop | SJBorderLineSideLeading | SJBorderLineSideBottom startMargin:0 endMargin:0 lineColor:self.themeColor backgroundColor:[UIColor whiteColor]];
         }
         else {
-            view = [SJBorderlineView borderlineViewWithSide:SJBorderlineSideAll startMargin:0 endMargin:0 lineColor:self.themeColor backgroundColor:[UIColor whiteColor]];
+            view = [SJBorderLineView borderlineViewWithSide:SJBorderLineSideAll startMargin:0 endMargin:0 lineColor:self.themeColor backgroundColor:[UIColor whiteColor]];
         }
         [tipsArrM addObject:view];
         view.hidden = YES;

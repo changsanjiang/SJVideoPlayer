@@ -52,7 +52,7 @@
 		A6441098200A406E006FD832 /* SJVideoModel.m in Sources */ = {isa = PBXBuildFile; fileRef = A6441097200A406E006FD832 /* SJVideoModel.m */; };
 		A663301F20C4FB4800CB4A02 /* SJFilmEditingResultPresentView.m in Sources */ = {isa = PBXBuildFile; fileRef = A663300820C4FB4800CB4A02 /* SJFilmEditingResultPresentView.m */; };
 		A663302020C4FB4800CB4A02 /* SJFilmEditingResultShareItem.m in Sources */ = {isa = PBXBuildFile; fileRef = A663300920C4FB4800CB4A02 /* SJFilmEditingResultShareItem.m */; };
-		A663302120C4FB4800CB4A02 /* SJFilmEditingResources.m in Sources */ = {isa = PBXBuildFile; fileRef = A663300B20C4FB4800CB4A02 /* SJFilmEditingResources.m */; };
+		A663302120C4FB4800CB4A02 /* SJFilmEditingLoader.m in Sources */ = {isa = PBXBuildFile; fileRef = A663300B20C4FB4800CB4A02 /* SJFilmEditingLoader.m */; };
 		A663302220C4FB4800CB4A02 /* SJFilmEditing.bundle in Resources */ = {isa = PBXBuildFile; fileRef = A663300D20C4FB4800CB4A02 /* SJFilmEditing.bundle */; };
 		A663302320C4FB4800CB4A02 /* SJFilmEditingSettings.m in Sources */ = {isa = PBXBuildFile; fileRef = A663300F20C4FB4800CB4A02 /* SJFilmEditingSettings.m */; };
 		A663302420C4FB4800CB4A02 /* UIView+SJFilmEditingAdd.m in Sources */ = {isa = PBXBuildFile; fileRef = A663301120C4FB4800CB4A02 /* UIView+SJFilmEditingAdd.m */; };
@@ -191,10 +191,10 @@
 		A663300720C4FB4800CB4A02 /* SJFilmEditingResultShareItem.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SJFilmEditingResultShareItem.h; sourceTree = "<group>"; };
 		A663300820C4FB4800CB4A02 /* SJFilmEditingResultPresentView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SJFilmEditingResultPresentView.m; sourceTree = "<group>"; };
 		A663300920C4FB4800CB4A02 /* SJFilmEditingResultShareItem.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SJFilmEditingResultShareItem.m; sourceTree = "<group>"; };
-		A663300B20C4FB4800CB4A02 /* SJFilmEditingResources.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SJFilmEditingResources.m; sourceTree = "<group>"; };
+		A663300B20C4FB4800CB4A02 /* SJFilmEditingLoader.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SJFilmEditingLoader.m; sourceTree = "<group>"; };
 		A663300C20C4FB4800CB4A02 /* SJFilmEditingSettings.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SJFilmEditingSettings.h; sourceTree = "<group>"; };
 		A663300D20C4FB4800CB4A02 /* SJFilmEditing.bundle */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.plug-in"; path = SJFilmEditing.bundle; sourceTree = "<group>"; };
-		A663300E20C4FB4800CB4A02 /* SJFilmEditingResources.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SJFilmEditingResources.h; sourceTree = "<group>"; };
+		A663300E20C4FB4800CB4A02 /* SJFilmEditingLoader.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SJFilmEditingLoader.h; sourceTree = "<group>"; };
 		A663300F20C4FB4800CB4A02 /* SJFilmEditingSettings.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SJFilmEditingSettings.m; sourceTree = "<group>"; };
 		A663301120C4FB4800CB4A02 /* UIView+SJFilmEditingAdd.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "UIView+SJFilmEditingAdd.m"; sourceTree = "<group>"; };
 		A663301220C4FB4800CB4A02 /* UIView+SJFilmEditingAdd.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "UIView+SJFilmEditingAdd.h"; sourceTree = "<group>"; };
@@ -584,25 +584,15 @@
 		A663300320C4FB4800CB4A02 /* SJFilmEditingControlLayer */ = {
 			isa = PBXGroup;
 			children = (
-				A663300420C4FB4800CB4A02 /* FilmEditing */,
-				A663301C20C4FB4800CB4A02 /* Header */,
-			);
-			path = SJFilmEditingControlLayer;
-			sourceTree = "<group>";
-		};
-		A663300420C4FB4800CB4A02 /* FilmEditing */ = {
-			isa = PBXGroup;
-			children = (
 				A663301520C4FB4800CB4A02 /* SJFilmEditingControlLayer.h */,
 				A663301320C4FB4800CB4A02 /* SJFilmEditingControlLayer.m */,
-				A663301420C4FB4800CB4A02 /* SJVideoPlayerFilmEditingConfig.h */,
-				A663301B20C4FB4800CB4A02 /* SJVideoPlayerFilmEditingConfig.m */,
 				A663300A20C4FB4800CB4A02 /* Asset */,
 				A663301020C4FB4800CB4A02 /* Category */,
 				A663300520C4FB4800CB4A02 /* Result */,
 				A663301620C4FB4800CB4A02 /* View */,
+				A663301C20C4FB4800CB4A02 /* Header */,
 			);
-			path = FilmEditing;
+			path = SJFilmEditingControlLayer;
 			sourceTree = "<group>";
 		};
 		A663300520C4FB4800CB4A02 /* Result */ = {
@@ -620,10 +610,12 @@
 			isa = PBXGroup;
 			children = (
 				A663300D20C4FB4800CB4A02 /* SJFilmEditing.bundle */,
-				A663300E20C4FB4800CB4A02 /* SJFilmEditingResources.h */,
-				A663300B20C4FB4800CB4A02 /* SJFilmEditingResources.m */,
+				A663300E20C4FB4800CB4A02 /* SJFilmEditingLoader.h */,
+				A663300B20C4FB4800CB4A02 /* SJFilmEditingLoader.m */,
 				A663300C20C4FB4800CB4A02 /* SJFilmEditingSettings.h */,
 				A663300F20C4FB4800CB4A02 /* SJFilmEditingSettings.m */,
+				A663301420C4FB4800CB4A02 /* SJVideoPlayerFilmEditingConfig.h */,
+				A663301B20C4FB4800CB4A02 /* SJVideoPlayerFilmEditingConfig.m */,
 			);
 			path = Asset;
 			sourceTree = "<group>";
@@ -640,10 +632,10 @@
 		A663301620C4FB4800CB4A02 /* View */ = {
 			isa = PBXGroup;
 			children = (
-				A663301720C4FB4800CB4A02 /* SJFilmEditingRecordingView.h */,
 				A663301820C4FB4800CB4A02 /* SJFilmEditingGenerateGIFView.h */,
-				A663301920C4FB4800CB4A02 /* SJFilmEditingRecordingView.m */,
 				A663301A20C4FB4800CB4A02 /* SJFilmEditingGenerateGIFView.m */,
+				A663301720C4FB4800CB4A02 /* SJFilmEditingRecordingView.h */,
+				A663301920C4FB4800CB4A02 /* SJFilmEditingRecordingView.m */,
 			);
 			path = View;
 			sourceTree = "<group>";
@@ -1034,7 +1026,7 @@
 				A663308720C4FB9100CB4A02 /* SJEdgeControlLayer.m in Sources */,
 				77033C14204E7611008F1ED5 /* DemoPlayerViewController.m in Sources */,
 				A663307D20C4FB9100CB4A02 /* SJVideoPlayerCenterControlView.m in Sources */,
-				A663302120C4FB4800CB4A02 /* SJFilmEditingResources.m in Sources */,
+				A663302120C4FB4800CB4A02 /* SJFilmEditingLoader.m in Sources */,
 				A663307920C4FB9100CB4A02 /* SJVideoPlayerLeftControlView.m in Sources */,
 				A663308920C4FB9100CB4A02 /* SJVideoPlayerMoreSetting.m in Sources */,
 				A663307720C4FB9100CB4A02 /* SJVideoPlayerControlMaskView.m in Sources */,

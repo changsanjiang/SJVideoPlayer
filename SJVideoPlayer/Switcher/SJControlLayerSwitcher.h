@@ -1,6 +1,6 @@
 //
 //  SJControlLayerSwitcher.h
-//  SJVideoPlayerV3Project
+//  SJVideoPlayerProject
 //
 //  Created by 畅三江 on 2018/6/1.
 //  Copyright © 2018年 畅三江. All rights reserved.
@@ -28,7 +28,7 @@ NS_ASSUME_NONNULL_BEGIN
 - (void)switchControlLayerForIdentitfier:(SJControlLayerIdentifier)identifier
                            toVideoPlayer:(__kindof SJBaseVideoPlayer *)videoPlayer;
 
-- (BOOL)switchToPreviousControlLayer;
+- (BOOL)switchToPreviousControlLayer; // 切换到之前的控制层
 
 /// 添加或替换控制层
 - (void)addControlLayer:(SJControlLayerCarrier *)carrier;

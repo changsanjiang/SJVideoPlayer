@@ -79,8 +79,13 @@
     };
     
     
-    [self.videoPlayerHelper playWithAsset:_asset playerParentView:self.playerSuperView];
+    /// test
+    if ( !_video ) {
+        [self.videoPlayerHelper playWithAsset:[[SJVideoPlayerURLAsset alloc] initWithAssetURL:[[NSBundle mainBundle] URLForResource:@"sample" withExtension:@"mp4"]] playerParentView:self.playerSuperView];
+        return;
+    }
     
+    [self.videoPlayerHelper playWithAsset:_asset playerParentView:self.playerSuperView];
     // Do any additional setup after loading the view.
 }
 

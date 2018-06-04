@@ -22,7 +22,7 @@ NSString *const SJVolBrigControlBrightnessText = @"SJVolBrigControlBrightnessTex
 }
 
 + (UIImage *)imageNamed:(NSString *)name {
-    return [UIImage imageNamed:[self bundleComponentWithImageName:name]];
+    return [UIImage imageNamed:name inBundle:[self bundle] compatibleWithTraitCollection:nil];
 }
 
 + (NSString *)bundleComponentWithImageName:(NSString *)imageName {

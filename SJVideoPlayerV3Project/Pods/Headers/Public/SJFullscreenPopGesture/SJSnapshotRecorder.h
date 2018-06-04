@@ -1,1 +1,0 @@
-../../../SJFullscreenPopGesture/SJFullscreenPopGesture/SJSnapshotRecorder.h

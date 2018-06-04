@@ -50,7 +50,7 @@
     });
 
     // supported orientation . 设置旋转支持的方向.
-    _videoPlayer.supportedOrientation = SJAutoRotateSupportedOrientation_LandscapeLeft;
+    _videoPlayer.supportedOrientation = SJAutoRotateSupportedOrientation_LandscapeLeft | SJAutoRotateSupportedOrientation_LandscapeRight;
     
     // 将播放器旋转成横屏.(播放器默认是竖屏的), 带动画
     _videoPlayer.orientation = SJOrientation_LandscapeLeft; // 请注意: 是`SJOrientation_LandscapeLeft` 而不是 `SJAutoRotateSupportedOrientation_LandscapeLeft`
@@ -58,10 +58,22 @@
     // 将播放器旋转成横屏.(播放器默认是竖屏的), 不带动画
 //    [_videoPlayer rotate:SJOrientation_LandscapeLeft animated:NO];
     
-}
-
-- (void)dealloc {
-    [[SJVideoPlayer sharedPlayer] stop];
+    
+    _videoPlayer.controlLayerAppearStateChanged = ^(__kindof SJBaseVideoPlayer * _Nonnull player, BOOL state) {
+        __strong typeof(_self) self = _self;
+        if ( !self ) return ;
+        [UIView animateWithDuration:0.25 animations:^{
+            [self setNeedsStatusBarAppearanceUpdate];
+        }];
+    };
+    
+    _videoPlayer.willRotateScreen = ^(__kindof SJBaseVideoPlayer * _Nonnull player, BOOL isFullScreen) {
+        __strong typeof(_self) self = _self;
+        if ( !self ) return ;
+        [UIView animateWithDuration:0.25 animations:^{
+            [self setNeedsStatusBarAppearanceUpdate];
+        }];
+    };
 }
 
 - (void)viewWillAppear:(BOOL)animated {
@@ -79,6 +91,10 @@
 
 - (UIStatusBarStyle)preferredStatusBarStyle {
     return UIStatusBarStyleLightContent;
+}
+
+- (BOOL)prefersStatusBarHidden {
+    return _videoPlayer.isFullScreen && !_videoPlayer.controlLayerAppeared;
 }
 
 @end

@@ -6,20 +6,14 @@ target 'SJVideoPlayerProject' do
   # use_frameworks!
 
   # Pods for SJVideoPlayerProject
-  pod 'SJUIFactory'
-  pod 'Masonry'
-  pod 'SJSlider'
-  pod 'SJFullscreenPopGesture'
-  pod 'SJBorderLineView'
-  pod 'SJPrompt'
-  pod 'SJOrentationObserver'
-  pod 'SJLoadingView'
-  pod 'SJVideoPlayerAssetCarrier'
-  pod 'SJVolBrigControl'
-  pod 'SJObserverHelper'
-  pod 'SJAttributesFactory'
-  pod 'SJBaseVideoPlayer'
-  pod 'SJScrollEntriesView'
-  pod 'Reachability'
   pod 'YYText'
+  
+ ["SJBaseVideoPlayer",
+  "SJAttributesFactory",
+  "SJFullscreenPopGesture",
+  "SJLoadingView",
+  "SJSlider",
+  "SJScrollEntriesView"
+  ].each {|lib| pod lib}
+
 end

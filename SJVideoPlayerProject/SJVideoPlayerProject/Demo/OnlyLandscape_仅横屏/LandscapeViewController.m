@@ -51,6 +51,7 @@
 
 - (void)viewWillDisappear:(BOOL)animated {
     [super viewWillDisappear:animated];
+    self.navigationController.visibleViewController.view.hidden = YES;
     [self.navigationController setNavigationBarHidden:NO animated:YES];
     [[UIDevice currentDevice] setValue:@(UIDeviceOrientationPortrait) forKey:@"orientation"];
 }

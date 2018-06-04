@@ -71,7 +71,9 @@ NS_ASSUME_NONNULL_BEGIN
 #pragma mark readwrite
 @property (nonatomic) BOOL disableRotation;
 @property (nonatomic) SJAutoRotateSupportedOrientation supportedOrientation;
-- (void)rotate:(SJOrientation)orientation animated:(BOOL)animated;
+- (void)rotate:(SJOrientation)orientation
+      animated:(BOOL)animated
+    completion:(void (^ _Nullable)(__kindof SJVideoPlayerHelper *helper))block;
 @property (nonatomic) BOOL lockScreen;
 @property (nonatomic) CGFloat rate; // if changed, 'playerRateChangedExeBlock' will be called.
 

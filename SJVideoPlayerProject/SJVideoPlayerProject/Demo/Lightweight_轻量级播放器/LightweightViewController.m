@@ -17,6 +17,7 @@
 #import "DemoPlayerViewController.h"
 #import "YYTapActionLabel.h"
 #import "FilmEditingHelper.h"
+#import <UIViewController+SJVideoPlayerAdd.h>
 
 static NSString *const LightweightTableViewCellID = @"LightweightTableViewCell";
 
@@ -43,6 +44,7 @@ static NSString *const LightweightTableViewCellID = @"LightweightTableViewCell";
 - (void)viewDidLoad {
     [super viewDidLoad];
     
+    self.sj_displayMode = SJPreViewDisplayMode_Origin;
     self.edgesForExtendedLayout = UIRectEdgeNone;
     
     // setup views
@@ -67,6 +69,16 @@ static NSString *const LightweightTableViewCellID = @"LightweightTableViewCell";
         });
     });
     
+    SJLightweightTopItem *download = [[SJLightweightTopItem alloc] initWithFlag:0 imageName:@"download"];
+    SJLightweightTopItem *share = [[SJLightweightTopItem alloc] initWithFlag:0 imageName:@"share"];
+    self.videoPlayerHelper.topItemsOfLightweightControlLayer = @[download, share];
+    self.videoPlayerHelper.userClickedTopItemOfLightweightControlLayerExeBlock = ^(SJVideoPlayerHelper * _Nonnull helper, SJLightweightTopItem * _Nonnull item) {
+        [helper.prompt showTitle:@"Top Item 被点击" duration:2 hiddenExeBlock:^(SJPrompt * _Nonnull prompt) {
+            __strong typeof(_self) self = _self;
+            if ( !self ) return ;
+            [self.navigationController pushViewController:[[self class] new] animated:YES];
+        }];
+    };
     // Do any additional setup after loading the view.
 }
 

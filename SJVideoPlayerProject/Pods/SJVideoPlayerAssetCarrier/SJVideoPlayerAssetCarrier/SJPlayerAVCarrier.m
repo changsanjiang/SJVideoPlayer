@@ -98,8 +98,10 @@ static NSTimeInterval _getLoadedTimeRange(AVPlayerItem *item) {
 }
 
 - (void)dealloc {
+#ifdef DEBUG
     NSLog(@"%d - %s", (int)__LINE__, __func__);
-    if ( !_isOtherAsset && _player.rate != 0 ) [_player pause];
+#endif
+    if ( !_isOtherAsset ) [_player pause];
     
     if ( self.playerItem ) {
         for ( NSString *keyPath in @[@"status",
@@ -228,7 +230,10 @@ static NSTimeInterval _getLoadedTimeRange(AVPlayerItem *item) {
     if ( 0 != self.player.rate ) [self.player pause];
 }
 - (void)play {
-    if ( 0 == self.player.rate ) [self.player play];
+#ifdef DEBUG
+    NSLog(@"%d - %s - %@", (int)__LINE__, __func__, self);
+#endif
+    [self.player play];
 }
 
 #pragma mark

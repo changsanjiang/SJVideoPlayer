@@ -345,6 +345,9 @@ NS_ASSUME_NONNULL_END
 - (float)progress {
     return _AVCarrier.progress;
 }
+- (float)bufferProgress {
+    return _AVCarrier.loadedTimeProgress;
+}
 - (NSIndexPath *)indexPath {
     return _scrollViewCarrier.indexPath;
 }

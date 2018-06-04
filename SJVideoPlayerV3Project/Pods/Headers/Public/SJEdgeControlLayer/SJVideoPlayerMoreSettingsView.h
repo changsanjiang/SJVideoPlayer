@@ -1,1 +1,0 @@
-../../../SJEdgeControlLayer/SJEdgeControlLayer/MoreSetting/SJVideoPlayerMoreSettingsView.h

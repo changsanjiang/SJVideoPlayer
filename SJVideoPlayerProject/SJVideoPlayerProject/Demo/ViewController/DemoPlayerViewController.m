@@ -15,6 +15,8 @@
 #import <AVFoundation/AVFoundation.h>
 #import <SJVideoPlayerAssetCarrier.h>
 #import <SJBaseVideoPlayer/SJBaseVideoPlayer.h>
+#import "SJLightweightTopItem.h"
+#import <UIViewController+SJVideoPlayerAdd.h>
 
 @interface DemoPlayerViewController ()<SJVideoPlayerHelperUseProtocol>
 
@@ -59,7 +61,26 @@
     
     [self _demoVCSetupViews];
     
+    
+    self.sj_displayMode = SJPreViewDisplayMode_Origin;
+    
+    __weak typeof(self) _self = self;
+    SJLightweightTopItem *download = [[SJLightweightTopItem alloc] initWithFlag:0 imageName:@"download"];
+    SJLightweightTopItem *share = [[SJLightweightTopItem alloc] initWithFlag:0 imageName:@"share"];
+    self.videoPlayerHelper.topItemsOfLightweightControlLayer = @[download, share];
+    self.videoPlayerHelper.userClickedTopItemOfLightweightControlLayerExeBlock = ^(SJVideoPlayerHelper * _Nonnull helper, SJLightweightTopItem * _Nonnull item) {
+        [helper.prompt showTitle:@"Top Item 被点击" duration:1 hiddenExeBlock:^(SJPrompt * _Nonnull prompt) {
+            __strong typeof(_self) self = _self;
+            if ( !self ) return ;
+            [self.videoPlayerHelper rotate:SJOrientation_Portrait animated:YES completion:^(__kindof SJVideoPlayerHelper * _Nonnull helper) {
+                [self.navigationController pushViewController:[[DemoPlayerViewController alloc] initWithVideo:self.video asset:self.asset] animated:YES];
+            }];
+        }];
+    };
+    
+    
     [self.videoPlayerHelper playWithAsset:_asset playerParentView:self.playerSuperView];
+    
     // Do any additional setup after loading the view.
 }
 

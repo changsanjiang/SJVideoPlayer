@@ -70,6 +70,7 @@ NS_ASSUME_NONNULL_BEGIN
  控制层的显示状态. YES -> appear, NO -> disappear.
  */
 @property (nonatomic, readonly) BOOL controlLayerAppearedState;
+- (void)setControlLayerAppearedState:(BOOL)controlLayerAppearedState;
 
 /**
  在视频第一次播放之前, 控制层会默认在1秒后显示. 如果在这1秒期间, 用户点击触发显示控制层, 则这个值为YES. 否则1秒显示控制层后, 才会设置这个值为YES.
@@ -347,17 +348,12 @@ NS_ASSUME_NONNULL_END
         if ( !self ) return;
         if ( self.state == SJVideoPlayerPlayState_PlayEnd ) return;
         switch ( status ) {
-            case AVPlayerItemStatusUnknown: {
-                asset.startBuffering(asset);
-            }
-                break;
+            case AVPlayerItemStatusUnknown:  break;
             case AVPlayerItemStatusFailed: {
-                asset.cancelledBuffer(asset);
                 [self _itemPlayFailed];
             }
                 break;
             case AVPlayerItemStatusReadyToPlay: {
-                asset.completeBuffer(asset);
                 if ( !self.resignActive ) [self _itemReadyToPlay];
             }
                 break;
@@ -477,9 +473,6 @@ NS_ASSUME_NONNULL_END
 
 - (void)setControlLayerDataSource:(id<SJVideoPlayerControlLayerDataSource>)controlLayerDataSource {
     if ( controlLayerDataSource == _controlLayerDataSource ) return;
-    
-    [_controlLayerDataSource.controlView removeFromSuperview];
-    
     _controlLayerDataSource = controlLayerDataSource;
     
     if ( !controlLayerDataSource ) return;
@@ -527,8 +520,13 @@ NS_ASSUME_NONNULL_END
 
 #pragma mark -
 - (void)_itemPrepareToPlay {
+    if ( [self.controlLayerDelegate respondsToSelector:@selector(startLoading:)] ) {
+        [self.controlLayerDelegate startLoading:self];
+    }
+    
     self.userClickedPause = NO;
     self.state = SJVideoPlayerPlayState_Prepare;
+    self.suspend = NO;
     
     if ( [self.controlLayerDelegate respondsToSelector:@selector(videoPlayer:prepareToPlay:)] ) {
         [self.controlLayerDelegate videoPlayer:self prepareToPlay:self.URLAsset];
@@ -536,13 +534,16 @@ NS_ASSUME_NONNULL_END
 }
 
 - (void)_itemPlayFailed {
+    if ( [self.controlLayerDelegate respondsToSelector:@selector(cancelLoading:)] ) {
+        [self.controlLayerDelegate cancelLoading:self];
+    }
+    
     self.error = self.asset.playerItem.error;
     
     self.state = SJVideoPlayerPlayState_PlayFailed;
 }
 
 - (void)_itemReadyToPlay {
-    
     if ( [self.controlLayerDelegate respondsToSelector:@selector(videoPlayer:currentTime:currentTimeStr:totalTime:totalTimeStr:)] ) {
         [self.controlLayerDelegate videoPlayer:self currentTime:self.currentTime currentTimeStr:self.currentTimeStr totalTime:self.totalTime totalTimeStr:self.totalTimeStr];
     }
@@ -1131,6 +1132,10 @@ NS_ASSUME_NONNULL_END
     return self.currentTime / self.totalTime;
 }
 
+- (float)bufferProgress {
+    return self.asset.bufferProgress;
+}
+
 - (NSTimeInterval)currentTime {
     return self.asset.currentTime;
 }
@@ -1231,13 +1236,12 @@ NS_ASSUME_NONNULL_END
 }
 
 - (BOOL)play {
-    self.suspend = NO;
-    
-    if ( self.state ==  SJVideoPlayerPlayState_PlayFailed ||
-        self.state == SJVideoPlayerPlayState_Unknown ) return NO;
+    if ( !self.asset ) return NO;
+    if ( self.state == SJVideoPlayerPlayState_PlayFailed ||
+         self.state == SJVideoPlayerPlayState_Unknown ) return NO;
     
     self.userClickedPause = NO;
-    if ( !self.asset ) return NO;
+    self.suspend = NO;
     [self.asset play];
     self.state = SJVideoPlayerPlayState_Playing;
     [self.displayRecorder start];
@@ -1245,29 +1249,27 @@ NS_ASSUME_NONNULL_END
 }
 
 - (BOOL)pause {
-    self.suspend = YES;
-    
-    if ( self.state ==  SJVideoPlayerPlayState_PlayFailed ||
-        self.state == SJVideoPlayerPlayState_Unknown ) return NO;
+    if ( !self.asset ) return NO;
+    if ( self.state == SJVideoPlayerPlayState_PlayFailed ||
+         self.state == SJVideoPlayerPlayState_Unknown ) return NO;
     
     self.userClickedPause = NO;
-    if ( !self.asset ) return NO;
+    self.suspend = YES;
     [self.asset pause];
     if ( SJVideoPlayerPlayState_PlayEnd != self.state ) self.state = SJVideoPlayerPlayState_Paused;
     return YES;
 }
 
 - (void)stop {
-    self.suspend = YES;
-    
+    if ( !self.asset ) return;
     self.state = SJVideoPlayerPlayState_Unknown;
     
-    if ( !self.asset ) return;
+    self.suspend = YES;
     [self clearAsset];
 }
 
 - (void)stopAndFadeOut {
-    self.suspend = YES;
+    if ( !self.asset ) self.suspend = YES;
     
     [self.asset pause];
     [self.view sj_fadeOutAndCompletion:^(UIView *view) {
@@ -1380,6 +1382,10 @@ NS_ASSUME_NONNULL_END
 - (void)setEnableControlLayerDisplayController:(BOOL)enableControlLayerDisplayController {
     objc_setAssociatedObject(self, @selector(enableControlLayerDisplayController), @(enableControlLayerDisplayController), OBJC_ASSOCIATION_RETAIN_NONATOMIC);
     self.displayRecorder.enabled = enableControlLayerDisplayController;
+}
+
+- (void)setControlLayerAppeared:(BOOL)controlLayerAppeared {
+    [self.displayRecorder setControlLayerAppearedState:controlLayerAppeared];
 }
 
 - (BOOL)controlLayerAppeared {
@@ -1817,16 +1823,18 @@ NS_ASSUME_NONNULL_END
     if ( !self.isEnabled ) return;
     if ( !self.videoPlayer.controlLayerDataSource ) return;
     self.controlLayerAppearedState = status;
-    
     if ( status && [self.videoPlayer.controlLayerDelegate respondsToSelector:@selector(controlLayerNeedAppear:)] ) {
         [_videoPlayer.controlLayerDelegate controlLayerNeedAppear:_videoPlayer];
     }
     else if ( !status && [self.videoPlayer.controlLayerDelegate respondsToSelector:@selector(controlLayerNeedDisappear:)] ) {
         [_videoPlayer.controlLayerDelegate controlLayerNeedDisappear:_videoPlayer];
     }
-    if ( _videoPlayer.controlLayerAppearStateChanged ) _videoPlayer.controlLayerAppearStateChanged(_videoPlayer, status);
 }
 
+- (void)setControlLayerAppearedState:(BOOL)status {
+    _controlLayerAppearedState = status;
+    if ( _videoPlayer.controlLayerAppearStateChanged ) _videoPlayer.controlLayerAppearStateChanged(_videoPlayer, status);
+}
 @end
 
 

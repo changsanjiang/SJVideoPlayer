@@ -41,10 +41,9 @@
 #import "SJVideoPlayerPreviewInfo.h"
 #import <SJPrompt/SJPrompt.h>
 #import <SJOrentationObserver/SJOrentationObserver.h>
+#import "SJVideoPlayerControlLayerProtocol.h"
 
 NS_ASSUME_NONNULL_BEGIN
-@protocol SJVideoPlayerControlLayerDataSource, SJVideoPlayerControlLayerDelegate;
-
 /**
  This enumeration lists some of the gesture types that the player has by default.
  When you don't want to use one of these gestures, you can set it like this:
@@ -61,21 +60,6 @@ typedef NS_ENUM(NSUInteger, SJDisablePlayerGestureTypes) {
     SJDisablePlayerGestureTypes_All = 1 << 4
 };
 
-
-/**
- This enumeration lists the three state values of the network.
- It is used to identify the current network state. You can obtain the current network state as follows:
- 
- 这个枚举列出了网络的3种状态值, 用来标识当前的网络状态, 你可以像下面这样获取当前的网络状态:
- ```
- _videoPlayer.networkStatus;
- ```
- */
-typedef NS_ENUM(NSInteger, SJNetworkStatus) {
-    SJNetworkStatus_NotReachable = 0,
-    SJNetworkStatus_ReachableViaWWAN = 1,
-    SJNetworkStatus_ReachableViaWiFi = 2
-};
 
 @interface SJBaseVideoPlayer : NSObject
 
@@ -273,6 +257,7 @@ typedef NS_ENUM(NSInteger, SJNetworkStatus) {
 - (NSString *)timeStringWithSeconds:(NSInteger)secs; // format: 00:00:00
 
 @property (nonatomic, readonly) float progress;
+@property (nonatomic, readonly) float bufferProgress;
 
 @property (nonatomic, readonly) NSTimeInterval currentTime;
 @property (nonatomic, readonly) NSTimeInterval totalTime;
@@ -431,6 +416,7 @@ typedef NS_ENUM(NSInteger, SJNetworkStatus) {
  readonly.
  */
 @property (nonatomic, readonly) BOOL controlLayerAppeared;
+- (void)setControlLayerAppeared:(BOOL)controlLayerAppeared;
 
 /**
  The block invoked When Control layer state changed.
@@ -630,161 +616,6 @@ typedef NS_ENUM(NSInteger, SJNetworkStatus) {
 
 @property (nonatomic, assign, readonly) BOOL playOnCell NS_DEPRECATED(2_0, 2_0, 2_0, 2_0, "use `isPlayOnScrollView`");            // 是在cell上播放
 @property (nonatomic, assign, readonly) BOOL scrollIntoTheCell NS_DEPRECATED(2_0, 2_0, 2_0, 2_0, "use `isScrollAppeared`");     // 播放器滚进了单元格中
-@end
-
-
-
-
-
-#pragma mark - ControlLayerProtocol
-
-@protocol SJVideoPlayerControlLayerDataSource <NSObject>
-
-@required
-/**
- 请返回控制层的根视图, 这个视图将会添加的播放器视图中.
- */
-- (UIView *)controlView;
-
-/**
- This method is called before the control layer needs to be hidden, and `controlLayerNeedDisappear:` will not be called if NO is returned.
- 当控制层显示时, 播放器会在一段时间(默认3秒)后尝试隐藏控制层, 此时会调用该方法, 如果返回YES, 则隐藏控制层, 否之.
- */
-- (BOOL)controlLayerDisappearCondition;
-
-/**
- This method is called before the gesture is triggered. If NO is returned, will not trigger gestures.
- 触发手势之前会调用这个方法, 如果返回NO, 将不会触发手势.
- */
-- (BOOL)triggerGesturesCondition:(CGPoint)location;
-
-@optional
-/**
- Call it When installed control view to player view.
- */
-- (void)installedControlViewToVideoPlayer:(__kindof SJBaseVideoPlayer *)videoPlayer;
-
-@end
-
-
-@protocol SJVideoPlayerControlLayerDelegate <NSObject>
-
-@required
-/**
- This method will be called when the control layer needs to be appear. You should do some appear work here.
- */
-- (void)controlLayerNeedAppear:(__kindof SJBaseVideoPlayer *)videoPlayer;
-
-/**
- This method will be called when the control layer needs to be disappear. You should do some disappear work here.
- */
-- (void)controlLayerNeedDisappear:(__kindof SJBaseVideoPlayer *)videoPlayer;
-
-
-@optional
-/**
- Call it when `tableView` or` collectionView` is about to appear. Because scrollview may be scrolled.
- */
-- (void)videoPlayerWillAppearInScrollView:(__kindof SJBaseVideoPlayer *)videoPlayer;
-
-/**
- Call it when `tableView` or` collectionView` is about to disappear. Because scrollview may be scrolled.
- */
-- (void)videoPlayerWillDisappearInScrollView:(__kindof SJBaseVideoPlayer *)videoPlayer;
-
-
-#pragma mark - 播放之前/状态
-
-- (void)videoPlayer:(__kindof SJBaseVideoPlayer *)videoPlayer prepareToPlay:(SJVideoPlayerURLAsset *)asset;
-
-- (void)videoPlayer:(__kindof SJBaseVideoPlayer *)videoPlayer stateChanged:(SJVideoPlayerPlayState)state;
-
-#pragma mark - 进度
-
-- (void)videoPlayer:(__kindof SJBaseVideoPlayer *)videoPlayer
-        currentTime:(NSTimeInterval)currentTime currentTimeStr:(NSString *)currentTimeStr
-          totalTime:(NSTimeInterval)totalTime totalTimeStr:(NSString *)totalTimeStr;
-
-/**
- Call it When buffer progress changed.
- 缓冲进度改变的时候调用.
- */
-- (void)videoPlayer:(__kindof SJBaseVideoPlayer *)videoPlayer loadedTimeProgress:(float)progress;
-
-- (void)startLoading:(__kindof SJBaseVideoPlayer *)videoPlayer;
-
-- (void)cancelLoading:(__kindof SJBaseVideoPlayer *)videoPlayer;
-
-/**
- Call it when stop load.
- */
-- (void)loadCompletion:(__kindof SJBaseVideoPlayer *)videoPlayer;
-
-#pragma mark - 锁屏
-/**
- Call it when set videoPlayer.lockedScreen == YES.
- */
-- (void)lockedVideoPlayer:(__kindof SJBaseVideoPlayer *)videoPlayer;
-
-/**
- Call it when set videoPlayer.lockedScreen == NO.
- */
-- (void)unlockedVideoPlayer:(__kindof SJBaseVideoPlayer *)videoPlayer;
-
-#pragma mark - This Tap gesture triggered when player locked screen.
-
-/**
- If player locked(videoPlayer.lockedScreen == YES), When the user tapped on the player this method will be called.
- */
-- (void)tappedPlayerOnTheLockedState:(__kindof SJBaseVideoPlayer *)videoPlayer;
-
-#pragma mark - 屏幕旋转
-/**
- Call it when player will rotate the screen, `isFull` if YES, then full screen.
- */
-- (void)videoPlayer:(__kindof SJBaseVideoPlayer *)videoPlayer willRotateView:(BOOL)isFull;
-
-/**
- Call it when player rotated screen.
- */
-- (void)videoPlayer:(__kindof SJBaseVideoPlayer *)videoPlayer didEndRotation:(BOOL)isFull;
-
-#pragma mark - 音量 / 亮度 / 播放速度
-
-- (void)videoPlayer:(__kindof SJBaseVideoPlayer *)videoPlayer muteChanged:(BOOL)mute;
-
-- (void)videoPlayer:(__kindof SJBaseVideoPlayer *)videoPlayer volumeChanged:(float)volume;
-
-- (void)videoPlayer:(__kindof SJBaseVideoPlayer *)videoPlayer brightnessChanged:(float)brightness;
-
-- (void)videoPlayer:(__kindof SJBaseVideoPlayer *)videoPlayer rateChanged:(float)rate;
-
-#pragma mark - 水平手势
-/// 水平方向开始拖动.
-- (void)horizontalDirectionWillBeginDragging:(__kindof SJBaseVideoPlayer *)videoPlayer;
-
-/**
- @param progress drag progress
- */
-- (void)videoPlayer:(__kindof SJBaseVideoPlayer *)videoPlayer horizontalDirectionDidMove:(CGFloat)progress;
-
-- (void)videoPlayer:(__kindof SJBaseVideoPlayer *)videoPlayer horizontalDirectionDidDrag:(CGFloat)translation NS_DEPRECATED(2_0, 2_0, 2_0, 2_0, "use `videoPlayer:horizontalDirectionDidMove:`");
-
-/// 水平方向拖动结束.
-- (void)horizontalDirectionDidEndDragging:(__kindof SJBaseVideoPlayer *)videoPlayer;
-
-#pragma mark - size
-- (void)videoPlayer:(__kindof SJBaseVideoPlayer *)videoPlayer presentationSize:(CGSize)size;
-
-#pragma mark - Network
-/// 网络状态变更
-- (void)videoPlayer:(__kindof SJBaseVideoPlayer *)videoPlayer reachabilityChanged:(SJNetworkStatus)status;
-
-#pragma mark -
-- (void)appWillResignActive:(__kindof SJBaseVideoPlayer *)videoPlayer;
-- (void)appDidBecomeActive:(__kindof SJBaseVideoPlayer *)videoPlayer;
-- (void)appWillEnterForeground:(__kindof SJBaseVideoPlayer *)videoPlayer;
-- (void)appDidEnterBackground:(__kindof SJBaseVideoPlayer *)videoPlayer;
 @end
 
 NS_ASSUME_NONNULL_END

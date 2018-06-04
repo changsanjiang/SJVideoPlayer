@@ -105,13 +105,16 @@ NS_ASSUME_NONNULL_END
 - (SJAutoRotateSupportedOrientation)supportedOrientation {
     return self.videoPlayer.supportedOrientation;
 }
-- (void)rotate:(SJOrientation)orientation animated:(BOOL)animated {
-    [self.videoPlayer rotate:orientation animated:animated];
+- (void)rotate:(SJOrientation)orientation
+      animated:(BOOL)animated
+    completion:(void (^ _Nullable)(__kindof SJVideoPlayerHelper *helper))block {
+    [self.videoPlayer rotate:orientation animated:animated completion:^(__kindof SJBaseVideoPlayer * _Nonnull player) {
+        if ( block ) block(self);
+    }];
 }
 - (void)setLockScreen:(BOOL)lockScreen {
     self.videoPlayer.lockedScreen = lockScreen;
 }
-
 - (BOOL)lockScreen {
     return self.videoPlayer.isLockedScreen;
 }
@@ -213,7 +216,15 @@ NS_ASSUME_NONNULL_END
         __strong typeof(_self) self = _self;
         if ( !self ) return;
         if ( self.playDidToEnd ) self.playDidToEnd(self);
-    };    
+    };
+    
+    
+    
+    _videoPlayer.moreSettings = @[[[SJVideoPlayerMoreSetting alloc] initWithTitle:@"下载" image:[UIImage imageNamed:@"download"] clickedExeBlock:^(SJVideoPlayerMoreSetting * _Nonnull model) {
+#ifdef DEBUG
+        NSLog(@"%d - %s", (int)__LINE__, __func__);
+#endif
+    }]];
 }
 
 - (void)clearPlayer {

@@ -146,6 +146,7 @@ static NSString *const kSJFilmEditingResultShareItemQQTitle = @"QQ";
 
 - (void)_saveResult:(id<SJVideoPlayerFilmEditingResult>)result {
     switch ( result.operation ) {
+        case SJVideoPlayerFilmEditingOperation_Unknown: break;
         case SJVideoPlayerFilmEditingOperation_Screenshot: {
             UIImageWriteToSavedPhotosAlbum(result.image, self, @selector(image:didFinishSavingWithError:contextInfo:), NULL);
         }

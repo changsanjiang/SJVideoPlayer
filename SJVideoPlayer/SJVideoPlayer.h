@@ -1,20 +1,11 @@
 //
 //  SJVideoPlayer.h
-//  SJVideoPlayerProject
+//  SJVideoPlayerV3Project
 //
-//  Created by BlueDancer on 2018/2/2.
-//  Copyright © 2018年 SanJiang. All rights reserved.
-//
-//  The base player, without the control layer, can be used if you need a custom control layer.
-//  https://github.com/changsanjiang/SJBaseVideoPlayer
-//
-//  Player with default control layer.
-//  https://github.com/changsanjiang/SJVideoPlayer
-//
-//  changsanjiang@gmail.com
+//  Created by 畅三江 on 2018/5/29.
+//  Copyright © 2018年 畅三江. All rights reserved.
 //
 
-#import <UIKit/UIKit.h>
 #import <SJBaseVideoPlayer/SJBaseVideoPlayer.h>
 #import "SJVideoPlayerSettings.h"
 #import "SJVideoPlayerMoreSetting.h"
@@ -24,122 +15,102 @@
 #import "SJLightweightTopItem.h"
 #import "SJVideoPlayerFilmEditingCommonHeader.h"
 #import "SJVideoPlayerFilmEditingConfig.h"
+#import "SJControlLayerSwitcher.h"
 
 NS_ASSUME_NONNULL_BEGIN
+/// 这两个标识是默认控制层的标识, 你可以行下面这样扩展您的标识, 将相应的控制层加入到switcher中, 通过switcher进行切换.
+/// SJControlLayerIdentifier YourControlLayerIdentifier;
+/// 当然, 也可以直接将默认的标识控制层, 替换成您的控制层.
+
+extern SJControlLayerIdentifier SJControlLayer_Edge;
+extern SJControlLayerIdentifier SJControlLayer_FilmEditing;
+
 
 @interface SJVideoPlayer : SJBaseVideoPlayer
 
-+ (instancetype)sharedPlayer;   // 使用默认的控制层
+/// 使用默认的控制层
++ (instancetype)player;
 
-+ (instancetype)player;         // 使用默认的控制层
-
-- (instancetype)init;           // 使用默认的控制层
-
-- (instancetype)initWithControlLayerDataSource:(nullable id<SJVideoPlayerControlLayerDataSource> )controlLayerDataSource
-                          controlLayerDelegate:(nullable id<SJVideoPlayerControlLayerDelegate>)controlLayerDelegate;    // 指定控制层
-
-/**
- A lightweight player with simple functions.
- 一个具有简单功能的播放器.
- 
- @return player
- */
+/// A lightweight player with simple functions.
+/// 一个具有简单功能的播放器.
 + (instancetype)lightweightPlayer;
 
+/// 使用默认的控制层
+- (instancetype)init;
 
-/**
- Clicked back btn exe block.
- 点击`返回`按钮的回调.
- 
- readwrite.
- */
+- (instancetype)_init;
+
+/// v2.0.8
+/// 新增: 控制层 切换器, 管理控制层的切换
+@property (nonatomic, strong, readonly) SJControlLayerSwitcher *switcher;
+
+/// This block invoked when clicked back btn, if videoPlayer.isFullscreen == NO.
+/// 点击`返回`按钮的回调
 @property (nonatomic, copy, readwrite) void(^clickedBackEvent)(SJVideoPlayer *player);
 
+/// Player will prompt the user when the network status changes, if disableNetworkStatusChangePrompt == NO;
+/// 是否禁止网络状态变化时的提示, 默认是NO.
+@property (nonatomic) BOOL disableNetworkStatusChangePrompt;
 
-/**
- If yes, the player will prompt the user when the network status changes.
- 是否禁止网络状态变化时的提示, 默认是NO.
- 
- readwrite.
- */
-@property (nonatomic) BOOL disableNetworkStatusChangePrompt; // default is NO. 是否禁止网路状态变化提示. 默认为No.
+/// Configure the player, Note: This `block` is run on the child thread.
+/// 配置播放器, 注意: 这个`block`在子线程运行
+///
+/// SJVideoPlayer.update(^(SJVideoPlayerSettings * _Nonnull commonSettings) {
+///     ..... setting player ......
+///     commonSettings.placeholder = [UIImage imageNamed:@"placeholder"];
+///     commonSettings.more_trackColor = [UIColor whiteColor];
+///     commonSettings.progress_trackColor = [UIColor colorWithWhite:0.4 alpha:1];
+///     commonSettings.progress_bufferColor = [UIColor whiteColor];
+/// });
+@property (class, nonatomic, copy, readonly) void(^update)(void(^block)(SJVideoPlayerSettings *commonSettings));
++ (void)resetSetting; // 重置配置, 恢复默认设置
 
+
++ (NSString *)version;
 @end
 
 
-#pragma mark - Setting lightweight control layer
-
+/// 配置`轻量级的控制层`
 @interface SJVideoPlayer (SettingLightweightControlLayer)
 
+/// 配置top控制层上的item
 @property (nonatomic, copy, nullable) NSArray<SJLightweightTopItem *> *topControlItems;
 
+/// 点击item执行的block
 @property (nonatomic, copy, nullable) void(^clickedTopControlItemExeBlock)(SJVideoPlayer *player, SJLightweightTopItem *item);
 
 @end
 
 
-#pragma mark - Setting default control layer
-
+/// 配置`默认的控制层`
 @interface SJVideoPlayer (SettingDefaultControlLayer)
 
-/**
- *  Whether to generate a preview view. default is YES.
- *
- *  是否自动生成预览视图, 默认是 YES. 如果为NO, 则预览按钮将不会显示.
- *
- *  readwrite.
- */
+/// Whether to generate a preview view. default is YES.
+/// 是否自动生成预览视图, 默认是 YES
 @property (nonatomic) BOOL generatePreviewImages;
 
-/**
- *  Configure the player, Note: T his `block` is run on the child thread.
- *
- *  配置播放器, 注意: 这个`block`在子线程运行.
- *
- *  SJVideoPlayer.update(^(SJVideoPlayerSettings * _Nonnull commonSettings) {
-        ..... setting player ......
-        commonSettings.placeholder = [UIImage imageNamed:@"placeholder"];
-        commonSettings.more_trackColor = [UIColor whiteColor];
-        commonSettings.progress_trackColor = [UIColor colorWithWhite:0.4 alpha:1];
-        commonSettings.progress_bufferColor = [UIColor whiteColor];
-    });
- **/
-@property (class, nonatomic, copy, readonly) void(^update)(void(^block)(SJVideoPlayerSettings *commonSettings));
-+ (void)resetSetting; // 重置配置, 恢复默认设置
-
-/**
- *  clicked More button to display items.
- *
- *  点击`更多(右上角的三个点)`按钮, 弹出来的选项.
- *
- *  readwrite.
- **/
+/// clicked More button to display items.
+/// 点击`更多(右上角的三个点)`按钮, 弹出来的选项.
 @property (nonatomic, strong, nullable) NSArray<SJVideoPlayerMoreSetting *> *moreSettings;
 
 @end
 
 
-
-#pragma mark - Film Editing [GIF/Export/Screenshot]
-
+/// 配置`剪辑的控制层`
 @interface SJVideoPlayer (FilmEditing)
 
-/**
- If yes, the player will display the right control view.
- But if the format of the video is m3u8, it does not work.
- 
- default is  NO.
- 
- readwrite.
- */
+/// The player will display the right control view if YES
+/// If the format of the video is m3u8, it does not work
+///
+/// 是否开启剪辑功能
+/// 默认是NO
+/// 不支持剪辑m3u8(如果开启, 将会自动隐藏剪辑按钮)
 @property (nonatomic) BOOL enableFilmEditing;
 
+/// 剪辑功能配置
 @property (nonatomic, strong, readonly) SJVideoPlayerFilmEditingConfig *filmEditingConfig;
 
 - (void)dismissFilmEditingViewCompletion:(void(^__nullable)(SJVideoPlayer *player))completionBlock;
-
-
-- (void)exitFilmEditingCompletion:(void(^__nullable)(SJVideoPlayer *player))completion NS_DEPRECATED(2_0, 2_0, 2_0, 2_0, "use `dismissFilmEditingViewCompletion:`");
 @end
 
 NS_ASSUME_NONNULL_END

@@ -1,1 +1,0 @@
-../../../SJVolBrigControl/SJVolBrigControl/Resource/SJVolBrigResource.h

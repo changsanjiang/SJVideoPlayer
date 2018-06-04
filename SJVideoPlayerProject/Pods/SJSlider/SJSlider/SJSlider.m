@@ -147,6 +147,7 @@ NS_ASSUME_NONNULL_BEGIN
 - (void)setTrackHeight:(CGFloat)trackHeight {
     _trackHeight = trackHeight;
     [self _needUpdateContainerCornerRadius];
+    [self _needUpdateContainerLayout];
 }
 
 - (void)setThumbCornerRadius:(CGFloat)thumbCornerRadius

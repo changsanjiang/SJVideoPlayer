@@ -306,6 +306,7 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic, strong, readonly) NSURL *assetURL;
 @property (nonatomic, assign, readonly) NSTimeInterval duration;  // unit is sec.
 @property (nonatomic, assign, readonly) NSTimeInterval currentTime; // unit is sec.
+@property (nonatomic, assign, readonly) float bufferProgress;
 @property (nonatomic, assign, readonly) float progress; // 0..1
 @property (nonatomic, strong, readonly, nullable) NSIndexPath *indexPath;
 @property (nonatomic, assign, readonly) NSInteger superviewTag;

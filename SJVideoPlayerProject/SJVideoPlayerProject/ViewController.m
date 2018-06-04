@@ -7,7 +7,6 @@
 //
 
 #import "ViewController.h"
-#import "PlayerViewController.h"
 #import "PlayerTableViewController.h"
 #import "PlayerCollectionViewController.h"
 #import "NestedTableViewController.h"
@@ -40,10 +39,6 @@
 
 - (IBAction)aboutKeyboard:(id)sender {
     [self.navigationController pushViewController:[[AboutKeyboardViewController alloc] init] animated:YES];
-}
-
-- (IBAction)push:(id)sender {
-    [self.navigationController pushViewController:[[PlayerViewController alloc] init] animated:YES];
 }
 
 - (IBAction)pushTable:(id)sender {

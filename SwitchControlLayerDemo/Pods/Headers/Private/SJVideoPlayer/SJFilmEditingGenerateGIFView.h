@@ -1,0 +1,1 @@
+../../../SJVideoPlayer/SJVideoPlayer/SJFilmEditingControlLayer/View/SJFilmEditingGenerateGIFView.h

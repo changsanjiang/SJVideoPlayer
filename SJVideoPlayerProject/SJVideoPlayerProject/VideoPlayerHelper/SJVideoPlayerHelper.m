@@ -137,7 +137,7 @@ NS_ASSUME_NONNULL_END
     switch ( _playerType ) {
         case SJVideoPlayerType_Default: {
             _videoPlayer = [SJVideoPlayer player];
-            _videoPlayer.generatePreviewImages = NO;
+            _videoPlayer.generatePreviewImages = YES;
         }
             break;
         case SJVideoPlayerType_Lightweight: {

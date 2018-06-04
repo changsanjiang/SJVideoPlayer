@@ -50,7 +50,6 @@
     }]];
     // switch
     [_videoPlayer.switcher switchControlLayerForIdentitfier:SJControlLayer_Edge toVideoPlayer:_videoPlayer];
-    
 }
 
 - (SJVideoPlayer *)videoPlayer {

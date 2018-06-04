@@ -10,8 +10,9 @@
 #import <SJVideoPlayer/SJVideoPlayer.h>
 #import <Masonry.h>
 #import "SJDemoControlLayer.h"
+#import <SJFilmEditingControlLayer.h>
 
-@interface ViewController () {
+@interface ViewController () <SJDemoControlLayerDelegate, SJFilmEditingControlLayerDelegate> {
     SJVideoPlayer *_videoPlayer;
 }
 
@@ -41,7 +42,8 @@
     
     // create a custom control layer
     SJDemoControlLayer *demoControlLayer = [SJDemoControlLayer new];
-
+    demoControlLayer.delegate = self;
+    
     // create a data carrier and add to switcher
     [_videoPlayer.switcher addControlLayer:[[SJControlLayerCarrier alloc] initWithIdentifier:SJControlLayer_Edge dataSource:demoControlLayer delegate:demoControlLayer exitExeBlock:^(SJControlLayerCarrier * _Nonnull carrier) {
         [demoControlLayer exitControlLayerCompeletionHandler:nil];
@@ -52,6 +54,11 @@
     [_videoPlayer.switcher switchControlLayerForIdentitfier:SJControlLayer_Edge toVideoPlayer:_videoPlayer];
 }
 
+- (void)clickedFilmEditingBtnOnDemoControlLayer:(SJDemoControlLayer *)controlLayer {
+    [_videoPlayer.switcher switchControlLayerForIdentitfier:SJControlLayer_FilmEditing toVideoPlayer:_videoPlayer];
+}
+
+#pragma mark
 - (SJVideoPlayer *)videoPlayer {
     if ( _videoPlayer ) return _videoPlayer;
     _videoPlayer = [SJVideoPlayer player];

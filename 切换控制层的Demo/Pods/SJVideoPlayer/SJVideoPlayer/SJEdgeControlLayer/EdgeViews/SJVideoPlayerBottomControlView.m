@@ -24,6 +24,9 @@
 @property (nonatomic, strong, readonly) SJSlider *progressSlider;
 @property (nonatomic, strong, readonly) UIButton *fullBtn;
 
+@property (nonatomic, strong) UIImage *fullScreenImage;
+@property (nonatomic, strong) UIImage *shrinkscreenImage;
+
 @end
 
 @implementation SJVideoPlayerBottomControlView
@@ -69,6 +72,7 @@
 
 - (void)setFullscreen:(BOOL)fullscreen {
     _fullscreen = fullscreen;
+    [self _updateFullBtnImage];
     [self invalidateIntrinsicContentSize];
 }
 
@@ -247,7 +251,10 @@
         if ( !self ) return;
         [self.playBtn setImage:setting.playBtnImage forState:UIControlStateNormal];
         [self.pauseBtn setImage:setting.pauseBtnImage forState:UIControlStateNormal];
-        [self.fullBtn setImage:setting.fullBtnImage forState:UIControlStateNormal];
+        self.fullScreenImage = setting.fullBtnImage;
+        self.shrinkscreenImage = setting.shrinkscreenImage;
+        [self _updateFullBtnImage];
+        
         self.progressSlider.traceImageView.backgroundColor = setting.progress_traceColor;
         self.progressSlider.trackImageView.backgroundColor = setting.progress_trackColor;
         if ( setting.progress_thumbImage ) {
@@ -259,5 +266,10 @@
         self.progressSlider.bufferProgressColor = setting.progress_bufferColor;
         self.progressSlider.trackHeight = setting.progress_traceHeight;
     }];
+}
+
+- (void)_updateFullBtnImage {
+    if ( self.fullscreen ) [self.fullBtn setImage:self.shrinkscreenImage forState:UIControlStateNormal];
+    else [self.fullBtn setImage:self.fullScreenImage forState:UIControlStateNormal];
 }
 @end

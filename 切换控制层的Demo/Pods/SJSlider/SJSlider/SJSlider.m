@@ -9,18 +9,6 @@
 #import <objc/message.h>
 
 NS_ASSUME_NONNULL_BEGIN
-
-@interface SJImageView : UIImageView
-@property (nonatomic, copy) void(^setImageExeBlock)(SJImageView *imageView);
-@end
-
-@implementation SJImageView
-- (void)setImage:(nullable UIImage *)image {
-    [super setImage:image];
-    if ( _setImageExeBlock ) _setImageExeBlock(self);
-}
-@end
-
 @interface SJSlider ()
 @property (nonatomic, strong, readonly) UIView *containerView;
 @end
@@ -229,8 +217,8 @@ NS_ASSUME_NONNULL_BEGIN
     _containerView = [UIView new];
     _containerView.clipsToBounds = YES;
     
-    SJImageView *(^makeImageView)(void) = ^SJImageView *{
-        SJImageView *imageView = [SJImageView new];
+    UIImageView *(^makeImageView)(void) = ^UIImageView *{
+        UIImageView *imageView = [UIImageView new];
         imageView.clipsToBounds = YES;
         imageView.contentMode = UIViewContentModeCenter;
         return imageView;
@@ -239,13 +227,6 @@ NS_ASSUME_NONNULL_BEGIN
     _traceImageView = makeImageView();
     _trackImageView = makeImageView();
     _thumbImageView = makeImageView();
-    __weak typeof(self) _self = self;
-    [(SJImageView *)_thumbImageView setSetImageExeBlock:^(SJImageView * _Nonnull imageView) {
-        __strong typeof(_self) self = _self;
-        if ( !self ) return;
-        imageView.bounds = (CGRect){CGPointZero, imageView.image.size};
-        [self _needUpdateThumbLayout];
-    }];
     
     [self addSubview:_containerView];
     [_containerView addSubview:self.trackImageView];

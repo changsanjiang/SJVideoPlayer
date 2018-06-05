@@ -377,8 +377,8 @@
 				);
 				PRODUCT_BUNDLE_IDENTIFIER = com.bluedancer.SwitchControlLayerDemo;
 				PRODUCT_NAME = "$(TARGET_NAME)";
-				PROVISIONING_PROFILE = "694b7939-1114-4ae4-b187-02fa71ba55eb";
-				PROVISIONING_PROFILE_SPECIFIER = sanjiang17macDev;
+				PROVISIONING_PROFILE = "64c214b3-450d-41eb-b05e-df636dfa28c8";
+				PROVISIONING_PROFILE_SPECIFIER = SanJiangDevelopment;
 				TARGETED_DEVICE_FAMILY = "1,2";
 			};
 			name = Debug;

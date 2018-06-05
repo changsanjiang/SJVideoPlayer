@@ -53,7 +53,7 @@
     /// 调用initWith...初始化即可
     /// 可以从指定的进度继续播放
     /// 如下, 从第10秒开始播放
-    _videoPlayer.URLAsset = [[SJVideoPlayerURLAsset alloc] initWithAssetURL:[[NSBundle mainBundle] URLForResource:@"sample" withExtension:@"mp4"] beginTime:10]; // 关于如何记录播放时间, 请看下面的 资源部分的注释
+    _videoPlayer.URLAsset = [[SJVideoPlayerURLAsset alloc] initWithAssetURL:[NSURL URLWithString:@"https://www.apple.com/105/media/us/iphone-x/2017/01df5b43-28e4-4848-bf20-490c34a926a7/films/feature/iphone-x-feature-tpl-cc-us-20170912_1280x720h.mp4"] beginTime:10]; // 关于如何记录播放时间, 请看下面的 资源部分的注释
     
     [self 一些注释];
     
@@ -131,7 +131,7 @@
     #pragma mark -资源
 #if 0
     // 播放一个资源, 可以是本地, 也可是网络资源
-    _videoPlayer.URLAsset = [[SJVideoPlayerURLAsset alloc] initWithAssetURL:[[NSBundle mainBundle] URLForResource:@"sample" withExtension:@"mp4"] beginTime:10];
+    _videoPlayer.URLAsset = [[SJVideoPlayerURLAsset alloc] initWithAssetURL:[NSURL URLWithString:@"https://github.com/changsanjiang/SJVideoPlayer/blob/master/SJVideoPlayerProject/SJVideoPlayerProject/sample.mp4"] beginTime:10];
     // 刷新当前的资源
     [_videoPlayer refresh];
     // 每个资源 dealloc的时候, 会调用这个方法

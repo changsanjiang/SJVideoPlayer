@@ -16,7 +16,6 @@
 		77AF4CE120AE825E00752191 /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 77AF4CE020AE825E00752191 /* main.m */; };
 		77AF4CF020AE845000752191 /* SJDemoVideoPlayerControlLayer.m in Sources */ = {isa = PBXBuildFile; fileRef = 77AF4CEF20AE845000752191 /* SJDemoVideoPlayerControlLayer.m */; };
 		77AF4CF620AE862F00752191 /* SJDemoVideoPlayer.m in Sources */ = {isa = PBXBuildFile; fileRef = 77AF4CF520AE862F00752191 /* SJDemoVideoPlayer.m */; };
-		77AF4CF820AE889300752191 /* sample.mp4 in Resources */ = {isa = PBXBuildFile; fileRef = 77AF4CF720AE889300752191 /* sample.mp4 */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -36,7 +35,6 @@
 		77AF4CEF20AE845000752191 /* SJDemoVideoPlayerControlLayer.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = SJDemoVideoPlayerControlLayer.m; sourceTree = "<group>"; };
 		77AF4CF420AE862F00752191 /* SJDemoVideoPlayer.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = SJDemoVideoPlayer.h; sourceTree = "<group>"; };
 		77AF4CF520AE862F00752191 /* SJDemoVideoPlayer.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = SJDemoVideoPlayer.m; sourceTree = "<group>"; };
-		77AF4CF720AE889300752191 /* sample.mp4 */ = {isa = PBXFileReference; lastKnownFileType = file; path = sample.mp4; sourceTree = "<group>"; };
 		F5FA692F662BF9621D85C02F /* Pods-Demo.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Demo.debug.xcconfig"; path = "Pods/Target Support Files/Pods-Demo/Pods-Demo.debug.xcconfig"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -85,7 +83,6 @@
 				77AF4CD220AE825D00752191 /* AppDelegate.m */,
 				77AF4CD420AE825D00752191 /* ViewController.h */,
 				77AF4CD520AE825D00752191 /* ViewController.m */,
-				77AF4CF720AE889300752191 /* sample.mp4 */,
 				77AF4CE720AE82DC00752191 /* CustomLayer */,
 				77AF4CD720AE825D00752191 /* Main.storyboard */,
 				77AF4CDA20AE825E00752191 /* Assets.xcassets */,
@@ -178,7 +175,6 @@
 				77AF4CDE20AE825E00752191 /* LaunchScreen.storyboard in Resources */,
 				77AF4CDB20AE825E00752191 /* Assets.xcassets in Resources */,
 				77AF4CD920AE825D00752191 /* Main.storyboard in Resources */,
-				77AF4CF820AE889300752191 /* sample.mp4 in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

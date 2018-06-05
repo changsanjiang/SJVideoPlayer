@@ -98,7 +98,7 @@ static NSString * const PlayerCollectionViewCellID = @"PlayerCollectionViewCell"
 - (void)clickedPlayOnColCell:(PlayerCollectionViewCell *)cell {
     [self _removeOldPlayer];
 
-    [self _createNewPlayerWithView:cell.backgroundImageView indexPath:[self.collectionView indexPathForCell:cell] tag:cell.backgroundImageView.tag videoURLStr:@"http://pu.latin5.com/bd1c831d-7024-4b17-a03e-e8ab89bb2a4b.m3u8"];
+    [self _createNewPlayerWithView:cell.backgroundImageView indexPath:[self.collectionView indexPathForCell:cell] tag:cell.backgroundImageView.tag videoURLStr:@"https://www.apple.com/105/media/us/iphone-x/2017/01df5b43-28e4-4848-bf20-490c34a926a7/films/feature/iphone-x-feature-tpl-cc-us-20170912_1280x720h.mp4"];
 }
 
 - (void)_removeOldPlayer {

@@ -1027,7 +1027,7 @@ NS_ASSUME_NONNULL_END
 }
 
 - (void)clearAsset {
-    if ( !self.asset.isOtherAsset ) {
+    if ( self.asset && !self.asset.isOtherAsset ) {
         [self.presentView.player replaceCurrentItemWithPlayerItem:nil];
         self.presentView.player = nil;
     }

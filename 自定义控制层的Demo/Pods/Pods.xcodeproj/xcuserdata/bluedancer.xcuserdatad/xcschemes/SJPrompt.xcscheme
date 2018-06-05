@@ -14,7 +14,7 @@
             buildForArchiving = "YES">
             <BuildableReference
                BuildableIdentifier = "primary"
-               BlueprintIdentifier = "73526329AE4ECBE8B5763D41CE8A78E6"
+               BlueprintIdentifier = "30E1D07B713D857688A78EDCC60B6FE4"
                BlueprintName = "SJPrompt"
                ReferencedContainer = "container:Pods.xcodeproj"
                BuildableName = "libSJPrompt.a">

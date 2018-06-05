@@ -124,7 +124,7 @@ static NSString *const SJVideoListTableViewCellID = @"SJVideoListTableViewCell";
     self.playedIndexPath = [self.tableView indexPathForCell:cell];
     SJVideoPlayerURLAsset *asset =
 //    [[SJVideoPlayerURLAsset alloc] initWithAssetURL:[[NSBundle mainBundle] URLForResource:@"sample" withExtension:@"mp4"]
-    [[SJVideoPlayerURLAsset alloc] initWithAssetURL:[NSURL URLWithString:@"http://video.cdn.lanwuzhe.com/14945858406905f0c"]
+    [[SJVideoPlayerURLAsset alloc] initWithAssetURL:[NSURL URLWithString:@"https://www.apple.com/105/media/us/iphone-x/2017/01df5b43-28e4-4848-bf20-490c34a926a7/films/feature/iphone-x-feature-tpl-cc-us-20170912_1280x720h.mp4"]
                                           beginTime:20
                                          scrollView:self.tableView
                                           indexPath:[self.tableView indexPathForCell:cell]

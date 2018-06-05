@@ -146,7 +146,7 @@ static NSString *const SJVideoListTableViewCellID = @"SJVideoListTableViewCell";
         __strong typeof(_self) self = _self;
         if ( !self ) return;
         SJVideoPlayerURLAsset *asset =
-        [[SJVideoPlayerURLAsset alloc] initWithAssetURL:[NSURL URLWithString:@"http://video.cdn.lanwuzhe.com/14945858406905f0c"]
+        [[SJVideoPlayerURLAsset alloc] initWithAssetURL:[NSURL URLWithString:@"https://www.apple.com/105/media/us/iphone-x/2017/01df5b43-28e4-4848-bf20-490c34a926a7/films/feature/iphone-x-feature-tpl-cc-us-20170912_1280x720h.mp4"]
                                               beginTime:0
                             collectionViewOfTableHeader:collectionView
                                 collectionCellIndexPath:indexPath

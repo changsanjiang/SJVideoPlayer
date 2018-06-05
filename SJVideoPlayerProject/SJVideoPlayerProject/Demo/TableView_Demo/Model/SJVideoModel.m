@@ -42,7 +42,7 @@
                                     videoId:i
                                  createTime:date.timeIntervalSince1970 - arc4random() % 100000
                                     creator:users[arc4random() % users.count]
-                                 playURLStr:@"http://video.cdn.lanwuzhe.com/14945858406905f0c"
+                                 playURLStr:@"https://www.apple.com/105/media/us/iphone-x/2017/01df5b43-28e4-4848-bf20-490c34a926a7/films/feature/iphone-x-feature-tpl-cc-us-20170912_1280x720h.mp4"
                                 coverURLStr:coverURLStrs[arc4random() % coverURLStrs.count]];
         
         [SJVideoListTableViewCell sync_makeContentWithVideo:model tappedDelegate:actionDelegate];
@@ -77,7 +77,7 @@
                                     videoId:i
                                  createTime:date.timeIntervalSince1970 - arc4random() % 100000
                                     creator:users[arc4random() % users.count]
-                                 playURLStr:@"http://video.cdn.lanwuzhe.com/14945858406905f0c"
+                                 playURLStr:@"https://www.apple.com/105/media/us/iphone-x/2017/01df5b43-28e4-4848-bf20-490c34a926a7/films/feature/iphone-x-feature-tpl-cc-us-20170912_1280x720h.mp4"
                                 coverURLStr:coverURLStrs[arc4random() % coverURLStrs.count]];
         
         [LightweightTableViewCell sync_makeContentWithVideo:model tappedDelegate:actionDelegate];

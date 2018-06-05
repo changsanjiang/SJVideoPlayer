@@ -73,7 +73,7 @@ static NSString *const PlayerTableViewCellID = @"PlayerTableViewCell";
     [self _removeOldPlayer];
     
     
-    [self _createNewPlayerWithView:cell.backgroundImageView indexPath:[self.tableView indexPathForCell:cell] tag:cell.backgroundImageView.tag videoURLStr:@"http://video.cdn.lanwuzhe.com/usertrend/166162-1513873330.mp4"];
+    [self _createNewPlayerWithView:cell.backgroundImageView indexPath:[self.tableView indexPathForCell:cell] tag:cell.backgroundImageView.tag videoURLStr:@"https://www.apple.com/105/media/us/iphone-x/2017/01df5b43-28e4-4848-bf20-490c34a926a7/films/feature/iphone-x-feature-tpl-cc-us-20170912_1280x720h.mp4"];
 }
 
 - (void)_removeOldPlayer {

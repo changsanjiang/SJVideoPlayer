@@ -64,28 +64,27 @@ static void _SJ_Round(UIView *view, float cornerRadius) {
 
 @interface SJRoundView : UIView
 @property (nonatomic, assign, readwrite) CGFloat cornerRadius;
-@property (nonatomic, assign) BOOL finished;
 @end
 @implementation SJRoundView
 - (void)layoutSubviews {
     [super layoutSubviews];
-    if ( !_finished ) {
-        _SJ_Round(self, _cornerRadius);
-        _finished = YES;
-    }
+    _SJ_Round(self, _cornerRadius);
 }
 @end
 
 @interface SJRoundButton : UIButton
 @property (nonatomic, assign, readwrite) CGFloat cornerRadius;
-@property (nonatomic, assign) BOOL finished;
+@property (nonatomic, assign) BOOL haveShadow;
+
 @end
 @implementation SJRoundButton
 - (void)layoutSubviews {
     [super layoutSubviews];
-    if ( !_finished ) {
+    if ( _haveShadow  ) {
+        [SJUIFactory commonShadowWithView:self size:self.bounds.size cornerRadius:self.cornerRadius];
+    }
+    else {
         _SJ_Round(self, _cornerRadius);
-        _finished = YES;
     }
 }
 @end
@@ -140,9 +139,10 @@ static void _SJ_Round(UIView *view, float cornerRadius) {
 }
 
 + (void)commonShadowWithLayer:(CALayer *)layer {
-    layer.shadowColor = [UIColor colorWithWhite:0.9 alpha:1].CGColor;
+    layer.shadowColor = [UIColor colorWithWhite:0.8 alpha:1].CGColor;
     layer.shadowOpacity = 1;
-    layer.shadowOffset = CGSizeMake(0.2, 0.2);
+    layer.shadowOffset = CGSizeMake(0, 0);
+    layer.shadowRadius = 1;
     layer.masksToBounds = NO;
 }
 
@@ -158,6 +158,7 @@ static void _SJ_Round(UIView *view, float cornerRadius) {
 
 + (CAShapeLayer *)commonShadowShapeLayerWithSize:(CGSize)size cornerRadius:(float)cornerRadius {
     CAShapeLayer *layer = [self shapeLayerWithSize:size cornerRadius:cornerRadius];
+    layer.backgroundColor = [UIColor whiteColor].CGColor;
     [self commonShadowWithLayer:layer];
     return layer;
 }
@@ -271,6 +272,15 @@ static void _SJ_Round(UIView *view, float cornerRadius) {
     view.cornerRadius = cornerRadius;
     view.backgroundColor = backgroundColor;
     return view;
+}
+
++ (UIView *)shadowViewWithCornerRadius:(CGFloat)cornerRadius
+                       backgroundColor:(UIColor * __nullable )backgroundColor {
+    SJShadowView *view = [SJShadowView new];
+    view.cornerRadius = cornerRadius;
+    view.backgroundColor = backgroundColor;
+    return view;
+
 }
 
 @end
@@ -781,6 +791,18 @@ estimatedSectionFooterHeight:(CGFloat)estimatedSectionFooterHeight {
     btn.titleLabel.font = font;
     return btn;
 }
+
++ (UIButton *)shadowButtonWithCornerRadius:(CGFloat)cornerRadius
+                           backgroundColor:(UIColor *)backgroundColor
+                           attributedTitle:(NSAttributedString *)attributedTitle
+                                    target:(id __nullable )target
+                                       sel:(SEL __nullable )sel
+                                       tag:(NSInteger)tag {
+    SJRoundButton *btn = (SJRoundButton *)[self buttonWithCornerRadius:cornerRadius backgroundColor:backgroundColor target:target sel:sel tag:tag];
+    btn.haveShadow = YES;
+    [btn setAttributedTitle:attributedTitle forState:UIControlStateNormal];
+    return btn;
+}
 @end
 
 
@@ -829,15 +851,11 @@ estimatedSectionFooterHeight:(CGFloat)estimatedSectionFooterHeight {
 
 @interface SJShapeImageView : UIImageView
 @property (nonatomic, assign, readwrite) CGFloat cornerRadius;
-@property (nonatomic, assign) BOOL finished;
 @end
 @implementation SJShapeImageView
 - (void)layoutSubviews {
     [super layoutSubviews];
-    if ( !_finished ) {
-        _SJ_Round(self, _cornerRadius);
-        _finished = YES;
-    }
+    _SJ_Round(self, _cornerRadius);
 }
 @end
 
@@ -909,6 +927,28 @@ estimatedSectionFooterHeight:(CGFloat)estimatedSectionFooterHeight {
 
 #pragma mark - Text Field
 
+@interface SJTextField : UITextField<UITextFieldDelegate>
+@property (nonatomic, copy) void(^textChangeExeBlock)(UITextField *textField);
+@property (nonatomic, copy) void(^returnExeBlock)(UITextField *textField);
+@end
+
+@implementation SJTextField
+- (instancetype)initWithFrame:(CGRect)frame {
+    self = [super initWithFrame:frame];
+    if ( !self ) return nil;
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(textChanged) name:UITextFieldTextDidChangeNotification object:self];
+    self.delegate = self;
+    return self;
+}
+- (void)textChanged {
+    if ( _textChangeExeBlock ) _textChangeExeBlock(self);
+}
+- (BOOL)textFieldShouldReturn:(UITextField *)textField {
+    if ( self.returnExeBlock ) self.returnExeBlock(self);
+    return YES;
+}
+@end
+
 @implementation SJUITextFieldFactory
 
 + (UITextField *)textFieldWithPlaceholder:(NSString *)placeholder
@@ -936,14 +976,26 @@ estimatedSectionFooterHeight:(CGFloat)estimatedSectionFooterHeight {
     return textField;
 }
 
-+ (UITextField *)textFieldWithAttrPlaceholder:(NSAttributedString *)placeholder
++ (__kindof UITextField *)textFieldWithAttrPlaceholder:(NSAttributedString *)placeholder
                                          text:(NSString *)text
                                          font:(UIFont *)font
                                     textColor:(UIColor *)textColor
                                  keyboardType:(UIKeyboardType)keyboardType
                                 returnKeyType:(UIReturnKeyType)returnKeyType
                               backgroundColor:(UIColor *)backgroundColor {
-    UITextField *textField = [UITextField new];
+    return [self textFieldWithAttrPlaceholder:placeholder text:text font:font textColor:textColor keyboardType:keyboardType returnKeyType:returnKeyType backgroundColor:backgroundColor textChangedExeBlock:nil returnExeBlock:nil];
+}
+
++ (__kindof UITextField *)textFieldWithAttrPlaceholder:(NSAttributedString * __nullable )placeholder
+                                                  text:(NSString * __nullable )text
+                                                  font:(UIFont * __nullable )font
+                                             textColor:(UIColor * __nullable )textColor
+                                          keyboardType:(UIKeyboardType)keyboardType
+                                         returnKeyType:(UIReturnKeyType)returnKeyType
+                                       backgroundColor:(UIColor * __nullable )backgroundColor
+                                   textChangedExeBlock:(void(^__nullable)(UITextField *textField))textChangeExeBlock
+                                        returnExeBlock:(void (^ _Nullable)(UITextField * _Nonnull))returnExeBlock {
+    SJTextField *textField = [SJTextField new];
     textField.attributedPlaceholder = placeholder;
     textField.text = text;
     textField.font = font;
@@ -953,9 +1005,10 @@ estimatedSectionFooterHeight:(CGFloat)estimatedSectionFooterHeight {
     if ( !backgroundColor ) backgroundColor = [UIColor clearColor];
     textField.backgroundColor = backgroundColor;
     textField.returnKeyType = returnKeyType;
+    textField.textChangeExeBlock = textChangeExeBlock;
+    textField.returnExeBlock = returnExeBlock;
     return textField;
 }
-
 
 + (void)textField:(UITextField *)textField setPlaceholder:(NSString *)placeholder placeholderColor:(UIColor *)placeholderColor {
     if ( 0 != placeholder.length && nil != placeholderColor ) {

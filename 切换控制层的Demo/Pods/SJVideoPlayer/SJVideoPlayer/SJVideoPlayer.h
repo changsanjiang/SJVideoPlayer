@@ -18,7 +18,7 @@
 #import "SJControlLayerSwitcher.h"
 
 NS_ASSUME_NONNULL_BEGIN
-/// 这两个标识是默认控制层的标识, 你可以像下面这样扩展您的标识, 将相应的控制层加入到switcher中, 通过switcher进行切换.
+/// 这两个标识是默认控制层的标识, 你可以行下面这样扩展您的标识, 将相应的控制层加入到switcher中, 通过switcher进行切换.
 /// SJControlLayerIdentifier YourControlLayerIdentifier;
 /// 当然, 也可以直接将默认的标识控制层, 替换成您的控制层.
 

@@ -115,40 +115,40 @@ PODS:
   - SJUIFactory (0.0.16):
     - SJUIFactory/Category (= 0.0.16)
   - SJUIFactory/Category (0.0.16)
-  - SJVideoPlayer (2.0.8.1):
+  - SJVideoPlayer (2.0.8.2):
     - Masonry
     - SJBaseVideoPlayer
     - SJFullscreenPopGesture
-    - SJVideoPlayer/Settings (= 2.0.8.1)
-    - SJVideoPlayer/SJEdgeControlLayer (= 2.0.8.1)
-    - SJVideoPlayer/SJEdgeLightweightControlLayer (= 2.0.8.1)
-    - SJVideoPlayer/SJFilmEditingControlLayer (= 2.0.8.1)
-    - SJVideoPlayer/Switcher (= 2.0.8.1)
-  - SJVideoPlayer/Settings (2.0.8.1):
+    - SJVideoPlayer/Settings (= 2.0.8.2)
+    - SJVideoPlayer/SJEdgeControlLayer (= 2.0.8.2)
+    - SJVideoPlayer/SJEdgeLightweightControlLayer (= 2.0.8.2)
+    - SJVideoPlayer/SJFilmEditingControlLayer (= 2.0.8.2)
+    - SJVideoPlayer/Switcher (= 2.0.8.2)
+  - SJVideoPlayer/Settings (2.0.8.2):
     - Masonry
     - SJBaseVideoPlayer
     - SJFullscreenPopGesture
     - SJVideoPlayer/SJEdgeControlLayer/Asset
     - SJVideoPlayer/SJFilmEditingControlLayer/Asset
-  - SJVideoPlayer/SJEdgeControlLayer (2.0.8.1):
+  - SJVideoPlayer/SJEdgeControlLayer (2.0.8.2):
     - Masonry
     - SJAttributesFactory
     - SJBaseVideoPlayer
     - SJFullscreenPopGesture
     - SJLoadingView
     - SJSlider
-    - SJVideoPlayer/SJEdgeControlLayer/Asset (= 2.0.8.1)
-    - SJVideoPlayer/SJEdgeControlLayer/EdgeViews (= 2.0.8.1)
-    - SJVideoPlayer/SJEdgeControlLayer/MaskView (= 2.0.8.1)
-    - SJVideoPlayer/SJEdgeControlLayer/MoreSetting (= 2.0.8.1)
-  - SJVideoPlayer/SJEdgeControlLayer/Asset (2.0.8.1):
+    - SJVideoPlayer/SJEdgeControlLayer/Asset (= 2.0.8.2)
+    - SJVideoPlayer/SJEdgeControlLayer/EdgeViews (= 2.0.8.2)
+    - SJVideoPlayer/SJEdgeControlLayer/MaskView (= 2.0.8.2)
+    - SJVideoPlayer/SJEdgeControlLayer/MoreSetting (= 2.0.8.2)
+  - SJVideoPlayer/SJEdgeControlLayer/Asset (2.0.8.2):
     - Masonry
     - SJAttributesFactory
     - SJBaseVideoPlayer
     - SJFullscreenPopGesture
     - SJLoadingView
     - SJSlider
-  - SJVideoPlayer/SJEdgeControlLayer/EdgeViews (2.0.8.1):
+  - SJVideoPlayer/SJEdgeControlLayer/EdgeViews (2.0.8.2):
     - Masonry
     - SJAttributesFactory
     - SJBaseVideoPlayer
@@ -157,14 +157,14 @@ PODS:
     - SJSlider
     - SJVideoPlayer/SJEdgeControlLayer/Asset
     - SJVideoPlayer/SJEdgeControlLayer/MaskView
-  - SJVideoPlayer/SJEdgeControlLayer/MaskView (2.0.8.1):
+  - SJVideoPlayer/SJEdgeControlLayer/MaskView (2.0.8.2):
     - Masonry
     - SJAttributesFactory
     - SJBaseVideoPlayer
     - SJFullscreenPopGesture
     - SJLoadingView
     - SJSlider
-  - SJVideoPlayer/SJEdgeControlLayer/MoreSetting (2.0.8.1):
+  - SJVideoPlayer/SJEdgeControlLayer/MoreSetting (2.0.8.2):
     - Masonry
     - SJAttributesFactory
     - SJBaseVideoPlayer
@@ -172,16 +172,7 @@ PODS:
     - SJLoadingView
     - SJSlider
     - SJVideoPlayer/SJEdgeControlLayer/Asset
-  - SJVideoPlayer/SJEdgeLightweightControlLayer (2.0.8.1):
-    - Masonry
-    - SJBaseVideoPlayer
-    - SJFullscreenPopGesture
-    - SJLoadingView
-    - SJSlider
-    - SJVideoPlayer/SJEdgeControlLayer/Asset
-    - SJVideoPlayer/SJEdgeControlLayer/MaskView
-    - SJVideoPlayer/SJEdgeLightweightControlLayer/LightweightControlView (= 2.0.8.1)
-  - SJVideoPlayer/SJEdgeLightweightControlLayer/LightweightControlView (2.0.8.1):
+  - SJVideoPlayer/SJEdgeLightweightControlLayer (2.0.8.2):
     - Masonry
     - SJBaseVideoPlayer
     - SJFullscreenPopGesture
@@ -189,51 +180,60 @@ PODS:
     - SJSlider
     - SJVideoPlayer/SJEdgeControlLayer/Asset
     - SJVideoPlayer/SJEdgeControlLayer/MaskView
-  - SJVideoPlayer/SJFilmEditingControlLayer (2.0.8.1):
+    - SJVideoPlayer/SJEdgeLightweightControlLayer/LightweightControlView (= 2.0.8.2)
+  - SJVideoPlayer/SJEdgeLightweightControlLayer/LightweightControlView (2.0.8.2):
+    - Masonry
+    - SJBaseVideoPlayer
+    - SJFullscreenPopGesture
+    - SJLoadingView
+    - SJSlider
+    - SJVideoPlayer/SJEdgeControlLayer/Asset
+    - SJVideoPlayer/SJEdgeControlLayer/MaskView
+  - SJVideoPlayer/SJFilmEditingControlLayer (2.0.8.2):
     - Masonry
     - SJAttributesFactory
     - SJBaseVideoPlayer
     - SJFullscreenPopGesture
     - SJSlider
-    - SJVideoPlayer/SJFilmEditingControlLayer/Asset (= 2.0.8.1)
-    - SJVideoPlayer/SJFilmEditingControlLayer/Category (= 2.0.8.1)
-    - SJVideoPlayer/SJFilmEditingControlLayer/Header (= 2.0.8.1)
-    - SJVideoPlayer/SJFilmEditingControlLayer/Result (= 2.0.8.1)
-    - SJVideoPlayer/SJFilmEditingControlLayer/View (= 2.0.8.1)
-  - SJVideoPlayer/SJFilmEditingControlLayer/Asset (2.0.8.1):
-    - Masonry
-    - SJAttributesFactory
-    - SJBaseVideoPlayer
-    - SJFullscreenPopGesture
-    - SJSlider
-    - SJVideoPlayer/SJFilmEditingControlLayer/Header
-  - SJVideoPlayer/SJFilmEditingControlLayer/Category (2.0.8.1):
-    - Masonry
-    - SJAttributesFactory
-    - SJBaseVideoPlayer
-    - SJFullscreenPopGesture
-    - SJSlider
-  - SJVideoPlayer/SJFilmEditingControlLayer/Header (2.0.8.1):
-    - Masonry
-    - SJAttributesFactory
-    - SJBaseVideoPlayer
-    - SJFullscreenPopGesture
-    - SJSlider
-  - SJVideoPlayer/SJFilmEditingControlLayer/Result (2.0.8.1):
+    - SJVideoPlayer/SJFilmEditingControlLayer/Asset (= 2.0.8.2)
+    - SJVideoPlayer/SJFilmEditingControlLayer/Category (= 2.0.8.2)
+    - SJVideoPlayer/SJFilmEditingControlLayer/Header (= 2.0.8.2)
+    - SJVideoPlayer/SJFilmEditingControlLayer/Result (= 2.0.8.2)
+    - SJVideoPlayer/SJFilmEditingControlLayer/View (= 2.0.8.2)
+  - SJVideoPlayer/SJFilmEditingControlLayer/Asset (2.0.8.2):
     - Masonry
     - SJAttributesFactory
     - SJBaseVideoPlayer
     - SJFullscreenPopGesture
     - SJSlider
     - SJVideoPlayer/SJFilmEditingControlLayer/Header
-  - SJVideoPlayer/SJFilmEditingControlLayer/View (2.0.8.1):
+  - SJVideoPlayer/SJFilmEditingControlLayer/Category (2.0.8.2):
+    - Masonry
+    - SJAttributesFactory
+    - SJBaseVideoPlayer
+    - SJFullscreenPopGesture
+    - SJSlider
+  - SJVideoPlayer/SJFilmEditingControlLayer/Header (2.0.8.2):
+    - Masonry
+    - SJAttributesFactory
+    - SJBaseVideoPlayer
+    - SJFullscreenPopGesture
+    - SJSlider
+  - SJVideoPlayer/SJFilmEditingControlLayer/Result (2.0.8.2):
     - Masonry
     - SJAttributesFactory
     - SJBaseVideoPlayer
     - SJFullscreenPopGesture
     - SJSlider
     - SJVideoPlayer/SJFilmEditingControlLayer/Header
-  - SJVideoPlayer/Switcher (2.0.8.1):
+  - SJVideoPlayer/SJFilmEditingControlLayer/View (2.0.8.2):
+    - Masonry
+    - SJAttributesFactory
+    - SJBaseVideoPlayer
+    - SJFullscreenPopGesture
+    - SJSlider
+    - SJVideoPlayer/SJFilmEditingControlLayer/Header
+  - SJVideoPlayer/Switcher (2.0.8.2):
     - Masonry
     - SJBaseVideoPlayer
     - SJFullscreenPopGesture
@@ -279,7 +279,7 @@ SPEC CHECKSUMS:
   SJPrompt: bc13bb292aa297d6ef31610646f4b4197d74de28
   SJSlider: b64ebc13af4ed9a4909bd38018d18594cc5f517b
   SJUIFactory: b3e973c5e2ae08bc5a1bd2c68d94c00f81e01a0b
-  SJVideoPlayer: 5946494090d9938ecb981c38cda25018be20d9bc
+  SJVideoPlayer: bf334b8552c55ec9247b5f0bd1bf16d1bc814427
   SJVideoPlayerAssetCarrier: 749f5f97f22d7c81416c828506a66f3542bfbfb0
   SJVolBrigControl: 6a94298727d9306ed6d563155e8f9b1560ff250e
 

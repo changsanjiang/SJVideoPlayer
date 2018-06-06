@@ -368,6 +368,7 @@ NS_ASSUME_NONNULL_END
         if ( [self.controlLayerDelegate respondsToSelector:@selector(videoPlayer:currentTime:currentTimeStr:totalTime:totalTimeStr:)] ) {
             [self.controlLayerDelegate videoPlayer:self currentTime:currentTime currentTimeStr:self.currentTimeStr totalTime:duration totalTimeStr:self.totalTimeStr];
         }
+        if ( self.playTimeDidChangeExeBlok ) self.playTimeDidChangeExeBlok(self);
     };
     
     asset.playDidToEnd = ^(SJVideoPlayerAssetCarrier * _Nonnull asset) {
@@ -621,7 +622,7 @@ NS_ASSUME_NONNULL_END
         if ( !self.view.superview ) return NO;
         if ( self.touchedScrollView ) return NO;
         if ( self.isPlayOnScrollView && !self.scrollIn ) return NO;
-        if ( self.disableRotation ) return NO;
+        if ( self.disableAutoRotation ) return NO;
         if ( self.isLockedScreen ) return NO;
         if ( self.resignActive ) return NO;
         return YES;
@@ -1146,6 +1147,14 @@ NS_ASSUME_NONNULL_END
     return [self timeStringWithSeconds:self.totalTime];
 }
 
+- (void)setPlayTimeDidChangeExeBlok:(void (^)(__kindof SJBaseVideoPlayer * _Nonnull))playTimeDidChangeExeBlok {
+    objc_setAssociatedObject(self, @selector(playTimeDidChangeExeBlok), playTimeDidChangeExeBlok, OBJC_ASSOCIATION_COPY_NONATOMIC);
+}
+
+- (void (^)(__kindof SJBaseVideoPlayer * _Nonnull))playTimeDidChangeExeBlok {
+    return objc_getAssociatedObject(self, _cmd);
+}
+
 - (void)jumpedToTime:(NSTimeInterval)time completionHandler:(void (^)(BOOL))completionHandler {
     if ( isnan(time) ) { return;}
     CMTime seekTime = CMTimeMakeWithSeconds(time, NSEC_PER_SEC);
@@ -1162,6 +1171,7 @@ NS_ASSUME_NONNULL_END
         if ( finished ) self.asset.completeBuffer(self.asset);
         else self.asset.cancelledBuffer(self.asset);
         if ( completionHandler ) completionHandler(finished);
+        if ( self.playTimeDidChangeExeBlok ) self.playTimeDidChangeExeBlok(self);
     }];
 }
 @end
@@ -1473,11 +1483,11 @@ NS_ASSUME_NONNULL_END
     dispatch_async(dispatch_get_main_queue(), ^{
         // 此方法为无条件旋转, 任何时候都可以旋转
         // 外界调用此方法, 就是想要旋转, 不管播放器有没有禁止旋转, 我都暂时解开, 最后恢复设置
-        BOOL disableRotation = self.disableRotation;
-        self.disableRotation = NO;
+        BOOL disableAutoRotation = self.disableAutoRotation;
+        self.disableAutoRotation = NO;
         [self.orentationObserver rotate];
         // 恢复
-        self.disableRotation = disableRotation; // reset
+        self.disableAutoRotation = disableAutoRotation; // reset
     });
 }
 
@@ -1487,23 +1497,23 @@ NS_ASSUME_NONNULL_END
 
 - (void)rotate:(SJOrientation)orientation animated:(BOOL)animated completion:(void (^ _Nullable)(__kindof SJBaseVideoPlayer *player))block {
     dispatch_async(dispatch_get_main_queue(), ^{
-        BOOL disableRotation = self.disableRotation;
-        self.disableRotation = NO;
+        BOOL disableAutoRotation = self.disableAutoRotation;
+        self.disableAutoRotation = NO;
         __weak typeof(self) _self = self;
         [self.orentationObserver rotate:orientation animated:animated completion:^(SJOrentationObserver * _Nonnull observer) {
             __strong typeof(_self) self = _self;
             if ( !self ) return;
-            self.disableRotation = disableRotation; // reset
+            self.disableAutoRotation = disableAutoRotation; // reset
             if ( block ) block(self);
         }];
     });
 }
 
-- (void)setDisableRotation:(BOOL)disableRotation {
-    objc_setAssociatedObject(self, @selector(disableRotation), @(disableRotation), OBJC_ASSOCIATION_RETAIN_NONATOMIC);
+- (void)setDisableAutoRotation:(BOOL)disableAutoRotation {
+    objc_setAssociatedObject(self, @selector(disableAutoRotation), @(disableAutoRotation), OBJC_ASSOCIATION_RETAIN_NONATOMIC);
 }
 
-- (BOOL)disableRotation {
+- (BOOL)disableAutoRotation {
     return [objc_getAssociatedObject(self, _cmd) boolValue];
 }
 

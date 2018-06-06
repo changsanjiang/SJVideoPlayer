@@ -26,7 +26,7 @@
     
     _videoPlayer = [SJVideoPlayer player];
     _videoPlayer.pausedToKeepAppearState = YES;
-    _videoPlayer.disableRotation = YES;
+    _videoPlayer.disableAutoRotation = YES;
     _videoPlayer.assetURL = [NSURL URLWithString:@"https://www.apple.com/105/media/us/iphone-x/2017/01df5b43-28e4-4848-bf20-490c34a926a7/films/feature/iphone-x-feature-tpl-cc-us-20170912_1280x720h.mp4"];
     [self.view addSubview:_videoPlayer.view];
     [_videoPlayer.view mas_makeConstraints:^(MASConstraintMaker *make) {

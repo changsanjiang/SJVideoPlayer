@@ -48,14 +48,14 @@ NS_ASSUME_NONNULL_END
         __strong typeof(_self) self = _self;
         if ( !self ) return;
         // video player disable roatation
-        self.videoPlayer.disableRotation = YES;   // 触发全屏手势时, 禁止播放器旋转
+        self.videoPlayer.disableAutoRotation = YES;   // 触发全屏手势时, 禁止播放器旋转
     };
     
     viewController.sj_viewDidEndDragging = ^(UIViewController *vc) {
         __strong typeof(_self) self = _self;
         if ( !self ) return;
         // video player enable roatation
-        self.videoPlayer.disableRotation = NO;    // 恢复旋转
+        self.videoPlayer.disableAutoRotation = NO;    // 恢复旋转
     };
 }
 @end
@@ -90,12 +90,12 @@ NS_ASSUME_NONNULL_END
 #pragma mark -
 @implementation SJVideoPlayerHelper (SJVideoPlayerOperation)
 
-- (void)setDisableRotation:(BOOL)disableRotation {
-    self.videoPlayer.disableRotation = disableRotation;
+- (void)setDisableAutoRotation:(BOOL)disableAutoRotation  {
+    self.videoPlayer.disableAutoRotation = disableAutoRotation;
 }
 
-- (BOOL)disableRotation {
-    return self.videoPlayer.disableRotation;
+- (BOOL)disableAutoRotation {
+    return self.videoPlayer.disableAutoRotation;
 }
 
 - (void)setSupportedOrientation:(SJAutoRotateSupportedOrientation)supportedOrientation {
@@ -318,7 +318,7 @@ NS_ASSUME_NONNULL_END
 @implementation SJVideoPlayerHelper (UIViewControllerHelper)
 - (void (^)(void))vc_viewDidAppearExeBlock {
     return ^ () {
-        self.videoPlayer.disableRotation = NO;
+        self.videoPlayer.disableAutoRotation = NO;
         if ( !self.videoPlayer.isPlayOnScrollView || (self.videoPlayer.isPlayOnScrollView && self.videoPlayer.isScrollAppeared) ) {
             [self.videoPlayer play];
         }
@@ -327,7 +327,7 @@ NS_ASSUME_NONNULL_END
 
 - (void (^)(void))vc_viewWillDisappearExeBlock {
     return ^ () {
-        self.videoPlayer.disableRotation = YES;   // 界面将要消失的时候, 禁止旋转.
+        self.videoPlayer.disableAutoRotation = YES;   // 界面将要消失的时候, 禁止旋转.
     };
 }
 

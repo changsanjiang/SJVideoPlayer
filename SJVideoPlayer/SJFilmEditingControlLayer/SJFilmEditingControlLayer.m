@@ -33,7 +33,7 @@ typedef SJVideoPlayerFilmEditingResultUploadState SJVideoPlayerFilmEditingResult
 /// Initial value
 @interface SJFilmEditingVideoPlayerPropertyRecroder: NSObject
 @property (nonatomic) BOOL enableControlLayerDisplayController;
-@property (nonatomic) BOOL disableRotation;
+@property (nonatomic) BOOL disableAutoRotation;
 @end
 
 
@@ -112,7 +112,7 @@ NS_ASSUME_NONNULL_END
 
 - (void)exitControlLayerCompeletionHandler:(nullable void (^)(void))compeletionHandler {
     if ( _propertyRecorder ) {
-        _videoPlayer.disableRotation = self.propertyRecorder.disableRotation;
+        _videoPlayer.disableAutoRotation = self.propertyRecorder.disableAutoRotation;
         _videoPlayer.enableControlLayerDisplayController = self.propertyRecorder.enableControlLayerDisplayController;
         _propertyRecorder = nil;
     }
@@ -188,10 +188,10 @@ NS_ASSUME_NONNULL_END
 - (void)installedControlViewToVideoPlayer:(__kindof SJBaseVideoPlayer *)videoPlayer {
     _videoPlayer = videoPlayer;
     self.propertyRecorder = [SJFilmEditingVideoPlayerPropertyRecroder new];
-    self.propertyRecorder.disableRotation = videoPlayer.disableRotation;
+    self.propertyRecorder.disableAutoRotation = videoPlayer.disableAutoRotation;
     self.propertyRecorder.enableControlLayerDisplayController = videoPlayer.enableControlLayerDisplayController;
     
-    videoPlayer.disableRotation = YES;
+    videoPlayer.disableAutoRotation = YES;
     videoPlayer.enableControlLayerDisplayController = NO;
     [videoPlayer setControlLayerAppeared:NO];
 }

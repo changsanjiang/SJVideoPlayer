@@ -265,6 +265,8 @@ typedef NS_ENUM(NSUInteger, SJDisablePlayerGestureTypes) {
 @property (nonatomic, strong, readonly) NSString *currentTimeStr;
 @property (nonatomic, strong, readonly) NSString *totalTimeStr;
 
+@property (nonatomic, copy, nullable) void(^playTimeDidChangeExeBlok)(__kindof SJBaseVideoPlayer *videoPlayer);
+
 - (void)jumpedToTime:(NSTimeInterval)secs completionHandler:(void (^ __nullable)(BOOL finished))completionHandler; // unit is sec. 单位是秒.
 
 - (void)seekToTime:(CMTime)time completionHandler:(void (^ __nullable)(BOOL finished))completionHandler;
@@ -463,13 +465,21 @@ typedef NS_ENUM(NSUInteger, SJDisablePlayerGestureTypes) {
 @property (nonatomic, readonly) BOOL isFullScreen;
 
 /**
- Whether to disable rotation.
+ Whether to disable auto rotation
  
  readwrite.
  You can disable the player rotation when appropriate.
  For example when the controller is about to disappear.
+ 
+ 是否禁止播放器自动旋转
+ 例如:
+ 在viewWillDisappear的时候, 可以禁止自动旋转
+ 在viewDidAppear的时候, 开启自动旋转
+ 
+ v1.0.11:
+ `disableRotation` 更名为 `disableAutoRotation`
  */
-@property (nonatomic) BOOL disableRotation;
+@property (nonatomic) BOOL disableAutoRotation;
 
 /**
  This is the player supports orientation when autorotation. default is `SJAutoRotateSupportedOrientation_All`.

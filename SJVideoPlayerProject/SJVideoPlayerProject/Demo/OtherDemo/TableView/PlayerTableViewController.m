@@ -41,12 +41,12 @@ static NSString *const PlayerTableViewCellID = @"PlayerTableViewCell";
 
 - (void)viewWillAppear:(BOOL)animated {
     [super viewWillAppear:animated];
-    _videoPlayer.disableRotation = NO;
+    _videoPlayer.disableAutoRotation = NO;
 }
 
 - (void)viewWillDisappear:(BOOL)animated {
     [super viewWillDisappear:animated];
-    _videoPlayer.disableRotation = YES;
+    _videoPlayer.disableAutoRotation = YES;
 }
 
 - (void)dealloc {

@@ -112,7 +112,7 @@ NS_ASSUME_NONNULL_END
 
 - (void)exitControlLayerCompeletionHandler:(nullable void (^)(void))compeletionHandler {
     if ( _propertyRecorder ) {
-        _videoPlayer.disableRotation = self.propertyRecorder.disableRotation;
+        _videoPlayer.disableAutoRotation = self.propertyRecorder.disableRotation;
         _videoPlayer.enableControlLayerDisplayController = self.propertyRecorder.enableControlLayerDisplayController;
         _propertyRecorder = nil;
     }

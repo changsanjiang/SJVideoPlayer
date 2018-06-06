@@ -69,7 +69,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 @interface SJVideoPlayerHelper (SJVideoPlayerOperation) // 暴露出来的播放器的一些操作
 #pragma mark readwrite
-@property (nonatomic) BOOL disableRotation;
+@property (nonatomic) BOOL disableAutoRotation;
 @property (nonatomic) SJAutoRotateSupportedOrientation supportedOrientation;
 - (void)rotate:(SJOrientation)orientation
       animated:(BOOL)animated

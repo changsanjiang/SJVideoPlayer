@@ -31,10 +31,6 @@ ___
 - [x] [Continue playing, Jumping into the next interface can use the resource initialization of the previous interface](https://github.com/changsanjiang/SJBaseVideoPlayer/blob/9e018b7a919e14e2986ba3beda0e47d823768b54/SJBaseVideoPlayer/Model/SJVideoPlayerURLAsset.h#L133)
 ___
 
-## Interface
-<img src="https://github.com/changsanjiang/SJBaseVideoPlayer/blob/master/Project/SJBaseVideoPlayer.png" />
-
-___
 
 ## Example
 <img src="https://github.com/changsanjiang/SJVideoPlayer/blob/master/SJVideoPlayerProject/SJVideoPlayerProject/play.gif" />

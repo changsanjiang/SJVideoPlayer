@@ -4,9 +4,6 @@
 [![Platform](https://img.shields.io/badge/platform-iOS-blue.svg)](https://github.com/changsanjiang)
 [![License](https://img.shields.io/github/license/changsanjiang/SJVideoPlayer.svg)](https://github.com/changsanjiang/SJVideoPlayer/blob/master/LICENSE.md)
 
-### 中文介绍
-https://www.jianshu.com/p/4c2a493fb4bf
-
 ### Installation
 ```ruby
 # Player with default control layer.
@@ -411,3 +408,12 @@ ___
 ___
 
 ## 待续...
+
+
+### 文章汇总
+介绍: 
+* https://www.jianshu.com/p/4c2a493fb4bf
+
+使用: 
+* https://www.jianshu.com/p/a60389f9acaf
+* https://www.jianshu.com/p/6a968ec24d3f

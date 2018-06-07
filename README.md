@@ -340,9 +340,10 @@ _videoPlayer.disableAutoRotation = YES;
 这里有两点需要注意: 1. 返回时要记得恢复自动旋转. 2. 禁止自动旋转后, 手动点击全屏按钮, 还是可以旋转的.
 ___
 
-* 禁止任何旋转. 也就是锁屏. 先播放器默认的实现, 看下图:
+* 禁止任何旋转. 也就是锁屏. 请看图:
 ![锁屏.gif](http://upload-images.jianshu.io/upload_images/2318691-0e98cdcbae21d4ce?imageMogr2/auto-orient/strip)
-请注意: 在锁屏状态下, 此时不管是用户点击全屏按钮, 还是自动旋转, 都将不触发. 代码如下:
+
+请注意: 在锁屏状态下, 此时不管是主动旋转, 还是自动旋转, 都将不触发. 代码如下:
 
 ```Objective-C
 /// 锁屏

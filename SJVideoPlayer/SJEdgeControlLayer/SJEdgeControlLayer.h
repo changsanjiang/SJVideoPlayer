@@ -41,6 +41,7 @@ NS_ASSUME_NONNULL_BEGIN
 @protocol SJEdgeControlLayerDelegate <NSObject>
 
 @optional
+  
 /// 返回按钮被点击
 - (void)clickedBackBtnOnControlLayer:(SJEdgeControlLayer *)controlLayer;
 

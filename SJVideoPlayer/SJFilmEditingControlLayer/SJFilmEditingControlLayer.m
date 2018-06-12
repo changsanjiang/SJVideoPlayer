@@ -33,7 +33,7 @@ typedef SJVideoPlayerFilmEditingResultUploadState SJVideoPlayerFilmEditingResult
 /// Initial value
 @interface SJFilmEditingVideoPlayerPropertyRecroder: NSObject
 @property (nonatomic) BOOL enableControlLayerDisplayController;
-@property (nonatomic) BOOL disableAutoRotation;
+@property (nonatomic) BOOL disableRotation;
 @end
 
 
@@ -112,7 +112,7 @@ NS_ASSUME_NONNULL_END
 
 - (void)exitControlLayerCompeletionHandler:(nullable void (^)(void))compeletionHandler {
     if ( _propertyRecorder ) {
-        _videoPlayer.disableAutoRotation = self.propertyRecorder.disableAutoRotation;
+        _videoPlayer.disableAutoRotation = self.propertyRecorder.disableRotation;
         _videoPlayer.enableControlLayerDisplayController = self.propertyRecorder.enableControlLayerDisplayController;
         _propertyRecorder = nil;
     }
@@ -188,7 +188,7 @@ NS_ASSUME_NONNULL_END
 - (void)installedControlViewToVideoPlayer:(__kindof SJBaseVideoPlayer *)videoPlayer {
     _videoPlayer = videoPlayer;
     self.propertyRecorder = [SJFilmEditingVideoPlayerPropertyRecroder new];
-    self.propertyRecorder.disableAutoRotation = videoPlayer.disableAutoRotation;
+    self.propertyRecorder.disableRotation = videoPlayer.disableAutoRotation;
     self.propertyRecorder.enableControlLayerDisplayController = videoPlayer.enableControlLayerDisplayController;
     
     videoPlayer.disableAutoRotation = YES;
@@ -403,7 +403,7 @@ NS_ASSUME_NONNULL_END
     self.result.exportState = SJVideoPlayerFilmEditingResultUploadStateCancelled;
     
     if ( self.result.uploadState == SJVideoPlayerFilmEditingResultUploadStateUploading ) {
-        [self.uploader cancelUpload:self.result];
+        [self.config.resultUploader cancelUpload:self.result];
         self.result.uploadState = SJFilmEditingStatus_Cancelled;
     }
 }
@@ -515,7 +515,7 @@ NS_ASSUME_NONNULL_END
     if ( !self.config.resultNeedUpload ) return;
     result.uploadState = SJVideoPlayerFilmEditingResultUploadStateUploading;
     __weak typeof(self) _self = self;
-    [self.uploader upload:result progress:^(float progress) {
+    [self.config.resultUploader upload:result progress:^(float progress) {
         __strong typeof(_self) self = _self;
         if ( !self ) return;
         resultView.uploadProgress = progress;

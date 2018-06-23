@@ -260,7 +260,8 @@ NS_ASSUME_NONNULL_BEGIN
 }
 
 - (void)dismissFilmEditingViewCompletion:(void(^__nullable)(SJVideoPlayer *player))completion {
-    [self.switcher switchToPreviousControlLayer];
+    [self.switcher switchControlLayerForIdentitfier:SJControlLayer_Edge toVideoPlayer:self];
+    if ( completion ) completion(self);
 }
 @end
 

@@ -83,6 +83,7 @@
     dispatch_async(dispatch_get_main_queue(), ^{
         self->_hiddenExeBlock = [hiddenExeBlock copy];
         if ( !self->_presentView ) return;
+        [self->_presentView bringSubviewToFront:self->_backgroundView];
         CGFloat maxWdith = 0 != self.config.maxWidth ? self.config.maxWidth : self->_presentView.frame.size.width * 0.6;
         CGSize size = [self _sizeWithAttrString:attributedString width:maxWdith height:CGFLOAT_MAX];
         [self->_promptLabel mas_updateConstraints:^(MASConstraintMaker *make) {

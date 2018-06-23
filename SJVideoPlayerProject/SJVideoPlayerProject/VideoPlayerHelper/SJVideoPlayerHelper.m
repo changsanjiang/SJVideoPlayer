@@ -225,6 +225,12 @@ NS_ASSUME_NONNULL_END
         NSLog(@"%d - %s", (int)__LINE__, __func__);
 #endif
     }]];
+    
+    _videoPlayer.playTimeDidChangeExeBlok = ^(__kindof SJBaseVideoPlayer * _Nonnull videoPlayer) {
+#ifdef DEBUG
+        NSLog(@"%d - %s", (int)__LINE__, __func__);
+#endif
+    };
 }
 
 - (void)clearPlayer {

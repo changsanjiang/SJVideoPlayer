@@ -10,15 +10,29 @@
 #import <objc/message.h>
 
 @interface SJObserverHelper : NSObject
+@property (nonatomic, readonly) const char *key;
 @property (nonatomic, unsafe_unretained) id target;
 @property (nonatomic, unsafe_unretained) id observer;
 @property (nonatomic, strong) NSString *keyPath;
 @property (nonatomic, weak) SJObserverHelper *factor;
 @end
 
-@implementation SJObserverHelper
+@implementation SJObserverHelper {
+    char * _key;
+}
+- (instancetype)init {
+    self = [super init];
+    if ( !self ) return nil;
+    NSString *keyStr = [NSString stringWithFormat:@"adfsf:%lu", (unsigned long)[self hash]];
+    _key = malloc(keyStr.length * sizeof(char) + 1);
+    strcpy(_key, keyStr.UTF8String);
+    return self;
+}
 - (void)dealloc {
-    if ( _factor ) [_target removeObserver:_observer forKeyPath:_keyPath];
+    free(_key);
+    if ( _factor ) {
+        [_target removeObserver:_observer forKeyPath:_keyPath];
+    }
 }
 @end
 
@@ -37,10 +51,8 @@
     helper.factor = sub;
     sub.factor = helper;
     
-    const char *helpeKey = [[keyPath mutableCopy] UTF8String];
-    const char *subKey = [[keyPath mutableCopy] UTF8String];
-    objc_setAssociatedObject(self, helpeKey, helper, OBJC_ASSOCIATION_RETAIN_NONATOMIC);
-    objc_setAssociatedObject(observer, subKey, sub, OBJC_ASSOCIATION_RETAIN_NONATOMIC);
+    objc_setAssociatedObject(self, helper.key, helper, OBJC_ASSOCIATION_RETAIN_NONATOMIC);
+    objc_setAssociatedObject(observer, sub.key, sub, OBJC_ASSOCIATION_RETAIN_NONATOMIC);
 }
 
 @end

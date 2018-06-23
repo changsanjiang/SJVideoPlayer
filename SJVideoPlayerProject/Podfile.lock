@@ -104,11 +104,11 @@ PODS:
   - SJBorderLineView (0.0.6)
   - SJFullscreenPopGesture (1.4.1)
   - SJLoadingView (1.0.1)
-  - SJObserverHelper (1.0.3)
+  - SJObserverHelper (1.0.4)
   - SJOrentationObserver (1.0.8.1):
     - SJOrentationObserver/Category (= 1.0.8.1)
   - SJOrentationObserver/Category (1.0.8.1)
-  - SJPrompt (1.0.4.1):
+  - SJPrompt (1.0.4.2):
     - Masonry
   - SJScrollEntriesView (1.0.9):
     - Masonry
@@ -162,9 +162,9 @@ SPEC CHECKSUMS:
   SJBorderLineView: 5878e67fb57e812a2d5d029ca666068784b5448a
   SJFullscreenPopGesture: 17ce985eef9e45a35ee11b90440502265a9f2362
   SJLoadingView: c3ff03e4b363a5b6a3ba0634d6bb9ce2647faf07
-  SJObserverHelper: b270d707cd18ab76538596aa4e98cf798c9e9868
+  SJObserverHelper: cc79b34310316b4799b2608e6399b78c1928672b
   SJOrentationObserver: 839b84a6a8132e4d4233f0224936606f95b1c332
-  SJPrompt: bc13bb292aa297d6ef31610646f4b4197d74de28
+  SJPrompt: 55dbaa26ac02bd776cd1a2e9409983b2f0551a3b
   SJScrollEntriesView: 6ad0595721a7152d9c3542ae5f6e1a27dec0f9b4
   SJSlider: b64ebc13af4ed9a4909bd38018d18594cc5f517b
   SJUIFactory: b3e973c5e2ae08bc5a1bd2c68d94c00f81e01a0b

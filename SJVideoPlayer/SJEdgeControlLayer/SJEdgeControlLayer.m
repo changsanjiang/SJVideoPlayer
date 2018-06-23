@@ -197,9 +197,6 @@ NS_ASSUME_NONNULL_END
 }
 
 - (void)controlLayerNeedAppear:(SJBaseVideoPlayer *)videoPlayer compeletionHandler:(void(^)(void))compeletionHandler {
-#ifdef DEBUG
-    NSLog(@"%d - %s", (int)__LINE__, __func__);
-#endif
 
     UIView_Animations(CommonAnimaDuration, ^{
         if ( SJVideoPlayerPlayState_PlayFailed == videoPlayer.state ) {

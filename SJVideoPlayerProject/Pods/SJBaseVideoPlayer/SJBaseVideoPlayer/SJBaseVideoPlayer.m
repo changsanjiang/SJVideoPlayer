@@ -365,6 +365,7 @@ NS_ASSUME_NONNULL_END
     asset.playTimeChanged = ^(SJVideoPlayerAssetCarrier * _Nonnull asset, NSTimeInterval currentTime, NSTimeInterval duration) {
         __strong typeof(_self) self = _self;
         if ( !self ) return;
+        if ( self.state == SJVideoPlayerPlayState_Paused ) return;
         if ( [self.controlLayerDelegate respondsToSelector:@selector(videoPlayer:currentTime:currentTimeStr:totalTime:totalTimeStr:)] ) {
             [self.controlLayerDelegate videoPlayer:self currentTime:currentTime currentTimeStr:self.currentTimeStr totalTime:duration totalTimeStr:self.totalTimeStr];
         }

@@ -101,6 +101,10 @@ static NSString *const SJVideoListTableViewCellID = @"SJVideoListTableViewCell";
     return self.videoPlayerHelper.vc_preferredStatusBarStyleExeBlock();
 }
 
+- (BOOL)prefersHomeIndicatorAutoHidden {
+    return YES;
+}
+
 - (void)clickedPlayOnTabCell:(SJVideoListTableViewCell *)cell playerParentView:(UIView *)playerParentView {
     
     SJVideoPlayerURLAsset *asset =

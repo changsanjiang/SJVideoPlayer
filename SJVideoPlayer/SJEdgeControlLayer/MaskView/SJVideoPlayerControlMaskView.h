@@ -10,6 +10,12 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
+/**
+ style
+
+ - SJMaskStyle_bottom:  从上到下的颜色 浅->深
+ - SJMaskStyle_top:     从上到下的颜色 深->浅
+ */
 typedef NS_ENUM(NSUInteger, SJMaskStyle) {
     SJMaskStyle_bottom,
     SJMaskStyle_top,

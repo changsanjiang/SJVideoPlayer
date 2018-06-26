@@ -93,6 +93,10 @@
     return UIStatusBarStyleLightContent;
 }
 
+- (BOOL)prefersHomeIndicatorAutoHidden {
+    return YES;
+}
+
 - (BOOL)prefersStatusBarHidden {
     return _videoPlayer.isFullScreen && !_videoPlayer.controlLayerAppeared;
 }

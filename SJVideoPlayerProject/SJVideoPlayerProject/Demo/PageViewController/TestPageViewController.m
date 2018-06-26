@@ -64,6 +64,10 @@ static NSInteger const vcCount = 9;
     return self.pageViewController.viewControllers.firstObject.preferredStatusBarStyle;
 }
 
+- (BOOL)prefersHomeIndicatorAutoHidden {
+    return YES;
+}
+
 #pragma mark -
 
 - (SJScrollEntriesView *)titlesView {

@@ -1,1 +1,1 @@
-../../../SJOrentationObserver/SJOrentationObserver/SJOrentationObserver.h
+../../../SJOrentationObserver/SJOrentationObserver/Deprecated/SJOrentationObserver.h

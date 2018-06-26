@@ -10,7 +10,7 @@
 #import <SJVideoPlayerAssetCarrier/SJVideoPlayerAssetCarrier.h>
 #import <Masonry/Masonry.h>
 #import <SJUIFactory/SJUIFactory.h>
-#import <SJOrentationObserver/SJOrentationObserver.h>
+#import <SJOrentationObserver/SJRotationManager.h>
 #import "SJPlayerGestureControl.h"
 #import <SJVolBrigControl/SJVolBrigControl.h>
 #import "UIView+SJVideoPlayerAdd.h"
@@ -32,18 +32,6 @@
 }
 - (CGSize)videoPresentationSize {
     return [objc_getAssociatedObject(self, _cmd) CGSizeValue];
-}
-@end
-
-
-@interface SJBaseVideoPlayerView: UIView
-@property (nonatomic, copy, nullable) void(^layoutSubViewsExeBlock)(SJBaseVideoPlayerView *view);
-@end
-
-@implementation SJBaseVideoPlayerView
-- (void)layoutSubviews {
-    [super layoutSubviews];
-    if ( _layoutSubViewsExeBlock ) _layoutSubViewsExeBlock(self);
 }
 @end
 
@@ -148,11 +136,11 @@ NS_ASSUME_NONNULL_BEGIN
 /**
  Base Video Player
  */
-@interface SJBaseVideoPlayer () {
+@interface SJBaseVideoPlayer ()<SJRotationManagerDelegate> {
     UIView *_view;
     SJVideoPlayerPresentView *_presentView;
     UIView *_controlContentView;
-    SJOrentationObserver *_orentationObserver;
+    SJRotationManager *_rotationManager;
     SJPlayerGestureControl *_gestureControl;
     SJVolBrigControl *_volBrigControl;
     _SJControlLayerAppearStateManager *_displayRecorder;
@@ -229,7 +217,7 @@ NS_ASSUME_NONNULL_BEGIN
 /**
  管理对象: 指定旋转及管理视图的自动旋转
  */
-@property (nonatomic, strong, readonly) SJOrentationObserver *orentationObserver;
+@property (nonatomic, strong, readonly) SJRotationManager *rotationManager;
 
 /**
  管理对象: 单击+双击+上下左右移动+捏合手势
@@ -269,6 +257,10 @@ NS_ASSUME_NONNULL_END
 
 + (instancetype)player {
     return [[self alloc] init];
+}
+
++ (NSString *)version {
+    return @"1.1.0";
 }
 
 - (instancetype)init {
@@ -569,22 +561,12 @@ NS_ASSUME_NONNULL_END
 #pragma mark -
 - (UIView *)view {
     if ( _view ) return _view;
-    _view = [SJBaseVideoPlayerView new];
+    _view = [UIView new];
     _view.backgroundColor = [UIColor blackColor];
     [_view addSubview:self.presentView];
-    
-    __weak typeof(self) _self = self;
-    [(SJBaseVideoPlayerView *)_view setLayoutSubViewsExeBlock:^(SJBaseVideoPlayerView *view) {
-        __strong typeof(_self) self = _self;
-        if ( !self ) return;
-        if ( self.presentView.superview == view ) {
-            self.presentView.frame = view.bounds;
-            if ( !self.controlContentView.superview ) [self.presentView addSubview:self.controlContentView];
-            self.controlContentView.frame = view.bounds;
-        }
-    }];
-    
-    [self orentationObserver];
+    [_presentView addSubview:self.controlContentView];
+    _presentView.autoresizingMask = _controlContentView.autoresizingMask = UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight;
+    [self rotationManager];
     [self gestureControl];
     [self reachabilityObserver];
     [self addInterceptTapGR];
@@ -611,13 +593,10 @@ NS_ASSUME_NONNULL_END
 }
 
 #pragma mark -
-- (SJOrentationObserver *)orentationObserver {
-    if ( _orentationObserver ) return _orentationObserver;
-    _orentationObserver = [[SJOrentationObserver alloc] initWithTarget:self.presentView container:self.view];
-    
+- (SJRotationManager *)rotationManager {
+    if ( _rotationManager ) return _rotationManager;
     __weak typeof(self) _self = self;
-    
-    _orentationObserver.rotationCondition = ^BOOL(SJOrentationObserver * _Nonnull observer) {
+    _rotationManager = [[SJRotationManager alloc] initWithTarget:self.presentView superview:self.view rotationCondition:^BOOL(SJRotationManager * _Nonnull observer) {
         __strong typeof(_self) self = _self;
         if ( !self ) return NO;
         if ( !self.view.superview ) return NO;
@@ -627,31 +606,21 @@ NS_ASSUME_NONNULL_END
         if ( self.isLockedScreen ) return NO;
         if ( self.resignActive ) return NO;
         return YES;
-    };
-    
-    _orentationObserver.orientationWillChange = ^(SJOrentationObserver * _Nonnull observer, BOOL isFullScreen) {
-        __strong typeof(_self) self = _self;
-        if ( !self ) return;
-        [UIView animateWithDuration:observer.duration animations:^{
-            self.controlContentView.frame = self.presentView.bounds;
-            [self.controlContentView layoutIfNeeded];
-        }];
-        if ( [self.controlLayerDelegate respondsToSelector:@selector(videoPlayer:willRotateView:)] ) {
-            [self.controlLayerDelegate videoPlayer:self willRotateView:isFullScreen];
-        }
-        if ( self.willRotateScreen ) self.willRotateScreen(self, isFullScreen);
-    };
-    
-    _orentationObserver.orientationChanged = ^(SJOrentationObserver * _Nonnull observer, BOOL isFullScreen) {
-        __strong typeof(_self) self = _self;
-        if ( !self ) return;
-        if ( [self.controlLayerDelegate respondsToSelector:@selector(videoPlayer:didEndRotation:)] ) {
-            [self.controlLayerDelegate videoPlayer:self didEndRotation:isFullScreen];
-        }
-        if ( self.rotatedScreen ) self.rotatedScreen(self, observer.isFullScreen);
-    };
-    
-    return _orentationObserver;
+    }];
+    _rotationManager.delegate = self;
+    return _rotationManager;
+}
+- (void)rotationManager:(SJRotationManager *)manager willRotateView:(BOOL)isFullscreen {
+    if ( [self.controlLayerDelegate respondsToSelector:@selector(videoPlayer:willRotateView:)] ) {
+        [self.controlLayerDelegate videoPlayer:self willRotateView:isFullscreen];
+    }
+    if ( self.willRotateScreen ) self.willRotateScreen(self, isFullscreen);
+}
+- (void)rotationManager:(SJRotationManager *)manager didRotateView:(BOOL)isFullscreen {
+    if ( [self.controlLayerDelegate respondsToSelector:@selector(videoPlayer:didEndRotation:)] ) {
+        [self.controlLayerDelegate videoPlayer:self didEndRotation:isFullscreen];
+    }
+    if ( self.rotatedScreen ) self.rotatedScreen(self, manager.isFullscreen);
 }
 - (SJPlayerGestureControl *)gestureControl {
     if ( _gestureControl ) return _gestureControl;
@@ -703,7 +672,7 @@ NS_ASSUME_NONNULL_END
         
         if ( SJPlayerGestureType_Pan == type &&
             self.isPlayOnScrollView &&
-            !self.orentationObserver.isFullScreen ) return NO;
+            !self.rotationManager.isFullscreen ) return NO;
         
         if ( self.controlLayerDataSource &&
             ![self.controlLayerDataSource triggerGesturesCondition:[gesture locationInView:gesture.view]] ) return NO;
@@ -1444,21 +1413,19 @@ NS_ASSUME_NONNULL_END
 @implementation SJBaseVideoPlayer (Rotation)
 
 - (void)setSupportedOrientation:(SJAutoRotateSupportedOrientation)supportedOrientation {
-    self.orentationObserver.supportedOrientation = supportedOrientation;
+    self.rotationManager.autorotationSupportedOrientation = supportedOrientation;
 }
 
 - (SJAutoRotateSupportedOrientation)supportedOrientation {
-    return self.orentationObserver.supportedOrientation;
+    return self.rotationManager.autorotationSupportedOrientation;
 }
 
 - (void)setOrientation:(SJOrientation)orientation {
-    dispatch_async(dispatch_get_main_queue(), ^{
-        self.orentationObserver.orientation = orientation;
-    });
+    [self rotate:orientation animated:YES];
 }
 
 - (SJOrientation)orientation {
-    return self.orentationObserver.orientation;
+    return self.rotationManager.currentOrientation;
 }
 
 - (UIInterfaceOrientation)currentOrientation {
@@ -1481,41 +1448,49 @@ NS_ASSUME_NONNULL_END
 }
 
 - (void)rotate {
-    dispatch_async(dispatch_get_main_queue(), ^{
-        // 此方法为无条件旋转, 任何时候都可以旋转
-        // 外界调用此方法, 就是想要旋转, 不管播放器有没有禁止旋转, 我都暂时解开, 最后恢复设置
-        BOOL disableAutoRotation = self.disableAutoRotation;
-        self.disableAutoRotation = NO;
-        [self.orentationObserver rotate];
-        // 恢复
-        self.disableAutoRotation = disableAutoRotation; // reset
-    });
+    // 此方法为无条件旋转, 任何时候都可以旋转
+    // 外界调用此方法, 就是想要旋转, 不管播放器有没有禁止旋转, 我都暂时解开, 最后恢复设置
+    BOOL disableAutoRotation = self.disableAutoRotation;
+    self.disableAutoRotation = NO;
+    [self.rotationManager rotate];
+    // 恢复
+    self.disableAutoRotation = disableAutoRotation; // reset
 }
 
 - (void)rotate:(SJOrientation)orientation animated:(BOOL)animated {
-    [self.orentationObserver rotate:orientation animated:animated];
+    [self.rotationManager rotate:orientation animated:animated];
 }
 
 - (void)rotate:(SJOrientation)orientation animated:(BOOL)animated completion:(void (^ _Nullable)(__kindof SJBaseVideoPlayer *player))block {
-    dispatch_async(dispatch_get_main_queue(), ^{
-        BOOL disableAutoRotation = self.disableAutoRotation;
-        self.disableAutoRotation = NO;
-        __weak typeof(self) _self = self;
-        [self.orentationObserver rotate:orientation animated:animated completion:^(SJOrentationObserver * _Nonnull observer) {
-            __strong typeof(_self) self = _self;
-            if ( !self ) return;
-            self.disableAutoRotation = disableAutoRotation; // reset
-            if ( block ) block(self);
-        }];
-    });
+    BOOL disableAutoRotation = self.disableAutoRotation;
+    self.disableAutoRotation = NO;
+    __weak typeof(self) _self = self;
+    [self.rotationManager rotate:orientation animated:animated completionHandler:^(SJRotationManager * _Nonnull mgr) {
+        __strong typeof(_self) self = _self;
+        if ( !self ) return;
+        self.disableAutoRotation = disableAutoRotation; // reset
+        if ( block ) block(self);
+    }];
 }
 
 - (void)setDisableAutoRotation:(BOOL)disableAutoRotation {
-    objc_setAssociatedObject(self, @selector(disableAutoRotation), @(disableAutoRotation), OBJC_ASSOCIATION_RETAIN_NONATOMIC);
+    self.rotationManager.disableAutorotation = disableAutoRotation;
 }
 
 - (BOOL)disableAutoRotation {
-    return [objc_getAssociatedObject(self, _cmd) boolValue];
+    return self.rotationManager.disableAutorotation;
+}
+
+- (void)setRotationTime:(NSTimeInterval)rotationTime {
+    self.rotationManager.duration = rotationTime;
+}
+
+- (NSTimeInterval)rotationTime {
+    return self.rotationManager.duration;
+}
+
+- (BOOL)isTransitioning {
+    return self.rotationManager.transitioning;
 }
 
 - (void)setWillRotateScreen:(void (^)(__kindof SJBaseVideoPlayer * _Nonnull, BOOL))willRotateScreen {
@@ -1535,7 +1510,7 @@ NS_ASSUME_NONNULL_END
 }
 
 - (BOOL)isFullScreen {
-    return self.orentationObserver.isFullScreen;
+    return self.rotationManager.isFullscreen;
 }
 
 @end

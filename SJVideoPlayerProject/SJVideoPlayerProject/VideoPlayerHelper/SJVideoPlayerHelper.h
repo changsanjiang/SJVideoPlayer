@@ -16,7 +16,7 @@
 #import "SJVideoPlayerFilmEditingCommonHeader.h"
 #import <SJPrompt/SJPrompt.h>
 #import "SJVideoPlayerURLAsset+SJControlAdd.h"
-#import <SJOrentationObserver/SJOrentationObserver.h>
+#import <SJOrentationObserver/SJRotationManager.h>
 
 @class SJVideoPlayerURLAsset, SJLightweightTopItem, SJVideoPlayerFilmEditingConfig;
 
@@ -155,6 +155,10 @@ NS_ASSUME_NONNULL_BEGIN
 //    return self.videoPlayerHelper.vc_preferredStatusBarStyleExeBlock();
 //}
 //
+//- (BOOL)prefersHomeIndicatorAutoHidden {
+//    return YES;
+//}
+//
 @protocol SJVideoPlayerHelperUseProtocol <NSObject>
 @required
 - (void)viewDidAppear:(BOOL)animated;
@@ -163,6 +167,8 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (BOOL)prefersStatusBarHidden;
 - (UIStatusBarStyle)preferredStatusBarStyle;
+- (BOOL)prefersHomeIndicatorAutoHidden;
+
 @end
 
 NS_ASSUME_NONNULL_END

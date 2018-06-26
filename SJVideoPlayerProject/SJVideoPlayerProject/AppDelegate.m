@@ -38,19 +38,18 @@
 
 - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions {
     
+    [UIApplication sharedApplication].statusBarOrientation = UIInterfaceOrientationPortrait;
+    [UIApplication sharedApplication].statusBarHidden = NO;
+    
     NSLog(@"%@", NSHomeDirectory());
     
     _window = [[UIWindow alloc] initWithFrame:[UIScreen mainScreen].bounds];
     _window.backgroundColor = [UIColor whiteColor];
     UIStoryboard *sb = [UIStoryboard storyboardWithName:@"Main" bundle:nil];
-    _window.rootViewController = [sb instantiateInitialViewController];
+    _window.rootViewController = [sb instantiateViewControllerWithIdentifier:@"nav"];
     [_window makeKeyAndVisible];
     
-    [UIApplication sharedApplication].statusBarOrientation = UIInterfaceOrientationPortrait;
-    [UIApplication sharedApplication].statusBarHidden = NO;
-    
-    
-    [self _settingVideoPlayer];
+//    [self _settingVideoPlayer];
     
     // Override point for customization after application launch.
     return YES;

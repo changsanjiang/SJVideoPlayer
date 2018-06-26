@@ -119,6 +119,10 @@ static NSString *const LightweightTableViewCellID = @"LightweightTableViewCell";
     return self.videoPlayerHelper.vc_preferredStatusBarStyleExeBlock();
 }
 
+- (BOOL)prefersHomeIndicatorAutoHidden {
+    return YES;
+}
+
 - (void)clickedPlayOnTabCell:(LightweightTableViewCell *)cell playerParentView:(UIView *)playerParentView {
     self.playedIndexPath = [self.tableView indexPathForCell:cell];
     SJVideoPlayerURLAsset *asset =

@@ -131,7 +131,7 @@ static NSString *const kSJFilmEditingResultShareItemQQTitle = @"QQ";
     else {
         __weak typeof(self) _self = self;
         // test test test
-        [self.player showTitle:item.title duration:1 hiddenExeBlock:^(__kindof SJBaseVideoPlayer * _Nonnull player) {
+        [self.player showTitle:[item.title stringByAppendingString:@", 准备跳转"] duration:1 hiddenExeBlock:^(__kindof SJBaseVideoPlayer * _Nonnull player) {
             [player dismissFilmEditingViewCompletion:^(SJVideoPlayer * _Nonnull player) {
                 [player rotate:SJOrientation_Portrait animated:YES completion:^(__kindof SJBaseVideoPlayer * _Nonnull player) {
                     __strong typeof(_self) self = _self;

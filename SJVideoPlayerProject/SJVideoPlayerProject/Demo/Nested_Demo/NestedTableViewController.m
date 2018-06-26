@@ -66,6 +66,9 @@ static NSString *const NestedTableViewCellID = @"NestedTableViewCell";
     return self.videoPlayerHelper.vc_preferredStatusBarStyleExeBlock();
 }
 
+- (BOOL)prefersHomeIndicatorAutoHidden {
+    return YES;
+}
 
 - (void)clickedPlayWithNestedTabCell:(NestedTableViewCell *)tabCell
                     playerParentView:(UIView *)playerParentView

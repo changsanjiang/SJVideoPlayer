@@ -533,6 +533,11 @@ NS_ASSUME_NONNULL_END
     [self.containerView addSubview:self.previewView];
     [self.containerView addSubview:self.loadingView];
     
+    
+    [_containerView mas_makeConstraints:^(MASConstraintMaker *make) {
+        make.edges.offset(0);
+    }];
+    
     [_topControlMaskView mas_makeConstraints:^(MASConstraintMaker *make) {
         make.top.leading.trailing.offset(0);
         make.height.equalTo(self->_topControlView);
@@ -540,10 +545,6 @@ NS_ASSUME_NONNULL_END
     
     [_topControlView mas_makeConstraints:^(MASConstraintMaker *make) {
         make.top.leading.trailing.offset(0);
-    }];
-    
-    [_containerView mas_makeConstraints:^(MASConstraintMaker *make) {
-        make.edges.offset(0);
     }];
     
     [_leftControlView mas_makeConstraints:^(MASConstraintMaker *make) {

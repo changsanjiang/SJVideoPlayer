@@ -125,6 +125,10 @@
     return UIStatusBarStyleLightContent;
 }
 
+- (BOOL)prefersHomeIndicatorAutoHidden {
+    return YES;
+}
+
 #pragma mark -
 - (void)_demoVCSetupViews {
     self.view.backgroundColor = [UIColor blackColor];

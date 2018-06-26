@@ -121,6 +121,10 @@ static NSString *const DownloadTableViewCellID = @"DownloadTableViewCell";
     return self.videoPlayerHelper.vc_preferredStatusBarStyleExeBlock();
 }
 
+- (BOOL)prefersHomeIndicatorAutoHidden {
+    return YES;
+}
+
 - (void)tabCell:(DownloadTableViewCell *)cell clickedPlayBtnAtCoverImageView:(UIImageView *)coverImageView {
     NSURL *URL = nil;
     if ( cell.model.entity.filePath ) {

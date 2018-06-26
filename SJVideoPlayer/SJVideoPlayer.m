@@ -179,7 +179,7 @@ NS_ASSUME_NONNULL_BEGIN
 }
 
 + (NSString *)version {
-    return @"v2.0.8";
+    return @"v2.0.9";
 }
 
 @end

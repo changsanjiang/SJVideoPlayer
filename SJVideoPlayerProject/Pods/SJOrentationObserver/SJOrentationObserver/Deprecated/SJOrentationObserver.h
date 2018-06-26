@@ -13,20 +13,35 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
-/// Auto rotate supported orientation
-typedef NS_ENUM(NSUInteger, SJAutoRotateSupportedOrientation) {
-    SJAutoRotateSupportedOrientation_All,
-    SJAutoRotateSupportedOrientation_Portrait = 1 << 0,
-    SJAutoRotateSupportedOrientation_LandscapeLeft = 1 << 1,  // UIDeviceOrientationLandscapeLeft
-    SJAutoRotateSupportedOrientation_LandscapeRight = 1 << 2, // UIDeviceOrientationLandscapeRight
-};
-
+/**
+ 视图方向
+ 
+ - SJOrientation_Portrait:       竖屏
+ - SJOrientation_LandscapeLeft:  全屏, Home键在右侧
+ - SJOrientation_LandscapeRight: 全屏, Home键在左侧
+ */
 typedef NS_ENUM(NSUInteger, SJOrientation) {
     SJOrientation_Portrait,
     SJOrientation_LandscapeLeft,  // UIDeviceOrientationLandscapeLeft
     SJOrientation_LandscapeRight, // UIDeviceOrientationLandscapeRight
 };
 
+/**
+ 自动旋转支持的方向
+ 
+ - SJAutoRotateSupportedOrientation_Portrait:       竖屏
+ - SJAutoRotateSupportedOrientation_LandscapeLeft:  支持全屏, Home键在右侧
+ - SJAutoRotateSupportedOrientation_LandscapeRight: 支持全屏, Home键在左侧
+ - SJAutoRotateSupportedOrientation_All:            全部方向
+ */
+typedef NS_ENUM(NSUInteger, SJAutoRotateSupportedOrientation) {
+    SJAutoRotateSupportedOrientation_Portrait = 1 << 0,
+    SJAutoRotateSupportedOrientation_LandscapeLeft = 1 << 1,  // UIDeviceOrientationLandscapeLeft
+    SJAutoRotateSupportedOrientation_LandscapeRight = 1 << 2, // UIDeviceOrientationLandscapeRight
+    SJAutoRotateSupportedOrientation_All = SJAutoRotateSupportedOrientation_Portrait | SJAutoRotateSupportedOrientation_LandscapeLeft | SJAutoRotateSupportedOrientation_LandscapeRight,
+};
+
+__deprecated_msg("已弃用, Use `SJRotationManager`;")
 @interface SJOrentationObserver : NSObject
 
 - (instancetype)initWithTarget:(UIView *)rotateView container:(UIView *)rotateViewSuperView rotationCondition:(BOOL(^)(SJOrentationObserver *observer))rotationCondition;

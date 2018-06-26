@@ -8,6 +8,9 @@
 
 #import "SJOrentationObserver.h"
 
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wdeprecated-implementations"
+
 NS_ASSUME_NONNULL_BEGIN
 @interface SJOrentationObserver () {
     CGRect _portrait;
@@ -247,3 +250,5 @@ static UIWindow *__window;
 }
 @end
 NS_ASSUME_NONNULL_END
+
+#pragma clang diagnostic pop

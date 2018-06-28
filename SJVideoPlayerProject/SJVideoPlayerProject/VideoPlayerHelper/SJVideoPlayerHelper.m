@@ -218,8 +218,6 @@ NS_ASSUME_NONNULL_END
         if ( self.playDidToEnd ) self.playDidToEnd(self);
     };
     
-    
-    
     _videoPlayer.moreSettings = @[[[SJVideoPlayerMoreSetting alloc] initWithTitle:@"下载" image:[UIImage imageNamed:@"download"] clickedExeBlock:^(SJVideoPlayerMoreSetting * _Nonnull model) {
 #ifdef DEBUG
         NSLog(@"%d - %s", (int)__LINE__, __func__);

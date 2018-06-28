@@ -294,8 +294,6 @@ NS_ASSUME_NONNULL_END
     _asset = asset;
     if ( !asset ) return;
     
-    if ( self.mute ) self.mute = YES; // update
-    
     [self _itemPrepareToPlay];
     
     __weak typeof(self) _self = self;
@@ -303,6 +301,7 @@ NS_ASSUME_NONNULL_END
         __strong typeof(_self) self = _self;
         if ( !self ) return;
         self.presentView.player = asset.player;
+        asset.player.muted = self.mute;
     };
     
     if ( asset.loadedPlayer ) asset.loadedPlayerExeBlock(asset);

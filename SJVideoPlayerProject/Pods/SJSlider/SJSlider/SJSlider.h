@@ -72,12 +72,29 @@ NS_ASSUME_NONNULL_BEGIN
  */
 @property (nonatomic, strong, readonly) UIPanGestureRecognizer *pan;
 
+/// 点击跳转的手势
+/// 当你想点击跳转时, 需要开启手势
+/// 默认是关闭, 即 tap.enabled = NO;
+@property (nonatomic, strong, readonly) UITapGestureRecognizer *tap;
+
 /*!
  *  The state of dragging.
  *
  *  是否在拖拽.
  */
 @property (nonatomic, assign, readonly) BOOL isDragging;
+
+@end
+
+
+#pragma mark - Prompt
+
+@interface SJSlider (Prompt)
+
+@property (nonatomic, strong, readonly) UILabel *promptLabel;
+
+/// default is 4.0
+@property (nonatomic) CGFloat promptSpacing;
 
 @end
 

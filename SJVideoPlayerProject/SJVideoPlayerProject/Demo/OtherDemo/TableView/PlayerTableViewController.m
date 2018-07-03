@@ -102,7 +102,7 @@ static NSString *const PlayerTableViewCellID = @"PlayerTableViewCell";
         self->_videoPlayer.view.alpha = 1;
     }];
     
-    _videoPlayer.URLAsset = [[SJVideoPlayerURLAsset alloc] initWithAssetURL:[NSURL URLWithString:videoURLStr] scrollView:self.tableView indexPath:indexPath superviewTag:tag];
+    _videoPlayer.URLAsset = [[SJVideoPlayerURLAsset alloc] initWithURL:[NSURL URLWithString:videoURLStr] playModel:[SJPlayModel UITableViewCellPlayModelWithPlayerSuperviewTag:tag atIndexPath:indexPath tableView:self.tableView]];
     
     _videoPlayer.autoPlay = YES;
 }

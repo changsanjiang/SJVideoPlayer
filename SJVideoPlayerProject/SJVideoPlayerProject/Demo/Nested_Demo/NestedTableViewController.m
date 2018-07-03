@@ -29,6 +29,7 @@ static NSString *const NestedTableViewCellID = @"NestedTableViewCell";
     [super viewDidLoad];
     self.title = @"Nested scrollView(嵌套view)";
     self.view.backgroundColor = [UIColor whiteColor];
+    self.edgesForExtendedLayout = UIRectEdgeNone;
     [self.tableView registerClass:NSClassFromString(NestedTableViewCellID) forCellReuseIdentifier:NestedTableViewCellID];
     self.tableView.rowHeight = [NestedTableViewCell height];
 }
@@ -78,16 +79,9 @@ static NSString *const NestedTableViewCellID = @"NestedTableViewCell";
     // create asset
     NSURL *playURL = [[NSBundle mainBundle] URLForResource:@"sample" withExtension:@"mp4"];
     
-    NSIndexPath *embeddedScrollViewIndexPath = [self.tableView indexPathForCell:tabCell];
-    UIView *embeddedScrollView = collectionView;
-    SJVideoPlayerURLAsset *asset =
-    [[SJVideoPlayerURLAsset alloc] initWithAssetURL:playURL
-                                          beginTime:0
-                                          indexPath:indexPath
-                                       superviewTag:playerParentView.tag
-                                scrollViewIndexPath:embeddedScrollViewIndexPath
-                                      scrollViewTag:embeddedScrollView.tag
-                                     rootScrollView:self.tableView];
+    NSIndexPath *tabCellIndexPath = [self.tableView indexPathForCell:tabCell];
+    
+    SJVideoPlayerURLAsset *asset = [[SJVideoPlayerURLAsset alloc] initWithURL:playURL playModel:[SJPlayModel UICollectionViewNestedInUITableViewCellPlayModelWithPlayerSuperviewTag:playerParentView.tag atIndexPath:indexPath collectionViewTag:collectionView.tag collectionViewAtIndexPath:tabCellIndexPath tableView:self.tableView]];
     
     [self.videoPlayerHelper playWithAsset:asset playerParentView:playerParentView];
 }
@@ -109,4 +103,3 @@ static NSString *const NestedTableViewCellID = @"NestedTableViewCell";
 }
 
 @end
-

@@ -73,10 +73,14 @@ static NSString *const LightweightTableViewCellID = @"LightweightTableViewCell";
     SJLightweightTopItem *share = [[SJLightweightTopItem alloc] initWithFlag:0 imageName:@"share"];
     self.videoPlayerHelper.topItemsOfLightweightControlLayer = @[download, share];
     self.videoPlayerHelper.userClickedTopItemOfLightweightControlLayerExeBlock = ^(SJVideoPlayerHelper * _Nonnull helper, SJLightweightTopItem * _Nonnull item) {
-        [helper.prompt showTitle:@"Top Item 被点击" duration:2 hiddenExeBlock:^(SJPrompt * _Nonnull prompt) {
+        [helper.prompt showTitle:@"Top Item 被点击" duration:2];
+        
+        /// 旋转至竖屏
+        [helper rotate:SJOrientation_Portrait animated:YES completion:^(__kindof SJVideoPlayerHelper * _Nonnull helper) {
             __strong typeof(_self) self = _self;
             if ( !self ) return ;
             [self.navigationController pushViewController:[[self class] new] animated:YES];
+
         }];
     };
     // Do any additional setup after loading the view.
@@ -125,12 +129,11 @@ static NSString *const LightweightTableViewCellID = @"LightweightTableViewCell";
 
 - (void)clickedPlayOnTabCell:(LightweightTableViewCell *)cell playerParentView:(UIView *)playerParentView {
     self.playedIndexPath = [self.tableView indexPathForCell:cell];
+    
     SJVideoPlayerURLAsset *asset =
-        [[SJVideoPlayerURLAsset alloc] initWithAssetURL:[[NSBundle mainBundle] URLForResource:@"sample" withExtension:@"mp4"]
-//    [[SJVideoPlayerURLAsset alloc] initWithAssetURL:[NSURL URLWithString:@"https://www.apple.com/105/media/us/iphone-x/2017/01df5b43-28e4-4848-bf20-490c34a926a7/films/feature/iphone-x-feature-tpl-cc-us-20170912_1280x720h.mp4"]
-                                         scrollView:self.tableView
-                                          indexPath:[self.tableView indexPathForCell:cell]
-                                       superviewTag:playerParentView.tag];
+    [[SJVideoPlayerURLAsset alloc] initWithURL:[NSURL URLWithString:cell.model.playURLStr]
+                                     playModel:[SJPlayModel UITableViewCellPlayModelWithPlayerSuperviewTag:playerParentView.tag atIndexPath:self.playedIndexPath tableView:self.tableView]];
+    
     asset.title = cell.model.title;
     asset.alwaysShowTitle = YES;
     

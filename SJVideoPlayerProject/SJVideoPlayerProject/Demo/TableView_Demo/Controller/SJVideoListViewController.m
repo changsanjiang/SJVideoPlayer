@@ -52,8 +52,7 @@ static NSString *const SJVideoListTableViewCellID = @"SJVideoListTableViewCell";
      */
     self.sj_displayMode = SJPreViewDisplayMode_Origin;
     self.view.backgroundColor = [UIColor whiteColor];
-//    self.edgesForExtendedLayout = UIRectEdgeNone;
-//    self.automaticallyAdjustsScrollViewInsets = NO;
+    self.edgesForExtendedLayout = UIRectEdgeNone;
     
     // setup views
     [self _videoListSetupViews];
@@ -126,13 +125,12 @@ static NSString *const SJVideoListTableViewCellID = @"SJVideoListTableViewCell";
 
 - (void)clickedPlayOnTabCell:(SJVideoListTableViewCell *)cell playerParentView:(UIView *)playerParentView {
     self.playedIndexPath = [self.tableView indexPathForCell:cell];
-    SJVideoPlayerURLAsset *asset =
-//    [[SJVideoPlayerURLAsset alloc] initWithAssetURL:[[NSBundle mainBundle] URLForResource:@"sample" withExtension:@"mp4"]
-    [[SJVideoPlayerURLAsset alloc] initWithAssetURL:[NSURL URLWithString:@"https://www.apple.com/105/media/us/iphone-x/2017/01df5b43-28e4-4848-bf20-490c34a926a7/films/feature/iphone-x-feature-tpl-cc-us-20170912_1280x720h.mp4"]
-                                          beginTime:20
-                                         scrollView:self.tableView
-                                          indexPath:[self.tableView indexPathForCell:cell]
-                                       superviewTag:playerParentView.tag];
+    
+    NSURL *URL = [NSURL URLWithString:cell.model.playURLStr];
+//    URL = [[NSBundle mainBundle] URLForResource:@"sample" withExtension:@"mp4"];
+    SJPlayModel *playModel = [SJPlayModel UITableViewCellPlayModelWithPlayerSuperviewTag:playerParentView.tag atIndexPath:self.playedIndexPath tableView:self.tableView];
+    SJVideoPlayerURLAsset *asset = [[SJVideoPlayerURLAsset alloc] initWithURL:URL playModel:playModel];
+    
     asset.title = @"DIY心情转盘 #手工##手工制作##卖包子喽##1块1个##卖完就撤#";
     asset.alwaysShowTitle = YES;
     

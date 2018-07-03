@@ -63,11 +63,11 @@
     [self invalidateIntrinsicContentSize];
 }
 
-- (void)setOnlyLandscape:(BOOL)onlyLandscape {
-    if ( onlyLandscape == _onlyLandscape ) return;
-    _onlyLandscape = onlyLandscape;
-    _fullBtn.hidden = onlyLandscape;
-    if ( onlyLandscape ) {
+- (void)setHiddenFullscreenBtn:(BOOL)hiddenFullscreenBtn {
+    if ( hiddenFullscreenBtn == _hiddenFullscreenBtn ) return;
+    _hiddenFullscreenBtn = hiddenFullscreenBtn;
+    _fullBtn.hidden = hiddenFullscreenBtn;
+    if ( hiddenFullscreenBtn ) {
         [_progressSlider mas_remakeConstraints:^(MASConstraintMaker *make) {
             make.leading.equalTo(self->_durationTimeLabel.mas_trailing).offset(12);
             make.height.centerY.equalTo(self->_playBtn);
@@ -266,6 +266,7 @@
         }
         self.progressSlider.bufferProgressColor = setting.progress_bufferColor;
         self.progressSlider.trackHeight = setting.progress_traceHeight;
+        self.progressSlider.loadingColor = setting.loadingLineColor;
     }];
 }
 

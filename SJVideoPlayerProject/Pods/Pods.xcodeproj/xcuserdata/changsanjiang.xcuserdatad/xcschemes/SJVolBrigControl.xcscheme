@@ -14,7 +14,7 @@
             buildForArchiving = "YES">
             <BuildableReference
                BuildableIdentifier = "primary"
-               BlueprintIdentifier = "7F48F9F063E5DD254F2F360376DAD400"
+               BlueprintIdentifier = "C80A44F1FDB88EFC5A4657BC97A30AC8"
                BlueprintName = "SJVolBrigControl"
                ReferencedContainer = "container:Pods.xcodeproj"
                BuildableName = "libSJVolBrigControl.a">

@@ -18,9 +18,12 @@ static NSString *SJVideoPlayerPreviewCollectionViewCellID = @"SJVideoPlayerPrevi
 
 @property (nonatomic, strong, readonly) UICollectionView *collectionView;
 
+@property (nonatomic, readonly) CGFloat maxHeight;
+
 @end
 
 @implementation SJVideoPlayerPreviewView
+@synthesize maxHeight = _maxHeight;
 @synthesize collectionView = _collectionView;
 
 - (instancetype)initWithFrame:(CGRect)frame {
@@ -30,10 +33,15 @@ static NSString *SJVideoPlayerPreviewCollectionViewCellID = @"SJVideoPlayerPrevi
     return self;
 }
 
+- (CGFloat)maxHeight {
+    if ( _maxHeight != 0 ) return _maxHeight;
+    _maxHeight = ceil(SJScreen_Min() * 0.25);
+    return _maxHeight;
+}
+
 - (CGSize)intrinsicContentSize {
-    CGFloat height = ceil(SJScreen_Min() * 0.25);
-    if ( _fullscreen ) return CGSizeMake(SJScreen_Max(), height);
-    else return CGSizeMake(SJScreen_Min(), height);
+    if ( _fullscreen ) return CGSizeMake(SJScreen_Max(), self.maxHeight);
+    else return CGSizeMake(SJScreen_Min(), self.maxHeight);
 }
 
 - (void)setPreviewImages:(NSArray<id<SJVideoPlayerPreviewInfo>> *)previewImages {
@@ -82,7 +90,7 @@ static NSString *SJVideoPlayerPreviewCollectionViewCellID = @"SJVideoPlayerPrevi
 - (CGSize)collectionView:(UICollectionView *)collectionView layout:(UICollectionViewLayout*)collectionViewLayout sizeForItemAtIndexPath:(NSIndexPath *)indexPath {
     CGSize imageSize = _previewImages.firstObject.image.size;
     CGFloat rate = imageSize.width / imageSize.height;
-    CGFloat height = floor(self.intrinsicContentSize.height - (collectionView.contentInset.top + collectionView.contentInset.bottom));
+    CGFloat height = floor(self.maxHeight - (collectionView.contentInset.top + collectionView.contentInset.bottom));
     CGFloat width = floor(rate * height);
     return CGSizeMake( width, height );
 }

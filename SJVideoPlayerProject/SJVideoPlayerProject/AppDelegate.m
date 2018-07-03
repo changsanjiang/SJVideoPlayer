@@ -33,6 +33,8 @@
         commonSettings.progress_bufferColor = [UIColor whiteColor];
         commonSettings.more_thumbSize = commonSettings.progress_thumbSize = 10;
         commonSettings.titleColor = [UIColor yellowColor];
+        
+        commonSettings.progress_thumbSize = 8;
     });
 }
 
@@ -49,7 +51,7 @@
     _window.rootViewController = [sb instantiateViewControllerWithIdentifier:@"nav"];
     [_window makeKeyAndVisible];
     
-//    [self _settingVideoPlayer];
+    [self _settingVideoPlayer];
     
     // Override point for customization after application launch.
     return YES;

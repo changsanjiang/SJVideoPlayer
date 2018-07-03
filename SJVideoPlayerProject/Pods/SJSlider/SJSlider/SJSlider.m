@@ -23,6 +23,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 @interface SJSlider ()
 @property (nonatomic, strong, readonly) UIView *containerView;
+@property (nonatomic, strong) UIActivityIndicatorView *indicatorView;
 @end
 
 #pragma mark -
@@ -35,7 +36,7 @@ NS_ASSUME_NONNULL_BEGIN
 - (void)setEnableBufferProgress:(BOOL)enableBufferProgress {
     if ( enableBufferProgress == self.enableBufferProgress ) return;
     objc_setAssociatedObject(self, @selector(enableBufferProgress), @(enableBufferProgress), OBJC_ASSOCIATION_RETAIN_NONATOMIC);
-    
+
     dispatch_async(dispatch_get_main_queue(), ^{
         if ( enableBufferProgress ) {
             UIView *bufferView = [self bufferProgressView];
@@ -233,6 +234,17 @@ NS_ASSUME_NONNULL_BEGIN
     return _animaMaxDuration * scale + 0.08/**/;
 }
 
+- (void)setIsLoading:(BOOL)isLoading {
+    _isLoading = isLoading;
+    if ( isLoading ) [self.indicatorView startAnimating];
+    else [self.indicatorView stopAnimating];
+}
+
+- (void)setLoadingColor:(UIColor *)loadingColor {
+    _loadingColor = loadingColor;
+    _indicatorView.color = loadingColor;
+}
+
 #pragma mark
 - (void)_setupDefaultValues {
     _animaMaxDuration = 0.5;
@@ -242,6 +254,7 @@ NS_ASSUME_NONNULL_BEGIN
     _round = YES;
     _value = 0;
     self.promptSpacing = 4.0;
+    _loadingColor = [UIColor blackColor];
 }
 
 #pragma mark
@@ -279,6 +292,18 @@ NS_ASSUME_NONNULL_BEGIN
 - (void)layoutSubviews {
     [super layoutSubviews];
     [self _needUpdateContainerLayout];
+}
+
+- (UIActivityIndicatorView *)indicatorView {
+    if ( _indicatorView ) return _indicatorView;
+    _indicatorView = [[UIActivityIndicatorView alloc] init];
+    [_thumbImageView addSubview:_indicatorView];
+    _indicatorView.color = self.loadingColor;
+    _indicatorView.translatesAutoresizingMaskIntoConstraints = NO;
+    [_thumbImageView addConstraint:[NSLayoutConstraint constraintWithItem:_indicatorView attribute:NSLayoutAttributeCenterX relatedBy:NSLayoutRelationEqual toItem:_thumbImageView attribute:NSLayoutAttributeCenterX multiplier:1 constant:0]];
+    [_thumbImageView addConstraint:[NSLayoutConstraint constraintWithItem:_indicatorView attribute:NSLayoutAttributeCenterY relatedBy:NSLayoutRelationEqual toItem:_thumbImageView attribute:NSLayoutAttributeCenterY multiplier:1 constant:0]];
+    [self _needUpdateIndicatorTransform];
+    return _indicatorView;
 }
 
 #pragma mark -
@@ -322,6 +347,11 @@ NS_ASSUME_NONNULL_BEGIN
 - (void)_updateThumbSize:(CGSize)size {
     _thumbImageView.bounds = (CGRect){CGPointZero, size};
     [self _needUpdateThumbLayout];
+    [self _needUpdateIndicatorTransform];
+}
+
+- (void)_needUpdateIndicatorTransform {
+    _indicatorView.transform = CGAffineTransformMakeScale(_thumbImageView.bounds.size.width / 16 * 0.6, _thumbImageView.bounds.size.height / 16 * 0.6);
 }
 @end
 
@@ -334,7 +364,7 @@ NS_ASSUME_NONNULL_BEGIN
     [self addSubview:_promptLabel];
     _promptLabel.translatesAutoresizingMaskIntoConstraints = NO;
     [self addConstraint:[NSLayoutConstraint constraintWithItem:_promptLabel attribute:NSLayoutAttributeCenterX relatedBy:NSLayoutRelationEqual toItem:_traceImageView attribute:NSLayoutAttributeTrailing multiplier:1 constant:0]];
-    [self addConstraint:_promptLabelBottomConstraint = [NSLayoutConstraint constraintWithItem:_promptLabel attribute:NSLayoutAttributeBottom relatedBy:NSLayoutRelationEqual toItem:_traceImageView attribute:NSLayoutAttributeTop multiplier:1 constant:-self.promptSpacing]];
+    [self addConstraint:_promptLabelBottomConstraint = [NSLayoutConstraint constraintWithItem:_promptLabel attribute:NSLayoutAttributeBottom relatedBy:NSLayoutRelationEqual toItem:_thumbImageView attribute:NSLayoutAttributeTop multiplier:1 constant:-self.promptSpacing]];
     return _promptLabel;
 }
 

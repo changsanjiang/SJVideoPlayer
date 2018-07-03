@@ -42,6 +42,7 @@ NS_ASSUME_NONNULL_BEGIN
                     playerParentView:(UIView *)playerParentView
                            indexPath:(NSIndexPath *__nullable)indexPath
                       collectionView:(UICollectionView *)collectionView;
+
 @end
 
 NS_ASSUME_NONNULL_END

@@ -125,8 +125,14 @@ static NSString * const PlayerCollectionViewCellID = @"PlayerCollectionViewCell"
         self->_videoPlayer.view.alpha = 1;
     }];
     
-    _videoPlayer.URLAsset = [[SJVideoPlayerURLAsset alloc] initWithAssetURL:[NSURL URLWithString:videoURLStr] scrollView:self.collectionView indexPath:indexPath superviewTag:tag];
-    
+    SJPlayModel *playModel = [SJPlayModel UICollectionViewCellPlayModelWithPlayerSuperviewTag:tag
+                                                                                  atIndexPath:indexPath
+                                                                               collectionView:self.collectionView];
+    SJVideoPlayerURLAsset *asset =
+    [[SJVideoPlayerURLAsset alloc] initWithURL:[NSURL URLWithString:videoURLStr]
+                                     playModel:playModel];
+
+    _videoPlayer.URLAsset = asset;
     _videoPlayer.autoPlay = YES;
 }
 

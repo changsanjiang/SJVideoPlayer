@@ -23,6 +23,10 @@
 + (void)assetAdd_exeBlock:(NSTimer *)timer {
     void(^block)(NSTimer *timer) = timer.userInfo;
     if ( block ) block(timer);
+    else [timer invalidate];
 }
 
+- (void)assetAdd_fire {
+    [self setFireDate:[NSDate dateWithTimeIntervalSinceNow:self.timeInterval]];
+}
 @end

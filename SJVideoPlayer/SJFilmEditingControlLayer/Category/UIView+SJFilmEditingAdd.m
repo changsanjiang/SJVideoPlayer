@@ -11,69 +11,69 @@
 
 @implementation UIView (SJFilmEditingAdd)
 
-- (void)setDisappearTransform:(CGAffineTransform)disappearTransform {
-    objc_setAssociatedObject(self, @selector(disappearTransform), [NSValue valueWithCGAffineTransform:disappearTransform], OBJC_ASSOCIATION_RETAIN_NONATOMIC);
+- (void)setSj_disappearTransform:(CGAffineTransform)sj_disappearTransform {
+    objc_setAssociatedObject(self, @selector(sj_disappearTransform), [NSValue valueWithCGAffineTransform:sj_disappearTransform], OBJC_ASSOCIATION_RETAIN_NONATOMIC);
 }
 
-- (CGAffineTransform)disappearTransform {
+- (CGAffineTransform)sj_disappearTransform {
     return [(NSValue *)objc_getAssociatedObject(self, _cmd) CGAffineTransformValue];
 }
 
-- (void)setDisappearType:(SJViewDisappearType)disappearType {
-    objc_setAssociatedObject(self, @selector(disappearType), @(disappearType), OBJC_ASSOCIATION_RETAIN_NONATOMIC);
+- (void)setSj_disappearType:(SJViewDisappearType)sj_disappearType {
+    objc_setAssociatedObject(self, @selector(sj_disappearType), @(sj_disappearType), OBJC_ASSOCIATION_RETAIN_NONATOMIC);
 }
 
-- (SJViewDisappearType)disappearType {
+- (SJViewDisappearType)sj_disappearType {
     return [objc_getAssociatedObject(self, _cmd) integerValue];
 }
 
-- (void)setAppearState:(BOOL)appearState {
-    objc_setAssociatedObject(self, @selector(appearState), @(appearState), OBJC_ASSOCIATION_RETAIN_NONATOMIC);
+- (void)setSj_appearState:(BOOL)sj_appearState {
+    objc_setAssociatedObject(self, @selector(sj_appearState), @(sj_appearState), OBJC_ASSOCIATION_RETAIN_NONATOMIC);
 }
 
-- (BOOL)appearState {
+- (BOOL)sj_appearState {
     return [objc_getAssociatedObject(self, _cmd) boolValue];
 }
 
-- (void)setAppearExeBlock:(void (^)(__kindof UIView * _Nonnull))appearExeBlock {
-    objc_setAssociatedObject(self, @selector(appearExeBlock), appearExeBlock, OBJC_ASSOCIATION_COPY_NONATOMIC);
+- (void)setSj_appearExeBlock:(void (^)(__kindof UIView * _Nonnull))sj_appearExeBlock {
+    objc_setAssociatedObject(self, @selector(sj_appearExeBlock), sj_appearExeBlock, OBJC_ASSOCIATION_COPY_NONATOMIC);
 }
 
-- (void (^)(__kindof UIView * _Nonnull))appearExeBlock {
+- (void (^)(__kindof UIView * _Nonnull))sj_appearExeBlock {
     return objc_getAssociatedObject(self, _cmd);
 }
 
-- (void)setDisappearExeBlock:(void (^)(__kindof UIView * _Nonnull))disappearExeBlock {
-    objc_setAssociatedObject(self, @selector(disappearExeBlock), disappearExeBlock, OBJC_ASSOCIATION_COPY_NONATOMIC);
+- (void)setSj_disappearExeBlock:(void (^)(__kindof UIView * _Nonnull))sj_disappearExeBlock {
+    objc_setAssociatedObject(self, @selector(sj_disappearExeBlock), sj_disappearExeBlock, OBJC_ASSOCIATION_COPY_NONATOMIC);
 }
 
-- (void (^)(__kindof UIView * _Nonnull))disappearExeBlock {
+- (void (^)(__kindof UIView * _Nonnull))sj_disappearExeBlock {
     return objc_getAssociatedObject(self, _cmd);
 }
 
-- (void)appear {
+- (void)sj_appear {
     [self __changeState:YES];
 }
 
-- (void)disappear {
+- (void)sj_disappear {
     [self __changeState:NO];
 }
 
 - (void)__changeState:(BOOL)show {
-    if ( SJViewDisappearType_All == (self.disappearType & SJViewDisappearType_All) ) {
-        self.disappearType = SJViewDisappearType_Alpha | SJViewDisappearType_Transform;
+    if ( SJViewDisappearType_All == (self.sj_disappearType & SJViewDisappearType_All) ) {
+        self.sj_disappearType = SJViewDisappearType_Alpha | SJViewDisappearType_Transform;
     }
     
-    if ( SJViewDisappearType_Transform == (self.disappearType & SJViewDisappearType_Transform) ) {
+    if ( SJViewDisappearType_Transform == (self.sj_disappearType & SJViewDisappearType_Transform) ) {
         if ( show ) {
             self.transform = CGAffineTransformIdentity;
         }
         else {
-            self.transform = self.disappearTransform;
+            self.transform = self.sj_disappearTransform;
         }
     }
     
-    if ( SJViewDisappearType_Alpha == (self.disappearType & SJViewDisappearType_Alpha) ) {
+    if ( SJViewDisappearType_Alpha == (self.sj_disappearType & SJViewDisappearType_Alpha) ) {
         if ( show ) {
             self.alpha = 1;
         }
@@ -82,13 +82,13 @@
         }
     }
 
-    self.appearState = show;
+    self.sj_appearState = show;
     
     if ( show ) {
-        if ( self.appearExeBlock ) self.appearExeBlock(self);
+        if ( self.sj_appearExeBlock ) self.sj_appearExeBlock(self);
     }
     else {
-        if ( self.disappearExeBlock ) self.disappearExeBlock(self);
+        if ( self.sj_disappearExeBlock ) self.sj_disappearExeBlock(self);
     }
 
 }

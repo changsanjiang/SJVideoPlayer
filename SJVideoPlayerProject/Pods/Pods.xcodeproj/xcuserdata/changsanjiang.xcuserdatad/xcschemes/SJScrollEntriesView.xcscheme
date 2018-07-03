@@ -14,7 +14,7 @@
             buildForArchiving = "YES">
             <BuildableReference
                BuildableIdentifier = "primary"
-               BlueprintIdentifier = "2FC73B5476E061FB361E1D3DB860E6BD"
+               BlueprintIdentifier = "9D39E40288C25299CA6772ED95F68A30"
                BlueprintName = "SJScrollEntriesView"
                ReferencedContainer = "container:Pods.xcodeproj"
                BuildableName = "libSJScrollEntriesView.a">

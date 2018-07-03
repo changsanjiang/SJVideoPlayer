@@ -35,9 +35,7 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic, strong, readonly) UIImageView *traceImageView;
 
 /*!
- *  If you do not set the image, it will not display.
- *
- *  拇指, 不设置它, 将不会创建.
+ *  拇指
  */
 @property (nonatomic, strong, readonly) UIImageView *thumbImageView;
 
@@ -73,8 +71,8 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic, strong, readonly) UIPanGestureRecognizer *pan;
 
 /// 点击跳转的手势
-/// 当你想点击跳转时, 需要开启手势
-/// 默认是关闭, 即 tap.enabled = NO;
+/// - 当你想点击跳转时, 需要开启手势
+/// - 默认是关闭, 即 tap.enabled = NO;
 @property (nonatomic, strong, readonly) UITapGestureRecognizer *tap;
 
 /*!
@@ -83,6 +81,14 @@ NS_ASSUME_NONNULL_BEGIN
  *  是否在拖拽.
  */
 @property (nonatomic, assign, readonly) BOOL isDragging;
+
+/// 是否加载中
+/// - 如果是YES, 将会在拇指上显示菊花圈圈(前提是设置了拇指thumb)
+@property (nonatomic) BOOL isLoading;
+
+/// 菊花圈圈的线颜色
+/// - 默认是黑色
+@property (nonatomic, strong) UIColor *loadingColor;
 
 @end
 

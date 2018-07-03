@@ -13,6 +13,7 @@
 #import <objc/message.h>
 #import "SJMediaDownloader.h"
 #import <UIViewController+SJVideoPlayerAdd.h>
+#import <SJBaseVideoPlayer/SJBaseVideoPlayer+PlayStatus.h>
 
 NS_ASSUME_NONNULL_BEGIN
 
@@ -176,7 +177,7 @@ NS_ASSUME_NONNULL_END
     };
     
     // The block invoked when the player will rotate screen
-    _videoPlayer.willRotateScreen = ^(SJVideoPlayer * _Nonnull player, BOOL isFullScreen) {
+    _videoPlayer.viewWillRotateExeBlock = ^(SJVideoPlayer * _Nonnull player, BOOL isFullScreen) {
         __strong typeof(_self) self = _self;
         if ( !self ) return ;
         [UIView animateWithDuration:0.25 animations:^{
@@ -212,7 +213,7 @@ NS_ASSUME_NONNULL_END
     }
     
     // The block invoked when play did to end
-    _videoPlayer.playDidToEnd = ^(__kindof SJBaseVideoPlayer * _Nonnull player) {
+    _videoPlayer.playDidToEndExeBlock = ^(__kindof SJBaseVideoPlayer * _Nonnull player) {
         __strong typeof(_self) self = _self;
         if ( !self ) return;
         if ( self.playDidToEnd ) self.playDidToEnd(self);
@@ -223,6 +224,7 @@ NS_ASSUME_NONNULL_END
         NSLog(@"%d - %s", (int)__LINE__, __func__);
 #endif
     }]];
+    
 }
 
 - (void)clearPlayer {
@@ -295,7 +297,7 @@ NS_ASSUME_NONNULL_END
 }
 
 - (NSURL *)currentPlayURL {
-    return self.videoPlayer.assetURL;
+    return self.videoPlayer.URLAsset.playAsset.URL;
 }
 
 - (NSTimeInterval)currentTime {
@@ -331,7 +333,7 @@ NS_ASSUME_NONNULL_END
 
 - (void (^)(void))vc_viewDidDisappearExeBlock {
     return ^ () {
-        if ( self.videoPlayer.state != SJVideoPlayerPlayState_Paused ) [self.videoPlayer pause];
+        if ( ![self.videoPlayer playStatus_isPaused_ReasonPause] ) [self.videoPlayer pause];
     };
 }
 

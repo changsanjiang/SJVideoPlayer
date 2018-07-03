@@ -25,9 +25,9 @@
     
     
     _videoPlayer = [SJVideoPlayer player];
+    _videoPlayer.supportedOrientation = SJAutoRotateSupportedOrientation_Portrait;
     _videoPlayer.pausedToKeepAppearState = YES;
-    _videoPlayer.disableAutoRotation = YES;
-    _videoPlayer.assetURL = [NSURL URLWithString:@"https://www.apple.com/105/media/us/iphone-x/2017/01df5b43-28e4-4848-bf20-490c34a926a7/films/feature/iphone-x-feature-tpl-cc-us-20170912_1280x720h.mp4"];
+    _videoPlayer.assetURL = [NSURL URLWithString:@"http://v.dansewudao.com/502718a3e0a24673b2afa1c5c27cd301/771b26823ac64631b8977a718610b779-9f4d50aeba651a86d2b45f89f4799f31-sd.mp4"];
     [self.view addSubview:_videoPlayer.view];
     [_videoPlayer.view mas_makeConstraints:^(MASConstraintMaker *make) {
         make.edges.offset(0);

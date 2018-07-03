@@ -13,7 +13,6 @@
 #import <Masonry.h>
 #import "SJVideoModel.h"
 #import <AVFoundation/AVFoundation.h>
-#import <SJVideoPlayerAssetCarrier.h>
 #import <SJBaseVideoPlayer/SJBaseVideoPlayer.h>
 #import "SJLightweightTopItem.h"
 #import <UIViewController+SJVideoPlayerAdd.h>
@@ -40,7 +39,7 @@
     self = [super init];
     if ( !self ) return nil;
     _video = video;
-    _asset = [SJVideoPlayerURLAsset assetWithOtherAsset:asset];
+    _asset = [[SJVideoPlayerURLAsset alloc] initWithPlayAsset:asset.playAsset];
     _asset.title = self.video.title;
     _asset.alwaysShowTitle = YES;
     return self;
@@ -50,7 +49,7 @@
     self = [super init];
     if ( !self ) return nil;
     _video = video;
-    _asset = [[SJVideoPlayerURLAsset alloc] initWithAssetURL:[NSURL URLWithString:self.video.playURLStr] beginTime:beginTime];
+    _asset = [[SJVideoPlayerURLAsset alloc] initWithURL:[NSURL URLWithString:self.video.playURLStr] specifyStartTime:beginTime];
     _asset.title = video.title;
     _asset.alwaysShowTitle = YES;
     return self;
@@ -81,7 +80,8 @@
     
     /// test
     if ( !_video ) {
-        [self.videoPlayerHelper playWithAsset:[[SJVideoPlayerURLAsset alloc] initWithAssetURL:[[NSBundle mainBundle] URLForResource:@"sample" withExtension:@"mp4"]] playerParentView:self.playerSuperView];
+        
+        [self.videoPlayerHelper playWithAsset:[[SJVideoPlayerURLAsset alloc] initWithURL:[[NSBundle mainBundle] URLForResource:@"sample" withExtension:@"mp4"]] playerParentView:self.playerSuperView];
         return;
     }
     

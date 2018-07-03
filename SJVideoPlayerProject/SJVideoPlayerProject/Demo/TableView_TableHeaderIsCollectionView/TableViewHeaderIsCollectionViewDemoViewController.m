@@ -45,6 +45,7 @@ static NSString *const SJVideoListTableViewCellID = @"SJVideoListTableViewCell";
     [super viewDidLoad];
     
     self.view.backgroundColor = [UIColor whiteColor];
+    self.edgesForExtendedLayout = UIRectEdgeNone;
     
     // setup views
     [self _videoListSetupViews];
@@ -108,10 +109,8 @@ static NSString *const SJVideoListTableViewCellID = @"SJVideoListTableViewCell";
 - (void)clickedPlayOnTabCell:(SJVideoListTableViewCell *)cell playerParentView:(UIView *)playerParentView {
     
     SJVideoPlayerURLAsset *asset =
-    [[SJVideoPlayerURLAsset alloc] initWithAssetURL:[[NSBundle mainBundle] URLForResource:@"sample" withExtension:@"mp4"]
-                                         scrollView:self.tableView
-                                          indexPath:[self.tableView indexPathForCell:cell]
-                                       superviewTag:playerParentView.tag];
+    [[SJVideoPlayerURLAsset alloc] initWithURL:[NSURL URLWithString:cell.model.playURLStr] playModel:[SJPlayModel UITableViewCellPlayModelWithPlayerSuperviewTag:playerParentView.tag atIndexPath:[self.tableView indexPathForCell:cell] tableView:self.tableView]];
+    
     asset.title = @"DIY心情转盘 #手工##手工制作#";
     asset.alwaysShowTitle = YES;
     
@@ -150,12 +149,7 @@ static NSString *const SJVideoListTableViewCellID = @"SJVideoListTableViewCell";
         __strong typeof(_self) self = _self;
         if ( !self ) return;
         SJVideoPlayerURLAsset *asset =
-        [[SJVideoPlayerURLAsset alloc] initWithAssetURL:[NSURL URLWithString:@"https://www.apple.com/105/media/us/iphone-x/2017/01df5b43-28e4-4848-bf20-490c34a926a7/films/feature/iphone-x-feature-tpl-cc-us-20170912_1280x720h.mp4"]
-                                              beginTime:0
-                            collectionViewOfTableHeader:collectionView
-                                collectionCellIndexPath:indexPath
-                                     playerSuperViewTag:videoPlayerSuperView.tag
-                                          rootTableView:self.tableView];
+        [[SJVideoPlayerURLAsset alloc] initWithURL:[NSURL URLWithString:@"https://www.apple.com/105/media/us/iphone-x/2017/01df5b43-28e4-4848-bf20-490c34a926a7/films/feature/iphone-x-feature-tpl-cc-us-20170912_1280x720h.mp4"] playModel:[SJPlayModel UICollectionViewNestedInUITableViewHeaderViewPlayModelWithPlayerSuperviewTag:videoPlayerSuperView.tag atIndexPath:indexPath collectionView:collectionView tableView:self.tableView]];
         
         asset.title = @"DIY心情转盘 #手工##手工制作#";
         [self.videoPlayerHelper playWithAsset:asset playerParentView:videoPlayerSuperView];

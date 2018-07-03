@@ -9,7 +9,10 @@
 #import <Foundation/Foundation.h>
 
 @interface NSTimer (SJAssetAdd)
+
 + (NSTimer *)assetAdd_timerWithTimeInterval:(NSTimeInterval)ti
                                       block:(void(^)(NSTimer *timer))block
                                     repeats:(BOOL)repeats;
+- (void)assetAdd_fire;
+
 @end

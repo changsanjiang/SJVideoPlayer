@@ -26,7 +26,7 @@ typedef NS_ENUM(NSUInteger, SJVideoPlayerBottomViewTag) {
 
 @property (nonatomic) BOOL fullscreen;
 
-@property (nonatomic) BOOL onlyLandscape;
+@property (nonatomic) BOOL hiddenFullscreenBtn;
 
 @property (nonatomic) float progress;
 
@@ -34,6 +34,8 @@ typedef NS_ENUM(NSUInteger, SJVideoPlayerBottomViewTag) {
 
 - (void)setCurrentTimeStr:(NSString *)currentTimeStr;
 - (void)setCurrentTimeStr:(NSString *)currentTimeStr totalTimeStr:(NSString *)totalTimeStr;
+
+@property (nonatomic) BOOL isLoading;
 
 @end
 

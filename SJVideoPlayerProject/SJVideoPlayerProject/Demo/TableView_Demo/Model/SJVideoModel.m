@@ -35,6 +35,17 @@
     NSDate *date = [NSDate date];
     
     
+    NSArray<NSString *> *testURLStrs =
+    @[@"http://v.dansewudao.com/444fccb3590845a799459f6154d2833f/fe86a70dc4b8497f828eaa19058639ba-6e51c667edc099f5b9871e93d0370245-sd.mp4",
+      @"http://v.dansewudao.com/d8d10b7e6c38421bb04fa8f7973aa906/a25106127ccf4052aa11aa792a8fc945-63be549439f2f81b92c75e150dc28e77-sd.mp4",
+      @"http://v.dansewudao.com/3da9bf57591b40e18959eb742b61cbc1/f4ccd0efa1114eac9aaadeb2f91cce75-6d5b8e7f16f5c95e9b13477414c086aa-sd.mp4",
+      @"http://v.dansewudao.com/502718a3e0a24673b2afa1c5c27cd301/771b26823ac64631b8977a718610b779-9f4d50aeba651a86d2b45f89f4799f31-sd.mp4",
+      @"http://v.dansewudao.com/49e9f074e890493fa1f1677ca4f2faec/69e262b1b2014ff3afbb4052b1829d7a-7d56bc62083a11837ece71958f513034-sd.mp4",
+      @"http://v.dansewudao.com/5ae2ef70bd854044a7e467a6de9b4557/5680314fc7dc4406b171ee613f231bd9-7b4a0bc984b4073be92825a8ecb36850-sd.mp4",
+      @"http://v.dansewudao.com/ef2236d79ec848b5b07415d66494739b/95b4d2efcd2641cbb5c8cff53637972d-b92a1d32edec0becb5436483bda75679-sd.mp4",
+      @"http://v.dansewudao.com/969785b209534ae2ae70a35bee5edb3f/e2cac516d2124089a796b5f177bd5a78-9f8e07f5fa9388811ba791a8e8864236-sd.mp4",
+      ];
+    
     // prepare test data
     for ( int i = 0 ; i < 100 ; ++ i ) {
         SJVideoModel *model =
@@ -42,7 +53,7 @@
                                     videoId:i
                                  createTime:date.timeIntervalSince1970 - arc4random() % 100000
                                     creator:users[arc4random() % users.count]
-                                 playURLStr:@"https://www.apple.com/105/media/us/iphone-x/2017/01df5b43-28e4-4848-bf20-490c34a926a7/films/feature/iphone-x-feature-tpl-cc-us-20170912_1280x720h.mp4"
+                                 playURLStr:testURLStrs[arc4random() % testURLStrs.count]
                                 coverURLStr:coverURLStrs[arc4random() % coverURLStrs.count]];
         
         [SJVideoListTableViewCell sync_makeContentWithVideo:model tappedDelegate:actionDelegate];
@@ -69,7 +80,17 @@
     NSMutableArray<SJVideoModel *> *testVideosM = [NSMutableArray array];
     NSDate *date = [NSDate date];
     
-    
+    NSArray<NSString *> *testURLStrs =
+    @[@"http://v.dansewudao.com/444fccb3590845a799459f6154d2833f/fe86a70dc4b8497f828eaa19058639ba-6e51c667edc099f5b9871e93d0370245-sd.mp4",
+      @"http://v.dansewudao.com/d8d10b7e6c38421bb04fa8f7973aa906/a25106127ccf4052aa11aa792a8fc945-63be549439f2f81b92c75e150dc28e77-sd.mp4",
+      @"http://v.dansewudao.com/3da9bf57591b40e18959eb742b61cbc1/f4ccd0efa1114eac9aaadeb2f91cce75-6d5b8e7f16f5c95e9b13477414c086aa-sd.mp4",
+      @"http://v.dansewudao.com/502718a3e0a24673b2afa1c5c27cd301/771b26823ac64631b8977a718610b779-9f4d50aeba651a86d2b45f89f4799f31-sd.mp4",
+      @"http://v.dansewudao.com/49e9f074e890493fa1f1677ca4f2faec/69e262b1b2014ff3afbb4052b1829d7a-7d56bc62083a11837ece71958f513034-sd.mp4",
+      @"http://v.dansewudao.com/5ae2ef70bd854044a7e467a6de9b4557/5680314fc7dc4406b171ee613f231bd9-7b4a0bc984b4073be92825a8ecb36850-sd.mp4",
+      @"http://v.dansewudao.com/ef2236d79ec848b5b07415d66494739b/95b4d2efcd2641cbb5c8cff53637972d-b92a1d32edec0becb5436483bda75679-sd.mp4",
+      @"http://v.dansewudao.com/969785b209534ae2ae70a35bee5edb3f/e2cac516d2124089a796b5f177bd5a78-9f8e07f5fa9388811ba791a8e8864236-sd.mp4",
+      ];
+
     // prepare test data
     for ( int i = 0 ; i < 100 ; ++ i ) {
         SJVideoModel *model =
@@ -77,7 +98,7 @@
                                     videoId:i
                                  createTime:date.timeIntervalSince1970 - arc4random() % 100000
                                     creator:users[arc4random() % users.count]
-                                 playURLStr:@"https://www.apple.com/105/media/us/iphone-x/2017/01df5b43-28e4-4848-bf20-490c34a926a7/films/feature/iphone-x-feature-tpl-cc-us-20170912_1280x720h.mp4"
+                                 playURLStr:testURLStrs[arc4random() % testURLStrs.count]
                                 coverURLStr:coverURLStrs[arc4random() % coverURLStrs.count]];
         
         [LightweightTableViewCell sync_makeContentWithVideo:model tappedDelegate:actionDelegate];

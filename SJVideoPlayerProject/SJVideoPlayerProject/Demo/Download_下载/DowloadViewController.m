@@ -134,11 +134,13 @@ static NSString *const DownloadTableViewCellID = @"DownloadTableViewCell";
         URL = [NSURL URLWithString:cell.model.playURLStr];
     }
     
+    SJPlayModel *playModel = [SJPlayModel UITableViewCellPlayModelWithPlayerSuperviewTag:coverImageView.tag
+                                                                             atIndexPath:[self.tableView indexPathForCell:cell]
+                                                                               tableView:self.tableView];
     SJVideoPlayerURLAsset *asset =
-    [[SJVideoPlayerURLAsset alloc] initWithAssetURL:URL
-                                         scrollView:self.tableView
-                                          indexPath:[self.tableView indexPathForCell:cell]
-                                       superviewTag:coverImageView.tag];
+    [[SJVideoPlayerURLAsset alloc] initWithURL:URL
+                                     playModel:playModel];
+    
     asset.title = cell.model.title;
     asset.alwaysShowTitle = YES;
 

@@ -1,386 +1,24 @@
 //
-//  SJPlayerAVCarrier.h
-//  SJVideoPlayerProject
+//  SJPlayAsset+SJBaseVideoPlayerAdd.m
+//  Masonry
 //
-//  Created by BlueDancer on 2017/9/1.
-//  Copyright © 2017年 SanJiang. All rights reserved.
-//
-//  https://github.com/changsanjiang/SJVideoPlayerAssetCarrier
-//  Demo: https://github.com/changsanjiang/SJVideoPlayer
-//  changsanjiang@gmail.com
+//  Created by 畅三江 on 2018/7/2.
 //
 
-#import "SJPlayerAVCarrier.h"
-#import "NSTimer+SJAssetAdd.h"
+#import "SJPlayAsset+SJBaseVideoPlayerAdd.h"
+#import <objc/message.h>
 #import <UIKit/UIKit.h>
 #import <ImageIO/ImageIO.h>
 #import <MobileCoreServices/MobileCoreServices.h>
-#import <objc/message.h>
+#import "NSTimer+SJAssetAdd.h"
 
 NS_ASSUME_NONNULL_BEGIN
-
-static NSTimeInterval _getLoadedTimeRange(AVPlayerItem *item) {
-    CMTimeRange loadedRange = [item.loadedTimeRanges.firstObject CMTimeRangeValue];
-    return (NSTimeInterval)(CMTimeGetSeconds(loadedRange.start) + CMTimeGetSeconds(loadedRange.duration));
-}
-
-#pragma mark -
-@interface SJPlayerAVCarrier ()
-@property (nonatomic) NSTimeInterval beginTime;
-@property (nonatomic) BOOL jumpedFlag;
-@property (nonatomic) BOOL bufferingFlag;
-@property (nonatomic) BOOL isOtherAsset;
-@property (nonatomic, getter=isLoadedPlayer) BOOL loadedPlayer;
-@property (nonatomic, strong, nullable) NSTimer *bufferRefreshTimer;
-
-#pragma mark
-@property (nonatomic, strong, nullable) id timeObserver;
-@property (nonatomic, strong, nullable) id itemPlayEndObserver;
-@property (nonatomic, strong, nullable) AVURLAsset *asset;
-@property (nonatomic, strong, nullable) AVPlayerItem *playerItem;
-@property (nonatomic, strong, nullable) AVPlayer *player;
-@property (nonatomic, strong, nullable) NSURL *assetURL;
-
-#pragma mark
-@property (nonatomic) short ref;
-@end
-
-@implementation SJPlayerAVCarrier {
-    NSArray<SJPlayerAVCarrier *> *_subCarriersM;
-}
-- (instancetype)init {
-    self = [super init];
-    if ( !self ) return nil;
-    _rate = 1;
-    _ref = 0;
-    return self;
-}
-
-- (instancetype)initWithURL:(NSURL *)URL beginTime:(NSTimeInterval)beginTime {
-    self = [self init];
-    if ( !self ) return nil;
-    _beginTime = beginTime;
-    [self _performSerialTask:^(SJPlayerAVCarrier * _Nonnull carrier) {
-        carrier.assetURL = URL;
-        carrier.asset = [AVURLAsset assetWithURL:URL];
-        carrier.playerItem = [AVPlayerItem playerItemWithAsset:carrier.asset automaticallyLoadedAssetKeys:@[@"duration"]];
-        carrier.player = [AVPlayer playerWithPlayerItem:carrier.playerItem];
-        carrier.player.actionAtItemEnd = AVPlayerActionAtItemEndPause;
-        [carrier _observe];
-    } mainTask:^(SJPlayerAVCarrier * _Nonnull carrier) {
-        carrier.loadedPlayer = YES;
-        if ( [carrier.delegate respondsToSelector:@selector(playerInitializedForAVCarrier:)] ) {
-            [carrier.delegate playerInitializedForAVCarrier:carrier];
-        }
-    }];
-    return self;
-}
-
-- (instancetype)initWithOtherCarrier:(__weak SJPlayerAVCarrier *)otherCarrier {
-    self = [self init];
-    if ( !self ) return nil;
-    [self _performSerialTask:^(SJPlayerAVCarrier * _Nonnull carrier) {
-        carrier.assetURL = otherCarrier.assetURL;
-        carrier.asset = otherCarrier.asset;
-        carrier.playerItem = otherCarrier.playerItem;
-        carrier.player = otherCarrier.player;
-        carrier.rate = otherCarrier.rate;
-        [carrier _observe];
-        [carrier _updateDuration];
-    } mainTask:^(SJPlayerAVCarrier * _Nonnull carrier) {
-        carrier.isOtherAsset = YES;
-        carrier.loadedPlayer = YES;
-        if ( [carrier.delegate respondsToSelector:@selector(playerInitializedForAVCarrier:)] ) {
-            [carrier.delegate playerInitializedForAVCarrier:carrier];
-        }
-    }];
-    return self;
-}
-
-- (void)dealloc {
-#ifdef DEBUG
-    NSLog(@"%d - %s", (int)__LINE__, __func__);
-#endif
-    if ( !_isOtherAsset ) [_player pause];
-    
-    if ( self.playerItem ) {
-        for ( NSString *keyPath in @[@"status",
-                                     @"playbackBufferEmpty",
-                                     @"loadedTimeRanges",
-                                     @"presentationSize",
-                                     @"duration"] ) {
-            [self.playerItem removeObserver:self forKeyPath:keyPath];
-        }
-        [_player removeTimeObserver:_timeObserver];
-        [[NSNotificationCenter defaultCenter] removeObserver:_itemPlayEndObserver name:AVPlayerItemDidPlayToEndTimeNotification object:self.playerItem];
-    }
-    
-    [self cancelBuffering];
-    [self cancelScreenshotOperation];
-    [self cancelPreviewImagesGeneration];
-    [self cancelExportOperation];
-    [self cancelGenerateGIFOperation];
-}
-
-- (void)_observe {
-    SJPlayerAVCarrier *carrier = self;
-    if ( @available(iOS 10.0, *) ) {
-        carrier.player.automaticallyWaitsToMinimizeStalling = YES;
-    }
-    for ( NSString *keyPath in @[@"status",
-                                 @"playbackBufferEmpty",
-                                 @"loadedTimeRanges",
-                                 @"presentationSize",
-                                 @"duration"] ) {
-        [carrier.playerItem addObserver:carrier
-                             forKeyPath:keyPath
-                                options:NSKeyValueObservingOptionNew
-                                context:NULL];
-    }
-    __weak typeof(self) _self = self;
-    carrier.timeObserver =
-    [carrier.player addPeriodicTimeObserverForInterval:CMTimeMakeWithSeconds(0.5, NSEC_PER_SEC) queue:dispatch_get_main_queue() usingBlock:^(CMTime time) {
-        __strong typeof(_self) self = _self;
-        if ( !self ) return;
-        if ( [self.delegate respondsToSelector:@selector(AVCarrier:currentTime:duration:)] ) {
-            [self.delegate AVCarrier:self
-                         currentTime:self.currentTime
-                            duration:self.duration];
-        }
-    }];
-    
-    carrier.itemPlayEndObserver =
-    [[NSNotificationCenter defaultCenter] addObserverForName:AVPlayerItemDidPlayToEndTimeNotification object:self.playerItem queue:[NSOperationQueue mainQueue] usingBlock:^(NSNotification * _Nonnull note) {
-        __strong typeof(_self) self = _self;
-        if ( !self ) return;
-        if ( [self.delegate respondsToSelector:@selector(playDidToEndForAVCarrier:)] ) {
-            [self.delegate playDidToEndForAVCarrier:self];
-        }
-    }];
-}
-
-- (void)observeValueForKeyPath:(nullable NSString *)keyPath
-                      ofObject:(nullable id)object
-                        change:(nullable NSDictionary<NSKeyValueChangeKey,id> *)change
-                       context:(nullable void *)context {
-    __weak typeof(self) _self = self;
-    dispatch_async(dispatch_get_main_queue(), ^{
-        __strong typeof(_self) self = _self;
-        if ( !self ) return;
-        if ( [keyPath isEqualToString:@"loadedTimeRanges"] ) {
-            [self _playerItemLoadedTimeRangeChanged];
-        }
-        else if ( [keyPath isEqualToString:@"status"] ) {
-            [self _playerItemStatusChanged];
-        }
-        else if ( [keyPath isEqualToString:@"playbackBufferEmpty"] ) {
-            [self _playerItemPlaybackBufferEmpty];
-        }
-        else if ( [keyPath isEqualToString:@"presentationSize"] ) {
-            [self _playerItemPresentationSizeChanged];
-        }
-        else if ( [keyPath isEqualToString:@"duration"] ) {
-            [self _updateDuration];
-        }
-    });
-}
-
-#pragma mark -
-- (void)cancelBuffering {
-    [self _clearBufferRefreshTimer];
-    self.bufferingFlag = NO;
-}
-
-- (void)setRate:(float)rate {
-    _rate = rate;
-    _player.rate = rate;
-    if ( [self.delegate respondsToSelector:@selector(AVCarrier:rateChanged:)] ) {
-        [self.delegate AVCarrier:self rateChanged:rate];
-    }
-}
-
-- (float)progress {
-    NSInteger duration = self.duration;
-    if ( 0 == duration ) return 0;
-    else return self.currentTime / duration;
-}
-
-- (float)loadedTimeProgress {
-    if ( 0 == self.duration ) return 0;
-    return _getLoadedTimeRange(self.playerItem) / self.duration;
-}
-
-#pragma mark
-- (NSString *)timeString:(NSTimeInterval)secs {
-    long min = 60;
-    long hour = 60 * min;
-    
-    long hours, seconds, minutes;
-    hours = secs / hour;
-    minutes = (secs - hours * hour) / 60;
-    seconds = (NSInteger)secs % 60;
-    if ( self.duration < hour ) {
-        return [NSString stringWithFormat:@"%02ld:%02ld", minutes, seconds];
-    }
-    else {
-        return [NSString stringWithFormat:@"%02ld:%02ld:%02ld", hours, minutes, seconds];
-    }
-}
-- (void)pause {
-    if ( 0 != self.player.rate ) [self.player pause];
-}
-- (void)play {
-#ifdef DEBUG
-    NSLog(@"%d - %s - %@", (int)__LINE__, __func__, self);
-#endif
-    [self.player play];
-}
-
-#pragma mark
-
-- (void)_playerItemLoadedTimeRangeChanged {
-    if ( 0 == self.duration ) return ;
-    if ( [self.delegate respondsToSelector:@selector(AVCarrier:loadedTimeProgress:)] ) {
-        [self.delegate AVCarrier:self
-              loadedTimeProgress:_getLoadedTimeRange(self.playerItem) / self.duration];
-    }
-}
-
-- (void)_playerItemStatusChanged {
-    __weak typeof(self) _self = self;
-    if ( 0 != self.beginTime
-        && self.jumpedFlag == NO
-        && AVPlayerItemStatusReadyToPlay == self.playerItem.status ) {
-        if ( self.beginTime > self.duration ) self.beginTime = 0;
-        [self jumpedToTime:self.beginTime completionHandler:^(BOOL finished) {
-            __strong typeof(_self) self = _self;
-            if ( !self ) return;
-            if ( !finished ) return;
-            self.jumpedFlag = YES;
-            if ( [self.delegate respondsToSelector:@selector(AVCarrier:playerItemStatusChanged:)] ) {
-                [self.delegate AVCarrier:self playerItemStatusChanged:self.playerItem.status];
-            }
-        }];
-    }
-    else {
-        if ( [self.delegate respondsToSelector:@selector(AVCarrier:playerItemStatusChanged:)] ) {
-            [self.delegate AVCarrier:self playerItemStatusChanged:self.playerItem.status];
-        }
-    }
-}
-
-- (void)_playerItemPlaybackBufferEmpty {
-    if ( self.bufferingFlag ) return;
-    [self _clearBufferRefreshTimer];
-    self.bufferingFlag = YES;
-
-    __weak typeof(self) _self = self;
-    _bufferRefreshTimer = [NSTimer assetAdd_timerWithTimeInterval:2 block:^(NSTimer *timer) {
-        __strong typeof(_self) self = _self;
-        if ( !self ) return;
-        NSTimeInterval duration = floor(self.duration);
-        NSTimeInterval pre_buffer = floor(self.currentTime) + 5;
-        pre_buffer = pre_buffer < duration ? pre_buffer : duration;
-        NSTimeInterval loaded = floor(_getLoadedTimeRange(self.playerItem));
-        if ( loaded <= pre_buffer ) return;
-        self.bufferingFlag = NO;
-        [self _clearBufferRefreshTimer];
-    } repeats:YES];
-    
-    [_bufferRefreshTimer setFireDate:[NSDate dateWithTimeIntervalSinceNow:2]];
-    [[NSRunLoop currentRunLoop] addTimer:_bufferRefreshTimer forMode:NSRunLoopCommonModes];
-}
-
-- (void)_clearBufferRefreshTimer {
-    if ( _bufferRefreshTimer ) {
-        [_bufferRefreshTimer invalidate];
-        _bufferRefreshTimer = nil;
-    }
-}
-
-- (void)_playerItemPresentationSizeChanged {
-    if ( [self.delegate respondsToSelector:@selector(AVCarrier:presentationSize:)] ) {
-        [self.delegate AVCarrier:self presentationSize:self.playerItem.presentationSize];
-    }
-}
-
-- (void)_updateDuration  {
-    _duration = CMTimeGetSeconds(self.playerItem.duration);
-}
-
-- (NSTimeInterval)currentTime {
-    return CMTimeGetSeconds(self.playerItem.currentTime);
-}
-
-- (void)_performSerialTask:(nullable void(^)(SJPlayerAVCarrier *carrier))serialTask
-                  mainTask:(nullable void(^)(SJPlayerAVCarrier *carrier))mainTask {
-    
-    static dispatch_queue_t STATIC_SERIAL_QUEUE = NULL;
-
-    if ( !STATIC_SERIAL_QUEUE ) {
-        STATIC_SERIAL_QUEUE = dispatch_queue_create("com.SJPlayer.serialQueue", DISPATCH_QUEUE_SERIAL);
-    }
-    
-    __weak typeof(self) _self = self;
-    dispatch_async(STATIC_SERIAL_QUEUE, ^{
-        __strong typeof(_self) self = _self;
-        if ( !self ) return;
-        if ( serialTask ) serialTask(self);
-        dispatch_async(dispatch_get_main_queue(), ^{
-            __strong typeof(_self) self = _self;
-            if ( !self ) return;
-            if ( mainTask ) mainTask(self);
-        });
-    });
-}
-
-@end
-
-
-
-#pragma mark -
-@implementation SJVideoPreviewModel
-+ (instancetype)previewModelWithImage:(UIImage *)image localTime:(CMTime)time {
-    SJVideoPreviewModel *model = [self new];
-    model -> _image = image;
-    model -> _localTime = time;
-    return model;
-}
-@end
-
-
-
-@implementation SJPlayerAVCarrier(SeekToTime)
-- (void)jumpedToTime:(NSTimeInterval)time completionHandler:(void (^ __nullable)(BOOL finished))completionHandler {
-    if ( isnan(time) ) { return;}
-    CMTime seekTime = CMTimeMakeWithSeconds(time, NSEC_PER_SEC);
-    [self seekToTime:seekTime completionHandler:completionHandler];
-}
-
-- (void)seekToTime:(CMTime)time completionHandler:(void (^ __nullable)(BOOL finished))completionHandler {
-    if ( 1 == CMTimeCompare(time, self.playerItem.duration) || AVPlayerStatusReadyToPlay != self.playerItem.status ) {
-        if ( completionHandler ) completionHandler(NO);
-        return;
-    }
-    [self.playerItem cancelPendingSeeks];
-    __weak typeof(self) _self = self;
-    [self.playerItem seekToTime:time completionHandler:^(BOOL finished) {
-        __strong typeof(_self) self = _self;
-        if ( !self ) return;
-        self.player.rate = self.rate;
-        if ( completionHandler ) completionHandler(finished);
-    }];
-}
-@end
-
-
-
-@implementation SJPlayerAVCarrier(Screenshot)
+@implementation SJPlayAsset (SJBaseVideoPlayerAdd_Screenshot)
 - (nullable AVAssetImageGenerator *)screenshotGenerator {
-    if ( !self.asset ) return nil;
+    if ( !self.URLAsset ) return nil;
     AVAssetImageGenerator *screenshotGenerator = objc_getAssociatedObject(self, _cmd);
     if ( screenshotGenerator ) return screenshotGenerator;
-    screenshotGenerator = [AVAssetImageGenerator assetImageGeneratorWithAsset:self.asset];
+    screenshotGenerator = [AVAssetImageGenerator assetImageGeneratorWithAsset:self.URLAsset];
     screenshotGenerator.requestedTimeToleranceBefore = kCMTimeZero;
     screenshotGenerator.requestedTimeToleranceAfter = kCMTimeZero;
     screenshotGenerator.appliesPreferredTrackTransform = YES;
@@ -391,24 +29,21 @@ static NSTimeInterval _getLoadedTimeRange(AVPlayerItem *item) {
     return [self screenshotWithTime:self.playerItem.currentTime];
 }
 - (UIImage * __nullable)screenshotWithTime:(CMTime)time {
-    if ( !self.asset ) return nil;
-    AVAssetImageGenerator *generator = [AVAssetImageGenerator assetImageGeneratorWithAsset:self.asset];
-    generator.appliesPreferredTrackTransform = YES;
-    generator.requestedTimeToleranceBefore = kCMTimeZero;
-    generator.requestedTimeToleranceAfter = kCMTimeZero;
-    CGImageRef imgRef = [generator copyCGImageAtTime:time actualTime:&time error:nil];
+    if ( !self.URLAsset ) return nil;
+    CGImageRef imgRef = [[self screenshotGenerator] copyCGImageAtTime:time actualTime:&time error:nil];
+    if ( !imgRef ) return nil;
     UIImage *image = [UIImage imageWithCGImage:imgRef];
     CGImageRelease(imgRef);
     return image;
 }
 - (void)screenshotWithTime:(NSTimeInterval)time
-                completion:(void(^)(SJPlayerAVCarrier *carrier, SJVideoPreviewModel * __nullable images, NSError *__nullable error))block {
+                completion:(void(^)(SJPlayAsset *a, UIImage * __nullable image, NSError *__nullable error))block {
     return [self screenshotWithTime:time size:CGSizeZero completion:block];
 }
 - (void)screenshotWithTime:(NSTimeInterval)t
                       size:(CGSize)size
-                completion:(void(^)(SJPlayerAVCarrier *carrier, SJVideoPreviewModel * __nullable images, NSError *__nullable error))block {
-    if ( !self.playerItem || !self.asset ) return;
+                completion:(void(^)(SJPlayAsset *a, UIImage * __nullable image, NSError *__nullable error))block {
+    if ( !self.playerItem ) return;
     [self.screenshotGenerator cancelAllCGImageGeneration];
     CMTime time = CMTimeMakeWithSeconds(t, NSEC_PER_SEC);
     self.screenshotGenerator.maximumSize = size;
@@ -417,8 +52,7 @@ static NSTimeInterval _getLoadedTimeRange(AVPlayerItem *item) {
         __strong typeof(_self) self = _self;
         if ( !self ) return;
         if ( result == AVAssetImageGeneratorSucceeded ) {
-            if ( block ) block(self, [SJVideoPreviewModel previewModelWithImage:[UIImage imageWithCGImage:imageRef]
-                                                                      localTime:actualTime], nil);
+            if ( block ) block(self, [UIImage imageWithCGImage:imageRef], nil);
         }
         else if ( result == AVAssetImageGeneratorFailed ) {
             if ( block ) block(self, nil, error);
@@ -426,18 +60,35 @@ static NSTimeInterval _getLoadedTimeRange(AVPlayerItem *item) {
     }];
 }
 - (void)cancelScreenshotOperation {
-    AVAssetImageGenerator *screenshotGenerator = objc_getAssociatedObject(self, _cmd);
+    AVAssetImageGenerator *screenshotGenerator = objc_getAssociatedObject(self, @selector(screenshotGenerator));
+    if ( !screenshotGenerator ) return;
     if ( screenshotGenerator ) [screenshotGenerator cancelAllCGImageGeneration];
 }
 @end
 
 
 
-@implementation SJPlayerAVCarrier (Previews)
-- (void)setGeneratedPreviewImages:(nullable NSArray<SJVideoPreviewModel *> *)generatedPreviewImages {
+@interface _SJVideoPreviewModel : NSObject<SJVideoPlayerPreviewInfo>
++ (instancetype)previewModelWithImage:(UIImage *)image
+                            localTime:(CMTime)time;
+@property (nonatomic, strong, readonly) UIImage *image;
+@property (nonatomic, assign, readonly) CMTime localTime;
+@end
+
+@implementation _SJVideoPreviewModel
++ (instancetype)previewModelWithImage:(UIImage *)image localTime:(CMTime)time {
+    _SJVideoPreviewModel *model = [self new];
+    model -> _image = image;
+    model -> _localTime = time;
+    return model;
+}
+@end
+
+@implementation SJPlayAsset (SJBaseVideoPlayerAdd_Previews)
+- (void)setGeneratedPreviewImages:(nullable NSArray<id<SJVideoPlayerPreviewInfo>> *)generatedPreviewImages {
     objc_setAssociatedObject(self, @selector(generatedPreviewImages), generatedPreviewImages, OBJC_ASSOCIATION_RETAIN_NONATOMIC);
 }
-- (nullable NSArray<SJVideoPreviewModel *> *)generatedPreviewImages {
+- (nullable NSArray<id<SJVideoPlayerPreviewInfo>> *)generatedPreviewImages {
     return objc_getAssociatedObject(self, _cmd);
 }
 - (void)setHasBeenGeneratedPreviewImages:(BOOL)hasBeenGeneratedPreviewImages {
@@ -453,10 +104,10 @@ static NSTimeInterval _getLoadedTimeRange(AVPlayerItem *item) {
     return [objc_getAssociatedObject(self, _cmd) CGSizeValue];
 }
 - (nullable AVAssetImageGenerator *)previewGenerator {
-    if ( !self.asset ) return nil;
+    if ( !self.URLAsset ) return nil;
     AVAssetImageGenerator *previewGenerator = objc_getAssociatedObject(self, _cmd);
     if ( previewGenerator ) return previewGenerator;
-    previewGenerator = [AVAssetImageGenerator assetImageGeneratorWithAsset:self.asset];
+    previewGenerator = [AVAssetImageGenerator assetImageGeneratorWithAsset:self.URLAsset];
     previewGenerator.requestedTimeToleranceBefore = kCMTimeZero;
     previewGenerator.requestedTimeToleranceAfter = kCMTimeZero;
     previewGenerator.appliesPreferredTrackTransform = YES;
@@ -465,7 +116,9 @@ static NSTimeInterval _getLoadedTimeRange(AVPlayerItem *item) {
 }
 static float const _GeneratePreImgScale = 0.05;
 - (void)generatedPreviewImagesWithMaxItemSize:(CGSize)itemSize
-                                   completion:(void(^)(SJPlayerAVCarrier *carrier, NSArray<SJVideoPreviewModel *> *__nullable images, NSError *__nullable error))block {
+                                   completion:(void(^)(SJPlayAsset *carrier, NSArray<id<SJVideoPlayerPreviewInfo>> *__nullable images, NSError *__nullable error))block {
+    if ( !self.URLAsset ) return;
+
     if ( self.hasBeenGeneratedPreviewImages && CGSizeEqualToSize(itemSize, self.beforeSize) ) {
         if ( block ) block(self, self.generatedPreviewImages, nil);
         return;
@@ -473,10 +126,9 @@ static float const _GeneratePreImgScale = 0.05;
     
     [self cancelPreviewImagesGeneration];
     
-    if ( !_asset ) return;
-    if ( 0 == _asset.duration.timescale ) return;
+    if ( 0 == self.URLAsset.duration.timescale ) return;
     NSMutableArray<NSValue *> *timesM = [NSMutableArray new];
-    NSInteger seconds = (long)_asset.duration.value / _asset.duration.timescale;
+    NSInteger seconds = (long)self.URLAsset.duration.value / self.URLAsset.duration.timescale;
     if ( 0 == seconds || isnan(seconds) ) return;
     if ( _GeneratePreImgScale > 1.0 || _GeneratePreImgScale <= 0 ) return;
     __block short maxCount = (short)floorf(1.0 / _GeneratePreImgScale);
@@ -487,13 +139,13 @@ static float const _GeneratePreImgScale = 0.05;
         if ( tV ) [timesM addObject:tV];
     }
     __weak typeof(self) _self = self;
-    NSMutableArray <SJVideoPreviewModel *> *imagesM = [NSMutableArray new];
+    NSMutableArray <id<SJVideoPlayerPreviewInfo>> *imagesM = [NSMutableArray new];
     self.previewGenerator.maximumSize = itemSize;
     [self.previewGenerator generateCGImagesAsynchronouslyForTimes:timesM completionHandler:^(CMTime requestedTime, CGImageRef  _Nullable imageRef, CMTime actualTime, AVAssetImageGeneratorResult result, NSError * _Nullable error) {
         switch ( result ) {
             case AVAssetImageGeneratorSucceeded: {
                 UIImage *image = [UIImage imageWithCGImage:imageRef];
-                SJVideoPreviewModel *model = [SJVideoPreviewModel previewModelWithImage:image localTime:actualTime];
+                _SJVideoPreviewModel *model = [_SJVideoPreviewModel previewModelWithImage:image localTime:actualTime];
                 [imagesM addObject:model];
                 if ( --maxCount != 0 ) return;
                 dispatch_async(dispatch_get_main_queue(), ^{
@@ -520,26 +172,22 @@ static float const _GeneratePreImgScale = 0.05;
     }];
 }
 - (void)cancelPreviewImagesGeneration {
-    AVAssetImageGenerator *previewGenerator = objc_getAssociatedObject(self, _cmd);
+    AVAssetImageGenerator *previewGenerator = objc_getAssociatedObject(self, @selector(previewGenerator));
     if ( previewGenerator ) [previewGenerator cancelAllCGImageGeneration];
 }
 @end
 
-
-
-
-#pragma mark
-@interface _SJGIFCreator : NSObject
+@interface __SJGIFCreator : NSObject
 @property (nonatomic, strong, readonly) UIImage *firstImage;
 - (instancetype)initWithSavePath:(NSURL *)savePath imagesCount:(int)count;
 - (void)addImage:(CGImageRef)imageRef;
 - (BOOL)finalize;
 @end
-@interface _SJGIFCreator ()
+@interface __SJGIFCreator ()
 @property (nonatomic) CGImageDestinationRef destination;
 @property (nonatomic, strong, readonly) NSDictionary *frameProperties;
 @end
-@implementation _SJGIFCreator
+@implementation __SJGIFCreator
 - (instancetype)initWithSavePath:(NSURL *)savePath imagesCount:(int)count {
     self = [super init];
     if ( !self ) return nil;
@@ -567,7 +215,7 @@ static float const _GeneratePreImgScale = 0.05;
 }
 @end
 
-@implementation SJPlayerAVCarrier (Export)
+@implementation SJPlayAsset (SJBaseVideoPlayerAdd_Export)
 - (void)setExportSession:(AVAssetExportSession * _Nullable)exportSession {
     objc_setAssociatedObject(self, @selector(exportSession), exportSession, OBJC_ASSOCIATION_RETAIN_NONATOMIC);
 }
@@ -583,16 +231,16 @@ static float const _GeneratePreImgScale = 0.05;
 - (void)exportWithBeginTime:(NSTimeInterval)beginTime
                     endTime:(NSTimeInterval)endTime
                  presetName:(nullable NSString *)presetName
-                   progress:(void(^)(SJPlayerAVCarrier *carrier, float progress))progress
-                 completion:(void(^)(SJPlayerAVCarrier *carrier, AVAsset * __nullable sandboxAsset, NSURL * __nullable fileURL, UIImage * __nullable thumbImage))completion
-                    failure:(void(^)(SJPlayerAVCarrier *carrier, NSError * __nullable error))failure {
+                   progress:(void(^)(SJPlayAsset *a, float progress))progress
+                 completion:(void(^)(SJPlayAsset *a, AVAsset * __nullable sandboxAsset, NSURL * __nullable fileURL, UIImage * __nullable thumbImage))completion
+                    failure:(void(^)(SJPlayAsset *a, NSError * __nullable error))failure {
     [self cancelExportOperation];
     if ( endTime - beginTime <= 0 ) {
         if ( failure ) failure(self, [NSError errorWithDomain:NSCocoaErrorDomain code:-1 userInfo:@{@"msg":@"Error: Start time is greater than end time!"}]);
         return;
     }
     if ( !presetName ) presetName = AVAssetExportPresetMediumQuality;
-    AVAsset *asset = self.asset;
+    AVAsset *asset = self.URLAsset;
     AVMutableComposition *compositionM = [AVMutableComposition composition];
     AVMutableCompositionTrack *audioTrackM = [compositionM addMutableTrackWithMediaType:AVMediaTypeAudio preferredTrackID:kCMPersistentTrackID_Invalid];
     AVMutableCompositionTrack *videoTrackM = [compositionM addMutableTrackWithMediaType:AVMediaTypeVideo preferredTrackID:kCMPersistentTrackID_Invalid];
@@ -633,12 +281,12 @@ static float const _GeneratePreImgScale = 0.05;
             case AVAssetExportSessionStatusExporting:
                 break;
             case AVAssetExportSessionStatusCompleted: {
-                [self screenshotWithTime:beginTime completion:^(SJPlayerAVCarrier * _Nonnull carrier, SJVideoPreviewModel * _Nullable images, NSError * _Nullable error) {
+                [self screenshotWithTime:beginTime completion:^(SJPlayAsset * _Nonnull a, UIImage * _Nullable image, NSError * _Nullable error) {
                     dispatch_async(dispatch_get_main_queue(), ^{
                         __strong typeof(_self) self = _self;
                         if ( !self ) return;
                         if ( progress ) progress(self, 1);
-                        if ( completion ) completion(self, compositionM, exportURL, images.image);
+                        if ( completion ) completion(self, compositionM, exportURL, image);
                     });
                 }];
             }
@@ -653,8 +301,8 @@ static float const _GeneratePreImgScale = 0.05;
                 break;
         }
         if ( self.exportSession.status == AVAssetExportSessionStatusCancelled ||
-             self.exportSession.status == AVAssetExportSessionStatusCompleted ||
-             self.exportSession.status == AVAssetExportSessionStatusFailed ) {
+            self.exportSession.status == AVAssetExportSessionStatusCompleted ||
+            self.exportSession.status == AVAssetExportSessionStatusFailed ) {
             // clear
             [self cancelExportOperation];
         }
@@ -680,19 +328,19 @@ static float const _GeneratePreImgScale = 0.05;
 
 
 #pragma mark
-- (void)setGIFCreator:(nullable _SJGIFCreator *)GIFCreator {
+- (void)setGIFCreator:(nullable __SJGIFCreator *)GIFCreator {
     objc_setAssociatedObject(self, @selector(GIFCreator), GIFCreator, OBJC_ASSOCIATION_RETAIN_NONATOMIC);
 }
 
-- (nullable _SJGIFCreator *)GIFCreator {
+- (nullable __SJGIFCreator *)GIFCreator {
     return objc_getAssociatedObject(self, _cmd);
 }
 
 - (nullable AVAssetImageGenerator *)GIFImageGenerator {
-    if ( !self.asset ) return nil;
+    if ( !self.URLAsset ) return nil;
     AVAssetImageGenerator *GIFImageGenerator = objc_getAssociatedObject(self, _cmd);
     if ( GIFImageGenerator ) return GIFImageGenerator;
-    GIFImageGenerator = [AVAssetImageGenerator assetImageGeneratorWithAsset:self.asset];
+    GIFImageGenerator = [AVAssetImageGenerator assetImageGeneratorWithAsset:self.URLAsset];
     GIFImageGenerator.requestedTimeToleranceBefore = kCMTimeZero;
     GIFImageGenerator.requestedTimeToleranceAfter = kCMTimeZero;
     GIFImageGenerator.appliesPreferredTrackTransform = YES;
@@ -706,9 +354,9 @@ static float const _GeneratePreImgScale = 0.05;
                      maximumSize:(CGSize)maximumSize
                         interval:(float)interval
                      gifSavePath:(NSURL *)gifSavePath
-                        progress:(void(^)(SJPlayerAVCarrier *carrier, float progress))progressBlock
-                      completion:(void(^)(SJPlayerAVCarrier *carrier, UIImage *imageGIF, UIImage *thumbnailImage))completion
-                         failure:(void(^)(SJPlayerAVCarrier *carrier, NSError *error))failure {
+                        progress:(void(^)(SJPlayAsset *a, float progress))progressBlock
+                      completion:(void(^)(SJPlayAsset *a, UIImage *imageGIF, UIImage *thumbnailImage))completion
+                         failure:(void(^)(SJPlayAsset *a, NSError *error))failure {
     [self cancelGenerateGIFOperation];
     if ( interval == 0 ) interval = 0.2f;
     __block int count = (int)ceil(duration / interval);
@@ -717,7 +365,7 @@ static float const _GeneratePreImgScale = 0.05;
         [timesM addObject:[NSValue valueWithCMTime:CMTimeMakeWithSeconds(beginTime + i * interval, NSEC_PER_SEC)]];
     }
     self.GIFImageGenerator.maximumSize = maximumSize;
-    self.GIFCreator = [[_SJGIFCreator alloc] initWithSavePath:gifSavePath imagesCount:count];
+    self.GIFCreator = [[__SJGIFCreator alloc] initWithSavePath:gifSavePath imagesCount:count];
     int all = count;
     __weak typeof(self) _self = self;
     [self.GIFImageGenerator generateCGImagesAsynchronouslyForTimes:timesM completionHandler:^(CMTime requestedTime, CGImageRef  _Nullable imageRef, CMTime actualTime, AVAssetImageGeneratorResult result, NSError * _Nullable error) {
@@ -767,8 +415,9 @@ static float const _GeneratePreImgScale = 0.05;
 }
 
 - (void)cancelGenerateGIFOperation {
-    if ( self.GIFImageGenerator ) {
-        [self.GIFImageGenerator cancelAllCGImageGeneration];
+    AVAssetImageGenerator *GIFImageGenerator = objc_getAssociatedObject(self, @selector(GIFImageGenerator));
+    if ( GIFImageGenerator ) {
+        [GIFImageGenerator cancelAllCGImageGeneration];
         [self setGIFCreator:nil];
     }
 }
@@ -900,4 +549,13 @@ static NSTimeInterval _yy_CGImageSourceGetGIFFrameDelayAtIndex(CGImageSourceRef 
 }
 @end
 
+
+@implementation  SJPlayAsset (SJBaseVideoPlayerAdd_CancelOperation)
+- (void)cancelOperation {
+    [self cancelExportOperation];
+    [self cancelScreenshotOperation];
+    [self cancelGenerateGIFOperation];
+    [self cancelPreviewImagesGeneration];
+}
+@end
 NS_ASSUME_NONNULL_END

@@ -42,13 +42,10 @@
     }];
     
 
-    dispatch_async(dispatch_get_global_queue(0, 0), ^{
-        self->_videoPlayer.assetURL = [[NSBundle mainBundle] URLForResource:@"sample" withExtension:@"mp4"];
-    });
-
+    self->_videoPlayer.URLAsset = [[SJVideoPlayerURLAsset alloc] initWithURL:[[NSBundle mainBundle] URLForResource:@"sample" withExtension:@"mp4"]];
     
     __weak typeof(self) _self = self;
-    _videoPlayer.willRotateScreen = ^(__kindof SJBaseVideoPlayer * _Nonnull player, BOOL isFullScreen) {
+    _videoPlayer.viewWillRotateExeBlock = ^(__kindof SJBaseVideoPlayer * _Nonnull player, BOOL isFullScreen) {
         __strong typeof(_self) self = _self;
         if ( !self ) return;
         [self.textView resignFirstResponder];       // text view resignFirstResponder.

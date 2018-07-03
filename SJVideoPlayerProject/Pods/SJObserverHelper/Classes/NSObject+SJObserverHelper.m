@@ -65,7 +65,7 @@ NS_ASSUME_NONNULL_BEGIN
     if ( [[self sj_observerhashSet] containsObject:hashstr] ) return;
     else [[self sj_observerhashSet] addObject:hashstr];
     
-    [self addObserver:observer forKeyPath:keyPath options:NSKeyValueObservingOptionOld | NSKeyValueObservingOptionNew context:nil];
+    [self addObserver:observer forKeyPath:keyPath options:NSKeyValueObservingOptionOld | NSKeyValueObservingOptionNew context:context];
     
     SJObserverHelper *helper = [SJObserverHelper new];
     SJObserverHelper *sub = [SJObserverHelper new];

@@ -252,25 +252,6 @@ NS_ASSUME_NONNULL_BEGIN
     [_presentView removeFromSuperview];
 }
 
-- (void)setControlLayerDataSource:(nullable id<SJVideoPlayerControlLayerDataSource>)controlLayerDataSource {
-    if ( controlLayerDataSource == _controlLayerDataSource ) return;
-    _controlLayerDataSource = controlLayerDataSource;
-    
-    if ( !controlLayerDataSource ) return;
-    
-    _controlLayerDataSource.controlView.clipsToBounds = YES;
-    
-    // install
-    [self.controlContentView addSubview:_controlLayerDataSource.controlView];
-    [_controlLayerDataSource.controlView mas_makeConstraints:^(MASConstraintMaker *make) {
-        make.edges.offset(0);
-    }];
-    
-    if ( [self.controlLayerDataSource respondsToSelector:@selector(installedControlViewToVideoPlayer:)] ) {
-        [self.controlLayerDataSource installedControlViewToVideoPlayer:self];
-    }
-}
-
 - (void)setPlayStatus:(SJVideoPlayerPlayStatus)playStatus {
     /// 所有播放状态, 均在`PlayControl`分类中维护
     /// 所有播放状态, 均在`PlayControl`分类中维护
@@ -366,6 +347,26 @@ NS_ASSUME_NONNULL_BEGIN
             break;
     }
 #endif
+}
+
+
+- (void)setControlLayerDataSource:(nullable id<SJVideoPlayerControlLayerDataSource>)controlLayerDataSource {
+    if ( controlLayerDataSource == _controlLayerDataSource ) return;
+    _controlLayerDataSource = controlLayerDataSource;
+    
+    if ( !controlLayerDataSource ) return;
+    
+    _controlLayerDataSource.controlView.clipsToBounds = YES;
+    
+    // install
+    [self.controlContentView addSubview:_controlLayerDataSource.controlView];
+    [_controlLayerDataSource.controlView mas_makeConstraints:^(MASConstraintMaker *make) {
+        make.edges.offset(0);
+    }];
+    
+    if ( [self.controlLayerDataSource respondsToSelector:@selector(installedControlViewToVideoPlayer:)] ) {
+        [self.controlLayerDataSource installedControlViewToVideoPlayer:self];
+    }
 }
 
 - (void)setControlLayerDelegate:(nullable id<SJVideoPlayerControlLayerDelegate>)controlLayerDelegate {

@@ -52,14 +52,14 @@
 }
 
 - (void)sj_appear {
-    [self __changeState:YES];
+    [self sj_changeState:YES];
 }
 
 - (void)sj_disappear {
-    [self __changeState:NO];
+    [self sj_changeState:NO];
 }
 
-- (void)__changeState:(BOOL)show {
+- (void)sj_changeState:(BOOL)show {
     if ( SJViewDisappearType_All == (self.sj_disappearType & SJViewDisappearType_All) ) {
         self.sj_disappearType = SJViewDisappearType_Alpha | SJViewDisappearType_Transform;
     }

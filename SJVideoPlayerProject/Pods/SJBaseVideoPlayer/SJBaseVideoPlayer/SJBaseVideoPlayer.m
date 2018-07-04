@@ -310,30 +310,30 @@ NS_ASSUME_NONNULL_BEGIN
     }
     
     
-#if 1
+#ifdef DEBUG
     switch ( playStatus ) {
         case SJVideoPlayerPlayStatusUnknown:
-            printf("SJBaseVideoPlayer.SJVideoPlayerPlayStatus.Unknown\n");
+            printf("SJBaseVideoPlayer<%p>.SJVideoPlayerPlayStatus.Unknown\n", self);
             break;
         case SJVideoPlayerPlayStatusPrepare:
-            printf("SJBaseVideoPlayer.SJVideoPlayerPlayStatus.Prepare\n");
+            printf("SJBaseVideoPlayer<%p>.SJVideoPlayerPlayStatus.Prepare\n", self);
             break;
         case SJVideoPlayerPlayStatusReadyToPlay:
-            printf("SJBaseVideoPlayer.SJVideoPlayerPlayStatus.ReadyToPlay\n");
+            printf("SJBaseVideoPlayer<%p>.SJVideoPlayerPlayStatus.ReadyToPlay\n", self);
             break;
         case SJVideoPlayerPlayStatusPlaying:
-            printf("SJBaseVideoPlayer.SJVideoPlayerPlayStatus.Playing\n");
+            printf("SJBaseVideoPlayer<%p>.SJVideoPlayerPlayStatus.Playing\n", self);
             break;
         case SJVideoPlayerPlayStatusPaused: {
             switch ( self.pausedReason ) {
                 case SJVideoPlayerPausedReasonBuffering:
-                    printf("SJBaseVideoPlayer.SJVideoPlayerPlayStatus.Paused(Reason: Buffering)\n");
+                    printf("SJBaseVideoPlayer<%p>.SJVideoPlayerPlayStatus.Paused(Reason: Buffering)\n", self);
                     break;
                 case SJVideoPlayerPausedReasonPause:
-                    printf("SJBaseVideoPlayer.SJVideoPlayerPlayStatus.Paused(Reason: Pause)\n");
+                    printf("SJBaseVideoPlayer<%p>.SJVideoPlayerPlayStatus.Paused(Reason: Pause)\n", self);
                     break;
                 case SJVideoPlayerPausedReasonSeeking:
-                    printf("SJBaseVideoPlayer.SJVideoPlayerPlayStatus.Paused(Reason: Seeking)\n");
+                    printf("SJBaseVideoPlayer<%p>.SJVideoPlayerPlayStatus.Paused(Reason: Seeking)\n", self);
                     break;
             }
         }
@@ -341,10 +341,10 @@ NS_ASSUME_NONNULL_BEGIN
         case SJVideoPlayerPlayStatusInactivity: {
             switch ( self.inactivityReason ) {
                 case SJVideoPlayerInactivityReasonPlayEnd :
-                    printf("SJBaseVideoPlayer.SJVideoPlayerPlayStatus.Inactivity(Reason: PlayEnd)\n");
+                    printf("SJBaseVideoPlayer<%p>.SJVideoPlayerPlayStatus.Inactivity(Reason: PlayEnd)\n", self);
                     break;
                 case SJVideoPlayerInactivityReasonPlayFailed:
-                    printf("SJBaseVideoPlayer.SJVideoPlayerPlayStatus.Inactivity(Reason: PlayFailed)\n");
+                    printf("SJBaseVideoPlayer<%p>.SJVideoPlayerPlayStatus.Inactivity(Reason: PlayFailed)\n", self);
                     break;
             }
         }
@@ -875,18 +875,18 @@ NS_ASSUME_NONNULL_BEGIN
         if ( self.assetDeallocExeBlock ) self.assetDeallocExeBlock(self);
     }
     
+    [_URLAsset.playAsset.player pause];
+    _playAssetObserver = nil;
+    _playModelObserver = nil;
     
-    if ( !URLAsset ) {
-        [_URLAsset.playAsset.player pause];
-        _playAssetObserver = nil;
-        _playModelObserver = nil;
-        self.playStatus = SJVideoPlayerPlayStatusUnknown;
-    }
-    else {
-        __weak typeof(self) _self = self;
-        dispatch_async(dispatch_get_main_queue(), ^{
-            __strong typeof(_self) self = _self;
-            if ( !self ) return ;
+    __weak typeof(self) _self = self;
+    dispatch_async(dispatch_get_main_queue(), ^{
+        __strong typeof(_self) self = _self;
+        if ( !self ) return ;
+        if ( !URLAsset ) {
+            self.playStatus = SJVideoPlayerPlayStatusUnknown;
+        }
+        else {
             self.playStatus = SJVideoPlayerPlayStatusPrepare;
             if ( [self.controlLayerDelegate respondsToSelector:@selector(startLoading:)] ) {
                 [self.controlLayerDelegate startLoading:self];
@@ -901,8 +901,8 @@ NS_ASSUME_NONNULL_BEGIN
             if ( [self.controlLayerDelegate respondsToSelector:@selector(videoPlayer:prepareToPlay:)] ) {
                 [self.controlLayerDelegate videoPlayer:self prepareToPlay:URLAsset];
             }
-        });
-    }
+        }
+    });
     
     _URLAsset = URLAsset;
 }

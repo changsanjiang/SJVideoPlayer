@@ -204,6 +204,7 @@ NS_ASSUME_NONNULL_END
     if ( self.currentOperation == SJVideoPlayerFilmEditingOperation_Unknown ) return;
     switch ( status ) {
         case SJVideoPlayerPlayStatusUnknown:
+        case SJVideoPlayerPlayStatusPrepare:
         case SJVideoPlayerPlayStatusReadyToPlay: break;
         case SJVideoPlayerPlayStatusPlaying: {
             [self resume];

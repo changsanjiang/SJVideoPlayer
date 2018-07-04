@@ -13,6 +13,10 @@
     return self.playStatus == SJVideoPlayerPlayStatusUnknown;
 }
 
+- (BOOL)playStatus_isPrepare {
+    return self.playStatus == SJVideoPlayerPlayStatusPrepare;
+}
+
 - (BOOL)playStatus_isReadyToPlay {
     return self.playStatus == SJVideoPlayerPlayStatusReadyToPlay;
 }

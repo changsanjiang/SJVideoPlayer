@@ -257,7 +257,7 @@ NS_ASSUME_NONNULL_BEGIN
     /// 所有播放状态, 均在`PlayControl`分类中维护
     _playStatus = playStatus;
     
-    if ( [self playStatus_isUnknown] || [self playStatus_isReadyToPlay] ) {
+    if ( [self playStatus_isUnknown] || [self playStatus_isPrepare] ) {
         [self.presentView showPlaceholder];
     }
     else if ( [self playStatus_isPlaying] ) {
@@ -270,6 +270,7 @@ NS_ASSUME_NONNULL_BEGIN
         case SJVideoPlayerPlayStatusUnknown:
             self.state = SJVideoPlayerPlayState_Unknown;
             break;
+        case SJVideoPlayerPlayStatusPrepare:
         case SJVideoPlayerPlayStatusReadyToPlay:
             self.state = SJVideoPlayerPlayState_Prepare;
             break;
@@ -313,6 +314,9 @@ NS_ASSUME_NONNULL_BEGIN
     switch ( playStatus ) {
         case SJVideoPlayerPlayStatusUnknown:
             printf("SJBaseVideoPlayer.SJVideoPlayerPlayStatus.Unknown\n");
+            break;
+        case SJVideoPlayerPlayStatusPrepare:
+            printf("SJBaseVideoPlayer.SJVideoPlayerPlayStatus.Prepare\n");
             break;
         case SJVideoPlayerPlayStatusReadyToPlay:
             printf("SJBaseVideoPlayer.SJVideoPlayerPlayStatus.ReadyToPlay\n");
@@ -871,18 +875,19 @@ NS_ASSUME_NONNULL_BEGIN
         if ( self.assetDeallocExeBlock ) self.assetDeallocExeBlock(self);
     }
     
-    self.playStatus = SJVideoPlayerPlayStatusUnknown;
     
     if ( !URLAsset ) {
         [_URLAsset.playAsset.player pause];
         _playAssetObserver = nil;
         _playModelObserver = nil;
+        self.playStatus = SJVideoPlayerPlayStatusUnknown;
     }
     else {
         __weak typeof(self) _self = self;
         dispatch_async(dispatch_get_main_queue(), ^{
             __strong typeof(_self) self = _self;
             if ( !self ) return ;
+            self.playStatus = SJVideoPlayerPlayStatusPrepare;
             if ( [self.controlLayerDelegate respondsToSelector:@selector(startLoading:)] ) {
                 [self.controlLayerDelegate startLoading:self];
             }
@@ -909,7 +914,7 @@ NS_ASSUME_NONNULL_BEGIN
 // 2.1
 - (void)_playerItemReadyToPlay {
     
-    if ( ![self playStatus_isUnknown] ) return;
+    if ( ![self playStatus_isPrepare] ) return;
     
     self.playStatus = SJVideoPlayerPlayStatusReadyToPlay;
     
@@ -1037,6 +1042,7 @@ NS_ASSUME_NONNULL_BEGIN
 }
 
 - (void)play {
+
     if ( !self.URLAsset ) return;
     
     if ( [self playStatus_isInactivity_ReasonPlayEnd] ) {
@@ -1051,7 +1057,7 @@ NS_ASSUME_NONNULL_BEGIN
         return;
     }
     
-    if ( [self playStatus_isUnknown] ) {
+    if ( [self playStatus_isPrepare] ) {
         // 记录操作, 待资源初始化完成后调用
         self.operationOfInitializing = ^(SJBaseVideoPlayer * _Nonnull player) {
             [player play];
@@ -1073,6 +1079,7 @@ NS_ASSUME_NONNULL_BEGIN
 }
 
 - (void)pause:(SJVideoPlayerPausedReason)reason {
+
     if ( !self.URLAsset ) return;
     
     if ( [self playStatus_isPaused_ReasonPause] ) return;
@@ -1081,7 +1088,7 @@ NS_ASSUME_NONNULL_BEGIN
     
     if ( [self playStatus_isInactivity_ReasonPlayFailed] ) return;
     
-    if ( [self playStatus_isUnknown] ) {
+    if ( [self playStatus_isPrepare] ) {
         
         __weak typeof(self) _self = self;
         self.operationOfInitializing = ^(SJBaseVideoPlayer * _Nonnull player) {

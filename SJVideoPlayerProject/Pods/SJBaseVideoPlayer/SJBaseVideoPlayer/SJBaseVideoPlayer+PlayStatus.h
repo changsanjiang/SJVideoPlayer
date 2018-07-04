@@ -11,6 +11,8 @@
 
 - (BOOL)playStatus_isUnknown;
 
+- (BOOL)playStatus_isPrepare;
+
 - (BOOL)playStatus_isReadyToPlay;
 
 - (BOOL)playStatus_isPlaying;

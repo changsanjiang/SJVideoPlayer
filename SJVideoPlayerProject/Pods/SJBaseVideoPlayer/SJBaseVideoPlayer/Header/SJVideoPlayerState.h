@@ -13,13 +13,15 @@
  当前播放的状态
 
  - SJVideoPlayerPlayStatusUnknown:      未播放任何资源时的状态
- - SJVideoPlayerPlayStatusReadyToPlay:  准备就绪
+ - SJVideoPlayerPlayStatusPrepare:      准备播放一个资源
+ - SJVideoPlayerPlayStatusReadyToPlay:  准备就绪, 可以播放
  - SJVideoPlayerPlayStatusPlaying:      播放中
  - SJVideoPlayerPlayStatusPaused:       暂停状态, 请通过`SJVideoPlayerPausedReason`, 查看暂停原因
  - SJVideoPlayerPlayStatusInactivity:   不活跃状态, 请通过`SJVideoPlayerInactivityReason`, 查看暂停原因
  */
 typedef NS_ENUM(NSUInteger, SJVideoPlayerPlayStatus) {
     SJVideoPlayerPlayStatusUnknown,
+    SJVideoPlayerPlayStatusPrepare,
     SJVideoPlayerPlayStatusReadyToPlay,
     SJVideoPlayerPlayStatusPlaying,
     SJVideoPlayerPlayStatusPaused,

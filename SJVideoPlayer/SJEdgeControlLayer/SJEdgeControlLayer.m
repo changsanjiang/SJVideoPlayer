@@ -286,7 +286,8 @@ NS_ASSUME_NONNULL_END
 
 - (void)videoPlayer:(__kindof SJBaseVideoPlayer *)videoPlayer statusDidChanged:(SJVideoPlayerPlayStatus)status {
     switch (status) {
-        case SJVideoPlayerPlayStatusUnknown: {
+        case SJVideoPlayerPlayStatusUnknown:
+        case SJVideoPlayerPlayStatusPrepare: { 
             [videoPlayer controlLayerNeedDisappear];
             self.topControlView.model.title = nil;
             [self.topControlView needUpdateLayout];

@@ -224,7 +224,7 @@ NS_ASSUME_NONNULL_BEGIN
 }
 
 + (NSString *)version {
-    return @"1.1.0";
+    return @"1.2.0";
 }
 
 - (instancetype)init {
@@ -735,10 +735,10 @@ NS_ASSUME_NONNULL_BEGIN
         if ( !self ) return ;
         
         if ( self.pauseWhenAppDidEnterBackground ) {
-            if ( [self playStatus_isPaused_ReasonPause] ) [self pause];
+            [self pause];
         }
         else {
-            if ( [self playStatus_isPaused_ReasonPause] ) self.presentView.player = nil;
+            self.presentView.player = nil;
         }
         
         if ( [self.controlLayerDelegate respondsToSelector:@selector(appDidEnterBackground:)] ) {

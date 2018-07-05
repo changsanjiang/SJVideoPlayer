@@ -2,100 +2,90 @@ PODS:
   - Masonry (1.1.0)
   - Reachability (3.2)
   - SJAttributesFactory (2.0.3.3)
-  - SJBaseVideoPlayer (1.2.0):
+  - SJBaseVideoPlayer (1.2.0.2):
     - Masonry
     - Reachability
-    - SJBaseVideoPlayer/Category (= 1.2.0)
-    - SJBaseVideoPlayer/Download (= 1.2.0)
-    - SJBaseVideoPlayer/GestureControl (= 1.2.0)
-    - SJBaseVideoPlayer/Header (= 1.2.0)
-    - SJBaseVideoPlayer/Model (= 1.2.0)
-    - SJBaseVideoPlayer/Present (= 1.2.0)
-    - SJBaseVideoPlayer/Registrar (= 1.2.0)
-    - SJBaseVideoPlayer/TimerControl (= 1.2.0)
-    - SJBorderLineView
+    - SJBaseVideoPlayer/Category (= 1.2.0.2)
+    - SJBaseVideoPlayer/Download (= 1.2.0.2)
+    - SJBaseVideoPlayer/GestureControl (= 1.2.0.2)
+    - SJBaseVideoPlayer/Header (= 1.2.0.2)
+    - SJBaseVideoPlayer/Model (= 1.2.0.2)
+    - SJBaseVideoPlayer/Present (= 1.2.0.2)
+    - SJBaseVideoPlayer/Registrar (= 1.2.0.2)
+    - SJBaseVideoPlayer/TimerControl (= 1.2.0.2)
     - SJObserverHelper
     - SJOrentationObserver
     - SJPrompt
     - SJUIFactory
     - SJVolBrigControl
-  - SJBaseVideoPlayer/Category (1.2.0):
+  - SJBaseVideoPlayer/Category (1.2.0.2):
     - Masonry
     - Reachability
-    - SJBorderLineView
     - SJObserverHelper
     - SJOrentationObserver
     - SJPrompt
     - SJUIFactory
     - SJVolBrigControl
-  - SJBaseVideoPlayer/Download (1.2.0):
+  - SJBaseVideoPlayer/Download (1.2.0.2):
     - Masonry
     - Reachability
-    - SJBorderLineView
     - SJObserverHelper
     - SJOrentationObserver
     - SJPrompt
     - SJUIFactory
     - SJVolBrigControl
-  - SJBaseVideoPlayer/GestureControl (1.2.0):
+  - SJBaseVideoPlayer/GestureControl (1.2.0.2):
     - Masonry
     - Reachability
-    - SJBorderLineView
     - SJObserverHelper
     - SJOrentationObserver
     - SJPrompt
     - SJUIFactory
     - SJVolBrigControl
-  - SJBaseVideoPlayer/Header (1.2.0):
+  - SJBaseVideoPlayer/Header (1.2.0.2):
     - Masonry
     - Reachability
-    - SJBorderLineView
     - SJObserverHelper
     - SJOrentationObserver
     - SJPrompt
     - SJUIFactory
     - SJVolBrigControl
-  - SJBaseVideoPlayer/Model (1.2.0):
+  - SJBaseVideoPlayer/Model (1.2.0.2):
     - Masonry
     - Reachability
     - SJBaseVideoPlayer/Category
     - SJBaseVideoPlayer/Header
-    - SJBorderLineView
     - SJObserverHelper
     - SJOrentationObserver
     - SJPrompt
     - SJUIFactory
     - SJVolBrigControl
-  - SJBaseVideoPlayer/Present (1.2.0):
+  - SJBaseVideoPlayer/Present (1.2.0.2):
     - Masonry
     - Reachability
     - SJBaseVideoPlayer/Header
-    - SJBorderLineView
     - SJObserverHelper
     - SJOrentationObserver
     - SJPrompt
     - SJUIFactory
     - SJVolBrigControl
-  - SJBaseVideoPlayer/Registrar (1.2.0):
+  - SJBaseVideoPlayer/Registrar (1.2.0.2):
     - Masonry
     - Reachability
-    - SJBorderLineView
     - SJObserverHelper
     - SJOrentationObserver
     - SJPrompt
     - SJUIFactory
     - SJVolBrigControl
-  - SJBaseVideoPlayer/TimerControl (1.2.0):
+  - SJBaseVideoPlayer/TimerControl (1.2.0.2):
     - Masonry
     - Reachability
     - SJBaseVideoPlayer/Category
-    - SJBorderLineView
     - SJObserverHelper
     - SJOrentationObserver
     - SJPrompt
     - SJUIFactory
     - SJVolBrigControl
-  - SJBorderLineView (0.0.6)
   - SJFullscreenPopGesture (1.4.1)
   - SJLoadingView (1.0.1)
   - SJObserverHelper (1.0.5.1)
@@ -135,7 +125,6 @@ SPEC REPOS:
     - Reachability
     - SJAttributesFactory
     - SJBaseVideoPlayer
-    - SJBorderLineView
     - SJFullscreenPopGesture
     - SJLoadingView
     - SJObserverHelper
@@ -151,8 +140,7 @@ SPEC CHECKSUMS:
   Masonry: 678fab65091a9290e40e2832a55e7ab731aad201
   Reachability: 33e18b67625424e47b6cde6d202dce689ad7af96
   SJAttributesFactory: 791dbaa250e42ce19e1f501663ddc696be51c3e9
-  SJBaseVideoPlayer: b61dedd113c2ff44e688a7227035f366af8cad12
-  SJBorderLineView: 5878e67fb57e812a2d5d029ca666068784b5448a
+  SJBaseVideoPlayer: 6b98cea66c09fc6a58d35c17e6e2342eb412bf33
   SJFullscreenPopGesture: 17ce985eef9e45a35ee11b90440502265a9f2362
   SJLoadingView: c3ff03e4b363a5b6a3ba0634d6bb9ce2647faf07
   SJObserverHelper: b8dcf2653dca2538bb601f558bde72c229e08737

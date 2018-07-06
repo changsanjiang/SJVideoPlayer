@@ -918,7 +918,7 @@ NS_ASSUME_NONNULL_BEGIN
     
     self.playStatus = SJVideoPlayerPlayStatusReadyToPlay;
     
-    BOOL mute = self.mute; self.mute = mute;
+    BOOL mute = self.mute; _URLAsset.playAsset.player.muted = mute;
     
     if ( [self.controlLayerDelegate respondsToSelector:@selector(videoPlayer:currentTime:currentTimeStr:totalTime:totalTimeStr:)] ) {
         [self.controlLayerDelegate videoPlayer:self currentTime:self.currentTime currentTimeStr:self.currentTimeStr totalTime:self.totalTime totalTimeStr:self.totalTimeStr];

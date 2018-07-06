@@ -29,11 +29,6 @@
 			<key>isShown</key>
 			<false/>
 		</dict>
-		<key>SJBorderLineView.xcscheme</key>
-		<dict>
-			<key>isShown</key>
-			<false/>
-		</dict>
 		<key>SJFullscreenPopGesture.xcscheme</key>
 		<dict>
 			<key>isShown</key>

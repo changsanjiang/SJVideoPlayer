@@ -14,7 +14,7 @@
             buildForArchiving = "YES">
             <BuildableReference
                BuildableIdentifier = "primary"
-               BlueprintIdentifier = "0640D9F823558D4E428F0D8115BDB0A6"
+               BlueprintIdentifier = "B7DAC7ECCEC2CFDBEEBC10F8A13AC3D3"
                BlueprintName = "SJOrentationObserver"
                ReferencedContainer = "container:Pods.xcodeproj"
                BuildableName = "libSJOrentationObserver.a">

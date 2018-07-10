@@ -16,15 +16,6 @@ NS_ASSUME_NONNULL_BEGIN
 - (void)sj_scrollViewDidEndDecelerating:(__kindof UIScrollView *)scrollView;
 @end
 
-@implementation UIScrollView (SJPlayerCurrentPlayingIndexPath)
-- (void)setSj_currentPlayingIndexPath:(nullable NSIndexPath *)sj_currentPlayingIndexPath {
-    objc_setAssociatedObject(self, @selector(sj_currentPlayingIndexPath), sj_currentPlayingIndexPath, OBJC_ASSOCIATION_RETAIN_NONATOMIC);
-}
-
-- (nullable NSIndexPath *)sj_currentPlayingIndexPath {
-    return objc_getAssociatedObject(self, _cmd);
-}
-@end
 
 static bool sj_isTookOver(Class cls);
 static void sj_setIsTookOver(Class cls);
@@ -32,6 +23,8 @@ static void sj_tookOverMethod(Class cls, struct objc_method_description *des, SE
 static void sj_scrollViewDidEndDragging(id<UIScrollViewDelegate_ListViewAutoplaySJAdd> delegate, SEL _cmd, __kindof UIScrollView *scrollView, bool willDecelerate);
 static void sj_scrollViewDidEndDecelerating(id<UIScrollViewDelegate_ListViewAutoplaySJAdd> delegate, SEL _cmd, __kindof UIScrollView *scrollView);
 static void sj_scrollViewConsiderPlayNewAsset(__kindof __kindof UIScrollView *scrollView);
+static void sj_tableViewNeedPlayNextAsset(UITableView *tableView);
+static void sj_collectionViewNeedPlayNextAsset(UICollectionView *collectionView);
 
 
 @interface _SJDeallocHelper: NSObject
@@ -85,14 +78,32 @@ static NSString *delegateKey = @"delegate";
 }
 @end
 
+@implementation UIScrollView (SJPlayerCurrentPlayingIndexPath)
+- (void)setSj_currentPlayingIndexPath:(nullable NSIndexPath *)sj_currentPlayingIndexPath {
+    objc_setAssociatedObject(self, @selector(sj_currentPlayingIndexPath), sj_currentPlayingIndexPath, OBJC_ASSOCIATION_RETAIN_NONATOMIC);
+}
+
+- (nullable NSIndexPath *)sj_currentPlayingIndexPath {
+    return objc_getAssociatedObject(self, _cmd);
+}
+- (void)sj_needPlayNextAsset {
+    // 查询当前显示的cell中(sj_currentPlayingIndexPath之后的), 是否存在播放器父视图
+    if ( [self isKindOfClass:[UITableView class]] ) {
+        sj_tableViewNeedPlayNextAsset((id)self);
+    }
+    else {
+        sj_collectionViewNeedPlayNextAsset((id)self);
+    }
+}
+@end
 
 @implementation UIScrollView (ListViewAutoplaySJAdd)
 
-- (void)setSj_enableAutoplay:(BOOL)sj_enableAutoplay {
-    objc_setAssociatedObject(self, @selector(sj_enableAutoplay), @(sj_enableAutoplay), OBJC_ASSOCIATION_RETAIN_NONATOMIC);
+- (void)setSj_enabledAutoplay:(BOOL)sj_enabledAutoplay {
+    objc_setAssociatedObject(self, @selector(sj_enabledAutoplay), @(sj_enabledAutoplay), OBJC_ASSOCIATION_RETAIN_NONATOMIC);
 }
 
-- (BOOL)sj_enableAutoplay {
+- (BOOL)sj_enabledAutoplay {
     return [objc_getAssociatedObject(self, _cmd) boolValue];
 }
 
@@ -105,9 +116,9 @@ static NSString *delegateKey = @"delegate";
 }
 
 - (void)sj_enableAutoplayWithConfig:(SJPlayerAutoplayConfig *)autoplayConfig {
-    autoplayConfig.animationType = SJAutoplayScrollAnimationTypeTop;
+    autoplayConfig.animationType = SJAutoplayScrollAnimationTypeMiddle;
     
-    self.sj_enableAutoplay = YES;
+    self.sj_enabledAutoplay = YES;
     self.sj_autoplayConfig = autoplayConfig;
 
     if ( self.delegate ) { [self _sj_tookOver]; }
@@ -121,7 +132,7 @@ static NSString *delegateKey = @"delegate";
 }
 
 - (void)sj_disenableAutoplay {
-    self.sj_enableAutoplay = NO;
+    self.sj_enabledAutoplay = NO;
     self.sj_autoplayConfig = nil;
 }
 
@@ -183,6 +194,8 @@ static void sj_scrollViewConsiderPlayNewAsset(__kindof __kindof UIScrollView *sc
 
 static void sj_tableViewConsiderPlayNewAsset(UITableView *tableView) {
     
+    if ( tableView.visibleCells.count == 0 ) return;
+    
     SJPlayerAutoplayConfig *config = [tableView sj_autoplayConfig];
     
     if ( tableView.sj_currentPlayingIndexPath &&
@@ -243,8 +256,6 @@ static void sj_tableViewConsiderPlayNewAsset(UITableView *tableView) {
             [config.autoplayDelegate sj_playerNeedPlayNewAssetAtIndexPath:nextIndexPath];
         }
     }
-    
-    sj_scrollViewNeedScroll(tableView, nextIndexPath, config.animationType);
 }
 
 static void sj_collectionViewConsiderPlayNewAsset(UICollectionView *collectionView) {
@@ -267,7 +278,7 @@ static void sj_scrollViewNeedScroll(__kindof UIScrollView *scrollView, NSIndexPa
         case SJAutoplayScrollAnimationTypeMiddle: {
             [UIView animateWithDuration:0.6 animations:^{
                 if ( [scrollView isKindOfClass:[UITableView class]] ) {
-                    [(UITableView *)scrollView scrollToRowAtIndexPath:indexPath atScrollPosition:UITableViewScrollPositionTop animated:NO];
+                    [(UITableView *)scrollView scrollToRowAtIndexPath:indexPath atScrollPosition:UITableViewScrollPositionMiddle animated:NO];
                 }
             } completion:^(BOOL finished) {
             }];
@@ -275,4 +286,28 @@ static void sj_scrollViewNeedScroll(__kindof UIScrollView *scrollView, NSIndexPa
             break;
     }
 }
+
+static void sj_tableViewNeedPlayNextAsset(UITableView *tableView) {
+    NSArray<NSIndexPath *> *visibleIndexPaths = tableView.indexPathsForVisibleRows;
+    if ( [visibleIndexPaths.lastObject compare:tableView.sj_currentPlayingIndexPath] == NSOrderedSame ) return;
+    NSInteger cut = [visibleIndexPaths indexOfObject:tableView.sj_currentPlayingIndexPath] + 1;
+    NSArray<NSIndexPath *> *subIndexPaths = [visibleIndexPaths subarrayWithRange:NSMakeRange(cut, visibleIndexPaths.count - cut)];
+    if ( subIndexPaths.count == 0 ) return;
+    __block NSIndexPath *nextIndexPath = nil;
+    [subIndexPaths enumerateObjectsUsingBlock:^(NSIndexPath * _Nonnull obj, NSUInteger idx, BOOL * _Nonnull stop) {
+        UIView *superview = [[tableView cellForRowAtIndexPath:obj] viewWithTag:101];
+        if ( !superview ) return;
+        *stop = YES;
+        nextIndexPath = obj;
+    }];
+    if ( !nextIndexPath ) return;
+
+    [[tableView sj_autoplayConfig].autoplayDelegate sj_playerNeedPlayNewAssetAtIndexPath:nextIndexPath];
+    sj_scrollViewNeedScroll(tableView, nextIndexPath, [tableView sj_autoplayConfig].animationType);
+}
+
+static void sj_collectionViewNeedPlayNextAsset(UICollectionView *collectionView) {
+    
+}
+
 NS_ASSUME_NONNULL_END

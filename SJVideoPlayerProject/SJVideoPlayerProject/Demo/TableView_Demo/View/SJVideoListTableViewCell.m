@@ -79,7 +79,7 @@ static const char *kVideoTitle = "kVideoTitle";
 
 + (CGFloat)heightWithVideo:(SJVideoModel *)video {
     YYTextLayout *titleLayout = objc_getAssociatedObject(video, kVideoTitle);
-    return 14 + 44 + 8 + titleLayout.textBoundingSize.height + 8 + (SJScreen_W() * 9 / 16.0f) + 8;
+    return 14 + 44 + 8 + titleLayout.textBoundingSize.height + 8 + (SJScreen_Min() * 9 / 16.0f) + 8;
 }
 
 #pragma mark -
@@ -106,6 +106,7 @@ static const char *kVideoTitle = "kVideoTitle";
 }
 
 - (void)setModel:(SJVideoModel *)model {
+    if ( model == _model ) return;
     _model = model;
     _avatarImageView.image = [UIImage imageNamed:model.creator.avatar];
     _coverImageView.image = [UIImage imageNamed:model.coverURLStr];

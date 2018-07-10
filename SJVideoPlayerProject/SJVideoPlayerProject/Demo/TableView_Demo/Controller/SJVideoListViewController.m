@@ -78,8 +78,10 @@ static NSString *const SJVideoListTableViewCellID = @"SJVideoListTableViewCell";
                 self.tableView.alpha = 1;
             }];
             
+            // 开启自动播放
             [self.tableView sj_enableAutoplayWithConfig:[SJPlayerAutoplayConfig configWithPlayerSuperviewTag:101 autoplayDelegate:self]];
             
+            // 播放第一个视频
             [self sj_playerNeedPlayNewAssetAtIndexPath:[NSIndexPath indexPathForRow:0 inSection:0]];
         });
     });

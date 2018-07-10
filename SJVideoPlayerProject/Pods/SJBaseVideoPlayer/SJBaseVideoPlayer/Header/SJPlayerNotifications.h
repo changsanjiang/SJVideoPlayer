@@ -10,7 +10,6 @@
 
 #import <UIKit/UIKit.h>
 NS_ASSUME_NONNULL_BEGIN
-UIKIT_EXTERN NSString *kSJPlayerAssetKey;
 UIKIT_EXTERN NSNotificationName const SJPlayerPrepareToPlayAnAssetNotification;
 NS_ASSUME_NONNULL_END
 #endif /* SJPlayerNotifications_h */

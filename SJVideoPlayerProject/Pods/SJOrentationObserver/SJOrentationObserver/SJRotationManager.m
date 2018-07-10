@@ -215,12 +215,13 @@ NS_ASSUME_NONNULL_BEGIN
                 break;
         }
         
+        // update 
+        self.con_portraitRect = [window convertRect:self.superview.bounds fromView:self.superview];
+
         if ( ori_old == SJOrientation_Portrait ) {
             self.target.translatesAutoresizingMaskIntoConstraints = YES;
-            CGRect frame = [window convertRect:self.target.frame fromView:self.superview];
-            self.target.frame = frame;
+            self.target.frame = self.con_portraitRect;
             [window addSubview:self.target];
-            self.con_portraitRect = frame;
         }
 
         // update

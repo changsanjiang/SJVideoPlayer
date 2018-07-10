@@ -64,6 +64,11 @@ NS_ASSUME_NONNULL_END
 - (void)setPlayer:(AVPlayer *)player {
     if ( player == self.avLayer.player ) return;
     self.avLayer.player = player;
+    
+    CATransition *anima = [CATransition animation];
+    anima.type = kCATransitionFade;
+    anima.duration = 1.0f;
+    [self.layer addAnimation:anima forKey:@"fadeAnimation"];
 }
 
 - (AVPlayer *)player {

@@ -975,6 +975,22 @@ NS_ASSUME_NONNULL_BEGIN
 }
 
 - (void)_playDidToEnd {
+    SJVideoPlayerURLAsset *URLAsset = self.URLAsset;
+    if ( [URLAsset.playModel isKindOfClass:[SJUITableViewCellPlayModel class]] ) {
+        SJUITableViewCellPlayModel *playModel = (id)URLAsset.playModel;
+        if ( playModel.tableView.sj_enabledAutoplay ) {
+            [playModel.tableView sj_needPlayNextAsset];
+            return;
+        }
+    }
+    else if ( [URLAsset.playModel isKindOfClass:[SJUICollectionViewCellPlayModel class]] ) {
+        SJUICollectionViewCellPlayModel *playModel = (id)URLAsset.playModel;
+        if ( playModel.collectionView.sj_enabledAutoplay ) {
+            [playModel.collectionView sj_needPlayNextAsset];
+            return;
+        }
+    }
+    
     self.inactivityReason = SJVideoPlayerInactivityReasonPlayEnd;
     self.playStatus = SJVideoPlayerPlayStatusInactivity;
     if ( self.playDidToEndExeBlock ) self.playDidToEndExeBlock(self);
@@ -1954,7 +1970,7 @@ NS_ASSUME_NONNULL_BEGIN
         }
             break;
         case SJPlayerBufferStatusFull: {
-            if ( [self playStatus_isPaused_ReasonPause] ) [self play];
+            if ( [self playStatus_isPaused_ReasonBuffering] ) [self play];
             if ( [self.controlLayerDelegate respondsToSelector:@selector(loadCompletion:)] ) {
                 [self.controlLayerDelegate loadCompletion:self];
             }
@@ -2027,7 +2043,6 @@ NS_ASSUME_NONNULL_BEGIN
 }
 @end
 
-NSString *kSJPlayerAssetKey = @"SJPlayerAssetKey";
 NSNotificationName const SJPlayerPrepareToPlayAnAssetNotification = @"SJPlayerPrepareToPlayAnAssetNotification";
 
 NS_ASSUME_NONNULL_END

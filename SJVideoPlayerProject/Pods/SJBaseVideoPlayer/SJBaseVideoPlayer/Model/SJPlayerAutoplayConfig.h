@@ -20,9 +20,12 @@ typedef NS_ENUM(NSUInteger, SJAutoplayScrollAnimationType) {
 + (instancetype)configWithPlayerSuperviewTag:(NSInteger)playerSuperviewTag
                             autoplayDelegate:(id<SJPlayerAutoplayDelegate>)autoplayDelegate;
 
+/// 滚动的动画类型. 默认不动画
+/// default is .none;
+@property (nonatomic) SJAutoplayScrollAnimationType animationType;
+
 @property (nonatomic, readonly) NSInteger playerSuperviewTag;
 @property (nonatomic, weak, nullable, readonly) id<SJPlayerAutoplayDelegate> autoplayDelegate;
-@property (nonatomic) SJAutoplayScrollAnimationType animationType;
 @end
 
 @protocol SJPlayerAutoplayDelegate <NSObject>

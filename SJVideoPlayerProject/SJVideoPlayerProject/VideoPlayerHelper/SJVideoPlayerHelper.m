@@ -131,26 +131,28 @@ NS_ASSUME_NONNULL_END
 - (void)playWithAsset:(SJVideoPlayerURLAsset *)asset playerParentView:(UIView *)playerParentView {
     __weak typeof(self) _self = self;
     
-    // old player fade out
-    [_videoPlayer stopAndFadeOut];
-    
-    // create new player
-    switch ( _playerType ) {
-        case SJVideoPlayerType_Default: {
-            _videoPlayer = [SJVideoPlayer player];
-            _videoPlayer.generatePreviewImages = YES;
+    if ( !_videoPlayer.isFullScreen ) {
+        // old player fade out
+        [_videoPlayer stopAndFadeOut];
+        
+        // create new player
+        switch ( _playerType ) {
+            case SJVideoPlayerType_Default: {
+                _videoPlayer = [SJVideoPlayer player];
+                _videoPlayer.generatePreviewImages = YES;
+            }
+                break;
+            case SJVideoPlayerType_Lightweight: {
+                _videoPlayer = [SJVideoPlayer lightweightPlayer];
+                _videoPlayer.topControlItems = self.topItemsOfLightweightControlLayer;
+                _videoPlayer.clickedTopControlItemExeBlock = ^(SJVideoPlayer * _Nonnull player, SJLightweightTopItem * _Nonnull item) {
+                    __strong typeof(_self) self = _self;
+                    if ( !self ) return;
+                    if ( self.userClickedTopItemOfLightweightControlLayerExeBlock ) self.userClickedTopItemOfLightweightControlLayerExeBlock(self, item);
+                };
+            }
+                break;
         }
-            break;
-        case SJVideoPlayerType_Lightweight: {
-            _videoPlayer = [SJVideoPlayer lightweightPlayer];
-            _videoPlayer.topControlItems = self.topItemsOfLightweightControlLayer;
-            _videoPlayer.clickedTopControlItemExeBlock = ^(SJVideoPlayer * _Nonnull player, SJLightweightTopItem * _Nonnull item) {
-                __strong typeof(_self) self = _self;
-                if ( !self ) return;
-                if ( self.userClickedTopItemOfLightweightControlLayerExeBlock ) self.userClickedTopItemOfLightweightControlLayerExeBlock(self, item);
-            };
-        }
-           break;
     }
     
     // play asset

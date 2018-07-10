@@ -230,11 +230,14 @@ NS_ASSUME_NONNULL_BEGIN
 
 
 
+#pragma mark - 关于视图控制器
+
 /// v1.3.0 新增
+/// 请在适当的时候调用这些方法
 @interface SJBaseVideoPlayer (UIViewController)
 
 /// You should call it when view did appear
-- (void)vc_viewDidAppear;
+- (void)vc_viewDidAppear; 
 /// You should call it when view will disappear
 - (void)vc_viewWillDisappear;
 - (void)vc_viewDidDisappear;

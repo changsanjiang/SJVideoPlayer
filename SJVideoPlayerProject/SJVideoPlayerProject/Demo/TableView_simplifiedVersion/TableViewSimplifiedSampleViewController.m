@@ -67,7 +67,7 @@ static NSString *const SimplifiedSampleTableViewCellID = @"SimplifiedSampleTable
             [self.tableView sj_needPlayNextAsset];
         });
     });
-    
+        
     // Do any additional setup after loading the view.
 }
 

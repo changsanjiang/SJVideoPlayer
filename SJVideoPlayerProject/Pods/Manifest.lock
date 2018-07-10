@@ -86,7 +86,7 @@ PODS:
     - SJPrompt
     - SJUIFactory
     - SJVolBrigControl
-  - SJFullscreenPopGesture (1.4.2)
+  - SJFullscreenPopGesture (1.4.3)
   - SJLoadingView (1.0.1)
   - SJObserverHelper (1.0.5.1)
   - SJOrentationObserver (1.1.1):
@@ -141,7 +141,7 @@ SPEC CHECKSUMS:
   Reachability: 33e18b67625424e47b6cde6d202dce689ad7af96
   SJAttributesFactory: 791dbaa250e42ce19e1f501663ddc696be51c3e9
   SJBaseVideoPlayer: 8f5b5cbc605da5c4c00e7f7d051c0aab0acae09a
-  SJFullscreenPopGesture: 8e70deef99b921080964468e27f6cf36b836631c
+  SJFullscreenPopGesture: 631a6b3801aa070468337c6a331736a38f7cde86
   SJLoadingView: c3ff03e4b363a5b6a3ba0634d6bb9ce2647faf07
   SJObserverHelper: b8dcf2653dca2538bb601f558bde72c229e08737
   SJOrentationObserver: c4ebd95ce693dfc40928a89aa3f846f6451a95f7

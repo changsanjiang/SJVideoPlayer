@@ -12,6 +12,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 /// List view autoplay.
 /// 列表自动播放功能
+/// v1.3.0 新增
 @interface UIScrollView (ListViewAutoplaySJAdd)
 
 @property (nonatomic, readonly) BOOL sj_enabledAutoplay;

@@ -48,7 +48,7 @@
     _window = [[UIWindow alloc] initWithFrame:[UIScreen mainScreen].bounds];
     _window.backgroundColor = [UIColor whiteColor];
     UIStoryboard *sb = [UIStoryboard storyboardWithName:@"Main" bundle:nil];
-    _window.rootViewController = [sb instantiateViewControllerWithIdentifier:@"nav"];
+    _window.rootViewController = [sb instantiateInitialViewController];
     [_window makeKeyAndVisible];
     
     [self _settingVideoPlayer];

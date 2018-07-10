@@ -913,11 +913,15 @@ NS_ASSUME_NONNULL_BEGIN
     
     if ( [URLAsset.playModel isKindOfClass:[SJUITableViewCellPlayModel class]] ) {
         SJUITableViewCellPlayModel *playModel = (id)URLAsset.playModel;
-        playModel.tableView.sj_currentPlayingIndexPath = playModel.indexPath;
+        if ( playModel.tableView.sj_enabledAutoplay ) {
+            playModel.tableView.sj_currentPlayingIndexPath = playModel.indexPath;
+        }
     }
     else if ( [URLAsset.playModel isKindOfClass:[SJUICollectionViewCellPlayModel class]] ) {
         SJUICollectionViewCellPlayModel *playModel = (id)URLAsset.playModel;
-        playModel.collectionView.sj_currentPlayingIndexPath = playModel.indexPath;
+        if ( playModel.collectionView.sj_enabledAutoplay ) {
+            playModel.collectionView.sj_currentPlayingIndexPath = playModel.indexPath;
+        }
     }
 }
 

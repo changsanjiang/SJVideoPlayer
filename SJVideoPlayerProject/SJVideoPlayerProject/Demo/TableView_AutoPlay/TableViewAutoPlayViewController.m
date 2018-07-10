@@ -1,12 +1,12 @@
 //
-//  SJVideoListViewController.m
+//  TableViewAutoPlayViewController.m
 //  SJVideoPlayerProject
 //
-//  Created by 畅三江 on 2018/1/13.
+//  Created by BlueDancer on 2018/7/9.
 //  Copyright © 2018年 SanJiang. All rights reserved.
 //
 
-#import "SJVideoListViewController.h"
+#import "TableViewAutoPlayViewController.h"
 #import <SJUIFactory.h>
 #import <Masonry.h>
 #import "SJVideoListTableViewCell.h"
@@ -18,11 +18,14 @@
 #import "YYTapActionLabel.h"
 #import "FilmEditingHelper.h"
 #import <SJFullscreenPopGesture/UIViewController+SJVideoPlayerAdd.h>
-#import <UIScrollView+ListViewAutoplaySJAdd.h>
+#import <SJBaseVideoPlayer/SJBaseVideoPlayer+PlayStatus.h>
+
+#import <objc/message.h>
+#import <NSObject+SJObserverHelper.h>
 
 static NSString *const SJVideoListTableViewCellID = @"SJVideoListTableViewCell";
 
-@interface SJVideoListViewController ()<UITableViewDelegate, UITableViewDataSource, SJVideoListTableViewCellDelegate, NSAttributedStringTappedDelegate, SJVideoPlayerHelperUseProtocol, SJPlayerAutoplayDelegate>
+@interface TableViewAutoPlayViewController ()<UITableViewDelegate, UITableViewDataSource, SJVideoListTableViewCellDelegate, NSAttributedStringTappedDelegate, SJVideoPlayerHelperUseProtocol>
 
 @property (nonatomic, strong, readonly) SJVideoPlayerHelper *videoPlayerHelper;
 @property (nonatomic, strong, readonly) FilmEditingHelper *filmEditingHelper;
@@ -35,7 +38,7 @@ static NSString *const SJVideoListTableViewCellID = @"SJVideoListTableViewCell";
 
 @end
 
-@implementation SJVideoListViewController
+@implementation TableViewAutoPlayViewController
 
 @synthesize indicator = _indicator;
 @synthesize tableView = _tableView;
@@ -47,7 +50,7 @@ static NSString *const SJVideoListTableViewCellID = @"SJVideoListTableViewCell";
 
 - (void)viewDidLoad {
     [super viewDidLoad];
-
+    
     /**
      全屏返回手势
      显示模式目前有两种: 1. 使用快照(截屏); 2. 使用原始视图(vc.view);
@@ -77,27 +80,9 @@ static NSString *const SJVideoListTableViewCellID = @"SJVideoListTableViewCell";
             [UIView animateWithDuration:0.3 animations:^{
                 self.tableView.alpha = 1;
             }];
-            
-            [self.tableView sj_enableAutoplayWithConfig:[SJPlayerAutoplayConfig configWithPlayerSuperviewTag:101 autoplayDelegate:self]];
-            
-            [self sj_playerNeedPlayNewAssetAtIndexPath:[NSIndexPath indexPathForRow:0 inSection:0]];
         });
     });
-
     // Do any additional setup after loading the view.
-}
-
-- (void)sj_playerNeedPlayNewAssetAtIndexPath:(NSIndexPath *)indexPath {
-    self.playedIndexPath = indexPath;
-    SJVideoListTableViewCell *cell = [self.tableView cellForRowAtIndexPath:indexPath];
-    NSURL *URL = [NSURL URLWithString:cell.model.playURLStr];
-    SJPlayModel *playModel = [SJPlayModel UITableViewCellPlayModelWithPlayerSuperviewTag:cell.coverImageView.tag atIndexPath:indexPath tableView:self.tableView];
-    SJVideoPlayerURLAsset *asset = [[SJVideoPlayerURLAsset alloc] initWithURL:URL playModel:playModel];
-    
-    asset.title = @"DIY心情转盘 #手工##手工制作##卖包子喽##1块1个##卖完就撤#";
-    asset.alwaysShowTitle = YES;
-    
-    [self.videoPlayerHelper playWithAsset:asset playerParentView:cell.coverImageView];
 }
 
 // please lazy load
@@ -145,7 +130,17 @@ static NSString *const SJVideoListTableViewCellID = @"SJVideoListTableViewCell";
 }
 
 - (void)clickedPlayOnTabCell:(SJVideoListTableViewCell *)cell playerParentView:(UIView *)playerParentView {
-    [self sj_playerNeedPlayNewAssetAtIndexPath:[self.tableView indexPathForCell:cell]];
+    self.playedIndexPath = [self.tableView indexPathForCell:cell];
+    
+    NSURL *URL = [NSURL URLWithString:cell.model.playURLStr];
+    //    URL = [[NSBundle mainBundle] URLForResource:@"sample" withExtension:@"mp4"];
+    SJPlayModel *playModel = [SJPlayModel UITableViewCellPlayModelWithPlayerSuperviewTag:playerParentView.tag atIndexPath:self.playedIndexPath tableView:self.tableView];
+    SJVideoPlayerURLAsset *asset = [[SJVideoPlayerURLAsset alloc] initWithURL:URL playModel:playModel];
+    
+    asset.title = @"DIY心情转盘 #手工##手工制作##卖包子喽##1块1个##卖完就撤#";
+    asset.alwaysShowTitle = YES;
+    
+    [self.videoPlayerHelper playWithAsset:asset playerParentView:playerParentView];
 }
 
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath {
@@ -166,11 +161,10 @@ static NSString *const SJVideoListTableViewCellID = @"SJVideoListTableViewCell";
         make.edges.offset(0);
     }];
     
-    _midLine = [SJUIViewFactory viewWithBackgroundColor:[UIColor greenColor]];
     [self.view addSubview:self.midLine];
-    [self.midLine mas_makeConstraints:^(MASConstraintMaker *make) {
+    [_midLine mas_makeConstraints:^(MASConstraintMaker *make) {
         make.leading.trailing.centerY.offset(0);
-        make.height.offset(2);
+        make.height.offset(3);
     }];
 }
 
@@ -198,6 +192,7 @@ static NSString *const SJVideoListTableViewCellID = @"SJVideoListTableViewCell";
 }
 
 - (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath {
+    return self.view.frame.size.height;
     return [SJVideoListTableViewCell heightWithVideo:_videos[indexPath.row]];
 }
 
@@ -208,7 +203,14 @@ static NSString *const SJVideoListTableViewCellID = @"SJVideoListTableViewCell";
     return cell;
 }
 
+- (UIView *)midLine {
+    if ( _midLine ) return _midLine;
+    _midLine = [SJUIViewFactory viewWithBackgroundColor:[UIColor greenColor]];
+    return _midLine;
+}
+
 #pragma mark - other
+
 - (void)attributedString:(NSAttributedString *)attrStr tappedStr:(NSAttributedString *)tappedStr {
     UIViewController *vc = [[self class] new];
     vc.title = tappedStr.string;
@@ -224,4 +226,86 @@ static NSString *const SJVideoListTableViewCellID = @"SJVideoListTableViewCell";
     DemoPlayerViewController *vc = [[DemoPlayerViewController alloc] initWithVideo:model asset:asset];
     [self.navigationController pushViewController:vc animated:YES];
 }
+
+
+#pragma mark -
+
+- (void)scrollViewDidEndDragging:(UIScrollView *)scrollView willDecelerate:(BOOL)decelerate {
+#ifdef DEBUG
+    NSLog(@"%d - %s - %d", (int)__LINE__, __func__, decelerate);
+#endif
+    if ( !decelerate ) {
+        [self scrollViewDidEndDecelerating:scrollView];
+    }
+}
+
+- (void)scrollViewDidEndDecelerating:(UIScrollView *)scrollView {
+#ifdef DEBUG
+    NSLog(@"%d - %s", (int)__LINE__, __func__);
+#endif
+    NSLog(@"%@", self.tableView.visibleCells);
+    
+    SJUITableViewCellPlayModel *playModel = (id)self.videoPlayerHelper.videoPlayer.URLAsset.playModel;
+    if ( [self.tableView.indexPathsForVisibleRows containsObject:playModel.indexPath] ) return;
+
+    
+    /// 注意一下 ios 11之后的
+    CGFloat midLine = floor((CGRectGetHeight(self.tableView.frame) - self.tableView.contentInset.top) * 0.5);
+    
+    NSInteger count = self.tableView.visibleCells.count;
+    NSInteger half = (NSInteger)(count * 0.5);
+    NSArray<UITableViewCell *> *half_l = [self.tableView.visibleCells subarrayWithRange:NSMakeRange(0, half)];
+    NSArray<UITableViewCell *> *half_r = [self.tableView.visibleCells subarrayWithRange:NSMakeRange(half, count - half)];
+    
+    NSLog(@"half_l - %@", half_l);
+    NSLog(@"half_r - %@", half_r);
+    
+    __block UITableViewCell *cell_l = nil;
+    __block UIView *half_l_view = nil;
+    [half_l enumerateObjectsWithOptions:NSEnumerationReverse usingBlock:^(UITableViewCell * _Nonnull obj, NSUInteger idx, BOOL * _Nonnull stop) {
+        UIView *superview = [obj viewWithTag:101];
+        if ( !superview ) return;
+        *stop = YES;
+        cell_l = obj;
+        half_l_view = superview;
+    }];
+    
+    __block UITableViewCell *cell_r = nil;
+    __block UIView *half_r_view = nil;
+    [half_r enumerateObjectsUsingBlock:^(UITableViewCell * _Nonnull obj, NSUInteger idx, BOOL * _Nonnull stop) {
+        UIView *superview = [obj viewWithTag:101];
+        if ( !superview ) return;
+        *stop = YES;
+        cell_r = obj;
+        half_r_view = superview;
+    }];
+    
+    if ( half_l_view && !half_r_view ) {
+        [self clickedPlayOnTabCell:(id)cell_l playerParentView:half_l_view];
+    }
+    else if ( half_r_view && !half_l_view ) {
+        [self clickedPlayOnTabCell:(id)cell_r playerParentView:half_r_view];
+    }
+    else {
+        /// 距离中线的位置
+        CGRect half_l_rect = [half_l_view.superview convertRect:half_l_view.frame toView:self.tableView.superview];
+        CGRect half_r_rect = [half_r_view.superview convertRect:half_r_view.frame toView:self.tableView.superview];
+        
+        NSLog(@"%f - %f - %f", midLine, ABS(CGRectGetMaxY(half_l_rect) - midLine), ABS(CGRectGetMinY(half_r_rect) - midLine));
+        
+        if ( ABS(CGRectGetMaxY(half_l_rect) - midLine) < ABS(CGRectGetMinY(half_r_rect) - midLine) ) {
+            [self clickedPlayOnTabCell:(id)cell_l playerParentView:half_l_view];
+        }
+        else {
+            [self clickedPlayOnTabCell:(id)cell_r playerParentView:half_r_view];
+        }
+    }
+}
+
+- (void)scrollViewDidEndScrollingAnimation:(UIScrollView *)scrollView {
+#ifdef DEBUG
+    NSLog(@"%d - %s", (int)__LINE__, __func__);
+#endif
+}
+
 @end

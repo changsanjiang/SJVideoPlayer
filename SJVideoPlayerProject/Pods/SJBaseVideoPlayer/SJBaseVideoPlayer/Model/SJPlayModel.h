@@ -166,6 +166,7 @@ NS_ASSUME_NONNULL_BEGIN
                  collectionViewAtIndexPath:(__strong NSIndexPath *)collectionViewAtIndexPath
                                  tableView:(__weak UITableView *)tableView;
 
+- (UICollectionView *)collectionView;
 @end
 
 NS_ASSUME_NONNULL_END

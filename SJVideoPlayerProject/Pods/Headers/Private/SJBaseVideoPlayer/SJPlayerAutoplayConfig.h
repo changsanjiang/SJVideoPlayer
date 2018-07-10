@@ -1,0 +1,1 @@
+../../../SJBaseVideoPlayer/SJBaseVideoPlayer/Model/SJPlayerAutoplayConfig.h

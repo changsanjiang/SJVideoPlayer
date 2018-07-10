@@ -225,7 +225,10 @@ NS_ASSUME_NONNULL_BEGIN
 - (BOOL)isPlayInTableView { return NO; }
 - (BOOL)isPlayInCollectionView { return YES; }
 - (nullable UIView *)playerSuperview {
-    return [[(UICollectionView *)([[self.tableView cellForRowAtIndexPath:self.collectionViewAtIndexPath] viewWithTag:self.collectionViewTag]) cellForItemAtIndexPath:self.indexPath] viewWithTag:self.playerSuperviewTag];
+    return [[self.collectionView cellForItemAtIndexPath:self.indexPath] viewWithTag:self.playerSuperviewTag];
+}
+- (UICollectionView *)collectionView {
+    return (UICollectionView *)([[self.tableView cellForRowAtIndexPath:self.collectionViewAtIndexPath] viewWithTag:self.collectionViewTag]);
 }
 @end
 NS_ASSUME_NONNULL_END

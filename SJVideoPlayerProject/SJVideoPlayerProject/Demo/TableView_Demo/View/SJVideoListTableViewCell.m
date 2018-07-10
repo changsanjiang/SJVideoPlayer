@@ -20,7 +20,6 @@
 @property (nonatomic, strong, readonly) YYLabel *nameLabel;
 @property (nonatomic, strong, readonly) UIButton *attentionBtn;
 @property (nonatomic, strong, readonly) YYTapActionLabel *contentLabel;
-@property (nonatomic, strong, readonly) UIImageView *coverImageView;
 @property (nonatomic, strong, readonly) UIImageView *playImageView;
 @property (nonatomic, strong, readonly) YYLabel *createTimeLabel;
 @property (nonatomic, strong, readonly) UIView *separatorLine;

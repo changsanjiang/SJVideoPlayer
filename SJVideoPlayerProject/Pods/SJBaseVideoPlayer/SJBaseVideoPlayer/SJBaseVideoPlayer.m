@@ -28,6 +28,8 @@
 #import "SJBaseVideoPlayer+PlayStatus.h"
 #import "SJTimerControl.h"
 #import <Reachability/Reachability.h>
+#import "SJPlayerNotifications.h"
+#import "UIScrollView+ListViewAutoplaySJAdd.h"
 
 NS_ASSUME_NONNULL_BEGIN
 
@@ -110,7 +112,7 @@ NS_ASSUME_NONNULL_BEGIN
 /**
  当网络状态变更时, 将会调用这个Block.
  */
-@property (nonatomic, copy, readwrite, nullable) void(^reachabilityChangedExeBlock)(_SJReachabilityObserver *observer, SJNetworkStatus status);
+@property (nonatomic, copy, nullable) void(^reachabilityChangedExeBlock)(_SJReachabilityObserver *observer, SJNetworkStatus status);
 @end
 
 /**
@@ -122,29 +124,18 @@ NS_ASSUME_NONNULL_BEGIN
  */
 @property (nonatomic) SJVideoPlayerPlayState state __deprecated_msg("已弃用, 请使用`playStatus`");
 
-@property (nonatomic, nullable) void(^operationOfInitializing)(SJBaseVideoPlayer *player);
+@property (nonatomic, copy, nullable) void(^operationOfInitializing)(SJBaseVideoPlayer *player);
 
 /**
  当前播放如果出错, 可以查看这个error
  */
-@property (nonatomic, strong, readwrite, nullable) NSError *error;
-
-/**
- 当播放器在TableView或者CollectionView中播放时, 播放器可能被滚动到窗口之外, 这个属性是用来标识是否滚入到窗口中. YES 表示在窗口中, 否则相反.
- */
-@property (nonatomic) BOOL scrollIn;
+@property (nonatomic, strong, nullable) NSError *error;
 
 /**
  当用户触摸到TableView或者ScrollView时, 这个值为YES.
  这个值用于旋转的条件之一, 如果用户触摸在TableView或者ScrollView上时, 将不会自动旋转.
  */
 @property (nonatomic) BOOL touchedScrollView; // 如果为`YES`, 则不旋转
-
-/**
- App是否活跃
- 这个值用于旋转的条件之一, 当不活跃时, 将不会自动旋转
- */
-@property (nonatomic) BOOL resignActive;
 
 /**
  管理对象: 监听 App在前台, 后台, 耳机插拔, 来电等的通知
@@ -260,7 +251,7 @@ NS_ASSUME_NONNULL_BEGIN
     if ( [self playStatus_isUnknown] || [self playStatus_isPrepare] ) {
         [self.presentView showPlaceholder];
     }
-    else if ( [self playStatus_isPlaying] ) {
+    else if ( [self playStatus_isReadyToPlay] ) {
         [self.presentView hiddenPlaceholder];
     }
 
@@ -447,10 +438,10 @@ NS_ASSUME_NONNULL_BEGIN
         if ( !self ) return NO;
         if ( !self.view.superview ) return NO;
         if ( self.touchedScrollView ) return NO;
-        if ( self.isPlayOnScrollView && !self.scrollIn ) return NO;
+        if ( self.isPlayOnScrollView && !self.isScrollAppeared ) return NO;
         if ( self.disableAutoRotation ) return NO;
         if ( self.isLockedScreen ) return NO;
-        if ( self.resignActive ) return NO;
+        if ( self.registrar.state == SJVideoPlayerAppState_ResignActive ) return NO;
         return YES;
     }];
     _rotationManager.delegate = self;
@@ -704,7 +695,6 @@ NS_ASSUME_NONNULL_BEGIN
     _registrar.willResignActive = ^(SJVideoPlayerRegistrar * _Nonnull registrar) {
         __strong typeof(_self) self = _self;
         if ( !self ) return;
-        self.resignActive = YES;
         if ( [self.controlLayerDelegate respondsToSelector:@selector(appWillResignActive:)] ) {
             [self.controlLayerDelegate appWillResignActive:self];
         }
@@ -713,7 +703,6 @@ NS_ASSUME_NONNULL_BEGIN
     _registrar.didBecomeActive = ^(SJVideoPlayerRegistrar * _Nonnull registrar) {
         __strong typeof(_self) self = _self;
         if ( !self ) return;
-        self.resignActive = NO;
         if ( [self.controlLayerDelegate respondsToSelector:@selector(appDidBecomeActive:)] ) {
             [self.controlLayerDelegate appDidBecomeActive:self];
         }
@@ -867,7 +856,6 @@ NS_ASSUME_NONNULL_BEGIN
 
 
 #pragma mark - 控制
-
 @implementation SJBaseVideoPlayer (PlayControl)
 // 1.
 - (void)setURLAsset:(nullable SJVideoPlayerURLAsset *)URLAsset {
@@ -888,6 +876,7 @@ NS_ASSUME_NONNULL_BEGIN
         }
         else {
             self.playStatus = SJVideoPlayerPlayStatusPrepare;
+            [[NSNotificationCenter defaultCenter] postNotificationName:SJPlayerPrepareToPlayAnAssetNotification object:self];
             if ( [self.controlLayerDelegate respondsToSelector:@selector(startLoading:)] ) {
                 [self.controlLayerDelegate startLoading:self];
             }
@@ -896,7 +885,6 @@ NS_ASSUME_NONNULL_BEGIN
             self.playAssetObserver.delegate = (id)self;
             self.playModelObserver = [[SJPlayModelPropertiesObserver alloc] initWithPlayModel:URLAsset.playModel];
             self.playModelObserver.delegate = (id)self;
-            self.scrollIn = YES;
             
             if ( [self.controlLayerDelegate respondsToSelector:@selector(videoPlayer:prepareToPlay:)] ) {
                 [self.controlLayerDelegate videoPlayer:self prepareToPlay:URLAsset];
@@ -905,6 +893,15 @@ NS_ASSUME_NONNULL_BEGIN
     });
     
     _URLAsset = URLAsset;
+    
+    if ( [URLAsset.playModel isKindOfClass:[SJUITableViewCellPlayModel class]] ) {
+        SJUITableViewCellPlayModel *playModel = (id)URLAsset.playModel;
+        playModel.tableView.sj_currentPlayingIndexPath = playModel.indexPath;
+    }
+    else if ( [URLAsset.playModel isKindOfClass:[SJUICollectionViewCellPlayModel class]] ) {
+        SJUICollectionViewCellPlayModel *playModel = (id)URLAsset.playModel;
+        playModel.collectionView.sj_currentPlayingIndexPath = playModel.indexPath;
+    }
 }
 
 - (nullable SJVideoPlayerURLAsset *)URLAsset {
@@ -944,7 +941,13 @@ NS_ASSUME_NONNULL_BEGIN
             self.operationOfInitializing = nil;
         }
         else if ( self.autoPlay ) {
-            [self play];
+            if ( self.isPlayOnScrollView ) {
+                if ( self.isScrollAppeared ) [self play];
+                else [self pause];
+            }
+            else {
+                [self play];
+            }
         }
         
         [self.displayRecorder resetInitialization];
@@ -1041,7 +1044,19 @@ NS_ASSUME_NONNULL_BEGIN
     return [objc_getAssociatedObject(self, _cmd) boolValue];
 }
 
+- (void)setCanPlayAnAsset:(nullable BOOL (^)(__kindof SJBaseVideoPlayer * _Nonnull))canPlayAnAsset {
+    objc_setAssociatedObject(self, @selector(canPlayAnAsset), canPlayAnAsset, OBJC_ASSOCIATION_COPY_NONATOMIC);
+}
+
+- (nullable BOOL (^)(__kindof SJBaseVideoPlayer * _Nonnull))canPlayAnAsset {
+    return objc_getAssociatedObject(self, _cmd);
+}
+
 - (void)play {
+    
+    if ( self.canPlayAnAsset ) {
+        if ( !self.canPlayAnAsset(self) ) return;
+    }
 
     if ( !self.URLAsset ) return;
     
@@ -1149,6 +1164,11 @@ NS_ASSUME_NONNULL_BEGIN
 }
 
 - (void)seekToTime:(NSTimeInterval)secs completionHandler:(void (^ __nullable)(BOOL finished))completionHandler {
+    
+    if ( self.canPlayAnAsset ) {
+        if ( !self.canPlayAnAsset(self) ) return;
+    }
+    
     if ( isnan(secs) ) { return;}
     
     if ( [self playStatus_isUnknown] ||
@@ -1633,8 +1653,9 @@ NS_ASSUME_NONNULL_BEGIN
 }
 
 - (BOOL)isScrollAppeared {
-    return self.scrollIn;
+    return self.playModelObserver.isAppeared;
 }
+
 @end
 
 
@@ -1695,7 +1716,7 @@ NS_ASSUME_NONNULL_BEGIN
 @interface _SJControlLayerAppearStateManager ()
 @property (nonatomic, weak, readonly) SJBaseVideoPlayer *videoPlayer;
 @property (nonatomic, strong, readonly) SJTimerControl *controlHiddenTimer;
-@property (nonatomic, readwrite) BOOL controlLayerAppearedState;
+@property (nonatomic) BOOL controlLayerAppearedState;
 @end
 
 @implementation _SJControlLayerAppearStateManager
@@ -1986,8 +2007,6 @@ NS_ASSUME_NONNULL_BEGIN
     self.touchedScrollView = touched;
 }
 - (void)playerWillAppearForObserver:(nonnull SJPlayModelPropertiesObserver *)observer superview:(nonnull UIView *)superview {
-    if ( self.scrollIn ) return;
-    self.scrollIn = YES;
     [self.displayRecorder layerAppear];
     if ( superview && self.view.superview != superview ) {
         [self.view removeFromSuperview];
@@ -2002,12 +2021,13 @@ NS_ASSUME_NONNULL_BEGIN
     }
 }
 - (void)playerWillDisappearForObserver:(nonnull SJPlayModelPropertiesObserver *)observer {
-    if ( !self.scrollIn ) return;
-    self.scrollIn = NO;
-    
     if ( [self.controlLayerDelegate respondsToSelector:@selector(videoPlayerWillDisappearInScrollView:)] ) {
         [self.controlLayerDelegate videoPlayerWillDisappearInScrollView:self];
     }
 }
 @end
+
+NSString *kSJPlayerAssetKey = @"SJPlayerAssetKey";
+NSNotificationName const SJPlayerPrepareToPlayAnAssetNotification = @"SJPlayerPrepareToPlayAnAssetNotification";
+
 NS_ASSUME_NONNULL_END

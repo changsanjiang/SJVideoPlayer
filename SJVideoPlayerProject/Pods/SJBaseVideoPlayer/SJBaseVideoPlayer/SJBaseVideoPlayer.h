@@ -178,6 +178,10 @@ NS_ASSUME_NONNULL_BEGIN
 /// 初始化完成后, 是否自动播放
 @property (nonatomic, getter=isAutoPlay) BOOL autoPlay;
 
+/// 播放器是否可以执行`play`
+/// - 当调用`play`时, 会回调该block, 如果返回YES, 则执行`play`方法, 否之.
+/// - 如果该block == nil, 则调用`play`时, 默认为执行.
+@property (nonatomic, copy, nullable) BOOL(^canPlayAnAsset)(__kindof SJBaseVideoPlayer *player);
 /// 使播放
 - (void)play;
 

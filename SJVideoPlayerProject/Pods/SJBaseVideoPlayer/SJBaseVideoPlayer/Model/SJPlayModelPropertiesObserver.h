@@ -26,6 +26,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 @property (nonatomic, weak, nullable) id <SJPlayModelPropertiesObserverDelegate> delegate;
 
+@property (nonatomic, readonly) BOOL isAppeared;
 @property (nonatomic, readonly) BOOL isTouchedTablView;
 @property (nonatomic, readonly) BOOL isTouchedCollectionView;
 @property (nonatomic, readonly) BOOL isPlayInTableView;

@@ -17,6 +17,7 @@
 #import <SJPrompt/SJPrompt.h>
 #import "SJVideoPlayerURLAsset+SJControlAdd.h"
 #import <SJOrentationObserver/SJRotationManager.h>
+#import "SJVideoPlayer.h"
 
 @class SJVideoPlayerURLAsset, SJLightweightTopItem, SJVideoPlayerFilmEditingConfig;
 
@@ -45,6 +46,7 @@ NS_ASSUME_NONNULL_BEGIN
 //
 @interface SJVideoPlayerHelper : NSObject
 @property (nonatomic, weak, readwrite) UIViewController<SJVideoPlayerHelperUseProtocol> *viewController;
+@property (nonatomic, strong, readonly, nullable) SJVideoPlayer *videoPlayer;
 
 - (instancetype)initWithViewController:(__weak UIViewController<SJVideoPlayerHelperUseProtocol> *)viewController;
 - (instancetype)initWithViewController:(__weak UIViewController<SJVideoPlayerHelperUseProtocol> *)viewController

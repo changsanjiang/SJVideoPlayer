@@ -6,7 +6,6 @@
     <dependencies>
         <deployment version="2096" identifier="iOS"/>
         <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="14088"/>
-        <capability name="Alignment constraints with different attributes" minToolsVersion="5.1"/>
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
     </dependencies>
     <scenes>
@@ -99,6 +98,13 @@
                                     <action selector="pushVc:" destination="BYZ-38-t0r" eventType="touchUpInside" id="LdY-TK-nbk"/>
                                 </connections>
                             </button>
+                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="9WL-ty-keX">
+                                <rect key="frame" x="120" y="605" width="135" height="30"/>
+                                <state key="normal" title="TableView_AutoPlay"/>
+                                <connections>
+                                    <action selector="tableViewAutoPlay:" destination="BYZ-38-t0r" eventType="touchUpInside" id="DXl-fM-d40"/>
+                                </connections>
+                            </button>
                         </subviews>
                         <color key="backgroundColor" red="1" green="1" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                         <constraints>
@@ -108,7 +114,9 @@
                             <constraint firstItem="BUy-1v-vW5" firstAttribute="centerX" secondItem="jUw-fL-Eph" secondAttribute="centerX" id="7Os-Sc-2vA"/>
                             <constraint firstItem="pDO-Qo-Vfp" firstAttribute="top" secondItem="Ehn-QU-Eed" secondAttribute="bottom" constant="8" id="Abc-8f-9Kt"/>
                             <constraint firstItem="New-u4-aTv" firstAttribute="top" secondItem="VJz-ra-xAR" secondAttribute="bottom" constant="17" id="B7M-hE-NGA"/>
+                            <constraint firstItem="9WL-ty-keX" firstAttribute="centerX" secondItem="WmI-e7-ZJu" secondAttribute="centerX" id="C3x-6w-XpM"/>
                             <constraint firstItem="VJz-ra-xAR" firstAttribute="centerX" secondItem="New-u4-aTv" secondAttribute="centerX" id="FbS-Ml-XXH"/>
+                            <constraint firstItem="9WL-ty-keX" firstAttribute="top" secondItem="WmI-e7-ZJu" secondAttribute="bottom" constant="13" id="K6a-Tt-Q8T"/>
                             <constraint firstItem="New-u4-aTv" firstAttribute="centerX" secondItem="8bC-Xf-vdC" secondAttribute="centerX" id="KAE-Ba-SeU"/>
                             <constraint firstItem="YcL-vo-yLH" firstAttribute="top" secondItem="pDO-Qo-Vfp" secondAttribute="bottom" constant="15" id="KWz-ie-n2f"/>
                             <constraint firstItem="RIg-cw-udN" firstAttribute="centerX" secondItem="YcL-vo-yLH" secondAttribute="centerX" id="OcK-wp-7iM"/>

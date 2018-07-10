@@ -19,6 +19,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 @property (nonatomic, strong, nullable) SJVideoModel *model;
 @property (nonatomic, weak, nullable) id<SJVideoListTableViewCellDelegate> delegate;
+@property (nonatomic, strong, readonly) UIImageView *coverImageView;
 
 @end
 

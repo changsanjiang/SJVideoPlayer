@@ -105,18 +105,13 @@ static NSString *const SJVideoListTableViewCellID = @"SJVideoListTableViewCell";
 - (void)playWithAsset:(SJVideoPlayerURLAsset *)asset playerParentView:(UIView *)playerParentView {
     
     // 如果播放器不是全屏, 就重新创建一个播放器
-    if ( !_player.isFullScreen ) {
-        // 让旧的播放器淡出
-        [_player stopAndFadeOut];
+    // 全屏播放时无需重新创建播放器, 只需设置`asset`即可
+    if ( !_player || !_player.isFullScreen ) {
+        [_player stopAndFadeOut]; // 让旧的播放器淡出
         
-        // 创建一个新的播放器
-        _player = [SJVideoPlayer player];
-        // 生成预览图
-        _player.generatePreviewImages = YES;
-        // 暂停时保持控制层显示
-        _player.pausedToKeepAppearState = YES;
-        // 将播放器添加到父视图中
-        [playerParentView addSubview:_player.view];
+        _player = [SJVideoPlayer player]; // 创建一个新的播放器
+        _player.generatePreviewImages = YES; // 生成预览缩略图, 大概20张
+        [playerParentView addSubview:_player.view]; // 将播放器添加到父视图中
         [_player.view mas_makeConstraints:^(MASConstraintMaker *make) {
             make.edges.offset(0);
         }];
@@ -133,24 +128,6 @@ static NSString *const SJVideoListTableViewCellID = @"SJVideoListTableViewCell";
             __strong typeof(_self) self = _self;
             if ( !self ) return;
             [self.navigationController popViewControllerAnimated:YES];
-        };
-        
-        // 视图将要旋转
-        _player.viewWillRotateExeBlock = ^(__kindof SJBaseVideoPlayer * _Nonnull player, BOOL isFullScreen) {
-            __strong typeof(_self) self = _self;
-            if ( !self ) return;
-            [UIView animateWithDuration:0.25 animations:^{
-                [self setNeedsStatusBarAppearanceUpdate];
-            }];
-        };
-        
-        // 控制层将要显示
-        _player.controlLayerAppearStateChanged = ^(__kindof SJBaseVideoPlayer * _Nonnull player, BOOL state) {
-            __strong typeof(_self) self = _self;
-            if ( !self ) return;
-            [UIView animateWithDuration:0.25 animations:^{
-                [self setNeedsStatusBarAppearanceUpdate];
-            }];
         };
         
         _player.enableFilmEditing = YES;

@@ -461,7 +461,14 @@ NS_ASSUME_NONNULL_BEGIN
     if ( [self.controlLayerDelegate respondsToSelector:@selector(videoPlayer:willRotateView:)] ) {
         [self.controlLayerDelegate videoPlayer:self willRotateView:isFullscreen];
     }
-    if ( self.viewWillRotateExeBlock ) self.viewWillRotateExeBlock(self, isFullscreen);
+    if ( self.viewWillRotateExeBlock ) {
+        self.viewWillRotateExeBlock(self, isFullscreen);
+    }
+    else {
+        [UIView animateWithDuration:0.25 animations:^{
+            [[self atViewController] setNeedsStatusBarAppearanceUpdate];
+        }];
+    }
 }
 - (void)rotationManager:(SJRotationManager *)manager didRotateView:(BOOL)isFullscreen {
     if ( [self.controlLayerDelegate respondsToSelector:@selector(videoPlayer:didEndRotation:)] ) {
@@ -1885,7 +1892,14 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (void)setControlLayerAppearedState:(BOOL)status {
     _controlLayerAppearedState = status;
-    if ( _videoPlayer.controlLayerAppearStateChanged ) _videoPlayer.controlLayerAppearStateChanged(_videoPlayer, status);
+    if ( _videoPlayer.controlLayerAppearStateChanged ) {
+        _videoPlayer.controlLayerAppearStateChanged(_videoPlayer, status);
+    }
+    else {
+        [UIView animateWithDuration:0.25 animations:^{
+            [[self.videoPlayer atViewController] setNeedsStatusBarAppearanceUpdate];
+        }];
+    }
 }
 @end
 

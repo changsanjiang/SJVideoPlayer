@@ -12,7 +12,6 @@
 #import "SJVideoListTableViewCell.h"
 #import "SJVideoModel.h"
 #import "SJVideoPlayer.h"
-#import "SJVideoPlayerHelper.h"
 #import <UIView+SJUIFactory.h>
 #import "DemoPlayerViewController.h"
 #import "YYTapActionLabel.h"
@@ -22,9 +21,9 @@
 
 static NSString *const SJVideoListTableViewCellID = @"SJVideoListTableViewCell";
 
-@interface SJVideoListViewController ()<UITableViewDelegate, UITableViewDataSource, SJVideoListTableViewCellDelegate, NSAttributedStringTappedDelegate, SJVideoPlayerHelperUseProtocol, SJPlayerAutoplayDelegate>
+@interface SJVideoListViewController ()<UITableViewDelegate, UITableViewDataSource, SJVideoListTableViewCellDelegate, NSAttributedStringTappedDelegate, SJPlayerAutoplayDelegate>
 
-@property (nonatomic, strong, readonly) SJVideoPlayerHelper *videoPlayerHelper;
+@property (nonatomic, strong, nullable) SJVideoPlayer *player;
 @property (nonatomic, strong, readonly) FilmEditingHelper *filmEditingHelper;
 @property (nonatomic, strong, readonly) UIActivityIndicatorView *indicator;
 @property (nonatomic, strong, readonly) UITableView *tableView;
@@ -81,8 +80,9 @@ static NSString *const SJVideoListTableViewCellID = @"SJVideoListTableViewCell";
             // 开启自动播放
             [self.tableView sj_enableAutoplayWithConfig:[SJPlayerAutoplayConfig configWithPlayerSuperviewTag:101 autoplayDelegate:self]];
             
-            // 播放第一个视频
-            [self sj_playerNeedPlayNewAssetAtIndexPath:[NSIndexPath indexPathForRow:0 inSection:0]];
+            // play asset
+            [self.tableView sj_needPlayNextAsset];
+            
         });
     });
 
@@ -99,17 +99,65 @@ static NSString *const SJVideoListTableViewCellID = @"SJVideoListTableViewCell";
     asset.title = @"DIY心情转盘 #手工##手工制作##卖包子喽##1块1个##卖完就撤#";
     asset.alwaysShowTitle = YES;
     
-    [self.videoPlayerHelper playWithAsset:asset playerParentView:cell.coverImageView];
+    [self playWithAsset:asset playerParentView:cell.coverImageView];
 }
 
-// please lazy load
-@synthesize videoPlayerHelper = _videoPlayerHelper;
-- (SJVideoPlayerHelper *)videoPlayerHelper {
-    if ( _videoPlayerHelper ) return _videoPlayerHelper;
-    _videoPlayerHelper = [[SJVideoPlayerHelper alloc] initWithViewController:self];
-    _videoPlayerHelper.enableFilmEditing = YES;
-    _videoPlayerHelper.filmEditingConfig = self.filmEditingHelper.filmEditingConfig;
-    return _videoPlayerHelper;
+- (void)playWithAsset:(SJVideoPlayerURLAsset *)asset playerParentView:(UIView *)playerParentView {
+    
+    // 如果播放器不是全屏, 就重新创建一个播放器
+    if ( !_player.isFullScreen ) {
+        // 让旧的播放器淡出
+        [_player stopAndFadeOut];
+        
+        // 创建一个新的播放器
+        _player = [SJVideoPlayer player];
+        // 生成预览图
+        _player.generatePreviewImages = YES;
+        // 暂停时保持控制层显示
+        _player.pausedToKeepAppearState = YES;
+        // 将播放器添加到父视图中
+        [playerParentView addSubview:_player.view];
+        [_player.view mas_makeConstraints:^(MASConstraintMaker *make) {
+            make.edges.offset(0);
+        }];
+        
+        // fade in(淡入)
+        _player.view.alpha = 0.001;
+        [UIView animateWithDuration:0.5 animations:^{
+            self.player.view.alpha = 1;
+        }];
+        
+        // 点击返回按钮执行的block
+        __weak typeof(self) _self = self;
+        _player.clickedBackEvent = ^(SJVideoPlayer * _Nonnull player) {
+            __strong typeof(_self) self = _self;
+            if ( !self ) return;
+            [self.navigationController popViewControllerAnimated:YES];
+        };
+        
+        // 视图将要旋转
+        _player.viewWillRotateExeBlock = ^(__kindof SJBaseVideoPlayer * _Nonnull player, BOOL isFullScreen) {
+            __strong typeof(_self) self = _self;
+            if ( !self ) return;
+            [UIView animateWithDuration:0.25 animations:^{
+                [self setNeedsStatusBarAppearanceUpdate];
+            }];
+        };
+        
+        // 控制层将要显示
+        _player.controlLayerAppearStateChanged = ^(__kindof SJBaseVideoPlayer * _Nonnull player, BOOL state) {
+            __strong typeof(_self) self = _self;
+            if ( !self ) return;
+            [UIView animateWithDuration:0.25 animations:^{
+                [self setNeedsStatusBarAppearanceUpdate];
+            }];
+        };
+        
+        _player.enableFilmEditing = YES;
+        [_player.filmEditingConfig config:self.filmEditingHelper.filmEditingConfig];
+    }
+    
+    _player.URLAsset = asset;
 }
 
 @synthesize filmEditingHelper = _filmEditingHelper;
@@ -121,25 +169,25 @@ static NSString *const SJVideoListTableViewCellID = @"SJVideoListTableViewCell";
 
 - (void)viewDidAppear:(BOOL)animated {
     [super viewDidAppear:animated];
-    self.videoPlayerHelper.vc_viewDidAppearExeBlock();
+    [self.player vc_viewDidAppear];
 }
 
 - (void)viewWillDisappear:(BOOL)animated {
     [super viewWillDisappear:animated];
-    self.videoPlayerHelper.vc_viewWillDisappearExeBlock();
+    [self.player vc_viewWillDisappear];
 }
 
 - (void)viewDidDisappear:(BOOL)animated {
     [super viewDidDisappear:animated];
-    self.videoPlayerHelper.vc_viewDidDisappearExeBlock();
+    [self.player vc_viewDidDisappear];
 }
 
 - (BOOL)prefersStatusBarHidden {
-    return self.videoPlayerHelper.vc_prefersStatusBarHiddenExeBlock();
+    return [self.player vc_prefersStatusBarHidden];
 }
 
 - (UIStatusBarStyle)preferredStatusBarStyle {
-    return self.videoPlayerHelper.vc_preferredStatusBarStyleExeBlock();
+    return [self.player vc_preferredStatusBarStyle];
 }
 
 - (BOOL)prefersHomeIndicatorAutoHidden {
@@ -153,7 +201,7 @@ static NSString *const SJVideoListTableViewCellID = @"SJVideoListTableViewCell";
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath {
     SJVideoPlayerURLAsset *asset = nil;
     if ( [self.playedIndexPath isEqual:indexPath] ) {
-        asset = self.videoPlayerHelper.asset;
+        asset = self.player.URLAsset;
     }
     DemoPlayerViewController *vc = [[DemoPlayerViewController alloc] initWithVideo:self.videos[indexPath.row] asset:asset];
     [self.navigationController pushViewController:vc animated:YES];
@@ -220,8 +268,8 @@ static NSString *const SJVideoListTableViewCellID = @"SJVideoListTableViewCell";
 - (void)tappedOtherPlacesOfAttributedString:(NSAttributedString *)attrStr {
     SJVideoModel *model = attrStr.object;
     SJVideoPlayerURLAsset *asset = nil;
-    if ( [self.videoPlayerHelper.currentPlayURL.absoluteString isEqualToString:model.playURLStr] ) {
-        asset = self.videoPlayerHelper.asset;
+    if ( [self.player.assetURL.absoluteString isEqualToString:model.playURLStr] ) {
+        asset = self.player.URLAsset;
     }
     DemoPlayerViewController *vc = [[DemoPlayerViewController alloc] initWithVideo:model asset:asset];
     [self.navigationController pushViewController:vc animated:YES];

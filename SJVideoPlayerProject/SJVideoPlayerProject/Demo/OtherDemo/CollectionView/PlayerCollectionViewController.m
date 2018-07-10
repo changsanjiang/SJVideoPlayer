@@ -9,25 +9,27 @@
 #import "PlayerCollectionViewController.h"
 #import "PlayerCollectionViewCell.h"
 #import <Masonry.h>
-#import "SJVideoPlayer.h"
+#import <SJBaseVideoPlayer/UIScrollView+ListViewAutoplaySJAdd.h>
+#import "SJVideoPlayerHelper.h"
 
 static NSString * const PlayerCollectionViewCellID = @"PlayerCollectionViewCell";
 
-@interface PlayerCollectionViewController ()<PlayerCollectionViewCellDelegate>
+@interface PlayerCollectionViewController ()<PlayerCollectionViewCellDelegate, SJVideoPlayerHelperUseProtocol, SJPlayerAutoplayDelegate>
 
-@property (nonatomic, strong, readwrite) SJVideoPlayer *videoPlayer;
+@property (nonatomic, strong, readonly) SJVideoPlayerHelper *videoPlayerHelper;
+@property (nonatomic, strong, readonly) UIView *midLine;
 
 @end
 
 @implementation PlayerCollectionViewController
-
+@synthesize midLine = _midLine;
 - (instancetype)init
 {
     UICollectionViewFlowLayout *flowLayout = [UICollectionViewFlowLayout new];
     flowLayout.itemSize = [PlayerCollectionViewCell itemSize];
-    flowLayout.minimumLineSpacing = 0;
+    flowLayout.minimumLineSpacing = 4;
     flowLayout.minimumInteritemSpacing = 0;
-    flowLayout.scrollDirection = UICollectionViewScrollDirectionHorizontal;
+    flowLayout.scrollDirection = UICollectionViewScrollDirectionVertical;
     
     self = [super initWithCollectionViewLayout:flowLayout];
     if (self) { }
@@ -37,6 +39,8 @@ static NSString * const PlayerCollectionViewCellID = @"PlayerCollectionViewCell"
 - (void)viewDidLoad {
     [super viewDidLoad];
     
+    self.edgesForExtendedLayout = UIRectEdgeNone;
+    
     self.title = @"CollectionView";
 
     // Uncomment the following line to preserve selection between presentations
@@ -45,37 +49,71 @@ static NSString * const PlayerCollectionViewCellID = @"PlayerCollectionViewCell"
     // Register cell classes
     [self.collectionView registerClass:[PlayerCollectionViewCell class] forCellWithReuseIdentifier:PlayerCollectionViewCellID];
     
+    self.collectionView.backgroundColor = [UIColor whiteColor];
+    
+    
+
+    SJPlayerAutoplayConfig *config = [SJPlayerAutoplayConfig configWithPlayerSuperviewTag:101 autoplayDelegate:self];
+    config.animationType = SJAutoplayScrollAnimationTypeTop;
+    [self.collectionView sj_enableAutoplayWithConfig:config];
+    
+    [self.collectionView sj_needPlayNextAsset];
+
+    _midLine = [UIView new];
+    _midLine.backgroundColor = [UIColor greenColor];
+    [self.view addSubview:self.midLine];
+    [self.midLine mas_makeConstraints:^(MASConstraintMaker *make) {
+        make.leading.trailing.centerY.offset(0);
+        make.height.offset(2);
+    }];
+    
     // Do any additional setup after loading the view.
 }
 
-- (void)viewWillAppear:(BOOL)animated {
-    [super viewWillAppear:animated];
-    _videoPlayer.disableAutoRotation = NO;
+- (void)sj_playerNeedPlayNewAssetAtIndexPath:(NSIndexPath *)indexPath {
+    [self clickedPlayOnColCell:(id)[self.collectionView cellForItemAtIndexPath:indexPath]];
+}
+
+- (void)clickedPlayOnColCell:(PlayerCollectionViewCell *)cell {
+    SJVideoPlayerURLAsset *asset = [[SJVideoPlayerURLAsset alloc] initWithURL:[NSURL URLWithString:@"https://www.apple.com/105/media/us/iphone-x/2017/01df5b43-28e4-4848-bf20-490c34a926a7/films/feature/iphone-x-feature-tpl-cc-us-20170912_1280x720h.mp4"] playModel:[SJPlayModel UICollectionViewCellPlayModelWithPlayerSuperviewTag:cell.backgroundImageView.tag atIndexPath:[self.collectionView indexPathForCell:cell] collectionView:self.collectionView]];
+    [self.videoPlayerHelper playWithAsset:asset playerParentView:cell.backgroundImageView];
+}
+
+// please lazy load
+@synthesize videoPlayerHelper = _videoPlayerHelper;
+- (SJVideoPlayerHelper *)videoPlayerHelper {
+    if ( _videoPlayerHelper ) return _videoPlayerHelper;
+    _videoPlayerHelper = [[SJVideoPlayerHelper alloc] initWithViewController:self];
+    _videoPlayerHelper.enableFilmEditing = YES;
+    return _videoPlayerHelper;
+}
+
+- (void)viewDidAppear:(BOOL)animated {
+    [super viewDidAppear:animated];
+    self.videoPlayerHelper.vc_viewDidAppearExeBlock();
 }
 
 - (void)viewWillDisappear:(BOOL)animated {
     [super viewWillDisappear:animated];
-    _videoPlayer.disableAutoRotation = YES;
+    self.videoPlayerHelper.vc_viewWillDisappearExeBlock();
 }
 
-- (void)dealloc {
-    [_videoPlayer stop];
+- (void)viewDidDisappear:(BOOL)animated {
+    [super viewDidDisappear:animated];
+    self.videoPlayerHelper.vc_viewDidDisappearExeBlock();
 }
 
-- (void)didReceiveMemoryWarning {
-    [super didReceiveMemoryWarning];
-    // Dispose of any resources that can be recreated.
+- (BOOL)prefersStatusBarHidden {
+    return self.videoPlayerHelper.vc_prefersStatusBarHiddenExeBlock();
 }
 
-/*
-#pragma mark - Navigation
-
-// In a storyboard-based application, you will often want to do a little preparation before navigation
-- (void)prepareForSegue:(UIStoryboardSegue *)segue sender:(id)sender {
-    // Get the new view controller using [segue destinationViewController].
-    // Pass the selected object to the new view controller.
+- (UIStatusBarStyle)preferredStatusBarStyle {
+    return self.videoPlayerHelper.vc_preferredStatusBarStyleExeBlock();
 }
-*/
+
+- (BOOL)prefersHomeIndicatorAutoHidden {
+    return YES;
+}
 
 #pragma mark <UICollectionViewDataSource>
 
@@ -93,101 +131,4 @@ static NSString * const PlayerCollectionViewCellID = @"PlayerCollectionViewCell"
     cell.delegate = self;
     return cell;
 }
-
-#pragma mark <UICollectionViewDelegate>
-- (void)clickedPlayOnColCell:(PlayerCollectionViewCell *)cell {
-    [self _removeOldPlayer];
-
-    [self _createNewPlayerWithView:cell.backgroundImageView indexPath:[self.collectionView indexPathForCell:cell] tag:cell.backgroundImageView.tag videoURLStr:@"https://www.apple.com/105/media/us/iphone-x/2017/01df5b43-28e4-4848-bf20-490c34a926a7/films/feature/iphone-x-feature-tpl-cc-us-20170912_1280x720h.mp4"];
-}
-
-- (void)_removeOldPlayer {
-    // clear old player
-    SJVideoPlayer *oldPlayer = _videoPlayer;
-    if ( !oldPlayer ) return;
-    [oldPlayer stopAndFadeOut];
-}
-
-- (void)_createNewPlayerWithView:(UIView *)view
-                       indexPath:(NSIndexPath *)indexPath
-                             tag:(NSInteger)tag
-                     videoURLStr:(NSString *)videoURLStr {
-    // create new player
-    _videoPlayer = [SJVideoPlayer player];
-    _videoPlayer.view.alpha = 0.001;
-    [view addSubview:_videoPlayer.view];
-    [_videoPlayer.view mas_remakeConstraints:^(MASConstraintMaker *make) {
-        make.edges.offset(0);
-    }];
-    
-    // fade in
-    [UIView animateWithDuration:0.5 animations:^{
-        self->_videoPlayer.view.alpha = 1;
-    }];
-    
-    SJPlayModel *playModel = [SJPlayModel UICollectionViewCellPlayModelWithPlayerSuperviewTag:tag
-                                                                                  atIndexPath:indexPath
-                                                                               collectionView:self.collectionView];
-    SJVideoPlayerURLAsset *asset =
-    [[SJVideoPlayerURLAsset alloc] initWithURL:[NSURL URLWithString:videoURLStr]
-                                     playModel:playModel];
-
-    _videoPlayer.URLAsset = asset;
-    _videoPlayer.autoPlay = YES;
-}
-
 @end
-
-#if 0
-#import <ImageIO/ImageIO.h>
-#import <MobileCoreServices/MobileCoreServices.h>
-static UIImage *frameImage(CGSize size, CGFloat radians) {
-    UIGraphicsBeginImageContextWithOptions(size, YES, 1); {
-        [[UIColor whiteColor] setFill];
-        UIRectFill(CGRectInfinite);
-        CGContextRef gc = UIGraphicsGetCurrentContext();
-        CGContextTranslateCTM(gc, size.width / 2, size.height / 2);
-        CGContextRotateCTM(gc, radians);
-        CGContextTranslateCTM(gc, size.width / 4, 0);
-        [[UIColor redColor] setFill];
-        CGFloat w = size.width / 10;
-        CGContextFillEllipseInRect(gc, CGRectMake(-w / 2, -w / 2, w, w));
-    }
-    UIImage *image = UIGraphicsGetImageFromCurrentImageContext();
-    UIGraphicsEndImageContext();
-    return image;
-}
-static void makeAnimatedGif(void) {
-    static NSUInteger kFrameCount = 16;
-    NSDictionary *fileProperties = @{
-                                     (__bridge id)kCGImagePropertyGIFDictionary: @{
-                                             (__bridge id)kCGImagePropertyGIFLoopCount: @0, // 0 means loop forever
-                                             }
-                                     };
-    
-    NSDictionary *frameProperties = @{
-                                      (__bridge id)kCGImagePropertyGIFDictionary: @{
-                                              (__bridge id)kCGImagePropertyGIFDelayTime: @0.02f, // a float (not double!) in seconds, rounded to centiseconds in the GIF data
-                                              }
-                                      };
-    NSURL *documentsDirectoryURL = [[NSFileManager defaultManager] URLForDirectory:NSDocumentDirectory inDomain:NSUserDomainMask appropriateForURL:nil create:YES error:nil];
-    NSURL *fileURL = [documentsDirectoryURL URLByAppendingPathComponent:@"animated.gif"];
-    
-    CGImageDestinationRef destination = CGImageDestinationCreateWithURL((__bridge CFURLRef)fileURL, kUTTypeGIF, kFrameCount, NULL);
-    CGImageDestinationSetProperties(destination, (__bridge CFDictionaryRef)fileProperties);
-    
-    for (NSUInteger i = 0; i < kFrameCount; i++) {
-        @autoreleasepool {
-            UIImage *image = frameImage(CGSizeMake(300, 300), M_PI * 2 * i / kFrameCount);
-            CGImageDestinationAddImage(destination, image.CGImage, (__bridge CFDictionaryRef)frameProperties);
-        }
-    }
-    
-    if (!CGImageDestinationFinalize(destination)) {
-        NSLog(@"failed to finalize image destination");
-    }
-    CFRelease(destination);
-    
-    NSLog(@"url=%@", fileURL);
-}
-#endif

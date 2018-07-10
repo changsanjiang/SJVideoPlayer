@@ -113,6 +113,8 @@ NS_ASSUME_NONNULL_BEGIN
 
 + (NSString *)version;
 
+- (nullable __kindof UIViewController *)atViewController;
+
 @end
 
 
@@ -226,6 +228,54 @@ NS_ASSUME_NONNULL_BEGIN
 - (void)playWithURL:(NSURL *)URL; // 不再建议使用, 请使用`URLAsset`进行初始化
 @end
 
+
+
+/// v1.3.0 新增
+@interface SJBaseVideoPlayer (UIViewController)
+
+/// You should call it when view did appear
+- (void)vc_viewDidAppear;
+/// You should call it when view will disappear
+- (void)vc_viewWillDisappear;
+- (void)vc_viewDidDisappear;
+- (BOOL)vc_prefersStatusBarHidden;
+- (UIStatusBarStyle)vc_preferredStatusBarStyle;
+
+/// The code is fixed, you can copy it directly to the view controller
+/// 以下的代码都是固定的, 可以直接copy到视图控制器中
+//
+//- (void)viewDidAppear:(BOOL)animated {
+//    [super viewDidAppear:animated];
+//    [self.player vc_viewDidAppear];
+//}
+//
+//- (void)viewWillDisappear:(BOOL)animated {
+//    [super viewWillDisappear:animated];
+//    [self.player vc_viewWillDisappear];
+//}
+//
+//- (void)viewDidDisappear:(BOOL)animated {
+//    [super viewDidDisappear:animated];
+//    [self.player vc_viewDidDisappear];
+//}
+//
+//- (BOOL)prefersStatusBarHidden {
+//    return [self.player vc_prefersStatusBarHidden];
+//}
+//
+//- (UIStatusBarStyle)preferredStatusBarStyle {
+//    return [self.player vc_preferredStatusBarStyle];
+//}
+//
+//- (BOOL)prefersHomeIndicatorAutoHidden {
+//    return YES;
+//}
+
+/// 当调用`vc_viewDidDisappearExeBlock`时, 将设置为YES
+/// 当调用`vc_viewWillDisappearExeBlock`时, 将设置为NO
+@property (nonatomic) BOOL vc_isDisappeared;
+
+@end
 
 
 

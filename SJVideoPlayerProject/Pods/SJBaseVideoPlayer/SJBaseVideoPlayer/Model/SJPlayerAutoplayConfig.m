@@ -13,6 +13,7 @@
     SJPlayerAutoplayConfig *config = [SJPlayerAutoplayConfig new];
     config->_playerSuperviewTag = playerSuperviewTag;
     config->_autoplayDelegate = autoplayDelegate;
+    config->_animationType = SJAutoplayScrollAnimationTypeMiddle;
     return config;
 }
 @end

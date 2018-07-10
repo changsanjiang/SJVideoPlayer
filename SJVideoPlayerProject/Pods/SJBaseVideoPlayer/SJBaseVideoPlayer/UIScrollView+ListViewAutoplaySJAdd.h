@@ -9,11 +9,14 @@
 #import "SJPlayerAutoplayConfig.h"
 
 NS_ASSUME_NONNULL_BEGIN
+
+/// List view autoplay.
 /// 列表自动播放功能
 @interface UIScrollView (ListViewAutoplaySJAdd)
 
 @property (nonatomic, readonly) BOOL sj_enabledAutoplay;
 
+/// enable autoplay
 /// 开启
 - (void)sj_enableAutoplayWithConfig:(SJPlayerAutoplayConfig *)autoplayConfig;
 
@@ -23,22 +26,11 @@ NS_ASSUME_NONNULL_BEGIN
 @end
 
 
+/// Developers don't need to care, this category is automatically maintained by the SJBaseVideoPlayer.
+/// 开发者无需关心, 此类由播放器自动维护
 @interface UIScrollView (SJPlayerCurrentPlayingIndexPath)
-/// 开发者无需关心, 播放器将会自动维护
 @property (nonatomic, strong, nullable, readonly) NSIndexPath *sj_currentPlayingIndexPath;
 - (void)setSj_currentPlayingIndexPath:(nullable NSIndexPath *)sj_currentPlayingIndexPath;
 - (void)sj_needPlayNextAsset;
 @end
 NS_ASSUME_NONNULL_END
-
-/**
- 示例:
-
- SJPlayerAutoplayConfig *config = [SJPlayerAutoplayConfig configWithPlayerSuperviewTag:101 autoplayDelegate:self];
- // 开启自动播放
- [self.tableView sj_enableAutoplayWithConfig:config];
- 
- // 播放第一个视频
- [self sj_playerNeedPlayNewAssetAtIndexPath:[NSIndexPath indexPathForRow:0 inSection:0]];
- 
- */

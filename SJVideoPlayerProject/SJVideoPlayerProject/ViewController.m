@@ -21,7 +21,6 @@
 #import <SJFullscreenPopGesture/UINavigationController+SJVideoPlayerAdd.h>
 #import "PortraitViewController.h"
 #import "DemoPlayerViewController.h"
-#import "TableViewAutoPlayViewController.h"
 
 @interface ViewController ()
 
@@ -91,10 +90,6 @@
 
 - (IBAction)pushVc:(id)sender {
     [self.navigationController pushViewController:[[DemoPlayerViewController alloc] init] animated:YES];
-}
-
-- (IBAction)tableViewAutoPlay:(id)sender {
-    [self.navigationController pushViewController:[[TableViewAutoPlayViewController alloc] init] animated:YES];
 }
 
 - (IBAction)test:(id)sender {

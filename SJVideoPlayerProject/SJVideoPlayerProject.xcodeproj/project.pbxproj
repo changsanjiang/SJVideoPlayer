@@ -46,7 +46,6 @@
 		77DA95232042C260007A9EE8 /* TestItem.m in Sources */ = {isa = PBXBuildFile; fileRef = 77DA95222042C260007A9EE8 /* TestItem.m */; };
 		77E754362040056F00A5AF44 /* FullViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 77E754352040056F00A5AF44 /* FullViewController.m */; };
 		77E754382040135000A5AF44 /* sample.mp4 in Resources */ = {isa = PBXBuildFile; fileRef = 77E754372040135000A5AF44 /* sample.mp4 */; };
-		77EB9ED620F3066000C922AB /* TableViewAutoPlayViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 77EB9ED520F3066000C922AB /* TableViewAutoPlayViewController.m */; };
 		A61CC0FE20C2BB240080DE44 /* SJVideoPlayerSettings.m in Sources */ = {isa = PBXBuildFile; fileRef = A61CC0FD20C2BB240080DE44 /* SJVideoPlayerSettings.m */; };
 		A6441092200A3FA9006FD832 /* SJVideoListViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = A6441091200A3FA9006FD832 /* SJVideoListViewController.m */; };
 		A6441095200A3FBA006FD832 /* SJVideoListTableViewCell.m in Sources */ = {isa = PBXBuildFile; fileRef = A6441094200A3FBA006FD832 /* SJVideoListTableViewCell.m */; };
@@ -179,8 +178,6 @@
 		77E754342040056F00A5AF44 /* FullViewController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = FullViewController.h; sourceTree = "<group>"; };
 		77E754352040056F00A5AF44 /* FullViewController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = FullViewController.m; sourceTree = "<group>"; };
 		77E754372040135000A5AF44 /* sample.mp4 */ = {isa = PBXFileReference; lastKnownFileType = file; path = sample.mp4; sourceTree = "<group>"; };
-		77EB9ED420F3066000C922AB /* TableViewAutoPlayViewController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = TableViewAutoPlayViewController.h; sourceTree = "<group>"; };
-		77EB9ED520F3066000C922AB /* TableViewAutoPlayViewController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = TableViewAutoPlayViewController.m; sourceTree = "<group>"; };
 		A53C6944FFDAC5FD9DA4750E /* libPods-SJVideoPlayerProject.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-SJVideoPlayerProject.a"; sourceTree = BUILT_PRODUCTS_DIR; };
 		A61CC0FC20C2BB240080DE44 /* SJVideoPlayerSettings.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = SJVideoPlayerSettings.h; sourceTree = "<group>"; };
 		A61CC0FD20C2BB240080DE44 /* SJVideoPlayerSettings.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = SJVideoPlayerSettings.m; sourceTree = "<group>"; };
@@ -522,18 +519,8 @@
 				773AFC71205D06DE003B2CAC /* Download_下载 */,
 				7706FC8D2062A818006A828B /* Lightweight_轻量级播放器 */,
 				A67E153920BE7F01002ECC48 /* OnlyLandscape_仅横屏 */,
-				77EB9ED320F3064000C922AB /* TableView_AutoPlay */,
 			);
 			path = Demo;
-			sourceTree = "<group>";
-		};
-		77EB9ED320F3064000C922AB /* TableView_AutoPlay */ = {
-			isa = PBXGroup;
-			children = (
-				77EB9ED420F3066000C922AB /* TableViewAutoPlayViewController.h */,
-				77EB9ED520F3066000C922AB /* TableViewAutoPlayViewController.m */,
-			);
-			path = TableView_AutoPlay;
 			sourceTree = "<group>";
 		};
 		A644108C200A3F89006FD832 /* TableView_在TableCell上播放 */ = {
@@ -986,7 +973,6 @@
 				775B201C2046682E00264AB9 /* TableHeaderCollectionViewCell.m in Sources */,
 				773AFC64205BA7C1003B2CAC /* DowloadViewController.m in Sources */,
 				A663302820C4FB4800CB4A02 /* SJVideoPlayerFilmEditingConfig.m in Sources */,
-				77EB9ED620F3066000C922AB /* TableViewAutoPlayViewController.m in Sources */,
 				A6F4E9742007A12400716B9C /* PlayerCollectionViewController.m in Sources */,
 				A663309A20C4FB9100CB4A02 /* SJLightweightTopControlView.m in Sources */,
 				A663308420C4FB9100CB4A02 /* SJVideoPlayerURLAsset+SJControlAdd.m in Sources */,

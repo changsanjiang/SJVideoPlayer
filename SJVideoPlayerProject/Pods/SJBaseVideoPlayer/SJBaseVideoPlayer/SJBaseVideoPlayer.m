@@ -215,7 +215,17 @@ NS_ASSUME_NONNULL_BEGIN
 }
 
 + (NSString *)version {
-    return @"1.2.0";
+    return @"1.3.0";
+}
+
+- (nullable __kindof UIViewController *)atViewController {
+    if ( _view.superview == nil ) return nil;
+    UIResponder *responder = _view.nextResponder;
+    while ( ![responder isKindOfClass:[UIViewController class]] ) {
+        responder = responder.nextResponder;
+        if ( [responder isMemberOfClass:[UIResponder class]] || !responder ) return nil;
+    }
+    return (UIViewController *)responder;
 }
 
 - (instancetype)init {
@@ -913,44 +923,45 @@ NS_ASSUME_NONNULL_BEGIN
     
     if ( ![self playStatus_isPrepare] ) return;
     
-    self.playStatus = SJVideoPlayerPlayStatusReadyToPlay;
-    
-    BOOL mute = self.mute; _URLAsset.playAsset.player.muted = mute;
-    
     if ( [self.controlLayerDelegate respondsToSelector:@selector(videoPlayer:currentTime:currentTimeStr:totalTime:totalTimeStr:)] ) {
         [self.controlLayerDelegate videoPlayer:self currentTime:self.currentTime currentTimeStr:self.currentTimeStr totalTime:self.totalTime totalTimeStr:self.totalTimeStr];
     }
     
     __weak typeof(self) _self = self;
     void(^block)(void) = ^{
-        __strong typeof(_self) self = _self;
-        if ( !self ) return ;
-        
-        if ( [self.controlLayerDelegate respondsToSelector:@selector(loadCompletion:)] ) {
-            [self.controlLayerDelegate loadCompletion:self];
-        }
-        
-        if ( self.registrar.state == SJVideoPlayerAppState_Background &&
-             self.pauseWhenAppDidEnterBackground ) {
-            [self pause:SJVideoPlayerPausedReasonPause];
-            return;
-        }
-        
-        if ( self.operationOfInitializing ) {
-            self.operationOfInitializing(self);
-            self.operationOfInitializing = nil;
-        }
-        else if ( self.autoPlay ) {
-            if ( self.isPlayOnScrollView ) {
-                if ( self.isScrollAppeared ) [self play];
-                else [self pause];
+        dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(0.9 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
+            __strong typeof(_self) self = _self;
+            if ( !self ) return;
+            if ( [self.controlLayerDelegate respondsToSelector:@selector(loadCompletion:)] ) {
+                [self.controlLayerDelegate loadCompletion:self];
             }
-            else {
-                [self play];
+            
+            self.playStatus = SJVideoPlayerPlayStatusReadyToPlay;
+            
+            self.URLAsset.playAsset.player.muted = self.mute;
+            
+            if ( self.registrar.state == SJVideoPlayerAppState_Background &&
+                self.pauseWhenAppDidEnterBackground ) {
+                [self pause:SJVideoPlayerPausedReasonPause];
+                return;
             }
-        }
-        
-        [self.displayRecorder resetInitialization];
+            
+            if ( self.operationOfInitializing ) {
+                self.operationOfInitializing(self);
+                self.operationOfInitializing = nil;
+            }
+            else if ( self.autoPlay ) {
+                if ( self.isPlayOnScrollView ) {
+                    if ( self.isScrollAppeared ) [self play];
+                    else [self pause];
+                }
+                else {
+                    [self play];
+                }
+            }
+            
+            [self.displayRecorder resetInitialization];
+        });
     };
     
     if ( !self.URLAsset.playAsset.isOtherAsset && 0 != self.URLAsset.playAsset.specifyStartTime ) {
@@ -975,22 +986,25 @@ NS_ASSUME_NONNULL_BEGIN
 }
 
 - (void)_playDidToEnd {
-    SJVideoPlayerURLAsset *URLAsset = self.URLAsset;
-    if ( [URLAsset.playModel isKindOfClass:[SJUITableViewCellPlayModel class]] ) {
-        SJUITableViewCellPlayModel *playModel = (id)URLAsset.playModel;
-        if ( playModel.tableView.sj_enabledAutoplay ) {
-            [playModel.tableView sj_needPlayNextAsset];
-            return;
+
+    if ( !self.vc_isDisappeared ) {
+        SJVideoPlayerURLAsset *URLAsset = self.URLAsset;
+        if ( [URLAsset.playModel isKindOfClass:[SJUITableViewCellPlayModel class]] ) {
+            SJUITableViewCellPlayModel *playModel = (id)URLAsset.playModel;
+            if ( playModel.tableView.sj_enabledAutoplay ) {
+                [playModel.tableView sj_needPlayNextAsset];
+                return;
+            }
+        }
+        else if ( [URLAsset.playModel isKindOfClass:[SJUICollectionViewCellPlayModel class]] ) {
+            SJUICollectionViewCellPlayModel *playModel = (id)URLAsset.playModel;
+            if ( playModel.collectionView.sj_enabledAutoplay ) {
+                [playModel.collectionView sj_needPlayNextAsset];
+                return;
+            }
         }
     }
-    else if ( [URLAsset.playModel isKindOfClass:[SJUICollectionViewCellPlayModel class]] ) {
-        SJUICollectionViewCellPlayModel *playModel = (id)URLAsset.playModel;
-        if ( playModel.collectionView.sj_enabledAutoplay ) {
-            [playModel.collectionView sj_needPlayNextAsset];
-            return;
-        }
-    }
-    
+
     self.inactivityReason = SJVideoPlayerInactivityReasonPlayEnd;
     self.playStatus = SJVideoPlayerPlayStatusInactivity;
     if ( self.playDidToEndExeBlock ) self.playDidToEndExeBlock(self);
@@ -1215,7 +1229,7 @@ NS_ASSUME_NONNULL_BEGIN
         [_URLAsset.playAsset.playerItem cancelPendingSeeks];
     }
     else {
-        [self pause:SJVideoPlayerPausedReasonSeeking];
+        if ( ![self playStatus_isPrepare] ) [self pause:SJVideoPlayerPausedReasonSeeking];
     }
     
     __weak typeof(self) _self = self;
@@ -1304,6 +1318,43 @@ NS_ASSUME_NONNULL_BEGIN
 
 @end
 
+
+
+@implementation SJBaseVideoPlayer (UIViewController)
+/// You should call it when view did appear
+- (void)vc_viewDidAppear {
+    self.disableAutoRotation = NO;
+    if ( !self.isPlayOnScrollView || (self.isPlayOnScrollView && self.isScrollAppeared) ) {
+        [self play];
+    }
+    self.vc_isDisappeared = NO;
+}
+/// You should call it when view will disappear
+- (void)vc_viewWillDisappear {
+    self.disableAutoRotation = YES;   // 界面将要消失的时候, 禁止旋转.
+    self.vc_isDisappeared = YES;
+}
+- (void)vc_viewDidDisappear {
+    if ( ![self playStatus_isPaused_ReasonPause] ) [self pause];
+}
+- (BOOL)vc_prefersStatusBarHidden {
+    // 全屏播放时, 使状态栏根据控制层显示或隐藏
+    if ( self.isFullScreen ) return !self.controlLayerAppeared;
+    return NO;
+}
+- (UIStatusBarStyle)vc_preferredStatusBarStyle {
+    // 全屏播放时, 使状态栏变成白色
+    if ( self.isFullScreen ) return UIStatusBarStyleLightContent;
+    return UIStatusBarStyleDefault;
+}
+
+- (void)setVc_isDisappeared:(BOOL)vc_isDisappeared {
+    objc_setAssociatedObject(self, @selector(vc_isDisappeared), @(vc_isDisappeared), OBJC_ASSOCIATION_RETAIN_NONATOMIC);
+}
+- (BOOL)vc_isDisappeared {
+    return [objc_getAssociatedObject(self, _cmd) boolValue];
+}
+@end
 
 #pragma mark - 时间
 

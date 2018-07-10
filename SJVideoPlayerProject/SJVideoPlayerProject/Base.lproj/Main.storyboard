@@ -99,10 +99,10 @@
                                 </connections>
                             </button>
                             <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="9WL-ty-keX">
-                                <rect key="frame" x="120" y="605" width="135" height="30"/>
-                                <state key="normal" title="TableView_AutoPlay"/>
+                                <rect key="frame" x="137" y="605" width="101" height="30"/>
+                                <state key="normal" title="CollectionView"/>
                                 <connections>
-                                    <action selector="tableViewAutoPlay:" destination="BYZ-38-t0r" eventType="touchUpInside" id="DXl-fM-d40"/>
+                                    <action selector="pushCollection:" destination="BYZ-38-t0r" eventType="touchUpInside" id="9S5-Tz-YHf"/>
                                 </connections>
                             </button>
                         </subviews>

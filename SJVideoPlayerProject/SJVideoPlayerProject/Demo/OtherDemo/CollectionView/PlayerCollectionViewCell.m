@@ -21,7 +21,7 @@
 @synthesize backgroundImageView = _backgroundImageView;
 
 + (CGSize)itemSize {
-    CGFloat w = SJScreen_W() - 44;
+    CGFloat w = floor(SJScreen_Min() * 0.5);
     CGFloat h = w * 9.0 / 16;
     return CGSizeMake(w, h);
 }
@@ -37,10 +37,7 @@
     [self.contentView addSubview:self.backgroundImageView];
     [_backgroundImageView addSubview:self.playImageView];
     [_backgroundImageView mas_makeConstraints:^(MASConstraintMaker *make) {
-        make.centerX.offset(0);
-        make.top.offset(8);
-        make.bottom.offset(-8);
-        make.width.equalTo(self->_backgroundImageView.mas_height).multipliedBy(16.0 / 9);
+        make.edges.offset(0);
     }];
     
     [_playImageView mas_makeConstraints:^(MASConstraintMaker *make) {

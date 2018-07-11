@@ -16,7 +16,7 @@
 #import "SJVideoPlayerFilmEditingCommonHeader.h"
 #import <SJPrompt/SJPrompt.h>
 #import "SJVideoPlayerURLAsset+SJControlAdd.h"
-#import <SJOrentationObserver/SJRotationManager.h>
+#import "SJRotationManager.h"
 #import "SJVideoPlayer.h"
 
 @class SJVideoPlayerURLAsset, SJLightweightTopItem, SJVideoPlayerFilmEditingConfig;

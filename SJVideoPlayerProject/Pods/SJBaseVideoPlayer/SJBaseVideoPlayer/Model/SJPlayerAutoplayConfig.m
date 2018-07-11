@@ -10,6 +10,9 @@
 @implementation SJPlayerAutoplayConfig
 + (instancetype)configWithPlayerSuperviewTag:(NSInteger)playerSuperviewTag
                             autoplayDelegate:(id<SJPlayerAutoplayDelegate>)autoplayDelegate {
+    NSParameterAssert(playerSuperviewTag != 0);
+    NSParameterAssert(autoplayDelegate != nil);
+    
     SJPlayerAutoplayConfig *config = [SJPlayerAutoplayConfig new];
     config->_playerSuperviewTag = playerSuperviewTag;
     config->_autoplayDelegate = autoplayDelegate;

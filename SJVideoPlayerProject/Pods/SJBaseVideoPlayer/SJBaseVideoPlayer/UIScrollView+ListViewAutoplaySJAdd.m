@@ -25,8 +25,8 @@ static void sj_scrollViewDidEndDecelerating(id<UIScrollViewDelegate_ListViewAuto
 
 /// autoplay
 static void sj_scrollViewConsiderPlayNewAsset(__kindof __kindof UIScrollView *scrollView);
-static void sj_tableViewNeedPlayNextAsset(UITableView *tableView);
-static void sj_collectionViewNeedPlayNextAsset(UICollectionView *collectionView);
+static void sj_tableViewConsiderPlayNextAsset(UITableView *tableView);
+static void sj_collectionViewConsiderPlayNextAsset(UICollectionView *collectionView);
 
 
 @interface _SJScrollViewDelegateObserver: NSObject
@@ -53,6 +53,7 @@ static NSString *delegateKey = @"delegate";
 }
 - (void)observeValueForKeyPath:(nullable NSString *)keyPath ofObject:(nullable id)object change:(nullable NSDictionary<NSKeyValueChangeKey,id> *)change context:(nullable void *)context {
     if ( context == &delegateKey ) {
+        if ( change[NSKeyValueChangeOldKey] == change[NSKeyValueChangeNewKey] ) return;
         if ( _valueChangeExeBlock ) _valueChangeExeBlock(self);
     }
 }
@@ -71,10 +72,10 @@ static NSString *delegateKey = @"delegate";
     dispatch_async(dispatch_get_main_queue(), ^{
         // 查询当前显示的cell中(sj_currentPlayingIndexPath之后的), 是否存在播放器父视图
         if ( [self isKindOfClass:[UITableView class]] ) {
-            sj_tableViewNeedPlayNextAsset((id)self);
+            sj_tableViewConsiderPlayNextAsset((id)self);
         }
         else if ( [self isKindOfClass:[UICollectionView class]] ) {
-            sj_collectionViewNeedPlayNextAsset((id)self);
+            sj_collectionViewConsiderPlayNextAsset((id)self);
         }
     });
 }
@@ -99,7 +100,6 @@ static NSString *delegateKey = @"delegate";
 }
 
 - (void)sj_enableAutoplayWithConfig:(SJPlayerAutoplayConfig *)autoplayConfig {
-    autoplayConfig.animationType = SJAutoplayScrollAnimationTypeMiddle;
     
     self.sj_enabledAutoplay = YES;
     self.sj_autoplayConfig = autoplayConfig;
@@ -200,7 +200,7 @@ static void sj_tableViewConsiderPlayNewAsset(UITableView *tableView) {
     __block UITableViewCell *cell_l = nil;
     __block UIView *half_l_view = nil;
     [half_l enumerateObjectsWithOptions:NSEnumerationReverse usingBlock:^(UITableViewCell * _Nonnull obj, NSUInteger idx, BOOL * _Nonnull stop) {
-        UIView *superview = [obj viewWithTag:101];
+        UIView *superview = [obj viewWithTag:config.playerSuperviewTag];
         if ( !superview ) return;
         *stop = YES;
         cell_l = obj;
@@ -210,7 +210,7 @@ static void sj_tableViewConsiderPlayNewAsset(UITableView *tableView) {
     __block UITableViewCell *cell_r = nil;
     __block UIView *half_r_view = nil;
     [half_r enumerateObjectsUsingBlock:^(UITableViewCell * _Nonnull obj, NSUInteger idx, BOOL * _Nonnull stop) {
-        UIView *superview = [obj viewWithTag:101];
+        UIView *superview = [obj viewWithTag:config.playerSuperviewTag];
         if ( !superview ) return;
         *stop = YES;
         cell_r = obj;
@@ -268,7 +268,7 @@ static void sj_collectionViewConsiderPlayNewAsset(UICollectionView *collectionVi
     __block UICollectionViewCell *cell_l = nil;
     __block UIView *half_l_view = nil;
     [half_l enumerateObjectsWithOptions:NSEnumerationReverse usingBlock:^(UICollectionViewCell * _Nonnull obj, NSUInteger idx, BOOL * _Nonnull stop) {
-        UIView *superview = [obj viewWithTag:101];
+        UIView *superview = [obj viewWithTag:config.playerSuperviewTag];
         if ( !superview ) return;
         *stop = YES;
         cell_l = obj;
@@ -278,7 +278,7 @@ static void sj_collectionViewConsiderPlayNewAsset(UICollectionView *collectionVi
     __block UICollectionViewCell *cell_r = nil;
     __block UIView *half_r_view = nil;
     [half_r enumerateObjectsUsingBlock:^(UICollectionViewCell * _Nonnull obj, NSUInteger idx, BOOL * _Nonnull stop) {
-        UIView *superview = [obj viewWithTag:101];
+        UIView *superview = [obj viewWithTag:config.playerSuperviewTag];
         if ( !superview ) return;
         *stop = YES;
         cell_r = obj;
@@ -338,7 +338,7 @@ static void sj_exeAnima(__kindof UIScrollView *scrollView, NSIndexPath *indexPat
     }
 }
 
-static void sj_tableViewNeedPlayNextAsset(UITableView *tableView) {
+static void sj_tableViewConsiderPlayNextAsset(UITableView *tableView) {
     NSArray<NSIndexPath *> *visibleIndexPaths = tableView.indexPathsForVisibleRows;
     if ( visibleIndexPaths.count == 0 ) return;
     if ( [visibleIndexPaths.lastObject compare:tableView.sj_currentPlayingIndexPath] == NSOrderedSame ) return;
@@ -359,7 +359,7 @@ static void sj_tableViewNeedPlayNextAsset(UITableView *tableView) {
     sj_exeAnima(tableView, nextIndexPath, [tableView sj_autoplayConfig].animationType);
 }
 
-static void sj_collectionViewNeedPlayNextAsset(UICollectionView *collectionView) {
+static void sj_collectionViewConsiderPlayNextAsset(UICollectionView *collectionView) {
     NSArray<NSIndexPath *> *visibleIndexPaths = [collectionView.indexPathsForVisibleItems sortedArrayUsingComparator:^NSComparisonResult(id  _Nonnull obj1, id  _Nonnull obj2) {
         return [obj1 compare:obj2];
     }];

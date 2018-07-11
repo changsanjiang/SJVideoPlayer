@@ -33,7 +33,7 @@
 #import "SJVideoPlayerState.h"
 #import "SJVideoPlayerPreviewInfo.h"
 #import <SJPrompt/SJPrompt.h>
-#import <SJOrentationObserver/SJRotationManager.h>
+#import "SJRotationManager.h"
 #import "SJVideoPlayerControlLayerProtocol.h"
 
 NS_ASSUME_NONNULL_BEGIN
@@ -274,8 +274,8 @@ NS_ASSUME_NONNULL_BEGIN
 //    return YES;
 //}
 
-/// 当调用`vc_viewDidDisappearExeBlock`时, 将设置为YES
-/// 当调用`vc_viewWillDisappearExeBlock`时, 将设置为NO
+/// 当调用`vc_viewWillDisappear`时, 将设置为YES
+/// 当调用`vc_viewDidAppear`时, 将设置为NO
 @property (nonatomic) BOOL vc_isDisappeared;
 
 @end

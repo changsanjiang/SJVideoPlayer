@@ -29,7 +29,7 @@ NS_ASSUME_NONNULL_BEGIN
     _target = target;
     _superview = superview;
     _duration = 0.4;
-    [self _updateRecDeviceOrientation];
+    _rec_deviceOrientation = UIDeviceOrientationPortrait;
     _blackView = [UIView new]; _blackView.backgroundColor = [UIColor blackColor];
     _autorotationSupportedOrientation = SJAutoRotateSupportedOrientation_All;
     _rotationCondition = rotationCondition;
@@ -99,19 +99,6 @@ NS_ASSUME_NONNULL_BEGIN
         default:    break;
     }
 }
-
-- (void)_updateRecDeviceOrientation {
-    switch ( [UIDevice currentDevice].orientation ) {
-        case UIDeviceOrientationPortrait:
-        case UIDeviceOrientationLandscapeLeft:
-        case UIDeviceOrientationLandscapeRight: {
-            _rec_deviceOrientation = [UIDevice currentDevice].orientation;
-        }
-            break;
-        default:    break;
-    }
-}
-
 /// 是否支持 Portrait
 - (BOOL)isSupportedPortrait {
     return SJAutoRotateSupportedOrientation_Portrait == ( _autorotationSupportedOrientation & SJAutoRotateSupportedOrientation_Portrait);

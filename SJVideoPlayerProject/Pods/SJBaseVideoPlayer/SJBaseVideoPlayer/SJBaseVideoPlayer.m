@@ -14,10 +14,9 @@
 
 #import "SJBaseVideoPlayer.h"
 #import <Masonry/Masonry.h>
-#import <SJUIFactory/SJUIFactory.h>
-#import <SJOrentationObserver/SJRotationManager.h>
+#import "SJRotationManager.h"
 #import "SJPlayerGestureControl.h"
-#import <SJVolBrigControl/SJVolBrigControl.h>
+#import "SJVolBrigControl.h"
 #import "UIView+SJVideoPlayerAdd.h"
 #import <objc/message.h>
 #import <SJObserverHelper/NSObject+SJObserverHelper.h>
@@ -28,7 +27,6 @@
 #import "SJBaseVideoPlayer+PlayStatus.h"
 #import "SJTimerControl.h"
 #import <Reachability/Reachability.h>
-#import "SJPlayerNotifications.h"
 #import "UIScrollView+ListViewAutoplaySJAdd.h"
 
 NS_ASSUME_NONNULL_BEGIN
@@ -893,7 +891,6 @@ NS_ASSUME_NONNULL_BEGIN
         }
         else {
             self.playStatus = SJVideoPlayerPlayStatusPrepare;
-            [[NSNotificationCenter defaultCenter] postNotificationName:SJPlayerPrepareToPlayAnAssetNotification object:self];
             if ( [self.controlLayerDelegate respondsToSelector:@selector(startLoading:)] ) {
                 [self.controlLayerDelegate startLoading:self];
             }
@@ -2111,7 +2108,5 @@ NS_ASSUME_NONNULL_BEGIN
     }
 }
 @end
-
-NSNotificationName const SJPlayerPrepareToPlayAnAssetNotification = @"SJPlayerPrepareToPlayAnAssetNotification";
 
 NS_ASSUME_NONNULL_END

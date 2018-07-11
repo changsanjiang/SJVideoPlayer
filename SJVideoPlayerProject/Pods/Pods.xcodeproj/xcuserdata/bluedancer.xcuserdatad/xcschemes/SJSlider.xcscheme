@@ -14,7 +14,7 @@
             buildForArchiving = "YES">
             <BuildableReference
                BuildableIdentifier = "primary"
-               BlueprintIdentifier = "5007F82C734263FF90D03D3A0EC829C3"
+               BlueprintIdentifier = "ABB8F5B6B583C7077E8EB2D347B711D8"
                BlueprintName = "SJSlider"
                ReferencedContainer = "container:Pods.xcodeproj"
                BuildableName = "libSJSlider.a">

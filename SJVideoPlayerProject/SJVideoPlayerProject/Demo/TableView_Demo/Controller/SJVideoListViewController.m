@@ -111,11 +111,7 @@ static NSString *const SJVideoListTableViewCellID = @"SJVideoListTableViewCell";
         
         _player = [SJVideoPlayer player]; // 创建一个新的播放器
         _player.generatePreviewImages = YES; // 生成预览缩略图, 大概20张
-        [playerParentView addSubview:_player.view]; // 将播放器添加到父视图中
-        [_player.view mas_makeConstraints:^(MASConstraintMaker *make) {
-            make.edges.offset(0);
-        }];
-        
+   
         // fade in(淡入)
         _player.view.alpha = 0.001;
         [UIView animateWithDuration:0.5 animations:^{
@@ -135,6 +131,11 @@ static NSString *const SJVideoListTableViewCellID = @"SJVideoListTableViewCell";
     }
     
     _player.URLAsset = asset;
+    
+    [playerParentView addSubview:_player.view]; // 将播放器添加到父视图中
+    [_player.view mas_makeConstraints:^(MASConstraintMaker *make) {
+        make.edges.offset(0);
+    }];
 }
 
 @synthesize filmEditingHelper = _filmEditingHelper;

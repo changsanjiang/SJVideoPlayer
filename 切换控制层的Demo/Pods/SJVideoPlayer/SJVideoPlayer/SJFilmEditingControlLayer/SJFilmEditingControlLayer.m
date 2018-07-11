@@ -15,7 +15,7 @@
 #import "SJFilmEditingGenerateGIFView.h"
 #import <SJPrompt/SJPrompt.h>
 #import "UIView+SJFilmEditingAdd.h"
-
+#import <SJBaseVideoPlayer/SJBaseVideoPlayer+PlayStatus.h>
 
 NS_ASSUME_NONNULL_BEGIN
 
@@ -33,7 +33,7 @@ typedef SJVideoPlayerFilmEditingResultUploadState SJVideoPlayerFilmEditingResult
 /// Initial value
 @interface SJFilmEditingVideoPlayerPropertyRecroder: NSObject
 @property (nonatomic) BOOL enableControlLayerDisplayController;
-@property (nonatomic) BOOL disableAutoRotation;
+@property (nonatomic) BOOL disableRotation;
 @end
 
 
@@ -112,15 +112,15 @@ NS_ASSUME_NONNULL_END
 
 - (void)exitControlLayerCompeletionHandler:(nullable void (^)(void))compeletionHandler {
     if ( _propertyRecorder ) {
-        _videoPlayer.disableAutoRotation = self.propertyRecorder.disableAutoRotation;
+        _videoPlayer.disableAutoRotation = self.propertyRecorder.disableRotation;
         _videoPlayer.enableControlLayerDisplayController = self.propertyRecorder.enableControlLayerDisplayController;
         _propertyRecorder = nil;
     }
     _videoPlayer.controlLayerDataSource = nil;
     _videoPlayer.controlLayerDelegate = nil;
     [UIView animateWithDuration:0.4 animations:^{
-        [self disappear];
-        [self.btnContainerView disappear];
+        [self sj_disappear];
+        [self.btnContainerView sj_disappear];
         [self cancel];
     } completion:^(BOOL finished) {
         [self->_generateGIFView removeFromSuperview]; self->_generateGIFView = nil;
@@ -134,10 +134,10 @@ NS_ASSUME_NONNULL_END
 - (void)restartControlLayerCompeletionHandler:(nullable void (^)(void))compeletionHandler {
     [self changedStatus:SJFilmEditingStatus_Unknown];
     self.currentOperation = SJVideoPlayerFilmEditingOperation_Unknown;
-    [self.btnContainerView disappear];
+    [self.btnContainerView sj_disappear];
     [UIView animateWithDuration:0.4 animations:^{
-        [self appear];
-        [self.btnContainerView appear];
+        [self sj_appear];
+        [self.btnContainerView sj_appear];
     } completion:^(BOOL finished) {
         if ( compeletionHandler ) compeletionHandler();
     }];
@@ -188,7 +188,7 @@ NS_ASSUME_NONNULL_END
 - (void)installedControlViewToVideoPlayer:(__kindof SJBaseVideoPlayer *)videoPlayer {
     _videoPlayer = videoPlayer;
     self.propertyRecorder = [SJFilmEditingVideoPlayerPropertyRecroder new];
-    self.propertyRecorder.disableAutoRotation = videoPlayer.disableAutoRotation;
+    self.propertyRecorder.disableRotation = videoPlayer.disableAutoRotation;
     self.propertyRecorder.enableControlLayerDisplayController = videoPlayer.enableControlLayerDisplayController;
     
     videoPlayer.disableAutoRotation = YES;
@@ -200,29 +200,31 @@ NS_ASSUME_NONNULL_END
 
 - (void)controlLayerNeedDisappear:(__kindof SJBaseVideoPlayer *)videoPlayer {}
 
-- (void)videoPlayer:(__kindof SJBaseVideoPlayer *)videoPlayer stateChanged:(SJVideoPlayerPlayState)state {
+- (void)videoPlayer:(__kindof SJBaseVideoPlayer *)videoPlayer statusDidChanged:(SJVideoPlayerPlayStatus)status {
     if ( self.currentOperation == SJVideoPlayerFilmEditingOperation_Unknown ) return;
-    switch ( state ) {
-        case SJVideoPlayerPlayState_Prepare:
-        case SJVideoPlayerPlayState_Paused:
-            break;
-        case SJVideoPlayerPlayState_Unknown:
-        case SJVideoPlayerPlayState_PlayFailed: {
-            [self pause];
-            [self.promptView showTitle:self.settings.operationFailedPrompt duration:self.promptDuration];
-        }
-            break;
-        case SJVideoPlayerPlayState_Buffing: {
-            [self pause];
-        }
-            break;
-        case SJVideoPlayerPlayState_Playing: {
+    switch ( status ) {
+        case SJVideoPlayerPlayStatusUnknown:
+        case SJVideoPlayerPlayStatusPrepare:
+        case SJVideoPlayerPlayStatusReadyToPlay: break;
+        case SJVideoPlayerPlayStatusPlaying: {
             [self resume];
         }
             break;
-        case SJVideoPlayerPlayState_PlayEnd: {
-            [self finalize];
-            [self.promptView showTitle:self.settings.videoPlayDidToEndText duration:self.promptDuration];
+        case SJVideoPlayerPlayStatusPaused: {
+            if ( [videoPlayer playStatus_isPaused_ReasonPause] || [videoPlayer playStatus_isPaused_ReasonBuffering] ) {
+                [self pause];
+            }
+        }
+            break;
+        case SJVideoPlayerPlayStatusInactivity: {
+            if ( [videoPlayer playStatus_isInactivity_ReasonPlayEnd] ) {
+                [self finalize];
+                [self.promptView showTitle:self.settings.videoPlayDidToEndText duration:self.promptDuration];
+            }
+            else if ( [videoPlayer playStatus_isInactivity_ReasonPlayFailed] ) {
+                [self pause];
+                [self.promptView showTitle:self.settings.operationFailedPrompt duration:self.promptDuration];
+            }
         }
             break;
     }
@@ -243,9 +245,7 @@ NS_ASSUME_NONNULL_END
     if ( self.currentOperation == SJVideoPlayerFilmEditingOperation_Screenshot ) return;
     
     if ( self.status == SJFilmEditingStatus_Recording ) {
-        if ( videoPlayer.state == SJVideoPlayerPlayState_Paused ) {
-            [self pause];
-        }
+        [self pause];
     }
 }
 
@@ -272,7 +272,7 @@ NS_ASSUME_NONNULL_END
             break;
     }
 
-    [_btnContainerView disappear];
+    [_btnContainerView sj_disappear];
 }
 
 - (void)setCurrentOperation:(SJVideoPlayerFilmEditingOperation)currentOperation {
@@ -403,7 +403,7 @@ NS_ASSUME_NONNULL_END
     self.result.exportState = SJVideoPlayerFilmEditingResultUploadStateCancelled;
     
     if ( self.result.uploadState == SJVideoPlayerFilmEditingResultUploadStateUploading ) {
-        [self.uploader cancelUpload:self.result];
+        [self.config.resultUploader cancelUpload:self.result];
         self.result.uploadState = SJFilmEditingStatus_Cancelled;
     }
 }
@@ -515,7 +515,7 @@ NS_ASSUME_NONNULL_END
     if ( !self.config.resultNeedUpload ) return;
     result.uploadState = SJVideoPlayerFilmEditingResultUploadStateUploading;
     __weak typeof(self) _self = self;
-    [self.uploader upload:result progress:^(float progress) {
+    [self.config.resultUploader upload:result progress:^(float progress) {
         __strong typeof(_self) self = _self;
         if ( !self ) return;
         resultView.uploadProgress = progress;
@@ -640,12 +640,7 @@ NS_ASSUME_NONNULL_END
     switch ( status ) {
         case SJFilmEditingStatus_Unknown: break;
         case SJFilmEditingStatus_Recording: {
-            if ( self.videoPlayer.state == SJVideoPlayerPlayState_PlayEnd ) {
-                [self.videoPlayer replay];
-            }
-            else if ( self.videoPlayer.state == SJVideoPlayerPlayState_Paused ) {
-                [self.videoPlayer play];
-            }
+            [self.videoPlayer play];
         }
             break;
         case SJFilmEditingStatus_Cancelled: { } break;
@@ -698,12 +693,12 @@ NS_ASSUME_NONNULL_END
     
     [self _updateLayout];
     
-    self.disappearType = SJViewDisappearType_Alpha;
-    _btnContainerView.disappearType = SJViewDisappearType_All;
-    _btnContainerView.disappearTransform = CGAffineTransformMakeTranslation(49, 0);
-    _resultPresentView.disappearType = SJViewDisappearType_Alpha;
+    self.sj_disappearType = SJViewDisappearType_Alpha;
+    _btnContainerView.sj_disappearType = SJViewDisappearType_All;
+    _btnContainerView.sj_disappearTransform = CGAffineTransformMakeTranslation(49, 0);
+    _resultPresentView.sj_disappearType = SJViewDisappearType_Alpha;
 
-    [_btnContainerView disappear];
+    [_btnContainerView sj_disappear];
 }
 
 - (void)_updateLayout {

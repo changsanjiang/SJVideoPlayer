@@ -23,6 +23,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 @interface SJSlider ()
 @property (nonatomic, strong, readonly) UIView *containerView;
+@property (nonatomic, strong) UIActivityIndicatorView *indicatorView;
 @end
 
 #pragma mark -
@@ -35,7 +36,7 @@ NS_ASSUME_NONNULL_BEGIN
 - (void)setEnableBufferProgress:(BOOL)enableBufferProgress {
     if ( enableBufferProgress == self.enableBufferProgress ) return;
     objc_setAssociatedObject(self, @selector(enableBufferProgress), @(enableBufferProgress), OBJC_ASSOCIATION_RETAIN_NONATOMIC);
-    
+
     dispatch_async(dispatch_get_main_queue(), ^{
         if ( enableBufferProgress ) {
             UIView *bufferView = [self bufferProgressView];
@@ -97,14 +98,17 @@ NS_ASSUME_NONNULL_BEGIN
 
 
 #pragma mark -
-@implementation SJSlider
+@implementation SJSlider {
+    UILabel *_promptLabel;
+    NSLayoutConstraint *_promptLabelBottomConstraint;
+}
 
 - (instancetype)initWithFrame:(CGRect)frame {
     self = [super initWithFrame:frame];
     if ( !self ) return nil;
     [self _setupDefaultValues];
-    [self _setupGestrue];
     [self _setupView];
+    [self _setupGestrue];
     [self _needUpdateContainerCornerRadius];
     return self;
 }
@@ -112,7 +116,16 @@ NS_ASSUME_NONNULL_BEGIN
 #pragma mark
 - (void)_setupGestrue {
     _pan = [[UIPanGestureRecognizer alloc] initWithTarget:self action:@selector(handlePanGR:)];
+    _pan.delaysTouchesBegan = YES;
     [self addGestureRecognizer:_pan];
+    
+    _tap = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(handleTapGR:)];
+    _tap.delaysTouchesBegan = YES;
+    [self addGestureRecognizer:_tap];
+
+    [_tap requireGestureRecognizerToFail:_pan];
+    
+    _tap.enabled = NO;
 }
 
 - (void)handlePanGR:(UIPanGestureRecognizer *)pan {
@@ -146,6 +159,13 @@ NS_ASSUME_NONNULL_BEGIN
         default:
             break;
     }
+}
+
+- (void)handleTapGR:(UITapGestureRecognizer *)tap {
+    if ( _containerView.frame.size.width == 0 ) return;
+    CGFloat point = [tap locationInView:tap.view].x;
+    CGFloat value = point / _containerView.frame.size.width * (_maxValue - _minValue);
+    [self setValue:value animated:YES];
 }
 
 #pragma mark -
@@ -211,7 +231,18 @@ NS_ASSUME_NONNULL_BEGIN
     add = ABS(add);
     CGFloat sum = _maxValue - _minValue;
     CGFloat scale = add / sum;
-    return _animaMaxDuration * scale;
+    return _animaMaxDuration * scale + 0.08/**/;
+}
+
+- (void)setIsLoading:(BOOL)isLoading {
+    _isLoading = isLoading;
+    if ( isLoading ) [self.indicatorView startAnimating];
+    else [self.indicatorView stopAnimating];
+}
+
+- (void)setLoadingColor:(UIColor *)loadingColor {
+    _loadingColor = loadingColor;
+    _indicatorView.color = loadingColor;
 }
 
 #pragma mark
@@ -222,6 +253,8 @@ NS_ASSUME_NONNULL_BEGIN
     _minValue = 0;
     _round = YES;
     _value = 0;
+    self.promptSpacing = 4.0;
+    _loadingColor = [UIColor blackColor];
 }
 
 #pragma mark
@@ -259,6 +292,18 @@ NS_ASSUME_NONNULL_BEGIN
 - (void)layoutSubviews {
     [super layoutSubviews];
     [self _needUpdateContainerLayout];
+}
+
+- (UIActivityIndicatorView *)indicatorView {
+    if ( _indicatorView ) return _indicatorView;
+    _indicatorView = [[UIActivityIndicatorView alloc] init];
+    [_thumbImageView addSubview:_indicatorView];
+    _indicatorView.color = self.loadingColor;
+    _indicatorView.translatesAutoresizingMaskIntoConstraints = NO;
+    [_thumbImageView addConstraint:[NSLayoutConstraint constraintWithItem:_indicatorView attribute:NSLayoutAttributeCenterX relatedBy:NSLayoutRelationEqual toItem:_thumbImageView attribute:NSLayoutAttributeCenterX multiplier:1 constant:0]];
+    [_thumbImageView addConstraint:[NSLayoutConstraint constraintWithItem:_indicatorView attribute:NSLayoutAttributeCenterY relatedBy:NSLayoutRelationEqual toItem:_thumbImageView attribute:NSLayoutAttributeCenterY multiplier:1 constant:0]];
+    [self _needUpdateIndicatorTransform];
+    return _indicatorView;
 }
 
 #pragma mark -
@@ -302,7 +347,36 @@ NS_ASSUME_NONNULL_BEGIN
 - (void)_updateThumbSize:(CGSize)size {
     _thumbImageView.bounds = (CGRect){CGPointZero, size};
     [self _needUpdateThumbLayout];
+    [self _needUpdateIndicatorTransform];
 }
+
+- (void)_needUpdateIndicatorTransform {
+    _indicatorView.transform = CGAffineTransformMakeScale(_thumbImageView.bounds.size.width / 16 * 0.6, _thumbImageView.bounds.size.height / 16 * 0.6);
+}
+@end
+
+
+@implementation SJSlider (Prompt)
+
+- (UILabel *)promptLabel {
+    if ( _promptLabel ) return _promptLabel;
+    _promptLabel = [[UILabel alloc] init];
+    [self addSubview:_promptLabel];
+    _promptLabel.translatesAutoresizingMaskIntoConstraints = NO;
+    [self addConstraint:[NSLayoutConstraint constraintWithItem:_promptLabel attribute:NSLayoutAttributeCenterX relatedBy:NSLayoutRelationEqual toItem:_traceImageView attribute:NSLayoutAttributeTrailing multiplier:1 constant:0]];
+    [self addConstraint:_promptLabelBottomConstraint = [NSLayoutConstraint constraintWithItem:_promptLabel attribute:NSLayoutAttributeBottom relatedBy:NSLayoutRelationEqual toItem:_thumbImageView attribute:NSLayoutAttributeTop multiplier:1 constant:-self.promptSpacing]];
+    return _promptLabel;
+}
+
+- (void)setPromptSpacing:(CGFloat)promptSpacing {
+    objc_setAssociatedObject(self, @selector(promptSpacing), @(promptSpacing), OBJC_ASSOCIATION_RETAIN_NONATOMIC);
+    _promptLabelBottomConstraint.constant = -promptSpacing;
+}
+
+- (CGFloat)promptSpacing {
+    return [objc_getAssociatedObject(self, _cmd) floatValue];
+}
+
 @end
 
 

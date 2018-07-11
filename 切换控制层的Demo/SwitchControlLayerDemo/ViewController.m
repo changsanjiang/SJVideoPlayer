@@ -63,7 +63,7 @@
     if ( _videoPlayer ) return _videoPlayer;
     _videoPlayer = [SJVideoPlayer player];
     __weak typeof(self) _self = self;
-    _videoPlayer.willRotateScreen = ^(__kindof SJBaseVideoPlayer * _Nonnull player, BOOL isFullScreen) {
+    _videoPlayer.viewWillRotateExeBlock = ^(__kindof SJBaseVideoPlayer * _Nonnull player, BOOL isFullScreen) {
         __strong typeof(_self) self = _self;
         if ( !self ) return;
         [UIView animateWithDuration:0.25 animations:^{

@@ -206,7 +206,7 @@
 			);
 			inputPaths = (
 				"${SRCROOT}/Pods/Target Support Files/Pods-Demo/Pods-Demo-resources.sh",
-				"${PODS_ROOT}/SJVolBrigControl/SJVolBrigControl/Resource/SJVolBrigResource.bundle",
+				"${PODS_ROOT}/SJBaseVideoPlayer/SJBaseVideoPlayer/SJVolBrigControl/Resource/SJVolBrigResource.bundle",
 			);
 			name = "[CP] Copy Pods Resources";
 			outputPaths = (
@@ -372,10 +372,7 @@
 				CODE_SIGN_STYLE = Manual;
 				DEVELOPMENT_TEAM = DB5B5F2RH5;
 				INFOPLIST_FILE = Demo/Info.plist;
-				LD_RUNPATH_SEARCH_PATHS = (
-					"$(inherited)",
-					"@executable_path/Frameworks",
-				);
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				PRODUCT_BUNDLE_IDENTIFIER = com.SanJiang.Demo;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE = "64c214b3-450d-41eb-b05e-df636dfa28c8";
@@ -392,10 +389,7 @@
 				CODE_SIGN_STYLE = Manual;
 				DEVELOPMENT_TEAM = "";
 				INFOPLIST_FILE = Demo/Info.plist;
-				LD_RUNPATH_SEARCH_PATHS = (
-					"$(inherited)",
-					"@executable_path/Frameworks",
-				);
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				PRODUCT_BUNDLE_IDENTIFIER = com.SanJiang.Demo;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE_SPECIFIER = "";

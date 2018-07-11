@@ -23,12 +23,15 @@ typedef NS_ENUM(NSUInteger, SJLightweightBottomControlViewTag) {
 
 @property (nonatomic) BOOL isFullscreen;
 
-@property (nonatomic) BOOL onlyLandscape;
+@property (nonatomic) BOOL hiddenFullscreenBtn;
 
 @property (nonatomic) float progress;
 
 @property (nonatomic) float bufferProgress;
 
+/// 显示播放按钮还是显示暂停按钮
+/// - YES显示暂停
+/// - NO显示播放
 @property (nonatomic, getter=isStopped) BOOL stopped;
 
 - (void)setCurrentTimeStr:(NSString *)currentTimeStr;

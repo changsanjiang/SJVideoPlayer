@@ -968,7 +968,7 @@ NS_ASSUME_NONNULL_BEGIN
                 }
             }
             
-            [self.displayRecorder resetInitialization];
+            if ( !self.isLockedScreen ) [self.displayRecorder resetInitialization];
         });
     };
     

@@ -32,6 +32,17 @@
 
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(audioSessionInterruptionNotification:) name:AVAudioSessionInterruptionNotification object:[AVAudioSession sharedInstance]];
 
+    switch ( UIApplication.sharedApplication.applicationState ) {
+        case UIApplicationStateActive:
+            _state = SJVideoPlayerAppState_Forground;
+            break;
+        case UIApplicationStateInactive:
+            _state = SJVideoPlayerAppState_ResignActive;
+            break;
+        case UIApplicationStateBackground:
+            _state = SJVideoPlayerAppState_Background;
+            break;
+    }
     return self;
 }
 

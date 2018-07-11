@@ -48,10 +48,10 @@
 
 - (void)setModel:(SJVideoPlayerTopControlModel *)model {
     _model = model;
-    [self update];
+    [self needUpdateLayout];
 }
 
-- (void)update {
+- (void)needUpdateLayout {
     [self invalidateIntrinsicContentSize];
     if ( self.model.fullscreen ) [self _fullscreenState];
     else [self _smallscreenState];

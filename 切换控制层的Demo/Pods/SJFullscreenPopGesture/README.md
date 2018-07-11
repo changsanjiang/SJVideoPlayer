@@ -11,11 +11,7 @@ ___
 ### Swift
 ```ruby
 pod 'SJNavigationPopGesture'
-```
-And
-
-```swift
-
+// and install
 func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplicationLaunchOptionsKey: Any]?) -> Bool {
 
     // you need call it

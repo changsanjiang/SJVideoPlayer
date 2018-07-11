@@ -173,7 +173,7 @@ static const char *kSJSnapshot = "kSJSnapshot";
     [recorder preparePopViewController];
     
     // add recorder view
-    [nav.view.superview insertSubview:recorder.rootView atIndex:0];
+    [nav.view.superview insertSubview:recorder.rootView belowSubview:nav.view];
     
     recorder.rootView.transform = CGAffineTransformMakeTranslation( self.shift, 0);
 

@@ -5,26 +5,19 @@
 //  Created by BlueDancer on 2018/2/2.
 //  Copyright © 2018年 SanJiang. All rights reserved.
 //
-//  The base player, without the control layer, can be used if you need a custom control layer.
-//  https://github.com/changsanjiang/SJBaseVideoPlayer
+//  GitHub:     https://github.com/changsanjiang/SJBaseVideoPlayer
 //
-//  Player with default control layer.
-//  https://github.com/changsanjiang/SJVideoPlayer
+//  Contact:    changsanjiang@gmail.com
 //
-//  If you have suggestions or bugs, please contact me
-//  如有建议或Bug, 还请联系我
-
-//  Email:  changsanjiang@gmail.com
-//  QQ:     1779609779
+//  QQGroup:    719616775
 //
 
 /**
  ------------------------
- *  Play
+ *  PlayControl
  *  Network
  *  Prompt
  *  Time
- *  Control
  *  GestureControl
  *  ControlLayer
  *  Rotation
@@ -40,26 +33,10 @@
 #import "SJVideoPlayerState.h"
 #import "SJVideoPlayerPreviewInfo.h"
 #import <SJPrompt/SJPrompt.h>
-#import <SJOrentationObserver/SJOrentationObserver.h>
+#import "SJRotationManager.h"
 #import "SJVideoPlayerControlLayerProtocol.h"
 
 NS_ASSUME_NONNULL_BEGIN
-/**
- This enumeration lists some of the gesture types that the player has by default.
- When you don't want to use one of these gestures, you can set it like this:
- 
- 这个枚举列出了播放器默认拥有的一些手势类型, 当你不想使用其中某个手势时, 可以像下面这样设置:
- _videoPlayer.disableGestureTypes = SJDisablePlayerGestureTypes_SingleTap | SJDisablePlayerGestureTypes_DoubleTap | ...;
- */
-typedef NS_ENUM(NSUInteger, SJDisablePlayerGestureTypes) {
-    SJDisablePlayerGestureTypes_None,
-    SJDisablePlayerGestureTypes_SingleTap = 1 << 0,
-    SJDisablePlayerGestureTypes_DoubleTap = 1 << 1,
-    SJDisablePlayerGestureTypes_Pan = 1 << 2,
-    SJDisablePlayerGestureTypes_Pinch = 1 << 3,
-    SJDisablePlayerGestureTypes_All = 1 << 4
-};
-
 
 @interface SJBaseVideoPlayer : NSObject
 
@@ -107,7 +84,7 @@ typedef NS_ENUM(NSUInteger, SJDisablePlayerGestureTypes) {
  
  readonly.
  */
-@property (nonatomic, readonly) SJVideoPlayerPlayState state;
+@property (nonatomic, readonly) SJVideoPlayerPlayState state __deprecated_msg("已弃用, 请使用`player.playStatus`");
 
 /**
  The error when the video play failed, you can view the error details through this error.
@@ -133,61 +110,175 @@ typedef NS_ENUM(NSUInteger, SJDisablePlayerGestureTypes) {
  */
 @property (nonatomic, strong) AVLayerVideoGravity videoGravity;
 
+
++ (NSString *)version;
+
+- (nullable __kindof UIViewController *)atViewController;
+
+@end
+
+
+#pragma mark - 时间
+
+@interface SJBaseVideoPlayer (Time)
+
+/// 播放的进度
+@property (nonatomic, readonly) float progress;
+/// 缓冲的进度
+@property (nonatomic, readonly) float bufferProgress;
+
+/// 当前的时间
+@property (nonatomic, strong, readonly) NSString *currentTimeStr;
+@property (nonatomic, readonly) NSTimeInterval currentTime;
+
+/// 全部的时间
+@property (nonatomic, strong, readonly) NSString *totalTimeStr;
+@property (nonatomic, readonly) NSTimeInterval totalTime;
+
+/// 播放时间改变的回调
+@property (nonatomic, copy, nullable) void(^playTimeDidChangeExeBlok)(__kindof SJBaseVideoPlayer *videoPlayer);
+/// 播放完毕的回调
+@property (nonatomic, copy, nullable) void(^playDidToEndExeBlock)(__kindof SJBaseVideoPlayer *player);
+
+- (NSString *)timeStringWithSeconds:(NSInteger)secs; // format: 00:00:00
+
 @end
 
 
 
 
+#pragma mark - 播放控制
 
-#pragma mark - 播放
+@interface SJBaseVideoPlayer (PlayControl)
 
-@interface SJBaseVideoPlayer (Play)
-
-/**
- Create an asset to play. (Any of the following initialization)
-
- 1.  video player -> UIView
- 2.  video player -> cell            -> table Or collection view
- 3.  video player -> table header    -> table view
- 4.  video player -> cell            -> collection view -> table header -> table view
- 5.  video player -> collection cell -> collection view -> table cell   -> table view
- 
- If this value is changed, the delegate method will be called. - (void)videoPlayer:(__kindof SJBaseVideoPlayer *)videoPlayer prepareToPlay:(SJVideoPlayerURLAsset *)asset
- 
- For example:
- [_containerView addSubView:_videoPlayer.view];
- _videoPlayer.URLAsset = [[SJVideoPlayerURLAsset alloc] initWithAssetURL:[NSURL URLWithString:@"http://....."]];
- 
- readwrite.
- */
+/// 资源
+/// - 使用资源URL及相关的视图信息进行初始化
 @property (nonatomic, strong, nullable) SJVideoPlayerURLAsset *URLAsset;
 
-/**
- The current asset URL. nullable.
- 
- readwrite.
- */
-@property (nonatomic, strong, readwrite, nullable) NSURL *assetURL;
+/// 播放状态
+@property (nonatomic, readonly) SJVideoPlayerPlayStatus playStatus;
 
-- (void)playWithURL:(NSURL *)playURL;
+/// 暂停原因
+@property (nonatomic, readonly) SJVideoPlayerPausedReason pausedReason;
 
-- (void)playWithURL:(NSURL *)playURL jumpedToTime:(NSTimeInterval)time; // unit is sec.
+/// 不活跃原因
+@property (nonatomic, readonly) SJVideoPlayerInactivityReason inactivityReason;
 
-/**
- Refresh current asset.
- */
-- (void)refresh;
-
-/**
- The block invoked When an asset is dealloc.
- For example, you can record its playback progress(videoPlayer.progress).
- 
- readwrite.
- */
+/// URLAsset资源dealloc时的回调
+/// - 可以在这里做一些记录的工作. 如播放记录.
 @property (nonatomic, copy, nullable) void(^assetDeallocExeBlock)(__kindof SJBaseVideoPlayer *videoPlayer);
 
+/// 资源刷新
+- (void)refresh;
+
+/// 是否静音🔇
+@property (nonatomic) BOOL mute;
+
+/// 是否锁屏
+@property (nonatomic, getter=isLockedScreen) BOOL lockedScreen;
+
+/// 初始化完成后, 是否自动播放
+@property (nonatomic, getter=isAutoPlay) BOOL autoPlay;
+
+/// 播放器是否可以执行`play`
+/// - 当调用`play`时, 会回调该block, 如果返回YES, 则执行`play`方法, 否之.
+/// - 如果该block == nil, 则调用`play`时, 默认为执行.
+@property (nonatomic, copy, nullable) BOOL(^canPlayAnAsset)(__kindof SJBaseVideoPlayer *player);
+/// 使播放
+- (void)play;
+
+/// 使暂停
+- (void)pause;
+
+/// 关于后台播放视频, 引用自: https://juejin.im/post/5a38e1a0f265da4327185a26
+///
+/// 当您想在后台播放视频时:
+/// 1. 需要设置 videoPlayer.pauseWhenAppDidEnterBackground = NO; (该值默认为YES, 即App进入后台默认暂停).
+/// 2. 前往 `TARGETS` -> `Capability` -> enable `Background Modes` -> select this mode `Audio, AirPlay, and Picture in Picture`
+@property (nonatomic) BOOL pauseWhenAppDidEnterBackground;
+
+/// 使停止
+- (void)stop;
+
+/// 停止播放, 并淡出
+- (void)stopAndFadeOut;
+
+/// 重头开始播放
+- (void)replay;
+
+/// 跳转到指定位置
+- (void)seekToTime:(NSTimeInterval)secs completionHandler:(void (^ __nullable)(BOOL finished))completionHandler;
+
+/// 调声音
+@property (nonatomic, readwrite) float volume;
+/// 禁止设置声音
+@property (nonatomic, readwrite) BOOL disableVolumeSetting;
+
+/// 调亮度
+@property (nonatomic, readwrite) float brightness;
+/// 禁止设置亮度
+@property (nonatomic, readwrite) BOOL disableBrightnessSetting;
+
+/// 调速
+@property (nonatomic, readwrite) float rate;
+/// 速率改变的回调
+@property (nonatomic, copy, readwrite, nullable) void(^rateChanged)(__kindof SJBaseVideoPlayer *player);
+
+@property (nonatomic, strong, nullable) NSURL *assetURL;
+- (void)playWithURL:(NSURL *)URL; // 不再建议使用, 请使用`URLAsset`进行初始化
 @end
 
+
+
+#pragma mark - 关于视图控制器
+
+/// v1.3.0 新增
+/// 请在适当的时候调用这些方法
+@interface SJBaseVideoPlayer (UIViewController)
+
+/// You should call it when view did appear
+- (void)vc_viewDidAppear; 
+/// You should call it when view will disappear
+- (void)vc_viewWillDisappear;
+- (void)vc_viewDidDisappear;
+- (BOOL)vc_prefersStatusBarHidden;
+- (UIStatusBarStyle)vc_preferredStatusBarStyle;
+
+/// The code is fixed, you can copy it directly to the view controller
+/// 以下的代码都是固定的, 可以直接copy到视图控制器中
+//
+//- (void)viewDidAppear:(BOOL)animated {
+//    [super viewDidAppear:animated];
+//    [self.player vc_viewDidAppear];
+//}
+//
+//- (void)viewWillDisappear:(BOOL)animated {
+//    [super viewWillDisappear:animated];
+//    [self.player vc_viewWillDisappear];
+//}
+//
+//- (void)viewDidDisappear:(BOOL)animated {
+//    [super viewDidDisappear:animated];
+//    [self.player vc_viewDidDisappear];
+//}
+//
+//- (BOOL)prefersStatusBarHidden {
+//    return [self.player vc_prefersStatusBarHidden];
+//}
+//
+//- (UIStatusBarStyle)preferredStatusBarStyle {
+//    return [self.player vc_preferredStatusBarStyle];
+//}
+//
+//- (BOOL)prefersHomeIndicatorAutoHidden {
+//    return YES;
+//}
+
+/// 当调用`vc_viewWillDisappear`时, 将设置为YES
+/// 当调用`vc_viewDidAppear`时, 将设置为NO
+@property (nonatomic) BOOL vc_isDisappeared;
+
+@end
 
 
 
@@ -250,108 +341,23 @@ typedef NS_ENUM(NSUInteger, SJDisablePlayerGestureTypes) {
 
 
 
-#pragma mark - 时间
-
-@interface SJBaseVideoPlayer (Time)
-
-- (NSString *)timeStringWithSeconds:(NSInteger)secs; // format: 00:00:00
-
-@property (nonatomic, readonly) float progress;
-@property (nonatomic, readonly) float bufferProgress;
-
-@property (nonatomic, readonly) NSTimeInterval currentTime;
-@property (nonatomic, readonly) NSTimeInterval totalTime;
-
-@property (nonatomic, strong, readonly) NSString *currentTimeStr;
-@property (nonatomic, strong, readonly) NSString *totalTimeStr;
-
-@property (nonatomic, copy, nullable) void(^playTimeDidChangeExeBlok)(__kindof SJBaseVideoPlayer *videoPlayer);
-
-- (void)jumpedToTime:(NSTimeInterval)secs completionHandler:(void (^ __nullable)(BOOL finished))completionHandler; // unit is sec. 单位是秒.
-
-- (void)seekToTime:(CMTime)time completionHandler:(void (^ __nullable)(BOOL finished))completionHandler;
-
-@end
-
-
-
-
-
-#pragma mark - 控制
-
-@interface SJBaseVideoPlayer (Control)
-
-/**
- Whether to mute, if set to yes, the sound service will not work. default is NO.
- If this value is changed, the delegate method will be called. - (void)videoPlayer:(__kindof SJBaseVideoPlayer *)videoPlayer muteChanged:(BOOL)mute;
-
- readwrite.
- */
-@property (nonatomic) BOOL mute;
-
-/**
- Lock the player. Gesture Interaction will not trigger. default is NO.
- If this value is changed, the delegate method will be called. - (void)lockedVideoPlayer:(__kindof SJBaseVideoPlayer *)videoPlayer;
- 
- readwrite.
- */
-@property (nonatomic, getter=isLockedScreen) BOOL lockedScreen;
-
-/**
- When set an asset, whether to start playing immediately. default is YES.
- 
- readwrite.
- */
-@property (nonatomic, getter=isAutoPlay) BOOL autoPlay;
-
-/**
- If Yes, player will be called pause method When Received `UIApplicationDidEnterBackgroundNotification` notification.
- default is YES.
- 
- NO if you set, You need to set up `TARGETS` -> `Capability` -> enable `Background Modes` -> select this mode `Audio, AirPlay, and Picture in Picture`
- 
- 
- 关于后台播放视频, 引用自: https://juejin.im/post/5a38e1a0f265da4327185a26
- 
- 当您想在后台播放视频时:
- 1. 需要设置 videoPlayer.pauseWhenAppDidEnterBackground = NO; (该值默认为YES, 即App进入后台默认暂停).
- 2. 前往 `TARGETS` -> `Capability` -> enable `Background Modes` -> select this mode `Audio, AirPlay, and Picture in Picture`
- 
- readwrite.
- */
-@property (nonatomic) BOOL pauseWhenAppDidEnterBackground;
-
-- (BOOL)play;
-
-- (BOOL)pause;                                           // 调用此方法, 表示开发者暂停.
-- (void)pauseForUser;                                    // 调用此方法, 表示用户暂停.
-@property (nonatomic, assign, readonly) BOOL userPaused; // 区分是用户暂停的, 还是开发者暂停的
-
-- (void)stop;
-
-- (void)stopAndFadeOut;
-
-- (void)replay; 
-
-@property (nonatomic, readwrite) float volume;
-@property (nonatomic, readwrite) BOOL disableVolumeSetting;
-
-@property (nonatomic, readwrite) float brightness;
-@property (nonatomic, readwrite) BOOL disableBrightnessSetting;
-
-@property (nonatomic, readwrite) float rate; // 0.5...2
-@property (nonatomic, copy, readwrite, nullable) void(^rateChanged)(__kindof SJBaseVideoPlayer *player);
-- (void)resetRate;
-
-@property (nonatomic, copy, readwrite, nullable) void(^playDidToEnd)(__kindof SJBaseVideoPlayer *player); // 播放完毕
-
-@end
-
-
-
-
-
 #pragma mark - 手势
+/**
+ This enumeration lists some of the gesture types that the player has by default.
+ When you don't want to use one of these gestures, you can set it like this:
+ 
+ 这个枚举列出了播放器默认拥有的一些手势类型, 当你不想使用其中某个手势时, 可以像下面这样设置:
+ _videoPlayer.disableGestureTypes = SJDisablePlayerGestureTypes_SingleTap | SJDisablePlayerGestureTypes_DoubleTap | ...;
+ */
+typedef NS_ENUM(NSUInteger, SJDisablePlayerGestureTypes) {
+    SJDisablePlayerGestureTypes_None,
+    SJDisablePlayerGestureTypes_SingleTap = 1 << 0,
+    SJDisablePlayerGestureTypes_DoubleTap = 1 << 1,
+    SJDisablePlayerGestureTypes_Pan = 1 << 2,
+    SJDisablePlayerGestureTypes_Pinch = 1 << 3,
+    SJDisablePlayerGestureTypes_All = 1 << 4
+};
+
 
 /**
  播放器的手势介绍:
@@ -443,10 +449,6 @@ typedef NS_ENUM(NSUInteger, SJDisablePlayerGestureTypes) {
  */
 - (void)controlLayerNeedDisappear;
 
-
-@property (nonatomic, readonly) BOOL controlViewDisplayed NS_DEPRECATED(2_0, 2_0, 2_0, 2_0, "use `controlLayerAppeared`");
-@property (nonatomic, copy, readwrite, nullable) void(^controlViewDisplayStatus)(__kindof SJBaseVideoPlayer *player, BOOL displayed) NS_DEPRECATED(2_0, 2_0, 2_0, 2_0, "use `controlLayerAppearStateChanged`");
-
 @end
 
 
@@ -456,6 +458,34 @@ typedef NS_ENUM(NSUInteger, SJDisablePlayerGestureTypes) {
 #pragma mark - 屏幕旋转
 
 @interface SJBaseVideoPlayer (Rotation)
+
+/**
+ Autorotation. Animated.
+ */
+- (void)rotate;
+
+/**
+ Rotate to the specified orientation.
+ 
+ @param orientation     Any value of SJOrientation.
+ @param animated        Whether or not animation.
+ */
+- (void)rotate:(SJOrientation)orientation animated:(BOOL)animated;
+
+/**
+ Rotate to the specified orientation.
+ 
+ @param orientation     Any value of SJOrientation.
+ @param animated        Whether or not animation.
+ @param block           The block invoked when player rotated.
+ */
+- (void)rotate:(SJOrientation)orientation animated:(BOOL)animated completion:(void (^ _Nullable)(__kindof SJBaseVideoPlayer *player))block;
+
+/// 视图将要旋转的回调
+@property (nonatomic, copy, nullable) void(^viewWillRotateExeBlock)(__kindof SJBaseVideoPlayer *player, BOOL isFullScreen);
+
+/// 视图旋转完后的回调
+@property (nonatomic, copy, nullable) void(^viewDidRotateExeBlock)(__kindof SJBaseVideoPlayer *player, BOOL isFullScreen);;
 
 /**
  When Orientation is LandscapeLeft or LandscapeRight, this value is YES.
@@ -481,6 +511,13 @@ typedef NS_ENUM(NSUInteger, SJDisablePlayerGestureTypes) {
  */
 @property (nonatomic) BOOL disableAutoRotation;
 
+/// 旋转的时间
+/// - 默认是0.4
+@property (nonatomic) NSTimeInterval rotationTime;
+
+/// 是否正在旋转
+@property (nonatomic, readonly) BOOL isTransitioning;
+
 /**
  This is the player supports orientation when autorotation. default is `SJAutoRotateSupportedOrientation_All`.
  
@@ -503,43 +540,6 @@ typedef NS_ENUM(NSUInteger, SJDisablePlayerGestureTypes) {
  readonly.
  */
 @property (nonatomic, readonly) UIInterfaceOrientation currentOrientation;
-
-/**
- The block invoked When player will rotate.
- 
- readwrite.
- */
-@property (nonatomic, copy, nullable) void(^willRotateScreen)(__kindof SJBaseVideoPlayer *player, BOOL isFullScreen);
-
-/**
- The block invoked when player rotated.
- 
- readwrite.
- */
-@property (nonatomic, copy, nullable) void(^rotatedScreen)(__kindof SJBaseVideoPlayer *player, BOOL isFullScreen);
-
-/**
- Autorotation. Animated.
- */
-- (void)rotate;
-
-/**
- Rotate to the specified orientation.
- 
- @param orientation     Any value of SJOrientation.
- @param animated        Whether or not animation.
- */
-- (void)rotate:(SJOrientation)orientation animated:(BOOL)animated;
-
-/**
- Rotate to the specified orientation.
- 
- @param orientation     Any value of SJOrientation.
- @param animated        Whether or not animation.
- @param block           The block invoked when player rotated.
- */
-- (void)rotate:(SJOrientation)orientation animated:(BOOL)animated completion:(void (^ _Nullable)(__kindof SJBaseVideoPlayer *player))block;
-
 @end
 
 
@@ -624,8 +624,22 @@ typedef NS_ENUM(NSUInteger, SJDisablePlayerGestureTypes) {
 @property (nonatomic, readonly) BOOL isScrollAppeared;
 
 
-@property (nonatomic, assign, readonly) BOOL playOnCell NS_DEPRECATED(2_0, 2_0, 2_0, 2_0, "use `isPlayOnScrollView`");            // 是在cell上播放
-@property (nonatomic, assign, readonly) BOOL scrollIntoTheCell NS_DEPRECATED(2_0, 2_0, 2_0, 2_0, "use `isScrollAppeared`");     // 播放器滚进了单元格中
 @end
+
+
+
+
+
+@interface SJBaseVideoPlayer (Deprecated)
+@property (nonatomic, copy, nullable) void(^playDidToEnd)(__kindof SJBaseVideoPlayer *player) __deprecated_msg("use `playDidToEndExeBlock`");
+@property (nonatomic, assign, readonly) BOOL playOnCell __deprecated_msg("use `isPlayOnScrollView`");
+@property (nonatomic, assign, readonly) BOOL scrollIntoTheCell __deprecated_msg("use `isScrollAppeared`");
+- (void)jumpedToTime:(NSTimeInterval)secs completionHandler:(void (^ __nullable)(BOOL finished))completionHandler __deprecated_msg("use `seekToTime:completionHandler:`"); // unit is sec. 单位是秒.
+@property (nonatomic, readonly) BOOL controlViewDisplayed __deprecated_msg("use `controlLayerAppeared`");
+@property (nonatomic, copy, readwrite, nullable) void(^controlViewDisplayStatus)(__kindof SJBaseVideoPlayer *player, BOOL displayed) __deprecated_msg("use `controlLayerAppearStateChanged`");
+@property (nonatomic, copy, nullable) void(^willRotateScreen)(__kindof SJBaseVideoPlayer *player, BOOL isFullScreen) __deprecated_msg("use `viewWillRotateExeBlock`");
+@property (nonatomic, copy, nullable) void(^rotatedScreen)(__kindof SJBaseVideoPlayer *player, BOOL isFullScreen) __deprecated_msg("use `viewDidRotateExeBlock`");
+@end
+
 
 NS_ASSUME_NONNULL_END

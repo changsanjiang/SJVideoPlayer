@@ -33,6 +33,7 @@
 #import <SJBaseVideoPlayer/SJTimerControl.h>
 #import <SJBaseVideoPlayer/SJVideoPlayerRegistrar.h>
 #import "SJVideoPlayerURLAsset+SJControlAdd.h"
+#import <SJBaseVideoPlayer/SJBaseVideoPlayer+PlayStatus.h>
 
 #pragma mark -
 
@@ -145,7 +146,7 @@ NS_ASSUME_NONNULL_END
 /// 播放器安装完控制层的回调.
 - (void)installedControlViewToVideoPlayer:(SJBaseVideoPlayer *)videoPlayer {
     self.videoPlayer = videoPlayer;
-    [self videoPlayer:videoPlayer stateChanged:videoPlayer.state];
+    [self videoPlayer:videoPlayer statusDidChanged:videoPlayer.playStatus];
     [self videoPlayer:videoPlayer prepareToPlay:videoPlayer.URLAsset];
 }
 
@@ -156,7 +157,7 @@ NS_ASSUME_NONNULL_END
 /// 控制层需要隐藏之前会调用这个方法, 如果返回NO, 将不调用`controlLayerNeedDisappear:`.
 - (BOOL)controlLayerDisappearCondition {
     if ( self.previewView.appearState ) return NO;          // 如果预览视图显示, 则不隐藏控制层
-    if ( SJVideoPlayerPlayState_PlayFailed == self.videoPlayer.state ) return NO;
+    if ( [self.videoPlayer playStatus_isInactivity_ReasonPlayFailed] ) return NO;
     return YES;
 }
 
@@ -177,7 +178,7 @@ NS_ASSUME_NONNULL_END
     self.topControlView.model.title = asset.title;
     self.topControlView.model.isPlayOnScrollView = videoPlayer.isPlayOnScrollView;
     self.topControlView.model.fullscreen = videoPlayer.isFullScreen;
-    [self.topControlView update];
+    [self.topControlView needUpdateLayout];
     
     
     self.bottomSlider.value = videoPlayer.progress;
@@ -188,6 +189,21 @@ NS_ASSUME_NONNULL_END
     [self _promptWithNetworkStatus:videoPlayer.networkStatus];
 
     _rightControlView.hidden = asset.isM3u8;
+
+    
+    SJAutoRotateSupportedOrientation supportedOrientation = _videoPlayer.supportedOrientation;
+    
+    // 如果不支持竖屏
+    if ( SJAutoRotateSupportedOrientation_Portrait != (SJAutoRotateSupportedOrientation_Portrait & supportedOrientation) ) {
+        _bottomControlView.hiddenFullscreenBtn = YES;
+    }
+    // 如果只支持竖屏
+    else if ( (SJAutoRotateSupportedOrientation_LandscapeLeft != (SJAutoRotateSupportedOrientation_LandscapeLeft & supportedOrientation)) && (SJAutoRotateSupportedOrientation_LandscapeRight != (SJAutoRotateSupportedOrientation_LandscapeRight & supportedOrientation)) ) {
+        _bottomControlView.hiddenFullscreenBtn = YES;
+    }
+    else {
+        _bottomControlView.hiddenFullscreenBtn = NO;
+    }
 }
 
 #pragma mark - Control layer appear / disappear
@@ -197,12 +213,9 @@ NS_ASSUME_NONNULL_END
 }
 
 - (void)controlLayerNeedAppear:(SJBaseVideoPlayer *)videoPlayer compeletionHandler:(void(^)(void))compeletionHandler {
-#ifdef DEBUG
-    NSLog(@"%d - %s", (int)__LINE__, __func__);
-#endif
 
     UIView_Animations(CommonAnimaDuration, ^{
-        if ( SJVideoPlayerPlayState_PlayFailed == videoPlayer.state ) {
+        if ( [videoPlayer playStatus_isInactivity_ReasonPlayFailed] ) {
             [self->_centerControlView failedState];
             [self->_centerControlView appear];
             [self->_topControlView appear];
@@ -230,8 +243,8 @@ NS_ASSUME_NONNULL_END
             }
             [self->_bottomSlider disappear];
             
-            if ( videoPlayer.state != SJVideoPlayerPlayState_PlayEnd ) [self->_centerControlView disappear];
-            else [self->_centerControlView appear];
+            if ( [videoPlayer playStatus_isInactivity_ReasonPlayEnd] ) [self->_centerControlView appear];
+            else [self->_centerControlView disappear];
         }
         
         if ( self->_moreSettingsView.appearState ) [self->_moreSettingsView disappear];
@@ -242,7 +255,7 @@ NS_ASSUME_NONNULL_END
 /// 隐藏边缘控制视图
 - (void)controlLayerNeedDisappear:(SJBaseVideoPlayer *)videoPlayer {
     UIView_Animations(CommonAnimaDuration, ^{
-        if ( SJVideoPlayerPlayState_PlayFailed != videoPlayer.state ) {
+        if ( ![videoPlayer playStatus_isInactivity_ReasonPlayFailed] ) {
             [self->_topControlView disappear];
             [self->_bottomControlView disappear];
             [self->_rightControlView disappear];
@@ -271,57 +284,49 @@ NS_ASSUME_NONNULL_END
     videoPlayer.view.hidden = YES;
 }
 
-/// 播放状态改变.
-- (void)videoPlayer:(SJBaseVideoPlayer *)videoPlayer stateChanged:(SJVideoPlayerPlayState)state {
-    switch ( state ) {
-        case SJVideoPlayerPlayState_Unknown: {
+- (void)videoPlayer:(__kindof SJBaseVideoPlayer *)videoPlayer statusDidChanged:(SJVideoPlayerPlayStatus)status {
+    switch (status) {
+        case SJVideoPlayerPlayStatusUnknown:
+        case SJVideoPlayerPlayStatusPrepare: { 
             [videoPlayer controlLayerNeedDisappear];
             self.topControlView.model.title = nil;
-            [self.topControlView update];
+            [self.topControlView needUpdateLayout];
             self.bottomSlider.value = 0;
             self.bottomControlView.progress = 0;
             self.bottomControlView.bufferProgress = 0;
             [self.bottomControlView setCurrentTimeStr:@"00:00" totalTimeStr:@"00:00"];
-        }
-            break;
-        case SJVideoPlayerPlayState_Prepare:   break;
-        case SJVideoPlayerPlayState_Paused:
-        case SJVideoPlayerPlayState_PlayFailed:
-        case SJVideoPlayerPlayState_PlayEnd: {
             self.bottomControlView.playState = NO;
         }
             break;
-        case SJVideoPlayerPlayState_Playing: {
+        case SJVideoPlayerPlayStatusReadyToPlay: break;
+        case SJVideoPlayerPlayStatusPlaying: {
             self.bottomControlView.playState = YES;
-            if ( self.centerControlView.appearState ) {
+            if ( [self.centerControlView appearState] ) {
                 UIView_Animations(CommonAnimaDuration, ^{
                     [self.centerControlView disappear];
                 }, nil);
             }
         }
             break;
-        case SJVideoPlayerPlayState_Buffing: {
-            if ( self.centerControlView.appearState ) {
-                UIView_Animations(CommonAnimaDuration, ^{
-                    [self.centerControlView disappear];
-                }, nil);
+        case SJVideoPlayerPlayStatusPaused:
+            if ( [videoPlayer playStatus_isPaused_ReasonBuffering] ) {
+                if ( self.centerControlView.appearState ) {
+                    UIView_Animations(CommonAnimaDuration, ^{
+                        [self.centerControlView disappear];
+                    }, nil);
+                }
             }
+            self.bottomControlView.playState = NO;
+            break;
+        case SJVideoPlayerPlayStatusInactivity: {
+            self.bottomControlView.playState = NO;
+            UIView_Animations(CommonAnimaDuration, ^{
+                [self.centerControlView appear];
+                if ( [videoPlayer playStatus_isInactivity_ReasonPlayEnd] ) [self.centerControlView replayState];
+                else [self.centerControlView failedState];
+            }, nil);
         }
             break;
-    }
-    
-    if ( SJVideoPlayerPlayState_PlayFailed == state ) {
-#ifdef DEBUG
-        NSLog(@"SJVideoPlayerLog: %@", videoPlayer.error);
-#endif
-        [self.loadingView stop];
-    }
-    
-    if ( SJVideoPlayerPlayState_PlayEnd ==  state ) {
-        UIView_Animations(CommonAnimaDuration, ^{
-            [self.centerControlView appear];
-            [self.centerControlView replayState];
-        }, nil);
     }
 }
 
@@ -344,16 +349,31 @@ NS_ASSUME_NONNULL_END
 
 /// 开始缓冲.
 - (void)startLoading:(SJBaseVideoPlayer *)videoPlayer {
+#ifdef DEBUG
+    NSLog(@"%d - %s", (int)__LINE__, __func__);
+#endif
+
     [self.loadingView start];
+    self.bottomControlView.isLoading = YES;
 }
 
 - (void)cancelLoading:(__kindof SJBaseVideoPlayer *)videoPlayer {
+#ifdef DEBUG
+    NSLog(@"%d - %s", (int)__LINE__, __func__);
+#endif
+
     [self.loadingView stop];
+    self.bottomControlView.isLoading = NO;
 }
 
 /// 缓冲完成.
 - (void)loadCompletion:(SJBaseVideoPlayer *)videoPlayer {
+#ifdef DEBUG
+    NSLog(@"%d - %s", (int)__LINE__, __func__);
+#endif
+
     [self.loadingView stop];
+    self.bottomControlView.isLoading = NO;
 }
 #pragma mark Player lock / unlock / tapped
 /// 播放器被锁屏, 此时将不旋转, 不触发手势相关事件.
@@ -393,12 +413,7 @@ NS_ASSUME_NONNULL_END
     // update layout
     self.bottomControlView.fullscreen = isFull;
     self.topControlView.model.fullscreen = isFull;
-    [self.topControlView update];
-    SJAutoRotateSupportedOrientation supportedOrientation = _videoPlayer.supportedOrientation;
-    if ( supportedOrientation == SJAutoRotateSupportedOrientation_All ) {
-        supportedOrientation = SJAutoRotateSupportedOrientation_Portrait | SJAutoRotateSupportedOrientation_LandscapeLeft | SJAutoRotateSupportedOrientation_LandscapeRight;
-    }
-    _bottomControlView.onlyLandscape = SJAutoRotateSupportedOrientation_Portrait != (SJAutoRotateSupportedOrientation_Portrait & supportedOrientation);
+    [self.topControlView needUpdateLayout];
     
     [self _setControlViewsDisappearValue]; // update. `reset`.
     
@@ -484,7 +499,7 @@ NS_ASSUME_NONNULL_END
             self.hasBeenGeneratedPreviewImages = YES;
             self.previewView.previewImages = images;
             self.topControlView.model.fullscreen = player.isFullScreen;
-            [self.topControlView update];
+            [self.topControlView needUpdateLayout];
         }
     }];
 }
@@ -536,6 +551,11 @@ NS_ASSUME_NONNULL_END
     [self.containerView addSubview:self.previewView];
     [self.containerView addSubview:self.loadingView];
     
+    
+    [_containerView mas_makeConstraints:^(MASConstraintMaker *make) {
+        make.edges.offset(0);
+    }];
+    
     [_topControlMaskView mas_makeConstraints:^(MASConstraintMaker *make) {
         make.top.leading.trailing.offset(0);
         make.height.equalTo(self->_topControlView);
@@ -543,10 +563,6 @@ NS_ASSUME_NONNULL_END
     
     [_topControlView mas_makeConstraints:^(MASConstraintMaker *make) {
         make.top.leading.trailing.offset(0);
-    }];
-    
-    [_containerView mas_makeConstraints:^(MASConstraintMaker *make) {
-        make.edges.offset(0);
     }];
     
     [_leftControlView mas_makeConstraints:^(MASConstraintMaker *make) {
@@ -676,7 +692,7 @@ NS_ASSUME_NONNULL_END
 
 - (void)previewView:(SJVideoPlayerPreviewView *)view didSelectItem:(id<SJVideoPlayerPreviewInfo>)item {
     __weak typeof(self) _self = self;
-    [_videoPlayer seekToTime:item.localTime completionHandler:^(BOOL finished) {
+    [_videoPlayer seekToTime:CMTimeGetSeconds(item.localTime) completionHandler:^(BOOL finished) {
         __strong typeof(_self) self = _self;
         if ( !self ) return ;
         [self.videoPlayer play];
@@ -807,12 +823,11 @@ NS_ASSUME_NONNULL_END
 - (void)bottomView:(SJVideoPlayerBottomControlView *)view clickedBtnTag:(SJVideoPlayerBottomViewTag)tag {
     switch ( tag ) {
         case SJVideoPlayerBottomViewTag_Play: {
-            if ( self.videoPlayer.state == SJVideoPlayerPlayState_PlayEnd ) [self.videoPlayer replay];
-            else [self.videoPlayer play];
+            [self.videoPlayer play];
         }
             break;
         case SJVideoPlayerBottomViewTag_Pause: {
-            [self.videoPlayer pauseForUser];
+            [self.videoPlayer pause];
         }
             break;
         case SJVideoPlayerBottomViewTag_Full: {
@@ -858,7 +873,7 @@ NS_ASSUME_NONNULL_END
     }, nil);
 
     __weak typeof(self) _self = self;
-    [self.videoPlayer jumpedToTime:self.draggingProgressView.shiftProgress * self.videoPlayer.totalTime completionHandler:^(BOOL finished) {
+    [self.videoPlayer seekToTime:self.draggingProgressView.shiftProgress * self.videoPlayer.totalTime completionHandler:^(BOOL finished) {
         __strong typeof(_self) self = _self;
         if ( !self ) return;
         [self.videoPlayer play];
@@ -888,8 +903,10 @@ NS_ASSUME_NONNULL_END
 - (void)setEnableFilmEditing:(BOOL)enableFilmEditing {
     if ( enableFilmEditing == _enableFilmEditing ) return;
     _enableFilmEditing = enableFilmEditing;
+    
     if ( enableFilmEditing ) {
         [self.containerView insertSubview:self.rightControlView aboveSubview:self.bottomControlView];
+        _rightControlView.hidden = self.videoPlayer.URLAsset.isM3u8;
         [_rightControlView mas_makeConstraints:^(MASConstraintMaker *make) {
             make.centerY.offset(0);
             make.trailing.offset(0);

@@ -179,7 +179,7 @@ NS_ASSUME_NONNULL_BEGIN
 }
 
 + (NSString *)version {
-    return @"v2.0.8";
+    return @"v2.0.9";
 }
 
 @end
@@ -260,7 +260,8 @@ NS_ASSUME_NONNULL_BEGIN
 }
 
 - (void)dismissFilmEditingViewCompletion:(void(^__nullable)(SJVideoPlayer *player))completion {
-    [self.switcher switchToPreviousControlLayer];
+    [self.switcher switchControlLayerForIdentitfier:SJControlLayer_Edge toVideoPlayer:self];
+    if ( completion ) completion(self);
 }
 @end
 

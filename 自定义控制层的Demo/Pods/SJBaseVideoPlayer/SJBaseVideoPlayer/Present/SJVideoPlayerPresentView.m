@@ -49,9 +49,26 @@ NS_ASSUME_NONNULL_END
 
 #pragma mark -
 
+- (void)showPlaceholder {
+    [UIView animateWithDuration:0.2 animations:^{
+        self.placeholderImageView.alpha = 1;
+    }];
+}
+
+- (void)hiddenPlaceholder {
+    [UIView animateWithDuration:0.2 animations:^{
+        self.placeholderImageView.alpha = 0.001;
+    }];
+}
+
 - (void)setPlayer:(AVPlayer *)player {
     if ( player == self.avLayer.player ) return;
     self.avLayer.player = player;
+    
+    CATransition *anima = [CATransition animation];
+    anima.type = kCATransitionFade;
+    anima.duration = 1.0f;
+    [self.layer addAnimation:anima forKey:@"fadeAnimation"];
 }
 
 - (AVPlayer *)player {
@@ -62,27 +79,6 @@ NS_ASSUME_NONNULL_END
     if ( placeholder == _placeholder ) return;
     _placeholder = placeholder;
     _placeholderImageView.image = placeholder;
-}
-
-- (void)setPlayState:(SJVideoPlayerPlayState)playState {
-    _playState = playState;
-    [UIView animateWithDuration:0.5 animations:^{
-        switch ( playState ) {
-            case SJVideoPlayerPlayState_Unknown:
-            case SJVideoPlayerPlayState_Prepare: {
-                self->_placeholderImageView.alpha = 1;
-            }
-                break;
-            case SJVideoPlayerPlayState_Playing: {
-                self->_placeholderImageView.alpha = 0.001;
-            }
-                break;
-            case SJVideoPlayerPlayState_Buffing:
-            case SJVideoPlayerPlayState_Paused:
-            case SJVideoPlayerPlayState_PlayEnd:
-            case SJVideoPlayerPlayState_PlayFailed: break;
-        }
-    }];
 }
 
 - (void)setVideoGravity:(AVLayerVideoGravity)videoGravity {

@@ -60,11 +60,10 @@ static NSString *const SimplifiedSampleTableViewCellID = @"SimplifiedSampleTable
                 self.tableView.alpha = 1;
             }];
             
-            // 开启自动播放
             [self.tableView sj_enableAutoplayWithConfig:[SJPlayerAutoplayConfig configWithPlayerSuperviewTag:101 autoplayDelegate:self]];
             
-            // play asset
             [self.tableView sj_needPlayNextAsset];
+            
         });
     });
         

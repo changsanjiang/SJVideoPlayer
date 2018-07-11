@@ -11,7 +11,7 @@
 #import <UIKit/UIKit.h>
 #import "SJNetworkStatus.h"
 #import "SJVideoPlayerState.h"
-@protocol SJPlayStatusControlDelegate, SJLoadingControlDelegate, SJNetworkStatusControlDelegate, SJLockScreenStateControlDelegate, SJAppActivityControlDelegate, SJVolumeBrightnessRateControlDelegate, SJGestureControlDelegate, SJRotationControlDelegate;
+@protocol SJPlayStatusControlDelegate, SJLoadingControlDelegate, SJNetworkStatusControlDelegate, SJLockScreenStateControlDelegate, SJAppActivityControlDelegate, SJVolumeBrightnessRateControlDelegate, SJGestureControlDelegate, SJRotationControlDelegate, SJDeprecatedControlDelegate;
 @class SJBaseVideoPlayer, SJVideoPlayerURLAsset;
 
 
@@ -51,7 +51,8 @@
     SJNetworkStatusControlDelegate,
     SJVolumeBrightnessRateControlDelegate,
     SJLockScreenStateControlDelegate,
-    SJAppActivityControlDelegate
+    SJAppActivityControlDelegate,
+    SJDeprecatedControlDelegate
 >
 @required
 /// This method will be called when the control layer needs to be appear. You should do some appear work here.
@@ -88,13 +89,16 @@
 /// 当播放器准备播放一个新的资源时, 会回调这个方法
 - (void)videoPlayer:(__kindof SJBaseVideoPlayer *)videoPlayer prepareToPlay:(SJVideoPlayerURLAsset *)asset;
 
-- (void)videoPlayer:(__kindof SJBaseVideoPlayer *)videoPlayer stateChanged:(SJVideoPlayerPlayState)state;
+- (void)videoPlayer:(__kindof SJBaseVideoPlayer *)videoPlayer statusDidChanged:(SJVideoPlayerPlayStatus)status;
+/// Deprecated
+- (void)videoPlayer:(__kindof SJBaseVideoPlayer *)videoPlayer stateChanged:(SJVideoPlayerPlayState)state __deprecated_msg("已弃用, 请使用`videoPlayer:statusDidChanged:`;");
 
 - (void)videoPlayer:(__kindof SJBaseVideoPlayer *)videoPlayer
         currentTime:(NSTimeInterval)currentTime currentTimeStr:(NSString *)currentTimeStr
           totalTime:(NSTimeInterval)totalTime totalTimeStr:(NSString *)totalTimeStr;
 
 - (void)videoPlayer:(__kindof SJBaseVideoPlayer *)videoPlayer presentationSize:(CGSize)size;
+
 @end
 
 
@@ -159,7 +163,6 @@
 /// 水平方向拖动中, progress 为当前的拖拽进度
 /// progress 表示当前拖拽的进度, 不是播放的进度
 - (void)videoPlayer:(__kindof SJBaseVideoPlayer *)videoPlayer horizontalDirectionDidMove:(CGFloat)progress;
-- (void)videoPlayer:(__kindof SJBaseVideoPlayer *)videoPlayer horizontalDirectionDidDrag:(CGFloat)translation NS_DEPRECATED(2_0, 2_0, 2_0, 2_0, "use `videoPlayer:horizontalDirectionDidMove:`");
 
 /// 水平手势
 /// 水平方向拖动结束.
@@ -204,5 +207,11 @@
 - (void)appDidEnterBackground:(__kindof SJBaseVideoPlayer *)videoPlayer;
 @end
 
+
+/// 一些已弃用的方法
+@protocol SJDeprecatedControlDelegate <NSObject>
+@optional
+- (void)videoPlayer:(__kindof SJBaseVideoPlayer *)videoPlayer horizontalDirectionDidDrag:(CGFloat)translation __deprecated_msg("use `videoPlayer:horizontalDirectionDidMove:`;");
+@end
 
 #endif /* SJVideoPlayerControlLayerProtocol_h */

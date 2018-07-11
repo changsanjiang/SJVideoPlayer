@@ -76,11 +76,11 @@
     [self invalidateIntrinsicContentSize];
 }
 
-- (void)setOnlyLandscape:(BOOL)onlyLandscape {
-    if ( onlyLandscape == _onlyLandscape ) return;
-    _onlyLandscape = onlyLandscape;
-    _fullBtn.hidden = onlyLandscape;
-    if ( onlyLandscape ) {
+- (void)setHiddenFullscreenBtn:(BOOL)hiddenFullscreenBtn {
+    if ( hiddenFullscreenBtn == _hiddenFullscreenBtn ) return;
+    _hiddenFullscreenBtn = hiddenFullscreenBtn;
+    _fullBtn.hidden = hiddenFullscreenBtn;
+    if ( hiddenFullscreenBtn ) {
         [_progressSlider mas_remakeConstraints:^(MASConstraintMaker *make) {
             make.leading.equalTo(self->_durationTimeLabel.mas_trailing).offset(12);
             make.height.centerY.equalTo(self->_playBtn);
@@ -103,6 +103,14 @@
 - (void)setCurrentTimeStr:(NSString *)currentTimeStr totalTimeStr:(NSString *)totalTimeStr {
     self.currentTimeLabel.text = currentTimeStr;
     self.durationTimeLabel.text = totalTimeStr;
+}
+
+- (void)setIsLoading:(BOOL)isLoading {
+    self.progressSlider.isLoading = isLoading;
+}
+
+- (BOOL)isLoading {
+    return self.progressSlider.isLoading;
 }
 
 - (void)clickedBtn:(UIButton *)btn {
@@ -265,6 +273,7 @@
         }
         self.progressSlider.bufferProgressColor = setting.progress_bufferColor;
         self.progressSlider.trackHeight = setting.progress_traceHeight;
+        self.progressSlider.loadingColor = setting.loadingLineColor;
     }];
 }
 

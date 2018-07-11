@@ -20,8 +20,9 @@ NS_ASSUME_NONNULL_BEGIN
 
 @property (nonatomic, strong) AVLayerVideoGravity videoGravity; // default is AVLayerVideoGravityResizeAspect.
 
-@property (nonatomic) SJVideoPlayerPlayState playState;
+- (void)showPlaceholder;
 
+- (void)hiddenPlaceholder;
 @end
 
 NS_ASSUME_NONNULL_END

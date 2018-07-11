@@ -57,6 +57,7 @@ NSNotificationName const SJSettingsPlayerNotification = @"SJSettingsPlayerNotifi
     self.progress_bufferColor = [UIColor colorWithWhite:0 alpha:0.2];
     self.progress_trackColor =  [UIColor whiteColor];
     self.progress_thumbColor = self.progress_traceColor;
+    self.progress_loadingColor = [UIColor whiteColor];
     self.moreBackgroundColor = [UIColor colorWithWhite:0 alpha:0.62];
     self.progress_traceHeight = 3;
     self.more_trackHeight = 4;

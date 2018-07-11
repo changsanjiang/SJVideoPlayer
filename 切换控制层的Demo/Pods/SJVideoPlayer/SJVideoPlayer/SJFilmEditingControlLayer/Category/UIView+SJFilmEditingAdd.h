@@ -17,19 +17,19 @@ typedef NS_ENUM(NSUInteger, SJViewDisappearType) {
 NS_ASSUME_NONNULL_BEGIN
 @interface UIView (SJFilmEditingAdd)
 
-@property (nonatomic, assign) SJViewDisappearType disappearType;
+@property (nonatomic, assign) SJViewDisappearType sj_disappearType;
 
-@property (nonatomic, assign) CGAffineTransform disappearTransform;
+@property (nonatomic, assign) CGAffineTransform sj_disappearTransform;
 
-@property (nonatomic, assign) BOOL appearState; // appear is `YES`, disappear is `NO`.
+@property (nonatomic, assign) BOOL sj_appearState; // appear is `YES`, disappear is `NO`.
 
-@property (nonatomic, copy, nullable) void(^appearExeBlock)(__kindof UIView *view);
+@property (nonatomic, copy, nullable) void(^sj_appearExeBlock)(__kindof UIView *view);
 
-@property (nonatomic, copy, nullable) void(^disappearExeBlock)(__kindof UIView *view);
+@property (nonatomic, copy, nullable) void(^sj_disappearExeBlock)(__kindof UIView *view);
 
-- (void)appear; // Animatable. 可动画的.
+- (void)sj_appear; // Animatable. 可动画的.
 
-- (void)disappear;  // Animatable. 可动画的.
+- (void)sj_disappear;  // Animatable. 可动画的.
 
 @end
 NS_ASSUME_NONNULL_END

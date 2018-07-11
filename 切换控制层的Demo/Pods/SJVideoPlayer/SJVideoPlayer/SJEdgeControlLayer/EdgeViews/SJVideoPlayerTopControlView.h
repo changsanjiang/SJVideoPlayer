@@ -36,7 +36,7 @@ typedef NS_ENUM(NSUInteger, SJVideoPlayerTopViewTag) {
 
 @property (nonatomic, strong, readonly) NSString *previewTitle;
 
-- (void)update;
+- (void)needUpdateLayout;
 
 @end
 

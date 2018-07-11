@@ -22,7 +22,6 @@ NS_ASSUME_NONNULL_BEGIN
 - (void)exitControlLayerCompeletionHandler:(nullable void(^)(void))compeletionHandler;
 
 #pragma mark
-@property (nonatomic, weak, nullable) id <SJVideoPlayerFilmEditingResultUpload> uploader;
 @property (nonatomic, weak, nullable) id <SJFilmEditingControlLayerDelegate> delegate;
 
 #pragma mark

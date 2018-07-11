@@ -912,23 +912,14 @@ BOOL _addAttributes(SJAttributesRangeOperator *operator, NSMutableAttributedStri
 
 #pragma mark -
 @implementation SJAttributesRangeOperator
-- (instancetype)init {
-    self = [super init];
-    if ( !self ) return nil;
-    [self addObserver:self forKeyPath:@"recorder" options:NSKeyValueObservingOptionNew context:nil];
-    return self;
-}
-- (void)observeValueForKeyPath:(NSString *__nullable)keyPath ofObject:(id __nullable)object change:(NSDictionary<NSKeyValueChangeKey,id> * __nullable)change context:(void * __nullable)context {
-    if ( !keyPath ) return;
+- (void)setRecorder:(nullable SJAttributesRecorder *)recorder {
+    _recorder = recorder;
     __weak typeof(self) _self = self;
-    self.recorderKVOHelper = [[__SJKVOHelper alloc] initWithTarget:_recorder keyPaths:[_recorder properties] valueChangedExeBlock:^(__SJKVOHelper * _Nonnull helper, NSString * _Nonnull keyPath) {
+    _recorderKVOHelper = [[__SJKVOHelper alloc] initWithTarget:self.recorder keyPaths:[self.recorder properties] valueChangedExeBlock:^(__SJKVOHelper * _Nonnull helper, NSString * _Nonnull keyPath) {
         __strong typeof(_self) self = _self;
         if ( !self ) return;
         self.recorder_value_added = NO;
     }];
-}
-- (void)dealloc {
-    [self removeObserver:self forKeyPath:@"recorder"];
 }
 @end
 

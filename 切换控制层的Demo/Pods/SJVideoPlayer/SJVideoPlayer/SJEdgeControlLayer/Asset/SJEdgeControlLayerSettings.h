@@ -57,6 +57,7 @@ extern NSNotificationName const SJSettingsPlayerNotification;
 @property (nonatomic, strong) UIColor *progress_traceColor;             // 轨迹, 走过的痕迹
 @property (nonatomic, strong) UIColor *progress_trackColor;             // 轨道
 @property (nonatomic, strong) UIColor *progress_bufferColor;            // 缓冲颜色
+@property (nonatomic, strong) UIColor *progress_loadingColor;           // 缓冲为空, 加载时的颜色
 @property (nonatomic, strong, nullable) UIImage *progress_thumbImage;
 @property (nonatomic, assign) float progress_thumbSize;                 // default is 0.
 @property (nonatomic, strong, nullable) UIColor *progress_thumbColor;

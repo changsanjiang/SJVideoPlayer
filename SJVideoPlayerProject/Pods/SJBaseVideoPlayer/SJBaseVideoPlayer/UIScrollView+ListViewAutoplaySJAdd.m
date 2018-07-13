@@ -217,14 +217,14 @@ static void sj_tableViewConsiderPlayNewAsset(UITableView *tableView) {
         half_r_view = superview;
     }];
 
+    if ( !half_l_view && !half_r_view ) return;
+    
     NSIndexPath *nextIndexPath = nil;
     if ( half_l_view && !half_r_view ) {
         nextIndexPath = [tableView indexPathForCell:cell_l];
-        [config.autoplayDelegate sj_playerNeedPlayNewAssetAtIndexPath:nextIndexPath];
     }
     else if ( half_r_view && !half_l_view ) {
         nextIndexPath = [tableView indexPathForCell:cell_r];
-        [config.autoplayDelegate sj_playerNeedPlayNewAssetAtIndexPath:nextIndexPath];
     }
     else {
         CGRect half_l_rect = [half_l_view.superview convertRect:half_l_view.frame toView:tableView.superview];
@@ -232,13 +232,12 @@ static void sj_tableViewConsiderPlayNewAsset(UITableView *tableView) {
 
         if ( ABS(CGRectGetMaxY(half_l_rect) - midLine) < ABS(CGRectGetMinY(half_r_rect) - midLine) ) {
             nextIndexPath = [tableView indexPathForCell:cell_l];
-            [config.autoplayDelegate sj_playerNeedPlayNewAssetAtIndexPath:nextIndexPath];
         }
         else {
             nextIndexPath = [tableView indexPathForCell:cell_r];
-            [config.autoplayDelegate sj_playerNeedPlayNewAssetAtIndexPath:nextIndexPath];
         }
     }
+    [config.autoplayDelegate sj_playerNeedPlayNewAssetAtIndexPath:nextIndexPath];
 }
 
 static void sj_collectionViewConsiderPlayNewAsset(UICollectionView *collectionView) {
@@ -285,14 +284,14 @@ static void sj_collectionViewConsiderPlayNewAsset(UICollectionView *collectionVi
         half_r_view = superview;
     }];
     
+    if ( !half_l_view && !half_r_view ) return;
+    
     NSIndexPath *nextIndexPath = nil;
     if ( half_l_view && !half_r_view ) {
         nextIndexPath = [collectionView indexPathForCell:cell_l];
-        [config.autoplayDelegate sj_playerNeedPlayNewAssetAtIndexPath:nextIndexPath];
     }
     else if ( half_r_view && !half_l_view ) {
         nextIndexPath = [collectionView indexPathForCell:cell_r];
-        [config.autoplayDelegate sj_playerNeedPlayNewAssetAtIndexPath:nextIndexPath];
     }
     else {
         CGRect half_l_rect = [half_l_view.superview convertRect:half_l_view.frame toView:collectionView.superview];
@@ -300,13 +299,13 @@ static void sj_collectionViewConsiderPlayNewAsset(UICollectionView *collectionVi
         
         if ( ABS(CGRectGetMaxY(half_l_rect) - midLine) < ABS(CGRectGetMinY(half_r_rect) - midLine) ) {
             nextIndexPath = [collectionView indexPathForCell:cell_l];
-            [config.autoplayDelegate sj_playerNeedPlayNewAssetAtIndexPath:nextIndexPath];
         }
         else {
             nextIndexPath = [collectionView indexPathForCell:cell_r];
-            [config.autoplayDelegate sj_playerNeedPlayNewAssetAtIndexPath:nextIndexPath];
         }
     }
+    
+    [config.autoplayDelegate sj_playerNeedPlayNewAssetAtIndexPath:nextIndexPath];
 }
 
 /// 执行动画

@@ -42,6 +42,12 @@ static NSString *const SimplifiedSampleTableViewCellID = @"SimplifiedSampleTable
     self.view.backgroundColor = [UIColor whiteColor];
     self.edgesForExtendedLayout = UIRectEdgeNone;
     
+    // Do any additional setup after loading the view.
+}
+
+- (void)prepareTestData {
+    if ( self.videos ) return;
+    
     [self.indicator startAnimating];
     // prepare test data.
     self.tableView.alpha = 0.001;
@@ -56,7 +62,7 @@ static NSString *const SimplifiedSampleTableViewCellID = @"SimplifiedSampleTable
             [self.tableView reloadData];
             [self.indicator stopAnimating];
             // fade in
-            [UIView animateWithDuration:0.3 animations:^{
+            [UIView animateWithDuration:0.6 animations:^{
                 self.tableView.alpha = 1;
             }];
             
@@ -66,8 +72,6 @@ static NSString *const SimplifiedSampleTableViewCellID = @"SimplifiedSampleTable
             
         });
     });
-        
-    // Do any additional setup after loading the view.
 }
 
 - (void)sj_playerNeedPlayNewAssetAtIndexPath:(NSIndexPath *)indexPath {
@@ -123,6 +127,7 @@ static NSString *const SimplifiedSampleTableViewCellID = @"SimplifiedSampleTable
 - (void)viewDidAppear:(BOOL)animated {
     [super viewDidAppear:animated];
     [self.player vc_viewDidAppear];
+    [self prepareTestData];
 }
 
 - (void)viewWillDisappear:(BOOL)animated {

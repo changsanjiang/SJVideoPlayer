@@ -26,6 +26,6 @@ NS_ASSUME_NONNULL_BEGIN
 
 @protocol SJVideoListTableViewCellDelegate <NSObject>
 @optional
-- (void)clickedPlayOnTabCell:(SJVideoListTableViewCell *)cell playerParentView:(UIView *)playerParentView;
+- (void)clickedPlayOnTabCell:(SJVideoListTableViewCell *)cell;
 @end
 NS_ASSUME_NONNULL_END

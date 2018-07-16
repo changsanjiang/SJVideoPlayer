@@ -100,8 +100,8 @@ static const char *kVideoTitle = "kVideoTitle";
 }
 
 - (void)handleTap:(UITapGestureRecognizer *)tap {
-    if ( [_delegate respondsToSelector:@selector(clickedPlayOnTabCell:playerParentView:)] ) {
-        [_delegate clickedPlayOnTabCell:self playerParentView:tap.view];
+    if ( [_delegate respondsToSelector:@selector(clickedPlayOnTabCell:)] ) {
+        [_delegate clickedPlayOnTabCell:self];
     }
 }
 

@@ -168,6 +168,29 @@ NS_ASSUME_NONNULL_BEGIN
     [self defaultEdgeControlLayer].disableNetworkStatusChangePrompt = disableNetworkStatusChangePrompt;
     [self defaultEdgeLightweightControlLayer].disableNetworkStatusChangePrompt = disableNetworkStatusChangePrompt;
 }
+
++ (NSString *)version {
+    return @"v2.1.1";
+}
+
+- (void (^)(SJVideoPlayer * _Nonnull))clickedBackEvent {
+    if ( _clickedBackEvent ) return _clickedBackEvent;
+    return ^ (SJVideoPlayer *player) {
+        UIViewController *vc = [player atViewController];
+        [vc.view endEditing:YES];
+        if ( vc.presentingViewController ) {
+            [vc dismissViewControllerAnimated:YES completion:nil];
+        }
+        else {
+            [vc.navigationController popViewControllerAnimated:YES];
+        }
+    };
+}
+
+@end
+
+
+@implementation SJVideoPlayer (CommonSettings)
 + (void (^)(void (^ _Nonnull)(SJVideoPlayerSettings * _Nonnull)))update {
     return SJVideoPlayerSettings.update;
 }
@@ -177,11 +200,6 @@ NS_ASSUME_NONNULL_BEGIN
         [commonSettings reset];
     });
 }
-
-+ (NSString *)version {
-    return @"v2.0.9";
-}
-
 @end
 
 
@@ -250,9 +268,15 @@ NS_ASSUME_NONNULL_BEGIN
     return [objc_getAssociatedObject(self, _cmd) boolValue];
 }
 
+// 历史遗留问题, 此处不应该readonly. 应该由外界配置...
 - (SJVideoPlayerFilmEditingConfig *)filmEditingConfig {
     SJVideoPlayerFilmEditingConfig *filmEditingConfig = objc_getAssociatedObject(self, _cmd);
-    [self defaultFilmEditingControlLayer].config = filmEditingConfig;
+    __weak typeof(self) _self = self;
+    dispatch_async(dispatch_get_main_queue(), ^{
+        __strong typeof(_self) self = _self;
+        if ( !self ) return;
+        [self defaultFilmEditingControlLayer].config = filmEditingConfig;
+    });
     if ( filmEditingConfig ) return filmEditingConfig;
     filmEditingConfig = [SJVideoPlayerFilmEditingConfig new];
     objc_setAssociatedObject(self, _cmd, filmEditingConfig, OBJC_ASSOCIATION_RETAIN_NONATOMIC);

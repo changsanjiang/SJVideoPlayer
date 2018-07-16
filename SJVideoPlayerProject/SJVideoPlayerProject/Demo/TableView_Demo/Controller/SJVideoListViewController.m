@@ -21,7 +21,7 @@
 
 static NSString *const SJVideoListTableViewCellID = @"SJVideoListTableViewCell";
 
-@interface SJVideoListViewController ()<UITableViewDelegate, UITableViewDataSource, SJVideoListTableViewCellDelegate, NSAttributedStringTappedDelegate, SJPlayerAutoplayDelegate>
+@interface SJVideoListViewController ()<UITableViewDelegate, UITableViewDataSource, SJVideoListTableViewCellDelegate, NSAttributedStringTappedDelegate>
 
 @property (nonatomic, strong, nullable) SJVideoPlayer *player;
 @property (nonatomic, strong, readonly) FilmEditingHelper *filmEditingHelper;
@@ -29,16 +29,12 @@ static NSString *const SJVideoListTableViewCellID = @"SJVideoListTableViewCell";
 @property (nonatomic, strong, readonly) UITableView *tableView;
 @property (nonatomic, strong) NSIndexPath *playedIndexPath;
 @property (nonatomic, strong) NSArray<SJVideoModel *> *videos;
-
-@property (nonatomic, strong, readonly) UIView *midLine;
-
 @end
 
 @implementation SJVideoListViewController
 
 @synthesize indicator = _indicator;
 @synthesize tableView = _tableView;
-@synthesize midLine = _midLine;
 
 - (void)dealloc {
     NSLog(@"%d - %s", (int)__LINE__, __func__);
@@ -77,16 +73,14 @@ static NSString *const SJVideoListTableViewCellID = @"SJVideoListTableViewCell";
                 self.tableView.alpha = 1;
             }];
             
-            // 开启自动播放
-            [self.tableView sj_enableAutoplayWithConfig:[SJPlayerAutoplayConfig configWithPlayerSuperviewTag:101 autoplayDelegate:self]];
-            
-            // play asset
-            [self.tableView sj_needPlayNextAsset];
-            
         });
     });
 
     // Do any additional setup after loading the view.
+}
+
+- (void)clickedPlayOnTabCell:(SJVideoListTableViewCell *)cell {
+    [self sj_playerNeedPlayNewAssetAtIndexPath:[self.tableView indexPathForCell:cell]];
 }
 
 - (void)sj_playerNeedPlayNewAssetAtIndexPath:(NSIndexPath *)indexPath {
@@ -172,10 +166,6 @@ static NSString *const SJVideoListTableViewCellID = @"SJVideoListTableViewCell";
     return YES;
 }
 
-- (void)clickedPlayOnTabCell:(SJVideoListTableViewCell *)cell playerParentView:(UIView *)playerParentView {
-    [self sj_playerNeedPlayNewAssetAtIndexPath:[self.tableView indexPathForCell:cell]];
-}
-
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath {
     SJVideoPlayerURLAsset *asset = nil;
     if ( [self.playedIndexPath isEqual:indexPath] ) {
@@ -192,13 +182,6 @@ static NSString *const SJVideoListTableViewCellID = @"SJVideoListTableViewCell";
     [self.view addSubview:self.tableView];
     [_tableView mas_makeConstraints:^(MASConstraintMaker *make) {
         make.edges.offset(0);
-    }];
-    
-    _midLine = [SJUIViewFactory viewWithBackgroundColor:[UIColor greenColor]];
-    [self.view addSubview:self.midLine];
-    [self.midLine mas_makeConstraints:^(MASConstraintMaker *make) {
-        make.leading.trailing.centerY.offset(0);
-        make.height.offset(2);
     }];
 }
 

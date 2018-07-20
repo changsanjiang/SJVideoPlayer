@@ -22,6 +22,8 @@
 #import "PortraitViewController.h"
 #import "DemoPlayerViewController.h"
 
+#import <sys/utsname.h>
+
 @interface ViewController ()
 
 @end
@@ -33,7 +35,7 @@
     
     self.view.backgroundColor = [UIColor whiteColor];
     
-    self.navigationController.sj_gestureType = SJFullscreenPopGestureType_Full;
+//    self.navigationController.sj_gestureType = SJFullscreenPopGestureType_Full;
     self.navigationController.sj_backgroundColor = [UIColor whiteColor];
 //    self.navigationController.sj_transitionMode = SJScreenshotTransitionModeShifting;
     

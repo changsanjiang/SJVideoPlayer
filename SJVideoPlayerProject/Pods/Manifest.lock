@@ -2,47 +2,47 @@ PODS:
   - Masonry (1.1.0)
   - Reachability (3.2)
   - SJAttributesFactory (2.0.3.3)
-  - SJBaseVideoPlayer (1.3.0.1):
+  - SJBaseVideoPlayer (1.3.0.2):
     - Masonry
     - Reachability
-    - SJBaseVideoPlayer/Category (= 1.3.0.1)
-    - SJBaseVideoPlayer/Download (= 1.3.0.1)
-    - SJBaseVideoPlayer/GestureControl (= 1.3.0.1)
-    - SJBaseVideoPlayer/Header (= 1.3.0.1)
-    - SJBaseVideoPlayer/Model (= 1.3.0.1)
-    - SJBaseVideoPlayer/Present (= 1.3.0.1)
-    - SJBaseVideoPlayer/Registrar (= 1.3.0.1)
-    - SJBaseVideoPlayer/SJRotationManager (= 1.3.0.1)
-    - SJBaseVideoPlayer/SJVolBrigControl (= 1.3.0.1)
-    - SJBaseVideoPlayer/TimerControl (= 1.3.0.1)
+    - SJBaseVideoPlayer/Category (= 1.3.0.2)
+    - SJBaseVideoPlayer/Download (= 1.3.0.2)
+    - SJBaseVideoPlayer/GestureControl (= 1.3.0.2)
+    - SJBaseVideoPlayer/Header (= 1.3.0.2)
+    - SJBaseVideoPlayer/Model (= 1.3.0.2)
+    - SJBaseVideoPlayer/Present (= 1.3.0.2)
+    - SJBaseVideoPlayer/Registrar (= 1.3.0.2)
+    - SJBaseVideoPlayer/SJRotationManager (= 1.3.0.2)
+    - SJBaseVideoPlayer/SJVolBrigControl (= 1.3.0.2)
+    - SJBaseVideoPlayer/TimerControl (= 1.3.0.2)
     - SJObserverHelper
     - SJPrompt
     - SJUIFactory
-  - SJBaseVideoPlayer/Category (1.3.0.1):
-    - Masonry
-    - Reachability
-    - SJObserverHelper
-    - SJPrompt
-    - SJUIFactory
-  - SJBaseVideoPlayer/Download (1.3.0.1):
+  - SJBaseVideoPlayer/Category (1.3.0.2):
     - Masonry
     - Reachability
     - SJObserverHelper
     - SJPrompt
     - SJUIFactory
-  - SJBaseVideoPlayer/GestureControl (1.3.0.1):
+  - SJBaseVideoPlayer/Download (1.3.0.2):
     - Masonry
     - Reachability
     - SJObserverHelper
     - SJPrompt
     - SJUIFactory
-  - SJBaseVideoPlayer/Header (1.3.0.1):
+  - SJBaseVideoPlayer/GestureControl (1.3.0.2):
     - Masonry
     - Reachability
     - SJObserverHelper
     - SJPrompt
     - SJUIFactory
-  - SJBaseVideoPlayer/Model (1.3.0.1):
+  - SJBaseVideoPlayer/Header (1.3.0.2):
+    - Masonry
+    - Reachability
+    - SJObserverHelper
+    - SJPrompt
+    - SJUIFactory
+  - SJBaseVideoPlayer/Model (1.3.0.2):
     - Masonry
     - Reachability
     - SJBaseVideoPlayer/Category
@@ -50,46 +50,46 @@ PODS:
     - SJObserverHelper
     - SJPrompt
     - SJUIFactory
-  - SJBaseVideoPlayer/Present (1.3.0.1):
+  - SJBaseVideoPlayer/Present (1.3.0.2):
     - Masonry
     - Reachability
     - SJBaseVideoPlayer/Header
     - SJObserverHelper
     - SJPrompt
     - SJUIFactory
-  - SJBaseVideoPlayer/Registrar (1.3.0.1):
+  - SJBaseVideoPlayer/Registrar (1.3.0.2):
     - Masonry
     - Reachability
     - SJObserverHelper
     - SJPrompt
     - SJUIFactory
-  - SJBaseVideoPlayer/SJRotationManager (1.3.0.1):
+  - SJBaseVideoPlayer/SJRotationManager (1.3.0.2):
     - Masonry
     - Reachability
     - SJObserverHelper
     - SJPrompt
     - SJUIFactory
-  - SJBaseVideoPlayer/SJVolBrigControl (1.3.0.1):
+  - SJBaseVideoPlayer/SJVolBrigControl (1.3.0.2):
     - Masonry
     - Reachability
-    - SJBaseVideoPlayer/SJVolBrigControl/Resource (= 1.3.0.1)
+    - SJBaseVideoPlayer/SJVolBrigControl/Resource (= 1.3.0.2)
     - SJObserverHelper
     - SJPrompt
     - SJUIFactory
-  - SJBaseVideoPlayer/SJVolBrigControl/Resource (1.3.0.1):
+  - SJBaseVideoPlayer/SJVolBrigControl/Resource (1.3.0.2):
     - Masonry
     - Reachability
     - SJObserverHelper
     - SJPrompt
     - SJUIFactory
-  - SJBaseVideoPlayer/TimerControl (1.3.0.1):
+  - SJBaseVideoPlayer/TimerControl (1.3.0.2):
     - Masonry
     - Reachability
     - SJBaseVideoPlayer/Category
     - SJObserverHelper
     - SJPrompt
     - SJUIFactory
-  - SJFullscreenPopGesture (1.4.3)
+  - SJFullscreenPopGesture (1.4.4.1)
   - SJLoadingView (1.0.1)
   - SJObserverHelper (1.0.5.1)
   - SJPrompt (1.0.4.2):
@@ -131,8 +131,8 @@ SPEC CHECKSUMS:
   Masonry: 678fab65091a9290e40e2832a55e7ab731aad201
   Reachability: 33e18b67625424e47b6cde6d202dce689ad7af96
   SJAttributesFactory: 791dbaa250e42ce19e1f501663ddc696be51c3e9
-  SJBaseVideoPlayer: b03cb0fc3b0a6ae7a3c6089e4140526b0ddd63ba
-  SJFullscreenPopGesture: 631a6b3801aa070468337c6a331736a38f7cde86
+  SJBaseVideoPlayer: ad1ad8fc490f65728963b054668eae139d8b2cff
+  SJFullscreenPopGesture: 23784de00b938ee95a248c3685b81017bb91e96a
   SJLoadingView: c3ff03e4b363a5b6a3ba0634d6bb9ce2647faf07
   SJObserverHelper: b8dcf2653dca2538bb601f558bde72c229e08737
   SJPrompt: 55dbaa26ac02bd776cd1a2e9409983b2f0551a3b

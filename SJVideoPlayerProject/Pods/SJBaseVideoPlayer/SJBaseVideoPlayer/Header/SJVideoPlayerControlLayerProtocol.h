@@ -11,7 +11,7 @@
 #import <UIKit/UIKit.h>
 #import "SJNetworkStatus.h"
 #import "SJVideoPlayerState.h"
-@protocol SJPlayStatusControlDelegate, SJLoadingControlDelegate, SJNetworkStatusControlDelegate, SJLockScreenStateControlDelegate, SJAppActivityControlDelegate, SJVolumeBrightnessRateControlDelegate, SJGestureControlDelegate, SJRotationControlDelegate, SJDeprecatedControlDelegate;
+@protocol SJPlayStatusControlDelegate, SJLoadingControlDelegate, SJNetworkStatusControlDelegate, SJLockScreenStateControlDelegate, SJAppActivityControlDelegate, SJVolumeBrightnessRateControlDelegate, SJGestureControlDelegate, SJRotationControlDelegate, SJDeprecatedControlDelegate, SJFitOnScreenControlDelegate;
 @class SJBaseVideoPlayer, SJVideoPlayerURLAsset;
 
 
@@ -52,7 +52,8 @@
     SJVolumeBrightnessRateControlDelegate,
     SJLockScreenStateControlDelegate,
     SJAppActivityControlDelegate,
-    SJDeprecatedControlDelegate
+    SJDeprecatedControlDelegate,
+    SJFitOnScreenControlDelegate
 >
 @required
 /// This method will be called when the control layer needs to be appear. You should do some appear work here.
@@ -145,6 +146,16 @@
 /// 当播放器旋转完成的时候, 会回调这个方法
 /// isFull 标识是否是全屏
 - (void)videoPlayer:(__kindof SJBaseVideoPlayer *)videoPlayer didEndRotation:(BOOL)isFull;
+@end
+
+
+/// v1.3.1 新增
+@protocol SJFitOnScreenControlDelegate <NSObject>
+@optional
+///  When `fitOnScreen` of player will change, this method will be called;
+/// 当播放器即将全屏(但不旋转)时, 这个方法将会被调用
+- (void)videoPlayer:(__kindof SJBaseVideoPlayer *)videoPlayer willFitOnScreen:(BOOL)isFitOnScreen;
+- (void)videoPlayer:(__kindof SJBaseVideoPlayer *)videoPlayer didCompleteFitOnScreen:(BOOL)isFitOnScreen;
 @end
 
 

@@ -213,7 +213,7 @@ NS_ASSUME_NONNULL_BEGIN
 }
 
 + (NSString *)version {
-    return @"1.3.0";
+    return @"1.3.1";
 }
 
 - (nullable __kindof UIViewController *)atViewController {
@@ -1493,6 +1493,75 @@ NS_ASSUME_NONNULL_BEGIN
 @end
 
 
+
+@implementation SJBaseVideoPlayer (FitOnScreen)
+
+- (void)setFitOnScreen:(BOOL)fitOnScreen {
+    [self setFitOnScreen:fitOnScreen animated:YES];
+}
+
+- (BOOL)isFitOnScreen {
+    return [objc_getAssociatedObject(self, _cmd) boolValue];
+}
+
+- (void)setFitOnScreen:(BOOL)fitOnScreen animated:(BOOL)animated {
+    [self setFitOnScreen:fitOnScreen animated:animated completionHandler:nil];
+}
+
+- (void)setFitOnScreen:(BOOL)fitOnScreen animated:(BOOL)animated completionHandler:(nullable void(^)(__kindof SJBaseVideoPlayer *player))completionHandler {
+    if ( fitOnScreen == self.isFitOnScreen ) { return; }
+    __weak typeof(self) _self = self;
+    dispatch_async(dispatch_get_main_queue(), ^{
+        __strong typeof(_self) self = _self;
+        if ( !self ) return;
+        UIWindow *window = [UIApplication sharedApplication].keyWindow;
+        if ( !window ) return;
+        CGRect origin = [window convertRect:self.view.bounds fromView:self.view];
+        if ( fitOnScreen ) {
+            self.presentView.frame = origin;
+            [window addSubview:self.presentView];
+        }
+        objc_setAssociatedObject(self, @selector(isFitOnScreen), @(fitOnScreen), OBJC_ASSOCIATION_RETAIN_NONATOMIC);
+        [UIView animateWithDuration:animated ? 0.4 : 0 animations:^{
+            __strong typeof(_self) self = _self;
+            if ( !self ) return;
+            if ( fitOnScreen ) {
+                self.presentView.frame = window.bounds;
+            }
+            else {
+                self.presentView.frame = origin;
+            }
+            [self.presentView layoutIfNeeded];
+        } completion:^(BOOL finished) {
+            __strong typeof(_self) self = _self;
+            if ( !self ) return;
+            if ( !fitOnScreen ) {
+                [self.view addSubview:self.presentView];
+                self.presentView.frame = self.view.bounds;
+            }
+        }];
+    });
+}
+
+- (void)setFitOnScreenWillChangeExeBlock:(nullable void (^)(__kindof SJBaseVideoPlayer * _Nonnull))fitOnScreenWillChangeExeBlock {
+    objc_setAssociatedObject(self, @selector(fitOnScreenWillChangeExeBlock), fitOnScreenWillChangeExeBlock, OBJC_ASSOCIATION_RETAIN_NONATOMIC);
+}
+
+- (nullable void (^)(__kindof SJBaseVideoPlayer * _Nonnull))fitOnScreenWillChangeExeBlock {
+    return objc_getAssociatedObject(self, _cmd);
+}
+
+- (void)setFitOnScreenDidChangeExeBlock:(nullable void (^)(__kindof SJBaseVideoPlayer * _Nonnull))fitOnScreenDidChangeExeBlock {
+    objc_setAssociatedObject(self, @selector(fitOnScreenDidChangeExeBlock), fitOnScreenDidChangeExeBlock, OBJC_ASSOCIATION_RETAIN_NONATOMIC);
+}
+
+- (nullable void (^)(__kindof SJBaseVideoPlayer * _Nonnull))fitOnScreenDidChangeExeBlock {
+    return objc_getAssociatedObject(self, _cmd);
+}
+
+@end
+
+
 #pragma mark - 屏幕旋转
 
 @implementation SJBaseVideoPlayer (Rotation)
@@ -1538,8 +1607,10 @@ NS_ASSUME_NONNULL_BEGIN
     BOOL disableAutoRotation = self.disableAutoRotation;
     self.disableAutoRotation = NO;
     [self.rotationManager rotate];
-    // 恢复
-    self.disableAutoRotation = disableAutoRotation; // reset
+    dispatch_async(dispatch_get_main_queue(), ^{
+        // 恢复
+        self.disableAutoRotation = disableAutoRotation; // reset
+    });
 }
 
 - (void)rotate:(SJOrientation)orientation animated:(BOOL)animated {

@@ -318,39 +318,47 @@ NS_ASSUME_NONNULL_END
 
 @implementation SJVideoPlayerHelper (UIViewControllerHelper)
 - (void (^)(void))vc_viewDidAppearExeBlock {
+    __weak typeof(self) _self = self;
     return ^ () {
-        self.videoPlayer.disableAutoRotation = NO;
-        if ( !self.videoPlayer.isPlayOnScrollView || (self.videoPlayer.isPlayOnScrollView && self.videoPlayer.isScrollAppeared) ) {
-            [self.videoPlayer play];
-        }
+        __strong typeof(_self) self = _self;
+        if ( !self ) return;
+        [self.videoPlayer vc_viewDidAppear];
     };
 }
 
 - (void (^)(void))vc_viewWillDisappearExeBlock {
+    __weak typeof(self) _self = self;
     return ^ () {
-        self.videoPlayer.disableAutoRotation = YES;   // 界面将要消失的时候, 禁止旋转.
+        __strong typeof(_self) self = _self;
+        if ( !self ) return;
+        [self.videoPlayer vc_viewWillDisappear];
     };
 }
 
 - (void (^)(void))vc_viewDidDisappearExeBlock {
+    __weak typeof(self) _self = self;
     return ^ () {
-        if ( ![self.videoPlayer playStatus_isPaused_ReasonPause] ) [self.videoPlayer pause];
+        __strong typeof(_self) self = _self;
+        if ( !self ) return;
+        [self.videoPlayer vc_viewDidDisappear];
     };
 }
 
 - (BOOL (^)(void))vc_prefersStatusBarHiddenExeBlock {
+    __weak typeof(self) _self = self;
     return ^BOOL () {
-        // 全屏播放时, 使状态栏根据控制层显示或隐藏
-        if ( self.videoPlayer.isFullScreen ) return !self.videoPlayer.controlLayerAppeared;
-        return NO;
+        __strong typeof(_self) self = _self;
+        if ( !self ) return NO;
+        return [self.videoPlayer vc_prefersStatusBarHidden];
     };
 }
 
 - (UIStatusBarStyle (^)(void))vc_preferredStatusBarStyleExeBlock {
+    __weak typeof(self) _self = self;
     return ^UIStatusBarStyle () {
-        // 全屏播放时, 使状态栏变成白色
-        if ( self.videoPlayer.isFullScreen ) return UIStatusBarStyleLightContent;
-        return UIStatusBarStyleDefault;
+        __strong typeof(_self) self = _self;
+        if ( !self ) return  UIStatusBarStyleDefault;
+        return [self.videoPlayer vc_preferredStatusBarStyle];
     };
 }
 @end

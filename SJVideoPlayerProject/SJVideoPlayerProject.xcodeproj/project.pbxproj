@@ -41,6 +41,7 @@
 		779A4E6720622C6B0041D8BE /* YYTapActionLabel.m in Sources */ = {isa = PBXBuildFile; fileRef = 779A4E6620622C6B0041D8BE /* YYTapActionLabel.m */; };
 		77AA437A20F4E5CE001CF529 /* TableViewSimplifiedSampleViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 77AA437920F4E5CE001CF529 /* TableViewSimplifiedSampleViewController.m */; };
 		77AA437D20F4E62B001CF529 /* SimplifiedSampleTableViewCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 77AA437C20F4E62B001CF529 /* SimplifiedSampleTableViewCell.m */; };
+		77B2E0172101F2B0008C7FED /* FitOnScreenDemoViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 77B2E0162101F2B0008C7FED /* FitOnScreenDemoViewController.m */; };
 		77D4597420861AAC00E5B183 /* FilmEditingHelper.m in Sources */ = {isa = PBXBuildFile; fileRef = 77D4597320861AAC00E5B183 /* FilmEditingHelper.m */; };
 		77DA95162042B8EC007A9EE8 /* SJVideoPlayerHelper.m in Sources */ = {isa = PBXBuildFile; fileRef = 77DA95142042B8EB007A9EE8 /* SJVideoPlayerHelper.m */; };
 		77DA951E2042C04B007A9EE8 /* TestPageViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 77DA95192042C04A007A9EE8 /* TestPageViewController.m */; };
@@ -171,6 +172,8 @@
 		77AA437920F4E5CE001CF529 /* TableViewSimplifiedSampleViewController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = TableViewSimplifiedSampleViewController.m; sourceTree = "<group>"; };
 		77AA437B20F4E62B001CF529 /* SimplifiedSampleTableViewCell.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = SimplifiedSampleTableViewCell.h; sourceTree = "<group>"; };
 		77AA437C20F4E62B001CF529 /* SimplifiedSampleTableViewCell.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = SimplifiedSampleTableViewCell.m; sourceTree = "<group>"; };
+		77B2E0152101F2B0008C7FED /* FitOnScreenDemoViewController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = FitOnScreenDemoViewController.h; sourceTree = "<group>"; };
+		77B2E0162101F2B0008C7FED /* FitOnScreenDemoViewController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = FitOnScreenDemoViewController.m; sourceTree = "<group>"; };
 		77D4597220861AAC00E5B183 /* FilmEditingHelper.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FilmEditingHelper.h; sourceTree = "<group>"; };
 		77D4597320861AAC00E5B183 /* FilmEditingHelper.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FilmEditingHelper.m; sourceTree = "<group>"; };
 		77DA95142042B8EB007A9EE8 /* SJVideoPlayerHelper.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SJVideoPlayerHelper.m; sourceTree = "<group>"; };
@@ -498,6 +501,15 @@
 			path = TableView_simplifiedVersion;
 			sourceTree = "<group>";
 		};
+		77B2E0142101F295008C7FED /* FitOnScreenDemo_全屏, 但不旋转 */ = {
+			isa = PBXGroup;
+			children = (
+				77B2E0152101F2B0008C7FED /* FitOnScreenDemoViewController.h */,
+				77B2E0162101F2B0008C7FED /* FitOnScreenDemoViewController.m */,
+			);
+			path = "FitOnScreenDemo_全屏, 但不旋转";
+			sourceTree = "<group>";
+		};
 		77DA95172042C029007A9EE8 /* PageViewController */ = {
 			isa = PBXGroup;
 			children = (
@@ -524,6 +536,7 @@
 		77E754332040054F00A5AF44 /* Demo */ = {
 			isa = PBXGroup;
 			children = (
+				77B2E0142101F295008C7FED /* FitOnScreenDemo_全屏, 但不旋转 */,
 				77AA437720F4E555001CF529 /* TableView_simplifiedVersion */,
 				7790AC77205A58B000F8DF48 /* AboutKeyboard_关于键盘方向 */,
 				A644108C200A3F89006FD832 /* TableView_在TableCell上播放 */,
@@ -992,6 +1005,7 @@
 				773AFC64205BA7C1003B2CAC /* DowloadViewController.m in Sources */,
 				A663302820C4FB4800CB4A02 /* SJVideoPlayerFilmEditingConfig.m in Sources */,
 				A6F4E9742007A12400716B9C /* PlayerCollectionViewController.m in Sources */,
+				77B2E0172101F2B0008C7FED /* FitOnScreenDemoViewController.m in Sources */,
 				A663309A20C4FB9100CB4A02 /* SJLightweightTopControlView.m in Sources */,
 				A663308420C4FB9100CB4A02 /* SJVideoPlayerURLAsset+SJControlAdd.m in Sources */,
 				A663309420C4FB9100CB4A02 /* SJLightweightLeftControlView.m in Sources */,

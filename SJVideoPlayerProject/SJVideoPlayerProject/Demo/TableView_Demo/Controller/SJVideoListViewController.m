@@ -75,8 +75,15 @@ static NSString *const SJVideoListTableViewCellID = @"SJVideoListTableViewCell";
             
         });
     });
+    
+    
+    self.navigationItem.rightBarButtonItem = [[UIBarButtonItem alloc] initWithTitle:@"full" style:UIBarButtonItemStyleDone target:self action:@selector(full)];
 
     // Do any additional setup after loading the view.
+}
+
+- (void)full {
+    self.player.fitOnScreen = !self.player.isFitOnScreen;
 }
 
 - (void)clickedPlayOnTabCell:(SJVideoListTableViewCell *)cell {

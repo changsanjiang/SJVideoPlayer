@@ -162,19 +162,28 @@
 
 - (BOOL)gestureRecognizer:(UIGestureRecognizer *)gestureRecognizer shouldRecognizeSimultaneouslyWithGestureRecognizer:(UIGestureRecognizer *)otherGestureRecognizer {
     if ( UIGestureRecognizerStateFailed ==  gestureRecognizer.state ||
-        UIGestureRecognizerStateCancelled == gestureRecognizer.state ) return NO;
+         UIGestureRecognizerStateCancelled == gestureRecognizer.state ) return NO;
     
-    else if ( ([otherGestureRecognizer isMemberOfClass:NSClassFromString(@"UIScrollViewPanGestureRecognizer")] ||
+    if ( gestureRecognizer == [self SJ_edgePan] ) {
+        [self _sjCancellGesture:otherGestureRecognizer];
+        return YES;
+    }
+
+    if ( ([otherGestureRecognizer isMemberOfClass:NSClassFromString(@"UIScrollViewPanGestureRecognizer")] ||
           [otherGestureRecognizer isMemberOfClass:NSClassFromString(@"UIScrollViewPagingSwipeGestureRecognizer")])
        && [otherGestureRecognizer.view isKindOfClass:[UIScrollView class]] ) {
         return [self SJ_considerScrollView:(UIScrollView *)otherGestureRecognizer.view
                          gestureRecognizer:(UIPanGestureRecognizer *)gestureRecognizer
                     otherGestureRecognizer:otherGestureRecognizer];
     }
-    
+    else if ( ![self SJ_isFadeAreaWithPoint:[gestureRecognizer locationInView:gestureRecognizer.view]] ) {
+        [self _sjCancellGesture:otherGestureRecognizer];
+        return YES;
+    }
     else if ( [otherGestureRecognizer isKindOfClass:[UIPanGestureRecognizer class]] ) {
         return NO;
     }
+    
     return YES;
 }
 

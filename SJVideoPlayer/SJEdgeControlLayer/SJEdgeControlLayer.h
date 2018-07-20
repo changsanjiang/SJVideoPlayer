@@ -26,15 +26,17 @@ NS_ASSUME_NONNULL_BEGIN
 
 
 #pragma mark
-@property (nonatomic, strong, readwrite, nullable) NSArray<SJVideoPlayerMoreSetting *> *moreSettings;
+@property (nonatomic, strong, nullable) NSArray<SJVideoPlayerMoreSetting *> *moreSettings;
 
-@property (nonatomic, strong, readwrite, nullable) SJFilmEditingResultShare *filmEditingResultShare;
+@property (nonatomic, strong, nullable) SJFilmEditingResultShare *filmEditingResultShare;
 
-@property (nonatomic, readwrite) BOOL generatePreviewImages;
+@property (nonatomic) BOOL generatePreviewImages;
 
-@property (nonatomic, readwrite) BOOL enableFilmEditing;
+@property (nonatomic) BOOL enableFilmEditing;
 
-@property (nonatomic, readwrite) BOOL disableNetworkStatusChangePrompt;
+@property (nonatomic) BOOL disableNetworkStatusChangePrompt;
+
+@property (nonatomic) BOOL useFitOnScreenAndDisableRotation;
 
 @end
 

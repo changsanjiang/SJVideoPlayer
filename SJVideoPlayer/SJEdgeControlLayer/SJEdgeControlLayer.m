@@ -422,19 +422,16 @@ NS_ASSUME_NONNULL_END
     if ( _moreSecondarySettingView.appearState ) [_moreSecondarySettingView disappear];
     [self.bottomSlider disappear];
     
-    if ( isFull ) {
-        // `iPhone_X` remake constraints.
-        if ( SJ_is_iPhoneX() ) {
+    // `iPhone_X` remake constraints.
+    if ( SJ_is_iPhoneX() ) {
+        if ( isFull ) {
             [self.containerView mas_remakeConstraints:^(MASConstraintMaker *make) {
                 make.center.offset(0);
                 make.height.equalTo(self.containerView.superview);
                 make.width.equalTo(self.containerView.mas_height).multipliedBy(16 / 9.0f);
             }];
         }
-    }
-    else {
-        // `iPhone_X` remake constraints.
-        if ( SJ_is_iPhoneX() ) {
+        else {
             [self.containerView mas_remakeConstraints:^(MASConstraintMaker *make) {
                 make.edges.offset(0);
             }];
@@ -447,6 +444,35 @@ NS_ASSUME_NONNULL_END
 /// 播放器完成旋转.
 //- (void)videoPlayer:(SJBaseVideoPlayer *)videoPlayer didEndRotation:(BOOL)isFull {
 //    
+//}
+
+#pragma mark - Fit On Screen
+
+- (void)videoPlayer:(__kindof SJBaseVideoPlayer *)videoPlayer willFitOnScreen:(BOOL)isFitOnScreen {
+    if ( isFitOnScreen && !videoPlayer.URLAsset.isM3u8 ) {
+        self.draggingProgressView.style = SJVideoPlayerDraggingProgressViewStylePreviewProgress;
+    }
+    else {
+        self.draggingProgressView.style = SJVideoPlayerDraggingProgressViewStyleArrowProgress;
+    }
+    
+    // update layout
+    self.bottomControlView.fullscreen = isFitOnScreen;
+    self.topControlView.model.fullscreen = isFitOnScreen;
+    [self.topControlView needUpdateLayout];
+    
+    [self _setControlViewsDisappearValue]; // update. `reset`.
+    
+    if ( _previewView.appearState ) [_previewView disappear];
+    if ( _moreSettingsView.appearState ) [_moreSettingsView disappear];
+    if ( _moreSecondarySettingView.appearState ) [_moreSecondarySettingView disappear];
+    [self.bottomSlider disappear];
+    
+    if ( videoPlayer.controlLayerAppeared ) [videoPlayer controlLayerNeedAppear]; // update
+}
+
+//- (void)videoPlayer:(__kindof SJBaseVideoPlayer *)videoPlayer didCompleteFitOnScreen:(BOOL)isFitOnScreen {
+//
 //}
 
 #pragma mark Player Volume / Brightness / Rate
@@ -720,20 +746,7 @@ NS_ASSUME_NONNULL_END
 - (void)topControlView:(SJVideoPlayerTopControlView *)view clickedBtnTag:(SJVideoPlayerTopViewTag)tag {
     switch ( tag ) {
         case SJVideoPlayerTopViewTag_Back: {
-            if ( _videoPlayer.isFullScreen ) {
-                SJAutoRotateSupportedOrientation supported = _videoPlayer.supportedOrientation;
-                if ( supported == SJAutoRotateSupportedOrientation_All ) {
-                    supported  = SJAutoRotateSupportedOrientation_Portrait | SJAutoRotateSupportedOrientation_LandscapeLeft | SJAutoRotateSupportedOrientation_LandscapeRight;
-                }
-                if ( SJAutoRotateSupportedOrientation_Portrait == (supported & SJAutoRotateSupportedOrientation_Portrait) ) {
-                    [_videoPlayer rotate];
-                    return;
-                }
-            }
-            
-            if ( [self.delegate respondsToSelector:@selector(clickedBackBtnOnControlLayer:)] ) {
-                [self.delegate clickedBackBtnOnControlLayer:self];
-            }
+            [self _hanleBackButtonEvent];
         }
             break;
         case SJVideoPlayerTopViewTag_More: {
@@ -758,6 +771,32 @@ NS_ASSUME_NONNULL_END
             }, nil);
         }
             break;
+    }
+}
+
+- (void)_hanleBackButtonEvent {
+    if ( self.useFitOnScreenAndDisableRotation ) {
+        if ( _videoPlayer.isFitOnScreen ) {
+            _videoPlayer.fitOnScreen = NO;
+        }
+        else {
+            if ( [self.delegate respondsToSelector:@selector(clickedBackBtnOnControlLayer:)] ) {
+                [self.delegate clickedBackBtnOnControlLayer:self];
+            }
+        }
+        
+        return;
+    }
+    
+    if ( _videoPlayer.isFullScreen ) {
+        if ( SJAutoRotateSupportedOrientation_Portrait == (_videoPlayer.supportedOrientation & SJAutoRotateSupportedOrientation_Portrait) ) {
+            [_videoPlayer rotate];
+            return;
+        }
+    }
+    
+    if ( [self.delegate respondsToSelector:@selector(clickedBackBtnOnControlLayer:)] ) {
+        [self.delegate clickedBackBtnOnControlLayer:self];
     }
 }
 
@@ -831,10 +870,20 @@ NS_ASSUME_NONNULL_END
         }
             break;
         case SJVideoPlayerBottomViewTag_Full: {
-            [self.videoPlayer rotate];
+            [self _hanldeFullButtonEvent];
         }
             break;
     }
+}
+
+- (void)_hanldeFullButtonEvent {
+    if ( !self.useFitOnScreenAndDisableRotation ) {
+        [self.videoPlayer rotate];
+        
+        return;
+    }
+    
+    self.videoPlayer.fitOnScreen = !self.videoPlayer.isFitOnScreen;
 }
 
 - (SJVideoPlayerDraggingProgressView *)draggingProgressView {

@@ -25,8 +25,13 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic, weak, nullable) id <SJEdgeLightweightControlLayerDelegate> delegate;
 
 @property (nonatomic, strong, nullable) NSArray<SJLightweightTopItem *> *topItems;
+
 @property (nonatomic) BOOL disableNetworkStatusChangePrompt;
+
 @property (nonatomic) BOOL enableFilmEditing;
+
+@property (nonatomic) BOOL useFitOnScreenAndDisableRotation;
+
 @end
 
 

@@ -170,7 +170,7 @@ NS_ASSUME_NONNULL_BEGIN
 }
 
 + (NSString *)version {
-    return @"v2.1.1";
+    return @"v2.1.2";
 }
 
 - (void (^)(SJVideoPlayer * _Nonnull))clickedBackEvent {
@@ -187,6 +187,19 @@ NS_ASSUME_NONNULL_BEGIN
     };
 }
 
+@end
+
+
+@implementation SJVideoPlayer (FitOnScreenExtension)
+- (void)setUseFitOnScreenAndDisableRotation:(BOOL)useFitOnScreenAndDisableRotation {
+    objc_setAssociatedObject(self, @selector(useFitOnScreenAndDisableRotation), @(useFitOnScreenAndDisableRotation), OBJC_ASSOCIATION_RETAIN_NONATOMIC);
+    [self defaultEdgeControlLayer].useFitOnScreenAndDisableRotation = useFitOnScreenAndDisableRotation;
+    [self defaultEdgeLightweightControlLayer].useFitOnScreenAndDisableRotation = useFitOnScreenAndDisableRotation;
+    self.disableAutoRotation = YES;
+}
+- (BOOL)useFitOnScreenAndDisableRotation {
+    return [objc_getAssociatedObject(self, _cmd) boolValue];
+}
 @end
 
 

@@ -1522,6 +1522,10 @@ NS_ASSUME_NONNULL_BEGIN
             [window addSubview:self.presentView];
         }
         objc_setAssociatedObject(self, @selector(isFitOnScreen), @(fitOnScreen), OBJC_ASSOCIATION_RETAIN_NONATOMIC);
+        if ( [self.controlLayerDelegate respondsToSelector:@selector(videoPlayer:willFitOnScreen:)] ) {
+            [self.controlLayerDelegate videoPlayer:self willFitOnScreen:fitOnScreen];
+        }
+        if ( self.fitOnScreenWillChangeExeBlock ) self.fitOnScreenWillChangeExeBlock(self);
         [UIView animateWithDuration:animated ? 0.4 : 0 animations:^{
             __strong typeof(_self) self = _self;
             if ( !self ) return;
@@ -1539,12 +1543,16 @@ NS_ASSUME_NONNULL_BEGIN
                 [self.view addSubview:self.presentView];
                 self.presentView.frame = self.view.bounds;
             }
+            if ( self.fitOnScreenDidChangeExeBlock ) self.fitOnScreenDidChangeExeBlock(self);
+            if ( [self.controlLayerDelegate respondsToSelector:@selector(videoPlayer:didCompleteFitOnScreen:)] ) {
+                [self.controlLayerDelegate videoPlayer:self didCompleteFitOnScreen:fitOnScreen];
+            }
         }];
     });
 }
 
 - (void)setFitOnScreenWillChangeExeBlock:(nullable void (^)(__kindof SJBaseVideoPlayer * _Nonnull))fitOnScreenWillChangeExeBlock {
-    objc_setAssociatedObject(self, @selector(fitOnScreenWillChangeExeBlock), fitOnScreenWillChangeExeBlock, OBJC_ASSOCIATION_RETAIN_NONATOMIC);
+    objc_setAssociatedObject(self, @selector(fitOnScreenWillChangeExeBlock), fitOnScreenWillChangeExeBlock, OBJC_ASSOCIATION_COPY_NONATOMIC);
 }
 
 - (nullable void (^)(__kindof SJBaseVideoPlayer * _Nonnull))fitOnScreenWillChangeExeBlock {
@@ -1552,7 +1560,7 @@ NS_ASSUME_NONNULL_BEGIN
 }
 
 - (void)setFitOnScreenDidChangeExeBlock:(nullable void (^)(__kindof SJBaseVideoPlayer * _Nonnull))fitOnScreenDidChangeExeBlock {
-    objc_setAssociatedObject(self, @selector(fitOnScreenDidChangeExeBlock), fitOnScreenDidChangeExeBlock, OBJC_ASSOCIATION_RETAIN_NONATOMIC);
+    objc_setAssociatedObject(self, @selector(fitOnScreenDidChangeExeBlock), fitOnScreenDidChangeExeBlock, OBJC_ASSOCIATION_COPY_NONATOMIC);
 }
 
 - (nullable void (^)(__kindof SJBaseVideoPlayer * _Nonnull))fitOnScreenDidChangeExeBlock {

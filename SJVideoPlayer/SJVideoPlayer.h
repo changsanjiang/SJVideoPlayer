@@ -57,17 +57,20 @@ extern SJControlLayerIdentifier SJControlLayer_FilmEditing;
 @end
 
 
-/// 扩展`fitOnScreen`
+/// v2.1.2 新增:
+///
+/// 扩展基类的`fitOnScreen`
 ///
 /// 为了兼容旋转功能, 此处扩展了一个属性`useFitOnScreenAndDisableRotation`,
 /// 表示不使用旋转功能, 只进行全屏或小屏的操作.
 ///
-/// `fitOnScreen`为`SJBaseVideoPlayer`的属性, 表示是否全屏或小屏.
 /// 设置`fitOnScreen`时, 播放器视图将不旋转.
 ///
 /// default is NO.
 @interface SJVideoPlayer (FitOnScreenExtension)
+
 @property (nonatomic) BOOL useFitOnScreenAndDisableRotation;
+
 @end
 
 

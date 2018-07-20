@@ -150,6 +150,7 @@
 
 
 /// v1.3.1 新增
+/// 全屏但不旋转
 @protocol SJFitOnScreenControlDelegate <NSObject>
 @optional
 ///  When `fitOnScreen` of player will change, this method will be called;

@@ -27,6 +27,10 @@ NS_ASSUME_NONNULL_BEGIN
 
 @implementation SJVideoPlayer
 
++ (NSString *)version {
+    return @"v2.1.2";
+}
+
 + (instancetype)player {
     return [[self alloc] init];
 }
@@ -167,10 +171,6 @@ NS_ASSUME_NONNULL_BEGIN
     _disableNetworkStatusChangePrompt = disableNetworkStatusChangePrompt;
     [self defaultEdgeControlLayer].disableNetworkStatusChangePrompt = disableNetworkStatusChangePrompt;
     [self defaultEdgeLightweightControlLayer].disableNetworkStatusChangePrompt = disableNetworkStatusChangePrompt;
-}
-
-+ (NSString *)version {
-    return @"v2.1.2";
 }
 
 - (void (^)(SJVideoPlayer * _Nonnull))clickedBackEvent {

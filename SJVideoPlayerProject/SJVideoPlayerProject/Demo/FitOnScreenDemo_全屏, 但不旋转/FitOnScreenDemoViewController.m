@@ -21,16 +21,39 @@
 
 - (void)viewDidLoad {
     [super viewDidLoad];
+    
+    [self _setupViews];
  
+    _player.URLAsset = [[SJVideoPlayerURLAsset alloc] initWithTitle:self.title URL:[[NSBundle mainBundle] URLForResource:@"sample" withExtension:@"mp4"] playModel:[SJPlayModel new]];
+    
+    // 全屏或小屏时, 禁止旋转
+    _player.useFitOnScreenAndDisableRotation = YES;
+    
+    __weak typeof(self) _self = self;
+    _player.fitOnScreenDidChangeExeBlock = ^(__kindof SJBaseVideoPlayer * _Nonnull player) {
+        __strong typeof(_self) self = _self;
+        if ( !self ) return;
+        if ( player.isFitOnScreen ) {
+            [self.button setTitle:@"充满" forState:UIControlStateNormal];
+        }
+        else {
+            [self.button setTitle:@"小屏" forState:UIControlStateNormal];
+        }
+    };
+    
+    // Do any additional setup after loading the view.
+}
+
+- (void)_setupViews {
+    
     self.title = @"Test Fit On Screen";
     [self.view addSubview:self.button];
     [self.button mas_makeConstraints:^(MASConstraintMaker *make) {
         make.center.offset(0);
     }];
     
-    
     // player
-    _player = [SJVideoPlayer player];
+    _player = [SJVideoPlayer lightweightPlayer];
     [self.view addSubview:_player.view];
     [_player.view mas_makeConstraints:^(MASConstraintMaker *make) {
         if (@available(iOS 11.0, *)) {
@@ -41,25 +64,6 @@
         make.leading.trailing.offset(0);
         make.height.equalTo(self->_player.view.mas_width).multipliedBy(9 / 16.0f);
     }];
-    
-    _player.URLAsset = [[SJVideoPlayerURLAsset alloc] initWithTitle:self.title URL:[[NSBundle mainBundle] URLForResource:@"sample" withExtension:@"mp4"] playModel:[SJPlayModel new]];
-    
-    
-    // 全屏或小屏时, 禁止旋转
-    _player.useFitOnScreenAndDisableRotation = YES;
-    __weak typeof(self) _self = self;
-    _player.fitOnScreenDidChangeExeBlock = ^(__kindof SJBaseVideoPlayer * _Nonnull player) {
-        __strong typeof(_self) self = _self;
-        if ( !self ) return;
-        if ( player.isFitOnScreen ) {
-            [self.button setTitle:@"充满屏幕" forState:UIControlStateNormal];
-        }
-        else {
-            [self.button setTitle:@"返回小屏" forState:UIControlStateNormal];
-        }
-    };
-    
-    // Do any additional setup after loading the view.
 }
 
 - (UIButton *)button {

@@ -870,13 +870,13 @@ NS_ASSUME_NONNULL_END
         }
             break;
         case SJVideoPlayerBottomViewTag_Full: {
-            [self _hanldeFullButtonEvent];
+            [self _handleFullButtonEvent];
         }
             break;
     }
 }
 
-- (void)_hanldeFullButtonEvent {
+- (void)_handleFullButtonEvent {
     if ( !self.useFitOnScreenAndDisableRotation ) {
         [self.videoPlayer rotate];
         

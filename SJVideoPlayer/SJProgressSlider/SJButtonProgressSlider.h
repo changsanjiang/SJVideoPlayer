@@ -1,11 +1,11 @@
 //
-//  SJButtonSlider.h
+//  SJButtonProgressSlider.h
 //
 //  Created by BlueDancer on 2017/11/20.
 //  Copyright © 2017年 SanJiang. All rights reserved.
 //
 
-#import "SJCommonSlider.h"
+#import "SJCommonProgressSlider.h"
 
 /*!
  *  two button each on the left and right.
@@ -14,7 +14,7 @@
  *  两个按钮, 分别在左边和右边.
  *  你可以设置父类中的`spacing`, 来调整他们之间的间距.
  **/
-@interface SJButtonSlider : SJCommonSlider
+@interface SJButtonProgressSlider : SJCommonProgressSlider
 
 @property (nonatomic, strong, readonly) UIButton *leftBtn;
 @property (nonatomic, strong, readonly) UIButton *rightBtn;

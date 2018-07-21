@@ -7,16 +7,16 @@
 //
 
 #import "SJVideoPlayerMoreSettingsSlidersView.h"
-#import "SJButtonSlider.h"
+#import "SJButtonProgressSlider.h"
 #import <Masonry/Masonry.h>
 #import <SJUIFactory/SJUIFactory.h>
 #import "UIView+SJVideoPlayerSetting.h"
 
 @interface SJVideoPlayerMoreSettingsSlidersView ()<SJProgressSliderDelegate>
 
-@property (nonatomic, strong, readonly) SJButtonSlider *rateSlider;
-@property (nonatomic, strong, readonly) SJButtonSlider *volumeSlider;
-@property (nonatomic, strong, readonly) SJButtonSlider *brightnessSlider;
+@property (nonatomic, strong, readonly) SJButtonProgressSlider *rateSlider;
+@property (nonatomic, strong, readonly) SJButtonProgressSlider *volumeSlider;
+@property (nonatomic, strong, readonly) SJButtonProgressSlider *brightnessSlider;
 
 @end
 
@@ -102,20 +102,20 @@
     self.rateSlider.slider.delegate = self;
 }
 
-- (SJButtonSlider *)volumeSlider {
+- (SJButtonProgressSlider *)volumeSlider {
     if ( _volumeSlider ) return _volumeSlider;
     _volumeSlider = [self slider];
     return _volumeSlider;
 }
 
-- (SJButtonSlider *)brightnessSlider {
+- (SJButtonProgressSlider *)brightnessSlider {
     if ( _brightnessSlider ) return _brightnessSlider;
     _brightnessSlider = [self slider];
     _brightnessSlider.slider.minValue = 0.1;
     return _brightnessSlider;
 }
 
-- (SJButtonSlider *)rateSlider {
+- (SJButtonProgressSlider *)rateSlider {
     if ( _rateSlider ) return _rateSlider;
     _rateSlider = [self slider];
     _rateSlider.slider.minValue = 0.5;
@@ -124,8 +124,8 @@
     return _rateSlider;
 }
 
-- (SJButtonSlider *)slider {
-    SJButtonSlider *slider = [SJButtonSlider new];
+- (SJButtonProgressSlider *)slider {
+    SJButtonProgressSlider *slider = [SJButtonProgressSlider new];
     slider.spacing = -6;
     return slider;
 }

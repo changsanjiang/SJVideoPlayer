@@ -14,7 +14,7 @@
 
 #import <UIKit/UIKit.h>
 #import "SJVideoPlayerFilmEditingCommonHeader.h"
-#import <SJPrompt/SJPrompt.h>
+#import <SJBaseVideoPlayer/SJPrompt.h>
 #import "SJVideoPlayerURLAsset+SJControlAdd.h"
 #import "SJRotationManager.h"
 #import "SJVideoPlayer.h"

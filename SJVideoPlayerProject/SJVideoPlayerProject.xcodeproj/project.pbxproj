@@ -51,8 +51,8 @@
 		77E754382040135000A5AF44 /* sample.mp4 in Resources */ = {isa = PBXBuildFile; fileRef = 77E754372040135000A5AF44 /* sample.mp4 */; };
 		A619241021034AD000CFAB5B /* SJLoadingView.m in Sources */ = {isa = PBXBuildFile; fileRef = A619240E21034AD000CFAB5B /* SJLoadingView.m */; };
 		A619241421034B8C00CFAB5B /* SJProgressSlider.m in Sources */ = {isa = PBXBuildFile; fileRef = A619241221034B8C00CFAB5B /* SJProgressSlider.m */; };
-		A619241721034C0100CFAB5B /* SJButtonSlider.m in Sources */ = {isa = PBXBuildFile; fileRef = A619241521034C0100CFAB5B /* SJButtonSlider.m */; };
-		A619241A21034C1100CFAB5B /* SJCommonSlider.m in Sources */ = {isa = PBXBuildFile; fileRef = A619241921034C1100CFAB5B /* SJCommonSlider.m */; };
+		A619241721034C0100CFAB5B /* SJButtonProgressSlider.m in Sources */ = {isa = PBXBuildFile; fileRef = A619241521034C0100CFAB5B /* SJButtonProgressSlider.m */; };
+		A619241A21034C1100CFAB5B /* SJCommonProgressSlider.m in Sources */ = {isa = PBXBuildFile; fileRef = A619241921034C1100CFAB5B /* SJCommonProgressSlider.m */; };
 		A61CC0FE20C2BB240080DE44 /* SJVideoPlayerSettings.m in Sources */ = {isa = PBXBuildFile; fileRef = A61CC0FD20C2BB240080DE44 /* SJVideoPlayerSettings.m */; };
 		A6441092200A3FA9006FD832 /* SJVideoListViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = A6441091200A3FA9006FD832 /* SJVideoListViewController.m */; };
 		A6441095200A3FBA006FD832 /* SJVideoListTableViewCell.m in Sources */ = {isa = PBXBuildFile; fileRef = A6441094200A3FBA006FD832 /* SJVideoListTableViewCell.m */; };
@@ -196,10 +196,10 @@
 		A619240E21034AD000CFAB5B /* SJLoadingView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SJLoadingView.m; sourceTree = "<group>"; };
 		A619241221034B8C00CFAB5B /* SJProgressSlider.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SJProgressSlider.m; sourceTree = "<group>"; };
 		A619241321034B8C00CFAB5B /* SJProgressSlider.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SJProgressSlider.h; sourceTree = "<group>"; };
-		A619241521034C0100CFAB5B /* SJButtonSlider.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SJButtonSlider.m; sourceTree = "<group>"; };
-		A619241621034C0100CFAB5B /* SJButtonSlider.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SJButtonSlider.h; sourceTree = "<group>"; };
-		A619241821034C1100CFAB5B /* SJCommonSlider.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SJCommonSlider.h; sourceTree = "<group>"; };
-		A619241921034C1100CFAB5B /* SJCommonSlider.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SJCommonSlider.m; sourceTree = "<group>"; };
+		A619241521034C0100CFAB5B /* SJButtonProgressSlider.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SJButtonProgressSlider.m; sourceTree = "<group>"; };
+		A619241621034C0100CFAB5B /* SJButtonProgressSlider.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SJButtonProgressSlider.h; sourceTree = "<group>"; };
+		A619241821034C1100CFAB5B /* SJCommonProgressSlider.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SJCommonProgressSlider.h; sourceTree = "<group>"; };
+		A619241921034C1100CFAB5B /* SJCommonProgressSlider.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SJCommonProgressSlider.m; sourceTree = "<group>"; };
 		A61CC0FC20C2BB240080DE44 /* SJVideoPlayerSettings.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = SJVideoPlayerSettings.h; sourceTree = "<group>"; };
 		A61CC0FD20C2BB240080DE44 /* SJVideoPlayerSettings.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = SJVideoPlayerSettings.m; sourceTree = "<group>"; };
 		A6441090200A3FA9006FD832 /* SJVideoListViewController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = SJVideoListViewController.h; sourceTree = "<group>"; };
@@ -579,10 +579,10 @@
 		A619241121034B8C00CFAB5B /* SJProgressSlider */ = {
 			isa = PBXGroup;
 			children = (
-				A619241821034C1100CFAB5B /* SJCommonSlider.h */,
-				A619241921034C1100CFAB5B /* SJCommonSlider.m */,
-				A619241621034C0100CFAB5B /* SJButtonSlider.h */,
-				A619241521034C0100CFAB5B /* SJButtonSlider.m */,
+				A619241821034C1100CFAB5B /* SJCommonProgressSlider.h */,
+				A619241921034C1100CFAB5B /* SJCommonProgressSlider.m */,
+				A619241621034C0100CFAB5B /* SJButtonProgressSlider.h */,
+				A619241521034C0100CFAB5B /* SJButtonProgressSlider.m */,
 				A619241321034B8C00CFAB5B /* SJProgressSlider.h */,
 				A619241221034B8C00CFAB5B /* SJProgressSlider.m */,
 			);
@@ -1095,7 +1095,7 @@
 				A663308820C4FB9100CB4A02 /* SJMoreSettingsSlidersViewModel.m in Sources */,
 				772005772029BBC7009F0190 /* SJMoreSettingItems.m in Sources */,
 				A663308A20C4FB9100CB4A02 /* SJVideoPlayerMoreSettingsView.m in Sources */,
-				A619241721034C0100CFAB5B /* SJButtonSlider.m in Sources */,
+				A619241721034C0100CFAB5B /* SJButtonProgressSlider.m in Sources */,
 				A663302420C4FB4800CB4A02 /* UIView+SJFilmEditingAdd.m in Sources */,
 				775B201920465E1500264AB9 /* TableHeaderCollectionView.m in Sources */,
 				A663301F20C4FB4800CB4A02 /* SJFilmEditingResultPresentView.m in Sources */,
@@ -1109,7 +1109,7 @@
 				774B251D1FCEBA5D002113CC /* AppDelegate.m in Sources */,
 				773AFC67205BA86F003B2CAC /* DownloadTableViewCell.m in Sources */,
 				A67E158320BE8FF6002ECC48 /* PortraitViewController.m in Sources */,
-				A619241A21034C1100CFAB5B /* SJCommonSlider.m in Sources */,
+				A619241A21034C1100CFAB5B /* SJCommonProgressSlider.m in Sources */,
 				775B201620465D6200264AB9 /* TableViewHeaderIsCollectionViewDemoViewController.m in Sources */,
 				A663309120C4FB9100CB4A02 /* SJVideoPlayerMoreSettingsFooterView.m in Sources */,
 				7706FC932062A96E006A828B /* LightweightViewController.m in Sources */,

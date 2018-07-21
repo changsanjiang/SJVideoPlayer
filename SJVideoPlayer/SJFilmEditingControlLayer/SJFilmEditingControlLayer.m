@@ -13,7 +13,7 @@
 #import "SJFilmEditingResultShareItem.h"
 #import "SJFilmEditingRecordingView.h"
 #import "SJFilmEditingGenerateGIFView.h"
-#import <SJPrompt/SJPrompt.h>
+#import <SJBaseVideoPlayer/SJPrompt.h>
 #import "UIView+SJFilmEditingAdd.h"
 #import <SJBaseVideoPlayer/SJBaseVideoPlayer+PlayStatus.h>
 

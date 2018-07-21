@@ -274,7 +274,9 @@ NS_ASSUME_NONNULL_BEGIN
         }
     }
     else if ( [self playStatus_isReadyToPlay] ) {
-        [self.presentView hiddenPlaceholder];
+        [UIView animateWithDuration:0.4 animations:^{
+            [self.presentView hiddenPlaceholder];
+        }];
     }
 
 #pragma clang diagnostic push

@@ -27,6 +27,12 @@ NS_ASSUME_NONNULL_BEGIN
 
 @implementation SJVideoPlayer
 
+- (void)dealloc {
+#ifdef DEBUG
+    NSLog(@"%d - %s", (int)__LINE__, __func__);
+#endif
+}
+
 + (NSString *)version {
     return @"v2.1.2";
 }

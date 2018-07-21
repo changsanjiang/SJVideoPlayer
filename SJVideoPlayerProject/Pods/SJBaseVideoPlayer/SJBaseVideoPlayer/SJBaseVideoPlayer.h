@@ -32,7 +32,7 @@
 #import "SJVideoPlayerURLAsset.h"
 #import "SJVideoPlayerState.h"
 #import "SJVideoPlayerPreviewInfo.h"
-#import <SJPrompt/SJPrompt.h>
+#import "SJPrompt.h"
 #import "SJRotationManager.h"
 #import "SJVideoPlayerControlLayerProtocol.h"
 

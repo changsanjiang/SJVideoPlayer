@@ -1,18 +1,18 @@
 //
-//  SJButtonSlider.m
+//  SJButtonProgressSlider.m
 //
 //  Created by BlueDancer on 2017/11/20.
 //  Copyright © 2017年 SanJiang. All rights reserved.
 //
 
-#import "SJButtonSlider.h"
+#import "SJButtonProgressSlider.h"
 #import <Masonry/Masonry.h>
 
 
-@interface SJButtonSlider ()
+@interface SJButtonProgressSlider ()
 @end
 
-@implementation SJButtonSlider
+@implementation SJButtonProgressSlider
 
 @synthesize leftBtn = _leftBtn;
 @synthesize rightBtn = _rightBtn;

@@ -97,7 +97,8 @@ NS_ASSUME_NONNULL_END
 
 - (void)dealloc {
     [[NSNotificationCenter defaultCenter] removeObserver:self];
-#ifdef DEBUG
+
+#ifdef SJ_MAC
     NSLog(@"SJVideoPlayerLog: %d - %s", (int)__LINE__, __func__);
 #endif
 }
@@ -290,7 +291,7 @@ NS_ASSUME_NONNULL_END
     }
     
     
-#ifdef DEBUG
+#ifdef SJ_MAC
     switch ( currentOperation ) {
         case SJVideoPlayerFilmEditingOperation_Unknown: break;
         case SJVideoPlayerFilmEditingOperation_GIF: {
@@ -658,7 +659,7 @@ NS_ASSUME_NONNULL_END
         [self.delegate filmEditingControlLayer:self statusChanged:status];
     }
     
-#ifdef DEBUG
+#ifdef SJ_MAC
     switch ( status ) {
         case SJFilmEditingStatus_Unknown: break;
         case SJFilmEditingStatus_Recording: {

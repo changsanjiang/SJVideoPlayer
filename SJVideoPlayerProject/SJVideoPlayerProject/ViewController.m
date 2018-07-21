@@ -32,6 +32,10 @@
 
 - (void)viewDidLoad {
     [super viewDidLoad];
+
+#ifdef SJ_MAC
+    NSLog(@"Hello, World");
+#endif
     
     self.view.backgroundColor = [UIColor whiteColor];
     

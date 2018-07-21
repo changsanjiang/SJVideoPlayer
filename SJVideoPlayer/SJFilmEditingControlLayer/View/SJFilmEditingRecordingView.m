@@ -48,11 +48,11 @@
     return self;
 }
 
+#ifdef SJ_MAC
 - (void)dealloc {
-#ifdef DEBUG
     NSLog(@"SJVideoPlayerLog: %d - %s", (int)__LINE__, __func__);
-#endif
 }
+#endif
 
 - (void)start {
     _duration = 0;

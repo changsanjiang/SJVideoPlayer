@@ -97,11 +97,11 @@ NS_ASSUME_NONNULL_END
     return self;
 }
 
+#ifdef SJ_MAC
 - (void)dealloc {
-#ifdef DEBUG
     NSLog(@"SJVideoPlayerLog: %d - %s", (int)__LINE__, __func__);
-#endif
 }
+#endif
 
 - (void)restartControlLayerCompeletionHandler:(nullable void(^)(void))compeletionHandler {
     if ( _videoPlayer.URLAsset ) {
@@ -349,7 +349,7 @@ NS_ASSUME_NONNULL_END
 
 /// 开始缓冲.
 - (void)startLoading:(SJBaseVideoPlayer *)videoPlayer {
-#ifdef DEBUG
+#ifdef SJ_MAC
     NSLog(@"%d - %s", (int)__LINE__, __func__);
 #endif
 
@@ -358,7 +358,7 @@ NS_ASSUME_NONNULL_END
 }
 
 - (void)cancelLoading:(__kindof SJBaseVideoPlayer *)videoPlayer {
-#ifdef DEBUG
+#ifdef SJ_MAC
     NSLog(@"%d - %s", (int)__LINE__, __func__);
 #endif
 
@@ -368,7 +368,7 @@ NS_ASSUME_NONNULL_END
 
 /// 缓冲完成.
 - (void)loadCompletion:(SJBaseVideoPlayer *)videoPlayer {
-#ifdef DEBUG
+#ifdef SJ_MAC
     NSLog(@"%d - %s", (int)__LINE__, __func__);
 #endif
 

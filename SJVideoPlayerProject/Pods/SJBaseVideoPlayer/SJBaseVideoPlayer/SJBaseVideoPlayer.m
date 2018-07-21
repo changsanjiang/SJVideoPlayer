@@ -243,7 +243,7 @@ NS_ASSUME_NONNULL_BEGIN
 }
 
 - (void)dealloc {
-#ifdef DEBUG
+#ifdef SJ_MAC
     NSLog(@"SJVideoPlayerLog: %d - %s", (int)__LINE__, __func__);
 #endif
     [_URLAsset.playAsset cancelOperation];
@@ -309,7 +309,7 @@ NS_ASSUME_NONNULL_BEGIN
     }
     
     
-#ifdef DEBUG
+#ifdef SJ_MAC
     switch ( playStatus ) {
         case SJVideoPlayerPlayStatusUnknown:
             printf("SJBaseVideoPlayer<%p>.SJVideoPlayerPlayStatus.Unknown\n", self);
@@ -780,7 +780,7 @@ NS_ASSUME_NONNULL_BEGIN
         if ( [self.controlLayerDelegate respondsToSelector:@selector(videoPlayer:reachabilityChanged:)] ) {
             [self.controlLayerDelegate videoPlayer:self reachabilityChanged:status];
         }
-#if 0
+#ifdef SJ_MAC
         switch (status) {
             case SJNetworkStatus_NotReachable: {
                 NSLog(@"网络状态: 无法连接网络");
@@ -802,41 +802,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (void)setState:(SJVideoPlayerPlayState)state {
     if ( state == _state ) return;
-    _state = state;
-#if 0
-    switch ( state ) {
-        case SJVideoPlayerPlayState_Unknown: {
-            NSLog(@"状态: 未知");
-        }
-            break;
-        case SJVideoPlayerPlayState_Playing: {
-            NSLog(@"状态: 播放");
-        }
-            break;
-        case SJVideoPlayerPlayState_PlayFailed: {
-            NSLog(@"状态: 失败");
-        }
-            break;
-        case SJVideoPlayerPlayState_Prepare: {
-            NSLog(@"状态: 准备");
-        }
-            break;
-        case SJVideoPlayerPlayState_Paused: {
-            NSLog(@"状态: 暂停");
-        }
-            break;
-        case SJVideoPlayerPlayState_Buffing: {
-            NSLog(@"状态: 缓冲");
-        }
-            break;
-        case SJVideoPlayerPlayState_PlayEnd: {
-            NSLog(@"状态: 完毕");
-        }
-            break;
-        default:
-            break;
-    }
-#endif
+    _state = state; 
     
     if ( state == SJVideoPlayerPlayState_Paused && self.pausedToKeepAppearState && self.registrar.state == SJVideoPlayerAppState_Forground ) [self.displayRecorder layerAppear];
     
@@ -1493,6 +1459,9 @@ NS_ASSUME_NONNULL_BEGIN
 @end
 
 
+
+
+#pragma mark - 充满屏幕
 
 @implementation SJBaseVideoPlayer (FitOnScreen)
 

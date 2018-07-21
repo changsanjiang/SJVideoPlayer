@@ -41,11 +41,11 @@ NS_ASSUME_NONNULL_END
 
 #pragma mark -
 
+#ifdef SJ_MAC
 - (void)dealloc {
-#ifdef DEBUG
     NSLog(@"%d - %s", (int)__LINE__, __func__);
-#endif
 }
+#endif
 
 #pragma mark -
 

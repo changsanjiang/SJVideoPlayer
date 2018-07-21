@@ -383,7 +383,7 @@ NS_ASSUME_NONNULL_BEGIN
 }
 
 - (void)startLoading:(SJBaseVideoPlayer *)videoPlayer {
-#ifdef DEBUG
+#ifdef SJ_MAC
     NSLog(@"%d - %s", (int)__LINE__, __func__);
 #endif
 
@@ -391,7 +391,7 @@ NS_ASSUME_NONNULL_BEGIN
 }
 
 - (void)cancelLoading:(__kindof SJBaseVideoPlayer *)videoPlayer {
-#ifdef DEBUG
+#ifdef SJ_MAC
     NSLog(@"%d - %s", (int)__LINE__, __func__);
 #endif
 
@@ -399,7 +399,7 @@ NS_ASSUME_NONNULL_BEGIN
 }
 
 - (void)loadCompletion:(SJBaseVideoPlayer *)videoPlayer {
-#ifdef DEBUG
+#ifdef SJ_MAC
     NSLog(@"%d - %s", (int)__LINE__, __func__);
 #endif
 

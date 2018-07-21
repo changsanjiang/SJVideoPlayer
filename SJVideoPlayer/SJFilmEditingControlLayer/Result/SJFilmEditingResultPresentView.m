@@ -47,11 +47,11 @@
     return self;
 }
 
+#ifdef SJ_MAC
 - (void)dealloc {
-#ifdef DEBUG
     NSLog(@"SJVideoPlayerLog: %d - %s", (int)__LINE__, __func__);
-#endif
 }
+#endif
 
 - (void)presentResultViewWithCompletion:(void (^)(void))block {
     [self.imageView mas_remakeConstraints:^(MASConstraintMaker *make) {

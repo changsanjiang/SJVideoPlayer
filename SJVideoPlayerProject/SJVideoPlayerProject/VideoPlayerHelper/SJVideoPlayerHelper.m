@@ -171,29 +171,10 @@ NS_ASSUME_NONNULL_END
         self->_videoPlayer.view.alpha = 1;
     }];
     
-    // The block invoked when user clicked back btn
-    _videoPlayer.clickedBackEvent = ^(SJVideoPlayer * _Nonnull player) {
-        __strong typeof(_self) self = _self;
-        if ( !self ) return;
-        [self.viewController.navigationController popViewControllerAnimated:YES];
-    };
-    
-    // The block invoked when the player will rotate screen
-    _videoPlayer.viewWillRotateExeBlock = ^(SJVideoPlayer * _Nonnull player, BOOL isFullScreen) {
-        __strong typeof(_self) self = _self;
-        if ( !self ) return ;
-        [UIView animateWithDuration:0.25 animations:^{
-            [self.viewController setNeedsStatusBarAppearanceUpdate];
-        }];
-    };
-    
     // The block invoked when the `control view` is `hidden` or `displayed`
     _videoPlayer.controlLayerAppearStateChanged = ^(SJVideoPlayer * _Nonnull player, BOOL displayed) {
         __strong typeof(_self) self = _self;
         if ( !self ) return;
-        [UIView animateWithDuration:0.25 animations:^{
-            [self.viewController setNeedsStatusBarAppearanceUpdate];
-        }];
         if ( self.controlLayerAppearStateChangedExeBlock ) self.controlLayerAppearStateChangedExeBlock(self, displayed);
     };
     

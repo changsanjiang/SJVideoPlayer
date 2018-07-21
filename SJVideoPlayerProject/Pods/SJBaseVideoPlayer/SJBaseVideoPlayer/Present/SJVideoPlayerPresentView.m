@@ -20,7 +20,9 @@ NS_ASSUME_NONNULL_BEGIN
 
 NS_ASSUME_NONNULL_END
 
-@implementation SJVideoPlayerPresentView
+@implementation SJVideoPlayerPresentView {
+    BOOL _isHidden;
+}
 
 @synthesize placeholderImageView = _placeholderImageView;
 
@@ -50,12 +52,14 @@ NS_ASSUME_NONNULL_END
 #pragma mark -
 
 - (void)showPlaceholder {
+    if ( _isHidden ) return; _isHidden = NO;
     [UIView animateWithDuration:0.2 animations:^{
         self.placeholderImageView.alpha = 1;
     }];
 }
 
 - (void)hiddenPlaceholder {
+    if ( !_isHidden ) return; _isHidden = YES;
     [UIView animateWithDuration:0.2 animations:^{
         self.placeholderImageView.alpha = 0.001;
     }];
@@ -90,16 +94,12 @@ NS_ASSUME_NONNULL_END
     return [self avLayer].videoGravity;
 }
 
-#pragma mark -
-
-- (void)layoutSubviews {
-    [super layoutSubviews];
-    _placeholderImageView.frame = self.bounds;
-}
-
 - (void)_presentSetupView {
     self.backgroundColor = [UIColor blackColor];
-    [self addSubview:self.placeholderImageView];
+    self.placeholderImageView.frame = self.bounds;
+    _placeholderImageView.autoresizingMask = UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight;
+    [self addSubview:_placeholderImageView];
+    [self hiddenPlaceholder];
 }
 
 - (UIImageView *)placeholderImageView {

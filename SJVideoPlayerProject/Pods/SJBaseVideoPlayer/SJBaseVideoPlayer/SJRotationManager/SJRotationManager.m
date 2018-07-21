@@ -68,7 +68,7 @@ NS_ASSUME_NONNULL_BEGIN
         
             if ( self.disableAutorotation ) {
 #ifdef DEBUG
-                NSLog(@"%d - %s - SJRotationManager - 旋转被禁止, 暂时无法旋转!", (int)__LINE__, __func__);
+                NSLog(@"%d - %s - SJRotationManager - 自动旋转被禁止, 暂时无法旋转!", (int)__LINE__, __func__);
 #endif
                 return;
             }

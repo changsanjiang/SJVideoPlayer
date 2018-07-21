@@ -18,6 +18,7 @@
 #import "FilmEditingHelper.h"
 #import <SJFullscreenPopGesture/UIViewController+SJVideoPlayerAdd.h>
 #import <UIScrollView+ListViewAutoplaySJAdd.h>
+#import <SJUIKit/UIScrollView+SJRefreshAdd.h>
 
 static NSString *const SJVideoListTableViewCellID = @"SJVideoListTableViewCell";
 
@@ -27,11 +28,13 @@ static NSString *const SJVideoListTableViewCellID = @"SJVideoListTableViewCell";
 @property (nonatomic, strong, readonly) FilmEditingHelper *filmEditingHelper;
 @property (nonatomic, strong, readonly) UIActivityIndicatorView *indicator;
 @property (nonatomic, strong, readonly) UITableView *tableView;
-@property (nonatomic, strong) NSIndexPath *playedIndexPath;
-@property (nonatomic, strong) NSArray<SJVideoModel *> *videos;
+@property (nonatomic, strong, readonly) NSMutableArray<SJVideoModel *> *videosM;
+
 @end
 
-@implementation SJVideoListViewController
+@implementation SJVideoListViewController {
+    NSMutableArray<SJVideoModel *> *_videosM;
+}
 
 @synthesize indicator = _indicator;
 @synthesize tableView = _tableView;
@@ -42,54 +45,25 @@ static NSString *const SJVideoListTableViewCellID = @"SJVideoListTableViewCell";
 
 - (void)viewDidLoad {
     [super viewDidLoad];
-
-    /**
-     全屏返回手势
-     显示模式目前有两种: 1. 使用快照(截屏); 2. 使用原始视图(vc.view);
-     SJPreViewDisplayMode_Origin 使用原始视图, 表示当手势返回时, 底部视图使用前一个vc的view;
-     如下:
-     */
-    self.sj_displayMode = SJPreViewDisplayMode_Origin;
-    self.view.backgroundColor = [UIColor whiteColor];
-    self.edgesForExtendedLayout = UIRectEdgeNone;
     
-    // setup views
-    [self _videoListSetupViews];
-    
-    [self.indicator startAnimating];
-    // prepare test data.
-    self.tableView.alpha = 0.001;
-    __weak typeof(self) _self = self;
-    dispatch_async(dispatch_get_global_queue(0, 0), ^{
-        // some test data
-        NSArray<SJVideoModel *> *videos = [SJVideoModel videoModelsWithTapActionDelegate:self];
-        dispatch_async(dispatch_get_main_queue(), ^{
-            __strong typeof(_self) self = _self;
-            if ( !self ) return;
-            self.videos = videos;
-            [self.tableView reloadData];
-            [self.indicator stopAnimating];
-            [UIView animateWithDuration:0.3 animations:^{
-                self.tableView.alpha = 1;
-            }];
-            
-        });
-    });
+    [self _setupViews];
+   
+    [self.tableView sj_exeHeaderRefreshing];
 
     // Do any additional setup after loading the view.
 }
+
+#pragma mark - play asset
 
 - (void)clickedPlayOnTabCell:(SJVideoListTableViewCell *)cell {
     [self sj_playerNeedPlayNewAssetAtIndexPath:[self.tableView indexPathForCell:cell]];
 }
 
 - (void)sj_playerNeedPlayNewAssetAtIndexPath:(NSIndexPath *)indexPath {
-    self.playedIndexPath = indexPath;
     SJVideoListTableViewCell *cell = [self.tableView cellForRowAtIndexPath:indexPath];
     NSURL *URL = [NSURL URLWithString:cell.model.playURLStr];
     SJPlayModel *playModel = [SJPlayModel UITableViewCellPlayModelWithPlayerSuperviewTag:cell.coverImageView.tag atIndexPath:indexPath tableView:self.tableView];
     SJVideoPlayerURLAsset *asset = [[SJVideoPlayerURLAsset alloc] initWithURL:URL playModel:playModel];
-    
     asset.title = @"DIY心情转盘 #手工##手工制作##卖包子喽##1块1个##卖完就撤#";
     asset.alwaysShowTitle = YES;
     
@@ -112,14 +86,7 @@ static NSString *const SJVideoListTableViewCellID = @"SJVideoListTableViewCell";
             self.player.view.alpha = 1;
         }];
         
-        // 点击返回按钮执行的block
-        __weak typeof(self) _self = self;
-        _player.clickedBackEvent = ^(SJVideoPlayer * _Nonnull player) {
-            __strong typeof(_self) self = _self;
-            if ( !self ) return;
-            [self.navigationController popViewControllerAnimated:YES];
-        };
-        
+        // 开启剪辑功能[截屏/GIF/导出]
         _player.enableFilmEditing = YES;
         [_player.filmEditingConfig config:self.filmEditingHelper.filmEditingConfig];
     }
@@ -137,6 +104,30 @@ static NSString *const SJVideoListTableViewCellID = @"SJVideoListTableViewCell";
     if ( _filmEditingHelper ) return _filmEditingHelper;
     _filmEditingHelper = [[FilmEditingHelper alloc] initWithViewController:self];
     return _filmEditingHelper;
+}
+
+#pragma mark -
+
+- (void)_setupViews {
+    _videosM = [NSMutableArray array];
+    
+    self.title = @"TableView";
+    self.view.backgroundColor = [UIColor whiteColor];
+    self.edgesForExtendedLayout = UIRectEdgeNone;
+
+    /**
+     全屏返回手势
+     显示模式目前有两种: 1. 使用快照(截屏); 2. 使用原始视图(vc.view);
+     SJPreViewDisplayMode_Origin 使用原始视图, 表示当手势返回时, 底部视图使用前一个vc的view;
+     如下:
+     */
+    self.sj_displayMode = SJPreViewDisplayMode_Origin;
+    
+    self.view.backgroundColor = [UIColor whiteColor];
+    [self.view addSubview:self.tableView];
+    [_tableView mas_makeConstraints:^(MASConstraintMaker *make) {
+        make.edges.offset(0);
+    }];
 }
 
 - (void)viewDidAppear:(BOOL)animated {
@@ -166,24 +157,7 @@ static NSString *const SJVideoListTableViewCellID = @"SJVideoListTableViewCell";
     return YES;
 }
 
-- (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath {
-    SJVideoPlayerURLAsset *asset = nil;
-    if ( [self.playedIndexPath isEqual:indexPath] ) {
-        asset = self.player.URLAsset;
-    }
-    DemoPlayerViewController *vc = [[DemoPlayerViewController alloc] initWithVideo:self.videos[indexPath.row] asset:asset];
-    [self.navigationController pushViewController:vc animated:YES];
-}
-
 #pragma mark -
-
-- (void)_videoListSetupViews {
-    self.view.backgroundColor = [UIColor whiteColor];
-    [self.view addSubview:self.tableView];
-    [_tableView mas_makeConstraints:^(MASConstraintMaker *make) {
-        make.edges.offset(0);
-    }];
-}
 
 - (UIActivityIndicatorView *)indicator {
     if ( _indicator ) return _indicator;
@@ -201,20 +175,59 @@ static NSString *const SJVideoListTableViewCellID = @"SJVideoListTableViewCell";
     if ( _tableView ) return _tableView;
     _tableView = [SJUITableViewFactory tableViewWithStyle:UITableViewStylePlain backgroundColor:[UIColor whiteColor] separatorStyle:UITableViewCellSeparatorStyleNone showsVerticalScrollIndicator:YES delegate:self dataSource:self];
     [_tableView registerClass:NSClassFromString(SJVideoListTableViewCellID) forCellReuseIdentifier:SJVideoListTableViewCellID];
+    
+    /// 配置刷新
+    __weak typeof(self) _self = self;
+    [_tableView sj_setupRefreshingWithPageSize:20 beginPageNum:1 refreshingBlock:^(UITableView *tableView, NSInteger pageNum) {
+        __strong typeof(_self) self = _self;
+        if ( !self ) return ;
+        [self.indicator startAnimating];
+        dispatch_async(dispatch_get_global_queue(0, 0), ^{
+            __strong typeof(_self) self = _self;
+            if ( !self ) return ;
+            // prepare test data.
+            NSArray<SJVideoModel *> *videos = [SJVideoModel videoModelsWithTapActionDelegate:self size:tableView.sj_pageSize];
+#ifdef SJ_MAC
+            sleep(1); // #warning 模拟网络延时
+#endif
+            dispatch_async(dispatch_get_main_queue(), ^{
+                __strong typeof(_self) self = _self;
+                if ( !self ) return;
+                if ( pageNum == tableView.sj_beginPageNum ) {
+                    [self.videosM removeAllObjects];
+                    [self.player stopAndFadeOut];
+                    self.player = nil;
+                }
+                [self.videosM addObjectsFromArray:videos];
+                [self.tableView reloadData];
+                [self.indicator stopAnimating];
+                [self.tableView sj_endRefreshingWithItemCount:videos.count];
+            });
+        });
+    }];
     return _tableView;
 }
 
+- (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath {
+    SJVideoPlayerURLAsset *asset = nil;
+    if ( [tableView.sj_currentPlayingIndexPath isEqual:indexPath] ) {
+        asset = self.player.URLAsset;
+    }
+    DemoPlayerViewController *vc = [[DemoPlayerViewController alloc] initWithVideo:_videosM[indexPath.row] asset:asset];
+    [self.navigationController pushViewController:vc animated:YES];
+}
+
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section {
-    return _videos.count;
+    return _videosM.count;
 }
 
 - (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath {
-    return [SJVideoListTableViewCell heightWithVideo:_videos[indexPath.row]];
+    return [SJVideoListTableViewCell heightWithVideo:_videosM[indexPath.row]];
 }
 
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath {
     SJVideoListTableViewCell * cell = (SJVideoListTableViewCell *)[tableView dequeueReusableCellWithIdentifier:SJVideoListTableViewCellID forIndexPath:indexPath];
-    cell.model = _videos[indexPath.row];
+    cell.model = _videosM[indexPath.row];
     cell.delegate = self;
     return cell;
 }

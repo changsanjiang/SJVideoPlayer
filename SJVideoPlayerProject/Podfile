@@ -13,7 +13,8 @@ target 'SJVideoPlayerProject' do
   "SJFullscreenPopGesture",
   "SJLoadingView",
   "SJSlider",
-  "SJScrollEntriesView"
+  "SJScrollEntriesView",
+  "SJUIKit/Refresh"
   ].each {|lib| pod lib}
 
 end

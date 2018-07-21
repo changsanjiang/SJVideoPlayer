@@ -95,7 +95,6 @@ static NSString *const SimplifiedSampleTableViewCellID = @"SimplifiedSampleTable
     // 如果播放器不是全屏, 就重新创建一个播放器
     if ( !_player || !_player.isFullScreen ) {
         [_player stopAndFadeOut]; // 让旧的播放器淡出
-        
         _player = [SJVideoPlayer player]; // 创建一个新的播放器
         _player.generatePreviewImages = YES; // 生成预览缩略图, 大概20张
         // fade in(淡入)
@@ -103,14 +102,6 @@ static NSString *const SimplifiedSampleTableViewCellID = @"SimplifiedSampleTable
         [UIView animateWithDuration:0.5 animations:^{
             self.player.view.alpha = 1;
         }];
-
-        // 点击返回按钮执行的block
-        __weak typeof(self) _self = self;
-        _player.clickedBackEvent = ^(SJVideoPlayer * _Nonnull player) {
-            __strong typeof(_self) self = _self;
-            if ( !self ) return;
-            [self.navigationController popViewControllerAnimated:YES];
-        };
     }
 
     _player.URLAsset = asset;

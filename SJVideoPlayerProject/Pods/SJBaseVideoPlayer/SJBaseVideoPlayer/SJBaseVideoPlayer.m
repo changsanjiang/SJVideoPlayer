@@ -426,20 +426,18 @@ NS_ASSUME_NONNULL_BEGIN
     if ( [self.controlLayerDelegate respondsToSelector:@selector(videoPlayer:willRotateView:)] ) {
         [self.controlLayerDelegate videoPlayer:self willRotateView:isFullscreen];
     }
-    if ( self.viewWillRotateExeBlock ) {
-        self.viewWillRotateExeBlock(self, isFullscreen);
-    }
-    else {
-        [UIView animateWithDuration:0.25 animations:^{
-            [[self atViewController] setNeedsStatusBarAppearanceUpdate];
-        }];
-    }
+    if ( self.viewWillRotateExeBlock ) self.viewWillRotateExeBlock(self, isFullscreen);
+    
+    [[self atViewController] setNeedsStatusBarAppearanceUpdate];
 }
 - (void)rotationManager:(SJRotationManager *)manager didRotateView:(BOOL)isFullscreen {
     if ( [self.controlLayerDelegate respondsToSelector:@selector(videoPlayer:didEndRotation:)] ) {
         [self.controlLayerDelegate videoPlayer:self didEndRotation:isFullscreen];
     }
     if ( self.viewDidRotateExeBlock ) self.viewDidRotateExeBlock(self, manager.isFullscreen);
+    [UIView animateWithDuration:0.25 animations:^{
+        [[self atViewController] setNeedsStatusBarAppearanceUpdate];
+    }];
 }
 - (SJPlayerGestureControl *)gestureControl {
     if ( _gestureControl ) return _gestureControl;
@@ -489,7 +487,7 @@ NS_ASSUME_NONNULL_BEGIN
         if ( [self playStatus_isInactivity_ReasonPlayFailed] ) return NO;
         
         if ( SJPlayerGestureType_Pan == type &&
-            self.isPlayOnScrollView &&
+             self.isPlayOnScrollView &&
             !self.rotationManager.isFullscreen ) return NO;
         
         if ( self.controlLayerDataSource &&
@@ -841,6 +839,7 @@ NS_ASSUME_NONNULL_BEGIN
     
     _URLAsset = URLAsset;
     
+    // 维护当前播放的indexPath
     if ( [URLAsset.playModel isKindOfClass:[SJUITableViewCellPlayModel class]] ) {
         SJUITableViewCellPlayModel *playModel = (id)URLAsset.playModel;
         if ( playModel.tableView.sj_enabledAutoplay ) {
@@ -882,7 +881,7 @@ NS_ASSUME_NONNULL_BEGIN
             self.URLAsset.playAsset.player.muted = self.mute;
             
             if ( self.registrar.state == SJVideoPlayerAppState_Background &&
-                self.pauseWhenAppDidEnterBackground ) {
+                 self.pauseWhenAppDidEnterBackground ) {
                 [self pause:SJVideoPlayerPausedReasonPause];
                 return;
             }
@@ -1025,14 +1024,11 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (void)play {
     
-    if ( self.canPlayAnAsset ) {
-        if ( !self.canPlayAnAsset(self) ) return;
-    }
+    if ( self.canPlayAnAsset ) { if ( !self.canPlayAnAsset(self) ) return; }
 
     if ( !self.URLAsset ) return;
     
     if ( [self playStatus_isInactivity_ReasonPlayEnd] ) {
-        
         [self replay];
         return;
     }
@@ -1279,6 +1275,7 @@ NS_ASSUME_NONNULL_BEGIN
     if ( ![self playStatus_isPaused_ReasonPause] ) [self pause];
 }
 - (BOOL)vc_prefersStatusBarHidden {
+    if ( self.rotationManager.transitioning ) return YES;
     // 全屏播放时, 使状态栏根据控制层显示或隐藏
     if ( self.isFullScreen ) return !self.controlLayerAppeared;
     return NO;
@@ -1911,11 +1908,10 @@ NS_ASSUME_NONNULL_BEGIN
     if ( _videoPlayer.controlLayerAppearStateChanged ) {
         _videoPlayer.controlLayerAppearStateChanged(_videoPlayer, status);
     }
-    else {
-        [UIView animateWithDuration:0.25 animations:^{
-            [[self.videoPlayer atViewController] setNeedsStatusBarAppearanceUpdate];
-        }];
-    }
+
+    [UIView animateWithDuration:self.videoPlayer.rotationManager.transitioning ? 0 : 0.25 animations:^{
+        [[self.videoPlayer atViewController] setNeedsStatusBarAppearanceUpdate];
+    }];
 }
 @end
 

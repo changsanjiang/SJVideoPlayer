@@ -14,10 +14,10 @@
             buildForArchiving = "YES">
             <BuildableReference
                BuildableIdentifier = "primary"
-               BlueprintIdentifier = "EB467E74B11925DD0C71072B57465A2E"
-               BlueprintName = "SJVolBrigControl"
+               BlueprintIdentifier = "66CA4A8CBBEF590734133E826FB43005"
+               BlueprintName = "SJUIKit"
                ReferencedContainer = "container:Pods.xcodeproj"
-               BuildableName = "libSJVolBrigControl.a">
+               BuildableName = "libSJUIKit.a">
             </BuildableReference>
          </BuildActionEntry>
       </BuildActionEntries>

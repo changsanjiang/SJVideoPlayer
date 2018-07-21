@@ -168,5 +168,4 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (UICollectionView *)collectionView;
 @end
-
 NS_ASSUME_NONNULL_END

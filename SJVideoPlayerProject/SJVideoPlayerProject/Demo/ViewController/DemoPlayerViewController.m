@@ -80,7 +80,6 @@
     
     /// test
     if ( !_video ) {
-        
         [self.videoPlayerHelper playWithAsset:[[SJVideoPlayerURLAsset alloc] initWithURL:[[NSBundle mainBundle] URLForResource:@"sample" withExtension:@"mp4"]] playerParentView:self.playerSuperView];
         return;
     }

@@ -11,10 +11,8 @@ target 'SJVideoPlayerProject' do
  ["SJBaseVideoPlayer",
   "SJAttributesFactory",
   "SJFullscreenPopGesture",
-  "SJLoadingView",
-  "SJSlider",
   "SJScrollEntriesView",
-  "SJUIKit/Refresh"
+  "SJUIKit/Refresh",
   ].each {|lib| pod lib}
 
 end

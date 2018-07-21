@@ -10,7 +10,7 @@
 #import <Masonry/Masonry.h>
 #import <SJUIFactory/SJUIFactory.h>
 #import <SJUIFactory/UIView+SJUIFactory.h>
-#import <SJSlider/SJSlider.h>
+#import "SJProgressSlider.h"
 
 
 @interface SJFilmEditingRecordingView ()
@@ -20,7 +20,7 @@
 @property (nonatomic, strong, readonly) UIView *progressContainerView;
 @property (nonatomic, strong, readonly) UILabel *progressLabel;
 @property (nonatomic, strong, readonly) UILabel *promptLabel;
-@property (nonatomic, strong, readonly) SJSlider *progressSlider;
+@property (nonatomic, strong, readonly) SJProgressSlider *progressSlider;
 @property (nonatomic, strong, readonly) NSTimer *countDownTimer;
 
 @property (nonatomic, readwrite) short duration; // sec.
@@ -232,9 +232,9 @@
     _promptLabel = [SJUILabelFactory labelWithText:@"" textColor:[UIColor whiteColor] font:[UIFont systemFontOfSize:11]];
     return _promptLabel;
 }
-- (SJSlider *)progressSlider {
+- (SJProgressSlider *)progressSlider {
     if ( _progressSlider ) return _progressSlider;
-    _progressSlider = [SJSlider new];
+    _progressSlider = [SJProgressSlider new];
     _progressSlider.trackHeight = 2;
     _progressSlider.userInteractionEnabled = NO;
     return _progressSlider;

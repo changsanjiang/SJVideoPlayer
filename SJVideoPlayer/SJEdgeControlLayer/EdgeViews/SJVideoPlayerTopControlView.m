@@ -74,11 +74,8 @@
         make.trailing.equalTo(self->_previewBtn.mas_leading);
     }];
     
-    // preview btn
-    if ( [self.delegate hasBeenGeneratedPreviewImages] ) self.previewBtn.hidden = NO;
-    
-    // more btn
-    self.moreBtn.hidden = NO;
+    if ( [self.delegate hasBeenGeneratedPreviewImages] ) self.previewBtn.hidden = _config.isFitOnScreen;
+    self.moreBtn.hidden = _config.isFitOnScreen;
 }
 
 - (void)_needUpdateSmallscreenLayout {
@@ -100,11 +97,8 @@
             make.trailing.equalTo(self->_moreBtn.mas_centerX).offset(8);
         }];
     }
-    
-    // preview btn
+
     self.previewBtn.hidden = YES;
-    
-    // more btn
     self.moreBtn.hidden = YES;
 }
 

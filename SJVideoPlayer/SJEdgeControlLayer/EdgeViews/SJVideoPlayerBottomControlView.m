@@ -7,21 +7,21 @@
 //
 
 #import "SJVideoPlayerBottomControlView.h"
-#import <SJSlider/SJSlider.h>
+#import "SJProgressSlider.h"
 #import <SJUIFactory/SJUIFactory.h>
 #import <Masonry/Masonry.h>
 #import "SJVideoPlayerControlMaskView.h"
 #import "UIView+SJVideoPlayerSetting.h"
 
 
-@interface SJVideoPlayerBottomControlView ()<SJSliderDelegate>
+@interface SJVideoPlayerBottomControlView ()<SJProgressSliderDelegate>
 
 @property (nonatomic, strong, readonly) UIButton *playBtn;
 @property (nonatomic, strong, readonly) UIButton *pauseBtn;
 @property (nonatomic, strong, readonly) UILabel *currentTimeLabel;
 @property (nonatomic, strong, readonly) UILabel *separateLabel;
 @property (nonatomic, strong, readonly) UILabel *durationTimeLabel;
-@property (nonatomic, strong, readonly) SJSlider *progressSlider;
+@property (nonatomic, strong, readonly) SJProgressSlider *progressSlider;
 @property (nonatomic, strong, readonly) UIButton *fullBtn;
 
 @property (nonatomic, strong) UIImage *fullScreenImage;
@@ -208,27 +208,27 @@
     return _pauseBtn;
 }
 
-- (SJSlider *)progressSlider {
+- (SJProgressSlider *)progressSlider {
     if ( _progressSlider ) return _progressSlider;
-    _progressSlider = [SJSlider new];
+    _progressSlider = [SJProgressSlider new];
     _progressSlider.enableBufferProgress = YES;
     _progressSlider.delegate = self;
     return _progressSlider;
 }
 
-- (void)sliderWillBeginDragging:(SJSlider *)slider {
+- (void)sliderWillBeginDragging:(SJProgressSlider *)slider {
     if ( [self.delegate respondsToSelector:@selector(sliderWillBeginDraggingForBottomView:)] ) {
         [self.delegate sliderWillBeginDraggingForBottomView:self];
     }
 }
 
-- (void)sliderDidDrag:(SJSlider *)slider {
+- (void)sliderDidDrag:(SJProgressSlider *)slider {
     if ( [self.delegate respondsToSelector:@selector(bottomView:sliderDidDrag:)] ) {
         [self.delegate bottomView:self sliderDidDrag:slider.value];
     }
 }
 
-- (void)sliderDidEndDragging:(SJSlider *)slider {
+- (void)sliderDidEndDragging:(SJProgressSlider *)slider {
     if ( [self.delegate respondsToSelector:@selector(sliderDidEndDraggingForBottomView:)] ) {
         [self.delegate sliderDidEndDraggingForBottomView:self];
     }

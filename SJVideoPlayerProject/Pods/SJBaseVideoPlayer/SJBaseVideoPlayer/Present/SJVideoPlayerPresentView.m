@@ -52,17 +52,13 @@ NS_ASSUME_NONNULL_END
 #pragma mark -
 
 - (void)showPlaceholder {
-    if ( _isHidden ) return; _isHidden = NO;
-    [UIView animateWithDuration:0.2 animations:^{
-        self.placeholderImageView.alpha = 1;
-    }];
+    if ( !_isHidden ) return; _isHidden = NO;
+    self.placeholderImageView.alpha = 1;
 }
 
 - (void)hiddenPlaceholder {
-    if ( !_isHidden ) return; _isHidden = YES;
-    [UIView animateWithDuration:0.2 animations:^{
-        self.placeholderImageView.alpha = 0.001;
-    }];
+    if ( _isHidden ) return; _isHidden = YES;
+    self.placeholderImageView.alpha = 0.001;
 }
 
 - (void)setPlayer:(AVPlayer *)player {

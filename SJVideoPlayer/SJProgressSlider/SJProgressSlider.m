@@ -1,11 +1,11 @@
 //
-//  SJSlider.m
-//  Pods-SJSlider_Example
+//  SJProgressSlider.m
+//  Pods-SJProgressSlider_Example
 //
 //  Created by BlueDancer on 2018/5/9.
 //
 
-#import "SJSlider.h"
+#import "SJProgressSlider.h"
 #import <objc/message.h>
 
 NS_ASSUME_NONNULL_BEGIN
@@ -21,13 +21,13 @@ NS_ASSUME_NONNULL_BEGIN
 }
 @end
 
-@interface SJSlider ()
+@interface SJProgressSlider ()
 @property (nonatomic, strong, readonly) UIView *containerView;
 @property (nonatomic, strong) UIActivityIndicatorView *indicatorView;
 @end
 
 #pragma mark -
-@implementation SJSlider (SJBufferProgress)
+@implementation SJProgressSlider (SJBufferProgress)
 
 - (BOOL)enableBufferProgress {
     return [objc_getAssociatedObject(self, _cmd) boolValue];
@@ -98,7 +98,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 
 #pragma mark -
-@implementation SJSlider {
+@implementation SJProgressSlider {
     UILabel *_promptLabel;
     NSLayoutConstraint *_promptLabelBottomConstraint;
 }
@@ -356,7 +356,7 @@ NS_ASSUME_NONNULL_BEGIN
 @end
 
 
-@implementation SJSlider (Prompt)
+@implementation SJProgressSlider (Prompt)
 
 - (UILabel *)promptLabel {
     if ( _promptLabel ) return _promptLabel;
@@ -380,7 +380,7 @@ NS_ASSUME_NONNULL_BEGIN
 @end
 
 
-@implementation SJSlider (BorderLine)
+@implementation SJProgressSlider (BorderLine)
 
 - (void)setVisualBorder:(BOOL)visualBorder {
     if ( self.visualBorder == visualBorder ) return;

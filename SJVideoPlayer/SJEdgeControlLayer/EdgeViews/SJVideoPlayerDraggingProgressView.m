@@ -9,13 +9,13 @@
 #import "SJVideoPlayerDraggingProgressView.h"
 #import <SJUIFactory/SJUIFactory.h>
 #import <Masonry/Masonry.h>
-#import <SJSlider/SJSlider.h>
+#import "SJProgressSlider.h"
 #import "UIView+SJVideoPlayerSetting.h"
 
 
 @interface SJVideoPlayerDraggingProgressView ()
 
-@property (nonatomic, strong, readonly) SJSlider *progressSlider;
+@property (nonatomic, strong, readonly) SJProgressSlider *progressSlider;
 @property (nonatomic, strong, readonly) UIImageView *directionImageView;
 @property (nonatomic, strong, readonly) UIImageView *previewImageView;
 
@@ -190,9 +190,9 @@
     }];
 }
 
-- (SJSlider *)progressSlider {
+- (SJProgressSlider *)progressSlider {
     if ( _progressSlider ) return _progressSlider;
-    _progressSlider = [SJSlider new];
+    _progressSlider = [SJProgressSlider new];
     _progressSlider.trackHeight = 3;
     _progressSlider.enableBufferProgress = YES;
     _progressSlider.pan.enabled = NO; 

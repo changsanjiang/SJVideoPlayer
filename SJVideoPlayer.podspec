@@ -1,7 +1,7 @@
 
 Pod::Spec.new do |s|
     s.name         = 'SJVideoPlayer'
-    s.version      = '2.1.1'
+    s.version      = '2.1.2'
     s.summary      = 'video player.'
     s.description  = 'https://github.com/changsanjiang/SJVideoPlayer/blob/master/README.md'
     s.homepage     = 'https://github.com/changsanjiang/SJVideoPlayer'
@@ -19,9 +19,9 @@ Pod::Spec.new do |s|
     s.subspec 'SJEdgeControlLayer' do |e|
         e.source_files = 'SJVideoPlayer/SJEdgeControlLayer/*.{h,m}'
         e.dependency 'SJBaseVideoPlayer'
-        e.dependency 'SJSlider'
+        e.dependency 'SJVideoPlayer/SJProgressSlider'
         e.dependency 'SJAttributesFactory'
-        e.dependency 'SJLoadingView'
+        e.dependency 'SJVideoPlayer/SJLoadingView'
 
         e.subspec 'Asset' do |a|
           a.source_files = 'SJVideoPlayer/SJEdgeControlLayer/Asset/*'
@@ -47,8 +47,8 @@ Pod::Spec.new do |s|
     s.subspec 'SJEdgeLightweightControlLayer' do |l|
         l.source_files = 'SJVideoPlayer/SJEdgeLightweightControlLayer/*.{h,m}'
         l.dependency 'SJBaseVideoPlayer'
-        l.dependency 'SJSlider'
-        l.dependency 'SJLoadingView'
+        l.dependency 'SJVideoPlayer/SJProgressSlider'
+        l.dependency 'SJVideoPlayer/SJLoadingView'
         l.dependency 'SJVideoPlayer/SJEdgeControlLayer/Asset'
         l.dependency 'SJVideoPlayer/SJEdgeControlLayer/MaskView'
 
@@ -60,7 +60,7 @@ Pod::Spec.new do |s|
     s.subspec 'SJFilmEditingControlLayer' do |f|
         f.source_files = 'SJVideoPlayer/SJFilmEditingControlLayer/*.{h,m}'
         f.dependency 'SJBaseVideoPlayer'
-        f.dependency 'SJSlider'
+        f.dependency 'SJVideoPlayer/SJProgressSlider'
         f.dependency 'SJAttributesFactory'
 
         f.subspec 'Asset' do |a|
@@ -98,5 +98,13 @@ Pod::Spec.new do |s|
         ss.source_files = 'SJVideoPlayer/Switcher/*.{h,m}'
         ss.dependency 'SJBaseVideoPlayer'
     end
-    
+
+    s.subspec 'SJProgressSlider' do |ss|
+        ss.source_files = 'SJVideoPlayer/SJProgressSlider/*.{h,m}'
+    end
+
+    s.subspec 'SJLoadingView' do |ss|
+        ss.source_files = 'SJVideoPlayer/SJLoadingView/*.{h,m}'
+    end
+
 end

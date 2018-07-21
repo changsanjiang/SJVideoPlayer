@@ -1,13 +1,13 @@
 //
 //  SJCommonSlider.h
-//  SJSlider
+//  SJProgressSlider
 //
 //  Created by BlueDancer on 2017/11/20.
 //  Copyright © 2017年 SanJiang. All rights reserved.
 //
 
 #import <UIKit/UIKit.h>
-#import "SJSlider.h"
+#import "SJProgressSlider.h"
 
 /*!
  *  two view each on the left and right.
@@ -22,7 +22,7 @@
 @property (nonatomic, assign, readwrite) float spacing;
 
 @property (nonatomic, strong, readonly) UIView *leftContainerView;
-@property (nonatomic, strong, readonly) SJSlider *slider;
+@property (nonatomic, strong, readonly) SJProgressSlider *slider;
 @property (nonatomic, strong, readonly) UIView *rightContainerView;
 
 @end

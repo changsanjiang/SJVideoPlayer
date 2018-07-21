@@ -12,9 +12,7 @@
 
 @interface FitOnScreenDemoViewController ()
 @property (nonatomic, strong) SJVideoPlayer *player;
-
 @property (nonatomic, strong) UIButton *button;
-
 @end
 
 @implementation FitOnScreenDemoViewController
@@ -23,23 +21,13 @@
     [super viewDidLoad];
     
     [self _setupViews];
- 
+    
     _player.URLAsset = [[SJVideoPlayerURLAsset alloc] initWithTitle:self.title URL:[[NSBundle mainBundle] URLForResource:@"sample" withExtension:@"mp4"] playModel:[SJPlayModel new]];
+    _player.URLAsset.title = self.title;
+    _player.URLAsset.alwaysShowTitle = YES;
     
     // 全屏或小屏时, 禁止旋转
     _player.useFitOnScreenAndDisableRotation = YES;
-    
-    __weak typeof(self) _self = self;
-    _player.fitOnScreenDidChangeExeBlock = ^(__kindof SJBaseVideoPlayer * _Nonnull player) {
-        __strong typeof(_self) self = _self;
-        if ( !self ) return;
-        if ( player.isFitOnScreen ) {
-            [self.button setTitle:@"充满" forState:UIControlStateNormal];
-        }
-        else {
-            [self.button setTitle:@"小屏" forState:UIControlStateNormal];
-        }
-    };
     
     // Do any additional setup after loading the view.
 }
@@ -91,6 +79,19 @@
         make.leading.trailing.offset(0);
         make.height.equalTo(self->_player.view.mas_width).multipliedBy(9 / 16.0f);
     }];
+    
+    
+    __weak typeof(self) _self = self;
+    _player.fitOnScreenDidChangeExeBlock = ^(__kindof SJBaseVideoPlayer * _Nonnull player) {
+        __strong typeof(_self) self = _self;
+        if ( !self ) return;
+        if ( player.isFitOnScreen ) {
+            [self.button setTitle:@"充满" forState:UIControlStateNormal];
+        }
+        else {
+            [self.button setTitle:@"小屏" forState:UIControlStateNormal];
+        }
+    };
 }
 
 - (UIButton *)button {
@@ -105,5 +106,4 @@
 - (void)clickedButton:(UIButton *)btn {
     _player.fitOnScreen = !_player.fitOnScreen;
 }
-
 @end

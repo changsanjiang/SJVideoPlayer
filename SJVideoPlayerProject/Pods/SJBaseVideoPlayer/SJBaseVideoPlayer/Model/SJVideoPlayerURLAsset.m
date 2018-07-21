@@ -25,10 +25,6 @@
     return self;
 }
 
-- (instancetype)initWithPlayAsset:(SJPlayAsset *)playAsset {
-    return [self initWithPlayAsset:playAsset playModel:[SJPlayModel new]];
-}
-
 - (instancetype)initWithURL:(NSURL *)URL specifyStartTime:(NSTimeInterval)specifyStartTime playModel:(__kindof SJPlayModel *)playModel {
     return [self initWithPlayAsset:[[SJPlayAsset alloc] initWithURL:URL specifyStartTime:specifyStartTime] playModel:playModel];
 }
@@ -47,11 +43,7 @@
 
 - (instancetype)initWithOtherAsset:(SJVideoPlayerURLAsset *)otherAsset
                          playModel:(__kindof SJPlayModel *)playModel {
-    self = [super init];
-    if ( !self ) return nil;
-    _playAsset = [[SJPlayAsset alloc] initWithOtherAsset:otherAsset.playAsset];
-    _playModel = playModel;
-    return self;
+    return [self initWithPlayAsset:[[SJPlayAsset alloc] initWithOtherAsset:otherAsset.playAsset] playModel:playModel?:[SJPlayModel new]];
 }
 
 - (BOOL)isM3u8 {

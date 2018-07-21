@@ -17,11 +17,11 @@
 @implementation SJVideoModel
 
 /// test test test test test
-+ (NSArray<SJVideoModel *> *)videoModelsWithTapActionDelegate:(id<NSAttributedStringTappedDelegate>)actionDelegate {
-    return [self videoModelsWithTapActionDelegate:actionDelegate size:100];
++ (NSArray<SJVideoModel *> *)testModelsWithTapActionDelegate:(id<NSAttributedStringTappedDelegate>)actionDelegate {
+    return [self testModelsWithTapActionDelegate:actionDelegate size:100];
 }
 
-+ (NSArray<SJVideoModel *> *)videoModelsWithTapActionDelegate:(id<NSAttributedStringTappedDelegate>)actionDelegate size:(NSInteger)size {
++ (NSArray<SJVideoModel *> *)testModelsWithTapActionDelegate:(id<NSAttributedStringTappedDelegate>)actionDelegate size:(NSInteger)size {
     NSArray<SJUserModel *> *users = [SJUserModel userModels];
     NSArray<NSString *> *titles =
     @[@"DIY心情转盘 #手工##手工制作#",
@@ -67,7 +67,7 @@
     return testVideosM;
 }
 
-+ (NSArray<SJVideoModel *> *)lightweightVideoModelsWithTapActionDelegate:(id<NSAttributedStringTappedDelegate>)actionDelegate {
++ (NSArray<SJVideoModel *> *)lightweighttestModelsWithTapActionDelegate:(id<NSAttributedStringTappedDelegate>)actionDelegate {
     NSArray<SJUserModel *> *users = [SJUserModel userModels];
     NSArray<NSString *> *titles =
     @[@"DIY心情转盘 #手工##手工制作#",

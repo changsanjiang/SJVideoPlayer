@@ -1,6 +1,6 @@
 //
 //  SJCommonSlider.m
-//  SJSlider
+//  SJProgressSlider
 //
 //  Created by BlueDancer on 2017/11/20.
 //  Copyright © 2017年 SanJiang. All rights reserved.
@@ -70,9 +70,9 @@
     return _leftContainerView;
 }
 
-- (SJSlider *)slider {
+- (SJProgressSlider *)slider {
     if ( _slider ) return _slider;
-    _slider = [SJSlider new];
+    _slider = [SJProgressSlider new];
     return _slider;
 }
 

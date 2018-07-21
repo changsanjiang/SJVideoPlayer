@@ -267,7 +267,11 @@ NS_ASSUME_NONNULL_BEGIN
 #endif
     
     if ( [self playStatus_isUnknown] || [self playStatus_isPrepare] ) {
-        [self.presentView showPlaceholder];
+        if ( !self.URLAsset.playAsset.isOtherAsset ) {
+            [UIView animateWithDuration:0.4 animations:^{
+               [self.presentView showPlaceholder];
+            }];
+        }
     }
     else if ( [self playStatus_isReadyToPlay] ) {
         [self.presentView hiddenPlaceholder];
@@ -1112,7 +1116,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (void)stopAndFadeOut {
     [self.view sj_fadeOutAndCompletion:^(UIView *view) {
-        [self.view removeFromSuperview];
+        [view removeFromSuperview];
         [self stop];
     }];
 }
@@ -1123,8 +1127,7 @@ NS_ASSUME_NONNULL_BEGIN
     if ( [self playStatus_isInactivity_ReasonPlayFailed] ) {
         SJPlayAsset *playAsset = self.URLAsset.playAsset;
         SJPlayModel *playModel = self.URLAsset.playModel;
-        self.URLAsset = [[SJVideoPlayerURLAsset alloc] initWithPlayAsset:[[SJPlayAsset alloc] initWithURL:playAsset.URL specifyStartTime:playAsset.specifyStartTime] playModel:playModel];
-        
+        self.URLAsset = [[SJVideoPlayerURLAsset alloc] initWithURL:playAsset.URL specifyStartTime:playAsset.specifyStartTime playModel:playModel];
         return;
     }
     

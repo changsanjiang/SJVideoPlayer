@@ -56,7 +56,7 @@ static NSString *const LightweightTableViewCellID = @"LightweightTableViewCell";
     __weak typeof(self) _self = self;
     dispatch_async(dispatch_get_global_queue(0, 0), ^{
         // some test data
-        NSArray<SJVideoModel *> *videos = [SJVideoModel lightweightVideoModelsWithTapActionDelegate:self];
+        NSArray<SJVideoModel *> *videos = [SJVideoModel lightweighttestModelsWithTapActionDelegate:self];
         dispatch_async(dispatch_get_main_queue(), ^{
             __strong typeof(_self) self = _self;
             if ( !self ) return;

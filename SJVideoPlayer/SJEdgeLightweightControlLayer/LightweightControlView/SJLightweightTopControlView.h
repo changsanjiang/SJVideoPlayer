@@ -14,8 +14,8 @@ NS_ASSUME_NONNULL_BEGIN
 
 
 @interface SJLightweightTopControlView : UIView
-@property (nonatomic, weak, readwrite, nullable) id<SJLightweightTopControlViewDelegate> delegate;
 @property (nonatomic, strong, readonly) SJLightweightTopControlConfig *config;
+@property (nonatomic, weak, nullable) id<SJLightweightTopControlViewDelegate> delegate;
 - (void)needUpdateConfig;
 
 @property (nonatomic, strong, nullable) NSArray<SJLightweightTopItem *> *topItems;

@@ -39,7 +39,7 @@
     self = [super init];
     if ( !self ) return nil;
     _video = video;
-    _asset = [[SJVideoPlayerURLAsset alloc] initWithPlayAsset:asset.playAsset];
+    _asset = [[SJVideoPlayerURLAsset alloc] initWithOtherAsset:asset playModel:nil];
     _asset.title = self.video.title;
     _asset.alwaysShowTitle = YES;
     return self;

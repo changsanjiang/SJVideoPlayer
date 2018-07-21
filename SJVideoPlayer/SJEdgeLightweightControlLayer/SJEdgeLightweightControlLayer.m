@@ -16,9 +16,9 @@
 #import "SJVideoPlayerAnimationHeader.h"
 #import "SJVideoPlayerControlMaskView.h"
 #import "SJLightweightDraggingProgressView.h"
-#import <SJLoadingView/SJLoadingView.h>
+#import "SJLoadingView.h"
 #import "UIView+SJVideoPlayerSetting.h"
-#import <SJSlider/SJSlider.h>
+#import "SJProgressSlider.h"
 #import "UIView+SJVideoPlayerSetting.h"
 #import <SJUIFactory/SJUIFactory.h>
 #import <SJBaseVideoPlayer/SJTimerControl.h>
@@ -34,7 +34,7 @@ NS_ASSUME_NONNULL_BEGIN
     UIView *_controlView;
     SJLightweightDraggingProgressView *_draggingProgressView;
     SJLoadingView *_loadingView;
-    SJSlider *_bottomSlider;
+    SJProgressSlider *_bottomSlider;
     UIView *_containerView;
     SJTimerControl *_lockStateTappedTimerControl;
     SJLightweightCenterControlView *_centerControlView;
@@ -52,7 +52,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 @property (nonatomic, weak, nullable) SJBaseVideoPlayer *videoPlayer;   // need weak ref.
 @property (nonatomic, strong, readonly) SJLoadingView *loadingView;
-@property (nonatomic, strong, readonly) SJSlider *bottomSlider;
+@property (nonatomic, strong, readonly) SJProgressSlider *bottomSlider;
 @property (nonatomic, strong, nullable) SJEdgeControlLayerSettings *settings;
 @property (nonatomic, strong, readonly) SJTimerControl *lockStateTappedTimerControl;
 @property (nonatomic, strong, readonly) UIButton *backBtn;
@@ -349,22 +349,12 @@ NS_ASSUME_NONNULL_BEGIN
 }
 
 - (void)videoPlayer:(__kindof SJBaseVideoPlayer *)videoPlayer willFitOnScreen:(BOOL)isFitOnScreen {
-    if ( isFitOnScreen && !videoPlayer.URLAsset.isM3u8 ) {
-        self.draggingProgressView.style = SJLightweightDraggingProgressViewStylePreviewProgress;
-    }
-    else {
-        self.draggingProgressView.style = SJLightweightDraggingProgressViewStyleArrowProgress;
-    }
-    
     // update layout
-    self.bottomControlView.isFitOnScreen = isFitOnScreen;
     self.topControlView.config.isFitOnScreen = isFitOnScreen;
     [self.topControlView needUpdateConfig];
-    
+    self.bottomControlView.isFitOnScreen = isFitOnScreen;
     [self _setControlViewsDisappearValue]; // update. `reset`.
-    
     [self.bottomSlider disappear];
-    
     if ( videoPlayer.controlLayerAppeared ) [videoPlayer controlLayerNeedAppear]; // update
 }
 
@@ -754,9 +744,9 @@ NS_ASSUME_NONNULL_BEGIN
 - (void)clickedBtn:(UIButton *)btn {
     [self clickedBackBtnOnTopControlView:self.topControlView];
 }
-- (SJSlider *)bottomSlider {
+- (SJProgressSlider *)bottomSlider {
     if ( _bottomSlider ) return _bottomSlider;
-    _bottomSlider = [SJSlider new];
+    _bottomSlider = [SJProgressSlider new];
     _bottomSlider.pan.enabled = NO;
     _bottomSlider.trackHeight = 1;
     return _bottomSlider;

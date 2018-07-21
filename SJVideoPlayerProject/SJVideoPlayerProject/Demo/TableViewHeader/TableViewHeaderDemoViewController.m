@@ -57,7 +57,7 @@ static NSString *const SJVideoListTableViewCellID = @"SJVideoListTableViewCell";
     __weak typeof(self) _self = self;
     dispatch_async(dispatch_get_global_queue(0, 0), ^{
         // some test data
-        NSArray<SJVideoModel *> *videos = [SJVideoModel videoModelsWithTapActionDelegate:self];
+        NSArray<SJVideoModel *> *videos = [SJVideoModel testModelsWithTapActionDelegate:self];
         dispatch_async(dispatch_get_main_queue(), ^{
             __strong typeof(_self) self = _self;
             if ( !self ) return;
@@ -117,15 +117,15 @@ static NSString *const SJVideoListTableViewCellID = @"SJVideoListTableViewCell";
     return YES;
 }
 
-- (void)clickedPlayOnTabCell:(SJVideoListTableViewCell *)cell playerParentView:(UIView *)playerParentView {
+- (void)clickedPlayOnTabCell:(SJVideoListTableViewCell *)cell {
     
     SJVideoPlayerURLAsset *asset =
-    [[SJVideoPlayerURLAsset alloc] initWithURL:[[NSBundle mainBundle] URLForResource:@"sample" withExtension:@"mp4"] playModel:[SJPlayModel UITableViewCellPlayModelWithPlayerSuperviewTag:playerParentView.tag atIndexPath:[self.tableView indexPathForCell:cell] tableView:self.tableView]];
+    [[SJVideoPlayerURLAsset alloc] initWithURL:[[NSBundle mainBundle] URLForResource:@"sample" withExtension:@"mp4"] playModel:[SJPlayModel UITableViewCellPlayModelWithPlayerSuperviewTag:cell.coverImageView.tag atIndexPath:[self.tableView indexPathForCell:cell] tableView:self.tableView]];
     
     asset.title = @"DIY心情转盘 #手工##手工制作#";
     asset.alwaysShowTitle = YES;
     
-    [self.videoPlayerHelper playWithAsset:asset playerParentView:playerParentView];
+    [self.videoPlayerHelper playWithAsset:asset playerParentView:cell.coverImageView];
 }
 
 #pragma mark -

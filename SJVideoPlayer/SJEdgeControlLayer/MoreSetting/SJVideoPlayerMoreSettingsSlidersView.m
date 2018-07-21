@@ -7,12 +7,12 @@
 //
 
 #import "SJVideoPlayerMoreSettingsSlidersView.h"
-#import <SJSlider/SJButtonSlider.h>
+#import "SJButtonSlider.h"
 #import <Masonry/Masonry.h>
 #import <SJUIFactory/SJUIFactory.h>
 #import "UIView+SJVideoPlayerSetting.h"
 
-@interface SJVideoPlayerMoreSettingsSlidersView ()<SJSliderDelegate>
+@interface SJVideoPlayerMoreSettingsSlidersView ()<SJProgressSliderDelegate>
 
 @property (nonatomic, strong, readonly) SJButtonSlider *rateSlider;
 @property (nonatomic, strong, readonly) SJButtonSlider *volumeSlider;
@@ -132,7 +132,7 @@
 
 #pragma mark
 
-- (void)sliderWillBeginDragging:(SJSlider *)slider {
+- (void)sliderWillBeginDragging:(SJProgressSlider *)slider {
     if ( slider == _rateSlider.slider ) {
         if ( _model.needChangePlayerRate ) _model.needChangePlayerRate(slider.value);
     }
@@ -144,7 +144,7 @@
     }
 }
 
-- (void)sliderDidDrag:(SJSlider *)slider {
+- (void)sliderDidDrag:(SJProgressSlider *)slider {
     if ( slider == _rateSlider.slider ) {
         if ( _model.needChangePlayerRate ) _model.needChangePlayerRate(slider.value);
     }
@@ -156,7 +156,7 @@
     }
 }
 
-- (void)sliderDidEndDragging:(SJSlider *)slider {
+- (void)sliderDidEndDragging:(SJProgressSlider *)slider {
     if ( slider == _rateSlider.slider ) {
         if ( _model.needChangePlayerRate ) _model.needChangePlayerRate(slider.value);
     }

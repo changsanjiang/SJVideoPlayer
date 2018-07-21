@@ -20,8 +20,8 @@ typedef NS_ENUM(NSUInteger, SJVideoPlayerTopViewTag) {
 
 
 @interface SJVideoPlayerTopControlView : UIView
-@property (nonatomic, weak, nullable) id<SJVideoPlayerTopControlViewDelegate> delegate;
 @property (nonatomic, strong, readonly) SJVideoPlayerTopControlConfig *config;
+@property (nonatomic, weak, nullable) id<SJVideoPlayerTopControlViewDelegate> delegate;
 
 - (void)needUpdateConfig;
 @end

@@ -1,6 +1,6 @@
 //
-//  SJSlider.h
-//  Pods-SJSlider_Example
+//  SJProgressSlider.h
+//  Pods-SJProgressSlider_Example
 //
 //  Created by BlueDancer on 2018/5/9.
 //
@@ -8,11 +8,11 @@
 #import <UIKit/UIKit.h>
 
 NS_ASSUME_NONNULL_BEGIN
-@protocol SJSliderDelegate;
+@protocol SJProgressSliderDelegate;
 
-@interface SJSlider : UIView
+@interface SJProgressSlider : UIView
 
-@property (nonatomic, weak) id <SJSliderDelegate>delegate;
+@property (nonatomic, weak) id <SJProgressSliderDelegate>delegate;
 
 /// Defualt is YES. 是否切园角. 默认YES
 @property (nonatomic, getter=isRound) BOOL round;
@@ -95,7 +95,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 #pragma mark - Prompt
 
-@interface SJSlider (Prompt)
+@interface SJProgressSlider (Prompt)
 
 @property (nonatomic, strong, readonly) UILabel *promptLabel;
 
@@ -107,7 +107,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 
 #pragma mark - Border
-@interface SJSlider (BorderLine)
+@interface SJProgressSlider (BorderLine)
 
 /*!
  *  visual border line.
@@ -132,7 +132,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 
 #pragma mark - Buffer
-@interface SJSlider (SJBufferProgress)
+@interface SJProgressSlider (SJBufferProgress)
 
 /*!
  *  开启缓冲进度. default is NO.
@@ -156,24 +156,24 @@ NS_ASSUME_NONNULL_BEGIN
 #pragma mark - Delegate
 
 
-@protocol SJSliderDelegate <NSObject>
+@protocol SJProgressSliderDelegate <NSObject>
 
 @optional
 
 /*!
  *  开始滑动
  */
-- (void)sliderWillBeginDragging:(SJSlider *)slider;
+- (void)sliderWillBeginDragging:(SJProgressSlider *)slider;
 
 /*!
  *  正在滑动
  */
-- (void)sliderDidDrag:(SJSlider *)slider;
+- (void)sliderDidDrag:(SJProgressSlider *)slider;
 
 /*!
  *  滑动完成
  */
-- (void)sliderDidEndDragging:(SJSlider *)slider;
+- (void)sliderDidEndDragging:(SJProgressSlider *)slider;
 
 @end
 NS_ASSUME_NONNULL_END

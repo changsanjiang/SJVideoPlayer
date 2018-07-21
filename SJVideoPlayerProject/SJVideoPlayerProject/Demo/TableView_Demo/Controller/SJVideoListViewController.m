@@ -19,6 +19,7 @@
 #import <SJFullscreenPopGesture/UIViewController+SJVideoPlayerAdd.h>
 #import <UIScrollView+ListViewAutoplaySJAdd.h>
 #import <SJUIKit/UIScrollView+SJRefreshAdd.h>
+#import <UIView+SJVideoPlayerAdd.h>
 
 static NSString *const SJVideoListTableViewCellID = @"SJVideoListTableViewCell";
 
@@ -71,7 +72,6 @@ static NSString *const SJVideoListTableViewCellID = @"SJVideoListTableViewCell";
 }
 
 - (void)playWithAsset:(SJVideoPlayerURLAsset *)asset playerParentView:(UIView *)playerParentView {
-    
     // 全屏播放时无需重新创建播放器, 只需设置`asset`即可
     // 如果播放器不是全屏, 就重新创建一个播放器
     if ( !_player || !_player.isFullScreen ) {
@@ -81,10 +81,7 @@ static NSString *const SJVideoListTableViewCellID = @"SJVideoListTableViewCell";
         _player.generatePreviewImages = YES; // 生成预览缩略图, 大概20张
    
         // fade in(淡入)
-        _player.view.alpha = 0.001;
-        [UIView animateWithDuration:0.5 animations:^{
-            self.player.view.alpha = 1;
-        }];
+        [_player.view sj_fadeIn];
         
         // 开启剪辑功能[截屏/GIF/导出]
         _player.enableFilmEditing = YES;
@@ -186,7 +183,7 @@ static NSString *const SJVideoListTableViewCellID = @"SJVideoListTableViewCell";
             __strong typeof(_self) self = _self;
             if ( !self ) return ;
             // prepare test data.
-            NSArray<SJVideoModel *> *videos = [SJVideoModel videoModelsWithTapActionDelegate:self size:tableView.sj_pageSize];
+            NSArray<SJVideoModel *> *videos = [SJVideoModel testModelsWithTapActionDelegate:self size:tableView.sj_pageSize];
 #ifdef SJ_MAC
             sleep(1); // #warning 模拟网络延时
 #endif

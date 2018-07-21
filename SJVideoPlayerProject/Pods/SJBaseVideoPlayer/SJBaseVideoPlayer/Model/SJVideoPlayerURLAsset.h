@@ -21,12 +21,9 @@ NS_ASSUME_NONNULL_BEGIN
 - (instancetype)initWithURL:(NSURL *)URL specifyStartTime:(NSTimeInterval)specifyStartTime;
 - (instancetype)initWithURL:(NSURL *)URL playModel:(__kindof SJPlayModel *)playModel;
 - (instancetype)initWithURL:(NSURL *)URL;
-- (instancetype)initWithPlayAsset:(SJPlayAsset *)playAsset playModel:(__kindof SJPlayModel *)playModel;
-- (instancetype)initWithPlayAsset:(SJPlayAsset *)playAsset;
+- (instancetype)initWithOtherAsset:(SJVideoPlayerURLAsset *)otherAsset playModel:(nullable __kindof SJPlayModel *)playModel;
 
-- (instancetype)initWithOtherAsset:(SJVideoPlayerURLAsset *)otherAsset playModel:(__kindof SJPlayModel *)playModel;
-
-@property (nonatomic, assign, readonly) BOOL isM3u8;
+@property (nonatomic, readonly) BOOL isM3u8;
 
 @end
 

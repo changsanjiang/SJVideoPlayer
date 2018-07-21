@@ -13,7 +13,7 @@
 #import "SJEdgeControlLayerSettings.h"
 #import "SJVideoPlayerDraggingProgressView.h"
 #import "UIView+SJVideoPlayerSetting.h"
-#import <SJSlider/SJSlider.h>
+#import "SJProgressSlider.h"
 #import "SJVideoPlayerLeftControlView.h"
 #import "SJVideoPlayerTopControlView.h"
 #import "SJVideoPlayerPreviewView.h"
@@ -23,7 +23,7 @@
 #import "SJVideoPlayerMoreSetting+Exe.h"
 #import "SJVideoPlayerMoreSettingSecondary.h"
 #import "SJVideoPlayerCenterControlView.h"
-#import <SJLoadingView/SJLoadingView.h>
+#import "SJLoadingView.h"
 #import <objc/message.h>
 #import "UIView+SJControlAdd.h"
 #import "SJVideoPlayerRightControlView.h"
@@ -59,7 +59,7 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic, strong, readonly) SJVideoPlayerBottomControlView *bottomControlView;
 @property (nonatomic, strong, readonly) SJVideoPlayerControlMaskView *bottomControlMaskView;
 @property (nonatomic, strong, readonly) SJVideoPlayerRightControlView *rightControlView;
-@property (nonatomic, strong, readonly) SJSlider *bottomSlider;
+@property (nonatomic, strong, readonly) SJProgressSlider *bottomSlider;
 @property (nonatomic, strong, readonly) SJVideoPlayerMoreSettingsView *moreSettingsView;
 @property (nonatomic, strong, readonly) SJVideoPlayerMoreSettingSecondaryView *moreSecondarySettingView;
 @property (nonatomic, strong, readonly) SJLoadingView *loadingView;
@@ -451,13 +451,6 @@ NS_ASSUME_NONNULL_END
 #pragma mark - Fit On Screen
 
 - (void)videoPlayer:(__kindof SJBaseVideoPlayer *)videoPlayer willFitOnScreen:(BOOL)isFitOnScreen {
-    if ( isFitOnScreen && !videoPlayer.URLAsset.isM3u8 ) {
-        self.draggingProgressView.style = SJVideoPlayerDraggingProgressViewStylePreviewProgress;
-    }
-    else {
-        self.draggingProgressView.style = SJVideoPlayerDraggingProgressViewStyleArrowProgress;
-    }
-    
     // update layout
     self.bottomControlView.isFitOnScreen = isFitOnScreen;
     self.topControlView.config.isFitOnScreen = isFitOnScreen;
@@ -980,9 +973,9 @@ NS_ASSUME_NONNULL_END
 
 #pragma mark - Bottom slider
 
-- (SJSlider *)bottomSlider {
+- (SJProgressSlider *)bottomSlider {
     if ( _bottomSlider ) return _bottomSlider;
-    _bottomSlider = [SJSlider new];
+    _bottomSlider = [SJProgressSlider new];
     _bottomSlider.pan.enabled = NO;
     _bottomSlider.trackHeight = 1;
     return _bottomSlider;

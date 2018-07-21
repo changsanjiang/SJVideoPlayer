@@ -174,11 +174,11 @@ NS_ASSUME_NONNULL_END
 /// 当设置播放资源时调用.
 - (void)videoPlayer:(SJBaseVideoPlayer *)videoPlayer prepareToPlay:(SJVideoPlayerURLAsset *)asset {
     // reset
-    self.topControlView.model.alwaysShowTitle = asset.alwaysShowTitle;
-    self.topControlView.model.title = asset.title;
-    self.topControlView.model.isPlayOnScrollView = videoPlayer.isPlayOnScrollView;
-    self.topControlView.model.fullscreen = videoPlayer.isFullScreen;
-    [self.topControlView needUpdateLayout];
+    self.topControlView.config.isAlwaysShowTitle = asset.alwaysShowTitle;
+    self.topControlView.config.title = asset.title;
+    self.topControlView.config.isPlayOnScrollView = videoPlayer.isPlayOnScrollView;
+    self.topControlView.config.isFullscreen = videoPlayer.isFullScreen;
+    [self.topControlView needUpdateConfig];
     
     
     self.bottomSlider.value = videoPlayer.progress;
@@ -286,11 +286,13 @@ NS_ASSUME_NONNULL_END
 
 - (void)videoPlayer:(__kindof SJBaseVideoPlayer *)videoPlayer statusDidChanged:(SJVideoPlayerPlayStatus)status {
     switch (status) {
-        case SJVideoPlayerPlayStatusUnknown:
+        case SJVideoPlayerPlayStatusUnknown: {
+            self.topControlView.config.title = nil;
+            [self.topControlView needUpdateConfig];
+        }
+            break;
         case SJVideoPlayerPlayStatusPrepare: { 
             [videoPlayer controlLayerNeedDisappear];
-            self.topControlView.model.title = nil;
-            [self.topControlView needUpdateLayout];
             self.bottomSlider.value = 0;
             self.bottomControlView.progress = 0;
             self.bottomControlView.bufferProgress = 0;
@@ -411,9 +413,9 @@ NS_ASSUME_NONNULL_END
     }
     
     // update layout
-    self.bottomControlView.fullscreen = isFull;
-    self.topControlView.model.fullscreen = isFull;
-    [self.topControlView needUpdateLayout];
+    self.bottomControlView.isFullscreen = isFull;
+    self.topControlView.config.isFullscreen = isFull;
+    [self.topControlView needUpdateConfig];
     
     [self _setControlViewsDisappearValue]; // update. `reset`.
     
@@ -457,9 +459,9 @@ NS_ASSUME_NONNULL_END
     }
     
     // update layout
-    self.bottomControlView.fullscreen = isFitOnScreen;
-    self.topControlView.model.fullscreen = isFitOnScreen;
-    [self.topControlView needUpdateLayout];
+    self.bottomControlView.isFitOnScreen = isFitOnScreen;
+    self.topControlView.config.isFitOnScreen = isFitOnScreen;
+    [self.topControlView needUpdateConfig];
     
     [self _setControlViewsDisappearValue]; // update. `reset`.
     
@@ -524,8 +526,8 @@ NS_ASSUME_NONNULL_END
         else {
             self.hasBeenGeneratedPreviewImages = YES;
             self.previewView.previewImages = images;
-            self.topControlView.model.fullscreen = player.isFullScreen;
-            [self.topControlView needUpdateLayout];
+            self.topControlView.config.isFullscreen = player.isFullScreen;
+            [self.topControlView needUpdateConfig];
         }
     }];
 }
@@ -775,7 +777,7 @@ NS_ASSUME_NONNULL_END
 }
 
 - (void)_hanleBackButtonEvent {
-    if ( self.useFitOnScreenAndDisableRotation ) {
+    if ( self.videoPlayer.useFitOnScreenAndDisableRotation ) {
         if ( _videoPlayer.isFitOnScreen ) {
             _videoPlayer.fitOnScreen = NO;
         }
@@ -877,7 +879,7 @@ NS_ASSUME_NONNULL_END
 }
 
 - (void)_handleFullButtonEvent {
-    if ( !self.useFitOnScreenAndDisableRotation ) {
+    if ( !self.videoPlayer.useFitOnScreenAndDisableRotation ) {
         [self.videoPlayer rotate];
         
         return;
@@ -905,7 +907,7 @@ NS_ASSUME_NONNULL_END
 - (void)bottomView:(SJVideoPlayerBottomControlView *)view sliderDidDrag:(CGFloat)progress {
     self.draggingProgressView.shiftProgress = progress;
     [self.draggingProgressView setTimeShiftStr:[self.videoPlayer timeStringWithSeconds:self.draggingProgressView.shiftProgress * self.videoPlayer.totalTime]];
-    if ( self.videoPlayer.isFullScreen && !self.videoPlayer.URLAsset.isM3u8 ) {
+    if ( (self.videoPlayer.isFullScreen || self.videoPlayer.fitOnScreen ) && !self.videoPlayer.URLAsset.isM3u8 ) {
         NSTimeInterval secs = self.draggingProgressView.shiftProgress * self.videoPlayer.totalTime;
         __weak typeof(self) _self = self;
         [self.videoPlayer screenshotWithTime:secs size:CGSizeMake(self.draggingProgressView.frame.size.width * 2, self.draggingProgressView.frame.size.height * 2) completion:^(SJBaseVideoPlayer * _Nonnull videoPlayer, UIImage * _Nullable image, NSError * _Nullable error) {

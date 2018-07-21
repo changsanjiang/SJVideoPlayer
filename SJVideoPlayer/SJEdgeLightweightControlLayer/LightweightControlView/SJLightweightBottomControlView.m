@@ -45,20 +45,27 @@
     [self _bottomSetupView];
     [self _bottomSettingHelper];
     [self setStopped:YES];
-    return self;
+    return self; 
 }
 
 - (CGSize)intrinsicContentSize {
-    if ( _isFullscreen ) {
-        if ( SJ_is_iPhoneX() ) return CGSizeMake(SJScreen_Max(), 60);
-        else return CGSizeMake(SJScreen_Max(), 49);
-    }
+    if ( _isFullscreen ) return CGSizeMake(SJScreen_Max(), 60);
     
-    return CGSizeMake(SJScreen_Min(), 49);
+    if ( _isFitOnScreen ) {
+        if ( SJ_is_iPhoneX() ) return CGSizeMake(SJScreen_Max(), 100);
+        return CGSizeMake(SJScreen_Max(), 60);
+    }
+    return CGSizeMake(SJScreen_Max(), 49);
 }
 
 - (void)setIsFullscreen:(BOOL)isFullscreen {
     _isFullscreen = isFullscreen;
+    [self _updateFullBtnImage];
+    [self invalidateIntrinsicContentSize];
+}
+
+- (void)setIsFitOnScreen:(BOOL)isFitOnScreen {
+    _isFitOnScreen = isFitOnScreen;
     [self _updateFullBtnImage];
     [self invalidateIntrinsicContentSize];
 }

@@ -22,20 +22,22 @@ typedef NS_ENUM(NSUInteger, SJVideoPlayerBottomViewTag) {
 
 @property (nonatomic, weak, readwrite, nullable) id<SJVideoPlayerBottomControlViewDelegate> delegate;
 
-@property (nonatomic) BOOL playState;
-
-@property (nonatomic) BOOL fullscreen;
-
 @property (nonatomic) BOOL hiddenFullscreenBtn;
-
-@property (nonatomic) float progress;
 
 @property (nonatomic) float bufferProgress;
 
-- (void)setCurrentTimeStr:(NSString *)currentTimeStr;
-- (void)setCurrentTimeStr:(NSString *)currentTimeStr totalTimeStr:(NSString *)totalTimeStr;
+@property (nonatomic) float progress;
+
+@property (nonatomic) BOOL isFitOnScreen;
+
+@property (nonatomic) BOOL isFullscreen;
 
 @property (nonatomic) BOOL isLoading;
+
+@property (nonatomic) BOOL playState;
+
+- (void)setCurrentTimeStr:(NSString *)currentTimeStr;
+- (void)setCurrentTimeStr:(NSString *)currentTimeStr totalTimeStr:(NSString *)totalTimeStr;
 
 @end
 

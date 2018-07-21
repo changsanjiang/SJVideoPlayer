@@ -36,8 +36,6 @@ NS_ASSUME_NONNULL_BEGIN
 
 @property (nonatomic) BOOL disableNetworkStatusChangePrompt;
 
-@property (nonatomic) BOOL useFitOnScreenAndDisableRotation;
-
 @end
 
 @protocol SJEdgeControlLayerDelegate <NSObject>

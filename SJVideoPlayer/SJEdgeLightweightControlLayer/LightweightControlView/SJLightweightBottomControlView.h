@@ -21,13 +21,15 @@ typedef NS_ENUM(NSUInteger, SJLightweightBottomControlViewTag) {
 
 @property (nonatomic, weak, readwrite, nullable) id<SJLightweightBottomControlViewDelegate> delegate;
 
-@property (nonatomic) BOOL isFullscreen;
-
 @property (nonatomic) BOOL hiddenFullscreenBtn;
+
+@property (nonatomic) float bufferProgress;
 
 @property (nonatomic) float progress;
 
-@property (nonatomic) float bufferProgress;
+@property (nonatomic) BOOL isFullscreen;
+
+@property (nonatomic) BOOL isFitOnScreen;
 
 /// 显示播放按钮还是显示暂停按钮
 /// - YES显示暂停

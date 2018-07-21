@@ -97,7 +97,7 @@
     if ( _button )  return _button;
     _button = [UIButton buttonWithType:UIButtonTypeCustom];
     _button.backgroundColor = [UIColor blackColor];
-    [_button setTitle:@"fit on screen" forState:UIControlStateNormal];
+    [_button setTitle:@"全屏, 但不旋转" forState:UIControlStateNormal];
     [_button addTarget:self action:@selector(clickedButton:) forControlEvents:UIControlEventTouchUpInside];
     return _button;
 }

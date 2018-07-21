@@ -18,17 +18,12 @@ NS_ASSUME_NONNULL_BEGIN
 
 
 @interface SJLightweightTopTmp : NSObject
-
 - (instancetype)initWithItem:(SJLightweightTopItem *)item;
-
-@property (nonatomic, strong, readonly) SJLightweightTopItem *item;
-
 @property (nonatomic, copy, nullable) void(^updatedExeBlock)(SJLightweightTopTmp *tmp);
-
+@property (nonatomic, strong, readonly) SJLightweightTopItem *item;
 @end
 
 @implementation SJLightweightTopTmp
-
 - (instancetype)initWithItem:(SJLightweightTopItem *)item {
     self = [super init];
     if ( !self ) return nil;
@@ -48,14 +43,15 @@ NS_ASSUME_NONNULL_BEGIN
 }
 @end
 
+
 @interface SJLightweightTopControlView () {
-    SJLightweightTopControlModel *_model;
+    SJLightweightTopControlConfig *_config;
 }
 
-@property (nonatomic, strong, readonly) UILabel *titleLabel;
-@property (nonatomic, strong, readonly) UIView *itemsContainerView;
 @property (nonatomic, strong, readwrite, nullable) NSArray<SJLightweightTopTmp *> *observerItems;
-
+@property (nonatomic, strong, readonly) UIView *itemsContainerView;
+@property (nonatomic, strong, readonly) UILabel *titleLabel;
+@property (nonatomic, copy) NSString *title;
 @end
 
 @implementation SJLightweightTopControlView
@@ -72,18 +68,26 @@ NS_ASSUME_NONNULL_BEGIN
 }
 
 - (CGSize)intrinsicContentSize {
-    if ( _isFullscreen ) {
+    if ( _config.isFullscreen ) return CGSizeMake(SJScreen_Max(), 72);
+    if ( _config.isFitOnScreen ) {
+        if ( SJ_is_iPhoneX() ) return CGSizeMake(SJScreen_Max(), 72 + 49);
         return CGSizeMake(SJScreen_Max(), 72);
     }
-    else {
-        return CGSizeMake(SJScreen_Min(), 55);
-    }
+    return CGSizeMake(SJScreen_Min(), 55);
 }
 
-- (void)setIsFullscreen:(BOOL)isFullscreen {
-    if ( isFullscreen == _isFullscreen ) return;
-    _isFullscreen = isFullscreen;
-    [self invalidateIntrinsicContentSize];
+- (void)setTitle:(NSString *)title {
+    if ( [title isEqualToString:_title]  ) return;
+    _title = title;
+    NSAttributedString *attrStr = nil;
+    if ( 0 != title.length ) {
+        attrStr = sj_makeAttributesString(^(SJAttributeWorker * _Nonnull make) {
+            make.font(self.titleLabel.font).textColor(self.titleLabel.textColor);
+            make.insert(title, 0);
+            make.shadow(CGSizeMake(0.5, 0.5), 1, [UIColor blackColor]);
+        });
+    }
+    _titleLabel.attributedText = attrStr;
 }
 
 - (void)setTopItems:(NSArray<SJLightweightTopItem *> * __nullable)topItems {
@@ -133,46 +137,46 @@ NS_ASSUME_NONNULL_BEGIN
     }
 }
 
-- (void)needUpdateLayout {
+- (void)needUpdateConfig {
+    [self invalidateIntrinsicContentSize];
+    if ( _config.isFullscreen || _config.isFitOnScreen ) [self _needUpdateFullscreenLayout];
+    else [self _needUpdateSmallscreenLayout];
+}
+
+- (void)_needUpdateFullscreenLayout {
+    _itemsContainerView.hidden = NO;
+    self.title = _config.title;
+    _titleLabel.hidden = NO;
+    _backBtn.hidden = NO;
+    [_titleLabel mas_remakeConstraints:^(MASConstraintMaker *make) {
+        make.leading.equalTo(self->_backBtn.mas_trailing);
+        make.centerY.equalTo(self->_backBtn);
+        make.trailing.equalTo(self->_itemsContainerView.mas_leading);
+    }];
+}
+
+- (void)_needUpdateSmallscreenLayout {
+    if ( _config.isAlwaysShowTitle ) self.title = _config.title;
+    _itemsContainerView.hidden = _config.isPlayOnScrollView;
+    _titleLabel.hidden = !_config.isAlwaysShowTitle;
+    _backBtn.hidden = _config.isPlayOnScrollView;
     
-    self.itemsContainerView.hidden = (!_isFullscreen && self.model.isPlayOnScrollView);
-    
-    if ( self.isFullscreen ) {
-        self.titleLabel.hidden = NO;
-    }
-    else {
-        self.titleLabel.hidden = !self.model.alwaysShowTitle;
-    }
-    
-    if ( !self.titleLabel.hidden ) {
-        NSAttributedString *attrStr = nil;
-        if ( 0 != self.model.title.length ) {
-            attrStr = sj_makeAttributesString(^(SJAttributeWorker * _Nonnull make) {
-                make.font(self.titleLabel.font).textColor(self.titleLabel.textColor);
-                make.insert(self.model.title, 0);
-                make.shadow(CGSizeMake(0.5, 0.5), 1, [UIColor blackColor]);
-            });
-        }
-        _titleLabel.attributedText = attrStr;
-    }
-    
-    if ( _isFullscreen || !self.model.isPlayOnScrollView ) {
-        _backBtn.hidden = NO;
-        [_titleLabel mas_remakeConstraints:^(MASConstraintMaker *make) {
-            make.leading.equalTo(self->_backBtn.mas_trailing);
-            make.centerY.equalTo(self->_backBtn);
-            make.trailing.equalTo(self->_itemsContainerView.mas_leading);
-        }];
-    }
-    else {
-        _backBtn.hidden = YES;
+    if ( _config.isPlayOnScrollView && _config.isAlwaysShowTitle ) {
         [_titleLabel mas_remakeConstraints:^(MASConstraintMaker *make) {
             make.leading.offset(16);
             make.centerY.equalTo(self->_backBtn);
             make.trailing.offset(-16);
         }];
     }
+    else {
+        [_titleLabel mas_remakeConstraints:^(MASConstraintMaker *make) {
+            make.leading.equalTo(self->_backBtn.mas_trailing);
+            make.centerY.equalTo(self->_backBtn);
+            make.trailing.equalTo(self->_itemsContainerView.mas_leading);
+        }];
+    }
 }
+
 
 - (void)clickedBtn:(UIButton *)btn {
     if ( ![_delegate respondsToSelector:@selector(clickedBackBtnOnTopControlView:)] ) return;
@@ -225,13 +229,13 @@ NS_ASSUME_NONNULL_BEGIN
         [self.backBtn setImage:setting.backBtnImage forState:UIControlStateNormal];
         self.titleLabel.font = setting.titleFont;
         self.titleLabel.textColor = setting.titleColor;
-        if ( 0 != self.model.title.length ) self.titleLabel.text = self.model.title;
+        if ( 0 != self.config.title.length ) [self setTitle:self.config.title];
     }];
 }
-- (SJLightweightTopControlModel *)model {
-    if ( _model ) return _model;
-    _model = [SJLightweightTopControlModel new];
-    return _model;
+- (SJLightweightTopControlConfig *)config {
+    if ( _config ) return _config;
+    _config = [SJLightweightTopControlConfig new];
+    return _config;
 }
 - (UIView *)itemsContainerView {
     if ( _itemsContainerView ) return _itemsContainerView;
@@ -241,6 +245,6 @@ NS_ASSUME_NONNULL_BEGIN
 @end
 
 
-@implementation SJLightweightTopControlModel
+@implementation SJLightweightTopControlConfig
 @end
 NS_ASSUME_NONNULL_END

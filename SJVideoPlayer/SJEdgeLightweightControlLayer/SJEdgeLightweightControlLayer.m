@@ -145,10 +145,10 @@ NS_ASSUME_NONNULL_BEGIN
         }
     }
     
-    self.topControlView.model.isPlayOnScrollView = videoPlayer.isPlayOnScrollView;
-    self.topControlView.model.alwaysShowTitle = asset.alwaysShowTitle;
-    self.topControlView.model.title = asset.title;
-    [self.topControlView needUpdateLayout];
+    self.topControlView.config.isPlayOnScrollView = videoPlayer.isPlayOnScrollView;
+    self.topControlView.config.isAlwaysShowTitle = asset.alwaysShowTitle;
+    self.topControlView.config.title = asset.title;
+    [self.topControlView needUpdateConfig];
     
     self.bottomSlider.value = videoPlayer.progress;
     self.bottomControlView.progress = videoPlayer.progress;
@@ -248,11 +248,13 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (void)videoPlayer:(__kindof SJBaseVideoPlayer *)videoPlayer statusDidChanged:(SJVideoPlayerPlayStatus)status {
     switch (status) {
-        case SJVideoPlayerPlayStatusUnknown:
+        case SJVideoPlayerPlayStatusUnknown:  {
+            self.topControlView.config.title = nil;
+            [self.topControlView needUpdateConfig];
+        }
+            break;
         case SJVideoPlayerPlayStatusPrepare: {
             [videoPlayer controlLayerNeedDisappear];
-            self.topControlView.model.title = nil;
-            [self.topControlView needUpdateLayout];
             self.bottomSlider.value = 0;
             self.bottomControlView.progress = 0;
             self.bottomControlView.bufferProgress = 0;
@@ -321,8 +323,8 @@ NS_ASSUME_NONNULL_BEGIN
         _draggingProgressView.style = SJLightweightDraggingProgressViewStyleArrowProgress;
     }
     
-    _topControlView.isFullscreen = isFull;
-    [_topControlView needUpdateLayout];
+    _topControlView.config.isFullscreen = isFull;
+    [_topControlView needUpdateConfig];
 
     _bottomControlView.isFullscreen = isFull;
     
@@ -355,9 +357,9 @@ NS_ASSUME_NONNULL_BEGIN
     }
     
     // update layout
-    self.bottomControlView.isFullscreen = isFitOnScreen;
-    self.topControlView.isFullscreen = isFitOnScreen;
-    [self.topControlView needUpdateLayout];
+    self.bottomControlView.isFitOnScreen = isFitOnScreen;
+    self.topControlView.config.isFitOnScreen = isFitOnScreen;
+    [self.topControlView needUpdateConfig];
     
     [self _setControlViewsDisappearValue]; // update. `reset`.
     
@@ -573,7 +575,7 @@ NS_ASSUME_NONNULL_BEGIN
     }
 }
 - (void)clickedBackBtnOnTopControlView:(SJLightweightTopControlView *)view {
-    if ( self.useFitOnScreenAndDisableRotation ) {
+    if ( self.videoPlayer.useFitOnScreenAndDisableRotation ) {
         if ( _videoPlayer.isFitOnScreen ) {
             _videoPlayer.fitOnScreen = NO;
         }
@@ -662,7 +664,7 @@ NS_ASSUME_NONNULL_BEGIN
     }
 }
 - (void)_handleFullButtonEvent {
-    if ( !self.useFitOnScreenAndDisableRotation ) {
+    if ( !self.videoPlayer.useFitOnScreenAndDisableRotation ) {
         [self.videoPlayer rotate];
         
         return;
@@ -683,7 +685,7 @@ NS_ASSUME_NONNULL_BEGIN
 - (void)bottomView:(SJLightweightBottomControlView *)view sliderDidDrag:(CGFloat)progress {
     self.draggingProgressView.shiftProgress = progress;
     [self.draggingProgressView setTimeShiftStr:[self.videoPlayer timeStringWithSeconds:self.draggingProgressView.shiftProgress * self.videoPlayer.totalTime]];
-    if ( self.videoPlayer.isFullScreen && !self.videoPlayer.URLAsset.isM3u8 ) {
+    if ( (self.videoPlayer.isFullScreen || self.videoPlayer.fitOnScreen ) && !self.videoPlayer.URLAsset.isM3u8 ) {
         NSTimeInterval secs = self.draggingProgressView.shiftProgress * self.videoPlayer.totalTime;
         __weak typeof(self) _self = self;
         [self.videoPlayer screenshotWithTime:secs size:CGSizeMake(self.draggingProgressView.frame.size.width * 2, self.draggingProgressView.frame.size.height * 2) completion:^(SJBaseVideoPlayer * _Nonnull videoPlayer, UIImage * _Nullable image, NSError * _Nullable error) {

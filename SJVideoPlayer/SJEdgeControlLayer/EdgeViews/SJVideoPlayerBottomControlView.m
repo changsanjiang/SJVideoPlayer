@@ -48,12 +48,13 @@
 }
 
 - (CGSize)intrinsicContentSize {
-    if ( SJ_is_iPhoneX() && _fullscreen )
-         return CGSizeMake(SJScreen_Max(), 60);
-    else {
-        if ( _fullscreen ) return CGSizeMake(SJScreen_Max(), 49);
-        else return CGSizeMake(SJScreen_Min(), 49);
+    if ( _isFullscreen ) return CGSizeMake(SJScreen_Max(), 60);
+    
+    if ( _isFitOnScreen ) {
+        if ( SJ_is_iPhoneX() ) return CGSizeMake(SJScreen_Max(), 100);
+        return CGSizeMake(SJScreen_Max(), 60);
     }
+    return CGSizeMake(SJScreen_Max(), 49);
 }
 
 - (void)setPlayState:(BOOL)playState {
@@ -70,8 +71,14 @@
     }];
 }
 
-- (void)setFullscreen:(BOOL)fullscreen {
-    _fullscreen = fullscreen;
+- (void)setIsFullscreen:(BOOL)isFullscreen {
+    _isFullscreen = isFullscreen;
+    [self _updateFullBtnImage];
+    [self invalidateIntrinsicContentSize];
+}
+
+- (void)setIsFitOnScreen:(BOOL)isFitOnScreen {
+    _isFitOnScreen = isFitOnScreen;
     [self _updateFullBtnImage];
     [self invalidateIntrinsicContentSize];
 }
@@ -278,7 +285,7 @@
 }
 
 - (void)_updateFullBtnImage {
-    if ( self.fullscreen ) [self.fullBtn setImage:self.shrinkscreenImage forState:UIControlStateNormal];
+    if ( _isFullscreen || _isFitOnScreen ) [self.fullBtn setImage:self.shrinkscreenImage forState:UIControlStateNormal];
     else [self.fullBtn setImage:self.fullScreenImage forState:UIControlStateNormal];
 }
 @end

@@ -417,6 +417,7 @@ NS_ASSUME_NONNULL_BEGIN
         if ( self.disableAutoRotation ) return NO;
         if ( self.isLockedScreen ) return NO;
         if ( self.registrar.state == SJVideoPlayerAppState_ResignActive ) return NO;
+        if ( self.useFitOnScreenAndDisableRotation ) return NO;
         return YES;
     }];
     _rotationManager.delegate = self;
@@ -1282,7 +1283,7 @@ NS_ASSUME_NONNULL_BEGIN
 }
 - (UIStatusBarStyle)vc_preferredStatusBarStyle {
     // 全屏播放时, 使状态栏变成白色
-    if ( self.isFullScreen ) return UIStatusBarStyleLightContent;
+    if ( self.isFullScreen || self.fitOnScreen ) return UIStatusBarStyleLightContent;
     return UIStatusBarStyleDefault;
 }
 
@@ -1428,6 +1429,13 @@ NS_ASSUME_NONNULL_BEGIN
 #pragma mark - 充满屏幕
 
 @implementation SJBaseVideoPlayer (FitOnScreen)
+- (void)setUseFitOnScreenAndDisableRotation:(BOOL)useFitOnScreenAndDisableRotation {
+    objc_setAssociatedObject(self, @selector(useFitOnScreenAndDisableRotation), @(useFitOnScreenAndDisableRotation), OBJC_ASSOCIATION_RETAIN_NONATOMIC);
+}
+
+- (BOOL)useFitOnScreenAndDisableRotation {
+    return [objc_getAssociatedObject(self, _cmd) boolValue];
+}
 
 - (void)setFitOnScreen:(BOOL)fitOnScreen {
     [self setFitOnScreen:fitOnScreen animated:YES];
@@ -1459,6 +1467,7 @@ NS_ASSUME_NONNULL_BEGIN
             [self.controlLayerDelegate videoPlayer:self willFitOnScreen:fitOnScreen];
         }
         if ( self.fitOnScreenWillChangeExeBlock ) self.fitOnScreenWillChangeExeBlock(self);
+        [[self atViewController] setNeedsStatusBarAppearanceUpdate];
         [UIView animateWithDuration:animated ? 0.4 : 0 animations:^{
             __strong typeof(_self) self = _self;
             if ( !self ) return;

@@ -457,6 +457,10 @@ typedef NS_ENUM(NSUInteger, SJDisablePlayerGestureTypes) {
 /// 全屏或小屏, 但不触发旋转
 @interface SJBaseVideoPlayer (FitOnScreen)
 
+/// 表示不使用旋转功能, 只进行全屏或小屏的操作.
+/// default is NO.
+@property (nonatomic) BOOL useFitOnScreenAndDisableRotation;
+
 /// Whether fullscreen or smallscreen, this method does not trigger rotation.
 /// 填充屏幕(或小屏), 此方法不触发旋转
 /// Animated

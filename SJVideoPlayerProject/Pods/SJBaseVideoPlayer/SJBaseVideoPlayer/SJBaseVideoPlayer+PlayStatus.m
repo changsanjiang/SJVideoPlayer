@@ -9,6 +9,50 @@
 
 @implementation SJBaseVideoPlayer (PlayStatus)
 
+- (NSString *)getPlayStatusStr:(SJVideoPlayerPlayStatus)status {
+    NSString *playStatusStr = nil;
+    switch ( status ) {
+        case SJVideoPlayerPlayStatusUnknown:
+            playStatusStr = [NSString stringWithFormat:@"SJBaseVideoPlayer<%p>.SJVideoPlayerPlayStatus.Unknown\n", self];
+            break;
+        case SJVideoPlayerPlayStatusPrepare:
+            playStatusStr = [NSString stringWithFormat:@"SJBaseVideoPlayer<%p>.SJVideoPlayerPlayStatus.Prepare\n", self];
+            break;
+        case SJVideoPlayerPlayStatusReadyToPlay:
+            playStatusStr = [NSString stringWithFormat:@"SJBaseVideoPlayer<%p>.SJVideoPlayerPlayStatus.ReadyToPlay\n", self];
+            break;
+        case SJVideoPlayerPlayStatusPlaying:
+            playStatusStr = [NSString stringWithFormat:@"SJBaseVideoPlayer<%p>.SJVideoPlayerPlayStatus.Playing\n", self];
+            break;
+        case SJVideoPlayerPlayStatusPaused: {
+            switch ( self.pausedReason ) {
+                case SJVideoPlayerPausedReasonBuffering:
+                    playStatusStr = [NSString stringWithFormat:@"SJBaseVideoPlayer<%p>.SJVideoPlayerPlayStatus.Paused(Reason: Buffering)\n", self];
+                    break;
+                case SJVideoPlayerPausedReasonPause:
+                    playStatusStr = [NSString stringWithFormat:@"SJBaseVideoPlayer<%p>.SJVideoPlayerPlayStatus.Paused(Reason: Pause)\n", self];
+                    break;
+                case SJVideoPlayerPausedReasonSeeking:
+                    playStatusStr = [NSString stringWithFormat:@"SJBaseVideoPlayer<%p>.SJVideoPlayerPlayStatus.Paused(Reason: Seeking)\n", self];
+                    break;
+            }
+        }
+            break;
+        case SJVideoPlayerPlayStatusInactivity: {
+            switch ( self.inactivityReason ) {
+                case SJVideoPlayerInactivityReasonPlayEnd :
+                    playStatusStr = [NSString stringWithFormat:@"SJBaseVideoPlayer<%p>.SJVideoPlayerPlayStatus.Inactivity(Reason: PlayEnd)\n", self];
+                    break;
+                case SJVideoPlayerInactivityReasonPlayFailed:
+                    playStatusStr = [NSString stringWithFormat:@"SJBaseVideoPlayer<%p>.SJVideoPlayerPlayStatus.Inactivity(Reason: PlayFailed)\n", self];
+                    break;
+            }
+        }
+            break;
+    }
+    return playStatusStr;
+}
+
 - (BOOL)playStatus_isUnknown {
     return self.playStatus == SJVideoPlayerPlayStatusUnknown;
 }

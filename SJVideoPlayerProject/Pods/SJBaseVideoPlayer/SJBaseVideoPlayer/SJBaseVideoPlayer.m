@@ -188,6 +188,8 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic) SJVideoPlayerPausedReason pausedReason;
 @property (nonatomic) SJVideoPlayerInactivityReason inactivityReason;
 
+@property (nonatomic, strong, nullable) NSString *playStatusStr;
+
 @end
 
 @implementation SJBaseVideoPlayer {
@@ -223,7 +225,7 @@ NS_ASSUME_NONNULL_BEGIN
         responder = responder.nextResponder;
         if ( [responder isMemberOfClass:[UIResponder class]] || !responder ) return nil;
     }
-    return (UIViewController *)responder;
+    return (__kindof UIViewController *)responder;
 }
 
 - (instancetype)init {
@@ -252,9 +254,17 @@ NS_ASSUME_NONNULL_BEGIN
 }
 
 - (void)setPlayStatus:(SJVideoPlayerPlayStatus)playStatus {
+    NSString *playStatusStr = [self getPlayStatusStr:playStatus];
+    if ( [playStatusStr isEqualToString:_playStatusStr] ) return;
+
     /// 所有播放状态, 均在`PlayControl`分类中维护
     /// 所有播放状态, 均在`PlayControl`分类中维护
     _playStatus = playStatus;
+    _playStatusStr = playStatusStr;
+    
+#ifdef DEBUG
+    printf("%s\n", playStatusStr.UTF8String);
+#endif
     
     if ( [self playStatus_isUnknown] || [self playStatus_isPrepare] ) {
         [self.presentView showPlaceholder];
@@ -307,49 +317,6 @@ NS_ASSUME_NONNULL_BEGIN
     if ( [self.controlLayerDelegate respondsToSelector:@selector(videoPlayer:statusDidChanged:)] ) {
         [self.controlLayerDelegate videoPlayer:self statusDidChanged:playStatus];
     }
-    
-    
-#ifdef SJ_MAC
-    switch ( playStatus ) {
-        case SJVideoPlayerPlayStatusUnknown:
-            printf("SJBaseVideoPlayer<%p>.SJVideoPlayerPlayStatus.Unknown\n", self);
-            break;
-        case SJVideoPlayerPlayStatusPrepare:
-            printf("SJBaseVideoPlayer<%p>.SJVideoPlayerPlayStatus.Prepare\n", self);
-            break;
-        case SJVideoPlayerPlayStatusReadyToPlay:
-            printf("SJBaseVideoPlayer<%p>.SJVideoPlayerPlayStatus.ReadyToPlay\n", self);
-            break;
-        case SJVideoPlayerPlayStatusPlaying:
-            printf("SJBaseVideoPlayer<%p>.SJVideoPlayerPlayStatus.Playing\n", self);
-            break;
-        case SJVideoPlayerPlayStatusPaused: {
-            switch ( self.pausedReason ) {
-                case SJVideoPlayerPausedReasonBuffering:
-                    printf("SJBaseVideoPlayer<%p>.SJVideoPlayerPlayStatus.Paused(Reason: Buffering)\n", self);
-                    break;
-                case SJVideoPlayerPausedReasonPause:
-                    printf("SJBaseVideoPlayer<%p>.SJVideoPlayerPlayStatus.Paused(Reason: Pause)\n", self);
-                    break;
-                case SJVideoPlayerPausedReasonSeeking:
-                    printf("SJBaseVideoPlayer<%p>.SJVideoPlayerPlayStatus.Paused(Reason: Seeking)\n", self);
-                    break;
-            }
-        }
-            break;
-        case SJVideoPlayerPlayStatusInactivity: {
-            switch ( self.inactivityReason ) {
-                case SJVideoPlayerInactivityReasonPlayEnd :
-                    printf("SJBaseVideoPlayer<%p>.SJVideoPlayerPlayStatus.Inactivity(Reason: PlayEnd)\n", self);
-                    break;
-                case SJVideoPlayerInactivityReasonPlayFailed:
-                    printf("SJBaseVideoPlayer<%p>.SJVideoPlayerPlayStatus.Inactivity(Reason: PlayFailed)\n", self);
-                    break;
-            }
-        }
-            break;
-    }
-#endif
 }
 
 
@@ -802,7 +769,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (void)setState:(SJVideoPlayerPlayState)state {
     if ( state == _state ) return;
-    _state = state; 
+    _state = state;
     
     if ( state == SJVideoPlayerPlayState_Paused && self.pausedToKeepAppearState && self.registrar.state == SJVideoPlayerAppState_Forground ) [self.displayRecorder layerAppear];
     

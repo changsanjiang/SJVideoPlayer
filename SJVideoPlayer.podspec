@@ -13,14 +13,14 @@ Pod::Spec.new do |s|
     s.dependency 'Masonry'
     s.dependency 'SJBaseVideoPlayer'
     s.dependency 'SJFullscreenPopGesture'
+    s.dependency 'SJUIFactory'
+    s.dependency 'SJAttributesFactory'
 
     s.source_files = 'SJVideoPlayer/*.{h,m}'
 
     s.subspec 'SJEdgeControlLayer' do |e|
         e.source_files = 'SJVideoPlayer/SJEdgeControlLayer/*.{h,m}'
-        e.dependency 'SJBaseVideoPlayer'
         e.dependency 'SJVideoPlayer/SJProgressSlider'
-        e.dependency 'SJAttributesFactory'
         e.dependency 'SJVideoPlayer/SJLoadingView'
 
         e.subspec 'Asset' do |a|
@@ -46,7 +46,6 @@ Pod::Spec.new do |s|
 
     s.subspec 'SJEdgeLightweightControlLayer' do |l|
         l.source_files = 'SJVideoPlayer/SJEdgeLightweightControlLayer/*.{h,m}'
-        l.dependency 'SJBaseVideoPlayer'
         l.dependency 'SJVideoPlayer/SJProgressSlider'
         l.dependency 'SJVideoPlayer/SJLoadingView'
         l.dependency 'SJVideoPlayer/SJEdgeControlLayer/Asset'
@@ -59,9 +58,8 @@ Pod::Spec.new do |s|
 
     s.subspec 'SJFilmEditingControlLayer' do |f|
         f.source_files = 'SJVideoPlayer/SJFilmEditingControlLayer/*.{h,m}'
-        f.dependency 'SJBaseVideoPlayer'
         f.dependency 'SJVideoPlayer/SJProgressSlider'
-        f.dependency 'SJAttributesFactory'
+
 
         f.subspec 'Asset' do |a|
             a.source_files = 'SJVideoPlayer/SJFilmEditingControlLayer/Asset/*'
@@ -96,7 +94,6 @@ Pod::Spec.new do |s|
 
     s.subspec 'Switcher' do |ss|
         ss.source_files = 'SJVideoPlayer/Switcher/*.{h,m}'
-        ss.dependency 'SJBaseVideoPlayer'
     end
 
     s.subspec 'SJProgressSlider' do |ss|

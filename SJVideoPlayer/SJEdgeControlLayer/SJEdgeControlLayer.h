@@ -8,7 +8,6 @@
 
 #import <Foundation/Foundation.h>
 #import <SJBaseVideoPlayer/SJVideoPlayerControlLayerProtocol.h>
-#import "SJEdgeControlLayerSettings.h"
 
 @protocol SJEdgeControlLayerDelegate;
 @class SJVideoPlayerMoreSetting, SJFilmEditingResultShare;

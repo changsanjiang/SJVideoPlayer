@@ -61,7 +61,10 @@
 
 - (void)_setupViews {
     
+    self.edgesForExtendedLayout = UIRectEdgeNone;
     self.title = @"Test Fit On Screen";
+    
+    
     [self.view addSubview:self.button];
     [self.button mas_makeConstraints:^(MASConstraintMaker *make) {
         make.center.offset(0);

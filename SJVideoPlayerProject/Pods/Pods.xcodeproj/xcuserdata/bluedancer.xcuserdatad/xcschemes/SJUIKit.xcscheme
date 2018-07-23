@@ -14,10 +14,10 @@
             buildForArchiving = "YES">
             <BuildableReference
                BuildableIdentifier = "primary"
-               BlueprintIdentifier = "E9D6F6643FACD40553E7AE24BD477A30"
-               BlueprintName = "SJLoadingView"
+               BlueprintIdentifier = "310ED96E5DE0625AA0CB00E8186A0994"
+               BlueprintName = "SJUIKit"
                ReferencedContainer = "container:Pods.xcodeproj"
-               BuildableName = "libSJLoadingView.a">
+               BuildableName = "libSJUIKit.a">
             </BuildableReference>
          </BuildActionEntry>
       </BuildActionEntries>

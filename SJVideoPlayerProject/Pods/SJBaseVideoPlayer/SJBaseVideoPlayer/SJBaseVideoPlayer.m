@@ -1281,7 +1281,10 @@ NS_ASSUME_NONNULL_BEGIN
     if ( ![self playStatus_isPaused_ReasonPause] ) [self pause];
 }
 - (BOOL)vc_prefersStatusBarHidden {
-    if ( self.rotationManager.transitioning ) return YES;
+    if ( self.rotationManager.transitioning ) {
+        if ( self.enableControlLayerDisplayController && self.controlLayerAppeared ) return NO;
+        return YES;
+    }
     // 全屏播放时, 使状态栏根据控制层显示或隐藏
     if ( self.isFullScreen ) return !self.controlLayerAppeared;
     return NO;

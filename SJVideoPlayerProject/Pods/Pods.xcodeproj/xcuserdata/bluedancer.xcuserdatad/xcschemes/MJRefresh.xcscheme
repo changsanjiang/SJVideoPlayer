@@ -14,10 +14,10 @@
             buildForArchiving = "YES">
             <BuildableReference
                BuildableIdentifier = "primary"
-               BlueprintIdentifier = "D3345FB36783ED17B0D6ABADA392E35E"
-               BlueprintName = "SJPrompt"
+               BlueprintIdentifier = "04CF549EBEEE7BC87AEAE35397184D94"
+               BlueprintName = "MJRefresh"
                ReferencedContainer = "container:Pods.xcodeproj"
-               BuildableName = "libSJPrompt.a">
+               BuildableName = "libMJRefresh.a">
             </BuildableReference>
          </BuildActionEntry>
       </BuildActionEntries>

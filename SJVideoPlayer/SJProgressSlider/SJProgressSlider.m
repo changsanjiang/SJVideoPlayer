@@ -10,11 +10,11 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
-@interface SJImageView : UIImageView
-@property (nonatomic, copy) void(^setImageExeBlock)(SJImageView *imageView);
+@interface SJProgressSliderImageView : UIImageView
+@property (nonatomic, copy) void(^setImageExeBlock)(SJProgressSliderImageView *imageView);
 @end
 
-@implementation SJImageView
+@implementation SJProgressSliderImageView
 - (void)setImage:(nullable UIImage *)image {
     [super setImage:image];
     if ( _setImageExeBlock ) _setImageExeBlock(self);
@@ -262,8 +262,8 @@ NS_ASSUME_NONNULL_BEGIN
     _containerView = [UIView new];
     _containerView.clipsToBounds = YES;
     
-    SJImageView *(^makeImageView)(void) = ^SJImageView *{
-        SJImageView *imageView = [SJImageView new];
+    SJProgressSliderImageView *(^makeImageView)(void) = ^SJProgressSliderImageView *{
+        SJProgressSliderImageView *imageView = [SJProgressSliderImageView new];
         imageView.clipsToBounds = YES;
         imageView.contentMode = UIViewContentModeCenter;
         return imageView;
@@ -273,7 +273,7 @@ NS_ASSUME_NONNULL_BEGIN
     _trackImageView = makeImageView();
     _thumbImageView = makeImageView();
     __weak typeof(self) _self = self;
-    [(SJImageView *)_thumbImageView setSetImageExeBlock:^(SJImageView * _Nonnull imageView) {
+    [(SJProgressSliderImageView *)_thumbImageView setSetImageExeBlock:^(SJProgressSliderImageView * _Nonnull imageView) {
         __strong typeof(_self) self = _self;
         if ( !self ) return;
         imageView.bounds = (CGRect){CGPointZero, imageView.image.size};

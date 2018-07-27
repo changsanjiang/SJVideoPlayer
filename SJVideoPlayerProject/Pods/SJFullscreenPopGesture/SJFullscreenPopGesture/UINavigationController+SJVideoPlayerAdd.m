@@ -14,45 +14,32 @@
 
 // MARK: UINavigationController
 
-@interface UINavigationController (SJVideoPlayerAdd)<UIGestureRecognizerDelegate>
-
-@property (nonatomic, strong, readonly) UIPanGestureRecognizer *SJ_pan;
+NS_ASSUME_NONNULL_BEGIN
+@interface UINavigationController (SJVideoPlayerAdd)
 @property (nonatomic, strong, readonly) UIScreenEdgePanGestureRecognizer *SJ_edgePan;
-@property (nonatomic, assign, readwrite) SJFullscreenPopGestureType SJ_selectedType;
-
+@property (nonatomic, strong, readonly) UIPanGestureRecognizer *SJ_pan;
+@property (nonatomic) SJFullscreenPopGestureType SJ_selectedType;
 @end
 
 @interface UINavigationController (SJExtension)<UINavigationControllerDelegate>
-
-@property (nonatomic, assign, readwrite) BOOL SJ_tookOver;
-
+@property (nonatomic) BOOL SJ_tookOver;
 @end
 
-
 @implementation UINavigationController (SJExtension)
-
 + (void)load {
     static dispatch_once_t onceToken;
     dispatch_once(&onceToken, ^{
-        
-        SEL sel[] = {
-            @selector(pushViewController:animated:),
-            @selector(SJ_pushViewController:animated:),
-        };
-        
         Class nav = [self class];
-        for ( int i = 0 ; i < sizeof(sel) / sizeof(SEL) ; ++ i ) {
-            SEL originalSelector = sel[i];
-            SEL swizzledSelector = sel[++ i];
-            Method originalMethod = class_getInstanceMethod(nav, originalSelector);
-            Method swizzledMethod = class_getInstanceMethod(nav, swizzledSelector);
-            BOOL added = class_addMethod([self class], originalSelector, method_getImplementation(swizzledMethod), method_getTypeEncoding(swizzledMethod));
-            if ( added ) {
-                class_replaceMethod([self class], swizzledSelector, method_getImplementation(originalMethod), method_getTypeEncoding(originalMethod));
-            }
-            else {
-                method_exchangeImplementations(originalMethod, swizzledMethod);
-            }
+        SEL originalSelector = @selector(pushViewController:animated:);
+        SEL swizzledSelector = @selector(SJ_pushViewController:animated:);
+        Method originalMethod = class_getInstanceMethod(nav, originalSelector);
+        Method swizzledMethod = class_getInstanceMethod(nav, swizzledSelector);
+        BOOL added = class_addMethod([self class], originalSelector, method_getImplementation(swizzledMethod), method_getTypeEncoding(swizzledMethod));
+        if ( added ) {
+            class_replaceMethod([self class], swizzledSelector, method_getImplementation(originalMethod), method_getTypeEncoding(originalMethod));
+        }
+        else {
+            method_exchangeImplementations(originalMethod, swizzledMethod);
         }
     });
 }
@@ -92,142 +79,94 @@
 @end
 
 
-
-
-
-
 // MARK: Gesture
 
-@implementation UINavigationController (SJVideoPlayerAdd)
+@interface _SJFullscreenGestureDelegate: NSObject<UIGestureRecognizerDelegate>
+@property (nonatomic, weak, nullable) UINavigationController *navigationController;
+@end
 
-- (UIPanGestureRecognizer *)SJ_pan {
-    UIPanGestureRecognizer *SJ_pan = objc_getAssociatedObject(self, _cmd);
-    if ( SJ_pan ) return SJ_pan;
-    SJ_pan = [[UIPanGestureRecognizer alloc] initWithTarget:self action:@selector(SJ_handlePanGR:)];
-    SJ_pan.delegate = self;
-    SJ_pan.delaysTouchesBegan = YES;
-    objc_setAssociatedObject(self, _cmd, SJ_pan, OBJC_ASSOCIATION_RETAIN_NONATOMIC);
-    return SJ_pan;
-}
-
-- (UIScreenEdgePanGestureRecognizer *)SJ_edgePan {
-    UIScreenEdgePanGestureRecognizer *SJ_edgePan = objc_getAssociatedObject(self, _cmd);
-    if ( SJ_edgePan ) return SJ_edgePan;
-    SJ_edgePan = [[UIScreenEdgePanGestureRecognizer alloc] initWithTarget:self action:@selector(SJ_handlePanGR:)];
-    SJ_edgePan.delegate = self;
-    SJ_edgePan.delaysTouchesBegan = YES;
-    SJ_edgePan.edges = UIRectEdgeLeft;
-    objc_setAssociatedObject(self, _cmd, SJ_edgePan, OBJC_ASSOCIATION_RETAIN_NONATOMIC);
-    return SJ_edgePan;
-}
-
-- (void)setSJ_selectedType:(SJFullscreenPopGestureType)SJ_selectedType {
-    objc_setAssociatedObject(self, @selector(SJ_selectedType), @(SJ_selectedType), OBJC_ASSOCIATION_RETAIN_NONATOMIC);
-    switch ( SJ_selectedType ) {
-        case SJFullscreenPopGestureType_EdgeLeft: {
-            [self.view addGestureRecognizer:self.SJ_edgePan];
-            [self.view removeGestureRecognizer:self.SJ_pan];
-        }
-            break;
-        case SJFullscreenPopGestureType_Full: {
-            [self.view addGestureRecognizer:self.SJ_pan];
-            [self.view removeGestureRecognizer:self.SJ_edgePan];
-        }
-            break;
-    }
-}
-
-- (SJFullscreenPopGestureType)SJ_selectedType {
-    return  [objc_getAssociatedObject(self, _cmd) integerValue];
-}
-
-#pragma mark -
-
+@implementation _SJFullscreenGestureDelegate
 - (BOOL)gestureRecognizer:(UIGestureRecognizer *)gestureRecognizer shouldReceiveTouch:(UITouch *)touch {
-    if ( self.topViewController.sj_DisableGestures ||
-        [[self valueForKey:@"_isTransitioning"] boolValue] ||
-        [self.topViewController.sj_considerWebView canGoBack] ) return NO;
-    else if ( self.childViewControllers.count <= 1 ) return NO;
-    else if ( [self.childViewControllers.lastObject isKindOfClass:[UINavigationController class]] ) return NO;
-    else return YES;
+    if ( self.navigationController.topViewController.sj_DisableGestures ||
+        [[self.navigationController valueForKey:@"_isTransitioning"] boolValue] ||
+        [self.navigationController.topViewController.sj_considerWebView canGoBack] ) return NO;
+    else if ( self.navigationController.childViewControllers.count <= 1 ) return NO;
+    else if ( [self.navigationController.childViewControllers.lastObject isKindOfClass:[UINavigationController class]] ) return NO;
+    return YES;
 }
 
 - (BOOL)gestureRecognizerShouldBegin:(UIPanGestureRecognizer *)gestureRecognizer {
-    if ( SJFullscreenPopGestureType_EdgeLeft == self.SJ_selectedType ) return YES;
+    if ( SJFullscreenPopGestureType_EdgeLeft == self.navigationController.SJ_selectedType ) return YES;
     if ( [self SJ_isFadeAreaWithPoint:[gestureRecognizer locationInView:gestureRecognizer.view]] ) return NO;
-    CGPoint translate = [gestureRecognizer translationInView:self.view];
+    CGPoint translate = [gestureRecognizer translationInView:self.navigationController.view];
     if ( translate.x > 0 && 0 == translate.y ) return YES;
-    else return NO;
+    return NO;
 }
 
 - (BOOL)gestureRecognizer:(UIGestureRecognizer *)gestureRecognizer shouldRecognizeSimultaneouslyWithGestureRecognizer:(UIGestureRecognizer *)otherGestureRecognizer {
     if ( UIGestureRecognizerStateFailed ==  gestureRecognizer.state ||
          UIGestureRecognizerStateCancelled == gestureRecognizer.state ) return NO;
     
-    if ( gestureRecognizer == [self SJ_edgePan] ) {
+    if ( gestureRecognizer == [self.navigationController SJ_edgePan] ) {
         [self _sjCancellGesture:otherGestureRecognizer];
         return YES;
     }
-
+    
     if ( ([otherGestureRecognizer isMemberOfClass:NSClassFromString(@"UIScrollViewPanGestureRecognizer")] ||
           [otherGestureRecognizer isMemberOfClass:NSClassFromString(@"UIScrollViewPagingSwipeGestureRecognizer")])
-       && [otherGestureRecognizer.view isKindOfClass:[UIScrollView class]] ) {
+          && [otherGestureRecognizer.view isKindOfClass:[UIScrollView class]] ) {
         return [self SJ_considerScrollView:(UIScrollView *)otherGestureRecognizer.view
                          gestureRecognizer:(UIPanGestureRecognizer *)gestureRecognizer
                     otherGestureRecognizer:otherGestureRecognizer];
     }
     
+    CGPoint point = [gestureRecognizer locationInView:gestureRecognizer.view];
     if ( [otherGestureRecognizer isKindOfClass:[UIPanGestureRecognizer class]] ) {
         if ( ![otherGestureRecognizer.view isKindOfClass:NSClassFromString(@"_MKMapContentView")] ) {
             return NO;
         }
-
-        // if `MKMapContentView`
-        CGPoint point = [gestureRecognizer locationInView:gestureRecognizer.view];
-        if ( (self.sj_fadeArea || self.sj_fadeAreaViews)
-             && ![self SJ_isFadeAreaWithPoint:point] ) {
+        
+        // consider `MKMapContentView`
+        
+        if ( (self.navigationController.topViewController.sj_fadeArea || self.navigationController.topViewController.sj_fadeAreaViews)
+              && ![self SJ_isFadeAreaWithPoint:point] ) {
             [self _sjCancellGesture:otherGestureRecognizer];
             return YES;
         }
         
         // map view default fade area
-        CGRect rect = (CGRect){CGPointMake(50, 0), self.view.frame.size};
+        CGRect rect = (CGRect){CGPointMake(50, 0), self.navigationController.view.frame.size};
         if ( ![self rect:rect containerPoint:point] ) {
             [self _sjCancellGesture:otherGestureRecognizer];
             return YES;
         }
+        
         return NO;
     }
     
-    if ( ![self SJ_isFadeAreaWithPoint:[gestureRecognizer locationInView:gestureRecognizer.view]] ) {
+    if ( (self.navigationController.topViewController.sj_fadeArea || self.navigationController.topViewController.sj_fadeAreaViews)
+         && ![self SJ_isFadeAreaWithPoint:point] ) {
         [self _sjCancellGesture:otherGestureRecognizer];
         return YES;
     }
     
-    return YES;
+    return NO;
 }
-
-#pragma mark -
 
 - (BOOL)SJ_isFadeAreaWithPoint:(CGPoint)point {
     __block BOOL isFadeArea = NO;
-    UIView *view = self.topViewController.view;
-    if ( 0 != self.topViewController.sj_fadeArea.count ) {
-        [self.topViewController.sj_fadeArea enumerateObjectsUsingBlock:^(NSValue * _Nonnull obj, NSUInteger idx, BOOL * _Nonnull stop) {
-            CGRect rect = [obj CGRectValue];
-            if ( !self.isNavigationBarHidden ) rect = [self.view convertRect:rect fromView:view];
-            if ( !CGRectContainsPoint(rect, point) ) return ;
+    if ( 0 != self.navigationController.topViewController.sj_fadeArea.count ) {
+        [self.navigationController.topViewController.sj_fadeArea enumerateObjectsUsingBlock:^(NSValue * _Nonnull obj, NSUInteger idx, BOOL * _Nonnull stop) {
+            if ( ![self rect:[obj CGRectValue] containerPoint:point] ) return;
             isFadeArea = YES;
             *stop = YES;
         }];
     }
     
     if ( !isFadeArea &&
-         0 != self.topViewController.sj_fadeAreaViews.count ) {
-        [self.topViewController.sj_fadeAreaViews enumerateObjectsUsingBlock:^(UIView * _Nonnull obj, NSUInteger idx, BOOL * _Nonnull stop) {
-            CGRect rect = obj.frame;
-            if ( !self.isNavigationBarHidden ) rect = [self.view convertRect:rect fromView:view];
-            if ( !CGRectContainsPoint(rect, point) ) return ;
+        0 != self.navigationController.topViewController.sj_fadeAreaViews.count ) {
+        [self.navigationController.topViewController.sj_fadeAreaViews enumerateObjectsUsingBlock:^(UIView * _Nonnull obj, NSUInteger idx, BOOL * _Nonnull stop) {
+            if ( ![self rect:obj.frame containerPoint:point] ) return;
             isFadeArea = YES;
             *stop = YES;
         }];
@@ -236,7 +175,7 @@
 }
 
 - (BOOL)rect:(CGRect)rect containerPoint:(CGPoint)point {
-    if ( !self.isNavigationBarHidden ) rect = [self.view convertRect:rect fromView:self.topViewController.view];
+    if ( !self.navigationController.isNavigationBarHidden ) rect = [self.navigationController.view convertRect:rect fromView:self.navigationController.topViewController.view];
     return CGRectContainsPoint(rect, point);
 }
 
@@ -245,7 +184,7 @@
         return [self SJ_considerQueuingScrollView:scrollView gestureRecognizer:gestureRecognizer otherGestureRecognizer:otherGestureRecognizer];
     }
     
-    CGPoint translate = [gestureRecognizer translationInView:self.view];
+    CGPoint translate = [gestureRecognizer translationInView:self.navigationController.view];
     if ( 0 == scrollView.contentOffset.x + scrollView.contentInset.left && !scrollView.decelerating && translate.x > 0 && 0 == translate.y ) {
         [self _sjCancellGesture:otherGestureRecognizer];
         return YES;
@@ -255,7 +194,7 @@
 
 - (BOOL)SJ_considerQueuingScrollView:(UIScrollView *)scrollView gestureRecognizer:(UIGestureRecognizer *)gestureRecognizer otherGestureRecognizer:(UIGestureRecognizer *)otherGestureRecognizer {
     UIPageViewController *pageVC = [self SJ_findingPageViewControllerWithQueueingScrollView:scrollView];
-
+    
     id<UIPageViewControllerDataSource> dataSource = pageVC.dataSource;
     UIViewController *beforeViewController = nil;
     
@@ -279,6 +218,68 @@
         if ( [responder isMemberOfClass:[UIResponder class]] || !responder ) { responder = nil; break;}
     }
     return (UIPageViewController *)responder;
+}
+
+- (void)_sjCancellGesture:(UIGestureRecognizer *)gesture {
+    [gesture setValue:@(UIGestureRecognizerStateCancelled) forKey:@"state"];
+}
+@end
+
+
+@implementation UINavigationController (SJVideoPlayerAdd)
+static const char *k_SJFullscreenGestureDelegate = "_SJFullscreenGestureDelegate";
+- (_SJFullscreenGestureDelegate *)_sjFullscreenGestureDelegate {
+    _SJFullscreenGestureDelegate *delegate = objc_getAssociatedObject(self, k_SJFullscreenGestureDelegate);
+    if ( !delegate ) {
+        delegate = _SJFullscreenGestureDelegate.new;
+        objc_setAssociatedObject(self, k_SJFullscreenGestureDelegate, delegate, OBJC_ASSOCIATION_RETAIN_NONATOMIC);
+    }
+    return delegate;
+}
+
+- (UIPanGestureRecognizer *)SJ_pan {
+    UIPanGestureRecognizer *SJ_pan = objc_getAssociatedObject(self, _cmd);
+    if ( SJ_pan ) return SJ_pan;
+    SJ_pan = [[UIPanGestureRecognizer alloc] initWithTarget:self action:@selector(SJ_handlePanGR:)];
+    SJ_pan.delaysTouchesBegan = YES;
+    objc_setAssociatedObject(self, _cmd, SJ_pan, OBJC_ASSOCIATION_RETAIN_NONATOMIC);
+    return SJ_pan;
+}
+
+- (UIScreenEdgePanGestureRecognizer *)SJ_edgePan {
+    UIScreenEdgePanGestureRecognizer *SJ_edgePan = objc_getAssociatedObject(self, _cmd);
+    if ( SJ_edgePan ) return SJ_edgePan;
+    SJ_edgePan = [[UIScreenEdgePanGestureRecognizer alloc] initWithTarget:self action:@selector(SJ_handlePanGR:)];
+    SJ_edgePan.delaysTouchesBegan = YES;
+    SJ_edgePan.edges = UIRectEdgeLeft;
+    objc_setAssociatedObject(self, _cmd, SJ_edgePan, OBJC_ASSOCIATION_RETAIN_NONATOMIC);
+    return SJ_edgePan;
+}
+
+- (void)setSJ_selectedType:(SJFullscreenPopGestureType)SJ_selectedType {
+    _SJFullscreenGestureDelegate *gestureDelegate = [self _sjFullscreenGestureDelegate];
+    gestureDelegate.navigationController = self;
+    objc_setAssociatedObject(self, @selector(SJ_selectedType), @(SJ_selectedType), OBJC_ASSOCIATION_RETAIN_NONATOMIC);
+    switch ( SJ_selectedType ) {
+        case SJFullscreenPopGestureType_EdgeLeft: {
+            self.SJ_edgePan.delegate = gestureDelegate;
+            self.SJ_pan.delegate = nil;
+            [self.view addGestureRecognizer:self.SJ_edgePan];
+            [self.view removeGestureRecognizer:self.SJ_pan];
+        }
+            break;
+        case SJFullscreenPopGestureType_Full: {
+            self.SJ_edgePan.delegate = nil;
+            self.SJ_pan.delegate = gestureDelegate;
+            [self.view addGestureRecognizer:self.SJ_pan];
+            [self.view removeGestureRecognizer:self.SJ_edgePan];
+        }
+            break;
+    }
+}
+
+- (SJFullscreenPopGestureType)SJ_selectedType {
+    return  [objc_getAssociatedObject(self, _cmd) integerValue];
 }
 
 - (void)SJ_handlePanGR:(UIPanGestureRecognizer *)pan {
@@ -344,9 +345,6 @@
     }];
 }
 
-- (void)_sjCancellGesture:(UIGestureRecognizer *)gesture {
-    [gesture setValue:@(UIGestureRecognizerStateCancelled) forKey:@"state"];
-}
 @end
 
 
@@ -388,13 +386,13 @@
     return gesture.state;
 }
 
-- (void)setSj_backgroundColor:(UIColor *)sj_backgroundColor {
+- (void)setSj_backgroundColor:(nullable UIColor *)sj_backgroundColor {
     objc_setAssociatedObject(self, @selector(sj_backgroundColor), sj_backgroundColor, OBJC_ASSOCIATION_RETAIN_NONATOMIC);
     self.navigationBar.barTintColor = sj_backgroundColor;
     self.view.backgroundColor = sj_backgroundColor;
 }
 
-- (UIColor *)sj_backgroundColor {
+- (nullable UIColor *)sj_backgroundColor {
     return objc_getAssociatedObject(self, _cmd);
 }
 
@@ -409,3 +407,4 @@
 }
 
 @end
+NS_ASSUME_NONNULL_END

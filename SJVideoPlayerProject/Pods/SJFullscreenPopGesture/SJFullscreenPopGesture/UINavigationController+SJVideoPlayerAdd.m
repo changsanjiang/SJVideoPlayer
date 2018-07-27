@@ -176,12 +176,32 @@
                          gestureRecognizer:(UIPanGestureRecognizer *)gestureRecognizer
                     otherGestureRecognizer:otherGestureRecognizer];
     }
-    else if ( ![self SJ_isFadeAreaWithPoint:[gestureRecognizer locationInView:gestureRecognizer.view]] ) {
+    
+    if ( [otherGestureRecognizer isKindOfClass:[UIPanGestureRecognizer class]] ) {
+        if ( ![otherGestureRecognizer.view isKindOfClass:NSClassFromString(@"_MKMapContentView")] ) {
+            return NO;
+        }
+
+        // if `MKMapContentView`
+        CGPoint point = [gestureRecognizer locationInView:gestureRecognizer.view];
+        if ( (self.sj_fadeArea || self.sj_fadeAreaViews)
+             && ![self SJ_isFadeAreaWithPoint:point] ) {
+            [self _sjCancellGesture:otherGestureRecognizer];
+            return YES;
+        }
+        
+        // map view default fade area
+        CGRect rect = (CGRect){CGPointMake(50, 0), self.view.frame.size};
+        if ( ![self rect:rect containerPoint:point] ) {
+            [self _sjCancellGesture:otherGestureRecognizer];
+            return YES;
+        }
+        return NO;
+    }
+    
+    if ( ![self SJ_isFadeAreaWithPoint:[gestureRecognizer locationInView:gestureRecognizer.view]] ) {
         [self _sjCancellGesture:otherGestureRecognizer];
         return YES;
-    }
-    else if ( [otherGestureRecognizer isKindOfClass:[UIPanGestureRecognizer class]] ) {
-        return NO;
     }
     
     return YES;
@@ -213,6 +233,11 @@
         }];
     }
     return isFadeArea;
+}
+
+- (BOOL)rect:(CGRect)rect containerPoint:(CGPoint)point {
+    if ( !self.isNavigationBarHidden ) rect = [self.view convertRect:rect fromView:self.topViewController.view];
+    return CGRectContainsPoint(rect, point);
 }
 
 - (BOOL)SJ_considerScrollView:(UIScrollView *)scrollView gestureRecognizer:(UIPanGestureRecognizer *)gestureRecognizer otherGestureRecognizer:(UIGestureRecognizer *)otherGestureRecognizer {

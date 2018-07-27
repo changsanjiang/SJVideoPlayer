@@ -84,7 +84,7 @@ PODS:
     - SJBaseVideoPlayer/Category
     - SJObserverHelper
     - SJUIFactory
-  - SJFullscreenPopGesture (1.4.4.1)
+  - SJFullscreenPopGesture (1.4.5)
   - SJObserverHelper (1.0.5.1)
   - SJScrollEntriesView (1.0.9):
     - Masonry
@@ -123,7 +123,7 @@ SPEC CHECKSUMS:
   Reachability: 33e18b67625424e47b6cde6d202dce689ad7af96
   SJAttributesFactory: 791dbaa250e42ce19e1f501663ddc696be51c3e9
   SJBaseVideoPlayer: d42a0ca12868c5b0f5e3d36747c4fb1a83c0690e
-  SJFullscreenPopGesture: 23784de00b938ee95a248c3685b81017bb91e96a
+  SJFullscreenPopGesture: f691695d98cbc36e08793fd94c2603f1c496fd27
   SJObserverHelper: b8dcf2653dca2538bb601f558bde72c229e08737
   SJScrollEntriesView: 6ad0595721a7152d9c3542ae5f6e1a27dec0f9b4
   SJUIFactory: b3e973c5e2ae08bc5a1bd2c68d94c00f81e01a0b

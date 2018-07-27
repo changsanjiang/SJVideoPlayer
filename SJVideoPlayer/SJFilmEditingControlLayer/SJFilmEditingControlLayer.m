@@ -213,7 +213,7 @@ NS_ASSUME_NONNULL_END
             break;
         case SJVideoPlayerPlayStatusPaused: {
             if ( [videoPlayer playStatus_isPaused_ReasonPause] || [videoPlayer playStatus_isPaused_ReasonBuffering] ) {
-                [self pause];
+                if ( self.status == SJFilmEditingStatus_Recording ) [self pause];
             }
         }
             break;

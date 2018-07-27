@@ -29,6 +29,8 @@
     // 全屏或小屏时, 禁止旋转
     _player.useFitOnScreenAndDisableRotation = YES;
     
+    _player.fitOnScreen = !_player.fitOnScreen;
+    
     // Do any additional setup after loading the view.
 }
 

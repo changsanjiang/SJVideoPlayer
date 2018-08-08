@@ -1,14 +1,14 @@
 
 Pod::Spec.new do |s|
     s.name         = 'SJVideoPlayer'
-    s.version      = '2.1.2.3'
+    s.version      = '2.1.3'
     s.summary      = 'video player.'
     s.description  = 'https://github.com/changsanjiang/SJVideoPlayer/blob/master/README.md'
     s.homepage     = 'https://github.com/changsanjiang/SJVideoPlayer'
     s.license      = { :type => 'MIT', :file => 'LICENSE.md' }
     s.author       = { 'SanJiang' => 'changsanjiang@gmail.com' }
     s.platform     = :ios, '8.0'
-    s.source       = { :git => 'https://github.com/changsanjiang/SJVideoPlayer.git', :tag => "v#{s.version}" }
+    s.source       = { :git => 'https://gitee.com/changsanjiang/SJVideoPlayer.git', :tag => "v#{s.version}" }
     s.requires_arc = true
     s.dependency 'Masonry'
     s.dependency 'SJBaseVideoPlayer'

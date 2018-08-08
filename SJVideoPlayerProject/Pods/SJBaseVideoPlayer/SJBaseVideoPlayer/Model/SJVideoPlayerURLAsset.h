@@ -9,6 +9,7 @@
 #import <UIKit/UIKit.h>
 #import "SJPlayAsset.h"
 #import "SJPlayModel.h"
+@class AVAsset;
 
 NS_ASSUME_NONNULL_BEGIN
 
@@ -24,7 +25,13 @@ NS_ASSUME_NONNULL_BEGIN
 - (instancetype)initWithOtherAsset:(SJVideoPlayerURLAsset *)otherAsset playModel:(nullable __kindof SJPlayModel *)playModel;
 
 @property (nonatomic, readonly) BOOL isM3u8;
+@end
 
+
+@interface SJVideoPlayerURLAsset (AVAsset)
+- (instancetype)initWithAVAsset:(__kindof AVAsset *)asset;
+- (instancetype)initWithAVAsset:(__kindof AVAsset *)asset playModel:(__kindof SJPlayModel *)playModel;
+- (instancetype)initWithAVAsset:(__kindof AVAsset *)asset specifyStartTime:(NSTimeInterval)specifyStartTime playModel:(__kindof SJPlayModel *)playModel;
 @end
 
 

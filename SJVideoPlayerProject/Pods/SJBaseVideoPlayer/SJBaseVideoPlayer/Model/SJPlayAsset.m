@@ -27,9 +27,17 @@ static NSNotificationName const SJPlayAssetDidCompletedLoadNotification = @"SJPl
 @property BOOL loadIsCompleted;
 @property BOOL isLoading;
 
+@property (nonatomic, strong, readonly) SJPlayAssetPropertiesObserver *observer;
 @end
 
 @implementation SJPlayAsset
+
+- (instancetype)init {
+    self = [super init];
+    if ( !self ) return nil;
+    _observer = [[SJPlayAssetPropertiesObserver alloc] initWithPlayerAsset:self];
+    return self;
+}
 
 - (instancetype)initWithURL:(NSURL *)URL {
     return [self initWithURL:URL specifyStartTime:0];
@@ -38,30 +46,43 @@ static NSNotificationName const SJPlayAssetDidCompletedLoadNotification = @"SJPl
 - (instancetype)initWithURL:(NSURL *)URL specifyStartTime:(NSTimeInterval)specifyStartTime {
     NSParameterAssert(URL);
     
-    self = [super init];
+    self = [self init];
     if ( !self ) return nil;
     _URL = URL;
     _specifyStartTime = specifyStartTime;
     return self;
 }
 
+- (instancetype)initWithAVAsset:(__kindof AVAsset *)asset specifyStartTime:(NSTimeInterval)specifyStartTime {
+    NSParameterAssert(asset);
+    
+    self = [self init];
+    if ( !self ) return nil;
+    _specifyStartTime = specifyStartTime;
+    _URLAsset = asset;
+    return self;
+}
+
 - (instancetype)initWithOtherAsset:(SJPlayAsset *)other {
     NSParameterAssert(other);
     
-    self = [super init];
+    self = [self init];
     if ( !self ) return nil;
     _URL = other.URL;
     _URLAsset = other.URLAsset;
     _playerItem = other.playerItem;
     _player = other.player;
     _isOtherAsset = YES;
-    _loadIsCompleted = YES;
-    __weak typeof(self) _self = self;
-    dispatch_async(dispatch_get_main_queue(), ^{
-        __strong typeof(_self) self = _self;
-        if ( !self ) return ;
-        [NSNotificationCenter.defaultCenter postNotificationName:SJPlayAssetDidCompletedLoadNotification object:self];
-    });
+    _loadIsCompleted = other.loadIsCompleted;
+    _isLoading = other.isLoading;
+    if ( _loadIsCompleted ) {
+        __weak typeof(self) _self = self;
+        dispatch_async(dispatch_get_main_queue(), ^{
+            __strong typeof(_self) self = _self;
+            if ( !self ) return ;
+            [NSNotificationCenter.defaultCenter postNotificationName:SJPlayAssetDidCompletedLoadNotification object:self];
+        });
+    }
     return self;
 }
 
@@ -74,7 +95,7 @@ static NSNotificationName const SJPlayAssetDidCompletedLoadNotification = @"SJPl
     dispatch_async(dispatch_get_global_queue(0, 0), ^{
         __strong typeof(_self) self = _self;
         if ( !self ) return;
-        AVURLAsset *URLAsset = [AVURLAsset assetWithURL:self.URL];
+        AVURLAsset *URLAsset = self.URLAsset ?:[AVURLAsset assetWithURL:self.URL];
         AVPlayerItem *playerItem = [[AVPlayerItem alloc] initWithAsset:URLAsset];
         AVPlayer *player = [AVPlayer playerWithPlayerItem:playerItem];
         self.URLAsset = URLAsset;
@@ -97,7 +118,7 @@ static NSNotificationName const SJPlayAssetDidCompletedLoadNotification = @"SJPl
 
 @interface SJPlayAssetPropertiesObserver()<SJPlayAssetDelegate>
 
-@property (nonatomic, strong) SJPlayAsset *playerAsset;
+@property (nonatomic, weak, nullable) SJPlayAsset *playerAsset;
 
 @property (nonatomic, strong, nullable) NSTimer *refresheBufferTimer;
 @property (nonatomic) NSTimeInterval duration;
@@ -128,19 +149,16 @@ static NSNotificationName const SJPlayAssetDidCompletedLoadNotification = @"SJPl
             if ( !self ) return ;
             [self _assetDidCompletedLoad:playerAsset];
         }];
-        [playerAsset load];
     }
     else {
-        __weak typeof(self) _self = self;
         dispatch_async(dispatch_get_main_queue(), ^{
-            __strong typeof(_self) self = _self;
-            if ( !self ) return ;
+            [self _assetDidCompletedLoad:playerAsset];
+            [self _updatePlayerItemStatus];
+            [self _updateBufferStatus:playerAsset.observer.bufferStatus];
             [self _updateBufferLoadedTime];
-            [self _updateDuration];
             [self _updateCurrentTime:playerAsset.player.currentTime];
             [self _updatePresentationSize];
-            [self _updatePlayerItemStatus];
-            [self _assetDidCompletedLoad:playerAsset];
+            [self _updateDuration];
         });
     }
     return self;

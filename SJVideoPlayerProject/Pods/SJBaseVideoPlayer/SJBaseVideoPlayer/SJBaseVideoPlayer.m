@@ -215,7 +215,7 @@ NS_ASSUME_NONNULL_BEGIN
 }
 
 + (NSString *)version {
-    return @"1.3.1";
+    return @"1.3.2";
 }
 
 - (nullable __kindof UIViewController *)atViewController {
@@ -837,6 +837,7 @@ NS_ASSUME_NONNULL_BEGIN
             self.playAssetObserver.delegate = (id)self;
             self.playModelObserver = [[SJPlayModelPropertiesObserver alloc] initWithPlayModel:URLAsset.playModel];
             self.playModelObserver.delegate = (id)self;
+            if ( !URLAsset.playAsset.loadIsCompleted ) [URLAsset.playAsset load];
             
             if ( [self.controlLayerDelegate respondsToSelector:@selector(videoPlayer:prepareToPlay:)] ) {
                 [self.controlLayerDelegate videoPlayer:self prepareToPlay:URLAsset];
@@ -939,6 +940,7 @@ NS_ASSUME_NONNULL_BEGIN
         if ( [URLAsset.playModel isKindOfClass:[SJUITableViewCellPlayModel class]] ) {
             SJUITableViewCellPlayModel *playModel = (id)URLAsset.playModel;
             if ( playModel.tableView.sj_enabledAutoplay ) {
+                if ( self.playDidToEndExeBlock ) self.playDidToEndExeBlock(self);
                 [playModel.tableView sj_needPlayNextAsset];
                 return;
             }
@@ -946,6 +948,7 @@ NS_ASSUME_NONNULL_BEGIN
         else if ( [URLAsset.playModel isKindOfClass:[SJUICollectionViewCellPlayModel class]] ) {
             SJUICollectionViewCellPlayModel *playModel = (id)URLAsset.playModel;
             if ( playModel.collectionView.sj_enabledAutoplay ) {
+                if ( self.playDidToEndExeBlock ) self.playDidToEndExeBlock(self);
                 [playModel.collectionView sj_needPlayNextAsset];
                 return;
             }
@@ -956,8 +959,6 @@ NS_ASSUME_NONNULL_BEGIN
     self.playStatus = SJVideoPlayerPlayStatusInactivity;
     if ( self.playDidToEndExeBlock ) self.playDidToEndExeBlock(self);
 }
-
-//- (void)_paused
 
 - (void)refresh {
     if ( !self.URLAsset ) return;

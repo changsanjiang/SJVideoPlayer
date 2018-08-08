@@ -47,7 +47,9 @@ static NSString *const SimplifiedSampleTableViewCellID = @"SimplifiedSampleTable
 - (void)sj_playerNeedPlayNewAssetAtIndexPath:(NSIndexPath *)indexPath {
     NSURL *URL = [NSURL URLWithString:_videos[indexPath.row].playURLStr];
     SimplifiedSampleTableViewCell *cell = [self.tableView cellForRowAtIndexPath:indexPath];
+    
     SJPlayModel *playModel = [SJPlayModel UITableViewCellPlayModelWithPlayerSuperviewTag:cell.backgroundImageView.tag atIndexPath:indexPath tableView:self.tableView];
+    
     SJVideoPlayerURLAsset *asset = [[SJVideoPlayerURLAsset alloc] initWithURL:URL playModel:playModel];
     asset.title = @"DIY心情转盘 #手工##手工制作##卖包子喽##1块1个##卖完就撤#";
     asset.alwaysShowTitle = YES;

@@ -197,6 +197,38 @@
             </objects>
             <point key="canvasLocation" x="1399" y="1623"/>
         </scene>
+        <!--AVComposition-->
+        <scene sceneID="ZBH-LF-Nru">
+            <objects>
+                <viewController title="AVComposition" id="efl-Vt-lQC" customClass="TestAVCompositionViewController" sceneMemberID="viewController">
+                    <layoutGuides>
+                        <viewControllerLayoutGuide type="top" id="B2n-OA-Rj5"/>
+                        <viewControllerLayoutGuide type="bottom" id="dGt-EL-HBN"/>
+                    </layoutGuides>
+                    <view key="view" contentMode="scaleToFill" id="8rC-A6-ofH">
+                        <rect key="frame" x="0.0" y="0.0" width="375" height="667"/>
+                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                        <subviews>
+                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="vge-VT-4yh">
+                                <rect key="frame" x="164" y="318.5" width="46" height="30"/>
+                                <state key="normal" title="Button"/>
+                                <connections>
+                                    <action selector="play:" destination="efl-Vt-lQC" eventType="touchUpInside" id="5ah-O6-PNX"/>
+                                </connections>
+                            </button>
+                        </subviews>
+                        <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                        <constraints>
+                            <constraint firstItem="vge-VT-4yh" firstAttribute="centerY" secondItem="8rC-A6-ofH" secondAttribute="centerY" id="6sP-dZ-QPW"/>
+                            <constraint firstItem="vge-VT-4yh" firstAttribute="centerX" secondItem="8rC-A6-ofH" secondAttribute="centerX" id="VAX-F0-9yX"/>
+                        </constraints>
+                    </view>
+                    <navigationItem key="navigationItem" id="ssK-hf-bNT"/>
+                </viewController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="Lh0-Ef-jIt" userLabel="First Responder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="1398" y="2409"/>
+        </scene>
         <!--Tab Bar Controller-->
         <scene sceneID="dbg-bY-EcX">
             <objects>
@@ -211,6 +243,7 @@
                         <segue destination="p9g-nt-8Rf" kind="relationship" relationship="viewControllers" id="3ly-HO-K8r"/>
                         <segue destination="AEq-MG-N4h" kind="relationship" relationship="viewControllers" id="NhR-Zw-bPG"/>
                         <segue destination="lyg-GJ-Hjw" kind="relationship" relationship="viewControllers" id="bwW-gl-OBt"/>
+                        <segue destination="V29-j4-95u" kind="relationship" relationship="viewControllers" id="GCN-Zt-NAN"/>
                     </connections>
                 </tabBarController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="B1N-fv-kUs" userLabel="First Responder" sceneMemberID="firstResponder"/>
@@ -254,6 +287,25 @@
                 <placeholder placeholderIdentifier="IBFirstResponder" id="KaK-R4-GNl" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
             <point key="canvasLocation" x="604" y="1624"/>
+        </scene>
+        <!--AVComposition-->
+        <scene sceneID="7Di-8R-3MF">
+            <objects>
+                <navigationController automaticallyAdjustsScrollViewInsets="NO" id="V29-j4-95u" sceneMemberID="viewController">
+                    <tabBarItem key="tabBarItem" title="AVComposition" id="j4G-1s-KUy"/>
+                    <toolbarItems/>
+                    <navigationBar key="navigationBar" contentMode="scaleToFill" insetsLayoutMarginsFromSafeArea="NO" id="tEh-vk-ylG">
+                        <rect key="frame" x="0.0" y="20" width="375" height="44"/>
+                        <autoresizingMask key="autoresizingMask"/>
+                    </navigationBar>
+                    <nil name="viewControllers"/>
+                    <connections>
+                        <segue destination="efl-Vt-lQC" kind="relationship" relationship="rootViewController" id="Dev-0x-0dt"/>
+                    </connections>
+                </navigationController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="Ovp-57-DKK" userLabel="First Responder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="604" y="2409"/>
         </scene>
     </scenes>
 </document>

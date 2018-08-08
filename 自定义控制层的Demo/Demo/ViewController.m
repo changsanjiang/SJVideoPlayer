@@ -39,6 +39,8 @@
 - (void)viewDidLoad {
     [super viewDidLoad];
     
+    /// 你是使用的AVPlayer吗, 如果是的话并且时间充足的话, 可以参考一下我的这个库.
+    
     /// 初始化一个播放器
     _videoPlayer = [SJDemoVideoPlayer player];
     /// 将播放器的视图添加到父视图上

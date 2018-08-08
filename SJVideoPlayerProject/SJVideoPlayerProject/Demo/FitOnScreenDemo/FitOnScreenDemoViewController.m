@@ -22,7 +22,11 @@
     
     [self _setupViews];
     
-    _player.URLAsset = [[SJVideoPlayerURLAsset alloc] initWithTitle:self.title URL:[[NSBundle mainBundle] URLForResource:@"sample" withExtension:@"mp4"] playModel:[SJPlayModel new]];
+    _player.URLAsset =
+    [[SJVideoPlayerURLAsset alloc] initWithTitle:self.title
+                                             URL:[[NSBundle mainBundle] URLForResource:@"sample" withExtension:@"mp4"]
+                                       playModel:[SJPlayModel new]];
+    
     _player.URLAsset.title = self.title;
     _player.URLAsset.alwaysShowTitle = YES;
     

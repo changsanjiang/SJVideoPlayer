@@ -19,21 +19,25 @@ typedef NS_ENUM(NSUInteger, SJPlayerBufferStatus) {
 };
 
 @interface SJPlayAsset: NSObject<SJPlayAsset>
-
 /// 通过URL进行初始化
+- (instancetype)initWithAVAsset:(__kindof AVAsset *)asset specifyStartTime:(NSTimeInterval)specifyStartTime;
 - (instancetype)initWithURL:(NSURL *)URL specifyStartTime:(NSTimeInterval)specifyStartTime;
 - (instancetype)initWithURL:(NSURL *)URL;
-
-/// 通过其他资源进行初始化
-- (instancetype)initWithOtherAsset:(SJPlayAsset *)other;
 
 /// 指定开始播放的时间
 @property (nonatomic, readonly) NSTimeInterval specifyStartTime;
 /// 播放的URL
-@property (nonatomic, strong, readonly) NSURL *URL;
+@property (nonatomic, strong, readonly, nullable) NSURL *URL;
+/// 是否已加载完毕
+@property (readonly) BOOL loadIsCompleted;
+/// 加载
+- (void)load;
+
+
+/// 通过其他资源进行初始化
+- (instancetype)initWithOtherAsset:(SJPlayAsset *)other;
 /// 是否是通过其他资源进行的初始化
 @property (nonatomic, readonly) BOOL isOtherAsset;
-
 @end
 
 #pragma mark -
@@ -52,9 +56,10 @@ typedef NS_ENUM(NSUInteger, SJPlayerBufferStatus) {
 
 @end
 
+/// 确保所有代理回调均在主线程
 @interface SJPlayAssetPropertiesObserver : NSObject
 
-- (instancetype)initWithPlayerAsset:(SJPlayAsset *)playerAsset;
+- (instancetype)initWithPlayerAsset:(__weak SJPlayAsset *)playerAsset;
 
 @property (nonatomic, weak, nullable) id<SJPlayAssetPropertiesObserverDelegate> delegate;
 @property (nonatomic, readonly) AVPlayerItemStatus playerItemStatus;

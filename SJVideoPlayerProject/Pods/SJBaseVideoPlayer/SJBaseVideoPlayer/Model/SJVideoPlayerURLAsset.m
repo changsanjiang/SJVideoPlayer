@@ -53,6 +53,19 @@
 @end
 
 
+@implementation SJVideoPlayerURLAsset(AVAsset)
+- (instancetype)initWithAVAsset:(__kindof AVAsset *)asset {
+    return [self initWithAVAsset:asset playModel:[SJPlayModel new]];
+}
+- (instancetype)initWithAVAsset:(__kindof AVAsset *)asset playModel:(__kindof SJPlayModel *)playModel {
+    return [self initWithAVAsset:asset specifyStartTime:0 playModel:playModel];
+}
+- (instancetype)initWithAVAsset:(__kindof AVAsset *)asset specifyStartTime:(NSTimeInterval)specifyStartTime playModel:(__kindof SJPlayModel *)playModel {
+    return [self initWithPlayAsset:[[SJPlayAsset alloc] initWithAVAsset:asset specifyStartTime:specifyStartTime] playModel:playModel];
+}
+@end
+
+
 #pragma clang diagnostic push
 #pragma clang diagnostic ignored "-Wdeprecated-declarations"
 @implementation SJVideoPlayerURLAsset (Deprecated)

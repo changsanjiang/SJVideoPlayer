@@ -37,6 +37,7 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic) BOOL isAlwaysShowTitle;
 @property (nonatomic) BOOL isFitOnScreen;
 @property (nonatomic) BOOL isFullscreen;
+@property (nonatomic) BOOL hideBackButtonWhenOrientationIsPortrait;
 @end
 
 NS_ASSUME_NONNULL_END

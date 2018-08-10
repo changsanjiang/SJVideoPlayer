@@ -35,6 +35,8 @@ NS_ASSUME_NONNULL_BEGIN
 
 @property (nonatomic) BOOL disableNetworkStatusChangePrompt;
 
+@property (nonatomic) BOOL hideBackButtonWhenOrientationIsPortrait;
+
 @end
 
 @protocol SJEdgeControlLayerDelegate <NSObject>

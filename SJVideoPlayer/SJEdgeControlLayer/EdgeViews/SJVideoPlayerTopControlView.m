@@ -80,9 +80,8 @@
 
 - (void)_needUpdateSmallscreenLayout {
     self.title = _config.title;
-    _backBtn.hidden = _config.isPlayOnScrollView;
-
-    if ( _config.isPlayOnScrollView && _config.isAlwaysShowTitle ) {
+    _backBtn.hidden = _config.isPlayOnScrollView || _config.hideBackButtonWhenOrientationIsPortrait;
+    if ( (_config.isPlayOnScrollView && _config.isAlwaysShowTitle) || _config.hideBackButtonWhenOrientationIsPortrait ) {
         // title label layout
         [_titleLabel mas_remakeConstraints:^(MASConstraintMaker *make) {
             make.leading.equalTo(self->_backBtn.mas_centerX).offset(-8);

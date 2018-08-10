@@ -77,7 +77,7 @@
     }];
     
     // player
-    _player = [SJVideoPlayer lightweightPlayer];
+    _player = [SJVideoPlayer player];
     [self.view addSubview:_player.view];
     [_player.view mas_makeConstraints:^(MASConstraintMaker *make) {
         if (@available(iOS 11.0, *)) {

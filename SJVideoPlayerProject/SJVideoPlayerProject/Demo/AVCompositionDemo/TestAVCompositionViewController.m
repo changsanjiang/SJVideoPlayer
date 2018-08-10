@@ -32,7 +32,7 @@ NS_ASSUME_NONNULL_BEGIN
     
     [self.indicator startAnimating];
     __weak typeof(self) _self = self;
-    [asset loadValuesAsynchronouslyForKeys:@[@"duration"] completionHandler:^{
+    [asset loadValuesAsynchronouslyForKeys:@[@"duration", @"tracks"] completionHandler:^{
         __strong typeof(_self) self = _self;
         if ( !self ) return;
         dispatch_async(dispatch_get_main_queue(), ^{

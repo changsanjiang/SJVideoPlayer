@@ -971,6 +971,13 @@ NS_ASSUME_NONNULL_END
     }
 }
 
+- (void)setHideBackButtonWhenOrientationIsPortrait:(BOOL)hideBackButtonWhenOrientationIsPortrait {
+    if ( hideBackButtonWhenOrientationIsPortrait == _hideBackButtonWhenOrientationIsPortrait ) return;
+    _hideBackButtonWhenOrientationIsPortrait = hideBackButtonWhenOrientationIsPortrait;
+    _topControlView.config.hideBackButtonWhenOrientationIsPortrait = hideBackButtonWhenOrientationIsPortrait;
+    [_topControlView needUpdateConfig];
+}
+
 #pragma mark - Bottom slider
 
 - (SJProgressSlider *)bottomSlider {

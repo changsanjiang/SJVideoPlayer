@@ -30,6 +30,8 @@ NS_ASSUME_NONNULL_BEGIN
 
 @property (nonatomic) BOOL enableFilmEditing;
 
+@property (nonatomic) BOOL hideBackButtonWhenOrientationIsPortrait;
+
 @end
 
 

@@ -34,7 +34,7 @@ NS_ASSUME_NONNULL_BEGIN
 }
 
 + (NSString *)version {
-    return @"v2.1.2";
+    return @"v2.1.4";
 }
 
 + (instancetype)player {
@@ -171,28 +171,6 @@ NS_ASSUME_NONNULL_BEGIN
     [self.switcher switchControlLayerForIdentitfier:SJControlLayer_FilmEditing toVideoPlayer:self];
 }
 
-
-#pragma mark
-- (void)setDisableNetworkStatusChangePrompt:(BOOL)disableNetworkStatusChangePrompt {
-    _disableNetworkStatusChangePrompt = disableNetworkStatusChangePrompt;
-    [self defaultEdgeControlLayer].disableNetworkStatusChangePrompt = disableNetworkStatusChangePrompt;
-    [self defaultEdgeLightweightControlLayer].disableNetworkStatusChangePrompt = disableNetworkStatusChangePrompt;
-}
-
-- (void (^)(SJVideoPlayer * _Nonnull))clickedBackEvent {
-    if ( _clickedBackEvent ) return _clickedBackEvent;
-    return ^ (SJVideoPlayer *player) {
-        UIViewController *vc = [player atViewController];
-        [vc.view endEditing:YES];
-        if ( vc.presentingViewController ) {
-            [vc dismissViewControllerAnimated:YES completion:nil];
-        }
-        else {
-            [vc.navigationController popViewControllerAnimated:YES];
-        }
-    };
-}
-
 @end
 
 
@@ -205,6 +183,45 @@ NS_ASSUME_NONNULL_BEGIN
     SJVideoPlayer.update(^(SJVideoPlayerSettings * _Nonnull commonSettings) {
         [commonSettings reset];
     });
+}
+
+- (void)setClickedBackEvent:(nullable void (^)(SJVideoPlayer * _Nonnull))clickedBackEvent {
+    objc_setAssociatedObject(self, @selector(clickedBackEvent), clickedBackEvent, OBJC_ASSOCIATION_RETAIN_NONATOMIC);
+}
+
+- (void (^)(SJVideoPlayer * _Nonnull))clickedBackEvent {
+    id block = objc_getAssociatedObject(self, _cmd);
+    if ( block ) return block;
+    return ^ (SJVideoPlayer *player) {
+        UIViewController *vc = [player atViewController];
+        [vc.view endEditing:YES];
+        if ( vc.presentingViewController ) {
+            [vc dismissViewControllerAnimated:YES completion:nil];
+        }
+        else {
+            [vc.navigationController popViewControllerAnimated:YES];
+        }
+    };
+}
+
+- (void)setHideBackButtonWhenOrientationIsPortrait:(BOOL)hideBackButtonWhenOrientationIsPortrait {
+    objc_setAssociatedObject(self, @selector(hideBackButtonWhenOrientationIsPortrait), @(hideBackButtonWhenOrientationIsPortrait), OBJC_ASSOCIATION_RETAIN_NONATOMIC);
+    [self defaultEdgeControlLayer].hideBackButtonWhenOrientationIsPortrait = hideBackButtonWhenOrientationIsPortrait;
+    [self defaultEdgeLightweightControlLayer].hideBackButtonWhenOrientationIsPortrait = hideBackButtonWhenOrientationIsPortrait;
+}
+
+- (BOOL)hideBackButtonWhenOrientationIsPortrait {
+    return [objc_getAssociatedObject(self, _cmd) boolValue];
+}
+
+- (void)setDisableNetworkStatusChangePrompt:(BOOL)disableNetworkStatusChangePrompt {
+    objc_setAssociatedObject(self, @selector(disableNetworkStatusChangePrompt), @(disableNetworkStatusChangePrompt), OBJC_ASSOCIATION_RETAIN_NONATOMIC);
+    [self defaultEdgeControlLayer].disableNetworkStatusChangePrompt = disableNetworkStatusChangePrompt;
+    [self defaultEdgeLightweightControlLayer].disableNetworkStatusChangePrompt = disableNetworkStatusChangePrompt;
+}
+
+- (BOOL)disableNetworkStatusChangePrompt {
+    return [objc_getAssociatedObject(self, _cmd) boolValue];
 }
 @end
 

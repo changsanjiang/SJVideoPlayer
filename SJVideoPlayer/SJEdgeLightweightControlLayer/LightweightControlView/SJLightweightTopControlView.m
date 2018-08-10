@@ -159,9 +159,9 @@ NS_ASSUME_NONNULL_BEGIN
     if ( _config.isAlwaysShowTitle ) self.title = _config.title;
     _itemsContainerView.hidden = _config.isPlayOnScrollView;
     _titleLabel.hidden = !_config.isAlwaysShowTitle;
-    _backBtn.hidden = _config.isPlayOnScrollView;
+    _backBtn.hidden = _config.isPlayOnScrollView || _config.hideBackButtonWhenOrientationIsPortrait;
     
-    if ( _config.isPlayOnScrollView && _config.isAlwaysShowTitle ) {
+    if ( (_config.isPlayOnScrollView && _config.isAlwaysShowTitle) || _config.hideBackButtonWhenOrientationIsPortrait ) {
         [_titleLabel mas_remakeConstraints:^(MASConstraintMaker *make) {
             make.leading.offset(16);
             make.centerY.equalTo(self->_backBtn);

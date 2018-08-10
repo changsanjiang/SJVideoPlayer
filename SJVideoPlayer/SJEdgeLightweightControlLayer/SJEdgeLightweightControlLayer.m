@@ -311,10 +311,12 @@ NS_ASSUME_NONNULL_BEGIN
 - (void)videoPlayer:(__kindof SJBaseVideoPlayer *)videoPlayer willRotateView:(BOOL)isFull {
     if ( _backBtn ) {
         if ( videoPlayer.isFullScreen ) [_backBtn disappear];
-        else if ( !videoPlayer.isPlayOnScrollView ) [_backBtn appear];
-        else [_backBtn disappear];
+        else {
+            if ( _hideBackButtonWhenOrientationIsPortrait ) [_backBtn disappear];
+            else if ( !videoPlayer.isPlayOnScrollView ) [_backBtn appear];
+            else [_backBtn disappear];
+        }
     }
-    
     
     if ( isFull && !videoPlayer.URLAsset.isM3u8 ) {
         _draggingProgressView.style = SJLightweightDraggingProgressViewStylePreviewProgress;
@@ -356,6 +358,7 @@ NS_ASSUME_NONNULL_BEGIN
     [self _setControlViewsDisappearValue]; // update. `reset`.
     [self.bottomSlider disappear];
     if ( videoPlayer.controlLayerAppeared ) [videoPlayer controlLayerNeedAppear]; // update
+    _backBtn.hidden = _hideBackButtonWhenOrientationIsPortrait && !isFitOnScreen;
 }
 
 //- (void)videoPlayer:(__kindof SJBaseVideoPlayer *)videoPlayer didCompleteFitOnScreen:(BOOL)isFitOnScreen {
@@ -822,6 +825,13 @@ NS_ASSUME_NONNULL_BEGIN
         [_rightControlView removeFromSuperview];
         _rightControlView = nil;
     }
+}
+
+- (void)setHideBackButtonWhenOrientationIsPortrait:(BOOL)hideBackButtonWhenOrientationIsPortrait {
+    if ( hideBackButtonWhenOrientationIsPortrait == _hideBackButtonWhenOrientationIsPortrait ) return;
+    _hideBackButtonWhenOrientationIsPortrait = hideBackButtonWhenOrientationIsPortrait;
+    _topControlView.config.hideBackButtonWhenOrientationIsPortrait = hideBackButtonWhenOrientationIsPortrait;
+    [_topControlView needUpdateConfig];
 }
 @end
 NS_ASSUME_NONNULL_END

@@ -37,7 +37,6 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic, readonly) SJPlayerBufferStatus bufferStatus;
 @property (nonatomic, readonly) CGSize presentationSize;
 
-@property (nonatomic) BOOL pauseWhenAppDidEnterBackground;
 @property (nonatomic) float rate;
 @property (nonatomic) BOOL mute;
 
@@ -45,6 +44,7 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic, strong, nullable) NSError *error;
 - (void)prepareToPlay;
 - (void)play;
+- (void)replay;
 - (void)pause;
 - (void)stop;
 - (void)seekToTime:(NSTimeInterval)secs completionHandler:(void (^ __nullable)(BOOL finished))completionHandler;

@@ -81,7 +81,6 @@ NS_ASSUME_NONNULL_BEGIN
 @synthesize duration = _duration;
 @synthesize bufferLoadedTime = _bufferLoadedTime;
 @synthesize bufferStatus = _bufferStatus;
-@synthesize pauseWhenAppDidEnterBackground = _pauseWhenAppDidEnterBackground;
 @synthesize rate = _rate;
 @synthesize mute = _mute;
 @synthesize presentationSize = _presentationSize;
@@ -105,6 +104,11 @@ NS_ASSUME_NONNULL_BEGIN
     _playAssetObserver = nil;
     _error = nil;
     _media = media;
+}
+
+- (void)setRate:(float)rate {
+    _rate = rate;
+    [self play];
 }
 
 - (void)prepareToPlay {
@@ -182,6 +186,9 @@ NS_ASSUME_NONNULL_BEGIN
     printf("SJAVMediaPlaybackController<%p>.rate == %lf\n", self, self.rate);
     printf("SJAVMediaPlaybackController<%p>.mute == %d\n",  self, self.mute);
 #endif
+}
+- (void)replay {
+#warning next ..
 }
 - (void)pause {
     if ( !_media ) return;

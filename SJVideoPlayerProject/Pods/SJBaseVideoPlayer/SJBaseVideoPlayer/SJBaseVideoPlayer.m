@@ -1101,10 +1101,9 @@ static Class _playbackControllerClass;
 }
 
 - (void)play {
+    if ( !self.URLAsset ) return;
     
     if ( self.canPlayAnAsset ) { if ( !self.canPlayAnAsset(self) ) return; }
-
-    if ( !self.URLAsset ) return;
     
     if ( [self playStatus_isInactivity_ReasonPlayEnd] ) {
         [self replay];
@@ -1124,10 +1123,8 @@ static Class _playbackControllerClass;
         };
         return;
     }
-    
-    [_URLAsset.playAsset.player play];
-    
-    _URLAsset.playAsset.player.rate = self.rate;
+
+    [_playbackController play];
     
     self.playStatus = SJVideoPlayerPlayStatusPlaying;
     
@@ -1293,9 +1290,7 @@ static Class _playbackControllerClass;
 - (void)setRate:(float)rate {
     if ( _rate == rate ) return;
     _rate = rate;
-    if ( _URLAsset.playAsset.player == nil ) return;
-    
-    _URLAsset.playAsset.player.rate = rate;
+    _playbackController.rate = rate;
 
     if ( [self.controlLayerDelegate respondsToSelector:@selector(videoPlayer:rateChanged:)] ) {
         [self.controlLayerDelegate videoPlayer:self rateChanged:rate];

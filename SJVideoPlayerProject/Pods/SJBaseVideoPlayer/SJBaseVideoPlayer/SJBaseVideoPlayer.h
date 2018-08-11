@@ -35,6 +35,7 @@
 #import "SJPrompt.h"
 #import "SJRotationManager.h"
 #import "SJVideoPlayerControlLayerProtocol.h"
+#import "SJMediaPlayback.h"
 
 NS_ASSUME_NONNULL_BEGIN
 
@@ -149,7 +150,9 @@ NS_ASSUME_NONNULL_BEGIN
 
 #pragma mark - 播放控制
 
-@interface SJBaseVideoPlayer (PlayControl)
+@interface SJBaseVideoPlayer (PlayControl)<SJMediaPlaybackControllerDelegate>
+
+@property (class, null_resettable, nonatomic) Class playbackControllerClass;
 
 /// 资源
 /// - 使用资源URL及相关的视图信息进行初始化

@@ -9,22 +9,28 @@
 #import <UIKit/UIKit.h>
 #import "SJPlayAsset.h"
 #import "SJPlayModel.h"
+#import "SJMediaPlayback.h"
 @class AVAsset;
 
 NS_ASSUME_NONNULL_BEGIN
-
-@interface SJVideoPlayerURLAsset : NSObject
-
-@property (nonatomic, strong, readonly) SJPlayAsset *playAsset;
-@property (nonatomic, strong, readonly) SJPlayModel *playModel;
-
+@interface SJVideoPlayerURLAsset : NSObject<SJMediaModel>
 - (instancetype)initWithURL:(NSURL *)URL specifyStartTime:(NSTimeInterval)specifyStartTime playModel:(__kindof SJPlayModel *)playModel;
 - (instancetype)initWithURL:(NSURL *)URL specifyStartTime:(NSTimeInterval)specifyStartTime;
 - (instancetype)initWithURL:(NSURL *)URL playModel:(__kindof SJPlayModel *)playModel;
 - (instancetype)initWithURL:(NSURL *)URL;
 - (instancetype)initWithOtherAsset:(SJVideoPlayerURLAsset *)otherAsset playModel:(nullable __kindof SJPlayModel *)playModel;
 
+
+@property (nonatomic, strong, readonly) NSURL *mediaURL;
+@property (nonatomic, strong, readonly) SJPlayModel *playModel;
+@property (nonatomic, readonly) NSTimeInterval specifyStartTime;
 @property (nonatomic, readonly) BOOL isM3u8;
+
+#warning next => delete
+@property (nonatomic, strong, readonly) SJPlayAsset *playAsset;
+
+- (instancetype)init NS_UNAVAILABLE;
++ (instancetype)new NS_UNAVAILABLE;
 @end
 
 

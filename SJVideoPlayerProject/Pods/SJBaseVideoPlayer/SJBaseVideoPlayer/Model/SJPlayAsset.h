@@ -8,16 +8,10 @@
 
 #import <UIKit/UIKit.h>
 #import "SJPlayAssetProtocol.h"
-
-NS_ASSUME_NONNULL_BEGIN
+#import "SJPlayerBufferStatus.h"
 @class SJPlayAssetPropertiesObserver;
 
-typedef NS_ENUM(NSUInteger, SJPlayerBufferStatus) {
-    SJPlayerBufferStatusUnknown,
-    SJPlayerBufferStatusEmpty,
-    SJPlayerBufferStatusFull,
-};
-
+NS_ASSUME_NONNULL_BEGIN
 @interface SJPlayAsset: NSObject<SJPlayAsset>
 /// 通过URL进行初始化
 - (instancetype)initWithAVAsset:(__kindof AVAsset *)asset specifyStartTime:(NSTimeInterval)specifyStartTime;

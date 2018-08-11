@@ -24,8 +24,7 @@
 - (void)viewDidLoad {
     [super viewDidLoad];
     [self _setupViews];
-    _videoPlayer.enableFilmEditing = YES;
-    // Do any additional setup after loading the view, typically from a nib.
+    _videoPlayer.assetURL = [NSURL URLWithString:@"http://video.cdn.lanwuzhe.com/14945858406905f0c"];
 }
 
 - (void)_setupViews {
@@ -37,8 +36,6 @@
         make.leading.trailing.offset(0);
         make.height.equalTo(self.videoPlayer.view.mas_width).multipliedBy(9/16.0);
     }];
-    // play
-    _videoPlayer.assetURL = [NSURL URLWithString:@"http://video.cdn.lanwuzhe.com/14945858406905f0c"];
     
     // create a custom control layer
     SJDemoControlLayer *demoControlLayer = [SJDemoControlLayer new];
@@ -50,44 +47,28 @@
     } restartExeBlock:^(SJControlLayerCarrier * _Nonnull carrier) {
         [demoControlLayer restartControlLayerCompeletionHandler:nil];
     }]];
+    
     // switch
     [_videoPlayer.switcher switchControlLayerForIdentitfier:SJControlLayer_Edge toVideoPlayer:_videoPlayer];
 }
 
+#pragma mark - demo control layer delegate method
 - (void)clickedFilmEditingBtnOnDemoControlLayer:(SJDemoControlLayer *)controlLayer {
     [_videoPlayer.switcher switchControlLayerForIdentitfier:SJControlLayer_FilmEditing toVideoPlayer:_videoPlayer];
 }
 
-#pragma mark
 - (SJVideoPlayer *)videoPlayer {
     if ( _videoPlayer ) return _videoPlayer;
     _videoPlayer = [SJVideoPlayer player];
-    __weak typeof(self) _self = self;
-    _videoPlayer.viewWillRotateExeBlock = ^(__kindof SJBaseVideoPlayer * _Nonnull player, BOOL isFullScreen) {
-        __strong typeof(_self) self = _self;
-        if ( !self ) return;
-        [UIView animateWithDuration:0.25 animations:^{
-            [self setNeedsStatusBarAppearanceUpdate];
-        }];
-    };
-    
-    _videoPlayer.controlLayerAppearStateChanged = ^(__kindof SJBaseVideoPlayer * _Nonnull player, BOOL state) {
-        __strong typeof(_self) self = _self;
-        if ( !self ) return;
-        [UIView animateWithDuration:0.25 animations:^{
-            [self setNeedsStatusBarAppearanceUpdate];
-        }];
-    };
+    _videoPlayer.enableFilmEditing = YES;
     return _videoPlayer;
 }
 
 - (BOOL)prefersStatusBarHidden {
-    if ( !_videoPlayer.isFullScreen ) return NO;
-    return !_videoPlayer.controlLayerAppeared;
+    return [self.videoPlayer vc_prefersStatusBarHidden];
 }
 
 - (UIStatusBarStyle)preferredStatusBarStyle {
-    if ( !_videoPlayer.isFullScreen ) return UIStatusBarStyleDefault;
-    return _videoPlayer.controlLayerAppeared ? UIStatusBarStyleLightContent : UIStatusBarStyleDefault;
+    return [self.videoPlayer vc_preferredStatusBarStyle];
 }
 @end

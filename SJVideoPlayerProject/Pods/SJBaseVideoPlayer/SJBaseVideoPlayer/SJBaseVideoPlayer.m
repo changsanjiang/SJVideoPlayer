@@ -29,6 +29,8 @@
 #import <Reachability/Reachability.h>
 #import "UIScrollView+ListViewAutoplaySJAdd.h"
 
+#import "SJAVMediaPlaybackController.h"
+
 NS_ASSUME_NONNULL_BEGIN
 
 /**
@@ -174,6 +176,11 @@ NS_ASSUME_NONNULL_BEGIN
  管理对象: 网络状态监测
  */
 @property (nonatomic, strong, readonly) _SJReachabilityObserver *reachabilityObserver;
+
+/**
+ 管理对象: 播放控制
+ */
+@property (nonatomic, strong, nullable) id<SJMediaPlaybackController> playbackController;
 
 /**
  锁屏状态下触发的手势.
@@ -810,41 +817,84 @@ NS_ASSUME_NONNULL_BEGIN
 
 #pragma mark - 控制
 @implementation SJBaseVideoPlayer (PlayControl)
+
+static Class _playbackControllerClass;
++ (void)setPlaybackControllerClass:(nullable Class)playbackControllerClass {
+    _playbackControllerClass = playbackControllerClass;
+}
+
++ (Class)playbackControllerClass {
+    if ( _playbackControllerClass ) return _playbackControllerClass;
+    return [SJAVMediaPlaybackController class];
+}
+
+- (void)_needUpdatePlaybackController {
+    [_playbackController.playerView removeFromSuperview];
+    _playbackController = [[self.class playbackControllerClass] new];
+    _playbackController.delegate = self;
+    _playbackController.playerView.frame = _presentView.bounds;
+    _playbackController.playerView.autoresizingMask = UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight;
+    [_presentView insertSubview:_playbackController.playerView atIndex:0];
+}
+
+- (void)playbackController:(id<SJMediaPlaybackController>)controller prepareStatusDidChange:(SJMediaPlaybackPrepareStatus)prepareStatus {
+    switch ( prepareStatus ) {
+        case SJMediaPlaybackPrepareStatusUnknown: break;
+        case SJMediaPlaybackPrepareStatusReadyToPlay: {
+            [self _playerReadyToPlay];
+        }
+            break;
+        case SJMediaPlaybackPrepareStatusFailed: {
+            [self _playerPrepareFailed];
+        }
+            break;
+    }
+}
+
+- (void)playbackController:(id<SJMediaPlaybackController>)controller durationDidChange:(NSTimeInterval)duration {
+    
+}
+
+- (void)playbackController:(id<SJMediaPlaybackController>)controller currentTimeDidChange:(NSTimeInterval)currentTime {
+    
+}
+
+- (void)mediaDidPlayToEndForPlaybackController:(id<SJMediaPlaybackController>)controller {
+    
+}
+
+- (void)playbackController:(id<SJMediaPlaybackController>)controller bufferLoadedTimeDidChange:(NSTimeInterval)bufferLoadedTime {
+    
+}
+
+- (void)playbackController:(id<SJMediaPlaybackController>)controller bufferStatusDidChange:(SJPlayerBufferStatus)bufferStatus {
+    
+}
+
+- (void)playbackController:(id<SJMediaPlaybackController>)controller presentationSizeDidChange:(CGSize)presentationSize {
+    
+}
+
+- (void)playbackController:(id<SJMediaPlaybackController>)controller willSeekToTime:(NSTimeInterval)time {
+    
+}
+
+- (void)playbackController:(id<SJMediaPlaybackController>)controller didSeekToTime:(NSTimeInterval)time finished:(BOOL)finished {
+    
+}
+
+#pragma mark -
+
 // 1.
 - (void)setURLAsset:(nullable SJVideoPlayerURLAsset *)URLAsset {
     if ( self.URLAsset ) {
         if ( self.assetDeallocExeBlock ) self.assetDeallocExeBlock(self);
     }
     
-    [_URLAsset.playAsset.player pause];
-    _playAssetObserver = nil;
-    _playModelObserver = nil;
-    
-    __weak typeof(self) _self = self;
-    dispatch_async(dispatch_get_main_queue(), ^{
-        __strong typeof(_self) self = _self;
-        if ( !self ) return ;
-        if ( !URLAsset ) {
-            self.playStatus = SJVideoPlayerPlayStatusUnknown;
-        }
-        else {
-            self.playStatus = SJVideoPlayerPlayStatusPrepare;
-            if ( [self.controlLayerDelegate respondsToSelector:@selector(startLoading:)] ) {
-                [self.controlLayerDelegate startLoading:self];
-            }
-            
-            self.playAssetObserver = [[SJPlayAssetPropertiesObserver alloc] initWithPlayerAsset:URLAsset.playAsset];
-            self.playAssetObserver.delegate = (id)self;
-            self.playModelObserver = [[SJPlayModelPropertiesObserver alloc] initWithPlayModel:URLAsset.playModel];
-            self.playModelObserver.delegate = (id)self;
-            if ( !URLAsset.playAsset.loadIsCompleted ) [URLAsset.playAsset load];
-            
-            if ( [self.controlLayerDelegate respondsToSelector:@selector(videoPlayer:prepareToPlay:)] ) {
-                [self.controlLayerDelegate videoPlayer:self prepareToPlay:URLAsset];
-            }
-        }
-    });
-    
+    if ( ![self.playbackController isKindOfClass:[self.class playbackControllerClass]] ) {
+        [self _needUpdatePlaybackController];
+    }
+
     _URLAsset = URLAsset;
     
     // 维护当前播放的indexPath
@@ -860,6 +910,28 @@ NS_ASSUME_NONNULL_BEGIN
             playModel.collectionView.sj_currentPlayingIndexPath = playModel.indexPath;
         }
     }
+    
+    self.playbackController.media = URLAsset;
+    
+    if ( !URLAsset ) {
+        self.playStatus = SJVideoPlayerPlayStatusUnknown;
+        self.playModelObserver = nil;
+    }
+    else {
+        self.playStatus = SJVideoPlayerPlayStatusPrepare;
+        if ( [self.controlLayerDelegate respondsToSelector:@selector(startLoading:)] ) {
+            [self.controlLayerDelegate startLoading:self];
+        }
+        
+        self.playModelObserver = [[SJPlayModelPropertiesObserver alloc] initWithPlayModel:URLAsset.playModel];
+        self.playModelObserver.delegate = (id)self;
+
+        if ( [self.controlLayerDelegate respondsToSelector:@selector(videoPlayer:prepareToPlay:)] ) {
+            [self.controlLayerDelegate videoPlayer:self prepareToPlay:URLAsset];
+        }
+        
+        [self.playbackController prepareToPlay];
+    }
 }
 
 - (nullable SJVideoPlayerURLAsset *)URLAsset {
@@ -867,7 +939,7 @@ NS_ASSUME_NONNULL_BEGIN
 }
 
 // 2.1
-- (void)_playerItemReadyToPlay {
+- (void)_playerReadyToPlay {
     
     if ( ![self playStatus_isPrepare] ) return;
     
@@ -885,8 +957,6 @@ NS_ASSUME_NONNULL_BEGIN
             }
             
             self.playStatus = SJVideoPlayerPlayStatusReadyToPlay;
-            
-            self.URLAsset.playAsset.player.muted = self.mute;
             
             if ( self.registrar.state == SJVideoPlayerAppState_Background &&
                  self.pauseWhenAppDidEnterBackground ) {
@@ -923,7 +993,7 @@ NS_ASSUME_NONNULL_BEGIN
 }
 
 // 2.2
-- (void)_playerItemPlayFailed {
+- (void)_playerPrepareFailed {
     if ( [self.controlLayerDelegate respondsToSelector:@selector(cancelLoading:)] ) {
         [self.controlLayerDelegate cancelLoading:self];
     }
@@ -2083,11 +2153,11 @@ NS_ASSUME_NONNULL_BEGIN
     switch ( playerItemStatus ) {
         case AVPlayerItemStatusUnknown: { } break;
         case AVPlayerItemStatusReadyToPlay: {
-            [self _playerItemReadyToPlay];
+            [self _playerReadyToPlay];
         }
             break;
         case AVPlayerItemStatusFailed: {
-            [self _playerItemPlayFailed];
+            [self _playerPrepareFailed];
         }
             break;
     }

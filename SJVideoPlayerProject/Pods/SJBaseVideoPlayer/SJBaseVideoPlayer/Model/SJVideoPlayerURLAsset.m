@@ -17,6 +17,28 @@
 
 @implementation SJVideoPlayerURLAsset
 
+- (instancetype)initWithURL:(NSURL *)URL specifyStartTime:(NSTimeInterval)specifyStartTime playModel:(__kindof SJPlayModel *)playModel {
+    self = [super init];
+    if ( !self ) return nil;
+    _mediaURL = URL;
+    _specifyStartTime = specifyStartTime;
+    _playModel = playModel?:[SJPlayModel new];
+    return self;
+}
+- (instancetype)initWithURL:(NSURL *)URL specifyStartTime:(NSTimeInterval)specifyStartTime {
+    return [self initWithURL:URL specifyStartTime:specifyStartTime playModel:[SJPlayModel new]];
+}
+- (instancetype)initWithURL:(NSURL *)URL playModel:(__kindof SJPlayModel *)playModel {
+    return [self initWithURL:URL specifyStartTime:0 playModel:playModel];
+}
+- (instancetype)initWithURL:(NSURL *)URL {
+    return [self initWithURL:URL specifyStartTime:0];
+}
+- (instancetype)initWithOtherAsset:(SJVideoPlayerURLAsset *)otherAsset playModel:(nullable __kindof SJPlayModel *)playModel {
+#warning next ...
+    return [self initWithURL:otherAsset.mediaURL specifyStartTime:0 playModel:playModel];
+}
+
 - (instancetype)initWithPlayAsset:(SJPlayAsset *)playAsset playModel:(__kindof SJPlayModel *)playModel {
     self = [super init];
     if ( !self ) return nil;
@@ -25,26 +47,26 @@
     return self;
 }
 
-- (instancetype)initWithURL:(NSURL *)URL specifyStartTime:(NSTimeInterval)specifyStartTime playModel:(__kindof SJPlayModel *)playModel {
-    return [self initWithPlayAsset:[[SJPlayAsset alloc] initWithURL:URL specifyStartTime:specifyStartTime] playModel:playModel];
-}
-
-- (instancetype)initWithURL:(NSURL *)URL specifyStartTime:(NSTimeInterval)specifyStartTime {
-    return [self initWithPlayAsset:[[SJPlayAsset alloc] initWithURL:URL specifyStartTime:specifyStartTime] playModel:[SJPlayModel new]];
-}
-
-- (instancetype)initWithURL:(NSURL *)URL playModel:(__kindof SJPlayModel *)playModel {
-    return [self initWithURL:URL specifyStartTime:0 playModel:playModel];
-}
-
-- (instancetype)initWithURL:(NSURL *)URL {
-    return [self initWithURL:URL specifyStartTime:0];
-}
-
-- (instancetype)initWithOtherAsset:(SJVideoPlayerURLAsset *)otherAsset
-                         playModel:(__kindof SJPlayModel *)playModel {
-    return [self initWithPlayAsset:[[SJPlayAsset alloc] initWithOtherAsset:otherAsset.playAsset] playModel:playModel?:[SJPlayModel new]];
-}
+//- (instancetype)initWithURL:(NSURL *)URL specifyStartTime:(NSTimeInterval)specifyStartTime playModel:(__kindof SJPlayModel *)playModel {
+//    return [self initWithPlayAsset:[[SJPlayAsset alloc] initWithURL:URL specifyStartTime:specifyStartTime] playModel:playModel];
+//}
+//
+//- (instancetype)initWithURL:(NSURL *)URL specifyStartTime:(NSTimeInterval)specifyStartTime {
+//    return [self initWithPlayAsset:[[SJPlayAsset alloc] initWithURL:URL specifyStartTime:specifyStartTime] playModel:[SJPlayModel new]];
+//}
+//
+//- (instancetype)initWithURL:(NSURL *)URL playModel:(__kindof SJPlayModel *)playModel {
+//    return [self initWithURL:URL specifyStartTime:0 playModel:playModel];
+//}
+//
+//- (instancetype)initWithURL:(NSURL *)URL {
+//    return [self initWithURL:URL specifyStartTime:0];
+//}
+//
+//- (instancetype)initWithOtherAsset:(SJVideoPlayerURLAsset *)otherAsset
+//                         playModel:(__kindof SJPlayModel *)playModel {
+//    return [self initWithPlayAsset:[[SJPlayAsset alloc] initWithOtherAsset:otherAsset.playAsset] playModel:playModel?:[SJPlayModel new]];
+//}
 
 - (BOOL)isM3u8 {
     return [self.playAsset.URL.absoluteString containsString:@".m3u8"];
@@ -144,37 +166,25 @@
     return self;
 }
 + (instancetype)assetWithOtherAsset:(SJVideoPlayerURLAsset *)asset __deprecated_msg("已弃用, 请使用 `initWithOtherAsset:playModel`;") {
-    SJVideoPlayerURLAsset *asset_new = [SJVideoPlayerURLAsset new];
-    asset_new.playAsset = asset.playAsset;
-    asset_new.playModel = [[SJPlayModel alloc] init];
-    return asset_new;
+    return [[SJVideoPlayerURLAsset alloc] initWithPlayAsset:asset.playAsset playModel:[SJPlayModel new]];
 }
 + (instancetype)assetWithOtherAsset:(SJVideoPlayerURLAsset *)asset
                          scrollView:(__unsafe_unretained UIScrollView * __nullable)tableOrCollectionView
                           indexPath:(NSIndexPath * __nullable)indexPath
                        superviewTag:(NSInteger)superviewTag __deprecated_msg("已弃用, 请使用 `initWithOtherAsset:playModel`;") {
-    SJVideoPlayerURLAsset *asset_new = [SJVideoPlayerURLAsset new];
-    asset_new.playAsset = asset.playAsset;
-    asset_new.playModel = asset.playModel;
-    return asset_new;
+    return [[SJVideoPlayerURLAsset alloc] initWithPlayAsset:asset.playAsset playModel:asset.playModel];
 }
 + (instancetype)assetWithOtherAsset:(SJVideoPlayerURLAsset *)asset
        playerSuperViewOfTableHeader:(__unsafe_unretained UIView *)superView
                           tableView:(__unsafe_unretained UITableView *)tableView __deprecated_msg("已弃用, 请使用 `initWithOtherAsset:playModel`;") {
-    SJVideoPlayerURLAsset *asset_new = [SJVideoPlayerURLAsset new];
-    asset_new.playAsset = asset.playAsset;
-    asset_new.playModel = [[SJUITableViewHeaderViewPlayModel alloc] initWithPlayerSuperview:superView tableView:tableView];
-    return asset_new;
+    return [[SJVideoPlayerURLAsset alloc] initWithPlayAsset:asset.playAsset playModel:[[SJUITableViewHeaderViewPlayModel alloc] initWithPlayerSuperview:superView tableView:tableView]];
 }
 + (instancetype)assetWithOtherAsset:(SJVideoPlayerURLAsset *)asset
         collectionViewOfTableHeader:(__unsafe_unretained UICollectionView *)collectionView
             collectionCellIndexPath:(NSIndexPath *)indexPath
                  playerSuperViewTag:(NSInteger)playerSuperViewTag
                       rootTableView:(__unsafe_unretained UITableView *)rootTableView __deprecated_msg("已弃用, 请使用 `initWithOtherAsset:playModel`;") {
-    SJVideoPlayerURLAsset *asset_new = [SJVideoPlayerURLAsset new];
-    asset_new.playAsset = asset.playAsset;
-    asset_new.playModel = [[SJUICollectionViewNestedInUITableViewHeaderViewPlayModel alloc] initWithPlayerSuperviewTag:playerSuperViewTag atIndexPath:indexPath collectionView:collectionView tableView:(id)rootTableView];
-    return asset_new;
+    return [[SJVideoPlayerURLAsset alloc] initWithPlayAsset:asset.playAsset playModel:[[SJUICollectionViewNestedInUITableViewHeaderViewPlayModel alloc] initWithPlayerSuperviewTag:playerSuperViewTag atIndexPath:indexPath collectionView:collectionView tableView:(id)rootTableView]];
 }
 + (instancetype)assetWithOtherAsset:(SJVideoPlayerURLAsset *)asset
                           indexPath:(NSIndexPath *__nullable)indexPath
@@ -182,10 +192,7 @@
                 scrollViewIndexPath:(NSIndexPath *__nullable)scrollViewIndexPath
                       scrollViewTag:(NSInteger)scrollViewTag
                      rootScrollView:(__unsafe_unretained UIScrollView *__nullable)rootScrollView __deprecated_msg("已弃用, 请使用 `initWithOtherAsset:playModel`;") {
-    SJVideoPlayerURLAsset *asset_new = [SJVideoPlayerURLAsset new];
-    asset_new.playAsset = asset.playAsset;
-    asset_new.playModel = [[SJUICollectionViewNestedInUITableViewCellPlayModel alloc] initWithPlayerSuperviewTag:superviewTag atIndexPath:indexPath collectionViewTag:scrollViewTag collectionViewAtIndexPath:scrollViewIndexPath tableView:(id)rootScrollView];
-    return asset_new;
+    return [[SJVideoPlayerURLAsset alloc] initWithPlayAsset:asset.playAsset playModel:[[SJUICollectionViewNestedInUITableViewCellPlayModel alloc] initWithPlayerSuperviewTag:superviewTag atIndexPath:indexPath collectionViewTag:scrollViewTag collectionViewAtIndexPath:scrollViewIndexPath tableView:(id)rootScrollView]];
 }
 @end
 NSString * const kSJVideoPlayerAssetKey = @"asset";

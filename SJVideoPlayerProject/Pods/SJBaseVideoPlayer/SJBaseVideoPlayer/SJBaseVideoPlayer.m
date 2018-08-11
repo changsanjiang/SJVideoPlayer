@@ -1231,7 +1231,7 @@ static Class _playbackControllerClass;
     }
     
     if ( [self playStatus_isPaused_ReasonSeeking] ) {
-        [self.playbackController cancelPendingSeeks];
+        if ( [self.playbackController respondsToSelector:@selector(cancelPendingSeeks)] ) [self.playbackController cancelPendingSeeks];
     }
     else {
         if ( ![self playStatus_isPrepare] ) [self pause:SJVideoPlayerPausedReasonSeeking];

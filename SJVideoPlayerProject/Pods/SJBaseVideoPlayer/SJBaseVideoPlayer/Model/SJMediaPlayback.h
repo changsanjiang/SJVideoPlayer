@@ -25,6 +25,7 @@ typedef AVLayerVideoGravity SJVideoGravity;
 
 NS_ASSUME_NONNULL_BEGIN
 @protocol SJMediaPlaybackController<NSObject>
+@required
 @property (nonatomic, weak, nullable) id<SJMediaPlaybackControllerDelegate> delegate;
 
 @property (nonatomic, strong, readonly) __kindof UIView *playerView;
@@ -50,6 +51,9 @@ NS_ASSUME_NONNULL_BEGIN
 - (void)seekToTime:(NSTimeInterval)secs completionHandler:(void (^ __nullable)(BOOL finished))completionHandler;
 
 - (nullable UIImage *)screenshot;
+
+@optional
+- (void)cancelPendingSeeks;
 @end
 
 

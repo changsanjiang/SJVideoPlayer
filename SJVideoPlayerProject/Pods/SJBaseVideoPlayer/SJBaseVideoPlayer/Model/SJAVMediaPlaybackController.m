@@ -68,7 +68,7 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic, strong, nullable) SJPlayAsset *playAsset;
 @property (nonatomic, strong, nullable) SJPlayAssetPropertiesObserver *playAssetObserver;
 @property (nonatomic, strong, readonly) AVAssetImageGenerator *screenshotGenerator;
-@property (nonatomic) BOOL isSeeking;
+@property (nonatomic) BOOL isPreparing;
 @end
 
 @implementation SJAVMediaPlaybackController
@@ -113,6 +113,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (void)prepareToPlay {
     if ( !_media ) return;
+    if ( _isPreparing ) return; _isPreparing = YES;
     __weak typeof(self) _self = self;
     dispatch_async(dispatch_get_global_queue(0, 0), ^{
         __strong typeof(_self) self = _self;
@@ -158,6 +159,7 @@ NS_ASSUME_NONNULL_BEGIN
     }
 }
 - (void)observer:(SJPlayAssetPropertiesObserver *)observer playerItemStatusDidChange:(AVPlayerItemStatus)playerItemStatus {
+    _isPreparing = NO;
     _prepareStatus = (SJMediaPlaybackPrepareStatus)playerItemStatus;
     if ( [self.delegate respondsToSelector:@selector(playbackController:prepareStatusDidChange:)] ) {
         [self.delegate playbackController:self prepareStatusDidChange:_prepareStatus];
@@ -178,6 +180,8 @@ NS_ASSUME_NONNULL_BEGIN
 #pragma mark -
 - (void)play {
     if ( !_media ) return;
+    if ( _isPreparing ) return;
+    
     [_playAsset.player play];
     _playAsset.player.rate = self.rate;
     _playAsset.player.muted = self.mute;
@@ -188,10 +192,20 @@ NS_ASSUME_NONNULL_BEGIN
 #endif
 }
 - (void)replay {
-#warning next ..
+    if ( !_media ) return;
+    if ( _isPreparing ) return;
+    
+    if ( _prepareStatus == SJMediaPlaybackPrepareStatusFailed ) {
+        [self prepareToPlay];
+        return;
+    }
+    
+    [self seekToTime:0 completionHandler:nil];
 }
 - (void)pause {
     if ( !_media ) return;
+    if ( _isPreparing ) return;
+    
     [_playAsset.player pause];
 }
 - (void)stop {
@@ -204,6 +218,7 @@ NS_ASSUME_NONNULL_BEGIN
     _playAsset = nil;
     _prepareStatus = SJMediaPlaybackPrepareStatusUnknown;
     _bufferStatus = SJPlayerBufferStatusUnknown;
+    _isPreparing = NO;
 }
 - (void)seekToTime:(NSTimeInterval)secs completionHandler:(void (^ __nullable)(BOOL finished))completionHandler {
     if ( isnan(secs) ) { return; }
@@ -225,9 +240,6 @@ NS_ASSUME_NONNULL_BEGIN
         if ( completionHandler ) completionHandler(NO);
         return;
     }
-
-    if ( _isSeeking ) [_playAsset.playerItem cancelPendingSeeks];
-    else _isSeeking = YES;
     
     if ( [self.delegate respondsToSelector:@selector(playbackController:willSeekToTime:)] ) {
         [self.delegate playbackController:self willSeekToTime:secs];
@@ -236,12 +248,15 @@ NS_ASSUME_NONNULL_BEGIN
     [_playAsset.playerItem seekToTime:CMTimeMakeWithSeconds(secs, NSEC_PER_SEC) completionHandler:^(BOOL finished) {
         __strong typeof(_self) self = _self;
         if ( !self ) return ;
-        self.isSeeking = NO;
         if ( completionHandler ) completionHandler(finished);
         if ( [self.delegate respondsToSelector:@selector(playbackController:didSeekToTime:finished:)] ) {
             [self.delegate playbackController:self didSeekToTime:secs finished:finished];
         }
     }];
+}
+
+- (void)cancelPendingSeeks {
+    [_playAsset.playerItem cancelPendingSeeks];
 }
 
 - (nullable UIImage *)screenshot {

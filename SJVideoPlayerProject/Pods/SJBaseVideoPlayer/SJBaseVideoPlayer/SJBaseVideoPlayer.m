@@ -1157,8 +1157,8 @@ static Class _playbackControllerClass;
         return;
     }
     
-    [_URLAsset.playAsset.player pause];
-    
+    [self.playbackController pause];
+
     self.pausedReason = reason;
     self.playStatus = SJVideoPlayerPlayStatusPaused;
 }
@@ -1166,12 +1166,13 @@ static Class _playbackControllerClass;
 - (void)stop {
     _operationOfInitializing = nil;
     
-    if ( !self.URLAsset.playAsset.isOtherAsset ) {
-        [self.presentView.player replaceCurrentItemWithPlayerItem:nil];
-        self.presentView.player = nil;
-    }
-    
-    self.playAssetObserver = nil;
+#warning next ... other asset
+//    if ( !self.URLAsset.playAsset.isOtherAsset ) {
+//        [self.presentView.player replaceCurrentItemWithPlayerItem:nil];
+//        self.presentView.player = nil;
+//    }
+
+    [self.playbackController stop];
     self.playModelObserver = nil;
     self.URLAsset = nil;
     
@@ -1194,14 +1195,7 @@ static Class _playbackControllerClass;
 - (void)replay {
     if ( !self.URLAsset ) return;
     
-    if ( [self playStatus_isInactivity_ReasonPlayFailed] ) {
-        SJPlayAsset *playAsset = self.URLAsset.playAsset;
-        SJPlayModel *playModel = self.URLAsset.playModel;
-        self.URLAsset = [[SJVideoPlayerURLAsset alloc] initWithURL:playAsset.URL specifyStartTime:playAsset.specifyStartTime playModel:playModel];
-        return;
-    }
-    
-    [self seekToTime:0 completionHandler:nil];
+    [self.playbackController replay];
 }
 
 - (void)seekToTime:(NSTimeInterval)secs completionHandler:(void (^ __nullable)(BOOL finished))completionHandler {
@@ -1218,17 +1212,17 @@ static Class _playbackControllerClass;
         return;
     }
     
-    if ( _URLAsset.playAsset.playerItem.status != AVPlayerItemStatusReadyToPlay ) {
+    if ( self.playbackController.prepareStatus != SJMediaPlaybackPrepareStatusReadyToPlay ) {
         if ( completionHandler ) completionHandler(NO);
         return;
     }
     
-    if ( secs > self.playAssetObserver.duration || secs < 0 ) {
+    if ( secs > self.playbackController.duration || secs < 0 ) {
         if ( completionHandler ) completionHandler(NO);
         return;
     }
     
-    NSTimeInterval current = floor(self.playAssetObserver.currentTime);
+    NSTimeInterval current = floor(self.playbackController.currentTime);
     NSTimeInterval seek = floor(secs);
     
     if ( current == seek ) {
@@ -1237,14 +1231,14 @@ static Class _playbackControllerClass;
     }
     
     if ( [self playStatus_isPaused_ReasonSeeking] ) {
-        [_URLAsset.playAsset.playerItem cancelPendingSeeks];
+        [self.playbackController cancelPendingSeeks];
     }
     else {
         if ( ![self playStatus_isPrepare] ) [self pause:SJVideoPlayerPausedReasonSeeking];
     }
     
     __weak typeof(self) _self = self;
-    [_URLAsset.playAsset.playerItem seekToTime:CMTimeMakeWithSeconds(secs, NSEC_PER_SEC) completionHandler:^(BOOL finished) {
+    [self.playbackController seekToTime:secs completionHandler:^(BOOL finished) {
         __strong typeof(_self) self = _self;
         if ( !self ) return ;
         if ( [self playStatus_isPaused_ReasonSeeking] ) [self play];

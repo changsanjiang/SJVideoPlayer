@@ -54,6 +54,8 @@ typedef NS_ENUM(NSUInteger, SJPanMovingDirection) {
 @property (nonatomic, assign, readonly) SJPanDirection panDirection;
 @property (nonatomic, assign, readonly) SJPanLocation panLocation;
 @property (nonatomic, assign, readonly) SJPanMovingDirection panMovingDirection;
+
+- (void)cancelPanGesture;
 @end
 
 NS_ASSUME_NONNULL_END

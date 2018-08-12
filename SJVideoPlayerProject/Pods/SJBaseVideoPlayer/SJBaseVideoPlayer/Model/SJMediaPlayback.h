@@ -10,9 +10,10 @@
 #define SJMediaPlaybackController_h
 #import <UIKit/UIKit.h>
 #import <AVFoundation/AVFoundation.h>
-#import "SJVideoPlayerState.h"
 #import "SJVideoPlayerPreviewInfo.h"
 #import "SJPlayerBufferStatus.h"
+#import "SJVideoPlayerState.h"
+@protocol SJMediaPlaybackControllerDelegate, SJMediaModel;
 
 typedef NS_ENUM(NSUInteger, SJMediaPlaybackPrepareStatus) {
     SJMediaPlaybackPrepareStatusUnknown = AVPlayerItemStatusUnknown,
@@ -20,8 +21,6 @@ typedef NS_ENUM(NSUInteger, SJMediaPlaybackPrepareStatus) {
     SJMediaPlaybackPrepareStatusFailed = AVPlayerItemStatusFailed,
 };
 typedef AVLayerVideoGravity SJVideoGravity;
-@protocol SJMediaPlaybackControllerDelegate, SJMediaModel;
-
 
 NS_ASSUME_NONNULL_BEGIN
 @protocol SJMediaPlaybackController<NSObject>
@@ -46,6 +45,7 @@ NS_ASSUME_NONNULL_BEGIN
 - (void)prepareToPlay;
 - (void)play;
 - (void)replay;
+@property (nonatomic) BOOL pauseWhenAppDidEnterBackground;
 - (void)pause;
 - (void)stop;
 - (void)seekToTime:(NSTimeInterval)secs completionHandler:(void (^ __nullable)(BOOL finished))completionHandler;
@@ -93,7 +93,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 @protocol SJMediaPlaybackControllerDelegate<NSObject>
 
-- (void)playbackController:(id<SJMediaPlaybackController>)controller prepareStatusDidChange:(SJMediaPlaybackPrepareStatus)prepareStatus;
+- (void)playbackController:(id<SJMediaPlaybackController>)controller prepareToPlayStatusDidChange:(SJMediaPlaybackPrepareStatus)prepareStatus;
 
 - (void)playbackController:(id<SJMediaPlaybackController>)controller durationDidChange:(NSTimeInterval)duration;
 
@@ -110,6 +110,10 @@ NS_ASSUME_NONNULL_BEGIN
 - (void)playbackController:(id<SJMediaPlaybackController>)controller willSeekToTime:(NSTimeInterval)time;
 
 - (void)playbackController:(id<SJMediaPlaybackController>)controller didSeekToTime:(NSTimeInterval)time finished:(BOOL)finished;
+
+@optional
+- (void)pausedForAppDidEnterBackgroundOfPlaybackController:(id<SJMediaPlaybackController>)controller;
+
 @end
 
 

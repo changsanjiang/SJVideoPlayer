@@ -27,7 +27,7 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic, readonly) BOOL isM3u8;
 
 #warning next => delete
-@property (nonatomic, strong, readonly) SJPlayAsset *playAsset;
+//@property (nonatomic, strong, readonly) SJPlayAsset *playAsset;
 
 - (instancetype)init NS_UNAVAILABLE;
 + (instancetype)new NS_UNAVAILABLE;

@@ -8,13 +8,14 @@
 
 #import "SJAVMediaPlaybackController.h"
 #import <AVFoundation/AVFoundation.h>
+#import "SJVideoPlayerRegistrar.h"
 #import "SJPlayAsset.h"
 
 NS_ASSUME_NONNULL_BEGIN
 @interface SJAVPlayerLayerPresentView: UIView
-@property (nonatomic, strong, nullable) AVPlayer *player;
 /// default is AVLayerVideoGravityResizeAspect
 @property (nonatomic, strong) AVLayerVideoGravity videoGravity;
+@property (nonatomic, strong, nullable) AVPlayer *player;
 @end
 
 @implementation SJAVPlayerLayerPresentView
@@ -65,9 +66,10 @@ NS_ASSUME_NONNULL_BEGIN
 
 
 @interface SJAVMediaPlaybackController()<SJPlayAssetPropertiesObserverDelegate>
-@property (nonatomic, strong, nullable) SJPlayAsset *playAsset;
 @property (nonatomic, strong, nullable) SJPlayAssetPropertiesObserver *playAssetObserver;
 @property (nonatomic, strong, readonly) AVAssetImageGenerator *screenshotGenerator;
+@property (nonatomic, strong, readonly) SJVideoPlayerRegistrar *registrar;
+@property (nonatomic, strong, nullable) SJPlayAsset *playAsset;
 @property (nonatomic) BOOL isPreparing;
 @end
 
@@ -86,11 +88,21 @@ NS_ASSUME_NONNULL_BEGIN
 @synthesize presentationSize = _presentationSize;
 @synthesize screenshotGenerator = _screenshotGenerator;
 @synthesize prepareStatus = _prepareStatus;
+/**
+ 关于后台播放视频, 引用自: https://juejin.im/post/5a38e1a0f265da4327185a26
+ 
+ 当您想在后台播放视频时:
+ 1. 需要设置 videoPlayer.pauseWhenAppDidEnterBackground = NO; 该值默认为YES, 即App进入后台默认暂停.
+ 2. 前往 `TARGETS` -> `Capability` -> enable `Background Modes` -> select this mode `Audio, AirPlay, and Picture in Picture`
+ */
+@synthesize pauseWhenAppDidEnterBackground = _pauseWhenAppDidEnterBackground;
+@synthesize registrar = _registrar;
 
 - (instancetype)init {
     self = [super init];
     if ( !self ) return nil;
     _rate = 1;
+    [self registrar];
     return self;
 }
 
@@ -108,7 +120,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (void)setRate:(float)rate {
     _rate = rate;
-    [self play];
+    _playAsset.player.rate = self.rate;
 }
 
 - (void)prepareToPlay {
@@ -161,11 +173,28 @@ NS_ASSUME_NONNULL_BEGIN
 - (void)observer:(SJPlayAssetPropertiesObserver *)observer playerItemStatusDidChange:(AVPlayerItemStatus)playerItemStatus {
     _isPreparing = NO;
     _prepareStatus = (SJMediaPlaybackPrepareStatus)playerItemStatus;
-    if ( [self.delegate respondsToSelector:@selector(playbackController:prepareStatusDidChange:)] ) {
-        [self.delegate playbackController:self prepareStatusDidChange:_prepareStatus];
+    if ( playerItemStatus == AVPlayerItemStatusReadyToPlay ) {
+        if ( self.registrar.state != SJVideoPlayerAppState_Background ) {
+            ((SJAVPlayerLayerPresentView *)self.playerView).player = self.playAsset.player;
+        }
+        
+        /// seek to specify start time
+        if ( 0 != self.media.specifyStartTime ) {
+            __weak typeof(self) _self = self;
+            [self seekToTime:self.media.specifyStartTime completionHandler:^(BOOL finished) {
+                __strong typeof(_self) self = _self;
+                if ( !self ) return ;
+                if ( [self.delegate respondsToSelector:@selector(playbackController:prepareToPlayStatusDidChange:)] ) {
+                    [self.delegate playbackController:self prepareToPlayStatusDidChange:self.prepareStatus];
+                }
+            }];
+            return;
+        }
     }
     
-    if ( playerItemStatus == AVPlayerItemStatusReadyToPlay ) ((SJAVPlayerLayerPresentView *)self.playerView).player = self.playAsset.player;
+    if ( [self.delegate respondsToSelector:@selector(playbackController:prepareToPlayStatusDidChange:)] ) {
+        [self.delegate playbackController:self prepareToPlayStatusDidChange:_prepareStatus];
+    }
 }
 - (void)assetLoadIsCompletedForObserver:(SJPlayAssetPropertiesObserver *)observer {
 #warning next ...
@@ -188,7 +217,7 @@ NS_ASSUME_NONNULL_BEGIN
     
 #ifdef DEBUG
     printf("SJAVMediaPlaybackController<%p>.rate == %lf\n", self, self.rate);
-    printf("SJAVMediaPlaybackController<%p>.mute == %d\n",  self, self.mute);
+    printf("SJAVMediaPlaybackController<%p>.mute == %s\n",  self, self.mute?"YES":"NO");
 #endif
 }
 - (void)replay {
@@ -277,6 +306,36 @@ NS_ASSUME_NONNULL_BEGIN
         _screenshotGenerator.appliesPreferredTrackTransform = YES;
     }
     return _screenshotGenerator;
+}
+
+- (SJVideoPlayerRegistrar *)registrar {
+    if ( _registrar ) return _registrar;
+    _registrar = [SJVideoPlayerRegistrar new];
+    __weak typeof(self) _self = self;
+    _registrar.willEnterForeground = ^(SJVideoPlayerRegistrar * _Nonnull registrar) {
+        __strong typeof(_self) self = _self;
+        if ( !self ) return ;
+        if ( !self.media ) return;
+        if ( self.isPreparing ) return;
+        if ( self.prepareStatus == SJMediaPlaybackPrepareStatusReadyToPlay ) ((SJAVPlayerLayerPresentView *)self.playerView).player = self.playAsset.player;
+    };
+    
+    _registrar.didEnterBackground = ^(SJVideoPlayerRegistrar * _Nonnull registrar) {
+        __strong typeof(_self) self = _self;
+        if ( !self ) return ;
+        if ( !self.media ) return;
+        if ( self.isPreparing ) return;
+        if ( self.pauseWhenAppDidEnterBackground ) {
+            [self pause];
+            if ( [self.delegate respondsToSelector:@selector(pausedForAppDidEnterBackgroundOfPlaybackController:)] ) {
+                [self.delegate pausedForAppDidEnterBackgroundOfPlaybackController:self];
+            }
+        }
+        else {
+            ((SJAVPlayerLayerPresentView *)self.playerView).player = nil;
+        }
+    };
+    return _registrar;
 }
 @end
 NS_ASSUME_NONNULL_END

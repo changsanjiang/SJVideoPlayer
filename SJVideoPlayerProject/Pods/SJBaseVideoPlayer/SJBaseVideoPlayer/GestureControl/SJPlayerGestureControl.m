@@ -182,4 +182,7 @@
     _panMovingDirection = panMovingDirection;
 }
 
+- (void)cancelPanGesture {
+    [_panGR setValue:@(UIGestureRecognizerStateCancelled) forKey:@"state"];
+}
 @end

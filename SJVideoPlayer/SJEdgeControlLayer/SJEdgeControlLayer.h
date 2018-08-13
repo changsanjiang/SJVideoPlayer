@@ -7,7 +7,11 @@
 //
 
 #import <Foundation/Foundation.h>
+#if __has_include(<SJBaseVideoPlayer/SJVideoPlayerControlLayerProtocol.h>)
 #import <SJBaseVideoPlayer/SJVideoPlayerControlLayerProtocol.h>
+#else
+#import "SJVideoPlayerControlLayerProtocol.h"
+#endif
 
 @protocol SJEdgeControlLayerDelegate;
 @class SJVideoPlayerMoreSetting, SJFilmEditingResultShare;

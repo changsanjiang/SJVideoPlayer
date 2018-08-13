@@ -8,12 +8,36 @@
 
 #import "SJFilmEditingResultPresentView.h"
 #import "SJFilmEditingResultShareItem.h"
+#if __has_include(<Masonry/Masonry.h>)
 #import <Masonry/Masonry.h>
+#else
+#import "Masonry.h"
+#endif
+#if __has_include(<SJUIFactory/SJUIFactory.h>)
 #import <SJUIFactory/SJUIFactory.h>
+#else
+#import "SJUIFactory.h"
+#endif
+#if __has_include(<SJUIFactory/UIView+SJUIFactory.h>)
 #import <SJUIFactory/UIView+SJUIFactory.h>
+#else
+#import "UIView+SJUIFactory.h"
+#endif
+#if __has_include(<SJBaseVideoPlayer/SJBaseVideoPlayer.h>)
 #import <SJBaseVideoPlayer/SJBaseVideoPlayer.h>
+#else
+#import "SJBaseVideoPlayer.h"
+#endif
+#if __has_include(<SJAttributesFactory/SJAttributeWorker.h>)
 #import <SJAttributesFactory/SJAttributeWorker.h>
+#else
+#import "SJAttributeWorker.h"
+#endif
+#if __has_include(<SJBaseVideoPlayer/SJVideoPlayerRegistrar.h>)
 #import <SJBaseVideoPlayer/SJVideoPlayerRegistrar.h>
+#else
+#import "SJVideoPlayerRegistrar.h"
+#endif
 
 @interface SJFilmEditingResultPresentView ()
 

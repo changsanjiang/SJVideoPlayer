@@ -8,7 +8,11 @@
 
 #import <Foundation/Foundation.h>
 #import "SJControlLayerCarrier.h"
+#if __has_include(<SJBaseVideoPlayer/SJBaseVideoPlayer.h>)
 #import <SJBaseVideoPlayer/SJBaseVideoPlayer.h>
+#else
+#import "SJBaseVideoPlayer.h"
+#endif
 
 NS_ASSUME_NONNULL_BEGIN
 

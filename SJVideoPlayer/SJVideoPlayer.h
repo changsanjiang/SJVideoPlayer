@@ -6,7 +6,11 @@
 //  Copyright © 2018年 畅三江. All rights reserved.
 //
 
+#if __has_include(<SJBaseVideoPlayer/SJBaseVideoPlayer.h>)
 #import <SJBaseVideoPlayer/SJBaseVideoPlayer.h>
+#else
+#import "SJBaseVideoPlayer.h"
+#endif
 #import "SJVideoPlayerSettings.h"
 #import "SJVideoPlayerMoreSetting.h"
 #import "SJVideoPlayerURLAsset+SJControlAdd.h"

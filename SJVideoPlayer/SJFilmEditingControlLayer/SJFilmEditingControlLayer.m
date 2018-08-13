@@ -7,15 +7,31 @@
 //
 
 #import "SJFilmEditingControlLayer.h"
+#if __has_include(<Masonry/Masonry.h>)
 #import <Masonry/Masonry.h>
+#else
+#import "Masonry.h"
+#endif
+#if __has_include(<SJUIFactory/SJUIFactory.h>)
 #import <SJUIFactory/SJUIFactory.h>
+#else
+#import "SJUIFactory.h"
+#endif
 #import "SJFilmEditingResultPresentView.h"
 #import "SJFilmEditingResultShareItem.h"
 #import "SJFilmEditingRecordingView.h"
 #import "SJFilmEditingGenerateGIFView.h"
+#if __has_include(<SJBaseVideoPlayer/SJPrompt.h>)
 #import <SJBaseVideoPlayer/SJPrompt.h>
+#else
+#import "SJPrompt.h"
+#endif
 #import "UIView+SJFilmEditingAdd.h"
+#if __has_include(<SJBaseVideoPlayer/SJBaseVideoPlayer+PlayStatus.h>)
 #import <SJBaseVideoPlayer/SJBaseVideoPlayer+PlayStatus.h>
+#else
+#import "SJBaseVideoPlayer+PlayStatus.h"
+#endif
 
 NS_ASSUME_NONNULL_BEGIN
 

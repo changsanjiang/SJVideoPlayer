@@ -7,7 +7,11 @@
 //
 
 #import <UIKit/UIKit.h>
+#if __has_include(<SJBaseVideoPlayer/SJBaseVideoPlayer.h>)
 #import <SJBaseVideoPlayer/SJBaseVideoPlayer.h>
+#else
+#import "SJBaseVideoPlayer.h"
+#endif
 #import "SJVideoPlayerFilmEditingCommonHeader.h"
 #import "SJFilmEditingStatus.h"
 #import "SJFilmEditingSettings.h"

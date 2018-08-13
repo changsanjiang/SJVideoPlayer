@@ -8,8 +8,16 @@
 
 #import "SJEdgeControlLayer.h"
 #import "SJVideoPlayerBottomControlView.h"
+#if __has_include(<Masonry/Masonry.h>)
 #import <Masonry/Masonry.h>
+#else
+#import "Masonry.h"
+#endif
+#if __has_include(<SJBaseVideoPlayer/SJBaseVideoPlayer.h>)
 #import <SJBaseVideoPlayer/SJBaseVideoPlayer.h>
+#else
+#import "SJBaseVideoPlayer.h"
+#endif
 #import "SJEdgeControlLayerSettings.h"
 #import "SJVideoPlayerDraggingProgressView.h"
 #import "UIView+SJVideoPlayerSetting.h"
@@ -28,12 +36,28 @@
 #import "UIView+SJControlAdd.h"
 #import "SJVideoPlayerRightControlView.h"
 #import "SJVideoPlayerControlMaskView.h"
+#if __has_include(<SJUIFactory/SJUIFactory.h>)
 #import <SJUIFactory/SJUIFactory.h>
+#else
+#import "SJUIFactory.h"
+#endif
 #import "SJVideoPlayerAnimationHeader.h"
+#if __has_include(<SJBaseVideoPlayer/SJTimerControl.h>)
 #import <SJBaseVideoPlayer/SJTimerControl.h>
+#else
+#import "SJTimerControl.h"
+#endif
+#if __has_include(<SJBaseVideoPlayer/SJVideoPlayerRegistrar.h>)
 #import <SJBaseVideoPlayer/SJVideoPlayerRegistrar.h>
+#else
+#import "SJVideoPlayerRegistrar.h"
+#endif
 #import "SJVideoPlayerURLAsset+SJControlAdd.h"
+#if __has_include(<SJBaseVideoPlayer/SJBaseVideoPlayer+PlayStatus.h>)
 #import <SJBaseVideoPlayer/SJBaseVideoPlayer+PlayStatus.h>
+#else
+#import "SJBaseVideoPlayer+PlayStatus.h"
+#endif
 
 #pragma mark -
 

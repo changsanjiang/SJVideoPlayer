@@ -1,41 +1,46 @@
 //
-//  SJPlayAsset.m
+//  SJAVMediaPlayAsset.m
 //  SJVideoPlayerAssetCarrier
 //
 //  Created by BlueDancer on 2018/6/28.
 //  Copyright © 2018年 SanJiang. All rights reserved.
 //
 
-#import "SJPlayAsset.h"
-#import <SJObserverHelper/NSObject+SJObserverHelper.h>
+#import "SJAVMediaPlayAsset.h"
 #import "NSTimer+SJAssetAdd.h"
+
+#if __has_include(<SJObserverHelper/NSObject+SJObserverHelper.h>)
+#import <SJObserverHelper/NSObject+SJObserverHelper.h>
+#else
+#import "NSObject+SJObserverHelper.h"
+#endif
 
 NS_ASSUME_NONNULL_BEGIN
 
-static NSNotificationName const SJPlayAssetDidCompletedLoadNotification = @"SJPlayAssetDidCompletedLoadNotification";
+static NSNotificationName const SJAVMediaPlayAssetDidCompletedLoadNotification = @"SJAVMediaPlayAssetDidCompletedLoadNotification";
 
-@protocol SJPlayAssetDelegate<NSObject>
+@protocol SJAVMediaPlayAssetDelegate<NSObject>
 
-- (void)_assetDidCompletedLoad:(SJPlayAsset *)asset;
+- (void)_assetDidCompletedLoad:(SJAVMediaPlayAsset *)asset;
 
 @end
 
-@interface SJPlayAsset()
+@interface SJAVMediaPlayAsset()
 @property (nonatomic, strong, nullable) AVURLAsset *URLAsset;
 @property (nonatomic, strong, nullable) AVPlayerItem *playerItem;
 @property (nonatomic, strong, nullable) AVPlayer *player;
 @property BOOL loadIsCompleted;
 @property BOOL isLoading;
 
-@property (nonatomic, strong, readonly) SJPlayAssetPropertiesObserver *observer;
+@property (nonatomic, strong, readonly) SJAVMediaPlayAssetPropertiesObserver *observer;
 @end
 
-@implementation SJPlayAsset
+@implementation SJAVMediaPlayAsset
 
 - (instancetype)init {
     self = [super init];
     if ( !self ) return nil;
-    _observer = [[SJPlayAssetPropertiesObserver alloc] initWithPlayerAsset:self];
+    _observer = [[SJAVMediaPlayAssetPropertiesObserver alloc] initWithPlayerAsset:self];
     return self;
 }
 
@@ -63,7 +68,7 @@ static NSNotificationName const SJPlayAssetDidCompletedLoadNotification = @"SJPl
     return self;
 }
 
-- (instancetype)initWithOtherAsset:(SJPlayAsset *)other {
+- (instancetype)initWithOtherAsset:(SJAVMediaPlayAsset *)other {
     NSParameterAssert(other);
     
     self = [self init];
@@ -80,7 +85,7 @@ static NSNotificationName const SJPlayAssetDidCompletedLoadNotification = @"SJPl
         dispatch_async(dispatch_get_main_queue(), ^{
             __strong typeof(_self) self = _self;
             if ( !self ) return ;
-            [NSNotificationCenter.defaultCenter postNotificationName:SJPlayAssetDidCompletedLoadNotification object:self];
+            [NSNotificationCenter.defaultCenter postNotificationName:SJAVMediaPlayAssetDidCompletedLoadNotification object:self];
         });
     }
     return self;
@@ -106,7 +111,7 @@ static NSNotificationName const SJPlayAssetDidCompletedLoadNotification = @"SJPl
             if ( !self ) return ;
             self.loadIsCompleted = YES;
             self.isLoading = NO;
-            [NSNotificationCenter.defaultCenter postNotificationName:SJPlayAssetDidCompletedLoadNotification object:self];
+            [NSNotificationCenter.defaultCenter postNotificationName:SJAVMediaPlayAssetDidCompletedLoadNotification object:self];
         });
     });
 }
@@ -116,9 +121,9 @@ static NSNotificationName const SJPlayAssetDidCompletedLoadNotification = @"SJPl
 
 #pragma mark -
 
-@interface SJPlayAssetPropertiesObserver()<SJPlayAssetDelegate>
+@interface SJAVMediaPlayAssetPropertiesObserver()<SJAVMediaPlayAssetDelegate>
 
-@property (nonatomic, weak, nullable) SJPlayAsset *playerAsset;
+@property (nonatomic, weak, nullable) SJAVMediaPlayAsset *playerAsset;
 
 @property (nonatomic, strong, nullable) NSTimer *refresheBufferTimer;
 @property (nonatomic) NSTimeInterval duration;
@@ -131,20 +136,20 @@ static NSNotificationName const SJPlayAssetDidCompletedLoadNotification = @"SJPl
 
 @end
 
-@implementation SJPlayAssetPropertiesObserver {
+@implementation SJAVMediaPlayAssetPropertiesObserver {
     id _noteToken;
     id _currentTimeNoteToken;
     id _playDidToEndNotaToken;
     BOOL _added;
 }
 
-- (instancetype)initWithPlayerAsset:(SJPlayAsset *)playerAsset {
+- (instancetype)initWithPlayerAsset:(SJAVMediaPlayAsset *)playerAsset {
     self = [super init];
     if ( !self ) return nil;
     _playerAsset = playerAsset;
     if ( !playerAsset.loadIsCompleted ) {
         __weak typeof(self) _self = self;
-        _noteToken = [NSNotificationCenter.defaultCenter addObserverForName:SJPlayAssetDidCompletedLoadNotification object:playerAsset queue:nil usingBlock:^(NSNotification * _Nonnull note) {
+        _noteToken = [NSNotificationCenter.defaultCenter addObserverForName:SJAVMediaPlayAssetDidCompletedLoadNotification object:playerAsset queue:nil usingBlock:^(NSNotification * _Nonnull note) {
             __strong typeof(_self) self = _self;
             if ( !self ) return ;
             [self _assetDidCompletedLoad:playerAsset];
@@ -153,12 +158,12 @@ static NSNotificationName const SJPlayAssetDidCompletedLoadNotification = @"SJPl
     else {
         dispatch_async(dispatch_get_main_queue(), ^{
             [self _assetDidCompletedLoad:playerAsset];
+            [self _updateDuration];
+            [self _updateCurrentTime:playerAsset.player.currentTime];
+            [self _updateBufferLoadedTime];
+            [self _updatePresentationSize];
             [self _updatePlayerItemStatus];
             [self _updateBufferStatus:playerAsset.observer.bufferStatus];
-            [self _updateBufferLoadedTime];
-            [self _updateCurrentTime:playerAsset.player.currentTime];
-            [self _updatePresentationSize];
-            [self _updateDuration];
         });
     }
     return self;
@@ -175,7 +180,7 @@ static NSString *kPlaybackBufferEmpty = @"playbackBufferEmpty";
 static NSString *kPresentationSize = @"presentationSize";
 static NSString *kPlayerItemStatus = @"status";
 
-- (void)_assetDidCompletedLoad:(SJPlayAsset *)asset {
+- (void)_assetDidCompletedLoad:(SJAVMediaPlayAsset *)asset {
     if ( _added ) return;
     _added = YES;
     [asset.playerItem sj_addObserver:self forKeyPath:kLoadedTimeRanges context:&kLoadedTimeRanges];

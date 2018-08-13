@@ -6,20 +6,22 @@
 //  Copyright © 2018年 SanJiang. All rights reserved.
 //
 
-#ifndef SJMediaPlaybackController_h
-#define SJMediaPlaybackController_h
+#ifndef SJMediaPlaybackProtocol_h
+#define SJMediaPlaybackProtocol_h
 #import <UIKit/UIKit.h>
 #import <AVFoundation/AVFoundation.h>
 #import "SJVideoPlayerPreviewInfo.h"
 #import "SJPlayerBufferStatus.h"
 #import "SJVideoPlayerState.h"
-@protocol SJMediaPlaybackControllerDelegate, SJMediaModel;
+
+@protocol SJMediaPlaybackControllerDelegate, SJMediaModelProtocol;
 
 typedef NS_ENUM(NSUInteger, SJMediaPlaybackPrepareStatus) {
     SJMediaPlaybackPrepareStatusUnknown = AVPlayerItemStatusUnknown,
     SJMediaPlaybackPrepareStatusReadyToPlay =  AVPlayerItemStatusReadyToPlay,
     SJMediaPlaybackPrepareStatusFailed = AVPlayerItemStatusFailed,
 };
+
 typedef AVLayerVideoGravity SJVideoGravity;
 
 NS_ASSUME_NONNULL_BEGIN
@@ -28,7 +30,7 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic, weak, nullable) id<SJMediaPlaybackControllerDelegate> delegate;
 
 @property (nonatomic, strong, readonly) __kindof UIView *playerView;
-@property (nonatomic, strong, nullable) id<SJMediaModel> media;
+@property (nonatomic, strong, nullable) id<SJMediaModelProtocol> media;
 @property (nonatomic, strong) SJVideoGravity videoGravity; // default is AVLayerVideoGravityResizeAspect
 
 @property (nonatomic, readonly) NSTimeInterval currentTime;
@@ -41,10 +43,9 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic) BOOL mute;
 
 @property (nonatomic, readonly) SJMediaPlaybackPrepareStatus prepareStatus;
-@property (nonatomic, strong, nullable) NSError *error;
+@property (nonatomic, strong, readonly, nullable) NSError *error;
 - (void)prepareToPlay;
 - (void)play;
-- (void)replay;
 @property (nonatomic) BOOL pauseWhenAppDidEnterBackground;
 - (void)pause;
 - (void)stop;
@@ -57,10 +58,8 @@ NS_ASSUME_NONNULL_BEGIN
 @end
 
 
+/// screenshot
 @protocol SJMediaPlaybackScreenshotController
-- (void)screenshotWithTime:(NSTimeInterval)time
-                completion:(void(^)(id<SJMediaPlaybackController> controller, UIImage * __nullable image, NSError *__nullable error))block;
-
 - (void)screenshotWithTime:(NSTimeInterval)time
                       size:(CGSize)size
                 completion:(void(^)(id<SJMediaPlaybackController> controller, UIImage * __nullable image, NSError *__nullable error))block;
@@ -70,12 +69,13 @@ NS_ASSUME_NONNULL_BEGIN
 @end
 
 
+/// export
 @protocol SJMediaPlaybackExportController
 - (void)exportWithBeginTime:(NSTimeInterval)beginTime
                     endTime:(NSTimeInterval)endTime
                  presetName:(nullable NSString *)presetName
                    progress:(void(^)(id<SJMediaPlaybackController> controller, float progress))progress
-                 completion:(void(^)(id<SJMediaPlaybackController> controller, NSURL *_Nullable saveURL, NSURL * __nullable fileURL, UIImage * __nullable thumbImage))completion
+                 completion:(void(^)(id<SJMediaPlaybackController> controller, NSURL * __nullable saveURL, UIImage * __nullable thumbImage))completion
                     failure:(void(^)(id<SJMediaPlaybackController> controller, NSError * __nullable error))failure;
 
 - (void)generateGIFWithBeginTime:(NSTimeInterval)beginTime
@@ -87,10 +87,12 @@ NS_ASSUME_NONNULL_BEGIN
                       completion:(void(^)(id<SJMediaPlaybackController> controller, UIImage *imageGIF, UIImage *screenshot))completion
                          failure:(void(^)(id<SJMediaPlaybackController> controller, NSError *error))failure;
 
-- (void)cancelOperation;
+- (void)cancelExportOperation;
+- (void)cancelGenerateGIFOperation;
 @end
 
 
+/// delegate
 @protocol SJMediaPlaybackControllerDelegate<NSObject>
 
 - (void)playbackController:(id<SJMediaPlaybackController>)controller prepareToPlayStatusDidChange:(SJMediaPlaybackPrepareStatus)prepareStatus;
@@ -107,20 +109,22 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (void)playbackController:(id<SJMediaPlaybackController>)controller presentationSizeDidChange:(CGSize)presentationSize;
 
-- (void)playbackController:(id<SJMediaPlaybackController>)controller willSeekToTime:(NSTimeInterval)time;
-
-- (void)playbackController:(id<SJMediaPlaybackController>)controller didSeekToTime:(NSTimeInterval)time finished:(BOOL)finished;
-
 @optional
 - (void)pausedForAppDidEnterBackgroundOfPlaybackController:(id<SJMediaPlaybackController>)controller;
 
 @end
 
 
-@protocol SJMediaModel
-@property (nonatomic, strong, readonly) NSURL *mediaURL;
+/// media
+@protocol SJMediaModelProtocol
+/// played by URL
+@property (nonatomic, strong, readonly, nullable) NSURL *mediaURL;
+
+/// played by other media
+@property (nonatomic, weak, readonly, nullable) id<SJMediaModelProtocol> otherMedia;
+
 @property (nonatomic) NSTimeInterval specifyStartTime;
 @end
 NS_ASSUME_NONNULL_END
 
-#endif /* SJMediaPlaybackController_h */
+#endif /* SJMediaPlaybackProtocol_h */

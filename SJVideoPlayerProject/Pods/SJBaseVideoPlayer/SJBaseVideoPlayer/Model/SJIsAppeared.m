@@ -7,6 +7,7 @@
 
 #import "SJIsAppeared.h"
 
+NS_ASSUME_NONNULL_BEGIN
 /// View -> UITableViewCell -> UITableView
 bool sj_isAppeared1(NSInteger viewTag, NSIndexPath *viewAtIndexPath, UITableView *tableView) {
     if ( ![tableView.indexPathsForVisibleRows containsObject:viewAtIndexPath] ) return NO;
@@ -60,3 +61,4 @@ bool sj_isAppeared5(NSInteger viewTag, NSIndexPath *viewAtIndexPath, UICollectio
     // 确定view是否在tableview中显示
     return sj_isAppeared2([[collectionView cellForItemAtIndexPath:viewAtIndexPath] viewWithTag:viewTag], tableView);
 }
+NS_ASSUME_NONNULL_END

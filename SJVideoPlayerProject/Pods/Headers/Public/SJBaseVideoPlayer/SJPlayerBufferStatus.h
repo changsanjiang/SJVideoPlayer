@@ -1,1 +1,1 @@
-../../../SJBaseVideoPlayer/SJBaseVideoPlayer/Model/SJPlayerBufferStatus.h
+../../../SJBaseVideoPlayer/SJBaseVideoPlayer/Header/SJPlayerBufferStatus.h

@@ -1,11 +1,11 @@
 //
-//  SJPlayAsset+SJBaseVideoPlayerAdd.m
+//  SJAVMediaPlayAsset+SJAVMediaPlaybackControllerAdd.m
 //  Masonry
 //
 //  Created by 畅三江 on 2018/7/2.
 //
 
-#import "SJPlayAsset+SJBaseVideoPlayerAdd.h"
+#import "SJAVMediaPlayAsset+SJAVMediaPlaybackControllerAdd.h"
 #import <objc/message.h>
 #import <UIKit/UIKit.h>
 #import <ImageIO/ImageIO.h>
@@ -13,7 +13,7 @@
 #import "NSTimer+SJAssetAdd.h"
 
 NS_ASSUME_NONNULL_BEGIN
-@implementation SJPlayAsset (SJBaseVideoPlayerAdd_Screenshot)
+@implementation SJAVMediaPlayAsset (SJBaseVideoPlayerAdd_Screenshot)
 - (nullable AVAssetImageGenerator *)screenshotGenerator {
     if ( !self.URLAsset ) return nil;
     AVAssetImageGenerator *screenshotGenerator = objc_getAssociatedObject(self, _cmd);
@@ -37,12 +37,12 @@ NS_ASSUME_NONNULL_BEGIN
     return image;
 }
 - (void)screenshotWithTime:(NSTimeInterval)time
-                completion:(void(^)(SJPlayAsset *a, UIImage * __nullable image, NSError *__nullable error))block {
+                completion:(void(^)(SJAVMediaPlayAsset *a, UIImage * __nullable image, NSError *__nullable error))block {
     return [self screenshotWithTime:time size:CGSizeZero completion:block];
 }
 - (void)screenshotWithTime:(NSTimeInterval)t
                       size:(CGSize)size
-                completion:(void(^)(SJPlayAsset *a, UIImage * __nullable image, NSError *__nullable error))block {
+                completion:(void(^)(SJAVMediaPlayAsset *a, UIImage * __nullable image, NSError *__nullable error))block {
     if ( !self.playerItem ) return;
     [self.screenshotGenerator cancelAllCGImageGeneration];
     CMTime time = CMTimeMakeWithSeconds(t, NSEC_PER_SEC);
@@ -84,7 +84,7 @@ NS_ASSUME_NONNULL_BEGIN
 }
 @end
 
-@implementation SJPlayAsset (SJBaseVideoPlayerAdd_Previews)
+@implementation SJAVMediaPlayAsset (SJBaseVideoPlayerAdd_Previews)
 - (void)setGeneratedPreviewImages:(nullable NSArray<id<SJVideoPlayerPreviewInfo>> *)generatedPreviewImages {
     objc_setAssociatedObject(self, @selector(generatedPreviewImages), generatedPreviewImages, OBJC_ASSOCIATION_RETAIN_NONATOMIC);
 }
@@ -116,7 +116,7 @@ NS_ASSUME_NONNULL_BEGIN
 }
 static float const _GeneratePreImgScale = 0.05;
 - (void)generatedPreviewImagesWithMaxItemSize:(CGSize)itemSize
-                                   completion:(void(^)(SJPlayAsset *carrier, NSArray<id<SJVideoPlayerPreviewInfo>> *__nullable images, NSError *__nullable error))block {
+                                   completion:(void(^)(SJAVMediaPlayAsset *carrier, NSArray<id<SJVideoPlayerPreviewInfo>> *__nullable images, NSError *__nullable error))block {
     if ( !self.URLAsset ) return;
 
     if ( self.hasBeenGeneratedPreviewImages && CGSizeEqualToSize(itemSize, self.beforeSize) ) {
@@ -215,7 +215,7 @@ static float const _GeneratePreImgScale = 0.05;
 }
 @end
 
-@implementation SJPlayAsset (SJBaseVideoPlayerAdd_Export)
+@implementation SJAVMediaPlayAsset (SJBaseVideoPlayerAdd_Export)
 - (void)setExportSession:(AVAssetExportSession * _Nullable)exportSession {
     objc_setAssociatedObject(self, @selector(exportSession), exportSession, OBJC_ASSOCIATION_RETAIN_NONATOMIC);
 }
@@ -231,9 +231,9 @@ static float const _GeneratePreImgScale = 0.05;
 - (void)exportWithBeginTime:(NSTimeInterval)beginTime
                     endTime:(NSTimeInterval)endTime
                  presetName:(nullable NSString *)presetName
-                   progress:(void(^)(SJPlayAsset *a, float progress))progress
-                 completion:(void(^)(SJPlayAsset *a, AVAsset * __nullable sandboxAsset, NSURL * __nullable fileURL, UIImage * __nullable thumbImage))completion
-                    failure:(void(^)(SJPlayAsset *a, NSError * __nullable error))failure {
+                   progress:(void(^)(SJAVMediaPlayAsset *a, float progress))progress
+                 completion:(void(^)(SJAVMediaPlayAsset *a, AVAsset * __nullable sandboxAsset, NSURL * __nullable fileURL, UIImage * __nullable thumbImage))completion
+                    failure:(void(^)(SJAVMediaPlayAsset *a, NSError * __nullable error))failure {
     [self cancelExportOperation];
     if ( endTime - beginTime <= 0 ) {
         if ( failure ) failure(self, [NSError errorWithDomain:NSCocoaErrorDomain code:-1 userInfo:@{@"msg":@"Error: Start time is greater than end time!"}]);
@@ -281,7 +281,7 @@ static float const _GeneratePreImgScale = 0.05;
             case AVAssetExportSessionStatusExporting:
                 break;
             case AVAssetExportSessionStatusCompleted: {
-                [self screenshotWithTime:beginTime completion:^(SJPlayAsset * _Nonnull a, UIImage * _Nullable image, NSError * _Nullable error) {
+                [self screenshotWithTime:beginTime completion:^(SJAVMediaPlayAsset * _Nonnull a, UIImage * _Nullable image, NSError * _Nullable error) {
                     dispatch_async(dispatch_get_main_queue(), ^{
                         __strong typeof(_self) self = _self;
                         if ( !self ) return;
@@ -354,9 +354,9 @@ static float const _GeneratePreImgScale = 0.05;
                      maximumSize:(CGSize)maximumSize
                         interval:(float)interval
                      gifSavePath:(NSURL *)gifSavePath
-                        progress:(void(^)(SJPlayAsset *a, float progress))progressBlock
-                      completion:(void(^)(SJPlayAsset *a, UIImage *imageGIF, UIImage *thumbnailImage))completion
-                         failure:(void(^)(SJPlayAsset *a, NSError *error))failure {
+                        progress:(void(^)(SJAVMediaPlayAsset *a, float progress))progressBlock
+                      completion:(void(^)(SJAVMediaPlayAsset *a, UIImage *imageGIF, UIImage *thumbnailImage))completion
+                         failure:(void(^)(SJAVMediaPlayAsset *a, NSError *error))failure {
     [self cancelGenerateGIFOperation];
     if ( interval == 0 ) interval = 0.2f;
     __block int count = (int)ceil(duration / interval);
@@ -550,7 +550,7 @@ static NSTimeInterval _yy_CGImageSourceGetGIFFrameDelayAtIndex(CGImageSourceRef 
 @end
 
 
-@implementation  SJPlayAsset (SJBaseVideoPlayerAdd_CancelOperation)
+@implementation  SJAVMediaPlayAsset (SJBaseVideoPlayerAdd_CancelOperation)
 - (void)cancelOperation {
     [self cancelExportOperation];
     [self cancelScreenshotOperation];

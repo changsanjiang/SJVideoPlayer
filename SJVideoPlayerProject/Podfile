@@ -7,12 +7,10 @@ target 'SJVideoPlayerProject' do
 
   # Pods for SJVideoPlayerProject
   pod 'YYText'
-  
- ["SJBaseVideoPlayer",
-  "SJAttributesFactory",
-  "SJFullscreenPopGesture",
-  "SJScrollEntriesView",
-  "SJUIKit/Refresh",
-  ].each {|lib| pod lib}
-
+  pod 'SJBaseVideoPlayer'
+  pod 'SJAttributesFactory'
+  pod 'SJFullscreenPopGesture'
+  pod 'SJScrollEntriesView'
+  pod 'SJUIKit/Refresh'
+  pod 'SJUIFactory'
 end

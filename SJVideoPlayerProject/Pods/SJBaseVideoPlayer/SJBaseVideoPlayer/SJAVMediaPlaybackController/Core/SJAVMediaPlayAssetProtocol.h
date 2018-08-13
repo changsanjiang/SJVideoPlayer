@@ -1,16 +1,16 @@
 //
-//  SJPlayAssetProtocol.h
+//  SJAVMediaPlayAssetProtocol.h
 //  Pods
 //
 //  Created by 畅三江 on 2018/7/2.
 //
 
-#ifndef SJPlayAssetProtocol_h
-#define SJPlayAssetProtocol_h
+#ifndef SJAVMediaPlayAssetProtocol_h
+#define SJAVMediaPlayAssetProtocol_h
 
 #import <AVFoundation/AVFoundation.h>
 
-@protocol SJPlayAsset<NSObject>
+@protocol SJAVMediaPlayAssetProtocol<NSObject>
 
 @property (nonatomic, strong, readonly, nullable) AVURLAsset *URLAsset;
 @property (nonatomic, strong, readonly, nullable) AVPlayerItem *playerItem;
@@ -18,4 +18,4 @@
 
 @end
 
-#endif /* SJPlayAssetProtocol_h */
+#endif /* SJAVMediaPlayAssetProtocol_h */

@@ -7,33 +7,16 @@
 //
 
 #import "SJVideoPlayerPresentView.h"
-#import <AVFoundation/AVPlayerLayer.h>
-#import <Masonry/Masonry.h>
-
 NS_ASSUME_NONNULL_BEGIN
-
 @interface SJVideoPlayerPresentView ()
-
 @property (nonatomic, strong, readonly) UIImageView *placeholderImageView;
-
 @end
-
-NS_ASSUME_NONNULL_END
 
 @implementation SJVideoPlayerPresentView {
     BOOL _isHidden;
 }
 
 @synthesize placeholderImageView = _placeholderImageView;
-
-+ (Class)layerClass {
-    return [AVPlayerLayer class];
-}
-
-- (AVPlayerLayer *)avLayer {
-    return (AVPlayerLayer *)self.layer;
-}
-
 - (instancetype)initWithFrame:(CGRect)frame {
     self = [super initWithFrame:frame];
     if ( !self ) return nil;
@@ -41,15 +24,11 @@ NS_ASSUME_NONNULL_END
     return self;
 }
 
-#pragma mark -
-
 #ifdef SJ_MAC
 - (void)dealloc {
     NSLog(@"%d - %s", (int)__LINE__, __func__);
 }
 #endif
-
-#pragma mark -
 
 - (void)showPlaceholder {
     if ( !_isHidden ) return; _isHidden = NO;
@@ -61,33 +40,10 @@ NS_ASSUME_NONNULL_END
     self.placeholderImageView.alpha = 0.001;
 }
 
-- (void)setPlayer:(AVPlayer *)player {
-    if ( player == self.avLayer.player ) return;
-    self.avLayer.player = player;
-    
-    CATransition *anima = [CATransition animation];
-    anima.type = kCATransitionFade;
-    anima.duration = 1.0f;
-    [self.layer addAnimation:anima forKey:@"fadeAnimation"];
-}
-
-- (AVPlayer *)player {
-    return self.avLayer.player;
-}
-
-- (void)setPlaceholder:(UIImage *)placeholder {
+- (void)setPlaceholder:(nullable UIImage *)placeholder {
     if ( placeholder == _placeholder ) return;
     _placeholder = placeholder;
     _placeholderImageView.image = placeholder;
-}
-
-- (void)setVideoGravity:(AVLayerVideoGravity)videoGravity {
-    if ( videoGravity == self.videoGravity ) return;
-    [self avLayer].videoGravity = videoGravity;
-}
-
-- (AVLayerVideoGravity)videoGravity {
-    return [self avLayer].videoGravity;
 }
 
 - (void)_presentSetupView {
@@ -107,3 +63,4 @@ NS_ASSUME_NONNULL_END
 }
 
 @end
+NS_ASSUME_NONNULL_END

@@ -7,8 +7,13 @@
 
 #import "UIScrollView+ListViewAutoplaySJAdd.h"
 #import <objc/message.h>
-#import <SJObserverHelper/NSObject+SJObserverHelper.h>
 #import "SJIsAppeared.h"
+
+#if __has_include(<SJObserverHelper/NSObject+SJObserverHelper.h>)
+#import <SJObserverHelper/NSObject+SJObserverHelper.h>
+#else
+#import "NSObject+SJObserverHelper.h"
+#endif
 
 NS_ASSUME_NONNULL_BEGIN
 @protocol UIScrollViewDelegate_ListViewAutoplaySJAdd <UIScrollViewDelegate>

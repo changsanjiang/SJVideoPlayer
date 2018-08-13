@@ -1,1 +1,1 @@
-../../../SJBaseVideoPlayer/SJBaseVideoPlayer/Download/SJMediaDownloader.h
+../../../SJBaseVideoPlayer/SJBaseVideoPlayer/Tool/SJMediaDownloader.h

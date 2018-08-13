@@ -7,13 +7,17 @@
 //
 
 #import "SJPlayModelPropertiesObserver.h"
-#import <SJObserverHelper/NSObject+SJObserverHelper.h>
 #import <objc/message.h>
 #import <UIKit/UIKit.h>
 #import "SJIsAppeared.h"
 
-NS_ASSUME_NONNULL_BEGIN
+#if __has_include(<SJObserverHelper/NSObject+SJObserverHelper.h>)
+#import <SJObserverHelper/NSObject+SJObserverHelper.h>
+#else
+#import "NSObject+SJObserverHelper.h"
+#endif
 
+NS_ASSUME_NONNULL_BEGIN
 @interface SJPlayModelPropertiesObserver()
 @property (nonatomic, strong, readonly) id<SJPlayModel> playModel;
 @property (nonatomic) CGPoint beforeOffset;

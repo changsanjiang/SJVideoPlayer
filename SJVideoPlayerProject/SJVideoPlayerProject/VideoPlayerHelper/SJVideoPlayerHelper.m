@@ -279,7 +279,7 @@ NS_ASSUME_NONNULL_END
 }
 
 - (NSURL *)currentPlayURL {
-    return self.videoPlayer.URLAsset.playAsset.URL;
+    return self.videoPlayer.URLAsset.mediaURL;
 }
 
 - (NSTimeInterval)currentTime {

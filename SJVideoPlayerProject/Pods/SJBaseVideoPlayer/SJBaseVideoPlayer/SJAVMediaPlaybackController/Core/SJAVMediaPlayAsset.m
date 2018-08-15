@@ -152,7 +152,7 @@ static NSNotificationName const SJAVMediaPlayAssetDidCompletedLoadNotification =
         _noteToken = [NSNotificationCenter.defaultCenter addObserverForName:SJAVMediaPlayAssetDidCompletedLoadNotification object:playerAsset queue:nil usingBlock:^(NSNotification * _Nonnull note) {
             __strong typeof(_self) self = _self;
             if ( !self ) return ;
-            [self _assetDidCompletedLoad:playerAsset];
+            [self _assetDidCompletedLoad:self.playerAsset];
         }];
     }
     else {

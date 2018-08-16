@@ -15,7 +15,6 @@
 
 @property (nonatomic, strong) SJVideoPlayer *videoPlayer;
 @property (nonatomic, strong) UITextView *textView;
-@property (nonatomic, assign) UIInterfaceOrientation orientation;
 
 @end
 
@@ -24,42 +23,42 @@
 - (instancetype)initWithNibName:(NSString *)nibNameOrNil bundle:(NSBundle *)nibBundleOrNil {
     self = [super initWithNibName:nibNameOrNil bundle:nibBundleOrNil];
     if ( !self ) return nil;
-    _orientation = UIInterfaceOrientationPortrait;
     return self;
 }
 
 - (void)viewDidLoad {
     [super viewDidLoad];
     self.view.backgroundColor = [UIColor whiteColor];
+    self.edgesForExtendedLayout = UIRectEdgeNone;
     
     _videoPlayer = [SJVideoPlayer player];
     [self.view addSubview:_videoPlayer.view];
-    
     [_videoPlayer.view mas_makeConstraints:^(MASConstraintMaker *make) {
-        if (@available(iOS 11.0, *)) {
-            make.top.equalTo(self.view.mas_safeAreaLayoutGuideTop);
-        } else {
-            make.top.offset(0);
-        }
-        make.leading.trailing.offset(0);
+        make.top.leading.trailing.offset(0);
         make.height.equalTo(self->_videoPlayer.view.mas_width).multipliedBy(9 / 16.0f);
     }];
     
-
-    self->_videoPlayer.URLAsset = [[SJVideoPlayerURLAsset alloc] initWithURL:[[NSBundle mainBundle] URLForResource:@"sample" withExtension:@"mp4"]];
+    _videoPlayer.hideBackButtonWhenOrientationIsPortrait = YES;
+    _videoPlayer.URLAsset = [[SJVideoPlayerURLAsset alloc] initWithURL:[[NSBundle mainBundle] URLForResource:@"sample" withExtension:@"mp4"]];
+    _videoPlayer.URLAsset.title = @"Test Test";
+    _videoPlayer.URLAsset.alwaysShowTitle = YES;
     
     __weak typeof(self) _self = self;
     _videoPlayer.viewWillRotateExeBlock = ^(__kindof SJBaseVideoPlayer * _Nonnull player, BOOL isFullScreen) {
         __strong typeof(_self) self = _self;
         if ( !self ) return;
-        [self.textView resignFirstResponder];       // text view resignFirstResponder.
+        [self.textView resignFirstResponder];
     };
     
+    _videoPlayer.controlLayerAppearStateChanged = ^(__kindof SJBaseVideoPlayer * _Nonnull player, BOOL state) {
+        __strong typeof(_self) self = _self;
+        if ( !self ) return;
+        if ( self.textView.isFirstResponder ) [self.textView resignFirstResponder];
+    };
 }
 
 - (void)viewDidAppear:(BOOL)animated {
     [super viewDidAppear:animated];
-    
     
     // test test test test test test test test test test test
     // test test test test test test test test test test test
@@ -77,23 +76,7 @@
     }];
 }
 
-- (void)viewWillAppear:(BOOL)animated {
-    [super viewWillAppear:animated];
-    [self.navigationController setNavigationBarHidden:YES animated:YES];
-}
-
-- (void)viewWillDisappear:(BOOL)animated {
-    [super viewWillDisappear:animated];
-    [self.navigationController setNavigationBarHidden:NO animated:YES];
-}
-
-#pragma mark - about keyboard orientation
 - (UIInterfaceOrientationMask)supportedInterfaceOrientations {
     return UIInterfaceOrientationMaskAllButUpsideDown;
 }
-
-- (UIInterfaceOrientation)preferredInterfaceOrientationForPresentation {
-    return _videoPlayer.currentOrientation;
-}
-
 @end

@@ -59,7 +59,7 @@ NS_ASSUME_NONNULL_BEGIN
 @synthesize switcher = _switcher;
 - (SJControlLayerSwitcher *)switcher {
     if ( _switcher ) return _switcher;
-    return _switcher = [[SJControlLayerSwitcher alloc] init];
+    return _switcher = [[SJControlLayerSwitcher alloc] initWithPlayer:self];
 }
 
 @synthesize defaultEdgeCarrier = _defaultEdgeCarrier;

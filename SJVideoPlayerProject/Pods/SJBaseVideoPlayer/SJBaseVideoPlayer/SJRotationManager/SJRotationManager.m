@@ -10,13 +10,13 @@
 
 NS_ASSUME_NONNULL_BEGIN
 @interface SJRotationManager()
-@property (nonatomic, weak, readonly) UIView *target;
-@property (nonatomic, weak, readonly) UIView *superview;
+@property (nonatomic, weak, readonly, nullable) UIView *target;
+@property (nonatomic, weak, readonly, nullable) UIView *superview;
 @property (nonatomic, strong, readonly) UIView *blackView;
-@property (nonatomic, readwrite) SJOrientation currentOrientation;
-@property (nonatomic, readwrite) BOOL transitioning;
-@property (nonatomic, readwrite) UIDeviceOrientation rec_deviceOrientation;
-@property (nonatomic, readwrite) CGRect con_portraitRect;
+@property (nonatomic) SJOrientation currentOrientation;
+@property (nonatomic) BOOL transitioning;
+@property (nonatomic) UIDeviceOrientation rec_deviceOrientation;
+@property (nonatomic) CGRect con_portraitRect;
 @end
 
 @implementation SJRotationManager
@@ -33,31 +33,56 @@ NS_ASSUME_NONNULL_BEGIN
     _blackView = [UIView new]; _blackView.backgroundColor = [UIColor blackColor];
     _autorotationSupportedOrientation = SJAutoRotateSupportedOrientation_All;
     _rotationCondition = rotationCondition;
-    [self _observeDeviceOrientation];
+    [self _observeNotifies];
     return self;
 }
 
 - (void)dealloc {
     [self.blackView removeFromSuperview];
-    [self removeDeviceOrientationObserver];
+    [self removeNotifies];
 }
 
 - (BOOL)isFullscreen {
     return _currentOrientation == SJOrientation_LandscapeLeft || _currentOrientation == SJOrientation_LandscapeRight;
 }
 
-- (void)_observeDeviceOrientation {
+- (void)_observeNotifies {
     if ( !UIDevice.currentDevice.isGeneratingDeviceOrientationNotifications ) {
-        [UIDevice.currentDevice beginGeneratingDeviceOrientationNotifications];
+         [UIDevice.currentDevice beginGeneratingDeviceOrientationNotifications];
     }
-    [NSNotificationCenter.defaultCenter addObserver:self selector:@selector(_deviceOrientationDidChange) name:UIDeviceOrientationDidChangeNotification object:nil];
+    [NSNotificationCenter.defaultCenter addObserver:self selector:@selector(deviceOrientationDidChangeNotify) name:UIDeviceOrientationDidChangeNotification object:nil];
+    [NSNotificationCenter.defaultCenter addObserver:self selector:@selector(applicationDidChangeStatusBarOrientationNotify) name:UIApplicationDidChangeStatusBarOrientationNotification object:nil];
 }
 
-- (void)removeDeviceOrientationObserver {
+- (void)removeNotifies {
     [NSNotificationCenter.defaultCenter removeObserver:self];
 }
 
-- (void)_deviceOrientationDidChange {
+- (void)applicationDidChangeStatusBarOrientationNotify {
+    if ( !self.superview ) return;
+    if ( !self.target ) return;
+    double system = [[UIDevice currentDevice].systemVersion doubleValue];
+    if ( system >= 8.0 && system < 9.0 ) {
+        NSInteger count = UIApplication.sharedApplication.windows.count;
+        if ( count <= 1 ) return;
+        [[UIApplication sharedApplication].windows enumerateObjectsUsingBlock:^(__kindof UIWindow * _Nonnull obj, NSUInteger idx, BOOL * _Nonnull stop) {
+            if ( ![obj isKindOfClass:NSClassFromString(@"UITextEffectsWindow")] ) return ;
+            *stop = YES;
+            UIWindow *window = UIApplication.sharedApplication.keyWindow;
+            window.rootViewController.editing = NO;
+            dispatch_async(dispatch_get_main_queue(), ^{
+                CGFloat width  = window.bounds.size.width;
+                CGFloat height = window.bounds.size.height;
+                CGFloat max = MAX(width, height);
+                CGFloat min = MIN(width, height);
+                obj.bounds = self.isFullscreen?(CGRect){0, 0, max, min}:(CGRect){0, 0, min, max};
+                obj.transform = self.target.transform;
+            });
+        }];
+    }
+}
+
+- (void)deviceOrientationDidChangeNotify {
     UIDeviceOrientation dev_orientation = [UIDevice currentDevice].orientation;
 
     switch ( dev_orientation ) {
@@ -80,19 +105,19 @@ NS_ASSUME_NONNULL_BEGIN
     switch ( dev_orientation ) {
         case UIDeviceOrientationPortrait: {
             if ( [self isSupportedPortrait] ) {
-                [self rotate:SJOrientation_Portrait animated:YES];
+                 [self rotate:SJOrientation_Portrait animated:YES];
             }
         }
             break;
         case UIDeviceOrientationLandscapeLeft: {
             if ( [self isSupportedLandscapeLeft] ) {
-                [self rotate:SJOrientation_LandscapeLeft animated:YES];
+                 [self rotate:SJOrientation_LandscapeLeft animated:YES];
             }
         }
             break;
         case UIDeviceOrientationLandscapeRight: {
             if ( [self isSupportedLandscapeRight] ) {
-                [self rotate:SJOrientation_LandscapeRight animated:YES];
+                 [self rotate:SJOrientation_LandscapeRight animated:YES];
             }
         }
             break;
@@ -101,15 +126,15 @@ NS_ASSUME_NONNULL_BEGIN
 }
 /// 是否支持 Portrait
 - (BOOL)isSupportedPortrait {
-    return SJAutoRotateSupportedOrientation_Portrait == ( _autorotationSupportedOrientation & SJAutoRotateSupportedOrientation_Portrait);
+    return _autorotationSupportedOrientation & SJAutoRotateSupportedOrientation_Portrait;
 }
 /// 是否支持 LandscapeLeft
 - (BOOL)isSupportedLandscapeLeft {
-    return SJAutoRotateSupportedOrientation_LandscapeLeft == ( _autorotationSupportedOrientation & SJAutoRotateSupportedOrientation_LandscapeLeft);
+    return _autorotationSupportedOrientation & SJAutoRotateSupportedOrientation_LandscapeLeft;
 }
 /// 是否支持 LandscapeRight
 - (BOOL)isSupportedLandscapeRight {
-    return SJAutoRotateSupportedOrientation_LandscapeRight == ( _autorotationSupportedOrientation & SJAutoRotateSupportedOrientation_LandscapeRight);
+    return _autorotationSupportedOrientation & SJAutoRotateSupportedOrientation_LandscapeRight;
 }
 /// 当前方向是否与设备方向一致
 - (BOOL)isCurrentOrientationAsDeviceOrientation {
@@ -130,7 +155,7 @@ NS_ASSUME_NONNULL_BEGIN
 - (void)rotate {
     // 如果是全屏状态 并且 支持 Portrait
     if ( self.isFullscreen && [self isSupportedPortrait] ) {
-        [self rotate:SJOrientation_Portrait animated:YES];
+         [self rotate:SJOrientation_Portrait animated:YES];
 
         return;
     }
@@ -144,12 +169,12 @@ NS_ASSUME_NONNULL_BEGIN
             case UIDeviceOrientationPortrait:
             case UIDeviceOrientationLandscapeLeft:
                 if ( [self isSupportedLandscapeLeft] ) {
-                    [self rotate:SJOrientation_LandscapeLeft animated:YES];
+                     [self rotate:SJOrientation_LandscapeLeft animated:YES];
                 }
                 break;
             case UIDeviceOrientationLandscapeRight: {
                 if ( [self isSupportedLandscapeRight] ) {
-                    [self rotate:SJOrientation_LandscapeRight animated:YES];
+                     [self rotate:SJOrientation_LandscapeRight animated:YES];
                 }
             }
                 break;
@@ -163,12 +188,12 @@ NS_ASSUME_NONNULL_BEGIN
     switch ( _rec_deviceOrientation ) {
         case UIDeviceOrientationLandscapeLeft:
             if ( [self isSupportedLandscapeRight] ) {
-                [self rotate:SJOrientation_LandscapeRight animated:YES];
+                 [self rotate:SJOrientation_LandscapeRight animated:YES];
             }
             break;
         case UIDeviceOrientationLandscapeRight: {
             if ( [self isSupportedLandscapeLeft] ) {
-                [self rotate:SJOrientation_LandscapeLeft animated:YES];
+                 [self rotate:SJOrientation_LandscapeLeft animated:YES];
             }
         }
             break;
@@ -215,7 +240,7 @@ NS_ASSUME_NONNULL_BEGIN
                 break;
         }
         
-        // update 
+        // update
         self.con_portraitRect = [window convertRect:self.superview.bounds fromView:self.superview];
 
         if ( ori_old == SJOrientation_Portrait ) {
@@ -231,8 +256,9 @@ NS_ASSUME_NONNULL_BEGIN
 #pragma clang diagnostic ignored "-Wdeprecated-declarations"
         [[UIApplication sharedApplication] setStatusBarOrientation:statusBarOrientation animated:NO];
 #pragma clang diagnostic pop
+        
         if ( [self.delegate respondsToSelector:@selector(rotationManager:willRotateView:)] ) {
-            [self.delegate rotationManager:self willRotateView:self.isFullscreen];
+             [self.delegate rotationManager:self willRotateView:self.isFullscreen];
         }
         [UIView animateWithDuration:animated ? self.duration : 0 animations:^{
             __strong typeof(_self) self = _self;
@@ -248,8 +274,8 @@ NS_ASSUME_NONNULL_BEGIN
                 [self.target layoutIfNeeded];
             }
             else {
-                CGFloat width = [UIScreen mainScreen].bounds.size.width;
-                CGFloat height = [UIScreen mainScreen].bounds.size.height;
+                CGFloat width  = window.bounds.size.width;
+                CGFloat height = window.bounds.size.height;
                 CGFloat max = MAX(width, height);
                 CGFloat min = MIN(width, height);
                 self.target.bounds = (CGRect){CGPointZero, (CGSize){max, min}};
@@ -272,7 +298,7 @@ NS_ASSUME_NONNULL_BEGIN
             }
             self.transitioning = false;
             if ( [self.delegate respondsToSelector:@selector(rotationManager:didRotateView:)] ) {
-                [self.delegate rotationManager:self didRotateView:self.isFullscreen];
+                 [self.delegate rotationManager:self didRotateView:self.isFullscreen];
             }
             if ( completionHandler ) completionHandler(self);
         }];

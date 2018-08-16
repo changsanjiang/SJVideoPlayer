@@ -20,30 +20,25 @@ NS_ASSUME_NONNULL_BEGIN
 
 @implementation SJControlLayerSwitcher
 
-- (instancetype)init {
+- (instancetype)initWithPlayer:(__weak SJBaseVideoPlayer *)videoPlayer {
     self = [super init];
     if ( !self ) return nil;
+    _videoPlayer = videoPlayer;
     _map = [NSMutableDictionary dictionary];
     _previousIdentifier = SJControlLayer_Uninitialized;
     _currentIdentifier = SJControlLayer_Uninitialized;
     return self;
 }
 
+- (void)switchControlLayerForIdentitfier:(SJControlLayerIdentifier)identifier {
+    [self switchControlLayerForIdentitfier:identifier toVideoPlayer:_videoPlayer];
+}
+
 - (void)switchControlLayerForIdentitfier:(SJControlLayerIdentifier)identifier toVideoPlayer:(__kindof SJBaseVideoPlayer *)videoPlayer {
     SJControlLayerCarrier *carrier_new = self.map[@(identifier)];
     NSParameterAssert(carrier_new);
-    
     SJControlLayerCarrier *carrier_old = self.map[@(self.currentIdentifier)];
-    if ( carrier_old.exitExeBlock ) carrier_old.exitExeBlock(carrier_old);
-    
-    videoPlayer.controlLayerDataSource = carrier_new.dataSource;
-    videoPlayer.controlLayerDelegate = carrier_new.delegate;
-    
-    _previousIdentifier = _currentIdentifier;
-    _currentIdentifier = carrier_new.identifier;
-    _videoPlayer = videoPlayer;
-    
-    if ( carrier_new.restartExeBlock ) carrier_new.restartExeBlock(carrier_new);
+    [self _switchControlLayerWithOldcarrier:carrier_old newcarrier:carrier_new toVideoPlayer:videoPlayer];
 }
 
 - (BOOL)switchToPreviousControlLayer {
@@ -54,7 +49,24 @@ NS_ASSUME_NONNULL_BEGIN
 }
 
 - (void)addControlLayer:(SJControlLayerCarrier *)carrier {
-    [self.map setObject:carrier forKey:@(carrier.identifier)];
+    SJControlLayerCarrier *old = self.map[@(carrier.identifier)];
+    /// 添加
+    if ( !old ) [self.map setObject:carrier forKey:@(carrier.identifier)];
+    /// 替换
+    else [self _switchControlLayerWithOldcarrier:old newcarrier:carrier toVideoPlayer:_videoPlayer];
+}
+
+- (void)_switchControlLayerWithOldcarrier:(SJControlLayerCarrier *_Nullable )carrier_old newcarrier:(SJControlLayerCarrier *)carrier_new toVideoPlayer:(__kindof SJBaseVideoPlayer *)videoPlayer {
+    NSParameterAssert(carrier_new);
+    if ( carrier_old.exitExeBlock ) carrier_old.exitExeBlock(carrier_old);
+    
+    videoPlayer.controlLayerDataSource = carrier_new.dataSource;
+    videoPlayer.controlLayerDelegate = carrier_new.delegate;
+    
+    _previousIdentifier = _currentIdentifier;
+    _currentIdentifier = carrier_new.identifier;
+
+    if ( carrier_new.restartExeBlock ) carrier_new.restartExeBlock(carrier_new);
 }
 
 - (void)deleteControlLayerForIdentifier:(SJControlLayerIdentifier)identifier {

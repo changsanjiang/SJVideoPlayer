@@ -906,13 +906,17 @@ NS_ASSUME_NONNULL_BEGIN
 
 // 1.
 - (void)setURLAsset:(nullable SJVideoPlayerURLAsset *)URLAsset {
+    if ( self.URLAsset ) {
+        if ( self.assetDeallocExeBlock ) self.assetDeallocExeBlock(self);
+    }
+    
+    _URLAsset = URLAsset;
+    
+    __weak typeof(self) _self = self;
     dispatch_async(dispatch_get_main_queue(), ^{
-        if ( self.URLAsset ) {
-            if ( self.assetDeallocExeBlock ) self.assetDeallocExeBlock(self);
-        }
-        
-        self->_URLAsset = URLAsset;
-        
+        __strong typeof(_self) self = _self;
+        if ( !self ) return;
+        if ( self.URLAsset != URLAsset ) return;
         // 维护当前播放的indexPath
         if ( [URLAsset.playModel isKindOfClass:[SJUITableViewCellPlayModel class]] ) {
             SJUITableViewCellPlayModel *playModel = (id)URLAsset.playModel;

@@ -47,7 +47,7 @@ NS_ASSUME_NONNULL_BEGIN
     /// 添加一个控制层
     [self.switcher addControlLayer:self.defaultEdgeCarrier];
     /// 切换到添加的控制层
-    [self.switcher switchControlLayerForIdentitfier:SJControlLayer_Edge toVideoPlayer:self];
+    [self.switcher switchControlLayerForIdentitfier:SJControlLayer_Edge];
     return self;
 }
 
@@ -56,7 +56,7 @@ NS_ASSUME_NONNULL_BEGIN
     /// 添加一个控制层
     [videoPlayer.switcher addControlLayer:videoPlayer.defaultEdgeLightweightCarrier];
     /// 切换到添加的控制层
-    [videoPlayer.switcher switchControlLayerForIdentitfier:SJControlLayer_Edge toVideoPlayer:videoPlayer];
+    [videoPlayer.switcher switchControlLayerForIdentitfier:SJControlLayer_Edge];
     return videoPlayer;
 }
 
@@ -69,7 +69,7 @@ NS_ASSUME_NONNULL_BEGIN
 @synthesize switcher = _switcher;
 - (SJControlLayerSwitcher *)switcher {
     if ( _switcher ) return _switcher;
-    return _switcher = [[SJControlLayerSwitcher alloc] init];
+    return _switcher = [[SJControlLayerSwitcher alloc] initWithPlayer:self];
 }
 
 @synthesize defaultEdgeCarrier = _defaultEdgeCarrier;
@@ -100,7 +100,7 @@ NS_ASSUME_NONNULL_BEGIN
 }
 /// 右侧按钮被点击
 - (void)clickedFilmEditingBtnOnControlLayer:(SJEdgeControlLayer *)controlLayer {
-    [self.switcher switchControlLayerForIdentitfier:SJControlLayer_FilmEditing toVideoPlayer:self];
+    [self.switcher switchControlLayerForIdentitfier:SJControlLayer_FilmEditing];
 }
 
 #pragma mark
@@ -126,12 +126,12 @@ NS_ASSUME_NONNULL_BEGIN
 
 /// 用户点击空白区域
 - (void)userTappedBlankAreaOnControlLayer:(SJFilmEditingControlLayer *)controlLayer {
-    [self.switcher switchControlLayerForIdentitfier:self.switcher.previousIdentifier toVideoPlayer:self];
+    [self.switcher switchControlLayerForIdentitfier:self.switcher.previousIdentifier];
 }
 
 /// 用户点击了取消按钮
 - (void)userClickedCancelBtnOnControlLayer:(SJFilmEditingControlLayer *)controlLayer {
-    [self.switcher switchControlLayerForIdentitfier:self.switcher.previousIdentifier toVideoPlayer:self];
+    [self.switcher switchControlLayerForIdentitfier:self.switcher.previousIdentifier];
 }
 
 /// 状态改变的回调
@@ -168,7 +168,7 @@ NS_ASSUME_NONNULL_BEGIN
 }
 /// 右侧按钮被点击
 - (void)clickedFilmEditingBtnOnLightweightControlLayer:(SJEdgeLightweightControlLayer *)controlLayer {
-    [self.switcher switchControlLayerForIdentitfier:SJControlLayer_FilmEditing toVideoPlayer:self];
+    [self.switcher switchControlLayerForIdentitfier:SJControlLayer_FilmEditing];
 }
 
 @end
@@ -307,7 +307,7 @@ NS_ASSUME_NONNULL_BEGIN
 }
 
 - (void)dismissFilmEditingViewCompletion:(void(^__nullable)(SJVideoPlayer *player))completion {
-    [self.switcher switchControlLayerForIdentitfier:SJControlLayer_Edge toVideoPlayer:self];
+    [self.switcher switchControlLayerForIdentitfier:SJControlLayer_Edge];
     if ( completion ) completion(self);
 }
 @end

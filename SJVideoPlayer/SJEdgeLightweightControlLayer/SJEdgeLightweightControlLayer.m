@@ -129,7 +129,10 @@ NS_ASSUME_NONNULL_BEGIN
         [self->_leftControlView disappear];
         [self->_bottomSlider disappear];
         [self->_centerControlView disappear];
-    }, compeletionHandler);
+    }, ^{
+        [self.controlView removeFromSuperview];
+        if ( compeletionHandler ) compeletionHandler();
+    });
 }
 
 #pragma mark -

@@ -41,18 +41,23 @@
     SJDemoControlLayer *demoControlLayer = [SJDemoControlLayer new];
     demoControlLayer.delegate = self;
 
+    
+    static SJControlLayerIdentifier SJControlLayer_Demo_Edge = 1;
+    
     // create a data carrier and add to switcher
-    [_videoPlayer.switcher addControlLayer:[[SJControlLayerCarrier alloc] initWithIdentifier:SJControlLayer_FilmEditing - 3 dataSource:demoControlLayer delegate:demoControlLayer exitExeBlock:^(SJControlLayerCarrier * _Nonnull carrier) {
+    [_videoPlayer.switcher addControlLayer:[[SJControlLayerCarrier alloc] initWithIdentifier:SJControlLayer_Demo_Edge dataSource:demoControlLayer delegate:demoControlLayer exitExeBlock:^(SJControlLayerCarrier * _Nonnull carrier) {
         [demoControlLayer exitControlLayerCompeletionHandler:^{
+            
             // remove control view from player view
             [demoControlLayer.controlView removeFromSuperview];
+
         }];
     } restartExeBlock:^(SJControlLayerCarrier * _Nonnull carrier) {
         [demoControlLayer restartControlLayerCompeletionHandler:nil];
     }]];
     
     // switch
-    [_videoPlayer.switcher switchControlLayerForIdentitfier:SJControlLayer_FilmEditing - 3 toVideoPlayer:_videoPlayer];
+    [_videoPlayer.switcher switchControlLayerForIdentitfier:SJControlLayer_Demo_Edge toVideoPlayer:_videoPlayer];
 }
 
 #pragma mark - demo control layer delegate method

@@ -153,7 +153,10 @@ NS_ASSUME_NONNULL_END
         [self->_previewView disappear];
         [self->_bottomSlider disappear];
         [self->_centerControlView disappear];
-    }, compeletionHandler);
+    }, ^{
+        [self.controlView removeFromSuperview];
+        if ( compeletionHandler ) compeletionHandler();
+    });
 }
 
 #pragma mark - Player extension

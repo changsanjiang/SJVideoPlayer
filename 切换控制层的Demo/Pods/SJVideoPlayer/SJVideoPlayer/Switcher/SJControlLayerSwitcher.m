@@ -38,6 +38,7 @@ NS_ASSUME_NONNULL_BEGIN
     SJControlLayerCarrier *carrier_new = self.map[@(identifier)];
     NSParameterAssert(carrier_new);
     SJControlLayerCarrier *carrier_old = self.map[@(self.currentIdentifier)];
+    if ( carrier_new == carrier_old ) return;
     [self _switchControlLayerWithOldcarrier:carrier_old newcarrier:carrier_new toVideoPlayer:videoPlayer];
 }
 
@@ -50,10 +51,13 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (void)addControlLayer:(SJControlLayerCarrier *)carrier {
     SJControlLayerCarrier *old = self.map[@(carrier.identifier)];
-    /// 添加
-    if ( !old ) [self.map setObject:carrier forKey:@(carrier.identifier)];
     /// 替换
-    else [self _switchControlLayerWithOldcarrier:old newcarrier:carrier toVideoPlayer:_videoPlayer];
+    if ( old ) {
+        [self _switchControlLayerWithOldcarrier:old newcarrier:carrier toVideoPlayer:_videoPlayer];
+    }
+    
+    /// 添加
+    [self.map setObject:carrier forKey:@(carrier.identifier)];
 }
 
 - (void)_switchControlLayerWithOldcarrier:(SJControlLayerCarrier *_Nullable )carrier_old newcarrier:(SJControlLayerCarrier *)carrier_new toVideoPlayer:(__kindof SJBaseVideoPlayer *)videoPlayer {

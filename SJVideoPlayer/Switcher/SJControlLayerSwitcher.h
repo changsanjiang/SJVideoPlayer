@@ -21,14 +21,16 @@ NS_ASSUME_NONNULL_BEGIN
 /// 使用示例请查看`SJVideoPlayer`的`init`方法.
 @interface SJControlLayerSwitcher : NSObject
 
-- (instancetype)init;
+- (instancetype)initWithPlayer:(__weak SJBaseVideoPlayer *)player;
+- (instancetype)init NS_UNAVAILABLE;
++ (instancetype)new NS_UNAVAILABLE;
 
 @property (nonatomic, readonly) SJControlLayerIdentifier currentIdentifier;  // 当前标识(控制层的标识)
 @property (nonatomic, readonly) SJControlLayerIdentifier previousIdentifier; // 前一个标识
 
-
 /// 切换控制层
 /// 将当前的控制层切换为指定标识的控制层
+- (void)switchControlLayerForIdentitfier:(SJControlLayerIdentifier)identifier;
 - (void)switchControlLayerForIdentitfier:(SJControlLayerIdentifier)identifier
                            toVideoPlayer:(__kindof SJBaseVideoPlayer *)videoPlayer;
 
@@ -40,6 +42,5 @@ NS_ASSUME_NONNULL_BEGIN
 - (void)deleteControlLayerForIdentifier:(SJControlLayerIdentifier)identifier;
 
 - (nullable SJControlLayerCarrier *)controlLayerForIdentifier:(SJControlLayerIdentifier)identifier;
-
 @end
 NS_ASSUME_NONNULL_END

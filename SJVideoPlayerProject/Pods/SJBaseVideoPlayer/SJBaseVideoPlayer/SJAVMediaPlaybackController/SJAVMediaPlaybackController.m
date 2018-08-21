@@ -72,6 +72,7 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic, strong, readonly) SJVideoPlayerRegistrar *registrar;
 @property (nonatomic) BOOL isPreparing;
 @property (nonatomic, strong, nullable) SJAVMediaPlayAsset *playAsset;
+@property (nonatomic, strong, readonly) dispatch_queue_t serailQueue;
 @end
 
 @implementation SJAVMediaPlaybackController
@@ -108,6 +109,9 @@ NS_ASSUME_NONNULL_BEGIN
     self = [super init];
     if ( !self ) return nil;
     _rate = 1;
+    static dispatch_queue_t queue;
+    if ( !queue ) queue = dispatch_queue_create("com.SJAVMediaPlaybackController", DISPATCH_QUEUE_SERIAL);
+    _serailQueue = queue;
     [self registrar];
     return self;
 }
@@ -124,6 +128,7 @@ NS_ASSUME_NONNULL_BEGIN
     _playAsset = nil;
     _error = nil;
     _prepareStatus = SJMediaPlaybackPrepareStatusUnknown;
+    _isPreparing = NO;
     _media = media;
 }
 
@@ -153,9 +158,10 @@ void setAVMediaPlayAsset(id<SJMediaModelProtocol> media, SJAVMediaPlayAsset *_Nu
     if ( !_media ) return;
     if ( _isPreparing ) return; _isPreparing = YES;
     __weak typeof(self) _self = self;
-    dispatch_async(dispatch_get_global_queue(0, 0), ^{
+    dispatch_async(_serailQueue, ^{
         __strong typeof(_self) self = _self;
         if ( !self ) return;
+        if ( !self.media ) return;
         /// played by other media
         if ( self.media.otherMedia ) {
             self.playAsset = getAVMediaPlayAsset(self.media.otherMedia);

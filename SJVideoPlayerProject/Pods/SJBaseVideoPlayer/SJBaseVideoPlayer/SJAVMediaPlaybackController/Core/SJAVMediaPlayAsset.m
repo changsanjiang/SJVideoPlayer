@@ -37,6 +37,12 @@ static NSNotificationName const SJAVMediaPlayAssetDidCompletedLoadNotification =
 
 @implementation SJAVMediaPlayAsset
 
+- (void)dealloc {
+#ifdef DEBUG
+    NSLog(@"%d - %s", (int)__LINE__, __func__);
+#endif
+}
+
 - (instancetype)init {
     self = [super init];
     if ( !self ) return nil;

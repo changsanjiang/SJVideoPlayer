@@ -51,35 +51,10 @@ NS_ASSUME_NONNULL_BEGIN
          [UIDevice.currentDevice beginGeneratingDeviceOrientationNotifications];
     }
     [NSNotificationCenter.defaultCenter addObserver:self selector:@selector(deviceOrientationDidChangeNotify) name:UIDeviceOrientationDidChangeNotification object:nil];
-    [NSNotificationCenter.defaultCenter addObserver:self selector:@selector(applicationDidChangeStatusBarOrientationNotify) name:UIApplicationDidChangeStatusBarOrientationNotification object:nil];
 }
 
 - (void)removeNotifies {
     [NSNotificationCenter.defaultCenter removeObserver:self];
-}
-
-- (void)applicationDidChangeStatusBarOrientationNotify {
-    if ( !self.superview ) return;
-    if ( !self.target ) return;
-    double system = [[UIDevice currentDevice].systemVersion doubleValue];
-    if ( system >= 8.0 && system < 9.0 ) {
-        NSInteger count = UIApplication.sharedApplication.windows.count;
-        if ( count <= 1 ) return;
-        [[UIApplication sharedApplication].windows enumerateObjectsUsingBlock:^(__kindof UIWindow * _Nonnull obj, NSUInteger idx, BOOL * _Nonnull stop) {
-            if ( ![obj isKindOfClass:NSClassFromString(@"UITextEffectsWindow")] ) return ;
-            *stop = YES;
-            UIWindow *window = UIApplication.sharedApplication.keyWindow;
-            window.rootViewController.editing = NO;
-            dispatch_async(dispatch_get_main_queue(), ^{
-                CGFloat width  = window.bounds.size.width;
-                CGFloat height = window.bounds.size.height;
-                CGFloat max = MAX(width, height);
-                CGFloat min = MIN(width, height);
-                obj.bounds = self.isFullscreen?(CGRect){0, 0, max, min}:(CGRect){0, 0, min, max};
-                obj.transform = self.target.transform;
-            });
-        }];
-    }
 }
 
 - (void)deviceOrientationDidChangeNotify {

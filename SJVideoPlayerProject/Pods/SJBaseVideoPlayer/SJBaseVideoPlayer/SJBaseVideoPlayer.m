@@ -285,19 +285,6 @@ NS_ASSUME_NONNULL_BEGIN
     printf("%s\n", playStatusStr.UTF8String);
 #endif
     
-    if ( [self playStatus_isUnknown] || [self playStatus_isPrepare] ) {
-        if ( !self.URLAsset.otherMedia ) {
-            [UIView animateWithDuration:0.4 animations:^{
-               [self.presentView showPlaceholder];
-            }];
-        }
-    }
-    else if ( [self playStatus_isReadyToPlay] ) {
-        [UIView animateWithDuration:0.4 animations:^{
-            [self.presentView hiddenPlaceholder];
-        }];
-    }
-
 #pragma clang diagnostic push
 #pragma clang diagnostic ignored "-Wdeprecated-declarations"
     switch ( playStatus ) {
@@ -338,10 +325,31 @@ NS_ASSUME_NONNULL_BEGIN
     }
 #pragma clang diagnostic pop
     
-    
-    if ( [self.controlLayerDelegate respondsToSelector:@selector(videoPlayer:statusDidChanged:)] ) {
-        [self.controlLayerDelegate videoPlayer:self statusDidChanged:playStatus];
+    __weak typeof(self) _self = self;
+    if ( [self playStatus_isUnknown] || [self playStatus_isPrepare] ) {
+        if ( !self.URLAsset.otherMedia ) {
+            dispatch_async(dispatch_get_main_queue(), ^{
+                [UIView animateWithDuration:0.4 animations:^{
+                    [self.presentView showPlaceholder];
+                }];
+            });
+        }
     }
+    else if ( [self playStatus_isReadyToPlay] ) {
+        dispatch_async(dispatch_get_main_queue(), ^{
+            [UIView animateWithDuration:0.4 animations:^{
+                [self.presentView hiddenPlaceholder];
+            }];
+        });
+    }
+
+    dispatch_async(dispatch_get_main_queue(), ^{
+        __strong typeof(_self) self = _self;
+        if ( !self ) return;
+        if ( [self.controlLayerDelegate respondsToSelector:@selector(videoPlayer:statusDidChanged:)] ) {
+            [self.controlLayerDelegate videoPlayer:self statusDidChanged:playStatus];
+        }
+    });
 }
 
 
@@ -912,47 +920,41 @@ NS_ASSUME_NONNULL_BEGIN
     
     _URLAsset = URLAsset;
     
-    __weak typeof(self) _self = self;
-    dispatch_async(dispatch_get_main_queue(), ^{
-        __strong typeof(_self) self = _self;
-        if ( !self ) return;
-        if ( self.URLAsset != URLAsset ) return;
-        // 维护当前播放的indexPath
-        if ( [URLAsset.playModel isKindOfClass:[SJUITableViewCellPlayModel class]] ) {
-            SJUITableViewCellPlayModel *playModel = (id)URLAsset.playModel;
-            if ( playModel.tableView.sj_enabledAutoplay ) {
-                playModel.tableView.sj_currentPlayingIndexPath = playModel.indexPath;
-            }
+    // 维护当前播放的indexPath
+    if ( [URLAsset.playModel isKindOfClass:[SJUITableViewCellPlayModel class]] ) {
+        SJUITableViewCellPlayModel *playModel = (id)URLAsset.playModel;
+        if ( playModel.tableView.sj_enabledAutoplay ) {
+            playModel.tableView.sj_currentPlayingIndexPath = playModel.indexPath;
         }
-        else if ( [URLAsset.playModel isKindOfClass:[SJUICollectionViewCellPlayModel class]] ) {
-            SJUICollectionViewCellPlayModel *playModel = (id)URLAsset.playModel;
-            if ( playModel.collectionView.sj_enabledAutoplay ) {
-                playModel.collectionView.sj_currentPlayingIndexPath = playModel.indexPath;
-            }
+    }
+    else if ( [URLAsset.playModel isKindOfClass:[SJUICollectionViewCellPlayModel class]] ) {
+        SJUICollectionViewCellPlayModel *playModel = (id)URLAsset.playModel;
+        if ( playModel.collectionView.sj_enabledAutoplay ) {
+            playModel.collectionView.sj_currentPlayingIndexPath = playModel.indexPath;
         }
+    }
+    
+    self.playbackController.media = URLAsset;
+
+    if ( !URLAsset ) {
+        self.playStatus = SJVideoPlayerPlayStatusUnknown;
+        self.playModelObserver = nil;
+    }
+    else {
+        self.playStatus = SJVideoPlayerPlayStatusPrepare;
+        self.playModelObserver = [[SJPlayModelPropertiesObserver alloc] initWithPlayModel:URLAsset.playModel];
+        self.playModelObserver.delegate = (id)self;
+        [self.playbackController prepareToPlay];
         
-        self.playbackController.media = URLAsset;
-        
-        if ( !URLAsset ) {
-            self.playStatus = SJVideoPlayerPlayStatusUnknown;
-            self.playModelObserver = nil;
-        }
-        else {
-            self.playStatus = SJVideoPlayerPlayStatusPrepare;
+        dispatch_async(dispatch_get_main_queue(), ^{
             if ( [self.controlLayerDelegate respondsToSelector:@selector(startLoading:)] ) {
                 [self.controlLayerDelegate startLoading:self];
             }
-            
-            self.playModelObserver = [[SJPlayModelPropertiesObserver alloc] initWithPlayModel:URLAsset.playModel];
-            self.playModelObserver.delegate = (id)self;
-            
             if ( [self.controlLayerDelegate respondsToSelector:@selector(videoPlayer:prepareToPlay:)] ) {
                 [self.controlLayerDelegate videoPlayer:self prepareToPlay:URLAsset];
             }
-            
-            [self.playbackController prepareToPlay];
-        }
-    });
+        });
+    }
 }
 
 - (nullable SJVideoPlayerURLAsset *)URLAsset {

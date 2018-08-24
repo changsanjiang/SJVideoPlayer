@@ -34,6 +34,7 @@ NS_ASSUME_NONNULL_BEGIN
 - (instancetype)initWithOtherAsset:(SJVideoPlayerURLAsset *)otherMedia playModel:(nullable __kindof SJPlayModel *)playModel {
     self = [super init];
     if ( !self ) return nil;
+    _mediaURL = otherMedia.mediaURL;
     _otherMedia = otherMedia;
     _playModel = playModel?:[SJPlayModel new];
     return self;

@@ -788,7 +788,7 @@ NS_ASSUME_NONNULL_BEGIN
         [self.backBtn setImage:setting.backBtnImage forState:UIControlStateNormal];
         self.bottomSlider.traceImageView.backgroundColor = setting.progress_traceColor;
         self.bottomSlider.trackImageView.backgroundColor = setting.progress_bufferColor;
-        self.videoPlayer.placeholder = setting.placeholder;
+        if ( !self.videoPlayer.placeholder && setting.placeholder ) self.videoPlayer.placeholder = setting.placeholder;
         [self.draggingProgressView setPreviewImage:setting.placeholder];
         if ( self.enableFilmEditing ) self.rightControlView.filmEditingBtnImage = setting.filmEditingBtnImage;
         self.settings = setting;

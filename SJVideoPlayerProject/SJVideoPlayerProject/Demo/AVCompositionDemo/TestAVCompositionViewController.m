@@ -71,6 +71,8 @@ NS_ASSUME_NONNULL_BEGIN
         make.leading.trailing.offset(0);
         make.height.equalTo(self.player.view.mas_width).multipliedBy(9/16.0);
     }];
+    
+    _player.autoPlay = NO;
 }
 
 - (void)viewDidAppear:(BOOL)animated {

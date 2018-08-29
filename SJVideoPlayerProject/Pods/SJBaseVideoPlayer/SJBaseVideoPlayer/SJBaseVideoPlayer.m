@@ -235,7 +235,7 @@ NS_ASSUME_NONNULL_BEGIN
 }
 
 + (NSString *)version {
-    return @"1.4.0";
+    return @"1.4.5";
 }
 
 - (nullable __kindof UIViewController *)atViewController {
@@ -275,7 +275,7 @@ NS_ASSUME_NONNULL_BEGIN
 - (void)setPlayStatus:(SJVideoPlayerPlayStatus)playStatus {
     NSString *playStatusStr = [self getPlayStatusStr:playStatus];
     if ( [playStatusStr isEqualToString:_playStatusStr] ) return;
-
+    
     /// 所有播放状态, 均在`PlayControl`分类中维护
     /// 所有播放状态, 均在`PlayControl`分类中维护
     _playStatus = playStatus;
@@ -488,7 +488,7 @@ NS_ASSUME_NONNULL_BEGIN
         if ( self.isLockedScreen ) return NO;
         
         SJDisablePlayerGestureTypes disableTypes = self.disableGestureTypes;
-
+        
         switch (type) {
             case SJPlayerGestureType_Unknown: break;
             case SJPlayerGestureType_Pan: {
@@ -522,7 +522,7 @@ NS_ASSUME_NONNULL_BEGIN
         if ( [self playStatus_isInactivity_ReasonPlayFailed] ) return NO;
         
         if ( SJPlayerGestureType_Pan == type &&
-             self.isPlayOnScrollView &&
+            self.isPlayOnScrollView &&
             !self.rotationManager.isFullscreen ) return NO;
         
         if ( self.controlLayerDataSource &&
@@ -540,8 +540,8 @@ NS_ASSUME_NONNULL_BEGIN
     _gestureControl.doubleTapped = ^(SJPlayerGestureControl * _Nonnull control) {
         __strong typeof(_self) self = _self;
         if ( !self ) return;
-        if ( [self playStatus_isPaused] || [self playStatus_isInactivity_ReasonPlayEnd] ) [self play];
-        else [self pause];
+        if ( [self playStatus_isPlaying] ) [self pause];
+        else [self play];
     };
     
     static CGFloat __increment;
@@ -939,7 +939,7 @@ NS_ASSUME_NONNULL_BEGIN
     }
     
     self.playbackController.media = URLAsset;
-
+    
     if ( !URLAsset ) {
         self.playStatus = SJVideoPlayerPlayStatusUnknown;
         self.playModelObserver = nil;
@@ -1039,7 +1039,7 @@ NS_ASSUME_NONNULL_BEGIN
             }
         }
     }
-
+    
     self.inactivityReason = SJVideoPlayerInactivityReasonPlayEnd;
     self.playStatus = SJVideoPlayerPlayStatusInactivity;
     if ( self.playDidToEndExeBlock ) self.playDidToEndExeBlock(self);
@@ -1140,7 +1140,7 @@ NS_ASSUME_NONNULL_BEGIN
         };
         return;
     }
-
+    
     [_playbackController play];
     
     self.playStatus = SJVideoPlayerPlayStatusPlaying;
@@ -1153,7 +1153,7 @@ NS_ASSUME_NONNULL_BEGIN
 }
 
 - (void)pause:(SJVideoPlayerPausedReason)reason {
-
+    
     if ( !self.URLAsset ) return;
     
     if ( [self playStatus_isPaused_ReasonPause] ) return;
@@ -1175,7 +1175,7 @@ NS_ASSUME_NONNULL_BEGIN
     }
     
     [self.playbackController pause];
-
+    
     self.pausedReason = reason;
     self.playStatus = SJVideoPlayerPlayStatusPaused;
 }
@@ -1298,7 +1298,7 @@ NS_ASSUME_NONNULL_BEGIN
     if ( _rate == rate ) return;
     _rate = rate;
     _playbackController.rate = rate;
-
+    
     if ( [self.controlLayerDelegate respondsToSelector:@selector(videoPlayer:rateChanged:)] ) {
         [self.controlLayerDelegate videoPlayer:self rateChanged:rate];
     }
@@ -2025,7 +2025,7 @@ NS_ASSUME_NONNULL_BEGIN
     if ( _videoPlayer.controlLayerAppearStateChanged ) {
         _videoPlayer.controlLayerAppearStateChanged(_videoPlayer, status);
     }
-
+    
     [UIView animateWithDuration:self.videoPlayer.rotationManager.transitioning ? 0 : 0.25 animations:^{
         [[self.videoPlayer atViewController] setNeedsStatusBarAppearanceUpdate];
     }];
@@ -2146,7 +2146,7 @@ NS_ASSUME_NONNULL_BEGIN
             make.edges.equalTo(superview);
         }];
     }
-
+    
     if ( [self.controlLayerDelegate respondsToSelector:@selector(videoPlayerWillAppearInScrollView:)] ) {
         [self.controlLayerDelegate videoPlayerWillAppearInScrollView:self];
     }

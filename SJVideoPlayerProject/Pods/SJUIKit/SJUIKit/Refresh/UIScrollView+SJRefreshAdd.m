@@ -43,32 +43,45 @@ char const SJRefreshingNonePageSize = -1;
 }
 
 - (void)sj_setupRefreshingWithRefreshingBlock:(void(^)(__kindof UIScrollView *scrollView, NSInteger pageNum))refreshingBlock {
-    [self sj_setupRefreshingWithPageSize:SJRefreshingNonePageSize beginPageNum:0 refreshingBlock:refreshingBlock];
+    [self _sj_setupRefreshingWithEnableHeader:YES enableFooter:NO pageSize:SJRefreshingNonePageSize beginPageNum:0 refreshingBlock:refreshingBlock];
 }
 
 - (void)sj_setupRefreshingWithPageSize:(short)pageSize
                           beginPageNum:(NSInteger)beginPageNum
                        refreshingBlock:(void(^)(__kindof UIScrollView *scrollView, NSInteger pageNum))refreshingBlock {
+    [self _sj_setupRefreshingWithEnableHeader:YES enableFooter:YES pageSize:pageSize beginPageNum:beginPageNum refreshingBlock:refreshingBlock];
+}
+- (void)sj_setupFooterRefreshingWithPageSize:(short)pageSize beginPageNum:(NSInteger)beginPageNum refreshingBlock:(void (^)(__kindof UIScrollView * _Nonnull, NSInteger))refreshingBlock {
+    [self _sj_setupRefreshingWithEnableHeader:NO enableFooter:YES pageSize:pageSize beginPageNum:beginPageNum refreshingBlock:refreshingBlock];
+}
+- (void)_sj_setupRefreshingWithEnableHeader:(BOOL)enableHeader
+                               enableFooter:(BOOL)enableFooter
+                                   pageSize:(short)pageSize
+                               beginPageNum:(NSInteger)beginPageNum
+                            refreshingBlock:(void(^)(__kindof UIScrollView *scrollView, NSInteger pageNum))refreshingBlock {
     __weak typeof(self) _self = self;
-    self.mj_header = [MJRefreshGifHeader headerWithRefreshingBlock:^{
-        __strong typeof(_self) self = _self;
-        if ( !self ) return ;
-        refreshingBlock(self, self.sj_pageNum = self.sj_beginPageNum);
-    }];
+    if ( enableHeader ) {
+        self.mj_header = [MJRefreshGifHeader headerWithRefreshingBlock:^{
+            __strong typeof(_self) self = _self;
+            if ( !self ) return ;
+            refreshingBlock(self, self.sj_pageNum = self.sj_beginPageNum);
+        }];
+    }
     
-    // footer
-    self.mj_footer = [MJRefreshAutoGifFooter footerWithRefreshingBlock:^{
-        __strong typeof(_self) self = _self;
-        if ( !self ) return;
-        refreshingBlock(self, self.sj_pageNum);
-    }];
+    if ( enableFooter ) {
+        self.mj_footer = [MJRefreshAutoGifFooter footerWithRefreshingBlock:^{
+            __strong typeof(_self) self = _self;
+            if ( !self ) return;
+            refreshingBlock(self, self.sj_pageNum);
+        }];
+    }
     
     if (@available(iOS 11.0, *)) {
         self.contentInsetAdjustmentBehavior = UIScrollViewContentInsetAdjustmentNever;
     }
     
     self.sj_pageSize = pageSize;
-    self.sj_beginPageNum = beginPageNum;
+    if ( 0 != beginPageNum ) self.sj_beginPageNum = beginPageNum;
     self.sj_pageNum = beginPageNum;
     self.mj_footer.hidden = YES;
     
@@ -77,9 +90,8 @@ char const SJRefreshingNonePageSize = -1;
     [UIScrollView.sj_refreshConfig configHeader:(MJRefreshGifHeader *)self.mj_header];
     [UIScrollView.sj_refreshConfig configFooter:(MJRefreshAutoGifFooter *)self.mj_footer];
 }
-
 - (void)sj_endRefreshingWithItemCount:(NSUInteger)itemCount {
-    if ( self.sj_pageNum == self.sj_beginPageNum ) {
+    if ( self.sj_pageNum == self.sj_beginPageNum && self.mj_header ) {
         [self sj_endHeaderRefreshingWithItemCount:itemCount];
     }
     else {
@@ -112,11 +124,21 @@ char const SJRefreshingNonePageSize = -1;
 }
 
 - (void)sj_exeHeaderRefreshing {
+    [self sj_exeHeaderRefreshingAnimated:YES];
+}
+
+- (void)sj_exeHeaderRefreshingAnimated:(BOOL)animated {
     if ( self.mj_header.state != MJRefreshStateIdle ) [self.mj_header endRefreshing];
-    [self.mj_header beginRefreshing];
+    if ( animated ) {
+        [self.mj_header beginRefreshing];
+    }
+    else {
+        if ( self.mj_header.refreshingBlock != nil ) self.mj_header.refreshingBlock();
+    }
 }
 
 - (void)sj_exeFooterRefreshing {
+    self.mj_footer.hidden = NO;
     if ( self.mj_footer.state != MJRefreshStateIdle ) [self.mj_footer endRefreshing];
     [self.mj_footer beginRefreshing];
 }

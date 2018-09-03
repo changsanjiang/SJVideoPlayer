@@ -1136,7 +1136,7 @@ NS_ASSUME_NONNULL_BEGIN
     if ( [self playStatus_isPrepare] ) {
         // 记录操作, 待资源初始化完成后调用
         self.operationOfInitializing = ^(SJBaseVideoPlayer * _Nonnull player) {
-            [player play];
+            if ( player.autoPlay ) [player play];
         };
         return;
     }

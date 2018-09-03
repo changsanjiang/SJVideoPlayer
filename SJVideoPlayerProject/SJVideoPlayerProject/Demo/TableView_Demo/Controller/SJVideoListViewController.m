@@ -94,6 +94,14 @@ static NSString *const SJVideoListTableViewCellID = @"SJVideoListTableViewCell";
     [_player.view mas_makeConstraints:^(MASConstraintMaker *make) {
         make.edges.offset(0);
     }];
+    
+    
+    dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(3 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
+#ifdef DEBUG
+        NSLog(@"%d - %s", (int)__LINE__, __func__);
+#endif
+        self.player.mute = YES;
+    });
 }
 
 @synthesize filmEditingHelper = _filmEditingHelper;

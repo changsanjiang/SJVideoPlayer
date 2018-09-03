@@ -47,6 +47,8 @@
 
         [self.navigationController popViewControllerAnimated:YES];
     };
+    
+    [[UIDevice currentDevice] setValue:@(UIDeviceOrientationPortrait) forKey:@"orientation"];
     // Do any additional setup after loading the view.
 }
 

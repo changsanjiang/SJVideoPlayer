@@ -26,12 +26,6 @@ NS_ASSUME_NONNULL_BEGIN
 @property (readonly) BOOL loadIsCompleted;
 /// 加载
 - (void)load;
-
-
-/// 通过其他资源进行初始化
-- (instancetype)initWithOtherAsset:(SJAVMediaPlayAsset *)other;
-/// 是否是通过其他资源进行的初始化
-@property (nonatomic, readonly) BOOL isOtherAsset;
 @end
 
 #pragma mark -

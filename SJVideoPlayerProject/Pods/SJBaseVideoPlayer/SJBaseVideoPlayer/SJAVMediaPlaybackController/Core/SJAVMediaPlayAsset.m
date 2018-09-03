@@ -74,29 +74,6 @@ static NSNotificationName const SJAVMediaPlayAssetDidCompletedLoadNotification =
     return self;
 }
 
-- (instancetype)initWithOtherAsset:(SJAVMediaPlayAsset *)other {
-    NSParameterAssert(other);
-    
-    self = [self init];
-    if ( !self ) return nil;
-    _URL = other.URL;
-    _URLAsset = other.URLAsset;
-    _playerItem = other.playerItem;
-    _player = other.player;
-    _isOtherAsset = YES;
-    _loadIsCompleted = other.loadIsCompleted;
-    _isLoading = other.isLoading;
-    if ( _loadIsCompleted ) {
-        __weak typeof(self) _self = self;
-        dispatch_async(dispatch_get_main_queue(), ^{
-            __strong typeof(_self) self = _self;
-            if ( !self ) return ;
-            [NSNotificationCenter.defaultCenter postNotificationName:SJAVMediaPlayAssetDidCompletedLoadNotification object:self];
-        });
-    }
-    return self;
-}
-
 - (void)load {
     if ( self.loadIsCompleted ) return;
     if ( self.isLoading ) return;

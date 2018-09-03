@@ -19,7 +19,7 @@ extern char const SJRefreshingNonePageSize;
 
 @property (class, nonatomic, strong, nullable) SJRefreshConfig *sj_refreshConfig;
 
-/// 配置刷新
+/// 只配置Header刷新
 /// 该方法只配置 header 刷新(当只有下拉刷新的时候使用)
 - (void)sj_setupRefreshingWithRefreshingBlock:(void(^)(__kindof UIScrollView *scrollView, NSInteger pageNum))refreshingBlock;
 /// 配置刷新
@@ -27,9 +27,16 @@ extern char const SJRefreshingNonePageSize;
 - (void)sj_setupRefreshingWithPageSize:(short)pageSize
                           beginPageNum:(NSInteger)beginPageNum
                        refreshingBlock:(void(^)(__kindof UIScrollView *scrollView, NSInteger pageNum))refreshingBlock;
+/// 只配置Footer刷新
+- (void)sj_setupFooterRefreshingWithPageSize:(short)pageSize
+                                beginPageNum:(NSInteger)beginPageNum
+                       refreshingBlock:(void(^)(__kindof UIScrollView *scrollView, NSInteger pageNum))refreshingBlock;
 
 /// 执行 header 刷新
+/// - Animated
 - (void)sj_exeHeaderRefreshing;
+- (void)sj_exeHeaderRefreshingAnimated:(BOOL)animated;
+
 /// 执行 footer 刷新
 - (void)sj_exeFooterRefreshing;
 /// 结束刷新

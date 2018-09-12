@@ -235,7 +235,7 @@ NS_ASSUME_NONNULL_BEGIN
 }
 
 + (NSString *)version {
-    return @"1.4.5";
+    return @"1.4.8";
 }
 
 - (nullable __kindof UIViewController *)atViewController {
@@ -455,6 +455,7 @@ NS_ASSUME_NONNULL_BEGIN
         if ( self.isLockedScreen ) return NO;
         if ( self.registrar.state == SJVideoPlayerAppState_ResignActive ) return NO;
         if ( self.useFitOnScreenAndDisableRotation ) return NO;
+        if ( self.vc_isDisappeared ) return NO;
         return YES;
     }];
     _rotationManager.delegate = self;
@@ -1339,7 +1340,6 @@ NS_ASSUME_NONNULL_BEGIN
 @implementation SJBaseVideoPlayer (UIViewController)
 /// You should call it when view did appear
 - (void)vc_viewDidAppear {
-    self.disableAutoRotation = NO;
     if ( !self.isPlayOnScrollView || (self.isPlayOnScrollView && self.isScrollAppeared) ) {
         [self play];
     }
@@ -1347,7 +1347,6 @@ NS_ASSUME_NONNULL_BEGIN
 }
 /// You should call it when view will disappear
 - (void)vc_viewWillDisappear {
-    self.disableAutoRotation = YES;   // 界面将要消失的时候, 禁止旋转.
     self.vc_isDisappeared = YES;
 }
 - (void)vc_viewDidDisappear {

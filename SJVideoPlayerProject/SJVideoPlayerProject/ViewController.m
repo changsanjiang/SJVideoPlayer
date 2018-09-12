@@ -21,6 +21,7 @@
 #import <SJFullscreenPopGesture/UINavigationController+SJVideoPlayerAdd.h>
 #import "PortraitViewController.h"
 #import "DemoPlayerViewController.h"
+#import "NestedCollectionViewController.h"
 
 #import <sys/utsname.h>
 
@@ -44,6 +45,10 @@
 //    self.navigationController.sj_transitionMode = SJScreenshotTransitionModeShifting;
     
     // Do any additional setup after loading the view, typically from a nib.
+}
+
+- (IBAction)nested:(id)sender {
+    [self.navigationController pushViewController:[[NestedCollectionViewController alloc] init] animated:YES];
 }
 
 - (IBAction)aboutKeyboard:(id)sender {

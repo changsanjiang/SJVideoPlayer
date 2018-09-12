@@ -56,6 +56,12 @@ NS_ASSUME_NONNULL_BEGIN
                                                                      collectionViewTag:(NSInteger)collectionViewTag
                                                              collectionViewAtIndexPath:(__strong NSIndexPath *)collectionViewAtIndexPath
                                                                              tableView:(__weak UITableView *)tableView;
+
++ (instancetype)UICollectionViewNestedInUICollectionViewCellPlayModelWithPlayerSuperviewTag:(NSInteger)playerSuperviewTag
+                                                                                atIndexPath:(__strong NSIndexPath *)indexPath
+                                                                          collectionViewTag:(NSInteger)collectionViewTag
+                                                                  collectionViewAtIndexPath:(__strong NSIndexPath *)collectionViewAtIndexPath
+                                                                         rootCollectionView:(__weak UICollectionView *)rootCollectionView;
 @end
 
 
@@ -166,6 +172,28 @@ NS_ASSUME_NONNULL_BEGIN
                  collectionViewAtIndexPath:(__strong NSIndexPath *)collectionViewAtIndexPath
                                  tableView:(__weak UITableView *)tableView;
 
+- (UICollectionView *)collectionView;
+@end
+
+/// - UICollectionView
+///     - UICollectionViewCell
+///         - UICollectionView
+///             - UICollectionViewCell
+///                 - player super view
+///                     - player
+@interface SJUICollectionViewNestedInUICollectionViewCellPlayModel: SJPlayModel
+- (instancetype)initWithWithPlayerSuperviewTag:(NSInteger)playerSuperviewTag
+                                   atIndexPath:(__strong NSIndexPath *)indexPath
+                             collectionViewTag:(NSInteger)collectionViewTag
+                     collectionViewAtIndexPath:(__strong NSIndexPath *)collectionViewAtIndexPath
+                            rootCollectionView:(__weak UICollectionView *)rootCollectionView;
+
+@property (nonatomic, readonly) NSInteger playerSuperviewTag;
+@property (nonatomic, strong, readonly) NSIndexPath *indexPath;
+@property (nonatomic, readonly) NSInteger collectionViewTag;
+@property (nonatomic, strong, readonly) NSIndexPath *collectionViewAtIndexPath;
+@property (nonatomic, weak, readonly) UICollectionView *rootCollectionView;
+// top
 - (UICollectionView *)collectionView;
 @end
 NS_ASSUME_NONNULL_END

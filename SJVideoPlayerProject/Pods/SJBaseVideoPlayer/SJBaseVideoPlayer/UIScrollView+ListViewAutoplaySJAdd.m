@@ -255,7 +255,7 @@ static void sj_collectionViewConsiderPlayNewAsset(UICollectionView *collectionVi
     
     NSIndexPath *currentPlayingIndexPath = collectionView.sj_currentPlayingIndexPath;
     if ( currentPlayingIndexPath &&
-         sj_isAppeared3(config.playerSuperviewTag, currentPlayingIndexPath, collectionView) ) return;
+         sj_isAppeared1(config.playerSuperviewTag, currentPlayingIndexPath, collectionView) ) return;
     
     CGFloat midLine = 0;
     if (@available(iOS 11.0, *)) {
@@ -318,25 +318,29 @@ static void sj_exeAnima(__kindof UIScrollView *scrollView, NSIndexPath *indexPat
     switch ( animationType ) {
         case SJAutoplayScrollAnimationTypeNone: break;
         case SJAutoplayScrollAnimationTypeTop: {
-            if ( [scrollView isKindOfClass:[UITableView class]] ) {
-                [UIView animateWithDuration:0.6 animations:^{
-                    [(UITableView *)scrollView scrollToRowAtIndexPath:indexPath atScrollPosition:UITableViewScrollPositionTop animated:NO];
-                }];
-            }
-            else if ( [scrollView isKindOfClass:[UICollectionView class]] ) {
-                [(UICollectionView *)scrollView scrollToItemAtIndexPath:indexPath atScrollPosition:UICollectionViewScrollPositionTop animated:YES];
-            }
+            @try{
+                if ( [scrollView isKindOfClass:[UITableView class]] ) {
+                    [UIView animateWithDuration:0.6 animations:^{
+                        [(UITableView *)scrollView scrollToRowAtIndexPath:indexPath atScrollPosition:UITableViewScrollPositionTop animated:NO];
+                    }];
+                }
+                else if ( [scrollView isKindOfClass:[UICollectionView class]] ) {
+                    [(UICollectionView *)scrollView scrollToItemAtIndexPath:indexPath atScrollPosition:UICollectionViewScrollPositionTop animated:YES];
+                }
+            }@catch(NSException *__unused ex) {}
         }
             break;
         case SJAutoplayScrollAnimationTypeMiddle: {
-            if ( [scrollView isKindOfClass:[UITableView class]] ) {
-                [UIView animateWithDuration:0.6 animations:^{
-                    [(UITableView *)scrollView scrollToRowAtIndexPath:indexPath atScrollPosition:UITableViewScrollPositionMiddle animated:NO];
-                }];
-            }
-            else if ( [scrollView isKindOfClass:[UICollectionView class]] ) {
-                [(UICollectionView *)scrollView scrollToItemAtIndexPath:indexPath atScrollPosition:UICollectionViewScrollPositionCenteredVertically animated:YES];
-            }
+            @try{
+                if ( [scrollView isKindOfClass:[UITableView class]] ) {
+                    [UIView animateWithDuration:0.6 animations:^{
+                        [(UITableView *)scrollView scrollToRowAtIndexPath:indexPath atScrollPosition:UITableViewScrollPositionMiddle animated:NO];
+                    }];
+                }
+                else if ( [scrollView isKindOfClass:[UICollectionView class]] ) {
+                    [(UICollectionView *)scrollView scrollToItemAtIndexPath:indexPath atScrollPosition:UICollectionViewScrollPositionCenteredVertically animated:YES];
+                }
+            }@catch(NSException *__unused ex) {}
         }
             break;
     }

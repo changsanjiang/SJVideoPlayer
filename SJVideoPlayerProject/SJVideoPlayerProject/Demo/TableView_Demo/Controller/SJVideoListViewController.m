@@ -51,6 +51,21 @@ static NSString *const SJVideoListTableViewCellID = @"SJVideoListTableViewCell";
    
     [self.tableView sj_exeHeaderRefreshing];
 
+    __weak typeof(self) _self = self;
+    self.sj_viewWillBeginDragging = ^(__kindof UIViewController * _Nonnull vc) {
+        __strong typeof(_self) self = _self;
+        if ( !self ) return ;
+        
+        self.player.disableAutoRotation = YES;
+    };
+    
+    self.sj_viewDidEndDragging = ^(__kindof UIViewController * _Nonnull vc) {
+        __strong typeof(_self) self = _self;
+        if ( !self ) return ;
+        
+        self.player.disableAutoRotation = NO;
+    };
+    
     // Do any additional setup after loading the view.
 }
 
@@ -94,14 +109,6 @@ static NSString *const SJVideoListTableViewCellID = @"SJVideoListTableViewCell";
     [_player.view mas_makeConstraints:^(MASConstraintMaker *make) {
         make.edges.offset(0);
     }];
-    
-    
-    dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(3 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
-#ifdef DEBUG
-        NSLog(@"%d - %s", (int)__LINE__, __func__);
-#endif
-        self.player.mute = YES;
-    });
 }
 
 @synthesize filmEditingHelper = _filmEditingHelper;

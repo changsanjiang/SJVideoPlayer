@@ -89,9 +89,16 @@ inline static void _errorLog(NSString *msg, id __nullable target) {
     if ( nil == self.recorder.textColor ) self.recorder.textColor = self.defaultTextColor;
     _addAttributes(self, self.attrStr);
     [self.rangeOperatorsM enumerateObjectsUsingBlock:^(SJAttributesRangeOperator * _Nonnull obj, NSUInteger idx, BOOL * _Nonnull stop) {
+        [self _addCommonValuesToRecorderIfNeed:obj.recorder];
         _addAttributes(obj, self.attrStr);
     }];
     return self.attrStr;
+}
+
+- (void)_addCommonValuesToRecorderIfNeed:(SJAttributesRecorder *)recorder {
+    if ( nil == recorder.font ) recorder.font = self.recorder.font;
+    if ( 0 == recorder.lineSpacing ) recorder.lineSpacing = self.recorder.lineSpacing;
+    //if ( nil == recorder.textColor ) recorder.textColor = self.recorder.textColor;
 }
 
 BOOL _addAttributes(SJAttributesRangeOperator *operator, NSMutableAttributedString *attrStr) {

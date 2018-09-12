@@ -209,6 +209,7 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic) SJVideoPlayerInactivityReason inactivityReason;
 
 @property (nonatomic, strong, nullable) NSString *playStatusStr;
+
 @end
 
 @implementation SJBaseVideoPlayer {
@@ -234,7 +235,7 @@ NS_ASSUME_NONNULL_BEGIN
 }
 
 + (NSString *)version {
-    return @"1.4.7";
+    return @"1.4.8";
 }
 
 - (nullable __kindof UIViewController *)atViewController {

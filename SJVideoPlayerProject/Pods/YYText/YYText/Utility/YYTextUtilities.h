@@ -233,13 +233,13 @@ static inline CGRect YYTextEmojiGetGlyphBoundingRectWithFontSize(CGFloat fontSiz
  Get the character set which should rotate in vertical form.
  @return The shared character set.
  */
-NSCharacterSet *YYTextVerticalFormRotateCharacterSet(void);
+NSCharacterSet *YYTextVerticalFormRotateCharacterSet();
 
 /**
  Get the character set which should rotate and move in vertical form.
  @return The shared character set.
  */
-NSCharacterSet *YYTextVerticalFormRotateAndMoveCharacterSet(void);
+NSCharacterSet *YYTextVerticalFormRotateAndMoveCharacterSet();
 
 
 
@@ -290,7 +290,7 @@ static inline CGFloat YYTextCGAffineTransformGetTranslateY(CGAffineTransform tra
  
  @see http://stackoverflow.com/questions/13291796/calculate-values-for-a-cgaffinetransform-from-three-points-in-each-of-two-uiview
  */
-CGAffineTransform YYTextCGAffineTransformGetFromPoints(CGPoint before[_Nullable 3], CGPoint after[_Nullable 3]);
+CGAffineTransform YYTextCGAffineTransformGetFromPoints(CGPoint before[3], CGPoint after[3]);
 
 /// Get the transform which can converts a point from the coordinate system of a given view to another.
 CGAffineTransform YYTextCGAffineTransformGetFromViews(UIView *from, UIView *to);
@@ -319,6 +319,7 @@ NSString *YYTextUIViewContentModeToCAGravity(UIViewContentMode contentMode);
 /**
  Returns a rectangle to fit the @param rect with specified content mode.
  
+ @param rect The constrant rect
  @param size The content size
  @param mode The content mode
  @return A rectangle for the given content mode.
@@ -363,10 +364,10 @@ static inline CGFloat YYTextCGPointGetDistanceToRect(CGPoint p, CGRect r) {
 
 
 /// Get main screen's scale.
-CGFloat YYTextScreenScale(void);
+CGFloat YYTextScreenScale();
 
 /// Get main screen's size. Height is always larger than width.
-CGSize YYTextScreenSize(void);
+CGSize YYTextScreenSize();
 
 /// Convert point to pixel.
 static inline CGFloat YYTextCGFloatToPixel(CGFloat value) {
@@ -554,9 +555,9 @@ static inline CFRange YYTextCFRangeFromNSRange(NSRange range) {
 
 
 /// Returns YES in App Extension.
-BOOL YYTextIsAppExtension(void);
+BOOL YYTextIsAppExtension();
 
 /// Returns nil in App Extension.
-UIApplication * _Nullable YYTextSharedApplication(void);
+UIApplication * _Nullable YYTextSharedApplication();
 
 NS_ASSUME_NONNULL_END

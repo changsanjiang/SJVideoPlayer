@@ -1,11 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="14113" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" colorMatched="YES" initialViewController="10Y-ew-mPj">
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="14313.18" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" colorMatched="YES" initialViewController="10Y-ew-mPj">
     <device id="retina4_7" orientation="portrait">
         <adaptation id="fullscreen"/>
     </device>
     <dependencies>
         <deployment version="2096" identifier="iOS"/>
-        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="14088"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="14283.14"/>
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
     </dependencies>
     <scenes>
@@ -22,7 +22,7 @@
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
                             <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="gbR-Ag-b7A">
-                                <rect key="frame" x="136" y="347" width="102" height="30"/>
+                                <rect key="frame" x="136.5" y="347" width="102" height="30"/>
                                 <state key="normal" title="Nested_嵌套的"/>
                                 <connections>
                                     <action selector="pushNested:" destination="BYZ-38-t0r" eventType="touchUpInside" id="1pQ-z4-LUv"/>
@@ -57,42 +57,42 @@
                                 </connections>
                             </button>
                             <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="Ehn-QU-Eed">
-                                <rect key="frame" x="155.5" y="387" width="62" height="30"/>
+                                <rect key="frame" x="156.5" y="387" width="62" height="30"/>
                                 <state key="normal" title="Full_全屏"/>
                                 <connections>
                                     <action selector="fullView:" destination="BYZ-38-t0r" eventType="touchUpInside" id="Fb6-Zz-1in"/>
                                 </connections>
                             </button>
                             <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="VJz-ra-xAR">
-                                <rect key="frame" x="85.5" y="148" width="205" height="30"/>
+                                <rect key="frame" x="85" y="148" width="205" height="30"/>
                                 <state key="normal" title="AboutKeyboard_关于键盘方向"/>
                                 <connections>
                                     <action selector="aboutKeyboard:" destination="BYZ-38-t0r" eventType="touchUpInside" id="nV1-W8-fzu"/>
                                 </connections>
                             </button>
                             <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="pDO-Qo-Vfp">
-                                <rect key="frame" x="152" y="425" width="69" height="30"/>
+                                <rect key="frame" x="153" y="425" width="69" height="30"/>
                                 <state key="normal" title="Download"/>
                                 <connections>
                                     <action selector="download:" destination="BYZ-38-t0r" eventType="touchUpInside" id="Gf1-t9-rtJ"/>
                                 </connections>
                             </button>
                             <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="YcL-vo-yLH">
-                                <rect key="frame" x="76" y="470" width="221" height="30"/>
+                                <rect key="frame" x="77" y="470" width="221" height="30"/>
                                 <state key="normal" title="LightweightPlayer_轻量级播放器"/>
                                 <connections>
                                     <action selector="lightweight:" destination="BYZ-38-t0r" eventType="touchUpInside" id="mEo-GL-uV4"/>
                                 </connections>
                             </button>
                             <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="RIg-cw-udN">
-                                <rect key="frame" x="164" y="515" width="46" height="30"/>
+                                <rect key="frame" x="164.5" y="515" width="46" height="30"/>
                                 <state key="normal" title="仅横屏"/>
                                 <connections>
                                     <action selector="landscape:" destination="BYZ-38-t0r" eventType="touchUpInside" id="KOx-Lm-3ie"/>
                                 </connections>
                             </button>
                             <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="WmI-e7-ZJu">
-                                <rect key="frame" x="172" y="562" width="30" height="30"/>
+                                <rect key="frame" x="172.5" y="562" width="30" height="30"/>
                                 <state key="normal" title="VC"/>
                                 <connections>
                                     <action selector="pushVc:" destination="BYZ-38-t0r" eventType="touchUpInside" id="LdY-TK-nbk"/>
@@ -106,10 +106,17 @@
                                 </connections>
                             </button>
                             <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="VyX-J7-gGC">
-                                <rect key="frame" x="163" y="110" width="50" height="30"/>
+                                <rect key="frame" x="162.5" y="110" width="50" height="30"/>
                                 <state key="normal" title="Nested"/>
                                 <connections>
                                     <action selector="nested:" destination="BYZ-38-t0r" eventType="touchUpInside" id="ZVn-kE-A1a"/>
+                                </connections>
+                            </button>
+                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="rUv-iZ-5em">
+                                <rect key="frame" x="28" y="76" width="83" height="30"/>
+                                <state key="normal" title="VC_Rotation"/>
+                                <connections>
+                                    <action selector="vc_rotation:" destination="BYZ-38-t0r" eventType="touchUpInside" id="U8d-6H-pkR"/>
                                 </connections>
                             </button>
                         </subviews>
@@ -120,6 +127,7 @@
                             <constraint firstItem="jUw-fL-Eph" firstAttribute="centerX" secondItem="New-u4-aTv" secondAttribute="centerX" id="6WM-he-EE8"/>
                             <constraint firstItem="wr7-x4-Iha" firstAttribute="centerX" secondItem="BUy-1v-vW5" secondAttribute="centerX" id="7AM-NR-w2T"/>
                             <constraint firstItem="BUy-1v-vW5" firstAttribute="centerX" secondItem="jUw-fL-Eph" secondAttribute="centerX" id="7Os-Sc-2vA"/>
+                            <constraint firstItem="rUv-iZ-5em" firstAttribute="top" secondItem="DGW-7I-m78" secondAttribute="bottom" constant="12" id="9X7-6Y-iE7"/>
                             <constraint firstItem="pDO-Qo-Vfp" firstAttribute="top" secondItem="Ehn-QU-Eed" secondAttribute="bottom" constant="8" id="Abc-8f-9Kt"/>
                             <constraint firstItem="New-u4-aTv" firstAttribute="top" secondItem="VJz-ra-xAR" secondAttribute="bottom" constant="17" id="B7M-hE-NGA"/>
                             <constraint firstItem="9WL-ty-keX" firstAttribute="centerX" secondItem="WmI-e7-ZJu" secondAttribute="centerX" id="C3x-6w-XpM"/>
@@ -133,6 +141,7 @@
                             <constraint firstItem="New-u4-aTv" firstAttribute="top" secondItem="DGW-7I-m78" secondAttribute="bottom" constant="131" id="Qya-bn-FQH"/>
                             <constraint firstItem="VJz-ra-xAR" firstAttribute="top" secondItem="VyX-J7-gGC" secondAttribute="bottom" constant="8" id="RtB-Q3-zDV"/>
                             <constraint firstItem="pDO-Qo-Vfp" firstAttribute="centerX" secondItem="Ehn-QU-Eed" secondAttribute="centerX" id="Utm-uI-mvh"/>
+                            <constraint firstItem="rUv-iZ-5em" firstAttribute="leading" secondItem="8bC-Xf-vdC" secondAttribute="leadingMargin" constant="12" id="Wod-QE-GkT"/>
                             <constraint firstItem="jUw-fL-Eph" firstAttribute="top" secondItem="New-u4-aTv" secondAttribute="bottom" constant="8" id="Ya1-fd-eG9"/>
                             <constraint firstItem="Ehn-QU-Eed" firstAttribute="top" secondItem="gbR-Ag-b7A" secondAttribute="bottom" constant="10" id="aEA-LO-FeB"/>
                             <constraint firstItem="WmI-e7-ZJu" firstAttribute="centerX" secondItem="RIg-cw-udN" secondAttribute="centerX" id="mgQ-ZR-xdW"/>
@@ -149,10 +158,28 @@
             </objects>
             <point key="canvasLocation" x="1415.2" y="132.68365817091455"/>
         </scene>
+        <!--Rotation View Controller-->
+        <scene sceneID="wEZ-AD-Vg2">
+            <objects>
+                <viewController storyboardIdentifier="VCRotationViewController" id="a4T-NZ-P9P" customClass="VCRotationViewController" sceneMemberID="viewController">
+                    <layoutGuides>
+                        <viewControllerLayoutGuide type="top" id="oPl-aZ-KHa"/>
+                        <viewControllerLayoutGuide type="bottom" id="6QG-IX-HcI"/>
+                    </layoutGuides>
+                    <view key="view" contentMode="scaleToFill" id="fO4-wq-j3E">
+                        <rect key="frame" x="0.0" y="0.0" width="375" height="667"/>
+                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                        <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                    </view>
+                </viewController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="ZQr-Yj-Iat" userLabel="First Responder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="3558" y="92"/>
+        </scene>
         <!--Item-->
         <scene sceneID="rOb-wk-Qej">
             <objects>
-                <navigationController storyboardIdentifier="nav" automaticallyAdjustsScrollViewInsets="NO" id="p9g-nt-8Rf" sceneMemberID="viewController">
+                <navigationController storyboardIdentifier="nav" automaticallyAdjustsScrollViewInsets="NO" id="p9g-nt-8Rf" customClass="NavigationController" sceneMemberID="viewController">
                     <tabBarItem key="tabBarItem" title="Item" id="nj1-Bl-7tN"/>
                     <toolbarItems/>
                     <navigationBar key="navigationBar" contentMode="scaleToFill" insetsLayoutMarginsFromSafeArea="NO" id="1Mq-Ey-cyy">
@@ -219,7 +246,7 @@
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
                             <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="vge-VT-4yh">
-                                <rect key="frame" x="164" y="318.5" width="46" height="30"/>
+                                <rect key="frame" x="164.5" y="318.5" width="46" height="30"/>
                                 <state key="normal" title="Button"/>
                                 <connections>
                                     <action selector="play:" destination="efl-Vt-lQC" eventType="touchUpInside" id="5ah-O6-PNX"/>
@@ -262,7 +289,7 @@
         <!--精简版-->
         <scene sceneID="8fd-hP-NyF">
             <objects>
-                <navigationController automaticallyAdjustsScrollViewInsets="NO" id="AEq-MG-N4h" sceneMemberID="viewController">
+                <navigationController automaticallyAdjustsScrollViewInsets="NO" id="AEq-MG-N4h" customClass="NavigationController" sceneMemberID="viewController">
                     <tabBarItem key="tabBarItem" title="精简版" id="ZjS-TG-WJ1"/>
                     <toolbarItems/>
                     <navigationBar key="navigationBar" contentMode="scaleToFill" insetsLayoutMarginsFromSafeArea="NO" id="loX-6L-CuE">
@@ -281,7 +308,7 @@
         <!--全屏, 不旋转-->
         <scene sceneID="Uso-4E-1lP">
             <objects>
-                <navigationController title="全屏, 不旋转" automaticallyAdjustsScrollViewInsets="NO" id="lyg-GJ-Hjw" sceneMemberID="viewController">
+                <navigationController title="全屏, 不旋转" automaticallyAdjustsScrollViewInsets="NO" id="lyg-GJ-Hjw" customClass="NavigationController" sceneMemberID="viewController">
                     <tabBarItem key="tabBarItem" title="全屏, 不旋转" id="1zq-Am-oXD"/>
                     <toolbarItems/>
                     <navigationBar key="navigationBar" contentMode="scaleToFill" insetsLayoutMarginsFromSafeArea="NO" id="qaK-OF-GlK">
@@ -300,7 +327,7 @@
         <!--AVComposition-->
         <scene sceneID="7Di-8R-3MF">
             <objects>
-                <navigationController automaticallyAdjustsScrollViewInsets="NO" id="V29-j4-95u" sceneMemberID="viewController">
+                <navigationController automaticallyAdjustsScrollViewInsets="NO" id="V29-j4-95u" customClass="NavigationController" sceneMemberID="viewController">
                     <tabBarItem key="tabBarItem" title="AVComposition" id="j4G-1s-KUy"/>
                     <toolbarItems/>
                     <navigationBar key="navigationBar" contentMode="scaleToFill" insetsLayoutMarginsFromSafeArea="NO" id="tEh-vk-ylG">

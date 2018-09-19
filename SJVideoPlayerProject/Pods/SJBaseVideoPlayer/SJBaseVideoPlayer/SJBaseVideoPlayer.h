@@ -495,6 +495,12 @@ typedef NS_ENUM(NSUInteger, SJDisablePlayerGestureTypes) {
 #pragma mark - 屏幕旋转
 
 @interface SJBaseVideoPlayer (Rotation)
+/// Default is SJRotationManager. It only rotates the player view.
+/// When you want to rotate the view controller, You can use the SJVCRotationManager.
+/// 默认情况下, 播放器将只旋转播放界面, ViewController并不会旋转.
+/// 当您想要旋转ViewController时, 可以采用此管理类进行旋转.
+/// - 使用示例请看`SJVCRotationManager`第36行注释。
+@property (nonatomic, strong, null_resettable) id<SJRotationManagerProtocol> rotationManager;
 
 /**
  Autorotation. Animated.

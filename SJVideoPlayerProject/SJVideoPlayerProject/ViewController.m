@@ -22,7 +22,7 @@
 #import "PortraitViewController.h"
 #import "DemoPlayerViewController.h"
 #import "NestedCollectionViewController.h"
-
+#import "VCRotationViewController.h"
 #import <sys/utsname.h>
 
 @interface ViewController ()
@@ -45,6 +45,11 @@
 //    self.navigationController.sj_transitionMode = SJScreenshotTransitionModeShifting;
     
     // Do any additional setup after loading the view, typically from a nib.
+}
+
+- (IBAction)vc_rotation:(id)sender {
+    VCRotationViewController *vc = [[UIStoryboard storyboardWithName:@"Main" bundle:nil] instantiateViewControllerWithIdentifier:@"VCRotationViewController"];
+    [self.navigationController pushViewController:vc animated:YES];
 }
 
 - (IBAction)nested:(id)sender {

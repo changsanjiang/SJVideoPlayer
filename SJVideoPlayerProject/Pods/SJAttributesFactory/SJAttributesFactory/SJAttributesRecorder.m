@@ -103,8 +103,10 @@ static NSArray<NSString *> *csj_propertyList(Class cls) {
 - (void)setTailIndent:(double)tailIndent {self.paragraphStyleM.tailIndent = tailIndent;}
 - (double)tailIndent {return self.paragraphStyleM.tailIndent;}
 
-- (void)setAlignment:(double)alignment {self.paragraphStyleM.alignment = alignment;}
-- (double)alignment {return self.paragraphStyleM.alignment;}
+- (void)setAlignment:(nullable NSNumber *)alignment {
+    _alignment = alignment;
+    self.paragraphStyleM.alignment = [alignment integerValue];
+}
 
 - (void)setLineBreakMode:(NSLineBreakMode)lineBreakMode {self.paragraphStyleM.lineBreakMode = lineBreakMode;}
 - (NSLineBreakMode)lineBreakMode {return self.paragraphStyleM.lineBreakMode;}

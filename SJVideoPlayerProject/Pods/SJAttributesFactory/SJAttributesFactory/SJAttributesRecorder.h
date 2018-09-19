@@ -48,7 +48,7 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic, assign) double firstLineHeadIndent;
 @property (nonatomic, assign) double headIndent;
 @property (nonatomic, assign) double tailIndent;
-@property (nonatomic, assign) double alignment;
+@property (nonatomic, strong, nullable) NSNumber *alignment;
 @property (nonatomic, assign) NSLineBreakMode lineBreakMode;
 - (void)addAttributes:(NSMutableAttributedString *)attrStr;
 - (void)removeAttribute:(NSAttributedStringKey)attributedStringKey;

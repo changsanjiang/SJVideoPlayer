@@ -10,8 +10,6 @@
 
 NS_ASSUME_NONNULL_BEGIN
 @interface SJRotationManager()
-@property (nonatomic, weak, readonly, nullable) UIView *target;
-@property (nonatomic, weak, readonly, nullable) UIView *superview;
 @property (nonatomic, strong, readonly) UIView *blackView;
 @property (nonatomic) SJOrientation currentOrientation;
 @property (nonatomic) BOOL transitioning;
@@ -20,19 +18,23 @@ NS_ASSUME_NONNULL_BEGIN
 @end
 
 @implementation SJRotationManager
+@synthesize autorotationSupportedOrientation = _autorotationSupportedOrientation;
+@synthesize disableAutorotation = _disableAutorotation;
+@synthesize rotationCondition = _rotationCondition;
+@synthesize delegate = _delegate;
+@synthesize duration = _duration;
+@synthesize superview = _superview;
+@synthesize target = _target;
 
-- (instancetype)initWithTarget:(UIView * _Nonnull __weak)target
-                     superview:(UIView * _Nonnull __weak)superview
-             rotationCondition:(nonnull BOOL (^)(SJRotationManager * _Nonnull))rotationCondition {
+- (instancetype)init {
     self = [super init];
     if ( !self ) return nil;
-    _target = target;
-    _superview = superview;
+    self = [super init];
+    if ( !self ) return nil;
     _duration = 0.4;
     _rec_deviceOrientation = UIDeviceOrientationPortrait;
     _blackView = [UIView new]; _blackView.backgroundColor = [UIColor blackColor];
     _autorotationSupportedOrientation = SJAutoRotateSupportedOrientation_All;
-    _rotationCondition = rotationCondition;
     [self _observeNotifies];
     return self;
 }

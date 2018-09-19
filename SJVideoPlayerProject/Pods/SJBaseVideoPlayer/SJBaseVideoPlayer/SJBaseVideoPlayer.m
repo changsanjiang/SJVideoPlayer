@@ -169,7 +169,7 @@ NS_ASSUME_NONNULL_BEGIN
 /**
  管理对象: 指定旋转及管理视图的自动旋转
  */
-@property (nonatomic, strong, readonly) SJRotationManager *rotationManager;
+@property (nonatomic, strong, null_resettable) id<SJRotationManagerProtocol> rotationManager;
 
 /**
  管理对象: 单击+双击+上下左右移动+捏合手势
@@ -235,7 +235,7 @@ NS_ASSUME_NONNULL_BEGIN
 }
 
 + (NSString *)version {
-    return @"1.4.8";
+    return @"1.4.9";
 }
 
 - (nullable __kindof UIViewController *)atViewController {
@@ -261,6 +261,11 @@ NS_ASSUME_NONNULL_BEGIN
     self.enableControlLayerDisplayController = YES; // 是否启用控制层管理器, 默认yes
     self.playFailedToKeepAppearState = YES; // 播放失败是否保持控制层显示, 默认yes
     [self registrar];
+    [self view];
+    [self rotationManager];
+    [self gestureControl];
+    [self reachabilityObserver];
+    [self addInterceptTapGR];
     return self;
 }
 
@@ -414,10 +419,6 @@ NS_ASSUME_NONNULL_BEGIN
     [_view addSubview:self.presentView];
     [_presentView addSubview:self.controlContentView];
     _presentView.autoresizingMask = _controlContentView.autoresizingMask = UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight;
-    [self rotationManager];
-    [self gestureControl];
-    [self reachabilityObserver];
-    [self addInterceptTapGR];
     return _view;
 }
 
@@ -442,10 +443,24 @@ NS_ASSUME_NONNULL_BEGIN
 }
 
 #pragma mark -
-- (SJRotationManager *)rotationManager {
+- (void)setRotationManager:(nullable id<SJRotationManagerProtocol>)rotationManager {
+    if ( !rotationManager ) rotationManager = [SJRotationManager new];
+    _rotationManager = rotationManager;
+    [self _configRotationManager:rotationManager];
+}
+
+- (id<SJRotationManagerProtocol>)rotationManager {
     if ( _rotationManager ) return _rotationManager;
+    _rotationManager = [[SJRotationManager alloc] init];
+    [self _configRotationManager:_rotationManager];
+    return _rotationManager;
+}
+
+- (void)_configRotationManager:(id<SJRotationManagerProtocol>)rotationManager {
+    rotationManager.superview = self.view;
+    rotationManager.target = self.presentView;
     __weak typeof(self) _self = self;
-    _rotationManager = [[SJRotationManager alloc] initWithTarget:self.presentView superview:self.view rotationCondition:^BOOL(SJRotationManager * _Nonnull observer) {
+    rotationManager.rotationCondition = ^BOOL(id<SJRotationManagerProtocol>  _Nonnull mgr) {
         __strong typeof(_self) self = _self;
         if ( !self ) return NO;
         if ( !self.view.superview ) return NO;
@@ -457,10 +472,10 @@ NS_ASSUME_NONNULL_BEGIN
         if ( self.useFitOnScreenAndDisableRotation ) return NO;
         if ( self.vc_isDisappeared ) return NO;
         return YES;
-    }];
-    _rotationManager.delegate = self;
-    return _rotationManager;
+    };
+    rotationManager.delegate = self;
 }
+
 - (void)rotationManager:(SJRotationManager *)manager willRotateView:(BOOL)isFullscreen {
     if ( [self.controlLayerDelegate respondsToSelector:@selector(videoPlayer:willRotateView:)] ) {
         [self.controlLayerDelegate videoPlayer:self willRotateView:isFullscreen];
@@ -519,7 +534,7 @@ NS_ASSUME_NONNULL_BEGIN
                 break;
         }
         
-        if ( [self playStatus_isUnknown] ) return NO;
+//        if ( [self playStatus_isUnknown] ) return NO;
         if ( [self playStatus_isInactivity_ReasonPlayFailed] ) return NO;
         
         if ( SJPlayerGestureType_Pan == type &&
@@ -1637,10 +1652,8 @@ NS_ASSUME_NONNULL_BEGIN
     BOOL disableAutoRotation = self.disableAutoRotation;
     self.disableAutoRotation = NO;
     [self.rotationManager rotate];
-    dispatch_async(dispatch_get_main_queue(), ^{
-        // 恢复
-        self.disableAutoRotation = disableAutoRotation; // reset
-    });
+    // 恢复
+    self.disableAutoRotation = disableAutoRotation; // reset
 }
 
 - (void)rotate:(SJOrientation)orientation animated:(BOOL)animated {

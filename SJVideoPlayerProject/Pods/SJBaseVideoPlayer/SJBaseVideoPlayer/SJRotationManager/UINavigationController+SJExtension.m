@@ -12,24 +12,34 @@
 
 @implementation UINavigationController (SJExtension)
 
+static UIViewController *_get_top_view_controller(UINavigationController *nav) {
+    UIViewController *vc = nav.topViewController;
+    while (  [vc isKindOfClass:[UINavigationController class]] || [vc isKindOfClass:[UITabBarController class]] ) {
+        if ( [vc isKindOfClass:[UINavigationController class]] ) vc = [(UINavigationController *)vc topViewController];
+        if ( [vc isKindOfClass:[UITabBarController class]] ) vc = [(UITabBarController *)vc selectedViewController];
+        if ( vc.presentedViewController ) vc = vc.presentedViewController;
+    }
+    return vc;
+}
+
 - (BOOL)shouldAutorotate {
-    return self.topViewController.shouldAutorotate;
+    return _get_top_view_controller(self).shouldAutorotate;
 }
 
 - (UIInterfaceOrientationMask)supportedInterfaceOrientations {
-    return self.topViewController.supportedInterfaceOrientations;
+    return _get_top_view_controller(self).supportedInterfaceOrientations;
 }
 
 - (UIInterfaceOrientation)preferredInterfaceOrientationForPresentation {
-    return self.topViewController.preferredInterfaceOrientationForPresentation;
+    return _get_top_view_controller(self).preferredInterfaceOrientationForPresentation;
 }
 
 - (UIViewController *)childViewControllerForStatusBarStyle {
-    return self.topViewController;
+    return _get_top_view_controller(self);
 }
 
 - (UIViewController *)childViewControllerForStatusBarHidden {
-    return self.topViewController;
+    return _get_top_view_controller(self);
 }
 
 @end

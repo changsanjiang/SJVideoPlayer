@@ -28,7 +28,7 @@
         if (@available(iOS 11.0, *)) {
             make.top.equalTo(self.view.mas_safeAreaLayoutGuideTop);
         } else {
-            make.top.offset(0);
+            make.top.offset(20);
         }
         make.leading.trailing.offset(0);
         make.height.equalTo(self->_videoPlayer.view.mas_width).multipliedBy(9 / 16.0f);

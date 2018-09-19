@@ -98,7 +98,8 @@ inline static void _errorLog(NSString *msg, id __nullable target) {
 - (void)_addCommonValuesToRecorderIfNeed:(SJAttributesRecorder *)recorder {
     if ( nil == recorder.font ) recorder.font = self.recorder.font;
     if ( 0 == recorder.lineSpacing ) recorder.lineSpacing = self.recorder.lineSpacing;
-    //if ( nil == recorder.textColor ) recorder.textColor = self.recorder.textColor;
+    if ( nil == recorder.alignment ) recorder.alignment = self.recorder.alignment;
+  //if ( nil == recorder.textColor ) recorder.textColor = self.recorder.textColor;
 }
 
 BOOL _addAttributes(SJAttributesRangeOperator *operator, NSMutableAttributedString *attrStr) {
@@ -903,7 +904,7 @@ BOOL _addAttributes(SJAttributesRangeOperator *operator, NSMutableAttributedStri
 /// 对齐方式
 - (SJAttributesRangeOperator * _Nonnull (^)(NSTextAlignment))alignment {
     return ^ SJAttributesRangeOperator *(NSTextAlignment alignment) {
-        self.recorder.alignment = alignment;
+        self.recorder.alignment = @(alignment);
         return self;
     };
 }

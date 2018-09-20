@@ -7,8 +7,11 @@
 //
 
 #import <Foundation/Foundation.h>
+#if __has_include(<SJBaseVideoPlayer/SJVideoPlayerControlLayerProtocol.h>)
 #import <SJBaseVideoPlayer/SJVideoPlayerControlLayerProtocol.h>
-#import "SJEdgeControlLayerSettings.h"
+#else
+#import "SJVideoPlayerControlLayerProtocol.h"
+#endif
 
 @protocol SJEdgeControlLayerDelegate;
 @class SJVideoPlayerMoreSetting, SJFilmEditingResultShare;
@@ -26,15 +29,17 @@ NS_ASSUME_NONNULL_BEGIN
 
 
 #pragma mark
-@property (nonatomic, strong, readwrite, nullable) NSArray<SJVideoPlayerMoreSetting *> *moreSettings;
+@property (nonatomic, strong, nullable) NSArray<SJVideoPlayerMoreSetting *> *moreSettings;
 
-@property (nonatomic, strong, readwrite, nullable) SJFilmEditingResultShare *filmEditingResultShare;
+@property (nonatomic, strong, nullable) SJFilmEditingResultShare *filmEditingResultShare;
 
-@property (nonatomic, readwrite) BOOL generatePreviewImages;
+@property (nonatomic) BOOL generatePreviewImages;
 
-@property (nonatomic, readwrite) BOOL enableFilmEditing;
+@property (nonatomic) BOOL enableFilmEditing;
 
-@property (nonatomic, readwrite) BOOL disableNetworkStatusChangePrompt;
+@property (nonatomic) BOOL disableNetworkStatusChangePrompt;
+
+@property (nonatomic) BOOL hideBackButtonWhenOrientationIsPortrait;
 
 @end
 

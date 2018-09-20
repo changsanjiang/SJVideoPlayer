@@ -7,8 +7,16 @@
 //
 
 #import "SJVideoPlayerMoreSettingsSecondaryHeaderView.h" 
+#if __has_include(<Masonry/Masonry.h>)
 #import <Masonry/Masonry.h>
+#else
+#import "Masonry.h"
+#endif
+#if __has_include(<SJUIFactory/SJUIFactory.h>)
 #import <SJUIFactory/SJUIFactory.h>
+#else
+#import "SJUIFactory.h"
+#endif
 #import "SJVideoPlayerMoreSetting.h"
 #import "SJVideoPlayerMoreSettingSecondaryView.h"
 #import "SJVideoPlayerMoreSettingSecondary.h"

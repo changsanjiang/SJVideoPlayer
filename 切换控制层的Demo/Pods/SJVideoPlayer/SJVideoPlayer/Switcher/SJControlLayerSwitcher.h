@@ -8,9 +8,14 @@
 
 #import <Foundation/Foundation.h>
 #import "SJControlLayerCarrier.h"
+#if __has_include(<SJBaseVideoPlayer/SJBaseVideoPlayer.h>)
 #import <SJBaseVideoPlayer/SJBaseVideoPlayer.h>
+#else
+#import "SJBaseVideoPlayer.h"
+#endif
 
 NS_ASSUME_NONNULL_BEGIN
+
 
 /// 控制层切换器
 /// 使用示例请查看`SJVideoPlayer`的`init`方法.
@@ -37,6 +42,5 @@ NS_ASSUME_NONNULL_BEGIN
 - (void)deleteControlLayerForIdentifier:(SJControlLayerIdentifier)identifier;
 
 - (nullable SJControlLayerCarrier *)controlLayerForIdentifier:(SJControlLayerIdentifier)identifier;
-
 @end
 NS_ASSUME_NONNULL_END

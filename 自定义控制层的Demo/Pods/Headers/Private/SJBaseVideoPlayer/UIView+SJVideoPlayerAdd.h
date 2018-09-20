@@ -1,1 +1,1 @@
-../../../SJBaseVideoPlayer/SJBaseVideoPlayer/Category/UIView+SJVideoPlayerAdd.h
+../../../SJBaseVideoPlayer/SJBaseVideoPlayer/Tool/UIView+SJVideoPlayerAdd.h

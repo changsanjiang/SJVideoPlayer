@@ -27,6 +27,16 @@ NS_ASSUME_NONNULL_BEGIN
 
 @implementation SJVideoPlayer
 
+- (void)dealloc {
+#ifdef DEBUG
+    NSLog(@"%d - %s", (int)__LINE__, __func__);
+#endif
+}
+
++ (NSString *)version {
+    return @"v2.1.4";
+}
+
 + (instancetype)player {
     return [[self alloc] init];
 }
@@ -37,7 +47,7 @@ NS_ASSUME_NONNULL_BEGIN
     /// 添加一个控制层
     [self.switcher addControlLayer:self.defaultEdgeCarrier];
     /// 切换到添加的控制层
-    [self.switcher switchControlLayerForIdentitfier:SJControlLayer_Edge toVideoPlayer:self];
+    [self.switcher switchControlLayerForIdentitfier:SJControlLayer_Edge];
     return self;
 }
 
@@ -46,7 +56,7 @@ NS_ASSUME_NONNULL_BEGIN
     /// 添加一个控制层
     [videoPlayer.switcher addControlLayer:videoPlayer.defaultEdgeLightweightCarrier];
     /// 切换到添加的控制层
-    [videoPlayer.switcher switchControlLayerForIdentitfier:SJControlLayer_Edge toVideoPlayer:videoPlayer];
+    [videoPlayer.switcher switchControlLayerForIdentitfier:SJControlLayer_Edge];
     return videoPlayer;
 }
 
@@ -90,7 +100,7 @@ NS_ASSUME_NONNULL_BEGIN
 }
 /// 右侧按钮被点击
 - (void)clickedFilmEditingBtnOnControlLayer:(SJEdgeControlLayer *)controlLayer {
-    [self.switcher switchControlLayerForIdentitfier:SJControlLayer_FilmEditing toVideoPlayer:self];
+    [self.switcher switchControlLayerForIdentitfier:SJControlLayer_FilmEditing];
 }
 
 #pragma mark
@@ -116,12 +126,12 @@ NS_ASSUME_NONNULL_BEGIN
 
 /// 用户点击空白区域
 - (void)userTappedBlankAreaOnControlLayer:(SJFilmEditingControlLayer *)controlLayer {
-    [self.switcher switchControlLayerForIdentitfier:self.switcher.previousIdentifier toVideoPlayer:self];
+    [self.switcher switchControlLayerForIdentitfier:self.switcher.previousIdentifier];
 }
 
 /// 用户点击了取消按钮
 - (void)userClickedCancelBtnOnControlLayer:(SJFilmEditingControlLayer *)controlLayer {
-    [self.switcher switchControlLayerForIdentitfier:self.switcher.previousIdentifier toVideoPlayer:self];
+    [self.switcher switchControlLayerForIdentitfier:self.switcher.previousIdentifier];
 }
 
 /// 状态改变的回调
@@ -158,16 +168,13 @@ NS_ASSUME_NONNULL_BEGIN
 }
 /// 右侧按钮被点击
 - (void)clickedFilmEditingBtnOnLightweightControlLayer:(SJEdgeLightweightControlLayer *)controlLayer {
-    [self.switcher switchControlLayerForIdentitfier:SJControlLayer_FilmEditing toVideoPlayer:self];
+    [self.switcher switchControlLayerForIdentitfier:SJControlLayer_FilmEditing];
 }
 
+@end
 
-#pragma mark
-- (void)setDisableNetworkStatusChangePrompt:(BOOL)disableNetworkStatusChangePrompt {
-    _disableNetworkStatusChangePrompt = disableNetworkStatusChangePrompt;
-    [self defaultEdgeControlLayer].disableNetworkStatusChangePrompt = disableNetworkStatusChangePrompt;
-    [self defaultEdgeLightweightControlLayer].disableNetworkStatusChangePrompt = disableNetworkStatusChangePrompt;
-}
+
+@implementation SJVideoPlayer (CommonSettings)
 + (void (^)(void (^ _Nonnull)(SJVideoPlayerSettings * _Nonnull)))update {
     return SJVideoPlayerSettings.update;
 }
@@ -178,10 +185,44 @@ NS_ASSUME_NONNULL_BEGIN
     });
 }
 
-+ (NSString *)version {
-    return @"v2.0.9";
+- (void)setClickedBackEvent:(nullable void (^)(SJVideoPlayer * _Nonnull))clickedBackEvent {
+    objc_setAssociatedObject(self, @selector(clickedBackEvent), clickedBackEvent, OBJC_ASSOCIATION_RETAIN_NONATOMIC);
 }
 
+- (void (^)(SJVideoPlayer * _Nonnull))clickedBackEvent {
+    id block = objc_getAssociatedObject(self, _cmd);
+    if ( block ) return block;
+    return ^ (SJVideoPlayer *player) {
+        UIViewController *vc = [player atViewController];
+        [vc.view endEditing:YES];
+        if ( vc.presentingViewController ) {
+            [vc dismissViewControllerAnimated:YES completion:nil];
+        }
+        else {
+            [vc.navigationController popViewControllerAnimated:YES];
+        }
+    };
+}
+
+- (void)setHideBackButtonWhenOrientationIsPortrait:(BOOL)hideBackButtonWhenOrientationIsPortrait {
+    objc_setAssociatedObject(self, @selector(hideBackButtonWhenOrientationIsPortrait), @(hideBackButtonWhenOrientationIsPortrait), OBJC_ASSOCIATION_RETAIN_NONATOMIC);
+    [self defaultEdgeControlLayer].hideBackButtonWhenOrientationIsPortrait = hideBackButtonWhenOrientationIsPortrait;
+    [self defaultEdgeLightweightControlLayer].hideBackButtonWhenOrientationIsPortrait = hideBackButtonWhenOrientationIsPortrait;
+}
+
+- (BOOL)hideBackButtonWhenOrientationIsPortrait {
+    return [objc_getAssociatedObject(self, _cmd) boolValue];
+}
+
+- (void)setDisableNetworkStatusChangePrompt:(BOOL)disableNetworkStatusChangePrompt {
+    objc_setAssociatedObject(self, @selector(disableNetworkStatusChangePrompt), @(disableNetworkStatusChangePrompt), OBJC_ASSOCIATION_RETAIN_NONATOMIC);
+    [self defaultEdgeControlLayer].disableNetworkStatusChangePrompt = disableNetworkStatusChangePrompt;
+    [self defaultEdgeLightweightControlLayer].disableNetworkStatusChangePrompt = disableNetworkStatusChangePrompt;
+}
+
+- (BOOL)disableNetworkStatusChangePrompt {
+    return [objc_getAssociatedObject(self, _cmd) boolValue];
+}
 @end
 
 
@@ -250,9 +291,15 @@ NS_ASSUME_NONNULL_BEGIN
     return [objc_getAssociatedObject(self, _cmd) boolValue];
 }
 
+// 历史遗留问题, 此处不应该readonly. 应该由外界配置...
 - (SJVideoPlayerFilmEditingConfig *)filmEditingConfig {
     SJVideoPlayerFilmEditingConfig *filmEditingConfig = objc_getAssociatedObject(self, _cmd);
-    [self defaultFilmEditingControlLayer].config = filmEditingConfig;
+    __weak typeof(self) _self = self;
+    dispatch_async(dispatch_get_main_queue(), ^{
+        __strong typeof(_self) self = _self;
+        if ( !self ) return;
+        [self defaultFilmEditingControlLayer].config = filmEditingConfig;
+    });
     if ( filmEditingConfig ) return filmEditingConfig;
     filmEditingConfig = [SJVideoPlayerFilmEditingConfig new];
     objc_setAssociatedObject(self, _cmd, filmEditingConfig, OBJC_ASSOCIATION_RETAIN_NONATOMIC);
@@ -260,7 +307,7 @@ NS_ASSUME_NONNULL_BEGIN
 }
 
 - (void)dismissFilmEditingViewCompletion:(void(^__nullable)(SJVideoPlayer *player))completion {
-    [self.switcher switchControlLayerForIdentitfier:SJControlLayer_Edge toVideoPlayer:self];
+    [self.switcher switchControlLayerForIdentitfier:SJControlLayer_Edge];
     if ( completion ) completion(self);
 }
 @end

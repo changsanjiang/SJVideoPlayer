@@ -7,9 +7,21 @@
 //
 
 #import "SJFilmEditingGenerateGIFView.h"
+#if __has_include(<Masonry/Masonry.h>)
 #import <Masonry/Masonry.h>
+#else
+#import "Masonry.h"
+#endif
+#if __has_include(<SJUIFactory/SJUIFactory.h>)
 #import <SJUIFactory/SJUIFactory.h>
+#else
+#import "SJUIFactory.h"
+#endif
+#if __has_include(<SJUIFactory/UIView+SJUIFactory.h>)
 #import <SJUIFactory/UIView+SJUIFactory.h>
+#else
+#import "UIView+SJUIFactory.h"
+#endif
 
 @interface SJFilmEditingGenerateGIFView ()
 @property (nonatomic, strong, readonly) UIButton *cancelBtn;
@@ -37,11 +49,11 @@
     return self;
 }
 
+#ifdef SJ_MAC
 - (void)dealloc {
-#ifdef DEBUG
     NSLog(@"SJVideoPlayerLog: %d - %s", (int)__LINE__, __func__);
-#endif
 }
+#endif
 
 - (int)maxDuration {
     return 8;

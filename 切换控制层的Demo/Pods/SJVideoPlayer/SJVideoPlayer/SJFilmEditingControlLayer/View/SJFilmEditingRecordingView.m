@@ -7,10 +7,22 @@
 //
 
 #import "SJFilmEditingRecordingView.h"
+#if __has_include(<Masonry/Masonry.h>)
 #import <Masonry/Masonry.h>
+#else
+#import "Masonry.h"
+#endif
+#if __has_include(<SJUIFactory/SJUIFactory.h>)
 #import <SJUIFactory/SJUIFactory.h>
+#else
+#import "SJUIFactory.h"
+#endif
+#if __has_include(<SJUIFactory/UIView+SJUIFactory.h>)
 #import <SJUIFactory/UIView+SJUIFactory.h>
-#import <SJSlider/SJSlider.h>
+#else
+#import "UIView+SJUIFactory.h"
+#endif
+#import "SJProgressSlider.h"
 
 
 @interface SJFilmEditingRecordingView ()
@@ -20,7 +32,7 @@
 @property (nonatomic, strong, readonly) UIView *progressContainerView;
 @property (nonatomic, strong, readonly) UILabel *progressLabel;
 @property (nonatomic, strong, readonly) UILabel *promptLabel;
-@property (nonatomic, strong, readonly) SJSlider *progressSlider;
+@property (nonatomic, strong, readonly) SJProgressSlider *progressSlider;
 @property (nonatomic, strong, readonly) NSTimer *countDownTimer;
 
 @property (nonatomic, readwrite) short duration; // sec.
@@ -48,11 +60,11 @@
     return self;
 }
 
+#ifdef SJ_MAC
 - (void)dealloc {
-#ifdef DEBUG
     NSLog(@"SJVideoPlayerLog: %d - %s", (int)__LINE__, __func__);
-#endif
 }
+#endif
 
 - (void)start {
     _duration = 0;
@@ -232,9 +244,9 @@
     _promptLabel = [SJUILabelFactory labelWithText:@"" textColor:[UIColor whiteColor] font:[UIFont systemFontOfSize:11]];
     return _promptLabel;
 }
-- (SJSlider *)progressSlider {
+- (SJProgressSlider *)progressSlider {
     if ( _progressSlider ) return _progressSlider;
-    _progressSlider = [SJSlider new];
+    _progressSlider = [SJProgressSlider new];
     _progressSlider.trackHeight = 2;
     _progressSlider.userInteractionEnabled = NO;
     return _progressSlider;

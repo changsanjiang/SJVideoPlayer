@@ -70,10 +70,8 @@ static NSString *const SimplifiedSampleTableViewCellID = @"SimplifiedSampleTable
         }];
     }
 
-    for ( int i = 0 ; i < 5 ; ++ i ) {
-        _player.URLAsset = asset;
-    }
-    
+    _player.URLAsset = asset;
+
     [playerParentView addSubview:_player.view]; // 将播放器添加到父视图中
     [_player.view mas_makeConstraints:^(MASConstraintMaker *make) {
         make.edges.offset(0);

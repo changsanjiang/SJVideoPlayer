@@ -8,6 +8,7 @@
 
 /* Begin PBXBuildFile section */
 		03BE740FB47C6583D04A46C5 /* libPods-Demo.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 3CF54F7D3104463FB0FDB54C /* libPods-Demo.a */; };
+		77301235215352B8002B135D /* sample.mp4 in Resources */ = {isa = PBXBuildFile; fileRef = 77301234215352A5002B135D /* sample.mp4 */; };
 		77AF4CD320AE825D00752191 /* AppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = 77AF4CD220AE825D00752191 /* AppDelegate.m */; };
 		77AF4CD620AE825D00752191 /* ViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 77AF4CD520AE825D00752191 /* ViewController.m */; };
 		77AF4CD920AE825D00752191 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 77AF4CD720AE825D00752191 /* Main.storyboard */; };
@@ -21,6 +22,7 @@
 /* Begin PBXFileReference section */
 		338A9D135113CE2F03805A8F /* Pods-Demo.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Demo.release.xcconfig"; path = "Pods/Target Support Files/Pods-Demo/Pods-Demo.release.xcconfig"; sourceTree = "<group>"; };
 		3CF54F7D3104463FB0FDB54C /* libPods-Demo.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-Demo.a"; sourceTree = BUILT_PRODUCTS_DIR; };
+		77301234215352A5002B135D /* sample.mp4 */ = {isa = PBXFileReference; lastKnownFileType = file; name = sample.mp4; path = ../../SJVideoPlayerProject/SJVideoPlayerProject/sample.mp4; sourceTree = "<group>"; };
 		77AF4CCE20AE825D00752191 /* Demo.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Demo.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		77AF4CD120AE825D00752191 /* AppDelegate.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = AppDelegate.h; sourceTree = "<group>"; };
 		77AF4CD220AE825D00752191 /* AppDelegate.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = AppDelegate.m; sourceTree = "<group>"; };
@@ -83,6 +85,7 @@
 				77AF4CD220AE825D00752191 /* AppDelegate.m */,
 				77AF4CD420AE825D00752191 /* ViewController.h */,
 				77AF4CD520AE825D00752191 /* ViewController.m */,
+				77301234215352A5002B135D /* sample.mp4 */,
 				77AF4CE720AE82DC00752191 /* CustomLayer */,
 				77AF4CD720AE825D00752191 /* Main.storyboard */,
 				77AF4CDA20AE825E00752191 /* Assets.xcassets */,
@@ -175,6 +178,7 @@
 				77AF4CDE20AE825E00752191 /* LaunchScreen.storyboard in Resources */,
 				77AF4CDB20AE825E00752191 /* Assets.xcassets in Resources */,
 				77AF4CD920AE825D00752191 /* Main.storyboard in Resources */,
+				77301235215352B8002B135D /* sample.mp4 in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -205,7 +209,7 @@
 			files = (
 			);
 			inputPaths = (
-				"${SRCROOT}/Pods/Target Support Files/Pods-Demo/Pods-Demo-resources.sh",
+				"${PODS_ROOT}/Target Support Files/Pods-Demo/Pods-Demo-resources.sh",
 				"${PODS_ROOT}/SJBaseVideoPlayer/SJBaseVideoPlayer/SJVolBrigControl/Resource/SJVolBrigResource.bundle",
 			);
 			name = "[CP] Copy Pods Resources";
@@ -214,7 +218,7 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-			shellScript = "\"${SRCROOT}/Pods/Target Support Files/Pods-Demo/Pods-Demo-resources.sh\"\n";
+			shellScript = "\"${PODS_ROOT}/Target Support Files/Pods-Demo/Pods-Demo-resources.sh\"\n";
 			showEnvVarsInLog = 0;
 		};
 /* End PBXShellScriptBuildPhase section */
@@ -372,7 +376,10 @@
 				CODE_SIGN_STYLE = Manual;
 				DEVELOPMENT_TEAM = DB5B5F2RH5;
 				INFOPLIST_FILE = Demo/Info.plist;
-				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+				);
 				PRODUCT_BUNDLE_IDENTIFIER = com.SanJiang.Demo;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE = "64c214b3-450d-41eb-b05e-df636dfa28c8";
@@ -389,7 +396,10 @@
 				CODE_SIGN_STYLE = Manual;
 				DEVELOPMENT_TEAM = "";
 				INFOPLIST_FILE = Demo/Info.plist;
-				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+				);
 				PRODUCT_BUNDLE_IDENTIFIER = com.SanJiang.Demo;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE_SPECIFIER = "";

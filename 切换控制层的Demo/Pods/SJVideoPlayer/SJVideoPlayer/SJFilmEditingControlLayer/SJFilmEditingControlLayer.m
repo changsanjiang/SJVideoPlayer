@@ -7,15 +7,31 @@
 //
 
 #import "SJFilmEditingControlLayer.h"
+#if __has_include(<Masonry/Masonry.h>)
 #import <Masonry/Masonry.h>
+#else
+#import "Masonry.h"
+#endif
+#if __has_include(<SJUIFactory/SJUIFactory.h>)
 #import <SJUIFactory/SJUIFactory.h>
+#else
+#import "SJUIFactory.h"
+#endif
 #import "SJFilmEditingResultPresentView.h"
 #import "SJFilmEditingResultShareItem.h"
 #import "SJFilmEditingRecordingView.h"
 #import "SJFilmEditingGenerateGIFView.h"
-#import <SJPrompt/SJPrompt.h>
+#if __has_include(<SJBaseVideoPlayer/SJPrompt.h>)
+#import <SJBaseVideoPlayer/SJPrompt.h>
+#else
+#import "SJPrompt.h"
+#endif
 #import "UIView+SJFilmEditingAdd.h"
+#if __has_include(<SJBaseVideoPlayer/SJBaseVideoPlayer+PlayStatus.h>)
 #import <SJBaseVideoPlayer/SJBaseVideoPlayer+PlayStatus.h>
+#else
+#import "SJBaseVideoPlayer+PlayStatus.h"
+#endif
 
 NS_ASSUME_NONNULL_BEGIN
 
@@ -97,7 +113,8 @@ NS_ASSUME_NONNULL_END
 
 - (void)dealloc {
     [[NSNotificationCenter defaultCenter] removeObserver:self];
-#ifdef DEBUG
+
+#ifdef SJ_MAC
     NSLog(@"SJVideoPlayerLog: %d - %s", (int)__LINE__, __func__);
 #endif
 }
@@ -212,7 +229,7 @@ NS_ASSUME_NONNULL_END
             break;
         case SJVideoPlayerPlayStatusPaused: {
             if ( [videoPlayer playStatus_isPaused_ReasonPause] || [videoPlayer playStatus_isPaused_ReasonBuffering] ) {
-                [self pause];
+                if ( self.status == SJFilmEditingStatus_Recording ) [self pause];
             }
         }
             break;
@@ -290,7 +307,7 @@ NS_ASSUME_NONNULL_END
     }
     
     
-#ifdef DEBUG
+#ifdef SJ_MAC
     switch ( currentOperation ) {
         case SJVideoPlayerFilmEditingOperation_Unknown: break;
         case SJVideoPlayerFilmEditingOperation_GIF: {
@@ -658,7 +675,7 @@ NS_ASSUME_NONNULL_END
         [self.delegate filmEditingControlLayer:self statusChanged:status];
     }
     
-#ifdef DEBUG
+#ifdef SJ_MAC
     switch ( status ) {
         case SJFilmEditingStatus_Unknown: break;
         case SJFilmEditingStatus_Recording: {

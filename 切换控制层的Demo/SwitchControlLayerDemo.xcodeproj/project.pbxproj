@@ -200,7 +200,7 @@
 			files = (
 			);
 			inputPaths = (
-				"${SRCROOT}/Pods/Target Support Files/Pods-SwitchControlLayerDemo/Pods-SwitchControlLayerDemo-resources.sh",
+				"${PODS_ROOT}/Target Support Files/Pods-SwitchControlLayerDemo/Pods-SwitchControlLayerDemo-resources.sh",
 				"${PODS_ROOT}/SJBaseVideoPlayer/SJBaseVideoPlayer/SJVolBrigControl/Resource/SJVolBrigResource.bundle",
 				"${PODS_ROOT}/SJVideoPlayer/SJVideoPlayer/SJEdgeControlLayer/Asset/SJEdgeControlLayer.bundle",
 				"${PODS_ROOT}/SJVideoPlayer/SJVideoPlayer/SJFilmEditingControlLayer/Asset/SJFilmEditing.bundle",
@@ -213,7 +213,7 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-			shellScript = "\"${SRCROOT}/Pods/Target Support Files/Pods-SwitchControlLayerDemo/Pods-SwitchControlLayerDemo-resources.sh\"\n";
+			shellScript = "\"${PODS_ROOT}/Target Support Files/Pods-SwitchControlLayerDemo/Pods-SwitchControlLayerDemo-resources.sh\"\n";
 			showEnvVarsInLog = 0;
 		};
 /* End PBXShellScriptBuildPhase section */
@@ -371,7 +371,10 @@
 				DEVELOPMENT_TEAM = DB5B5F2RH5;
 				INFOPLIST_FILE = SwitchControlLayerDemo/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 9.0;
-				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+				);
 				PRODUCT_BUNDLE_IDENTIFIER = com.bluedancer.SwitchControlLayerDemo;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE = "64c214b3-450d-41eb-b05e-df636dfa28c8";
@@ -389,7 +392,10 @@
 				DEVELOPMENT_TEAM = "";
 				INFOPLIST_FILE = SwitchControlLayerDemo/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 9.0;
-				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+				);
 				PRODUCT_BUNDLE_IDENTIFIER = com.bluedancer.SwitchControlLayerDemo;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE_SPECIFIER = "";

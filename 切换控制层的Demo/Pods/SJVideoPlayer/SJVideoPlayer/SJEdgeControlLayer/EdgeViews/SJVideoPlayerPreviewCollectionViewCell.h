@@ -7,7 +7,11 @@
 //
 
 #import <UIKit/UIKit.h>
+#if __has_include(<SJBaseVideoPlayer/SJVideoPlayerPreviewInfo.h>)
 #import <SJBaseVideoPlayer/SJVideoPlayerPreviewInfo.h>
+#else
+#import "SJVideoPlayerPreviewInfo.h"
+#endif
 
 NS_ASSUME_NONNULL_BEGIN
 

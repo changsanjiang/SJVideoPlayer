@@ -32,8 +32,7 @@
     
     // 全屏或小屏时, 禁止旋转
     _player.useFitOnScreenAndDisableRotation = YES;
-    
-    _player.fitOnScreen = !_player.fitOnScreen;
+    [_player setFitOnScreen:YES animated:YES];
     
     // Do any additional setup after loading the view.
 }
@@ -94,12 +93,7 @@
     _player.fitOnScreenDidChangeExeBlock = ^(__kindof SJBaseVideoPlayer * _Nonnull player) {
         __strong typeof(_self) self = _self;
         if ( !self ) return;
-        if ( player.isFitOnScreen ) {
-            [self.button setTitle:@"充满" forState:UIControlStateNormal];
-        }
-        else {
-            [self.button setTitle:@"小屏" forState:UIControlStateNormal];
-        }
+        [self.button setTitle:player.isFullScreen?@"充满":@"小屏" forState:UIControlStateNormal];
     };
 }
 

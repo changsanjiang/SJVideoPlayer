@@ -6,7 +6,11 @@
 //  Copyright © 2018年 SanJiang. All rights reserved.
 //
 
+#if __has_include(<SJBaseVideoPlayer/SJVideoPlayerURLAsset.h>)
 #import <SJBaseVideoPlayer/SJVideoPlayerURLAsset.h>
+#else
+#import "SJVideoPlayerURLAsset.h"
+#endif
 
 NS_ASSUME_NONNULL_BEGIN
 

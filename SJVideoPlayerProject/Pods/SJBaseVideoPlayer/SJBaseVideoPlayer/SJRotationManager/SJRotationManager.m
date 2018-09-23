@@ -182,7 +182,7 @@ NS_ASSUME_NONNULL_BEGIN
     [self rotate:orientation animated:animated completionHandler:nil];
 }
 
-- (void)rotate:(SJOrientation)orientation animated:(BOOL)animated completionHandler:(nullable void (^)(SJRotationManager * _Nonnull))completionHandler {
+- (void)rotate:(SJOrientation)orientation animated:(BOOL)animated completionHandler:(nullable void (^)(id<SJRotationManagerProtocol> _Nonnull))completionHandler {
     __weak typeof(self) _self = self;
     dispatch_async(dispatch_get_main_queue(), ^{
         __strong typeof(_self) self = _self;
@@ -190,7 +190,7 @@ NS_ASSUME_NONNULL_BEGIN
         if ( self.transitioning ) return;
         if ( !self.superview ) return;
         if ( !self.target ) return;
-        if ( self.rotationCondition ) { if ( !self.rotationCondition(self) ) return; }
+        if ( self.rotationCondition && !self.rotationCondition(self) ) return;
         SJOrientation ori_old = self.currentOrientation;
         SJOrientation ori_new = orientation;
         if ( ori_old == ori_new ) { if ( completionHandler ) completionHandler(self); return; }

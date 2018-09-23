@@ -466,7 +466,6 @@ NS_ASSUME_NONNULL_BEGIN
         if ( !self.view.superview ) return NO;
         if ( self.touchedScrollView ) return NO;
         if ( self.isPlayOnScrollView && !self.isScrollAppeared ) return NO;
-        if ( self.disableAutoRotation ) return NO;
         if ( self.isLockedScreen ) return NO;
         if ( self.registrar.state == SJVideoPlayerAppState_ResignActive ) return NO;
         if ( self.useFitOnScreenAndDisableRotation ) return NO;
@@ -1647,13 +1646,7 @@ NS_ASSUME_NONNULL_BEGIN
 }
 
 - (void)rotate {
-    // 此方法为无条件旋转, 任何时候都可以旋转
-    // 外界调用此方法, 就是想要旋转, 不管播放器有没有禁止旋转, 我都暂时解开, 最后恢复设置
-    BOOL disableAutoRotation = self.disableAutoRotation;
-    self.disableAutoRotation = NO;
     [self.rotationManager rotate];
-    // 恢复
-    self.disableAutoRotation = disableAutoRotation; // reset
 }
 
 - (void)rotate:(SJOrientation)orientation animated:(BOOL)animated {
@@ -1661,13 +1654,10 @@ NS_ASSUME_NONNULL_BEGIN
 }
 
 - (void)rotate:(SJOrientation)orientation animated:(BOOL)animated completion:(void (^ _Nullable)(__kindof SJBaseVideoPlayer *player))block {
-    BOOL disableAutoRotation = self.disableAutoRotation;
-    self.disableAutoRotation = NO;
     __weak typeof(self) _self = self;
-    [self.rotationManager rotate:orientation animated:animated completionHandler:^(SJRotationManager * _Nonnull mgr) {
+    [self.rotationManager rotate:orientation animated:animated completionHandler:^(id<SJRotationManagerProtocol>  _Nonnull mgr) {
         __strong typeof(_self) self = _self;
         if ( !self ) return;
-        self.disableAutoRotation = disableAutoRotation; // reset
         if ( block ) block(self);
     }];
 }

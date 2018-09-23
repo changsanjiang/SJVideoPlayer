@@ -1,1 +1,1 @@
-../../../SJBaseVideoPlayer/SJBaseVideoPlayer/Registrar/SJVideoPlayerRegistrar.h
+../../../SJBaseVideoPlayer/SJBaseVideoPlayer/Tool/SJVideoPlayerRegistrar.h

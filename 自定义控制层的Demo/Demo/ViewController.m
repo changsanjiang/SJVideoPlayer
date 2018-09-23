@@ -39,8 +39,6 @@
 - (void)viewDidLoad {
     [super viewDidLoad];
     
-    /// 你是使用的AVPlayer吗, 如果是的话并且时间充足的话, 可以参考一下我的这个库.
-    
     /// 初始化一个播放器
     _videoPlayer = [SJDemoVideoPlayer player];
     /// 将播放器的视图添加到父视图上
@@ -55,8 +53,8 @@
     /// 调用initWith...初始化即可
     /// 可以从指定的进度继续播放
     /// 如下, 从第10秒开始播放
-    _videoPlayer.URLAsset = [[SJVideoPlayerURLAsset alloc] initWithURL:[NSURL URLWithString:@"https://www.apple.com/105/media/us/iphone-x/2017/01df5b43-28e4-4848-bf20-490c34a926a7/films/feature/iphone-x-feature-tpl-cc-us-20170912_1280x720h.mp4"] specifyStartTime:10]; // 关于如何记录播放时间, 请看下面的 资源部分的注释
-    
+    _videoPlayer.URLAsset = [[SJVideoPlayerURLAsset alloc] initWithURL:[[NSBundle mainBundle] URLForResource:@"sample" withExtension:@"mp4"] specifyStartTime:10]; // 关于如何记录播放时间, 请看下面的 资源部分的注释
+
     [self 一些注释];
     
     // Do any additional setup after loading the view, typically from a nib.

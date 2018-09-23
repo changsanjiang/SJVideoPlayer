@@ -20,7 +20,7 @@
 }
 
 - (instancetype)initWithTitle:(NSString *)title alwaysShowTitle:(BOOL)alwaysShowTitle URL:(NSURL *)URL specifyStartTime:(NSTimeInterval)specifyStartTime playModel:(__kindof SJPlayModel *)playModel {
-    self = [self initWithPlayAsset:[[SJPlayAsset alloc] initWithURL:URL specifyStartTime:specifyStartTime] playModel:playModel];
+    self = [self initWithURL:URL specifyStartTime:specifyStartTime playModel:playModel];
     if ( !self ) return nil;
     self.title = title;
     self.alwaysShowTitle = alwaysShowTitle;

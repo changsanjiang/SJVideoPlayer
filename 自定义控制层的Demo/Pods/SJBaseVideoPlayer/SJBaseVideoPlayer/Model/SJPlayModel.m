@@ -73,6 +73,14 @@ NS_ASSUME_NONNULL_BEGIN
     return [[SJUICollectionViewNestedInUITableViewCellPlayModel alloc] initWithPlayerSuperviewTag:playerSuperviewTag atIndexPath:indexPath collectionViewTag:collectionViewTag collectionViewAtIndexPath:collectionViewAtIndexPath tableView:tableView];
 }
 
++ (instancetype)UICollectionViewNestedInUICollectionViewCellPlayModelWithPlayerSuperviewTag:(NSInteger)playerSuperviewTag
+                                                                                atIndexPath:(__strong NSIndexPath *)indexPath
+                                                                          collectionViewTag:(NSInteger)collectionViewTag
+                                                                  collectionViewAtIndexPath:(__strong NSIndexPath *)collectionViewAtIndexPath
+                                                                         rootCollectionView:(__weak UICollectionView *)rootCollectionView {
+    return [[SJUICollectionViewNestedInUICollectionViewCellPlayModel alloc] initWithWithPlayerSuperviewTag:playerSuperviewTag atIndexPath:indexPath collectionViewTag:collectionViewTag collectionViewAtIndexPath:collectionViewAtIndexPath rootCollectionView:rootCollectionView];
+}
+
 - (instancetype)init {
     self = [super init];
     if ( !self ) return nil;
@@ -229,6 +237,38 @@ NS_ASSUME_NONNULL_BEGIN
 }
 - (UICollectionView *)collectionView {
     return (UICollectionView *)([[self.tableView cellForRowAtIndexPath:self.collectionViewAtIndexPath] viewWithTag:self.collectionViewTag]);
+}
+@end
+
+@implementation SJUICollectionViewNestedInUICollectionViewCellPlayModel
+- (instancetype)initWithWithPlayerSuperviewTag:(NSInteger)playerSuperviewTag
+                                   atIndexPath:(__strong NSIndexPath *)indexPath
+                             collectionViewTag:(NSInteger)collectionViewTag
+                     collectionViewAtIndexPath:(__strong NSIndexPath *)collectionViewAtIndexPath
+                            rootCollectionView:(__weak UICollectionView *)rootCollectionView {
+    NSParameterAssert(playerSuperviewTag != 0);
+    NSParameterAssert(indexPath);
+    NSParameterAssert(collectionViewTag != 0);
+    NSParameterAssert(collectionViewAtIndexPath);
+    NSParameterAssert(rootCollectionView);
+    
+    self = [super init];
+    if ( !self ) return nil;
+    _playerSuperviewTag = playerSuperviewTag;
+    _indexPath = indexPath;
+    _collectionViewTag = collectionViewTag;
+    _collectionViewAtIndexPath = collectionViewAtIndexPath;
+    _rootCollectionView = rootCollectionView;
+    return self;
+}
+
+- (BOOL)isPlayInTableView { return NO; }
+- (BOOL)isPlayInCollectionView { return YES; }
+- (nullable UIView *)playerSuperview {
+    return [[[self collectionView] cellForItemAtIndexPath:self.indexPath] viewWithTag:self.playerSuperviewTag];
+}
+- (UICollectionView *)collectionView {
+    return (UICollectionView *)[[self.rootCollectionView cellForItemAtIndexPath:self.collectionViewAtIndexPath] viewWithTag:self.collectionViewTag];
 }
 @end
 NS_ASSUME_NONNULL_END

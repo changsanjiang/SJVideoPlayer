@@ -7,8 +7,13 @@
 
 #import "UIScrollView+ListViewAutoplaySJAdd.h"
 #import <objc/message.h>
-#import <SJObserverHelper/NSObject+SJObserverHelper.h>
 #import "SJIsAppeared.h"
+
+#if __has_include(<SJObserverHelper/NSObject+SJObserverHelper.h>)
+#import <SJObserverHelper/NSObject+SJObserverHelper.h>
+#else
+#import "NSObject+SJObserverHelper.h"
+#endif
 
 NS_ASSUME_NONNULL_BEGIN
 @protocol UIScrollViewDelegate_ListViewAutoplaySJAdd <UIScrollViewDelegate>
@@ -217,14 +222,14 @@ static void sj_tableViewConsiderPlayNewAsset(UITableView *tableView) {
         half_r_view = superview;
     }];
 
+    if ( !half_l_view && !half_r_view ) return;
+    
     NSIndexPath *nextIndexPath = nil;
     if ( half_l_view && !half_r_view ) {
         nextIndexPath = [tableView indexPathForCell:cell_l];
-        [config.autoplayDelegate sj_playerNeedPlayNewAssetAtIndexPath:nextIndexPath];
     }
     else if ( half_r_view && !half_l_view ) {
         nextIndexPath = [tableView indexPathForCell:cell_r];
-        [config.autoplayDelegate sj_playerNeedPlayNewAssetAtIndexPath:nextIndexPath];
     }
     else {
         CGRect half_l_rect = [half_l_view.superview convertRect:half_l_view.frame toView:tableView.superview];
@@ -232,13 +237,12 @@ static void sj_tableViewConsiderPlayNewAsset(UITableView *tableView) {
 
         if ( ABS(CGRectGetMaxY(half_l_rect) - midLine) < ABS(CGRectGetMinY(half_r_rect) - midLine) ) {
             nextIndexPath = [tableView indexPathForCell:cell_l];
-            [config.autoplayDelegate sj_playerNeedPlayNewAssetAtIndexPath:nextIndexPath];
         }
         else {
             nextIndexPath = [tableView indexPathForCell:cell_r];
-            [config.autoplayDelegate sj_playerNeedPlayNewAssetAtIndexPath:nextIndexPath];
         }
     }
+    [config.autoplayDelegate sj_playerNeedPlayNewAssetAtIndexPath:nextIndexPath];
 }
 
 static void sj_collectionViewConsiderPlayNewAsset(UICollectionView *collectionView) {
@@ -251,7 +255,7 @@ static void sj_collectionViewConsiderPlayNewAsset(UICollectionView *collectionVi
     
     NSIndexPath *currentPlayingIndexPath = collectionView.sj_currentPlayingIndexPath;
     if ( currentPlayingIndexPath &&
-         sj_isAppeared3(config.playerSuperviewTag, currentPlayingIndexPath, collectionView) ) return;
+         sj_isAppeared1(config.playerSuperviewTag, currentPlayingIndexPath, collectionView) ) return;
     
     CGFloat midLine = 0;
     if (@available(iOS 11.0, *)) {
@@ -285,14 +289,14 @@ static void sj_collectionViewConsiderPlayNewAsset(UICollectionView *collectionVi
         half_r_view = superview;
     }];
     
+    if ( !half_l_view && !half_r_view ) return;
+    
     NSIndexPath *nextIndexPath = nil;
     if ( half_l_view && !half_r_view ) {
         nextIndexPath = [collectionView indexPathForCell:cell_l];
-        [config.autoplayDelegate sj_playerNeedPlayNewAssetAtIndexPath:nextIndexPath];
     }
     else if ( half_r_view && !half_l_view ) {
         nextIndexPath = [collectionView indexPathForCell:cell_r];
-        [config.autoplayDelegate sj_playerNeedPlayNewAssetAtIndexPath:nextIndexPath];
     }
     else {
         CGRect half_l_rect = [half_l_view.superview convertRect:half_l_view.frame toView:collectionView.superview];
@@ -300,13 +304,13 @@ static void sj_collectionViewConsiderPlayNewAsset(UICollectionView *collectionVi
         
         if ( ABS(CGRectGetMaxY(half_l_rect) - midLine) < ABS(CGRectGetMinY(half_r_rect) - midLine) ) {
             nextIndexPath = [collectionView indexPathForCell:cell_l];
-            [config.autoplayDelegate sj_playerNeedPlayNewAssetAtIndexPath:nextIndexPath];
         }
         else {
             nextIndexPath = [collectionView indexPathForCell:cell_r];
-            [config.autoplayDelegate sj_playerNeedPlayNewAssetAtIndexPath:nextIndexPath];
         }
     }
+    
+    [config.autoplayDelegate sj_playerNeedPlayNewAssetAtIndexPath:nextIndexPath];
 }
 
 /// 执行动画
@@ -314,25 +318,29 @@ static void sj_exeAnima(__kindof UIScrollView *scrollView, NSIndexPath *indexPat
     switch ( animationType ) {
         case SJAutoplayScrollAnimationTypeNone: break;
         case SJAutoplayScrollAnimationTypeTop: {
-            if ( [scrollView isKindOfClass:[UITableView class]] ) {
-                [UIView animateWithDuration:0.6 animations:^{
-                    [(UITableView *)scrollView scrollToRowAtIndexPath:indexPath atScrollPosition:UITableViewScrollPositionTop animated:NO];
-                }];
-            }
-            else if ( [scrollView isKindOfClass:[UICollectionView class]] ) {
-                [(UICollectionView *)scrollView scrollToItemAtIndexPath:indexPath atScrollPosition:UICollectionViewScrollPositionTop animated:YES];
-            }
+            @try{
+                if ( [scrollView isKindOfClass:[UITableView class]] ) {
+                    [UIView animateWithDuration:0.6 animations:^{
+                        [(UITableView *)scrollView scrollToRowAtIndexPath:indexPath atScrollPosition:UITableViewScrollPositionTop animated:NO];
+                    }];
+                }
+                else if ( [scrollView isKindOfClass:[UICollectionView class]] ) {
+                    [(UICollectionView *)scrollView scrollToItemAtIndexPath:indexPath atScrollPosition:UICollectionViewScrollPositionTop animated:YES];
+                }
+            }@catch(NSException *__unused ex) {}
         }
             break;
         case SJAutoplayScrollAnimationTypeMiddle: {
-            if ( [scrollView isKindOfClass:[UITableView class]] ) {
-                [UIView animateWithDuration:0.6 animations:^{
-                    [(UITableView *)scrollView scrollToRowAtIndexPath:indexPath atScrollPosition:UITableViewScrollPositionMiddle animated:NO];
-                }];
-            }
-            else if ( [scrollView isKindOfClass:[UICollectionView class]] ) {
-                [(UICollectionView *)scrollView scrollToItemAtIndexPath:indexPath atScrollPosition:UICollectionViewScrollPositionCenteredVertically animated:YES];
-            }
+            @try{
+                if ( [scrollView isKindOfClass:[UITableView class]] ) {
+                    [UIView animateWithDuration:0.6 animations:^{
+                        [(UITableView *)scrollView scrollToRowAtIndexPath:indexPath atScrollPosition:UITableViewScrollPositionMiddle animated:NO];
+                    }];
+                }
+                else if ( [scrollView isKindOfClass:[UICollectionView class]] ) {
+                    [(UICollectionView *)scrollView scrollToItemAtIndexPath:indexPath atScrollPosition:UICollectionViewScrollPositionCenteredVertically animated:YES];
+                }
+            }@catch(NSException *__unused ex) {}
         }
             break;
     }

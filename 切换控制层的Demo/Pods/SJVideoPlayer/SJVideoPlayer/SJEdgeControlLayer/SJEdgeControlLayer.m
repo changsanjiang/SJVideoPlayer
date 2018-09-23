@@ -8,12 +8,20 @@
 
 #import "SJEdgeControlLayer.h"
 #import "SJVideoPlayerBottomControlView.h"
+#if __has_include(<Masonry/Masonry.h>)
 #import <Masonry/Masonry.h>
+#else
+#import "Masonry.h"
+#endif
+#if __has_include(<SJBaseVideoPlayer/SJBaseVideoPlayer.h>)
 #import <SJBaseVideoPlayer/SJBaseVideoPlayer.h>
+#else
+#import "SJBaseVideoPlayer.h"
+#endif
 #import "SJEdgeControlLayerSettings.h"
 #import "SJVideoPlayerDraggingProgressView.h"
 #import "UIView+SJVideoPlayerSetting.h"
-#import <SJSlider/SJSlider.h>
+#import "SJProgressSlider.h"
 #import "SJVideoPlayerLeftControlView.h"
 #import "SJVideoPlayerTopControlView.h"
 #import "SJVideoPlayerPreviewView.h"
@@ -23,17 +31,33 @@
 #import "SJVideoPlayerMoreSetting+Exe.h"
 #import "SJVideoPlayerMoreSettingSecondary.h"
 #import "SJVideoPlayerCenterControlView.h"
-#import <SJLoadingView/SJLoadingView.h>
+#import "SJLoadingView.h"
 #import <objc/message.h>
 #import "UIView+SJControlAdd.h"
 #import "SJVideoPlayerRightControlView.h"
 #import "SJVideoPlayerControlMaskView.h"
+#if __has_include(<SJUIFactory/SJUIFactory.h>)
 #import <SJUIFactory/SJUIFactory.h>
+#else
+#import "SJUIFactory.h"
+#endif
 #import "SJVideoPlayerAnimationHeader.h"
+#if __has_include(<SJBaseVideoPlayer/SJTimerControl.h>)
 #import <SJBaseVideoPlayer/SJTimerControl.h>
+#else
+#import "SJTimerControl.h"
+#endif
+#if __has_include(<SJBaseVideoPlayer/SJVideoPlayerRegistrar.h>)
 #import <SJBaseVideoPlayer/SJVideoPlayerRegistrar.h>
+#else
+#import "SJVideoPlayerRegistrar.h"
+#endif
 #import "SJVideoPlayerURLAsset+SJControlAdd.h"
+#if __has_include(<SJBaseVideoPlayer/SJBaseVideoPlayer+PlayStatus.h>)
 #import <SJBaseVideoPlayer/SJBaseVideoPlayer+PlayStatus.h>
+#else
+#import "SJBaseVideoPlayer+PlayStatus.h"
+#endif
 
 #pragma mark -
 
@@ -59,7 +83,7 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic, strong, readonly) SJVideoPlayerBottomControlView *bottomControlView;
 @property (nonatomic, strong, readonly) SJVideoPlayerControlMaskView *bottomControlMaskView;
 @property (nonatomic, strong, readonly) SJVideoPlayerRightControlView *rightControlView;
-@property (nonatomic, strong, readonly) SJSlider *bottomSlider;
+@property (nonatomic, strong, readonly) SJProgressSlider *bottomSlider;
 @property (nonatomic, strong, readonly) SJVideoPlayerMoreSettingsView *moreSettingsView;
 @property (nonatomic, strong, readonly) SJVideoPlayerMoreSettingSecondaryView *moreSecondarySettingView;
 @property (nonatomic, strong, readonly) SJLoadingView *loadingView;
@@ -97,11 +121,11 @@ NS_ASSUME_NONNULL_END
     return self;
 }
 
+#ifdef SJ_MAC
 - (void)dealloc {
-#ifdef DEBUG
     NSLog(@"SJVideoPlayerLog: %d - %s", (int)__LINE__, __func__);
-#endif
 }
+#endif
 
 - (void)restartControlLayerCompeletionHandler:(nullable void(^)(void))compeletionHandler {
     if ( _videoPlayer.URLAsset ) {
@@ -129,7 +153,10 @@ NS_ASSUME_NONNULL_END
         [self->_previewView disappear];
         [self->_bottomSlider disappear];
         [self->_centerControlView disappear];
-    }, compeletionHandler);
+    }, ^{
+        [self.controlView removeFromSuperview];
+        if ( compeletionHandler ) compeletionHandler();
+    });
 }
 
 #pragma mark - Player extension
@@ -174,11 +201,11 @@ NS_ASSUME_NONNULL_END
 /// 当设置播放资源时调用.
 - (void)videoPlayer:(SJBaseVideoPlayer *)videoPlayer prepareToPlay:(SJVideoPlayerURLAsset *)asset {
     // reset
-    self.topControlView.model.alwaysShowTitle = asset.alwaysShowTitle;
-    self.topControlView.model.title = asset.title;
-    self.topControlView.model.isPlayOnScrollView = videoPlayer.isPlayOnScrollView;
-    self.topControlView.model.fullscreen = videoPlayer.isFullScreen;
-    [self.topControlView needUpdateLayout];
+    self.topControlView.config.isAlwaysShowTitle = asset.alwaysShowTitle;
+    self.topControlView.config.title = asset.title;
+    self.topControlView.config.isPlayOnScrollView = videoPlayer.isPlayOnScrollView;
+    self.topControlView.config.isFullscreen = videoPlayer.isFullScreen;
+    [self.topControlView needUpdateConfig];
     
     
     self.bottomSlider.value = videoPlayer.progress;
@@ -286,11 +313,13 @@ NS_ASSUME_NONNULL_END
 
 - (void)videoPlayer:(__kindof SJBaseVideoPlayer *)videoPlayer statusDidChanged:(SJVideoPlayerPlayStatus)status {
     switch (status) {
-        case SJVideoPlayerPlayStatusUnknown:
+        case SJVideoPlayerPlayStatusUnknown: {
+            self.topControlView.config.title = nil;
+            [self.topControlView needUpdateConfig];
+        }
+            break;
         case SJVideoPlayerPlayStatusPrepare: { 
             [videoPlayer controlLayerNeedDisappear];
-            self.topControlView.model.title = nil;
-            [self.topControlView needUpdateLayout];
             self.bottomSlider.value = 0;
             self.bottomControlView.progress = 0;
             self.bottomControlView.bufferProgress = 0;
@@ -349,7 +378,7 @@ NS_ASSUME_NONNULL_END
 
 /// 开始缓冲.
 - (void)startLoading:(SJBaseVideoPlayer *)videoPlayer {
-#ifdef DEBUG
+#ifdef SJ_MAC
     NSLog(@"%d - %s", (int)__LINE__, __func__);
 #endif
 
@@ -358,7 +387,7 @@ NS_ASSUME_NONNULL_END
 }
 
 - (void)cancelLoading:(__kindof SJBaseVideoPlayer *)videoPlayer {
-#ifdef DEBUG
+#ifdef SJ_MAC
     NSLog(@"%d - %s", (int)__LINE__, __func__);
 #endif
 
@@ -368,7 +397,7 @@ NS_ASSUME_NONNULL_END
 
 /// 缓冲完成.
 - (void)loadCompletion:(SJBaseVideoPlayer *)videoPlayer {
-#ifdef DEBUG
+#ifdef SJ_MAC
     NSLog(@"%d - %s", (int)__LINE__, __func__);
 #endif
 
@@ -411,9 +440,9 @@ NS_ASSUME_NONNULL_END
     }
     
     // update layout
-    self.bottomControlView.fullscreen = isFull;
-    self.topControlView.model.fullscreen = isFull;
-    [self.topControlView needUpdateLayout];
+    self.bottomControlView.isFullscreen = isFull;
+    self.topControlView.config.isFullscreen = isFull;
+    [self.topControlView needUpdateConfig];
     
     [self _setControlViewsDisappearValue]; // update. `reset`.
     
@@ -422,19 +451,16 @@ NS_ASSUME_NONNULL_END
     if ( _moreSecondarySettingView.appearState ) [_moreSecondarySettingView disappear];
     [self.bottomSlider disappear];
     
-    if ( isFull ) {
-        // `iPhone_X` remake constraints.
-        if ( SJ_is_iPhoneX() ) {
+    // `iPhone_X` remake constraints.
+    if ( SJ_is_iPhoneX() ) {
+        if ( isFull ) {
             [self.containerView mas_remakeConstraints:^(MASConstraintMaker *make) {
                 make.center.offset(0);
                 make.height.equalTo(self.containerView.superview);
                 make.width.equalTo(self.containerView.mas_height).multipliedBy(16 / 9.0f);
             }];
         }
-    }
-    else {
-        // `iPhone_X` remake constraints.
-        if ( SJ_is_iPhoneX() ) {
+        else {
             [self.containerView mas_remakeConstraints:^(MASConstraintMaker *make) {
                 make.edges.offset(0);
             }];
@@ -447,6 +473,28 @@ NS_ASSUME_NONNULL_END
 /// 播放器完成旋转.
 //- (void)videoPlayer:(SJBaseVideoPlayer *)videoPlayer didEndRotation:(BOOL)isFull {
 //    
+//}
+
+#pragma mark - Fit On Screen
+
+- (void)videoPlayer:(__kindof SJBaseVideoPlayer *)videoPlayer willFitOnScreen:(BOOL)isFitOnScreen {
+    // update layout
+    self.bottomControlView.isFitOnScreen = isFitOnScreen;
+    self.topControlView.config.isFitOnScreen = isFitOnScreen;
+    [self.topControlView needUpdateConfig];
+    
+    [self _setControlViewsDisappearValue]; // update. `reset`.
+    
+    if ( _previewView.appearState ) [_previewView disappear];
+    if ( _moreSettingsView.appearState ) [_moreSettingsView disappear];
+    if ( _moreSecondarySettingView.appearState ) [_moreSecondarySettingView disappear];
+    [self.bottomSlider disappear];
+    
+    if ( videoPlayer.controlLayerAppeared ) [videoPlayer controlLayerNeedAppear]; // update
+}
+
+//- (void)videoPlayer:(__kindof SJBaseVideoPlayer *)videoPlayer didCompleteFitOnScreen:(BOOL)isFitOnScreen {
+//
 //}
 
 #pragma mark Player Volume / Brightness / Rate
@@ -498,8 +546,8 @@ NS_ASSUME_NONNULL_END
         else {
             self.hasBeenGeneratedPreviewImages = YES;
             self.previewView.previewImages = images;
-            self.topControlView.model.fullscreen = player.isFullScreen;
-            [self.topControlView needUpdateLayout];
+            self.topControlView.config.isFullscreen = player.isFullScreen;
+            [self.topControlView needUpdateConfig];
         }
     }];
 }
@@ -720,20 +768,7 @@ NS_ASSUME_NONNULL_END
 - (void)topControlView:(SJVideoPlayerTopControlView *)view clickedBtnTag:(SJVideoPlayerTopViewTag)tag {
     switch ( tag ) {
         case SJVideoPlayerTopViewTag_Back: {
-            if ( _videoPlayer.isFullScreen ) {
-                SJAutoRotateSupportedOrientation supported = _videoPlayer.supportedOrientation;
-                if ( supported == SJAutoRotateSupportedOrientation_All ) {
-                    supported  = SJAutoRotateSupportedOrientation_Portrait | SJAutoRotateSupportedOrientation_LandscapeLeft | SJAutoRotateSupportedOrientation_LandscapeRight;
-                }
-                if ( SJAutoRotateSupportedOrientation_Portrait == (supported & SJAutoRotateSupportedOrientation_Portrait) ) {
-                    [_videoPlayer rotate];
-                    return;
-                }
-            }
-            
-            if ( [self.delegate respondsToSelector:@selector(clickedBackBtnOnControlLayer:)] ) {
-                [self.delegate clickedBackBtnOnControlLayer:self];
-            }
+            [self _hanleBackButtonEvent];
         }
             break;
         case SJVideoPlayerTopViewTag_More: {
@@ -758,6 +793,32 @@ NS_ASSUME_NONNULL_END
             }, nil);
         }
             break;
+    }
+}
+
+- (void)_hanleBackButtonEvent {
+    if ( self.videoPlayer.useFitOnScreenAndDisableRotation ) {
+        if ( _videoPlayer.isFitOnScreen ) {
+            _videoPlayer.fitOnScreen = NO;
+        }
+        else {
+            if ( [self.delegate respondsToSelector:@selector(clickedBackBtnOnControlLayer:)] ) {
+                [self.delegate clickedBackBtnOnControlLayer:self];
+            }
+        }
+        
+        return;
+    }
+    
+    if ( _videoPlayer.isFullScreen ) {
+        if ( SJAutoRotateSupportedOrientation_Portrait == (_videoPlayer.supportedOrientation & SJAutoRotateSupportedOrientation_Portrait) ) {
+            [_videoPlayer rotate];
+            return;
+        }
+    }
+    
+    if ( [self.delegate respondsToSelector:@selector(clickedBackBtnOnControlLayer:)] ) {
+        [self.delegate clickedBackBtnOnControlLayer:self];
     }
 }
 
@@ -831,10 +892,20 @@ NS_ASSUME_NONNULL_END
         }
             break;
         case SJVideoPlayerBottomViewTag_Full: {
-            [self.videoPlayer rotate];
+            [self _handleFullButtonEvent];
         }
             break;
     }
+}
+
+- (void)_handleFullButtonEvent {
+    if ( !self.videoPlayer.useFitOnScreenAndDisableRotation ) {
+        [self.videoPlayer rotate];
+        
+        return;
+    }
+    
+    self.videoPlayer.fitOnScreen = !self.videoPlayer.isFitOnScreen;
 }
 
 - (SJVideoPlayerDraggingProgressView *)draggingProgressView {
@@ -856,7 +927,7 @@ NS_ASSUME_NONNULL_END
 - (void)bottomView:(SJVideoPlayerBottomControlView *)view sliderDidDrag:(CGFloat)progress {
     self.draggingProgressView.shiftProgress = progress;
     [self.draggingProgressView setTimeShiftStr:[self.videoPlayer timeStringWithSeconds:self.draggingProgressView.shiftProgress * self.videoPlayer.totalTime]];
-    if ( self.videoPlayer.isFullScreen && !self.videoPlayer.URLAsset.isM3u8 ) {
+    if ( (self.videoPlayer.isFullScreen || self.videoPlayer.fitOnScreen ) && !self.videoPlayer.URLAsset.isM3u8 ) {
         NSTimeInterval secs = self.draggingProgressView.shiftProgress * self.videoPlayer.totalTime;
         __weak typeof(self) _self = self;
         [self.videoPlayer screenshotWithTime:secs size:CGSizeMake(self.draggingProgressView.frame.size.width * 2, self.draggingProgressView.frame.size.height * 2) completion:^(SJBaseVideoPlayer * _Nonnull videoPlayer, UIImage * _Nullable image, NSError * _Nullable error) {
@@ -927,11 +998,18 @@ NS_ASSUME_NONNULL_END
     }
 }
 
+- (void)setHideBackButtonWhenOrientationIsPortrait:(BOOL)hideBackButtonWhenOrientationIsPortrait {
+    if ( hideBackButtonWhenOrientationIsPortrait == _hideBackButtonWhenOrientationIsPortrait ) return;
+    _hideBackButtonWhenOrientationIsPortrait = hideBackButtonWhenOrientationIsPortrait;
+    _topControlView.config.hideBackButtonWhenOrientationIsPortrait = hideBackButtonWhenOrientationIsPortrait;
+    [_topControlView needUpdateConfig];
+}
+
 #pragma mark - Bottom slider
 
-- (SJSlider *)bottomSlider {
+- (SJProgressSlider *)bottomSlider {
     if ( _bottomSlider ) return _bottomSlider;
-    _bottomSlider = [SJSlider new];
+    _bottomSlider = [SJProgressSlider new];
     _bottomSlider.pan.enabled = NO;
     _bottomSlider.trackHeight = 1;
     return _bottomSlider;
@@ -1080,7 +1158,7 @@ NS_ASSUME_NONNULL_END
         if ( !self ) return;
         self.bottomSlider.traceImageView.backgroundColor = setting.progress_traceColor;
         self.bottomSlider.trackImageView.backgroundColor = setting.progress_bufferColor;
-        self.videoPlayer.placeholder = setting.placeholder;
+        if ( !self.videoPlayer.placeholder && setting.placeholder ) self.videoPlayer.placeholder = setting.placeholder;
         if ( self.enableFilmEditing ) self.rightControlView.filmEditingBtnImage = setting.filmEditingBtnImage;
         [self.draggingProgressView setPreviewImage:setting.placeholder];
         self.settings = setting;

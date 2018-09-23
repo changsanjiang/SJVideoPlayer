@@ -29,12 +29,13 @@
  */
 
 #import <UIKit/UIKit.h>
-#import "SJVideoPlayerURLAsset.h"
 #import "SJVideoPlayerState.h"
 #import "SJVideoPlayerPreviewInfo.h"
-#import <SJPrompt/SJPrompt.h>
+#import "SJPrompt.h"
 #import "SJRotationManager.h"
 #import "SJVideoPlayerControlLayerProtocol.h"
+#import "SJMediaPlaybackProtocol.h"
+#import "SJVideoPlayerURLAsset+SJAVMediaPlaybackAdd.h"
 
 NS_ASSUME_NONNULL_BEGIN
 
@@ -149,7 +150,9 @@ NS_ASSUME_NONNULL_BEGIN
 
 #pragma mark - 播放控制
 
-@interface SJBaseVideoPlayer (PlayControl)
+@interface SJBaseVideoPlayer (PlayControl)<SJMediaPlaybackControllerDelegate>
+/// 管理对象: 播放控制
+@property (null_resettable, nonatomic, strong) id<SJMediaPlaybackController> playbackController;
 
 /// 资源
 /// - 使用资源URL及相关的视图信息进行初始化
@@ -355,7 +358,7 @@ typedef NS_ENUM(NSUInteger, SJDisablePlayerGestureTypes) {
     SJDisablePlayerGestureTypes_DoubleTap = 1 << 1,
     SJDisablePlayerGestureTypes_Pan = 1 << 2,
     SJDisablePlayerGestureTypes_Pinch = 1 << 3,
-    SJDisablePlayerGestureTypes_All = 1 << 4
+    SJDisablePlayerGestureTypes_All = SJDisablePlayerGestureTypes_SingleTap | SJDisablePlayerGestureTypes_DoubleTap | SJDisablePlayerGestureTypes_Pan | SJDisablePlayerGestureTypes_Pinch,
 };
 
 
@@ -453,11 +456,51 @@ typedef NS_ENUM(NSUInteger, SJDisablePlayerGestureTypes) {
 
 
 
+/// 全屏或小屏, 但不触发旋转
+/// v1.3.1 新增
+@interface SJBaseVideoPlayer (FitOnScreen)
+
+/// Disable rotation, only full screen(`fitOnScreen==YES`) or small screen(`fitOnScreen==NO`) operation.
+/// 禁止旋转, 只进行全屏或小屏的操作.
+/// default is NO.
+@property (nonatomic) BOOL useFitOnScreenAndDisableRotation;
+
+/// Whether fullscreen or smallscreen, this method does not trigger rotation.
+/// 全屏或小屏, 此方法不触发旋转
+/// Animated
+@property (nonatomic, getter=isFitOnScreen) BOOL fitOnScreen;
+
+/// Whether fullscreen or smallscreen, this method does not trigger rotation.
+/// 全屏或小屏, 此方法不触发旋转
+/// - animated : 是否动画
+- (void)setFitOnScreen:(BOOL)fitOnScreen animated:(BOOL)animated;
+
+/// Whether fullscreen or smallscreen, this method does not trigger rotation.
+/// 全屏或小屏, 此方法不触发旋转
+/// - animated : 是否动画
+/// - completionHandler : 操作完成的回调
+- (void)setFitOnScreen:(BOOL)fitOnScreen animated:(BOOL)animated completionHandler:(nullable void(^)(__kindof SJBaseVideoPlayer *player))completionHandler;
+
+/// 全屏或小屏过程中的回调
+@property (nonatomic, copy, nullable) void(^fitOnScreenWillChangeExeBlock)(__kindof SJBaseVideoPlayer *player);
+
+/// 全屏或小屏过程中的回调
+@property (nonatomic, copy, nullable) void(^fitOnScreenDidChangeExeBlock)(__kindof SJBaseVideoPlayer *player);;
+
+@end
+
+
 
 
 #pragma mark - 屏幕旋转
 
 @interface SJBaseVideoPlayer (Rotation)
+/// Default is SJRotationManager. It only rotates the player view.
+/// When you want to rotate the view controller, You can use the SJVCRotationManager.
+/// 默认情况下, 播放器将只旋转播放界面, ViewController并不会旋转.
+/// 当您想要旋转ViewController时, 可以采用此管理类进行旋转.
+/// - 使用示例请看`SJVCRotationManager`第36行注释。
+@property (nonatomic, strong, null_resettable) id<SJRotationManagerProtocol> rotationManager;
 
 /**
  Autorotation. Animated.

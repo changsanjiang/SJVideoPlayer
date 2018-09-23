@@ -7,7 +7,11 @@
 //
 
 #import <Foundation/Foundation.h>
+#if __has_include(<SJBaseVideoPlayer/SJVideoPlayerControlLayerProtocol.h>)
 #import <SJBaseVideoPlayer/SJVideoPlayerControlLayerProtocol.h>
+#else
+#import "SJVideoPlayerControlLayerProtocol.h"
+#endif
 #import "SJLightweightTopItem.h"
 
 NS_ASSUME_NONNULL_BEGIN
@@ -25,8 +29,13 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic, weak, nullable) id <SJEdgeLightweightControlLayerDelegate> delegate;
 
 @property (nonatomic, strong, nullable) NSArray<SJLightweightTopItem *> *topItems;
+
 @property (nonatomic) BOOL disableNetworkStatusChangePrompt;
+
 @property (nonatomic) BOOL enableFilmEditing;
+
+@property (nonatomic) BOOL hideBackButtonWhenOrientationIsPortrait;
+
 @end
 
 

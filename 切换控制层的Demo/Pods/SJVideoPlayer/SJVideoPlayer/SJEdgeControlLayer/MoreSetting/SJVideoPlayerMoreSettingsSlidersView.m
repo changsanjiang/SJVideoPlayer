@@ -7,16 +7,24 @@
 //
 
 #import "SJVideoPlayerMoreSettingsSlidersView.h"
-#import <SJSlider/SJButtonSlider.h>
+#import "SJButtonProgressSlider.h"
+#if __has_include(<Masonry/Masonry.h>)
 #import <Masonry/Masonry.h>
+#else
+#import "Masonry.h"
+#endif
+#if __has_include(<SJUIFactory/SJUIFactory.h>)
 #import <SJUIFactory/SJUIFactory.h>
+#else
+#import "SJUIFactory.h"
+#endif
 #import "UIView+SJVideoPlayerSetting.h"
 
-@interface SJVideoPlayerMoreSettingsSlidersView ()<SJSliderDelegate>
+@interface SJVideoPlayerMoreSettingsSlidersView ()<SJProgressSliderDelegate>
 
-@property (nonatomic, strong, readonly) SJButtonSlider *rateSlider;
-@property (nonatomic, strong, readonly) SJButtonSlider *volumeSlider;
-@property (nonatomic, strong, readonly) SJButtonSlider *brightnessSlider;
+@property (nonatomic, strong, readonly) SJButtonProgressSlider *rateSlider;
+@property (nonatomic, strong, readonly) SJButtonProgressSlider *volumeSlider;
+@property (nonatomic, strong, readonly) SJButtonProgressSlider *brightnessSlider;
 
 @end
 
@@ -102,20 +110,20 @@
     self.rateSlider.slider.delegate = self;
 }
 
-- (SJButtonSlider *)volumeSlider {
+- (SJButtonProgressSlider *)volumeSlider {
     if ( _volumeSlider ) return _volumeSlider;
     _volumeSlider = [self slider];
     return _volumeSlider;
 }
 
-- (SJButtonSlider *)brightnessSlider {
+- (SJButtonProgressSlider *)brightnessSlider {
     if ( _brightnessSlider ) return _brightnessSlider;
     _brightnessSlider = [self slider];
     _brightnessSlider.slider.minValue = 0.1;
     return _brightnessSlider;
 }
 
-- (SJButtonSlider *)rateSlider {
+- (SJButtonProgressSlider *)rateSlider {
     if ( _rateSlider ) return _rateSlider;
     _rateSlider = [self slider];
     _rateSlider.slider.minValue = 0.5;
@@ -124,15 +132,15 @@
     return _rateSlider;
 }
 
-- (SJButtonSlider *)slider {
-    SJButtonSlider *slider = [SJButtonSlider new];
+- (SJButtonProgressSlider *)slider {
+    SJButtonProgressSlider *slider = [SJButtonProgressSlider new];
     slider.spacing = -6;
     return slider;
 }
 
 #pragma mark
 
-- (void)sliderWillBeginDragging:(SJSlider *)slider {
+- (void)sliderWillBeginDragging:(SJProgressSlider *)slider {
     if ( slider == _rateSlider.slider ) {
         if ( _model.needChangePlayerRate ) _model.needChangePlayerRate(slider.value);
     }
@@ -144,7 +152,7 @@
     }
 }
 
-- (void)sliderDidDrag:(SJSlider *)slider {
+- (void)sliderDidDrag:(SJProgressSlider *)slider {
     if ( slider == _rateSlider.slider ) {
         if ( _model.needChangePlayerRate ) _model.needChangePlayerRate(slider.value);
     }
@@ -156,7 +164,7 @@
     }
 }
 
-- (void)sliderDidEndDragging:(SJSlider *)slider {
+- (void)sliderDidEndDragging:(SJProgressSlider *)slider {
     if ( slider == _rateSlider.slider ) {
         if ( _model.needChangePlayerRate ) _model.needChangePlayerRate(slider.value);
     }

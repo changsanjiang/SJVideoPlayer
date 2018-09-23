@@ -7,21 +7,29 @@
 //
 
 #import "SJVideoPlayerBottomControlView.h"
-#import <SJSlider/SJSlider.h>
+#import "SJProgressSlider.h"
+#if __has_include(<SJUIFactory/SJUIFactory.h>)
 #import <SJUIFactory/SJUIFactory.h>
+#else
+#import "SJUIFactory.h"
+#endif
+#if __has_include(<Masonry/Masonry.h>)
 #import <Masonry/Masonry.h>
+#else
+#import "Masonry.h"
+#endif
 #import "SJVideoPlayerControlMaskView.h"
 #import "UIView+SJVideoPlayerSetting.h"
 
 
-@interface SJVideoPlayerBottomControlView ()<SJSliderDelegate>
+@interface SJVideoPlayerBottomControlView ()<SJProgressSliderDelegate>
 
 @property (nonatomic, strong, readonly) UIButton *playBtn;
 @property (nonatomic, strong, readonly) UIButton *pauseBtn;
 @property (nonatomic, strong, readonly) UILabel *currentTimeLabel;
 @property (nonatomic, strong, readonly) UILabel *separateLabel;
 @property (nonatomic, strong, readonly) UILabel *durationTimeLabel;
-@property (nonatomic, strong, readonly) SJSlider *progressSlider;
+@property (nonatomic, strong, readonly) SJProgressSlider *progressSlider;
 @property (nonatomic, strong, readonly) UIButton *fullBtn;
 
 @property (nonatomic, strong) UIImage *fullScreenImage;
@@ -48,12 +56,13 @@
 }
 
 - (CGSize)intrinsicContentSize {
-    if ( SJ_is_iPhoneX() && _fullscreen )
-         return CGSizeMake(SJScreen_Max(), 60);
-    else {
-        if ( _fullscreen ) return CGSizeMake(SJScreen_Max(), 49);
-        else return CGSizeMake(SJScreen_Min(), 49);
+    if ( _isFullscreen ) return CGSizeMake(SJScreen_Max(), 60);
+    
+    if ( _isFitOnScreen ) {
+        if ( SJ_is_iPhoneX() ) return CGSizeMake(SJScreen_Max(), 100);
+        return CGSizeMake(SJScreen_Max(), 60);
     }
+    return CGSizeMake(SJScreen_Max(), 49);
 }
 
 - (void)setPlayState:(BOOL)playState {
@@ -70,8 +79,14 @@
     }];
 }
 
-- (void)setFullscreen:(BOOL)fullscreen {
-    _fullscreen = fullscreen;
+- (void)setIsFullscreen:(BOOL)isFullscreen {
+    _isFullscreen = isFullscreen;
+    [self _updateFullBtnImage];
+    [self invalidateIntrinsicContentSize];
+}
+
+- (void)setIsFitOnScreen:(BOOL)isFitOnScreen {
+    _isFitOnScreen = isFitOnScreen;
     [self _updateFullBtnImage];
     [self invalidateIntrinsicContentSize];
 }
@@ -201,27 +216,27 @@
     return _pauseBtn;
 }
 
-- (SJSlider *)progressSlider {
+- (SJProgressSlider *)progressSlider {
     if ( _progressSlider ) return _progressSlider;
-    _progressSlider = [SJSlider new];
+    _progressSlider = [SJProgressSlider new];
     _progressSlider.enableBufferProgress = YES;
     _progressSlider.delegate = self;
     return _progressSlider;
 }
 
-- (void)sliderWillBeginDragging:(SJSlider *)slider {
+- (void)sliderWillBeginDragging:(SJProgressSlider *)slider {
     if ( [self.delegate respondsToSelector:@selector(sliderWillBeginDraggingForBottomView:)] ) {
         [self.delegate sliderWillBeginDraggingForBottomView:self];
     }
 }
 
-- (void)sliderDidDrag:(SJSlider *)slider {
+- (void)sliderDidDrag:(SJProgressSlider *)slider {
     if ( [self.delegate respondsToSelector:@selector(bottomView:sliderDidDrag:)] ) {
         [self.delegate bottomView:self sliderDidDrag:slider.value];
     }
 }
 
-- (void)sliderDidEndDragging:(SJSlider *)slider {
+- (void)sliderDidEndDragging:(SJProgressSlider *)slider {
     if ( [self.delegate respondsToSelector:@selector(sliderDidEndDraggingForBottomView:)] ) {
         [self.delegate sliderDidEndDraggingForBottomView:self];
     }
@@ -278,7 +293,7 @@
 }
 
 - (void)_updateFullBtnImage {
-    if ( self.fullscreen ) [self.fullBtn setImage:self.shrinkscreenImage forState:UIControlStateNormal];
+    if ( _isFullscreen || _isFitOnScreen ) [self.fullBtn setImage:self.shrinkscreenImage forState:UIControlStateNormal];
     else [self.fullBtn setImage:self.fullScreenImage forState:UIControlStateNormal];
 }
 @end

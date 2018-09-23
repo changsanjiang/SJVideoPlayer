@@ -9,16 +9,13 @@
 #import "SJVolBrigControl.h"
 #import "SJVideoPlayerTipsView.h"
 #import "SJVolBrigResource.h"
-#import <MediaPlayer/MPMusicPlayerController.h>
+#import <AVFoundation/AVFoundation.h>
+#import <MediaPlayer/MPVolumeView.h>
 
-#pragma clang diagnostic push
-#pragma clang diagnostic ignored "-Wdeprecated-declarations"
-
-
-@interface SJVolBrigControl ()
-
-@property (nonatomic, strong, readwrite) SJVideoPlayerTipsView *brightnessView;
-
+@interface SJVolBrigControl () {
+    SJVideoPlayerTipsView *_brightnessView;
+    UISlider *_volumeSlider;
+}
 @end
 
 @implementation SJVolBrigControl
@@ -28,16 +25,23 @@
     self = [super init];
     if ( !self ) return nil;
     [self brightnessView];
+    
     [[NSNotificationCenter defaultCenter] addObserver:self
                                              selector:@selector(volumeDidChange)
                                                  name:@"AVSystemController_SystemVolumeDidChangeNotification"
                                                object:nil];
-    _volume = [MPMusicPlayerController applicationMusicPlayer].volume;
+    _volume = [AVAudioSession sharedInstance].outputVolume;
+    for ( UIView *subview in [[MPVolumeView new] subviews] ) {
+        if ( [subview.class.description isEqualToString:@"MPVolumeSlider"] ) {
+            _volumeSlider = (UISlider *)subview;
+            break;
+        }
+    }
     return self;
 }
 
 - (void)volumeDidChange {
-    if ( _volumeChanged ) _volumeChanged([MPMusicPlayerController applicationMusicPlayer].volume);
+    if ( _volumeChanged ) _volumeChanged([AVAudioSession sharedInstance].outputVolume);
 }
 
 - (void)dealloc {
@@ -64,7 +68,7 @@
     if ( isnan(volume) || volume < 0 ) volume = 0;
     else if ( volume > 1 ) volume = 1;
     _volume = volume;
-    [[MPMusicPlayerController applicationMusicPlayer] setVolume:volume];
+    _volumeSlider.value = volume;
 }
 
 - (void)setBrightness:(float)brightness {
@@ -79,6 +83,4 @@
 - (float)brightness {
     return [UIScreen mainScreen].brightness;
 }
-
 @end
-#pragma clang diagnostic pop

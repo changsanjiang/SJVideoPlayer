@@ -7,13 +7,17 @@
 //
 
 #import "SJPlayModelPropertiesObserver.h"
-#import <SJObserverHelper/NSObject+SJObserverHelper.h>
 #import <objc/message.h>
 #import <UIKit/UIKit.h>
 #import "SJIsAppeared.h"
 
-NS_ASSUME_NONNULL_BEGIN
+#if __has_include(<SJObserverHelper/NSObject+SJObserverHelper.h>)
+#import <SJObserverHelper/NSObject+SJObserverHelper.h>
+#else
+#import "NSObject+SJObserverHelper.h"
+#endif
 
+NS_ASSUME_NONNULL_BEGIN
 @interface SJPlayModelPropertiesObserver()
 @property (nonatomic, strong, readonly) id<SJPlayModel> playModel;
 @property (nonatomic) CGPoint beforeOffset;
@@ -64,8 +68,14 @@ NS_ASSUME_NONNULL_BEGIN
     else if ( [_playModel isKindOfClass:[SJUICollectionViewNestedInUITableViewCellPlayModel class]] ) {
         SJUICollectionViewNestedInUITableViewCellPlayModel *playModel = _playModel;
         _isAppeared = [self _isAppearedInTheScrollingView:playModel.collectionView];
-        [self _observeScrollView:[[playModel.tableView cellForRowAtIndexPath:playModel.collectionViewAtIndexPath] viewWithTag:playModel.collectionViewTag]];
+        [self _observeScrollView:playModel.collectionView];
         [self _observeScrollView:playModel.tableView];
+    }
+    else if ( [_playModel isKindOfClass:[SJUICollectionViewNestedInUICollectionViewCellPlayModel class]] ) {
+        SJUICollectionViewNestedInUICollectionViewCellPlayModel *playModel = _playModel;
+        _isAppeared = [self _isAppearedInTheScrollingView:playModel.collectionView];
+        [self _observeScrollView:playModel.collectionView];
+        [self _observeScrollView:playModel.rootCollectionView];
     }
 }
 
@@ -137,36 +147,7 @@ static NSString *kState = @"state";
 }
 
 - (BOOL)_isAppearedInTheScrollingView:(UIScrollView *)scrollView {
-    if ( [_playModel isKindOfClass:[SJUITableViewCellPlayModel class]] ) {
-        SJUITableViewCellPlayModel *playModel = _playModel;
-        return sj_isAppeared1(playModel.playerSuperviewTag, playModel.indexPath, playModel.tableView);
-    }
-    else if ( [_playModel isKindOfClass:[SJUITableViewHeaderViewPlayModel class]] ) {
-        SJUITableViewHeaderViewPlayModel *playModel = _playModel;
-        return sj_isAppeared2(playModel.playerSuperview, playModel.tableView);
-    }
-    else if ( [_playModel isKindOfClass:[SJUICollectionViewCellPlayModel class]] ) {
-        SJUICollectionViewCellPlayModel *playModel = _playModel;
-        return sj_isAppeared3(playModel.playerSuperviewTag, playModel.indexPath, playModel.collectionView);
-    }
-    else if ( [_playModel isKindOfClass:[SJUICollectionViewNestedInUITableViewHeaderViewPlayModel class]] ) {
-        SJUICollectionViewNestedInUITableViewHeaderViewPlayModel *playModel = _playModel;
-        if ( scrollView == playModel.collectionView ) {
-            return sj_isAppeared3(playModel.playerSuperviewTag, playModel.indexPath, playModel.collectionView);
-        }
-        
-        return sj_isAppeared5(playModel.playerSuperviewTag, playModel.indexPath, playModel.collectionView, playModel.tableView);
-    }
-    else if ( [_playModel isKindOfClass:[SJUICollectionViewNestedInUITableViewCellPlayModel class]] ) {
-        SJUICollectionViewNestedInUITableViewCellPlayModel *playModel = _playModel;
-        UICollectionView *collectionView = playModel.collectionView;
-        if ( collectionView == scrollView ) {
-            return sj_isAppeared3(playModel.playerSuperviewTag, playModel.indexPath, collectionView);
-        }
-        
-        return sj_isAppeared4(playModel.playerSuperviewTag, playModel.indexPath, playModel.collectionViewTag, playModel.collectionViewAtIndexPath, playModel.tableView);
-    }
-    return NO;
+    return sj_isAppeared2(_playModel.playerSuperview, scrollView);
 }
 
 - (void)_scrollViewDidScroll:(UIScrollView *)scrollView {

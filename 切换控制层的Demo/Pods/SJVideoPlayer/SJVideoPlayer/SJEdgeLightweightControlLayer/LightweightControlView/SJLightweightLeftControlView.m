@@ -8,8 +8,16 @@
 
 #import "SJLightweightLeftControlView.h"
 #import "UIView+SJVideoPlayerSetting.h"
+#if __has_include(<Masonry/Masonry.h>)
 #import <Masonry/Masonry.h>
+#else
+#import "Masonry.h"
+#endif
+#if __has_include(<SJUIFactory/SJUIFactory.h>)
 #import <SJUIFactory/SJUIFactory.h>
+#else
+#import "SJUIFactory.h"
+#endif
 
 
 

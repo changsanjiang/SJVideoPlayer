@@ -6,7 +6,11 @@
 //  Copyright © 2018年 畅三江. All rights reserved.
 //
 
+#if __has_include(<SJBaseVideoPlayer/SJBaseVideoPlayer.h>)
 #import <SJBaseVideoPlayer/SJBaseVideoPlayer.h>
+#else
+#import "SJBaseVideoPlayer.h"
+#endif
 #import "SJVideoPlayerSettings.h"
 #import "SJVideoPlayerMoreSetting.h"
 #import "SJVideoPlayerURLAsset+SJControlAdd.h"
@@ -18,7 +22,7 @@
 #import "SJControlLayerSwitcher.h"
 
 NS_ASSUME_NONNULL_BEGIN
-/// 这两个标识是默认控制层的标识, 你可以行下面这样扩展您的标识, 将相应的控制层加入到switcher中, 通过switcher进行切换.
+/// 这两个标识是默认控制层的标识. 可以像下面这样扩展您的标识, 将相应的控制层加入到switcher(切换器)中, 通过switcher进行切换.
 /// SJControlLayerIdentifier YourControlLayerIdentifier;
 /// 当然, 也可以直接将默认的标识控制层, 替换成您的控制层.
 
@@ -44,16 +48,15 @@ extern SJControlLayerIdentifier SJControlLayer_FilmEditing;
 /// 新增: 控制层 切换器, 管理控制层的切换
 @property (nonatomic, strong, readonly) SJControlLayerSwitcher *switcher;
 
-/// This block invoked when clicked back btn, if videoPlayer.isFullscreen == NO.
-/// 点击`返回`按钮的回调
-@property (nonatomic, copy, readwrite) void(^clickedBackEvent)(SJVideoPlayer *player);
++ (NSString *)version;
 
-/// Player will prompt the user when the network status changes, if disableNetworkStatusChangePrompt == NO;
-/// 是否禁止网络状态变化时的提示, 默认是NO.
-@property (nonatomic) BOOL disableNetworkStatusChangePrompt;
+@end
 
+
+@interface SJVideoPlayer (CommonSettings)
+/// 配置`播放器图片或slider的颜色等`
 /// Configure the player, Note: This `block` is run on the child thread.
-/// 配置播放器, 注意: 这个`block`在子线程运行
+/// 配置播放器, 例如: 滚动条的颜色等... 注意: 这个`block`在子线程运行
 ///
 /// SJVideoPlayer.update(^(SJVideoPlayerSettings * _Nonnull commonSettings) {
 ///     ..... setting player ......
@@ -65,8 +68,18 @@ extern SJControlLayerIdentifier SJControlLayer_FilmEditing;
 @property (class, nonatomic, copy, readonly) void(^update)(void(^block)(SJVideoPlayerSettings *commonSettings));
 + (void)resetSetting; // 重置配置, 恢复默认设置
 
+/// This block invoked when clicked back btn, if videoPlayer.isFullscreen == NO.
+/// 点击`返回`按钮的回调
+@property (null_resettable, nonatomic, copy) void(^clickedBackEvent)(SJVideoPlayer *player);
 
-+ (NSString *)version;
+/// 当播放器为竖屏时, 是否隐藏返回按钮
+/// v2.1.4 新增
+@property (nonatomic) BOOL hideBackButtonWhenOrientationIsPortrait;
+
+/// Player will prompt the user when the network status changes, if disableNetworkStatusChangePrompt == NO;
+/// 是否禁止网络状态变化时的提示, 默认是NO.
+@property (nonatomic) BOOL disableNetworkStatusChangePrompt;
+
 @end
 
 

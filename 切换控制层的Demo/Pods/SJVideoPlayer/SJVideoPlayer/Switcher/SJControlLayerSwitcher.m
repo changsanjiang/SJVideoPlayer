@@ -69,7 +69,7 @@ NS_ASSUME_NONNULL_BEGIN
     
     _previousIdentifier = _currentIdentifier;
     _currentIdentifier = carrier_new.identifier;
-
+    
     if ( carrier_new.restartExeBlock ) carrier_new.restartExeBlock(carrier_new);
 }
 
@@ -81,7 +81,6 @@ NS_ASSUME_NONNULL_BEGIN
     return self.map[@(identifier)];
 }
 @end
-
 
 SJControlLayerIdentifier SJControlLayer_Uninitialized = LONG_MAX;
 

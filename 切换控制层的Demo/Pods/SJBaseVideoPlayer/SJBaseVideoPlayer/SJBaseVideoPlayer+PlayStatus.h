@@ -9,6 +9,8 @@
 
 @interface SJBaseVideoPlayer (PlayStatus)
 
+- (NSString *)getPlayStatusStr:(SJVideoPlayerPlayStatus)status;
+
 - (BOOL)playStatus_isUnknown;
 
 - (BOOL)playStatus_isPrepare;

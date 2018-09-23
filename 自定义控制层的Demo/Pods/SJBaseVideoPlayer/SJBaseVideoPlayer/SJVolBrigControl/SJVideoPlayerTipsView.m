@@ -8,8 +8,13 @@
 
 #import "SJVideoPlayerTipsView.h"
 #import "SJBorderLineView.h"
-#import <Masonry/Masonry.h>
 #import "SJVolBrigResource.h"
+#if __has_include(<Masonry/Masonry.h>)
+#import <Masonry/Masonry.h>
+#else
+#import "Masonry.h"
+#endif
+
 
 @interface SJVideoPlayerTipsView ()
 

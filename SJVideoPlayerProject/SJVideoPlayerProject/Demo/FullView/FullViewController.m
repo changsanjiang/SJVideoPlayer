@@ -8,12 +8,13 @@
 
 #import "FullViewController.h"
 #import "SJVideoPlayer.h"
-#import <SJUIFactory/SJUIFactory.h>
 #import <Masonry.h>
+#import "SJVCRotationManager.h"
 
 @interface FullViewController ()
 
-@property (nonatomic, strong) SJVideoPlayer *videoPlayer;
+@property (nonatomic, strong) SJVideoPlayer *player;
+@property (nonatomic, strong) SJVCRotationManager *rotationManager;
 
 @end
 
@@ -21,63 +22,56 @@
 
 - (void)viewDidLoad {
     [super viewDidLoad];
-    self.view.backgroundColor = [UIColor whiteColor];
-    _videoPlayer = [SJVideoPlayer lightweightPlayer];
-    [self.view addSubview:_videoPlayer.view];
-    [_videoPlayer.view mas_makeConstraints:^(MASConstraintMaker *make) {
-        if (@available(iOS 11.0, *)) {
-            make.top.equalTo(self.view.mas_safeAreaLayoutGuideTop);
-        } else {
-            make.top.offset(20);
-        }
-        make.leading.trailing.offset(0);
-        make.height.equalTo(self->_videoPlayer.view.mas_width).multipliedBy(9 / 16.0f);
-    }];
+    
+    [self _setupViews];
+    
+    /// 替换旋转管理类
+    _rotationManager = [[SJVCRotationManager alloc] initWithViewController:self];
+    _player.rotationManager = _rotationManager;
+    
+    _player.supportedOrientation = SJAutoRotateSupportedOrientation_LandscapeLeft;
+    
+    /// update device orientation
+    [[UIDevice currentDevice] setValue:@(UIDeviceOrientationPortrait) forKey:@"orientation"];
+    [[UIDevice currentDevice] setValue:@(UIDeviceOrientationLandscapeLeft) forKey:@"orientation"];
     
     __weak typeof(self) _self = self;
-    _videoPlayer.clickedBackEvent = ^(SJVideoPlayer * _Nonnull player) {
+    _player.clickedBackEvent = ^(SJVideoPlayer * _Nonnull player) {
         __strong typeof(_self) self = _self;
         if ( !self ) return;
-//        [self.videoPlayer rotate:SJOrientation_Portrait animated:YES completion:^(__kindof SJBaseVideoPlayer * _Nonnull player) {
-//            __strong typeof(_self) self = _self;
-//            if ( !self ) return;
-//           self.videoPlayer.orientation = SJOrientation_Portrait;
-//            [self.navigationController popViewControllerAnimated:YES];
-//        }];
-        [self.navigationController popViewControllerAnimated:YES];
+        [self.navigationController popViewControllerAnimated:NO];
     };
     
-    // 播放
-    [_videoPlayer showTitle:@"2秒后开始播放"];
-    dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(2 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
-        self->_videoPlayer.assetURL = [[NSBundle mainBundle] URLForResource:@"sample" withExtension:@"mp4"];
-    });
+    /// 播放
+    _player.assetURL = [[NSBundle mainBundle] URLForResource:@"sample" withExtension:@"mp4"];
+    // Do any additional setup after loading the view.
+}
 
-    // supported orientation . 设置旋转支持的方向.
-    _videoPlayer.supportedOrientation = SJAutoRotateSupportedOrientation_LandscapeLeft | SJAutoRotateSupportedOrientation_LandscapeRight;
-    
-    // 将播放器旋转成横屏.(播放器默认是竖屏的), 带动画
-    _videoPlayer.orientation = SJOrientation_LandscapeLeft; // 请注意: 是`SJOrientation_LandscapeLeft` 而不是 `SJAutoRotateSupportedOrientation_LandscapeLeft`
-    
-    // 将播放器旋转成横屏.(播放器默认是竖屏的), 不带动画
-//    [_videoPlayer rotate:SJOrientation_LandscapeLeft animated:NO];
-    
-    
-    _videoPlayer.controlLayerAppearStateChanged = ^(__kindof SJBaseVideoPlayer * _Nonnull player, BOOL state) {
-        __strong typeof(_self) self = _self;
-        if ( !self ) return ;
-        [UIView animateWithDuration:0.25 animations:^{
-            [self setNeedsStatusBarAppearanceUpdate];
-        }];
-    };
-    
-    _videoPlayer.viewWillRotateExeBlock = ^(__kindof SJBaseVideoPlayer * _Nonnull player, BOOL isFullScreen) {
-        __strong typeof(_self) self = _self;
-        if ( !self ) return ;
-        [UIView animateWithDuration:0.25 animations:^{
-            [self setNeedsStatusBarAppearanceUpdate];
-        }];
-    };
+- (void)_setupViews {
+    self.view.backgroundColor = [UIColor whiteColor];
+    _player = [SJVideoPlayer player];
+    [self.view addSubview:_player.view];
+    [_player.view mas_makeConstraints:^(MASConstraintMaker *make) {
+        make.top.leading.trailing.offset(0);
+        make.height.equalTo(self.player.view.mas_width).multipliedBy(9 / 16.0f);
+    }];
+}
+
+- (void)viewWillTransitionToSize:(CGSize)size withTransitionCoordinator:(id<UIViewControllerTransitionCoordinator>)coordinator {
+    [_rotationManager vc_viewWillTransitionToSize:size withTransitionCoordinator:coordinator];
+    [super viewWillTransitionToSize:size withTransitionCoordinator:coordinator];
+}
+
+- (BOOL)shouldAutorotate {
+    return [self.rotationManager vc_shouldAutorotate];
+}
+
+- (UIInterfaceOrientationMask)supportedInterfaceOrientations {
+    return [self.rotationManager vc_supportedInterfaceOrientations];
+}
+
+- (UIInterfaceOrientation)preferredInterfaceOrientationForPresentation {
+    return [self.rotationManager vc_preferredInterfaceOrientationForPresentation];
 }
 
 - (void)viewWillAppear:(BOOL)animated {
@@ -85,24 +79,31 @@
     [self.navigationController setNavigationBarHidden:YES animated:YES];
 }
 
+- (void)viewDidAppear:(BOOL)animated {
+    [super viewDidAppear:animated];
+    [self.player vc_viewDidAppear];
+}
+
 - (void)viewWillDisappear:(BOOL)animated {
     [super viewWillDisappear:animated];
-    [_videoPlayer pause];
-    /// 还原状态栏的方向
-    [[UIApplication sharedApplication] setStatusBarOrientation:UIInterfaceOrientationPortrait animated:YES];
+    [self.player vc_viewWillDisappear];
     [self.navigationController setNavigationBarHidden:NO animated:YES];
 }
 
+- (void)viewDidDisappear:(BOOL)animated {
+    [super viewDidDisappear:animated];
+    [self.player vc_viewDidDisappear];
+}
+
+- (BOOL)prefersStatusBarHidden {
+    return [self.player vc_prefersStatusBarHidden];
+}
+
 - (UIStatusBarStyle)preferredStatusBarStyle {
-    return UIStatusBarStyleLightContent;
+    return [self.player vc_preferredStatusBarStyle];
 }
 
 - (BOOL)prefersHomeIndicatorAutoHidden {
     return YES;
 }
-
-- (BOOL)prefersStatusBarHidden {
-    return _videoPlayer.isFullScreen && !_videoPlayer.controlLayerAppeared;
-}
-
 @end

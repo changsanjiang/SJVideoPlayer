@@ -7,19 +7,29 @@
 //
 
 #import "SJVideoPlayerTopControlView.h"
+#if __has_include(<SJUIFactory/SJUIFactory.h>)
 #import <SJUIFactory/SJUIFactory.h>
+#else
+#import "SJUIFactory.h"
+#endif
+#if __has_include(<Masonry/Masonry.h>)
 #import <Masonry/Masonry.h>
+#else
+#import "Masonry.h"
+#endif
 #import "UIView+SJVideoPlayerSetting.h"
+#if __has_include(<SJAttributesFactory/SJAttributeWorker.h>)
 #import <SJAttributesFactory/SJAttributeWorker.h>
+#else
+#import "SJAttributeWorker.h"
+#endif
 
 @interface SJVideoPlayerTopControlView ()
-
 @property (nonatomic, strong, readonly) UIButton *backBtn;
 @property (nonatomic, strong, readonly) UIButton *previewBtn;
 @property (nonatomic, strong, readonly) UIButton *moreBtn;
 @property (nonatomic, strong, readonly) UILabel *titleLabel;
 @property (nonatomic, copy, readwrite) NSString *title;
-
 @end
 
 @implementation SJVideoPlayerTopControlView
@@ -33,82 +43,73 @@
     if ( !self ) return nil;
     [self _topSetupViews];
     [self _topSettingHelper];
-    _model = [SJVideoPlayerTopControlModel new];
+    _config = [SJVideoPlayerTopControlConfig new];
     return self;
 }
 
+- (void)layoutSubviews {
+    [super layoutSubviews];
+    if ( [self.delegate respondsToSelector:@selector(frameDidChangeOfTopControlView:)] ) {
+        [self.delegate frameDidChangeOfTopControlView:self];
+    }
+}
+
 - (CGSize)intrinsicContentSize {
-    if ( _model.fullscreen ) {
+    if ( _config.isFullscreen ) return CGSizeMake(SJScreen_Max(), 72);
+    if ( _config.isFitOnScreen ) {
+        if ( SJ_is_iPhoneX() ) return CGSizeMake(SJScreen_Max(), 72 + 49);
         return CGSizeMake(SJScreen_Max(), 72);
     }
-    else {
-        return CGSizeMake(SJScreen_Min(), 55);
-    }
+    return CGSizeMake(SJScreen_Min(), 55);
 }
 
-- (void)setModel:(SJVideoPlayerTopControlModel *)model {
-    _model = model;
-    [self needUpdateLayout];
+- (void)setConfig:(SJVideoPlayerTopControlConfig * _Nonnull)config {
+    _config = config;
+    [self needUpdateConfig];
 }
 
-- (void)needUpdateLayout {
+- (void)needUpdateConfig {
     [self invalidateIntrinsicContentSize];
-    if ( self.model.fullscreen ) [self _fullscreenState];
-    else [self _smallscreenState];
+    if ( _config.isFullscreen || _config.isFitOnScreen ) [self _needUpdateFullscreenLayout];
+    else [self _needUpdateSmallscreenLayout];
 }
 
-- (void)setPreviewTitle:(NSString * _Nonnull)previewTitle {
-    _previewTitle = previewTitle;
-    [_previewBtn setTitle:previewTitle forState:UIControlStateNormal];
-}
-
-- (void)_fullscreenState {
+- (void)_needUpdateFullscreenLayout {
     // back btn
     self.backBtn.hidden = NO;
 
     // title label layout
-    self.title = self.model.title;
+    self.title = _config.title;
     [_titleLabel mas_remakeConstraints:^(MASConstraintMaker *make) {
         make.leading.equalTo(self->_backBtn.mas_trailing);
         make.centerY.equalTo(self->_backBtn);
         make.trailing.equalTo(self->_previewBtn.mas_leading);
     }];
     
-    // preview btn
-    if ( [self.delegate hasBeenGeneratedPreviewImages] ) self.previewBtn.hidden = NO;
-    
-    // more btn
-    self.moreBtn.hidden = NO;
+    if ( [self.delegate hasBeenGeneratedPreviewImages] ) self.previewBtn.hidden = _config.isFitOnScreen;
+    self.moreBtn.hidden = _config.isFitOnScreen;
 }
 
-- (void)_smallscreenState {
-    self.title = self.model.title;
-    if ( self.model.isPlayOnScrollView ) {
-        // back btn
-        _backBtn.hidden = YES;
-        if ( self.model.alwaysShowTitle ) {
-            // title label layout
-            [_titleLabel mas_remakeConstraints:^(MASConstraintMaker *make) {
-                make.leading.equalTo(self->_backBtn.mas_centerX).offset(-8);
-                make.centerY.equalTo(self->_backBtn);
-                make.trailing.equalTo(self->_moreBtn.mas_centerX).offset(8);
-            }];
-        }
+- (void)_needUpdateSmallscreenLayout {
+    self.title = _config.title;
+    _backBtn.hidden = _config.isPlayOnScrollView || _config.hideBackButtonWhenOrientationIsPortrait;
+    if ( (_config.isPlayOnScrollView && _config.isAlwaysShowTitle) || _config.hideBackButtonWhenOrientationIsPortrait ) {
+        // title label layout
+        [_titleLabel mas_remakeConstraints:^(MASConstraintMaker *make) {
+            make.leading.equalTo(self->_backBtn.mas_centerX).offset(-8);
+            make.centerY.equalTo(self->_backBtn);
+            make.trailing.equalTo(self->_moreBtn.mas_centerX).offset(8);
+        }];
     }
     else {
-        _backBtn.hidden = NO;
-        
         [_titleLabel mas_remakeConstraints:^(MASConstraintMaker *make) {
             make.leading.equalTo(self->_backBtn.mas_trailing);
             make.centerY.equalTo(self->_backBtn);
             make.trailing.equalTo(self->_moreBtn.mas_centerX).offset(8);
         }];
     }
-    
-    // preview btn
+
     self.previewBtn.hidden = YES;
-    
-    // more btn
     self.moreBtn.hidden = YES;
 }
 
@@ -207,11 +208,11 @@
         }
         self.titleLabel.font = setting.titleFont;
         self.titleLabel.textColor = setting.titleColor;
-        if ( 0 != self.title.length ) self.title = self.title;
+        if ( 0 != self.config.title.length ) [self setTitle:self.config.title];
     }];
 }
 @end
 
 
-@implementation SJVideoPlayerTopControlModel
+@implementation SJVideoPlayerTopControlConfig
 @end

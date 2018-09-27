@@ -14,6 +14,9 @@
 @interface VCRotationViewController ()
 @property (nonatomic, strong) SJVideoPlayer *player;
 @property (nonatomic, strong) SJVCRotationManager *rotationManager;
+@property (nonatomic, strong) UIButton *disable_Yes_btn;
+@property (nonatomic, strong) UIButton *disable_No_btn;
+@property (nonatomic, strong) UIButton *rotateBtn;
 @end
 
 @implementation VCRotationViewController
@@ -34,12 +37,58 @@
 
 - (void)_setupViews {
     self.view.backgroundColor = [UIColor whiteColor];
+    
+    __weak typeof(self) _self = self;
+    UIButton *(^inner_makeButton)(NSString *title, SEL selector) = ^UIButton * (NSString *title, SEL selector) {
+        __strong typeof(_self) self = _self;
+        if ( !self ) return nil;
+        UIButton *btn = [UIButton buttonWithType:UIButtonTypeSystem];
+        [btn setTitle:title forState:UIControlStateNormal];
+        [btn addTarget:self action:selector forControlEvents:UIControlEventTouchUpInside];
+        return btn;
+    };
+    
+    _disable_Yes_btn = inner_makeButton(@"disable_autorotation_yes", @selector(disableRotation_Yes));
+    _disable_No_btn  = inner_makeButton(@"disable_autorotation_no", @selector(disableRotation_No));
+    _rotateBtn = inner_makeButton(@"force roate", @selector(rotate));
+    
+    [self.view addSubview:_disable_Yes_btn];
+    [self.view addSubview:_disable_No_btn];
+    [self.view addSubview:_rotateBtn];
+    
     _player = [SJVideoPlayer player];
     [self.view addSubview:_player.view];
     [_player.view mas_makeConstraints:^(MASConstraintMaker *make) {
         make.top.leading.trailing.offset(0);
         make.height.equalTo(self.player.view.mas_width).multipliedBy(9 / 16.0f);
     }];
+    
+    
+    [_disable_Yes_btn mas_makeConstraints:^(MASConstraintMaker *make) {
+        make.center.offset(0);
+    }];
+    
+    [_disable_No_btn mas_makeConstraints:^(MASConstraintMaker *make) {
+        make.top.equalTo(self.disable_Yes_btn.mas_bottom).offset(12);
+        make.centerX.offset(0);
+    }];
+    
+    [_rotateBtn mas_makeConstraints:^(MASConstraintMaker *make) {
+        make.top.equalTo(self.disable_No_btn.mas_bottom).offset(12);
+        make.centerX.offset(0);
+    }];
+}
+
+- (void)disableRotation_Yes {
+    _player.disableAutoRotation = YES;
+}
+
+- (void)disableRotation_No {
+    _player.disableAutoRotation = NO;
+}
+
+- (void)rotate {
+    [_player rotate];
 }
 
 - (void)viewWillTransitionToSize:(CGSize)size withTransitionCoordinator:(id<UIViewControllerTransitionCoordinator>)coordinator {

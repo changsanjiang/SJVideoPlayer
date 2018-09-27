@@ -20,6 +20,7 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic) UIDeviceOrientation rec_deviceOrientation;
 @property (nonatomic) SJOrientation currentOrientation;
 @property (nonatomic) BOOL transitioning;
+@property (nonatomic) BOOL needToForceRotation;
 @end
 
 @implementation SJVCRotationManager {
@@ -59,18 +60,6 @@ NS_ASSUME_NONNULL_BEGIN
             break;
         default:    break;
     }
-}
-
-- (BOOL)shouldAutorotate {
-    return !self.disableAutorotation;
-}
-
-- (UIInterfaceOrientationMask)supportedInterfaceOrientations {
-    return UIInterfaceOrientationMaskAllButUpsideDown;
-}
-
-- (UIInterfaceOrientation)preferredInterfaceOrientationForPresentation {
-    return UIInterfaceOrientationPortrait;
 }
 
 - (BOOL)_isSupported:(SJOrientation)orientation {
@@ -135,7 +124,13 @@ NS_ASSUME_NONNULL_BEGIN
         if ( !self.target ) return;
         if ( self.rotationCondition ) { if ( !self.rotationCondition(self) ) return; }
         if ( orientation == self.currentOrientation ) { if (completionHandler) completionHandler(self); return; }
-        self.rotateCompletionHandler = completionHandler;
+        self.needToForceRotation = YES;
+        self.rotateCompletionHandler = ^(id<SJRotationManagerProtocol>  _Nonnull mgr) {
+            __strong typeof(_self) self = _self;
+            if ( !self ) return ;
+            self.needToForceRotation = NO;
+            if ( completionHandler ) completionHandler(self);
+        };
         [UIDevice.currentDevice setValue:@(_deviceOrentationForSJOrientation(orientation)) forKey:@"orientation"];
         [UIViewController attemptRotationToDeviceOrientation];
     });
@@ -170,7 +165,9 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (BOOL)vc_shouldAutorotate {
     [self _refreshDeviceOrientation];
-    if ([self _isSupported:_sjOrientationForDeviceOrentation(_rec_deviceOrientation)] ) return !self.disableAutorotation;
+    if ( self.rotationCondition && !self.rotationCondition(self) ) return NO;
+    if ( self.needToForceRotation ) return YES;
+    if ( [self _isSupported:_sjOrientationForDeviceOrentation(_rec_deviceOrientation)] ) return !self.disableAutorotation;
     return NO;
 }
 - (UIInterfaceOrientationMask)vc_supportedInterfaceOrientations {

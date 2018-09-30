@@ -1,1 +1,0 @@
-../../../SJVideoPlayer/SJVideoPlayer/SJEdgeControlLayer/EdgeViews/SJVideoPlayerLeftControlView.h

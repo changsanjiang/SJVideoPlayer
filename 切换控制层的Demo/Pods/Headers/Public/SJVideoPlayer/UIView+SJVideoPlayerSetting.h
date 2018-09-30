@@ -1,1 +1,0 @@
-../../../SJVideoPlayer/SJVideoPlayer/SJEdgeControlLayer/Asset/UIView+SJVideoPlayerSetting.h

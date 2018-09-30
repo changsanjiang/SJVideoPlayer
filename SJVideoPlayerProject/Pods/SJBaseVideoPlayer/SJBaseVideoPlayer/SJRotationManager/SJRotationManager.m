@@ -81,19 +81,19 @@ NS_ASSUME_NONNULL_BEGIN
     
     switch ( dev_orientation ) {
         case UIDeviceOrientationPortrait: {
-            if ( [self isSupportedPortrait] ) {
+            if ( [self _isSupported:SJOrientation_Portrait] ) {
                  [self rotate:SJOrientation_Portrait animated:YES];
             }
         }
             break;
         case UIDeviceOrientationLandscapeLeft: {
-            if ( [self isSupportedLandscapeLeft] ) {
+            if ( [self _isSupported:SJOrientation_LandscapeLeft] ) {
                  [self rotate:SJOrientation_LandscapeLeft animated:YES];
             }
         }
             break;
         case UIDeviceOrientationLandscapeRight: {
-            if ( [self isSupportedLandscapeRight] ) {
+            if ( [self _isSupported:SJOrientation_LandscapeRight] ) {
                  [self rotate:SJOrientation_LandscapeRight animated:YES];
             }
         }
@@ -101,80 +101,74 @@ NS_ASSUME_NONNULL_BEGIN
         default:    break;
     }
 }
-/// 是否支持 Portrait
-- (BOOL)isSupportedPortrait {
-    return _autorotationSupportedOrientation & SJAutoRotateSupportedOrientation_Portrait;
-}
-/// 是否支持 LandscapeLeft
-- (BOOL)isSupportedLandscapeLeft {
-    return _autorotationSupportedOrientation & SJAutoRotateSupportedOrientation_LandscapeLeft;
-}
-/// 是否支持 LandscapeRight
-- (BOOL)isSupportedLandscapeRight {
-    return _autorotationSupportedOrientation & SJAutoRotateSupportedOrientation_LandscapeRight;
-}
-/// 当前方向是否与设备方向一致
-- (BOOL)isCurrentOrientationAsDeviceOrientation {
-    switch ( _rec_deviceOrientation ) {
-        case UIDeviceOrientationLandscapeLeft: {
-            if ( self.currentOrientation == SJOrientation_LandscapeLeft ) return YES;
-        }
-            break;
-        case UIDeviceOrientationLandscapeRight: {
-            if ( self.currentOrientation == SJOrientation_LandscapeRight ) return YES;
-        }
-            break;
-        default: break;
+
+- (BOOL)_isSupported:(SJOrientation)orientation {
+    switch ( orientation ) {
+        case SJOrientation_Portrait:
+            return _autorotationSupportedOrientation & SJAutoRotateSupportedOrientation_Portrait;
+        case SJOrientation_LandscapeLeft:
+            return _autorotationSupportedOrientation & SJAutoRotateSupportedOrientation_LandscapeLeft;
+        case SJOrientation_LandscapeRight:
+            return _autorotationSupportedOrientation & SJAutoRotateSupportedOrientation_LandscapeRight;
     }
     return NO;
 }
 
-- (void)rotate {
-    // 如果是全屏状态 并且 支持 Portrait
-    if ( self.isFullscreen && [self isSupportedPortrait] ) {
-         [self rotate:SJOrientation_Portrait animated:YES];
+//static UIDeviceOrientation _deviceOrentationForSJOrientation(SJOrientation orientation) {
+//    switch ( orientation ) {
+//        case SJOrientation_Portrait:
+//            return UIDeviceOrientationPortrait;
+//        case SJOrientation_LandscapeLeft:
+//            return UIDeviceOrientationLandscapeLeft;
+//        case SJOrientation_LandscapeRight:
+//            return UIDeviceOrientationLandscapeRight;
+//    }
+//}
 
-        return;
-    }
-    
-    // 不是全屏或者不支持竖屏
-    // 就是要全屏
-    // 查看当前方向是否与设备方向一致
-    // 如果不一致, 当前设备朝哪个方向, 就旋转到那个方向
-    if ( ![self isCurrentOrientationAsDeviceOrientation] ) {
-        switch ( _rec_deviceOrientation ) {
-            case UIDeviceOrientationPortrait:
-            case UIDeviceOrientationLandscapeLeft:
-                if ( [self isSupportedLandscapeLeft] ) {
-                     [self rotate:SJOrientation_LandscapeLeft animated:YES];
-                }
-                break;
-            case UIDeviceOrientationLandscapeRight: {
-                if ( [self isSupportedLandscapeRight] ) {
-                     [self rotate:SJOrientation_LandscapeRight animated:YES];
-                }
-            }
-                break;
-            default: break;
-        }
-        
-        return;
-    }
-    
-    // 如果方向一致, 就旋转到相反的方向
-    switch ( _rec_deviceOrientation ) {
+static SJOrientation _sjOrientationForDeviceOrentation(UIDeviceOrientation orientation) {
+    switch ( orientation ) {
+        case UIDeviceOrientationPortrait:
+            return SJOrientation_Portrait;
         case UIDeviceOrientationLandscapeLeft:
-            if ( [self isSupportedLandscapeRight] ) {
-                 [self rotate:SJOrientation_LandscapeRight animated:YES];
-            }
-            break;
-        case UIDeviceOrientationLandscapeRight: {
-            if ( [self isSupportedLandscapeLeft] ) {
-                 [self rotate:SJOrientation_LandscapeLeft animated:YES];
-            }
-        }
-            break;
-        default: break;
+            return SJOrientation_LandscapeLeft;
+        case UIDeviceOrientationLandscapeRight:
+            return SJOrientation_LandscapeRight;
+        default:
+            return SJOrientation_Portrait;
+    }
+}
+- (void)rotate {
+    if ( ![self _isSupported:SJOrientation_LandscapeLeft] &&
+         ![self _isSupported:SJOrientation_LandscapeRight] ) {
+        if ( [self isFullscreen] ) [self rotate:SJOrientation_Portrait animated:YES];
+        else [self rotate:SJOrientation_LandscapeLeft animated:YES];
+        return;
+    }
+    
+    if ( [self isFullscreen] &&
+        [self _isSupported:SJOrientation_Portrait] ) {
+        [self rotate:SJOrientation_Portrait animated:YES];
+        return;
+    }
+    
+    if ( [self _isSupported:SJOrientation_LandscapeLeft] &&
+        [self _isSupported:SJOrientation_LandscapeRight] ) {
+        SJOrientation orientation = _sjOrientationForDeviceOrentation(_rec_deviceOrientation);
+        if ( orientation == SJOrientation_Portrait ) orientation = SJOrientation_LandscapeLeft;
+        [self rotate:orientation animated:YES];
+        return;
+    }
+    
+    if ( [self _isSupported:SJOrientation_LandscapeLeft] &&
+        ![self _isSupported:SJOrientation_LandscapeRight] ) {
+        [self rotate:SJOrientation_LandscapeLeft animated:YES];
+        return;
+    }
+    
+    if ( ![self _isSupported:SJOrientation_LandscapeLeft] &&
+        [self _isSupported:SJOrientation_LandscapeRight] ) {
+        [self rotate:SJOrientation_LandscapeRight animated:YES];
+        return;
     }
 }
 

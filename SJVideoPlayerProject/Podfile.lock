@@ -62,6 +62,9 @@ PODS:
     - SJObserverHelper
   - SJFullscreenPopGesture (1.4.6)
   - SJObserverHelper (1.0.5.1)
+  - SJRouter (0.0.6):
+    - SJRouter/Core (= 0.0.6)
+  - SJRouter/Core (0.0.6)
   - SJScrollEntriesView (1.1.0):
     - Masonry
   - SJUIFactory (0.0.16):
@@ -72,9 +75,12 @@ PODS:
   - YYText (1.0.7)
 
 DEPENDENCIES:
+  - Masonry
+  - MJRefresh
   - SJAttributesFactory
   - SJBaseVideoPlayer
   - SJFullscreenPopGesture
+  - SJRouter
   - SJScrollEntriesView
   - SJUIFactory
   - SJUIKit/Refresh
@@ -89,6 +95,7 @@ SPEC REPOS:
     - SJBaseVideoPlayer
     - SJFullscreenPopGesture
     - SJObserverHelper
+    - SJRouter
     - SJScrollEntriesView
     - SJUIFactory
     - SJUIKit
@@ -102,11 +109,12 @@ SPEC CHECKSUMS:
   SJBaseVideoPlayer: f83d5adde3244258ae6f43ef8a3120f9329dab8f
   SJFullscreenPopGesture: 94db6f970d864d53161d819916aed3f30b6a1442
   SJObserverHelper: b8dcf2653dca2538bb601f558bde72c229e08737
+  SJRouter: 38710771c1e9e0f7a8526a0060a3374b4964a9bd
   SJScrollEntriesView: 2388fec9dbb6ab639f8966de036394eeb753617d
   SJUIFactory: b3e973c5e2ae08bc5a1bd2c68d94c00f81e01a0b
   SJUIKit: db663bfe8bdbd069c4881bf4167582da37a72ece
   YYText: 5c461d709e24d55a182d1441c41dc639a18a4849
 
-PODFILE CHECKSUM: dfb49f76800ee1fed9501825c12e87a539911a51
+PODFILE CHECKSUM: 3baebcb66211e1ebdff7a4e63015fa5c8360cf60
 
 COCOAPODS: 1.5.3

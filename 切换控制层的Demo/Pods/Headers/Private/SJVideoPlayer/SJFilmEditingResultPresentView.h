@@ -1,1 +1,0 @@
-../../../SJVideoPlayer/SJVideoPlayer/SJFilmEditingControlLayer/Result/SJFilmEditingResultPresentView.h

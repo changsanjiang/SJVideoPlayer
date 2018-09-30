@@ -33,6 +33,7 @@ extern bool sj_isAppeared2(UIView *_Nullable childView, UIScrollView *_Nullable 
     CGRect rect = [childView.superview convertRect:childView.frame toView:scrollView];
     CGRect rect_max = (CGRect){scrollView.contentOffset, scrollView.frame.size};
     CGRect inset = CGRectIntersection(rect, rect_max);
+    if ( CGRectIsEmpty(inset) ) return false;
     return !CGRectIsNull(inset);
 }
 NS_ASSUME_NONNULL_END

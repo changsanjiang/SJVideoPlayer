@@ -1,1 +1,0 @@
-../../../SJVideoPlayer/SJVideoPlayer/SJFilmEditingControlLayer/Asset/SJFilmEditingSettings.h

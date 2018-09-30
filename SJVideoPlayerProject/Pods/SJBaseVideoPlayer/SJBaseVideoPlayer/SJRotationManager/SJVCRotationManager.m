@@ -80,8 +80,11 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (void)rotate {
     if ( ![self _isSupported:SJOrientation_LandscapeLeft] &&
-        ![self _isSupported:SJOrientation_LandscapeRight] )
+        ![self _isSupported:SJOrientation_LandscapeRight] ) {
+        if ( [self isFullscreen] ) [self rotate:SJOrientation_Portrait animated:YES];
+        else [self rotate:SJOrientation_LandscapeLeft animated:YES];
         return;
+    }
     
     if ( [self isFullscreen] &&
         [self _isSupported:SJOrientation_Portrait] ) {
@@ -144,6 +147,7 @@ NS_ASSUME_NONNULL_BEGIN
     if ( [self.delegate respondsToSelector:@selector(rotationManager:willRotateView:)] ) {
         [self.delegate rotationManager:self willRotateView:isFull];
     }
+    
     [self.target mas_remakeConstraints:^(MASConstraintMaker *make) {
         if ( isFull ) make.edges.equalTo(self->_atViewController.view);
         else make.edges.equalTo(self.superview);

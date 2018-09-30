@@ -1,1 +1,0 @@
-../../../SJBaseVideoPlayer/SJBaseVideoPlayer/Model/SJPlayModelPropertiesObserver.h

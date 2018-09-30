@@ -1,1 +1,0 @@
-../../../SJBaseVideoPlayer/SJBaseVideoPlayer/SJPrompt/SJPromptConfig.h

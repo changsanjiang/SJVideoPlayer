@@ -1,1 +1,0 @@
-../../../SJVideoPlayer/SJVideoPlayer/SJEdgeControlLayer/SJEdgeControlLayer.h

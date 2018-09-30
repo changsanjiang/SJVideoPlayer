@@ -99,6 +99,8 @@
 		A600669B21610FD50001B5F8 /* ViewControllerPageViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = A600669A21610FD50001B5F8 /* ViewControllerPageViewController.m */; };
 		A600669E216110610001B5F8 /* TestItem.m in Sources */ = {isa = PBXBuildFile; fileRef = A600669C216110610001B5F8 /* TestItem.m */; };
 		A60066A12161109F0001B5F8 /* UIViewController+TestAdd.m in Sources */ = {isa = PBXBuildFile; fileRef = A60066A02161109F0001B5F8 /* UIViewController+TestAdd.m */; };
+		A60066A5216126EA0001B5F8 /* ViewControllerContinuePlaying.m in Sources */ = {isa = PBXBuildFile; fileRef = A60066A4216126EA0001B5F8 /* ViewControllerContinuePlaying.m */; };
+		A60066A7216128770001B5F8 /* ViewControllerContinuePlaying.xib in Resources */ = {isa = PBXBuildFile; fileRef = A60066A6216128770001B5F8 /* ViewControllerContinuePlaying.xib */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -302,6 +304,9 @@
 		A600669D216110610001B5F8 /* TestItem.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TestItem.h; sourceTree = "<group>"; };
 		A600669F2161109F0001B5F8 /* UIViewController+TestAdd.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "UIViewController+TestAdd.h"; sourceTree = "<group>"; };
 		A60066A02161109F0001B5F8 /* UIViewController+TestAdd.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "UIViewController+TestAdd.m"; sourceTree = "<group>"; };
+		A60066A3216126EA0001B5F8 /* ViewControllerContinuePlaying.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = ViewControllerContinuePlaying.h; sourceTree = "<group>"; };
+		A60066A4216126EA0001B5F8 /* ViewControllerContinuePlaying.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = ViewControllerContinuePlaying.m; sourceTree = "<group>"; };
+		A60066A6216128770001B5F8 /* ViewControllerContinuePlaying.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = ViewControllerContinuePlaying.xib; sourceTree = "<group>"; };
 		CAED6A87F45B68EF4FBAAD38 /* Pods-SJVideoPlayer.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-SJVideoPlayer.release.xcconfig"; path = "Pods/Target Support Files/Pods-SJVideoPlayer/Pods-SJVideoPlayer.release.xcconfig"; sourceTree = "<group>"; };
 		D2D51F57491F1093AB14DA2B /* libPods-SJVideoPlayerTests.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-SJVideoPlayerTests.a"; sourceTree = BUILT_PRODUCTS_DIR; };
 		DDCE7D7F757328DEFBB8B4E7 /* Pods-SJVideoPlayer.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-SJVideoPlayer.debug.xcconfig"; path = "Pods/Target Support Files/Pods-SJVideoPlayer/Pods-SJVideoPlayer.debug.xcconfig"; sourceTree = "<group>"; };
@@ -671,6 +676,7 @@
 		A6006646215F97D50001B5F8 /* Demo */ = {
 			isa = PBXGroup;
 			children = (
+				A60066A2216116650001B5F8 /* ContinuePlayingOnTheNewViewController(在新的界面继续播放) */,
 				A600669821610FC00001B5F8 /* PageViewController */,
 				A600668A2160FC160001B5F8 /* ListAutoPlay(列表自动播放) */,
 				A60066842160B7A00001B5F8 /* Control_Rotation(旋转控制) */,
@@ -787,6 +793,16 @@
 			path = PageViewController;
 			sourceTree = "<group>";
 		};
+		A60066A2216116650001B5F8 /* ContinuePlayingOnTheNewViewController(在新的界面继续播放) */ = {
+			isa = PBXGroup;
+			children = (
+				A60066A3216126EA0001B5F8 /* ViewControllerContinuePlaying.h */,
+				A60066A4216126EA0001B5F8 /* ViewControllerContinuePlaying.m */,
+				A60066A6216128770001B5F8 /* ViewControllerContinuePlaying.xib */,
+			);
+			path = "ContinuePlayingOnTheNewViewController(在新的界面继续播放)";
+			sourceTree = "<group>";
+		};
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
@@ -900,6 +916,7 @@
 				A600656A215F947F0001B5F8 /* LaunchScreen.storyboard in Resources */,
 				A600662F215F974B0001B5F8 /* SJEdgeControlLayer.bundle in Resources */,
 				A6006567215F947F0001B5F8 /* Assets.xcassets in Resources */,
+				A60066A7216128770001B5F8 /* ViewControllerContinuePlaying.xib in Resources */,
 				A6006565215F947E0001B5F8 /* Main.storyboard in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -1034,6 +1051,7 @@
 				A6006630215F974B0001B5F8 /* SJEdgeControlLayer.m in Sources */,
 				A6006669216083DA0001B5F8 /* SJTableHeaderView.m in Sources */,
 				A600667C2160A6B70001B5F8 /* CollectionViewCellHasCollectionView.m in Sources */,
+				A60066A5216126EA0001B5F8 /* ViewControllerContinuePlaying.m in Sources */,
 				A600663C215F974B0001B5F8 /* SJFilmEditingResultPresentView.m in Sources */,
 				A600665521605D270001B5F8 /* ViewControllerSJUITableViewCellPlayModel.m in Sources */,
 				A6006615215F974B0001B5F8 /* SJLightweightLeftControlView.m in Sources */,

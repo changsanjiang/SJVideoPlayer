@@ -75,6 +75,8 @@
     [m addObject:[[LWZTableSectionShrinker alloc] initWithTitle:@"List View Auto Play" titleWhenShrank:nil dataArr:[self _createItemsBySJListViewAutoplay]]];
     
     [m addObject:[[LWZTableSectionShrinker alloc] initWithTitle:@"Paging Playback" titleWhenShrank:nil dataArr:[self _createItemsByPagingPlayback]]];
+    
+    [m addObject:[[LWZTableSectionShrinker alloc] initWithTitle:@"Continue Playing" titleWhenShrank:nil dataArr:[self _createItemsByContinuePlaying]]];
     _data = m.copy;
 }
 
@@ -151,6 +153,13 @@
     @[[[Item alloc] initWithTitle:@"PageViewController"
                          subTitle:@"分页播放"
                              path:@"pagingPlayback/pageViewController"],];
+}
+
+- (NSArray<Item *> *)_createItemsByContinuePlaying {
+    return
+    @[[[Item alloc] initWithTitle:@"ContinuePlaying"
+                         subTitle:@"续播, 在新界面继续播放"
+                             path:@"player/continuePlaying"]];
 }
 
 - (NSInteger)numberOfSectionsInTableView:(UITableView *)tableView {

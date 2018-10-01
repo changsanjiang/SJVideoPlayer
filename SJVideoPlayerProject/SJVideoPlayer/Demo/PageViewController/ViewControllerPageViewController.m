@@ -76,7 +76,6 @@ static NSInteger const vcCount = 9;
 - (SJScrollEntriesView *)titlesView {
     if ( _titlesView ) return _titlesView;
     SJScrollEntriesViewSettings *settins = [SJScrollEntriesViewSettings defaultSettings];
-    settins.lineColor = settins.selectedColor = [UIColor blueColor];
     _titlesView = [[SJScrollEntriesView alloc] initWithSettings:settins];
     _titlesView.backgroundColor = [UIColor whiteColor];
     NSMutableArray<TestItem *> *arrM = [NSMutableArray array];

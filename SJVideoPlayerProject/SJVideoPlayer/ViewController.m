@@ -77,6 +77,10 @@
     [m addObject:[[LWZTableSectionShrinker alloc] initWithTitle:@"Paging Playback" titleWhenShrank:nil dataArr:[self _createItemsByPagingPlayback]]];
     
     [m addObject:[[LWZTableSectionShrinker alloc] initWithTitle:@"Continue Playing" titleWhenShrank:nil dataArr:[self _createItemsByContinuePlaying]]];
+    
+    
+    
+    [m addObject:[[LWZTableSectionShrinker alloc] initWithTitle:@"Other" titleWhenShrank:nil dataArr:[self _createItemsByOtherOperations]]];
     _data = m.copy;
 }
 
@@ -157,9 +161,23 @@
 
 - (NSArray<Item *> *)_createItemsByContinuePlaying {
     return
-    @[[[Item alloc] initWithTitle:@"ContinuePlaying"
-                         subTitle:@"续播, 在新界面继续播放"
-                             path:@"player/continuePlaying"]];
+    @[[[Item alloc] initWithTitle:@"ContinuePlayingOnTheNewViewController"
+                         subTitle:@"在新界面继续播放"
+                             path:@"player/continuePlaying"],
+      [[Item alloc] initWithTitle:@"ContinuePlayingWhenAppDidEnterBackground"
+                         subTitle:@"当App进入后台继续播放"
+                             path:@"player/continuePlayingOnTheBackground"]];
+}
+
+- (NSArray<Item *> *)_createItemsByOtherOperations {
+    return
+    @[[[Item alloc] initWithTitle:@"Set playback rate"
+                         subTitle:@"调整播放速度"
+                             path:@"player/setPlaybackRate"],
+      
+      [[Item alloc] initWithTitle:@"UpdateResources"
+                         subTitle:@"修改默认的图片等资源"
+                             path:@"player/updateResources"]];
 }
 
 - (NSInteger)numberOfSectionsInTableView:(UITableView *)tableView {

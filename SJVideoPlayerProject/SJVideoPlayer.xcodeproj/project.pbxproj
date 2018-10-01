@@ -101,6 +101,9 @@
 		A60066A12161109F0001B5F8 /* UIViewController+TestAdd.m in Sources */ = {isa = PBXBuildFile; fileRef = A60066A02161109F0001B5F8 /* UIViewController+TestAdd.m */; };
 		A60066A5216126EA0001B5F8 /* ViewControllerContinuePlaying.m in Sources */ = {isa = PBXBuildFile; fileRef = A60066A4216126EA0001B5F8 /* ViewControllerContinuePlaying.m */; };
 		A60066A7216128770001B5F8 /* ViewControllerContinuePlaying.xib in Resources */ = {isa = PBXBuildFile; fileRef = A60066A6216128770001B5F8 /* ViewControllerContinuePlaying.xib */; };
+		A60066AB216195880001B5F8 /* ViewControllerContinuePlayingWhenAppDidEnterBackgroud.m in Sources */ = {isa = PBXBuildFile; fileRef = A60066AA216195880001B5F8 /* ViewControllerContinuePlayingWhenAppDidEnterBackgroud.m */; };
+		A60066AE216197590001B5F8 /* ViewControllerSetPlaybackRate.m in Sources */ = {isa = PBXBuildFile; fileRef = A60066AD216197590001B5F8 /* ViewControllerSetPlaybackRate.m */; };
+		A60066B121619DCF0001B5F8 /* ViewControllerUpdateResources.m in Sources */ = {isa = PBXBuildFile; fileRef = A60066B021619DCF0001B5F8 /* ViewControllerUpdateResources.m */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -307,6 +310,12 @@
 		A60066A3216126EA0001B5F8 /* ViewControllerContinuePlaying.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = ViewControllerContinuePlaying.h; sourceTree = "<group>"; };
 		A60066A4216126EA0001B5F8 /* ViewControllerContinuePlaying.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = ViewControllerContinuePlaying.m; sourceTree = "<group>"; };
 		A60066A6216128770001B5F8 /* ViewControllerContinuePlaying.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = ViewControllerContinuePlaying.xib; sourceTree = "<group>"; };
+		A60066A9216195880001B5F8 /* ViewControllerContinuePlayingWhenAppDidEnterBackgroud.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = ViewControllerContinuePlayingWhenAppDidEnterBackgroud.h; sourceTree = "<group>"; };
+		A60066AA216195880001B5F8 /* ViewControllerContinuePlayingWhenAppDidEnterBackgroud.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = ViewControllerContinuePlayingWhenAppDidEnterBackgroud.m; sourceTree = "<group>"; };
+		A60066AC216197590001B5F8 /* ViewControllerSetPlaybackRate.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = ViewControllerSetPlaybackRate.h; sourceTree = "<group>"; };
+		A60066AD216197590001B5F8 /* ViewControllerSetPlaybackRate.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = ViewControllerSetPlaybackRate.m; sourceTree = "<group>"; };
+		A60066AF21619DCF0001B5F8 /* ViewControllerUpdateResources.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = ViewControllerUpdateResources.h; sourceTree = "<group>"; };
+		A60066B021619DCF0001B5F8 /* ViewControllerUpdateResources.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = ViewControllerUpdateResources.m; sourceTree = "<group>"; };
 		CAED6A87F45B68EF4FBAAD38 /* Pods-SJVideoPlayer.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-SJVideoPlayer.release.xcconfig"; path = "Pods/Target Support Files/Pods-SJVideoPlayer/Pods-SJVideoPlayer.release.xcconfig"; sourceTree = "<group>"; };
 		D2D51F57491F1093AB14DA2B /* libPods-SJVideoPlayerTests.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-SJVideoPlayerTests.a"; sourceTree = BUILT_PRODUCTS_DIR; };
 		DDCE7D7F757328DEFBB8B4E7 /* Pods-SJVideoPlayer.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-SJVideoPlayer.debug.xcconfig"; path = "Pods/Target Support Files/Pods-SJVideoPlayer/Pods-SJVideoPlayer.debug.xcconfig"; sourceTree = "<group>"; };
@@ -676,6 +685,7 @@
 		A6006646215F97D50001B5F8 /* Demo */ = {
 			isa = PBXGroup;
 			children = (
+				A60066A8216195050001B5F8 /* Other */,
 				A60066A2216116650001B5F8 /* ContinuePlayingOnTheNewViewController(在新的界面继续播放) */,
 				A600669821610FC00001B5F8 /* PageViewController */,
 				A600668A2160FC160001B5F8 /* ListAutoPlay(列表自动播放) */,
@@ -799,8 +809,21 @@
 				A60066A3216126EA0001B5F8 /* ViewControllerContinuePlaying.h */,
 				A60066A4216126EA0001B5F8 /* ViewControllerContinuePlaying.m */,
 				A60066A6216128770001B5F8 /* ViewControllerContinuePlaying.xib */,
+				A60066A9216195880001B5F8 /* ViewControllerContinuePlayingWhenAppDidEnterBackgroud.h */,
+				A60066AA216195880001B5F8 /* ViewControllerContinuePlayingWhenAppDidEnterBackgroud.m */,
 			);
 			path = "ContinuePlayingOnTheNewViewController(在新的界面继续播放)";
+			sourceTree = "<group>";
+		};
+		A60066A8216195050001B5F8 /* Other */ = {
+			isa = PBXGroup;
+			children = (
+				A60066AC216197590001B5F8 /* ViewControllerSetPlaybackRate.h */,
+				A60066AD216197590001B5F8 /* ViewControllerSetPlaybackRate.m */,
+				A60066AF21619DCF0001B5F8 /* ViewControllerUpdateResources.h */,
+				A60066B021619DCF0001B5F8 /* ViewControllerUpdateResources.m */,
+			);
+			path = Other;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -874,6 +897,11 @@
 				TargetAttributes = {
 					A6006559215F947E0001B5F8 = {
 						CreatedOnToolsVersion = 10.0;
+						SystemCapabilities = {
+							com.apple.BackgroundModes = {
+								enabled = 1;
+							};
+						};
 					};
 					A6006571215F947F0001B5F8 = {
 						CreatedOnToolsVersion = 10.0;
@@ -1042,6 +1070,7 @@
 				A6006628215F974B0001B5F8 /* SJVideoPlayerPreviewCollectionViewCell.m in Sources */,
 				A600661A215F974B0001B5F8 /* SJLightweightCenterControlView.m in Sources */,
 				A6006614215F974B0001B5F8 /* SJEdgeLightweightControlLayer.m in Sources */,
+				A60066B121619DCF0001B5F8 /* ViewControllerUpdateResources.m in Sources */,
 				A6006639215F974B0001B5F8 /* SJVideoPlayerMoreSettingsColCell.m in Sources */,
 				A6006633215F974B0001B5F8 /* SJVideoPlayerMoreSettingsView.m in Sources */,
 				A6006638215F974B0001B5F8 /* SJVideoPlayerMoreSettingsSlidersView.m in Sources */,
@@ -1069,9 +1098,11 @@
 				A600664C216052A90001B5F8 /* ViewControllerSJPlayModel.m in Sources */,
 				A600669E216110610001B5F8 /* TestItem.m in Sources */,
 				A60066802160AD6D0001B5F8 /* ViewControllerDefaultPlayer.m in Sources */,
+				A60066AB216195880001B5F8 /* ViewControllerContinuePlayingWhenAppDidEnterBackgroud.m in Sources */,
 				A6006620215F974B0001B5F8 /* SJVideoPlayerControlMaskView.m in Sources */,
 				A600661F215F974B0001B5F8 /* SJVideoPlayer.m in Sources */,
 				A600661E215F974B0001B5F8 /* SJLoadingView.m in Sources */,
+				A60066AE216197590001B5F8 /* ViewControllerSetPlaybackRate.m in Sources */,
 				A6006634215F974B0001B5F8 /* SJVideoPlayerMoreSettingSecondaryColCell.m in Sources */,
 				A6006612215F974B0001B5F8 /* SJCommonProgressSlider.m in Sources */,
 				A60066A12161109F0001B5F8 /* UIViewController+TestAdd.m in Sources */,

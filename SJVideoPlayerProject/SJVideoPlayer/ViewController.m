@@ -177,7 +177,11 @@
       
       [[Item alloc] initWithTitle:@"UpdateResources"
                          subTitle:@"修改默认的图片等资源"
-                             path:@"player/updateResources"]];
+                             path:@"player/updateResources"],
+      
+      [[Item alloc] initWithTitle:@"CustomControlLayer"
+                         subTitle:@"自定义控制层"
+                             path:@"player/customControlLayer"]];
 }
 
 - (NSInteger)numberOfSectionsInTableView:(UITableView *)tableView {

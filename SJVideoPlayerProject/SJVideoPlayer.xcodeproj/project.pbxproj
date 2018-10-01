@@ -104,6 +104,8 @@
 		A60066AB216195880001B5F8 /* ViewControllerContinuePlayingWhenAppDidEnterBackgroud.m in Sources */ = {isa = PBXBuildFile; fileRef = A60066AA216195880001B5F8 /* ViewControllerContinuePlayingWhenAppDidEnterBackgroud.m */; };
 		A60066AE216197590001B5F8 /* ViewControllerSetPlaybackRate.m in Sources */ = {isa = PBXBuildFile; fileRef = A60066AD216197590001B5F8 /* ViewControllerSetPlaybackRate.m */; };
 		A60066B121619DCF0001B5F8 /* ViewControllerUpdateResources.m in Sources */ = {isa = PBXBuildFile; fileRef = A60066B021619DCF0001B5F8 /* ViewControllerUpdateResources.m */; };
+		A60066B52161A3710001B5F8 /* ViewControllerCustomControlLayer.m in Sources */ = {isa = PBXBuildFile; fileRef = A60066B42161A3710001B5F8 /* ViewControllerCustomControlLayer.m */; };
+		A60066BB2161A41E0001B5F8 /* CustomControlLayerView.m in Sources */ = {isa = PBXBuildFile; fileRef = A60066BA2161A41E0001B5F8 /* CustomControlLayerView.m */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -316,6 +318,10 @@
 		A60066AD216197590001B5F8 /* ViewControllerSetPlaybackRate.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = ViewControllerSetPlaybackRate.m; sourceTree = "<group>"; };
 		A60066AF21619DCF0001B5F8 /* ViewControllerUpdateResources.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = ViewControllerUpdateResources.h; sourceTree = "<group>"; };
 		A60066B021619DCF0001B5F8 /* ViewControllerUpdateResources.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = ViewControllerUpdateResources.m; sourceTree = "<group>"; };
+		A60066B32161A3710001B5F8 /* ViewControllerCustomControlLayer.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = ViewControllerCustomControlLayer.h; sourceTree = "<group>"; };
+		A60066B42161A3710001B5F8 /* ViewControllerCustomControlLayer.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = ViewControllerCustomControlLayer.m; sourceTree = "<group>"; };
+		A60066B92161A41E0001B5F8 /* CustomControlLayerView.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = CustomControlLayerView.h; sourceTree = "<group>"; };
+		A60066BA2161A41E0001B5F8 /* CustomControlLayerView.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = CustomControlLayerView.m; sourceTree = "<group>"; };
 		CAED6A87F45B68EF4FBAAD38 /* Pods-SJVideoPlayer.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-SJVideoPlayer.release.xcconfig"; path = "Pods/Target Support Files/Pods-SJVideoPlayer/Pods-SJVideoPlayer.release.xcconfig"; sourceTree = "<group>"; };
 		D2D51F57491F1093AB14DA2B /* libPods-SJVideoPlayerTests.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-SJVideoPlayerTests.a"; sourceTree = BUILT_PRODUCTS_DIR; };
 		DDCE7D7F757328DEFBB8B4E7 /* Pods-SJVideoPlayer.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-SJVideoPlayer.debug.xcconfig"; path = "Pods/Target Support Files/Pods-SJVideoPlayer/Pods-SJVideoPlayer.debug.xcconfig"; sourceTree = "<group>"; };
@@ -685,6 +691,7 @@
 		A6006646215F97D50001B5F8 /* Demo */ = {
 			isa = PBXGroup;
 			children = (
+				A60066B22161A1AA0001B5F8 /* CustomControlLayer */,
 				A60066A8216195050001B5F8 /* Other */,
 				A60066A2216116650001B5F8 /* ContinuePlayingOnTheNewViewController(在新的界面继续播放) */,
 				A600669821610FC00001B5F8 /* PageViewController */,
@@ -824,6 +831,17 @@
 				A60066B021619DCF0001B5F8 /* ViewControllerUpdateResources.m */,
 			);
 			path = Other;
+			sourceTree = "<group>";
+		};
+		A60066B22161A1AA0001B5F8 /* CustomControlLayer */ = {
+			isa = PBXGroup;
+			children = (
+				A60066B32161A3710001B5F8 /* ViewControllerCustomControlLayer.h */,
+				A60066B42161A3710001B5F8 /* ViewControllerCustomControlLayer.m */,
+				A60066B92161A41E0001B5F8 /* CustomControlLayerView.h */,
+				A60066BA2161A41E0001B5F8 /* CustomControlLayerView.m */,
+			);
+			path = CustomControlLayer;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -1086,6 +1104,7 @@
 				A6006615215F974B0001B5F8 /* SJLightweightLeftControlView.m in Sources */,
 				A6006637215F974B0001B5F8 /* SJVideoPlayerMoreSettingSecondary.m in Sources */,
 				A600661C215F974B0001B5F8 /* SJControlLayerSwitcher.m in Sources */,
+				A60066B52161A3710001B5F8 /* ViewControllerCustomControlLayer.m in Sources */,
 				A6006629215F974B0001B5F8 /* UIView+SJVideoPlayerSetting.m in Sources */,
 				A6006611215F974B0001B5F8 /* SJProgressSlider.m in Sources */,
 				A6006636215F974B0001B5F8 /* SJVideoPlayerMoreSetting+Exe.m in Sources */,
@@ -1109,6 +1128,7 @@
 				A6006622215F974B0001B5F8 /* SJVideoPlayerLeftControlView.m in Sources */,
 				A6006641215F974B0001B5F8 /* SJFilmEditingSettings.m in Sources */,
 				A6006618215F974B0001B5F8 /* SJLightweightTopItem.m in Sources */,
+				A60066BB2161A41E0001B5F8 /* CustomControlLayerView.m in Sources */,
 				A6006635215F974B0001B5F8 /* SJVideoPlayerMoreSettingSecondaryView.m in Sources */,
 				A600662C215F974B0001B5F8 /* SJEdgeControlLayerSettings.m in Sources */,
 				A600663B215F974B0001B5F8 /* SJVideoPlayerMoreSettingsSecondaryHeaderView.m in Sources */,

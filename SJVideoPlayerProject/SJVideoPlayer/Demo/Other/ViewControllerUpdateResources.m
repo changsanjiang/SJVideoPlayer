@@ -34,7 +34,7 @@
     self.view.backgroundColor = [UIColor blackColor];
     
     
-    // update
+    // update resources
     SJVideoPlayer.update(^(SJVideoPlayerSettings * _Nonnull commonSettings) {
         commonSettings.progress_traceColor = UIColor.redColor;
         commonSettings.progress_trackColor = UIColor.yellowColor;

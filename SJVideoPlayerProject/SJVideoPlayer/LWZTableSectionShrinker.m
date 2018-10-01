@@ -34,7 +34,7 @@ NS_ASSUME_NONNULL_BEGIN
     return self.isShrink?_titleWhenShrank:_title;
 }
 
-- (nullable NSArray *)dataArrForShrinkStatus {
+- (nullable NSArray *)dataArrByShrinkStatus {
     return self.isShrink?nil:_dataArr;
 }
 

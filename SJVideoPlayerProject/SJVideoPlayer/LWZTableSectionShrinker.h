@@ -16,7 +16,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 @property (nonatomic, readonly, getter=isShrink) BOOL shrink;
 - (void)switchingStatus;
-- (nullable NSArray<ObjectType> *)dataArrForShrinkStatus;
+- (nullable NSArray<ObjectType> *)dataArrByShrinkStatus;
 - (nullable id)titleForShrinkStatus;
 
 - (void)resetDataArr:(nullable NSArray<ObjectType> *)dataArr;

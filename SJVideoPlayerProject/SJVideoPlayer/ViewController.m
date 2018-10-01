@@ -193,7 +193,7 @@
 }
 
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section {
-    return _data[section].dataArrForShrinkStatus.count;
+    return _data[section].dataArrByShrinkStatus.count;
 }
 
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath {
@@ -208,12 +208,12 @@
 }
 
 - (void)tableView:(UITableView *)tableView willDisplayCell:(UITableViewCell *)cell forRowAtIndexPath:(NSIndexPath *)indexPath {
-    cell.textLabel.text = _data[indexPath.section].dataArrForShrinkStatus[indexPath.row].title;
-    cell.detailTextLabel.text = _data[indexPath.section].dataArrForShrinkStatus[indexPath.row].subTitle;
+    cell.textLabel.text = _data[indexPath.section].dataArrByShrinkStatus[indexPath.row].title;
+    cell.detailTextLabel.text = _data[indexPath.section].dataArrByShrinkStatus[indexPath.row].subTitle;
 }
 
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath {
-    SJRouteRequest *reqeust = [[SJRouteRequest alloc] initWithPath:_data[indexPath.section].dataArrForShrinkStatus[indexPath.row].path parameters:nil];
+    SJRouteRequest *reqeust = [[SJRouteRequest alloc] initWithPath:_data[indexPath.section].dataArrByShrinkStatus[indexPath.row].path parameters:nil];
     [SJRouter.shared handleRequest:reqeust completionHandler:nil];
 }
 @end

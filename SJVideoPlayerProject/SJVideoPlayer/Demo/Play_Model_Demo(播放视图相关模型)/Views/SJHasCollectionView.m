@@ -46,7 +46,13 @@
         make.bottom.offset(0);
         make.centerX.offset(0);
     }];
+    
     return self;
+}
+
+- (void)sj_playerNeedPlayNewAssetAtIndexPath:(NSIndexPath *)indexPath {
+    SJCollectionViewCell *cell = (id)[_collectionView cellForItemAtIndexPath:indexPath];
+    if ( self.clickedPlayButtonExeBlock ) self.clickedPlayButtonExeBlock(self, cell.view, indexPath);
 }
 
 - (void)scrollViewDidScroll:(UIScrollView *)scrollView {
@@ -72,7 +78,7 @@
     cell.view.clickedPlayButtonExeBlock = ^(SJPlayView * _Nonnull view) {
         __strong typeof(_self) self = _self;
         if ( !self ) return;
-        if ( self.clickedPlayButtonExeBlock ) self.clickedPlayButtonExeBlock(self, view, indexPath);
+        [self sj_playerNeedPlayNewAssetAtIndexPath:indexPath];
     };
 }
 @end

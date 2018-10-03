@@ -1158,7 +1158,6 @@ NS_ASSUME_NONNULL_END
         if ( !self ) return;
         self.bottomSlider.traceImageView.backgroundColor = setting.progress_traceColor;
         self.bottomSlider.trackImageView.backgroundColor = setting.progress_bufferColor;
-        if ( !self.videoPlayer.placeholder && setting.placeholder ) self.videoPlayer.placeholder = setting.placeholder;
         if ( self.enableFilmEditing ) self.rightControlView.filmEditingBtnImage = setting.filmEditingBtnImage;
         [self.draggingProgressView setPreviewImage:setting.placeholder];
         self.settings = setting;

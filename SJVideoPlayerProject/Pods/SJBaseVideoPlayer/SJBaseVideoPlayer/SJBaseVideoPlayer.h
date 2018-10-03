@@ -98,7 +98,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 /**
  The placeholder image when loading video.
- 加载视频时的占位图.
+ 加载视频时的占位图. 加载视频初始化时, 会短暂黑屏, 建议设置一下占位图.
  
  readwrite.
  */

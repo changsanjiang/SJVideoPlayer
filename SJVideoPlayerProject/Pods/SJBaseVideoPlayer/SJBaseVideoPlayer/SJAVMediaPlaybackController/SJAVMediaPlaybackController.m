@@ -47,7 +47,7 @@ NS_ASSUME_NONNULL_BEGIN
     
     CATransition *anima = [CATransition animation];
     anima.type = kCATransitionFade;
-    anima.duration = 1.0f;
+    anima.duration = 0.4f;
     [self.layer addAnimation:anima forKey:@"fadeAnimation"];
 }
 

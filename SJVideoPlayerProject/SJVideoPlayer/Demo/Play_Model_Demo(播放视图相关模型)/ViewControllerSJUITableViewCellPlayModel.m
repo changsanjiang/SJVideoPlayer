@@ -63,7 +63,6 @@
         
         // create new player
         self.player = [SJVideoPlayer player];
-        self.player.placeholder = [UIImage imageNamed:@"cover"];
 #ifdef SJMAC
         self.player.disableNetworkStatusChangePrompt = YES;
 #endif

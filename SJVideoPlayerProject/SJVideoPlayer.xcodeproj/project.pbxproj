@@ -440,14 +440,14 @@
 		A6006592215F974B0001B5F8 /* SJVideoPlayer */ = {
 			isa = PBXGroup;
 			children = (
+				A600659D215F974B0001B5F8 /* SJVideoPlayer.h */,
+				A60065B8215F974B0001B5F8 /* SJVideoPlayer.m */,
 				A6006593215F974B0001B5F8 /* Settings */,
 				A60065B9215F974B0001B5F8 /* SJEdgeControlLayer */,
 				A600659E215F974B0001B5F8 /* SJEdgeLightweightControlLayer */,
 				A60065F5215F974B0001B5F8 /* SJFilmEditingControlLayer */,
 				A60065B5215F974B0001B5F8 /* SJLoadingView */,
 				A6006596215F974B0001B5F8 /* SJProgressSlider */,
-				A600659D215F974B0001B5F8 /* SJVideoPlayer.h */,
-				A60065B8215F974B0001B5F8 /* SJVideoPlayer.m */,
 				A60065B0215F974B0001B5F8 /* Switcher */,
 			);
 			path = SJVideoPlayer;

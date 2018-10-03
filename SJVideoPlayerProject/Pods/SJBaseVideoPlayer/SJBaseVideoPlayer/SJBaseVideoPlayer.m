@@ -377,11 +377,12 @@ NS_ASSUME_NONNULL_BEGIN
 - (void)_considerShowOrHiddenPlaceholder {
     if ( [self playStatus_isUnknown] || [self playStatus_isPrepare] ) {
         if ( !self.URLAsset.otherMedia ) {
-            dispatch_async(dispatch_get_main_queue(), ^{
-                [UIView animateWithDuration:0.4 animations:^{
+            if ( [NSThread.currentThread isMainThread] ) [self.presentView showPlaceholder];
+            else {
+                dispatch_async(dispatch_get_main_queue(), ^{
                     [self.presentView showPlaceholder];
-                }];
-            });
+                });
+            }
         }
     }
     else if ( [self playStatus_isPlaying] ) {
@@ -964,7 +965,7 @@ NS_ASSUME_NONNULL_BEGIN
         self.playModelObserver = [[SJPlayModelPropertiesObserver alloc] initWithPlayModel:URLAsset.playModel];
         self.playModelObserver.delegate = (id)self;
         [self.playbackController prepareToPlay];
-        
+
         dispatch_async(dispatch_get_main_queue(), ^{
             if ( [self.controlLayerDelegate respondsToSelector:@selector(startLoading:)] ) {
                 [self.controlLayerDelegate startLoading:self];

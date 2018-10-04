@@ -102,6 +102,10 @@
                        subTitle:@"在TableView的TableHeaderView中播放"
                            path:@"tableView/tableHeaderView/play"],
     
+    [[Item alloc] initWithTitle:@"TableFooterView"
+                       subTitle:@"在TableView的TableFooterView中播放"
+                           path:@"tableView/tableFooterView/play"],
+    
     [[Item alloc] initWithTitle:@"SJUICollectionViewNestedInUITableViewHeaderViewPlayModel"
                        subTitle:@"在CollectionView单元格中播放, 嵌套在TableViewHeader中"
                            path:@"tableView/tableHeaderView/collectionView/cell/play"],

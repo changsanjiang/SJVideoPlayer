@@ -106,6 +106,7 @@
 		A60066B121619DCF0001B5F8 /* ViewControllerUpdateResources.m in Sources */ = {isa = PBXBuildFile; fileRef = A60066B021619DCF0001B5F8 /* ViewControllerUpdateResources.m */; };
 		A60066B52161A3710001B5F8 /* ViewControllerCustomControlLayer.m in Sources */ = {isa = PBXBuildFile; fileRef = A60066B42161A3710001B5F8 /* ViewControllerCustomControlLayer.m */; };
 		A60066BB2161A41E0001B5F8 /* CustomControlLayerView.m in Sources */ = {isa = PBXBuildFile; fileRef = A60066BA2161A41E0001B5F8 /* CustomControlLayerView.m */; };
+		A6B548A62165980C001C3988 /* ViewControllerTableFooter.m in Sources */ = {isa = PBXBuildFile; fileRef = A6B548A52165980C001C3988 /* ViewControllerTableFooter.m */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -147,7 +148,6 @@
 		A6006581215F947F0001B5F8 /* SJVideoPlayerUITests.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = SJVideoPlayerUITests.m; sourceTree = "<group>"; };
 		A6006583215F947F0001B5F8 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		A600658F215F970B0001B5F8 /* Podfile */ = {isa = PBXFileReference; lastKnownFileType = text; path = Podfile; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.ruby; };
-		A6006590215F97120001B5F8 /* SJVideoPlayer.podspec */ = {isa = PBXFileReference; lastKnownFileType = text; path = SJVideoPlayer.podspec; sourceTree = "<group>"; };
 		A6006591215F971D0001B5F8 /* README.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = README.md; sourceTree = "<group>"; };
 		A6006594215F974B0001B5F8 /* SJVideoPlayerSettings.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SJVideoPlayerSettings.h; sourceTree = "<group>"; };
 		A6006595215F974B0001B5F8 /* SJVideoPlayerSettings.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SJVideoPlayerSettings.m; sourceTree = "<group>"; };
@@ -322,6 +322,9 @@
 		A60066B42161A3710001B5F8 /* ViewControllerCustomControlLayer.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = ViewControllerCustomControlLayer.m; sourceTree = "<group>"; };
 		A60066B92161A41E0001B5F8 /* CustomControlLayerView.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = CustomControlLayerView.h; sourceTree = "<group>"; };
 		A60066BA2161A41E0001B5F8 /* CustomControlLayerView.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = CustomControlLayerView.m; sourceTree = "<group>"; };
+		A6B548A321652F71001C3988 /* SJVideoPlayer.podspec */ = {isa = PBXFileReference; lastKnownFileType = text; name = SJVideoPlayer.podspec; path = ../SJVideoPlayer.podspec; sourceTree = "<group>"; };
+		A6B548A42165980C001C3988 /* ViewControllerTableFooter.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = ViewControllerTableFooter.h; sourceTree = "<group>"; };
+		A6B548A52165980C001C3988 /* ViewControllerTableFooter.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = ViewControllerTableFooter.m; sourceTree = "<group>"; };
 		CAED6A87F45B68EF4FBAAD38 /* Pods-SJVideoPlayer.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-SJVideoPlayer.release.xcconfig"; path = "Pods/Target Support Files/Pods-SJVideoPlayer/Pods-SJVideoPlayer.release.xcconfig"; sourceTree = "<group>"; };
 		D2D51F57491F1093AB14DA2B /* libPods-SJVideoPlayerTests.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-SJVideoPlayerTests.a"; sourceTree = BUILT_PRODUCTS_DIR; };
 		DDCE7D7F757328DEFBB8B4E7 /* Pods-SJVideoPlayer.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-SJVideoPlayer.debug.xcconfig"; path = "Pods/Target Support Files/Pods-SJVideoPlayer/Pods-SJVideoPlayer.debug.xcconfig"; sourceTree = "<group>"; };
@@ -383,7 +386,7 @@
 		A6006551215F947E0001B5F8 = {
 			isa = PBXGroup;
 			children = (
-				A6006590215F97120001B5F8 /* SJVideoPlayer.podspec */,
+				A6B548A321652F71001C3988 /* SJVideoPlayer.podspec */,
 				A600658F215F970B0001B5F8 /* Podfile */,
 				A6006591215F971D0001B5F8 /* README.md */,
 				A600655C215F947E0001B5F8 /* SJVideoPlayer */,
@@ -729,6 +732,8 @@
 				A600665C21607CCD0001B5F8 /* ViewControllerSJUICollectionViewCellPlayModel.m */,
 				A6006661216081800001B5F8 /* ViewControllerSJUITableViewHeaderViewPlayModel.h */,
 				A6006662216081800001B5F8 /* ViewControllerSJUITableViewHeaderViewPlayModel.m */,
+				A6B548A42165980C001C3988 /* ViewControllerTableFooter.h */,
+				A6B548A52165980C001C3988 /* ViewControllerTableFooter.m */,
 				A6006664216083480001B5F8 /* ViewControllerSJUICollectionViewNestedInUITableViewHeaderViewPlayModel.h */,
 				A6006665216083480001B5F8 /* ViewControllerSJUICollectionViewNestedInUITableViewHeaderViewPlayModel.m */,
 				A60066702160A0B00001B5F8 /* ViewControllerSJUICollectionViewNestedInUITableViewCellPlayModel.h */,
@@ -1101,6 +1106,7 @@
 				A60066A5216126EA0001B5F8 /* ViewControllerContinuePlaying.m in Sources */,
 				A600663C215F974B0001B5F8 /* SJFilmEditingResultPresentView.m in Sources */,
 				A600665521605D270001B5F8 /* ViewControllerSJUITableViewCellPlayModel.m in Sources */,
+				A6B548A62165980C001C3988 /* ViewControllerTableFooter.m in Sources */,
 				A6006615215F974B0001B5F8 /* SJLightweightLeftControlView.m in Sources */,
 				A6006637215F974B0001B5F8 /* SJVideoPlayerMoreSettingSecondary.m in Sources */,
 				A600661C215F974B0001B5F8 /* SJControlLayerSwitcher.m in Sources */,

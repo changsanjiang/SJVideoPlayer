@@ -11,9 +11,13 @@
 #import "SJEdgeControlLayer.h"
 #import "SJFilmEditingControlLayer.h"
 #import "SJEdgeLightweightControlLayer.h"
+#import "UIView+SJVideoPlayerSetting.h"
 
 NS_ASSUME_NONNULL_BEGIN
 @interface SJVideoPlayer ()<SJEdgeControlLayerDelegate, SJFilmEditingControlLayerDelegate, SJEdgeLightweightControlLayerDelegate>
+
+@property (nonatomic, strong, readonly) SJVideoPlayerControlSettingRecorder *recorder;
+
 
 @property (nonatomic, strong, readonly) SJControlLayerCarrier *defaultEdgeCarrier;
 @property (nonatomic, strong, readonly) SJControlLayerCarrier *defaultFilmEditingCarrier;
@@ -34,7 +38,7 @@ NS_ASSUME_NONNULL_BEGIN
 }
 
 + (NSString *)version {
-    return @"v2.1.4";
+    return @"v2.1.5";
 }
 
 + (instancetype)player {
@@ -42,7 +46,7 @@ NS_ASSUME_NONNULL_BEGIN
 }
 
 - (instancetype)init {
-    self = [super init];
+    self = [self _init];
     if ( !self ) return nil;
     /// 添加一个控制层
     [self.switcher addControlLayer:self.defaultEdgeCarrier];
@@ -62,7 +66,14 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (instancetype)_init {
     self = [super init];
-    if ( self ) {}
+    if ( !self ) return nil;
+    __weak typeof(self) _self = self;
+    _recorder = [[SJVideoPlayerControlSettingRecorder alloc] initWithSettings:^(SJEdgeControlLayerSettings * _Nonnull setting) {
+        __strong typeof(_self) self = _self;
+        if ( !self ) return ;
+        self.placeholder = [SJVideoPlayerSettings commonSettings].placeholder;
+    }];
+    self.placeholder = [SJVideoPlayerSettings commonSettings].placeholder;
     return self;
 }
 

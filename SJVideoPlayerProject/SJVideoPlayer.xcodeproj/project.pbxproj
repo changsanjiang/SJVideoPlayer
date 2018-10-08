@@ -453,7 +453,8 @@
 				A6006596215F974B0001B5F8 /* SJProgressSlider */,
 				A60065B0215F974B0001B5F8 /* Switcher */,
 			);
-			path = SJVideoPlayer;
+			name = SJVideoPlayer;
+			path = ../../SJVideoPlayer;
 			sourceTree = "<group>";
 		};
 		A6006593215F974B0001B5F8 /* Settings */ = {

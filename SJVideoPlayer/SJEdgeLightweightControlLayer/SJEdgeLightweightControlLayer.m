@@ -788,7 +788,6 @@ NS_ASSUME_NONNULL_BEGIN
         [self.backBtn setImage:setting.backBtnImage forState:UIControlStateNormal];
         self.bottomSlider.traceImageView.backgroundColor = setting.progress_traceColor;
         self.bottomSlider.trackImageView.backgroundColor = setting.progress_bufferColor;
-        if ( !self.videoPlayer.placeholder && setting.placeholder ) self.videoPlayer.placeholder = setting.placeholder;
         [self.draggingProgressView setPreviewImage:setting.placeholder];
         if ( self.enableFilmEditing ) self.rightControlView.filmEditingBtnImage = setting.filmEditingBtnImage;
         self.settings = setting;
@@ -853,6 +852,7 @@ NS_ASSUME_NONNULL_BEGIN
 - (void)setHideBackButtonWhenOrientationIsPortrait:(BOOL)hideBackButtonWhenOrientationIsPortrait {
     if ( hideBackButtonWhenOrientationIsPortrait == _hideBackButtonWhenOrientationIsPortrait ) return;
     _hideBackButtonWhenOrientationIsPortrait = hideBackButtonWhenOrientationIsPortrait;
+    _backBtn.hidden = hideBackButtonWhenOrientationIsPortrait;
     _topControlView.config.hideBackButtonWhenOrientationIsPortrait = hideBackButtonWhenOrientationIsPortrait;
     [_topControlView needUpdateConfig];
 }

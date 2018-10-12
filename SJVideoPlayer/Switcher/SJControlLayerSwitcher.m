@@ -51,12 +51,14 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (void)addControlLayer:(SJControlLayerCarrier *)carrier {
     SJControlLayerCarrier *old = self.map[@(carrier.identifier)];
-    /// 替换
-    if ( old ) {
+    
+    /// Thanks @steven326
+    /// https://github.com/changsanjiang/SJVideoPlayer/issues/40
+    if ( old && (old.identifier == self.currentIdentifier) ) {
+        /// 替换
         [self _switchControlLayerWithOldcarrier:old newcarrier:carrier toVideoPlayer:_videoPlayer];
     }
-    
-    /// 添加
+
     [self.map setObject:carrier forKey:@(carrier.identifier)];
 }
 

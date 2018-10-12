@@ -62,6 +62,9 @@
     /// 1. 需要设置 videoPlayer.pauseWhenAppDidEnterBackground = NO; (该值默认为YES, 即App进入后台默认暂停).
     /// 2. 前往 `TARGETS` -> `Capability` -> enable `Background Modes` -> select this mode `Audio, AirPlay, and Picture in Picture`
     _player.pauseWhenAppDidEnterBackground = NO;
+    
+    
+    [_player showTitle:@"请将App退入后台, 播放器将持续播放" duration:-1];
     // Do any additional setup after loading the view.
 }
 

@@ -695,7 +695,7 @@
 		A6006646215F97D50001B5F8 /* Demo */ = {
 			isa = PBXGroup;
 			children = (
-				A60066B22161A1AA0001B5F8 /* CustomControlLayer */,
+				A60066B22161A1AA0001B5F8 /* CustomControlLayer(自定义控制层) */,
 				A60066A8216195050001B5F8 /* Other */,
 				A60066A2216116650001B5F8 /* ContinuePlayingOnTheNewViewController(在新的界面继续播放) */,
 				A600669821610FC00001B5F8 /* PageViewController */,
@@ -839,7 +839,7 @@
 			path = Other;
 			sourceTree = "<group>";
 		};
-		A60066B22161A1AA0001B5F8 /* CustomControlLayer */ = {
+		A60066B22161A1AA0001B5F8 /* CustomControlLayer(自定义控制层) */ = {
 			isa = PBXGroup;
 			children = (
 				A60066B32161A3710001B5F8 /* ViewControllerCustomControlLayer.h */,
@@ -847,7 +847,7 @@
 				A60066B92161A41E0001B5F8 /* CustomControlLayerView.h */,
 				A60066BA2161A41E0001B5F8 /* CustomControlLayerView.m */,
 			);
-			path = CustomControlLayer;
+			path = "CustomControlLayer(自定义控制层)";
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */

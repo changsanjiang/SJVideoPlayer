@@ -46,6 +46,7 @@
     _player.URLAsset.title = @"Test Title";
     _player.hideBackButtonWhenOrientationIsPortrait = YES;
     _player.enableFilmEditing = YES;
+    _player.pausedToKeepAppearState = YES;
     
     self.sj_viewWillBeginDragging = ^(ViewControllerDefaultPlayer * _Nonnull vc) {
         vc.player.disableAutoRotation = YES;
@@ -54,8 +55,6 @@
     self.sj_viewDidEndDragging = ^(ViewControllerDefaultPlayer * _Nonnull vc) {
         vc.player.disableAutoRotation = NO;
     };
-    
-    
     
 #pragma mark
     UILabel *noteLabel = [UILabel new];

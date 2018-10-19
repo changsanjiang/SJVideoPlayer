@@ -42,23 +42,29 @@ static UIViewController *_sj_get_top_view_controller() {
     /// https://www.jianshu.com/p/534eccb63974
     /// https://github.com/changsanjiang/SJRouter/pull/1
     
-    unsigned int cls_count = 0;
-    NSString *app_img = [NSBundle mainBundle].executablePath;
-    const char **classes = objc_copyClassNamesForImage([app_img UTF8String], &cls_count);
-    Protocol *p_handler = @protocol(SJRouteHandler);
-    for ( unsigned int i = 0 ; i < cls_count ; ++ i ) {
-        const char *cls_name = classes[i];
-        NSString *cls_str = [NSString stringWithUTF8String:cls_name];
-        Class cls = NSClassFromString(cls_str);
-        if ( ![cls conformsToProtocol:p_handler] ) continue;
-        if ( ![(id)cls respondsToSelector:@selector(routePath)] ) continue;
-        if ( ![(id)cls respondsToSelector:@selector(handleRequestWithParameters:topViewController:completionHandler:)] ) continue;
-        _handlersM[[(id<SJRouteHandler>)cls routePath]] = cls;
+    unsigned int img_count = 0;
+    const char **imgs = objc_copyImageNames(&img_count);
+    const char *main = NSBundle.mainBundle.bundlePath.UTF8String;
+    for ( unsigned int i = 0 ; i < img_count ; ++ i ) {
+        const char *img = imgs[i];
+        if ( !strstr(img, main) ) continue;
+        unsigned int cls_count = 0;
+        const char **classes = objc_copyClassNamesForImage(img, &cls_count);
+        Protocol *p_handler = @protocol(SJRouteHandler);
+        for ( unsigned int i = 0 ; i < cls_count ; ++ i ) {
+            const char *cls_name = classes[i];
+            NSString *cls_str = [NSString stringWithUTF8String:cls_name];
+            Class cls = NSClassFromString(cls_str);
+            if ( ![cls conformsToProtocol:p_handler] ) continue;
+            if ( ![(id)cls respondsToSelector:@selector(routePath)] ) continue;
+            if ( ![(id)cls respondsToSelector:@selector(handleRequestWithParameters:topViewController:completionHandler:)] ) continue;
+            _handlersM[[(id<SJRouteHandler>)cls routePath]] = cls;
+        }
+        if ( classes ) free(classes);
     }
-    if ( classes ) free(classes);
+    if ( imgs ) free(imgs);
     return self;
 }
-
 - (void)handleRequest:(SJRouteRequest *)request completionHandler:(nullable SJCompletionHandler)completionHandler {
     NSParameterAssert(request); if ( !request ) return;
     Class<SJRouteHandler> handler = _handlersM[request.requestPath];
@@ -69,6 +75,10 @@ static UIViewController *_sj_get_top_view_controller() {
         printf("\n (-_-) Unhandled request: %s", request.description.UTF8String);
         if ( _unhandledCallback ) _unhandledCallback(request, _sj_get_top_view_controller());
     }
+}
+- (BOOL)canHandleRoutePath:(NSString *)routePath {
+    if ( 0 == routePath.length ) return NO;
+    return _handlersM[routePath];
 }
 @end
 NS_ASSUME_NONNULL_END

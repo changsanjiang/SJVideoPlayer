@@ -13,6 +13,8 @@
 #import <SJFullscreenPopGesture/UIViewController+SJVideoPlayerAdd.h>
 #import "SJProgressSlider.h"
 
+/// 调速
+
 @interface ViewControllerSetPlaybackRate ()<SJRouteHandler, SJProgressSliderDelegate>
 @property (nonatomic, strong) SJVideoPlayer *player;
 @property (nonatomic, strong) SJProgressSlider *rateSlider;

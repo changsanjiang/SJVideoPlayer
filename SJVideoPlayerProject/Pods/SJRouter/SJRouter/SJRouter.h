@@ -16,7 +16,7 @@
 @class UIViewController;
 
 NS_ASSUME_NONNULL_BEGIN
-typedef void(^SJRouterUnhandledCallback)(SJRouteRequest *request, UIViewController *topViewController); // 无法处理某个请求时的回调
+typedef void(^SJRouterUnhandledCallback)(SJRouteRequest *request, UIViewController *topViewController); // 无法处理时的回调
 
 @interface SJRouter : NSObject
 + (instancetype)shared;
@@ -24,5 +24,6 @@ typedef void(^SJRouterUnhandledCallback)(SJRouteRequest *request, UIViewControll
 - (void)handleRequest:(SJRouteRequest *)request completionHandler:(nullable SJCompletionHandler)completionHandler;
 
 @property (nonatomic, copy, nullable) SJRouterUnhandledCallback unhandledCallback;
+- (BOOL)canHandleRoutePath:(NSString *)routePath; // 是否可以处理某个路径
 @end
 NS_ASSUME_NONNULL_END

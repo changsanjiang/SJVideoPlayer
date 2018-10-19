@@ -78,8 +78,6 @@
     
     [m addObject:[[LWZTableSectionShrinker alloc] initWithTitle:@"Continue Playing" titleWhenShrank:nil dataArr:[self _createItemsByContinuePlaying]]];
     
-    
-    
     [m addObject:[[LWZTableSectionShrinker alloc] initWithTitle:@"Other" titleWhenShrank:nil dataArr:[self _createItemsByOtherOperations]]];
     _data = m.copy;
 }
@@ -185,7 +183,11 @@
       
       [[Item alloc] initWithTitle:@"CustomControlLayer"
                          subTitle:@"自定义控制层"
-                             path:@"player/customControlLayer"]];
+                             path:@"player/customControlLayer"],
+      
+      [[Item alloc] initWithTitle:@"VideoFlip"
+                         subTitle:@"镜像翻转"
+                             path:@"player/videoFlip"]];
 }
 
 - (NSInteger)numberOfSectionsInTableView:(UITableView *)tableView {

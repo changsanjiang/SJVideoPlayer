@@ -858,6 +858,146 @@ static UIScrollView *_Nullable _getScrollViewOfPlayModel(SJPlayModel *playModel)
 
 @end
 
+
+@interface _SJViewFlipTransitionServer : NSObject<CAAnimationDelegate>
+- (instancetype)initWithView:(__weak UIView *)view;
+@property (nonatomic) SJViewFlipTransitionDirection direction;
+@property (nonatomic, readonly) BOOL isFlipTransitioning;
+- (void)setDirection:(SJViewFlipTransitionDirection)direction animated:(BOOL)animated;
+- (void)setDirection:(SJViewFlipTransitionDirection)direction animated:(BOOL)animated completionHandler:(void(^_Nullable)(__kindof _SJViewFlipTransitionServer *s))completionHandler;
+
+@property (nonatomic, copy, nullable) void(^flipTransitionDirectionWillChangeExeBlock)(__kindof _SJViewFlipTransitionServer *s);
+@property (nonatomic, copy, nullable) void(^flipTransitionDirectionDidChangeExeBlock)(__kindof _SJViewFlipTransitionServer *s);
+@end
+
+@implementation _SJViewFlipTransitionServer {
+    __weak UIView *_view;
+    void(^_Nullable _completionHandler)(__kindof _SJViewFlipTransitionServer *s);
+}
+- (instancetype)initWithView:(__weak UIView *)view {
+    self = [super init];
+    if ( !self ) return nil;
+    _view = view;
+    return self;
+}
+
+- (void)setDirection:(SJViewFlipTransitionDirection)direction {
+    [self setDirection:direction animated:YES];
+}
+
+- (void)setDirection:(SJViewFlipTransitionDirection)direction animated:(BOOL)animated {
+    [self setDirection:direction animated:animated completionHandler:nil];
+}
+
+- (void)setDirection:(SJViewFlipTransitionDirection)direction animated:(BOOL)animated completionHandler:(void(^_Nullable)(__kindof _SJViewFlipTransitionServer *s))completionHandler {
+    if ( direction == _direction ) return;
+    if ( _isFlipTransitioning ) return;
+    
+    _direction = direction;
+    
+    CATransition *anima = [CATransition animation];
+    anima.timingFunction = [CAMediaTimingFunction functionWithName:kCAMediaTimingFunctionEaseIn];
+    anima.type = @"oglFlip";
+    anima.delegate = self;
+    CATransform3D transform = CATransform3DIdentity;
+    switch ( direction ) {
+        case SJViewFlipTransitionDirection_Identity: {
+            transform = CATransform3DIdentity;
+        }
+            break;
+        case SJViewFlipTransitionDirection_Horizontally: {
+            transform = CATransform3DMakeRotation(M_PI, 0, 1, 0);
+        }
+            break;
+    }
+    
+    anima.subtype = kCATransitionFromRight;
+    anima.duration = 1.0f;
+    [_view.layer addAnimation:anima forKey:nil];
+    _view.layer.transform = transform;
+}
+
+- (void)animationDidStart:(CAAnimation *)anim {
+    _isFlipTransitioning = YES;
+    if ( _flipTransitionDirectionWillChangeExeBlock ) _flipTransitionDirectionWillChangeExeBlock(self);
+}
+
+- (void)animationDidStop:(CAAnimation *)anim finished:(BOOL)flag {
+    _isFlipTransitioning = NO;
+    
+    if ( _completionHandler ) {
+        _completionHandler(self);
+        _completionHandler = nil;
+    }
+    if ( _flipTransitionDirectionDidChangeExeBlock ) _flipTransitionDirectionDidChangeExeBlock(self);
+}
+@end
+
+
+@implementation SJBaseVideoPlayer (VideoFlipTransition)
+
+- (_SJViewFlipTransitionServer *)flipTransitionServer {
+    _SJViewFlipTransitionServer *s = objc_getAssociatedObject(self, _cmd);
+    if ( !s ) {
+        s = [[_SJViewFlipTransitionServer alloc] initWithView:_playbackController.playerView];
+        objc_setAssociatedObject(self, _cmd, s, OBJC_ASSOCIATION_RETAIN_NONATOMIC);
+    }
+    return s;
+}
+
+- (SJViewFlipTransitionDirection)flipTransitionDirection {
+    return self.flipTransitionServer.direction;
+}
+
+- (void)setFlipTransitionDirection:(SJViewFlipTransitionDirection)t {
+    self.flipTransitionServer.direction = t;
+}
+- (void)setFlipTransitionDirection:(SJViewFlipTransitionDirection)t animated:(BOOL)animated {
+    [self.flipTransitionServer setDirection:t animated:animated];
+}
+- (void)setFlipTransitionDirection:(SJViewFlipTransitionDirection)t animated:(BOOL)animated completionHandler:(void(^_Nullable)(__kindof SJBaseVideoPlayer *player))completionHandler {
+    __weak typeof(self) _self = self;
+    [self.flipTransitionServer setDirection:t animated:animated completionHandler:^(__kindof _SJViewFlipTransitionServer * _Nonnull s) {
+        __strong typeof(_self) self = _self;
+        if ( !self ) return;
+        if ( completionHandler ) completionHandler(self);
+    }];
+}
+- (BOOL)isFlipTransitioning {
+    return self.flipTransitionServer.isFlipTransitioning;
+}
+
+- (void)setFlipTransitionDirectionWillChangeExeBlock:(void (^_Nullable)(__kindof SJBaseVideoPlayer * _Nonnull))block {
+    objc_setAssociatedObject(self, @selector(flipTransitionDirectionWillChangeExeBlock), block, OBJC_ASSOCIATION_COPY_NONATOMIC);
+    __weak typeof(self) _self = self;
+    self.flipTransitionServer.flipTransitionDirectionWillChangeExeBlock = ^(__kindof _SJViewFlipTransitionServer * _Nonnull s) {
+        __strong typeof(_self) self = _self;
+        if ( !self ) return;
+        if ( block ) block(self);
+    };
+}
+
+- (void (^_Nullable)(__kindof SJBaseVideoPlayer * _Nonnull))flipTransitionDirectionWillChangeExeBlock {
+    return objc_getAssociatedObject(self, _cmd);
+}
+
+- (void)setFlipTransitionDirectionDidChangeExeBlock:(void (^_Nullable)(__kindof SJBaseVideoPlayer * _Nonnull))block {
+    objc_setAssociatedObject(self, @selector(flipTransitionDirectionDidChangeExeBlock), block, OBJC_ASSOCIATION_COPY_NONATOMIC);
+    __weak typeof(self) _self = self;
+    self.flipTransitionServer.flipTransitionDirectionDidChangeExeBlock = ^(__kindof _SJViewFlipTransitionServer * _Nonnull s) {
+        __strong typeof(_self) self = _self;
+        if ( !self ) return;
+        if ( block ) block(self);
+    };
+}
+
+- (void (^_Nullable)(__kindof SJBaseVideoPlayer * _Nonnull))flipTransitionDirectionDidChangeExeBlock {
+    return objc_getAssociatedObject(self, _cmd);
+}
+
+@end
+
+
 #pragma mark - Network
 
 @implementation SJBaseVideoPlayer (Network)

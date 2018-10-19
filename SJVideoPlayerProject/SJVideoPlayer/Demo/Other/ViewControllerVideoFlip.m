@@ -1,53 +1,45 @@
 //
-//  ViewControllerUpdateUI.m
+//  ViewControllerVideoFlip.m
 //  SJVideoPlayer
 //
-//  Created by 畅三江 on 2018/10/1.
+//  Created by BlueDancer on 2018/10/19.
 //  Copyright © 2018 畅三江. All rights reserved.
 //
 
-#import "ViewControllerUpdateResources.h"
+#import "ViewControllerVideoFlip.h"
 #import "SJVideoPlayer.h"
 #import <SJRouter/SJRouter.h>
 #import <Masonry/Masonry.h>
 #import <SJFullscreenPopGesture/UIViewController+SJVideoPlayerAdd.h>
-#import "SJProgressSlider.h"
 
-/// 更新资源图片等..
+/// 镜像翻转
 
-@interface ViewControllerUpdateResources ()<SJRouteHandler, SJProgressSliderDelegate>
+@interface ViewControllerVideoFlip ()<SJRouteHandler>
 @property (nonatomic, strong) SJVideoPlayer *player;
-@property (nonatomic, strong) SJProgressSlider *rateSlider;
 @end
 
-@implementation ViewControllerUpdateResources
+@implementation ViewControllerVideoFlip
 
 + (NSString *)routePath {
-    return @"player/updateResources";
+    return @"player/videoFlip";
 }
 
 + (void)handleRequestWithParameters:(SJParameters)parameters topViewController:(UIViewController *)topViewController completionHandler:(SJCompletionHandler)completionHandler {
     [topViewController.navigationController pushViewController:[self new] animated:YES];
 }
 
+
+
+- (IBAction)flip:(id)sender {
+    _player.flipTransitionDirection = (_player.flipTransitionDirection == SJViewFlipTransitionDirection_Identity)?SJViewFlipTransitionDirection_Horizontally:SJViewFlipTransitionDirection_Identity;
+}
+
+
+
 - (void)viewDidLoad {
     [super viewDidLoad];
     self.edgesForExtendedLayout = UIRectEdgeNone;
-    self.view.backgroundColor = [UIColor blackColor];
-    
-    
-    // update resources
-    SJVideoPlayer.update(^(SJVideoPlayerSettings * _Nonnull commonSettings) {
-        commonSettings.progress_traceColor = UIColor.redColor;
-        commonSettings.progress_trackColor = UIColor.yellowColor;
-        // ....
-//        commonSettings.fastImage = [UIImage imageNamed:@""];
-//        commonSettings.fastImage = [UIImage imageNamed:@""];
-//        commonSettings.fastImage = [UIImage imageNamed:@""];
-    });
-    
-    
-    
+    self.view.backgroundColor = [UIColor whiteColor];
     
     // create a player of the default type
     _player = [SJVideoPlayer player];
@@ -64,14 +56,26 @@
     _player.URLAsset.title = @"Test Title";
     _player.hideBackButtonWhenOrientationIsPortrait = YES;
     _player.enableFilmEditing = YES;
+    _player.pausedToKeepAppearState = YES;
     
-    self.sj_viewWillBeginDragging = ^(ViewControllerUpdateResources * _Nonnull vc) {
-        vc.player.disableAutoRotation = YES;
+    
+    __weak typeof(self) _self = self;
+    _player.flipTransitionDirectionWillChangeExeBlock = ^(__kindof SJBaseVideoPlayer * _Nonnull player) {
+        __strong typeof(_self) self = _self;
+        if ( !self ) return;
+#ifdef DEBUG
+        NSLog(@"将要翻转");
+#endif
     };
     
-    self.sj_viewDidEndDragging = ^(ViewControllerUpdateResources * _Nonnull vc) {
-        vc.player.disableAutoRotation = NO;
+    _player.flipTransitionDirectionDidChangeExeBlock = ^(__kindof SJBaseVideoPlayer * _Nonnull player) {
+        __strong typeof(_self) self = _self;
+        if ( !self ) return;
+#ifdef DEBUG
+        NSLog(@"完成翻转");
+#endif
     };
+    
     // Do any additional setup after loading the view.
 }
 

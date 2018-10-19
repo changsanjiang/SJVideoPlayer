@@ -119,6 +119,28 @@ NS_ASSUME_NONNULL_BEGIN
 @end
 
 
+/// 镜像翻转
+typedef enum : NSUInteger {
+    /// 恢复
+    SJViewFlipTransitionDirection_Identity,
+    /// 水平翻转
+    SJViewFlipTransitionDirection_Horizontally, // X轴
+} SJViewFlipTransitionDirection;
+
+/// 镜像翻转
+@interface SJBaseVideoPlayer (VideoFlipTransition)
+
+@property (nonatomic, readonly) BOOL isFlipTransitioning;
+@property (nonatomic) SJViewFlipTransitionDirection flipTransitionDirection; // Animated.
+- (void)setFlipTransitionDirection:(SJViewFlipTransitionDirection)t animated:(BOOL)animated;
+- (void)setFlipTransitionDirection:(SJViewFlipTransitionDirection)t animated:(BOOL)animated completionHandler:(void(^_Nullable)(__kindof SJBaseVideoPlayer *player))completionHandler;
+
+@property (nonatomic, copy, nullable) void(^flipTransitionDirectionWillChangeExeBlock)(__kindof SJBaseVideoPlayer *player);
+@property (nonatomic, copy, nullable) void(^flipTransitionDirectionDidChangeExeBlock)(__kindof SJBaseVideoPlayer *player);
+
+@end
+
+
 #pragma mark - 时间
 
 @interface SJBaseVideoPlayer (Time)

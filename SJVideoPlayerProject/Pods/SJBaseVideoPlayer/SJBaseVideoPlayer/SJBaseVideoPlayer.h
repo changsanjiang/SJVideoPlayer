@@ -131,6 +131,7 @@ typedef enum : NSUInteger {
 @interface SJBaseVideoPlayer (VideoFlipTransition)
 
 @property (nonatomic, readonly) BOOL isFlipTransitioning;
+@property (nonatomic) NSTimeInterval flipTransitionDuration; // default is 1.0
 @property (nonatomic) SJViewFlipTransitionDirection flipTransitionDirection; // Animated.
 - (void)setFlipTransitionDirection:(SJViewFlipTransitionDirection)t animated:(BOOL)animated;
 - (void)setFlipTransitionDirection:(SJViewFlipTransitionDirection)t animated:(BOOL)animated completionHandler:(void(^_Nullable)(__kindof SJBaseVideoPlayer *player))completionHandler;

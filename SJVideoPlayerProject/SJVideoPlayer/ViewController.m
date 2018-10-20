@@ -185,9 +185,13 @@
                          subTitle:@"自定义控制层"
                              path:@"player/customControlLayer"],
       
-      [[Item alloc] initWithTitle:@"VideoFlip"
+      [[Item alloc] initWithTitle:@"VideoFlipTransition"
                          subTitle:@"镜像翻转"
-                             path:@"player/videoFlip"]];
+                             path:@"player/videoFlipTransition"],
+      
+      [[Item alloc] initWithTitle:@"Test"
+                         subTitle:@"测试"
+                             path:@"player/test"]];
 }
 
 - (NSInteger)numberOfSectionsInTableView:(UITableView *)tableView {

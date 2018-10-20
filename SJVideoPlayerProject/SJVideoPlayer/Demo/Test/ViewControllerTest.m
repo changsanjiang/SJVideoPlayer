@@ -1,46 +1,50 @@
 //
-//  ViewControllerVideoFlip.m
+//  ViewControllerTest.m
 //  SJVideoPlayer
 //
 //  Created by BlueDancer on 2018/10/19.
 //  Copyright © 2018 畅三江. All rights reserved.
 //
 
-#import "ViewControllerVideoFlip.h"
+#import "ViewControllerTest.h"
 #import "SJVideoPlayer.h"
 #import <SJRouter/SJRouter.h>
 #import <Masonry/Masonry.h>
 #import <SJFullscreenPopGesture/UIViewController+SJVideoPlayerAdd.h>
+#import "SJEdgeNewControlLayer.h"
 
-/// 镜像翻转
-
-@interface ViewControllerVideoFlip ()<SJRouteHandler>
+@interface ViewControllerTest ()<SJRouteHandler>
 @property (nonatomic, strong) SJVideoPlayer *player;
 @end
 
-@implementation ViewControllerVideoFlip
+@implementation ViewControllerTest
 
 + (NSString *)routePath {
-    return @"player/videoFlipTransition";
+    return @"player/test";
 }
 
 + (void)handleRequestWithParameters:(SJParameters)parameters topViewController:(UIViewController *)topViewController completionHandler:(SJCompletionHandler)completionHandler {
     [topViewController.navigationController pushViewController:[self new] animated:YES];
 }
 
-
-
-- (IBAction)flip:(id)sender {
-    _player.flipTransitionDirection = (_player.flipTransitionDirection == SJViewFlipTransitionDirection_Identity)?SJViewFlipTransitionDirection_Horizontally:SJViewFlipTransitionDirection_Identity;
-}
-
-
-
 - (void)viewDidLoad {
     [super viewDidLoad];
     self.edgesForExtendedLayout = UIRectEdgeNone;
     self.view.backgroundColor = [UIColor whiteColor];
+    [self _setupViews];
     
+    SJEdgeNewControlLayer *controlLayer = [SJEdgeNewControlLayer new];
+    SJControlLayerCarrier *carrier = [[SJControlLayerCarrier alloc] initWithIdentifier:SJControlLayer_Edge dataSource:controlLayer delegate:controlLayer exitExeBlock:^(SJControlLayerCarrier * _Nonnull carrier) {
+        
+    } restartExeBlock:^(SJControlLayerCarrier * _Nonnull carrier) {
+        
+    }];
+    [self.player.switcher addControlLayer:carrier];
+    
+    // Do any additional setup after loading the view.
+}
+
+- (void)_setupViews {
     // create a player of the default type
     _player = [SJVideoPlayer player];
     
@@ -57,26 +61,6 @@
     _player.hideBackButtonWhenOrientationIsPortrait = YES;
     _player.enableFilmEditing = YES;
     _player.pausedToKeepAppearState = YES;
-    
-    
-    __weak typeof(self) _self = self;
-    _player.flipTransitionDirectionWillChangeExeBlock = ^(__kindof SJBaseVideoPlayer * _Nonnull player) {
-        __strong typeof(_self) self = _self;
-        if ( !self ) return;
-#ifdef DEBUG
-        NSLog(@"将要翻转");
-#endif
-    };
-    
-    _player.flipTransitionDirectionDidChangeExeBlock = ^(__kindof SJBaseVideoPlayer * _Nonnull player) {
-        __strong typeof(_self) self = _self;
-        if ( !self ) return;
-#ifdef DEBUG
-        NSLog(@"完成翻转");
-#endif
-    };
-    
-    // Do any additional setup after loading the view.
 }
 
 - (void)viewDidAppear:(BOOL)animated {

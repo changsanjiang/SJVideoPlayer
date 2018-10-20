@@ -861,6 +861,7 @@ static UIScrollView *_Nullable _getScrollViewOfPlayModel(SJPlayModel *playModel)
 
 @interface _SJViewFlipTransitionServer : NSObject<CAAnimationDelegate>
 - (instancetype)initWithView:(__weak UIView *)view;
+@property (nonatomic) NSTimeInterval flipTransitionDuration;
 @property (nonatomic) SJViewFlipTransitionDirection direction;
 @property (nonatomic, readonly) BOOL isFlipTransitioning;
 - (void)setDirection:(SJViewFlipTransitionDirection)direction animated:(BOOL)animated;
@@ -878,6 +879,7 @@ static UIScrollView *_Nullable _getScrollViewOfPlayModel(SJPlayModel *playModel)
     self = [super init];
     if ( !self ) return nil;
     _view = view;
+    _flipTransitionDuration = 1.0;
     return self;
 }
 
@@ -900,19 +902,22 @@ static UIScrollView *_Nullable _getScrollViewOfPlayModel(SJPlayModel *playModel)
     anima.type = @"oglFlip";
     anima.delegate = self;
     CATransform3D transform = CATransform3DIdentity;
+    CATransitionSubtype subtype = kCATransitionFromRight;
     switch ( direction ) {
         case SJViewFlipTransitionDirection_Identity: {
             transform = CATransform3DIdentity;
+            subtype = kCATransitionFromLeft;
         }
             break;
         case SJViewFlipTransitionDirection_Horizontally: {
             transform = CATransform3DMakeRotation(M_PI, 0, 1, 0);
+            subtype = kCATransitionFromRight;
         }
             break;
     }
     
-    anima.subtype = kCATransitionFromRight;
-    anima.duration = 1.0f;
+    anima.subtype = subtype;
+    anima.duration = _flipTransitionDuration;
     [_view.layer addAnimation:anima forKey:nil];
     _view.layer.transform = transform;
 }
@@ -995,6 +1000,13 @@ static UIScrollView *_Nullable _getScrollViewOfPlayModel(SJPlayModel *playModel)
     return objc_getAssociatedObject(self, _cmd);
 }
 
+- (void)setFlipTransitionDuration:(NSTimeInterval)flipTransitionDuration {
+    self.flipTransitionServer.flipTransitionDuration = flipTransitionDuration;
+}
+
+- (NSTimeInterval)flipTransitionDuration {
+    return self.flipTransitionServer.flipTransitionDuration;
+}
 @end
 
 

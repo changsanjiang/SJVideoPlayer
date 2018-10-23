@@ -31,7 +31,7 @@
 
 
 - (IBAction)flip:(id)sender {
-    _player.flipTransitionDirection = (_player.flipTransitionDirection == SJViewFlipTransition_Identity)?SJViewFlipTransition_Horizontally:SJViewFlipTransition_Identity;
+    _player.flipTransition = (_player.flipTransition == SJViewFlipTransition_Identity)?SJViewFlipTransition_Horizontally:SJViewFlipTransition_Identity;
 }
 
 
@@ -60,7 +60,7 @@
     
     
     __weak typeof(self) _self = self;
-    _player.flipTransitionDirectionWillChangeExeBlock = ^(__kindof SJBaseVideoPlayer * _Nonnull player) {
+    _player.flipTransitionDidStartExeBlock = ^(__kindof SJBaseVideoPlayer * _Nonnull player) {
         __strong typeof(_self) self = _self;
         if ( !self ) return;
 #ifdef DEBUG
@@ -68,7 +68,7 @@
 #endif
     };
     
-    _player.flipTransitionDirectionDidChangeExeBlock = ^(__kindof SJBaseVideoPlayer * _Nonnull player) {
+    _player.flipTransitionDidStopExeBlock = ^(__kindof SJBaseVideoPlayer * _Nonnull player) {
         __strong typeof(_self) self = _self;
         if ( !self ) return;
 #ifdef DEBUG

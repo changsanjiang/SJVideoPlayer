@@ -867,8 +867,8 @@ static UIScrollView *_Nullable _getScrollViewOfPlayModel(SJPlayModel *playModel)
 - (void)setDirection:(SJViewFlipTransition)direction animated:(BOOL)animated;
 - (void)setDirection:(SJViewFlipTransition)direction animated:(BOOL)animated completionHandler:(void(^_Nullable)(__kindof _SJViewFlipTransitionServer *s))completionHandler;
 
-@property (nonatomic, copy, nullable) void(^flipTransitionDirectionWillChangeExeBlock)(__kindof _SJViewFlipTransitionServer *s);
-@property (nonatomic, copy, nullable) void(^flipTransitionDirectionDidChangeExeBlock)(__kindof _SJViewFlipTransitionServer *s);
+@property (nonatomic, copy, nullable) void(^flipTransitionDidStartExeBlock)(__kindof _SJViewFlipTransitionServer *s);
+@property (nonatomic, copy, nullable) void(^flipTransitionDidStopExeBlock)(__kindof _SJViewFlipTransitionServer *s);
 @end
 
 @implementation _SJViewFlipTransitionServer {
@@ -920,7 +920,7 @@ static UIScrollView *_Nullable _getScrollViewOfPlayModel(SJPlayModel *playModel)
 
 - (void)animationDidStart:(CAAnimation *)anim {
     _isFlipTransitioning = YES;
-    if ( _flipTransitionDirectionWillChangeExeBlock ) _flipTransitionDirectionWillChangeExeBlock(self);
+    if ( _flipTransitionDidStartExeBlock ) _flipTransitionDidStartExeBlock(self);
 }
 
 - (void)animationDidStop:(CAAnimation *)anim finished:(BOOL)flag {
@@ -930,7 +930,7 @@ static UIScrollView *_Nullable _getScrollViewOfPlayModel(SJPlayModel *playModel)
         _completionHandler(self);
         _completionHandler = nil;
     }
-    if ( _flipTransitionDirectionDidChangeExeBlock ) _flipTransitionDirectionDidChangeExeBlock(self);
+    if ( _flipTransitionDidStopExeBlock ) _flipTransitionDidStopExeBlock(self);
 }
 @end
 
@@ -946,17 +946,17 @@ static UIScrollView *_Nullable _getScrollViewOfPlayModel(SJPlayModel *playModel)
     return s;
 }
 
-- (SJViewFlipTransition)flipTransitionDirection {
+- (SJViewFlipTransition)flipTransition {
     return self.flipTransitionServer.direction;
 }
 
-- (void)setFlipTransitionDirection:(SJViewFlipTransition)t {
+- (void)setFlipTransition:(SJViewFlipTransition)t {
     self.flipTransitionServer.direction = t;
 }
-- (void)setFlipTransitionDirection:(SJViewFlipTransition)t animated:(BOOL)animated {
+- (void)setFlipTransition:(SJViewFlipTransition)t animated:(BOOL)animated {
     [self.flipTransitionServer setDirection:t animated:animated];
 }
-- (void)setFlipTransitionDirection:(SJViewFlipTransition)t animated:(BOOL)animated completionHandler:(void(^_Nullable)(__kindof SJBaseVideoPlayer *player))completionHandler {
+- (void)setFlipTransition:(SJViewFlipTransition)t animated:(BOOL)animated completionHandler:(void(^_Nullable)(__kindof SJBaseVideoPlayer *player))completionHandler {
     __weak typeof(self) _self = self;
     [self.flipTransitionServer setDirection:t animated:animated completionHandler:^(__kindof _SJViewFlipTransitionServer * _Nonnull s) {
         __strong typeof(_self) self = _self;
@@ -968,31 +968,31 @@ static UIScrollView *_Nullable _getScrollViewOfPlayModel(SJPlayModel *playModel)
     return self.flipTransitionServer.isFlipTransitioning;
 }
 
-- (void)setFlipTransitionDirectionWillChangeExeBlock:(void (^_Nullable)(__kindof SJBaseVideoPlayer * _Nonnull))block {
-    objc_setAssociatedObject(self, @selector(flipTransitionDirectionWillChangeExeBlock), block, OBJC_ASSOCIATION_COPY_NONATOMIC);
+- (void)setFlipTransitionDidStartExeBlock:(void (^_Nullable)(__kindof SJBaseVideoPlayer * _Nonnull))block {
+    objc_setAssociatedObject(self, @selector(flipTransitionDidStartExeBlock), block, OBJC_ASSOCIATION_COPY_NONATOMIC);
     __weak typeof(self) _self = self;
-    self.flipTransitionServer.flipTransitionDirectionWillChangeExeBlock = ^(__kindof _SJViewFlipTransitionServer * _Nonnull s) {
+    self.flipTransitionServer.flipTransitionDidStartExeBlock = ^(__kindof _SJViewFlipTransitionServer * _Nonnull s) {
         __strong typeof(_self) self = _self;
         if ( !self ) return;
         if ( block ) block(self);
     };
 }
 
-- (void (^_Nullable)(__kindof SJBaseVideoPlayer * _Nonnull))flipTransitionDirectionWillChangeExeBlock {
+- (void (^_Nullable)(__kindof SJBaseVideoPlayer * _Nonnull))flipTransitionDidStartExeBlock {
     return objc_getAssociatedObject(self, _cmd);
 }
 
-- (void)setFlipTransitionDirectionDidChangeExeBlock:(void (^_Nullable)(__kindof SJBaseVideoPlayer * _Nonnull))block {
-    objc_setAssociatedObject(self, @selector(flipTransitionDirectionDidChangeExeBlock), block, OBJC_ASSOCIATION_COPY_NONATOMIC);
+- (void)setFlipTransitionDidStopExeBlock:(void (^_Nullable)(__kindof SJBaseVideoPlayer * _Nonnull))block {
+    objc_setAssociatedObject(self, @selector(flipTransitionDidStopExeBlock), block, OBJC_ASSOCIATION_COPY_NONATOMIC);
     __weak typeof(self) _self = self;
-    self.flipTransitionServer.flipTransitionDirectionDidChangeExeBlock = ^(__kindof _SJViewFlipTransitionServer * _Nonnull s) {
+    self.flipTransitionServer.flipTransitionDidStopExeBlock = ^(__kindof _SJViewFlipTransitionServer * _Nonnull s) {
         __strong typeof(_self) self = _self;
         if ( !self ) return;
         if ( block ) block(self);
     };
 }
 
-- (void (^_Nullable)(__kindof SJBaseVideoPlayer * _Nonnull))flipTransitionDirectionDidChangeExeBlock {
+- (void (^_Nullable)(__kindof SJBaseVideoPlayer * _Nonnull))flipTransitionDidStopExeBlock {
     return objc_getAssociatedObject(self, _cmd);
 }
 

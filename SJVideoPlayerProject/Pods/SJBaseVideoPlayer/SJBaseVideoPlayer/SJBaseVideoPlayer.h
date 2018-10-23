@@ -124,7 +124,7 @@ typedef enum : NSUInteger {
     /// 恢复
     SJViewFlipTransition_Identity,
     /// 水平翻转
-    SJViewFlipTransition_Horizontally, // X轴
+    SJViewFlipTransition_Horizontally,
 } SJViewFlipTransition;
 
 /// 镜像翻转
@@ -132,12 +132,12 @@ typedef enum : NSUInteger {
 
 @property (nonatomic, readonly) BOOL isFlipTransitioning;
 @property (nonatomic) NSTimeInterval flipTransitionDuration; // default is 1.0
-@property (nonatomic) SJViewFlipTransition flipTransitionDirection; // Animated.
-- (void)setFlipTransitionDirection:(SJViewFlipTransition)t animated:(BOOL)animated;
-- (void)setFlipTransitionDirection:(SJViewFlipTransition)t animated:(BOOL)animated completionHandler:(void(^_Nullable)(__kindof SJBaseVideoPlayer *player))completionHandler;
+@property (nonatomic) SJViewFlipTransition flipTransition; // Animated.
+- (void)setFlipTransition:(SJViewFlipTransition)t animated:(BOOL)animated;
+- (void)setFlipTransition:(SJViewFlipTransition)t animated:(BOOL)animated completionHandler:(void(^_Nullable)(__kindof SJBaseVideoPlayer *player))completionHandler;
 
-@property (nonatomic, copy, nullable) void(^flipTransitionDirectionWillChangeExeBlock)(__kindof SJBaseVideoPlayer *player);
-@property (nonatomic, copy, nullable) void(^flipTransitionDirectionDidChangeExeBlock)(__kindof SJBaseVideoPlayer *player);
+@property (nonatomic, copy, nullable) void(^flipTransitionDidStartExeBlock)(__kindof SJBaseVideoPlayer *player);
+@property (nonatomic, copy, nullable) void(^flipTransitionDidStopExeBlock)(__kindof SJBaseVideoPlayer *player);
 
 @end
 

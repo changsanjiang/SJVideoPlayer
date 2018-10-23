@@ -31,7 +31,7 @@
 
 
 - (IBAction)flip:(id)sender {
-    _player.flipTransitionDirection = (_player.flipTransitionDirection == SJViewFlipTransitionDirection_Identity)?SJViewFlipTransitionDirection_Horizontally:SJViewFlipTransitionDirection_Identity;
+    _player.flipTransitionDirection = (_player.flipTransitionDirection == SJViewFlipTransition_Identity)?SJViewFlipTransition_Horizontally:SJViewFlipTransition_Identity;
 }
 
 

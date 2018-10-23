@@ -14,9 +14,5 @@ NS_ASSUME_NONNULL_BEGIN
 + (instancetype)cellWithCollectionView:(UICollectionView *)collectionView indexPath:(NSIndexPath *)indexPath;
 
 @property (nonatomic, strong, readonly) UIButton *button;
-
-//@property (nonatomic, strong) <#Class#> *<#name#>;
-//@property (nonatomic, strong) <#Class#> *<#name#>;
-
 @end
 NS_ASSUME_NONNULL_END

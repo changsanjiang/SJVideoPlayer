@@ -19,7 +19,9 @@ NS_ASSUME_NONNULL_BEGIN
 + (instancetype)cellWithCollectionView:(UICollectionView *)collectionView indexPath:(NSIndexPath *)indexPath;
 
 @property (nonatomic, strong, readonly) SJButton *button;
-
+@property (nonatomic, strong, readonly) UIView *customViewContainerView;
 @property (nonatomic, copy, nullable) void(^clickedButtonExeBlock)(SJButtonItemCollectionViewCell *cell);
+
+- (void)removeSubviewsFromCustomViewContainerView;
 @end
 NS_ASSUME_NONNULL_END

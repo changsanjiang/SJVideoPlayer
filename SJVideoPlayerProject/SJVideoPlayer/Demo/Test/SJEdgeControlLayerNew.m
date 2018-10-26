@@ -215,8 +215,10 @@ SJEdgeControlButtonItemTag const SJEdgeControlLayerBottomItem_FullBtn = 10005;
     /// title item
     if ( videoPlayer.URLAsset.alwaysShowTitle )
         titleItem.hidden = NO;
-    else
-        titleItem.hidden = !isFull || !isFitOnScreen;
+    else {
+        if ( videoPlayer.useFitOnScreenAndDisableRotation ) titleItem.hidden = !videoPlayer.isFitOnScreen;
+        else titleItem.hidden = !isFull;
+    }
 
     if ( !titleItem.hidden ) {
         // margin

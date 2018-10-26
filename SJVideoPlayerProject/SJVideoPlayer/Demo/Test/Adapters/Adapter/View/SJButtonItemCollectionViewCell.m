@@ -45,6 +45,23 @@ static NSString *SJButtonItemCollectionViewCellID = @"SJButtonItemCollectionView
     [_button addTarget:self action:@selector(clickedButton:) forControlEvents:UIControlEventTouchUpInside];
     return _button;
 }
+
+@synthesize customViewContainerView = _customViewContainerView;
+- (UIView *)customViewContainerView {
+    if ( _customViewContainerView ) return _customViewContainerView;
+    _customViewContainerView = [UIView new];
+    [self.contentView addSubview:_customViewContainerView];
+    [_customViewContainerView mas_makeConstraints:^(MASConstraintMaker *make) {
+        make.edges.offset(0);
+    }];
+    return _customViewContainerView;
+}
+
+- (void)removeSubviewsFromCustomViewContainerView {
+    [_customViewContainerView.subviews enumerateObjectsWithOptions:NSEnumerationReverse usingBlock:^(__kindof UIView * _Nonnull obj, NSUInteger idx, BOOL * _Nonnull stop) {
+        [obj removeFromSuperview];
+    }];
+}
 @end
 
 

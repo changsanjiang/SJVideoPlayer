@@ -35,7 +35,7 @@ NS_ASSUME_NONNULL_BEGIN
         [self _prepareLayout_Vertical];
     }
 }
-
+//0x108803c00
 - (void)_prepareLayout_Horizontal {
     [_layoutAttributes removeAllObjects];
     
@@ -181,6 +181,7 @@ NS_ASSUME_NONNULL_BEGIN
     return _collectionView;
 }
 - (void)reload {
+    NSLog(@"%@", self.collectionView);
     _layout.items = _itemsM;
     [_layout invalidateLayout];
     [_collectionView reloadData];
@@ -286,17 +287,24 @@ NS_ASSUME_NONNULL_BEGIN
         cell.button.hidden = YES;
         item.customView.frame = cell.contentView.bounds;
         item.customView.autoresizingMask = UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight;
-        [cell.contentView addSubview:item.customView];
+        [cell.customViewContainerView addSubview:item.customView];
     }
     else if ( 0 != item.title.length  ) {
+        [cell removeSubviewsFromCustomViewContainerView];
         cell.button.hidden = NO;
         cell.button.sj_titleLabel.attributedText = item.title;
         cell.button.sj_imageView.image = nil;
     }
     else if ( item.image ) {
+        [cell removeSubviewsFromCustomViewContainerView];
         cell.button.hidden = NO;
         cell.button.sj_titleLabel.attributedText = nil;
         cell.button.sj_imageView.image = item.image;
+    }
+    else {
+        [cell removeSubviewsFromCustomViewContainerView];
+        cell.button.sj_titleLabel.attributedText = nil;
+        cell.button.sj_imageView.image = nil;
     }
     
     cell.clickedButtonExeBlock = ^(SJButtonItemCollectionViewCell * _Nonnull cell) {

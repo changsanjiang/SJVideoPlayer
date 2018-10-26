@@ -345,14 +345,16 @@ NS_ASSUME_NONNULL_BEGIN
     objc_setAssociatedObject(self, @selector(showMoreItemForTopControlLayer), @(showMoreItemForTopControlLayer), OBJC_ASSOCIATION_RETAIN_NONATOMIC);
     if ( showMoreItemForTopControlLayer ) {
         [self.defaultEdgeControlLayer.topAdapter addItem:[self moreItemDelegate].item];
-        [self.defaultEdgeControlLayer.topAdapter reload];
         [self.switcher addControlLayer:[self defaultMoreSettingCarrier]];
     }
     else {
         [self.defaultEdgeControlLayer.topAdapter removeItemForTag:SJEdgeControlLayerTopItem_More];
-        [self.defaultEdgeControlLayer.topAdapter reload];
         [self.switcher deleteControlLayerForIdentifier:SJControlLayer_MoreSettting];
     }
+    
+    dispatch_async(dispatch_get_main_queue(), ^{
+        [self.defaultEdgeControlLayer.topAdapter reload];
+    });
 }
 
 - (BOOL)showMoreItemForTopControlLayer {
@@ -395,15 +397,17 @@ NS_ASSUME_NONNULL_BEGIN
         
         // 将item加入到边缘控制层中
         [[self defaultEdgeControlLayer].rightAdapter addItem:[self filmEditingItemDelegate].item];
-        [[self defaultEdgeControlLayer].rightAdapter reload];
     }
     else {
         // 移除
         [self.switcher deleteControlLayerForIdentifier:SJControlLayer_FilmEditing];
         _defaultFilmEditingCarrier = nil;
         [[self defaultEdgeControlLayer].rightAdapter removeItemForTag:SJEdgeControlLayerBottomItem_FilmEditing];
-        [[self defaultEdgeControlLayer].rightAdapter reload];
     }
+    
+    dispatch_async(dispatch_get_main_queue(), ^{
+        [[self defaultEdgeControlLayer].rightAdapter reload];
+    });
 }
 
 - (BOOL)enableFilmEditing {

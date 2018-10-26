@@ -20,16 +20,9 @@
 #import "SJVideoPlayerFilmEditingCommonHeader.h"
 #import "SJVideoPlayerFilmEditingConfig.h"
 #import "SJControlLayerSwitcher.h"
+#import "SJEdgeControlButtonItem.h"
 
 NS_ASSUME_NONNULL_BEGIN
-/// 这两个标识是默认控制层的标识. 可以像下面这样扩展您的标识, 将相应的控制层加入到switcher(切换器)中, 通过switcher进行切换.
-/// SJControlLayerIdentifier YourControlLayerIdentifier;
-/// 当然, 也可以直接将默认的标识控制层, 替换成您的控制层.
-
-extern SJControlLayerIdentifier SJControlLayer_Edge;
-extern SJControlLayerIdentifier SJControlLayer_FilmEditing;
-
-
 @interface SJVideoPlayer : SJBaseVideoPlayer
 
 /// 使用默认的控制层
@@ -102,6 +95,11 @@ extern SJControlLayerIdentifier SJControlLayer_FilmEditing;
 /// 是否自动生成预览视图, 默认是 YES
 @property (nonatomic) BOOL generatePreviewImages;
 
+/// Default control layer show `more item`.
+/// 默认控制层中`Top层`显示更多按钮
+/// Default is YES.
+@property (nonatomic) BOOL showMoreItemForTopControlLayer;
+
 /// clicked More button to display items.
 /// 点击`更多(右上角的三个点)`按钮, 弹出来的选项.
 @property (nonatomic, strong, nullable) NSArray<SJVideoPlayerMoreSetting *> *moreSettings;
@@ -110,11 +108,11 @@ extern SJControlLayerIdentifier SJControlLayer_FilmEditing;
 
 
 /// 配置`剪辑的控制层`
+/// 以下为控制层items的扩展tag
 @interface SJVideoPlayer (FilmEditing)
-
 /// The player will display the right control view if YES
 /// If the format of the video is m3u8, it does not work
-///
+/// Default value is NO.
 /// 是否开启剪辑功能
 /// 默认是NO
 /// 不支持剪辑m3u8(如果开启, 将会自动隐藏剪辑按钮)
@@ -123,7 +121,28 @@ extern SJControlLayerIdentifier SJControlLayer_FilmEditing;
 /// 剪辑功能配置
 @property (nonatomic, strong, readonly) SJVideoPlayerFilmEditingConfig *filmEditingConfig;
 
+/// 退出剪辑层
 - (void)dismissFilmEditingViewCompletion:(void(^__nullable)(SJVideoPlayer *player))completionBlock;
 @end
 
+
+
+/// 控制层切换器扩展(切换控制层)
+@interface SJVideoPlayer(SwitcherExtension)
+/// 切换控制层
+- (void)switchControlLayerForIdentitfier:(SJControlLayerIdentifier)identifier;
+@end
+
+
+/// 以下标识是默认存在的控制层标识
+/// - 可以像下面这样扩展您的标识, 将相应的控制层加入到switcher(切换器)中, 通过switcher进行切换.
+/// - SJControlLayerIdentifier YourControlLayerIdentifier;
+/// - 当然, 也可以直接将已存在控制层, 替换成您的控制层.
+extern SJControlLayerIdentifier const SJControlLayer_Edge;            // 默认的边缘控制层
+extern SJControlLayerIdentifier const SJControlLayer_FilmEditing;     // 默认的剪辑层
+extern SJControlLayerIdentifier const SJControlLayer_MoreSettting;    // 默认的更多设置控制层
+
+
+extern SJEdgeControlButtonItemTag const SJEdgeControlLayerBottomItem_FilmEditing;   // GIF/导出/截屏
+extern SJEdgeControlButtonItemTag const SJEdgeControlLayerTopItem_More;             // More
 NS_ASSUME_NONNULL_END

@@ -209,6 +209,10 @@ NS_ASSUME_NONNULL_BEGIN
     if ( index >= self.numberOfItems ) return;
     [_itemsM removeObjectAtIndex:index];
 }
+- (void)removeItemForTag:(SJEdgeControlButtonItemTag)tag {
+    NSInteger idx = [self indexOfItemForTag:tag];
+    [self removeItemAtIndex:idx];
+}
 - (nullable SJEdgeControlButtonItem *)itemAtIndex:(NSInteger)index {
     if ( index >= self.numberOfItems ) return nil;
     if ( index < 0 ) return nil;

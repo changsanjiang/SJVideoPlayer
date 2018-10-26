@@ -63,6 +63,7 @@
 /// * 当调用[videoPlayer controlLayerNeedAppear]时, 此时会立即回调这个方法
 /// * 每当播放一个新的资源时, 1秒后播放器会自动回调这个方法
 - (void)controlLayerNeedAppear:(__kindof SJBaseVideoPlayer *)videoPlayer;
+- (void)controlLayerNeedAppear:(__kindof SJBaseVideoPlayer *)videoPlayer;
 
 /// This method will be called when the control layer needs to be disappear. You should do some disappear work here.
 /// 当控制层需要隐藏的时候, 会回调这个方法. 你应该在这个做一些隐藏的工作

@@ -7,7 +7,7 @@
 //
 
 #import "UIView+SJAnimationAdded.h"
-#import <objc/message.h>
+#import <objc/message.h> 
 
 NS_ASSUME_NONNULL_BEGIN
 @implementation UIView (SJAnimationAdded)
@@ -18,10 +18,10 @@ NS_ASSUME_NONNULL_BEGIN
     return [objc_getAssociatedObject(self, _cmd) boolValue];
 }
 
-- (void)setSjv_disappearDirection:(SJViewDisappearDirection)sjv_disappearDirection {
+- (void)setSjv_disappearDirection:(SJViewDisappearAnimation)sjv_disappearDirection {
     objc_setAssociatedObject(self, @selector(sjv_disappearDirection), @(sjv_disappearDirection), OBJC_ASSOCIATION_RETAIN_NONATOMIC);
 }
-- (SJViewDisappearDirection)sjv_disappearDirection {
+- (SJViewDisappearAnimation)sjv_disappearDirection {
     return [objc_getAssociatedObject(self, _cmd) integerValue];
 }
 
@@ -29,26 +29,34 @@ NS_ASSUME_NONNULL_BEGIN
     if ( self.sjv_disappeared ) return;
     CGAffineTransform transform = CGAffineTransformIdentity;
     switch ( self.sjv_disappearDirection ) {
-        case SJViewDisappearDirection_None: break;
-        case SJViewDisappearDirection_Top: {
+        case SJViewDisappearAnimation_None: break;
+        case SJViewDisappearAnimation_Top: {
             transform = CGAffineTransformMakeTranslation(0, -self.bounds.size.height);
         }
             break;
-        case SJViewDisappearDirection_Left: {
+        case SJViewDisappearAnimation_Left: {
             transform = CGAffineTransformMakeTranslation(-self.bounds.size.width, 0);
         }
             break;
-        case SJViewDisappearDirection_Bottom: {
+        case SJViewDisappearAnimation_Bottom: {
             transform = CGAffineTransformMakeTranslation(0, self.bounds.size.height);
         }
             break;
-        case SJViewDisappearDirection_Right: {
+        case SJViewDisappearAnimation_Right: {
             transform = CGAffineTransformMakeTranslation(self.bounds.size.width, 0);
+        }
+            break;
+        case SJViewDisappearAnimation_HorizontalScaling: {
+            transform = CGAffineTransformMakeScale(0.001f, 1);
+        }
+            break;
+        case SJViewDisappearAnimation_VerticalScaling: {
+            transform = CGAffineTransformMakeScale(1, 0.001f);
         }
             break;
     }
     self.transform = transform;
-    self.alpha = 0.001;
+    if ( !self.sjv_doNotSetAlpha ) self.alpha = 0.001;
     self.sjv_disappeared = YES;
 }
 
@@ -57,6 +65,14 @@ NS_ASSUME_NONNULL_BEGIN
     self.transform = CGAffineTransformIdentity;
     self.alpha = 1;
     self.sjv_disappeared = NO;
+}
+
+- (void)setSjv_doNotSetAlpha:(BOOL)sjv_doNotSetAlpha {
+    objc_setAssociatedObject(self, @selector(sjv_doNotSetAlpha), @(sjv_doNotSetAlpha), OBJC_ASSOCIATION_RETAIN_NONATOMIC);
+}
+
+- (BOOL)sjv_doNotSetAlpha {
+    return [objc_getAssociatedObject(self, _cmd) boolValue];
 }
 @end
 NS_ASSUME_NONNULL_END

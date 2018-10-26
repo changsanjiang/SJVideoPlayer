@@ -48,10 +48,6 @@ static NSString *const SJVideoPlayerMoreSettingsFooterViewID = @"SJVideoPlayerMo
     return self;
 }
 
-- (CGSize)intrinsicContentSize {
-    return CGSizeMake(ceil(SJScreen_Max() * 0.4), SJScreen_Min());
-}
-
 - (SJVideoPlayerMoreSettingsSlidersView *)slidersView {
     if ( _slidersView ) return _slidersView;
     _slidersView = [SJVideoPlayerMoreSettingsSlidersView new];
@@ -62,6 +58,7 @@ static NSString *const SJVideoPlayerMoreSettingsFooterViewID = @"SJVideoPlayerMo
 #pragma mark -
 
 - (void)setMoreSettings:(NSArray<SJVideoPlayerMoreSetting *> *)moreSettings {
+    if ( moreSettings == _moreSettings ) return;
     _moreSettings = moreSettings;
     [self.colView reloadData];
 }
@@ -69,9 +66,14 @@ static NSString *const SJVideoPlayerMoreSettingsFooterViewID = @"SJVideoPlayerMo
 - (void)_moreSettingsViewSetupUI {
     [self addSubview:self.colView];
     [_colView mas_makeConstraints:^(MASConstraintMaker *make) {
-        make.edges.equalTo(self->_colView.superview);
+        make.width.offset(ceil(SJScreen_Max() * 0.4));
+        make.top.left.bottom.offset(0);
+        if (@available(iOS 11.0, *)) {
+            make.right.equalTo(self.mas_safeAreaLayoutGuideRight);
+        } else {
+            make.right.offset(0);
+        }
     }];
-    
     [self slidersView];
 }
 
@@ -79,11 +81,16 @@ static NSString *const SJVideoPlayerMoreSettingsFooterViewID = @"SJVideoPlayerMo
     if ( _colView ) return _colView;
     UICollectionViewFlowLayout *flowLayout = [[UICollectionViewFlowLayout alloc] init];
     flowLayout.scrollDirection = UICollectionViewScrollDirectionVertical;
+    flowLayout.minimumLineSpacing = 0;
+    flowLayout.minimumInteritemSpacing = 0;
     _colView = [[UICollectionView alloc] initWithFrame:CGRectZero collectionViewLayout:flowLayout];
     [_colView registerClass:NSClassFromString(SJVideoPlayerMoreSettingsColCellID) forCellWithReuseIdentifier:SJVideoPlayerMoreSettingsColCellID];
     [_colView registerClass:NSClassFromString(SJVideoPlayerMoreSettingsFooterViewID) forSupplementaryViewOfKind:UICollectionElementKindSectionFooter withReuseIdentifier:SJVideoPlayerMoreSettingsFooterViewID];
     _colView.dataSource = self;
     _colView.delegate = self;
+    if (@available(iOS 11.0, *)) {
+        _colView.contentInsetAdjustmentBehavior = UIScrollViewContentInsetAdjustmentNever;
+    }
     _colView.contentInset = UIEdgeInsetsMake(20, 0, 0, 0);
     return _colView;
 }
@@ -113,20 +120,12 @@ static NSString *const SJVideoPlayerMoreSettingsFooterViewID = @"SJVideoPlayerMo
 }
 
 - (CGSize)collectionView:(UICollectionView *)collectionView layout:(UICollectionViewLayout*)collectionViewLayout sizeForItemAtIndexPath:(NSIndexPath *)indexPath {
-    CGFloat width = floor(self.intrinsicContentSize.width / 3);
+    CGFloat width = floor(collectionView.bounds.size.width / 3);
     return CGSizeMake( width, width);
 }
 
-- (CGFloat)collectionView:(UICollectionView *)collectionView layout:(UICollectionViewLayout*)collectionViewLayout minimumInteritemSpacingForSectionAtIndex:(NSInteger)section {
-    return 0;
-}
-
-- (CGFloat)collectionView:(UICollectionView *)collectionView layout:(UICollectionViewLayout*)collectionViewLayout minimumLineSpacingForSectionAtIndex:(NSInteger)section {
-    return 0;
-}
-
 - (CGSize)collectionView:(UICollectionView *)collectionView layout:(UICollectionViewLayout*)collectionViewLayout referenceSizeForFooterInSection:(NSInteger)section {
-    if ( 0 == _moreSettings.count ) return CGSizeMake(self.intrinsicContentSize.width, self.intrinsicContentSize.height - 2 * (collectionView.contentInset.top + collectionView.contentInset.bottom));
+    if ( 0 == _moreSettings.count ) return CGSizeMake(collectionView.bounds.size.width, collectionView.bounds.size.height - 2 * (collectionView.contentInset.top + collectionView.contentInset.bottom));
     return self.slidersView.intrinsicContentSize;
 }
 

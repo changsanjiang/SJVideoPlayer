@@ -13,6 +13,7 @@
 #import <SJFullscreenPopGesture/UIViewController+SJVideoPlayerAdd.h>
 #import "SJEdgeControlLayerAdapters.h"
 #import <SJAttributeWorker.h>
+#import "SJMoreSettingControlLayer.h"
 
 #import "SJEdgeControlLayerNew.h"
 
@@ -37,17 +38,20 @@
     
     [self _setupViews];
     
-    SJEdgeControlLayerNew *controlLayer = [SJEdgeControlLayerNew new];
-    SJControlLayerCarrier *carrier = [[SJControlLayerCarrier alloc] initWithIdentifier:SJControlLayer_Edge dataSource:controlLayer delegate:controlLayer exitExeBlock:^(SJControlLayerCarrier * _Nonnull carrier) {
-        [controlLayer exitControlLayerCompeletionHandler:nil];
-    } restartExeBlock:^(SJControlLayerCarrier * _Nonnull carrier) {
-        [controlLayer restartControlLayerCompeletionHandler:nil];
-    }];
-    [self.player.switcher addControlLayer:carrier];
+//    SJEdgeControlLayerNew *controlLayer = [SJEdgeControlLayerNew new];
+//    SJControlLayerCarrier *carrier = [[SJControlLayerCarrier alloc] initWithIdentifier:SJControlLayer_Edge dataSource:controlLayer delegate:controlLayer exitExeBlock:^(SJControlLayerCarrier * _Nonnull carrier) {
+//        [controlLayer exitControlLayerCompeletionHandler:nil];
+//    } restartExeBlock:^(SJControlLayerCarrier * _Nonnull carrier) {
+//        [controlLayer restartControlLayerCompeletionHandler:nil];
+//    }];
+//    [self.player.switcher addControlLayer:carrier];
+//
+//
+//    controlLayer.bottomAdapter.view.backgroundColor = [UIColor redColor];
+//
+//
     
-    
-    controlLayer.bottomAdapter.view.backgroundColor = [UIColor redColor];
-    
+    SJEdgeControlLayerNew *controlLayer = (id)[_player.switcher controlLayerForIdentifier:SJControlLayer_Edge].dataSource;
     
     /// test
     SJEdgeControlButtonItem *testItem = [SJEdgeControlButtonItem placeholderWithSize:49 tag:0];
@@ -57,13 +61,54 @@
     testItem.delegate = self;
     [controlLayer.rightAdapter addItem:testItem];
     [controlLayer.rightAdapter reload];
-    
+
     [testItem addTarget:self action:@selector(test)];
     
     
     _player.URLAsset = [[SJVideoPlayerURLAsset alloc] initWithURL:[NSBundle.mainBundle URLForResource:@"play" withExtension:@"mp4"]];
-    _player.URLAsset.title = @"Test Title Test TitlTest Title Test Title TestTest Title Test Title TestTest Title Test Title TestTest Title Test Title TestTest Title Test Title TestTest Title Test Title TestTest Title Test Title Test";
+    _player.URLAsset.title = @"Test Title Test TitlTest Title Test Title";
     _player.URLAsset.alwaysShowTitle = YES;
+    _player.enableFilmEditing = YES;
+    
+    
+    
+    SJMoreSettingControlLayer *more = [[SJMoreSettingControlLayer alloc] init];
+    SJControlLayerCarrier *more_c = [[SJControlLayerCarrier alloc] initWithIdentifier:SJControlLayer_MoreSettting dataSource:more delegate:more exitExeBlock:^(SJControlLayerCarrier * _Nonnull carrier) {
+        [more exitControlLayer];
+    } restartExeBlock:^(SJControlLayerCarrier * _Nonnull carrier) {
+        [more restartControlLayer];
+    }];
+    [_player.switcher addControlLayer:more_c];
+    
+    __weak typeof(self) _self = self;
+    more.disappearExeBlock = ^(SJMoreSettingControlLayer * _Nonnull control) {
+        __strong typeof(_self) self = _self;
+        if ( !self ) return;
+        [self.player.switcher switchToPreviousControlLayer];
+    };
+    
+    
+    
+    SJVideoPlayerMoreSetting *mm = [[SJVideoPlayerMoreSetting alloc] initWithTitle:@"测试" image:[UIImage imageNamed:@"avatar"] clickedExeBlock:^(SJVideoPlayerMoreSetting * _Nonnull model) {
+#ifdef DEBUG
+        NSLog(@"%d - %s", (int)__LINE__, __func__);
+#endif
+    }];
+    
+    
+    SJVideoPlayerMoreSetting *mm1 = [[SJVideoPlayerMoreSetting alloc] initWithTitle:@"测试2" image:[UIImage imageNamed:@"avatar"] showTowSetting:YES twoSettingTopTitle:@"测试二级标题" twoSettingItems:@[[[SJVideoPlayerMoreSettingSecondary alloc] initWithTitle:@"二级" image:[UIImage imageNamed:@"avatar"] clickedExeBlock:^(SJVideoPlayerMoreSetting * _Nonnull model) {
+#ifdef DEBUG
+        NSLog(@"%d - %s", (int)__LINE__, __func__);
+#endif
+    }]] clickedExeBlock:^(SJVideoPlayerMoreSetting * _Nonnull model) {
+#ifdef DEBUG
+        NSLog(@"%d - %s", (int)__LINE__, __func__);
+#endif
+    }];
+    
+    more.moreSettings = @[mm, mm1];
+    
+    _player.moreSettings = @[mm, mm1];
     // Do any additional setup after loading the view.
 }
 
@@ -71,13 +116,14 @@
 #ifdef DEBUG
     NSLog(@"%d - %s", (int)__LINE__, __func__);
 #endif
-    [self.player.switcher switchControlLayerForIdentitfier:SJControlLayer_FilmEditing];
+    
+    [_player.switcher switchControlLayerForIdentitfier:SJControlLayer_MoreSettting];
 }
 
-///// test
-//- (void)updatePropertiesIfNeeded:(SJEdgeControlButtonItem *)item videoPlayer:(__kindof SJBaseVideoPlayer *)player {
-//    item.customView.backgroundColor = player.isFullScreen?[UIColor yellowColor]:[UIColor orangeColor];
-//}
+/// test
+- (void)updatePropertiesIfNeeded:(SJEdgeControlButtonItem *)item videoPlayer:(__kindof SJBaseVideoPlayer *)player {
+    item.customView.backgroundColor = player.isFullScreen?[UIColor yellowColor]:[UIColor orangeColor];
+}
 
 - (void)_setupViews {
     // create a player of the default type
@@ -91,7 +137,6 @@
         make.height.equalTo(self->_player.view.mas_width).multipliedBy(9 / 16.0f);
     }];
     
-    _player.hideBackButtonWhenOrientationIsPortrait = YES;
     _player.enableFilmEditing = YES;
     _player.pausedToKeepAppearState = YES;
 }

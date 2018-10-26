@@ -304,6 +304,15 @@ typedef enum : NSUInteger {
 /// 当调用`vc_viewDidAppear`时, 将设置为NO
 @property (nonatomic) BOOL vc_isDisappeared;
 
+
+/// v1.6.0 新增
+/// 临时显示状态栏
+/// Animatable. 可动画的
+- (void)needShowStatusBar;
+
+/// 临时隐藏状态栏
+/// Animatable. 可动画的
+- (void)needHiddenStatusBar;
 @end
 
 
@@ -474,7 +483,6 @@ typedef NS_ENUM(NSUInteger, SJDisablePlayerGestureTypes) {
  - (void)controlLayerNeedDisappear:(__kindof SJBaseVideoPlayer *)videoPlayer;
  */
 - (void)controlLayerNeedDisappear;
-
 @end
 
 

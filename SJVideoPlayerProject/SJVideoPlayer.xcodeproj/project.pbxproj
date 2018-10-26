@@ -11,6 +11,7 @@
 		43F2333258EBE969CCFDC15C /* libPods-SJVideoPlayerUITests.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 9B2DD9C970891E06976F0D02 /* libPods-SJVideoPlayerUITests.a */; };
 		64483D3A731345391617A1E1 /* libPods-SJVideoPlayerTests.a in Frameworks */ = {isa = PBXBuildFile; fileRef = D2D51F57491F1093AB14DA2B /* libPods-SJVideoPlayerTests.a */; };
 		7736E87F217B225500DFBB89 /* SJEdgeControlLayerAdapters.m in Sources */ = {isa = PBXBuildFile; fileRef = 7736E87E217B225500DFBB89 /* SJEdgeControlLayerAdapters.m */; };
+		775D7D2821832CB300426773 /* SJMoreSettingControlLayer.m in Sources */ = {isa = PBXBuildFile; fileRef = 775D7D2721832CB300426773 /* SJMoreSettingControlLayer.m */; };
 		77A331B8217F32CD00980A17 /* UIView+SJAnimationAdded.m in Sources */ = {isa = PBXBuildFile; fileRef = 77A331B7217F32CD00980A17 /* UIView+SJAnimationAdded.m */; };
 		77E8D75821797FDA00B025A7 /* ViewControllerVideoFlip.m in Sources */ = {isa = PBXBuildFile; fileRef = 77E8D75721797FDA00B025A7 /* ViewControllerVideoFlip.m */; };
 		77E8D75A2179817300B025A7 /* ViewControllerVideoFlip.xib in Resources */ = {isa = PBXBuildFile; fileRef = 77E8D7592179817300B025A7 /* ViewControllerVideoFlip.xib */; };
@@ -141,6 +142,8 @@
 		49C395682C18F58B94052560 /* Pods-SJVideoPlayerTests.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-SJVideoPlayerTests.release.xcconfig"; path = "Pods/Target Support Files/Pods-SJVideoPlayerTests/Pods-SJVideoPlayerTests.release.xcconfig"; sourceTree = "<group>"; };
 		7736E87D217B225500DFBB89 /* SJEdgeControlLayerAdapters.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = SJEdgeControlLayerAdapters.h; sourceTree = "<group>"; };
 		7736E87E217B225500DFBB89 /* SJEdgeControlLayerAdapters.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = SJEdgeControlLayerAdapters.m; sourceTree = "<group>"; };
+		775D7D2621832CB300426773 /* SJMoreSettingControlLayer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SJMoreSettingControlLayer.h; sourceTree = "<group>"; };
+		775D7D2721832CB300426773 /* SJMoreSettingControlLayer.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SJMoreSettingControlLayer.m; sourceTree = "<group>"; };
 		77A331B6217F32CD00980A17 /* UIView+SJAnimationAdded.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "UIView+SJAnimationAdded.h"; sourceTree = "<group>"; };
 		77A331B7217F32CD00980A17 /* UIView+SJAnimationAdded.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = "UIView+SJAnimationAdded.m"; sourceTree = "<group>"; };
 		77E8D75621797FDA00B025A7 /* ViewControllerVideoFlip.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = ViewControllerVideoFlip.h; sourceTree = "<group>"; };
@@ -408,6 +411,15 @@
 			path = Adapters;
 			sourceTree = "<group>";
 		};
+		775D7D2221832A1200426773 /* SJMoreSettingControlLayer */ = {
+			isa = PBXGroup;
+			children = (
+				775D7D2621832CB300426773 /* SJMoreSettingControlLayer.h */,
+				775D7D2721832CB300426773 /* SJMoreSettingControlLayer.m */,
+			);
+			path = SJMoreSettingControlLayer;
+			sourceTree = "<group>";
+		};
 		77E8D75F2179A0B100B025A7 /* Test */ = {
 			isa = PBXGroup;
 			children = (
@@ -524,6 +536,7 @@
 			children = (
 				A600659D215F974B0001B5F8 /* SJVideoPlayer.h */,
 				A60065B8215F974B0001B5F8 /* SJVideoPlayer.m */,
+				775D7D2221832A1200426773 /* SJMoreSettingControlLayer */,
 				A6006593215F974B0001B5F8 /* Settings */,
 				A60065B9215F974B0001B5F8 /* SJEdgeControlLayer */,
 				A600659E215F974B0001B5F8 /* SJEdgeLightweightControlLayer */,
@@ -1157,6 +1170,7 @@
 			files = (
 				A600662D215F974B0001B5F8 /* SJVideoPlayerURLAsset+SJControlAdd.m in Sources */,
 				A600669721610C2F0001B5F8 /* ViewControllerFullscreen.m in Sources */,
+				775D7D2821832CB300426773 /* SJMoreSettingControlLayer.m in Sources */,
 				A600662B215F974B0001B5F8 /* SJVideoPlayerAnimationHeader.m in Sources */,
 				A600661B215F974B0001B5F8 /* SJLightweightTopControlView.m in Sources */,
 				7736E87F217B225500DFBB89 /* SJEdgeControlLayerAdapters.m in Sources */,

@@ -40,7 +40,7 @@ NS_ASSUME_NONNULL_BEGIN
     return self;
 }
 - (BOOL)isM3u8 {
-    return [_mediaURL.absoluteString containsString:@".m3u8"];
+    return [_mediaURL.pathExtension containsString:@"m3u8"];
 }
 @end
 

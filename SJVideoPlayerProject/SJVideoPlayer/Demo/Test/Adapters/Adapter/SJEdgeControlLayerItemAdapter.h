@@ -31,6 +31,7 @@ NS_ASSUME_NONNULL_BEGIN
 /// 删除
 /// - 注意: 删除后, 记得调用刷新
 - (void)removeItemAtIndex:(NSInteger)index;
+- (void)removeItemForTag:(SJEdgeControlButtonItemTag)tag;
 
 /// 交互位置
 /// - 注意: 交互后, 记得调用刷新

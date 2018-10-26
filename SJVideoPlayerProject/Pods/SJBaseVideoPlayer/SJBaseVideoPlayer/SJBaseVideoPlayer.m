@@ -220,6 +220,10 @@ static UIScrollView *_Nullable _getScrollViewOfPlayModel(SJPlayModel *playModel)
 
 @property (nonatomic, strong, nullable) NSString *playStatusStr;
 
+/// 临时显示状态栏
+@property (nonatomic) BOOL tmpShowStatusBar;
+/// 临时隐藏状态栏
+@property (nonatomic) BOOL tmpHiddenStatusBar;
 @end
 
 @implementation SJBaseVideoPlayer {
@@ -1510,6 +1514,8 @@ static UIScrollView *_Nullable _getScrollViewOfPlayModel(SJPlayModel *playModel)
     if ( ![self playStatus_isPaused_ReasonPause] ) [self pause];
 }
 - (BOOL)vc_prefersStatusBarHidden {
+    if ( _tmpShowStatusBar ) return NO;
+    if ( _tmpHiddenStatusBar ) return YES;
     if ( self.lockedScreen ) return YES;
     if ( self.rotationManager.transitioning ) {
         if ( self.enableControlLayerDisplayController && self.controlLayerAppeared ) return NO;
@@ -1530,6 +1536,24 @@ static UIScrollView *_Nullable _getScrollViewOfPlayModel(SJPlayModel *playModel)
 }
 - (BOOL)vc_isDisappeared {
     return [objc_getAssociatedObject(self, _cmd) boolValue];
+}
+
+- (void)needShowStatusBar {
+    if ( _tmpShowStatusBar ) return;
+    _tmpShowStatusBar = YES;
+    [self.atViewController setNeedsStatusBarAppearanceUpdate];
+    dispatch_async(dispatch_get_main_queue(), ^{
+        self.tmpShowStatusBar = NO;
+    });
+}
+
+- (void)needHiddenStatusBar {
+    if ( _tmpHiddenStatusBar ) return;
+    _tmpHiddenStatusBar = YES;
+    [self.atViewController setNeedsStatusBarAppearanceUpdate];
+    dispatch_async(dispatch_get_main_queue(), ^{
+        self.tmpHiddenStatusBar = NO;
+    });
 }
 @end
 
@@ -2144,6 +2168,7 @@ static UIScrollView *_Nullable _getScrollViewOfPlayModel(SJPlayModel *playModel)
     _controlHiddenTimer.exeBlock = ^(SJTimerControl * _Nonnull control) {
         __strong typeof(_self) self = _self;
         if ( !self ) return;
+        if ( !self.isEnabled ) return;
         // 如果控制层显示, 当达到隐藏的条件, `timer`将控制层隐藏. 否则, 清除`timer`.
         if ( self.controlLayerAppearedState &&
             self.videoPlayer.controlLayerDataSource.controlLayerDisappearCondition )
@@ -2155,7 +2180,6 @@ static UIScrollView *_Nullable _getScrollViewOfPlayModel(SJPlayModel *playModel)
 
 #pragma mark -
 - (void)_changing:(BOOL)status {
-    if ( !self.isEnabled ) return;
     if ( !self.videoPlayer.controlLayerDataSource ) return;
     self.controlLayerAppearedState = status;
     if ( status && [self.videoPlayer.controlLayerDelegate respondsToSelector:@selector(controlLayerNeedAppear:)] ) {

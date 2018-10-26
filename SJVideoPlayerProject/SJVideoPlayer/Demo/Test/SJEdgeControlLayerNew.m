@@ -66,19 +66,6 @@ SJEdgeControlButtonItemTag const SJEdgeControlLayerBottomItem_FullBtn = 10005;
 @end
 
 @implementation SJEdgeControlLayerNew
-- (instancetype)initWithFrame:(CGRect)frame {
-    self = [super initWithFrame:frame];
-    if ( !self ) return nil;
-    [self _setupView];
-    self.topContainerView.sjv_disappearDirection = SJViewDisappearDirection_Top;
-    self.leftContainerView.sjv_disappearDirection = SJViewDisappearDirection_Left;
-    self.bottomContainerView.sjv_disappearDirection = SJViewDisappearDirection_Bottom;
-    self.rightContainerView.sjv_disappearDirection = SJViewDisappearDirection_Right;
-    [self _hidden:_draggingProgressView animated:NO];
-    self.autoMarginForTop = YES;
-    _generatePreviewImages = YES;
-    return self;
-}
 
 - (void)restartControlLayerCompeletionHandler:(nullable void(^)(void))compeletionHandler {
     if ( _videoPlayer.URLAsset ) {
@@ -110,6 +97,22 @@ SJEdgeControlButtonItemTag const SJEdgeControlLayerBottomItem_FullBtn = 10005;
         if ( compeletionHandler ) compeletionHandler();
     }];
 }
+
+- (instancetype)initWithFrame:(CGRect)frame {
+    self = [super initWithFrame:frame];
+    if ( !self ) return nil;
+    [self _setupView];
+    self.topContainerView.sjv_disappearDirection = SJViewDisappearAnimation_Top;
+    self.leftContainerView.sjv_disappearDirection = SJViewDisappearAnimation_Left;
+    self.bottomContainerView.sjv_disappearDirection = SJViewDisappearAnimation_Bottom;
+    self.rightContainerView.sjv_disappearDirection = SJViewDisappearAnimation_Right;
+    [self _hidden:_draggingProgressView animated:NO];
+    self.autoMarginForTop = YES;
+    _generatePreviewImages = YES;
+    SJEdgeControlLayerSettings.update(^(SJEdgeControlLayerSettings * _Nonnull settings) {});
+    return self;
+}
+
 #pragma mark - setup view
 - (void)_setupView {
     [self _addItemsToTopAdapter];
@@ -287,6 +290,7 @@ SJEdgeControlButtonItemTag const SJEdgeControlLayerBottomItem_FullBtn = 10005;
     if ( _previewView ) return _previewView;
     _previewView = [SJVideoPlayerPreviewView new];
     _previewView.delegate = self;
+    _previewView.sjv_disappearDirection = SJViewDisappearAnimation_VerticalScaling;
     _previewView.backgroundColor = [UIColor colorWithWhite:0 alpha:0.4];
     [self.controlView addSubview:_previewView];
     [self _hidden:_previewView animated:NO];
@@ -592,9 +596,9 @@ SJEdgeControlButtonItemTag const SJEdgeControlLayerBottomItem_FullBtn = 10005;
 - (void)_updateItemsFor_RightAdapterIfNeeded:(__kindof SJBaseVideoPlayer *)videoPlayer {
     if ( !_bottomAdapter ) return;
     if ( [self _isHiddenWithView:_rightContainerView] ) return;
-    
-    
+
     [self _callDelegateMethodOfItemsForAdapter:_rightAdapter videoPlayer:videoPlayer];
+    [_rightAdapter reload];
 }
 
 - (BOOL)_canDisapearFor_RightAdapter {
@@ -819,8 +823,6 @@ SJEdgeControlButtonItemTag const SJEdgeControlLayerBottomItem_FullBtn = 10005;
     [self _draggingDidEndForVideoPlayer:videoPlayer];
 }
 
-/// This Tap gesture triggered when player locked screen.
-/// If player locked(videoPlayer.lockedScreen == YES), When the user tapped on the player this method will be called.
 /// 这是一个只有在播放器锁屏状态下, 才会回调的方法
 /// 当播放器锁屏后, 用户每次点击都会回调这个方法
 - (void)tappedPlayerOnTheLockedState:(__kindof SJBaseVideoPlayer *)videoPlayer {

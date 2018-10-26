@@ -21,6 +21,7 @@ NS_ASSUME_NONNULL_BEGIN
     __kindof UIView *_Nullable _bottomContainerView;
     UIView *_Nullable _leftContainerView;
     UIView *_Nullable _rightContainerView;
+    UIView *_safeAreaView;
 }
 
 @property (nonatomic, strong, readonly) SJEdgeControlLayerItemAdapter *topAdapter;    // lazy load
@@ -35,5 +36,6 @@ NS_ASSUME_NONNULL_BEGIN
 
 /// default is NO.
 @property (nonatomic) BOOL showBackgroundColor;
+@property (nonatomic) BOOL autoMarginForTop; // 是否自动让出状态栏的高度(仅在全屏状态下有效)
 @end
 NS_ASSUME_NONNULL_END

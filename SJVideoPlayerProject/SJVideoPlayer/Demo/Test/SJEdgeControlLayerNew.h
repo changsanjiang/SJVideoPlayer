@@ -33,6 +33,8 @@ extern SJEdgeControlButtonItemTag const SJEdgeControlLayerBottomItem_FullBtn;   
 
 
 @interface SJEdgeControlLayerNew : SJEdgeControlLayerAdapters<SJVideoPlayerControlLayerDelegate, SJVideoPlayerControlLayerDataSource>
+/// default is NO
 @property (nonatomic) BOOL hideBackButtonWhenOrientationIsPortrait;
+@property (nonatomic) BOOL generatePreviewImages;
 @end
 NS_ASSUME_NONNULL_END

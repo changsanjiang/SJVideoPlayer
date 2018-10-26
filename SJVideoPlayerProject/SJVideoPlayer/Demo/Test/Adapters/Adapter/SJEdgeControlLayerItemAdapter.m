@@ -231,12 +231,23 @@ NS_ASSUME_NONNULL_BEGIN
     }
     return index;
 }
+- (void)exchangeItemAtIndex:(NSInteger)idx1 withItemAtIndex:(NSInteger)idx2 {
+    if ( idx1 < 0 || idx1 >= _itemsM.count ) return;
+    if ( idx2 < 0 || idx2 >= _itemsM.count ) return;
+    if ( idx1 == idx2 ) return;
+    [_itemsM exchangeObjectAtIndex:idx1 withObjectAtIndex:idx2];
+}
+- (void)exchangeItemForTag:(SJEdgeControlButtonItemTag)tag1 withItemForTag:(SJEdgeControlButtonItemTag)tag2 {
+    NSInteger idx1 = [self indexOfItemForTag:tag1];
+    NSInteger idx2 = [self indexOfItemForTag:tag2];
+    [self exchangeItemAtIndex:idx1 withItemAtIndex:idx2];
+}
 - (NSInteger)itemCount {
     return _itemsM.count;
 }
 - (nullable NSArray<SJEdgeControlButtonItem *> *)itemsWithRange:(NSRange)range {
     if ( range.location >= _itemsM.count ) return nil;
-    if ( range.location + range.length >= _itemsM.count ) return nil;
+    if ( range.location + range.length > _itemsM.count ) return nil;
     return [_itemsM subarrayWithRange:range];
 }
 - (BOOL)itemsIsHiddenWithRange:(NSRange)range {

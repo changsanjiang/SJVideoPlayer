@@ -25,6 +25,8 @@
 #import "SJMoreSettingsSlidersViewModel.h"
 #import "SJVideoPlayerMoreSetting.h"
 #import "SJVideoPlayerMoreSetting+Exe.h"
+#import "SJEdgeControlLayerSettings.h"
+#import "UIView+SJVideoPlayerSetting.h"
 
 NS_ASSUME_NONNULL_BEGIN
 @interface SJMoreSettingControlLayer ()
@@ -107,7 +109,6 @@ NS_ASSUME_NONNULL_BEGIN
     }
 }
 
-
 - (NSArray<SJVideoPlayerMoreSetting *> *_Nullable)moreSettings {
     return _moreSettingsView.moreSettings;
 }
@@ -125,6 +126,14 @@ NS_ASSUME_NONNULL_BEGIN
     _moreSettingsView.sjv_disappearDirection = SJViewDisappearAnimation_Right;
     _moreSettingsView.sjv_doNotSetAlpha = YES;
     _moreSettingsView.footerViewModel = self.footerViewModel;
+    
+    __weak typeof(self) _self = self;
+    _moreSettingsView.settingRecroder = [[SJVideoPlayerControlSettingRecorder alloc] initWithSettings:^(SJEdgeControlLayerSettings * _Nonnull setting) {
+        __strong typeof(_self) self = _self;
+        if ( !self ) return ;
+        self.moreSettingsView.backgroundColor = setting.moreBackgroundColor;
+    }];
+    self.moreSettingsView.backgroundColor = SJEdgeControlLayerSettings.commonSettings.moreBackgroundColor;
     return _moreSettingsView;
 }
 
@@ -177,13 +186,16 @@ NS_ASSUME_NONNULL_BEGIN
     _moreSecondarySettingView.sjv_disappearDirection = SJViewDisappearAnimation_Right;
     [self addSubview:_moreSecondarySettingView];
     [_moreSecondarySettingView mas_makeConstraints:^(MASConstraintMaker *make) {
-        make.edges.equalTo(self.moreSettingsView);
+        make.top.bottom.right.offset(0);
     }];
-
-    NSLog(@"--------");
-    NSLog(@"%@", _moreSecondarySettingView);
+    __weak typeof(self) _self = self;
+    _moreSecondarySettingView.settingRecroder = [[SJVideoPlayerControlSettingRecorder alloc] initWithSettings:^(SJEdgeControlLayerSettings * _Nonnull setting) {
+        __strong typeof(_self) self = _self;
+        if ( !self ) return ;
+        self.moreSecondarySettingView.backgroundColor = setting.moreBackgroundColor;
+    }];
+    self.moreSecondarySettingView.backgroundColor = SJEdgeControlLayerSettings.commonSettings.moreBackgroundColor;
     [self.controlView layoutIfNeeded];
-    NSLog(@"%@", _moreSecondarySettingView);
     [self _hidden:_moreSecondarySettingView animated:NO];
     return _moreSecondarySettingView;
 }

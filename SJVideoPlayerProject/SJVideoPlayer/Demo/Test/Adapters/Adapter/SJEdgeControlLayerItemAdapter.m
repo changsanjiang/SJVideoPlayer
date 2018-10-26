@@ -280,6 +280,8 @@ NS_ASSUME_NONNULL_BEGIN
     if ( !item ) return;
     if ( !cell ) return;
     
+    cell.contentView.hidden = item.hidden;
+    
     if ( item.customView ) {
         cell.button.hidden = YES;
         item.customView.frame = cell.contentView.bounds;

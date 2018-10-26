@@ -19,8 +19,6 @@
 #else
 #import "SJUIFactory.h"
 #endif
-#import "UIView+SJVideoPlayerSetting.h"
-
 
 @interface SJVideoPlayerMoreSettingSecondaryView (ColDataSourceMethods)<UICollectionViewDataSource>
 @end
@@ -48,12 +46,7 @@ static NSString *const SJVideoPlayerMoreSettingsSecondaryHeaderViewID = @"SJVide
     self = [super initWithFrame:frame];
     if ( !self ) return nil;
     [self _secondarySettingSetupUI];
-    [self _secondarySettingHelper];
     return self;
-}
-
-- (CGSize)intrinsicContentSize {
-    return CGSizeMake(ceil(SJScreen_Max() * 0.4), SJScreen_Min());
 }
 
 - (void)setTwoLevelSettings:(SJVideoPlayerMoreSetting *)twoLevelSettings {
@@ -64,7 +57,13 @@ static NSString *const SJVideoPlayerMoreSettingsSecondaryHeaderViewID = @"SJVide
 - (void)_secondarySettingSetupUI {
     [self addSubview:self.colView];
     [_colView mas_makeConstraints:^(MASConstraintMaker *make) {
-        make.edges.equalTo(self->_colView.superview);
+        make.width.offset(ceil(SJScreen_Max() * 0.4));
+        make.top.left.bottom.offset(0);
+        if (@available(iOS 11.0, *)) {
+            make.right.equalTo(self.mas_safeAreaLayoutGuideRight);
+        } else {
+            make.right.offset(0);
+        }
     }];
 }
 
@@ -80,17 +79,8 @@ static NSString *const SJVideoPlayerMoreSettingsSecondaryHeaderViewID = @"SJVide
     [_colView registerClass:NSClassFromString(SJVideoPlayerMoreSettingsSecondaryHeaderViewID) forSupplementaryViewOfKind:UICollectionElementKindSectionHeader withReuseIdentifier:SJVideoPlayerMoreSettingsSecondaryHeaderViewID];
     _colView.dataSource = self;
     _colView.delegate = self;
-    
+    _colView.backgroundColor = [UIColor clearColor];
     return _colView;
-}
-
-- (void)_secondarySettingHelper {
-    __weak typeof(self) _self = self;
-    self.settingRecroder = [[SJVideoPlayerControlSettingRecorder alloc] initWithSettings:^(SJEdgeControlLayerSettings * _Nonnull setting) {
-        __strong typeof(_self) self = _self;
-        if ( !self ) return;
-        self.colView.backgroundColor = self.backgroundColor = setting.moreBackgroundColor;
-    }];
 }
 
 @end
@@ -126,7 +116,7 @@ static NSString *const SJVideoPlayerMoreSettingsSecondaryHeaderViewID = @"SJVide
 @implementation SJVideoPlayerMoreSettingSecondaryView (UICollectionViewDelegateMethods)
 
 - (CGSize)collectionView:(UICollectionView *)collectionView layout:(UICollectionViewLayout*)collectionViewLayout sizeForItemAtIndexPath:(NSIndexPath *)indexPath {
-    CGFloat width = floor( self.intrinsicContentSize.width / 3);
+    CGFloat width = floor( collectionView.bounds.size.width / 3);
     return CGSizeMake( width, width );
 }
 

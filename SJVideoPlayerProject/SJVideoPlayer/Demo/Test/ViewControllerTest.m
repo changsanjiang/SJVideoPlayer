@@ -51,41 +51,24 @@
 //
 //
     
-    SJEdgeControlLayerNew *controlLayer = (id)[_player.switcher controlLayerForIdentifier:SJControlLayer_Edge].dataSource;
-    
-    /// test
-    SJEdgeControlButtonItem *testItem = [SJEdgeControlButtonItem placeholderWithSize:49 tag:0];
-    testItem.title = sj_makeAttributesString(^(SJAttributeWorker * _Nonnull make) {
-        make.append(@"测试");
-    });
-    testItem.delegate = self;
-    [controlLayer.rightAdapter addItem:testItem];
-    [controlLayer.rightAdapter reload];
-
-    [testItem addTarget:self action:@selector(test)];
+//    SJEdgeControlLayerNew *controlLayer = (id)[_player.switcher controlLayerForIdentifier:SJControlLayer_Edge].dataSource;
+//    
+//    /// test
+//    SJEdgeControlButtonItem *testItem = [SJEdgeControlButtonItem placeholderWithSize:49 tag:0];
+//    testItem.title = sj_makeAttributesString(^(SJAttributeWorker * _Nonnull make) {
+//        make.append(@"测试");
+//    });
+//    testItem.delegate = self;
+//    [controlLayer.rightAdapter addItem:testItem];
+//    [controlLayer.rightAdapter reload];
+//
+//    [testItem addTarget:self action:@selector(test)];
     
     
     _player.URLAsset = [[SJVideoPlayerURLAsset alloc] initWithURL:[NSBundle.mainBundle URLForResource:@"play" withExtension:@"mp4"]];
     _player.URLAsset.title = @"Test Title Test TitlTest Title Test Title";
     _player.URLAsset.alwaysShowTitle = YES;
     _player.enableFilmEditing = YES;
-    
-    
-    
-    SJMoreSettingControlLayer *more = [[SJMoreSettingControlLayer alloc] init];
-    SJControlLayerCarrier *more_c = [[SJControlLayerCarrier alloc] initWithIdentifier:SJControlLayer_MoreSettting dataSource:more delegate:more exitExeBlock:^(SJControlLayerCarrier * _Nonnull carrier) {
-        [more exitControlLayer];
-    } restartExeBlock:^(SJControlLayerCarrier * _Nonnull carrier) {
-        [more restartControlLayer];
-    }];
-    [_player.switcher addControlLayer:more_c];
-    
-    __weak typeof(self) _self = self;
-    more.disappearExeBlock = ^(SJMoreSettingControlLayer * _Nonnull control) {
-        __strong typeof(_self) self = _self;
-        if ( !self ) return;
-        [self.player.switcher switchToPreviousControlLayer];
-    };
     
     
     
@@ -96,7 +79,7 @@
     }];
     
     
-    SJVideoPlayerMoreSetting *mm1 = [[SJVideoPlayerMoreSetting alloc] initWithTitle:@"测试2" image:[UIImage imageNamed:@"avatar"] showTowSetting:YES twoSettingTopTitle:@"测试二级标题" twoSettingItems:@[[[SJVideoPlayerMoreSettingSecondary alloc] initWithTitle:@"二级" image:[UIImage imageNamed:@"avatar"] clickedExeBlock:^(SJVideoPlayerMoreSetting * _Nonnull model) {
+    SJVideoPlayerMoreSetting *mm1 = [[SJVideoPlayerMoreSetting alloc] initWithTitle:@"测试2" image:[UIImage imageNamed:@"avatar"] showTowSetting:YES twoSettingTopTitle:@"测试二级标题" twoSettingItems:@[mm, mm, mm, mm, mm, [[SJVideoPlayerMoreSettingSecondary alloc] initWithTitle:@"二级" image:[UIImage imageNamed:@"avatar"] clickedExeBlock:^(SJVideoPlayerMoreSetting * _Nonnull model) {
 #ifdef DEBUG
         NSLog(@"%d - %s", (int)__LINE__, __func__);
 #endif
@@ -105,8 +88,6 @@
         NSLog(@"%d - %s", (int)__LINE__, __func__);
 #endif
     }];
-    
-    more.moreSettings = @[mm, mm1];
     
     _player.moreSettings = @[mm, mm1];
     // Do any additional setup after loading the view.

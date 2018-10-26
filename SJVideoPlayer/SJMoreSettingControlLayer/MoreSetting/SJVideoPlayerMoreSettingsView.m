@@ -13,7 +13,6 @@
 #else
 #import "Masonry.h"
 #endif
-#import "UIView+SJVideoPlayerSetting.h"
 #if __has_include(<SJUIFactory/SJUIFactory.h>)
 #import <SJUIFactory/SJUIFactory.h>
 #else
@@ -44,7 +43,6 @@ static NSString *const SJVideoPlayerMoreSettingsFooterViewID = @"SJVideoPlayerMo
     self = [super initWithFrame:frame];
     if ( !self ) return nil;
     [self _moreSettingsViewSetupUI];
-    [self _moreSettingsHelper];
     return self;
 }
 
@@ -88,6 +86,7 @@ static NSString *const SJVideoPlayerMoreSettingsFooterViewID = @"SJVideoPlayerMo
     [_colView registerClass:NSClassFromString(SJVideoPlayerMoreSettingsFooterViewID) forSupplementaryViewOfKind:UICollectionElementKindSectionFooter withReuseIdentifier:SJVideoPlayerMoreSettingsFooterViewID];
     _colView.dataSource = self;
     _colView.delegate = self;
+    _colView.backgroundColor = [UIColor clearColor];
     if (@available(iOS 11.0, *)) {
         _colView.contentInsetAdjustmentBehavior = UIScrollViewContentInsetAdjustmentNever;
     }
@@ -129,10 +128,5 @@ static NSString *const SJVideoPlayerMoreSettingsFooterViewID = @"SJVideoPlayerMo
     return self.slidersView.intrinsicContentSize;
 }
 
-#pragma mark -
-- (void)_moreSettingsHelper {
-    self.settingRecroder = [[SJVideoPlayerControlSettingRecorder alloc] initWithSettings:^(SJEdgeControlLayerSettings * _Nonnull setting) {
-        self.colView.backgroundColor = self.backgroundColor = setting.moreBackgroundColor;
-    }];
-}
 @end
+

@@ -1468,6 +1468,8 @@ static UIScrollView *_Nullable _getScrollViewOfPlayModel(SJPlayModel *playModel)
     if ( self.rateChanged ) self.rateChanged(self);
     
     if ( [self playStatus_isInactivity_ReasonPlayEnd] ) [self replay];
+    
+    if ( [self playStatus_isPaused] ) [self play];
 }
 
 - (float)rate {

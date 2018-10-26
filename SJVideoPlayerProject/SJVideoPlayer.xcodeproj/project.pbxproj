@@ -416,6 +416,7 @@
 			children = (
 				775D7D2621832CB300426773 /* SJMoreSettingControlLayer.h */,
 				775D7D2721832CB300426773 /* SJMoreSettingControlLayer.m */,
+				A60065DD215F974B0001B5F8 /* MoreSetting */,
 			);
 			path = SJMoreSettingControlLayer;
 			sourceTree = "<group>";
@@ -630,7 +631,6 @@
 				A60065CE215F974B0001B5F8 /* Asset */,
 				A60065BD215F974B0001B5F8 /* EdgeViews */,
 				A60065BA215F974B0001B5F8 /* MaskView */,
-				A60065DD215F974B0001B5F8 /* MoreSetting */,
 			);
 			path = SJEdgeControlLayer;
 			sourceTree = "<group>";
@@ -1436,7 +1436,7 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CODE_SIGN_STYLE = Manual;
-				DEVELOPMENT_TEAM = U5A7L7SMNP;
+				DEVELOPMENT_TEAM = DB5B5F2RH5;
 				GCC_PREPROCESSOR_DEFINITIONS = (
 					"$(inherited)",
 					"COCOAPODS=1",
@@ -1450,7 +1450,7 @@
 				);
 				PRODUCT_BUNDLE_IDENTIFIER = com.SanJiang.SJVideoPlayer;
 				PRODUCT_NAME = "$(TARGET_NAME)";
-				PROVISIONING_PROFILE_SPECIFIER = WildcardProfile;
+				PROVISIONING_PROFILE_SPECIFIER = SanJiangDevelopment;
 				TARGETED_DEVICE_FAMILY = "1,2";
 			};
 			name = Debug;

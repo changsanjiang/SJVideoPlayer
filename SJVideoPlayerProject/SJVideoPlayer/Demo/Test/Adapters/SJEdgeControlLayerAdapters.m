@@ -45,12 +45,13 @@ NS_ASSUME_NONNULL_BEGIN
         case UIInterfaceOrientationPortraitUpsideDown: {
             [_topAdapter.view mas_remakeConstraints:^(MASConstraintMaker *make) {
                 make.height.offset(49);
-                make.top.bottom.offset(0);
+                make.bottom.offset(0);
                 if (@available(iOS 11.0, *)) {
+                    make.top.equalTo(self.topContainerView.mas_safeAreaLayoutGuideTop);
                     make.left.equalTo(self.topContainerView.mas_safeAreaLayoutGuideLeft);
                     make.right.equalTo(self.topContainerView.mas_safeAreaLayoutGuideRight);
                 } else {
-                    make.left.right.offset(0);
+                    make.top.left.right.offset(0);
                 }
             }];
         }
@@ -58,7 +59,7 @@ NS_ASSUME_NONNULL_BEGIN
         case UIInterfaceOrientationLandscapeLeft:
         case UIInterfaceOrientationLandscapeRight: {
             [_topAdapter.view mas_remakeConstraints:^(MASConstraintMaker *make) {
-                make.top.offset(20);
+                make.top.offset(20); // 统一 20
                 make.height.offset(49);
                 make.bottom.offset(0);
                 if (@available(iOS 11.0, *)) {

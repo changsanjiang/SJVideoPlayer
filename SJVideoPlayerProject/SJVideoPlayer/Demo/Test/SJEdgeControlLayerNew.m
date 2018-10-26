@@ -200,9 +200,10 @@ SJEdgeControlButtonItemTag const SJEdgeControlLayerBottomItem_FullBtn = 10005;
     SJEdgeControlButtonItem *previewItem = [self.topAdapter itemForTag:SJEdgeControlLayerTopItem_Preview];
     SJEdgeControlButtonItem *titleItem = [self.topAdapter itemForTag:SJEdgeControlLayerTopItem_Title];
 
+    BOOL isFitOnScreen = videoPlayer.isFitOnScreen;
     BOOL isFull = videoPlayer.isFullScreen;
     /// back item
-    if ( isFull )
+    if ( isFull || isFitOnScreen )
         backItem.hidden = NO;
     else {
         if ( _hideBackButtonWhenOrientationIsPortrait )
@@ -215,7 +216,7 @@ SJEdgeControlButtonItemTag const SJEdgeControlLayerBottomItem_FullBtn = 10005;
     if ( videoPlayer.URLAsset.alwaysShowTitle )
         titleItem.hidden = NO;
     else
-        titleItem.hidden = !isFull;
+        titleItem.hidden = !isFull || !isFitOnScreen;
 
     if ( !titleItem.hidden ) {
         // margin
@@ -236,7 +237,7 @@ SJEdgeControlButtonItemTag const SJEdgeControlLayerBottomItem_FullBtn = 10005;
     }
     
     /// preview item
-    previewItem.hidden = !_hasBeenGeneratedPreviewImages || !isFull || !_generatePreviewImages;
+    previewItem.hidden = !_hasBeenGeneratedPreviewImages || !isFull || !isFitOnScreen || !_generatePreviewImages;
     
     [self _callDelegateMethodOfItemsForAdapter:_topAdapter videoPlayer:videoPlayer];
     [self.topAdapter reload];
@@ -265,15 +266,25 @@ SJEdgeControlButtonItemTag const SJEdgeControlLayerBottomItem_FullBtn = 10005;
             [vc.navigationController popViewControllerAnimated:YES];
     };
     
-    // 竖屏状态
-    // 只支持一个反向
-    // 调用 back
-    if ( self.videoPlayer.orientation == SJOrientation_Portrait ||
-         [self _whetherToSupportOnlyOneOrientation] ) {
-        _inner_back();
+    if ( _videoPlayer.useFitOnScreenAndDisableRotation ) {
+        if ( _videoPlayer.isFitOnScreen ) {
+            _videoPlayer.fitOnScreen = NO;
+        }
+        else {
+            _inner_back();
+        }
     }
     else {
-        [_videoPlayer rotate];
+        // 竖屏状态
+        // 只支持一个反向
+        // 调用 back
+        if ( self.videoPlayer.orientation == SJOrientation_Portrait ||
+            [self _whetherToSupportOnlyOneOrientation] ) {
+            _inner_back();
+        }
+        else {
+            [_videoPlayer rotate];
+        }
     }
 }
 
@@ -300,6 +311,7 @@ SJEdgeControlButtonItemTag const SJEdgeControlLayerBottomItem_FullBtn = 10005;
         make.left.equalTo(self.leftContainerView.mas_left);
         make.right.equalTo(self.rightContainerView.mas_right);
     }];
+    
     return _previewView;
 }
 
@@ -555,7 +567,8 @@ SJEdgeControlButtonItemTag const SJEdgeControlLayerBottomItem_FullBtn = 10005;
 }
 
 - (void)clickedFullItem:(SJEdgeControlButtonItem *)item {
-    [self.videoPlayer rotate];
+    if ( _videoPlayer.useFitOnScreenAndDisableRotation ) _videoPlayer.fitOnScreen = !_videoPlayer.fitOnScreen;
+    else [self.videoPlayer rotate];
 }
 
 - (void)sliderWillBeginDragging:(SJProgressSlider *)slider {
@@ -679,6 +692,7 @@ SJEdgeControlButtonItemTag const SJEdgeControlLayerBottomItem_FullBtn = 10005;
 - (SJVideoPlayerDraggingProgressView *)draggingProgressView {
     if ( _draggingProgressView ) return _draggingProgressView;
     _draggingProgressView = [SJVideoPlayerDraggingProgressView new];
+    [_draggingProgressView setPreviewImage:_videoPlayer.placeholder];
     return _draggingProgressView;
 }
 
@@ -804,6 +818,11 @@ SJEdgeControlButtonItemTag const SJEdgeControlLayerBottomItem_FullBtn = 10005;
 }
 
 - (void)videoPlayer:(__kindof SJBaseVideoPlayer *)videoPlayer willRotateView:(BOOL)isFull {
+    [self _updateAppearStateForAdapters:videoPlayer];
+    [self _updateItemsForAdaptersIfNeeded:videoPlayer];
+}
+
+- (void)videoPlayer:(__kindof SJBaseVideoPlayer *)videoPlayer willFitOnScreen:(BOOL)isFitOnScreen {
     [self _updateAppearStateForAdapters:videoPlayer];
     [self _updateItemsForAdaptersIfNeeded:videoPlayer];
 }

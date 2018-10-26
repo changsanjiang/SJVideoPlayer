@@ -51,7 +51,9 @@
     
     _player.URLAsset = [[SJVideoPlayerURLAsset alloc] initWithURL:[NSBundle.mainBundle URLForResource:@"play" withExtension:@"mp4"]];
     _player.URLAsset.title = @"Test Title";
+    _player.URLAsset.alwaysShowTitle = YES;
     _player.hideBackButtonWhenOrientationIsPortrait = YES;
+    _player.pausedToKeepAppearState = YES;
     _player.enableFilmEditing = YES;
     
     self.sj_viewWillBeginDragging = ^(ViewControllerFitOnScreen * _Nonnull vc) {

@@ -14,14 +14,17 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic, strong, readonly) UIImageView *sj_imageView;
 @end
 
-@interface SJButtonItemCollectionViewCell : UICollectionViewCell
+@interface SJButtonItemCollectionViewCell : UICollectionViewCell {
+    @public
+    UIView *_customViewContainerView;
+}
 + (void)registerWithCollectionView:(UICollectionView *)collectionView;
 + (instancetype)cellWithCollectionView:(UICollectionView *)collectionView indexPath:(NSIndexPath *)indexPath;
 
 @property (nonatomic, strong, readonly) SJButton *button;
-@property (nonatomic, strong, readonly) UIView *customViewContainerView;
 @property (nonatomic, copy, nullable) void(^clickedButtonExeBlock)(SJButtonItemCollectionViewCell *cell);
 
+@property (nonatomic, strong, readonly) UIView *customViewContainerView;
 - (void)removeSubviewsFromCustomViewContainerView;
 @end
 NS_ASSUME_NONNULL_END

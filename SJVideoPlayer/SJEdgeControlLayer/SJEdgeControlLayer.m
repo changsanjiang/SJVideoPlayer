@@ -558,7 +558,7 @@ NS_ASSUME_NONNULL_END
 }
 
 - (void)_promptWithNetworkStatus:(SJNetworkStatus)status {
-    if ( self.disableNetworkStatusChangePrompt ) return;
+    if ( _disablePromptWhenNetworkStatusChanges ) return;
     if ( [self.videoPlayer.assetURL isFileURL] ) return; // return when is local video.
     if ( !self.settings ) return;
  

@@ -37,7 +37,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 @property (nonatomic) BOOL enableFilmEditing;
 
-@property (nonatomic) BOOL disableNetworkStatusChangePrompt;
+@property (nonatomic) BOOL disablePromptWhenNetworkStatusChanges;
 
 @property (nonatomic) BOOL hideBackButtonWhenOrientationIsPortrait;
 

@@ -30,7 +30,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 @property (nonatomic, strong, nullable) NSArray<SJLightweightTopItem *> *topItems;
 
-@property (nonatomic) BOOL disableNetworkStatusChangePrompt;
+@property (nonatomic) BOOL disablePromptWhenNetworkStatusChanges;
 
 @property (nonatomic) BOOL enableFilmEditing;
 

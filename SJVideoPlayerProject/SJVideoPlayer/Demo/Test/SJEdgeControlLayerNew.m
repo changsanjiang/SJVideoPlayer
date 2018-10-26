@@ -121,13 +121,7 @@ SJEdgeControlButtonItemTag const SJEdgeControlLayerBottomItem_FullBtn = 10005;
     [self _addItemsToRightAdapter];
     
     [self.controlView addSubview:self.loadingView];
-    [self.controlView addSubview:self.draggingProgressView];
-    
     [_loadingView mas_makeConstraints:^(MASConstraintMaker *make) {
-        make.center.offset(0);
-    }];
-    
-    [_draggingProgressView mas_makeConstraints:^(MASConstraintMaker *make) {
         make.center.offset(0);
     }];
 }
@@ -179,7 +173,7 @@ SJEdgeControlButtonItemTag const SJEdgeControlLayerBottomItem_FullBtn = 10005;
     /// 是否显示
     if ( videoPlayer.controlLayerAppeared ) {
         [self _show:_topContainerView animated:YES];
-        if ( !videoPlayer.isFullScreen ) {
+        if ( !videoPlayer.isFullScreen && !videoPlayer.isFitOnScreen ) {
             [self _hidden:_previewView animated:YES];
         }
     }
@@ -215,10 +209,9 @@ SJEdgeControlButtonItemTag const SJEdgeControlLayerBottomItem_FullBtn = 10005;
     /// title item
     if ( videoPlayer.URLAsset.alwaysShowTitle )
         titleItem.hidden = NO;
-    else {
-        if ( videoPlayer.useFitOnScreenAndDisableRotation ) titleItem.hidden = !videoPlayer.isFitOnScreen;
-        else titleItem.hidden = !isFull;
-    }
+    else
+        titleItem.hidden = (!isFull && !isFitOnScreen);
+    
 
     if ( !titleItem.hidden ) {
         // margin
@@ -239,7 +232,7 @@ SJEdgeControlButtonItemTag const SJEdgeControlLayerBottomItem_FullBtn = 10005;
     }
     
     /// preview item
-    previewItem.hidden = !_hasBeenGeneratedPreviewImages || !isFull || !isFitOnScreen || !_generatePreviewImages;
+    previewItem.hidden = !_hasBeenGeneratedPreviewImages || !isFull || !_generatePreviewImages;
     
     [self _callDelegateMethodOfItemsForAdapter:_topAdapter videoPlayer:videoPlayer];
     [self.topAdapter reload];
@@ -259,21 +252,12 @@ SJEdgeControlButtonItemTag const SJEdgeControlLayerBottomItem_FullBtn = 10005;
 }
 
 - (void)clickedBackItem:(SJEdgeControlButtonItem *)item {
-    void(^_inner_back)(void) = ^ {
-        UIViewController *vc = [self.videoPlayer atViewController];
-        [vc.view endEditing:YES];
-        if ( vc.presentingViewController )
-            [vc dismissViewControllerAnimated:YES completion:nil];
-        else
-            [vc.navigationController popViewControllerAnimated:YES];
-    };
-    
     if ( _videoPlayer.useFitOnScreenAndDisableRotation ) {
         if ( _videoPlayer.isFitOnScreen ) {
             _videoPlayer.fitOnScreen = NO;
         }
         else {
-            _inner_back();
+            if ( _clickedBackItemExeBlock ) _clickedBackItemExeBlock(self);
         }
     }
     else {
@@ -281,8 +265,8 @@ SJEdgeControlButtonItemTag const SJEdgeControlLayerBottomItem_FullBtn = 10005;
         // 只支持一个反向
         // 调用 back
         if ( self.videoPlayer.orientation == SJOrientation_Portrait ||
-            [self _whetherToSupportOnlyOneOrientation] ) {
-            _inner_back();
+             [self _whetherToSupportOnlyOneOrientation] ) {
+            if ( _clickedBackItemExeBlock ) _clickedBackItemExeBlock(self);
         }
         else {
             [_videoPlayer rotate];
@@ -333,8 +317,9 @@ SJEdgeControlButtonItemTag const SJEdgeControlLayerBottomItem_FullBtn = 10005;
 
 /// 生成预览图片
 - (void)_generatePreviewImagesIfNeededForVideoPlayer:(__kindof SJBaseVideoPlayer *)videoPlayer videoSize:(CGSize)size {
-    if ( !self.generatePreviewImages ) return;
-    if ( self.hasBeenGeneratedPreviewImages ) return;
+    if ( _videoPlayer.useFitOnScreenAndDisableRotation ) return;
+    if ( !_generatePreviewImages ) return;
+    if ( _hasBeenGeneratedPreviewImages ) return;
     CGFloat scale = size.width / size.height;
     CGSize previewItemSize = CGSizeMake(scale * self.previewView.intrinsicContentSize.height * 2, self.previewView.intrinsicContentSize.height * 2);
     __weak typeof(self) _self = self;
@@ -348,7 +333,7 @@ SJEdgeControlButtonItemTag const SJEdgeControlLayerBottomItem_FullBtn = 10005;
         }
         else {
             self.hasBeenGeneratedPreviewImages = YES;
-            [self.topAdapter reload];
+            [self _updateItemsFor_TopAdapterIfNeeded:self.videoPlayer];
             self.previewView.previewImages = images;
         }
     }];
@@ -695,6 +680,11 @@ SJEdgeControlButtonItemTag const SJEdgeControlLayerBottomItem_FullBtn = 10005;
     if ( _draggingProgressView ) return _draggingProgressView;
     _draggingProgressView = [SJVideoPlayerDraggingProgressView new];
     [_draggingProgressView setPreviewImage:_videoPlayer.placeholder];
+    [self.controlView addSubview:_draggingProgressView];
+    [self _hidden:_draggingProgressView animated:NO];
+    [_draggingProgressView mas_makeConstraints:^(MASConstraintMaker *make) {
+        make.center.offset(0);
+    }];
     return _draggingProgressView;
 }
 
@@ -704,11 +694,11 @@ SJEdgeControlButtonItemTag const SJEdgeControlLayerBottomItem_FullBtn = 10005;
 
 /// 拖拽将要触发
 - (void)_draggingWillTriggerForVideoPlayer:(__kindof SJBaseVideoPlayer *)videoPlayer {
-    if ( (_videoPlayer.isFullScreen || _videoPlayer.fitOnScreen ) &&
+    if (  _videoPlayer.isFullScreen &&
          !_videoPlayer.URLAsset.isM3u8 ) {
-        _draggingProgressView.style = SJVideoPlayerDraggingProgressViewStylePreviewProgress;
+        self.draggingProgressView.style = SJVideoPlayerDraggingProgressViewStylePreviewProgress;
     }
-    else _draggingProgressView.style = SJVideoPlayerDraggingProgressViewStyleArrowProgress;
+    else self.draggingProgressView.style = SJVideoPlayerDraggingProgressViewStyleArrowProgress;
     
     [self _show:_draggingProgressView animated:YES];
     [_draggingProgressView setTimeShiftStr:videoPlayer.currentTimeStr totalTimeStr:videoPlayer.totalTimeStr];
@@ -756,7 +746,7 @@ SJEdgeControlButtonItemTag const SJEdgeControlLayerBottomItem_FullBtn = 10005;
          CGRectContainsPoint( _leftContainerView.frame, location ) ||
          CGRectContainsPoint( _bottomContainerView.frame, location ) ||
          CGRectContainsPoint( _rightContainerView.frame, location ) ||
-         (![self _isHiddenWithView:_previewView] && CGRectContainsPoint( _previewView.frame, location)) ) return NO;
+         CGRectContainsPoint( _previewView.frame, location) ) return NO;
     return YES;
 }
 
@@ -887,6 +877,28 @@ SJEdgeControlButtonItemTag const SJEdgeControlLayerBottomItem_FullBtn = 10005;
 
 - (void)videoPlayer:(__kindof SJBaseVideoPlayer *)videoPlayer presentationSize:(CGSize)size {
     [self _generatePreviewImagesIfNeededForVideoPlayer:videoPlayer videoSize:size];
+}
+
+- (void)videoPlayer:(SJBaseVideoPlayer *)videoPlayer reachabilityChanged:(SJNetworkStatus)status {
+    [self _promptWithNetworkStatus:status];
+}
+
+- (void)_promptWithNetworkStatus:(SJNetworkStatus)status {
+    if ( _disablePromptWhenNetworkStatusChanges ) return;
+    if ( [self.videoPlayer.assetURL isFileURL] ) return; // return when is local video.
+   
+    switch ( status ) {
+        case SJNetworkStatus_NotReachable: {
+            [_videoPlayer showTitle:SJEdgeControlLayerSettings.commonSettings.notReachablePrompt duration:3];
+        }
+            break;
+        case SJNetworkStatus_ReachableViaWWAN: {
+            [_videoPlayer showTitle:SJEdgeControlLayerSettings.commonSettings.reachableViaWWANPrompt duration:3];
+        }
+            break;
+        case SJNetworkStatus_ReachableViaWiFi: {}
+            break;
+    }
 }
 
 #pragma mark -

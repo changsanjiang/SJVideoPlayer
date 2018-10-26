@@ -45,8 +45,7 @@ static NSString *SJButtonItemCollectionViewCellID = @"SJButtonItemCollectionView
     [_button addTarget:self action:@selector(clickedButton:) forControlEvents:UIControlEventTouchUpInside];
     return _button;
 }
-
-@synthesize customViewContainerView = _customViewContainerView;
+ 
 - (UIView *)customViewContainerView {
     if ( _customViewContainerView ) return _customViewContainerView;
     _customViewContainerView = [UIView new];

@@ -32,17 +32,16 @@ NS_ASSUME_NONNULL_BEGIN
 /// 一个具有简单功能的播放器.
 + (instancetype)lightweightPlayer;
 
+/// Use default control layer.
 /// 使用默认的控制层
 - (instancetype)init;
-
-- (instancetype)_init;
 
 /// v2.0.8
 /// 新增: 控制层 切换器, 管理控制层的切换
 @property (nonatomic, strong, readonly) SJControlLayerSwitcher *switcher;
 
 + (NSString *)version;
-
+- (instancetype)_init;
 @end
 
 
@@ -69,9 +68,9 @@ NS_ASSUME_NONNULL_BEGIN
 /// v2.1.4 新增
 @property (nonatomic) BOOL hideBackButtonWhenOrientationIsPortrait;
 
-/// Player will prompt the user when the network status changes, if disableNetworkStatusChangePrompt == NO;
-/// 是否禁止网络状态变化时的提示, 默认是NO.
-@property (nonatomic) BOOL disableNetworkStatusChangePrompt;
+/// Default value is NO.
+/// 是否禁止网络状态变化时的提示
+@property (nonatomic) BOOL disablePromptWhenNetworkStatusChanges;
 
 @end
 
@@ -92,7 +91,7 @@ NS_ASSUME_NONNULL_BEGIN
 @interface SJVideoPlayer (SettingDefaultControlLayer)
 
 /// Whether to generate a preview view. default is YES.
-/// 是否自动生成预览视图, 默认是 YES
+/// 是否自动生成预览视图, 默认是 YES.
 @property (nonatomic) BOOL generatePreviewImages;
 
 /// Default control layer show `more item`.
@@ -145,4 +144,10 @@ extern SJControlLayerIdentifier const SJControlLayer_MoreSettting;    // 默认�
 
 extern SJEdgeControlButtonItemTag const SJEdgeControlLayerBottomItem_FilmEditing;   // GIF/导出/截屏
 extern SJEdgeControlButtonItemTag const SJEdgeControlLayerTopItem_More;             // More
+
+
+
+@interface SJVideoPlayer (SJVideoPlayerDeprecated)
+@property (nonatomic) BOOL disableNetworkStatusChangePrompt __deprecated_msg("use `disablePromptWhenNetworkStatusChanges`");
+@end
 NS_ASSUME_NONNULL_END

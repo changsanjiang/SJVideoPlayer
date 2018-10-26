@@ -180,8 +180,7 @@ NS_ASSUME_NONNULL_BEGIN
 - (UIView *)view {
     return _collectionView;
 }
-- (void)reload {
-    NSLog(@"%@", self.collectionView);
+- (void)reload { 
     _layout.items = _itemsM;
     [_layout invalidateLayout];
     [_collectionView reloadData];
@@ -282,29 +281,31 @@ NS_ASSUME_NONNULL_BEGIN
     if ( !cell ) return;
     
     cell.contentView.hidden = item.hidden;
+    if ( item.hidden ) return;
     
     if ( item.customView ) {
+        cell.customViewContainerView.hidden = NO;
         cell.button.hidden = YES;
-        item.customView.frame = cell.contentView.bounds;
+        item.customView.frame = cell->_customViewContainerView.bounds;
         item.customView.autoresizingMask = UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight;
-        [cell.customViewContainerView addSubview:item.customView];
+        [cell removeSubviewsFromCustomViewContainerView];
+        [cell->_customViewContainerView addSubview:item.customView];
     }
     else if ( 0 != item.title.length  ) {
-        [cell removeSubviewsFromCustomViewContainerView];
+        cell->_customViewContainerView.hidden = YES;
         cell.button.hidden = NO;
         cell.button.sj_titleLabel.attributedText = item.title;
         cell.button.sj_imageView.image = nil;
     }
     else if ( item.image ) {
-        [cell removeSubviewsFromCustomViewContainerView];
+        cell->_customViewContainerView.hidden = YES;
         cell.button.hidden = NO;
         cell.button.sj_titleLabel.attributedText = nil;
         cell.button.sj_imageView.image = item.image;
     }
     else {
-        [cell removeSubviewsFromCustomViewContainerView];
-        cell.button.sj_titleLabel.attributedText = nil;
-        cell.button.sj_imageView.image = nil;
+        cell.button.hidden = YES;
+        cell->_customViewContainerView.hidden = YES;
     }
     
     cell.clickedButtonExeBlock = ^(SJButtonItemCollectionViewCell * _Nonnull cell) {

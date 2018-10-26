@@ -67,7 +67,7 @@
         }];
     }
 #ifdef SJMAC
-    _player.disableNetworkStatusChangePrompt = YES;
+    _player.disablePromptWhenNetworkStatusChanges = YES;
 #endif
     [cell.view.coverImageView addSubview:self.player.view];
     [_player.view mas_makeConstraints:^(MASConstraintMaker *make) {

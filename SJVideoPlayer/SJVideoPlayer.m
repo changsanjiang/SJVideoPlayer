@@ -258,6 +258,12 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (void)setClickedBackEvent:(nullable void (^)(SJVideoPlayer * _Nonnull))clickedBackEvent {
     objc_setAssociatedObject(self, @selector(clickedBackEvent), clickedBackEvent, OBJC_ASSOCIATION_RETAIN_NONATOMIC);
+    __weak typeof(self) _self = self;
+    [self defaultEdgeControlLayer].clickedBackItemExeBlock = ^(SJEdgeControlLayerNew * _Nonnull control) {
+        __strong typeof(_self) self = _self;
+        if ( !self ) return ;
+        if ( clickedBackEvent ) clickedBackEvent(self);
+    };
 }
 
 - (void (^)(SJVideoPlayer * _Nonnull))clickedBackEvent {
@@ -285,15 +291,13 @@ NS_ASSUME_NONNULL_BEGIN
     return [objc_getAssociatedObject(self, _cmd) boolValue];
 }
 
-- (void)setDisableNetworkStatusChangePrompt:(BOOL)disableNetworkStatusChangePrompt {
-    objc_setAssociatedObject(self, @selector(disableNetworkStatusChangePrompt), @(disableNetworkStatusChangePrompt), OBJC_ASSOCIATION_RETAIN_NONATOMIC);
-    
-#warning next ..
-//    [self defaultEdgeControlLayer].disableNetworkStatusChangePrompt = disableNetworkStatusChangePrompt;
-//    [self defaultEdgeLightweightControlLayer].disableNetworkStatusChangePrompt = disableNetworkStatusChangePrompt;
+- (void)setDisablePromptWhenNetworkStatusChanges:(BOOL)disablePromptWhenNetworkStatusChanges {
+    objc_setAssociatedObject(self, @selector(disablePromptWhenNetworkStatusChanges), @(disablePromptWhenNetworkStatusChanges), OBJC_ASSOCIATION_RETAIN_NONATOMIC);
+    [self defaultEdgeControlLayer].disablePromptWhenNetworkStatusChanges = disablePromptWhenNetworkStatusChanges;
+    [self defaultEdgeLightweightControlLayer].disablePromptWhenNetworkStatusChanges = disablePromptWhenNetworkStatusChanges;
 }
 
-- (BOOL)disableNetworkStatusChangePrompt {
+- (BOOL)disablePromptWhenNetworkStatusChanges {
     return [objc_getAssociatedObject(self, _cmd) boolValue];
 }
 @end
@@ -470,4 +474,16 @@ SJControlLayerIdentifier const SJControlLayer_MoreSettting = LONG_MAX - 3;
 
 SJEdgeControlButtonItemTag const SJEdgeControlLayerBottomItem_FilmEditing = LONG_MAX - 1;   // GIF/导出/截屏
 SJEdgeControlButtonItemTag const SJEdgeControlLayerTopItem_More = LONG_MAX - 2;             // More
+
+
+@implementation SJVideoPlayer (SJVideoPlayerDeprecated)
+
+- (void)setDisableNetworkStatusChangePrompt:(BOOL)disableNetworkStatusChangePrompt __deprecated_msg("use `disablePromptWhenNetworkStatusChanges`") {
+    [self setDisablePromptWhenNetworkStatusChanges:disableNetworkStatusChangePrompt];
+}
+- (BOOL)disableNetworkStatusChangePrompt __deprecated_msg("use `disablePromptWhenNetworkStatusChanges`") {
+    return [self disablePromptWhenNetworkStatusChanges];
+}
+
+@end
 NS_ASSUME_NONNULL_END

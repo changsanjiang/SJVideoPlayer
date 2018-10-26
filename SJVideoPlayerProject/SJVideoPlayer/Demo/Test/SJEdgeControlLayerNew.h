@@ -35,8 +35,9 @@ extern SJEdgeControlButtonItemTag const SJEdgeControlLayerBottomItem_FullBtn;   
 - (void)restartControlLayerCompeletionHandler:(nullable void(^)(void))compeletionHandler;
 - (void)exitControlLayerCompeletionHandler:(nullable void(^)(void))compeletionHandler;
 
-/// default is NO
+@property (nonatomic, copy, nullable) void(^clickedBackItemExeBlock)(SJEdgeControlLayerNew *control);
 @property (nonatomic) BOOL hideBackButtonWhenOrientationIsPortrait;
+@property (nonatomic) BOOL disablePromptWhenNetworkStatusChanges;
 @property (nonatomic) BOOL generatePreviewImages;
 @end
 NS_ASSUME_NONNULL_END

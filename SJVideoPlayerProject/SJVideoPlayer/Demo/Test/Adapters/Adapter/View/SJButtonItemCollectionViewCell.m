@@ -33,11 +33,45 @@ static NSString *SJButtonItemCollectionViewCellID = @"SJButtonItemCollectionView
     }];
 }
 
+- (void)clickedButton:(UIButton *)btn {
+    if ( _clickedButtonExeBlock ) _clickedButtonExeBlock(self);
+}
+
 @synthesize button = _button;
-- (UIButton *)button {
+- (SJButton *)button {
     if ( _button ) return _button;
-    _button = [UIButton buttonWithType:UIButtonTypeCustom];
-    _button.titleLabel.numberOfLines = 0;
+    _button = [SJButton new];
+    _button.clipsToBounds = YES;
+    [_button addTarget:self action:@selector(clickedButton:) forControlEvents:UIControlEventTouchUpInside];
     return _button;
+}
+@end
+
+
+@implementation SJButton
+@synthesize sj_titleLabel = _sj_titleLabel;
+@synthesize sj_imageView = _sj_imageView;
+
+- (UILabel *)sj_titleLabel {
+    if ( _sj_titleLabel ) return _sj_titleLabel;
+    _sj_titleLabel = [[UILabel alloc] init];
+    _sj_titleLabel.numberOfLines = 0;
+    [self addSubview:_sj_titleLabel];
+    [_sj_titleLabel mas_makeConstraints:^(MASConstraintMaker *make) {
+        make.edges.offset(0);
+    }];
+    return _sj_titleLabel;
+}
+
+- (UIImageView *)sj_imageView {
+    if ( _sj_imageView ) return _sj_imageView;
+    _sj_imageView = [[UIImageView alloc] init];
+    _sj_imageView.contentMode = UIViewContentModeCenter;
+    
+    [self addSubview:_sj_imageView];
+    [_sj_imageView mas_makeConstraints:^(MASConstraintMaker *make) {
+        make.edges.offset(0);
+    }];
+    return _sj_imageView;
 }
 @end

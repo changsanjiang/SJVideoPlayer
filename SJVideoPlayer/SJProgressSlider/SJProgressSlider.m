@@ -124,7 +124,7 @@ NS_ASSUME_NONNULL_BEGIN
     [self addGestureRecognizer:_tap];
 
     [_tap requireGestureRecognizerToFail:_pan];
-    
+
     _tap.enabled = NO;
 }
 
@@ -165,7 +165,8 @@ NS_ASSUME_NONNULL_BEGIN
     if ( _containerView.frame.size.width == 0 ) return;
     CGFloat point = [tap locationInView:tap.view].x;
     CGFloat value = point / _containerView.frame.size.width * (_maxValue - _minValue);
-    [self setValue:value animated:YES];
+    if ( _tappedExeBlock ) _tappedExeBlock(self, value);
+    else [self setValue:value animated:YES];
 }
 
 #pragma mark -

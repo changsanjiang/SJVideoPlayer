@@ -57,7 +57,6 @@ static UIScrollView *_Nullable _getScrollViewOfPlayModel(SJPlayModel *playModel)
     return nil;
 }
 
-
 /**
  管理类: 控制层显示与隐藏
  */
@@ -916,6 +915,7 @@ static UIScrollView *_Nullable _getScrollViewOfPlayModel(SJPlayModel *playModel)
     rotationAnimation.delegate = self;
     [_view.layer addAnimation:rotationAnimation forKey:nil];
     _view.layer.transform = transform;
+    _isFlipTransitioning = YES;
 }
 
 - (void)animationDidStart:(CAAnimation *)anim {
@@ -1235,6 +1235,7 @@ static UIScrollView *_Nullable _getScrollViewOfPlayModel(SJPlayModel *playModel)
     else {
         [self.controlLayerDataSource.controlView removeGestureRecognizer:self.lockStateTapGesture];
     }
+    
     if      ( lockedScreen && [self.controlLayerDelegate respondsToSelector:@selector(lockedVideoPlayer:)] ) {
         [self.controlLayerDelegate lockedVideoPlayer:self];
     }
@@ -1508,6 +1509,7 @@ static UIScrollView *_Nullable _getScrollViewOfPlayModel(SJPlayModel *playModel)
     if ( ![self playStatus_isPaused_ReasonPause] ) [self pause];
 }
 - (BOOL)vc_prefersStatusBarHidden {
+    if ( self.lockedScreen ) return YES;
     if ( self.rotationManager.transitioning ) {
         if ( self.enableControlLayerDisplayController && self.controlLayerAppeared ) return NO;
         return YES;

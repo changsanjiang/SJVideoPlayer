@@ -54,6 +54,12 @@
     return [SJTableViewCell cellWithTableView:tableView];
 }
 
+- (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath {
+#ifdef DEBUG
+    NSLog(@"%d - %s", (int)__LINE__, __func__);
+#endif
+}
+
 - (void)tableView:(UITableView *)tableView willDisplayCell:(SJTableViewCell *)cell forRowAtIndexPath:(NSIndexPath *)indexPath {
     __weak typeof(self) _self = self;
     cell.view.clickedPlayButtonExeBlock = ^(SJPlayView * _Nonnull view) {

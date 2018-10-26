@@ -74,6 +74,7 @@ NS_ASSUME_NONNULL_BEGIN
 /// - 当你想点击跳转时, 需要开启手势
 /// - 默认是关闭, 即 tap.enabled = NO;
 @property (nonatomic, strong, readonly) UITapGestureRecognizer *tap;
+@property (nonatomic, copy, nullable) void(^tappedExeBlock)(SJProgressSlider *slider, CGFloat location);
 
 /*!
  *  The state of dragging.

@@ -11,7 +11,9 @@
 #import <SJRouter/SJRouter.h>
 #import <Masonry/Masonry.h>
 #import <SJFullscreenPopGesture/UIViewController+SJVideoPlayerAdd.h>
-#import "SJEdgeNewControlLayer.h"
+#import "SJEdgeControlLayerAdapters.h"
+
+#import "SJEdgeControlLayerNew.h"
 
 @interface ViewControllerTest ()<SJRouteHandler>
 @property (nonatomic, strong) SJVideoPlayer *player;
@@ -31,9 +33,10 @@
     [super viewDidLoad];
     self.edgesForExtendedLayout = UIRectEdgeNone;
     self.view.backgroundColor = [UIColor whiteColor];
+    
     [self _setupViews];
     
-    SJEdgeNewControlLayer *controlLayer = [SJEdgeNewControlLayer new];
+    SJEdgeControlLayerNew *controlLayer = [SJEdgeControlLayerNew new];
     SJControlLayerCarrier *carrier = [[SJControlLayerCarrier alloc] initWithIdentifier:SJControlLayer_Edge dataSource:controlLayer delegate:controlLayer exitExeBlock:^(SJControlLayerCarrier * _Nonnull carrier) {
         
     } restartExeBlock:^(SJControlLayerCarrier * _Nonnull carrier) {
@@ -57,7 +60,8 @@
     }];
     
     _player.URLAsset = [[SJVideoPlayerURLAsset alloc] initWithURL:[NSBundle.mainBundle URLForResource:@"play" withExtension:@"mp4"]];
-    _player.URLAsset.title = @"Test Title";
+    _player.URLAsset.title = @"Test Title Test Title Test";
+    _player.URLAsset.alwaysShowTitle = YES;
     _player.hideBackButtonWhenOrientationIsPortrait = YES;
     _player.enableFilmEditing = YES;
     _player.pausedToKeepAppearState = YES;
@@ -68,8 +72,14 @@
     [self.player vc_viewDidAppear];
 }
 
+- (void)viewWillAppear:(BOOL)animated {
+    [super viewWillAppear:animated];
+    [self.navigationController setNavigationBarHidden:YES animated:YES];
+}
+
 - (void)viewWillDisappear:(BOOL)animated {
     [super viewWillDisappear:animated];
+    [self.navigationController setNavigationBarHidden:NO animated:YES];
     [self.player vc_viewWillDisappear];
 }
 

@@ -12,6 +12,7 @@
 #import <Masonry/Masonry.h>
 #import <SJFullscreenPopGesture/UIViewController+SJVideoPlayerAdd.h>
 #import "SJEdgeControlLayerAdapters.h"
+#import <SJAttributeWorker.h>
 
 #import "SJEdgeControlLayerNew.h"
 
@@ -38,31 +39,45 @@
     
     SJEdgeControlLayerNew *controlLayer = [SJEdgeControlLayerNew new];
     SJControlLayerCarrier *carrier = [[SJControlLayerCarrier alloc] initWithIdentifier:SJControlLayer_Edge dataSource:controlLayer delegate:controlLayer exitExeBlock:^(SJControlLayerCarrier * _Nonnull carrier) {
-        
+        [controlLayer exitControlLayerCompeletionHandler:nil];
     } restartExeBlock:^(SJControlLayerCarrier * _Nonnull carrier) {
-        
+        [controlLayer restartControlLayerCompeletionHandler:nil];
     }];
     [self.player.switcher addControlLayer:carrier];
     
     
-    
+    controlLayer.bottomAdapter.view.backgroundColor = [UIColor redColor];
     
     
     /// test
-    UIView *customView = [[UIView alloc] initWithFrame:CGRectMake(0, 0, 60, 49)];
-    customView.backgroundColor = [UIColor orangeColor];
-    SJEdgeControlButtonItem *testItem = [[SJEdgeControlButtonItem alloc] initWithCustomView:customView tag:0];
+    SJEdgeControlButtonItem *testItem = [SJEdgeControlButtonItem placeholderWithSize:49 tag:0];
+    testItem.title = sj_makeAttributesString(^(SJAttributeWorker * _Nonnull make) {
+        make.append(@"测试");
+    });
     testItem.delegate = self;
-    [controlLayer.topAdapter addItem:testItem];
-    [controlLayer.topAdapter reload];
+    [controlLayer.rightAdapter addItem:testItem];
+    [controlLayer.rightAdapter reload];
     
+    [testItem addTarget:self action:@selector(test)];
+    
+    
+    _player.URLAsset = [[SJVideoPlayerURLAsset alloc] initWithURL:[NSBundle.mainBundle URLForResource:@"play" withExtension:@"mp4"]];
+    _player.URLAsset.title = @"Test Title Test TitlTest Title Test Title TestTest Title Test Title TestTest Title Test Title TestTest Title Test Title TestTest Title Test Title TestTest Title Test Title TestTest Title Test Title Test";
+    _player.URLAsset.alwaysShowTitle = YES;
     // Do any additional setup after loading the view.
 }
 
-/// test
-- (void)updatePropertiesIfNeeded:(SJEdgeControlButtonItem *)item videoPlayer:(__kindof SJBaseVideoPlayer *)player {
-    item.customView.backgroundColor = player.isFullScreen?[UIColor yellowColor]:[UIColor orangeColor];
+- (void)test {
+#ifdef DEBUG
+    NSLog(@"%d - %s", (int)__LINE__, __func__);
+#endif
+    [self.player.switcher switchControlLayerForIdentitfier:SJControlLayer_FilmEditing];
 }
+
+///// test
+//- (void)updatePropertiesIfNeeded:(SJEdgeControlButtonItem *)item videoPlayer:(__kindof SJBaseVideoPlayer *)player {
+//    item.customView.backgroundColor = player.isFullScreen?[UIColor yellowColor]:[UIColor orangeColor];
+//}
 
 - (void)_setupViews {
     // create a player of the default type
@@ -76,9 +91,6 @@
         make.height.equalTo(self->_player.view.mas_width).multipliedBy(9 / 16.0f);
     }];
     
-    _player.URLAsset = [[SJVideoPlayerURLAsset alloc] initWithURL:[NSBundle.mainBundle URLForResource:@"play" withExtension:@"mp4"]];
-    _player.URLAsset.title = @"Test Title Test TitlTest Title Test Title TestTest Title Test Title TestTest Title Test Title TestTest Title Test Title TestTest Title Test Title TestTest Title Test Title TestTest Title Test Title Test";
-    _player.URLAsset.alwaysShowTitle = YES;
     _player.hideBackButtonWhenOrientationIsPortrait = YES;
     _player.enableFilmEditing = YES;
     _player.pausedToKeepAppearState = YES;

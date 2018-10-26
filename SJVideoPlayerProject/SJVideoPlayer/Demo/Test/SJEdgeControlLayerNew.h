@@ -18,7 +18,6 @@ NS_ASSUME_NONNULL_BEGIN
 extern SJEdgeControlButtonItemTag const SJEdgeControlLayerTopItem_Back;             // 返回按钮
 extern SJEdgeControlButtonItemTag const SJEdgeControlLayerTopItem_Title;            // 标题
 extern SJEdgeControlButtonItemTag const SJEdgeControlLayerTopItem_Preview;          // 预览按钮
-extern SJEdgeControlButtonItemTag const SJEdgeControlLayerTopItem_More;             // 更多按钮
 
 #pragma mark - Left
 extern SJEdgeControlButtonItemTag const SJEdgeControlLayerLeftItem_Lock;            // 锁屏按钮
@@ -33,6 +32,9 @@ extern SJEdgeControlButtonItemTag const SJEdgeControlLayerBottomItem_FullBtn;   
 
 
 @interface SJEdgeControlLayerNew : SJEdgeControlLayerAdapters<SJVideoPlayerControlLayerDelegate, SJVideoPlayerControlLayerDataSource>
+- (void)restartControlLayerCompeletionHandler:(nullable void(^)(void))compeletionHandler;
+- (void)exitControlLayerCompeletionHandler:(nullable void(^)(void))compeletionHandler;
+
 /// default is NO
 @property (nonatomic) BOOL hideBackButtonWhenOrientationIsPortrait;
 @property (nonatomic) BOOL generatePreviewImages;

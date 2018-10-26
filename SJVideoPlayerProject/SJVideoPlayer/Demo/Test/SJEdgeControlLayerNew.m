@@ -42,7 +42,6 @@
 SJEdgeControlButtonItemTag const SJEdgeControlLayerTopItem_Back = 10000;
 SJEdgeControlButtonItemTag const SJEdgeControlLayerTopItem_Title = 10001;
 SJEdgeControlButtonItemTag const SJEdgeControlLayerTopItem_Preview = 10002;
-SJEdgeControlButtonItemTag const SJEdgeControlLayerTopItem_More = 10003;
 
 #pragma mark - Left
 SJEdgeControlButtonItemTag const SJEdgeControlLayerLeftItem_Lock = 10000;
@@ -63,6 +62,7 @@ SJEdgeControlButtonItemTag const SJEdgeControlLayerBottomItem_FullBtn = 10005;
 @property (nonatomic, strong, readonly) SJVideoPlayerPreviewView *previewView;
 @property (nonatomic, strong, readonly) SJVideoPlayerDraggingProgressView *draggingProgressView;
 @property (nonatomic) BOOL hasBeenGeneratedPreviewImages;
+@property (nonatomic, strong, readonly) UIButton *replayButton;
 @end
 
 @implementation SJEdgeControlLayerNew
@@ -80,6 +80,36 @@ SJEdgeControlButtonItemTag const SJEdgeControlLayerBottomItem_FullBtn = 10005;
     return self;
 }
 
+- (void)restartControlLayerCompeletionHandler:(nullable void(^)(void))compeletionHandler {
+    if ( _videoPlayer.URLAsset ) {
+        [_videoPlayer controlLayerNeedAppear];
+        [self _show:self.controlView animated:YES completionHandler:^{
+            if ( compeletionHandler ) compeletionHandler();
+        }];
+    }
+    else {
+        [_videoPlayer controlLayerNeedDisappear];
+    }
+}
+
+- (void)exitControlLayerCompeletionHandler:(nullable void(^)(void))compeletionHandler {
+    /// clean
+    _videoPlayer.controlLayerDataSource = nil;
+    _videoPlayer.controlLayerDelegate = nil;
+    _videoPlayer = nil;
+    
+    [self _hidden:_topContainerView animated:YES];
+    [self _hidden:_leftContainerView animated:YES];
+    [self _hidden:_bottomContainerView animated:YES];
+    [self _hidden:_rightContainerView animated:YES];
+    [self _hidden:_previewView animated:YES];
+    [self _hidden:_replayButton animated:YES];
+    
+    [self _hidden:self.controlView animated:YES completionHandler:^{
+        [self.controlView removeFromSuperview];
+        if ( compeletionHandler ) compeletionHandler();
+    }];
+}
 #pragma mark - setup view
 - (void)_setupView {
     [self _addItemsToTopAdapter];
@@ -99,27 +129,6 @@ SJEdgeControlButtonItemTag const SJEdgeControlLayerBottomItem_FullBtn = 10005;
     }];
 }
 
-- (void)_updatelayout {
-    BOOL isFullscreen = _videoPlayer.isFullScreen;
-    BOOL isFitOnScreen = _videoPlayer.isFitOnScreen;
-    [_topAdapter.view mas_updateConstraints:^(MASConstraintMaker *make) {
-        
-    }];
-    
-    [_leftAdapter.view mas_remakeConstraints:^(MASConstraintMaker *make) {
-        
-    }];
-    
-    [_bottomAdapter.view mas_remakeConstraints:^(MASConstraintMaker *make) {
-        
-    }];
-    
-    [_rightAdapter.view mas_makeConstraints:^(MASConstraintMaker *make) {
-        
-    }];
-}
-
-
 #pragma mark - Top
 - (void)_addItemsToTopAdapter {
     SJEdgeControlButtonItem *backItem = [SJEdgeControlButtonItem placeholderWithType:SJButtonItemPlaceholderType_49x49 tag:SJEdgeControlLayerTopItem_Back];
@@ -129,12 +138,9 @@ SJEdgeControlButtonItemTag const SJEdgeControlLayerBottomItem_FullBtn = 10005;
     SJEdgeControlButtonItem *titleItem = [SJEdgeControlButtonItem placeholderWithType:SJButtonItemPlaceholderType_49xFill tag:SJEdgeControlLayerTopItem_Title];
     [self.topAdapter addItem:titleItem];
     
-    SJEdgeControlButtonItem *previewItem = [SJEdgeControlButtonItem placeholderWithType:SJButtonItemPlaceholderType_49x49 tag:SJEdgeControlLayerTopItem_Preview];
+    SJEdgeControlButtonItem *previewItem = [SJEdgeControlButtonItem placeholderWithSize:58 tag:SJEdgeControlLayerTopItem_Preview];
     [previewItem addTarget:self action:@selector(clickedPreviewItem:)];
     [self.topAdapter addItem:previewItem];
-    
-    SJEdgeControlButtonItem *moreItem = [SJEdgeControlButtonItem placeholderWithType:SJButtonItemPlaceholderType_49x49 tag:SJEdgeControlLayerTopItem_More];
-    [self.topAdapter addItem:moreItem];
     
     // top resources
     __weak typeof(self) _self = self;
@@ -142,7 +148,6 @@ SJEdgeControlButtonItemTag const SJEdgeControlLayerBottomItem_FullBtn = 10005;
         __strong typeof(_self) self = _self;
         if ( !self ) return;
         backItem.image = setting.backBtnImage;
-        moreItem.image = setting.moreBtnImage;
         if ( titleItem.title ) {
             titleItem.title = sj_makeAttributesString(^(SJAttributeWorker * _Nonnull make) {
                 make.insertAttrStr(titleItem.title, 0);
@@ -151,15 +156,12 @@ SJEdgeControlButtonItemTag const SJEdgeControlLayerBottomItem_FullBtn = 10005;
             });
         }
         previewItem.title = sj_makeAttributesString(^(SJAttributeWorker * _Nonnull make) {
-            make.append(setting.previewBtnTitle).font(setting.previewBtnFont).textColor([UIColor whiteColor]);
+            make.append(setting.previewBtnTitle).alignment(NSTextAlignmentCenter)
+            .font(setting.previewBtnFont).textColor([UIColor whiteColor]);
         });
         previewItem.image = setting.previewBtnImage;
         [self.topAdapter reload];
     }];
-}
-/// 更新容器的布局
-- (void)_updateLayoutFor_TopAdapterWithVideoPlayer:(__kindof SJBaseVideoPlayer *)videoPlayer {
-#warning next ..
 }
 
 /// 更新显示状态
@@ -193,7 +195,6 @@ SJEdgeControlButtonItemTag const SJEdgeControlLayerBottomItem_FullBtn = 10005;
     /// 更新item显示状态, 是否需要隐藏
     SJEdgeControlButtonItem *backItem = [self.topAdapter itemForTag:SJEdgeControlLayerTopItem_Back];
     SJEdgeControlButtonItem *previewItem = [self.topAdapter itemForTag:SJEdgeControlLayerTopItem_Preview];
-    SJEdgeControlButtonItem *moreItem = [self.topAdapter itemForTag:SJEdgeControlLayerTopItem_More];
     SJEdgeControlButtonItem *titleItem = [self.topAdapter itemForTag:SJEdgeControlLayerTopItem_Title];
 
     BOOL isFull = videoPlayer.isFullScreen;
@@ -234,9 +235,6 @@ SJEdgeControlButtonItemTag const SJEdgeControlLayerBottomItem_FullBtn = 10005;
     /// preview item
     previewItem.hidden = !_hasBeenGeneratedPreviewImages || !isFull || !_generatePreviewImages;
     
-    /// more item
-    moreItem.hidden = !isFull;
-
     [self _callDelegateMethodOfItemsForAdapter:_topAdapter videoPlayer:videoPlayer];
     [self.topAdapter reload];
 }
@@ -353,11 +351,6 @@ SJEdgeControlButtonItemTag const SJEdgeControlLayerBottomItem_FullBtn = 10005;
     [lockItem addTarget:self action:@selector(clickedLockItem:)];
 }
 
-/// 更新容器的布局
-- (void)_updateLayoutFor_LeftAdapterWithVideoPlayer:(__kindof SJBaseVideoPlayer *)videoPlayer {
-#warning next ..
-}
-
 /// 更新显示状态
 - (void)_updateAppearStateFor_LeftAdapterWithVideoPlayer:(__kindof SJBaseVideoPlayer *)videoPlayer {
     /// 锁屏状态下显示
@@ -454,11 +447,6 @@ SJEdgeControlButtonItemTag const SJEdgeControlLayerBottomItem_FullBtn = 10005;
         if ( !self ) return;
         [self _updateItemsFor_BottomAdapterIfNeeded:self.videoPlayer];
     }];
-}
-
-/// 更新容器的布局
-- (void)_updateLayoutFor_BottomAdapterWithVideoPlayer:(__kindof SJBaseVideoPlayer *)videoPlayer {
-#warning next ..
 }
 
 /// 更新显示状态
@@ -583,11 +571,6 @@ SJEdgeControlButtonItemTag const SJEdgeControlLayerBottomItem_FullBtn = 10005;
     
 }
 
-/// 更新容器的布局
-- (void)_updateLayoutFor_RightAdapterWithVideoPlayer:(__kindof SJBaseVideoPlayer *)videoPlayer {
-#warning next ..
-}
-
 /// 更新显示状态
 - (void)_updateAppearStateFor_RightAdapterWithVideoPlayer:(__kindof SJBaseVideoPlayer *)videoPlayer {
     /// 锁屏状态下, 使隐藏
@@ -620,6 +603,61 @@ SJEdgeControlButtonItemTag const SJEdgeControlLayerBottomItem_FullBtn = 10005;
 
 
 #pragma mark - center
+@synthesize replayButton = _replayButton;
+- (UIButton *)replayButton {
+    if ( _replayButton ) return _replayButton;
+    _replayButton = [UIButton buttonWithType:UIButtonTypeCustom];
+    _replayButton.titleLabel.numberOfLines = 0;
+    [self.controlView addSubview:_replayButton];
+    [_replayButton mas_makeConstraints:^(MASConstraintMaker *make) {
+        make.center.offset(0);
+    }];
+    [self _updateReplayButton];
+    [self _hidden:_replayButton animated:NO];
+    
+    __weak typeof(self) _self = self;
+    _replayButton.settingRecroder = [[SJVideoPlayerControlSettingRecorder alloc] initWithSettings:^(SJEdgeControlLayerSettings * _Nonnull setting) {
+        __strong typeof(_self) self = _self;
+        if ( !self ) return;
+        [self _updateReplayButton];
+    }];
+    
+    [_replayButton addTarget:self action:@selector(clickedReplayButton:) forControlEvents:UIControlEventTouchUpInside];
+    return _replayButton;
+}
+
+- (void)_updateAppearStateOfReplayButtomForVideoPlayer:(__kindof SJBaseVideoPlayer *)videoPlayer {
+    if ( [videoPlayer playStatus_isInactivity_ReasonPlayEnd] ) {
+        [self _show:self.replayButton animated:YES];
+    }
+    else {
+        [self _hidden:_replayButton animated:NO];
+    }
+}
+
+- (void)clickedReplayButton:(UIButton *)button {
+    [_videoPlayer replay];
+}
+
+- (void)_updateReplayButton {
+    SJEdgeControlLayerSettings *settings = SJEdgeControlLayerSettings.commonSettings;
+    [self.replayButton setAttributedTitle:sj_makeAttributesString(^(SJAttributeWorker * _Nonnull make) {
+        if ( settings.replayBtnImage ) {
+            make.insert(settings.replayBtnImage, 0, CGPointZero, CGSizeZero).alignment(NSTextAlignmentCenter);
+        }
+        
+        if ( settings.replayBtnImage && 0 != settings.replayBtnTitle.length ) {
+            make.append(@"\n");
+        }
+        
+        if ( 0 != settings.replayBtnTitle.length ) {
+            make.append(settings.replayBtnTitle).font(settings.replayBtnFont)
+            .textColor(settings.replayBtnTitleColor);
+        }
+        make.alignment(NSTextAlignmentCenter).lineSpacing(6);
+    }) forState:UIControlStateNormal];
+}
+
 @synthesize loadingView = _loadingView;
 - (SJLoadingView *)loadingView {
     if ( _loadingView ) return _loadingView;
@@ -697,7 +735,8 @@ SJEdgeControlButtonItemTag const SJEdgeControlLayerBottomItem_FullBtn = 10005;
     if ( CGRectContainsPoint( _topContainerView.frame, location ) ||
          CGRectContainsPoint( _leftContainerView.frame, location ) ||
          CGRectContainsPoint( _bottomContainerView.frame, location ) ||
-         CGRectContainsPoint( _rightContainerView.frame, location ) ) return NO;
+         CGRectContainsPoint( _rightContainerView.frame, location ) ||
+         (![self _isHiddenWithView:_previewView] && CGRectContainsPoint( _previewView.frame, location)) ) return NO;
     return YES;
 }
 
@@ -735,6 +774,7 @@ SJEdgeControlButtonItemTag const SJEdgeControlLayerBottomItem_FullBtn = 10005;
 
 - (void)videoPlayer:(__kindof SJBaseVideoPlayer *)videoPlayer statusDidChanged:(SJVideoPlayerPlayStatus)status {
     [self _updateItemsForAdaptersIfNeeded:videoPlayer];
+    [self _updateAppearStateOfReplayButtomForVideoPlayer:videoPlayer];
 }
 
 - (void)videoPlayer:(__kindof SJBaseVideoPlayer *)videoPlayer currentTime:(NSTimeInterval)currentTime currentTimeStr:(NSString *)currentTimeStr totalTime:(NSTimeInterval)totalTime totalTimeStr:(NSString *)totalTimeStr {
@@ -778,7 +818,6 @@ SJEdgeControlButtonItemTag const SJEdgeControlLayerBottomItem_FullBtn = 10005;
 - (void)horizontalDirectionDidEndDragging:(SJBaseVideoPlayer *)videoPlayer {
     [self _draggingDidEndForVideoPlayer:videoPlayer];
 }
-
 
 /// This Tap gesture triggered when player locked screen.
 /// If player locked(videoPlayer.lockedScreen == YES), When the user tapped on the player this method will be called.
@@ -861,21 +900,29 @@ SJEdgeControlButtonItemTag const SJEdgeControlLayerBottomItem_FullBtn = 10005;
 }
 
 - (void)_show:(UIView *)view animated:(BOOL)animated {
+    [self _show:view animated:animated completionHandler:nil];
+}
+
+- (void)_hidden:(UIView *)view animated:(BOOL)animated {
+    [self _hidden:view animated:animated completionHandler:nil];
+}
+
+- (void)_show:(UIView *)view animated:(BOOL)animated completionHandler:(void(^_Nullable)(void))completionHandler {
     if ( !view.sjv_disappeared ) return;
     if ( animated ) {
         UIView_Animations(CommonAnimaDuration, ^{
             [view sjv_appear];
-        }, nil);
+        }, completionHandler);
     }
     else [view sjv_appear];
 }
 
-- (void)_hidden:(UIView *)view animated:(BOOL)animated {
+- (void)_hidden:(UIView *)view animated:(BOOL)animated completionHandler:(void(^_Nullable)(void))completionHandler {
     if ( view.sjv_disappeared ) return;
     if ( animated ) {
         UIView_Animations(CommonAnimaDuration, ^{
             [view sjv_disapear];
-        }, nil);
+        }, completionHandler);
     }
     else [view sjv_disapear];
 }

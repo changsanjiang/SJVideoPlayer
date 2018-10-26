@@ -84,7 +84,7 @@
     if ( _singleTap ) return _singleTap;
     _singleTap = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(handleSingleTap:)];
     _singleTap.delegate = self;
-    _singleTap.delaysTouchesBegan = YES;
+//    _singleTap.delaysTouchesBegan = YES;
     return _singleTap;
 }
 - (UITapGestureRecognizer *)doubleTap {

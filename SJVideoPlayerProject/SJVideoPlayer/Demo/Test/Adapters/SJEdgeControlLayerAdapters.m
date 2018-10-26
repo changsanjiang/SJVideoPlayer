@@ -198,9 +198,9 @@ NS_ASSUME_NONNULL_BEGIN
     [self.rightContainerView addSubview:_rightAdapter.view];
     [_rightAdapter.view mas_makeConstraints:^(MASConstraintMaker *make) {
         make.width.offset(49);
-        make.top.bottom.left.offset(0);
+        make.top.left.bottom.offset(0);
         if (@available(iOS 11.0, *)) {
-            make.right.equalTo(self.leftContainerView.mas_safeAreaLayoutGuideRight);
+            make.right.equalTo(self.rightContainerView.mas_safeAreaLayoutGuideRight);
         } else {
             make.right.offset(0);
         }

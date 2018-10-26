@@ -435,6 +435,7 @@ static UIScrollView *_Nullable _getScrollViewOfPlayModel(SJPlayModel *playModel)
 
 - (void)addInterceptTapGR {
     UITapGestureRecognizer *intercept = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(handleInterceptTapGR:)];
+
     [self.view addGestureRecognizer:intercept];
 }
 

@@ -127,10 +127,15 @@ NS_ASSUME_NONNULL_BEGIN
     [self _cancelOperations];
     _playAssetObserver = nil;
     _playAsset = nil;
-    _error = nil;
-    _prepareStatus = SJMediaPlaybackPrepareStatusUnknown;
     _isPreparing = NO;
     _media = media;
+    _error = nil;
+    _currentTime = 0;
+    _duration = 0;
+    _bufferLoadedTime = 0;
+    _bufferStatus = 0;
+    _presentationSize = CGSizeZero;
+    _prepareStatus = 0;
 }
 
 - (void)setMute:(BOOL)mute {

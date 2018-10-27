@@ -14,7 +14,13 @@
 #endif
 
 NS_ASSUME_NONNULL_BEGIN
-@interface SJLoadFailedControlLayer : SJEdgeControlLayerAdapters<SJVideoPlayerControlLayerDelegate, SJVideoPlayerControlLayerDataSource>
+extern SJEdgeControlButtonItemTag const SJLoadFailedControlLayerTopItem_Back;             // 返回按钮
 
+@interface SJLoadFailedControlLayer : SJEdgeControlLayerAdapters<SJVideoPlayerControlLayerDelegate, SJVideoPlayerControlLayerDataSource>
+- (void)restartControlLayer;
+- (void)exitControlLayer;
+
+@property (nonatomic, copy, nullable) void(^clickedBackItemExeBlock)(SJLoadFailedControlLayer *control);
+@property (nonatomic, copy, nullable) void(^clickedFaliedButtonExeBlock)(SJLoadFailedControlLayer *control);
 @end
 NS_ASSUME_NONNULL_END

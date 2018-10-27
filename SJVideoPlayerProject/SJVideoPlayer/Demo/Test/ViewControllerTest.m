@@ -16,6 +16,8 @@
 #import "SJMoreSettingControlLayer.h"
 
 #import "SJEdgeControlLayerNew.h"
+#import "SJLoadFailedControlLayer.h"
+#import <NSObject+SJObserverHelper.h>
 
 @interface ViewControllerTest ()<SJRouteHandler, SJEdgeControlButtonItemDelegate>
 @property (nonatomic, strong) SJVideoPlayer *player;
@@ -38,31 +40,19 @@
     
     [self _setupViews];
     
-//    SJEdgeControlLayerNew *controlLayer = [SJEdgeControlLayerNew new];
-//    SJControlLayerCarrier *carrier = [[SJControlLayerCarrier alloc] initWithIdentifier:SJControlLayer_Edge dataSource:controlLayer delegate:controlLayer exitExeBlock:^(SJControlLayerCarrier * _Nonnull carrier) {
-//        [controlLayer exitControlLayerCompeletionHandler:nil];
-//    } restartExeBlock:^(SJControlLayerCarrier * _Nonnull carrier) {
-//        [controlLayer restartControlLayerCompeletionHandler:nil];
-//    }];
-//    [self.player.switcher addControlLayer:carrier];
-//
-//
-//    controlLayer.bottomAdapter.view.backgroundColor = [UIColor redColor];
-//
-//
+    [self _addControlLayerToSwitcher];
     
-//    SJEdgeControlLayerNew *controlLayer = (id)[_player.switcher controlLayerForIdentifier:SJControlLayer_Edge].dataSource;
-//    
-//    /// test
-//    SJEdgeControlButtonItem *testItem = [SJEdgeControlButtonItem placeholderWithSize:49 tag:0];
-//    testItem.title = sj_makeAttributesString(^(SJAttributeWorker * _Nonnull make) {
-//        make.append(@"测试");
-//    });
-//    testItem.delegate = self;
-//    [controlLayer.rightAdapter addItem:testItem];
-//    [controlLayer.rightAdapter reload];
-//
-//    [testItem addTarget:self action:@selector(test)];
+    SJEdgeControlLayerNew *controlLayer = (id)[_player.switcher controlLayerForIdentifier:SJControlLayer_Edge].dataSource;
+    /// test
+    SJEdgeControlButtonItem *testItem = [SJEdgeControlButtonItem placeholderWithSize:49 tag:0];
+    testItem.title = sj_makeAttributesString(^(SJAttributeWorker * _Nonnull make) {
+        make.append(@"测试");
+    });
+    testItem.delegate = self;
+    [controlLayer.rightAdapter addItem:testItem];
+    [controlLayer.rightAdapter reload];
+
+    [testItem addTarget:self action:@selector(test)];
     
     
     _player.URLAsset = [[SJVideoPlayerURLAsset alloc] initWithURL:[NSBundle.mainBundle URLForResource:@"play" withExtension:@"mp4"]];
@@ -90,7 +80,30 @@
     }];
     
     _player.moreSettings = @[mm, mm1];
+    
+    
+    
+    [_player sj_addObserver:self forKeyPath:@"playStatus"];
+    
     // Do any additional setup after loading the view.
+}
+
+- (void)observeValueForKeyPath:(NSString *)keyPath ofObject:(id)object change:(NSDictionary<NSKeyValueChangeKey,id> *)change context:(void *)context {
+#ifdef DEBUG
+    NSLog(@"%d - %s", (int)__LINE__, __func__);
+#endif
+
+}
+
+- (void)_addControlLayerToSwitcher {
+//    SJLoadFailedControlLayer *controlLayer = [SJLoadFailedControlLayer new];
+//    SJControlLayerCarrier *carrier = [[SJControlLayerCarrier alloc] initWithIdentifier:111 dataSource:controlLayer delegate:controlLayer exitExeBlock:^(SJControlLayerCarrier * _Nonnull carrier) {
+//        [controlLayer exitControlLayer];
+//    } restartExeBlock:^(SJControlLayerCarrier * _Nonnull carrier) {
+//        [controlLayer restartControlLayer];
+//    }];
+//
+//    [_player.switcher addControlLayer:carrier];
 }
 
 - (void)test {
@@ -98,7 +111,9 @@
     NSLog(@"%d - %s", (int)__LINE__, __func__);
 #endif
     
-    [_player.switcher switchControlLayerForIdentitfier:SJControlLayer_MoreSettting];
+    dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(3 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
+        self.player.URLAsset = [[SJVideoPlayerURLAsset alloc] initWithURL:[NSURL URLWithString:@"http://www.tetet.com"]];
+    });
 }
 
 /// test

@@ -540,12 +540,12 @@ SJEdgeControlButtonItemTag const SJEdgeControlLayerBottomItem_FullBtn = 10005;
 - (void)_updatePlaybackProgressFor_BottomAdapterWithCurrentTime:(NSTimeInterval)currentTime duration:(NSTimeInterval)duration {
     SJEdgeControlButtonItem *sliderItem = [_bottomAdapter itemForTag:SJEdgeControlLayerBottomItem_Slider];
     SJProgressSlider *slider = sliderItem.customView;
-    slider.maxValue = duration;
+    slider.maxValue = duration?:1;
     if ( !slider.isDragging ) slider.value = currentTime;
     
     if ( ![self _isHiddenWithView:_bottomProgressSlider] ) {
-        _bottomProgressSlider.value = currentTime;
-        _bottomProgressSlider.maxValue = duration;
+        _bottomProgressSlider.value = slider.value;
+        _bottomProgressSlider.maxValue = slider.maxValue;
     }
 }
 
@@ -811,6 +811,9 @@ SJEdgeControlButtonItemTag const SJEdgeControlLayerBottomItem_FullBtn = 10005;
 - (void)videoPlayer:(__kindof SJBaseVideoPlayer *)videoPlayer prepareToPlay:(SJVideoPlayerURLAsset *)asset {
     [self _resetGeneratePreviewImagesState];
     [self _updateItemsForAdaptersIfNeeded:videoPlayer];
+    [self _updateTimeLabelFor_BottomAdapterWithCurrentTimeStr:videoPlayer.currentTimeStr durationStr:videoPlayer.totalTimeStr];
+    [self _updatePlaybackProgressFor_BottomAdapterWithCurrentTime:videoPlayer.currentTime duration:videoPlayer.totalTime];
+    NSLog(@"%@ - %@", videoPlayer.currentTimeStr, videoPlayer.totalTimeStr);
 }
 
 - (void)videoPlayer:(__kindof SJBaseVideoPlayer *)videoPlayer statusDidChanged:(SJVideoPlayerPlayStatus)status {

@@ -13,6 +13,17 @@
 #import "SJEdgeLightweightControlLayer.h"
 #import "UIView+SJVideoPlayerSetting.h"
 #import "SJMoreSettingControlLayer.h"
+#if __has_include(<SJObserverHelper/NSObject+SJObserverHelper.h>)
+#import <SJObserverHelper/NSObject+SJObserverHelper.h>
+#else
+#import "NSObject+SJObserverHelper.h"
+#endif
+#if __has_include(<SJBaseVideoPlayer/SJBaseVideoPlayer.h>)
+#import <SJBaseVideoPlayer/SJBaseVideoPlayer+PlayStatus.h>
+#else
+#import "SJBaseVideoPlayer+PlayStatus.h"
+#endif
+#import "SJLoadFailedControlLayer.h"
 
 NS_ASSUME_NONNULL_BEGIN
 @interface _SJEdgeControlButtonItemDelegate : NSObject<SJEdgeControlButtonItemDelegate>
@@ -40,6 +51,26 @@ NS_ASSUME_NONNULL_BEGIN
 }
 @end
 
+@interface _SJPlayerPlayFailedObserver : NSObject
+- (instancetype)initWithPlayer:(SJBaseVideoPlayer *)player;
+@property (nonatomic, copy, nullable) void(^playFailedExeBlock)(SJBaseVideoPlayer *player);
+@end
+@implementation _SJPlayerPlayFailedObserver
+static NSString *_kPlayStatus = @"playStatus";
+- (instancetype)initWithPlayer:(SJBaseVideoPlayer *)player {
+    self = [super init];
+    if ( !self ) return nil;
+    [player sj_addObserver:self forKeyPath:_kPlayStatus context:&_kPlayStatus];
+    return self;
+}
+
+- (void)observeValueForKeyPath:(nullable NSString *)keyPath ofObject:(nullable SJBaseVideoPlayer *)object change:(nullable NSDictionary<NSKeyValueChangeKey,id> *)change context:(nullable void *)context {
+    if ( context == &_kPlayStatus ) {
+        if ( [object playStatus_isInactivity_ReasonPlayFailed] ) {
+            if ( _playFailedExeBlock ) _playFailedExeBlock(object);
+        }
+    }}
+@end
 
 
 
@@ -53,11 +84,16 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic, strong, readonly) SJControlLayerCarrier *defaultFilmEditingCarrier;
 @property (nonatomic, strong, readonly) SJControlLayerCarrier *defaultEdgeLightweightCarrier;
 @property (nonatomic, strong, readonly) SJControlLayerCarrier *defaultMoreSettingCarrier;
+@property (nonatomic, strong, readonly) SJControlLayerCarrier *defaultLoadFailedCarrier;
+
 
 - (nullable SJEdgeControlLayerNew *)defaultEdgeControlLayer;
 - (nullable SJFilmEditingControlLayer *)defaultFilmEditingControlLayer;
 - (nullable SJEdgeLightweightControlLayer *)defaultEdgeLightweightControlLayer;
 - (nullable SJMoreSettingControlLayer *)defaultMoreSettingControlLayer;
+- (nullable SJLoadFailedControlLayer *)defaultLoadFailedControlLayer;
+
+@property (nonatomic, strong, readonly) _SJPlayerPlayFailedObserver *playFailedObserver;
 @end
 
 @implementation SJVideoPlayer
@@ -83,9 +119,9 @@ NS_ASSUME_NONNULL_BEGIN
     [self.switcher addControlLayer:self.defaultEdgeCarrier];
     /// 切换到添加的控制层
     [self.switcher switchControlLayerForIdentitfier:SJControlLayer_Edge];
-    
     /// 显示更多按钮
     self.showMoreItemForTopControlLayer = YES;
+    [self playFailedObserver];
     return self;
 }
 
@@ -95,6 +131,7 @@ NS_ASSUME_NONNULL_BEGIN
     [videoPlayer.switcher addControlLayer:videoPlayer.defaultEdgeLightweightCarrier];
     /// 切换到添加的控制层
     [videoPlayer.switcher switchControlLayerForIdentitfier:SJControlLayer_Edge];
+    [videoPlayer playFailedObserver];
     return videoPlayer;
 }
 
@@ -241,7 +278,55 @@ NS_ASSUME_NONNULL_BEGIN
     return nil;
 }
 
+#pragma mark -
+@synthesize playFailedObserver = _playFailedObserver;
+- (_SJPlayerPlayFailedObserver *)playFailedObserver {
+    if ( _playFailedObserver ) return _playFailedObserver;
+    _playFailedObserver = [[_SJPlayerPlayFailedObserver alloc] initWithPlayer:self];
+    __weak typeof(self) _self = self;
+    _playFailedObserver.playFailedExeBlock = ^(SJBaseVideoPlayer * _Nonnull player) {
+        __strong typeof(_self) self = _self;
+        if ( !self ) return ;
+        if ( ![self.switcher controlLayerForIdentifier:SJControlLayer_LoadFailed] ) {
+            [self.switcher addControlLayer:self.defaultLoadFailedCarrier];
+        }
+        [self.switcher switchControlLayerForIdentitfier:SJControlLayer_LoadFailed];
+    };
+    return _playFailedObserver;
+}
 
+@synthesize defaultLoadFailedCarrier = _defaultLoadFailedCarrier;
+- (SJControlLayerCarrier *)defaultLoadFailedCarrier {
+    if ( _defaultLoadFailedCarrier ) return _defaultLoadFailedCarrier;
+    SJLoadFailedControlLayer *controlLayer = [SJLoadFailedControlLayer new];
+    __weak typeof(self) _self = self;
+    controlLayer.clickedBackItemExeBlock = ^(SJLoadFailedControlLayer * _Nonnull control) {
+        __strong typeof(_self) self = _self;
+        if ( !self ) return ;
+        if ( self.clickedBackEvent ) self.clickedBackEvent(self);
+    };
+    
+    controlLayer.clickedFaliedButtonExeBlock = ^(SJLoadFailedControlLayer * _Nonnull control) {
+        __strong typeof(_self) self = _self;
+        if ( !self ) return ;
+        [self refresh];
+        [self.switcher switchToPreviousControlLayer];
+    };
+    
+    _defaultLoadFailedCarrier = [[SJControlLayerCarrier alloc] initWithIdentifier:SJControlLayer_LoadFailed dataSource:controlLayer delegate:controlLayer exitExeBlock:^(SJControlLayerCarrier * _Nonnull carrier) {
+        [controlLayer exitControlLayer];
+    } restartExeBlock:^(SJControlLayerCarrier * _Nonnull carrier) {
+        [controlLayer restartControlLayer];
+    }];
+    return _defaultLoadFailedCarrier;
+}
+
+- (nullable SJLoadFailedControlLayer *)defaultLoadFailedControlLayer {
+    if ( [_defaultLoadFailedCarrier.dataSource isKindOfClass:[SJLoadFailedControlLayer class]] ) {
+        return (id)_defaultLoadFailedCarrier.dataSource;
+    }
+    return nil;
+}
 @end
 
 
@@ -471,6 +556,7 @@ NS_ASSUME_NONNULL_BEGIN
 SJControlLayerIdentifier const SJControlLayer_Edge = LONG_MAX - 1;
 SJControlLayerIdentifier const SJControlLayer_FilmEditing = LONG_MAX - 2;
 SJControlLayerIdentifier const SJControlLayer_MoreSettting = LONG_MAX - 3;
+SJControlLayerIdentifier const SJControlLayer_LoadFailed = LONG_MAX - 4;
 
 SJEdgeControlButtonItemTag const SJEdgeControlLayerBottomItem_FilmEditing = LONG_MAX - 1;   // GIF/导出/截屏
 SJEdgeControlButtonItemTag const SJEdgeControlLayerTopItem_More = LONG_MAX - 2;             // More

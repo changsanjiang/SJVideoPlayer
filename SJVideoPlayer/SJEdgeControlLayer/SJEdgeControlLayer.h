@@ -1,57 +1,43 @@
 //
 //  SJEdgeControlLayer.h
-//  SJVideoPlayerProject
+//  SJVideoPlayer
 //
-//  Created by BlueDancer on 2018/2/6.
-//  Copyright © 2018年 SanJiang. All rights reserved.
+//  Created by BlueDancer on 2018/10/24.
+//  Copyright © 2018 畅三江. All rights reserved.
 //
 
-#import <Foundation/Foundation.h>
+#import "SJEdgeControlLayerAdapters.h"
 #if __has_include(<SJBaseVideoPlayer/SJVideoPlayerControlLayerProtocol.h>)
 #import <SJBaseVideoPlayer/SJVideoPlayerControlLayerProtocol.h>
 #else
 #import "SJVideoPlayerControlLayerProtocol.h"
 #endif
 
-@protocol SJEdgeControlLayerDelegate;
-@class SJVideoPlayerMoreSetting, SJFilmEditingResultShare;
-
 NS_ASSUME_NONNULL_BEGIN
+#pragma mark - Top
+extern SJEdgeControlButtonItemTag const SJEdgeControlLayerTopItem_Back;             // 返回按钮
+extern SJEdgeControlButtonItemTag const SJEdgeControlLayerTopItem_Title;            // 标题
+extern SJEdgeControlButtonItemTag const SJEdgeControlLayerTopItem_Preview;          // 预览按钮
 
-@interface SJEdgeControlLayer : UIView<SJVideoPlayerControlLayerDelegate, SJVideoPlayerControlLayerDataSource>
+#pragma mark - Left
+extern SJEdgeControlButtonItemTag const SJEdgeControlLayerLeftItem_Lock;            // 锁屏按钮
 
-- (void)restartControlLayerCompeletionHandler:(nullable void(^)(void))compeletionHandler;
+#pragma mark - bottom
+extern SJEdgeControlButtonItemTag const SJEdgeControlLayerBottomItem_Play;          // 播放按钮
+extern SJEdgeControlButtonItemTag const SJEdgeControlLayerBottomItem_CurrentTime;   // 当前时间
+extern SJEdgeControlButtonItemTag const SJEdgeControlLayerBottomItem_DurationTime;  // 全部时长
+extern SJEdgeControlButtonItemTag const SJEdgeControlLayerBottomItem_Separator;     // 时间分隔符(斜杠/)
+extern SJEdgeControlButtonItemTag const SJEdgeControlLayerBottomItem_Slider;        // 播放进度条
+extern SJEdgeControlButtonItemTag const SJEdgeControlLayerBottomItem_FullBtn;       // 全屏按钮
 
-- (void)exitControlLayerCompeletionHandler:(nullable void(^)(void))compeletionHandler;
 
-@property (nonatomic, weak) id <SJEdgeControlLayerDelegate> delegate;
+@interface SJEdgeControlLayer : SJEdgeControlLayerAdapters<SJVideoPlayerControlLayerDelegate, SJVideoPlayerControlLayerDataSource>
+- (void)restartControlLayer;
+- (void)exitControlLayer;
 
-
-
-#pragma mark
-@property (nonatomic, strong, nullable) NSArray<SJVideoPlayerMoreSetting *> *moreSettings;
-
-@property (nonatomic, strong, nullable) SJFilmEditingResultShare *filmEditingResultShare;
-
-@property (nonatomic) BOOL generatePreviewImages;
-
-@property (nonatomic) BOOL enableFilmEditing;
-
-@property (nonatomic) BOOL disablePromptWhenNetworkStatusChanges;
-
+@property (nonatomic, copy, nullable) void(^clickedBackItemExeBlock)(SJEdgeControlLayer *control);
 @property (nonatomic) BOOL hideBackButtonWhenOrientationIsPortrait;
-
+@property (nonatomic) BOOL disablePromptWhenNetworkStatusChanges;
+@property (nonatomic) BOOL generatePreviewImages;
 @end
-
-@protocol SJEdgeControlLayerDelegate <NSObject>
-
-@optional
-  
-/// 返回按钮被点击
-- (void)clickedBackBtnOnControlLayer:(SJEdgeControlLayer *)controlLayer;
-
-/// 右侧按钮被点击
-- (void)clickedFilmEditingBtnOnControlLayer:(SJEdgeControlLayer *)controlLayer;
-@end
-
 NS_ASSUME_NONNULL_END

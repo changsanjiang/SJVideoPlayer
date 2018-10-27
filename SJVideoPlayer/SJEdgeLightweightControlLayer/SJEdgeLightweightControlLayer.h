@@ -22,9 +22,9 @@ NS_ASSUME_NONNULL_BEGIN
  */
 @interface SJEdgeLightweightControlLayer : NSObject<SJVideoPlayerControlLayerDelegate, SJVideoPlayerControlLayerDataSource>
 
-- (void)restartControlLayerCompeletionHandler:(nullable void(^)(void))compeletionHandler;
+- (void)restartControlLayer;
 
-- (void)exitControlLayerCompeletionHandler:(nullable void(^)(void))compeletionHandler;
+- (void)exitControlLayer;
 
 @property (nonatomic, weak, nullable) id <SJEdgeLightweightControlLayerDelegate> delegate;
 

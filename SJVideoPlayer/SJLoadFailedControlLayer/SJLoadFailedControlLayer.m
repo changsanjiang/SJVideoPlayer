@@ -36,7 +36,7 @@ SJEdgeControlButtonItemTag const SJLoadFailedControlLayerTopItem_Back = 10000;
 
 @implementation SJLoadFailedControlLayer
 - (void)restartControlLayer {
-    [self _show:self.controlView animated:NO];
+    [self _show:self.controlView animated:YES];
 }
 
 - (void)exitControlLayer {
@@ -45,8 +45,9 @@ SJEdgeControlButtonItemTag const SJLoadFailedControlLayerTopItem_Back = 10000;
     _videoPlayer.controlLayerDelegate = nil;
     _videoPlayer = nil;
     
-    [self _hidden:self.controlView animated:NO];
-    [self.controlView removeFromSuperview];
+    [self _hidden:self.controlView animated:YES completionHandler:^{
+        [self.controlView removeFromSuperview];
+    }];
 }
 
 - (instancetype)initWithFrame:(CGRect)frame {
@@ -172,6 +173,10 @@ SJEdgeControlButtonItemTag const SJLoadFailedControlLayerTopItem_Back = 10000;
     [videoPlayer.view layoutIfNeeded];
     
     [self _show:_topContainerView animated:NO];
+}
+
+- (void)videoPlayer:(__kindof SJBaseVideoPlayer *)videoPlayer willRotateView:(BOOL)isFull {
+    [self.topAdapter reload];
 }
 
 #pragma mark -

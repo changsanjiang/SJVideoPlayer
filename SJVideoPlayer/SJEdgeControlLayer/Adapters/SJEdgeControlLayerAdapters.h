@@ -36,6 +36,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 /// default is NO.
 @property (nonatomic) BOOL showBackgroundColor;
-@property (nonatomic) BOOL autoMarginForTop; // 是否自动让出状态栏的高度(仅在全屏状态下有效)
+/// default is YES.
+@property (nonatomic) BOOL autoAdjustTopSpacing; // 自动调整顶部间距, 让出状态栏
 @end
 NS_ASSUME_NONNULL_END

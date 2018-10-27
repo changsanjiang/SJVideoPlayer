@@ -21,9 +21,9 @@ NS_ASSUME_NONNULL_BEGIN
 
 @interface SJFilmEditingControlLayer : UIView<SJVideoPlayerControlLayerDelegate, SJVideoPlayerControlLayerDataSource>
 
-- (void)restartControlLayerCompeletionHandler:(nullable void(^)(void))compeletionHandler;
+- (void)restartControlLayer;
 
-- (void)exitControlLayerCompeletionHandler:(nullable void(^)(void))compeletionHandler;
+- (void)exitControlLayer;
 
 #pragma mark
 @property (nonatomic, weak, nullable) id <SJFilmEditingControlLayerDelegate> delegate;

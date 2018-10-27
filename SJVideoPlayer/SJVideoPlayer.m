@@ -8,7 +8,7 @@
 
 #import "SJVideoPlayer.h"
 #import <objc/message.h>
-#import "SJEdgeControlLayerNew.h"
+#import "SJEdgeControlLayer.h"
 #import "SJFilmEditingControlLayer.h"
 #import "SJEdgeLightweightControlLayer.h"
 #import "UIView+SJVideoPlayerSetting.h"
@@ -87,7 +87,7 @@ static NSString *_kPlayStatus = @"playStatus";
 @property (nonatomic, strong, readonly) SJControlLayerCarrier *defaultLoadFailedCarrier;
 
 
-- (nullable SJEdgeControlLayerNew *)defaultEdgeControlLayer;
+- (nullable SJEdgeControlLayer *)defaultEdgeControlLayer;
 - (nullable SJFilmEditingControlLayer *)defaultFilmEditingControlLayer;
 - (nullable SJEdgeLightweightControlLayer *)defaultEdgeLightweightControlLayer;
 - (nullable SJMoreSettingControlLayer *)defaultMoreSettingControlLayer;
@@ -160,25 +160,25 @@ static NSString *_kPlayStatus = @"playStatus";
 - (SJControlLayerCarrier *)defaultEdgeCarrier {
     if ( _defaultEdgeCarrier ) return _defaultEdgeCarrier;
     // 创建一个控制层
-    SJEdgeControlLayerNew *edgeControlLayer = [SJEdgeControlLayerNew new];
+    SJEdgeControlLayer *edgeControlLayer = [SJEdgeControlLayer new];
     // 创建载体
     SJControlLayerCarrier *defaultEdgeCarrier =
     [[SJControlLayerCarrier alloc] initWithIdentifier:SJControlLayer_Edge dataSource:edgeControlLayer delegate:edgeControlLayer exitExeBlock:^(SJControlLayerCarrier * _Nonnull carrier) {
-        [(SJEdgeControlLayerNew *)carrier.dataSource exitControlLayerCompeletionHandler:nil];
+        [(SJEdgeControlLayer *)carrier.dataSource exitControlLayer];
     } restartExeBlock:^(SJControlLayerCarrier * _Nonnull carrier) {
-        [(SJEdgeControlLayerNew *)carrier.dataSource restartControlLayerCompeletionHandler:nil];
+        [(SJEdgeControlLayer *)carrier.dataSource restartControlLayer];
     }];
     return _defaultEdgeCarrier = defaultEdgeCarrier;
 }
 
-- (nullable SJEdgeControlLayerNew *)defaultEdgeControlLayer {
-    if ( [_defaultEdgeCarrier.dataSource isKindOfClass:[SJEdgeControlLayerNew class]] ) {
+- (nullable SJEdgeControlLayer *)defaultEdgeControlLayer {
+    if ( [_defaultEdgeCarrier.dataSource isKindOfClass:[SJEdgeControlLayer class]] ) {
         return (id)_defaultEdgeCarrier.dataSource;
     }
     return nil;
 }
 /// 右侧按钮被点击
-- (void)clickedFilmEditingBtnOnControlLayer:(SJEdgeControlLayerNew *)controlLayer {
+- (void)clickedFilmEditingBtnOnControlLayer:(SJEdgeControlLayer *)controlLayer {
     [self.switcher switchControlLayerForIdentitfier:SJControlLayer_FilmEditing];
 }
 
@@ -189,9 +189,9 @@ static NSString *_kPlayStatus = @"playStatus";
     SJFilmEditingControlLayer *filmEditingControlLayer = [SJFilmEditingControlLayer new];
     filmEditingControlLayer.delegate = self;
     SJControlLayerCarrier *defaultFilmEditingCarrier = [[SJControlLayerCarrier alloc] initWithIdentifier:SJControlLayer_FilmEditing dataSource:filmEditingControlLayer delegate:filmEditingControlLayer exitExeBlock:^(SJControlLayerCarrier * _Nonnull carrier) {
-        [(SJFilmEditingControlLayer *)carrier.dataSource exitControlLayerCompeletionHandler:nil];
+        [(SJFilmEditingControlLayer *)carrier.dataSource exitControlLayer];
     } restartExeBlock:^(SJControlLayerCarrier * _Nonnull carrier) {
-        [(SJFilmEditingControlLayer *)carrier.dataSource restartControlLayerCompeletionHandler:nil];
+        [(SJFilmEditingControlLayer *)carrier.dataSource restartControlLayer];
     }];
     return _defaultFilmEditingCarrier = defaultFilmEditingCarrier;
 }
@@ -224,9 +224,9 @@ static NSString *_kPlayStatus = @"playStatus";
     SJEdgeLightweightControlLayer *edgeControlLayer = [SJEdgeLightweightControlLayer new];
     edgeControlLayer.delegate = self;
     _defaultEdgeLightweightCarrier = [[SJControlLayerCarrier alloc] initWithIdentifier:SJControlLayer_Edge dataSource:edgeControlLayer delegate:edgeControlLayer exitExeBlock:^(SJControlLayerCarrier * _Nonnull carrier) {
-        [(SJEdgeLightweightControlLayer *)carrier.dataSource exitControlLayerCompeletionHandler:nil];
+        [(SJEdgeLightweightControlLayer *)carrier.dataSource exitControlLayer];
     } restartExeBlock:^(SJControlLayerCarrier * _Nonnull carrier) {
-        [(SJEdgeLightweightControlLayer *)carrier.dataSource restartControlLayerCompeletionHandler:nil];
+        [(SJEdgeLightweightControlLayer *)carrier.dataSource restartControlLayer];
     }];
     return _defaultEdgeLightweightCarrier;
 }
@@ -344,7 +344,7 @@ static NSString *_kPlayStatus = @"playStatus";
 - (void)setClickedBackEvent:(nullable void (^)(SJVideoPlayer * _Nonnull))clickedBackEvent {
     objc_setAssociatedObject(self, @selector(clickedBackEvent), clickedBackEvent, OBJC_ASSOCIATION_RETAIN_NONATOMIC);
     __weak typeof(self) _self = self;
-    [self defaultEdgeControlLayer].clickedBackItemExeBlock = ^(SJEdgeControlLayerNew * _Nonnull control) {
+    [self defaultEdgeControlLayer].clickedBackItemExeBlock = ^(SJEdgeControlLayer * _Nonnull control) {
         __strong typeof(_self) self = _self;
         if ( !self ) return ;
         if ( clickedBackEvent ) clickedBackEvent(self);

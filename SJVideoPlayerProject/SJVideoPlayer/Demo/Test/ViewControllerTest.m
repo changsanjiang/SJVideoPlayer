@@ -15,7 +15,7 @@
 #import <SJAttributeWorker.h>
 #import "SJMoreSettingControlLayer.h"
 
-#import "SJEdgeControlLayerNew.h"
+#import "SJEdgeControlLayer.h"
 #import "SJLoadFailedControlLayer.h"
 #import <NSObject+SJObserverHelper.h>
 
@@ -42,7 +42,7 @@
     
     [self _addControlLayerToSwitcher];
     
-    SJEdgeControlLayerNew *controlLayer = (id)[_player.switcher controlLayerForIdentifier:SJControlLayer_Edge].dataSource;
+    SJEdgeControlLayer *controlLayer = (id)[_player.switcher controlLayerForIdentifier:SJControlLayer_Edge].dataSource;
     /// test
     SJEdgeControlButtonItem *testItem = [SJEdgeControlButtonItem placeholderWithSize:49 tag:0];
     testItem.title = sj_makeAttributesString(^(SJAttributeWorker * _Nonnull make) {

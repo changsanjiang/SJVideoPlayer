@@ -22,9 +22,16 @@
 
 NS_ASSUME_NONNULL_BEGIN
 @implementation SJEdgeControlLayerAdapters
-- (void)setAutoMarginForTop:(BOOL)autoMarginForTop {
-    _autoMarginForTop = autoMarginForTop;
-    if ( autoMarginForTop ) [self _observeOrientationChangeOfStatusBarNotify];
+- (instancetype)initWithFrame:(CGRect)frame {
+    self = [super initWithFrame:frame];
+    if ( !self ) return nil;
+    self.autoAdjustTopSpacing = YES;
+    return self;
+}
+
+- (void)setAutoAdjustTopSpacing:(BOOL)autoAdjustTopSpacing {
+    _autoAdjustTopSpacing = autoAdjustTopSpacing;
+    if ( autoAdjustTopSpacing ) [self _observeOrientationChangeOfStatusBarNotify];
     else [self _removeNotify];
 }
 

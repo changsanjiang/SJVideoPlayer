@@ -107,16 +107,16 @@ NS_ASSUME_NONNULL_BEGIN
 
 #pragma mark -
 
-- (void)restartControlLayerCompeletionHandler:(nullable void(^)(void))compeletionHandler {
+- (void)restartControlLayer {
     if ( _videoPlayer.URLAsset ) {
         [_videoPlayer setControlLayerAppeared:YES];
-        [self controlLayerNeedAppear:_videoPlayer compeletionHandler:compeletionHandler];
+        [self controlLayerNeedAppear:_videoPlayer compeletionHandler:nil];
         return;
     }
     
     [_videoPlayer controlLayerNeedDisappear];
 }
-- (void)exitControlLayerCompeletionHandler:(nullable void(^)(void))compeletionHandler {
+- (void)exitControlLayer {
     /// clean
     _videoPlayer.controlLayerDataSource = nil;
     _videoPlayer.controlLayerDelegate = nil;
@@ -131,7 +131,6 @@ NS_ASSUME_NONNULL_BEGIN
         [self->_centerControlView disappear];
     }, ^{
         [self.controlView removeFromSuperview];
-        if ( compeletionHandler ) compeletionHandler();
     });
 }
 

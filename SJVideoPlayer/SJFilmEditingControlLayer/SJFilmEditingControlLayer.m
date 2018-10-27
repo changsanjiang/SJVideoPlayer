@@ -127,7 +127,7 @@ NS_ASSUME_NONNULL_END
     [self.screenshotBtn setImage:settings.screenshotBtnImage forState:UIControlStateNormal];
 }
 
-- (void)exitControlLayerCompeletionHandler:(nullable void (^)(void))compeletionHandler {
+- (void)exitControlLayer {
     if ( _propertyRecorder ) {
         _videoPlayer.disableAutoRotation = self.propertyRecorder.disableRotation;
         _videoPlayer.enableControlLayerDisplayController = self.propertyRecorder.enableControlLayerDisplayController;
@@ -144,19 +144,16 @@ NS_ASSUME_NONNULL_END
         [self->_recordView removeFromSuperview]; self->_recordView = nil;
         [self->_resultPresentView removeFromSuperview]; self->_resultPresentView = nil;
         [self removeFromSuperview];
-        if ( compeletionHandler ) compeletionHandler();
     }];
 }
 
-- (void)restartControlLayerCompeletionHandler:(nullable void (^)(void))compeletionHandler {
+- (void)restartControlLayer {
     [self changedStatus:SJFilmEditingStatus_Unknown];
     self.currentOperation = SJVideoPlayerFilmEditingOperation_Unknown;
     [self.btnContainerView sj_disappear];
     [UIView animateWithDuration:0.4 animations:^{
         [self sj_appear];
         [self.btnContainerView sj_appear];
-    } completion:^(BOOL finished) {
-        if ( compeletionHandler ) compeletionHandler();
     }];
 }
 

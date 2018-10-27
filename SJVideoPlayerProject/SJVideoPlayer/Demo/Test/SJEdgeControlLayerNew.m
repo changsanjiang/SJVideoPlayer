@@ -63,6 +63,7 @@ SJEdgeControlButtonItemTag const SJEdgeControlLayerBottomItem_FullBtn = 10005;
 @property (nonatomic, strong, readonly) SJVideoPlayerDraggingProgressView *draggingProgressView;
 @property (nonatomic) BOOL hasBeenGeneratedPreviewImages;
 @property (nonatomic, strong, readonly) UIButton *replayButton;
+@property (nonatomic, strong, readonly) SJProgressSlider *bottomProgressSlider;
 @end
 
 @implementation SJEdgeControlLayerNew
@@ -107,6 +108,7 @@ SJEdgeControlButtonItemTag const SJEdgeControlLayerBottomItem_FullBtn = 10005;
     self.bottomContainerView.sjv_disappearDirection = SJViewDisappearAnimation_Bottom;
     self.rightContainerView.sjv_disappearDirection = SJViewDisappearAnimation_Right;
     [self _hidden:_draggingProgressView animated:NO];
+    [self _hidden:_bottomProgressSlider animated:NO];
     self.autoMarginForTop = YES;
     _generatePreviewImages = YES;
     SJEdgeControlLayerSettings.update(^(SJEdgeControlLayerSettings * _Nonnull settings) {});
@@ -123,6 +125,12 @@ SJEdgeControlButtonItemTag const SJEdgeControlLayerBottomItem_FullBtn = 10005;
     [self.controlView addSubview:self.loadingView];
     [_loadingView mas_makeConstraints:^(MASConstraintMaker *make) {
         make.center.offset(0);
+    }];
+
+    [self.controlView addSubview:self.bottomProgressSlider];
+    [_bottomProgressSlider mas_makeConstraints:^(MASConstraintMaker *make) {
+        make.left.bottom.right.offset(0);
+        make.height.offset(1);
     }];
 }
 
@@ -320,8 +328,7 @@ SJEdgeControlButtonItemTag const SJEdgeControlLayerBottomItem_FullBtn = 10005;
     if ( _videoPlayer.useFitOnScreenAndDisableRotation ) return;
     if ( !_generatePreviewImages ) return;
     if ( _hasBeenGeneratedPreviewImages ) return;
-    CGFloat scale = size.width / size.height;
-    CGSize previewItemSize = CGSizeMake(scale * self.previewView.intrinsicContentSize.height * 2, self.previewView.intrinsicContentSize.height * 2);
+    CGSize previewItemSize = CGSizeMake(150, 150);
     __weak typeof(self) _self = self;
     [videoPlayer generatedPreviewImagesWithMaxItemSize:previewItemSize completion:^(SJBaseVideoPlayer * _Nonnull player, NSArray<id<SJVideoPlayerPreviewInfo>> * _Nullable images, NSError * _Nullable error) {
         __strong typeof(_self) self = _self;
@@ -457,15 +464,18 @@ SJEdgeControlButtonItemTag const SJEdgeControlLayerBottomItem_FullBtn = 10005;
     /// 锁屏状态下, 使隐藏
     if ( videoPlayer.isLockedScreen ) {
         [self _hidden:_bottomContainerView animated:YES];
+        [self _show:_bottomProgressSlider animated:YES];
         return;
     }
     
     /// 是否显示
     if ( videoPlayer.controlLayerAppeared ) {
         [self _show:_bottomContainerView animated:YES];
+        [self _hidden:_bottomProgressSlider animated:YES];
     }
     else {
         [self _hidden:_bottomContainerView animated:YES];
+        [self _show:_bottomProgressSlider animated:YES];
     }
 }
 
@@ -532,6 +542,11 @@ SJEdgeControlButtonItemTag const SJEdgeControlLayerBottomItem_FullBtn = 10005;
     SJProgressSlider *slider = sliderItem.customView;
     slider.maxValue = duration;
     if ( !slider.isDragging ) slider.value = currentTime;
+    
+    if ( ![self _isHiddenWithView:_bottomProgressSlider] ) {
+        _bottomProgressSlider.value = currentTime;
+        _bottomProgressSlider.maxValue = duration;
+    }
 }
 
 /// 更新缓冲进度
@@ -568,6 +583,22 @@ SJEdgeControlButtonItemTag const SJEdgeControlLayerBottomItem_FullBtn = 10005;
 
 - (void)sliderDidEndDragging:(SJProgressSlider *)slider {
     [self _draggingDidEndForVideoPlayer:_videoPlayer];
+}
+
+@synthesize bottomProgressSlider = _bottomProgressSlider;
+- (SJProgressSlider *)bottomProgressSlider {
+    if ( _bottomProgressSlider ) return _bottomProgressSlider;
+    _bottomProgressSlider = [SJProgressSlider new];
+    _bottomProgressSlider.pan.enabled = NO;
+    _bottomProgressSlider.trackHeight = 1;
+    __weak typeof(self) _self = self;
+    _bottomProgressSlider.settingRecroder = [[SJVideoPlayerControlSettingRecorder alloc] initWithSettings:^(SJEdgeControlLayerSettings * _Nonnull setting) {
+        __strong typeof(_self) self = _self;
+        if ( !self ) return ;
+        self.bottomProgressSlider.traceImageView.backgroundColor = setting.progress_traceColor;
+        self.bottomProgressSlider.trackImageView.backgroundColor = setting.progress_trackColor;
+    }];
+    return _bottomProgressSlider;
 }
 
 #pragma mark - right

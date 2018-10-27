@@ -117,6 +117,7 @@
 		A60066B52161A3710001B5F8 /* ViewControllerCustomControlLayer.m in Sources */ = {isa = PBXBuildFile; fileRef = A60066B42161A3710001B5F8 /* ViewControllerCustomControlLayer.m */; };
 		A60066BB2161A41E0001B5F8 /* CustomControlLayerView.m in Sources */ = {isa = PBXBuildFile; fileRef = A60066BA2161A41E0001B5F8 /* CustomControlLayerView.m */; };
 		A6B548A62165980C001C3988 /* ViewControllerTableFooter.m in Sources */ = {isa = PBXBuildFile; fileRef = A6B548A52165980C001C3988 /* ViewControllerTableFooter.m */; };
+		A6D1A24A2183FBB9006FF2C1 /* SJLoadFailedControlLayer.m in Sources */ = {isa = PBXBuildFile; fileRef = A6D1A2492183FBB9006FF2C1 /* SJLoadFailedControlLayer.m */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -354,6 +355,8 @@
 		A6B548A321652F71001C3988 /* SJVideoPlayer.podspec */ = {isa = PBXFileReference; lastKnownFileType = text; name = SJVideoPlayer.podspec; path = ../SJVideoPlayer.podspec; sourceTree = "<group>"; };
 		A6B548A42165980C001C3988 /* ViewControllerTableFooter.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = ViewControllerTableFooter.h; sourceTree = "<group>"; };
 		A6B548A52165980C001C3988 /* ViewControllerTableFooter.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = ViewControllerTableFooter.m; sourceTree = "<group>"; };
+		A6D1A2482183FBB9006FF2C1 /* SJLoadFailedControlLayer.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = SJLoadFailedControlLayer.h; sourceTree = "<group>"; };
+		A6D1A2492183FBB9006FF2C1 /* SJLoadFailedControlLayer.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = SJLoadFailedControlLayer.m; sourceTree = "<group>"; };
 		CAED6A87F45B68EF4FBAAD38 /* Pods-SJVideoPlayer.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-SJVideoPlayer.release.xcconfig"; path = "Pods/Target Support Files/Pods-SJVideoPlayer/Pods-SJVideoPlayer.release.xcconfig"; sourceTree = "<group>"; };
 		D2D51F57491F1093AB14DA2B /* libPods-SJVideoPlayerTests.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-SJVideoPlayerTests.a"; sourceTree = BUILT_PRODUCTS_DIR; };
 		DDCE7D7F757328DEFBB8B4E7 /* Pods-SJVideoPlayer.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-SJVideoPlayer.debug.xcconfig"; path = "Pods/Target Support Files/Pods-SJVideoPlayer/Pods-SJVideoPlayer.debug.xcconfig"; sourceTree = "<group>"; };
@@ -537,6 +540,7 @@
 			children = (
 				A600659D215F974B0001B5F8 /* SJVideoPlayer.h */,
 				A60065B8215F974B0001B5F8 /* SJVideoPlayer.m */,
+				A6D1A2472183FACD006FF2C1 /* SJLoadFailedControlLayer */,
 				775D7D2221832A1200426773 /* SJMoreSettingControlLayer */,
 				A6006593215F974B0001B5F8 /* Settings */,
 				A60065B9215F974B0001B5F8 /* SJEdgeControlLayer */,
@@ -946,6 +950,15 @@
 			path = "CustomControlLayer(自定义控制层)";
 			sourceTree = "<group>";
 		};
+		A6D1A2472183FACD006FF2C1 /* SJLoadFailedControlLayer */ = {
+			isa = PBXGroup;
+			children = (
+				A6D1A2482183FBB9006FF2C1 /* SJLoadFailedControlLayer.h */,
+				A6D1A2492183FBB9006FF2C1 /* SJLoadFailedControlLayer.m */,
+			);
+			path = SJLoadFailedControlLayer;
+			sourceTree = "<group>";
+		};
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
@@ -1257,6 +1270,7 @@
 				A600655F215F947E0001B5F8 /* AppDelegate.m in Sources */,
 				A6006627215F974B0001B5F8 /* SJVideoPlayerDraggingProgressView.m in Sources */,
 				A6006644215F974B0001B5F8 /* SJFilmEditingRecordingView.m in Sources */,
+				A6D1A24A2183FBB9006FF2C1 /* SJLoadFailedControlLayer.m in Sources */,
 				A600666C216085C90001B5F8 /* SJPlayView.m in Sources */,
 				A6006645215F974B0001B5F8 /* SJFilmEditingGenerateGIFView.m in Sources */,
 				A6006649216041510001B5F8 /* LWZTableSectionShrinker.m in Sources */,

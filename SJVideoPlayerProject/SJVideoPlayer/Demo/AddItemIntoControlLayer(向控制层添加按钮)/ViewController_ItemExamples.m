@@ -47,8 +47,8 @@ static SJEdgeControlButtonItemTag SJEdgeControlButtonItemTag_Share = 10;        
     /// 有些时候, 我们需要某个按钮, 在小屏时隐藏, 大屏后显示.
     /// 可以通过下面这个属性, 来控制item是否隐藏
     /// 注意: 将逻辑放到item的代理方法中`updatePropertiesIfNeeded:videoPlayer:`
+//    imageItem.delegate = self;
 //    imageItem.hidden = YES;
-    
     [_player.defaultEdgeControlLayer.topAdapter addItem:imageItem];
     
     
@@ -59,7 +59,6 @@ static SJEdgeControlButtonItemTag SJEdgeControlButtonItemTag_Share = 10;        
     
     // 调整 item 前后间隔
     titleItem.insets = SJEdgeInsetsMake(8, 8);
-
     [_player.defaultEdgeControlLayer.topAdapter addItem:titleItem];
     
     
@@ -85,13 +84,15 @@ static SJEdgeControlButtonItemTag SJEdgeControlButtonItemTag_Share = 10;        
         });
     });
     
+    
     // 4.2 占位2
     // 创建一个大小为 49 * 49 的item
 //    SJEdgeControlButtonItem *p2 = [SJEdgeControlButtonItem placeholderWithType:SJButtonItemPlaceholderType_49x49 tag:SJEdgeControlButtonItemTag_Share];
+    
+    
     // 4.3 占位3
     // 创建一个自适应大小的item, 不过高度必须是49
     SJEdgeControlButtonItem *p3 = [SJEdgeControlButtonItem placeholderWithType:SJButtonItemPlaceholderType_49xAutoresizing tag:SJEdgeControlButtonItemTag_Share];
-
     // 在这里我就直接设置标题了, 也可以异步更新
     p3.title = sj_makeAttributesString(^(SJAttributeWorker * _Nonnull make) {
         make.append([UIImage imageNamed:@"share"], CGPointZero, CGSizeZero).alignment(NSTextAlignmentCenter);
@@ -101,6 +102,9 @@ static SJEdgeControlButtonItemTag SJEdgeControlButtonItemTag_Share = 10;        
     
     [_player.defaultEdgeControlLayer.leftAdapter addItem:p3];
 
+    
+    
+    
     
     // 添加了item的容器 更新一下
     [_player.defaultEdgeControlLayer.topAdapter reload];

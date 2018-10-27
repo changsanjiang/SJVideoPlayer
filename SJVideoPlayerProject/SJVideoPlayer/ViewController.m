@@ -94,13 +94,9 @@
                          subTitle:@"Button Item 的各种使用"
                              path:@"player/defaultPlayer/itemExamples"],
       
-      [[Item alloc] initWithTitle:@"SJUICollectionViewCellPlayModel"
-                         subTitle:@"在CollectionView单元格中播放"
-                             path:@"collectionView/cell/play"],
-      
-      [[Item alloc] initWithTitle:@"SJUITableViewHeaderViewPlayModel"
-                         subTitle:@"在TableView的TableHeaderView中播放"
-                             path:@"tableView/tableHeaderView/play"]];
+      [[Item alloc] initWithTitle:@"Adjust button items location"
+                         subTitle:@"调整控制层中 默认按钮的位置"
+                             path:@"player/defaultPlayer/adjust"]];
 }
 
 - (NSArray<Item *> *)_createItemsBySJPlayModel {

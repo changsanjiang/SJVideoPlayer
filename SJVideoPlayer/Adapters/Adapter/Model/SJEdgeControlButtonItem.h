@@ -49,7 +49,7 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic, nullable) SEL action;
 - (instancetype)init NS_UNAVAILABLE;
 + (instancetype)new  NS_UNAVAILABLE;
-@property (nonatomic) BOOL fill; // 当想要填充剩余空间时, 可以设置为`Yes`. 注意: 在`adapter`中, 此`item`只能存在一个.
+@property (nonatomic) BOOL fill; // 当想要填充剩余空间时, 可以设置为`Yes`. 注意: 在`adapter`中, 此`item`只能存在一个. 
 @property (nonatomic, weak, nullable) id<SJEdgeControlButtonItemDelegate> delegate;
 
 - (void)addTarget:(id)target action:(nonnull SEL)action;

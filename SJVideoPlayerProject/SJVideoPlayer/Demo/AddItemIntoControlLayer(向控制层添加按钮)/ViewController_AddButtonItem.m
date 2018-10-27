@@ -75,7 +75,7 @@ static SJEdgeControlButtonItemTag SJEdgeControlButtonItemTag_Share = 10;        
 }
 
 #pragma mark - update
-/// 下面这个代理方法 会在每次控制层显示的时候调用
+/// 每次控制层显示, 下面这个方法, 都将会调用
 /// 如果需要根据播放器的状态, 更新Item的属性, 可以直接在这个方法里面修改即可
 - (void)updatePropertiesIfNeeded:(SJEdgeControlButtonItem *)item videoPlayer:(__kindof SJBaseVideoPlayer *)player {
     
@@ -87,6 +87,11 @@ static SJEdgeControlButtonItemTag SJEdgeControlButtonItemTag_Share = 10;        
     //    if ( player.isFullScreen ){
     //        item.image = [UIImage imageNamed:@"..."];
     //    }
+    
+    /// 有些时候, 我们需要某个按钮, 在小屏时隐藏, 大屏后显示.
+    /// 可以通过下面这个属性, 来控制item是否隐藏
+    /// 注意: 将逻辑放到item的代理方法中`updatePropertiesIfNeeded:videoPlayer:`
+    //  imageItem.hidden = !player.isFullScreen;
 }
 
 

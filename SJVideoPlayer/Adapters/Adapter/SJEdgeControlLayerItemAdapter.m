@@ -39,9 +39,9 @@ NS_ASSUME_NONNULL_BEGIN
 - (void)_prepareLayout_Horizontal {
     [_layoutAttributes removeAllObjects];
     
-    CGFloat content_w = 0; // 内容宽度
-    CGRect bounds_arr[_items.count]; // 所有内容的bounds
-    int fill_idx = kCFNotFound; // 需要填充的item的索引
+    CGFloat content_w = 0;              // 内容宽度
+    CGRect bounds_arr[_items.count];    // 所有内容的bounds
+    int fill_idx = kCFNotFound;         // 需要填充的item的索引
     for ( int i = 0 ; i < _items.count ; ++ i ) {
         CGFloat width = 0;
         CGFloat height = 49;
@@ -85,9 +85,9 @@ NS_ASSUME_NONNULL_BEGIN
 - (void)_prepareLayout_Vertical {
     [_layoutAttributes removeAllObjects];
     
-    CGFloat content_h = 0; // 内容宽度
-    CGRect bounds_arr[_items.count]; // 所有内容的bounds
-    int fill_idx = kCFNotFound; // 需要填充的item的索引
+    CGFloat content_h = 0;              // 内容宽度
+    CGRect bounds_arr[_items.count];    // 所有内容的bounds
+    int fill_idx = kCFNotFound;         // 需要填充的item的索引
     
     for ( int i = 0 ; i < _items.count ; ++ i ) {
         CGFloat width = 49;

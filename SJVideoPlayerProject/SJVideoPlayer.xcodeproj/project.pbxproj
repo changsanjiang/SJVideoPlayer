@@ -116,6 +116,8 @@
 		A6D1A259218446EB006FF2C1 /* ViewController_AddButtonItem.xib in Resources */ = {isa = PBXBuildFile; fileRef = A6D1A257218446EB006FF2C1 /* ViewController_AddButtonItem.xib */; };
 		A6D1A25D21844F57006FF2C1 /* ViewController_ItemExamples.m in Sources */ = {isa = PBXBuildFile; fileRef = A6D1A25B21844F57006FF2C1 /* ViewController_ItemExamples.m */; };
 		A6D1A25E21844F57006FF2C1 /* ViewController_ItemExamples.xib in Resources */ = {isa = PBXBuildFile; fileRef = A6D1A25C21844F57006FF2C1 /* ViewController_ItemExamples.xib */; };
+		A6D1A26221845F02006FF2C1 /* ViewController_Adjust.m in Sources */ = {isa = PBXBuildFile; fileRef = A6D1A26021845F02006FF2C1 /* ViewController_Adjust.m */; };
+		A6D1A26321845F02006FF2C1 /* ViewController_Adjust.xib in Resources */ = {isa = PBXBuildFile; fileRef = A6D1A26121845F02006FF2C1 /* ViewController_Adjust.xib */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -349,6 +351,9 @@
 		A6D1A25A21844F57006FF2C1 /* ViewController_ItemExamples.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = ViewController_ItemExamples.h; sourceTree = "<group>"; };
 		A6D1A25B21844F57006FF2C1 /* ViewController_ItemExamples.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = ViewController_ItemExamples.m; sourceTree = "<group>"; };
 		A6D1A25C21844F57006FF2C1 /* ViewController_ItemExamples.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = ViewController_ItemExamples.xib; sourceTree = "<group>"; };
+		A6D1A25F21845F02006FF2C1 /* ViewController_Adjust.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = ViewController_Adjust.h; sourceTree = "<group>"; };
+		A6D1A26021845F02006FF2C1 /* ViewController_Adjust.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = ViewController_Adjust.m; sourceTree = "<group>"; };
+		A6D1A26121845F02006FF2C1 /* ViewController_Adjust.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = ViewController_Adjust.xib; sourceTree = "<group>"; };
 		CAED6A87F45B68EF4FBAAD38 /* Pods-SJVideoPlayer.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-SJVideoPlayer.release.xcconfig"; path = "Pods/Target Support Files/Pods-SJVideoPlayer/Pods-SJVideoPlayer.release.xcconfig"; sourceTree = "<group>"; };
 		D2D51F57491F1093AB14DA2B /* libPods-SJVideoPlayerTests.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-SJVideoPlayerTests.a"; sourceTree = BUILT_PRODUCTS_DIR; };
 		DDCE7D7F757328DEFBB8B4E7 /* Pods-SJVideoPlayer.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-SJVideoPlayer.debug.xcconfig"; path = "Pods/Target Support Files/Pods-SJVideoPlayer/Pods-SJVideoPlayer.debug.xcconfig"; sourceTree = "<group>"; };
@@ -949,6 +954,9 @@
 				A6D1A25A21844F57006FF2C1 /* ViewController_ItemExamples.h */,
 				A6D1A25B21844F57006FF2C1 /* ViewController_ItemExamples.m */,
 				A6D1A25C21844F57006FF2C1 /* ViewController_ItemExamples.xib */,
+				A6D1A25F21845F02006FF2C1 /* ViewController_Adjust.h */,
+				A6D1A26021845F02006FF2C1 /* ViewController_Adjust.m */,
+				A6D1A26121845F02006FF2C1 /* ViewController_Adjust.xib */,
 			);
 			path = "AddItemIntoControlLayer(向控制层添加按钮)";
 			sourceTree = "<group>";
@@ -1076,6 +1084,7 @@
 				A60066A7216128770001B5F8 /* ViewControllerContinuePlaying.xib in Resources */,
 				A6D1A259218446EB006FF2C1 /* ViewController_AddButtonItem.xib in Resources */,
 				A6006565215F947E0001B5F8 /* Main.storyboard in Resources */,
+				A6D1A26321845F02006FF2C1 /* ViewController_Adjust.xib in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1210,6 +1219,7 @@
 				A600669B21610FD50001B5F8 /* ViewControllerPageViewController.m in Sources */,
 				A6006562215F947E0001B5F8 /* ViewController.m in Sources */,
 				77E8D75821797FDA00B025A7 /* ViewControllerVideoFlip.m in Sources */,
+				A6D1A26221845F02006FF2C1 /* ViewController_Adjust.m in Sources */,
 				A6D1A258218446EB006FF2C1 /* ViewController_AddButtonItem.m in Sources */,
 				A60066832160AD7A0001B5F8 /* ViewControllerLightWeightPlayer.m in Sources */,
 				A6006669216083DA0001B5F8 /* SJTableHeaderView.m in Sources */,

@@ -23,7 +23,7 @@ extern SJEdgeControlButtonItemTag const SJEdgeControlLayerBottomItem_Play;      
 extern SJEdgeControlButtonItemTag const SJEdgeControlLayerBottomItem_CurrentTime;   // 当前时间
 extern SJEdgeControlButtonItemTag const SJEdgeControlLayerBottomItem_DurationTime;  // 全部时长
 extern SJEdgeControlButtonItemTag const SJEdgeControlLayerBottomItem_Separator;     // 时间分隔符(斜杠/)
-extern SJEdgeControlButtonItemTag const SJEdgeControlLayerBottomItem_Slider;        // 播放进度条
+extern SJEdgeControlButtonItemTag const SJEdgeControlLayerBottomItem_Progress;        // 播放进度条
 extern SJEdgeControlButtonItemTag const SJEdgeControlLayerBottomItem_FullBtn;       // 全屏按钮
 
 

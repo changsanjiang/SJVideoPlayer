@@ -51,7 +51,7 @@ SJEdgeControlButtonItemTag const SJEdgeControlLayerBottomItem_Play = 10000;
 SJEdgeControlButtonItemTag const SJEdgeControlLayerBottomItem_CurrentTime = 10001;
 SJEdgeControlButtonItemTag const SJEdgeControlLayerBottomItem_DurationTime = 10002;
 SJEdgeControlButtonItemTag const SJEdgeControlLayerBottomItem_Separator = 10003;
-SJEdgeControlButtonItemTag const SJEdgeControlLayerBottomItem_Slider = 10004;
+SJEdgeControlButtonItemTag const SJEdgeControlLayerBottomItem_Progress = 10004;
 SJEdgeControlButtonItemTag const SJEdgeControlLayerBottomItem_FullBtn = 10005;
 
 @interface SJEdgeControlLayer ()<SJProgressSliderDelegate, SJVideoPlayerPreviewViewDelegate>
@@ -443,7 +443,7 @@ SJEdgeControlButtonItemTag const SJEdgeControlLayerBottomItem_FullBtn = 10005;
             if ( finished ) [self.videoPlayer play];
         }];
     };
-    SJEdgeControlButtonItem *sliderItem = [[SJEdgeControlButtonItem alloc] initWithCustomView:slider tag:SJEdgeControlLayerBottomItem_Slider];
+    SJEdgeControlButtonItem *sliderItem = [[SJEdgeControlButtonItem alloc] initWithCustomView:slider tag:SJEdgeControlLayerBottomItem_Progress];
     sliderItem.fill = YES;
     [self.bottomAdapter addItem:sliderItem];
     
@@ -485,7 +485,7 @@ SJEdgeControlButtonItemTag const SJEdgeControlLayerBottomItem_FullBtn = 10005;
     if ( !_bottomAdapter ) return;
     if ( [self _isHiddenWithView:_bottomContainerView] ) return;
     SJEdgeControlButtonItem *playItem = [_bottomAdapter itemForTag:SJEdgeControlLayerBottomItem_Play];
-    SJEdgeControlButtonItem *sliderItem = [_bottomAdapter itemForTag:SJEdgeControlLayerBottomItem_Slider];
+    SJEdgeControlButtonItem *sliderItem = [_bottomAdapter itemForTag:SJEdgeControlLayerBottomItem_Progress];
     SJEdgeControlButtonItem *fullItem = [_bottomAdapter itemForTag:SJEdgeControlLayerBottomItem_FullBtn];
     
     SJEdgeControlLayerSettings *settings = [SJEdgeControlLayerSettings commonSettings];
@@ -539,7 +539,7 @@ SJEdgeControlButtonItemTag const SJEdgeControlLayerBottomItem_FullBtn = 10005;
 
 /// 更新播放进度
 - (void)_updatePlaybackProgressFor_BottomAdapterWithCurrentTime:(NSTimeInterval)currentTime duration:(NSTimeInterval)duration {
-    SJEdgeControlButtonItem *sliderItem = [_bottomAdapter itemForTag:SJEdgeControlLayerBottomItem_Slider];
+    SJEdgeControlButtonItem *sliderItem = [_bottomAdapter itemForTag:SJEdgeControlLayerBottomItem_Progress];
     SJProgressSlider *slider = sliderItem.customView;
     slider.maxValue = duration?:1;
     if ( !slider.isDragging ) slider.value = currentTime;
@@ -552,14 +552,14 @@ SJEdgeControlButtonItemTag const SJEdgeControlLayerBottomItem_FullBtn = 10005;
 
 /// 更新缓冲进度
 - (void)_updateBufferProgressFor_BottomAdapter:(NSTimeInterval)bufferProgress {
-    SJEdgeControlButtonItem *sliderItem = [_bottomAdapter itemForTag:SJEdgeControlLayerBottomItem_Slider];
+    SJEdgeControlButtonItem *sliderItem = [_bottomAdapter itemForTag:SJEdgeControlLayerBottomItem_Progress];
     SJProgressSlider *slider = sliderItem.customView;
     slider.bufferProgress = bufferProgress;
 }
 
 // controlLayerDisappearCondition
 - (BOOL)_canDisappearFor_BottomAdapter {
-    SJEdgeControlButtonItem *sliderItem = [_bottomAdapter itemForTag:SJEdgeControlLayerBottomItem_Slider];
+    SJEdgeControlButtonItem *sliderItem = [_bottomAdapter itemForTag:SJEdgeControlLayerBottomItem_Progress];
     SJProgressSlider *slider = sliderItem.customView;
     return !slider.isDragging;
 }

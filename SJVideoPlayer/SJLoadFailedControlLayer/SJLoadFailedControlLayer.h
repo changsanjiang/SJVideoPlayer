@@ -7,19 +7,12 @@
 //
 
 #import "SJEdgeControlLayerAdapters.h"
-#if __has_include(<SJBaseVideoPlayer/SJVideoPlayerControlLayerProtocol.h>)
-#import <SJBaseVideoPlayer/SJVideoPlayerControlLayerProtocol.h>
-#else
-#import "SJVideoPlayerControlLayerProtocol.h"
-#endif
+#import "SJControlLayerCarrier.h"
 
 NS_ASSUME_NONNULL_BEGIN
 extern SJEdgeControlButtonItemTag const SJLoadFailedControlLayerTopItem_Back;             // 返回按钮
 
-@interface SJLoadFailedControlLayer : SJEdgeControlLayerAdapters<SJVideoPlayerControlLayerDelegate, SJVideoPlayerControlLayerDataSource>
-- (void)restartControlLayer;
-- (void)exitControlLayer;
-
+@interface SJLoadFailedControlLayer : SJEdgeControlLayerAdapters<SJControlLayer> 
 @property (nonatomic, copy, nullable) void(^clickedBackItemExeBlock)(SJLoadFailedControlLayer *control);
 @property (nonatomic, copy, nullable) void(^clickedFaliedButtonExeBlock)(SJLoadFailedControlLayer *control);
 @end

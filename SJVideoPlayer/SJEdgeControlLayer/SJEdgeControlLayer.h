@@ -7,11 +7,7 @@
 //
 
 #import "SJEdgeControlLayerAdapters.h"
-#if __has_include(<SJBaseVideoPlayer/SJVideoPlayerControlLayerProtocol.h>)
-#import <SJBaseVideoPlayer/SJVideoPlayerControlLayerProtocol.h>
-#else
-#import "SJVideoPlayerControlLayerProtocol.h"
-#endif
+#import "SJControlLayerCarrier.h"
 
 NS_ASSUME_NONNULL_BEGIN
 #pragma mark - Top
@@ -31,10 +27,7 @@ extern SJEdgeControlButtonItemTag const SJEdgeControlLayerBottomItem_Slider;    
 extern SJEdgeControlButtonItemTag const SJEdgeControlLayerBottomItem_FullBtn;       // 全屏按钮
 
 
-@interface SJEdgeControlLayer : SJEdgeControlLayerAdapters<SJVideoPlayerControlLayerDelegate, SJVideoPlayerControlLayerDataSource>
-- (void)restartControlLayer;
-- (void)exitControlLayer;
-
+@interface SJEdgeControlLayer : SJEdgeControlLayerAdapters<SJControlLayer>
 @property (nonatomic, copy, nullable) void(^clickedBackItemExeBlock)(SJEdgeControlLayer *control);
 @property (nonatomic) BOOL hideBackButtonWhenOrientationIsPortrait;
 @property (nonatomic) BOOL disablePromptWhenNetworkStatusChanges;

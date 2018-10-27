@@ -40,13 +40,16 @@ NS_ASSUME_NONNULL_BEGIN
 @synthesize moreSettingsView = _moreSettingsView;
 @synthesize moreSecondarySettingView = _moreSecondarySettingView;
 @synthesize footerViewModel = _footerViewModel;
+@synthesize restarted = _restarted;
 
 - (void)restartControlLayer {
+    _restarted = YES;
     [_videoPlayer controlLayerNeedAppear];
     [self _show:self.controlView animated:YES];
 }
 
 - (void)exitControlLayer {
+    _restarted= NO;
     /// clean
     _videoPlayer.controlLayerDataSource = nil;
     _videoPlayer.controlLayerDelegate = nil;
@@ -55,7 +58,7 @@ NS_ASSUME_NONNULL_BEGIN
     [self _hidden:_moreSettingsView animated:YES];
     [self _hidden:_moreSecondarySettingView animated:YES];
     [self _hidden:self.controlView animated:YES completionHandler:^{
-        [self.controlView removeFromSuperview];
+        if ( !self->_restarted ) [self.controlView removeFromSuperview];
     }];
 }
 

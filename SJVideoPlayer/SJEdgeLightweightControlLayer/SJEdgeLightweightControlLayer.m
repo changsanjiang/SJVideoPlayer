@@ -87,6 +87,7 @@ NS_ASSUME_NONNULL_BEGIN
 @synthesize bottomControlView = _bottomControlView;
 @synthesize backBtn = _backBtn;
 @synthesize rightControlView = _rightControlView;
+@synthesize restarted = _restarted;
 
 - (instancetype)init {
     self = [super init];
@@ -108,6 +109,7 @@ NS_ASSUME_NONNULL_BEGIN
 #pragma mark -
 
 - (void)restartControlLayer {
+    _restarted = YES;
     if ( _videoPlayer.URLAsset ) {
         [_videoPlayer setControlLayerAppeared:YES];
         [self controlLayerNeedAppear:_videoPlayer compeletionHandler:nil];
@@ -117,6 +119,7 @@ NS_ASSUME_NONNULL_BEGIN
     [_videoPlayer controlLayerNeedDisappear];
 }
 - (void)exitControlLayer {
+    _restarted = NO;
     /// clean
     _videoPlayer.controlLayerDataSource = nil;
     _videoPlayer.controlLayerDelegate = nil;
@@ -130,7 +133,7 @@ NS_ASSUME_NONNULL_BEGIN
         [self->_bottomSlider disappear];
         [self->_centerControlView disappear];
     }, ^{
-        [self.controlView removeFromSuperview];
+        if ( !self->_restarted ) [self.controlView removeFromSuperview];
     });
 }
 

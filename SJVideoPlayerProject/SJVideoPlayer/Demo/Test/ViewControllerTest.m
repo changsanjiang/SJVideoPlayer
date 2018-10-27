@@ -42,7 +42,7 @@
     
     [self _addControlLayerToSwitcher];
     
-    SJEdgeControlLayer *controlLayer = (id)[_player.switcher controlLayerForIdentifier:SJControlLayer_Edge].dataSource;
+    SJEdgeControlLayer *controlLayer = (id)[_player.switcher controlLayerForIdentifier:SJControlLayer_Edge].controlLayer;
     /// test
     SJEdgeControlButtonItem *testItem = [SJEdgeControlButtonItem placeholderWithSize:49 tag:0];
     testItem.title = sj_makeAttributesString(^(SJAttributeWorker * _Nonnull make) {
@@ -83,16 +83,7 @@
     
     
     
-    [_player sj_addObserver:self forKeyPath:@"playStatus"];
-    
     // Do any additional setup after loading the view.
-}
-
-- (void)observeValueForKeyPath:(NSString *)keyPath ofObject:(id)object change:(NSDictionary<NSKeyValueChangeKey,id> *)change context:(void *)context {
-#ifdef DEBUG
-    NSLog(@"%d - %s", (int)__LINE__, __func__);
-#endif
-
 }
 
 - (void)_addControlLayerToSwitcher {

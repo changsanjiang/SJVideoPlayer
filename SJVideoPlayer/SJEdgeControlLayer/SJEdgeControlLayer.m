@@ -93,6 +93,7 @@ SJEdgeControlButtonItemTag const SJEdgeControlLayerBottomItem_FullBtn = 10005;
     [self _hidden:_rightContainerView animated:YES];
     [self _hidden:_previewView animated:YES];
     [self _hidden:_replayButton animated:YES];
+    [self _hidden:_draggingProgressView animated:YES];
     
     [self _hidden:self.controlView animated:YES completionHandler:^{
         if ( !self->_restarted ) [self.controlView removeFromSuperview];
@@ -851,6 +852,17 @@ SJEdgeControlButtonItemTag const SJEdgeControlLayerBottomItem_FullBtn = 10005;
 - (void)videoPlayer:(__kindof SJBaseVideoPlayer *)videoPlayer willFitOnScreen:(BOOL)isFitOnScreen {
     [self _updateAppearStateForAdapters:videoPlayer];
     [self _updateItemsForAdaptersIfNeeded:videoPlayer];
+}
+
+///  在`tableView`或`collectionView`上将要显示的时候调用.
+- (void)videoPlayerWillAppearInScrollView:(SJBaseVideoPlayer *)videoPlayer {
+    videoPlayer.view.hidden = NO;
+}
+
+///  在`tableView`或`collectionView`上将要消失的时候调用.
+- (void)videoPlayerWillDisappearInScrollView:(SJBaseVideoPlayer *)videoPlayer {
+    [videoPlayer pause];
+    videoPlayer.view.hidden = YES;
 }
 
 #pragma mark Player Horizontal Gesture

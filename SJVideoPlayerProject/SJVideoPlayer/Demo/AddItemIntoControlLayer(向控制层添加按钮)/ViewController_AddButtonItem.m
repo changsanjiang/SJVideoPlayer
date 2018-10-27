@@ -34,6 +34,10 @@ static SJEdgeControlButtonItemTag SJEdgeControlButtonItemTag_Share = 10;        
     [super viewDidLoad];
     [self _setupViews];
     
+    
+    [_player showTitle:@"当前Demo为: 添加 item 到控制层" duration:-1];
+
+    
     _player.URLAsset = [[SJVideoPlayerURLAsset alloc] initWithURL:[NSBundle.mainBundle URLForResource:@"play" withExtension:@"mp4"]];
     _player.URLAsset.title = @"Test Title";
     

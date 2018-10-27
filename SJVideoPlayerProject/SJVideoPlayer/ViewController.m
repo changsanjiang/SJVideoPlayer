@@ -90,13 +90,13 @@
                          subTitle:@"在控制层中`添加``移除``更新`按钮"
                              path:@"player/defaultPlayer/addItem"],
       
+      [[Item alloc] initWithTitle:@"Adjust button items location"
+                         subTitle:@"调整控制层中 按钮的位置"
+                             path:@"player/defaultPlayer/adjust"],
+      
       [[Item alloc] initWithTitle:@"Other button item examples"
                          subTitle:@"Button Item 的各种使用"
-                             path:@"player/defaultPlayer/itemExamples"],
-      
-      [[Item alloc] initWithTitle:@"Adjust button items location"
-                         subTitle:@"调整控制层中 默认按钮的位置"
-                             path:@"player/defaultPlayer/adjust"]];
+                             path:@"player/defaultPlayer/itemExamples"]];
 }
 
 - (NSArray<Item *> *)_createItemsBySJPlayModel {

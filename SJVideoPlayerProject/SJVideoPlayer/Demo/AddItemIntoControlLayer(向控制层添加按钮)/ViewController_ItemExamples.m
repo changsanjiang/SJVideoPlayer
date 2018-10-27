@@ -40,6 +40,9 @@ static SJEdgeControlButtonItemTag SJEdgeControlButtonItemTag_Share = 10;        
     _player.URLAsset.title = @"Test Title";
     
     
+    [_player showTitle:@"当前Demo为: 更多 item 的创建示例" duration:-1];
+
+    
     
     // 1. 49 * 49 大小的图片item
     SJEdgeControlButtonItem *imageItem = [[SJEdgeControlButtonItem alloc] initWithImage:[UIImage imageNamed:@"share"] target:self action:@selector(test:) tag:SJEdgeControlButtonItemTag_Share];

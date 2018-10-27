@@ -10,9 +10,6 @@
 #import "SJVideoPlayer.h"
 #import <SJRouter/SJRouter.h>
 
-
-#warning next 播放错误 控制层 ...
-
 @interface AppDelegate ()
 
 @end
@@ -24,6 +21,7 @@
     
     SJVideoPlayer.update(^(SJVideoPlayerSettings * _Nonnull commonSettings) {
         commonSettings.placeholder = [UIImage imageNamed:@"cover"];
+        commonSettings.progress_thumbSize = 8;
     });
     
     dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{

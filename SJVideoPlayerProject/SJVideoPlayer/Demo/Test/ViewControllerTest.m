@@ -102,6 +102,7 @@
     NSLog(@"%d - %s", (int)__LINE__, __func__);
 #endif
     
+    [_player showTitle:@"3秒后测试加载失败" duration:3];
     dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(3 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
         self.player.URLAsset = [[SJVideoPlayerURLAsset alloc] initWithURL:[NSURL URLWithString:@"http://www.tetet.com"]];
     });

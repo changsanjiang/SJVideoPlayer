@@ -147,7 +147,14 @@ static NSString *_kPlayStatus = @"playStatus";
 @synthesize defaultEdgeCarrier = _defaultEdgeCarrier;
 - (SJControlLayerCarrier *)defaultEdgeCarrier {
     if ( _defaultEdgeCarrier ) return _defaultEdgeCarrier;
-    _defaultEdgeCarrier = [[SJControlLayerCarrier alloc] initWithIdentifier:SJControlLayer_Edge controlLayer:[SJEdgeControlLayer new]];
+    SJEdgeControlLayer *controlLayer = [SJEdgeControlLayer new];
+    __weak typeof(self) _self = self;
+    controlLayer.clickedBackItemExeBlock = ^(SJEdgeControlLayer * _Nonnull control) {
+        __strong typeof(_self) self = _self;
+        if ( !self ) return ;
+        if ( self.clickedBackEvent ) self.clickedBackEvent(self);
+    };
+    _defaultEdgeCarrier = [[SJControlLayerCarrier alloc] initWithIdentifier:SJControlLayer_Edge controlLayer:controlLayer];
     return _defaultEdgeCarrier;
 }
 

@@ -38,6 +38,9 @@
     
     
     
+    [_player showTitle:@"当前Demo为: 调整 item 的位置" duration:-1];
+    
+    
     [UIScrollView.new setContentOffset:CGPointMake(0, 0) animated:YES];
     
     // 这里调整 时间进度为例

@@ -119,7 +119,8 @@ NS_ASSUME_NONNULL_BEGIN
 @end
 
 
-/// 镜像翻转
+#pragma mark - 镜像翻转
+
 typedef enum : NSUInteger {
     /// 恢复
     SJViewFlipTransition_Identity,

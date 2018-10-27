@@ -366,7 +366,7 @@ static UIScrollView *_Nullable _getScrollViewOfPlayModel(SJPlayModel *playModel)
     
     // install
     [self.controlContentView addSubview:_controlLayerDataSource.controlView];
-    [_controlLayerDataSource.controlView mas_makeConstraints:^(MASConstraintMaker *make) {
+    [_controlLayerDataSource.controlView mas_remakeConstraints:^(MASConstraintMaker *make) {
         make.edges.offset(0);
     }];
     

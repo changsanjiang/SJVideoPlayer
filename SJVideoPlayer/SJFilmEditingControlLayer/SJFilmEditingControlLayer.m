@@ -101,6 +101,7 @@ NS_ASSUME_NONNULL_END
 @synthesize generateGIFView = _generateGIFView;
 @synthesize tapGR = _tapGR;
 @synthesize promptView = _promptView;
+@synthesize restarted = _restarted;
 
 - (instancetype)initWithFrame:(CGRect)frame {
     self = [super initWithFrame:frame];
@@ -128,6 +129,7 @@ NS_ASSUME_NONNULL_END
 }
 
 - (void)exitControlLayer {
+    _restarted = NO;
     if ( _propertyRecorder ) {
         _videoPlayer.disableAutoRotation = self.propertyRecorder.disableRotation;
         _videoPlayer.enableControlLayerDisplayController = self.propertyRecorder.enableControlLayerDisplayController;
@@ -143,11 +145,12 @@ NS_ASSUME_NONNULL_END
         [self->_generateGIFView removeFromSuperview]; self->_generateGIFView = nil;
         [self->_recordView removeFromSuperview]; self->_recordView = nil;
         [self->_resultPresentView removeFromSuperview]; self->_resultPresentView = nil;
-        [self removeFromSuperview];
+        if ( !self->_restarted ) [self removeFromSuperview];
     }];
 }
 
 - (void)restartControlLayer {
+    _restarted = YES;
     [self changedStatus:SJFilmEditingStatus_Unknown];
     self.currentOperation = SJVideoPlayerFilmEditingOperation_Unknown;
     [self.btnContainerView sj_disappear];

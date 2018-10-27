@@ -7,18 +7,11 @@
 //
 
 #import <UIKit/UIKit.h>
-#if __has_include(<SJBaseVideoPlayer/SJVideoPlayerControlLayerProtocol.h>)
-#import <SJBaseVideoPlayer/SJVideoPlayerControlLayerProtocol.h>
-#else
-#import "SJVideoPlayerControlLayerProtocol.h"
-#endif
+#import "SJControlLayerCarrier.h"
 @class SJVideoPlayerMoreSetting;
 
 NS_ASSUME_NONNULL_BEGIN
-@interface SJMoreSettingControlLayer : UIView<SJVideoPlayerControlLayerDelegate, SJVideoPlayerControlLayerDataSource>
-- (void)restartControlLayer;
-- (void)exitControlLayer;
-
+@interface SJMoreSettingControlLayer : UIView<SJControlLayer>
 @property (nonatomic, copy, nullable) void(^disappearExeBlock)(SJMoreSettingControlLayer *control);
 @property (nonatomic, strong, nullable) NSArray<SJVideoPlayerMoreSetting *> *moreSettings;
 @end

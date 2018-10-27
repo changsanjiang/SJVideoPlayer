@@ -12,10 +12,11 @@
 NS_ASSUME_NONNULL_BEGIN
 
 @interface SJControlLayerSwitcher ()
+@property (nonatomic, copy, readonly) void(^exitExeBlock)(SJControlLayerCarrier *carrier);
+@property (nonatomic, copy, readonly) void(^restartExeBlock)(SJControlLayerCarrier *carrier);
 
 @property (nonatomic, strong, readonly) NSMutableDictionary *map;
 @property (nonatomic, weak, nullable) SJBaseVideoPlayer *videoPlayer;
-
 @end
 
 @implementation SJControlLayerSwitcher
@@ -31,21 +32,17 @@ NS_ASSUME_NONNULL_BEGIN
 }
 
 - (void)switchControlLayerForIdentitfier:(SJControlLayerIdentifier)identifier {
-    [self switchControlLayerForIdentitfier:identifier toVideoPlayer:_videoPlayer];
-}
-
-- (void)switchControlLayerForIdentitfier:(SJControlLayerIdentifier)identifier toVideoPlayer:(__kindof SJBaseVideoPlayer *)videoPlayer {
     SJControlLayerCarrier *carrier_new = self.map[@(identifier)];
     NSParameterAssert(carrier_new);
     SJControlLayerCarrier *carrier_old = self.map[@(self.currentIdentifier)];
     if ( carrier_new == carrier_old ) return;
-    [self _switchControlLayerWithOldcarrier:carrier_old newcarrier:carrier_new toVideoPlayer:videoPlayer];
+    [self _switchControlLayerWithOldcarrier:carrier_old newcarrier:carrier_new];
 }
 
 - (BOOL)switchToPreviousControlLayer {
     if ( self.previousIdentifier == SJControlLayer_Uninitialized ) return NO;
     if ( !self.videoPlayer ) return NO;
-    [self switchControlLayerForIdentitfier:self.previousIdentifier toVideoPlayer:self.videoPlayer];
+    [self switchControlLayerForIdentitfier:self.previousIdentifier];
     return YES;
 }
 
@@ -56,23 +53,20 @@ NS_ASSUME_NONNULL_BEGIN
     /// https://github.com/changsanjiang/SJVideoPlayer/issues/40
     if ( old && (old.identifier == self.currentIdentifier) ) {
         /// 替换
-        [self _switchControlLayerWithOldcarrier:old newcarrier:carrier toVideoPlayer:_videoPlayer];
+        [self _switchControlLayerWithOldcarrier:old newcarrier:carrier];
     }
 
     [self.map setObject:carrier forKey:@(carrier.identifier)];
 }
 
-- (void)_switchControlLayerWithOldcarrier:(SJControlLayerCarrier *_Nullable )carrier_old newcarrier:(SJControlLayerCarrier *)carrier_new toVideoPlayer:(__kindof SJBaseVideoPlayer *)videoPlayer {
+- (void)_switchControlLayerWithOldcarrier:(SJControlLayerCarrier *_Nullable )carrier_old newcarrier:(SJControlLayerCarrier *)carrier_new {
     NSParameterAssert(carrier_new);
-    if ( carrier_old.exitExeBlock ) carrier_old.exitExeBlock(carrier_old);
-    
-    videoPlayer.controlLayerDataSource = carrier_new.dataSource;
-    videoPlayer.controlLayerDelegate = carrier_new.delegate;
-    
+    [carrier_old.controlLayer exitControlLayer];
+    _videoPlayer.controlLayerDataSource = carrier_new.controlLayer;
+    _videoPlayer.controlLayerDelegate = carrier_new.controlLayer;
     _previousIdentifier = _currentIdentifier;
     _currentIdentifier = carrier_new.identifier;
-    
-    if ( carrier_new.restartExeBlock ) carrier_new.restartExeBlock(carrier_new);
+    [carrier_new.controlLayer restartControlLayer];
 }
 
 - (void)deleteControlLayerForIdentifier:(SJControlLayerIdentifier)identifier {
@@ -81,6 +75,13 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (nullable SJControlLayerCarrier *)controlLayerForIdentifier:(SJControlLayerIdentifier)identifier {
     return self.map[@(identifier)];
+}
+@end
+
+
+@implementation SJControlLayerSwitcher (Deprecated)
+- (void)switchControlLayerForIdentitfier:(SJControlLayerIdentifier)identifier toVideoPlayer:(__kindof SJBaseVideoPlayer *)videoPlayer __deprecated_msg("use `switchControlLayerForIdentitfier`;") {
+    [self switchControlLayerForIdentitfier:identifier];
 }
 @end
 

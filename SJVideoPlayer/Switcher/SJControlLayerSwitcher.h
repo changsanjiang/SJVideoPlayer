@@ -20,7 +20,6 @@ NS_ASSUME_NONNULL_BEGIN
 /// 控制层切换器
 /// 使用示例请查看`SJVideoPlayer`的`init`方法.
 @interface SJControlLayerSwitcher : NSObject
-
 - (instancetype)initWithPlayer:(__weak SJBaseVideoPlayer *)player;
 - (instancetype)init NS_UNAVAILABLE;
 + (instancetype)new NS_UNAVAILABLE;
@@ -31,16 +30,18 @@ NS_ASSUME_NONNULL_BEGIN
 /// 切换控制层
 /// 将当前的控制层切换为指定标识的控制层
 - (void)switchControlLayerForIdentitfier:(SJControlLayerIdentifier)identifier;
-- (void)switchControlLayerForIdentitfier:(SJControlLayerIdentifier)identifier
-                           toVideoPlayer:(__kindof SJBaseVideoPlayer *)videoPlayer;
-
 - (BOOL)switchToPreviousControlLayer; // 切换到之前的控制层
-
 /// 添加或替换控制层
 - (void)addControlLayer:(SJControlLayerCarrier *)carrier;
-
 - (void)deleteControlLayerForIdentifier:(SJControlLayerIdentifier)identifier;
-
 - (nullable SJControlLayerCarrier *)controlLayerForIdentifier:(SJControlLayerIdentifier)identifier;
+@end
+
+
+
+
+@interface SJControlLayerSwitcher (Deprecated)
+- (void)switchControlLayerForIdentitfier:(SJControlLayerIdentifier)identifier
+                           toVideoPlayer:(__kindof SJBaseVideoPlayer *)videoPlayer __deprecated_msg("use `switchControlLayerForIdentitfier`;");
 @end
 NS_ASSUME_NONNULL_END

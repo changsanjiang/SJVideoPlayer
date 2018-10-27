@@ -67,8 +67,10 @@ SJEdgeControlButtonItemTag const SJEdgeControlLayerBottomItem_FullBtn = 10005;
 @end
 
 @implementation SJEdgeControlLayer
+@synthesize restarted = _restarted;
 
 - (void)restartControlLayer {
+    _restarted = YES;
     if ( _videoPlayer.URLAsset ) {
         [_videoPlayer controlLayerNeedAppear];
         [self _show:self.controlView animated:YES];
@@ -79,6 +81,7 @@ SJEdgeControlButtonItemTag const SJEdgeControlLayerBottomItem_FullBtn = 10005;
 }
 
 - (void)exitControlLayer {
+    _restarted = NO;
     /// clean
     _videoPlayer.controlLayerDataSource = nil;
     _videoPlayer.controlLayerDelegate = nil;
@@ -92,7 +95,7 @@ SJEdgeControlButtonItemTag const SJEdgeControlLayerBottomItem_FullBtn = 10005;
     [self _hidden:_replayButton animated:YES];
     
     [self _hidden:self.controlView animated:YES completionHandler:^{
-        [self.controlView removeFromSuperview];
+        if ( !self->_restarted ) [self.controlView removeFromSuperview];
     }];
 }
 

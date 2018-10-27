@@ -11,7 +11,6 @@
 #else
 #import "SJAttributeWorker.h"
 #endif
-#import "SJVideoPlayerURLAsset+SJControlAdd.h"
 
 #if __has_include(<Masonry/Masonry.h>)
 #import <Masonry/Masonry.h>
@@ -30,6 +29,7 @@
 #endif
 
 #import "SJEdgeControlLayer.h"
+#import "SJVideoPlayerURLAsset+SJControlAdd.h"
 #import "SJVideoPlayerDraggingProgressView.h"
 #import "SJVideoPlayerAnimationHeader.h"
 #import "SJVideoPlayerPreviewView.h"

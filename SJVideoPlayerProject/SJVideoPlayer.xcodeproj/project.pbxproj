@@ -402,11 +402,9 @@
 		7736E879217B221E00DFBB89 /* Adapters */ = {
 			isa = PBXGroup;
 			children = (
-				77E8D7A62179D7E100B025A7 /* Adapter */,
 				7736E87D217B225500DFBB89 /* SJEdgeControlLayerAdapters.h */,
 				7736E87E217B225500DFBB89 /* SJEdgeControlLayerAdapters.m */,
-				77A331B6217F32CD00980A17 /* UIView+SJAnimationAdded.h */,
-				77A331B7217F32CD00980A17 /* UIView+SJAnimationAdded.m */,
+				77E8D7A62179D7E100B025A7 /* Core */,
 			);
 			path = Adapters;
 			sourceTree = "<group>";
@@ -416,7 +414,7 @@
 			children = (
 				775D7D2621832CB300426773 /* SJMoreSettingControlLayer.h */,
 				775D7D2721832CB300426773 /* SJMoreSettingControlLayer.m */,
-				A60065DD215F974B0001B5F8 /* MoreSetting */,
+				A60065DD215F974B0001B5F8 /* Core */,
 			);
 			path = SJMoreSettingControlLayer;
 			sourceTree = "<group>";
@@ -430,33 +428,17 @@
 			path = Test;
 			sourceTree = "<group>";
 		};
-		77E8D7A62179D7E100B025A7 /* Adapter */ = {
+		77E8D7A62179D7E100B025A7 /* Core */ = {
 			isa = PBXGroup;
 			children = (
 				77E8D7A32179D6BF00B025A7 /* SJEdgeControlLayerItemAdapter.h */,
 				77E8D7A42179D6BF00B025A7 /* SJEdgeControlLayerItemAdapter.m */,
-				77E8D7AF217B0CA500B025A7 /* Model */,
-				77E8D7AD217B0C9700B025A7 /* View */,
-			);
-			path = Adapter;
-			sourceTree = "<group>";
-		};
-		77E8D7AD217B0C9700B025A7 /* View */ = {
-			isa = PBXGroup;
-			children = (
+				77E8D7692179A86800B025A7 /* SJEdgeControlButtonItem.h */,
+				77E8D76A2179A86800B025A7 /* SJEdgeControlButtonItem.m */,
 				77E8D7B0217B0CE800B025A7 /* SJButtonItemCollectionViewCell.h */,
 				77E8D7B1217B0CE800B025A7 /* SJButtonItemCollectionViewCell.m */,
 			);
-			path = View;
-			sourceTree = "<group>";
-		};
-		77E8D7AF217B0CA500B025A7 /* Model */ = {
-			isa = PBXGroup;
-			children = (
-				77E8D7692179A86800B025A7 /* SJEdgeControlButtonItem.h */,
-				77E8D76A2179A86800B025A7 /* SJEdgeControlButtonItem.m */,
-			);
-			path = Model;
+			path = Core;
 			sourceTree = "<group>";
 		};
 		8A873F4429937C671B152826 /* Pods */ = {
@@ -534,16 +516,17 @@
 			children = (
 				A600659D215F974B0001B5F8 /* SJVideoPlayer.h */,
 				A60065B8215F974B0001B5F8 /* SJVideoPlayer.m */,
-				7736E879217B221E00DFBB89 /* Adapters */,
 				A6006593215F974B0001B5F8 /* Settings */,
+				A6D1A26421847C1E006FF2C1 /* Common */,
+				7736E879217B221E00DFBB89 /* Adapters */,
+				A60065B0215F974B0001B5F8 /* Switcher */,
+				A60065B5215F974B0001B5F8 /* SJLoadingView */,
+				A6006596215F974B0001B5F8 /* SJProgressSlider */,
 				A60065B9215F974B0001B5F8 /* SJEdgeControlLayer */,
 				A600659E215F974B0001B5F8 /* SJEdgeLightweightControlLayer */,
 				A60065F5215F974B0001B5F8 /* SJFilmEditingControlLayer */,
 				A6D1A2472183FACD006FF2C1 /* SJLoadFailedControlLayer */,
-				A60065B5215F974B0001B5F8 /* SJLoadingView */,
 				775D7D2221832A1200426773 /* SJMoreSettingControlLayer */,
-				A6006596215F974B0001B5F8 /* SJProgressSlider */,
-				A60065B0215F974B0001B5F8 /* Switcher */,
 			);
 			name = SJVideoPlayer;
 			path = ../../SJVideoPlayer;
@@ -605,10 +588,9 @@
 		A60065B0215F974B0001B5F8 /* Switcher */ = {
 			isa = PBXGroup;
 			children = (
-				A60065B3215F974B0001B5F8 /* SJControlLayerCarrier.h */,
-				A60065B2215F974B0001B5F8 /* SJControlLayerCarrier.m */,
 				A60065B4215F974B0001B5F8 /* SJControlLayerSwitcher.h */,
 				A60065B1215F974B0001B5F8 /* SJControlLayerSwitcher.m */,
+				A6D1A26521847D60006FF2C1 /* Core */,
 			);
 			path = Switcher;
 			sourceTree = "<group>";
@@ -627,23 +609,13 @@
 			children = (
 				77F8161321803A540078B6F0 /* SJEdgeControlLayer.h */,
 				77F8161421803A540078B6F0 /* SJEdgeControlLayer.m */,
-				A60065CE215F974B0001B5F8 /* Asset */,
-				A60065BD215F974B0001B5F8 /* EdgeViews */,
-				A60065BA215F974B0001B5F8 /* MaskView */,
+				A60065CE215F974B0001B5F8 /* ResourceLoader */,
+				A60065BD215F974B0001B5F8 /* View */,
 			);
 			path = SJEdgeControlLayer;
 			sourceTree = "<group>";
 		};
-		A60065BA215F974B0001B5F8 /* MaskView */ = {
-			isa = PBXGroup;
-			children = (
-				A60065BC215F974B0001B5F8 /* SJVideoPlayerControlMaskView.h */,
-				A60065BB215F974B0001B5F8 /* SJVideoPlayerControlMaskView.m */,
-			);
-			path = MaskView;
-			sourceTree = "<group>";
-		};
-		A60065BD215F974B0001B5F8 /* EdgeViews */ = {
+		A60065BD215F974B0001B5F8 /* View */ = {
 			isa = PBXGroup;
 			children = (
 				A60065C5215F974B0001B5F8 /* SJVideoPlayerDraggingProgressView.h */,
@@ -653,10 +625,10 @@
 				A60065CA215F974B0001B5F8 /* SJVideoPlayerPreviewView.h */,
 				A60065C3215F974B0001B5F8 /* SJVideoPlayerPreviewView.m */,
 			);
-			path = EdgeViews;
+			path = View;
 			sourceTree = "<group>";
 		};
-		A60065CE215F974B0001B5F8 /* Asset */ = {
+		A60065CE215F974B0001B5F8 /* ResourceLoader */ = {
 			isa = PBXGroup;
 			children = (
 				A60065DB215F974B0001B5F8 /* SJEdgeControlLayer.bundle */,
@@ -664,19 +636,13 @@
 				A60065D9215F974B0001B5F8 /* SJEdgeControlLayerLoader.m */,
 				A60065D0215F974B0001B5F8 /* SJEdgeControlLayerSettings.h */,
 				A60065D7215F974B0001B5F8 /* SJEdgeControlLayerSettings.m */,
-				A60065D1215F974B0001B5F8 /* SJVideoPlayerAnimationHeader.h */,
-				A60065D6215F974B0001B5F8 /* SJVideoPlayerAnimationHeader.m */,
-				A60065D4215F974B0001B5F8 /* SJVideoPlayerURLAsset+SJControlAdd.h */,
-				A60065D8215F974B0001B5F8 /* SJVideoPlayerURLAsset+SJControlAdd.m */,
-				A60065DA215F974B0001B5F8 /* UIView+SJControlAdd.h */,
-				A60065D2215F974B0001B5F8 /* UIView+SJControlAdd.m */,
 				A60065D5215F974B0001B5F8 /* UIView+SJVideoPlayerSetting.h */,
 				A60065CF215F974B0001B5F8 /* UIView+SJVideoPlayerSetting.m */,
 			);
-			path = Asset;
+			path = ResourceLoader;
 			sourceTree = "<group>";
 		};
-		A60065DD215F974B0001B5F8 /* MoreSetting */ = {
+		A60065DD215F974B0001B5F8 /* Core */ = {
 			isa = PBXGroup;
 			children = (
 				A60065EB215F974B0001B5F8 /* SJMoreSettingsSlidersViewModel.h */,
@@ -702,13 +668,13 @@
 				A60065F1215F974B0001B5F8 /* SJVideoPlayerMoreSettingsView.h */,
 				A60065E8215F974B0001B5F8 /* SJVideoPlayerMoreSettingsView.m */,
 			);
-			path = MoreSetting;
+			path = Core;
 			sourceTree = "<group>";
 		};
 		A60065F5215F974B0001B5F8 /* SJFilmEditingControlLayer */ = {
 			isa = PBXGroup;
 			children = (
-				A60065FB215F974B0001B5F8 /* Asset */,
+				A60065FB215F974B0001B5F8 /* ResourceLoader */,
 				A6006603215F974B0001B5F8 /* Category */,
 				A600660D215F974B0001B5F8 /* Header */,
 				A60065F6215F974B0001B5F8 /* Result */,
@@ -730,7 +696,7 @@
 			path = Result;
 			sourceTree = "<group>";
 		};
-		A60065FB215F974B0001B5F8 /* Asset */ = {
+		A60065FB215F974B0001B5F8 /* ResourceLoader */ = {
 			isa = PBXGroup;
 			children = (
 				A60065FF215F974B0001B5F8 /* SJFilmEditing.bundle */,
@@ -741,7 +707,7 @@
 				A60065FC215F974B0001B5F8 /* SJVideoPlayerFilmEditingConfig.h */,
 				A6006600215F974B0001B5F8 /* SJVideoPlayerFilmEditingConfig.m */,
 			);
-			path = Asset;
+			path = ResourceLoader;
 			sourceTree = "<group>";
 		};
 		A6006603215F974B0001B5F8 /* Category */ = {
@@ -959,6 +925,32 @@
 				A6D1A26121845F02006FF2C1 /* ViewController_Adjust.xib */,
 			);
 			path = "AddItemIntoControlLayer(向控制层添加按钮)";
+			sourceTree = "<group>";
+		};
+		A6D1A26421847C1E006FF2C1 /* Common */ = {
+			isa = PBXGroup;
+			children = (
+				A60065D1215F974B0001B5F8 /* SJVideoPlayerAnimationHeader.h */,
+				A60065D6215F974B0001B5F8 /* SJVideoPlayerAnimationHeader.m */,
+				A60065D4215F974B0001B5F8 /* SJVideoPlayerURLAsset+SJControlAdd.h */,
+				A60065D8215F974B0001B5F8 /* SJVideoPlayerURLAsset+SJControlAdd.m */,
+				A60065DA215F974B0001B5F8 /* UIView+SJControlAdd.h */,
+				A60065D2215F974B0001B5F8 /* UIView+SJControlAdd.m */,
+				77A331B6217F32CD00980A17 /* UIView+SJAnimationAdded.h */,
+				77A331B7217F32CD00980A17 /* UIView+SJAnimationAdded.m */,
+				A60065BC215F974B0001B5F8 /* SJVideoPlayerControlMaskView.h */,
+				A60065BB215F974B0001B5F8 /* SJVideoPlayerControlMaskView.m */,
+			);
+			path = Common;
+			sourceTree = "<group>";
+		};
+		A6D1A26521847D60006FF2C1 /* Core */ = {
+			isa = PBXGroup;
+			children = (
+				A60065B3215F974B0001B5F8 /* SJControlLayerCarrier.h */,
+				A60065B2215F974B0001B5F8 /* SJControlLayerCarrier.m */,
+			);
+			path = Core;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -1460,7 +1452,10 @@
 				);
 				INFOPLIST_FILE = SJVideoPlayer/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 8.0;
-				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+				);
 				PRODUCT_BUNDLE_IDENTIFIER = com.SanJiang.SJVideoPlayer;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE_SPECIFIER = SanJiangDevelopment;
@@ -1477,7 +1472,10 @@
 				DEVELOPMENT_TEAM = "";
 				INFOPLIST_FILE = SJVideoPlayer/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 8.0;
-				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+				);
 				PRODUCT_BUNDLE_IDENTIFIER = com.SanJiang.SJVideoPlayer;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE_SPECIFIER = "";
@@ -1493,7 +1491,11 @@
 				CODE_SIGN_STYLE = Automatic;
 				DEVELOPMENT_TEAM = P48QDNW72T;
 				INFOPLIST_FILE = SJVideoPlayerTests/Info.plist;
-				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@loader_path/Frameworks",
+				);
 				PRODUCT_BUNDLE_IDENTIFIER = com.SanJiang.SJVideoPlayerTests;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				TARGETED_DEVICE_FAMILY = "1,2";
@@ -1509,7 +1511,11 @@
 				CODE_SIGN_STYLE = Automatic;
 				DEVELOPMENT_TEAM = P48QDNW72T;
 				INFOPLIST_FILE = SJVideoPlayerTests/Info.plist;
-				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@loader_path/Frameworks",
+				);
 				PRODUCT_BUNDLE_IDENTIFIER = com.SanJiang.SJVideoPlayerTests;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				TARGETED_DEVICE_FAMILY = "1,2";
@@ -1524,7 +1530,11 @@
 				CODE_SIGN_STYLE = Automatic;
 				DEVELOPMENT_TEAM = P48QDNW72T;
 				INFOPLIST_FILE = SJVideoPlayerUITests/Info.plist;
-				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@loader_path/Frameworks",
+				);
 				PRODUCT_BUNDLE_IDENTIFIER = com.SanJiang.SJVideoPlayerUITests;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				TARGETED_DEVICE_FAMILY = "1,2";
@@ -1539,7 +1549,11 @@
 				CODE_SIGN_STYLE = Automatic;
 				DEVELOPMENT_TEAM = P48QDNW72T;
 				INFOPLIST_FILE = SJVideoPlayerUITests/Info.plist;
-				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@loader_path/Frameworks",
+				);
 				PRODUCT_BUNDLE_IDENTIFIER = com.SanJiang.SJVideoPlayerUITests;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				TARGETED_DEVICE_FAMILY = "1,2";

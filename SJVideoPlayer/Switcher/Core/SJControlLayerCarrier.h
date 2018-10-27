@@ -6,15 +6,23 @@
 //  Copyright © 2018年 畅三江. All rights reserved.
 //
 
-#import <Foundation/Foundation.h>
-@protocol SJControlLayer;
+#if __has_include(<SJBaseVideoPlayer/SJBaseVideoPlayer.h>)
+#import <SJBaseVideoPlayer/SJVideoPlayerControlLayerProtocol.h>
+#else
+#import "SJVideoPlayerControlLayerProtocol.h"
+#endif
 
 typedef long SJControlLayerIdentifier;
 
 extern SJControlLayerIdentifier SJControlLayer_Uninitialized;
 
-NS_ASSUME_NONNULL_BEGIN
+@protocol SJControlLayerRestartProtocol,
+SJControlLayerExitProtocol,
+SJControlLayer;
 
+
+
+NS_ASSUME_NONNULL_BEGIN
 @interface SJControlLayerCarrier : NSObject
 - (instancetype)initWithIdentifier:(SJControlLayerIdentifier)identifier
                       controlLayer:(id<SJControlLayer>)controlLayer;
@@ -25,6 +33,7 @@ NS_ASSUME_NONNULL_BEGIN
 - (instancetype)init NS_UNAVAILABLE;
 + (instancetype) new NS_UNAVAILABLE;
 @end
+
 
 
 
@@ -39,18 +48,13 @@ NS_ASSUME_NONNULL_BEGIN
 - (void)exitControlLayer;       // 退出控制层. 切换器(switcher)切换控制层时, 该方法将会被调用
 @end
 
-@protocol SJVideoPlayerControlLayerDataSource, SJVideoPlayerControlLayerDelegate;
-
 @protocol SJControlLayer <
-    SJVideoPlayerControlLayerDataSource,
-    SJVideoPlayerControlLayerDelegate,
-    SJControlLayerRestartProtocol,
-    SJControlLayerExitProtocol
+SJVideoPlayerControlLayerDataSource,
+SJVideoPlayerControlLayerDelegate,
+SJControlLayerRestartProtocol,
+SJControlLayerExitProtocol
 >
 @end
-
-
-
 
 
 @interface SJControlLayerCarrier (Deprecated)

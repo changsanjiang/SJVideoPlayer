@@ -46,11 +46,11 @@ NS_ASSUME_NONNULL_BEGIN
         CGFloat width = 0;
         CGFloat height = 49;
         SJEdgeControlButtonItem *item = _items[i];
-        if ( item.isHidden ) { }
+        if ( item.fill )
+            fill_idx = i;
+        else if ( item.isHidden ) { }
         else if ( 0 != item.size )
             width = item.size;
-        else if ( item.fill )
-            fill_idx = i;
         else if ( item.customView )
             width = item.customView.frame.size.width;
         else if ( 0 != item.title.length )
@@ -59,7 +59,7 @@ NS_ASSUME_NONNULL_BEGIN
             width = 49;
         
         CGRect bounds = (CGRect){CGPointZero, (CGSize){width, height}};
-        content_w += item.insets.left + bounds.size.width + item.insets.right;
+        content_w += item.insets.front + bounds.size.width + item.insets.rear;
         bounds_arr[i] = bounds;
     }
     
@@ -73,12 +73,12 @@ NS_ASSUME_NONNULL_BEGIN
     CGFloat current_x = 0;
     for ( int i = 0 ; i < _items.count ; ++ i ) {
         SJEdgeControlButtonItem *item = _items[i];
-        current_x += item.insets.left;
+        current_x += item.insets.front;
         NSIndexPath *indexPath = [NSIndexPath indexPathForItem:i inSection:0];
         UICollectionViewLayoutAttributes *attributes = [UICollectionViewLayoutAttributes layoutAttributesForCellWithIndexPath:indexPath];
         attributes.frame = (CGRect){(CGPoint){current_x, 0}, (CGSize)bounds_arr[i].size};
         [_layoutAttributes addObject:attributes];
-        current_x += bounds_arr[i].size.width + item.insets.right;
+        current_x += bounds_arr[i].size.width + item.insets.rear;
     }
 }
 
@@ -93,12 +93,11 @@ NS_ASSUME_NONNULL_BEGIN
         CGFloat width = 49;
         CGFloat height = 0;
         SJEdgeControlButtonItem *item = _items[i];
-        if ( item.isHidden ) {
-        }
+        if ( item.fill )
+            fill_idx = i;
+        else if ( item.isHidden ) { }
         else if ( 0 != item.size )
             height = item.size;
-        else if ( item.fill )
-            fill_idx = i;
         else if ( item.customView )
             height = item.customView.frame.size.height;
         else if ( 0 != item.title.length )
@@ -107,7 +106,7 @@ NS_ASSUME_NONNULL_BEGIN
             height = 49;
         
         CGRect bounds = (CGRect){CGPointZero, (CGSize){width, height}};
-        content_h += item.insets.left + bounds.size.width + item.insets.right;
+        content_h += item.insets.front + bounds.size.height + item.insets.rear;
         bounds_arr[i] = bounds;
     }
     
@@ -120,12 +119,12 @@ NS_ASSUME_NONNULL_BEGIN
     CGFloat current_y = floor((max_h - content_h) * 0.5);
     for ( int i = 0 ; i < _items.count ; ++ i ) {
         SJEdgeControlButtonItem *item = _items[i];
-        current_y += item.insets.left;
+        current_y += item.insets.front;
         NSIndexPath *indexPath = [NSIndexPath indexPathForItem:i inSection:0];
         UICollectionViewLayoutAttributes *attributes = [UICollectionViewLayoutAttributes layoutAttributesForCellWithIndexPath:indexPath];
         attributes.frame = (CGRect){(CGPoint){0, current_y}, (CGSize)bounds_arr[i].size};
         [_layoutAttributes addObject:attributes];
-        current_y += bounds_arr[i].size.height + item.insets.right;
+        current_y += bounds_arr[i].size.height + item.insets.rear;
     }
 }
 

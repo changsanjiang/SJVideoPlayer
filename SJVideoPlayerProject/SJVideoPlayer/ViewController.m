@@ -70,6 +70,8 @@
     
     [m addObject:[[LWZTableSectionShrinker alloc] initWithTitle:@"Control Rotation" titleWhenShrank:nil dataArr:[self _createItemsBySJControlRotation]]];
     
+    [m addObject:[[LWZTableSectionShrinker alloc] initWithTitle:@"Button Item Operations For Control Layer" titleWhenShrank:nil dataArr:[self _createItemsByButtonItemOperationsForControlLayer]]];
+    
     [m addObject:[[LWZTableSectionShrinker alloc] initWithTitle:@"Play Model Demo" titleWhenShrank:nil dataArr:[self _createItemsBySJPlayModel]]];
     
     [m addObject:[[LWZTableSectionShrinker alloc] initWithTitle:@"List View Auto Play" titleWhenShrank:nil dataArr:[self _createItemsBySJListViewAutoplay]]];
@@ -80,6 +82,25 @@
     
     [m addObject:[[LWZTableSectionShrinker alloc] initWithTitle:@"Other" titleWhenShrank:nil dataArr:[self _createItemsByOtherOperations]]];
     _data = m.copy;
+}
+
+- (NSArray<Item *> *)_createItemsByButtonItemOperationsForControlLayer {
+    return
+    @[[[Item alloc] initWithTitle:@"Add & Remove & Update Item"
+                         subTitle:@"在控制层中`添加``移除``更新`按钮"
+                             path:@"player/defaultPlayer/addItem"],
+      
+      [[Item alloc] initWithTitle:@"Other button item examples"
+                         subTitle:@"Button Item 的各种使用"
+                             path:@"player/defaultPlayer/itemExamples"],
+      
+      [[Item alloc] initWithTitle:@"SJUICollectionViewCellPlayModel"
+                         subTitle:@"在CollectionView单元格中播放"
+                             path:@"collectionView/cell/play"],
+      
+      [[Item alloc] initWithTitle:@"SJUITableViewHeaderViewPlayModel"
+                         subTitle:@"在TableView的TableHeaderView中播放"
+                             path:@"tableView/tableHeaderView/play"]];
 }
 
 - (NSArray<Item *> *)_createItemsBySJPlayModel {

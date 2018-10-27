@@ -8,11 +8,7 @@
 
 #import "SJVideoPlayer.h"
 #import <objc/message.h>
-#import "SJEdgeControlLayer.h"
-#import "SJFilmEditingControlLayer.h"
-#import "SJEdgeLightweightControlLayer.h"
 #import "UIView+SJVideoPlayerSetting.h"
-#import "SJMoreSettingControlLayer.h"
 #if __has_include(<SJObserverHelper/NSObject+SJObserverHelper.h>)
 #import <SJObserverHelper/NSObject+SJObserverHelper.h>
 #else
@@ -23,7 +19,6 @@
 #else
 #import "SJBaseVideoPlayer+PlayStatus.h"
 #endif
-#import "SJLoadFailedControlLayer.h"
 
 NS_ASSUME_NONNULL_BEGIN
 @interface _SJEdgeControlButtonItemDelegate : NSObject<SJEdgeControlButtonItemDelegate>
@@ -85,13 +80,6 @@ static NSString *_kPlayStatus = @"playStatus";
 @property (nonatomic, strong, readonly) SJControlLayerCarrier *defaultEdgeLightweightCarrier;
 @property (nonatomic, strong, readonly) SJControlLayerCarrier *defaultMoreSettingCarrier;
 @property (nonatomic, strong, readonly) SJControlLayerCarrier *defaultLoadFailedCarrier;
-
-
-- (nullable SJEdgeControlLayer *)defaultEdgeControlLayer;
-- (nullable SJFilmEditingControlLayer *)defaultFilmEditingControlLayer;
-- (nullable SJEdgeLightweightControlLayer *)defaultEdgeLightweightControlLayer;
-- (nullable SJMoreSettingControlLayer *)defaultMoreSettingControlLayer;
-- (nullable SJLoadFailedControlLayer *)defaultLoadFailedControlLayer;
 
 @property (nonatomic, strong, readonly) _SJPlayerPlayFailedObserver *playFailedObserver;
 @end

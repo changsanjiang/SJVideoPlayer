@@ -21,6 +21,11 @@
 #import "SJVideoPlayerFilmEditingConfig.h"
 #import "SJControlLayerSwitcher.h"
 #import "SJEdgeControlButtonItem.h"
+#import "SJEdgeControlLayer.h"
+#import "SJFilmEditingControlLayer.h"
+#import "SJEdgeLightweightControlLayer.h"
+#import "SJMoreSettingControlLayer.h"
+#import "SJLoadFailedControlLayer.h"
 
 NS_ASSUME_NONNULL_BEGIN
 @interface SJVideoPlayer : SJBaseVideoPlayer
@@ -42,6 +47,12 @@ NS_ASSUME_NONNULL_BEGIN
 
 + (NSString *)version;
 - (instancetype)_init;
+
+- (nullable SJEdgeControlLayer *)defaultEdgeControlLayer;
+- (nullable SJFilmEditingControlLayer *)defaultFilmEditingControlLayer;
+- (nullable SJEdgeLightweightControlLayer *)defaultEdgeLightweightControlLayer;
+- (nullable SJMoreSettingControlLayer *)defaultMoreSettingControlLayer;
+- (nullable SJLoadFailedControlLayer *)defaultLoadFailedControlLayer;
 @end
 
 

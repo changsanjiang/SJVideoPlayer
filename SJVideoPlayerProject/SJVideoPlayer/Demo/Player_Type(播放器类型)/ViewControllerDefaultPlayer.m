@@ -99,4 +99,7 @@
     return YES;
 }
 
+- (void)setNeedsStatusBarAppearanceUpdate {
+    
+}
 @end

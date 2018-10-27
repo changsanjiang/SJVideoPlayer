@@ -12,7 +12,8 @@ typedef NSInteger SJEdgeControlButtonItemTag;
 @class SJBaseVideoPlayer;
 
 typedef struct SJEdgeInsets {
-    CGFloat left, right;
+    // 前后间距
+    CGFloat front, rear;
 } SJEdgeInsets;
 
 UIKIT_STATIC_INLINE SJEdgeInsets SJEdgeInsetsMake(CGFloat left, CGFloat right) {

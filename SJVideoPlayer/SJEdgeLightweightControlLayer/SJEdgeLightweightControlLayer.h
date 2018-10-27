@@ -7,7 +7,11 @@
 //
 
 #import <Foundation/Foundation.h>
-#import "SJControlLayerCarrier.h"
+#if __has_include(<SJBaseVideoPlayer/SJVideoPlayerControlLayerProtocol.h>)
+#import <SJBaseVideoPlayer/SJVideoPlayerControlLayerProtocol.h>
+#else
+#import "SJVideoPlayerControlLayerProtocol.h"
+#endif
 #import "SJLightweightTopItem.h"
 
 NS_ASSUME_NONNULL_BEGIN
@@ -16,7 +20,12 @@ NS_ASSUME_NONNULL_BEGIN
 /**
  轻量级的控制层
  */
-@interface SJEdgeLightweightControlLayer : NSObject<SJControlLayer>
+@interface SJEdgeLightweightControlLayer : NSObject<SJVideoPlayerControlLayerDelegate, SJVideoPlayerControlLayerDataSource>
+
+- (void)restartControlLayer;
+
+- (void)exitControlLayer;
+
 @property (nonatomic, weak, nullable) id <SJEdgeLightweightControlLayerDelegate> delegate;
 
 @property (nonatomic, strong, nullable) NSArray<SJLightweightTopItem *> *topItems;

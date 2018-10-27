@@ -159,13 +159,21 @@ static NSString *_kPlayStatus = @"playStatus";
 @synthesize defaultEdgeCarrier = _defaultEdgeCarrier;
 - (SJControlLayerCarrier *)defaultEdgeCarrier {
     if ( _defaultEdgeCarrier ) return _defaultEdgeCarrier;
-    _defaultEdgeCarrier = [[SJControlLayerCarrier alloc] initWithIdentifier:SJControlLayer_Edge controlLayer:[SJEdgeControlLayer new]];
-    return _defaultEdgeCarrier;
+    // 创建一个控制层
+    SJEdgeControlLayer *edgeControlLayer = [SJEdgeControlLayer new];
+    // 创建载体
+    SJControlLayerCarrier *defaultEdgeCarrier =
+    [[SJControlLayerCarrier alloc] initWithIdentifier:SJControlLayer_Edge dataSource:edgeControlLayer delegate:edgeControlLayer exitExeBlock:^(SJControlLayerCarrier * _Nonnull carrier) {
+        [(SJEdgeControlLayer *)carrier.dataSource exitControlLayer];
+    } restartExeBlock:^(SJControlLayerCarrier * _Nonnull carrier) {
+        [(SJEdgeControlLayer *)carrier.dataSource restartControlLayer];
+    }];
+    return _defaultEdgeCarrier = defaultEdgeCarrier;
 }
 
 - (nullable SJEdgeControlLayer *)defaultEdgeControlLayer {
-    if ( [_defaultEdgeCarrier.controlLayer isKindOfClass:[SJEdgeControlLayer class]] ) {
-        return (id)_defaultEdgeCarrier.controlLayer;
+    if ( [_defaultEdgeCarrier.dataSource isKindOfClass:[SJEdgeControlLayer class]] ) {
+        return (id)_defaultEdgeCarrier.dataSource;
     }
     return nil;
 }
@@ -180,13 +188,17 @@ static NSString *_kPlayStatus = @"playStatus";
     if ( _defaultFilmEditingCarrier ) return _defaultFilmEditingCarrier;
     SJFilmEditingControlLayer *filmEditingControlLayer = [SJFilmEditingControlLayer new];
     filmEditingControlLayer.delegate = self;
-    _defaultFilmEditingCarrier = [[SJControlLayerCarrier alloc] initWithIdentifier:SJControlLayer_FilmEditing controlLayer:filmEditingControlLayer];
-    return _defaultFilmEditingCarrier;
+    SJControlLayerCarrier *defaultFilmEditingCarrier = [[SJControlLayerCarrier alloc] initWithIdentifier:SJControlLayer_FilmEditing dataSource:filmEditingControlLayer delegate:filmEditingControlLayer exitExeBlock:^(SJControlLayerCarrier * _Nonnull carrier) {
+        [(SJFilmEditingControlLayer *)carrier.dataSource exitControlLayer];
+    } restartExeBlock:^(SJControlLayerCarrier * _Nonnull carrier) {
+        [(SJFilmEditingControlLayer *)carrier.dataSource restartControlLayer];
+    }];
+    return _defaultFilmEditingCarrier = defaultFilmEditingCarrier;
 }
 
 - (nullable SJFilmEditingControlLayer *)defaultFilmEditingControlLayer {
-    if ( [_defaultFilmEditingCarrier.controlLayer isKindOfClass:[SJFilmEditingControlLayer class]] ) {
-        return (id)_defaultFilmEditingCarrier.controlLayer;
+    if ( [_defaultFilmEditingCarrier.dataSource isKindOfClass:[SJFilmEditingControlLayer class]] ) {
+        return (id)_defaultFilmEditingCarrier.dataSource;
     }
     return nil;
 }
@@ -211,14 +223,17 @@ static NSString *_kPlayStatus = @"playStatus";
     if ( _defaultEdgeLightweightCarrier ) return _defaultEdgeLightweightCarrier;
     SJEdgeLightweightControlLayer *edgeControlLayer = [SJEdgeLightweightControlLayer new];
     edgeControlLayer.delegate = self;
-    _defaultEdgeLightweightCarrier = [[SJControlLayerCarrier alloc] initWithIdentifier:SJControlLayer_Edge controlLayer:edgeControlLayer];
-    
+    _defaultEdgeLightweightCarrier = [[SJControlLayerCarrier alloc] initWithIdentifier:SJControlLayer_Edge dataSource:edgeControlLayer delegate:edgeControlLayer exitExeBlock:^(SJControlLayerCarrier * _Nonnull carrier) {
+        [(SJEdgeLightweightControlLayer *)carrier.dataSource exitControlLayer];
+    } restartExeBlock:^(SJControlLayerCarrier * _Nonnull carrier) {
+        [(SJEdgeLightweightControlLayer *)carrier.dataSource restartControlLayer];
+    }];
     return _defaultEdgeLightweightCarrier;
 }
 
 - (nullable SJEdgeLightweightControlLayer *)defaultEdgeLightweightControlLayer {
-    if ( [_defaultEdgeLightweightCarrier.controlLayer isKindOfClass:[SJEdgeLightweightControlLayer class]] ) {
-        return (id)_defaultEdgeLightweightCarrier.controlLayer;
+    if ( [_defaultEdgeLightweightCarrier.dataSource isKindOfClass:[SJEdgeLightweightControlLayer class]] ) {
+        return (id)_defaultEdgeLightweightCarrier.dataSource;
     }
     return nil;
 }
@@ -248,13 +263,17 @@ static NSString *_kPlayStatus = @"playStatus";
         [self.switcher switchToPreviousControlLayer];
     };
     
-    _defaultMoreSettingCarrier = [[SJControlLayerCarrier alloc] initWithIdentifier:SJControlLayer_MoreSettting controlLayer:moreControlLayer];
+    _defaultMoreSettingCarrier = [[SJControlLayerCarrier alloc] initWithIdentifier:SJControlLayer_MoreSettting dataSource:moreControlLayer delegate:moreControlLayer exitExeBlock:^(SJControlLayerCarrier * _Nonnull carrier) {
+        [moreControlLayer exitControlLayer];
+    } restartExeBlock:^(SJControlLayerCarrier * _Nonnull carrier) {
+        [moreControlLayer restartControlLayer];
+    }];
     return _defaultMoreSettingCarrier;
 }
 
 - (nullable SJMoreSettingControlLayer *)defaultMoreSettingControlLayer {
-    if ( [_defaultMoreSettingCarrier.controlLayer isKindOfClass:[SJMoreSettingControlLayer class]] ) {
-        return (id)_defaultMoreSettingCarrier.controlLayer;
+    if ( [_defaultMoreSettingCarrier.dataSource isKindOfClass:[SJMoreSettingControlLayer class]] ) {
+        return (id)_defaultMoreSettingCarrier.dataSource;
     }
     return nil;
 }
@@ -294,13 +313,17 @@ static NSString *_kPlayStatus = @"playStatus";
         [self.switcher switchToPreviousControlLayer];
     };
     
-    _defaultLoadFailedCarrier = [[SJControlLayerCarrier alloc] initWithIdentifier:SJControlLayer_LoadFailed controlLayer:controlLayer];
+    _defaultLoadFailedCarrier = [[SJControlLayerCarrier alloc] initWithIdentifier:SJControlLayer_LoadFailed dataSource:controlLayer delegate:controlLayer exitExeBlock:^(SJControlLayerCarrier * _Nonnull carrier) {
+        [controlLayer exitControlLayer];
+    } restartExeBlock:^(SJControlLayerCarrier * _Nonnull carrier) {
+        [controlLayer restartControlLayer];
+    }];
     return _defaultLoadFailedCarrier;
 }
 
 - (nullable SJLoadFailedControlLayer *)defaultLoadFailedControlLayer {
-    if ( [_defaultLoadFailedCarrier.controlLayer isKindOfClass:[SJLoadFailedControlLayer class]] ) {
-        return (id)_defaultLoadFailedCarrier.controlLayer;
+    if ( [_defaultLoadFailedCarrier.dataSource isKindOfClass:[SJLoadFailedControlLayer class]] ) {
+        return (id)_defaultLoadFailedCarrier.dataSource;
     }
     return nil;
 }

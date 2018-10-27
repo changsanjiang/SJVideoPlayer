@@ -31,26 +31,22 @@ SJEdgeControlButtonItemTag const SJLoadFailedControlLayerTopItem_Back = 10000;
 
 @interface SJLoadFailedControlLayer ()
 @property (nonatomic, weak, nullable) SJBaseVideoPlayer *videoPlayer;
-@property (nonatomic, strong, readonly) UIButton *reloadButton;
+@property (nonatomic, strong, readonly) UIButton *failedBtn;
 @end
 
 @implementation SJLoadFailedControlLayer
-@synthesize restarted = _restarted;
-
 - (void)restartControlLayer {
-    _restarted = YES;
     [self _show:self.controlView animated:YES];
 }
 
 - (void)exitControlLayer {
-    _restarted = NO;
     /// clean
     _videoPlayer.controlLayerDataSource = nil;
     _videoPlayer.controlLayerDelegate = nil;
     _videoPlayer = nil;
     
     [self _hidden:self.controlView animated:YES completionHandler:^{
-        if ( !self->_restarted )[self.controlView removeFromSuperview];
+        [self.controlView removeFromSuperview];
     }];
 }
 
@@ -64,12 +60,10 @@ SJEdgeControlButtonItemTag const SJLoadFailedControlLayerTopItem_Back = 10000;
 - (void)_setupViews {
     self.controlView.backgroundColor = [UIColor blackColor];
     [self _addItemsToTopAdapter];
-    [self.controlView addSubview:self.reloadButton];
-    [_reloadButton mas_makeConstraints:^(MASConstraintMaker *make) {
+    [self.controlView addSubview:self.failedBtn];
+    [_failedBtn mas_makeConstraints:^(MASConstraintMaker *make) {
         make.center.offset(0);
     }];
-    
-    _reloadButton.backgroundColor = [UIColor redColor];
 }
 
 - (void)_addItemsToTopAdapter {
@@ -115,28 +109,28 @@ SJEdgeControlButtonItemTag const SJLoadFailedControlLayerTopItem_Back = 10000;
     return NO;
 }
 
-@synthesize reloadButton = _reloadButton;
-- (UIButton *)reloadButton {
-    if ( _reloadButton ) return _reloadButton;
-    _reloadButton = [UIButton buttonWithType:UIButtonTypeCustom];
-    [_reloadButton addTarget:self action:@selector(clickedFailedButton:) forControlEvents:UIControlEventTouchUpInside];
-    [self _updateContent];
+@synthesize failedBtn = _failedBtn;
+- (UIButton *)failedBtn {
+    if ( _failedBtn ) return _failedBtn;
+    _failedBtn = [UIButton buttonWithType:UIButtonTypeCustom];
+    [_failedBtn addTarget:self action:@selector(clickedFailedButton:) forControlEvents:UIControlEventTouchUpInside];
+    [self _updateContentForFailedButton];
     __weak typeof(self) _self = self;
-    _reloadButton.settingRecroder = [[SJVideoPlayerControlSettingRecorder alloc] initWithSettings:^(SJEdgeControlLayerSettings * _Nonnull setting) {
+    _failedBtn.settingRecroder = [[SJVideoPlayerControlSettingRecorder alloc] initWithSettings:^(SJEdgeControlLayerSettings * _Nonnull setting) {
         __strong typeof(_self) self = _self;
         if ( !self ) return ;
-        [self _updateContent];
+        [self _updateContentForFailedButton];
     }];
-    return _reloadButton;
+    return _failedBtn;
 }
 
 - (void)clickedFailedButton:(UIButton *)btn {
     if ( _clickedFaliedButtonExeBlock ) _clickedFaliedButtonExeBlock(self);
 }
 
-- (void)_updateContent {
+- (void)_updateContentForFailedButton {
     SJEdgeControlLayerSettings *setting = [SJEdgeControlLayerSettings commonSettings];
-    [_reloadButton setAttributedTitle:sj_makeAttributesString(^(SJAttributeWorker * _Nonnull make) {
+    [_failedBtn setAttributedTitle:sj_makeAttributesString(^(SJAttributeWorker * _Nonnull make) {
         if ( setting.playFailedBtnImage ) {
             make.insert(setting.playFailedBtnImage, 0, CGPointZero, setting.playFailedBtnImage.size);
         }

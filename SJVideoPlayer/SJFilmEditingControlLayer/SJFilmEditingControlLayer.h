@@ -7,7 +7,11 @@
 //
 
 #import <UIKit/UIKit.h>
-#import "SJControlLayerCarrier.h"
+#if __has_include(<SJBaseVideoPlayer/SJBaseVideoPlayer.h>)
+#import <SJBaseVideoPlayer/SJBaseVideoPlayer.h>
+#else
+#import "SJBaseVideoPlayer.h"
+#endif
 #import "SJVideoPlayerFilmEditingCommonHeader.h"
 #import "SJFilmEditingStatus.h"
 #import "SJFilmEditingSettings.h"
@@ -15,7 +19,12 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
-@interface SJFilmEditingControlLayer : UIView<SJControlLayer>
+@interface SJFilmEditingControlLayer : UIView<SJVideoPlayerControlLayerDelegate, SJVideoPlayerControlLayerDataSource>
+
+- (void)restartControlLayer;
+
+- (void)exitControlLayer;
+
 #pragma mark
 @property (nonatomic, weak, nullable) id <SJFilmEditingControlLayerDelegate> delegate;
 

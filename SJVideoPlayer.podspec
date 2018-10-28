@@ -12,7 +12,6 @@ Pod::Spec.new do |s|
     s.requires_arc = true
     s.dependency 'Masonry'
     s.dependency 'SJBaseVideoPlayer'
-    s.dependency 'SJFullscreenPopGesture'
     s.dependency 'SJUIFactory'
     s.dependency 'SJAttributesFactory'
 

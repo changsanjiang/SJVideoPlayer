@@ -58,7 +58,8 @@ NS_ASSUME_NONNULL_BEGIN
                     make.left.equalTo(self.topContainerView.mas_safeAreaLayoutGuideLeft);
                     make.right.equalTo(self.topContainerView.mas_safeAreaLayoutGuideRight);
                 } else {
-                    make.top.left.right.offset(0);
+                    make.top.offset(8);
+                    make.left.right.offset(0);
                 }
             }];
         }
@@ -191,7 +192,7 @@ NS_ASSUME_NONNULL_BEGIN
             make.right.equalTo(self.bottomContainerView.mas_safeAreaLayoutGuideRight);
             make.bottom.equalTo(self.bottomContainerView.mas_safeAreaLayoutGuideBottom);
         } else {
-            make.left.right.offset(0);
+            make.left.bottom.right.offset(0);
         }
         
         make.height.offset(49);

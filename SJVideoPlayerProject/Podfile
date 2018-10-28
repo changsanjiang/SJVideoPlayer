@@ -9,8 +9,15 @@ target 'SJVideoPlayer' do
   
   pod 'YYText', :inhibit_warnings => true
   pod 'SJBaseVideoPlayer'
+  
+  # 便捷的创建 NSAttributedString
   pod 'SJAttributesFactory'
+  
+  # 全屏手势
   pod 'SJFullscreenPopGesture'
+  
+  
+  
   pod 'SJScrollEntriesView'
   pod 'SJUIKit/Refresh'
   pod 'SJUIFactory'

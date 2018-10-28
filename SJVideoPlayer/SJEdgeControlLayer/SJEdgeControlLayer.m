@@ -507,7 +507,7 @@ SJEdgeControlButtonItemTag const SJEdgeControlLayerBottomItem_FullBtn = 10005;
         [slider setThumbCornerRadius:settings.progress_thumbSize * 0.5 size:CGSizeMake(settings.progress_thumbSize, settings.progress_thumbSize) thumbBackgroundColor:settings.progress_thumbColor];
     }
     
-    fullItem.image = videoPlayer.isFullScreen?settings.shrinkscreenImage:settings.fullBtnImage;
+    fullItem.image = (videoPlayer.isFullScreen || videoPlayer.isFitOnScreen)?settings.shrinkscreenImage:settings.fullBtnImage;
     
     [self _callDelegateMethodOfItemsForAdapter:_bottomAdapter videoPlayer:videoPlayer];
     [_bottomAdapter reload];
@@ -814,7 +814,6 @@ SJEdgeControlButtonItemTag const SJEdgeControlLayerBottomItem_FullBtn = 10005;
     [self _updateItemsForAdaptersIfNeeded:videoPlayer];
     [self _updateTimeLabelFor_BottomAdapterWithCurrentTimeStr:videoPlayer.currentTimeStr durationStr:videoPlayer.totalTimeStr];
     [self _updatePlaybackProgressFor_BottomAdapterWithCurrentTime:videoPlayer.currentTime duration:videoPlayer.totalTime];
-    NSLog(@"%@ - %@", videoPlayer.currentTimeStr, videoPlayer.totalTimeStr);
 }
 
 - (void)videoPlayer:(__kindof SJBaseVideoPlayer *)videoPlayer statusDidChanged:(SJVideoPlayerPlayStatus)status {

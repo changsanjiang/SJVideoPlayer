@@ -10,7 +10,6 @@
 #import "SJVideoPlayer.h"
 #import <SJRouter/SJRouter.h>
 #import <Masonry/Masonry.h>
-#import <SJFullscreenPopGesture/UIViewController+SJVideoPlayerAdd.h>
 
 @interface ViewControllerDefaultPlayer ()<SJRouteHandler>
 @property (nonatomic, strong) SJVideoPlayer *player;
@@ -49,14 +48,6 @@
     _player.enableFilmEditing = YES;
     _player.pausedToKeepAppearState = YES;
     _player.generatePreviewImages = YES;
-    
-    self.sj_viewWillBeginDragging = ^(ViewControllerDefaultPlayer * _Nonnull vc) {
-        vc.player.disableAutoRotation = YES;
-    };
-    
-    self.sj_viewDidEndDragging = ^(ViewControllerDefaultPlayer * _Nonnull vc) {
-        vc.player.disableAutoRotation = NO;
-    };
     
 #pragma mark
     UILabel *noteLabel = [UILabel new];

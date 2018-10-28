@@ -10,7 +10,6 @@
 #import "SJVideoPlayer.h"
 #import <SJRouter/SJRouter.h>
 #import <Masonry/Masonry.h>
-#import <SJFullscreenPopGesture/UIViewController+SJVideoPlayerAdd.h>
 
 @interface ViewControllerSJPlayModel ()<SJRouteHandler>
 @property (nonatomic, strong) SJVideoPlayer *player;
@@ -44,13 +43,6 @@
     _player.URLAsset.title = @"Test Title";
     _player.hideBackButtonWhenOrientationIsPortrait = YES;
     
-    self.sj_viewWillBeginDragging = ^(ViewControllerSJPlayModel * _Nonnull vc) {
-        vc.player.disableAutoRotation = YES;
-    };
-    
-    self.sj_viewDidEndDragging = ^(ViewControllerSJPlayModel * _Nonnull vc) {
-        vc.player.disableAutoRotation = NO;
-    };
     // Do any additional setup after loading the view.
 }
 

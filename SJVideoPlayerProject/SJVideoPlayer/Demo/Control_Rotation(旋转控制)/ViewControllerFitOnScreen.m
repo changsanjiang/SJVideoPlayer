@@ -10,7 +10,6 @@
 #import "SJVideoPlayer.h"
 #import <SJRouter/SJRouter.h>
 #import <Masonry/Masonry.h>
-#import <SJFullscreenPopGesture/UIViewController+SJVideoPlayerAdd.h>
 
 @interface ViewControllerFitOnScreen ()<SJRouteHandler>
 @property (nonatomic, strong) SJVideoPlayer *player;
@@ -55,14 +54,7 @@
     _player.hideBackButtonWhenOrientationIsPortrait = YES;
     _player.pausedToKeepAppearState = YES;
     _player.enableFilmEditing = YES;
-    
-    self.sj_viewWillBeginDragging = ^(ViewControllerFitOnScreen * _Nonnull vc) {
-        vc.player.disableAutoRotation = YES;
-    };
-    
-    self.sj_viewDidEndDragging = ^(ViewControllerFitOnScreen * _Nonnull vc) {
-        vc.player.disableAutoRotation = NO;
-    };
+   
     // Do any additional setup after loading the view.
 }
 

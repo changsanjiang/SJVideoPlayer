@@ -45,6 +45,10 @@
 #import "Reachability.h"
 #endif
 
+#if __has_include(<SJFullscreenPopGesture/UINavigationController+SJVideoPlayerAdd.h>)
+#import <SJFullscreenPopGesture/UINavigationController+SJVideoPlayerAdd.h>
+#endif
+
 NS_ASSUME_NONNULL_BEGIN
 static UIScrollView *_Nullable _getScrollViewOfPlayModel(SJPlayModel *playModel) {
     if ( playModel.isPlayInTableView || playModel.isPlayInCollectionView ) {
@@ -56,6 +60,17 @@ static UIScrollView *_Nullable _getScrollViewOfPlayModel(SJPlayModel *playModel)
     }
     return nil;
 }
+
+@interface SJPlayerView : UIView
+@property (nonatomic, copy, nullable) void(^willMoveToWindowExeBlock)(SJPlayerView *view, UIWindow *_Nullable window);
+@end
+
+@implementation SJPlayerView
+- (void)willMoveToWindow:(nullable UIWindow *)newWindow {
+    [super willMoveToWindow:newWindow];
+    if ( _willMoveToWindowExeBlock ) _willMoveToWindowExeBlock(self, newWindow);
+}
+@end
 
 /**
  管理类: 控制层显示与隐藏
@@ -220,6 +235,8 @@ static UIScrollView *_Nullable _getScrollViewOfPlayModel(SJPlayModel *playModel)
 
 @property (nonatomic, strong, nullable) NSString *playStatusStr;
 
+@property (nonatomic) BOOL isTriggeringForPopGesture;
+
 /// 临时显示状态栏
 @property (nonatomic) BOOL tmpShowStatusBar;
 /// 临时隐藏状态栏
@@ -281,6 +298,41 @@ static UIScrollView *_Nullable _getScrollViewOfPlayModel(SJPlayModel *playModel)
     [self reachabilityObserver];
     [self addInterceptTapGR];
     return self;
+}
+
+static NSString *_kGestureState = @"state";
+- (void)_observeFullscreenPopGestureState {
+    UINavigationController *nav = self.atViewController.navigationController;
+    if ( !nav ) return;
+    UIGestureRecognizer *gesture = nil;
+#if __has_include(<SJFullscreenPopGesture/UINavigationController+SJVideoPlayerAdd.h>)
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Warc-performSelector-leaks"
+#pragma clang diagnostic ignored "-Wundeclared-selector"
+    if ( nav.sj_gestureType == SJFullscreenPopGestureType_Full ) {
+        if ( [nav respondsToSelector:@selector(SJ_pan)] ) {
+            gesture = [nav performSelector:@selector(SJ_pan)];
+        }
+    }
+    else {
+        if ( [nav respondsToSelector:@selector(SJ_edgePan)] ) {
+            gesture = [nav performSelector:@selector(SJ_edgePan)];
+        }
+    }
+#pragma clang diagnostic pop
+#else
+    gesture = nav.interactivePopGestureRecognizer;
+#endif
+    if ( !gesture ) return;
+    
+    [gesture sj_addObserver:self forKeyPath:_kGestureState context:&_kGestureState];
+}
+
+- (void)observeValueForKeyPath:(nullable NSString *)keyPath ofObject:(nullable id)object change:(nullable NSDictionary<NSKeyValueChangeKey,id> *)change context:(nullable void *)context {
+    if ( context == &_kGestureState ) {
+        UIGestureRecognizer *g = object;
+        _isTriggeringForPopGesture = (g.state == UIGestureRecognizerStateChanged);
+    }
 }
 
 - (void)dealloc {
@@ -429,11 +481,20 @@ static UIScrollView *_Nullable _getScrollViewOfPlayModel(SJPlayModel *playModel)
 #pragma mark -
 - (UIView *)view {
     if ( _view ) return _view;
-    _view = [UIView new];
+    _view = [SJPlayerView new];
     _view.backgroundColor = [UIColor blackColor];
     [_view addSubview:self.presentView];
     [_presentView addSubview:self.controlContentView];
     _presentView.autoresizingMask = _controlContentView.autoresizingMask = UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight;
+    __weak typeof(self) _self = self;
+    [(SJPlayerView *)_view setWillMoveToWindowExeBlock:^(SJPlayerView * _Nonnull view, UIWindow * _Nullable window) {
+        if ( !window ) return;
+        dispatch_async(dispatch_get_main_queue(), ^{
+            __strong typeof(_self) self = _self;
+            if ( !self ) return ;
+            [self _observeFullscreenPopGestureState];
+        });
+    }];
     return _view;
 }
 
@@ -486,6 +547,7 @@ static UIScrollView *_Nullable _getScrollViewOfPlayModel(SJPlayModel *playModel)
         if ( self.registrar.state == SJVideoPlayerAppState_ResignActive ) return NO;
         if ( self.useFitOnScreenAndDisableRotation ) return NO;
         if ( self.vc_isDisappeared ) return NO;
+        if ( self.isTriggeringForPopGesture ) return NO;
         return YES;
     };
     rotationManager.delegate = self;
@@ -1457,6 +1519,7 @@ static UIScrollView *_Nullable _getScrollViewOfPlayModel(SJPlayModel *playModel)
 }
 
 - (void)setRate:(float)rate {
+    if ( self.canPlayAnAsset && !self.canPlayAnAsset(self) ) return;
     if ( _rate == rate ) return;
     _rate = rate;
     _playbackController.rate = rate;

@@ -10,7 +10,6 @@
 #import "SJVideoPlayer.h"
 #import <SJRouter/SJRouter.h>
 #import <Masonry/Masonry.h>
-#import <SJFullscreenPopGesture/UIViewController+SJVideoPlayerAdd.h>
 #import "CustomControlLayerView.h"
 
 @interface ViewControllerControlLayerSwitcherDemo ()<SJRouteHandler>
@@ -103,13 +102,6 @@
     _player.pausedToKeepAppearState = YES;
     _player.generatePreviewImages = YES;
     
-    self.sj_viewWillBeginDragging = ^(ViewControllerControlLayerSwitcherDemo * _Nonnull vc) {
-        vc.player.disableAutoRotation = YES;
-    };
-    
-    self.sj_viewDidEndDragging = ^(ViewControllerControlLayerSwitcherDemo * _Nonnull vc) {
-        vc.player.disableAutoRotation = NO;
-    };
 }
 
 - (void)viewDidAppear:(BOOL)animated {

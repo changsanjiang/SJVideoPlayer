@@ -10,7 +10,6 @@
 #import "SJVideoPlayer.h"
 #import <SJRouter/SJRouter.h>
 #import <Masonry/Masonry.h>
-#import <SJFullscreenPopGesture/UIViewController+SJVideoPlayerAdd.h>
 
 @interface ViewControllerContinuePlayingWhenAppDidEnterBackgroud ()<SJRouteHandler>
 @property (nonatomic, strong) SJVideoPlayer *player;
@@ -47,13 +46,6 @@
     _player.hideBackButtonWhenOrientationIsPortrait = YES;
     _player.enableFilmEditing = YES;
     
-    self.sj_viewWillBeginDragging = ^(ViewControllerContinuePlayingWhenAppDidEnterBackgroud * _Nonnull vc) {
-        vc.player.disableAutoRotation = YES;
-    };
-    
-    self.sj_viewDidEndDragging = ^(ViewControllerContinuePlayingWhenAppDidEnterBackgroud * _Nonnull vc) {
-        vc.player.disableAutoRotation = NO;
-    };
 
     
     /// 关于后台播放视频, 引用自: https://juejin.im/post/5a38e1a0f265da4327185a26

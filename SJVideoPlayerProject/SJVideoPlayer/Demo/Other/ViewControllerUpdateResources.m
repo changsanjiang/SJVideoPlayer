@@ -10,7 +10,6 @@
 #import "SJVideoPlayer.h"
 #import <SJRouter/SJRouter.h>
 #import <Masonry/Masonry.h>
-#import <SJFullscreenPopGesture/UIViewController+SJVideoPlayerAdd.h>
 #import "SJProgressSlider.h"
 
 /// 更新资源图片等..
@@ -65,13 +64,6 @@
     _player.hideBackButtonWhenOrientationIsPortrait = YES;
     _player.enableFilmEditing = YES;
     
-    self.sj_viewWillBeginDragging = ^(ViewControllerUpdateResources * _Nonnull vc) {
-        vc.player.disableAutoRotation = YES;
-    };
-    
-    self.sj_viewDidEndDragging = ^(ViewControllerUpdateResources * _Nonnull vc) {
-        vc.player.disableAutoRotation = NO;
-    };
     // Do any additional setup after loading the view.
 }
 

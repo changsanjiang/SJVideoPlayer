@@ -10,8 +10,6 @@
 #import "SJVideoPlayer.h"
 #import <SJRouter/SJRouter.h>
 #import <Masonry/Masonry.h>
-#import <SJFullscreenPopGesture/UIViewController+SJVideoPlayerAdd.h>
-
 @interface ViewControllerLightWeightPlayer ()<SJRouteHandler>
 @property (nonatomic, strong) SJVideoPlayer *player;
 @end
@@ -48,14 +46,7 @@
     _player.hideBackButtonWhenOrientationIsPortrait = YES;
     _player.enableFilmEditing = YES;
     
-    self.sj_viewWillBeginDragging = ^(ViewControllerLightWeightPlayer * _Nonnull vc) {
-        vc.player.disableAutoRotation = YES;
-    };
-    
-    self.sj_viewDidEndDragging = ^(ViewControllerLightWeightPlayer * _Nonnull vc) {
-        vc.player.disableAutoRotation = NO;
-    };
-
+   
     
 #pragma mark
     UILabel *noteLabel = [UILabel new];

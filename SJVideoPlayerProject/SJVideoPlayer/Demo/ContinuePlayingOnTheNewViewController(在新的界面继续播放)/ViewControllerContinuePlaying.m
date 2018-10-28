@@ -60,14 +60,6 @@
         make.height.equalTo(self->_player.view.mas_width).multipliedBy(9 / 16.0f);
     }];
     
-    self.sj_viewWillBeginDragging = ^(ViewControllerContinuePlaying * _Nonnull vc) {
-        vc.player.disableAutoRotation = YES;
-    };
-    
-    self.sj_viewDidEndDragging = ^(ViewControllerContinuePlaying * _Nonnull vc) {
-        vc.player.disableAutoRotation = NO;
-    };
-    
     if ( !_asset ) {
         _player.URLAsset = [[SJVideoPlayerURLAsset alloc] initWithURL:[NSBundle.mainBundle URLForResource:@"play" withExtension:@"mp4"]];
         _player.URLAsset.title = @"Test Title";

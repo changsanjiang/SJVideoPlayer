@@ -10,7 +10,6 @@
 #import "SJVideoPlayer.h"
 #import <SJRouter/SJRouter.h>
 #import <Masonry/Masonry.h>
-#import <SJFullscreenPopGesture/UIViewController+SJVideoPlayerAdd.h>
 #import <SJBaseVideoPlayer/SJVCRotationManager.h>
 
 @interface ViewControllerControlRotation ()<SJRouteHandler>
@@ -122,13 +121,6 @@
     _player.URLAsset.title = @"Test Title";
     _player.hideBackButtonWhenOrientationIsPortrait = YES;
     
-    self.sj_viewWillBeginDragging = ^(ViewControllerControlRotation * _Nonnull vc) {
-        vc.player.disableAutoRotation = YES;
-    };
-    
-    self.sj_viewDidEndDragging = ^(ViewControllerControlRotation * _Nonnull vc) {
-        vc.player.disableAutoRotation = NO;
-    };
     
     
     /// 初始化旋转VC管理器

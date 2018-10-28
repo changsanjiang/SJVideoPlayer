@@ -10,7 +10,6 @@
 #import "SJVideoPlayer.h"
 #import <SJRouter/SJRouter.h>
 #import <Masonry/Masonry.h>
-#import <SJFullscreenPopGesture/UIViewController+SJVideoPlayerAdd.h>
 #import "SJProgressSlider.h"
 
 /// 调速
@@ -50,15 +49,6 @@
     _player.URLAsset.title = @"Test Title";
     _player.hideBackButtonWhenOrientationIsPortrait = YES;
     _player.enableFilmEditing = YES;
-    
-    self.sj_viewWillBeginDragging = ^(ViewControllerSetPlaybackRate * _Nonnull vc) {
-        vc.player.disableAutoRotation = YES;
-    };
-    
-    self.sj_viewDidEndDragging = ^(ViewControllerSetPlaybackRate * _Nonnull vc) {
-        vc.player.disableAutoRotation = NO;
-    };
-    
     
     _rateSlider = [SJProgressSlider new];
     _rateSlider.maxValue = 2;

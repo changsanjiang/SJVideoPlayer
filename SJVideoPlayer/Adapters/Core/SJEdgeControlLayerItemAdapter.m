@@ -25,6 +25,10 @@ NS_ASSUME_NONNULL_BEGIN
     return self;
 }
 
+- (void)invalidateLayout {
+    [super invalidateLayout];
+}
+
 - (void)prepareLayout {
     [super prepareLayout];
     
@@ -148,6 +152,10 @@ NS_ASSUME_NONNULL_BEGIN
     bounds.size.height = ceil(bounds.size.height);
     return bounds.size;
 }
+
+- (BOOL)shouldInvalidateLayoutForBoundsChange:(CGRect)newBounds {
+    return YES;
+}
 @end
 
 
@@ -174,20 +182,26 @@ NS_ASSUME_NONNULL_BEGIN
     _collectionView.backgroundColor = [UIColor clearColor];
     _collectionView.showsVerticalScrollIndicator = NO;
     _collectionView.showsHorizontalScrollIndicator = NO;
+    
+    [self.view addSubview:_collectionView];
+    _collectionView.frame = _view.bounds;
+    _collectionView.autoresizingMask = UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight;
     return self;
 }
+@synthesize view = _view;
 - (UIView *)view {
-    return _collectionView;
+    if ( _view ) return _view;
+    return _view = [UIView new];
 }
 - (void)reload { 
     _layout.items = _itemsM;
-    [_layout invalidateLayout];
     [_collectionView reloadData];
 }
 - (void)updateContentForItemWithTag:(SJEdgeControlButtonItemTag)tag {
     NSInteger index = [self indexOfItemForTag:tag];
     SJEdgeControlButtonItem *item = [self itemForTag:tag];
     if ( !item ) return;
+    if ( 0 == [_collectionView numberOfItemsInSection:0] ) return;
     [self _updateContentOfCell:(id)[_collectionView cellForItemAtIndexPath:[NSIndexPath indexPathForItem:index inSection:0]] forItem:item];
 }
 - (NSInteger)numberOfItems {

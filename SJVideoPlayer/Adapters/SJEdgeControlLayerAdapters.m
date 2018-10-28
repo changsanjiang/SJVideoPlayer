@@ -54,11 +54,11 @@ NS_ASSUME_NONNULL_BEGIN
                 make.height.offset(49);
                 make.bottom.offset(0);
                 if (@available(iOS 11.0, *)) {
-                    make.top.equalTo(self.topContainerView.mas_safeAreaLayoutGuideTop);
+                    make.top.equalTo(self.topContainerView.mas_safeAreaLayoutGuideTop).offset(8);
                     make.left.equalTo(self.topContainerView.mas_safeAreaLayoutGuideLeft);
                     make.right.equalTo(self.topContainerView.mas_safeAreaLayoutGuideRight);
                 } else {
-                    make.top.offset(8);
+                    make.top.offset(self.isFitOnScreen?20:8);
                     make.left.right.offset(0);
                 }
             }];
@@ -80,6 +80,12 @@ NS_ASSUME_NONNULL_BEGIN
         }
             break;
     }
+}
+
+- (void)setIsFitOnScreen:(BOOL)isFitOnScreen {
+    if ( isFitOnScreen == _isFitOnScreen ) return;
+    _isFitOnScreen = isFitOnScreen;
+    [self _updateTopLayout:nil];
 }
 
 - (SJVideoPlayerControlMaskView *)topContainerView {

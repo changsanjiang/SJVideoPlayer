@@ -801,6 +801,7 @@ SJEdgeControlButtonItemTag const SJEdgeControlLayerBottomItem_FullBtn = 10005;
 }
 
 - (void)controlLayerNeedAppear:(__kindof SJBaseVideoPlayer *)videoPlayer {
+    self.isFitOnScreen = CGRectEqualToRect(videoPlayer.view.bounds, UIScreen.mainScreen.bounds);
     [self _updateAppearStateForAdapters:videoPlayer];
     [self _updateItemsForAdaptersIfNeeded:videoPlayer];
 }
@@ -846,11 +847,17 @@ SJEdgeControlButtonItemTag const SJEdgeControlLayerBottomItem_FullBtn = 10005;
 - (void)videoPlayer:(__kindof SJBaseVideoPlayer *)videoPlayer willRotateView:(BOOL)isFull {
     [self _updateAppearStateForAdapters:videoPlayer];
     [self _updateItemsForAdaptersIfNeeded:videoPlayer];
+    if ( ![self _isHiddenWithView:_bottomProgressSlider] ) [self _hidden:_bottomProgressSlider animated:NO];
 }
 
 - (void)videoPlayer:(__kindof SJBaseVideoPlayer *)videoPlayer willFitOnScreen:(BOOL)isFitOnScreen {
+    self.isFitOnScreen = isFitOnScreen;
     [self _updateAppearStateForAdapters:videoPlayer];
     [self _updateItemsForAdaptersIfNeeded:videoPlayer];
+}
+
+- (void)videoPlayer:(__kindof SJBaseVideoPlayer *)videoPlayer didEndRotation:(BOOL)isFull {
+    if ( !videoPlayer.controlLayerAppeared ) [self _show:_bottomProgressSlider animated:YES];
 }
 
 ///  在`tableView`或`collectionView`上将要显示的时候调用.

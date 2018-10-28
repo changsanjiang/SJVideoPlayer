@@ -33,9 +33,13 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic, strong, readonly) UIView *leftContainerView;
 @property (nonatomic, strong, readonly) UIView *rightContainerView;
 
-/// default is NO.
-@property (nonatomic) BOOL showBackgroundColor;
 /// default is YES.
 @property (nonatomic) BOOL autoAdjustTopSpacing; // 自动调整顶部间距, 让出状态栏
+
+@property (nonatomic) BOOL isFitOnScreen;
+
+#ifdef DEBUG
+@property (nonatomic) BOOL showBackgroundColor;
+#endif
 @end
 NS_ASSUME_NONNULL_END

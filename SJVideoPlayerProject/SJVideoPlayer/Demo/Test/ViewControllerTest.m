@@ -18,6 +18,7 @@
 #import "SJEdgeControlLayer.h"
 #import "SJLoadFailedControlLayer.h"
 #import <NSObject+SJObserverHelper.h>
+#import "ViewControllerTestPresent.h"
 
 @interface ViewControllerTest ()<SJRouteHandler, SJEdgeControlButtonItemDelegate>
 @property (nonatomic, strong) SJVideoPlayer *player;
@@ -37,6 +38,7 @@
     [super viewDidLoad];
     self.edgesForExtendedLayout = UIRectEdgeNone;
     self.view.backgroundColor = [UIColor whiteColor];
+    
     
     [self _setupViews];
     
@@ -106,6 +108,9 @@
     dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(3 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
         self.player.URLAsset = [[SJVideoPlayerURLAsset alloc] initWithURL:[NSURL URLWithString:@"http://www.tetet.com"]];
     });
+  
+//    [_player showTitle:@"3秒后测试充满屏幕的情况" duration:3];
+//    [self presentViewController:[ViewControllerTestPresent new] animated:YES completion:nil];
 }
 
 /// test
@@ -120,7 +125,7 @@
     [self.view addSubview:_player.view];
     [_player.view mas_makeConstraints:^(MASConstraintMaker *make) {
         if (@available(iOS 11.0, *)) make.top.equalTo(self.view.mas_safeAreaLayoutGuideTop);
-        else make.top.offset(0);
+        else make.top.offset(20);
         make.leading.trailing.offset(0);
         make.height.equalTo(self->_player.view.mas_width).multipliedBy(9 / 16.0f);
     }];

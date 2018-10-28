@@ -80,8 +80,17 @@
     
     [m addObject:[[LWZTableSectionShrinker alloc] initWithTitle:@"Continue Playing" titleWhenShrank:nil dataArr:[self _createItemsByContinuePlaying]]];
     
+    [m addObject:[[LWZTableSectionShrinker alloc] initWithTitle:@"Control Layer Switcher" titleWhenShrank:nil dataArr:[self _createItemsByControlLayerSwitcher]]];
+    
     [m addObject:[[LWZTableSectionShrinker alloc] initWithTitle:@"Other" titleWhenShrank:nil dataArr:[self _createItemsByOtherOperations]]];
     _data = m.copy;
+}
+
+- (NSArray<Item *> *)_createItemsByControlLayerSwitcher {
+    return
+    @[[[Item alloc] initWithTitle:@"Replace control Layer"
+                         subTitle:@"替换默认的控制层"
+                             path:@"player/defaultPlayer/switcher/replaceControlLayer"]];
 }
 
 - (NSArray<Item *> *)_createItemsByButtonItemOperationsForControlLayer {

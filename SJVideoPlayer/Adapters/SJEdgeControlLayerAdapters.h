@@ -21,7 +21,6 @@ NS_ASSUME_NONNULL_BEGIN
     __kindof UIView *_Nullable _bottomContainerView;
     UIView *_Nullable _leftContainerView;
     UIView *_Nullable _rightContainerView;
-    UIView *_safeAreaView;
 }
 
 @property (nonatomic, strong, readonly) SJEdgeControlLayerItemAdapter *topAdapter;    // lazy load

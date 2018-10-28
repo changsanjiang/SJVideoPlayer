@@ -12,9 +12,6 @@
 NS_ASSUME_NONNULL_BEGIN
 
 @interface SJControlLayerSwitcher ()
-@property (nonatomic, copy, readonly) void(^exitExeBlock)(SJControlLayerCarrier *carrier);
-@property (nonatomic, copy, readonly) void(^restartExeBlock)(SJControlLayerCarrier *carrier);
-
 @property (nonatomic, strong, readonly) NSMutableDictionary *map;
 @property (nonatomic, weak, nullable) SJBaseVideoPlayer *videoPlayer;
 @end

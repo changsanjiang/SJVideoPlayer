@@ -6,11 +6,11 @@
 //  Copyright © 2018 畅三江. All rights reserved.
 //
 
-#import <UIKit/UIKit.h>
-#import <SJBaseVideoPlayer/SJVideoPlayerControlLayerProtocol.h>
+#import "SJEdgeControlLayerAdapters.h"
+#import "SJControlLayerCarrier.h"
 
 NS_ASSUME_NONNULL_BEGIN
-@interface CustomControlLayerView : UIView<SJVideoPlayerControlLayerDelegate, SJVideoPlayerControlLayerDataSource>
+@interface CustomControlLayerView : SJEdgeControlLayerAdapters<SJControlLayer>
 
 @end
 NS_ASSUME_NONNULL_END

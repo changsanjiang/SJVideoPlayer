@@ -72,7 +72,7 @@
             make.edges.offset(0);
         }];
         
-        self.player.URLAsset = [[SJVideoPlayerURLAsset alloc] initWithURL:[NSBundle.mainBundle URLForResource:@"play" withExtension:@"mp4"] playModel:[SJPlayModel UICollectionViewCellPlayModelWithPlayerSuperviewTag:view.coverImageView.tag atIndexPath:indexPath collectionView:collectionView]];
+        self.player.URLAsset = [[SJVideoPlayerURLAsset alloc] initWithURL:[NSBundle.mainBundle URLForResource:@"play" withExtension:@"mp4"] playModel:[SJPlayModel UICollectionViewCellPlayModelWithPlayerSuperviewTag:view.coverImageView.tag atIndexPath:indexPath collectionView:self.collectionView]];
         self.player.URLAsset.title = @"Test Title";
         self.player.URLAsset.alwaysShowTitle = YES;
     };

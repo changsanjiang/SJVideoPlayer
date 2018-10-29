@@ -256,7 +256,7 @@ SJEdgeControlButtonItemTag const SJEdgeControlLayerBottomItem_FullBtn = 10005;
 }
 
 - (BOOL)_canDisappearFor_TopAdapter {
-    if ( ![self _isHiddenWithView:_previewView] ) return NO;
+    if ( _previewView && ![self _isHiddenWithView:_previewView] ) return NO;
     return YES;
 }
 
@@ -527,7 +527,7 @@ SJEdgeControlButtonItemTag const SJEdgeControlLayerBottomItem_FullBtn = 10005;
     if ( ![durationStr isEqualToString:durationTimeItem.title.string] ) {
         durationTimeItem.title = sj_makeAttributesString(^(SJAttributeWorker * _Nonnull make) {
             make.append(durationStr).font([UIFont systemFontOfSize:11]).textColor([UIColor whiteColor]).alignment(NSTextAlignmentCenter);
-            currentTimeItem.size = durationTimeItem.size = make.size().width;
+            currentTimeItem.size = durationTimeItem.size = [self _timeLabelMaxWidthByDurationStr:durationStr];
         });
         [_bottomAdapter reload];
     }
@@ -535,6 +535,20 @@ SJEdgeControlButtonItemTag const SJEdgeControlLayerBottomItem_FullBtn = 10005;
         [_bottomAdapter updateContentForItemWithTag:SJEdgeControlLayerBottomItem_CurrentTime];
         [_bottomAdapter updateContentForItemWithTag:SJEdgeControlLayerBottomItem_DurationTime];
     }
+}
+
+- (CGFloat)_timeLabelMaxWidthByDurationStr:(NSString *)durationStr {
+    // 00:00
+    // 00:00:00
+    NSString *ms = @"00:00";
+    NSString *hms = @"00:00:00";
+    NSString *format = (durationStr.length == ms.length)?ms:hms;
+    __block CGSize size = CGSizeZero;
+    sj_makeAttributesString(^(SJAttributeWorker * _Nonnull make) {
+       make.append(format).font([UIFont systemFontOfSize:11]).textColor([UIColor whiteColor]).alignment(NSTextAlignmentCenter);
+        size = make.size();
+    });
+    return size.width;
 }
 
 /// 更新播放进度

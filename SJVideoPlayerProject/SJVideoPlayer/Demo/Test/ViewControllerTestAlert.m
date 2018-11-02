@@ -74,6 +74,7 @@
 #ifdef DEBUG
         NSLog(@"%d - %s", (int)__LINE__, __func__);
 #endif
+
     }]];
     
     dispatch_async(dispatch_get_main_queue(), ^{
@@ -94,10 +95,22 @@
 }
 
 - (UIInterfaceOrientationMask)supportedInterfaceOrientations {
+    if ( self.presentedViewController ) {
+        switch ( _player.currentOrientation ) {
+            case UIInterfaceOrientationPortrait:
+                return UIInterfaceOrientationMaskPortrait;
+            case UIInterfaceOrientationLandscapeLeft:
+                return UIInterfaceOrientationMaskLandscapeLeft;
+            case UIInterfaceOrientationLandscapeRight:
+                return UIInterfaceOrientationMaskLandscapeRight;
+            default: break;
+        }
+    }
     return [self.rotationManager vc_supportedInterfaceOrientations];
 }
 
 - (UIInterfaceOrientation)preferredInterfaceOrientationForPresentation {
+    if ( self.presentedViewController ) return _player.currentOrientation;
     return [self.rotationManager vc_preferredInterfaceOrientationForPresentation];
 }
 

@@ -219,6 +219,10 @@
                          subTitle:@"镜像翻转"
                              path:@"player/videoFlipTransition"],
       
+      [[Item alloc] initWithTitle:@"Test Alert"
+                         subTitle:@"测试 弹窗"
+                             path:@"player/defaultPlayer/testAlert"],
+      
       [[Item alloc] initWithTitle:@"Test"
                          subTitle:@"测试"
                              path:@"player/test"]];

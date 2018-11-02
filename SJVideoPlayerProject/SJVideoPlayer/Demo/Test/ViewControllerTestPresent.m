@@ -41,17 +41,6 @@
     _player.pausedToKeepAppearState = YES;
     _player.generatePreviewImages = YES;
     
-#pragma mark
-    UILabel *noteLabel = [UILabel new];
-    noteLabel.numberOfLines = 0;
-    noteLabel.text = @"This is a simple demo, please use other demos to understand how to use.\n此为简单Demo, 请通过其他Demo来了解如何使用.";
-    noteLabel.font = [UIFont systemFontOfSize:12];
-    [self.view addSubview:noteLabel];
-    [noteLabel mas_makeConstraints:^(MASConstraintMaker *make) {
-        make.leading.offset(8);
-        make.trailing.offset(-8);
-        make.centerY.offset(0);
-    }];
     // Do any additional setup after loading the view.
 }
 

@@ -18,7 +18,7 @@
 #import "SJEdgeControlLayer.h"
 #import "SJLoadFailedControlLayer.h"
 #import <NSObject+SJObserverHelper.h>
-#import "ViewControllerTestPresent.h"
+#import "ViewControllerTestPresent.h" 
 
 @interface ViewControllerTest ()<SJRouteHandler, SJEdgeControlButtonItemDelegate>
 @property (nonatomic, strong) SJVideoPlayer *player;

@@ -237,6 +237,10 @@ NS_ASSUME_NONNULL_BEGIN
     if ( _disappearExeBlock ) _disappearExeBlock(self);
 }
 
+- (void)videoPlayer:(__kindof SJBaseVideoPlayer *)videoPlayer willRotateView:(BOOL)isFull {
+    if ( _disappearExeBlock ) _disappearExeBlock(self);
+}
+
 /// 声音被改变.
 - (void)videoPlayer:(SJBaseVideoPlayer *)videoPlayer volumeChanged:(float)volume {
     if ( _footerViewModel.volumeChanged ) _footerViewModel.volumeChanged(volume);

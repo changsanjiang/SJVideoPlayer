@@ -130,7 +130,7 @@ static NSString *_kPlayStatus = @"playStatus";
     _recorder = [[SJVideoPlayerControlSettingRecorder alloc] initWithSettings:^(SJEdgeControlLayerSettings * _Nonnull setting) {
         __strong typeof(_self) self = _self;
         if ( !self ) return ;
-        self.placeholder = [SJVideoPlayerSettings commonSettings].placeholder;
+        if ( [SJVideoPlayerSettings commonSettings].placeholder ) self.placeholder = [SJVideoPlayerSettings commonSettings].placeholder;
     }];
     self.placeholder = [SJVideoPlayerSettings commonSettings].placeholder;
     return self;

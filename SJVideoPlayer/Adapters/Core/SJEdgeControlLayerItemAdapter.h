@@ -9,9 +9,18 @@
 #import <UIKit/UIKit.h>
 #import "SJEdgeControlButtonItem.h"
 
+typedef enum : NSUInteger {
+    /// 垂直布局
+    SJAdapterItemsLayoutTypeVerticalLayout = UICollectionViewScrollDirectionVertical,
+    /// 水平布局
+    SJAdapterItemsLayoutTypeHorizontalLayout = UICollectionViewScrollDirectionHorizontal,
+    
+    /// SJAdapterItemsLayoutTypeFrameLayout, // Sometime in the future
+} SJAdapterItemsLayoutType;
+
 NS_ASSUME_NONNULL_BEGIN
 @interface SJEdgeControlLayerItemAdapter : NSObject
-- (instancetype)initWithDirection:(UICollectionViewScrollDirection)direction;
+- (instancetype)initWithLayoutType:(SJAdapterItemsLayoutType)layoutType;
 /// 刷新
 - (void)reload;
 - (void)updateContentForItemWithTag:(SJEdgeControlButtonItemTag)tag;

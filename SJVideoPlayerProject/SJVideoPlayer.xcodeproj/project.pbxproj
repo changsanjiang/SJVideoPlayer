@@ -13,6 +13,7 @@
 		7736E87F217B225500DFBB89 /* SJEdgeControlLayerAdapters.m in Sources */ = {isa = PBXBuildFile; fileRef = 7736E87E217B225500DFBB89 /* SJEdgeControlLayerAdapters.m */; };
 		775D7D2821832CB300426773 /* SJMoreSettingControlLayer.m in Sources */ = {isa = PBXBuildFile; fileRef = 775D7D2721832CB300426773 /* SJMoreSettingControlLayer.m */; };
 		77A331B8217F32CD00980A17 /* UIView+SJAnimationAdded.m in Sources */ = {isa = PBXBuildFile; fileRef = 77A331B7217F32CD00980A17 /* UIView+SJAnimationAdded.m */; };
+		77DDBA9D218BE5CC00071AD1 /* ViewControllerFilmEditing.m in Sources */ = {isa = PBXBuildFile; fileRef = 77DDBA9C218BE5CC00071AD1 /* ViewControllerFilmEditing.m */; };
 		77E8D75821797FDA00B025A7 /* ViewControllerVideoFlip.m in Sources */ = {isa = PBXBuildFile; fileRef = 77E8D75721797FDA00B025A7 /* ViewControllerVideoFlip.m */; };
 		77E8D75A2179817300B025A7 /* ViewControllerVideoFlip.xib in Resources */ = {isa = PBXBuildFile; fileRef = 77E8D7592179817300B025A7 /* ViewControllerVideoFlip.xib */; };
 		77E8D7622179A0E700B025A7 /* ViewControllerTest.m in Sources */ = {isa = PBXBuildFile; fileRef = 77E8D7612179A0E700B025A7 /* ViewControllerTest.m */; };
@@ -149,6 +150,8 @@
 		775D7D2721832CB300426773 /* SJMoreSettingControlLayer.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SJMoreSettingControlLayer.m; sourceTree = "<group>"; };
 		77A331B6217F32CD00980A17 /* UIView+SJAnimationAdded.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "UIView+SJAnimationAdded.h"; sourceTree = "<group>"; };
 		77A331B7217F32CD00980A17 /* UIView+SJAnimationAdded.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = "UIView+SJAnimationAdded.m"; sourceTree = "<group>"; };
+		77DDBA9B218BE5CC00071AD1 /* ViewControllerFilmEditing.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = ViewControllerFilmEditing.h; sourceTree = "<group>"; };
+		77DDBA9C218BE5CC00071AD1 /* ViewControllerFilmEditing.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = ViewControllerFilmEditing.m; sourceTree = "<group>"; };
 		77E8D75621797FDA00B025A7 /* ViewControllerVideoFlip.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = ViewControllerVideoFlip.h; sourceTree = "<group>"; };
 		77E8D75721797FDA00B025A7 /* ViewControllerVideoFlip.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = ViewControllerVideoFlip.m; sourceTree = "<group>"; };
 		77E8D7592179817300B025A7 /* ViewControllerVideoFlip.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = ViewControllerVideoFlip.xib; sourceTree = "<group>"; };
@@ -423,6 +426,15 @@
 				A60065DD215F974B0001B5F8 /* Core */,
 			);
 			path = SJMoreSettingControlLayer;
+			sourceTree = "<group>";
+		};
+		77DDBA9A218BE5A000071AD1 /* FilmEditing(GIF Screenshot Export) */ = {
+			isa = PBXGroup;
+			children = (
+				77DDBA9B218BE5CC00071AD1 /* ViewControllerFilmEditing.h */,
+				77DDBA9C218BE5CC00071AD1 /* ViewControllerFilmEditing.m */,
+			);
+			path = "FilmEditing(GIF Screenshot Export)";
 			sourceTree = "<group>";
 		};
 		77E8D75F2179A0B100B025A7 /* Test */ = {
@@ -750,6 +762,7 @@
 		A6006646215F97D50001B5F8 /* Demo */ = {
 			isa = PBXGroup;
 			children = (
+				77DDBA9A218BE5A000071AD1 /* FilmEditing(GIF Screenshot Export) */,
 				A6D1A26621855EB5006FF2C1 /* ControlLayerSwitcher(控制层切换) */,
 				A6D1A24E21844086006FF2C1 /* AddItemIntoControlLayer(向控制层添加按钮) */,
 				A60066A2216116650001B5F8 /* ContinuePlayingOnTheNewViewController(在新的界面继续播放) */,
@@ -1259,6 +1272,7 @@
 				A6006620215F974B0001B5F8 /* SJVideoPlayerControlMaskView.m in Sources */,
 				A600661F215F974B0001B5F8 /* SJVideoPlayer.m in Sources */,
 				A600661E215F974B0001B5F8 /* SJLoadingView.m in Sources */,
+				77DDBA9D218BE5CC00071AD1 /* ViewControllerFilmEditing.m in Sources */,
 				A60066AE216197590001B5F8 /* ViewControllerSetPlaybackRate.m in Sources */,
 				A6006634215F974B0001B5F8 /* SJVideoPlayerMoreSettingSecondaryColCell.m in Sources */,
 				A6006612215F974B0001B5F8 /* SJCommonProgressSlider.m in Sources */,

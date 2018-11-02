@@ -12,7 +12,7 @@
 NS_ASSUME_NONNULL_BEGIN
 @interface SJCollectionViewLayout : UICollectionViewLayout
 @property (nonatomic, copy, nullable) NSArray<SJEdgeControlButtonItem *> *items;
-@property (nonatomic) UICollectionViewScrollDirection scrollDirection;
+@property (nonatomic) SJAdapterItemsLayoutType layoutType;
 @end
 
 @implementation SJCollectionViewLayout {
@@ -31,12 +31,17 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (void)prepareLayout {
     [super prepareLayout];
-    
-    if ( _scrollDirection == UICollectionViewScrollDirectionHorizontal ) {
-        [self _prepareLayout_Horizontal];
-    }
-    else {
-        [self _prepareLayout_Vertical];
+    switch ( _layoutType ) {
+        case SJAdapterItemsLayoutTypeVerticalLayout:
+            [self _prepareLayout_Vertical];
+            break;
+        case SJAdapterItemsLayoutTypeHorizontalLayout:
+            [self _prepareLayout_Horizontal];
+            break;
+//            Sometime in the future
+//        case SJAdapterItemsLayoutTypeFrameLayout:
+//            [self _prepareLayout_Frame];
+//            break;
     }
 }
 //0x108803c00
@@ -132,6 +137,12 @@ NS_ASSUME_NONNULL_BEGIN
     }
 }
 
+// Sometime in the future
+//- (void)_prepareLayout_Frame {
+//    [_layoutAttributes removeAllObjects];
+//
+//}
+
 - (nullable NSArray<__kindof UICollectionViewLayoutAttributes *> *)layoutAttributesForElementsInRect:(CGRect)rect {
     return _layoutAttributes;
 }
@@ -162,19 +173,18 @@ NS_ASSUME_NONNULL_BEGIN
 @interface SJEdgeControlLayerItemAdapter ()<UICollectionViewDelegate, UICollectionViewDataSource>
 @property (nonatomic, strong, readonly) NSMutableArray<SJEdgeControlButtonItem *> *itemsM;
 @property (nonatomic, strong, readonly) UICollectionView *collectionView;
-@property (nonatomic, readonly) UICollectionViewScrollDirection direction;
 @end
 
 @implementation SJEdgeControlLayerItemAdapter {
     SJCollectionViewLayout *_layout;
 }
-- (instancetype)initWithDirection:(UICollectionViewScrollDirection)direction {
+- (instancetype)initWithLayoutType:(SJAdapterItemsLayoutType)layoutType {
     self = [super init];
     if ( !self ) return nil;
     _itemsM = NSMutableArray.array;
     
     _layout = [SJCollectionViewLayout new];
-    _layout.scrollDirection = direction;
+    _layout.layoutType = layoutType;
     _collectionView = [[UICollectionView alloc] initWithFrame:CGRectZero collectionViewLayout:_layout];
     [SJButtonItemCollectionViewCell registerWithCollectionView:_collectionView];
     _collectionView.dataSource = self;

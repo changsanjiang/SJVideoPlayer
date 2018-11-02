@@ -207,6 +207,10 @@
                          subTitle:@"修改默认的图片等资源"
                              path:@"player/updateResources"],
       
+      [[Item alloc] initWithTitle:@"GIF Screenshot Export"
+                         subTitle:@"GIF Screenshot Export 示例"
+                             path:@"player/filmEditing"],
+      
       [[Item alloc] initWithTitle:@"CustomControlLayer"
                          subTitle:@"自定义控制层"
                              path:@"player/customControlLayer"],

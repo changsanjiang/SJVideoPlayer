@@ -166,7 +166,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (SJEdgeControlLayerItemAdapter *)topAdapter {
     if ( _topAdapter ) return _topAdapter;
-    _topAdapter = [[SJEdgeControlLayerItemAdapter alloc] initWithDirection:UICollectionViewScrollDirectionHorizontal];
+    _topAdapter = [[SJEdgeControlLayerItemAdapter alloc] initWithLayoutType:SJAdapterItemsLayoutTypeHorizontalLayout];
     [self.topContainerView addSubview:_topAdapter.view];
     [self _updateTopLayout:nil];
     return _topAdapter;
@@ -174,7 +174,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (SJEdgeControlLayerItemAdapter *)leftAdapter {
     if ( _leftAdapter ) return _leftAdapter;
-    _leftAdapter = [[SJEdgeControlLayerItemAdapter alloc] initWithDirection:UICollectionViewScrollDirectionVertical];
+    _leftAdapter = [[SJEdgeControlLayerItemAdapter alloc] initWithLayoutType:SJAdapterItemsLayoutTypeVerticalLayout];
     [self.leftContainerView addSubview:_leftAdapter.view];
     [_leftAdapter.view mas_makeConstraints:^(MASConstraintMaker *make) {
         make.width.offset(49);
@@ -190,7 +190,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (SJEdgeControlLayerItemAdapter *)bottomAdapter {
     if ( _bottomAdapter ) return _bottomAdapter;
-    _bottomAdapter = [[SJEdgeControlLayerItemAdapter alloc] initWithDirection:UICollectionViewScrollDirectionHorizontal];
+    _bottomAdapter = [[SJEdgeControlLayerItemAdapter alloc] initWithLayoutType:SJAdapterItemsLayoutTypeHorizontalLayout];
     [self.bottomContainerView addSubview:_bottomAdapter.view];
     [_bottomAdapter.view mas_makeConstraints:^(MASConstraintMaker *make) {
         if (@available(iOS 11.0, *)) {
@@ -209,7 +209,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (SJEdgeControlLayerItemAdapter *)rightAdapter {
     if ( _rightAdapter ) return _rightAdapter;
-    _rightAdapter = [[SJEdgeControlLayerItemAdapter alloc] initWithDirection:UICollectionViewScrollDirectionVertical];
+    _rightAdapter = [[SJEdgeControlLayerItemAdapter alloc] initWithLayoutType:SJAdapterItemsLayoutTypeVerticalLayout];
     [self.rightContainerView addSubview:_rightAdapter.view];
     [_rightAdapter.view mas_makeConstraints:^(MASConstraintMaker *make) {
         make.width.offset(49);

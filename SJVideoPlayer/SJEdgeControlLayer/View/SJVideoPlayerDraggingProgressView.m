@@ -66,12 +66,13 @@
 - (void)_needUpdateToStyle:(SJVideoPlayerDraggingProgressViewStyle)style {
     switch (  style ) {
         case SJVideoPlayerDraggingProgressViewStyleArrowProgress: {
-            [_contentView mas_updateConstraints:^(MASConstraintMaker *make) {
+            [_contentView mas_remakeConstraints:^(MASConstraintMaker *make) {
+                make.edges.offset(0);
                 CGFloat width = SJScreen_Min() * (150 / 375.0);
                 CGFloat height = width * 8 / 15;
                 make.size.mas_offset(CGSizeMake(ceil(width), ceil(height)));
             }];
-
+            
             _previewImageView.hidden = YES;
             _progressSlider.trackHeight = 3;
             
@@ -97,7 +98,8 @@
         }
             break;
         case SJVideoPlayerDraggingProgressViewStylePreviewProgress: {
-            [_contentView mas_updateConstraints:^(MASConstraintMaker *make) {
+            [_contentView mas_remakeConstraints:^(MASConstraintMaker *make) {
+                make.edges.offset(0);
                 CGFloat width = SJScreen_Max() * ( 120 / 375.0);
                 CGFloat height = width * 3 / 4;
                 make.size.mas_offset(CGSizeMake(ceil(width), ceil(height)));
@@ -195,11 +197,13 @@
     [_shiftTimeLabel mas_makeConstraints:^(MASConstraintMaker *make) {
         make.right.equalTo(self->_separatorLabel.mas_left);
         make.centerY.equalTo(self->_separatorLabel);
+        make.left.offset(0);
     }];
     
     [_durationTimeLabel mas_makeConstraints:^(MASConstraintMaker *make) {
         make.left.equalTo(self->_separatorLabel.mas_right);
         make.centerY.equalTo(self->_separatorLabel);
+        make.right.offset(0);
     }];
 }
 
@@ -214,7 +218,7 @@
     _progressSlider = [SJProgressSlider new];
     _progressSlider.trackHeight = 3;
     _progressSlider.enableBufferProgress = YES;
-    _progressSlider.pan.enabled = NO; 
+    _progressSlider.pan.enabled = NO;
     return _progressSlider;
 }
 
@@ -234,6 +238,7 @@
 - (UILabel *)shiftTimeLabel {
     if ( _shiftTimeLabel ) return _shiftTimeLabel;
     _shiftTimeLabel = [SJUILabelFactory labelWithFont:[UIFont systemFontOfSize:13]];
+    _shiftTimeLabel.textAlignment = NSTextAlignmentRight;
     return _shiftTimeLabel;
 }
 
@@ -246,6 +251,7 @@
 - (UILabel *)durationTimeLabel {
     if ( _durationTimeLabel ) return _durationTimeLabel;
     _durationTimeLabel = [SJUILabelFactory labelWithFont:self.shiftTimeLabel.font textColor:[UIColor whiteColor]];
+    _durationTimeLabel.textAlignment = NSTextAlignmentLeft;
     return _durationTimeLabel;
 }
 

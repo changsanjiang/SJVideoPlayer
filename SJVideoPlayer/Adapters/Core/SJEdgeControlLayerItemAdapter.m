@@ -16,7 +16,7 @@ NS_ASSUME_NONNULL_BEGIN
 @end
 
 @implementation SJCollectionViewLayout {
-    @private NSMutableArray<UICollectionViewLayoutAttributes *> *_layoutAttributes;
+    @public NSMutableArray<UICollectionViewLayoutAttributes *> *_layoutAttributes;
 }
 - (instancetype)init {
     self = [super init];
@@ -283,6 +283,13 @@ NS_ASSUME_NONNULL_BEGIN
         if ( !item.isHidden ) return NO;
     }
     return YES;
+}
+- (BOOL)itemContainsPoint:(CGPoint)point {
+    for ( UICollectionViewLayoutAttributes *atr in _layout->_layoutAttributes ) {
+        if ( CGRectContainsPoint(atr.frame, point) )
+            return YES;
+    }
+    return NO;
 }
 
 #pragma mark -

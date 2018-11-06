@@ -260,6 +260,14 @@ SJEdgeControlButtonItemTag const SJEdgeControlLayerBottomItem_FullBtn = 10005;
     return YES;
 }
 
+- (BOOL)_canTriggerGesturesFor_TopAdapter:(CGPoint)location {
+    if ( CGRectContainsPoint(_topAdapter.view.frame, location) &&
+         [_topAdapter itemContainsPoint:[self.controlView convertPoint:location toView:_topAdapter.view]] )
+        return NO;
+    
+    return YES;
+}
+
 - (void)clickedBackItem:(SJEdgeControlButtonItem *)item {
     if ( _videoPlayer.useFitOnScreenAndDisableRotation ) {
         if ( _videoPlayer.isFitOnScreen ) {
@@ -394,6 +402,14 @@ SJEdgeControlButtonItemTag const SJEdgeControlLayerBottomItem_FullBtn = 10005;
 }
 
 - (BOOL)_canDisappearFor_LeftAdapter {
+    return YES;
+}
+
+- (BOOL)_canTriggerGesturesFor_LeftAdapter:(CGPoint)location {
+    if ( CGRectContainsPoint(_leftAdapter.view.frame, location) &&
+         [_leftAdapter itemContainsPoint:[self.controlView convertPoint:location toView:_leftAdapter.view]] )
+        return NO;
+    
     return YES;
 }
 
@@ -578,6 +594,14 @@ SJEdgeControlButtonItemTag const SJEdgeControlLayerBottomItem_FullBtn = 10005;
     return !slider.isDragging;
 }
 
+- (BOOL)_canTriggerGesturesFor_BottomAdapter:(CGPoint)location {
+    if ( CGRectContainsPoint(_bottomAdapter.view.frame, location) &&
+         [_bottomAdapter itemContainsPoint:[self.controlView convertPoint:location toView:_bottomAdapter.view]] )
+        return NO;
+    
+    return YES;
+}
+
 - (void)clickedPlayItem:(SJEdgeControlButtonItem *)item {
     if ( [self.videoPlayer playStatus_isPlaying] ) [self.videoPlayer pause];
     else [self.videoPlayer play];
@@ -651,6 +675,13 @@ SJEdgeControlButtonItemTag const SJEdgeControlLayerBottomItem_FullBtn = 10005;
     return YES;
 }
 
+- (BOOL)_canTriggerGesturesFor_RightAdapter:(CGPoint)location {
+    if ( CGRectContainsPoint(_rightAdapter.view.frame, location) &&
+         [_rightAdapter itemContainsPoint:[self.controlView convertPoint:location toView:_rightAdapter.view]] )
+        return NO;
+    
+    return YES;
+}
 
 #pragma mark - center
 @synthesize replayButton = _replayButton;
@@ -725,7 +756,7 @@ SJEdgeControlButtonItemTag const SJEdgeControlLayerBottomItem_FullBtn = 10005;
 - (SJVideoPlayerDraggingProgressView *)draggingProgressView {
     if ( _draggingProgressView ) return _draggingProgressView;
     _draggingProgressView = [SJVideoPlayerDraggingProgressView new];
-    [_draggingProgressView setPreviewImage:_videoPlayer.placeholder];
+    [_draggingProgressView setPreviewImage:_videoPlayer.placeholderImageView.image];
     [self.controlView addSubview:_draggingProgressView];
     [self _hidden:_draggingProgressView animated:NO];
     [_draggingProgressView mas_makeConstraints:^(MASConstraintMaker *make) {
@@ -787,15 +818,21 @@ SJEdgeControlButtonItemTag const SJEdgeControlLayerBottomItem_FullBtn = 10005;
     return self;
 }
 
+/// 是否可以触发播放器的手势
 - (BOOL)triggerGesturesCondition:(CGPoint)location {
-    if ( CGRectContainsPoint( _topContainerView.frame, location ) ||
-         CGRectContainsPoint( _leftContainerView.frame, location ) ||
-         CGRectContainsPoint( _bottomContainerView.frame, location ) ||
-         CGRectContainsPoint( _rightContainerView.frame, location ) ||
-         CGRectContainsPoint( _previewView.frame, location) ) return NO;
+    if ( ![self _canTriggerGesturesFor_TopAdapter:location] ||
+         ![self _canTriggerGesturesFor_LeftAdapter:location] ||
+         ![self _canTriggerGesturesFor_BottomAdapter:location] ||
+         ![self _canTriggerGesturesFor_RightAdapter:location] ) return NO;
+    
+    if ( CGRectContainsPoint( _previewView.frame, location) )
+        return NO;
+    
     return YES;
 }
 
+/// 当播放器尝试自动隐藏控制层时, 将会调用这个方法
+/// - 返回Yes, 将隐藏控制层
 - (BOOL)controlLayerDisappearCondition {
     if ( [self _canDisappearFor_BottomAdapter] &&
          [self _canDisappearFor_LeftAdapter] &&

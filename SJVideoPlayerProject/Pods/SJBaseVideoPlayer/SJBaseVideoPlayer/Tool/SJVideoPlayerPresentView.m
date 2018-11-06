@@ -9,7 +9,6 @@
 #import "SJVideoPlayerPresentView.h"
 NS_ASSUME_NONNULL_BEGIN
 @interface SJVideoPlayerPresentView ()
-@property (nonatomic, strong, readonly) UIImageView *placeholderImageView;
 @end
 
 @implementation SJVideoPlayerPresentView {
@@ -38,12 +37,6 @@ NS_ASSUME_NONNULL_BEGIN
 - (void)hiddenPlaceholder {
     if ( _isHidden ) return; _isHidden = YES;
     self.placeholderImageView.alpha = 0.001;
-}
-
-- (void)setPlaceholder:(nullable UIImage *)placeholder {
-    if ( placeholder == _placeholder ) return;
-    _placeholder = placeholder;
-    _placeholderImageView.image = placeholder;
 }
 
 - (void)_presentSetupView {

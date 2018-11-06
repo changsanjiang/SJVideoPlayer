@@ -31,6 +31,7 @@ NS_ASSUME_NONNULL_BEGIN
 - (NSInteger)indexOfItemForTag:(SJEdgeControlButtonItemTag)tag;
 - (nullable NSArray<SJEdgeControlButtonItem *> *)itemsWithRange:(NSRange)range;
 - (BOOL)itemsIsHiddenWithRange:(NSRange)range; // 此范围的items是否已隐藏
+- (BOOL)itemContainsPoint:(CGPoint)point; // 某个点是否在item中
 
 /// 添加
 /// - 注意: 添加后, 记得调用刷新
@@ -46,6 +47,7 @@ NS_ASSUME_NONNULL_BEGIN
 /// - 注意: 交互后, 记得调用刷新
 - (void)exchangeItemAtIndex:(NSInteger)idx1 withItemAtIndex:(NSInteger)idx2;
 - (void)exchangeItemForTag:(SJEdgeControlButtonItemTag)tag1 withItemForTag:(SJEdgeControlButtonItemTag)tag2;
+
 
 @property (nonatomic, strong, readonly) UIView *view;
 @property (nonatomic, readonly) NSInteger itemCount;

@@ -95,14 +95,12 @@ NS_ASSUME_NONNULL_BEGIN
  */
 @property (nonatomic, strong, readonly, nullable) NSError *error;
 
-
 /**
- The placeholder image when loading video.
- 加载视频时的占位图. 加载视频初始化时, 会短暂黑屏, 建议设置一下占位图.
- 
- readwrite.
+ This imageView will show up during the loading of the video(player.status is unknown or prepare).
+ - When initializing the loaded video, it may be a short black screen. It is recommended to set the placeholderImage.
+ - 初始化加载视频时, 可能会短暂黑屏, 建议设置一下占位图.
  */
-@property (nonatomic, strong, nullable) UIImage *placeholder;
+@property (nonatomic, strong, readonly) UIImageView *placeholderImageView;
 
 /**
  default is `AVLayerVideoGravityResizeAspect`.
@@ -714,6 +712,7 @@ typedef NS_ENUM(NSUInteger, SJDisablePlayerGestureTypes) {
 @property (nonatomic, copy, readwrite, nullable) void(^controlViewDisplayStatus)(__kindof SJBaseVideoPlayer *player, BOOL displayed) __deprecated_msg("use `controlLayerAppearStateChanged`");
 @property (nonatomic, copy, nullable) void(^willRotateScreen)(__kindof SJBaseVideoPlayer *player, BOOL isFullScreen) __deprecated_msg("use `viewWillRotateExeBlock`");
 @property (nonatomic, copy, nullable) void(^rotatedScreen)(__kindof SJBaseVideoPlayer *player, BOOL isFullScreen) __deprecated_msg("use `viewDidRotateExeBlock`");
+@property (nonatomic, strong, nullable) UIImage *placeholder __deprecated_msg("use `player.placeholderImageView`");
 @end
 
 

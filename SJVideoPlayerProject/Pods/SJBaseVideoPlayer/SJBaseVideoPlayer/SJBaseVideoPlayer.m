@@ -266,7 +266,7 @@ static UIScrollView *_Nullable _getScrollViewOfPlayModel(SJPlayModel *playModel)
 }
 
 + (NSString *)version {
-    return @"1.6.0";
+    return @"1.6.1";
 }
 
 - (nullable __kindof UIViewController *)atViewController {
@@ -297,6 +297,7 @@ static UIScrollView *_Nullable _getScrollViewOfPlayModel(SJPlayModel *playModel)
     [self gestureControl];
     [self reachabilityObserver];
     [self addInterceptTapGR];
+    [self _considerShowOrHiddenPlaceholder];
     return self;
 }
 
@@ -460,13 +461,12 @@ static NSString *_kGestureState = @"state";
     }
 }
 
-- (void)setPlaceholder:(nullable UIImage *)placeholder {
-    self.presentView.placeholder = placeholder;
-    [self _considerShowOrHiddenPlaceholder];
-}
-
-- (nullable UIImage *)placeholder {
-    return self.presentView.placeholder;
+///
+/// Thanks @chjsun
+/// https://github.com/changsanjiang/SJVideoPlayer/issues/42
+///
+- (UIImageView *)placeholderImageView {
+    return self.presentView.placeholderImageView;
 }
 
 - (void)setVideoGravity:(AVLayerVideoGravity)videoGravity {
@@ -969,7 +969,7 @@ static NSString *_kGestureState = @"state";
         }
             break;
         case SJViewFlipTransition_Horizontally: {
-            transform = CATransform3DConcat(CATransform3DMakeRotation(M_PI, 0, 1, 0), CATransform3DMakeTranslation(0, 0, -1000));
+            transform = CATransform3DConcat(CATransform3DMakeRotation(M_PI, 0, 1, 0), CATransform3DMakeTranslation(0, 0, -10000));
         }
             break;
     }
@@ -983,6 +983,7 @@ static NSString *_kGestureState = @"state";
     [_view.layer addAnimation:rotationAnimation forKey:nil];
     _view.layer.transform = transform;
     _isFlipTransitioning = YES;
+    _completionHandler = completionHandler;
 }
 
 - (void)animationDidStart:(CAAnimation *)anim {
@@ -2236,7 +2237,7 @@ static NSString *_kGestureState = @"state";
         if ( !self.isEnabled ) return;
         // 如果控制层显示, 当达到隐藏的条件, `timer`将控制层隐藏. 否则, 清除`timer`.
         if ( self.controlLayerAppearedState &&
-            self.videoPlayer.controlLayerDataSource.controlLayerDisappearCondition )
+             self.videoPlayer.controlLayerDataSource.controlLayerDisappearCondition )
             [self layerDisappear];
         else [control clear];
     };
@@ -2359,6 +2360,15 @@ static NSString *_kGestureState = @"state";
 - (nullable void (^)(__kindof SJBaseVideoPlayer * _Nonnull, BOOL))rotatedScreen  __deprecated_msg("use `viewDidRotateExeBlock`") {
     return self.viewDidRotateExeBlock;
 }
+
+- (void)setPlaceholder:(nullable UIImage *)placeholder __deprecated_msg("use `player.placeholderImageView`") {
+    self.placeholderImageView.image = placeholder;
+}
+
+- (nullable UIImage *)placeholder __deprecated_msg("use `player.placeholderImageView`") {
+    return self.placeholderImageView.image;
+}
+
 @end
 
 

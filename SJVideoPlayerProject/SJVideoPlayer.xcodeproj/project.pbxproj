@@ -1175,7 +1175,7 @@
 			files = (
 			);
 			inputPaths = (
-				"${SRCROOT}/Pods/Target Support Files/Pods-SJVideoPlayer/Pods-SJVideoPlayer-resources.sh",
+				"${PODS_ROOT}/Target Support Files/Pods-SJVideoPlayer/Pods-SJVideoPlayer-resources.sh",
 				"${PODS_ROOT}/MJRefresh/MJRefresh/MJRefresh.bundle",
 				"${PODS_ROOT}/SJBaseVideoPlayer/SJBaseVideoPlayer/SJVolBrigControl/Resource/SJVolBrigResource.bundle",
 			);
@@ -1186,7 +1186,7 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-			shellScript = "\"${SRCROOT}/Pods/Target Support Files/Pods-SJVideoPlayer/Pods-SJVideoPlayer-resources.sh\"\n";
+			shellScript = "\"${PODS_ROOT}/Target Support Files/Pods-SJVideoPlayer/Pods-SJVideoPlayer-resources.sh\"\n";
 			showEnvVarsInLog = 0;
 		};
 		FDF166A4D637D276A8FF0C3A /* [CP] Check Pods Manifest.lock */ = {

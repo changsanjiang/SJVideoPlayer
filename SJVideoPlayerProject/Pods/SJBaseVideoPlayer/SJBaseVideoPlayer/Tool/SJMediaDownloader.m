@@ -110,7 +110,9 @@ typedef NS_ENUM(NSInteger, SJMediaDownloadErrorCode) {
 @end
 NS_ASSUME_NONNULL_END
 
-@implementation SJMediaDownloader
+@implementation SJMediaDownloader {
+    id _notifyToken;
+}
 
 + (instancetype)shared {
     static id _instance;
@@ -597,7 +599,16 @@ NS_ASSUME_NONNULL_END
 
 #pragma mark -
 - (void)installNotifications {
-    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(applicationWillTerminate) name:UIApplicationWillTerminateNotification object:nil];
+    __weak typeof(self) _self = self;
+    _notifyToken = [NSNotificationCenter.defaultCenter addObserverForName:UIApplicationWillTerminateNotification object:nil queue:nil usingBlock:^(NSNotification * _Nonnull note) {
+        __strong typeof(_self) self = _self;
+        if ( !self ) return;
+        [self applicationWillTerminate];
+    }];
+}
+
+- (void)dealloc {
+    if ( _notifyToken ) [NSNotificationCenter.defaultCenter removeObserver:_notifyToken];
 }
 
 - (void)applicationWillTerminate {

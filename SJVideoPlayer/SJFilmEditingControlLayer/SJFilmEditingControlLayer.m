@@ -90,7 +90,9 @@ typedef SJVideoPlayerFilmEditingResultUploadState SJVideoPlayerFilmEditingResult
 @end
 NS_ASSUME_NONNULL_END
 
-@implementation SJFilmEditingControlLayer
+@implementation SJFilmEditingControlLayer {
+    id _notifyToken;
+}
 
 @synthesize btnContainerView = _btnContainerView;
 @synthesize screenshotBtn = _screenshotBtn;
@@ -108,12 +110,17 @@ NS_ASSUME_NONNULL_END
     if ( !self ) return nil;
     [self _setupViews];
     SJFilmEditingControlLayer.update(^(SJFilmEditingSettings * _Nonnull settings) {});
-    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(settingsUpdateNotification:) name:SJFilmEditingSettingsUpdateNotification object:nil];
+    __weak typeof(self) _self = self;
+    _notifyToken = [NSNotificationCenter.defaultCenter addObserverForName:SJFilmEditingSettingsUpdateNotification object:nil queue:nil usingBlock:^(NSNotification * _Nonnull note) {
+        __strong typeof(_self) self = _self;
+        if ( !self ) return;
+        [self settingsUpdateNotification:note];
+    }];
     return self;
 }
 
 - (void)dealloc {
-    [[NSNotificationCenter defaultCenter] removeObserver:self];
+    if ( _notifyToken ) [[NSNotificationCenter defaultCenter] removeObserver:_notifyToken];
 
 #ifdef SJ_MAC
     NSLog(@"SJVideoPlayerLog: %d - %s", (int)__LINE__, __func__);

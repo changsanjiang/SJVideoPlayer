@@ -18,7 +18,10 @@
 }
 @end
 
-@implementation SJVolBrigControl
+@implementation SJVolBrigControl {
+    id _notifyToken;
+}
+
 @synthesize volume = _volume;
 
 - (instancetype)init {
@@ -26,10 +29,13 @@
     if ( !self ) return nil;
     [self brightnessView];
     
-    [[NSNotificationCenter defaultCenter] addObserver:self
-                                             selector:@selector(volumeDidChange)
-                                                 name:@"AVSystemController_SystemVolumeDidChangeNotification"
-                                               object:nil];
+    __weak typeof(self) _self = self;
+    _notifyToken = [NSNotificationCenter.defaultCenter addObserverForName:@"AVSystemController_SystemVolumeDidChangeNotification" object:nil queue:nil usingBlock:^(NSNotification * _Nonnull note) {
+        __strong typeof(_self) self = _self;
+        if ( !self ) return;
+        [self volumeDidChange];
+    }];
+    
     _volume = [AVAudioSession sharedInstance].outputVolume;
     for ( UIView *subview in [[MPVolumeView new] subviews] ) {
         if ( [subview.class.description isEqualToString:@"MPVolumeSlider"] ) {
@@ -45,7 +51,7 @@
 }
 
 - (void)dealloc {
-    [[NSNotificationCenter defaultCenter] removeObserver:self];
+    if ( _notifyToken ) [[NSNotificationCenter defaultCenter] removeObserver:_notifyToken];
 }
 
 - (SJVideoPlayerTipsView *)brightnessView {

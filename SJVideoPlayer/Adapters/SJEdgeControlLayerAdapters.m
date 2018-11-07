@@ -21,29 +21,32 @@
 #import "SJEdgeControlLayerAdapters.h"
 
 NS_ASSUME_NONNULL_BEGIN
-@implementation SJEdgeControlLayerAdapters
+@implementation SJEdgeControlLayerAdapters {
+    id _notifyToken;
+}
 - (instancetype)initWithFrame:(CGRect)frame {
     self = [super initWithFrame:frame];
     if ( !self ) return nil;
+    [self _observeOrientationChangeOfStatusBarNotify];
     self.autoAdjustTopSpacing = YES;
     return self;
 }
 
-- (void)setAutoAdjustTopSpacing:(BOOL)autoAdjustTopSpacing {
-    _autoAdjustTopSpacing = autoAdjustTopSpacing;
-    if ( autoAdjustTopSpacing ) [self _observeOrientationChangeOfStatusBarNotify];
-    else [self _removeNotify];
+- (void)dealloc {
+    if ( _notifyToken ) [NSNotificationCenter.defaultCenter removeObserver:_notifyToken];
 }
 
 - (void)_observeOrientationChangeOfStatusBarNotify {
-    [NSNotificationCenter.defaultCenter addObserver:self selector:@selector(_updateTopLayout:) name:UIApplicationWillChangeStatusBarOrientationNotification object:nil];
-}
-
-- (void)_removeNotify {
-    [NSNotificationCenter.defaultCenter removeObserver:self];
+    __weak typeof(self) _self = self;
+    _notifyToken = [NSNotificationCenter.defaultCenter addObserverForName:UIApplicationWillChangeStatusBarOrientationNotification object:nil queue:nil usingBlock:^(NSNotification * _Nonnull note) {
+        __strong typeof(_self) self = _self;
+        if ( !self ) return;
+        [self _updateTopLayout:note];
+    }];
 }
 
 - (void)_updateTopLayout:(nullable NSNotification *)notify {
+    if ( !_autoAdjustTopSpacing ) return;
     if ( !_topAdapter ) return;
     UIInterfaceOrientation orientation = notify?[notify.userInfo[UIApplicationStatusBarOrientationUserInfoKey] integerValue]: UIApplication.sharedApplication.statusBarOrientation;
     switch ( orientation ) {

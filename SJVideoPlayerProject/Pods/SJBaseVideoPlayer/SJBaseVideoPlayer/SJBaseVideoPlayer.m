@@ -2275,7 +2275,9 @@ static NSString *_kGestureState = @"state";
 @property (nonatomic, strong, readonly) Reachability *reachability;
 @end
 
-@implementation _SJReachabilityObserver
+@implementation _SJReachabilityObserver {
+    id _notifyToken;
+}
 
 + (instancetype)sharedInstance {
     static id _instance;
@@ -2290,7 +2292,13 @@ static NSString *_kGestureState = @"state";
     self = [super init];
     if ( !self ) return nil;
     _reachability = [Reachability reachabilityForInternetConnection];
-    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(_reachabilityChangedNotification) name:kReachabilityChangedNotification object:_reachability];
+    
+    __weak typeof(self) _self = self;
+    _notifyToken = [NSNotificationCenter.defaultCenter addObserverForName:kReachabilityChangedNotification object:_reachability queue:nil usingBlock:^(NSNotification * _Nonnull note) {
+        __strong typeof(_self) self = _self;
+        if ( !self ) return;
+        [self _reachabilityChangedNotification];
+    }];
     [_reachability startNotifier];
     return self;
 }
@@ -2308,7 +2316,7 @@ static NSString *_kGestureState = @"state";
 
 - (void)dealloc {
     [_reachability stopNotifier];
-    [[NSNotificationCenter defaultCenter] removeObserver:self name:kReachabilityChangedNotification object:_reachability];
+    if ( _notifyToken ) [[NSNotificationCenter defaultCenter] removeObserver:_notifyToken name:kReachabilityChangedNotification object:_reachability];
 }
 @end
 

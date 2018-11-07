@@ -15,24 +15,26 @@
 
 @end
 
-@implementation SJVideoPlayerControlSettingRecorder
+@implementation SJVideoPlayerControlSettingRecorder {
+    id _notifyToken;
+}
 
 - (instancetype)initWithSettings:(void (^)(SJEdgeControlLayerSettings *))settings {
     self = [super init];
     if ( !self ) return nil;
     _settings = settings;
-    [[NSNotificationCenter defaultCenter] addObserver:self
-                                             selector:@selector(settingsPlayerNotification:)
-                                                 name:SJSettingsPlayerNotification
-                                               object:nil];
+    
+    __weak typeof(self) _self = self;
+    _notifyToken = [NSNotificationCenter.defaultCenter addObserverForName:SJSettingsPlayerNotification object:nil queue:nil usingBlock:^(NSNotification * _Nonnull note) {
+        __strong typeof(_self) self = _self;
+        if ( !self ) return;
+        if ( self.settings ) self.settings(note.object);
+    }];
     return self;
-}
-- (void)settingsPlayerNotification:(NSNotification *)notifi {
-    if ( self.settings ) self.settings(notifi.object);
 }
 
 - (void)dealloc {
-    [[NSNotificationCenter defaultCenter] removeObserver:self];
+    if ( _notifyToken ) [NSNotificationCenter.defaultCenter removeObserver:_notifyToken];
 }
 
 @end

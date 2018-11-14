@@ -89,6 +89,9 @@ static NSNotificationName const SJAVMediaPlayAssetDidCompletedLoadNotification =
         self.URLAsset = URLAsset;
         self.playerItem = playerItem;
         self.player = player;
+        if (@available(iOS 10.0, *) ) {
+            if ( ![self.URL.pathExtension isEqualToString:@"m3u8"] ) self.player.automaticallyWaitsToMinimizeStalling = NO;
+        }
         dispatch_async(dispatch_get_main_queue(), ^{
             __strong typeof(_self) self = _self;
             if ( !self ) return ;
@@ -252,7 +255,7 @@ static NSString *kPlayerItemStatus = @"status";
 /// - 轮询缓冲
 - (void)_pollingPlaybackBuffer {
     if ( floor(self.currentTime) == floor(self.duration) ) return;
-    if ( self.bufferStatus == SJPlayerBufferStatusEmpty ) return;
+    if ( _bufferStatus == SJPlayerBufferStatusEmpty ) return;
     [self _updateBufferStatus:SJPlayerBufferStatusEmpty];
     __weak typeof(self) _self = self;
     self.refresheBufferTimer = [NSTimer assetAdd_timerWithTimeInterval:1 block:^(NSTimer *timer) {

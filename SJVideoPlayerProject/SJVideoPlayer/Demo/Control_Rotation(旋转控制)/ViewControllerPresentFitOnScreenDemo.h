@@ -1,8 +1,8 @@
 //
-//  ViewControllerControlRotation.h
+//  ViewControllerPresentFitOnScreenDemo.h
 //  SJVideoPlayer
 //
-//  Created by 畅三江 on 2018/9/30.
+//  Created by BlueDancer on 2018/11/14.
 //  Copyright © 2018 畅三江. All rights reserved.
 //
 
@@ -10,7 +10,7 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
-@interface ViewControllerControlRotation : BaseViewController
+@interface ViewControllerPresentFitOnScreenDemo : BaseViewController
 
 @end
 

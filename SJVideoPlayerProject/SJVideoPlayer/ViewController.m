@@ -153,6 +153,10 @@
                          subTitle:@"使全屏, 但不旋转"
                              path:@"player/fitOnScreen"],
       
+      [[Item alloc] initWithTitle:@"Fit On Screen V2"
+                         subTitle:@"使全屏, 但不旋转, V2"
+                             path:@"player/fitOnScreenV2"],
+      
       [[Item alloc] initWithTitle:@"Full Screen Playback"
                          subTitle:@"直接全屏播放"
                              path:@"player/fullscreen"]];

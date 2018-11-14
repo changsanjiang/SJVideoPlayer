@@ -21,6 +21,11 @@
 		77E8D76B2179A86800B025A7 /* SJEdgeControlButtonItem.m in Sources */ = {isa = PBXBuildFile; fileRef = 77E8D76A2179A86800B025A7 /* SJEdgeControlButtonItem.m */; };
 		77E8D7A52179D6BF00B025A7 /* SJEdgeControlLayerItemAdapter.m in Sources */ = {isa = PBXBuildFile; fileRef = 77E8D7A42179D6BF00B025A7 /* SJEdgeControlLayerItemAdapter.m */; };
 		77E8D7B2217B0CE800B025A7 /* SJButtonItemCollectionViewCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 77E8D7B1217B0CE800B025A7 /* SJButtonItemCollectionViewCell.m */; };
+		77EECF4E219C074B00736073 /* BaseViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 77EECF4D219C074B00736073 /* BaseViewController.m */; };
+		77EECF51219C08FC00736073 /* PresentingViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 77EECF50219C08FC00736073 /* PresentingViewController.m */; };
+		77EECF58219C0CEC00736073 /* ViewControllerPresentFitOnScreenDemo.m in Sources */ = {isa = PBXBuildFile; fileRef = 77EECF56219C0CEC00736073 /* ViewControllerPresentFitOnScreenDemo.m */; };
+		77EECF59219C0CEC00736073 /* ViewControllerPresentFitOnScreenDemo.xib in Resources */ = {isa = PBXBuildFile; fileRef = 77EECF57219C0CEC00736073 /* ViewControllerPresentFitOnScreenDemo.xib */; };
+		77EECF5C219C14AA00736073 /* SJNavTransitionAnimator.m in Sources */ = {isa = PBXBuildFile; fileRef = 77EECF5B219C14A900736073 /* SJNavTransitionAnimator.m */; };
 		77F8161521803A540078B6F0 /* SJEdgeControlLayer.m in Sources */ = {isa = PBXBuildFile; fileRef = 77F8161421803A540078B6F0 /* SJEdgeControlLayer.m */; };
 		A600655F215F947E0001B5F8 /* AppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = A600655E215F947E0001B5F8 /* AppDelegate.m */; };
 		A6006562215F947E0001B5F8 /* ViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = A6006561215F947E0001B5F8 /* ViewController.m */; };
@@ -166,6 +171,15 @@
 		77E8D7A42179D6BF00B025A7 /* SJEdgeControlLayerItemAdapter.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = SJEdgeControlLayerItemAdapter.m; sourceTree = "<group>"; };
 		77E8D7B0217B0CE800B025A7 /* SJButtonItemCollectionViewCell.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = SJButtonItemCollectionViewCell.h; sourceTree = "<group>"; };
 		77E8D7B1217B0CE800B025A7 /* SJButtonItemCollectionViewCell.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = SJButtonItemCollectionViewCell.m; sourceTree = "<group>"; };
+		77EECF4C219C074B00736073 /* BaseViewController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = BaseViewController.h; sourceTree = "<group>"; };
+		77EECF4D219C074B00736073 /* BaseViewController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = BaseViewController.m; sourceTree = "<group>"; };
+		77EECF4F219C08FC00736073 /* PresentingViewController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = PresentingViewController.h; sourceTree = "<group>"; };
+		77EECF50219C08FC00736073 /* PresentingViewController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = PresentingViewController.m; sourceTree = "<group>"; };
+		77EECF55219C0CEC00736073 /* ViewControllerPresentFitOnScreenDemo.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = ViewControllerPresentFitOnScreenDemo.h; sourceTree = "<group>"; };
+		77EECF56219C0CEC00736073 /* ViewControllerPresentFitOnScreenDemo.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = ViewControllerPresentFitOnScreenDemo.m; sourceTree = "<group>"; };
+		77EECF57219C0CEC00736073 /* ViewControllerPresentFitOnScreenDemo.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = ViewControllerPresentFitOnScreenDemo.xib; sourceTree = "<group>"; };
+		77EECF5A219C14A900736073 /* SJNavTransitionAnimator.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SJNavTransitionAnimator.h; sourceTree = "<group>"; };
+		77EECF5B219C14A900736073 /* SJNavTransitionAnimator.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SJNavTransitionAnimator.m; sourceTree = "<group>"; };
 		77F8161321803A540078B6F0 /* SJEdgeControlLayer.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = SJEdgeControlLayer.h; sourceTree = "<group>"; };
 		77F8161421803A540078B6F0 /* SJEdgeControlLayer.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = SJEdgeControlLayer.m; sourceTree = "<group>"; };
 		9B2DD9C970891E06976F0D02 /* libPods-SJVideoPlayerUITests.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-SJVideoPlayerUITests.a"; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -794,6 +808,8 @@
 				A6006568215F947F0001B5F8 /* LaunchScreen.storyboard */,
 				A600656B215F947F0001B5F8 /* Info.plist */,
 				A600656C215F947F0001B5F8 /* main.m */,
+				77EECF4C219C074B00736073 /* BaseViewController.h */,
+				77EECF4D219C074B00736073 /* BaseViewController.m */,
 			);
 			name = Resources;
 			sourceTree = "<group>";
@@ -864,6 +880,13 @@
 				A6006693216108880001B5F8 /* ViewControllerFitOnScreen.m */,
 				A600669521610C2F0001B5F8 /* ViewControllerFullscreen.h */,
 				A600669621610C2F0001B5F8 /* ViewControllerFullscreen.m */,
+				77EECF55219C0CEC00736073 /* ViewControllerPresentFitOnScreenDemo.h */,
+				77EECF56219C0CEC00736073 /* ViewControllerPresentFitOnScreenDemo.m */,
+				77EECF57219C0CEC00736073 /* ViewControllerPresentFitOnScreenDemo.xib */,
+				77EECF4F219C08FC00736073 /* PresentingViewController.h */,
+				77EECF50219C08FC00736073 /* PresentingViewController.m */,
+				77EECF5A219C14A900736073 /* SJNavTransitionAnimator.h */,
+				77EECF5B219C14A900736073 /* SJNavTransitionAnimator.m */,
 			);
 			path = "Control_Rotation(旋转控制)";
 			sourceTree = "<group>";
@@ -1112,6 +1135,7 @@
 				A60066A7216128770001B5F8 /* ViewControllerContinuePlaying.xib in Resources */,
 				A6D1A259218446EB006FF2C1 /* ViewController_AddButtonItem.xib in Resources */,
 				A6006565215F947E0001B5F8 /* Main.storyboard in Resources */,
+				77EECF59219C0CEC00736073 /* ViewControllerPresentFitOnScreenDemo.xib in Resources */,
 				A6D1A26321845F02006FF2C1 /* ViewController_Adjust.xib in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -1233,6 +1257,8 @@
 				A600663F215F974B0001B5F8 /* SJVideoPlayerFilmEditingConfig.m in Sources */,
 				A6006642215F974B0001B5F8 /* UIView+SJFilmEditingAdd.m in Sources */,
 				A6006640215F974B0001B5F8 /* SJFilmEditingLoader.m in Sources */,
+				77EECF58219C0CEC00736073 /* ViewControllerPresentFitOnScreenDemo.m in Sources */,
+				77EECF51219C08FC00736073 /* PresentingViewController.m in Sources */,
 				77830928218C50310014ECAF /* ViewControllerTestAlert.m in Sources */,
 				77A331B8217F32CD00980A17 /* UIView+SJAnimationAdded.m in Sources */,
 				A60066792160A66F0001B5F8 /* ViewControllerSJUICollectionViewNestedInUICollectionViewCellPlayModel.m in Sources */,
@@ -1260,6 +1286,7 @@
 				A6B548A62165980C001C3988 /* ViewControllerTableFooter.m in Sources */,
 				77E8D7622179A0E700B025A7 /* ViewControllerTest.m in Sources */,
 				A6006615215F974B0001B5F8 /* SJLightweightLeftControlView.m in Sources */,
+				77EECF4E219C074B00736073 /* BaseViewController.m in Sources */,
 				A6006637215F974B0001B5F8 /* SJVideoPlayerMoreSettingSecondary.m in Sources */,
 				A600661C215F974B0001B5F8 /* SJControlLayerSwitcher.m in Sources */,
 				77F8161521803A540078B6F0 /* SJEdgeControlLayer.m in Sources */,
@@ -1267,6 +1294,7 @@
 				A6006629215F974B0001B5F8 /* UIView+SJVideoPlayerSetting.m in Sources */,
 				A6006611215F974B0001B5F8 /* SJProgressSlider.m in Sources */,
 				A6006636215F974B0001B5F8 /* SJVideoPlayerMoreSetting+Exe.m in Sources */,
+				77EECF5C219C14AA00736073 /* SJNavTransitionAnimator.m in Sources */,
 				A6006617215F974B0001B5F8 /* SJLightweightDraggingProgressView.m in Sources */,
 				A6006658216071540001B5F8 /* SJTableViewCell.m in Sources */,
 				A6006632215F974B0001B5F8 /* SJVideoPlayerMoreSetting.m in Sources */,

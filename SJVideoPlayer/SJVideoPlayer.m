@@ -137,7 +137,7 @@ static NSString *_kPlayStatus = @"playStatus";
 }
 
 - (void)_updateCommonProperties {
-    if ( self.placeholderImageView.image != SJVideoPlayerSettings.commonSettings.placeholder )
+    if ( !self.placeholderImageView.image )
         self.placeholderImageView.image = SJVideoPlayerSettings.commonSettings.placeholder;
 }
 

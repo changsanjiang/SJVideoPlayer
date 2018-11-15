@@ -9,6 +9,10 @@
 #import <objc/message.h>
 
 NS_ASSUME_NONNULL_BEGIN
+@interface SJRouteRequest ()
+@property (nonatomic, strong, readonly, nullable) NSURL *originalURL;
+@end
+
 @implementation SJRouteRequest
 - (instancetype)initWithPath:(NSString *)rq parameters:(nullable SJParameters)prts {
     NSParameterAssert(rq);
@@ -34,14 +38,8 @@ NS_ASSUME_NONNULL_BEGIN
     }
     self = [self initWithPath:URL.path.stringByDeletingPathExtension parameters:parameters];
     if ( !self ) return nil;
-    self.originalURL = URL;
+    _originalURL = URL;
     return self;
-}
-- (void)setOriginalURL:(NSURL * _Nullable)originalURL {
-    objc_setAssociatedObject(self, @selector(originalURL), originalURL, OBJC_ASSOCIATION_RETAIN_NONATOMIC);
-}
-- (NSURL *_Nullable)originalURL {
-    return objc_getAssociatedObject(self, _cmd);
 }
 - (NSString *)description {
     return
@@ -49,7 +47,7 @@ NS_ASSUME_NONNULL_BEGIN
      requestPath = %@; \n \
      parameters = %@; \n \
      originalURL = %@; \n \
-     }", NSStringFromClass([self class]), self, _requestPath, _prts, self.originalURL];
+     }", NSStringFromClass([self class]), self, _requestPath, _prts, _originalURL];
 }
 @end
 NS_ASSUME_NONNULL_END

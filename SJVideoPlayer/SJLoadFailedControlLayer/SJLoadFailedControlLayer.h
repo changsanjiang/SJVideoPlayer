@@ -15,5 +15,6 @@ extern SJEdgeControlButtonItemTag const SJLoadFailedControlLayerTopItem_Back;   
 @interface SJLoadFailedControlLayer : SJEdgeControlLayerAdapters<SJControlLayer> 
 @property (nonatomic, copy, nullable) void(^clickedBackItemExeBlock)(SJLoadFailedControlLayer *control);
 @property (nonatomic, copy, nullable) void(^clickedFaliedButtonExeBlock)(SJLoadFailedControlLayer *control);
+@property (nonatomic, copy, nullable) void(^prepareToPlayNewAssetExeBlock)(SJLoadFailedControlLayer *control);
 @end
 NS_ASSUME_NONNULL_END

@@ -45,12 +45,6 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (instancetype)init;
 
-/**
- This is the player view. you can use it to present video.
- 这个是播放器视图, 你可以用它去呈现视频.
- 
- readonly.
- */
 @property (nonatomic, strong, readonly) UIView *view;
 
 /**
@@ -74,18 +68,6 @@ NS_ASSUME_NONNULL_BEGIN
  weak. readwrite.
  */
 @property (nonatomic, weak, nullable) id <SJVideoPlayerControlLayerDelegate> controlLayerDelegate;
-
-/**
- play state.
- 
- If this value is changed, the delegate method will be called.
- - (void)videoPlayer:(__kindof SJBaseVideoPlayer *)videoPlayer stateChanged:(SJVideoPlayerPlayState)state;
- 
- 播放状态, 当状态发生改变时, 将会调用代理方法.
- 
- readonly.
- */
-@property (nonatomic, readonly) SJVideoPlayerPlayState state __deprecated_msg("已弃用, 请使用`player.playStatus`");
 
 /**
  The error when the video play failed, you can view the error details through this error.
@@ -713,6 +695,7 @@ typedef NS_ENUM(NSUInteger, SJDisablePlayerGestureTypes) {
 @property (nonatomic, copy, nullable) void(^willRotateScreen)(__kindof SJBaseVideoPlayer *player, BOOL isFullScreen) __deprecated_msg("use `viewWillRotateExeBlock`");
 @property (nonatomic, copy, nullable) void(^rotatedScreen)(__kindof SJBaseVideoPlayer *player, BOOL isFullScreen) __deprecated_msg("use `viewDidRotateExeBlock`");
 @property (nonatomic, strong, nullable) UIImage *placeholder __deprecated_msg("use `player.placeholderImageView`");
+@property (nonatomic, readonly) SJVideoPlayerPlayState state __deprecated_msg("use `player.playStatus`");
 @end
 
 

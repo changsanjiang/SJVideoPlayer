@@ -93,7 +93,7 @@ static NSString *_kPlayStatus = @"playStatus";
 }
 
 + (NSString *)version {
-    return @"v2.2.3";
+    return @"v2.2.4";
 }
 
 + (instancetype)player {
@@ -290,8 +290,14 @@ static NSString *_kPlayStatus = @"playStatus";
     controlLayer.clickedFaliedButtonExeBlock = ^(SJLoadFailedControlLayer * _Nonnull control) {
         __strong typeof(_self) self = _self;
         if ( !self ) return ;
+        [self.switcher switchControlLayerForIdentitfier:SJControlLayer_Edge];
         [self refresh];
-        [self.switcher switchToPreviousControlLayer];
+    };
+    
+    controlLayer.prepareToPlayNewAssetExeBlock = ^(SJLoadFailedControlLayer * _Nonnull control) {
+        __strong typeof(_self) self = _self;
+        if ( !self ) return;
+        [self.switcher switchControlLayerForIdentitfier:SJControlLayer_Edge];
     };
     
     _defaultLoadFailedCarrier = [[SJControlLayerCarrier alloc] initWithIdentifier:SJControlLayer_LoadFailed controlLayer:controlLayer];

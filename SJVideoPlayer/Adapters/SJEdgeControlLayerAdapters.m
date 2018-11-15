@@ -167,6 +167,27 @@ NS_ASSUME_NONNULL_BEGIN
     return _rightContainerView;
 }
 
+
+
+- (UIView *)centerContainerView {
+    if ( _centerContainerView ) return _centerContainerView;
+    _centerContainerView = [UIView new];
+    [self addSubview:_centerContainerView];
+    [_centerContainerView mas_makeConstraints:^(MASConstraintMaker *make) {
+        make.center.offset(0);
+    }];
+    
+#ifdef DEBUG
+    if ( self.showBackgroundColor ) {
+        _centerContainerView.backgroundColor =  [UIColor colorWithRed:arc4random() % 256 / 255.0
+                                                                green:arc4random() % 256 / 255.0
+                                                                 blue:arc4random() % 256 / 255.0
+                                                                alpha:1];
+    }
+#endif
+    return _centerContainerView;
+}
+
 - (SJEdgeControlLayerItemAdapter *)topAdapter {
     if ( _topAdapter ) return _topAdapter;
     _topAdapter = [[SJEdgeControlLayerItemAdapter alloc] initWithLayoutType:SJAdapterItemsLayoutTypeHorizontalLayout];
@@ -224,6 +245,22 @@ NS_ASSUME_NONNULL_BEGIN
         }
     }];
     return _rightAdapter;
+}
+
+- (SJEdgeControlLayerItemAdapter *)centerAdapter {
+    if ( _centerAdapter ) return _centerAdapter;
+    _centerAdapter = [[SJEdgeControlLayerItemAdapter alloc] initWithLayoutType:SJAdapterItemsLayoutTypeFrameLayout];
+    [self.centerContainerView addSubview:_centerAdapter.view];
+    __weak typeof(self) _self = self;
+    _centerAdapter.maxSizeDidUpdateOfFrameLayoutExeBlock = ^(CGSize size) {
+        __strong typeof(_self) self = _self;
+        if ( !self ) return;
+        [self.centerAdapter.view mas_remakeConstraints:^(MASConstraintMaker *make) {
+            make.edges.offset(0);
+            make.size.mas_equalTo(size);
+        }];
+    };
+    return _centerAdapter;
 }
 @end
 NS_ASSUME_NONNULL_END

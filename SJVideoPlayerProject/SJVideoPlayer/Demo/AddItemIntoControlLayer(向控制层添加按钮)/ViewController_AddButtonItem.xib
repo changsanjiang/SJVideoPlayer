@@ -1,11 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="14313.18" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" colorMatched="YES">
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="14460.31" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" colorMatched="YES">
     <device id="retina4_7" orientation="portrait">
         <adaptation id="fullscreen"/>
     </device>
     <dependencies>
         <deployment identifier="iOS"/>
-        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="14283.14"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="14460.20"/>
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
     </dependencies>
     <objects>
@@ -26,18 +26,28 @@
                         <action selector="add:" destination="-1" eventType="touchUpInside" id="jcj-Di-MIm"/>
                     </connections>
                 </button>
-                <button opaque="NO" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="ICB-Mo-EGQ">
-                    <rect key="frame" x="95" y="394" width="186" height="30"/>
-                    <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="ICB-Mo-EGQ">
+                    <rect key="frame" x="94.5" y="394" width="186" height="30"/>
                     <state key="normal" title="Remove item -- first Added"/>
                     <connections>
                         <action selector="remove:" destination="-1" eventType="touchUpInside" id="9p4-lL-ynO"/>
                     </connections>
                 </button>
+                <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="4Ph-1X-3g4">
+                    <rect key="frame" x="68.5" y="462" width="238" height="30"/>
+                    <state key="normal" title="Add Item Into Center Control Layer"/>
+                    <connections>
+                        <action selector="addItemIntoCenterControllayer:" destination="-1" eventType="touchUpInside" id="CuQ-vH-9uT"/>
+                    </connections>
+                </button>
             </subviews>
             <color key="backgroundColor" red="1" green="1" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
             <constraints>
+                <constraint firstItem="ICB-Mo-EGQ" firstAttribute="top" secondItem="glU-qu-wWK" secondAttribute="bottom" constant="45.5" id="CFL-Ul-mes"/>
+                <constraint firstItem="ICB-Mo-EGQ" firstAttribute="centerX" secondItem="glU-qu-wWK" secondAttribute="centerX" id="HgQ-5V-06D"/>
+                <constraint firstItem="4Ph-1X-3g4" firstAttribute="top" secondItem="ICB-Mo-EGQ" secondAttribute="bottom" constant="38" id="Hlo-F1-Af6"/>
                 <constraint firstItem="glU-qu-wWK" firstAttribute="centerX" secondItem="i5M-Pr-FkT" secondAttribute="centerX" id="QeR-Xk-Twr"/>
+                <constraint firstItem="4Ph-1X-3g4" firstAttribute="centerX" secondItem="ICB-Mo-EGQ" secondAttribute="centerX" id="bcU-5U-D6j"/>
                 <constraint firstItem="glU-qu-wWK" firstAttribute="centerY" secondItem="i5M-Pr-FkT" secondAttribute="centerY" id="jML-Gx-5H1"/>
             </constraints>
             <point key="canvasLocation" x="-127.2" y="116.49175412293854"/>

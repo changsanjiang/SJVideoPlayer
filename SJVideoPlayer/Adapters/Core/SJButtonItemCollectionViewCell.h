@@ -9,7 +9,7 @@
 #import <UIKit/UIKit.h>
 
 NS_ASSUME_NONNULL_BEGIN
-@interface SJButton : UIButton
+@interface SJButtonItemContentView : UIView
 @property (nonatomic, strong, readonly) UILabel *sj_titleLabel;
 @property (nonatomic, strong, readonly) UIImageView *sj_imageView;
 @end
@@ -21,10 +21,10 @@ NS_ASSUME_NONNULL_BEGIN
 + (void)registerWithCollectionView:(UICollectionView *)collectionView;
 + (instancetype)cellWithCollectionView:(UICollectionView *)collectionView indexPath:(NSIndexPath *)indexPath;
 
-@property (nonatomic, strong, readonly) SJButton *button;
-@property (nonatomic, copy, nullable) void(^clickedButtonExeBlock)(SJButtonItemCollectionViewCell *cell);
-
+@property (nonatomic, copy, nullable) void(^clickedCellExeBlock)(SJButtonItemCollectionViewCell *cell);
+@property (nonatomic, strong, readonly) SJButtonItemContentView *itemContentView;
 @property (nonatomic, strong, readonly) UIView *customViewContainerView;
+@property (nonatomic, strong, readonly) UIButton *backgroundButton;
 - (void)removeSubviewsFromCustomViewContainerView;
 @end
 NS_ASSUME_NONNULL_END

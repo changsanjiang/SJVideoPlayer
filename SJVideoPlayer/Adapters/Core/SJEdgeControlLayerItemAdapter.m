@@ -13,10 +13,13 @@ NS_ASSUME_NONNULL_BEGIN
 @interface SJCollectionViewLayout : UICollectionViewLayout
 @property (nonatomic, copy, nullable) NSArray<SJEdgeControlButtonItem *> *items;
 @property (nonatomic) SJAdapterItemsLayoutType layoutType;
+@property (nonatomic, copy, nullable) void(^maxSizeDidUpdateOfFrameLayoutExeBlock)(CGSize size);
+@property (nonatomic, readonly) CGSize maxSizeOfFrameLayout;
 @end
 
 @implementation SJCollectionViewLayout {
     @public NSMutableArray<UICollectionViewLayoutAttributes *> *_layoutAttributes;
+    CGSize _maxSizeOfFrameLayout;
 }
 - (instancetype)init {
     self = [super init];
@@ -38,13 +41,12 @@ NS_ASSUME_NONNULL_BEGIN
         case SJAdapterItemsLayoutTypeHorizontalLayout:
             [self _prepareLayout_Horizontal];
             break;
-//            Sometime in the future
-//        case SJAdapterItemsLayoutTypeFrameLayout:
-//            [self _prepareLayout_Frame];
-//            break;
+        case SJAdapterItemsLayoutTypeFrameLayout:
+            [self _prepareLayout_Frame];
+            break;
     }
 }
-//0x108803c00
+
 - (void)_prepareLayout_Horizontal {
     [_layoutAttributes removeAllObjects];
     
@@ -137,11 +139,38 @@ NS_ASSUME_NONNULL_BEGIN
     }
 }
 
-// Sometime in the future
-//- (void)_prepareLayout_Frame {
-//    [_layoutAttributes removeAllObjects];
-//
-//}
+- (void)_prepareLayout_Frame {
+    [_layoutAttributes removeAllObjects];
+    CGSize beforeMaxSize = _maxSizeOfFrameLayout;
+    _maxSizeOfFrameLayout = CGSizeZero;
+    
+    CGRect bounds_arr[_items.count];
+    for ( int i = 0 ; i < _items.count ; ++ i ) {
+        CGRect bounds = CGRectZero;
+        SJEdgeControlButtonItem *item = _items[i];
+        bounds = item.customView.bounds;
+        bounds_arr[i] = bounds;
+        if ( bounds.size.width > _maxSizeOfFrameLayout.width )
+            _maxSizeOfFrameLayout.width = bounds.size.width;
+        if ( bounds.size.height > _maxSizeOfFrameLayout.height )
+            _maxSizeOfFrameLayout.height = bounds.size.height;
+    }
+    
+    CGSize size_max = self.collectionView.frame.size;
+    CGPoint center = (CGPoint){size_max.width * 0.5, size_max.height * 0.5};
+    for ( int i = 0 ; i < _items.count ; ++ i ) {
+        CGRect bounds = bounds_arr[i];
+        NSIndexPath *indexPath = [NSIndexPath indexPathForItem:i inSection:0];
+        UICollectionViewLayoutAttributes *attributes = [UICollectionViewLayoutAttributes layoutAttributesForCellWithIndexPath:indexPath];
+        attributes.size = bounds.size;
+        attributes.center = center;
+        [_layoutAttributes addObject:attributes];
+    }
+    
+    if ( !CGSizeEqualToSize(beforeMaxSize, _maxSizeOfFrameLayout) ) {
+        if ( _maxSizeDidUpdateOfFrameLayoutExeBlock ) _maxSizeDidUpdateOfFrameLayoutExeBlock(_maxSizeOfFrameLayout);
+    }
+}
 
 - (nullable NSArray<__kindof UICollectionViewLayoutAttributes *> *)layoutAttributesForElementsInRect:(CGRect)rect {
     return _layoutAttributes;
@@ -153,7 +182,9 @@ NS_ASSUME_NONNULL_BEGIN
 }
 
 - (CGSize)collectionViewContentSize {
-    return CGSizeMake(CGRectGetMaxX(_layoutAttributes.lastObject.frame), CGRectGetMaxY(_layoutAttributes.lastObject.frame));
+    if ( _layoutType != SJAdapterItemsLayoutTypeFrameLayout )
+        return CGSizeMake(CGRectGetMaxX(_layoutAttributes.lastObject.frame), CGRectGetMaxY(_layoutAttributes.lastObject.frame));
+    return _maxSizeOfFrameLayout;
 }
 
 - (CGSize)sizeWithAttrString:(NSAttributedString *)attrStr width:(double)width height:(double)height {
@@ -173,6 +204,7 @@ NS_ASSUME_NONNULL_BEGIN
 @interface SJEdgeControlLayerItemAdapter ()<UICollectionViewDelegate, UICollectionViewDataSource>
 @property (nonatomic, strong, readonly) NSMutableArray<SJEdgeControlButtonItem *> *itemsM;
 @property (nonatomic, strong, readonly) UICollectionView *collectionView;
+@property (nonatomic, strong, readonly) SJCollectionViewLayout *layout;
 @end
 
 @implementation SJEdgeControlLayerItemAdapter {
@@ -192,6 +224,9 @@ NS_ASSUME_NONNULL_BEGIN
     _collectionView.backgroundColor = [UIColor clearColor];
     _collectionView.showsVerticalScrollIndicator = NO;
     _collectionView.showsHorizontalScrollIndicator = NO;
+    if (@available(iOS 11.0, *)) {
+        _collectionView.contentInsetAdjustmentBehavior = UIScrollViewContentInsetAdjustmentNever;
+    }
     
     [self.view addSubview:_collectionView];
     _collectionView.frame = _view.bounds;
@@ -203,7 +238,13 @@ NS_ASSUME_NONNULL_BEGIN
     if ( _view ) return _view;
     return _view = [UIView new];
 }
-- (void)reload { 
+- (void)setMaxSizeDidUpdateOfFrameLayoutExeBlock:(void (^_Nullable)(CGSize))maxSizeDidUpdateOfFrameLayoutExeBlock {
+    _layout.maxSizeDidUpdateOfFrameLayoutExeBlock = maxSizeDidUpdateOfFrameLayoutExeBlock;
+}
+- (void (^_Nullable)(CGSize))maxSizeDidUpdateOfFrameLayoutExeBlock {
+    return _layout.maxSizeDidUpdateOfFrameLayoutExeBlock;
+}
+- (void)reload {
     _layout.items = _itemsM;
     [_collectionView reloadData];
 }
@@ -212,7 +253,7 @@ NS_ASSUME_NONNULL_BEGIN
     SJEdgeControlButtonItem *item = [self itemForTag:tag];
     if ( !item ) return;
     if ( 0 == [_collectionView numberOfItemsInSection:0] ) return;
-    [self _updateContentOfCell:(id)[_collectionView cellForItemAtIndexPath:[NSIndexPath indexPathForItem:index inSection:0]] forItem:item];
+    [self _updateContentOfCell:(id)[_collectionView cellForItemAtIndexPath:[NSIndexPath indexPathForItem:index inSection:0]] forItem:item atIndexPath:[NSIndexPath indexPathForItem:index inSection:0]];
 }
 - (NSInteger)numberOfItems {
     return _itemsM.count;
@@ -226,6 +267,12 @@ NS_ASSUME_NONNULL_BEGIN
     if ( index >= self.numberOfItems ) index = self.numberOfItems;
     if ( index < 0 ) index = 0;
     [_itemsM insertObject:item atIndex:index];
+}
+- (void)insertItem:(SJEdgeControlButtonItem *)item frontItem:(SJEdgeControlButtonItemTag)tag {
+    [self insertItem:item atIndex:[self indexOfItemForTag:tag]+1];
+}
+- (void)insertItem:(SJEdgeControlButtonItem *)item rearItem:(SJEdgeControlButtonItemTag)tag {
+    [self insertItem:item atIndex:[self indexOfItemForTag:tag]-1];
 }
 - (void)removeItemAtIndex:(NSInteger)index {
     if ( index < 0 ) return;
@@ -303,42 +350,43 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (void)collectionView:(UICollectionView *)collectionView willDisplayCell:(SJButtonItemCollectionViewCell *)cell forItemAtIndexPath:(NSIndexPath *)indexPath {
     SJEdgeControlButtonItem *item = _itemsM[indexPath.item];
-    [self _updateContentOfCell:cell forItem:item];
+    [self _updateContentOfCell:cell forItem:item atIndexPath:indexPath];
 }
 
-- (void)_updateContentOfCell:(SJButtonItemCollectionViewCell *)cell forItem:(SJEdgeControlButtonItem *)item {
+- (void)_updateContentOfCell:(SJButtonItemCollectionViewCell *)cell forItem:(SJEdgeControlButtonItem *)item atIndexPath:(NSIndexPath *)indexPath {
     if ( !item ) return;
     if ( !cell ) return;
     
     cell.contentView.hidden = item.hidden;
-    if ( item.hidden ) return;
+    if ( item.hidden )
+        return;
     
     if ( item.customView ) {
         cell.customViewContainerView.hidden = NO;
-        cell.button.hidden = YES;
-        item.customView.frame = cell->_customViewContainerView.bounds;
-        item.customView.autoresizingMask = UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight;
+        cell.itemContentView.hidden = YES;
+        cell.customViewContainerView.userInteractionEnabled = (nil == item.target);
+        item.customView.frame = _layout->_layoutAttributes[indexPath.item].bounds;
         [cell removeSubviewsFromCustomViewContainerView];
         [cell->_customViewContainerView addSubview:item.customView];
     }
     else if ( 0 != item.title.length  ) {
         cell->_customViewContainerView.hidden = YES;
-        cell.button.hidden = NO;
-        cell.button.sj_titleLabel.attributedText = item.title;
-        cell.button.sj_imageView.image = nil;
+        cell.itemContentView.hidden = NO;
+        cell.itemContentView.sj_titleLabel.attributedText = item.title;
+        cell.itemContentView.sj_imageView.image = nil;
     }
     else if ( item.image ) {
         cell->_customViewContainerView.hidden = YES;
-        cell.button.hidden = NO;
-        cell.button.sj_titleLabel.attributedText = nil;
-        cell.button.sj_imageView.image = item.image;
+        cell.itemContentView.hidden = NO;
+        cell.itemContentView.sj_titleLabel.attributedText = nil;
+        cell.itemContentView.sj_imageView.image = item.image;
     }
     else {
-        cell.button.hidden = YES;
+        cell.itemContentView.hidden = YES;
         cell->_customViewContainerView.hidden = YES;
     }
     
-    cell.clickedButtonExeBlock = ^(SJButtonItemCollectionViewCell * _Nonnull cell) {
+    cell.clickedCellExeBlock = ^(SJButtonItemCollectionViewCell * _Nonnull cell) {
 #pragma clang diagnostic push
 #pragma clang diagnostic ignored "-Warc-performSelector-leaks"
         if ( [item.target respondsToSelector:item.action] ) [item.target performSelector:item.action withObject:item];

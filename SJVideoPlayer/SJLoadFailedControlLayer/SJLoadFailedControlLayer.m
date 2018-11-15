@@ -158,6 +158,10 @@ SJEdgeControlButtonItemTag const SJLoadFailedControlLayerTopItem_Back = 10000;
 
 
 #pragma mark - player delegate methods
+- (void)videoPlayer:(__kindof SJBaseVideoPlayer *)videoPlayer prepareToPlay:(SJVideoPlayerURLAsset *)asset {
+    if ( _prepareToPlayNewAssetExeBlock ) _prepareToPlayNewAssetExeBlock(self);
+}
+
 - (void)controlLayerNeedAppear:(__kindof SJBaseVideoPlayer *)videoPlayer { }
 
 - (void)controlLayerNeedDisappear:(__kindof SJBaseVideoPlayer *)videoPlayer { }

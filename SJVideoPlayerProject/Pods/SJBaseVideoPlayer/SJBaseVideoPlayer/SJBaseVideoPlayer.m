@@ -266,7 +266,7 @@ static UIScrollView *_Nullable _getScrollViewOfPlayModel(SJPlayModel *playModel)
 }
 
 + (NSString *)version {
-    return @"1.6.1";
+    return @"1.6.3";
 }
 
 - (nullable __kindof UIViewController *)atViewController {

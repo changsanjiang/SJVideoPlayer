@@ -26,6 +26,8 @@ extern SJEdgeControlButtonItemTag const SJEdgeControlLayerBottomItem_Separator; 
 extern SJEdgeControlButtonItemTag const SJEdgeControlLayerBottomItem_Progress;      // 播放进度条
 extern SJEdgeControlButtonItemTag const SJEdgeControlLayerBottomItem_FullBtn;       // 全屏按钮
 
+#pragma mark - center
+extern SJEdgeControlButtonItemTag const SJEdgeControlLayerCenterItem_Replay;        // 重播按钮
 
 @interface SJEdgeControlLayer : SJEdgeControlLayerAdapters<SJControlLayer>
 @property (nonatomic, copy, nullable) void(^clickedBackItemExeBlock)(SJEdgeControlLayer *control);

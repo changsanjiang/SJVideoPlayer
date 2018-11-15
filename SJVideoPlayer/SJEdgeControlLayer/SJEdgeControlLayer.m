@@ -54,15 +54,17 @@ SJEdgeControlButtonItemTag const SJEdgeControlLayerBottomItem_Separator = 10003;
 SJEdgeControlButtonItemTag const SJEdgeControlLayerBottomItem_Progress = 10004;
 SJEdgeControlButtonItemTag const SJEdgeControlLayerBottomItem_FullBtn = 10005;
 
+#pragma mark - center
+SJEdgeControlButtonItemTag const SJEdgeControlLayerCenterItem_Replay = 10000;
+
 @interface SJEdgeControlLayer ()<SJProgressSliderDelegate, SJVideoPlayerPreviewViewDelegate>
 @property (nonatomic, weak, nullable) SJBaseVideoPlayer *videoPlayer;
 
 @property (nonatomic, strong, readonly) SJTimerControl *lockStateTappedTimerControl;
+@property (nonatomic, strong, readonly) SJVideoPlayerDraggingProgressView *draggingProgressView;
 @property (nonatomic, strong, readonly) SJLoadingView *loadingView;
 @property (nonatomic, strong, readonly) SJVideoPlayerPreviewView *previewView;
-@property (nonatomic, strong, readonly) SJVideoPlayerDraggingProgressView *draggingProgressView;
 @property (nonatomic) BOOL hasBeenGeneratedPreviewImages;
-@property (nonatomic, strong, readonly) UIButton *replayButton;
 @property (nonatomic, strong, readonly) SJProgressSlider *bottomProgressSlider;
 @end
 
@@ -92,7 +94,6 @@ SJEdgeControlButtonItemTag const SJEdgeControlLayerBottomItem_FullBtn = 10005;
     [self _hidden:_bottomContainerView animated:YES];
     [self _hidden:_rightContainerView animated:YES];
     [self _hidden:_previewView animated:YES];
-    [self _hidden:_replayButton animated:YES];
     [self _hidden:_draggingProgressView animated:YES];
     
     [self _hidden:self.controlView animated:YES completionHandler:^{
@@ -108,6 +109,7 @@ SJEdgeControlButtonItemTag const SJEdgeControlLayerBottomItem_FullBtn = 10005;
     self.leftContainerView.sjv_disappearDirection = SJViewDisappearAnimation_Left;
     self.bottomContainerView.sjv_disappearDirection = SJViewDisappearAnimation_Bottom;
     self.rightContainerView.sjv_disappearDirection = SJViewDisappearAnimation_Right;
+    self.centerContainerView.sjv_disappearDirection = SJViewDisappearAnimation_None;
     [self _hidden:_draggingProgressView animated:NO];
     [self _hidden:_bottomProgressSlider animated:NO];
     self.autoAdjustTopSpacing = YES;
@@ -122,6 +124,7 @@ SJEdgeControlButtonItemTag const SJEdgeControlLayerBottomItem_FullBtn = 10005;
     [self _addItemsToLeftAdapter];
     [self _addItemsToBottomAdapter];
     [self _addItemsToRightAdapter];
+    [self _addItemsToCenterAdapter];
     
     [self.controlView addSubview:self.loadingView];
     [_loadingView mas_makeConstraints:^(MASConstraintMaker *make) {
@@ -193,7 +196,8 @@ SJEdgeControlButtonItemTag const SJEdgeControlLayerBottomItem_FullBtn = 10005;
     
 }
 
-/// 更新容器中的Items
+/// - 更新容器中的Items
+/// - 是否应该显示
 - (void)_updateItemsFor_TopAdapterIfNeeded:(__kindof SJBaseVideoPlayer *)videoPlayer {
     if ( !_topAdapter ) return;
     if ( [self _isHiddenWithView:_topContainerView] ) return;
@@ -261,8 +265,9 @@ SJEdgeControlButtonItemTag const SJEdgeControlLayerBottomItem_FullBtn = 10005;
 }
 
 - (BOOL)_canTriggerGesturesFor_TopAdapter:(CGPoint)location {
-    if ( CGRectContainsPoint(_topAdapter.view.frame, location) &&
-         [_topAdapter itemContainsPoint:[self.controlView convertPoint:location toView:_topAdapter.view]] )
+    CGPoint point = [self.controlView convertPoint:location toView:_topAdapter.view];
+    if ( CGRectContainsPoint(_topAdapter.view.frame, point) &&
+         [_topAdapter itemContainsPoint:point] )
         return NO;
     
     return YES;
@@ -406,8 +411,9 @@ SJEdgeControlButtonItemTag const SJEdgeControlLayerBottomItem_FullBtn = 10005;
 }
 
 - (BOOL)_canTriggerGesturesFor_LeftAdapter:(CGPoint)location {
-    if ( CGRectContainsPoint(_leftAdapter.view.frame, location) &&
-         [_leftAdapter itemContainsPoint:[self.controlView convertPoint:location toView:_leftAdapter.view]] )
+    CGPoint point = [self.controlView convertPoint:location toView:_leftAdapter.view];
+    if ( CGRectContainsPoint(_leftAdapter.view.frame, point) &&
+        [_leftAdapter itemContainsPoint:point] )
         return NO;
     
     return YES;
@@ -595,8 +601,9 @@ SJEdgeControlButtonItemTag const SJEdgeControlLayerBottomItem_FullBtn = 10005;
 }
 
 - (BOOL)_canTriggerGesturesFor_BottomAdapter:(CGPoint)location {
-    if ( CGRectContainsPoint(_bottomAdapter.view.frame, location) &&
-         [_bottomAdapter itemContainsPoint:[self.controlView convertPoint:location toView:_bottomAdapter.view]] )
+    CGPoint point = [self.controlView convertPoint:location toView:_bottomAdapter.view];
+    if ( CGRectContainsPoint(_bottomAdapter.view.frame, point) &&
+        [_bottomAdapter itemContainsPoint:point] )
         return NO;
     
     return YES;
@@ -676,53 +683,57 @@ SJEdgeControlButtonItemTag const SJEdgeControlLayerBottomItem_FullBtn = 10005;
 }
 
 - (BOOL)_canTriggerGesturesFor_RightAdapter:(CGPoint)location {
-    if ( CGRectContainsPoint(_rightAdapter.view.frame, location) &&
-         [_rightAdapter itemContainsPoint:[self.controlView convertPoint:location toView:_rightAdapter.view]] )
+    CGPoint point = [self.controlView convertPoint:location toView:_rightAdapter.view];
+    if ( CGRectContainsPoint(_rightAdapter.view.frame, point) &&
+        [_rightAdapter itemContainsPoint:point] )
         return NO;
     
     return YES;
 }
 
 #pragma mark - center
-@synthesize replayButton = _replayButton;
-- (UIButton *)replayButton {
-    if ( _replayButton ) return _replayButton;
-    _replayButton = [UIButton buttonWithType:UIButtonTypeCustom];
-    _replayButton.titleLabel.numberOfLines = 0;
-    [self.controlView addSubview:_replayButton];
-    [_replayButton mas_makeConstraints:^(MASConstraintMaker *make) {
-        make.center.offset(0);
-    }];
-    [self _updateReplayButton];
-    [self _hidden:_replayButton animated:NO];
+- (void)_addItemsToCenterAdapter {
+    UILabel *replayLabel = [UILabel new];
+    replayLabel.numberOfLines = 0;
+    SJEdgeControlButtonItem *replayItem = [SJEdgeControlButtonItem frameLayoutWithCustomView:replayLabel tag:SJEdgeControlLayerCenterItem_Replay];
+    [replayItem addTarget:self action:@selector(clickedReplayButton:)];
+    [self.centerAdapter addItem:replayItem];
+    
     
     __weak typeof(self) _self = self;
-    _replayButton.settingRecroder = [[SJVideoPlayerControlSettingRecorder alloc] initWithSettings:^(SJEdgeControlLayerSettings * _Nonnull setting) {
+    self.centerAdapter.view.settingRecroder = [[SJVideoPlayerControlSettingRecorder alloc] initWithSettings:^(SJEdgeControlLayerSettings * _Nonnull setting) {
         __strong typeof(_self) self = _self;
         if ( !self ) return;
-        [self _updateReplayButton];
+        [self _updateItemsFor_CenterAdapterIfNeeded:self.videoPlayer];
     }];
     
-    [_replayButton addTarget:self action:@selector(clickedReplayButton:) forControlEvents:UIControlEventTouchUpInside];
-    return _replayButton;
+    replayLabel.settingRecroder = [[SJVideoPlayerControlSettingRecorder alloc] initWithSettings:^(SJEdgeControlLayerSettings * _Nonnull setting) {
+        __strong typeof(_self) self = _self;
+        if ( !self ) return;
+        [self _updateReplayItemFor_CenterAdapter];
+    }];
+    
+    [self _updateReplayItemFor_CenterAdapter];
 }
 
-- (void)_updateAppearStateOfReplayButtomForVideoPlayer:(__kindof SJBaseVideoPlayer *)videoPlayer {
-    if ( [videoPlayer playStatus_isInactivity_ReasonPlayEnd] ) {
-        [self _show:self.replayButton animated:YES];
-    }
-    else {
-        [self _hidden:_replayButton animated:NO];
-    }
+- (void)_updateAppearStateFor_CenterAdapterWithVideoPlayer:(__kindof SJBaseVideoPlayer *)videoPlayer {
+    /// nothing
 }
 
-- (void)clickedReplayButton:(UIButton *)button {
-    [_videoPlayer replay];
+- (void)_updateItemsFor_CenterAdapterIfNeeded:(__kindof SJBaseVideoPlayer *)videoPlayer {
+    if ( !_centerAdapter ) return;
+    [self _updateAppearStateFor_ReplayItemWithVideoPlayerIfNeeded:videoPlayer];
+    [self _callDelegateMethodOfItemsForAdapter:_centerAdapter videoPlayer:videoPlayer];
+    [_centerAdapter reload];
 }
 
-- (void)_updateReplayButton {
+- (void)_updateReplayItemFor_CenterAdapter {
+    if ( !_centerAdapter ) return;
     SJEdgeControlLayerSettings *settings = SJEdgeControlLayerSettings.commonSettings;
-    [self.replayButton setAttributedTitle:sj_makeAttributesString(^(SJAttributeWorker * _Nonnull make) {
+    SJEdgeControlButtonItem *replayItem = [_centerAdapter itemForTag:SJEdgeControlLayerCenterItem_Replay];
+    
+    UILabel *replayLabel = replayItem.customView;
+    replayLabel.attributedText = sj_makeAttributesString(^(SJAttributeWorker * _Nonnull make) {
         if ( settings.replayBtnImage ) {
             make.insert(settings.replayBtnImage, 0, CGPointZero, CGSizeZero).alignment(NSTextAlignmentCenter);
         }
@@ -736,7 +747,32 @@ SJEdgeControlButtonItemTag const SJEdgeControlLayerBottomItem_FullBtn = 10005;
             .textColor(settings.replayBtnTitleColor);
         }
         make.alignment(NSTextAlignmentCenter).lineSpacing(6);
-    }) forState:UIControlStateNormal];
+        replayLabel.bounds = (CGRect){CGPointZero, make.size()};
+    });
+    
+    [self.centerAdapter reload];
+}
+
+- (void)_updateAppearStateFor_ReplayItemWithVideoPlayerIfNeeded:(__kindof SJBaseVideoPlayer *)videoPlayer {
+    SJEdgeControlButtonItem *replayItem = [_centerAdapter itemForTag:SJEdgeControlLayerCenterItem_Replay];
+    BOOL needHidden = ![videoPlayer playStatus_isInactivity_ReasonPlayEnd];
+    if ( needHidden != replayItem.hidden ) {
+        replayItem.hidden = needHidden;
+        [_centerAdapter reload];
+    }
+}
+
+- (BOOL)_canTriggerGesturesFor_CenterAdapter:(CGPoint)location {
+    CGPoint point = [self.controlView convertPoint:location toView:_centerAdapter.view];
+    if ( CGRectContainsPoint(_centerAdapter.view.frame, point) &&
+        [_centerAdapter itemContainsPoint:point] )
+        return NO;
+    
+    return YES;
+}
+
+- (void)clickedReplayButton:(UIButton *)button {
+    [_videoPlayer replay];
 }
 
 @synthesize loadingView = _loadingView;
@@ -823,7 +859,8 @@ SJEdgeControlButtonItemTag const SJEdgeControlLayerBottomItem_FullBtn = 10005;
     if ( ![self _canTriggerGesturesFor_TopAdapter:location] ||
          ![self _canTriggerGesturesFor_LeftAdapter:location] ||
          ![self _canTriggerGesturesFor_BottomAdapter:location] ||
-         ![self _canTriggerGesturesFor_RightAdapter:location] ) return NO;
+         ![self _canTriggerGesturesFor_RightAdapter:location] ||
+         ![self _canTriggerGesturesFor_CenterAdapter:location] ) return NO;
     
     if ( CGRectContainsPoint( _previewView.frame, location) )
         return NO;
@@ -870,7 +907,6 @@ SJEdgeControlButtonItemTag const SJEdgeControlLayerBottomItem_FullBtn = 10005;
 
 - (void)videoPlayer:(__kindof SJBaseVideoPlayer *)videoPlayer statusDidChanged:(SJVideoPlayerPlayStatus)status {
     [self _updateItemsForAdaptersIfNeeded:videoPlayer];
-    [self _updateAppearStateOfReplayButtomForVideoPlayer:videoPlayer];
 }
 
 - (void)videoPlayer:(__kindof SJBaseVideoPlayer *)videoPlayer currentTime:(NSTimeInterval)currentTime currentTimeStr:(NSString *)currentTimeStr totalTime:(NSTimeInterval)totalTime totalTimeStr:(NSString *)totalTimeStr {
@@ -1013,6 +1049,7 @@ SJEdgeControlButtonItemTag const SJEdgeControlLayerBottomItem_FullBtn = 10005;
     [self _updateAppearStateFor_LeftAdapterWithVideoPlayer:videoPlayer];
     [self _updateAppearStateFor_BottomAdapterWithVideoPlayer:videoPlayer];
     [self _updateAppearStateFor_RightAdapterWithVideoPlayer:videoPlayer];
+    [self _updateAppearStateFor_CenterAdapterWithVideoPlayer:videoPlayer];
 }
 
 /// 更新 items
@@ -1021,6 +1058,7 @@ SJEdgeControlButtonItemTag const SJEdgeControlLayerBottomItem_FullBtn = 10005;
     [self _updateItemsFor_LeftAdapterIfNeeded:videoPlayer];
     [self _updateItemsFor_BottomAdapterIfNeeded:videoPlayer];
     [self _updateItemsFor_RightAdapterIfNeeded:videoPlayer];
+    [self _updateItemsFor_CenterAdapterIfNeeded:videoPlayer];
 }
 
 - (void)_callDelegateMethodOfItemsForAdapter:(SJEdgeControlLayerItemAdapter *)adapter videoPlayer:(__kindof SJBaseVideoPlayer *)videoPlayer {

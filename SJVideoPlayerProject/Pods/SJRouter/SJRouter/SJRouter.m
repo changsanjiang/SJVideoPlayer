@@ -56,9 +56,13 @@ static UIViewController *_sj_get_top_view_controller() {
             NSString *cls_str = [NSString stringWithUTF8String:cls_name];
             Class cls = NSClassFromString(cls_str);
             if ( ![cls conformsToProtocol:p_handler] ) continue;
-            if ( ![(id)cls respondsToSelector:@selector(routePath)] ) continue;
             if ( ![(id)cls respondsToSelector:@selector(handleRequestWithParameters:topViewController:completionHandler:)] ) continue;
-            _handlersM[[(id<SJRouteHandler>)cls routePath]] = cls;
+            if ( [(id)cls respondsToSelector:@selector(routePath)] )
+                _handlersM[[(id<SJRouteHandler>)cls routePath]] = cls;
+            else if ( [(id)cls respondsToSelector:@selector(multiRoutePath)] ) {
+                for ( NSString *rp in [(id<SJRouteHandler>)cls multiRoutePath] )
+                    _handlersM[rp] = cls;
+            }
         }
         if ( classes ) free(classes);
     }

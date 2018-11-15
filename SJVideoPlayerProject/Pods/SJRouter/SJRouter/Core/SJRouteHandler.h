@@ -8,16 +8,19 @@
 #ifndef SJRouteHandler_h
 #define SJRouteHandler_h
 #import <UIKit/UIKit.h>
-
-NS_ASSUME_NONNULL_BEGIN
 typedef id SJParameters;
 
+NS_ASSUME_NONNULL_BEGIN
 typedef void(^SJCompletionHandler)(id _Nullable result, NSError *_Nullable error);
 
 @protocol SJRouteHandler
-+ (NSString *)routePath;
-
+@required
 + (void)handleRequestWithParameters:(nullable SJParameters)parameters topViewController:(UIViewController *)topViewController completionHandler:(nullable SJCompletionHandler)completionHandler;
+
+@optional
++ (NSString *)routePath;                 // 单路径 可以用这个方法返回
++ (NSArray<NSString *> *)multiRoutePath; // 多路径 可以从这个方法返回
+
 @end
 NS_ASSUME_NONNULL_END
 

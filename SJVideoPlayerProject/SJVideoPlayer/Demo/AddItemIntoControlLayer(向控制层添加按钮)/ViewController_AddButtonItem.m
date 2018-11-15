@@ -35,7 +35,7 @@ static SJEdgeControlButtonItemTag SJEdgeControlButtonItemTag_Share = 10;        
     [self _setupViews];
     
     
-    [_player showTitle:@"当前Demo为: 添加 item 到控制层" duration:-1];
+//    [_player showTitle:@"当前Demo为: 添加 item 到控制层" duration:-1];
 
     
     _player.URLAsset = [[SJVideoPlayerURLAsset alloc] initWithURL:[NSBundle.mainBundle URLForResource:@"play" withExtension:@"mp4"]];
@@ -70,6 +70,22 @@ static SJEdgeControlButtonItemTag SJEdgeControlButtonItemTag_Share = 10;        
 - (IBAction)remove:(id)sender {
     [_player.defaultEdgeControlLayer.topAdapter removeItemForTag:SJEdgeControlButtonItemTag_Share];
     [_player.defaultEdgeControlLayer.topAdapter reload];
+}
+
+/// 向centerAdapter添加Item
+- (IBAction)addItemIntoCenterControllayer:(id)sender {
+    UIView *v = [UIView new];
+    /// 测试, 给一个随机大小
+    v.bounds = CGRectMake(0, 0, arc4random() % 200 + 20, arc4random() % 200 + 20);
+    /// 测试, 随机颜色
+    v.backgroundColor =  [UIColor colorWithRed:arc4random() % 256 / 255.0
+                                         green:arc4random() % 256 / 255.0
+                                          blue:arc4random() % 256 / 255.0
+                                         alpha:1];
+    
+    SJEdgeControlButtonItem *item = [SJEdgeControlButtonItem frameLayoutWithCustomView:v tag:0];
+    [_player.defaultEdgeControlLayer.centerAdapter addItem:item];
+    [_player.defaultEdgeControlLayer.centerAdapter reload];
 }
 
 - (void)clickedShareItem {

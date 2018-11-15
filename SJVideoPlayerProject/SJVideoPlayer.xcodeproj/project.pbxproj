@@ -26,6 +26,7 @@
 		77EECF58219C0CEC00736073 /* ViewControllerPresentFitOnScreenDemo.m in Sources */ = {isa = PBXBuildFile; fileRef = 77EECF56219C0CEC00736073 /* ViewControllerPresentFitOnScreenDemo.m */; };
 		77EECF59219C0CEC00736073 /* ViewControllerPresentFitOnScreenDemo.xib in Resources */ = {isa = PBXBuildFile; fileRef = 77EECF57219C0CEC00736073 /* ViewControllerPresentFitOnScreenDemo.xib */; };
 		77EECF5C219C14AA00736073 /* SJNavTransitionAnimator.m in Sources */ = {isa = PBXBuildFile; fileRef = 77EECF5B219C14A900736073 /* SJNavTransitionAnimator.m */; };
+		77EECF60219D0DE200736073 /* TestAdapterViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 77EECF5F219D0DE200736073 /* TestAdapterViewController.m */; };
 		77F8161521803A540078B6F0 /* SJEdgeControlLayer.m in Sources */ = {isa = PBXBuildFile; fileRef = 77F8161421803A540078B6F0 /* SJEdgeControlLayer.m */; };
 		A600655F215F947E0001B5F8 /* AppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = A600655E215F947E0001B5F8 /* AppDelegate.m */; };
 		A6006562215F947E0001B5F8 /* ViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = A6006561215F947E0001B5F8 /* ViewController.m */; };
@@ -180,6 +181,8 @@
 		77EECF57219C0CEC00736073 /* ViewControllerPresentFitOnScreenDemo.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = ViewControllerPresentFitOnScreenDemo.xib; sourceTree = "<group>"; };
 		77EECF5A219C14A900736073 /* SJNavTransitionAnimator.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SJNavTransitionAnimator.h; sourceTree = "<group>"; };
 		77EECF5B219C14A900736073 /* SJNavTransitionAnimator.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SJNavTransitionAnimator.m; sourceTree = "<group>"; };
+		77EECF5E219D0DE200736073 /* TestAdapterViewController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = TestAdapterViewController.h; sourceTree = "<group>"; };
+		77EECF5F219D0DE200736073 /* TestAdapterViewController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = TestAdapterViewController.m; sourceTree = "<group>"; };
 		77F8161321803A540078B6F0 /* SJEdgeControlLayer.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = SJEdgeControlLayer.h; sourceTree = "<group>"; };
 		77F8161421803A540078B6F0 /* SJEdgeControlLayer.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = SJEdgeControlLayer.m; sourceTree = "<group>"; };
 		9B2DD9C970891E06976F0D02 /* libPods-SJVideoPlayerUITests.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-SJVideoPlayerUITests.a"; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -478,6 +481,15 @@
 				77E8D7B1217B0CE800B025A7 /* SJButtonItemCollectionViewCell.m */,
 			);
 			path = Core;
+			sourceTree = "<group>";
+		};
+		77EECF5D219D0DCF00736073 /* TestAdapter */ = {
+			isa = PBXGroup;
+			children = (
+				77EECF5E219D0DE200736073 /* TestAdapterViewController.h */,
+				77EECF5F219D0DE200736073 /* TestAdapterViewController.m */,
+			);
+			path = TestAdapter;
 			sourceTree = "<group>";
 		};
 		8A873F4429937C671B152826 /* Pods */ = {
@@ -793,6 +805,7 @@
 				A600669821610FC00001B5F8 /* PageViewController */,
 				A60066A8216195050001B5F8 /* Other */,
 				77E8D75F2179A0B100B025A7 /* Test */,
+				77EECF5D219D0DCF00736073 /* TestAdapter */,
 			);
 			path = Demo;
 			sourceTree = "<group>";
@@ -1258,6 +1271,7 @@
 				A6006642215F974B0001B5F8 /* UIView+SJFilmEditingAdd.m in Sources */,
 				A6006640215F974B0001B5F8 /* SJFilmEditingLoader.m in Sources */,
 				77EECF58219C0CEC00736073 /* ViewControllerPresentFitOnScreenDemo.m in Sources */,
+				77EECF60219D0DE200736073 /* TestAdapterViewController.m in Sources */,
 				77EECF51219C08FC00736073 /* PresentingViewController.m in Sources */,
 				77830928218C50310014ECAF /* ViewControllerTestAlert.m in Sources */,
 				77A331B8217F32CD00980A17 /* UIView+SJAnimationAdded.m in Sources */,

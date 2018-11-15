@@ -14,8 +14,8 @@ typedef enum : NSUInteger {
     SJAdapterItemsLayoutTypeVerticalLayout = UICollectionViewScrollDirectionVertical,
     /// 水平布局
     SJAdapterItemsLayoutTypeHorizontalLayout = UICollectionViewScrollDirectionHorizontal,
-    
-    /// SJAdapterItemsLayoutTypeFrameLayout, // Sometime in the future
+    /// 帧布局(一层一层往上盖, 并居中显示)
+    SJAdapterItemsLayoutTypeFrameLayout,
 } SJAdapterItemsLayoutType;
 
 NS_ASSUME_NONNULL_BEGIN
@@ -37,6 +37,8 @@ NS_ASSUME_NONNULL_BEGIN
 /// - 注意: 添加后, 记得调用刷新
 - (void)addItem:(SJEdgeControlButtonItem *)item;
 - (void)insertItem:(SJEdgeControlButtonItem *)item atIndex:(NSInteger)index;
+- (void)insertItem:(SJEdgeControlButtonItem *)item frontItem:(SJEdgeControlButtonItemTag)tag;
+- (void)insertItem:(SJEdgeControlButtonItem *)item rearItem:(SJEdgeControlButtonItemTag)tag;
 
 /// 删除
 /// - 注意: 删除后, 记得调用刷新
@@ -53,5 +55,6 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic, readonly) NSInteger itemCount;
 - (instancetype)init NS_UNAVAILABLE;
 + (instancetype)new  NS_UNAVAILABLE;
+@property (nonatomic, copy, nullable) void(^maxSizeDidUpdateOfFrameLayoutExeBlock)(CGSize size); // 只有在frameLayout布局时, 才会被调用
 @end
 NS_ASSUME_NONNULL_END

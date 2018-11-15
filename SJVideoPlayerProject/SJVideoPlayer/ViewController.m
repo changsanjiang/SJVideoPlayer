@@ -83,6 +83,8 @@
     [m addObject:[[LWZTableSectionShrinker alloc] initWithTitle:@"Control Layer Switcher" titleWhenShrank:nil dataArr:[self _createItemsByControlLayerSwitcher]]];
     
     [m addObject:[[LWZTableSectionShrinker alloc] initWithTitle:@"Other" titleWhenShrank:nil dataArr:[self _createItemsByOtherOperations]]];
+    
+    [m addObject:[[LWZTableSectionShrinker alloc] initWithTitle:@"Test Adapter" titleWhenShrank:nil dataArr:[self _createItemsByTestAdapter]]];
     _data = m.copy;
 }
 
@@ -230,6 +232,13 @@
       [[Item alloc] initWithTitle:@"Test"
                          subTitle:@"测试"
                              path:@"player/test"]];
+}
+
+- (NSArray<Item *> *)_createItemsByTestAdapter {
+    return
+    @[[[Item alloc] initWithTitle:@"Test Adapter"
+                         subTitle:@"测试 Adapter"
+                             path:@"test/testAdapter"]];
 }
 
 - (NSInteger)numberOfSectionsInTableView:(UITableView *)tableView {

@@ -83,8 +83,7 @@
     
     _player.moreSettings = @[mm, mm1];
     
-    
-    
+
     // Do any additional setup after loading the view.
 }
 

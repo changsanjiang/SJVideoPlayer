@@ -16,9 +16,8 @@ typedef struct SJEdgeInsets {
     CGFloat front, rear;
 } SJEdgeInsets;
 
-UIKIT_STATIC_INLINE SJEdgeInsets SJEdgeInsetsMake(CGFloat left, CGFloat right) {
-    SJEdgeInsets insets = {left, right};
-    return insets;
+UIKIT_STATIC_INLINE SJEdgeInsets SJEdgeInsetsMake(CGFloat front, CGFloat rear) {
+    return (SJEdgeInsets){front, rear};
 }
 
 NS_ASSUME_NONNULL_BEGIN
@@ -75,5 +74,15 @@ typedef enum : NSUInteger {
 + (instancetype)placeholderWithSize:(CGFloat)size tag:(SJEdgeControlButtonItemTag)tag; // `placeholderType == SJButtonItemPlaceholderType_49xSpecifiedSize`
 @property (nonatomic, readonly) SJButtonItemPlaceholderType placeholderType;
 @property (nonatomic) CGFloat size;
+@end
+
+
+
+/// - 其他布局无效, 只配合帧布局使用(SJAdapterItemsLayoutTypeFrameLayout)
+/// - 帧布局仅支持`customView`
+/// - 请设置`customView`的`bounds`
+@interface SJEdgeControlButtonItem (FrameLayout)
++ (instancetype)frameLayoutWithCustomView:(__kindof UIView *)customView tag:(SJEdgeControlButtonItemTag)tag;
+@property (nonatomic, readonly) BOOL isFrameLayout;
 @end
 NS_ASSUME_NONNULL_END

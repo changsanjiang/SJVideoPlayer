@@ -31,23 +31,36 @@ static NSString *SJButtonItemCollectionViewCellID = @"SJButtonItemCollectionView
 }
 
 - (void)_setupView {
-    [self.contentView addSubview:self.button];
-    [_button mas_makeConstraints:^(MASConstraintMaker *make) {
+    [self.contentView addSubview:self.backgroundButton];
+    [self.contentView addSubview:self.itemContentView];
+    [_backgroundButton mas_makeConstraints:^(MASConstraintMaker *make) {
+        make.edges.offset(0);
+    }];
+
+    [_itemContentView mas_makeConstraints:^(MASConstraintMaker *make) {
         make.edges.offset(0);
     }];
 }
 
-- (void)clickedButton:(UIButton *)btn {
-    if ( _clickedButtonExeBlock ) _clickedButtonExeBlock(self);
+- (void)clickedBackgroundBtn:(UIButton *)btn {
+    if ( _clickedCellExeBlock ) _clickedCellExeBlock(self);
 }
 
-@synthesize button = _button;
-- (SJButton *)button {
-    if ( _button ) return _button;
-    _button = [SJButton new];
-    _button.clipsToBounds = YES;
-    [_button addTarget:self action:@selector(clickedButton:) forControlEvents:UIControlEventTouchUpInside];
-    return _button;
+@synthesize backgroundButton = _backgroundButton;
+- (UIButton *)backgroundButton {
+    if ( _backgroundButton ) return _backgroundButton;
+    _backgroundButton = [UIButton buttonWithType:UIButtonTypeCustom];
+    [_backgroundButton addTarget:self action:@selector(clickedBackgroundBtn:) forControlEvents:UIControlEventTouchUpInside];
+    return _backgroundButton;
+}
+
+@synthesize itemContentView = _itemContentView;
+- (SJButtonItemContentView *)itemContentView {
+    if ( _itemContentView ) return _itemContentView;
+    _itemContentView = [SJButtonItemContentView new];
+    _itemContentView.clipsToBounds = YES;
+    _itemContentView.userInteractionEnabled = NO;
+    return _itemContentView;
 }
  
 - (UIView *)customViewContainerView {
@@ -68,7 +81,7 @@ static NSString *SJButtonItemCollectionViewCellID = @"SJButtonItemCollectionView
 @end
 
 
-@implementation SJButton
+@implementation SJButtonItemContentView
 @synthesize sj_titleLabel = _sj_titleLabel;
 @synthesize sj_imageView = _sj_imageView;
 

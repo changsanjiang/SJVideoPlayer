@@ -16,22 +16,28 @@ NS_ASSUME_NONNULL_BEGIN
     SJEdgeControlLayerItemAdapter *_Nullable _leftAdapter;
     SJEdgeControlLayerItemAdapter *_Nullable _bottomAdapter;
     SJEdgeControlLayerItemAdapter *_Nullable _rightAdapter;
+    SJEdgeControlLayerItemAdapter *_Nullable _centerAdapter;
     
     __kindof UIView *_Nullable _topContainerView;
     __kindof UIView *_Nullable _bottomContainerView;
     UIView *_Nullable _leftContainerView;
     UIView *_Nullable _rightContainerView;
+    UIView *_Nullable _centerContainerView;
 }
 
 @property (nonatomic, strong, readonly) SJEdgeControlLayerItemAdapter *topAdapter;    // lazy load
 @property (nonatomic, strong, readonly) SJEdgeControlLayerItemAdapter *leftAdapter;   // lazy load
 @property (nonatomic, strong, readonly) SJEdgeControlLayerItemAdapter *bottomAdapter; // lazy load
 @property (nonatomic, strong, readonly) SJEdgeControlLayerItemAdapter *rightAdapter;  // lazy load
+@property (nonatomic, strong, readonly) SJEdgeControlLayerItemAdapter *centerAdapter; // lazy load
+
 
 @property (nonatomic, strong, readonly) UIView *topContainerView;
 @property (nonatomic, strong, readonly) UIView *bottomContainerView;
 @property (nonatomic, strong, readonly) UIView *leftContainerView;
 @property (nonatomic, strong, readonly) UIView *rightContainerView;
+@property (nonatomic, strong, readonly) UIView *centerContainerView;
+
 
 /// default is YES.
 @property (nonatomic) BOOL autoAdjustTopSpacing; // 自动调整顶部间距, 让出状态栏

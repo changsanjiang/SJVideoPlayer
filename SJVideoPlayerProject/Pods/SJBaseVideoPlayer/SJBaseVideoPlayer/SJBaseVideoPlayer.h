@@ -159,8 +159,14 @@ typedef enum : NSUInteger {
 @property (null_resettable, nonatomic, strong) id<SJMediaPlaybackController> playbackController;
 
 /// 资源
-/// - 使用资源URL及相关的视图信息进行初始化
+/// - 播放一个资源
+/// - 使用URL及相关的视图信息进行初始化
 @property (nonatomic, strong, nullable) SJVideoPlayerURLAsset *URLAsset;
+
+/// 预加载资源
+/// - 当需要预加载某个资源时, 可以设置它
+/// - 播放器会在合适的时候, 进行预加载
+@property (nonatomic, strong, nullable) SJVideoPlayerURLAsset *prefetchAsset;
 
 /// 播放状态
 @property (nonatomic, readonly) SJVideoPlayerPlayStatus playStatus;

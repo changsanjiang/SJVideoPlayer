@@ -254,11 +254,11 @@ static UIScrollView *_Nullable _getScrollViewOfPlayModel(SJPlayModel *playModel)
     SJVideoPlayerRegistrar *_registrar;
     _SJReachabilityObserver *_reachabilityObserver;
     UITapGestureRecognizer *_lockStateTapGesture;
-    SJVideoPlayerURLAsset *_URLAsset;
     CGFloat _rate;
     SJVideoPlayerPlayStatus _playStatus;
     SJVideoPlayerPausedReason _pausedReason;
     SJVideoPlayerInactivityReason _inactivityReason;
+    SJVideoPlayerURLAsset *_URLAsset;
 }
 
 + (instancetype)player {
@@ -282,10 +282,13 @@ static UIScrollView *_Nullable _getScrollViewOfPlayModel(SJPlayModel *playModel)
 - (instancetype)init {
     self = [super init];
     if ( !self ) return nil;
-    NSError *error = nil;
-    // 使播放器在静音状态下也能放出声音
-    [[AVAudioSession sharedInstance] setCategory:AVAudioSessionCategoryPlayback error:&error];
-    if ( error ) NSLog(@"%@", error.userInfo);
+    if ( AVAudioSession.sharedInstance.category != AVAudioSessionCategoryPlayback ||
+         AVAudioSession.sharedInstance.category != AVAudioSessionCategoryPlayAndRecord ) {
+        NSError *error = nil;
+        // 使播放器在静音状态下也能放出声音
+        [[AVAudioSession sharedInstance] setCategory:AVAudioSessionCategoryPlayback error:&error];
+        if ( error ) NSLog(@"%@", error.userInfo);
+    }
     self.rate = 1;
     self.autoPlay = YES; // 是否自动播放, 默认yes
     self.pauseWhenAppDidEnterBackground = YES; // App进入后台是否暂停播放, 默认yes
@@ -585,41 +588,39 @@ static NSString *_kGestureState = @"state";
         switch (type) {
             case SJPlayerGestureType_Unknown: break;
             case SJPlayerGestureType_Pan: {
-                if ( SJDisablePlayerGestureTypes_Pan == (disableTypes & SJDisablePlayerGestureTypes_Pan ) ) {
+                if ( disableTypes & SJDisablePlayerGestureTypes_Pan )
                     return NO;
-                }
             }
                 break;
-                
             case SJPlayerGestureType_Pinch: {
-                if ( SJDisablePlayerGestureTypes_Pinch == (disableTypes & SJDisablePlayerGestureTypes_Pinch ) ) {
+                if ( disableTypes & SJDisablePlayerGestureTypes_Pinch )
                     return NO;
-                }
             }
                 break;
             case SJPlayerGestureType_DoubleTap: {
-                if ( SJDisablePlayerGestureTypes_DoubleTap == (disableTypes & SJDisablePlayerGestureTypes_DoubleTap) ) {
+                if ( disableTypes & SJDisablePlayerGestureTypes_DoubleTap )
                     return NO;
-                }
             }
                 break;
             case SJPlayerGestureType_SingleTap: {
-                if ( SJDisablePlayerGestureTypes_SingleTap == (disableTypes & SJDisablePlayerGestureTypes_SingleTap ) ) {
+                if ( disableTypes & SJDisablePlayerGestureTypes_SingleTap )
                     return NO;
-                }
             }
                 break;
         }
         
-//        if ( [self playStatus_isUnknown] ) return NO;
-        if ( [self playStatus_isInactivity_ReasonPlayFailed] ) return NO;
+        if ( [self playStatus_isInactivity_ReasonPlayFailed] )
+            return NO;
         
         if ( SJPlayerGestureType_Pan == type &&
-            self.isPlayOnScrollView &&
-            !self.rotationManager.isFullscreen ) return NO;
+             self.isPlayOnScrollView &&
+            !self.rotationManager.isFullscreen )
+            return NO;
         
-        if ( self.controlLayerDataSource &&
-            ![self.controlLayerDataSource triggerGesturesCondition:[gesture locationInView:gesture.view]] ) return NO;
+        if ( type != SJPlayerGestureType_Pinch &&
+             self.controlLayerDataSource &&
+            ![self.controlLayerDataSource triggerGesturesCondition:[gesture locationInView:gesture.view]] )
+            return NO;
         
         return YES;
     };
@@ -925,6 +926,8 @@ static NSString *_kGestureState = @"state";
 @end
 
 
+#pragma mark -
+
 @interface _SJViewFlipTransitionServer : NSObject<CAAnimationDelegate>
 - (instancetype)initWithView:(__weak UIView *)view;
 @property (nonatomic) NSTimeInterval flipTransitionDuration;
@@ -1161,7 +1164,7 @@ static NSString *_kGestureState = @"state";
 
 // 1.
 - (void)setURLAsset:(nullable SJVideoPlayerURLAsset *)URLAsset {
-    if ( self.URLAsset ) {
+    if ( _URLAsset ) {
         if ( self.assetDeallocExeBlock ) self.assetDeallocExeBlock(self);
     }
     
@@ -1200,6 +1203,19 @@ static NSString *_kGestureState = @"state";
     return _URLAsset;
 }
 
+- (void)setPrefetchAsset:(nullable SJVideoPlayerURLAsset *)prefetchAsset {
+    if ( [self.playbackController respondsToSelector:@selector(setPrefetchMedia:)] ) {
+        self.playbackController.prefetchMedia = prefetchAsset;
+    }
+}
+
+- (nullable SJVideoPlayerURLAsset *)prefetchAsset {
+    if ( [self.playbackController respondsToSelector:@selector(prefetchMedia)] ) {
+        return (id)self.playbackController.prefetchMedia;
+    }
+    return nil;
+}
+
 // 2.1
 - (void)_playerReadyToPlay {
     
@@ -1210,7 +1226,7 @@ static NSString *_kGestureState = @"state";
     }
     
     __weak typeof(self) _self = self;
-    dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(0.9 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
+    void(^_inner_play_block)(void) = ^ {
         __strong typeof(_self) self = _self;
         if ( !self ) return;
         if ( [self.controlLayerDelegate respondsToSelector:@selector(loadCompletion:)] ) {
@@ -1240,7 +1256,16 @@ static NSString *_kGestureState = @"state";
         }
         
         if ( !self.isLockedScreen ) [self.displayRecorder resetInitialization];
-    });
+    };
+    
+    if ( self.playbackController.bufferLoadedTime > self.playbackController.currentTime + 3 ) {
+        _inner_play_block();
+    }
+    else {
+        dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(0.9 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
+            _inner_play_block();
+        });
+    }
 }
 
 // 2.2

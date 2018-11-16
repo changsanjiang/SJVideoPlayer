@@ -10,8 +10,8 @@
 #import <Masonry/Masonry.h>
 #import <SJRouter/SJRouter.h>
 #import "LWZTableSectionShrinker.h"
-#import <SJFullscreenPopGesture/UINavigationController+SJVideoPlayerAdd.h>
-#import <SJFullscreenPopGesture/UIViewController+SJVideoPlayerAdd.h>
+//#import <SJFullscreenPopGesture/UINavigationController+SJVideoPlayerAdd.h>
+//#import <SJFullscreenPopGesture/UIViewController+SJVideoPlayerAdd.h>
 
 @interface Item : NSObject
 - (instancetype)initWithTitle:(NSString *)title subTitle:(NSString *)subTitle path:(NSString *)path;
@@ -39,13 +39,8 @@
 
 - (void)viewDidLoad {
     [super viewDidLoad];
-    self.navigationController.sj_gestureType = SJFullscreenPopGestureType_Full;
-    self.navigationController.sj_transitionMode = SJScreenshotTransitionModeShifting;
-    self.sj_displayMode = SJPreViewDisplayMode_Origin;
     self.view.backgroundColor = [UIColor whiteColor];
     self.edgesForExtendedLayout = UIRectEdgeNone;
-
-    
     
     [self _createDemoData];
     _tableView = [[UITableView alloc] initWithFrame:CGRectZero style:UITableViewStyleGrouped];
@@ -82,10 +77,19 @@
     
     [m addObject:[[LWZTableSectionShrinker alloc] initWithTitle:@"Control Layer Switcher" titleWhenShrank:nil dataArr:[self _createItemsByControlLayerSwitcher]]];
     
+    [m addObject:[[LWZTableSectionShrinker alloc] initWithTitle:@"Prefetcher" titleWhenShrank:nil dataArr:[self _createItemsByPrefetcher]]];
+    
     [m addObject:[[LWZTableSectionShrinker alloc] initWithTitle:@"Other" titleWhenShrank:nil dataArr:[self _createItemsByOtherOperations]]];
     
     [m addObject:[[LWZTableSectionShrinker alloc] initWithTitle:@"Test Adapter" titleWhenShrank:nil dataArr:[self _createItemsByTestAdapter]]];
     _data = m.copy;
+}
+
+- (NSArray<Item *> *)_createItemsByPrefetcher {
+    return
+    @[[[Item alloc] initWithTitle:@"Prefetcher"
+                         subTitle:@"预加载"
+                             path:@"asset/prefetcher"]];
 }
 
 - (NSArray<Item *> *)_createItemsByControlLayerSwitcher {

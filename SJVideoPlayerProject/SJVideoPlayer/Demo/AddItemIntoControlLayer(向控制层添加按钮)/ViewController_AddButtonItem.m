@@ -10,7 +10,6 @@
 #import "SJVideoPlayer.h"
 #import <SJRouter/SJRouter.h>
 #import <Masonry/Masonry.h>
-#import <SJFullscreenPopGesture/UIViewController+SJVideoPlayerAdd.h>
 
 /// 控制层 Item 相关操作 之 `添加按钮`
 
@@ -33,7 +32,6 @@ static SJEdgeControlButtonItemTag SJEdgeControlButtonItemTag_Share = 10;        
 - (void)viewDidLoad {
     [super viewDidLoad];
     [self _setupViews];
-    
     
 //    [_player showTitle:@"当前Demo为: 添加 item 到控制层" duration:-1];
 
@@ -74,9 +72,9 @@ static SJEdgeControlButtonItemTag SJEdgeControlButtonItemTag_Share = 10;        
 
 /// 向centerAdapter添加Item
 - (IBAction)addItemIntoCenterControllayer:(id)sender {
-    UIView *v = [UIView new];
+    UISlider *v = [UISlider new];
     /// 测试, 给一个随机大小
-    v.bounds = CGRectMake(0, 0, arc4random() % 200 + 20, arc4random() % 200 + 20);
+    v.bounds = CGRectMake(0, 0, 200, 200);
     /// 测试, 随机颜色
     v.backgroundColor =  [UIColor colorWithRed:arc4random() % 256 / 255.0
                                          green:arc4random() % 256 / 255.0

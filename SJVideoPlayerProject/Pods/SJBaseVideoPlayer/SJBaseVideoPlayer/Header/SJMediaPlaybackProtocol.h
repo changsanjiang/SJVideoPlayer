@@ -55,6 +55,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 @optional
 - (void)cancelPendingSeeks;
+@property (nonatomic, strong, nullable) id<SJMediaModelProtocol> prefetchMedia;
 @end
 
 

@@ -10,7 +10,6 @@
 #import "SJVideoPlayer.h"
 #import <SJRouter/SJRouter.h>
 #import <Masonry/Masonry.h>
-#import <SJFullscreenPopGesture/UIViewController+SJVideoPlayerAdd.h>
 #import <SJAttributesFactory/SJAttributeWorker.h>
 
 /// 控制层 Item 相关操作 之 `添加按钮`

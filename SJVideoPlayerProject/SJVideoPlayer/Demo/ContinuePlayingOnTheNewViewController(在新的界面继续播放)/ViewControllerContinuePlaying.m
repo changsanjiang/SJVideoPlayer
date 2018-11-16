@@ -10,7 +10,6 @@
 #import "SJVideoPlayer.h"
 #import <SJRouter/SJRouter.h>
 #import <Masonry/Masonry.h>
-#import <SJFullscreenPopGesture/UIViewController+SJVideoPlayerAdd.h>
 
 @interface ViewControllerContinuePlaying ()<SJRouteHandler>
 @property (nonatomic, strong) SJVideoPlayer *player;
@@ -49,7 +48,6 @@
     [super viewDidLoad];
     self.edgesForExtendedLayout = UIRectEdgeNone;
     self.view.backgroundColor = [UIColor whiteColor];
-    self.sj_displayMode = SJPreViewDisplayMode_Origin;
     
     _player = [SJVideoPlayer player];
     [self.view addSubview:_player.view];

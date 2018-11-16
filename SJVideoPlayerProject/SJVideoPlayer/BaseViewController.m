@@ -7,6 +7,7 @@
 //
 
 #import "BaseViewController.h"
+#import <SJFullscreenPopGesture/UIViewController+SJVideoPlayerAdd.h>
 
 @interface BaseViewController ()
 
@@ -23,5 +24,6 @@
     [super viewDidLoad];
     self.view.backgroundColor = [UIColor whiteColor];
     self.edgesForExtendedLayout = UIRectEdgeNone;
+    self.sj_displayMode = SJPreViewDisplayMode_Origin;
 }
 @end

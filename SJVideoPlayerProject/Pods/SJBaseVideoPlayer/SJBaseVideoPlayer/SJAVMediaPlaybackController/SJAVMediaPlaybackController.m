@@ -14,6 +14,11 @@
 #import "SJAVMediaPlayAsset.h"
 
 NS_ASSUME_NONNULL_BEGIN
+@interface _SJAVMediaPrefetcher : NSObject<SJAVMediaPlayAssetPropertiesObserverDelegate>
+- (void)prefetchAsset:(SJAVMediaPlayAsset *)asset;
+- (void)cancel;
+@end
+
 @interface SJAVPlayerLayerPresentView: UIView
 /// default is AVLayerVideoGravityResizeAspect
 @property (nonatomic, strong) AVLayerVideoGravity videoGravity;
@@ -45,10 +50,10 @@ NS_ASSUME_NONNULL_BEGIN
     if ( player == self.avLayer.player ) return;
     self.avLayer.player = player;
     
-    CATransition *anima = [CATransition animation];
-    anima.type = kCATransitionFade;
-    anima.duration = 0.4f;
-    [self.layer addAnimation:anima forKey:@"fadeAnimation"];
+//    CATransition *anima = [CATransition animation];
+//    anima.type = kCATransitionFade;
+//    anima.duration = 0.4f;
+//    [self.layer addAnimation:anima forKey:@"fadeAnimation"];
 }
 
 - (nullable AVPlayer *)player {
@@ -73,6 +78,7 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic) BOOL isPreparing;
 @property (nonatomic, strong, nullable) SJAVMediaPlayAsset *playAsset;
 @property (nonatomic, strong, readonly) dispatch_queue_t serailQueue;
+@property (nonatomic, strong, readonly) _SJAVMediaPrefetcher *prefetcher;
 @end
 
 @implementation SJAVMediaPlaybackController
@@ -91,6 +97,8 @@ NS_ASSUME_NONNULL_BEGIN
 @synthesize prepareStatus = _prepareStatus;
 @synthesize pauseWhenAppDidEnterBackground = _pauseWhenAppDidEnterBackground;
 @synthesize registrar = _registrar;
+@synthesize prefetchMedia = _prefetchMedia;
+@synthesize prefetcher = _prefetcher;
 
 - (void)dealloc {
 #ifdef DEBUG
@@ -136,6 +144,7 @@ NS_ASSUME_NONNULL_BEGIN
     _bufferStatus = 0;
     _presentationSize = CGSizeZero;
     _prepareStatus = 0;
+    [_prefetcher cancel];
 }
 
 - (void)setMute:(BOOL)mute {
@@ -157,6 +166,21 @@ NS_ASSUME_NONNULL_BEGIN
     return [(SJAVPlayerLayerPresentView *)self.playerView videoGravity];
 }
 
+- (void)prepareToPlay {
+    if ( !_media ) return;
+    if ( _isPreparing ) return; _isPreparing = YES;
+    __weak typeof(self) _self = self;
+    dispatch_async(_serailQueue, ^{
+        __strong typeof(_self) self = _self;
+        if ( !self ) return;
+        if ( !self.media ) return;
+        self.playAsset = [self _getPlayAssetForMedia:self.media];
+        self.playAssetObserver = [[SJAVMediaPlayAssetPropertiesObserver alloc] initWithPlayerAsset:self.playAsset];
+        self.playAssetObserver.delegate = self;
+        [self.playAsset load];
+    });
+}
+
 static const char *kSJAVMediaPlayAsset = "kSJAVMediaPlayAsset";
 SJAVMediaPlayAsset *_Nullable getAVMediaPlayAsset(id<SJMediaModelProtocol> media) {
     return objc_getAssociatedObject(media, kSJAVMediaPlayAsset);
@@ -166,33 +190,24 @@ void setAVMediaPlayAsset(id<SJMediaModelProtocol> media, SJAVMediaPlayAsset *_Nu
     objc_setAssociatedObject(media, kSJAVMediaPlayAsset, playAsset, OBJC_ASSOCIATION_RETAIN_NONATOMIC);
 }
 
-- (void)prepareToPlay {
-    if ( !_media ) return;
-    if ( _isPreparing ) return; _isPreparing = YES;
-    __weak typeof(self) _self = self;
-    dispatch_async(_serailQueue, ^{
-        __strong typeof(_self) self = _self;
-        if ( !self ) return;
-        if ( !self.media ) return;
-        /// played by other media
-        if ( self.media.otherMedia ) {
-            self.playAsset = getAVMediaPlayAsset(self.media.otherMedia);
+- (SJAVMediaPlayAsset *)_getPlayAssetForMedia:(id<SJMediaModelProtocol>)media {
+    SJAVMediaPlayAsset *playAsset = nil;
+    /// create by other media
+    if ( media.otherMedia ) {
+        playAsset = getAVMediaPlayAsset(media.otherMedia);
+    }
+    else {
+        AVAsset *avAsset = nil;
+        if ( [(id)media respondsToSelector:@selector(avAsset)] ) {
+            avAsset = [(id<SJAVMediaModelProtocol>)media avAsset];
         }
-        else {
-            AVAsset *asset = nil;
-            if ( [(id)self.media respondsToSelector:@selector(avAsset)] ) {
-                asset = [(id<SJAVMediaModelProtocol>)self.media avAsset];
-            }
-            /// played by AVAsset
-            if ( asset ) self.playAsset = [[SJAVMediaPlayAsset alloc] initWithAVAsset:asset specifyStartTime:self.media.specifyStartTime];
-            /// played by URL
-            else self.playAsset = [[SJAVMediaPlayAsset alloc] initWithURL:self.media.mediaURL specifyStartTime:self.media.specifyStartTime];
-        }
-        setAVMediaPlayAsset(self.media, self.playAsset);
-        self.playAssetObserver = [[SJAVMediaPlayAssetPropertiesObserver alloc] initWithPlayerAsset:self.playAsset];
-        self.playAssetObserver.delegate = self;
-        [self.playAsset load];
-    });
+        /// create by AVAsset
+        if ( avAsset ) playAsset = [[SJAVMediaPlayAsset alloc] initWithAVAsset:avAsset specifyStartTime:media.specifyStartTime];
+        /// create by URL
+        else playAsset = [[SJAVMediaPlayAsset alloc] initWithURL:media.mediaURL specifyStartTime:media.specifyStartTime];
+    }
+    setAVMediaPlayAsset(media, playAsset);
+    return playAsset;
 }
 
 #pragma mark -
@@ -206,6 +221,12 @@ void setAVMediaPlayAsset(id<SJMediaModelProtocol> media, SJAVMediaPlayAsset *_Nu
     _currentTime = currentTime;
     if ( [self.delegate respondsToSelector:@selector(playbackController:currentTimeDidChange:)] ) {
         [self.delegate playbackController:self currentTimeDidChange:currentTime];
+    }
+    
+    
+#warning next .. 预加载
+    if ( _prefetchMedia && currentTime >= _duration * 0.9 ) {
+        [self.prefetcher prefetchAsset:[self _getPlayAssetForMedia:_prefetchMedia]];
     }
 }
 - (void)observer:(SJAVMediaPlayAssetPropertiesObserver *)observer bufferLoadedTimeDidChange:(NSTimeInterval)bufferLoadedTime {
@@ -419,5 +440,37 @@ void setAVMediaPlayAsset(id<SJMediaModelProtocol> media, SJAVMediaPlayAsset *_Nu
     }];
 }
 
+#pragma mark -
+- (_SJAVMediaPrefetcher *)prefetcher {
+    if ( _prefetcher ) return _prefetcher;
+    _prefetcher = [_SJAVMediaPrefetcher new];
+    return _prefetcher;
+}
+@end
+
+
+@implementation _SJAVMediaPrefetcher {
+    SJAVMediaPlayAsset *_asset;
+    SJAVMediaPlayAssetPropertiesObserver *_assetObserver;
+}
+- (void)prefetchAsset:(SJAVMediaPlayAsset *)asset {
+    if ( asset == _asset ) return;
+    [self cancel];
+    if ( !asset ) return;
+    _assetObserver = [[SJAVMediaPlayAssetPropertiesObserver alloc] initWithPlayerAsset:_asset];
+    _assetObserver.delegate = self;
+}
+- (void)cancel {
+    [_asset.player cancelPendingPrerolls];
+}
+- (void)observer:(SJAVMediaPlayAssetPropertiesObserver *)observer playerItemStatusDidChange:(AVPlayerItemStatus)playerItemStatus {
+    if ( playerItemStatus != AVPlayerStatusReadyToPlay ) return;
+    
+    [_asset.player prerollAtRate:1 completionHandler:^(BOOL finished) {
+#ifdef DEBUG
+        NSLog(@"%d - %s - %d", (int)__LINE__, __func__, finished);
+#endif
+    }];
+}
 @end
 NS_ASSUME_NONNULL_END

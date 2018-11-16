@@ -10,7 +10,6 @@
 #import "SJVideoPlayer.h"
 #import <SJRouter/SJRouter.h>
 #import <Masonry/Masonry.h>
-#import <SJFullscreenPopGesture/UIViewController+SJVideoPlayerAdd.h>
 #import <SJAttributesFactory/SJAttributeWorker.h>
 
 

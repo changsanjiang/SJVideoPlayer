@@ -585,41 +585,39 @@ static NSString *_kGestureState = @"state";
         switch (type) {
             case SJPlayerGestureType_Unknown: break;
             case SJPlayerGestureType_Pan: {
-                if ( SJDisablePlayerGestureTypes_Pan == (disableTypes & SJDisablePlayerGestureTypes_Pan ) ) {
+                if ( disableTypes & SJDisablePlayerGestureTypes_Pan )
                     return NO;
-                }
             }
                 break;
-                
             case SJPlayerGestureType_Pinch: {
-                if ( SJDisablePlayerGestureTypes_Pinch == (disableTypes & SJDisablePlayerGestureTypes_Pinch ) ) {
+                if ( disableTypes & SJDisablePlayerGestureTypes_Pinch )
                     return NO;
-                }
             }
                 break;
             case SJPlayerGestureType_DoubleTap: {
-                if ( SJDisablePlayerGestureTypes_DoubleTap == (disableTypes & SJDisablePlayerGestureTypes_DoubleTap) ) {
+                if ( disableTypes & SJDisablePlayerGestureTypes_DoubleTap )
                     return NO;
-                }
             }
                 break;
             case SJPlayerGestureType_SingleTap: {
-                if ( SJDisablePlayerGestureTypes_SingleTap == (disableTypes & SJDisablePlayerGestureTypes_SingleTap ) ) {
+                if ( disableTypes & SJDisablePlayerGestureTypes_SingleTap )
                     return NO;
-                }
             }
                 break;
         }
         
-//        if ( [self playStatus_isUnknown] ) return NO;
-        if ( [self playStatus_isInactivity_ReasonPlayFailed] ) return NO;
+        if ( [self playStatus_isInactivity_ReasonPlayFailed] )
+            return NO;
         
         if ( SJPlayerGestureType_Pan == type &&
-            self.isPlayOnScrollView &&
-            !self.rotationManager.isFullscreen ) return NO;
+             self.isPlayOnScrollView &&
+            !self.rotationManager.isFullscreen )
+            return NO;
         
-        if ( self.controlLayerDataSource &&
-            ![self.controlLayerDataSource triggerGesturesCondition:[gesture locationInView:gesture.view]] ) return NO;
+        if ( type != SJPlayerGestureType_Pinch &&
+             self.controlLayerDataSource &&
+            ![self.controlLayerDataSource triggerGesturesCondition:[gesture locationInView:gesture.view]] )
+            return NO;
         
         return YES;
     };
@@ -1160,7 +1158,7 @@ static NSString *_kGestureState = @"state";
 #pragma mark -
 
 // 1.
-- (void)setURLAsset:(nullable SJVideoPlayerURLAsset *)URLAsset {
+- (void)setURLAsset:(nullable SJVideoPlayerURLAsset *)URLAsset { 
     if ( self.URLAsset ) {
         if ( self.assetDeallocExeBlock ) self.assetDeallocExeBlock(self);
     }

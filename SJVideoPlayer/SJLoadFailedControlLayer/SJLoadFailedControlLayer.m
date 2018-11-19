@@ -85,6 +85,12 @@ SJEdgeControlButtonItemTag const SJLoadFailedControlLayerTopItem_Back = 10000;
     [self.topAdapter reload];
 }
 
+- (void)_updateItems:(__kindof SJBaseVideoPlayer *)videoPlayer {
+    SJEdgeControlButtonItem *backItem = [_topAdapter itemForTag:SJLoadFailedControlLayerTopItem_Back];
+    backItem.hidden = videoPlayer.isPlayOnScrollView && !videoPlayer.isFullScreen;
+    [_topAdapter reload];
+}
+
 - (void)clickedBackItem:(SJEdgeControlButtonItem *)item {
     if ( _videoPlayer.useFitOnScreenAndDisableRotation ) {
         if ( _videoPlayer.isFitOnScreen ) {
@@ -181,12 +187,23 @@ SJEdgeControlButtonItemTag const SJLoadFailedControlLayerTopItem_Back = 10000;
 - (void)installedControlViewToVideoPlayer:(__kindof SJBaseVideoPlayer *)videoPlayer {
     _videoPlayer = videoPlayer;
     [videoPlayer.view layoutIfNeeded];
-    
+    [self _updateItems:videoPlayer];
     [self _show:_topContainerView animated:NO];
 }
 
 - (void)videoPlayer:(__kindof SJBaseVideoPlayer *)videoPlayer willRotateView:(BOOL)isFull {
-    [self.topAdapter reload];
+    [self _updateItems:videoPlayer];
+}
+
+///  在`tableView`或`collectionView`上将要显示的时候调用.
+- (void)videoPlayerWillAppearInScrollView:(SJBaseVideoPlayer *)videoPlayer {
+    videoPlayer.view.hidden = NO;
+}
+
+///  在`tableView`或`collectionView`上将要消失的时候调用.
+- (void)videoPlayerWillDisappearInScrollView:(SJBaseVideoPlayer *)videoPlayer {
+    [videoPlayer pause];
+    videoPlayer.view.hidden = YES;
 }
 
 #pragma mark -

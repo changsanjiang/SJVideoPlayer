@@ -50,9 +50,6 @@
 }
 
 - (BOOL)gestureRecognizerShouldBegin:(UIGestureRecognizer *)gestureRecognizer {
-    if ( gestureRecognizer == self.pinchGR ) {
-        if ( self.pinchGR.numberOfTouches <= 1 ) return NO;
-    }
     SJPlayerGestureType type = SJPlayerGestureType_Unknown;
     if ( gestureRecognizer == self.singleTap ) type = SJPlayerGestureType_SingleTap;
     else if ( gestureRecognizer == self.doubleTap ) type = SJPlayerGestureType_DoubleTap;
@@ -84,7 +81,7 @@
     if ( _singleTap ) return _singleTap;
     _singleTap = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(handleSingleTap:)];
     _singleTap.delegate = self;
-//    _singleTap.delaysTouchesBegan = YES;
+    _singleTap.delaysTouchesBegan = YES;
     return _singleTap;
 }
 - (UITapGestureRecognizer *)doubleTap {
@@ -106,7 +103,6 @@
     if ( _pinchGR ) return _pinchGR;
     _pinchGR = [[UIPinchGestureRecognizer alloc] initWithTarget:self action:@selector(handlePinch:)];
     _pinchGR.delegate = self;
-    _pinchGR.delaysTouchesBegan = YES;
     return _pinchGR;
 }
 

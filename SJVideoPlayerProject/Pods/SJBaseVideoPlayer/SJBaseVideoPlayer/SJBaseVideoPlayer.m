@@ -1092,6 +1092,10 @@ static NSString *_kGestureState = @"state";
 #pragma mark - 控制
 @implementation SJBaseVideoPlayer (PlayControl)
 
+- (void)switchTheCurrentlyPlayingVideoDefinitionByURL:(NSURL *)URL {
+    [self.playbackController switchTheCurrentlyPlayingVideoDefinitionByURL:URL];
+}
+
 - (void)playbackController:(id<SJMediaPlaybackController>)controller prepareToPlayStatusDidChange:(SJMediaPlaybackPrepareStatus)prepareStatus {
     switch ( prepareStatus ) {
         case SJMediaPlaybackPrepareStatusUnknown: break;
@@ -1160,6 +1164,12 @@ static NSString *_kGestureState = @"state";
     }
 }
 
+- (void)playbackController:(id<SJMediaPlaybackController>)controller switchVideoDefinition:(NSURL *)URL statusDidChange:(SJMediaPlaybackSwitchDefinitionStatus)status {
+#ifdef DEBUG
+    NSLog(@"%d - -[%@ %s]", (int)__LINE__, NSStringFromClass([self class]), (char *)_cmd);
+#endif
+}
+
 #pragma mark -
 
 // 1.
@@ -1201,19 +1211,6 @@ static NSString *_kGestureState = @"state";
 
 - (nullable SJVideoPlayerURLAsset *)URLAsset {
     return _URLAsset;
-}
-
-- (void)setPrefetchAsset:(nullable SJVideoPlayerURLAsset *)prefetchAsset {
-    if ( [self.playbackController respondsToSelector:@selector(setPrefetchMedia:)] ) {
-        self.playbackController.prefetchMedia = prefetchAsset;
-    }
-}
-
-- (nullable SJVideoPlayerURLAsset *)prefetchAsset {
-    if ( [self.playbackController respondsToSelector:@selector(prefetchMedia)] ) {
-        return (id)self.playbackController.prefetchMedia;
-    }
-    return nil;
 }
 
 // 2.1

@@ -13,7 +13,8 @@
 @interface AppDelegate ()
 
 @end
-
+// 200, 450, 850, 1200, 2000
+// http://asp.cntv.qingcdn.com/asp/hls/main/0303000a/3/default/72c4a73d7294652f71f5fbdabb82b3fb/2000.m3u8
 @implementation AppDelegate
 
 

@@ -340,6 +340,7 @@ SJEdgeControlButtonItemTag const SJEdgeControlLayerCenterItem_Replay = 10000;
 /// 生成预览图片
 - (void)_generatePreviewImagesIfNeededForVideoPlayer:(__kindof SJBaseVideoPlayer *)videoPlayer videoSize:(CGSize)size {
     if ( _videoPlayer.useFitOnScreenAndDisableRotation ) return;
+    if ( videoPlayer.URLAsset.isM3u8 ) return;
     if ( !_generatePreviewImages ) return;
     if ( _hasBeenGeneratedPreviewImages ) return;
     CGSize previewItemSize = CGSizeMake(150, 150);

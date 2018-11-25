@@ -56,7 +56,8 @@
     [testItem addTarget:self action:@selector(test)];
     
     
-    _player.URLAsset = [[SJVideoPlayerURLAsset alloc] initWithURL:[NSBundle.mainBundle URLForResource:@"play" withExtension:@"mp4"]];
+//    _player.URLAsset = [[SJVideoPlayerURLAsset alloc] initWithURL:[NSBundle.mainBundle URLForResource:@"play" withExtension:@"mp4"]];
+    _player.URLAsset = [[SJVideoPlayerURLAsset alloc] initWithURL:[NSURL URLWithString:@"http://asp.cntv.qingcdn.com/asp/hls/main/0303000a/3/default/72c4a73d7294652f71f5fbdabb82b3fb/200.m3u8"]];
     _player.URLAsset.title = @"Test Title Test TitlTest Title Test Title";
     _player.URLAsset.alwaysShowTitle = YES;
     _player.enableFilmEditing = YES;
@@ -102,13 +103,15 @@
     NSLog(@"%d - %s", (int)__LINE__, __func__);
 #endif
     
-    [_player showTitle:@"3秒后测试加载失败" duration:3];
-    dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(3 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
-        self.player.URLAsset = [[SJVideoPlayerURLAsset alloc] initWithURL:[NSURL URLWithString:@"http://www.tetet.com"]];
-    });
+//    [_player showTitle:@"3秒后测试加载失败" duration:3];
+//    dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(3 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
+//        self.player.URLAsset = [[SJVideoPlayerURLAsset alloc] initWithURL:[NSURL URLWithString:@"http://www.tetet.com"]];
+//    });
   
 //    [_player showTitle:@"3秒后测试充满屏幕的情况" duration:3];
 //    [self presentViewController:[ViewControllerTestPresent new] animated:YES completion:nil];
+    
+    [_player switchTheCurrentlyPlayingVideoDefinitionByURL:[NSURL URLWithString:@"http://asp.cntv.qingcdn.com/asp/hls/main/0303000a/3/default/72c4a73d7294652f71f5fbdabb82b3fb/2000.m3u8"]];
 }
 
 /// test

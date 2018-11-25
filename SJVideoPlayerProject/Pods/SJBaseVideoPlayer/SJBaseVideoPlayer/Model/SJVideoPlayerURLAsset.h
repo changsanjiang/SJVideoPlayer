@@ -20,6 +20,7 @@ NS_ASSUME_NONNULL_BEGIN
 - (instancetype)initWithURL:(NSURL *)URL;
 @property (nonatomic, strong) SJPlayModel *playModel;
 @property (nonatomic, readonly) BOOL isM3u8;
+@property (nonatomic, readonly) BOOL isMP3;
 
 - (instancetype)initWithOtherAsset:(SJVideoPlayerURLAsset *)otherMedia playModel:(nullable __kindof SJPlayModel *)playModel;
 @property (nonatomic, weak, readonly, nullable) SJVideoPlayerURLAsset *otherMedia;

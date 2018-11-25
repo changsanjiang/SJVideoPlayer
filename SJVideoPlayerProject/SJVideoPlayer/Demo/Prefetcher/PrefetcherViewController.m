@@ -39,12 +39,10 @@
     }];
 
     _player.URLAsset = [[SJVideoPlayerURLAsset alloc] initWithURL:[NSBundle.mainBundle URLForResource:@"play" withExtension:@"mp4"]];
-    
-    _player.prefetchAsset = [[SJVideoPlayerURLAsset alloc] initWithURL:[NSURL URLWithString:@"http://pi69jq07w.bkt.clouddn.com/1542004625489637.mp4"]];
 }
 
 - (IBAction)next:(id)sender {
-    _player.URLAsset = _player.prefetchAsset;
+    
 }
 
 @end

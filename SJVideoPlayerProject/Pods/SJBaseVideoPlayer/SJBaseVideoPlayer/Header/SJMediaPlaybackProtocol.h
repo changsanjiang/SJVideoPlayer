@@ -16,13 +16,13 @@
 
 @protocol SJMediaPlaybackControllerDelegate, SJMediaModelProtocol;
 
-typedef NS_ENUM(NSUInteger, SJMediaPlaybackPrepareStatus) {
+typedef NS_ENUM(NSInteger, SJMediaPlaybackPrepareStatus) {
     SJMediaPlaybackPrepareStatusUnknown = AVPlayerItemStatusUnknown,
     SJMediaPlaybackPrepareStatusReadyToPlay =  AVPlayerItemStatusReadyToPlay,
     SJMediaPlaybackPrepareStatusFailed = AVPlayerItemStatusFailed,
 };
 
-typedef NS_ENUM(NSUInteger, SJMediaPlaybackSwitchDefinitionStatus) {
+typedef NS_ENUM(NSInteger, SJMediaPlaybackSwitchDefinitionStatus) {
     SJMediaPlaybackSwitchDefinitionStatusUnknown,
     SJMediaPlaybackSwitchDefinitionStatusSwitching,
     SJMediaPlaybackSwitchDefinitionStatusFinished,

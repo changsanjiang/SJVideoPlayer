@@ -58,6 +58,8 @@
     
 //    _player.URLAsset = [[SJVideoPlayerURLAsset alloc] initWithURL:[NSBundle.mainBundle URLForResource:@"play" withExtension:@"mp4"]];
     _player.URLAsset = [[SJVideoPlayerURLAsset alloc] initWithURL:[NSURL URLWithString:@"http://asp.cntv.qingcdn.com/asp/hls/main/0303000a/3/default/72c4a73d7294652f71f5fbdabb82b3fb/200.m3u8"]];
+    
+//    _player.URLAsset = [[SJVideoPlayerURLAsset alloc] initWithURL:[NSURL URLWithString:@"https://m10.music.126.net/20181126002247/0f516e800b013fca887efc4032a21ea0/ymusic/9855/f6dc/3553/57828641c5a2c629ec09c462f151132b.mp3"]];
     _player.URLAsset.title = @"Test Title Test TitlTest Title Test Title";
     _player.URLAsset.alwaysShowTitle = YES;
     _player.enableFilmEditing = YES;
@@ -69,7 +71,6 @@
         NSLog(@"%d - %s", (int)__LINE__, __func__);
 #endif
     }];
-    
     
     SJVideoPlayerMoreSetting *mm1 = [[SJVideoPlayerMoreSetting alloc] initWithTitle:@"测试2" image:[UIImage imageNamed:@"avatar"] showTowSetting:YES twoSettingTopTitle:@"测试二级标题" twoSettingItems:@[mm, mm, mm, mm, mm, [[SJVideoPlayerMoreSettingSecondary alloc] initWithTitle:@"二级" image:[UIImage imageNamed:@"avatar"] clickedExeBlock:^(SJVideoPlayerMoreSetting * _Nonnull model) {
 #ifdef DEBUG

@@ -12,11 +12,7 @@
 #import "SJAVMediaPlayAsset+SJAVMediaPlaybackControllerAdd.h"
 #import "SJVideoPlayerRegistrar.h"
 #import "SJAVMediaPlayAsset.h"
-#if __has_include(<SJObserverHelper/NSObject+SJObserverHelper.h>)
-#import <SJObserverHelper/NSObject+SJObserverHelper.h>
-#else
-#import "NSObject+SJObserverHelper.h"
-#endif
+#import "SJAVMediaPresentView.h"
 
 NS_ASSUME_NONNULL_BEGIN
 @interface SJAVMediaPlayAssetPrefetcher : NSObject
@@ -28,66 +24,10 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic, copy, nullable) void(^playerItemStatusDidChangeExeBlock)(AVPlayerItemStatus status);
 @end
 
-@interface SJAVPlayerLayerPresentView: UIView
-/// default is AVLayerVideoGravityResizeAspect
-@property (nonatomic, strong) AVLayerVideoGravity videoGravity;
-@property (nonatomic, strong, nullable) AVPlayer *player;
-@property (nonatomic, copy, nullable) void(^readyForDisplayExeBlock)(SJAVPlayerLayerPresentView *view);
-@end
-
-@implementation SJAVPlayerLayerPresentView
-#ifdef SJ_MAC
-- (void)dealloc {
-    NSLog(@"%d - %s", (int)__LINE__, __func__);
-}
-#endif
-
-+ (Class)layerClass {
-    return [AVPlayerLayer class];
-}
-
-- (AVPlayerLayer *)avLayer {
-    return (AVPlayerLayer *)self.layer;
-}
-
-static NSString *kReadyForDisplay = @"readyForDisplay";
-- (instancetype)initWithFrame:(CGRect)frame {
-    self = [super initWithFrame:frame];
-    if ( !self ) return nil;
-    [self.layer sj_addObserver:self forKeyPath:@"readyForDisplay" context:&kReadyForDisplay];
-    return self;
-}
-
-- (void)observeValueForKeyPath:(nullable NSString *)keyPath ofObject:(nullable id)object change:(nullable NSDictionary<NSKeyValueChangeKey,id> *)change context:(nullable void *)context {
-    if ( context == &kReadyForDisplay ) {
-        if ( self.avLayer.isReadyForDisplay && _readyForDisplayExeBlock ) _readyForDisplayExeBlock(self);
-    }
-}
-
-- (void)setPlayer:(nullable AVPlayer *)player {
-    if ( player == self.avLayer.player ) return;
-    self.avLayer.player = player;
-}
-
-- (nullable AVPlayer *)player {
-    return self.avLayer.player;
-}
-
-- (void)setVideoGravity:(AVLayerVideoGravity)videoGravity {
-    if ( videoGravity == self.videoGravity ) return;
-    [self avLayer].videoGravity = videoGravity;
-}
-
-- (AVLayerVideoGravity)videoGravity {
-    return [self avLayer].videoGravity;
-}
-
-@end
-
-
 @interface SJAVMediaPlaybackController()<SJAVMediaPlayAssetPropertiesObserverDelegate>
 @property (nonatomic, strong, readonly) SJVideoPlayerRegistrar *registrar;
 
+@property (nonatomic, strong, readonly) SJAVMediaPresentView *presentView;
 @property (nonatomic, strong, nullable) SJAVMediaPlayAssetPrefetcher *prefetcher;
 @property (nonatomic, strong, nullable) SJAVMediaPlayAssetPropertiesObserver *playAssetObserver;
 @property (nonatomic, strong, nullable) SJAVMediaPlayAsset *playAsset;
@@ -129,13 +69,13 @@ static NSString *kReadyForDisplay = @"readyForDisplay";
     self = [super init];
     if ( !self ) return nil;
     _rate = 1;
+    _presentView = [SJAVMediaPresentView new];
     [self registrar];
     return self;
 }
 
-- (SJAVPlayerLayerPresentView *)playerView {
-    if ( _playerView ) return _playerView;
-    return _playerView = [SJAVPlayerLayerPresentView new];
+- (UIView *)playerView {
+    return _presentView;
 }
 
 - (void)setMedia:(nullable id<SJMediaModelProtocol>)media {
@@ -167,24 +107,24 @@ static NSString *kReadyForDisplay = @"readyForDisplay";
 }
 
 - (void)setVideoGravity:(SJVideoGravity)videoGravity {
-    ((SJAVPlayerLayerPresentView *)self.playerView).videoGravity = videoGravity;
+    self.presentView.presenters.lastObject.videoGravity = videoGravity;
 }
 
 - (SJVideoGravity)videoGravity {
-    return [(SJAVPlayerLayerPresentView *)self.playerView videoGravity];
+    return self.presentView.presenters.lastObject.videoGravity;
 }
 
 - (void)prepareToPlay {
     if ( !_media ) return;
     if ( _isPreparing ) return; _isPreparing = YES;
-    self.playAsset = [self _getPlayAssetForMedia:self.media];
-    self.playAssetObserver = [[SJAVMediaPlayAssetPropertiesObserver alloc] initWithPlayerAsset:self.playAsset];
-    self.playAssetObserver.delegate = self;
-    [self.playAsset load];
+    _playAsset = [self _getPlayAssetForMedia:_media];
+    _playAssetObserver = [[SJAVMediaPlayAssetPropertiesObserver alloc] initWithPlayerAsset:_playAsset];
+    _playAssetObserver.delegate = self;
+    [_playAsset load];
 }
 
+static const char *key = "kSJAVMediaPlayAsset";
 - (SJAVMediaPlayAsset *)_getPlayAssetForMedia:(id<SJMediaModelProtocol>)media {
-    static const char *key = "kSJAVMediaPlayAsset";
     SJAVMediaPlayAsset *playAsset = objc_getAssociatedObject(media.otherMedia?:media, key);
     if ( !playAsset ) {
         AVAsset *avAsset = nil;
@@ -198,6 +138,10 @@ static NSString *kReadyForDisplay = @"readyForDisplay";
     }
     objc_setAssociatedObject(media, key, playAsset, OBJC_ASSOCIATION_RETAIN_NONATOMIC);
     return playAsset;
+}
+
+- (void)_refreshPlayAssetForMedia:(id<SJMediaModelProtocol>)media playAsset:(SJAVMediaPlayAsset *)playAsset {
+    objc_setAssociatedObject(media, key, playAsset, OBJC_ASSOCIATION_RETAIN_NONATOMIC);
 }
 
 - (void)switchTheCurrentlyPlayingVideoDefinitionByURL:(NSURL *)URL {
@@ -214,22 +158,32 @@ static NSString *kReadyForDisplay = @"readyForDisplay";
             case AVPlayerItemStatusUnknown: break;
             case AVPlayerItemStatusReadyToPlay: {
                 /// 播放时间一到, 瞬间切换
-                self.prefetcher.playAsset.player.muted = YES;
                 CMTime time = self.playAsset.playerItem.currentTime;
-#warning next ...
+#warning next ... 1. 解决延迟问题, 以及2.media关联的playAsset的问题
 //                time = CMTimeAdd(time, CMTimeMakeWithSeconds(3, NSEC_PER_SEC));
                 [self.prefetcher.playAsset.playerItem seekToTime:time toleranceBefore:kCMTimeZero toleranceAfter:kCMTimeZero completionHandler:^(BOOL finished) {
+                    __strong typeof(_self) self = _self;
+                    if ( !self ) return ;
                     if ( !finished ) {
                         [self.delegate playbackController:self
                                     switchVideoDefinition:URL
                                           statusDidChange:SJMediaPlaybackSwitchDefinitionStatusFailed];
                     }
                     else {
-                        self.media.mediaURL = URL;
-                        self.playAsset = self.prefetcher.playAsset;
-                        self.playAssetObserver = self.prefetcher.playAssetObserver;
-                        ((SJAVPlayerLayerPresentView *)self.playerView).player = self.playAsset.player;
-                        [self.playAsset.player play];
+                        self.prefetcher.playAsset.player.muted = YES;
+                        id<SJAVPlayerLayerPresenter> presenter = [self.presentView createPresenterForPlayer:self.prefetcher.playAsset.player];
+                        [self.presentView insertPresenter:presenter atIndex:0];
+                        presenter.isReadyForDisplayExeBlock = ^(id<SJAVPlayerLayerPresenter>  _Nonnull presenter) {
+                            __strong typeof(_self) self = _self;
+                            if ( !self ) return ;
+                            self.prefetcher.playAsset.player.muted = NO;
+                            self.media.mediaURL = URL;
+                            [self _refreshPlayAssetForMedia:self.media playAsset:self.prefetcher.playAsset];
+                            self.playAsset = self.prefetcher.playAsset;
+                            self.playAssetObserver = self.prefetcher.playAssetObserver;
+                            [self.presentView removePresenter:self.presentView.presenters.lastObject];
+                            [self.playAsset.player play];
+                        };
                     }
                 }];
             }
@@ -278,38 +232,36 @@ static NSString *kReadyForDisplay = @"readyForDisplay";
 - (void)observer:(SJAVMediaPlayAssetPropertiesObserver *)observer playerItemStatusDidChange:(AVPlayerItemStatus)playerItemStatus {
     _isPreparing = NO;
     _prepareStatus = (SJMediaPlaybackPrepareStatus)playerItemStatus;
-    if ( playerItemStatus == AVPlayerItemStatusReadyToPlay ) {
-        if ( self.registrar.state != SJVideoPlayerAppState_Background ) {
-            SJAVPlayerLayerPresentView *presentView = self.playerView;
-            presentView.player = self.playAsset.player;
-            __weak typeof(self) _self = self;
-            presentView.readyForDisplayExeBlock = ^(SJAVPlayerLayerPresentView * _Nonnull view) {
-                __strong typeof(_self) self = _self;
-                if ( !self ) return ;
-                if ( [self.delegate respondsToSelector:@selector(playbackController:prepareToPlayStatusDidChange:)] ) {
-                    [self.delegate playbackController:self prepareToPlayStatusDidChange:self.prepareStatus];
-                }
-            };
-        }
-        
-        /// seek to specify start time
-        if ( 0 != self.media.specifyStartTime ) {
-            __weak typeof(self) _self = self;
-            [self seekToTime:self.media.specifyStartTime completionHandler:^(BOOL finished) {
-                __strong typeof(_self) self = _self;
-                if ( !self ) return ;
-                if ( [self.delegate respondsToSelector:@selector(playbackController:prepareToPlayStatusDidChange:)] ) {
-                    [self.delegate playbackController:self prepareToPlayStatusDidChange:self.prepareStatus];
-                }
-            }];
-            return;
+    
+    if ( playerItemStatus != AVPlayerStatusReadyToPlay ||
+         self.registrar.state == SJVideoPlayerAppState_Background ) {
+        if ( [self.delegate respondsToSelector:@selector(playbackController:prepareToPlayStatusDidChange:)] ) {
+            [self.delegate playbackController:self prepareToPlayStatusDidChange:_prepareStatus];
         }
         return;
     }
     
-    if ( [self.delegate respondsToSelector:@selector(playbackController:prepareToPlayStatusDidChange:)] ) {
-        [self.delegate playbackController:self prepareToPlayStatusDidChange:_prepareStatus];
-    }
+    __weak typeof(self) _self = self;
+    /// seek to specify start time
+    [self seekToTime:self.media.specifyStartTime completionHandler:^(BOOL finished) {
+        __strong typeof(_self) self = _self;
+        if ( !self ) return ;
+//        if ( ![self.playAsset.URLAsset tracksWithMediaType:AVMediaTypeVideo].firstObject ) {
+//            if ( [self.delegate respondsToSelector:@selector(playbackController:prepareToPlayStatusDidChange:)] ) {
+//                [self.delegate playbackController:self prepareToPlayStatusDidChange:(NSInteger)playerItemStatus];
+//            }
+//            return;
+//        }
+        id<SJAVPlayerLayerPresenter> presenter = [self.presentView createPresenterForPlayer:self.playAsset.player];
+        [self.presentView  removeAllPresenterAndAddNewPresenter:presenter];
+        presenter.isReadyForDisplayExeBlock = ^(id<SJAVPlayerLayerPresenter>  _Nonnull presenter) {
+            __strong typeof(_self) self = _self;
+            if ( !self ) return ;
+            if ( [self.delegate respondsToSelector:@selector(playbackController:prepareToPlayStatusDidChange:)] ) {
+                [self.delegate playbackController:self prepareToPlayStatusDidChange:(NSInteger)playerItemStatus];
+            }
+        };
+    }];
 }
 - (void)assetLoadIsCompletedForObserver:(SJAVMediaPlayAssetPropertiesObserver *)observer { /* nothing */ }
 - (void)playDidToEndForObserver:(SJAVMediaPlayAssetPropertiesObserver *)observer {
@@ -340,9 +292,9 @@ static NSString *kReadyForDisplay = @"readyForDisplay";
 - (void)stop {
     [_playAsset.player pause];
     
-    if ( !self.media.otherMedia ) {
-        [((SJAVPlayerLayerPresentView *)self.playerView).player replaceCurrentItemWithPlayerItem:nil];
-        ((SJAVPlayerLayerPresentView *)self.playerView).player = nil;
+    if ( !_media.otherMedia ) {
+        [_playAsset.player replaceCurrentItemWithPlayerItem:nil];
+        [_presentView removeAllPresenter];
     }
 
     [self _cancelOperations];
@@ -390,7 +342,9 @@ static NSString *kReadyForDisplay = @"readyForDisplay";
     _registrar.willEnterForeground = ^(SJVideoPlayerRegistrar * _Nonnull registrar) {
         __strong typeof(_self) self = _self;
         if ( !self ) return ;
-        if ( self.prepareStatus == SJMediaPlaybackPrepareStatusReadyToPlay ) ((SJAVPlayerLayerPresentView *)self.playerView).player = self.playAsset.player;
+        if ( self.prepareStatus == SJMediaPlaybackPrepareStatusReadyToPlay ) {
+            [self.presentView removeAllPresenterAndAddNewPresenter:[self.presentView createPresenterForPlayer:self.playAsset.player]];
+        }
     };
     
     _registrar.didEnterBackground = ^(SJVideoPlayerRegistrar * _Nonnull registrar) {
@@ -412,7 +366,7 @@ static NSString *kReadyForDisplay = @"readyForDisplay";
              1. 需要设置 videoPlayer.pauseWhenAppDidEnterBackground = NO; 该值默认为YES, 即App进入后台默认暂停.
              2. 前往 `TARGETS` -> `Capability` -> enable `Background Modes` -> select this mode `Audio, AirPlay, and Picture in Picture`
              */
-            ((SJAVPlayerLayerPresentView *)self.playerView).player = nil;
+            [self.presentView removeAllPresenter];
         }
     };
     return _registrar;

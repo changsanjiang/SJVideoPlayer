@@ -1222,47 +1222,33 @@ static NSString *_kGestureState = @"state";
         [self.controlLayerDelegate videoPlayer:self currentTime:self.currentTime currentTimeStr:self.currentTimeStr totalTime:self.totalTime totalTimeStr:self.totalTimeStr];
     }
     
-    __weak typeof(self) _self = self;
-    void(^_inner_play_block)(void) = ^ {
-        __strong typeof(_self) self = _self;
-        if ( !self ) return;
-        if ( [self.controlLayerDelegate respondsToSelector:@selector(loadCompletion:)] ) {
-            [self.controlLayerDelegate loadCompletion:self];
-        }
-        
-        self.playStatus = SJVideoPlayerPlayStatusReadyToPlay;
-        
-        if ( self.registrar.state == SJVideoPlayerAppState_Background &&
-            self.pauseWhenAppDidEnterBackground ) {
-            [self pause:SJVideoPlayerPausedReasonPause];
-            return;
-        }
-        
-        if ( self.operationOfInitializing ) {
-            self.operationOfInitializing(self);
-            self.operationOfInitializing = nil;
-        }
-        else if ( self.autoPlay ) {
-            if ( self.isPlayOnScrollView ) {
-                if ( self.isScrollAppeared ) [self play];
-                else [self pause];
-            }
-            else {
-                [self play];
-            }
-        }
-        
-        if ( !self.isLockedScreen ) [self.displayRecorder resetInitialization];
-    };
+    if ( [self.controlLayerDelegate respondsToSelector:@selector(loadCompletion:)] ) {
+        [self.controlLayerDelegate loadCompletion:self];
+    }
     
-    if ( self.playbackController.bufferLoadedTime > self.playbackController.currentTime + 3 ) {
-        _inner_play_block();
+    self.playStatus = SJVideoPlayerPlayStatusReadyToPlay;
+    
+    if ( self.registrar.state == SJVideoPlayerAppState_Background &&
+        self.pauseWhenAppDidEnterBackground ) {
+        [self pause:SJVideoPlayerPausedReasonPause];
+        return;
     }
-    else {
-        dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(0.9 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
-            _inner_play_block();
-        });
+    
+    if ( self.operationOfInitializing ) {
+        self.operationOfInitializing(self);
+        self.operationOfInitializing = nil;
     }
+    else if ( self.autoPlay ) {
+        if ( self.isPlayOnScrollView ) {
+            if ( self.isScrollAppeared ) [self play];
+            else [self pause];
+        }
+        else {
+            [self play];
+        }
+    }
+    
+    if ( !self.isLockedScreen ) [self.displayRecorder resetInitialization];
 }
 
 // 2.2
@@ -1590,7 +1576,7 @@ static NSString *_kGestureState = @"state";
 /// You should call it when view did appear
 - (void)vc_viewDidAppear {
     if ( !self.isPlayOnScrollView || (self.isPlayOnScrollView && self.isScrollAppeared) ) {
-        [self play];
+        if ( ![self playStatus_isPlaying] ) [self play];
     }
     self.vc_isDisappeared = NO;
 }

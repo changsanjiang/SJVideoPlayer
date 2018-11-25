@@ -809,7 +809,8 @@ SJEdgeControlButtonItemTag const SJEdgeControlLayerCenterItem_Replay = 10000;
 /// 拖拽将要触发
 - (void)_draggingWillTriggerForVideoPlayer:(__kindof SJBaseVideoPlayer *)videoPlayer {
     if (  _videoPlayer.isFullScreen &&
-         !_videoPlayer.URLAsset.isM3u8 ) {
+        !_videoPlayer.URLAsset.isM3u8 &&
+        !_videoPlayer.URLAsset.isMP3 ) {
         self.draggingProgressView.style = SJVideoPlayerDraggingProgressViewStylePreviewProgress;
     }
     else self.draggingProgressView.style = SJVideoPlayerDraggingProgressViewStyleArrowProgress;
@@ -842,7 +843,7 @@ SJEdgeControlButtonItemTag const SJEdgeControlLayerCenterItem_Replay = 10000;
     [videoPlayer seekToTime:_draggingProgressView.shiftProgress * videoPlayer.totalTime completionHandler:^(BOOL finished) {
         __strong typeof(_self) self = _self;
         if ( !self ) return;
-        [self.videoPlayer play];
+        if ( ![self.videoPlayer playStatus_isPlaying] )[self.videoPlayer play];
     }];
     [self _hidden:_draggingProgressView animated:YES];
 }

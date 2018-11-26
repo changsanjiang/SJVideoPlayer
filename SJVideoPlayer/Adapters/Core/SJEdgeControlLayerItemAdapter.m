@@ -11,10 +11,11 @@
 
 NS_ASSUME_NONNULL_BEGIN
 @interface SJCollectionViewLayout : UICollectionViewLayout
+@property (nonatomic, readonly) CGSize maxSizeOfFrameLayout;
+
+@property (nonatomic, copy, nullable) void(^maxSizeDidUpdateOfFrameLayoutExeBlock)(CGSize size);
 @property (nonatomic, copy, nullable) NSArray<SJEdgeControlButtonItem *> *items;
 @property (nonatomic) SJAdapterItemsLayoutType layoutType;
-@property (nonatomic, copy, nullable) void(^maxSizeDidUpdateOfFrameLayoutExeBlock)(CGSize size);
-@property (nonatomic, readonly) CGSize maxSizeOfFrameLayout;
 @end
 
 @implementation SJCollectionViewLayout {
@@ -332,8 +333,10 @@ NS_ASSUME_NONNULL_BEGIN
     return YES;
 }
 - (BOOL)itemContainsPoint:(CGPoint)point {
-    for ( UICollectionViewLayoutAttributes *atr in _layout->_layoutAttributes ) {
-        if ( CGRectContainsPoint(atr.frame, point) )
+    for ( int i = 0 ; i < _layout -> _layoutAttributes.count ; ++ i ) {
+        UICollectionViewLayoutAttributes *atr = _layout->_layoutAttributes[i];
+        if ( CGRectContainsPoint(atr.frame, point) &&
+             ![self itemAtIndex:i].isHidden )
             return YES;
     }
     return NO;

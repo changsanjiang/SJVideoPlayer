@@ -231,6 +231,7 @@ NS_ASSUME_NONNULL_BEGIN
 - (CGFloat)_calculateAnimaDuration:(CGFloat)add {
     add = ABS(add);
     CGFloat sum = _maxValue - _minValue;
+    if ( isnan(sum) || sum <= 0 ) sum = 0.001;
     CGFloat scale = add / sum;
     return _animaMaxDuration * scale + 0.08/**/;
 }
@@ -331,6 +332,7 @@ NS_ASSUME_NONNULL_BEGIN
 - (void)_needUpdateTraceLayout {
     CGFloat width = self.frame.size.width;
     CGFloat sum = _maxValue - _minValue;
+    if ( isnan(sum) || sum <= 0 ) sum = 0.001;
     _traceImageView.frame = CGRectMake(0, 0, width * (_value - _minValue) / sum, _trackHeight);
     [self _needUpdateThumbLayout];
 }

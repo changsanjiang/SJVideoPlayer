@@ -1216,11 +1216,21 @@ static NSString *_kGestureState = @"state";
 // 2.1
 - (void)_playerReadyToPlay {
     
-    if ( ![self playStatus_isPrepare] ) return;
+    if ( ![self playStatus_isPrepare] )
+        return;
     
     if ( [self.controlLayerDelegate respondsToSelector:@selector(videoPlayer:currentTime:currentTimeStr:totalTime:totalTimeStr:)] ) {
         [self.controlLayerDelegate videoPlayer:self currentTime:self.currentTime currentTimeStr:self.currentTimeStr totalTime:self.totalTime totalTimeStr:self.totalTimeStr];
     }
+
+    if ( self.registrar.state == SJVideoPlayerAppState_Background &&
+         self.pauseWhenAppDidEnterBackground ) {
+        [self pause:SJVideoPlayerPausedReasonPause];
+        return;
+    }
+    
+    if ( !self.isLockedScreen )
+        [self.displayRecorder resetInitialization];
     
     if ( [self.controlLayerDelegate respondsToSelector:@selector(loadCompletion:)] ) {
         [self.controlLayerDelegate loadCompletion:self];
@@ -1228,27 +1238,21 @@ static NSString *_kGestureState = @"state";
     
     self.playStatus = SJVideoPlayerPlayStatusReadyToPlay;
     
-    if ( self.registrar.state == SJVideoPlayerAppState_Background &&
-        self.pauseWhenAppDidEnterBackground ) {
-        [self pause:SJVideoPlayerPausedReasonPause];
-        return;
-    }
-    
     if ( self.operationOfInitializing ) {
         self.operationOfInitializing(self);
         self.operationOfInitializing = nil;
     }
     else if ( self.autoPlay ) {
         if ( self.isPlayOnScrollView ) {
-            if ( self.isScrollAppeared ) [self play];
-            else [self pause];
+            if ( self.isScrollAppeared )
+                [self play];
+            else
+                [self pause];
         }
         else {
             [self play];
         }
     }
-    
-    if ( !self.isLockedScreen ) [self.displayRecorder resetInitialization];
 }
 
 // 2.2

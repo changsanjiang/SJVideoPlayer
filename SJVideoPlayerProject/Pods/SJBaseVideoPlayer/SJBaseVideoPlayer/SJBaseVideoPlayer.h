@@ -164,7 +164,7 @@ typedef enum : NSUInteger {
 @property (nonatomic, strong, nullable) SJVideoPlayerURLAsset *URLAsset;
 
 /// v1.6.5 新增
-/// 切换清晰度
+/// 切换 清晰度
 /// - 切换当前播放的视频清晰度
 - (void)switchVideoDefinitionByURL:(NSURL *)URL;
 

@@ -56,8 +56,6 @@
     [testItem addTarget:self action:@selector(test)];
     
     _player.URLAsset = [[SJVideoPlayerURLAsset alloc] initWithURL:[NSBundle.mainBundle URLForResource:@"play" withExtension:@"mp4"]];
-    
-//    _player.URLAsset = [[SJVideoPlayerURLAsset alloc] initWithURL:[NSURL URLWithString:@"https://m10.music.126.net/20181126002247/0f516e800b013fca887efc4032a21ea0/ymusic/9855/f6dc/3553/57828641c5a2c629ec09c462f151132b.mp3"]];
     _player.URLAsset.title = @"Test Title Test TitlTest Title Test Title";
     _player.URLAsset.alwaysShowTitle = YES;
     _player.enableFilmEditing = YES;

@@ -57,6 +57,7 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic, readonly) CGSize presentationSize;
 @property (nonatomic, readonly) NSTimeInterval duration;
 
+- (void)_loadPresentationSize:(void(^)(CGSize presentationSize))completionBlock;
 @end
 
 NS_ASSUME_NONNULL_END

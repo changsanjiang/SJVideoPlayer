@@ -59,7 +59,7 @@ NS_ASSUME_NONNULL_BEGIN
 - (void)seekToTime:(NSTimeInterval)secs completionHandler:(void (^ __nullable)(BOOL finished))completionHandler;
 - (nullable UIImage *)screenshot;
 
-- (void)switchTheCurrentlyPlayingVideoDefinitionByURL:(NSURL *)URL;
+- (void)switchVideoDefinitionByURL:(NSURL *)URL;
 @optional
 - (void)cancelPendingSeeks;
 @end
@@ -115,7 +115,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (void)playbackController:(id<SJMediaPlaybackController>)controller presentationSizeDidChange:(CGSize)presentationSize;
 
-- (void)playbackController:(id<SJMediaPlaybackController>)controller switchVideoDefinition:(NSURL *)URL statusDidChange:(SJMediaPlaybackSwitchDefinitionStatus)status;
+- (void)playbackController:(id<SJMediaPlaybackController>)controller switchVideoDefinitionByURL:(NSURL *)URL statusDidChange:(SJMediaPlaybackSwitchDefinitionStatus)status;
 
 @optional
 - (void)pausedForAppDidEnterBackgroundOfPlaybackController:(id<SJMediaPlaybackController>)controller;

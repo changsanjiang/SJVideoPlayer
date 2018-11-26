@@ -119,6 +119,9 @@ static NSString *kReadyForDisplay = @"readyForDisplay";
         [obj removeFromSuperview];
     }];
 }
+- (void)removeLastPresenter {
+    [self.subviews.lastObject removeFromSuperview];
+}
 - (void)removeAllPresenterAndAddNewPresenter:(id<SJAVPlayerLayerPresenter>)presenter {
     if ( !presenter ) return;
     [self removeAllPresenter];

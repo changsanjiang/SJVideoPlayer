@@ -1092,8 +1092,8 @@ static NSString *_kGestureState = @"state";
 #pragma mark - 控制
 @implementation SJBaseVideoPlayer (PlayControl)
 
-- (void)switchTheCurrentlyPlayingVideoDefinitionByURL:(NSURL *)URL {
-    [self.playbackController switchTheCurrentlyPlayingVideoDefinitionByURL:URL];
+- (void)switchVideoDefinitionByURL:(NSURL *)URL {
+    [self.playbackController switchVideoDefinitionByURL:URL];
 }
 
 - (void)playbackController:(id<SJMediaPlaybackController>)controller prepareToPlayStatusDidChange:(SJMediaPlaybackPrepareStatus)prepareStatus {
@@ -1164,10 +1164,10 @@ static NSString *_kGestureState = @"state";
     }
 }
 
-- (void)playbackController:(id<SJMediaPlaybackController>)controller switchVideoDefinition:(NSURL *)URL statusDidChange:(SJMediaPlaybackSwitchDefinitionStatus)status {
-#ifdef DEBUG
-    NSLog(@"%d - -[%@ %s]", (int)__LINE__, NSStringFromClass([self class]), (char *)_cmd);
-#endif
+- (void)playbackController:(id<SJMediaPlaybackController>)controller switchVideoDefinitionByURL:(NSURL *)URL statusDidChange:(SJMediaPlaybackSwitchDefinitionStatus)status {
+    if ( [self.controlLayerDelegate respondsToSelector:@selector(videoPlayer:switchVideoDefinitionByURL:statusDidChange:)] ) {
+        [self.controlLayerDelegate videoPlayer:self switchVideoDefinitionByURL:URL statusDidChange:status];
+    }
 }
 
 #pragma mark -

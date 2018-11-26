@@ -11,7 +11,9 @@
 #import <UIKit/UIKit.h>
 #import "SJNetworkStatus.h"
 #import "SJVideoPlayerState.h"
-@protocol SJPlayStatusControlDelegate, SJLoadingControlDelegate, SJNetworkStatusControlDelegate, SJLockScreenStateControlDelegate, SJAppActivityControlDelegate, SJVolumeBrightnessRateControlDelegate, SJGestureControlDelegate, SJRotationControlDelegate, SJDeprecatedControlDelegate, SJFitOnScreenControlDelegate;
+#import "SJMediaPlaybackProtocol.h"
+
+@protocol SJPlayStatusControlDelegate, SJLoadingControlDelegate, SJNetworkStatusControlDelegate, SJLockScreenStateControlDelegate, SJAppActivityControlDelegate, SJVolumeBrightnessRateControlDelegate, SJGestureControlDelegate, SJRotationControlDelegate, SJDeprecatedControlDelegate, SJFitOnScreenControlDelegate, SJSwitchVideoDefinitionControlDelegate;
 @class SJBaseVideoPlayer, SJVideoPlayerURLAsset;
 
 
@@ -53,7 +55,8 @@
     SJLockScreenStateControlDelegate,
     SJAppActivityControlDelegate,
     SJDeprecatedControlDelegate,
-    SJFitOnScreenControlDelegate
+    SJFitOnScreenControlDelegate,
+    SJSwitchVideoDefinitionControlDelegate
 >
 @required
 /// This method will be called when the control layer needs to be appear. You should do some appear work here.
@@ -207,6 +210,12 @@
 /// Call it when set videoPlayer.lockedScreen == NO.
 /// 当设置 videoPlayer.lockedScreen == NO 时, 这个方法将会调用
 - (void)unlockedVideoPlayer:(__kindof SJBaseVideoPlayer *)videoPlayer;
+@end
+
+
+
+@protocol SJSwitchVideoDefinitionControlDelegate <NSObject>
+- (void)videoPlayer:(__kindof SJBaseVideoPlayer *)videoPlayer switchVideoDefinitionByURL:(NSURL *)URL statusDidChange:(SJMediaPlaybackSwitchDefinitionStatus)status;
 @end
 
 

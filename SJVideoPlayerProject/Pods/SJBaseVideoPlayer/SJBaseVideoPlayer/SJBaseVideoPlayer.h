@@ -155,11 +155,6 @@ typedef enum : NSUInteger {
 #pragma mark - 播放控制
 
 @interface SJBaseVideoPlayer (PlayControl)<SJMediaPlaybackControllerDelegate>
-/// v1.6.5 新增
-/// 切换清晰度
-/// - 切换当前播放的视频清晰度
-- (void)switchTheCurrentlyPlayingVideoDefinitionByURL:(NSURL *)URL;
-
 /// 管理对象: 播放控制
 @property (null_resettable, nonatomic, strong) id<SJMediaPlaybackController> playbackController;
 
@@ -167,6 +162,11 @@ typedef enum : NSUInteger {
 /// - 播放一个资源
 /// - 使用URL及相关的视图信息进行初始化
 @property (nonatomic, strong, nullable) SJVideoPlayerURLAsset *URLAsset;
+
+/// v1.6.5 新增
+/// 切换清晰度
+/// - 切换当前播放的视频清晰度
+- (void)switchVideoDefinitionByURL:(NSURL *)URL;
 
 /// 播放状态
 @property (nonatomic, readonly) SJVideoPlayerPlayStatus playStatus;

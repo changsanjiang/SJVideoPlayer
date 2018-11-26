@@ -25,7 +25,7 @@ NS_ASSUME_NONNULL_BEGIN
 - (void)insertPresenter:(id<SJAVPlayerLayerPresenter>)presenter abovePresenter:(id<SJAVPlayerLayerPresenter>)abovePresenter;
 - (void)removePresenter:(id<SJAVPlayerLayerPresenter>)presenter;
 - (void)removeAllPresenter;
-
+- (void)removeLastPresenter;
 - (void)removeAllPresenterAndAddNewPresenter:(id<SJAVPlayerLayerPresenter>)presenter;
 @end
 NS_ASSUME_NONNULL_END

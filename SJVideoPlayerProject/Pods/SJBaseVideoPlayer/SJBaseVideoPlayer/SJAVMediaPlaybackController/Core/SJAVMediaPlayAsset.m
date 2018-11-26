@@ -314,6 +314,21 @@ static NSString *kPlayerItemStatus = @"status";
     }
 }
 
+- (void)_loadPresentationSize:(void(^)(CGSize presentationSize))completionBlock {
+    if ( !CGSizeEqualToSize(self.presentationSize, CGSizeZero) ) {
+        if ( completionBlock ) completionBlock(_presentationSize);
+    }
+    else {
+        __weak typeof(self) _self = self;
+        [_playerAsset.URLAsset loadValuesAsynchronouslyForKeys:@[@"naturalSize"] completionHandler:^{
+            __strong typeof(_self) self = _self;
+            if ( !self ) return ;
+            dispatch_async(dispatch_get_main_queue(), ^{
+                if ( completionBlock ) completionBlock(self.playerAsset.URLAsset.naturalSize);
+            });
+        }];
+    }
+}
 @end
 
 NS_ASSUME_NONNULL_END

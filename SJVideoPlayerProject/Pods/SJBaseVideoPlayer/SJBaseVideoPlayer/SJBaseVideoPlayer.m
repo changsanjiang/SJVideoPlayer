@@ -266,7 +266,7 @@ static UIScrollView *_Nullable _getScrollViewOfPlayModel(SJPlayModel *playModel)
 }
 
 + (NSString *)version {
-    return @"1.6.3";
+    return @"1.7.1";
 }
 
 - (nullable __kindof UIViewController *)atViewController {
@@ -1196,16 +1196,14 @@ static NSString *_kGestureState = @"state";
         self.playStatus = SJVideoPlayerPlayStatusPrepare;
         self.playModelObserver = [[SJPlayModelPropertiesObserver alloc] initWithPlayModel:URLAsset.playModel];
         self.playModelObserver.delegate = (id)self;
+    
+        if ( [self.controlLayerDelegate respondsToSelector:@selector(startLoading:)] ) {
+            [self.controlLayerDelegate startLoading:self];
+        }
+        if ( [self.controlLayerDelegate respondsToSelector:@selector(videoPlayer:prepareToPlay:)] ) {
+            [self.controlLayerDelegate videoPlayer:self prepareToPlay:URLAsset];
+        }
         [self.playbackController prepareToPlay];
-
-        dispatch_async(dispatch_get_main_queue(), ^{
-            if ( [self.controlLayerDelegate respondsToSelector:@selector(startLoading:)] ) {
-                [self.controlLayerDelegate startLoading:self];
-            }
-            if ( [self.controlLayerDelegate respondsToSelector:@selector(videoPlayer:prepareToPlay:)] ) {
-                [self.controlLayerDelegate videoPlayer:self prepareToPlay:URLAsset];
-            }
-        });
     }
 }
 
@@ -1358,6 +1356,8 @@ static NSString *_kGestureState = @"state";
     if ( !self.URLAsset ) return;
     
     if ( self.canPlayAnAsset ) { if ( !self.canPlayAnAsset(self) ) return; }
+    
+    if ( self.registrar.state == SJVideoPlayerAppState_Background && self.pauseWhenAppDidEnterBackground ) return;
     
     if ( [self playStatus_isInactivity_ReasonPlayEnd] ) {
         [self replay];

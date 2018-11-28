@@ -93,7 +93,7 @@ static NSString *_kPlayStatus = @"playStatus";
 }
 
 + (NSString *)version {
-    return @"v2.2.4";
+    return @"v2.2.6";
 }
 
 + (instancetype)player {

@@ -697,6 +697,7 @@ SJEdgeControlButtonItemTag const SJEdgeControlLayerCenterItem_Replay = 10000;
     UILabel *replayLabel = [UILabel new];
     replayLabel.numberOfLines = 0;
     SJEdgeControlButtonItem *replayItem = [SJEdgeControlButtonItem frameLayoutWithCustomView:replayLabel tag:SJEdgeControlLayerCenterItem_Replay];
+    replayItem.hidden = YES;
     [replayItem addTarget:self action:@selector(clickedReplayButton:)];
     [self.centerAdapter addItem:replayItem];
     

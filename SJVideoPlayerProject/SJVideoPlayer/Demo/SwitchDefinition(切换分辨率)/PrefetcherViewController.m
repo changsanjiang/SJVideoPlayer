@@ -39,6 +39,10 @@
     }];
 
     _player.URLAsset = [[SJVideoPlayerURLAsset alloc] initWithURL:[NSBundle.mainBundle URLForResource:@"play" withExtension:@"mp4"]];
+    
+    
+    ///切换分辨率
+//    _player switchVideoDefinitionByURL:<#(nonnull NSURL *)#>
 }
 
 - (IBAction)next:(id)sender {

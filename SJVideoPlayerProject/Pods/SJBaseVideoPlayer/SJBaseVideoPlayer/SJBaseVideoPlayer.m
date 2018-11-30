@@ -1281,7 +1281,7 @@ static NSString *_kGestureState = @"state";
 
 - (void)refresh {
     if ( !self.URLAsset ) return;
-    [self replay];
+    self.URLAsset = [[SJVideoPlayerURLAsset alloc] initWithURL:_URLAsset.mediaURL specifyStartTime:_URLAsset.specifyStartTime playModel:_URLAsset.playModel];
 }
 
 - (void)setAssetDeallocExeBlock:(nullable void (^)(__kindof SJBaseVideoPlayer * _Nonnull))assetDeallocExeBlock {
@@ -1366,7 +1366,7 @@ static NSString *_kGestureState = @"state";
     
     if ( [self playStatus_isInactivity_ReasonPlayFailed] ) {
         // 尝试重新播放
-        [self replay];
+        [self refresh];
         return;
     }
     
@@ -1442,10 +1442,14 @@ static NSString *_kGestureState = @"state";
 - (void)replay {
     if ( !self.URLAsset ) return;
     if ( [self playStatus_isInactivity_ReasonPlayFailed] ) {
-        self.URLAsset = [[SJVideoPlayerURLAsset alloc] initWithURL:_URLAsset.mediaURL specifyStartTime:_URLAsset.specifyStartTime playModel:_URLAsset.playModel];
+        [self refresh];
         return;
     }
-    [self seekToTime:0 completionHandler:nil];
+
+    [self seekToTime:0 completionHandler:^(BOOL finished) {
+        [self.playbackController play];
+        self.playStatus = SJVideoPlayerPlayStatusPlaying;
+    }];
 }
 
 - (void)seekToTime:(NSTimeInterval)secs completionHandler:(void (^ __nullable)(BOOL finished))completionHandler {
@@ -1476,7 +1480,7 @@ static NSString *_kGestureState = @"state";
     NSTimeInterval seek = floor(secs);
     
     if ( current == seek ) {
-        if ( completionHandler ) completionHandler(NO);
+        if ( completionHandler ) completionHandler(YES);
         return;
     }
     
@@ -1580,7 +1584,7 @@ static NSString *_kGestureState = @"state";
 /// You should call it when view did appear
 - (void)vc_viewDidAppear {
     if ( !self.isPlayOnScrollView || (self.isPlayOnScrollView && self.isScrollAppeared) ) {
-        if ( ![self playStatus_isPlaying] ) [self play];
+        [self play];
     }
     self.vc_isDisappeared = NO;
 }
@@ -1589,7 +1593,7 @@ static NSString *_kGestureState = @"state";
     self.vc_isDisappeared = YES;
 }
 - (void)vc_viewDidDisappear {
-    if ( ![self playStatus_isPaused_ReasonPause] ) [self pause];
+    [self pause];
 }
 - (BOOL)vc_prefersStatusBarHidden {
     if ( _tmpShowStatusBar ) return NO;

@@ -273,7 +273,7 @@ NS_ASSUME_NONNULL_BEGIN
     [self insertItem:item atIndex:[self indexOfItemForTag:tag]+1];
 }
 - (void)insertItem:(SJEdgeControlButtonItem *)item rearItem:(SJEdgeControlButtonItemTag)tag {
-    [self insertItem:item atIndex:[self indexOfItemForTag:tag]-1];
+    [self insertItem:item atIndex:[self indexOfItemForTag:tag]];
 }
 - (void)removeItemAtIndex:(NSInteger)index {
     if ( index < 0 ) return;

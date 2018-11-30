@@ -93,7 +93,7 @@ static NSString *_kPlayStatus = @"playStatus";
 }
 
 + (NSString *)version {
-    return @"v2.2.6";
+    return @"v2.2.7";
 }
 
 + (instancetype)player {
@@ -109,7 +109,6 @@ static NSString *_kPlayStatus = @"playStatus";
     [self.switcher switchControlLayerForIdentitfier:SJControlLayer_Edge];
     /// 显示更多按钮
     self.showMoreItemForTopControlLayer = YES;
-    [self playFailedObserver];
     return self;
 }
 
@@ -119,7 +118,6 @@ static NSString *_kPlayStatus = @"playStatus";
     [videoPlayer.switcher addControlLayer:videoPlayer.defaultEdgeLightweightCarrier];
     /// 切换到添加的控制层
     [videoPlayer.switcher switchControlLayerForIdentitfier:SJControlLayer_Edge];
-    [videoPlayer playFailedObserver];
     return videoPlayer;
 }
 
@@ -133,6 +131,7 @@ static NSString *_kPlayStatus = @"playStatus";
         [self _updateCommonProperties];
     }];
     [self _updateCommonProperties];
+    [self playFailedObserver];
     return self;
 }
 
@@ -146,7 +145,6 @@ static NSString *_kPlayStatus = @"playStatus";
     if ( _switcher ) return _switcher;
     return _switcher = [[SJControlLayerSwitcher alloc] initWithPlayer:self];
 }
-
 
 #pragma mark -
 @synthesize defaultEdgeCarrier = _defaultEdgeCarrier;
@@ -258,7 +256,6 @@ static NSString *_kPlayStatus = @"playStatus";
     }
     return nil;
 }
-
 #pragma mark -
 @synthesize playFailedObserver = _playFailedObserver;
 - (_SJPlayerPlayFailedObserver *)playFailedObserver {
@@ -515,7 +512,7 @@ static NSString *_kPlayStatus = @"playStatus";
     delegate.updatePropertiesIfNeeded = ^(SJEdgeControlButtonItem * _Nonnull item, __kindof SJBaseVideoPlayer * _Nonnull player) {
         // 小屏或者 M3U8的时候 自动隐藏
         // M3u8 暂时无法剪辑
-        item.hidden = !player.isFullScreen || player.URLAsset.isM3u8;
+        item.hidden = (!player.isFullScreen || player.URLAsset.isM3u8) || !player.URLAsset;
         item.image = SJVideoPlayerSettings.commonSettings.filmEditingBtnImage;
     };
     

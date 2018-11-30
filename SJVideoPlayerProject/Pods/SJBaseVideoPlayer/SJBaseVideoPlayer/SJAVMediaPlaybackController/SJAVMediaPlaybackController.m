@@ -128,7 +128,9 @@ NS_ASSUME_NONNULL_BEGIN
 
 static const char *key = "kSJAVMediaPlayAsset";
 - (SJAVMediaPlayAsset *)_getPlayAssetForMedia:(id<SJMediaModelProtocol>)media {
-    SJAVMediaPlayAsset *playAsset = objc_getAssociatedObject(media.otherMedia?:media, key);
+    id<SJMediaModelProtocol> other = media.otherMedia;
+    while ( other.otherMedia ) other = other.otherMedia;
+    SJAVMediaPlayAsset *playAsset = objc_getAssociatedObject(other?:media, key);
     if ( !playAsset ) {
         AVAsset *avAsset = nil;
         if ( [(id)media respondsToSelector:@selector(avAsset)] ) {
@@ -233,23 +235,29 @@ static const char *key = "kSJAVMediaPlayAsset";
     }
     
     __weak typeof(self) _self = self;
-    /// seek to specify start time
-    [self seekToTime:self.media.specifyStartTime completionHandler:^(BOOL finished) {
+    void(^_inner_loadPresentationSize)(void) = ^ {
         __strong typeof(_self) self = _self;
-        if ( !self ) return ;
+        if ( !self ) return;
         [self.playAssetObserver _loadPresentationSize:^(CGSize presentationSize) {
             __strong typeof(_self) self = _self;
             if ( !self ) return ;
             if ( !CGSizeEqualToSize(presentationSize, CGSizeZero) ) {
                 id<SJAVPlayerLayerPresenter> presenter = [self.presentView createPresenterForPlayer:self.playAsset.player];
                 [self.presentView  removeAllPresenterAndAddNewPresenter:presenter];
-                presenter.isReadyForDisplayExeBlock = ^(id<SJAVPlayerLayerPresenter>  _Nonnull presenter) {
+                void(^inner_isReadyForDisplay)(id<SJAVPlayerLayerPresenter>  _Nonnull presenter) = ^(id<SJAVPlayerLayerPresenter>  _Nonnull presenter) {
                     __strong typeof(_self) self = _self;
                     if ( !self ) return ;
                     if ( [self.delegate respondsToSelector:@selector(playbackController:prepareToPlayStatusDidChange:)] ) {
                         [self.delegate playbackController:self prepareToPlayStatusDidChange:(NSInteger)playerItemStatus];
                     }
                 };
+                
+                if ( presenter.isReadyForDisplay ) {
+                    inner_isReadyForDisplay(presenter);
+                }
+                else {
+                    presenter.isReadyForDisplayExeBlock = inner_isReadyForDisplay;
+                }
             }
             else {
                 if ( [self.delegate respondsToSelector:@selector(playbackController:prepareToPlayStatusDidChange:)] ) {
@@ -257,7 +265,17 @@ static const char *key = "kSJAVMediaPlayAsset";
                 }
             }
         }];
-    }];
+    };
+    
+    /// seek to specify start time
+    if ( 0 != self.media.specifyStartTime ) {
+        [self seekToTime:self.media.specifyStartTime completionHandler:^(BOOL finished) {
+            _inner_loadPresentationSize();
+        }];
+    }
+    else {
+        _inner_loadPresentationSize();
+    }
 }
 - (void)assetLoadIsCompletedForObserver:(SJAVMediaPlayAssetPropertiesObserver *)observer { /* nothing */ }
 - (void)playDidToEndForObserver:(SJAVMediaPlayAssetPropertiesObserver *)observer {

@@ -453,14 +453,14 @@
 			path = SJMoreSettingControlLayer;
 			sourceTree = "<group>";
 		};
-		7798A7D3219EB9D90020A507 /* Prefetcher */ = {
+		7798A7D3219EB9D90020A507 /* SwitchDefinition(切换分辨率) */ = {
 			isa = PBXGroup;
 			children = (
 				7798A7D4219EBA520020A507 /* PrefetcherViewController.h */,
 				7798A7D5219EBA520020A507 /* PrefetcherViewController.m */,
 				7798A7D7219ECF3B0020A507 /* PrefetcherViewController.xib */,
 			);
-			path = Prefetcher;
+			path = "SwitchDefinition(切换分辨率)";
 			sourceTree = "<group>";
 		};
 		77DDBA9A218BE5A000071AD1 /* FilmEditing(GIF Screenshot Export) */ = {
@@ -818,7 +818,7 @@
 				A60066842160B7A00001B5F8 /* Control_Rotation(旋转控制) */,
 				A600667D2160AC700001B5F8 /* Player_Type(播放器类型) */,
 				A600669821610FC00001B5F8 /* PageViewController */,
-				7798A7D3219EB9D90020A507 /* Prefetcher */,
+				7798A7D3219EB9D90020A507 /* SwitchDefinition(切换分辨率) */,
 				A60066A8216195050001B5F8 /* Other */,
 				77E8D75F2179A0B100B025A7 /* Test */,
 				77EECF5D219D0DCF00736073 /* TestAdapter */,

@@ -16,7 +16,7 @@ NS_ASSUME_NONNULL_BEGIN
 @end
 
 @interface SJAVMediaPresentView : UIView
-- (id<SJAVPlayerLayerPresenter>)createPresenterForPlayer:(AVPlayer *)player;
+- (id<SJAVPlayerLayerPresenter>)createPresenterForPlayer:(AVPlayer *)player videoGravity:(AVLayerVideoGravity)videoGravity;
 
 @property (nonatomic, strong, readonly) NSArray<id<SJAVPlayerLayerPresenter>> *presenters;
 - (void)addPresenter:(id<SJAVPlayerLayerPresenter>)presenter;

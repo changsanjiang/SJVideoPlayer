@@ -473,7 +473,7 @@ static NSString *_kGestureState = @"state";
 }
 
 - (void)setVideoGravity:(AVLayerVideoGravity)videoGravity {
-    _playbackController.videoGravity = videoGravity;
+    self.playbackController.videoGravity = videoGravity;
 }
 
 - (AVLayerVideoGravity)videoGravity {
@@ -495,6 +495,7 @@ static NSString *_kGestureState = @"state";
         dispatch_async(dispatch_get_main_queue(), ^{
             __strong typeof(_self) self = _self;
             if ( !self ) return ;
+            [self.playModelObserver refreshAppearState];
             [self _observeFullscreenPopGestureState];
         });
     }];

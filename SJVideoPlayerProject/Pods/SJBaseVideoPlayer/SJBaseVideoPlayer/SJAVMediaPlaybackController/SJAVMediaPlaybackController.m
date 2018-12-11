@@ -110,11 +110,16 @@ NS_ASSUME_NONNULL_BEGIN
 }
 
 - (void)setVideoGravity:(SJVideoGravity)videoGravity {
-    self.presentView.presenters.lastObject.videoGravity = videoGravity;
+    if ( videoGravity == self.videoGravity ) return;
+    _videoGravity = videoGravity;
+    for ( id<SJAVPlayerLayerPresenter> presenter in self.presentView.presenters ) {
+        presenter.videoGravity = videoGravity;
+    }
 }
 
 - (SJVideoGravity)videoGravity {
-    return self.presentView.presenters.lastObject.videoGravity;
+    if ( !_videoGravity ) return AVLayerVideoGravityResizeAspect;
+    return _videoGravity;
 }
 
 - (void)prepareToPlay {
@@ -160,7 +165,7 @@ static const char *key = "kSJAVMediaPlayAsset";
     _switcher = [[SJAVMediaPlayAssetSwitcher alloc] initWithURL:URL replyCurrentTime:^CMTime(SJAVMediaPlayAssetSwitcher * _Nonnull switcher) {
         return playerItem.currentTime;
     } presenter:^id<SJAVPlayerLayerPresenter> _Nonnull(SJAVMediaPlayAssetSwitcher * _Nonnull switcher, AVPlayer * _Nonnull player) {
-        id<SJAVPlayerLayerPresenter> presenter = [self.presentView createPresenterForPlayer:player];
+        id<SJAVPlayerLayerPresenter> presenter = [self.presentView createPresenterForPlayer:player videoGravity:self.videoGravity];
         [self.presentView insertPresenter:presenter atIndex:0];
         presenter.videoGravity = self.videoGravity;
         return presenter;
@@ -242,7 +247,7 @@ static const char *key = "kSJAVMediaPlayAsset";
             __strong typeof(_self) self = _self;
             if ( !self ) return ;
             if ( !CGSizeEqualToSize(presentationSize, CGSizeZero) ) {
-                id<SJAVPlayerLayerPresenter> presenter = [self.presentView createPresenterForPlayer:self.playAsset.player];
+                id<SJAVPlayerLayerPresenter> presenter = [self.presentView createPresenterForPlayer:self.playAsset.player videoGravity:self.videoGravity];
                 [self.presentView  removeAllPresenterAndAddNewPresenter:presenter];
                 void(^inner_isReadyForDisplay)(id<SJAVPlayerLayerPresenter>  _Nonnull presenter) = ^(id<SJAVPlayerLayerPresenter>  _Nonnull presenter) {
                     __strong typeof(_self) self = _self;
@@ -357,7 +362,7 @@ static const char *key = "kSJAVMediaPlayAsset";
         __strong typeof(_self) self = _self;
         if ( !self ) return ;
         if ( self.prepareStatus == SJMediaPlaybackPrepareStatusReadyToPlay ) {
-            [self.presentView removeAllPresenterAndAddNewPresenter:[self.presentView createPresenterForPlayer:self.playAsset.player]];
+            [self.presentView removeAllPresenterAndAddNewPresenter:[self.presentView createPresenterForPlayer:self.playAsset.player videoGravity:self.videoGravity]];
         }
     };
     

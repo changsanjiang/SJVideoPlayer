@@ -157,6 +157,7 @@ static NSString *kState = @"state";
     _beforeOffset = scrollView.contentOffset;
 }
 
+@synthesize isAppeared = _isAppeared;
 - (void)setIsAppeared:(BOOL)isAppeared {
     if ( isAppeared == _isAppeared ) return;
     _isAppeared = isAppeared;
@@ -180,5 +181,21 @@ static NSString *kState = @"state";
     return _playModel.isPlayInCollectionView;
 }
 
+- (void)refreshAppearState {
+    if ( [_playModel isMemberOfClass:[SJPlayModel class]] ) {
+        self.isAppeared = YES;
+        return;
+    }
+    
+    UIView *superview = _playModel.playerSuperview;
+    while ( superview && ![superview isKindOfClass:[UIScrollView class]] ) {
+        superview = superview.superview;
+    }
+    if ( !superview ) {
+        self.isAppeared = NO;
+        return;
+    }
+    self.isAppeared = [self _isAppearedInTheScrollingView:(id)superview];
+}
 @end
 NS_ASSUME_NONNULL_END

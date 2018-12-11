@@ -82,9 +82,10 @@ static NSString *kReadyForDisplay = @"readyForDisplay";
 }
 #endif
 
-- (id<SJAVPlayerLayerPresenter>)createPresenterForPlayer:(AVPlayer *)player {
+- (id<SJAVPlayerLayerPresenter>)createPresenterForPlayer:(AVPlayer *)player videoGravity:(AVLayerVideoGravity)videoGravity {
     _SJAVPlayerLayerPresentView *view = [[_SJAVPlayerLayerPresentView alloc] initWithFrame:self.bounds];
     view.player = player;
+    view.videoGravity = videoGravity;
     return view;
 }
 - (NSArray<_SJAVPlayerLayerPresentView *> *)presenters {

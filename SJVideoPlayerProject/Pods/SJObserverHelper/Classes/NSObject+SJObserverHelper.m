@@ -36,7 +36,7 @@ NS_ASSUME_NONNULL_BEGIN
 - (const char *)key {
     if ( _key ) return _key;
     NSString *keyStr = [NSString stringWithFormat:@"sanjiang:%lu", (unsigned long)[self hash]];
-    _key = malloc(keyStr.length * sizeof(char) + 1);
+    _key = malloc((keyStr.length + 1) * sizeof(char));
     strcpy(_key, keyStr.UTF8String);
     return _key;
 }
@@ -78,7 +78,7 @@ NS_ASSUME_NONNULL_BEGIN
     sub.factor = helper;
     
     objc_setAssociatedObject(self, helper.key, helper, OBJC_ASSOCIATION_RETAIN_NONATOMIC);
-    objc_setAssociatedObject(observer, helper.key, sub, OBJC_ASSOCIATION_RETAIN_NONATOMIC);
+    objc_setAssociatedObject(observer, sub.key, sub, OBJC_ASSOCIATION_RETAIN_NONATOMIC);
 }
 
 - (NSMutableSet<NSString *> *)sj_observerhashSet {

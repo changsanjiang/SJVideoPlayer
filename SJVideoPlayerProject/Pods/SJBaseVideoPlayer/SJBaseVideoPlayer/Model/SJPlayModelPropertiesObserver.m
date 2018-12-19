@@ -188,7 +188,7 @@ static NSString *kState = @"state";
     }
     
     UIView *superview = _playModel.playerSuperview;
-    while ( superview && ![superview isKindOfClass:[UIScrollView class]] ) {
+    while ( superview && !([superview isKindOfClass:[UITableView class]] || [superview isKindOfClass:[UICollectionView class]]) ) {
         superview = superview.superview;
     }
     if ( !superview ) {

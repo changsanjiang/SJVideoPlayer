@@ -17,9 +17,11 @@
 NS_ASSUME_NONNULL_BEGIN
 @interface NSObject (SJObserverHelper)
 
+/// Add an observer, you don't need to remove observer (auto remove)
 /// 添加观察者, 无需移除 (将会自动移除)
 - (void)sj_addObserver:(NSObject *)observer forKeyPath:(NSString *)keyPath;
 
+/// Add an observer, you don't need to remove observer (auto remove)
 /// 添加观察者, 无需移除 (将会自动移除)
 - (void)sj_addObserver:(NSObject *)observer forKeyPath:(NSString *)keyPath context:(nullable void *)context;
 

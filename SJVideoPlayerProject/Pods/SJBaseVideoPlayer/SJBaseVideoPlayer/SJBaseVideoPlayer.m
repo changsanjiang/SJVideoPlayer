@@ -53,7 +53,7 @@ NS_ASSUME_NONNULL_BEGIN
 static UIScrollView *_Nullable _getScrollViewOfPlayModel(SJPlayModel *playModel) {
     if ( playModel.isPlayInTableView || playModel.isPlayInCollectionView ) {
         __kindof UIView *superview = playModel.playerSuperview;
-        while ( superview && ![superview isKindOfClass:[UIScrollView class]] ) {
+        while ( superview && !([superview isKindOfClass:[UITableView class]] || [superview isKindOfClass:[UICollectionView class]]) ) {
             superview = superview.superview;
         }
         return superview;

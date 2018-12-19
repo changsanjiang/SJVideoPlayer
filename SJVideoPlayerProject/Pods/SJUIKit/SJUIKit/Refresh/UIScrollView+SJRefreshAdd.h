@@ -13,7 +13,7 @@ NS_ASSUME_NONNULL_BEGIN
 /// 当不需要页码大小时, 可以传入此size
 extern char const SJRefreshingNonePageSize;
 
-@class SJRefreshConfig;
+@class SJRefreshConfig, SJPlaceholderView;
 
 @interface UIScrollView (SJRefreshAdd)
 
@@ -58,18 +58,23 @@ extern char const SJRefreshingNonePageSize;
 @end
 
 
-
+#pragma mark -
 @interface SJRefreshConfig : NSObject
-
 @property (nonatomic, strong, nullable) UIColor *textColor;
-
-#pragma mark header
 @property (nonatomic, strong, nullable) UIImage *gifImage_header;
-
-
-
-#pragma mark footer
 @property (nonatomic, strong, nullable) UIImage *gifImage_footer;
 @end
 
+
+
+@interface UIScrollView (SJPlaceholder)
+@property (nonatomic, strong, readonly) SJPlaceholderView  *sj_placeholderView;
+@end
+
+
+@interface SJPlaceholderView : UIControl
+@property (nonatomic, strong, readonly) UILabel *label;
+@property (nonatomic) UIEdgeInsets insets;
+@property (nonatomic, copy, nullable) void(^clickedBackgroundExeBlock)(SJPlaceholderView *view);
+@end
 NS_ASSUME_NONNULL_END

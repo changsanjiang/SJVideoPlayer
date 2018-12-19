@@ -90,6 +90,7 @@ char const SJRefreshingNonePageSize = -1;
     [UIScrollView.sj_refreshConfig configHeader:(MJRefreshGifHeader *)self.mj_header];
     [UIScrollView.sj_refreshConfig configFooter:(MJRefreshAutoGifFooter *)self.mj_footer];
 }
+
 - (void)sj_endRefreshingWithItemCount:(NSUInteger)itemCount {
     if ( self.sj_pageNum == self.sj_beginPageNum && self.mj_header ) {
         [self sj_endHeaderRefreshingWithItemCount:itemCount];
@@ -98,11 +99,13 @@ char const SJRefreshingNonePageSize = -1;
         [self sj_endFooterRefreshingWithItemCount:itemCount];
     }
     self.sj_pageNum += 1;
+    [self _considerHiddenPlaceholder];
 }
 
 - (void)sj_endRefreshing {
     if ( self.mj_header.state == MJRefreshStateRefreshing ) [self.mj_header endRefreshing];
     if ( self.mj_footer.state == MJRefreshStateRefreshing ) [self.mj_footer endRefreshing];
+    [self _considerHiddenPlaceholder];
 }
 
 - (void)sj_endHeaderRefreshingWithItemCount:(NSUInteger)itemCount {
@@ -141,6 +144,7 @@ char const SJRefreshingNonePageSize = -1;
     self.mj_footer.hidden = NO;
     if ( self.mj_footer.state != MJRefreshStateIdle ) [self.mj_footer endRefreshing];
     [self.mj_footer beginRefreshing];
+    [self _considerHiddenPlaceholder];
 }
 
 #pragma mark -
@@ -169,6 +173,87 @@ char const SJRefreshingNonePageSize = -1;
     return [objc_getAssociatedObject(self, _cmd) integerValue];
 }
 
+- (void)_considerHiddenPlaceholder {
+    UIView *placeholderView = objc_getAssociatedObject(self, @selector(sj_placeholderView));
+    if ( !placeholderView ) return;
+    
+    if ( [self isKindOfClass:[UITableView class]] ) {
+        UITableView *_self = (id)self;
+        for ( int i = 0 ; i < _self.numberOfSections ; ++ i ) {
+            NSInteger rows = [_self numberOfRowsInSection:i];
+            if ( 0 == rows ) continue;
+            placeholderView.hidden = YES;
+            return;
+        }
+    }
+    else if ( [self isKindOfClass:[UICollectionView class]] ) {
+        UICollectionView *_self = (id)self;
+        for ( int i = 0 ; i < _self.numberOfSections ; ++ i ) {
+            NSInteger items = [_self numberOfItemsInSection:i];
+            if ( 0 == items ) continue;
+            placeholderView.hidden = YES;
+            return;
+        }
+    }
+
+    placeholderView.hidden = NO;
+}
+
 @end
 
+@implementation UIScrollView (SJPlaceholder)
+- (SJPlaceholderView *)sj_placeholderView {
+    SJPlaceholderView *view = objc_getAssociatedObject(self, _cmd);
+    if ( !view ) view = [SJPlaceholderView new];
+    objc_setAssociatedObject(self, @selector(sj_placeholderView), view, OBJC_ASSOCIATION_RETAIN_NONATOMIC);
+    [self addSubview:view];
+    view.translatesAutoresizingMaskIntoConstraints = NO;
+    [self addConstraint:[NSLayoutConstraint constraintWithItem:view attribute:NSLayoutAttributeCenterX relatedBy:NSLayoutRelationEqual toItem:self attribute:NSLayoutAttributeCenterX multiplier:1 constant:0]];
+    [self addConstraint:[NSLayoutConstraint constraintWithItem:view attribute:NSLayoutAttributeCenterY relatedBy:NSLayoutRelationEqual toItem:self attribute:NSLayoutAttributeCenterY multiplier:1 constant:0]];
+    return view;
+}
+@end
+
+
+@implementation SJPlaceholderView
+
+- (instancetype)initWithFrame:(CGRect)frame {
+    self = [super initWithFrame:frame];
+    if ( !self ) return nil;
+    [self addTarget:self action:@selector(clickedBackground:) forControlEvents:UIControlEventTouchUpInside];
+    return self;
+}
+
+- (void)clickedBackground:(UIButton *)btn {
+    if ( _clickedBackgroundExeBlock ) _clickedBackgroundExeBlock(self);
+}
+
+- (void)setInsets:(UIEdgeInsets)insets {
+    if ( UIEdgeInsetsEqualToEdgeInsets(insets, _insets) ) return;
+    _insets = insets;
+    [self _needRefreshLabelConstraints:insets];
+}
+
+@synthesize label = _label;
+- (UILabel *)label {
+    if ( _label ) return _label;
+    _label = [UILabel new];
+    [self addSubview:_label];
+    [self _needRefreshLabelConstraints:_insets];
+    return _label;
+}
+
+- (void)_needRefreshLabelConstraints:(UIEdgeInsets)insets {
+    if ( !_label ) return;
+    [self.constraints enumerateObjectsWithOptions:NSEnumerationReverse usingBlock:^(__kindof NSLayoutConstraint * _Nonnull cons, NSUInteger idx, BOOL * _Nonnull stop) {
+        if ( cons.secondItem != self->_label && cons.firstItem != self->_label ) return ;
+        [self removeConstraint:cons];
+    }];
+    
+    self->_label.translatesAutoresizingMaskIntoConstraints = NO;
+    [self addConstraints:[NSLayoutConstraint constraintsWithVisualFormat:[NSString stringWithFormat:@"V:|-%lf-[_label]-%lf-|", (double)insets.top, (double)insets.bottom] options:NSLayoutFormatAlignAllLeading metrics:nil views:NSDictionaryOfVariableBindings(_label)]];
+    [self addConstraints:[NSLayoutConstraint constraintsWithVisualFormat:[NSString stringWithFormat:@"H:|-%lf-[_label]-%lf-|", (double)insets.left, (double)insets.right] options:NSLayoutFormatAlignAllLeading metrics:nil views:NSDictionaryOfVariableBindings(_label)]];
+}
+
+@end
 NS_ASSUME_NONNULL_END

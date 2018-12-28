@@ -254,7 +254,13 @@ static NSString *kPlayerItemStatus = @"status";
 
 /// - 轮询缓冲
 - (void)_pollingPlaybackBuffer {
-    if ( floor(self.currentTime) == floor(self.duration) ) return;
+    NSTimeInterval duration = self.duration;
+    if ( duration <= 10 ) {
+        [self _updateBufferStatus:SJPlayerBufferStatusFull];
+        return;
+    }
+    
+    if ( floor(self.currentTime) == floor(duration) ) return;
     if ( _bufferStatus == SJPlayerBufferStatusEmpty ) return;
     [self _updateBufferStatus:SJPlayerBufferStatusEmpty];
     __weak typeof(self) _self = self;

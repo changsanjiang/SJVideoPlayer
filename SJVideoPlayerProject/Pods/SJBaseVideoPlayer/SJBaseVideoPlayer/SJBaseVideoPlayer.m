@@ -98,6 +98,7 @@ static UIScrollView *_Nullable _getScrollViewOfPlayModel(SJPlayModel *playModel)
  这个属性用于是否1秒后显示控制层.
  */
 @property (nonatomic, readonly) BOOL initialization;
+@property (nonatomic) BOOL controlLayerAutoAppearWhenAssetInitialized;
 
 /**
  重置`self.initialization`, 当播放新的资源时, 该方法会被调用.
@@ -123,11 +124,6 @@ static UIScrollView *_Nullable _getScrollViewOfPlayModel(SJPlayModel *playModel)
  当播放被暂停时, 是否保持控制层一直显示.  见 `videoPlayer.pausedToKeepAppearState`.
  */
 @property (nonatomic) BOOL pausedToKeepAppearState;
-
-/**
- 当播放失败时, 是否保持控制层一直显示. 见 `videoPlayer.playFailedToKeepAppearState`
- */
-@property (nonatomic) BOOL playFailedToKeepAppearState;
 
 - (void)start;
 
@@ -293,7 +289,6 @@ static UIScrollView *_Nullable _getScrollViewOfPlayModel(SJPlayModel *playModel)
     self.autoPlay = YES; // 是否自动播放, 默认yes
     self.pauseWhenAppDidEnterBackground = YES; // App进入后台是否暂停播放, 默认yes
     self.enableControlLayerDisplayController = YES; // 是否启用控制层管理器, 默认yes
-    self.playFailedToKeepAppearState = YES; // 播放失败是否保持控制层显示, 默认yes
     [self registrar];
     [self view];
     [self rotationManager];
@@ -1739,6 +1734,14 @@ static NSString *_kGestureState = @"state";
     return self.displayRecorder.controlLayerAppearedState;
 }
 
+- (void)setControlLayerAutoAppearWhenAssetInitialized:(BOOL)controlLayerAutoAppearWhenAssetInitialized {
+    self.displayRecorder.controlLayerAutoAppearWhenAssetInitialized = controlLayerAutoAppearWhenAssetInitialized;
+}
+
+- (BOOL)controlLayerAutoAppearWhenAssetInitialized {
+    return self.displayRecorder.controlLayerAutoAppearWhenAssetInitialized;
+}
+
 - (nullable void (^)(__kindof SJBaseVideoPlayer * _Nonnull, BOOL))controlLayerAppearStateChanged {
     return objc_getAssociatedObject(self, _cmd);
 }
@@ -1759,12 +1762,6 @@ static NSString *_kGestureState = @"state";
 }
 - (BOOL)pausedToKeepAppearState {
     return self.displayRecorder.pausedToKeepAppearState;
-}
-- (void)setPlayFailedToKeepAppearState:(BOOL)playFailedToKeepAppearState {
-    self.displayRecorder.playFailedToKeepAppearState = playFailedToKeepAppearState;
-}
-- (BOOL)playFailedToKeepAppearState {
-    return self.displayRecorder.playFailedToKeepAppearState;
 }
 @end
 
@@ -2182,6 +2179,7 @@ static NSString *_kGestureState = @"state";
 - (instancetype)initWithVideoPlayer:(SJBaseVideoPlayer *)videoPlayer {
     self = [super init];
     if ( !self ) return nil;
+    _controlLayerAutoAppearWhenAssetInitialized = YES;
     _videoPlayer = videoPlayer;
     [_videoPlayer sj_addObserver:self forKeyPath:@"locked"];
     [_videoPlayer sj_addObserver:self forKeyPath:@"playStatus"];
@@ -2216,14 +2214,12 @@ static NSString *_kGestureState = @"state";
 }
 
 - (void)considerChangeState {
-    if ( _playFailedToKeepAppearState && [_videoPlayer playStatus_isInactivity_ReasonPlayFailed] ) return;
     if ( self.controlLayerAppearedState ) [self layerDisappear];
     else [self layerAppear];
 }
 
 - (void)layerAppear {
     if ( _pausedToKeepAppearState && [_videoPlayer playStatus_isPaused] ) [self.controlHiddenTimer clear];
-    else if ( _playFailedToKeepAppearState && [_videoPlayer playStatus_isInactivity_ReasonPlayFailed] ) [self.controlHiddenTimer clear];
     else [self.controlHiddenTimer start];
     [self _changing:YES];
     _initialization = YES;
@@ -2235,6 +2231,9 @@ static NSString *_kGestureState = @"state";
 }
 
 - (void)resetInitialization {
+    if ( !self.controlLayerAutoAppearWhenAssetInitialized )
+        return;
+    
     _initialization = NO;
     __weak typeof(self) _self = self;
     dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(1 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
@@ -2394,6 +2393,10 @@ static NSString *_kGestureState = @"state";
     return self.placeholderImageView.image;
 }
 
+- (void)setPlayFailedToKeepAppearState:(BOOL)playFailedToKeepAppearState __deprecated { }
+- (BOOL)playFailedToKeepAppearState __deprecated {
+    return NO;
+}
 @end
 
 

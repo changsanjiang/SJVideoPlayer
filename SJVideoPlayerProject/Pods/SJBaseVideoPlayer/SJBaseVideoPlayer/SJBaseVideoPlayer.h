@@ -432,14 +432,6 @@ typedef NS_ENUM(NSUInteger, SJDisablePlayerGestureTypes) {
 @property (nonatomic) BOOL pausedToKeepAppearState;
 
 /**
- When play failed, Whether to kepp the appear state.
- default is YES.
- 
- readwrite.
- */
-@property (nonatomic) BOOL playFailedToKeepAppearState;
-
-/**
  YES -> Appear.
  NO  -> Disappear.
  
@@ -447,6 +439,9 @@ typedef NS_ENUM(NSUInteger, SJDisablePlayerGestureTypes) {
  */
 @property (nonatomic, readonly) BOOL controlLayerAppeared;
 - (void)setControlLayerAppeared:(BOOL)controlLayerAppeared;
+
+/// default is YES.
+@property (nonatomic) BOOL controlLayerAutoAppearWhenAssetInitialized;
 
 /**
  The block invoked When Control layer state changed.
@@ -702,6 +697,7 @@ typedef NS_ENUM(NSUInteger, SJDisablePlayerGestureTypes) {
 @property (nonatomic, copy, nullable) void(^rotatedScreen)(__kindof SJBaseVideoPlayer *player, BOOL isFullScreen) __deprecated_msg("use `viewDidRotateExeBlock`");
 @property (nonatomic, strong, nullable) UIImage *placeholder __deprecated_msg("use `player.placeholderImageView`");
 @property (nonatomic, readonly) SJVideoPlayerPlayState state __deprecated_msg("use `player.playStatus`");
+@property (nonatomic) BOOL playFailedToKeepAppearState __deprecated;
 @end
 
 

@@ -17,7 +17,7 @@ target 'SJVideoPlayer' do
   pod 'SJFullscreenPopGesture'
   
   pod 'SJScrollEntriesView'
-  pod 'SJUIKit/Refresh'
+  pod 'SJUIKit'
   pod 'SJUIFactory'
   pod 'Masonry', :inhibit_warnings => true
   pod 'MJRefresh', :inhibit_warnings => true

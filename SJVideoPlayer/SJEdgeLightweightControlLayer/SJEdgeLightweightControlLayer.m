@@ -117,8 +117,7 @@ NS_ASSUME_NONNULL_BEGIN
 - (void)restartControlLayer {
     _restarted = YES;
     if ( _videoPlayer.URLAsset ) {
-        [_videoPlayer setControlLayerAppeared:YES];
-        [self controlLayerNeedAppear:_videoPlayer compeletionHandler:nil];
+        [_videoPlayer controlLayerNeedAppear];
         return;
     }
     
@@ -378,7 +377,7 @@ NS_ASSUME_NONNULL_BEGIN
         }
     }
     
-    if ( videoPlayer.controlLayerAppeared ) [videoPlayer controlLayerNeedAppear]; // update
+    if ( videoPlayer.controlLayerIsAppeared ) [videoPlayer controlLayerNeedAppear]; // update
 }
 
 - (void)videoPlayer:(__kindof SJBaseVideoPlayer *)videoPlayer willFitOnScreen:(BOOL)isFitOnScreen {
@@ -388,7 +387,7 @@ NS_ASSUME_NONNULL_BEGIN
     self.bottomControlView.isFitOnScreen = isFitOnScreen;
     [self _setControlViewsDisappearValue]; // update. `reset`.
     [self.bottomSlider disappear];
-    if ( videoPlayer.controlLayerAppeared ) [videoPlayer controlLayerNeedAppear]; // update
+    if ( videoPlayer.controlLayerIsAppeared ) [videoPlayer controlLayerNeedAppear]; // update
     _backBtn.hidden = _hideBackButtonWhenOrientationIsPortrait && !isFitOnScreen;
 }
 
@@ -849,7 +848,7 @@ NS_ASSUME_NONNULL_BEGIN
         }];
         _rightControlView.disappearType = SJDisappearType_Alpha;
         
-        if ( !self.videoPlayer.controlLayerAppeared ) [_rightControlView disappear];
+        if ( !self.videoPlayer.controlLayerIsAppeared ) [_rightControlView disappear];
     }
     else {
         [_rightControlView removeFromSuperview];

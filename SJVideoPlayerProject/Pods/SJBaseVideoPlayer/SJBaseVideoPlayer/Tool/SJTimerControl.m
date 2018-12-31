@@ -27,7 +27,7 @@
     return self;
 }
 
-- (void)setInterval:(short)interval {
+- (void)setInterval:(NSTimeInterval)interval {
     _interval = interval;
     _point = interval;
 }

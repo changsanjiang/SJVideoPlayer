@@ -8,8 +8,8 @@
 
 #ifndef SJNetworkStatus_h
 #define SJNetworkStatus_h
-
-
+#import <Foundation/Foundation.h>
+@protocol SJReachabilityObserver;
 /**
  This enumeration lists the three state values of the network.
  It is used to identify the current network state. You can obtain the current network state as follows:
@@ -26,4 +26,13 @@ typedef NS_ENUM(NSInteger, SJNetworkStatus) {
 };
 
 
+@protocol SJReachability <NSObject>
+- (id<SJReachabilityObserver>)getObserver;
+
+@property (nonatomic, readonly) SJNetworkStatus networkStatus;
+@end
+
+@protocol SJReachabilityObserver <NSObject>
+@property (nonatomic, copy, nullable) void(^networkStatusDidChangeExeBlock)(id<SJReachability> r, SJNetworkStatus status);
+@end
 #endif /* SJNetworkStatus_h */

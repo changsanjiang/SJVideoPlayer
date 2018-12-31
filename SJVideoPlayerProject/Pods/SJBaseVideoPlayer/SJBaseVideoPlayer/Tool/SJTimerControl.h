@@ -13,9 +13,9 @@ NS_ASSUME_NONNULL_BEGIN
 @interface SJTimerControl : NSObject
 
 /// default is 3;
-@property (nonatomic, assign, readwrite) short interval;
+@property (nonatomic) NSTimeInterval interval;
 
-@property (nonatomic, copy, readwrite, nullable) void(^exeBlock)(SJTimerControl *control);
+@property (nonatomic, copy, nullable) void(^exeBlock)(SJTimerControl *control);
 
 - (void)start;
 

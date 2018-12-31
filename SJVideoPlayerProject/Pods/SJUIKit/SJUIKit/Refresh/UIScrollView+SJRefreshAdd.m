@@ -92,11 +92,24 @@ char const SJRefreshingNonePageSize = -1;
 }
 
 - (void)sj_endRefreshingWithItemCount:(NSUInteger)itemCount {
+    [self sj_endRefreshing];
+
+    /// header
     if ( self.sj_pageNum == self.sj_beginPageNum && self.mj_header ) {
-        [self sj_endHeaderRefreshingWithItemCount:itemCount];
+        if ( itemCount == 0 || itemCount == SJRefreshingNonePageSize ) { // 如果没有数据
+            self.mj_footer.hidden = YES;
+        }
+        else {
+            self.mj_footer.hidden = NO;
+            if ( itemCount < self.sj_pageSize ) [self.mj_footer endRefreshingWithNoMoreData];   // 如果数据小于pageSize
+            else  if ( self.mj_footer.state == MJRefreshStateNoMoreData ) [self.mj_footer resetNoMoreData];
+        }
     }
+    /// footer
     else {
-        [self sj_endFooterRefreshingWithItemCount:itemCount];
+        if ( itemCount < self.sj_pageSize ) [self.mj_footer endRefreshingWithNoMoreData];   // 如果数据小于pageSize
+        else if ( self.mj_footer.state == MJRefreshStateNoMoreData ) [self.mj_footer resetNoMoreData];
+        else [self.mj_footer endRefreshing];
     }
     self.sj_pageNum += 1;
     [self _considerHiddenPlaceholder];
@@ -106,24 +119,6 @@ char const SJRefreshingNonePageSize = -1;
     if ( self.mj_header.state == MJRefreshStateRefreshing ) [self.mj_header endRefreshing];
     if ( self.mj_footer.state == MJRefreshStateRefreshing ) [self.mj_footer endRefreshing];
     [self _considerHiddenPlaceholder];
-}
-
-- (void)sj_endHeaderRefreshingWithItemCount:(NSUInteger)itemCount {
-    [self.mj_header endRefreshing];
-    if ( itemCount == 0 || itemCount == SJRefreshingNonePageSize ) { // 如果没有数据
-        self.mj_footer.hidden = YES;
-    }
-    else {
-        self.mj_footer.hidden = NO;
-        if ( itemCount < self.sj_pageSize ) [self.mj_footer endRefreshingWithNoMoreData];   // 如果数据小于pageSize
-        else  if ( self.mj_footer.state == MJRefreshStateNoMoreData ) [self.mj_footer resetNoMoreData];
-    }
-}
-
-- (void)sj_endFooterRefreshingWithItemCount:(NSUInteger)itemCount {
-    if ( itemCount < self.sj_pageSize ) [self.mj_footer endRefreshingWithNoMoreData];   // 如果数据小于pageSize
-    else if ( self.mj_footer.state == MJRefreshStateNoMoreData ) [self.mj_footer resetNoMoreData];
-    else [self.mj_footer endRefreshing];
 }
 
 - (void)sj_exeHeaderRefreshing {

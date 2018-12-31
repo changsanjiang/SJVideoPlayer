@@ -175,6 +175,11 @@ SJEdgeControlButtonItemTag const SJEdgeControlLayerCenterItem_Replay = 10000;
 
 /// 更新显示状态
 - (void)_updateAppearStateFor_TopAdapterWithVideoPlayer:(__kindof SJBaseVideoPlayer *)videoPlayer {
+    if ( 0 == _topAdapter.itemCount ) {
+        [self _hidden:_topContainerView animated:YES];
+        return;
+    }
+    
     /// 锁屏状态下, 使隐藏
     if ( videoPlayer.isLockedScreen ) {
         [self _hidden:_topContainerView animated:YES];
@@ -183,7 +188,7 @@ SJEdgeControlButtonItemTag const SJEdgeControlLayerCenterItem_Replay = 10000;
     }
     
     /// 是否显示
-    if ( videoPlayer.controlLayerAppeared ) {
+    if ( videoPlayer.controlLayerIsAppeared ) {
         [self _show:_topContainerView animated:YES];
         if ( !videoPlayer.isFullScreen && !videoPlayer.isFitOnScreen ) {
             [self _hidden:_previewView animated:YES];
@@ -199,8 +204,11 @@ SJEdgeControlButtonItemTag const SJEdgeControlLayerCenterItem_Replay = 10000;
 /// - 更新容器中的Items
 /// - 是否应该显示
 - (void)_updateItemsFor_TopAdapterIfNeeded:(__kindof SJBaseVideoPlayer *)videoPlayer {
-    if ( !_topAdapter ) return;
-    if ( [self _isHiddenWithView:_topContainerView] ) return;
+    if ( [self _isHiddenWithView:_topContainerView] )
+        return;
+
+    if ( 0 == _topAdapter.itemCount )
+        return;
     
     /// 更新item显示状态, 是否需要隐藏
     SJEdgeControlButtonItem *backItem = [self.topAdapter itemForTag:SJEdgeControlLayerTopItem_Back];
@@ -209,43 +217,48 @@ SJEdgeControlButtonItemTag const SJEdgeControlLayerCenterItem_Replay = 10000;
 
     BOOL isFitOnScreen = videoPlayer.isFitOnScreen;
     BOOL isFull = videoPlayer.isFullScreen;
-    /// back item
-    if ( isFull || isFitOnScreen )
-        backItem.hidden = NO;
-    else {
-        if ( _hideBackButtonWhenOrientationIsPortrait )
-            backItem.hidden = YES;
+    
+    if ( backItem ) {
+        if ( isFull || isFitOnScreen )
+            backItem.hidden = NO;
+        else {
+            if ( _hideBackButtonWhenOrientationIsPortrait )
+                backItem.hidden = YES;
+            else
+                backItem.hidden = videoPlayer.isPlayOnScrollView;
+        }
+    }
+    
+    if ( previewItem ) {
+        previewItem.hidden = !_hasBeenGeneratedPreviewImages || !isFull || !_generatePreviewImages;
+    }
+    
+    if ( titleItem ) {
+        /// title item
+        if ( videoPlayer.URLAsset.alwaysShowTitle )
+            titleItem.hidden = NO;
         else
-            backItem.hidden = videoPlayer.isPlayOnScrollView;
-    }
-    
-    /// title item
-    if ( videoPlayer.URLAsset.alwaysShowTitle )
-        titleItem.hidden = NO;
-    else
-        titleItem.hidden = (!isFull && !isFitOnScreen);
-    
-
-    if ( !titleItem.hidden ) {
-        // margin
-        CGFloat left =
-        [_topAdapter itemsIsHiddenWithRange:NSMakeRange(0, [_topAdapter indexOfItemForTag:SJEdgeControlLayerTopItem_Title])]?12:0;
+            titleItem.hidden = (!isFull && !isFitOnScreen);
         
-        CGFloat right =
-        [_topAdapter itemsIsHiddenWithRange:NSMakeRange([_topAdapter indexOfItemForTag:SJEdgeControlLayerTopItem_Title], _topAdapter.itemCount)]?12:0;
         
-        titleItem.insets = SJEdgeInsetsMake(left, right);
-        titleItem.title = sj_makeAttributesString(^(SJAttributeWorker * _Nonnull make) {
-            make.append(videoPlayer.URLAsset.title?:@"", 0)
-            .font(SJEdgeControlLayerSettings.commonSettings.titleFont)
-            .textColor(SJEdgeControlLayerSettings.commonSettings.titleColor)
-            .shadow(CGSizeMake(0.5, 0.5), 1, [UIColor blackColor])
-            .lineBreakMode(NSLineBreakByTruncatingTail);
-        });
+        if ( !titleItem.hidden ) {
+            // margin
+            CGFloat left =
+            [_topAdapter itemsIsHiddenWithRange:NSMakeRange(0, [_topAdapter indexOfItemForTag:SJEdgeControlLayerTopItem_Title])]?12:0;
+            
+            CGFloat right =
+            [_topAdapter itemsIsHiddenWithRange:NSMakeRange([_topAdapter indexOfItemForTag:SJEdgeControlLayerTopItem_Title], _topAdapter.itemCount)]?12:0;
+            
+            titleItem.insets = SJEdgeInsetsMake(left, right);
+            titleItem.title = sj_makeAttributesString(^(SJAttributeWorker * _Nonnull make) {
+                make.append(videoPlayer.URLAsset.title?:@"", 0)
+                .font(SJEdgeControlLayerSettings.commonSettings.titleFont)
+                .textColor(SJEdgeControlLayerSettings.commonSettings.titleColor)
+                .shadow(CGSizeMake(0.5, 0.5), 1, [UIColor blackColor])
+                .lineBreakMode(NSLineBreakByTruncatingTail);
+            });
+        }
     }
-    
-    /// preview item
-    previewItem.hidden = !_hasBeenGeneratedPreviewImages || !isFull || !_generatePreviewImages;
     
     [self _callDelegateMethodOfItemsForAdapter:_topAdapter videoPlayer:videoPlayer];
     [self.topAdapter reload];
@@ -378,6 +391,11 @@ SJEdgeControlButtonItemTag const SJEdgeControlLayerCenterItem_Replay = 10000;
 
 /// 更新显示状态
 - (void)_updateAppearStateFor_LeftAdapterWithVideoPlayer:(__kindof SJBaseVideoPlayer *)videoPlayer {
+    if ( 0 == _leftAdapter.itemCount ) {
+        [self _hidden:_leftContainerView animated:YES];
+        return;
+    }
+    
     /// 锁屏状态下显示
     if ( videoPlayer.isLockedScreen ) {
         [self _show:_leftContainerView animated:YES];
@@ -386,7 +404,7 @@ SJEdgeControlButtonItemTag const SJEdgeControlLayerCenterItem_Replay = 10000;
     }
     
     /// 是否显示
-    if ( videoPlayer.controlLayerAppeared ) {
+    if ( videoPlayer.controlLayerIsAppeared ) {
         [self _show:_leftContainerView animated:YES];
     }
     else {
@@ -396,8 +414,11 @@ SJEdgeControlButtonItemTag const SJEdgeControlLayerCenterItem_Replay = 10000;
 
 /// 更新容器中的Items
 - (void)_updateItemsFor_LeftAdapterIfNeeded:(__kindof SJBaseVideoPlayer *)videoPlayer {
-    if ( !_leftAdapter ) return;
-    if ( [self _isHiddenWithView:_leftContainerView] ) return;
+    if ( 0 == _leftAdapter.itemCount )
+        return;
+    
+    if ( [self _isHiddenWithView:_leftContainerView] )
+        return;
     
     SJEdgeControlButtonItem *lockItem = [self.leftAdapter itemForTag:SJEdgeControlLayerLeftItem_Lock];
     lockItem.hidden = !videoPlayer.isFullScreen;
@@ -485,6 +506,11 @@ SJEdgeControlButtonItemTag const SJEdgeControlLayerCenterItem_Replay = 10000;
 
 /// 更新显示状态
 - (void)_updateAppearStateFor_BottomAdapterWithVideoPlayer:(__kindof SJBaseVideoPlayer *)videoPlayer {
+    if ( 0 == _bottomAdapter.itemCount ) {
+        [self _hidden:_bottomContainerView animated:YES];
+        return;
+    }
+    
     /// 锁屏状态下, 使隐藏
     if ( videoPlayer.isLockedScreen ) {
         [self _hidden:_bottomContainerView animated:YES];
@@ -493,7 +519,7 @@ SJEdgeControlButtonItemTag const SJEdgeControlLayerCenterItem_Replay = 10000;
     }
     
     /// 是否显示
-    if ( videoPlayer.controlLayerAppeared ) {
+    if ( videoPlayer.controlLayerIsAppeared ) {
         [self _show:_bottomContainerView animated:YES];
         [self _hidden:_bottomProgressSlider animated:YES];
     }
@@ -505,19 +531,23 @@ SJEdgeControlButtonItemTag const SJEdgeControlLayerCenterItem_Replay = 10000;
 
 /// 更新容器中的Items
 - (void)_updateItemsFor_BottomAdapterIfNeeded:(__kindof SJBaseVideoPlayer *)videoPlayer {
-    if ( !_bottomAdapter ) return;
-    if ( [self _isHiddenWithView:_bottomContainerView] ) return;
+    if ( 0 == _bottomAdapter.itemCount )
+        return;
+    
+    if ( [self _isHiddenWithView:_bottomContainerView] )
+        return;
+    
     SJEdgeControlButtonItem *playItem = [_bottomAdapter itemForTag:SJEdgeControlLayerBottomItem_Play];
-    SJEdgeControlButtonItem *sliderItem = [_bottomAdapter itemForTag:SJEdgeControlLayerBottomItem_Progress];
+    SJEdgeControlButtonItem *progressItem = [_bottomAdapter itemForTag:SJEdgeControlLayerBottomItem_Progress];
     SJEdgeControlButtonItem *fullItem = [_bottomAdapter itemForTag:SJEdgeControlLayerBottomItem_FullBtn];
     
     SJEdgeControlLayerSettings *settings = [SJEdgeControlLayerSettings commonSettings];
-    
+
     playItem.image = [videoPlayer playStatus_isPlaying]?settings.pauseBtnImage:settings.playBtnImage;
     [self _updateTimeLabelFor_BottomAdapterWithCurrentTimeStr:videoPlayer.currentTimeStr durationStr:videoPlayer.totalTimeStr];
     
-    sliderItem.insets = SJEdgeInsetsMake(8, 8);
-    SJProgressSlider *slider = sliderItem.customView;
+    progressItem.insets = SJEdgeInsetsMake(8, 8);
+    SJProgressSlider *slider = progressItem.customView;
     slider.traceImageView.backgroundColor = settings.progress_traceColor;
     slider.trackImageView.backgroundColor = settings.progress_trackColor;
     slider.bufferProgressColor = settings.progress_bufferColor;
@@ -578,8 +608,8 @@ SJEdgeControlButtonItemTag const SJEdgeControlLayerCenterItem_Replay = 10000;
 
 /// 更新播放进度
 - (void)_updatePlaybackProgressFor_BottomAdapterWithCurrentTime:(NSTimeInterval)currentTime duration:(NSTimeInterval)duration {
-    SJEdgeControlButtonItem *sliderItem = [_bottomAdapter itemForTag:SJEdgeControlLayerBottomItem_Progress];
-    SJProgressSlider *slider = sliderItem.customView;
+    SJEdgeControlButtonItem *progressItem = [_bottomAdapter itemForTag:SJEdgeControlLayerBottomItem_Progress];
+    SJProgressSlider *slider = progressItem.customView;
     slider.maxValue = duration?:1;
     if ( !slider.isDragging ) slider.value = currentTime;
     
@@ -591,15 +621,15 @@ SJEdgeControlButtonItemTag const SJEdgeControlLayerCenterItem_Replay = 10000;
 
 /// 更新缓冲进度
 - (void)_updateBufferProgressFor_BottomAdapter:(NSTimeInterval)bufferProgress {
-    SJEdgeControlButtonItem *sliderItem = [_bottomAdapter itemForTag:SJEdgeControlLayerBottomItem_Progress];
-    SJProgressSlider *slider = sliderItem.customView;
+    SJEdgeControlButtonItem *progressItem = [_bottomAdapter itemForTag:SJEdgeControlLayerBottomItem_Progress];
+    SJProgressSlider *slider = progressItem.customView;
     slider.bufferProgress = bufferProgress;
 }
 
 // controlLayerDisappearCondition
 - (BOOL)_canDisappearFor_BottomAdapter {
-    SJEdgeControlButtonItem *sliderItem = [_bottomAdapter itemForTag:SJEdgeControlLayerBottomItem_Progress];
-    SJProgressSlider *slider = sliderItem.customView;
+    SJEdgeControlButtonItem *progressItem = [_bottomAdapter itemForTag:SJEdgeControlLayerBottomItem_Progress];
+    SJProgressSlider *slider = progressItem.customView;
     return !slider.isDragging;
 }
 
@@ -657,6 +687,11 @@ SJEdgeControlButtonItemTag const SJEdgeControlLayerCenterItem_Replay = 10000;
 
 /// 更新显示状态
 - (void)_updateAppearStateFor_RightAdapterWithVideoPlayer:(__kindof SJBaseVideoPlayer *)videoPlayer {
+    if ( 0 == _rightAdapter.itemCount ) {
+        [self _hidden:_rightContainerView animated:YES];
+        return;
+    }
+    
     /// 锁屏状态下, 使隐藏
     if ( videoPlayer.isLockedScreen ) {
         [self _hidden:_rightContainerView animated:YES];
@@ -664,7 +699,7 @@ SJEdgeControlButtonItemTag const SJEdgeControlLayerCenterItem_Replay = 10000;
     }
     
     /// 是否显示
-    if ( videoPlayer.controlLayerAppeared ) {
+    if ( videoPlayer.controlLayerIsAppeared ) {
         [self _show:_rightContainerView animated:YES];
     }
     else {
@@ -674,7 +709,9 @@ SJEdgeControlButtonItemTag const SJEdgeControlLayerCenterItem_Replay = 10000;
 
 /// 更新容器中的Items
 - (void)_updateItemsFor_RightAdapterIfNeeded:(__kindof SJBaseVideoPlayer *)videoPlayer {
-    if ( !_bottomAdapter ) return;
+    if ( 0 == _rightAdapter.itemCount )
+        return;
+    
     if ( [self _isHiddenWithView:_rightContainerView] ) return;
 
     [self _callDelegateMethodOfItemsForAdapter:_rightAdapter videoPlayer:videoPlayer];
@@ -721,11 +758,16 @@ SJEdgeControlButtonItemTag const SJEdgeControlLayerCenterItem_Replay = 10000;
 }
 
 - (void)_updateAppearStateFor_CenterAdapterWithVideoPlayer:(__kindof SJBaseVideoPlayer *)videoPlayer {
-    /// nothing
+    if ( 0 == _centerAdapter.itemCount ) {
+        [self _hidden:_centerContainerView animated:YES];
+        return;
+    }
 }
 
 - (void)_updateItemsFor_CenterAdapterIfNeeded:(__kindof SJBaseVideoPlayer *)videoPlayer {
-    if ( !_centerAdapter ) return;
+    if ( 0 == _centerAdapter.itemCount )
+        return;
+    
     [self _updateAppearStateFor_ReplayItemWithVideoPlayerIfNeeded:videoPlayer];
     [self _callDelegateMethodOfItemsForAdapter:_centerAdapter videoPlayer:videoPlayer];
     [_centerAdapter reload];
@@ -949,7 +991,7 @@ SJEdgeControlButtonItemTag const SJEdgeControlLayerCenterItem_Replay = 10000;
 }
 
 - (void)videoPlayer:(__kindof SJBaseVideoPlayer *)videoPlayer didEndRotation:(BOOL)isFull {
-    if ( !videoPlayer.controlLayerAppeared ) [self _show:_bottomProgressSlider animated:YES];
+    if ( !videoPlayer.controlLayerIsAppeared ) [self _show:_bottomProgressSlider animated:YES];
 }
 
 ///  在`tableView`或`collectionView`上将要显示的时候调用.

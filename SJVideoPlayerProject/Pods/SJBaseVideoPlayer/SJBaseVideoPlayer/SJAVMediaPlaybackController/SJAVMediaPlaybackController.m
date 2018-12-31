@@ -306,7 +306,7 @@ static const char *key = "kSJAVMediaPlayAsset";
 - (void)pause {
     if ( _prepareStatus != SJMediaPlaybackPrepareStatusReadyToPlay ) return;
     
-    [_playAsset.player pause];
+    [self.playAsset.player pause];
 }
 - (void)stop {
     [_playAsset.player pause];

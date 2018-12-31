@@ -39,7 +39,7 @@
         make.height.equalTo(self->_player.view.mas_width).multipliedBy(9 / 16.0f);
     }];
     
-    _player.URLAsset = [[SJVideoPlayerURLAsset alloc] initWithURL:[NSBundle.mainBundle URLForResource:@"play" withExtension:@"mp4"]];
+    _player.assetURL = [NSURL URLWithString:@"https://www.apple.com/105/media/us/iphone-xr/2018/e7f073a7-e8ae-4c18-937b-91d8939fcadd/films/design/iphone-xr-design-tpl-cc-us-2018_640x360h.mp4"];
     _player.URLAsset.title = @"Test Title";
     _player.hideBackButtonWhenOrientationIsPortrait = YES;
     

@@ -54,6 +54,12 @@ NS_ASSUME_NONNULL_BEGIN
 }
 @end
 
+@interface SJFlagObject ()
+@property (nonatomic, strong, nullable) UIImage *image;
+@property (nonatomic, strong, nullable) id title;
+@property (nonatomic, strong, nullable) id extra;
+@end
+
 @implementation SJFlagObject
 - (instancetype)initWithFlag:(NSInteger)flag {
     self = [super init];

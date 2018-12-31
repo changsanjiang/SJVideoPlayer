@@ -29,4 +29,10 @@ NS_ASSUME_NONNULL_BEGIN
 - (instancetype)init NS_UNAVAILABLE;
 + (instancetype)new NS_UNAVAILABLE;
 @end
+
+@interface SJFlagObject (Extra)
+@property (nonatomic, strong, nullable) id title;
+@property (nonatomic, strong, nullable) UIImage *image;
+@property (nonatomic, strong, nullable) id extra;
+@end
 NS_ASSUME_NONNULL_END

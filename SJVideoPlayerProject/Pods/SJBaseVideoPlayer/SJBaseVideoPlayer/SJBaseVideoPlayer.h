@@ -33,7 +33,10 @@
 #import "SJVideoPlayerPreviewInfo.h"
 #import "SJPrompt.h"
 #import "SJRotationManager.h"
+#import "SJFitOnScreenManagerProtocol.h"
 #import "SJVideoPlayerControlLayerProtocol.h"
+#import "SJControlLayerAppearManagerProtocol.h"
+#import "SJFlipTransitionManagerProtocol.h"
 #import "SJMediaPlaybackProtocol.h"
 #import "SJVideoPlayerURLAsset+SJAVMediaPlaybackAdd.h"
 
@@ -89,7 +92,7 @@ NS_ASSUME_NONNULL_BEGIN
  
  readwrite.
  */
-@property (nonatomic, strong) AVLayerVideoGravity videoGravity;
+@property (nonatomic, strong, null_resettable) AVLayerVideoGravity videoGravity;
 
 
 + (NSString *)version;
@@ -101,25 +104,16 @@ NS_ASSUME_NONNULL_BEGIN
 
 #pragma mark - 镜像翻转
 
-typedef enum : NSUInteger {
-    /// 恢复
-    SJViewFlipTransition_Identity,
-    /// 水平翻转
-    SJViewFlipTransition_Horizontally,
-} SJViewFlipTransition;
-
-/// 镜像翻转
 @interface SJBaseVideoPlayer (VideoFlipTransition)
+@property (nonatomic, strong, null_resettable) id<SJFlipTransitionManager> flipTransitionManager;
 
 @property (nonatomic, readonly) BOOL isFlipTransitioning;
-@property (nonatomic) NSTimeInterval flipTransitionDuration; // default is 1.0
 @property (nonatomic) SJViewFlipTransition flipTransition; // Animated.
 - (void)setFlipTransition:(SJViewFlipTransition)t animated:(BOOL)animated;
 - (void)setFlipTransition:(SJViewFlipTransition)t animated:(BOOL)animated completionHandler:(void(^_Nullable)(__kindof SJBaseVideoPlayer *player))completionHandler;
 
 @property (nonatomic, copy, nullable) void(^flipTransitionDidStartExeBlock)(__kindof SJBaseVideoPlayer *player);
 @property (nonatomic, copy, nullable) void(^flipTransitionDidStopExeBlock)(__kindof SJBaseVideoPlayer *player);
-
 @end
 
 
@@ -155,8 +149,8 @@ typedef enum : NSUInteger {
 #pragma mark - 播放控制
 
 @interface SJBaseVideoPlayer (PlayControl)<SJMediaPlaybackControllerDelegate>
-/// 管理对象: 播放控制
-@property (null_resettable, nonatomic, strong) id<SJMediaPlaybackController> playbackController;
+
+@property (nonatomic, strong, null_resettable) id<SJMediaPlaybackController> playbackController;
 
 /// 资源
 /// - 播放一个资源
@@ -191,7 +185,7 @@ typedef enum : NSUInteger {
 @property (nonatomic, getter=isLockedScreen) BOOL lockedScreen;
 
 /// 初始化完成后, 是否自动播放
-@property (nonatomic, getter=isAutoPlay) BOOL autoPlay;
+@property (nonatomic) BOOL autoPlayWhenPlayStatusIsReadyToPlay;
 
 /// 播放器是否可以执行`play`
 /// - 当调用`play`时, 会回调该block, 如果返回YES, 则执行`play`方法, 否之.
@@ -235,7 +229,7 @@ typedef enum : NSUInteger {
 /// 调速
 @property (nonatomic, readwrite) float rate;
 /// 速率改变的回调
-@property (nonatomic, copy, readwrite, nullable) void(^rateChanged)(__kindof SJBaseVideoPlayer *player);
+@property (nonatomic, copy, nullable) void(^rateDidChangeExeBlock)(__kindof SJBaseVideoPlayer *player);
 
 @property (nonatomic, strong, nullable) NSURL *assetURL;
 - (void)playWithURL:(NSURL *)URL; // 不再建议使用, 请使用`URLAsset`进行初始化
@@ -308,9 +302,10 @@ typedef enum : NSUInteger {
 #pragma mark - Network
 
 @interface SJBaseVideoPlayer (Network)
+@property (nonatomic, strong, null_resettable) id<SJReachability> reachability;
 
 @property (nonatomic, readonly) SJNetworkStatus networkStatus;
-
+@property (nonatomic, copy, nullable) void(^networkStatusDidChangeExeBlock)(__kindof SJBaseVideoPlayer *player);
 @end
 
 
@@ -412,43 +407,11 @@ typedef NS_ENUM(NSUInteger, SJDisablePlayerGestureTypes) {
 
 
 
-#pragma mark - 控制层
+#pragma mark - 播放器控制层 显示/隐藏 控制
 
 @interface SJBaseVideoPlayer (ControlLayer)
 
-/**
- Whether to open the control layer [Appear / Disappear] Manager. default is YES.
- 
- readwrite.
- */
-@property (nonatomic) BOOL enableControlLayerDisplayController;
-
-/**
- When the player paused, Whether to keep the appear state.
- default is NO.
- 
- readwrite.
- */
-@property (nonatomic) BOOL pausedToKeepAppearState;
-
-/**
- YES -> Appear.
- NO  -> Disappear.
- 
- readonly.
- */
-@property (nonatomic, readonly) BOOL controlLayerAppeared;
-- (void)setControlLayerAppeared:(BOOL)controlLayerAppeared;
-
-/// default is YES.
-@property (nonatomic) BOOL controlLayerAutoAppearWhenAssetInitialized;
-
-/**
- The block invoked When Control layer state changed.
- 
- readwrite.
- */
-@property (nonatomic, copy, nullable) void(^controlLayerAppearStateChanged)(__kindof SJBaseVideoPlayer *player, BOOL state);
+@property (nonatomic, strong, null_resettable) id<SJControlLayerAppearManager> controlLayerAppearManager;
 
 /**
  When you want to appear the control layer, you should call this method to appear.
@@ -465,18 +428,21 @@ typedef NS_ENUM(NSUInteger, SJDisablePlayerGestureTypes) {
  - (void)controlLayerNeedDisappear:(__kindof SJBaseVideoPlayer *)videoPlayer;
  */
 - (void)controlLayerNeedDisappear;
+
+@property (nonatomic) BOOL disabledControlLayerAppearManager; // default value is NO.
+@property (nonatomic) BOOL controlLayerIsAppeared;
+@property (nonatomic) BOOL pausedToKeepAppearState;
+@property (nonatomic) BOOL controlLayerAutoAppearWhenAssetInitialized; // default value is YES.
+@property (nonatomic, copy, nullable) void(^controlLayerAppearStateDidChangeExeBlock)(__kindof SJBaseVideoPlayer *player, BOOL state);
 @end
+
 
 
 
 /// 全屏或小屏, 但不触发旋转
 /// v1.3.1 新增
 @interface SJBaseVideoPlayer (FitOnScreen)
-
-/// Disable rotation, only full screen(`fitOnScreen==YES`) or small screen(`fitOnScreen==NO`) operation.
-/// 禁止旋转, 只进行全屏或小屏的操作.
-/// default is NO.
-@property (nonatomic) BOOL useFitOnScreenAndDisableRotation;
+@property (nonatomic, strong, null_resettable) id<SJFitOnScreenManager> fitOnScreenManager;
 
 /// Whether fullscreen or smallscreen, this method does not trigger rotation.
 /// 全屏或小屏, 此方法不触发旋转
@@ -494,12 +460,9 @@ typedef NS_ENUM(NSUInteger, SJDisablePlayerGestureTypes) {
 /// - completionHandler : 操作完成的回调
 - (void)setFitOnScreen:(BOOL)fitOnScreen animated:(BOOL)animated completionHandler:(nullable void(^)(__kindof SJBaseVideoPlayer *player))completionHandler;
 
-/// 全屏或小屏过程中的回调
-@property (nonatomic, copy, nullable) void(^fitOnScreenWillChangeExeBlock)(__kindof SJBaseVideoPlayer *player);
-
-/// 全屏或小屏过程中的回调
-@property (nonatomic, copy, nullable) void(^fitOnScreenDidChangeExeBlock)(__kindof SJBaseVideoPlayer *player);;
-
+@property (nonatomic) BOOL useFitOnScreenAndDisableRotation;
+@property (nonatomic, copy, nullable) void(^fitOnScreenWillBeginExeBlock)(__kindof SJBaseVideoPlayer *player);
+@property (nonatomic, copy, nullable) void(^fitOnScreenDidEndExeBlock)(__kindof SJBaseVideoPlayer *player);;
 @end
 
 
@@ -537,64 +500,15 @@ typedef NS_ENUM(NSUInteger, SJDisablePlayerGestureTypes) {
  */
 - (void)rotate:(SJOrientation)orientation animated:(BOOL)animated completion:(void (^ _Nullable)(__kindof SJBaseVideoPlayer *player))block;
 
-/// 视图将要旋转的回调
-@property (nonatomic, copy, nullable) void(^viewWillRotateExeBlock)(__kindof SJBaseVideoPlayer *player, BOOL isFullScreen);
-
-/// 视图旋转完后的回调
-@property (nonatomic, copy, nullable) void(^viewDidRotateExeBlock)(__kindof SJBaseVideoPlayer *player, BOOL isFullScreen);;
-
-/**
- When Orientation is LandscapeLeft or LandscapeRight, this value is YES.
- 
- readonly.
- */
 @property (nonatomic, readonly) BOOL isFullScreen;
-
-/**
- Whether to disable auto rotation
- 
- readwrite.
- You can disable the player rotation when appropriate.
- For example when the controller is about to disappear.
- 
- 是否禁止播放器自动旋转
- 例如:
- 在viewWillDisappear的时候, 可以禁止自动旋转
- 在viewDidAppear的时候, 开启自动旋转
- 
- v1.0.11:
- `disableRotation` 更名为 `disableAutoRotation`
- */
-@property (nonatomic) BOOL disableAutoRotation;
-
-/// 旋转的时间
-/// - 默认是0.4
-@property (nonatomic) NSTimeInterval rotationTime;
-
-/// 是否正在旋转
 @property (nonatomic, readonly) BOOL isTransitioning;
 
-/**
- This is the player supports orientation when autorotation. default is `SJAutoRotateSupportedOrientation_All`.
- 
- readwrite.
- */
-@property (nonatomic) SJAutoRotateSupportedOrientation supportedOrientation;
-
-/**
- Rotate to the specified orientation, Animated.
- Any value of SJOrientation.
- 
- readwrite.
- */
+@property (nonatomic) BOOL disableAutoRotation;
+@property (nonatomic) NSTimeInterval rotationTime;
 @property (nonatomic) SJOrientation orientation;
-
-/**
- The current orientation of the player.
- Default is UIInterfaceOrientationPortrait.
- 
- readonly.
- */
+@property (nonatomic) SJAutoRotateSupportedOrientation supportedOrientation;
+@property (nonatomic, copy, nullable) void(^viewWillRotateExeBlock)(__kindof SJBaseVideoPlayer *player, BOOL isFullScreen);
+@property (nonatomic, copy, nullable) void(^viewDidRotateExeBlock)(__kindof SJBaseVideoPlayer *player, BOOL isFullScreen);
 @property (nonatomic, readonly) UIInterfaceOrientation currentOrientation;
 @end
 
@@ -606,7 +520,7 @@ typedef NS_ENUM(NSUInteger, SJDisablePlayerGestureTypes) {
 
 @interface SJBaseVideoPlayer (Screenshot)
 
-@property (nonatomic, copy, readwrite, nullable) void(^presentationSize)(__kindof SJBaseVideoPlayer *videoPlayer, CGSize size);
+@property (nonatomic, copy, nullable) void(^presentationSize)(__kindof SJBaseVideoPlayer *videoPlayer, CGSize size);
 
 - (UIImage * __nullable)screenshot;
 
@@ -679,7 +593,8 @@ typedef NS_ENUM(NSUInteger, SJDisablePlayerGestureTypes) {
  */
 @property (nonatomic, readonly) BOOL isScrollAppeared;
 
-
+@property (nonatomic, copy, nullable) void(^playerViewWillAppearExeBlock)(__kindof SJBaseVideoPlayer *videoPlayer);
+@property (nonatomic, copy, nullable) void(^playerViewWillDisappearExeBlock)(__kindof SJBaseVideoPlayer *videoPlayer);
 @end
 
 
@@ -698,7 +613,13 @@ typedef NS_ENUM(NSUInteger, SJDisablePlayerGestureTypes) {
 @property (nonatomic, strong, nullable) UIImage *placeholder __deprecated_msg("use `player.placeholderImageView`");
 @property (nonatomic, readonly) SJVideoPlayerPlayState state __deprecated_msg("use `player.playStatus`");
 @property (nonatomic) BOOL playFailedToKeepAppearState __deprecated;
+@property (nonatomic, copy, nullable) void(^controlLayerAppearStateChanged)(__kindof SJBaseVideoPlayer *player, BOOL state) __deprecated_msg("use `controlLayerAppearStateDidChangeExeBlock`");
+@property (nonatomic) BOOL controlLayerAppeared __deprecated_msg("use `controlLayerIsAppeared`");
+@property (nonatomic) BOOL enableControlLayerDisplayController __deprecated_msg("use `disabledControlLayerAppearManager`");
+@property (nonatomic, copy, nullable) void(^fitOnScreenWillChangeExeBlock)(__kindof SJBaseVideoPlayer *player) __deprecated_msg("use `fitOnScreenWillBeginExeBlock`");
+@property (nonatomic, copy, nullable) void(^fitOnScreenDidChangeExeBlock)(__kindof SJBaseVideoPlayer *player) __deprecated_msg("use `fitOnScreenDidEndExeBlock`");
+@property (nonatomic, getter=isAutoPlay) BOOL autoPlay __deprecated_msg("use `autoPlayWhenPlayStatusIsReadyToPlay`");
+@property (nonatomic, copy, nullable) void(^rateChanged)(__kindof SJBaseVideoPlayer *player) __deprecated_msg("use `rateDidChangeExeBlock`");
 @end
-
 
 NS_ASSUME_NONNULL_END

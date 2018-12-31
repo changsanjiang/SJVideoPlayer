@@ -78,7 +78,7 @@ typedef enum : NSUInteger {
 
 
 
-/// - 其他布局无效, 只配合帧布局使用(SJAdapterItemsLayoutTypeFrameLayout)
+/// - 此分类只配合帧布局使用(SJAdapterItemsLayoutTypeFrameLayout), 其他布局无效
 /// - 帧布局仅支持`customView`
 /// - 请设置`customView`的`bounds`
 @interface SJEdgeControlButtonItem (FrameLayout)

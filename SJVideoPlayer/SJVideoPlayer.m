@@ -93,7 +93,7 @@ static NSString *_kPlayStatus = @"playStatus";
 }
 
 + (NSString *)version {
-    return @"v2.2.7";
+    return @"v2.2.8";
 }
 
 + (instancetype)player {
@@ -158,6 +158,7 @@ static NSString *_kPlayStatus = @"playStatus";
         if ( self.clickedBackEvent ) self.clickedBackEvent(self);
     };
     _defaultEdgeCarrier = [[SJControlLayerCarrier alloc] initWithIdentifier:SJControlLayer_Edge controlLayer:controlLayer];
+    
     return _defaultEdgeCarrier;
 }
 

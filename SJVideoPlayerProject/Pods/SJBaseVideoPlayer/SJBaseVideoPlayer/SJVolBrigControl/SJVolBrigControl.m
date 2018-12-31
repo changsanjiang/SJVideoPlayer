@@ -71,6 +71,9 @@
 }
 
 - (void)setVolume:(float)volume {
+    if ( _disableVolumeSetting )
+        return;
+    
     if ( isnan(volume) || volume < 0 ) volume = 0;
     else if ( volume > 1 ) volume = 1;
     _volume = volume;
@@ -78,6 +81,9 @@
 }
 
 - (void)setBrightness:(float)brightness {
+    if ( _disableBrightnessSetting )
+        return;
+    
     if ( isnan(brightness) ) brightness = 0;
     if ( brightness < 0.1 ) brightness = 0.1;
     else if ( brightness > 1 ) brightness = 1;

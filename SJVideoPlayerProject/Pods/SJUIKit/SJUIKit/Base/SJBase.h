@@ -10,5 +10,9 @@
 #define SJBase_h
 
 #import "SJBaseViewController.h"
+#import "SJBaseCollectionReusableView.h"
+#import "SJBaseCollectionViewCell.h"
+#import "SJBaseTableViewCell.h"
+#import "SJBaseTableViewHeaderFooterView.h"
 
 #endif /* SJBase_h */

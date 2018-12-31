@@ -69,9 +69,6 @@
         
         // create new player
         self.player = [SJVideoPlayer player];
-#ifdef SJMAC
-        self.player.disablePromptWhenNetworkStatusChanges = YES;
-#endif
         [view.coverImageView addSubview:self.player.view];
         [self.player.view mas_makeConstraints:^(MASConstraintMaker *make) {
             make.edges.offset(0);

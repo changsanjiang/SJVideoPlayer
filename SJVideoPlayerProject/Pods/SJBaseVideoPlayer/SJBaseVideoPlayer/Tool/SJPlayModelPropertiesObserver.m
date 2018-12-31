@@ -187,15 +187,12 @@ static NSString *kState = @"state";
         return;
     }
     
-    UIView *superview = _playModel.playerSuperview;
-    while ( superview && !([superview isKindOfClass:[UITableView class]] || [superview isKindOfClass:[UICollectionView class]]) ) {
-        superview = superview.superview;
-    }
+    UIScrollView *superview = sj_getScrollView(_playModel);
     if ( !superview ) {
         self.isAppeared = NO;
         return;
     }
-    self.isAppeared = [self _isAppearedInTheScrollingView:(id)superview];
+    self.isAppeared = [self _isAppearedInTheScrollingView:superview];
 }
 @end
 NS_ASSUME_NONNULL_END

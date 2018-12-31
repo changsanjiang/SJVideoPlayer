@@ -26,6 +26,11 @@
 #import "SJTimerControl.h"
 #import "UIScrollView+ListViewAutoplaySJAdd.h"
 #import "SJAVMediaPlaybackController.h"
+#import "SJReachability.h"
+#import "SJControlLayerAppearStateManager.h"
+#import "SJFitOnScreenManager.h"
+#import "SJFlipTransitionManager.h"
+#import "SJIsAppeared.h"
 
 #if __has_include(<Masonry/Masonry.h>)
 #import <Masonry/Masonry.h>
@@ -39,28 +44,11 @@
 #import "NSObject+SJObserverHelper.h"
 #endif
 
-#if __has_include(<Reachability/Reachability.h>)
-#import <Reachability/Reachability.h>
-#else
-#import "Reachability.h"
-#endif
-
 #if __has_include(<SJFullscreenPopGesture/UINavigationController+SJVideoPlayerAdd.h>)
 #import <SJFullscreenPopGesture/UINavigationController+SJVideoPlayerAdd.h>
 #endif
 
 NS_ASSUME_NONNULL_BEGIN
-static UIScrollView *_Nullable _getScrollViewOfPlayModel(SJPlayModel *playModel) {
-    if ( playModel.isPlayInTableView || playModel.isPlayInCollectionView ) {
-        __kindof UIView *superview = playModel.playerSuperview;
-        while ( superview && !([superview isKindOfClass:[UITableView class]] || [superview isKindOfClass:[UICollectionView class]]) ) {
-            superview = superview.superview;
-        }
-        return superview;
-    }
-    return nil;
-}
-
 @interface SJPlayerView : UIView
 @property (nonatomic, copy, nullable) void(^willMoveToWindowExeBlock)(SJPlayerView *view, UIWindow *_Nullable window);
 @end
@@ -70,84 +58,6 @@ static UIScrollView *_Nullable _getScrollViewOfPlayModel(SJPlayModel *playModel)
     [super willMoveToWindow:newWindow];
     if ( _willMoveToWindowExeBlock ) _willMoveToWindowExeBlock(self, newWindow);
 }
-@end
-
-/**
- 管理类: 控制层显示与隐藏
- */
-@interface _SJControlLayerAppearStateManager : NSObject
-
-/**
- 初始化构造方法
- */
-- (instancetype)initWithVideoPlayer:(SJBaseVideoPlayer *)videoPlayer;
-
-/**
- 是否开启管理类去管理控制层的显示与隐藏. 见 `videoPlayer.enableControlLayerDisplayController`
- */
-@property (nonatomic, getter=isEnabled) BOOL enabled;
-
-/**
- 控制层的显示状态. YES -> appear, NO -> disappear.
- */
-@property (nonatomic, readonly) BOOL controlLayerAppearedState;
-- (void)setControlLayerAppearedState:(BOOL)controlLayerAppearedState;
-
-/**
- 在视频第一次播放之前, 控制层会默认在1秒后显示. 如果在这1秒期间, 用户点击触发显示控制层, 则这个值为YES. 否则1秒显示控制层后, 才会设置这个值为YES.
- 这个属性用于是否1秒后显示控制层.
- */
-@property (nonatomic, readonly) BOOL initialization;
-@property (nonatomic) BOOL controlLayerAutoAppearWhenAssetInitialized;
-
-/**
- 重置`self.initialization`, 当播放新的资源时, 该方法会被调用.
- */
-- (void)resetInitialization;
-
-/**
- 当单击手势触发时, 会调用这个方法. 考虑是否显示或隐藏控制层, 或不做任何事情.
- */
-- (void)considerChangeState;
-
-/**
- 在`self.enabled == YES`的情况下, 立即显示控制层.
- */
-- (void)layerAppear;
-
-/**
- 在`self.enabled == YES`的情况下, 立即隐藏控制层.
- */
-- (void)layerDisappear;
-
-/**
- 当播放被暂停时, 是否保持控制层一直显示.  见 `videoPlayer.pausedToKeepAppearState`.
- */
-@property (nonatomic) BOOL pausedToKeepAppearState;
-
-- (void)start;
-
-@end
-
-/**
- 管理类: 监测 网络状态
- */
-@interface _SJReachabilityObserver : NSObject
-
-/**
- 网络状态只需一个监测对象即可, 所以将其作为单例使用.
- */
-+ (instancetype)sharedInstance;
-
-/**
- 当前的网络状态.
- */
-@property (nonatomic, assign, readonly) SJNetworkStatus networkStatus;
-
-/**
- 当网络状态变更时, 将会调用这个Block.
- */
-@property (nonatomic, copy, nullable) void(^reachabilityChangedExeBlock)(_SJReachabilityObserver *observer, SJNetworkStatus status);
 @end
 
 /**
@@ -203,21 +113,6 @@ static UIScrollView *_Nullable _getScrollViewOfPlayModel(SJPlayModel *playModel)
 @property (nonatomic, strong, readonly) SJVolBrigControl *volBrigControl;
 
 /**
- 管理对象: 控制层的显示与隐藏
- */
-@property (nonatomic, strong, readonly) _SJControlLayerAppearStateManager *displayRecorder;
-
-/**
- 管理对象: 网络状态监测
- */
-@property (nonatomic, strong, readonly) _SJReachabilityObserver *reachabilityObserver;
-
-/**
- 管理对象: 播放控制
- */
-@property (null_resettable, nonatomic, strong) id<SJMediaPlaybackController> playbackController;
-
-/**
  锁屏状态下触发的手势.
  当播放器被锁屏时, 用户单击后, 会触发这个手势, 调用`controlLayerDelegate`的方法: `tappedPlayerOnTheLockedState:`
  */
@@ -243,18 +138,68 @@ static UIScrollView *_Nullable _getScrollViewOfPlayModel(SJPlayModel *playModel)
     UIView *_view;
     SJVideoPlayerPresentView *_presentView;
     UIView *_controlContentView;
-    SJRotationManager *_rotationManager;
-    SJPlayerGestureControl *_gestureControl;
     SJVolBrigControl *_volBrigControl;
-    _SJControlLayerAppearStateManager *_displayRecorder;
     SJVideoPlayerRegistrar *_registrar;
-    _SJReachabilityObserver *_reachabilityObserver;
+    
+    /// gestures
     UITapGestureRecognizer *_lockStateTapGesture;
+    SJPlayerGestureControl *_gestureControl;
+    SJDisablePlayerGestureTypes _disableGestureTypes;
+    
+    /// view controller
+    BOOL _vc_isDisappeared;
+    
+    /// playback controller
+    id<SJMediaPlaybackController> _playbackController;
+    void (^_Nullable _assetDeallocExeBlock)(__kindof SJBaseVideoPlayer * _Nonnull);
+    BOOL _mute;
+    BOOL _lockedScreen;
+    BOOL _autoPlayWhenPlayStatusIsReadyToPlay;
+    BOOL _pauseWhenAppDidEnterBackground;
+    BOOL(^_Nullable _canPlayAnAsset)(__kindof SJBaseVideoPlayer *player);
+    void(^_Nullable _rateDidChangeExeBlock)(__kindof SJBaseVideoPlayer *player);
+    void(^_Nullable _playTimeDidChangeExeBlok)(__kindof SJBaseVideoPlayer *videoPlayer);
+    void(^_Nullable _playDidToEndExeBlock)(__kindof SJBaseVideoPlayer *player);
     CGFloat _rate;
     SJVideoPlayerPlayStatus _playStatus;
     SJVideoPlayerPausedReason _pausedReason;
     SJVideoPlayerInactivityReason _inactivityReason;
     SJVideoPlayerURLAsset *_URLAsset;
+    
+    /// control layer appear manager
+    id<SJControlLayerAppearManager> _controlLayerAppearManager;
+    id<SJControlLayerAppearManagerObserver> _controlLayerAppearManagerObserver;
+    void(^_Nullable _controlLayerAppearStateDidChangeExeBlock)(__kindof SJBaseVideoPlayer *player, BOOL state);
+    BOOL _pausedToKeepAppearState;
+    BOOL _controlLayerAutoAppearWhenAssetInitialized;
+    
+    /// rotation manager
+    SJRotationManager *_rotationManager;
+    void(^_Nullable _viewWillRotateExeBlock)(__kindof SJBaseVideoPlayer *player, BOOL isFullScreen);
+    void(^_Nullable _viewDidRotateExeBlock)(__kindof SJBaseVideoPlayer *player, BOOL isFullScreen);;
+    
+    /// Fit on screen manager
+    id<SJFitOnScreenManager> _fitOnScreenManager;
+    id<SJFitOnScreenManagerObserver> _fitOnScreenManagerObserver;
+    BOOL _useFitOnScreenAndDisableRotation;
+    BOOL _fitOnScreen;
+    void(^_Nullable _fitOnScreenWillBeginExeBlock)(__kindof SJBaseVideoPlayer *player);
+    void(^_Nullable _fitOnScreenDidEndExeBlock)(__kindof SJBaseVideoPlayer *player);
+    
+    /// Flip Transition manager
+    id<SJFlipTransitionManager> _flipTransitionManager;
+    id<SJFlipTransitionManagerObserver> _flipTransitionManagerObserver;
+    void(^_Nullable _flipTransitionDidStartExeBlock)(__kindof SJBaseVideoPlayer *player);
+    void(^_Nullable _flipTransitionDidStopExeBlock)(__kindof SJBaseVideoPlayer *player);
+    
+    /// Network status
+    id<SJReachability> _reachability;
+    id<SJReachabilityObserver> _reachabilityObserver;
+    void(^_Nullable _networkStatusDidChangeExeBlock)(__kindof SJBaseVideoPlayer *player);
+    
+    /// Scroll
+    void(^_Nullable _playerViewWillAppearExeBlock)(__kindof SJBaseVideoPlayer *videoPlayer);
+    void(^_Nullable _playerViewWillDisappearExeBlock)(__kindof SJBaseVideoPlayer *videoPlayer);
 }
 
 + (instancetype)player {
@@ -262,7 +207,7 @@ static UIScrollView *_Nullable _getScrollViewOfPlayModel(SJPlayModel *playModel)
 }
 
 + (NSString *)version {
-    return @"1.7.1";
+    return @"1.8.0";
 }
 
 - (nullable __kindof UIViewController *)atViewController {
@@ -278,25 +223,30 @@ static UIScrollView *_Nullable _getScrollViewOfPlayModel(SJPlayModel *playModel)
 - (instancetype)init {
     self = [super init];
     if ( !self ) return nil;
+    self.rate = 1;
+    self.autoPlayWhenPlayStatusIsReadyToPlay = YES; // 是否自动播放, 默认yes
+    self.pauseWhenAppDidEnterBackground = YES; // App进入后台是否暂停播放, 默认yes
+    self.disabledControlLayerAppearManager = NO; // 是否启用控制层管理器
+    self.controlLayerAutoAppearWhenAssetInitialized = YES;
+    [self registrar];
+    [self view];
+    [self reachability];
+    [self rotationManager];
+    [self gestureControl];
+    [self addInterceptTapGR];
+    [self _configAVAudioSession];
+    [self _considerShowOrHiddenPlaceholder];
+    return self;
+}
+
+- (void)_configAVAudioSession {
     if ( AVAudioSession.sharedInstance.category != AVAudioSessionCategoryPlayback ||
-         AVAudioSession.sharedInstance.category != AVAudioSessionCategoryPlayAndRecord ) {
+        AVAudioSession.sharedInstance.category != AVAudioSessionCategoryPlayAndRecord ) {
         NSError *error = nil;
         // 使播放器在静音状态下也能放出声音
         [[AVAudioSession sharedInstance] setCategory:AVAudioSessionCategoryPlayback error:&error];
         if ( error ) NSLog(@"%@", error.userInfo);
     }
-    self.rate = 1;
-    self.autoPlay = YES; // 是否自动播放, 默认yes
-    self.pauseWhenAppDidEnterBackground = YES; // App进入后台是否暂停播放, 默认yes
-    self.enableControlLayerDisplayController = YES; // 是否启用控制层管理器, 默认yes
-    [self registrar];
-    [self view];
-    [self rotationManager];
-    [self gestureControl];
-    [self reachabilityObserver];
-    [self addInterceptTapGR];
-    [self _considerShowOrHiddenPlaceholder];
-    return self;
 }
 
 static NSString *_kGestureState = @"state";
@@ -467,7 +417,7 @@ static NSString *_kGestureState = @"state";
     return self.presentView.placeholderImageView;
 }
 
-- (void)setVideoGravity:(AVLayerVideoGravity)videoGravity {
+- (void)setVideoGravity:(AVLayerVideoGravity _Nullable)videoGravity {
     self.playbackController.videoGravity = videoGravity;
 }
 
@@ -558,7 +508,8 @@ static NSString *_kGestureState = @"state";
     }
     if ( self.viewWillRotateExeBlock ) self.viewWillRotateExeBlock(self, isFullscreen);
     
-    [[self atViewController] setNeedsStatusBarAppearanceUpdate];
+    [self controlLayerNeedDisappear];
+    [self needShowStatusBar];
 }
 - (void)rotationManager:(SJRotationManager *)manager didRotateView:(BOOL)isFullscreen {
     if ( [self.controlLayerDelegate respondsToSelector:@selector(videoPlayer:didEndRotation:)] ) {
@@ -624,7 +575,7 @@ static NSString *_kGestureState = @"state";
     _gestureControl.singleTapped = ^(SJPlayerGestureControl * _Nonnull control) {
         __strong typeof(_self) self = _self;
         if ( !self ) return;
-        [self.displayRecorder considerChangeState];
+        [self.controlLayerAppearManager switchAppearState];
     };
     
     _gestureControl.doubleTapped = ^(SJPlayerGestureControl * _Nonnull control) {
@@ -780,11 +731,7 @@ static NSString *_kGestureState = @"state";
     
     return _volBrigControl;
 }
-- (_SJControlLayerAppearStateManager *)displayRecorder {
-    if ( _displayRecorder ) return _displayRecorder;
-    _displayRecorder = [[_SJControlLayerAppearStateManager alloc] initWithVideoPlayer:self];
-    return _displayRecorder;
-}
+
 - (SJVideoPlayerRegistrar *)registrar {
     if ( _registrar ) return _registrar;
     _registrar = [SJVideoPlayerRegistrar new];
@@ -839,41 +786,14 @@ static NSString *_kGestureState = @"state";
     return _registrar;
 }
 
-- (_SJReachabilityObserver *)reachabilityObserver {
-    if ( _reachabilityObserver ) return _reachabilityObserver;
-    _reachabilityObserver = [_SJReachabilityObserver sharedInstance];
-    __weak typeof(self) _self = self;
-    _reachabilityObserver.reachabilityChangedExeBlock = ^(_SJReachabilityObserver * _Nonnull observer, SJNetworkStatus status) {
-        __strong typeof(_self) self = _self;
-        if ( !self ) return;
-        if ( [self.controlLayerDelegate respondsToSelector:@selector(videoPlayer:reachabilityChanged:)] ) {
-            [self.controlLayerDelegate videoPlayer:self reachabilityChanged:status];
-        }
-#ifdef SJ_MAC
-        switch (status) {
-            case SJNetworkStatus_NotReachable: {
-                NSLog(@"网络状态: 无法连接网络");
-            }
-                break;
-            case SJNetworkStatus_ReachableViaWiFi: {
-                NSLog(@"网络状态: WiFi");
-            }
-                break;
-            case SJNetworkStatus_ReachableViaWWAN: {
-                NSLog(@"网络状态: WWAN");
-            }
-                break;
-        }
-#endif
-    };
-    return _reachabilityObserver;
-}
-
 - (void)setState:(SJVideoPlayerPlayState)state {
     if ( state == _state ) return;
     _state = state;
     
-    if ( state == SJVideoPlayerPlayState_Paused && self.pausedToKeepAppearState && self.registrar.state == SJVideoPlayerAppState_Forground ) [self.displayRecorder layerAppear];
+    if ( state == SJVideoPlayerPlayState_Paused &&
+         self.pausedToKeepAppearState &&
+         self.registrar.state == SJVideoPlayerAppState_Forground )
+        [self.controlLayerAppearManager keepAppearState];
     
     if ( [self.controlLayerDelegate respondsToSelector:@selector(videoPlayer:stateChanged:)] ) {
         [self.controlLayerDelegate videoPlayer:self stateChanged:state];
@@ -891,8 +811,138 @@ static NSString *_kGestureState = @"state";
         [self.controlLayerDelegate tappedPlayerOnTheLockedState:self];
     }
 }
+@end
 
-@synthesize playbackController = _playbackController;
+
+#pragma mark -
+
+@implementation SJBaseVideoPlayer (VideoFlipTransition)
+- (void)setFlipTransitionManager:(id<SJFlipTransitionManager> _Nullable)flipTransitionManager {
+    _flipTransitionManager = flipTransitionManager;
+}
+- (id<SJFlipTransitionManager>)flipTransitionManager {
+    if ( _flipTransitionManager )
+        return _flipTransitionManager;
+    
+    _flipTransitionManager = [[SJFlipTransitionManager alloc] initWithTarget:_playbackController.playerView];
+    [self _needUpdateFlipTransitionManagerProperties];
+    return _flipTransitionManager;
+}
+
+- (void)_needUpdateFlipTransitionManagerProperties {
+    if ( !_flipTransitionManager )
+        return;
+    
+    _flipTransitionManagerObserver = [_flipTransitionManager getObserver];
+    __weak typeof(self) _self = self;
+    _flipTransitionManagerObserver.flipTransitionDidStartExeBlock = ^(id<SJFlipTransitionManager> mgr) {
+        __strong typeof(_self) self = _self;
+        if ( !self ) return;
+        if ( self.flipTransitionDidStartExeBlock )
+            self.flipTransitionDidStartExeBlock(self);
+    };
+    
+    _flipTransitionManagerObserver.flipTransitionDidStopExeBlock = ^(id<SJFlipTransitionManager> mgr) {
+        __strong typeof(_self) self = _self;
+        if ( !self ) return;
+        if ( self.flipTransitionDidStopExeBlock )
+            self.flipTransitionDidStopExeBlock(self);
+    };
+}
+
+- (BOOL)isFlipTransitioning {
+    return self.flipTransitionManager.state == SJFlipTransitionStateStart;
+}
+- (SJViewFlipTransition)flipTransition {
+    return self.flipTransitionManager.flipTransition;
+}
+- (void)setFlipTransition:(SJViewFlipTransition)flipTransition {
+    [self setFlipTransition:flipTransition animated:YES];
+}
+- (void)setFlipTransition:(SJViewFlipTransition)t animated:(BOOL)animated {
+    [self setFlipTransition:t animated:animated completionHandler:nil];
+}
+- (void)setFlipTransition:(SJViewFlipTransition)t animated:(BOOL)animated completionHandler:(void(^_Nullable)(__kindof SJBaseVideoPlayer *player))completionHandler {
+    __weak typeof(self) _self = self;
+    [self.flipTransitionManager setFlipTransition:t animated:animated completionHandler:^(id<SJFlipTransitionManager> mgr) {
+        __strong typeof(_self) self = _self;
+        if ( !self ) return;
+      if ( completionHandler )
+          completionHandler(self);
+    }];
+}
+
+- (void)setFlipTransitionDidStartExeBlock:(void (^_Nullable)(__kindof SJBaseVideoPlayer * _Nonnull))block {
+    _flipTransitionDidStartExeBlock = block;
+}
+
+- (void (^_Nullable)(__kindof SJBaseVideoPlayer * _Nonnull))flipTransitionDidStartExeBlock {
+    return _flipTransitionDidStartExeBlock;
+}
+
+- (void)setFlipTransitionDidStopExeBlock:(void (^_Nullable)(__kindof SJBaseVideoPlayer * _Nonnull))block {
+    _flipTransitionDidStopExeBlock = block;
+}
+
+- (void (^_Nullable)(__kindof SJBaseVideoPlayer * _Nonnull))flipTransitionDidStopExeBlock {
+    return _flipTransitionDidStopExeBlock;
+}
+@end
+
+
+#pragma mark - Network
+
+@implementation SJBaseVideoPlayer (Network)
+
+- (void)setReachability:(id<SJReachability> _Nullable)reachability {
+    _reachability = reachability;
+    [self _needUpdateReachabilityProperties];
+}
+
+- (id<SJReachability>)reachability {
+    if ( _reachability )
+        return _reachability;
+    _reachability = [SJReachability shared];
+    [self _needUpdateReachabilityProperties];
+    return _reachability;
+}
+
+- (void)_needUpdateReachabilityProperties {
+    if ( !_reachability )
+        return;
+    
+    _reachabilityObserver = [_reachability getObserver];
+    __weak typeof(self) _self = self;
+    _reachabilityObserver.networkStatusDidChangeExeBlock = ^(id<SJReachability> r, SJNetworkStatus status) {
+        __strong typeof(_self) self = _self;
+        if ( !self ) return;
+
+        if ( [self.controlLayerDelegate respondsToSelector:@selector(videoPlayer:reachabilityChanged:)] ) {
+            [self.controlLayerDelegate videoPlayer:self reachabilityChanged:status];
+        }
+        
+        if ( self.networkStatusDidChangeExeBlock )
+            self.networkStatusDidChangeExeBlock(self);
+    };
+}
+
+- (SJNetworkStatus)networkStatus {
+    return self.reachability.networkStatus;
+}
+
+- (void)setNetworkStatusDidChangeExeBlock:(void (^_Nullable)(__kindof SJBaseVideoPlayer * _Nonnull))networkStatusDidChangeExeBlock {
+    _networkStatusDidChangeExeBlock = networkStatusDidChangeExeBlock;
+}
+
+- (void (^_Nullable)(__kindof SJBaseVideoPlayer * _Nonnull))networkStatusDidChangeExeBlock {
+    return _networkStatusDidChangeExeBlock;
+}
+@end
+
+
+
+#pragma mark - 控制
+@implementation SJBaseVideoPlayer (PlayControl)
 - (void)setPlaybackController:(nullable id<SJMediaPlaybackController>)playbackController {
     [_playbackController.playerView removeFromSuperview];
     _playbackController = playbackController;
@@ -907,6 +957,9 @@ static NSString *_kGestureState = @"state";
 }
 
 - (void)_needUpdatePlaybackControllerProperties {
+    if ( !_playbackController )
+        return;
+    
     _playbackController.delegate = self;
     if ( _playbackController.playerView.superview != self.presentView ) {
         _playbackController.playerView.frame = self.presentView.bounds;
@@ -918,175 +971,6 @@ static NSString *_kGestureState = @"state";
     if ( _playbackController.mute != self.mute ) _playbackController.mute = self.mute;
     if ( _playbackController.videoGravity != self.videoGravity ) _playbackController.videoGravity = self.videoGravity;
 }
-
-@end
-
-
-#pragma mark -
-
-@interface _SJViewFlipTransitionServer : NSObject<CAAnimationDelegate>
-- (instancetype)initWithView:(__weak UIView *)view;
-@property (nonatomic) NSTimeInterval flipTransitionDuration;
-@property (nonatomic) SJViewFlipTransition direction;
-@property (nonatomic, readonly) BOOL isFlipTransitioning;
-- (void)setDirection:(SJViewFlipTransition)direction animated:(BOOL)animated;
-- (void)setDirection:(SJViewFlipTransition)direction animated:(BOOL)animated completionHandler:(void(^_Nullable)(__kindof _SJViewFlipTransitionServer *s))completionHandler;
-
-@property (nonatomic, copy, nullable) void(^flipTransitionDidStartExeBlock)(__kindof _SJViewFlipTransitionServer *s);
-@property (nonatomic, copy, nullable) void(^flipTransitionDidStopExeBlock)(__kindof _SJViewFlipTransitionServer *s);
-@end
-
-@implementation _SJViewFlipTransitionServer {
-    __weak UIView *_view;
-    void(^_Nullable _completionHandler)(__kindof _SJViewFlipTransitionServer *s);
-}
-- (instancetype)initWithView:(__weak UIView *)view {
-    self = [super init];
-    if ( !self ) return nil;
-    _view = view;
-    _flipTransitionDuration = 1.0;
-    return self;
-}
-
-- (void)setDirection:(SJViewFlipTransition)direction {
-    [self setDirection:direction animated:YES];
-}
-
-- (void)setDirection:(SJViewFlipTransition)direction animated:(BOOL)animated {
-    [self setDirection:direction animated:animated completionHandler:nil];
-}
-
-- (void)setDirection:(SJViewFlipTransition)direction animated:(BOOL)animated completionHandler:(void(^_Nullable)(__kindof _SJViewFlipTransitionServer *s))completionHandler {
-    if ( direction == _direction ) return;
-    if ( _isFlipTransitioning ) return;
-    _direction = direction;
-    
-    CATransform3D transform = CATransform3DIdentity;
-    switch ( direction ) {
-        case SJViewFlipTransition_Identity: {
-            transform = CATransform3DIdentity;
-        }
-            break;
-        case SJViewFlipTransition_Horizontally: {
-            transform = CATransform3DConcat(CATransform3DMakeRotation(M_PI, 0, 1, 0), CATransform3DMakeTranslation(0, 0, -10000));
-        }
-            break;
-    }
-
-    CABasicAnimation *rotationAnimation = [CABasicAnimation animationWithKeyPath:@"transform"];
-    rotationAnimation.fromValue = [NSValue valueWithCATransform3D:_view.layer.transform];
-    rotationAnimation.toValue = [NSValue valueWithCATransform3D:transform];
-    rotationAnimation.duration = _flipTransitionDuration;
-    rotationAnimation.cumulative = YES;
-    rotationAnimation.delegate = self;
-    [_view.layer addAnimation:rotationAnimation forKey:nil];
-    _view.layer.transform = transform;
-    _isFlipTransitioning = YES;
-    _completionHandler = completionHandler;
-}
-
-- (void)animationDidStart:(CAAnimation *)anim {
-    _isFlipTransitioning = YES;
-    if ( _flipTransitionDidStartExeBlock ) _flipTransitionDidStartExeBlock(self);
-}
-
-- (void)animationDidStop:(CAAnimation *)anim finished:(BOOL)flag {
-    _isFlipTransitioning = NO;
-    
-    if ( _completionHandler ) {
-        _completionHandler(self);
-        _completionHandler = nil;
-    }
-    if ( _flipTransitionDidStopExeBlock ) _flipTransitionDidStopExeBlock(self);
-}
-@end
-
-
-@implementation SJBaseVideoPlayer (VideoFlipTransition)
-
-- (_SJViewFlipTransitionServer *)flipTransitionServer {
-    _SJViewFlipTransitionServer *s = objc_getAssociatedObject(self, _cmd);
-    if ( !s ) {
-        s = [[_SJViewFlipTransitionServer alloc] initWithView:_playbackController.playerView];
-        objc_setAssociatedObject(self, _cmd, s, OBJC_ASSOCIATION_RETAIN_NONATOMIC);
-    }
-    return s;
-}
-
-- (SJViewFlipTransition)flipTransition {
-    return self.flipTransitionServer.direction;
-}
-
-- (void)setFlipTransition:(SJViewFlipTransition)t {
-    self.flipTransitionServer.direction = t;
-}
-- (void)setFlipTransition:(SJViewFlipTransition)t animated:(BOOL)animated {
-    [self.flipTransitionServer setDirection:t animated:animated];
-}
-- (void)setFlipTransition:(SJViewFlipTransition)t animated:(BOOL)animated completionHandler:(void(^_Nullable)(__kindof SJBaseVideoPlayer *player))completionHandler {
-    __weak typeof(self) _self = self;
-    [self.flipTransitionServer setDirection:t animated:animated completionHandler:^(__kindof _SJViewFlipTransitionServer * _Nonnull s) {
-        __strong typeof(_self) self = _self;
-        if ( !self ) return;
-        if ( completionHandler ) completionHandler(self);
-    }];
-}
-- (BOOL)isFlipTransitioning {
-    return self.flipTransitionServer.isFlipTransitioning;
-}
-
-- (void)setFlipTransitionDidStartExeBlock:(void (^_Nullable)(__kindof SJBaseVideoPlayer * _Nonnull))block {
-    objc_setAssociatedObject(self, @selector(flipTransitionDidStartExeBlock), block, OBJC_ASSOCIATION_COPY_NONATOMIC);
-    __weak typeof(self) _self = self;
-    self.flipTransitionServer.flipTransitionDidStartExeBlock = ^(__kindof _SJViewFlipTransitionServer * _Nonnull s) {
-        __strong typeof(_self) self = _self;
-        if ( !self ) return;
-        if ( block ) block(self);
-    };
-}
-
-- (void (^_Nullable)(__kindof SJBaseVideoPlayer * _Nonnull))flipTransitionDidStartExeBlock {
-    return objc_getAssociatedObject(self, _cmd);
-}
-
-- (void)setFlipTransitionDidStopExeBlock:(void (^_Nullable)(__kindof SJBaseVideoPlayer * _Nonnull))block {
-    objc_setAssociatedObject(self, @selector(flipTransitionDidStopExeBlock), block, OBJC_ASSOCIATION_COPY_NONATOMIC);
-    __weak typeof(self) _self = self;
-    self.flipTransitionServer.flipTransitionDidStopExeBlock = ^(__kindof _SJViewFlipTransitionServer * _Nonnull s) {
-        __strong typeof(_self) self = _self;
-        if ( !self ) return;
-        if ( block ) block(self);
-    };
-}
-
-- (void (^_Nullable)(__kindof SJBaseVideoPlayer * _Nonnull))flipTransitionDidStopExeBlock {
-    return objc_getAssociatedObject(self, _cmd);
-}
-
-- (void)setFlipTransitionDuration:(NSTimeInterval)flipTransitionDuration {
-    self.flipTransitionServer.flipTransitionDuration = flipTransitionDuration;
-}
-
-- (NSTimeInterval)flipTransitionDuration {
-    return self.flipTransitionServer.flipTransitionDuration;
-}
-@end
-
-
-#pragma mark - Network
-
-@implementation SJBaseVideoPlayer (Network)
-
-- (SJNetworkStatus)networkStatus {
-    return self.reachabilityObserver.networkStatus;
-}
-
-@end
-
-
-
-#pragma mark - 控制
-@implementation SJBaseVideoPlayer (PlayControl)
 
 - (void)switchVideoDefinitionByURL:(NSURL *)URL {
     [self.playbackController switchVideoDefinitionByURL:URL];
@@ -1177,7 +1061,7 @@ static NSString *_kGestureState = @"state";
     _URLAsset = URLAsset;
     
     // 维护当前播放的indexPath
-    UIScrollView *scrollView = _getScrollViewOfPlayModel(URLAsset.playModel);
+    UIScrollView *scrollView = sj_getScrollView(URLAsset.playModel);
     if ( scrollView.sj_enabledAutoplay ) {
         scrollView.sj_currentPlayingIndexPath = [URLAsset.playModel performSelector:@selector(indexPath)];
     }
@@ -1223,8 +1107,14 @@ static NSString *_kGestureState = @"state";
         return;
     }
     
-    if ( !self.isLockedScreen )
-        [self.displayRecorder resetInitialization];
+    if ( !self.isLockedScreen && self.controlLayerAutoAppearWhenAssetInitialized ) {
+        __weak typeof(self) _self = self;
+        dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(1 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
+            __strong typeof(_self) self = _self;
+            if ( !self ) return;
+            [self.controlLayerAppearManager needAppear];
+        });
+    }
     
     if ( [self.controlLayerDelegate respondsToSelector:@selector(loadCompletion:)] ) {
         [self.controlLayerDelegate loadCompletion:self];
@@ -1236,7 +1126,7 @@ static NSString *_kGestureState = @"state";
         self.operationOfInitializing(self);
         self.operationOfInitializing = nil;
     }
-    else if ( self.autoPlay ) {
+    else if ( self.autoPlayWhenPlayStatusIsReadyToPlay ) {
         if ( self.isPlayOnScrollView ) {
             if ( self.isScrollAppeared )
                 [self play];
@@ -1262,7 +1152,7 @@ static NSString *_kGestureState = @"state";
 
 - (void)_mediaDidPlayToEnd {
     if ( !self.vc_isDisappeared ) {
-        UIScrollView *scrollView = _getScrollViewOfPlayModel(_URLAsset.playModel);
+        UIScrollView *scrollView = sj_getScrollView(_URLAsset.playModel);
         if ( scrollView.sj_enabledAutoplay ) {
             if ( self.playDidToEndExeBlock ) self.playDidToEndExeBlock(self);
             [scrollView sj_needPlayNextAsset];
@@ -1281,28 +1171,30 @@ static NSString *_kGestureState = @"state";
 }
 
 - (void)setAssetDeallocExeBlock:(nullable void (^)(__kindof SJBaseVideoPlayer * _Nonnull))assetDeallocExeBlock {
-    objc_setAssociatedObject(self, @selector(assetDeallocExeBlock), assetDeallocExeBlock, OBJC_ASSOCIATION_COPY_NONATOMIC);
+    _assetDeallocExeBlock = assetDeallocExeBlock;
 }
 
 - (nullable void (^)(__kindof SJBaseVideoPlayer * _Nonnull))assetDeallocExeBlock {
-    return objc_getAssociatedObject(self, _cmd);
+    return _assetDeallocExeBlock;
 }
 
 - (void)setMute:(BOOL)mute {
-    if ( mute == self.mute ) return;
-    objc_setAssociatedObject(self, @selector(mute), @(mute), OBJC_ASSOCIATION_RETAIN_NONATOMIC);
+    if ( mute == _mute )
+        return;
+    _mute = mute;
     _playbackController.mute = mute;
     if ( [self.controlLayerDelegate respondsToSelector:@selector(videoPlayer:muteChanged:)] ) {
         [self.controlLayerDelegate videoPlayer:self muteChanged:mute];
     }
 }
-
 - (BOOL)mute {
-    return [objc_getAssociatedObject(self, _cmd) boolValue];
+    return _mute;
 }
 
 - (void)setLockedScreen:(BOOL)lockedScreen {
-    objc_setAssociatedObject(self, @selector(isLockedScreen), @(lockedScreen), OBJC_ASSOCIATION_RETAIN_NONATOMIC);
+    if ( lockedScreen == _lockedScreen )
+        return;
+    _lockedScreen = lockedScreen;
     if ( lockedScreen ) {
         [self.controlLayerDataSource.controlView addGestureRecognizer:self.lockStateTapGesture];
     }
@@ -1317,35 +1209,33 @@ static NSString *_kGestureState = @"state";
         [self.controlLayerDelegate unlockedVideoPlayer:self];
     }
 }
-
 - (BOOL)isLockedScreen {
-    return [objc_getAssociatedObject(self, _cmd) boolValue];
+    return _lockedScreen;
 }
 
-- (void)setAutoPlay:(BOOL)autoPlay {
-    objc_setAssociatedObject(self, @selector(isAutoPlay), @(autoPlay), OBJC_ASSOCIATION_RETAIN_NONATOMIC);
+- (void)setAutoPlayWhenPlayStatusIsReadyToPlay:(BOOL)autoPlayWhenPlayStatusIsReadyToPlay {
+    _autoPlayWhenPlayStatusIsReadyToPlay = autoPlayWhenPlayStatusIsReadyToPlay;
 }
-
-- (BOOL)isAutoPlay {
-    return [objc_getAssociatedObject(self, _cmd) boolValue];
+- (BOOL)autoPlayWhenPlayStatusIsReadyToPlay {
+    return _autoPlayWhenPlayStatusIsReadyToPlay;
 }
 
 - (void)setPauseWhenAppDidEnterBackground:(BOOL)pauseWhenAppDidEnterBackground {
-    if ( pauseWhenAppDidEnterBackground ==  self.pauseWhenAppDidEnterBackground ) return;
-    objc_setAssociatedObject(self, @selector(pauseWhenAppDidEnterBackground), @(pauseWhenAppDidEnterBackground), OBJC_ASSOCIATION_RETAIN_NONATOMIC);
+    if ( pauseWhenAppDidEnterBackground ==  _pauseWhenAppDidEnterBackground ) return;
+    _pauseWhenAppDidEnterBackground = pauseWhenAppDidEnterBackground;
     _playbackController.pauseWhenAppDidEnterBackground = pauseWhenAppDidEnterBackground;
 }
 
 - (BOOL)pauseWhenAppDidEnterBackground {
-    return [objc_getAssociatedObject(self, _cmd) boolValue];
+    return _pauseWhenAppDidEnterBackground;
 }
 
 - (void)setCanPlayAnAsset:(nullable BOOL (^)(__kindof SJBaseVideoPlayer * _Nonnull))canPlayAnAsset {
-    objc_setAssociatedObject(self, @selector(canPlayAnAsset), canPlayAnAsset, OBJC_ASSOCIATION_COPY_NONATOMIC);
+    _canPlayAnAsset = canPlayAnAsset;
 }
 
 - (nullable BOOL (^)(__kindof SJBaseVideoPlayer * _Nonnull))canPlayAnAsset {
-    return objc_getAssociatedObject(self, _cmd);
+    return _canPlayAnAsset;
 }
 
 - (void)play {
@@ -1369,7 +1259,7 @@ static NSString *_kGestureState = @"state";
     if ( [self playStatus_isPrepare] ) {
         // 记录操作, 待资源初始化完成后调用
         self.operationOfInitializing = ^(SJBaseVideoPlayer * _Nonnull player) {
-            if ( player.autoPlay ) [player play];
+            if ( player.autoPlayWhenPlayStatusIsReadyToPlay ) [player play];
         };
         return;
     }
@@ -1378,7 +1268,7 @@ static NSString *_kGestureState = @"state";
     
     self.playStatus = SJVideoPlayerPlayStatusPlaying;
     
-    [self.displayRecorder start];
+    [self.controlLayerAppearManager resume];
 }
 
 - (void)pause {
@@ -1507,11 +1397,11 @@ static NSString *_kGestureState = @"state";
 }
 
 - (void)setDisableVolumeSetting:(BOOL)disableVolumeSetting {
-    objc_setAssociatedObject(self, @selector(disableVolumeSetting), @(disableVolumeSetting), OBJC_ASSOCIATION_RETAIN_NONATOMIC);
+    self.volBrigControl.disableVolumeSetting = disableVolumeSetting;
 }
 
 - (BOOL)disableVolumeSetting {
-    return [objc_getAssociatedObject(self, _cmd) boolValue];
+    return self.volBrigControl.disableVolumeSetting;
 }
 
 - (void)setBrightness:(float)brightness {
@@ -1524,11 +1414,11 @@ static NSString *_kGestureState = @"state";
 }
 
 - (void)setDisableBrightnessSetting:(BOOL)disableBrightnessSetting {
-    objc_setAssociatedObject(self, @selector(disableBrightnessSetting), @(disableBrightnessSetting), OBJC_ASSOCIATION_RETAIN_NONATOMIC);
+    self.volBrigControl.disableBrightnessSetting = disableBrightnessSetting;
 }
 
 - (BOOL)disableBrightnessSetting {
-    return [objc_getAssociatedObject(self, _cmd) boolValue];
+    return self.volBrigControl.disableBrightnessSetting;
 }
 
 - (void)setRate:(float)rate {
@@ -1541,7 +1431,7 @@ static NSString *_kGestureState = @"state";
         [self.controlLayerDelegate videoPlayer:self rateChanged:rate];
     }
     
-    if ( self.rateChanged ) self.rateChanged(self);
+    if ( self.rateDidChangeExeBlock ) self.rateDidChangeExeBlock(self);
     
     if ( [self playStatus_isInactivity_ReasonPlayEnd] ) [self replay];
     
@@ -1551,13 +1441,11 @@ static NSString *_kGestureState = @"state";
 - (float)rate {
     return _rate;
 }
-
-- (void)setRateChanged:(nullable void (^)(__kindof SJBaseVideoPlayer * _Nonnull))rateChanged {
-    objc_setAssociatedObject(self, @selector(rateChanged), rateChanged, OBJC_ASSOCIATION_COPY_NONATOMIC);
+- (void)setRateDidChangeExeBlock:(void (^_Nullable)(__kindof SJBaseVideoPlayer * _Nonnull))rateDidChangeExeBlock {
+    _rateDidChangeExeBlock = rateDidChangeExeBlock;
 }
-
-- (nullable void (^)(__kindof SJBaseVideoPlayer * _Nonnull))rateChanged {
-    return objc_getAssociatedObject(self, _cmd);
+- (void (^_Nullable)(__kindof SJBaseVideoPlayer * _Nonnull))rateDidChangeExeBlock {
+    return _rateDidChangeExeBlock;
 }
 
 - (void)setAssetURL:(nullable NSURL *)assetURL {
@@ -1596,11 +1484,11 @@ static NSString *_kGestureState = @"state";
     if ( _tmpHiddenStatusBar ) return YES;
     if ( self.lockedScreen ) return YES;
     if ( self.rotationManager.transitioning ) {
-        if ( self.enableControlLayerDisplayController && self.controlLayerAppeared ) return NO;
+        if ( !self.disabledControlLayerAppearManager && self.controlLayerIsAppeared ) return NO;
         return YES;
     }
     // 全屏播放时, 使状态栏根据控制层显示或隐藏
-    if ( self.isFullScreen ) return !self.controlLayerAppeared;
+    if ( self.isFullScreen ) return !self.controlLayerIsAppeared;
     return NO;
 }
 - (UIStatusBarStyle)vc_preferredStatusBarStyle {
@@ -1610,10 +1498,10 @@ static NSString *_kGestureState = @"state";
 }
 
 - (void)setVc_isDisappeared:(BOOL)vc_isDisappeared {
-    objc_setAssociatedObject(self, @selector(vc_isDisappeared), @(vc_isDisappeared), OBJC_ASSOCIATION_RETAIN_NONATOMIC);
+    _vc_isDisappeared = vc_isDisappeared;
 }
 - (BOOL)vc_isDisappeared {
-    return [objc_getAssociatedObject(self, _cmd) boolValue];
+    return _vc_isDisappeared;
 }
 
 - (void)needShowStatusBar {
@@ -1681,19 +1569,19 @@ static NSString *_kGestureState = @"state";
 }
 
 - (void)setPlayTimeDidChangeExeBlok:(nullable void (^)(__kindof SJBaseVideoPlayer * _Nonnull))playTimeDidChangeExeBlok {
-    objc_setAssociatedObject(self, @selector(playTimeDidChangeExeBlok), playTimeDidChangeExeBlok, OBJC_ASSOCIATION_COPY_NONATOMIC);
+    _playTimeDidChangeExeBlok = playTimeDidChangeExeBlok;
 }
 
 - (nullable void (^)(__kindof SJBaseVideoPlayer * _Nonnull))playTimeDidChangeExeBlok {
-    return objc_getAssociatedObject(self, _cmd);
+    return _playTimeDidChangeExeBlok;
 }
 
-- (void)setPlayDidToEndExeBlock:(nullable void (^)(__kindof SJBaseVideoPlayer * _Nonnull))playDidToEnd {
-    objc_setAssociatedObject(self, @selector(playDidToEndExeBlock), playDidToEnd, OBJC_ASSOCIATION_COPY_NONATOMIC);
+- (void)setPlayDidToEndExeBlock:(nullable void (^)(__kindof SJBaseVideoPlayer * _Nonnull))playDidToEndExeBlock {
+    _playDidToEndExeBlock = playDidToEndExeBlock;
 }
 
 - (nullable void (^)(__kindof SJBaseVideoPlayer * _Nonnull))playDidToEndExeBlock {
-    return objc_getAssociatedObject(self, _cmd);
+    return _playDidToEndExeBlock;
 }
 @end
 
@@ -1703,11 +1591,11 @@ static NSString *_kGestureState = @"state";
 @implementation SJBaseVideoPlayer (GestureControl)
 
 - (void)setDisableGestureTypes:(SJDisablePlayerGestureTypes)disableGestureTypes {
-    objc_setAssociatedObject(self, @selector(disableGestureTypes), @(disableGestureTypes), OBJC_ASSOCIATION_RETAIN_NONATOMIC);
+    _disableGestureTypes = disableGestureTypes;
 }
 
 - (SJDisablePlayerGestureTypes)disableGestureTypes {
-    return [objc_getAssociatedObject(self, _cmd) integerValue];
+    return _disableGestureTypes;
 }
 
 @end
@@ -1716,52 +1604,109 @@ static NSString *_kGestureState = @"state";
 #pragma mark - 控制层
 
 @implementation SJBaseVideoPlayer (ControlLayer)
-
-- (BOOL)enableControlLayerDisplayController {
-    return [objc_getAssociatedObject(self, _cmd) boolValue];
-}
-
-- (void)setEnableControlLayerDisplayController:(BOOL)enableControlLayerDisplayController {
-    objc_setAssociatedObject(self, @selector(enableControlLayerDisplayController), @(enableControlLayerDisplayController), OBJC_ASSOCIATION_RETAIN_NONATOMIC);
-    self.displayRecorder.enabled = enableControlLayerDisplayController;
-}
-
-- (void)setControlLayerAppeared:(BOOL)controlLayerAppeared {
-    [self.displayRecorder setControlLayerAppearedState:controlLayerAppeared];
-}
-
-- (BOOL)controlLayerAppeared {
-    return self.displayRecorder.controlLayerAppearedState;
-}
-
-- (void)setControlLayerAutoAppearWhenAssetInitialized:(BOOL)controlLayerAutoAppearWhenAssetInitialized {
-    self.displayRecorder.controlLayerAutoAppearWhenAssetInitialized = controlLayerAutoAppearWhenAssetInitialized;
-}
-
-- (BOOL)controlLayerAutoAppearWhenAssetInitialized {
-    return self.displayRecorder.controlLayerAutoAppearWhenAssetInitialized;
-}
-
-- (nullable void (^)(__kindof SJBaseVideoPlayer * _Nonnull, BOOL))controlLayerAppearStateChanged {
-    return objc_getAssociatedObject(self, _cmd);
-}
-
-- (void)setControlLayerAppearStateChanged:(nullable void (^)(__kindof SJBaseVideoPlayer * _Nonnull, BOOL))controlLayerAppearStateChanged {
-    objc_setAssociatedObject(self, @selector(controlLayerAppearStateChanged), controlLayerAppearStateChanged, OBJC_ASSOCIATION_COPY_NONATOMIC);
-}
-
+/// 控制层需要显示
 - (void)controlLayerNeedAppear {
-    [self.displayRecorder layerAppear];
-}
-- (void)controlLayerNeedDisappear {
-    [self.displayRecorder layerDisappear];
+    [self.controlLayerAppearManager needAppear];
 }
 
+/// 控制层需要隐藏
+- (void)controlLayerNeedDisappear {
+    [self.controlLayerAppearManager needDisappear];
+}
+
+- (void)setControlLayerAppearManager:(id<SJControlLayerAppearManager> _Nullable)controlLayerAppearManager {
+    _controlLayerAppearManager = controlLayerAppearManager;
+    if ( controlLayerAppearManager ) [self _needUpdateControlLayerAppearManagerProperties];
+}
+- (id<SJControlLayerAppearManager>)controlLayerAppearManager {
+    if ( _controlLayerAppearManager )
+        return _controlLayerAppearManager;
+    _controlLayerAppearManager = [[SJControlLayerAppearStateManager alloc] init];
+    [self _needUpdateControlLayerAppearManagerProperties];
+    return _controlLayerAppearManager;
+}
+
+- (void)_needUpdateControlLayerAppearManagerProperties {
+    if ( !_controlLayerAppearManager )
+        return;
+    _controlLayerAppearManagerObserver = [_controlLayerAppearManager getObserver];
+    
+    __weak typeof(self) _self = self;
+    _controlLayerAppearManagerObserver.appearStateDidChangeExeBlock = ^(id<SJControlLayerAppearManager> mgr) {
+        __strong typeof(_self) self = _self;
+        if ( !self ) return;
+        
+        if ( mgr.isAppeared ) {
+            if ( [self.controlLayerDelegate respondsToSelector:@selector(controlLayerNeedAppear:)] ) {
+                [self.controlLayerDelegate controlLayerNeedAppear:self];
+            }
+        }
+        else {
+            if ( [self.controlLayerDelegate respondsToSelector:@selector(controlLayerNeedDisappear:)] ) {
+                [self.controlLayerDelegate controlLayerNeedDisappear:self];
+            }
+        }
+        
+        if ( self.controlLayerAppearStateDidChangeExeBlock )
+            self.controlLayerAppearStateDidChangeExeBlock(self, mgr.isAppeared);
+
+        if ( !self.rotationManager.isFullscreen ||
+             self.rotationManager.transitioning ) {
+            [UIView performWithoutAnimation:^{
+                [[self atViewController] setNeedsStatusBarAppearanceUpdate];
+            }];
+        }
+        else {
+            [UIView animateWithDuration:0.25 animations:^{
+                [[self atViewController] setNeedsStatusBarAppearanceUpdate];
+            }];
+        }
+    };
+}
+
+/// 是否禁止控制层管理
+- (void)setDisabledControlLayerAppearManager:(BOOL)disabledControlLayerAppearManager {
+    self.controlLayerAppearManager.disabled = disabledControlLayerAppearManager;
+}
+- (BOOL)disabledControlLayerAppearManager {
+    return self.controlLayerAppearManager.isDisabled;
+}
+
+/// 控制层是否显示
+- (void)setControlLayerIsAppeared:(BOOL)controlLayerIsAppeared {
+    if ( controlLayerIsAppeared ) {
+        [self.controlLayerAppearManager needAppear];
+    }
+    else {
+        [self.controlLayerAppearManager needDisappear];
+    }
+}
+- (BOOL)controlLayerIsAppeared {
+    return self.controlLayerAppearManager.isAppeared;
+}
+
+/// 暂停时是否保持控制层一直显示
 - (void)setPausedToKeepAppearState:(BOOL)pausedToKeepAppearState {
-    self.displayRecorder.pausedToKeepAppearState = pausedToKeepAppearState;
+    _pausedToKeepAppearState = pausedToKeepAppearState;
 }
 - (BOOL)pausedToKeepAppearState {
-    return self.displayRecorder.pausedToKeepAppearState;
+    return _pausedToKeepAppearState;
+}
+
+/// 资源初始化完成后, 是否自动显示控制层
+- (void)setControlLayerAutoAppearWhenAssetInitialized:(BOOL)controlLayerAutoAppearWhenAssetInitialized {
+    _controlLayerAutoAppearWhenAssetInitialized = controlLayerAutoAppearWhenAssetInitialized;
+}
+- (BOOL)controlLayerAutoAppearWhenAssetInitialized {
+    return _controlLayerAutoAppearWhenAssetInitialized;
+}
+
+/// 控制层显示状态改变时的回调
+- (void)setControlLayerAppearStateDidChangeExeBlock:(void (^_Nullable)(__kindof SJBaseVideoPlayer * _Nonnull, BOOL))controlLayerAppearStateDidChangeExeBlock {
+    _controlLayerAppearStateDidChangeExeBlock = controlLayerAppearStateDidChangeExeBlock;
+}
+- (void (^_Nullable)(__kindof SJBaseVideoPlayer * _Nonnull, BOOL))controlLayerAppearStateDidChangeExeBlock {
+    return _controlLayerAppearStateDidChangeExeBlock;
 }
 @end
 
@@ -1771,86 +1716,93 @@ static NSString *_kGestureState = @"state";
 #pragma mark - 充满屏幕
 
 @implementation SJBaseVideoPlayer (FitOnScreen)
-- (void)setUseFitOnScreenAndDisableRotation:(BOOL)useFitOnScreenAndDisableRotation {
-    objc_setAssociatedObject(self, @selector(useFitOnScreenAndDisableRotation), @(useFitOnScreenAndDisableRotation), OBJC_ASSOCIATION_RETAIN_NONATOMIC);
+- (void)setFitOnScreenManager:(id<SJFitOnScreenManager> _Nullable)fitOnScreenManager {
+    _fitOnScreenManager = fitOnScreenManager;
+    [self _needUpdateFitOnScreenManagerProperties];
 }
-
-- (BOOL)useFitOnScreenAndDisableRotation {
-    return [objc_getAssociatedObject(self, _cmd) boolValue];
+- (id<SJFitOnScreenManager>)fitOnScreenManager {
+    if ( _fitOnScreenManager )
+        return _fitOnScreenManager;
+    _fitOnScreenManager = [[SJFitOnScreenManager alloc] initWithTarget:self.presentView targetSuperview:self.view];
+    [self _needUpdateFitOnScreenManagerProperties];
+    return _fitOnScreenManager;
 }
-
-- (void)setFitOnScreen:(BOOL)fitOnScreen {
-    [self setFitOnScreen:fitOnScreen animated:YES];
+- (void)_needUpdateFitOnScreenManagerProperties {
+    if ( !_fitOnScreenManager )
+        return;
+    
+    _fitOnScreenManagerObserver = [_fitOnScreenManager getObserver];
+    __weak typeof(self) _self = self;
+    _fitOnScreenManagerObserver.fitOnScreenWillBeginExeBlock = ^(id<SJFitOnScreenManager> mgr) {
+        __strong typeof(_self) self = _self;
+        if ( !self ) return;
+        [self controlLayerNeedDisappear];
+        
+        if ( [self.controlLayerDelegate respondsToSelector:@selector(videoPlayer:willFitOnScreen:)] ) {
+            [self.controlLayerDelegate videoPlayer:self willFitOnScreen:mgr.isFitOnScreen];
+        }
+        
+        if ( self.fitOnScreenWillBeginExeBlock )
+            self.fitOnScreenWillBeginExeBlock(self);
+        
+        [UIView performWithoutAnimation:^{
+            [[self atViewController] setNeedsStatusBarAppearanceUpdate];
+        }];
+    };
+    
+    _fitOnScreenManagerObserver.fitOnScreenDidEndExeBlock = ^(id<SJFitOnScreenManager> mgr) {
+        __strong typeof(_self) self = _self;
+        if ( !self ) return;
+        if ( [self.controlLayerDelegate respondsToSelector:@selector(videoPlayer:didCompleteFitOnScreen:)] ) {
+            [self.controlLayerDelegate videoPlayer:self didCompleteFitOnScreen:mgr.isFitOnScreen];
+        }
+        
+        if ( self.fitOnScreenDidEndExeBlock )
+            self.fitOnScreenDidEndExeBlock(self);
+    };
 }
 
 - (BOOL)isFitOnScreen {
-    return [objc_getAssociatedObject(self, _cmd) boolValue];
+    return self.fitOnScreenManager.isFitOnScreen;
 }
-
+- (void)setFitOnScreen:(BOOL)fitOnScreen {
+    [self setFitOnScreen:fitOnScreen animated:YES];
+}
 - (void)setFitOnScreen:(BOOL)fitOnScreen animated:(BOOL)animated {
     [self setFitOnScreen:fitOnScreen animated:animated completionHandler:nil];
 }
 
 - (void)setFitOnScreen:(BOOL)fitOnScreen animated:(BOOL)animated completionHandler:(nullable void(^)(__kindof SJBaseVideoPlayer *player))completionHandler {
-    if ( fitOnScreen == self.isFitOnScreen ) { return; }
+    self.useFitOnScreenAndDisableRotation = YES;
+    
     __weak typeof(self) _self = self;
-    dispatch_async(dispatch_get_main_queue(), ^{
+    [self.fitOnScreenManager setFitOnScreen:fitOnScreen animated:animated completionHandler:^(id<SJFitOnScreenManager> mgr) {
         __strong typeof(_self) self = _self;
         if ( !self ) return;
-        UIWindow *window = [UIApplication sharedApplication].keyWindow;
-        if ( !window ) return;
-        CGRect origin = [window convertRect:self.view.bounds fromView:self.view];
-        if ( fitOnScreen ) {
-            self.presentView.frame = origin;
-            [window addSubview:self.presentView];
-        }
-        objc_setAssociatedObject(self, @selector(isFitOnScreen), @(fitOnScreen), OBJC_ASSOCIATION_RETAIN_NONATOMIC);
-        if ( [self.controlLayerDelegate respondsToSelector:@selector(videoPlayer:willFitOnScreen:)] ) {
-            [self.controlLayerDelegate videoPlayer:self willFitOnScreen:fitOnScreen];
-        }
-        if ( self.fitOnScreenWillChangeExeBlock ) self.fitOnScreenWillChangeExeBlock(self);
-        [[self atViewController] setNeedsStatusBarAppearanceUpdate];
-        [UIView animateWithDuration:animated ? 0.4 : 0 animations:^{
-            __strong typeof(_self) self = _self;
-            if ( !self ) return;
-            if ( fitOnScreen ) {
-                self.presentView.frame = window.bounds;
-            }
-            else {
-                self.presentView.frame = origin;
-            }
-            [self.presentView layoutIfNeeded];
-        } completion:^(BOOL finished) {
-            __strong typeof(_self) self = _self;
-            if ( !self ) return;
-            if ( !fitOnScreen ) {
-                [self.view addSubview:self.presentView];
-                self.presentView.frame = self.view.bounds;
-            }
-            if ( self.fitOnScreenDidChangeExeBlock ) self.fitOnScreenDidChangeExeBlock(self);
-            if ( [self.controlLayerDelegate respondsToSelector:@selector(videoPlayer:didCompleteFitOnScreen:)] ) {
-                [self.controlLayerDelegate videoPlayer:self didCompleteFitOnScreen:fitOnScreen];
-            }
-        }];
-    });
+        if ( completionHandler ) completionHandler(self);
+    }];
 }
 
-- (void)setFitOnScreenWillChangeExeBlock:(nullable void (^)(__kindof SJBaseVideoPlayer * _Nonnull))fitOnScreenWillChangeExeBlock {
-    objc_setAssociatedObject(self, @selector(fitOnScreenWillChangeExeBlock), fitOnScreenWillChangeExeBlock, OBJC_ASSOCIATION_COPY_NONATOMIC);
+- (void)setUseFitOnScreenAndDisableRotation:(BOOL)useFitOnScreenAndDisableRotation {
+    _useFitOnScreenAndDisableRotation = useFitOnScreenAndDisableRotation;
+}
+- (BOOL)useFitOnScreenAndDisableRotation {
+    return _useFitOnScreenAndDisableRotation;
 }
 
-- (nullable void (^)(__kindof SJBaseVideoPlayer * _Nonnull))fitOnScreenWillChangeExeBlock {
-    return objc_getAssociatedObject(self, _cmd);
+- (void)setFitOnScreenWillBeginExeBlock:(void (^_Nullable)(__kindof SJBaseVideoPlayer * _Nonnull))fitOnScreenWillBeginExeBlock {
+    _fitOnScreenWillBeginExeBlock = fitOnScreenWillBeginExeBlock;
+}
+- (void (^_Nullable)(__kindof SJBaseVideoPlayer * _Nonnull))fitOnScreenWillBeginExeBlock {
+    return _fitOnScreenWillBeginExeBlock;
 }
 
-- (void)setFitOnScreenDidChangeExeBlock:(nullable void (^)(__kindof SJBaseVideoPlayer * _Nonnull))fitOnScreenDidChangeExeBlock {
-    objc_setAssociatedObject(self, @selector(fitOnScreenDidChangeExeBlock), fitOnScreenDidChangeExeBlock, OBJC_ASSOCIATION_COPY_NONATOMIC);
+- (void)setFitOnScreenDidEndExeBlock:(void (^_Nullable)(__kindof SJBaseVideoPlayer * _Nonnull))fitOnScreenDidEndExeBlock {
+    _fitOnScreenDidEndExeBlock = fitOnScreenDidEndExeBlock;
 }
-
-- (nullable void (^)(__kindof SJBaseVideoPlayer * _Nonnull))fitOnScreenDidChangeExeBlock {
-    return objc_getAssociatedObject(self, _cmd);
+- (void (^_Nullable)(__kindof SJBaseVideoPlayer * _Nonnull))fitOnScreenDidEndExeBlock {
+    return _fitOnScreenDidEndExeBlock;
 }
-
 @end
 
 
@@ -1935,19 +1887,19 @@ static NSString *_kGestureState = @"state";
 }
 
 - (void)setViewWillRotateExeBlock:(nullable void (^)(__kindof SJBaseVideoPlayer * _Nonnull, BOOL))viewWillRotateExeBlock {
-    objc_setAssociatedObject(self, @selector(viewWillRotateExeBlock), viewWillRotateExeBlock, OBJC_ASSOCIATION_COPY_NONATOMIC);
+    _viewWillRotateExeBlock = viewWillRotateExeBlock;
 }
 
 - (nullable void (^)(__kindof SJBaseVideoPlayer * _Nonnull, BOOL))viewWillRotateExeBlock {
-    return objc_getAssociatedObject(self, _cmd);
+    return _viewWillRotateExeBlock;
 }
 
 - (void)setViewDidRotateExeBlock:(nullable void (^)(__kindof SJBaseVideoPlayer * _Nonnull, BOOL))viewDidRotateExeBlock {
-    objc_setAssociatedObject(self, @selector(viewDidRotateExeBlock), viewDidRotateExeBlock, OBJC_ASSOCIATION_COPY_NONATOMIC);
+    _viewDidRotateExeBlock = viewDidRotateExeBlock;
 }
 
 - (nullable void (^)(__kindof SJBaseVideoPlayer * _Nonnull, BOOL))viewDidRotateExeBlock {
-    return objc_getAssociatedObject(self, _cmd);
+    return _viewDidRotateExeBlock;
 }
 @end
 
@@ -2110,6 +2062,19 @@ static NSString *_kGestureState = @"state";
     return self.playModelObserver.isAppeared;
 }
 
+- (void)setPlayerViewWillAppearExeBlock:(void (^_Nullable)(__kindof SJBaseVideoPlayer * _Nonnull))playerViewWillAppearExeBlock {
+    _playerViewWillAppearExeBlock = playerViewWillAppearExeBlock;
+}
+- (void (^_Nullable)(__kindof SJBaseVideoPlayer * _Nonnull))playerViewWillAppearExeBlock {
+    return _playerViewWillAppearExeBlock;
+}
+
+- (void)setPlayerViewWillDisappearExeBlock:(void (^_Nullable)(__kindof SJBaseVideoPlayer * _Nonnull))playerViewWillDisappearExeBlock {
+    _playerViewWillDisappearExeBlock = playerViewWillDisappearExeBlock;
+}
+- (void (^_Nullable)(__kindof SJBaseVideoPlayer * _Nonnull))playerViewWillDisappearExeBlock {
+    return _playerViewWillDisappearExeBlock;
+}
 @end
 
 
@@ -2163,177 +2128,6 @@ static NSString *_kGestureState = @"state";
     [self.prompt hidden];
 }
 
-@end
-
-
-#pragma mark -
-@interface _SJControlLayerAppearStateManager ()
-@property (nonatomic, weak, readonly) SJBaseVideoPlayer *videoPlayer;
-@property (nonatomic, strong, readonly) SJTimerControl *controlHiddenTimer;
-@property (nonatomic) BOOL controlLayerAppearedState;
-@end
-
-@implementation _SJControlLayerAppearStateManager
-@synthesize controlHiddenTimer = _controlHiddenTimer;
-
-- (instancetype)initWithVideoPlayer:(SJBaseVideoPlayer *)videoPlayer {
-    self = [super init];
-    if ( !self ) return nil;
-    _controlLayerAutoAppearWhenAssetInitialized = YES;
-    _videoPlayer = videoPlayer;
-    [_videoPlayer sj_addObserver:self forKeyPath:@"locked"];
-    [_videoPlayer sj_addObserver:self forKeyPath:@"playStatus"];
-    return self;
-}
-
-- (void)observeValueForKeyPath:(nullable NSString *)keyPath ofObject:(nullable id)object change:(nullable NSDictionary<NSKeyValueChangeKey,id> *)change context:(nullable void *)context {
-    if ( [keyPath isEqualToString:@"locked"] ) {
-        if ( _videoPlayer.isLockedScreen ) {
-            [self.controlHiddenTimer clear];
-        }
-        else {
-            [self.controlHiddenTimer start];
-        }
-    }
-    else if ( [keyPath isEqualToString:@"playStatus"] ) {
-        if ( [_videoPlayer playStatus_isInactivity_ReasonPlayFailed] ) {
-            [self layerAppear];
-        }
-    }
-}
-
-- (void)setEnabled:(BOOL)enabled {
-    _enabled = enabled;
-    if ( enabled ) [_controlHiddenTimer start];
-    else [_controlHiddenTimer clear];
-}
-
-- (void)start {
-    if ( !_enabled ) return;
-    [_controlHiddenTimer start];
-}
-
-- (void)considerChangeState {
-    if ( self.controlLayerAppearedState ) [self layerDisappear];
-    else [self layerAppear];
-}
-
-- (void)layerAppear {
-    if ( _pausedToKeepAppearState && [_videoPlayer playStatus_isPaused] ) [self.controlHiddenTimer clear];
-    else [self.controlHiddenTimer start];
-    [self _changing:YES];
-    _initialization = YES;
-}
-
-- (void)layerDisappear {
-    [self.controlHiddenTimer clear];
-    [self _changing:NO];
-}
-
-- (void)resetInitialization {
-    if ( !self.controlLayerAutoAppearWhenAssetInitialized )
-        return;
-    
-    _initialization = NO;
-    __weak typeof(self) _self = self;
-    dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(1 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
-        __strong typeof(_self) self = _self;
-        if ( !self ) return;
-        if ( !self.initialization && !self.controlLayerAppearedState ) [self layerAppear];
-    });
-}
-
-- (SJTimerControl *)controlHiddenTimer {
-    if ( _controlHiddenTimer ) return _controlHiddenTimer;
-    _controlHiddenTimer = [[SJTimerControl alloc] init];
-    __weak typeof(self) _self = self;
-    _controlHiddenTimer.exeBlock = ^(SJTimerControl * _Nonnull control) {
-        __strong typeof(_self) self = _self;
-        if ( !self ) return;
-        if ( !self.isEnabled ) return;
-        // 如果控制层显示, 当达到隐藏的条件, `timer`将控制层隐藏. 否则, 清除`timer`.
-        if ( self.controlLayerAppearedState &&
-             self.videoPlayer.controlLayerDataSource.controlLayerDisappearCondition )
-            [self layerDisappear];
-        else [control clear];
-    };
-    return _controlHiddenTimer;
-}
-
-#pragma mark -
-- (void)_changing:(BOOL)status {
-    if ( !self.videoPlayer.controlLayerDataSource ) return;
-    self.controlLayerAppearedState = status;
-    if ( status && [self.videoPlayer.controlLayerDelegate respondsToSelector:@selector(controlLayerNeedAppear:)] ) {
-        [_videoPlayer.controlLayerDelegate controlLayerNeedAppear:_videoPlayer];
-    }
-    else if ( !status && [self.videoPlayer.controlLayerDelegate respondsToSelector:@selector(controlLayerNeedDisappear:)] ) {
-        [_videoPlayer.controlLayerDelegate controlLayerNeedDisappear:_videoPlayer];
-    }
-}
-
-- (void)setControlLayerAppearedState:(BOOL)status {
-    _controlLayerAppearedState = status;
-    if ( _videoPlayer.controlLayerAppearStateChanged ) {
-        _videoPlayer.controlLayerAppearStateChanged(_videoPlayer, status);
-    }
-    
-    [UIView animateWithDuration:self.videoPlayer.rotationManager.transitioning ? 0 : 0.25 animations:^{
-        [[self.videoPlayer atViewController] setNeedsStatusBarAppearanceUpdate];
-    }];
-}
-@end
-
-
-#pragma mark -
-
-@interface _SJReachabilityObserver ()
-@property (nonatomic, strong, readonly) Reachability *reachability;
-@end
-
-@implementation _SJReachabilityObserver {
-    id _notifyToken;
-}
-
-+ (instancetype)sharedInstance {
-    static id _instance;
-    static dispatch_once_t onceToken;
-    dispatch_once(&onceToken, ^{
-        _instance = [self new];
-    });
-    return _instance;
-}
-
-- (instancetype)init {
-    self = [super init];
-    if ( !self ) return nil;
-    _reachability = [Reachability reachabilityForInternetConnection];
-    
-    __weak typeof(self) _self = self;
-    _notifyToken = [NSNotificationCenter.defaultCenter addObserverForName:kReachabilityChangedNotification object:_reachability queue:nil usingBlock:^(NSNotification * _Nonnull note) {
-        __strong typeof(_self) self = _self;
-        if ( !self ) return;
-        [self _reachabilityChangedNotification];
-    }];
-    [_reachability startNotifier];
-    return self;
-}
-
-- (void)_reachabilityChangedNotification {
-    if ( self.reachabilityChangedExeBlock ) {
-        SJNetworkStatus status = (NSInteger)[self.reachability currentReachabilityStatus];
-        self.reachabilityChangedExeBlock(self, status);
-    }
-}
-
-- (SJNetworkStatus)networkStatus {
-    return (NSInteger)[self.reachability currentReachabilityStatus];
-}
-
-- (void)dealloc {
-    [_reachability stopNotifier];
-    if ( _notifyToken ) [[NSNotificationCenter defaultCenter] removeObserver:_notifyToken name:kReachabilityChangedNotification object:_reachability];
-}
 @end
 
 
@@ -2397,6 +2191,58 @@ static NSString *_kGestureState = @"state";
 - (BOOL)playFailedToKeepAppearState __deprecated {
     return NO;
 }
+
+- (nullable void (^)(__kindof SJBaseVideoPlayer * _Nonnull, BOOL))controlLayerAppearStateChanged __deprecated_msg("use `controlLayerAppearStateDidChangeExeBlock`") {
+    return self.controlLayerAppearStateDidChangeExeBlock;
+}
+
+- (void)setControlLayerAppearStateChanged:(nullable void (^)(__kindof SJBaseVideoPlayer * _Nonnull, BOOL))controlLayerAppearStateChanged __deprecated_msg("use `controlLayerAppearStateDidChangeExeBlock`") {
+    self.controlLayerAppearStateDidChangeExeBlock = controlLayerAppearStateChanged;
+}
+
+- (void)setControlLayerAppeared:(BOOL)controlLayerAppeared {
+    self.controlLayerIsAppeared = controlLayerAppeared;
+}
+
+- (BOOL)controlLayerAppeared {
+    return self.controlLayerIsAppeared;
+}
+
+- (BOOL)enableControlLayerDisplayController __deprecated_msg("use `disabledControlLayerAppearManager`") {
+    return !self.controlLayerAppearManager.disabled;
+}
+
+- (void)setEnableControlLayerDisplayController:(BOOL)enableControlLayerDisplayController __deprecated_msg("use `disabledControlLayerAppearManager`") {
+    self.controlLayerAppearManager.disabled = !enableControlLayerDisplayController;
+}
+
+- (void)setFitOnScreenWillChangeExeBlock:(nullable void (^)(__kindof SJBaseVideoPlayer * _Nonnull))fitOnScreenWillChangeExeBlock __deprecated_msg("use `fitOnScreenWillBeginExeBlock`") {
+    self.fitOnScreenWillBeginExeBlock = fitOnScreenWillChangeExeBlock;
+}
+- (nullable void (^)(__kindof SJBaseVideoPlayer * _Nonnull))fitOnScreenWillChangeExeBlock __deprecated_msg("use `fitOnScreenWillBeginExeBlock`") {
+    return self.fitOnScreenWillBeginExeBlock;
+}
+
+- (void)setFitOnScreenDidChangeExeBlock:(nullable void (^)(__kindof SJBaseVideoPlayer * _Nonnull))fitOnScreenDidChangeExeBlock __deprecated_msg("use `fitOnScreenDidEndExeBlock`") {
+    self.fitOnScreenDidEndExeBlock = fitOnScreenDidChangeExeBlock;
+}
+- (nullable void (^)(__kindof SJBaseVideoPlayer * _Nonnull))fitOnScreenDidChangeExeBlock __deprecated_msg("use `fitOnScreenDidEndExeBlock`") {
+    return self.fitOnScreenDidEndExeBlock;
+}
+
+- (void)setAutoPlay:(BOOL)autoPlay __deprecated_msg("use `autoPlayWhenPlayStatusIsReadyToPlay`") {
+    self.autoPlayWhenPlayStatusIsReadyToPlay = autoPlay;
+}
+- (BOOL)isAutoPlay __deprecated_msg("use `autoPlayWhenPlayStatusIsReadyToPlay`") {
+    return self.autoPlayWhenPlayStatusIsReadyToPlay;
+}
+
+- (void)setRateChanged:(nullable void (^)(__kindof SJBaseVideoPlayer * _Nonnull))rateChanged __deprecated_msg("use `rateDidChangeExeBlock`") {
+    self.rateDidChangeExeBlock = rateChanged;
+}
+- (nullable void (^)(__kindof SJBaseVideoPlayer * _Nonnull))rateChanged __deprecated_msg("use `rateDidChangeExeBlock`") {
+    return self.rateDidChangeExeBlock;
+}
 @end
 
 
@@ -2411,7 +2257,6 @@ static NSString *_kGestureState = @"state";
     self.touchedScrollView = touched;
 }
 - (void)playerWillAppearForObserver:(nonnull SJPlayModelPropertiesObserver *)observer superview:(nonnull UIView *)superview {
-    [self.displayRecorder layerAppear];
     if ( superview && self.view.superview != superview ) {
         [self.view removeFromSuperview];
         [superview addSubview:self.view];
@@ -2423,11 +2268,17 @@ static NSString *_kGestureState = @"state";
     if ( [self.controlLayerDelegate respondsToSelector:@selector(videoPlayerWillAppearInScrollView:)] ) {
         [self.controlLayerDelegate videoPlayerWillAppearInScrollView:self];
     }
+    
+    if ( _playerViewWillAppearExeBlock )
+        _playerViewWillAppearExeBlock(self);
 }
 - (void)playerWillDisappearForObserver:(nonnull SJPlayModelPropertiesObserver *)observer {
     if ( [self.controlLayerDelegate respondsToSelector:@selector(videoPlayerWillDisappearInScrollView:)] ) {
         [self.controlLayerDelegate videoPlayerWillDisappearInScrollView:self];
     }
+    
+    if ( _playerViewWillDisappearExeBlock )
+        _playerViewWillDisappearExeBlock(self);
 }
 @end
 

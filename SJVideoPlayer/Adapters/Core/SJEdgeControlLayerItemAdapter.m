@@ -364,13 +364,16 @@ NS_ASSUME_NONNULL_BEGIN
     if ( item.hidden )
         return;
     
-    if ( item.customView ) {
+    UIView *customView = item.customView;
+    if ( customView ) {
         cell.customViewContainerView.hidden = NO;
         cell.itemContentView.hidden = YES;
         cell.customViewContainerView.userInteractionEnabled = (nil == item.target);
-        item.customView.frame = _layout->_layoutAttributes[indexPath.item].bounds;
-        [cell removeSubviewsFromCustomViewContainerView];
-        [cell->_customViewContainerView addSubview:item.customView];
+        customView.frame = _layout->_layoutAttributes[indexPath.item].bounds;
+        if ( cell->_customViewContainerView.subviews.lastObject != customView ) {
+            [cell removeSubviewsFromCustomViewContainerView];
+            [cell->_customViewContainerView addSubview:customView];
+        }
     }
     else if ( 0 != item.title.length  ) {
         cell->_customViewContainerView.hidden = YES;

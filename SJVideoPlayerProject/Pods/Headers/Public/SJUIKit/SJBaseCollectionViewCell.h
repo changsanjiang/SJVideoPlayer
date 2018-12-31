@@ -1,1 +1,0 @@
-../../../SJUIKit/SJUIKit/Base/SJBaseCollectionViewCell.h

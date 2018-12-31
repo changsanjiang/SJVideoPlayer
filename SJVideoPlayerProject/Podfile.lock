@@ -1,6 +1,5 @@
 PODS:
   - Masonry (1.1.0)
-  - MJRefresh (3.1.15.7)
   - Reachability (3.2)
   - SJAttributesFactory (2.0.5)
   - SJBaseVideoPlayer (1.8.0):
@@ -68,40 +67,21 @@ PODS:
   - SJUIFactory (0.0.16):
     - SJUIFactory/Category (= 0.0.16)
   - SJUIFactory/Category (0.0.16)
-  - SJUIKit (0.0.0.17):
-    - SJUIKit/AsyncLoad (= 0.0.0.17)
-    - SJUIKit/Base (= 0.0.0.17)
-    - SJUIKit/ModalAlert (= 0.0.0.17)
-    - SJUIKit/ObjectContainer (= 0.0.0.17)
-    - SJUIKit/Refresh (= 0.0.0.17)
-  - SJUIKit/AsyncLoad (0.0.0.17)
-  - SJUIKit/Base (0.0.0.17):
-    - SJObserverHelper
-    - SJUIKit/Base/Core (= 0.0.0.17)
-  - SJUIKit/Base/Core (0.0.0.17):
-    - SJObserverHelper
-  - SJUIKit/ModalAlert (0.0.0.17)
-  - SJUIKit/ObjectContainer (0.0.0.17)
-  - SJUIKit/Refresh (0.0.0.17):
-    - MJRefresh
   - YYText (1.0.7)
 
 DEPENDENCIES:
   - Masonry
-  - MJRefresh
   - SJAttributesFactory
   - SJBaseVideoPlayer
   - SJFullscreenPopGesture
   - SJRouter
   - SJScrollEntriesView
   - SJUIFactory
-  - SJUIKit
   - YYText
 
 SPEC REPOS:
   https://github.com/cocoapods/specs.git:
     - Masonry
-    - MJRefresh
     - Reachability
     - SJAttributesFactory
     - SJBaseVideoPlayer
@@ -110,12 +90,10 @@ SPEC REPOS:
     - SJRouter
     - SJScrollEntriesView
     - SJUIFactory
-    - SJUIKit
     - YYText
 
 SPEC CHECKSUMS:
   Masonry: 678fab65091a9290e40e2832a55e7ab731aad201
-  MJRefresh: 697f8ec75ebdbe9207767bb682cf0f51b0d8a41f
   Reachability: 33e18b67625424e47b6cde6d202dce689ad7af96
   SJAttributesFactory: d5b670fd0930928ac1c6fb0b06653f92fefd640c
   SJBaseVideoPlayer: c05a7676e8f2135528b5059bef625931edb98686
@@ -124,9 +102,8 @@ SPEC CHECKSUMS:
   SJRouter: 83d99661639b4be9e937e6167c830f9f8283f93f
   SJScrollEntriesView: 2388fec9dbb6ab639f8966de036394eeb753617d
   SJUIFactory: b3e973c5e2ae08bc5a1bd2c68d94c00f81e01a0b
-  SJUIKit: ed745baf49bdd62a3b0090e784dd99d5979bf4ac
   YYText: 5c461d709e24d55a182d1441c41dc639a18a4849
 
-PODFILE CHECKSUM: 14604f40ef4ce0caebf0163a124968d6f8b69f01
+PODFILE CHECKSUM: 98896916af9595cf02ae821b32f2335203751e6c
 
 COCOAPODS: 1.6.0.beta.2

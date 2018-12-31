@@ -569,7 +569,7 @@ SJEdgeControlButtonItemTag const SJEdgeControlLayerCenterItem_Replay = 10000;
 /// 更新时间标签
 - (void)_updateTimeLabelFor_BottomAdapterWithCurrentTimeStr:(NSString *)currentTimeStr durationStr:(NSString *)durationStr {
     if ( !_bottomAdapter ) return;
-    if ( [self _isHiddenWithView:_bottomAdapter.view] ) return;
+    if ( [self _isHiddenWithView:_bottomContainerView] ) return;
     SJEdgeControlButtonItem *currentTimeItem = [_bottomAdapter itemForTag:SJEdgeControlLayerBottomItem_CurrentTime];
     SJEdgeControlButtonItem *durationTimeItem = [_bottomAdapter itemForTag:SJEdgeControlLayerBottomItem_DurationTime];
     
@@ -578,6 +578,7 @@ SJEdgeControlButtonItemTag const SJEdgeControlLayerCenterItem_Replay = 10000;
     currentTimeItem.title = sj_makeAttributesString(^(SJAttributeWorker * _Nonnull make) {
         make.append(currentTimeStr).font([UIFont systemFontOfSize:11]).textColor([UIColor whiteColor]).alignment(NSTextAlignmentCenter);
     });
+    [_bottomAdapter updateContentForItemWithTag:SJEdgeControlLayerBottomItem_CurrentTime];
     
     if ( ![durationStr isEqualToString:durationTimeItem.title.string] ) {
         durationTimeItem.title = sj_makeAttributesString(^(SJAttributeWorker * _Nonnull make) {
@@ -585,10 +586,6 @@ SJEdgeControlButtonItemTag const SJEdgeControlLayerCenterItem_Replay = 10000;
             currentTimeItem.size = durationTimeItem.size = [self _timeLabelMaxWidthByDurationStr:durationStr];
         });
         [_bottomAdapter reload];
-    }
-    else {
-        [_bottomAdapter updateContentForItemWithTag:SJEdgeControlLayerBottomItem_CurrentTime];
-        [_bottomAdapter updateContentForItemWithTag:SJEdgeControlLayerBottomItem_DurationTime];
     }
 }
 
@@ -783,11 +780,11 @@ SJEdgeControlButtonItemTag const SJEdgeControlLayerCenterItem_Replay = 10000;
         if ( settings.replayBtnImage ) {
             make.insert(settings.replayBtnImage, 0, CGPointZero, CGSizeZero).alignment(NSTextAlignmentCenter);
         }
-        
+
         if ( settings.replayBtnImage && 0 != settings.replayBtnTitle.length ) {
             make.append(@"\n");
         }
-        
+
         if ( 0 != settings.replayBtnTitle.length ) {
             make.append(settings.replayBtnTitle).font(settings.replayBtnFont)
             .textColor(settings.replayBtnTitleColor);

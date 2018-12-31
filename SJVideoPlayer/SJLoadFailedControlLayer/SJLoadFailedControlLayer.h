@@ -12,7 +12,8 @@
 NS_ASSUME_NONNULL_BEGIN
 extern SJEdgeControlButtonItemTag const SJLoadFailedControlLayerTopItem_Back;             // 返回按钮
 
-@interface SJLoadFailedControlLayer : SJEdgeControlLayerAdapters<SJControlLayer> 
+@interface SJLoadFailedControlLayer : SJEdgeControlLayerAdapters<SJControlLayer>
+@property (nonatomic) BOOL hideBackButtonWhenOrientationIsPortrait;
 @property (nonatomic, copy, nullable) void(^clickedBackItemExeBlock)(SJLoadFailedControlLayer *control);
 @property (nonatomic, copy, nullable) void(^clickedFaliedButtonExeBlock)(SJLoadFailedControlLayer *control);
 @property (nonatomic, copy, nullable) void(^prepareToPlayNewAssetExeBlock)(SJLoadFailedControlLayer *control);

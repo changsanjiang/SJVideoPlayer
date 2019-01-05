@@ -52,6 +52,7 @@ NS_ASSUME_NONNULL_BEGIN
 @synthesize prepareStatus = _prepareStatus;
 @synthesize pauseWhenAppDidEnterBackground = _pauseWhenAppDidEnterBackground;
 @synthesize registrar = _registrar;
+@synthesize volume = _volume;
 
 - (void)dealloc {
 #ifdef DEBUG
@@ -71,6 +72,7 @@ NS_ASSUME_NONNULL_BEGIN
     self = [super init];
     if ( !self ) return nil;
     _rate = 1;
+    _volume = 1;
     _presentView = [SJAVMediaPresentView new];
     [self registrar];
     return self;
@@ -96,6 +98,15 @@ NS_ASSUME_NONNULL_BEGIN
     _prepareStatus = 0;
     _switcher = nil;
     [_presentView removeAllPresenter];
+}
+
+- (void)setVolume:(float)volume {
+    _volume = volume;
+    if ( !_mute ) _playAsset.player.volume = volume;
+}
+
+- (float)volume {
+    return _volume;
 }
 
 - (void)setMute:(BOOL)mute {
@@ -230,6 +241,7 @@ static const char *key = "kSJAVMediaPlayAsset";
     if ( _prepareStatus == (SJMediaPlaybackPrepareStatus)playerItemStatus ) return;
     _isPreparing = NO;
     _prepareStatus = (SJMediaPlaybackPrepareStatus)playerItemStatus;
+    _error = _playAsset.playerItem.error;
     
     if ( playerItemStatus != AVPlayerStatusReadyToPlay ||
          self.registrar.state == SJVideoPlayerAppState_Background ) {
@@ -296,11 +308,13 @@ static const char *key = "kSJAVMediaPlayAsset";
     [_playAsset.player play];
     _playAsset.player.rate = self.rate;
     _playAsset.player.muted = self.mute;
+    if ( !_mute ) _playAsset.player.volume = _volume;
     
 #ifdef DEBUG
     printf("\n");
     printf("SJAVMediaPlaybackController<%p>.rate == %lf\n", self, self.rate);
     printf("SJAVMediaPlaybackController<%p>.mute == %s\n",  self, self.mute?"YES":"NO");
+    printf("SJAVMediaPlaybackController<%p>.playerVolume == %lf\n",  self, _volume);
 #endif
 }
 - (void)pause {
@@ -332,14 +346,6 @@ static const char *key = "kSJAVMediaPlayAsset";
     }
 
     if ( secs > _duration || secs < 0 ) {
-        if ( completionHandler ) completionHandler(NO);
-        return;
-    }
-
-    NSTimeInterval current = floor(self.playAssetObserver.currentTime);
-    NSTimeInterval seek = floor(secs);
-
-    if ( current == seek ) {
         if ( completionHandler ) completionHandler(NO);
         return;
     }

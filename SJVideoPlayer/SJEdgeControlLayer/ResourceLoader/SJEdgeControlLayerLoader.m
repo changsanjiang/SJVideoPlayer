@@ -18,9 +18,10 @@ NSString *const SJVideoPlayer_ReachableViaWWANPrompt = @"SJVideoPlayer_Reachable
 
 + (NSBundle *)bundle {
     static NSBundle *bundle = nil;
-    if ( nil == bundle ) {
-        bundle = [NSBundle bundleWithPath:[[NSBundle bundleForClass:[self class]] pathForResource:@"SJEdgeControlLayer" ofType:@"bundle"]];
-    }
+    static dispatch_once_t onceToken;
+    dispatch_once(&onceToken, ^{
+       bundle = [NSBundle bundleWithPath:[[NSBundle bundleForClass:[self class]] pathForResource:@"SJEdgeControlLayer" ofType:@"bundle"]];
+    });
     return bundle;
 }
 

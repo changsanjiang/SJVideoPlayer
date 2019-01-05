@@ -46,13 +46,6 @@ typedef NS_ENUM(NSUInteger, SJVideoPlayerFilmEditingResultUploadState) {
 typedef SJVideoPlayerFilmEditingResultUploadState SJVideoPlayerFilmEditingResultExportState;
 
 
-/// Initial value
-@interface SJFilmEditingVideoPlayerPropertyRecroder: NSObject
-@property (nonatomic) BOOL disableRotation;
-@end
-
-
-
 @interface SJVideoPlayerFilmEditingResult : NSObject <SJVideoPlayerFilmEditingResult>
 @property (nonatomic) SJVideoPlayerFilmEditingOperation operation;
 @property (nonatomic, strong, nullable) UIImage *thumbnailImage;
@@ -83,7 +76,6 @@ typedef SJVideoPlayerFilmEditingResultUploadState SJVideoPlayerFilmEditingResult
 @property (nonatomic) BOOL itemClickedInterval;
 
 #pragma mark
-@property (nonatomic, strong, nullable) SJFilmEditingVideoPlayerPropertyRecroder *propertyRecorder;
 @property (nonatomic, strong, nullable) SJFilmEditingSettings *settings;
 @property (nonatomic, weak, nullable) SJBaseVideoPlayer *videoPlayer;
 @end
@@ -136,10 +128,6 @@ NS_ASSUME_NONNULL_END
 
 - (void)exitControlLayer {
     _restarted = NO;
-    if ( _propertyRecorder ) {
-        _videoPlayer.disableAutoRotation = self.propertyRecorder.disableRotation;
-        _propertyRecorder = nil;
-    }
     _videoPlayer.controlLayerDataSource = nil;
     _videoPlayer.controlLayerDelegate = nil;
     [UIView animateWithDuration:0.4 animations:^{
@@ -207,13 +195,14 @@ NS_ASSUME_NONNULL_END
     return NO;
 }
 
+- (BOOL)canTriggerRotationOfVideoPlayer:(__kindof SJBaseVideoPlayer *)videoPlayer {
+    return NO;
+}
+
 - (void)installedControlViewToVideoPlayer:(__kindof SJBaseVideoPlayer *)videoPlayer {
     _videoPlayer = videoPlayer;
-    self.propertyRecorder = [SJFilmEditingVideoPlayerPropertyRecroder new];
-    self.propertyRecorder.disableRotation = videoPlayer.disableAutoRotation;
     
     [videoPlayer needHiddenStatusBar];
-    videoPlayer.disableAutoRotation = YES;
 }
 
 - (void)controlLayerNeedAppear:(__kindof SJBaseVideoPlayer *)videoPlayer {}
@@ -297,8 +286,7 @@ NS_ASSUME_NONNULL_END
 
 - (void)setCurrentOperation:(SJVideoPlayerFilmEditingOperation)currentOperation {
     _currentOperation = currentOperation;
-   
-    _videoPlayer.videoGravity = AVLayerVideoGravityResizeAspect;
+    
     switch ( currentOperation ) {
         case SJVideoPlayerFilmEditingOperation_Unknown: break;
         case SJVideoPlayerFilmEditingOperation_Screenshot: {
@@ -860,8 +848,4 @@ NS_ASSUME_NONNULL_END
     else if ( self.image ) return UIImagePNGRepresentation(self.image);
     return nil;
 }
-@end
-
-
-@implementation SJFilmEditingVideoPlayerPropertyRecroder
 @end

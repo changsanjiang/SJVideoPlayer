@@ -42,6 +42,7 @@ NS_ASSUME_NONNULL_BEGIN
 @implementation SJControlLayerAppearStateManager
 @synthesize disabled = _disabled;
 @synthesize isAppeared = _isAppeared;
+@synthesize canDisappearAutomatically = _canDisappearAutomatically;
 
 - (instancetype)init {
     self = [super init];
@@ -51,6 +52,10 @@ NS_ASSUME_NONNULL_BEGIN
     _timer.exeBlock = ^(SJTimerControl * _Nonnull control) {
         __strong typeof(_self) self = _self;
         if ( !self ) return;
+        if ( self.canDisappearAutomatically ) {
+            if ( !self.canDisappearAutomatically(self) )
+                return;
+        }
         [self needDisappear];
     };
     return self;

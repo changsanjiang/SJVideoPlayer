@@ -46,6 +46,7 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic, readonly) SJPlayerBufferStatus bufferStatus;
 @property (nonatomic, readonly) CGSize presentationSize;
 
+@property (nonatomic) float volume;
 @property (nonatomic) float rate;
 @property (nonatomic) BOOL mute;
 

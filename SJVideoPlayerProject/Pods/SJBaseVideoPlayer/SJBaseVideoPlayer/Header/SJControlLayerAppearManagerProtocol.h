@@ -10,6 +10,7 @@
 #import <UIKit/UIKit.h>
 @protocol SJControlLayerAppearManagerObserver;
 
+NS_ASSUME_NONNULL_BEGIN
 @protocol SJControlLayerAppearManager
 - (id<SJControlLayerAppearManagerObserver>)getObserver;
 @property (nonatomic, getter=isDisabled) BOOL disabled;
@@ -24,9 +25,12 @@
 - (void)resume;
 - (void)keepAppearState;
 - (void)keepDisappearState;
+
+@property (nonatomic, copy, nullable) BOOL(^canDisappearAutomatically)(id<SJControlLayerAppearManager> mgr);
 @end
 
 @protocol SJControlLayerAppearManagerObserver
 @property (nonatomic, copy, nullable) void(^appearStateDidChangeExeBlock)(id<SJControlLayerAppearManager> mgr);
 @end
+NS_ASSUME_NONNULL_END
 #endif /* SJControlLayerAppearManagerProtocol_h */

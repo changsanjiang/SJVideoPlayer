@@ -66,7 +66,7 @@
     }];
     
     __weak typeof(self) _self = self;
-    _player.rateChanged = ^(__kindof SJBaseVideoPlayer * _Nonnull player) {
+    _player.rateDidChangeExeBlock = ^(__kindof SJBaseVideoPlayer * _Nonnull player) {
         __strong typeof(_self) self = _self;
         if ( !self ) return ;
         [player showTitle:[NSString stringWithFormat:@"%.02f", player.rate]];

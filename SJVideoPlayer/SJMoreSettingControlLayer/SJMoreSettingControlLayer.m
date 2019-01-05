@@ -46,6 +46,7 @@ NS_ASSUME_NONNULL_BEGIN
     _restarted = YES;
     [_videoPlayer controlLayerNeedAppear];
     [self _show:self.controlView animated:YES];
+    [_moreSettingsView update];
 }
 
 - (void)exitControlLayer {
@@ -148,13 +149,13 @@ NS_ASSUME_NONNULL_BEGIN
     _footerViewModel.initialBrightnessValue = ^float{
         __strong typeof(_self) self = _self;
         if ( !self ) return 0;
-        return self.videoPlayer.brightness;
+        return self.videoPlayer.deviceBrightness;
     };
     
     _footerViewModel.initialVolumeValue = ^float{
         __strong typeof(_self) self = _self;
         if ( !self ) return 0;
-        return self.videoPlayer.volume;
+        return self.videoPlayer.deviceVolume;
     };
     
     _footerViewModel.initialPlayerRateValue = ^float{
@@ -166,13 +167,13 @@ NS_ASSUME_NONNULL_BEGIN
     _footerViewModel.needChangeVolume = ^(float volume) {
         __strong typeof(_self) self = _self;
         if ( !self ) return;
-        self.videoPlayer.volume = volume;
+        self.videoPlayer.deviceVolume = volume;
     };
     
     _footerViewModel.needChangeBrightness = ^(float brightness) {
         __strong typeof(_self) self = _self;
         if ( !self ) return;
-        self.videoPlayer.brightness = brightness;
+        self.videoPlayer.deviceBrightness = brightness;
     };
     
     _footerViewModel.needChangePlayerRate = ^(float rate) {

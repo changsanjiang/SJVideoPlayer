@@ -12,14 +12,45 @@
 #else
 #import "Masonry.h"
 #endif
-
+#if __has_include(<SJObserverHelper/NSObject+SJObserverHelper.h>)
+#import <SJObserverHelper/NSObject+SJObserverHelper.h>
+#else
+#import "NSObject+SJObserverHelper.h"
+#endif
 
 NS_ASSUME_NONNULL_BEGIN
+@interface SJVCRotationManagerObserver : NSObject<SJRotationManagerObserver>
+@end
+
+@implementation SJVCRotationManagerObserver
+@synthesize rotationDidStartExeBlock = _rotationDidStartExeBlock;
+@synthesize rotationDidEndExeBlock = _rotationDidEndExeBlock;
+- (instancetype)initWithMgr:(id<SJRotationManagerProtocol>)mgr {
+    self = [super init];
+    if ( !self )
+        return nil;
+    [(id)mgr sj_addObserver:self forKeyPath:@"transitioning"];
+    return self;
+}
+
+- (void)observeValueForKeyPath:(NSString *_Nullable)keyPath ofObject:(id _Nullable)object change:(NSDictionary<NSKeyValueChangeKey,id> * _Nullable)change context:(void * _Nullable)context {
+    id<SJRotationManagerProtocol> mgr = object;
+    if ( mgr.isTransitioning ) {
+        if ( _rotationDidStartExeBlock )
+            _rotationDidStartExeBlock(mgr);
+    }
+    else {
+        if ( _rotationDidEndExeBlock )
+            _rotationDidEndExeBlock(mgr);
+    }
+}
+@end
+
 @interface SJVCRotationManager()
 @property (nonatomic, copy) void(^rotateCompletionHandler)(id<SJRotationManagerProtocol> mgr);
 @property (nonatomic) UIDeviceOrientation rec_deviceOrientation;
 @property (nonatomic) SJOrientation currentOrientation;
-@property (nonatomic) BOOL transitioning;
+@property (nonatomic, getter=isTransitioning) BOOL transitioning;
 @property (nonatomic) BOOL needToForceRotation;
 @end
 
@@ -28,8 +59,7 @@ NS_ASSUME_NONNULL_BEGIN
 }
 @synthesize autorotationSupportedOrientation = _autorotationSupportedOrientation;
 @synthesize disableAutorotation = _disableAutorotation;
-@synthesize rotationCondition = _rotationCondition;
-@synthesize delegate = _delegate;
+@synthesize shouldTriggerRotation = _shouldTriggerRotation;
 @synthesize duration = _duration;
 @synthesize superview = _superview;
 @synthesize target = _target;
@@ -43,6 +73,10 @@ NS_ASSUME_NONNULL_BEGIN
     [NSNotificationCenter.defaultCenter addObserver:self selector:@selector(_refreshDeviceOrientation) name:UIDeviceOrientationDidChangeNotification object:nil];
     _atViewController = atViewController;
     return self;
+}
+
+- (id<SJRotationManagerObserver>)getObserver {
+    return [[SJVCRotationManagerObserver alloc] initWithMgr:self];
 }
 
 - (void)dealloc {
@@ -122,10 +156,10 @@ NS_ASSUME_NONNULL_BEGIN
     dispatch_async(dispatch_get_main_queue(), ^{
         __strong typeof(_self) self = _self;
         if ( !self ) return ;
-        if ( self.transitioning ) return;
+        if ( self.isTransitioning ) return;
         if ( !self.superview ) return;
         if ( !self.target ) return;
-        if ( self.rotationCondition ) { if ( !self.rotationCondition(self) ) return; }
+        if ( self.shouldTriggerRotation ) { if ( !self.shouldTriggerRotation(self) ) return; }
         if ( orientation == self.currentOrientation ) { if (completionHandler) completionHandler(self); return; }
         self.needToForceRotation = YES;
         self.rotateCompletionHandler = ^(id<SJRotationManagerProtocol>  _Nonnull mgr) {
@@ -140,14 +174,11 @@ NS_ASSUME_NONNULL_BEGIN
 }
 
 - (void)vc_viewWillTransitionToSize:(CGSize)size withTransitionCoordinator:(id<UIViewControllerTransitionCoordinator>)coordinator {
-    self.transitioning = YES;
     [self _refreshDeviceOrientation];
-    self.currentOrientation = _sjOrientationForDeviceOrentation(self->_rec_deviceOrientation);
-    BOOL isFull = size.width > size.height;
-    if ( [self.delegate respondsToSelector:@selector(rotationManager:willRotateView:)] ) {
-        [self.delegate rotationManager:self willRotateView:isFull];
-    }
-    
+    _currentOrientation = _sjOrientationForDeviceOrentation(_rec_deviceOrientation);
+    self.transitioning = YES;
+    BOOL isFull = self.isFullscreen;
+
     [self.target mas_remakeConstraints:^(MASConstraintMaker *make) {
         if ( isFull ) make.edges.equalTo(self->_atViewController.view);
         else make.edges.equalTo(self.superview);
@@ -155,23 +186,23 @@ NS_ASSUME_NONNULL_BEGIN
     [UIView animateWithDuration:coordinator.transitionDuration animations:^{
         [self.target layoutIfNeeded];
     }];
-    [coordinator animateAlongsideTransition:nil completion:^(id<UIViewControllerTransitionCoordinatorContext>  _Nonnull context) {
-        self.transitioning = NO;
-        if ( isFull ) [self->_atViewController.view addSubview:self.target];
-        else [self.superview addSubview:self.target];
-        if ( [self.delegate respondsToSelector:@selector(rotationManager:didRotateView:)] ) {
-            [self.delegate rotationManager:self didRotateView:isFull];
-        }
-        if ( self->_rotateCompletionHandler ) self->_rotateCompletionHandler(self);
-        self->_rotateCompletionHandler = nil;
-    }];
+    if ( isFull ) [_atViewController.view addSubview:_target];
+    else [_superview addSubview:_target];
+    self.transitioning = NO;
+    if ( _rotateCompletionHandler ) _rotateCompletionHandler(self);
+    _rotateCompletionHandler = nil;
 }
 
 - (BOOL)vc_shouldAutorotate {
     [self _refreshDeviceOrientation];
-    if ( self.rotationCondition && !self.rotationCondition(self) ) return NO;
-    if ( self.needToForceRotation ) return YES;
-    if ( [self _isSupported:_sjOrientationForDeviceOrentation(_rec_deviceOrientation)] ) return !self.disableAutorotation;
+    if ( self.shouldTriggerRotation && !self.shouldTriggerRotation(self) )
+        return NO;
+    
+    if ( self.needToForceRotation )
+        return YES;
+    
+    if ( [self _isSupported:_sjOrientationForDeviceOrentation(_rec_deviceOrientation)] )
+        return !self.disableAutorotation;
     return NO;
 }
 - (UIInterfaceOrientationMask)vc_supportedInterfaceOrientations {

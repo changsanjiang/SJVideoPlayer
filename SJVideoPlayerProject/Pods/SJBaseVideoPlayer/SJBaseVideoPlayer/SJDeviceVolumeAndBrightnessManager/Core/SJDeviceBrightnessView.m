@@ -1,22 +1,22 @@
 //
-//  SJVideoPlayerTipsView.m
+//  SJDeviceBrightnessView.m
 //  SJVideoPlayerProject
 //
 //  Created by BlueDancer on 2017/8/24.
 //  Copyright © 2017年 SanJiang. All rights reserved.
 //
 
-#import "SJVideoPlayerTipsView.h"
+#import "SJDeviceBrightnessView.h"
 #import "SJBorderLineView.h"
-#import "SJVolBrigResource.h"
+#import "SJDeviceVolumeAndBrightnessManagerResourceLoader.h"
 #if __has_include(<Masonry/Masonry.h>)
 #import <Masonry/Masonry.h>
 #else
 #import "Masonry.h"
 #endif
 
-
-@interface SJVideoPlayerTipsView ()
+NS_ASSUME_NONNULL_BEGIN
+@interface SJDeviceBrightnessView ()
 
 @property (nonatomic, strong, readonly) UIColor *themeColor;
 @property (nonatomic, strong, readonly) UIVisualEffectView *bottomMaskView;
@@ -27,7 +27,7 @@
 @end
 
 
-@implementation SJVideoPlayerTipsView
+@implementation SJDeviceBrightnessView
 
 @synthesize bottomMaskView = _bottomMaskView;
 @synthesize titleLabel = _titleLabel;
@@ -39,7 +39,7 @@
     frame.size = CGSizeMake(155, 155);
     self = [super initWithFrame:frame];
     if ( !self ) return nil;
-    [self _tipsViewSetupUI];
+    [self _setupViews];
     return self;
 }
 
@@ -50,14 +50,12 @@
     _tipsContainerView.hidden = (0 == value);
 }
 
-- (void)setImage:(UIImage *)image {
+- (void)setImage:(UIImage *_Nullable)image {
     _image = image;
     _imageView.image = image;
 }
 
-// MARK: UI
-
-- (void)_tipsViewSetupUI {
+- (void)_setupViews {
     
     self.layer.cornerRadius = 8;
     self.layer.masksToBounds = YES;
@@ -108,15 +106,16 @@
 
 - (UIVisualEffectView *)bottomMaskView {
     if ( _bottomMaskView ) return _bottomMaskView;
-    UIBlurEffect *effect = [UIBlurEffect effectWithStyle:UIBlurEffectStyleExtraLight];
+    UIBlurEffect *effect = [UIBlurEffect effectWithStyle:UIBlurEffectStyleLight];
     _bottomMaskView = [[UIVisualEffectView alloc] initWithEffect:effect];
+    _bottomMaskView.backgroundColor = [UIColor colorWithWhite:0 alpha:0.1];
     return _bottomMaskView;
 }
 
 - (UILabel *)titleLabel {
     if ( _titleLabel ) return _titleLabel;
     _titleLabel = [UILabel new];
-    _titleLabel.font = [UIFont boldSystemFontOfSize:14];
+    _titleLabel.font = [UIFont boldSystemFontOfSize:16];
     _titleLabel.textColor = self.themeColor;
     _titleLabel.textAlignment = NSTextAlignmentCenter;
     return _titleLabel;
@@ -157,9 +156,10 @@
 
 #pragma mark -
 - (UIColor *)themeColor {
-    return [UIColor colorWithRed:1 / 255.0
-                           green:0 / 255.0
-                            blue:13 / 255.0
+    return [UIColor colorWithRed:51 / 255.0
+                           green:51 / 255.0
+                            blue:51 / 255.0
                            alpha:1];
 }
 @end
+NS_ASSUME_NONNULL_END

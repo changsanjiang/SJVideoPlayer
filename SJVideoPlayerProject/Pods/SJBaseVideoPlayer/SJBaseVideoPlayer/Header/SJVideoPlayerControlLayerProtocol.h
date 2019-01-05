@@ -25,6 +25,7 @@
 /// 这个视图将会添加的播放器中
 - (UIView *)controlView;
 
+@optional
 /// This method is called before the control layer needs to be hidden, and `controlLayerNeedDisappear:` will not be called if NO is returned.
 /// 此方法针对`自动隐藏`的控制. 如果返回YES, 将会触发隐藏控制层的相关方法(见下delegate的`controlLayerNeedDisappear:`)
 ///
@@ -36,7 +37,6 @@
 /// 此方法将作为手势触发的一个条件, 如果返回NO, 将不会触发任何手势.
 - (BOOL)triggerGesturesCondition:(CGPoint)location;
 
-@optional
 /// Call it When installed control view to player view.
 /// 当安装好控制层后, 会回调这个方法
 - (void)installedControlViewToVideoPlayer:(__kindof SJBaseVideoPlayer *)videoPlayer;
@@ -140,6 +140,9 @@
 
 @protocol SJRotationControlDelegate <NSObject>
 @optional
+/// Whether trigger rotation of video player
+- (BOOL)canTriggerRotationOfVideoPlayer:(__kindof SJBaseVideoPlayer *)videoPlayer;
+
 /// Call it when player will rotate, `isFull` if YES, then full screen.
 /// 当播放器将要旋转的时候, 会回调这个方法
 /// isFull 标识是否是全屏

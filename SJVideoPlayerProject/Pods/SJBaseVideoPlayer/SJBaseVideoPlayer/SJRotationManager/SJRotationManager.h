@@ -14,5 +14,6 @@
 
 NS_ASSUME_NONNULL_BEGIN
 @interface SJRotationManager : NSObject<SJRotationManagerProtocol>
+
 @end
 NS_ASSUME_NONNULL_END

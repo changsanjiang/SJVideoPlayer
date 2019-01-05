@@ -2,7 +2,8 @@
 //  SJProgressSlider.h
 //  Pods-SJProgressSlider_Example
 //
-//  Created by BlueDancer on 2018/5/9.
+//  Created by BlueDancer on 2017/11/20.
+//  Copyright © 2017年 SanJiang. All rights reserved.
 //
 
 #import <UIKit/UIKit.h>
@@ -63,6 +64,17 @@ NS_ASSUME_NONNULL_BEGIN
  *  default is 1.0;
  */
 @property (nonatomic) CGFloat maxValue;
+
+/*!
+ *  default is 0;
+ */
+@property (nonatomic) CGFloat expand;
+
+/*!
+ *  default is 0.382;
+ *  0...1
+ */
+@property (nonatomic) float thumbOutsideSpace;
 
 /*!
  *  If you don't want to use this gesture, you can disable it
@@ -143,7 +155,7 @@ NS_ASSUME_NONNULL_BEGIN
 /*!
  *  缓冲进度颜色. default is grayColor
  */
-@property (nonatomic, strong, readwrite) UIColor *bufferProgressColor;
+@property (nonatomic, strong, null_resettable) UIColor *bufferProgressColor;
 
 /*!
  *  缓冲进度

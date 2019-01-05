@@ -15,23 +15,79 @@
 
 @end
 
-@implementation SJVideoPlayerRegistrar
+@implementation SJVideoPlayerRegistrar {
+    id _audioSessionRouteChangeToken;
+    id _applicationWillResignActiveToken;
+    id _applicationDidBecomeActiveToken;
+    id _applicationWillEnterForegroundToken;
+    id _applicationDidEnterBackgroundToken;
+    id _audioSessionInterruptionToken;
+}
 
 - (instancetype)init {
     self = [super init];
     if ( !self ) return nil;
-    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(audioSessionRouteChangeNotification:) name:AVAudioSessionRouteChangeNotification object:nil];
+    dispatch_async(dispatch_get_global_queue(0, 0), ^{
+        __weak typeof(self) _self = self;
+        self->_audioSessionRouteChangeToken = [NSNotificationCenter.defaultCenter addObserverForName:AVAudioSessionRouteChangeNotification object:nil queue:nil usingBlock:^(NSNotification * _Nonnull note) {
+            __strong typeof(_self) self = _self;
+            if ( !self ) return ;
+            NSDictionary *interuptionDict = note.userInfo;
+            NSInteger routeChangeReason = [[interuptionDict valueForKey:AVAudioSessionRouteChangeReasonKey] integerValue];
+            switch (routeChangeReason) {
+                case AVAudioSessionRouteChangeReasonNewDeviceAvailable: {
+                    if ( self.newDeviceAvailable ) self.newDeviceAvailable(self);
+                }
+                    break;
+                case AVAudioSessionRouteChangeReasonOldDeviceUnavailable: {
+                    if ( self.oldDeviceUnavailable ) self.oldDeviceUnavailable(self);
+                }
+                    break;
+                case AVAudioSessionRouteChangeReasonCategoryChange: {
+                    if ( self.categoryChange ) self.categoryChange(self);
+                }
+                    break;
+            }
+        }];
+        
+        self->_applicationWillResignActiveToken = [NSNotificationCenter.defaultCenter addObserverForName:UIApplicationWillResignActiveNotification object:nil queue:nil usingBlock:^(NSNotification * _Nonnull note) {
+            __strong typeof(_self) self = _self;
+            if ( !self ) return ;
+            self.state = SJVideoPlayerAppState_ResignActive;
+            if ( self.willResignActive ) self.willResignActive(self);
+        }];
+        
+        self->_applicationDidBecomeActiveToken = [NSNotificationCenter.defaultCenter addObserverForName:UIApplicationDidBecomeActiveNotification object:nil queue:nil usingBlock:^(NSNotification * _Nonnull note) {
+            __strong typeof(_self) self = _self;
+            if ( !self ) return ;
+            self.state = SJVideoPlayerAppState_BecomeActive;
+            if ( self.didBecomeActive ) self.didBecomeActive(self);
+        }];
+        
+        self->_applicationWillEnterForegroundToken = [NSNotificationCenter.defaultCenter addObserverForName:UIApplicationWillEnterForegroundNotification object:nil queue:nil usingBlock:^(NSNotification * _Nonnull note) {
+            __strong typeof(_self) self = _self;
+            if ( !self ) return ;
+            self.state = SJVideoPlayerAppState_Forground;
+            if ( self.willEnterForeground ) self.willEnterForeground(self);
+        }];
+        
+        self->_applicationDidEnterBackgroundToken = [NSNotificationCenter.defaultCenter addObserverForName:UIApplicationDidEnterBackgroundNotification object:nil queue:nil usingBlock:^(NSNotification * _Nonnull note) {
+            __strong typeof(_self) self = _self;
+            if ( !self ) return ;
+            self.state = SJVideoPlayerAppState_Background;
+            if ( self.didEnterBackground ) self.didEnterBackground(self);
+        }];
+        
+        self->_audioSessionInterruptionToken = [NSNotificationCenter.defaultCenter addObserverForName:AVAudioSessionInterruptionNotification object:[AVAudioSession sharedInstance] queue:nil usingBlock:^(NSNotification * _Nonnull note) {
+            __strong typeof(_self) self = _self;
+            if ( !self ) return ;
+            NSDictionary *info = note.userInfo;
+            if( (AVAudioSessionInterruptionType)[info[AVAudioSessionInterruptionTypeKey] integerValue] == AVAudioSessionInterruptionTypeBegan ) {
+                if ( self.audioSessionInterruption ) self.audioSessionInterruption(self);
+            }
+        }];
+    });
     
-    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(applicationWillResignActiveNotification) name:UIApplicationWillResignActiveNotification object:nil];
-    
-    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(applicationDidBecomeActiveNotification) name:UIApplicationDidBecomeActiveNotification object:nil];
-    
-    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(applicationWillEnterForegroundNotification) name:UIApplicationWillEnterForegroundNotification object:nil];
-    
-    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(applicationDidEnterBackgroundNotification) name:UIApplicationDidEnterBackgroundNotification object:nil];
-
-    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(audioSessionInterruptionNotification:) name:AVAudioSessionInterruptionNotification object:[AVAudioSession sharedInstance]];
-
     switch ( UIApplication.sharedApplication.applicationState ) {
         case UIApplicationStateActive:
             _state = SJVideoPlayerAppState_Forground;
@@ -47,57 +103,12 @@
 }
 
 - (void)dealloc {
-    [[NSNotificationCenter defaultCenter] removeObserver:self];
+   if ( _audioSessionRouteChangeToken ) [[NSNotificationCenter defaultCenter] removeObserver:_audioSessionRouteChangeToken];
+    if ( _applicationWillResignActiveToken ) [[NSNotificationCenter defaultCenter] removeObserver:_applicationWillResignActiveToken];
+    if ( _applicationDidBecomeActiveToken ) [[NSNotificationCenter defaultCenter] removeObserver:_applicationDidBecomeActiveToken];
+    if ( _applicationWillEnterForegroundToken ) [[NSNotificationCenter defaultCenter] removeObserver:_applicationWillEnterForegroundToken];
+    if ( _applicationDidEnterBackgroundToken ) [[NSNotificationCenter defaultCenter] removeObserver:_applicationDidEnterBackgroundToken];
+    if ( _audioSessionInterruptionToken ) [[NSNotificationCenter defaultCenter] removeObserver:_audioSessionInterruptionToken];
 }
 
-- (void)audioSessionRouteChangeNotification:(NSNotification*)notifi {
-    __weak typeof(self) _self = self;
-    dispatch_async(dispatch_get_main_queue(), ^{
-        __strong typeof(_self) self = _self;
-        if ( !self ) return;
-        NSDictionary *interuptionDict = notifi.userInfo;
-        NSInteger routeChangeReason = [[interuptionDict valueForKey:AVAudioSessionRouteChangeReasonKey] integerValue];
-        switch (routeChangeReason) {
-            case AVAudioSessionRouteChangeReasonNewDeviceAvailable: {
-                if ( self.newDeviceAvailable ) self.newDeviceAvailable(self);
-            }
-                break;
-            case AVAudioSessionRouteChangeReasonOldDeviceUnavailable: {
-                if ( self.oldDeviceUnavailable ) self.oldDeviceUnavailable(self);
-            }
-                break;
-            case AVAudioSessionRouteChangeReasonCategoryChange: {
-                if ( self.categoryChange ) self.categoryChange(self);
-            }
-                break;
-        }
-    });
-}
-
-- (void)applicationWillResignActiveNotification {
-    self.state = SJVideoPlayerAppState_ResignActive;
-    if ( _willResignActive ) _willResignActive(self);
-}
-
-- (void)applicationDidBecomeActiveNotification {
-    self.state = SJVideoPlayerAppState_BecomeActive;
-    if ( _didBecomeActive ) _didBecomeActive(self);
-}
-
-- (void)applicationWillEnterForegroundNotification {
-    self.state = SJVideoPlayerAppState_Forground;
-    if ( _willEnterForeground ) _willEnterForeground(self);
-}
-
-- (void)applicationDidEnterBackgroundNotification {
-    self.state = SJVideoPlayerAppState_Background;
-    if ( _didEnterBackground ) _didEnterBackground(self);
-}
-
-- (void)audioSessionInterruptionNotification:(NSNotification *)notification{
-    NSDictionary *info = notification.userInfo;
-    if( (AVAudioSessionInterruptionType)[info[AVAudioSessionInterruptionTypeKey] integerValue] == AVAudioSessionInterruptionTypeBegan ) {
-        if ( _audioSessionInterruption ) _audioSessionInterruption(self);
-    }
-}
 @end

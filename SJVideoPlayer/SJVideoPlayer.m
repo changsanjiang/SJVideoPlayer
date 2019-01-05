@@ -63,7 +63,8 @@ static NSString *_kPlayStatus = @"playStatus";
         if ( [object playStatus_isInactivity_ReasonPlayFailed] ) {
             if ( _playFailedExeBlock ) _playFailedExeBlock(object);
         }
-    }}
+    }
+}
 @end
 
 
@@ -111,7 +112,7 @@ static NSString *_kPlayStatus = @"playStatus";
 }
 
 + (NSString *)version {
-    return @"v2.2.8";
+    return @"v2.2.9";
 }
 
 + (instancetype)player {

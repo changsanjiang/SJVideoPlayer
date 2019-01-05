@@ -1,6 +1,6 @@
 //
-//  SJVolBrigResource.h
-//  SJVolBrigControl
+//  SJDeviceVolumeAndBrightnessManagerResourceLoader.h
+//  SJDeviceVolumeAndBrightnessManager
 //
 //  Created by BlueDancer on 2017/12/10.
 //  Copyright © 2017年 SanJiang. All rights reserved.
@@ -14,7 +14,7 @@ UIKIT_EXTERN NSString *const SJVolBrigControlBrightnessText;
 
 @class UIImage;
 
-@interface SJVolBrigResource : NSObject
+@interface SJDeviceVolumeAndBrightnessManagerResourceLoader : NSObject
 
 + (UIImage * __nullable)imageNamed:(NSString *)name;
 

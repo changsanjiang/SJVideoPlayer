@@ -7,12 +7,46 @@
 //
 
 #import "SJRotationManager.h"
+#if __has_include(<SJObserverHelper/NSObject+SJObserverHelper.h>)
+#import <SJObserverHelper/NSObject+SJObserverHelper.h>
+#else
+#import "NSObject+SJObserverHelper.h"
+#endif
 
 NS_ASSUME_NONNULL_BEGIN
+@interface SJRotationManagerObserver : NSObject<SJRotationManagerObserver>
+- (instancetype)initWithMgr:(id<SJRotationManagerProtocol>)mgr;
+@end
+
+@implementation SJRotationManagerObserver
+@synthesize rotationDidStartExeBlock = _rotationDidStartExeBlock;
+@synthesize rotationDidEndExeBlock = _rotationDidEndExeBlock;
+- (instancetype)initWithMgr:(id<SJRotationManagerProtocol>)mgr {
+    self = [super init];
+    if ( !self )
+        return nil;
+    [(id)mgr sj_addObserver:self forKeyPath:@"transitioning"];
+    return self;
+}
+
+- (void)observeValueForKeyPath:(NSString *_Nullable)keyPath ofObject:(id _Nullable)object change:(NSDictionary<NSKeyValueChangeKey,id> * _Nullable)change context:(void * _Nullable)context {
+    id<SJRotationManagerProtocol> mgr = object;
+    if ( mgr.isTransitioning ) {
+        if ( _rotationDidStartExeBlock )
+            _rotationDidStartExeBlock(mgr);
+    }
+    else {
+        if ( _rotationDidEndExeBlock )
+            _rotationDidEndExeBlock(mgr);
+    }
+}
+@end
+
+
 @interface SJRotationManager()
 @property (nonatomic, strong, readonly) UIView *blackView;
 @property (nonatomic) SJOrientation currentOrientation;
-@property (nonatomic) BOOL transitioning;
+@property (nonatomic, getter=isTransitioning) BOOL transitioning;
 @property (nonatomic) UIDeviceOrientation rec_deviceOrientation;
 @property (nonatomic) CGRect con_portraitRect;
 @end
@@ -20,8 +54,7 @@ NS_ASSUME_NONNULL_BEGIN
 @implementation SJRotationManager
 @synthesize autorotationSupportedOrientation = _autorotationSupportedOrientation;
 @synthesize disableAutorotation = _disableAutorotation;
-@synthesize rotationCondition = _rotationCondition;
-@synthesize delegate = _delegate;
+@synthesize shouldTriggerRotation = _shouldTriggerRotation;
 @synthesize duration = _duration;
 @synthesize superview = _superview;
 @synthesize target = _target;
@@ -37,6 +70,10 @@ NS_ASSUME_NONNULL_BEGIN
     _autorotationSupportedOrientation = SJAutoRotateSupportedOrientation_All;
     [self _observeNotifies];
     return self;
+}
+
+- (id<SJRotationManagerObserver>)getObserver {
+    return [[SJRotationManagerObserver alloc] initWithMgr:self];
 }
 
 - (void)dealloc {
@@ -114,17 +151,6 @@ NS_ASSUME_NONNULL_BEGIN
     return NO;
 }
 
-//static UIDeviceOrientation _deviceOrentationForSJOrientation(SJOrientation orientation) {
-//    switch ( orientation ) {
-//        case SJOrientation_Portrait:
-//            return UIDeviceOrientationPortrait;
-//        case SJOrientation_LandscapeLeft:
-//            return UIDeviceOrientationLandscapeLeft;
-//        case SJOrientation_LandscapeRight:
-//            return UIDeviceOrientationLandscapeRight;
-//    }
-//}
-
 static SJOrientation _sjOrientationForDeviceOrentation(UIDeviceOrientation orientation) {
     switch ( orientation ) {
         case UIDeviceOrientationPortrait:
@@ -184,7 +210,7 @@ static SJOrientation _sjOrientationForDeviceOrentation(UIDeviceOrientation orien
         if ( self.transitioning ) return;
         if ( !self.superview ) return;
         if ( !self.target ) return;
-        if ( self.rotationCondition && !self.rotationCondition(self) ) return;
+        if ( self.shouldTriggerRotation && !self.shouldTriggerRotation(self) ) return;
         SJOrientation ori_old = self.currentOrientation;
         SJOrientation ori_new = orientation;
         if ( ori_old == ori_new ) { if ( completionHandler ) completionHandler(self); return; }
@@ -228,9 +254,6 @@ static SJOrientation _sjOrientationForDeviceOrentation(UIDeviceOrientation orien
         [[UIApplication sharedApplication] setStatusBarOrientation:statusBarOrientation animated:NO];
 #pragma clang diagnostic pop
         
-        if ( [self.delegate respondsToSelector:@selector(rotationManager:willRotateView:)] ) {
-             [self.delegate rotationManager:self willRotateView:self.isFullscreen];
-        }
         [UIView animateWithDuration:animated ? self.duration : 0 animations:^{
             __strong typeof(_self) self = _self;
             if ( !self ) return ;
@@ -268,9 +291,6 @@ static SJOrientation _sjOrientationForDeviceOrentation(UIDeviceOrientation orien
                 [window insertSubview:self.blackView belowSubview:self.target];
             }
             self.transitioning = false;
-            if ( [self.delegate respondsToSelector:@selector(rotationManager:didRotateView:)] ) {
-                 [self.delegate rotationManager:self didRotateView:self.isFullscreen];
-            }
             if ( completionHandler ) completionHandler(self);
         }];
     });

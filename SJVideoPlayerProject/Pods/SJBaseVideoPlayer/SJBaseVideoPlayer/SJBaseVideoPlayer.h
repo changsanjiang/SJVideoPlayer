@@ -29,16 +29,17 @@
  */
 
 #import <UIKit/UIKit.h>
-#import "SJVideoPlayerState.h"
 #import "SJVideoPlayerPreviewInfo.h"
 #import "SJPrompt.h"
-#import "SJRotationManager.h"
 #import "SJFitOnScreenManagerProtocol.h"
+#import "SJRotationManagerProtocol.h"
 #import "SJVideoPlayerControlLayerProtocol.h"
 #import "SJControlLayerAppearManagerProtocol.h"
 #import "SJFlipTransitionManagerProtocol.h"
 #import "SJMediaPlaybackProtocol.h"
 #import "SJVideoPlayerURLAsset+SJAVMediaPlaybackAdd.h"
+#import "SJPlayerGestureControlProtocol.h"
+#import "SJDeviceVolumeAndBrightnessManagerProtocol.h"
 
 NS_ASSUME_NONNULL_BEGIN
 
@@ -157,6 +158,10 @@ NS_ASSUME_NONNULL_BEGIN
 /// - 使用URL及相关的视图信息进行初始化
 @property (nonatomic, strong, nullable) SJVideoPlayerURLAsset *URLAsset;
 
+/// URLAsset资源dealloc时的回调
+/// - 可以在这里做一些记录的工作. 如播放记录.
+@property (nonatomic, copy, nullable) void(^assetDeallocExeBlock)(__kindof SJBaseVideoPlayer *videoPlayer);
+
 /// v1.6.5 新增
 /// 切换 清晰度
 /// - 切换当前播放的视频清晰度
@@ -171,15 +176,14 @@ NS_ASSUME_NONNULL_BEGIN
 /// 不活跃原因
 @property (nonatomic, readonly) SJVideoPlayerInactivityReason inactivityReason;
 
-/// URLAsset资源dealloc时的回调
-/// - 可以在这里做一些记录的工作. 如播放记录.
-@property (nonatomic, copy, nullable) void(^assetDeallocExeBlock)(__kindof SJBaseVideoPlayer *videoPlayer);
+@property (nonatomic, copy, nullable) void(^playStatusDidChangeExeBlock)(__kindof SJBaseVideoPlayer *videoPlayer);
 
 /// 资源刷新
 - (void)refresh;
 
 /// 是否静音🔇
-@property (nonatomic) BOOL mute;
+@property (nonatomic, getter=isMute) BOOL mute;
+@property (nonatomic) float playerVolume;
 
 /// 是否锁屏
 @property (nonatomic, getter=isLockedScreen) BOOL lockedScreen;
@@ -216,18 +220,8 @@ NS_ASSUME_NONNULL_BEGIN
 /// 跳转到指定位置
 - (void)seekToTime:(NSTimeInterval)secs completionHandler:(void (^ __nullable)(BOOL finished))completionHandler;
 
-/// 调声音
-@property (nonatomic, readwrite) float volume;
-/// 禁止设置声音
-@property (nonatomic, readwrite) BOOL disableVolumeSetting;
-
-/// 调亮度
-@property (nonatomic, readwrite) float brightness;
-/// 禁止设置亮度
-@property (nonatomic, readwrite) BOOL disableBrightnessSetting;
-
 /// 调速
-@property (nonatomic, readwrite) float rate;
+@property (nonatomic) float rate;
 /// 速率改变的回调
 @property (nonatomic, copy, nullable) void(^rateDidChangeExeBlock)(__kindof SJBaseVideoPlayer *player);
 
@@ -235,6 +229,18 @@ NS_ASSUME_NONNULL_BEGIN
 - (void)playWithURL:(NSURL *)URL; // 不再建议使用, 请使用`URLAsset`进行初始化
 @end
 
+
+#pragma mark -
+
+@interface SJBaseVideoPlayer (DeviceVolumeAndBrightness)
+@property (nonatomic, strong, null_resettable) id<SJDeviceVolumeAndBrightnessManager> deviceVolumeAndBrightnessManager;
+
+@property (nonatomic) float deviceVolume;
+@property (nonatomic) float deviceBrightness;
+
+@property (nonatomic) BOOL disableBrightnessSetting;
+@property (nonatomic) BOOL disableVolumeSetting;
+@end
 
 
 #pragma mark - 关于视图控制器
@@ -360,23 +366,6 @@ NS_ASSUME_NONNULL_BEGIN
 
 #pragma mark - 手势
 /**
- This enumeration lists some of the gesture types that the player has by default.
- When you don't want to use one of these gestures, you can set it like this:
- 
- 这个枚举列出了播放器默认拥有的一些手势类型, 当你不想使用其中某个手势时, 可以像下面这样设置:
- _videoPlayer.disableGestureTypes = SJDisablePlayerGestureTypes_SingleTap | SJDisablePlayerGestureTypes_DoubleTap | ...;
- */
-typedef NS_ENUM(NSUInteger, SJDisablePlayerGestureTypes) {
-    SJDisablePlayerGestureTypes_None,
-    SJDisablePlayerGestureTypes_SingleTap = 1 << 0,
-    SJDisablePlayerGestureTypes_DoubleTap = 1 << 1,
-    SJDisablePlayerGestureTypes_Pan = 1 << 2,
-    SJDisablePlayerGestureTypes_Pinch = 1 << 3,
-    SJDisablePlayerGestureTypes_All = SJDisablePlayerGestureTypes_SingleTap | SJDisablePlayerGestureTypes_DoubleTap | SJDisablePlayerGestureTypes_Pan | SJDisablePlayerGestureTypes_Pinch,
-};
-
-
-/**
  播放器的手势介绍:
  base video player 默认会存在四种手势, Single Tap, double Tap, Pan, Pinch.
  
@@ -399,7 +388,9 @@ typedef NS_ENUM(NSUInteger, SJDisablePlayerGestureTypes) {
  */
 @interface SJBaseVideoPlayer (GestureControl)
 
-@property (nonatomic, readwrite) SJDisablePlayerGestureTypes disableGestureTypes;
+@property (nonatomic, strong, null_resettable) id<SJPlayerGestureControl> gestureControl;
+
+@property (nonatomic) SJPlayerDisabledGestures disabledGestures;
 
 @end
 
@@ -598,16 +589,15 @@ typedef NS_ENUM(NSUInteger, SJDisablePlayerGestureTypes) {
 @end
 
 
-
-
+#pragma mark - 已弃用
 
 @interface SJBaseVideoPlayer (Deprecated)
 @property (nonatomic, copy, nullable) void(^playDidToEnd)(__kindof SJBaseVideoPlayer *player) __deprecated_msg("use `playDidToEndExeBlock`");
-@property (nonatomic, assign, readonly) BOOL playOnCell __deprecated_msg("use `isPlayOnScrollView`");
-@property (nonatomic, assign, readonly) BOOL scrollIntoTheCell __deprecated_msg("use `isScrollAppeared`");
+@property (nonatomic, readonly) BOOL playOnCell __deprecated_msg("use `isPlayOnScrollView`");
+@property (nonatomic, readonly) BOOL scrollIntoTheCell __deprecated_msg("use `isScrollAppeared`");
 - (void)jumpedToTime:(NSTimeInterval)secs completionHandler:(void (^ __nullable)(BOOL finished))completionHandler __deprecated_msg("use `seekToTime:completionHandler:`"); // unit is sec. 单位是秒.
-@property (nonatomic, readonly) BOOL controlViewDisplayed __deprecated_msg("use `controlLayerAppeared`");
-@property (nonatomic, copy, readwrite, nullable) void(^controlViewDisplayStatus)(__kindof SJBaseVideoPlayer *player, BOOL displayed) __deprecated_msg("use `controlLayerAppearStateChanged`");
+@property (nonatomic, readonly) BOOL controlViewDisplayed __deprecated_msg("use `controlLayerIsAppeared`");
+@property (nonatomic, copy, nullable) void(^controlViewDisplayStatus)(__kindof SJBaseVideoPlayer *player, BOOL displayed) __deprecated_msg("use `controlLayerAppearStateChanged`");
 @property (nonatomic, copy, nullable) void(^willRotateScreen)(__kindof SJBaseVideoPlayer *player, BOOL isFullScreen) __deprecated_msg("use `viewWillRotateExeBlock`");
 @property (nonatomic, copy, nullable) void(^rotatedScreen)(__kindof SJBaseVideoPlayer *player, BOOL isFullScreen) __deprecated_msg("use `viewDidRotateExeBlock`");
 @property (nonatomic, strong, nullable) UIImage *placeholder __deprecated_msg("use `player.placeholderImageView`");
@@ -620,6 +610,9 @@ typedef NS_ENUM(NSUInteger, SJDisablePlayerGestureTypes) {
 @property (nonatomic, copy, nullable) void(^fitOnScreenDidChangeExeBlock)(__kindof SJBaseVideoPlayer *player) __deprecated_msg("use `fitOnScreenDidEndExeBlock`");
 @property (nonatomic, getter=isAutoPlay) BOOL autoPlay __deprecated_msg("use `autoPlayWhenPlayStatusIsReadyToPlay`");
 @property (nonatomic, copy, nullable) void(^rateChanged)(__kindof SJBaseVideoPlayer *player) __deprecated_msg("use `rateDidChangeExeBlock`");
+@property (nonatomic) SJDisablePlayerGestureTypes disableGestureTypes __deprecated_msg("use `disabledGestures`");
+@property (nonatomic) float volume __deprecated_msg("use `deviceVolume`");
+@property (nonatomic) float brightness __deprecated_msg("use `deviceBrightness`");
 @end
 
 NS_ASSUME_NONNULL_END

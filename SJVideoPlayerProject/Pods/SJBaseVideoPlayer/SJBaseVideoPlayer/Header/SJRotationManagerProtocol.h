@@ -9,7 +9,7 @@
 #define SJRotationManagerProtocol_h
 
 #import <UIKit/UIKit.h>
-@protocol SJRotationManagerProtocol;
+@protocol SJRotationManagerProtocol, SJRotationManagerObserver;
 /**
  视图方向
  
@@ -38,18 +38,22 @@ typedef NS_ENUM(NSUInteger, SJAutoRotateSupportedOrientation) {
     SJAutoRotateSupportedOrientation_All = SJAutoRotateSupportedOrientation_Portrait | SJAutoRotateSupportedOrientation_LandscapeLeft | SJAutoRotateSupportedOrientation_LandscapeRight,
 };
 
-
 NS_ASSUME_NONNULL_BEGIN
-@protocol SJRotationManagerDelegate<NSObject>
-/// 将要旋转
-- (void)rotationManager:(id<SJRotationManagerProtocol>)manager willRotateView:(BOOL)isFullscreen;
-/// 完成旋转
-- (void)rotationManager:(id<SJRotationManagerProtocol>)manager didRotateView:(BOOL)isFullscreen;
-@end
-
-
 @protocol SJRotationManagerProtocol<NSObject>
-@property (nonatomic, weak, nullable) id<SJRotationManagerDelegate> delegate;
+- (id<SJRotationManagerObserver>)getObserver;
+
+/// The block invoked when orientation will changed, if return YES, auto rotate will be triggered
+@property (nonatomic, copy, nullable) BOOL(^shouldTriggerRotation)(id<SJRotationManagerProtocol> mgr);
+
+/// 旋转
+/// - Animated
+- (void)rotate;
+
+/// 旋转到指定方向
+- (void)rotate:(SJOrientation)orientation animated:(BOOL)animated;
+
+/// 旋转到指定方向
+- (void)rotate:(SJOrientation)orientation animated:(BOOL)animated completionHandler:(nullable void(^)(id<SJRotationManagerProtocol> mgr))completionHandler;
 
 /// 是否禁止自动旋转
 /// - 该属性只会禁止自动旋转, 当调用 rotate 等方法还是可以旋转的
@@ -70,25 +74,15 @@ NS_ASSUME_NONNULL_BEGIN
 /// 是否全屏
 /// - landscapeRight 或者 landscapeLeft 即为全屏
 @property (nonatomic, readonly) BOOL isFullscreen;
-
-/// 是否正在旋转
-@property (nonatomic, readonly) BOOL transitioning;
-
-/// 旋转
-/// - Animated
-- (void)rotate;
-
-/// 旋转到指定方向
-- (void)rotate:(SJOrientation)orientation animated:(BOOL)animated;
-
-/// 旋转到指定方向
-- (void)rotate:(SJOrientation)orientation animated:(BOOL)animated completionHandler:(nullable void(^)(id<SJRotationManagerProtocol> mgr))completionHandler;
-
+@property (nonatomic, readonly, getter=isTransitioning) BOOL transitioning; // 是否正在旋转
 @property (nonatomic, weak, nullable) UIView *superview;
 @property (nonatomic, weak, nullable) UIView *target;
-/// The block invoked when orientation will changed, if return YES, auto rotate will be triggered
-@property (nonatomic, copy, nullable) BOOL(^rotationCondition)(id<SJRotationManagerProtocol> mgr);
+@end
+
+
+@protocol SJRotationManagerObserver <NSObject>
+@property (nonatomic, copy, nullable) void(^rotationDidStartExeBlock)(id<SJRotationManagerProtocol> mgr);
+@property (nonatomic, copy, nullable) void(^rotationDidEndExeBlock)(id<SJRotationManagerProtocol> mgr);
 @end
 NS_ASSUME_NONNULL_END
-
 #endif

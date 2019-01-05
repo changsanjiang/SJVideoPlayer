@@ -8,7 +8,7 @@ target 'SJVideoPlayer' do
   # Pods for SJVideoPlayer
   
   pod 'YYText', :inhibit_warnings => true
-  pod 'SJBaseVideoPlayer'
+  pod 'SJBaseVideoPlayer'#, :path => '../../SJBaseVideoPlayer'
   
   # 便捷的创建 NSAttributedString
   pod 'SJAttributesFactory'

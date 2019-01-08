@@ -1,1 +1,1 @@
-../../../SJBaseVideoPlayer/SJBaseVideoPlayer/Header/SJFlipTransitionManagerProtocol.h
+../../../../../../SJBaseVideoPlayer/SJBaseVideoPlayer/Header/SJFlipTransitionManagerProtocol.h

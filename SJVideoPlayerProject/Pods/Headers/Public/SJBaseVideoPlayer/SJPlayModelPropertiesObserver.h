@@ -1,1 +1,1 @@
-../../../SJBaseVideoPlayer/SJBaseVideoPlayer/Tool/SJPlayModelPropertiesObserver.h
+../../../../../../SJBaseVideoPlayer/SJBaseVideoPlayer/Tool/SJPlayModelPropertiesObserver.h

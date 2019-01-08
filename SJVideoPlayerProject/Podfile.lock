@@ -36,20 +36,17 @@ PODS:
   - SJBaseVideoPlayer/SJDeviceVolumeAndBrightnessManager (1.8.1):
     - Masonry
     - Reachability
-    - SJBaseVideoPlayer/Header
     - SJBaseVideoPlayer/SJDeviceVolumeAndBrightnessManager/Core (= 1.8.1)
     - SJBaseVideoPlayer/SJDeviceVolumeAndBrightnessManager/ResourceLoader (= 1.8.1)
     - SJObserverHelper
   - SJBaseVideoPlayer/SJDeviceVolumeAndBrightnessManager/Core (1.8.1):
     - Masonry
     - Reachability
-    - SJBaseVideoPlayer/Header
     - SJBaseVideoPlayer/SJDeviceVolumeAndBrightnessManager/ResourceLoader
     - SJObserverHelper
   - SJBaseVideoPlayer/SJDeviceVolumeAndBrightnessManager/ResourceLoader (1.8.1):
     - Masonry
     - Reachability
-    - SJBaseVideoPlayer/Header
     - SJObserverHelper
   - SJBaseVideoPlayer/SJPrompt (1.8.1):
     - Masonry
@@ -81,7 +78,7 @@ PODS:
 DEPENDENCIES:
   - Masonry
   - SJAttributesFactory
-  - SJBaseVideoPlayer
+  - SJBaseVideoPlayer (from `../../SJBaseVideoPlayer`)
   - SJFullscreenPopGesture
   - SJRouter
   - SJScrollEntriesView
@@ -93,7 +90,6 @@ SPEC REPOS:
     - Masonry
     - Reachability
     - SJAttributesFactory
-    - SJBaseVideoPlayer
     - SJFullscreenPopGesture
     - SJObserverHelper
     - SJRouter
@@ -101,11 +97,15 @@ SPEC REPOS:
     - SJUIFactory
     - YYText
 
+EXTERNAL SOURCES:
+  SJBaseVideoPlayer:
+    :path: "../../SJBaseVideoPlayer"
+
 SPEC CHECKSUMS:
   Masonry: 678fab65091a9290e40e2832a55e7ab731aad201
   Reachability: 33e18b67625424e47b6cde6d202dce689ad7af96
   SJAttributesFactory: d5b670fd0930928ac1c6fb0b06653f92fefd640c
-  SJBaseVideoPlayer: e571ede2c0cf78ce24eb22276641c04e9ab9e125
+  SJBaseVideoPlayer: a12aa84da6d8abcc9171ae1329d3b8cffbdb0dda
   SJFullscreenPopGesture: 94db6f970d864d53161d819916aed3f30b6a1442
   SJObserverHelper: aaa83baa3ea3fdb3e972979fed25b24df524fb01
   SJRouter: 83d99661639b4be9e937e6167c830f9f8283f93f
@@ -113,6 +113,6 @@ SPEC CHECKSUMS:
   SJUIFactory: b3e973c5e2ae08bc5a1bd2c68d94c00f81e01a0b
   YYText: 5c461d709e24d55a182d1441c41dc639a18a4849
 
-PODFILE CHECKSUM: cfe4834c96c4d731da6f80533267599b6463a762
+PODFILE CHECKSUM: 6b7a4d1828ffadff8773985371b43ede6bba07ee
 
 COCOAPODS: 1.6.0.beta.2

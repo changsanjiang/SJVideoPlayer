@@ -1,1 +1,1 @@
-../../../SJBaseVideoPlayer/SJBaseVideoPlayer/Header/SJDeviceVolumeAndBrightnessManagerProtocol.h
+../../../../../../SJBaseVideoPlayer/SJBaseVideoPlayer/Header/SJDeviceVolumeAndBrightnessManagerProtocol.h

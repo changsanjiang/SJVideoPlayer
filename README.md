@@ -234,10 +234,10 @@ SJPlayModel *playModel = [SJPlayModel new];
 
 ```Objective-C
 --  UITableView
---  UITableViewCell
---  Player.superview
---  Player.view
-
+    --  UITableViewCell
+        --  Player.superview
+            --  Player.view
+            
 SJPlayModel *playModel = [SJPlayModel UITableViewCellPlayModelWithPlayerSuperviewTag:cell.coverImageView.tag atIndexPath:indexPath tableView:self.tableView];
 ```
 
@@ -245,9 +245,9 @@ SJPlayModel *playModel = [SJPlayModel UITableViewCellPlayModelWithPlayerSupervie
 
 ```Objective-C
 --  UITableView
---  UITableView.tableHeaderView 或者 UITableView.tableFooterView  
---  Player.superview
---  Player.view
+    --  UITableView.tableHeaderView 或者 UITableView.tableFooterView  
+        --  Player.superview
+            --  Player.view
 
 SJPlayModel *playModel = [SJPlayModel UITableViewHeaderViewPlayModelWithPlayerSuperview:view.coverImageView tableView:self.tableView];
 ```
@@ -256,9 +256,9 @@ SJPlayModel *playModel = [SJPlayModel UITableViewHeaderViewPlayModelWithPlayerSu
 
 ```Objective-C
 --  UICollectionView
---  UICollectionViewCell
---  Player.superview
---  Player.view
+    --  UICollectionViewCell
+        --  Player.superview
+            --  Player.view
 
 SJPlayModel *playModel = [SJPlayModel UICollectionViewCellPlayModelWithPlayerSuperviewTag:cell.coverImageView.tag atIndexPath:indexPath collectionView:self.collectionView];
 ```
@@ -267,11 +267,11 @@ SJPlayModel *playModel = [SJPlayModel UICollectionViewCellPlayModelWithPlayerSup
 
 ```Objective-C
 --  UITableView
---  UITableView.tableHeaderView 或者 UITableView.tableFooterView  
---  tableHeaderView.UICollectionView
---  UICollectionViewCell
---  Player.superview
---  Player.view
+    --  UITableView.tableHeaderView 或者 UITableView.tableFooterView  
+        --  tableHeaderView.UICollectionView
+            --  UICollectionViewCell
+                --  Player.superview
+                    --  Player.view
 
 SJPlayModel *playModel = [SJPlayModel UICollectionViewNestedInUITableViewHeaderViewPlayModelWithPlayerSuperviewTag:cell.coverImageView.tag atIndexPath:indexPath collectionView:tableHeaderView.collectionView tableView:self.tableView];
 ```
@@ -280,11 +280,11 @@ SJPlayModel *playModel = [SJPlayModel UICollectionViewNestedInUITableViewHeaderV
 
 ```Objective-C
 --  UITableView
---  UITableViewCell
---  UITableViewCell.UICollectionView
---  UICollectionViewCell
---  Player.superview
---  Player.view
+    --  UITableViewCell
+        --  UITableViewCell.UICollectionView
+            --  UICollectionViewCell
+                --  Player.superview
+                    --  Player.view
 
 SJPlayModel *playModel = [SJPlayModel UICollectionViewNestedInUITableViewCellPlayModelWithPlayerSuperviewTag:collectionViewCell.coverImageView.tag atIndexPath:collectionViewCellAtIndexPath collectionViewTag:tableViewCell.collectionView.tag collectionViewAtIndexPath:tableViewCellAtIndexPath tableView:self.tableView];
 ```
@@ -293,11 +293,11 @@ SJPlayModel *playModel = [SJPlayModel UICollectionViewNestedInUITableViewCellPla
 
 ```Objective-C
 --  UICollectionView
---  UICollectionViewCell
---  UICollectionViewCell.UICollectionView
---  UICollectionViewCell
---  Player.superview
---  Player.view
+    --  UICollectionViewCell
+        --  UICollectionViewCell.UICollectionView
+            --  UICollectionViewCell
+                --  Player.superview
+                    --  Player.view
 
 SJPlayModel *playModel = [SJPlayModel UICollectionViewNestedInUICollectionViewCellPlayModelWithPlayerSuperviewTag:collectionViewCell.coverImageView.tag atIndexPath:collectionViewCellAtIndexPath collectionViewTag:rootCollectionViewCell.collectionView.tag collectionViewAtIndexPath:collectionViewAtIndexPath rootCollectionView:self.collectionView];
 ```
@@ -306,9 +306,9 @@ SJPlayModel *playModel = [SJPlayModel UICollectionViewNestedInUICollectionViewCe
 
 ```Objective-C
 --  UITableView
---  UITableViewHeaderFooterView 
---  Player.superview
---  Player.view            
+    --  UITableViewHeaderFooterView 
+        --  Player.superview
+            --  Player.view            
 
 /// isHeader: 当在header中播放时, 传YES, 在footer时, 传NO.
 SJPlayModel *playModel = [SJPlayModel UITableViewHeaderFooterViewPlayModelWithPlayerSuperviewTag:sectionHeaderView.coverImageView.tag inSection:section isHeader:YES tableView:self.tableView];
@@ -377,7 +377,7 @@ SJBaseVideoPlayer 提供了每个资源在 Dealloc 时的回调, 如下:
 ```Objective-C
 // 每个资源dealloc时的回调
 _player.assetDeallocExeBlock = ^(__kindof SJBaseVideoPlayer * _Nonnull videoPlayer) {
-// .....
+    // .....
 };
 ```
 
@@ -412,7 +412,7 @@ _player.totalTimeStr
 
 ```Objective-C
 _player.playTimeDidChangeExeBlok = ^(__kindof SJBaseVideoPlayer * _Nonnull videoPlayer) {
-/// ...
+    /// ...
 };
 ```
 
@@ -420,7 +420,7 @@ _player.playTimeDidChangeExeBlok = ^(__kindof SJBaseVideoPlayer * _Nonnull video
 
 ```Objective-C
 _player.playDidToEndExeBlock = ^(__kindof SJBaseVideoPlayer * _Nonnull videoPlayer) {
-/// ...
+    /// ...
 };
 ```
 
@@ -444,22 +444,22 @@ _player.playDidToEndExeBlock = ^(__kindof SJBaseVideoPlayer * _Nonnull videoPlay
 
 ```Objective-C
 /**
-当前播放的状态
+ 当前播放的状态
 
-- SJVideoPlayerPlayStatusUnknown:      未播放任何资源时的状态
-- SJVideoPlayerPlayStatusPrepare:      准备播放一个资源
-- SJVideoPlayerPlayStatusReadyToPlay:  准备就绪, 可以播放
-- SJVideoPlayerPlayStatusPlaying:      播放中
-- SJVideoPlayerPlayStatusPaused:       暂停状态, 请通过`SJVideoPlayerPausedReason`, 查看暂停原因
-- SJVideoPlayerPlayStatusInactivity:   不活跃状态, 请通过`SJVideoPlayerInactivityReason`, 查看暂停原因
-*/
+ - SJVideoPlayerPlayStatusUnknown:      未播放任何资源时的状态
+ - SJVideoPlayerPlayStatusPrepare:      准备播放一个资源
+ - SJVideoPlayerPlayStatusReadyToPlay:  准备就绪, 可以播放
+ - SJVideoPlayerPlayStatusPlaying:      播放中
+ - SJVideoPlayerPlayStatusPaused:       暂停状态, 请通过`SJVideoPlayerPausedReason`, 查看暂停原因
+ - SJVideoPlayerPlayStatusInactivity:   不活跃状态, 请通过`SJVideoPlayerInactivityReason`, 查看暂停原因
+ */
 typedef NS_ENUM(NSUInteger, SJVideoPlayerPlayStatus) {
-SJVideoPlayerPlayStatusUnknown,
-SJVideoPlayerPlayStatusPrepare,
-SJVideoPlayerPlayStatusReadyToPlay,
-SJVideoPlayerPlayStatusPlaying,
-SJVideoPlayerPlayStatusPaused,
-SJVideoPlayerPlayStatusInactivity,
+    SJVideoPlayerPlayStatusUnknown,
+    SJVideoPlayerPlayStatusPrepare,
+    SJVideoPlayerPlayStatusReadyToPlay,
+    SJVideoPlayerPlayStatusPlaying,
+    SJVideoPlayerPlayStatusPaused,
+    SJVideoPlayerPlayStatusInactivity,
 };
 ```
 
@@ -467,16 +467,16 @@ SJVideoPlayerPlayStatusInactivity,
 
 ```Objective-C
 /**
-暂停的理由
+ 暂停的理由
 
-- SJVideoPlayerPausedReasonBuffering:   正在缓冲
-- SJVideoPlayerPausedReasonPause:       被暂停
-- SJVideoPlayerPausedReasonSeeking:     正在跳转(调用seekToTime:时)
-*/
+ - SJVideoPlayerPausedReasonBuffering:   正在缓冲
+ - SJVideoPlayerPausedReasonPause:       被暂停
+ - SJVideoPlayerPausedReasonSeeking:     正在跳转(调用seekToTime:时)
+ */
 typedef NS_ENUM(NSUInteger, SJVideoPlayerPausedReason) {
-SJVideoPlayerPausedReasonBuffering,
-SJVideoPlayerPausedReasonPause,
-SJVideoPlayerPausedReasonSeeking,
+    SJVideoPlayerPausedReasonBuffering,
+    SJVideoPlayerPausedReasonPause,
+    SJVideoPlayerPausedReasonSeeking,
 };
 ```
 
@@ -484,14 +484,14 @@ SJVideoPlayerPausedReasonSeeking,
 
 ```Objective-C
 /**
-不活跃的原因
-
-- SJVideoPlayerInactivityReasonPlayEnd:    播放完毕
-- SJVideoPlayerInactivityReasonPlayFailed: 播放失败
-*/
+ 不活跃的原因
+ 
+ - SJVideoPlayerInactivityReasonPlayEnd:    播放完毕
+ - SJVideoPlayerInactivityReasonPlayFailed: 播放失败
+ */
 typedef NS_ENUM(NSUInteger, SJVideoPlayerInactivityReason) {
-SJVideoPlayerInactivityReasonPlayEnd,
-SJVideoPlayerInactivityReasonPlayFailed,
+    SJVideoPlayerInactivityReasonPlayEnd,
+    SJVideoPlayerInactivityReasonPlayFailed,
 };
 
 ```
@@ -623,7 +623,7 @@ _player.pauseWhenAppDidEnterBackground = NO; // 默认值为 YES, 即进入后�
 ```Objective-C
 NSTimeInterval secs = 20.0;
 [_player seekToTime:secs completionHandler:^(BOOL finished) {
-// ....
+    // ....
 }];
 ```
 
@@ -636,7 +636,7 @@ _player.rate = 1.0;
 
 
 _player.rateDidChangeExeBlock = ^(__kindof SJBaseVideoPlayer * _Nonnull player) {
-/// .. 
+    /// .. 
 }
 ```
 
@@ -676,9 +676,9 @@ controlLayerAppearManager 内部存在一个定时器, 当控制层显示时, �
 
 此方法将会回调控制层的代理方法:
 
-"- (void)controlLayerNeedAppear:(__kindof SJBaseVideoPlayer *)videoPlayer;"
-
-代理将会对当前的控制层进行显示处理.
+ "- (void)controlLayerNeedAppear:(__kindof SJBaseVideoPlayer *)videoPlayer;"
+ 
+ 代理将会对当前的控制层进行显示处理.
 </p>
 
 ```Objective-C

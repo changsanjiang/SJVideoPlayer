@@ -35,6 +35,9 @@ NS_ASSUME_NONNULL_BEGIN
 }
 
 - (void)observeValueForKeyPath:(NSString *_Nullable)keyPath ofObject:(id _Nullable)object change:(NSDictionary<NSKeyValueChangeKey,id> *_Nullable)change context:(void *_Nullable)context {
+    if ( [change[NSKeyValueChangeOldKey] integerValue] == [change[NSKeyValueChangeNewKey] integerValue] )
+        return;
+    
     id<SJReachability> mgr = object;
     if ( _networkStatusDidChangeExeBlock )
         _networkStatusDidChangeExeBlock(mgr, mgr.networkStatus);

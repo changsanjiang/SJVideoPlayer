@@ -34,6 +34,9 @@ NS_ASSUME_NONNULL_BEGIN
 }
 
 - (void)observeValueForKeyPath:(NSString *_Nullable)keyPath ofObject:(id _Nullable)object change:(NSDictionary<NSKeyValueChangeKey,id> * _Nullable)change context:(void * _Nullable)context {
+    if ( [change[NSKeyValueChangeOldKey] boolValue] == [change[NSKeyValueChangeNewKey] boolValue] )
+        return;
+    
     id<SJRotationManagerProtocol> mgr = object;
     if ( mgr.isTransitioning ) {
         if ( _rotationDidStartExeBlock )

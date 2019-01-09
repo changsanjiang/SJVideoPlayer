@@ -423,7 +423,7 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic) BOOL disabledControlLayerAppearManager; // default value is NO.
 @property (nonatomic) BOOL controlLayerIsAppeared;
 @property (nonatomic) BOOL pausedToKeepAppearState;
-@property (nonatomic) BOOL controlLayerAutoAppearWhenAssetInitialized; // default value is YES.
+@property (nonatomic) BOOL controlLayerAutoAppearWhenAssetInitialized; // default value is NO.
 @property (nonatomic, copy, nullable) void(^controlLayerAppearStateDidChangeExeBlock)(__kindof SJBaseVideoPlayer *player, BOOL state);
 @end
 

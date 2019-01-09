@@ -1,1 +1,1 @@
-../../../../../../SJBaseVideoPlayer/SJBaseVideoPlayer/Header/SJControlLayerAppearManagerProtocol.h
+../../../SJBaseVideoPlayer/SJBaseVideoPlayer/Header/SJControlLayerAppearManagerProtocol.h

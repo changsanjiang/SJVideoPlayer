@@ -230,10 +230,10 @@ SJPlayModel *playModel = [SJPlayModel new];
 
 ```Objective-C
 --  UITableView
---  UITableViewCell
---  Player.superview
---  Player.view
-
+    --  UITableViewCell
+        --  Player.superview
+            --  Player.view
+            
 SJPlayModel *playModel = [SJPlayModel UITableViewCellPlayModelWithPlayerSuperviewTag:cell.coverImageView.tag atIndexPath:indexPath tableView:self.tableView];
 ```
 
@@ -241,9 +241,9 @@ SJPlayModel *playModel = [SJPlayModel UITableViewCellPlayModelWithPlayerSupervie
 
 ```Objective-C
 --  UITableView
---  UITableView.tableHeaderView 或者 UITableView.tableFooterView  
---  Player.superview
---  Player.view
+    --  UITableView.tableHeaderView 或者 UITableView.tableFooterView  
+        --  Player.superview
+            --  Player.view
 
 SJPlayModel *playModel = [SJPlayModel UITableViewHeaderViewPlayModelWithPlayerSuperview:view.coverImageView tableView:self.tableView];
 ```
@@ -252,9 +252,9 @@ SJPlayModel *playModel = [SJPlayModel UITableViewHeaderViewPlayModelWithPlayerSu
 
 ```Objective-C
 --  UICollectionView
---  UICollectionViewCell
---  Player.superview
---  Player.view
+    --  UICollectionViewCell
+        --  Player.superview
+            --  Player.view
 
 SJPlayModel *playModel = [SJPlayModel UICollectionViewCellPlayModelWithPlayerSuperviewTag:cell.coverImageView.tag atIndexPath:indexPath collectionView:self.collectionView];
 ```
@@ -263,11 +263,11 @@ SJPlayModel *playModel = [SJPlayModel UICollectionViewCellPlayModelWithPlayerSup
 
 ```Objective-C
 --  UITableView
---  UITableView.tableHeaderView 或者 UITableView.tableFooterView  
---  tableHeaderView.UICollectionView
---  UICollectionViewCell
---  Player.superview
---  Player.view
+    --  UITableView.tableHeaderView 或者 UITableView.tableFooterView  
+        --  tableHeaderView.UICollectionView
+            --  UICollectionViewCell
+                --  Player.superview
+                    --  Player.view
 
 SJPlayModel *playModel = [SJPlayModel UICollectionViewNestedInUITableViewHeaderViewPlayModelWithPlayerSuperviewTag:cell.coverImageView.tag atIndexPath:indexPath collectionView:tableHeaderView.collectionView tableView:self.tableView];
 ```
@@ -276,11 +276,11 @@ SJPlayModel *playModel = [SJPlayModel UICollectionViewNestedInUITableViewHeaderV
 
 ```Objective-C
 --  UITableView
---  UITableViewCell
---  UITableViewCell.UICollectionView
---  UICollectionViewCell
---  Player.superview
---  Player.view
+    --  UITableViewCell
+        --  UITableViewCell.UICollectionView
+            --  UICollectionViewCell
+                --  Player.superview
+                    --  Player.view
 
 SJPlayModel *playModel = [SJPlayModel UICollectionViewNestedInUITableViewCellPlayModelWithPlayerSuperviewTag:collectionViewCell.coverImageView.tag atIndexPath:collectionViewCellAtIndexPath collectionViewTag:tableViewCell.collectionView.tag collectionViewAtIndexPath:tableViewCellAtIndexPath tableView:self.tableView];
 ```
@@ -289,11 +289,11 @@ SJPlayModel *playModel = [SJPlayModel UICollectionViewNestedInUITableViewCellPla
 
 ```Objective-C
 --  UICollectionView
---  UICollectionViewCell
---  UICollectionViewCell.UICollectionView
---  UICollectionViewCell
---  Player.superview
---  Player.view
+    --  UICollectionViewCell
+        --  UICollectionViewCell.UICollectionView
+            --  UICollectionViewCell
+                --  Player.superview
+                    --  Player.view
 
 SJPlayModel *playModel = [SJPlayModel UICollectionViewNestedInUICollectionViewCellPlayModelWithPlayerSuperviewTag:collectionViewCell.coverImageView.tag atIndexPath:collectionViewCellAtIndexPath collectionViewTag:rootCollectionViewCell.collectionView.tag collectionViewAtIndexPath:collectionViewAtIndexPath rootCollectionView:self.collectionView];
 ```
@@ -302,9 +302,9 @@ SJPlayModel *playModel = [SJPlayModel UICollectionViewNestedInUICollectionViewCe
 
 ```Objective-C
 --  UITableView
---  UITableViewHeaderFooterView 
---  Player.superview
---  Player.view            
+    --  UITableViewHeaderFooterView 
+        --  Player.superview
+            --  Player.view            
 
 /// isHeader: 当在header中播放时, 传YES, 在footer时, 传NO.
 SJPlayModel *playModel = [SJPlayModel UITableViewHeaderFooterViewPlayModelWithPlayerSuperviewTag:sectionHeaderView.coverImageView.tag inSection:section isHeader:YES tableView:self.tableView];
@@ -373,7 +373,7 @@ SJBaseVideoPlayer 提供了每个资源在 Dealloc 时的回调, 如下:
 ```Objective-C
 // 每个资源dealloc时的回调
 _player.assetDeallocExeBlock = ^(__kindof SJBaseVideoPlayer * _Nonnull videoPlayer) {
-// .....
+    // .....
 };
 ```
 
@@ -408,7 +408,7 @@ _player.totalTimeStr
 
 ```Objective-C
 _player.playTimeDidChangeExeBlok = ^(__kindof SJBaseVideoPlayer * _Nonnull videoPlayer) {
-/// ...
+    /// ...
 };
 ```
 
@@ -416,7 +416,7 @@ _player.playTimeDidChangeExeBlok = ^(__kindof SJBaseVideoPlayer * _Nonnull video
 
 ```Objective-C
 _player.playDidToEndExeBlock = ^(__kindof SJBaseVideoPlayer * _Nonnull videoPlayer) {
-/// ...
+    /// ...
 };
 ```
 
@@ -440,22 +440,22 @@ _player.playDidToEndExeBlock = ^(__kindof SJBaseVideoPlayer * _Nonnull videoPlay
 
 ```Objective-C
 /**
-当前播放的状态
+ 当前播放的状态
 
-- SJVideoPlayerPlayStatusUnknown:      未播放任何资源时的状态
-- SJVideoPlayerPlayStatusPrepare:      准备播放一个资源
-- SJVideoPlayerPlayStatusReadyToPlay:  准备就绪, 可以播放
-- SJVideoPlayerPlayStatusPlaying:      播放中
-- SJVideoPlayerPlayStatusPaused:       暂停状态, 请通过`SJVideoPlayerPausedReason`, 查看暂停原因
-- SJVideoPlayerPlayStatusInactivity:   不活跃状态, 请通过`SJVideoPlayerInactivityReason`, 查看暂停原因
-*/
+ - SJVideoPlayerPlayStatusUnknown:      未播放任何资源时的状态
+ - SJVideoPlayerPlayStatusPrepare:      准备播放一个资源
+ - SJVideoPlayerPlayStatusReadyToPlay:  准备就绪, 可以播放
+ - SJVideoPlayerPlayStatusPlaying:      播放中
+ - SJVideoPlayerPlayStatusPaused:       暂停状态, 请通过`SJVideoPlayerPausedReason`, 查看暂停原因
+ - SJVideoPlayerPlayStatusInactivity:   不活跃状态, 请通过`SJVideoPlayerInactivityReason`, 查看暂停原因
+ */
 typedef NS_ENUM(NSUInteger, SJVideoPlayerPlayStatus) {
-SJVideoPlayerPlayStatusUnknown,
-SJVideoPlayerPlayStatusPrepare,
-SJVideoPlayerPlayStatusReadyToPlay,
-SJVideoPlayerPlayStatusPlaying,
-SJVideoPlayerPlayStatusPaused,
-SJVideoPlayerPlayStatusInactivity,
+    SJVideoPlayerPlayStatusUnknown,
+    SJVideoPlayerPlayStatusPrepare,
+    SJVideoPlayerPlayStatusReadyToPlay,
+    SJVideoPlayerPlayStatusPlaying,
+    SJVideoPlayerPlayStatusPaused,
+    SJVideoPlayerPlayStatusInactivity,
 };
 ```
 
@@ -463,16 +463,16 @@ SJVideoPlayerPlayStatusInactivity,
 
 ```Objective-C
 /**
-暂停的理由
+ 暂停的理由
 
-- SJVideoPlayerPausedReasonBuffering:   正在缓冲
-- SJVideoPlayerPausedReasonPause:       被暂停
-- SJVideoPlayerPausedReasonSeeking:     正在跳转(调用seekToTime:时)
-*/
+ - SJVideoPlayerPausedReasonBuffering:   正在缓冲
+ - SJVideoPlayerPausedReasonPause:       被暂停
+ - SJVideoPlayerPausedReasonSeeking:     正在跳转(调用seekToTime:时)
+ */
 typedef NS_ENUM(NSUInteger, SJVideoPlayerPausedReason) {
-SJVideoPlayerPausedReasonBuffering,
-SJVideoPlayerPausedReasonPause,
-SJVideoPlayerPausedReasonSeeking,
+    SJVideoPlayerPausedReasonBuffering,
+    SJVideoPlayerPausedReasonPause,
+    SJVideoPlayerPausedReasonSeeking,
 };
 ```
 
@@ -480,14 +480,14 @@ SJVideoPlayerPausedReasonSeeking,
 
 ```Objective-C
 /**
-不活跃的原因
-
-- SJVideoPlayerInactivityReasonPlayEnd:    播放完毕
-- SJVideoPlayerInactivityReasonPlayFailed: 播放失败
-*/
+ 不活跃的原因
+ 
+ - SJVideoPlayerInactivityReasonPlayEnd:    播放完毕
+ - SJVideoPlayerInactivityReasonPlayFailed: 播放失败
+ */
 typedef NS_ENUM(NSUInteger, SJVideoPlayerInactivityReason) {
-SJVideoPlayerInactivityReasonPlayEnd,
-SJVideoPlayerInactivityReasonPlayFailed,
+    SJVideoPlayerInactivityReasonPlayEnd,
+    SJVideoPlayerInactivityReasonPlayFailed,
 };
 
 ```
@@ -619,7 +619,7 @@ _player.pauseWhenAppDidEnterBackground = NO; // 默认值为 YES, 即进入后�
 ```Objective-C
 NSTimeInterval secs = 20.0;
 [_player seekToTime:secs completionHandler:^(BOOL finished) {
-// ....
+    // ....
 }];
 ```
 
@@ -632,7 +632,7 @@ _player.rate = 1.0;
 
 
 _player.rateDidChangeExeBlock = ^(__kindof SJBaseVideoPlayer * _Nonnull player) {
-/// .. 
+    /// .. 
 }
 ```
 
@@ -672,9 +672,9 @@ controlLayerAppearManager 内部存在一个定时器, 当控制层显示时, �
 
 此方法将会回调控制层的代理方法:
 
-"- (void)controlLayerNeedAppear:(__kindof SJBaseVideoPlayer *)videoPlayer;"
-
-代理将会对当前的控制层进行显示处理.
+ "- (void)controlLayerNeedAppear:(__kindof SJBaseVideoPlayer *)videoPlayer;"
+ 
+ 代理将会对当前的控制层进行显示处理.
 </p>
 
 ```Objective-C
@@ -821,18 +821,18 @@ _player.supportedOrientation = SJAutoRotateSupportedOrientation_LandscapeLeft | 
 
 
 /**
-自动旋转支持的方向
-
-- SJAutoRotateSupportedOrientation_Portrait:       竖屏
-- SJAutoRotateSupportedOrientation_LandscapeLeft:  支持全屏, Home键在右侧
-- SJAutoRotateSupportedOrientation_LandscapeRight: 支持全屏, Home键在左侧
-- SJAutoRotateSupportedOrientation_All:            全部方向
-*/
+ 自动旋转支持的方向
+ 
+ - SJAutoRotateSupportedOrientation_Portrait:       竖屏
+ - SJAutoRotateSupportedOrientation_LandscapeLeft:  支持全屏, Home键在右侧
+ - SJAutoRotateSupportedOrientation_LandscapeRight: 支持全屏, Home键在左侧
+ - SJAutoRotateSupportedOrientation_All:            全部方向
+ */
 typedef NS_ENUM(NSUInteger, SJAutoRotateSupportedOrientation) {
-SJAutoRotateSupportedOrientation_Portrait = 1 << 0,
-SJAutoRotateSupportedOrientation_LandscapeLeft = 1 << 1,  
-SJAutoRotateSupportedOrientation_LandscapeRight = 1 << 2, 
-SJAutoRotateSupportedOrientation_All = SJAutoRotateSupportedOrientation_Portrait | SJAutoRotateSupportedOrientation_LandscapeLeft | SJAutoRotateSupportedOrientation_LandscapeRight,
+    SJAutoRotateSupportedOrientation_Portrait = 1 << 0,
+    SJAutoRotateSupportedOrientation_LandscapeLeft = 1 << 1,  
+    SJAutoRotateSupportedOrientation_LandscapeRight = 1 << 2, 
+    SJAutoRotateSupportedOrientation_All = SJAutoRotateSupportedOrientation_Portrait | SJAutoRotateSupportedOrientation_LandscapeLeft | SJAutoRotateSupportedOrientation_LandscapeRight,
 };
 ```
 
@@ -892,11 +892,11 @@ _player.orientation
 ```Objective-C
 _observer = [self.rotationManager getObserver];
 _observer.rotationDidStartExeBlock = ^(id<SJRotationManagerProtocol>  _Nonnull mgr) {
-/// ...
+    /// ...
 };
-
+    
 _observer.rotationDidEndExeBlock = ^(id<SJRotationManagerProtocol>  _Nonnull mgr) {
-/// ...
+    /// ...
 };
 ```
 
@@ -910,29 +910,29 @@ _observer.rotationDidEndExeBlock = ^(id<SJRotationManagerProtocol>  _Nonnull mgr
 
 ```Objective-C
 - (void)viewDidLoad {
-[super viewDidLoad];
-_player.rotationManager = [[SJVCRotationManager alloc] initWithViewController:vc];
+    [super viewDidLoad];
+    _player.rotationManager = [[SJVCRotationManager alloc] initWithViewController:vc];
 }
 
 - (void)viewWillTransitionToSize:(CGSize)size withTransitionCoordinator:(id<UIViewControllerTransitionCoordinator>)coordinator {
-SJVCRotationManager *mgr = _player.rotationManager;
-[mgr vc_viewWillTransitionToSize:size withTransitionCoordinator:coordinator];
-[super viewWillTransitionToSize:size withTransitionCoordinator:coordinator];
+    SJVCRotationManager *mgr = _player.rotationManager;
+    [mgr vc_viewWillTransitionToSize:size withTransitionCoordinator:coordinator];
+    [super viewWillTransitionToSize:size withTransitionCoordinator:coordinator];
 }
 
 - (BOOL)shouldAutorotate {
-SJVCRotationManager *mgr = _player.rotationManager;
-return [mgr vc_shouldAutorotate];
+    SJVCRotationManager *mgr = _player.rotationManager;
+    return [mgr vc_shouldAutorotate];
 }
 
 - (UIInterfaceOrientationMask)supportedInterfaceOrientations {
-SJVCRotationManager *mgr = _player.rotationManager;
-return [mgr vc_supportedInterfaceOrientations];
+    SJVCRotationManager *mgr = _player.rotationManager;
+    return [mgr vc_supportedInterfaceOrientations];
 }
 
 - (UIInterfaceOrientation)preferredInterfaceOrientationForPresentation {
-SJVCRotationManager *mgr = _player.rotationManager;
-return [mgr vc_preferredInterfaceOrientationForPresentation];
+    SJVCRotationManager *mgr = _player.rotationManager;
+    return [mgr vc_preferredInterfaceOrientationForPresentation];
 }
 ```
 
@@ -956,7 +956,7 @@ _player.fitOnScreen = YES;
 [_player setFitOnScreen:NO animated:NO];
 
 [_player setFitOnScreen:YES animated:YES completionHandler:^(__kindof SJBaseVideoPlayer * _Nonnull player) {
-/// ...
+    /// ...
 }];
 ```
 
@@ -990,8 +990,8 @@ ___
 
 ```Objective-C
 typedef enum : NSUInteger {
-SJViewFlipTransition_Identity,
-SJViewFlipTransition_Horizontally, // 水平翻转
+    SJViewFlipTransition_Identity,
+    SJViewFlipTransition_Horizontally, // 水平翻转
 } SJViewFlipTransition;
 ```
 
@@ -1005,7 +1005,7 @@ _player.flipTransition
 [_player setFlipTransition:SJViewFlipTransition_Horizontally];
 [_player setFlipTransition:SJViewFlipTransition_Horizontally animated:YES];
 [_player setFlipTransition:SJViewFlipTransition_Identity animated:YES completionHandler:^(__kindof SJBaseVideoPlayer * _Nonnull player) {
-/// ...
+    /// ...
 }];
 ```
 
@@ -1070,10 +1070,10 @@ ___
 ```Objective-C
 __weak typeof(self) _self = self;
 _gestureControl.singleTapHandler = ^(id<SJPlayerGestureControl>  _Nonnull control, CGPoint location) {
-__strong typeof(_self) self = _self;
-if ( !self ) return ;
-/// 让控制层显示或隐藏
-[self.controlLayerAppearManager switchAppearState];
+    __strong typeof(_self) self = _self;
+    if ( !self ) return ;
+    /// 让控制层显示或隐藏
+    [self.controlLayerAppearManager switchAppearState];
 };
 ```
 
@@ -1086,12 +1086,12 @@ if ( !self ) return ;
 ```Objective-C
 __weak typeof(self) _self = self;
 _gestureControl.doubleTapHandler = ^(id<SJPlayerGestureControl>  _Nonnull control, CGPoint location) {
-__strong typeof(_self) self = _self;
-if ( !self ) return ;
-if ( [self playStatus_isPlaying] )
-[self pause];
-else
-[self play];
+    __strong typeof(_self) self = _self;
+    if ( !self ) return ;
+    if ( [self playStatus_isPlaying] )
+        [self pause];
+    else
+        [self play];
 };
 ```
 
@@ -1103,9 +1103,9 @@ else
 ```Objective-C
 __weak typeof(self) _self = self;
 _gestureControl.panHandler = ^(id<SJPlayerGestureControl>  _Nonnull control, SJPanGestureTriggeredPosition position, SJPanGestureMovingDirection direction, SJPanGestureRecognizerState state, CGPoint translate) {
-__strong typeof(_self) self = _self;
-if ( !self ) return ;
-/// ....
+    __strong typeof(_self) self = _self;
+    if ( !self ) return ;
+    /// ....
 };
 ```
 
@@ -1118,9 +1118,9 @@ if ( !self ) return ;
 ```Objective-C
 __weak typeof(self) _self = self;
 _gestureControl.pinchHandler = ^(id<SJPlayerGestureControl>  _Nonnull control, CGFloat scale) {
-__strong typeof(_self) self = _self;
-if ( !self ) return ;
-self.playbackController.videoGravity = scale > 1 ?AVLayerVideoGravityResizeAspectFill:AVLayerVideoGravityResizeAspect;
+    __strong typeof(_self) self = _self;
+    if ( !self ) return ;
+    self.playbackController.videoGravity = scale > 1 ?AVLayerVideoGravityResizeAspectFill:AVLayerVideoGravityResizeAspect;
 };
 ```
 
@@ -1135,10 +1135,10 @@ self.playbackController.videoGravity = scale > 1 ?AVLayerVideoGravityResizeAspec
 _player.disabledGestures = SJPlayerGestureType_SingleTap | SJPlayerGestureType_DoubleTap;  
 
 typedef enum : NSUInteger {
-SJPlayerGestureType_SingleTap,
-SJPlayerGestureType_DoubleTap,
-SJPlayerGestureType_Pan,
-SJPlayerGestureType_Pinch,
+    SJPlayerGestureType_SingleTap,
+    SJPlayerGestureType_DoubleTap,
+    SJPlayerGestureType_Pan,
+    SJPlayerGestureType_Pinch,
 } SJPlayerGestureType;
 ```
 
@@ -1148,9 +1148,9 @@ SJPlayerGestureType_Pinch,
 /// 例如 替换单击手势的处理
 __weak typeof(self) _self = self;
 _player.gestureControl.singleTapHandler = ^(id<SJPlayerGestureControl>  _Nonnull control, CGPoint location) {
-__strong typeof(_self) self = _self;
-if ( !self ) return ;
-/// .....你的处理
+    __strong typeof(_self) self = _self;
+    if ( !self ) return ;
+    /// .....你的处理
 };
 ```
 
@@ -1210,7 +1210,7 @@ ___
 
 /// Update
 _player.prompt.update(^(SJPromptConfig * _Nonnull config) {
-config.font = [UIFont systemFontOfSize:12];
+    config.font = [UIFont systemFontOfSize:12];
 });
 
 /// 所有属性如下: 
@@ -1246,6 +1246,13 @@ ___
 <p>
 接入播放器的 ViewController 中, 会写一些固定的代码, 我将这些固定代码(例如 进入下个页面时, 需要当前页面的播放器暂停), 都封装在了以下方法中. 
 
+```Objective-C
+- (void)viewDidAppear:(BOOL)animated {
+    [super viewDidAppear:animated];
+    [_player vc_viewDidAppear];
+}
+```
+
 在适当的时候直接调用即可, 以下为内部实现:
 </p>
 
@@ -1259,14 +1266,14 @@ ___
 
 ```Objective-C
 - (void)vc_viewDidAppear {
-if ( !self.isPlayOnScrollView || (self.isPlayOnScrollView && self.isScrollAppeared) ) {
-/// 恢复播放
-[self play];
-}
-
-/// 标识vc已显示 
-/// vc_isDisappeared 是自动旋转触发的条件之一, 如果控制器 disappear 了, 就不会触发旋转 
-self.vc_isDisappeared = NO;
+    if ( !self.isPlayOnScrollView || (self.isPlayOnScrollView && self.isScrollAppeared) ) {
+    /// 恢复播放
+        [self play];
+    }
+    
+    /// 标识vc已显示 
+    /// vc_isDisappeared 是自动旋转触发的条件之一, 如果控制器 disappear 了, 就不会触发旋转 
+    self.vc_isDisappeared = NO;
 }
 ```
 
@@ -1280,9 +1287,9 @@ self.vc_isDisappeared = NO;
 
 ```Objective-C
 - (void)vc_viewWillDisappear {
-/// 标识vc已显示 
-/// vc_isDisappeared 是自动旋转触发的条件之一, 如果控制器 disappear 了, 就不会触发旋转 
-self.vc_isDisappeared = YES;
+    /// 标识vc已显示 
+    /// vc_isDisappeared 是自动旋转触发的条件之一, 如果控制器 disappear 了, 就不会触发旋转 
+    self.vc_isDisappeared = YES;
 }
 ```
 
@@ -1296,7 +1303,7 @@ self.vc_isDisappeared = YES;
 
 ```Objective-C
 - (void)vc_viewDidDisappear {
-[self pause];
+    [self pause];
 }
 ```
 
@@ -1310,16 +1317,16 @@ self.vc_isDisappeared = YES;
 
 ```Objective-C
 - (BOOL)vc_prefersStatusBarHidden {
-if ( _tmpShowStatusBar ) return NO;         // 临时显示
-if ( _tmpHiddenStatusBar ) return YES;      // 临时隐藏
-if ( self.lockedScreen ) return YES;        // 锁屏时, 不显示
-if ( self.rotationManager.transitioning ) { // 旋转时, 不显示
-if ( !self.disabledControlLayerAppearManager && self.controlLayerIsAppeared ) return NO;
-return YES;
-}
-// 全屏播放时, 使状态栏根据控制层显示或隐藏
-if ( self.isFullScreen ) return !self.controlLayerIsAppeared;
-return NO;
+    if ( _tmpShowStatusBar ) return NO;         // 临时显示
+    if ( _tmpHiddenStatusBar ) return YES;      // 临时隐藏
+    if ( self.lockedScreen ) return YES;        // 锁屏时, 不显示
+    if ( self.rotationManager.transitioning ) { // 旋转时, 不显示
+        if ( !self.disabledControlLayerAppearManager && self.controlLayerIsAppeared ) return NO;
+        return YES;
+    }
+    // 全屏播放时, 使状态栏根据控制层显示或隐藏
+    if ( self.isFullScreen ) return !self.controlLayerIsAppeared;
+    return NO;
 }
 ```
 
@@ -1333,9 +1340,9 @@ return NO;
 
 ```Objective-C
 - (UIStatusBarStyle)vc_preferredStatusBarStyle {
-// 全屏播放时, 使状态栏变成白色
-if ( self.isFullScreen || self.fitOnScreen ) return UIStatusBarStyleLightContent;
-return UIStatusBarStyleDefault;
+    // 全屏播放时, 使状态栏变成白色
+    if ( self.isFullScreen || self.fitOnScreen ) return UIStatusBarStyleLightContent;
+    return UIStatusBarStyleDefault;
 }
 ```
 
@@ -1373,12 +1380,12 @@ UIImage *img = [_player screenshot];
 
 ```Objective-C
 - (void)screenshotWithTime:(NSTimeInterval)secs
-completion:(void(^)(__kindof SJBaseVideoPlayer *videoPlayer, UIImage * __nullable image, NSError *__nullable error))block;
+                completion:(void(^)(__kindof SJBaseVideoPlayer *videoPlayer, UIImage * __nullable image, NSError *__nullable error))block;
 
 /// 可以通过 _player.playbackController.presentationSize 来获取当前视频宽高
 - (void)screenshotWithTime:(NSTimeInterval)secs
-size:(CGSize)size
-completion:(void(^)(__kindof SJBaseVideoPlayer *videoPlayer, UIImage * __nullable image, NSError *__nullable error))block;
+                      size:(CGSize)size
+                completion:(void(^)(__kindof SJBaseVideoPlayer *videoPlayer, UIImage * __nullable image, NSError *__nullable error))block;
 ```
 
 <h3 id="14.1">14.3 生成预览视图, 大约20张</h3>
@@ -1387,7 +1394,7 @@ completion:(void(^)(__kindof SJBaseVideoPlayer *videoPlayer, UIImage * __nullabl
 /// 可以通过 _player.playbackController.presentationSize 来获取当前视频宽高
 /// itemSize 应该尽可能的小一点, 这样处理的效率会更快
 - (void)generatedPreviewImagesWithMaxItemSize:(CGSize)itemSize
-completion:(void(^)(__kindof SJBaseVideoPlayer *player, NSArray<id<SJVideoPlayerPreviewInfo>> *__nullable images, NSError *__nullable error))block;
+                                   completion:(void(^)(__kindof SJBaseVideoPlayer *player, NSArray<id<SJVideoPlayerPreviewInfo>> *__nullable images, NSError *__nullable error))block;
 ```
 
 <h2 id="15">15. 导出视频或GIF</h2>
@@ -1396,21 +1403,21 @@ completion:(void(^)(__kindof SJBaseVideoPlayer *player, NSArray<id<SJVideoPlayer
 
 ```Objective-C
 /**
-export session.
-
-@param beginTime           开始的位置, 单位是秒
-@param endTime             结束的位置, 单位是秒
-@param presetName            default is `AVAssetExportPresetMediumQuality`.
-@param progressBlock       progressBlock
-@param completion            completion
-@param failure               failure
-*/
+ export session.
+ 
+ @param beginTime           开始的位置, 单位是秒
+ @param endTime             结束的位置, 单位是秒
+ @param presetName 	       default is `AVAssetExportPresetMediumQuality`.
+ @param progressBlock       progressBlock
+ @param completion 	       completion
+ @param failure 	          failure
+ */
 - (void)exportWithBeginTime:(NSTimeInterval)beginTime
-endTime:(NSTimeInterval)endTime
-presetName:(nullable NSString *)presetName
-progress:(void(^)(__kindof SJBaseVideoPlayer *videoPlayer, float progress))progressBlock
-completion:(void(^)(__kindof SJBaseVideoPlayer *videoPlayer, NSURL *fileURL, UIImage *thumbnailImage))completion
-failure:(void(^)(__kindof SJBaseVideoPlayer *videoPlayer, NSError *error))failure;
+                    endTime:(NSTimeInterval)endTime
+                 presetName:(nullable NSString *)presetName
+                   progress:(void(^)(__kindof SJBaseVideoPlayer *videoPlayer, float progress))progressBlock
+                 completion:(void(^)(__kindof SJBaseVideoPlayer *videoPlayer, NSURL *fileURL, UIImage *thumbnailImage))completion
+                    failure:(void(^)(__kindof SJBaseVideoPlayer *videoPlayer, NSError *error))failure;
 ```
 
 <h3 id="15.2">15.2 导出GIF</h3>
@@ -1426,10 +1433,10 @@ failure:(void(^)(__kindof SJBaseVideoPlayer *videoPlayer, NSError *error))failur
 @param failure 失败的回调
 */
 - (void)generateGIFWithBeginTime:(NSTimeInterval)beginTime
-duration:(NSTimeInterval)duration
-progress:(void(^)(__kindof SJBaseVideoPlayer *videoPlayer, float progress))progressBlock
-completion:(void(^)(__kindof SJBaseVideoPlayer *videoPlayer, UIImage *imageGIF, UIImage *thumbnailImage, NSURL *filePath))completion
-failure:(void(^)(__kindof SJBaseVideoPlayer *videoPlayer, NSError *error))failure;
+                        duration:(NSTimeInterval)duration
+                        progress:(void(^)(__kindof SJBaseVideoPlayer *videoPlayer, float progress))progressBlock
+                      completion:(void(^)(__kindof SJBaseVideoPlayer *videoPlayer, UIImage *imageGIF, UIImage *thumbnailImage, NSURL *filePath))completion
+                         failure:(void(^)(__kindof SJBaseVideoPlayer *videoPlayer, NSError *error))failure;
 ```
 
 <h3 id="15.3">15.3 取消操作</h3>
@@ -1497,14 +1504,14 @@ _player.isScrollAppeared
 
 ```Objective-C
 typedef NS_ENUM(NSUInteger, SJAutoplayScrollAnimationType) {
-SJAutoplayScrollAnimationTypeNone,
-SJAutoplayScrollAnimationTypeTop,
-SJAutoplayScrollAnimationTypeMiddle,
+    SJAutoplayScrollAnimationTypeNone,
+    SJAutoplayScrollAnimationTypeTop,
+    SJAutoplayScrollAnimationTypeMiddle,
 };
 
 @interface SJPlayerAutoplayConfig : NSObject
 + (instancetype)configWithPlayerSuperviewTag:(NSInteger)playerSuperviewTag
-autoplayDelegate:(id<SJPlayerAutoplayDelegate>)autoplayDelegate;
+                            autoplayDelegate:(id<SJPlayerAutoplayDelegate>)autoplayDelegate;
 
 /// 滚动的动画类型
 /// default is .Middle;
@@ -1645,7 +1652,7 @@ currentTime:(NSTimeInterval)currentTime currentTimeStr:(NSString *)currentTimeSt
 
 <h3 id="19.1">19.20 - (void)videoPlayer:(__kindof SJBaseVideoPlayer *)videoPlayer willRotateView:(BOOL)isFull;</h3>
 
-开始旋转的回调
+ 开始旋转的回调
 
 <h3 id="19.1">19.21 - (void)videoPlayer:(__kindof SJBaseVideoPlayer *)videoPlayer didEndRotation:(BOOL)isFull;</h3>
 

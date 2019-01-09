@@ -1610,8 +1610,9 @@ static NSString *_kGestureState = @"state";
             self.controlLayerAppearStateDidChangeExeBlock(self, mgr.isAppeared);
 
         if ( !self.rotationManager.isFullscreen ||
-             self.rotationManager.transitioning ) {
-            [UIView performWithoutAnimation:^{
+              self.rotationManager.transitioning ) {
+            [UIView animateWithDuration:0 animations:^{
+            } completion:^(BOOL finished) {
                 [[self atViewController] setNeedsStatusBarAppearanceUpdate];
             }];
         }
@@ -1817,7 +1818,18 @@ static NSString *_kGestureState = @"state";
             self.viewWillRotateExeBlock(self, mgr.isFullscreen);
         
         [self controlLayerNeedDisappear];
-        if ( !mgr.isFullscreen ) [self needShowStatusBar];
+        
+        ///
+        /// Thanks @SuperEvilRabbit
+        /// https://github.com/changsanjiang/SJVideoPlayer/issues/58
+        ///
+        [UIView animateWithDuration:0 animations:^{
+        } completion:^(BOOL finished) {
+            if ( mgr.isFullscreen )
+                [self needHiddenStatusBar];
+            else
+                [self needShowStatusBar];
+        }];
     };
     
     _rotationManagerObserver.rotationDidEndExeBlock = ^(id<SJRotationManagerProtocol>  _Nonnull mgr) {

@@ -78,7 +78,11 @@ NS_ASSUME_NONNULL_BEGIN
                                                                           collectionViewTag:(NSInteger)collectionViewTag
                                                                   collectionViewAtIndexPath:(__strong NSIndexPath *)collectionViewAtIndexPath
                                                                          rootCollectionView:(__weak UICollectionView *)rootCollectionView {
-    return [[SJUICollectionViewNestedInUICollectionViewCellPlayModel alloc] initWithWithPlayerSuperviewTag:playerSuperviewTag atIndexPath:indexPath collectionViewTag:collectionViewTag collectionViewAtIndexPath:collectionViewAtIndexPath rootCollectionView:rootCollectionView];
+    return [[SJUICollectionViewNestedInUICollectionViewCellPlayModel alloc] initWithPlayerSuperviewTag:playerSuperviewTag atIndexPath:indexPath collectionViewTag:collectionViewTag collectionViewAtIndexPath:collectionViewAtIndexPath rootCollectionView:rootCollectionView];
+}
+
++ (instancetype)UITableViewHeaderFooterViewPlayModelWithPlayerSuperviewTag:(NSInteger)playerSuperviewTag inSection:(NSInteger)section isHeader:(BOOL)isHeader tableView:(UITableView * _Nonnull __weak)tableView {
+    return [[SJUITableViewHeaderFooterViewPlayModel alloc] initWithPlayerSuperviewTag:playerSuperviewTag inSection:section isHeader:isHeader tableView:tableView];
 }
 
 - (instancetype)init {
@@ -241,7 +245,7 @@ NS_ASSUME_NONNULL_BEGIN
 @end
 
 @implementation SJUICollectionViewNestedInUICollectionViewCellPlayModel
-- (instancetype)initWithWithPlayerSuperviewTag:(NSInteger)playerSuperviewTag
+- (instancetype)initWithPlayerSuperviewTag:(NSInteger)playerSuperviewTag
                                    atIndexPath:(__strong NSIndexPath *)indexPath
                              collectionViewTag:(NSInteger)collectionViewTag
                      collectionViewAtIndexPath:(__strong NSIndexPath *)collectionViewAtIndexPath
@@ -269,6 +273,32 @@ NS_ASSUME_NONNULL_BEGIN
 }
 - (UICollectionView *)collectionView {
     return (UICollectionView *)[[self.rootCollectionView cellForItemAtIndexPath:self.collectionViewAtIndexPath] viewWithTag:self.collectionViewTag];
+}
+@end
+
+@implementation SJUITableViewHeaderFooterViewPlayModel
+- (instancetype)initWithPlayerSuperviewTag:(NSInteger)playerSuperviewTag
+                                 inSection:(NSInteger)inSection
+                                  isHeader:(BOOL)isHeader
+                                 tableView:(UITableView * _Nonnull __weak)tableView {
+    NSParameterAssert(playerSuperviewTag != 0);
+    NSParameterAssert(tableView);
+    
+    self = [super init];
+    if ( !self )
+        return nil;
+    _playerSuperviewTag = playerSuperviewTag;
+    _inSection = inSection;
+    _tableView = tableView;
+    _isHeader = isHeader;
+    return self;
+}
+
+- (BOOL)isPlayInTableView { return YES; }
+- (BOOL)isPlayInCollectionView { return NO; }
+- (UIView *_Nullable)playerSuperview {
+    return _isHeader?[[[self tableView] headerViewForSection:_inSection] viewWithTag:_playerSuperviewTag]:
+    [[[self tableView] footerViewForSection:_inSection] viewWithTag:_playerSuperviewTag];
 }
 @end
 NS_ASSUME_NONNULL_END

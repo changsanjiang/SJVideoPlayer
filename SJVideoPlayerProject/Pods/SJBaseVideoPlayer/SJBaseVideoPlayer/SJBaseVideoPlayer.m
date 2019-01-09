@@ -590,7 +590,6 @@ static NSString *_kGestureState = @"state";
 - (void)setFlipTransitionDidStartExeBlock:(void (^_Nullable)(__kindof SJBaseVideoPlayer * _Nonnull))block {
     _flipTransitionDidStartExeBlock = block;
 }
-
 - (void (^_Nullable)(__kindof SJBaseVideoPlayer * _Nonnull))flipTransitionDidStartExeBlock {
     return _flipTransitionDidStartExeBlock;
 }
@@ -598,7 +597,6 @@ static NSString *_kGestureState = @"state";
 - (void)setFlipTransitionDidStopExeBlock:(void (^_Nullable)(__kindof SJBaseVideoPlayer * _Nonnull))block {
     _flipTransitionDidStopExeBlock = block;
 }
-
 - (void (^_Nullable)(__kindof SJBaseVideoPlayer * _Nonnull))flipTransitionDidStopExeBlock {
     return _flipTransitionDidStopExeBlock;
 }

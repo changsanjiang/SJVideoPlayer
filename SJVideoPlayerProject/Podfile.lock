@@ -2,62 +2,65 @@ PODS:
   - Masonry (1.1.0)
   - Reachability (3.2)
   - SJAttributesFactory (2.0.5)
-  - SJBaseVideoPlayer (1.8.1):
+  - SJBaseVideoPlayer (1.8.2):
     - Masonry
     - Reachability
-    - SJBaseVideoPlayer/Header (= 1.8.1)
-    - SJBaseVideoPlayer/Model (= 1.8.1)
-    - SJBaseVideoPlayer/SJAVMediaPlaybackController (= 1.8.1)
-    - SJBaseVideoPlayer/SJDeviceVolumeAndBrightnessManager (= 1.8.1)
-    - SJBaseVideoPlayer/SJPrompt (= 1.8.1)
-    - SJBaseVideoPlayer/SJRotationManager (= 1.8.1)
-    - SJBaseVideoPlayer/Tool (= 1.8.1)
+    - SJBaseVideoPlayer/Header (= 1.8.2)
+    - SJBaseVideoPlayer/Model (= 1.8.2)
+    - SJBaseVideoPlayer/SJAVMediaPlaybackController (= 1.8.2)
+    - SJBaseVideoPlayer/SJDeviceVolumeAndBrightnessManager (= 1.8.2)
+    - SJBaseVideoPlayer/SJPrompt (= 1.8.2)
+    - SJBaseVideoPlayer/SJRotationManager (= 1.8.2)
+    - SJBaseVideoPlayer/Tool (= 1.8.2)
     - SJObserverHelper
-  - SJBaseVideoPlayer/Header (1.8.1):
+  - SJBaseVideoPlayer/Header (1.8.2):
     - Masonry
     - Reachability
     - SJObserverHelper
-  - SJBaseVideoPlayer/Model (1.8.1):
+  - SJBaseVideoPlayer/Model (1.8.2):
     - Masonry
     - Reachability
     - SJBaseVideoPlayer/Header
     - SJObserverHelper
-  - SJBaseVideoPlayer/SJAVMediaPlaybackController (1.8.1):
+  - SJBaseVideoPlayer/SJAVMediaPlaybackController (1.8.2):
     - Masonry
     - Reachability
-    - SJBaseVideoPlayer/SJAVMediaPlaybackController/Core (= 1.8.1)
+    - SJBaseVideoPlayer/SJAVMediaPlaybackController/Core (= 1.8.2)
     - SJBaseVideoPlayer/Tool
     - SJObserverHelper
-  - SJBaseVideoPlayer/SJAVMediaPlaybackController/Core (1.8.1):
+  - SJBaseVideoPlayer/SJAVMediaPlaybackController/Core (1.8.2):
     - Masonry
     - Reachability
     - SJBaseVideoPlayer/Tool
     - SJObserverHelper
-  - SJBaseVideoPlayer/SJDeviceVolumeAndBrightnessManager (1.8.1):
+  - SJBaseVideoPlayer/SJDeviceVolumeAndBrightnessManager (1.8.2):
     - Masonry
     - Reachability
-    - SJBaseVideoPlayer/SJDeviceVolumeAndBrightnessManager/Core (= 1.8.1)
-    - SJBaseVideoPlayer/SJDeviceVolumeAndBrightnessManager/ResourceLoader (= 1.8.1)
+    - SJBaseVideoPlayer/Header
+    - SJBaseVideoPlayer/SJDeviceVolumeAndBrightnessManager/Core (= 1.8.2)
+    - SJBaseVideoPlayer/SJDeviceVolumeAndBrightnessManager/ResourceLoader (= 1.8.2)
     - SJObserverHelper
-  - SJBaseVideoPlayer/SJDeviceVolumeAndBrightnessManager/Core (1.8.1):
+  - SJBaseVideoPlayer/SJDeviceVolumeAndBrightnessManager/Core (1.8.2):
     - Masonry
     - Reachability
+    - SJBaseVideoPlayer/Header
     - SJBaseVideoPlayer/SJDeviceVolumeAndBrightnessManager/ResourceLoader
     - SJObserverHelper
-  - SJBaseVideoPlayer/SJDeviceVolumeAndBrightnessManager/ResourceLoader (1.8.1):
-    - Masonry
-    - Reachability
-    - SJObserverHelper
-  - SJBaseVideoPlayer/SJPrompt (1.8.1):
-    - Masonry
-    - Reachability
-    - SJObserverHelper
-  - SJBaseVideoPlayer/SJRotationManager (1.8.1):
+  - SJBaseVideoPlayer/SJDeviceVolumeAndBrightnessManager/ResourceLoader (1.8.2):
     - Masonry
     - Reachability
     - SJBaseVideoPlayer/Header
     - SJObserverHelper
-  - SJBaseVideoPlayer/Tool (1.8.1):
+  - SJBaseVideoPlayer/SJPrompt (1.8.2):
+    - Masonry
+    - Reachability
+    - SJObserverHelper
+  - SJBaseVideoPlayer/SJRotationManager (1.8.2):
+    - Masonry
+    - Reachability
+    - SJBaseVideoPlayer/Header
+    - SJObserverHelper
+  - SJBaseVideoPlayer/Tool (1.8.2):
     - Masonry
     - Reachability
     - SJBaseVideoPlayer/Header
@@ -105,7 +108,7 @@ SPEC CHECKSUMS:
   Masonry: 678fab65091a9290e40e2832a55e7ab731aad201
   Reachability: 33e18b67625424e47b6cde6d202dce689ad7af96
   SJAttributesFactory: d5b670fd0930928ac1c6fb0b06653f92fefd640c
-  SJBaseVideoPlayer: a12aa84da6d8abcc9171ae1329d3b8cffbdb0dda
+  SJBaseVideoPlayer: 409a24ea32573714bb691f6c41e90a18342868a3
   SJFullscreenPopGesture: 94db6f970d864d53161d819916aed3f30b6a1442
   SJObserverHelper: aaa83baa3ea3fdb3e972979fed25b24df524fb01
   SJRouter: 83d99661639b4be9e937e6167c830f9f8283f93f
@@ -113,6 +116,6 @@ SPEC CHECKSUMS:
   SJUIFactory: b3e973c5e2ae08bc5a1bd2c68d94c00f81e01a0b
   YYText: 5c461d709e24d55a182d1441c41dc639a18a4849
 
-PODFILE CHECKSUM: 6b7a4d1828ffadff8773985371b43ede6bba07ee
+PODFILE CHECKSUM: 981439ede8af69b3e353b6cdda08aca17c9cb3b5
 
 COCOAPODS: 1.6.0.beta.2

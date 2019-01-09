@@ -38,44 +38,42 @@ NS_ASSUME_NONNULL_BEGIN
     else {
         [self _observeProperties];
     }
+    
+    [self refreshAppearState];
     return self;
 }
 
 - (void)_observeProperties {
     if ( [_playModel isKindOfClass:[SJUITableViewCellPlayModel class]] ) {
         SJUITableViewCellPlayModel *playModel = _playModel;
-        _isAppeared = [self _isAppearedInTheScrollingView:playModel.tableView];
         [self _observeScrollView:playModel.tableView];
-        _beforeOffset = playModel.tableView.contentOffset;
     }
     else if ( [_playModel isKindOfClass:[SJUICollectionViewCellPlayModel class]] ) {
         SJUICollectionViewCellPlayModel *playModel = _playModel;
-        _isAppeared = [self _isAppearedInTheScrollingView:playModel.collectionView];
         [self _observeScrollView:playModel.collectionView];
-        _beforeOffset = playModel.collectionView.contentOffset;
     }
     else if ( [_playModel isKindOfClass:[SJUITableViewHeaderViewPlayModel class]] ) {
         SJUITableViewHeaderViewPlayModel *playModel = _playModel;
-        _isAppeared = [self _isAppearedInTheScrollingView:playModel.tableView];
         [self _observeScrollView:playModel.tableView];
     }
     else if ( [_playModel isKindOfClass:[SJUICollectionViewNestedInUITableViewHeaderViewPlayModel class]] ) {
         SJUICollectionViewNestedInUITableViewHeaderViewPlayModel *playModel = _playModel;
-        _isAppeared = [self _isAppearedInTheScrollingView:playModel.collectionView];
         [self _observeScrollView:playModel.collectionView];
         [self _observeScrollView:playModel.tableView];
     }
     else if ( [_playModel isKindOfClass:[SJUICollectionViewNestedInUITableViewCellPlayModel class]] ) {
         SJUICollectionViewNestedInUITableViewCellPlayModel *playModel = _playModel;
-        _isAppeared = [self _isAppearedInTheScrollingView:playModel.collectionView];
         [self _observeScrollView:playModel.collectionView];
         [self _observeScrollView:playModel.tableView];
     }
     else if ( [_playModel isKindOfClass:[SJUICollectionViewNestedInUICollectionViewCellPlayModel class]] ) {
         SJUICollectionViewNestedInUICollectionViewCellPlayModel *playModel = _playModel;
-        _isAppeared = [self _isAppearedInTheScrollingView:playModel.collectionView];
         [self _observeScrollView:playModel.collectionView];
         [self _observeScrollView:playModel.rootCollectionView];
+    }
+    else if ( [_playModel isKindOfClass:[SJUITableViewHeaderFooterViewPlayModel class]] ) {
+        SJUITableViewHeaderFooterViewPlayModel *playModel = _playModel;
+        [self _observeScrollView:playModel.tableView];
     }
 }
 
@@ -103,19 +101,19 @@ static NSString *kState = @"state";
 - (void)_panGestureStateDidChange:(UIPanGestureRecognizer *)pan {
     if ( !pan ) return;
     UIGestureRecognizerState state = pan.state;
-    BOOL isTableView = NO;
-    BOOL isCollectionView = NO;
+    BOOL isTouchedTableView = NO;
+    BOOL isTouchedCollectionView = NO;
     switch ( state ) {
         case UIGestureRecognizerStateChanged: return;
         case UIGestureRecognizerStatePossible: return;
         case UIGestureRecognizerStateBegan: {
             if ( [pan.view isKindOfClass:[UITableView class]] ) {
                 _isTouchedTablView = YES;
-                isTableView = YES;
+                isTouchedTableView = YES;
             }
             else if ( [pan.view isKindOfClass:[UICollectionView class]] ) {
                 _isTouchedCollectionView = YES;
-                isCollectionView = YES;
+                isTouchedCollectionView = YES;
             }
         }
             break;
@@ -124,22 +122,22 @@ static NSString *kState = @"state";
         case UIGestureRecognizerStateCancelled: {
             if ( [pan.view isKindOfClass:[UITableView class]] ) {
                 _isTouchedTablView = NO;
-                isTableView = YES;
+                isTouchedTableView = YES;
             }
             else if ( [pan.view isKindOfClass:[UICollectionView class]] ) {
                 _isTouchedCollectionView = NO;
-                isCollectionView = YES;
+                isTouchedCollectionView = YES;
             }
         }
             break;
     }
     
-    if ( isTableView ) {
+    if ( isTouchedTableView ) {
         if ( [self.delegate respondsToSelector:@selector(observer:userTouchedTableView:)] ) {
             [self.delegate observer:self userTouchedTableView:_isTouchedTablView];
         }
     }
-    else if ( isCollectionView ) {
+    else if ( isTouchedCollectionView ) {
         if ( [self.delegate respondsToSelector:@selector(observer:userTouchedCollectionView:)] ) {
             [self.delegate observer:self userTouchedCollectionView:_isTouchedCollectionView];
         }

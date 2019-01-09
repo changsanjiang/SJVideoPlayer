@@ -35,33 +35,72 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (instancetype)init;
 
+/// - UITableView
+///     - UITableViewCell
+///         - player super view
+///             - player
 + (instancetype)UITableViewCellPlayModelWithPlayerSuperviewTag:(NSInteger)playerSuperviewTag
                                                    atIndexPath:(__strong NSIndexPath *)indexPath
                                                      tableView:(__weak UITableView *)tableView;
 
+/// - UICollectionView
+///     - UICollectionViewCell
+///         - player super view
+///             - player
 + (instancetype)UICollectionViewCellPlayModelWithPlayerSuperviewTag:(NSInteger)playerSuperviewTag
                                                         atIndexPath:(__strong NSIndexPath *)indexPath
                                                      collectionView:(__weak UICollectionView *)collectionView;
 
+/// - UITableView
+///     - UITableViewHeaderView
+///         - player super view
+///             - player
 + (instancetype)UITableViewHeaderViewPlayModelWithPlayerSuperview:(__weak UIView *)playerSuperview
                                                         tableView:(__weak UITableView *)tableView;
 
+/// - UITableView
+///     - UITableViewHeaderView
+///         - UICollectionView
+///             - UICollectionViewCell
+///                 - player super view
+///                     - player
 + (instancetype)UICollectionViewNestedInUITableViewHeaderViewPlayModelWithPlayerSuperviewTag:(NSInteger)playerSuperviewTag
                                                                                  atIndexPath:(NSIndexPath *)indexPath
                                                                               collectionView:(__weak UICollectionView *)collectionView
                                                                                    tableView:(__weak UITableView *)tableView;
 
+/// - UITableView
+///     - UITableViewCell
+///         - UICollectionView
+///             - UICollectionViewCell
+///                 - player super view
+///                     - player
 + (instancetype)UICollectionViewNestedInUITableViewCellPlayModelWithPlayerSuperviewTag:(NSInteger)playerSuperviewTag
                                                                            atIndexPath:(__strong NSIndexPath *)indexPath
                                                                      collectionViewTag:(NSInteger)collectionViewTag
                                                              collectionViewAtIndexPath:(__strong NSIndexPath *)collectionViewAtIndexPath
                                                                              tableView:(__weak UITableView *)tableView;
 
+/// - UICollectionView
+///     - UICollectionViewCell
+///         - UICollectionView
+///             - UICollectionViewCell
+///                 - player super view
+///                     - player
 + (instancetype)UICollectionViewNestedInUICollectionViewCellPlayModelWithPlayerSuperviewTag:(NSInteger)playerSuperviewTag
                                                                                 atIndexPath:(__strong NSIndexPath *)indexPath
                                                                           collectionViewTag:(NSInteger)collectionViewTag
                                                                   collectionViewAtIndexPath:(__strong NSIndexPath *)collectionViewAtIndexPath
                                                                          rootCollectionView:(__weak UICollectionView *)rootCollectionView;
+
+/// - UITableView
+///     - UITableViewHeaderFooterView
+///         - player super view
+///             - player
++ (instancetype)UITableViewHeaderFooterViewPlayModelWithPlayerSuperviewTag:(NSInteger)playerSuperviewTag
+                                                                        inSection:(NSInteger)section
+                                                                         isHeader:(BOOL)isHeader    // 是否是Header, 如果是传YES, 如果是Footer传NO
+                                                                        tableView:(__weak UITableView *)tableView;
 @end
 
 
@@ -182,11 +221,11 @@ NS_ASSUME_NONNULL_BEGIN
 ///                 - player super view
 ///                     - player
 @interface SJUICollectionViewNestedInUICollectionViewCellPlayModel: SJPlayModel
-- (instancetype)initWithWithPlayerSuperviewTag:(NSInteger)playerSuperviewTag
-                                   atIndexPath:(__strong NSIndexPath *)indexPath
-                             collectionViewTag:(NSInteger)collectionViewTag
-                     collectionViewAtIndexPath:(__strong NSIndexPath *)collectionViewAtIndexPath
-                            rootCollectionView:(__weak UICollectionView *)rootCollectionView;
+- (instancetype)initWithPlayerSuperviewTag:(NSInteger)playerSuperviewTag
+                               atIndexPath:(__strong NSIndexPath *)indexPath
+                         collectionViewTag:(NSInteger)collectionViewTag
+                 collectionViewAtIndexPath:(__strong NSIndexPath *)collectionViewAtIndexPath
+                        rootCollectionView:(__weak UICollectionView *)rootCollectionView;
 
 @property (nonatomic, readonly) NSInteger playerSuperviewTag;
 @property (nonatomic, strong, readonly) NSIndexPath *indexPath;
@@ -195,5 +234,21 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic, weak, readonly) UICollectionView *rootCollectionView;
 // top
 - (UICollectionView *)collectionView;
+@end
+
+/// - UITableView
+///     - UITableViewHeaderFooterView
+///         - player super view
+///             - player
+@interface SJUITableViewHeaderFooterViewPlayModel : SJPlayModel
+- (instancetype)initWithPlayerSuperviewTag:(NSInteger)playerSuperviewTag
+                                 inSection:(NSInteger)inSection
+                                  isHeader:(BOOL)isHeader
+                                 tableView:(__weak UITableView *)tableView;
+
+@property (nonatomic, readonly) NSInteger playerSuperviewTag;
+@property (nonatomic, readonly) NSInteger inSection;
+@property (nonatomic, readonly) BOOL isHeader;
+@property (nonatomic, strong, readonly) UITableView *tableView;
 @end
 NS_ASSUME_NONNULL_END

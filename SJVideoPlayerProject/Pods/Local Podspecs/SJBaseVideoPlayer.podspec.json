@@ -1,6 +1,6 @@
 {
   "name": "SJBaseVideoPlayer",
-  "version": "1.8.1",
+  "version": "1.8.2",
   "summary": "video player.",
   "description": "https://github.com/changsanjiang/SJBaseVideoPlayer/blob/master/README.md",
   "homepage": "https://github.com/changsanjiang/SJBaseVideoPlayer",
@@ -15,8 +15,8 @@
     "ios": "8.0"
   },
   "source": {
-    "git": "https://gitee.com/changsanjiang/SJBaseVideoPlayer.git",
-    "tag": "v1.8.1"
+    "git": "https://github.com/changsanjiang/SJBaseVideoPlayer.git",
+    "tag": "v1.8.2"
   },
   "frameworks": [
     "UIKit",
@@ -91,6 +91,11 @@
     },
     {
       "name": "SJDeviceVolumeAndBrightnessManager",
+      "dependencies": {
+        "SJBaseVideoPlayer/Header": [
+
+        ]
+      },
       "source_files": "SJBaseVideoPlayer/SJDeviceVolumeAndBrightnessManager/*.{h,m}",
       "subspecs": [
         {

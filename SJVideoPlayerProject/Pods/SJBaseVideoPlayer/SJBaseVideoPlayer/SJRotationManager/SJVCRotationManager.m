@@ -47,16 +47,16 @@ NS_ASSUME_NONNULL_BEGIN
 @end
 
 @interface SJVCRotationManager()
-@property (nonatomic, copy) void(^rotateCompletionHandler)(id<SJRotationManagerProtocol> mgr);
+@property (nonatomic, weak, readonly, nullable) UIViewController *atViewController;
+@property (nonatomic, getter=isTransitioning) BOOL transitioning;
 @property (nonatomic) UIDeviceOrientation rec_deviceOrientation;
 @property (nonatomic) SJOrientation currentOrientation;
-@property (nonatomic, getter=isTransitioning) BOOL transitioning;
 @property (nonatomic) BOOL needToForceRotation;
+
+@property (nonatomic, copy, nullable) void(^rotateCompletionHandler)(id<SJRotationManagerProtocol> mgr);
 @end
 
-@implementation SJVCRotationManager {
-    __weak UIViewController *_atViewController;
-}
+@implementation SJVCRotationManager
 @synthesize autorotationSupportedOrientation = _autorotationSupportedOrientation;
 @synthesize disableAutorotation = _disableAutorotation;
 @synthesize shouldTriggerRotation = _shouldTriggerRotation;
@@ -183,14 +183,18 @@ NS_ASSUME_NONNULL_BEGIN
         if ( isFull ) make.edges.equalTo(self->_atViewController.view);
         else make.edges.equalTo(self.superview);
     }];
+    __weak typeof(self) _self = self;
     [UIView animateWithDuration:coordinator.transitionDuration animations:^{
         [self.target layoutIfNeeded];
+    } completion:^(BOOL finished) {
+        __strong typeof(_self) self = _self;
+        if ( !self ) return;
+        if ( isFull ) [self.atViewController.view addSubview:self.target];
+        else [self.superview addSubview:self.target];
+        self.transitioning = NO;
+        if ( self.rotateCompletionHandler ) self.rotateCompletionHandler(self);
+        self.rotateCompletionHandler = nil;
     }];
-    if ( isFull ) [_atViewController.view addSubview:_target];
-    else [_superview addSubview:_target];
-    self.transitioning = NO;
-    if ( _rotateCompletionHandler ) _rotateCompletionHandler(self);
-    _rotateCompletionHandler = nil;
 }
 
 - (BOOL)vc_shouldAutorotate {

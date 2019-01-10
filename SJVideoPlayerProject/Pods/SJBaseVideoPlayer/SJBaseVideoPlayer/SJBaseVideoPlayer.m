@@ -1238,9 +1238,6 @@ static NSString *_kGestureState = @"state";
 @implementation SJBaseVideoPlayer (UIViewController)
 /// You should call it when view did appear
 - (void)vc_viewDidAppear {
-    if ( !self.isPlayOnScrollView || (self.isPlayOnScrollView && self.isScrollAppeared) ) {
-        [self play];
-    }
     self.vc_isDisappeared = NO;
 }
 /// You should call it when view will disappear

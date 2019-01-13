@@ -1,1 +1,1 @@
-../../../../../../SJBaseVideoPlayer/SJBaseVideoPlayer/SJRotationManager/UITabBarController+SJExtension.h
+../../../SJBaseVideoPlayer/SJBaseVideoPlayer/SJRotationManager/UITabBarController+SJExtension.h

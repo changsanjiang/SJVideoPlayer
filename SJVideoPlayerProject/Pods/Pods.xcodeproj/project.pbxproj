@@ -3,7 +3,7 @@
 	archiveVersion = 1;
 	classes = {
 	};
-	objectVersion = 46;
+	objectVersion = 50;
 	objects = {
 
 /* Begin PBXBuildFile section */
@@ -331,14 +331,14 @@
 		00C2B558E3C46B34C2FD907419156712 /* YYTextView.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = YYTextView.h; path = YYText/YYTextView.h; sourceTree = "<group>"; };
 		00F726C1DEB24F42F60A57146C543DEE /* UIViewController+SJVideoPlayerAdd.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = "UIViewController+SJVideoPlayerAdd.m"; path = "SJFullscreenPopGesture/UIViewController+SJVideoPlayerAdd.m"; sourceTree = "<group>"; };
 		01005CD0E40770A6AEE45AFF53F935C8 /* SJFullscreenPopGesture-prefix.pch */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = "SJFullscreenPopGesture-prefix.pch"; sourceTree = "<group>"; };
-		0197A16774F8064CB3B321802936E634 /* libSJAttributesFactory.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libSJAttributesFactory.a; sourceTree = BUILT_PRODUCTS_DIR; };
+		0197A16774F8064CB3B321802936E634 /* libSJAttributesFactory.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; name = libSJAttributesFactory.a; path = libSJAttributesFactory.a; sourceTree = BUILT_PRODUCTS_DIR; };
 		02152D2CD41CC5B30F6E6760E856B8BB /* UITabBarController+SJExtension.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = "UITabBarController+SJExtension.m"; path = "SJBaseVideoPlayer/SJRotationManager/UITabBarController+SJExtension.m"; sourceTree = "<group>"; };
 		02CFA9664CBFCEB1BB360C17A1F647BF /* YYTextDebugOption.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = YYTextDebugOption.h; path = YYText/Component/YYTextDebugOption.h; sourceTree = "<group>"; };
 		0405A3D80FBB04F9BFEF476EE70C4DD4 /* YYTextLine.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = YYTextLine.m; path = YYText/Component/YYTextLine.m; sourceTree = "<group>"; };
 		048D5241E89CD7072791FBE01F024FC5 /* UITabBarController+SJExtension.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = "UITabBarController+SJExtension.h"; path = "SJBaseVideoPlayer/SJRotationManager/UITabBarController+SJExtension.h"; sourceTree = "<group>"; };
 		077BDC89F4AA7B8D43CCCF38A33AD6AF /* SJPlayModel.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = SJPlayModel.h; path = SJBaseVideoPlayer/Model/SJPlayModel.h; sourceTree = "<group>"; };
 		079C9D6C66CD80AC2D6B88E7B85378A6 /* UIView+SJVideoPlayerAdd.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = "UIView+SJVideoPlayerAdd.m"; path = "SJBaseVideoPlayer/Tool/UIView+SJVideoPlayerAdd.m"; sourceTree = "<group>"; };
-		08414408B529AF8EE09C31C3CA0370C8 /* libSJObserverHelper.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libSJObserverHelper.a; sourceTree = BUILT_PRODUCTS_DIR; };
+		08414408B529AF8EE09C31C3CA0370C8 /* libSJObserverHelper.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; name = libSJObserverHelper.a; path = libSJObserverHelper.a; sourceTree = BUILT_PRODUCTS_DIR; };
 		086E19A01328B9293A796BEB1C62EC03 /* Pods-SJVideoPlayerUITests.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; path = "Pods-SJVideoPlayerUITests.release.xcconfig"; sourceTree = "<group>"; };
 		08808B2B88FBBE1BB862B62930111F07 /* MASViewAttribute.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = MASViewAttribute.m; path = Masonry/MASViewAttribute.m; sourceTree = "<group>"; };
 		09302C0C8E76DB7007FBE8926CA81249 /* MASViewConstraint.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = MASViewConstraint.h; path = Masonry/MASViewConstraint.h; sourceTree = "<group>"; };
@@ -347,8 +347,8 @@
 		0CC0D3C4A176CD277EBF414556478770 /* SJRotationManagerProtocol.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = SJRotationManagerProtocol.h; path = SJBaseVideoPlayer/Header/SJRotationManagerProtocol.h; sourceTree = "<group>"; };
 		0D59E72A0EA2EFF9537C04A1587062A5 /* SJBaseVideoPlayer-dummy.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; path = "SJBaseVideoPlayer-dummy.m"; sourceTree = "<group>"; };
 		0E8679498E3FF2C1BFC9B15CEB35ED5F /* SJVideoPlayerControlLayerProtocol.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = SJVideoPlayerControlLayerProtocol.h; path = SJBaseVideoPlayer/Header/SJVideoPlayerControlLayerProtocol.h; sourceTree = "<group>"; };
-		0F0BFBC4E716BD9867A7C146492C3BD4 /* libMasonry.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libMasonry.a; sourceTree = BUILT_PRODUCTS_DIR; };
-		112C24094C44DCF28514B76DE5351D1D /* SJBaseVideoPlayer.podspec */ = {isa = PBXFileReference; explicitFileType = text.script.ruby; includeInIndex = 1; indentWidth = 2; path = SJBaseVideoPlayer.podspec; sourceTree = "<group>"; tabWidth = 2; xcLanguageSpecificationIdentifier = xcode.lang.ruby; };
+		0F0BFBC4E716BD9867A7C146492C3BD4 /* libMasonry.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; name = libMasonry.a; path = libMasonry.a; sourceTree = BUILT_PRODUCTS_DIR; };
+		112C24094C44DCF28514B76DE5351D1D /* SJBaseVideoPlayer.podspec */ = {isa = PBXFileReference; explicitFileType = text.script.ruby; includeInIndex = 1; indentWidth = 2; lastKnownFileType = text; path = SJBaseVideoPlayer.podspec; sourceTree = "<group>"; tabWidth = 2; xcLanguageSpecificationIdentifier = xcode.lang.ruby; };
 		134D0A20E3D910E2EBB849B7B00B4037 /* MASConstraint.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = MASConstraint.m; path = Masonry/MASConstraint.m; sourceTree = "<group>"; };
 		13B2DB64B6380B7CCA0484A9726192E4 /* View+MASAdditions.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = "View+MASAdditions.h"; path = "Masonry/View+MASAdditions.h"; sourceTree = "<group>"; };
 		14A80DAD4E1F0EA409AD61F564B4278F /* SJFlipTransitionManager.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = SJFlipTransitionManager.m; path = SJBaseVideoPlayer/Tool/SJFlipTransitionManager.m; sourceTree = "<group>"; };
@@ -374,7 +374,7 @@
 		25727441C44CEA60CEE2E746679BDA7D /* YYLabel.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = YYLabel.h; path = YYText/YYLabel.h; sourceTree = "<group>"; };
 		27B7CAFB5D9B8BE09B2769BFB16B2A7A /* UIPasteboard+YYText.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = "UIPasteboard+YYText.m"; path = "YYText/Utility/UIPasteboard+YYText.m"; sourceTree = "<group>"; };
 		2A07DD6920CFE540C02F276404F6D6BE /* SJBorderLineView.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = SJBorderLineView.h; path = SJBaseVideoPlayer/SJDeviceVolumeAndBrightnessManager/Core/SJBorderLineView.h; sourceTree = "<group>"; };
-		2A386CD38B913DE42FDC3EE11E86D413 /* libSJRouter.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libSJRouter.a; sourceTree = BUILT_PRODUCTS_DIR; };
+		2A386CD38B913DE42FDC3EE11E86D413 /* libSJRouter.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; name = libSJRouter.a; path = libSJRouter.a; sourceTree = BUILT_PRODUCTS_DIR; };
 		2A5036763156ADF6E83B6C672DAD4ABC /* UINavigationController+SJExtension.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = "UINavigationController+SJExtension.h"; path = "SJBaseVideoPlayer/SJRotationManager/UINavigationController+SJExtension.h"; sourceTree = "<group>"; };
 		2B3B673EBD967A40103D028E5AA33C13 /* Pods-SJVideoPlayerUITests-acknowledgements.markdown */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text; path = "Pods-SJVideoPlayerUITests-acknowledgements.markdown"; sourceTree = "<group>"; };
 		2C388802CDF797C75D67C2E6DD9C13DA /* UINavigationController+SJExtension.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = "UINavigationController+SJExtension.m"; path = "SJBaseVideoPlayer/SJRotationManager/UINavigationController+SJExtension.m"; sourceTree = "<group>"; };
@@ -394,11 +394,11 @@
 		3885906033FF63C047122BFA4701736E /* MASLayoutConstraint.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = MASLayoutConstraint.h; path = Masonry/MASLayoutConstraint.h; sourceTree = "<group>"; };
 		3955383C337580A339DFBB9BAA517F09 /* NSLayoutConstraint+MASDebugAdditions.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = "NSLayoutConstraint+MASDebugAdditions.h"; path = "Masonry/NSLayoutConstraint+MASDebugAdditions.h"; sourceTree = "<group>"; };
 		3A5D369F51F1ED054FF17F58BB6D531D /* Pods-SJVideoPlayerTests.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; path = "Pods-SJVideoPlayerTests.release.xcconfig"; sourceTree = "<group>"; };
-		3D2BDAD025873AC42CC4461F3C457347 /* libSJFullscreenPopGesture.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libSJFullscreenPopGesture.a; sourceTree = BUILT_PRODUCTS_DIR; };
-		3D8A9F68B95A89D0620BEEACDD29236B /* libSJScrollEntriesView.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libSJScrollEntriesView.a; sourceTree = BUILT_PRODUCTS_DIR; };
+		3D2BDAD025873AC42CC4461F3C457347 /* libSJFullscreenPopGesture.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; name = libSJFullscreenPopGesture.a; path = libSJFullscreenPopGesture.a; sourceTree = BUILT_PRODUCTS_DIR; };
+		3D8A9F68B95A89D0620BEEACDD29236B /* libSJScrollEntriesView.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; name = libSJScrollEntriesView.a; path = libSJScrollEntriesView.a; sourceTree = BUILT_PRODUCTS_DIR; };
 		3ED4B4BD8FD06754892A9117E7CB6771 /* SJPlayerGestureControl.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = SJPlayerGestureControl.m; path = SJBaseVideoPlayer/Tool/SJPlayerGestureControl.m; sourceTree = "<group>"; };
 		3F2608EA415D5B9E4A1A2F467B7A6C38 /* MASLayoutConstraint.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = MASLayoutConstraint.m; path = Masonry/MASLayoutConstraint.m; sourceTree = "<group>"; };
-		3FDF3908526390BC1834B0557465D389 /* libSJBaseVideoPlayer.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libSJBaseVideoPlayer.a; sourceTree = BUILT_PRODUCTS_DIR; };
+		3FDF3908526390BC1834B0557465D389 /* libSJBaseVideoPlayer.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; name = libSJBaseVideoPlayer.a; path = libSJBaseVideoPlayer.a; sourceTree = BUILT_PRODUCTS_DIR; };
 		40B0D5AD7EB78EF4C9BF486E0DF83F2E /* YYTextDebugOption.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = YYTextDebugOption.m; path = YYText/Component/YYTextDebugOption.m; sourceTree = "<group>"; };
 		40F52C7D9AF01A2FFA5241F55B08D335 /* YYTextUtilities.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = YYTextUtilities.h; path = YYText/Utility/YYTextUtilities.h; sourceTree = "<group>"; };
 		41DCB4EBD5330C06687F16F7F01990B7 /* SJScrollEntriesViewUserProtocol.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = SJScrollEntriesViewUserProtocol.h; path = SJScrollEntriesView/SJScrollEntriesViewUserProtocol.h; sourceTree = "<group>"; };
@@ -430,7 +430,7 @@
 		6EAAF3DE76191BFB697AE850A1A42D69 /* SJPrompt.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = SJPrompt.h; path = SJBaseVideoPlayer/SJPrompt/SJPrompt.h; sourceTree = "<group>"; };
 		6F3CDBF45D849282F56B2F884FDA525D /* SJScrollEntriesView.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; path = SJScrollEntriesView.xcconfig; sourceTree = "<group>"; };
 		6F8F3674FAE44C88BF1E11D52EE0A72F /* YYTextView.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = YYTextView.m; path = YYText/YYTextView.m; sourceTree = "<group>"; };
-		70DAAE342958E019ED7651C66DCB1B13 /* libPods-SJVideoPlayerTests.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-SJVideoPlayerTests.a"; sourceTree = BUILT_PRODUCTS_DIR; };
+		70DAAE342958E019ED7651C66DCB1B13 /* libPods-SJVideoPlayerTests.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; name = "libPods-SJVideoPlayerTests.a"; path = "libPods-SJVideoPlayerTests.a"; sourceTree = BUILT_PRODUCTS_DIR; };
 		72BB364C2C99CBE724D365C87B271F24 /* SJDeviceVolumeAndBrightnessManager.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = SJDeviceVolumeAndBrightnessManager.m; path = SJBaseVideoPlayer/SJDeviceVolumeAndBrightnessManager/SJDeviceVolumeAndBrightnessManager.m; sourceTree = "<group>"; };
 		73E3D1DD8CB7EB79F75CAF6D87097EBE /* SJRotationManager.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = SJRotationManager.h; path = SJBaseVideoPlayer/SJRotationManager/SJRotationManager.h; sourceTree = "<group>"; };
 		7418D7938BAE3346FC1C2DDBFA9DD5C7 /* YYTextRubyAnnotation.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = YYTextRubyAnnotation.h; path = YYText/String/YYTextRubyAnnotation.h; sourceTree = "<group>"; };
@@ -456,12 +456,12 @@
 		85E3F80AB1201B88BD21BD0F4EEF875B /* UINavigationController+SJVideoPlayerAdd.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = "UINavigationController+SJVideoPlayerAdd.h"; path = "SJFullscreenPopGesture/UINavigationController+SJVideoPlayerAdd.h"; sourceTree = "<group>"; };
 		8664F9131907B3E75A588E938D9C2510 /* UIViewController+SJVideoPlayerAdd.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = "UIViewController+SJVideoPlayerAdd.h"; path = "SJFullscreenPopGesture/UIViewController+SJVideoPlayerAdd.h"; sourceTree = "<group>"; };
 		872CC6874DE71CDA729068BD275BD71D /* Masonry.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; path = Masonry.xcconfig; sourceTree = "<group>"; };
-		88785253DFD9AE98D6393AEA340B2AEE /* libPods-SJVideoPlayer.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-SJVideoPlayer.a"; sourceTree = BUILT_PRODUCTS_DIR; };
+		88785253DFD9AE98D6393AEA340B2AEE /* libPods-SJVideoPlayer.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; name = "libPods-SJVideoPlayer.a"; path = "libPods-SJVideoPlayer.a"; sourceTree = BUILT_PRODUCTS_DIR; };
 		891F373C6059C87E01B080F130546898 /* SJRouteHandler.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = SJRouteHandler.h; path = SJRouter/Core/SJRouteHandler.h; sourceTree = "<group>"; };
 		89458ADE404F84D8DA7328958DB2C648 /* MASUtilities.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = MASUtilities.h; path = Masonry/MASUtilities.h; sourceTree = "<group>"; };
 		8955CE0B9094B3686F7E8270789348A7 /* Pods-SJVideoPlayer.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; path = "Pods-SJVideoPlayer.release.xcconfig"; sourceTree = "<group>"; };
 		89930B63F17DC324BA98D10C95018839 /* SJReachability.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = SJReachability.h; path = SJBaseVideoPlayer/Tool/SJReachability.h; sourceTree = "<group>"; };
-		8AE4AF236AA4CAEAACEDB878BC40BC39 /* libReachability.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libReachability.a; sourceTree = BUILT_PRODUCTS_DIR; };
+		8AE4AF236AA4CAEAACEDB878BC40BC39 /* libReachability.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; name = libReachability.a; path = libReachability.a; sourceTree = BUILT_PRODUCTS_DIR; };
 		8C212E3B446A78E065C9D59DD6BB2A46 /* SJVideoPlayerRegistrar.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = SJVideoPlayerRegistrar.m; path = SJBaseVideoPlayer/Tool/SJVideoPlayerRegistrar.m; sourceTree = "<group>"; };
 		8E18EBC77D16252F633D6CBC515DC431 /* SJAVMediaPlayAssetSwitcher.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = SJAVMediaPlayAssetSwitcher.h; path = SJBaseVideoPlayer/SJAVMediaPlaybackController/SJAVMediaPlayAssetSwitcher.h; sourceTree = "<group>"; };
 		8E1A0016ADBF91C877B52823DBC3575E /* SJObserverHelper-prefix.pch */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = "SJObserverHelper-prefix.pch"; sourceTree = "<group>"; };
@@ -486,7 +486,7 @@
 		A6AF1F7CF5752766F0C08D3C8C9747C8 /* UIView+SJVideoPlayerAdd.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = "UIView+SJVideoPlayerAdd.h"; path = "SJBaseVideoPlayer/Tool/UIView+SJVideoPlayerAdd.h"; sourceTree = "<group>"; };
 		A83B1532C5E1C871A42BC67447009804 /* SJFullscreenPopGesture.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; path = SJFullscreenPopGesture.xcconfig; sourceTree = "<group>"; };
 		A8F9C1FE3C3B1B6043762996C011ED09 /* UIScrollView+ListViewAutoplaySJAdd.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = "UIScrollView+ListViewAutoplaySJAdd.m"; path = "SJBaseVideoPlayer/UIScrollView+ListViewAutoplaySJAdd.m"; sourceTree = "<group>"; };
-		A954A69350106DFA23D18BF933883EEB /* libYYText.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libYYText.a; sourceTree = BUILT_PRODUCTS_DIR; };
+		A954A69350106DFA23D18BF933883EEB /* libYYText.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; name = libYYText.a; path = libYYText.a; sourceTree = BUILT_PRODUCTS_DIR; };
 		AA16CC55964C41A0A00DAB0EA7977477 /* NSObject+SJObserverHelper.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = "NSObject+SJObserverHelper.m"; path = "Classes/NSObject+SJObserverHelper.m"; sourceTree = "<group>"; };
 		AA9F2781B84C43D5BA1ACA041D7CEF0B /* SJReachability.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = SJReachability.m; path = SJBaseVideoPlayer/Tool/SJReachability.m; sourceTree = "<group>"; };
 		AD48F61B0BC1E52C143112D5D07E3CAE /* SJVideoPlayerRegistrar.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = SJVideoPlayerRegistrar.h; path = SJBaseVideoPlayer/Tool/SJVideoPlayerRegistrar.h; sourceTree = "<group>"; };
@@ -500,7 +500,7 @@
 		B12B78F2D90DFF491109EEFB413A3F34 /* Pods-SJVideoPlayerTests-acknowledgements.markdown */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text; path = "Pods-SJVideoPlayerTests-acknowledgements.markdown"; sourceTree = "<group>"; };
 		B1302C757216E80967AA0D9DEE1671A7 /* NSArray+MASAdditions.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = "NSArray+MASAdditions.h"; path = "Masonry/NSArray+MASAdditions.h"; sourceTree = "<group>"; };
 		B1889D6A2B1F91AB7D507060CE89A4E7 /* SJAttributesFactory.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; path = SJAttributesFactory.xcconfig; sourceTree = "<group>"; };
-		B36AB396275697EEE1A5B13BA8A38FE3 /* Podfile */ = {isa = PBXFileReference; explicitFileType = text.script.ruby; includeInIndex = 1; indentWidth = 2; name = Podfile; path = ../Podfile; sourceTree = SOURCE_ROOT; tabWidth = 2; xcLanguageSpecificationIdentifier = xcode.lang.ruby; };
+		B36AB396275697EEE1A5B13BA8A38FE3 /* Podfile */ = {isa = PBXFileReference; explicitFileType = text.script.ruby; includeInIndex = 1; indentWidth = 2; lastKnownFileType = text; name = Podfile; path = ../Podfile; sourceTree = SOURCE_ROOT; tabWidth = 2; xcLanguageSpecificationIdentifier = xcode.lang.ruby; };
 		B43EE8EACD305A8F47AB114263634295 /* Pods-SJVideoPlayerTests-dummy.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; path = "Pods-SJVideoPlayerTests-dummy.m"; sourceTree = "<group>"; };
 		B47AF2F5DC9359A1DEF13223B29E7071 /* SJVCRotationManager.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = SJVCRotationManager.m; path = SJBaseVideoPlayer/SJRotationManager/SJVCRotationManager.m; sourceTree = "<group>"; };
 		B76C9A459A5923A31B41B3737AD32965 /* ViewController+MASAdditions.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = "ViewController+MASAdditions.h"; path = "Masonry/ViewController+MASAdditions.h"; sourceTree = "<group>"; };
@@ -537,11 +537,11 @@
 		D8CCDC015BDD185A3ECD97F68F57E51A /* SJUIFactory.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; path = SJUIFactory.xcconfig; sourceTree = "<group>"; };
 		D92B54A5DF076F59D8061F011D7EE947 /* Reachability-dummy.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; path = "Reachability-dummy.m"; sourceTree = "<group>"; };
 		D9AB182A945D1DE162DEBCA3619FE50B /* YYTextInput.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = YYTextInput.m; path = YYText/Component/YYTextInput.m; sourceTree = "<group>"; };
-		DA1525A71CFA79472C17FED4E901F204 /* README.md */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = net.daringfireball.markdown; path = README.md; sourceTree = "<group>"; };
-		DA4D70584C44B6B3559074F498559C7E /* libSJUIFactory.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libSJUIFactory.a; sourceTree = BUILT_PRODUCTS_DIR; };
+		DA1525A71CFA79472C17FED4E901F204 /* README.md */ = {isa = PBXFileReference; includeInIndex = 1; path = README.md; sourceTree = "<group>"; };
+		DA4D70584C44B6B3559074F498559C7E /* libSJUIFactory.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; name = libSJUIFactory.a; path = libSJUIFactory.a; sourceTree = BUILT_PRODUCTS_DIR; };
 		DC5CCE291AF4814B5361705E7B77884F /* SJSnapshotRecorder.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = SJSnapshotRecorder.h; path = SJFullscreenPopGesture/SJSnapshotRecorder.h; sourceTree = "<group>"; };
 		DCAF23D90E3E508F4CC437538D8805A2 /* SJRouter.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; path = SJRouter.xcconfig; sourceTree = "<group>"; };
-		DCFE81A8636F5B727C285151485AFABB /* LICENSE.md */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = net.daringfireball.markdown; path = LICENSE.md; sourceTree = "<group>"; };
+		DCFE81A8636F5B727C285151485AFABB /* LICENSE.md */ = {isa = PBXFileReference; includeInIndex = 1; path = LICENSE.md; sourceTree = "<group>"; };
 		DEAC3F2459C1EC42B0F5E86F58C60D00 /* SJVideoPlayerPresentView.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = SJVideoPlayerPresentView.m; path = SJBaseVideoPlayer/Tool/SJVideoPlayerPresentView.m; sourceTree = "<group>"; };
 		E2E132957EE62BBB4160EBE0C8386CE1 /* SJSnapshotRecorder.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = SJSnapshotRecorder.m; path = SJFullscreenPopGesture/SJSnapshotRecorder.m; sourceTree = "<group>"; };
 		E428A0C2C1FDE5F3C3F15614D086534D /* YYTextMagnifier.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = YYTextMagnifier.m; path = YYText/Component/YYTextMagnifier.m; sourceTree = "<group>"; };
@@ -553,7 +553,7 @@
 		E783CE33619DA060433AF4C9C4D6474A /* YYTextKeyboardManager.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = YYTextKeyboardManager.h; path = YYText/Component/YYTextKeyboardManager.h; sourceTree = "<group>"; };
 		E79D6B4543D703FA8E0145E398587A05 /* SJRouteRequest.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = SJRouteRequest.m; path = SJRouter/Core/SJRouteRequest.m; sourceTree = "<group>"; };
 		E7C33451441682AEE7FC7BD423B31C07 /* UIView+YYText.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = "UIView+YYText.m"; path = "YYText/Utility/UIView+YYText.m"; sourceTree = "<group>"; };
-		E83802A2E5FAE14AB9AC71D806A48813 /* libPods-SJVideoPlayerUITests.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-SJVideoPlayerUITests.a"; sourceTree = BUILT_PRODUCTS_DIR; };
+		E83802A2E5FAE14AB9AC71D806A48813 /* libPods-SJVideoPlayerUITests.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; name = "libPods-SJVideoPlayerUITests.a"; path = "libPods-SJVideoPlayerUITests.a"; sourceTree = BUILT_PRODUCTS_DIR; };
 		EA4A03DEEA860D3DABC46B7398C6784F /* SJAttributesFactory.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = SJAttributesFactory.h; path = SJAttributesFactory/SJAttributesFactory.h; sourceTree = "<group>"; };
 		EB29C46108FACA23D5BFB927B51477E9 /* SJRouter.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = SJRouter.h; path = SJRouter/SJRouter.h; sourceTree = "<group>"; };
 		EB7813D1E6B8D7E21F4C7B457B6CD5C7 /* SJAttributesFactory-dummy.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; path = "SJAttributesFactory-dummy.m"; sourceTree = "<group>"; };
@@ -722,6 +722,7 @@
 				22D0E475FC425A10882DB3C3AE17D811 /* ViewController+MASAdditions.m */,
 				17BD3595BF934346B087D4DEF9006041 /* Support Files */,
 			);
+			name = Masonry;
 			path = Masonry;
 			sourceTree = "<group>";
 		};
@@ -825,6 +826,7 @@
 				AA16CC55964C41A0A00DAB0EA7977477 /* NSObject+SJObserverHelper.m */,
 				7D5E7C2F4E4EDF2BAA71E2E24A99EE4D /* Support Files */,
 			);
+			name = SJObserverHelper;
 			path = SJObserverHelper;
 			sourceTree = "<group>";
 		};
@@ -868,6 +870,7 @@
 				E048F1BE7D396DD2949108257BAD8764 /* Category */,
 				103348228EC3A7D8F019902292A2ECC2 /* Support Files */,
 			);
+			name = SJUIFactory;
 			path = SJUIFactory;
 			sourceTree = "<group>";
 		};
@@ -889,6 +892,7 @@
 				8E1C49141118D84D878A91B5C239DAE3 /* Reachability.m */,
 				DF9A05FAA25ABBE4F3324F4A284FFFB6 /* Support Files */,
 			);
+			name = Reachability;
 			path = Reachability;
 			sourceTree = "<group>";
 		};
@@ -1002,6 +1006,7 @@
 				41DCB4EBD5330C06687F16F7F01990B7 /* SJScrollEntriesViewUserProtocol.h */,
 				7E67FC0C4EA40EE3A7DD286D4D4E7713 /* Support Files */,
 			);
+			name = SJScrollEntriesView;
 			path = SJScrollEntriesView;
 			sourceTree = "<group>";
 		};
@@ -1116,6 +1121,7 @@
 				3863797DC6DF7DD49D81258D3E93120D /* YYTextWeakProxy.m */,
 				26CF8A9A15585E2EB878553274CAE7A0 /* Support Files */,
 			);
+			name = YYText;
 			path = YYText;
 			sourceTree = "<group>";
 		};
@@ -1145,6 +1151,7 @@
 				00F726C1DEB24F42F60A57146C543DEE /* UIViewController+SJVideoPlayerAdd.m */,
 				1A669D7E286FB434A7D5EA59E6C5E7FE /* Support Files */,
 			);
+			name = SJFullscreenPopGesture;
 			path = SJFullscreenPopGesture;
 			sourceTree = "<group>";
 		};
@@ -1227,6 +1234,7 @@
 				5BCDFE218C636D134C7620D81C8E454A /* Core */,
 				3BD037B80C5E5E8A3D187C0D8027B94F /* Support Files */,
 			);
+			name = SJRouter;
 			path = SJRouter;
 			sourceTree = "<group>";
 		};
@@ -1259,6 +1267,7 @@
 				F2E5E6576B6B5461975FBAAADF165973 /* SJAttributeWorker.m */,
 				78C7A0ACD3297ED2ACAF3F3C54FCAB09 /* Support Files */,
 			);
+			name = SJAttributesFactory;
 			path = SJAttributesFactory;
 			sourceTree = "<group>";
 		};
@@ -2515,7 +2524,8 @@
 				MTL_FAST_MATH = YES;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				STRIP_INSTALLED_PRODUCT = NO;
-				SWIFT_OPTIMIZATION_LEVEL = "-Owholemodule";
+				SWIFT_COMPILATION_MODE = wholemodule;
+				SWIFT_OPTIMIZATION_LEVEL = "-O";
 				SWIFT_VERSION = 4.2;
 				SYMROOT = "${SRCROOT}/../build";
 			};
@@ -2589,7 +2599,6 @@
 					"POD_CONFIGURATION_DEBUG=1",
 					"DEBUG=1",
 					"$(inherited)",
-					SJ_MAC,
 				);
 				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
 				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;

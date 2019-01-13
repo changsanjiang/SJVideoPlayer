@@ -26,12 +26,15 @@
     _navTransitionAnimator = [[SJNavTransitionAnimator alloc] init];
     _navTransitionAnimator.navigationController = self.navigationController;
     
+    
+    SJPlayModel *currentPlayModel = _player.URLAsset.playModel;
     __weak typeof(self) _self = self;
     [_navTransitionAnimator pushAnimation:^(SJNavTransitionAnimator * _Nonnull anim, id<UIViewControllerContextTransitioning>  _Nonnull transitionContext, UIView * _Nonnull toView, UIView * _Nonnull fromView) {
         __strong typeof(_self) self = _self;
         if ( !self ) return;
         self.player.hideBackButtonWhenOrientationIsPortrait = NO;
         [self.player controlLayerNeedAppear];
+        self.player.URLAsset.playModel = [SJPlayModel new];
 
         toView.backgroundColor = [UIColor clearColor];
         CGRect frame = [self.playerSuperview convertRect:self.player.view.frame toView:toView];
@@ -51,6 +54,7 @@
         if ( !self ) return;
         self.player.hideBackButtonWhenOrientationIsPortrait = YES;
         [self.player controlLayerNeedDisappear];
+        self.player.URLAsset.playModel = currentPlayModel;
         
         CGRect frame = [toView convertRect:self.playerSuperview.frame toView:fromView];
         [self.player.view mas_remakeConstraints:^(MASConstraintMaker *make) {

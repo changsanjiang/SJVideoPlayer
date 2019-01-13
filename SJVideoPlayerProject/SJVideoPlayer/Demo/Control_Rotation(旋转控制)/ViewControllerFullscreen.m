@@ -52,7 +52,18 @@
     
     /// 播放
     _player.assetURL = [[NSBundle mainBundle] URLForResource:@"play" withExtension:@"mp4"];
-    // Do any additional setup after loading the view.
+    
+    
+    /// Test
+    _player.defaultEdgeControlLayer.topContainerView.backgroundColor = [UIColor colorWithWhite:0 alpha:0.8];
+    
+    [_player.defaultEdgeControlLayer.bottomAdapter removeItemForTag:SJEdgeControlLayerBottomItem_Separator];
+    [_player.defaultEdgeControlLayer.bottomAdapter removeItemForTag:SJEdgeControlLayerBottomItem_FullBtn];
+    SJEdgeControlButtonItem *durationItem = [_player.defaultEdgeControlLayer.bottomAdapter itemForTag:SJEdgeControlLayerBottomItem_DurationTime];
+    durationItem.insets = SJEdgeInsetsMake(0, 12);
+    [_player.defaultEdgeControlLayer.bottomAdapter exchangeItemForTag:SJEdgeControlLayerBottomItem_DurationTime withItemForTag:SJEdgeControlLayerBottomItem_Progress];
+    [_player.defaultEdgeControlLayer.bottomAdapter reload];
+    _player.defaultEdgeControlLayer.bottomContainerView.backgroundColor = [UIColor colorWithWhite:0 alpha:0.8];
 }
 
 - (void)_setupViews {

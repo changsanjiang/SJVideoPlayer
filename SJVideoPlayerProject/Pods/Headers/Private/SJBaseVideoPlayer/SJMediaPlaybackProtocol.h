@@ -1,1 +1,1 @@
-../../../SJBaseVideoPlayer/SJBaseVideoPlayer/Header/SJMediaPlaybackProtocol.h
+../../../../../../SJBaseVideoPlayer/SJBaseVideoPlayer/Header/SJMediaPlaybackProtocol.h

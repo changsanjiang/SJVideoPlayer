@@ -9,21 +9,22 @@
 #import "SJAttributesRecorder.h"
 #import <objc/message.h>
 
-static NSArray<NSString *> *csj_propertyList(Class cls) {
-    NSMutableArray <NSString *> *namesArrM = [NSMutableArray array];
-    unsigned int outCount = 0;
-    objc_property_t *propertyList = class_copyPropertyList(cls, &outCount);
-    if ( propertyList != NULL && outCount > 0 ) {
-        for ( int i = 0; i < outCount; i ++ ) {
-            objc_property_t property = propertyList[i];
-            const char *name  = property_getName(property);
-            NSString *nameStr = [NSString stringWithUTF8String:name];
-            [namesArrM addObject:nameStr];
-        }
-    }
-    free(propertyList);
-    return namesArrM.copy;
-}
+NS_ASSUME_NONNULL_BEGIN
+#define __Set_Property(__value__)   \
+if ( __value__ == _##__value__ ) \
+    return; \
+ \
+_##__value__ = __value__;   \
+if ( _propertyDidChangeExeBlock ) \
+    _propertyDidChangeExeBlock(self);
+
+#define __Set_Paragraph_Property(__value__)  \
+if ( __value__ == self.paragraphStyleM.__value__ ) \
+    return; \
+\
+self.paragraphStyleM.__value__ = __value__; \
+if ( _propertyDidChangeExeBlock ) \
+    _propertyDidChangeExeBlock(self);
 
 @implementation SJStrokeAttribute
 + (instancetype)strokeWithValue:(double)value color:(UIColor *)color {
@@ -36,15 +37,9 @@ static NSArray<NSString *> *csj_propertyList(Class cls) {
     _color = color;
     return self;
 }
-- (id)copyWithZone:(NSZone *)zone {
-    SJStrokeAttribute *newBorder = [SJStrokeAttribute new];
-    [csj_propertyList([self class]) enumerateObjectsUsingBlock:^(NSString * _Nonnull obj, NSUInteger idx, BOOL * _Nonnull stop) {
-        [newBorder setValue:[[self valueForKey:obj] copy] forKey:obj];
-    }];
-    return newBorder;
-}
-- (id)mutableCopyWithZone:(NSZone *)zone {
-    return [self copyWithZone:zone];
+
+- (id)mutableCopyWithZone:(NSZone *_Nullable)zone {
+    return [SJStrokeAttribute strokeWithValue:_value color:_color];
 }
 @end
 
@@ -60,129 +55,131 @@ static NSArray<NSString *> *csj_propertyList(Class cls) {
     _color = color;
     return self;
 }
-- (id)copyWithZone:(NSZone *)zone {
-    SJUnderlineAttribute *newUnderline = [SJUnderlineAttribute new];
-    [csj_propertyList([self class]) enumerateObjectsUsingBlock:^(NSString * _Nonnull obj, NSUInteger idx, BOOL * _Nonnull stop) {
-        [newUnderline setValue:[[self valueForKey:obj] copy] forKey:obj];
-    }];
-    return newUnderline;
-}
-- (id)mutableCopyWithZone:(NSZone *)zone {
-    return [self copyWithZone:zone];
+
+- (id)mutableCopyWithZone:(NSZone *_Nullable)zone {
+    return [SJUnderlineAttribute underLineWithStyle:_value color:_color];
 }
 @end
 
 #pragma mark -
-@implementation SJAttributesRecorder {
-   NSMutableParagraphStyle * _paragraphStyleM;
+@implementation SJAttributesRecorder
+- (void)setFont:(UIFont *_Nullable)font {
+    __Set_Property(font);
 }
-- (void)setParagraphStyleM:(NSMutableParagraphStyle *)paragraphStyleM {
+
+- (void)setTextColor:(UIColor *_Nullable)textColor {
+    __Set_Property(textColor);
+}
+
+- (void)setExpansion:(double)expansion {
+    __Set_Property(expansion);
+}
+
+- (void)setShadow:(NSShadow *_Nullable)shadow {
+    __Set_Property(shadow);
+}
+
+- (void)setBackgroundColor:(UIColor *_Nullable)backgroundColor {
+    __Set_Property(backgroundColor);
+}
+
+- (void)setUnderLine:(SJUnderlineAttribute *_Nullable)underLine {
+    __Set_Property(underLine);
+}
+
+- (void)setStrikethrough:(SJUnderlineAttribute *_Nullable)strikethrough {
+    __Set_Property(strikethrough);
+}
+
+- (void)setStroke:(SJStrokeAttribute *_Nullable)stroke {
+    __Set_Property(stroke);
+}
+
+- (void)setObliqueness:(double)obliqueness {
+    __Set_Property(obliqueness);
+}
+
+- (void)setLetterSpacing:(double)letterSpacing {
+    __Set_Property(letterSpacing);
+}
+
+- (void)setOffset:(double)offset {
+    __Set_Property(offset);
+}
+
+- (void)setLink:(BOOL)link {
+    __Set_Property(link);
+}
+
+@synthesize paragraphStyleM = _paragraphStyleM;
+- (void)setParagraphStyleM:(NSMutableParagraphStyle *_Nullable)paragraphStyleM {
     if ( [paragraphStyleM isMemberOfClass:[NSParagraphStyle class]] ) paragraphStyleM = paragraphStyleM.mutableCopy;
-    _paragraphStyleM = paragraphStyleM;
+    __Set_Property(paragraphStyleM);
 }
 - (NSMutableParagraphStyle *)paragraphStyleM {
     if ( _paragraphStyleM ) return _paragraphStyleM;
     _paragraphStyleM = [NSParagraphStyle defaultParagraphStyle].mutableCopy;
     return _paragraphStyleM;
 }
-- (void)setLineSpacing:(double)lineSpacing {self.paragraphStyleM.lineSpacing = lineSpacing;}
+- (void)setLineSpacing:(double)lineSpacing {
+    __Set_Paragraph_Property(lineSpacing);
+}
 - (double)lineSpacing {return self.paragraphStyleM.lineSpacing;}
 
-- (void)setParagraphSpacing:(double)paragraphSpacing {self.paragraphStyleM.paragraphSpacing = paragraphSpacing;}
+- (void)setParagraphSpacing:(double)paragraphSpacing {
+   __Set_Paragraph_Property(paragraphSpacing);
+}
 - (double)paragraphSpacing {return self.paragraphStyleM.paragraphSpacing;}
 
-- (void)setParagraphSpacingBefore:(double)paragraphSpacingBefore {self.paragraphStyleM.paragraphSpacingBefore = paragraphSpacingBefore;}
+- (void)setParagraphSpacingBefore:(double)paragraphSpacingBefore {
+    __Set_Paragraph_Property(paragraphSpacingBefore);
+}
 - (double)paragraphSpacingBefore {return self.paragraphStyleM.paragraphSpacingBefore;}
 
-- (void)setFirstLineHeadIndent:(double)firstLineHeadIndent {self.paragraphStyleM.firstLineHeadIndent = firstLineHeadIndent;}
+- (void)setFirstLineHeadIndent:(double)firstLineHeadIndent {
+    __Set_Paragraph_Property(firstLineHeadIndent);
+}
 - (double)firstLineHeadIndent {return self.paragraphStyleM.firstLineHeadIndent;}
 
-- (void)setHeadIndent:(double)headIndent {self.paragraphStyleM.headIndent = headIndent;}
+- (void)setHeadIndent:(double)headIndent {
+    __Set_Paragraph_Property(headIndent);
+}
 - (double)headIndent {return self.paragraphStyleM.headIndent;}
 
-- (void)setTailIndent:(double)tailIndent {self.paragraphStyleM.tailIndent = tailIndent;}
+- (void)setTailIndent:(double)tailIndent {
+    __Set_Paragraph_Property(tailIndent);
+}
 - (double)tailIndent {return self.paragraphStyleM.tailIndent;}
 
-- (void)setAlignment:(nullable NSNumber *)alignment {
-    _alignment = alignment;
-    self.paragraphStyleM.alignment = [alignment integerValue];
+@synthesize alignment = _alignment;
+- (void)setAlignment:(NSNumber *_Nullable)ali {
+    _alignment = ali;
+    NSTextAlignment alignment = [ali integerValue];
+    __Set_Paragraph_Property(alignment);
 }
 
-- (void)setLineBreakMode:(NSLineBreakMode)lineBreakMode {self.paragraphStyleM.lineBreakMode = lineBreakMode;}
+- (void)setLineBreakMode:(NSLineBreakMode)lineBreakMode {
+    __Set_Paragraph_Property(lineBreakMode);
+}
 - (NSLineBreakMode)lineBreakMode {return self.paragraphStyleM.lineBreakMode;}
 
-- (void)addAttributes:(NSMutableAttributedString *)attrStr {
-    NSRange range = self.range;
-    if ( range.location == 0 && range.length == 0 ) {
-        range = NSMakeRange(0, attrStr.length);
-    }
-    if ( range.length == 0 ) return;
-    if ( nil != self.font ) {
-        [attrStr addAttribute:NSFontAttributeName value:self.font range:range];
-    }
-    if ( nil != self.textColor ) {
-        [attrStr addAttribute:NSForegroundColorAttributeName value:self.textColor range:range];
-    }
-    if ( 0 != self.expansion ) {
-        [attrStr addAttribute:NSExpansionAttributeName value:@(self.expansion) range:range];
-    }
-    if ( nil != self.shadow ) {
-        [attrStr addAttribute:NSShadowAttributeName value:self.shadow range:range];
-    }
-    if ( nil != self.backgroundColor ) {
-        [attrStr addAttribute:NSBackgroundColorAttributeName value:self.backgroundColor range:range];
-    }
-    if ( nil != self.underLine ) {
-        [attrStr addAttribute:NSUnderlineStyleAttributeName value:@(self.underLine.value) range:range];
-        [attrStr addAttribute:NSUnderlineColorAttributeName value:self.underLine.color range:range];
-    }
-    if ( nil != self.strikethrough ) {
-        [attrStr addAttribute:NSStrikethroughStyleAttributeName value:@(self.strikethrough.value) range:range];
-        [attrStr addAttribute:NSStrikethroughColorAttributeName value:self.strikethrough.color range:range];
-    }
-    if ( nil != self.stroke ) {
-        [attrStr addAttribute:NSStrokeWidthAttributeName value:@(self.stroke.value) range:range];
-        [attrStr addAttribute:NSStrokeColorAttributeName value:self.stroke.color range:range];
-    }
-    if ( 0 != self.obliqueness ) {
-        [attrStr addAttribute:NSObliquenessAttributeName value:@(self.obliqueness) range:range];
-    }
-    if ( 0 != self.letterSpacing ) {
-        [attrStr addAttribute:NSKernAttributeName value:@(self.letterSpacing) range:range];
-    }
-    if ( 0 != self.offset ) {
-        [attrStr addAttribute:NSBaselineOffsetAttributeName value:@(self.offset) range:range];
-    }
-    if ( YES == self.link ) {
-        [attrStr addAttribute:NSLinkAttributeName value:@(1) range:range];
-    }
-    if ( nil != _paragraphStyleM ) {
-        [attrStr addAttribute:NSParagraphStyleAttributeName value:self.paragraphStyleM range:range];
-    }
-}
-- (void)removeAttribute:(NSAttributedStringKey)attributedStringKey {
-    if      ( attributedStringKey == NSFontAttributeName ) self.font = nil;
-    else if ( attributedStringKey == NSForegroundColorAttributeName ) self.textColor = nil;
-    else if ( attributedStringKey == NSExpansionAttributeName ) self.expansion = 0;
-    else if ( attributedStringKey == NSShadowAttributeName ) self.shadow = nil;
-    else if ( attributedStringKey == NSBackgroundColorAttributeName ) self.backgroundColor = nil;
-    else if ( attributedStringKey == NSUnderlineStyleAttributeName ) self.underLine = nil;
-    else if ( attributedStringKey == NSStrikethroughStyleAttributeName ) self.strikethrough = nil;
-    else if ( attributedStringKey == NSStrokeWidthAttributeName ) self.stroke = nil;
-    else if ( attributedStringKey == NSObliquenessAttributeName ) self.obliqueness = 0;
-    else if ( attributedStringKey == NSKernAttributeName ) self.letterSpacing = 0;
-    else if ( attributedStringKey == NSBaselineOffsetAttributeName ) self.offset = 0;
-    else if ( attributedStringKey == NSLinkAttributeName ) self.link = NO;
-    else if ( attributedStringKey == NSParagraphStyleAttributeName ) self.paragraphStyleM = [NSParagraphStyle defaultParagraphStyle].mutableCopy;
-}
-- (id)copyWithZone:(NSZone *)zone {
-    SJAttributesRecorder *newRecorder = [SJAttributesRecorder new];
-    [self.properties enumerateObjectsUsingBlock:^(NSString * _Nonnull obj, NSUInteger idx, BOOL * _Nonnull stop) {
-        [newRecorder setValue:[[self valueForKey:obj] copy] forKey:obj];
-    }];
-    return newRecorder;
-}
-- (NSArray<NSString *> *)properties {
-    return csj_propertyList([self class]);
+- (id)mutableCopyWithZone:(NSZone *_Nullable)zone {
+    SJAttributesRecorder *obj = [SJAttributesRecorder new];
+    obj.range = _range;
+    obj.font = _font;
+    obj.textColor = _textColor;
+    obj.expansion = _expansion;
+    obj.shadow = _shadow;
+    obj.backgroundColor = _backgroundColor;
+    obj.underLine = _underLine;
+    obj.strikethrough = _strikethrough;
+    obj.stroke = _stroke;
+    obj.obliqueness = _obliqueness;
+    obj.letterSpacing = _letterSpacing;
+    obj.offset = _offset;
+    obj.link = _link;
+    obj.paragraphStyleM = _paragraphStyleM;
+    return obj;
 }
 @end
+NS_ASSUME_NONNULL_END

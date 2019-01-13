@@ -87,7 +87,19 @@ SJEdgeControlButtonItemTag const SJLoadFailedControlLayerTopItem_Back = 10000;
 
 - (void)_updateItems:(__kindof SJBaseVideoPlayer *)videoPlayer {
     SJEdgeControlButtonItem *backItem = [_topAdapter itemForTag:SJLoadFailedControlLayerTopItem_Back];
-    backItem.hidden = videoPlayer.isPlayOnScrollView && !videoPlayer.isFullScreen;
+    BOOL isFitOnScreen = videoPlayer.isFitOnScreen;
+    BOOL isFull = videoPlayer.isFullScreen;
+    
+    if ( backItem ) {
+        if ( isFull || isFitOnScreen )
+            backItem.hidden = NO;
+        else {
+            if ( _hideBackButtonWhenOrientationIsPortrait )
+                backItem.hidden = YES;
+            else
+                backItem.hidden = videoPlayer.isPlayOnScrollView;
+        }
+    }
     [_topAdapter reload];
 }
 
@@ -125,6 +137,7 @@ SJEdgeControlButtonItemTag const SJLoadFailedControlLayerTopItem_Back = 10000;
 - (UIButton *)reloadButton {
     if ( _reloadButton ) return _reloadButton;
     _reloadButton = [UIButton buttonWithType:UIButtonTypeCustom];
+    _reloadButton.titleLabel.numberOfLines = 0;
     [_reloadButton addTarget:self action:@selector(clickedFailedButton:) forControlEvents:UIControlEventTouchUpInside];
     [self _updateContent];
     __weak typeof(self) _self = self;
@@ -144,21 +157,19 @@ SJEdgeControlButtonItemTag const SJLoadFailedControlLayerTopItem_Back = 10000;
     SJEdgeControlLayerSettings *setting = [SJEdgeControlLayerSettings commonSettings];
     [_reloadButton setAttributedTitle:sj_makeAttributesString(^(SJAttributeWorker * _Nonnull make) {
         if ( setting.playFailedBtnImage ) {
-            make.insert(setting.playFailedBtnImage, 0, CGPointZero, setting.playFailedBtnImage.size);
+            make.append(setting.playFailedBtnImage, CGPointZero, setting.playFailedBtnImage.size);
         }
+        
         if ( setting.playFailedBtnImage && 0 != setting.playFailedBtnTitle.length ) {
-            make.insertText(@"\n", -1);
+            make.append(@"\n");
+            make.alignment(NSTextAlignmentCenter).lineSpacing(6);
         }
         
         if ( 0 != setting.playFailedBtnTitle.length ) {
-            make.insert([NSString stringWithFormat:@"%@", setting.playFailedBtnTitle], -1);
-            make.lastInserted(^(SJAttributesRangeOperator * _Nonnull lastOperator) {
-                lastOperator
-                .font(setting.playFailedBtnFont)
-                .textColor(setting.playFailedBtnTitleColor);
-            });
+            make.append([NSString stringWithFormat:@" %@ ", setting.playFailedBtnTitle])
+            .font(setting.playFailedBtnFont)
+            .textColor(setting.playFailedBtnTitleColor);
         }
-        make.alignment(NSTextAlignmentCenter).lineSpacing(6);
     }) forState:UIControlStateNormal];
 }
 
@@ -172,16 +183,18 @@ SJEdgeControlButtonItemTag const SJLoadFailedControlLayerTopItem_Back = 10000;
 
 - (void)controlLayerNeedDisappear:(__kindof SJBaseVideoPlayer *)videoPlayer { }
 
-- (BOOL)controlLayerDisappearCondition {
+/// 不触发自动隐藏控制层
+- (BOOL)controlLayerOfVideoPlayerCanAutomaticallyDisappear:(__kindof SJBaseVideoPlayer *)videoPlayer {
+    return NO;
+}
+
+/// 不触发任何手势
+- (BOOL)videoPlayer:(__kindof SJBaseVideoPlayer *)videoPlayer gestureRecognizerShouldTrigger:(SJPlayerGestureType)type location:(CGPoint)location {
     return NO;
 }
 
 - (UIView *)controlView {
     return self;
-}
-
-- (BOOL)triggerGesturesCondition:(CGPoint)location {
-    return NO;
 }
 
 - (void)installedControlViewToVideoPlayer:(__kindof SJBaseVideoPlayer *)videoPlayer {

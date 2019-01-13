@@ -54,7 +54,7 @@
     
     [_leftContainerView mas_makeConstraints:^(MASConstraintMaker *make) {
         make.top.leading.bottom.equalTo(self->_leftContainerView.superview);
-        make.width.equalTo(self->_leftContainerView.mas_height);
+        make.width.equalTo(self->_leftContainerView.mas_height).priorityLow();
     }];
     
     [_slider mas_makeConstraints:^(MASConstraintMaker *make) {
@@ -63,7 +63,7 @@
     
     [_rightContainerView mas_makeConstraints:^(MASConstraintMaker *make) {
         make.top.trailing.bottom.equalTo(self->_rightContainerView.superview);
-        make.width.equalTo(self->_rightContainerView.mas_height);
+        make.width.equalTo(self->_rightContainerView.mas_height).priorityLow();
     }];
 }
 

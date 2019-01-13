@@ -9,8 +9,9 @@
 #import <UIKit/UIKit.h>
 
 NS_ASSUME_NONNULL_BEGIN
-@interface SJStrokeAttribute: NSObject<NSCopying, NSMutableCopying>
-@property (nonatomic, assign) double value;
+#pragma mark -
+@interface SJStrokeAttribute: NSObject<NSMutableCopying>
+@property (nonatomic) double value;
 @property (nonatomic, strong) UIColor *color;
 + (instancetype)strokeWithValue:(double)value color:(UIColor *)color;
 - (instancetype)initWithValue:(double)value color:(UIColor *)color;
@@ -18,41 +19,39 @@ NS_ASSUME_NONNULL_BEGIN
 
 
 #pragma mark -
-@interface SJUnderlineAttribute: NSObject<NSCopying, NSMutableCopying>
-@property (nonatomic, assign) NSUnderlineStyle value;
+@interface SJUnderlineAttribute: NSObject<NSMutableCopying>
+@property (nonatomic) NSUnderlineStyle value;
 @property (nonatomic, strong) UIColor *color;
 + (instancetype)underLineWithStyle:(NSUnderlineStyle)value color:(UIColor *)color;
 - (instancetype)initWithStyle:(NSUnderlineStyle)value color:(UIColor *)color;
 @end
 
 #pragma mark -
-@interface SJAttributesRecorder: NSObject<NSCopying>
-@property (nonatomic, assign) NSRange range;
+@interface SJAttributesRecorder: NSObject<NSMutableCopying>
+@property (nonatomic) NSRange range;
 @property (nonatomic, strong, nullable) UIFont *font;
 @property (nonatomic, strong, nullable) UIColor *textColor;
-@property (nonatomic, assign) double expansion;
+@property (nonatomic) double expansion;
 @property (nonatomic, strong, nullable) NSShadow *shadow;
 @property (nonatomic, strong, nullable) UIColor *backgroundColor;
 @property (nonatomic, strong, nullable) SJUnderlineAttribute *underLine;
 @property (nonatomic, strong, nullable) SJUnderlineAttribute *strikethrough;
 @property (nonatomic, strong, nullable) SJStrokeAttribute *stroke;
-@property (nonatomic, assign) double obliqueness;
-@property (nonatomic, assign) double letterSpacing;
-@property (nonatomic, assign) double offset;
-@property (nonatomic, assign) BOOL link;
-#pragma mark -
-@property (nonatomic, strong) NSMutableParagraphStyle *paragraphStyleM;
-@property (nonatomic, assign) double lineSpacing;
-@property (nonatomic, assign) double paragraphSpacing;
-@property (nonatomic, assign) double paragraphSpacingBefore;
-@property (nonatomic, assign) double firstLineHeadIndent;
-@property (nonatomic, assign) double headIndent;
-@property (nonatomic, assign) double tailIndent;
-@property (nonatomic, strong, nullable) NSNumber *alignment;
-@property (nonatomic, assign) NSLineBreakMode lineBreakMode;
-- (void)addAttributes:(NSMutableAttributedString *)attrStr;
-- (void)removeAttribute:(NSAttributedStringKey)attributedStringKey;
-- (NSArray<NSString *> *)properties;
-@end
+@property (nonatomic) double obliqueness;
+@property (nonatomic) double letterSpacing;
+@property (nonatomic) double offset;
+@property (nonatomic) BOOL link;
 
+@property (nonatomic, strong, null_resettable) NSMutableParagraphStyle *paragraphStyleM;
+@property (nonatomic) double lineSpacing;
+@property (nonatomic) double paragraphSpacing;
+@property (nonatomic) double paragraphSpacingBefore;
+@property (nonatomic) double firstLineHeadIndent;
+@property (nonatomic) double headIndent;
+@property (nonatomic) double tailIndent;
+@property (nonatomic, strong, nullable) NSNumber *alignment;
+@property (nonatomic) NSLineBreakMode lineBreakMode;
+
+@property (nonatomic, copy, nullable) void(^propertyDidChangeExeBlock)(SJAttributesRecorder *recorder);
+@end
 NS_ASSUME_NONNULL_END

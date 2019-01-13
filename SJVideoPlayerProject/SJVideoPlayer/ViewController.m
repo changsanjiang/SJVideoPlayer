@@ -147,7 +147,12 @@
     
     [[Item alloc] initWithTitle:@"SJUICollectionViewNestedInUICollectionViewCellPlayModel"
                        subTitle:@"在CollectionView单元格中播放, 嵌套在CollectionViewCell中"
-                           path:@"collectionView/cell/collectionView/cell/play"]];
+                           path:@"collectionView/cell/collectionView/cell/play"],
+    
+    [[Item alloc] initWithTitle:@"SJUITableViewHeaderFooterViewPlayModel"
+                       subTitle:@"在TableViewHeaderFooterView中播放"
+                           path:@"tableView/headerFooterView/play"],
+    ];
 }
 
 - (NSArray<Item *> *)_createItemsBySJControlRotation {

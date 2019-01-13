@@ -22,15 +22,12 @@
 #import "SJVideoPlayerControlMaskView.h"
 #import "UIView+SJVideoPlayerSetting.h"
 
-
-@interface SJLightweightBottomControlView ()<SJProgressSliderDelegate>
-
+@interface SJLightweightBottomControlView ()
 @property (nonatomic, strong, readonly) UIButton *playBtn;
 @property (nonatomic, strong, readonly) UIButton *pauseBtn;
 @property (nonatomic, strong, readonly) UILabel *currentTimeLabel;
 @property (nonatomic, strong, readonly) UILabel *separateLabel;
 @property (nonatomic, strong, readonly) UILabel *durationTimeLabel;
-@property (nonatomic, strong, readonly) SJProgressSlider *progressSlider;
 @property (nonatomic, strong, readonly) UIButton *fullBtn;
 
 @property (nonatomic, strong) UIImage *fullScreenImage;
@@ -51,7 +48,7 @@
     self = [super initWithFrame:frame];
     if ( !self ) return nil;
     [self _bottomSetupView];
-    [self _bottomSettingHelper];
+    [self _initializeSettingRecorder];
     [self setStopped:YES];
     return self; 
 }
@@ -126,23 +123,6 @@
     [_delegate bottomControlView:self clickedViewTag:btn.tag];
 }
 
-- (void)setProgress:(float)progress {
-    if ( self.progressSlider.isDragging ) return;
-    self.progressSlider.value = progress;
-}
-
-- (float)progress {
-    return self.progressSlider.value;
-}
-
-- (void)setBufferProgress:(float)bufferProgress {
-    self.progressSlider.bufferProgress = bufferProgress;
-}
-
-- (float)bufferProgress {
-    return self.progressSlider.bufferProgress;
-}
-
 #pragma mark -
 
 - (void)_bottomSetupView {
@@ -212,27 +192,7 @@
 - (SJProgressSlider *)progressSlider {
     if ( _progressSlider ) return _progressSlider;
     _progressSlider = [SJProgressSlider new];
-    _progressSlider.enableBufferProgress = YES;
-    _progressSlider.delegate = self;
     return _progressSlider;
-}
-
-- (void)sliderWillBeginDragging:(SJProgressSlider *)slider {
-    if ( [self.delegate respondsToSelector:@selector(sliderWillBeginDraggingForBottomView:)] ) {
-        [self.delegate sliderWillBeginDraggingForBottomView:self];
-    }
-}
-
-- (void)sliderDidDrag:(SJProgressSlider *)slider {
-    if ( [self.delegate respondsToSelector:@selector(bottomView:sliderDidDrag:)] ) {
-        [self.delegate bottomView:self sliderDidDrag:slider.value];
-    }
-}
-
-- (void)sliderDidEndDragging:(SJProgressSlider *)slider {
-    if ( [self.delegate respondsToSelector:@selector(sliderDidEndDraggingForBottomView:)] ) {
-        [self.delegate sliderDidEndDraggingForBottomView:self];
-    }
 }
 
 - (UIButton *)fullBtn {
@@ -260,7 +220,7 @@
 }
 
 #pragma mark -
-- (void)_bottomSettingHelper {
+- (void)_initializeSettingRecorder {
     __weak typeof(self) _self = self;
     self.settingRecroder = [[SJVideoPlayerControlSettingRecorder alloc] initWithSettings:^(SJEdgeControlLayerSettings * _Nonnull setting) {
         __strong typeof(_self) self = _self;

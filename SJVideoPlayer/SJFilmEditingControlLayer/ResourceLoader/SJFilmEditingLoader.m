@@ -21,9 +21,10 @@ NSString *const SJVideoPlayer_OperationFailedPrompt = @"SJVideoPlayer_OperationF
 
 + (NSBundle *)bundle {
     static NSBundle *bundle = nil;
-    if ( nil == bundle ) {
+    static dispatch_once_t onceToken;
+    dispatch_once(&onceToken, ^{
         bundle = [NSBundle bundleWithPath:[[NSBundle bundleForClass:[self class]] pathForResource:@"SJFilmEditing" ofType:@"bundle"]];
-    }
+    });
     return bundle;
 }
 
@@ -33,7 +34,8 @@ NSString *const SJVideoPlayer_OperationFailedPrompt = @"SJVideoPlayer_OperationF
 
 + (NSString *)localizedStringForKey:(NSString *)key {
     static NSBundle *bundle = nil;
-    if ( nil == bundle ) {
+    static dispatch_once_t onceToken;
+    dispatch_once(&onceToken, ^{
         NSString *language = [NSLocale preferredLanguages].firstObject;
         if ( [language hasPrefix:@"en"] ) {
             language = @"en";
@@ -50,7 +52,7 @@ NSString *const SJVideoPlayer_OperationFailedPrompt = @"SJVideoPlayer_OperationF
             language = @"en";
         }
         bundle = [NSBundle bundleWithPath:[[self bundle] pathForResource:language ofType:@"lproj"]];
-    }
+    });
     NSString *value = [bundle localizedStringForKey:key value:nil table:nil];
     return [[NSBundle mainBundle] localizedStringForKey:key value:value table:nil];
 }

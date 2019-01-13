@@ -2,7 +2,8 @@
 //  SJProgressSlider.m
 //  Pods-SJProgressSlider_Example
 //
-//  Created by BlueDancer on 2018/5/9.
+//  Created by BlueDancer on 2017/11/20.
+//  Copyright © 2017年 SanJiang. All rights reserved.
 //
 
 #import "SJProgressSlider.h"
@@ -22,80 +23,24 @@ NS_ASSUME_NONNULL_BEGIN
 @end
 
 @interface SJProgressSlider ()
-@property (nonatomic, strong, readonly) UIView *containerView;
 @property (nonatomic, strong) UIActivityIndicatorView *indicatorView;
+@property (nonatomic, strong, readonly) UIView *containerView;
+
+/// buffer
+@property (nonatomic, strong) UIView *bufferProgressView;
+@property (nonatomic, strong) UIColor *bufferProgressColor;
+@property (nonatomic) BOOL enableBufferProgress;
+@property (nonatomic) CGFloat bufferProgress;
+
+/// border
+@property (null_resettable, nonatomic, strong) UIColor *borderColor;
+@property (nonatomic) BOOL visualBorder;
+@property (nonatomic) CGFloat borderWidth;
+
+/// prompt
+@property (nonatomic, strong, readonly) UILabel *promptLabel;
+@property (nonatomic) CGFloat promptSpacing;
 @end
-
-#pragma mark -
-@implementation SJProgressSlider (SJBufferProgress)
-
-- (BOOL)enableBufferProgress {
-    return [objc_getAssociatedObject(self, _cmd) boolValue];
-}
-
-- (void)setEnableBufferProgress:(BOOL)enableBufferProgress {
-    if ( enableBufferProgress == self.enableBufferProgress ) return;
-    objc_setAssociatedObject(self, @selector(enableBufferProgress), @(enableBufferProgress), OBJC_ASSOCIATION_RETAIN_NONATOMIC);
-
-    dispatch_async(dispatch_get_main_queue(), ^{
-        if ( enableBufferProgress ) {
-            UIView *bufferView = [self bufferProgressView];
-            [self.containerView insertSubview:bufferView aboveSubview:self.trackImageView];
-            bufferView.frame = CGRectMake(0, 0, 0, self.containerView.frame.size.height);
-            CGFloat bufferProgress = self.bufferProgress;
-            if ( 0 != bufferProgress ) [self _needUpdateBufferLayout];
-        }
-        else {
-            [[self bufferProgressView] removeFromSuperview];
-        }
-    });
-}
-
-- (UIColor *)bufferProgressColor {
-    UIColor *bufferProgressColor = objc_getAssociatedObject(self, _cmd);
-    if ( bufferProgressColor ) return bufferProgressColor;
-    return [UIColor grayColor];
-}
-
-- (void)setBufferProgressColor:(UIColor *)bufferProgressColor {
-    if ( !bufferProgressColor ) return;
-    objc_setAssociatedObject(self, @selector(bufferProgressColor), bufferProgressColor, OBJC_ASSOCIATION_RETAIN_NONATOMIC);
-    dispatch_async(dispatch_get_main_queue(), ^{
-        self.bufferProgressView.backgroundColor = bufferProgressColor;
-    });
-}
-
-- (CGFloat)bufferProgress {
-    return [objc_getAssociatedObject(self, _cmd) floatValue];
-}
-
-- (void)setBufferProgress:(CGFloat)bufferProgress {
-    if ( isnan(bufferProgress) ) return;
-    if ( bufferProgress < 0 ) bufferProgress = 0;
-    else if ( bufferProgress > 1 ) bufferProgress = 1;
-    objc_setAssociatedObject(self, @selector(bufferProgress), @(bufferProgress), OBJC_ASSOCIATION_RETAIN_NONATOMIC);
-    [self _needUpdateBufferLayout];
-}
-
-- (UIView *)bufferProgressView {
-    UIView *bufferProgressView = objc_getAssociatedObject(self, _cmd);
-    if ( bufferProgressView ) return bufferProgressView;
-    bufferProgressView = [UIView new];
-    bufferProgressView.backgroundColor = self.bufferProgressColor;
-    objc_setAssociatedObject(self, _cmd, bufferProgressView, OBJC_ASSOCIATION_RETAIN_NONATOMIC);
-    return bufferProgressView;
-}
-
-- (void)_needUpdateBufferLayout {
-    UIView *bufferView = [self bufferProgressView];
-    CGFloat width = self.bufferProgress * self.containerView.frame.size.width;
-    CGRect frame = bufferView.frame;
-    frame.size.height = self.containerView.frame.size.height;
-    frame.size.width = width;
-    bufferView.frame = frame;
-}
-@end
-
 
 #pragma mark -
 @implementation SJProgressSlider {
@@ -113,7 +58,18 @@ NS_ASSUME_NONNULL_BEGIN
     return self;
 }
 
-#pragma mark
+- (void)_setupDefaultValues {
+    _animaMaxDuration = 0.5;
+    _trackHeight = 8;
+    _maxValue = 1;
+    _minValue = 0;
+    _round = YES;
+    _value = 0;
+    _thumbOutsideSpace = 0.382;
+    self.promptSpacing = 4.0;
+    _loadingColor = [UIColor blackColor];
+}
+
 - (void)_setupGestrue {
     _pan = [[UIPanGestureRecognizer alloc] initWithTarget:self action:@selector(handlePanGR:)];
     _pan.delaysTouchesBegan = YES;
@@ -122,9 +78,9 @@ NS_ASSUME_NONNULL_BEGIN
     _tap = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(handleTapGR:)];
     _tap.delaysTouchesBegan = YES;
     [self addGestureRecognizer:_tap];
-
+    
     [_tap requireGestureRecognizerToFail:_pan];
-
+    
     _tap.enabled = NO;
 }
 
@@ -133,7 +89,7 @@ NS_ASSUME_NONNULL_BEGIN
     CGFloat add = ( offset / _containerView.bounds.size.width) * ( _maxValue - _minValue );
     [self setValue:self.value + add animated:YES];
     [pan setTranslation:CGPointZero inView:pan.view];
-
+    
     switch ( pan.state ) {
         case UIGestureRecognizerStateBegan: {
             _isDragging = YES;
@@ -247,19 +203,7 @@ NS_ASSUME_NONNULL_BEGIN
     _indicatorView.color = loadingColor;
 }
 
-#pragma mark
-- (void)_setupDefaultValues {
-    _animaMaxDuration = 0.5;
-    _trackHeight = 8;
-    _maxValue = 1;
-    _minValue = 0;
-    _round = YES;
-    _value = 0;
-    self.promptSpacing = 4.0;
-    _loadingColor = [UIColor blackColor];
-}
-
-#pragma mark
+#pragma mark -
 - (void)_setupView {
     _containerView = [UIView new];
     _containerView.clipsToBounds = YES;
@@ -308,12 +252,15 @@ NS_ASSUME_NONNULL_BEGIN
     return _indicatorView;
 }
 
-#pragma mark -
+#pragma mark - slider
 - (void)_needUpdateContainerLayout {
-    CGFloat width = self.frame.size.width;
-    CGFloat height = self.frame.size.height;
-    _containerView.bounds = CGRectMake(0, 0, width, _trackHeight);
-    _containerView.center = CGPointMake(width * 0.5, height * 0.5);
+    CGFloat maxW = self.frame.size.width;
+    CGFloat maxH = self.frame.size.height;
+    
+    CGFloat containerW = maxW - _expand * 2;
+    CGFloat contaienrH = _trackHeight;
+    _containerView.bounds = (CGRect){0, 0, containerW, contaienrH};
+    _containerView.center = (CGPoint){maxW * 0.5, maxH * 0.5};
     [self _needUpdateTrackLayout];
     if ( self.enableBufferProgress ) [self _needUpdateBufferLayout];
 }
@@ -324,27 +271,34 @@ NS_ASSUME_NONNULL_BEGIN
 }
 
 - (void)_needUpdateTrackLayout {
-    CGFloat width = self.frame.size.width;
-    _trackImageView.frame = CGRectMake(0, 0, width, _trackHeight);
+    CGFloat trackW = _containerView.frame.size.width;
+    CGFloat trackH = _containerView.frame.size.height;
+    _trackImageView.frame = CGRectMake(0, 0, trackW, trackH);
     [self _needUpdateTraceLayout];
 }
 
 - (void)_needUpdateTraceLayout {
-    CGFloat width = self.frame.size.width;
+    CGFloat maxW = _containerView.frame.size.width;
     CGFloat sum = _maxValue - _minValue;
     if ( isnan(sum) || sum <= 0 ) sum = 0.001;
-    _traceImageView.frame = CGRectMake(0, 0, width * (_value - _minValue) / sum, _trackHeight);
+    CGFloat traceW = maxW * (_value - _minValue) / sum;
+    CGFloat traceH = _containerView.frame.size.height;
+    _traceImageView.frame = CGRectMake(0, 0, traceW, traceH);
     [self _needUpdateThumbLayout];
 }
 
 - (void)_needUpdateThumbLayout {
-    CGFloat width = self.frame.size.width;
     CGFloat height = self.frame.size.height;
-    CGFloat maxX = CGRectGetMaxX(_traceImageView.frame);
-    CGFloat margin = ceil(_thumbImageView.frame.size.width * 0.382);
-    if ( maxX <= margin ) maxX = margin;
-    else if ( maxX >= width - margin ) maxX = width - margin;
-    _thumbImageView.center = CGPointMake(maxX, height * 0.5);
+    
+    CGFloat thumbW = _thumbImageView.frame.size.width;
+    CGFloat outside = ceil(_thumbImageView.frame.size.width * _thumbOutsideSpace);
+    CGFloat minCenterX = _expand - outside + thumbW * 0.5;
+    CGFloat maxCenterX = _containerView.bounds.size.width - thumbW * 0.5 + outside + _expand;
+    
+    CGFloat tracePosition = _traceImageView.frame.size.width + _expand;
+    if ( tracePosition <= minCenterX ) tracePosition = minCenterX;
+    else if ( tracePosition >= maxCenterX ) tracePosition = maxCenterX;
+    _thumbImageView.center = CGPointMake(tracePosition, height * 0.5);
 }
 
 - (void)_updateThumbSize:(CGSize)size {
@@ -356,41 +310,74 @@ NS_ASSUME_NONNULL_BEGIN
 - (void)_needUpdateIndicatorTransform {
     _indicatorView.transform = CGAffineTransformMakeScale(_thumbImageView.bounds.size.width / 16 * 0.6, _thumbImageView.bounds.size.height / 16 * 0.6);
 }
-@end
 
+#pragma mark - buffer
 
-@implementation SJProgressSlider (Prompt)
-
-- (UILabel *)promptLabel {
-    if ( _promptLabel ) return _promptLabel;
-    _promptLabel = [[UILabel alloc] init];
-    [self addSubview:_promptLabel];
-    _promptLabel.translatesAutoresizingMaskIntoConstraints = NO;
-    [self addConstraint:[NSLayoutConstraint constraintWithItem:_promptLabel attribute:NSLayoutAttributeCenterX relatedBy:NSLayoutRelationEqual toItem:_traceImageView attribute:NSLayoutAttributeTrailing multiplier:1 constant:0]];
-    [self addConstraint:_promptLabelBottomConstraint = [NSLayoutConstraint constraintWithItem:_promptLabel attribute:NSLayoutAttributeBottom relatedBy:NSLayoutRelationEqual toItem:_thumbImageView attribute:NSLayoutAttributeTop multiplier:1 constant:-self.promptSpacing]];
-    return _promptLabel;
+- (void)setEnableBufferProgress:(BOOL)enableBufferProgress {
+    if ( enableBufferProgress == _enableBufferProgress ) return;
+    _enableBufferProgress = enableBufferProgress;
+    dispatch_async(dispatch_get_main_queue(), ^{
+        if ( enableBufferProgress ) {
+            UIView *bufferView = [self bufferProgressView];
+            [self.containerView insertSubview:bufferView aboveSubview:self.trackImageView];
+            bufferView.frame = CGRectMake(0, 0, 0, self.containerView.frame.size.height);
+            CGFloat bufferProgress = self.bufferProgress;
+            if ( 0 != bufferProgress ) [self _needUpdateBufferLayout];
+        }
+        else {
+            [[self bufferProgressView] removeFromSuperview];
+        }
+    });
 }
 
-- (void)setPromptSpacing:(CGFloat)promptSpacing {
-    objc_setAssociatedObject(self, @selector(promptSpacing), @(promptSpacing), OBJC_ASSOCIATION_RETAIN_NONATOMIC);
-    _promptLabelBottomConstraint.constant = -promptSpacing;
+@synthesize bufferProgressColor = _bufferProgressColor;
+- (UIColor *)bufferProgressColor {
+    if ( _bufferProgressColor ) return _bufferProgressColor;
+    return [UIColor grayColor];
 }
 
-- (CGFloat)promptSpacing {
-    return [objc_getAssociatedObject(self, _cmd) floatValue];
+- (void)setBufferProgressColor:(UIColor *)bufferProgressColor {
+    _bufferProgressColor = bufferProgressColor;
+    dispatch_async(dispatch_get_main_queue(), ^{
+        self.bufferProgressView.backgroundColor = bufferProgressColor;
+    });
 }
 
-@end
+@synthesize bufferProgress = _bufferProgress;
+- (void)setBufferProgress:(CGFloat)bufferProgress {
+    if ( isnan(bufferProgress) ) return;
+    if ( bufferProgress < 0 ) bufferProgress = 0;
+    else if ( bufferProgress > 1 ) bufferProgress = 1;
+    _bufferProgress = bufferProgress;
+    [self _needUpdateBufferLayout];
+}
+
+@synthesize bufferProgressView = _bufferProgressView;
+- (UIView *)bufferProgressView {
+    if ( _bufferProgressView ) return _bufferProgressView;
+    _bufferProgressView = [UIView new];
+    _bufferProgressView.backgroundColor = self.bufferProgressColor;
+    return _bufferProgressView;
+}
+
+- (void)_needUpdateBufferLayout {
+    UIView *bufferView = [self bufferProgressView];
+    CGFloat width = self.bufferProgress * self.containerView.frame.size.width;
+    CGRect frame = bufferView.frame;
+    frame.size.height = self.containerView.frame.size.height;
+    frame.size.width = width;
+    bufferView.frame = frame;
+}
 
 
-@implementation SJProgressSlider (BorderLine)
+#pragma mark - border
 
+@synthesize visualBorder = _visualBorder;
 - (void)setVisualBorder:(BOOL)visualBorder {
-    if ( self.visualBorder == visualBorder ) return;
-    objc_setAssociatedObject(self, @selector(visualBorder), @(visualBorder), OBJC_ASSOCIATION_RETAIN_NONATOMIC);
+    if ( _visualBorder == visualBorder ) return;
     if ( visualBorder ) {
-        _containerView.layer.borderColor = self.borderColor.CGColor;
-        _containerView.layer.borderWidth = self.borderWidth;
+        _containerView.layer.borderColor = _borderColor.CGColor;
+        _containerView.layer.borderWidth = _borderWidth;
     }
     else {
         _containerView.layer.borderColor = nil;
@@ -398,24 +385,21 @@ NS_ASSUME_NONNULL_BEGIN
     }
 }
 
-- (BOOL)visualBorder {
-    return [objc_getAssociatedObject(self, _cmd) boolValue];
-}
-
+@synthesize borderColor = _borderColor;
 - (void)setBorderColor:(UIColor * __nullable)borderColor {
-    objc_setAssociatedObject(self, @selector(borderColor), borderColor, OBJC_ASSOCIATION_RETAIN_NONATOMIC);
-    if ( self.visualBorder ) _containerView.layer.borderColor = borderColor.CGColor;
+    _borderColor = borderColor;
+    if ( _visualBorder ) _containerView.layer.borderColor = borderColor.CGColor;
 }
 
 - (UIColor *)borderColor {
-    UIColor *borderColor = objc_getAssociatedObject(self, _cmd);
-    if ( borderColor ) return borderColor;
+    if ( _borderColor ) return _borderColor;
     return [UIColor lightGrayColor];
 }
 
+@synthesize borderWidth = _borderWidth;
 - (void)setBorderWidth:(CGFloat)borderWidth {
-    objc_setAssociatedObject(self, @selector(borderWidth), @(borderWidth), OBJC_ASSOCIATION_RETAIN_NONATOMIC);
-    if ( self.visualBorder ) _containerView.layer.borderWidth = borderWidth;
+    _borderWidth = borderWidth;
+    if ( _visualBorder ) _containerView.layer.borderWidth = borderWidth;
 }
 
 - (CGFloat)borderWidth {
@@ -424,5 +408,21 @@ NS_ASSUME_NONNULL_BEGIN
     return 0.4;
 }
 
+#pragma mark - prompt
+
+- (UILabel *)promptLabel {
+    if ( _promptLabel ) return _promptLabel;
+    _promptLabel = [[UILabel alloc] init];
+    [self addSubview:_promptLabel];
+    _promptLabel.translatesAutoresizingMaskIntoConstraints = NO;
+    [self addConstraint:[NSLayoutConstraint constraintWithItem:_promptLabel attribute:NSLayoutAttributeCenterX relatedBy:NSLayoutRelationEqual toItem:_traceImageView attribute:NSLayoutAttributeTrailing multiplier:1 constant:0]];
+    [self addConstraint:_promptLabelBottomConstraint = [NSLayoutConstraint constraintWithItem:_promptLabel attribute:NSLayoutAttributeBottom relatedBy:NSLayoutRelationEqual toItem:_thumbImageView attribute:NSLayoutAttributeTop multiplier:1 constant:-_promptSpacing]];
+    return _promptLabel;
+}
+
+- (void)setPromptSpacing:(CGFloat)promptSpacing {
+    _promptSpacing = promptSpacing;
+    _promptLabelBottomConstraint.constant = -promptSpacing;
+}
 @end
 NS_ASSUME_NONNULL_END

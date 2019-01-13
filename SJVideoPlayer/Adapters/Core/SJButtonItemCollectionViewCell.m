@@ -13,6 +13,8 @@
 #import "Masonry.h"
 #endif
 
+
+NS_ASSUME_NONNULL_BEGIN
 @implementation SJButtonItemCollectionViewCell
 static NSString *SJButtonItemCollectionViewCellID = @"SJButtonItemCollectionViewCell";
 + (void)registerWithCollectionView:(UICollectionView *)collectionView {
@@ -108,3 +110,4 @@ static NSString *SJButtonItemCollectionViewCellID = @"SJButtonItemCollectionView
     return _sj_imageView;
 }
 @end
+NS_ASSUME_NONNULL_END

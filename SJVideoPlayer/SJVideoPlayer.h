@@ -73,7 +73,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 /// This block invoked when clicked back btn, if videoPlayer.isFullscreen == NO.
 /// 点击`返回`按钮的回调
-@property (null_resettable, nonatomic, copy) void(^clickedBackEvent)(SJVideoPlayer *player);
+@property (nonatomic, copy, null_resettable) void(^clickedBackEvent)(SJVideoPlayer *player);
 
 /// 当播放器为竖屏时, 是否隐藏返回按钮
 /// v2.1.4 新增

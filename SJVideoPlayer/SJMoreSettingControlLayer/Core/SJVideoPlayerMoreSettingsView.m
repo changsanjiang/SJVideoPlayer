@@ -46,6 +46,10 @@ static NSString *const SJVideoPlayerMoreSettingsFooterViewID = @"SJVideoPlayerMo
     return self;
 }
 
+- (void)update {
+    [_colView reloadData];
+}
+
 - (SJVideoPlayerMoreSettingsSlidersView *)slidersView {
     if ( _slidersView ) return _slidersView;
     _slidersView = [SJVideoPlayerMoreSettingsSlidersView new];

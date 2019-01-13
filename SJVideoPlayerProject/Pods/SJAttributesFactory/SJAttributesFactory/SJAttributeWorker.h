@@ -16,32 +16,9 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
-/*!
- *  make attributed string:
- 
- *   NSAttributedString *attrStr = sj_makeAttributesString(^(SJAttributeWorker * _Nonnull make) {
- 
- *       // set font , text color.
- *       make.font([UIFont boldSystemFontOfSize:14]).textColor([UIColor blackColor]);
- 
- *       make.append(@"@迷你世界联机 :@江叔 用小淘气耍赖野人#迷你世界#");
- 
- *       make.regexp(@"[@][^@]+\\s", ^(SJAttributesRangeOperator * _Nonnull matched) {
- *           matched.textColor([UIColor purpleColor]);
- *          // some code
- *       });
- 
- *       make.regexp(@"[#][^#]+#", ^(SJAttributesRangeOperator * _Nonnull matched) {
- *          matched.textColor([UIColor orangeColor]);
- *          // some code
- *       });
- *   });
- **/
-extern NSMutableAttributedString *sj_makeAttributesString(void(^block)(SJAttributeWorker *make));
-
-#pragma mark -
 @interface SJAttributesRangeOperator: NSObject
-@property (nonatomic, strong, nullable) SJAttributesRecorder *recorder;
+- (instancetype)initWithRange:(NSRange)range target:(__strong NSMutableAttributedString *)attrStr;
+- (instancetype)initWithRecorder:(SJAttributesRecorder *)recorder target:(__strong NSMutableAttributedString *)attrStr;
 @end
 
 
@@ -51,9 +28,9 @@ extern NSMutableAttributedString *sj_makeAttributesString(void(^block)(SJAttribu
 
 - (instancetype)init NS_DESIGNATED_INITIALIZER;
 
-@property (nonatomic, assign, readonly) NSRange range;
+@property (nonatomic, readonly) NSRange range;
 
-@property (nonatomic, assign, readonly) NSMutableAttributedString *workInProcess;
+@property (nonatomic, readonly) NSMutableAttributedString *workInProcess;
 
 - (NSMutableAttributedString *)endTask;
 
@@ -64,14 +41,14 @@ extern NSMutableAttributedString *sj_makeAttributesString(void(^block)(SJAttribu
  *
  *  default is UIFont.systemFont(ofSize: 14)
  **/
-@property (nonatomic, strong) UIFont *defaultFont;
+@property (nonatomic, strong, null_resettable) UIFont *defaultFont;
 
 /*!
  *  default textColor.
  *
  *  default is UIColor.black
  **/
-@property (nonatomic, strong) UIColor *defaultTextColor;
+@property (nonatomic, strong, null_resettable) UIColor *defaultTextColor;
 
 /*!
  *  range editing. can be used it with `regexp` method.
@@ -87,7 +64,7 @@ extern NSMutableAttributedString *sj_makeAttributesString(void(^block)(SJAttribu
  **/
 @property (nonatomic, copy, readonly) NSAttributedString *(^subAttrStr)(NSRange subRange);
 
-@property (nonatomic, assign, readonly) NSInteger length;
+@property (nonatomic, readonly) NSInteger length;
 
 @end
 
@@ -186,7 +163,7 @@ typedef NS_ENUM(NSUInteger, SJAttributeRegexpInsertPosition) {
  *
  *  最近一次插入的文本的范围.
  **/
-@property (nonatomic, assign, readonly) NSRange lastInsertedRange;
+@property (nonatomic, readonly) NSRange lastInsertedRange;
 /*!
  *  editing the last inserted text
  *
@@ -328,4 +305,5 @@ typedef NS_ENUM(NSUInteger, SJAttributeRegexpInsertPosition) {
 
 @end
 
+extern NSMutableAttributedString *sj_makeAttributesString(void(^block)(SJAttributeWorker *make));
 NS_ASSUME_NONNULL_END

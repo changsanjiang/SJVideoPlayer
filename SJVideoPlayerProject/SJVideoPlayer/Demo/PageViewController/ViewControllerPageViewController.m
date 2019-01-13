@@ -52,7 +52,7 @@ static NSInteger const vcCount = 9;
         make.leading.bottom.trailing.offset(0);
     }];
     
-    [self.pageViewController setViewControllers:@[[self _viewControllerWithIndex:0]] direction:UIPageViewControllerNavigationDirectionForward animated:NO completion:nil];
+    [self.pageViewController setViewControllers:@[[self _viewControllerAtIndex:0]] direction:UIPageViewControllerNavigationDirectionForward animated:NO completion:nil];
     
     // Do any additional setup after loading the view.
 }
@@ -87,7 +87,7 @@ static NSInteger const vcCount = 9;
     NSInteger vcIndex = self.pageViewController.viewControllers.firstObject.index;
     if ( currentIndex == vcIndex ) return;
     UIPageViewControllerNavigationDirection direction = (vcIndex > currentIndex) ? UIPageViewControllerNavigationDirectionReverse : UIPageViewControllerNavigationDirectionForward;
-    [self.pageViewController setViewControllers:@[[self _viewControllerWithIndex:currentIndex]] direction:direction animated:YES completion:nil];
+    [self.pageViewController setViewControllers:@[[self _viewControllerAtIndex:currentIndex]] direction:direction animated:YES completion:nil];
 }
 
 #pragma mark -
@@ -101,18 +101,18 @@ static NSInteger const vcCount = 9;
 }
 
 - (nullable UIViewController *)pageViewController:(UIPageViewController *)pageViewController viewControllerBeforeViewController:(UIViewController *)viewController {
-    return [self _viewControllerWithIndex:viewController.index - 1];
+    return [self _viewControllerAtIndex:viewController.index - 1];
 }
 
 - (nullable UIViewController *)pageViewController:(UIPageViewController *)pageViewController viewControllerAfterViewController:(UIViewController *)viewController {
-    return [self _viewControllerWithIndex:viewController.index + 1];
+    return [self _viewControllerAtIndex:viewController.index + 1];
 }
 
 - (void)pageViewController:(UIPageViewController *)pageViewController didFinishAnimating:(BOOL)finished previousViewControllers:(NSArray<UIViewController *> *)previousViewControllers transitionCompleted:(BOOL)completed {
     UIViewController *vc = pageViewController.viewControllers.firstObject;
     [self.titlesView changeIndex:[vc index]];
 }
-- (UIViewController *)_viewControllerWithIndex:(NSInteger)index {
+- (UIViewController *)_viewControllerAtIndex:(NSInteger)index {
     if ( index >= vcCount ) return nil;
     if ( index < 0 ) return nil;
     

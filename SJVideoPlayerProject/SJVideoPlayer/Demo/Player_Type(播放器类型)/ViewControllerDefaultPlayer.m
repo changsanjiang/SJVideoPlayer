@@ -32,7 +32,7 @@
     
     // create a player of the default type
     _player = [SJVideoPlayer player];
-    
+
     [self.view addSubview:_player.view];
     [_player.view mas_makeConstraints:^(MASConstraintMaker *make) {
         if (@available(iOS 11.0, *)) make.top.equalTo(self.view.mas_safeAreaLayoutGuideTop);

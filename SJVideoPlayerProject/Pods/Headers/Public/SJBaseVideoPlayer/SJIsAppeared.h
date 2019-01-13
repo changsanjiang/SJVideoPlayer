@@ -1,1 +1,1 @@
-../../../SJBaseVideoPlayer/SJBaseVideoPlayer/Model/SJIsAppeared.h
+../../../../../../SJBaseVideoPlayer/SJBaseVideoPlayer/Tool/SJIsAppeared.h

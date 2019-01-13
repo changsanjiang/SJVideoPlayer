@@ -78,11 +78,7 @@ NS_ASSUME_NONNULL_BEGIN
     return self;
 }
 
-- (BOOL)controlLayerDisappearCondition {
-    return YES;
-}
-
-- (BOOL)triggerGesturesCondition:(CGPoint)location {
+- (BOOL)videoPlayer:(__kindof SJBaseVideoPlayer *)videoPlayer gestureRecognizerShouldTrigger:(SJPlayerGestureType)type location:(CGPoint)location {
     if ( CGRectContainsPoint( _topContainerView.frame, location) ||
          CGRectContainsPoint( _bottomContainerView.frame, location) ) return NO;
     return YES;
@@ -132,7 +128,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 // SJPlayStatusControlDelegate
 // SJVolumeBrightnessRateControlDelegate
-// SJLoadingControlDelegate
+// SJBufferControlDelegate
 // .....
 // ....
 @end

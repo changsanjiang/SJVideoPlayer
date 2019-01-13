@@ -48,7 +48,7 @@
 #import "UIView+SJControlAdd.h"
 #import "SJVideoPlayerAnimationHeader.h"
 #import "SJVideoPlayerControlMaskView.h"
-#import "SJLightweightDraggingProgressView.h"
+#import "SJVideoPlayerDraggingProgressView.h"
 #import "SJLoadingView.h"
 #import "UIView+SJVideoPlayerSetting.h"
 #import "SJProgressSlider.h"
@@ -56,9 +56,9 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
-@interface SJEdgeLightweightControlLayer () <SJLightweightBottomControlViewDelegate, SJLightweightLeftControlViewDelegate, SJLightweightTopControlViewDelegate, SJLightweightCenterControlViewDelegate, SJLightweightRightControlViewDelegate> {
+@interface SJEdgeLightweightControlLayer () <SJLightweightBottomControlViewDelegate, SJLightweightLeftControlViewDelegate, SJLightweightTopControlViewDelegate, SJLightweightCenterControlViewDelegate, SJLightweightRightControlViewDelegate, SJProgressSliderDelegate> {
     UIView *_controlView;
-    SJLightweightDraggingProgressView *_draggingProgressView;
+    SJVideoPlayerDraggingProgressView *_draggingProgressView;
     SJLoadingView *_loadingView;
     SJProgressSlider *_bottomSlider;
     UIView *_containerView;
@@ -72,7 +72,7 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic, strong, readonly) SJLightweightBottomControlView *bottomControlView;
 @property (nonatomic, strong, readonly) SJLightweightCenterControlView *centerControlView;
 @property (nonatomic, strong, readonly) SJVideoPlayerControlMaskView *bottomMaskView;
-@property (nonatomic, strong, readonly) SJLightweightDraggingProgressView *draggingProgressView;
+@property (nonatomic, strong, readonly) SJVideoPlayerDraggingProgressView *draggingProgressView;
 @property (nonatomic, strong, readonly) SJLightweightRightControlView *rightControlView;
 
 
@@ -117,8 +117,7 @@ NS_ASSUME_NONNULL_BEGIN
 - (void)restartControlLayer {
     _restarted = YES;
     if ( _videoPlayer.URLAsset ) {
-        [_videoPlayer setControlLayerAppeared:YES];
-        [self controlLayerNeedAppear:_videoPlayer compeletionHandler:nil];
+        [_videoPlayer controlLayerNeedAppear];
         return;
     }
     
@@ -144,15 +143,6 @@ NS_ASSUME_NONNULL_BEGIN
 }
 
 #pragma mark -
-
-- (BOOL)controlLayerDisappearCondition {
-    return YES;
-}
-
-- (BOOL)triggerGesturesCondition:(CGPoint)location {
-    return YES;
-}
-
 - (void)installedControlViewToVideoPlayer:(__kindof SJBaseVideoPlayer *)videoPlayer {
     _videoPlayer = videoPlayer;
     
@@ -182,8 +172,6 @@ NS_ASSUME_NONNULL_BEGIN
     [self.topControlView needUpdateConfig];
     
     self.bottomSlider.value = videoPlayer.progress;
-    self.bottomControlView.progress = videoPlayer.progress;
-    self.bottomControlView.bufferProgress = videoPlayer.bufferProgress;
     [self.bottomControlView setCurrentTimeStr:videoPlayer.currentTimeStr totalTimeStr:videoPlayer.totalTimeStr];
     
     [self _promptWithNetworkStatus:videoPlayer.networkStatus];
@@ -287,8 +275,6 @@ NS_ASSUME_NONNULL_BEGIN
         case SJVideoPlayerPlayStatusPrepare: {
             [videoPlayer controlLayerNeedDisappear];
             self.bottomSlider.value = 0;
-            self.bottomControlView.progress = 0;
-            self.bottomControlView.bufferProgress = 0;
             [self.bottomControlView setCurrentTimeStr:@"00:00" totalTimeStr:@"00:00"];
             self.bottomControlView.stopped = YES;
         }
@@ -328,15 +314,15 @@ NS_ASSUME_NONNULL_BEGIN
 - (void)videoPlayer:(SJBaseVideoPlayer *)videoPlayer
         currentTime:(NSTimeInterval)currentTime currentTimeStr:(NSString *)currentTimeStr
           totalTime:(NSTimeInterval)totalTime totalTimeStr:(NSString *)totalTimeStr {
-    [self.bottomControlView setCurrentTimeStr:currentTimeStr totalTimeStr:totalTimeStr];
-    float progress = videoPlayer.progress;
-    self.bottomSlider.value = progress;
-    self.bottomControlView.progress = progress;
-    if ( self.draggingProgressView.appearState ) self.draggingProgressView.playProgress = progress;
-}
-
-- (void)videoPlayer:(SJBaseVideoPlayer *)videoPlayer loadedTimeProgress:(float)progress {
-    self.bottomControlView.bufferProgress = progress;
+    _bottomSlider.maxValue = totalTime?:1;
+    _bottomSlider.value = currentTime;
+    
+    [_bottomControlView setCurrentTimeStr:currentTimeStr totalTimeStr:totalTimeStr];
+    
+    if ( !_bottomControlView.progressSlider.isDragging ) {
+        _bottomControlView.progressSlider.maxValue = totalTime?:1;
+        _bottomControlView.progressSlider.value = currentTime;
+    }
 }
 
 - (void)videoPlayer:(__kindof SJBaseVideoPlayer *)videoPlayer willRotateView:(BOOL)isFull {
@@ -347,13 +333,6 @@ NS_ASSUME_NONNULL_BEGIN
             else if ( !videoPlayer.isPlayOnScrollView ) [_backBtn appear];
             else [_backBtn disappear];
         }
-    }
-    
-    if ( isFull && !videoPlayer.URLAsset.isM3u8 ) {
-        _draggingProgressView.style = SJLightweightDraggingProgressViewStylePreviewProgress;
-    }
-    else {
-        _draggingProgressView.style = SJLightweightDraggingProgressViewStyleArrowProgress;
     }
     
     _topControlView.config.isFullscreen = isFull;
@@ -378,7 +357,7 @@ NS_ASSUME_NONNULL_BEGIN
         }
     }
     
-    if ( videoPlayer.controlLayerAppeared ) [videoPlayer controlLayerNeedAppear]; // update
+    if ( videoPlayer.controlLayerIsAppeared ) [videoPlayer controlLayerNeedAppear]; // update
 }
 
 - (void)videoPlayer:(__kindof SJBaseVideoPlayer *)videoPlayer willFitOnScreen:(BOOL)isFitOnScreen {
@@ -388,48 +367,45 @@ NS_ASSUME_NONNULL_BEGIN
     self.bottomControlView.isFitOnScreen = isFitOnScreen;
     [self _setControlViewsDisappearValue]; // update. `reset`.
     [self.bottomSlider disappear];
-    if ( videoPlayer.controlLayerAppeared ) [videoPlayer controlLayerNeedAppear]; // update
+    if ( videoPlayer.controlLayerIsAppeared ) [videoPlayer controlLayerNeedAppear]; // update
     _backBtn.hidden = _hideBackButtonWhenOrientationIsPortrait && !isFitOnScreen;
 }
 
-//- (void)videoPlayer:(__kindof SJBaseVideoPlayer *)videoPlayer didCompleteFitOnScreen:(BOOL)isFitOnScreen {
-//
-//}
-
-- (void)horizontalDirectionWillBeginDragging:(SJBaseVideoPlayer *)videoPlayer {
-    [self sliderWillBeginDraggingForBottomView:self.bottomControlView];
+- (void)videoPlayer:(__kindof SJBaseVideoPlayer *)videoPlayer panGestureTriggeredInTheHorizontalDirection:(SJPanGestureRecognizerState)state progressTime:(NSTimeInterval)progressTime {
+    switch ( state ) {
+        case SJPanGestureRecognizerStateBegan: {
+            [self _draggingDidStart:_videoPlayer];
+        }
+            break;
+        case SJPanGestureRecognizerStateChanged: {
+            [self _draggingForVideoPlayer:_videoPlayer progressTime:progressTime];
+        }
+            break;
+        case SJPanGestureRecognizerStateEnded: {
+            [self _draggingDidEnd:_videoPlayer];
+        }
+            break;
+    }
 }
 
-- (void)videoPlayer:(__kindof SJBaseVideoPlayer *)videoPlayer horizontalDirectionDidMove:(CGFloat)progress {
-    [self bottomView:self.bottomControlView sliderDidDrag:progress];
+#pragma mark -
+
+- (void)videoPlayer:(__kindof SJBaseVideoPlayer *)videoPlayer bufferTimeDidChange:(NSTimeInterval)bufferTime {
+    self.bottomControlView.progressSlider.bufferProgress = bufferTime / videoPlayer.totalTime;
 }
 
-- (void)horizontalDirectionDidEndDragging:(SJBaseVideoPlayer *)videoPlayer {
-    [self sliderDidEndDraggingForBottomView:self.bottomControlView];
-}
-
-- (void)startLoading:(SJBaseVideoPlayer *)videoPlayer {
-#ifdef SJ_MAC
-    NSLog(@"%d - %s", (int)__LINE__, __func__);
-#endif
-
-    [self.loadingView start];
-}
-
-- (void)cancelLoading:(__kindof SJBaseVideoPlayer *)videoPlayer {
-#ifdef SJ_MAC
-    NSLog(@"%d - %s", (int)__LINE__, __func__);
-#endif
-
-    [self.loadingView stop];
-}
-
-- (void)loadCompletion:(SJBaseVideoPlayer *)videoPlayer {
-#ifdef SJ_MAC
-    NSLog(@"%d - %s", (int)__LINE__, __func__);
-#endif
-
-    [self.loadingView stop];
+- (void)videoPlayer:(__kindof SJBaseVideoPlayer *)videoPlayer bufferStatusDidChange:(SJPlayerBufferStatus)bufferStatus {
+    switch ( bufferStatus ) {
+        case SJPlayerBufferStatusUnknown:
+        case SJPlayerBufferStatusPlayable: {
+            [_loadingView stop];
+        }
+            break;
+        case SJPlayerBufferStatusUnplayable: {
+            [_loadingView start];
+        }
+            break;
+    }
 }
 
 - (void)lockedVideoPlayer:(SJBaseVideoPlayer *)videoPlayer {
@@ -669,6 +645,7 @@ NS_ASSUME_NONNULL_BEGIN
     if ( _bottomControlView ) return _bottomControlView;
     _bottomControlView = [SJLightweightBottomControlView new];
     _bottomControlView.delegate = self;
+    _bottomControlView.progressSlider.delegate = self;
     return _bottomControlView;
 }
 - (void)bottomControlView:(SJLightweightBottomControlView *)bottomControlView clickedViewTag:(SJLightweightBottomControlViewTag)tag {
@@ -696,23 +673,50 @@ NS_ASSUME_NONNULL_BEGIN
     
     self.videoPlayer.fitOnScreen = !self.videoPlayer.isFitOnScreen;
 }
-- (void)sliderWillBeginDraggingForBottomView:(SJLightweightBottomControlView *)view {
+
+#pragma mark - slider
+- (void)sliderWillBeginDragging:(SJProgressSlider *)slider {
+    [self _draggingDidStart:_videoPlayer];
+}
+
+- (void)sliderDidDrag:(SJProgressSlider *)slider {
+    [self _draggingForVideoPlayer:_videoPlayer progressTime:slider.value];
+}
+
+- (void)sliderDidEndDragging:(SJProgressSlider *)slider {
+    [self _draggingDidEnd:_videoPlayer];
+}
+
+/// 拖拽将要开始
+- (void)_draggingDidStart:(__kindof SJBaseVideoPlayer *)videoPlayer {
+    if ( !_videoPlayer.isFullScreen ||
+         !_videoPlayer.playbackController.isReadyForDisplay ||
+         videoPlayer.URLAsset.isM3u8 ) {
+        self.draggingProgressView.style = SJVideoPlayerDraggingProgressViewStyleArrowProgress;
+    }
+    else {
+        self.draggingProgressView.style = SJVideoPlayerDraggingProgressViewStylePreviewProgress;
+    }
+    
     UIView_Animations(CommonAnimaDuration, ^{
         [self.draggingProgressView appear];
     }, nil);
-    [self.draggingProgressView setTimeShiftStr:self.videoPlayer.currentTimeStr totalTimeStr:self.videoPlayer.totalTimeStr];
-    [_videoPlayer controlLayerNeedDisappear];
-    self.draggingProgressView.playProgress = self.videoPlayer.progress;
-    self.draggingProgressView.shiftProgress = self.videoPlayer.progress;
+    
+    _draggingProgressView.maxValue = _videoPlayer.totalTime?:1;
+    _draggingProgressView.currentTime = _videoPlayer.progress;
+    _draggingProgressView.progressTime = _videoPlayer.progress;
+    [_draggingProgressView setProgressTimeStr:_videoPlayer.currentTimeStr totalTimeStr:_videoPlayer.totalTimeStr];
 }
 
-- (void)bottomView:(SJLightweightBottomControlView *)view sliderDidDrag:(CGFloat)progress {
-    self.draggingProgressView.shiftProgress = progress;
-    [self.draggingProgressView setTimeShiftStr:[self.videoPlayer timeStringWithSeconds:self.draggingProgressView.shiftProgress * self.videoPlayer.totalTime]];
-    if ( (self.videoPlayer.isFullScreen || self.videoPlayer.fitOnScreen ) && !self.videoPlayer.URLAsset.isM3u8 ) {
-        NSTimeInterval secs = self.draggingProgressView.shiftProgress * self.videoPlayer.totalTime;
+/// 拖拽中
+- (void)_draggingForVideoPlayer:(__kindof SJBaseVideoPlayer *)videoPlayer progressTime:(NSTimeInterval)progressTime {
+    _draggingProgressView.progressTime = progressTime;
+    [_draggingProgressView setProgressTimeStr:[videoPlayer timeStringWithSeconds:progressTime]];
+    
+    // 生成预览图
+    if ( _draggingProgressView.style == SJVideoPlayerDraggingProgressViewStylePreviewProgress ) {
         __weak typeof(self) _self = self;
-        [self.videoPlayer screenshotWithTime:secs size:CGSizeMake(self.draggingProgressView.frame.size.width * 2, self.draggingProgressView.frame.size.height * 2) completion:^(SJBaseVideoPlayer * _Nonnull videoPlayer, UIImage * _Nullable image, NSError * _Nullable error) {
+        [self.videoPlayer screenshotWithTime:progressTime size:CGSizeMake(_draggingProgressView.frame.size.width * 2, _draggingProgressView.frame.size.height * 2) completion:^(SJBaseVideoPlayer * _Nonnull videoPlayer, UIImage * _Nullable image, NSError * _Nullable error) {
             __strong typeof(_self) self = _self;
             if ( !self ) return;
             [self.draggingProgressView setPreviewImage:image];
@@ -720,13 +724,14 @@ NS_ASSUME_NONNULL_BEGIN
     }
 }
 
-- (void)sliderDidEndDraggingForBottomView:(SJLightweightBottomControlView *)view {
+/// 拖拽结束
+- (void)_draggingDidEnd:(__kindof SJBaseVideoPlayer *)videoPlayer {
     UIView_Animations(CommonAnimaDuration, ^{
         [self.draggingProgressView disappear];
     }, nil);
-
+    
     __weak typeof(self) _self = self;
-    [self.videoPlayer seekToTime:self.draggingProgressView.shiftProgress * self.videoPlayer.totalTime completionHandler:^(BOOL finished) {
+    [self.videoPlayer seekToTime:self.draggingProgressView.progressTime completionHandler:^(BOOL finished) {
         __strong typeof(_self) self = _self;
         if ( !self ) return;
         [self.videoPlayer play];
@@ -734,9 +739,9 @@ NS_ASSUME_NONNULL_BEGIN
 }
 
 #pragma mark - dragging progress view
-- (SJLightweightDraggingProgressView *)draggingProgressView {
+- (SJVideoPlayerDraggingProgressView *)draggingProgressView {
     if ( _draggingProgressView ) return _draggingProgressView;
-    _draggingProgressView = [SJLightweightDraggingProgressView new];
+    _draggingProgressView = [SJVideoPlayerDraggingProgressView new];
     return _draggingProgressView;
 }
 
@@ -849,7 +854,7 @@ NS_ASSUME_NONNULL_BEGIN
         }];
         _rightControlView.disappearType = SJDisappearType_Alpha;
         
-        if ( !self.videoPlayer.controlLayerAppeared ) [_rightControlView disappear];
+        if ( !self.videoPlayer.controlLayerIsAppeared ) [_rightControlView disappear];
     }
     else {
         [_rightControlView removeFromSuperview];

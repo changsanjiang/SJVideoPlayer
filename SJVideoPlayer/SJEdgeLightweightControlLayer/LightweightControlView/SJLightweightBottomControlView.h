@@ -7,6 +7,7 @@
 //
 
 #import <UIKit/UIKit.h>
+@class SJProgressSlider;
 
 NS_ASSUME_NONNULL_BEGIN
 typedef NS_ENUM(NSUInteger, SJLightweightBottomControlViewTag) {
@@ -18,17 +19,10 @@ typedef NS_ENUM(NSUInteger, SJLightweightBottomControlViewTag) {
 @protocol SJLightweightBottomControlViewDelegate;
 
 @interface SJLightweightBottomControlView : UIView
-
-@property (nonatomic, weak, readwrite, nullable) id<SJLightweightBottomControlViewDelegate> delegate;
-
+@property (nonatomic, weak, nullable) id<SJLightweightBottomControlViewDelegate> delegate;
+@property (nonatomic, strong, readonly) SJProgressSlider *progressSlider;
 @property (nonatomic) BOOL hiddenFullscreenBtn;
-
-@property (nonatomic) float bufferProgress;
-
-@property (nonatomic) float progress;
-
 @property (nonatomic) BOOL isFullscreen;
-
 @property (nonatomic) BOOL isFitOnScreen;
 
 /// 显示播放按钮还是显示暂停按钮
@@ -38,19 +32,11 @@ typedef NS_ENUM(NSUInteger, SJLightweightBottomControlViewTag) {
 
 - (void)setCurrentTimeStr:(NSString *)currentTimeStr;
 - (void)setCurrentTimeStr:(NSString *)currentTimeStr totalTimeStr:(NSString *)totalTimeStr;
-
 @end
 
 @protocol SJLightweightBottomControlViewDelegate <NSObject>
 			
 @optional
 - (void)bottomControlView:(SJLightweightBottomControlView *)bottomControlView clickedViewTag:(SJLightweightBottomControlViewTag)tag;
-
-- (void)sliderWillBeginDraggingForBottomView:(SJLightweightBottomControlView *)view;
-
-- (void)bottomView:(SJLightweightBottomControlView *)view sliderDidDrag:(CGFloat)value;
-
-- (void)sliderDidEndDraggingForBottomView:(SJLightweightBottomControlView *)view;
-
 @end
 NS_ASSUME_NONNULL_END

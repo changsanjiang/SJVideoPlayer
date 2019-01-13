@@ -278,7 +278,7 @@
     _videoPlayer.view.backgroundColor = [UIColor clearColor];
     _videoPlayer.view.subviews.firstObject.backgroundColor = [UIColor clearColor];
     _videoPlayer.disableAutoRotation = YES;
-    _videoPlayer.disableGestureTypes = SJDisablePlayerGestureTypes_All;
+    _videoPlayer.disabledGestures = SJPlayerDisabledGestures_All;
     _videoPlayer.playDidToEndExeBlock = ^(__kindof SJBaseVideoPlayer * _Nonnull player) {
         [player seekToTime:0 completionHandler:nil];
     };

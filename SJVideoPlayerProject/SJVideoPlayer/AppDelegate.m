@@ -22,6 +22,7 @@
     SJVideoPlayer.update(^(SJVideoPlayerSettings * _Nonnull commonSettings) {
         commonSettings.placeholder = [UIImage imageNamed:@"cover"];
         commonSettings.progress_thumbSize = 8;
+        commonSettings.playFailedBtnImage = commonSettings.playBtnImage;
     });
     
     dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{

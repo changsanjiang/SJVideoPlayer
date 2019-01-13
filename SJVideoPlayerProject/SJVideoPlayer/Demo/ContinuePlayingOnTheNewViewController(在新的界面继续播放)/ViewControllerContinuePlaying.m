@@ -76,6 +76,7 @@
 - (void)viewDidAppear:(BOOL)animated {
     [super viewDidAppear:animated];
     [self.player vc_viewDidAppear];
+    [self.player play];
 }
 
 - (void)viewWillDisappear:(BOOL)animated {

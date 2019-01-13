@@ -105,9 +105,6 @@ static SJEdgeControlButtonItemTag SJEdgeControlButtonItemTag_Share = 10;        
     [_player.defaultEdgeControlLayer.leftAdapter addItem:p3];
 
     
-    
-    
-    
     // 添加了item的容器 更新一下
     [_player.defaultEdgeControlLayer.topAdapter reload];
     [_player.defaultEdgeControlLayer.bottomAdapter reload];

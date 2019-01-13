@@ -7,7 +7,6 @@
 //
 
 #import "SJVideoPlayer.h"
-#import <objc/message.h>
 #import "UIView+SJVideoPlayerSetting.h"
 #if __has_include(<SJObserverHelper/NSObject+SJObserverHelper.h>)
 #import <SJObserverHelper/NSObject+SJObserverHelper.h>
@@ -64,7 +63,8 @@ static NSString *_kPlayStatus = @"playStatus";
         if ( [object playStatus_isInactivity_ReasonPlayFailed] ) {
             if ( _playFailedExeBlock ) _playFailedExeBlock(object);
         }
-    }}
+    }
+}
 @end
 
 
@@ -84,7 +84,26 @@ static NSString *_kPlayStatus = @"playStatus";
 @property (nonatomic, strong, readonly) _SJPlayerPlayFailedObserver *playFailedObserver;
 @end
 
-@implementation SJVideoPlayer
+@implementation SJVideoPlayer {
+    /// common
+    void(^_Nullable _clickedBackEvent)(SJVideoPlayer *player);
+    BOOL _hideBackButtonWhenOrientationIsPortrait;
+    BOOL _disablePromptWhenNetworkStatusChanges;
+    
+    /// lightweight control layer
+    NSArray<SJLightweightTopItem *> *_Nullable _topControlItems;
+    void(^_Nullable _clickedTopControlItemExeBlock)(SJVideoPlayer *player, SJLightweightTopItem *item);
+
+    /// default control layer
+    BOOL _showMoreItemForTopControlLayer;
+    NSArray<SJVideoPlayerMoreSetting *> *_Nullable _moreSettings;
+    _SJEdgeControlButtonItemDelegate *_moreItemDelegate;
+    
+    /// film editing control layer
+    BOOL _enableFilmEditing;
+    SJVideoPlayerFilmEditingConfig *_filmEditingConfig;
+    _SJEdgeControlButtonItemDelegate *_filmEditingItemDelegate;
+}
 
 - (void)dealloc {
 #ifdef DEBUG
@@ -93,7 +112,7 @@ static NSString *_kPlayStatus = @"playStatus";
 }
 
 + (NSString *)version {
-    return @"v2.2.4";
+    return @"v2.3.0";
 }
 
 + (instancetype)player {
@@ -109,7 +128,6 @@ static NSString *_kPlayStatus = @"playStatus";
     [self.switcher switchControlLayerForIdentitfier:SJControlLayer_Edge];
     /// 显示更多按钮
     self.showMoreItemForTopControlLayer = YES;
-    [self playFailedObserver];
     return self;
 }
 
@@ -119,7 +137,6 @@ static NSString *_kPlayStatus = @"playStatus";
     [videoPlayer.switcher addControlLayer:videoPlayer.defaultEdgeLightweightCarrier];
     /// 切换到添加的控制层
     [videoPlayer.switcher switchControlLayerForIdentitfier:SJControlLayer_Edge];
-    [videoPlayer playFailedObserver];
     return videoPlayer;
 }
 
@@ -133,6 +150,7 @@ static NSString *_kPlayStatus = @"playStatus";
         [self _updateCommonProperties];
     }];
     [self _updateCommonProperties];
+    [self playFailedObserver];
     return self;
 }
 
@@ -147,19 +165,20 @@ static NSString *_kPlayStatus = @"playStatus";
     return _switcher = [[SJControlLayerSwitcher alloc] initWithPlayer:self];
 }
 
-
 #pragma mark -
 @synthesize defaultEdgeCarrier = _defaultEdgeCarrier;
 - (SJControlLayerCarrier *)defaultEdgeCarrier {
     if ( _defaultEdgeCarrier ) return _defaultEdgeCarrier;
     SJEdgeControlLayer *controlLayer = [SJEdgeControlLayer new];
+    controlLayer.hideBackButtonWhenOrientationIsPortrait = _hideBackButtonWhenOrientationIsPortrait;
     __weak typeof(self) _self = self;
     controlLayer.clickedBackItemExeBlock = ^(SJEdgeControlLayer * _Nonnull control) {
         __strong typeof(_self) self = _self;
         if ( !self ) return ;
-        if ( self.clickedBackEvent ) self.clickedBackEvent(self);
+        self.clickedBackEvent(self);
     };
     _defaultEdgeCarrier = [[SJControlLayerCarrier alloc] initWithIdentifier:SJControlLayer_Edge controlLayer:controlLayer];
+    
     return _defaultEdgeCarrier;
 }
 
@@ -210,6 +229,7 @@ static NSString *_kPlayStatus = @"playStatus";
 - (SJControlLayerCarrier *)defaultEdgeLightweightCarrier {
     if ( _defaultEdgeLightweightCarrier ) return _defaultEdgeLightweightCarrier;
     SJEdgeLightweightControlLayer *edgeControlLayer = [SJEdgeLightweightControlLayer new];
+    edgeControlLayer.hideBackButtonWhenOrientationIsPortrait = _hideBackButtonWhenOrientationIsPortrait;
     edgeControlLayer.delegate = self;
     _defaultEdgeLightweightCarrier = [[SJControlLayerCarrier alloc] initWithIdentifier:SJControlLayer_Edge controlLayer:edgeControlLayer];
     
@@ -224,7 +244,7 @@ static NSString *_kPlayStatus = @"playStatus";
 }
 /// 返回按钮被点击
 - (void)clickedBackBtnOnLightweightControlLayer:(SJEdgeLightweightControlLayer *)controlLayer {
-    if ( self.clickedBackEvent ) self.clickedBackEvent(self);
+    self.clickedBackEvent(self);
 }
 /// 点击顶部控制层上的item
 - (void)lightwieghtControlLayer:(SJEdgeLightweightControlLayer *)controlLayer clickedTopControlItem:(SJLightweightTopItem *)item {
@@ -258,7 +278,6 @@ static NSString *_kPlayStatus = @"playStatus";
     }
     return nil;
 }
-
 #pragma mark -
 @synthesize playFailedObserver = _playFailedObserver;
 - (_SJPlayerPlayFailedObserver *)playFailedObserver {
@@ -280,11 +299,12 @@ static NSString *_kPlayStatus = @"playStatus";
 - (SJControlLayerCarrier *)defaultLoadFailedCarrier {
     if ( _defaultLoadFailedCarrier ) return _defaultLoadFailedCarrier;
     SJLoadFailedControlLayer *controlLayer = [SJLoadFailedControlLayer new];
+    controlLayer.hideBackButtonWhenOrientationIsPortrait = _hideBackButtonWhenOrientationIsPortrait;
     __weak typeof(self) _self = self;
     controlLayer.clickedBackItemExeBlock = ^(SJLoadFailedControlLayer * _Nonnull control) {
         __strong typeof(_self) self = _self;
         if ( !self ) return ;
-        if ( self.clickedBackEvent ) self.clickedBackEvent(self);
+        self.clickedBackEvent(self);
     };
     
     controlLayer.clickedFaliedButtonExeBlock = ^(SJLoadFailedControlLayer * _Nonnull control) {
@@ -325,18 +345,12 @@ static NSString *_kPlayStatus = @"playStatus";
 }
 
 - (void)setClickedBackEvent:(nullable void (^)(SJVideoPlayer * _Nonnull))clickedBackEvent {
-    objc_setAssociatedObject(self, @selector(clickedBackEvent), clickedBackEvent, OBJC_ASSOCIATION_RETAIN_NONATOMIC);
-    __weak typeof(self) _self = self;
-    [self defaultEdgeControlLayer].clickedBackItemExeBlock = ^(SJEdgeControlLayer * _Nonnull control) {
-        __strong typeof(_self) self = _self;
-        if ( !self ) return ;
-        if ( clickedBackEvent ) clickedBackEvent(self);
-    };
+    _clickedBackEvent = clickedBackEvent;
 }
 
 - (void (^)(SJVideoPlayer * _Nonnull))clickedBackEvent {
-    id block = objc_getAssociatedObject(self, _cmd);
-    if ( block ) return block;
+    if ( _clickedBackEvent )
+        return _clickedBackEvent;
     return ^ (SJVideoPlayer *player) {
         UIViewController *vc = [player atViewController];
         [vc.view endEditing:YES];
@@ -350,23 +364,24 @@ static NSString *_kPlayStatus = @"playStatus";
 }
 
 - (void)setHideBackButtonWhenOrientationIsPortrait:(BOOL)hideBackButtonWhenOrientationIsPortrait {
-    objc_setAssociatedObject(self, @selector(hideBackButtonWhenOrientationIsPortrait), @(hideBackButtonWhenOrientationIsPortrait), OBJC_ASSOCIATION_RETAIN_NONATOMIC);
+    _hideBackButtonWhenOrientationIsPortrait = hideBackButtonWhenOrientationIsPortrait;
     [self defaultEdgeControlLayer].hideBackButtonWhenOrientationIsPortrait = hideBackButtonWhenOrientationIsPortrait;
     [self defaultEdgeLightweightControlLayer].hideBackButtonWhenOrientationIsPortrait = hideBackButtonWhenOrientationIsPortrait;
+    [self defaultLoadFailedControlLayer].hideBackButtonWhenOrientationIsPortrait = hideBackButtonWhenOrientationIsPortrait;
 }
 
 - (BOOL)hideBackButtonWhenOrientationIsPortrait {
-    return [objc_getAssociatedObject(self, _cmd) boolValue];
+    return _hideBackButtonWhenOrientationIsPortrait;
 }
 
 - (void)setDisablePromptWhenNetworkStatusChanges:(BOOL)disablePromptWhenNetworkStatusChanges {
-    objc_setAssociatedObject(self, @selector(disablePromptWhenNetworkStatusChanges), @(disablePromptWhenNetworkStatusChanges), OBJC_ASSOCIATION_RETAIN_NONATOMIC);
+    _disablePromptWhenNetworkStatusChanges = disablePromptWhenNetworkStatusChanges;
     [self defaultEdgeControlLayer].disablePromptWhenNetworkStatusChanges = disablePromptWhenNetworkStatusChanges;
     [self defaultEdgeLightweightControlLayer].disablePromptWhenNetworkStatusChanges = disablePromptWhenNetworkStatusChanges;
 }
 
 - (BOOL)disablePromptWhenNetworkStatusChanges {
-    return [objc_getAssociatedObject(self, _cmd) boolValue];
+    return _disablePromptWhenNetworkStatusChanges;
 }
 @end
 
@@ -375,20 +390,20 @@ static NSString *_kPlayStatus = @"playStatus";
 @implementation SJVideoPlayer (SettingLightweightControlLayer)
 
 - (void)setTopControlItems:(nullable NSArray<SJLightweightTopItem *> *)topControlItems {
-    objc_setAssociatedObject(self, @selector(topControlItems), topControlItems, OBJC_ASSOCIATION_COPY_NONATOMIC);
+    _topControlItems = topControlItems.copy;
     [self defaultEdgeLightweightControlLayer].topItems = topControlItems;
 }
 
 - (nullable NSArray<SJLightweightTopItem *> *)topControlItems {
-    return objc_getAssociatedObject(self, _cmd);
+    return _topControlItems;
 }
 
 - (void)setClickedTopControlItemExeBlock:(nullable void (^)(SJVideoPlayer * _Nonnull, SJLightweightTopItem * _Nonnull))clickedTopControlItemExeBlock {
-    objc_setAssociatedObject(self, @selector(clickedTopControlItemExeBlock), clickedTopControlItemExeBlock, OBJC_ASSOCIATION_COPY_NONATOMIC);
+    _clickedTopControlItemExeBlock = clickedTopControlItemExeBlock;
 }
 
 - (nullable void (^)(SJVideoPlayer * _Nonnull, SJLightweightTopItem * _Nonnull))clickedTopControlItemExeBlock {
-    return objc_getAssociatedObject(self, _cmd);
+    return _clickedTopControlItemExeBlock;
 }
 @end
 
@@ -413,44 +428,44 @@ static NSString *_kPlayStatus = @"playStatus";
 }
 
 - (void)setShowMoreItemForTopControlLayer:(BOOL)showMoreItemForTopControlLayer {
-    if ( showMoreItemForTopControlLayer == self.showMoreItemForTopControlLayer ) return;
-    objc_setAssociatedObject(self, @selector(showMoreItemForTopControlLayer), @(showMoreItemForTopControlLayer), OBJC_ASSOCIATION_RETAIN_NONATOMIC);
+    if ( showMoreItemForTopControlLayer == _showMoreItemForTopControlLayer )
+        return;
+    _showMoreItemForTopControlLayer = showMoreItemForTopControlLayer;
     if ( showMoreItemForTopControlLayer ) {
         [self.defaultEdgeControlLayer.topAdapter addItem:[self moreItemDelegate].item];
-        [self.switcher addControlLayer:[self defaultMoreSettingCarrier]];
     }
     else {
         [self.defaultEdgeControlLayer.topAdapter removeItemForTag:SJEdgeControlLayerTopItem_More];
         [self.switcher deleteControlLayerForIdentifier:SJControlLayer_MoreSettting];
     }
     
-    dispatch_async(dispatch_get_main_queue(), ^{
-        [self.defaultEdgeControlLayer.topAdapter reload];
-    });
+    [self.defaultEdgeControlLayer.topAdapter reload];
 }
 
 - (BOOL)showMoreItemForTopControlLayer {
-    return [objc_getAssociatedObject(self, _cmd) boolValue];
+    return _showMoreItemForTopControlLayer;
 }
 
 - (_SJEdgeControlButtonItemDelegate *)moreItemDelegate {
-    _SJEdgeControlButtonItemDelegate *delegate = objc_getAssociatedObject(self, _cmd);
-    if ( delegate ) return delegate;
-    delegate = [[_SJEdgeControlButtonItemDelegate alloc] initWithItem:[SJEdgeControlButtonItem placeholderWithSize:58 tag:SJEdgeControlLayerTopItem_More]];
-    delegate.item.image = SJVideoPlayerSettings.commonSettings.moreBtnImage;
-    delegate.updatePropertiesIfNeeded = ^(SJEdgeControlButtonItem * _Nonnull item, __kindof SJBaseVideoPlayer * _Nonnull player) {
+    if ( _moreItemDelegate )
+        return _moreItemDelegate;
+    _moreItemDelegate = [[_SJEdgeControlButtonItemDelegate alloc] initWithItem:[SJEdgeControlButtonItem placeholderWithSize:58 tag:SJEdgeControlLayerTopItem_More]];
+    _moreItemDelegate.item.image = SJVideoPlayerSettings.commonSettings.moreBtnImage;
+    _moreItemDelegate.updatePropertiesIfNeeded = ^(SJEdgeControlButtonItem * _Nonnull item, __kindof SJBaseVideoPlayer * _Nonnull player) {
         item.hidden = !player.isFullScreen;
         item.image = SJVideoPlayerSettings.commonSettings.moreBtnImage;
     };
     
     __weak typeof(self) _self = self;
-    delegate.clickedItemExeBlock = ^(SJEdgeControlButtonItem * _Nonnull item) {
+    _moreItemDelegate.clickedItemExeBlock = ^(SJEdgeControlButtonItem * _Nonnull item) {
         __strong typeof(_self) self = _self;
         if ( !self ) return;
+        if ( ![self.switcher controlLayerForIdentifier:SJControlLayer_MoreSettting] ) {
+            [self.switcher addControlLayer:[self defaultMoreSettingCarrier]];
+        }
         [self.switcher switchControlLayerForIdentitfier:SJControlLayer_MoreSettting];
     };
-    objc_setAssociatedObject(self, _cmd, delegate, OBJC_ASSOCIATION_RETAIN_NONATOMIC);
-    return delegate;
+    return _moreItemDelegate;
 }
 
 @end
@@ -458,8 +473,8 @@ static NSString *_kPlayStatus = @"playStatus";
 
 @implementation SJVideoPlayer (FilmEditing)
 - (void)setEnableFilmEditing:(BOOL)enableFilmEditing {
-    if ( enableFilmEditing == self.enableFilmEditing ) return;
-    objc_setAssociatedObject(self, @selector(enableFilmEditing), @(enableFilmEditing), OBJC_ASSOCIATION_RETAIN_NONATOMIC);
+    if ( enableFilmEditing == _enableFilmEditing ) return;
+    _enableFilmEditing = enableFilmEditing;
    
     [self defaultEdgeLightweightControlLayer].enableFilmEditing = enableFilmEditing;
     if ( enableFilmEditing ) {
@@ -477,28 +492,24 @@ static NSString *_kPlayStatus = @"playStatus";
         [[self defaultEdgeControlLayer].rightAdapter removeItemForTag:SJEdgeControlLayerBottomItem_FilmEditing];
     }
     
-    dispatch_async(dispatch_get_main_queue(), ^{
-        [[self defaultEdgeControlLayer].rightAdapter reload];
-    });
+    [[self defaultEdgeControlLayer].rightAdapter reload];
 }
 
 - (BOOL)enableFilmEditing {
-    return [objc_getAssociatedObject(self, _cmd) boolValue];
+    return _enableFilmEditing;
 }
 
 // 历史遗留问题, 此处不应该readonly. 应该由外界配置...
 - (SJVideoPlayerFilmEditingConfig *)filmEditingConfig {
-    SJVideoPlayerFilmEditingConfig *filmEditingConfig = objc_getAssociatedObject(self, _cmd);
+    if ( _filmEditingConfig ) return _filmEditingConfig;
+    _filmEditingConfig = [SJVideoPlayerFilmEditingConfig new];
     __weak typeof(self) _self = self;
     dispatch_async(dispatch_get_main_queue(), ^{
         __strong typeof(_self) self = _self;
         if ( !self ) return;
-        [self defaultFilmEditingControlLayer].config = filmEditingConfig;
+        [self defaultFilmEditingControlLayer].config = self.filmEditingConfig;
     });
-    if ( filmEditingConfig ) return filmEditingConfig;
-    filmEditingConfig = [SJVideoPlayerFilmEditingConfig new];
-    objc_setAssociatedObject(self, _cmd, filmEditingConfig, OBJC_ASSOCIATION_RETAIN_NONATOMIC);
-    return filmEditingConfig;
+    return _filmEditingConfig;
 }
 
 - (void)dismissFilmEditingViewCompletion:(void(^__nullable)(SJVideoPlayer *player))completion {
@@ -507,25 +518,25 @@ static NSString *_kPlayStatus = @"playStatus";
 }
 
 - (_SJEdgeControlButtonItemDelegate *)filmEditingItemDelegate {
-    _SJEdgeControlButtonItemDelegate *delegate = objc_getAssociatedObject(self, _cmd);
-    if ( delegate ) return delegate;
-    delegate = [[_SJEdgeControlButtonItemDelegate alloc] initWithItem:[SJEdgeControlButtonItem placeholderWithType:SJButtonItemPlaceholderType_49x49 tag:SJEdgeControlLayerBottomItem_FilmEditing]];
-    delegate.item.image = SJVideoPlayerSettings.commonSettings.filmEditingBtnImage;
-    objc_setAssociatedObject(self, _cmd, delegate, OBJC_ASSOCIATION_RETAIN_NONATOMIC);
-    delegate.updatePropertiesIfNeeded = ^(SJEdgeControlButtonItem * _Nonnull item, __kindof SJBaseVideoPlayer * _Nonnull player) {
+    if ( _filmEditingItemDelegate )
+        return _filmEditingItemDelegate;
+    
+    _filmEditingItemDelegate = [[_SJEdgeControlButtonItemDelegate alloc] initWithItem:[SJEdgeControlButtonItem placeholderWithType:SJButtonItemPlaceholderType_49x49 tag:SJEdgeControlLayerBottomItem_FilmEditing]];
+    _filmEditingItemDelegate.item.image = SJVideoPlayerSettings.commonSettings.filmEditingBtnImage;
+    _filmEditingItemDelegate.updatePropertiesIfNeeded = ^(SJEdgeControlButtonItem * _Nonnull item, __kindof SJBaseVideoPlayer * _Nonnull player) {
         // 小屏或者 M3U8的时候 自动隐藏
         // M3u8 暂时无法剪辑
-        item.hidden = !player.isFullScreen || player.URLAsset.isM3u8;
+        item.hidden = (!player.isFullScreen || player.URLAsset.isM3u8) || !player.URLAsset;
         item.image = SJVideoPlayerSettings.commonSettings.filmEditingBtnImage;
     };
     
     __weak typeof(self) _self = self;
-    delegate.clickedItemExeBlock = ^(SJEdgeControlButtonItem * _Nonnull item) {
+    _filmEditingItemDelegate.clickedItemExeBlock = ^(SJEdgeControlButtonItem * _Nonnull item) {
         __strong typeof(_self) self = _self;
         if ( !self ) return;
         [self switchControlLayerForIdentitfier:SJControlLayer_FilmEditing];
     };
-    return delegate;
+    return _filmEditingItemDelegate;
 }
 @end
 

@@ -74,7 +74,7 @@ inline static void _errorLog(NSString *msg, id __nullable target) {
     else _needToAdd = NO;
     
 #ifdef SJ_MAC
-    NSLog(@"%@", self);
+    // NSLog(@"%@", self);
 #endif
     
     NSRange range = _recorder.range;

@@ -81,7 +81,7 @@ PODS:
 DEPENDENCIES:
   - Masonry
   - SJAttributesFactory
-  - SJBaseVideoPlayer
+  - SJBaseVideoPlayer (from `../../SJBaseVideoPlayer`)
   - SJFullscreenPopGesture
   - SJRouter
   - SJScrollEntriesView
@@ -93,13 +93,16 @@ SPEC REPOS:
     - Masonry
     - Reachability
     - SJAttributesFactory
-    - SJBaseVideoPlayer
     - SJFullscreenPopGesture
     - SJObserverHelper
     - SJRouter
     - SJScrollEntriesView
     - SJUIFactory
     - YYText
+
+EXTERNAL SOURCES:
+  SJBaseVideoPlayer:
+    :path: "../../SJBaseVideoPlayer"
 
 SPEC CHECKSUMS:
   Masonry: 678fab65091a9290e40e2832a55e7ab731aad201
@@ -113,6 +116,6 @@ SPEC CHECKSUMS:
   SJUIFactory: b3e973c5e2ae08bc5a1bd2c68d94c00f81e01a0b
   YYText: 5c461d709e24d55a182d1441c41dc639a18a4849
 
-PODFILE CHECKSUM: 8b9434f46d897f1a86b1b427d7990c918a112f7f
+PODFILE CHECKSUM: 981439ede8af69b3e353b6cdda08aca17c9cb3b5
 
 COCOAPODS: 1.6.0.beta.2

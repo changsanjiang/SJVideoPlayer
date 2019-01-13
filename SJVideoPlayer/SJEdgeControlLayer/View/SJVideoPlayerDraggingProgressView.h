@@ -16,17 +16,15 @@ typedef NS_ENUM(NSUInteger, SJVideoPlayerDraggingProgressViewStyle) {
 };
 
 @interface SJVideoPlayerDraggingProgressView : UIView
+@property (nonatomic) SJVideoPlayerDraggingProgressViewStyle style;
 
-@property (nonatomic, readwrite) SJVideoPlayerDraggingProgressViewStyle style;
-
-@property (nonatomic, readwrite) float shiftProgress;
-
-@property (nonatomic, readwrite) float playProgress;
-
-- (void)setTimeShiftStr:(NSString *)shiftTimeStr;
-- (void)setTimeShiftStr:(NSString *)shiftTimeStr totalTimeStr:(NSString *)totalTimeStr;
+@property (nonatomic) NSTimeInterval progressTime;
+- (void)setMaxValue:(NSTimeInterval)maxValue;
+- (void)setCurrentTime:(NSTimeInterval)currentTime;
 - (void)setPreviewImage:(UIImage *)image;
 
+- (void)setProgressTimeStr:(NSString *)shiftTimeStr;
+- (void)setProgressTimeStr:(NSString *)shiftTimeStr totalTimeStr:(NSString *)totalTimeStr;
 @end
 
 NS_ASSUME_NONNULL_END

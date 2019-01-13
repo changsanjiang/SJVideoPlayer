@@ -112,7 +112,7 @@ static NSString *_kPlayStatus = @"playStatus";
 }
 
 + (NSString *)version {
-    return @"v2.2.9";
+    return @"v2.3.0";
 }
 
 + (instancetype)player {
@@ -433,16 +433,13 @@ static NSString *_kPlayStatus = @"playStatus";
     _showMoreItemForTopControlLayer = showMoreItemForTopControlLayer;
     if ( showMoreItemForTopControlLayer ) {
         [self.defaultEdgeControlLayer.topAdapter addItem:[self moreItemDelegate].item];
-        [self.switcher addControlLayer:[self defaultMoreSettingCarrier]];
     }
     else {
         [self.defaultEdgeControlLayer.topAdapter removeItemForTag:SJEdgeControlLayerTopItem_More];
         [self.switcher deleteControlLayerForIdentifier:SJControlLayer_MoreSettting];
     }
     
-    dispatch_async(dispatch_get_main_queue(), ^{
-        [self.defaultEdgeControlLayer.topAdapter reload];
-    });
+    [self.defaultEdgeControlLayer.topAdapter reload];
 }
 
 - (BOOL)showMoreItemForTopControlLayer {
@@ -463,6 +460,9 @@ static NSString *_kPlayStatus = @"playStatus";
     _moreItemDelegate.clickedItemExeBlock = ^(SJEdgeControlButtonItem * _Nonnull item) {
         __strong typeof(_self) self = _self;
         if ( !self ) return;
+        if ( ![self.switcher controlLayerForIdentifier:SJControlLayer_MoreSettting] ) {
+            [self.switcher addControlLayer:[self defaultMoreSettingCarrier]];
+        }
         [self.switcher switchControlLayerForIdentitfier:SJControlLayer_MoreSettting];
     };
     return _moreItemDelegate;
@@ -492,9 +492,7 @@ static NSString *_kPlayStatus = @"playStatus";
         [[self defaultEdgeControlLayer].rightAdapter removeItemForTag:SJEdgeControlLayerBottomItem_FilmEditing];
     }
     
-    dispatch_async(dispatch_get_main_queue(), ^{
-        [[self defaultEdgeControlLayer].rightAdapter reload];
-    });
+    [[self defaultEdgeControlLayer].rightAdapter reload];
 }
 
 - (BOOL)enableFilmEditing {

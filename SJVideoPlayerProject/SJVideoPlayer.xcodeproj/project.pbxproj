@@ -47,7 +47,6 @@
 		A6006614215F974B0001B5F8 /* SJEdgeLightweightControlLayer.m in Sources */ = {isa = PBXBuildFile; fileRef = A600659F215F974B0001B5F8 /* SJEdgeLightweightControlLayer.m */; };
 		A6006615215F974B0001B5F8 /* SJLightweightLeftControlView.m in Sources */ = {isa = PBXBuildFile; fileRef = A60065A3215F974B0001B5F8 /* SJLightweightLeftControlView.m */; };
 		A6006616215F974B0001B5F8 /* SJLightweightRightControlView.m in Sources */ = {isa = PBXBuildFile; fileRef = A60065A7215F974B0001B5F8 /* SJLightweightRightControlView.m */; };
-		A6006617215F974B0001B5F8 /* SJLightweightDraggingProgressView.m in Sources */ = {isa = PBXBuildFile; fileRef = A60065A8215F974B0001B5F8 /* SJLightweightDraggingProgressView.m */; };
 		A6006618215F974B0001B5F8 /* SJLightweightTopItem.m in Sources */ = {isa = PBXBuildFile; fileRef = A60065A9215F974B0001B5F8 /* SJLightweightTopItem.m */; };
 		A6006619215F974B0001B5F8 /* SJLightweightBottomControlView.m in Sources */ = {isa = PBXBuildFile; fileRef = A60065AB215F974B0001B5F8 /* SJLightweightBottomControlView.m */; };
 		A600661A215F974B0001B5F8 /* SJLightweightCenterControlView.m in Sources */ = {isa = PBXBuildFile; fileRef = A60065AC215F974B0001B5F8 /* SJLightweightCenterControlView.m */; };
@@ -226,13 +225,11 @@
 		A600659D215F974B0001B5F8 /* SJVideoPlayer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SJVideoPlayer.h; sourceTree = "<group>"; };
 		A600659F215F974B0001B5F8 /* SJEdgeLightweightControlLayer.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SJEdgeLightweightControlLayer.m; sourceTree = "<group>"; };
 		A60065A1215F974B0001B5F8 /* SJLightweightTopItem.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SJLightweightTopItem.h; sourceTree = "<group>"; };
-		A60065A2215F974B0001B5F8 /* SJLightweightDraggingProgressView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SJLightweightDraggingProgressView.h; sourceTree = "<group>"; };
 		A60065A3215F974B0001B5F8 /* SJLightweightLeftControlView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SJLightweightLeftControlView.m; sourceTree = "<group>"; };
 		A60065A4215F974B0001B5F8 /* SJLightweightTopControlView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SJLightweightTopControlView.h; sourceTree = "<group>"; };
 		A60065A5215F974B0001B5F8 /* SJLightweightCenterControlView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SJLightweightCenterControlView.h; sourceTree = "<group>"; };
 		A60065A6215F974B0001B5F8 /* SJLightweightBottomControlView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SJLightweightBottomControlView.h; sourceTree = "<group>"; };
 		A60065A7215F974B0001B5F8 /* SJLightweightRightControlView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SJLightweightRightControlView.m; sourceTree = "<group>"; };
-		A60065A8215F974B0001B5F8 /* SJLightweightDraggingProgressView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SJLightweightDraggingProgressView.m; sourceTree = "<group>"; };
 		A60065A9215F974B0001B5F8 /* SJLightweightTopItem.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SJLightweightTopItem.m; sourceTree = "<group>"; };
 		A60065AA215F974B0001B5F8 /* SJLightweightLeftControlView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SJLightweightLeftControlView.h; sourceTree = "<group>"; };
 		A60065AB215F974B0001B5F8 /* SJLightweightBottomControlView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SJLightweightBottomControlView.m; sourceTree = "<group>"; };
@@ -643,8 +640,6 @@
 				A60065AB215F974B0001B5F8 /* SJLightweightBottomControlView.m */,
 				A60065A5215F974B0001B5F8 /* SJLightweightCenterControlView.h */,
 				A60065AC215F974B0001B5F8 /* SJLightweightCenterControlView.m */,
-				A60065A2215F974B0001B5F8 /* SJLightweightDraggingProgressView.h */,
-				A60065A8215F974B0001B5F8 /* SJLightweightDraggingProgressView.m */,
 				A60065AA215F974B0001B5F8 /* SJLightweightLeftControlView.h */,
 				A60065A3215F974B0001B5F8 /* SJLightweightLeftControlView.m */,
 				A60065AE215F974B0001B5F8 /* SJLightweightRightControlView.h */,
@@ -1062,7 +1057,7 @@
 				A6006556215F947E0001B5F8 /* Sources */,
 				A6006557215F947E0001B5F8 /* Frameworks */,
 				A6006558215F947E0001B5F8 /* Resources */,
-				8B49B6A3CD4E34F85B982978 /* [CP] Copy Pods Resources */,
+				ED91B9E5B346FA5B6A944BAB /* [CP] Copy Pods Resources */,
 			);
 			buildRules = (
 			);
@@ -1215,28 +1210,6 @@
 			shellScript = "diff \"${PODS_PODFILE_DIR_PATH}/Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [ $? != 0 ] ; then\n    # print error to STDERR\n    echo \"error: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\" >&2\n    exit 1\nfi\n# This output is used by Xcode 'outputs' to avoid re-running this script phase.\necho \"SUCCESS\" > \"${SCRIPT_OUTPUT_FILE_0}\"\n";
 			showEnvVarsInLog = 0;
 		};
-		8B49B6A3CD4E34F85B982978 /* [CP] Copy Pods Resources */ = {
-			isa = PBXShellScriptBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			inputFileListPaths = (
-			);
-			inputPaths = (
-				"${PODS_ROOT}/Target Support Files/Pods-SJVideoPlayer/Pods-SJVideoPlayer-resources.sh",
-				"${PODS_ROOT}/SJBaseVideoPlayer/SJBaseVideoPlayer/SJDeviceVolumeAndBrightnessManager/ResourceLoader/SJDeviceVolumeAndBrightnessManager.bundle",
-			);
-			name = "[CP] Copy Pods Resources";
-			outputFileListPaths = (
-			);
-			outputPaths = (
-				"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/SJDeviceVolumeAndBrightnessManager.bundle",
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-			shellPath = /bin/sh;
-			shellScript = "\"${PODS_ROOT}/Target Support Files/Pods-SJVideoPlayer/Pods-SJVideoPlayer-resources.sh\"\n";
-			showEnvVarsInLog = 0;
-		};
 		8EBF77382E210BB1BEEE5B59 /* [CP] Check Pods Manifest.lock */ = {
 			isa = PBXShellScriptBuildPhase;
 			buildActionMask = 2147483647;
@@ -1253,6 +1226,28 @@
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
 			shellScript = "diff \"${PODS_PODFILE_DIR_PATH}/Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [ $? != 0 ] ; then\n    # print error to STDERR\n    echo \"error: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\" >&2\n    exit 1\nfi\n# This output is used by Xcode 'outputs' to avoid re-running this script phase.\necho \"SUCCESS\" > \"${SCRIPT_OUTPUT_FILE_0}\"\n";
+			showEnvVarsInLog = 0;
+		};
+		ED91B9E5B346FA5B6A944BAB /* [CP] Copy Pods Resources */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputFileListPaths = (
+			);
+			inputPaths = (
+				"${PODS_ROOT}/Target Support Files/Pods-SJVideoPlayer/Pods-SJVideoPlayer-resources.sh",
+				"${PODS_ROOT}/../../../SJBaseVideoPlayer/SJBaseVideoPlayer/SJDeviceVolumeAndBrightnessManager/ResourceLoader/SJDeviceVolumeAndBrightnessManager.bundle",
+			);
+			name = "[CP] Copy Pods Resources";
+			outputFileListPaths = (
+			);
+			outputPaths = (
+				"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/SJDeviceVolumeAndBrightnessManager.bundle",
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "\"${PODS_ROOT}/Target Support Files/Pods-SJVideoPlayer/Pods-SJVideoPlayer-resources.sh\"\n";
 			showEnvVarsInLog = 0;
 		};
 		FDF166A4D637D276A8FF0C3A /* [CP] Check Pods Manifest.lock */ = {
@@ -1339,7 +1334,6 @@
 				A6006611215F974B0001B5F8 /* SJProgressSlider.m in Sources */,
 				A6006636215F974B0001B5F8 /* SJVideoPlayerMoreSetting+Exe.m in Sources */,
 				77EECF5C219C14AA00736073 /* SJNavTransitionAnimator.m in Sources */,
-				A6006617215F974B0001B5F8 /* SJLightweightDraggingProgressView.m in Sources */,
 				A6006658216071540001B5F8 /* SJTableViewCell.m in Sources */,
 				A6006632215F974B0001B5F8 /* SJVideoPlayerMoreSetting.m in Sources */,
 				A6006631215F974B0001B5F8 /* SJMoreSettingsSlidersViewModel.m in Sources */,

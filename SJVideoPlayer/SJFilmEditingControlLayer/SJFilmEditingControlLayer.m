@@ -187,11 +187,7 @@ NS_ASSUME_NONNULL_END
     return self;
 }
 
-- (BOOL)controlLayerDisappearCondition {
-    return NO;
-}
-
-- (BOOL)triggerGesturesCondition:(CGPoint)location {
+- (BOOL)videoPlayer:(__kindof SJBaseVideoPlayer *)videoPlayer gestureRecognizerShouldTrigger:(SJPlayerGestureType)type location:(CGPoint)location {
     return NO;
 }
 

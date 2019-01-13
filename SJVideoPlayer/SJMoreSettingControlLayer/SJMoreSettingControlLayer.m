@@ -122,22 +122,24 @@ NS_ASSUME_NONNULL_BEGIN
     [_moreSettingsView mas_makeConstraints:^(MASConstraintMaker *make) {
         make.top.bottom.trailing.offset(0);
     }];
+    
+    _moreSettingsView.sjv_disappearDirection = SJViewDisappearAnimation_Right;
+    _moreSettingsView.sjv_doNotSetAlpha = YES;
+    _moreSettingsView.alpha = 0.001;
 }
 
 - (SJVideoPlayerMoreSettingsView *)moreSettingsView {
     if ( _moreSettingsView ) return _moreSettingsView;
     _moreSettingsView = [SJVideoPlayerMoreSettingsView new];
-    _moreSettingsView.sjv_disappearDirection = SJViewDisappearAnimation_Right;
-    _moreSettingsView.sjv_doNotSetAlpha = YES;
     _moreSettingsView.footerViewModel = self.footerViewModel;
-    
+
     __weak typeof(self) _self = self;
     _moreSettingsView.settingRecroder = [[SJVideoPlayerControlSettingRecorder alloc] initWithSettings:^(SJEdgeControlLayerSettings * _Nonnull setting) {
         __strong typeof(_self) self = _self;
         if ( !self ) return ;
         self.moreSettingsView.backgroundColor = setting.moreBackgroundColor;
     }];
-    self.moreSettingsView.backgroundColor = SJEdgeControlLayerSettings.commonSettings.moreBackgroundColor;
+    _moreSettingsView.backgroundColor = SJEdgeControlLayerSettings.commonSettings.moreBackgroundColor;
     return _moreSettingsView;
 }
 
@@ -209,20 +211,19 @@ NS_ASSUME_NONNULL_BEGIN
     return self;
 }
 
-- (BOOL)triggerGesturesCondition:(CGPoint)location {
+- (BOOL)videoPlayer:(__kindof SJBaseVideoPlayer *)videoPlayer gestureRecognizerShouldTrigger:(SJPlayerGestureType)type location:(CGPoint)location {
     if ( CGRectContainsPoint( _moreSettingsView.frame, location) ||
          CGRectContainsPoint( _moreSecondarySettingView.frame, location) ) return NO;
     return YES;
 }
 
 /// 禁止自动隐藏
-- (BOOL)controlLayerDisappearCondition {
+- (BOOL)controlLayerOfVideoPlayerCanDisappear:(__kindof SJBaseVideoPlayer *)videoPlayer {
     return NO;
 }
 
 - (void)installedControlViewToVideoPlayer:(__kindof SJBaseVideoPlayer *)videoPlayer {
     _videoPlayer = videoPlayer;
-    [self.controlView layoutIfNeeded];
     [self _hidden:_moreSettingsView animated:NO];
     [self _hidden:_moreSecondarySettingView animated:NO];
 }
@@ -272,23 +273,27 @@ NS_ASSUME_NONNULL_BEGIN
 }
 
 - (void)_show:(UIView *)view animated:(BOOL)animated completionHandler:(void(^_Nullable)(void))completionHandler {
-    if ( !view.sjv_disappeared ) return;
-    if ( animated ) {
-        UIView_Animations(CommonAnimaDuration, ^{
-            [view sjv_appear];
-        }, completionHandler);
-    }
-    else [view sjv_appear];
+    dispatch_async(dispatch_get_main_queue(), ^{
+        if ( !view.sjv_disappeared ) return;
+        if ( animated ) {
+            UIView_Animations(CommonAnimaDuration, ^{
+                [view sjv_appear];
+            }, completionHandler);
+        }
+        else [view sjv_appear];
+    });
 }
 
 - (void)_hidden:(UIView *)view animated:(BOOL)animated completionHandler:(void(^_Nullable)(void))completionHandler {
-    if ( view.sjv_disappeared ) return;
-    if ( animated ) {
-        UIView_Animations(CommonAnimaDuration, ^{
-            [view sjv_disapear];
-        }, completionHandler);
-    }
-    else [view sjv_disapear];
+    dispatch_async(dispatch_get_main_queue(), ^{
+        if ( view.sjv_disappeared ) return;
+        if ( animated ) {
+            UIView_Animations(CommonAnimaDuration, ^{
+                [view sjv_disapear];
+            }, completionHandler);
+        }
+        else [view sjv_disapear];
+    });
 }
 @end
 NS_ASSUME_NONNULL_END

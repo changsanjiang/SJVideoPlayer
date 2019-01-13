@@ -68,13 +68,15 @@
         case SJVideoPlayerDraggingProgressViewStyleArrowProgress: {
             [_contentView mas_remakeConstraints:^(MASConstraintMaker *make) {
                 make.edges.offset(0);
-                CGFloat width = SJScreen_Min() * (150 / 375.0);
+                CGFloat width = 150;
                 CGFloat height = width * 8 / 15;
                 make.size.mas_offset(CGSizeMake(ceil(width), ceil(height)));
             }];
             
             _previewImageView.hidden = YES;
             _progressSlider.trackHeight = 3;
+            
+            [_previewImageView mas_remakeConstraints:^(MASConstraintMaker *make) {}];
             
             [_directionImageView mas_remakeConstraints:^(MASConstraintMaker *make) {
                 make.top.offset(0);
@@ -83,8 +85,8 @@
             }];
             
             [_progressSlider mas_remakeConstraints:^(MASConstraintMaker *make) {
-                make.leading.offset(8);
-                make.trailing.offset(-8);
+                make.left.offset(8);
+                make.right.offset(-8);
                 make.top.equalTo(self.mas_centerY).offset(8);
                 make.height.offset(3);
             }];
@@ -93,6 +95,7 @@
                 make.centerX.offset(0);
                 make.top.equalTo(self->_progressSlider.mas_bottom);
                 make.bottom.offset(0);
+                make.width.offset(5);
             }];
             
         }
@@ -100,74 +103,69 @@
         case SJVideoPlayerDraggingProgressViewStylePreviewProgress: {
             [_contentView mas_remakeConstraints:^(MASConstraintMaker *make) {
                 make.edges.offset(0);
-                CGFloat width = SJScreen_Max() * ( 120 / 375.0);
-                CGFloat height = width * 3 / 4;
-                make.size.mas_offset(CGSizeMake(ceil(width), ceil(height)));
             }];
             
             _previewImageView.hidden = NO;
             _progressSlider.trackHeight = 2;
             [_directionImageView mas_remakeConstraints:^(MASConstraintMaker *make) {
-                make.width.offset(10.0 / 375 * SJScreen_W());
-                make.centerY.equalTo(self->_separatorLabel);
+                make.top.offset(8);
+                make.bottom.equalTo(self.previewImageView.mas_top).offset(-8);
+                make.height.offset(20);
                 make.centerX.equalTo(self).multipliedBy(0.25);
             }];
             
             [_separatorLabel mas_remakeConstraints:^(MASConstraintMaker *make) {
                 make.centerX.offset(0);
-                make.top.offset(0);
-                make.bottom.equalTo(self->_previewImageView.mas_top);
+                make.centerY.equalTo(self.directionImageView);
+                make.width.offset(4);
             }];
             
             [_previewImageView mas_remakeConstraints:^(MASConstraintMaker *make) {
-                make.leading.offset(8);
-                make.bottom.trailing.offset(-8);
+                make.left.offset(8);
+                make.bottom.right.offset(-8);
+                make.width.offset(180);
                 make.height.equalTo(self->_previewImageView.mas_width).multipliedBy(9.0 / 16);
             }];
             
             [_progressSlider mas_remakeConstraints:^(MASConstraintMaker *make) {
-                make.width.equalTo(self->_durationTimeLabel).multipliedBy(2);
-                make.top.equalTo(self->_shiftTimeLabel.mas_bottom).offset(4);
-                make.centerX.equalTo(self->_separatorLabel);
-                make.height.offset(3);
+                make.centerX.offset(0);
+                make.top.equalTo(self.separatorLabel.mas_bottom);
+                make.bottom.equalTo(self.previewImageView.mas_top);
+                make.width.offset(68);
             }];
         }
             break;
     }
 }
 
-- (void)setShiftProgress:(float)shiftProgress {
-    if      ( shiftProgress > 1 ) shiftProgress = 1;
-    else if ( shiftProgress < 0 ) shiftProgress = 0;
-    else if ( isnan(shiftProgress) ) return;
-    
-    float beforeShiftProgress = _shiftProgress;
-    
-    _shiftProgress = shiftProgress;
-    
-    if ( beforeShiftProgress > _shiftProgress ) {
-        _directionImageView.image = _forwardImage;
-    }
-    else if ( beforeShiftProgress < _shiftProgress ) {
-        _directionImageView.image = _fastImage;
-    }
-    
-    _progressSlider.value = shiftProgress;
+- (void)setMaxValue:(NSTimeInterval)maxValue {
+    _progressSlider.maxValue = maxValue;
 }
 
-- (void)setPlayProgress:(float)playProgress {
-    _progressSlider.bufferProgress = playProgress;
+- (void)setCurrentTime:(NSTimeInterval)currentTime {
+    _progressSlider.bufferProgress = currentTime / _progressSlider.maxValue;
 }
 
-- (float)playProgress {
-    return _progressSlider.bufferProgress;
-}
-
-- (void)setTimeShiftStr:(NSString *)shiftTimeStr {
+- (void)setProgressTimeStr:(NSString *)shiftTimeStr {
     _shiftTimeLabel.text = shiftTimeStr;
 }
 
-- (void)setTimeShiftStr:(NSString *)shiftTimeStr totalTimeStr:(NSString *)totalTimeStr {
+- (void)setProgressTime:(NSTimeInterval)progressTime {
+    float beforeProgressTime = _progressTime;
+    
+    _progressTime = progressTime;
+
+    if ( beforeProgressTime > _progressTime ) {
+        _directionImageView.image = _forwardImage;
+    }
+    else if ( beforeProgressTime < _progressTime ) {
+        _directionImageView.image = _fastImage;
+    }
+    
+    _progressSlider.value = progressTime;
+}
+
+- (void)setProgressTimeStr:(NSString *)shiftTimeStr totalTimeStr:(NSString *)totalTimeStr {
     _shiftTimeLabel.text = shiftTimeStr;
     _durationTimeLabel.text = totalTimeStr;
 }
@@ -175,6 +173,7 @@
 - (void)setPreviewImage:(UIImage *)image {
     _previewImageView.image = image;
 }
+
 #pragma mark -
 
 - (void)_setupViews {
@@ -205,6 +204,24 @@
         make.centerY.equalTo(self->_separatorLabel);
         make.right.offset(0);
     }];
+    
+    
+// <SJProgressSlider: 0x15ba0ebb0; frame = (0 0; 0 0); gestureRecognizers = <NSArray: 0x2809ccff0>; layer = <CALayer: 0x2807d8ca0>>
+// <UIImageView: 0x15ba0f9c0; frame = (0 0; 0 0); clipsToBounds = YES; userInteractionEnabled = NO; layer = <CALayer: 0x2807d9b00>>
+// <UILabel: 0x15ba0fde0; frame = (0 0; 0 0); userInteractionEnabled = NO; layer = <_UILabelLayer: 0x28249e800>>
+// <UILabel: 0x15ba100d0; frame = (0 0; 4.33333 15.6667); text = '/'; userInteractionEnabled = NO; layer = <_UILabelLayer: 0x28249e530>>
+// <UILabel: 0x15ba10510; frame = (0 0; 0 0); userInteractionEnabled = NO; layer = <_UILabelLayer: 0x28249e6c0>>
+// <UIImageView: 0x15ba10800; frame = (0 0; 0 0); clipsToBounds = YES; hidden = YES; userInteractionEnabled = NO; layer = <CALayer: 0x2807d9e40>>
+
+//    "<MASLayoutConstraint:0x2823fba80 UIImageView:0x15ba10800.height == UIImageView:0x15ba10800.width * 0.5625>",
+//    "<MASLayoutConstraint:0x2823a75a0 UIImageView:0x15ba0f9c0.top == UIView:0x15ba0e9d0.top + 8>",
+//    "<MASLayoutConstraint:0x2823a7600 UIImageView:0x15ba0f9c0.bottom == UIImageView:0x15ba10800.top - 8>",
+//    "<MASLayoutConstraint:0x282398a20 UIImageView:0x15ba10800.left == UIView:0x15ba0e9d0.left + 8>",
+//    "<MASLayoutConstraint:0x28239b420 UIImageView:0x15ba10800.bottom == UIView:0x15ba0e9d0.bottom - 8>",
+//    "<MASLayoutConstraint:0x2823fba20 UIImageView:0x15ba10800.right == UIView:0x15ba0e9d0.right - 8>",
+//    "<MASLayoutConstraint:0x2823b68e0 UIView:0x15ba0e9d0.width == 150>",
+//    "<MASLayoutConstraint:0x2823b6520 UIView:0x15ba0e9d0.height == 80>"
+
 }
 
 - (UIView *)contentView {

@@ -183,16 +183,18 @@ SJEdgeControlButtonItemTag const SJLoadFailedControlLayerTopItem_Back = 10000;
 
 - (void)controlLayerNeedDisappear:(__kindof SJBaseVideoPlayer *)videoPlayer { }
 
-- (BOOL)controlLayerDisappearCondition {
+/// 不触发自动隐藏控制层
+- (BOOL)controlLayerOfVideoPlayerCanAutomaticallyDisappear:(__kindof SJBaseVideoPlayer *)videoPlayer {
+    return NO;
+}
+
+/// 不触发任何手势
+- (BOOL)videoPlayer:(__kindof SJBaseVideoPlayer *)videoPlayer gestureRecognizerShouldTrigger:(SJPlayerGestureType)type location:(CGPoint)location {
     return NO;
 }
 
 - (UIView *)controlView {
     return self;
-}
-
-- (BOOL)triggerGesturesCondition:(CGPoint)location {
-    return NO;
 }
 
 - (void)installedControlViewToVideoPlayer:(__kindof SJBaseVideoPlayer *)videoPlayer {

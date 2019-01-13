@@ -271,7 +271,7 @@ static const char *key = "kSJAVMediaPlayAsset";
 
 - (void)_updateBufferStatusIfNeeded {
     SJPlayerBufferStatus bufferStatus = _playAssetObserver.bufferStatus;
-    if ( bufferStatus == _bufferStatus ) {
+    if ( bufferStatus != _bufferStatus ) {
         _bufferStatus = bufferStatus;
         if ( [self.delegate respondsToSelector:@selector(playbackController:bufferStatusDidChange:)] ) {
             [self.delegate playbackController:self bufferStatusDidChange:bufferStatus];

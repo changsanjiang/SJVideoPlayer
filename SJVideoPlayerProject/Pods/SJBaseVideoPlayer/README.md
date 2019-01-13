@@ -118,6 +118,7 @@ ___
 #### [11. 占位图](#11)
 * [11.1 设置本地占位图](#11.1)
 * [11.2 设置网络占位图](#11.2)
+* [11.3 是否隐藏占位图 - 播放器准备好显示时](#11.3)
 
 #### [12. 显示提示文本](#12)
 * [12.1 显示文本及持续时间 - (NSString or NSAttributedString)](#12.1)
@@ -155,42 +156,89 @@ ___
 
 #### [18. 控制层数据源, 每个方法介绍](#18)
 * [18.1 - (UIView *)controlView;](#18.1)
-* [18.2 - (BOOL)controlLayerDisappearCondition;](#18.2)
-* [18.3 - (BOOL)triggerGesturesCondition:(CGPoint)location;](#18.3)
-* [18.4 - (void)installedControlViewToVideoPlayer:(__kindof SJBaseVideoPlayer *)videoPlayer;](#18.4)
+* [18.2 - (void)installedControlViewToVideoPlayer:(__kindof SJBaseVideoPlayer *)videoPlayer;](#18.2)
 
 #### [19. 控制层代理, 每个方法介绍](#19)
 * [19.1 - (void)controlLayerNeedAppear:(__kindof SJBaseVideoPlayer *)videoPlayer;](#19.1)
 * [19.2 - (void)controlLayerNeedDisappear:(__kindof SJBaseVideoPlayer *)videoPlayer;](#19.2)
-* [19.3 - (void)videoPlayerWillAppearInScrollView:(__kindof SJBaseVideoPlayer *)videoPlayer;](#19.3)
-* [19.4 - (void)videoPlayerWillDisappearInScrollView:(__kindof SJBaseVideoPlayer *)videoPlayer;](#19.4)
-* [19.5 - (void)videoPlayer:(__kindof SJBaseVideoPlayer *)videoPlayer prepareToPlay:(SJVideoPlayerURLAsset *)asset;](#19.5)
-* [19.6 - (void)videoPlayer:(__kindof SJBaseVideoPlayer *)videoPlayer statusDidChanged:(SJVideoPlayerPlayStatus)status;](#19.6)
-* [19.7 - (void)videoPlayer:(__kindof SJBaseVideoPlayer *)videoPlayer](#19.7)
-currentTime:(NSTimeInterval)currentTime currentTimeStr:(NSString *)currentTimeStr<br/>
-totalTime:(NSTimeInterval)totalTime totalTimeStr:(NSString *)totalTimeStr;<br/>
-* [19.8 - (void)videoPlayer:(__kindof SJBaseVideoPlayer *)videoPlayer presentationSize:(CGSize)size;](#19.8)
-* [19.9 - (void)videoPlayer:(__kindof SJBaseVideoPlayer *)videoPlayer muteChanged:(BOOL)mute;](#19.9)
+* [19.3 - (BOOL)controlLayerOfVideoPlayerCanAutomaticallyDisappear:(__kindof SJBaseVideoPlayer *)videoPlayer;](#19.3)
+* [19.4 - (void)videoPlayerWillAppearInScrollView:(__kindof SJBaseVideoPlayer *)videoPlayer;](#19.4)
+* [19.5 - (void)videoPlayerWillDisappearInScrollView:(__kindof SJBaseVideoPlayer *)videoPlayer;](#19.5)
+
+</br>
+
+* [SJPlayStatusControlDelegate](#SJPlayStatusControlDelegate)
+
+* [19.6 - (void)videoPlayer:(__kindof SJBaseVideoPlayer *)videoPlayer prepareToPlay:(SJVideoPlayerURLAsset *)asset;](#19.6)
+* [19.7 - (void)videoPlayer:(__kindof SJBaseVideoPlayer *)videoPlayer statusDidChanged:(SJVideoPlayerPlayStatus)status;](#19.7)
+* [19.8 - (void)videoPlayer:(__kindof SJBaseVideoPlayer *)videoPlayercurrentTime:(NSTimeInterval)currentTime currentTimeStr:(NSString *)currentTimeStr totalTime:(NSTimeInterval)totalTime totalTimeStr:(NSString *)totalTimeStr;](#19.8)
+* [19.9 - (void)videoPlayer:(__kindof SJBaseVideoPlayer *)videoPlayer presentationSize:(CGSize)size;](#19.9)
+
+
+</br>
+
+* [SJVolumeBrightnessRateControlDelegate](#SJVolumeBrightnessRateControlDelegate)
+
+* [19.10 - (void)videoPlayer:(__kindof SJBaseVideoPlayer *)videoPlayer muteChanged:(BOOL)mute;](#19.10)
 * [19.11 - (void)videoPlayer:(__kindof SJBaseVideoPlayer *)videoPlayer volumeChanged:(float)volume;](#19.11)
 * [19.12 - (void)videoPlayer:(__kindof SJBaseVideoPlayer *)videoPlayer brightnessChanged:(float)brightness;](#19.12)
 * [19.13 - (void)videoPlayer:(__kindof SJBaseVideoPlayer *)videoPlayer rateChanged:(float)rate;](#19.13)
-* [19.14 - (void)videoPlayer:(__kindof SJBaseVideoPlayer *)videoPlayer loadedTimeProgress:(float)progress;](#19.14)
-* [19.15 - (void)startLoading:(__kindof SJBaseVideoPlayer *)videoPlayer;](#19.15)
-* [19.16 - (void)cancelLoading:(__kindof SJBaseVideoPlayer *)videoPlayer;](#19.16)
-* [19.17 - (void)loadCompletion:(__kindof SJBaseVideoPlayer *)videoPlayer;](#19.17)
-* [19.18 - (BOOL)canTriggerRotationOfVideoPlayer:(__kindof SJBaseVideoPlayer *)videoPlayer;](#19.18)
-* [19.20 - (void)videoPlayer:(__kindof SJBaseVideoPlayer *)videoPlayer willRotateView:(BOOL)isFull;](#19.20)
-* [19.21 - (void)videoPlayer:(__kindof SJBaseVideoPlayer *)videoPlayer didEndRotation:(BOOL)isFull;](#19.21)
+
+
+</br>
+
+* [SJBufferControlDelegate](#SJBufferControlDelegate)
+
+* [19.14 - (void)videoPlayer:(__kindof SJBaseVideoPlayer *)videoPlayer bufferTimeDidChange:(NSTimeInterval)bufferTime;](#19.14 )
+* [19.15 - (void)videoPlayer:(__kindof SJBaseVideoPlayer *)videoPlayer bufferStatusDidChange:(SJPlayerBufferStatus)bufferStatus;](#19.15)
+
+
+</br>
+
+* [SJRotationControlDelegate](#SJRotationControlDelegate)
+
+* [19.16 - (BOOL)canTriggerRotationOfVideoPlayer:(__kindof SJBaseVideoPlayer *)videoPlayer;](#19.16)
+* [19.17 - (void)videoPlayer:(__kindof SJBaseVideoPlayer *)videoPlayer willRotateView:(BOOL)isFull;](#19.17)
+* [19.18 - (void)videoPlayer:(__kindof SJBaseVideoPlayer *)videoPlayer didEndRotation:(BOOL)isFull;](#19.18)
+
+
+</br>
+
+* [SJFitOnScreenControlDelegate](#SJFitOnScreenControlDelegate)
+
 * [19.22 - (void)videoPlayer:(__kindof SJBaseVideoPlayer *)videoPlayer willFitOnScreen:(BOOL)isFitOnScreen;](#19.22)
 * [19.23 - (void)videoPlayer:(__kindof SJBaseVideoPlayer *)videoPlayer didCompleteFitOnScreen:(BOOL)isFitOnScreen;](#19.23)
-* [19.24 - (void)horizontalDirectionWillBeginDragging:(__kindof SJBaseVideoPlayer *)videoPlayer;](#19.24)
-* [19.25 - (void)videoPlayer:(__kindof SJBaseVideoPlayer *)videoPlayer horizontalDirectionDidMove:(CGFloat)progress;](#19.25)
-* [19.26 - (void)horizontalDirectionDidEndDragging:(__kindof SJBaseVideoPlayer *)videoPlayer;](#19.26)
-* [19.27 - (void)videoPlayer:(__kindof SJBaseVideoPlayer *)videoPlayer reachabilityChanged:(SJNetworkStatus)status;](#19.27)
-* [19.28 - (void)tappedPlayerOnTheLockedState:(__kindof SJBaseVideoPlayer *)videoPlayer;](#19.28)
-* [19.29 - (void)lockedVideoPlayer:(__kindof SJBaseVideoPlayer *)videoPlayer;](#19.29)
-* [19.30 - (void)unlockedVideoPlayer:(__kindof SJBaseVideoPlayer *)videoPlayer;](#19.30)
-* [19.31 - (void)videoPlayer:(__kindof SJBaseVideoPlayer *)videoPlayer switchVideoDefinitionByURL:(NSURL *)URL statusDidChange:(SJMediaPlaybackSwitchDefinitionStatus)status;](#19.31)
+
+
+</br>
+
+* [SJGestureControlDelegate](#SJGestureControlDelegate)
+
+* [19.24 - (BOOL)videoPlayer:(__kindof SJBaseVideoPlayer *)videoPlayer gestureRecognizerShouldTrigger:(SJPlayerGestureType)type location:(CGPoint)location;](#19.24)
+* [19.25 - (void)videoPlayer:(__kindof SJBaseVideoPlayer *)videoPlayer panGestureTriggeredInTheHorizontalDirection:(SJPanGestureRecognizerState)state progressTime:(NSTimeInterval)progressTime;](#19.25)
+
+
+</br>
+
+* [SJNetworkStatusControlDelegate](#SJNetworkStatusControlDelegate)
+
+* [19.26 - (void)videoPlayer:(__kindof SJBaseVideoPlayer *)videoPlayer reachabilityChanged:(SJNetworkStatus)status;](#19.26)
+
+
+</br>
+
+* [SJLockScreenStateControlDelegate](#SJLockScreenStateControlDelegate)
+
+* [19.27 - (void)tappedPlayerOnTheLockedState:(__kindof SJBaseVideoPlayer *)videoPlayer;](#19.27)
+* [19.28 - (void)lockedVideoPlayer:(__kindof SJBaseVideoPlayer *)videoPlayer;](#19.28)
+* [19.29 - (void)unlockedVideoPlayer:(__kindof SJBaseVideoPlayer *)videoPlayer;](#19.29)
+
+
+</br>
+
+* [SJSwitchVideoDefinitionControlDelegate](#SJSwitchVideoDefinitionControlDelegate)
+
+* [19.30 - (void)videoPlayer:(__kindof SJBaseVideoPlayer *)videoPlayer switchVideoDefinitionByURL:(NSURL *)URL statusDidChange:(SJMediaPlaybackSwitchDefinitionStatus)status;](#19.30)
 
 ___
 
@@ -1175,6 +1223,14 @@ _player.placeholderImageView.image = [UIImage imageNamed:@"..."];
 [_player.placeholderImageView sd_setImageWithURL:URL placeholderImage:img];
 ```
 
+<h3 id="11.3">11.3 是否隐藏占位图 - 播放器准备好显示时</h3>
+
+```Objective-C
+/// 播放器准备好显示时, 是否隐藏占位图
+/// - 默认为YES
+@property (nonatomic) BOOL hiddenPlaceholderImageViewWhenPlayerIsReadyForDisplay;
+```
+
 ___
 
 <h2 id="12">12. 显示提示文本</h2>
@@ -1540,24 +1596,14 @@ ___
 <h3 id="18.1">18.1 - (UIView *)controlView;</h3>
 
 <p>
-controlView 为控制层的根视图, 它将会被添加到播放器中
+controlView 为控制层的视图, 它将会被添加到播放器中
 </p>
 
-<h3 id="18.2">18.2 - (BOOL)controlLayerDisappearCondition;</h3>
-
-[控制层的显示和隐藏管理类](#4) 触发自动隐藏时, 播放器会回调这个方法.
-
-如果返回 YES, 则播放器将会调用 [19.2 - (void)controlLayerNeedDisappear:(__kindof SJBaseVideoPlayer *)videoPlayer;](#19.2).
-
-<h3 id="18.3">18.3 - (BOOL)triggerGesturesCondition:(CGPoint)location;</h3>
-
-此方法将作为手势触发的一个条件, 如果返回NO, 将不会触发任何手势.
-
-当某个手势将要触发时, 该方法将会被调用. 
-
-<h3 id="18.4">18.4 - (void)installedControlViewToVideoPlayer:(__kindof SJBaseVideoPlayer *)videoPlayer;</h3>
+<h3 id="18.2">18.2 - (void)installedControlViewToVideoPlayer:(__kindof SJBaseVideoPlayer *)videoPlayer;</h3>
 
 当播放器将[controlView](#18.1)添加到播放器视图中后, 会回调这个方法.
+
+___
 
 <h2 id="19">19. 控制层代理, 每个方法介绍</h2>
 
@@ -1567,7 +1613,8 @@ controlView 为控制层的根视图, 它将会被添加到播放器中
 
 当调用 `[_player controlLayerNeedAppear]` 时, 此时会立即回调这个方法
 
-<h3 id="19.1">19.2 - (void)controlLayerNeedDisappear:(__kindof SJBaseVideoPlayer *)videoPlayer;</h3>
+
+<h3 id="19.2">19.2 - (void)controlLayerNeedDisappear:(__kindof SJBaseVideoPlayer *)videoPlayer;</h3>
 
 当控制层需要隐藏的时候, 会回调这个方法. 你应该在这里做一些隐藏的工作.
 
@@ -1576,123 +1623,157 @@ controlView 为控制层的根视图, 它将会被添加到播放器中
 - 当控制层显示时, 默认会在3秒后, 自动调用这个方法, 隐藏控制层
 
 
-<h3 id="19.1">19.3 - (void)videoPlayerWillAppearInScrollView:(__kindof SJBaseVideoPlayer *)videoPlayer;</h3>
+<h3 id="19.3">19.3 - (BOOL)controlLayerOfVideoPlayerCanAutomaticallyDisappear:(__kindof SJBaseVideoPlayer *)videoPlayer;</h3>
+
+控制层是否可以自动隐藏, 返回NO, 播放器将不会调用[隐藏的代理方法](#19.2).
+
+
+<h3 id="19.4">19.4 - (void)videoPlayerWillAppearInScrollView:(__kindof SJBaseVideoPlayer *)videoPlayer;</h3>
 
 滚动 scrollView 时, 播放器即将出现时会回调这个方法.
 
-<h3 id="19.1">19.4 - (void)videoPlayerWillDisappearInScrollView:(__kindof SJBaseVideoPlayer *)videoPlayer;</h3>
+
+<h3 id="19.5">19.5 - (void)videoPlayerWillDisappearInScrollView:(__kindof SJBaseVideoPlayer *)videoPlayer;</h3>
 
 滚动scrollView时, 播放器即将消失时会回调这个方法.
 
-<h3 id="19.1">19.5 - (void)videoPlayer:(__kindof SJBaseVideoPlayer *)videoPlayer prepareToPlay:(SJVideoPlayerURLAsset *)asset;</h3>
+</br>
+
+<h3 id="SJPlayStatusControlDelegate"> SJPlayStatusControlDelegate</h3>
+
+* [19.9 - (void)videoPlayer:(__kindof SJBaseVideoPlayer *)videoPlayer presentationSize:(CGSize)size;](#19.9)
+
+
+<h3 id="19.6">19.6 - (void)videoPlayer:(__kindof SJBaseVideoPlayer *)videoPlayer prepareToPlay:(SJVideoPlayerURLAsset *)asset;</h3>
 
 当播放器播放一个新的资源时, 会回调这个方法
 
-<h3 id="19.1">19.6 - (void)videoPlayer:(__kindof SJBaseVideoPlayer *)videoPlayer statusDidChanged:(SJVideoPlayerPlayStatus)status;</h3>
+
+<h3 id="19.7">19.7 - (void)videoPlayer:(__kindof SJBaseVideoPlayer *)videoPlayer statusDidChanged:(SJVideoPlayerPlayStatus)status;</h3>
 
 当播放状态改变时, 会回调这个方法
 
-<h3 id="19.1">19.7 - (void)videoPlayer:(__kindof SJBaseVideoPlayer *)videoPlayer
+
+<h3 id="19.8">19.8 - (void)videoPlayer:(__kindof SJBaseVideoPlayer *)videoPlayer
 currentTime:(NSTimeInterval)currentTime currentTimeStr:(NSString *)currentTimeStrtotalTime:(NSTimeInterval)totalTime totalTimeStr:(NSString *)totalTimeStr;</h3>
 
 播放时间改变的回调
 
-<h3 id="19.1">19.8 - (void)videoPlayer:(__kindof SJBaseVideoPlayer *)videoPlayer presentationSize:(CGSize)size;</h3>
+
+<h3 id="19.9">19.9 - (void)videoPlayer:(__kindof SJBaseVideoPlayer *)videoPlayer presentationSize:(CGSize)size;</h3>
 
 播放器获取到视频宽高后, 会回调这个方法
 
-<h3 id="19.1">19.9 - (void)videoPlayer:(__kindof SJBaseVideoPlayer *)videoPlayer muteChanged:(BOOL)mute;</h3>
+
+</br>
+
+<h3 id="SJVolumeBrightnessRateControlDelegate"> SJVolumeBrightnessRateControlDelegate</h3>
+
+<h3 id="19.10">19.10 - (void)videoPlayer:(__kindof SJBaseVideoPlayer *)videoPlayer muteChanged:(BOOL)mute;</h3>
 
 设置静音时, 会回调这个方法
 
-<h3 id="19.1">19.11 - (void)videoPlayer:(__kindof SJBaseVideoPlayer *)videoPlayer volumeChanged:(float)volume;</h3>
+<h3 id="19.11">19.11 - (void)videoPlayer:(__kindof SJBaseVideoPlayer *)videoPlayer volumeChanged:(float)volume;</h3>
 
 设置系统音量时, 会回调这个方法
 
-<h3 id="19.1">19.12 - (void)videoPlayer:(__kindof SJBaseVideoPlayer *)videoPlayer brightnessChanged:(float)brightness;</h3>
+<h3 id="19.12">19.12 - (void)videoPlayer:(__kindof SJBaseVideoPlayer *)videoPlayer brightnessChanged:(float)brightness;</h3>
 
 设置系统亮度时, 会回调这个方法
 
-<h3 id="19.1">19.13 - (void)videoPlayer:(__kindof SJBaseVideoPlayer *)videoPlayer rateChanged:(float)rate;</h3>
+<h3 id="19.13">19.13 - (void)videoPlayer:(__kindof SJBaseVideoPlayer *)videoPlayer rateChanged:(float)rate;</h3>
 
 设置速率时, 会回调这个方法
 
-<h3 id="19.1">19.14 - (void)videoPlayer:(__kindof SJBaseVideoPlayer *)videoPlayer loadedTimeProgress:(float)progress;</h3>
+
+</br>
+
+<h3 id="SJBufferControlDelegate"> SJBufferControlDelegate</h3>
+
+<h3 id="19.14">19.14 - (void)videoPlayer:(__kindof SJBaseVideoPlayer *)videoPlayer bufferTimeDidChange:(NSTimeInterval)bufferTime;</h3>
 
 缓冲时间改变的回调.
 
-注: 由于命名问题, 此方法未来可能会过期
 
-<h3 id="19.1">19.15 - (void)startLoading:(__kindof SJBaseVideoPlayer *)videoPlayer;</h3>
+<h3 id="19.15">19.15 - (void)videoPlayer:(__kindof SJBaseVideoPlayer *)videoPlayer bufferStatusDidChange:(SJPlayerBufferStatus)bufferStatus;</h3>
 
-开始缓冲. 
+缓冲状态改变的回调
 
-注: 由于命名问题, 此方法未来可能会过期
 
-<h3 id="19.1">19.16 - (void)cancelLoading:(__kindof SJBaseVideoPlayer *)videoPlayer;</h3>
+</br>
 
-取消缓冲.
+<h3 id="SJRotationControlDelegate"> SJRotationControlDelegate</h3>
 
-注: 由于命名问题, 此方法未来可能会过期
-
-<h3 id="19.1">19.17 - (void)loadCompletion:(__kindof SJBaseVideoPlayer *)videoPlayer;</h3>
-
-完成缓冲.
-
-注: 由于命名问题, 此方法未来可能会过期
-
-<h3 id="19.1">19.18 - (BOOL)canTriggerRotationOfVideoPlayer:(__kindof SJBaseVideoPlayer *)videoPlayer;</h3>
+<h3 id="19.16">19.16 - (BOOL)canTriggerRotationOfVideoPlayer:(__kindof SJBaseVideoPlayer *)videoPlayer;</h3>
 
 播放器是否可以出发自动旋转.
 
-<h3 id="19.1">19.20 - (void)videoPlayer:(__kindof SJBaseVideoPlayer *)videoPlayer willRotateView:(BOOL)isFull;</h3>
+<h3 id="19.17">19.17 - (void)videoPlayer:(__kindof SJBaseVideoPlayer *)videoPlayer willRotateView:(BOOL)isFull;</h3>
 
  开始旋转的回调
 
-<h3 id="19.1">19.21 - (void)videoPlayer:(__kindof SJBaseVideoPlayer *)videoPlayer didEndRotation:(BOOL)isFull;</h3>
+<h3 id="19.18">19.18 - (void)videoPlayer:(__kindof SJBaseVideoPlayer *)videoPlayer didEndRotation:(BOOL)isFull;</h3>
 
 结束旋转的回调
 
-<h3 id="19.1">19.22 - (void)videoPlayer:(__kindof SJBaseVideoPlayer *)videoPlayer willFitOnScreen:(BOOL)isFitOnScreen;</h3>
+
+</br>
+
+<h3 id="SJFitOnScreenControlDelegate">SJFitOnScreenControlDelegate</h3>
+
+<h3 id="19.19">19.19 - (void)videoPlayer:(__kindof SJBaseVideoPlayer *)videoPlayer willFitOnScreen:(BOOL)isFitOnScreen;</h3>
 
 将要充满屏幕的回调
 
-<h3 id="19.1">19.23 - (void)videoPlayer:(__kindof SJBaseVideoPlayer *)videoPlayer didCompleteFitOnScreen:(BOOL)isFitOnScreen;</h3>
+<h3 id="19.20">19.20 - (void)videoPlayer:(__kindof SJBaseVideoPlayer *)videoPlayer didCompleteFitOnScreen:(BOOL)isFitOnScreen;</h3>
 
 完成后的回调
 
-<h3 id="19.1">19.24 - (void)horizontalDirectionWillBeginDragging:(__kindof SJBaseVideoPlayer *)videoPlayer;</h3>
 
-水平方向的手势将要开始拖拽
+</br>
 
-<h3 id="19.1">19.25 - (void)videoPlayer:(__kindof SJBaseVideoPlayer *)videoPlayer horizontalDirectionDidMove:(CGFloat)progress;</h3>
+<h3 id="SJGestureControlDelegate">SJGestureControlDelegate</h3>
 
-水平方向的手势拖动中, progress 为当前的拖拽进度
+<h3 id="19.24">19.24 - (BOOL)videoPlayer:(__kindof SJBaseVideoPlayer *)videoPlayer gestureRecognizerShouldTrigger:(SJPlayerGestureType)type location:(CGPoint)location;</h3>
 
-注: 由于命名问题, 此方法未来可能会过期
+是否可以出发某个手势
 
-<h3 id="19.1">19.26 - (void)horizontalDirectionDidEndDragging:(__kindof SJBaseVideoPlayer *)videoPlayer;</h3>
 
-水平方向的手势拖动结束.
+<h3 id="19.25">19.25 - (void)videoPlayer:(__kindof SJBaseVideoPlayer *)videoPlayer panGestureTriggeredInTheHorizontalDirection:(SJPanGestureRecognizerState)state progressTime:(NSTimeInterval)progressTime;</h3>
 
-<h3 id="19.1">19.27 - (void)videoPlayer:(__kindof SJBaseVideoPlayer *)videoPlayer reachabilityChanged:(SJNetworkStatus)status;</h3>
+水平方向拖动
+
+
+</br>
+
+<h3 id="SJNetworkStatusControlDelegate">SJNetworkStatusControlDelegate</h3>
+
+
+<h3 id="19.26">19.26 - (void)videoPlayer:(__kindof SJBaseVideoPlayer *)videoPlayer reachabilityChanged:(SJNetworkStatus)status;</h3>
 
 网络状态变更的回调.
 
-<h3 id="19.1">19.28 - (void)tappedPlayerOnTheLockedState:(__kindof SJBaseVideoPlayer *)videoPlayer;</h3>
+<h3 id="SJLockScreenStateControlDelegate">SJLockScreenStateControlDelegate</h3>
+
+<h3 id="19.27">19.27 - (void)tappedPlayerOnTheLockedState:(__kindof SJBaseVideoPlayer *)videoPlayer;</h3>
 
 这是一个只有在播放器锁屏状态下, 才会回调的方法
 
 当播放器锁屏后, 用户每次点击都会回调这个方法
 
-<h3 id="19.1">19.29 - (void)lockedVideoPlayer:(__kindof SJBaseVideoPlayer *)videoPlayer;</h3>
+<h3 id="19.28">19.28 - (void)lockedVideoPlayer:(__kindof SJBaseVideoPlayer *)videoPlayer;</h3>
 
 锁屏后的回调
 
-<h3 id="19.1">19.30 - (void)unlockedVideoPlayer:(__kindof SJBaseVideoPlayer *)videoPlayer;</h3>
+<h3 id="19.29">19.29 - (void)unlockedVideoPlayer:(__kindof SJBaseVideoPlayer *)videoPlayer;</h3>
 
 解锁后的回调
 
-<h3 id="19.1">19.31 - (void)videoPlayer:(__kindof SJBaseVideoPlayer *)videoPlayer switchVideoDefinitionByURL:(NSURL *)URL statusDidChange:(SJMediaPlaybackSwitchDefinitionStatus)status;</h3>
+
+</br>
+
+<h3 id="SJSwitchVideoDefinitionControlDelegate">SJSwitchVideoDefinitionControlDelegate</h3>
+
+<h3 id="19.30">19.30 - (void)videoPlayer:(__kindof SJBaseVideoPlayer *)videoPlayer switchVideoDefinitionByURL:(NSURL *)URL statusDidChange:(SJMediaPlaybackSwitchDefinitionStatus)status;</h3>
 
 切换分辨率的回调

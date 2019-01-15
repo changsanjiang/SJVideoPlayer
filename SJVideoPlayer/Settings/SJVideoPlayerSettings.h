@@ -80,12 +80,6 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic, strong) UIFont *replayBtnFont;         // default is [UIFont boldSystemFontOfSize:12].
 @property (nonatomic, strong) UIColor *replayBtnTitleColor;  // default is white.
 
-@property (nonatomic, strong, readonly) NSString *playFailedBtnTitle;
-@property (nonatomic, strong, nullable) UIImage *playFailedBtnImage;     // default is nil.
-@property (nonatomic, strong) UIFont *playFailedBtnFont;                 // default is [UIFont boldSystemFontOfSize:12].
-@property (nonatomic, strong) UIColor *playFailedBtnTitleColor;          // default is white.
-
-
 #pragma mark more
 @property (nonatomic, strong) UIColor *moreBackgroundColor; // more view background color
 @property (nonatomic, strong) UIColor *more_traceColor;     // sider trace color of more view
@@ -100,6 +94,13 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic, strong) UIImage *more_minBrightnessImage;
 @property (nonatomic, strong) UIImage *more_maxBrightnessImage;
 
+
+// - deprecated properties
+
+@property (nonatomic, strong, readonly) NSString *playFailedBtnTitle __deprecated;
+@property (nonatomic, strong, nullable) UIImage *playFailedBtnImage __deprecated;
+@property (nonatomic, strong) UIFont *playFailedBtnFont __deprecated;
+@property (nonatomic, strong) UIColor *playFailedBtnTitleColor __deprecated;
 @end
 
 

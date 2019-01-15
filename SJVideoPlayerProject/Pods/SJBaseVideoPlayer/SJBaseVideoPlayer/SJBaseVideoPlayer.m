@@ -781,7 +781,7 @@ static NSString *_kGestureState = @"state";
 #pragma clang diagnostic pop
     }
     
-#ifdef SJ_MAC
+#ifdef DEBUG
     NSString *network = nil;
     switch ( _reachability.networkStatus ) {
         case SJNetworkStatus_NotReachable:

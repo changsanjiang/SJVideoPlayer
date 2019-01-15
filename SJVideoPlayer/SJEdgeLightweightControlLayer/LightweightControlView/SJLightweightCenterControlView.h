@@ -21,8 +21,6 @@ typedef NS_ENUM(NSUInteger, SJLightweightCenterControlViewTag) {
 
 @property (nonatomic, weak, readwrite, nullable) id<SJLightweightCenterControlViewDelegate> delegate;
 
-- (void)failedState;
-
 - (void)replayState;
 
 @end

@@ -202,7 +202,6 @@ NS_ASSUME_NONNULL_BEGIN
         if ( videoPlayer.isFullScreen ) [self->_backBtn appear];
         
         if ( [videoPlayer playStatus_isInactivity_ReasonPlayFailed] ) {
-            [self->_centerControlView failedState];
             [self->_centerControlView appear];
             [self->_topControlView appear];
             [self->_leftControlView disappear];
@@ -304,7 +303,6 @@ NS_ASSUME_NONNULL_BEGIN
             UIView_Animations(CommonAnimaDuration, ^{
                 [self.centerControlView appear];
                 if ( [videoPlayer playStatus_isInactivity_ReasonPlayEnd] ) [self.centerControlView replayState];
-                else [self.centerControlView failedState];
             }, nil);
         }
             break;

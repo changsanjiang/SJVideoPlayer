@@ -934,7 +934,7 @@ SJEdgeControlButtonItemTag const SJEdgeControlLayerCenterItem_Replay = 10000;
     if ( [videoPlayer playStatus_isPaused_ReasonSeeking] || [videoPlayer playStatus_isPrepare] ) {
         [_loadingView start];
     }
-    else {
+    else if ( videoPlayer.playbackController.bufferStatus == SJPlayerBufferStatusPlayable ) {
         [_loadingView stop];
     }
 }

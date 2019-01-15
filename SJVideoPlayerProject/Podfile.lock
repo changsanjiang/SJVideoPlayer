@@ -2,65 +2,65 @@ PODS:
   - Masonry (1.1.0)
   - Reachability (3.2)
   - SJAttributesFactory (2.0.5)
-  - SJBaseVideoPlayer (2.0.2):
+  - SJBaseVideoPlayer (2.0.3):
     - Masonry
     - Reachability
-    - SJBaseVideoPlayer/Header (= 2.0.2)
-    - SJBaseVideoPlayer/Model (= 2.0.2)
-    - SJBaseVideoPlayer/SJAVMediaPlaybackController (= 2.0.2)
-    - SJBaseVideoPlayer/SJDeviceVolumeAndBrightnessManager (= 2.0.2)
-    - SJBaseVideoPlayer/SJPrompt (= 2.0.2)
-    - SJBaseVideoPlayer/SJRotationManager (= 2.0.2)
-    - SJBaseVideoPlayer/Tool (= 2.0.2)
+    - SJBaseVideoPlayer/Header (= 2.0.3)
+    - SJBaseVideoPlayer/Model (= 2.0.3)
+    - SJBaseVideoPlayer/SJAVMediaPlaybackController (= 2.0.3)
+    - SJBaseVideoPlayer/SJDeviceVolumeAndBrightnessManager (= 2.0.3)
+    - SJBaseVideoPlayer/SJPrompt (= 2.0.3)
+    - SJBaseVideoPlayer/SJRotationManager (= 2.0.3)
+    - SJBaseVideoPlayer/Tool (= 2.0.3)
     - SJObserverHelper
-  - SJBaseVideoPlayer/Header (2.0.2):
+  - SJBaseVideoPlayer/Header (2.0.3):
     - Masonry
     - Reachability
     - SJObserverHelper
-  - SJBaseVideoPlayer/Model (2.0.2):
-    - Masonry
-    - Reachability
-    - SJBaseVideoPlayer/Header
-    - SJObserverHelper
-  - SJBaseVideoPlayer/SJAVMediaPlaybackController (2.0.2):
-    - Masonry
-    - Reachability
-    - SJBaseVideoPlayer/SJAVMediaPlaybackController/Core (= 2.0.2)
-    - SJBaseVideoPlayer/Tool
-    - SJObserverHelper
-  - SJBaseVideoPlayer/SJAVMediaPlaybackController/Core (2.0.2):
-    - Masonry
-    - Reachability
-    - SJBaseVideoPlayer/Tool
-    - SJObserverHelper
-  - SJBaseVideoPlayer/SJDeviceVolumeAndBrightnessManager (2.0.2):
+  - SJBaseVideoPlayer/Model (2.0.3):
     - Masonry
     - Reachability
     - SJBaseVideoPlayer/Header
-    - SJBaseVideoPlayer/SJDeviceVolumeAndBrightnessManager/Core (= 2.0.2)
-    - SJBaseVideoPlayer/SJDeviceVolumeAndBrightnessManager/ResourceLoader (= 2.0.2)
     - SJObserverHelper
-  - SJBaseVideoPlayer/SJDeviceVolumeAndBrightnessManager/Core (2.0.2):
+  - SJBaseVideoPlayer/SJAVMediaPlaybackController (2.0.3):
+    - Masonry
+    - Reachability
+    - SJBaseVideoPlayer/SJAVMediaPlaybackController/Core (= 2.0.3)
+    - SJBaseVideoPlayer/Tool
+    - SJObserverHelper
+  - SJBaseVideoPlayer/SJAVMediaPlaybackController/Core (2.0.3):
+    - Masonry
+    - Reachability
+    - SJBaseVideoPlayer/Tool
+    - SJObserverHelper
+  - SJBaseVideoPlayer/SJDeviceVolumeAndBrightnessManager (2.0.3):
+    - Masonry
+    - Reachability
+    - SJBaseVideoPlayer/Header
+    - SJBaseVideoPlayer/SJDeviceVolumeAndBrightnessManager/Core (= 2.0.3)
+    - SJBaseVideoPlayer/SJDeviceVolumeAndBrightnessManager/ResourceLoader (= 2.0.3)
+    - SJObserverHelper
+  - SJBaseVideoPlayer/SJDeviceVolumeAndBrightnessManager/Core (2.0.3):
     - Masonry
     - Reachability
     - SJBaseVideoPlayer/Header
     - SJBaseVideoPlayer/SJDeviceVolumeAndBrightnessManager/ResourceLoader
     - SJObserverHelper
-  - SJBaseVideoPlayer/SJDeviceVolumeAndBrightnessManager/ResourceLoader (2.0.2):
+  - SJBaseVideoPlayer/SJDeviceVolumeAndBrightnessManager/ResourceLoader (2.0.3):
     - Masonry
     - Reachability
     - SJBaseVideoPlayer/Header
     - SJObserverHelper
-  - SJBaseVideoPlayer/SJPrompt (2.0.2):
+  - SJBaseVideoPlayer/SJPrompt (2.0.3):
     - Masonry
     - Reachability
     - SJObserverHelper
-  - SJBaseVideoPlayer/SJRotationManager (2.0.2):
+  - SJBaseVideoPlayer/SJRotationManager (2.0.3):
     - Masonry
     - Reachability
     - SJBaseVideoPlayer/Header
     - SJObserverHelper
-  - SJBaseVideoPlayer/Tool (2.0.2):
+  - SJBaseVideoPlayer/Tool (2.0.3):
     - Masonry
     - Reachability
     - SJBaseVideoPlayer/Header
@@ -105,7 +105,7 @@ SPEC CHECKSUMS:
   Masonry: 678fab65091a9290e40e2832a55e7ab731aad201
   Reachability: 33e18b67625424e47b6cde6d202dce689ad7af96
   SJAttributesFactory: d5b670fd0930928ac1c6fb0b06653f92fefd640c
-  SJBaseVideoPlayer: f537ef0f74bf892c5d417feaebf0d8e334cf7ff7
+  SJBaseVideoPlayer: 8c23e7f788eaa0ededb11fa2c9ee4f56f1a45f47
   SJFullscreenPopGesture: 94db6f970d864d53161d819916aed3f30b6a1442
   SJObserverHelper: aaa83baa3ea3fdb3e972979fed25b24df524fb01
   SJRouter: 83d99661639b4be9e937e6167c830f9f8283f93f

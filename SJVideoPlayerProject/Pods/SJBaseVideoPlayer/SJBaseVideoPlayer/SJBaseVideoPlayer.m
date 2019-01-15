@@ -1135,9 +1135,14 @@ static NSString *_kGestureState = @"state";
     [self.playbackController seekToTime:secs completionHandler:^(BOOL finished) {
         __strong typeof(_self) self = _self;
         if ( !self ) return ;
-        if ( [self playStatus_isPaused_ReasonSeeking] ) [self play];
+        if ( !finished ) {
+            [self _refreshBufferStatus];
+        }
+        else {
+            if ( [self playStatus_isPaused_ReasonSeeking] ) [self play];
+            if ( self.playTimeDidChangeExeBlok ) self.playTimeDidChangeExeBlok(self);
+        }
         if ( completionHandler ) completionHandler(finished);
-        if ( self.playTimeDidChangeExeBlok ) self.playTimeDidChangeExeBlok(self);
     }];
 }
 

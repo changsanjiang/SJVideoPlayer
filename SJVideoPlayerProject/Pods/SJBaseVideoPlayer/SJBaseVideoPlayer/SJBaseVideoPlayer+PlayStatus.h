@@ -33,4 +33,5 @@
 
 - (BOOL)playStatus_isInactivity_ReasonPlayFailed;
 
+- (BOOL)playStatus_isInactivity_ReasonNotReachableAndPlaybackStalled;
 @end

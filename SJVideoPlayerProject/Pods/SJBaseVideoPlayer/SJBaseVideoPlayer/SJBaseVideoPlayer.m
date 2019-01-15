@@ -339,6 +339,9 @@ static NSString *_kGestureState = @"state";
                 case SJVideoPlayerInactivityReasonPlayFailed:
                     self.state = SJVideoPlayerPlayState_PlayFailed;
                     break;
+                case SJVideoPlayerInactivityReasonNotReachableAndPlaybackStalled:
+                    self.state = SJVideoPlayerPlayState_PlayFailed;
+                    break;
             }
             break;
     }
@@ -619,64 +622,12 @@ static NSString *_kGestureState = @"state";
 }
 @end
 
-
-#pragma mark - Network
-
-@implementation SJBaseVideoPlayer (Network)
-
-- (void)setReachability:(id<SJReachability> _Nullable)reachability {
-    _reachability = reachability;
-    [self _needUpdateReachabilityProperties];
-}
-
-- (id<SJReachability>)reachability {
-    if ( _reachability )
-        return _reachability;
-    _reachability = [SJReachability shared];
-    [self _needUpdateReachabilityProperties];
-    return _reachability;
-}
-
-- (void)_needUpdateReachabilityProperties {
-    if ( !_reachability )
-        return;
-    
-    _reachabilityObserver = [_reachability getObserver];
-    __weak typeof(self) _self = self;
-    _reachabilityObserver.networkStatusDidChangeExeBlock = ^(id<SJReachability> r, SJNetworkStatus status) {
-        __strong typeof(_self) self = _self;
-        if ( !self ) return;
-
-        if ( [self.controlLayerDelegate respondsToSelector:@selector(videoPlayer:reachabilityChanged:)] ) {
-            [self.controlLayerDelegate videoPlayer:self reachabilityChanged:status];
-        }
-        
-        if ( self.networkStatusDidChangeExeBlock )
-            self.networkStatusDidChangeExeBlock(self);
-    };
-}
-
-- (SJNetworkStatus)networkStatus {
-    return self.reachability.networkStatus;
-}
-
-- (void)setNetworkStatusDidChangeExeBlock:(void (^_Nullable)(__kindof SJBaseVideoPlayer * _Nonnull))networkStatusDidChangeExeBlock {
-    _networkStatusDidChangeExeBlock = networkStatusDidChangeExeBlock;
-}
-
-- (void (^_Nullable)(__kindof SJBaseVideoPlayer * _Nonnull))networkStatusDidChangeExeBlock {
-    return _networkStatusDidChangeExeBlock;
-}
-@end
-
-
-
 #pragma mark - 控制
 @implementation SJBaseVideoPlayer (PlayControl)
 - (void)setPlaybackController:(nullable id<SJMediaPlaybackController>)playbackController {
     [_playbackController.playerView removeFromSuperview];
     _playbackController = playbackController;
-    if ( playbackController ) [self _needUpdatePlaybackControllerProperties];
+    [self _needUpdatePlaybackControllerProperties];
 }
 
 - (id<SJMediaPlaybackController>)playbackController {
@@ -762,37 +713,50 @@ static NSString *_kGestureState = @"state";
 }
 
 - (void)playbackController:(id<SJMediaPlaybackController>)controller bufferStatusDidChange:(SJPlayerBufferStatus)bufferStatus {
-#ifdef SJ_MAC
-    switch ( bufferStatus ) {
-        case SJPlayerBufferStatusUnknown:
-            printf("\nSJPlayerBufferStatusUnknown \n");
-            break;
-        case SJPlayerBufferStatusUnplayable:
-            printf("\nSJPlayerBufferStatusUnplayable \n");
-            break;
-        case SJPlayerBufferStatusPlayable:
-            printf("\nSJPlayerBufferStatusPlayable \n");
-            break;
+    [self _refreshBufferStatus];
+}
+
+- (void)playbackController:(id<SJMediaPlaybackController>)controller presentationSizeDidChange:(CGSize)presentationSize {
+    if ( self.presentationSize ) self.presentationSize(self, presentationSize);
+    if ( [self.controlLayerDelegate respondsToSelector:@selector(videoPlayer:presentationSize:)] ) {
+        [self.controlLayerDelegate videoPlayer:self presentationSize:presentationSize];
     }
-#endif
+}
+
+- (void)playbackController:(id<SJMediaPlaybackController>)controller switchVideoDefinitionByURL:(NSURL *)URL statusDidChange:(SJMediaPlaybackSwitchDefinitionStatus)status {
+    if ( [self.controlLayerDelegate respondsToSelector:@selector(videoPlayer:switchVideoDefinitionByURL:statusDidChange:)] ) {
+        [self.controlLayerDelegate videoPlayer:self switchVideoDefinitionByURL:URL statusDidChange:status];
+    }
+}
+
+- (void)_refreshBufferStatus {
+    SJPlayerBufferStatus bufferStatus = self.playbackController.bufferStatus;
     
     switch ( bufferStatus ) {
-        case SJPlayerBufferStatusUnknown: break;
+        case SJPlayerBufferStatusUnknown:
         case SJPlayerBufferStatusUnplayable: {
-            if ( ![self playStatus_isPrepare] || _assetIsPlayed ) {
-               if ( [self playStatus_isPaused] )
-                   [self pause:SJVideoPlayerPausedReasonBuffering];
+            // 有网
+            if ( self.reachability.networkStatus != SJNetworkStatus_NotReachable ) {
+                if ( (![self playStatus_isPrepare] && ![self playStatus_isReadyToPlay]) || _assetIsPlayed ) {
+                    if ( ![self playStatus_isPaused] )
+                        [self pause:SJVideoPlayerPausedReasonBuffering];
+                }
+            }
+            // 无网
+            else if ( ![self.URLAsset.mediaURL isFileURL] ) {
+                self.inactivityReason = SJVideoPlayerInactivityReasonNotReachableAndPlaybackStalled;
+                self.playStatus = SJVideoPlayerPlayStatusInactivity;
             }
         }
             break;
         case SJPlayerBufferStatusPlayable: {
-            if ( _assetIsPlayed && [self playStatus_isPaused_ReasonBuffering] ) {
+            if ( [self playStatus_isPaused_ReasonBuffering] || [self playStatus_isInactivity_ReasonNotReachableAndPlaybackStalled] ) {
                 [self play];
             }
         }
             break;
     }
-
+    
     if ( [self.controlLayerDelegate respondsToSelector:@selector(videoPlayer:bufferStatusDidChange:)] ) {
         [self.controlLayerDelegate videoPlayer:self bufferStatusDidChange:bufferStatus];
     }
@@ -816,21 +780,34 @@ static NSString *_kGestureState = @"state";
         }
 #pragma clang diagnostic pop
     }
-}
-
-- (void)playbackController:(id<SJMediaPlaybackController>)controller presentationSizeDidChange:(CGSize)presentationSize {
-    if ( self.presentationSize ) self.presentationSize(self, presentationSize);
-    if ( [self.controlLayerDelegate respondsToSelector:@selector(videoPlayer:presentationSize:)] ) {
-        [self.controlLayerDelegate videoPlayer:self presentationSize:presentationSize];
+    
+#ifdef SJ_MAC
+    NSString *network = nil;
+    switch ( _reachability.networkStatus ) {
+        case SJNetworkStatus_NotReachable:
+            network = @"SJNetworkStatus_NotReachable";
+            break;
+        case SJNetworkStatus_ReachableViaWWAN:
+            network = @"SJNetworkStatus_ReachableViaWWAN";
+            break;
+        case SJNetworkStatus_ReachableViaWiFi:
+            network = @"SJNetworkStatus_ReachableViaWiFi";
+            break;
     }
-}
-
-- (void)playbackController:(id<SJMediaPlaybackController>)controller switchVideoDefinitionByURL:(NSURL *)URL statusDidChange:(SJMediaPlaybackSwitchDefinitionStatus)status {
-    if ( [self.controlLayerDelegate respondsToSelector:@selector(videoPlayer:switchVideoDefinitionByURL:statusDidChange:)] ) {
-        [self.controlLayerDelegate videoPlayer:self switchVideoDefinitionByURL:URL statusDidChange:status];
+    
+    switch ( bufferStatus ) {
+        case SJPlayerBufferStatusUnknown:
+            printf("\nSJPlayerBufferStatusUnknown - %s \n", network.UTF8String);
+            break;
+        case SJPlayerBufferStatusUnplayable:
+            printf("\nSJPlayerBufferStatusUnplayable - %s \n", network.UTF8String);
+            break;
+        case SJPlayerBufferStatusPlayable:
+            printf("\nSJPlayerBufferStatusPlayable - %s \n", network.UTF8String);
+            break;
     }
+#endif
 }
-
 #pragma mark -
 
 // 1.
@@ -1205,6 +1182,57 @@ static NSString *_kGestureState = @"state";
 
 @end
 
+
+#pragma mark - Network
+
+@implementation SJBaseVideoPlayer (Network)
+
+- (void)setReachability:(id<SJReachability> _Nullable)reachability {
+    _reachability = reachability;
+    [self _needUpdateReachabilityProperties];
+}
+
+- (id<SJReachability>)reachability {
+    if ( _reachability )
+        return _reachability;
+    _reachability = [SJReachability shared];
+    [self _needUpdateReachabilityProperties];
+    return _reachability;
+}
+
+- (void)_needUpdateReachabilityProperties {
+    if ( !_reachability )
+        return;
+    
+    _reachabilityObserver = [_reachability getObserver];
+    __weak typeof(self) _self = self;
+    _reachabilityObserver.networkStatusDidChangeExeBlock = ^(id<SJReachability> r, SJNetworkStatus status) {
+        __strong typeof(_self) self = _self;
+        if ( !self ) return;
+        
+        [self _refreshBufferStatus];
+        
+        if ( [self.controlLayerDelegate respondsToSelector:@selector(videoPlayer:reachabilityChanged:)] ) {
+            [self.controlLayerDelegate videoPlayer:self reachabilityChanged:status];
+        }
+        
+        if ( self.networkStatusDidChangeExeBlock )
+            self.networkStatusDidChangeExeBlock(self);
+    };
+}
+
+- (SJNetworkStatus)networkStatus {
+    return self.reachability.networkStatus;
+}
+
+- (void)setNetworkStatusDidChangeExeBlock:(void (^_Nullable)(__kindof SJBaseVideoPlayer * _Nonnull))networkStatusDidChangeExeBlock {
+    _networkStatusDidChangeExeBlock = networkStatusDidChangeExeBlock;
+}
+
+- (void (^_Nullable)(__kindof SJBaseVideoPlayer * _Nonnull))networkStatusDidChangeExeBlock {
+    return _networkStatusDidChangeExeBlock;
+}
+@end
 
 #pragma mark -
 

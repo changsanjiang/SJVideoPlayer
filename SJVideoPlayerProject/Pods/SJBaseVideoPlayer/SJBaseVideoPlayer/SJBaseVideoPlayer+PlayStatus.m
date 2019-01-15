@@ -90,6 +90,9 @@
                 case SJVideoPlayerInactivityReasonPlayFailed:
                     playStatusStr = [NSString stringWithFormat:@"SJBaseVideoPlayer<%p>.SJVideoPlayerPlayStatus.Inactivity(Reason: PlayFailed)\n", self];
                     break;
+                case SJVideoPlayerInactivityReasonNotReachableAndPlaybackStalled:
+                    playStatusStr = [NSString stringWithFormat:@"SJBaseVideoPlayer<%p>.SJVideoPlayerPlayStatus.Inactivity(Reason: PlaybackStalled)\n", self];
+                    break;
             }
         }
             break;
@@ -97,4 +100,7 @@
     return playStatusStr;
 }
 
+- (BOOL)playStatus_isInactivity_ReasonNotReachableAndPlaybackStalled {
+    return self.playStatus == SJVideoPlayerPlayStatusInactivity && self.inactivityReason == SJVideoPlayerInactivityReasonNotReachableAndPlaybackStalled;
+}
 @end

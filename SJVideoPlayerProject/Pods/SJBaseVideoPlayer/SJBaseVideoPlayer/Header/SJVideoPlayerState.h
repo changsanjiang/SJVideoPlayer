@@ -46,10 +46,12 @@ typedef NS_ENUM(NSUInteger, SJVideoPlayerPausedReason) {
  
  - SJVideoPlayerInactivityReasonPlayEnd:    播放完毕
  - SJVideoPlayerInactivityReasonPlayFailed: 播放失败
+ - SJVideoPlayerInactivityReasonNotReachableAndPlaybackStalled: 无网并且缓冲为空, 无法继续播放
  */
 typedef NS_ENUM(NSUInteger, SJVideoPlayerInactivityReason) {
     SJVideoPlayerInactivityReasonPlayEnd,
     SJVideoPlayerInactivityReasonPlayFailed,
+    SJVideoPlayerInactivityReasonNotReachableAndPlaybackStalled
 };
 
 

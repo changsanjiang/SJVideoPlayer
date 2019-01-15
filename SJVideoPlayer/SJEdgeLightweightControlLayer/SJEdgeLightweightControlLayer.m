@@ -575,26 +575,6 @@ NS_ASSUME_NONNULL_BEGIN
     }
 }
 - (void)clickedBackBtnOnTopControlView:(SJLightweightTopControlView *)view {
-    if ( self.videoPlayer.useFitOnScreenAndDisableRotation ) {
-        if ( _videoPlayer.isFitOnScreen ) {
-            _videoPlayer.fitOnScreen = NO;
-        }
-        else {
-            if ( [self.delegate respondsToSelector:@selector(clickedBackBtnOnLightweightControlLayer:)] ) {
-                [self.delegate clickedBackBtnOnLightweightControlLayer:self];
-            }
-        }
-        
-        return;
-    }
-    
-    if ( _videoPlayer.isFullScreen ) {
-        if ( SJAutoRotateSupportedOrientation_Portrait == (_videoPlayer.supportedOrientation & SJAutoRotateSupportedOrientation_Portrait) ) {
-            [_videoPlayer rotate];
-            return;
-        }
-    }
-    
     if ( [self.delegate respondsToSelector:@selector(clickedBackBtnOnLightweightControlLayer:)] ) {
         [self.delegate clickedBackBtnOnLightweightControlLayer:self];
     }

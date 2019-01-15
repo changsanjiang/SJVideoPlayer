@@ -1,7 +1,7 @@
 
 Pod::Spec.new do |s|
     s.name         = 'SJVideoPlayer'
-    s.version      = '2.3.0'
+    s.version      = '2.3.1'
     s.summary      = 'video player.'
     s.description  = 'https://github.com/changsanjiang/SJVideoPlayer/blob/master/README.md'
     s.homepage     = 'https://github.com/changsanjiang/SJVideoPlayer'
@@ -111,9 +111,14 @@ Pod::Spec.new do |s|
 
     s.subspec 'SJLoadFailedControlLayer' do |ss|
         ss.source_files = 'SJVideoPlayer/SJLoadFailedControlLayer/*.{h,m}'
-        ss.dependency 'SJVideoPlayer/SJEdgeControlLayer'
+        ss.dependency 'SJVideoPlayer/SJNotReachableControlLayer'
     end
 
+    s.subspec 'SJNotReachableControlLayer' do |ss|
+        ss.source_files = 'SJVideoPlayer/SJNotReachableControlLayer/*.{h,m}'
+        ss.dependency 'SJVideoPlayer/SJEdgeControlLayer'
+    end
+    
     s.subspec 'SJMoreSettingControlLayer' do |ss|
         ss.source_files = 'SJVideoPlayer/SJMoreSettingControlLayer/*.{h,m}'
         ss.dependency 'SJVideoPlayer/SJEdgeControlLayer'

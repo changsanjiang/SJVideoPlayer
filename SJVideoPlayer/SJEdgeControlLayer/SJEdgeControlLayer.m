@@ -271,14 +271,6 @@ SJEdgeControlButtonItemTag const SJEdgeControlLayerCenterItem_Replay = 10000;
     [self.topAdapter reload];
 }
 
-/// 播放器是否只支持一个方向
-- (BOOL)_whetherToSupportOnlyOneOrientation {
-    if ( _videoPlayer.supportedOrientation == SJAutoRotateSupportedOrientation_Portrait ) return YES;
-    if ( _videoPlayer.supportedOrientation == SJAutoRotateSupportedOrientation_LandscapeLeft ) return YES;
-    if ( _videoPlayer.supportedOrientation == SJAutoRotateSupportedOrientation_LandscapeRight ) return YES;
-    return NO;
-}
-
 - (BOOL)_canDisappearFor_TopAdapter {
     if ( _previewView && ![self _isHiddenWithView:_previewView] ) return NO;
     return YES;
@@ -294,26 +286,7 @@ SJEdgeControlButtonItemTag const SJEdgeControlLayerCenterItem_Replay = 10000;
 }
 
 - (void)clickedBackItem:(SJEdgeControlButtonItem *)item {
-    if ( _videoPlayer.useFitOnScreenAndDisableRotation ) {
-        if ( _videoPlayer.isFitOnScreen ) {
-            _videoPlayer.fitOnScreen = NO;
-        }
-        else {
-            if ( _clickedBackItemExeBlock ) _clickedBackItemExeBlock(self);
-        }
-    }
-    else {
-        // 竖屏状态
-        // 只支持一个反向
-        // 调用 back
-        if ( self.videoPlayer.orientation == SJOrientation_Portrait ||
-             [self _whetherToSupportOnlyOneOrientation] ) {
-            if ( _clickedBackItemExeBlock ) _clickedBackItemExeBlock(self);
-        }
-        else {
-            [_videoPlayer rotate];
-        }
-    }
+    if ( _clickedBackItemExeBlock ) _clickedBackItemExeBlock(self);
 }
 
 - (void)clickedPreviewItem:(SJEdgeControlButtonItem *)item {
@@ -957,6 +930,13 @@ SJEdgeControlButtonItemTag const SJEdgeControlLayerCenterItem_Replay = 10000;
 
 - (void)videoPlayer:(__kindof SJBaseVideoPlayer *)videoPlayer statusDidChanged:(SJVideoPlayerPlayStatus)status {
     [self _updateItemsForAdaptersIfNeeded:videoPlayer];
+    
+    if ( [videoPlayer playStatus_isPaused_ReasonSeeking] || [videoPlayer playStatus_isPrepare] ) {
+        [_loadingView start];
+    }
+    else {
+        [_loadingView stop];
+    }
 }
 
 - (void)videoPlayer:(__kindof SJBaseVideoPlayer *)videoPlayer currentTime:(NSTimeInterval)currentTime currentTimeStr:(NSString *)currentTimeStr totalTime:(NSTimeInterval)totalTime totalTimeStr:(NSString *)totalTimeStr {

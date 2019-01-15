@@ -7,15 +7,12 @@
 //
 
 #import <Foundation/Foundation.h>
-
-NS_ASSUME_NONNULL_BEGIN
-
-extern NSNotificationName const SJSettingsPlayerNotification;
-
 @class UIImage, UIColor, UIFont;
 
-@interface SJEdgeControlLayerSettings : NSObject
+NS_ASSUME_NONNULL_BEGIN
+extern NSNotificationName const SJSettingsPlayerNotification;
 
+@interface SJEdgeControlLayerSettings : NSObject
 /// shared
 + (instancetype)commonSettings;
 
@@ -75,11 +72,6 @@ extern NSNotificationName const SJSettingsPlayerNotification;
 @property (nonatomic, strong) UIFont *replayBtnFont;         // default is [UIFont boldSystemFontOfSize:12].
 @property (nonatomic, strong) UIColor *replayBtnTitleColor;  // default is white.
 
-@property (nonatomic, strong, readonly) NSString *playFailedBtnTitle;
-@property (nonatomic, strong, nullable) UIImage *playFailedBtnImage;     // default is nil.
-@property (nonatomic, strong) UIFont *playFailedBtnFont;                 // default is [UIFont boldSystemFontOfSize:12].
-@property (nonatomic, strong) UIColor *playFailedBtnTitleColor;          // default is white.
-
 
 #pragma mark more
 @property (nonatomic, strong) UIColor *moreBackgroundColor; // more view background color
@@ -95,5 +87,22 @@ extern NSNotificationName const SJSettingsPlayerNotification;
 @property (nonatomic, strong) UIImage *more_minBrightnessImage;
 @property (nonatomic, strong) UIImage *more_maxBrightnessImage;
 
+/// 播放失败控制层
+@property (nonatomic, strong) NSString *playFailedText;
+@property (nonatomic, strong) NSString *playFailedButtonText;
+@property (nonatomic, strong) UIColor *playFailedButtonBackgroundColor;
+
+/// 无网控制层
+@property (nonatomic, strong) NSString *notReachableAndPlaybackStalledText;
+@property (nonatomic, strong) NSString *notReachableAndPlaybackStalledButtonText;
+@property (nonatomic, strong) UIColor *notReachableAndPlaybackStalledButtonBackgroundColor;
+
+
+// - deprecated properties
+
+@property (nonatomic, strong, readonly) NSString *playFailedBtnTitle __deprecated;
+@property (nonatomic, strong, nullable) UIImage *playFailedBtnImage __deprecated;
+@property (nonatomic, strong) UIFont *playFailedBtnFont __deprecated;
+@property (nonatomic, strong) UIColor *playFailedBtnTitleColor __deprecated;
 @end
 NS_ASSUME_NONNULL_END

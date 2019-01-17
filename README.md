@@ -16,6 +16,9 @@ pod 'SJBaseVideoPlayer'
 # 天朝 
 pod 'SJBaseVideoPlayer', :git => 'https://gitee.com/changsanjiang/SJBaseVideoPlayer.git'
 pod 'SJVideoPlayer', :git => 'https://gitee.com/changsanjiang/SJVideoPlayer.git'
+pod 'SJObserverHelper', :git => 'https://gitee.com/changsanjiang/SJObserverHelper.git' 
+pod 'SJAttributesFactory', :git => 'https://gitee.com/changsanjiang/SJAttributesFactory.git'
+pod 'SJUIFactory', :git => 'https://gitee.com/changsanjiang/SJUIFactory.git'
 $ pod update --no-repo-update   (不要用 pod install 了, 用这个命令安装)
 ```
 - [Base Video Player](https://github.com/changsanjiang/SJBaseVideoPlayer)

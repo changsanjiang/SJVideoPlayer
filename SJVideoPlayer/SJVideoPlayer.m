@@ -224,13 +224,14 @@ static NSString *_kPlayStatus = @"playStatus";
 - (SJControlLayerCarrier *)defaultFilmEditingCarrier {
     if ( _defaultFilmEditingCarrier ) return _defaultFilmEditingCarrier;
     SJFilmEditingControlLayer *controlLayer = [SJFilmEditingControlLayer new];
+    _defaultFilmEditingCarrier = [[SJControlLayerCarrier alloc] initWithIdentifier:SJControlLayer_FilmEditing controlLayer:controlLayer];
+    
     __weak typeof(self) _self = self;
     controlLayer.cancelledOperationExeBlock = ^(SJFilmEditingControlLayer * _Nonnull control) {
         __strong typeof(_self) self = _self;
         if ( !self ) return ;
         [self.switcher switchToPreviousControlLayer];
     };
-    _defaultFilmEditingCarrier = [[SJControlLayerCarrier alloc] initWithIdentifier:SJControlLayer_FilmEditing controlLayer:controlLayer];
     return _defaultFilmEditingCarrier;
 }
 
@@ -245,10 +246,10 @@ static NSString *_kPlayStatus = @"playStatus";
 - (SJControlLayerCarrier *)defaultEdgeLightweightCarrier {
     if ( _defaultEdgeLightweightCarrier ) return _defaultEdgeLightweightCarrier;
     SJEdgeLightweightControlLayer *edgeControlLayer = [SJEdgeLightweightControlLayer new];
+    _defaultEdgeLightweightCarrier = [[SJControlLayerCarrier alloc] initWithIdentifier:SJControlLayer_Edge controlLayer:edgeControlLayer];
+
     edgeControlLayer.hideBackButtonWhenOrientationIsPortrait = _hideBackButtonWhenOrientationIsPortrait;
     edgeControlLayer.delegate = self;
-    _defaultEdgeLightweightCarrier = [[SJControlLayerCarrier alloc] initWithIdentifier:SJControlLayer_Edge controlLayer:edgeControlLayer];
-    
     return _defaultEdgeLightweightCarrier;
 }
 
@@ -276,15 +277,14 @@ static NSString *_kPlayStatus = @"playStatus";
 - (SJControlLayerCarrier *)defaultMoreSettingCarrier {
     if ( _defaultMoreSettingCarrier ) return _defaultMoreSettingCarrier;
     SJMoreSettingControlLayer *moreControlLayer = [SJMoreSettingControlLayer new];
-    moreControlLayer.moreSettings = self.moreSettings;
+    _defaultMoreSettingCarrier = [[SJControlLayerCarrier alloc] initWithIdentifier:SJControlLayer_MoreSettting controlLayer:moreControlLayer];
+    
     __weak typeof(self) _self = self;
     moreControlLayer.disappearExeBlock = ^(SJMoreSettingControlLayer * _Nonnull control) {
         __strong typeof(_self) self = _self;
         if ( !self ) return ;
         [self.switcher switchToPreviousControlLayer];
     };
-    
-    _defaultMoreSettingCarrier = [[SJControlLayerCarrier alloc] initWithIdentifier:SJControlLayer_MoreSettting controlLayer:moreControlLayer];
     return _defaultMoreSettingCarrier;
 }
 
@@ -299,6 +299,8 @@ static NSString *_kPlayStatus = @"playStatus";
 - (SJControlLayerCarrier *)defaultLoadFailedCarrier {
     if ( _defaultLoadFailedCarrier ) return _defaultLoadFailedCarrier;
     SJLoadFailedControlLayer *controlLayer = [SJLoadFailedControlLayer new];
+    _defaultLoadFailedCarrier = [[SJControlLayerCarrier alloc] initWithIdentifier:SJControlLayer_LoadFailed controlLayer:controlLayer];
+    
     controlLayer.hideBackButtonWhenOrientationIsPortrait = _hideBackButtonWhenOrientationIsPortrait;
     __weak typeof(self) _self = self;
     controlLayer.clickedBackButtonExeBlock = ^(SJLoadFailedControlLayer * _Nonnull controlLayer) {
@@ -317,8 +319,6 @@ static NSString *_kPlayStatus = @"playStatus";
         if ( !self ) return;
         [self.switcher switchControlLayerForIdentitfier:SJControlLayer_Edge];
     };
-
-    _defaultLoadFailedCarrier = [[SJControlLayerCarrier alloc] initWithIdentifier:SJControlLayer_LoadFailed controlLayer:controlLayer];
     return _defaultLoadFailedCarrier;
 }
 
@@ -334,6 +334,8 @@ static NSString *_kPlayStatus = @"playStatus";
 - (SJControlLayerCarrier *)defaultNotReachableCarrier {
     if ( _defaultNotReachableCarrier ) return _defaultNotReachableCarrier;
     SJNotReachableControlLayer *controlLayer = [[SJNotReachableControlLayer alloc] initWithFrame:self.view.bounds];
+    _defaultNotReachableCarrier = [[SJControlLayerCarrier alloc] initWithIdentifier:SJControlLayer_NotReachableAndPlaybackStalled controlLayer:controlLayer];
+    
     controlLayer.hideBackButtonWhenOrientationIsPortrait = _hideBackButtonWhenOrientationIsPortrait;
     __weak typeof(self) _self = self;
     controlLayer.clickedBackButtonExeBlock = ^(SJNotReachableControlLayer * _Nonnull controlLayer) {
@@ -359,7 +361,6 @@ static NSString *_kPlayStatus = @"playStatus";
             [self.switcher switchToPreviousControlLayer];
         }
     };
-    _defaultNotReachableCarrier = [[SJControlLayerCarrier alloc] initWithIdentifier:SJControlLayer_NotReachableAndPlaybackStalled controlLayer:controlLayer];
     return _defaultNotReachableCarrier;
 }
 

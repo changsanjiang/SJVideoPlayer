@@ -209,7 +209,7 @@ static NSString *_kPlayStatus = @"playStatus";
 }
 
 - (nullable SJEdgeControlLayer *)defaultEdgeControlLayer {
-    if ( [self.defaultEdgeCarrier.controlLayer isKindOfClass:[SJEdgeControlLayer class]] ) {
+    if ( [_defaultEdgeCarrier.controlLayer isKindOfClass:[SJEdgeControlLayer class]] ) {
         return (id)_defaultEdgeCarrier.controlLayer;
     }
     return nil;
@@ -254,7 +254,7 @@ static NSString *_kPlayStatus = @"playStatus";
 }
 
 - (nullable SJEdgeLightweightControlLayer *)defaultEdgeLightweightControlLayer {
-    if ( [self.defaultEdgeLightweightCarrier.controlLayer isKindOfClass:[SJEdgeLightweightControlLayer class]] ) {
+    if ( [_defaultEdgeLightweightCarrier.controlLayer isKindOfClass:[SJEdgeLightweightControlLayer class]] ) {
         return (id)_defaultEdgeLightweightCarrier.controlLayer;
     }
     return nil;
@@ -289,7 +289,7 @@ static NSString *_kPlayStatus = @"playStatus";
 }
 
 - (nullable SJMoreSettingControlLayer *)defaultMoreSettingControlLayer {
-    if ( [self.defaultMoreSettingCarrier.controlLayer isKindOfClass:[SJMoreSettingControlLayer class]] ) {
+    if ( [_defaultMoreSettingCarrier.controlLayer isKindOfClass:[SJMoreSettingControlLayer class]] ) {
         return (id)_defaultMoreSettingCarrier.controlLayer;
     }
     return nil;
@@ -365,7 +365,7 @@ static NSString *_kPlayStatus = @"playStatus";
 }
 
 - (nullable SJNotReachableControlLayer *)defaultNotReachableControlLayer {
-    if ( [_defaultNotReachableCarrier.controlLayer isKindOfClass:[SJNotReachableControlLayer class]] ) {
+    if ( [self.defaultNotReachableCarrier.controlLayer isKindOfClass:[SJNotReachableControlLayer class]] ) {
         return (id)_defaultNotReachableCarrier.controlLayer;
     }
     return nil;

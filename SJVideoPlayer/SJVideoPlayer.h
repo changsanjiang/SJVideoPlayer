@@ -53,6 +53,7 @@ NS_ASSUME_NONNULL_BEGIN
 - (nullable SJFilmEditingControlLayer *)defaultFilmEditingControlLayer;
 - (nullable SJEdgeLightweightControlLayer *)defaultEdgeLightweightControlLayer;
 - (nullable SJMoreSettingControlLayer *)defaultMoreSettingControlLayer;
+
 - (nullable SJLoadFailedControlLayer *)defaultLoadFailedControlLayer;
 - (nullable SJNotReachableControlLayer *)defaultNotReachableControlLayer;
 @end

@@ -227,7 +227,8 @@ static NSString *kRate = @"rate";
             CMTime buf = CMTimeAdd(range.start, range.duration);
             isPre_buf = (CMTimeGetSeconds(buf) - CMTimeGetSeconds(_currentTime)) > 2;
         }
-        if ( isPlaybackLikelyToKeepUp || isPlaybackBufferFull || !isFloatZero(rate) || isPre_buf ) {
+// NSLog(@"%d - %d - %d", isPlaybackLikelyToKeepUp, isPlaybackBufferFull, isPre_buf);
+        if ( isPlaybackLikelyToKeepUp || isPlaybackBufferFull || isPre_buf ) {
             status = SJPlayerBufferStatusPlayable;
         }
         else {

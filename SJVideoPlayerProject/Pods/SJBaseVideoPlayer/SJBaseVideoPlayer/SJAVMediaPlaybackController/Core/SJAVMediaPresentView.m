@@ -115,7 +115,6 @@ static NSString *kReadyForDisplay = @"readyForDisplay";
     if ( !_mainPresenter ) {
         SJAVPlayerLayerPresenter *main = [[SJAVPlayerLayerPresenter alloc] initWithFrame:self.bounds];
         main.autoresizingMask = UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight;
-        main.backgroundColor = [UIColor blackColor];
         [self addSubview:main];
         main.videoGravity = self.videoGravity;
         _mainPresenter = main;
@@ -128,7 +127,6 @@ static NSString *kReadyForDisplay = @"readyForDisplay";
     if ( !_subPresenter ) {
         SJAVPlayerLayerPresenter *sub = [[SJAVPlayerLayerPresenter alloc] initWithFrame:self.bounds];
         sub.autoresizingMask = UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight;
-        sub.backgroundColor = [UIColor blackColor];
         [self insertSubview:sub belowSubview:(id)self.mainPresenter];
         sub.videoGravity = self.videoGravity;
         _subPresenter = sub;

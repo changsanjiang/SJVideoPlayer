@@ -40,13 +40,15 @@
  Exported video or whether the image needs to be uploaded.
  
  导出来的视频或图片是否需要上传
- default is YES
+ default is NO
  */
 @property (nonatomic) BOOL resultNeedUpload;
-@property (nonatomic, weak, nullable) id<SJVideoPlayerFilmEditingResultUpload> resultUploader; // 谁去上传
+@property (nonatomic, weak, nullable) id<SJVideoPlayerFilmEditingResultUpload> resultUploader;
 
 @property (nonatomic) BOOL disableScreenshot;   // default is NO
 @property (nonatomic) BOOL disableRecord;       // default is NO
 @property (nonatomic) BOOL disableGIF;          // default is NO
 
+/// 导出成功后, 保存到相册
+@property (nonatomic) BOOL saveResultToAlbumWhenExportSuccess; // default is NO
 @end

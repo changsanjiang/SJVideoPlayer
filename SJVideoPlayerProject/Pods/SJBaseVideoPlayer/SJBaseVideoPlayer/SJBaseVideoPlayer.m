@@ -159,6 +159,7 @@ NS_ASSUME_NONNULL_BEGIN
     SJVideoPlayerInactivityReason _inactivityReason;
     void(^_Nullable _playStatusDidChangeExeBlock)(__kindof SJBaseVideoPlayer *videoPlayer);
     SJVideoPlayerURLAsset *_URLAsset;
+    NSTimeInterval _playedLastTime;
     
     /// control layer appear manager
     id<SJControlLayerAppearManager> _controlLayerAppearManager;
@@ -202,7 +203,7 @@ NS_ASSUME_NONNULL_BEGIN
 }
 
 + (NSString *)version {
-    return @"2.0.1";
+    return @"2.0.5";
 }
 
 - (nullable __kindof UIViewController *)atViewController {
@@ -359,6 +360,7 @@ static NSString *_kGestureState = @"state";
     
     if ( SJVideoPlayerPlayStatusPlaying == _playStatus ) {
         _assetIsPlayed = YES;
+        _playedLastTime = 0;
     }
 }
 
@@ -554,6 +556,7 @@ static NSString *_kGestureState = @"state";
 @implementation SJBaseVideoPlayer (VideoFlipTransition)
 - (void)setFlipTransitionManager:(id<SJFlipTransitionManager> _Nullable)flipTransitionManager {
     _flipTransitionManager = flipTransitionManager;
+    [self _needUpdateFlipTransitionManagerProperties];
 }
 - (id<SJFlipTransitionManager>)flipTransitionManager {
     if ( _flipTransitionManager )
@@ -731,6 +734,33 @@ static NSString *_kGestureState = @"state";
 
 - (void)_refreshBufferStatus {
     SJPlayerBufferStatus bufferStatus = self.playbackController.bufferStatus;
+#ifdef SJ_MAC
+    NSString *network = nil;
+    switch ( _reachability.networkStatus ) {
+        case SJNetworkStatus_NotReachable:
+            network = @"SJNetworkStatus_NotReachable";
+            break;
+        case SJNetworkStatus_ReachableViaWWAN:
+            network = @"SJNetworkStatus_ReachableViaWWAN";
+            break;
+        case SJNetworkStatus_ReachableViaWiFi:
+            network = @"SJNetworkStatus_ReachableViaWiFi";
+            break;
+    }
+    
+    switch ( bufferStatus ) {
+        case SJPlayerBufferStatusUnknown:
+            printf("\nSJPlayerBufferStatusUnknown - %s \n", network.UTF8String);
+            break;
+        case SJPlayerBufferStatusUnplayable:
+            printf("\nSJPlayerBufferStatusUnplayable - %s \n", network.UTF8String);
+            break;
+        case SJPlayerBufferStatusPlayable:
+            printf("\nSJPlayerBufferStatusPlayable - %s \n", network.UTF8String);
+            break;
+    }
+#endif
+    
     
     switch ( bufferStatus ) {
         case SJPlayerBufferStatusUnknown:
@@ -780,33 +810,6 @@ static NSString *_kGestureState = @"state";
         }
 #pragma clang diagnostic pop
     }
-    
-#ifdef DEBUG
-    NSString *network = nil;
-    switch ( _reachability.networkStatus ) {
-        case SJNetworkStatus_NotReachable:
-            network = @"SJNetworkStatus_NotReachable";
-            break;
-        case SJNetworkStatus_ReachableViaWWAN:
-            network = @"SJNetworkStatus_ReachableViaWWAN";
-            break;
-        case SJNetworkStatus_ReachableViaWiFi:
-            network = @"SJNetworkStatus_ReachableViaWiFi";
-            break;
-    }
-    
-    switch ( bufferStatus ) {
-        case SJPlayerBufferStatusUnknown:
-            printf("\nSJPlayerBufferStatusUnknown - %s \n", network.UTF8String);
-            break;
-        case SJPlayerBufferStatusUnplayable:
-            printf("\nSJPlayerBufferStatusUnplayable - %s \n", network.UTF8String);
-            break;
-        case SJPlayerBufferStatusPlayable:
-            printf("\nSJPlayerBufferStatusPlayable - %s \n", network.UTF8String);
-            break;
-    }
-#endif
 }
 #pragma mark -
 
@@ -817,6 +820,7 @@ static NSString *_kGestureState = @"state";
     }
     
     _URLAsset = URLAsset;
+    _assetIsPlayed = NO;
     
     // 维护当前播放的indexPath
     UIScrollView *scrollView = sj_getScrollView(URLAsset.playModel);
@@ -914,7 +918,10 @@ static NSString *_kGestureState = @"state";
 
 - (void)refresh {
     if ( !self.URLAsset ) return;
-    self.URLAsset = [[SJVideoPlayerURLAsset alloc] initWithURL:_URLAsset.mediaURL specifyStartTime:_URLAsset.specifyStartTime playModel:_URLAsset.playModel];
+    if ( self.currentTime != 0 ) {
+        _playedLastTime = self.currentTime;
+    }
+    self.URLAsset = [[SJVideoPlayerURLAsset alloc] initWithURL:_URLAsset.mediaURL specifyStartTime:_playedLastTime playModel:_URLAsset.playModel];
 }
 
 - (void)setAssetDeallocExeBlock:(nullable void (^)(__kindof SJBaseVideoPlayer * _Nonnull))assetDeallocExeBlock {
@@ -1691,7 +1698,7 @@ static NSString *_kGestureState = @"state";
         }
 #pragma clang diagnostic push
 #pragma clang diagnostic ignored "-Wdeprecated-declarations"
-        else if ( [self.controlLayerDataSource respondsToSelector:@selector(controlLayerDisappearCondition)] ) {
+        else if ( [self.controlLayerDelegate respondsToSelector:@selector(controlLayerDisappearCondition)] ) {
             if ( !self.controlLayerDelegate.controlLayerDisappearCondition )
                 return NO;
         }
@@ -2232,6 +2239,7 @@ static NSString *_kGestureState = @"state";
     prompt.update(^(SJPromptConfig * _Nonnull config) {
         config.cornerRadius = 4;
         config.font = [UIFont systemFontOfSize:12];
+        config.backgroundColor = [UIColor colorWithWhite:0 alpha:0.8];
     });
     objc_setAssociatedObject(self, _cmd, prompt, OBJC_ASSOCIATION_RETAIN_NONATOMIC);
     return prompt;

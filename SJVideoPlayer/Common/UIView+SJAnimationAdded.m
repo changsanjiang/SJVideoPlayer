@@ -7,7 +7,8 @@
 //
 
 #import "UIView+SJAnimationAdded.h"
-#import <objc/message.h> 
+#import <objc/message.h>
+#import "SJVideoPlayerAnimationHeader.h"
 
 NS_ASSUME_NONNULL_BEGIN
 @implementation UIView (SJAnimationAdded)
@@ -26,7 +27,6 @@ NS_ASSUME_NONNULL_BEGIN
 }
 
 - (void)sjv_disapear {
-    if ( self.sjv_disappeared ) return;
     CGAffineTransform transform = CGAffineTransformIdentity;
     switch ( self.sjv_disappearDirection ) {
         case SJViewDisappearAnimation_None: break;
@@ -47,32 +47,74 @@ NS_ASSUME_NONNULL_BEGIN
         }
             break;
         case SJViewDisappearAnimation_HorizontalScaling: {
-            transform = CGAffineTransformMakeScale(0.001f, 1);
+            transform = CGAffineTransformMakeScale(0.001, 1);
         }
             break;
         case SJViewDisappearAnimation_VerticalScaling: {
-            transform = CGAffineTransformMakeScale(1, 0.001f);
+            transform = CGAffineTransformMakeScale(1, 0.001);
         }
             break;
     }
     self.transform = transform;
-    if ( !self.sjv_doNotSetAlpha ) self.alpha = 0.001;
+    self.alpha = 0.001;
     self.sjv_disappeared = YES;
 }
 
-- (void)sjv_appear {
-    if ( !self.sjv_disappeared ) return;
+- (void)sjv_appear { 
     self.transform = CGAffineTransformIdentity;
     self.alpha = 1;
     self.sjv_disappeared = NO;
 }
-
-- (void)setSjv_doNotSetAlpha:(BOOL)sjv_doNotSetAlpha {
-    objc_setAssociatedObject(self, @selector(sjv_doNotSetAlpha), @(sjv_doNotSetAlpha), OBJC_ASSOCIATION_RETAIN_NONATOMIC);
-}
-
-- (BOOL)sjv_doNotSetAlpha {
-    return [objc_getAssociatedObject(self, _cmd) boolValue];
-}
 @end
+
+#pragma mark -
+
+BOOL sj_view_isDisappeared(UIView *view) {
+    if ( !view )
+        return NO;
+    return view.sjv_disappeared;
+}
+void sj_view_makeAppear(UIView *view, BOOL animated, void(^_Nullable completionHandler)(void)) {
+    if ( !view )
+        return;
+    [UIView animateWithDuration:0 animations:^{} completion:^(BOOL finished) {
+        if ( animated ) {
+            UIView_Animations(CommonAnimaDuration, ^{
+                [view sjv_appear];
+            }, completionHandler);
+        }
+        else {
+            [view sjv_appear];
+        }
+    }];
+}
+void sj_view_makeDisappear(UIView *view, BOOL animated, void(^_Nullable completionHandler)(void)) {
+    if ( !view )
+        return;
+    [UIView animateWithDuration:0 animations:^{} completion:^(BOOL finished) {
+        if ( animated ) {
+            UIView_Animations(CommonAnimaDuration, ^{
+                [view sjv_disapear];
+            }, completionHandler);
+        }
+        else {
+            [view sjv_disapear];
+        }
+    }];
+}
+void sj_view_initializes(UIView *view) {
+    view.alpha = 0.001;
+}
+
+void __attribute__((overloadable)) sj_view_makeAppear(UIView *view, BOOL animated) {
+    sj_view_makeAppear(view, animated, nil);
+}
+void __attribute__((overloadable)) sj_view_makeDisappear(UIView *view, BOOL animated) {
+    sj_view_makeDisappear(view, animated, nil);
+}
+void __attribute__((overloadable)) sj_view_initializes(NSArray<UIView *> *views) {
+    for ( UIView *view in views ) {
+        sj_view_initializes(view);
+    }
+}
 NS_ASSUME_NONNULL_END

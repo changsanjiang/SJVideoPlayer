@@ -21,9 +21,9 @@ NS_ASSUME_NONNULL_BEGIN
 @synthesize restarted = _restarted;
 
 - (void)restartControlLayer {
-    [self _show:self.controlView animated:YES];
-    [self _show:_topContainerView animated:YES];
-    [self _show:_bottomContainerView animated:YES];
+    sj_view_makeAppear(self.controlView, YES);
+    sj_view_makeAppear(_topContainerView, YES);
+    sj_view_makeAppear(_bottomContainerView, YES);
 }
 
 - (void)exitControlLayer {
@@ -31,12 +31,11 @@ NS_ASSUME_NONNULL_BEGIN
     _player.controlLayerDelegate = nil;
     _player = nil;
     
-    [self _hidden:_topContainerView animated:YES];
-    [self _hidden:_bottomContainerView animated:YES];
-    
-    [self _hidden:self.controlView animated:YES completionHandler:^{
+    sj_view_makeDisappear(_topContainerView, YES);
+    sj_view_makeDisappear(_bottomContainerView, YES);
+    sj_view_makeDisappear(self.controlView, YES, ^{
         if ( !self -> _restarted ) [self.controlView removeFromSuperview];
-    }];
+    });
 }
 
 - (instancetype)initWithFrame:(CGRect)frame {
@@ -88,42 +87,24 @@ NS_ASSUME_NONNULL_BEGIN
     _player = videoPlayer;
     
     [_player.view layoutIfNeeded];
-    [self _hidden:_topContainerView animated:NO];
-    [self _hidden:_bottomContainerView animated:NO];
+    sj_view_makeDisappear(_topContainerView, NO);
+    sj_view_makeDisappear(_bottomContainerView, NO);
 }
 
 - (void)controlLayerNeedAppear:(__kindof SJBaseVideoPlayer *)videoPlayer {
-    [self _show:_topContainerView animated:YES];
-    [self _show:_bottomContainerView animated:YES];
+    sj_view_makeAppear(_topContainerView, YES);
+    sj_view_makeAppear(_bottomContainerView, YES);
 }
 
 - (void)controlLayerNeedDisappear:(__kindof SJBaseVideoPlayer *)videoPlayer {
-    [self _hidden:_topContainerView animated:YES];
-    [self _hidden:_bottomContainerView animated:YES];
+    sj_view_makeDisappear(_topContainerView, YES);
+    sj_view_makeDisappear(_bottomContainerView, YES);
 }
 
 - (void)videoPlayer:(__kindof SJBaseVideoPlayer *)videoPlayer prepareToPlay:(SJVideoPlayerURLAsset *)asset {
 #ifdef DEBUG
     NSLog(@"%d - %s", (int)__LINE__, __func__);
 #endif
-}
-
-- (void)_show:(UIView *)view animated:(BOOL)animated {
-    if ( !view.sjv_disappeared ) return;
-    [UIView animateWithDuration:animated?0.6:0 animations:^{
-        [view sjv_appear];
-    }];
-}
-
-- (void)_hidden:(UIView *)view animated:(BOOL)animated {
-    [self _hidden:view animated:animated completionHandler:nil];
-}
-
-- (void)_hidden:(UIView *)view animated:(BOOL)animated completionHandler:(void(^_Nullable)(void))competionHandler {
-    if ( view.sjv_disappeared ) return;
-    [UIView animateWithDuration:animated?0.6:0 animations:^{
-        [view sjv_disapear];
-    }];
 }
 
 // SJPlayStatusControlDelegate

@@ -27,5 +27,6 @@ extern SJEdgeControlButtonItemTag const SJNotReachableControlLayerTopItem_Back;
 @property (nonatomic, copy, nullable) void(^clickedBackButtonExeBlock)(__kindof SJNotReachableControlLayer *control);
 @property (nonatomic, copy, nullable) void(^clickedReloadButtonExeBlock)(__kindof SJNotReachableControlLayer *control);
 @property (nonatomic, copy, nullable) void(^prepareToPlayNewAssetExeBlock)(__kindof SJNotReachableControlLayer *control);
+@property (nonatomic, copy, nullable) void(^playStatusDidChangeExeBlock)(__kindof SJNotReachableControlLayer *control);
 @end
 NS_ASSUME_NONNULL_END

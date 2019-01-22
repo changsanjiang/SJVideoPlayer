@@ -9,6 +9,7 @@
 #import <UIKit/UIKit.h>
 #import "SJAVMediaPlayAssetProtocol.h"
 #import "SJPlayerBufferStatus.h"
+
 @protocol SJAVMediaPlayAssetPropertiesObserverDelegate;
 @class SJAVMediaPlayAssetPropertiesObserver;
 
@@ -20,7 +21,6 @@ NS_ASSUME_NONNULL_BEGIN
 
 @property (nonatomic, readonly) NSTimeInterval specifyStartTime;
 @property (nonatomic, strong, readonly, nullable) NSURL *URL;
-
 - (instancetype)init NS_UNAVAILABLE;
 + (instancetype)new  NS_UNAVAILABLE;
 @end

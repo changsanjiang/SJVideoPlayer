@@ -39,8 +39,9 @@
         make.height.equalTo(self->_player.view.mas_width).multipliedBy(9 / 16.0f);
     }];
     
-    _player.assetURL = [NSURL URLWithString:@"https://www.apple.com/105/media/us/iphone-xr/2018/e7f073a7-e8ae-4c18-937b-91d8939fcadd/films/design/iphone-xr-design-tpl-cc-us-2018_640x360h.mp4"];
+    _player.assetURL = [NSURL URLWithString:@"https://www.apple.com/105/media/us/macbook-air/2018/9f419882_aefd_4083_902e_efcaee17a0b8/films/product/mba-product-tpl-cc-us-2018_1280x720h.mp4"];
     _player.URLAsset.title = @"Test Title";
+    _player.enableFilmEditing = YES;
     _player.hideBackButtonWhenOrientationIsPortrait = YES;
     
     // Do any additional setup after loading the view.

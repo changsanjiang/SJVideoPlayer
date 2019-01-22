@@ -65,14 +65,14 @@ SJEdgeControlButtonItemTag const SJNotReachableControlLayerTopItem_Back = 10000;
 
 - (void)restartControlLayer {
     _restarted = YES;
-    [self _show:self.controlView animated:YES];
+    sj_view_makeAppear(self.controlView, YES);
 }
 
 - (void)exitControlLayer {
     _restarted = NO;
-    [self _hidden:self.controlView animated:YES completionHandler:^{
+    sj_view_makeDisappear(self.controlView, YES, ^{
         if ( !self->_restarted ) [self.controlView removeFromSuperview];
-    }];
+    });
 }
 
 - (instancetype)initWithFrame:(CGRect)frame {
@@ -143,6 +143,10 @@ SJEdgeControlButtonItemTag const SJNotReachableControlLayerTopItem_Back = 10000;
     if ( _prepareToPlayNewAssetExeBlock ) _prepareToPlayNewAssetExeBlock(self);
 }
 
+- (void)videoPlayer:(__kindof SJBaseVideoPlayer *)videoPlayer statusDidChanged:(SJVideoPlayerPlayStatus)status {
+    if ( _playStatusDidChangeExeBlock ) _playStatusDidChangeExeBlock(self);
+}
+
 - (void)controlLayerNeedAppear:(__kindof SJBaseVideoPlayer *)videoPlayer {}
 - (void)controlLayerNeedDisappear:(__kindof SJBaseVideoPlayer *)videoPlayer {}
 - (void)videoPlayer:(__kindof SJBaseVideoPlayer *)videoPlayer willRotateView:(BOOL)isFull {
@@ -168,43 +172,6 @@ SJEdgeControlButtonItemTag const SJNotReachableControlLayerTopItem_Back = 10000;
         }
     }
     [_topAdapter reload];
-}
-
-#pragma mark -
-- (BOOL)_isHiddenWithView:(UIView *)view {
-    return view.sjv_disappeared;
-}
-
-- (void)_show:(UIView *)view animated:(BOOL)animated {
-    [self _show:view animated:animated completionHandler:nil];
-}
-
-- (void)_hidden:(UIView *)view animated:(BOOL)animated {
-    [self _hidden:view animated:animated completionHandler:nil];
-}
-
-- (void)_show:(UIView *)view animated:(BOOL)animated completionHandler:(void(^_Nullable)(void))completionHandler {
-    dispatch_async(dispatch_get_main_queue(), ^{
-        if ( !view.sjv_disappeared ) return;
-        if ( animated ) {
-            UIView_Animations(CommonAnimaDuration, ^{
-                [view sjv_appear];
-            }, completionHandler);
-        }
-        else [view sjv_appear];
-    });
-}
-
-- (void)_hidden:(UIView *)view animated:(BOOL)animated completionHandler:(void(^_Nullable)(void))completionHandler {
-    dispatch_async(dispatch_get_main_queue(), ^{
-        if ( view.sjv_disappeared ) return;
-        if ( animated ) {
-            UIView_Animations(CommonAnimaDuration, ^{
-                [view sjv_disapear];
-            }, completionHandler);
-        }
-        else [view sjv_disapear];
-    });
 }
 @end
 NS_ASSUME_NONNULL_END

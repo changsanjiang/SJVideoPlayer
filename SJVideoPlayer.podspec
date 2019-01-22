@@ -1,7 +1,7 @@
 
 Pod::Spec.new do |s|
     s.name         = 'SJVideoPlayer'
-    s.version      = '2.3.2'
+    s.version      = '2.3.3'
     s.summary      = 'video player.'
     s.description  = 'https://github.com/changsanjiang/SJVideoPlayer/blob/master/README.md'
     s.homepage     = 'https://github.com/changsanjiang/SJVideoPlayer'
@@ -90,22 +90,9 @@ Pod::Spec.new do |s|
             a.resource = 'SJVideoPlayer/SJFilmEditingControlLayer/ResourceLoader/SJFilmEditing.bundle'
         end
 
-        f.subspec 'Category' do |c|
-            c.source_files = 'SJVideoPlayer/SJFilmEditingControlLayer/Category/*'
-        end
-
-        f.subspec 'Result' do |r|
-            r.source_files = 'SJVideoPlayer/SJFilmEditingControlLayer/Result/*'
-            r.dependency 'SJVideoPlayer/SJFilmEditingControlLayer/Header'
-        end
-
-        f.subspec 'Header' do |h|
-            h.source_files = 'SJVideoPlayer/SJFilmEditingControlLayer/Header/*'
-        end
-
-        f.subspec 'View' do |v|
-            v.source_files = 'SJVideoPlayer/SJFilmEditingControlLayer/View/*'
-            v.dependency 'SJVideoPlayer/SJFilmEditingControlLayer/Header'
+        f.subspec 'Core' do |a|
+            a.source_files = 'SJVideoPlayer/SJFilmEditingControlLayer/Core/**/*.{h,m}'
+            a.dependency 'SJVideoPlayer/SJFilmEditingControlLayer/ResourceLoader'
         end
     end
 

@@ -58,6 +58,8 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (void)_switchControlLayerWithOldcarrier:(SJControlLayerCarrier *_Nullable )carrier_old newcarrier:(SJControlLayerCarrier *)carrier_new {
     NSParameterAssert(carrier_new);
+    _videoPlayer.controlLayerDataSource = nil;
+    _videoPlayer.controlLayerDelegate = nil;
     [carrier_old.controlLayer exitControlLayer];
     _videoPlayer.controlLayerDataSource = carrier_new.controlLayer;
     _videoPlayer.controlLayerDelegate = carrier_new.controlLayer;

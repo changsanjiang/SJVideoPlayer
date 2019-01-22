@@ -16,6 +16,10 @@
 #import "SJAVMediaPlayAssetSwitcher.h"
 
 NS_ASSUME_NONNULL_BEGIN
+inline static bool isFloatZero(float value) {
+    return fabsf(value) <= 0.00001f;
+}
+
 @interface SJAVMediaPlaybackController()<SJAVMediaPlayAssetPropertiesObserverDelegate>
 @property (nonatomic, strong, readonly) SJVideoPlayerRegistrar *registrar;
 
@@ -25,6 +29,7 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic, strong, nullable) SJAVMediaPlayAssetPropertiesObserver *playAssetObserver;
 @property (nonatomic, strong, nullable) SJAVMediaPlayAsset *playAsset;
 @property (nonatomic) BOOL isPreparing;
+@property (nonatomic) BOOL isPlaying;
 @end
 
 @implementation SJAVMediaPlaybackController
@@ -105,13 +110,13 @@ NS_ASSUME_NONNULL_BEGIN
     _presentationSize = CGSizeZero;
     _prepareStatus = 0;
     _switcher = nil;
+    _isPlaying = NO;
 }
 
 - (void)setVolume:(float)volume {
     _volume = volume;
     if ( !_mute ) _playAsset.player.volume = volume;
 }
-
 - (float)volume {
     return _volume;
 }
@@ -130,7 +135,6 @@ NS_ASSUME_NONNULL_BEGIN
 - (void)setVideoGravity:(SJVideoGravity)videoGravity {
     _presentView.videoGravity = videoGravity;
 }
-
 - (SJVideoGravity)videoGravity {
     return _presentView.videoGravity;
 }
@@ -138,6 +142,7 @@ NS_ASSUME_NONNULL_BEGIN
 - (void)prepareToPlay {
     if ( !_media ) return;
     if ( _isPreparing ) return; _isPreparing = YES;
+    
     _playAsset = [self _getPlayAssetForMedia:_media];
     _playAssetObserver = [[SJAVMediaPlayAssetPropertiesObserver alloc] initWithPlayerAsset:_playAsset];
     _playAssetObserver.delegate = self;
@@ -223,6 +228,7 @@ static const char *key = "kSJAVMediaPlayAsset";
 }
 - (void)observer:(SJAVMediaPlayAssetPropertiesObserver *)observer bufferLoadedTimeDidChange:(NSTimeInterval)bufferLoadedTime {
     [self _updateBufferLoadedTimeIfNeeded];
+    [self _updatePrepareStatusIfNeeded];
 }
 - (void)observer:(SJAVMediaPlayAssetPropertiesObserver *)observer bufferStatusDidChange:(SJPlayerBufferStatus)bufferStatus {
     [self _updateBufferStatusIfNeeded];
@@ -234,6 +240,7 @@ static const char *key = "kSJAVMediaPlayAsset";
     [self _updatePrepareStatusIfNeeded];
 }
 - (void)playDidToEndForObserver:(SJAVMediaPlayAssetPropertiesObserver *)observer {
+    _isPlaying = NO;
     if ( [self.delegate respondsToSelector:@selector(mediaDidPlayToEndForPlaybackController:)] ) {
         [self.delegate mediaDidPlayToEndForPlaybackController:self];
     }
@@ -275,6 +282,15 @@ static const char *key = "kSJAVMediaPlayAsset";
     if ( [self.delegate respondsToSelector:@selector(playbackController:bufferStatusDidChange:)] ) {
         [self.delegate playbackController:self bufferStatusDidChange:bufferStatus];
     }
+    
+    dispatch_async(dispatch_get_main_queue(), ^{
+        // 缓存就绪&播放中, rate如果==0, 尝试播放
+        if ( bufferStatus == SJPlayerBufferStatusPlayable &&
+             self->_isPlaying &&
+             isFloatZero(self->_playAsset.player.rate) ) {
+            [self.playAsset.player play];
+        }
+    });
 }
 
 - (void)_updatePresentationSizeIfNeeded {
@@ -289,6 +305,7 @@ static const char *key = "kSJAVMediaPlayAsset";
 
 - (void)_updatePrepareStatusIfNeeded {
     AVPlayerItemStatus playerItemStatus = _playAssetObserver.playerItemStatus;
+    
     if ( _prepareStatus != (SJMediaPlaybackPrepareStatus)playerItemStatus ) {
         _isPreparing = NO;
         _prepareStatus = (SJMediaPlaybackPrepareStatus)playerItemStatus;
@@ -308,8 +325,9 @@ static const char *key = "kSJAVMediaPlayAsset";
         };
         
         /// seek to specify start time
-        if ( 0 != self.media.specifyStartTime ) {
-            [self seekToTime:self.media.specifyStartTime completionHandler:^(BOOL finished) {
+        if ( _prepareStatus == SJMediaPlaybackPrepareStatusReadyToPlay &&
+             0 != self.media.specifyStartTime ) {
+            [self.playAsset.playerItem seekToTime:CMTimeMake(self.media.specifyStartTime * 1000, 1000) toleranceBefore:kCMTimeZero toleranceAfter:kCMTimeZero completionHandler:^(BOOL finished) {
                 _inner_completionHandler();
             }];
         }
@@ -326,6 +344,7 @@ static const char *key = "kSJAVMediaPlayAsset";
     _playAsset.player.rate = self.rate;
     _playAsset.player.muted = self.mute;
     if ( !_mute ) _playAsset.player.volume = _volume;
+    _isPlaying = YES;
     
 #ifdef DEBUG
     printf("\n");
@@ -336,8 +355,8 @@ static const char *key = "kSJAVMediaPlayAsset";
 }
 - (void)pause {
     if ( _prepareStatus != SJMediaPlaybackPrepareStatusReadyToPlay ) return;
-    
     [self.playAsset.player pause];
+    _isPlaying = NO;
 }
 - (void)stop {
     [_playAsset.player pause];
@@ -353,6 +372,7 @@ static const char *key = "kSJAVMediaPlayAsset";
     _prepareStatus = SJMediaPlaybackPrepareStatusUnknown;
     _bufferStatus = SJPlayerBufferStatusUnknown;
     _isPreparing = NO;
+    _isPlaying = NO;
 }
 - (void)seekToTime:(NSTimeInterval)secs completionHandler:(void (^ __nullable)(BOOL finished))completionHandler {
     if ( isnan(secs) ) { return; }

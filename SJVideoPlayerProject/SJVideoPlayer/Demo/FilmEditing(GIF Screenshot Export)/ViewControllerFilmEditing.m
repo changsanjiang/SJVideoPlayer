@@ -11,6 +11,7 @@
 #import <SJRouter/SJRouter.h>
 #import <Masonry/Masonry.h>
 #import <objc/message.h>
+#import "SJFilmEditingSettings.h"
 
 @interface ViewControllerFilmEditing ()<SJRouteHandler, SJVideoPlayerFilmEditingResultUpload>
 @property (nonatomic, strong) SJVideoPlayer *player;
@@ -33,15 +34,20 @@
     [super viewDidLoad];
     [self _setupViews];
     
+    SJFilmEditingSettings.update(^(SJFilmEditingSettings *settings) {
+//        settings.cancelText = @"...";
+//        settings.doneText = @"...";
+//        .....
+//        ....
+//        ..
+    });
     
     [_player showTitle:@"当前Demo为 剪辑操作示例.  请全屏后, 点击右侧剪辑按钮." duration:-1];
-    
     
     // play
     _player.URLAsset = [[SJVideoPlayerURLAsset alloc] initWithURL:[NSBundle.mainBundle URLForResource:@"play" withExtension:@"mp4"]];
     _player.URLAsset.title = @"Test Title";
     _player.URLAsset.alwaysShowTitle = YES;
-    
     
     
     // 1. 开启剪辑层(GIF/Screenshot/Export)
@@ -51,6 +57,8 @@
     SJVideoPlayerFilmEditingConfig *config = [[SJVideoPlayerFilmEditingConfig alloc] init];
     config.resultNeedUpload = YES; // 剪辑结果是否需要上传, 默认为YES
     config.resultUploader = self;  // 上传者
+    // 导出成功后, 是否保存到相册
+//    config.saveResultToAlbumWhenExportSuccess = YES;
     
     /// 2.1 用户每次点击某个操作时, 该block都会被调用. 返回Yes, 则开始操作
     ///     - 例如, 当截屏时, 用户登录之后才能继续操作, 可以在此方法中返回NO, 让用户前往登录
@@ -95,14 +103,14 @@
     static NSString *const kWeibo = @"Weibo";
     
     SJFilmEditingResultShareItem *qq =
-    [[SJFilmEditingResultShareItem alloc] initWithTitle:kQQ image:[UIImage imageNamed:@"share"]];
+    [[SJFilmEditingResultShareItem alloc] initWithTitle:kQQ image:[UIImage imageNamed:@"result_qq"]];
     qq.canAlsoClickedWhenUploading = NO; // 上传的时候, 是否可以点击, 默认为NO
     
     SJFilmEditingResultShareItem *wechat =
-    [[SJFilmEditingResultShareItem alloc] initWithTitle:kWechat image:[UIImage imageNamed:@"share"]];
+    [[SJFilmEditingResultShareItem alloc] initWithTitle:kWechat image:[UIImage imageNamed:@"result_wechat"]];
     
     SJFilmEditingResultShareItem *weibo =
-    [[SJFilmEditingResultShareItem alloc] initWithTitle:kWeibo image:[UIImage imageNamed:@"share"]];
+    [[SJFilmEditingResultShareItem alloc] initWithTitle:kWeibo image:[UIImage imageNamed:@"result_weibo"]];
     
     /// 3. 分享按钮
     config.resultShareItems = @[qq, wechat, weibo];
@@ -124,6 +132,10 @@
         }
 
         [player showTitle:title];
+        
+#ifdef DEBUG
+        NSLog(@"%d - %s", (int)__LINE__, __func__);
+#endif
     };
     
     // 4. 配置到播放器
@@ -161,6 +173,7 @@ static NSString *kCancelFlag = @"cancel";
     }
     
     
+//    测试: 此处为 模拟上传
 //    测试: 此处为 模拟上传
     dispatch_async(dispatch_get_global_queue(0, 0), ^{
         float progress = 0;

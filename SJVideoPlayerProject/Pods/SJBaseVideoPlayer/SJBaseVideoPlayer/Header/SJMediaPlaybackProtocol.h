@@ -62,6 +62,7 @@ NS_ASSUME_NONNULL_BEGIN
 - (nullable UIImage *)screenshot;
 
 - (void)switchVideoDefinitionByURL:(NSURL *)URL;
+
 @optional
 - (void)cancelPendingSeeks;
 @end

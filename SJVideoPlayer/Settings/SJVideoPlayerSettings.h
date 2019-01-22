@@ -102,26 +102,4 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic, strong) UIFont *playFailedBtnFont __deprecated;
 @property (nonatomic, strong) UIColor *playFailedBtnTitleColor __deprecated;
 @end
-
-
-@interface SJVideoPlayerSettings (FilmEditingControlLayer)
-@property (class, nonatomic, copy, readonly) void(^updateFilmEditingControlLayer)(void(^block)(SJVideoPlayerSettings *settings));
-- (void)resetFilmEditingControlLayer;
-
-@property (nonatomic, strong, readonly) NSString *videoPlayDidToEndText;
-@property (nonatomic, strong, readonly) NSString *cancelBtnTitle;
-@property (nonatomic, strong, readonly) NSString *waitingForRecordingPromptText;
-@property (nonatomic, strong, readonly) NSString *finishRecordingPromptText;
-@property (nonatomic, strong, readonly) NSString *uploadingPrompt;
-@property (nonatomic, strong, readonly) NSString *uploadSuccessfullyPrompt;
-@property (nonatomic, strong, readonly) NSString *exportingPrompt;
-@property (nonatomic, strong, readonly) NSString *exportSuccessfullyPrompt;
-@property (nonatomic, strong, readonly) NSString *operationFailedPrompt;
-
-@property (nonatomic, strong) UIImage *screenshotBtnImage;
-@property (nonatomic, strong) UIImage *exportBtnImage;
-@property (nonatomic, strong) UIImage *gifBtnImage;
-@property (nonatomic, strong) UIImage *finishRecordingBtnImage;
-@end
-
 NS_ASSUME_NONNULL_END

@@ -52,5 +52,9 @@
 		<string>UIInterfaceOrientationLandscapeLeft</string>
 		<string>UIInterfaceOrientationLandscapeRight</string>
 	</array>
+	<key>NSPhotoLibraryUsageDescription</key>
+	<string>你可以设置头像, 个人主页背景, 还可以发送带图的动态</string>
+	<key>NSPhotoLibraryAddUsageDescription</key>
+	<string>你可以设置头像, 个人主页背景, 还可以发送带图的动态</string>
 </dict>
 </plist>

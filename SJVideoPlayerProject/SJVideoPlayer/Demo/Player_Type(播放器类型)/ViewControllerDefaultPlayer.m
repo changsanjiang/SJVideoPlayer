@@ -45,10 +45,11 @@
     _player.URLAsset.title = @"Test Title";
     _player.URLAsset.alwaysShowTitle = YES;
     _player.hideBackButtonWhenOrientationIsPortrait = YES;
-    _player.enableFilmEditing = YES;
     _player.pausedToKeepAppearState = YES;
     _player.generatePreviewImages = YES;
-    
+    _player.enableFilmEditing = YES;
+    _player.filmEditingConfig.saveResultToAlbumWhenExportSuccess = YES;
+
 #pragma mark
     UILabel *noteLabel = [UILabel new];
     noteLabel.numberOfLines = 0;
@@ -60,6 +61,7 @@
         make.trailing.offset(-8);
         make.centerY.offset(0);
     }];
+
     // Do any additional setup after loading the view.
 }
 

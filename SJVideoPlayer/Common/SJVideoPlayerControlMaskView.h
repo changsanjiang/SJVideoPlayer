@@ -25,6 +25,7 @@ typedef NS_ENUM(NSUInteger, SJMaskStyle) {
 
 - (instancetype)initWithStyle:(SJMaskStyle)style;
 
+- (void)cleanColors;
 @end
 
 NS_ASSUME_NONNULL_END

@@ -14,7 +14,17 @@
 #import "SJMediaPlaybackProtocol.h"
 #import "SJPlayerGestureControlProtocol.h"
 
-@protocol SJPlayStatusControlDelegate, SJBufferControlDelegate, SJNetworkStatusControlDelegate, SJLockScreenStateControlDelegate, SJAppActivityControlDelegate, SJVolumeBrightnessRateControlDelegate, SJGestureControlDelegate, SJRotationControlDelegate, SJFitOnScreenControlDelegate, SJSwitchVideoDefinitionControlDelegate;
+@protocol SJPlayStatusControlDelegate,
+SJBufferControlDelegate,
+SJNetworkStatusControlDelegate,
+SJLockScreenStateControlDelegate,
+SJAppActivityControlDelegate,
+SJVolumeBrightnessRateControlDelegate,
+SJGestureControlDelegate,
+SJRotationControlDelegate,
+SJFitOnScreenControlDelegate,
+SJSwitchVideoDefinitionControlDelegate;
+
 @class SJBaseVideoPlayer, SJVideoPlayerURLAsset;
 
 

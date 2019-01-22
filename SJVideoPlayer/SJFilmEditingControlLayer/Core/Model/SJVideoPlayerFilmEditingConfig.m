@@ -9,13 +9,6 @@
 #import "SJVideoPlayerFilmEditingConfig.h"
 
 @implementation SJVideoPlayerFilmEditingConfig
-- (instancetype)init {
-    self = [super init];
-    if ( !self ) return nil;
-    _resultNeedUpload = YES;
-    return self;
-}
-
 - (void)config:(SJVideoPlayerFilmEditingConfig *)otherConfig {
     self.shouldStartWhenUserSelectedAnOperation = otherConfig.shouldStartWhenUserSelectedAnOperation;
     self.resultShareItems = otherConfig.resultShareItems;
@@ -25,5 +18,6 @@
     self.disableScreenshot = otherConfig.disableScreenshot;
     self.disableRecord = otherConfig.disableRecord;
     self.disableGIF = otherConfig.disableGIF;
+    self.saveResultToAlbumWhenExportSuccess = otherConfig.saveResultToAlbumWhenExportSuccess;
 }
 @end

@@ -20,13 +20,20 @@ typedef enum : NSUInteger {
 } SJViewDisappearAnimation;
 
 NS_ASSUME_NONNULL_BEGIN
+extern BOOL sj_view_isDisappeared(UIView *view);
+extern void sj_view_makeAppear(UIView *view, BOOL animated, void(^_Nullable completionHandler)(void));
+extern void sj_view_makeDisappear(UIView *view, BOOL animated, void(^_Nullable completionHandler)(void));
+extern void sj_view_initializes(UIView *view);
+
+extern void __attribute__((overloadable)) sj_view_makeAppear(UIView *view, BOOL animated);
+extern void __attribute__((overloadable)) sj_view_makeDisappear(UIView *view, BOOL animated);
+extern void __attribute__((overloadable)) sj_view_initializes(NSArray<UIView *> *views);
+
 @interface UIView (SJAnimationAdded)
 @property (nonatomic) SJViewDisappearAnimation sjv_disappearDirection;
 @property (nonatomic, readonly) BOOL sjv_disappeared;
-@property (nonatomic) BOOL sjv_doNotSetAlpha; // 是否不设置透明度, 默认动画会设置透明度
 
 - (void)sjv_disapear; // Animatable. 可动画的
 - (void)sjv_appear; // Animatable. 可动画的
-
 @end
 NS_ASSUME_NONNULL_END

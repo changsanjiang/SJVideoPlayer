@@ -179,7 +179,7 @@ static float const _GeneratePreImgScale = 0.05;
 
 @interface __SJGIFCreator : NSObject
 @property (nonatomic, strong, readonly) UIImage *firstImage;
-- (instancetype)initWithSavePath:(NSURL *)savePath imagesCount:(int)count;
+- (instancetype)initWithSavePath:(NSURL *)savePath imagesCount:(int)count interval:(NSTimeInterval)interval;
 - (void)addImage:(CGImageRef)imageRef;
 - (BOOL)finalize;
 @end
@@ -188,14 +188,15 @@ static float const _GeneratePreImgScale = 0.05;
 @property (nonatomic, strong, readonly) NSDictionary *frameProperties;
 @end
 @implementation __SJGIFCreator
-- (instancetype)initWithSavePath:(NSURL *)savePath imagesCount:(int)count {
+- (instancetype)initWithSavePath:(NSURL *)savePath imagesCount:(int)count interval:(NSTimeInterval)interval {
     self = [super init];
     if ( !self ) return nil;
+    if ( interval < 0.02 ) interval = 0.1;
     [[NSFileManager defaultManager] removeItemAtURL:savePath error:nil];
     _destination = CGImageDestinationCreateWithURL((__bridge CFURLRef)savePath, kUTTypeGIF, count, NULL);
     NSDictionary *fileProperties = @{ (__bridge id)kCGImagePropertyGIFDictionary: @{(__bridge id)kCGImagePropertyGIFLoopCount: @(0)} };
     CGImageDestinationSetProperties(_destination, (__bridge CFDictionaryRef)fileProperties);
-    _frameProperties = @{ (__bridge id)kCGImagePropertyGIFDictionary: @{(__bridge id)kCGImagePropertyGIFDelayTime: @(0.25f)} };
+    _frameProperties = @{ (__bridge id)kCGImagePropertyGIFDictionary: @{(__bridge id)kCGImagePropertyGIFDelayTime: @(interval)} };
     return self;
 }
 - (void)addImage:(CGImageRef)imageRef {
@@ -252,6 +253,7 @@ static float const _GeneratePreImgScale = 0.05;
     if ( error ) { NSLog(@"Export Failed: error = %@", error); if ( failure ) failure(self, error); return;}
     [videoTrackM insertTimeRange:cutRange ofTrack:assetVideoTrack atTime:kCMTimeZero error:&error];
     if ( error ) { NSLog(@"Export Failed: error = %@", error); if ( failure ) failure(self, error); return;}
+    videoTrackM.preferredTransform = assetVideoTrack.preferredTransform;
     
     NSURL *exportURL = [[[NSFileManager defaultManager] URLsForDirectory:NSDocumentDirectory inDomains:NSUserDomainMask].firstObject URLByAppendingPathComponent:@"Export.mp4"];
     [[NSFileManager defaultManager] removeItemAtURL:exportURL error:nil];
@@ -358,14 +360,14 @@ static float const _GeneratePreImgScale = 0.05;
                       completion:(void(^)(SJAVMediaPlayAsset *a, UIImage *imageGIF, UIImage *thumbnailImage))completion
                          failure:(void(^)(SJAVMediaPlayAsset *a, NSError *error))failure {
     [self cancelGenerateGIFOperation];
-    if ( interval == 0 ) interval = 0.2f;
+    if ( interval < 0.02 ) interval = 0.1f;
     __block int count = (int)ceil(duration / interval);
     NSMutableArray<NSValue *> *timesM = [NSMutableArray new];
     for ( int i = 0 ; i < count ; ++ i ) {
         [timesM addObject:[NSValue valueWithCMTime:CMTimeMakeWithSeconds(beginTime + i * interval, NSEC_PER_SEC)]];
     }
     self.GIFImageGenerator.maximumSize = maximumSize;
-    self.GIFCreator = [[__SJGIFCreator alloc] initWithSavePath:gifSavePath imagesCount:count];
+    self.GIFCreator = [[__SJGIFCreator alloc] initWithSavePath:gifSavePath imagesCount:count interval:interval];
     int all = count;
     __weak typeof(self) _self = self;
     [self.GIFImageGenerator generateCGImagesAsynchronouslyForTimes:timesM completionHandler:^(CMTime requestedTime, CGImageRef  _Nullable imageRef, CMTime actualTime, AVAssetImageGeneratorResult result, NSError * _Nullable error) {

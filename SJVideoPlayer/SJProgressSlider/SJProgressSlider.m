@@ -254,6 +254,10 @@ NS_ASSUME_NONNULL_BEGIN
 
 #pragma mark - slider
 - (void)_needUpdateContainerLayout {
+    if ( CGSizeEqualToSize(CGSizeZero, self.bounds.size) ) {
+        return;
+    }
+    
     CGFloat maxW = self.frame.size.width;
     CGFloat maxH = self.frame.size.height;
     
@@ -271,6 +275,10 @@ NS_ASSUME_NONNULL_BEGIN
 }
 
 - (void)_needUpdateTrackLayout {
+    if ( CGSizeEqualToSize(CGSizeZero, _containerView.bounds.size) ) {
+        return;
+    }
+    
     CGFloat trackW = _containerView.frame.size.width;
     CGFloat trackH = _containerView.frame.size.height;
     _trackImageView.frame = CGRectMake(0, 0, trackW, trackH);
@@ -278,16 +286,32 @@ NS_ASSUME_NONNULL_BEGIN
 }
 
 - (void)_needUpdateTraceLayout {
+    if ( CGSizeEqualToSize(CGSizeZero, _containerView.bounds.size) ) {
+        return;
+    }
+    
     CGFloat maxW = _containerView.frame.size.width;
     CGFloat sum = _maxValue - _minValue;
-    if ( isnan(sum) || sum <= 0 ) sum = 0.001;
     CGFloat traceW = maxW * (_value - _minValue) / sum;
     CGFloat traceH = _containerView.frame.size.height;
+    
+    if ( isnan(traceW) || isinf(traceW) ) {
+        traceW = 0;
+    }
+    
+    if ( isnan(traceH) || isinf(traceH) ) {
+        traceH = 0;
+    }
+    
     _traceImageView.frame = CGRectMake(0, 0, traceW, traceH);
     [self _needUpdateThumbLayout];
 }
 
 - (void)_needUpdateThumbLayout {
+    if ( CGSizeEqualToSize(CGSizeZero, self.bounds.size) ) {
+        return;
+    }
+    
     CGFloat height = self.frame.size.height;
     
     CGFloat thumbW = _thumbImageView.frame.size.width;
@@ -298,6 +322,10 @@ NS_ASSUME_NONNULL_BEGIN
     CGFloat tracePosition = _traceImageView.frame.size.width + _expand;
     if ( tracePosition <= minCenterX ) tracePosition = minCenterX;
     else if ( tracePosition >= maxCenterX ) tracePosition = maxCenterX;
+    
+    if ( isnan(tracePosition) || isinf(tracePosition) ) {
+        tracePosition = 0;
+    }
     _thumbImageView.center = CGPointMake(tracePosition, height * 0.5);
 }
 

@@ -16,9 +16,11 @@ target 'SJVideoPlayer' do
   # use_frameworks!
 
   # Pods for SJVideoPlayer
-  
+
   pod 'YYText', :inhibit_warnings => true
+  pod 'SJVideoPlayer', :path => '../../SJVideoPlayer'
   pod 'SJBaseVideoPlayer'#, :path => '../../SJBaseVideoPlayer'
+  pod 'SJPlaybackListController'#, :path => '../../SJPlaybackListController'
   
   # 便捷的创建 NSAttributedString
   pod 'SJAttributesFactory'
@@ -27,21 +29,10 @@ target 'SJVideoPlayer' do
   pod 'SJFullscreenPopGesture'
   
   pod 'SJScrollEntriesView'
-  #pod 'SJUIKit'
   pod 'SJUIFactory'
   pod 'Masonry', :inhibit_warnings => true
-  #pod 'MJRefresh', :inhibit_warnings => true
   pod 'SJRouter'
   pod 'SJScrollEntriesView'
-  
-  target 'SJVideoPlayerTests' do
-    inherit! :search_paths
-    # Pods for testing
-  end
-
-  target 'SJVideoPlayerUITests' do
-    inherit! :search_paths
-    # Pods for testing
-  end
-
+  #pod 'SJUIKit'
+  #pod 'MJRefresh', :inhibit_warnings => true
 end

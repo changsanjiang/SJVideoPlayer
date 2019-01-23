@@ -172,13 +172,14 @@ NS_ASSUME_NONNULL_BEGIN
 /// 播放状态
 @property (nonatomic, readonly) SJVideoPlayerPlayStatus playStatus;
 
+/// 播放状态观察者
+- (id<SJPlayStatusObserver>)getPlayStatusObserver; // 需要对它强引用, 否则观察者会被释放
+
 /// 暂停原因
 @property (nonatomic, readonly) SJVideoPlayerPausedReason pausedReason;
 
 /// 不活跃原因
 @property (nonatomic, readonly) SJVideoPlayerInactivityReason inactivityReason;
-
-@property (nonatomic, copy, nullable) void(^playStatusDidChangeExeBlock)(__kindof SJBaseVideoPlayer *videoPlayer);
 
 /// 资源刷新
 - (void)refresh;
@@ -615,6 +616,7 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic) SJDisablePlayerGestureTypes disableGestureTypes __deprecated_msg("use `disabledGestures`");
 @property (nonatomic) float volume __deprecated_msg("use `deviceVolume`");
 @property (nonatomic) float brightness __deprecated_msg("use `deviceBrightness`");
+@property (nonatomic, copy, nullable) void(^playStatusDidChangeExeBlock)(__kindof SJBaseVideoPlayer *videoPlayer) __deprecated_msg("use `_playStatusObserver = [_player getPlayStatusObserver]`");
 @end
 
 NS_ASSUME_NONNULL_END

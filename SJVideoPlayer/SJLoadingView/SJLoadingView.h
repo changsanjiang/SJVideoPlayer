@@ -10,15 +10,7 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
-typedef NS_ENUM(NSUInteger, SJLoadingType) {
-    SJLoadingType_Keep,
-    SJLoadingType_FadeOut,
-};
-
 @interface SJLoadingView : UIView
-
-/// default is SJLoadingType_Keep.
-@property (nonatomic, assign) SJLoadingType animType;
 
 /// default is whiteColor.
 @property (nonatomic, strong, null_resettable) UIColor *lineColor;

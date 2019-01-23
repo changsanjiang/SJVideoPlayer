@@ -424,10 +424,16 @@ NS_ASSUME_NONNULL_BEGIN
         cell->_customViewContainerView.hidden = YES;
     }
     
+    __weak typeof(self) _self = self;
     cell.clickedCellExeBlock = ^(SJButtonItemCollectionViewCell * _Nonnull cell) {
+        __strong typeof(_self) self = _self;
+        if ( !self ) return ;
 #pragma clang diagnostic push
 #pragma clang diagnostic ignored "-Warc-performSelector-leaks"
-        if ( [item.target respondsToSelector:item.action] ) [item.target performSelector:item.action withObject:item];
+        if ( [item.target respondsToSelector:item.action] ) {
+            [item.target performSelector:item.action withObject:item];
+            if ( self.executedTargetActionExeBlock ) self.executedTargetActionExeBlock(self);
+        }
 #pragma clang diagnostic pop
     };
 }

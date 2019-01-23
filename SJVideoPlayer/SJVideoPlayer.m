@@ -8,6 +8,8 @@
 
 #import "SJVideoPlayer.h"
 #import "UIView+SJVideoPlayerSetting.h"
+#import "SJFilmEditingControlLayer.h"
+
 #if __has_include(<SJObserverHelper/NSObject+SJObserverHelper.h>)
 #import <SJObserverHelper/NSObject+SJObserverHelper.h>
 #else
@@ -18,7 +20,6 @@
 #else
 #import "SJBaseVideoPlayer+PlayStatus.h"
 #endif
-#import "SJFilmEditingControlLayer.h"
 
 NS_ASSUME_NONNULL_BEGIN
 @interface _SJEdgeControlButtonItemDelegate : NSObject<SJEdgeControlButtonItemDelegate>
@@ -46,28 +47,6 @@ NS_ASSUME_NONNULL_BEGIN
 }
 @end
 
-@interface _SJPlayerPlayStatusObserver : NSObject
-- (instancetype)initWithPlayer:(SJBaseVideoPlayer *)player;
-@property (nonatomic, copy, nullable) void(^playStatusDidChangeExeBlock)(SJBaseVideoPlayer *player);
-@end
-@implementation _SJPlayerPlayStatusObserver
-static NSString *_kPlayStatus = @"playStatus";
-- (instancetype)initWithPlayer:(SJBaseVideoPlayer *)player {
-    self = [super init];
-    if ( !self ) return nil;
-    [player sj_addObserver:self forKeyPath:_kPlayStatus context:&_kPlayStatus];
-    return self;
-}
-
-- (void)observeValueForKeyPath:(nullable NSString *)keyPath ofObject:(nullable SJBaseVideoPlayer *)object change:(nullable NSDictionary<NSKeyValueChangeKey,id> *)change context:(nullable void *)context {
-    if ( context == &_kPlayStatus ) {
-        if ( _playStatusDidChangeExeBlock ) _playStatusDidChangeExeBlock(object);
-    }
-}
-@end
-
-
-
 
 
 
@@ -81,7 +60,7 @@ static NSString *_kPlayStatus = @"playStatus";
 @property (nonatomic, strong, readonly) SJControlLayerCarrier *defaultLoadFailedCarrier;
 @property (nonatomic, strong, readonly) SJControlLayerCarrier *defaultNotReachableCarrier;
 
-@property (nonatomic, strong, readonly) _SJPlayerPlayStatusObserver *playStatusObserver;
+@property (nonatomic, strong, readonly) id<SJPlayStatusObserver> playStatusObserver;
 @end
 
 @implementation SJVideoPlayer {
@@ -151,7 +130,7 @@ static NSString *_kPlayStatus = @"playStatus";
     }];
     [self _updateCommonProperties];
     
-    _playStatusObserver = [[_SJPlayerPlayStatusObserver alloc] initWithPlayer:self];
+    _playStatusObserver = [self getPlayStatusObserver];
     _playStatusObserver.playStatusDidChangeExeBlock = ^(SJBaseVideoPlayer * _Nonnull player) {
         __strong typeof(_self) self = _self;
         if ( !self ) return ;

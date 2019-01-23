@@ -60,6 +60,27 @@ NS_ASSUME_NONNULL_BEGIN
 }
 @end
 
+@interface SJPlayStatusObserver : NSObject<SJPlayStatusObserver>
+- (instancetype)initWithPlayer:(__kindof SJBaseVideoPlayer *)player;
+@property (nonatomic, copy, nullable) void(^playStatusDidChangeExeBlock)(__kindof SJBaseVideoPlayer *player);
+@end
+
+@implementation SJPlayStatusObserver
+static NSString *_kPlayStatus = @"playStatus";
+- (instancetype)initWithPlayer:(__kindof SJBaseVideoPlayer *)player {
+    self = [super init];
+    if ( !self ) return nil;
+    [player sj_addObserver:self forKeyPath:_kPlayStatus context:&_kPlayStatus];
+    return self;
+}
+
+- (void)observeValueForKeyPath:(nullable NSString *)keyPath ofObject:(nullable SJBaseVideoPlayer *)object change:(nullable NSDictionary<NSKeyValueChangeKey,id> *)change context:(nullable void *)context {
+    if ( context == &_kPlayStatus ) {
+        if ( _playStatusDidChangeExeBlock ) _playStatusDidChangeExeBlock(object);
+    }
+}
+@end
+
 #pragma mark -
 
 @interface SJBaseVideoPlayer ()
@@ -435,7 +456,7 @@ static NSString *_kGestureState = @"state";
     [self.view addGestureRecognizer:intercept];
 }
 
-- (void)handleInterceptTapGR:(UITapGestureRecognizer *)tap {}
+- (void)handleInterceptTapGR:(UITapGestureRecognizer *)tap { }
 
 - (SJVideoPlayerPresentView *)presentView {
     if ( _presentView ) return _presentView;
@@ -658,6 +679,10 @@ static NSString *_kGestureState = @"state";
 
 - (void)switchVideoDefinitionByURL:(NSURL *)URL {
     [self.playbackController switchVideoDefinitionByURL:URL];
+}
+
+- (id<SJPlayStatusObserver>)getPlayStatusObserver {
+    return [[SJPlayStatusObserver alloc] initWithPlayer:self];
 }
 
 /// delegate methods
@@ -933,13 +958,6 @@ static NSString *_kGestureState = @"state";
 }
 - (nullable void (^)(__kindof SJBaseVideoPlayer * _Nonnull))assetDeallocExeBlock {
     return _assetDeallocExeBlock;
-}
-
-- (void)setPlayStatusDidChangeExeBlock:(void (^_Nullable)(__kindof SJBaseVideoPlayer * _Nonnull))playStatusDidChangeExeBlock {
-    _playStatusDidChangeExeBlock = playStatusDidChangeExeBlock;
-}
-- (void (^_Nullable)(__kindof SJBaseVideoPlayer * _Nonnull))playStatusDidChangeExeBlock {
-    return _playStatusDidChangeExeBlock;
 }
 
 - (void)setPlayerVolume:(float)playerVolume {
@@ -2173,7 +2191,7 @@ static NSString *_kGestureState = @"state";
     if ( [_playbackController respondsToSelector:@selector(generateGIFWithBeginTime:duration:maximumSize:interval:gifSavePath:progress:completion:failure:)] ) {
         NSURL *filePath = [NSURL fileURLWithPath:[NSTemporaryDirectory() stringByAppendingPathComponent:@"SJGeneratedGif.gif"]];
         __weak typeof(self) _self = self;
-        [(id<SJMediaPlaybackExportController>)_playbackController generateGIFWithBeginTime:beginTime duration:duration maximumSize:CGSizeMake(375, 375) interval:0.25f gifSavePath:filePath progress:^(id<SJMediaPlaybackController>  _Nonnull controller, float progress) {
+        [(id<SJMediaPlaybackExportController>)_playbackController generateGIFWithBeginTime:beginTime duration:duration maximumSize:CGSizeMake(375, 375) interval:0.1f gifSavePath:filePath progress:^(id<SJMediaPlaybackController>  _Nonnull controller, float progress) {
             __strong typeof(_self) self = _self;
             if ( !self ) return ;
             if ( progressBlock ) progressBlock(self, progress);
@@ -2459,6 +2477,13 @@ static NSString *_kGestureState = @"state";
 }
 - (float)brightness __deprecated_msg("use `deviceBrightness`") {
     return self.deviceBrightness;
+}
+
+- (void)setPlayStatusDidChangeExeBlock:(void (^_Nullable)(__kindof SJBaseVideoPlayer * _Nonnull))playStatusDidChangeExeBlock __deprecated_msg("use `_playStatusObserver = [_player getPlayStatusObserver]`") {
+    _playStatusDidChangeExeBlock = playStatusDidChangeExeBlock;
+}
+- (void (^_Nullable)(__kindof SJBaseVideoPlayer * _Nonnull))playStatusDidChangeExeBlock __deprecated_msg("use `_playStatusObserver = [_player getPlayStatusObserver]`") {
+    return _playStatusDidChangeExeBlock;
 }
 @end
 NS_ASSUME_NONNULL_END

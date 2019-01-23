@@ -1,0 +1,33 @@
+{
+  "name": "SJPlaybackListController",
+  "version": "0.1.0",
+  "summary": "A short description of SJPlaybackListController.",
+  "description": "TODO: Add long description of the pod here.",
+  "homepage": "https://github.com/changsanjiang@gmail.com/SJPlaybackListController",
+  "license": {
+    "type": "MIT",
+    "file": "LICENSE"
+  },
+  "authors": {
+    "changsanjiang@gmail.com": "changsanjiang@gmail.com"
+  },
+  "source": {
+    "git": "https://github.com/changsanjiang@gmail.com/SJPlaybackListController.git",
+    "tag": "0.1.0"
+  },
+  "platforms": {
+    "ios": "8.0"
+  },
+  "source_files": "SJPlaybackListController/*.{h,m}",
+  "dependencies": {
+    "SJVideoPlayer": [
+
+    ]
+  },
+  "subspecs": [
+    {
+      "name": "Core",
+      "source_files": "SJPlaybackListController/Core/*.{h,m}"
+    }
+  ]
+}

@@ -140,6 +140,19 @@ SJEdgeControlButtonItemTag const SJEdgeControlLayerCenterItem_Replay = 10000;
     self.rightContainerView.sjv_disappearDirection = SJViewDisappearAnimation_Right;
     self.centerContainerView.sjv_disappearDirection = SJViewDisappearAnimation_None;
     sj_view_initializes(@[self.topContainerView, self.leftContainerView, self.bottomContainerView, self.rightContainerView]);
+    
+    __weak typeof(self) _self = self;
+    void(^executedTargetActionExeBlock)(SJEdgeControlLayerItemAdapter *adapter) = ^(SJEdgeControlLayerItemAdapter * _Nonnull adapter) {
+        __strong typeof(_self) self = _self;
+        if ( !self ) return ;
+        [self.videoPlayer.controlLayerAppearManager resume];
+    };
+    
+    self.topAdapter.executedTargetActionExeBlock = executedTargetActionExeBlock;
+    self.leftAdapter.executedTargetActionExeBlock = executedTargetActionExeBlock;
+    self.bottomAdapter.executedTargetActionExeBlock = executedTargetActionExeBlock;
+    self.rightAdapter.executedTargetActionExeBlock = executedTargetActionExeBlock;
+    self.centerAdapter.executedTargetActionExeBlock = executedTargetActionExeBlock;
 }
 
 #pragma mark - Top
@@ -851,7 +864,8 @@ SJEdgeControlButtonItemTag const SJEdgeControlLayerCenterItem_Replay = 10000;
 - (void)_draggingDidStart:(__kindof SJBaseVideoPlayer *)videoPlayer {
     if ( !_videoPlayer.isFullScreen ||
          !_videoPlayer.playbackController.isReadyForDisplay ||
-         videoPlayer.URLAsset.isM3u8 ) {
+         videoPlayer.URLAsset.isM3u8 ||
+         ![_videoPlayer.playbackController respondsToSelector:@selector(screenshotWithTime:size:completion:)] ) {
         self.draggingProgressView.style = SJVideoPlayerDraggingProgressViewStyleArrowProgress;
     }
     else {

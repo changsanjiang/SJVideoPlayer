@@ -64,6 +64,8 @@
     
     [m addObject:[[LWZTableSectionShrinker alloc] initWithTitle:@"Player Type" titleWhenShrank:nil dataArr:[self _createItemsBySJPlayerType]]];
     
+    [m addObject:[[LWZTableSectionShrinker alloc] initWithTitle:@"PlaybackListController" titleWhenShrank:nil dataArr:[self _createItemsByPlaybackListController]]];
+    
     [m addObject:[[LWZTableSectionShrinker alloc] initWithTitle:@"Control Rotation" titleWhenShrank:nil dataArr:[self _createItemsBySJControlRotation]]];
     
     [m addObject:[[LWZTableSectionShrinker alloc] initWithTitle:@"Button Item Operations For Control Layer" titleWhenShrank:nil dataArr:[self _createItemsByButtonItemOperationsForControlLayer]]];
@@ -84,6 +86,13 @@
     
     [m addObject:[[LWZTableSectionShrinker alloc] initWithTitle:@"Test Adapter" titleWhenShrank:nil dataArr:[self _createItemsByTestAdapter]]];
     _data = m.copy;
+}
+
+- (NSArray<Item *> *)_createItemsByPlaybackListController {
+    return
+    @[[[Item alloc] initWithTitle:@"PlaybackListController"
+                         subTitle:@"播放列表控制"
+                             path:@"playbackListController"]];
 }
 
 - (NSArray<Item *> *)_createItemsByPrefetcher {

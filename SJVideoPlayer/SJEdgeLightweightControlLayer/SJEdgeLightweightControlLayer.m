@@ -307,6 +307,8 @@ NS_ASSUME_NONNULL_BEGIN
         }
             break;
     }
+    
+    [self _startOrStopLoadingView];
 }
 
 - (void)videoPlayer:(SJBaseVideoPlayer *)videoPlayer
@@ -393,16 +395,31 @@ NS_ASSUME_NONNULL_BEGIN
 }
 
 - (void)videoPlayer:(__kindof SJBaseVideoPlayer *)videoPlayer bufferStatusDidChange:(SJPlayerBufferStatus)bufferStatus {
-    switch ( bufferStatus ) {
-        case SJPlayerBufferStatusUnknown:
-        case SJPlayerBufferStatusPlayable: {
-            [_loadingView stop];
+    [self _startOrStopLoadingView];
+}
+
+- (void)_startOrStopLoadingView {
+    SJPlayerBufferStatus bufferStatus = self.videoPlayer.playbackController.bufferStatus;
+    if ( [_videoPlayer playStatus_isPaused_ReasonSeeking] ||
+        [_videoPlayer playStatus_isPrepare] ) {
+        [_loadingView start];
+    }
+    else if ( _videoPlayer.playbackController.bufferStatus == SJPlayerBufferStatusPlayable ||
+             [_videoPlayer playStatus_isInactivity] ) {
+        [_loadingView stop];
+    }
+    else {
+        switch ( bufferStatus ) {
+            case SJPlayerBufferStatusUnknown:
+            case SJPlayerBufferStatusPlayable: {
+                [_loadingView stop];
+            }
+                break;
+            case SJPlayerBufferStatusUnplayable: {
+                [_loadingView start];
+            }
+                break;
         }
-            break;
-        case SJPlayerBufferStatusUnplayable: {
-            [_loadingView start];
-        }
-            break;
     }
 }
 

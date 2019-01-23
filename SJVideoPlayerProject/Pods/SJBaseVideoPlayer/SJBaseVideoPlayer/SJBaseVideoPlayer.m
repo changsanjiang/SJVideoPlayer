@@ -203,7 +203,7 @@ NS_ASSUME_NONNULL_BEGIN
 }
 
 + (NSString *)version {
-    return @"2.0.5";
+    return @"2.0.6";
 }
 
 - (nullable __kindof UIViewController *)atViewController {
@@ -733,6 +733,10 @@ static NSString *_kGestureState = @"state";
 }
 
 - (void)_refreshBufferStatus {
+    if ( [self playStatus_isInactivity_ReasonPlayEnd] ) {
+        return;
+    }
+    
     SJPlayerBufferStatus bufferStatus = self.playbackController.bufferStatus;
 #ifdef SJ_MAC
     NSString *network = nil;

@@ -946,12 +946,7 @@ SJEdgeControlButtonItemTag const SJEdgeControlLayerCenterItem_Replay = 10000;
 - (void)videoPlayer:(__kindof SJBaseVideoPlayer *)videoPlayer statusDidChanged:(SJVideoPlayerPlayStatus)status {
     [self _updateItemsForAdaptersIfNeeded:videoPlayer];
     
-    if ( [videoPlayer playStatus_isPaused_ReasonSeeking] || [videoPlayer playStatus_isPrepare] ) {
-        [_loadingView start];
-    }
-    else if ( videoPlayer.playbackController.bufferStatus == SJPlayerBufferStatusPlayable ) {
-        [_loadingView stop];
-    }
+    [self _startOrStopLoadingView];
 }
 
 - (void)videoPlayer:(__kindof SJBaseVideoPlayer *)videoPlayer currentTime:(NSTimeInterval)currentTime currentTimeStr:(NSString *)currentTimeStr totalTime:(NSTimeInterval)totalTime totalTimeStr:(NSString *)totalTimeStr {
@@ -965,16 +960,31 @@ SJEdgeControlButtonItemTag const SJEdgeControlLayerCenterItem_Replay = 10000;
 }
 
 - (void)videoPlayer:(__kindof SJBaseVideoPlayer *)videoPlayer bufferStatusDidChange:(SJPlayerBufferStatus)bufferStatus {
-    switch ( bufferStatus ) {
-        case SJPlayerBufferStatusUnknown:
-        case SJPlayerBufferStatusPlayable: {
-            [_loadingView stop];
+    [self _startOrStopLoadingView];
+}
+
+- (void)_startOrStopLoadingView {
+    SJPlayerBufferStatus bufferStatus = self.videoPlayer.playbackController.bufferStatus;
+    if ( [_videoPlayer playStatus_isPaused_ReasonSeeking] ||
+         [_videoPlayer playStatus_isPrepare] ) {
+        [_loadingView start];
+    }
+    else if ( _videoPlayer.playbackController.bufferStatus == SJPlayerBufferStatusPlayable ||
+             [_videoPlayer playStatus_isInactivity] ) {
+        [_loadingView stop];
+    }
+    else {
+        switch ( bufferStatus ) {
+            case SJPlayerBufferStatusUnknown:
+            case SJPlayerBufferStatusPlayable: {
+                [_loadingView stop];
+            }
+                break;
+            case SJPlayerBufferStatusUnplayable: {
+                [_loadingView start];
+            }
+                break;
         }
-            break;
-        case SJPlayerBufferStatusUnplayable: {
-            [_loadingView start];
-        }
-            break;
     }
 }
 

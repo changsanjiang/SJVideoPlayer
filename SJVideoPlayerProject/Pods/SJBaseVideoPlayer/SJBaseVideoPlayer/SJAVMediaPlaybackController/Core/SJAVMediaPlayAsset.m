@@ -122,7 +122,7 @@ static NSString *kRate = @"rate";
     [_playerItem sj_addObserver:self forKeyPath:kPlayerItemStatus context:&kPlayerItemStatus];
     [_playerItem sj_addObserver:self forKeyPath:kPlaybackLikelyToKeeyUp context:&kPlaybackLikelyToKeeyUp];
     [_playerItem sj_addObserver:self forKeyPath:kPlaybackBufferFull context:&kPlaybackBufferFull];
-    [_player sj_addObserver:self forKeyPath:kRate context:&kRate];
+    [_player     sj_addObserver:self forKeyPath:kRate context:&kRate];
     
     __weak typeof(self) _self = self;
     _currentTimeNoteToken = [_player addPeriodicTimeObserverForInterval:CMTimeMakeWithSeconds(0.5, NSEC_PER_SEC) queue:dispatch_get_main_queue() usingBlock:^(CMTime time) {
@@ -220,15 +220,14 @@ static NSString *kRate = @"rate";
     if ( self.playerItem.status == AVPlayerItemStatusReadyToPlay ) {
         BOOL isPlaybackBufferEmpty = self.playerItem.isPlaybackBufferEmpty;
         BOOL isPlaybackBufferFull = self.playerItem.isPlaybackBufferFull;
-        BOOL isPlaybackLikelyToKeepUp = self.playerItem.isPlaybackLikelyToKeepUp;
         BOOL isPre_buf = NO;
         if ( !isPlaybackBufferEmpty ) {
-            CMTimeRange range = _bufferLoadedTime;
-            CMTime buf = CMTimeAdd(range.start, range.duration);
-            isPre_buf = (CMTimeGetSeconds(buf) - CMTimeGetSeconds(_currentTime)) > 2;
+            CMTime currentTime = self.playerItem.currentTime;
+            CMTimeRange range = [self.playerItem.loadedTimeRanges.firstObject CMTimeRangeValue];
+            isPre_buf = CMTimeRangeContainsTime(range, currentTime) && CMTimeGetSeconds(range.duration) > 0.1;
         }
-// NSLog(@"%d - %d - %d", isPlaybackLikelyToKeepUp, isPlaybackBufferFull, isPre_buf);
-        if ( isPlaybackLikelyToKeepUp || isPlaybackBufferFull || isPre_buf ) {
+        
+        if ( isPre_buf || isPlaybackBufferFull ) {
             status = SJPlayerBufferStatusPlayable;
         }
         else {

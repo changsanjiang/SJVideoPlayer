@@ -30,6 +30,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (NSInteger)indexForMediaId:(NSInteger)mediaId; // 如果不存在, 将返回 NSNotFound
 - (nullable id<SJMediaInfo>)mediaAtIndex:(NSInteger)index;
+- (nullable id<SJMediaInfo>)mediaForMediaId:(NSInteger)mediaId;
 
 // - add
 - (void)addMedia:(id<SJMediaInfo>)media;
@@ -61,6 +62,7 @@ NS_ASSUME_NONNULL_BEGIN
 @protocol SJPlaybackListControllerDelegate <NSObject>
 - (void)listController:(id<SJPlaybackListController>)listController needToPlayMedia:(id<SJMediaInfo>)media;
 - (void)listController:(id<SJPlaybackListController>)listController needToReplayCurrentMedia:(id<SJMediaInfo>)media;
+- (void)currentMediaForListControllerIsRemoved:(id<SJPlaybackListController>)listController;
 @end
 
 @protocol SJMediaInfo <NSObject>

@@ -46,6 +46,13 @@ NS_ASSUME_NONNULL_BEGIN
     return idx;
 }
 
+- (nullable id<SJMediaInfo>)mediaForMediaId:(NSInteger)mediaId {
+    SJPlaybackListControllerLock();
+    id<SJMediaInfo> media = [self _unsafe_mediaForMediaId:mediaId];
+    SJPlaybackListControllerUnlock();
+    return media;
+}
+
 - (nullable id<SJMediaInfo>)mediaAtIndex:(NSInteger)index {
     id<SJMediaInfo> info = nil;
     SJPlaybackListControllerLock();
@@ -72,12 +79,14 @@ NS_ASSUME_NONNULL_BEGIN
         [_m removeObjectAtIndex:idx];
     }
     
-    idx = [self _unsafe_indexForMediaId:self.currentMediaId];
-    if ( idx >= _m.count || idx < 0 ) {
-        idx = 0;
-    }
+    idx = [self _unsafe_indexForMediaId:self.currentMediaId] + 1;
     
-    [_m insertObject:media atIndex:idx];
+    if ( idx > _m.count || idx < 0 ) {
+        [_m addObject:media];
+    }
+    else {
+        [_m insertObject:media atIndex:idx];
+    }
     SJPlaybackListControllerUnlock();
     [NSNotificationCenter.defaultCenter postNotificationName:SJPlaybackListControllerListDidChangeNotification object:self];
 }
@@ -110,6 +119,12 @@ NS_ASSUME_NONNULL_BEGIN
         [_m removeObjectAtIndex:idx];
     }
     SJPlaybackListControllerUnlock();
+    if ( self.currentMediaId == mediaId ) {
+        self.currentMediaId = NSNotFound;
+        if ( [self.delegate respondsToSelector:@selector(currentMediaForListControllerIsRemoved:)] ) {
+            [self.delegate currentMediaForListControllerIsRemoved:self];
+        }
+    }
     [NSNotificationCenter.defaultCenter postNotificationName:SJPlaybackListControllerListDidChangeNotification object:self];
 }
 
@@ -118,11 +133,17 @@ NS_ASSUME_NONNULL_BEGIN
     [_m removeAllObjects];
     self.currentMediaId = NSNotFound;
     SJPlaybackListControllerUnlock();
+    if ( self.currentMediaId != NSNotFound ) {
+        self.currentMediaId = NSNotFound;
+        if ( [self.delegate respondsToSelector:@selector(currentMediaForListControllerIsRemoved:)] ) {
+            [self.delegate currentMediaForListControllerIsRemoved:self];
+        }
+    }
     [NSNotificationCenter.defaultCenter postNotificationName:SJPlaybackListControllerListDidChangeNotification object:self];
 }
 
 - (nullable id<SJMediaInfo>)currentMedia {
-    return [self mediaAtIndex:self.currentMediaId];
+    return [self mediaForMediaId:self.currentMediaId];
 }
 
 - (NSArray<id<SJMediaInfo>> *)medias {
@@ -228,6 +249,14 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (NSInteger)_unsafe_indexForMediaId:(NSInteger)mediaId {
     return [self _unsafe_medias:_m indexForMediaId:mediaId];
+}
+
+- (nullable id<SJMediaInfo>)_unsafe_mediaForMediaId:(NSInteger)mediaId {
+    NSInteger idx = [self _unsafe_indexForMediaId:mediaId];
+    if ( idx != NSNotFound ) {
+        return _m[idx];
+    }
+    return nil;
 }
 
 - (void)_unsafe_addMedia:(id<SJMediaInfo>)media {

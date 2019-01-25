@@ -1,6 +1,6 @@
 {
   "name": "SJPlaybackListController",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "summary": "SJBaseVideoPlayer 播放列表控制器.",
   "description": "播放列表控制器: 1. 播放模式: 单曲/循环/随机. 2: 播放列表控制",
   "homepage": "https://github.com/changsanjiang/SJPlaybackListController",
@@ -13,17 +13,12 @@
   },
   "source": {
     "git": "https://github.com/changsanjiang/SJPlaybackListController.git",
-    "tag": "0.0.1"
+    "tag": "0.0.2"
   },
   "platforms": {
     "ios": "8.0"
   },
   "source_files": "SJPlaybackListController/*.{h,m}",
-  "dependencies": {
-    "SJBaseVideoPlayer": [
-
-    ]
-  },
   "subspecs": [
     {
       "name": "Core",

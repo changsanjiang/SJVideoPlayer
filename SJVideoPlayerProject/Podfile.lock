@@ -68,9 +68,9 @@ PODS:
     - SJObserverHelper
   - SJFullscreenPopGesture (1.4.6)
   - SJObserverHelper (1.0.6)
-  - SJPlaybackListController (0.0.2):
-    - SJPlaybackListController/Core (= 0.0.2)
-  - SJPlaybackListController/Core (0.0.2)
+  - SJPlaybackListController (0.0.3):
+    - SJPlaybackListController/Core (= 0.0.3)
+  - SJPlaybackListController/Core (0.0.3)
   - SJRouter (0.0.9):
     - SJRouter/Core (= 0.0.9)
   - SJRouter/Core (0.0.9)
@@ -266,7 +266,7 @@ SPEC CHECKSUMS:
   SJBaseVideoPlayer: ec93eb716b261ef7262b350839b316ac0cc0db50
   SJFullscreenPopGesture: 94db6f970d864d53161d819916aed3f30b6a1442
   SJObserverHelper: aaa83baa3ea3fdb3e972979fed25b24df524fb01
-  SJPlaybackListController: 4f5f0962b4179f00e2b500d6274caf58da323582
+  SJPlaybackListController: 1da48ff4d7d7f2b0cf5d871b93cf9bbac0a18f39
   SJRouter: 83d99661639b4be9e937e6167c830f9f8283f93f
   SJScrollEntriesView: 2388fec9dbb6ab639f8966de036394eeb753617d
   SJUIFactory: b3e973c5e2ae08bc5a1bd2c68d94c00f81e01a0b

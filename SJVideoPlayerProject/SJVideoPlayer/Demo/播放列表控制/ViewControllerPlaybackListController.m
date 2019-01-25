@@ -229,4 +229,9 @@ static SJEdgeControlButtonItemTag SJEdgeControlButtonItem_PlayNextMedia = 101;
     [_player replay];
 }
 
+/// 当前播放的 media 被移除的回调
+- (void)currentMediaForListControllerIsRemoved:(id<SJPlaybackListController>)listController {
+    [_player stop];
+    [listController playNextMedia];
+}
 @end

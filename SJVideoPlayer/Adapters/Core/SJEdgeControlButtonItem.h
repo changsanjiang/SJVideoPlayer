@@ -38,6 +38,8 @@ NS_ASSUME_NONNULL_BEGIN
 - (instancetype)initWithCustomView:(nullable __kindof UIView *)customView
                                tag:(SJEdgeControlButtonItemTag)tag;
 
+- (instancetype)initWithTag:(SJEdgeControlButtonItemTag)tag;
+
 @property (nonatomic) SJEdgeInsets insets; // 左右间隔, 默认{0, 0}
 @property (nonatomic) SJEdgeControlButtonItemTag tag;
 @property (nonatomic, strong, nullable) __kindof UIView *customView;

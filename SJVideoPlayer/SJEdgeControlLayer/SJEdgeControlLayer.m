@@ -111,6 +111,7 @@ SJEdgeControlButtonItemTag const SJEdgeControlLayerCenterItem_Replay = 10000;
     sj_view_makeDisappear(_bottomProgressSlider, NO);
     self.autoAdjustTopSpacing = YES;
     self.generatePreviewImages = YES;
+    self.hideBottomProgressSlider = YES;
     SJEdgeControlLayerSettings.update(^(SJEdgeControlLayerSettings * _Nonnull settings) {});
     return self;
 }
@@ -126,12 +127,6 @@ SJEdgeControlButtonItemTag const SJEdgeControlLayerCenterItem_Replay = 10000;
     [self.controlView addSubview:self.loadingView];
     [_loadingView mas_makeConstraints:^(MASConstraintMaker *make) {
         make.center.offset(0);
-    }];
-
-    [self.controlView addSubview:self.bottomProgressSlider];
-    [_bottomProgressSlider mas_makeConstraints:^(MASConstraintMaker *make) {
-        make.left.bottom.right.offset(0);
-        make.height.offset(1);
     }];
     
     self.topContainerView.sjv_disappearDirection = SJViewDisappearAnimation_Top;
@@ -678,10 +673,39 @@ SJEdgeControlButtonItemTag const SJEdgeControlLayerCenterItem_Replay = 10000;
     _bottomProgressSlider.settingRecroder = [[SJVideoPlayerControlSettingRecorder alloc] initWithSettings:^(SJEdgeControlLayerSettings * _Nonnull setting) {
         __strong typeof(_self) self = _self;
         if ( !self ) return ;
-        self.bottomProgressSlider.traceImageView.backgroundColor = setting.progress_traceColor;
-        self.bottomProgressSlider.trackImageView.backgroundColor = setting.progress_trackColor;
+        [self _updateBottomProgressSlider];
     }];
+    [self _updateBottomProgressSlider];
     return _bottomProgressSlider;
+}
+
+- (void)_updateBottomProgressSlider {
+    if ( !_bottomProgressSlider )
+        return;
+    SJEdgeControlLayerSettings *setting = SJEdgeControlLayerSettings.commonSettings;
+    _bottomProgressSlider.traceImageView.backgroundColor = setting.progress_traceColor;
+    _bottomProgressSlider.trackImageView.backgroundColor = setting.progress_trackColor;
+}
+
+- (void)setHideBottomProgressSlider:(BOOL)hideBottomProgressSlider {
+    _hideBottomProgressSlider = hideBottomProgressSlider;
+    dispatch_async(dispatch_get_main_queue(), ^{
+        if ( self->_hideBottomProgressSlider ) {
+            if ( self->_bottomProgressSlider ) {
+                [self->_bottomProgressSlider removeFromSuperview];
+                self->_bottomProgressSlider = nil;
+            }
+        }
+        else {
+            if ( !self->_bottomProgressSlider ) {
+                [self.controlView addSubview:self.bottomProgressSlider];
+                [self->_bottomProgressSlider mas_makeConstraints:^(MASConstraintMaker *make) {
+                    make.left.bottom.right.offset(0);
+                    make.height.offset(1);
+                }];
+            }
+        }
+    });
 }
 
 #pragma mark - right

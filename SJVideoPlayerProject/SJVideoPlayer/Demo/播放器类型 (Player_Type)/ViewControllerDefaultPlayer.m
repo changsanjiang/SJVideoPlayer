@@ -49,7 +49,7 @@
     _player.generatePreviewImages = YES;
     _player.enableFilmEditing = YES;
     _player.filmEditingConfig.saveResultToAlbumWhenExportSuccess = YES;
-
+    
 #pragma mark
     UILabel *noteLabel = [UILabel new];
     noteLabel.numberOfLines = 0;

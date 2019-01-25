@@ -34,5 +34,6 @@ extern SJEdgeControlButtonItemTag const SJEdgeControlLayerCenterItem_Replay;    
 @property (nonatomic) BOOL hideBackButtonWhenOrientationIsPortrait;
 @property (nonatomic) BOOL disablePromptWhenNetworkStatusChanges;
 @property (nonatomic) BOOL generatePreviewImages;
+@property (nonatomic) BOOL hideBottomProgressSlider;
 @end
 NS_ASSUME_NONNULL_END

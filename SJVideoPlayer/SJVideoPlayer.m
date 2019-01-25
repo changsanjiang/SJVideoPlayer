@@ -107,6 +107,8 @@ NS_ASSUME_NONNULL_BEGIN
     [self.switcher switchControlLayerForIdentitfier:SJControlLayer_Edge];
     /// 显示更多按钮
     self.showMoreItemForTopControlLayer = YES;
+    /// 显示底部进度条
+    self.defaultEdgeControlLayer.hideBottomProgressSlider = NO;
     return self;
 }
 

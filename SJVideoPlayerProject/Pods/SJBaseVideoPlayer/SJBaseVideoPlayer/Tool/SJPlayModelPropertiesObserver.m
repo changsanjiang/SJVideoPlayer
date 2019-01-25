@@ -151,6 +151,24 @@ static NSString *kState = @"state";
 - (void)_scrollViewDidScroll:(UIScrollView *)scrollView {
     if ( !scrollView ) return;
     if ( CGPointEqualToPoint(_beforeOffset, scrollView.contentOffset) ) return;
+    
+    ///
+    /// Thanks @loveuqian
+    /// https://github.com/changsanjiang/SJVideoPlayer/issues/62
+    ///
+    if ( [_playModel isKindOfClass:[SJUICollectionViewNestedInUITableViewCellPlayModel class]] ) {
+        SJUICollectionViewNestedInUITableViewCellPlayModel *playModel = _playModel;
+        if ( scrollView == playModel.tableView ) {
+            [self _observeScrollView:playModel.collectionView];
+        }
+    }
+    else if ( [_playModel isKindOfClass:[SJUICollectionViewNestedInUICollectionViewCellPlayModel class]] ) {
+        SJUICollectionViewNestedInUICollectionViewCellPlayModel *playModel = _playModel;
+        if ( scrollView == playModel.rootCollectionView ) {
+            [self _observeScrollView:playModel.collectionView];
+        }
+    }
+
     self.isAppeared = [self _isAppearedInTheScrollingView:scrollView];
     _beforeOffset = scrollView.contentOffset;
 }

@@ -9,7 +9,6 @@
 #define SJPlaybackListControllerProtocol_h
 
 @protocol SJMediaInfo, SJPlaybackListControllerObserver, SJPlaybackListControllerDelegate;
-@class SJPlayModel, SJBaseVideoPlayer;
 
 typedef enum : NSUInteger {
     SJPlaybackMode_ListCycle,       // 列表循环
@@ -32,40 +31,40 @@ NS_ASSUME_NONNULL_BEGIN
 - (NSInteger)indexForMediaId:(NSInteger)mediaId; // 如果不存在, 将返回 NSNotFound
 - (nullable id<SJMediaInfo>)mediaAtIndex:(NSInteger)index;
 
+// - add
 - (void)addMedia:(id<SJMediaInfo>)media;
 - (void)addToTheBackOfCurrentMedia:(id<SJMediaInfo>)media;
+- (void)addMedias:(NSArray<id<SJMediaInfo>> *)medias;
+
+// - replace
 - (void)replaceMedias:(NSArray<id<SJMediaInfo>> *)medias;
+
+// - remove
 - (void)remove:(NSInteger)mediaId;
 - (void)removeAllMedias;
 
+// - playback mode
 @property SJSupportedPlaybackMode supportedMode;
 @property SJPlaybackMode mode; // 播放模式
 - (void)changePlaybackMode;
 
-@property (strong, readonly, nullable) id<SJMediaInfo> currentMedia;
+// - play
 - (void)playPreviousMedia;
 - (void)playNextMedia;
 - (void)playAtIndex:(NSInteger)idx;
+- (void)currentMediaFinishedPlaying; // 当播放器播放完成后, 请调用这个方法, 告诉列表控制器当前的media已完成播放
 
+- (nullable id<SJMediaInfo>)currentMedia;
 - (NSArray<id<SJMediaInfo>> * _Nonnull)medias;
-
-- (instancetype)init NS_UNAVAILABLE;
-+ (instancetype)new NS_UNAVAILABLE;
 @end
 
 @protocol SJPlaybackListControllerDelegate <NSObject>
-@optional
-/// playbackURLDecisionHandler - 播放地址决定块
-/// 如果返回`nil`, 将采用`index`对应的`audioInfo.playURL`
-- (void)listController:(id<SJPlaybackListController>)listController willPlayAtIndex:(NSInteger)index playbackURLDecisionHandler:(void(^)(NSURL *_Nullable URL))playbackURLDecisionHandler;
+- (void)listController:(id<SJPlaybackListController>)listController needToPlayMedia:(id<SJMediaInfo>)media;
+- (void)listController:(id<SJPlaybackListController>)listController needToReplayCurrentMedia:(id<SJMediaInfo>)media;
 @end
 
 @protocol SJMediaInfo <NSObject>
 @property (nonatomic, readonly) NSInteger id;
-@property (nonatomic, strong, readonly) SJPlayModel *viewHierarchy; // 视图层级
-@property (nonatomic, strong, readonly) NSURL *URL;
-@property (nonatomic, strong, readonly) NSString *title;
-@property (nonatomic, readonly) NSTimeInterval specifyStartTime;
 @end
 
 @protocol SJPlaybackListControllerObserver <NSObject>

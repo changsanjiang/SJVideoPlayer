@@ -7,22 +7,14 @@
 
 #import "SJPlaybackListController.h"
 #import "SJPlaybackListControllerObserver.h"
-#if __has_include(<SJBaseVideoPlayer/SJBaseVideoPlayer.h>)
-#import <SJBaseVideoPlayer/SJBaseVideoPlayer.h>
-#import <SJBaseVideoPlayer/SJBaseVideoPlayer+PlayStatus.h>
-#else
-#import "SJBaseVideoPlayer.h"
-#import "SJBaseVideoPlayer+PlayStatus.h"
-#endif
 
 NS_ASSUME_NONNULL_BEGIN
 #define SJPlaybackListControllerLock() dispatch_semaphore_wait(_lock, DISPATCH_TIME_FOREVER);
 #define SJPlaybackListControllerUnlock() dispatch_semaphore_signal(_lock);
 
 @interface SJPlaybackListController ()
-@property (nonatomic, strong, readonly) id<SJPlayStatusObserver> playStatusObserver;
 @property (nonatomic, strong, readonly) NSMutableArray<id<SJMediaInfo>> *m;
-@property (strong, nullable) id<SJMediaInfo> currentMedia;
+@property NSInteger currentMediaId;
 @end
 
 @implementation SJPlaybackListController {
@@ -31,15 +23,13 @@ NS_ASSUME_NONNULL_BEGIN
 @synthesize supportedMode = _supportedMode;
 @synthesize delegate = _delegate;
 
-- (instancetype)initWithPlayer:(__kindof SJBaseVideoPlayer *)player {
+- (instancetype)init {
     self = [super init];
-    if (self) {
-        _player = player;
-        _m = [NSMutableArray array];
-        _lock = dispatch_semaphore_create(1);
-        _supportedMode = SJSupportedPlaybackMode_All;
-        [self initializePlayStatusObserver];
-    }
+    if ( !self ) return nil;
+    _currentMediaId = NSNotFound;
+    _m = [NSMutableArray array];
+    _lock = dispatch_semaphore_create(1);
+    _supportedMode = SJSupportedPlaybackMode_All;
     return self;
 }
 
@@ -51,7 +41,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (NSInteger)indexForMediaId:(NSInteger)mediaId {
     SJPlaybackListControllerLock();
-    NSInteger idx = [self _indexForMediaId:mediaId];
+    NSInteger idx = [self _unsafe_indexForMediaId:mediaId];
     SJPlaybackListControllerUnlock();
     return idx;
 }
@@ -67,28 +57,38 @@ NS_ASSUME_NONNULL_BEGIN
 }
 
 - (void)addMedia:(id<SJMediaInfo>)media {
-    if ( !media || self.currentMedia.id == media.id )
-        return;
     SJPlaybackListControllerLock();
-    NSInteger idx = [self _indexForMediaId:media.id];
-    if ( idx != NSNotFound ) {
-        [_m removeObjectAtIndex:idx];
-    }
-    [_m addObject:media];
+    [self _unsafe_addMedia:media];
     SJPlaybackListControllerUnlock();
     [NSNotificationCenter.defaultCenter postNotificationName:SJPlaybackListControllerListDidChangeNotification object:self];
 }
 
 - (void)addToTheBackOfCurrentMedia:(id<SJMediaInfo>)media {
-    if ( !media || self.currentMedia.id == media.id )
+    if ( !media || self.currentMediaId == media.id )
         return;
     SJPlaybackListControllerLock();
-    NSInteger idx = [self _indexForMediaId:media.id];
+    NSInteger idx = [self _unsafe_indexForMediaId:media.id];
     if ( idx != NSNotFound ) {
         [_m removeObjectAtIndex:idx];
     }
-    idx = [self _indexForMediaId:self.currentMedia.id] + 1;
+    
+    idx = [self _unsafe_indexForMediaId:self.currentMediaId];
+    if ( idx >= _m.count || idx < 0 ) {
+        idx = 0;
+    }
+    
     [_m insertObject:media atIndex:idx];
+    SJPlaybackListControllerUnlock();
+    [NSNotificationCenter.defaultCenter postNotificationName:SJPlaybackListControllerListDidChangeNotification object:self];
+}
+
+- (void)addMedias:(NSArray<id<SJMediaInfo>> *)medias {
+    if ( 0 == medias.count )
+        return;
+    SJPlaybackListControllerLock();
+    for ( id<SJMediaInfo> info in [self _removeDuplicateMedias:medias] ) {
+        [self _unsafe_addMedia:info];
+    }
     SJPlaybackListControllerUnlock();
     [NSNotificationCenter.defaultCenter postNotificationName:SJPlaybackListControllerListDidChangeNotification object:self];
 }
@@ -105,7 +105,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (void)remove:(NSInteger)mediaId {
     SJPlaybackListControllerLock();
-    NSInteger idx = [self _indexForMediaId:mediaId];
+    NSInteger idx = [self _unsafe_indexForMediaId:mediaId];
     if ( idx != NSNotFound ) {
         [_m removeObjectAtIndex:idx];
     }
@@ -116,8 +116,13 @@ NS_ASSUME_NONNULL_BEGIN
 - (void)removeAllMedias {
     SJPlaybackListControllerLock();
     [_m removeAllObjects];
+    self.currentMediaId = NSNotFound;
     SJPlaybackListControllerUnlock();
     [NSNotificationCenter.defaultCenter postNotificationName:SJPlaybackListControllerListDidChangeNotification object:self];
+}
+
+- (nullable id<SJMediaInfo>)currentMedia {
+    return [self mediaAtIndex:self.currentMediaId];
 }
 
 - (NSArray<id<SJMediaInfo>> *)medias {
@@ -139,13 +144,14 @@ NS_ASSUME_NONNULL_BEGIN
 }
 
 - (BOOL)_isSupportedMode:(SJPlaybackMode)mode {
+    SJSupportedPlaybackMode supportedMode = self.supportedMode;
     switch ( mode ) {
         case SJPlaybackMode_ListCycle:
-            return _supportedMode & SJSupportedPlaybackMode_ListCycle;
+            return supportedMode & SJSupportedPlaybackMode_ListCycle;
         case SJPlaybackMode_SingleCycle:
-            return _supportedMode & SJSupportedPlaybackMode_SingleCycle;
+            return supportedMode & SJSupportedPlaybackMode_SingleCycle;
         case SJPlaybackMode_RandomPlay:
-            return _supportedMode & SJSupportedPlaybackMode_RandomPlay;
+            return supportedMode & SJSupportedPlaybackMode_RandomPlay;
     }
 }
 
@@ -167,45 +173,78 @@ NS_ASSUME_NONNULL_BEGIN
 - (void)playPreviousMedia {
     if ( 0 == _m.count )
         return;
-    NSInteger idx = [self indexForMediaId:self.currentMedia.id];
-    [self playAtIndex:(idx-1<_m.count)?(idx-1):(_m.count-1)];
+    if ( __builtin_expect(self.mode == SJPlaybackMode_RandomPlay, 0) ) {
+        [self _randomModePlayNextMedia];
+    }
+    else {
+        NSInteger idx = [self indexForMediaId:self.currentMediaId];
+        [self playAtIndex:(idx-1<_m.count)?(idx-1):(_m.count-1)];
+    }
 }
 - (void)playNextMedia {
     if ( 0 == _m.count )
         return;
-    NSInteger idx = [self indexForMediaId:self.currentMedia.id];
-    [self playAtIndex:(idx+1<_m.count)?(idx+1):0];
+    if ( __builtin_expect(self.mode == SJPlaybackMode_RandomPlay, 0) ) {
+        [self _randomModePlayNextMedia];
+    }
+    else {
+        NSInteger idx = [self indexForMediaId:self.currentMediaId];
+        [self playAtIndex:(idx+1<_m.count)?(idx+1):0];
+    }
+}
+- (void)_randomModePlayNextMedia {
+    NSInteger idx = [self indexForMediaId:self.currentMediaId];
+    NSInteger next = idx; while ( next == idx ) next = arc4random() % _m.count;
+    [self playAtIndex:next];
 }
 - (void)playAtIndex:(NSInteger)idx {
     id<SJMediaInfo>_Nullable info = [self mediaAtIndex:idx];
-    if ( !info || !info.URL )
+    if ( !info )
         return;
-    self.currentMedia = info;
+    self.currentMediaId = info.id;
     
-    __weak typeof(self) _self = self;
-    void(^_innerBlock)(NSURL *URL) = ^(NSURL *URL) {
-        __strong typeof(_self) self = _self;
-        if ( !self ) return ;
-        self.player.URLAsset = [[SJVideoPlayerURLAsset alloc] initWithURL:URL playModel:info.viewHierarchy];
-        [NSNotificationCenter.defaultCenter postNotificationName:SJPlaybackListControllerPrepareToPlayMediaNotification object:self];
-    };
+#ifdef DEBUG
+    printf("\n播放列表: 将要播放 - idx = %ld \n", (long)idx);
+#endif
     
-    if ( [self.delegate respondsToSelector:@selector(listController:willPlayAtIndex:playbackURLDecisionHandler:)] ) {
-        [self.delegate listController:self willPlayAtIndex:idx playbackURLDecisionHandler:^(NSURL * _Nullable URL) {
-            _innerBlock(URL?:info.URL);
-        }];
+    if ( [self.delegate respondsToSelector:@selector(listController:needToPlayMedia:)] ) {
+        [self.delegate listController:self needToPlayMedia:info];
+    }
+    
+    [NSNotificationCenter.defaultCenter postNotificationName:SJPlaybackListControllerPrepareToPlayMediaNotification object:self];
+}
+- (void)currentMediaFinishedPlaying {
+    if ( self.mode == SJPlaybackMode_SingleCycle ) {
+        if ( [self.delegate respondsToSelector:@selector(listController:needToReplayCurrentMedia:)] ) {
+            [self.delegate listController:self needToReplayCurrentMedia:self.currentMedia];
+        }
     }
     else {
-        _innerBlock(info.URL);
+        [self playNextMedia];
     }
 }
 
-#pragma mark -
+#pragma mark - unsafe
 
-- (NSInteger)_indexForMediaId:(NSInteger)mediaId {
+- (NSInteger)_unsafe_indexForMediaId:(NSInteger)mediaId {
+    return [self _unsafe_medias:_m indexForMediaId:mediaId];
+}
+
+- (void)_unsafe_addMedia:(id<SJMediaInfo>)media {
+    if ( !media || self.currentMediaId == media.id )
+        return;
+    
+    NSInteger idx = [self _unsafe_indexForMediaId:media.id];
+    if ( idx != NSNotFound ) {
+        [_m removeObjectAtIndex:idx];
+    }
+    [_m addObject:media];
+}
+
+- (NSInteger)_unsafe_medias:(NSArray<id<SJMediaInfo>> *)medias indexForMediaId:(NSInteger)mediaId {
     NSInteger idx = NSNotFound;
-    for ( NSInteger i = 0 ; i < _m.count ; ++ i ) {
-        id<SJMediaInfo> info = _m[i];
+    for ( NSInteger i = 0 ; i < medias.count ; ++ i ) {
+        id<SJMediaInfo> info = medias[i];
         if ( info.id == mediaId ) {
             idx = i;
             break;
@@ -214,24 +253,18 @@ NS_ASSUME_NONNULL_BEGIN
     return idx;
 }
 
-#pragma mark -
-
-- (void)initializePlayStatusObserver {
-    _playStatusObserver = [_player getPlayStatusObserver];
-    
-    __weak typeof(self) _self = self;
-    _playStatusObserver.playStatusDidChangeExeBlock = ^(SJBaseVideoPlayer * _Nonnull player) {
-        __strong typeof(_self) self = _self;
-        if ( !self ) return;
-        if ( [player playStatus_isInactivity_ReasonPlayEnd] ) {
-            if ( self.mode == SJPlaybackMode_SingleCycle ) {
-                [player replay];
-            }
-            else {
-                [self playNextMedia];
-            }
+- (nullable NSArray<id<SJMediaInfo>> *)_removeDuplicateMedias:(NSArray<id<SJMediaInfo>> *)medias {
+    NSInteger count = medias.count;
+    if ( 0 == count )
+        return nil;
+    NSMutableArray<id<SJMediaInfo>> *m = [NSMutableArray arrayWithCapacity:count];
+    for ( id<SJMediaInfo> info in medias ) {
+        NSInteger idx = [self _unsafe_medias:m indexForMediaId:info.id];
+        if ( idx == NSNotFound ) {
+            [m addObject:info];
         }
-    };
+    }
+    return m.copy;
 }
 @end
 NS_ASSUME_NONNULL_END

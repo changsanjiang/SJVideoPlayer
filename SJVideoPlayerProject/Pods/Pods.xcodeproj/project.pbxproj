@@ -344,13 +344,6 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
-		0D7FB183ED1F8612C2C96F68F94CF0D1 /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = D41D8CD98F00B204E9800998ECF8427E /* Project object */;
-			proxyType = 1;
-			remoteGlobalIDString = BD2AB9E907A07877358C2D0E194BD4CA;
-			remoteInfo = SJBaseVideoPlayer;
-		};
 		22E8D3C9639E006197A57BFCB142FF75 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = D41D8CD98F00B204E9800998ECF8427E /* Project object */;
@@ -2325,7 +2318,6 @@
 			buildRules = (
 			);
 			dependencies = (
-				D3EC64EA8C030E68B21F38DCF1AF812A /* PBXTargetDependency */,
 			);
 			name = SJPlaybackListController;
 			productName = SJPlaybackListController;
@@ -2881,12 +2873,6 @@
 			name = SJVideoPlayer;
 			target = C39268EF76EFAA362AD9154C6F1F4F24 /* SJVideoPlayer */;
 			targetProxy = A230FB57D6C0FE32D91400431A94093B /* PBXContainerItemProxy */;
-		};
-		D3EC64EA8C030E68B21F38DCF1AF812A /* PBXTargetDependency */ = {
-			isa = PBXTargetDependency;
-			name = SJBaseVideoPlayer;
-			target = BD2AB9E907A07877358C2D0E194BD4CA /* SJBaseVideoPlayer */;
-			targetProxy = 0D7FB183ED1F8612C2C96F68F94CF0D1 /* PBXContainerItemProxy */;
 		};
 		D5787F3543BD1C8F2FAD806300587251 /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;

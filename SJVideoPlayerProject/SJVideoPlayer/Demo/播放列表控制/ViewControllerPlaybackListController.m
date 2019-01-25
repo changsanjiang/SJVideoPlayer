@@ -13,9 +13,10 @@
 #import "SJPlaybackListController.h"
 #import "TestMedia.h"
 
-@interface ViewControllerPlaybackListController ()<SJRouteHandler>
+@interface ViewControllerPlaybackListController ()<SJRouteHandler, SJPlaybackListControllerDelegate>
 @property (nonatomic, strong, readonly) id<SJPlaybackListControllerObserver> listControllerObserver;
 @property (nonatomic, strong, readonly) SJPlaybackListController *listController;
+@property (nonatomic, strong, readonly) SJVideoPlayer *player;
 @end
 
 @implementation ViewControllerPlaybackListController
@@ -29,6 +30,7 @@
 
 - (void)viewDidLoad {
     [super viewDidLoad];
+    [self _initializePlayer];
     [self _initializePlaybackListController];
     [self _initializeListControllerObserver];
     [self _addButtonItemsToEdgeControlLayer];
@@ -52,16 +54,49 @@
 
     [_listController replaceMedias:medias]; // 当前列表替换为 medias
     [_listController playAtIndex:0];    // 播放第一个视频
-}
+    
+    
+#if 0
+    /// Test
+    for ( int i = 0 ; i < 999 ; ++ i ) {
+        dispatch_async(dispatch_get_global_queue(0, 0), ^{
+            [self.listController addMedia:medias.firstObject];
+        });
 
-- (void)_initializeListControllerObserver {
-    _listControllerObserver = [_listController getObserver];
-    __weak typeof(self) _self = self;
-    _listControllerObserver.playbackModeDidChangeExdBlock = ^(id<SJPlaybackListController>  _Nonnull controller) {
-        __strong typeof(_self) self = _self;
-        if ( !self ) return ;
-        [self _updatePlaybackModeItem];
-    };
+        dispatch_async(dispatch_get_global_queue(0, 0), ^{
+            [self.listController addToTheBackOfCurrentMedia:medias.lastObject];
+        });
+        
+        dispatch_async(dispatch_get_global_queue(0, 0), ^{
+            [self.listController addMedias:medias];
+        });
+
+        dispatch_async(dispatch_get_global_queue(0, 0), ^{
+            [self.listController replaceMedias:medias];
+        });
+
+        dispatch_async(dispatch_get_global_queue(0, 0), ^{
+            [self.listController remove:3];
+        });
+
+        dispatch_async(dispatch_get_global_queue(0, 0), ^{
+            [self.listController removeAllMedias];
+        });
+
+        dispatch_async(dispatch_get_global_queue(0, 0), ^{
+            [self.listController changePlaybackMode];
+        });
+
+        dispatch_async(dispatch_get_global_queue(0, 0), ^{
+            self.listController.mode = SJPlaybackMode_SingleCycle;
+        });
+        
+        dispatch_async(dispatch_get_global_queue(0, 0), ^{
+            [self.listController medias];
+        });
+    }
+#endif
+    
 }
 
 #pragma mark -
@@ -70,16 +105,14 @@ static SJEdgeControlButtonItemTag SJEdgeControlButtonItem_PlaybackMode = 100;
 static SJEdgeControlButtonItemTag SJEdgeControlButtonItem_PlayNextMedia = 101;
 
 - (void)_addButtonItemsToEdgeControlLayer {
-    SJVideoPlayer *player = _listController.player;
-    
     // 播放模式按钮 (列表循环/单曲循环/随机播放)
     SJEdgeControlButtonItem *playbackModeItem = [SJEdgeControlButtonItem placeholderWithType:SJButtonItemPlaceholderType_49x49 tag:SJEdgeControlButtonItem_PlaybackMode];
-    [player.defaultEdgeControlLayer.bottomAdapter insertItem:playbackModeItem frontItem:SJEdgeControlLayerBottomItem_Play];
+    [_player.defaultEdgeControlLayer.bottomAdapter insertItem:playbackModeItem frontItem:SJEdgeControlLayerBottomItem_Play];
     [playbackModeItem addTarget:self action:@selector(handleClickedPlaybackModeItemEvent:)];
 
     // 下一曲按钮
     SJEdgeControlButtonItem *playNextMediaItem = [SJEdgeControlButtonItem placeholderWithType:SJButtonItemPlaceholderType_49x49 tag:SJEdgeControlButtonItem_PlayNextMedia];
-    [player.defaultEdgeControlLayer.bottomAdapter insertItem:playNextMediaItem frontItem:SJEdgeControlButtonItem_PlaybackMode];
+    [_player.defaultEdgeControlLayer.bottomAdapter insertItem:playNextMediaItem frontItem:SJEdgeControlButtonItem_PlaybackMode];
     [playNextMediaItem addTarget:self action:@selector(handleClickedPlayNextMediaItemEvent:)];
     
     // 更新
@@ -96,26 +129,24 @@ static SJEdgeControlButtonItemTag SJEdgeControlButtonItem_PlayNextMedia = 101;
 }
 
 - (void)_updatePlaybackModeItem {
-    SJVideoPlayer *player = _listController.player;
-    SJEdgeControlButtonItem *playbackModeItem = [player.defaultEdgeControlLayer.bottomAdapter itemForTag:SJEdgeControlButtonItem_PlaybackMode];
+    SJEdgeControlButtonItem *playbackModeItem = [_player.defaultEdgeControlLayer.bottomAdapter itemForTag:SJEdgeControlButtonItem_PlaybackMode];
     __weak typeof(self) _self = self;
     [self _loadImageWithName:[self _imageNameOfPlaybackMode] callback:^(UIImage * _Nullable img) {
         __strong typeof(_self) self = _self;
         if ( !self ) return ;
         playbackModeItem.image = img;
-        [player.defaultEdgeControlLayer.bottomAdapter reload];
+        [self.player.defaultEdgeControlLayer.bottomAdapter reload];
     }];
 }
 
 - (void)_updatePlayNextMediaItem {
-    SJVideoPlayer *player = _listController.player;
-    SJEdgeControlButtonItem *playNextMediaItem = [player.defaultEdgeControlLayer.bottomAdapter itemForTag:SJEdgeControlButtonItem_PlayNextMedia];
+    SJEdgeControlButtonItem *playNextMediaItem = [_player.defaultEdgeControlLayer.bottomAdapter itemForTag:SJEdgeControlButtonItem_PlayNextMedia];
     __weak typeof(self) _self = self;
     [self _loadImageWithName:@"Next" callback:^(UIImage * _Nullable img) {
         __strong typeof(_self) self = _self;
         if ( !self ) return ;
         playNextMediaItem.image = img;
-        [player.defaultEdgeControlLayer.bottomAdapter reload];
+        [self.player.defaultEdgeControlLayer.bottomAdapter reload];
     }];
 }
 
@@ -141,11 +172,10 @@ static SJEdgeControlButtonItemTag SJEdgeControlButtonItem_PlayNextMedia = 101;
 
 #pragma mark -
 
-- (void)_initializePlaybackListController {
-    _listController = [[SJPlaybackListController alloc] initWithPlayer:[SJVideoPlayer player]];
-
-    [self.view addSubview:_listController.player.view];
-    [_listController.player.view mas_makeConstraints:^(MASConstraintMaker *make) {
+- (void)_initializePlayer {
+    _player = [SJVideoPlayer player];
+    [self.view addSubview:_player.view];
+    [_player.view mas_makeConstraints:^(MASConstraintMaker *make) {
         if (@available(iOS 11.0, *)) {
             make.top.equalTo(self.view.mas_safeAreaLayoutGuideTop);
         } else {
@@ -154,6 +184,49 @@ static SJEdgeControlButtonItemTag SJEdgeControlButtonItem_PlayNextMedia = 101;
         make.leading.trailing.offset(0);
         make.height.equalTo(self.view.mas_width).multipliedBy(9 / 16.0f);
     }];
+    
+    __weak typeof(self) _self = self;
+    _player.playDidToEndExeBlock = ^(__kindof SJBaseVideoPlayer * _Nonnull player) {
+        __strong typeof(_self) self = _self;
+        if ( !self ) return;
+        [self.listController currentMediaFinishedPlaying]; // 通知listController, 当前已播放完毕
+    };
+}
+
+- (void)_initializePlaybackListController {
+    _listController = [SJPlaybackListController new];
+    _listController.delegate = self;
+}
+
+- (void)_initializeListControllerObserver {
+    _listControllerObserver = [_listController getObserver];
+    __weak typeof(self) _self = self;
+    _listControllerObserver.playbackModeDidChangeExdBlock = ^(id<SJPlaybackListController>  _Nonnull controller) {
+        __strong typeof(_self) self = _self;
+        if ( !self ) return ;
+        [self _updatePlaybackModeItem];
+    };
+    
+    _listControllerObserver.listDidChangeExeBlock = ^(id<SJPlaybackListController>  _Nonnull controller) {
+        __strong typeof(_self) self = _self;
+        if ( !self ) return;
+        if ( 0 == controller.medias.count ) {
+            [self.player stop];
+        }
+    };
+}
+
+/// 需要播放下一个media
+- (void)listController:(id<SJPlaybackListController>)listController needToPlayMedia:(id<SJMediaInfo>)media {
+    TestMedia *testMedia = media;
+    _player.URLAsset = [[SJVideoPlayerURLAsset alloc] initWithURL:testMedia.URL playModel:[SJPlayModel new]];
+    _player.URLAsset.title = testMedia.title;
+    _player.URLAsset.alwaysShowTitle = YES;
+}
+
+/// 需要重新播放
+- (void)listController:(id<SJPlaybackListController>)listController needToReplayCurrentMedia:(id<SJMediaInfo>)media {
+    [_player replay];
 }
 
 @end

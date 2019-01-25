@@ -89,7 +89,25 @@ NS_ASSUME_NONNULL_BEGIN
         }
             break;
         case SJPlayerGestureType_Pan: {
+            CGPoint velocity = [_pan velocityInView:_pan.view];
+            CGFloat x = fabs(velocity.x);
+            CGFloat y = fabs(velocity.y);
+            if (x > y) {
+                _movingDirection = SJPanGestureMovingDirection_H;
+            }
+            else {
+                _movingDirection = SJPanGestureMovingDirection_V;
+            }
+            
             if ( SJPlayerDisabledGestures_Pan & _disabledGestures )
+                return NO;
+            
+            if ( SJPanGestureMovingDirection_H == _movingDirection &&
+                 SJPlayerDisabledGestures_Pan_H & _disabledGestures )
+                return NO;
+            
+            if ( SJPanGestureMovingDirection_V == _movingDirection &&
+                SJPlayerDisabledGestures_Pan_V & _disabledGestures )
                 return NO;
         }
             break;
@@ -145,16 +163,6 @@ NS_ASSUME_NONNULL_BEGIN
                 _triggeredPosition = SJPanGestureTriggeredPosition_Left;
             }
             
-            CGPoint velocity = [pan velocityInView:pan.view];
-            CGFloat x = fabs(velocity.x);
-            CGFloat y = fabs(velocity.y);
-            if (x > y) {
-                _movingDirection = SJPanGestureMovingDirection_H;
-            }
-            else {
-                _movingDirection = SJPanGestureMovingDirection_V;
-            }
-
             if ( _panHandler ) _panHandler(self, _triggeredPosition, _movingDirection, SJPanGestureRecognizerStateBegan, translate);
         }
             break;

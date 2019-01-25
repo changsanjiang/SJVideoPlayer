@@ -27,6 +27,9 @@ typedef enum : NSUInteger {
                                    SJPlayerDisabledGestures_DoubleTap |
                                    SJPlayerDisabledGestures_Pan |
                                    SJPlayerDisabledGestures_Pinch,
+    
+    SJPlayerDisabledGestures_Pan_H = 1 << 4, // 水平方向
+    SJPlayerDisabledGestures_Pan_V = 1 << 5, // 垂直方向
 } SJPlayerDisabledGestures;
 
 typedef enum : NSUInteger {

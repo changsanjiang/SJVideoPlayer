@@ -10,8 +10,6 @@
 
 NS_ASSUME_NONNULL_BEGIN
 @interface SJPlaybackListController : NSObject<SJPlaybackListController>
-- (instancetype)initWithPlayer:(__kindof SJBaseVideoPlayer *)player;
 
-@property (nonatomic, strong, readonly) __kindof SJBaseVideoPlayer *player;
 @end
 NS_ASSUME_NONNULL_END

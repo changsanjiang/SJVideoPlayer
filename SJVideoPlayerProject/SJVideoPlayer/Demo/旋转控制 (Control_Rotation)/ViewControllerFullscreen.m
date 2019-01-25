@@ -36,11 +36,13 @@
     _rotationManager = [[SJVCRotationManager alloc] initWithViewController:self];
     _player.rotationManager = _rotationManager;
     
-    _player.supportedOrientation = SJAutoRotateSupportedOrientation_LandscapeLeft;
+//    _player.supportedOrientation = SJAutoRotateSupportedOrientation_LandscapeLeft;
     
+
     /// update device orientation
     [[UIDevice currentDevice] setValue:@(UIDeviceOrientationPortrait) forKey:@"orientation"];
-    [[UIDevice currentDevice] setValue:@(UIDeviceOrientationLandscapeLeft) forKey:@"orientation"];
+    _player.disableAutoRotation = YES;
+    [_player rotate:SJOrientation_LandscapeLeft animated:YES];
     
     __weak typeof(self) _self = self;
     _player.clickedBackEvent = ^(SJVideoPlayer * _Nonnull player) {
@@ -58,7 +60,7 @@
     _player.defaultEdgeControlLayer.topContainerView.backgroundColor = [UIColor colorWithWhite:0 alpha:0.8];
     
     [_player.defaultEdgeControlLayer.bottomAdapter removeItemForTag:SJEdgeControlLayerBottomItem_Separator];
-    [_player.defaultEdgeControlLayer.bottomAdapter removeItemForTag:SJEdgeControlLayerBottomItem_FullBtn];
+//    [_player.defaultEdgeControlLayer.bottomAdapter removeItemForTag:SJEdgeControlLayerBottomItem_FullBtn];
     SJEdgeControlButtonItem *durationItem = [_player.defaultEdgeControlLayer.bottomAdapter itemForTag:SJEdgeControlLayerBottomItem_DurationTime];
     durationItem.insets = SJEdgeInsetsMake(0, 12);
     [_player.defaultEdgeControlLayer.bottomAdapter exchangeItemForTag:SJEdgeControlLayerBottomItem_DurationTime withItemForTag:SJEdgeControlLayerBottomItem_Progress];
@@ -71,8 +73,7 @@
     _player = [SJVideoPlayer player];
     [self.view addSubview:_player.view];
     [_player.view mas_makeConstraints:^(MASConstraintMaker *make) {
-        make.top.leading.trailing.offset(0);
-        make.height.equalTo(self.player.view.mas_width).multipliedBy(9 / 16.0f);
+        make.edges.offset(0);
     }];
 }
 

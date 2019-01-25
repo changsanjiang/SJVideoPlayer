@@ -224,7 +224,7 @@ static NSString *_kPlayStatus = @"playStatus";
 }
 
 + (NSString *)version {
-    return @"2.0.6";
+    return @"2.0.8";
 }
 
 - (nullable __kindof UIViewController *)atViewController {
@@ -1140,9 +1140,11 @@ static NSString *_kGestureState = @"state";
         return;
     }
     
-    if ( secs > self.playbackController.duration || secs < 0 ) {
-        if ( completionHandler ) completionHandler(NO);
-        return;
+    if ( secs > self.playbackController.duration ) {
+        secs = self.playbackController.duration;
+    }
+    else if ( secs < 0 ) {
+        secs = 0;
     }
     
     NSTimeInterval current = floor(self.playbackController.currentTime + 0.5);

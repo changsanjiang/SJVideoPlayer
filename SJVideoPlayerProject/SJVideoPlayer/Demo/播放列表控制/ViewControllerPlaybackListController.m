@@ -174,6 +174,7 @@ static SJEdgeControlButtonItemTag SJEdgeControlButtonItem_PlayNextMedia = 101;
 
 - (void)_initializePlayer {
     _player = [SJVideoPlayer player];
+    _player.defaultEdgeControlLayer.showResidentBackButton = YES;
     [self.view addSubview:_player.view];
     [_player.view mas_makeConstraints:^(MASConstraintMaker *make) {
         if (@available(iOS 11.0, *)) {

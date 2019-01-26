@@ -433,7 +433,12 @@ SJEdgeControlButtonItemTag const SJEdgeControlLayerCenterItem_Replay = 10000;
     SJEdgeControlButtonItem *placeholderItem = [self.topAdapter itemForTag:SJEdgeControlLayerTopItem_PlaceholderBack];
     BOOL isFitOnScreen = _videoPlayer.isFitOnScreen;
     BOOL isFull = _videoPlayer.isFullScreen;
-    _residentBackButton.hidden = placeholderItem.hidden = _videoPlayer.isPlayOnScrollView && !isFitOnScreen && !isFull;
+    if ( __builtin_expect(_videoPlayer.isLockedScreen, 0) ) {
+        _residentBackButton.hidden = YES;
+    }
+    else {
+        _residentBackButton.hidden = placeholderItem.hidden = _videoPlayer.isPlayOnScrollView && !isFitOnScreen && !isFull;
+    }
 }
 
 #pragma mark - left
@@ -1165,6 +1170,7 @@ SJEdgeControlButtonItemTag const SJEdgeControlLayerCenterItem_Replay = 10000;
 
 - (void)lockedVideoPlayer:(__kindof SJBaseVideoPlayer *)videoPlayer {
     [videoPlayer controlLayerNeedDisappear];
+    [self _updateAppearStateForResidentBackButton];
     [self _updateAppearStateForAdapters:videoPlayer];
     [self _updateItemsForAdaptersIfNeeded:videoPlayer];
     [self.lockStateTappedTimerControl start];
@@ -1172,6 +1178,7 @@ SJEdgeControlButtonItemTag const SJEdgeControlLayerCenterItem_Replay = 10000;
 
 - (void)unlockedVideoPlayer:(__kindof SJBaseVideoPlayer *)videoPlayer {
     [videoPlayer controlLayerNeedAppear];
+    [self _updateAppearStateForResidentBackButton];
     [self _updateAppearStateForAdapters:videoPlayer];
     [self _updateItemsForAdaptersIfNeeded:videoPlayer];
     [self.lockStateTappedTimerControl clear];

@@ -42,6 +42,8 @@ NS_ASSUME_NONNULL_BEGIN
     _screen = (struct SJ_Screen){max, min, is_iPhoneX};
 
     _topHeight = _leftWidth = _bottomHeight = _rightWidth = 49;
+    _topMargin = 4;
+    
     [self _observeOrientationChangeOfStatusBarNotify];
     self.autoAdjustTopSpacing = YES;
     self.autoAdjustLayoutWhenDeviceIsiPhoneX = YES;
@@ -120,7 +122,7 @@ NS_ASSUME_NONNULL_BEGIN
         CGFloat safeLeftMargin = ceil((_screen.max - safeWidth) * 0.5);
         
         [_topAdapter.view mas_remakeConstraints:^(MASConstraintMaker *make) {
-            make.top.offset((self.autoAdjustTopSpacing?20:0) + self.topMargin); // 统一 20
+            make.top.offset(self.autoAdjustTopSpacing?20:0);
             make.left.mas_greaterThanOrEqualTo(0).priorityLow();
             make.bottom.offset(0);
             make.right.mas_lessThanOrEqualTo(0).priorityLow();

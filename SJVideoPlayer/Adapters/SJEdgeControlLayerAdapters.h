@@ -52,7 +52,7 @@ struct SJ_Screen {
 @property (nonatomic) BOOL autoAdjustTopSpacing; // 自动调整顶部间距, 让出状态栏
 
 /// default is Yes.
-@property (nonatomic) BOOL autoAdjustLayoutWhenDeviceIsiPhoneX; // 自动跳转布局, 如果是iPhone X
+@property (nonatomic) BOOL autoAdjustLayoutWhenDeviceIsiPhoneX; // 自动调整布局, 如果是iPhone X
 
 #ifdef DEBUG
 @property (nonatomic) BOOL showBackgroundColor;
@@ -64,8 +64,9 @@ struct SJ_Screen {
 @property (nonatomic) CGFloat bottomHeight;
 @property (nonatomic) CGFloat rightWidth;
 
-// - default is 0.
+// - default is 4.
 @property (nonatomic) CGFloat topMargin;
+// - default is 0.
 @property (nonatomic) CGFloat leftMargin;
 @property (nonatomic) CGFloat bottomMargin;
 @property (nonatomic) CGFloat rightMargin;

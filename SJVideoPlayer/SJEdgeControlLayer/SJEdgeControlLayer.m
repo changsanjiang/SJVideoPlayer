@@ -42,6 +42,7 @@
 SJEdgeControlButtonItemTag const SJEdgeControlLayerTopItem_Back = 10000;
 SJEdgeControlButtonItemTag const SJEdgeControlLayerTopItem_Title = 10001;
 SJEdgeControlButtonItemTag const SJEdgeControlLayerTopItem_Preview = 10002;
+static SJEdgeControlButtonItemTag const SJEdgeControlLayerTopItem_PlaceholderBack = 10003;
 
 #pragma mark - Left
 SJEdgeControlButtonItemTag const SJEdgeControlLayerLeftItem_Lock = 10000;
@@ -66,6 +67,10 @@ SJEdgeControlButtonItemTag const SJEdgeControlLayerCenterItem_Replay = 10000;
 @property (nonatomic, strong, readonly) SJVideoPlayerPreviewView *previewView;
 @property (nonatomic) BOOL hasBeenGeneratedPreviewImages;
 @property (nonatomic, strong, readonly) SJProgressSlider *bottomProgressSlider;
+
+// back
+@property (nonatomic, strong, readonly) UIButton *residentBackButton;
+@property (nonatomic, strong, readonly) SJEdgeControlButtonItem *backItem;
 @end
 
 @implementation SJEdgeControlLayer
@@ -153,8 +158,9 @@ SJEdgeControlButtonItemTag const SJEdgeControlLayerCenterItem_Replay = 10000;
 #pragma mark - Top
 - (void)_addItemsToTopAdapter {
     SJEdgeControlButtonItem *backItem = [SJEdgeControlButtonItem placeholderWithType:SJButtonItemPlaceholderType_49x49 tag:SJEdgeControlLayerTopItem_Back];
-    [backItem addTarget:self action:@selector(clickedBackItem:)];
+    [backItem addTarget:self action:@selector(clickedBackItem)];
     [self.topAdapter addItem:backItem];
+    _backItem = backItem;
 
     SJEdgeControlButtonItem *titleItem = [SJEdgeControlButtonItem placeholderWithType:SJButtonItemPlaceholderType_49xFill tag:SJEdgeControlLayerTopItem_Title];
     [self.topAdapter addItem:titleItem];
@@ -223,7 +229,7 @@ SJEdgeControlButtonItemTag const SJEdgeControlLayerCenterItem_Replay = 10000;
         return;
     
     /// 更新item显示状态, 是否需要隐藏
-    SJEdgeControlButtonItem *backItem = [self.topAdapter itemForTag:SJEdgeControlLayerTopItem_Back];
+    SJEdgeControlButtonItem *backItem = _backItem;
     SJEdgeControlButtonItem *previewItem = [self.topAdapter itemForTag:SJEdgeControlLayerTopItem_Preview];
     SJEdgeControlButtonItem *titleItem = [self.topAdapter itemForTag:SJEdgeControlLayerTopItem_Title];
 
@@ -256,10 +262,10 @@ SJEdgeControlButtonItemTag const SJEdgeControlLayerCenterItem_Replay = 10000;
         if ( !titleItem.hidden ) {
             // margin
             CGFloat left =
-            [_topAdapter itemsIsHiddenWithRange:NSMakeRange(0, [_topAdapter indexOfItemForTag:SJEdgeControlLayerTopItem_Title])]?12:0;
+            [_topAdapter itemsIsHiddenWithRange:NSMakeRange(0, [_topAdapter indexOfItemForTag:SJEdgeControlLayerTopItem_Title])]?16:0;
             
             CGFloat right =
-            [_topAdapter itemsIsHiddenWithRange:NSMakeRange([_topAdapter indexOfItemForTag:SJEdgeControlLayerTopItem_Title], _topAdapter.itemCount)]?12:0;
+            [_topAdapter itemsIsHiddenWithRange:NSMakeRange([_topAdapter indexOfItemForTag:SJEdgeControlLayerTopItem_Title], _topAdapter.itemCount)]?16:0;
             
             titleItem.insets = SJEdgeInsetsMake(left, right);
             titleItem.title = sj_makeAttributesString(^(SJAttributeWorker * _Nonnull make) {
@@ -290,7 +296,7 @@ SJEdgeControlButtonItemTag const SJEdgeControlLayerCenterItem_Replay = 10000;
     return YES;
 }
 
-- (void)clickedBackItem:(SJEdgeControlButtonItem *)item {
+- (void)clickedBackItem {
     if ( _clickedBackItemExeBlock ) _clickedBackItemExeBlock(self);
 }
 
@@ -374,6 +380,60 @@ SJEdgeControlButtonItemTag const SJEdgeControlLayerCenterItem_Replay = 10000;
             self.previewView.previewImages = images;
         }
     }];
+}
+
+- (void)setShowResidentBackButton:(BOOL)showResidentBackButton {
+    if ( showResidentBackButton == _showResidentBackButton )
+        return;
+    _showResidentBackButton = showResidentBackButton;
+    dispatch_async(dispatch_get_main_queue(), ^{
+        if ( self->_showResidentBackButton ) {
+            [self.controlView addSubview:self.residentBackButton];
+            [self->_residentBackButton mas_makeConstraints:^(MASConstraintMaker *make) {
+                make.top.left.bottom.equalTo(self.topAdapter.view);
+                make.width.equalTo(self.topAdapter.view.mas_height);
+            }];
+            
+            // placeholder item
+            SJEdgeControlButtonItem *placeholderItem = [self.topAdapter itemForTag:SJEdgeControlLayerTopItem_PlaceholderBack];
+            if ( !placeholderItem ) {
+                placeholderItem = [SJEdgeControlButtonItem placeholderWithType:SJButtonItemPlaceholderType_49x49 tag:SJEdgeControlLayerTopItem_PlaceholderBack];
+            }
+            [self.topAdapter removeItemForTag:SJEdgeControlLayerTopItem_Back];
+            [self.topAdapter insertItem:placeholderItem atIndex:0];
+            [self _updateAppearStateForResidentBackButton];
+            [self.topAdapter reload];
+        }
+        else {
+            if ( self->_residentBackButton ) {
+                [self->_residentBackButton removeFromSuperview];
+                self->_residentBackButton = nil;
+                
+                // back item
+                [self.topAdapter removeItemForTag:SJEdgeControlLayerTopItem_PlaceholderBack];
+                [self.topAdapter insertItem:self.backItem atIndex:0];
+                [self.topAdapter reload];
+            }
+        }
+    });
+}
+
+@synthesize residentBackButton = _residentBackButton;
+- (UIButton *)residentBackButton {
+    if ( _residentBackButton ) return _residentBackButton;
+    _residentBackButton = [UIButton buttonWithType:UIButtonTypeCustom];
+    [_residentBackButton setImage:SJEdgeControlLayerSettings.commonSettings.backBtnImage forState:UIControlStateNormal];
+    [_residentBackButton addTarget:self action:@selector(clickedBackItem) forControlEvents:UIControlEventTouchUpInside];
+    return _residentBackButton;
+}
+
+- (void)_updateAppearStateForResidentBackButton {
+    if ( !_showResidentBackButton )
+        return;
+    SJEdgeControlButtonItem *placeholderItem = [self.topAdapter itemForTag:SJEdgeControlLayerTopItem_PlaceholderBack];
+    BOOL isFitOnScreen = _videoPlayer.isFitOnScreen;
+    BOOL isFull = _videoPlayer.isFullScreen;
+    _residentBackButton.hidden = placeholderItem.hidden = _videoPlayer.isPlayOnScrollView && !isFitOnScreen && !isFull;
 }
 
 #pragma mark - left
@@ -966,6 +1026,7 @@ SJEdgeControlButtonItemTag const SJEdgeControlLayerCenterItem_Replay = 10000;
 }
 
 - (void)controlLayerNeedAppear:(__kindof SJBaseVideoPlayer *)videoPlayer {
+    [self _updateAppearStateForResidentBackButton];
     [self _updateAppearStateForAdapters:videoPlayer];
     [self _updateItemsForAdaptersIfNeeded:videoPlayer];
 }
@@ -975,6 +1036,7 @@ SJEdgeControlButtonItemTag const SJEdgeControlLayerCenterItem_Replay = 10000;
 }
 
 - (void)videoPlayer:(__kindof SJBaseVideoPlayer *)videoPlayer prepareToPlay:(SJVideoPlayerURLAsset *)asset {
+    [self _updateAppearStateForResidentBackButton];
     [self _resetGeneratePreviewState];
     [self _updateItemsForAdaptersIfNeeded:videoPlayer];
     [self _updateTimeLabelFor_BottomAdapterWithCurrentTimeStr:videoPlayer.currentTimeStr durationStr:videoPlayer.totalTimeStr];
@@ -1027,12 +1089,16 @@ SJEdgeControlButtonItemTag const SJEdgeControlLayerCenterItem_Replay = 10000;
 }
 
 - (void)videoPlayer:(__kindof SJBaseVideoPlayer *)videoPlayer willRotateView:(BOOL)isFull {
+    [self _updateAppearStateForResidentBackButton];
     [self _updateAppearStateForAdapters:videoPlayer];
     [self _updateItemsForAdaptersIfNeeded:videoPlayer];
-    if ( !sj_view_isDisappeared(_bottomProgressSlider) ) sj_view_makeDisappear(_bottomProgressSlider, NO);
+    if ( !sj_view_isDisappeared(_bottomProgressSlider) ) {
+        sj_view_makeDisappear(_bottomProgressSlider, NO);
+    }
 }
 
 - (void)videoPlayer:(__kindof SJBaseVideoPlayer *)videoPlayer willFitOnScreen:(BOOL)isFitOnScreen {
+    [self _updateAppearStateForResidentBackButton];
     [self _updateAppearStateForAdapters:videoPlayer];
     [self _updateItemsForAdaptersIfNeeded:videoPlayer];
 }

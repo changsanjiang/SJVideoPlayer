@@ -66,6 +66,7 @@
     rotationAnim.toValue = [NSNumber numberWithFloat:2 * M_PI];
     rotationAnim.duration = _speed;
     rotationAnim.repeatCount = CGFLOAT_MAX;
+    rotationAnim.removedOnCompletion = NO;
     [_gradientLayer addAnimation:rotationAnim forKey:@"rotation"];
 }
 
@@ -73,8 +74,7 @@
     if ( !_animating ) return;
     _animating = NO;
     self.alpha = 0.001;
-    [_shapeLayer removeAllAnimations];
-    [_gradientLayer removeAllAnimations];
+    [_gradientLayer removeAnimationForKey:@"rotation"];
 }
 
 - (void)layoutSubviews {

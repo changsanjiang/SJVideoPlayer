@@ -84,14 +84,14 @@ NS_ASSUME_NONNULL_BEGIN
     _SJEdgeControlButtonItemDelegate *_filmEditingItemDelegate;
 }
 
-- (void)dealloc {
 #ifdef DEBUG
+- (void)dealloc {
     NSLog(@"%d - %s", (int)__LINE__, __func__);
-#endif
 }
+#endif
 
 + (NSString *)version {
-    return @"v2.3.3";
+    return @"v2.3.7";
 }
 
 + (instancetype)player {
@@ -195,11 +195,6 @@ NS_ASSUME_NONNULL_BEGIN
     }
     return nil;
 }
-/// 右侧按钮被点击
-- (void)clickedFilmEditingBtnOnControlLayer:(SJEdgeControlLayer *)controlLayer {
-    [self.switcher switchControlLayerForIdentitfier:SJControlLayer_FilmEditing];
-}
-
 #pragma mark -
 @synthesize defaultFilmEditingCarrier = _defaultFilmEditingCarrier;
 - (SJControlLayerCarrier *)defaultFilmEditingCarrier {

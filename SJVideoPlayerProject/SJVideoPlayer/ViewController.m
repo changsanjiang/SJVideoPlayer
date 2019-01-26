@@ -80,7 +80,7 @@
     
     [m addObject:[[LWZTableSectionShrinker alloc] initWithTitle:@"Control Layer Switcher" titleWhenShrank:nil dataArr:[self _createItemsByControlLayerSwitcher]]];
     
-    [m addObject:[[LWZTableSectionShrinker alloc] initWithTitle:@"Prefetcher" titleWhenShrank:nil dataArr:[self _createItemsByPrefetcher]]];
+//    [m addObject:[[LWZTableSectionShrinker alloc] initWithTitle:@"Prefetcher" titleWhenShrank:nil dataArr:[self _createItemsByPrefetcher]]];
     
     [m addObject:[[LWZTableSectionShrinker alloc] initWithTitle:@"Other" titleWhenShrank:nil dataArr:[self _createItemsByOtherOperations]]];
     
@@ -95,12 +95,12 @@
                              path:@"playbackListController"]];
 }
 
-- (NSArray<Item *> *)_createItemsByPrefetcher {
-    return
-    @[[[Item alloc] initWithTitle:@"Prefetcher"
-                         subTitle:@"预加载"
-                             path:@"asset/prefetcher"]];
-}
+//- (NSArray<Item *> *)_createItemsByPrefetcher {
+//    return
+//    @[[[Item alloc] initWithTitle:@"Prefetcher"
+//                         subTitle:@"预加载"
+//                             path:@"asset/prefetcher"]];
+//}
 
 - (NSArray<Item *> *)_createItemsByControlLayerSwitcher {
     return

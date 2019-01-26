@@ -42,9 +42,21 @@
     _player.assetURL = [NSURL URLWithString:@"https://www.apple.com/105/media/us/macbook-air/2018/9f419882_aefd_4083_902e_efcaee17a0b8/films/product/mba-product-tpl-cc-us-2018_1280x720h.mp4"];
     _player.URLAsset.title = @"Test Title";
     _player.enableFilmEditing = YES;
-    _player.hideBackButtonWhenOrientationIsPortrait = YES;
     
+    
+    UIButton *centerBtn = [UIButton buttonWithType:UIButtonTypeCustom];
+    [centerBtn addTarget:self action:@selector(clickedCenterBtn:) forControlEvents:UIControlEventTouchUpInside];
+    [centerBtn setTitle:@"Push" forState:UIControlStateNormal];
+    [self.view addSubview:centerBtn];
+    centerBtn.backgroundColor = [UIColor blueColor];
+    [centerBtn mas_makeConstraints:^(MASConstraintMaker *make) {
+        make.center.offset(0);
+    }];
     // Do any additional setup after loading the view.
+}
+
+- (void)clickedCenterBtn:(UIButton *)btn {
+    [self.navigationController pushViewController:[[self class] new] animated:YES];
 }
 
 - (void)viewDidAppear:(BOOL)animated {

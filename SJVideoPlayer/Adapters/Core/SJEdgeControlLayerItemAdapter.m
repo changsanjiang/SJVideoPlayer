@@ -69,6 +69,8 @@ NS_ASSUME_NONNULL_BEGIN
         else if ( item.isHidden ) { }
         else if ( 0 != item.size )
             width = item.size;
+        else if ( item.placeholderType == SJButtonItemPlaceholderType_49x49 )
+            width = height;
         else if ( item.customView ) {
             if ( item.placeholderType == SJButtonItemPlaceholderType_49xAutoresizing ) {
                 width = [self autoresizingWithView:item.customView maxSize:CGSizeMake(CGFLOAT_MAX, height)].width;
@@ -127,6 +129,8 @@ NS_ASSUME_NONNULL_BEGIN
         else if ( item.isHidden ) { }
         else if ( 0 != item.size )
             height = item.size;
+        else if ( item.placeholderType == SJButtonItemPlaceholderType_49x49 )
+            height = width;
         else if ( item.customView ) {
             if ( item.placeholderType == SJButtonItemPlaceholderType_49xAutoresizing ) {
                 height = [self autoresizingWithView:item.customView maxSize:CGSizeMake(width, CGFLOAT_MAX)].height;

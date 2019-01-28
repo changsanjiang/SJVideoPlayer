@@ -233,6 +233,12 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (CGSize)autoresizingWithView:(UIView *)view maxSize:(CGSize)maxSize {
     CGSize size = [view systemLayoutSizeFittingSize:maxSize];
+    CGFloat maxWidth = self.collectionView.bounds.size.width;
+    CGFloat maxHeight = self.collectionView.bounds.size.height;
+    if ( size.width > maxWidth )
+        size.width = maxWidth;
+    if ( size.height > maxHeight )
+        size.height = maxHeight;
     return size;
 }
 @end

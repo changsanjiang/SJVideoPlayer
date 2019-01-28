@@ -497,8 +497,6 @@ static SJEdgeControlButtonItemTag SJTopItem_Back = 1;
     self.topContainerView.sjv_disappearDirection = SJViewDisappearAnimation_Top;
     [self.topContainerView cleanColors];
     sj_view_initializes(self.topContainerView);
-    SJEdgeControlButtonItem *backItem = [SJEdgeControlButtonItem placeholderWithType:SJButtonItemPlaceholderType_49x49 tag:SJTopItem_Back];
-    backItem.insets = SJEdgeInsetsMake(self.topMargin, 0);
     CGFloat buttonH = self.topHeight;
     CGFloat buttonW = ceil(buttonH * 2.8);
     _backButtonContainerView = [[SJFilmEditingButtonContainerView alloc] initWithFrame:CGRectZero buttonSize:CGSizeMake(buttonW, buttonH)];
@@ -509,6 +507,9 @@ static SJEdgeControlButtonItemTag SJTopItem_Back = 1;
         if ( !self ) return ;
         [self _cancel];
     };
+    
+    SJEdgeControlButtonItem *backItem = [[SJEdgeControlButtonItem alloc] initWithTag:SJTopItem_Back];
+    backItem.insets = SJEdgeInsetsMake(self.topMargin, 0);
     backItem.customView = _backButtonContainerView;
     [self.topAdapter addItem:backItem];
 }

@@ -122,7 +122,7 @@ NS_ASSUME_NONNULL_BEGIN
         CGFloat safeLeftMargin = ceil((_screen.max - safeWidth) * 0.5);
         
         [_topAdapter.view mas_remakeConstraints:^(MASConstraintMaker *make) {
-            make.top.offset(self.autoAdjustTopSpacing?20:0);
+            make.top.offset(self.autoAdjustTopSpacing?20:self.topMargin);
             make.left.mas_greaterThanOrEqualTo(0).priorityLow();
             make.bottom.offset(0);
             make.right.mas_lessThanOrEqualTo(0).priorityLow();
@@ -412,7 +412,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (void)setRightWidth:(CGFloat)rightWidth {
     _rightWidth = rightWidth;
-    [_rightAdapter.view mas_makeConstraints:^(MASConstraintMaker *make) {
+    [_rightAdapter.view mas_updateConstraints:^(MASConstraintMaker *make) {
         make.width.offset(rightWidth);
     }];
 }

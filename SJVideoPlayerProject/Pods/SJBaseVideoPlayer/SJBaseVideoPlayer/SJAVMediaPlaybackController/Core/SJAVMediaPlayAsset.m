@@ -222,9 +222,10 @@ static NSString *kRate = @"rate";
         BOOL isPlaybackBufferFull = self.playerItem.isPlaybackBufferFull;
         BOOL isPre_buf = NO;
         if ( !isPlaybackBufferEmpty ) {
-            CMTime currentTime = self.playerItem.currentTime;
             CMTimeRange range = [self.playerItem.loadedTimeRanges.firstObject CMTimeRangeValue];
-            isPre_buf = CMTimeRangeContainsTime(range, currentTime) && CMTimeGetSeconds(range.duration) > 0.1;
+            NSTimeInterval currentTime = CMTimeGetSeconds(self.playerItem.currentTime);
+            NSTimeInterval bufferTime = CMTimeGetSeconds(range.start) + CMTimeGetSeconds(range.duration);
+            isPre_buf = (bufferTime > currentTime) && CMTimeGetSeconds(range.duration) > 0.1;
         }
         
         if ( isPre_buf || isPlaybackBufferFull ) {

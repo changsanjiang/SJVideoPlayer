@@ -49,6 +49,7 @@
     _player.generatePreviewImages = YES;
     _player.enableFilmEditing = YES;
     _player.filmEditingConfig.saveResultToAlbumWhenExportSuccess = YES;
+    _player.resumePlaybackWhenAppDidEnterForeground = YES;
     
 #pragma mark
     UILabel *noteLabel = [UILabel new];

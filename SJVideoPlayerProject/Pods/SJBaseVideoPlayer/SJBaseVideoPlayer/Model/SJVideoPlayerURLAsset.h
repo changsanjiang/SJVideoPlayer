@@ -10,10 +10,13 @@
 #import "SJPlayModel.h"
 #import "SJMediaPlaybackProtocol.h"
 
+@protocol SJVideoPlayerURLAssetObserver;
 @class AVAsset;
 
 NS_ASSUME_NONNULL_BEGIN
+
 @interface SJVideoPlayerURLAsset : NSObject<SJMediaModelProtocol>
+- (id<SJVideoPlayerURLAssetObserver>)getObserver;
 - (instancetype)initWithURL:(NSURL *)URL specifyStartTime:(NSTimeInterval)specifyStartTime playModel:(__kindof SJPlayModel *)playModel;
 - (instancetype)initWithURL:(NSURL *)URL specifyStartTime:(NSTimeInterval)specifyStartTime;
 - (instancetype)initWithURL:(NSURL *)URL playModel:(__kindof SJPlayModel *)playModel;
@@ -29,6 +32,9 @@ NS_ASSUME_NONNULL_BEGIN
 @end
 
 
+@protocol SJVideoPlayerURLAssetObserver <NSObject>
+@property (nonatomic, copy, nullable) void(^playModelDidChangeExeBlock)(SJVideoPlayerURLAsset *asset);
+@end
 
 
 /// 已弃用

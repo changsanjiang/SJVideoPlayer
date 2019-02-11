@@ -8,8 +8,31 @@
 
 #import "SJVideoPlayerURLAsset.h"
 #import <objc/message.h>
+#if __has_include(<SJObserverHelper/NSObject+SJObserverHelper.h>)
+#import <SJObserverHelper/NSObject+SJObserverHelper.h>
+#else
+#import "NSObject+SJObserverHelper.h"
+#endif
 
 NS_ASSUME_NONNULL_BEGIN
+@interface SJVideoPlayerURLAssetObserver : NSObject<SJVideoPlayerURLAssetObserver>
+- (instancetype)initWithAsset:(SJVideoPlayerURLAsset *)asset;
+@end
+@implementation SJVideoPlayerURLAssetObserver
+@synthesize playModelDidChangeExeBlock = _playModelDidChangeExeBlock;
+
+- (instancetype)initWithAsset:(SJVideoPlayerURLAsset *)asset {
+    self = [super init];
+    if ( !self ) return nil;
+    [asset sj_addObserver:self forKeyPath:@"playModel"];
+    return self;
+}
+
+- (void)observeValueForKeyPath:(nullable NSString *)keyPath ofObject:(nullable id)object change:(nullable NSDictionary<NSKeyValueChangeKey,id> *)change context:(nullable void *)context {
+    if ( _playModelDidChangeExeBlock ) _playModelDidChangeExeBlock(object);
+}
+@end
+
 @implementation SJVideoPlayerURLAsset
 @synthesize mediaURL = _mediaURL;
 @synthesize specifyStartTime = _specifyStartTime;
@@ -46,6 +69,9 @@ NS_ASSUME_NONNULL_BEGIN
     if ( _playModel )
         return _playModel;
     return _playModel = [SJPlayModel new];
+}
+- (id<SJVideoPlayerURLAssetObserver>)getObserver {
+    return [[SJVideoPlayerURLAssetObserver alloc] initWithAsset:self];
 }
 @end
 

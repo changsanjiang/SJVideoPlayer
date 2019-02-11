@@ -21,6 +21,7 @@ target 'SJVideoPlayer' do
   pod 'SJVideoPlayer', :path => '../../SJVideoPlayer'
   pod 'SJBaseVideoPlayer'#, :path => '../../SJBaseVideoPlayer'
   pod 'SJPlaybackListController'#, :path => '../../SJPlaybackListController'
+  pod 'SJObserverHelper'#, :path => '../../SJObserverHelper'
   
   # 便捷的创建 NSAttributedString
   pod 'SJAttributesFactory'

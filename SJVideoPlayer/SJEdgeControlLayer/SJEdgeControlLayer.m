@@ -712,8 +712,16 @@ SJEdgeControlButtonItemTag const SJEdgeControlLayerCenterItem_Replay = 10000;
 }
 
 - (void)clickedFullItem:(SJEdgeControlButtonItem *)item {
-    if ( _videoPlayer.useFitOnScreenAndDisableRotation ) _videoPlayer.fitOnScreen = !_videoPlayer.fitOnScreen;
-    else [self.videoPlayer rotate];
+    if ( _videoPlayer.needPresentModalViewControlller &&
+        !_videoPlayer.modalViewControllerManager.isPresentedModalViewControlller ) {
+        [_videoPlayer presentModalViewControlller];
+    }
+    else if ( _videoPlayer.useFitOnScreenAndDisableRotation ) {
+        _videoPlayer.fitOnScreen = !_videoPlayer.fitOnScreen;
+    }
+    else {
+        [self.videoPlayer rotate];
+    }
 }
 
 - (void)sliderWillBeginDragging:(SJProgressSlider *)slider {

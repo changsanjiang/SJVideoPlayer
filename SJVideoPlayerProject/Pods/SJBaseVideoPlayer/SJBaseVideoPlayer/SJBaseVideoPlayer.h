@@ -40,6 +40,7 @@
 #import "SJVideoPlayerURLAsset+SJAVMediaPlaybackAdd.h"
 #import "SJPlayerGestureControlProtocol.h"
 #import "SJDeviceVolumeAndBrightnessManagerProtocol.h"
+#import "SJModalViewControlllerManagerProtocol.h"
 
 NS_ASSUME_NONNULL_BEGIN
 
@@ -195,11 +196,17 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic) BOOL autoPlayWhenPlayStatusIsReadyToPlay;
 
 /// 播放器是否可以执行`play`
+///
 /// - 当调用`play`时, 会回调该block, 如果返回YES, 则执行`play`方法, 否之.
 /// - 如果该block == nil, 则调用`play`时, 默认为执行.
 @property (nonatomic, copy, nullable) BOOL(^canPlayAnAsset)(__kindof SJBaseVideoPlayer *player);
 /// 使播放
 - (void)play;
+
+/// 是否恢复播放, 进入前台时.
+///
+/// 正常情况下, 进入后台时, 播放器将会暂停. 此属性表示App进入前台后, 播放器是否恢复播放. 默认为NO.
+@property (nonatomic) BOOL resumePlaybackWhenAppDidEnterForeground;
 
 /// 使暂停
 - (void)pause;
@@ -250,7 +257,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 /// v1.3.0 新增
 /// 请在适当的时候调用这些方法
-@interface SJBaseVideoPlayer (UIViewController)
+@interface SJBaseVideoPlayer (ViewController)
 
 /// You should call it when view did appear
 - (void)vc_viewDidAppear; 
@@ -431,6 +438,13 @@ NS_ASSUME_NONNULL_BEGIN
 @end
 
 
+@interface SJBaseVideoPlayer (ModalViewControlller)
+@property (nonatomic, strong, null_resettable) id<SJModalViewControlllerManagerProtocol> modalViewControllerManager;
+@property (nonatomic) BOOL needPresentModalViewControlller;
+
+- (void)presentModalViewControlller;
+- (void)dismissModalViewControlller;
+@end
 
 
 /// 全屏或小屏, 但不触发旋转

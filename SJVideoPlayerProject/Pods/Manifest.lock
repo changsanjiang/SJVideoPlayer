@@ -2,72 +2,72 @@ PODS:
   - Masonry (1.1.0)
   - Reachability (3.2)
   - SJAttributesFactory (2.0.5)
-  - SJBaseVideoPlayer (2.0.9):
+  - SJBaseVideoPlayer (2.1.0):
     - Masonry
     - Reachability
-    - SJBaseVideoPlayer/Header (= 2.0.9)
-    - SJBaseVideoPlayer/Model (= 2.0.9)
-    - SJBaseVideoPlayer/SJAVMediaPlaybackController (= 2.0.9)
-    - SJBaseVideoPlayer/SJDeviceVolumeAndBrightnessManager (= 2.0.9)
-    - SJBaseVideoPlayer/SJPrompt (= 2.0.9)
-    - SJBaseVideoPlayer/SJRotationManager (= 2.0.9)
-    - SJBaseVideoPlayer/Tool (= 2.0.9)
+    - SJBaseVideoPlayer/Header (= 2.1.0)
+    - SJBaseVideoPlayer/Model (= 2.1.0)
+    - SJBaseVideoPlayer/SJAVMediaPlaybackController (= 2.1.0)
+    - SJBaseVideoPlayer/SJDeviceVolumeAndBrightnessManager (= 2.1.0)
+    - SJBaseVideoPlayer/SJPrompt (= 2.1.0)
+    - SJBaseVideoPlayer/SJRotationManager (= 2.1.0)
+    - SJBaseVideoPlayer/Tool (= 2.1.0)
     - SJObserverHelper
-  - SJBaseVideoPlayer/Header (2.0.9):
+  - SJBaseVideoPlayer/Header (2.1.0):
     - Masonry
     - Reachability
     - SJObserverHelper
-  - SJBaseVideoPlayer/Model (2.0.9):
-    - Masonry
-    - Reachability
-    - SJBaseVideoPlayer/Header
-    - SJObserverHelper
-  - SJBaseVideoPlayer/SJAVMediaPlaybackController (2.0.9):
-    - Masonry
-    - Reachability
-    - SJBaseVideoPlayer/SJAVMediaPlaybackController/Core (= 2.0.9)
-    - SJBaseVideoPlayer/Tool
-    - SJObserverHelper
-  - SJBaseVideoPlayer/SJAVMediaPlaybackController/Core (2.0.9):
-    - Masonry
-    - Reachability
-    - SJBaseVideoPlayer/Tool
-    - SJObserverHelper
-  - SJBaseVideoPlayer/SJDeviceVolumeAndBrightnessManager (2.0.9):
+  - SJBaseVideoPlayer/Model (2.1.0):
     - Masonry
     - Reachability
     - SJBaseVideoPlayer/Header
-    - SJBaseVideoPlayer/SJDeviceVolumeAndBrightnessManager/Core (= 2.0.9)
-    - SJBaseVideoPlayer/SJDeviceVolumeAndBrightnessManager/ResourceLoader (= 2.0.9)
     - SJObserverHelper
-  - SJBaseVideoPlayer/SJDeviceVolumeAndBrightnessManager/Core (2.0.9):
+  - SJBaseVideoPlayer/SJAVMediaPlaybackController (2.1.0):
+    - Masonry
+    - Reachability
+    - SJBaseVideoPlayer/SJAVMediaPlaybackController/Core (= 2.1.0)
+    - SJBaseVideoPlayer/Tool
+    - SJObserverHelper
+  - SJBaseVideoPlayer/SJAVMediaPlaybackController/Core (2.1.0):
+    - Masonry
+    - Reachability
+    - SJBaseVideoPlayer/Tool
+    - SJObserverHelper
+  - SJBaseVideoPlayer/SJDeviceVolumeAndBrightnessManager (2.1.0):
+    - Masonry
+    - Reachability
+    - SJBaseVideoPlayer/Header
+    - SJBaseVideoPlayer/SJDeviceVolumeAndBrightnessManager/Core (= 2.1.0)
+    - SJBaseVideoPlayer/SJDeviceVolumeAndBrightnessManager/ResourceLoader (= 2.1.0)
+    - SJObserverHelper
+  - SJBaseVideoPlayer/SJDeviceVolumeAndBrightnessManager/Core (2.1.0):
     - Masonry
     - Reachability
     - SJBaseVideoPlayer/Header
     - SJBaseVideoPlayer/SJDeviceVolumeAndBrightnessManager/ResourceLoader
     - SJObserverHelper
-  - SJBaseVideoPlayer/SJDeviceVolumeAndBrightnessManager/ResourceLoader (2.0.9):
+  - SJBaseVideoPlayer/SJDeviceVolumeAndBrightnessManager/ResourceLoader (2.1.0):
     - Masonry
     - Reachability
     - SJBaseVideoPlayer/Header
     - SJObserverHelper
-  - SJBaseVideoPlayer/SJPrompt (2.0.9):
+  - SJBaseVideoPlayer/SJPrompt (2.1.0):
     - Masonry
     - Reachability
     - SJObserverHelper
-  - SJBaseVideoPlayer/SJRotationManager (2.0.9):
+  - SJBaseVideoPlayer/SJRotationManager (2.1.0):
     - Masonry
     - Reachability
     - SJBaseVideoPlayer/Header
     - SJObserverHelper
-  - SJBaseVideoPlayer/Tool (2.0.9):
+  - SJBaseVideoPlayer/Tool (2.1.0):
     - Masonry
     - Reachability
     - SJBaseVideoPlayer/Header
     - SJBaseVideoPlayer/Model
     - SJObserverHelper
   - SJFullscreenPopGesture (1.4.6)
-  - SJObserverHelper (1.0.6)
+  - SJObserverHelper (1.0.7)
   - SJPlaybackListController (0.0.3):
     - SJPlaybackListController/Core (= 0.0.3)
   - SJPlaybackListController/Core (0.0.3)
@@ -234,6 +234,7 @@ DEPENDENCIES:
   - SJAttributesFactory
   - SJBaseVideoPlayer
   - SJFullscreenPopGesture
+  - SJObserverHelper
   - SJPlaybackListController
   - SJRouter
   - SJScrollEntriesView
@@ -263,9 +264,9 @@ SPEC CHECKSUMS:
   Masonry: 678fab65091a9290e40e2832a55e7ab731aad201
   Reachability: 33e18b67625424e47b6cde6d202dce689ad7af96
   SJAttributesFactory: d5b670fd0930928ac1c6fb0b06653f92fefd640c
-  SJBaseVideoPlayer: b719d257c0e56e86a7607fc656b69d56a120339e
+  SJBaseVideoPlayer: b1d0319fa4162c76c7e5e2019792471119f887b8
   SJFullscreenPopGesture: 94db6f970d864d53161d819916aed3f30b6a1442
-  SJObserverHelper: aaa83baa3ea3fdb3e972979fed25b24df524fb01
+  SJObserverHelper: 864366ffb6f9dfc10ee7831cbb39576912913fbf
   SJPlaybackListController: 1da48ff4d7d7f2b0cf5d871b93cf9bbac0a18f39
   SJRouter: 83d99661639b4be9e937e6167c830f9f8283f93f
   SJScrollEntriesView: 2388fec9dbb6ab639f8966de036394eeb753617d
@@ -273,6 +274,6 @@ SPEC CHECKSUMS:
   SJVideoPlayer: dcf72234cae40935650593f0c65c93d99931f683
   YYText: 5c461d709e24d55a182d1441c41dc639a18a4849
 
-PODFILE CHECKSUM: 1c283b1cdc0ae9fca111cd1e8863a9ec58c1966f
+PODFILE CHECKSUM: f95c6d0de1efa73b9d591523f2768232ae19a692
 
 COCOAPODS: 1.6.0.beta.2

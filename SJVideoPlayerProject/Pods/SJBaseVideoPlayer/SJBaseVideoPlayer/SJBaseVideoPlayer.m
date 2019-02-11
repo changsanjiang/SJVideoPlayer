@@ -31,6 +31,7 @@
 #import "SJFlipTransitionManager.h"
 #import "SJIsAppeared.h"
 #import "SJPlayerGestureControl.h"
+#import "SJModalViewControlllerManager.h"
 
 #if __has_include(<Masonry/Masonry.h>)
 #import <Masonry/Masonry.h>
@@ -141,7 +142,9 @@ static NSString *_kPlayStatus = @"playStatus";
     SJVideoPlayerRegistrar *_registrar;
     
     /// 当前资源是否播放过
-    BOOL _assetIsPlayed;
+    /// mpc => Media Playback Controller
+    BOOL _mpc_assetIsPlayed;
+    id<SJVideoPlayerURLAssetObserver> _Nullable _mpc_assetObserver;
     
     /// Placeholder
     BOOL _hiddenPlaceholderImageViewWhenPlayerIsReadyForDisplay;
@@ -170,6 +173,7 @@ static NSString *_kPlayStatus = @"playStatus";
     BOOL _lockedScreen;
     BOOL _autoPlayWhenPlayStatusIsReadyToPlay;
     BOOL _pauseWhenAppDidEnterBackground;
+    BOOL _resumePlaybackWhenAppDidEnterForeground;
     BOOL(^_Nullable _canPlayAnAsset)(__kindof SJBaseVideoPlayer *player);
     void(^_Nullable _rateDidChangeExeBlock)(__kindof SJBaseVideoPlayer *player);
     void(^_Nullable _playTimeDidChangeExeBlok)(__kindof SJBaseVideoPlayer *videoPlayer);
@@ -217,6 +221,11 @@ static NSString *_kPlayStatus = @"playStatus";
     /// Scroll
     void(^_Nullable _playerViewWillAppearExeBlock)(__kindof SJBaseVideoPlayer *videoPlayer);
     void(^_Nullable _playerViewWillDisappearExeBlock)(__kindof SJBaseVideoPlayer *videoPlayer);
+    
+    /// mvcm => Modal view controller Manager
+    id<SJModalViewControlllerManagerProtocol> _mvcm_modalViewControllerManager;
+    BOOL _mvcm_needPresentModalViewControlller;
+    UIView *_Nullable _mvcm_targetSuperView;
 }
 
 + (instancetype)player {
@@ -228,8 +237,16 @@ static NSString *_kPlayStatus = @"playStatus";
 }
 
 - (nullable __kindof UIViewController *)atViewController {
-    if ( _view.superview == nil ) return nil;
-    UIResponder *responder = _view.nextResponder;
+    UIResponder *responder = nil;
+    if ( self.needPresentModalViewControlller &&
+         self.modalViewControllerManager.isPresentedModalViewControlller )
+        responder = _mvcm_targetSuperView.nextResponder;
+    else
+        responder = _view.nextResponder;
+    
+    if ( !responder )
+        return nil;
+    
     while ( ![responder isKindOfClass:[UIViewController class]] ) {
         responder = responder.nextResponder;
         if ( [responder isMemberOfClass:[UIResponder class]] || !responder ) return nil;
@@ -380,7 +397,7 @@ static NSString *_kGestureState = @"state";
     });
     
     if ( SJVideoPlayerPlayStatusPlaying == _playStatus ) {
-        _assetIsPlayed = YES;
+        _mpc_assetIsPlayed = YES;
         _playedLastTime = 0;
     }
 }
@@ -487,6 +504,8 @@ static NSString *_kGestureState = @"state";
     _registrar.didBecomeActive = ^(SJVideoPlayerRegistrar * _Nonnull registrar) {
         __strong typeof(_self) self = _self;
         if ( !self ) return;
+        if ( [self playStatus_isPaused] && self.resumePlaybackWhenAppDidEnterForeground ) [self play];
+
         if ( [self.controlLayerDelegate respondsToSelector:@selector(appDidBecomeActive:)] ) {
             [self.controlLayerDelegate appDidBecomeActive:self];
         }
@@ -796,7 +815,7 @@ static NSString *_kGestureState = @"state";
         case SJPlayerBufferStatusUnplayable: {
             // 有网
             if ( self.reachability.networkStatus != SJNetworkStatus_NotReachable ) {
-                if ( (![self playStatus_isPrepare] && ![self playStatus_isReadyToPlay]) || _assetIsPlayed ) {
+                if ( (![self playStatus_isPrepare] && ![self playStatus_isReadyToPlay]) || _mpc_assetIsPlayed ) {
                     if ( ![self playStatus_isPaused] )
                         [self pause:SJVideoPlayerPausedReasonBuffering];
                 }
@@ -840,22 +859,30 @@ static NSString *_kGestureState = @"state";
 #pragma clang diagnostic pop
     }
 }
-#pragma mark -
 
 // 1.
 - (void)setURLAsset:(nullable SJVideoPlayerURLAsset *)URLAsset {
     if ( _URLAsset ) {
-        if ( self.assetDeallocExeBlock ) self.assetDeallocExeBlock(self);
+        if ( self.assetDeallocExeBlock )
+            self.assetDeallocExeBlock(self);
     }
     
+    _mpc_assetIsPlayed = NO;
+    
+    // update
+    [self _updateCurrentPlayingIndexPathIfNeeded:URLAsset.playModel];
+    [self _updatePlayModelObserver:URLAsset.playModel];
+    _mpc_assetObserver = [URLAsset getObserver];
+    __weak typeof(self) _self = self;
+    _mpc_assetObserver.playModelDidChangeExeBlock = ^(SJVideoPlayerURLAsset * _Nonnull asset) {
+        __strong typeof(_self) self = _self;
+        if ( !self ) return;
+        [self _updateCurrentPlayingIndexPathIfNeeded:URLAsset.playModel];
+        [self _updatePlayModelObserver:URLAsset.playModel];
+    };
+    
+    // update
     _URLAsset = URLAsset;
-    _assetIsPlayed = NO;
-    
-    // 维护当前播放的indexPath
-    UIScrollView *scrollView = sj_getScrollView(URLAsset.playModel);
-    if ( scrollView.sj_enabledAutoplay ) {
-        scrollView.sj_currentPlayingIndexPath = [URLAsset.playModel performSelector:@selector(indexPath)];
-    }
     
     self.playbackController.media = URLAsset;
     
@@ -865,8 +892,6 @@ static NSString *_kGestureState = @"state";
     }
     else {
         self.playStatus = SJVideoPlayerPlayStatusPrepare;
-        self.playModelObserver = [[SJPlayModelPropertiesObserver alloc] initWithPlayModel:URLAsset.playModel];
-        self.playModelObserver.delegate = (id)self;
     
         if ( [self.controlLayerDelegate respondsToSelector:@selector(videoPlayer:prepareToPlay:)] ) {
             [self.controlLayerDelegate videoPlayer:self prepareToPlay:URLAsset];
@@ -874,7 +899,6 @@ static NSString *_kGestureState = @"state";
         [self.playbackController prepareToPlay];
     }
 }
-
 - (nullable SJVideoPlayerURLAsset *)URLAsset {
     return _URLAsset;
 }
@@ -963,7 +987,6 @@ static NSString *_kGestureState = @"state";
 - (void)setPlayerVolume:(float)playerVolume {
     _playbackController.volume = playerVolume;
 }
-
 - (float)playerVolume {
     return _playbackController.volume;
 }
@@ -1015,15 +1038,20 @@ static NSString *_kGestureState = @"state";
     _pauseWhenAppDidEnterBackground = pauseWhenAppDidEnterBackground;
     _playbackController.pauseWhenAppDidEnterBackground = pauseWhenAppDidEnterBackground;
 }
-
 - (BOOL)pauseWhenAppDidEnterBackground {
     return _pauseWhenAppDidEnterBackground;
+}
+
+- (void)setResumePlaybackWhenAppDidEnterForeground:(BOOL)resumePlaybackWhenAppDidEnterForeground {
+    _resumePlaybackWhenAppDidEnterForeground = resumePlaybackWhenAppDidEnterForeground;
+}
+- (BOOL)resumePlaybackWhenAppDidEnterForeground {
+    return _resumePlaybackWhenAppDidEnterForeground;
 }
 
 - (void)setCanPlayAnAsset:(nullable BOOL (^)(__kindof SJBaseVideoPlayer * _Nonnull))canPlayAnAsset {
     _canPlayAnAsset = canPlayAnAsset;
 }
-
 - (nullable BOOL (^)(__kindof SJBaseVideoPlayer * _Nonnull))canPlayAnAsset {
     return _canPlayAnAsset;
 }
@@ -1130,7 +1158,7 @@ static NSString *_kGestureState = @"state";
     if ( isnan(secs) ) { return;}
     
     if ( [self playStatus_isUnknown] ||
-        [self playStatus_isInactivity_ReasonPlayFailed] ) {
+         [self playStatus_isInactivity_ReasonPlayFailed] ) {
         if ( completionHandler ) completionHandler(NO);
         return;
     }
@@ -1216,6 +1244,25 @@ static NSString *_kGestureState = @"state";
     self.assetURL = URL;
 }
 
+- (void)_updateCurrentPlayingIndexPathIfNeeded:(SJPlayModel *)playModel {
+    if ( !playModel )
+        return;
+    
+    // 维护当前播放的indexPath
+    UIScrollView *scrollView = sj_getScrollView(playModel);
+    if ( scrollView.sj_enabledAutoplay ) {
+        scrollView.sj_currentPlayingIndexPath = [playModel performSelector:@selector(indexPath)];
+    }
+}
+
+- (void)_updatePlayModelObserver:(SJPlayModel *)playModel {
+    if ( !playModel )
+        return;
+    
+    // update playModel
+    self.playModelObserver = [[SJPlayModelPropertiesObserver alloc] initWithPlayModel:playModel];
+    self.playModelObserver.delegate = (id)self;
+}
 @end
 
 
@@ -1349,7 +1396,7 @@ static NSString *_kGestureState = @"state";
 
 #pragma mark -
 
-@implementation SJBaseVideoPlayer (UIViewController)
+@implementation SJBaseVideoPlayer (ViewController)
 /// You should call it when view did appear
 - (void)vc_viewDidAppear {
     self.vc_isDisappeared = NO;
@@ -1366,14 +1413,26 @@ static NSString *_kGestureState = @"state";
     if ( _tmpHiddenStatusBar ) return YES;
     if ( self.lockedScreen ) return YES;
     if ( self.rotationManager.transitioning ) {
-        if ( !self.disabledControlLayerAppearManager && self.controlLayerIsAppeared ) return NO;
-        return YES;
+        if ( !self.disabledControlLayerAppearManager && self.controlLayerIsAppeared )
+            return NO;
+        else
+            return YES;
+    }
+    if ( self.modalViewControllerManager.isPresentedModalViewControlller ) {
+        if ( self.modalViewControllerManager.isTransitioning )
+            return NO;
+        else
+            return !self.controlLayerIsAppeared;
     }
     // 全屏播放时, 使状态栏根据控制层显示或隐藏
-    if ( self.isFullScreen ) return !self.controlLayerIsAppeared;
+    if ( self.isFullScreen )
+        return !self.controlLayerIsAppeared;
     return NO;
 }
 - (UIStatusBarStyle)vc_preferredStatusBarStyle {
+    if ( self.modalViewControllerManager.isPresentedModalViewControlller ) {
+        return UIStatusBarStyleLightContent;
+    }
     // 全屏播放时, 使状态栏变成白色
     if ( self.isFullScreen || self.fitOnScreen ) return UIStatusBarStyleLightContent;
     return UIStatusBarStyleDefault;
@@ -1811,6 +1870,70 @@ static NSString *_kGestureState = @"state";
 @end
 
 
+@implementation SJBaseVideoPlayer (ModalViewControlller)
+
+- (void)setModalViewControllerManager:(nullable id<SJModalViewControlllerManagerProtocol>)modalViewControllerManager {
+    _mvcm_modalViewControllerManager = modalViewControllerManager;
+    [self _needUpdateModalViewControllerManagerProperties];
+}
+- (id<SJModalViewControlllerManagerProtocol>)modalViewControllerManager {
+    if ( _mvcm_modalViewControllerManager )
+        return _mvcm_modalViewControllerManager;
+    _mvcm_modalViewControllerManager = [[SJModalViewControlllerManager alloc] init];
+    [self _needUpdateModalViewControllerManagerProperties];
+    return _mvcm_modalViewControllerManager;
+}
+
+- (void)setNeedPresentModalViewControlller:(BOOL)needPresentModalViewControlller {
+    _mvcm_needPresentModalViewControlller = needPresentModalViewControlller;
+}
+- (BOOL)needPresentModalViewControlller {
+    return _mvcm_needPresentModalViewControlller;
+}
+
+- (void)_needUpdateModalViewControllerManagerProperties {
+    if ( !_mvcm_modalViewControllerManager )
+        return;
+    
+}
+
+- (void)presentModalViewControlller {
+    NSAssert(self.needPresentModalViewControlller, @"You must set `player.needPresentModalViewControlller` to Yes.");
+
+    if ( self.modalViewControllerManager.isPresentedModalViewControlller )
+        return;
+    
+    dispatch_async(dispatch_get_main_queue(), ^{
+        self->_mvcm_targetSuperView = [[UIView alloc] initWithFrame:self.view.bounds];
+        self->_mvcm_targetSuperView.backgroundColor = UIColor.blackColor;
+        self->_mvcm_targetSuperView.autoresizingMask = UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight;
+        [self.view insertSubview:self->_mvcm_targetSuperView atIndex:0];
+        [self->_mvcm_targetSuperView addSubview:self.presentView];
+        self.rotationManager.superview = self->_mvcm_targetSuperView;
+        
+        [self.modalViewControllerManager presentModalViewControlllerWithTarget:self->_mvcm_targetSuperView targetSuperView:self.view player:(id)self completion:nil];
+    });
+}
+- (void)dismissModalViewControlller {
+    if ( !self.needPresentModalViewControlller )
+        return;
+    
+    if ( !self.modalViewControllerManager.isPresentedModalViewControlller )
+        return;
+    
+    dispatch_async(dispatch_get_main_queue(), ^{
+        [self.modalViewControllerManager dismissModalViewControlllerCompletion:^{
+            [self controlLayerNeedAppear];
+            [self.view insertSubview:self.presentView atIndex:0];
+            self.rotationManager.superview = self.view;
+            [self->_mvcm_targetSuperView removeFromSuperview];
+            self->_mvcm_targetSuperView = nil;
+        }];
+    });
+}
+
+@end
+
 
 
 #pragma mark - 充满屏幕
@@ -1931,7 +2054,7 @@ static NSString *_kGestureState = @"state";
     rotationManager.shouldTriggerRotation = ^BOOL(id<SJRotationManagerProtocol>  _Nonnull mgr) {
         __strong typeof(_self) self = _self;
         if ( !self ) return NO;
-        if ( !self.view.superview ) return NO;
+        if ( !self.presentView.window ) return NO;
         if ( self.touchedScrollView ) return NO;
         if ( self.isPlayOnScrollView && !self.isScrollAppeared ) return NO;
         if ( self.isLockedScreen ) return NO;
@@ -1943,6 +2066,8 @@ static NSString *_kGestureState = @"state";
             if ( ![self.controlLayerDelegate canTriggerRotationOfVideoPlayer:self] )
                 return NO;
         }
+        if ( self.needPresentModalViewControlller && !self.modalViewControllerManager.isPresentedModalViewControlller ) return NO;
+        if ( self.modalViewControllerManager.isTransitioning ) return NO;
         if ( self.atViewController.presentedViewController ) return NO;
         return YES;
     };

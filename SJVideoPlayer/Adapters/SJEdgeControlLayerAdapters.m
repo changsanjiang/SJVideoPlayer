@@ -173,41 +173,43 @@ NS_ASSUME_NONNULL_BEGIN
 - (void)_updateTopLayout:(nullable NSNotification *)notify {
     if ( !_topAdapter ) return;
     if ( _screen.is_iPhoneX ) return;
-    UIInterfaceOrientation orientation = notify?[notify.userInfo[UIApplicationStatusBarOrientationUserInfoKey] integerValue]: UIApplication.sharedApplication.statusBarOrientation;
-    switch ( orientation ) {
-        case UIInterfaceOrientationUnknown: break;
-        case UIInterfaceOrientationPortrait:
-        case UIInterfaceOrientationPortraitUpsideDown: {
-            [_topAdapter.view mas_remakeConstraints:^(MASConstraintMaker *make) {
-                if (@available(iOS 11.0, *)) {
-                    make.top.equalTo(self.topContainerView.mas_safeAreaLayoutGuideTop).offset(self.topMargin);
-                    make.left.equalTo(self.topContainerView.mas_safeAreaLayoutGuideLeft);
-                    make.right.equalTo(self.topContainerView.mas_safeAreaLayoutGuideRight);
-                } else {
-                    make.top.offset(self.topMargin + ((self.isFitOnScreen && self.autoAdjustTopSpacing)?20:0));
-                    make.left.right.offset(0);
-                }
-                make.bottom.offset(0);
-                make.height.offset(self.topHeight);
-            }];
+    [UIView animateWithDuration:0 animations:^{} completion:^(BOOL finished) {
+        UIInterfaceOrientation orientation = notify?[notify.userInfo[UIApplicationStatusBarOrientationUserInfoKey] integerValue]: UIApplication.sharedApplication.statusBarOrientation;
+        switch ( orientation ) {
+            case UIInterfaceOrientationUnknown: break;
+            case UIInterfaceOrientationPortrait:
+            case UIInterfaceOrientationPortraitUpsideDown: {
+                [self.topAdapter.view mas_remakeConstraints:^(MASConstraintMaker *make) {
+                    if (@available(iOS 11.0, *)) {
+                        make.top.equalTo(self.topContainerView.mas_safeAreaLayoutGuideTop).offset(self.topMargin);
+                        make.left.equalTo(self.topContainerView.mas_safeAreaLayoutGuideLeft);
+                        make.right.equalTo(self.topContainerView.mas_safeAreaLayoutGuideRight);
+                    } else {
+                        make.top.offset(self.topMargin + ((self.isFitOnScreen && self.autoAdjustTopSpacing)?20:0));
+                        make.left.right.offset(0);
+                    }
+                    make.bottom.offset(0);
+                    make.height.offset(self.topHeight);
+                }];
+            }
+                break;
+            case UIInterfaceOrientationLandscapeLeft:
+            case UIInterfaceOrientationLandscapeRight: {
+                [self.topAdapter.view mas_remakeConstraints:^(MASConstraintMaker *make) {
+                    make.top.offset(self.topMargin + (self.autoAdjustTopSpacing?20:0)); // 统一 20
+                    if (@available(iOS 11.0, *)) {
+                        make.left.equalTo(self.topContainerView.mas_safeAreaLayoutGuideLeft);
+                        make.right.equalTo(self.topContainerView.mas_safeAreaLayoutGuideRight);
+                    } else {
+                        make.left.right.offset(0);
+                    }
+                    make.bottom.offset(0);
+                    make.height.offset(self.topHeight);
+                }];
+            }
+                break;
         }
-            break;
-        case UIInterfaceOrientationLandscapeLeft:
-        case UIInterfaceOrientationLandscapeRight: {
-            [_topAdapter.view mas_remakeConstraints:^(MASConstraintMaker *make) {
-                make.top.offset(self.topMargin + (self.autoAdjustTopSpacing?20:0)); // 统一 20
-                if (@available(iOS 11.0, *)) {
-                    make.left.equalTo(self.topContainerView.mas_safeAreaLayoutGuideLeft);
-                    make.right.equalTo(self.topContainerView.mas_safeAreaLayoutGuideRight);
-                } else {
-                    make.left.right.offset(0);
-                }
-                make.bottom.offset(0);
-                make.height.offset(self.topHeight);
-            }];
-        }
-            break;
-    }
+    }];
 }
 
 - (SJVideoPlayerControlMaskView *)topContainerView {

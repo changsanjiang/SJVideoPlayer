@@ -349,25 +349,19 @@ NS_ASSUME_NONNULL_BEGIN
 
 #pragma mark -
 - (void)_handleClickedBackButtonEvent {
-    if ( self.useFitOnScreenAndDisableRotation ) {
-        if ( self.isFitOnScreen ) {
-            self.fitOnScreen = NO;
-        }
-        else {
-            self.clickedBackEvent(self);
-        }
+    if ( self.isFullScreen &&
+        ![self _whetherToSupportOnlyOneOrientation] ) {
+        [self rotate];
+    }
+    else if ( self.isFitOnScreen ) {
+        self.fitOnScreen = NO;
+    }
+    else if ( self.needPresentModalViewControlller &&
+              self.modalViewControllerManager.isPresentedModalViewControlller ) {
+        [self dismissModalViewControlller];
     }
     else {
-        // 竖屏状态
-        // 只支持一个反向
-        // 调用 back
-        if ( self.orientation == SJOrientation_Portrait ||
-            [self _whetherToSupportOnlyOneOrientation] ) {
-            self.clickedBackEvent(self);
-        }
-        else {
-            [self rotate];
-        }
+        self.clickedBackEvent(self);
     }
 }
 

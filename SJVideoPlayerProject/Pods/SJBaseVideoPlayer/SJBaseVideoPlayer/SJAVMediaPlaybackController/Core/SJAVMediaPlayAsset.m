@@ -221,7 +221,7 @@ static NSString *kRate = @"rate";
         BOOL isPlaybackBufferEmpty = self.playerItem.isPlaybackBufferEmpty;
         BOOL isPlaybackBufferFull = self.playerItem.isPlaybackBufferFull;
         BOOL isPre_buf = NO;
-        if ( !isPlaybackBufferEmpty ) {
+        if ( !isPlaybackBufferEmpty || [self.URLAsset.URL isFileURL] ) {
             CMTimeRange range = [self.playerItem.loadedTimeRanges.firstObject CMTimeRangeValue];
             NSTimeInterval currentTime = CMTimeGetSeconds(self.playerItem.currentTime);
             NSTimeInterval bufferTime = CMTimeGetSeconds(range.start) + CMTimeGetSeconds(range.duration);

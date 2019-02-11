@@ -69,6 +69,7 @@
         
         // create new player
         self.player = [SJVideoPlayer player];
+        self.player.needPresentModalViewControlller = YES;
         [view.coverImageView addSubview:self.player.view];
         [self.player.view mas_makeConstraints:^(MASConstraintMaker *make) {
             make.edges.offset(0);

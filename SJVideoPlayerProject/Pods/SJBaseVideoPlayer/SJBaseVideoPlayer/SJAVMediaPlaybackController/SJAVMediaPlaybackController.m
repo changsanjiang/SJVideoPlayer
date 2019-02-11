@@ -129,7 +129,7 @@ inline static bool isFloatZero(float value) {
 
 - (void)setRate:(float)rate {
     _rate = rate;
-    _playAsset.player.rate = self.rate;
+    _playAsset.player.rate = rate;
 }
 
 - (void)setVideoGravity:(SJVideoGravity)videoGravity {

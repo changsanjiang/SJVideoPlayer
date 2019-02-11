@@ -237,7 +237,7 @@ SJEdgeControlButtonItemTag const SJEdgeControlLayerCenterItem_Replay = 10000;
     BOOL isFull = videoPlayer.isFullScreen;
     
     if ( backItem ) {
-        if ( isFull || isFitOnScreen )
+        if ( isFull || isFitOnScreen || videoPlayer.modalViewControllerManager.isPresentedModalViewControlller )
             backItem.hidden = NO;
         else {
             if ( _hideBackButtonWhenOrientationIsPortrait )
@@ -627,7 +627,7 @@ SJEdgeControlButtonItemTag const SJEdgeControlLayerCenterItem_Replay = 10000;
         [slider setThumbCornerRadius:settings.progress_thumbSize * 0.5 size:CGSizeMake(settings.progress_thumbSize, settings.progress_thumbSize) thumbBackgroundColor:settings.progress_thumbColor];
     }
     
-    fullItem.image = (videoPlayer.isFullScreen || videoPlayer.isFitOnScreen)?settings.shrinkscreenImage:settings.fullBtnImage;
+    fullItem.image = (videoPlayer.isFullScreen || videoPlayer.isFitOnScreen || videoPlayer.modalViewControllerManager.isPresentedModalViewControlller ) ?settings.shrinkscreenImage:settings.fullBtnImage;
     
     [self _callDelegateMethodOfItemsForAdapter:_bottomAdapter videoPlayer:videoPlayer];
     [_bottomAdapter reload];
@@ -712,9 +712,11 @@ SJEdgeControlButtonItemTag const SJEdgeControlLayerCenterItem_Replay = 10000;
 }
 
 - (void)clickedFullItem:(SJEdgeControlButtonItem *)item {
-    if ( _videoPlayer.needPresentModalViewControlller &&
-        !_videoPlayer.modalViewControllerManager.isPresentedModalViewControlller ) {
-        [_videoPlayer presentModalViewControlller];
+    if ( _videoPlayer.needPresentModalViewControlller ) {
+        if ( !_videoPlayer.modalViewControllerManager.isPresentedModalViewControlller )
+            [_videoPlayer presentModalViewControlller];
+        else
+            [_videoPlayer dismissModalViewControlller];
     }
     else if ( _videoPlayer.useFitOnScreenAndDisableRotation ) {
         _videoPlayer.fitOnScreen = !_videoPlayer.fitOnScreen;

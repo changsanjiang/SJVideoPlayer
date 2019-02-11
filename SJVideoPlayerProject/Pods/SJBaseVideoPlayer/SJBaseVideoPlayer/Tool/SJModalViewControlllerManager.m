@@ -7,6 +7,9 @@
 
 #import "SJModalViewControlllerManager.h"
 #import "SJVideoPlayerURLAsset.h"
+#import "SJRotationManagerProtocol.h"
+#import "SJControlLayerAppearManagerProtocol.h"
+
 #if __has_include(<Masonry/Masonry.h>)
 #import <Masonry/Masonry.h>
 #else
@@ -196,7 +199,9 @@ typedef NS_ENUM(NSUInteger, __SJModalViewControllerState) {
 - (void)dismissModalViewControlllerCompletion:(nullable void (^)(void))completion {
     if ( !self.isPresentedModalViewControlller )
         return;
-    [_viewController dismissViewControllerAnimated:YES completion:completion];
+    [_player.rotationManager rotate:SJOrientation_Portrait animated:YES completionHandler:^(id<SJRotationManagerProtocol>  _Nonnull mgr) {
+        [self->_viewController dismissViewControllerAnimated:YES completion:completion];
+    }];
 }
 
 - (nullable __kindof UIViewController *)targetAtViewController {
@@ -220,7 +225,7 @@ typedef NS_ENUM(NSUInteger, __SJModalViewControllerState) {
         if ( !self ) return;
         self.transitioning = YES;
         self.player.URLAsset.playModel = self.modalVCPlayModel;
-        [self.player controlLayerNeedDisappear];
+        [self.player.controlLayerAppearManager needDisappear];
         
         UIView *containerView = [transitionContext containerView];
         UIView *toView = [transitionContext viewForKey:UITransitionContextToViewKey];
@@ -239,14 +244,14 @@ typedef NS_ENUM(NSUInteger, __SJModalViewControllerState) {
         } completion:^(BOOL finished) {
             self.transitioning = NO;
             [transitionContext completeTransition:YES];
-            [self.player controlLayerNeedAppear];
+            [self.player.controlLayerAppearManager needAppear];
         }];
     } dismissAnimation:^(__SJTransitionAnimator * _Nonnull animator, id<UIViewControllerContextTransitioning>  _Nonnull transitionContext) {
         __strong typeof(_self) self = _self;
         if ( !self ) return;
         self.transitioning = YES;
         self.player.URLAsset.playModel = self.originPlayModel;
-        [self.player controlLayerNeedDisappear];
+        [self.player.controlLayerAppearManager needDisappear];
         
         UIView *fromView = [transitionContext viewForKey:UITransitionContextFromViewKey];
         CGRect frame = [self.targetSuperView.superview convertRect:self.targetSuperView.frame toView:fromView];
@@ -265,7 +270,7 @@ typedef NS_ENUM(NSUInteger, __SJModalViewControllerState) {
             }];
             self.transitioning = NO;
             [transitionContext completeTransition:YES];
-            [self.player controlLayerNeedAppear];
+            [self.player.controlLayerAppearManager needAppear];
         }];
     }];
 }

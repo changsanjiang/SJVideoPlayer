@@ -8,13 +8,14 @@
 
 #ifndef SJModalViewControlllerManagerProtocol_h
 #define SJModalViewControlllerManagerProtocol_h
+@protocol SJRotationManagerProtocol, SJControlLayerAppearManager;
 @class SJVideoPlayerURLAsset;
 
 NS_ASSUME_NONNULL_BEGIN
 @protocol SJModalViewControllerPlayer <NSObject>
 @property (nonatomic, strong, nullable) SJVideoPlayerURLAsset *URLAsset;
-- (void)controlLayerNeedAppear;
-- (void)controlLayerNeedDisappear;
+@property (nonatomic, strong, null_resettable) id<SJRotationManagerProtocol> rotationManager;
+@property (nonatomic, strong, null_resettable) id<SJControlLayerAppearManager> controlLayerAppearManager;
 - (BOOL)vc_prefersStatusBarHidden;
 - (UIStatusBarStyle)vc_preferredStatusBarStyle;
 @end

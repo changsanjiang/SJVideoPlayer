@@ -2054,7 +2054,7 @@ static NSString *_kGestureState = @"state";
     rotationManager.shouldTriggerRotation = ^BOOL(id<SJRotationManagerProtocol>  _Nonnull mgr) {
         __strong typeof(_self) self = _self;
         if ( !self ) return NO;
-        if ( !self.presentView.window ) return NO;
+        if ( !self.view.superview ) return NO;
         if ( self.touchedScrollView ) return NO;
         if ( self.isPlayOnScrollView && !self.isScrollAppeared ) return NO;
         if ( self.isLockedScreen ) return NO;

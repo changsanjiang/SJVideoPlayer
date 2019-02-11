@@ -349,16 +349,16 @@ NS_ASSUME_NONNULL_BEGIN
 
 #pragma mark -
 - (void)_handleClickedBackButtonEvent {
-    if ( self.isFullScreen &&
+    if ( self.needPresentModalViewControlller &&
+         self.modalViewControllerManager.isPresentedModalViewControlller ) {
+        [self dismissModalViewControlller];
+    }
+    else if ( self.isFullScreen &&
         ![self _whetherToSupportOnlyOneOrientation] ) {
         [self rotate];
     }
     else if ( self.isFitOnScreen ) {
         self.fitOnScreen = NO;
-    }
-    else if ( self.needPresentModalViewControlller &&
-              self.modalViewControllerManager.isPresentedModalViewControlller ) {
-        [self dismissModalViewControlller];
     }
     else {
         self.clickedBackEvent(self);

@@ -32,18 +32,6 @@
     
     [self _setupViews];
     
-    /// 替换旋转管理类
-    _rotationManager = [[SJVCRotationManager alloc] initWithViewController:self];
-    _player.rotationManager = _rotationManager;
-    
-//    _player.supportedOrientation = SJAutoRotateSupportedOrientation_LandscapeLeft;
-    
-
-    /// update device orientation
-    [[UIDevice currentDevice] setValue:@(UIDeviceOrientationPortrait) forKey:@"orientation"];
-    _player.disableAutoRotation = YES;
-    [_player rotate:SJOrientation_LandscapeLeft animated:YES];
-    
     __weak typeof(self) _self = self;
     _player.clickedBackEvent = ^(SJVideoPlayer * _Nonnull player) {
         __strong typeof(_self) self = _self;
@@ -56,16 +44,24 @@
     _player.assetURL = [[NSBundle mainBundle] URLForResource:@"play" withExtension:@"mp4"];
     
     
-    /// Test
+    /// Top
     _player.defaultEdgeControlLayer.topContainerView.backgroundColor = [UIColor colorWithWhite:0 alpha:0.8];
     
+    /// Bottom
     [_player.defaultEdgeControlLayer.bottomAdapter removeItemForTag:SJEdgeControlLayerBottomItem_Separator];
-//    [_player.defaultEdgeControlLayer.bottomAdapter removeItemForTag:SJEdgeControlLayerBottomItem_FullBtn];
     SJEdgeControlButtonItem *durationItem = [_player.defaultEdgeControlLayer.bottomAdapter itemForTag:SJEdgeControlLayerBottomItem_DurationTime];
     durationItem.insets = SJEdgeInsetsMake(0, 12);
     [_player.defaultEdgeControlLayer.bottomAdapter exchangeItemForTag:SJEdgeControlLayerBottomItem_DurationTime withItemForTag:SJEdgeControlLayerBottomItem_Progress];
     [_player.defaultEdgeControlLayer.bottomAdapter reload];
     _player.defaultEdgeControlLayer.bottomContainerView.backgroundColor = [UIColor colorWithWhite:0 alpha:0.8];
+    
+    
+    /// update device orientation
+    _rotationManager = [[SJVCRotationManager alloc] initWithViewController:self];
+    _player.rotationManager = _rotationManager;
+    _player.supportedOrientation = SJAutoRotateSupportedOrientation_LandscapeLeft;
+    [[UIDevice currentDevice] setValue:@(UIDeviceOrientationPortrait) forKey:@"orientation"];
+    [[UIDevice currentDevice] setValue:@(UIDeviceOrientationLandscapeLeft) forKey:@"orientation"];
 }
 
 - (void)_setupViews {

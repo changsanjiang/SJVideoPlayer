@@ -19,7 +19,7 @@ target 'SJVideoPlayer' do
 
   pod 'YYText', :inhibit_warnings => true
   pod 'SJVideoPlayer', :path => '../../SJVideoPlayer'
-  pod 'SJBaseVideoPlayer'#, :path => '../../SJBaseVideoPlayer'
+  pod 'SJBaseVideoPlayer', :path => '../../SJBaseVideoPlayer'
   pod 'SJPlaybackListController'#, :path => '../../SJPlaybackListController'
   pod 'SJObserverHelper'#, :path => '../../SJObserverHelper'
   

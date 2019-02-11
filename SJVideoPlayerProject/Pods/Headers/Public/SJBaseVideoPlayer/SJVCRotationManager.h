@@ -1,1 +1,1 @@
-../../../SJBaseVideoPlayer/SJBaseVideoPlayer/SJRotationManager/SJVCRotationManager.h
+../../../../../../SJBaseVideoPlayer/SJBaseVideoPlayer/SJRotationManager/SJVCRotationManager.h

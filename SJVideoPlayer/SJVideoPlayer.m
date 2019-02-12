@@ -141,6 +141,7 @@ NS_ASSUME_NONNULL_BEGIN
             if ( ![self.switcher controlLayerForIdentifier:SJControlLayer_LoadFailed] ) {
                 [self.switcher addControlLayer:self.defaultLoadFailedCarrier];
             }
+            self.defaultLoadFailedControlLayer.hideBackButtonWhenOrientationIsPortrait = self.hideBackButtonWhenOrientationIsPortrait;
             [self.switcher switchControlLayerForIdentitfier:SJControlLayer_LoadFailed];
         }
         // 无网, 无缓冲
@@ -148,6 +149,7 @@ NS_ASSUME_NONNULL_BEGIN
             if ( ![self.switcher controlLayerForIdentifier:SJControlLayer_NotReachableAndPlaybackStalled] ) {
                 [self.switcher addControlLayer:self.defaultNotReachableCarrier];
             }
+            self.defaultNotReachableControlLayer.hideBackButtonWhenOrientationIsPortrait = self.hideBackButtonWhenOrientationIsPortrait;
             [self.switcher switchControlLayerForIdentitfier:SJControlLayer_NotReachableAndPlaybackStalled];
         }
         else if ( self.switcher.currentIdentifier == SJControlLayer_NotReachableAndPlaybackStalled ||
@@ -410,8 +412,6 @@ NS_ASSUME_NONNULL_BEGIN
     _hideBackButtonWhenOrientationIsPortrait = hideBackButtonWhenOrientationIsPortrait;
     [self defaultEdgeControlLayer].hideBackButtonWhenOrientationIsPortrait = hideBackButtonWhenOrientationIsPortrait;
     [self defaultEdgeLightweightControlLayer].hideBackButtonWhenOrientationIsPortrait = hideBackButtonWhenOrientationIsPortrait;
-    [self defaultLoadFailedControlLayer].hideBackButtonWhenOrientationIsPortrait = hideBackButtonWhenOrientationIsPortrait;
-    [self defaultNotReachableControlLayer].hideBackButtonWhenOrientationIsPortrait = hideBackButtonWhenOrientationIsPortrait;
 }
 
 - (BOOL)hideBackButtonWhenOrientationIsPortrait {
@@ -519,13 +519,12 @@ NS_ASSUME_NONNULL_BEGIN
 - (void)setEnableFilmEditing:(BOOL)enableFilmEditing {
     if ( enableFilmEditing == _enableFilmEditing ) return;
     _enableFilmEditing = enableFilmEditing;
-   
+    
+    /// 轻量级控制层
     [self defaultEdgeLightweightControlLayer].enableFilmEditing = enableFilmEditing;
+    
+    /// 默认的边缘控制层
     if ( enableFilmEditing ) {
-        // 将剪辑控制层加入到切换器中
-        [self.switcher addControlLayer:self.defaultFilmEditingCarrier];
-        [self defaultFilmEditingControlLayer].config = self.filmEditingConfig;
-        
         // 将item加入到边缘控制层中
         [[self defaultEdgeControlLayer].rightAdapter addItem:[self filmEditingItemDelegate].item];
     }
@@ -538,22 +537,13 @@ NS_ASSUME_NONNULL_BEGIN
     
     [[self defaultEdgeControlLayer].rightAdapter reload];
 }
-
 - (BOOL)enableFilmEditing {
     return _enableFilmEditing;
 }
 
-// 历史遗留问题, 此处不应该readonly. 应该由外界配置...
 - (SJVideoPlayerFilmEditingConfig *)filmEditingConfig {
     if ( _filmEditingConfig ) return _filmEditingConfig;
-    _filmEditingConfig = [SJVideoPlayerFilmEditingConfig new];
-    __weak typeof(self) _self = self;
-    dispatch_async(dispatch_get_main_queue(), ^{
-        __strong typeof(_self) self = _self;
-        if ( !self ) return;
-        [self defaultFilmEditingControlLayer].config = self.filmEditingConfig;
-    });
-    return _filmEditingConfig;
+    return _filmEditingConfig = [SJVideoPlayerFilmEditingConfig new];
 }
 
 - (void)dismissFilmEditingViewCompletion:(void(^__nullable)(SJVideoPlayer *player))completion {
@@ -578,6 +568,10 @@ NS_ASSUME_NONNULL_BEGIN
     _filmEditingItemDelegate.clickedItemExeBlock = ^(SJEdgeControlButtonItem * _Nonnull item) {
         __strong typeof(_self) self = _self;
         if ( !self ) return;
+        if ( ![self.switcher controlLayerForIdentifier:SJControlLayer_FilmEditing] ) {
+            [self.switcher addControlLayer:self.defaultFilmEditingCarrier];
+        }
+        [self defaultFilmEditingControlLayer].config = self.filmEditingConfig;
         [self switchControlLayerForIdentitfier:SJControlLayer_FilmEditing];
     };
     return _filmEditingItemDelegate;

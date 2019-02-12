@@ -67,7 +67,7 @@ static SJEdgeControlButtonItemTag SJTopItem_Back = 1;
     self.flashingView.backgroundColor = [UIColor colorWithWhite:1 alpha:0.8];
     self.coverImageView.alpha = 0.001;
     __weak typeof(self) _self = self;
-    [self _getScreenshot:^(UIImage * _Nonnull img) {
+    [self _getScreenshot:^(UIImage * _Nullable img) {
         __strong typeof(_self) self = _self;
         if ( !self ) return;
         self.coverImageView.image = img;
@@ -118,7 +118,7 @@ static SJEdgeControlButtonItemTag SJTopItem_Back = 1;
     }];
 }
 
-- (void)_getScreenshot:(void(^)(UIImage *img))block {
+- (void)_getScreenshot:(void(^)(UIImage *_Nullable img))block {
     if ( [self.player.assetURL isFileURL] ) {
         if ( block ) block(self.player.screenshot);
     }

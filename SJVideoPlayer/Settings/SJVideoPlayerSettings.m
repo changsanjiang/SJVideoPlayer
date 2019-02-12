@@ -32,14 +32,12 @@
                 __strong typeof(_self) self = _self;
                 if ( !self ) return ;
                 [[NSNotificationCenter defaultCenter] postNotificationName:SJSettingsPlayerNotification object:[SJEdgeControlLayerSettings commonSettings]];
-                [[NSNotificationCenter defaultCenter] postNotificationName:SJFilmEditingSettingsUpdatedNotification object:[SJFilmEditingSettings commonSettings]];
             });
         });
     };
 }
 - (void)reset {
     [[SJEdgeControlLayerSettings commonSettings] reset];
-    [[SJFilmEditingSettings commonSettings] reset];
 }
 @end
 

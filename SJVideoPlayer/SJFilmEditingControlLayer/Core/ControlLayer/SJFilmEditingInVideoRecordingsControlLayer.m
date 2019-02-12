@@ -310,6 +310,10 @@ static SJEdgeControlButtonItemTag SJBottomItem_RightFill = 5;
     return NO;
 }
 
+- (BOOL)canTriggerRotationOfVideoPlayer:(__kindof SJBaseVideoPlayer *)videoPlayer {
+    return NO;
+}
+
 - (void)videoPlayer:(__kindof SJBaseVideoPlayer *)videoPlayer statusDidChanged:(SJVideoPlayerPlayStatus)status {
     switch ( videoPlayer.playStatus ) {
         case SJVideoPlayerPlayStatusUnknown: break;

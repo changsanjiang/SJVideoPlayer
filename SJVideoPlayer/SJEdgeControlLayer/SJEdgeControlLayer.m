@@ -763,6 +763,9 @@ SJEdgeControlButtonItemTag const SJEdgeControlLayerCenterItem_Replay = 10000;
 }
 
 - (void)setHideBottomProgressSlider:(BOOL)hideBottomProgressSlider {
+    if ( hideBottomProgressSlider == _hideBottomProgressSlider )
+        return;
+    
     _hideBottomProgressSlider = hideBottomProgressSlider;
     dispatch_async(dispatch_get_main_queue(), ^{
         if ( self->_hideBottomProgressSlider ) {

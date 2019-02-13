@@ -80,12 +80,6 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic, strong) UIFont *replayBtnFont;         // default is [UIFont boldSystemFontOfSize:12].
 @property (nonatomic, strong) UIColor *replayBtnTitleColor;  // default is white.
 
-@property (nonatomic, strong, readonly) NSString *playFailedBtnTitle;
-@property (nonatomic, strong, nullable) UIImage *playFailedBtnImage;     // default is nil.
-@property (nonatomic, strong) UIFont *playFailedBtnFont;                 // default is [UIFont boldSystemFontOfSize:12].
-@property (nonatomic, strong) UIColor *playFailedBtnTitleColor;          // default is white.
-
-
 #pragma mark more
 @property (nonatomic, strong) UIColor *moreBackgroundColor; // more view background color
 @property (nonatomic, strong) UIColor *more_traceColor;     // sider trace color of more view
@@ -100,27 +94,12 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic, strong) UIImage *more_minBrightnessImage;
 @property (nonatomic, strong) UIImage *more_maxBrightnessImage;
 
+
+// - deprecated properties
+
+@property (nonatomic, strong, readonly) NSString *playFailedBtnTitle __deprecated;
+@property (nonatomic, strong, nullable) UIImage *playFailedBtnImage __deprecated;
+@property (nonatomic, strong) UIFont *playFailedBtnFont __deprecated;
+@property (nonatomic, strong) UIColor *playFailedBtnTitleColor __deprecated;
 @end
-
-
-@interface SJVideoPlayerSettings (FilmEditingControlLayer)
-@property (class, nonatomic, copy, readonly) void(^updateFilmEditingControlLayer)(void(^block)(SJVideoPlayerSettings *settings));
-- (void)resetFilmEditingControlLayer;
-
-@property (nonatomic, strong, readonly) NSString *videoPlayDidToEndText;
-@property (nonatomic, strong, readonly) NSString *cancelBtnTitle;
-@property (nonatomic, strong, readonly) NSString *waitingForRecordingPromptText;
-@property (nonatomic, strong, readonly) NSString *finishRecordingPromptText;
-@property (nonatomic, strong, readonly) NSString *uploadingPrompt;
-@property (nonatomic, strong, readonly) NSString *uploadSuccessfullyPrompt;
-@property (nonatomic, strong, readonly) NSString *exportingPrompt;
-@property (nonatomic, strong, readonly) NSString *exportSuccessfullyPrompt;
-@property (nonatomic, strong, readonly) NSString *operationFailedPrompt;
-
-@property (nonatomic, strong) UIImage *screenshotBtnImage;
-@property (nonatomic, strong) UIImage *exportBtnImage;
-@property (nonatomic, strong) UIImage *gifBtnImage;
-@property (nonatomic, strong) UIImage *finishRecordingBtnImage;
-@end
-
 NS_ASSUME_NONNULL_END

@@ -14,16 +14,6 @@
 			<key>isShown</key>
 			<false/>
 		</dict>
-		<key>Pods-SJVideoPlayerTests.xcscheme</key>
-		<dict>
-			<key>isShown</key>
-			<false/>
-		</dict>
-		<key>Pods-SJVideoPlayerUITests.xcscheme</key>
-		<dict>
-			<key>isShown</key>
-			<false/>
-		</dict>
 		<key>Reachability.xcscheme</key>
 		<dict>
 			<key>isShown</key>
@@ -49,6 +39,11 @@
 			<key>isShown</key>
 			<false/>
 		</dict>
+		<key>SJPlaybackListController.xcscheme</key>
+		<dict>
+			<key>isShown</key>
+			<false/>
+		</dict>
 		<key>SJRouter.xcscheme</key>
 		<dict>
 			<key>isShown</key>
@@ -60,6 +55,11 @@
 			<false/>
 		</dict>
 		<key>SJUIFactory.xcscheme</key>
+		<dict>
+			<key>isShown</key>
+			<false/>
+		</dict>
+		<key>SJVideoPlayer.xcscheme</key>
 		<dict>
 			<key>isShown</key>
 			<false/>

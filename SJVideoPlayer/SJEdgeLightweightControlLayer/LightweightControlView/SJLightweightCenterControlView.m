@@ -26,13 +26,11 @@
 
 @interface SJLightweightCenterControlView ()
 
-@property (nonatomic, strong, readonly) UIButton *failedBtn;
 @property (nonatomic, strong, readonly) UIButton *replayBtn;
 
 @end
 
 @implementation SJLightweightCenterControlView
-@synthesize failedBtn = _failedBtn;
 @synthesize replayBtn = _replayBtn;
 
 - (instancetype)initWithFrame:(CGRect)frame {
@@ -53,33 +51,18 @@
     [_delegate centerControlView:self clickedBtnTag:btn.tag];
 }
 
-- (void)failedState {
-    self.replayBtn.hidden = YES;
-    self.failedBtn.hidden = NO;
-}
-
 - (void)replayState {
     self.replayBtn.hidden = NO;
-    self.failedBtn.hidden = YES;
 }
 
 - (void)_centerSetupView {
-    [self addSubview:self.failedBtn];
     [self addSubview:self.replayBtn];
-    [_failedBtn mas_makeConstraints:^(MASConstraintMaker *make) {
-        make.center.offset(0);
-    }];
     
     [_replayBtn mas_makeConstraints:^(MASConstraintMaker *make) {
         make.center.offset(0);
     }];
 }
 
-- (UIButton *)failedBtn {
-    if ( _failedBtn ) return _failedBtn;
-    _failedBtn = [SJUIButtonFactory buttonWithImageName:@"" target:self sel:@selector(clickedBtn:) tag:SJLightweightCenterControlViewTag_Failed];
-    return _failedBtn;
-}
 - (UIButton *)replayBtn {
     if ( _replayBtn ) return _replayBtn;
     _replayBtn = [SJUIButtonFactory buttonWithImageName:@"" target:self sel:@selector(clickedBtn:) tag:SJLightweightCenterControlViewTag_Replay];
@@ -112,26 +95,7 @@
             make.alignment(NSTextAlignmentCenter).lineSpacing(6);
         }) forState:UIControlStateNormal];
         
-        
-        [self.failedBtn setAttributedTitle:sj_makeAttributesString(^(SJAttributeWorker * _Nonnull make) {
-            if ( setting.playFailedBtnImage ) {
-                make.insert(setting.playFailedBtnImage, 0, CGPointZero, setting.playFailedBtnImage.size);
-            }
-            if ( setting.playFailedBtnImage && 0 != setting.playFailedBtnTitle.length ) {
-                make.insertText(@"\n", -1);
-            }
-            
-            if ( 0 != setting.playFailedBtnTitle.length ) {
-                make.insert([NSString stringWithFormat:@"%@", setting.playFailedBtnTitle], -1);
-                make.lastInserted(^(SJAttributesRangeOperator * _Nonnull lastOperator) {
-                    lastOperator
-                    .font(setting.playFailedBtnFont)
-                    .textColor(setting.playFailedBtnTitleColor);
-                });
-            }
-            make.alignment(NSTextAlignmentCenter).lineSpacing(6);
-        }) forState:UIControlStateNormal];
-        
+
     }];
 }
 

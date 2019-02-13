@@ -16,15 +16,15 @@
 #import <objc/message.h>
 
 NS_ASSUME_NONNULL_BEGIN
-@interface SJObserverHelper: NSObject
-@property (nonatomic, readonly) const char *key; // lazy load
+@interface __SJKVOAutoremove: NSObject
+@property (nonatomic, readonly) const char *key;        // lazy load
 @property (nonatomic, unsafe_unretained) id target;
 @property (nonatomic, unsafe_unretained) id observer;
+@property (nonatomic, weak, nullable) __SJKVOAutoremove *factor;
 @property (nonatomic, strong) NSString *keyPath;
-@property (nonatomic, weak) SJObserverHelper *factor;
 @end
 
-@implementation SJObserverHelper {
+@implementation __SJKVOAutoremove {
     char *_key;
 }
 - (instancetype)init {
@@ -44,6 +44,7 @@ NS_ASSUME_NONNULL_BEGIN
     if ( _key ) free(_key);
     if ( _factor ) {
         [_target removeObserver:_observer forKeyPath:_keyPath];
+        _factor = nil;
     }
 }
 @end
@@ -55,6 +56,10 @@ NS_ASSUME_NONNULL_BEGIN
 }
 
 - (void)sj_addObserver:(NSObject *)observer forKeyPath:(NSString *)keyPath context:(nullable void *)context {
+    [self sj_addObserver:observer forKeyPath:keyPath options:NSKeyValueObservingOptionOld | NSKeyValueObservingOptionNew context:context];
+}
+
+- (void)sj_addObserver:(NSObject *)observer forKeyPath:(NSString *)keyPath options:(NSKeyValueObservingOptions)options context:(nullable void *)context {
     NSParameterAssert(observer);
     NSParameterAssert(keyPath);
     
@@ -67,8 +72,8 @@ NS_ASSUME_NONNULL_BEGIN
     
     [self addObserver:observer forKeyPath:keyPath options:NSKeyValueObservingOptionOld | NSKeyValueObservingOptionNew context:context];
     
-    SJObserverHelper *helper = [SJObserverHelper new];
-    SJObserverHelper *sub = [SJObserverHelper new];
+    __SJKVOAutoremove *helper = [__SJKVOAutoremove new];
+    __SJKVOAutoremove *sub = [__SJKVOAutoremove new];
     
     sub.target = helper.target = self;
     sub.observer = helper.observer = observer;
@@ -87,6 +92,57 @@ NS_ASSUME_NONNULL_BEGIN
     set = [NSMutableSet set];
     objc_setAssociatedObject(self, _cmd, set, OBJC_ASSOCIATION_RETAIN_NONATOMIC);
     return set;
+}
+
+@end
+
+
+#pragma mark - Notification
+
+@interface __SJNotificationAutoremove : NSObject
+- (instancetype)initWithToken:(id)token;
+@property (nonatomic, readonly) const char *key;        // lazy load
+@end
+
+@implementation __SJNotificationAutoremove {
+    id _token;
+    char *_key;
+}
+- (instancetype)initWithToken:(id)token {
+    self = [super init];
+    if ( !self ) return nil;
+    _token = token;
+    return self;
+}
+- (const char *)key {
+    if ( _key ) return _key;
+    NSString *keyStr = [NSString stringWithFormat:@"sanjiang:%lu", (unsigned long)[self hash]];
+    _key = malloc((keyStr.length + 1) * sizeof(char));
+    strcpy(_key, keyStr.UTF8String);
+    return _key;
+}
+- (void)dealloc {
+    if ( _key ) free(_key);
+    if ( _token ) {
+        [NSNotificationCenter.defaultCenter removeObserver:_token];
+    }
+}
+@end
+
+@implementation NSObject (SJNotificationHelper)
+- (void)sj_observeWithNotification:(NSNotificationName)notification target:(id _Nullable)target usingBlock:(void(^)(id self, NSNotification *note))block {
+    [self sj_observeWithNotification:notification target:target queue:NSOperationQueue.mainQueue usingBlock:block];
+}
+- (void)sj_observeWithNotification:(NSNotificationName)notification target:(id _Nullable)target queue:(NSOperationQueue *_Nullable)queue usingBlock:(void(^)(id self, NSNotification *note))block {
+    __weak typeof(self) _self = self;
+    id token = [NSNotificationCenter.defaultCenter addObserverForName:notification object:target queue:queue usingBlock:^(NSNotification * _Nonnull note) {
+        __strong typeof(_self) self = _self;
+        if ( !self ) return;
+        if ( block ) block(self, note);
+    }];
+    
+    __SJNotificationAutoremove *helper = [[__SJNotificationAutoremove alloc] initWithToken:token];
+    objc_setAssociatedObject(self, helper.key, helper, OBJC_ASSOCIATION_RETAIN_NONATOMIC);
 }
 @end
 NS_ASSUME_NONNULL_END

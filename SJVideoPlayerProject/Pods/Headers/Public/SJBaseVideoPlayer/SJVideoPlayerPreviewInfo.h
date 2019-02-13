@@ -1,1 +1,1 @@
-../../../../../../SJBaseVideoPlayer/SJBaseVideoPlayer/Header/SJVideoPlayerPreviewInfo.h
+../../../SJBaseVideoPlayer/SJBaseVideoPlayer/Header/SJVideoPlayerPreviewInfo.h

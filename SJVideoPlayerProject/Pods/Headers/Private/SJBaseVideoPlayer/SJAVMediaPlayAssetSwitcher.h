@@ -1,1 +1,1 @@
-../../../../../../SJBaseVideoPlayer/SJBaseVideoPlayer/SJAVMediaPlaybackController/SJAVMediaPlayAssetSwitcher.h
+../../../SJBaseVideoPlayer/SJBaseVideoPlayer/SJAVMediaPlaybackController/SJAVMediaPlayAssetSwitcher.h

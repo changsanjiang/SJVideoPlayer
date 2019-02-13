@@ -202,7 +202,6 @@ NS_ASSUME_NONNULL_BEGIN
         if ( videoPlayer.isFullScreen ) [self->_backBtn appear];
         
         if ( [videoPlayer playStatus_isInactivity_ReasonPlayFailed] ) {
-            [self->_centerControlView failedState];
             [self->_centerControlView appear];
             [self->_topControlView appear];
             [self->_leftControlView disappear];
@@ -304,11 +303,12 @@ NS_ASSUME_NONNULL_BEGIN
             UIView_Animations(CommonAnimaDuration, ^{
                 [self.centerControlView appear];
                 if ( [videoPlayer playStatus_isInactivity_ReasonPlayEnd] ) [self.centerControlView replayState];
-                else [self.centerControlView failedState];
             }, nil);
         }
             break;
     }
+    
+    [self _startOrStopLoadingView];
 }
 
 - (void)videoPlayer:(SJBaseVideoPlayer *)videoPlayer
@@ -395,16 +395,31 @@ NS_ASSUME_NONNULL_BEGIN
 }
 
 - (void)videoPlayer:(__kindof SJBaseVideoPlayer *)videoPlayer bufferStatusDidChange:(SJPlayerBufferStatus)bufferStatus {
-    switch ( bufferStatus ) {
-        case SJPlayerBufferStatusUnknown:
-        case SJPlayerBufferStatusPlayable: {
-            [_loadingView stop];
+    [self _startOrStopLoadingView];
+}
+
+- (void)_startOrStopLoadingView {
+    SJPlayerBufferStatus bufferStatus = self.videoPlayer.playbackController.bufferStatus;
+    if ( [_videoPlayer playStatus_isPaused_ReasonSeeking] ||
+        [_videoPlayer playStatus_isPrepare] ) {
+        [_loadingView start];
+    }
+    else if ( _videoPlayer.playbackController.bufferStatus == SJPlayerBufferStatusPlayable ||
+             [_videoPlayer playStatus_isInactivity] ) {
+        [_loadingView stop];
+    }
+    else {
+        switch ( bufferStatus ) {
+            case SJPlayerBufferStatusUnknown:
+            case SJPlayerBufferStatusPlayable: {
+                [_loadingView stop];
+            }
+                break;
+            case SJPlayerBufferStatusUnplayable: {
+                [_loadingView start];
+            }
+                break;
         }
-            break;
-        case SJPlayerBufferStatusUnplayable: {
-            [_loadingView start];
-        }
-            break;
     }
 }
 
@@ -575,26 +590,6 @@ NS_ASSUME_NONNULL_BEGIN
     }
 }
 - (void)clickedBackBtnOnTopControlView:(SJLightweightTopControlView *)view {
-    if ( self.videoPlayer.useFitOnScreenAndDisableRotation ) {
-        if ( _videoPlayer.isFitOnScreen ) {
-            _videoPlayer.fitOnScreen = NO;
-        }
-        else {
-            if ( [self.delegate respondsToSelector:@selector(clickedBackBtnOnLightweightControlLayer:)] ) {
-                [self.delegate clickedBackBtnOnLightweightControlLayer:self];
-            }
-        }
-        
-        return;
-    }
-    
-    if ( _videoPlayer.isFullScreen ) {
-        if ( SJAutoRotateSupportedOrientation_Portrait == (_videoPlayer.supportedOrientation & SJAutoRotateSupportedOrientation_Portrait) ) {
-            [_videoPlayer rotate];
-            return;
-        }
-    }
-    
     if ( [self.delegate respondsToSelector:@selector(clickedBackBtnOnLightweightControlLayer:)] ) {
         [self.delegate clickedBackBtnOnLightweightControlLayer:self];
     }

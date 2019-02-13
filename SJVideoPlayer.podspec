@@ -1,14 +1,14 @@
 
 Pod::Spec.new do |s|
     s.name         = 'SJVideoPlayer'
-    s.version      = '2.2.9'
+    s.version      = '2.3.11'
     s.summary      = 'video player.'
     s.description  = 'https://github.com/changsanjiang/SJVideoPlayer/blob/master/README.md'
     s.homepage     = 'https://github.com/changsanjiang/SJVideoPlayer'
     s.license      = { :type => 'MIT', :file => 'LICENSE.md' }
     s.author       = { 'SanJiang' => 'changsanjiang@gmail.com' }
     s.platform     = :ios, '8.0'
-    s.source       = { :git => 'https://gitee.com/changsanjiang/SJVideoPlayer.git', :tag => "v#{s.version}" }
+    s.source       = { :git => 'https://github.com/changsanjiang/SJVideoPlayer.git', :tag => "v#{s.version}" }
     s.requires_arc = true
     s.dependency 'Masonry'
     s.dependency 'SJBaseVideoPlayer'
@@ -83,37 +83,29 @@ Pod::Spec.new do |s|
         f.source_files = 'SJVideoPlayer/SJFilmEditingControlLayer/*.{h,m}'
         f.dependency 'SJVideoPlayer/SJProgressSlider'
         f.dependency 'SJVideoPlayer/Switcher'
-
+        f.dependency 'SJVideoPlayer/Adapters'
+        
         f.subspec 'ResourceLoader' do |a|
             a.source_files = 'SJVideoPlayer/SJFilmEditingControlLayer/ResourceLoader/*'
-            a.dependency 'SJVideoPlayer/SJFilmEditingControlLayer/Header'
             a.resource = 'SJVideoPlayer/SJFilmEditingControlLayer/ResourceLoader/SJFilmEditing.bundle'
         end
 
-        f.subspec 'Category' do |c|
-            c.source_files = 'SJVideoPlayer/SJFilmEditingControlLayer/Category/*'
-        end
-
-        f.subspec 'Result' do |r|
-            r.source_files = 'SJVideoPlayer/SJFilmEditingControlLayer/Result/*'
-            r.dependency 'SJVideoPlayer/SJFilmEditingControlLayer/Header'
-        end
-
-        f.subspec 'Header' do |h|
-            h.source_files = 'SJVideoPlayer/SJFilmEditingControlLayer/Header/*'
-        end
-
-        f.subspec 'View' do |v|
-            v.source_files = 'SJVideoPlayer/SJFilmEditingControlLayer/View/*'
-            v.dependency 'SJVideoPlayer/SJFilmEditingControlLayer/Header'
+        f.subspec 'Core' do |a|
+            a.source_files = 'SJVideoPlayer/SJFilmEditingControlLayer/Core/**/*.{h,m}'
+            a.dependency 'SJVideoPlayer/SJFilmEditingControlLayer/ResourceLoader'
         end
     end
 
     s.subspec 'SJLoadFailedControlLayer' do |ss|
         ss.source_files = 'SJVideoPlayer/SJLoadFailedControlLayer/*.{h,m}'
-        ss.dependency 'SJVideoPlayer/SJEdgeControlLayer'
+        ss.dependency 'SJVideoPlayer/SJNotReachableControlLayer'
     end
 
+    s.subspec 'SJNotReachableControlLayer' do |ss|
+        ss.source_files = 'SJVideoPlayer/SJNotReachableControlLayer/*.{h,m}'
+        ss.dependency 'SJVideoPlayer/SJEdgeControlLayer'
+    end
+    
     s.subspec 'SJMoreSettingControlLayer' do |ss|
         ss.source_files = 'SJVideoPlayer/SJMoreSettingControlLayer/*.{h,m}'
         ss.dependency 'SJVideoPlayer/SJEdgeControlLayer'

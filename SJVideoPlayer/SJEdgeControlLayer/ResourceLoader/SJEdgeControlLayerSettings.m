@@ -74,10 +74,27 @@ NSNotificationName const SJSettingsPlayerNotification = @"SJSettingsPlayerNotifi
     self.replayBtnTitleColor = [UIColor whiteColor];
     _previewBtnTitle = [SJEdgeControlLayerLoader localizedStringForKey:SJVideoPlayer_PreviewText];
     self.previewBtnFont = [UIFont boldSystemFontOfSize:12];
+    self.filmEditingBtnImage = [SJEdgeControlLayerLoader imageNamed:@"sj_video_player_film_editing"];
+    
+
+    /// 播放失败控制层 24abff
+    _playFailedText = [SJEdgeControlLayerLoader localizedStringForKey:SJVideoPlayer_PlayFailedText];
+    _playFailedButtonText = [SJEdgeControlLayerLoader localizedStringForKey:SJVideoPlayer_PlayFailedButtonText];
+    _playFailedButtonBackgroundColor = [UIColor colorWithRed:36/255.0 green:171/255.0 blue:1 alpha:1];
+    
+    /// 无网控制层
+    _notReachableAndPlaybackStalledText = [SJEdgeControlLayerLoader localizedStringForKey:SJVideoPlayer_NotReachableText];
+    _notReachableAndPlaybackStalledButtonText = [SJEdgeControlLayerLoader localizedStringForKey:SJVideoPlayer_NotReachableButtonText];
+    _notReachableAndPlaybackStalledButtonBackgroundColor = _playFailedButtonBackgroundColor;
+    
+
+    // deprecated properties
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wdeprecated-declarations"
     _playFailedBtnTitle = [SJEdgeControlLayerLoader localizedStringForKey:SJVideoPlayer_PlayFailedText];
     self.playFailedBtnFont = [UIFont boldSystemFontOfSize:12];
     self.playFailedBtnTitleColor = [UIColor whiteColor];
-    self.filmEditingBtnImage = [SJEdgeControlLayerLoader imageNamed:@"sj_video_player_film_editing"];
+#pragma clang diagnostic pop
 }
 
 @end

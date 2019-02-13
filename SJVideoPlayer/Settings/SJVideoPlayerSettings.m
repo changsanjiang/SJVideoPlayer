@@ -32,14 +32,12 @@
                 __strong typeof(_self) self = _self;
                 if ( !self ) return ;
                 [[NSNotificationCenter defaultCenter] postNotificationName:SJSettingsPlayerNotification object:[SJEdgeControlLayerSettings commonSettings]];
-                [[NSNotificationCenter defaultCenter] postNotificationName:SJFilmEditingSettingsUpdateNotification object:[SJFilmEditingSettings commonSettings]];
             });
         });
     };
 }
 - (void)reset {
     [[SJEdgeControlLayerSettings commonSettings] reset];
-    [[SJFilmEditingSettings commonSettings] reset];
 }
 @end
 
@@ -349,76 +347,5 @@
 }
 - (UIImage *)more_maxBrightnessImage {
     return [SJEdgeControlLayerSettings commonSettings].more_maxBrightnessImage;
-}
-@end
-
-
-@implementation SJVideoPlayerSettings (FilmEditingControlLayer)
-+ (void (^)(void (^ _Nonnull)(SJVideoPlayerSettings * _Nonnull)))updateFilmEditingControlLayer {
-    return ^(void(^block)(SJVideoPlayerSettings *settings)) {
-        __weak typeof(self) _self = self;
-        dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
-            block([SJVideoPlayerSettings commonSettings]);
-            dispatch_async(dispatch_get_main_queue(), ^{
-                __strong typeof(_self) self = _self;
-                if ( !self ) return ;
-                [[NSNotificationCenter defaultCenter] postNotificationName:SJFilmEditingSettingsUpdateNotification object:[SJFilmEditingSettings commonSettings]];
-            });
-        });
-    };
-}
-- (void)resetFilmEditingControlLayer {
-    return [[SJFilmEditingSettings commonSettings] reset];
-}
-- (NSString *)videoPlayDidToEndText {
-    return [SJFilmEditingSettings commonSettings].videoPlayDidToEndText;
-}
-- (NSString *)cancelBtnTitle {
-    return [SJFilmEditingSettings commonSettings].cancelBtnTitle;
-}
-- (NSString *)waitingForRecordingPromptText {
-    return [SJFilmEditingSettings commonSettings].waitingForRecordingPromptText;
-}
-- (NSString *)finishRecordingPromptText {
-    return [SJFilmEditingSettings commonSettings].finishRecordingPromptText;
-}
-- (NSString *)uploadingPrompt {
-    return [SJFilmEditingSettings commonSettings].uploadingPrompt;
-}
-- (NSString *)uploadSuccessfullyPrompt {
-    return [SJFilmEditingSettings commonSettings].uploadSuccessfullyPrompt;
-}
-- (NSString *)exportingPrompt {
-    return [SJFilmEditingSettings commonSettings].exportingPrompt;
-}
-- (NSString *)exportSuccessfullyPrompt {
-    return [SJFilmEditingSettings commonSettings].exportSuccessfullyPrompt;
-}
-- (NSString *)operationFailedPrompt {
-    return [SJFilmEditingSettings commonSettings].operationFailedPrompt;
-}
-- (void)setScreenshotBtnImage:(UIImage *)screenshotBtnImage {
-    [SJFilmEditingSettings commonSettings].screenshotBtnImage = screenshotBtnImage;
-}
-- (UIImage *)screenshotBtnImage {
-    return [SJFilmEditingSettings commonSettings].screenshotBtnImage;
-}
-- (void)setExportBtnImage:(UIImage *)exportBtnImage {
-    [SJFilmEditingSettings commonSettings].exportBtnImage = exportBtnImage;
-}
-- (UIImage *)exportBtnImage {
-    return [SJFilmEditingSettings commonSettings].exportBtnImage;
-}
-- (void)setGifBtnImage:(UIImage *)gifBtnImage {
-    [SJFilmEditingSettings commonSettings].gifBtnImage = gifBtnImage;
-}
-- (UIImage *)gifBtnImage {
-    return [SJFilmEditingSettings commonSettings].gifBtnImage;
-}
-- (void)setFinishRecordingBtnImage:(UIImage *)finishRecordingBtnImage {
-    [SJFilmEditingSettings commonSettings].finishRecordingBtnImage = finishRecordingBtnImage;
-}
-- (UIImage *)finishRecordingBtnImage {
-    return [SJFilmEditingSettings commonSettings].finishRecordingBtnImage;
 }
 @end

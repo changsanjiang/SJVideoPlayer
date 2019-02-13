@@ -38,6 +38,8 @@ NS_ASSUME_NONNULL_BEGIN
 - (instancetype)initWithCustomView:(nullable __kindof UIView *)customView
                                tag:(SJEdgeControlButtonItemTag)tag;
 
+- (instancetype)initWithTag:(SJEdgeControlButtonItemTag)tag;
+
 @property (nonatomic) SJEdgeInsets insets; // 左右间隔, 默认{0, 0}
 @property (nonatomic) SJEdgeControlButtonItemTag tag;
 @property (nonatomic, strong, nullable) __kindof UIView *customView;
@@ -48,7 +50,7 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic, nullable) SEL action;
 - (instancetype)init NS_UNAVAILABLE;
 + (instancetype)new  NS_UNAVAILABLE;
-@property (nonatomic) BOOL fill; // 当想要填充剩余空间时, 可以设置为`Yes`. 注意: 在`adapter`中, 此`item`只能存在一个. 
+@property (nonatomic) BOOL fill; // 当想要填充剩余空间时, 可以设置为`Yes`. 
 @property (nonatomic, weak, nullable) id<SJEdgeControlButtonItemDelegate> delegate;
 
 - (void)addTarget:(id)target action:(nonnull SEL)action;

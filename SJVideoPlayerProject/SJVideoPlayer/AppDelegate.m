@@ -19,10 +19,9 @@
 
 - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions {
     
-    SJVideoPlayer.update(^(SJVideoPlayerSettings * _Nonnull commonSettings) {
-        commonSettings.placeholder = [UIImage imageNamed:@"cover"];
-        commonSettings.progress_thumbSize = 8;
-        commonSettings.playFailedBtnImage = commonSettings.playBtnImage;
+    SJVideoPlayer.update(^(SJVideoPlayerSettings * _Nonnull common) {
+        common.placeholder = [UIImage imageNamed:@"cover"];
+        common.progress_thumbSize = 8;
     });
     
     dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{

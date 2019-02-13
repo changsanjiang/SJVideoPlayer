@@ -35,40 +35,54 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (void)prepareLayout {
     [super prepareLayout];
+    [_layoutAttributes removeAllObjects];
+    
     switch ( _layoutType ) {
-        case SJAdapterItemsLayoutTypeVerticalLayout:
+        case SJAdapterItemsLayoutTypeVerticalLayout: {
             [self _prepareLayout_Vertical];
+        }
             break;
-        case SJAdapterItemsLayoutTypeHorizontalLayout:
+        case SJAdapterItemsLayoutTypeHorizontalLayout: {
             [self _prepareLayout_Horizontal];
+        }
             break;
-        case SJAdapterItemsLayoutTypeFrameLayout:
+        case SJAdapterItemsLayoutTypeFrameLayout: {
             [self _prepareLayout_Frame];
+        }
             break;
     }
 }
 
 - (void)_prepareLayout_Horizontal {
-    [_layoutAttributes removeAllObjects];
-    
+    if ( CGSizeEqualToSize(self.collectionView.bounds.size, CGSizeZero) ) {
+        return;
+    }
     CGFloat content_w = 0;              // 内容宽度
     CGRect bounds_arr[_items.count];    // 所有内容的bounds
-    int fill_idx = kCFNotFound;         // 需要填充的item的索引
-    for ( int i = 0 ; i < _items.count ; ++ i ) {
+    NSMutableArray<NSNumber *> *fillIndexes = [NSMutableArray new];
+    CGFloat height = self.collectionView.bounds.size.height;
+    for ( NSInteger i = 0 ; i < _items.count ; ++ i ) {
         CGFloat width = 0;
-        CGFloat height = 49;
         SJEdgeControlButtonItem *item = _items[i];
         if ( item.fill )
-            fill_idx = i;
+            [fillIndexes addObject:@(i)];
         else if ( item.isHidden ) { }
         else if ( 0 != item.size )
             width = item.size;
-        else if ( item.customView )
-            width = item.customView.frame.size.width;
+        else if ( item.placeholderType == SJButtonItemPlaceholderType_49x49 )
+            width = height;
+        else if ( item.customView ) {
+            if ( item.placeholderType == SJButtonItemPlaceholderType_49xAutoresizing ) {
+                width = [self autoresizingWithView:item.customView maxSize:CGSizeMake(CGFLOAT_MAX, height)].width;
+            }
+            else {
+                width = item.customView.frame.size.width;
+            }
+        }
         else if ( 0 != item.title.length )
             width = [self sizeWithAttrString:item.title width:CGFLOAT_MAX height:height].width;
         else if ( item.image )
-            width = 49;
+            width = height;
         
         CGRect bounds = (CGRect){CGPointZero, (CGSize){width, height}};
         content_w += item.insets.front + bounds.size.width + item.insets.rear;
@@ -76,14 +90,18 @@ NS_ASSUME_NONNULL_BEGIN
     }
     
     // 填充剩余空间
-    if ( fill_idx != kCFNotFound ) {
+    if ( fillIndexes.count != 0 ) {
         CGFloat max_w = self.collectionView.bounds.size.width;
-        if ( max_w > content_w ) bounds_arr[fill_idx] = (CGRect){CGPointZero, (CGSize){max_w - content_w, 49}};
+        CGFloat remanentW = max_w - content_w;
+        CGFloat itemW = remanentW / fillIndexes.count;
+        for ( NSNumber *idx in fillIndexes ) {
+            bounds_arr[[idx integerValue]] = (CGRect){CGPointZero, (CGSize){itemW, height}};
+        }
     }
     
     // create `LayoutAttributes`
     CGFloat current_x = 0;
-    for ( int i = 0 ; i < _items.count ; ++ i ) {
+    for ( NSInteger i = 0 ; i < _items.count ; ++ i ) {
         SJEdgeControlButtonItem *item = _items[i];
         current_x += item.insets.front;
         NSIndexPath *indexPath = [NSIndexPath indexPathForItem:i inSection:0];
@@ -95,27 +113,36 @@ NS_ASSUME_NONNULL_BEGIN
 }
 
 - (void)_prepareLayout_Vertical {
-    [_layoutAttributes removeAllObjects];
-    
+    if ( CGSizeEqualToSize(self.collectionView.bounds.size, CGSizeZero) ) {
+        return;
+    }
     CGFloat content_h = 0;              // 内容宽度
     CGRect bounds_arr[_items.count];    // 所有内容的bounds
-    int fill_idx = kCFNotFound;         // 需要填充的item的索引
     
-    for ( int i = 0 ; i < _items.count ; ++ i ) {
-        CGFloat width = 49;
+    CGFloat width = self.collectionView.bounds.size.width;
+    NSMutableArray<NSNumber *> *fillIndexes = [NSMutableArray new];
+    for ( NSInteger i = 0 ; i < _items.count ; ++ i ) {
         CGFloat height = 0;
         SJEdgeControlButtonItem *item = _items[i];
         if ( item.fill )
-            fill_idx = i;
+            [fillIndexes addObject:@(i)];
         else if ( item.isHidden ) { }
         else if ( 0 != item.size )
             height = item.size;
-        else if ( item.customView )
-            height = item.customView.frame.size.height;
+        else if ( item.placeholderType == SJButtonItemPlaceholderType_49x49 )
+            height = width;
+        else if ( item.customView ) {
+            if ( item.placeholderType == SJButtonItemPlaceholderType_49xAutoresizing ) {
+                height = [self autoresizingWithView:item.customView maxSize:CGSizeMake(width, CGFLOAT_MAX)].height;
+            }
+            else {
+                height = item.customView.frame.size.height;
+            }
+        }
         else if ( 0 != item.title.length )
             height = [self sizeWithAttrString:item.title width:width height:CGFLOAT_MAX].height;
         else if ( item.image )
-            height = 49;
+            height = width;
         
         CGRect bounds = (CGRect){CGPointZero, (CGSize){width, height}};
         content_h += item.insets.front + bounds.size.height + item.insets.rear;
@@ -124,12 +151,16 @@ NS_ASSUME_NONNULL_BEGIN
     
     // 填充剩余空间
     CGFloat max_h = self.collectionView.bounds.size.height;
-    if ( fill_idx != kCFNotFound ) {
-        if ( max_h > content_h ) bounds_arr[fill_idx] = (CGRect){CGPointZero, (CGSize){49, max_h - content_h}};
+    if ( fillIndexes.count != 0 ) {
+        CGFloat remanentH = max_h - content_h;
+        CGFloat itemH = remanentH / fillIndexes.count;
+        for ( NSNumber *idx in fillIndexes ) {
+            bounds_arr[[idx integerValue]] = (CGRect){CGPointZero, (CGSize){width, itemH}};
+        }
     }
     
     CGFloat current_y = floor((max_h - content_h) * 0.5);
-    for ( int i = 0 ; i < _items.count ; ++ i ) {
+    for ( NSInteger i = 0 ; i < _items.count ; ++ i ) {
         SJEdgeControlButtonItem *item = _items[i];
         current_y += item.insets.front;
         NSIndexPath *indexPath = [NSIndexPath indexPathForItem:i inSection:0];
@@ -141,12 +172,11 @@ NS_ASSUME_NONNULL_BEGIN
 }
 
 - (void)_prepareLayout_Frame {
-    [_layoutAttributes removeAllObjects];
     CGSize beforeMaxSize = _maxSizeOfFrameLayout;
     _maxSizeOfFrameLayout = CGSizeZero;
     
     CGRect bounds_arr[_items.count];
-    for ( int i = 0 ; i < _items.count ; ++ i ) {
+    for ( NSInteger i = 0 ; i < _items.count ; ++ i ) {
         CGRect bounds = CGRectZero;
         SJEdgeControlButtonItem *item = _items[i];
         bounds = item.customView.bounds;
@@ -157,9 +187,8 @@ NS_ASSUME_NONNULL_BEGIN
             _maxSizeOfFrameLayout.height = bounds.size.height;
     }
     
-    CGSize size_max = self.collectionView.frame.size;
-    CGPoint center = (CGPoint){size_max.width * 0.5, size_max.height * 0.5};
-    for ( int i = 0 ; i < _items.count ; ++ i ) {
+    CGPoint center = (CGPoint){_maxSizeOfFrameLayout.width * 0.5, _maxSizeOfFrameLayout.height * 0.5};
+    for ( NSInteger i = 0 ; i < _items.count ; ++ i ) {
         CGRect bounds = bounds_arr[i];
         NSIndexPath *indexPath = [NSIndexPath indexPathForItem:i inSection:0];
         UICollectionViewLayoutAttributes *attributes = [UICollectionViewLayoutAttributes layoutAttributesForCellWithIndexPath:indexPath];
@@ -188,6 +217,12 @@ NS_ASSUME_NONNULL_BEGIN
     return _maxSizeOfFrameLayout;
 }
 
+- (BOOL)shouldInvalidateLayoutForBoundsChange:(CGRect)newBounds {
+    return YES;
+}
+
+//
+
 - (CGSize)sizeWithAttrString:(NSAttributedString *)attrStr width:(double)width height:(double)height {
     if ( 0 == attrStr.length ) { return CGSizeZero; }
     CGRect bounds = [attrStr boundingRectWithSize:(CGSize){width, height} options:NSStringDrawingUsesLineFragmentOrigin | NSStringDrawingUsesFontLeading context:nil];
@@ -196,8 +231,15 @@ NS_ASSUME_NONNULL_BEGIN
     return bounds.size;
 }
 
-- (BOOL)shouldInvalidateLayoutForBoundsChange:(CGRect)newBounds {
-    return YES;
+- (CGSize)autoresizingWithView:(UIView *)view maxSize:(CGSize)maxSize {
+    CGSize size = [view systemLayoutSizeFittingSize:maxSize];
+    CGFloat maxWidth = self.collectionView.bounds.size.width;
+    CGFloat maxHeight = self.collectionView.bounds.size.height;
+    if ( size.width > maxWidth )
+        size.width = maxWidth;
+    if ( size.height > maxHeight )
+        size.height = maxHeight;
+    return size;
 }
 @end
 
@@ -297,7 +339,7 @@ NS_ASSUME_NONNULL_BEGIN
     return nil;
 }
 - (NSInteger)indexOfItemForTag:(SJEdgeControlButtonItemTag)tag {
-    NSInteger index = kCFNotFound;
+    NSInteger index = NSNotFound;
     for ( int i = 0 ; i < _itemsM.count ; ++ i ) {
         if ( _itemsM[i].tag != tag ) continue;
         index = i;
@@ -392,10 +434,16 @@ NS_ASSUME_NONNULL_BEGIN
         cell->_customViewContainerView.hidden = YES;
     }
     
+    __weak typeof(self) _self = self;
     cell.clickedCellExeBlock = ^(SJButtonItemCollectionViewCell * _Nonnull cell) {
+        __strong typeof(_self) self = _self;
+        if ( !self ) return ;
 #pragma clang diagnostic push
 #pragma clang diagnostic ignored "-Warc-performSelector-leaks"
-        if ( [item.target respondsToSelector:item.action] ) [item.target performSelector:item.action withObject:item];
+        if ( [item.target respondsToSelector:item.action] ) {
+            [item.target performSelector:item.action withObject:item];
+            if ( self.executedTargetActionExeBlock ) self.executedTargetActionExeBlock(self);
+        }
 #pragma clang diagnostic pop
     };
 }

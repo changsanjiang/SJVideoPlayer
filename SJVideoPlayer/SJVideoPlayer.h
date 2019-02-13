@@ -26,6 +26,7 @@
 #import "SJEdgeLightweightControlLayer.h"
 #import "SJMoreSettingControlLayer.h"
 #import "SJLoadFailedControlLayer.h"
+#import "SJNotReachableControlLayer.h"
 
 NS_ASSUME_NONNULL_BEGIN
 @interface SJVideoPlayer : SJBaseVideoPlayer
@@ -52,7 +53,9 @@ NS_ASSUME_NONNULL_BEGIN
 - (nullable SJFilmEditingControlLayer *)defaultFilmEditingControlLayer;
 - (nullable SJEdgeLightweightControlLayer *)defaultEdgeLightweightControlLayer;
 - (nullable SJMoreSettingControlLayer *)defaultMoreSettingControlLayer;
+
 - (nullable SJLoadFailedControlLayer *)defaultLoadFailedControlLayer;
+- (nullable SJNotReachableControlLayer *)defaultNotReachableControlLayer;
 @end
 
 
@@ -152,7 +155,7 @@ extern SJControlLayerIdentifier const SJControlLayer_Edge;            // 默认�
 extern SJControlLayerIdentifier const SJControlLayer_FilmEditing;     // 默认的剪辑层
 extern SJControlLayerIdentifier const SJControlLayer_MoreSettting;    // 默认的更多设置控制层
 extern SJControlLayerIdentifier const SJControlLayer_LoadFailed;      // 默认加载失败时显示的控制层
-
+extern SJControlLayerIdentifier const SJControlLayer_NotReachableAndPlaybackStalled;    // 默认加载失败时显示的控制层
 
 extern SJEdgeControlButtonItemTag const SJEdgeControlLayerBottomItem_FilmEditing;   // GIF/导出/截屏
 extern SJEdgeControlButtonItemTag const SJEdgeControlLayerTopItem_More;             // More

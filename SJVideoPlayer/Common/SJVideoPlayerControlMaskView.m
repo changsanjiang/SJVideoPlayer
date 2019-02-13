@@ -42,4 +42,9 @@
     return self;
 }
 
+- (void)cleanColors {
+    CAGradientLayer *maskGradientLayer = (id)self.layer;
+    maskGradientLayer.colors = nil;
+}
+
 @end

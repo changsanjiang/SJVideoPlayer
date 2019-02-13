@@ -364,6 +364,8 @@ SJEdgeControlButtonItemTag const SJEdgeControlLayerCenterItem_Replay = 10000;
     if ( videoPlayer.URLAsset.isM3u8 ) return;
     if ( !_generatePreviewImages ) return;
     if ( _hasBeenGeneratedPreviewImages ) return;
+    SJEdgeControlButtonItem *previewItem = [self.topAdapter itemForTag:SJEdgeControlLayerTopItem_Preview];
+    if ( !previewItem ) return;
     CGSize previewItemSize = CGSizeMake(150, 150);
     __weak typeof(self) _self = self;
     [videoPlayer generatedPreviewImagesWithMaxItemSize:previewItemSize completion:^(SJBaseVideoPlayer * _Nonnull player, NSArray<id<SJVideoPlayerPreviewInfo>> * _Nullable images, NSError * _Nullable error) {

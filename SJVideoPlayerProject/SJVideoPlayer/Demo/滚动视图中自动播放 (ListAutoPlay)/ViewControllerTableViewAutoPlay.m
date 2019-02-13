@@ -50,7 +50,15 @@
     
     [_tableView sj_needPlayNextAsset];
     
+    dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(5 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
+        [self.tableView setContentOffset:CGPointMake(0, 1000) animated:YES];
+    });
+    
     // Do any additional setup after loading the view.
+}
+
+- (void)scrollViewDidEndScrollingAnimation:(UIScrollView *)scrollView {
+    [self.tableView sj_needPlayNextAsset];
 }
 
 - (void)sj_playerNeedPlayNewAssetAtIndexPath:(NSIndexPath *)indexPath {

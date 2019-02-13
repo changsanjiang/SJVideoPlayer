@@ -1,1 +1,1 @@
-../../../../../../SJBaseVideoPlayer/SJBaseVideoPlayer/Tool/SJPlayerGestureControl.h
+../../../SJBaseVideoPlayer/SJBaseVideoPlayer/Tool/SJPlayerGestureControl.h

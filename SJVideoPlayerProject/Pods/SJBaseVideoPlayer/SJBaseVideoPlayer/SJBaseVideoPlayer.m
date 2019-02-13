@@ -233,7 +233,7 @@ static NSString *_kPlayStatus = @"playStatus";
 }
 
 + (NSString *)version {
-    return @"2.0.8";
+    return @"2.1.1";
 }
 
 - (nullable __kindof UIViewController *)atViewController {
@@ -1903,6 +1903,9 @@ static NSString *_kGestureState = @"state";
     if ( self.modalViewControllerManager.isPresentedModalViewControlller )
         return;
     
+    if ( self.modalViewControllerManager.isTransitioning )
+        return;
+    
     dispatch_async(dispatch_get_main_queue(), ^{
         self->_mvcm_targetSuperView = [[UIView alloc] initWithFrame:self.view.bounds];
         self->_mvcm_targetSuperView.backgroundColor = UIColor.blackColor;
@@ -1919,6 +1922,9 @@ static NSString *_kGestureState = @"state";
         return;
     
     if ( !self.modalViewControllerManager.isPresentedModalViewControlller )
+        return;
+
+    if ( self.modalViewControllerManager.isTransitioning )
         return;
     
     dispatch_async(dispatch_get_main_queue(), ^{

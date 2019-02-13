@@ -1,1 +1,1 @@
-../../../../../../SJBaseVideoPlayer/SJBaseVideoPlayer/Header/SJModalViewControlllerManagerProtocol.h
+../../../SJBaseVideoPlayer/SJBaseVideoPlayer/Header/SJModalViewControlllerManagerProtocol.h

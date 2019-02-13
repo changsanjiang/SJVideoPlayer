@@ -438,6 +438,7 @@ NS_ASSUME_NONNULL_BEGIN
 @end
 
 
+/// v2.1.1 新增
 @interface SJBaseVideoPlayer (ModalViewControlller)
 @property (nonatomic, strong, null_resettable) id<SJModalViewControlllerManagerProtocol> modalViewControllerManager;
 @property (nonatomic) BOOL needPresentModalViewControlller;

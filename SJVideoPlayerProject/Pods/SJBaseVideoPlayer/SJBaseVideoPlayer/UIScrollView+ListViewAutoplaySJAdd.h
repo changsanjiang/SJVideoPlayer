@@ -24,6 +24,7 @@ NS_ASSUME_NONNULL_BEGIN
 /// 关闭
 - (void)sj_disenableAutoplay;
 
+- (void)sj_needPlayNextAsset;
 @end
 
 
@@ -32,6 +33,5 @@ NS_ASSUME_NONNULL_BEGIN
 @interface UIScrollView (SJPlayerCurrentPlayingIndexPath)
 @property (nonatomic, strong, nullable, readonly) NSIndexPath *sj_currentPlayingIndexPath;
 - (void)setSj_currentPlayingIndexPath:(nullable NSIndexPath *)sj_currentPlayingIndexPath;
-- (void)sj_needPlayNextAsset;
 @end
 NS_ASSUME_NONNULL_END

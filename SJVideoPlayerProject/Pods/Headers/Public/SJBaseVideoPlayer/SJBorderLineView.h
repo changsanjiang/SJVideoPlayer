@@ -1,1 +1,1 @@
-../../../../../../SJBaseVideoPlayer/SJBaseVideoPlayer/SJDeviceVolumeAndBrightnessManager/Core/SJBorderLineView.h
+../../../SJBaseVideoPlayer/SJBaseVideoPlayer/SJDeviceVolumeAndBrightnessManager/Core/SJBorderLineView.h

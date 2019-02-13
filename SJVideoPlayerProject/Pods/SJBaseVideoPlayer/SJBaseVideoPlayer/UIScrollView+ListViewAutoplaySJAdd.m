@@ -24,6 +24,7 @@ NS_ASSUME_NONNULL_BEGIN
 /// took over
 static bool sj_isTookOver(Class cls);
 static void sj_setIsTookOver(Class cls);
+
 static void sj_tookOverMethod(Class cls, struct objc_method_description *des, SEL tookOverSEL, IMP tookOverIMP);
 static void sj_scrollViewDidEndDragging(id<UIScrollViewDelegate_ListViewAutoplaySJAdd> delegate, SEL _cmd, __kindof UIScrollView *scrollView, bool willDecelerate);
 static void sj_scrollViewDidEndDecelerating(id<UIScrollViewDelegate_ListViewAutoplaySJAdd> delegate, SEL _cmd, __kindof UIScrollView *scrollView);
@@ -72,18 +73,6 @@ static NSString *delegateKey = @"delegate";
 - (nullable NSIndexPath *)sj_currentPlayingIndexPath {
     return objc_getAssociatedObject(self, _cmd);
 }
-
-- (void)sj_needPlayNextAsset {
-    dispatch_async(dispatch_get_main_queue(), ^{
-        // 查询当前显示的cell中(sj_currentPlayingIndexPath之后的), 是否存在播放器父视图
-        if ( [self isKindOfClass:[UITableView class]] ) {
-            sj_tableViewConsiderPlayNextAsset((id)self);
-        }
-        else if ( [self isKindOfClass:[UICollectionView class]] ) {
-            sj_collectionViewConsiderPlayNextAsset((id)self);
-        }
-    });
-}
 @end
 
 @implementation UIScrollView (ListViewAutoplaySJAdd)
@@ -122,6 +111,17 @@ static NSString *delegateKey = @"delegate";
 - (void)sj_disenableAutoplay {
     self.sj_enabledAutoplay = NO;
     self.sj_autoplayConfig = nil;
+}
+
+- (void)sj_needPlayNextAsset {
+    dispatch_async(dispatch_get_main_queue(), ^{
+        if ( [self isKindOfClass:[UITableView class]] ) {
+            sj_tableViewConsiderPlayNextAsset((id)self);
+        }
+        else if ( [self isKindOfClass:[UICollectionView class]] ) {
+            sj_collectionViewConsiderPlayNextAsset((id)self);
+        }
+    });
 }
 
 #pragma mark -
@@ -176,8 +176,10 @@ static void sj_scrollViewDidEndDecelerating(id<UIScrollViewDelegate_ListViewAuto
 static void sj_scrollViewConsiderPlayNewAsset(__kindof __kindof UIScrollView *scrollView) {
     if ( !scrollView.sj_enabledAutoplay ) return;
     if ( ![scrollView sj_autoplayConfig].autoplayDelegate ) return;
-    if ( [scrollView isKindOfClass:[UITableView class]] ) sj_tableViewConsiderPlayNewAsset(scrollView);
-    else if ( [scrollView isKindOfClass:[UICollectionView class]] ) sj_collectionViewConsiderPlayNewAsset(scrollView);
+    if ( [scrollView isKindOfClass:[UITableView class]] )
+        sj_tableViewConsiderPlayNewAsset(scrollView);
+    else if ( [scrollView isKindOfClass:[UICollectionView class]] )
+        sj_collectionViewConsiderPlayNewAsset(scrollView);
 }
 
 static void sj_tableViewConsiderPlayNewAsset(UITableView *tableView) {
@@ -348,23 +350,40 @@ static void sj_exeAnima(__kindof UIScrollView *scrollView, NSIndexPath *indexPat
 
 static void sj_tableViewConsiderPlayNextAsset(UITableView *tableView) {
     NSArray<NSIndexPath *> *visibleIndexPaths = tableView.indexPathsForVisibleRows;
-    if ( visibleIndexPaths.count == 0 ) return;
-    if ( [visibleIndexPaths.lastObject compare:tableView.sj_currentPlayingIndexPath] == NSOrderedSame ) return;
-    NSInteger cut = tableView.sj_currentPlayingIndexPath ? [visibleIndexPaths indexOfObject:tableView.sj_currentPlayingIndexPath] + 1  : 0;
-    NSArray<NSIndexPath *> *subIndexPaths = [visibleIndexPaths subarrayWithRange:NSMakeRange(cut, visibleIndexPaths.count - cut)];
-    if ( subIndexPaths.count == 0 ) return;
-    __block NSIndexPath *nextIndexPath = nil;
-    NSInteger superviewTag = [tableView sj_autoplayConfig].playerSuperviewTag;
-    [subIndexPaths enumerateObjectsUsingBlock:^(NSIndexPath * _Nonnull obj, NSUInteger idx, BOOL * _Nonnull stop) {
-        UIView *superview = [[tableView cellForRowAtIndexPath:obj] viewWithTag:superviewTag];
-        if ( !superview ) return;
-        *stop = YES;
-        nextIndexPath = obj;
-    }];
-    if ( !nextIndexPath ) return;
-
-    [[tableView sj_autoplayConfig].autoplayDelegate sj_playerNeedPlayNewAssetAtIndexPath:nextIndexPath];
-    sj_exeAnima(tableView, nextIndexPath, [tableView sj_autoplayConfig].animationType);
+    if ( visibleIndexPaths.count == 0 )
+        return;
+    if ( [visibleIndexPaths.lastObject compare:tableView.sj_currentPlayingIndexPath] == NSOrderedSame )
+        return;
+    
+    NSInteger idx = [visibleIndexPaths indexOfObject:tableView.sj_currentPlayingIndexPath];
+    if ( !tableView.sj_currentPlayingIndexPath ) {
+        NSIndexPath *indexPath = [tableView.indexPathsForVisibleRows firstObject];
+        
+        [[tableView sj_autoplayConfig].autoplayDelegate sj_playerNeedPlayNewAssetAtIndexPath:indexPath];
+        sj_exeAnima(tableView, indexPath, [tableView sj_autoplayConfig].animationType);
+    }
+    else if ( idx == NSNotFound ) {
+        sj_scrollViewConsiderPlayNewAsset(tableView);
+    }
+    else {
+        NSInteger next = idx + 1;
+        NSArray<NSIndexPath *> *subIndexPaths = [visibleIndexPaths subarrayWithRange:NSMakeRange(next, visibleIndexPaths.count - next)];
+        if ( subIndexPaths.count == 0 )
+            return;
+        __block NSIndexPath *nextIndexPath = nil;
+        NSInteger superviewTag = [tableView sj_autoplayConfig].playerSuperviewTag;
+        [subIndexPaths enumerateObjectsUsingBlock:^(NSIndexPath * _Nonnull obj, NSUInteger idx, BOOL * _Nonnull stop) {
+            UIView *superview = [[tableView cellForRowAtIndexPath:obj] viewWithTag:superviewTag];
+            if ( !superview )
+                return;
+            *stop = YES;
+            nextIndexPath = obj;
+        }];
+        if ( !nextIndexPath )
+            return;
+        [[tableView sj_autoplayConfig].autoplayDelegate sj_playerNeedPlayNewAssetAtIndexPath:nextIndexPath];
+        sj_exeAnima(tableView, nextIndexPath, [tableView sj_autoplayConfig].animationType);
+    }
 }
 
 static void sj_collectionViewConsiderPlayNextAsset(UICollectionView *collectionView) {
@@ -373,21 +392,36 @@ static void sj_collectionViewConsiderPlayNextAsset(UICollectionView *collectionV
     }];
     if ( visibleIndexPaths.count == 0 ) return;
     if ( [visibleIndexPaths.lastObject compare:collectionView.sj_currentPlayingIndexPath] == NSOrderedSame ) return;
-    NSInteger cut = collectionView.sj_currentPlayingIndexPath ? [visibleIndexPaths indexOfObject:collectionView.sj_currentPlayingIndexPath] + 1 : 0;
-    NSArray<NSIndexPath *> *subIndexPaths = [visibleIndexPaths subarrayWithRange:NSMakeRange(cut, visibleIndexPaths.count - cut)];
-    if ( subIndexPaths.count == 0 ) return;
-    __block NSIndexPath *nextIndexPath = nil;
-    NSInteger superviewTag = [collectionView sj_autoplayConfig].playerSuperviewTag;
-    [subIndexPaths enumerateObjectsUsingBlock:^(NSIndexPath * _Nonnull obj, NSUInteger idx, BOOL * _Nonnull stop) {
-        UIView *superview = [[collectionView cellForItemAtIndexPath:obj] viewWithTag:superviewTag];
-        if ( !superview ) return;
-        *stop = YES;
-        nextIndexPath = obj;
-    }];
-    if ( !nextIndexPath ) return;
-    
-    [[collectionView sj_autoplayConfig].autoplayDelegate sj_playerNeedPlayNewAssetAtIndexPath:nextIndexPath];
-    sj_exeAnima(collectionView, nextIndexPath, [collectionView sj_autoplayConfig].animationType);
+    NSInteger idx = [visibleIndexPaths indexOfObject:collectionView.sj_currentPlayingIndexPath];
+    if ( !collectionView.sj_currentPlayingIndexPath ) {
+        NSIndexPath *indexPath = [collectionView.indexPathsForVisibleItems firstObject];
+        
+        [[collectionView sj_autoplayConfig].autoplayDelegate sj_playerNeedPlayNewAssetAtIndexPath:indexPath];
+        sj_exeAnima(collectionView, indexPath, [collectionView sj_autoplayConfig].animationType);
+    }
+    else if ( idx == NSNotFound ) {
+        sj_scrollViewConsiderPlayNewAsset(collectionView);
+    }
+    else {
+        NSInteger next = idx + 1;
+        NSArray<NSIndexPath *> *subIndexPaths = [visibleIndexPaths subarrayWithRange:NSMakeRange(next, visibleIndexPaths.count - next)];
+        if ( subIndexPaths.count == 0 )
+            return;
+        __block NSIndexPath *nextIndexPath = nil;
+        NSInteger superviewTag = [collectionView sj_autoplayConfig].playerSuperviewTag;
+        [subIndexPaths enumerateObjectsUsingBlock:^(NSIndexPath * _Nonnull obj, NSUInteger idx, BOOL * _Nonnull stop) {
+            UIView *superview = [[collectionView cellForItemAtIndexPath:obj] viewWithTag:superviewTag];
+            if ( !superview )
+                return;
+            *stop = YES;
+            nextIndexPath = obj;
+        }];
+        if ( !nextIndexPath )
+            return;
+        
+        [[collectionView sj_autoplayConfig].autoplayDelegate sj_playerNeedPlayNewAssetAtIndexPath:nextIndexPath];
+        sj_exeAnima(collectionView, nextIndexPath, [collectionView sj_autoplayConfig].animationType);
+    }
 }
 
 NS_ASSUME_NONNULL_END

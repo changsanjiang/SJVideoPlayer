@@ -22,6 +22,7 @@ NS_ASSUME_NONNULL_BEGIN
 }
 @synthesize supportedMode = _supportedMode;
 @synthesize delegate = _delegate;
+@synthesize recycle = _recycle;
 
 - (instancetype)init {
     self = [super init];
@@ -156,9 +157,9 @@ NS_ASSUME_NONNULL_BEGIN
 #pragma mark -
 
 - (void)changePlaybackMode {
-    if ( self.supportedMode == SJSupportedPlaybackMode_ListCycle ) return;
-    if ( self.supportedMode == SJSupportedPlaybackMode_SingleCycle ) return;
-    if ( self.supportedMode == SJSupportedPlaybackMode_RandomPlay ) return;
+    if ( self.supportedMode == SJSupportedPlaybackMode_InOrder ) return;
+    if ( self.supportedMode == SJSupportedPlaybackMode_RepeatOne ) return;
+    if ( self.supportedMode == SJSupportedPlaybackMode_Shuffle ) return;
     SJPlaybackMode mode = self.mode;
     while ( ![self _isSupportedMode:(mode = (mode + 1) % 3)] ) { }
     self.mode = mode;
@@ -167,12 +168,12 @@ NS_ASSUME_NONNULL_BEGIN
 - (BOOL)_isSupportedMode:(SJPlaybackMode)mode {
     SJSupportedPlaybackMode supportedMode = self.supportedMode;
     switch ( mode ) {
-        case SJPlaybackMode_ListCycle:
-            return supportedMode & SJSupportedPlaybackMode_ListCycle;
-        case SJPlaybackMode_SingleCycle:
-            return supportedMode & SJSupportedPlaybackMode_SingleCycle;
-        case SJPlaybackMode_RandomPlay:
-            return supportedMode & SJSupportedPlaybackMode_RandomPlay;
+        case SJPlaybackMode_InOrder:
+            return supportedMode & SJSupportedPlaybackMode_InOrder;
+        case SJPlaybackMode_RepeatOne:
+            return supportedMode & SJSupportedPlaybackMode_RepeatOne;
+        case SJPlaybackMode_Shuffle:
+            return supportedMode & SJSupportedPlaybackMode_Shuffle;
     }
 }
 
@@ -194,23 +195,31 @@ NS_ASSUME_NONNULL_BEGIN
 - (void)playPreviousMedia {
     if ( 0 == _m.count )
         return;
-    if ( __builtin_expect(self.mode == SJPlaybackMode_RandomPlay, 0) ) {
+    if ( __builtin_expect(self.mode == SJPlaybackMode_Shuffle, 0) ) {
         [self _randomModePlayNextMedia];
     }
     else {
         NSInteger idx = [self indexForMediaId:self.currentMediaId];
-        [self playAtIndex:(idx-1<_m.count)?(idx-1):(_m.count-1)];
+        NSInteger idx2 = idx - 1;
+        if ( !_recycle && idx2 < 0 )
+            return;
+        
+        [self playAtIndex:(idx2<_m.count)?idx2:(_m.count-1)];
     }
 }
 - (void)playNextMedia {
     if ( 0 == _m.count )
         return;
-    if ( __builtin_expect(self.mode == SJPlaybackMode_RandomPlay, 0) ) {
+    if ( __builtin_expect(self.mode == SJPlaybackMode_Shuffle, 0) ) {
         [self _randomModePlayNextMedia];
     }
     else {
         NSInteger idx = [self indexForMediaId:self.currentMediaId];
-        [self playAtIndex:(idx+1<_m.count)?(idx+1):0];
+        NSInteger idx2 = idx + 1;
+        if ( !_recycle && idx2 >= _m.count )
+            return;
+        
+        [self playAtIndex:(idx2<_m.count)?idx2:0];
     }
 }
 - (void)_randomModePlayNextMedia {
@@ -235,7 +244,7 @@ NS_ASSUME_NONNULL_BEGIN
     [NSNotificationCenter.defaultCenter postNotificationName:SJPlaybackListControllerPrepareToPlayMediaNotification object:self];
 }
 - (void)currentMediaFinishedPlaying {
-    if ( self.mode == SJPlaybackMode_SingleCycle ) {
+    if ( self.mode == SJPlaybackMode_RepeatOne ) {
         if ( [self.delegate respondsToSelector:@selector(listController:needToReplayCurrentMedia:)] ) {
             [self.delegate listController:self needToReplayCurrentMedia:self.currentMedia];
         }

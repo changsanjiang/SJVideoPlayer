@@ -11,16 +11,19 @@
 @protocol SJMediaInfo, SJPlaybackListControllerObserver, SJPlaybackListControllerDelegate;
 
 typedef enum : NSUInteger {
-    SJPlaybackMode_ListCycle,       // 列表循环
-    SJPlaybackMode_SingleCycle,     // 单曲循环
-    SJPlaybackMode_RandomPlay,      // 随机播放
+    SJPlaybackMode_InOrder,         // 顺序播放
+    SJPlaybackMode_RepeatOne,       // 单曲循环
+    SJPlaybackMode_Shuffle,         // 随机
 } SJPlaybackMode;
 
 typedef enum : NSUInteger {
-    SJSupportedPlaybackMode_ListCycle = 1 << 0,
-    SJSupportedPlaybackMode_SingleCycle = 1 << 1,
-    SJSupportedPlaybackMode_RandomPlay = 1 << 2,
-    SJSupportedPlaybackMode_All = SJSupportedPlaybackMode_ListCycle | SJSupportedPlaybackMode_SingleCycle | SJSupportedPlaybackMode_RandomPlay,
+    SJSupportedPlaybackMode_InOrder     = 1 << 0,
+    SJSupportedPlaybackMode_RepeatOne   = 1 << 1,
+    SJSupportedPlaybackMode_Shuffle     = 1 << 2,
+    
+    SJSupportedPlaybackMode_All         = SJSupportedPlaybackMode_InOrder |
+                                          SJSupportedPlaybackMode_RepeatOne |
+                                          SJSupportedPlaybackMode_Shuffle,
 } SJSupportedPlaybackMode;
 
 NS_ASSUME_NONNULL_BEGIN
@@ -45,15 +48,18 @@ NS_ASSUME_NONNULL_BEGIN
 - (void)removeAllMedias;
 
 // - playback mode
-@property SJSupportedPlaybackMode supportedMode;
+@property SJSupportedPlaybackMode supportedMode; // default is SJSupportedPlaybackMode_All.
 @property SJPlaybackMode mode; // 播放模式
 - (void)changePlaybackMode;
+
+@property (nonatomic) BOOL recycle; // default is NO. 列表中的最后一个media播放完毕后, 是否从头播放.
 
 // - play
 - (void)playPreviousMedia;
 - (void)playNextMedia;
 - (void)playAtIndex:(NSInteger)idx;
 - (void)currentMediaFinishedPlaying; // 当播放器播放完成后, 请调用这个方法, 告诉列表控制器当前的media已完成播放
+
 
 - (nullable id<SJMediaInfo>)currentMedia;
 - (NSArray<id<SJMediaInfo>> * _Nonnull)medias;

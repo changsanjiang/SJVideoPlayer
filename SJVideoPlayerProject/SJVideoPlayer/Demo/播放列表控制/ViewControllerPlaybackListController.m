@@ -88,7 +88,7 @@
         });
 
         dispatch_async(dispatch_get_global_queue(0, 0), ^{
-            self.listController.mode = SJPlaybackMode_SingleCycle;
+            self.listController.mode = SJPlaybackMode_RepeatOne;
         });
         
         dispatch_async(dispatch_get_global_queue(0, 0), ^{
@@ -152,11 +152,11 @@ static SJEdgeControlButtonItemTag SJEdgeControlButtonItem_PlayNextMedia = 101;
 
 - (NSString *)_imageNameOfPlaybackMode {
     switch ( self.listController.mode ) {
-        case SJPlaybackMode_ListCycle:
+        case SJPlaybackMode_InOrder:
             return @"ListCycle";
-        case SJPlaybackMode_SingleCycle:
+        case SJPlaybackMode_RepeatOne:
             return @"SingleCycle";
-        case SJPlaybackMode_RandomPlay:
+        case SJPlaybackMode_Shuffle:
             return @"RandomPlay";
     }
 }

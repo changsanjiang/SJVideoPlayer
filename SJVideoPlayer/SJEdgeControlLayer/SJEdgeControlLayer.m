@@ -219,6 +219,10 @@ SJEdgeControlButtonItemTag const SJEdgeControlLayerCenterItem_Replay = 10000;
     
 }
 
+- (void)setHideBackButtonWhenOrientationIsPortrait:(BOOL)hideBackButtonWhenOrientationIsPortrait {
+    _hideBackButtonWhenOrientationIsPortrait = hideBackButtonWhenOrientationIsPortrait;
+}
+
 /// - 更新容器中的Items
 /// - 是否应该显示
 - (void)_updateItemsFor_TopAdapterIfNeeded:(__kindof SJBaseVideoPlayer *)videoPlayer {
@@ -1130,12 +1134,15 @@ SJEdgeControlButtonItemTag const SJEdgeControlLayerCenterItem_Replay = 10000;
 ///  在`tableView`或`collectionView`上将要显示的时候调用.
 - (void)videoPlayerWillAppearInScrollView:(SJBaseVideoPlayer *)videoPlayer {
     videoPlayer.view.hidden = NO;
+    if ( _resumePlaybackWhenPlayerViewScrollAppears ) {
+        [videoPlayer play];
+    }
 }
 
 ///  在`tableView`或`collectionView`上将要消失的时候调用.
 - (void)videoPlayerWillDisappearInScrollView:(SJBaseVideoPlayer *)videoPlayer {
-    [videoPlayer pause];
     videoPlayer.view.hidden = YES;
+    [videoPlayer pause];
 }
 
 #pragma mark Player Horizontal Gesture

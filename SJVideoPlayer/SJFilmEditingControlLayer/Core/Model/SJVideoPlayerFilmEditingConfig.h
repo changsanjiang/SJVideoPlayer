@@ -8,10 +8,11 @@
 
 #import <Foundation/Foundation.h>
 #import "SJVideoPlayerFilmEditingCommonHeader.h"
+#import "SJFilmEditingResultShareItem.h"
 
 @protocol SJVideoPlayerFilmEditingResult, SJVideoPlayerFilmEditingResultUpload;
 
-@class SJBaseVideoPlayer, SJFilmEditingResultShareItem;
+@class SJBaseVideoPlayer;
 
 @interface SJVideoPlayerFilmEditingConfig : NSObject
 

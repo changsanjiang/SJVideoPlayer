@@ -85,6 +85,10 @@
     [m addObject:[[LWZTableSectionShrinker alloc] initWithTitle:@"Other" titleWhenShrank:nil dataArr:[self _createItemsByOtherOperations]]];
     
     [m addObject:[[LWZTableSectionShrinker alloc] initWithTitle:@"Test Adapter" titleWhenShrank:nil dataArr:[self _createItemsByTestAdapter]]];
+    
+    
+//    [m addObject:[[LWZTableSectionShrinker alloc] initWithTitle:@"DouYin" titleWhenShrank:nil dataArr:[self _createItemsByDouYin]]];
+    
     _data = m.copy;
 }
 
@@ -258,6 +262,13 @@
     @[[[Item alloc] initWithTitle:@"Test Adapter"
                          subTitle:@"测试 Adapter"
                              path:@"test/testAdapter"]];
+}
+
+- (NSArray<Item *> *)_createItemsByDouYin {
+    return
+    @[[[Item alloc] initWithTitle:@"DouYin"
+                         subTitle:@"DouYin"
+                             path:@"douYin"]];
 }
 
 - (NSInteger)numberOfSectionsInTableView:(UITableView *)tableView {

@@ -420,6 +420,7 @@ NS_ASSUME_NONNULL_BEGIN
     else if ( 0 != item.title.length  ) {
         cell->_customViewContainerView.hidden = YES;
         cell.itemContentView.hidden = NO;
+        cell.itemContentView.sj_titleLabel.numberOfLines = item.numberOfLines;
         cell.itemContentView.sj_titleLabel.attributedText = item.title;
         cell.itemContentView.sj_imageView.image = nil;
     }

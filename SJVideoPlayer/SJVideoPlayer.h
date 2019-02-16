@@ -13,17 +13,15 @@
 #endif
 #import "SJVideoPlayerSettings.h"
 #import "SJVideoPlayerMoreSetting.h"
-#import "SJVideoPlayerURLAsset+SJControlAdd.h"
 #import "SJVideoPlayerMoreSettingSecondary.h"
-#import "SJFilmEditingResultShareItem.h"
-#import "SJLightweightTopItem.h"
+#import "SJVideoPlayerURLAsset+SJControlAdd.h"
 #import "SJVideoPlayerFilmEditingCommonHeader.h"
 #import "SJVideoPlayerFilmEditingConfig.h"
 #import "SJControlLayerSwitcher.h"
-#import "SJEdgeControlButtonItem.h"
+#import "SJLightweightTopItem.h" // deprecated
+
 #import "SJEdgeControlLayer.h"
 #import "SJFilmEditingControlLayer.h"
-#import "SJEdgeLightweightControlLayer.h"
 #import "SJMoreSettingControlLayer.h"
 #import "SJLoadFailedControlLayer.h"
 #import "SJNotReachableControlLayer.h"
@@ -51,7 +49,6 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (nullable SJEdgeControlLayer *)defaultEdgeControlLayer;
 - (nullable SJFilmEditingControlLayer *)defaultFilmEditingControlLayer;
-- (nullable SJEdgeLightweightControlLayer *)defaultEdgeLightweightControlLayer;
 - (nullable SJMoreSettingControlLayer *)defaultMoreSettingControlLayer;
 
 - (nullable SJLoadFailedControlLayer *)defaultLoadFailedControlLayer;
@@ -78,35 +75,33 @@ NS_ASSUME_NONNULL_BEGIN
 /// 点击`返回`按钮的回调
 @property (nonatomic, copy, null_resettable) void(^clickedBackEvent)(SJVideoPlayer *player);
 
+@end
+
+
+#pragma mark - 配置 defaultEdgeControlLayer
+/// 配置`默认的控制层`
+@interface SJVideoPlayer (SettingDefaultControlLayer)
+
+/// 是否恢复播放 当播放器滚动(ScrollView)出现时
+@property (nonatomic) BOOL resumePlaybackWhenPlayerViewScrollAppears;
+
+/// 是否隐藏底部的进度slider
+@property (nonatomic) BOOL hideBottomProgressSlider;
+
+/// 是否使返回按钮常驻
+@property (nonatomic) BOOL showResidentBackButton;
+
 /// 当播放器为竖屏时, 是否隐藏返回按钮
 /// v2.1.4 新增
 @property (nonatomic) BOOL hideBackButtonWhenOrientationIsPortrait;
 
-/// Default value is NO.
-/// 是否禁止网络状态变化时的提示
-@property (nonatomic) BOOL disablePromptWhenNetworkStatusChanges;
-
-@end
-
-
-/// 配置`轻量级的控制层`
-@interface SJVideoPlayer (SettingLightweightControlLayer)
-
-/// 配置top控制层上的item
-@property (nonatomic, copy, nullable) NSArray<SJLightweightTopItem *> *topControlItems;
-
-/// 点击item执行的block
-@property (nonatomic, copy, nullable) void(^clickedTopControlItemExeBlock)(SJVideoPlayer *player, SJLightweightTopItem *item);
-
-@end
-
-
-/// 配置`默认的控制层`
-@interface SJVideoPlayer (SettingDefaultControlLayer)
-
 /// Whether to generate a preview view. default is YES.
 /// 是否自动生成预览视图, 默认是 YES.
 @property (nonatomic) BOOL generatePreviewImages;
+
+/// Default value is NO.
+/// 是否禁止网络状态变化时的提示
+@property (nonatomic) BOOL disablePromptWhenNetworkStatusChanges;
 
 /// Default control layer show `more item`.
 /// 默认控制层中`Top层`显示更多按钮
@@ -116,10 +111,10 @@ NS_ASSUME_NONNULL_BEGIN
 /// clicked More button to display items.
 /// 点击`更多(右上角的三个点)`按钮, 弹出来的选项.
 @property (nonatomic, strong, nullable) NSArray<SJVideoPlayerMoreSetting *> *moreSettings;
-
 @end
 
 
+#pragma mark - 配置 defaultFilmEditingControlLayer
 /// 配置`剪辑的控制层`
 /// 以下为控制层items的扩展tag
 @interface SJVideoPlayer (FilmEditing)
@@ -164,5 +159,10 @@ extern SJEdgeControlButtonItemTag const SJEdgeControlLayerTopItem_More;         
 
 @interface SJVideoPlayer (SJVideoPlayerDeprecated)
 @property (nonatomic) BOOL disableNetworkStatusChangePrompt __deprecated_msg("use `disablePromptWhenNetworkStatusChanges`");
+
+typedef SJEdgeControlLayer SJEdgeLightweightControlLayer __deprecated;
+- (nullable SJEdgeLightweightControlLayer *)defaultEdgeLightweightControlLayer __deprecated_msg("use `defaultEdgeControlLayer`");
+@property (nonatomic, copy, nullable) NSArray<SJLightweightTopItem *> *topControlItems __deprecated_msg("use [player.defaultEdgeControlLayer.topAdapter addItem:item];");
+@property (nonatomic, copy, nullable) void(^clickedTopControlItemExeBlock)(SJVideoPlayer *player, SJLightweightTopItem *item) __deprecated;
 @end
 NS_ASSUME_NONNULL_END

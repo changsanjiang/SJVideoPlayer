@@ -32,6 +32,19 @@
     
     [self _setupViews];
     
+    /// 播放
+    _player.assetURL = [[NSBundle mainBundle] URLForResource:@"play" withExtension:@"mp4"];
+    
+    
+    /// 替换旋转管理类
+    _rotationManager = [[SJVCRotationManager alloc] initWithViewController:self];
+    _player.rotationManager = _rotationManager;
+    _player.supportedOrientation = SJAutoRotateSupportedOrientation_LandscapeLeft;
+    /// update device orientation
+    [[UIDevice currentDevice] setValue:@(UIDeviceOrientationPortrait) forKey:@"orientation"];
+    [[UIDevice currentDevice] setValue:@(UIDeviceOrientationLandscapeLeft) forKey:@"orientation"];
+    _player.disableAutoRotation = YES;
+    
     __weak typeof(self) _self = self;
     _player.clickedBackEvent = ^(SJVideoPlayer * _Nonnull player) {
         __strong typeof(_self) self = _self;
@@ -40,28 +53,28 @@
         [self.navigationController popViewControllerAnimated:YES];
     };
     
-    /// 播放
-    _player.assetURL = [[NSBundle mainBundle] URLForResource:@"play" withExtension:@"mp4"];
-    
-    
-    /// Top
+    // 禁止横屏水平滑动手势
+    _player.disabledGestures = SJPlayerDisabledGestures_Pan_H;
+    /// Test
     _player.defaultEdgeControlLayer.topContainerView.backgroundColor = [UIColor colorWithWhite:0 alpha:0.8];
     
-    /// Bottom
+    [_player.defaultEdgeControlLayer.bottomAdapter removeItemForTag:SJEdgeControlLayerBottomItem_CurrentTime];
     [_player.defaultEdgeControlLayer.bottomAdapter removeItemForTag:SJEdgeControlLayerBottomItem_Separator];
+    [_player.defaultEdgeControlLayer.bottomAdapter removeItemForTag:SJEdgeControlLayerBottomItem_DurationTime];
+    [_player.defaultEdgeControlLayer.bottomAdapter removeItemForTag:SJEdgeControlLayerBottomItem_Progress];
+    
+    SJEdgeControlButtonItem *fillItem = [[SJEdgeControlButtonItem alloc] initWithCustomView:nil tag:1];
+    fillItem.fill = YES;
+    [_player.defaultEdgeControlLayer.bottomAdapter insertItem:fillItem frontItem:SJEdgeControlLayerBottomItem_Play];
+    
     SJEdgeControlButtonItem *durationItem = [_player.defaultEdgeControlLayer.bottomAdapter itemForTag:SJEdgeControlLayerBottomItem_DurationTime];
     durationItem.insets = SJEdgeInsetsMake(0, 12);
     [_player.defaultEdgeControlLayer.bottomAdapter exchangeItemForTag:SJEdgeControlLayerBottomItem_DurationTime withItemForTag:SJEdgeControlLayerBottomItem_Progress];
+    
+    _player.defaultEdgeControlLayer.hideBottomProgressSlider = YES;
+    
     [_player.defaultEdgeControlLayer.bottomAdapter reload];
     _player.defaultEdgeControlLayer.bottomContainerView.backgroundColor = [UIColor colorWithWhite:0 alpha:0.8];
-    
-    
-    /// update device orientation
-    _rotationManager = [[SJVCRotationManager alloc] initWithViewController:self];
-    _player.rotationManager = _rotationManager;
-    _player.supportedOrientation = SJAutoRotateSupportedOrientation_LandscapeLeft;
-    [[UIDevice currentDevice] setValue:@(UIDeviceOrientationPortrait) forKey:@"orientation"];
-    [[UIDevice currentDevice] setValue:@(UIDeviceOrientationLandscapeLeft) forKey:@"orientation"];
 }
 
 - (void)_setupViews {
@@ -116,7 +129,7 @@
 }
 
 - (UIStatusBarStyle)preferredStatusBarStyle {
-    return [self.player vc_preferredStatusBarStyle];
+    return UIStatusBarStyleLightContent;
 }
 
 - (BOOL)prefersHomeIndicatorAutoHidden {

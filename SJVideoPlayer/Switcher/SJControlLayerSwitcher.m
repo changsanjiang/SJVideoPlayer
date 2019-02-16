@@ -7,9 +7,37 @@
 //
 
 #import "SJControlLayerSwitcher.h"
-
+#if __has_include(<SJObserverHelper/NSObject+SJObserverHelper.h>)
+#import <SJObserverHelper/NSObject+SJObserverHelper.h>
+#else
+#import "NSObject+SJObserverHelper.h"
+#endif
 
 NS_ASSUME_NONNULL_BEGIN
+static NSString *const SJPlayerSwitchControlLayerUserInfoKey = @"SJPlayerSwitchControlLayerUserInfoKey";
+static NSNotificationName const SJPlayerWillBeginSwitchControlLayerNotification = @"SJPlayerWillBeginSwitchControlLayerNotification";
+static NSNotificationName const SJPlayerDidEndSwitchControlLayerNotification = @"SJPlayerDidEndSwitchControlLayerNotification";
+
+@interface SJControlLayerSwitcherObsrever : NSObject<SJControlLayerSwitcherObsrever>
+- (instancetype)initWithSwitcher:(id<SJControlLayerSwitcher>)switcher;
+@end
+
+@implementation SJControlLayerSwitcherObsrever
+@synthesize playerWillBeginSwitchControlLayer = _playerWillBeginSwitchControlLayer;
+@synthesize playerDidEndSwitchControlLayer = _playerDidEndSwitchControlLayer;
+- (instancetype)initWithSwitcher:(id<SJControlLayerSwitcher>)switcher {
+    self = [super init];
+    if ( !self ) return nil;
+    [self sj_observeWithNotification:SJPlayerWillBeginSwitchControlLayerNotification target:switcher usingBlock:^(SJControlLayerSwitcherObsrever *  _Nonnull self, NSNotification * _Nonnull note) {
+        if ( self.playerWillBeginSwitchControlLayer ) self.playerWillBeginSwitchControlLayer(note.object, note.userInfo[SJPlayerSwitchControlLayerUserInfoKey]);
+    }];
+    
+    [self sj_observeWithNotification:SJPlayerDidEndSwitchControlLayerNotification target:switcher usingBlock:^(SJControlLayerSwitcherObsrever *_Nonnull self, NSNotification * _Nonnull note) {
+        if ( self.playerDidEndSwitchControlLayer ) self.playerDidEndSwitchControlLayer(note.object, note.userInfo[SJPlayerSwitchControlLayerUserInfoKey]);
+    }];
+    return self;
+}
+@end
 
 @interface SJControlLayerSwitcher ()
 @property (nonatomic, strong, readonly) NSMutableDictionary *map;
@@ -17,6 +45,14 @@ NS_ASSUME_NONNULL_BEGIN
 @end
 
 @implementation SJControlLayerSwitcher
+@synthesize currentIdentifier = _currentIdentifier;
+@synthesize previousIdentifier = _previousIdentifier;
+
+#ifdef DEBUG
+- (void)dealloc {
+    NSLog(@"%d - %s", (int)__LINE__, __func__);
+}
+#endif
 
 - (instancetype)initWithPlayer:(__weak SJBaseVideoPlayer *)videoPlayer {
     self = [super init];
@@ -26,6 +62,10 @@ NS_ASSUME_NONNULL_BEGIN
     _previousIdentifier = SJControlLayer_Uninitialized;
     _currentIdentifier = SJControlLayer_Uninitialized;
     return self;
+}
+
+- (id<SJControlLayerSwitcherObsrever>)getObserver {
+    return [[SJControlLayerSwitcherObsrever alloc] initWithSwitcher:self];
 }
 
 - (void)switchControlLayerForIdentitfier:(SJControlLayerIdentifier)identifier {
@@ -61,11 +101,16 @@ NS_ASSUME_NONNULL_BEGIN
     _videoPlayer.controlLayerDataSource = nil;
     _videoPlayer.controlLayerDelegate = nil;
     [carrier_old.controlLayer exitControlLayer];
+    
+    // - begin
+    [NSNotificationCenter.defaultCenter postNotificationName:SJPlayerWillBeginSwitchControlLayerNotification object:self userInfo:@{SJPlayerSwitchControlLayerUserInfoKey:carrier_new.controlLayer}];
     _videoPlayer.controlLayerDataSource = carrier_new.controlLayer;
     _videoPlayer.controlLayerDelegate = carrier_new.controlLayer;
     _previousIdentifier = _currentIdentifier;
     _currentIdentifier = carrier_new.identifier;
     [carrier_new.controlLayer restartControlLayer];
+    // - end
+    [NSNotificationCenter.defaultCenter postNotificationName:SJPlayerDidEndSwitchControlLayerNotification object:self userInfo:@{SJPlayerSwitchControlLayerUserInfoKey:carrier_new.controlLayer}];
 }
 
 - (void)deleteControlLayerForIdentifier:(SJControlLayerIdentifier)identifier {

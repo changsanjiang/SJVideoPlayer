@@ -34,6 +34,8 @@ target 'SJVideoPlayer' do
   pod 'Masonry', :inhibit_warnings => true
   pod 'SJRouter'
   pod 'SJScrollEntriesView'
-  #pod 'SJUIKit'
+  #pod 'SJUIKit/Base'
+  #pod 'SJUIKit/Refresh'
+  #pod 'MJRefresh', :inhibit_warnings => true
   #pod 'MJRefresh', :inhibit_warnings => true
 end

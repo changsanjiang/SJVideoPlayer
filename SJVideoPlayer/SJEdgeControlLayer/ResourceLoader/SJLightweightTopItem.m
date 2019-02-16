@@ -9,10 +9,8 @@
 #import "SJLightweightTopItem.h"
 
 NSString *const kLightweightTopItemImageNameKeyPath = @"imageName";
-
 @implementation SJLightweightTopItem
-
-- (instancetype)initWithFlag:(NSInteger)flag imageName:(NSString *)imageName {
+- (instancetype)initWithFlag:(NSInteger)flag imageName:(NSString *)imageName __deprecated {
     self = [super init];
     if ( !self ) return nil;
     _flag = flag;

@@ -42,7 +42,7 @@
     }];
     
     _player.URLAsset = [[SJVideoPlayerURLAsset alloc] initWithURL:[NSBundle.mainBundle URLForResource:@"play" withExtension:@"mp4"]];
-    _player.URLAsset.title = @"Test Title";
+    _player.URLAsset.title = @"Test TitleTest TitleTest TitleTest TitleTest TitleTest TitleTest TitleTest Title";
     _player.URLAsset.alwaysShowTitle = YES;
     _player.hideBackButtonWhenOrientationIsPortrait = YES;
     _player.pausedToKeepAppearState = YES;
@@ -50,6 +50,9 @@
     _player.enableFilmEditing = YES;
     _player.filmEditingConfig.saveResultToAlbumWhenExportSuccess = YES;
     _player.resumePlaybackWhenAppDidEnterForeground = YES;
+    
+    SJEdgeControlButtonItem *titleItem = [_player.defaultEdgeControlLayer.topAdapter itemForTag:SJEdgeControlLayerTopItem_Title];
+    titleItem.numberOfLines = 1;
     
 #pragma mark
     UILabel *noteLabel = [UILabel new];

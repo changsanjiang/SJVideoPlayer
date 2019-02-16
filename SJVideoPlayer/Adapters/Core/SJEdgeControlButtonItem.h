@@ -44,6 +44,7 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic) SJEdgeControlButtonItemTag tag;
 @property (nonatomic, strong, nullable) __kindof UIView *customView;
 @property (nonatomic, strong, nullable) NSAttributedString *title;
+@property (nonatomic) NSInteger numberOfLines;
 @property (nonatomic, strong, nullable) UIImage *image;
 @property (nonatomic, getter=isHidden) BOOL hidden;
 @property (nonatomic, weak, nullable) id target;

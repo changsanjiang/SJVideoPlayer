@@ -1,6 +1,6 @@
 {
   "name": "SJVideoPlayer",
-  "version": "2.3.10",
+  "version": "2.4.0",
   "summary": "video player.",
   "description": "https://github.com/changsanjiang/SJVideoPlayer/blob/master/README.md",
   "homepage": "https://github.com/changsanjiang/SJVideoPlayer",
@@ -16,7 +16,7 @@
   },
   "source": {
     "git": "https://github.com/changsanjiang/SJVideoPlayer.git",
-    "tag": "v2.3.10"
+    "tag": "v2.4.0"
   },
   "requires_arc": true,
   "dependencies": {
@@ -106,21 +106,6 @@
 
             ]
           }
-        }
-      ]
-    },
-    {
-      "name": "SJEdgeLightweightControlLayer",
-      "source_files": "SJVideoPlayer/SJEdgeLightweightControlLayer/*.{h,m}",
-      "dependencies": {
-        "SJVideoPlayer/SJEdgeControlLayer": [
-
-        ]
-      },
-      "subspecs": [
-        {
-          "name": "LightweightControlView",
-          "source_files": "SJVideoPlayer/SJEdgeLightweightControlLayer/LightweightControlView/*.{h,m}"
         }
       ]
     },

@@ -11,6 +11,7 @@
 		773AABFD21E43CFD007B1272 /* ViewControllerSJUITableViewHeaderFooterViewPlayModel.m in Sources */ = {isa = PBXBuildFile; fileRef = 773AABFC21E43CFD007B1272 /* ViewControllerSJUITableViewHeaderFooterViewPlayModel.m */; };
 		773AAC0021E443AE007B1272 /* SJTableViewHeaderFooterView.m in Sources */ = {isa = PBXBuildFile; fileRef = 773AABFF21E443AE007B1272 /* SJTableViewHeaderFooterView.m */; };
 		77434E5121F86EAC0038ABC1 /* ViewControllerPlaybackListController.m in Sources */ = {isa = PBXBuildFile; fileRef = 77434E5021F86EAC0038ABC1 /* ViewControllerPlaybackListController.m */; };
+		774CEA1E2217C46A00489474 /* ViewControllerDouYin.m in Sources */ = {isa = PBXBuildFile; fileRef = 774CEA1D2217C46A00489474 /* ViewControllerDouYin.m */; };
 		77830928218C50310014ECAF /* ViewControllerTestAlert.m in Sources */ = {isa = PBXBuildFile; fileRef = 77830927218C50310014ECAF /* ViewControllerTestAlert.m */; };
 		7798A7D6219EBA520020A507 /* PrefetcherViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 7798A7D5219EBA520020A507 /* PrefetcherViewController.m */; };
 		7798A7D8219ECF3B0020A507 /* PrefetcherViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 7798A7D7219ECF3B0020A507 /* PrefetcherViewController.xib */; };
@@ -103,6 +104,8 @@
 		773AABFF21E443AE007B1272 /* SJTableViewHeaderFooterView.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = SJTableViewHeaderFooterView.m; sourceTree = "<group>"; };
 		77434E4F21F86EAC0038ABC1 /* ViewControllerPlaybackListController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = ViewControllerPlaybackListController.h; sourceTree = "<group>"; };
 		77434E5021F86EAC0038ABC1 /* ViewControllerPlaybackListController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = ViewControllerPlaybackListController.m; sourceTree = "<group>"; };
+		774CEA1C2217C46A00489474 /* ViewControllerDouYin.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ViewControllerDouYin.h; sourceTree = "<group>"; };
+		774CEA1D2217C46A00489474 /* ViewControllerDouYin.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ViewControllerDouYin.m; sourceTree = "<group>"; };
 		77830926218C50310014ECAF /* ViewControllerTestAlert.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = ViewControllerTestAlert.h; sourceTree = "<group>"; };
 		77830927218C50310014ECAF /* ViewControllerTestAlert.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = ViewControllerTestAlert.m; sourceTree = "<group>"; };
 		7798A7D4219EBA520020A507 /* PrefetcherViewController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = PrefetcherViewController.h; sourceTree = "<group>"; };
@@ -281,6 +284,15 @@
 			path = "播放列表控制";
 			sourceTree = "<group>";
 		};
+		774CEA1B2217C45D00489474 /* DouYin */ = {
+			isa = PBXGroup;
+			children = (
+				774CEA1C2217C46A00489474 /* ViewControllerDouYin.h */,
+				774CEA1D2217C46A00489474 /* ViewControllerDouYin.m */,
+			);
+			path = DouYin;
+			sourceTree = "<group>";
+		};
 		7798A7D3219EB9D90020A507 /* SwitchDefinition(切换分辨率) */ = {
 			isa = PBXGroup;
 			children = (
@@ -406,6 +418,7 @@
 				A60066A8216195050001B5F8 /* Other */,
 				77E8D75F2179A0B100B025A7 /* Test */,
 				77EECF5D219D0DCF00736073 /* TestAdapter */,
+				774CEA1B2217C45D00489474 /* DouYin */,
 			);
 			path = Demo;
 			sourceTree = "<group>";
@@ -811,6 +824,7 @@
 				A600669B21610FD50001B5F8 /* ViewControllerPageViewController.m in Sources */,
 				A649169621F8B367000DBCCF /* TestMedia.m in Sources */,
 				773AAC0021E443AE007B1272 /* SJTableViewHeaderFooterView.m in Sources */,
+				774CEA1E2217C46A00489474 /* ViewControllerDouYin.m in Sources */,
 				A6006562215F947E0001B5F8 /* ViewController.m in Sources */,
 				77E8D75821797FDA00B025A7 /* ViewControllerVideoFlip.m in Sources */,
 				A6D1A26221845F02006FF2C1 /* ViewController_Adjust.m in Sources */,

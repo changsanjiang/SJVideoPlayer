@@ -33,8 +33,9 @@ extern SJEdgeControlButtonItemTag const SJEdgeControlLayerCenterItem_Replay;    
 @property (nonatomic, copy, nullable) void(^clickedBackItemExeBlock)(SJEdgeControlLayer *control);
 @property (nonatomic) BOOL hideBackButtonWhenOrientationIsPortrait; // 竖屏时隐藏返回按钮
 @property (nonatomic) BOOL disablePromptWhenNetworkStatusChanges; // 禁止网络状态变化提示
-@property (nonatomic) BOOL generatePreviewImages;   // 生成预览视图, 大概20张
+@property (nonatomic) BOOL generatePreviewImages;    // 生成预览视图, 大概20张
 @property (nonatomic) BOOL hideBottomProgressSlider; // 隐藏底部进度条
-@property (nonatomic) BOOL showResidentBackButton;  // 返回按钮常驻
+@property (nonatomic) BOOL showResidentBackButton;   // 返回按钮常驻
+@property (nonatomic) BOOL resumePlaybackWhenPlayerViewScrollAppears; // 播放器滚动(ScrollView)出现时, 是否恢复播放
 @end
 NS_ASSUME_NONNULL_END

@@ -1,1 +1,1 @@
-../../../../../SJVideoPlayer/SJEdgeLightweightControlLayer/LightweightControlView/SJLightweightTopItem.h
+../../../../../SJVideoPlayer/SJEdgeControlLayer/ResourceLoader/SJLightweightTopItem.h

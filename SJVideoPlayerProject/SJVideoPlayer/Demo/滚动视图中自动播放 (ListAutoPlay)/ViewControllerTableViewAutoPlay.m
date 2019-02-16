@@ -30,29 +30,10 @@
 
 - (void)viewDidLoad {
     [super viewDidLoad];
-    self.edgesForExtendedLayout = UIRectEdgeNone;
-    self.view.backgroundColor = [UIColor whiteColor];
     
-    _tableView = [[UITableView alloc] initWithFrame:CGRectZero style:UITableViewStylePlain];
-    _tableView.backgroundColor = [UIColor blackColor];
-    _tableView.delegate = self;
-    _tableView.dataSource = self;
-    _tableView.rowHeight = self.view.bounds.size.width * 9 / 16.0 + 8;
+    [self _setupViews];
     
-    [self.view addSubview:_tableView];
-    [_tableView mas_makeConstraints:^(MASConstraintMaker *make) {
-        make.edges.offset(0);
-    }];
-    
-    
-    // 配置列表自动播放
-    [_tableView sj_enableAutoplayWithConfig:[SJPlayerAutoplayConfig configWithPlayerSuperviewTag:101 autoplayDelegate:self]];
-    
-    [_tableView sj_needPlayNextAsset];
-    
-    dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(5 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
-        [self.tableView setContentOffset:CGPointMake(0, 1000) animated:YES];
-    });
+    [self _configAutoplayForTableView];
     
     // Do any additional setup after loading the view.
 }
@@ -84,6 +65,31 @@
     _player.URLAsset = [[SJVideoPlayerURLAsset alloc] initWithURL:[NSBundle.mainBundle URLForResource:@"play" withExtension:@"mp4"] playModel:[SJPlayModel UITableViewCellPlayModelWithPlayerSuperviewTag:cell.view.coverImageView.tag atIndexPath:indexPath tableView:self.tableView]];
     _player.URLAsset.title = @"Test Title";
     _player.URLAsset.alwaysShowTitle = YES;
+}
+
+#pragma mark -
+
+- (void)_configAutoplayForTableView {
+    // 配置列表自动播放
+    [_tableView sj_enableAutoplayWithConfig:[SJPlayerAutoplayConfig configWithPlayerSuperviewTag:101 autoplayDelegate:self]];
+    
+    [_tableView sj_needPlayNextAsset];
+}
+
+- (void)_setupViews {
+    self.edgesForExtendedLayout = UIRectEdgeNone;
+    self.view.backgroundColor = [UIColor whiteColor];
+    
+    _tableView = [[UITableView alloc] initWithFrame:CGRectZero style:UITableViewStylePlain];
+    _tableView.backgroundColor = [UIColor blackColor];
+    _tableView.delegate = self;
+    _tableView.dataSource = self;
+    _tableView.rowHeight = self.view.bounds.size.width * 9 / 16.0 + 8;
+    
+    [self.view addSubview:_tableView];
+    [_tableView mas_makeConstraints:^(MASConstraintMaker *make) {
+        make.edges.offset(0);
+    }];
 }
 
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section {

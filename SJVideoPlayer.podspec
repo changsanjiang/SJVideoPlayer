@@ -1,7 +1,7 @@
 
 Pod::Spec.new do |s|
     s.name         = 'SJVideoPlayer'
-    s.version      = '2.3.11'
+    s.version      = '2.4.0'
     s.summary      = 'video player.'
     s.description  = 'https://github.com/changsanjiang/SJVideoPlayer/blob/master/README.md'
     s.homepage     = 'https://github.com/changsanjiang/SJVideoPlayer'
@@ -69,16 +69,7 @@ Pod::Spec.new do |s|
         ss.dependency 'SJVideoPlayer/SJProgressSlider'
         ss.dependency 'SJVideoPlayer/SJLoadingView'
     end
-
-    s.subspec 'SJEdgeLightweightControlLayer' do |l|
-        l.source_files = 'SJVideoPlayer/SJEdgeLightweightControlLayer/*.{h,m}'
-        l.dependency 'SJVideoPlayer/SJEdgeControlLayer'
-
-        l.subspec 'LightweightControlView' do |view|
-            view.source_files = 'SJVideoPlayer/SJEdgeLightweightControlLayer/LightweightControlView/*.{h,m}'
-        end
-    end
-
+    
     s.subspec 'SJFilmEditingControlLayer' do |f|
         f.source_files = 'SJVideoPlayer/SJFilmEditingControlLayer/*.{h,m}'
         f.dependency 'SJVideoPlayer/SJProgressSlider'

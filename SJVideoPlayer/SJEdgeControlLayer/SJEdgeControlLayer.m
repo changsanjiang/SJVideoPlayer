@@ -293,7 +293,8 @@ SJEdgeControlButtonItemTag const SJEdgeControlLayerCenterItem_Replay = 10000;
 
 - (BOOL)_canTriggerGesturesFor_TopAdapter:(CGPoint)location {
     CGPoint point = [self.controlView convertPoint:location toView:_topAdapter.view];
-    if ( CGRectContainsPoint(_topAdapter.view.frame, point) &&
+    if ( !sj_view_isDisappeared(_topContainerView) &&
+         CGRectContainsPoint(_topAdapter.view.frame, point) &&
          [_topAdapter itemContainsPoint:point] )
         return NO;
     
@@ -507,7 +508,8 @@ SJEdgeControlButtonItemTag const SJEdgeControlLayerCenterItem_Replay = 10000;
 
 - (BOOL)_canTriggerGesturesFor_LeftAdapter:(CGPoint)location {
     CGPoint point = [self.controlView convertPoint:location toView:_leftAdapter.view];
-    if ( CGRectContainsPoint(_leftAdapter.view.frame, point) &&
+    if ( !sj_view_isDisappeared(_leftContainerView) &&
+         CGRectContainsPoint(_leftAdapter.view.frame, point) &&
         [_leftAdapter itemContainsPoint:point] )
         return NO;
     
@@ -705,7 +707,8 @@ SJEdgeControlButtonItemTag const SJEdgeControlLayerCenterItem_Replay = 10000;
 
 - (BOOL)_canTriggerGesturesFor_BottomAdapter:(CGPoint)location {
     CGPoint point = [self.controlView convertPoint:location toView:_bottomAdapter.view];
-    if ( CGRectContainsPoint(_bottomAdapter.view.frame, point) &&
+    if ( !sj_view_isDisappeared(_bottomContainerView) &&
+         CGRectContainsPoint(_bottomAdapter.view.frame, point) &&
         [_bottomAdapter itemContainsPoint:point] )
         return NO;
     
@@ -836,7 +839,8 @@ SJEdgeControlButtonItemTag const SJEdgeControlLayerCenterItem_Replay = 10000;
 
 - (BOOL)_canTriggerGesturesFor_RightAdapter:(CGPoint)location {
     CGPoint point = [self.controlView convertPoint:location toView:_rightAdapter.view];
-    if ( CGRectContainsPoint(_rightAdapter.view.frame, point) &&
+    if ( !sj_view_isDisappeared(_rightContainerView) &&
+         CGRectContainsPoint(_rightAdapter.view.frame, point) &&
         [_rightAdapter itemContainsPoint:point] )
         return NO;
     
@@ -930,7 +934,8 @@ SJEdgeControlButtonItemTag const SJEdgeControlLayerCenterItem_Replay = 10000;
 
 - (BOOL)_canTriggerGesturesFor_CenterAdapter:(CGPoint)location {
     CGPoint point = [self.controlView convertPoint:location toView:_centerAdapter.view];
-    if ( CGRectContainsPoint(_centerAdapter.view.frame, point) &&
+    if ( !sj_view_isDisappeared(_centerContainerView) &&
+         CGRectContainsPoint(_centerAdapter.view.frame, point) &&
         [_centerAdapter itemContainsPoint:point] )
         return NO;
     

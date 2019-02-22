@@ -160,8 +160,6 @@ NS_ASSUME_NONNULL_BEGIN
         __strong typeof(_self) self = _self;
         if ( !self ) return ;
         if ( self.isTransitioning ) return;
-        if ( !self.superview ) return;
-        if ( !self.target ) return;
         if ( self.shouldTriggerRotation ) { if ( !self.shouldTriggerRotation(self) ) return; }
         if ( orientation == self.currentOrientation ) { if (completionHandler) completionHandler(self); return; }
         self.needToForceRotation = YES;
@@ -181,7 +179,7 @@ NS_ASSUME_NONNULL_BEGIN
     _currentOrientation = _sjOrientationForDeviceOrentation(_rec_deviceOrientation);
     self.transitioning = YES;
     BOOL isFull = self.isFullscreen;
-
+    
     [self.target mas_remakeConstraints:^(MASConstraintMaker *make) {
         if ( isFull ) make.edges.equalTo(self->_atViewController.view);
         else make.edges.equalTo(self.superview);
@@ -192,8 +190,10 @@ NS_ASSUME_NONNULL_BEGIN
     } completion:^(BOOL finished) {
         __strong typeof(_self) self = _self;
         if ( !self ) return;
-        if ( isFull ) [self.atViewController.view addSubview:self.target];
-        else [self.superview addSubview:self.target];
+        if ( self.target ) {
+            if ( isFull ) [self.atViewController.view addSubview:self.target];
+            else [self.superview addSubview:self.target];
+        }
         self.transitioning = NO;
         if ( self.rotateCompletionHandler ) self.rotateCompletionHandler(self);
         self.rotateCompletionHandler = nil;

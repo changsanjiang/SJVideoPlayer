@@ -53,6 +53,10 @@ NS_ASSUME_NONNULL_BEGIN
     _timer.exeBlock = ^(SJTimerControl * _Nonnull control) {
         __strong typeof(_self) self = _self;
         if ( !self ) return;
+        if ( self.isDisabled ) {
+            [control clear];
+            return;
+        }
         if ( self.canAutomaticallyDisappear ) {
             if ( !self.canAutomaticallyDisappear(self) )
                 return;
@@ -82,23 +86,23 @@ NS_ASSUME_NONNULL_BEGIN
 }
 
 - (void)needAppear {
-    [_timer start];
+    [self _start];
     self.isAppeared = YES;
 }
 
 - (void)needDisappear {
-    [_timer clear];
+    [self _clear];
     self.isAppeared = NO;
 }
 
 - (void)resume {
     if ( _isAppeared )
-        [_timer start];
+        [self _start];
 }
 
 - (void)keepAppearState {
     [self needAppear];
-    [_timer clear];
+    [self _clear];
 }
 
 - (void)keepDisappearState {
@@ -112,8 +116,20 @@ NS_ASSUME_NONNULL_BEGIN
         return;
     _disabled = disabled;
 
-    if ( disabled ) [_timer clear];
-    else if ( _isAppeared ) [_timer start];
+    if ( disabled )
+        [self _clear];
+    else if ( _isAppeared )
+        [self _start];
+}
+
+- (void)_start {
+    if ( _disabled )
+        return;
+    [_timer start];
+}
+
+- (void)_clear {
+    [_timer clear];
 }
 @end
 NS_ASSUME_NONNULL_END

@@ -233,7 +233,7 @@ static NSString *_kPlayStatus = @"playStatus";
 }
 
 + (NSString *)version {
-    return @"2.1.1";
+    return @"2.1.3";
 }
 
 - (nullable __kindof UIViewController *)atViewController {

@@ -14,6 +14,7 @@
 /// 控制层 Item 相关操作 之 `添加按钮`
 
 static SJEdgeControlButtonItemTag SJEdgeControlButtonItemTag_Share = 10;        // 分享
+static SJEdgeControlButtonItemTag SJEdgeControlLayerCenterItem_CustomView = 1;
 
 @interface ViewController_AddButtonItem ()<SJRouteHandler, SJEdgeControlButtonItemDelegate>
 @property (nonatomic, strong) SJVideoPlayer *player;
@@ -81,7 +82,8 @@ static SJEdgeControlButtonItemTag SJEdgeControlButtonItemTag_Share = 10;        
                                           blue:arc4random() % 256 / 255.0
                                          alpha:1];
     
-    SJEdgeControlButtonItem *item = [SJEdgeControlButtonItem frameLayoutWithCustomView:v tag:0];
+    SJEdgeControlButtonItem *item = [SJEdgeControlButtonItem frameLayoutWithCustomView:v tag:SJEdgeControlLayerCenterItem_CustomView];
+    item.delegate = self;
     [_player.defaultEdgeControlLayer.centerAdapter addItem:item];
     [_player.defaultEdgeControlLayer.centerAdapter reload];
 }
@@ -112,8 +114,16 @@ static SJEdgeControlButtonItemTag SJEdgeControlButtonItemTag_Share = 10;        
     //  imageItem.hidden = !player.isFullScreen;
 }
 
-
-
+/// 是否可以触发手势
+- (BOOL)edgeControlButtonItem:(SJEdgeControlButtonItem *)item gestureRecognizerShouldTrigger:(SJPlayerGestureType)type atPoint:(CGPoint)point {
+    if ( item.tag == SJEdgeControlLayerCenterItem_CustomView ) {
+        if ( type == SJPlayerGestureType_Pan )
+            return NO;
+        else
+            return YES;
+    }
+    return NO;
+}
 
 
 #pragma mark -

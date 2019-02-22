@@ -7,6 +7,7 @@
 //
 
 #import <UIKit/UIKit.h>
+#import <SJBaseVideoPlayer/SJPlayerGestureControl.h>
 typedef NSInteger SJEdgeControlButtonItemTag;
 @protocol SJEdgeControlButtonItemDelegate;
 @class SJBaseVideoPlayer;
@@ -58,7 +59,11 @@ NS_ASSUME_NONNULL_BEGIN
 @end
 
 @protocol SJEdgeControlButtonItemDelegate <NSObject>
+@optional
+/// 每次控制层显示, 这个方法都会被调用
 - (void)updatePropertiesIfNeeded:(SJEdgeControlButtonItem *)item videoPlayer:(__kindof SJBaseVideoPlayer *)player;
+/// 手势是否可以触发
+- (BOOL)edgeControlButtonItem:(SJEdgeControlButtonItem *)item gestureRecognizerShouldTrigger:(SJPlayerGestureType)type atPoint:(CGPoint)point;
 @end
 
 

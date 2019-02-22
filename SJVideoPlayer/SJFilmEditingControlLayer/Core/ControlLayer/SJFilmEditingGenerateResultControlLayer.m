@@ -542,6 +542,7 @@ static SJEdgeControlButtonItemTag SJTopItem_Back = 1;
 - (SJBaseVideoPlayer *)exportedVideoPlayer {
     if ( _exportedVideoPlayer ) return _exportedVideoPlayer;
     _exportedVideoPlayer = [SJBaseVideoPlayer player];
+    _exportedVideoPlayer.resumePlaybackWhenAppDidEnterForeground = YES;
     _exportedVideoPlayer.view.backgroundColor = [UIColor clearColor];
     for ( UIView *view in _exportedVideoPlayer.view.subviews ) {
         view.backgroundColor = [UIColor clearColor];

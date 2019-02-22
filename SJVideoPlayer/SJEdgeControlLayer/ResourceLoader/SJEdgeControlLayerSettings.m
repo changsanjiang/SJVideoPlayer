@@ -9,6 +9,11 @@
 #import "SJEdgeControlLayerSettings.h"
 #import <UIKit/UIKit.h>
 #import "SJEdgeControlLayerLoader.h"
+#if __has_include(<SJObserverHelper/NSObject+SJObserverHelper.h>)
+#import <SJObserverHelper/NSObject+SJObserverHelper.h>
+#else
+#import "NSObject+SJObserverHelper.h"
+#endif
 
 NSNotificationName const SJSettingsPlayerNotification = @"SJSettingsPlayerNotification";
 
@@ -19,7 +24,6 @@ NSNotificationName const SJSettingsPlayerNotification = @"SJSettingsPlayerNotifi
     static dispatch_once_t onceToken;
     dispatch_once(&onceToken, ^{
         _instance = [self new];
-        [_instance reset];
     });
     return _instance;
 }
@@ -33,6 +37,13 @@ NSNotificationName const SJSettingsPlayerNotification = @"SJSettingsPlayerNotifi
             });
         });
     };
+}
+
+- (instancetype)init {
+    self = [super init];
+    if ( !self ) return nil;
+    [self reset];
+    return self;
 }
 
 - (void)reset {

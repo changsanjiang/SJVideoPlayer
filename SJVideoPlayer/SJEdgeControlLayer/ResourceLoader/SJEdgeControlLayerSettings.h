@@ -6,8 +6,7 @@
 //  Copyright © 2018年 changsanjiang@gmail.com. All rights reserved.
 //
 
-#import <Foundation/Foundation.h>
-@class UIImage, UIColor, UIFont;
+#import <UIKit/UIKit.h>
 
 NS_ASSUME_NONNULL_BEGIN
 extern NSNotificationName const SJSettingsPlayerNotification;

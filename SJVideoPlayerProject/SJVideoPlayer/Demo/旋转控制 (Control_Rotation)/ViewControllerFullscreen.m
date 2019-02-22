@@ -35,7 +35,6 @@
     /// 播放
     _player.assetURL = [[NSBundle mainBundle] URLForResource:@"play" withExtension:@"mp4"];
     
-    
     /// 替换旋转管理类
     _rotationManager = [[SJVCRotationManager alloc] initWithViewController:self];
     _player.rotationManager = _rotationManager;

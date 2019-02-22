@@ -77,6 +77,7 @@ BOOL sj_view_isDisappeared(UIView *view) {
 void sj_view_makeAppear(UIView *view, BOOL animated, void(^_Nullable completionHandler)(void)) {
     if ( !view )
         return;
+    view.sjv_disappeared = NO;
     [UIView animateWithDuration:0 animations:^{} completion:^(BOOL finished) {
         if ( animated ) {
             UIView_Animations(CommonAnimaDuration, ^{
@@ -91,6 +92,7 @@ void sj_view_makeAppear(UIView *view, BOOL animated, void(^_Nullable completionH
 void sj_view_makeDisappear(UIView *view, BOOL animated, void(^_Nullable completionHandler)(void)) {
     if ( !view )
         return;
+    view.sjv_disappeared = YES;
     [UIView animateWithDuration:0 animations:^{} completion:^(BOOL finished) {
         if ( animated ) {
             UIView_Animations(CommonAnimaDuration, ^{

@@ -71,7 +71,12 @@ static SJEdgeControlButtonItemTag SJBottomItem_RightFill = 5;
     sj_view_makeAppear(self.controlView, YES);
     self.status = SJFilmEditingStatus_Unknown;
     self.countDownNum = _maxCountDownNum;
-    self.start = CMTimeMake(_player.currentTime * 1000, 1000);
+    if ( [_player playStatus_isInactivity_ReasonPlayEnd] ) {
+        self.start = kCMTimeZero;
+    }
+    else {
+        self.start = CMTimeMake(_player.currentTime * 1000, 1000);
+    }
     [self resume];
 }
 

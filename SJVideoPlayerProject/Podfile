@@ -37,5 +37,4 @@ target 'SJVideoPlayer' do
   #pod 'SJUIKit/Base'
   #pod 'SJUIKit/Refresh'
   #pod 'MJRefresh', :inhibit_warnings => true
-  #pod 'MJRefresh', :inhibit_warnings => true
 end

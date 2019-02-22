@@ -44,6 +44,11 @@ static NSString *SJButtonItemCollectionViewCellID = @"SJButtonItemCollectionView
     }];
 }
 
+- (void)setClickedCellExeBlock:(nullable void (^)(SJButtonItemCollectionViewCell * _Nonnull))clickedCellExeBlock {
+    _clickedCellExeBlock = clickedCellExeBlock;
+    _backgroundButton.hidden = (clickedCellExeBlock == nil);
+}
+
 - (void)clickedBackgroundBtn:(UIButton *)btn {
     if ( _clickedCellExeBlock ) _clickedCellExeBlock(self);
 }

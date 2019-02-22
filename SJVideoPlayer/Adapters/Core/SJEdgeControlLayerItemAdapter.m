@@ -375,13 +375,17 @@ NS_ASSUME_NONNULL_BEGIN
     return YES;
 }
 - (BOOL)itemContainsPoint:(CGPoint)point {
+    return [self itemAtPoint:point] != nil;
+}
+- (SJEdgeControlButtonItem *_Nullable)itemAtPoint:(CGPoint)point {
     for ( int i = 0 ; i < _layout -> _layoutAttributes.count ; ++ i ) {
         UICollectionViewLayoutAttributes *atr = _layout->_layoutAttributes[i];
-        if ( CGRectContainsPoint(atr.frame, point) &&
-             ![self itemAtIndex:i].isHidden )
-            return YES;
+        SJEdgeControlButtonItem *item = [self itemAtIndex:i];
+        if ( !item.isHidden && CGRectContainsPoint(atr.frame, point) ) {
+            return item;
+        }
     }
-    return NO;
+    return nil;
 }
 
 #pragma mark -
@@ -436,7 +440,7 @@ NS_ASSUME_NONNULL_BEGIN
     }
     
     __weak typeof(self) _self = self;
-    cell.clickedCellExeBlock = ^(SJButtonItemCollectionViewCell * _Nonnull cell) {
+    cell.clickedCellExeBlock = item.target?^(SJButtonItemCollectionViewCell * _Nonnull cell) {
         __strong typeof(_self) self = _self;
         if ( !self ) return ;
 #pragma clang diagnostic push
@@ -446,7 +450,7 @@ NS_ASSUME_NONNULL_BEGIN
             if ( self.executedTargetActionExeBlock ) self.executedTargetActionExeBlock(self);
         }
 #pragma clang diagnostic pop
-    };
+    }:nil;
 }
 @end
 NS_ASSUME_NONNULL_END

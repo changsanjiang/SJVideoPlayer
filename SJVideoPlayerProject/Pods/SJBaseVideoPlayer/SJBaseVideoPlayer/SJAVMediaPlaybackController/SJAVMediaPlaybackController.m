@@ -159,9 +159,8 @@ inline static bool isFloatZero(float value) {
 
 static const char *key = "kSJAVMediaPlayAsset";
 - (SJAVMediaPlayAsset *)_getPlayAssetForMedia:(id<SJMediaModelProtocol>)media {
-    id<SJMediaModelProtocol> other = media.otherMedia;
-    while ( other.otherMedia ) other = other.otherMedia;
-    SJAVMediaPlayAsset *playAsset = objc_getAssociatedObject(other?:media, key);
+    id<SJMediaModelProtocol> _Nullable other = media.otherMedia;
+    SJAVMediaPlayAsset *_Nullable playAsset = objc_getAssociatedObject(other?:media, key);
     if ( !playAsset ) {
         AVAsset *avAsset = nil;
         if ( [(id)media respondsToSelector:@selector(avAsset)] ) {
@@ -177,8 +176,7 @@ static const char *key = "kSJAVMediaPlayAsset";
 }
 
 - (void)_refreshForMedia:(id<SJMediaModelProtocol>)media newAsset:(SJAVMediaPlayAsset *)newAsset {
-    id<SJMediaModelProtocol> other = media.otherMedia;
-    while ( other.otherMedia ) other = other.otherMedia;
+    id<SJMediaModelProtocol> _Nullable other = media.otherMedia;
     objc_setAssociatedObject(other?:media, key, newAsset, OBJC_ASSOCIATION_RETAIN_NONATOMIC);
 }
 

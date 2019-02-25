@@ -60,12 +60,11 @@ static SJEdgeControlButtonItemTag SJTopItem_Back = 1;
 
 - (void)restartControlLayer {
     _restarted = YES;
-    sj_view_makeAppear(self.controlView, YES);
-    
     self.flashingView.alpha = 0.001;
     self.itemsContainerView.alpha = 0.001;
     self.flashingView.backgroundColor = [UIColor colorWithWhite:1 alpha:0.8];
     self.coverImageView.alpha = 0.001;
+    sj_view_makeAppear(self.controlView, YES);
     __weak typeof(self) _self = self;
     [self _getScreenshot:^(UIImage * _Nullable img) {
         __strong typeof(_self) self = _self;
@@ -97,7 +96,7 @@ static SJEdgeControlButtonItemTag SJTopItem_Back = 1;
                         make.height.equalTo(self.coverImageView.mas_width).multipliedBy(min/max);
                     }];
                     
-                    CGFloat scale = self.coverImageView.image.size.width / self.coverImageView.image.size.height?:0;
+                    CGFloat scale = img?(self.coverImageView.image.size.width / self.coverImageView.image.size.height):0;
                     CGFloat maxW = self.bounds.size.width * 0.4;
                     CGFloat showH = maxW * min / max;
                     CGFloat showW = showH * scale;

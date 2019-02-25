@@ -41,6 +41,7 @@
 #import "SJPlayerGestureControlProtocol.h"
 #import "SJDeviceVolumeAndBrightnessManagerProtocol.h"
 #import "SJModalViewControlllerManagerProtocol.h"
+#import "SJBaseVideoPlayerStatisticsProtocol.h"
 
 NS_ASSUME_NONNULL_BEGIN
 
@@ -227,6 +228,8 @@ NS_ASSUME_NONNULL_BEGIN
 /// 重头开始播放
 - (void)replay;
 
+/// 是否可以调用 seekToTime:, 默认为YES
+@property (nonatomic) BOOL canSeekToTime;
 /// 跳转到指定位置
 - (void)seekToTime:(NSTimeInterval)secs completionHandler:(void (^ __nullable)(BOOL finished))completionHandler;
 
@@ -605,6 +608,15 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic, copy, nullable) void(^playerViewWillAppearExeBlock)(__kindof SJBaseVideoPlayer *videoPlayer);
 @property (nonatomic, copy, nullable) void(^playerViewWillDisappearExeBlock)(__kindof SJBaseVideoPlayer *videoPlayer);
 @end
+
+
+
+#pragma mark - 播放时长统计
+@interface SJBaseVideoPlayer (Statistics)
+@property (class, nonatomic, strong, null_resettable) id<SJBaseVideoPlayerStatistics> statistics;
+@property (nonatomic, strong, null_resettable) id<SJBaseVideoPlayerStatistics> statistics;
+@end
+
 
 
 #pragma mark - 已弃用

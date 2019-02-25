@@ -8,6 +8,7 @@
 
 #import <UIKit/UIKit.h>
 
+NS_ASSUME_NONNULL_BEGIN
 UIKIT_EXTERN NSString *const SJVideoPlayer_ReplayText;
 UIKIT_EXTERN NSString *const SJVideoPlayer_PreviewText;
 UIKIT_EXTERN NSString *const SJVideoPlayer_PlayFailedText;
@@ -19,8 +20,9 @@ UIKIT_EXTERN NSString *const SJVideoPlayer_NotReachableButtonText;
 
 @interface SJEdgeControlLayerLoader : NSObject
 
-+ (UIImage *)imageNamed:(NSString *)name;
++ (nullable UIImage *)imageNamed:(NSString *)name;
 
-+ (NSString *)localizedStringForKey:(NSString *)key;
++ (nullable NSString *)localizedStringForKey:(NSString *)key;
 
 @end
+NS_ASSUME_NONNULL_END

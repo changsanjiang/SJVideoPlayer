@@ -32,6 +32,7 @@
 #import "SJIsAppeared.h"
 #import "SJPlayerGestureControl.h"
 #import "SJModalViewControlllerManager.h"
+#import "SJBaseVideoPlayerStatistics.h"
 
 #if __has_include(<Masonry/Masonry.h>)
 #import <Masonry/Masonry.h>
@@ -185,6 +186,7 @@ static NSString *_kPlayStatus = @"playStatus";
     void(^_Nullable _playStatusDidChangeExeBlock)(__kindof SJBaseVideoPlayer *videoPlayer);
     SJVideoPlayerURLAsset *_URLAsset;
     NSTimeInterval _playedLastTime;
+    BOOL _canSeekToTime;
     
     /// control layer appear manager
     id<SJControlLayerAppearManager> _controlLayerAppearManager;
@@ -233,7 +235,7 @@ static NSString *_kPlayStatus = @"playStatus";
 }
 
 + (NSString *)version {
-    return @"2.1.3";
+    return @"2.1.4";
 }
 
 - (nullable __kindof UIViewController *)atViewController {
@@ -262,6 +264,7 @@ static NSString *_kPlayStatus = @"playStatus";
     self.autoPlayWhenPlayStatusIsReadyToPlay = YES; // 是否自动播放, 默认yes
     self.pauseWhenAppDidEnterBackground = YES; // App进入后台是否暂停播放, 默认yes
     self.disabledControlLayerAppearManager = NO; // 是否启用控制层管理器
+    self.canSeekToTime = YES;
     [self registrar];
     [self view];
     [self reachability];
@@ -270,6 +273,7 @@ static NSString *_kPlayStatus = @"playStatus";
     [self addInterceptTapGR];
     [self _configAVAudioSession];
     [self _showOrHiddenPlaceholderImageViewIfNeeded];
+    [self.statistics observePlayer:(id)self];
     return self;
 }
 
@@ -1149,7 +1153,22 @@ static NSString *_kGestureState = @"state";
     }];
 }
 
+- (void)setCanSeekToTime:(BOOL)canSeekToTime {
+    _canSeekToTime = canSeekToTime;
+    SJPlayerDisabledGestures ges = self.disabledGestures;
+    if ( !canSeekToTime ) {
+        ges = ges | SJPlayerDisabledGestures_Pan_H;
+    }
+    else {
+        ges &= (~SJPlayerDisabledGestures_Pan_H);
+    }
+    self.disabledGestures = ges;
+}
+- (BOOL)canSeekToTime {
+    return _canSeekToTime;
+}
 - (void)seekToTime:(NSTimeInterval)secs completionHandler:(void (^ __nullable)(BOOL finished))completionHandler {
+    if ( !_canSeekToTime ) return;
     
     if ( self.canPlayAnAsset ) {
         if ( !self.canPlayAnAsset(self) ) return;
@@ -2434,6 +2453,30 @@ static NSString *_kGestureState = @"state";
     [self.prompt hidden];
 }
 
+@end
+
+
+#pragma mark -
+@implementation SJBaseVideoPlayer (Statistics)
+static id<SJBaseVideoPlayerStatistics> _statistics;
++ (void)setStatistics:(nullable id<SJBaseVideoPlayerStatistics>)statistics {
+    _statistics = statistics;
+}
++ (id<SJBaseVideoPlayerStatistics>)statistics {
+    if ( !_statistics ) {
+        static dispatch_once_t onceToken;
+        dispatch_once(&onceToken, ^{
+            _statistics = [SJBaseVideoPlayerStatistics new];
+        });
+    }
+    return _statistics;
+}
+- (void)setStatistics:(nullable id<SJBaseVideoPlayerStatistics>)statistics {
+    SJBaseVideoPlayer.statistics = statistics;
+}
+- (id<SJBaseVideoPlayerStatistics>)statistics {
+    return SJBaseVideoPlayer.statistics;
+}
 @end
 
 

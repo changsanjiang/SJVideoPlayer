@@ -8,6 +8,7 @@
 
 #import "SJEdgeControlLayerLoader.h"
 
+NS_ASSUME_NONNULL_BEGIN
 NSString *const SJVideoPlayer_ReplayText = @"SJVideoPlayer_ReplayText";
 NSString *const SJVideoPlayer_PreviewText = @"SJVideoPlayer_PreviewText";
 NSString *const SJVideoPlayer_PlayFailedText = @"SJVideoPlayer_PlayFailedText";
@@ -28,11 +29,17 @@ NSString *const SJVideoPlayer_NotReachableButtonText = @"SJVideoPlayer_NotReacha
     return bundle;
 }
 
-+ (UIImage *)imageNamed:(NSString *)name {
-    return [UIImage imageNamed:name inBundle:[self bundle] compatibleWithTraitCollection:nil];
++ (nullable UIImage *)imageNamed:(NSString *)name {
+    if ( 0 == name.length )
+        return nil;
+    int scale = (int)UIScreen.mainScreen.scale;
+    if ( scale < 2 ) scale = 2;
+    else if ( scale > 3 ) scale = 3;
+    NSString *n = [NSString stringWithFormat:@"%@@%dx.png", name, scale];
+    return [UIImage imageWithContentsOfFile:[self.bundle pathForResource:n ofType:nil]];
 }
 
-+ (NSString *)localizedStringForKey:(NSString *)key {
++ (nullable NSString *)localizedStringForKey:(NSString *)key {
     static NSBundle *bundle = nil;
     if ( nil == bundle ) {
         NSString *language = [NSLocale preferredLanguages].firstObject;
@@ -56,3 +63,4 @@ NSString *const SJVideoPlayer_NotReachableButtonText = @"SJVideoPlayer_NotReacha
     return [[NSBundle mainBundle] localizedStringForKey:key value:value table:nil];
 }
 @end
+NS_ASSUME_NONNULL_END

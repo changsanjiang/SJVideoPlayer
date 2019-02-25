@@ -57,11 +57,15 @@ NS_ASSUME_NONNULL_BEGIN
 - (instancetype)initWithOtherAsset:(SJVideoPlayerURLAsset *)otherMedia playModel:(nullable __kindof SJPlayModel *)playModel {
     self = [super init];
     if ( !self ) return nil;
-    _mediaURL = otherMedia.mediaURL;
-    _otherMedia = otherMedia;
+    SJVideoPlayerURLAsset *origin = otherMedia;
+    while ( origin.otherMedia && origin != origin.otherMedia ) {
+        origin = origin.otherMedia;
+    }
+    _mediaURL = origin.mediaURL;
+    _otherMedia = origin;
     _playModel = playModel?:[SJPlayModel new];
     return self;
-}
+} 
 - (BOOL)isM3u8 {
     return [_mediaURL.pathExtension containsString:@"m3u8"];
 } 

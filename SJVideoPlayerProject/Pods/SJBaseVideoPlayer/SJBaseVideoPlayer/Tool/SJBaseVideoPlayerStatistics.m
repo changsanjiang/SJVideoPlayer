@@ -95,6 +95,8 @@ static NSString * kPlayStatus = @"playStatus";
         [self _playStatusDidChangeOfPlayer:object];
     }
     else if ( context == &kURLAsset ) {
+        SJVideoPlayerURLAsset *old = change[NSKeyValueChangeOldKey];
+        if ( [old isKindOfClass:[SJVideoPlayerURLAsset class]] ) [old statistics_stop];
         [self _URLAssetDidChangeOfPlayer:object];
     }
 }

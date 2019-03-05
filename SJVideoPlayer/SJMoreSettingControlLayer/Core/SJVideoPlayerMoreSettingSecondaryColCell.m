@@ -17,11 +17,6 @@
 #else
 #import "SJAttributeWorker.h"
 #endif
-#if __has_include(<SJUIFactory/SJUIFactory.h>)
-#import <SJUIFactory/SJUIFactory.h>
-#else
-#import "SJUIFactory.h"
-#endif
 #import "SJVideoPlayerMoreSetting+Exe.h"
 #import "SJVideoPlayerMoreSettingSecondary.h"
 
@@ -79,7 +74,8 @@
 
 - (UIButton *)itemBtn {
     if ( _itemBtn ) return _itemBtn;
-    _itemBtn = [SJUIButtonFactory buttonWithTarget:self sel:@selector(clickedBtn:)];
+    _itemBtn = [UIButton buttonWithType:UIButtonTypeCustom];
+    [_itemBtn addTarget:self action:@selector(clickedBtn:) forControlEvents:UIControlEventTouchUpInside];
     _itemBtn.titleLabel.numberOfLines = 0;
     _itemBtn.titleLabel.textAlignment = NSTextAlignmentCenter;
     return _itemBtn;

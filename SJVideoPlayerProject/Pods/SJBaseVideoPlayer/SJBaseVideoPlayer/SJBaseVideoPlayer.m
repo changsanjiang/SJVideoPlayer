@@ -33,6 +33,7 @@
 #import "SJPlayerGestureControl.h"
 #import "SJModalViewControlllerManager.h"
 #import "SJBaseVideoPlayerStatistics.h"
+#import "SJBaseVideoPlayerAutoRefreshContext.h"
 
 #if __has_include(<Masonry/Masonry.h>)
 #import <Masonry/Masonry.h>
@@ -134,6 +135,8 @@ static NSString *_kPlayStatus = @"playStatus";
 
 @property (nonatomic) NSTimeInterval pan_totalTime;
 @property (nonatomic) NSTimeInterval pan_shift;
+
+@property (nonatomic, strong, nullable) SJBaseVideoPlayerAutoRefreshContext *autoRefresh;
 @end
 
 @implementation SJBaseVideoPlayer {
@@ -163,6 +166,7 @@ static NSString *_kPlayStatus = @"playStatus";
     /// gestures
     UITapGestureRecognizer *_lockStateTapGesture;
     SJPlayerGestureControl *_gestureControl;
+    BOOL(^_Nullable _gestureRecognizerShouldTrigger)(__kindof SJBaseVideoPlayer *player, SJPlayerGestureType type, CGPoint location);
     
     /// view controller
     BOOL _vc_isDisappeared;
@@ -187,10 +191,13 @@ static NSString *_kPlayStatus = @"playStatus";
     SJVideoPlayerURLAsset *_URLAsset;
     NSTimeInterval _playedLastTime;
     BOOL _canSeekToTime;
+    NSTimeInterval _delayToAutoRefreshWhenPlayFailed;
+    SJBaseVideoPlayerAutoRefreshContext *_Nullable _autoRefresh;
     
     /// control layer appear manager
     id<SJControlLayerAppearManager> _controlLayerAppearManager;
     id<SJControlLayerAppearManagerObserver> _controlLayerAppearManagerObserver;
+    BOOL(^_Nullable _canAutomaticallyDisappear)(__kindof SJBaseVideoPlayer *player);
     void(^_Nullable _controlLayerAppearStateDidChangeExeBlock)(__kindof SJBaseVideoPlayer *player, BOOL state);
     BOOL _pausedToKeepAppearState;
     BOOL _controlLayerAutoAppearWhenAssetInitialized;
@@ -198,6 +205,7 @@ static NSString *_kPlayStatus = @"playStatus";
     /// rotation manager
     id<SJRotationManagerProtocol> _rotationManager;
     id<SJRotationManagerObserver> _rotationManagerObserver;
+    BOOL(^_Nullable _shouldTriggerRotation)(__kindof SJBaseVideoPlayer *player);
     void(^_Nullable _viewWillRotateExeBlock)(__kindof SJBaseVideoPlayer *player, BOOL isFullScreen);
     void(^_Nullable _viewDidRotateExeBlock)(__kindof SJBaseVideoPlayer *player, BOOL isFullScreen);;
     
@@ -518,6 +526,7 @@ static NSString *_kGestureState = @"state";
     _registrar.willEnterForeground = ^(SJVideoPlayerRegistrar * _Nonnull registrar) {
         __strong typeof(_self) self = _self;
         if ( !self ) return ;
+        if ( self.autoRefresh != nil ) [self.autoRefresh resume];
         if ( [self.controlLayerDelegate respondsToSelector:@selector(appWillEnterForeground:)] ) {
             [self.controlLayerDelegate appWillEnterForeground:self];
         }
@@ -526,6 +535,7 @@ static NSString *_kGestureState = @"state";
     _registrar.didEnterBackground = ^(SJVideoPlayerRegistrar * _Nonnull registrar) {
         __strong typeof(_self) self = _self;
         if ( !self ) return ;
+        if ( self.autoRefresh != nil ) [self.autoRefresh pause];
         if ( self.pauseWhenAppDidEnterBackground ) {
             [self pause];
         }
@@ -871,6 +881,7 @@ static NSString *_kGestureState = @"state";
             self.assetDeallocExeBlock(self);
     }
     
+    _autoRefresh = nil;
     _mpc_assetIsPlayed = NO;
     
     // update
@@ -956,6 +967,24 @@ static NSString *_kGestureState = @"state";
     self.error = _playbackController.error;
     self.inactivityReason = SJVideoPlayerInactivityReasonPlayFailed;
     self.playStatus = SJVideoPlayerPlayStatusInactivity;
+    
+    // auto refresh
+    if ( 0 != _delayToAutoRefreshWhenPlayFailed && _autoRefresh.asset != _URLAsset ) {
+        _autoRefresh = [[SJBaseVideoPlayerAutoRefreshContext alloc] initWithAsset:_URLAsset delay:_delayToAutoRefreshWhenPlayFailed];
+        __weak typeof(self) _self = self;
+        _autoRefresh.after = ^(SJBaseVideoPlayerAutoRefreshContext * _Nonnull context) {
+            __strong typeof(_self) self = _self;
+            if ( !self ) return;
+            if ( [self playStatus_isInactivity_ReasonPlayFailed] &&
+                  self.registrar.state != SJVideoPlayerAppState_Background ) {
+#ifdef DEBUG
+                puts("SJBaseVideoPlayer: 当前状态为播放失败, 正在尝试重新播放!");
+#endif
+                self.autoRefresh = nil;
+                [self refresh];
+            }
+        };
+    }
 }
 
 - (void)_mediaDidPlayToEnd {
@@ -978,7 +1007,15 @@ static NSString *_kGestureState = @"state";
     if ( self.currentTime != 0 ) {
         _playedLastTime = self.currentTime;
     }
-    self.URLAsset = [[SJVideoPlayerURLAsset alloc] initWithURL:_URLAsset.mediaURL specifyStartTime:_playedLastTime playModel:_URLAsset.playModel];
+
+    [self setURLAsset:_URLAsset];
+}
+
+- (void)setDelayToAutoRefreshWhenPlayFailed:(NSTimeInterval)delayToAutoRefreshWhenPlayFailed {
+    _delayToAutoRefreshWhenPlayFailed = delayToAutoRefreshWhenPlayFailed;
+}
+- (NSTimeInterval)delayToAutoRefreshWhenPlayFailed {
+    return _delayToAutoRefreshWhenPlayFailed;
 }
 
 - (void)setAssetDeallocExeBlock:(nullable void (^)(__kindof SJBaseVideoPlayer * _Nonnull))assetDeallocExeBlock {
@@ -1563,6 +1600,13 @@ static NSString *_kGestureState = @"state";
     return _gestureControl;
 }
 
+- (void)setGestureRecognizerShouldTrigger:(BOOL (^_Nullable)(__kindof SJBaseVideoPlayer * _Nonnull, SJPlayerGestureType, CGPoint))gestureRecognizerShouldTrigger {
+    _gestureRecognizerShouldTrigger = gestureRecognizerShouldTrigger;
+}
+- (BOOL (^_Nullable)(__kindof SJBaseVideoPlayer * _Nonnull, SJPlayerGestureType, CGPoint))gestureRecognizerShouldTrigger {
+    return _gestureRecognizerShouldTrigger;
+}
+
 - (void)_needUpdateGestureControlProperties {
     if ( !_gestureControl )
         return;
@@ -1573,9 +1617,6 @@ static NSString *_kGestureState = @"state";
         if ( !self ) return NO;
         
         if ( self.isLockedScreen )
-            return NO;
-        
-        if ( [self playStatus_isInactivity_ReasonPlayFailed] )
             return NO;
         
         if ( SJPlayerGestureType_Pan == type ) {
@@ -1604,6 +1645,10 @@ static NSString *_kGestureState = @"state";
                 return NO;
         }
 #pragma clang diagnostic pop
+        
+        if ( self.gestureRecognizerShouldTrigger && !self.gestureRecognizerShouldTrigger(self, type, location) ) {
+            return NO;
+        }
         return YES;
     };
     
@@ -1784,6 +1829,13 @@ static NSString *_kGestureState = @"state";
     return _controlLayerAppearManager;
 }
 
+- (void)setCanAutomaticallyDisappear:(BOOL (^_Nullable)(__kindof SJBaseVideoPlayer * _Nonnull))canAutomaticallyDisappear {
+    _canAutomaticallyDisappear = canAutomaticallyDisappear;
+}
+- (BOOL (^_Nullable)(__kindof SJBaseVideoPlayer * _Nonnull))canAutomaticallyDisappear {
+    return _canAutomaticallyDisappear;
+}
+
 - (void)_needUpdateControlLayerAppearManagerProperties {
     if ( !_controlLayerAppearManager )
         return;
@@ -1805,6 +1857,10 @@ static NSString *_kGestureState = @"state";
                 return NO;
         }
 #pragma clang diagnostic pop
+        
+        if ( self.canAutomaticallyDisappear && !self.canAutomaticallyDisappear(self) ) {
+            return NO;
+        }
         return YES;
     };
     
@@ -2070,6 +2126,13 @@ static NSString *_kGestureState = @"state";
     return _rotationManager;
 }
 
+- (void)setShouldTriggerRotation:(BOOL (^_Nullable)(__kindof SJBaseVideoPlayer * _Nonnull))shouldTriggerRotation {
+    _shouldTriggerRotation = shouldTriggerRotation;
+}
+- (BOOL (^_Nullable)(__kindof SJBaseVideoPlayer * _Nonnull))shouldTriggerRotation {
+    return _shouldTriggerRotation;
+}
+
 - (void)_configRotationManager:(id<SJRotationManagerProtocol>)rotationManager {
     if ( !rotationManager )
         return;
@@ -2094,6 +2157,7 @@ static NSString *_kGestureState = @"state";
         if ( self.needPresentModalViewControlller && !self.modalViewControllerManager.isPresentedModalViewControlller ) return NO;
         if ( self.modalViewControllerManager.isTransitioning ) return NO;
         if ( self.atViewController.presentedViewController ) return NO;
+        if ( self.shouldTriggerRotation && !self.shouldTriggerRotation(self) ) return NO;
         return YES;
     };
     

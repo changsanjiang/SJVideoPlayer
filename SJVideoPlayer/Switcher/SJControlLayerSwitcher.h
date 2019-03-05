@@ -13,7 +13,7 @@
 #else
 #import "SJBaseVideoPlayer.h"
 #endif
-@protocol SJControlLayerSwitcherObsrever;
+@protocol SJControlLayerSwitcherObsrever, SJControlLayerSwitcherDelegate;
 
 NS_ASSUME_NONNULL_BEGIN
 /// 控制层切换器
@@ -26,6 +26,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 @property (nonatomic, readonly) SJControlLayerIdentifier currentIdentifier;  // 当前标识(控制层的标识)
 @property (nonatomic, readonly) SJControlLayerIdentifier previousIdentifier; // 前一个标识
+@property (nonatomic, weak, nullable) id<SJControlLayerSwitcherDelegate> delegate;
 
 /// 切换控制层
 /// - 将当前的控制层切换为指定标识的控制层
@@ -41,6 +42,13 @@ NS_ASSUME_NONNULL_BEGIN
 // - switcher
 @interface SJControlLayerSwitcher : NSObject<SJControlLayerSwitcher>
 
+@end
+
+
+// - delegate
+@protocol SJControlLayerSwitcherDelegate <NSObject>
+@optional
+- (BOOL)switcher:(id<SJControlLayerSwitcher>)switcher shouldSwitchToControlLayer:(SJControlLayerIdentifier)identifier;
 @end
 
 // - observer

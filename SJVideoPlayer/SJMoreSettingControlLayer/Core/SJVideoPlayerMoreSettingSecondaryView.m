@@ -14,11 +14,6 @@
 #endif
 #import "SJVideoPlayerMoreSettingsSecondaryHeaderView.h"
 #import "SJVideoPlayerMoreSettingSecondary.h"
-#if __has_include(<SJUIFactory/SJUIFactory.h>)
-#import <SJUIFactory/SJUIFactory.h>
-#else
-#import "SJUIFactory.h"
-#endif
 
 @interface SJVideoPlayerMoreSettingSecondaryView (ColDataSourceMethods)<UICollectionViewDataSource>
 @end
@@ -57,7 +52,6 @@ static NSString *const SJVideoPlayerMoreSettingsSecondaryHeaderViewID = @"SJVide
 - (void)_secondarySettingSetupUI {
     [self addSubview:self.colView];
     [_colView mas_makeConstraints:^(MASConstraintMaker *make) {
-        make.width.offset(ceil(SJScreen_Max() * 0.4));
         make.top.left.bottom.offset(0);
         if (@available(iOS 11.0, *)) {
             make.right.equalTo(self.mas_safeAreaLayoutGuideRight);

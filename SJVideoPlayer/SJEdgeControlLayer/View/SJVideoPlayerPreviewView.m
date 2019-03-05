@@ -7,49 +7,44 @@
 //
 
 #import "SJVideoPlayerPreviewView.h"
-#if __has_include(<SJUIFactory/SJUIFactory.h>)
-#import <SJUIFactory/SJUIFactory.h>
-#else
-#import "SJUIFactory.h"
-#endif
 #if __has_include(<Masonry/Masonry.h>)
 #import <Masonry/Masonry.h>
 #else
 #import "Masonry.h"
 #endif
 
-
-
 static NSString *SJVideoPlayerPreviewCollectionViewCellID = @"SJVideoPlayerPreviewCollectionViewCell";
 
+struct SJPreviewBounds {
+    CGFloat maxWidth;
+    CGFloat minWidth;
+    CGFloat height;
+};
+
 @interface SJVideoPlayerPreviewView ()<UICollectionViewDelegate, UICollectionViewDataSource>
-
 @property (nonatomic, strong, readonly) UICollectionView *collectionView;
-
-@property (nonatomic, readonly) CGFloat maxHeight;
-
+@property (nonatomic) struct SJPreviewBounds previewBounds;
 @end
 
 @implementation SJVideoPlayerPreviewView
-@synthesize maxHeight = _maxHeight;
 @synthesize collectionView = _collectionView;
 
 - (instancetype)initWithFrame:(CGRect)frame {
     self = [super initWithFrame:frame];
     if ( !self ) return nil;
-    [self _previewSetupView];
+    CGFloat screenW = UIScreen.mainScreen.bounds.size.width;
+    CGFloat screenH = UIScreen.mainScreen.bounds.size.height;
+    CGFloat min = MIN(screenW, screenH);
+    CGFloat max = MAX(screenW, screenH);
+    _previewBounds = (struct SJPreviewBounds){max, min, ceil(min * 0.25)};
+    [self _setupViews];
     return self;
 }
 
-- (CGFloat)maxHeight {
-    if ( _maxHeight != 0 ) return _maxHeight;
-    _maxHeight = ceil(SJScreen_Min() * 0.25);
-    return _maxHeight;
-}
-
 - (CGSize)intrinsicContentSize {
-    if ( _fullscreen ) return CGSizeMake(SJScreen_Max(), self.maxHeight);
-    else return CGSizeMake(SJScreen_Min(), self.maxHeight);
+    if ( _fullscreen )
+        return CGSizeMake(_previewBounds.maxWidth, _previewBounds.height);
+    return CGSizeMake(_previewBounds.minWidth, _previewBounds.height);
 }
 
 - (void)setPreviewImages:(NSArray<id<SJVideoPlayerPreviewInfo>> *)previewImages {
@@ -64,7 +59,7 @@ static NSString *SJVideoPlayerPreviewCollectionViewCellID = @"SJVideoPlayerPrevi
 
 #pragma mark
 
-- (void)_previewSetupView {
+- (void)_setupViews {
     [self addSubview:self.collectionView];
     [_collectionView mas_makeConstraints:^(MASConstraintMaker *make) {
         make.edges.equalTo(self->_collectionView.superview);
@@ -98,7 +93,7 @@ static NSString *SJVideoPlayerPreviewCollectionViewCellID = @"SJVideoPlayerPrevi
 - (CGSize)collectionView:(UICollectionView *)collectionView layout:(UICollectionViewLayout*)collectionViewLayout sizeForItemAtIndexPath:(NSIndexPath *)indexPath {
     CGSize imageSize = _previewImages.firstObject.image.size;
     CGFloat rate = imageSize.width / imageSize.height;
-    CGFloat height = floor(self.maxHeight - (collectionView.contentInset.top + collectionView.contentInset.bottom));
+    CGFloat height = floor(_previewBounds.height - (collectionView.contentInset.top + collectionView.contentInset.bottom));
     CGFloat width = floor(rate * height);
     return CGSizeMake( width, height );
 }

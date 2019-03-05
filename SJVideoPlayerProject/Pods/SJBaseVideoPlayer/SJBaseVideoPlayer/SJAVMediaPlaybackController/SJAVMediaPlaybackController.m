@@ -95,6 +95,7 @@ inline static bool isFloatZero(float value) {
 }
 
 - (void)setMedia:(nullable id<SJMediaModelProtocol>)media {
+    [self _refreshForMedia:_media newAsset:nil];
     [_playAsset.player pause];
     [_presentView reset];
     [self _cancelOperations];
@@ -175,7 +176,8 @@ static const char *key = "kSJAVMediaPlayAsset";
     return playAsset;
 }
 
-- (void)_refreshForMedia:(id<SJMediaModelProtocol>)media newAsset:(SJAVMediaPlayAsset *)newAsset {
+- (void)_refreshForMedia:(id<SJMediaModelProtocol>)media newAsset:(nullable SJAVMediaPlayAsset *)newAsset {
+    if ( !media ) return;
     id<SJMediaModelProtocol> _Nullable other = media.otherMedia;
     objc_setAssociatedObject(other?:media, key, newAsset, OBJC_ASSOCIATION_RETAIN_NONATOMIC);
 }
@@ -385,7 +387,7 @@ static const char *key = "kSJAVMediaPlayAsset";
         return;
     }
 
-    [_playAsset.playerItem seekToTime:CMTimeMakeWithSeconds(secs, NSEC_PER_SEC) completionHandler:^(BOOL finished) {
+    [_playAsset.playerItem seekToTime:CMTimeMakeWithSeconds(secs, NSEC_PER_SEC) toleranceBefore:kCMTimeZero toleranceAfter:kCMTimeZero completionHandler:^(BOOL finished) {
         if ( completionHandler ) completionHandler(finished);
     }];
 }

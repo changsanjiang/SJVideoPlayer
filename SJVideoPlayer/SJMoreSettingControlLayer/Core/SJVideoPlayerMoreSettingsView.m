@@ -13,11 +13,6 @@
 #else
 #import "Masonry.h"
 #endif
-#if __has_include(<SJUIFactory/SJUIFactory.h>)
-#import <SJUIFactory/SJUIFactory.h>
-#else
-#import "SJUIFactory.h"
-#endif
 #import "SJVideoPlayerMoreSettingsFooterView.h"
 
 
@@ -42,7 +37,7 @@ static NSString *const SJVideoPlayerMoreSettingsFooterViewID = @"SJVideoPlayerMo
 - (instancetype)initWithFrame:(CGRect)frame {
     self = [super initWithFrame:frame];
     if ( !self ) return nil;
-    [self _moreSettingsViewSetupUI];
+    [self _setupViews];
     return self;
 }
 
@@ -65,10 +60,10 @@ static NSString *const SJVideoPlayerMoreSettingsFooterViewID = @"SJVideoPlayerMo
     [self.colView reloadData];
 }
 
-- (void)_moreSettingsViewSetupUI {
+- (void)_setupViews {
     [self addSubview:self.colView];
     [_colView mas_makeConstraints:^(MASConstraintMaker *make) {
-        make.width.offset(ceil(SJScreen_Max() * 0.4));
+        make.width.offset(self.slidersView.intrinsicContentSize.width);
         make.top.left.bottom.offset(0);
         if (@available(iOS 11.0, *)) {
             make.right.equalTo(self.mas_safeAreaLayoutGuideRight);
@@ -76,7 +71,6 @@ static NSString *const SJVideoPlayerMoreSettingsFooterViewID = @"SJVideoPlayerMo
             make.right.offset(0);
         }
     }];
-    [self slidersView];
 }
 
 - (UICollectionView *)colView {

@@ -14,7 +14,7 @@
             buildForArchiving = "YES">
             <BuildableReference
                BuildableIdentifier = "primary"
-               BlueprintIdentifier = "E39A6AE928E849F7005F51248B2F85D4"
+               BlueprintIdentifier = "3469D24C1DA6A7E53B9D3C9FA418FE65"
                BlueprintName = "SJRouter"
                ReferencedContainer = "container:Pods.xcodeproj"
                BuildableName = "libSJRouter.a">

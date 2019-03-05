@@ -186,6 +186,11 @@ NS_ASSUME_NONNULL_BEGIN
 /// 资源刷新
 - (void)refresh;
 
+/// 播放失败时延迟多少秒自动刷新
+/// - 默认是0, 即不自动刷新
+/// - 单位秒
+@property (nonatomic) NSTimeInterval delayToAutoRefreshWhenPlayFailed;
+
 /// 是否静音🔇
 @property (nonatomic, getter=isMute) BOOL mute;
 @property (nonatomic) float playerVolume;
@@ -405,6 +410,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 @property (nonatomic) SJPlayerDisabledGestures disabledGestures;
 
+@property (nonatomic, copy, nullable) BOOL(^gestureRecognizerShouldTrigger)(__kindof SJBaseVideoPlayer *player, SJPlayerGestureType type, CGPoint location);
 @end
 
 
@@ -416,6 +422,8 @@ NS_ASSUME_NONNULL_BEGIN
 @interface SJBaseVideoPlayer (ControlLayer)
 
 @property (nonatomic, strong, null_resettable) id<SJControlLayerAppearManager> controlLayerAppearManager;
+
+@property (nonatomic, copy, nullable) BOOL(^canAutomaticallyDisappear)(__kindof SJBaseVideoPlayer *player);
 
 /**
  When you want to appear the control layer, you should call this method to appear.
@@ -489,6 +497,8 @@ NS_ASSUME_NONNULL_BEGIN
 /// 当您想要旋转ViewController时, 可以采用此管理类进行旋转.
 /// - 使用示例请看`SJVCRotationManager`第36行注释。
 @property (nonatomic, strong, null_resettable) id<SJRotationManagerProtocol> rotationManager;
+
+@property (nonatomic, copy, nullable) BOOL(^shouldTriggerRotation)(__kindof SJBaseVideoPlayer *player);
 
 /**
  Autorotation. Animated.

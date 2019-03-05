@@ -14,7 +14,7 @@
             buildForArchiving = "YES">
             <BuildableReference
                BuildableIdentifier = "primary"
-               BlueprintIdentifier = "F539F3EDEEA0F6E1D486AD2245B24AEC"
+               BlueprintIdentifier = "8597BA49FDE4E5A37B804FB5E2E5DD34"
                BlueprintName = "SJAttributesFactory"
                ReferencedContainer = "container:Pods.xcodeproj"
                BuildableName = "libSJAttributesFactory.a">

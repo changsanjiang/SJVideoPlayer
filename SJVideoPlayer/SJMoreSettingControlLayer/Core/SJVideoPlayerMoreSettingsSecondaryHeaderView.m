@@ -12,11 +12,6 @@
 #else
 #import "Masonry.h"
 #endif
-#if __has_include(<SJUIFactory/SJUIFactory.h>)
-#import <SJUIFactory/SJUIFactory.h>
-#else
-#import "SJUIFactory.h"
-#endif
 #import "SJVideoPlayerMoreSetting.h"
 #import "SJVideoPlayerMoreSettingSecondaryView.h"
 #import "SJVideoPlayerMoreSettingSecondary.h"
@@ -73,7 +68,8 @@
 
 - (UILabel *)titleLabel {
     if ( _titleLabel ) return _titleLabel;
-    _titleLabel = [SJUILabelFactory labelWithText:@"" textColor:[SJVideoPlayerMoreSettingSecondary titleColor] alignment:NSTextAlignmentLeft font:[UIFont systemFontOfSize:10]];
+    _titleLabel = [[UILabel alloc] initWithFrame:CGRectZero];
+    _titleLabel.textColor = [SJVideoPlayerMoreSettingSecondary titleColor];
     _titleLabel.font = [UIFont systemFontOfSize:[SJVideoPlayerMoreSettingSecondary topTitleFontSize]];
     return _titleLabel;
 }

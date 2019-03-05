@@ -13,11 +13,6 @@
 #else
 #import "Masonry.h"
 #endif
-#if __has_include(<SJUIFactory/SJUIFactory.h>)
-#import <SJUIFactory/SJUIFactory.h>
-#else
-#import "SJUIFactory.h"
-#endif
 #import "UIView+SJVideoPlayerSetting.h"
 
 @interface SJVideoPlayerMoreSettingsSlidersView ()<SJProgressSliderDelegate>
@@ -39,7 +34,8 @@
 }
 
 - (CGSize)intrinsicContentSize {
-    return CGSizeMake(ceil(SJScreen_Max() * 0.4), [[self class] itemHeight] * 3);
+    CGFloat max = MAX(UIScreen.mainScreen.bounds.size.width, UIScreen.mainScreen.bounds.size.height);
+    return CGSizeMake(ceil(max * 0.4), [[self class] itemHeight] * 3);
 }
 
 - (instancetype)initWithFrame:(CGRect)frame {

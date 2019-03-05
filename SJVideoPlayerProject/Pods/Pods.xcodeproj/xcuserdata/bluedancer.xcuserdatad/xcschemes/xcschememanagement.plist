@@ -54,11 +54,6 @@
 			<key>isShown</key>
 			<false/>
 		</dict>
-		<key>SJUIFactory.xcscheme</key>
-		<dict>
-			<key>isShown</key>
-			<false/>
-		</dict>
 		<key>SJVideoPlayer.xcscheme</key>
 		<dict>
 			<key>isShown</key>

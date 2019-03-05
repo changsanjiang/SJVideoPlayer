@@ -30,7 +30,6 @@ target 'SJVideoPlayer' do
   pod 'SJFullscreenPopGesture'
   
   pod 'SJScrollEntriesView'
-  pod 'SJUIFactory'
   pod 'Masonry', :inhibit_warnings => true
   pod 'SJRouter'
   pod 'SJScrollEntriesView'

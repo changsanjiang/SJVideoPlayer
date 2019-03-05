@@ -191,7 +191,7 @@ NS_ASSUME_NONNULL_BEGIN
     _moreSecondarySettingView.sjv_disappearDirection = SJViewDisappearAnimation_Right;
     [self addSubview:_moreSecondarySettingView];
     [_moreSecondarySettingView mas_makeConstraints:^(MASConstraintMaker *make) {
-        make.top.bottom.right.offset(0);
+        make.edges.equalTo(self.moreSettingsView);
     }];
     __weak typeof(self) _self = self;
     _moreSecondarySettingView.settingRecroder = [[SJVideoPlayerControlSettingRecorder alloc] initWithSettings:^(SJEdgeControlLayerSettings * _Nonnull setting) {

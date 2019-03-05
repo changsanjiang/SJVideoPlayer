@@ -7,11 +7,6 @@
 //
 
 #import "SJVideoPlayerDraggingProgressView.h"
-#if __has_include(<SJUIFactory/SJUIFactory.h>)
-#import <SJUIFactory/SJUIFactory.h>
-#else
-#import "SJUIFactory.h"
-#endif
 #if __has_include(<Masonry/Masonry.h>)
 #import <Masonry/Masonry.h>
 #else
@@ -185,7 +180,6 @@
     [_contentView addSubview:self.durationTimeLabel];
     [_contentView addSubview:self.previewImageView];
     
-    [SJUIFactory regulate:_contentView cornerRadius:8];
     _contentView.backgroundColor = [UIColor colorWithWhite:0 alpha:0.8];
     [_contentView mas_makeConstraints:^(MASConstraintMaker *make) {
         make.edges.offset(0);
@@ -209,6 +203,7 @@
 - (UIView *)contentView {
     if ( _contentView ) return _contentView;
     _contentView = [UIView new];
+    _contentView.layer.cornerRadius = 8;
     return _contentView;
 }
 
@@ -223,33 +218,43 @@
 
 - (UIImageView *)directionImageView {
     if ( _directionImageView ) return _directionImageView;
-    _directionImageView = [SJUIImageViewFactory imageViewWithViewMode:UIViewContentModeScaleAspectFit];
+    _directionImageView = [[UIImageView alloc] initWithFrame:CGRectZero];
+    _directionImageView.contentMode = UIViewContentModeScaleAspectFit;
     return _directionImageView;
 }
 
 - (UIImageView *)previewImageView {
     if ( _previewImageView ) return _previewImageView;
-    _previewImageView = [SJUIImageViewFactory imageViewWithViewMode:UIViewContentModeScaleAspectFit];
-    [SJUIFactory regulate:_previewImageView cornerRadius:8];
+    _previewImageView = [[UIImageView alloc] initWithFrame:CGRectZero];
+    _previewImageView.contentMode = UIViewContentModeScaleAspectFit;
+    _previewImageView.layer.cornerRadius = 8;
+    _previewImageView.layer.masksToBounds = YES;
     return _previewImageView;
 }
 
 - (UILabel *)shiftTimeLabel {
     if ( _shiftTimeLabel ) return _shiftTimeLabel;
-    _shiftTimeLabel = [SJUILabelFactory labelWithFont:[UIFont systemFontOfSize:13]];
+    _shiftTimeLabel = [[UILabel alloc] initWithFrame:CGRectZero];
+    _shiftTimeLabel.font = [UIFont systemFontOfSize:13];
+    _shiftTimeLabel.textColor = [UIColor whiteColor];
     _shiftTimeLabel.textAlignment = NSTextAlignmentRight;
     return _shiftTimeLabel;
 }
 
 - (UILabel *)separatorLabel {
     if ( _separatorLabel ) return _separatorLabel;
-    _separatorLabel = [SJUILabelFactory labelWithText:@"/" textColor:[UIColor whiteColor] font:self.shiftTimeLabel.font];
+    _separatorLabel = [[UILabel alloc] initWithFrame:CGRectZero];
+    _separatorLabel.font = [UIFont systemFontOfSize:13];
+    _separatorLabel.textColor = [UIColor whiteColor];
+    _separatorLabel.text = @"/";
     return _separatorLabel;
 }
 
 - (UILabel *)durationTimeLabel {
     if ( _durationTimeLabel ) return _durationTimeLabel;
-    _durationTimeLabel = [SJUILabelFactory labelWithFont:self.shiftTimeLabel.font textColor:[UIColor whiteColor]];
+    _durationTimeLabel = [[UILabel alloc] initWithFrame:CGRectZero];
+    _durationTimeLabel.font = [UIFont systemFontOfSize:13];
+    _durationTimeLabel.textColor = [UIColor whiteColor];
     _durationTimeLabel.textAlignment = NSTextAlignmentLeft;
     return _durationTimeLabel;
 }

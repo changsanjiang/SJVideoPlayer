@@ -47,6 +47,7 @@ static NSNotificationName const SJPlayerDidEndSwitchControlLayerNotification = @
 @implementation SJControlLayerSwitcher
 @synthesize currentIdentifier = _currentIdentifier;
 @synthesize previousIdentifier = _previousIdentifier;
+@synthesize delegate = _delegate;
 
 #ifdef DEBUG
 - (void)dealloc {
@@ -98,6 +99,12 @@ static NSNotificationName const SJPlayerDidEndSwitchControlLayerNotification = @
 
 - (void)_switchControlLayerWithOldcarrier:(SJControlLayerCarrier *_Nullable )carrier_old newcarrier:(SJControlLayerCarrier *)carrier_new {
     NSParameterAssert(carrier_new);
+    
+    if ( [self.delegate respondsToSelector:@selector(switcher:shouldSwitchToControlLayer:)] ) {
+        if ( ![self.delegate switcher:self shouldSwitchToControlLayer:carrier_new.identifier] )
+            return;
+    }
+    
     _videoPlayer.controlLayerDataSource = nil;
     _videoPlayer.controlLayerDelegate = nil;
     [carrier_old.controlLayer exitControlLayer];

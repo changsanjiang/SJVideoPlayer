@@ -7,11 +7,6 @@
 //
 
 #import "SJVideoPlayerPreviewCollectionViewCell.h"
-#if __has_include(<SJUIFactory/SJUIFactory.h>)
-#import <SJUIFactory/SJUIFactory.h>
-#else
-#import "SJUIFactory.h"
-#endif
 #if __has_include(<Masonry/Masonry.h>)
 #import <Masonry/Masonry.h>
 #else
@@ -51,7 +46,8 @@
 
 - (UIImageView *)imageView {
     if ( _imageView ) return _imageView;
-    _imageView = [SJUIImageViewFactory imageViewWithImageName:@"" viewMode:UIViewContentModeScaleAspectFill];
+    _imageView = [[UIImageView alloc] initWithFrame:CGRectZero];
+    _imageView.contentMode = UIViewContentModeScaleAspectFill;
     return _imageView;
 }
 @end

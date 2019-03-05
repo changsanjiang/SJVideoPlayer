@@ -14,7 +14,7 @@
             buildForArchiving = "YES">
             <BuildableReference
                BuildableIdentifier = "primary"
-               BlueprintIdentifier = "D1E8BBA79F9160CD3B0AD84C5E8B10F3"
+               BlueprintIdentifier = "1030E60A6FF8759789E45C7664EDADB8"
                BlueprintName = "SJFullscreenPopGesture"
                ReferencedContainer = "container:Pods.xcodeproj"
                BuildableName = "libSJFullscreenPopGesture.a">

@@ -43,9 +43,6 @@ NS_ASSUME_NONNULL_BEGIN
 
 #pragma mark top
 @property (nonatomic, strong) UIImage *backBtnImage;
-@property (nonatomic, strong, nullable) UIImage *previewBtnImage;
-@property (nonatomic, strong) UIFont *previewBtnFont;        // default is [UIFont boldSystemFontOfSize:12].
-@property (nonatomic, strong, readonly) NSString *previewBtnTitle;
 @property (nonatomic, strong) UIImage *moreBtnImage;
 @property (nonatomic, strong) UIFont *titleFont;   // video title font, default is [UIFont boldSystemFontOfSize:14]
 @property (nonatomic, strong) UIColor *titleColor; // video title color, default is [UIColor whiteColor]
@@ -95,11 +92,14 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic, strong) UIImage *more_maxBrightnessImage;
 
 
-// - deprecated properties
+// - Deprecated -
 
 @property (nonatomic, strong, readonly) NSString *playFailedBtnTitle __deprecated;
 @property (nonatomic, strong, nullable) UIImage *playFailedBtnImage __deprecated;
 @property (nonatomic, strong) UIFont *playFailedBtnFont __deprecated;
 @property (nonatomic, strong) UIColor *playFailedBtnTitleColor __deprecated;
+@property (nonatomic, strong, nullable) UIImage *previewBtnImage __deprecated;
+@property (nonatomic, strong) UIFont *previewBtnFont __deprecated;
+@property (nonatomic, strong, readonly) NSString *previewBtnTitle __deprecated;
 @end
 NS_ASSUME_NONNULL_END

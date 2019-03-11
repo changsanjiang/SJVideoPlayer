@@ -45,8 +45,7 @@
     _player.URLAsset.title = @"Test TitleTest TitleTest TitleTest TitleTest TitleTest TitleTest TitleTest Title";
     _player.URLAsset.alwaysShowTitle = YES;
     _player.hideBackButtonWhenOrientationIsPortrait = YES;
-    _player.pausedToKeepAppearState = YES;
-    _player.generatePreviewImages = YES;
+    _player.pausedToKeepAppearState = YES; 
     _player.enableFilmEditing = YES;
     _player.filmEditingConfig.saveResultToAlbumWhenExportSuccess = YES;
     _player.resumePlaybackWhenAppDidEnterForeground = YES;

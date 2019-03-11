@@ -89,7 +89,7 @@ NS_ASSUME_NONNULL_BEGIN
 #endif
 
 + (NSString *)version {
-    return @"v2.4.1";
+    return @"v2.4.4";
 }
 
 + (instancetype)player {
@@ -111,13 +111,11 @@ NS_ASSUME_NONNULL_BEGIN
 + (instancetype)lightweightPlayer {
     SJVideoPlayer *videoPlayer = [[SJVideoPlayer alloc] _init];
     SJEdgeControlLayer *controlLayer = (id)videoPlayer.defaultEdgeCarrier.controlLayer;
-    controlLayer.generatePreviewImages = NO;
     controlLayer.hideBottomProgressSlider = NO;
     controlLayer.topContainerView.sjv_disappearDirection =
     controlLayer.leftContainerView.sjv_disappearDirection =
     controlLayer.bottomContainerView.sjv_disappearDirection =
     controlLayer.rightContainerView.sjv_disappearDirection = SJViewDisappearAnimation_None;
-    [controlLayer.topAdapter removeItemForTag:SJEdgeControlLayerTopItem_Preview];
     [controlLayer.topAdapter reload];
     
     [videoPlayer.switcher addControlLayer:videoPlayer.defaultEdgeCarrier];
@@ -406,7 +404,6 @@ NS_ASSUME_NONNULL_BEGIN
 
 #pragma mark -
 @implementation SJVideoPlayer (SettingDefaultControlLayer)
-
 - (void)setResumePlaybackWhenPlayerViewScrollAppears:(BOOL)resumePlaybackWhenPlayerViewScrollAppears {
     [self defaultEdgeControlLayer].resumePlaybackWhenPlayerViewScrollAppears = resumePlaybackWhenPlayerViewScrollAppears;
 }
@@ -426,13 +423,6 @@ NS_ASSUME_NONNULL_BEGIN
 }
 - (BOOL)showResidentBackButton {
     return self.defaultEdgeControlLayer.showResidentBackButton;
-}
-
-- (void)setGeneratePreviewImages:(BOOL)generatePreviewImages {
-    [self defaultEdgeControlLayer].generatePreviewImages = generatePreviewImages;
-}
-- (BOOL)generatePreviewImages {
-    return [self defaultEdgeControlLayer].generatePreviewImages;
 }
 
 - (void)setHideBackButtonWhenOrientationIsPortrait:(BOOL)hideBackButtonWhenOrientationIsPortrait {
@@ -588,6 +578,13 @@ SJEdgeControlButtonItemTag const SJEdgeControlLayerTopItem_More = LONG_MAX - 2; 
 }
 - (BOOL)disableNetworkStatusChangePrompt __deprecated_msg("use `disablePromptWhenNetworkStatusChanges`") {
     return [self disablePromptWhenNetworkStatusChanges];
+}
+
+
+- (void)setGeneratePreviewImages:(BOOL)generatePreviewImages __deprecated_msg("use `此功能已移除, 设置将无效`") {
+}
+- (BOOL)generatePreviewImages __deprecated_msg("use `此功能已移除, 设置将无效`") {
+    return NO;
 }
 
 - (nullable SJEdgeControlLayer *)defaultEdgeLightweightControlLayer __deprecated_msg("use `defaultEdgeControlLayer`") {

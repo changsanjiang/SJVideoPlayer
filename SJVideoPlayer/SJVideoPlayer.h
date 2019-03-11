@@ -88,16 +88,12 @@ NS_ASSUME_NONNULL_BEGIN
 /// 是否隐藏底部的进度slider
 @property (nonatomic) BOOL hideBottomProgressSlider;
 
-/// 是否使返回按钮常驻
+/// 是否使`返回按钮常驻`
 @property (nonatomic) BOOL showResidentBackButton;
 
 /// 当播放器为竖屏时, 是否隐藏返回按钮
 /// v2.1.4 新增
 @property (nonatomic) BOOL hideBackButtonWhenOrientationIsPortrait;
-
-/// Whether to generate a preview view. default is YES.
-/// 是否自动生成预览视图, 默认是 YES.
-@property (nonatomic) BOOL generatePreviewImages;
 
 /// Default value is NO.
 /// 是否禁止网络状态变化时的提示
@@ -159,7 +155,7 @@ extern SJEdgeControlButtonItemTag const SJEdgeControlLayerTopItem_More;         
 
 @interface SJVideoPlayer (SJVideoPlayerDeprecated)
 @property (nonatomic) BOOL disableNetworkStatusChangePrompt __deprecated_msg("use `disablePromptWhenNetworkStatusChanges`");
-
+@property (nonatomic) BOOL generatePreviewImages __deprecated_msg("use `此功能已移除, 设置将无效`");
 typedef SJEdgeControlLayer SJEdgeLightweightControlLayer __deprecated;
 - (nullable SJEdgeLightweightControlLayer *)defaultEdgeLightweightControlLayer __deprecated_msg("use `defaultEdgeControlLayer`");
 @property (nonatomic, copy, nullable) NSArray<SJLightweightTopItem *> *topControlItems __deprecated_msg("use [player.defaultEdgeControlLayer.topAdapter addItem:item];");

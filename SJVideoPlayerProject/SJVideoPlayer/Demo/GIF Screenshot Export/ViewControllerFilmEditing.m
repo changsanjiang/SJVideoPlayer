@@ -224,8 +224,7 @@ static NSString *kCancelFlag = @"cancel";
     // create a player of the default type
     _player = [SJVideoPlayer player];
     _player.hideBackButtonWhenOrientationIsPortrait = YES;
-    _player.pausedToKeepAppearState = YES;
-    _player.generatePreviewImages = YES;
+    _player.pausedToKeepAppearState = YES; 
     
     [self.view addSubview:_player.view];
     [_player.view mas_makeConstraints:^(MASConstraintMaker *make) {

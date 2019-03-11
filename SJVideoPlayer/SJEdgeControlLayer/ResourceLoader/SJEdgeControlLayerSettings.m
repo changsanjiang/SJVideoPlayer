@@ -56,7 +56,6 @@ NSNotificationName const SJSettingsPlayerNotification = @"SJSettingsPlayerNotifi
     self.forwardImage = [SJEdgeControlLayerLoader imageNamed:@"sj_video_player_forward"];
     self.backBtnImage = [SJEdgeControlLayerLoader imageNamed:@"sj_video_player_back"];
     self.moreBtnImage = [SJEdgeControlLayerLoader imageNamed:@"sj_video_player_more"];
-    self.previewBtnImage = [SJEdgeControlLayerLoader imageNamed:@""];
     self.playBtnImage = [SJEdgeControlLayerLoader imageNamed:@"sj_video_player_play"];
     self.pauseBtnImage = [SJEdgeControlLayerLoader imageNamed:@"sj_video_player_pause"];
     self.fullBtnImage = [SJEdgeControlLayerLoader imageNamed:@"sj_video_player_fullscreen"];
@@ -83,8 +82,6 @@ NSNotificationName const SJSettingsPlayerNotification = @"SJSettingsPlayerNotifi
     _replayBtnTitle = [SJEdgeControlLayerLoader localizedStringForKey:SJVideoPlayer_ReplayText];
     self.replayBtnFont = [UIFont boldSystemFontOfSize:12];
     self.replayBtnTitleColor = [UIColor whiteColor];
-    _previewBtnTitle = [SJEdgeControlLayerLoader localizedStringForKey:SJVideoPlayer_PreviewText];
-    self.previewBtnFont = [UIFont boldSystemFontOfSize:12];
     self.filmEditingBtnImage = [SJEdgeControlLayerLoader imageNamed:@"sj_video_player_film_editing"];
     
 

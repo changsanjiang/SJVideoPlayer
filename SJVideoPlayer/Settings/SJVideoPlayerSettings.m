@@ -100,20 +100,16 @@
 - (UIImage *)backBtnImage {
     return [SJEdgeControlLayerSettings commonSettings].backBtnImage;
 }
-- (void)setPreviewBtnImage:(UIImage *)previewBtnImage {
-    [SJEdgeControlLayerSettings commonSettings].previewBtnImage = previewBtnImage;
-}
+- (void)setPreviewBtnImage:(UIImage *)previewBtnImage {}
 - (UIImage *)previewBtnImage {
-    return [SJEdgeControlLayerSettings commonSettings].previewBtnImage;
+    return nil;
 }
-- (void)setPreviewBtnFont:(UIFont *)previewBtnFont {
-    [SJEdgeControlLayerSettings commonSettings].previewBtnFont = previewBtnFont;
-}
+- (void)setPreviewBtnFont:(UIFont *)previewBtnFont {}
 - (UIFont *)previewBtnFont {
-    return [SJEdgeControlLayerSettings commonSettings].previewBtnFont;
+    return nil;
 }
 - (NSString *)previewBtnTitle {
-    return [SJEdgeControlLayerSettings commonSettings].previewBtnTitle;
+    return nil;
 }
 - (void)setMoreBtnImage:(UIImage *)moreBtnImage {
     [SJEdgeControlLayerSettings commonSettings].moreBtnImage = moreBtnImage;

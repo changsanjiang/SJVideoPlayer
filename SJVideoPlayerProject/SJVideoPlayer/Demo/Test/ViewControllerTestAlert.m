@@ -38,8 +38,7 @@
     _player.URLAsset.alwaysShowTitle = YES;
     _player.hideBackButtonWhenOrientationIsPortrait = YES;
     _player.enableFilmEditing = YES;
-    _player.pausedToKeepAppearState = YES;
-    _player.generatePreviewImages = YES;
+    _player.pausedToKeepAppearState = YES; 
     
     
     /// 使用 旋转vc管理器

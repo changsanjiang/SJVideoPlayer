@@ -8,6 +8,11 @@
 
 /* Begin PBXBuildFile section */
 		40F59AFCD7E50F2DB1319068 /* libPods-SJVideoPlayer.a in Frameworks */ = {isa = PBXBuildFile; fileRef = E88ED72598D99C421F9347EA /* libPods-SJVideoPlayer.a */; };
+		77359A0F22322C9B009FE031 /* SJSetPlaybackRateControlLayer.m in Sources */ = {isa = PBXBuildFile; fileRef = 77359A0E22322C9B009FE031 /* SJSetPlaybackRateControlLayer.m */; };
+		77359A1322322D32009FE031 /* SJPlaybackRateLevels.m in Sources */ = {isa = PBXBuildFile; fileRef = 77359A1222322D32009FE031 /* SJPlaybackRateLevels.m */; };
+		77359A192232329D009FE031 /* SJBaseVideoPlayer+SetPlaybackRateAdd.m in Sources */ = {isa = PBXBuildFile; fileRef = 77359A182232329D009FE031 /* SJBaseVideoPlayer+SetPlaybackRateAdd.m */; };
+		77359A1C223233DF009FE031 /* SJVideoPlayer+PlaybackRatelevelsAdd.m in Sources */ = {isa = PBXBuildFile; fileRef = 77359A1B223233DF009FE031 /* SJVideoPlayer+PlaybackRatelevelsAdd.m */; };
+		77359A1F2232379B009FE031 /* SJEdgeControlButtonItemDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = 77359A1E2232379B009FE031 /* SJEdgeControlButtonItemDelegate.m */; };
 		773AABFD21E43CFD007B1272 /* ViewControllerSJUITableViewHeaderFooterViewPlayModel.m in Sources */ = {isa = PBXBuildFile; fileRef = 773AABFC21E43CFD007B1272 /* ViewControllerSJUITableViewHeaderFooterViewPlayModel.m */; };
 		773AAC0021E443AE007B1272 /* SJTableViewHeaderFooterView.m in Sources */ = {isa = PBXBuildFile; fileRef = 773AABFF21E443AE007B1272 /* SJTableViewHeaderFooterView.m */; };
 		77434E5121F86EAC0038ABC1 /* ViewControllerPlaybackListController.m in Sources */ = {isa = PBXBuildFile; fileRef = 77434E5021F86EAC0038ABC1 /* ViewControllerPlaybackListController.m */; };
@@ -98,6 +103,16 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
+		77359A0D22322C9B009FE031 /* SJSetPlaybackRateControlLayer.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = SJSetPlaybackRateControlLayer.h; sourceTree = "<group>"; };
+		77359A0E22322C9B009FE031 /* SJSetPlaybackRateControlLayer.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = SJSetPlaybackRateControlLayer.m; sourceTree = "<group>"; };
+		77359A1122322D32009FE031 /* SJPlaybackRateLevels.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = SJPlaybackRateLevels.h; sourceTree = "<group>"; };
+		77359A1222322D32009FE031 /* SJPlaybackRateLevels.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = SJPlaybackRateLevels.m; sourceTree = "<group>"; };
+		77359A172232329D009FE031 /* SJBaseVideoPlayer+SetPlaybackRateAdd.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "SJBaseVideoPlayer+SetPlaybackRateAdd.h"; sourceTree = "<group>"; };
+		77359A182232329D009FE031 /* SJBaseVideoPlayer+SetPlaybackRateAdd.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = "SJBaseVideoPlayer+SetPlaybackRateAdd.m"; sourceTree = "<group>"; };
+		77359A1A223233DF009FE031 /* SJVideoPlayer+PlaybackRatelevelsAdd.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "SJVideoPlayer+PlaybackRatelevelsAdd.h"; sourceTree = "<group>"; };
+		77359A1B223233DF009FE031 /* SJVideoPlayer+PlaybackRatelevelsAdd.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = "SJVideoPlayer+PlaybackRatelevelsAdd.m"; sourceTree = "<group>"; };
+		77359A1D2232379B009FE031 /* SJEdgeControlButtonItemDelegate.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = SJEdgeControlButtonItemDelegate.h; sourceTree = "<group>"; };
+		77359A1E2232379B009FE031 /* SJEdgeControlButtonItemDelegate.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = SJEdgeControlButtonItemDelegate.m; sourceTree = "<group>"; };
 		773AABFB21E43CFD007B1272 /* ViewControllerSJUITableViewHeaderFooterViewPlayModel.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = ViewControllerSJUITableViewHeaderFooterViewPlayModel.h; sourceTree = "<group>"; };
 		773AABFC21E43CFD007B1272 /* ViewControllerSJUITableViewHeaderFooterViewPlayModel.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = ViewControllerSJUITableViewHeaderFooterViewPlayModel.m; sourceTree = "<group>"; };
 		773AABFE21E443AE007B1272 /* SJTableViewHeaderFooterView.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = SJTableViewHeaderFooterView.h; sourceTree = "<group>"; };
@@ -274,6 +289,33 @@
 			name = Frameworks;
 			sourceTree = "<group>";
 		};
+		77359A0C22322C75009FE031 /* Rate(调速) */ = {
+			isa = PBXGroup;
+			children = (
+				A60066AC216197590001B5F8 /* ViewControllerSetPlaybackRate.h */,
+				A60066AD216197590001B5F8 /* ViewControllerSetPlaybackRate.m */,
+				77359A1A223233DF009FE031 /* SJVideoPlayer+PlaybackRatelevelsAdd.h */,
+				77359A1B223233DF009FE031 /* SJVideoPlayer+PlaybackRatelevelsAdd.m */,
+				77359A1022322C9F009FE031 /* Core */,
+			);
+			path = "Rate(调速)";
+			sourceTree = "<group>";
+		};
+		77359A1022322C9F009FE031 /* Core */ = {
+			isa = PBXGroup;
+			children = (
+				77359A1122322D32009FE031 /* SJPlaybackRateLevels.h */,
+				77359A1222322D32009FE031 /* SJPlaybackRateLevels.m */,
+				77359A0D22322C9B009FE031 /* SJSetPlaybackRateControlLayer.h */,
+				77359A0E22322C9B009FE031 /* SJSetPlaybackRateControlLayer.m */,
+				77359A172232329D009FE031 /* SJBaseVideoPlayer+SetPlaybackRateAdd.h */,
+				77359A182232329D009FE031 /* SJBaseVideoPlayer+SetPlaybackRateAdd.m */,
+				77359A1D2232379B009FE031 /* SJEdgeControlButtonItemDelegate.h */,
+				77359A1E2232379B009FE031 /* SJEdgeControlButtonItemDelegate.m */,
+			);
+			path = Core;
+			sourceTree = "<group>";
+		};
 		77434E4E21F86E8C0038ABC1 /* 播放列表控制 */ = {
 			isa = PBXGroup;
 			children = (
@@ -403,6 +445,7 @@
 		A6006646215F97D50001B5F8 /* Demo */ = {
 			isa = PBXGroup;
 			children = (
+				77359A0C22322C75009FE031 /* Rate(调速) */,
 				A600667D2160AC700001B5F8 /* 播放器类型 (Player_Type) */,
 				77434E4E21F86E8C0038ABC1 /* 播放列表控制 */,
 				77DDBA9A218BE5A000071AD1 /* GIF Screenshot Export */,
@@ -560,8 +603,6 @@
 		A60066A8216195050001B5F8 /* Other */ = {
 			isa = PBXGroup;
 			children = (
-				A60066AC216197590001B5F8 /* ViewControllerSetPlaybackRate.h */,
-				A60066AD216197590001B5F8 /* ViewControllerSetPlaybackRate.m */,
 				A60066AF21619DCF0001B5F8 /* ViewControllerUpdateResources.h */,
 				A60066B021619DCF0001B5F8 /* ViewControllerUpdateResources.m */,
 				77E8D75621797FDA00B025A7 /* ViewControllerVideoFlip.h */,
@@ -812,9 +853,11 @@
 			files = (
 				A600669721610C2F0001B5F8 /* ViewControllerFullscreen.m in Sources */,
 				A60066722160A0B00001B5F8 /* ViewControllerSJUICollectionViewNestedInUITableViewCellPlayModel.m in Sources */,
+				77359A192232329D009FE031 /* SJBaseVideoPlayer+SetPlaybackRateAdd.m in Sources */,
 				A600665D21607CCD0001B5F8 /* ViewControllerSJUICollectionViewCellPlayModel.m in Sources */,
 				A6006690216100D00001B5F8 /* ViewControllerCollectionViewAutoPlay.m in Sources */,
 				A600668D2160FC430001B5F8 /* ViewControllerTableViewAutoPlay.m in Sources */,
+				77359A1322322D32009FE031 /* SJPlaybackRateLevels.m in Sources */,
 				77EECF58219C0CEC00736073 /* ViewControllerPresentFitOnScreenDemo.m in Sources */,
 				77EECF60219D0DE200736073 /* TestAdapterViewController.m in Sources */,
 				77EECF51219C08FC00736073 /* PresentingViewController.m in Sources */,
@@ -830,6 +873,7 @@
 				A6D1A26221845F02006FF2C1 /* ViewController_Adjust.m in Sources */,
 				A6D1A258218446EB006FF2C1 /* ViewController_AddButtonItem.m in Sources */,
 				A60066832160AD7A0001B5F8 /* ViewControllerLightWeightPlayer.m in Sources */,
+				77359A0F22322C9B009FE031 /* SJSetPlaybackRateControlLayer.m in Sources */,
 				A6006669216083DA0001B5F8 /* SJTableHeaderView.m in Sources */,
 				A600667C2160A6B70001B5F8 /* CollectionViewCellHasCollectionView.m in Sources */,
 				A60066A5216126EA0001B5F8 /* ViewControllerContinuePlaying.m in Sources */,
@@ -842,6 +886,7 @@
 				A6006658216071540001B5F8 /* SJTableViewCell.m in Sources */,
 				A600664C216052A90001B5F8 /* ViewControllerSJPlayModel.m in Sources */,
 				A600669E216110610001B5F8 /* TestItem.m in Sources */,
+				77359A1F2232379B009FE031 /* SJEdgeControlButtonItemDelegate.m in Sources */,
 				A60066802160AD6D0001B5F8 /* ViewControllerDefaultPlayer.m in Sources */,
 				A60066AB216195880001B5F8 /* ViewControllerContinuePlayingWhenAppDidEnterBackgroud.m in Sources */,
 				7798A7D6219EBA520020A507 /* PrefetcherViewController.m in Sources */,
@@ -849,6 +894,7 @@
 				A60066AE216197590001B5F8 /* ViewControllerSetPlaybackRate.m in Sources */,
 				77434E5121F86EAC0038ABC1 /* ViewControllerPlaybackListController.m in Sources */,
 				A60066A12161109F0001B5F8 /* UIViewController+TestAdd.m in Sources */,
+				77359A1C223233DF009FE031 /* SJVideoPlayer+PlaybackRatelevelsAdd.m in Sources */,
 				A60066BB2161A41E0001B5F8 /* CustomControlLayerView.m in Sources */,
 				A6D1A25D21844F57006FF2C1 /* ViewController_ItemExamples.m in Sources */,
 				773AABFD21E43CFD007B1272 /* ViewControllerSJUITableViewHeaderFooterViewPlayModel.m in Sources */,

@@ -59,7 +59,6 @@
     if ( !_player || !_player.isFullScreen ) {
         [_player stopAndFadeOut]; // 让旧的播放器淡出
         _player = [SJVideoPlayer player]; // 创建一个新的播放器
-        _player.generatePreviewImages = YES; // 生成预览缩略图, 大概20张
         // fade in(淡入)
         _player.view.alpha = 0.001;
         [UIView animateWithDuration:0.6 animations:^{

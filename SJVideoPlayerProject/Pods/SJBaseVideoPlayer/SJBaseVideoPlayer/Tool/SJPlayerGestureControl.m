@@ -19,9 +19,9 @@ NS_ASSUME_NONNULL_BEGIN
     /// Pan gesture
     SJPanGestureMovingDirection _movingDirection;
     SJPanGestureTriggeredPosition _triggeredPosition;
-    
-    __weak UIView *_Nullable _view;
 }
+
+@synthesize targetView = _targetView;
 
 @synthesize disabledGestures = _disabledGestures;
 @synthesize gestureRecognizerShouldTrigger = _gestureRecognizerShouldTrigger;
@@ -34,7 +34,7 @@ NS_ASSUME_NONNULL_BEGIN
     self = [super init];
     if ( !self ) return nil;
     NSAssert(view, @"view can not be empty!");
-    _view = view;
+    _targetView = view;
     
     /// Single Tap
     _singleTap = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(handleSingleTap:)];
@@ -156,7 +156,7 @@ NS_ASSUME_NONNULL_BEGIN
     switch (pan.state) {
         case UIGestureRecognizerStateBegan: {
             CGPoint location = [pan locationInView:pan.view];
-            if ( location.x > _view.bounds.size.width * 0.5 ) {
+            if ( location.x > _targetView.bounds.size.width * 0.5 ) {
                 _triggeredPosition = SJPanGestureTriggeredPosition_Right;
             }
             else {

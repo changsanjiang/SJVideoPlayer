@@ -52,6 +52,7 @@ typedef enum : NSUInteger {
 @protocol SJPlayerGestureControl <NSObject>
 - (instancetype)initWithTargetView:(__weak UIView *)view;
 
+@property (nonatomic, weak, readonly, nullable) UIView *targetView;
 @property (nonatomic, copy, nullable) BOOL(^gestureRecognizerShouldTrigger)(id<SJPlayerGestureControl> control, SJPlayerGestureType type, CGPoint location);
 @property (nonatomic, copy, nullable) void(^singleTapHandler)(id<SJPlayerGestureControl> control, CGPoint location);
 @property (nonatomic, copy, nullable) void(^doubleTapHandler)(id<SJPlayerGestureControl> control, CGPoint location);

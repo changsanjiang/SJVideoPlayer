@@ -11,19 +11,27 @@
 NS_ASSUME_NONNULL_BEGIN
 static UIViewController *_sj_get_top_view_controller() {
     UIViewController *vc = UIApplication.sharedApplication.keyWindow.rootViewController;
-    while (  [vc isKindOfClass:[UINavigationController class]] || [vc isKindOfClass:[UITabBarController class]] ) {
-        if ( [vc isKindOfClass:[UINavigationController class]] ) vc = [(UINavigationController *)vc topViewController];
-        if ( [vc isKindOfClass:[UITabBarController class]] ) vc = [(UITabBarController *)vc selectedViewController];
-        if ( vc.presentedViewController ) vc = vc.presentedViewController;
+    while (  [vc isKindOfClass:[UINavigationController class]] ||
+             [vc isKindOfClass:[UITabBarController class]] ||
+              vc.presentedViewController ) {
+        if ( [vc isKindOfClass:[UINavigationController class]] )
+            vc = [(UINavigationController *)vc topViewController];
+        if ( [vc isKindOfClass:[UITabBarController class]] )
+            vc = [(UITabBarController *)vc selectedViewController];
+        if ( vc.presentedViewController )
+            vc = vc.presentedViewController;
     }
     return vc;
 }
 
 @interface SJRouter()
-@property (nonatomic, strong, readonly) NSMutableDictionary<NSString *, Class<SJRouteHandler>> *handlersM;
+@property (nonatomic, strong, readonly) NSMutableDictionary<NSString *, Class> *handlersM;
 @end
 
-@implementation SJRouter
+@implementation SJRouter {
+    dispatch_group_t _group;
+}
+
 + (instancetype)shared {
     static id _instace;
     static dispatch_once_t onceToken;
@@ -37,52 +45,69 @@ static UIViewController *_sj_get_top_view_controller() {
     self = [super init];
     if ( !self ) return nil;
     _handlersM = [NSMutableDictionary new];
-    
-    /// Thanks @yehot, @Potato121
-    /// https://www.jianshu.com/p/534eccb63974
-    /// https://github.com/changsanjiang/SJRouter/pull/1
-    
-    unsigned int img_count = 0;
-    const char **imgs = objc_copyImageNames(&img_count);
-    const char *main = NSBundle.mainBundle.bundlePath.UTF8String;
-    for ( unsigned int i = 0 ; i < img_count ; ++ i ) {
-        const char *img = imgs[i];
-        if ( !strstr(img, main) ) continue;
-        unsigned int cls_count = 0;
-        const char **classes = objc_copyClassNamesForImage(img, &cls_count);
-        Protocol *p_handler = @protocol(SJRouteHandler);
-        for ( unsigned int i = 0 ; i < cls_count ; ++ i ) {
-            const char *cls_name = classes[i];
-            NSString *cls_str = [NSString stringWithUTF8String:cls_name];
-            Class cls = NSClassFromString(cls_str);
-            if ( ![cls conformsToProtocol:p_handler] ) continue;
-            if ( ![(id)cls respondsToSelector:@selector(handleRequestWithParameters:topViewController:completionHandler:)] ) continue;
-            if ( [(id)cls respondsToSelector:@selector(routePath)] )
-                _handlersM[[(id<SJRouteHandler>)cls routePath]] = cls;
-            else if ( [(id)cls respondsToSelector:@selector(multiRoutePath)] ) {
-                for ( NSString *rp in [(id<SJRouteHandler>)cls multiRoutePath] )
-                    _handlersM[rp] = cls;
+    _group = dispatch_group_create();
+    dispatch_group_async(_group, dispatch_get_global_queue(0, 0), ^{
+        /// Thanks @yehot, @Potato121
+        /// https://www.jianshu.com/p/534eccb63974
+        /// https://github.com/changsanjiang/SJRouter/pull/1
+        unsigned int img_count = 0;
+        const char **imgs = objc_copyImageNames(&img_count);
+        const char *main = NSBundle.mainBundle.bundlePath.UTF8String;
+        SEL sel_handler = @selector(handleRequestWithParameters:topViewController:completionHandler:);
+        SEL sel_path = @selector(routePath);
+        SEL sel_multiPath = @selector(multiRoutePath);
+        Protocol *protocol = @protocol(SJRouteHandler);
+        for ( unsigned int i = 0 ; i < img_count ; ++ i ) {
+            const char *image = imgs[i];
+            if ( !strstr(image, main) ) continue;
+            unsigned int cls_count = 0;
+            const char **names = objc_copyClassNamesForImage(image, &cls_count);
+            for ( unsigned int i = 0 ; i < cls_count ; ++ i ) {
+                const char *cls_name = names[i];
+                Class _Nullable cls = objc_getClass(cls_name);
+                if ( !cls ) continue;
+                if ( !class_conformsToProtocol(cls, protocol) ) continue;
+                Class metaClass = (Class)object_getClass(cls);
+                if ( !class_respondsToSelector(metaClass, sel_handler) ) continue;
+                if ( class_respondsToSelector(metaClass, sel_path) ) {
+                    IMP func = class_getMethodImplementation(metaClass, sel_path);
+                    NSString *routePath = ((NSString *(*)(id, SEL))func)(cls, sel_path);
+                    if ( routePath.length > 0 ) {
+                        self->_handlersM[routePath] = cls;
+                    }
+                }
+                else if ( class_respondsToSelector(metaClass, sel_multiPath) ) {
+                    IMP func = class_getMethodImplementation(metaClass, sel_multiPath);
+                    for ( NSString *routePath in ((NSArray<NSString *> *(*)(id, SEL))func)(cls, sel_multiPath) ) {
+                        if ( routePath.length > 0 ) {
+                            self->_handlersM[routePath] = cls;
+                        }
+                    }
+                }
             }
+            if ( names ) free(names);
         }
-        if ( classes ) free(classes);
-    }
-    if ( imgs ) free(imgs);
+        if ( imgs ) free(imgs);
+    });
+    
     return self;
 }
 - (void)handleRequest:(SJRouteRequest *)request completionHandler:(nullable SJCompletionHandler)completionHandler {
     NSParameterAssert(request); if ( !request ) return;
-    Class<SJRouteHandler> handler = _handlersM[request.requestPath];
-    if ( handler ) {
-        [handler handleRequestWithParameters:request.prts topViewController:_sj_get_top_view_controller() completionHandler:completionHandler];
-    }
-    else {
-        printf("\n (-_-) Unhandled request: %s", request.description.UTF8String);
-        if ( _unhandledCallback ) _unhandledCallback(request, _sj_get_top_view_controller());
-    }
+    dispatch_group_notify(_group, dispatch_get_main_queue(), ^{
+        Class<SJRouteHandler> handler = self->_handlersM[request.requestPath];
+        if ( handler ) {
+            [handler handleRequestWithParameters:request.prts topViewController:_sj_get_top_view_controller() completionHandler:completionHandler];
+        }
+        else {
+            printf("\n (-_-) Unhandled request: %s", request.description.UTF8String);
+            if ( self->_unhandledCallback ) self->_unhandledCallback(request, _sj_get_top_view_controller());
+        }
+    });
 }
 - (BOOL)canHandleRoutePath:(NSString *)routePath {
     if ( 0 == routePath.length ) return NO;
-    return _handlersM[routePath];
+    return _handlersM[routePath] != nil;
 }
 @end
 NS_ASSUME_NONNULL_END

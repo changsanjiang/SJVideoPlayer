@@ -23,6 +23,15 @@ NS_ASSUME_NONNULL_BEGIN
     _prts = prts;
     return self;
 }
+
+- (NSString *)description {
+    return
+    [NSString stringWithFormat:@"[%@<%p>] {\n \
+     requestPath = %@; \n \
+     parameters = %@; \n \
+     originalURL = %@; \n \
+     }", NSStringFromClass([self class]), self, _requestPath, _prts, _originalURL];
+}
 @end
 
 @implementation SJRouteRequest(CreateByURL)
@@ -40,14 +49,6 @@ NS_ASSUME_NONNULL_BEGIN
     if ( !self ) return nil;
     _originalURL = URL;
     return self;
-}
-- (NSString *)description {
-    return
-    [NSString stringWithFormat:@"[%@<%p>] {\n \
-     requestPath = %@; \n \
-     parameters = %@; \n \
-     originalURL = %@; \n \
-     }", NSStringFromClass([self class]), self, _requestPath, _prts, _originalURL];
 }
 @end
 NS_ASSUME_NONNULL_END

@@ -233,6 +233,11 @@ static const char *key = "kSJAVMediaPlayAsset";
 - (void)observer:(SJAVMediaPlayAssetPropertiesObserver *)observer bufferStatusDidChange:(SJPlayerBufferStatus)bufferStatus {
     [self _updateBufferStatusIfNeeded];
 }
+- (void)observer:(SJAVMediaPlayAssetPropertiesObserver *)observer bufferWatingTimeDidChange:(NSTimeInterval)bufferWatingTime {
+    if ( [self.delegate respondsToSelector:@selector(playbackController:bufferWatingTimeDidChange:)] ) {
+        [self.delegate playbackController:self bufferWatingTimeDidChange:bufferWatingTime];
+    }
+}
 - (void)observer:(SJAVMediaPlayAssetPropertiesObserver *)observer presentationSizeDidChange:(CGSize)presentationSize {
     [self _updatePresentationSizeIfNeeded];
 }
@@ -486,6 +491,14 @@ static const char *key = "kSJAVMediaPlayAsset";
         if ( !self ) return ;
         if ( failure ) failure(self, error);
     }];
+}
+
+- (NSTimeInterval)bufferWatingTime {
+    return _playAsset.bufferWatingTime;
+}
+
+- (void)updateBufferStatus {
+    [_playAsset updateBufferStatus];
 }
 @end
 NS_ASSUME_NONNULL_END

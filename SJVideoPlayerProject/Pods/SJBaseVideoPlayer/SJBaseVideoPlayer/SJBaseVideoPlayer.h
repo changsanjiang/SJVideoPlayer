@@ -46,59 +46,27 @@
 NS_ASSUME_NONNULL_BEGIN
 
 @interface SJBaseVideoPlayer : NSObject
-
++ (NSString *)version;
 + (instancetype)player;
-
 - (instancetype)init;
 
+// - View -
+
 @property (nonatomic, strong, readonly) UIView *view;
-
-/**
- This is a data source object for the control layer.
- It must implement the methods defined in the SJVideoPlayerControlLayerDataSource protocol.
- The data source is not retained.
- 
- 这个是关于控制层的数据源对象, 它必须实现 SJVideoPlayerControlLayerDataSource 协议里面定义的方法.
- 
- weak. readwrite.
- */
-@property (nonatomic, weak, nullable) id <SJVideoPlayerControlLayerDataSource> controlLayerDataSource;
-
-/**
- This is about the delegate object of the control layer.
- Some interactive events of the player will call the method defined in SJVideoPlayerControlLayerDelegate.
- The delegate is not retained.
- 
- 这个是关于控制层的代理对象, 播放器的一些交互事件会调用定义在 SJVideoPlayerControlLayerDelegate 中的方法.
- 
- weak. readwrite.
- */
-@property (nonatomic, weak, nullable) id <SJVideoPlayerControlLayerDelegate> controlLayerDelegate;
-
-/**
- The error when the video play failed, you can view the error details through this error.
- 播放失败时的错误, 你可以通过这个error来查看报错详情.
- 
- readonly.
- */
-@property (nonatomic, strong, readonly, nullable) NSError *error;
-
-/**
- default is `AVLayerVideoGravityResizeAspect`.
- 
- readwrite.
- */
 @property (nonatomic, strong, null_resettable) AVLayerVideoGravity videoGravity;
-
-
-+ (NSString *)version;
-
 - (nullable __kindof UIViewController *)atViewController;
 
+// - Control Layer Delegate -
+
+@property (nonatomic, weak, nullable) id <SJVideoPlayerControlLayerDataSource> controlLayerDataSource;
+@property (nonatomic, weak, nullable) id <SJVideoPlayerControlLayerDelegate> controlLayerDelegate;
 @end
 
 
 @interface SJBaseVideoPlayer (Placeholder)
+
+// - Placeholder -
+
 /// 初始化资源时, 可能会短暂黑屏, 建议设置一下占位图
 @property (nonatomic, strong, readonly) UIImageView *placeholderImageView;
 
@@ -127,23 +95,20 @@ NS_ASSUME_NONNULL_BEGIN
 
 @interface SJBaseVideoPlayer (Time)
 
-/// 播放的进度
-@property (nonatomic, readonly) float progress;
-/// 缓冲的进度
-@property (nonatomic, readonly) float bufferProgress;
+// - Time -
 
-/// 当前的时间
-@property (nonatomic, strong, readonly) NSString *currentTimeStr;
 @property (nonatomic, readonly) NSTimeInterval currentTime;
-
-/// 全部的时间
-@property (nonatomic, strong, readonly) NSString *totalTimeStr;
 @property (nonatomic, readonly) NSTimeInterval totalTime;
+@property (nonatomic, strong, readonly) NSString *currentTimeStr;
+@property (nonatomic, strong, readonly) NSString *totalTimeStr;
 
-/// 播放时间改变的回调
 @property (nonatomic, copy, nullable) void(^playTimeDidChangeExeBlok)(__kindof SJBaseVideoPlayer *videoPlayer);
-/// 播放完毕的回调
 @property (nonatomic, copy, nullable) void(^playDidToEndExeBlock)(__kindof SJBaseVideoPlayer *player);
+
+// - Progress -
+
+@property (nonatomic, readonly) float progress;
+@property (nonatomic, readonly) float bufferProgress;
 
 - (NSString *)timeStringWithSeconds:(NSInteger)secs; // format: 00:00:00
 @end
@@ -157,94 +122,116 @@ NS_ASSUME_NONNULL_BEGIN
 
 @property (nonatomic, strong, null_resettable) id<SJMediaPlaybackController> playbackController;
 
+
+// - Asset -
+
 /// 资源
 /// - 播放一个资源
 /// - 使用URL及相关的视图信息进行初始化
 @property (nonatomic, strong, nullable) SJVideoPlayerURLAsset *URLAsset;
-
-/// URLAsset资源dealloc时的回调
+/// asset`dealloc`时的回调
 /// - 可以在这里做一些记录的工作. 如播放记录.
 @property (nonatomic, copy, nullable) void(^assetDeallocExeBlock)(__kindof SJBaseVideoPlayer *videoPlayer);
 
-/// v1.6.5 新增
-/// 切换 清晰度
-/// - 切换当前播放的视频清晰度
-- (void)switchVideoDefinitionByURL:(NSURL *)URL;
 
-/// 播放状态
-@property (nonatomic, readonly) SJVideoPlayerPlayStatus playStatus;
+// - Playback Status -
 
 /// 播放状态观察者
 - (id<SJPlayStatusObserver>)getPlayStatusObserver; // 需要对它强引用, 否则观察者会被释放
-
+/// 播放失败时的错误
+@property (nonatomic, strong, readonly, nullable) NSError *error;
+/// 播放状态
+@property (nonatomic, readonly) SJVideoPlayerPlayStatus playStatus;
 /// 暂停原因
 @property (nonatomic, readonly) SJVideoPlayerPausedReason pausedReason;
-
 /// 不活跃原因
 @property (nonatomic, readonly) SJVideoPlayerInactivityReason inactivityReason;
 
-/// 资源刷新
+
+// - Play -
+
+/// 刷新
 - (void)refresh;
-
-/// 播放失败时延迟多少秒自动刷新
-/// - 默认是0, 即不自动刷新
-/// - 单位秒
-@property (nonatomic) NSTimeInterval delayToAutoRefreshWhenPlayFailed;
-
-/// 是否静音🔇
-@property (nonatomic, getter=isMute) BOOL mute;
-@property (nonatomic) float playerVolume;
-
-/// 是否锁屏
-@property (nonatomic, getter=isLockedScreen) BOOL lockedScreen;
-
 /// 初始化完成后, 是否自动播放
 @property (nonatomic) BOOL autoPlayWhenPlayStatusIsReadyToPlay;
-
 /// 播放器是否可以执行`play`
 ///
 /// - 当调用`play`时, 会回调该block, 如果返回YES, 则执行`play`方法, 否之.
 /// - 如果该block == nil, 则调用`play`时, 默认为执行.
 @property (nonatomic, copy, nullable) BOOL(^canPlayAnAsset)(__kindof SJBaseVideoPlayer *player);
+/// 自动刷新, 播放失败时延迟多少秒刷新.
+/// - 默认是0, 即不自动刷新
+/// - 单位是秒
+@property (nonatomic) NSTimeInterval delayToAutoRefreshWhenPlayFailed;
+/// 当缓冲为`Unplayable`时, 多少秒后自动尝试播放
+/// - 默认是0, 将会在缓冲状态为`Playable`时播放.
+/// - 单位是秒
+@property (nonatomic) NSInteger refreshToPlayAfterBufferTime;
 /// 使播放
 - (void)play;
+/// 切换`清晰度` (v1.6.5 新增)
+/// - 切换当前播放的视频清晰度
+- (void)switchVideoDefinitionByURL:(NSURL *)URL;
+
+
+// - Pause -
 
 /// 是否恢复播放, 进入前台时.
 ///
 /// 正常情况下, 进入后台时, 播放器将会暂停. 此属性表示App进入前台后, 播放器是否恢复播放. 默认为NO.
 @property (nonatomic) BOOL resumePlaybackWhenAppDidEnterForeground;
-
-/// 使暂停
-- (void)pause;
-
 /// 关于后台播放视频, 引用自: https://juejin.im/post/5a38e1a0f265da4327185a26
 ///
 /// 当您想在后台播放视频时:
 /// 1. 需要设置 videoPlayer.pauseWhenAppDidEnterBackground = NO; (该值默认为YES, 即App进入后台默认暂停).
 /// 2. 前往 `TARGETS` -> `Capability` -> enable `Background Modes` -> select this mode `Audio, AirPlay, and Picture in Picture`
 @property (nonatomic) BOOL pauseWhenAppDidEnterBackground;
+/// 使暂停
+- (void)pause;
+
+
+// - Stop -
 
 /// 使停止
 - (void)stop;
 
-/// 停止播放, 并淡出
+/// 使停止, 并淡出
 - (void)stopAndFadeOut;
 
-/// 重头开始播放
+
+// - Replay -
+
+/// 是否重播过 - 当前的资源
+@property (nonatomic, readonly, getter=isReplayed) BOOL replayed;
+/// 重播
 - (void)replay;
+
+
+// - Seek To Time -
 
 /// 是否可以调用 seekToTime:, 默认为YES
 @property (nonatomic) BOOL canSeekToTime;
 /// 跳转到指定位置
 - (void)seekToTime:(NSTimeInterval)secs completionHandler:(void (^ __nullable)(BOOL finished))completionHandler;
 
+
+// - Rate -
+
 /// 调速
 @property (nonatomic) float rate;
 /// 速率改变的回调
 @property (nonatomic, copy, nullable) void(^rateDidChangeExeBlock)(__kindof SJBaseVideoPlayer *player);
 
-@property (nonatomic, strong, nullable) NSURL *assetURL;
-- (void)playWithURL:(NSURL *)URL; // 不再建议使用, 请使用`URLAsset`进行初始化
+
+// - Volume -
+
+/// 是否静音🔇
+@property (nonatomic, getter=isMute) BOOL mute;
+@property (nonatomic) float playerVolume;
+
+
+/// 是否锁屏
+@property (nonatomic, getter=isLockedScreen) BOOL lockedScreen;
 @end
 
 
@@ -654,6 +641,8 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic) float volume __deprecated_msg("use `deviceVolume`");
 @property (nonatomic) float brightness __deprecated_msg("use `deviceBrightness`");
 @property (nonatomic, copy, nullable) void(^playStatusDidChangeExeBlock)(__kindof SJBaseVideoPlayer *videoPlayer) __deprecated_msg("use `_playStatusObserver = [_player getPlayStatusObserver]`");
+- (void)playWithURL:(NSURL *)URL; // 不再建议使用, 请使用`URLAsset`进行初始化
+@property (nonatomic, strong, nullable) NSURL *assetURL;
 @end
 
 NS_ASSUME_NONNULL_END

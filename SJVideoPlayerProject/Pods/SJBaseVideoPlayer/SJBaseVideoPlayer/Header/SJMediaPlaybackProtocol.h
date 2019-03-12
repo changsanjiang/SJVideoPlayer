@@ -42,8 +42,10 @@ NS_ASSUME_NONNULL_BEGIN
 
 @property (nonatomic, readonly) NSTimeInterval currentTime;
 @property (nonatomic, readonly) NSTimeInterval duration;
-@property (nonatomic, readonly) NSTimeInterval bufferLoadedTime;
 @property (nonatomic, readonly) SJPlayerBufferStatus bufferStatus;
+@property (nonatomic, readonly) NSTimeInterval bufferLoadedTime;
+@property (nonatomic, readonly) NSTimeInterval bufferWatingTime;
+- (void)updateBufferStatus;
 @property (nonatomic, readonly) CGSize presentationSize;
 @property (nonatomic, readonly) BOOL isReadyForDisplay;
 
@@ -107,14 +109,13 @@ NS_ASSUME_NONNULL_BEGIN
 - (void)playbackController:(id<SJMediaPlaybackController>)controller prepareToPlayStatusDidChange:(SJMediaPlaybackPrepareStatus)prepareStatus;
 
 - (void)playbackController:(id<SJMediaPlaybackController>)controller durationDidChange:(NSTimeInterval)duration;
-
 - (void)playbackController:(id<SJMediaPlaybackController>)controller currentTimeDidChange:(NSTimeInterval)currentTime;
 
 - (void)mediaDidPlayToEndForPlaybackController:(id<SJMediaPlaybackController>)controller;
 
 - (void)playbackController:(id<SJMediaPlaybackController>)controller bufferLoadedTimeDidChange:(NSTimeInterval)bufferLoadedTime;
-
 - (void)playbackController:(id<SJMediaPlaybackController>)controller bufferStatusDidChange:(SJPlayerBufferStatus)bufferStatus;
+- (void)playbackController:(id<SJMediaPlaybackController>)controller bufferWatingTimeDidChange:(NSTimeInterval)bufferWatingTime;
 
 - (void)playbackController:(id<SJMediaPlaybackController>)controller presentationSizeDidChange:(CGSize)presentationSize;
 

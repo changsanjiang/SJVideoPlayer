@@ -92,11 +92,6 @@ static NSString *_kPlayStatus = @"playStatus";
 @property (nonatomic, copy, nullable) void(^operationOfInitializing)(SJBaseVideoPlayer *player);
 
 /**
- 当前播放如果出错, 可以查看这个error
- */
-@property (nonatomic, strong, nullable) NSError *error;
-
-/**
  当用户触摸到TableView或者ScrollView时, 这个值为YES.
  这个值用于旋转的条件之一, 如果用户触摸在TableView或者ScrollView上时, 将不会自动旋转.
  */
@@ -172,6 +167,7 @@ static NSString *_kPlayStatus = @"playStatus";
     BOOL _vc_isDisappeared;
     
     /// playback controller
+    NSError *_Nullable _error;
     id<SJMediaPlaybackController> _playbackController;
     void (^_Nullable _assetDeallocExeBlock)(__kindof SJBaseVideoPlayer * _Nonnull);
     BOOL _mute;
@@ -193,6 +189,8 @@ static NSString *_kPlayStatus = @"playStatus";
     BOOL _canSeekToTime;
     NSTimeInterval _delayToAutoRefreshWhenPlayFailed;
     SJBaseVideoPlayerAutoRefreshContext *_Nullable _autoRefresh;
+    BOOL _replayed;
+    NSInteger _refreshToPlayAfterBufferTime;
     
     /// control layer appear manager
     id<SJControlLayerAppearManager> _controlLayerAppearManager;
@@ -243,7 +241,7 @@ static NSString *_kPlayStatus = @"playStatus";
 }
 
 + (NSString *)version {
-    return @"2.1.4";
+    return @"2.2.0";
 }
 
 - (nullable __kindof UIViewController *)atViewController {
@@ -718,160 +716,11 @@ static NSString *_kGestureState = @"state";
     return [[SJPlayStatusObserver alloc] initWithPlayer:self];
 }
 
-/// delegate methods
-
-- (void)playbackControllerIsReadyForDisplay:(id<SJMediaPlaybackController>)controller {
-    [self _showOrHiddenPlaceholderImageViewIfNeeded];
+- (void)setError:(NSError * _Nullable)error {
+    _error = error;
 }
-
-- (void)playbackController:(id<SJMediaPlaybackController>)controller prepareToPlayStatusDidChange:(SJMediaPlaybackPrepareStatus)prepareStatus {
-    switch ( prepareStatus ) {
-        case SJMediaPlaybackPrepareStatusUnknown: break;
-        case SJMediaPlaybackPrepareStatusReadyToPlay: {
-            [self _playerReadyToPlay];
-        }
-            break;
-        case SJMediaPlaybackPrepareStatusFailed: {
-            [self _playerPrepareFailed];
-        }
-            break;
-    }
-}
-
-- (void)playbackController:(id<SJMediaPlaybackController>)controller durationDidChange:(NSTimeInterval)duration {
-    [self _playTimeDidChange];
-}
-
-- (void)playbackController:(id<SJMediaPlaybackController>)controller currentTimeDidChange:(NSTimeInterval)currentTime {
-    [self _playTimeDidChange];
-}
-
-- (void)_playTimeDidChange {
-    if ( [self playStatus_isPaused] ) return;
-    if ( [self.controlLayerDelegate respondsToSelector:@selector(videoPlayer:currentTime:currentTimeStr:totalTime:totalTimeStr:)] ) {
-        [self.controlLayerDelegate videoPlayer:self currentTime:self.currentTime currentTimeStr:self.currentTimeStr totalTime:self.totalTime totalTimeStr:self.totalTimeStr];
-    }
-    if ( self.playTimeDidChangeExeBlok ) self.playTimeDidChangeExeBlok(self);
-}
-
-- (void)mediaDidPlayToEndForPlaybackController:(id<SJMediaPlaybackController>)controller {
-    [self _mediaDidPlayToEnd];
-}
-
-- (void)playbackController:(id<SJMediaPlaybackController>)controller bufferLoadedTimeDidChange:(NSTimeInterval)bufferLoadedTime {
-    if ( controller.duration == 0 ) return;
-    
-    if ( [self.controlLayerDelegate respondsToSelector:@selector(videoPlayer:bufferTimeDidChange:)] ) {
-        [self.controlLayerDelegate videoPlayer:self bufferTimeDidChange:bufferLoadedTime];
-    }
-#pragma clang diagnostic push
-#pragma clang diagnostic ignored "-Wdeprecated-declarations"
-    else if ( [self.controlLayerDelegate respondsToSelector:@selector(videoPlayer:loadedTimeProgress:)] ) {
-        [self.controlLayerDelegate videoPlayer:self loadedTimeProgress:controller.bufferLoadedTime / controller.duration];
-    }
-#pragma clang diagnostic pop
-
-}
-
-- (void)playbackController:(id<SJMediaPlaybackController>)controller bufferStatusDidChange:(SJPlayerBufferStatus)bufferStatus {
-    [self _refreshBufferStatus];
-}
-
-- (void)playbackController:(id<SJMediaPlaybackController>)controller presentationSizeDidChange:(CGSize)presentationSize {
-    if ( self.presentationSize ) self.presentationSize(self, presentationSize);
-    if ( [self.controlLayerDelegate respondsToSelector:@selector(videoPlayer:presentationSize:)] ) {
-        [self.controlLayerDelegate videoPlayer:self presentationSize:presentationSize];
-    }
-}
-
-- (void)playbackController:(id<SJMediaPlaybackController>)controller switchVideoDefinitionByURL:(NSURL *)URL statusDidChange:(SJMediaPlaybackSwitchDefinitionStatus)status {
-    if ( [self.controlLayerDelegate respondsToSelector:@selector(videoPlayer:switchVideoDefinitionByURL:statusDidChange:)] ) {
-        [self.controlLayerDelegate videoPlayer:self switchVideoDefinitionByURL:URL statusDidChange:status];
-    }
-}
-
-- (void)_refreshBufferStatus {
-    if ( [self playStatus_isInactivity_ReasonPlayEnd] ) {
-        return;
-    }
-    
-    SJPlayerBufferStatus bufferStatus = self.playbackController.bufferStatus;
-#ifdef SJ_MAC
-    NSString *network = nil;
-    switch ( _reachability.networkStatus ) {
-        case SJNetworkStatus_NotReachable:
-            network = @"SJNetworkStatus_NotReachable";
-            break;
-        case SJNetworkStatus_ReachableViaWWAN:
-            network = @"SJNetworkStatus_ReachableViaWWAN";
-            break;
-        case SJNetworkStatus_ReachableViaWiFi:
-            network = @"SJNetworkStatus_ReachableViaWiFi";
-            break;
-    }
-    
-    switch ( bufferStatus ) {
-        case SJPlayerBufferStatusUnknown:
-            printf("\nSJPlayerBufferStatusUnknown - %s \n", network.UTF8String);
-            break;
-        case SJPlayerBufferStatusUnplayable:
-            printf("\nSJPlayerBufferStatusUnplayable - %s \n", network.UTF8String);
-            break;
-        case SJPlayerBufferStatusPlayable:
-            printf("\nSJPlayerBufferStatusPlayable - %s \n", network.UTF8String);
-            break;
-    }
-#endif
-    
-    
-    switch ( bufferStatus ) {
-        case SJPlayerBufferStatusUnknown:
-        case SJPlayerBufferStatusUnplayable: {
-            // 有网
-            if ( self.reachability.networkStatus != SJNetworkStatus_NotReachable ) {
-                if ( (![self playStatus_isPrepare] && ![self playStatus_isReadyToPlay]) || _mpc_assetIsPlayed ) {
-                    if ( ![self playStatus_isPaused] )
-                        [self pause:SJVideoPlayerPausedReasonBuffering];
-                }
-            }
-            // 无网
-            else if ( ![self.URLAsset.mediaURL isFileURL] ) {
-                self.inactivityReason = SJVideoPlayerInactivityReasonNotReachableAndPlaybackStalled;
-                self.playStatus = SJVideoPlayerPlayStatusInactivity;
-            }
-        }
-            break;
-        case SJPlayerBufferStatusPlayable: {
-            if ( [self playStatus_isPaused_ReasonBuffering] || [self playStatus_isInactivity_ReasonNotReachableAndPlaybackStalled] ) {
-                [self play];
-            }
-        }
-            break;
-    }
-    
-    if ( [self.controlLayerDelegate respondsToSelector:@selector(videoPlayer:bufferStatusDidChange:)] ) {
-        [self.controlLayerDelegate videoPlayer:self bufferStatusDidChange:bufferStatus];
-    }
-    else {
-#pragma clang diagnostic push
-#pragma clang diagnostic ignored "-Wdeprecated-declarations"
-        switch ( bufferStatus ) {
-            case SJPlayerBufferStatusUnknown: break;
-            case SJPlayerBufferStatusUnplayable: {
-                if ( [self.controlLayerDelegate respondsToSelector:@selector(startLoading:)] ) {
-                    [self.controlLayerDelegate startLoading:self];
-                }
-            }
-                break;
-            case SJPlayerBufferStatusPlayable: {
-                if ( [self.controlLayerDelegate respondsToSelector:@selector(loadCompletion:)] ) {
-                    [self.controlLayerDelegate loadCompletion:self];
-                }
-            }
-                break;
-        }
-#pragma clang diagnostic pop
-    }
+- (NSError *_Nullable)error {
+    return _error;
 }
 
 // 1.
@@ -883,6 +732,7 @@ static NSString *_kGestureState = @"state";
     
     _autoRefresh = nil;
     _mpc_assetIsPlayed = NO;
+    _replayed = NO;
     
     // update
     [self _updateCurrentPlayingIndexPathIfNeeded:URLAsset.playModel];
@@ -918,96 +768,13 @@ static NSString *_kGestureState = @"state";
     return _URLAsset;
 }
 
-// 2.1
-- (void)_playerReadyToPlay {
-    
-    if ( ![self playStatus_isPrepare] )
-        return;
-    
-    if ( [self.controlLayerDelegate respondsToSelector:@selector(videoPlayer:currentTime:currentTimeStr:totalTime:totalTimeStr:)] ) {
-        [self.controlLayerDelegate videoPlayer:self currentTime:self.currentTime currentTimeStr:self.currentTimeStr totalTime:self.totalTime totalTimeStr:self.totalTimeStr];
-    }
-
-    if ( self.registrar.state == SJVideoPlayerAppState_Background &&
-         self.pauseWhenAppDidEnterBackground ) {
-        [self pause:SJVideoPlayerPausedReasonPause];
-        return;
-    }
-    
-    if ( !self.isLockedScreen && self.controlLayerAutoAppearWhenAssetInitialized ) {
-        __weak typeof(self) _self = self;
-        dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(1 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
-            __strong typeof(_self) self = _self;
-            if ( !self ) return;
-            [self.controlLayerAppearManager needAppear];
-        });
-    }
-    
-    self.playStatus = SJVideoPlayerPlayStatusReadyToPlay;
-    
-    if ( self.operationOfInitializing ) {
-        self.operationOfInitializing(self);
-        self.operationOfInitializing = nil;
-    }
-    else if ( self.autoPlayWhenPlayStatusIsReadyToPlay ) {
-        if ( self.isPlayOnScrollView ) {
-            if ( self.isScrollAppeared )
-                [self play];
-            else
-                [self pause];
-        }
-        else {
-            [self play];
-        }
-    }
-}
-
-// 2.2
-- (void)_playerPrepareFailed {
-    self.error = _playbackController.error;
-    self.inactivityReason = SJVideoPlayerInactivityReasonPlayFailed;
-    self.playStatus = SJVideoPlayerPlayStatusInactivity;
-    
-    // auto refresh
-    if ( 0 != _delayToAutoRefreshWhenPlayFailed && _autoRefresh.asset != _URLAsset ) {
-        _autoRefresh = [[SJBaseVideoPlayerAutoRefreshContext alloc] initWithAsset:_URLAsset delay:_delayToAutoRefreshWhenPlayFailed];
-        __weak typeof(self) _self = self;
-        _autoRefresh.after = ^(SJBaseVideoPlayerAutoRefreshContext * _Nonnull context) {
-            __strong typeof(_self) self = _self;
-            if ( !self ) return;
-            if ( [self playStatus_isInactivity_ReasonPlayFailed] &&
-                  self.registrar.state != SJVideoPlayerAppState_Background ) {
-#ifdef DEBUG
-                puts("SJBaseVideoPlayer: 当前状态为播放失败, 正在尝试重新播放!");
-#endif
-                self.autoRefresh = nil;
-                [self refresh];
-            }
-        };
-    }
-}
-
-- (void)_mediaDidPlayToEnd {
-    if ( !self.vc_isDisappeared ) {
-        UIScrollView *scrollView = sj_getScrollView(_URLAsset.playModel);
-        if ( scrollView.sj_enabledAutoplay ) {
-            if ( self.playDidToEndExeBlock ) self.playDidToEndExeBlock(self);
-            [scrollView sj_needPlayNextAsset];
-            return;
-        }
-    }
-    
-    self.inactivityReason = SJVideoPlayerInactivityReasonPlayEnd;
-    self.playStatus = SJVideoPlayerPlayStatusInactivity;
-    if ( self.playDidToEndExeBlock ) self.playDidToEndExeBlock(self);
-}
-
 - (void)refresh {
     if ( !self.URLAsset ) return;
     if ( self.currentTime != 0 ) {
         _playedLastTime = self.currentTime;
     }
 
+    _URLAsset.specifyStartTime = _playedLastTime;
     [self setURLAsset:_URLAsset];
 }
 
@@ -1016,6 +783,13 @@ static NSString *_kGestureState = @"state";
 }
 - (NSTimeInterval)delayToAutoRefreshWhenPlayFailed {
     return _delayToAutoRefreshWhenPlayFailed;
+}
+
+- (void)setRefreshToPlayAfterBufferTime:(NSInteger)refreshToPlayAfterBufferTime {
+    _refreshToPlayAfterBufferTime = refreshToPlayAfterBufferTime;
+}
+- (NSInteger)refreshToPlayAfterBufferTime {
+    return _refreshToPlayAfterBufferTime;
 }
 
 - (void)setAssetDeallocExeBlock:(nullable void (^)(__kindof SJBaseVideoPlayer * _Nonnull))assetDeallocExeBlock {
@@ -1099,9 +873,7 @@ static NSString *_kGestureState = @"state";
 
 - (void)play {
     if ( !self.URLAsset ) return;
-    
     if ( self.canPlayAnAsset ) { if ( !self.canPlayAnAsset(self) ) return; }
-    
     if ( self.registrar.state == SJVideoPlayerAppState_Background && self.pauseWhenAppDidEnterBackground ) return;
     
     if ( [self playStatus_isInactivity_ReasonPlayEnd] ) {
@@ -1145,14 +917,9 @@ static NSString *_kGestureState = @"state";
     if ( [self playStatus_isInactivity_ReasonPlayFailed] ) return;
     
     if ( [self playStatus_isPrepare] ) {
-        
-        __weak typeof(self) _self = self;
         self.operationOfInitializing = ^(SJBaseVideoPlayer * _Nonnull player) {
-            __strong typeof(_self) self = _self;
-            if ( !self ) return ;
-            [self pause:reason];
+            [player pause:reason];
         };
-        
         return;
     }
     
@@ -1177,6 +944,13 @@ static NSString *_kGestureState = @"state";
     }];
 }
 
+- (void)setReplayed:(BOOL)replayed {
+    _replayed = replayed;
+}
+- (BOOL)isReplayed {
+    return _replayed;
+}
+
 - (void)replay {
     if ( !self.URLAsset ) return;
     if ( [self playStatus_isInactivity_ReasonPlayFailed] ) {
@@ -1188,6 +962,8 @@ static NSString *_kGestureState = @"state";
         [self.playbackController play];
         self.playStatus = SJVideoPlayerPlayStatusPlaying;
     }];
+    
+    self.replayed = YES;
 }
 
 - (void)setCanSeekToTime:(BOOL)canSeekToTime {
@@ -1225,35 +1001,22 @@ static NSString *_kGestureState = @"state";
     }
     
     if ( secs > self.playbackController.duration ) {
-        secs = self.playbackController.duration;
+        secs = self.playbackController.duration * 0.98;
     }
     else if ( secs < 0 ) {
         secs = 0;
     }
     
-    NSTimeInterval current = floor(self.playbackController.currentTime + 0.5);
-    NSTimeInterval seek = floor(secs + 0.5);
+    if ( [self.playbackController respondsToSelector:@selector(cancelPendingSeeks)] )
+        [self.playbackController cancelPendingSeeks];
     
-    if ( current == seek ) {
-        if ( completionHandler ) completionHandler(YES);
-        return;
-    }
-    
-    if ( [self playStatus_isPaused_ReasonSeeking] ) {
-        if ( [self.playbackController respondsToSelector:@selector(cancelPendingSeeks)] ) [self.playbackController cancelPendingSeeks];
-    }
-    else {
-        if ( ![self playStatus_isPrepare] ) [self pause:SJVideoPlayerPausedReasonSeeking];
-    }
-    
+    [self pause:SJVideoPlayerPausedReasonSeeking];
     __weak typeof(self) _self = self;
     [self.playbackController seekToTime:secs completionHandler:^(BOOL finished) {
         __strong typeof(_self) self = _self;
         if ( !self ) return ;
-        if ( !finished ) {
-            [self _refreshBufferStatus];
-        }
-        else {
+        [self.playbackController updateBufferStatus];
+        if ( finished ) {
             if ( [self playStatus_isPaused_ReasonSeeking] ) [self play];
             if ( self.playTimeDidChangeExeBlok ) self.playTimeDidChangeExeBlok(self);
         }
@@ -1288,18 +1051,6 @@ static NSString *_kGestureState = @"state";
     return _rateDidChangeExeBlock;
 }
 
-- (void)setAssetURL:(nullable NSURL *)assetURL {
-    self.URLAsset = [[SJVideoPlayerURLAsset alloc] initWithURL:assetURL];
-}
-
-- (nullable NSURL *)assetURL {
-    return self.URLAsset.mediaURL;
-}
-
-- (void)playWithURL:(NSURL *)URL {
-    self.assetURL = URL;
-}
-
 - (void)_updateCurrentPlayingIndexPathIfNeeded:(SJPlayModel *)playModel {
     if ( !playModel )
         return;
@@ -1318,6 +1069,259 @@ static NSString *_kGestureState = @"state";
     // update playModel
     self.playModelObserver = [[SJPlayModelPropertiesObserver alloc] initWithPlayModel:playModel];
     self.playModelObserver.delegate = (id)self;
+}
+
+// - Playback Controll Delegate -
+
+- (void)playbackControllerIsReadyForDisplay:(id<SJMediaPlaybackController>)controller {
+    [self _showOrHiddenPlaceholderImageViewIfNeeded];
+}
+
+- (void)playbackController:(id<SJMediaPlaybackController>)controller prepareToPlayStatusDidChange:(SJMediaPlaybackPrepareStatus)prepareStatus {
+    switch ( prepareStatus ) {
+        case SJMediaPlaybackPrepareStatusUnknown: break;
+        case SJMediaPlaybackPrepareStatusReadyToPlay: {
+            [self _playerReadyToPlay];
+        }
+            break;
+        case SJMediaPlaybackPrepareStatusFailed: {
+            [self _playerPrepareFailed];
+        }
+            break;
+    }
+}
+
+- (void)playbackController:(id<SJMediaPlaybackController>)controller durationDidChange:(NSTimeInterval)duration {
+    [self _playTimeDidChange];
+}
+
+- (void)playbackController:(id<SJMediaPlaybackController>)controller currentTimeDidChange:(NSTimeInterval)currentTime {
+    [self _playTimeDidChange];
+}
+
+- (void)mediaDidPlayToEndForPlaybackController:(id<SJMediaPlaybackController>)controller {
+    [self _mediaDidPlayToEnd];
+}
+
+- (void)playbackController:(id<SJMediaPlaybackController>)controller bufferLoadedTimeDidChange:(NSTimeInterval)bufferLoadedTime {
+    if ( controller.duration == 0 ) return;
+    
+    if ( [self.controlLayerDelegate respondsToSelector:@selector(videoPlayer:bufferTimeDidChange:)] ) {
+        [self.controlLayerDelegate videoPlayer:self bufferTimeDidChange:bufferLoadedTime];
+    }
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wdeprecated-declarations"
+    else if ( [self.controlLayerDelegate respondsToSelector:@selector(videoPlayer:loadedTimeProgress:)] ) {
+        [self.controlLayerDelegate videoPlayer:self loadedTimeProgress:controller.bufferLoadedTime / controller.duration];
+    }
+#pragma clang diagnostic pop
+    
+}
+
+- (void)playbackController:(id<SJMediaPlaybackController>)controller bufferStatusDidChange:(SJPlayerBufferStatus)bufferStatus {
+    [self _updateBufferStatus];
+}
+
+- (void)playbackController:(id<SJMediaPlaybackController>)controller bufferWatingTimeDidChange:(NSTimeInterval)bufferWatingTime {
+    if ( _refreshToPlayAfterBufferTime == 0 ) return;
+    BOOL flag = (((NSInteger)bufferWatingTime) % _refreshToPlayAfterBufferTime == 0) && (self.networkStatus != SJNetworkStatus_NotReachable);
+    if ( flag ) {
+        __weak typeof(self) _self = self;
+        [self.playbackController seekToTime:self.currentTime completionHandler:^(BOOL finished) {
+            __strong typeof(_self) self = _self;
+            if ( !self ) return;
+            if ( finished ) [self.playbackController play];
+        }];
+    }
+}
+
+- (void)playbackController:(id<SJMediaPlaybackController>)controller presentationSizeDidChange:(CGSize)presentationSize {
+    if ( self.presentationSize ) self.presentationSize(self, presentationSize);
+    if ( [self.controlLayerDelegate respondsToSelector:@selector(videoPlayer:presentationSize:)] ) {
+        [self.controlLayerDelegate videoPlayer:self presentationSize:presentationSize];
+    }
+}
+
+- (void)playbackController:(id<SJMediaPlaybackController>)controller switchVideoDefinitionByURL:(NSURL *)URL statusDidChange:(SJMediaPlaybackSwitchDefinitionStatus)status {
+    if ( [self.controlLayerDelegate respondsToSelector:@selector(videoPlayer:switchVideoDefinitionByURL:statusDidChange:)] ) {
+        [self.controlLayerDelegate videoPlayer:self switchVideoDefinitionByURL:URL statusDidChange:status];
+    }
+}
+
+- (void)_playTimeDidChange {
+    if ( [self playStatus_isPaused] ) return;
+    if ( [self.controlLayerDelegate respondsToSelector:@selector(videoPlayer:currentTime:currentTimeStr:totalTime:totalTimeStr:)] ) {
+        [self.controlLayerDelegate videoPlayer:self currentTime:self.currentTime currentTimeStr:self.currentTimeStr totalTime:self.totalTime totalTimeStr:self.totalTimeStr];
+    }
+    if ( self.playTimeDidChangeExeBlok ) self.playTimeDidChangeExeBlok(self);
+}
+
+- (void)_updateBufferStatus {
+    if ( [self playStatus_isInactivity_ReasonPlayEnd] ) {
+        return;
+    }
+    
+    SJPlayerBufferStatus bufferStatus = self.playbackController.bufferStatus;
+#ifdef SJ_MAC
+    NSString *network = nil;
+    switch ( _reachability.networkStatus ) {
+        case SJNetworkStatus_NotReachable:
+            network = @"SJNetworkStatus_NotReachable";
+            break;
+        case SJNetworkStatus_ReachableViaWWAN:
+            network = @"SJNetworkStatus_ReachableViaWWAN";
+            break;
+        case SJNetworkStatus_ReachableViaWiFi:
+            network = @"SJNetworkStatus_ReachableViaWiFi";
+            break;
+    }
+    
+    switch ( bufferStatus ) {
+        case SJPlayerBufferStatusUnknown:
+            printf("\nSJPlayerBufferStatusUnknown - %s \n", network.UTF8String);
+            break;
+        case SJPlayerBufferStatusUnplayable:
+            printf("\nSJPlayerBufferStatusUnplayable - %s \n", network.UTF8String);
+            break;
+        case SJPlayerBufferStatusPlayable:
+            printf("\nSJPlayerBufferStatusPlayable - %s \n", network.UTF8String);
+            break;
+    }
+#endif
+    
+    switch ( bufferStatus ) {
+        case SJPlayerBufferStatusUnknown:
+        case SJPlayerBufferStatusUnplayable: {
+            // 有网
+            if ( self.reachability.networkStatus != SJNetworkStatus_NotReachable ) {
+                if ( (![self playStatus_isPrepare] && ![self playStatus_isReadyToPlay]) || _mpc_assetIsPlayed ) {
+                    if ( ![self playStatus_isPaused] )
+                        [self pause:SJVideoPlayerPausedReasonBuffering];
+                }
+            }
+            // 无网
+            else if ( ![self.URLAsset.mediaURL isFileURL] ) {
+                self.inactivityReason = SJVideoPlayerInactivityReasonNotReachableAndPlaybackStalled;
+                self.playStatus = SJVideoPlayerPlayStatusInactivity;
+            }
+        }
+            break;
+        case SJPlayerBufferStatusPlayable: {
+            if ( [self playStatus_isPaused_ReasonBuffering] ||
+                [self playStatus_isInactivity_ReasonNotReachableAndPlaybackStalled] ) {
+                [self play];
+            }
+        }
+            break;
+    }
+    
+    if ( [self.controlLayerDelegate respondsToSelector:@selector(videoPlayer:bufferStatusDidChange:)] ) {
+        [self.controlLayerDelegate videoPlayer:self bufferStatusDidChange:bufferStatus];
+    }
+    else {
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wdeprecated-declarations"
+        switch ( bufferStatus ) {
+            case SJPlayerBufferStatusUnknown: break;
+            case SJPlayerBufferStatusUnplayable: {
+                if ( [self.controlLayerDelegate respondsToSelector:@selector(startLoading:)] ) {
+                    [self.controlLayerDelegate startLoading:self];
+                }
+            }
+                break;
+            case SJPlayerBufferStatusPlayable: {
+                if ( [self.controlLayerDelegate respondsToSelector:@selector(loadCompletion:)] ) {
+                    [self.controlLayerDelegate loadCompletion:self];
+                }
+            }
+                break;
+        }
+#pragma clang diagnostic pop
+    }
+}
+
+// 2.1
+- (void)_playerReadyToPlay {
+    
+    if ( ![self playStatus_isPrepare] )
+        return;
+    
+    if ( [self.controlLayerDelegate respondsToSelector:@selector(videoPlayer:currentTime:currentTimeStr:totalTime:totalTimeStr:)] ) {
+        [self.controlLayerDelegate videoPlayer:self currentTime:self.currentTime currentTimeStr:self.currentTimeStr totalTime:self.totalTime totalTimeStr:self.totalTimeStr];
+    }
+    
+    if ( self.registrar.state == SJVideoPlayerAppState_Background &&
+        self.pauseWhenAppDidEnterBackground ) {
+        [self pause:SJVideoPlayerPausedReasonPause];
+        return;
+    }
+    
+    if ( !self.isLockedScreen && self.controlLayerAutoAppearWhenAssetInitialized ) {
+        __weak typeof(self) _self = self;
+        dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(1 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
+            __strong typeof(_self) self = _self;
+            if ( !self ) return;
+            [self.controlLayerAppearManager needAppear];
+        });
+    }
+    
+    self.playStatus = SJVideoPlayerPlayStatusReadyToPlay;
+    
+    if ( self.operationOfInitializing ) {
+        self.operationOfInitializing(self);
+        self.operationOfInitializing = nil;
+    }
+    else if ( self.autoPlayWhenPlayStatusIsReadyToPlay ) {
+        if ( self.isPlayOnScrollView ) {
+            if ( self.isScrollAppeared )
+                [self play];
+            else
+                [self pause];
+        }
+        else {
+            [self play];
+        }
+    }
+}
+
+// 2.2
+- (void)_playerPrepareFailed {
+    self.error = _playbackController.error;
+    self.inactivityReason = SJVideoPlayerInactivityReasonPlayFailed;
+    self.playStatus = SJVideoPlayerPlayStatusInactivity;
+    
+    // auto refresh
+    if ( 0 != _delayToAutoRefreshWhenPlayFailed && _autoRefresh.asset != _URLAsset ) {
+        _autoRefresh = [[SJBaseVideoPlayerAutoRefreshContext alloc] initWithAsset:_URLAsset delay:_delayToAutoRefreshWhenPlayFailed];
+        __weak typeof(self) _self = self;
+        _autoRefresh.after = ^(SJBaseVideoPlayerAutoRefreshContext * _Nonnull context) {
+            __strong typeof(_self) self = _self;
+            if ( !self ) return;
+            if ( [self playStatus_isInactivity_ReasonPlayFailed] &&
+                self.registrar.state != SJVideoPlayerAppState_Background ) {
+#ifdef DEBUG
+                puts("SJBaseVideoPlayer: 当前状态为播放失败, 正在尝试重新播放!");
+#endif
+                self.autoRefresh = nil;
+                [self refresh];
+            }
+        };
+    }
+}
+
+- (void)_mediaDidPlayToEnd {
+    if ( !self.vc_isDisappeared ) {
+        UIScrollView *scrollView = sj_getScrollView(_URLAsset.playModel);
+        if ( scrollView.sj_enabledAutoplay ) {
+            if ( self.playDidToEndExeBlock ) self.playDidToEndExeBlock(self);
+            [scrollView sj_needPlayNextAsset];
+            return;
+        }
+    }
+    
+    self.inactivityReason = SJVideoPlayerInactivityReasonPlayEnd;
+    self.playStatus = SJVideoPlayerPlayStatusInactivity;
+    if ( self.playDidToEndExeBlock ) self.playDidToEndExeBlock(self);
 }
 @end
 
@@ -1349,7 +1353,7 @@ static NSString *_kGestureState = @"state";
         __strong typeof(_self) self = _self;
         if ( !self ) return;
         
-        [self _refreshBufferStatus];
+        [self _updateBufferStatus];
         
         if ( [self.controlLayerDelegate respondsToSelector:@selector(videoPlayer:reachabilityChanged:)] ) {
             [self.controlLayerDelegate videoPlayer:self reachabilityChanged:status];
@@ -2724,6 +2728,16 @@ static id<SJBaseVideoPlayerStatistics> _statistics;
 }
 - (void (^_Nullable)(__kindof SJBaseVideoPlayer * _Nonnull))playStatusDidChangeExeBlock __deprecated_msg("use `_playStatusObserver = [_player getPlayStatusObserver]`") {
     return _playStatusDidChangeExeBlock;
+}
+- (void)playWithURL:(NSURL *)URL {
+    self.assetURL = URL;
+}
+- (void)setAssetURL:(nullable NSURL *)assetURL {
+    self.URLAsset = [[SJVideoPlayerURLAsset alloc] initWithURL:assetURL];
+}
+
+- (nullable NSURL *)assetURL {
+    return self.URLAsset.mediaURL;
 }
 @end
 NS_ASSUME_NONNULL_END

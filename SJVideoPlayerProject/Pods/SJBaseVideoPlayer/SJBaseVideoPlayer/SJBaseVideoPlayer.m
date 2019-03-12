@@ -170,27 +170,25 @@ static NSString *_kPlayStatus = @"playStatus";
     NSError *_Nullable _error;
     id<SJMediaPlaybackController> _playbackController;
     void (^_Nullable _assetDeallocExeBlock)(__kindof SJBaseVideoPlayer * _Nonnull);
-    BOOL _mute;
     BOOL _lockedScreen;
     BOOL _autoPlayWhenPlayStatusIsReadyToPlay;
-    BOOL _pauseWhenAppDidEnterBackground;
     BOOL _resumePlaybackWhenAppDidEnterForeground;
     BOOL(^_Nullable _canPlayAnAsset)(__kindof SJBaseVideoPlayer *player);
     void(^_Nullable _rateDidChangeExeBlock)(__kindof SJBaseVideoPlayer *player);
     void(^_Nullable _playTimeDidChangeExeBlok)(__kindof SJBaseVideoPlayer *videoPlayer);
     void(^_Nullable _playDidToEndExeBlock)(__kindof SJBaseVideoPlayer *player);
-    CGFloat _rate;
     SJVideoPlayerPlayStatus _playStatus;
     SJVideoPlayerPausedReason _pausedReason;
     SJVideoPlayerInactivityReason _inactivityReason;
     void(^_Nullable _playStatusDidChangeExeBlock)(__kindof SJBaseVideoPlayer *videoPlayer);
     SJVideoPlayerURLAsset *_URLAsset;
     NSTimeInterval _playedLastTime;
-    BOOL _canSeekToTime;
+    BOOL(^_Nullable _canSeekToTime)(__kindof SJBaseVideoPlayer *player);
     NSTimeInterval _delayToAutoRefreshWhenPlayFailed;
     SJBaseVideoPlayerAutoRefreshContext *_Nullable _autoRefresh;
     BOOL _replayed;
     NSInteger _refreshToPlayAfterBufferTime;
+    void(^_Nullable _presentationSizeDidChangeExeBlock)(__kindof SJBaseVideoPlayer *videoPlayer);
     
     /// control layer appear manager
     id<SJControlLayerAppearManager> _controlLayerAppearManager;
@@ -211,9 +209,10 @@ static NSString *_kPlayStatus = @"playStatus";
     id<SJFitOnScreenManager> _fitOnScreenManager;
     id<SJFitOnScreenManagerObserver> _fitOnScreenManagerObserver;
     BOOL _useFitOnScreenAndDisableRotation;
-    BOOL _fitOnScreen;
     void(^_Nullable _fitOnScreenWillBeginExeBlock)(__kindof SJBaseVideoPlayer *player);
     void(^_Nullable _fitOnScreenDidEndExeBlock)(__kindof SJBaseVideoPlayer *player);
+    
+    BOOL _autoManageViewToFitOnScreenOrRotation;
     
     /// Flip Transition manager
     id<SJFlipTransitionManager> _flipTransitionManager;
@@ -270,7 +269,7 @@ static NSString *_kPlayStatus = @"playStatus";
     self.autoPlayWhenPlayStatusIsReadyToPlay = YES; // 是否自动播放, 默认yes
     self.pauseWhenAppDidEnterBackground = YES; // App进入后台是否暂停播放, 默认yes
     self.disabledControlLayerAppearManager = NO; // 是否启用控制层管理器
-    self.canSeekToTime = YES;
+    
     [self registrar];
     [self view];
     [self reachability];
@@ -703,8 +702,6 @@ static NSString *_kGestureState = @"state";
         [_presentView insertSubview:_playbackController.playerView atIndex:0];
     }
     if ( _playbackController.rate != self.rate ) _playbackController.rate = self.rate;
-    if ( _playbackController.pauseWhenAppDidEnterBackground != self.pauseWhenAppDidEnterBackground ) _playbackController.pauseWhenAppDidEnterBackground = self.pauseWhenAppDidEnterBackground;
-    if ( _playbackController.mute != self.mute ) _playbackController.mute = self.mute;
     if ( _playbackController.videoGravity != self.videoGravity ) _playbackController.videoGravity = self.videoGravity;
 }
 
@@ -807,16 +804,15 @@ static NSString *_kGestureState = @"state";
 }
 
 - (void)setMute:(BOOL)mute {
-    if ( mute == _mute )
+    if ( mute == _playbackController.mute )
         return;
-    _mute = mute;
     _playbackController.mute = mute;
     if ( [self.controlLayerDelegate respondsToSelector:@selector(videoPlayer:muteChanged:)] ) {
         [self.controlLayerDelegate videoPlayer:self muteChanged:mute];
     }
 }
 - (BOOL)isMute {
-    return _mute;
+    return _playbackController.mute;
 }
 
 - (void)setLockedScreen:(BOOL)lockedScreen {
@@ -849,12 +845,10 @@ static NSString *_kGestureState = @"state";
 }
 
 - (void)setPauseWhenAppDidEnterBackground:(BOOL)pauseWhenAppDidEnterBackground {
-    if ( pauseWhenAppDidEnterBackground ==  _pauseWhenAppDidEnterBackground ) return;
-    _pauseWhenAppDidEnterBackground = pauseWhenAppDidEnterBackground;
     _playbackController.pauseWhenAppDidEnterBackground = pauseWhenAppDidEnterBackground;
 }
 - (BOOL)pauseWhenAppDidEnterBackground {
-    return _pauseWhenAppDidEnterBackground;
+    return _playbackController.pauseWhenAppDidEnterBackground;
 }
 
 - (void)setResumePlaybackWhenAppDidEnterForeground:(BOOL)resumePlaybackWhenAppDidEnterForeground {
@@ -966,22 +960,17 @@ static NSString *_kGestureState = @"state";
     self.replayed = YES;
 }
 
-- (void)setCanSeekToTime:(BOOL)canSeekToTime {
+- (void)setCanSeekToTime:(BOOL (^_Nullable)(__kindof SJBaseVideoPlayer * _Nonnull))canSeekToTime {
     _canSeekToTime = canSeekToTime;
-    SJPlayerDisabledGestures ges = self.disabledGestures;
-    if ( !canSeekToTime ) {
-        ges = ges | SJPlayerDisabledGestures_Pan_H;
-    }
-    else {
-        ges &= (~SJPlayerDisabledGestures_Pan_H);
-    }
-    self.disabledGestures = ges;
 }
-- (BOOL)canSeekToTime {
+- (BOOL (^_Nullable)(__kindof SJBaseVideoPlayer * _Nonnull))canSeekToTime {
     return _canSeekToTime;
 }
+
 - (void)seekToTime:(NSTimeInterval)secs completionHandler:(void (^ __nullable)(BOOL finished))completionHandler {
-    if ( !_canSeekToTime ) return;
+    if ( _canSeekToTime ) {
+        if ( !_canSeekToTime(self) ) return;
+    }
     
     if ( self.canPlayAnAsset ) {
         if ( !self.canPlayAnAsset(self) ) return;
@@ -1026,8 +1015,7 @@ static NSString *_kGestureState = @"state";
 
 - (void)setRate:(float)rate {
     if ( self.canPlayAnAsset && !self.canPlayAnAsset(self) ) return;
-    if ( _rate == rate ) return;
-    _rate = rate;
+    if ( _playbackController.rate == rate ) return;
     _playbackController.rate = rate;
     
     if ( [self.controlLayerDelegate respondsToSelector:@selector(videoPlayer:rateChanged:)] ) {
@@ -1042,7 +1030,7 @@ static NSString *_kGestureState = @"state";
 }
 
 - (float)rate {
-    return _rate;
+    return _playbackController.rate;
 }
 - (void)setRateDidChangeExeBlock:(void (^_Nullable)(__kindof SJBaseVideoPlayer * _Nonnull))rateDidChangeExeBlock {
     _rateDidChangeExeBlock = rateDidChangeExeBlock;
@@ -1124,19 +1112,26 @@ static NSString *_kGestureState = @"state";
 
 - (void)playbackController:(id<SJMediaPlaybackController>)controller bufferWatingTimeDidChange:(NSTimeInterval)bufferWatingTime {
     if ( _refreshToPlayAfterBufferTime == 0 ) return;
-    BOOL flag = (((NSInteger)bufferWatingTime) % _refreshToPlayAfterBufferTime == 0) && (self.networkStatus != SJNetworkStatus_NotReachable);
+    BOOL flag = (((NSInteger)bufferWatingTime) % _refreshToPlayAfterBufferTime == 0)
+                && (self.networkStatus != SJNetworkStatus_NotReachable)
+                && ![self playStatus_isPaused_ReasonPause];
     if ( flag ) {
         __weak typeof(self) _self = self;
         [self.playbackController seekToTime:self.currentTime completionHandler:^(BOOL finished) {
             __strong typeof(_self) self = _self;
             if ( !self ) return;
-            if ( finished ) [self.playbackController play];
+            if ( finished ) [self play];
         }];
     }
 }
 
 - (void)playbackController:(id<SJMediaPlaybackController>)controller presentationSizeDidChange:(CGSize)presentationSize {
-    if ( self.presentationSize ) self.presentationSize(self, presentationSize);
+    if ( _autoManageViewToFitOnScreenOrRotation && !self.isFullScreen && !self.isFitOnScreen ) {
+        self.useFitOnScreenAndDisableRotation = presentationSize.width < presentationSize.height;
+    }
+    
+    if ( self.presentationSizeDidChangeExeBlock )
+        self.presentationSizeDidChangeExeBlock(self);
     if ( [self.controlLayerDelegate respondsToSelector:@selector(videoPlayer:presentationSize:)] ) {
         [self.controlLayerDelegate videoPlayer:self presentationSize:presentationSize];
     }
@@ -1680,6 +1675,13 @@ static NSString *_kGestureState = @"state";
                 switch ( direction ) {
                         /// 水平
                     case SJPanGestureMovingDirection_H: {
+                        if ( self.canSeekToTime ) {
+                            if ( !self.canSeekToTime(self) ) {
+                                [control cancelGesture:SJPlayerGestureType_Pan];
+                                return;
+                            }
+                        }
+                        
                         self.pan_shift = self.currentTime;
                         self.pan_totalTime = self.totalTime;
 #pragma clang diagnostic push
@@ -2021,6 +2023,17 @@ static NSString *_kGestureState = @"state";
 
 
 
+@implementation SJBaseVideoPlayer (AutoManageViewToFitOnScreenOrRotation)
+- (void)setAutoManageViewToFitOnScreenOrRotation:(BOOL)autoManageViewToFitOnScreenOrRotation {
+    _autoManageViewToFitOnScreenOrRotation = autoManageViewToFitOnScreenOrRotation;
+}
+- (BOOL)autoManageViewToFitOnScreenOrRotation {
+    return _autoManageViewToFitOnScreenOrRotation;
+}
+@end
+
+
+
 #pragma mark - 充满屏幕
 
 @implementation SJBaseVideoPlayer (FitOnScreen)
@@ -2296,16 +2309,18 @@ static NSString *_kGestureState = @"state";
 @end
 
 
-#pragma mark - 截图
 
 @implementation SJBaseVideoPlayer (Screenshot)
 
-- (void)setPresentationSize:(nullable void (^)(__kindof SJBaseVideoPlayer * _Nonnull, CGSize))presentationSize {
-    objc_setAssociatedObject(self, @selector(presentationSize), presentationSize, OBJC_ASSOCIATION_COPY_NONATOMIC);
+- (void)setPresentationSizeDidChangeExeBlock:(void (^_Nullable)(__kindof SJBaseVideoPlayer * _Nonnull))presentationSizeDidChangeExeBlock {
+    _presentationSizeDidChangeExeBlock = presentationSizeDidChangeExeBlock;
+}
+- (void (^_Nullable)(__kindof SJBaseVideoPlayer * _Nonnull))presentationSizeDidChangeExeBlock {
+    return _presentationSizeDidChangeExeBlock;
 }
 
-- (nullable void (^)(__kindof SJBaseVideoPlayer * _Nonnull, CGSize))presentationSize {
-    return objc_getAssociatedObject(self, _cmd);
+- (CGSize)videoPresentationSize {
+    return _playbackController.presentationSize;
 }
 
 - (UIImage * __nullable)screenshot {
@@ -2738,6 +2753,20 @@ static id<SJBaseVideoPlayerStatistics> _statistics;
 
 - (nullable NSURL *)assetURL {
     return self.URLAsset.mediaURL;
+}
+
+- (void)setPresentationSize:(nullable void (^)(__kindof SJBaseVideoPlayer * _Nonnull, CGSize))presentationSize __deprecated_msg("use `presentationSizeDidChangeExeBlock`") {
+    __weak typeof(self) _self = self;
+    self.presentationSizeDidChangeExeBlock = ^(__kindof SJBaseVideoPlayer * _Nonnull videoPlayer) {
+        __strong typeof(_self) self = _self;
+        if ( !self ) return;
+        if ( presentationSize ) presentationSize(self, videoPlayer.videoPresentationSize);
+    };
+    objc_setAssociatedObject(self, @selector(presentationSize), presentationSize, OBJC_ASSOCIATION_RETAIN_NONATOMIC);
+}
+
+- (nullable void (^)(__kindof SJBaseVideoPlayer * _Nonnull, CGSize))presentationSize __deprecated_msg("use `presentationSizeDidChangeExeBlock`") {
+    return objc_getAssociatedObject(self, _cmd);
 }
 @end
 NS_ASSUME_NONNULL_END

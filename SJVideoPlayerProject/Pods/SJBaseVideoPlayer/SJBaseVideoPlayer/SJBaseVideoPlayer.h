@@ -209,9 +209,9 @@ NS_ASSUME_NONNULL_BEGIN
 
 // - Seek To Time -
 
-/// 是否可以调用 seekToTime:, 默认为YES
-@property (nonatomic) BOOL canSeekToTime;
-/// 跳转到指定位置
+/// 是否可以调用 seekToTime:
+@property (nonatomic, copy, nullable) BOOL(^canSeekToTime)(__kindof SJBaseVideoPlayer *player);
+/// 跳转到指定位置播放
 - (void)seekToTime:(NSTimeInterval)secs completionHandler:(void (^ __nullable)(BOOL finished))completionHandler;
 
 
@@ -446,6 +446,15 @@ NS_ASSUME_NONNULL_BEGIN
 @end
 
 
+// - Auto Manage Player View to Fit On Screen Or Rotation -
+
+@interface SJBaseVideoPlayer (AutoManageViewToFitOnScreenOrRotation)
+@property (nonatomic) BOOL autoManageViewToFitOnScreenOrRotation;
+@end
+
+
+// - Fit On Screen
+
 /// 全屏或小屏, 但不触发旋转
 /// v1.3.1 新增
 @interface SJBaseVideoPlayer (FitOnScreen)
@@ -473,9 +482,7 @@ NS_ASSUME_NONNULL_BEGIN
 @end
 
 
-
-
-#pragma mark - 屏幕旋转
+// - Rotation -
 
 @interface SJBaseVideoPlayer (Rotation)
 /// Default is SJRotationManager. It only rotates the player view.
@@ -529,7 +536,14 @@ NS_ASSUME_NONNULL_BEGIN
 
 @interface SJBaseVideoPlayer (Screenshot)
 
-@property (nonatomic, copy, nullable) void(^presentationSize)(__kindof SJBaseVideoPlayer *videoPlayer, CGSize size);
+// - Presentation Size -
+
+@property (nonatomic, copy, nullable) void(^presentationSizeDidChangeExeBlock)(__kindof SJBaseVideoPlayer *videoPlayer);
+
+@property (nonatomic, readonly) CGSize videoPresentationSize;
+
+
+// - Screenshot -
 
 - (UIImage * __nullable)screenshot;
 
@@ -643,6 +657,7 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic, copy, nullable) void(^playStatusDidChangeExeBlock)(__kindof SJBaseVideoPlayer *videoPlayer) __deprecated_msg("use `_playStatusObserver = [_player getPlayStatusObserver]`");
 - (void)playWithURL:(NSURL *)URL; // 不再建议使用, 请使用`URLAsset`进行初始化
 @property (nonatomic, strong, nullable) NSURL *assetURL;
+@property (nonatomic, copy, nullable) void(^presentationSize)(__kindof SJBaseVideoPlayer *videoPlayer, CGSize size) __deprecated_msg("use `presentationSizeDidChangeExeBlock`");
 @end
 
 NS_ASSUME_NONNULL_END

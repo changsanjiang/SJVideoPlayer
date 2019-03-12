@@ -43,7 +43,6 @@ NS_ASSUME_NONNULL_BEGIN
 }
 
 - (void)_setupViews {
-    sj_view_initializes(self.rightContainerView);
     self.rightWidth = 120;
     self.rightContainerView.backgroundColor = [UIColor blackColor];
     self.rightContainerView.sjv_disappearDirection = SJViewDisappearAnimation_Right;
@@ -128,6 +127,7 @@ NS_ASSUME_NONNULL_BEGIN
 - (void)installedControlViewToVideoPlayer:(__kindof SJBaseVideoPlayer *)videoPlayer {
     _player = videoPlayer;
     [self _updateItemsForRightAdapter];
+    sj_view_initializes(self.rightContainerView);
     sj_view_makeDisappear(_rightContainerView, NO);
 }
 

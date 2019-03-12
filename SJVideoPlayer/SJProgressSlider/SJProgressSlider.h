@@ -94,6 +94,7 @@ NS_ASSUME_NONNULL_BEGIN
  *  是否在拖拽.
  */
 @property (nonatomic, assign, readonly) BOOL isDragging;
+- (void)cancelDragging; // 取消拖拽
 
 /// 是否加载中
 /// - 如果是YES, 将会在拇指上显示菊花圈圈(前提是设置了拇指thumb)
@@ -188,5 +189,7 @@ NS_ASSUME_NONNULL_BEGIN
  */
 - (void)sliderDidEndDragging:(SJProgressSlider *)slider;
 
+
+- (void)sliderValueDidChange:(SJProgressSlider *)slider;
 @end
 NS_ASSUME_NONNULL_END

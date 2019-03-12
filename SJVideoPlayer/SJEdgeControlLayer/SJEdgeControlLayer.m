@@ -496,8 +496,13 @@ SJEdgeControlButtonItemTag const SJEdgeControlLayerCenterItem_Replay = 40000;
 }
 
 - (void)sliderWillBeginDragging:(SJProgressSlider *)slider {
-    if ( _SJSlowPath(!_videoPlayer.canSeekToTime) )
-        return;
+    if ( _videoPlayer.canSeekToTime ) {
+        if ( !_videoPlayer.canSeekToTime(_videoPlayer) ) {
+            [slider cancelDragging];
+            return;
+        }
+    }
+    
     [self _draggingDidStart:_videoPlayer];
 }
 
@@ -1151,7 +1156,6 @@ SJEdgeControlButtonItemTag const SJEdgeControlLayerCenterItem_Replay = 40000;
     slider.bufferProgressColor = setting.progress_bufferColor;
     slider.trackHeight = setting.progress_traceHeight;
     slider.loadingColor = setting.loadingLineColor;
-    slider.pan.enabled = _videoPlayer.canSeekToTime;
     
     if ( setting.progress_thumbImage ) {
         slider.thumbImageView.image = setting.progress_thumbImage;

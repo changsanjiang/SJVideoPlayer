@@ -507,14 +507,10 @@ SJEdgeControlButtonItemTag const SJEdgeControlLayerCenterItem_Replay = 40000;
 }
 
 - (void)sliderDidDrag:(SJProgressSlider *)slider {
-    if ( _SJSlowPath(!_videoPlayer.canSeekToTime) )
-        return;
     [self _draggingForVideoPlayer:_videoPlayer progressTime:slider.value];
 }
 
 - (void)sliderDidEndDragging:(SJProgressSlider *)slider {
-    if ( _SJSlowPath(!_videoPlayer.canSeekToTime) )
-        return;
     [self _draggingDidEnd:_videoPlayer];
 }
 

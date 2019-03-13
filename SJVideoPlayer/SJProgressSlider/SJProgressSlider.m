@@ -99,6 +99,8 @@ NS_ASSUME_NONNULL_BEGIN
             }
         }
         case UIGestureRecognizerStateChanged: {
+            if ( _isCancelled )
+                return;
             if ( [self.delegate respondsToSelector:@selector(sliderDidDrag:)] ) {
                 [self.delegate sliderDidDrag:self];
             }

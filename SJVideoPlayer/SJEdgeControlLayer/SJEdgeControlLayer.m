@@ -347,6 +347,11 @@ SJEdgeControlButtonItemTag const SJEdgeControlLayerCenterItem_Replay = 40000;
     slider.tappedExeBlock = ^(SJProgressSlider * _Nonnull slider, CGFloat location) {
         __strong typeof(_self) self = _self;
         if ( !self ) return;
+        if ( self.videoPlayer.canSeekToTime ) {
+            if ( !self.videoPlayer.canSeekToTime(self.videoPlayer) )
+                return;
+        }
+        
         [self.videoPlayer seekToTime:location completionHandler:^(BOOL finished) {
             __strong typeof(_self) self = _self;
             if ( !self ) return;

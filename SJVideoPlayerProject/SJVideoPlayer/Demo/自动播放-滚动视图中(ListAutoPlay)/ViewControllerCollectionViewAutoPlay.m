@@ -33,25 +33,17 @@
     self.edgesForExtendedLayout = UIRectEdgeNone;
     self.view.backgroundColor = [UIColor whiteColor];
     
-    UICollectionViewFlowLayout *layout = [UICollectionViewFlowLayout new];
-    layout.itemSize = CGSizeMake(self.view.bounds.size.width, self.view.bounds.size.width * 9 / 16.0 + 8);
-    layout.minimumLineSpacing = 0;
-    layout.minimumInteritemSpacing = 0;
-    _collectionView = [[UICollectionView alloc] initWithFrame:CGRectZero collectionViewLayout:layout];
-    _collectionView.delegate = self;
-    _collectionView.dataSource = self;
-    [SJCollectionViewCell registerWithCollectionView:_collectionView];
-    [self.view addSubview:_collectionView];
-    [_collectionView mas_makeConstraints:^(MASConstraintMaker *make) {
-        make.edges.offset(0);
-    }];
-    
-    
-    // 配置列表自动播放
-    [_collectionView sj_enableAutoplayWithConfig:[SJPlayerAutoplayConfig configWithPlayerSuperviewTag:101 autoplayDelegate:self]];
-    [_collectionView sj_needPlayNextAsset];
-    
+    [self _setupViews];
+    [self _configAutoplayForCollectionView];
     // Do any additional setup after loading the view.
+}
+
+// 配置列表自动播放
+- (void)_configAutoplayForCollectionView {
+    SJPlayerAutoplayConfig *config = [SJPlayerAutoplayConfig configWithPlayerSuperviewTag:101 autoplayDelegate:self];
+    config.autoplayPosition = SJAutoplayPositionTop;
+    [_collectionView sj_enableAutoplayWithConfig:config];
+    [_collectionView sj_needPlayNextAsset];
 }
 
 - (void)sj_playerNeedPlayNewAssetAtIndexPath:(NSIndexPath *)indexPath {
@@ -68,6 +60,8 @@
 #ifdef SJMAC
     _player.disablePromptWhenNetworkStatusChanges = YES;
 #endif
+    
+    _player.resumePlaybackWhenPlayerViewScrollAppears = YES;
     [cell.view.coverImageView addSubview:self.player.view];
     [_player.view mas_makeConstraints:^(MASConstraintMaker *make) {
         make.edges.offset(0);
@@ -76,6 +70,21 @@
     self.player.URLAsset = [[SJVideoPlayerURLAsset alloc] initWithURL:[NSBundle.mainBundle URLForResource:@"play" withExtension:@"mp4"] playModel:[SJPlayModel UICollectionViewCellPlayModelWithPlayerSuperviewTag:cell.view.coverImageView.tag atIndexPath:indexPath collectionView:_collectionView]];
     self.player.URLAsset.title = @"Test Title";
     self.player.URLAsset.alwaysShowTitle = YES;
+}
+
+- (void)_setupViews {
+    UICollectionViewFlowLayout *layout = [UICollectionViewFlowLayout new];
+    layout.itemSize = CGSizeMake(self.view.bounds.size.width, self.view.bounds.size.width * 9 / 16.0 + 8);
+    layout.minimumLineSpacing = 0;
+    layout.minimumInteritemSpacing = 0;
+    _collectionView = [[UICollectionView alloc] initWithFrame:CGRectZero collectionViewLayout:layout];
+    _collectionView.delegate = self;
+    _collectionView.dataSource = self;
+    [SJCollectionViewCell registerWithCollectionView:_collectionView];
+    [self.view addSubview:_collectionView];
+    [_collectionView mas_makeConstraints:^(MASConstraintMaker *make) {
+        make.edges.offset(0);
+    }];
 }
 
 - (NSInteger)collectionView:(UICollectionView *)collectionView numberOfItemsInSection:(NSInteger)section {

@@ -454,7 +454,7 @@
 				A60066A2216116650001B5F8 /* 在新的界面继续播放 (ContinuePlayingOnTheNewViewController) */,
 				A600665221605D050001B5F8 /* 视图层级 (View Hierarchy) */,
 				A60066B22161A1AA0001B5F8 /* 自定义控制层 (CustomYourControlLayer) */,
-				A600668A2160FC160001B5F8 /* 滚动视图中自动播放 (ListAutoPlay) */,
+				A600668A2160FC160001B5F8 /* 自动播放-滚动视图中(ListAutoPlay) */,
 				A60066842160B7A00001B5F8 /* 旋转控制 (Control_Rotation) */,
 				A600669821610FC00001B5F8 /* PageViewController */,
 				7798A7D3219EB9D90020A507 /* SwitchDefinition(切换分辨率) */,
@@ -564,7 +564,7 @@
 			path = "旋转控制 (Control_Rotation)";
 			sourceTree = "<group>";
 		};
-		A600668A2160FC160001B5F8 /* 滚动视图中自动播放 (ListAutoPlay) */ = {
+		A600668A2160FC160001B5F8 /* 自动播放-滚动视图中(ListAutoPlay) */ = {
 			isa = PBXGroup;
 			children = (
 				A600668B2160FC430001B5F8 /* ViewControllerTableViewAutoPlay.h */,
@@ -572,7 +572,7 @@
 				A600668E216100D00001B5F8 /* ViewControllerCollectionViewAutoPlay.h */,
 				A600668F216100D00001B5F8 /* ViewControllerCollectionViewAutoPlay.m */,
 			);
-			path = "滚动视图中自动播放 (ListAutoPlay)";
+			path = "自动播放-滚动视图中(ListAutoPlay)";
 			sourceTree = "<group>";
 		};
 		A600669821610FC00001B5F8 /* PageViewController */ = {
@@ -1083,7 +1083,7 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CODE_SIGN_STYLE = Manual;
-				DEVELOPMENT_TEAM = DB5B5F2RH5;
+				DEVELOPMENT_TEAM = U5A7L7SMNP;
 				GCC_PREPROCESSOR_DEFINITIONS = (
 					"$(inherited)",
 					"COCOAPODS=1",
@@ -1097,7 +1097,7 @@
 				);
 				PRODUCT_BUNDLE_IDENTIFIER = com.SanJiang.SJVideoPlayer;
 				PRODUCT_NAME = "$(TARGET_NAME)";
-				PROVISIONING_PROFILE_SPECIFIER = SanJiangDevelopment;
+				PROVISIONING_PROFILE_SPECIFIER = WildcardProfile;
 				TARGETED_DEVICE_FAMILY = "1,2";
 			};
 			name = Debug;

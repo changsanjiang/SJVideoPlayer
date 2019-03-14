@@ -29,15 +29,9 @@
 NSTimeInterval const CommonAnimaDuration = 0.4;
 
 void UIView_Animations(NSTimeInterval duration, Block __nullable animations, Block __nullable completion) {
-    if ( completion ) {
-        _SJAnimationContext *context = [[_SJAnimationContext alloc] initWithCompletion:completion];
-        [UIView beginAnimations:nil context:(void *)context];
-        [UIView setAnimationDelegate:context];
-    }
-    else {
-        [UIView beginAnimations:nil context:NULL];
-    }
-    [UIView setAnimationDuration:duration];
-    if ( animations ) animations();
-    [UIView commitAnimations];
+    [UIView animateWithDuration:duration animations:^{
+        if ( animations ) animations();
+    } completion:^(BOOL finished) {
+        if ( completion ) completion();
+    }];
 }

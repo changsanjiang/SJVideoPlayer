@@ -41,7 +41,9 @@
         make.height.equalTo(self->_player.view.mas_width).multipliedBy(9 / 16.0f);
     }];
     
-    _player.URLAsset = [[SJVideoPlayerURLAsset alloc] initWithURL:[NSBundle.mainBundle URLForResource:@"play" withExtension:@"mp4"]];
+//    _player.URLAsset = [[SJVideoPlayerURLAsset alloc] initWithURL:[NSBundle.mainBundle URLForResource:@"play" withExtension:@"mp4"]];
+    
+    _player.assetURL = [NSURL URLWithString:@"http://live.lanwuzhe.com/lanwuzhe/15519342.m3u8"];
     _player.URLAsset.title = @"Test TitleTest TitleTest TitleTest TitleTest TitleTest TitleTest TitleTest Title";
     _player.URLAsset.alwaysShowTitle = YES;
     _player.hideBackButtonWhenOrientationIsPortrait = YES;

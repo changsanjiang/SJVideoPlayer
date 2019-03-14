@@ -21,6 +21,8 @@ UIKIT_STATIC_INLINE SJEdgeInsets SJEdgeInsetsMake(CGFloat front, CGFloat rear) {
     return (SJEdgeInsets){front, rear};
 }
 
+UIKIT_EXTERN NSNotificationName const SJEdgeControlButtonItemPerformedActionNotification;
+
 NS_ASSUME_NONNULL_BEGIN
 @interface SJEdgeControlButtonItem : NSObject
 /// 49 * 49
@@ -45,7 +47,7 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic) SJEdgeControlButtonItemTag tag;
 @property (nonatomic, strong, nullable) __kindof UIView *customView;
 @property (nonatomic, strong, nullable) NSAttributedString *title;
-@property (nonatomic) NSInteger numberOfLines;
+@property (nonatomic) NSInteger numberOfLines; // default is 1.0
 @property (nonatomic, strong, nullable) UIImage *image;
 @property (nonatomic, getter=isHidden) BOOL hidden;
 @property (nonatomic, weak, nullable) id target;
@@ -56,6 +58,7 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic, weak, nullable) id<SJEdgeControlButtonItemDelegate> delegate;
 
 - (void)addTarget:(id)target action:(nonnull SEL)action;
+- (void)performAction;
 @end
 
 @protocol SJEdgeControlButtonItemDelegate <NSObject>

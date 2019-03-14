@@ -26,7 +26,7 @@ extern SJEdgeControlButtonItemTag const SJEdgeControlLayerBottomItem_DurationTim
 extern SJEdgeControlButtonItemTag const SJEdgeControlLayerBottomItem_Separator;     // 时间分隔符(斜杠/)
 extern SJEdgeControlButtonItemTag const SJEdgeControlLayerBottomItem_Progress;      // 播放进度条
 extern SJEdgeControlButtonItemTag const SJEdgeControlLayerBottomItem_FullBtn;       // 全屏按钮
-
+extern SJEdgeControlButtonItemTag const SJEdgeControlLayerBottomItem_LIVEText;      // 实时直播
 
 // - Center Items -
 extern SJEdgeControlButtonItemTag const SJEdgeControlLayerCenterItem_Replay;        // 重播按钮

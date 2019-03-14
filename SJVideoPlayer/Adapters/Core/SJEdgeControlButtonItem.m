@@ -10,6 +10,8 @@
 #import <objc/message.h>
 
 NS_ASSUME_NONNULL_BEGIN
+NSNotificationName const SJEdgeControlButtonItemPerformedActionNotification = @"SJEdgeControlButtonItemPerformedActionNotification";
+
 @implementation SJEdgeControlButtonItem {
     SJButtonItemPlaceholderType _placeholderType;
     CGFloat _size;
@@ -48,12 +50,24 @@ NS_ASSUME_NONNULL_BEGIN
     self = [super init];
     if ( !self ) return nil;
     _tag = tag;
+    _numberOfLines = 1;
     return self;
 }
 
 - (void)addTarget:(id)target action:(nonnull SEL)action {
     _target = target;
     _action = action;
+}
+
+- (void)performAction {
+    if ( !_action ) return;
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Warc-performSelector-leaks"
+    if ( [_target respondsToSelector:_action] ) {
+        [_target performSelector:_action withObject:self];
+        [NSNotificationCenter.defaultCenter postNotificationName:SJEdgeControlButtonItemPerformedActionNotification object:self];
+    }
+#pragma clang diagnostic pop
 }
 @end
 

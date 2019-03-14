@@ -12,6 +12,12 @@
 #import "SJAttributeWorker.h"
 #endif
 
+#if __has_include(<SJObserverHelper/NSObject+SJObserverHelper.h>)
+#import <SJObserverHelper/NSObject+SJObserverHelper.h>
+#else
+#import "NSObject+SJObserverHelper.h"
+#endif
+
 #if __has_include(<Masonry/Masonry.h>)
 #import <Masonry/Masonry.h>
 #else
@@ -52,6 +58,7 @@ SJEdgeControlButtonItemTag const SJEdgeControlLayerBottomItem_DurationTime = 300
 SJEdgeControlButtonItemTag const SJEdgeControlLayerBottomItem_Separator = 30003;
 SJEdgeControlButtonItemTag const SJEdgeControlLayerBottomItem_Progress = 30004;
 SJEdgeControlButtonItemTag const SJEdgeControlLayerBottomItem_FullBtn = 30005;
+SJEdgeControlButtonItemTag const SJEdgeControlLayerBottomItem_LIVEText = 30006;
 
 #pragma mark - center
 SJEdgeControlButtonItemTag const SJEdgeControlLayerCenterItem_Replay = 40000;
@@ -113,7 +120,6 @@ SJEdgeControlButtonItemTag const SJEdgeControlLayerCenterItem_Replay = 40000;
     [self _setupView];
     self.autoAdjustTopSpacing = YES;
     self.hideBottomProgressSlider = YES;
-    SJEdgeControlLayerSettings.update(^(SJEdgeControlLayerSettings * _Nonnull settings) {});
     return self;
 }
 
@@ -137,18 +143,19 @@ SJEdgeControlButtonItemTag const SJEdgeControlLayerCenterItem_Replay = 40000;
     self.centerContainerView.sjv_disappearDirection = SJViewDisappearAnimation_None;
     sj_view_initializes(@[self.topContainerView, self.leftContainerView, self.bottomContainerView, self.rightContainerView]);
     
-    __weak typeof(self) _self = self;
-    void(^executedTargetActionExeBlock)(SJEdgeControlLayerItemAdapter *adapter) = ^(SJEdgeControlLayerItemAdapter * _Nonnull adapter) {
-        __strong typeof(_self) self = _self;
-        if ( !self ) return ;
-        [self.videoPlayer.controlLayerAppearManager resume];
-    };
-    
-    self.topAdapter.executedTargetActionExeBlock = executedTargetActionExeBlock;
-    self.leftAdapter.executedTargetActionExeBlock = executedTargetActionExeBlock;
-    self.bottomAdapter.executedTargetActionExeBlock = executedTargetActionExeBlock;
-    self.rightAdapter.executedTargetActionExeBlock = executedTargetActionExeBlock;
-    self.centerAdapter.executedTargetActionExeBlock = executedTargetActionExeBlock;
+    [self sj_observeWithNotification:SJEdgeControlButtonItemPerformedActionNotification target:nil usingBlock:^(SJEdgeControlLayer *self, NSNotification * _Nonnull note) {
+        [self _buttonItemPerformedAction:note.object];
+    }];
+}
+
+- (void)_buttonItemPerformedAction:(SJEdgeControlButtonItem *)item {
+    if ( [_topAdapter containsItem:item] ||
+         [_leftAdapter containsItem:item] ||
+         [_bottomAdapter containsItem:item] ||
+         [_rightAdapter containsItem:item] ||
+         [_centerAdapter containsItem:item] ) {
+        [_videoPlayer controlLayerNeedAppear]; // 如果点击到当前控制层上的item, 则重置控制层的隐藏间隔
+    }
 }
 
 #pragma mark - Top
@@ -352,6 +359,11 @@ SJEdgeControlButtonItemTag const SJEdgeControlLayerCenterItem_Replay = 40000;
                 return;
         }
         
+        if ( [self.videoPlayer playStatus_isUnknown] ||
+             [self.videoPlayer playStatus_isPrepare] ) {
+            return;
+        }
+        
         [self.videoPlayer seekToTime:location completionHandler:^(BOOL finished) {
             __strong typeof(_self) self = _self;
             if ( !self ) return;
@@ -506,6 +518,12 @@ SJEdgeControlButtonItemTag const SJEdgeControlLayerCenterItem_Replay = 40000;
             [slider cancelDragging];
             return;
         }
+    }
+    
+    if ( [_videoPlayer playStatus_isUnknown] ||
+         [_videoPlayer playStatus_isPrepare] ) {
+        [slider cancelDragging];
+        return;
     }
     
     [self _draggingDidStart:_videoPlayer];
@@ -704,8 +722,11 @@ SJEdgeControlButtonItemTag const SJEdgeControlLayerCenterItem_Replay = 40000;
     [_draggingProgressView mas_makeConstraints:^(MASConstraintMaker *make) {
         make.center.offset(0);
     }];
+    
+    sj_view_initializes(_draggingProgressView);
+    sj_view_makeAppear(_draggingProgressView, NO);
+    
     _draggingProgressView.maxValue = videoPlayer.totalTime?:1;
-    sj_view_makeAppear(_draggingProgressView, YES);
     [_draggingProgressView setProgressTimeStr:videoPlayer.currentTimeStr
                                  totalTimeStr:videoPlayer.totalTimeStr];
 }
@@ -784,6 +805,44 @@ SJEdgeControlButtonItemTag const SJEdgeControlLayerCenterItem_Replay = 40000;
     [self _updateItemsForAdaptersIfNeeded:videoPlayer];
     [self _updateTimeLabelFor_BottomAdapterWithCurrentTimeStr:videoPlayer.currentTimeStr durationStr:videoPlayer.totalTimeStr];
     [self _updatePlaybackProgressFor_BottomAdapterWithCurrentTime:videoPlayer.currentTime duration:videoPlayer.totalTime];
+}
+
+- (void)videoPlayer:(__kindof SJBaseVideoPlayer *)videoPlayer playbackTypeLoaded:(SJMediaPlaybackType)playbackType {
+    SJEdgeControlButtonItem *currentTimeItem = [_bottomAdapter itemForTag:SJEdgeControlLayerBottomItem_CurrentTime];
+    SJEdgeControlButtonItem *separatorItem = [_bottomAdapter itemForTag:SJEdgeControlLayerBottomItem_Separator];
+    SJEdgeControlButtonItem *durationTimeItem = [_bottomAdapter itemForTag:SJEdgeControlLayerBottomItem_DurationTime];
+    SJEdgeControlButtonItem *progressItem = [_bottomAdapter itemForTag:SJEdgeControlLayerBottomItem_Progress];
+    switch ( playbackType ) {
+        case SJMediaPlaybackTypeLIVE: {
+            currentTimeItem.hidden = YES;
+            separatorItem.hidden = YES;
+            durationTimeItem.hidden = YES;
+            progressItem.hidden = YES;
+            _bottomProgressSlider.hidden = YES;
+            
+            SJEdgeControlButtonItem *liveTextItem = [[SJEdgeControlButtonItem alloc] initWithTag:SJEdgeControlLayerBottomItem_LIVEText];
+            liveTextItem.title = sj_makeAttributesString(^(SJAttributeWorker * _Nonnull make) {
+                make.append(@"实时直播")
+                .font(SJEdgeControlLayerSettings.commonSettings.titleFont)
+                .textColor(SJEdgeControlLayerSettings.commonSettings.titleColor)
+                .shadow(CGSizeMake(0.5, 0.5), 1, [UIColor blackColor]);
+            });
+            [_bottomAdapter insertItem:liveTextItem frontItem:SJEdgeControlLayerBottomItem_Play];
+        }
+            break;
+        case SJMediaPlaybackTypeUnknown:
+        case SJMediaPlaybackTypeVOD:
+        case SJMediaPlaybackTypeFILE: {
+            currentTimeItem.hidden = NO;
+            separatorItem.hidden = NO;
+            durationTimeItem.hidden = NO;
+            progressItem.hidden = NO;
+            _bottomProgressSlider.hidden = self.hideBottomProgressSlider;
+            [_bottomAdapter removeItemForTag:SJEdgeControlLayerBottomItem_LIVEText];
+        }
+            break;
+    }
+    [self.bottomAdapter reload];
 }
 
 - (void)videoPlayer:(__kindof SJBaseVideoPlayer *)videoPlayer statusDidChanged:(SJVideoPlayerPlayStatus)status {
@@ -1111,7 +1170,7 @@ SJEdgeControlButtonItemTag const SJEdgeControlLayerCenterItem_Replay = 40000;
     
     CGFloat right =
     [_topAdapter itemsIsHiddenWithRange:NSMakeRange([_topAdapter indexOfItemForTag:SJEdgeControlLayerTopItem_Title], _topAdapter.itemCount)]?16:0;
-    
+    titleItem.numberOfLines = 1;
     titleItem.insets = SJEdgeInsetsMake(left, right);
     titleItem.title = sj_makeAttributesString(^(SJAttributeWorker * _Nonnull make) {
         make.append(title)

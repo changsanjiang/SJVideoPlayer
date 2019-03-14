@@ -74,10 +74,14 @@ NS_ASSUME_NONNULL_BEGIN
             else {
                 [self _updateLayout_isNormal_iPhone_X];
             }
-            
-            _beforeBounds = self.bounds;
         }
     }
+    else {
+        if ( !CGRectEqualToRect(_beforeBounds, self.bounds) ) {
+            [self _updateTopLayout:nil];
+        }
+    }
+    _beforeBounds = self.bounds;
 }
 
 - (void)_updateLayout_isNormal_iPhone_X {
@@ -209,6 +213,10 @@ NS_ASSUME_NONNULL_BEGIN
             }
                 break;
         }
+        
+        [UIView animateWithDuration:0.4 animations:^{
+            [self layoutIfNeeded];
+        }];
     }];
 }
 

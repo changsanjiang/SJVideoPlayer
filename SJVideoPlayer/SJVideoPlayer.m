@@ -101,7 +101,6 @@ NS_ASSUME_NONNULL_BEGIN
     if ( !self ) return nil;
     [self.switcher addControlLayer:self.defaultEdgeCarrier]; // 添加一个控制层
     [self.switcher switchControlLayerForIdentitfier:SJControlLayer_Edge]; // 切换到添加的控制层
-    
     self.showMoreItemForTopControlLayer = YES; // 显示更多按钮
     self.defaultEdgeControlLayer.hideBottomProgressSlider = NO; // 显示底部进度条
     return self;
@@ -126,17 +125,19 @@ NS_ASSUME_NONNULL_BEGIN
 - (instancetype)_init {
     self = [super init];
     if ( !self ) return nil;
-    [self _initializeSwitcher];
-    [self _initializeSettingsRecorder];
-    [self _initializePlayStatusObserver];
+    _switcher = [[SJControlLayerSwitcher alloc] initWithPlayer:self];
+    dispatch_async(dispatch_get_global_queue(0, 0), ^{
+        [self _initializeSwitcherObserver];
+        [self _initializeSettingsRecorder];
+        [self _initializePlayStatusObserver];
+    });
+    [self _updateCommonProperties];
     return self;
 }
 
 #pragma mark -
-- (void)_initializeSwitcher {
-    _switcher = [[SJControlLayerSwitcher alloc] initWithPlayer:self];
+- (void)_initializeSwitcherObserver {
     _switcherObserver = [_switcher getObserver];
-    
     __weak typeof(self) _self = self;
     _switcherObserver.playerWillBeginSwitchControlLayer = ^(id<SJControlLayerSwitcher>  _Nonnull switcher, id<SJControlLayer>  _Nonnull controlLayer) {
         __strong typeof(_self) self = _self;
@@ -456,15 +457,18 @@ NS_ASSUME_NONNULL_BEGIN
     if ( showMoreItemForTopControlLayer == _showMoreItemForTopControlLayer )
         return;
     _showMoreItemForTopControlLayer = showMoreItemForTopControlLayer;
-    if ( showMoreItemForTopControlLayer ) {
-        [self.defaultEdgeControlLayer.topAdapter addItem:[self moreItemDelegate].item];
-    }
-    else {
-        [self.defaultEdgeControlLayer.topAdapter removeItemForTag:SJEdgeControlLayerTopItem_More];
-        [self.switcher deleteControlLayerForIdentifier:SJControlLayer_MoreSettting];
-    }
+    dispatch_async(dispatch_get_main_queue(), ^{
+        if ( showMoreItemForTopControlLayer ) {
+            [self.defaultEdgeControlLayer.topAdapter addItem:[self moreItemDelegate].item];
+        }
+        else {
+            [self.defaultEdgeControlLayer.topAdapter removeItemForTag:SJEdgeControlLayerTopItem_More];
+            [self.switcher deleteControlLayerForIdentifier:SJControlLayer_MoreSettting];
+        }
+        
+        [self.defaultEdgeControlLayer.topAdapter reload];
+    });
     
-    [self.defaultEdgeControlLayer.topAdapter reload];
 }
 - (BOOL)showMoreItemForTopControlLayer {
     return _showMoreItemForTopControlLayer;

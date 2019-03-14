@@ -2,65 +2,65 @@ PODS:
   - Masonry (1.1.0)
   - Reachability (3.2)
   - SJAttributesFactory (2.0.5)
-  - SJBaseVideoPlayer (2.2.1):
+  - SJBaseVideoPlayer (2.2.2):
     - Masonry
     - Reachability
-    - SJBaseVideoPlayer/Header (= 2.2.1)
-    - SJBaseVideoPlayer/Model (= 2.2.1)
-    - SJBaseVideoPlayer/SJAVMediaPlaybackController (= 2.2.1)
-    - SJBaseVideoPlayer/SJDeviceVolumeAndBrightnessManager (= 2.2.1)
-    - SJBaseVideoPlayer/SJPrompt (= 2.2.1)
-    - SJBaseVideoPlayer/SJRotationManager (= 2.2.1)
-    - SJBaseVideoPlayer/Tool (= 2.2.1)
+    - SJBaseVideoPlayer/Header (= 2.2.2)
+    - SJBaseVideoPlayer/Model (= 2.2.2)
+    - SJBaseVideoPlayer/SJAVMediaPlaybackController (= 2.2.2)
+    - SJBaseVideoPlayer/SJDeviceVolumeAndBrightnessManager (= 2.2.2)
+    - SJBaseVideoPlayer/SJPrompt (= 2.2.2)
+    - SJBaseVideoPlayer/SJRotationManager (= 2.2.2)
+    - SJBaseVideoPlayer/Tool (= 2.2.2)
     - SJObserverHelper
-  - SJBaseVideoPlayer/Header (2.2.1):
+  - SJBaseVideoPlayer/Header (2.2.2):
     - Masonry
     - Reachability
     - SJObserverHelper
-  - SJBaseVideoPlayer/Model (2.2.1):
-    - Masonry
-    - Reachability
-    - SJBaseVideoPlayer/Header
-    - SJObserverHelper
-  - SJBaseVideoPlayer/SJAVMediaPlaybackController (2.2.1):
-    - Masonry
-    - Reachability
-    - SJBaseVideoPlayer/SJAVMediaPlaybackController/Core (= 2.2.1)
-    - SJBaseVideoPlayer/Tool
-    - SJObserverHelper
-  - SJBaseVideoPlayer/SJAVMediaPlaybackController/Core (2.2.1):
-    - Masonry
-    - Reachability
-    - SJBaseVideoPlayer/Tool
-    - SJObserverHelper
-  - SJBaseVideoPlayer/SJDeviceVolumeAndBrightnessManager (2.2.1):
+  - SJBaseVideoPlayer/Model (2.2.2):
     - Masonry
     - Reachability
     - SJBaseVideoPlayer/Header
-    - SJBaseVideoPlayer/SJDeviceVolumeAndBrightnessManager/Core (= 2.2.1)
-    - SJBaseVideoPlayer/SJDeviceVolumeAndBrightnessManager/ResourceLoader (= 2.2.1)
     - SJObserverHelper
-  - SJBaseVideoPlayer/SJDeviceVolumeAndBrightnessManager/Core (2.2.1):
+  - SJBaseVideoPlayer/SJAVMediaPlaybackController (2.2.2):
+    - Masonry
+    - Reachability
+    - SJBaseVideoPlayer/SJAVMediaPlaybackController/Core (= 2.2.2)
+    - SJBaseVideoPlayer/Tool
+    - SJObserverHelper
+  - SJBaseVideoPlayer/SJAVMediaPlaybackController/Core (2.2.2):
+    - Masonry
+    - Reachability
+    - SJBaseVideoPlayer/Tool
+    - SJObserverHelper
+  - SJBaseVideoPlayer/SJDeviceVolumeAndBrightnessManager (2.2.2):
+    - Masonry
+    - Reachability
+    - SJBaseVideoPlayer/Header
+    - SJBaseVideoPlayer/SJDeviceVolumeAndBrightnessManager/Core (= 2.2.2)
+    - SJBaseVideoPlayer/SJDeviceVolumeAndBrightnessManager/ResourceLoader (= 2.2.2)
+    - SJObserverHelper
+  - SJBaseVideoPlayer/SJDeviceVolumeAndBrightnessManager/Core (2.2.2):
     - Masonry
     - Reachability
     - SJBaseVideoPlayer/Header
     - SJBaseVideoPlayer/SJDeviceVolumeAndBrightnessManager/ResourceLoader
     - SJObserverHelper
-  - SJBaseVideoPlayer/SJDeviceVolumeAndBrightnessManager/ResourceLoader (2.2.1):
+  - SJBaseVideoPlayer/SJDeviceVolumeAndBrightnessManager/ResourceLoader (2.2.2):
     - Masonry
     - Reachability
     - SJBaseVideoPlayer/Header
     - SJObserverHelper
-  - SJBaseVideoPlayer/SJPrompt (2.2.1):
+  - SJBaseVideoPlayer/SJPrompt (2.2.2):
     - Masonry
     - Reachability
     - SJObserverHelper
-  - SJBaseVideoPlayer/SJRotationManager (2.2.1):
+  - SJBaseVideoPlayer/SJRotationManager (2.2.2):
     - Masonry
     - Reachability
     - SJBaseVideoPlayer/Header
     - SJObserverHelper
-  - SJBaseVideoPlayer/Tool (2.2.1):
+  - SJBaseVideoPlayer/Tool (2.2.2):
     - Masonry
     - Reachability
     - SJBaseVideoPlayer/Header
@@ -76,123 +76,123 @@ PODS:
   - SJRouter/Core (0.0.10)
   - SJScrollEntriesView (1.1.0):
     - Masonry
-  - SJVideoPlayer (2.4.5):
+  - SJVideoPlayer (2.4.7):
     - Masonry
     - SJAttributesFactory
-    - SJBaseVideoPlayer (>= 2.2.1)
-    - SJVideoPlayer/Adapters (= 2.4.5)
-    - SJVideoPlayer/Common (= 2.4.5)
-    - SJVideoPlayer/Settings (= 2.4.5)
-    - SJVideoPlayer/SJEdgeControlLayer (= 2.4.5)
-    - SJVideoPlayer/SJFilmEditingControlLayer (= 2.4.5)
-    - SJVideoPlayer/SJLoadFailedControlLayer (= 2.4.5)
-    - SJVideoPlayer/SJLoadingView (= 2.4.5)
-    - SJVideoPlayer/SJMoreSettingControlLayer (= 2.4.5)
-    - SJVideoPlayer/SJNotReachableControlLayer (= 2.4.5)
-    - SJVideoPlayer/SJProgressSlider (= 2.4.5)
-    - SJVideoPlayer/Switcher (= 2.4.5)
-  - SJVideoPlayer/Adapters (2.4.5):
+    - SJBaseVideoPlayer (>= 2.2.2)
+    - SJVideoPlayer/Adapters (= 2.4.7)
+    - SJVideoPlayer/Common (= 2.4.7)
+    - SJVideoPlayer/Settings (= 2.4.7)
+    - SJVideoPlayer/SJEdgeControlLayer (= 2.4.7)
+    - SJVideoPlayer/SJFilmEditingControlLayer (= 2.4.7)
+    - SJVideoPlayer/SJLoadFailedControlLayer (= 2.4.7)
+    - SJVideoPlayer/SJLoadingView (= 2.4.7)
+    - SJVideoPlayer/SJMoreSettingControlLayer (= 2.4.7)
+    - SJVideoPlayer/SJNotReachableControlLayer (= 2.4.7)
+    - SJVideoPlayer/SJProgressSlider (= 2.4.7)
+    - SJVideoPlayer/Switcher (= 2.4.7)
+  - SJVideoPlayer/Adapters (2.4.7):
     - Masonry
     - SJAttributesFactory
-    - SJBaseVideoPlayer (>= 2.2.1)
+    - SJBaseVideoPlayer (>= 2.2.2)
     - SJVideoPlayer/Common
-  - SJVideoPlayer/Common (2.4.5):
+  - SJVideoPlayer/Common (2.4.7):
     - Masonry
     - SJAttributesFactory
-    - SJBaseVideoPlayer (>= 2.2.1)
-  - SJVideoPlayer/Settings (2.4.5):
+    - SJBaseVideoPlayer (>= 2.2.2)
+  - SJVideoPlayer/Settings (2.4.7):
     - Masonry
     - SJAttributesFactory
-    - SJBaseVideoPlayer (>= 2.2.1)
+    - SJBaseVideoPlayer (>= 2.2.2)
     - SJVideoPlayer/SJEdgeControlLayer/ResourceLoader
     - SJVideoPlayer/SJFilmEditingControlLayer/ResourceLoader
-  - SJVideoPlayer/SJEdgeControlLayer (2.4.5):
+  - SJVideoPlayer/SJEdgeControlLayer (2.4.7):
     - Masonry
     - SJAttributesFactory
-    - SJBaseVideoPlayer (>= 2.2.1)
+    - SJBaseVideoPlayer (>= 2.2.2)
     - SJVideoPlayer/Adapters
     - SJVideoPlayer/Common
-    - SJVideoPlayer/SJEdgeControlLayer/ResourceLoader (= 2.4.5)
-    - SJVideoPlayer/SJEdgeControlLayer/View (= 2.4.5)
+    - SJVideoPlayer/SJEdgeControlLayer/ResourceLoader (= 2.4.7)
+    - SJVideoPlayer/SJEdgeControlLayer/View (= 2.4.7)
     - SJVideoPlayer/SJLoadingView
     - SJVideoPlayer/SJProgressSlider
     - SJVideoPlayer/Switcher
-  - SJVideoPlayer/SJEdgeControlLayer/ResourceLoader (2.4.5):
+  - SJVideoPlayer/SJEdgeControlLayer/ResourceLoader (2.4.7):
     - Masonry
     - SJAttributesFactory
-    - SJBaseVideoPlayer (>= 2.2.1)
+    - SJBaseVideoPlayer (>= 2.2.2)
     - SJVideoPlayer/Adapters
     - SJVideoPlayer/Common
     - SJVideoPlayer/SJLoadingView
     - SJVideoPlayer/SJProgressSlider
     - SJVideoPlayer/Switcher
-  - SJVideoPlayer/SJEdgeControlLayer/View (2.4.5):
+  - SJVideoPlayer/SJEdgeControlLayer/View (2.4.7):
     - Masonry
     - SJAttributesFactory
-    - SJBaseVideoPlayer (>= 2.2.1)
+    - SJBaseVideoPlayer (>= 2.2.2)
     - SJVideoPlayer/Adapters
     - SJVideoPlayer/Common
     - SJVideoPlayer/SJEdgeControlLayer/ResourceLoader
     - SJVideoPlayer/SJLoadingView
     - SJVideoPlayer/SJProgressSlider
     - SJVideoPlayer/Switcher
-  - SJVideoPlayer/SJFilmEditingControlLayer (2.4.5):
+  - SJVideoPlayer/SJFilmEditingControlLayer (2.4.7):
     - Masonry
     - SJAttributesFactory
-    - SJBaseVideoPlayer (>= 2.2.1)
+    - SJBaseVideoPlayer (>= 2.2.2)
     - SJVideoPlayer/Adapters
-    - SJVideoPlayer/SJFilmEditingControlLayer/Core (= 2.4.5)
-    - SJVideoPlayer/SJFilmEditingControlLayer/ResourceLoader (= 2.4.5)
+    - SJVideoPlayer/SJFilmEditingControlLayer/Core (= 2.4.7)
+    - SJVideoPlayer/SJFilmEditingControlLayer/ResourceLoader (= 2.4.7)
     - SJVideoPlayer/SJProgressSlider
     - SJVideoPlayer/Switcher
-  - SJVideoPlayer/SJFilmEditingControlLayer/Core (2.4.5):
+  - SJVideoPlayer/SJFilmEditingControlLayer/Core (2.4.7):
     - Masonry
     - SJAttributesFactory
-    - SJBaseVideoPlayer (>= 2.2.1)
+    - SJBaseVideoPlayer (>= 2.2.2)
     - SJVideoPlayer/Adapters
     - SJVideoPlayer/SJFilmEditingControlLayer/ResourceLoader
     - SJVideoPlayer/SJProgressSlider
     - SJVideoPlayer/Switcher
-  - SJVideoPlayer/SJFilmEditingControlLayer/ResourceLoader (2.4.5):
+  - SJVideoPlayer/SJFilmEditingControlLayer/ResourceLoader (2.4.7):
     - Masonry
     - SJAttributesFactory
-    - SJBaseVideoPlayer (>= 2.2.1)
+    - SJBaseVideoPlayer (>= 2.2.2)
     - SJVideoPlayer/Adapters
     - SJVideoPlayer/SJProgressSlider
     - SJVideoPlayer/Switcher
-  - SJVideoPlayer/SJLoadFailedControlLayer (2.4.5):
+  - SJVideoPlayer/SJLoadFailedControlLayer (2.4.7):
     - Masonry
     - SJAttributesFactory
-    - SJBaseVideoPlayer (>= 2.2.1)
+    - SJBaseVideoPlayer (>= 2.2.2)
     - SJVideoPlayer/SJNotReachableControlLayer
-  - SJVideoPlayer/SJLoadingView (2.4.5):
+  - SJVideoPlayer/SJLoadingView (2.4.7):
     - Masonry
     - SJAttributesFactory
-    - SJBaseVideoPlayer (>= 2.2.1)
-  - SJVideoPlayer/SJMoreSettingControlLayer (2.4.5):
+    - SJBaseVideoPlayer (>= 2.2.2)
+  - SJVideoPlayer/SJMoreSettingControlLayer (2.4.7):
     - Masonry
     - SJAttributesFactory
-    - SJBaseVideoPlayer (>= 2.2.1)
+    - SJBaseVideoPlayer (>= 2.2.2)
     - SJVideoPlayer/SJEdgeControlLayer
-    - SJVideoPlayer/SJMoreSettingControlLayer/Core (= 2.4.5)
-  - SJVideoPlayer/SJMoreSettingControlLayer/Core (2.4.5):
+    - SJVideoPlayer/SJMoreSettingControlLayer/Core (= 2.4.7)
+  - SJVideoPlayer/SJMoreSettingControlLayer/Core (2.4.7):
     - Masonry
     - SJAttributesFactory
-    - SJBaseVideoPlayer (>= 2.2.1)
+    - SJBaseVideoPlayer (>= 2.2.2)
     - SJVideoPlayer/SJEdgeControlLayer
-  - SJVideoPlayer/SJNotReachableControlLayer (2.4.5):
+  - SJVideoPlayer/SJNotReachableControlLayer (2.4.7):
     - Masonry
     - SJAttributesFactory
-    - SJBaseVideoPlayer (>= 2.2.1)
+    - SJBaseVideoPlayer (>= 2.2.2)
     - SJVideoPlayer/SJEdgeControlLayer
-  - SJVideoPlayer/SJProgressSlider (2.4.5):
+  - SJVideoPlayer/SJProgressSlider (2.4.7):
     - Masonry
     - SJAttributesFactory
-    - SJBaseVideoPlayer (>= 2.2.1)
-  - SJVideoPlayer/Switcher (2.4.5):
+    - SJBaseVideoPlayer (>= 2.2.2)
+  - SJVideoPlayer/Switcher (2.4.7):
     - Masonry
     - SJAttributesFactory
-    - SJBaseVideoPlayer (>= 2.2.1)
+    - SJBaseVideoPlayer (>= 2.2.2)
   - YYText (1.0.7)
 
 DEPENDENCIES:
@@ -228,13 +228,13 @@ SPEC CHECKSUMS:
   Masonry: 678fab65091a9290e40e2832a55e7ab731aad201
   Reachability: 33e18b67625424e47b6cde6d202dce689ad7af96
   SJAttributesFactory: d5b670fd0930928ac1c6fb0b06653f92fefd640c
-  SJBaseVideoPlayer: d278e3ff6f5956f8dab9c5291d77c10f3b7684ff
+  SJBaseVideoPlayer: 54f4f9b50a304c2f8129a3d6a3af05932002a9d3
   SJFullscreenPopGesture: 94db6f970d864d53161d819916aed3f30b6a1442
   SJObserverHelper: baf589280961aeda14acb812ac68f289b753027f
   SJPlaybackListController: bb150965596f46cc5542b37c05d8401601db4022
   SJRouter: e9a0246c2f1aaf6511cf15b2a67788246c08100c
   SJScrollEntriesView: 2388fec9dbb6ab639f8966de036394eeb753617d
-  SJVideoPlayer: 2d618a0517e16cd2f7aac1ebadb4686833896604
+  SJVideoPlayer: b50b872a93d386e5d5639915d6693b3a2549af11
   YYText: 5c461d709e24d55a182d1441c41dc639a18a4849
 
 PODFILE CHECKSUM: 749a590b7694ec430a2273354db28d292a8d8a95

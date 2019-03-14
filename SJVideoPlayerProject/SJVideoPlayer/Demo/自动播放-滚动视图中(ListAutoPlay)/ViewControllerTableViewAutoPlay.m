@@ -61,6 +61,7 @@
         make.edges.offset(0);
     }];
     
+    _player.resumePlaybackWhenPlayerViewScrollAppears = YES;
     _player.URLAsset = [[SJVideoPlayerURLAsset alloc] initWithURL:[NSBundle.mainBundle URLForResource:@"play" withExtension:@"mp4"] playModel:[SJPlayModel UITableViewCellPlayModelWithPlayerSuperviewTag:cell.view.coverImageView.tag atIndexPath:indexPath tableView:self.tableView]];
     _player.URLAsset.title = @"Test Title";
     _player.URLAsset.alwaysShowTitle = YES;
@@ -70,9 +71,10 @@
 
 - (void)_configAutoplayForTableView {
     // 配置列表自动播放
-    [_tableView sj_enableAutoplayWithConfig:[SJPlayerAutoplayConfig configWithPlayerSuperviewTag:101 autoplayDelegate:self]];
-    
-    [_tableView sj_needPlayNextAsset];
+    SJPlayerAutoplayConfig *config = [SJPlayerAutoplayConfig configWithPlayerSuperviewTag:101 autoplayDelegate:self];
+    config.autoplayPosition = SJAutoplayPositionTop;
+    [_tableView sj_enableAutoplayWithConfig:config];
+//    [_tableView sj_needPlayNextAsset];
 }
 
 - (void)_setupViews {

@@ -9,6 +9,8 @@
 #import <UIKit/UIKit.h>
 #import "SJAVMediaPlayAssetProtocol.h"
 #import "SJPlayerBufferStatus.h"
+#import "SJMediaPlaybackProtocol.h"
+
 @protocol SJAVMediaPlayAssetPropertiesObserverDelegate;
 @class SJAVMediaPlayAssetPropertiesObserver;
 
@@ -20,6 +22,7 @@ UIKIT_EXTERN NSNotificationName const SJAVMediaBufferLoadedTimeRangesDidChangeNo
 UIKIT_EXTERN NSNotificationName const SJAVMediaBufferWatingTimeDidChangeNotification;
 UIKIT_EXTERN NSNotificationName const SJAVMediaPresentationSizeDidChangeNotification;
 UIKIT_EXTERN NSNotificationName const SJAVMediaPlayerItemStatusDidChangeNotification;
+UIKIT_EXTERN NSNotificationName const SJAVMediaPlaybackTypeLoadedNotification;
 
 
 NS_ASSUME_NONNULL_BEGIN
@@ -40,6 +43,7 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic, readonly) CMTimeRange bufferLoadedTime;
 @property (nonatomic, readonly) CGSize presentationSize;
 @property (nonatomic, readonly) AVPlayerItemStatus playerItemStatus;
+@property (nonatomic, readonly) SJMediaPlaybackType playbackType;
 - (void)updateBufferStatus;
 @end
 
@@ -56,6 +60,7 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic, readonly) NSTimeInterval currentTime;
 @property (nonatomic, readonly) CGSize presentationSize;
 @property (nonatomic, readonly) NSTimeInterval duration;
+@property (nonatomic, readonly) SJMediaPlaybackType playbackType;
 
 - (instancetype)init NS_UNAVAILABLE;
 + (instancetype)new  NS_UNAVAILABLE;
@@ -71,5 +76,6 @@ NS_ASSUME_NONNULL_BEGIN
 - (void)observer:(SJAVMediaPlayAssetPropertiesObserver *)observer presentationSizeDidChange:(CGSize)presentationSize;
 - (void)observer:(SJAVMediaPlayAssetPropertiesObserver *)observer playerItemStatusDidChange:(AVPlayerItemStatus)playerItemStatus;
 - (void)playDidToEndForObserver:(SJAVMediaPlayAssetPropertiesObserver *)observer;
+- (void)observer:(SJAVMediaPlayAssetPropertiesObserver *)observer playbackTypeLoaded:(SJMediaPlaybackType)playbackType;
 @end
 NS_ASSUME_NONNULL_END

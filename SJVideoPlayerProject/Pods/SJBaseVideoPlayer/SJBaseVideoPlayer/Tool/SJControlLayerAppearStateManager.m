@@ -96,8 +96,7 @@ NS_ASSUME_NONNULL_BEGIN
 }
 
 - (void)resume {
-    if ( _isAppeared )
-        [self _start];
+    if ( _isAppeared ) [self _start];
 }
 
 - (void)keepAppearState {

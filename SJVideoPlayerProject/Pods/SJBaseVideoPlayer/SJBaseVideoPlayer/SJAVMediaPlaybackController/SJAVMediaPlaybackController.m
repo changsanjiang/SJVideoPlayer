@@ -70,6 +70,12 @@ inline static bool isFloatZero(float value) {
     _rate = 1;
     _volume = 1;
     _presentView = [SJAVMediaPresentView new];
+    [self _setupMainPresenterObserver];
+    [self registrar];
+    return self;
+}
+
+- (void)_setupMainPresenterObserver {
     _mainPresenterObserver = [_presentView.mainPresenter getObserver];
     __weak typeof(self) _self = self;
     _mainPresenterObserver.isReadyForDisplayExeBlock = ^(id<SJAVPlayerLayerPresenter>  _Nonnull presenter) {
@@ -78,12 +84,10 @@ inline static bool isFloatZero(float value) {
         if ( [self.delegate respondsToSelector:@selector(playbackControllerIsReadyForDisplay:)] ) {
             [self.delegate playbackControllerIsReadyForDisplay:self];
         }
-    #ifdef SJ_MAC
+#ifdef SJ_MAC
         printf("\n_presentView.mainPresenter.isReadyForDisplay\n");
-    #endif
+#endif
     };
-    [self registrar];
-    return self;
 }
 
 - (UIView *)playerView {
@@ -211,6 +215,7 @@ static const char *key = "kSJAVMediaPlayAsset";
             [self play];
             [self.presentView exchangePresenter];
             [self.presentView resetSubPresenter];
+            [self _setupMainPresenterObserver];
         #ifdef SJ_MAC
             printf("\n切换清晰度完成\n");
         #endif
@@ -250,7 +255,11 @@ static const char *key = "kSJAVMediaPlayAsset";
         [self.delegate mediaDidPlayToEndForPlaybackController:self];
     }
 }
-
+- (void)observer:(SJAVMediaPlayAssetPropertiesObserver *)observer playbackTypeLoaded:(SJMediaPlaybackType)playbackType {
+    if ( [self.delegate respondsToSelector:@selector(playbackController:playbackTypeLoaded:)] ) {
+        [self.delegate playbackController:self playbackTypeLoaded:playbackType];
+    }
+}
 - (void)_updateDurationIfNeeded {
     NSTimeInterval duration = _playAssetObserver.duration;
     if ( duration != _duration ) {
@@ -499,6 +508,10 @@ static const char *key = "kSJAVMediaPlayAsset";
 
 - (void)updateBufferStatus {
     [_playAsset updateBufferStatus];
+}
+
+- (SJMediaPlaybackType)playbackType {
+    return _playAsset.playbackType;
 }
 @end
 NS_ASSUME_NONNULL_END

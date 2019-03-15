@@ -28,14 +28,18 @@ bool sj_isAppeared1(NSInteger viewTag, NSIndexPath *viewAtIndexPath, UIScrollVie
 }
 
 bool sj_isAppeared2(UIView *_Nullable childView, UIScrollView *_Nullable scrollView) {
-    if ( !childView ) return false;
-    if ( !scrollView ) return false;
-    if ( !scrollView.window ) return false;
+    return !CGRectIsEmpty(sj_intersection(childView, scrollView));
+}
+
+extern CGRect sj_intersection(UIView *_Nullable childView, UIScrollView *_Nullable scrollView) {
+    if ( !childView || !scrollView || !scrollView.window )
+        return CGRectZero;
     CGRect rect = [childView.superview convertRect:childView.frame toView:scrollView];
     CGRect rect_max = (CGRect){scrollView.contentOffset, scrollView.frame.size};
-    CGRect inset = CGRectIntersection(rect, rect_max);
-    if ( CGRectIsEmpty(inset) ) return false;
-    return !CGRectIsNull(inset);
+    CGRect ist = CGRectIntersection(rect, rect_max);
+    if ( CGRectIsEmpty(ist) || CGRectIsNull(ist) )
+        return CGRectZero;
+    return ist;
 }
 
 UIScrollView *_Nullable sj_getScrollView(SJPlayModel *playModel) {

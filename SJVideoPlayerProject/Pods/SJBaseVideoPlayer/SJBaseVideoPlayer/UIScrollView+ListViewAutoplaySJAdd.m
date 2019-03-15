@@ -16,55 +16,6 @@
 #endif
 
 NS_ASSUME_NONNULL_BEGIN
-@protocol UIScrollViewDelegate_ListViewAutoplaySJAdd <UIScrollViewDelegate>
-- (void)sj_scrollViewDidEndDragging:(__kindof UIScrollView *)scrollView willDecelerate:(BOOL)decelerate;
-- (void)sj_scrollViewDidEndDecelerating:(__kindof UIScrollView *)scrollView;
-@end
-
-/// took over
-static bool sj_isTookOver(Class cls);
-static void sj_setIsTookOver(Class cls);
-
-static void sj_tookOverMethod(Class cls, struct objc_method_description *des, SEL tookOverSEL, IMP tookOverIMP);
-static void sj_scrollViewDidEndDragging(id<UIScrollViewDelegate_ListViewAutoplaySJAdd> delegate, SEL _cmd, __kindof UIScrollView *scrollView, bool willDecelerate);
-static void sj_scrollViewDidEndDecelerating(id<UIScrollViewDelegate_ListViewAutoplaySJAdd> delegate, SEL _cmd, __kindof UIScrollView *scrollView);
-
-/// autoplay
-static void sj_scrollViewConsiderPlayNewAsset(__kindof __kindof UIScrollView *scrollView);
-static void sj_tableViewConsiderPlayNextAsset(UITableView *tableView);
-static void sj_collectionViewConsiderPlayNextAsset(UICollectionView *collectionView);
-
-
-@interface _SJScrollViewDelegateObserver: NSObject
-+ (void)observeScrollView:(__kindof UIScrollView *)scrollView delegateChangeExeBlock:(void(^)(void))block;
-- (instancetype)initWithScrollView:(__kindof UIScrollView *)scrollView valueChangeExeBlock:(void(^)(_SJScrollViewDelegateObserver *observer))block;
-@property (nonatomic, copy) void(^valueChangeExeBlock)(_SJScrollViewDelegateObserver *observer);
-@end
-
-@implementation _SJScrollViewDelegateObserver
-+ (void)observeScrollView:(__kindof UIScrollView *)scrollView delegateChangeExeBlock:(void(^)(void))block {
-    if ( objc_getAssociatedObject(scrollView, _cmd) != nil ) return;
-    _SJScrollViewDelegateObserver *observer = [[_SJScrollViewDelegateObserver alloc] initWithScrollView:scrollView valueChangeExeBlock:^(_SJScrollViewDelegateObserver * _Nonnull observer) {
-        if ( block ) block();
-    }];
-    objc_setAssociatedObject(scrollView, _cmd, observer, OBJC_ASSOCIATION_RETAIN_NONATOMIC);
-}
-static NSString *delegateKey = @"delegate";
-- (instancetype)initWithScrollView:(__kindof UIScrollView *)scrollView valueChangeExeBlock:(void (^)(_SJScrollViewDelegateObserver * _Nonnull))block {
-    self = [super init];
-    if ( !self ) return nil;
-    _valueChangeExeBlock = block;
-    [scrollView sj_addObserver:self forKeyPath:delegateKey context:&delegateKey];
-    return self;
-}
-- (void)observeValueForKeyPath:(nullable NSString *)keyPath ofObject:(nullable id)object change:(nullable NSDictionary<NSKeyValueChangeKey,id> *)change context:(nullable void *)context {
-    if ( context == &delegateKey ) {
-        if ( change[NSKeyValueChangeOldKey] == change[NSKeyValueChangeNewKey] ) return;
-        if ( _valueChangeExeBlock ) _valueChangeExeBlock(self);
-    }
-}
-@end
-
 @implementation UIScrollView (SJPlayerCurrentPlayingIndexPath)
 - (void)setSj_currentPlayingIndexPath:(nullable NSIndexPath *)sj_currentPlayingIndexPath {
     objc_setAssociatedObject(self, @selector(sj_currentPlayingIndexPath), sj_currentPlayingIndexPath, OBJC_ASSOCIATION_RETAIN_NONATOMIC);
@@ -75,12 +26,15 @@ static NSString *delegateKey = @"delegate";
 }
 @end
 
-@implementation UIScrollView (ListViewAutoplaySJAdd)
+static void sj_observeContentOffset(UIScrollView *scrollView, void(^contentOffsetDidChangeExeBlock)(void));
+static void sj_removeContentOffsetObserver(UIScrollView *scrollView);
 
+static void sj_considerPlayNewAsset(__kindof UIScrollView *scrollView);
+static void sj_needPlayNextAsset(__kindof UIScrollView *scrollView);
+@implementation UIScrollView (ListViewAutoplaySJAdd)
 - (void)setSj_enabledAutoplay:(BOOL)sj_enabledAutoplay {
     objc_setAssociatedObject(self, @selector(sj_enabledAutoplay), @(sj_enabledAutoplay), OBJC_ASSOCIATION_RETAIN_NONATOMIC);
 }
-
 - (BOOL)sj_enabledAutoplay {
     return [objc_getAssociatedObject(self, _cmd) boolValue];
 }
@@ -88,92 +42,94 @@ static NSString *delegateKey = @"delegate";
 - (void)setSj_autoplayConfig:(nullable SJPlayerAutoplayConfig *)sj_autoplayConfig {
     objc_setAssociatedObject(self, @selector(sj_autoplayConfig), sj_autoplayConfig, OBJC_ASSOCIATION_RETAIN_NONATOMIC);
 }
-
 - (nullable SJPlayerAutoplayConfig *)sj_autoplayConfig {
     return objc_getAssociatedObject(self, _cmd);
 }
 
 - (void)sj_enableAutoplayWithConfig:(SJPlayerAutoplayConfig *)autoplayConfig {
-    
     self.sj_enabledAutoplay = YES;
     self.sj_autoplayConfig = autoplayConfig;
 
-    if ( self.delegate ) { [self _sj_tookOver]; }
-    
-    __weak typeof(self) _self = self;
-    [_SJScrollViewDelegateObserver observeScrollView:self delegateChangeExeBlock:^{
-        __strong typeof(_self) self = _self;
-        if ( !self ) return;
-        if ( self.delegate ) [self _sj_tookOver];
-    }];
+    dispatch_async(dispatch_get_main_queue(), ^{
+        __weak typeof(self) _self = self;
+        sj_observeContentOffset(self, ^{
+            __strong typeof(_self) self = _self;
+            if ( !self ) return;
+            [NSObject cancelPreviousPerformRequestsWithTarget:self selector:@selector(sj_considerPlayNewAsset) object:nil];
+            [self performSelector:@selector(sj_considerPlayNewAsset) withObject:nil afterDelay:0.3];
+        });
+    });
 }
 
 - (void)sj_disenableAutoplay {
     self.sj_enabledAutoplay = NO;
     self.sj_autoplayConfig = nil;
+    sj_removeContentOffsetObserver(self);
 }
 
 - (void)sj_needPlayNextAsset {
     dispatch_async(dispatch_get_main_queue(), ^{
-        if ( [self isKindOfClass:[UITableView class]] ) {
-            sj_tableViewConsiderPlayNextAsset((id)self);
-        }
-        else if ( [self isKindOfClass:[UICollectionView class]] ) {
-            sj_collectionViewConsiderPlayNextAsset((id)self);
-        }
+        sj_needPlayNextAsset(self);
     });
 }
 
-#pragma mark -
-- (void)_sj_tookOver {
-    if ( [self isMemberOfClass:[UIScrollView class]] ) return;
-    Class delegate_cls = [self.delegate class];
-    if ( sj_isTookOver(delegate_cls) ) return; sj_setIsTookOver(delegate_cls);
-    Protocol *protocol = @protocol(UIScrollViewDelegate);
-    struct objc_method_description des = protocol_getMethodDescription(protocol, @selector(scrollViewDidEndDragging:willDecelerate:), NO, YES);
-    sj_tookOverMethod(delegate_cls, &des, @selector(sj_scrollViewDidEndDragging:willDecelerate:), (IMP)sj_scrollViewDidEndDragging);
-    
-    des = protocol_getMethodDescription(protocol, @selector(scrollViewDidEndDecelerating:), NO, YES);
-    sj_tookOverMethod(delegate_cls, &des, @selector(sj_scrollViewDidEndDecelerating:), (IMP)sj_scrollViewDidEndDecelerating);
+- (void)sj_considerPlayNewAsset {
+    dispatch_async(dispatch_get_main_queue(), ^{
+        sj_considerPlayNewAsset(self);
+    });
 }
-
 @end
 
-static const char *tookOverKey = "tookOverKey";
-static bool sj_isTookOver(Class cls) {
-    return [objc_getAssociatedObject(cls, tookOverKey) boolValue];
+@interface _SJScrollViewContentOffsetObserver : NSObject
+- (instancetype)initWithScrollView:(UIScrollView *)scrollView contentOffsetDidChangeExeBlock:(void(^)(void))block;
+@end
+
+@implementation _SJScrollViewContentOffsetObserver {
+    void(^_contentOffsetDidChangeExeBlock)(void);
+}
++ (void)observeScrollView:(__kindof UIScrollView *)scrollView contentOffsetDidChangeExeBlock:(void(^)(void))block {
+    _SJScrollViewContentOffsetObserver *_Nullable observer = objc_getAssociatedObject(scrollView, _cmd);
+    if ( observer )
+        return;
+    
+    observer = [[_SJScrollViewContentOffsetObserver alloc] initWithScrollView:scrollView contentOffsetDidChangeExeBlock:block];
+    objc_setAssociatedObject(scrollView, _cmd, observer, OBJC_ASSOCIATION_RETAIN_NONATOMIC);
+}
+- (instancetype)initWithScrollView:(UIScrollView *)scrollView contentOffsetDidChangeExeBlock:(void (^)(void))block {
+    self = [super init];
+    if ( !self ) return nil;
+    [scrollView sj_addObserver:self forKeyPath:@"contentOffset"];
+    _contentOffsetDidChangeExeBlock = block;
+    return self;
+}
+- (void)observeValueForKeyPath:(nullable NSString *)keyPath ofObject:(nullable id)object change:(nullable NSDictionary<NSKeyValueChangeKey,id> *)change context:(nullable void *)context {
+    if ( [change[NSKeyValueChangeNewKey] isEqual:change[NSKeyValueChangeOldKey]] )
+        return;
+    if ( _contentOffsetDidChangeExeBlock ) _contentOffsetDidChangeExeBlock();
+}
+@end
+
+static char kObserver;
+static void sj_observeContentOffset(UIScrollView *scrollView, void(^contentOffsetDidChangeExeBlock)(void)) {
+    dispatch_async(dispatch_get_main_queue(), ^{
+        _SJScrollViewContentOffsetObserver *_Nullable observer = objc_getAssociatedObject(scrollView, &kObserver);
+        if ( observer )
+            return;
+        observer = [[_SJScrollViewContentOffsetObserver alloc] initWithScrollView:scrollView contentOffsetDidChangeExeBlock:contentOffsetDidChangeExeBlock];
+        objc_setAssociatedObject(scrollView, &kObserver, observer, OBJC_ASSOCIATION_RETAIN_NONATOMIC);
+    });
 }
 
-static void sj_setIsTookOver(Class cls) {
-    objc_setAssociatedObject(cls, tookOverKey, @(YES), OBJC_ASSOCIATION_RETAIN_NONATOMIC);
+static void sj_removeContentOffsetObserver(UIScrollView *scrollView) {
+    objc_setAssociatedObject(scrollView, &kObserver, nil, OBJC_ASSOCIATION_RETAIN_NONATOMIC);
 }
 
-static void sj_none() { /* nothing */ }
-
-static void sj_tookOverMethod(Class cls, struct objc_method_description *des, SEL tookOverSEL, IMP tookOverIMP) {
-    Method origin = class_getInstanceMethod(cls, des->name);
-    if ( !origin ) { class_addMethod(cls, des->name, (IMP)sj_none, des->types); origin = class_getInstanceMethod(cls, des->name); }
-    class_addMethod(cls, tookOverSEL, tookOverIMP, des->types);
-    Method t = class_getInstanceMethod(cls, tookOverSEL);
-    method_exchangeImplementations(origin, t);
-}
-
+#pragma mark -
 static void sj_tableViewConsiderPlayNewAsset(UITableView *tableView);
 static void sj_collectionViewConsiderPlayNewAsset(UICollectionView *collectionView);
 static void sj_exeAnima(__kindof UIScrollView *scrollView, NSIndexPath *indexPath, SJAutoplayScrollAnimationType animationType);
 
-static void sj_scrollViewDidEndDragging(id<UIScrollViewDelegate_ListViewAutoplaySJAdd> delegate, SEL _cmd, __kindof UIScrollView *scrollView, bool willDecelerate) {
-    [delegate sj_scrollViewDidEndDragging:scrollView willDecelerate:willDecelerate];
-    if ( willDecelerate ) return;
-    sj_scrollViewConsiderPlayNewAsset(scrollView);
-}
-
-static void sj_scrollViewDidEndDecelerating(id<UIScrollViewDelegate_ListViewAutoplaySJAdd> delegate, SEL _cmd, __kindof UIScrollView *scrollView) {
-    [delegate sj_scrollViewDidEndDecelerating:scrollView];
-    sj_scrollViewConsiderPlayNewAsset(scrollView);
-}
-
-static void sj_scrollViewConsiderPlayNewAsset(__kindof __kindof UIScrollView *scrollView) {
+static void sj_considerPlayNewAsset(__kindof __kindof UIScrollView *scrollView) {
     if ( !scrollView.sj_enabledAutoplay ) return;
     if ( ![scrollView sj_autoplayConfig].autoplayDelegate ) return;
     if ( [scrollView isKindOfClass:[UITableView class]] )
@@ -182,136 +138,190 @@ static void sj_scrollViewConsiderPlayNewAsset(__kindof __kindof UIScrollView *sc
         sj_collectionViewConsiderPlayNewAsset(scrollView);
 }
 
-static void sj_tableViewConsiderPlayNewAsset(UITableView *tableView) {
-    NSArray<UITableViewCell *> *visibleCells = tableView.visibleCells;
-    if ( visibleCells.count == 0 ) return;
+static NSIndexPath *_Nullable sj_tableViewAutoplayNextIndexPath(UITableView *tableView) {
+    NSArray<NSIndexPath *> *_Nullable indexPathsForVisibleRows = tableView.indexPathsForVisibleRows;
+    if ( !indexPathsForVisibleRows )
+        return nil;
     
     SJPlayerAutoplayConfig *config = [tableView sj_autoplayConfig];
-    
     NSIndexPath *currentPlayingIndexPath = tableView.sj_currentPlayingIndexPath;
     if ( currentPlayingIndexPath &&
-         sj_isAppeared1(config.playerSuperviewTag, currentPlayingIndexPath, tableView) ) return;
-
-    CGFloat midLine = 0;
-    if (@available(iOS 11.0, *)) {
-        midLine = floor((CGRectGetHeight(tableView.frame) - tableView.adjustedContentInset.top) * 0.5);
-    } else {
-        midLine = floor((CGRectGetHeight(tableView.frame) - tableView.contentInset.top) * 0.5);
-    }
-
-    NSInteger count = visibleCells.count;
-    NSInteger half = (NSInteger)(count * 0.5);
-    NSArray<UITableViewCell *> *half_l = [visibleCells subarrayWithRange:NSMakeRange(0, half)];
-    NSArray<UITableViewCell *> *half_r = [visibleCells subarrayWithRange:NSMakeRange(half, count - half)];
-
-    __block UITableViewCell *cell_l = nil;
-    __block UIView *half_l_view = nil;
-    [half_l enumerateObjectsWithOptions:NSEnumerationReverse usingBlock:^(UITableViewCell * _Nonnull obj, NSUInteger idx, BOOL * _Nonnull stop) {
-        UIView *superview = [obj viewWithTag:config.playerSuperviewTag];
-        if ( !superview ) return;
-        *stop = YES;
-        cell_l = obj;
-        half_l_view = superview;
-    }];
-
-    __block UITableViewCell *cell_r = nil;
-    __block UIView *half_r_view = nil;
-    [half_r enumerateObjectsUsingBlock:^(UITableViewCell * _Nonnull obj, NSUInteger idx, BOOL * _Nonnull stop) {
-        UIView *superview = [obj viewWithTag:config.playerSuperviewTag];
-        if ( !superview ) return;
-        *stop = YES;
-        cell_r = obj;
-        half_r_view = superview;
-    }];
-
-    if ( !half_l_view && !half_r_view ) return;
+        sj_isAppeared1(config.playerSuperviewTag, currentPlayingIndexPath, tableView) )
+        return nil;
     
-    NSIndexPath *nextIndexPath = nil;
-    if ( half_l_view && !half_r_view ) {
-        nextIndexPath = [tableView indexPathForCell:cell_l];
-    }
-    else if ( half_r_view && !half_l_view ) {
-        nextIndexPath = [tableView indexPathForCell:cell_r];
-    }
-    else {
-        CGRect half_l_rect = [half_l_view.superview convertRect:half_l_view.frame toView:tableView.superview];
-        CGRect half_r_rect = [half_r_view.superview convertRect:half_r_view.frame toView:tableView.superview];
+    switch ( config.autoplayPosition ) {
+        case SJAutoplayPositionTop: {
+            for ( NSIndexPath *indexPath in indexPathsForVisibleRows ) {
+                UIView *_Nullable target = sj_getTarget(tableView, indexPath, config.playerSuperviewTag);
+                if ( !target ) continue;
+                CGRect its = sj_intersection(target, tableView);
+                if ( floor(its.size.height) >= floor(target.bounds.size.height) ) {
+                    return indexPath;
+                }
+            }
+        }
+            break;
+        case SJAutoplayPositionMiddle: {
+            NSArray<UITableViewCell *> *visibleCells = tableView.visibleCells;
+            CGFloat midLine = 0;
+            if (@available(iOS 11.0, *)) {
+                midLine = floor((CGRectGetHeight(tableView.frame) - tableView.adjustedContentInset.top) * 0.5);
+            } else {
+                midLine = floor((CGRectGetHeight(tableView.frame) - tableView.contentInset.top) * 0.5);
+            }
 
-        if ( ABS(CGRectGetMaxY(half_l_rect) - midLine) < ABS(CGRectGetMinY(half_r_rect) - midLine) ) {
-            nextIndexPath = [tableView indexPathForCell:cell_l];
-        }
-        else {
-            nextIndexPath = [tableView indexPathForCell:cell_r];
+            NSInteger count = visibleCells.count;
+            NSInteger half = (NSInteger)(count * 0.5);
+            NSArray<UITableViewCell *> *half_l = [visibleCells subarrayWithRange:NSMakeRange(0, half)];
+            NSArray<UITableViewCell *> *half_r = [visibleCells subarrayWithRange:NSMakeRange(half, count - half)];
+            
+            UITableViewCell *cell_l = nil;
+            UIView *half_l_view = nil;
+            for ( UITableViewCell *cell in half_l ) {
+                UIView *_Nullable superview = [cell viewWithTag:config.playerSuperviewTag];
+                if ( !superview ) continue;
+                cell_l = cell;
+                half_l_view = superview;
+            }
+            
+            UITableViewCell *cell_r = nil;
+            UIView *half_r_view = nil;
+            for ( UITableViewCell *obj in half_r ) {
+                UIView *_Nullable superview = [obj viewWithTag:config.playerSuperviewTag];
+                if ( !superview ) continue;
+                cell_r = obj;
+                half_r_view = superview;
+            }
+            
+            if ( !half_l_view && !half_r_view ) return nil;
+            
+            NSIndexPath *_Nullable nextIndexPath = nil;
+            if ( half_l_view && !half_r_view ) {
+                nextIndexPath = [tableView indexPathForCell:cell_l];
+            }
+            else if ( half_r_view && !half_l_view ) {
+                nextIndexPath = [tableView indexPathForCell:cell_r];
+            }
+            else {
+                CGRect half_l_rect = [half_l_view.superview convertRect:half_l_view.frame toView:tableView.superview];
+                CGRect half_r_rect = [half_r_view.superview convertRect:half_r_view.frame toView:tableView.superview];
+                
+                if ( ABS(CGRectGetMaxY(half_l_rect) - midLine) < ABS(CGRectGetMinY(half_r_rect) - midLine) ) {
+                    nextIndexPath = [tableView indexPathForCell:cell_l];
+                }
+                else {
+                    nextIndexPath = [tableView indexPathForCell:cell_r];
+                }
+            }
+            return nextIndexPath;
         }
     }
+
+    return nil;
+}
+
+static void sj_tableViewConsiderPlayNewAsset(UITableView *tableView) {
+    NSIndexPath *_Nullable nextIndexPath = sj_tableViewAutoplayNextIndexPath(tableView);
+    if ( !nextIndexPath )
+        return;
+    SJPlayerAutoplayConfig *config = [tableView sj_autoplayConfig];
     [config.autoplayDelegate sj_playerNeedPlayNewAssetAtIndexPath:nextIndexPath];
 }
 
-static void sj_collectionViewConsiderPlayNewAsset(UICollectionView *collectionView) {
-    NSArray<UICollectionViewCell *> *visibleCells = [collectionView.visibleCells sortedArrayUsingComparator:^NSComparisonResult(id  _Nonnull obj1, id  _Nonnull obj2) {
-        return [[collectionView indexPathForCell:obj1] compare:[collectionView indexPathForCell:obj2]];
+static NSIndexPath *_Nullable sj_collectionViewAutoplayNextIndexPath(UICollectionView *collectionView) {
+    NSArray<NSIndexPath *> *indexPathsForVisibleItems = [collectionView.indexPathsForVisibleItems sortedArrayUsingComparator:^NSComparisonResult(id  _Nonnull obj1, id  _Nonnull obj2) {
+        return [obj1 compare:obj2];
     }];
-    if ( visibleCells.count == 0 ) return;
+    if ( 0 == indexPathsForVisibleItems.count )
+        return nil;
     
     SJPlayerAutoplayConfig *config = [collectionView sj_autoplayConfig];
-    
     NSIndexPath *currentPlayingIndexPath = collectionView.sj_currentPlayingIndexPath;
     if ( currentPlayingIndexPath &&
-         sj_isAppeared1(config.playerSuperviewTag, currentPlayingIndexPath, collectionView) ) return;
+        sj_isAppeared1(config.playerSuperviewTag, currentPlayingIndexPath, collectionView) )
+        return nil;
     
-    CGFloat midLine = 0;
-    if (@available(iOS 11.0, *)) {
-        midLine = floor((CGRectGetHeight(collectionView.frame) - collectionView.adjustedContentInset.top) * 0.5);
-    } else {
-        midLine = floor((CGRectGetHeight(collectionView.frame) - collectionView.contentInset.top) * 0.5);
-    }
-    
-    NSInteger count = visibleCells.count;
-    NSInteger half = (NSInteger)(count * 0.5);
-    NSArray<UICollectionViewCell *> *half_l = [visibleCells subarrayWithRange:NSMakeRange(0, half)];
-    NSArray<UICollectionViewCell *> *half_r = [visibleCells subarrayWithRange:NSMakeRange(half, count - half)];
-    
-    __block UICollectionViewCell *cell_l = nil;
-    __block UIView *half_l_view = nil;
-    [half_l enumerateObjectsWithOptions:NSEnumerationReverse usingBlock:^(UICollectionViewCell * _Nonnull obj, NSUInteger idx, BOOL * _Nonnull stop) {
-        UIView *superview = [obj viewWithTag:config.playerSuperviewTag];
-        if ( !superview ) return;
-        *stop = YES;
-        cell_l = obj;
-        half_l_view = superview;
-    }];
-    
-    __block UICollectionViewCell *cell_r = nil;
-    __block UIView *half_r_view = nil;
-    [half_r enumerateObjectsUsingBlock:^(UICollectionViewCell * _Nonnull obj, NSUInteger idx, BOOL * _Nonnull stop) {
-        UIView *superview = [obj viewWithTag:config.playerSuperviewTag];
-        if ( !superview ) return;
-        *stop = YES;
-        cell_r = obj;
-        half_r_view = superview;
-    }];
-    
-    if ( !half_l_view && !half_r_view ) return;
-    
-    NSIndexPath *nextIndexPath = nil;
-    if ( half_l_view && !half_r_view ) {
-        nextIndexPath = [collectionView indexPathForCell:cell_l];
-    }
-    else if ( half_r_view && !half_l_view ) {
-        nextIndexPath = [collectionView indexPathForCell:cell_r];
-    }
-    else {
-        CGRect half_l_rect = [half_l_view.superview convertRect:half_l_view.frame toView:collectionView.superview];
-        CGRect half_r_rect = [half_r_view.superview convertRect:half_r_view.frame toView:collectionView.superview];
-        
-        if ( ABS(CGRectGetMaxY(half_l_rect) - midLine) < ABS(CGRectGetMinY(half_r_rect) - midLine) ) {
-            nextIndexPath = [collectionView indexPathForCell:cell_l];
+    switch ( config.autoplayPosition ) {
+        case SJAutoplayPositionTop: {
+            for ( NSIndexPath *indexPath in indexPathsForVisibleItems ) {
+                UIView *_Nullable target = sj_getTarget(collectionView, indexPath, config.playerSuperviewTag);
+                if ( !target ) continue;
+                CGRect its = sj_intersection(target, collectionView);
+                if ( floor(its.size.height) >= floor(target.bounds.size.height) ) {
+                    return indexPath;
+                }
+            }
         }
-        else {
-            nextIndexPath = [collectionView indexPathForCell:cell_r];
+            break;
+        case SJAutoplayPositionMiddle: {
+            CGFloat midLine = 0;
+            if (@available(iOS 11.0, *)) {
+                midLine = floor((CGRectGetHeight(collectionView.frame) - collectionView.adjustedContentInset.top) * 0.5);
+            } else {
+                midLine = floor((CGRectGetHeight(collectionView.frame) - collectionView.contentInset.top) * 0.5);
+            }
+            
+            NSMutableArray<UICollectionViewCell *> *visibleCells = [NSMutableArray arrayWithCapacity:indexPathsForVisibleItems.count];
+            for ( NSIndexPath *indexPath in indexPathsForVisibleItems ) {
+                [visibleCells addObject:[collectionView cellForItemAtIndexPath:indexPath]];
+            }
+            NSInteger count = visibleCells.count;
+            NSInteger half = (NSInteger)(count * 0.5);
+            NSArray<UICollectionViewCell *> *half_l = [visibleCells subarrayWithRange:NSMakeRange(0, half)];
+            NSArray<UICollectionViewCell *> *half_r = [visibleCells subarrayWithRange:NSMakeRange(half, count - half)];
+            
+            __block UICollectionViewCell *cell_l = nil;
+            __block UIView *half_l_view = nil;
+            [half_l enumerateObjectsWithOptions:NSEnumerationReverse usingBlock:^(UICollectionViewCell * _Nonnull obj, NSUInteger idx, BOOL * _Nonnull stop) {
+                UIView *superview = [obj viewWithTag:config.playerSuperviewTag];
+                if ( !superview ) return;
+                *stop = YES;
+                cell_l = obj;
+                half_l_view = superview;
+            }];
+            
+            __block UICollectionViewCell *cell_r = nil;
+            __block UIView *half_r_view = nil;
+            [half_r enumerateObjectsUsingBlock:^(UICollectionViewCell * _Nonnull obj, NSUInteger idx, BOOL * _Nonnull stop) {
+                UIView *superview = [obj viewWithTag:config.playerSuperviewTag];
+                if ( !superview ) return;
+                *stop = YES;
+                cell_r = obj;
+                half_r_view = superview;
+            }];
+            
+            if ( !half_l_view && !half_r_view ) return nil;
+            
+            NSIndexPath *nextIndexPath = nil;
+            if ( half_l_view && !half_r_view ) {
+                nextIndexPath = [collectionView indexPathForCell:cell_l];
+            }
+            else if ( half_r_view && !half_l_view ) {
+                nextIndexPath = [collectionView indexPathForCell:cell_r];
+            }
+            else {
+                CGRect half_l_rect = [half_l_view.superview convertRect:half_l_view.frame toView:collectionView.superview];
+                CGRect half_r_rect = [half_r_view.superview convertRect:half_r_view.frame toView:collectionView.superview];
+                
+                if ( ABS(CGRectGetMaxY(half_l_rect) - midLine) < ABS(CGRectGetMinY(half_r_rect) - midLine) ) {
+                    nextIndexPath = [collectionView indexPathForCell:cell_l];
+                }
+                else {
+                    nextIndexPath = [collectionView indexPathForCell:cell_r];
+                }
+            }
+
+            return nextIndexPath;
         }
     }
-    
+    return nil;
+}
+
+static void sj_collectionViewConsiderPlayNewAsset(UICollectionView *collectionView) {
+    NSIndexPath *_Nullable nextIndexPath = sj_collectionViewAutoplayNextIndexPath(collectionView);
+    if ( !nextIndexPath )
+        return;
+    SJPlayerAutoplayConfig *config = [collectionView sj_autoplayConfig];
     [config.autoplayDelegate sj_playerNeedPlayNewAssetAtIndexPath:nextIndexPath];
 }
 
@@ -348,6 +358,18 @@ static void sj_exeAnima(__kindof UIScrollView *scrollView, NSIndexPath *indexPat
     }
 }
 
+#pragma mark -
+static void sj_tableViewConsiderPlayNextAsset(UITableView *tableView);
+static void sj_collectionViewConsiderPlayNextAsset(UICollectionView *collectionView);
+static void sj_needPlayNextAsset(__kindof UIScrollView *scrollView) {
+    if ( [scrollView isKindOfClass:[UITableView class]] ) {
+        sj_tableViewConsiderPlayNextAsset((id)scrollView);
+    }
+    else if ( [scrollView isKindOfClass:[UICollectionView class]] ) {
+        sj_collectionViewConsiderPlayNextAsset((id)scrollView);
+    }
+}
+
 static void sj_tableViewConsiderPlayNextAsset(UITableView *tableView) {
     NSArray<NSIndexPath *> *visibleIndexPaths = tableView.indexPathsForVisibleRows;
     if ( visibleIndexPaths.count == 0 )
@@ -363,7 +385,7 @@ static void sj_tableViewConsiderPlayNextAsset(UITableView *tableView) {
         sj_exeAnima(tableView, indexPath, [tableView sj_autoplayConfig].animationType);
     }
     else if ( idx == NSNotFound ) {
-        sj_scrollViewConsiderPlayNewAsset(tableView);
+        sj_considerPlayNewAsset(tableView);
     }
     else {
         NSInteger next = idx + 1;
@@ -394,13 +416,13 @@ static void sj_collectionViewConsiderPlayNextAsset(UICollectionView *collectionV
     if ( [visibleIndexPaths.lastObject compare:collectionView.sj_currentPlayingIndexPath] == NSOrderedSame ) return;
     NSInteger idx = [visibleIndexPaths indexOfObject:collectionView.sj_currentPlayingIndexPath];
     if ( !collectionView.sj_currentPlayingIndexPath ) {
-        NSIndexPath *indexPath = [collectionView.indexPathsForVisibleItems firstObject];
+        NSIndexPath *indexPath = [visibleIndexPaths firstObject];
         
         [[collectionView sj_autoplayConfig].autoplayDelegate sj_playerNeedPlayNewAssetAtIndexPath:indexPath];
         sj_exeAnima(collectionView, indexPath, [collectionView sj_autoplayConfig].animationType);
     }
     else if ( idx == NSNotFound ) {
-        sj_scrollViewConsiderPlayNewAsset(collectionView);
+        sj_considerPlayNewAsset(collectionView);
     }
     else {
         NSInteger next = idx + 1;

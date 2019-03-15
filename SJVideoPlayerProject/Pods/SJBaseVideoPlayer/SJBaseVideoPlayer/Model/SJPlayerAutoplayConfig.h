@@ -16,6 +16,11 @@ typedef NS_ENUM(NSUInteger, SJAutoplayScrollAnimationType) {
     SJAutoplayScrollAnimationTypeMiddle,
 };
 
+typedef enum : NSUInteger {
+    SJAutoplayPositionTop,
+    SJAutoplayPositionMiddle,
+} SJAutoplayPosition;
+
 @interface SJPlayerAutoplayConfig : NSObject
 + (instancetype)configWithPlayerSuperviewTag:(NSInteger)playerSuperviewTag
                             autoplayDelegate:(id<SJPlayerAutoplayDelegate>)autoplayDelegate;
@@ -23,6 +28,8 @@ typedef NS_ENUM(NSUInteger, SJAutoplayScrollAnimationType) {
 /// 滚动的动画类型
 /// default is .Middle;
 @property (nonatomic) SJAutoplayScrollAnimationType animationType;
+/// default is .Top
+@property (nonatomic) SJAutoplayPosition autoplayPosition;
 
 @property (nonatomic, readonly) NSInteger playerSuperviewTag;
 @property (nonatomic, weak, nullable, readonly) id<SJPlayerAutoplayDelegate> autoplayDelegate;

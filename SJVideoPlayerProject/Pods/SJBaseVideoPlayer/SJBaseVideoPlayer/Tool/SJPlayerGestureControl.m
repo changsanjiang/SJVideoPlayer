@@ -15,12 +15,7 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic, strong, readonly) UIPinchGestureRecognizer *pinch;
 @end
 
-@implementation SJPlayerGestureControl {
-    /// Pan gesture
-    SJPanGestureMovingDirection _movingDirection;
-    SJPanGestureTriggeredPosition _triggeredPosition;
-}
-
+@implementation SJPlayerGestureControl
 @synthesize targetView = _targetView;
 
 @synthesize disabledGestures = _disabledGestures;
@@ -29,6 +24,8 @@ NS_ASSUME_NONNULL_BEGIN
 @synthesize doubleTapHandler = _doubleTapHandler;
 @synthesize panHandler = _panHandler;
 @synthesize pinchHandler = _pinchHandler;
+@synthesize movingDirection = _movingDirection;
+@synthesize triggeredPosition = _triggeredPosition;
 
 - (instancetype)initWithTargetView:(UIView * _Nonnull __weak)view {
     self = [super init];
@@ -61,10 +58,12 @@ NS_ASSUME_NONNULL_BEGIN
     [_singleTap requireGestureRecognizerToFail:_doubleTap];
     [_doubleTap requireGestureRecognizerToFail:_pan];
     
-    [view addGestureRecognizer:_singleTap];
-    [view addGestureRecognizer:_doubleTap];
-    [view addGestureRecognizer:_pan];
-    [view addGestureRecognizer:_pinch];
+    dispatch_async(dispatch_get_main_queue(), ^{
+        [view addGestureRecognizer:self->_singleTap];
+        [view addGestureRecognizer:self->_doubleTap];
+        [view addGestureRecognizer:self->_pan];
+        [view addGestureRecognizer:self->_pinch];
+    });
     return self;
 }
 
@@ -89,6 +88,14 @@ NS_ASSUME_NONNULL_BEGIN
         }
             break;
         case SJPlayerGestureType_Pan: {
+            CGPoint location = [_pan locationInView:_pan.view];
+            if ( location.x > _targetView.bounds.size.width * 0.5 ) {
+                _triggeredPosition = SJPanGestureTriggeredPosition_Right;
+            }
+            else {
+                _triggeredPosition = SJPanGestureTriggeredPosition_Left;
+            }
+            
             CGPoint velocity = [_pan velocityInView:_pan.view];
             CGFloat x = fabs(velocity.x);
             CGFloat y = fabs(velocity.y);
@@ -155,14 +162,6 @@ NS_ASSUME_NONNULL_BEGIN
     CGPoint translate = [pan translationInView:pan.view];
     switch (pan.state) {
         case UIGestureRecognizerStateBegan: {
-            CGPoint location = [pan locationInView:pan.view];
-            if ( location.x > _targetView.bounds.size.width * 0.5 ) {
-                _triggeredPosition = SJPanGestureTriggeredPosition_Right;
-            }
-            else {
-                _triggeredPosition = SJPanGestureTriggeredPosition_Left;
-            }
-            
             if ( _panHandler ) _panHandler(self, _triggeredPosition, _movingDirection, SJPanGestureRecognizerStateBegan, translate);
         }
             break;

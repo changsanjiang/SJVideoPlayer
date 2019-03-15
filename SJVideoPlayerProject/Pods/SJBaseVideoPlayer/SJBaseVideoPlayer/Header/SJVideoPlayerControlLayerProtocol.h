@@ -88,6 +88,8 @@ SJSwitchVideoDefinitionControlDelegate;
 
 @protocol SJPlayStatusControlDelegate <NSObject>
 @optional
+- (void)videoPlayer:(__kindof SJBaseVideoPlayer *)videoPlayer playbackTypeLoaded:(SJMediaPlaybackType)playbackType;
+
 /// When the player is prepare to play a new asset, this method will be called.
 /// 当播放器准备播放一个新的资源时, 会回调这个方法
 - (void)videoPlayer:(__kindof SJBaseVideoPlayer *)videoPlayer prepareToPlay:(SJVideoPlayerURLAsset *)asset;

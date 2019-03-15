@@ -65,11 +65,8 @@ NS_ASSUME_NONNULL_BEGIN
 - (instancetype)init {
     self = [super init];
     if ( !self ) return nil;
-    self = [super init];
-    if ( !self ) return nil;
     _duration = 0.4;
     _rec_deviceOrientation = UIDeviceOrientationPortrait;
-    _blackView = [UIView new]; _blackView.backgroundColor = [UIColor blackColor];
     _autorotationSupportedOrientation = SJAutoRotateSupportedOrientation_All;
     [self _observeNotifies];
     return self;
@@ -79,9 +76,16 @@ NS_ASSUME_NONNULL_BEGIN
     return [[SJRotationManagerObserver alloc] initWithMgr:self];
 }
 
+@synthesize blackView = _blackView;
+- (UIView *)blackView {
+    if ( _blackView ) return _blackView;
+    _blackView = [UIView new];
+    _blackView.backgroundColor = [UIColor blackColor];
+    return _blackView;
+}
+
 - (void)dealloc {
-    [self.blackView removeFromSuperview];
-    [self removeNotifies];
+    [_blackView removeFromSuperview];
 }
 
 - (BOOL)isFullscreen {
@@ -92,11 +96,9 @@ NS_ASSUME_NONNULL_BEGIN
     if ( !UIDevice.currentDevice.isGeneratingDeviceOrientationNotifications ) {
          [UIDevice.currentDevice beginGeneratingDeviceOrientationNotifications];
     }
-    [NSNotificationCenter.defaultCenter addObserver:self selector:@selector(deviceOrientationDidChangeNotify) name:UIDeviceOrientationDidChangeNotification object:nil];
-}
-
-- (void)removeNotifies {
-    [NSNotificationCenter.defaultCenter removeObserver:self];
+    [self sj_observeWithNotification:UIDeviceOrientationDidChangeNotification target:nil usingBlock:^(SJRotationManager *_Nonnull self, NSNotification * _Nonnull note) {
+        [self deviceOrientationDidChangeNotify];
+    }];
 }
 
 - (void)deviceOrientationDidChangeNotify {

@@ -29,6 +29,14 @@ typedef NS_ENUM(NSInteger, SJMediaPlaybackSwitchDefinitionStatus) {
     SJMediaPlaybackSwitchDefinitionStatusFailed,
 };
 
+//Playback type (LIVE, VOD, FILE).
+typedef enum : NSUInteger {
+    SJMediaPlaybackTypeUnknown,
+    SJMediaPlaybackTypeLIVE,
+    SJMediaPlaybackTypeVOD,
+    SJMediaPlaybackTypeFILE
+} SJMediaPlaybackType;
+
 typedef AVLayerVideoGravity SJVideoGravity;
 
 NS_ASSUME_NONNULL_BEGIN
@@ -36,6 +44,7 @@ NS_ASSUME_NONNULL_BEGIN
 @required
 @property (nonatomic, weak, nullable) id<SJMediaPlaybackControllerDelegate> delegate;
 
+@property (nonatomic, readonly) SJMediaPlaybackType playbackType;
 @property (nonatomic, strong, readonly) __kindof UIView *playerView;
 @property (nonatomic, strong, nullable) id<SJMediaModelProtocol> media;
 @property (nonatomic, strong) SJVideoGravity videoGravity; // default is AVLayerVideoGravityResizeAspect
@@ -62,7 +71,6 @@ NS_ASSUME_NONNULL_BEGIN
 - (void)stop;
 - (void)seekToTime:(NSTimeInterval)secs completionHandler:(void (^ __nullable)(BOOL finished))completionHandler;
 - (nullable UIImage *)screenshot;
-
 - (void)switchVideoDefinitionByURL:(NSURL *)URL;
 
 @optional
@@ -122,6 +130,7 @@ NS_ASSUME_NONNULL_BEGIN
 - (void)playbackController:(id<SJMediaPlaybackController>)controller switchVideoDefinitionByURL:(NSURL *)URL statusDidChange:(SJMediaPlaybackSwitchDefinitionStatus)status;
 
 - (void)playbackControllerIsReadyForDisplay:(id<SJMediaPlaybackController>)controller;
+- (void)playbackController:(id<SJMediaPlaybackController>)controller playbackTypeLoaded:(SJMediaPlaybackType)playbackType;
 
 @optional
 - (void)pausedForAppDidEnterBackgroundOfPlaybackController:(id<SJMediaPlaybackController>)controller;

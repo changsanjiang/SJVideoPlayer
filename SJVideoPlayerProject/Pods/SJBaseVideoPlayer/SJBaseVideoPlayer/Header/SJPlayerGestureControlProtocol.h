@@ -64,6 +64,9 @@ typedef enum : NSUInteger {
 - (UIGestureRecognizerState)stateOfGesture:(SJPlayerGestureType)type;
 - (instancetype)init NS_UNAVAILABLE;
 + (instancetype)new NS_UNAVAILABLE;
+
+@property (nonatomic, readonly) SJPanGestureMovingDirection movingDirection;
+@property (nonatomic, readonly) SJPanGestureTriggeredPosition triggeredPosition;
 @end
 
 

@@ -28,6 +28,7 @@ NSNotificationName const SJAVMediaBufferStatusDidChangeNotification = @"SJAVMedi
 NSNotificationName const SJAVMediaBufferWatingTimeDidChangeNotification = @"SJAVMediaBufferWatingTimeDidChangeNotification";
 NSNotificationName const SJAVMediaPresentationSizeDidChangeNotification = @"SJAVMediaPresentationSizeDidChangeNotification";
 NSNotificationName const SJAVMediaPlayerItemStatusDidChangeNotification = @"SJAVMediaPlayerItemStatusDidChangeNotification";
+NSNotificationName const SJAVMediaPlaybackTypeLoadedNotification = @"SJAVMediaPlaybackTypeLoadedNotification";
 
 @interface SJAVMediaPlayAsset()
 @property (nonatomic, strong, nullable) AVURLAsset *URLAsset;
@@ -41,6 +42,7 @@ NSNotificationName const SJAVMediaPlayerItemStatusDidChangeNotification = @"SJAV
 @property (nonatomic) CMTimeRange bufferLoadedTime;
 @property (nonatomic) CGSize presentationSize;
 @property (nonatomic) AVPlayerItemStatus playerItemStatus;
+@property (nonatomic) SJMediaPlaybackType playbackType;
 @end
 
 @implementation SJAVMediaPlayAsset {
@@ -125,10 +127,16 @@ static NSString *kRate = @"rate";
     [_playerItem sj_addObserver:self forKeyPath:kPlaybackBufferFull context:&kPlaybackBufferFull];
     [_player     sj_addObserver:self forKeyPath:kRate context:&kRate];
     
+    [self sj_observeWithNotification:AVPlayerItemNewAccessLogEntryNotification target:_playerItem usingBlock:^(SJAVMediaPlayAsset *self, NSNotification * _Nonnull note) {
+        [self _updatePlaybackType];
+    }];
+    
     __weak typeof(self) _self = self;
     _currentTimeNoteToken = [_player addPeriodicTimeObserverForInterval:CMTimeMakeWithSeconds(0.5, NSEC_PER_SEC) queue:dispatch_get_main_queue() usingBlock:^(CMTime time) {
         __strong typeof(_self) self = _self;
         if ( !self ) return ;
+        if ( self.playerItem.status != AVPlayerItemStatusReadyToPlay )
+            return;
         [self _updateCurrentTime:time];
     }];
     
@@ -143,7 +151,8 @@ static NSString *kRate = @"rate";
 - (void)observeValueForKeyPath:(nullable NSString *)keyPath ofObject:(nullable id)object change:(nullable NSDictionary<NSKeyValueChangeKey,id> *)change context:(nullable void *)context {
     id value_new = change[NSKeyValueChangeNewKey];
     id value_old = change[NSKeyValueChangeOldKey];
-    if ( value_new == value_old ) return;
+    if ( [value_new isKindOfClass:[NSNull class]] ) return;
+    if ( [value_new isEqual:value_old] ) return;
     
     dispatch_async(dispatch_get_main_queue(), ^{
         if ( context == &kLoadedTimeRanges ) {
@@ -259,6 +268,25 @@ static NSString *kRate = @"rate";
     }
 }
 
+- (void)_updatePlaybackType {
+    AVPlayerItemAccessLogEvent *event = _playerItem.accessLog.events.firstObject;
+    SJMediaPlaybackType playbackType = SJMediaPlaybackTypeUnknown;
+    NSString *type = event.playbackType;
+    if ( [type isEqualToString:@"LIVE"] ) {
+        playbackType = SJMediaPlaybackTypeLIVE;
+    }
+    else if ( [type isEqualToString:@"VOD"] ) {
+        playbackType = SJMediaPlaybackTypeVOD;
+    }
+    else if ( [type isEqualToString:@"FILE"] ) {
+        playbackType = SJMediaPlaybackTypeFILE;
+    }
+    if ( _playbackType != playbackType ) {
+        _playbackType = playbackType;
+        [NSNotificationCenter.defaultCenter postNotificationName:SJAVMediaPlaybackTypeLoadedNotification object:self];
+    }
+}
+
 #pragma mark -
 - (void)setBufferStatus:(SJPlayerBufferStatus)bufferStatus {
     if ( bufferStatus == _bufferStatus ) return;
@@ -303,16 +331,7 @@ static NSString *kRate = @"rate";
 @property (nonatomic) SJPlayerBufferStatus bufferStatus;
 @end
 
-@implementation SJAVMediaPlayAssetPropertiesObserver {
-    id _playerItemDidPlayToEndTimeNoteToken;
-    id _playbackTimeDidChangeNoteToken;
-    id _durationDidChangeNoteToken;
-    id _loadedTimeRangesDidChangeNoteToken;
-    id _bufferStatusDidChangeNoteToken;
-    id _presentationSizeDidChangeNoteToken;
-    id _playerItemStatusDidChangeNoteToken;
-}
-
+@implementation SJAVMediaPlayAssetPropertiesObserver
 - (instancetype)initWithPlayerAsset:(SJAVMediaPlayAsset *)playerAsset {
     self = [super init];
     if ( !self ) return nil;
@@ -365,6 +384,16 @@ static NSString *kRate = @"rate";
             [self.delegate observer:self bufferWatingTimeDidChange:self.bufferWatingTime];
         }
     }];
+    
+    [self sj_observeWithNotification:SJAVMediaPlaybackTypeLoadedNotification target:playerAsset usingBlock:^(SJAVMediaPlayAssetPropertiesObserver *_Nonnull self, NSNotification * _Nonnull note) {
+        if ( [self.delegate respondsToSelector:@selector(observer:playbackTypeLoaded:)] ) {
+            [self.delegate observer:self playbackTypeLoaded:self.playbackType];
+        }
+        
+#ifdef DEBUG
+        NSLog(@"SJMediaPlaybackType: %d", (int)self.playbackType);
+#endif
+    }];
     return self;
 }
 
@@ -377,11 +406,15 @@ static NSString *kRate = @"rate";
 }
 
 - (NSTimeInterval)bufferLoadedTime {
+    if ( self.playerItemStatus != AVPlayerItemStatusReadyToPlay )
+        return 0;
     CMTimeRange range = _playerAsset.bufferLoadedTime;
     return CMTimeGetSeconds(range.start) + CMTimeGetSeconds(range.duration);
 }
 
 - (NSTimeInterval)currentTime {
+    if ( self.playerItemStatus != AVPlayerItemStatusReadyToPlay )
+        return 0;
     return CMTimeGetSeconds(_playerAsset.currentTime);
 }
 
@@ -395,6 +428,10 @@ static NSString *kRate = @"rate";
 
 - (NSTimeInterval)bufferWatingTime {
     return _playerAsset.bufferWatingTime;
+}
+
+- (SJMediaPlaybackType)playbackType {
+    return _playerAsset.playbackType;
 }
 @end
 

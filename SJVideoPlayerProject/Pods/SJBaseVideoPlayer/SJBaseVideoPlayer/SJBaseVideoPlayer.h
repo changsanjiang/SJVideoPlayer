@@ -133,6 +133,9 @@ NS_ASSUME_NONNULL_BEGIN
 /// - 可以在这里做一些记录的工作. 如播放记录.
 @property (nonatomic, copy, nullable) void(^assetDeallocExeBlock)(__kindof SJBaseVideoPlayer *videoPlayer);
 
+// - Playback Type -
+
+@property (nonatomic, readonly) SJMediaPlaybackType playbackType;
 
 // - Playback Status -
 
@@ -172,14 +175,14 @@ NS_ASSUME_NONNULL_BEGIN
 /// 切换`清晰度` (v1.6.5 新增)
 /// - 切换当前播放的视频清晰度
 - (void)switchVideoDefinitionByURL:(NSURL *)URL;
-
-
-// - Pause -
-
 /// 是否恢复播放, 进入前台时.
 ///
 /// 正常情况下, 进入后台时, 播放器将会暂停. 此属性表示App进入前台后, 播放器是否恢复播放. 默认为NO.
 @property (nonatomic) BOOL resumePlaybackWhenAppDidEnterForeground;
+
+
+// - Pause -
+
 /// 关于后台播放视频, 引用自: https://juejin.im/post/5a38e1a0f265da4327185a26
 ///
 /// 当您想在后台播放视频时:
@@ -235,7 +238,7 @@ NS_ASSUME_NONNULL_BEGIN
 @end
 
 
-#pragma mark -
+#pragma mark - 设备 音量和亮度
 
 @interface SJBaseVideoPlayer (DeviceVolumeAndBrightness)
 @property (nonatomic, strong, null_resettable) id<SJDeviceVolumeAndBrightnessManager> deviceVolumeAndBrightnessManager;

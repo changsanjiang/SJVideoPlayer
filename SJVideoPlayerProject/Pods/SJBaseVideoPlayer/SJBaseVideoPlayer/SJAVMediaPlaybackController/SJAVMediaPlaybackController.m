@@ -326,27 +326,21 @@ static const char *key = "kSJAVMediaPlayAsset";
         _error = _playAsset.playerItem.error;
         
         __weak typeof(self) _self = self;
-        void(^_inner_completionHandler)(void) = ^{
-            __strong typeof(_self) self = _self;
-            if ( !self ) return ;
-            if ( self.presentView.mainPresenter.player != self.playAsset.player ) {
-                self.presentView.mainPresenter.player = self.playAsset.player;
-            }
-            
-            if ( [self.delegate respondsToSelector:@selector(playbackController:prepareToPlayStatusDidChange:)] ) {
-                [self.delegate playbackController:self prepareToPlayStatusDidChange:(NSInteger)playerItemStatus];
-            }
-        };
-        
-        /// seek to specify start time
-        if ( _prepareStatus == SJMediaPlaybackPrepareStatusReadyToPlay &&
-             0 != self.media.specifyStartTime ) {
-            [self.playAsset.playerItem seekToTime:CMTimeMake(self.media.specifyStartTime * 1000, 1000) toleranceBefore:kCMTimeZero toleranceAfter:kCMTimeZero completionHandler:^(BOOL finished) {
-                _inner_completionHandler();
+        if ( _prepareStatus == SJMediaPlaybackPrepareStatusReadyToPlay ) {
+            __weak SJAVMediaPlayAsset *_Nullable asset = self.playAsset;
+            _presentView.mainPresenter.player = asset.player;
+            [asset.playerItem seekToTime:CMTimeMakeWithSeconds(0.1, NSEC_PER_SEC) completionHandler:^(BOOL finished) {
+                [asset.playerItem seekToTime:CMTimeMakeWithSeconds(self.media.specifyStartTime, NSEC_PER_SEC) toleranceBefore:kCMTimeZero toleranceAfter:kCMTimeZero completionHandler:^(BOOL finished) {
+                    __strong typeof(_self) self = _self;
+                    if ( !self ) return;
+                    if ( self.playAsset == asset && [self.delegate respondsToSelector:@selector(playbackController:prepareToPlayStatusDidChange:)] )
+                        [self.delegate playbackController:self prepareToPlayStatusDidChange:(NSInteger)playerItemStatus];
+                }];
             }];
         }
         else {
-            _inner_completionHandler();
+            if ( [self.delegate respondsToSelector:@selector(playbackController:prepareToPlayStatusDidChange:)] )
+                [self.delegate playbackController:self prepareToPlayStatusDidChange:(NSInteger)playerItemStatus];
         }
     }
 }

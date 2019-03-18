@@ -33,7 +33,7 @@
 #import "SJPlayerGestureControl.h"
 #import "SJModalViewControlllerManager.h"
 #import "SJBaseVideoPlayerStatistics.h"
-#import "SJBaseVideoPlayerAutoRefreshContext.h"
+#import "SJBaseVideoPlayerAutoRefreshController.h"
 
 #if __has_include(<Masonry/Masonry.h>)
 #import <Masonry/Masonry.h>
@@ -133,7 +133,7 @@ static NSString *_kPlayStatus = @"playStatus";
 @property (nonatomic) NSTimeInterval pan_totalTime;
 @property (nonatomic) NSTimeInterval pan_shift;
 
-@property (nonatomic, strong, nullable) SJBaseVideoPlayerAutoRefreshContext *autoRefresh;
+@property (nonatomic, strong, nullable) SJBaseVideoPlayerAutoRefreshController *autoRefresh;
 @end
 
 @implementation SJBaseVideoPlayer {
@@ -187,7 +187,7 @@ static NSString *_kPlayStatus = @"playStatus";
     NSTimeInterval _playedLastTime;
     BOOL(^_Nullable _canSeekToTime)(__kindof SJBaseVideoPlayer *player);
     NSTimeInterval _delayToAutoRefreshWhenPlayFailed;
-    SJBaseVideoPlayerAutoRefreshContext *_Nullable _autoRefresh;
+    SJBaseVideoPlayerAutoRefreshController *_Nullable _autoRefresh;
     BOOL _replayed;
     NSInteger _refreshToPlayAfterBufferTime;
     void(^_Nullable _presentationSizeDidChangeExeBlock)(__kindof SJBaseVideoPlayer *videoPlayer);
@@ -284,7 +284,7 @@ static NSString *_kPlayStatus = @"playStatus";
         [self reachability];
         [self gestureControl];
         [self _configAVAudioSession];
-        [self.statistics observePlayer:(id)self];
+        if ( SJBaseVideoPlayer.isEnabledStatistics ) [self.statistics observePlayer:(id)self];
     });
     return self;
 }
@@ -530,7 +530,6 @@ static NSString *_kGestureState = @"state";
     _registrar.willEnterForeground = ^(SJVideoPlayerRegistrar * _Nonnull registrar) {
         __strong typeof(_self) self = _self;
         if ( !self ) return ;
-        if ( self.autoRefresh != nil ) [self.autoRefresh resume];
         if ( [self.controlLayerDelegate respondsToSelector:@selector(appWillEnterForeground:)] ) {
             [self.controlLayerDelegate appWillEnterForeground:self];
         }
@@ -539,7 +538,6 @@ static NSString *_kGestureState = @"state";
     _registrar.didEnterBackground = ^(SJVideoPlayerRegistrar * _Nonnull registrar) {
         __strong typeof(_self) self = _self;
         if ( !self ) return ;
-        if ( self.autoRefresh != nil ) [self.autoRefresh pause];
         if ( self.pauseWhenAppDidEnterBackground ) {
             [self pause];
         }
@@ -587,6 +585,24 @@ static NSString *_kGestureState = @"state";
         [self.controlLayerDelegate tappedPlayerOnTheLockedState:self];
     }
 }
+
+- (void)_cleanScrollViewCurrentPlayingIndexPath:(SJPlayModel *)playModel {
+    if ( playModel ) {
+        UIScrollView *scrollView = sj_getScrollView(playModel);
+        scrollView.sj_currentPlayingIndexPath = nil;
+    }
+}
+
+- (void)_updateCurrentPlayingIndexPathIfNeeded:(SJPlayModel *)playModel {
+    if ( !playModel )
+        return;
+    
+    // 维护当前播放的indexPath
+    UIScrollView *scrollView = sj_getScrollView(playModel);
+    if ( scrollView.sj_enabledAutoplay ) {
+        scrollView.sj_currentPlayingIndexPath = [playModel performSelector:@selector(indexPath)];
+    }
+}
 @end
 
 
@@ -620,7 +636,7 @@ static NSString *_kGestureState = @"state";
     if ( _flipTransitionManager )
         return _flipTransitionManager;
     
-    _flipTransitionManager = [[SJFlipTransitionManager alloc] initWithTarget:_playbackController.playerView];
+    _flipTransitionManager = [[SJFlipTransitionManager alloc] initWithTarget:self.playbackController.playerView];
     [self _needUpdateFlipTransitionManagerProperties];
     return _flipTransitionManager;
 }
@@ -739,7 +755,6 @@ static NSString *_kGestureState = @"state";
             self.assetDeallocExeBlock(self);
     }
     
-    _autoRefresh = nil;
     _mpc_assetIsPlayed = NO;
     _replayed = NO;
     
@@ -789,6 +804,12 @@ static NSString *_kGestureState = @"state";
 
 - (void)setDelayToAutoRefreshWhenPlayFailed:(NSTimeInterval)delayToAutoRefreshWhenPlayFailed {
     _delayToAutoRefreshWhenPlayFailed = delayToAutoRefreshWhenPlayFailed;
+    if ( delayToAutoRefreshWhenPlayFailed > 0 ) {
+        _autoRefresh = [[SJBaseVideoPlayerAutoRefreshController alloc] initWithPlayer:(id)self];
+    }
+    else {
+        _autoRefresh = nil;
+    }
 }
 - (NSTimeInterval)delayToAutoRefreshWhenPlayFailed {
     return _delayToAutoRefreshWhenPlayFailed;
@@ -809,7 +830,7 @@ static NSString *_kGestureState = @"state";
 }
 
 - (void)setPlayerVolume:(float)playerVolume {
-    _playbackController.volume = playerVolume;
+    self.playbackController.volume = playerVolume;
 }
 - (float)playerVolume {
     return _playbackController.volume;
@@ -818,7 +839,7 @@ static NSString *_kGestureState = @"state";
 - (void)setMute:(BOOL)mute {
     if ( mute == _playbackController.mute )
         return;
-    _playbackController.mute = mute;
+    self.playbackController.mute = mute;
     if ( [self.controlLayerDelegate respondsToSelector:@selector(videoPlayer:muteChanged:)] ) {
         [self.controlLayerDelegate videoPlayer:self muteChanged:mute];
     }
@@ -937,6 +958,7 @@ static NSString *_kGestureState = @"state";
 }
 
 - (void)stop {
+    [self _cleanScrollViewCurrentPlayingIndexPath:_URLAsset.playModel];
     _operationOfInitializing = nil;
     [self.playbackController stop];
     self.playModelObserver = nil;
@@ -945,6 +967,7 @@ static NSString *_kGestureState = @"state";
 }
 
 - (void)stopAndFadeOut {
+    [self _cleanScrollViewCurrentPlayingIndexPath:_URLAsset.playModel];
     [self.view sj_fadeOutAndCompletion:^(UIView *view) {
         [view removeFromSuperview];
         [self stop];
@@ -1025,7 +1048,7 @@ static NSString *_kGestureState = @"state";
 - (void)setRate:(float)rate {
     if ( self.canPlayAnAsset && !self.canPlayAnAsset(self) ) return;
     if ( _playbackController.rate == rate ) return;
-    _playbackController.rate = rate;
+    self.playbackController.rate = rate;
     
     if ( [self.controlLayerDelegate respondsToSelector:@selector(videoPlayer:rateChanged:)] ) {
         [self.controlLayerDelegate videoPlayer:self rateChanged:rate];
@@ -1046,17 +1069,6 @@ static NSString *_kGestureState = @"state";
 }
 - (void (^_Nullable)(__kindof SJBaseVideoPlayer * _Nonnull))rateDidChangeExeBlock {
     return _rateDidChangeExeBlock;
-}
-
-- (void)_updateCurrentPlayingIndexPathIfNeeded:(SJPlayModel *)playModel {
-    if ( !playModel )
-        return;
-    
-    // 维护当前播放的indexPath
-    UIScrollView *scrollView = sj_getScrollView(playModel);
-    if ( scrollView.sj_enabledAutoplay ) {
-        scrollView.sj_currentPlayingIndexPath = [playModel performSelector:@selector(indexPath)];
-    }
 }
 
 - (void)_updatePlayModelObserver:(SJPlayModel *)playModel {
@@ -1294,24 +1306,6 @@ static NSString *_kGestureState = @"state";
     self.error = _playbackController.error;
     self.inactivityReason = SJVideoPlayerInactivityReasonPlayFailed;
     self.playStatus = SJVideoPlayerPlayStatusInactivity;
-    
-    // auto refresh
-    if ( 0 != _delayToAutoRefreshWhenPlayFailed && _autoRefresh.asset != _URLAsset ) {
-        _autoRefresh = [[SJBaseVideoPlayerAutoRefreshContext alloc] initWithAsset:_URLAsset delay:_delayToAutoRefreshWhenPlayFailed];
-        __weak typeof(self) _self = self;
-        _autoRefresh.after = ^(SJBaseVideoPlayerAutoRefreshContext * _Nonnull context) {
-            __strong typeof(_self) self = _self;
-            if ( !self ) return;
-            if ( [self playStatus_isInactivity_ReasonPlayFailed] &&
-                self.registrar.state != SJVideoPlayerAppState_Background ) {
-#ifdef DEBUG
-                puts("SJBaseVideoPlayer: 当前状态为播放失败, 正在尝试重新播放!");
-#endif
-                self.autoRefresh = nil;
-                [self refresh];
-            }
-        };
-    }
 }
 
 - (void)_mediaDidPlayToEnd {
@@ -2560,6 +2554,14 @@ static NSString *_kGestureState = @"state";
 
 #pragma mark -
 @implementation SJBaseVideoPlayer (Statistics)
+static BOOL _enabledStatistics;
++ (void)setEnabledStatistics:(BOOL)enabledStatistics {
+    _enabledStatistics = enabledStatistics;
+}
++ (BOOL)isEnabledStatistics {
+    return _enabledStatistics;
+}
+
 static id<SJBaseVideoPlayerStatistics> _statistics;
 + (void)setStatistics:(nullable id<SJBaseVideoPlayerStatistics>)statistics {
     _statistics = statistics;

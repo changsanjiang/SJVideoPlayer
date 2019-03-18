@@ -1,5 +1,5 @@
 //
-//  SJDeviceVolumeAndBrightnessManager.h
+//  SJDeviceVolumeAndBrightnessManagerDefines.h
 //  SJDeviceVolumeAndBrightnessManager
 //
 //  Created by BlueDancer on 2017/12/10.
@@ -7,7 +7,7 @@
 //
 
 #import <UIKit/UIKit.h>
-#import "SJDeviceVolumeAndBrightnessManagerProtocol.h"
+#import "SJDeviceVolumeAndBrightnessManagerDefines.h"
 
 NS_ASSUME_NONNULL_BEGIN
 @interface SJDeviceVolumeAndBrightnessManager : NSObject<SJDeviceVolumeAndBrightnessManager>

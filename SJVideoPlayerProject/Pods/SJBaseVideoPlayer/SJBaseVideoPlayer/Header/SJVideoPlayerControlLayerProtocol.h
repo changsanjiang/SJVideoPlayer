@@ -9,10 +9,10 @@
 #ifndef SJVideoPlayerControlLayerProtocol_h
 #define SJVideoPlayerControlLayerProtocol_h
 #import <UIKit/UIKit.h>
-#import "SJNetworkStatus.h"
-#import "SJVideoPlayerState.h"
+#import "SJReachabilityDefines.h"
+#import "SJVideoPlayerPlayStatusDefines.h"
 #import "SJMediaPlaybackProtocol.h"
-#import "SJPlayerGestureControlProtocol.h"
+#import "SJPlayerGestureControlDefines.h"
 
 @protocol SJPlayStatusControlDelegate,
 SJBufferControlDelegate,

@@ -7,8 +7,8 @@
 
 #import "SJModalViewControlllerManager.h"
 #import "SJVideoPlayerURLAsset.h"
-#import "SJRotationManagerProtocol.h"
-#import "SJControlLayerAppearManagerProtocol.h"
+#import "SJRotationManagerDefines.h"
+#import "SJControlLayerAppearManagerDefines.h"
 
 #if __has_include(<Masonry/Masonry.h>)
 #import <Masonry/Masonry.h>

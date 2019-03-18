@@ -121,7 +121,9 @@ static void sj_observeContentOffset(UIScrollView *scrollView, void(^contentOffse
 }
 
 static void sj_removeContentOffsetObserver(UIScrollView *scrollView) {
-    objc_setAssociatedObject(scrollView, &kObserver, nil, OBJC_ASSOCIATION_RETAIN_NONATOMIC);
+    dispatch_async(dispatch_get_main_queue(), ^{
+        objc_setAssociatedObject(scrollView, &kObserver, nil, OBJC_ASSOCIATION_RETAIN_NONATOMIC);
+    });
 }
 
 #pragma mark -

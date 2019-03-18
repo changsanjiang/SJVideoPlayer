@@ -74,7 +74,7 @@
     SJPlayerAutoplayConfig *config = [SJPlayerAutoplayConfig configWithPlayerSuperviewTag:101 autoplayDelegate:self];
     config.autoplayPosition = SJAutoplayPositionTop;
     [_tableView sj_enableAutoplayWithConfig:config];
-//    [_tableView sj_needPlayNextAsset];
+    [_tableView sj_needPlayNextAsset];
 }
 
 - (void)_setupViews {

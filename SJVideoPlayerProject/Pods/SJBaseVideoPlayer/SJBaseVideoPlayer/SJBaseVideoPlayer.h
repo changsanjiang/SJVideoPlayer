@@ -31,17 +31,17 @@
 #import <UIKit/UIKit.h>
 #import "SJVideoPlayerPreviewInfo.h"
 #import "SJPrompt.h"
-#import "SJFitOnScreenManagerProtocol.h"
-#import "SJRotationManagerProtocol.h"
+#import "SJFitOnScreenManagerDefines.h"
+#import "SJRotationManagerDefines.h"
 #import "SJVideoPlayerControlLayerProtocol.h"
-#import "SJControlLayerAppearManagerProtocol.h"
-#import "SJFlipTransitionManagerProtocol.h"
+#import "SJControlLayerAppearManagerDefines.h"
+#import "SJFlipTransitionManagerDefines.h"
 #import "SJMediaPlaybackProtocol.h"
 #import "SJVideoPlayerURLAsset+SJAVMediaPlaybackAdd.h"
-#import "SJPlayerGestureControlProtocol.h"
-#import "SJDeviceVolumeAndBrightnessManagerProtocol.h"
-#import "SJModalViewControlllerManagerProtocol.h"
-#import "SJBaseVideoPlayerStatisticsProtocol.h"
+#import "SJPlayerGestureControlDefines.h"
+#import "SJDeviceVolumeAndBrightnessManagerDefines.h"
+#import "SJModalViewControlllerManagerDefines.h"
+#import "SJBaseVideoPlayerStatisticsDefines.h"
 
 NS_ASSUME_NONNULL_BEGIN
 
@@ -204,7 +204,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 // - Replay -
 
-/// 是否重播过 - 当前的资源
+/// 是否重播过 - 当前的资源.
 @property (nonatomic, readonly, getter=isReplayed) BOOL replayed;
 /// 重播
 - (void)replay;
@@ -627,6 +627,8 @@ NS_ASSUME_NONNULL_BEGIN
 
 #pragma mark - 播放时长统计
 @interface SJBaseVideoPlayer (Statistics)
+// default value is NO.
+@property (class, nonatomic, getter=isEnabledStatistics) BOOL enabledStatistics;
 @property (class, nonatomic, strong, null_resettable) id<SJBaseVideoPlayerStatistics> statistics;
 @property (nonatomic, strong, null_resettable) id<SJBaseVideoPlayerStatistics> statistics;
 @end

@@ -12,7 +12,7 @@
 #import <AVFoundation/AVFoundation.h>
 #import "SJVideoPlayerPreviewInfo.h"
 #import "SJPlayerBufferStatus.h"
-#import "SJVideoPlayerState.h"
+#import "SJVideoPlayerPlayStatusDefines.h"
 
 @protocol SJMediaPlaybackControllerDelegate, SJMediaModelProtocol;
 

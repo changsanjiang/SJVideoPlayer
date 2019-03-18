@@ -6,7 +6,7 @@
 //
 
 #import <Foundation/Foundation.h>
-#import "SJControlLayerAppearManagerProtocol.h"
+#import "SJControlLayerAppearManagerDefines.h"
 
 NS_ASSUME_NONNULL_BEGIN
 @interface SJControlLayerAppearStateManager : NSObject<SJControlLayerAppearManager>

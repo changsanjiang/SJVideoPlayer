@@ -6,8 +6,8 @@
 //
 
 #import "SJBaseVideoPlayerStatistics.h"
-#import "SJVideoPlayerURLAsset.h"
 #import <objc/message.h>
+#import "SJVideoPlayerURLAsset.h"
 #import "NSTimer+SJAssetAdd.h"
 #if __has_include(<SJObserverHelper/NSObject+SJObserverHelper.h>)
 #import <SJObserverHelper/NSObject+SJObserverHelper.h>
@@ -73,6 +73,10 @@ static const char *kTimer = "statistics_refreshTimer";
     [timer invalidate];
     objc_setAssociatedObject(self, kTimer, nil, OBJC_ASSOCIATION_RETAIN_NONATOMIC);
 }
+
+- (void)statistics_reset {
+    self.statistics_currentPlayingTime = 0;
+}
 @end
 
 @interface SJBaseVideoPlayerStatistics ()
@@ -82,13 +86,17 @@ static const char *kTimer = "statistics_refreshTimer";
 @implementation SJBaseVideoPlayerStatistics
 @synthesize playStatusDidChangeHandler = _playStatusDidChangeHandler;
 
-static NSString * kURLAsset = @"URLAsset";
-static NSString * kPlayStatus = @"playStatus";
-- (void)observePlayer:(__weak id<SJBaseVideoPlayerStatisticsPlayer>)player {
-    [(id)player sj_addObserver:self forKeyPath:kURLAsset context:&kURLAsset];
-    [(id)player sj_addObserver:self forKeyPath:kPlayStatus context:&kPlayStatus];
-    [self _playStatusDidChangeOfPlayer:player];
-    [self _URLAssetDidChangeOfPlayer:player];
+static NSString *kURLAsset = @"URLAsset";
+static NSString *kPlayStatus = @"playStatus";
+static NSString *kReplayed = @"replayed";
+- (void)observePlayer:(__weak id<SJBaseVideoPlayer>)player {
+    dispatch_async(dispatch_get_main_queue(), ^{
+        [(id)player sj_addObserver:self forKeyPath:kURLAsset context:&kURLAsset];
+        [(id)player sj_addObserver:self forKeyPath:kPlayStatus context:&kPlayStatus];
+        [(id)player sj_addObserver:self forKeyPath:kReplayed context:&kReplayed];
+        [self _playStatusDidChangeOfPlayer:player];
+        [self _URLAssetDidChangeOfPlayer:player];
+    });
 }
 - (void)observeValueForKeyPath:(nullable NSString *)keyPath ofObject:(nullable id)object change:(nullable NSDictionary<NSKeyValueChangeKey,id> *)change context:(nullable void *)context {
     if ( context == &kPlayStatus ) {
@@ -99,8 +107,12 @@ static NSString * kPlayStatus = @"playStatus";
         if ( [old isKindOfClass:[SJVideoPlayerURLAsset class]] ) [old statistics_stop];
         [self _URLAssetDidChangeOfPlayer:object];
     }
+    else if ( context == &kReplayed ) {
+        id<SJBaseVideoPlayer> player = object;
+        [player.URLAsset statistics_reset];
+    }
 }
-- (void)_playStatusDidChangeOfPlayer:(id<SJBaseVideoPlayerStatisticsPlayer>)player {
+- (void)_playStatusDidChangeOfPlayer:(id<SJBaseVideoPlayer>)player {
     if ( player.playStatus == SJVideoPlayerPlayStatusPlaying ) {
         [player.URLAsset statistics_start];
     }
@@ -110,7 +122,7 @@ static NSString * kPlayStatus = @"playStatus";
     
     if ( _playStatusDidChangeHandler ) _playStatusDidChangeHandler(self, player);
 }
-- (void)_URLAssetDidChangeOfPlayer:(id<SJBaseVideoPlayerStatisticsPlayer>)player {
+- (void)_URLAssetDidChangeOfPlayer:(id<SJBaseVideoPlayer>)player {
     __weak typeof(self) _self = self;
     player.URLAsset.statistics_currentPlayingTimeDidChangeExeBlock = ^(SJVideoPlayerURLAsset * _Nonnull asset) {
         __strong typeof(_self) self = _self;

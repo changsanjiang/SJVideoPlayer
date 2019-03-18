@@ -46,8 +46,6 @@
     _player.hideBackButtonWhenOrientationIsPortrait = YES;
     _player.enableFilmEditing = YES;
     
-   
-    
 #pragma mark
     UILabel *noteLabel = [UILabel new];
     noteLabel.numberOfLines = 0;

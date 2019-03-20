@@ -325,10 +325,11 @@ static const char *key = "kSJAVMediaPlayAsset";
         _prepareStatus = (SJMediaPlaybackPrepareStatus)playerItemStatus;
         _error = _playAsset.playerItem.error;
         
+        __weak SJAVMediaPlayAsset *_Nullable asset = self.playAsset;
+        _presentView.mainPresenter.player = asset.player;
+
         __weak typeof(self) _self = self;
-        if ( _prepareStatus == SJMediaPlaybackPrepareStatusReadyToPlay ) {
-            __weak SJAVMediaPlayAsset *_Nullable asset = self.playAsset;
-            _presentView.mainPresenter.player = asset.player;
+        if ( _prepareStatus == SJMediaPlaybackPrepareStatusReadyToPlay && !_media.otherMedia ) {
             [asset.playerItem seekToTime:CMTimeMakeWithSeconds(0.1, NSEC_PER_SEC) completionHandler:^(BOOL finished) {
                 [asset.playerItem seekToTime:CMTimeMakeWithSeconds(self.media.specifyStartTime, NSEC_PER_SEC) toleranceBefore:kCMTimeZero toleranceAfter:kCMTimeZero completionHandler:^(BOOL finished) {
                     __strong typeof(_self) self = _self;

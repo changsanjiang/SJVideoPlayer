@@ -65,8 +65,12 @@ static UIViewController *_sj_get_top_view_controller() {
             for ( unsigned int i = 0 ; i < cls_count ; ++ i ) {
                 const char *cls_name = names[i];
                 Class _Nullable cls = objc_getClass(cls_name);
-                if ( !cls ) continue;
-                if ( !class_conformsToProtocol(cls, protocol) ) continue;
+                Class _Nullable supercls = cls;
+                /// Thanks @Patrick-Q  2019/3/20 14:43:37
+                while ( supercls && !class_conformsToProtocol(supercls, protocol) )
+                    supercls = class_getSuperclass(supercls);
+                if ( !supercls ) continue;
+
                 Class metaClass = (Class)object_getClass(cls);
                 if ( !class_respondsToSelector(metaClass, sel_handler) ) continue;
                 if ( class_respondsToSelector(metaClass, sel_path) ) {
@@ -100,7 +104,9 @@ static UIViewController *_sj_get_top_view_controller() {
             [handler handleRequestWithParameters:request.prts topViewController:_sj_get_top_view_controller() completionHandler:completionHandler];
         }
         else {
+#ifdef DEBUG
             printf("\n (-_-) Unhandled request: %s", request.description.UTF8String);
+#endif
             if ( self->_unhandledCallback ) self->_unhandledCallback(request, _sj_get_top_view_controller());
         }
     });

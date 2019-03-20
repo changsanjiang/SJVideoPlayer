@@ -25,6 +25,10 @@
 		<key>NSAllowsArbitraryLoads</key>
 		<true/>
 	</dict>
+	<key>NSPhotoLibraryAddUsageDescription</key>
+	<string>你可以设置头像, 个人主页背景, 还可以发送带图的动态</string>
+	<key>NSPhotoLibraryUsageDescription</key>
+	<string>你可以设置头像, 个人主页背景, 还可以发送带图的动态</string>
 	<key>UIBackgroundModes</key>
 	<array>
 		<string>audio</string>
@@ -41,8 +45,8 @@
 	<true/>
 	<key>UISupportedInterfaceOrientations</key>
 	<array>
-		<string>UIInterfaceOrientationPortrait</string>
 		<string>UIInterfaceOrientationLandscapeRight</string>
+		<string>UIInterfaceOrientationPortrait</string>
 		<string>UIInterfaceOrientationLandscapeLeft</string>
 	</array>
 	<key>UISupportedInterfaceOrientations~ipad</key>
@@ -52,9 +56,5 @@
 		<string>UIInterfaceOrientationLandscapeLeft</string>
 		<string>UIInterfaceOrientationLandscapeRight</string>
 	</array>
-	<key>NSPhotoLibraryUsageDescription</key>
-	<string>你可以设置头像, 个人主页背景, 还可以发送带图的动态</string>
-	<key>NSPhotoLibraryAddUsageDescription</key>
-	<string>你可以设置头像, 个人主页背景, 还可以发送带图的动态</string>
 </dict>
 </plist>

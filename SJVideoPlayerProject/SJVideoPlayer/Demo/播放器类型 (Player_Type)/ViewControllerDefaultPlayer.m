@@ -10,9 +10,11 @@
 #import "SJVideoPlayer.h"
 #import <SJRouter/SJRouter.h>
 #import <Masonry/Masonry.h>
+#import <WebKit/WebKit.h>
 
 @interface ViewControllerDefaultPlayer ()<SJRouteHandler>
 @property (nonatomic, strong) SJVideoPlayer *player;
+@property (nonatomic, strong) WKWebView *webView;
 @end
 
 @implementation ViewControllerDefaultPlayer
@@ -67,6 +69,18 @@
         make.trailing.offset(-8);
         make.centerY.offset(0);
     }];
+
+    
+    WKWebViewConfiguration *config = [WKWebViewConfiguration new];
+    config.allowsInlineMediaPlayback = YES;
+    _webView = [[WKWebView alloc] initWithFrame:CGRectZero configuration:config];
+    
+    _webView.frame = CGRectMake(0, 400, self.view.bounds.size.width, 300);
+    [self.view insertSubview:_webView atIndex:0];
+    
+    NSURL *URL = [NSURL URLWithString:@"https://mp.weixin.qq.com/s/_ppwbyHn9ag3zrkV7qu4qw"];
+    NSURLRequest *request = [NSURLRequest requestWithURL:URL];
+    [_webView loadRequest:request];
 
     // Do any additional setup after loading the view.
 }

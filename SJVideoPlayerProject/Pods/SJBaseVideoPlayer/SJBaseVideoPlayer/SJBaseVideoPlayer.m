@@ -34,6 +34,7 @@
 #import "SJModalViewControlllerManager.h"
 #import "SJBaseVideoPlayerStatistics.h"
 #import "SJBaseVideoPlayerAutoRefreshController.h"
+#import "SJVCRotationManager.h"
 
 #if __has_include(<Masonry/Masonry.h>)
 #import <Masonry/Masonry.h>
@@ -52,11 +53,21 @@
 #endif
 
 NS_ASSUME_NONNULL_BEGIN
+static NSInteger _SJBaseVideoPlayerViewTag = 10000;
+
 @interface SJPlayerView : UIView
 @property (nonatomic, copy, nullable) void(^willMoveToWindowExeBlock)(SJPlayerView *view, UIWindow *_Nullable window);
+@property (nonatomic, weak, nullable) __kindof SJBaseVideoPlayer *player;
 @end
 
 @implementation SJPlayerView
+- (instancetype)initWithFrame:(CGRect)frame {
+    self = [super initWithFrame:frame];
+    if (self) {
+        self.tag = _SJBaseVideoPlayerViewTag;
+    }
+    return self;
+}
 - (void)willMoveToWindow:(nullable UIWindow *)newWindow {
     [super willMoveToWindow:newWindow];
     if ( _willMoveToWindowExeBlock ) _willMoveToWindowExeBlock(self, newWindow);
@@ -85,6 +96,7 @@ static NSString *_kPlayStatus = @"playStatus";
     }
 }
 @end
+
 
 #pragma mark -
 
@@ -134,6 +146,101 @@ static NSString *_kPlayStatus = @"playStatus";
 @property (nonatomic) NSTimeInterval pan_shift;
 
 @property (nonatomic, strong, nullable) SJBaseVideoPlayerAutoRefreshController *autoRefresh;
+@end
+
+@implementation UITabBarController (SJBaseVideoPlayerAdded)
+- (UIViewController *)sj_topViewController {
+    if ( self.selectedIndex == NSNotFound )
+        return self.viewControllers.firstObject;
+    return self.selectedViewController;
+}
+
+- (BOOL)shouldAutorotate {
+    return [[self sj_topViewController] shouldAutorotate];
+}
+
+- (UIInterfaceOrientationMask)supportedInterfaceOrientations {
+    return [[self sj_topViewController] supportedInterfaceOrientations];
+}
+
+- (UIInterfaceOrientation)preferredInterfaceOrientationForPresentation {
+    return [[self sj_topViewController] preferredInterfaceOrientationForPresentation];
+}
+@end
+
+@implementation UINavigationController (SJBaseVideoPlayerAdded)
+- (BOOL)shouldAutorotate {
+    return self.topViewController.shouldAutorotate;
+}
+
+- (UIInterfaceOrientationMask)supportedInterfaceOrientations {
+    return self.topViewController.supportedInterfaceOrientations;
+}
+
+- (UIInterfaceOrientation)preferredInterfaceOrientationForPresentation {
+    return self.topViewController.preferredInterfaceOrientationForPresentation;
+}
+
+- (nullable UIViewController *)childViewControllerForStatusBarStyle {
+    return self.topViewController;
+}
+
+- (nullable UIViewController *)childViewControllerForStatusBarHidden {
+    return self.topViewController;
+}
+@end
+
+@interface UIViewController (SJBaseVideoPlayerAdded)
+- (BOOL)sj_shouldAutorotate;
+- (UIInterfaceOrientationMask)sj_supportedInterfaceOrientations;
+@end
+
+@implementation UIViewController (SJBaseVideoPlayerAdded)
+static void
+sj_swizzleMethod(Class cls, SEL originalSelector, SEL swizzledSelector) {
+    Method originalMethod = class_getInstanceMethod(cls, originalSelector);
+    Method swizzledMethod = class_getInstanceMethod(cls, swizzledSelector);
+    method_exchangeImplementations(originalMethod, swizzledMethod);
+}
+
++ (void)load {
+    sj_swizzleMethod([UIViewController class], @selector(shouldAutorotate), @selector(sj_shouldAutorotate));
+    sj_swizzleMethod([UIViewController class], @selector(supportedInterfaceOrientations), @selector(sj_supportedInterfaceOrientations));
+}
+
+- (BOOL)sj_shouldAutorotate {
+    if ( !self.nextResponder ) return NO;
+    SJPlayerView *_Nullable playerView = [self sj_playerView];
+    if ( playerView ) {
+        if ( [playerView.player.rotationManager isKindOfClass:[SJVCRotationManager class]] ) {
+            SJVCRotationManager *mgr = playerView.player.rotationManager;
+            return [mgr vc_shouldAutorotate];
+        }
+        return NO;
+    }
+    return [self sj_shouldAutorotate];
+}
+
+- (UIInterfaceOrientationMask)sj_supportedInterfaceOrientations {
+    if ( !self.nextResponder ) return UIInterfaceOrientationMaskPortrait;
+    SJPlayerView *_Nullable playerView = [self sj_playerView];
+    if ( playerView ) {
+        if ( [playerView.player.rotationManager isKindOfClass:[SJVCRotationManager class]] ) {
+            SJVCRotationManager *mgr = playerView.player.rotationManager;
+            return [mgr vc_supportedInterfaceOrientations];
+        }
+        return UIInterfaceOrientationMaskPortrait;
+    }
+    return [self sj_supportedInterfaceOrientations];
+}
+
+- (SJPlayerView *_Nullable)sj_playerView {
+    __kindof UIView *_Nullable view = [self.view viewWithTag:_SJBaseVideoPlayerViewTag];
+    if ( view && [view isKindOfClass:[SJPlayerView class]] ) {
+        return view;
+    }
+    return nil;
+}
 @end
 
 @implementation SJBaseVideoPlayer {
@@ -244,7 +351,7 @@ static NSString *_kPlayStatus = @"playStatus";
 }
 
 + (NSString *)version {
-    return @"2.2.2";
+    return @"2.3.0";
 }
 
 - (nullable __kindof UIViewController *)atViewController {
@@ -465,6 +572,7 @@ static NSString *_kGestureState = @"state";
 - (UIView *)view {
     if ( _view ) return _view;
     _view = [SJPlayerView new];
+    [(SJPlayerView *)_view setPlayer:self];
     _view.backgroundColor = [UIColor blackColor];
     [_view addSubview:self.presentView];
     [_presentView addSubview:self.controlContentView];
@@ -2164,6 +2272,7 @@ static NSString *_kGestureState = @"state";
         __strong typeof(_self) self = _self;
         if ( !self ) return NO;
         if ( !self.view.superview ) return NO;
+        if ( !self.view.window.isKeyWindow ) return NO;
         if ( self.touchedScrollView ) return NO;
         if ( self.isPlayOnScrollView && !self.isScrollAppeared ) return NO;
         if ( self.isLockedScreen ) return NO;

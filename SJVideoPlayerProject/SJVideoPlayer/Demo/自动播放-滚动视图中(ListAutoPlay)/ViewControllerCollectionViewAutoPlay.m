@@ -57,6 +57,16 @@
         [UIView animateWithDuration:0.6 animations:^{
             self.player.view.alpha = 1;
         }];
+        
+        _player.videoGravity = AVLayerVideoGravityResizeAspectFill;
+        
+        __weak typeof(self) _self = self;
+        _player.playDidToEndExeBlock = ^(__kindof SJBaseVideoPlayer * _Nonnull player) {
+            __strong typeof(_self) self = _self;
+            if ( !self ) return;
+            NSIndexPath *next = [NSIndexPath indexPathForItem:indexPath.item + 1 inSection:indexPath.section];
+            [self.collectionView scrollToItemAtIndexPath:next atScrollPosition:UICollectionViewScrollPositionTop animated:YES];
+        };
     }
 #ifdef SJMAC
     _player.disablePromptWhenNetworkStatusChanges = YES;
@@ -75,12 +85,16 @@
 
 - (void)_setupViews {
     UICollectionViewFlowLayout *layout = [UICollectionViewFlowLayout new];
-    layout.itemSize = CGSizeMake(self.view.bounds.size.width, self.view.bounds.size.width * 9 / 16.0 + 8);
+    layout.itemSize = CGSizeMake(self.view.bounds.size.width, self.view.bounds.size.height);
     layout.minimumLineSpacing = 0;
     layout.minimumInteritemSpacing = 0;
     _collectionView = [[UICollectionView alloc] initWithFrame:CGRectZero collectionViewLayout:layout];
     _collectionView.delegate = self;
     _collectionView.dataSource = self;
+    _collectionView.pagingEnabled = YES;
+    if (@available(iOS 11.0, *)) {
+        _collectionView.contentInsetAdjustmentBehavior = UIScrollViewContentInsetAdjustmentNever;
+    }
     [SJCollectionViewCell registerWithCollectionView:_collectionView];
     [self.view addSubview:_collectionView];
     [_collectionView mas_makeConstraints:^(MASConstraintMaker *make) {

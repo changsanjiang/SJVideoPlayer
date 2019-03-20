@@ -10,12 +10,33 @@
 #import "SJVideoPlayer.h"
 #import <SJRouter/SJRouter.h>
 
+@implementation UIViewController (Rotation)
+static BOOL _isCustomClass(Class cls) {
+    NSString *clsStr = NSStringFromClass(cls);
+    return [clsStr hasPrefix:@"SJ"];
+}
+
+- (BOOL)shouldAutorotate {
+    return !_isCustomClass([self class]);
+}
+
+- (UIInterfaceOrientationMask)supportedInterfaceOrientations {
+    if ( _isCustomClass([self class]) )
+        return UIInterfaceOrientationMaskPortrait;
+    return UIInterfaceOrientationMaskAllButUpsideDown;
+}
+
+- (UIInterfaceOrientation)preferredInterfaceOrientationForPresentation {
+    return UIInterfaceOrientationPortrait;
+}
+@end
+
+
 @interface AppDelegate ()
 
 @end
 
 @implementation AppDelegate
-
 
 - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions {
     

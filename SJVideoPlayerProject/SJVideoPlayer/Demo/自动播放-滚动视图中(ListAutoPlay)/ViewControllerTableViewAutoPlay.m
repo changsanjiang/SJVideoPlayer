@@ -16,6 +16,8 @@
 @interface ViewControllerTableViewAutoPlay ()<SJRouteHandler, UITableViewDataSource, UITableViewDelegate, SJPlayerAutoplayDelegate>
 @property (nonatomic, strong) UITableView *tableView;
 @property (nonatomic, strong) SJVideoPlayer *player;
+
+@property (nonatomic, strong) UIView *midLine;
 @end
 
 @implementation ViewControllerTableViewAutoPlay
@@ -38,11 +40,11 @@
     // Do any additional setup after loading the view.
 }
 
-- (void)scrollViewDidEndScrollingAnimation:(UIScrollView *)scrollView {
-    [self.tableView sj_needPlayNextAsset];
-}
-
 - (void)sj_playerNeedPlayNewAssetAtIndexPath:(NSIndexPath *)indexPath {
+#ifdef DEBUG
+    NSLog(@"%d - %s", (int)__LINE__, __func__);
+#endif
+    
     SJTableViewCell *cell = [self.tableView cellForRowAtIndexPath:indexPath];
     if ( !_player || !_player.isFullScreen ) {
         [_player stopAndFadeOut]; // 让旧的播放器淡出
@@ -72,9 +74,9 @@
 - (void)_configAutoplayForTableView {
     // 配置列表自动播放
     SJPlayerAutoplayConfig *config = [SJPlayerAutoplayConfig configWithPlayerSuperviewTag:101 autoplayDelegate:self];
-    config.autoplayPosition = SJAutoplayPositionTop;
+    config.autoplayPosition = SJAutoplayPositionMiddle;
     [_tableView sj_enableAutoplayWithConfig:config];
-    [_tableView sj_needPlayNextAsset];
+    [_tableView sj_playNextVisibleAsset];
 }
 
 - (void)_setupViews {
@@ -90,6 +92,15 @@
     [self.view addSubview:_tableView];
     [_tableView mas_makeConstraints:^(MASConstraintMaker *make) {
         make.edges.offset(0);
+    }];
+    
+    _midLine = [[UIView alloc] initWithFrame:CGRectZero];
+    _midLine.backgroundColor = [UIColor redColor];
+    [self.view addSubview:_midLine];
+    [_midLine mas_makeConstraints:^(MASConstraintMaker *make) {
+        make.left.right.offset(0);
+        make.centerY.offset(0);
+        make.height.offset(2);
     }];
 }
 

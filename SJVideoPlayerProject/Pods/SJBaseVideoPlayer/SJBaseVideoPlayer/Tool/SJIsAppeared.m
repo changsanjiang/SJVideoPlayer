@@ -10,7 +10,9 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
-__kindof UIView *sj_getTarget(UIScrollView *scrollView, NSIndexPath *viewAtIndexPath, NSInteger viewTag) {
+__kindof UIView *_Nullable sj_getTarget(UIScrollView *scrollView, NSIndexPath *viewAtIndexPath, NSInteger viewTag) {
+    if ( !viewAtIndexPath || !scrollView )
+        return nil;
     UIView *target = nil;
     if ( [scrollView isKindOfClass:[UITableView class]] ) {
         UITableViewCell *cell = [(UITableView *)scrollView cellForRowAtIndexPath:viewAtIndexPath];

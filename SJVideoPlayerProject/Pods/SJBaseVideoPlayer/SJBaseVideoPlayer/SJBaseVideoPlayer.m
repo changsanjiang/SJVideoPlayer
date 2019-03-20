@@ -586,13 +586,6 @@ static NSString *_kGestureState = @"state";
     }
 }
 
-- (void)_cleanScrollViewCurrentPlayingIndexPath:(SJPlayModel *)playModel {
-    if ( playModel ) {
-        UIScrollView *scrollView = sj_getScrollView(playModel);
-        scrollView.sj_currentPlayingIndexPath = nil;
-    }
-}
-
 - (void)_updateCurrentPlayingIndexPathIfNeeded:(SJPlayModel *)playModel {
     if ( !playModel )
         return;
@@ -958,7 +951,6 @@ static NSString *_kGestureState = @"state";
 }
 
 - (void)stop {
-    [self _cleanScrollViewCurrentPlayingIndexPath:_URLAsset.playModel];
     _operationOfInitializing = nil;
     [self.playbackController stop];
     self.playModelObserver = nil;
@@ -967,7 +959,6 @@ static NSString *_kGestureState = @"state";
 }
 
 - (void)stopAndFadeOut {
-    [self _cleanScrollViewCurrentPlayingIndexPath:_URLAsset.playModel];
     [self.view sj_fadeOutAndCompletion:^(UIView *view) {
         [view removeFromSuperview];
         [self stop];
@@ -1309,18 +1300,16 @@ static NSString *_kGestureState = @"state";
 }
 
 - (void)_mediaDidPlayToEnd {
-    if ( !self.vc_isDisappeared ) {
-        UIScrollView *scrollView = sj_getScrollView(_URLAsset.playModel);
-        if ( scrollView.sj_enabledAutoplay ) {
-            if ( self.playDidToEndExeBlock ) self.playDidToEndExeBlock(self);
-            [scrollView sj_needPlayNextAsset];
-            return;
-        }
-    }
-    
     self.inactivityReason = SJVideoPlayerInactivityReasonPlayEnd;
     self.playStatus = SJVideoPlayerPlayStatusInactivity;
     if ( self.playDidToEndExeBlock ) self.playDidToEndExeBlock(self);
+    
+    if ( self.view.window ) {
+        UIScrollView *scrollView = sj_getScrollView(_URLAsset.playModel);
+        if ( scrollView.sj_enabledAutoplay ) {
+            [scrollView sj_playNextVisibleAsset];
+        }
+    }
 }
 @end
 

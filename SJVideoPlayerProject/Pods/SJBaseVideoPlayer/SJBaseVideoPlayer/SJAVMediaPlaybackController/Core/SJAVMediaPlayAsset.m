@@ -247,6 +247,13 @@ static NSString *kRate = @"rate";
     }
     
     if ( status != self.bufferStatus || ( status == SJPlayerBufferStatusPlayable && isFloatZero(rate)) ) {
+        if ( status == SJPlayerBufferStatusUnplayable ) {
+            CMTimeRange range = [self.playerItem.loadedTimeRanges.firstObject CMTimeRangeValue];
+            NSTimeInterval buffer = floor(CMTimeGetSeconds(range.start) + CMTimeGetSeconds(range.duration) + 0.5);
+            NSTimeInterval duration = floor(CMTimeGetSeconds(self.playerItem.duration) + 0.5);
+            if ( buffer == duration )
+                return;
+        }
         self.bufferStatus = status;
         [NSNotificationCenter.defaultCenter postNotificationName:SJAVMediaBufferStatusDidChangeNotification object:self];
     }

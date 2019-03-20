@@ -16,6 +16,7 @@
 @interface ViewControllerCollectionViewAutoPlay ()<SJRouteHandler, UICollectionViewDelegate, UICollectionViewDataSource, SJPlayerAutoplayDelegate>
 @property (nonatomic, strong) UICollectionView *collectionView;
 @property (nonatomic, strong) SJVideoPlayer *player;
+@property (nonatomic, strong) UIView *midLine;
 @end
 
 @implementation ViewControllerCollectionViewAutoPlay
@@ -41,9 +42,9 @@
 // 配置列表自动播放
 - (void)_configAutoplayForCollectionView {
     SJPlayerAutoplayConfig *config = [SJPlayerAutoplayConfig configWithPlayerSuperviewTag:101 autoplayDelegate:self];
-    config.autoplayPosition = SJAutoplayPositionTop;
+    config.autoplayPosition = SJAutoplayPositionMiddle;
     [_collectionView sj_enableAutoplayWithConfig:config];
-    [_collectionView sj_needPlayNextAsset];
+    [_collectionView sj_playNextVisibleAsset];
 }
 
 - (void)sj_playerNeedPlayNewAssetAtIndexPath:(NSIndexPath *)indexPath {
@@ -85,6 +86,15 @@
     [_collectionView mas_makeConstraints:^(MASConstraintMaker *make) {
         make.edges.offset(0);
     }];
+    
+    _midLine = [[UIView alloc] initWithFrame:CGRectZero];
+    _midLine.backgroundColor = [UIColor redColor];
+    [self.view addSubview:_midLine];
+    [_midLine mas_makeConstraints:^(MASConstraintMaker *make) {
+        make.left.right.offset(0);
+        make.centerY.offset(0);
+        make.height.offset(2);
+    }];
 }
 
 - (NSInteger)collectionView:(UICollectionView *)collectionView numberOfItemsInSection:(NSInteger)section {
@@ -104,6 +114,11 @@
     };
 }
 
+- (void)viewWillAppear:(BOOL)animated {
+    [super viewWillAppear:animated];
+    [self.navigationController setNavigationBarHidden:YES animated:YES];
+}
+
 - (void)viewDidAppear:(BOOL)animated {
     [super viewDidAppear:animated];
     [self.player vc_viewDidAppear];
@@ -111,6 +126,7 @@
 
 - (void)viewWillDisappear:(BOOL)animated {
     [super viewWillDisappear:animated];
+    [self.navigationController setNavigationBarHidden:NO animated:YES];
     [self.player vc_viewWillDisappear];
 }
 
@@ -124,7 +140,8 @@
 }
 
 - (UIStatusBarStyle)preferredStatusBarStyle {
-    return [self.player vc_preferredStatusBarStyle];
+    return UIStatusBarStyleLightContent;
+//    return [self.player vc_preferredStatusBarStyle];
 }
 
 - (BOOL)prefersHomeIndicatorAutoHidden {

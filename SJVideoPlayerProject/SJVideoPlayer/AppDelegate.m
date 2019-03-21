@@ -13,7 +13,7 @@
 @implementation UIViewController (Rotation)
 static BOOL _isCustomClass(Class cls) {
     NSString *clsStr = NSStringFromClass(cls);
-    return [clsStr hasPrefix:@"SJ"];
+    return [clsStr hasPrefix:@"SJ"] || [clsStr hasPrefix:@"V"];
 }
 
 - (BOOL)shouldAutorotate {

@@ -1113,7 +1113,7 @@ SJEdgeControlButtonItemTag const SJEdgeControlLayerCenterItem_Replay = 40000;
     if ( !adapter ) return;
     NSArray<SJEdgeControlButtonItem *> *items = [adapter itemsWithRange:NSMakeRange(0, adapter.itemCount)];
     for ( SJEdgeControlButtonItem *item in items ) {
-        if ( !item.hidden && [item.delegate respondsToSelector:@selector(updatePropertiesIfNeeded:videoPlayer:)] ) {
+        if ( [item.delegate respondsToSelector:@selector(updatePropertiesIfNeeded:videoPlayer:)] ) {
             [item.delegate updatePropertiesIfNeeded:item videoPlayer:videoPlayer];
         }
     }
@@ -1274,6 +1274,8 @@ SJEdgeControlButtonItemTag const SJEdgeControlLayerCenterItem_Replay = 40000;
 }
 
 - (void)_bottom_updateLiveItem:(SJEdgeControlButtonItem *)liveItem {
+    if ( liveItem.hidden )
+        return;
     liveItem.title = sj_makeAttributesString(^(SJAttributeWorker * _Nonnull make) {
         make.append(SJEdgeControlLayerSettings.commonSettings.liveText)
         .font(SJEdgeControlLayerSettings.commonSettings.titleFont)

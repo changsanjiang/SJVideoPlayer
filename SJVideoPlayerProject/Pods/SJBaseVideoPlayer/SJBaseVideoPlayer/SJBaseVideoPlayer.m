@@ -375,7 +375,6 @@ sj_swizzleMethod(Class cls, SEL originalSelector, SEL swizzledSelector) {
 - (instancetype)init {
     self = [super init];
     if ( !self ) return nil;
-    self.rate = 1;
     self.hiddenPlaceholderImageViewWhenPlayerIsReadyForDisplay = YES;
     self.autoPlayWhenPlayStatusIsReadyToPlay = YES; // 是否自动播放, 默认yes
     self.pauseWhenAppDidEnterBackground = YES; // App进入后台是否暂停播放, 默认yes
@@ -1029,6 +1028,10 @@ static NSString *_kGestureState = @"state";
     self.playStatus = SJVideoPlayerPlayStatusPlaying;
     
     [self.controlLayerAppearManager resume];
+    
+#ifdef DEBUG
+    NSLog(@"%d - %s", (int)__LINE__, __func__);
+#endif
 }
 
 - (void)pause {
@@ -1161,7 +1164,7 @@ static NSString *_kGestureState = @"state";
 }
 
 - (float)rate {
-    return _playbackController.rate;
+    return self.playbackController.rate;
 }
 - (void)setRateDidChangeExeBlock:(void (^_Nullable)(__kindof SJBaseVideoPlayer * _Nonnull))rateDidChangeExeBlock {
     _rateDidChangeExeBlock = rateDidChangeExeBlock;
@@ -1324,7 +1327,7 @@ static NSString *_kGestureState = @"state";
             break;
         case SJPlayerBufferStatusPlayable: {
             if ( [self playStatus_isPaused_ReasonBuffering] ||
-                [self playStatus_isInactivity_ReasonNotReachableAndPlaybackStalled] ) {
+                 [self playStatus_isInactivity_ReasonNotReachableAndPlaybackStalled] ) {
                 [self play];
             }
         }
@@ -1458,6 +1461,14 @@ static NSString *_kGestureState = @"state";
         if ( self.networkStatusDidChangeExeBlock )
             self.networkStatusDidChangeExeBlock(self);
     };
+}
+
+///
+/// Thanks @18138870200
+/// https://github.com/18138870200/SGNetworkSpeed.git
+///
+- (NSString *)networkSpeedStr {
+    return self.reachability.networkSpeedStr;
 }
 
 - (SJNetworkStatus)networkStatus {
@@ -1910,7 +1921,7 @@ static NSString *_kGestureState = @"state";
 }
 
 - (void)setDisabledGestures:(SJPlayerDisabledGestures)disabledGestures {
-    _gestureControl.disabledGestures = disabledGestures;
+    self.gestureControl.disabledGestures = disabledGestures;
 }
 
 - (SJPlayerDisabledGestures)disabledGestures {

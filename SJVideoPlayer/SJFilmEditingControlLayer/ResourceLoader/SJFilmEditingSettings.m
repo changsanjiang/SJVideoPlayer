@@ -26,29 +26,35 @@ NSString *const SJFilmEditing_uploadFailedText = @"SJFilmEditing_uploadFailedTex
 NSString *const SJFilmEditing_uploadSuccessText = @"SJFilmEditing_uploadSuccessText";
 
 @implementation SJFilmEditingSettings
-
 + (instancetype)commonSettings {
     static id _instance;
     static dispatch_once_t onceToken;
     dispatch_once(&onceToken, ^{
         _instance = [self new];
-        [_instance reset];
     });
     return _instance;
 }
 
+- (instancetype)init {
+    self = [super init];
+    if ( !self ) return nil;
+    [self reset];
+    return self;
+}
+
 + (void (^)(void (^ _Nonnull)(SJFilmEditingSettings * _Nonnull)))update {
     return ^(void(^block)(SJFilmEditingSettings *settings)) {
-        __weak typeof(self) _self = self;
-        dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
-            block([SJFilmEditingSettings commonSettings]);
-            dispatch_async(dispatch_get_main_queue(), ^{
-                __strong typeof(_self) self = _self;
-                if ( !self ) return ;
-                [[NSNotificationCenter defaultCenter] postNotificationName:SJFilmEditingSettingsUpdatedNotification object:[SJFilmEditingSettings commonSettings]];
-            });
+        dispatch_async(dispatch_get_global_queue(0, 0), ^{
+            block(SJFilmEditingSettings.commonSettings);
+            [SJFilmEditingSettings.commonSettings postUpdateNotify];
         });
     };
+}
+
+- (void)postUpdateNotify {
+    dispatch_async(dispatch_get_main_queue(), ^{
+        [[NSNotificationCenter defaultCenter] postNotificationName:SJFilmEditingSettingsUpdatedNotification object:self];
+    });
 }
 
 - (void)reset {

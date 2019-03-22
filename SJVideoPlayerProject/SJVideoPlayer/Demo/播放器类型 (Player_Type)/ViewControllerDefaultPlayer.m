@@ -43,7 +43,9 @@
         make.height.equalTo(self->_player.view.mas_width).multipliedBy(9 / 16.0f);
     }];
     
-    _player.URLAsset = [[SJVideoPlayerURLAsset alloc] initWithURL:[NSBundle.mainBundle URLForResource:@"play" withExtension:@"mp4"]];
+//    _player.URLAsset = [[SJVideoPlayerURLAsset alloc] initWithURL:[NSBundle.mainBundle URLForResource:@"play" withExtension:@"mp4"]];
+    
+    _player.URLAsset = [[SJVideoPlayerURLAsset alloc] initWithURL:[NSURL URLWithString:@"http://ivi.bupt.edu.cn/hls/cctv6.m3u8"]];
     
     _player.URLAsset.title = @"Test TitleTest TitleTest TitleTest TitleTest TitleTest TitleTest TitleTest Title";
     _player.URLAsset.alwaysShowTitle = YES;

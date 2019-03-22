@@ -122,7 +122,10 @@ static SJEdgeControlButtonItemTag SJBottomItem_RightFill = 5;
     __weak typeof(self) _self = self;
     _countDownTimer = [NSTimer assetAdd_timerWithTimeInterval:1 block:^(NSTimer *timer) {
         __strong typeof(_self) self = _self;
-        if ( !self ) return ;
+        if ( !self ) {
+            [timer invalidate];
+            return;
+        }
         if ( 0 == (self.countDownNum -= 1) ) {
             [self finished];
         }

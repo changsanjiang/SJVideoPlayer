@@ -8,7 +8,7 @@
 
 #import "SJEdgeControlLayerAdapters.h"
 #import "SJVideoPlayerFilmEditingConfig.h"
-#import "SJControlLayerCarrier.h"
+#import "SJControlLayerDefines.h"
 
 NS_ASSUME_NONNULL_BEGIN
 @interface SJFilmEditingControlLayer : SJEdgeControlLayerAdapters<SJControlLayer>

@@ -28,17 +28,6 @@ NSNotificationName const SJSettingsPlayerNotification = @"SJSettingsPlayerNotifi
     return _instance;
 }
 
-+ (void (^)(void (^ _Nonnull)(SJEdgeControlLayerSettings * _Nonnull)))update {
-    return ^(void(^block)(SJEdgeControlLayerSettings *settings)) {
-        dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
-            block([SJEdgeControlLayerSettings commonSettings]);
-            dispatch_async(dispatch_get_main_queue(), ^{
-                [[NSNotificationCenter defaultCenter] postNotificationName:SJSettingsPlayerNotification object:[SJEdgeControlLayerSettings commonSettings]];
-            });
-        });
-    };
-}
-
 - (instancetype)init {
     self = [super init];
     if ( !self ) return nil;
@@ -46,10 +35,27 @@ NSNotificationName const SJSettingsPlayerNotification = @"SJSettingsPlayerNotifi
     return self;
 }
 
++ (void (^)(void (^ _Nonnull)(SJEdgeControlLayerSettings * _Nonnull)))update {
+    return ^(void(^block)(SJEdgeControlLayerSettings *settings)) {
+        dispatch_async(dispatch_get_global_queue(0, 0), ^{
+            block(SJEdgeControlLayerSettings.commonSettings);
+            [SJEdgeControlLayerSettings.commonSettings postUpdateNotify];
+        });
+    };
+}
+
+- (void)postUpdateNotify {
+    dispatch_async(dispatch_get_main_queue(), ^{
+        [[NSNotificationCenter defaultCenter] postNotificationName:SJSettingsPlayerNotification object:self];
+    });
+}
+
 - (void)reset {
     _notReachablePrompt = [SJEdgeControlLayerLoader localizedStringForKey:SJVideoPlayer_NotReachablePrompt];
     _reachableViaWWANPrompt = [SJEdgeControlLayerLoader localizedStringForKey:SJVideoPlayer_ReachableViaWWANPrompt];
     self.loadingLineColor = [UIColor whiteColor];
+    self.loadingNetworkSpeedTextFont = [UIFont systemFontOfSize:11];
+    self.loadingNetworkSpeedTextColor = [UIColor whiteColor];
     self.titleFont = [UIFont boldSystemFontOfSize:14];
     self.titleColor = [UIColor whiteColor];
     self.fastImage = [SJEdgeControlLayerLoader imageNamed:@"sj_video_player_fast"];
@@ -83,7 +89,7 @@ NSNotificationName const SJSettingsPlayerNotification = @"SJSettingsPlayerNotifi
     self.replayBtnFont = [UIFont boldSystemFontOfSize:12];
     self.replayBtnTitleColor = [UIColor whiteColor];
     self.filmEditingBtnImage = [SJEdgeControlLayerLoader imageNamed:@"sj_video_player_film_editing"];
-    
+    _liveText = [SJEdgeControlLayerLoader localizedStringForKey:SJVideoPlayer_LiveText];
 
     /// 播放失败控制层 24abff
     _playFailedText = [SJEdgeControlLayerLoader localizedStringForKey:SJVideoPlayer_PlayFailedText];

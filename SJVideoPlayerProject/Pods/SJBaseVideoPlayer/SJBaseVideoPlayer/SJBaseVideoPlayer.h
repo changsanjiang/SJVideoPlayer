@@ -162,7 +162,7 @@ NS_ASSUME_NONNULL_BEGIN
 /// - 当调用`play`时, 会回调该block, 如果返回YES, 则执行`play`方法, 否之.
 /// - 如果该block == nil, 则调用`play`时, 默认为执行.
 @property (nonatomic, copy, nullable) BOOL(^canPlayAnAsset)(__kindof SJBaseVideoPlayer *player);
-/// 自动刷新, 播放失败时延迟多少秒刷新.
+/// 自动刷新, 播放失败时每隔多少秒刷新一次.
 /// - 默认是0, 即不自动刷新
 /// - 单位是秒
 @property (nonatomic) NSTimeInterval delayToAutoRefreshWhenPlayFailed;
@@ -318,6 +318,8 @@ NS_ASSUME_NONNULL_BEGIN
 @interface SJBaseVideoPlayer (Network)
 @property (nonatomic, strong, null_resettable) id<SJReachability> reachability;
 
+/// 当前网速
+@property (nonatomic, strong, readonly) NSString *networkSpeedStr;
 @property (nonatomic, readonly) SJNetworkStatus networkStatus;
 @property (nonatomic, copy, nullable) void(^networkStatusDidChangeExeBlock)(__kindof SJBaseVideoPlayer *player);
 @end

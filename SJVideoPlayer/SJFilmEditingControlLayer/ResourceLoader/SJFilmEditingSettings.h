@@ -30,7 +30,7 @@ extern NSString *const SJFilmEditing_uploadSuccessText;
 /// shared
 + (instancetype)commonSettings;
 - (void)reset;
-
+- (void)postUpdateNotify;
 @property (class, nonatomic, copy, readonly) void(^update)(void(^block)(SJFilmEditingSettings *settings));
 
 @property (nonatomic, strong) UIImage *screenshotBtnImage;

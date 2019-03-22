@@ -38,12 +38,11 @@
     self.edgesForExtendedLayout = UIRectEdgeNone;
     self.view.backgroundColor = [UIColor whiteColor];
     
-    
     [self _setupViews];
     
     [self _addControlLayerToSwitcher];
     
-    SJEdgeControlLayer *controlLayer = (id)[_player.switcher controlLayerForIdentifier:SJControlLayer_Edge].controlLayer;
+    SJEdgeControlLayer *controlLayer = (id)[_player.switcher controlLayerForIdentifier:SJControlLayer_Edge];
     /// test
     SJEdgeControlButtonItem *testItem = [SJEdgeControlButtonItem placeholderWithSize:49 tag:0];
     testItem.title = sj_makeAttributesString(^(SJAttributeWorker * _Nonnull make) {
@@ -85,14 +84,7 @@
 }
 
 - (void)_addControlLayerToSwitcher {
-//    SJLoadFailedControlLayer *controlLayer = [SJLoadFailedControlLayer new];
-//    SJControlLayerCarrier *carrier = [[SJControlLayerCarrier alloc] initWithIdentifier:111 dataSource:controlLayer delegate:controlLayer exitExeBlock:^(SJControlLayerCarrier * _Nonnull carrier) {
-//        [controlLayer exitControlLayer];
-//    } restartExeBlock:^(SJControlLayerCarrier * _Nonnull carrier) {
-//        [controlLayer restartControlLayer];
-//    }];
-//
-//    [_player.switcher addControlLayer:carrier];
+
 }
 
 - (void)test {

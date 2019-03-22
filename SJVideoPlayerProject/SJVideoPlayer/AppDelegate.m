@@ -40,13 +40,11 @@ static BOOL _isCustomClass(Class cls) {
 
 - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions {
     
+    NSLog(@"%@", NSTemporaryDirectory());
+    
     SJVideoPlayer.update(^(SJVideoPlayerSettings * _Nonnull common) {
         common.placeholder = [UIImage imageNamed:@"cover"];
         common.progress_thumbSize = 8;
-    });
-    
-    dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
-        [SJRouter shared];
     });
     
     [UIApplication.sharedApplication setStatusBarOrientation:UIInterfaceOrientationPortrait];

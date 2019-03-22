@@ -8,7 +8,8 @@
 
 #import "SJEdgeControlLayerAdapters.h"
 #import "SJVideoPlayerFilmEditingCommonHeader.h"
-#import "SJControlLayerCarrier.h"
+#import "SJControlLayerDefines.h"
+
 @class SJFilmEditingResultShareItem;
 
 NS_ASSUME_NONNULL_BEGIN

@@ -6,21 +6,9 @@
 //  Copyright © 2018年 畅三江. All rights reserved.
 //
 
-#if __has_include(<SJBaseVideoPlayer/SJBaseVideoPlayer.h>)
-#import <SJBaseVideoPlayer/SJVideoPlayerControlLayerProtocol.h>
-#else
-#import "SJVideoPlayerControlLayerProtocol.h"
-#endif
+#import "SJControlLayerDefines.h"
 
-typedef long SJControlLayerIdentifier;
-
-extern SJControlLayerIdentifier SJControlLayer_Uninitialized;
-
-@protocol SJControlLayerRestartProtocol,
-SJControlLayerExitProtocol,
-SJControlLayer;
-
-
+// - Deprecated -
 
 NS_ASSUME_NONNULL_BEGIN
 @interface SJControlLayerCarrier : NSObject
@@ -33,29 +21,6 @@ NS_ASSUME_NONNULL_BEGIN
 - (instancetype)init NS_UNAVAILABLE;
 + (instancetype) new NS_UNAVAILABLE;
 @end
-
-
-
-
-@protocol SJControlLayerRestartProtocol <NSObject>
-@required
-@property (nonatomic, readonly) BOOL restarted; // 是否已重新启用
-- (void)restartControlLayer;    // 重新启用控制层.  切换器(switcher)切换控制层时, 该方法将会被调用
-@end
-
-@protocol SJControlLayerExitProtocol <NSObject>
-@required
-- (void)exitControlLayer;       // 退出控制层. 切换器(switcher)切换控制层时, 该方法将会被调用
-@end
-
-@protocol SJControlLayer <
-SJVideoPlayerControlLayerDataSource,
-SJVideoPlayerControlLayerDelegate,
-SJControlLayerRestartProtocol,
-SJControlLayerExitProtocol
->
-@end
-
 
 @interface SJControlLayerCarrier (Deprecated)
 - (instancetype)initWithIdentifier:(SJControlLayerIdentifier)identifier

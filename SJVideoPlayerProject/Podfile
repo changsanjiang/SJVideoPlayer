@@ -17,7 +17,6 @@ target 'SJVideoPlayer' do
 
   # Pods for SJVideoPlayer
 
-  pod 'YYText', :inhibit_warnings => true
   pod 'SJVideoPlayer', :path => '../../SJVideoPlayer'
   pod 'SJBaseVideoPlayer'#, :path => '../../SJBaseVideoPlayer'
   pod 'SJPlaybackListController'#, :path => '../../SJPlaybackListController'

@@ -106,30 +106,32 @@ static SJControlLayerIdentifier SJFilmEditingGenerateResultControlLayerIdentifie
     
     [self exitControlLayer];
     
-    if ( ![self.switcher controlLayerForIdentifier:SJFilmEditingInVideoRecordingsControlLayerIdentifier] ) {
-        SJFilmEditingInVideoRecordingsControlLayer *controlLayer = [SJFilmEditingInVideoRecordingsControlLayer new];
-        SJControlLayerCarrier *carrier = [[SJControlLayerCarrier alloc] initWithIdentifier:SJFilmEditingInVideoRecordingsControlLayerIdentifier controlLayer:controlLayer];
-        [self.switcher addControlLayer:carrier];
-        
+    if ( ![self.switcher containsControlLayer:SJFilmEditingInVideoRecordingsControlLayerIdentifier] ) {
         __weak typeof(self) _self = self;
-        controlLayer.statusDidChangeExeBlock = ^(SJFilmEditingInVideoRecordingsControlLayer * _Nonnull control) {
+        [self.switcher addControlLayerForIdentifier:SJFilmEditingInVideoRecordingsControlLayerIdentifier lazyLoading:^id<SJControlLayer> _Nonnull(SJControlLayerIdentifier identifier) {
             __strong typeof(_self) self = _self;
-            if ( !self ) return ;
-            switch ( control.status ) {
-                case SJFilmEditingStatus_Unknown:
-                case SJFilmEditingStatus_Recording:
-                case SJFilmEditingStatus_Paused:
-                    break;
-                case SJFilmEditingStatus_Cancelled: {
-                    [self cancel];
+            if ( !self ) return nil;
+            SJFilmEditingInVideoRecordingsControlLayer *controlLayer = [SJFilmEditingInVideoRecordingsControlLayer new];
+            controlLayer.statusDidChangeExeBlock = ^(SJFilmEditingInVideoRecordingsControlLayer * _Nonnull control) {
+                __strong typeof(_self) self = _self;
+                if ( !self ) return ;
+                switch ( control.status ) {
+                    case SJFilmEditingStatus_Unknown:
+                    case SJFilmEditingStatus_Recording:
+                    case SJFilmEditingStatus_Paused:
+                        break;
+                    case SJFilmEditingStatus_Cancelled: {
+                        [self cancel];
+                    }
+                        break;
+                    case SJFilmEditingStatus_Finished: {
+                        [self _generateResultWithParameters:[self _createParametersWithOperation:SJVideoPlayerFilmEditingOperation_Export range:control.range]];
+                    }
+                        break;
                 }
-                    break;
-                case SJFilmEditingStatus_Finished: {
-                    [self _generateResultWithParameters:[self _createParametersWithOperation:SJVideoPlayerFilmEditingOperation_Export range:control.range]];
-                }
-                    break;
-            }
-        };
+            };
+            return controlLayer;
+        }];
     }
     
     [self.switcher switchControlLayerForIdentitfier:SJFilmEditingInVideoRecordingsControlLayerIdentifier];
@@ -144,30 +146,33 @@ static SJControlLayerIdentifier SJFilmEditingGenerateResultControlLayerIdentifie
     
     [self exitControlLayer];
     
-    if ( ![self.switcher controlLayerForIdentifier:SJFilmEditingInGIFRecordingsControlLayerIdentifier] ) {
-        SJFilmEditingInGIFRecordingsControlLayer *controlLayer = [SJFilmEditingInGIFRecordingsControlLayer new];
-        SJControlLayerCarrier *carrier = [[SJControlLayerCarrier alloc] initWithIdentifier:SJFilmEditingInGIFRecordingsControlLayerIdentifier controlLayer:controlLayer];
-        [self.switcher addControlLayer:carrier];
+    if ( ![self.switcher containsControlLayer:SJFilmEditingInGIFRecordingsControlLayerIdentifier] ) {
         
         __weak typeof(self) _self = self;
-        controlLayer.statusDidChangeExeBlock = ^(SJFilmEditingInGIFRecordingsControlLayer * _Nonnull control) {
+        [self.switcher addControlLayerForIdentifier:SJFilmEditingInGIFRecordingsControlLayerIdentifier lazyLoading:^id<SJControlLayer> _Nonnull(SJControlLayerIdentifier identifier) {
             __strong typeof(_self) self = _self;
-            if ( !self ) return ;
-            switch ( control.status ) {
-                case SJFilmEditingStatus_Unknown:
-                case SJFilmEditingStatus_Recording:
-                case SJFilmEditingStatus_Paused:
-                    break;
-                case SJFilmEditingStatus_Cancelled: {
-                    [self cancel];
+            if ( !self ) return nil;
+            SJFilmEditingInGIFRecordingsControlLayer *controlLayer = [SJFilmEditingInGIFRecordingsControlLayer new];
+            controlLayer.statusDidChangeExeBlock = ^(SJFilmEditingInGIFRecordingsControlLayer * _Nonnull control) {
+                __strong typeof(_self) self = _self;
+                if ( !self ) return ;
+                switch ( control.status ) {
+                    case SJFilmEditingStatus_Unknown:
+                    case SJFilmEditingStatus_Recording:
+                    case SJFilmEditingStatus_Paused:
+                        break;
+                    case SJFilmEditingStatus_Cancelled: {
+                        [self cancel];
+                    }
+                        break;
+                    case SJFilmEditingStatus_Finished: {
+                        [self _generateResultWithParameters:[self _createParametersWithOperation:SJVideoPlayerFilmEditingOperation_GIF range:control.range]];
+                    }
+                        break;
                 }
-                    break;
-                case SJFilmEditingStatus_Finished: {
-                    [self _generateResultWithParameters:[self _createParametersWithOperation:SJVideoPlayerFilmEditingOperation_GIF range:control.range]];
-                }
-                    break;
-            }
-        };
+            };
+            return controlLayer;
+        }];
     }
     
     [self.switcher switchControlLayerForIdentitfier:SJFilmEditingInGIFRecordingsControlLayerIdentifier];
@@ -182,7 +187,7 @@ static SJControlLayerIdentifier SJFilmEditingGenerateResultControlLayerIdentifie
 }
 
 - (void)cancel {
-    [[self.switcher controlLayerForIdentifier:self.switcher.currentIdentifier].controlLayer exitControlLayer];
+    [[self.switcher controlLayerForIdentifier:self.switcher.currentIdentifier] exitControlLayer];
     _switcher = nil;
     if ( self.cancelledOperationExeBlock ) {
         self.cancelledOperationExeBlock(self);
@@ -199,20 +204,22 @@ static SJControlLayerIdentifier SJFilmEditingGenerateResultControlLayerIdentifie
 
 - (void)_generateResultWithParameters:(id<SJVideoPlayerFilmEditingParameters>)parameters {
     [_player pause];
-    if ( ![self.switcher controlLayerForIdentifier:SJFilmEditingGenerateResultControlLayerIdentifier] ) {
-        SJFilmEditingGenerateResultControlLayer *controlLayer = [SJFilmEditingGenerateResultControlLayer new];
-        SJControlLayerCarrier *carrier = [[SJControlLayerCarrier alloc] initWithIdentifier:SJFilmEditingGenerateResultControlLayerIdentifier controlLayer:controlLayer];
-        [self.switcher addControlLayer:carrier];
-        
+    if ( ![self.switcher containsControlLayer:SJFilmEditingGenerateResultControlLayerIdentifier] ) {
         __weak typeof(self) _self = self;
-        controlLayer.cancelledOperationExeBlock = ^(SJFilmEditingGenerateResultControlLayer * _Nonnull control) {
+        [self.switcher addControlLayerForIdentifier:SJFilmEditingGenerateResultControlLayerIdentifier lazyLoading:^id<SJControlLayer> _Nonnull(SJControlLayerIdentifier identifier) {
             __strong typeof(_self) self = _self;
-            if ( !self ) return ;
-            [self cancel];
-        };
+            if ( !self ) return nil;
+            SJFilmEditingGenerateResultControlLayer *controlLayer = [SJFilmEditingGenerateResultControlLayer new];
+            controlLayer.cancelledOperationExeBlock = ^(SJFilmEditingGenerateResultControlLayer * _Nonnull control) {
+                __strong typeof(_self) self = _self;
+                if ( !self ) return ;
+                [self cancel];
+            };
+            return controlLayer;
+        }];
     }
     
-    SJFilmEditingGenerateResultControlLayer *control = (id)[self.switcher controlLayerForIdentifier:SJFilmEditingGenerateResultControlLayerIdentifier].controlLayer;
+    SJFilmEditingGenerateResultControlLayer *control = (id)[self.switcher controlLayerForIdentifier:SJFilmEditingGenerateResultControlLayerIdentifier];
     control.parameters = parameters;
     control.shareItems = self.config.resultShareItems;
     control.clickedResultShareItemExeBlock = self.config.clickedResultShareItemExeBlock;

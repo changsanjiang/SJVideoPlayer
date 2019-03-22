@@ -9,16 +9,13 @@
 #import "SJLoadingView.h"
 
 @interface SJLoadingView ()<CAAnimationDelegate>
-
 @property (nonatomic, strong, readonly) CAGradientLayer *gradientLayer;
 @property (nonatomic, strong, readonly) CAShapeLayer *shapeLayer;
 @property (nonatomic, assign) CGFloat lineWidth;
 @property (nonatomic, assign, getter=isAnimating) BOOL animating;
-
 @end
 
 @implementation SJLoadingView
-
 @synthesize lineColor = _lineColor;
 @synthesize gradientLayer = _gradientLayer;
 @synthesize shapeLayer = _shapeLayer;
@@ -73,8 +70,12 @@
 - (void)stop {
     if ( !_animating ) return;
     _animating = NO;
-    self.alpha = 0.001;
-    [_gradientLayer removeAnimationForKey:@"rotation"];
+    [UIView animateWithDuration:0.3 animations:^{
+        self.alpha = 0.001;
+    } completion:^(BOOL finished) {
+        if ( !self->_animating )
+            [self->_gradientLayer removeAnimationForKey:@"rotation"];
+    }];
 }
 
 - (void)layoutSubviews {

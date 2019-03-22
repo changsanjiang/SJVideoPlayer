@@ -7,7 +7,7 @@
 //
 
 #import <UIKit/UIKit.h>
-#import "SJControlLayerCarrier.h"
+#import "SJControlLayerDefines.h"
 @class SJVideoPlayerMoreSetting;
 
 NS_ASSUME_NONNULL_BEGIN

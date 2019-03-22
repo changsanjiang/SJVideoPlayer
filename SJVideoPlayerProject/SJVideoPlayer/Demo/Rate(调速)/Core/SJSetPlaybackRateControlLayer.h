@@ -7,7 +7,7 @@
 //
 
 #import "SJEdgeControlLayerAdapters.h"
-#import "SJControlLayerCarrier.h"
+#import "SJControlLayerDefines.h"
 #import "SJPlaybackRateLevels.h"
 
 NS_ASSUME_NONNULL_BEGIN

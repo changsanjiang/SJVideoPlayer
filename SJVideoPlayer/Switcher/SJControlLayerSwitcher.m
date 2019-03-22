@@ -14,6 +14,7 @@
 #endif
 
 NS_ASSUME_NONNULL_BEGIN
+SJControlLayerIdentifier SJControlLayer_Uninitialized = LONG_MAX;
 static NSString *const SJPlayerSwitchControlLayerUserInfoKey = @"SJPlayerSwitchControlLayerUserInfoKey";
 static NSNotificationName const SJPlayerWillBeginSwitchControlLayerNotification = @"SJPlayerWillBeginSwitchControlLayerNotification";
 static NSNotificationName const SJPlayerDidEndSwitchControlLayerNotification = @"SJPlayerDidEndSwitchControlLayerNotification";
@@ -40,8 +41,8 @@ static NSNotificationName const SJPlayerDidEndSwitchControlLayerNotification = @
 @end
 
 @interface SJControlLayerSwitcher ()
-@property (nonatomic, strong, readonly) NSMutableDictionary *map;
 @property (nonatomic, weak, nullable) SJBaseVideoPlayer *videoPlayer;
+@property (nonatomic, strong, readonly) NSMutableDictionary *map;
 @end
 
 @implementation SJControlLayerSwitcher
@@ -70,11 +71,34 @@ static NSNotificationName const SJPlayerDidEndSwitchControlLayerNotification = @
 }
 
 - (void)switchControlLayerForIdentitfier:(SJControlLayerIdentifier)identifier {
-    SJControlLayerCarrier *carrier_new = self.map[@(identifier)];
-    NSParameterAssert(carrier_new);
-    SJControlLayerCarrier *carrier_old = self.map[@(self.currentIdentifier)];
-    if ( carrier_new == carrier_old ) return;
-    [self _switchControlLayerWithOldcarrier:carrier_old newcarrier:carrier_new];
+    id<SJControlLayer> _Nullable oldValue = [self controlLayerForIdentifier:self.currentIdentifier];
+    id<SJControlLayer> _Nullable newValue = [self controlLayerForIdentifier:identifier];
+    NSParameterAssert(newValue); if ( !newValue ) return;
+    if ( oldValue == newValue )
+        return;
+    
+    if ( [self.delegate respondsToSelector:@selector(switcher:shouldSwitchToControlLayer:)] ) {
+        if ( ![self.delegate switcher:self shouldSwitchToControlLayer:identifier] )
+            return;
+    }
+    
+    // - begin -
+    [NSNotificationCenter.defaultCenter postNotificationName:SJPlayerWillBeginSwitchControlLayerNotification object:self userInfo:oldValue?@{SJPlayerSwitchControlLayerUserInfoKey:oldValue}:nil];
+
+    _videoPlayer.controlLayerDataSource = nil;
+    _videoPlayer.controlLayerDelegate = nil;
+    [oldValue exitControlLayer];
+
+    // update identifiers
+    _previousIdentifier = _currentIdentifier;
+    _currentIdentifier = identifier;
+
+    _videoPlayer.controlLayerDataSource = newValue;
+    _videoPlayer.controlLayerDelegate = newValue;
+    [newValue restartControlLayer];
+    
+    // - end -
+    [NSNotificationCenter.defaultCenter postNotificationName:SJPlayerDidEndSwitchControlLayerNotification object:self userInfo:@{SJPlayerSwitchControlLayerUserInfoKey:newValue}];
 }
 
 - (BOOL)switchToPreviousControlLayer {
@@ -84,58 +108,51 @@ static NSNotificationName const SJPlayerDidEndSwitchControlLayerNotification = @
     return YES;
 }
 
-- (void)addControlLayer:(SJControlLayerCarrier *)carrier {
-    SJControlLayerCarrier *old = self.map[@(carrier.identifier)];
-    
-    /// Thanks @steven326
-    /// https://github.com/changsanjiang/SJVideoPlayer/issues/40
-    if ( old && (old.identifier == self.currentIdentifier) ) {
-        /// 替换
-        [self _switchControlLayerWithOldcarrier:old newcarrier:carrier];
+- (void)addControlLayerForIdentifier:(SJControlLayerIdentifier)identifier
+                         lazyLoading:(nullable id<SJControlLayer>(^)(SJControlLayerIdentifier identifier))loading {
+    [self.map setObject:loading forKey:@(identifier)];
+    if ( self.currentIdentifier == identifier ) {
+        [self switchControlLayerForIdentitfier:identifier];
     }
-
-    [self.map setObject:carrier forKey:@(carrier.identifier)];
-}
-
-- (void)_switchControlLayerWithOldcarrier:(SJControlLayerCarrier *_Nullable )carrier_old newcarrier:(SJControlLayerCarrier *)carrier_new {
-    NSParameterAssert(carrier_new);
-    
-    if ( [self.delegate respondsToSelector:@selector(switcher:shouldSwitchToControlLayer:)] ) {
-        if ( ![self.delegate switcher:self shouldSwitchToControlLayer:carrier_new.identifier] )
-            return;
-    }
-    
-    _videoPlayer.controlLayerDataSource = nil;
-    _videoPlayer.controlLayerDelegate = nil;
-    [carrier_old.controlLayer exitControlLayer];
-    
-    // - begin
-    [NSNotificationCenter.defaultCenter postNotificationName:SJPlayerWillBeginSwitchControlLayerNotification object:self userInfo:@{SJPlayerSwitchControlLayerUserInfoKey:carrier_new.controlLayer}];
-    _videoPlayer.controlLayerDataSource = carrier_new.controlLayer;
-    _videoPlayer.controlLayerDelegate = carrier_new.controlLayer;
-    _previousIdentifier = _currentIdentifier;
-    _currentIdentifier = carrier_new.identifier;
-    [carrier_new.controlLayer restartControlLayer];
-    // - end
-    [NSNotificationCenter.defaultCenter postNotificationName:SJPlayerDidEndSwitchControlLayerNotification object:self userInfo:@{SJPlayerSwitchControlLayerUserInfoKey:carrier_new.controlLayer}];
 }
 
 - (void)deleteControlLayerForIdentifier:(SJControlLayerIdentifier)identifier {
     [self.map removeObjectForKey:@(identifier)];
 }
 
-- (nullable SJControlLayerCarrier *)controlLayerForIdentifier:(SJControlLayerIdentifier)identifier {
-    return self.map[@(identifier)];
+- (nullable id<SJControlLayer>)controlLayerForIdentifier:(SJControlLayerIdentifier)identifier {
+    id _Nullable result = self.map[@(identifier)];
+    if ( !result )
+        return nil;
+    
+    // loaded
+    if ( [result conformsToProtocol:@protocol(SJControlLayer)] ) {
+        return result;
+    }
+    
+    // lazy loading
+    id<SJControlLayer> controlLayer = ((id<SJControlLayer>(^)(SJControlLayerIdentifier))result)(identifier);
+    [self.map setObject:controlLayer forKey:@(identifier)];
+    return controlLayer;
+}
+
+- (BOOL)containsControlLayer:(SJControlLayerIdentifier)identifier {
+    return self.map[@(identifier)] != nil;
 }
 @end
+NS_ASSUME_NONNULL_END
 
 
+NS_ASSUME_NONNULL_BEGIN
 @implementation SJControlLayerSwitcher (Deprecated)
 - (void)switchControlLayerForIdentitfier:(SJControlLayerIdentifier)identifier toVideoPlayer:(__kindof SJBaseVideoPlayer *)videoPlayer __deprecated_msg("use `switchControlLayerForIdentitfier`;") {
     [self switchControlLayerForIdentitfier:identifier];
 }
+
+- (void)addControlLayer:(SJControlLayerCarrier *)carrier __deprecated_msg("use `addControlLayerForIdentifier:lazyLoading`;") {
+    [self addControlLayerForIdentifier:carrier.identifier lazyLoading:^id<SJControlLayer> _Nonnull(SJControlLayerIdentifier identifier) {
+        return carrier.controlLayer;
+    }];
+}
 @end
-
-SJControlLayerIdentifier SJControlLayer_Uninitialized = LONG_MAX;
-
 NS_ASSUME_NONNULL_END

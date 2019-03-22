@@ -17,6 +17,7 @@ UIKIT_EXTERN NSString *const SJVideoPlayer_NotReachablePrompt;
 UIKIT_EXTERN NSString *const SJVideoPlayer_ReachableViaWWANPrompt;
 UIKIT_EXTERN NSString *const SJVideoPlayer_NotReachableText;
 UIKIT_EXTERN NSString *const SJVideoPlayer_NotReachableButtonText;
+UIKIT_EXTERN NSString *const SJVideoPlayer_LiveText;
 
 @interface SJEdgeControlLayerLoader : NSObject
 

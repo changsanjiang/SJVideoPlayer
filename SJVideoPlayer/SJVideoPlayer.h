@@ -47,12 +47,13 @@ NS_ASSUME_NONNULL_BEGIN
 + (NSString *)version;
 - (instancetype)_init;
 
-- (nullable SJEdgeControlLayer *)defaultEdgeControlLayer;
-- (nullable SJFilmEditingControlLayer *)defaultFilmEditingControlLayer;
-- (nullable SJMoreSettingControlLayer *)defaultMoreSettingControlLayer;
-
-- (nullable SJLoadFailedControlLayer *)defaultLoadFailedControlLayer;
-- (nullable SJNotReachableControlLayer *)defaultNotReachableControlLayer;
+/// - default control layers -
+/// - lazy load -
+@property (nonatomic, strong, readonly) SJEdgeControlLayer *defaultEdgeControlLayer;
+@property (nonatomic, strong, readonly) SJNotReachableControlLayer *defaultNotReachableControlLayer;
+@property (nonatomic, strong, readonly) SJFilmEditingControlLayer *defaultFilmEditingControlLayer;
+@property (nonatomic, strong, readonly) SJMoreSettingControlLayer *defaultMoreSettingControlLayer;
+@property (nonatomic, strong, readonly) SJLoadFailedControlLayer *defaultLoadFailedControlLayer;
 @end
 
 
@@ -82,6 +83,16 @@ NS_ASSUME_NONNULL_BEGIN
 /// 配置`默认的控制层`
 @interface SJVideoPlayer (SettingDefaultControlLayer)
 
+/// 是否在loading视图上显示网速
+///
+/// - Default value is YES.
+@property (nonatomic) BOOL showNetworkSpeedToLoadingView;
+
+/// 是否禁止网络状态变化时的提示
+///
+/// - Default value is NO.
+@property (nonatomic) BOOL disablePromptWhenNetworkStatusChanges;
+
 /// 是否恢复播放 当播放器滚动(ScrollView)出现时
 @property (nonatomic) BOOL resumePlaybackWhenPlayerViewScrollAppears;
 
@@ -94,10 +105,6 @@ NS_ASSUME_NONNULL_BEGIN
 /// 当播放器为竖屏时, 是否隐藏返回按钮
 /// v2.1.4 新增
 @property (nonatomic) BOOL hideBackButtonWhenOrientationIsPortrait;
-
-/// Default value is NO.
-/// 是否禁止网络状态变化时的提示
-@property (nonatomic) BOOL disablePromptWhenNetworkStatusChanges;
 
 /// Default control layer show `more item`.
 /// 默认控制层中`Top层`显示更多按钮

@@ -55,26 +55,26 @@ SJControlLayerIdentifier const SJControlLayer_SetPlaybackRate = 666;
         objc_setAssociatedObject(self, _cmd, itemDelegate, OBJC_ASSOCIATION_RETAIN_NONATOMIC);
         
         // add to switcher
-        SJSetPlaybackRateControlLayer *controlLayer = [[SJSetPlaybackRateControlLayer alloc] initWithFrame:CGRectZero];
-        SJControlLayerCarrier *carrier = [[SJControlLayerCarrier alloc] initWithIdentifier:SJControlLayer_SetPlaybackRate controlLayer:controlLayer];
-        [self.switcher addControlLayer:carrier];
-        
-        controlLayer.clickedLevelItemExeBlock = ^(SJPlaybackRateLevel level) {
-            __strong typeof(_self) self = _self;
-            if ( !self ) return;
-            self.rateLevels.level = level;
-            self.rate = 1.0 * level / 100;
-            [self.switcher switchControlLayerForIdentitfier:SJControlLayer_Edge];
-            dispatch_async(dispatch_get_main_queue(), ^{
-                [self.defaultEdgeControlLayer.bottomAdapter reload];
-            });
-        };
-        
-        controlLayer.clickedEmptyAreaExeBlock = ^{
-            __strong typeof(_self) self = _self;
-            if ( !self ) return;
-            [self.switcher switchControlLayerForIdentitfier:SJControlLayer_Edge];
-        };
+        [self.switcher addControlLayerForIdentifier:SJControlLayer_SetPlaybackRate lazyLoading:^id<SJControlLayer> _Nonnull(SJControlLayerIdentifier identifier) {
+            SJSetPlaybackRateControlLayer *controlLayer = [[SJSetPlaybackRateControlLayer alloc] initWithFrame:CGRectZero];
+            controlLayer.clickedLevelItemExeBlock = ^(SJPlaybackRateLevel level) {
+                __strong typeof(_self) self = _self;
+                if ( !self ) return;
+                self.rateLevels.level = level;
+                self.rate = 1.0 * level / 100;
+                [self.switcher switchControlLayerForIdentitfier:SJControlLayer_Edge];
+                dispatch_async(dispatch_get_main_queue(), ^{
+                    [self.defaultEdgeControlLayer.bottomAdapter reload];
+                });
+            };
+            
+            controlLayer.clickedEmptyAreaExeBlock = ^{
+                __strong typeof(_self) self = _self;
+                if ( !self ) return;
+                [self.switcher switchControlLayerForIdentitfier:SJControlLayer_Edge];
+            };
+            return controlLayer;
+        }];
     }
     else {
         // remove

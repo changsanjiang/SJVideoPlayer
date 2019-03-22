@@ -41,7 +41,7 @@
 #import "UIView+SJVideoPlayerSetting.h"
 #import "UIView+SJAnimationAdded.h"
 #import "SJProgressSlider.h"
-#import "SJLoadingView.h"
+#import "SJNetworkLoadingView.h"
 
 #pragma mark - Top
 SJEdgeControlButtonItemTag const SJEdgeControlLayerTopItem_Back = 10000;
@@ -72,12 +72,13 @@ SJEdgeControlButtonItemTag const SJEdgeControlLayerCenterItem_Replay = 40000;
 
 @property (nonatomic, strong, readonly) SJTimerControl *lockStateTappedTimerControl;
 @property (nonatomic, strong, readonly) SJVideoPlayerDraggingProgressView *draggingProgressView;
-@property (nonatomic, strong, readonly) SJLoadingView *loadingView;
+@property (nonatomic, strong, readonly) SJNetworkLoadingView *loadingView;
 @property (nonatomic, strong, readonly) SJProgressSlider *bottomProgressSlider;
 
 // back
 @property (nonatomic, strong, readonly) UIButton *residentBackButton;
 @property (nonatomic, strong, readonly) SJEdgeControlButtonItem *backItem;
+@property (nonatomic, strong, nullable) id<SJReachabilityObserver> reachabilityObserver;
 @end
 
 @implementation SJEdgeControlLayer
@@ -329,6 +330,11 @@ SJEdgeControlButtonItemTag const SJEdgeControlLayerCenterItem_Replay = 40000;
     playItem.delegate = self;
     [playItem addTarget:self action:@selector(clickedPlayItem:)];
     [self.bottomAdapter addItem:playItem];
+    
+    SJEdgeControlButtonItem *liveItem = [[SJEdgeControlButtonItem alloc] initWithTag:SJEdgeControlLayerBottomItem_LIVEText];
+    liveItem.delegate = self;
+    liveItem.hidden = YES;
+    [self.bottomAdapter addItem:liveItem];
     
     // 当前时间
     SJEdgeControlButtonItem *currentTimeItem = [SJEdgeControlButtonItem placeholderWithSize:8 tag:SJEdgeControlLayerBottomItem_CurrentTime];
@@ -680,16 +686,41 @@ SJEdgeControlButtonItemTag const SJEdgeControlLayerCenterItem_Replay = 40000;
 }
 
 @synthesize loadingView = _loadingView;
-- (SJLoadingView *)loadingView {
+- (SJNetworkLoadingView *)loadingView {
     if ( _loadingView ) return _loadingView;
-    _loadingView = [SJLoadingView new];
+    _loadingView = [SJNetworkLoadingView new];
     __weak typeof(self) _self = self;
     _loadingView.settingRecroder = [[SJVideoPlayerControlSettingRecorder alloc] initWithSettings:^(SJEdgeControlLayerSettings * _Nonnull setting) {
         __strong typeof(_self) self = _self;
         if ( !self ) return;
         self.loadingView.lineColor = setting.loadingLineColor;
     }];
+    self.loadingView.lineColor = SJEdgeControlLayerSettings.commonSettings.loadingLineColor;
     return _loadingView;
+}
+
+- (void)_updateNetworkSpeedStrForLoadingView {
+    if ( !_loadingView.isAnimating )
+        return;
+    
+    if ( _showNetworkSpeedToLoadingView && !_videoPlayer.assetURL.isFileURL ) {
+        _loadingView.networkSpeedStr = sj_makeAttributesString(^(SJAttributeWorker * _Nonnull make) {
+            SJEdgeControlLayerSettings *settings = [SJEdgeControlLayerSettings commonSettings];
+            make.font(settings.loadingNetworkSpeedTextFont);
+            make.textColor(settings.loadingNetworkSpeedTextColor);
+            make.alignment(NSTextAlignmentCenter);
+            make.append(self.videoPlayer.networkSpeedStr);
+        });
+    }
+    else {
+        _loadingView.networkSpeedStr = nil;
+    }
+}
+
+- (void)setShowNetworkSpeedToLoadingView:(BOOL)showNetworkSpeedToLoadingView {
+    _showNetworkSpeedToLoadingView = showNetworkSpeedToLoadingView;
+    if ( !showNetworkSpeedToLoadingView )
+        _loadingView.networkSpeedStr = nil;
 }
 
 @synthesize draggingProgressView = _draggingProgressView;
@@ -777,6 +808,14 @@ SJEdgeControlButtonItemTag const SJEdgeControlLayerCenterItem_Replay = 40000;
     sj_view_makeDisappear(_bottomContainerView, NO);
     sj_view_makeDisappear(_rightContainerView, NO);
     sj_view_makeDisappear(_centerContainerView, NO);
+    
+    _reachabilityObserver = [videoPlayer.reachability getObserver];
+    __weak typeof(self) _self = self;
+    _reachabilityObserver.networkSpeedDidChangeExeBlock = ^(id<SJReachability> r, NSString *speedStr) {
+        __strong typeof(_self) self = _self;
+        if ( !self ) return;
+        [self _updateNetworkSpeedStrForLoadingView];
+    };
 }
 
 #pragma mark -
@@ -812,22 +851,15 @@ SJEdgeControlButtonItemTag const SJEdgeControlLayerCenterItem_Replay = 40000;
     SJEdgeControlButtonItem *separatorItem = [_bottomAdapter itemForTag:SJEdgeControlLayerBottomItem_Separator];
     SJEdgeControlButtonItem *durationTimeItem = [_bottomAdapter itemForTag:SJEdgeControlLayerBottomItem_DurationTime];
     SJEdgeControlButtonItem *progressItem = [_bottomAdapter itemForTag:SJEdgeControlLayerBottomItem_Progress];
+    SJEdgeControlButtonItem *liveItem = [_bottomAdapter itemForTag:SJEdgeControlLayerBottomItem_LIVEText];
     switch ( playbackType ) {
         case SJMediaPlaybackTypeLIVE: {
             currentTimeItem.hidden = YES;
             separatorItem.hidden = YES;
             durationTimeItem.hidden = YES;
             progressItem.hidden = YES;
+            liveItem.hidden = NO;
             _bottomProgressSlider.hidden = YES;
-            
-            SJEdgeControlButtonItem *liveTextItem = [[SJEdgeControlButtonItem alloc] initWithTag:SJEdgeControlLayerBottomItem_LIVEText];
-            liveTextItem.title = sj_makeAttributesString(^(SJAttributeWorker * _Nonnull make) {
-                make.append(@"实时直播")
-                .font(SJEdgeControlLayerSettings.commonSettings.titleFont)
-                .textColor(SJEdgeControlLayerSettings.commonSettings.titleColor)
-                .shadow(CGSizeMake(0.5, 0.5), 1, [UIColor blackColor]);
-            });
-            [_bottomAdapter insertItem:liveTextItem frontItem:SJEdgeControlLayerBottomItem_Play];
         }
             break;
         case SJMediaPlaybackTypeUnknown:
@@ -837,6 +869,7 @@ SJEdgeControlButtonItemTag const SJEdgeControlLayerCenterItem_Replay = 40000;
             separatorItem.hidden = NO;
             durationTimeItem.hidden = NO;
             progressItem.hidden = NO;
+            liveItem.hidden = YES;
             _bottomProgressSlider.hidden = self.hideBottomProgressSlider;
             [_bottomAdapter removeItemForTag:SJEdgeControlLayerBottomItem_LIVEText];
         }
@@ -884,6 +917,7 @@ SJEdgeControlButtonItemTag const SJEdgeControlLayerCenterItem_Replay = 40000;
                 break;
             case SJPlayerBufferStatusUnplayable: {
                 [_loadingView start];
+                [self _updateNetworkSpeedStrForLoadingView];
             }
                 break;
         }
@@ -1079,7 +1113,7 @@ SJEdgeControlButtonItemTag const SJEdgeControlLayerCenterItem_Replay = 40000;
     if ( !adapter ) return;
     NSArray<SJEdgeControlButtonItem *> *items = [adapter itemsWithRange:NSMakeRange(0, adapter.itemCount)];
     for ( SJEdgeControlButtonItem *item in items ) {
-        if ( [item.delegate respondsToSelector:@selector(updatePropertiesIfNeeded:videoPlayer:)] ) {
+        if ( !item.hidden && [item.delegate respondsToSelector:@selector(updatePropertiesIfNeeded:videoPlayer:)] ) {
             [item.delegate updatePropertiesIfNeeded:item videoPlayer:videoPlayer];
         }
     }
@@ -1118,6 +1152,9 @@ SJEdgeControlButtonItemTag const SJEdgeControlLayerCenterItem_Replay = 40000;
     }
     else if ( item.tag == SJEdgeControlLayerBottomItem_FullBtn ) {
         [self _bottom_updateFullItem:item];
+    }
+    else if ( item.tag == SJEdgeControlLayerBottomItem_LIVEText ) {
+        [self _bottom_updateLiveItem:item];
     }
     // center
     else if ( item.tag == SJEdgeControlLayerCenterItem_Replay ) {
@@ -1234,6 +1271,15 @@ SJEdgeControlButtonItemTag const SJEdgeControlLayerCenterItem_Replay = 40000;
 
     SJEdgeControlLayerSettings *setting = SJEdgeControlLayerSettings.commonSettings;
     fullItem.image = (isFullscreen || isFitOnScreen || isPresentedModalViewControlller) ?setting.shrinkscreenImage:setting.fullBtnImage;
+}
+
+- (void)_bottom_updateLiveItem:(SJEdgeControlButtonItem *)liveItem {
+    liveItem.title = sj_makeAttributesString(^(SJAttributeWorker * _Nonnull make) {
+        make.append(SJEdgeControlLayerSettings.commonSettings.liveText)
+        .font(SJEdgeControlLayerSettings.commonSettings.titleFont)
+        .textColor(SJEdgeControlLayerSettings.commonSettings.titleColor)
+        .shadow(CGSizeMake(0.5, 0.5), 1, [UIColor blackColor]);
+    });
 }
 
 #pragma mark - update items CENTER

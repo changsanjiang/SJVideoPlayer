@@ -50,31 +50,22 @@
     
     // 这里以 替换默认的边缘控制层为例, 将其替换为开发者自定义的控制层
     
-    // - 1. 创建开发者自己的控制层
-    _testControlLayer = [CustomControlLayerView new];
+    // - 1. 下面这个方法是添加控制层到切换器中
+    //   1.1 添加控制层后, 可以通过调用第四步的方法, 进行切换.
+    // - 1.2 也可以通过这个方法, 替换掉原有的控制层.
+    ///  切换器是通过 identifier 标识控制层的. 所以相同的控制层标识, 之前的将会被替换掉
+    [_player.switcher addControlLayerForIdentifier:SJControlLayer_Edge lazyLoading:^id<SJControlLayer> (SJControlLayerIdentifier identifier) {
+        CustomControlLayerView *controlLayer = [CustomControlLayerView new];
+        return controlLayer;
+    }];
     
-    // - 2. 我们将替换默认的边缘控制层, 所以 这里的 identifier 使用 `SJControlLayer_Edge`
-    SJControlLayerCarrier *carrier = [[SJControlLayerCarrier alloc] initWithIdentifier:SJControlLayer_Edge controlLayer:_testControlLayer];
-    
-    // - 3. 下面这个方法是添加控制层到切换器中
-    //   3.1 添加控制层后, 可以通过调用第四步的方法, 进行切换.
-    // - 3.1 也可以通过这个方法, 替换掉原有的控制层.
-    ///      切换器是通过 identifier 标识控制层的. 所以相同的控制层标识, 之前的将会被替换掉
-    [_player.switcher addControlLayer:carrier];
-    
-    // 4. 切换到我们替换过来的控制层
+    // 2. 切换到我们替换过来的控制层
     [_player.switcher switchControlLayerForIdentitfier:SJControlLayer_Edge];
-    
-    
-    
     
 #pragma mark -
     // 有添加, 就得有删除, 下面就是删除切换器中存在的控制层
     // 当然, 如果删除的控制层, 当前正在使用, 为保持正常使用, 该控制层还会继续显示. 直到切换器, 切到别的控制层.
 //    [_player.switcher deleteControlLayerForIdentifier:SJControlLayer_Edge];
-    
-    
-    
     
     // Do any additional setup after loading the view.
 }

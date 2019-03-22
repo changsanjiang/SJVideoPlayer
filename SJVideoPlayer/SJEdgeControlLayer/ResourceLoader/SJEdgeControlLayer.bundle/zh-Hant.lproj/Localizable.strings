@@ -7,3 +7,4 @@
 "SJVideoPlayer_ReachableViaWWANPrompt" = "當前非WiFi環境, 請注意流量消耗";
 "SJVideoPlayer_NotReachableText" = "網絡超時, 請在穩定的網絡下重試";
 "SJVideoPlayer_NotReachableButtonText" = "重新加載";
+"SJVideoPlayer_LiveText" = "實時直播";

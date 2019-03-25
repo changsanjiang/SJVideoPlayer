@@ -94,6 +94,7 @@ SJEdgeControlButtonItemTag const SJEdgeControlLayerCenterItem_Replay = 40000;
     else {
         [_videoPlayer controlLayerNeedDisappear];
     }
+    [self _startOrStopLoadingView];
 }
 
 /// 控制层退场
@@ -700,7 +701,7 @@ SJEdgeControlButtonItemTag const SJEdgeControlLayerCenterItem_Replay = 40000;
 }
 
 - (void)_updateNetworkSpeedStrForLoadingView {
-    if ( !_loadingView.isAnimating )
+    if ( !_videoPlayer || !_loadingView.isAnimating )
         return;
     
     if ( _showNetworkSpeedToLoadingView && !_videoPlayer.assetURL.isFileURL ) {
@@ -899,6 +900,11 @@ SJEdgeControlButtonItemTag const SJEdgeControlLayerCenterItem_Replay = 40000;
 }
 
 - (void)_startOrStopLoadingView {
+    if ( !_videoPlayer ) {
+        [_loadingView stop];
+        return;
+    }
+    
     SJPlayerBufferStatus bufferStatus = self.videoPlayer.playbackController.bufferStatus;
     if ( [_videoPlayer playStatus_isPaused_ReasonSeeking] ||
          [_videoPlayer playStatus_isPrepare] ) {

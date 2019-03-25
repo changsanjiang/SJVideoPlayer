@@ -79,7 +79,6 @@ static NSNotificationName const GSUploadNetworkSpeedNotificationKey = @"__GSUplo
             [self stop];
         };
     });
-    [self start];
     return self;
 }
 
@@ -213,6 +212,7 @@ static Reachability *_reachability;
     if ( !self ) return nil;
     [self _initializeReachability];
     [self _initializeSpeedObserver];
+    [self _startOrStopSpeedObserver];
     return self;
 }
 
@@ -230,11 +230,21 @@ static Reachability *_reachability;
     [self _updateNetworkStatus];
     [self sj_observeWithNotification:kReachabilityChangedNotification target:_reachability usingBlock:^(SJReachability *self, NSNotification * _Nonnull note) {
         [self _updateNetworkStatus];
+        [self _startOrStopSpeedObserver];
     }];
 }
 
 - (void)_updateNetworkStatus {
     self.networkStatus = (NSInteger)[_reachability currentReachabilityStatus];
+}
+
+- (void)_startOrStopSpeedObserver {
+    if ( _networkStatus == SJNetworkStatus_NotReachable ) {
+        [_networkSpeedObserver stop];
+    }
+    else {
+        [_networkSpeedObserver start];
+    }
 }
 
 - (void)_initializeSpeedObserver {

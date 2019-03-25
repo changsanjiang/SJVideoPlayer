@@ -806,20 +806,11 @@
 			files = (
 			);
 			inputFileListPaths = (
-			);
-			inputPaths = (
-				"${PODS_ROOT}/Target Support Files/Pods-SJVideoPlayer/Pods-SJVideoPlayer-resources.sh",
-				"${PODS_ROOT}/SJBaseVideoPlayer/SJBaseVideoPlayer/SJDeviceVolumeAndBrightnessManager/ResourceLoader/SJDeviceVolumeAndBrightnessManager.bundle",
-				"${PODS_ROOT}/../../SJVideoPlayer/SJEdgeControlLayer/ResourceLoader/SJEdgeControlLayer.bundle",
-				"${PODS_ROOT}/../../SJVideoPlayer/SJFilmEditingControlLayer/ResourceLoader/SJFilmEditing.bundle",
+				"${PODS_ROOT}/Target Support Files/Pods-SJVideoPlayer/Pods-SJVideoPlayer-resources-${CONFIGURATION}-input-files.xcfilelist",
 			);
 			name = "[CP] Copy Pods Resources";
 			outputFileListPaths = (
-			);
-			outputPaths = (
-				"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/SJDeviceVolumeAndBrightnessManager.bundle",
-				"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/SJEdgeControlLayer.bundle",
-				"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/SJFilmEditing.bundle",
+				"${PODS_ROOT}/Target Support Files/Pods-SJVideoPlayer/Pods-SJVideoPlayer-resources-${CONFIGURATION}-output-files.xcfilelist",
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;

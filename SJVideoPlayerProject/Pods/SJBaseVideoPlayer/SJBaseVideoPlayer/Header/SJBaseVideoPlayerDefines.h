@@ -12,6 +12,7 @@
 @protocol SJReachability, SJPlayStatusObserver;
 @class SJVideoPlayerURLAsset;
 
+NS_ASSUME_NONNULL_BEGIN
 @protocol SJBaseVideoPlayer <NSObject>
 - (id<SJPlayStatusObserver>)getPlayStatusObserver;
 @property (nonatomic, strong, null_resettable) id<SJReachability> reachability;
@@ -23,4 +24,5 @@
 @property (nonatomic, readonly) SJVideoPlayerInactivityReason inactivityReason;
 @property (nonatomic, strong, readonly, nullable) NSError *error;
 @end
+NS_ASSUME_NONNULL_END
 #endif /* SJBaseVideoPlayerDefines_h */

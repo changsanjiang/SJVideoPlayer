@@ -10,6 +10,7 @@
 #import "SJVideoPlayerFilmEditingCommonHeader.h"
 #import "SJFilmEditingResultShareItem.h"
 
+NS_ASSUME_NONNULL_BEGIN
 @protocol SJVideoPlayerFilmEditingResult, SJVideoPlayerFilmEditingResultUpload;
 
 @class SJBaseVideoPlayer;
@@ -53,3 +54,4 @@
 /// 导出成功后, 保存到相册
 @property (nonatomic) BOOL saveResultToAlbumWhenExportSuccess; // default is NO
 @end
+NS_ASSUME_NONNULL_END

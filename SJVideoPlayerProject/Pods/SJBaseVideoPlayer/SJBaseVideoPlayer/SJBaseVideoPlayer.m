@@ -2865,10 +2865,10 @@ static id<SJBaseVideoPlayerStatistics> _statistics;
     return self.deviceBrightness;
 }
 
-- (void)setPlayStatusDidChangeExeBlock:(void (^_Nullable)(__kindof SJBaseVideoPlayer * _Nonnull))playStatusDidChangeExeBlock __deprecated_msg("use `_playStatusObserver = [_player getPlayStatusObserver]`") {
+- (void)setPlayStatusDidChangeExeBlock:(void (^_Nullable)(__kindof SJBaseVideoPlayer * _Nonnull))playStatusDidChangeExeBlock {
     _playStatusDidChangeExeBlock = playStatusDidChangeExeBlock;
 }
-- (void (^_Nullable)(__kindof SJBaseVideoPlayer * _Nonnull))playStatusDidChangeExeBlock __deprecated_msg("use `_playStatusObserver = [_player getPlayStatusObserver]`") {
+- (void (^_Nullable)(__kindof SJBaseVideoPlayer * _Nonnull))playStatusDidChangeExeBlock {
     return _playStatusDidChangeExeBlock;
 }
 - (void)playWithURL:(NSURL *)URL {

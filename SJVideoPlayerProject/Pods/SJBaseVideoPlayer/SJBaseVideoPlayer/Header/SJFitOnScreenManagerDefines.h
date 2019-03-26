@@ -15,6 +15,7 @@ typedef enum : NSUInteger {
     SJFitOnScreenStateEnd,
 } SJFitOnScreenState;
 
+NS_ASSUME_NONNULL_BEGIN
 @protocol SJFitOnScreenManager <NSObject>
 - (instancetype)initWithTarget:(__strong UIView *)target targetSuperview:(__strong UIView *)superview;
 - (id<SJFitOnScreenManagerObserver>)getObserver;
@@ -36,4 +37,5 @@ typedef enum : NSUInteger {
 @property (nonatomic, copy, nullable) void(^fitOnScreenWillBeginExeBlock)(id<SJFitOnScreenManager> mgr);
 @property (nonatomic, copy, nullable) void(^fitOnScreenDidEndExeBlock)(id<SJFitOnScreenManager> mgr);
 @end
+NS_ASSUME_NONNULL_END
 #endif /* SJFitOnScreenManagerProtocol_h */

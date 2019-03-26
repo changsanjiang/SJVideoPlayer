@@ -661,7 +661,7 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic) SJDisablePlayerGestureTypes disableGestureTypes __deprecated_msg("use `disabledGestures`");
 @property (nonatomic) float volume __deprecated_msg("use `deviceVolume`");
 @property (nonatomic) float brightness __deprecated_msg("use `deviceBrightness`");
-@property (nonatomic, copy, nullable) void(^playStatusDidChangeExeBlock)(__kindof SJBaseVideoPlayer *videoPlayer) __deprecated_msg("use `_playStatusObserver = [_player getPlayStatusObserver]`");
+@property (nonatomic, copy, nullable) void(^playStatusDidChangeExeBlock)(__kindof SJBaseVideoPlayer *videoPlayer);
 - (void)playWithURL:(NSURL *)URL; // 不再建议使用, 请使用`URLAsset`进行初始化
 @property (nonatomic, strong, nullable) NSURL *assetURL;
 @property (nonatomic, copy, nullable) void(^presentationSize)(__kindof SJBaseVideoPlayer *videoPlayer, CGSize size) __deprecated_msg("use `presentationSizeDidChangeExeBlock`");

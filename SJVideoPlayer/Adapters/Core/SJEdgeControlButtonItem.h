@@ -21,9 +21,9 @@ UIKIT_STATIC_INLINE SJEdgeInsets SJEdgeInsetsMake(CGFloat front, CGFloat rear) {
     return (SJEdgeInsets){front, rear};
 }
 
+NS_ASSUME_NONNULL_BEGIN
 UIKIT_EXTERN NSNotificationName const SJEdgeControlButtonItemPerformedActionNotification;
 
-NS_ASSUME_NONNULL_BEGIN
 @interface SJEdgeControlButtonItem : NSObject
 /// 49 * 49
 - (instancetype)initWithImage:(nullable UIImage *)image

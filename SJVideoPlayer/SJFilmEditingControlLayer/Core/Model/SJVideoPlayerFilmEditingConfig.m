@@ -8,6 +8,7 @@
 
 #import "SJVideoPlayerFilmEditingConfig.h"
 
+NS_ASSUME_NONNULL_BEGIN
 @implementation SJVideoPlayerFilmEditingConfig
 - (void)config:(SJVideoPlayerFilmEditingConfig *)otherConfig {
     self.shouldStartWhenUserSelectedAnOperation = otherConfig.shouldStartWhenUserSelectedAnOperation;
@@ -21,3 +22,4 @@
     self.saveResultToAlbumWhenExportSuccess = otherConfig.saveResultToAlbumWhenExportSuccess;
 }
 @end
+NS_ASSUME_NONNULL_END

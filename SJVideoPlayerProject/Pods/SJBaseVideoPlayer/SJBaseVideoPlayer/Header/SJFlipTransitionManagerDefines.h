@@ -20,6 +20,7 @@ typedef enum : NSUInteger {
     SJFlipTransitionStateEnd,
 } SJFlipTransitionState;
 
+NS_ASSUME_NONNULL_BEGIN
 @protocol SJFlipTransitionManager <NSObject>
 - (instancetype)initWithTarget:(__strong UIView *)target;
 - (id<SJFlipTransitionManagerObserver>)getObserver;
@@ -40,4 +41,5 @@ typedef enum : NSUInteger {
 @property (nonatomic, copy, nullable) void(^flipTransitionDidStartExeBlock)(id<SJFlipTransitionManager> mgr);
 @property (nonatomic, copy, nullable) void(^flipTransitionDidStopExeBlock)(id<SJFlipTransitionManager> mgr);
 @end
+NS_ASSUME_NONNULL_END
 #endif /* SJFlipTransitionManagerProtocol_h */

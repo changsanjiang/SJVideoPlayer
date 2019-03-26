@@ -479,7 +479,7 @@ SJEdgeControlButtonItemTag const SJEdgeControlLayerCenterItem_Replay = 40000;
         if ( !slider.isDragging ) slider.value = c;
     }
     
-    if ( !sj_view_isDisappeared(_bottomProgressSlider) ) {
+    if ( _bottomProgressSlider && !sj_view_isDisappeared(_bottomProgressSlider) ) {
         _bottomProgressSlider.value = c;
         _bottomProgressSlider.maxValue = d;
     }
@@ -574,22 +574,26 @@ SJEdgeControlButtonItemTag const SJEdgeControlLayerCenterItem_Replay = 40000;
     
     _hideBottomProgressSlider = hideBottomProgressSlider;
     dispatch_async(dispatch_get_main_queue(), ^{
-        if ( self->_hideBottomProgressSlider ) {
-            if ( self->_bottomProgressSlider ) {
-                [self->_bottomProgressSlider removeFromSuperview];
-                self->_bottomProgressSlider = nil;
-            }
-        }
-        else {
-            if ( !self->_bottomProgressSlider ) {
-                [self.controlView addSubview:self.bottomProgressSlider];
-                [self->_bottomProgressSlider mas_makeConstraints:^(MASConstraintMaker *make) {
-                    make.left.bottom.right.offset(0);
-                    make.height.offset(1);
-                }];
-            }
-        }
+        [self _showOrRemoveBottomProgressSlider];
     });
+}
+
+- (void)_showOrRemoveBottomProgressSlider {
+    if ( _hideBottomProgressSlider || _videoPlayer.playbackType == SJMediaPlaybackTypeLIVE ) {
+        if ( _bottomProgressSlider ) {
+            [_bottomProgressSlider removeFromSuperview];
+            _bottomProgressSlider = nil;
+        }
+    }
+    else {
+        if ( !_bottomProgressSlider ) {
+            [self.controlView addSubview:self.bottomProgressSlider];
+            [_bottomProgressSlider mas_makeConstraints:^(MASConstraintMaker *make) {
+                make.left.bottom.right.offset(0);
+                make.height.offset(1);
+            }];
+        }
+    }
 }
 
 #pragma mark - right
@@ -860,7 +864,6 @@ SJEdgeControlButtonItemTag const SJEdgeControlLayerCenterItem_Replay = 40000;
             durationTimeItem.hidden = YES;
             progressItem.hidden = YES;
             liveItem.hidden = NO;
-            _bottomProgressSlider.hidden = YES;
         }
             break;
         case SJMediaPlaybackTypeUnknown:
@@ -871,12 +874,12 @@ SJEdgeControlButtonItemTag const SJEdgeControlLayerCenterItem_Replay = 40000;
             durationTimeItem.hidden = NO;
             progressItem.hidden = NO;
             liveItem.hidden = YES;
-            _bottomProgressSlider.hidden = self.hideBottomProgressSlider;
             [_bottomAdapter removeItemForTag:SJEdgeControlLayerBottomItem_LIVEText];
         }
             break;
     }
     [self.bottomAdapter reload];
+    [self _showOrRemoveBottomProgressSlider];
 }
 
 - (void)videoPlayer:(__kindof SJBaseVideoPlayer *)videoPlayer statusDidChanged:(SJVideoPlayerPlayStatus)status {

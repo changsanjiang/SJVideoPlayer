@@ -1,7 +1,7 @@
 
 Pod::Spec.new do |s|
     s.name         = 'SJVideoPlayer'
-    s.version      = '2.5.1'
+    s.version      = '2.5.2'
     s.summary      = 'video player.'
     s.description  = 'https://github.com/changsanjiang/SJVideoPlayer/blob/master/README.md'
     s.homepage     = 'https://github.com/changsanjiang/SJVideoPlayer'
@@ -11,7 +11,7 @@ Pod::Spec.new do |s|
     s.source       = { :git => 'https://github.com/changsanjiang/SJVideoPlayer.git', :tag => "v#{s.version}" }
     s.requires_arc = true
     s.dependency 'Masonry'
-    s.dependency 'SJBaseVideoPlayer', '>= 2.3.2'
+    s.dependency 'SJBaseVideoPlayer', '>= 2.3.3'
     s.dependency 'SJAttributesFactory'
 
     s.source_files = 'SJVideoPlayer/*.{h,m}'

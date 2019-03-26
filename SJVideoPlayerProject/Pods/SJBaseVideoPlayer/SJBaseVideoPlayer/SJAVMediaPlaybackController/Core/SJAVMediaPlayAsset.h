@@ -14,6 +14,7 @@
 @protocol SJAVMediaPlayAssetPropertiesObserverDelegate;
 @class SJAVMediaPlayAssetPropertiesObserver;
 
+NS_ASSUME_NONNULL_BEGIN
 UIKIT_EXTERN NSNotificationName const SJAVMediaDidPlayToEndTimeNotification;
 UIKIT_EXTERN NSNotificationName const SJAVMediaPlaybackTimeDidChangeNotification;
 UIKIT_EXTERN NSNotificationName const SJAVMediaPlaybackDurationDidChangeNotificationn;
@@ -24,8 +25,6 @@ UIKIT_EXTERN NSNotificationName const SJAVMediaPresentationSizeDidChangeNotifica
 UIKIT_EXTERN NSNotificationName const SJAVMediaPlayerItemStatusDidChangeNotification;
 UIKIT_EXTERN NSNotificationName const SJAVMediaPlaybackTypeLoadedNotification;
 
-
-NS_ASSUME_NONNULL_BEGIN
 @interface SJAVMediaPlayAsset: NSObject<SJAVMediaPlayAssetProtocol>
 - (instancetype)initWithURL:(NSURL *)URL;
 - (instancetype)initWithURL:(NSURL *)URL specifyStartTime:(NSTimeInterval)specifyStartTime;

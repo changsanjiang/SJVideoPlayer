@@ -9,6 +9,7 @@
 #import "SJFilmEditingSettings.h"
 #import "SJFilmEditingLoader.h"
 
+NS_ASSUME_NONNULL_BEGIN
 NSNotificationName const SJFilmEditingSettingsUpdatedNotification = @"SJFilmEditingSettingsUpdatedNotification";
 NSString *const SJFilmEditing_cancelText = @"SJFilmEditing_cancelText";
 NSString *const SJFilmEditing_doneText = @"SJFilmEditing_doneText";
@@ -107,3 +108,4 @@ NSString *const SJFilmEditing_uploadSuccessText = @"SJFilmEditing_uploadSuccessT
     [NSNotificationCenter.defaultCenter removeObserver:_updatedToken];
 }
 @end
+NS_ASSUME_NONNULL_END

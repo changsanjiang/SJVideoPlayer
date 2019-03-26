@@ -9,6 +9,7 @@
 #ifndef SJNetworkStatus_h
 #define SJNetworkStatus_h
 #import <Foundation/Foundation.h>
+NS_ASSUME_NONNULL_BEGIN
 @protocol SJReachabilityObserver;
 /**
  This enumeration lists the three state values of the network.
@@ -38,4 +39,5 @@ typedef NS_ENUM(NSInteger, SJNetworkStatus) {
 @property (nonatomic, copy, nullable) void(^networkStatusDidChangeExeBlock)(id<SJReachability> r, SJNetworkStatus status);
 @property (nonatomic, copy, nullable) void(^networkSpeedDidChangeExeBlock)(id<SJReachability> r, NSString *speedStr);
 @end
+NS_ASSUME_NONNULL_END
 #endif /* SJNetworkStatus_h */

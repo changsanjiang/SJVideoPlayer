@@ -63,7 +63,7 @@
         return;
     [UIView animateWithDuration:0.3 animations:^{
         [self->_loadingView start];
-        self->_speedLabel.alpha = 1;
+        self.alpha = 1;
     }];
 }
 
@@ -72,7 +72,7 @@
         return;
     [UIView animateWithDuration:0.3 animations:^{
         [self->_loadingView stop];
-        self->_speedLabel.alpha = 0.001;
+        self.alpha = 0.001;
     }];
 }
 

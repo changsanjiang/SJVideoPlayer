@@ -522,6 +522,10 @@ static NSString *_kGestureState = @"state";
         _mpc_assetIsPlayed = YES;
         _playedLastTime = 0;
     }
+    
+    if ( [self playStatus_isInactivity_ReasonPlayEnd] ) {
+        if ( self.playDidToEndExeBlock ) self.playDidToEndExeBlock(self);
+    }
 }
 
 
@@ -1409,7 +1413,7 @@ static NSString *_kGestureState = @"state";
 - (void)_mediaDidPlayToEnd {
     self.inactivityReason = SJVideoPlayerInactivityReasonPlayEnd;
     self.playStatus = SJVideoPlayerPlayStatusInactivity;
-    if ( self.playDidToEndExeBlock ) self.playDidToEndExeBlock(self);
+//    if ( self.playDidToEndExeBlock ) self.playDidToEndExeBlock(self);
     
     if ( self.view.window ) {
         UIScrollView *scrollView = sj_getScrollView(_URLAsset.playModel);

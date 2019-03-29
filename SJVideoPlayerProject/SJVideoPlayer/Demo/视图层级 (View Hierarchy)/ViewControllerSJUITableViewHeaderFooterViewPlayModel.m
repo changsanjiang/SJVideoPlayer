@@ -70,10 +70,10 @@
         __strong typeof(_self) self = _self;
         if ( !self ) return;
         SJPlayModel *playModel = [SJPlayModel UITableViewHeaderFooterViewPlayModelWithPlayerSuperviewTag:view.coverImageView.tag inSection:section isHeader:YES tableView:self.tableView];
-        NSURL *URL = [NSBundle.mainBundle URLForResource:@"play" withExtension:@"mp4"];
+        NSURL *URL = [NSURL URLWithString:@"https://xy2.v.netease.com/2018/0815/d08adab31cc9e6ce36111afc8a92c937qt.mp4"];
         
         SJVideoPlayerURLAsset *asset = [[SJVideoPlayerURLAsset alloc] initWithURL:URL playModel:playModel];
-        asset.title = @"Test Title";
+        asset.title = @"十五年前, 一见钟情";
         asset.alwaysShowTitle = YES;
         [self _playAsset:asset];
     };
@@ -87,11 +87,10 @@
         __strong typeof(_self) self = _self;
         if ( !self ) return;
         SJPlayModel *playModel = [SJPlayModel UITableViewHeaderFooterViewPlayModelWithPlayerSuperviewTag:view.coverImageView.tag inSection:section isHeader:NO tableView:self.tableView];
-        NSURL *URL = [NSBundle.mainBundle URLForResource:@"play" withExtension:@"mp4"];
+        NSURL *URL = [NSURL URLWithString:@"https://xy2.v.netease.com/2018/0815/d08adab31cc9e6ce36111afc8a92c937qt.mp4"];
         
         SJVideoPlayerURLAsset *asset = [[SJVideoPlayerURLAsset alloc] initWithURL:URL playModel:playModel];
-        asset.title = @"Test Title";
-        asset.alwaysShowTitle = YES;
+        asset.title = @"十五年前, 一见钟情";
         [self _playAsset:asset];
     };
     return footerView;
@@ -113,11 +112,10 @@
         __strong typeof(_self) self = _self;
         if ( !self ) return;
         SJPlayModel *playModel = [SJPlayModel UITableViewCellPlayModelWithPlayerSuperviewTag:view.coverImageView.tag atIndexPath:indexPath tableView:self.tableView];
-        NSURL *URL = [NSBundle.mainBundle URLForResource:@"play" withExtension:@"mp4"];
+        NSURL *URL = [NSURL URLWithString:@"https://xy2.v.netease.com/2018/0815/d08adab31cc9e6ce36111afc8a92c937qt.mp4"];
         
         SJVideoPlayerURLAsset *asset = [[SJVideoPlayerURLAsset alloc] initWithURL:URL playModel:playModel];
-        asset.title = @"Test Title";
-        asset.alwaysShowTitle = YES;
+        asset.title = @"十五年前, 一见钟情"; 
         [self _playAsset:asset];
     };
 }

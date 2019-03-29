@@ -217,7 +217,7 @@ SJSwitchVideoDefinitionControlDelegate;
 
 @protocol SJSwitchVideoDefinitionControlDelegate <NSObject>
 @optional
-- (void)videoPlayer:(__kindof SJBaseVideoPlayer *)videoPlayer switchVideoDefinitionByURL:(NSURL *)URL statusDidChange:(SJMediaPlaybackSwitchDefinitionStatus)status;
+- (void)videoPlayer:(__kindof SJBaseVideoPlayer *)videoPlayer switchingDefinitionStatusDidChange:(SJMediaPlaybackSwitchDefinitionStatus)status media:(id<SJMediaModelProtocol>)media;
 @end
 
 

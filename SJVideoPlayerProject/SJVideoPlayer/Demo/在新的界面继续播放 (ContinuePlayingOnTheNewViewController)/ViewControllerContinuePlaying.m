@@ -10,6 +10,7 @@
 #import "SJVideoPlayer.h"
 #import <SJRouter/SJRouter.h>
 #import <Masonry/Masonry.h>
+#import <SJBaseVideoPlayer/SJBaseVideoPlayer+PlayStatus.h>
 
 @interface ViewControllerContinuePlaying ()<SJRouteHandler>
 @property (nonatomic, strong) SJVideoPlayer *player;
@@ -59,8 +60,8 @@
     }];
     
     if ( !_asset ) {
-        _player.URLAsset = [[SJVideoPlayerURLAsset alloc] initWithURL:[NSBundle.mainBundle URLForResource:@"play" withExtension:@"mp4"]];
-        _player.URLAsset.title = @"Test Title";
+        _player.URLAsset = [[SJVideoPlayerURLAsset alloc] initWithURL:[NSURL URLWithString:@"https://xy2.v.netease.com/2018/0815/d08adab31cc9e6ce36111afc8a92c937qt.mp4"]];
+        _player.URLAsset.title = @"十五年前, 一见钟情";
     }
     else {
         _player.URLAsset = [[SJVideoPlayerURLAsset alloc] initWithOtherAsset:_asset playModel:[SJPlayModel new]];
@@ -76,7 +77,7 @@
 - (void)viewDidAppear:(BOOL)animated {
     [super viewDidAppear:animated];
     [self.player vc_viewDidAppear];
-    [self.player play];
+    if ( ![self.player playStatus_isInactivity_ReasonPlayEnd] ) [self.player play];
 }
 
 - (void)viewWillDisappear:(BOOL)animated {

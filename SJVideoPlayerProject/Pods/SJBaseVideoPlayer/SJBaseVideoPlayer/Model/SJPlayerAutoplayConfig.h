@@ -28,7 +28,7 @@ typedef enum : NSUInteger {
 /// 滚动的动画类型
 /// default is .Middle;
 @property (nonatomic) SJAutoplayScrollAnimationType animationType;
-/// default is .Top
+/// default is .Middle;
 @property (nonatomic) SJAutoplayPosition autoplayPosition;
 
 @property (nonatomic, readonly) NSInteger playerSuperviewTag;

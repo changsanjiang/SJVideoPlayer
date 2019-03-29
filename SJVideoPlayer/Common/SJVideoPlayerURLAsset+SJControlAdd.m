@@ -115,7 +115,9 @@
 }
 
 - (BOOL)alwaysShowTitle {
-    return [objc_getAssociatedObject(self, _cmd) boolValue];
+    NSNumber *num = objc_getAssociatedObject(self, _cmd);
+    if ( num ) return [num boolValue];
+    return YES;
 }
 
 @end

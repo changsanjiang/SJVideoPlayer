@@ -58,6 +58,7 @@ static void sj_removeContentOffsetObserver(UIScrollView *scrollView);
             __strong typeof(_self) self = _self;
             if ( !self ) return;
             [NSObject cancelPreviousPerformRequestsWithTarget:self selector:@selector(sj_playNextAssetAfterEndScroll) object:nil];
+            if ( !self.window ) return;
             [self performSelector:@selector(sj_playNextAssetAfterEndScroll) withObject:nil afterDelay:0.3];
         });
     });

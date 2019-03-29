@@ -33,7 +33,7 @@
     [self _setupViews];
     
     /// 播放
-    _player.assetURL = [[NSBundle mainBundle] URLForResource:@"play" withExtension:@"mp4"];
+    _player.assetURL = [NSURL URLWithString:@"https://xy2.v.netease.com/2018/0815/d08adab31cc9e6ce36111afc8a92c937qt.mp4"];
     
     /// 替换旋转管理类
     _rotationManager = [[SJVCRotationManager alloc] initWithViewController:self];

@@ -161,6 +161,8 @@ static NSString *kRate = @"rate";
         }
         else if ( context == &kPlayerItemStatus ) {
             [self _updatePlayerItemStatus];
+            [self _updateBufferLoadedTime];
+            [self updateBufferStatus];
 #ifdef SJ_MAC
             //printf("\n:--<%p>.kPlayerItemStatus %ld \n", self, (long)_playerItem.status);
 #endif

@@ -16,32 +16,18 @@
 #import <objc/message.h>
 
 NS_ASSUME_NONNULL_BEGIN
-@interface __SJKVOAutoremove: NSObject
-@property (nonatomic, readonly) char *key;        // lazy load
-@property (nonatomic, unsafe_unretained) id target;
-@property (nonatomic, unsafe_unretained) id observer;
+@interface __SJKVOAutoremove: NSObject {
+@public
+    char _key;
+}
+@property (nonatomic, unsafe_unretained, nullable) id target;
+@property (nonatomic, unsafe_unretained, nullable) id observer;
 @property (nonatomic, weak, nullable) __SJKVOAutoremove *factor;
-@property (nonatomic, strong) NSString *keyPath;
+@property (nonatomic, copy, nullable) NSString *keyPath;
 @end
 
-@implementation __SJKVOAutoremove {
-    char *_key;
-}
-- (instancetype)init {
-    self = [super init];
-    if ( !self ) return nil;
-    _key = NULL;
-    return self;
-}
-- (char *)key {
-    if ( _key ) return _key;
-    NSString *keyStr = [NSString stringWithFormat:@"%lu", (unsigned long)[self hash]];
-    _key = malloc((keyStr.length + 1) * sizeof(char));
-    strcpy(_key, keyStr.UTF8String);
-    return _key;
-}
+@implementation __SJKVOAutoremove
 - (void)dealloc {
-    if ( _key ) free(_key);
     if ( _factor ) {
         [_target removeObserver:_observer forKeyPath:_keyPath];
         _factor = nil;
@@ -49,8 +35,7 @@ NS_ASSUME_NONNULL_BEGIN
 }
 @end
 
-@implementation NSObject (ObserverHelper)
-
+@implementation NSObject (SJKVOHelper)
 - (void)sj_addObserver:(NSObject *)observer forKeyPath:(NSString *)keyPath {
     [self sj_addObserver:observer forKeyPath:keyPath context:NULL];
 }
@@ -82,8 +67,8 @@ NS_ASSUME_NONNULL_BEGIN
     helper.factor = sub;
     sub.factor = helper;
     
-    objc_setAssociatedObject(self, helper.key, helper, OBJC_ASSOCIATION_RETAIN_NONATOMIC);
-    objc_setAssociatedObject(observer, sub.key, sub, OBJC_ASSOCIATION_RETAIN_NONATOMIC);
+    objc_setAssociatedObject(self, &helper->_key, helper, OBJC_ASSOCIATION_RETAIN_NONATOMIC);
+    objc_setAssociatedObject(observer, &sub->_key, sub, OBJC_ASSOCIATION_RETAIN_NONATOMIC);
 }
 
 - (NSMutableSet<NSString *> *)sj_observerhashSet {
@@ -118,40 +103,77 @@ NS_ASSUME_NONNULL_BEGIN
 
 
 #pragma mark - SJDeallocCallback
-@interface __SJDeallockCallback : NSObject
-@property (nonatomic, readonly) char *key;
-@property (nonatomic, unsafe_unretained, readonly) id target;
-@property (nonatomic, copy, readonly) SJDeallockCallbackTask task;
-- (instancetype)initWithTarget:(__unsafe_unretained id)target task:(SJDeallockCallbackTask)task;
+@interface __SJDeallockCallback : NSObject {
+@public
+    char _key;
+}
+@property (nonatomic, unsafe_unretained, nullable) id target;
+@property (nonatomic, copy, nullable) SJDeallockCallbackTask task;
 @end
 
-@implementation __SJDeallockCallback {
-    char *_key;
-}
-- (instancetype)initWithTarget:(__unsafe_unretained id)target task:(SJDeallockCallbackTask)task {
-    self = [super init];
-    if ( !self ) return nil;
-    _target = target;
-    _task = task;
-    return self;
-}
-- (char *)key {
-    if ( _key ) return _key;
-    NSString *keyStr = [NSString stringWithFormat:@"%lu", (unsigned long)[self hash]];
-    _key = malloc((keyStr.length + 1) * sizeof(char));
-    strcpy(_key, keyStr.UTF8String);
-    return _key;
-}
+@implementation __SJDeallockCallback
 - (void)dealloc {
     if ( _task ) _task(_target);
-    if ( _key ) free(_key);
 }
 @end
 
 @implementation NSObject (SJDeallocCallback)
 - (void)sj_addDeallocCallbackTask:(SJDeallockCallbackTask)block {
-    __SJDeallockCallback *callback = [[__SJDeallockCallback alloc] initWithTarget:self task:block];
-    objc_setAssociatedObject(self, callback.key, callback, OBJC_ASSOCIATION_RETAIN_NONATOMIC);
+    __SJDeallockCallback *callback = [__SJDeallockCallback new];
+    callback.target = self;
+    callback.task = block;
+    objc_setAssociatedObject(self, &callback->_key, callback, OBJC_ASSOCIATION_RETAIN_NONATOMIC);
 }
 @end
+
+@interface __SJKVOObserver : NSObject {
+@public
+    char _key;
+}
+@property (nonatomic, unsafe_unretained, readonly) id target;
+@property (nonatomic, copy, readonly) NSString *keyPath;
+@property (nonatomic, readonly) NSKeyValueObservingOptions options;
+@property (nonatomic, copy, readonly) SJKVOObservedChangeHandler hanlder;
+@end
+@implementation __SJKVOObserver
+- (instancetype)initWithTarget:(__unsafe_unretained id)target
+                    forKeyPath:(NSString *)keyPath
+                       options:(NSKeyValueObservingOptions)options
+                        change:(SJKVOObservedChangeHandler)hanlder {
+    self = [super init];
+    if ( !self ) return nil;
+    _target = target;
+    _keyPath = [keyPath copy];
+    _hanlder = hanlder;
+    [_target addObserver:self forKeyPath:keyPath options:options context:NULL];
+    return self;
+}
+- (void)dealloc {
+    @try {
+        [_target removeObserver:self forKeyPath:_keyPath];
+    } @catch (NSException *__unused exception) { }
+}
+- (void)observeValueForKeyPath:(nullable NSString *)keyPath ofObject:(nullable id)object change:(nullable NSDictionary<NSKeyValueChangeKey,id> *)change context:(nullable void *)context {
+    if ( _hanlder ) _hanlder(object, change);
+}
+@end
+
+SJKVOObserverToken
+sjkvo_observe(id target, NSString *keyPath, SJKVOObservedChangeHandler handler) {
+    return sjkvo_observe(target, keyPath, NSKeyValueObservingOptionInitial | NSKeyValueObservingOptionNew | NSKeyValueObservingOptionOld, handler);
+}
+
+SJKVOObserverToken __attribute__((overloadable))
+sjkvo_observe(id target, NSString *keyPath, NSKeyValueObservingOptions options, SJKVOObservedChangeHandler handler) {
+    if ( !target )
+        return 0;
+    __SJKVOObserver *observer = [[__SJKVOObserver alloc] initWithTarget:target forKeyPath:keyPath options:options change:handler];
+    objc_setAssociatedObject(target, &observer->_key, observer, OBJC_ASSOCIATION_RETAIN_NONATOMIC);
+    return (SJKVOObserverToken)&observer->_key;
+}
+
+void
+sjkvo_remove(id target, SJKVOObserverToken token) {
+    objc_setAssociatedObject(target, (void *)token, nil, OBJC_ASSOCIATION_RETAIN_NONATOMIC);
+}
 NS_ASSUME_NONNULL_END

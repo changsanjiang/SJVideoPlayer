@@ -56,7 +56,7 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic, readonly) NSTimeInterval bufferWatingTime;
 - (void)updateBufferStatus;
 @property (nonatomic, readonly) CGSize presentationSize;
-@property (nonatomic, readonly) BOOL isReadyForDisplay;
+@property (nonatomic, readonly, getter=isReadyForDisplay) BOOL readyForDisplay;
 
 @property (nonatomic) float volume;
 @property (nonatomic) float rate;
@@ -71,7 +71,7 @@ NS_ASSUME_NONNULL_BEGIN
 - (void)stop;
 - (void)seekToTime:(NSTimeInterval)secs completionHandler:(void (^ __nullable)(BOOL finished))completionHandler;
 - (nullable UIImage *)screenshot;
-- (void)switchVideoDefinitionByURL:(NSURL *)URL;
+- (void)switchVideoDefinition:(id<SJMediaModelProtocol>)media;
 
 @optional
 - (void)cancelPendingSeeks;
@@ -127,7 +127,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (void)playbackController:(id<SJMediaPlaybackController>)controller presentationSizeDidChange:(CGSize)presentationSize;
 
-- (void)playbackController:(id<SJMediaPlaybackController>)controller switchVideoDefinitionByURL:(NSURL *)URL statusDidChange:(SJMediaPlaybackSwitchDefinitionStatus)status;
+- (void)playbackController:(id<SJMediaPlaybackController>)controller switchingDefinitionStatusDidChange:(SJMediaPlaybackSwitchDefinitionStatus)status media:(id<SJMediaModelProtocol>)media;
 
 - (void)playbackControllerIsReadyForDisplay:(id<SJMediaPlaybackController>)controller;
 - (void)playbackController:(id<SJMediaPlaybackController>)controller playbackTypeLoaded:(SJMediaPlaybackType)playbackType;

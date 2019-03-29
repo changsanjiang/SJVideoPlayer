@@ -38,7 +38,7 @@
         make.height.equalTo(self->_player.view.mas_width).multipliedBy(9 / 16.0f);
     }];
 
-    _player.URLAsset = [[SJVideoPlayerURLAsset alloc] initWithURL:[NSBundle.mainBundle URLForResource:@"play" withExtension:@"mp4"]];
+    _player.URLAsset = [[SJVideoPlayerURLAsset alloc] initWithURL:[NSURL URLWithString:@"https://xy2.v.netease.com/2018/0815/d08adab31cc9e6ce36111afc8a92c937qt.mp4"]];
     
     
     ///切换分辨率

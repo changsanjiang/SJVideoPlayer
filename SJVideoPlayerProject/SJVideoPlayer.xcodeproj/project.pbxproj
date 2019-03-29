@@ -3,7 +3,7 @@
 	archiveVersion = 1;
 	classes = {
 	};
-	objectVersion = 50;
+	objectVersion = 51;
 	objects = {
 
 /* Begin PBXBuildFile section */
@@ -42,7 +42,6 @@
 		A600664C216052A90001B5F8 /* ViewControllerSJPlayModel.m in Sources */ = {isa = PBXBuildFile; fileRef = A600664B216052A90001B5F8 /* ViewControllerSJPlayModel.m */; };
 		A600665521605D270001B5F8 /* ViewControllerSJUITableViewCellPlayModel.m in Sources */ = {isa = PBXBuildFile; fileRef = A600665421605D270001B5F8 /* ViewControllerSJUITableViewCellPlayModel.m */; };
 		A6006658216071540001B5F8 /* SJTableViewCell.m in Sources */ = {isa = PBXBuildFile; fileRef = A6006657216071540001B5F8 /* SJTableViewCell.m */; };
-		A600665A2160785C0001B5F8 /* play.mp4 in Resources */ = {isa = PBXBuildFile; fileRef = A60066592160785C0001B5F8 /* play.mp4 */; };
 		A600665D21607CCD0001B5F8 /* ViewControllerSJUICollectionViewCellPlayModel.m in Sources */ = {isa = PBXBuildFile; fileRef = A600665C21607CCD0001B5F8 /* ViewControllerSJUICollectionViewCellPlayModel.m */; };
 		A600666021607DBF0001B5F8 /* SJCollectionViewCell.m in Sources */ = {isa = PBXBuildFile; fileRef = A600665F21607DBF0001B5F8 /* SJCollectionViewCell.m */; };
 		A6006663216081800001B5F8 /* ViewControllerSJUITableViewHeaderViewPlayModel.m in Sources */ = {isa = PBXBuildFile; fileRef = A6006662216081800001B5F8 /* ViewControllerSJUITableViewHeaderViewPlayModel.m */; };
@@ -171,7 +170,6 @@
 		A600665421605D270001B5F8 /* ViewControllerSJUITableViewCellPlayModel.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = ViewControllerSJUITableViewCellPlayModel.m; sourceTree = "<group>"; };
 		A6006656216071540001B5F8 /* SJTableViewCell.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = SJTableViewCell.h; sourceTree = "<group>"; };
 		A6006657216071540001B5F8 /* SJTableViewCell.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = SJTableViewCell.m; sourceTree = "<group>"; };
-		A60066592160785C0001B5F8 /* play.mp4 */ = {isa = PBXFileReference; lastKnownFileType = file; path = play.mp4; sourceTree = "<group>"; };
 		A600665B21607CCD0001B5F8 /* ViewControllerSJUICollectionViewCellPlayModel.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = ViewControllerSJUICollectionViewCellPlayModel.h; sourceTree = "<group>"; };
 		A600665C21607CCD0001B5F8 /* ViewControllerSJUICollectionViewCellPlayModel.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = ViewControllerSJUICollectionViewCellPlayModel.m; sourceTree = "<group>"; };
 		A600665E21607DBF0001B5F8 /* SJCollectionViewCell.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = SJCollectionViewCell.h; sourceTree = "<group>"; };
@@ -471,7 +469,6 @@
 			children = (
 				A6006648216041510001B5F8 /* LWZTableSectionShrinker.h */,
 				A6006647216041510001B5F8 /* LWZTableSectionShrinker.m */,
-				A60066592160785C0001B5F8 /* play.mp4 */,
 				A6006563215F947E0001B5F8 /* Main.storyboard */,
 				A6006566215F947F0001B5F8 /* Assets.xcassets */,
 				A6006568215F947F0001B5F8 /* LaunchScreen.storyboard */,
@@ -768,7 +765,6 @@
 			buildActionMask = 2147483647;
 			files = (
 				A60066892160B82A0001B5F8 /* ViewControllerControlRotation.xib in Resources */,
-				A600665A2160785C0001B5F8 /* play.mp4 in Resources */,
 				A600656A215F947F0001B5F8 /* LaunchScreen.storyboard in Resources */,
 				77E8D75A2179817300B025A7 /* ViewControllerVideoFlip.xib in Resources */,
 				A6D1A25E21844F57006FF2C1 /* ViewController_ItemExamples.xib in Resources */,

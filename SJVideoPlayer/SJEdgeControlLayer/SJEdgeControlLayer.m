@@ -1197,8 +1197,8 @@ SJEdgeControlButtonItemTag const SJEdgeControlLayerCenterItem_Replay = 40000;
 
 - (void)_top_updateTitleItem:(SJEdgeControlButtonItem *)titleItem {
     if ( _SJSlowPath(!titleItem) ) return;
-    
-    BOOL alwaysShowTitle = _videoPlayer.URLAsset.alwaysShowTitle;
+    SJVideoPlayerURLAsset *asset = _videoPlayer.URLAsset.otherMedia?:_videoPlayer.URLAsset;
+    BOOL alwaysShowTitle = asset.alwaysShowTitle;
     BOOL isFullscreen = _videoPlayer.isFullScreen;
     BOOL isFitOnScreen = _videoPlayer.isFitOnScreen;
 
@@ -1209,7 +1209,7 @@ SJEdgeControlButtonItemTag const SJEdgeControlLayerCenterItem_Replay = 40000;
     
     if ( titleItem.hidden ) return;
     
-    NSString *title = _videoPlayer.URLAsset.title?:@"";
+    NSString *title = asset.title?:@" ";
     // margin
     CGFloat left =
     [_topAdapter itemsIsHiddenWithRange:NSMakeRange(0, [_topAdapter indexOfItemForTag:SJEdgeControlLayerTopItem_Title])]?16:0;

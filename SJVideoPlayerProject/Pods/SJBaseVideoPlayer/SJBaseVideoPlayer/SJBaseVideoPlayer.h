@@ -174,7 +174,8 @@ NS_ASSUME_NONNULL_BEGIN
 - (void)play;
 /// 切换`清晰度` (v1.6.5 新增)
 /// - 切换当前播放的视频清晰度
-- (void)switchVideoDefinitionByURL:(NSURL *)URL;
+- (void)switchVideoDefinition:(SJVideoPlayerURLAsset *)URLAsset;
+
 /// 是否恢复播放, 进入前台时.
 ///
 /// 正常情况下, 进入后台时, 播放器将会暂停. 此属性表示App进入前台后, 播放器是否恢复播放. 默认为NO.
@@ -665,6 +666,6 @@ NS_ASSUME_NONNULL_BEGIN
 - (void)playWithURL:(NSURL *)URL; // 不再建议使用, 请使用`URLAsset`进行初始化
 @property (nonatomic, strong, nullable) NSURL *assetURL;
 @property (nonatomic, copy, nullable) void(^presentationSize)(__kindof SJBaseVideoPlayer *videoPlayer, CGSize size) __deprecated_msg("use `presentationSizeDidChangeExeBlock`");
+- (void)switchVideoDefinitionByURL:(NSURL *)URL; // 切换清晰度, 推荐使用 `switchVideoDefinition:`
 @end
-
 NS_ASSUME_NONNULL_END

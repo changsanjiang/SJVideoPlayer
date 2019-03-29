@@ -62,9 +62,8 @@
             make.edges.offset(0);
         }];
         
-        self.player.URLAsset = [[SJVideoPlayerURLAsset alloc] initWithURL:[NSBundle.mainBundle URLForResource:@"play" withExtension:@"mp4"] playModel:[SJPlayModel UITableViewHeaderViewPlayModelWithPlayerSuperview:view.coverImageView tableView:self.tableView]];
-        self.player.URLAsset.title = @"Test Title";
-        self.player.URLAsset.alwaysShowTitle = YES;
+        self.player.URLAsset = [[SJVideoPlayerURLAsset alloc] initWithURL:[NSURL URLWithString:@"https://xy2.v.netease.com/2018/0815/d08adab31cc9e6ce36111afc8a92c937qt.mp4"] playModel:[SJPlayModel UITableViewHeaderViewPlayModelWithPlayerSuperview:view.coverImageView tableView:self.tableView]];
+        self.player.URLAsset.title = @"十五年前, 一见钟情";
         
     };
     _tableView.tableHeaderView = tableHeaderView;
@@ -98,9 +97,8 @@
             make.edges.offset(0);
         }];
         
-        self.player.URLAsset = [[SJVideoPlayerURLAsset alloc] initWithURL:[NSBundle.mainBundle URLForResource:@"play" withExtension:@"mp4"] playModel:[SJPlayModel UITableViewCellPlayModelWithPlayerSuperviewTag:view.coverImageView.tag atIndexPath:indexPath tableView:self.tableView]];
-        self.player.URLAsset.title = @"Test Title";
-        self.player.URLAsset.alwaysShowTitle = YES;
+        self.player.URLAsset = [[SJVideoPlayerURLAsset alloc] initWithURL:[NSURL URLWithString:@"https://xy2.v.netease.com/2018/0815/d08adab31cc9e6ce36111afc8a92c937qt.mp4"] playModel:[SJPlayModel UITableViewCellPlayModelWithPlayerSuperviewTag:view.coverImageView.tag atIndexPath:indexPath tableView:self.tableView]];
+        self.player.URLAsset.title = @"十五年前, 一见钟情"; 
     };
 }
 

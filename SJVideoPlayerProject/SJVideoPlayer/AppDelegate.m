@@ -45,6 +45,8 @@ static BOOL _isCustomClass(Class cls) {
     SJVideoPlayer.update(^(SJVideoPlayerSettings * _Nonnull common) {
         common.placeholder = [UIImage imageNamed:@"cover"];
         common.progress_thumbSize = 8;
+        common.progress_trackColor = [UIColor colorWithWhite:0.8 alpha:1];
+        common.progress_bufferColor = [UIColor whiteColor];
     });
     
     [UIApplication.sharedApplication setStatusBarOrientation:UIInterfaceOrientationPortrait];

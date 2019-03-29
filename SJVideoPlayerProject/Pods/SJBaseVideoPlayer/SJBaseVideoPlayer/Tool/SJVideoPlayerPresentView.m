@@ -33,14 +33,28 @@ NS_ASSUME_NONNULL_BEGIN
     return _isHidden;
 }
 
-- (void)showPlaceholder {
+- (void)showPlaceholder:(BOOL)animated {
     if ( !_isHidden ) return; _isHidden = NO;
-    self.placeholderImageView.alpha = 1;
+    if ( animated ) {
+        [UIView animateWithDuration:0.4 animations:^{
+            self->_placeholderImageView.alpha = 1;
+        }];
+    }
+    else {
+        _placeholderImageView.alpha = 1;
+    }
 }
 
-- (void)hiddenPlaceholder {
+- (void)hiddenPlaceholder:(BOOL)animated {
     if ( _isHidden ) return; _isHidden = YES;
-    self.placeholderImageView.alpha = 0.001;
+    if ( animated ) {
+        [UIView animateWithDuration:0.4 animations:^{
+            self->_placeholderImageView.alpha = 0.001;
+        }];
+    }
+    else {
+        _placeholderImageView.alpha = 0.001; 
+    }
 }
 
 - (void)_presentSetupView {
@@ -48,7 +62,7 @@ NS_ASSUME_NONNULL_BEGIN
     self.placeholderImageView.frame = self.bounds;
     _placeholderImageView.autoresizingMask = UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight;
     [self addSubview:_placeholderImageView];
-    [self hiddenPlaceholder];
+    [self hiddenPlaceholder:NO];
 }
 
 - (UIImageView *)placeholderImageView {

@@ -17,6 +17,7 @@
     config->_playerSuperviewTag = playerSuperviewTag;
     config->_autoplayDelegate = autoplayDelegate;
     config->_animationType = SJAutoplayScrollAnimationTypeMiddle;
+    config->_autoplayPosition = SJAutoplayPositionMiddle;
     return config;
 }
 @end

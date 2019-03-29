@@ -11,7 +11,6 @@
 #import "SJMediaPlaybackProtocol.h"
 
 @protocol SJVideoPlayerURLAssetObserver;
-@class AVAsset;
 
 NS_ASSUME_NONNULL_BEGIN
 
@@ -25,7 +24,7 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic, readonly) BOOL isM3u8; 
 
 - (instancetype)initWithOtherAsset:(SJVideoPlayerURLAsset *)otherMedia playModel:(nullable __kindof SJPlayModel *)playModel;
-@property (nonatomic, weak, readonly, nullable) SJVideoPlayerURLAsset *otherMedia;
+@property (nonatomic, strong, readonly, nullable) SJVideoPlayerURLAsset *otherMedia;
 
 - (instancetype)init NS_UNAVAILABLE;
 + (instancetype)new NS_UNAVAILABLE;

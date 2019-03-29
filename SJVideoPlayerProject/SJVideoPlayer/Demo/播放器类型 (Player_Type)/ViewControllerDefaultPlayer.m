@@ -11,6 +11,7 @@
 #import <SJRouter/SJRouter.h>
 #import <Masonry/Masonry.h>
 #import <WebKit/WebKit.h>
+#import <SJBaseVideoPlayer/SJBaseVideoPlayer+PlayStatus.h>
 
 @interface ViewControllerDefaultPlayer ()<SJRouteHandler>
 @property (nonatomic, strong) SJVideoPlayer *player;
@@ -43,19 +44,14 @@
         make.height.equalTo(self->_player.view.mas_width).multipliedBy(9 / 16.0f);
     }];
     
-//    _player.URLAsset = [[SJVideoPlayerURLAsset alloc] initWithURL:[NSBundle.mainBundle URLForResource:@"play" withExtension:@"mp4"]];
+    _player.URLAsset = [[SJVideoPlayerURLAsset alloc] initWithURL:[NSURL URLWithString:@"https://xy2.v.netease.com/2018/0815/c4f8e15cf43e4404911c2e9d17d89d3fqt.mp4"]];
+    _player.URLAsset.title = @"一次邂逅, 遇见一生所爱";
     
-    _player.URLAsset = [[SJVideoPlayerURLAsset alloc] initWithURL:[NSURL URLWithString:@"http://ivi.bupt.edu.cn/hls/cctv6.m3u8"]];
-    
-    _player.URLAsset.title = @"Test TitleTest TitleTest TitleTest TitleTest TitleTest TitleTest TitleTest Title";
-    _player.URLAsset.alwaysShowTitle = YES;
     _player.hideBackButtonWhenOrientationIsPortrait = YES;
     _player.pausedToKeepAppearState = YES; 
     _player.enableFilmEditing = YES;
     _player.filmEditingConfig.saveResultToAlbumWhenExportSuccess = YES;
     _player.resumePlaybackWhenAppDidEnterForeground = YES;
-    
-    _player.delayToAutoRefreshWhenPlayFailed = 5;
     
     SJEdgeControlButtonItem *titleItem = [_player.defaultEdgeControlLayer.topAdapter itemForTag:SJEdgeControlLayerTopItem_Title];
     titleItem.numberOfLines = 1;
@@ -71,7 +67,7 @@
         make.trailing.offset(-8);
         make.centerY.offset(0);
     }];
-
+    
     
     WKWebViewConfiguration *config = [WKWebViewConfiguration new];
     config.allowsInlineMediaPlayback = YES;

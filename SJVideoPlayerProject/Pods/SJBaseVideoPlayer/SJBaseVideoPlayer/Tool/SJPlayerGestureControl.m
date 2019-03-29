@@ -125,8 +125,8 @@ NS_ASSUME_NONNULL_BEGIN
             break;
     }
     
-    if ( _gestureRecognizerShouldTrigger )
-        return _gestureRecognizerShouldTrigger(self, type, [gestureRecognizer locationInView:gestureRecognizer.view]);
+    if ( _gestureRecognizerShouldTrigger && !_gestureRecognizerShouldTrigger(self, type, [gestureRecognizer locationInView:gestureRecognizer.view]) )
+        return NO;
     
     return YES;
 }

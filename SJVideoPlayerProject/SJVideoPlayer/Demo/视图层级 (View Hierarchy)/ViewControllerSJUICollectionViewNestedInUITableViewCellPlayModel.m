@@ -71,9 +71,8 @@
             make.edges.offset(0);
         }];
         
-        self.player.URLAsset = [[SJVideoPlayerURLAsset alloc] initWithURL:[NSBundle.mainBundle URLForResource:@"play" withExtension:@"mp4"] playModel:[SJPlayModel UICollectionViewNestedInUITableViewCellPlayModelWithPlayerSuperviewTag:view.coverImageView.tag atIndexPath:playViewIndexPath collectionViewTag:containerView.collectionView.tag collectionViewAtIndexPath:indexPath tableView:self.tableView]];
-        self.player.URLAsset.title = @"Test Title";
-        self.player.URLAsset.alwaysShowTitle = YES;
+        self.player.URLAsset = [[SJVideoPlayerURLAsset alloc] initWithURL:[NSURL URLWithString:@"https://xy2.v.netease.com/2018/0815/d08adab31cc9e6ce36111afc8a92c937qt.mp4"] playModel:[SJPlayModel UICollectionViewNestedInUITableViewCellPlayModelWithPlayerSuperviewTag:view.coverImageView.tag atIndexPath:playViewIndexPath collectionViewTag:containerView.collectionView.tag collectionViewAtIndexPath:indexPath tableView:self.tableView]];
+        self.player.URLAsset.title = @"十五年前, 一见钟情"; 
 
     };
 }

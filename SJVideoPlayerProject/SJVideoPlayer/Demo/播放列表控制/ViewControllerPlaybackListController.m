@@ -12,6 +12,7 @@
 #import <Masonry/Masonry.h>
 #import "SJPlaybackListController.h"
 #import "TestMedia.h"
+#import <SJBaseVideoPlayer/SJVideoPlayerURLAssetPrefetcher.h>
 
 @interface ViewControllerPlaybackListController ()<SJRouteHandler, SJPlaybackListControllerDelegate>
 @property (nonatomic, strong, readonly) id<SJPlaybackListControllerObserver> listControllerObserver;
@@ -34,69 +35,39 @@
     [self _initializePlaybackListController];
     [self _initializeListControllerObserver];
     [self _addButtonItemsToEdgeControlLayer];
+    
+    // 创建资源, 并进行预加载
     [self _makeTestData];
 }
 
 - (void)_makeTestData {
-    NSArray<NSURL *> *TestURLs = @[[NSBundle.mainBundle URLForResource:@"play" withExtension:@"mp4"],
-                                   [NSURL URLWithString:@"https://www.apple.com/105/media/us/macbook-air/2018/9f419882_aefd_4083_902e_efcaee17a0b8/films/product/mba-product-tpl-cc-us-2018_1280x720h.mp4"],
-                                   [NSURL URLWithString:@"https://www.apple.com/105/media/us/ipad-pro/2018/cE249dd1_58dc_487a_880b_6a1bc197cc43/films/product/ipad-pro-product-tpl-cc-us-2018_640x360h.mp4"]];
     
-    NSMutableArray<TestMedia *> *medias = [NSMutableArray array];
-    for ( int i = 1 ; i < 5; ++ i ) {
+    NSArray<NSURL *> *testURLs =
+  @[[NSURL URLWithString:@"https://xy2.v.netease.com/r/video/20190308/31cbdd25-3cc9-49d4-934c-8d29b54fc15b.mp4"],
+    [NSURL URLWithString:@"https://xy2.v.netease.com/2018/0815/2b4c5207f8977c183897728dc6c77d58qt.mp4"],
+    [NSURL URLWithString:@"https://xy2.v.netease.com/2018/0815/c4f8e15cf43e4404911c2e9d17d89d3fqt.mp4"],
+    [NSURL URLWithString:@"https://xy2.v.netease.com/2018/0815/d08adab31cc9e6ce36111afc8a92c937qt.mp4"],
+    [NSURL URLWithString:@"https://xy2.v.netease.com/2018/0815/bedf0f6f6573ca36c041932f4f601f06qt.mp4"]];
+    
+    NSMutableArray<TestMedia *> *videos = [NSMutableArray array];
+    for ( int i = 0 ; i < testURLs.count; ++ i ) {
         TestMedia *media = [TestMedia new];
         media.id = i;
+        media.URL = testURLs[i];
+        media.title = @"一生所爱";
         media.viewHierarchy = [SJPlayModel new];
-        media.URL = TestURLs[i % TestURLs.count];
-        media.title = @"测试 测试";
-        [medias addObject:media];
+        [videos addObject:media];
+        
+        // 进行预加载
+        SJVideoPlayerURLAsset *asset = [[SJVideoPlayerURLAsset alloc] initWithURL:media.URL playModel:[SJPlayModel new]];
+        asset.title = media.title;
+        [SJVideoPlayerURLAssetPrefetcher.shared prefetchAsset:asset];
     }
 
-    [_listController replaceMedias:medias]; // 当前列表替换为 medias
-    [_listController playAtIndex:0];    // 播放第一个视频
-    
-    
-#if 0
-    /// Test
-    for ( int i = 0 ; i < 999 ; ++ i ) {
-        dispatch_async(dispatch_get_global_queue(0, 0), ^{
-            [self.listController addMedia:medias.firstObject];
-        });
-
-        dispatch_async(dispatch_get_global_queue(0, 0), ^{
-            [self.listController addToTheBackOfCurrentMedia:medias.lastObject];
-        });
-        
-        dispatch_async(dispatch_get_global_queue(0, 0), ^{
-            [self.listController addMedias:medias];
-        });
-
-        dispatch_async(dispatch_get_global_queue(0, 0), ^{
-            [self.listController replaceMedias:medias];
-        });
-
-        dispatch_async(dispatch_get_global_queue(0, 0), ^{
-            [self.listController remove:3];
-        });
-
-        dispatch_async(dispatch_get_global_queue(0, 0), ^{
-            [self.listController removeAllMedias];
-        });
-
-        dispatch_async(dispatch_get_global_queue(0, 0), ^{
-            [self.listController changePlaybackMode];
-        });
-
-        dispatch_async(dispatch_get_global_queue(0, 0), ^{
-            self.listController.mode = SJPlaybackMode_RepeatOne;
-        });
-        
-        dispatch_async(dispatch_get_global_queue(0, 0), ^{
-            [self.listController medias];
-        });
-    }
-#endif
-    
+    // 添加到 播放列表
+    [_listController replaceMedias:videos];
+    // 播放 第一个视频
+    [_listController playAtIndex:0];
 }
 
 #pragma mark -
@@ -197,6 +168,7 @@ static SJEdgeControlButtonItemTag SJEdgeControlButtonItem_PlayNextMedia = 101;
 - (void)_initializePlaybackListController {
     _listController = [SJPlaybackListController new];
     _listController.delegate = self;
+    _listController.recycle = YES;
 }
 
 - (void)_initializeListControllerObserver {
@@ -220,9 +192,14 @@ static SJEdgeControlButtonItemTag SJEdgeControlButtonItem_PlayNextMedia = 101;
 /// 需要播放下一个media
 - (void)listController:(id<SJPlaybackListController>)listController needToPlayMedia:(id<SJMediaInfo>)media {
     TestMedia *testMedia = media;
-    _player.URLAsset = [[SJVideoPlayerURLAsset alloc] initWithURL:testMedia.URL playModel:[SJPlayModel new]];
-    _player.URLAsset.title = testMedia.title;
-    _player.URLAsset.alwaysShowTitle = YES;
+    // 是否预加载过
+    SJVideoPlayerURLAsset *_Nullable asset = [SJVideoPlayerURLAssetPrefetcher.shared assetForURL:testMedia.URL];
+    if ( !asset ) {
+        // 创建一个新的资源
+        asset = [[SJVideoPlayerURLAsset alloc] initWithURL:testMedia.URL playModel:[SJPlayModel new]];
+        asset.title = testMedia.title;
+    }
+    _player.URLAsset = asset;
 }
 
 /// 需要重新播放

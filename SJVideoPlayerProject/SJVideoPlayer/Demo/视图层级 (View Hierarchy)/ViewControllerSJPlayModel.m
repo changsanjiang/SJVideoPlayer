@@ -40,7 +40,7 @@
     }];
     
     _player.assetURL = [NSURL URLWithString:@"https://www.apple.com/105/media/us/macbook-air/2018/9f419882_aefd_4083_902e_efcaee17a0b8/films/product/mba-product-tpl-cc-us-2018_1280x720h.mp4"];
-    _player.URLAsset.title = @"Test Title";
+    _player.URLAsset.title = @"十五年前, 一见钟情";
     _player.enableFilmEditing = YES;
     
     

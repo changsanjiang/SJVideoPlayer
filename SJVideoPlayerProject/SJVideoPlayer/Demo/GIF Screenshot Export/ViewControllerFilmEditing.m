@@ -45,9 +45,8 @@
     [_player showTitle:@"当前Demo为 剪辑操作示例.  请全屏后, 点击右侧剪辑按钮." duration:-1];
     
     // play
-    _player.URLAsset = [[SJVideoPlayerURLAsset alloc] initWithURL:[NSBundle.mainBundle URLForResource:@"play" withExtension:@"mp4"]];
-    _player.URLAsset.title = @"Test Title";
-    _player.URLAsset.alwaysShowTitle = YES;
+    _player.URLAsset = [[SJVideoPlayerURLAsset alloc] initWithURL:[NSURL URLWithString:@"https://xy2.v.netease.com/2018/0815/d08adab31cc9e6ce36111afc8a92c937qt.mp4"]];
+    _player.URLAsset.title = @"十五年前, 一见钟情"; 
     
     
     // 1. 开启剪辑层(GIF/Screenshot/Export)

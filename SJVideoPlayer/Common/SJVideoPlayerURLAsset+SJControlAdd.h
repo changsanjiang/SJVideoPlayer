@@ -33,7 +33,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 @property (nonatomic, copy, nullable) NSString *title;
 
-@property (nonatomic) BOOL alwaysShowTitle; // default is `NO`(小屏的时候不显示, 全屏的时候显示标题)
+@property (nonatomic) BOOL alwaysShowTitle; // default is `YES`
 
 
 

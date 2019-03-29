@@ -115,8 +115,8 @@
 }
 
 - (BOOL)alwaysShowTitle {
-    NSNumber *num = objc_getAssociatedObject(self, _cmd);
-    if ( num ) return [num boolValue];
+    NSNumber *_Nullable num = objc_getAssociatedObject(self, _cmd);
+    if ( num != nil ) return [num boolValue];
     return YES;
 }
 

@@ -444,7 +444,7 @@ SJEdgeControlButtonItemTag const SJEdgeControlLayerCenterItem_Replay = 40000;
     });
     [_bottomAdapter updateContentForItemWithTag:SJEdgeControlLayerBottomItem_CurrentTime];
     
-    if ( ![durationStr isEqualToString:durationTimeItem.title.string] ) {
+    if ( ![durationStr isEqualToString:durationTimeItem.title.string?:@""] ) {
         durationTimeItem.title = sj_makeAttributesString(^(SJAttributeWorker * _Nonnull make) {
             make.append(durationStr).font([UIFont systemFontOfSize:11]).textColor([UIColor whiteColor]).alignment(NSTextAlignmentCenter);
             currentTimeItem.size = durationTimeItem.size = [self _timeLabelMaxWidthByDurationStr:durationStr];

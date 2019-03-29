@@ -110,6 +110,10 @@ static NSNotificationName const SJPlayerDidEndSwitchControlLayerNotification = @
 
 - (void)addControlLayerForIdentifier:(SJControlLayerIdentifier)identifier
                          lazyLoading:(nullable id<SJControlLayer>(^)(SJControlLayerIdentifier identifier))loading {
+#ifdef DEBUG
+    NSParameterAssert(loading);
+#endif
+    
     [self.map setObject:loading forKey:@(identifier)];
     if ( self.currentIdentifier == identifier ) {
         [self switchControlLayerForIdentitfier:identifier];

@@ -10,6 +10,7 @@
 #import <Masonry/Masonry.h>
 #import <SJRouter/SJRouter.h>
 #import "LWZTableSectionShrinker.h"
+#import <SJVideoPlayer/SJVideoPlayer.h>
 //#import <SJFullscreenPopGesture/UINavigationController+SJVideoPlayerAdd.h>
 //#import <SJFullscreenPopGesture/UIViewController+SJVideoPlayerAdd.h>
 

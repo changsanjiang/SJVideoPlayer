@@ -68,12 +68,13 @@ NS_ASSUME_NONNULL_BEGIN
     /// default control layer
     BOOL _showMoreItemForTopControlLayer;
     NSArray<SJVideoPlayerMoreSetting *> *_Nullable _moreSettings;
-    _SJEdgeControlButtonItemDelegate *_moreItemDelegate;
+    _SJEdgeControlButtonItemDelegate *_Nullable _moreItemDelegate;
     
     /// film editing control layer
     BOOL _enableFilmEditing;
-    SJVideoPlayerFilmEditingConfig *_filmEditingConfig;
-    _SJEdgeControlButtonItemDelegate *_filmEditingItemDelegate;
+    SJVideoPlayerFilmEditingConfig *_Nullable _filmEditingConfig;
+    _SJEdgeControlButtonItemDelegate *_Nullable _filmEditingItemDelegate;
+    SJFilmEditingControlLayer *_Nullable _defaultFilmEditingControlLayer;
 }
 
 #ifdef DEBUG
@@ -95,7 +96,9 @@ NS_ASSUME_NONNULL_BEGIN
     if ( !self ) return nil;
     __weak typeof(self) _self = self;
     [self.switcher addControlLayerForIdentifier:SJControlLayer_Edge lazyLoading:^id<SJControlLayer> (SJControlLayerIdentifier identifier) {
-        return _self.defaultEdgeControlLayer;
+        __strong typeof(_self) self = _self;
+        if ( !self ) return nil;
+        return self.defaultEdgeControlLayer;
     }];
     
     [self.switcher switchControlLayerForIdentitfier:SJControlLayer_Edge]; // 切换到添加的控制层
@@ -152,11 +155,15 @@ NS_ASSUME_NONNULL_BEGIN
 - (void)_initializePlayStatusObserver {
     __weak typeof(self) _self = self;
     [self.switcher addControlLayerForIdentifier:SJControlLayer_LoadFailed lazyLoading:^id<SJControlLayer> _Nonnull(SJControlLayerIdentifier identifier) {
-        return _self.defaultLoadFailedControlLayer;
+        __strong typeof(_self) self = _self;
+        if ( !self ) return nil;
+        return self.defaultLoadFailedControlLayer;
     }];
     
     [self.switcher addControlLayerForIdentifier:SJControlLayer_NotReachableAndPlaybackStalled lazyLoading:^id<SJControlLayer> _Nonnull(SJControlLayerIdentifier identifier) {
-        return _self.defaultNotReachableControlLayer;
+        __strong typeof(_self) self = _self;
+        if ( !self ) return nil;
+        return self.defaultNotReachableControlLayer;
     }];
     
     _playStatusObserver = [self getPlayStatusObserver];
@@ -212,7 +219,6 @@ NS_ASSUME_NONNULL_BEGIN
     return _defaultEdgeControlLayer;
 }
 
-@synthesize defaultFilmEditingControlLayer = _defaultFilmEditingControlLayer;
 - (SJFilmEditingControlLayer *)defaultFilmEditingControlLayer {
     if ( !_defaultFilmEditingControlLayer ) {
         _defaultFilmEditingControlLayer = [SJFilmEditingControlLayer new];
@@ -430,7 +436,9 @@ NS_ASSUME_NONNULL_BEGIN
             if ( ![self.switcher containsControlLayer:SJControlLayer_MoreSettting] ) {
                 __weak typeof(self) _self = self;
                 [self.switcher addControlLayerForIdentifier:SJControlLayer_MoreSettting lazyLoading:^id<SJControlLayer> _Nonnull(SJControlLayerIdentifier identifier) {
-                    return _self.defaultMoreSettingControlLayer;
+                    __strong typeof(_self) self = _self;
+                    if ( !self ) return nil;
+                    return self.defaultMoreSettingControlLayer;
                 }];
             }
         }
@@ -480,7 +488,9 @@ NS_ASSUME_NONNULL_BEGIN
         if ( ![self.switcher containsControlLayer:SJControlLayer_FilmEditing] ) {
             __weak typeof(self) _self = self;
             [self.switcher addControlLayerForIdentifier:SJControlLayer_FilmEditing lazyLoading:^id<SJControlLayer> _Nonnull(SJControlLayerIdentifier identifier) {
-                return _self.defaultFilmEditingControlLayer;
+                __strong typeof(_self) self = _self;
+                if ( !self ) return nil;
+                return self.defaultFilmEditingControlLayer;
             }];
         }
     }

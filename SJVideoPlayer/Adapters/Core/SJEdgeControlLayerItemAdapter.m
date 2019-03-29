@@ -118,7 +118,6 @@ NS_ASSUME_NONNULL_BEGIN
     }
     CGFloat content_h = 0;              // 内容宽度
     CGRect bounds_arr[_items.count];    // 所有内容的bounds
-    
     CGFloat width = self.collectionView.bounds.size.width;
     NSMutableArray<NSNumber *> *fillIndexes = [NSMutableArray new];
     for ( NSInteger i = 0 ; i < _items.count ; ++ i ) {
@@ -165,7 +164,7 @@ NS_ASSUME_NONNULL_BEGIN
         current_y += item.insets.front;
         NSIndexPath *indexPath = [NSIndexPath indexPathForItem:i inSection:0];
         UICollectionViewLayoutAttributes *attributes = [UICollectionViewLayoutAttributes layoutAttributesForCellWithIndexPath:indexPath];
-        attributes.frame = (CGRect){(CGPoint){0, current_y}, (CGSize)bounds_arr[i].size};
+        attributes.frame = (CGRect){CGPointMake(0, current_y), (CGSize)bounds_arr[i].size};
         [_layoutAttributes addObject:attributes];
         current_y += bounds_arr[i].size.height + item.insets.rear;
     }

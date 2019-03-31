@@ -10,7 +10,7 @@
 #import "SJVideoPlayer.h"
 #import <SJRouter/SJRouter.h>
 #import <Masonry/Masonry.h>
-#import <SJAttributesFactory/SJAttributeWorker.h>
+#import <SJUIKit/SJAttributeWorker.h>
 
 /// 控制层 Item 相关操作 之 `添加按钮`
 

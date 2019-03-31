@@ -9,13 +9,21 @@
 #import <objc/message.h>
 #import "SJIsAppeared.h"
 
-#if __has_include(<SJObserverHelper/NSObject+SJObserverHelper.h>)
-#import <SJObserverHelper/NSObject+SJObserverHelper.h>
+#if __has_include(<SJUIKit/NSObject+SJObserverHelper.h>)
+#import <SJUIKit/NSObject+SJObserverHelper.h>
 #else
 #import "NSObject+SJObserverHelper.h"
 #endif
 
+#if __has_include(<SJUIKit/SJRunLoopTaskQueue.h>)
+#import <SJUIKit/SJRunLoopTaskQueue.h>
+#else
+#import "SJRunLoopTaskQueue.h"
+#endif
+
 NS_ASSUME_NONNULL_BEGIN
+static NSString *const kQueue = @"SJBaseVideoPlayerAutoplayTaskQueue";
+
 @implementation UIScrollView (SJPlayerCurrentPlayingIndexPath)
 - (void)setSj_currentPlayingIndexPath:(nullable NSIndexPath *)sj_currentPlayingIndexPath {
     objc_setAssociatedObject(self, @selector(sj_currentPlayingIndexPath), sj_currentPlayingIndexPath, OBJC_ASSOCIATION_RETAIN_NONATOMIC);
@@ -26,11 +34,10 @@ NS_ASSUME_NONNULL_BEGIN
 }
 @end
 
-
 static void sj_playNextAssetAfterEndScroll(__kindof UIScrollView *scrollView);
 static void sj_playNextVisibleAsset(__kindof UIScrollView *scrollView);
 
-static void sj_observeContentOffset(UIScrollView *scrollView, void(^contentOffsetDidChangeExeBlock)(void));
+static void sj_scrollViewContentOffsetDidChange(UIScrollView *scrollView, void(^contentOffsetDidChangeExeBlock)(void));
 static void sj_removeContentOffsetObserver(UIScrollView *scrollView);
 
 @implementation UIScrollView (ListViewAutoplaySJAdd)
@@ -52,14 +59,14 @@ static void sj_removeContentOffsetObserver(UIScrollView *scrollView);
     self.sj_enabledAutoplay = YES;
     self.sj_autoplayConfig = autoplayConfig;
 
-    dispatch_async(dispatch_get_main_queue(), ^{
-        __weak typeof(self) _self = self;
-        sj_observeContentOffset(self, ^{
-            __strong typeof(_self) self = _self;
-            if ( !self ) return;
-            [NSObject cancelPreviousPerformRequestsWithTarget:self selector:@selector(sj_playNextAssetAfterEndScroll) object:nil];
-            if ( !self.window ) return;
-            [self performSelector:@selector(sj_playNextAssetAfterEndScroll) withObject:nil afterDelay:0.3];
+    SJRunLoopTaskQueue *queue = SJRunLoopTaskQueue.queue(kQueue).update(CFRunLoopGetMain(), kCFRunLoopDefaultMode);
+    __weak typeof(self) _self = self;
+    sj_scrollViewContentOffsetDidChange(self, ^{
+        __strong typeof(_self) self = _self;
+        if ( !self ) return;
+        [NSObject cancelPreviousPerformRequestsWithTarget:self selector:@selector(sj_playNextAssetAfterEndScroll) object:nil];
+        queue.empty().enqueue(^{
+            [self performSelector:@selector(sj_playNextAssetAfterEndScroll) withObject:nil afterDelay:0.4];
         });
     });
 }
@@ -96,37 +103,26 @@ static void sj_removeContentOffsetObserver(UIScrollView *scrollView);
 
 @interface _SJScrollViewContentOffsetObserver : NSObject
 - (instancetype)initWithScrollView:(UIScrollView *)scrollView contentOffsetDidChangeExeBlock:(void(^)(void))block;
+@property (nonatomic, copy, readonly) void(^contentOffsetDidChangeExeBlock)(void);
 @end
 
-@implementation _SJScrollViewContentOffsetObserver {
-    void(^_contentOffsetDidChangeExeBlock)(void);
-}
-+ (void)observeScrollView:(__kindof UIScrollView *)scrollView contentOffsetDidChangeExeBlock:(void(^)(void))block {
-    _SJScrollViewContentOffsetObserver *_Nullable observer = objc_getAssociatedObject(scrollView, _cmd);
-    if ( observer )
-        return;
-    
-    observer = [[_SJScrollViewContentOffsetObserver alloc] initWithScrollView:scrollView contentOffsetDidChangeExeBlock:block];
-    objc_setAssociatedObject(scrollView, _cmd, observer, OBJC_ASSOCIATION_RETAIN_NONATOMIC);
-}
+@implementation _SJScrollViewContentOffsetObserver
 - (instancetype)initWithScrollView:(UIScrollView *)scrollView contentOffsetDidChangeExeBlock:(void (^)(void))block {
     self = [super init];
     if ( !self ) return nil;
-    [scrollView sj_addObserver:self forKeyPath:@"contentOffset"];
     _contentOffsetDidChangeExeBlock = block;
+    dispatch_async(dispatch_get_main_queue(), ^{
+        [scrollView sj_addObserver:self forKeyPath:@"contentOffset"];
+    });
     return self;
 }
 - (void)observeValueForKeyPath:(nullable NSString *)keyPath ofObject:(nullable id)object change:(nullable NSDictionary<NSKeyValueChangeKey,id> *)change context:(nullable void *)context {
-    if ( [change[NSKeyValueChangeNewKey] isKindOfClass:[NSNull class]] )
-        return;
-    if ( [change[NSKeyValueChangeNewKey] isEqual:change[NSKeyValueChangeOldKey]] )
-        return;
-    if ( _contentOffsetDidChangeExeBlock ) _contentOffsetDidChangeExeBlock();
+    _contentOffsetDidChangeExeBlock();
 }
 @end
 
 static char kObserver;
-static void sj_observeContentOffset(UIScrollView *scrollView, void(^contentOffsetDidChangeExeBlock)(void)) {
+static void sj_scrollViewContentOffsetDidChange(UIScrollView *scrollView, void(^contentOffsetDidChangeExeBlock)(void)) {
     dispatch_async(dispatch_get_main_queue(), ^{
         _SJScrollViewContentOffsetObserver *_Nullable observer = objc_getAssociatedObject(scrollView, &kObserver);
         if ( observer )

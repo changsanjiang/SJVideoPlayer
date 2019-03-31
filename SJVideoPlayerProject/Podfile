@@ -17,22 +17,16 @@ target 'SJVideoPlayer' do
 
   # Pods for SJVideoPlayer
 
-  pod 'SJVideoPlayer', :path => '../../SJVideoPlayer'
   pod 'SJBaseVideoPlayer'#, :path => '../../SJBaseVideoPlayer'
-  pod 'SJPlaybackListController'#, :path => '../../SJPlaybackListController'
-  pod 'SJObserverHelper'#, :path => '../../SJObserverHelper'
+  pod 'SJVideoPlayer', :path => '../../SJVideoPlayer'
   
-  # 便捷的创建 NSAttributedString
-  pod 'SJAttributesFactory'
   
   # 全屏手势
   pod 'SJFullscreenPopGesture'
-  
+  pod 'SJPlaybackListController'#, :path => '../../SJPlaybackListController'
   pod 'SJScrollEntriesView'
   pod 'Masonry', :inhibit_warnings => true
   pod 'SJRouter'
   pod 'SJScrollEntriesView'
-  #pod 'SJUIKit/Base'
-  #pod 'SJUIKit/Refresh'
   #pod 'MJRefresh', :inhibit_warnings => true
 end

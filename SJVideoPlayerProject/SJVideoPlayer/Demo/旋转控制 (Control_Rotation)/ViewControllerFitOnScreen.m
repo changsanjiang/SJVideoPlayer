@@ -31,7 +31,11 @@
     self.view.backgroundColor = [UIColor whiteColor];
     
     _player = [SJVideoPlayer player];
-    _player.useFitOnScreenAndDisableRotation = YES; // 全屏但不旋转
+    
+    // 取消自动管理
+    _player.autoManageViewToFitOnScreenOrRotation = NO;
+    // 全屏但不旋转
+    _player.useFitOnScreenAndDisableRotation = YES;
 #ifdef DEBUG
     [_player showTitle:@"点击全屏按钮, 播放器将充满屏幕" duration:5];
 #endif

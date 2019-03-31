@@ -455,7 +455,7 @@ NS_ASSUME_NONNULL_BEGIN
 // - Auto Manage Player View to Fit On Screen Or Rotation -
 
 @interface SJBaseVideoPlayer (AutoManageViewToFitOnScreenOrRotation)
-@property (nonatomic) BOOL autoManageViewToFitOnScreenOrRotation;
+@property (nonatomic) BOOL autoManageViewToFitOnScreenOrRotation; // default value is YES.
 @end
 
 
@@ -607,19 +607,29 @@ NS_ASSUME_NONNULL_BEGIN
 #pragma mark - 在`tableView`或`collectionView`上播放
 
 @interface SJBaseVideoPlayer (ScrollView)
+/// 滚动出去后, 是否暂停. 默认为YES
+///
+/// - default value is YES.
+@property (nonatomic) BOOL pauseWhenScrollDisappeared;
 
-/**
- Whether to play on scrollView.
- 
- readonly.
- */
+/// 滚动进入时, 是否恢复播放. 默认为YES
+///
+/// - default values is YES.
+@property (nonatomic) BOOL resumePlaybackWhenScrollAppeared;
+
+/// 滚动出去后, 是否隐藏播放器视图. 默认为YES
+///
+/// - default value is YES.
+@property (nonatomic) BOOL hiddenViewWhenScrollDisappeared;
+
+/// 是否在 scrollView 中播放
+///
+/// Whether to play on scrollView.
 @property (nonatomic, readonly) BOOL isPlayOnScrollView;
 
-/**
- Whether the player is appeared when playing on scrollView. Because scrollview may be scrolled.
- 
- readonly.
- */
+/// 播放器视图是否显示
+///
+/// Whether the player is appeared when playing on scrollView. Because scrollview may be scrolled.
 @property (nonatomic, readonly) BOOL isScrollAppeared;
 
 @property (nonatomic, copy, nullable) void(^playerViewWillAppearExeBlock)(__kindof SJBaseVideoPlayer *videoPlayer);

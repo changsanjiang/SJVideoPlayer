@@ -46,24 +46,17 @@
 #endif
     
     SJTableViewCell *cell = [self.tableView cellForRowAtIndexPath:indexPath];
-    if ( !_player || !_player.isFullScreen ) {
-        [_player stopAndFadeOut]; // 让旧的播放器淡出
-        _player = [SJVideoPlayer player]; // 创建一个新的播放器 
-        // fade in(淡入)
-        _player.view.alpha = 0.001;
-        [UIView animateWithDuration:0.6 animations:^{
-            self.player.view.alpha = 1;
-        }];
+    if ( !_player ) {
+        _player = [SJVideoPlayer player];
+        _player.resumePlaybackWhenScrollAppeared = YES;
     }
-#ifdef SJMAC
-    _player.disablePromptWhenNetworkStatusChanges = YES;
-#endif
+    
+    self.player.view.hidden = NO;
     [cell.view.coverImageView addSubview:self.player.view];
     [_player.view mas_makeConstraints:^(MASConstraintMaker *make) {
         make.edges.offset(0);
     }];
     
-    _player.resumePlaybackWhenPlayerViewScrollAppears = YES;
     _player.URLAsset = [[SJVideoPlayerURLAsset alloc] initWithURL:[NSURL URLWithString:@"https://xy2.v.netease.com/2018/0815/d08adab31cc9e6ce36111afc8a92c937qt.mp4"] playModel:[SJPlayModel UITableViewCellPlayModelWithPlayerSuperviewTag:cell.view.coverImageView.tag atIndexPath:indexPath tableView:self.tableView]];
     _player.URLAsset.title = @"十五年前, 一见钟情"; 
 }

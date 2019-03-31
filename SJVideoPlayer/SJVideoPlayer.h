@@ -93,9 +93,6 @@ NS_ASSUME_NONNULL_BEGIN
 /// - Default value is NO.
 @property (nonatomic) BOOL disablePromptWhenNetworkStatusChanges;
 
-/// 是否恢复播放 当播放器滚动(ScrollView)出现时
-@property (nonatomic) BOOL resumePlaybackWhenPlayerViewScrollAppears;
-
 /// 是否隐藏底部的进度slider
 @property (nonatomic) BOOL hideBottomProgressSlider;
 
@@ -167,5 +164,6 @@ typedef SJEdgeControlLayer SJEdgeLightweightControlLayer __deprecated;
 - (nullable SJEdgeLightweightControlLayer *)defaultEdgeLightweightControlLayer __deprecated_msg("use `defaultEdgeControlLayer`");
 @property (nonatomic, copy, nullable) NSArray<SJLightweightTopItem *> *topControlItems __deprecated_msg("use [player.defaultEdgeControlLayer.topAdapter addItem:item];");
 @property (nonatomic, copy, nullable) void(^clickedTopControlItemExeBlock)(SJVideoPlayer *player, SJLightweightTopItem *item) __deprecated;
+@property (nonatomic) BOOL resumePlaybackWhenPlayerViewScrollAppears __deprecated_msg("use `resumePlaybackWhenScrollAppeared`");
 @end
 NS_ASSUME_NONNULL_END

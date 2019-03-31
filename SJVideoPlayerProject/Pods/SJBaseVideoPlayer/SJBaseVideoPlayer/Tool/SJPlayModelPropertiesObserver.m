@@ -10,9 +10,14 @@
 #import <objc/message.h>
 #import <UIKit/UIKit.h>
 #import "SJIsAppeared.h"
+#if __has_include(<SJUIKit/SJRunLoopTaskQueue.h>)
+#import <SJUIKit/SJRunLoopTaskQueue.h>
+#else
+#import "SJRunLoopTaskQueue.h"
+#endif
 
-#if __has_include(<SJObserverHelper/NSObject+SJObserverHelper.h>)
-#import <SJObserverHelper/NSObject+SJObserverHelper.h>
+#if __has_include(<SJUIKit/NSObject+SJObserverHelper.h>)
+#import <SJUIKit/NSObject+SJObserverHelper.h>
 #else
 #import "NSObject+SJObserverHelper.h"
 #endif
@@ -22,6 +27,7 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic, strong, readonly) id<SJPlayModel> playModel;
 @property (nonatomic) CGPoint beforeOffset;
 @property (nonatomic) BOOL isAppeared;
+@property (nonatomic, strong, readonly) SJRunLoopTaskQueue *taskQueue;
 @end
 
 @implementation SJPlayModelPropertiesObserver
@@ -32,6 +38,8 @@ NS_ASSUME_NONNULL_BEGIN
     self = [super init];
     if ( !self ) return nil;
     _playModel = playModel;
+    _taskQueue = SJRunLoopTaskQueue.queue(@"SJPlayModelObserverRunLoopTaskQueue").delay(6);
+    
     if ( [playModel isMemberOfClass:[SJPlayModel class]] ) {
         _isAppeared = YES;
     }
@@ -40,6 +48,7 @@ NS_ASSUME_NONNULL_BEGIN
     }
     
     [self refreshAppearState];
+    
     return self;
 }
 
@@ -91,7 +100,10 @@ static NSString *kState = @"state";
                         change:(nullable NSDictionary<NSKeyValueChangeKey,id> *)change
                        context:(nullable void *)context {
     if ( &kContentOffset == context ) {
-        [self _scrollViewDidScroll:object];
+        __weak typeof(self) _self = self;
+        _taskQueue.empty().enqueue(^{
+            [_self _scrollViewDidScroll:object];
+        });
     }
     else if ( &kState == context ) {
         [self _panGestureStateDidChange:object];
@@ -168,7 +180,7 @@ static NSString *kState = @"state";
             [self _observeScrollView:playModel.collectionView];
         }
     }
-
+    
     self.isAppeared = [self _isAppearedInTheScrollingView:scrollView];
     _beforeOffset = scrollView.contentOffset;
 }
@@ -198,6 +210,7 @@ static NSString *kState = @"state";
 }
 
 - (void)refreshAppearState {
+    _isAppeared = NO;
     if ( [_playModel isMemberOfClass:[SJPlayModel class]] ) {
         self.isAppeared = YES;
         return;

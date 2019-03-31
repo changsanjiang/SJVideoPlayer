@@ -43,8 +43,8 @@
 #import "Masonry.h"
 #endif
 
-#if __has_include(<SJObserverHelper/NSObject+SJObserverHelper.h>)
-#import <SJObserverHelper/NSObject+SJObserverHelper.h>
+#if __has_include(<SJUIKit/NSObject+SJObserverHelper.h>)
+#import <SJUIKit/NSObject+SJObserverHelper.h>
 #else
 #import "NSObject+SJObserverHelper.h"
 #endif
@@ -313,6 +313,9 @@ sj_swizzleMethod(Class cls, SEL originalSelector, SEL swizzledSelector) {
     void(^_Nullable _networkStatusDidChangeExeBlock)(__kindof SJBaseVideoPlayer *player);
     
     /// Scroll
+    BOOL _pauseWhenScrollDisappeared;
+    BOOL _hiddenViewWhenScrollDisappeared;
+    BOOL _resumePlaybackWhenScrollAppeared;
     void(^_Nullable _playerViewWillAppearExeBlock)(__kindof SJBaseVideoPlayer *videoPlayer);
     void(^_Nullable _playerViewWillDisappearExeBlock)(__kindof SJBaseVideoPlayer *videoPlayer);
     
@@ -327,7 +330,7 @@ sj_swizzleMethod(Class cls, SEL originalSelector, SEL swizzledSelector) {
 }
 
 + (NSString *)version {
-    return @"2.3.0";
+    return @"2.3.5";
 }
 
 - (nullable __kindof UIViewController *)atViewController {
@@ -351,10 +354,13 @@ sj_swizzleMethod(Class cls, SEL originalSelector, SEL swizzledSelector) {
 - (instancetype)init {
     self = [super init];
     if ( !self ) return nil;
+    self.pauseWhenScrollDisappeared = YES;
+    self.hiddenViewWhenScrollDisappeared = YES;
+    self.resumePlaybackWhenScrollAppeared = YES;
     self.hiddenPlaceholderImageViewWhenPlayerIsReadyForDisplay = YES;
     self.autoPlayWhenPlayStatusIsReadyToPlay = YES; // 是否自动播放, 默认yes
     self.pauseWhenAppDidEnterBackground = YES; // App进入后台是否暂停播放, 默认yes
-    self.disabledControlLayerAppearManager = NO; // 是否启用控制层管理器
+    self.autoManageViewToFitOnScreenOrRotation = YES;
     
     [self view];
     [self _showOrHiddenPlaceholderImageViewIfNeeded];
@@ -954,7 +960,9 @@ sj_swizzleMethod(Class cls, SEL originalSelector, SEL swizzledSelector) {
     if ( _canPlayAnAsset && !_canPlayAnAsset(self) ) return;
     if ( self.registrar.state == SJVideoPlayerAppState_Background && self.pauseWhenAppDidEnterBackground ) return;
     
-    if ( [self playStatus_isInactivity_ReasonPlayEnd] ) {
+    NSTimeInterval current = floor(self.currentTime + 0.5);
+    NSTimeInterval duration = floor(self.totalTime + 0.5);
+    if ( [self playStatus_isInactivity_ReasonPlayEnd] && current == duration ) {
         [self replay];
         return;
     }
@@ -977,10 +985,6 @@ sj_swizzleMethod(Class cls, SEL originalSelector, SEL swizzledSelector) {
     self.playStatus = SJVideoPlayerPlayStatusPlaying;
     
     [self.controlLayerAppearManager resume];
-    
-#ifdef DEBUG
-    NSLog(@"%d - %s", (int)__LINE__, __func__);
-#endif
 }
 
 - (void)pause {
@@ -1005,7 +1009,7 @@ sj_swizzleMethod(Class cls, SEL originalSelector, SEL swizzledSelector) {
     }
     
     [self.playbackController pause];
-    
+
     self.pausedReason = reason;
     self.playStatus = SJVideoPlayerPlayStatusPaused;
 }
@@ -1129,6 +1133,7 @@ sj_swizzleMethod(Class cls, SEL originalSelector, SEL swizzledSelector) {
     // update playModel
     self.playModelObserver = [[SJPlayModelPropertiesObserver alloc] initWithPlayModel:playModel];
     self.playModelObserver.delegate = (id)self;
+    [self.playModelObserver refreshAppearState];
 }
 
 // - Playback Controll Delegate -
@@ -2532,6 +2537,26 @@ sj_swizzleMethod(Class cls, SEL originalSelector, SEL swizzledSelector) {
 #pragma mark - 在`tableView`或`collectionView`上播放
 
 @implementation SJBaseVideoPlayer (ScrollView)
+- (void)setPauseWhenScrollDisappeared:(BOOL)pauseWhenScrollDisappeared {
+    _pauseWhenScrollDisappeared = pauseWhenScrollDisappeared;
+}
+- (BOOL)pauseWhenScrollDisappeared {
+    return _pauseWhenScrollDisappeared;
+}
+
+- (void)setHiddenViewWhenScrollDisappeared:(BOOL)hiddenViewWhenScrollDisappeared {
+    _hiddenViewWhenScrollDisappeared = hiddenViewWhenScrollDisappeared;
+}
+- (BOOL)hiddenViewWhenScrollDisappeared {
+    return _hiddenViewWhenScrollDisappeared;
+}
+
+- (void)setResumePlaybackWhenScrollAppeared:(BOOL)resumePlaybackWhenScrollAppeared {
+    _resumePlaybackWhenScrollAppeared = resumePlaybackWhenScrollAppeared;
+}
+- (BOOL)resumePlaybackWhenScrollAppeared {
+    return _resumePlaybackWhenScrollAppeared;
+}
 
 - (BOOL)isPlayOnScrollView {
     return [self.playModelObserver isPlayInCollectionView] || [self.playModelObserver isPlayInTableView];
@@ -2656,8 +2681,15 @@ static id<SJBaseVideoPlayerStatistics> _statistics;
     self.touchedScrollView = touched;
 }
 - (void)playerWillAppearForObserver:(nonnull SJPlayModelPropertiesObserver *)observer superview:(nonnull UIView *)superview {
+    if ( _hiddenViewWhenScrollDisappeared ) {
+        _view.hidden = NO;
+    }
+    
+    if ( _resumePlaybackWhenScrollAppeared && ![self playStatus_isInactivity] ) {
+        [self play];
+    }
+    
     if ( superview && self.view.superview != superview ) {
-        [self.view removeFromSuperview];
         [superview addSubview:self.view];
         [self.view mas_remakeConstraints:^(MASConstraintMaker *make) {
             make.edges.equalTo(superview);
@@ -2672,6 +2704,12 @@ static id<SJBaseVideoPlayerStatistics> _statistics;
         _playerViewWillAppearExeBlock(self);
 }
 - (void)playerWillDisappearForObserver:(nonnull SJPlayModelPropertiesObserver *)observer {
+    if ( _pauseWhenScrollDisappeared ) {
+        [self pause];
+    }
+
+    _view.hidden = _hiddenViewWhenScrollDisappeared;
+    
     if ( [self.controlLayerDelegate respondsToSelector:@selector(videoPlayerWillDisappearInScrollView:)] ) {
         [self.controlLayerDelegate videoPlayerWillDisappearInScrollView:self];
     }

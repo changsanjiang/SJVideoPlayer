@@ -72,7 +72,7 @@
     _player.disablePromptWhenNetworkStatusChanges = YES;
 #endif
     
-    _player.resumePlaybackWhenPlayerViewScrollAppears = YES;
+    _player.resumePlaybackWhenScrollAppeared = YES;
     [cell.view.coverImageView addSubview:self.player.view];
     [_player.view mas_makeConstraints:^(MASConstraintMaker *make) {
         make.edges.offset(0);

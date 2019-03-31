@@ -6,14 +6,14 @@
 //  Copyright © 2018 畅三江. All rights reserved.
 //
 
-#if __has_include(<SJAttributesFactory/SJAttributeWorker.h>)
-#import <SJAttributesFactory/SJAttributeWorker.h>
+#if __has_include(<SJUIKit/SJAttributeWorker.h>)
+#import <SJUIKit/SJAttributeWorker.h>
 #else
 #import "SJAttributeWorker.h"
 #endif
 
-#if __has_include(<SJObserverHelper/NSObject+SJObserverHelper.h>)
-#import <SJObserverHelper/NSObject+SJObserverHelper.h>
+#if __has_include(<SJUIKit/NSObject+SJObserverHelper.h>)
+#import <SJUIKit/NSObject+SJObserverHelper.h>
 #else
 #import "NSObject+SJObserverHelper.h"
 #endif
@@ -950,20 +950,6 @@ SJEdgeControlButtonItemTag const SJEdgeControlLayerCenterItem_Replay = 40000;
 
 - (void)videoPlayer:(__kindof SJBaseVideoPlayer *)videoPlayer didEndRotation:(BOOL)isFull {
     if ( !videoPlayer.controlLayerIsAppeared ) sj_view_makeAppear(_bottomProgressSlider, YES);
-}
-
-///  在`tableView`或`collectionView`上将要显示的时候调用.
-- (void)videoPlayerWillAppearInScrollView:(SJBaseVideoPlayer *)videoPlayer {
-    videoPlayer.view.hidden = NO;
-    if ( _resumePlaybackWhenPlayerViewScrollAppears ) {
-        [videoPlayer play];
-    }
-}
-
-///  在`tableView`或`collectionView`上将要消失的时候调用.
-- (void)videoPlayerWillDisappearInScrollView:(SJBaseVideoPlayer *)videoPlayer {
-    videoPlayer.view.hidden = YES;
-    [videoPlayer pause];
 }
 
 #pragma mark Player Horizontal Gesture

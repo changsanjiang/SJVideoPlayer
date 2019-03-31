@@ -7,8 +7,8 @@
 //
 
 #import "SJControlLayerSwitcher.h"
-#if __has_include(<SJObserverHelper/NSObject+SJObserverHelper.h>)
-#import <SJObserverHelper/NSObject+SJObserverHelper.h>
+#if __has_include(<SJUIKit/NSObject+SJObserverHelper.h>)
+#import <SJUIKit/NSObject+SJObserverHelper.h>
 #else
 #import "NSObject+SJObserverHelper.h"
 #endif
@@ -49,6 +49,7 @@ static NSNotificationName const SJPlayerDidEndSwitchControlLayerNotification = @
 @synthesize currentIdentifier = _currentIdentifier;
 @synthesize previousIdentifier = _previousIdentifier;
 @synthesize delegate = _delegate;
+@synthesize resolveControlLayer = _resolveControlLayer;
 
 #ifdef DEBUG
 - (void)dealloc {
@@ -73,6 +74,12 @@ static NSNotificationName const SJPlayerDidEndSwitchControlLayerNotification = @
 - (void)switchControlLayerForIdentitfier:(SJControlLayerIdentifier)identifier {
     id<SJControlLayer> _Nullable oldValue = [self controlLayerForIdentifier:self.currentIdentifier];
     id<SJControlLayer> _Nullable newValue = [self controlLayerForIdentifier:identifier];
+    if ( !newValue && _resolveControlLayer ) {
+        newValue = _resolveControlLayer(identifier);
+        [self addControlLayerForIdentifier:identifier lazyLoading:^id<SJControlLayer> _Nonnull(SJControlLayerIdentifier identifier) {
+            return newValue;
+        }];
+    }
     NSParameterAssert(newValue); if ( !newValue ) return;
     if ( oldValue == newValue )
         return;
@@ -83,7 +90,7 @@ static NSNotificationName const SJPlayerDidEndSwitchControlLayerNotification = @
     }
     
     // - begin -
-    [NSNotificationCenter.defaultCenter postNotificationName:SJPlayerWillBeginSwitchControlLayerNotification object:self userInfo:oldValue?@{SJPlayerSwitchControlLayerUserInfoKey:oldValue}:nil];
+    [NSNotificationCenter.defaultCenter postNotificationName:SJPlayerWillBeginSwitchControlLayerNotification object:self userInfo:newValue?@{SJPlayerSwitchControlLayerUserInfoKey:newValue}:nil];
 
     _videoPlayer.controlLayerDataSource = nil;
     _videoPlayer.controlLayerDelegate = nil;

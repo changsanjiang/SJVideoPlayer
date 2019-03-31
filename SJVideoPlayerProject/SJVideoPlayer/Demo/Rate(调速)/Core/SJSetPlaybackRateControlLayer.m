@@ -7,8 +7,8 @@
 //
 
 #import "SJSetPlaybackRateControlLayer.h"
-#if __has_include(<SJAttributesFactory/SJAttributeWorker.h>)
-#import <SJAttributesFactory/SJAttributeWorker.h>
+#if __has_include(<SJUIKit/SJAttributeWorker.h>)
+#import <SJUIKit/SJAttributeWorker.h>
 #else
 #import "SJAttributeWorker.h"
 #endif

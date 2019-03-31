@@ -52,6 +52,9 @@ extern SJControlLayerIdentifier SJControlLayer_Uninitialized;
 /// - 你需要对它强引用, 否则会被释放
 - (id<SJControlLayerSwitcherObsrever>)getObserver;
 
+/// 当`switchControlLayerForIdentitfier:`无对应的控制层时, 该block将会被调用
+@property (nonatomic, copy, nullable) id<SJControlLayer> _Nullable (^resolveControlLayer)(SJControlLayerIdentifier identifier);
+
 @property (nonatomic, weak, nullable) id<SJControlLayerSwitcherDelegate> delegate;
 @property (nonatomic, readonly) SJControlLayerIdentifier previousIdentifier;
 @property (nonatomic, readonly) SJControlLayerIdentifier currentIdentifier;

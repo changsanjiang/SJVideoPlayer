@@ -16,8 +16,8 @@
 #import "Masonry.h"
 #endif
 
-#if __has_include(<SJObserverHelper/NSObject+SJObserverHelper.h>)
-#import <SJObserverHelper/NSObject+SJObserverHelper.h>
+#if __has_include(<SJUIKit/NSObject+SJObserverHelper.h>)
+#import <SJUIKit/NSObject+SJObserverHelper.h>
 #else
 #import "NSObject+SJObserverHelper.h"
 #endif
@@ -129,6 +129,9 @@ typedef NS_ENUM(NSUInteger, __SJModalViewControllerState) {
 }
 - (BOOL)prefersHomeIndicatorAutoHidden {
     return YES;
+}
+- (BOOL)shouldAutorotate {
+    return NO;
 }
 @end
 

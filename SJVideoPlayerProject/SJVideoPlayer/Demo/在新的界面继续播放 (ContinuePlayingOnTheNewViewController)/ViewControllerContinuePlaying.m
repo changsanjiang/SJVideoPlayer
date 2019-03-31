@@ -60,7 +60,7 @@
     }];
     
     if ( !_asset ) {
-        _player.URLAsset = [[SJVideoPlayerURLAsset alloc] initWithURL:[NSURL URLWithString:@"https://xy2.v.netease.com/2018/0815/d08adab31cc9e6ce36111afc8a92c937qt.mp4"]];
+        _player.URLAsset = [[SJVideoPlayerURLAsset alloc] initWithURL:[NSURL URLWithString:@"https://xy2.v.netease.com/2018/0815/2b4c5207f8977c183897728dc6c77d58qt.mp4"]];
         _player.URLAsset.title = @"十五年前, 一见钟情";
     }
     else {
@@ -77,7 +77,7 @@
 - (void)viewDidAppear:(BOOL)animated {
     [super viewDidAppear:animated];
     [self.player vc_viewDidAppear];
-    if ( ![self.player playStatus_isInactivity_ReasonPlayEnd] ) [self.player play];
+    [self.player play];
 }
 
 - (void)viewWillDisappear:(BOOL)animated {

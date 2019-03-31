@@ -10,7 +10,7 @@
 #import "SJVideoPlayer.h"
 #import <SJRouter/SJRouter.h>
 #import <Masonry/Masonry.h>
-#import <SJAttributesFactory/SJAttributeWorker.h>
+#import <SJUIKit/SJAttributeWorker.h>
 #import <SJBaseVideoPlayer/SJVCRotationManager.h>
 
 @interface ViewControllerTestAlert ()<SJRouteHandler>

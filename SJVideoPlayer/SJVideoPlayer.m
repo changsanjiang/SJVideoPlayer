@@ -12,8 +12,8 @@
 #import "UIView+SJAnimationAdded.h"
 #import <objc/message.h>
 
-#if __has_include(<SJObserverHelper/NSObject+SJObserverHelper.h>)
-#import <SJObserverHelper/NSObject+SJObserverHelper.h>
+#if __has_include(<SJUIKit/NSObject+SJObserverHelper.h>)
+#import <SJUIKit/NSObject+SJObserverHelper.h>
 #else
 #import "NSObject+SJObserverHelper.h"
 #endif
@@ -84,7 +84,7 @@ NS_ASSUME_NONNULL_BEGIN
 #endif
 
 + (NSString *)version {
-    return @"v2.5.3";
+    return @"v2.5.4";
 }
 
 + (instancetype)player {
@@ -94,13 +94,6 @@ NS_ASSUME_NONNULL_BEGIN
 - (instancetype)init {
     self = [self _init];
     if ( !self ) return nil;
-    __weak typeof(self) _self = self;
-    [self.switcher addControlLayerForIdentifier:SJControlLayer_Edge lazyLoading:^id<SJControlLayer> (SJControlLayerIdentifier identifier) {
-        __strong typeof(_self) self = _self;
-        if ( !self ) return nil;
-        return self.defaultEdgeControlLayer;
-    }];
-    
     [self.switcher switchControlLayerForIdentitfier:SJControlLayer_Edge]; // 切换到添加的控制层
     self.showNetworkSpeedToLoadingView = YES; // 显示加载网速
     self.showMoreItemForTopControlLayer = YES; // 显示更多按钮
@@ -111,17 +104,13 @@ NS_ASSUME_NONNULL_BEGIN
 // v2.4.0 之后删除了旧的lightweightPlayer控制层, 迁移至 defaultEdgeControlLayer
 + (instancetype)lightweightPlayer {
     SJVideoPlayer *videoPlayer = [[SJVideoPlayer alloc] _init];
-    __weak typeof(videoPlayer) _videoPlayer = videoPlayer;
-    [videoPlayer.switcher addControlLayerForIdentifier:SJControlLayer_Edge lazyLoading:^id<SJControlLayer> (SJControlLayerIdentifier identifier) {
-        SJEdgeControlLayer *edgeControlLayer = _videoPlayer.defaultEdgeControlLayer;
-        edgeControlLayer.hideBottomProgressSlider = NO;
-        edgeControlLayer.topContainerView.sjv_disappearDirection =
-        edgeControlLayer.leftContainerView.sjv_disappearDirection =
-        edgeControlLayer.bottomContainerView.sjv_disappearDirection =
-        edgeControlLayer.rightContainerView.sjv_disappearDirection = SJViewDisappearAnimation_None;
-        [edgeControlLayer.topAdapter reload];
-        return edgeControlLayer;
-    }];
+    SJEdgeControlLayer *controlLayer = videoPlayer.defaultEdgeControlLayer;
+    controlLayer.hideBottomProgressSlider = NO;
+    controlLayer.topContainerView.sjv_disappearDirection =
+    controlLayer.leftContainerView.sjv_disappearDirection =
+    controlLayer.bottomContainerView.sjv_disappearDirection =
+    controlLayer.rightContainerView.sjv_disappearDirection = SJViewDisappearAnimation_None;
+    [controlLayer.topAdapter reload];
     [videoPlayer.switcher switchControlLayerForIdentitfier:SJControlLayer_Edge];
     return videoPlayer;
 }
@@ -130,6 +119,23 @@ NS_ASSUME_NONNULL_BEGIN
     self = [super init];
     if ( !self ) return nil;
     _switcher = [[SJControlLayerSwitcher alloc] initWithPlayer:self];
+    __weak typeof(self) _self = self;
+    _switcher.resolveControlLayer = ^id<SJControlLayer> _Nullable(SJControlLayerIdentifier identifier) {
+        __strong typeof(_self) self = _self;
+        if ( !self ) return nil;
+        if ( identifier == SJControlLayer_Edge )
+            return self.defaultEdgeControlLayer;
+        else if ( identifier == SJControlLayer_NotReachableAndPlaybackStalled )
+            return self.defaultNotReachableControlLayer;
+        else if ( identifier == SJControlLayer_FilmEditing )
+            return self.defaultFilmEditingControlLayer;
+        else if ( identifier == SJControlLayer_MoreSettting )
+            return self.defaultMoreSettingControlLayer;
+        else if ( identifier == SJControlLayer_LoadFailed )
+            return self.defaultLoadFailedControlLayer;
+        return nil;
+    };
+    
     dispatch_async(dispatch_get_global_queue(0, 0), ^{
         [self _initializeSwitcherObserver];
         [self _initializeSettingsRecorder];
@@ -154,18 +160,6 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (void)_initializePlayStatusObserver {
     __weak typeof(self) _self = self;
-    [self.switcher addControlLayerForIdentifier:SJControlLayer_LoadFailed lazyLoading:^id<SJControlLayer> _Nonnull(SJControlLayerIdentifier identifier) {
-        __strong typeof(_self) self = _self;
-        if ( !self ) return nil;
-        return self.defaultLoadFailedControlLayer;
-    }];
-    
-    [self.switcher addControlLayerForIdentifier:SJControlLayer_NotReachableAndPlaybackStalled lazyLoading:^id<SJControlLayer> _Nonnull(SJControlLayerIdentifier identifier) {
-        __strong typeof(_self) self = _self;
-        if ( !self ) return nil;
-        return self.defaultNotReachableControlLayer;
-    }];
-    
     _playStatusObserver = [self getPlayStatusObserver];
     _playStatusObserver.playStatusDidChangeExeBlock = ^(SJBaseVideoPlayer * _Nonnull player) {
         __strong typeof(_self) self = _self;
@@ -378,18 +372,12 @@ NS_ASSUME_NONNULL_BEGIN
 - (BOOL)showNetworkSpeedToLoadingView {
     return [self defaultEdgeControlLayer].showNetworkSpeedToLoadingView;
 }
+
 - (void)setDisablePromptWhenNetworkStatusChanges:(BOOL)disablePromptWhenNetworkStatusChanges {
     [self defaultEdgeControlLayer].disablePromptWhenNetworkStatusChanges = disablePromptWhenNetworkStatusChanges;
 }
 - (BOOL)disablePromptWhenNetworkStatusChanges {
     return [self defaultEdgeControlLayer].disablePromptWhenNetworkStatusChanges;
-}
-
-- (void)setResumePlaybackWhenPlayerViewScrollAppears:(BOOL)resumePlaybackWhenPlayerViewScrollAppears {
-    [self defaultEdgeControlLayer].resumePlaybackWhenPlayerViewScrollAppears = resumePlaybackWhenPlayerViewScrollAppears;
-}
-- (BOOL)resumePlaybackWhenPlayerViewScrollAppears {
-    return [self defaultEdgeControlLayer].resumePlaybackWhenPlayerViewScrollAppears;
 }
 
 - (void)setHideBottomProgressSlider:(BOOL)hideBottomProgressSlider {
@@ -433,14 +421,6 @@ NS_ASSUME_NONNULL_BEGIN
     dispatch_async(dispatch_get_main_queue(), ^{
         if ( showMoreItemForTopControlLayer ) {
             [self.defaultEdgeControlLayer.topAdapter addItem:[self moreItemDelegate].item];
-            if ( ![self.switcher containsControlLayer:SJControlLayer_MoreSettting] ) {
-                __weak typeof(self) _self = self;
-                [self.switcher addControlLayerForIdentifier:SJControlLayer_MoreSettting lazyLoading:^id<SJControlLayer> _Nonnull(SJControlLayerIdentifier identifier) {
-                    __strong typeof(_self) self = _self;
-                    if ( !self ) return nil;
-                    return self.defaultMoreSettingControlLayer;
-                }];
-            }
         }
         else {
             [self.defaultEdgeControlLayer.topAdapter removeItemForTag:SJEdgeControlLayerTopItem_More];
@@ -485,14 +465,6 @@ NS_ASSUME_NONNULL_BEGIN
     if ( enableFilmEditing ) {
         // 将item加入到边缘控制层中
         [[self defaultEdgeControlLayer].rightAdapter addItem:[self filmEditingItemDelegate].item];
-        if ( ![self.switcher containsControlLayer:SJControlLayer_FilmEditing] ) {
-            __weak typeof(self) _self = self;
-            [self.switcher addControlLayerForIdentifier:SJControlLayer_FilmEditing lazyLoading:^id<SJControlLayer> _Nonnull(SJControlLayerIdentifier identifier) {
-                __strong typeof(_self) self = _self;
-                if ( !self ) return nil;
-                return self.defaultFilmEditingControlLayer;
-            }];
-        }
     }
     else {
         // 移除
@@ -604,6 +576,12 @@ SJEdgeControlButtonItemTag const SJEdgeControlLayerTopItem_More = LONG_MAX - 2; 
         }
     }
     if ( self.clickedTopControlItemExeBlock ) self.clickedTopControlItemExeBlock(self, topItem);
+}
+- (void)setResumePlaybackWhenPlayerViewScrollAppears:(BOOL)resumePlaybackWhenPlayerViewScrollAppears {
+    self.resumePlaybackWhenScrollAppeared = resumePlaybackWhenPlayerViewScrollAppears;
+}
+- (BOOL)resumePlaybackWhenPlayerViewScrollAppears {
+    return self.resumePlaybackWhenScrollAppeared;
 }
 @end
 NS_ASSUME_NONNULL_END

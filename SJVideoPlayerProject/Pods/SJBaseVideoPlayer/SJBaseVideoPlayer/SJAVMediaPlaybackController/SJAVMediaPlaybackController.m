@@ -9,8 +9,8 @@
 #import "SJAVMediaPlaybackController.h"
 #import <AVFoundation/AVFoundation.h>
 #import <objc/message.h>
-#if __has_include(<SJObserverHelper/NSObject+SJObserverHelper.h>)
-#import <SJObserverHelper/NSObject+SJObserverHelper.h>
+#if __has_include(<SJUIKit/NSObject+SJObserverHelper.h>)
+#import <SJUIKit/NSObject+SJObserverHelper.h>
 #else
 #import "NSObject+SJObserverHelper.h"
 #endif
@@ -31,7 +31,6 @@ inline static bool isFloatZero(float value) {
 @property (nonatomic, strong, readonly) SJVideoPlayerRegistrar *registrar;
 @property (nonatomic, strong, nullable) SJAVMediaPlayAssetPropertiesObserver *playAssetObserver;
 @property (nonatomic, strong, nullable) SJAVMediaPlayAsset *playAsset;
-@property (nonatomic) BOOL isPreparing;
 @property (nonatomic) BOOL isPlaying;
 
 @property (nonatomic, strong, readonly) SJAVMediaMainPresenter *mainPresenter;
@@ -150,7 +149,6 @@ inline static bool isFloatZero(float value) {
     [self _cancelOperations];
     _playAssetObserver = nil;
     _playAsset = nil;
-    _isPreparing = NO;
     _error = nil;
     _currentTime = 0;
     _duration = 0;
@@ -207,8 +205,7 @@ inline static bool isFloatZero(float value) {
 
 - (void)prepareToPlay {
     if ( !_media ) return;
-    if ( _isPreparing ) return; _isPreparing = YES;
-    
+
     _playAsset = sj_assetForMedia(_media);
     _playAssetObserver = [[SJAVMediaPlayAssetPropertiesObserver alloc] initWithPlayerAsset:_playAsset];
     _playAssetObserver.delegate = self;
@@ -397,41 +394,67 @@ inline static bool isFloatZero(float value) {
 
 - (void)_updatePrepareStatusIfNeeded {
     AVPlayerItemStatus playerItemStatus = _playAssetObserver.playerItemStatus;
+    if ( _prepareStatus == (NSInteger)playerItemStatus )
+        return;
     
-    if ( _prepareStatus != (SJMediaPlaybackPrepareStatus)playerItemStatus ) {
-        _isPreparing = NO;
-        _prepareStatus = (SJMediaPlaybackPrepareStatus)playerItemStatus;
-        _error = _playAsset.playerItem.error;
-        [self _setupMainPresenterIfNeeded];
-        
-        __weak SJAVMediaPlayAsset *_Nullable asset = self.playAsset;
-        __weak typeof(self) _self = self;
-        if ( _prepareStatus == SJMediaPlaybackPrepareStatusReadyToPlay &&
-             !_media.otherMedia ) {
-            [asset.playerItem seekToTime:CMTimeMakeWithSeconds(0.1, NSEC_PER_SEC) completionHandler:^(BOOL finished) {
-                [asset.playerItem seekToTime:CMTimeMakeWithSeconds(self.media.specifyStartTime, NSEC_PER_SEC) toleranceBefore:kCMTimeZero toleranceAfter:kCMTimeZero completionHandler:^(BOOL finished) {
-                    __strong typeof(_self) self = _self;
-                    if ( !self ) return;
-                    if ( self.playAsset == asset && [self.delegate respondsToSelector:@selector(playbackController:prepareToPlayStatusDidChange:)] )
-                        [self.delegate playbackController:self prepareToPlayStatusDidChange:(NSInteger)playerItemStatus];
-                }];
-            }];
-        }
-        else {
-            if ( [self.delegate respondsToSelector:@selector(playbackController:prepareToPlayStatusDidChange:)] )
-                [self.delegate playbackController:self prepareToPlayStatusDidChange:(NSInteger)playerItemStatus];
-        }
+    _prepareStatus = (SJMediaPlaybackPrepareStatus)playerItemStatus;
+    _error = _playAsset.playerItem.error;
+    
+    BOOL isResponse = [self.delegate respondsToSelector:@selector(playbackController:prepareToPlayStatusDidChange:)];
+    if ( _prepareStatus != SJMediaPlaybackPrepareStatusReadyToPlay ) {
+        if ( isResponse )
+            [self.delegate playbackController:self prepareToPlayStatusDidChange:(NSInteger)playerItemStatus];
+        return;
     }
+    
+    // ready to play
+    __weak SJAVMediaPlayAsset *_Nullable asset = self.playAsset;
+    [self _setupMainPresenterIfNeeded];
+    __weak typeof(self) _self = self;
+    if ( !_media.otherMedia ) {
+        [asset.playerItem seekToTime:CMTimeMakeWithSeconds(0.1, NSEC_PER_SEC) completionHandler:^(BOOL finished) {
+            __strong typeof(_self) self = _self;
+            if ( !self ) return;
+            if ( self.playAsset != asset ) return;
+            [asset.playerItem seekToTime:CMTimeMakeWithSeconds(self.media.specifyStartTime, NSEC_PER_SEC) toleranceBefore:kCMTimeZero toleranceAfter:kCMTimeZero completionHandler:^(BOOL finished) {
+                __strong typeof(_self) self = _self;
+                if ( !self ) return;
+                if ( self.playAsset != asset ) return;
+                if ( isResponse )
+                    [self.delegate playbackController:self prepareToPlayStatusDidChange:(NSInteger)playerItemStatus];
+            }];
+        }];
+        
+        return;
+    }
+    
+    // play end ?
+    NSTimeInterval current = floor(CMTimeGetSeconds(asset.playerItem.currentTime) + 0.5);
+    NSTimeInterval duration = floor(CMTimeGetSeconds(asset.playerItem.duration) + 0.5);
+    if ( current == duration ) {
+        [asset.playerItem seekToTime:kCMTimeZero toleranceBefore:kCMTimeZero toleranceAfter:kCMTimeZero completionHandler:^(BOOL finished) {
+            __strong typeof(_self) self = _self;
+            if ( !self ) return;
+            if ( self.playAsset != asset ) return;
+            if ( isResponse )
+                [self.delegate playbackController:self prepareToPlayStatusDidChange:(NSInteger)playerItemStatus];
+        }];
+        return;
+    }
+    
+    if ( isResponse )
+        [self.delegate playbackController:self prepareToPlayStatusDidChange:(NSInteger)playerItemStatus];
 }
+
 #pragma mark -
 - (void)play {
     if ( _prepareStatus != SJMediaPlaybackPrepareStatusReadyToPlay ) return;
     
+    _isPlaying = YES;
     [_playAsset.player play];
     _playAsset.player.rate = self.rate;
     _playAsset.player.muted = self.mute;
     if ( !_mute ) _playAsset.player.volume = _volume;
-    _isPlaying = YES;
     
 #ifdef DEBUG
     printf("\n");
@@ -442,8 +465,8 @@ inline static bool isFloatZero(float value) {
 }
 - (void)pause {
     if ( _prepareStatus != SJMediaPlaybackPrepareStatusReadyToPlay ) return;
-    [self.playAsset.player pause];
     _isPlaying = NO;
+    [self.playAsset.player pause];
 }
 - (void)stop {
     [_playAsset.player pause];
@@ -457,7 +480,6 @@ inline static bool isFloatZero(float value) {
     _playAsset = nil;
     _prepareStatus = SJMediaPlaybackPrepareStatusUnknown;
     _bufferStatus = SJPlayerBufferStatusUnknown;
-    _isPreparing = NO;
     _isPlaying = NO;
 }
 - (void)seekToTime:(NSTimeInterval)secs completionHandler:(void (^ __nullable)(BOOL finished))completionHandler {

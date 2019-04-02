@@ -13,6 +13,7 @@
 #import "SJPlaybackListController.h"
 #import "TestMedia.h"
 #import <SJBaseVideoPlayer/SJVideoPlayerURLAssetPrefetcher.h>
+#import "SJRemoteCommandHandler.h"
 
 @interface ViewControllerPlaybackListController ()<SJRouteHandler, SJPlaybackListControllerDelegate>
 @property (nonatomic, strong, readonly) id<SJPlaybackListControllerObserver> listControllerObserver;
@@ -35,6 +36,7 @@
     [self _initializePlaybackListController];
     [self _initializeListControllerObserver];
     [self _addButtonItemsToEdgeControlLayer];
+    [self _configRemoteCommandHandler];
     
     // 创建资源, 并进行预加载
     [self _makeTestData];
@@ -142,9 +144,44 @@ static SJEdgeControlButtonItemTag SJEdgeControlButtonItem_PlayNextMedia = 101;
 }
 
 #pragma mark -
+- (void)_configRemoteCommandHandler {
+    __weak typeof(self) _self = self;
+    SJRemoteCommandHandler.shared.pauseCommandHandler = ^(id<SJRemoteCommandHandler>  _Nonnull handler) {
+        __strong typeof(_self) self = _self;
+        if ( !self ) return;
+        [self.player pause];
+    };
+    
+    SJRemoteCommandHandler.shared.playCommandHandler = ^(id<SJRemoteCommandHandler>  _Nonnull handler) {
+        __strong typeof(_self) self = _self;
+        if ( !self ) return;
+        [self.player play];
+    };
+    
+    SJRemoteCommandHandler.shared.previousCommandHandler = ^(id<SJRemoteCommandHandler>  _Nonnull handler) {
+        __strong typeof(_self) self = _self;
+        if ( !self ) return;
+        [self.listController playPreviousMedia];
+    };
+    
+    SJRemoteCommandHandler.shared.nextCommandHandler = ^(id<SJRemoteCommandHandler>  _Nonnull handler) {
+        __strong typeof(_self) self = _self;
+        if ( !self ) return;
+        [self.listController playNextMedia];
+    };
+    
+    SJRemoteCommandHandler.shared.seekToTimeCommandHandler = ^(id<SJRemoteCommandHandler>  _Nonnull handler, NSTimeInterval secs) {
+        __strong typeof(_self) self = _self;
+        if ( !self ) return;
+        [self.player seekToTime:secs completionHandler:nil];
+    };
+}
+
+#pragma mark -
 
 - (void)_initializePlayer {
     _player = [SJVideoPlayer player];
+    _player.pauseWhenAppDidEnterBackground = NO;
     _player.defaultEdgeControlLayer.showResidentBackButton = YES;
     [self.view addSubview:_player.view];
     [_player.view mas_makeConstraints:^(MASConstraintMaker *make) {
@@ -162,6 +199,19 @@ static SJEdgeControlButtonItemTag SJEdgeControlButtonItem_PlayNextMedia = 101;
         __strong typeof(_self) self = _self;
         if ( !self ) return;
         [self.listController currentMediaFinishedPlaying]; // 通知listController, 当前已播放完毕
+    };
+    
+    _player.playTimeDidChangeExeBlok = ^(__kindof SJBaseVideoPlayer * _Nonnull videoPlayer) {
+        __strong typeof(_self) self = _self;
+        if ( !self ) return;
+        [SJRemoteCommandHandler.shared updateNowPlayingInfo:
+         @{MPMediaItemPropertyTitle:@"十五年前, 一见钟情",
+           MPMediaItemPropertyMediaType:@(MPMediaTypeAnyAudio),
+           MPNowPlayingInfoPropertyElapsedPlaybackTime:@(videoPlayer.currentTime),
+           MPMediaItemPropertyPlaybackDuration:@(videoPlayer.totalTime),
+           MPNowPlayingInfoPropertyPlaybackRate:@(videoPlayer.rate),
+           MPMediaItemPropertyArtist:@"Artist",
+           MPMediaItemPropertyAlbumArtist:@"AlbumArtist"}];
     };
 }
 

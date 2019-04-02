@@ -30,6 +30,9 @@
     "SJUIKit/ObserverHelper": [
       ">= 0.0.0.23"
     ],
+    "SJUIKit/Queues": [
+      ">= 0.0.0.23"
+    ],
     "Reachability": [
 
     ]

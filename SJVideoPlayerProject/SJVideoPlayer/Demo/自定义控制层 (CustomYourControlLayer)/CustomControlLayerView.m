@@ -24,6 +24,7 @@ NS_ASSUME_NONNULL_BEGIN
     sj_view_makeAppear(self.controlView, YES);
     sj_view_makeAppear(_topContainerView, YES);
     sj_view_makeAppear(_bottomContainerView, YES);
+    [_player controlLayerNeedAppear];
 }
 
 - (void)exitControlLayer {

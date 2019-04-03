@@ -72,7 +72,7 @@ static NSNotificationName const SJPlayerDidEndSwitchControlLayerNotification = @
 }
 
 - (void)switchControlLayerForIdentitfier:(SJControlLayerIdentifier)identifier {
-    id<SJControlLayer> _Nullable oldValue = [self controlLayerForIdentifier:self.currentIdentifier];
+    id<SJControlLayer> _Nullable oldValue = (id)self.videoPlayer.controlLayerDataSource;
     id<SJControlLayer> _Nullable newValue = [self controlLayerForIdentifier:identifier];
     if ( !newValue && _resolveControlLayer ) {
         newValue = _resolveControlLayer(identifier);

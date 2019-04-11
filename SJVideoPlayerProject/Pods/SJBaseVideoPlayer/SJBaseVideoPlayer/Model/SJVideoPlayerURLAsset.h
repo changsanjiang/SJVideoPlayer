@@ -8,7 +8,7 @@
 
 #import <UIKit/UIKit.h>
 #import "SJPlayModel.h"
-#import "SJMediaPlaybackProtocol.h"
+#import "SJMediaPlaybackControllerDefines.h"
 
 @protocol SJVideoPlayerURLAssetObserver;
 

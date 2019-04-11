@@ -33,7 +33,7 @@ NS_ASSUME_NONNULL_BEGIN
     return _isHidden;
 }
 
-- (void)showPlaceholder:(BOOL)animated {
+- (void)showPlaceholderAnimated:(BOOL)animated {
     if ( !_isHidden ) return; _isHidden = NO;
     if ( animated ) {
         [UIView animateWithDuration:0.4 animations:^{
@@ -45,7 +45,7 @@ NS_ASSUME_NONNULL_BEGIN
     }
 }
 
-- (void)hiddenPlaceholder:(BOOL)animated {
+- (void)hiddenPlaceholderAnimated:(BOOL)animated {
     if ( _isHidden ) return; _isHidden = YES;
     if ( animated ) {
         [UIView animateWithDuration:0.4 animations:^{
@@ -62,7 +62,7 @@ NS_ASSUME_NONNULL_BEGIN
     self.placeholderImageView.frame = self.bounds;
     _placeholderImageView.autoresizingMask = UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight;
     [self addSubview:_placeholderImageView];
-    [self hiddenPlaceholder:NO];
+    [self hiddenPlaceholderAnimated:NO];
 }
 
 - (UIImageView *)placeholderImageView {

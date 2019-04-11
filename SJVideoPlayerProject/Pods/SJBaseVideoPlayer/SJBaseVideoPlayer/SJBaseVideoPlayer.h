@@ -29,14 +29,13 @@
  */
 
 #import <UIKit/UIKit.h>
-#import "SJVideoPlayerPreviewInfo.h"
 #import "SJPrompt.h"
 #import "SJFitOnScreenManagerDefines.h"
 #import "SJRotationManagerDefines.h"
 #import "SJVideoPlayerControlLayerProtocol.h"
 #import "SJControlLayerAppearManagerDefines.h"
 #import "SJFlipTransitionManagerDefines.h"
-#import "SJMediaPlaybackProtocol.h"
+#import "SJMediaPlaybackControllerDefines.h"
 #import "SJVideoPlayerURLAsset+SJAVMediaPlaybackAdd.h"
 #import "SJPlayerGestureControlDefines.h"
 #import "SJDeviceVolumeAndBrightnessManagerDefines.h"
@@ -166,10 +165,6 @@ NS_ASSUME_NONNULL_BEGIN
 /// - 默认是0, 即不自动刷新
 /// - 单位是秒
 @property (nonatomic) NSTimeInterval delayToAutoRefreshWhenPlayFailed;
-/// 当缓冲为`Unplayable`时, 多少秒后自动尝试播放
-/// - 默认是0, 将会在缓冲状态为`Playable`时播放.
-/// - 单位是秒
-@property (nonatomic) NSInteger refreshToPlayAfterBufferTime;
 /// 使播放
 - (void)play;
 /// 切换`清晰度` (v1.6.5 新增)
@@ -559,10 +554,6 @@ NS_ASSUME_NONNULL_BEGIN
 - (void)screenshotWithTime:(NSTimeInterval)time
                       size:(CGSize)size
                 completion:(void(^)(__kindof SJBaseVideoPlayer *videoPlayer, UIImage * __nullable image, NSError *__nullable error))block;
-
-- (void)generatedPreviewImagesWithMaxItemSize:(CGSize)itemSize
-                                   completion:(void(^)(__kindof SJBaseVideoPlayer *player, NSArray<id<SJVideoPlayerPreviewInfo>> *__nullable images, NSError *__nullable error))block;
-
 @end
 
 

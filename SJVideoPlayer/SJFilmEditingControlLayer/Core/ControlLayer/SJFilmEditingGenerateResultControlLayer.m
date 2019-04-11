@@ -579,6 +579,9 @@ static SJEdgeControlButtonItemTag SJTopItem_Back = 1;
     return NO;
 }
 
+- (BOOL)canPerformPlayForVideoPlayer:(__kindof SJBaseVideoPlayer *)videoPlayer {
+    return NO;
+}
 - (void)controlLayerNeedAppear:(__kindof SJBaseVideoPlayer *)videoPlayer { }
 - (void)controlLayerNeedDisappear:(__kindof SJBaseVideoPlayer *)videoPlayer { }
 @end

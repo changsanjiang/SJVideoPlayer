@@ -6,7 +6,7 @@
 //
 
 #import "SJVideoPlayerURLAssetPrefetcher.h"
-#import "SJAVMediaPlayAssetLoader.h"
+#import "SJAVMediaPlayerLoader.h"
 #define __SJPrefetchMaxCount  (3)
 
 NS_ASSUME_NONNULL_BEGIN
@@ -38,7 +38,7 @@ NS_ASSUME_NONNULL_BEGIN
                 [_m removeObjectAtIndex:0];
             }
             // load asset
-            sj_assetForMedia(asset);
+            [SJAVMediaPlayerLoader loadPlayerForMedia:asset completionHandler:nil];
             [_m addObject:asset];
         }
     }

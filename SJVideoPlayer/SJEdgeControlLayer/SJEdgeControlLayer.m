@@ -789,7 +789,7 @@ SJEdgeControlButtonItemTag const SJEdgeControlLayerCenterItem_Replay = 40000;
     [videoPlayer seekToTime:_draggingProgressView.progressTime completionHandler:^(BOOL finished) {
         __strong typeof(_self) self = _self;
         if ( !self ) return;
-        if ( ![self.videoPlayer playStatus_isPlaying] )[self.videoPlayer play];
+        [self.videoPlayer play];
     }];
     sj_view_makeDisappear(_draggingProgressView, YES, ^{
         if ( sj_view_isDisappeared(self->_draggingProgressView) ) {

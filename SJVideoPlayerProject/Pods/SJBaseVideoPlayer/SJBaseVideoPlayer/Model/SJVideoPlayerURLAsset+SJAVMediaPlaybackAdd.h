@@ -9,7 +9,7 @@
 #import "SJVideoPlayerURLAsset.h"
 #import <AVFoundation/AVFoundation.h>
 #import "SJPlayModel.h"
-#import "SJAVMediaModelProtocol.h"
+#import "SJMediaPlaybackControllerDefines.h"
 
 NS_ASSUME_NONNULL_BEGIN
 @interface SJVideoPlayerURLAsset (SJAVMediaPlaybackAdd)<SJAVMediaModelProtocol>

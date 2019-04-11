@@ -65,17 +65,15 @@ NS_ASSUME_NONNULL_BEGIN
         return;
     }
     
-    BOOL playFailed = _player.error;
-    
+    [self _cancel];
+    BOOL playFailed = _player.error != nil;
     if ( !playFailed ||
          _player.reachability.networkStatus == SJNetworkStatus_NotReachable ||
          _registrar.state == SJVideoPlayerAppState_Background ) {
-        [self _cancel];
         return;
     }
     
     if ( playFailed ) {
-        [self _cancel];
         [self _start];
     }
 }
@@ -88,6 +86,10 @@ NS_ASSUME_NONNULL_BEGIN
     [NSObject cancelPreviousPerformRequestsWithTarget:self];
 }
 
+- (void)cancel {
+    [self _cancel];
+}
+
 - (void)_refresh {
     if ( [self _needRefresh] ) {
 #ifdef DEBUG
@@ -98,10 +100,25 @@ NS_ASSUME_NONNULL_BEGIN
 }
 
 - (BOOL)_needRefresh {
+    switch ( _player.playStatus ) {
+        case SJVideoPlayerPlayStatusUnknown: break;
+        case SJVideoPlayerPlayStatusPrepare:
+        case SJVideoPlayerPlayStatusReadyToPlay:
+        case SJVideoPlayerPlayStatusPlaying:
+        case SJVideoPlayerPlayStatusPaused:
+            return NO;
+        case SJVideoPlayerPlayStatusInactivity: {
+            if ( _player.inactivityReason != SJVideoPlayerInactivityReasonPlayFailed &&
+                 _player.inactivityReason != SJVideoPlayerInactivityReasonNotReachableAndPlaybackStalled )
+                return NO;
+        }
+            break;
+    }
+    
     return
     _player.error != nil &&
     _player.reachability.networkStatus != SJNetworkStatus_NotReachable &&
-    _registrar.state != SJVideoPlayerAppState_Background;
+    _registrar.state != SJVideoPlayerAppState_Background ;
 }
 @end
 NS_ASSUME_NONNULL_END

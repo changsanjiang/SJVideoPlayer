@@ -11,7 +11,7 @@
 #import <UIKit/UIKit.h>
 #import "SJReachabilityDefines.h"
 #import "SJVideoPlayerPlayStatusDefines.h"
-#import "SJMediaPlaybackProtocol.h"
+#import "SJMediaPlaybackControllerDefines.h"
 #import "SJPlayerGestureControlDefines.h"
 
 @protocol SJPlayStatusControlDelegate,
@@ -23,7 +23,8 @@ SJVolumeBrightnessRateControlDelegate,
 SJGestureControlDelegate,
 SJRotationControlDelegate,
 SJFitOnScreenControlDelegate,
-SJSwitchVideoDefinitionControlDelegate;
+SJSwitchVideoDefinitionControlDelegate,
+SJPlaybackControlDelegate;
 
 @class SJBaseVideoPlayer, SJVideoPlayerURLAsset;
 
@@ -53,7 +54,8 @@ SJSwitchVideoDefinitionControlDelegate;
     SJLockScreenStateControlDelegate,
     SJAppActivityControlDelegate,
     SJFitOnScreenControlDelegate,
-    SJSwitchVideoDefinitionControlDelegate
+    SJSwitchVideoDefinitionControlDelegate,
+    SJPlaybackControlDelegate
 >
 @required
 /// This method will be called when the control layer needs to be appear.
@@ -82,6 +84,14 @@ SJSwitchVideoDefinitionControlDelegate;
 // deprecated methods
 
 - (BOOL)controlLayerDisappearCondition __deprecated_msg("use `controlLayerOfVideoPlayerCanAutomaticallyDisappear:`");
+@end
+
+
+@protocol SJPlaybackControlDelegate <NSObject>
+@optional
+- (BOOL)canPerformPlayForVideoPlayer:(__kindof SJBaseVideoPlayer *)videoPlayer;
+- (BOOL)canPerformPauseForVideoPlayer:(__kindof SJBaseVideoPlayer *)videoPlayer;
+- (BOOL)canPerformStopForVideoPlayer:(__kindof SJBaseVideoPlayer *)videoPlayer;
 @end
 
 

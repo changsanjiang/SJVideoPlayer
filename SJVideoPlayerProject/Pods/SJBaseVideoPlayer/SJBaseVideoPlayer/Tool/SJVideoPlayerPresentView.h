@@ -13,7 +13,7 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic, strong, readonly) UIImageView *placeholderImageView;
 
 @property (nonatomic, readonly) BOOL placeholderImageViewIsHidden;
-- (void)showPlaceholder:(BOOL)animated;
-- (void)hiddenPlaceholder:(BOOL)animated;
+- (void)showPlaceholderAnimated:(BOOL)animated;
+- (void)hiddenPlaceholderAnimated:(BOOL)animated;
 @end
 NS_ASSUME_NONNULL_END

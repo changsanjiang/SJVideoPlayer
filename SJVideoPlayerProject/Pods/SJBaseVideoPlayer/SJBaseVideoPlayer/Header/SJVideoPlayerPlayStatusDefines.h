@@ -38,6 +38,7 @@ typedef NS_ENUM(NSUInteger, SJVideoPlayerPlayStatus) {
  - SJVideoPlayerPausedReasonSeeking:     正在跳转(调用seekToTime:时)
  */
 typedef NS_ENUM(NSUInteger, SJVideoPlayerPausedReason) {
+    SJVideoPlayerPausedReasonUnknown,
     SJVideoPlayerPausedReasonBuffering,
     SJVideoPlayerPausedReasonPause,
     SJVideoPlayerPausedReasonSeeking,
@@ -51,11 +52,20 @@ typedef NS_ENUM(NSUInteger, SJVideoPlayerPausedReason) {
  - SJVideoPlayerInactivityReasonNotReachableAndPlaybackStalled: 无网并且缓冲为空, 无法继续播放
  */
 typedef NS_ENUM(NSUInteger, SJVideoPlayerInactivityReason) {
+    SJVideoPlayerInactivityReasonUnknown,
     SJVideoPlayerInactivityReasonPlayEnd,
     SJVideoPlayerInactivityReasonPlayFailed,
     SJVideoPlayerInactivityReasonNotReachableAndPlaybackStalled
 };
 
+
+//Playback type (LIVE, VOD, FILE).
+typedef enum : NSUInteger {
+    SJMediaPlaybackTypeUnknown,
+    SJMediaPlaybackTypeLIVE,
+    SJMediaPlaybackTypeVOD,
+    SJMediaPlaybackTypeFILE
+} SJMediaPlaybackType;
 
 @protocol SJPlayStatusObserver <NSObject>
 @property (nonatomic, copy, nullable) void(^playStatusDidChangeExeBlock)(__kindof SJBaseVideoPlayer *player);

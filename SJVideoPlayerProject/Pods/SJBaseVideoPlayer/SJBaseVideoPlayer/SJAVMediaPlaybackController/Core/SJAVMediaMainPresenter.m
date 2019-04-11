@@ -152,7 +152,8 @@ NS_ASSUME_NONNULL_BEGIN
     
     [self removeSubPresenter:presenter];
     [_container resetPresenter:presenter];
-    
+    presenter.videoGravity = _videoGravity;
+
     // observe `readyForDisplay` of sub presenter
     __weak typeof(self) _self = self;
     sjkvo_observe(presenter, @"readyForDisplay", ^(SJAVMediaSubPresenter *presenter, NSDictionary<NSKeyValueChangeKey,id> * _Nullable change) {

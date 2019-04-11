@@ -70,6 +70,9 @@
             break;
         case SJVideoPlayerPlayStatusPaused: {
             switch ( self.pausedReason ) {
+                case SJVideoPlayerPausedReasonUnknown:
+                    playStatusStr = [NSString stringWithFormat:@"SJBaseVideoPlayer<%p>.SJVideoPlayerPlayStatus.Paused(Reason: Unknown)\n", self];
+                    break;
                 case SJVideoPlayerPausedReasonBuffering:
                     playStatusStr = [NSString stringWithFormat:@"SJBaseVideoPlayer<%p>.SJVideoPlayerPlayStatus.Paused(Reason: Buffering)\n", self];
                     break;
@@ -84,6 +87,9 @@
             break;
         case SJVideoPlayerPlayStatusInactivity: {
             switch ( self.inactivityReason ) {
+                case SJVideoPlayerPausedReasonUnknown:
+                    playStatusStr = [NSString stringWithFormat:@"SJBaseVideoPlayer<%p>.SJVideoPlayerPlayStatus.Inactivity(Reason: Unknown)\n", self];
+                    break;
                 case SJVideoPlayerInactivityReasonPlayEnd :
                     playStatusStr = [NSString stringWithFormat:@"SJBaseVideoPlayer<%p>.SJVideoPlayerPlayStatus.Inactivity(Reason: PlayEnd)\n", self];
                     break;

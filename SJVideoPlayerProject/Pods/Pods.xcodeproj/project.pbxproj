@@ -2075,7 +2075,7 @@
 				LastUpgradeCheck = 0930;
 			};
 			buildConfigurationList = 4821239608C13582E20E6DA73FD5F1F9 /* Build configuration list for PBXProject "Pods" */;
-			compatibilityVersion = "Xcode 3.2";
+			compatibilityVersion = "Xcode 10.0";
 			developmentRegion = English;
 			hasScannedForEncodings = 0;
 			knownRegions = (

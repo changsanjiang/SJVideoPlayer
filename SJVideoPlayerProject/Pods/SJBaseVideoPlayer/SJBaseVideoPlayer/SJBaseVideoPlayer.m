@@ -299,7 +299,7 @@ sj_swizzleMethod(Class cls, SEL originalSelector, SEL swizzledSelector) {
 }
 
 + (NSString *)version {
-    return @"2.3.6";
+    return @"2.4.1";
 }
 
 - (nullable __kindof UIViewController *)atViewController {
@@ -505,8 +505,8 @@ sj_swizzleMethod(Class cls, SEL originalSelector, SEL swizzledSelector) {
     _registrar.willResignActive = ^(SJVideoPlayerRegistrar * _Nonnull registrar) {
         __strong typeof(_self) self = _self;
         if ( !self ) return;
-        if ( [self.controlLayerDelegate respondsToSelector:@selector(appWillResignActive:)] ) {
-            [self.controlLayerDelegate appWillResignActive:self];
+        if ( [self.controlLayerDelegate respondsToSelector:@selector(receivedApplicationWillResignActiveNotification:)] ) {
+            [self.controlLayerDelegate receivedApplicationWillResignActiveNotification:self];
         }
     };
     
@@ -521,24 +521,24 @@ sj_swizzleMethod(Class cls, SEL originalSelector, SEL swizzledSelector) {
             if ( canPlay ) [self play];
         }
         
-        if ( [self.controlLayerDelegate respondsToSelector:@selector(appDidBecomeActive:)] ) {
-            [self.controlLayerDelegate appDidBecomeActive:self];
+        if ( [self.controlLayerDelegate respondsToSelector:@selector(receivedApplicationDidBecomeActiveNotification:)] ) {
+            [self.controlLayerDelegate receivedApplicationDidBecomeActiveNotification:self];
         }
     };
     
     _registrar.willEnterForeground = ^(SJVideoPlayerRegistrar * _Nonnull registrar) {
         __strong typeof(_self) self = _self;
         if ( !self ) return ;
-        if ( [self.controlLayerDelegate respondsToSelector:@selector(appWillEnterForeground:)] ) {
-            [self.controlLayerDelegate appWillEnterForeground:self];
+        if ( [self.controlLayerDelegate respondsToSelector:@selector(receivedApplicationWillEnterForegroundNotification:)] ) {
+            [self.controlLayerDelegate receivedApplicationWillEnterForegroundNotification:self];
         }
     };
     
     _registrar.didEnterBackground = ^(SJVideoPlayerRegistrar * _Nonnull registrar) {
         __strong typeof(_self) self = _self;
         if ( !self ) return ;
-        if ( [self.controlLayerDelegate respondsToSelector:@selector(appDidEnterBackground:)] ) {
-            [self.controlLayerDelegate appDidEnterBackground:self];
+        if ( [self.controlLayerDelegate respondsToSelector:@selector(receivedApplicationDidEnterBackgroundNotification:)] ) {
+            [self.controlLayerDelegate receivedApplicationDidEnterBackgroundNotification:self];
         }
     };
     return _registrar;

@@ -59,11 +59,6 @@
         media.title = @"一生所爱";
         media.viewHierarchy = [SJPlayModel new];
         [videos addObject:media];
-        
-        // 进行预加载
-        SJVideoPlayerURLAsset *asset = [[SJVideoPlayerURLAsset alloc] initWithURL:media.URL playModel:[SJPlayModel new]];
-        asset.title = media.title;
-        [SJVideoPlayerURLAssetPrefetcher.shared prefetchAsset:asset];
     }
 
     // 添加到 播放列表
@@ -243,13 +238,34 @@ static SJEdgeControlButtonItemTag SJEdgeControlButtonItem_PlayNextMedia = 101;
 - (void)listController:(id<SJPlaybackListController>)listController needToPlayMedia:(id<SJMediaInfo>)media {
     TestMedia *testMedia = media;
     // 是否预加载过
-    SJVideoPlayerURLAsset *_Nullable asset = [SJVideoPlayerURLAssetPrefetcher.shared assetForURL:testMedia.URL];
-    if ( !asset ) {
+    SJVideoPlayerURLAsset *_Nullable curAsset = [SJVideoPlayerURLAssetPrefetcher.shared assetForURL:testMedia.URL];
+    if ( !curAsset ) {
         // 创建一个新的资源
-        asset = [[SJVideoPlayerURLAsset alloc] initWithURL:testMedia.URL playModel:[SJPlayModel new]];
-        asset.title = testMedia.title;
+        curAsset = [[SJVideoPlayerURLAsset alloc] initWithURL:testMedia.URL];
+        curAsset.title = testMedia.title;
     }
-    _player.URLAsset = asset;
+    
+    curAsset.playModel = [SJPlayModel new]; // 设置视图层次模型
+    _player.URLAsset = curAsset;
+    
+    NSInteger curIdx = [listController indexForMediaId:media.id];
+    // 进行预加载
+    // next Asset
+    TestMedia *_Nullable nextMedia = [listController mediaAtIndex:curIdx + 1];
+    if ( nextMedia ) {
+        SJVideoPlayerURLAsset *next = [[SJVideoPlayerURLAsset alloc] initWithURL:nextMedia.URL];
+        next.title = nextMedia.title;
+        [SJVideoPlayerURLAssetPrefetcher.shared prefetchAsset:next];
+    }
+    
+    // 进行预加载
+    // previous Asset
+    TestMedia *_Nullable previousMedia = [listController mediaAtIndex:curIdx - 1];
+    if ( previousMedia ) {
+        SJVideoPlayerURLAsset *previous = [[SJVideoPlayerURLAsset alloc] initWithURL:previousMedia.URL];
+        previous.title = previousMedia.title;
+        [SJVideoPlayerURLAssetPrefetcher.shared prefetchAsset:previous];
+    }
 }
 
 /// 需要重新播放

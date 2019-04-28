@@ -1578,10 +1578,10 @@ sj_swizzleMethod(Class cls, SEL originalSelector, SEL swizzledSelector) {
                     switch ( control.triggeredPosition ) {
                             /// Brightness
                         case SJPanGestureTriggeredPosition_Left:
-                            return self.controlInfo->deviceVolumeAndBrightness.disableBrightnessSetting;
+                            return !self.controlInfo->deviceVolumeAndBrightness.disableBrightnessSetting;
                             /// Volume
                         case SJPanGestureTriggeredPosition_Right:
-                            return self.controlInfo->deviceVolumeAndBrightness.disableVolumeSetting || self.mute;
+                            return !self.controlInfo->deviceVolumeAndBrightness.disableVolumeSetting || self.mute;
                     }
                 }
             }

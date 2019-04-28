@@ -12,10 +12,10 @@
 #else
 #import "Masonry.h"
 #endif
-#if __has_include(<SJUIKit/SJAttributeWorker.h>)
-#import <SJUIKit/SJAttributeWorker.h>
+#if __has_include(<SJUIKit/SJAttributesFactory.h>)
+#import <SJUIKit/SJAttributesFactory.h>
 #else
-#import "SJAttributeWorker.h"
+#import "SJAttributesFactory.h"
 #endif
 #import "SJVideoPlayerMoreSetting+Exe.h"
 #import "SJVideoPlayerMoreSettingSecondary.h"
@@ -43,26 +43,24 @@
 
 - (void)setModel:(SJVideoPlayerMoreSettingSecondary *)model {
     _model = model;
-    [_itemBtn setAttributedTitle:sj_makeAttributesString(^(SJAttributeWorker * _Nonnull make) {
-        
+    [_itemBtn setAttributedTitle:[NSAttributedString sj_UIKitText:^(id<SJUIKitTextMakerProtocol>  _Nonnull make) {
         if ( model.image ) {
-            make.insert(model.image, 0, CGPointZero, model.image.size);
+            make.appendImage(^(id<SJUTImageAttachment>  _Nonnull make) {
+                make.image = model.image;
+            });
+            
+            if ( 0 != model.title.length ) {
+                make.append(@"\n");
+            }
         }
         
-        if ( 0 != model.title.length ) {
-            make.insert([NSString stringWithFormat:@"%@", model.title], -1);;
-        }
-        
-        if ( model.image && 0 != model.title.length ) {
-            make.insert(@"\n", make.lastInsertedRange.location);
-        }
-        
+        make.append(model.title);
         make
         .font([UIFont systemFontOfSize:[SJVideoPlayerMoreSetting titleFontSize]])
         .textColor([SJVideoPlayerMoreSetting titleColor])
         .alignment(NSTextAlignmentCenter)
         .lineSpacing(6);
-    }) forState:UIControlStateNormal];
+    }] forState:UIControlStateNormal];
 }
 
 - (void)_SJVideoPlayerMoreSettingTwoSettingsCellSetupUI {

@@ -11,10 +11,10 @@
 #else
 #import "Masonry.h"
 #endif
-#if __has_include(<SJUIKit/SJAttributeWorker.h>)
-#import <SJUIKit/SJAttributeWorker.h>
+#if __has_include(<SJUIKit/SJAttributesFactory.h>)
+#import <SJUIKit/SJAttributesFactory.h>
 #else
-#import "SJAttributeWorker.h"
+#import "SJAttributesFactory.h"
 #endif
 
 #import "SJVideoPlayerControlMaskView.h"

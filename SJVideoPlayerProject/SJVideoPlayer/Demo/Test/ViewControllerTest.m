@@ -11,7 +11,7 @@
 #import <SJRouter/SJRouter.h>
 #import <Masonry/Masonry.h>
 #import "SJEdgeControlLayerAdapters.h"
-#import <SJAttributeWorker.h>
+#import <SJUIKit/SJAttributesFactory.h>
 #import "SJMoreSettingControlLayer.h"
 
 #import "SJEdgeControlLayer.h"
@@ -45,9 +45,10 @@
     SJEdgeControlLayer *controlLayer = (id)[_player.switcher controlLayerForIdentifier:SJControlLayer_Edge];
     /// test
     SJEdgeControlButtonItem *testItem = [SJEdgeControlButtonItem placeholderWithSize:49 tag:0];
-    testItem.title = sj_makeAttributesString(^(SJAttributeWorker * _Nonnull make) {
+    testItem.title = [NSAttributedString sj_UIKitText:^(id<SJUIKitTextMakerProtocol>  _Nonnull make) {
         make.append(@"测试");
-    });
+    }];
+    
     testItem.delegate = self;
     [controlLayer.rightAdapter addItem:testItem];
     [controlLayer.rightAdapter reload];

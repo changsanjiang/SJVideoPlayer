@@ -10,7 +10,7 @@
 #import "SJVideoPlayer.h"
 #import <SJRouter/SJRouter.h>
 #import <Masonry/Masonry.h>
-#import <SJUIKit/SJAttributeWorker.h>
+#import <SJUIKit/SJAttributesFactory.h>
 #import <SJBaseVideoPlayer/SJVCRotationManager.h>
 
 @interface ViewControllerTestAlert ()<SJRouteHandler>
@@ -53,9 +53,10 @@
     
     
     SJEdgeControlButtonItem *testItem = [SJEdgeControlButtonItem placeholderWithSize:49 tag:0];
-    testItem.title = sj_makeAttributesString(^(SJAttributeWorker * _Nonnull make) {
+    testItem.title = [NSAttributedString sj_UIKitText:^(id<SJUIKitTextMakerProtocol>  _Nonnull make) {
         make.append(@"TTest").font([UIFont boldSystemFontOfSize:14]).textColor([UIColor whiteColor]).alignment(NSTextAlignmentCenter);
-    });
+    }];
+    
     [testItem addTarget:self action:@selector(clickedTestItem:)];
 
     [_player.defaultEdgeControlLayer.rightAdapter addItem:testItem];

@@ -10,7 +10,7 @@
 #import "SJVideoPlayer.h"
 #import <SJRouter/SJRouter.h>
 #import <Masonry/Masonry.h>
-#import <SJUIKit/SJAttributeWorker.h>
+#import <SJUIKit/SJAttributesFactory.h>
 
 
 @interface ViewController_Adjust ()<SJRouteHandler>

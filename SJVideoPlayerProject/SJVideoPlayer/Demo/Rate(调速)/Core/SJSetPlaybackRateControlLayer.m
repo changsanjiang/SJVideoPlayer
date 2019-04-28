@@ -7,10 +7,10 @@
 //
 
 #import "SJSetPlaybackRateControlLayer.h"
-#if __has_include(<SJUIKit/SJAttributeWorker.h>)
-#import <SJUIKit/SJAttributeWorker.h>
+#if __has_include(<SJUIKit/SJAttributesFactory.h>)
+#import <SJUIKit/SJAttributesFactory.h>
 #else
-#import "SJAttributeWorker.h"
+#import "SJAttributesFactory.h"
 #endif
 #if __has_include(<SJBaseVideoPlayer/SJBaseVideoPlayer.h>)
 #import <SJBaseVideoPlayer/SJBaseVideoPlayer.h>
@@ -77,14 +77,14 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (void)_updateItemsForRightAdapter {
     NSAttributedString *(^makeTitle)(SJPlaybackRateLevel) = ^NSAttributedString *(SJPlaybackRateLevel l) {
-        return sj_makeAttributesString(^(SJAttributeWorker * _Nonnull make) {
+        return [NSAttributedString sj_UIKitText:^(id<SJUIKitTextMakerProtocol>  _Nonnull make) {
             make.alignment(NSTextAlignmentCenter);
             make.append([self.player.rateLevels toString:l]);
             if ( l == self.player.rateLevels.level )
                 make.textColor([UIColor greenColor]);
             else
                 make.textColor([UIColor whiteColor]);
-        });
+        }];
     };
     
     [self.rightAdapter itemForTag:SJPlaybackRateLevel_1].title = makeTitle(SJPlaybackRateLevel_1);

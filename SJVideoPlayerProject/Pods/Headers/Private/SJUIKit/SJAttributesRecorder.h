@@ -1,1 +1,1 @@
-../../../SJUIKit/SJUIKit/AttributesFactory/SJAttributesRecorder.h
+../../../SJUIKit/SJUIKit/AttributesFactory/Deprecated/SJAttributesRecorder.h

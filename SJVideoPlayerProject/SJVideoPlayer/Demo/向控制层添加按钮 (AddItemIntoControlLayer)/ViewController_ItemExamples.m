@@ -10,7 +10,7 @@
 #import "SJVideoPlayer.h"
 #import <SJRouter/SJRouter.h>
 #import <Masonry/Masonry.h>
-#import <SJUIKit/SJAttributeWorker.h>
+#import <SJUIKit/SJAttributesFactory.h>
 
 /// 控制层 Item 相关操作 之 `添加按钮`
 
@@ -55,9 +55,9 @@ static SJEdgeControlButtonItemTag SJEdgeControlButtonItemTag_Share = 10;        
     
     
     // 2. 49 * title.size.width
-    SJEdgeControlButtonItem *titleItem = [[SJEdgeControlButtonItem alloc] initWithTitle:sj_makeAttributesString(^(SJAttributeWorker * _Nonnull make) {
+    SJEdgeControlButtonItem *titleItem = [[SJEdgeControlButtonItem alloc] initWithTitle:[NSAttributedString sj_UIKitText:^(id<SJUIKitTextMakerProtocol>  _Nonnull make) {
         make.append(@"Share").font([UIFont systemFontOfSize:14]).textColor([UIColor whiteColor]).alignment(NSTextAlignmentCenter);
-    }) target:self action:@selector(test:) tag:SJEdgeControlButtonItemTag_Share];
+    }] target:self action:@selector(test:) tag:SJEdgeControlButtonItemTag_Share];
     
     // 调整 item 前后间隔
     titleItem.insets = SJEdgeInsetsMake(8, 8);
@@ -96,11 +96,18 @@ static SJEdgeControlButtonItemTag SJEdgeControlButtonItemTag_Share = 10;        
     // 创建一个自适应大小的item, 不过高度必须是49
     SJEdgeControlButtonItem *p3 = [SJEdgeControlButtonItem placeholderWithType:SJButtonItemPlaceholderType_49xAutoresizing tag:SJEdgeControlButtonItemTag_Share];
     // 在这里我就直接设置标题了, 也可以异步更新
-    p3.title = sj_makeAttributesString(^(SJAttributeWorker * _Nonnull make) {
-        make.append([UIImage imageNamed:@"share"], CGPointZero, CGSizeZero).alignment(NSTextAlignmentCenter);
+    p3.title = [NSAttributedString sj_UIKitText:^(id<SJUIKitTextMakerProtocol>  _Nonnull make) {
+        make.alignment(NSTextAlignmentCenter);
+        make.appendImage(^(id<SJUTImageAttachment>  _Nonnull make) {
+            make.image = [UIImage imageNamed:@"share"];
+        });
         make.append(@"\nshare").font([UIFont systemFontOfSize:10]).textColor([UIColor whiteColor]).alignment(NSTextAlignmentCenter);
-        make.shadow(CGSizeZero, 1, [UIColor redColor]);
-    });
+        
+        make.shadow(^(NSShadow * _Nonnull make) {
+            make.shadowBlurRadius = 1;
+            make.shadowColor = [UIColor redColor];
+        });
+    }];
     
     [_player.defaultEdgeControlLayer.leftAdapter addItem:p3];
 

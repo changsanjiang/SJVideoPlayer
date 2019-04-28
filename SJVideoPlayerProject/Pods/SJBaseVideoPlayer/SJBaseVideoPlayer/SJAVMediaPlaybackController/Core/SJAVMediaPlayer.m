@@ -13,8 +13,10 @@
 #endif
 #import "SJReachability.h"
 
+//#define SJTEST_PLAYER
+
 NS_ASSUME_NONNULL_BEGIN
-typedef struct SJAVMediaPlaybackInfo {
+typedef struct SJAVMediaPlaybackControlInfo {
     BOOL isPrerolling;      ///< buffer为空的状态
     BOOL isPlayed;          ///< 是否播放过
     BOOL isPaused;          ///< 是否调用了暂停
@@ -24,6 +26,7 @@ typedef struct SJAVMediaPlaybackInfo {
     
     NSTimeInterval specifyStartTime;
     NSTimeInterval playableDuration;
+    NSTimeInterval bufferTimeToContinuePlaying;
     NSTimeInterval duration;
     NSInteger bufferingProgress;
     SJPlayerBufferStatus bufferStatus;
@@ -43,17 +46,11 @@ typedef struct SJAVMediaPlaybackInfo {
         BOOL isSeeking;
         CMTime time;
     } seekingInfo;
-} SJAVMediaPlaybackInfo;
-
-static NSString *kDuration = @"duration";
-static NSString *kLoadedTimeRanges = @"loadedTimeRanges";
-static NSString *kPlaybackBufferEmpty = @"playbackBufferEmpty";
-static NSString *kPresentationSize = @"presentationSize";
-static NSString *kPlayerItemStatus = @"status";
-
-static NSString *kPlaybackLikelyToKeeyUp = @"playbackLikelyToKeepUp";
-static NSString *kPlaybackBufferFull = @"playbackBufferFull";
-static NSString *kRate = @"rate";
+    
+#if __IPHONE_OS_VERSION_MAX_ALLOWED >= __IPHONE_10_0
+    AVPlayerTimeControlStatus timeControlStatus NS_AVAILABLE(10_12, 10_0);
+#endif
+} SJAVMediaPlaybackControlInfo;
 
 // resume play after stall
 static const float kMaxHighWaterMarkMilli = 15 * 1000;
@@ -63,7 +60,7 @@ inline static bool isFloatZero(float value) {
 }
 
 @interface SJAVMediaPlayer ()
-@property (nonatomic, readonly) SJAVMediaPlaybackInfo *sj_playbackInfo;
+@property (nonatomic, readonly) SJAVMediaPlaybackControlInfo *sj_controlInfo;
 @property (nonatomic, strong, nullable) NSError *sj_error;
 @property (nonatomic, getter=sj_isReplayed) BOOL sj_replayed;
 @end
@@ -86,34 +83,8 @@ inline static bool isFloatZero(float value) {
     self = [super initWithPlayerItem:item];
     if ( self ) {
         _sj_playbackRate = 1.0;
-        _sj_playbackInfo = (SJAVMediaPlaybackInfo *)malloc(sizeof(SJAVMediaPlaybackInfo));
-        _sj_playbackInfo->isPrerolling = NO;
-        _sj_playbackInfo->isPaused = NO;
-        _sj_playbackInfo->isPlayed = NO;
-        _sj_playbackInfo->isPlaying = NO;
-        _sj_playbackInfo->isError = NO;
-        _sj_playbackInfo->isPlayedToEndTime = NO;
-        
-        _sj_playbackInfo->specifyStartTime = specifyStartTime;
-        _sj_playbackInfo->playableDuration = 0;
-        _sj_playbackInfo->duration = 0;
-        _sj_playbackInfo->bufferingProgress = 0;
-        _sj_playbackInfo->bufferStatus = SJPlayerBufferStatusUnknown;
-        _sj_playbackInfo->inactivityReason = 0;
-        _sj_playbackInfo->pausedReason = 0;
-        _sj_playbackInfo->playbackStatus = 0;
-        _sj_playbackInfo->playbackType = SJMediaPlaybackTypeUnknown;
-        
-        _sj_playbackInfo->prepareStatus = SJAVMediaPrepareStatusUnknown;
-        _sj_playbackInfo->seekingInfo = (struct SJAVMediaPlayerSeekingInfo){NO, kCMTimeZero};
-        
-        if (@available(iOS 10.0, *) ) {
-            AVURLAsset *asset = (AVURLAsset *)item.asset;
-            if ( [asset respondsToSelector:@selector(URL)] ) {
-                self.automaticallyWaitsToMinimizeStalling = [asset.URL.pathExtension isEqualToString:@"m3u8"];
-            }
-        }
-        
+        _sj_controlInfo = (SJAVMediaPlaybackControlInfo *)calloc(1, sizeof(SJAVMediaPlaybackControlInfo));
+        _sj_controlInfo->bufferTimeToContinuePlaying = 2;
         [self _sj_prepareToPlay];
     }
     return self;
@@ -122,9 +93,9 @@ inline static bool isFloatZero(float value) {
 #ifdef DEBUG
     NSLog(@"%d - %s", (int)__LINE__, __func__);
 #endif
-    if ( _sj_playbackInfo->seekingInfo.isSeeking )
+    if ( _sj_controlInfo->seekingInfo.isSeeking )
         [self.currentItem cancelPendingSeeks];
-    free(_sj_playbackInfo);
+    free(_sj_controlInfo);
 }
 
 - (void)_sj_prepareToPlay {
@@ -133,15 +104,15 @@ inline static bool isFloatZero(float value) {
         return;
     }
     
-    if ( _sj_playbackInfo->prepareStatus != SJAVMediaPrepareStatusUnknown ) ///< 防止准备过程多次调用
+    if ( _sj_controlInfo->prepareStatus != SJAVMediaPrepareStatusUnknown ) ///< 防止准备过程多次调用
         return;
     
-    _sj_playbackInfo->prepareStatus = SJAVMediaPrepareStatusPreparing;
+    _sj_controlInfo->prepareStatus = SJAVMediaPrepareStatusPreparing;
     
     AVPlayerItem *item = self.currentItem;
     __weak typeof(self) _self = self;
     // - prepare -
-    sjkvo_observe(item, kPlayerItemStatus, ^(id  _Nonnull target, NSDictionary<NSKeyValueChangeKey,id> * _Nullable change) {
+    sjkvo_observe(item, @"status", ^(id  _Nonnull target, NSDictionary<NSKeyValueChangeKey,id> * _Nullable change) {
         __strong typeof(_self) self = _self;
         if ( !self ) return;
         [self _playerItemStatusDidChange];
@@ -157,43 +128,48 @@ inline static bool isFloatZero(float value) {
     }];
     
     // - buffer -
-    sjkvo_observe(item, kLoadedTimeRanges, ^(id  _Nonnull target, NSDictionary<NSKeyValueChangeKey,id> * _Nullable change) {
+    sjkvo_observe(item, @"loadedTimeRanges", ^(id  _Nonnull target, NSDictionary<NSKeyValueChangeKey,id> * _Nullable change) {
         __strong typeof(_self) self = _self;
         if ( !self ) return;
         [self _playerItemLoadedTimeRangesDidChange];
     });
-    sjkvo_observe(item, kPlaybackBufferEmpty, ^(id  _Nonnull target, NSDictionary<NSKeyValueChangeKey,id> * _Nullable change) {
-        __strong typeof(_self) self = _self;
-        if ( !self ) return;
-        [self _bufferStatusDidChange];
-    });
-    sjkvo_observe(item, kPlaybackLikelyToKeeyUp, ^(id  _Nonnull target, NSDictionary<NSKeyValueChangeKey,id> * _Nullable change) {
-        __strong typeof(_self) self = _self;
-        if ( !self ) return;
-        [self _bufferStatusDidChange];
-    });
-    sjkvo_observe(item, kPlaybackBufferEmpty, NSKeyValueObservingOptionNew|NSKeyValueObservingOptionOld, ^(AVPlayerItem *target, NSDictionary<NSKeyValueChangeKey,id> * _Nullable change) {
-        __strong typeof(_self) self = _self;
-        if ( !self ) return;
-        self.sj_playbackInfo->isPrerolling = target.isPlaybackBufferEmpty;
-        [self _bufferStatusDidChange];
-    });
-    sjkvo_observe(item, kPlaybackBufferFull, ^(id  _Nonnull target, NSDictionary<NSKeyValueChangeKey,id> * _Nullable change) {
-        __strong typeof(_self) self = _self;
-        if ( !self ) return;
-        [self _bufferStatusDidChange];
-    });
-    sjkvo_observe(self, kRate, ^(id  _Nonnull target, NSDictionary<NSKeyValueChangeKey,id> * _Nullable change) {
+    
+    if ( @available(iOS 10.0, *) ) {
+        sjkvo_observe(self, @"timeControlStatus", ^(SJAVMediaPlayer *self, NSDictionary<NSKeyValueChangeKey,id> * _Nullable change) {
+            self.sj_controlInfo->timeControlStatus = [change[NSKeyValueChangeNewKey] integerValue];
+            [self _bufferStatusDidChange];
+            [self _playbackStatusDidChange];
+        });
+    }
+    else {
+        sjkvo_observe(item, @"playbackLikelyToKeepUp", ^(id  _Nonnull target, NSDictionary<NSKeyValueChangeKey,id> * _Nullable change) {
+            __strong typeof(_self) self = _self;
+            if ( !self ) return;
+            [self _bufferStatusDidChange];
+        });
+        sjkvo_observe(item, @"playbackBufferEmpty", NSKeyValueObservingOptionNew|NSKeyValueObservingOptionOld, ^(AVPlayerItem *target, NSDictionary<NSKeyValueChangeKey,id> * _Nullable change) {
+            __strong typeof(_self) self = _self;
+            if ( !self ) return;
+            self.sj_controlInfo->isPrerolling = target.isPlaybackBufferEmpty;
+            [self _bufferStatusDidChange];
+        });
+        sjkvo_observe(item, @"playbackBufferFull", ^(id  _Nonnull target, NSDictionary<NSKeyValueChangeKey,id> * _Nullable change) {
+            __strong typeof(_self) self = _self;
+            if ( !self ) return;
+            [self _bufferStatusDidChange];
+        });
+    }
+    sjkvo_observe(self, @"rate", ^(id  _Nonnull target, NSDictionary<NSKeyValueChangeKey,id> * _Nullable change) {
         __strong typeof(_self) self = _self;
         if ( !self ) return;
         [self _rateDidChange];
     });
-    sjkvo_observe(item, kPresentationSize, ^(id  _Nonnull target, NSDictionary<NSKeyValueChangeKey,id> * _Nullable change) {
+    sjkvo_observe(item, @"presentationSize", ^(id  _Nonnull target, NSDictionary<NSKeyValueChangeKey,id> * _Nullable change) {
         __strong typeof(_self) self = _self;
         if ( !self ) return;
         [self _postNotificationWithName:SJAVMediaLoadedPresentationSizeNotification];
     });
-    sjkvo_observe(item, kDuration, ^(id  _Nonnull target, NSDictionary<NSKeyValueChangeKey,id> * _Nullable change) {
+    sjkvo_observe(item, @"duration", ^(id  _Nonnull target, NSDictionary<NSKeyValueChangeKey,id> * _Nullable change) {
         __strong typeof(_self) self = _self;
         if ( !self ) return;
         [self _durationDidChange];
@@ -220,12 +196,44 @@ inline static bool isFloatZero(float value) {
     }];
 }
 
+#ifdef SJTEST_PLAYER
+- (void)test_log {
+    /// next
+    /// - 接入`timeControlStatus`
+    /// - 增加当缓冲超过多少秒时候, 恢复播放. `bufferTimeToContinuePlaying`
+    
+    /// timeControlStatus == AVPlayerTimeControlStatusWaitingToPlayAtSpecifiedRate
+    /// reasonForWaitingToPlay
+    /// - AVPlayerWaitingWhileEvaluatingBufferingRateReason
+    /// It is recommended that you do not show UI indicating a waiting state to the user when this is the reason the player is in a wait state.
+    /// 正在监视回放缓冲区的填充率，以确定回放是否可能在没有中断的情况下完成。
+    
+    /// - AVPlayerWaitingToMinimizeStallsReason
+    /// Playback will continue when playback can continue without a stall at the player specified rate. Playback will also continue if the player item’s playback buffer becomes full and no further buffering of media data is possible.
+    /// 当回放能够在没有中断的情况下完成或者AVPlayerItem缓冲为full时, playback will continue
+    
+    if (@available(iOS 10.0, *)) {
+        switch ( _sj_controlInfo->timeControlStatus ) {
+            case AVPlayerTimeControlStatusPaused:
+                NSLog(@"AVPlayerTimeControlStatusPaused - %@ - %d - %d - %d - %lf", self.reasonForWaitingToPlay, self.currentItem.isPlaybackBufferEmpty, self.currentItem.isPlaybackBufferFull, self.currentItem.isPlaybackLikelyToKeepUp, self.rate);
+                break;
+            case AVPlayerTimeControlStatusWaitingToPlayAtSpecifiedRate:
+                NSLog(@"AVPlayerTimeControlStatusWaitingToPlayAtSpecifiedRate - %@ - %d - %d - %d - %lf", self.reasonForWaitingToPlay, self.currentItem.isPlaybackBufferEmpty, self.currentItem.isPlaybackBufferFull, self.currentItem.isPlaybackLikelyToKeepUp, self.rate);
+                break;
+            case AVPlayerTimeControlStatusPlaying:
+                NSLog(@"AVPlayerTimeControlStatusPlaying - %@ - %d - %d - %d - %lf", self.reasonForWaitingToPlay, self.currentItem.isPlaybackBufferEmpty, self.currentItem.isPlaybackBufferFull, self.currentItem.isPlaybackLikelyToKeepUp, self.rate);
+                break;
+        }
+    }
+}
+#endif
+
 - (void)_playerItemStatusDidChange {
-    if ( _sj_playbackInfo->prepareStatus == SJAVMediaPrepareStatusPreparing ) { ///< 防止准备过程多次调用
+    if ( _sj_controlInfo->prepareStatus == SJAVMediaPrepareStatusPreparing ) { ///< 防止准备过程多次调用
         AVPlayerItem *item = self.currentItem;
         AVPlayerItemStatus status = item.status;
         if ( status == AVPlayerItemStatusReadyToPlay ) {
-            NSTimeInterval specifyStartTime = _sj_playbackInfo->specifyStartTime;
+            NSTimeInterval specifyStartTime = _sj_controlInfo->specifyStartTime;
             if ( isFloatZero(specifyStartTime) ) {
                 [self _successfullyToPrepare:item];
                 return;
@@ -276,15 +284,15 @@ inline static bool isFloatZero(float value) {
 
 - (void)_bufferStatusDidChange {
     SJPlayerBufferStatus bufferStatus = self.sj_bufferStatus;
-    if ( _sj_playbackInfo->bufferStatus != bufferStatus ) {
-        _sj_playbackInfo->bufferStatus = bufferStatus;
+    if ( _sj_controlInfo->bufferStatus != bufferStatus ) {
+         _sj_controlInfo->bufferStatus = bufferStatus;
         [self _postNotificationWithName:SJAVMediaBufferStatusDidChangeNotification];
     }
 }
 
 - (void)_rateDidChange {
     if ( !isFloatZero(self.rate) )
-        _sj_playbackInfo->isPrerolling = NO;
+        _sj_controlInfo->isPrerolling = NO;
     
     [self _playbackStatusDidChange];
     [self _bufferStatusDidChange];
@@ -292,8 +300,8 @@ inline static bool isFloatZero(float value) {
 
 - (void)_durationDidChange {
     NSTimeInterval duration = CMTimeGetSeconds(self.currentItem.duration);
-    if ( _sj_playbackInfo->duration != duration ) {
-        _sj_playbackInfo->duration = duration;
+    if ( _sj_controlInfo->duration != duration ) {
+        _sj_controlInfo->duration = duration;
         [self _postNotificationWithName:SJAVMediaLoadedDurationNotification];
     }
 }
@@ -304,10 +312,10 @@ inline static bool isFloatZero(float value) {
     if ( playbackStatus == SJVideoPlayerPlayStatusPaused ) {
         SJVideoPlayerPausedReason pausedReason = self.sj_pausedReason;
         if ( pausedReason != SJVideoPlayerPausedReasonUnknown ) {
-            if ( pausedReason != _sj_playbackInfo->pausedReason ) {
-                _sj_playbackInfo->inactivityReason = SJVideoPlayerInactivityReasonUnknown;
-                _sj_playbackInfo->pausedReason = pausedReason;
-                _sj_playbackInfo->playbackStatus = playbackStatus;
+            if ( pausedReason != _sj_controlInfo->pausedReason ) {
+                _sj_controlInfo->inactivityReason = SJVideoPlayerInactivityReasonUnknown;
+                _sj_controlInfo->pausedReason = pausedReason;
+                _sj_controlInfo->playbackStatus = playbackStatus;
                 changed = YES;
             }
         }
@@ -315,18 +323,18 @@ inline static bool isFloatZero(float value) {
     else if ( playbackStatus == SJVideoPlayerPlayStatusInactivity ) {
         SJVideoPlayerInactivityReason inactivityReason = self.sj_inactivityReason;
         if ( inactivityReason != SJVideoPlayerInactivityReasonUnknown ) {
-            if ( inactivityReason != _sj_playbackInfo->inactivityReason ) {
-                _sj_playbackInfo->inactivityReason = inactivityReason;
-                _sj_playbackInfo->pausedReason = SJVideoPlayerPausedReasonUnknown;
-                _sj_playbackInfo->playbackStatus = playbackStatus;
+            if ( inactivityReason != _sj_controlInfo->inactivityReason ) {
+                _sj_controlInfo->inactivityReason = inactivityReason;
+                _sj_controlInfo->pausedReason = SJVideoPlayerPausedReasonUnknown;
+                _sj_controlInfo->playbackStatus = playbackStatus;
                 changed = YES;
             }
         }
     }
-    else if ( playbackStatus != _sj_playbackInfo->playbackStatus ) {
-        _sj_playbackInfo->inactivityReason = SJVideoPlayerInactivityReasonUnknown;
-        _sj_playbackInfo->pausedReason = SJVideoPlayerPausedReasonUnknown;
-        _sj_playbackInfo->playbackStatus = playbackStatus;
+    else if ( playbackStatus != _sj_controlInfo->playbackStatus ) {
+        _sj_controlInfo->inactivityReason = SJVideoPlayerInactivityReasonUnknown;
+        _sj_controlInfo->pausedReason = SJVideoPlayerPausedReasonUnknown;
+        _sj_controlInfo->playbackStatus = playbackStatus;
         changed = YES;
     }
     
@@ -351,8 +359,8 @@ inline static bool isFloatZero(float value) {
         }
         
         dispatch_async(dispatch_get_main_queue(), ^{
-            if ( self.sj_playbackInfo->playbackType != playbackType ) {
-                self.sj_playbackInfo->playbackType = playbackType;
+            if ( self.sj_controlInfo->playbackType != playbackType ) {
+                self.sj_controlInfo->playbackType = playbackType;
                 [self _postNotificationWithName:SJAVMediaLoadedPlaybackTypeNotification];
             }
         });
@@ -360,43 +368,43 @@ inline static bool isFloatZero(float value) {
 }
 
 - (void)_successfullyToPrepare:(AVPlayerItem *)item {
-    _sj_playbackInfo->prepareStatus = SJAVMediaPrepareStatusSuccessfullyToPrepare;
+    _sj_controlInfo->prepareStatus = SJAVMediaPrepareStatusSuccessfullyToPrepare;
     [self _playbackStatusDidChange];
 }
 
 - (void)_failedToPrepare:(NSError *)error {
-    _sj_playbackInfo->prepareStatus = SJAVMediaPrepareStatusFailedToPrepare;
+    _sj_controlInfo->prepareStatus = SJAVMediaPrepareStatusFailedToPrepare;
     [self _onError:error];
 }
 
 - (void)_playableDurationDidChange:(NSTimeInterval)playableDuration {
-    _sj_playbackInfo->playableDuration = playableDuration;
-
-    NSTimeInterval currentPlaybackTime = [self sj_getCurrentPlaybackTime];
-    int playableDurationMilli = (int)(playableDuration * 1000);
-    int currentPlaybackTimeMilli = (int)(currentPlaybackTime * 1000);
-    
-    int bufferedDurationMilli = playableDurationMilli - currentPlaybackTimeMilli;
-    if ( bufferedDurationMilli > 0 ) {
-        _sj_playbackInfo->bufferingProgress = bufferedDurationMilli * 100 / kMaxHighWaterMarkMilli;
-        if (_sj_playbackInfo->bufferingProgress > 100) {
-            dispatch_async(dispatch_get_main_queue(), ^{
-                if (self->_sj_playbackInfo->bufferingProgress > 100) {
-                    if ( [self sj_getIsPlaying] ) {
-                        self.rate = self->_sj_playbackRate;
-                    }
-                }
-            });
-        }
-    }
-
+    _sj_controlInfo->playableDuration = playableDuration;
     [self _postNotificationWithName:SJAVMediaPlayableDurationDidChangeNotification];
     
-    if ( SJReachability.shared.networkStatus != SJNetworkStatus_NotReachable ) {
-        if ( playableDuration != 0 ) {
-            if ( _sj_playbackInfo->isPlaying ) {
-                if ( ![self sj_getIsPlaying] ) {
-                    self.rate = self.sj_playbackRate;
+    /// 缓冲时间正在改变时, 需要做的事情
+    /// - 当play方法被调用时, 确定播放器是否真正的在播放, 如果没有则在最小缓冲足够时恢复播放
+    
+    if ( SJReachability.shared.networkStatus != SJNetworkStatus_NotReachable && !self.currentItem.isPlaybackBufferEmpty ) {
+        if ( _sj_controlInfo->isPlaying && ![self sj_getPlayerIsPlaying] ) {
+            NSTimeInterval currentPlaybackTime = [self sj_getCurrentPlaybackTime];
+            int playableDurationMilli = (int)(playableDuration * 1000);
+            int currentPlaybackTimeMilli = (int)(currentPlaybackTime * 1000);
+            
+            int bufferedDurationMilli = playableDurationMilli - currentPlaybackTimeMilli;
+            if ( bufferedDurationMilli > 0 ) {
+                NSTimeInterval bufferTimeToContinuePlaying = _sj_controlInfo->bufferTimeToContinuePlaying;
+                NSTimeInterval maxHighWaterMarkMilli = (bufferTimeToContinuePlaying > 0)?bufferTimeToContinuePlaying * 1000 : kMaxHighWaterMarkMilli;
+                _sj_controlInfo->bufferingProgress = bufferedDurationMilli * 100 / maxHighWaterMarkMilli;
+                if (_sj_controlInfo->bufferingProgress > 100) {
+                    // continue playing
+                    if ( @available(iOS 10.0, *) ) {
+                        [self playImmediatelyAtRate:_sj_playbackRate];
+                    }
+                    else {
+                        self.rate = _sj_playbackRate;
+                        [self _bufferStatusDidChange];
+                        [self _playbackStatusDidChange];
+                    }
                 }
             }
         }
@@ -404,7 +412,7 @@ inline static bool isFloatZero(float value) {
 }
 
 - (void)_successfullyToPlayEndTime:(NSNotification *)note {
-    _sj_playbackInfo->isPlayedToEndTime = YES;
+    _sj_controlInfo->isPlayedToEndTime = YES;
     [self _postNotificationWithName:SJAVMediaPlayDidToEndTimeNotification];
     [self _playbackStatusDidChange];
 }
@@ -414,7 +422,7 @@ inline static bool isFloatZero(float value) {
 }
 
 - (void)_onError:(NSError *)error {
-    _sj_playbackInfo->isError = YES;
+    _sj_controlInfo->isError = YES;
     _sj_error = error;
     [self _playbackStatusDidChange];
 }
@@ -425,7 +433,7 @@ inline static bool isFloatZero(float value) {
 
 - (void)setSj_playbackRate:(float)sj_playbackRate {
     _sj_playbackRate = sj_playbackRate;
-    if ( _sj_playbackInfo->isPlaying )
+    if ( _sj_controlInfo->isPlaying )
         self.rate = sj_playbackRate;
 }
 
@@ -445,14 +453,22 @@ inline static bool isFloatZero(float value) {
     return self.isMuted;
 }
 
-- (void)play {
-    _sj_playbackInfo->isPrerolling = NO;
-    _sj_playbackInfo->isPaused = NO;
-    _sj_playbackInfo->isPlayed = YES;
-    _sj_playbackInfo->isPlaying = YES;
+- (void)setSj_bufferTimeToContinuePlaying:(NSTimeInterval)sj_bufferTimeToContinuePlaying {
+    _sj_controlInfo->bufferTimeToContinuePlaying = sj_bufferTimeToContinuePlaying;
+}
 
-    if ( _sj_playbackInfo->isPlayedToEndTime ) {
-        _sj_playbackInfo->isPlayedToEndTime = NO;
+- (NSTimeInterval)sj_bufferTimeToContinuePlaying {
+    return _sj_controlInfo->bufferTimeToContinuePlaying;
+}
+
+- (void)play {
+    _sj_controlInfo->isPrerolling = NO;
+    _sj_controlInfo->isPaused = NO;
+    _sj_controlInfo->isPlayed = YES;
+    _sj_controlInfo->isPlaying = YES;
+
+    if ( _sj_controlInfo->isPlayedToEndTime ) {
+        _sj_controlInfo->isPlayedToEndTime = NO;
         _sj_replayed = YES;
         [self _willSeekingToTime:kCMTimeZero];
         [self seekToTime:kCMTimeZero];
@@ -465,13 +481,13 @@ inline static bool isFloatZero(float value) {
     }
 }
 - (void)replay {
-    _sj_playbackInfo->isPlayedToEndTime = YES;
+    _sj_controlInfo->isPlayedToEndTime = YES;
     [self play];
 }
 - (void)pause {
-    _sj_playbackInfo->isPrerolling = NO;
-    _sj_playbackInfo->isPaused = YES;
-    _sj_playbackInfo->isPlaying = NO;
+    _sj_controlInfo->isPrerolling = NO;
+    _sj_controlInfo->isPaused = YES;
+    _sj_controlInfo->isPlaying = NO;
     [super pause];
 }
 - (void)report {
@@ -518,44 +534,44 @@ inline static bool isFloatZero(float value) {
     }];
 }
 - (BOOL)_canSeekToTime:(CMTime)time {
-    return !_sj_playbackInfo->isError && _sj_playbackInfo->prepareStatus == SJAVMediaPrepareStatusSuccessfullyToPrepare;
+    return !_sj_controlInfo->isError && _sj_controlInfo->prepareStatus == SJAVMediaPrepareStatusSuccessfullyToPrepare;
 }
 - (void)_willSeekingToTime:(CMTime)time {
-    if ( _sj_playbackInfo->seekingInfo.isSeeking ) {
+    if ( _sj_controlInfo->seekingInfo.isSeeking ) {
         [self.currentItem cancelPendingSeeks];
     }
-    _sj_playbackInfo->seekingInfo.isSeeking = YES;
-    _sj_playbackInfo->seekingInfo.time = time;
-    if ( _sj_playbackInfo->isPrerolling )
+    _sj_controlInfo->seekingInfo.isSeeking = YES;
+    _sj_controlInfo->seekingInfo.time = time;
+    if ( _sj_controlInfo->isPrerolling )
         [self pause];
     [self _playbackStatusDidChange];
 }
 - (void)_didEndSeeking {
-    if ( _sj_playbackInfo->isPrerolling )
+    if ( _sj_controlInfo->isPrerolling )
         [self play];
-    _sj_playbackInfo->seekingInfo.isSeeking = NO;
-    _sj_playbackInfo->seekingInfo.time = kCMTimeZero;
+    _sj_controlInfo->seekingInfo.isSeeking = NO;
+    _sj_controlInfo->seekingInfo.time = kCMTimeZero;
     [self _playbackStatusDidChange];
 }
 - (SJVideoPlayerPlayStatus)sj_playbackStatus {
-    if      ( _sj_playbackInfo->isPlayedToEndTime ) ///< 已播放完毕
+    if      ( _sj_controlInfo->isPlayedToEndTime ) ///< 已播放完毕
         return SJVideoPlayerPlayStatusInactivity;
-    else if ( _sj_playbackInfo->prepareStatus == SJAVMediaPrepareStatusUnknown ) ///< 未准备就绪
+    else if ( _sj_controlInfo->prepareStatus == SJAVMediaPrepareStatusUnknown ) ///< 未准备就绪
         return SJVideoPlayerPlayStatusUnknown;
-    else if ( _sj_playbackInfo->prepareStatus == SJAVMediaPrepareStatusPreparing ) ///< 初始化, 准备中
+    else if ( _sj_controlInfo->prepareStatus == SJAVMediaPrepareStatusPreparing ) ///< 初始化, 准备中
         return SJVideoPlayerPlayStatusPrepare;
-    else if ( _sj_playbackInfo->prepareStatus == SJAVMediaPrepareStatusFailedToPrepare ) ///< 初始化失败
+    else if ( _sj_controlInfo->prepareStatus == SJAVMediaPrepareStatusFailedToPrepare ) ///< 初始化失败
         return SJVideoPlayerPlayStatusInactivity;
-    else if ( !_sj_playbackInfo->isPlayed && _sj_playbackInfo->prepareStatus == SJAVMediaPrepareStatusSuccessfullyToPrepare ) ///< 初始化完成
+    else if ( !_sj_controlInfo->isPlayed && _sj_controlInfo->prepareStatus == SJAVMediaPrepareStatusSuccessfullyToPrepare ) ///< 初始化完成
         return SJVideoPlayerPlayStatusReadyToPlay;
-    else if ( _sj_playbackInfo->isError )   ///< 播放报错
+    else if ( _sj_controlInfo->isError )   ///< 播放报错
         return SJVideoPlayerPlayStatusInactivity;
-    else if ( _sj_playbackInfo->seekingInfo.isSeeking ) ///< 调用了 seekToTime:
+    else if ( _sj_controlInfo->seekingInfo.isSeeking ) ///< 调用了 seekToTime:
         return SJVideoPlayerPlayStatusPaused;
-    else if ( _sj_playbackInfo->isPaused )  ///< 调用了暂停
+    else if ( _sj_controlInfo->isPaused )  ///< 调用了暂停
         return SJVideoPlayerPlayStatusPaused;
-    else if ( _sj_playbackInfo->isPlaying ) {   ///< 调用了播放
-        if ( [self sj_getIsPlaying] )   ///< 确定是否正在播放
+    else if ( _sj_controlInfo->isPlaying ) {   ///< 调用了播放
+        if ( [self sj_getPlayerIsPlaying] )   ///< 确定是否正在播放
             return SJVideoPlayerPlayStatusPlaying;
         
         if ( [self sj_bufferStatus] == SJPlayerBufferStatusUnplayable ) {   ///< 缓冲不够播放
@@ -568,9 +584,9 @@ inline static bool isFloatZero(float value) {
     return SJVideoPlayerPlayStatusPaused;
 }
 - (SJVideoPlayerPausedReason)sj_pausedReason {
-    if      ( _sj_playbackInfo->isPaused )  ///< 调用了暂停
+    if      ( _sj_controlInfo->isPaused )  ///< 调用了暂停
         return SJVideoPlayerPausedReasonPause;
-    else if ( _sj_playbackInfo->seekingInfo.isSeeking ) ///< 调用了 seekToTime:
+    else if ( _sj_controlInfo->seekingInfo.isSeeking ) ///< 调用了 seekToTime:
         return SJVideoPlayerPausedReasonSeeking;
     else if ( [self sj_bufferStatus] == SJPlayerBufferStatusUnplayable )    ///< 缓冲不够播放了
         return SJVideoPlayerPausedReasonBuffering;
@@ -578,9 +594,9 @@ inline static bool isFloatZero(float value) {
     return SJVideoPlayerPausedReasonUnknown;
 }
 - (SJVideoPlayerInactivityReason)sj_inactivityReason {
-    if      ( _sj_playbackInfo->isPlayedToEndTime ) ///< 播放完毕
+    if      ( _sj_controlInfo->isPlayedToEndTime ) ///< 播放完毕
         return SJVideoPlayerInactivityReasonPlayEnd;
-    else if ( _sj_playbackInfo->isError )  ///< 播放报错了
+    else if ( _sj_controlInfo->isError )  ///< 播放报错了
         return SJVideoPlayerInactivityReasonPlayFailed;
     else if ( [self sj_bufferStatus] == SJPlayerBufferStatusUnplayable && SJReachability.shared.networkStatus == SJNetworkStatus_NotReachable ) ///< 无网了
         return SJVideoPlayerInactivityReasonNotReachableAndPlaybackStalled;
@@ -588,49 +604,80 @@ inline static bool isFloatZero(float value) {
     return SJVideoPlayerInactivityReasonUnknown;
 }
 - (SJPlayerBufferStatus)sj_bufferStatus {
-    AVPlayerItem *item = self.currentItem;
-    
-    if      ( _sj_playbackInfo->seekingInfo.isSeeking )     ///< 调用了 seekToTime:
+    if      ( _sj_controlInfo->seekingInfo.isSeeking )     ///< 调用了 seekToTime:
         return SJPlayerBufferStatusUnplayable;
-    else if ( [self sj_getIsPlaying] )  ///< 确定正在播放中
+    else if ( [self sj_getPlayerIsPlaying] )  ///< 确定正在播放中
         return SJPlayerBufferStatusPlayable;
-    else if ( [item isPlaybackBufferFull] ) ///< 缓冲足够播放
-        return SJPlayerBufferStatusPlayable;
-    else if ( [item isPlaybackLikelyToKeepUp] ) ///< 缓冲足够播放
-        return SJPlayerBufferStatusPlayable;
-    else if ( [item isPlaybackBufferEmpty] )    ///< 缓冲空了
-        return SJPlayerBufferStatusUnplayable;
-    
+    else if ( @available(iOS 10.0, *) ) {
+        /// next
+        /// - 接入`timeControlStatus`
+        /// - 增加`当缓冲超过多少秒时候, 恢复播放`
+        switch ( _sj_controlInfo->timeControlStatus ) {
+            case AVPlayerTimeControlStatusPaused:
+            case AVPlayerTimeControlStatusPlaying:
+                return SJPlayerBufferStatusPlayable;
+            case AVPlayerTimeControlStatusWaitingToPlayAtSpecifiedRate:
+                /// timeControlStatus == AVPlayerTimeControlStatusWaitingToPlayAtSpecifiedRate
+                /// reasonForWaitingToPlay
+                /// - AVPlayerWaitingWhileEvaluatingBufferingRateReason
+                /// It is recommended that you do not show UI indicating a waiting state to the user when this is the reason the player is in a wait state.
+                /// 正在监视回放缓冲区的填充率，以确定回放是否可能在没有中断的情况下完成。
+                
+                /// - AVPlayerWaitingToMinimizeStallsReason
+                /// Playback will continue when playback can continue without a stall at the player specified rate. Playback will also continue if the player item’s playback buffer becomes full and no further buffering of media data is possible.
+                /// 当回放能够在没有中断的情况下完成或者AVPlayerItem缓冲为full时, playback will continue
+                return SJPlayerBufferStatusUnplayable;
+        }
+    }
+    else {
+        AVPlayerItem *item = self.currentItem;
+        if ( [item isPlaybackBufferFull] ) ///< 缓冲足够播放
+            return SJPlayerBufferStatusPlayable;
+        else if ( [item isPlaybackLikelyToKeepUp] ) ///< 缓冲足够播放
+            return SJPlayerBufferStatusPlayable;
+        else if ( [item isPlaybackBufferEmpty] )    ///< 缓冲空了
+            return SJPlayerBufferStatusUnplayable;
+    }
     return SJPlayerBufferStatusUnknown;
 }
 - (BOOL)sj_getIsPlayed {
-    return _sj_playbackInfo->isPlayed;
+    return _sj_controlInfo->isPlayed;
 }
-- (BOOL)sj_getIsPlaying {
-    if ( !isFloatZero(self.rate) )
-        return YES;
-    if ( _sj_playbackInfo->isPrerolling && SJReachability.shared.networkStatus != SJNetworkStatus_NotReachable )
-        return YES;
-    
+- (BOOL)sj_getPlayerIsPlaying { ///< 确定播放器是否真正的在播放
+    if ( @available(iOS 10.0, *) ) {
+        switch ( _sj_controlInfo->timeControlStatus ) {
+            case AVPlayerTimeControlStatusPaused:
+            case AVPlayerTimeControlStatusWaitingToPlayAtSpecifiedRate:
+                return NO;
+            case AVPlayerTimeControlStatusPlaying:
+                return YES;
+        }
+    }
+    else {
+        if ( !isFloatZero(self.rate) )
+            return YES;
+        if ( _sj_controlInfo->isPrerolling && SJReachability.shared.networkStatus != SJNetworkStatus_NotReachable )
+            return YES;
+    }
     return NO;
 }
 - (SJMediaPlaybackType)sj_getPlaybackType {
-    return _sj_playbackInfo->playbackType;
+    return _sj_controlInfo->playbackType;
 }
 - (NSTimeInterval)sj_getDuration {
-    return _sj_playbackInfo->duration;
+    return _sj_controlInfo->duration;
 }
 - (NSTimeInterval)sj_getCurrentPlaybackTime {
-    if ( _sj_playbackInfo->prepareStatus != SJAVMediaPrepareStatusSuccessfullyToPrepare )
+    if ( _sj_controlInfo->prepareStatus != SJAVMediaPrepareStatusSuccessfullyToPrepare )
         return 0;
-    if ( _sj_playbackInfo->seekingInfo.isSeeking )
-        return CMTimeGetSeconds(_sj_playbackInfo->seekingInfo.time);
+    if ( _sj_controlInfo->seekingInfo.isSeeking )
+        return CMTimeGetSeconds(_sj_controlInfo->seekingInfo.time);
     return CMTimeGetSeconds(self.currentTime);
 }
 - (NSTimeInterval)sj_getPlayableDuration {
-    if ( _sj_playbackInfo->prepareStatus != SJAVMediaPrepareStatusSuccessfullyToPrepare )
+    if ( _sj_controlInfo->prepareStatus != SJAVMediaPrepareStatusSuccessfullyToPrepare )
         return 0;
-    return _sj_playbackInfo->playableDuration;
+    return _sj_controlInfo->playableDuration;
 }
 - (AVPlayerItemStatus)sj_getAVPlayerItemStatus {
     return self.currentItem.status;

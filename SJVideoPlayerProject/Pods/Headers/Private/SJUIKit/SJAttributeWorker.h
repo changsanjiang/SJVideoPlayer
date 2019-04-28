@@ -1,1 +1,1 @@
-../../../SJUIKit/SJUIKit/AttributesFactory/SJAttributeWorker.h
+../../../SJUIKit/SJUIKit/AttributesFactory/Deprecated/SJAttributeWorker.h

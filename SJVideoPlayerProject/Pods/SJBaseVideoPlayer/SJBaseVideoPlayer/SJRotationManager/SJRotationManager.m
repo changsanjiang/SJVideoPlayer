@@ -51,7 +51,6 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic) SJOrientation currentOrientation;
 @property (nonatomic, getter=isTransitioning) BOOL transitioning;
 @property (nonatomic) UIDeviceOrientation rec_deviceOrientation;
-@property (nonatomic) CGRect con_portraitRect;
 @end
 
 @implementation SJRotationManager
@@ -243,11 +242,11 @@ static SJOrientation _sjOrientationForDeviceOrentation(UIDeviceOrientation orien
         }
         
         // update
-        self.con_portraitRect = [window convertRect:self.superview.bounds fromView:self.superview];
+        CGRect portraitRect = [window convertRect:self.superview.bounds fromView:self.superview];
 
         if ( ori_old == SJOrientation_Portrait ) {
             self.target.translatesAutoresizingMaskIntoConstraints = YES;
-            self.target.frame = self.con_portraitRect;
+            self.target.frame = portraitRect;
             [window addSubview:self.target];
         }
 
@@ -264,12 +263,12 @@ static SJOrientation _sjOrientationForDeviceOrentation(UIDeviceOrientation orien
             if ( !self ) return ;
             if ( ori_new == SJOrientation_Portrait ) {
                 self.target.transform = transform;
-                self.target.bounds = (CGRect){CGPointZero, self.con_portraitRect.size};
+                self.target.bounds = (CGRect){CGPointZero, portraitRect.size};
                 self.target.center =
-                (CGPoint){self.con_portraitRect.origin.x +
-                          self.con_portraitRect.size.width * 0.5,
-                          self.con_portraitRect.origin.y +
-                          self.con_portraitRect.size.height * 0.5};
+                (CGPoint){portraitRect.origin.x +
+                          portraitRect.size.width * 0.5,
+                          portraitRect.origin.y +
+                          portraitRect.size.height * 0.5};
                 [self.target layoutIfNeeded];
             }
             else {

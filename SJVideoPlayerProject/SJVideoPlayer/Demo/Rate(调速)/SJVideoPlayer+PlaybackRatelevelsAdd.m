@@ -10,7 +10,7 @@
 #import <objc/message.h>
 #import "SJSetPlaybackRateControlLayer.h"
 #import "SJEdgeControlButtonItemDelegate.h"
-#import "SJAttributeWorker.h"
+#import "SJAttributesFactory.h"
 #import "SJBaseVideoPlayer+SetPlaybackRateAdd.h"
 
 NS_ASSUME_NONNULL_BEGIN
@@ -32,7 +32,7 @@ SJControlLayerIdentifier const SJControlLayer_SetPlaybackRate = 666;
         itemDelegate.updatePropertiesIfNeeded = ^(SJEdgeControlButtonItem * _Nonnull item, __kindof SJBaseVideoPlayer * _Nonnull player) {
             __strong typeof(_self) self = _self;
             if ( !self ) return;
-            item.title = sj_makeAttributesString(^(SJAttributeWorker * _Nonnull make) {
+            item.title = [NSAttributedString sj_UIKitText:^(id<SJUIKitTextMakerProtocol>  _Nonnull make) {
                 NSString *name = nil;
                 make.alignment(NSTextAlignmentCenter);
                 if ( player.rateLevels.level != SJPlaybackRateLevel_1 ) {
@@ -44,7 +44,7 @@ SJControlLayerIdentifier const SJControlLayer_SetPlaybackRate = 666;
                 make.append(name);
                 make.textColor([UIColor whiteColor]);
                 make.font([UIFont systemFontOfSize:13]);
-            });
+            }];
         };
         
         itemDelegate.clickedItemExeBlock = ^(SJEdgeControlButtonItem * _Nonnull item) {

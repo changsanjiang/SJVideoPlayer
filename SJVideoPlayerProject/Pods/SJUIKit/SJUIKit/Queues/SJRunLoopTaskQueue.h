@@ -16,7 +16,7 @@ typedef void(^SJRunLoopTaskHandler)(void);
 @property (class, nonatomic, copy, readonly) SJRunLoopTaskQueue *main;
 @property (class, nonatomic, copy, readonly) void(^destroy)(NSString *name);
 
-/// 每执行任务一次任务, 延迟多少次RunLoop
+/// 每执行一次任务, 延迟多少次RunLoop
 @property (nonatomic, copy, readonly) SJRunLoopTaskQueue *_Nullable(^delay)(NSUInteger num);
 @property (nonatomic, copy, readonly) SJRunLoopTaskQueue *_Nullable(^update)(CFRunLoopRef rlr, CFRunLoopMode mode);
 /// enqueue, Add a task to the queue.

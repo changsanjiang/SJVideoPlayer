@@ -92,9 +92,9 @@ static NSNotificationName const SJPlayerDidEndSwitchControlLayerNotification = @
     // - begin -
     [NSNotificationCenter.defaultCenter postNotificationName:SJPlayerWillBeginSwitchControlLayerNotification object:self userInfo:newValue?@{SJPlayerSwitchControlLayerUserInfoKey:newValue}:nil];
 
+    [oldValue exitControlLayer];
     _videoPlayer.controlLayerDataSource = nil;
     _videoPlayer.controlLayerDelegate = nil;
-    [oldValue exitControlLayer];
 
     // update identifiers
     _previousIdentifier = _currentIdentifier;

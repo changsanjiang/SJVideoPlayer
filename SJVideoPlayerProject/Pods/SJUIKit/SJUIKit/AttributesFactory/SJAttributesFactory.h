@@ -9,10 +9,18 @@
 #ifndef SJAttributesFactory_h
 #define SJAttributesFactory_h
 
+#import "NSAttributedString+SJMake.h"
+
+
+// - deprecated (use `NSAttributedString+SJMake.h`).
+// - deprecated (use `NSAttributedString+SJMake.h`).
+// - 已弃用, 未来可能会删除
 #import "SJAttributeWorker.h"
 
 /*!
- *  make attributed string:
+ * - deprecated (use `NSAttributedString+SJMake.h`).
+ *
+ * - make attributed string:
  
  *   NSAttributedString *attrStr = sj_makeAttributesString(^(SJAttributeWorker * _Nonnull make) {
  

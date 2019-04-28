@@ -135,7 +135,7 @@ NS_ASSUME_NONNULL_BEGIN
         [self.delegate playbackController:self playbackStatusDidChange:status];
     }
     
-    if ( _player.sj_getIsPlaying ) {
+    if ( _player.sj_getPlayerIsPlaying ) {
         [self _activeTimeRefreshTimerIfNeeded];
     }
     else {
@@ -174,7 +174,7 @@ NS_ASSUME_NONNULL_BEGIN
 }
 
 - (void)_activeTimeRefreshTimerIfNeeded {
-    if ( self.player.sj_getIsPlaying ) {
+    if ( self.player.sj_getPlayerIsPlaying ) {
         if ( !_timeRefreshTimer ) {
             __weak typeof(self) _self = self;
             _timeRefreshTimer = [NSTimer assetAdd_timerWithTimeInterval:_refreshTimeInterval block:^(NSTimer *timer) {

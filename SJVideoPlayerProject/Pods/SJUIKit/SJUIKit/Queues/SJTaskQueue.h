@@ -14,7 +14,7 @@ NS_ASSUME_NONNULL_BEGIN
 @property (class, nonatomic, copy, readonly) SJTaskQueue *main;
 @property (class, nonatomic, copy, readonly) void(^destroy)(NSString *name);
 
-/// 每执行任务一次任务, 延迟多少秒
+/// 每执行一次任务, 延迟多少秒
 @property (nonatomic, copy, readonly) SJTaskQueue *_Nullable(^delay)(NSTimeInterval secs);
 /// enqueue, Add a task to the queue.
 ///

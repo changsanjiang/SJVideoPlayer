@@ -29,10 +29,10 @@
 #import "SJBaseVideoPlayer.h"
 #endif
 
-#if __has_include(<SJUIKit/SJAttributeWorker.h>)
-#import <SJUIKit/SJAttributeWorker.h>
+#if __has_include(<SJUIKit/SJAttributesFactory.h>)
+#import <SJUIKit/SJAttributesFactory.h>
 #else
-#import "SJAttributeWorker.h"
+#import "SJAttributesFactory.h"
 #endif
 
 NS_ASSUME_NONNULL_BEGIN
@@ -370,11 +370,14 @@ static SJEdgeControlButtonItemTag SJTopItem_Back = 1;
 }
 
 - (void)_updatePromptLabelText:(NSString *)text {
-    _promptLabel.attributedText = sj_makeAttributesString(^(SJAttributeWorker * _Nonnull make) {
+    _promptLabel.attributedText = [NSAttributedString sj_UIKitText:^(id<SJUIKitTextMakerProtocol>  _Nonnull make) {
         make.font([UIFont systemFontOfSize:12]).textColor([UIColor whiteColor]);
         make.append(text);
-        make.shadow(CGSizeMake(0.5, 0.5), 1, [UIColor blackColor]);
-    });
+        make.shadow(^(NSShadow * _Nonnull make) {
+            make.shadowColor = UIColor.blackColor;
+            make.shadowOffset = CGSizeMake(0, 0.5);
+        });
+    }];
 }
 
 - (void)_cancel {

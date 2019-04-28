@@ -16,6 +16,11 @@
 #else
 #import "Masonry.h"
 #endif
+#if __has_include(<SJUIKit/NSObject+SJObserverHelper.h>)
+#import <SJUIKit/NSObject+SJObserverHelper.h>
+#else
+#import "NSObject+SJObserverHelper.h"
+#endif
 
 NS_ASSUME_NONNULL_BEGIN
 static NSNotificationName const SJDeviceVolumeDidChangeNotification = @"SJDeviceVolumeDidChangeNotification";
@@ -37,14 +42,14 @@ static NSNotificationName const SJDeviceBrightnessDidChangeNotification = @"SJDe
     if ( !self )
         return nil;
     __weak typeof(self) _self = self;
-    _volumeDidChangeToken = [NSNotificationCenter.defaultCenter addObserverForName:SJDeviceVolumeDidChangeNotification object:mgr queue:nil usingBlock:^(NSNotification * _Nonnull note) {
+    _volumeDidChangeToken = [NSNotificationCenter.defaultCenter addObserverForName:SJDeviceVolumeDidChangeNotification object:mgr queue:NSOperationQueue.mainQueue usingBlock:^(NSNotification * _Nonnull note) {
         __strong typeof(_self) self = _self;
         if ( !self ) return ;
         id<SJDeviceVolumeAndBrightnessManager> mgr = note.object;
         if ( self.volumeDidChangeExeBlock ) self.volumeDidChangeExeBlock(mgr, mgr.volume);
     }];
     
-    _brightnessDidChangeToken = [NSNotificationCenter.defaultCenter addObserverForName:SJDeviceBrightnessDidChangeNotification object:mgr queue:nil usingBlock:^(NSNotification * _Nonnull note) {
+    _brightnessDidChangeToken = [NSNotificationCenter.defaultCenter addObserverForName:SJDeviceBrightnessDidChangeNotification object:mgr queue:NSOperationQueue.mainQueue usingBlock:^(NSNotification * _Nonnull note) {
         __strong typeof(_self) self = _self;
         if ( !self ) return ;
         id<SJDeviceVolumeAndBrightnessManager> mgr = note.object;
@@ -65,14 +70,13 @@ static NSNotificationName const SJDeviceBrightnessDidChangeNotification = @"SJDe
     UISlider *_volumeSlider;
 }
 
+@property (nonatomic, strong, readonly) UISlider *volumeSlider;
 @property (nonatomic, strong, readonly) UIView *brightnessView;
-@property (nonatomic, strong, nullable) id volumeDidChangeToken;
 @property (nonatomic, strong, nullable) id brightnessDidChangeToken;
 @end
 
 @implementation SJDeviceVolumeAndBrightnessManager
 @synthesize brightness = _brightness;
-@synthesize volume = _volume;
 @synthesize targetView = _targetView;
 
 + (instancetype)shared {
@@ -90,7 +94,6 @@ static NSNotificationName const SJDeviceBrightnessDidChangeNotification = @"SJDe
     for ( UIView *subview in [[MPVolumeView new] subviews] ) {
         if ( [subview.class.description isEqualToString:@"MPVolumeSlider"] ) {
             _volumeSlider = (UISlider *)subview;
-            _volumeSlider.value = [AVAudioSession sharedInstance].outputVolume;
             break;
         }
     }
@@ -98,17 +101,17 @@ static NSNotificationName const SJDeviceBrightnessDidChangeNotification = @"SJDe
     dispatch_async(dispatch_get_global_queue(0, 0), ^{
         __strong typeof(_self) self = _self;
         if ( !self ) return ;
-        self.volumeDidChangeToken = [NSNotificationCenter.defaultCenter addObserverForName:@"AVSystemController_SystemVolumeDidChangeNotification" object:nil queue:nil usingBlock:^(NSNotification * _Nonnull note) {
-            __strong typeof(_self) self = _self;
-            if ( !self ) return;
-            [self volumeDidChange];
-        }];
-        
         self.brightnessDidChangeToken = [NSNotificationCenter.defaultCenter addObserverForName:UIScreenBrightnessDidChangeNotification object:nil queue:nil usingBlock:^(NSNotification * _Nonnull note) {
             __strong typeof(_self) self = _self;
             if ( !self ) return ;
             [self brightnessDidChange];
         }];
+        
+        sjkvo_observe([AVAudioSession sharedInstance], @"outputVolume", ^(id  _Nonnull target, NSDictionary<NSKeyValueChangeKey,id> * _Nullable change) {
+            __strong typeof(_self) self = _self;
+            if ( !self ) return;
+            [self volumeDidChange];
+        });
     });
     return self;
 }
@@ -126,7 +129,6 @@ static NSNotificationName const SJDeviceBrightnessDidChangeNotification = @"SJDe
 }
 
 - (void)dealloc {
-    if ( _volumeDidChangeToken ) [NSNotificationCenter.defaultCenter removeObserver:_volumeDidChangeToken];
     if ( _brightnessDidChangeToken ) [NSNotificationCenter.defaultCenter removeObserver:_brightnessDidChangeToken];
 }
 

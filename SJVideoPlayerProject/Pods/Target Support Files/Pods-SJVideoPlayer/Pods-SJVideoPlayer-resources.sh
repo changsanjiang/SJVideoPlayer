@@ -97,11 +97,13 @@ EOM
   esac
 }
 if [[ "$CONFIGURATION" == "Debug" ]]; then
+  install_resource "${PODS_ROOT}/MJRefresh/MJRefresh/MJRefresh.bundle"
   install_resource "${PODS_ROOT}/SJBaseVideoPlayer/SJBaseVideoPlayer/SJDeviceVolumeAndBrightnessManager/ResourceLoader/SJDeviceVolumeAndBrightnessManager.bundle"
   install_resource "${PODS_ROOT}/../../SJVideoPlayer/SJEdgeControlLayer/ResourceLoader/SJEdgeControlLayer.bundle"
   install_resource "${PODS_ROOT}/../../SJVideoPlayer/SJFilmEditingControlLayer/ResourceLoader/SJFilmEditing.bundle"
 fi
 if [[ "$CONFIGURATION" == "Release" ]]; then
+  install_resource "${PODS_ROOT}/MJRefresh/MJRefresh/MJRefresh.bundle"
   install_resource "${PODS_ROOT}/SJBaseVideoPlayer/SJBaseVideoPlayer/SJDeviceVolumeAndBrightnessManager/ResourceLoader/SJDeviceVolumeAndBrightnessManager.bundle"
   install_resource "${PODS_ROOT}/../../SJVideoPlayer/SJEdgeControlLayer/ResourceLoader/SJEdgeControlLayer.bundle"
   install_resource "${PODS_ROOT}/../../SJVideoPlayer/SJFilmEditingControlLayer/ResourceLoader/SJFilmEditing.bundle"

@@ -26,7 +26,9 @@ target 'SJVideoPlayer' do
   pod 'SJPlaybackListController'#, :path => '../../SJPlaybackListController'
   pod 'SJScrollEntriesView'
   pod 'Masonry', :inhibit_warnings => true
+  pod 'MJRefresh', :inhibit_warnings => true
   pod 'SJRouter'
   pod 'SJScrollEntriesView'
+  pod 'SJUIKit'
   #pod 'MJRefresh', :inhibit_warnings => true
 end

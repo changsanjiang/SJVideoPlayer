@@ -44,7 +44,7 @@
         make.height.equalTo(self->_player.view.mas_width).multipliedBy(9 / 16.0f);
     }];
     
-    _player.URLAsset = [[SJVideoPlayerURLAsset alloc] initWithURL:[NSURL URLWithString:@"https://xy2.v.netease.com/2018/0815/c4f8e15cf43e4404911c2e9d17d89d3fqt.mp4"]];
+    _player.URLAsset = [[SJVideoPlayerURLAsset alloc] initWithURL:[NSURL URLWithString:@"https://xy2.v.netease.com/r/video/20190308/31cbdd25-3cc9-49d4-934c-8d29b54fc15b.mp4"]];
     _player.URLAsset.title = @"一次邂逅, 遇见一生所爱";
     
     _player.hideBackButtonWhenOrientationIsPortrait = YES;

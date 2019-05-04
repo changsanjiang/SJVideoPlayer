@@ -205,6 +205,10 @@
                          subTitle:@"TableView自动播放"
                              path:@"tableView/autoplay"],
       
+      [[Item alloc] initWithTitle:@"TableView Autoplay + MJRefresh"
+                           subTitle:@"TableView自动播放 + MJRefresh"
+                               path:@"tableView/autoplay2"],
+      
       [[Item alloc] initWithTitle:@"CollectionView Autoplay"
                          subTitle:@"CollectionView自动播放"
                              path:@"collectionView/autoplay"],];

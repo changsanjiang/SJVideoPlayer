@@ -1,4 +1,5 @@
 ${PODS_ROOT}/Target Support Files/Pods-SJVideoPlayer/Pods-SJVideoPlayer-resources.sh
+${PODS_ROOT}/MJRefresh/MJRefresh/MJRefresh.bundle
 ${PODS_ROOT}/SJBaseVideoPlayer/SJBaseVideoPlayer/SJDeviceVolumeAndBrightnessManager/ResourceLoader/SJDeviceVolumeAndBrightnessManager.bundle
 ${PODS_ROOT}/../../SJVideoPlayer/SJEdgeControlLayer/ResourceLoader/SJEdgeControlLayer.bundle
 ${PODS_ROOT}/../../SJVideoPlayer/SJFilmEditingControlLayer/ResourceLoader/SJFilmEditing.bundle

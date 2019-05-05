@@ -10,34 +10,24 @@
 
 NS_ASSUME_NONNULL_BEGIN
 NSInteger DemoTableViewCellCoverTag = 101;
-
-@interface DemoTableViewCellViewModel ()
-@end
-
 @implementation DemoTableViewCellViewModel
 @synthesize coverTag = _coverTag;
+@synthesize title = _title;
+@synthesize coverURL = _coverURL;
+@synthesize height = _height;
 
 - (instancetype)initWithModel:(DemoMediaModel *)model {
     self = [super init];
     if ( !self ) return nil;
-    _model = model;
+    _title = model.title;
+    _coverURL = model.coverURL;
+    _playURL = model.playURL;
+    _height = UIScreen.mainScreen.bounds.size.width * 9 / 16.0 + 8;
     return self;
 }
 
 - (NSInteger)coverTag {
     return DemoTableViewCellCoverTag;
-}
-
-- (nullable NSString *)title {
-    return _model.title;
-}
-
-- (nullable NSString *)coverURL {
-    return _model.coverURL;
-}
-
-- (CGFloat)height {
-    return UIScreen.mainScreen.bounds.size.width * 9 / 16.0 + 8;
 }
 @end
 NS_ASSUME_NONNULL_END

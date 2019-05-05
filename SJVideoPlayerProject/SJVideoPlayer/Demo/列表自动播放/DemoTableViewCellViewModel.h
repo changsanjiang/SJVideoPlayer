@@ -15,8 +15,8 @@ extern NSInteger DemoTableViewCellCoverTag;
 
 @interface DemoTableViewCellViewModel : NSObject<DemoTableViewCellDataSoruce>
 - (instancetype)initWithModel:(DemoMediaModel *)model;
-@property (nonatomic, strong, readonly) DemoMediaModel *model;
-- (CGFloat)height;
+@property (nonatomic, copy, readonly) NSString *playURL;
+@property (nonatomic, readonly) CGFloat height;
 
 - (instancetype)init NS_UNAVAILABLE;
 + (instancetype)new NS_UNAVAILABLE;

@@ -17,8 +17,8 @@ NS_ASSUME_NONNULL_BEGIN
 
 @protocol DemoTableViewCellDataSoruce
 @property (nonatomic, readonly) NSInteger coverTag;
-@property (nonatomic, strong, readonly, nullable) NSString *title;
-@property (nonatomic, strong, readonly, nullable) NSString *coverURL;
+@property (nonatomic, copy, readonly, nullable) NSString *title;
+@property (nonatomic, copy, readonly, nullable) NSString *coverURL;
 @end
 
 @protocol DemoTableViewCellDelegate

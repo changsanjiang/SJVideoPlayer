@@ -45,7 +45,8 @@ static NSString *kDemoTableViewCell = @"DemoTableViewCell";
     self.view.backgroundColor = [UIColor whiteColor];
     
     _tableView = [[UITableView alloc] initWithFrame:CGRectZero style:UITableViewStylePlain];
-    _tableView.backgroundColor = [UIColor blackColor];
+    _tableView.separatorStyle = UITableViewCellSeparatorStyleNone;
+    _tableView.backgroundColor = [UIColor whiteColor];
     _tableView.delegate = self;
     _tableView.dataSource = self;
     [self.view addSubview:_tableView];
@@ -124,7 +125,7 @@ static NSString *kDemoTableViewCell = @"DemoTableViewCell";
             _player = [SJVideoPlayer player];
         }
         
-        _player.URLAsset = [[SJVideoPlayerURLAsset alloc] initWithURL:[NSURL URLWithString:vm.model.playURL] playModel:[SJPlayModel UITableViewCellPlayModelWithPlayerSuperviewTag:vm.coverTag atIndexPath:indexPath tableView:self.tableView]];
+        _player.URLAsset = [[SJVideoPlayerURLAsset alloc] initWithURL:[NSURL URLWithString:vm.playURL] playModel:[SJPlayModel UITableViewCellPlayModelWithPlayerSuperviewTag:vm.coverTag atIndexPath:indexPath tableView:self.tableView]];
         _player.URLAsset.title = vm.title;
     }
 }

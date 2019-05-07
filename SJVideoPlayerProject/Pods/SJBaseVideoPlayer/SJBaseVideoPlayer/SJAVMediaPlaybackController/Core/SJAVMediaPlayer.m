@@ -85,6 +85,7 @@ inline static bool isFloatZero(float value) {
         _sj_playbackRate = 1.0;
         _sj_controlInfo = (SJAVMediaPlaybackControlInfo *)calloc(1, sizeof(SJAVMediaPlaybackControlInfo));
         _sj_controlInfo->bufferTimeToContinuePlaying = 2;
+        _sj_controlInfo->specifyStartTime = specifyStartTime;
         [self _sj_prepareToPlay];
     }
     return self;

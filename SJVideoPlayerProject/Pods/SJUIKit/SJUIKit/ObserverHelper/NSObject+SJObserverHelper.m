@@ -45,6 +45,13 @@ NS_ASSUME_NONNULL_BEGIN
 }
 
 - (void)sj_addObserver:(NSObject *)observer forKeyPath:(NSString *)keyPath options:(NSKeyValueObservingOptions)options context:(nullable void *)context {
+    if ( ![NSThread.currentThread isMainThread] ) {
+        dispatch_async(dispatch_get_main_queue(), ^{
+            [self sj_addObserver:observer forKeyPath:keyPath options:options context:context];
+        });
+        return;
+    }
+    
     NSParameterAssert(observer);
     NSParameterAssert(keyPath);
     

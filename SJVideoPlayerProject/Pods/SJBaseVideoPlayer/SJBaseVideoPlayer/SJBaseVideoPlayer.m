@@ -64,6 +64,7 @@ typedef struct _SJPlayerControlInfo {
     
     struct _PlaceholderImageView {
         BOOL hiddenPlaceholderImageViewWhenPlayerIsReadyForDisplay :1;
+        NSTimeInterval delayInSecondsForHiddenPlaceholderImageView;
     } placeholder;
     
     struct _ViewController {
@@ -442,7 +443,7 @@ sj_swizzleMethod(Class cls, SEL originalSelector, SEL swizzledSelector) {
 - (void)_showOrHiddenPlaceholderImageViewIfNeeded {
     if ( _playbackController.isReadyForDisplay ) {
         if ( _controlInfo->placeholder.hiddenPlaceholderImageViewWhenPlayerIsReadyForDisplay ) {
-            [self.presentView hiddenPlaceholderAnimated:YES];
+            [self.presentView hiddenPlaceholderAnimated:YES delay:_controlInfo->placeholder.delayInSecondsForHiddenPlaceholderImageView];
         }
     }
     else {
@@ -645,6 +646,13 @@ sj_swizzleMethod(Class cls, SEL originalSelector, SEL swizzledSelector) {
 
 - (BOOL)hiddenPlaceholderImageViewWhenPlayerIsReadyForDisplay {
     return _controlInfo->placeholder.hiddenPlaceholderImageViewWhenPlayerIsReadyForDisplay;
+}
+
+- (void)setDelayInSecondsForHiddenPlaceholderImageView:(NSTimeInterval)delayInSecondsForHiddenPlaceholderImageView {
+    _controlInfo->placeholder.delayInSecondsForHiddenPlaceholderImageView = delayInSecondsForHiddenPlaceholderImageView;
+}
+- (NSTimeInterval)delayInSecondsForHiddenPlaceholderImageView {
+    return _controlInfo->placeholder.delayInSecondsForHiddenPlaceholderImageView;
 }
 @end
 

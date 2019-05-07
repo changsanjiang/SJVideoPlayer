@@ -14,6 +14,6 @@ NS_ASSUME_NONNULL_BEGIN
 
 @property (nonatomic, readonly) BOOL placeholderImageViewIsHidden;
 - (void)showPlaceholderAnimated:(BOOL)animated;
-- (void)hiddenPlaceholderAnimated:(BOOL)animated;
+- (void)hiddenPlaceholderAnimated:(BOOL)animated delay:(NSTimeInterval)secs;
 @end
 NS_ASSUME_NONNULL_END

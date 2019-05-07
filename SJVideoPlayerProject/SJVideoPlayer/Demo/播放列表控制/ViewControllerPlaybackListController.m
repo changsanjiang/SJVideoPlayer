@@ -176,6 +176,7 @@ static SJEdgeControlButtonItemTag SJEdgeControlButtonItem_PlayNextMedia = 101;
 
 - (void)_initializePlayer {
     _player = [SJVideoPlayer player];
+    _player.delayInSecondsForHiddenPlaceholderImageView = 0.4;
     _player.pauseWhenAppDidEnterBackground = NO;
     _player.defaultEdgeControlLayer.showResidentBackButton = YES;
     [self.view addSubview:_player.view];
@@ -246,7 +247,8 @@ static SJEdgeControlButtonItemTag SJEdgeControlButtonItem_PlayNextMedia = 101;
     }
     
     curAsset.playModel = [SJPlayModel new]; // 设置视图层次模型
-    _player.URLAsset = curAsset;
+    self.player.URLAsset = curAsset;
+    [self.player replay];
     
     NSInteger curIdx = [listController indexForMediaId:media.id];
     // 进行预加载
@@ -256,15 +258,6 @@ static SJEdgeControlButtonItemTag SJEdgeControlButtonItem_PlayNextMedia = 101;
         SJVideoPlayerURLAsset *next = [[SJVideoPlayerURLAsset alloc] initWithURL:nextMedia.URL];
         next.title = nextMedia.title;
         [SJVideoPlayerURLAssetPrefetcher.shared prefetchAsset:next];
-    }
-    
-    // 进行预加载
-    // previous Asset
-    TestMedia *_Nullable previousMedia = [listController mediaAtIndex:curIdx - 1];
-    if ( previousMedia ) {
-        SJVideoPlayerURLAsset *previous = [[SJVideoPlayerURLAsset alloc] initWithURL:previousMedia.URL];
-        previous.title = previousMedia.title;
-        [SJVideoPlayerURLAssetPrefetcher.shared prefetchAsset:previous];
     }
 }
 

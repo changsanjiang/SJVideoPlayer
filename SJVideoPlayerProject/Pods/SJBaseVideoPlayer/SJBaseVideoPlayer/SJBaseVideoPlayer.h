@@ -72,6 +72,10 @@ NS_ASSUME_NONNULL_BEGIN
 /// 播放器准备好显示时, 是否隐藏占位图
 /// - 默认为YES
 @property (nonatomic) BOOL hiddenPlaceholderImageViewWhenPlayerIsReadyForDisplay;
+
+/// 将要隐藏 placeholderImageView 时, 延迟多少秒才去隐藏
+/// - 默认为0
+@property (nonatomic) NSTimeInterval delayInSecondsForHiddenPlaceholderImageView;
 @end
 
 

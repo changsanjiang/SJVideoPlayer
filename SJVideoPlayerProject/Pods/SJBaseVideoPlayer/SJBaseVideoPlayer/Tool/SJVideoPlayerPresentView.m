@@ -13,6 +13,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 @implementation SJVideoPlayerPresentView {
     BOOL _isHidden;
+    BOOL _isDelayed;
 }
 
 @synthesize placeholderImageView = _placeholderImageView;
@@ -34,6 +35,8 @@ NS_ASSUME_NONNULL_BEGIN
 }
 
 - (void)showPlaceholderAnimated:(BOOL)animated {
+    if ( _isDelayed )
+        [NSObject cancelPreviousPerformRequestsWithTarget:self selector:@selector(_hiddenPlaceholderAnimated:) object:nil];
     if ( !_isHidden ) return; _isHidden = NO;
     if ( animated ) {
         [UIView animateWithDuration:0.4 animations:^{
@@ -45,16 +48,29 @@ NS_ASSUME_NONNULL_BEGIN
     }
 }
 
-- (void)hiddenPlaceholderAnimated:(BOOL)animated {
+- (void)hiddenPlaceholderAnimated:(BOOL)animated delay:(NSTimeInterval)secs {
+    if ( _isDelayed )
+        [NSObject cancelPreviousPerformRequestsWithTarget:self selector:@selector(_hiddenPlaceholderAnimated:) object:nil];
     if ( _isHidden ) return; _isHidden = YES;
-    if ( animated ) {
+    if ( secs == 0 ) {
+        [self _hiddenPlaceholderAnimated:@(animated)];
+    }
+    else {
+        [self performSelector:@selector(_hiddenPlaceholderAnimated:) withObject:@(animated) afterDelay:secs];
+        _isDelayed = YES;
+    }
+}
+
+- (void)_hiddenPlaceholderAnimated:(NSNumber *)animated {
+    if ( [animated boolValue] ) {
         [UIView animateWithDuration:0.4 animations:^{
             self->_placeholderImageView.alpha = 0.001;
         }];
     }
     else {
-        _placeholderImageView.alpha = 0.001; 
+        _placeholderImageView.alpha = 0.001;
     }
+    _isDelayed = NO;
 }
 
 - (void)_presentSetupView {
@@ -62,7 +78,7 @@ NS_ASSUME_NONNULL_BEGIN
     self.placeholderImageView.frame = self.bounds;
     _placeholderImageView.autoresizingMask = UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight;
     [self addSubview:_placeholderImageView];
-    [self hiddenPlaceholderAnimated:NO];
+    [self hiddenPlaceholderAnimated:NO delay:0];
 }
 
 - (UIImageView *)placeholderImageView {

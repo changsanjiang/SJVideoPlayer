@@ -411,7 +411,7 @@ _player.URLAsset.specifyStartTime = secs;
 ```Objective-C
 /// otherAsset即为上一个页面播放的Asset
 /// 除了需要一个otherAsset, 其他方面同以上的示例一模一样
-_player.URLAsset = [SJVideoPlayerURLAsset initWithOtherAsset:otherAsset playModel:playModel]; 
+_player.URLAsset = [[SJVideoPlayerURLAsset alloc] initWithOtherAsset:otherAsset playModel:playModel]; 
 ```
 
 <h3 id="2.5">2.5 销毁时的回调. 可在此时做一些记录工作, 如播放位置</h3>

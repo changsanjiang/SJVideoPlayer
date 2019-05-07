@@ -54,7 +54,9 @@ static NSString *kDemoTableViewCell = @"DemoTableViewCell";
         make.edges.offset(0);
     }];
     
-    [self.tableView sj_enableAutoplayWithConfig:[SJPlayerAutoplayConfig configWithPlayerSuperviewTag:DemoTableViewCellCoverTag autoplayDelegate:self]];
+    SJPlayerAutoplayConfig *config = [SJPlayerAutoplayConfig configWithPlayerSuperviewTag:DemoTableViewCellCoverTag autoplayDelegate:self];
+    config.autoplayPosition = SJAutoplayPositionTop;
+    [self.tableView sj_enableAutoplayWithConfig:config];
     
     NSArray<NSString *> *titles = @[@"一次邂逅, 遇见一生所爱", @"十五年前, 一见钟情", @"十五年后, 再次相遇"];
     NSArray<NSString *> *playURLs =

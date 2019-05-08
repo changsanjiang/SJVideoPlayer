@@ -31,11 +31,13 @@ NS_ASSUME_NONNULL_BEGIN
 NS_ASSUME_NONNULL_END
 
 #if __has_include(<SDWebImage/UIImageView+WebCache.h>)
-#import <SDWebImage/UIImage+Transform.h>
 NS_ASSUME_NONNULL_BEGIN
 @interface UIImageView (AsyncLoadRoundCornerImage)
-/// - radius: 请填百分比, 例如视图宽高为10, 切圆角2, 则填 2/10.0
-- (void)asyncLoadImageWithURL:(NSURL *)URL cornerRadius:(float)radius corners:(SDRectCorner)corners borderWidth:(CGFloat)borderWidth borderColor:(nullable UIColor *)borderColor;
+/// 四边切圆角
+- (void)asyncLoadImageWithURL:(NSURL *)URL cornerRadius:(float)radius corners:(UIRectCorner)corners borderWidth:(CGFloat)borderWidth borderColor:(nullable UIColor *)borderColor placeholderImage:(nullable UIImage *)placeholderImage;
+
+/// 切圆
+- (void)asyncLoadRoundedImageWithURL:(NSURL *)URL borderWidth:(CGFloat)borderWidth borderColor:(nullable UIColor *)borderColor placeholderImage:(nullable UIImage *)placeholderImage;
 @end
 NS_ASSUME_NONNULL_END
 #endif

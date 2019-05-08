@@ -45,13 +45,6 @@ NS_ASSUME_NONNULL_BEGIN
 }
 
 - (void)sj_addObserver:(NSObject *)observer forKeyPath:(NSString *)keyPath options:(NSKeyValueObservingOptions)options context:(nullable void *)context {
-    if ( ![NSThread.currentThread isMainThread] ) {
-        dispatch_async(dispatch_get_main_queue(), ^{
-            [self sj_addObserver:observer forKeyPath:keyPath options:options context:context];
-        });
-        return;
-    }
-    
     NSParameterAssert(observer);
     NSParameterAssert(keyPath);
     
@@ -59,8 +52,10 @@ NS_ASSUME_NONNULL_BEGIN
     
     NSString *hashstr = [NSString stringWithFormat:@"%lu-%@", (unsigned long)[observer hash], keyPath];
     
-    if ( [[self sj_observerhashSet] containsObject:hashstr] ) return;
-    else [[self sj_observerhashSet] addObject:hashstr];
+    @synchronized (self) {
+        if ( [[self sj_observerhashSet] containsObject:hashstr] ) return;
+        else [[self sj_observerhashSet] addObject:hashstr];
+    }
     
     [self addObserver:observer forKeyPath:keyPath options:NSKeyValueObservingOptionOld | NSKeyValueObservingOptionNew context:context];
     

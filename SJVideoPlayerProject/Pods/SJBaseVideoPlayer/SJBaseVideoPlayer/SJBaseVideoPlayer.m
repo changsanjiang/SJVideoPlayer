@@ -305,7 +305,7 @@ sj_swizzleMethod(Class cls, SEL originalSelector, SEL swizzledSelector) {
 }
 
 + (NSString *)version {
-    return @"2.4.2";
+    return @"2.4.4";
 }
 
 - (nullable __kindof UIViewController *)atViewController {
@@ -381,23 +381,14 @@ sj_swizzleMethod(Class cls, SEL originalSelector, SEL swizzledSelector) {
     /// 所有播放状态, 均在`PlayControl`分类中维护
     _playStatus = playStatus;
     
+#ifdef DEBUG
+    printf("%s\n", [self getPlayStatusStr:playStatus].UTF8String);
+#endif
+    
     if ( _playStatusDidChangeExeBlock )
         _playStatusDidChangeExeBlock(self);
     
     [self _showOrHiddenPlaceholderImageViewIfNeeded];
-    
-    if ( [self playStatus_isInactivity_ReasonPlayEnd] ) {
-        if ( self.playDidToEndExeBlock ) {
-            self.playDidToEndExeBlock(self);
-        }
-        // auto play next visible asset
-        if ( self.view.window ) {
-            UIScrollView *scrollView = sj_getScrollView(_URLAsset.playModel);
-            if ( scrollView.sj_enabledAutoplay ) {
-                [scrollView sj_playNextVisibleAsset];
-            }
-        }
-    }
     
     if ( [self playStatus_isPaused_ReasonPause] ) {
         if ( self.pausedToKeepAppearState ) {
@@ -416,10 +407,19 @@ sj_swizzleMethod(Class cls, SEL originalSelector, SEL swizzledSelector) {
         }
 #pragma clang diagnostic pop
     }
-
-#ifdef DEBUG
-    printf("%s\n", [self getPlayStatusStr:playStatus].UTF8String);
-#endif
+    
+    if ( [self playStatus_isInactivity_ReasonPlayEnd] ) {
+        if ( self.playDidToEndExeBlock ) {
+            self.playDidToEndExeBlock(self);
+        }
+        // auto play next visible asset
+        if ( self.view.window ) {
+            UIScrollView *scrollView = sj_getScrollView(_URLAsset.playModel);
+            if ( scrollView.sj_enabledAutoplay ) {
+                [scrollView sj_playNextVisibleAsset];
+            }
+        }
+    }
 }
 
 - (void)setControlLayerDataSource:(nullable id<SJVideoPlayerControlLayerDataSource>)controlLayerDataSource {

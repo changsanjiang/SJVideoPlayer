@@ -55,6 +55,7 @@ UIKIT_EXTERN NSNotificationName const SJAVMediaItemStatusDidChangeNotification;
 - (void)play;
 - (void)replay;
 - (void)pause;
+- (void)reset;
 
 - (void)report; ///< post 当前播放状态
 @end

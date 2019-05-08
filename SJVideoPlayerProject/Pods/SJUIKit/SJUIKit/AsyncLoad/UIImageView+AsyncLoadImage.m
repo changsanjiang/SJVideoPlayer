@@ -9,6 +9,7 @@
 #import "UIImageView+AsyncLoadImage.h"
 #import <objc/message.h>
 #import "SJAsyncLoader.h"
+#import "NSObject+SJObserverHelper.h"
 
 NS_ASSUME_NONNULL_BEGIN
 @implementation UIImageView (AsyncLoadImage)
@@ -59,64 +60,90 @@ NS_ASSUME_NONNULL_END
 
 #if __has_include(<SDWebImage/UIImageView+WebCache.h>)
 #import <SDWebImage/UIImageView+WebCache.h>
-#import <SDWebImage/SDImageTransformer.h>
-#import <SDWebImage/UIImage+Transform.h>
-
 NS_ASSUME_NONNULL_BEGIN
-@interface SJImageRoundCornerTransformer : SDImageRoundCornerTransformer
-@property (nonatomic, assign) CGFloat cornerRadius;
-@property (nonatomic, assign) SDRectCorner corners;
-@property (nonatomic, assign) CGFloat borderWidth;
-@property (nonatomic, strong, nullable) UIColor *borderColor;
-@end
-
-@implementation SJImageRoundCornerTransformer
-@dynamic cornerRadius, corners, borderWidth, borderColor;
-+ (instancetype)transformerWithRadius:(CGFloat)cornerRadius corners:(SDRectCorner)corners borderWidth:(CGFloat)borderWidth borderColor:(UIColor *_Nullable)borderColor {
-    SJImageRoundCornerTransformer *transformer = [SJImageRoundCornerTransformer new];
-    transformer.cornerRadius = cornerRadius;
-    transformer.corners = corners;
-    transformer.borderWidth = borderWidth;
-    transformer.borderColor = borderColor;
-    return transformer;
-}
-- (nullable UIImage *)transformedImageWithImage:(nonnull UIImage *)image forKey:(nonnull NSString *)key {
-    if ( !image )
-        return nil;
-    CGSize size = image.size;
-    return [image sd_roundedCornerImageWithRadius:self.cornerRadius * MIN(size.width, size.height) corners:self.corners borderWidth:self.borderWidth borderColor:self.borderColor];
-}
-@end
-
-@interface SJImageFittingSizeTransformer : NSObject<SDImageTransformer>
-- (instancetype)initWithView:(UIView *)view;
-@property (nonatomic, weak, readonly, nullable) UIView *view;
-@end
-
-@implementation SJImageFittingSizeTransformer
-- (instancetype)initWithView:(UIView *)view {
-    self = [super init];
-    if ( self ) {
-        _view = view;
-    }
-    return self;
-}
-- (NSString *)transformerKey {
-    return [NSString stringWithFormat:@"SJImageFittingSizeTransformer(%f, %f)", ceil(_view.bounds.size.width), ceil(_view.bounds.size.height)];
-}
-
-- (nullable UIImage *)transformedImageWithImage:(UIImage *)image forKey:(NSString *)key {
-    if (!image) {
-        return nil;
-    }
-    return [image sd_resizedImageWithSize:_view.bounds.size scaleMode:SDImageScaleModeAspectFill];
-}
-@end
-
 @implementation UIImageView (AsyncLoadRoundCornerImage)
-/// - radius: 请填百分比
-- (void)asyncLoadImageWithURL:(NSURL *)URL cornerRadius:(float)radius corners:(SDRectCorner)corners borderWidth:(CGFloat)borderWidth borderColor:(UIColor * _Nullable)borderColor {
-    [self sd_setImageWithURL:URL placeholderImage:nil options:SDWebImageDelayPlaceholder context:@{SDWebImageContextImageTransformer:[SJImageRoundCornerTransformer transformerWithRadius:radius corners:corners borderWidth:borderWidth borderColor:borderColor]}];
+- (void)asyncLoadImageWithURL:(NSURL *)URL cornerRadius:(float)radius corners:(UIRectCorner)corners borderWidth:(CGFloat)borderWidth borderColor:(nullable UIColor *)borderColor placeholderImage:(nullable UIImage *)placeholderImage {
+    [self sd_setImageWithURL:URL placeholderImage:placeholderImage];
+    
+    if ( !self.layer.mask && radius != 0 && corners != 0 ) {
+        CAShapeLayer *mask = [[CAShapeLayer alloc] init];
+        self.layer.mask = mask;
+        
+        CAShapeLayer *_Nullable border = nil;
+        if ( borderWidth != 0 && borderColor != nil ) {
+            border = [[CAShapeLayer alloc] init];
+            border.strokeColor = borderColor.CGColor;
+            border.lineWidth = borderWidth;
+            border.fillColor = UIColor.clearColor.CGColor;
+            [self.layer addSublayer:border];
+        }
+        
+        __auto_type updateSublayersLayout = ^(UIImageView *imageView, CAShapeLayer *mask, CAShapeLayer *_Nullable border) {
+            CGRect bounds = imageView.bounds;
+            if ( !CGSizeEqualToSize(CGSizeZero, bounds.size) ) {
+                {
+                    mask.frame = bounds;
+                    UIBezierPath *path = [UIBezierPath bezierPathWithRoundedRect:bounds byRoundingCorners:corners cornerRadii:CGSizeMake(radius, radius)];
+                    mask.path = path.CGPath;
+                }
+                
+                if ( border != nil ) {
+                    border.frame = bounds;
+                    border.path = mask.path;
+                }
+            }
+        };
+        
+        sjkvo_observe(self, @"frame", ^(id  _Nonnull target, NSDictionary<NSKeyValueChangeKey,id> * _Nullable change) {
+            updateSublayersLayout(target, mask, border);
+        });
+        
+        sjkvo_observe(self, @"bounds", ^(id  _Nonnull target, NSDictionary<NSKeyValueChangeKey,id> * _Nullable change) {
+            updateSublayersLayout(target, mask, border);
+        });
+    }
+}
+
+- (void)asyncLoadRoundedImageWithURL:(NSURL *)URL borderWidth:(CGFloat)borderWidth borderColor:(nullable UIColor *)borderColor placeholderImage:(nullable UIImage *)placeholderImage {
+    [self sd_setImageWithURL:URL placeholderImage:placeholderImage];
+    
+    if ( !self.layer.mask ) {
+        CAShapeLayer *mask = [[CAShapeLayer alloc] init];
+        self.layer.mask = mask;
+        
+        CAShapeLayer *_Nullable border = nil;
+        if ( borderWidth != 0 && borderColor != nil ) {
+            border = [[CAShapeLayer alloc] init];
+            border.strokeColor = borderColor.CGColor;
+            border.lineWidth = borderWidth;
+            border.fillColor = UIColor.clearColor.CGColor;
+            [self.layer addSublayer:border];
+        }
+
+        __auto_type updateSublayersLayout = ^(UIImageView *imageView, CAShapeLayer *mask, CAShapeLayer *_Nullable border) {
+            CGRect bounds = imageView.bounds;
+            if ( !CGSizeEqualToSize(CGSizeZero, bounds.size) ) {
+                {
+                    mask.frame = bounds;
+                    UIBezierPath *path = [UIBezierPath bezierPathWithArcCenter:CGPointMake(bounds.size.width * 0.5, bounds.size.width * 0.5) radius:bounds.size.width * 0.5 startAngle:0 endAngle:M_PI * 2 clockwise:YES];
+                    mask.path = path.CGPath;
+                }
+                
+                if ( border != nil) {
+                    border.frame = bounds;
+                    border.path = mask.path;
+                }
+            }
+        };
+        
+        sjkvo_observe(self, @"frame", ^(id  _Nonnull target, NSDictionary<NSKeyValueChangeKey,id> * _Nullable change) {
+            updateSublayersLayout(target, mask, border);
+        });
+        
+        sjkvo_observe(self, @"bounds", ^(id  _Nonnull target, NSDictionary<NSKeyValueChangeKey,id> * _Nullable change) {
+            updateSublayersLayout(target, mask, border);
+        });
+    }
 }
 @end
 NS_ASSUME_NONNULL_END

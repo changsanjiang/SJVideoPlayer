@@ -491,6 +491,22 @@ inline static bool isFloatZero(float value) {
     _sj_controlInfo->isPlaying = NO;
     [super pause];
 }
+- (void)reset {
+    if ( _sj_controlInfo->prepareStatus == SJAVMediaPrepareStatusSuccessfullyToPrepare ) {
+        _sj_controlInfo->isPlayed = NO;
+        _sj_controlInfo->isPaused = NO;
+        _sj_controlInfo->isPlaying = NO;
+        _sj_controlInfo->isPlayedToEndTime = NO;
+        
+        if ( _sj_controlInfo->seekingInfo.isSeeking ) {
+            [self.currentItem cancelPendingSeeks];
+            _sj_controlInfo->seekingInfo.isSeeking = NO;
+            _sj_controlInfo->seekingInfo.time = kCMTimeZero;
+        }
+        [self seekToTime:kCMTimeZero];
+        [super pause];
+    }
+}
 - (void)report {
     [self _postNotificationWithName:SJAVMediaPlaybackStatusDidChangeNotification];
     [self _postNotificationWithName:SJAVMediaBufferStatusDidChangeNotification];
@@ -623,6 +639,8 @@ inline static bool isFloatZero(float value) {
                 /// - AVPlayerWaitingWhileEvaluatingBufferingRateReason
                 /// It is recommended that you do not show UI indicating a waiting state to the user when this is the reason the player is in a wait state.
                 /// 正在监视回放缓冲区的填充率，以确定回放是否可能在没有中断的情况下完成。
+                if ( self.reasonForWaitingToPlay == AVPlayerWaitingWhileEvaluatingBufferingRateReason )
+                    return SJPlayerBufferStatusPlayable;
                 
                 /// - AVPlayerWaitingToMinimizeStallsReason
                 /// Playback will continue when playback can continue without a stall at the player specified rate. Playback will also continue if the player item’s playback buffer becomes full and no further buffering of media data is possible.

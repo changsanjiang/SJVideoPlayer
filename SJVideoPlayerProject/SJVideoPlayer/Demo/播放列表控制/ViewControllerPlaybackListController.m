@@ -32,6 +32,9 @@
 
 - (void)viewDidLoad {
     [super viewDidLoad];
+    
+    SJVideoPlayerURLAssetPrefetcher.shared.maxCount = 5;
+    
     [self _initializePlayer];
     [self _initializePlaybackListController];
     [self _initializeListControllerObserver];
@@ -244,11 +247,11 @@ static SJEdgeControlButtonItemTag SJEdgeControlButtonItem_PlayNextMedia = 101;
         // 创建一个新的资源
         curAsset = [[SJVideoPlayerURLAsset alloc] initWithURL:testMedia.URL];
         curAsset.title = testMedia.title;
+        [SJVideoPlayerURLAssetPrefetcher.shared prefetchAsset:curAsset];
     }
     
     curAsset.playModel = [SJPlayModel new]; // 设置视图层次模型
     self.player.URLAsset = curAsset;
-    [self.player replay];
     
     NSInteger curIdx = [listController indexForMediaId:media.id];
     // 进行预加载

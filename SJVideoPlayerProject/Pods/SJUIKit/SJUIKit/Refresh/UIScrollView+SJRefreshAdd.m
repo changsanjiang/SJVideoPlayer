@@ -241,6 +241,9 @@ char const SJRefreshingNonePageSize = -1;
 }
 
 - (void)sj_exeHeaderRefreshingAnimated:(BOOL)animated {
+    if ( self.mj_header.state == MJRefreshStateRefreshing ) {
+        return;
+    }
     if ( self.mj_header.state != MJRefreshStateIdle ) [self.mj_header endRefreshing];
     if ( animated ) {
         [self.mj_header beginRefreshing];
@@ -251,6 +254,9 @@ char const SJRefreshingNonePageSize = -1;
 }
 
 - (void)sj_exeFooterRefreshing {
+    if ( self.mj_footer.state == MJRefreshStateRefreshing ) {
+        return;
+    }
     self.mj_footer.hidden = NO;
     if ( self.mj_footer.state != MJRefreshStateIdle ) [self.mj_footer endRefreshing];
     [self.mj_footer beginRefreshing];

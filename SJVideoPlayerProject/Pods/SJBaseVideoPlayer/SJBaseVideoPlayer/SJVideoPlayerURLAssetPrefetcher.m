@@ -69,7 +69,7 @@ NS_ASSUME_NONNULL_BEGIN
     if (  asset ) {
         for ( NSInteger i = 0 ; i < _m.count ; ++ i ) {
             SJVideoPlayerURLAsset *a = _m[i];
-            if ( a == asset ) {
+            if ( a == asset || [a.mediaURL isEqual:asset.mediaURL] ) {
                 return i;
             }
         }

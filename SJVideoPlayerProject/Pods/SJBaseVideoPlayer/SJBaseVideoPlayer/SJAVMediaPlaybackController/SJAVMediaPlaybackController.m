@@ -69,8 +69,7 @@ NS_ASSUME_NONNULL_BEGIN
     });
     
     [self sj_observeWithNotification:SJAVMediaPlaybackStatusDidChangeNotification target:nil usingBlock:^(SJAVMediaPlaybackController *self, NSNotification * _Nonnull note) {
-        id<SJAVMediaPlayerProtocol> player = self.player;
-        if ( player == note.object ) {
+        if ( self.player == note.object ) {
             [self _playStatusDidChange];
         }
     }];
@@ -289,13 +288,11 @@ NS_ASSUME_NONNULL_BEGIN
     [SJAVMediaPlayerLoader loadPlayerForMedia:_media completionHandler:^(id<SJMediaModelProtocol>  _Nonnull media, id<SJAVMediaPlayerProtocol>  _Nonnull player) {
         __strong typeof(_self) self = _self;
         if ( !self ) return;
-        SJRunLoopTaskQueue.main.enqueue(^{
-            if ( media == self.media ) {
-                self.player = player;
-                [self.player report];
-                [self _resetMainPresenterIfNeeded];
-            }
-        });
+        if ( media == self.media ) {
+            self.player = player;
+            [self.player report];
+            [self _resetMainPresenterIfNeeded];
+        }
     }];
 }
 

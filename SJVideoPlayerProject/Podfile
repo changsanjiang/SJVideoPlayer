@@ -17,7 +17,7 @@ target 'SJVideoPlayer' do
 
   # Pods for SJVideoPlayer
 
-  #pod 'SJBaseVideoPlayer', :path => '../../SJBaseVideoPlayer'
+  pod 'SJBaseVideoPlayer'#, :path => '../../SJBaseVideoPlayer'
   pod 'SJVideoPlayer', :path => '../../SJVideoPlayer'
   
   

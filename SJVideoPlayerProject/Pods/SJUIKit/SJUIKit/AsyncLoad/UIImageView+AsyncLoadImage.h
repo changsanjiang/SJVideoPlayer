@@ -34,7 +34,7 @@ NS_ASSUME_NONNULL_END
 NS_ASSUME_NONNULL_BEGIN
 @interface UIImageView (AsyncLoadRoundCornerImage)
 /// 四边切圆角
-- (void)asyncLoadImageWithURL:(NSURL *)URL cornerRadius:(float)radius corners:(UIRectCorner)corners borderWidth:(CGFloat)borderWidth borderColor:(nullable UIColor *)borderColor placeholderImage:(nullable UIImage *)placeholderImage;
+- (void)asyncLoadImageWithURL:(NSURL *)URL cornerRadius:(CGFloat)radius corners:(UIRectCorner)corners borderWidth:(CGFloat)borderWidth borderColor:(nullable UIColor *)borderColor placeholderImage:(nullable UIImage *)placeholderImage;
 
 /// 切圆
 - (void)asyncLoadRoundedImageWithURL:(NSURL *)URL borderWidth:(CGFloat)borderWidth borderColor:(nullable UIColor *)borderColor placeholderImage:(nullable UIImage *)placeholderImage;

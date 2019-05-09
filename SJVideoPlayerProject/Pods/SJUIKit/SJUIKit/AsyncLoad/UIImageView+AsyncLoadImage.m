@@ -9,7 +9,6 @@
 #import "UIImageView+AsyncLoadImage.h"
 #import <objc/message.h>
 #import "SJAsyncLoader.h"
-#import "NSObject+SJObserverHelper.h"
 
 NS_ASSUME_NONNULL_BEGIN
 @implementation UIImageView (AsyncLoadImage)
@@ -60,90 +59,17 @@ NS_ASSUME_NONNULL_END
 
 #if __has_include(<SDWebImage/UIImageView+WebCache.h>)
 #import <SDWebImage/UIImageView+WebCache.h>
+#import "SJCornerMask.h"
 NS_ASSUME_NONNULL_BEGIN
 @implementation UIImageView (AsyncLoadRoundCornerImage)
-- (void)asyncLoadImageWithURL:(NSURL *)URL cornerRadius:(float)radius corners:(UIRectCorner)corners borderWidth:(CGFloat)borderWidth borderColor:(nullable UIColor *)borderColor placeholderImage:(nullable UIImage *)placeholderImage {
+- (void)asyncLoadImageWithURL:(NSURL *)URL cornerRadius:(CGFloat)radius corners:(UIRectCorner)corners borderWidth:(CGFloat)borderWidth borderColor:(nullable UIColor *)borderColor placeholderImage:(nullable UIImage *)placeholderImage {
     [self sd_setImageWithURL:URL placeholderImage:placeholderImage];
-    
-    if ( !self.layer.mask && radius != 0 && corners != 0 ) {
-        CAShapeLayer *mask = [[CAShapeLayer alloc] init];
-        self.layer.mask = mask;
-        
-        CAShapeLayer *_Nullable border = nil;
-        if ( borderWidth != 0 && borderColor != nil ) {
-            border = [[CAShapeLayer alloc] init];
-            border.strokeColor = borderColor.CGColor;
-            border.lineWidth = borderWidth;
-            border.fillColor = UIColor.clearColor.CGColor;
-            [self.layer addSublayer:border];
-        }
-        
-        __auto_type updateSublayersLayout = ^(UIImageView *imageView, CAShapeLayer *mask, CAShapeLayer *_Nullable border) {
-            CGRect bounds = imageView.bounds;
-            if ( !CGSizeEqualToSize(CGSizeZero, bounds.size) ) {
-                {
-                    mask.frame = bounds;
-                    UIBezierPath *path = [UIBezierPath bezierPathWithRoundedRect:bounds byRoundingCorners:corners cornerRadii:CGSizeMake(radius, radius)];
-                    mask.path = path.CGPath;
-                }
-                
-                if ( border != nil ) {
-                    border.frame = bounds;
-                    border.path = mask.path;
-                }
-            }
-        };
-        
-        sjkvo_observe(self, @"frame", ^(id  _Nonnull target, NSDictionary<NSKeyValueChangeKey,id> * _Nullable change) {
-            updateSublayersLayout(target, mask, border);
-        });
-        
-        sjkvo_observe(self, @"bounds", ^(id  _Nonnull target, NSDictionary<NSKeyValueChangeKey,id> * _Nullable change) {
-            updateSublayersLayout(target, mask, border);
-        });
-    }
+    SJCornerMaskSetRectCorner(self, corners, radius, borderWidth, borderColor);
 }
 
 - (void)asyncLoadRoundedImageWithURL:(NSURL *)URL borderWidth:(CGFloat)borderWidth borderColor:(nullable UIColor *)borderColor placeholderImage:(nullable UIImage *)placeholderImage {
     [self sd_setImageWithURL:URL placeholderImage:placeholderImage];
-    
-    if ( !self.layer.mask ) {
-        CAShapeLayer *mask = [[CAShapeLayer alloc] init];
-        self.layer.mask = mask;
-        
-        CAShapeLayer *_Nullable border = nil;
-        if ( borderWidth != 0 && borderColor != nil ) {
-            border = [[CAShapeLayer alloc] init];
-            border.strokeColor = borderColor.CGColor;
-            border.lineWidth = borderWidth;
-            border.fillColor = UIColor.clearColor.CGColor;
-            [self.layer addSublayer:border];
-        }
-
-        __auto_type updateSublayersLayout = ^(UIImageView *imageView, CAShapeLayer *mask, CAShapeLayer *_Nullable border) {
-            CGRect bounds = imageView.bounds;
-            if ( !CGSizeEqualToSize(CGSizeZero, bounds.size) ) {
-                {
-                    mask.frame = bounds;
-                    UIBezierPath *path = [UIBezierPath bezierPathWithArcCenter:CGPointMake(bounds.size.width * 0.5, bounds.size.width * 0.5) radius:bounds.size.width * 0.5 startAngle:0 endAngle:M_PI * 2 clockwise:YES];
-                    mask.path = path.CGPath;
-                }
-                
-                if ( border != nil) {
-                    border.frame = bounds;
-                    border.path = mask.path;
-                }
-            }
-        };
-        
-        sjkvo_observe(self, @"frame", ^(id  _Nonnull target, NSDictionary<NSKeyValueChangeKey,id> * _Nullable change) {
-            updateSublayersLayout(target, mask, border);
-        });
-        
-        sjkvo_observe(self, @"bounds", ^(id  _Nonnull target, NSDictionary<NSKeyValueChangeKey,id> * _Nullable change) {
-            updateSublayersLayout(target, mask, border);
-        });
-    }
+    SJCornerMaskSetRound(self, borderWidth, borderColor);
 }
 @end
 NS_ASSUME_NONNULL_END

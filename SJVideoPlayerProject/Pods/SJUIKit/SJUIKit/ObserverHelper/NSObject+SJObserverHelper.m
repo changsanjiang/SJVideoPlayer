@@ -57,7 +57,7 @@ NS_ASSUME_NONNULL_BEGIN
         else [[self sj_observerhashSet] addObject:hashstr];
     }
     
-    [self addObserver:observer forKeyPath:keyPath options:NSKeyValueObservingOptionOld | NSKeyValueObservingOptionNew context:context];
+    [self addObserver:observer forKeyPath:keyPath options:options context:context];
     
     __SJKVOAutoremove *helper = [__SJKVOAutoremove new];
     __SJKVOAutoremove *sub = [__SJKVOAutoremove new];

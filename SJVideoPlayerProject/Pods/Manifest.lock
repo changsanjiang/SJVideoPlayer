@@ -86,40 +86,43 @@ PODS:
   - SJRouter/Core (0.0.11)
   - SJScrollEntriesView (1.1.0):
     - Masonry
-  - SJUIKit (0.0.0.27):
-    - SJUIKit/AsyncLoad (= 0.0.0.27)
-    - SJUIKit/AttributesFactory (= 0.0.0.27)
-    - SJUIKit/Base (= 0.0.0.27)
-    - SJUIKit/Date (= 0.0.0.27)
-    - SJUIKit/ObserverHelper (= 0.0.0.27)
-    - SJUIKit/Other (= 0.0.0.27)
-    - SJUIKit/Queues (= 0.0.0.27)
-    - SJUIKit/Refresh (= 0.0.0.27)
-    - SJUIKit/Thread (= 0.0.0.27)
-    - SJUIKit/UIMaker (= 0.0.0.27)
-  - SJUIKit/AsyncLoad (0.0.0.27):
+  - SJUIKit (0.0.0.28):
+    - SJUIKit/AsyncLoad (= 0.0.0.28)
+    - SJUIKit/AttributesFactory (= 0.0.0.28)
+    - SJUIKit/Base (= 0.0.0.28)
+    - SJUIKit/CornerMask (= 0.0.0.28)
+    - SJUIKit/Date (= 0.0.0.28)
+    - SJUIKit/ObserverHelper (= 0.0.0.28)
+    - SJUIKit/Other (= 0.0.0.28)
+    - SJUIKit/Queues (= 0.0.0.28)
+    - SJUIKit/Refresh (= 0.0.0.28)
+    - SJUIKit/Thread (= 0.0.0.28)
+    - SJUIKit/UIMaker (= 0.0.0.28)
+  - SJUIKit/AsyncLoad (0.0.0.28):
+    - SJUIKit/CornerMask
+  - SJUIKit/AttributesFactory (0.0.0.28):
+    - SJUIKit/AttributesFactory/Deprecated (= 0.0.0.28)
+    - SJUIKit/AttributesFactory/UIKitText (= 0.0.0.28)
+  - SJUIKit/AttributesFactory/Deprecated (0.0.0.28)
+  - SJUIKit/AttributesFactory/UIKitText (0.0.0.28)
+  - SJUIKit/Base (0.0.0.28):
+    - SJUIKit/Base/Core (= 0.0.0.28)
     - SJUIKit/ObserverHelper
-  - SJUIKit/AttributesFactory (0.0.0.27):
-    - SJUIKit/AttributesFactory/Deprecated (= 0.0.0.27)
-    - SJUIKit/AttributesFactory/UIKitText (= 0.0.0.27)
-  - SJUIKit/AttributesFactory/Deprecated (0.0.0.27)
-  - SJUIKit/AttributesFactory/UIKitText (0.0.0.27)
-  - SJUIKit/Base (0.0.0.27):
-    - SJUIKit/Base/Core (= 0.0.0.27)
+  - SJUIKit/Base/Core (0.0.0.28):
     - SJUIKit/ObserverHelper
-  - SJUIKit/Base/Core (0.0.0.27):
+  - SJUIKit/CornerMask (0.0.0.28):
     - SJUIKit/ObserverHelper
-  - SJUIKit/Date (0.0.0.27)
-  - SJUIKit/ObserverHelper (0.0.0.27)
-  - SJUIKit/Other (0.0.0.27):
+  - SJUIKit/Date (0.0.0.28)
+  - SJUIKit/ObserverHelper (0.0.0.28)
+  - SJUIKit/Other (0.0.0.28):
     - SJUIKit/Date
-  - SJUIKit/Queues (0.0.0.27)
-  - SJUIKit/Refresh (0.0.0.27):
+  - SJUIKit/Queues (0.0.0.28)
+  - SJUIKit/Refresh (0.0.0.28):
     - MJRefresh
-  - SJUIKit/Thread (0.0.0.27)
-  - SJUIKit/UIMaker (0.0.0.27):
-    - SJUIKit/UIMaker/Core (= 0.0.0.27)
-  - SJUIKit/UIMaker/Core (0.0.0.27)
+  - SJUIKit/Thread (0.0.0.28)
+  - SJUIKit/UIMaker (0.0.0.28):
+    - SJUIKit/UIMaker/Core (= 0.0.0.28)
+  - SJUIKit/UIMaker/Core (0.0.0.28)
   - SJVideoPlayer (2.5.7):
     - Masonry
     - SJBaseVideoPlayer (>= 2.4.1)
@@ -274,7 +277,7 @@ SPEC CHECKSUMS:
   SJPlaybackListController: bb150965596f46cc5542b37c05d8401601db4022
   SJRouter: 62dd20b18a199ca9d251817449b901f9228daad1
   SJScrollEntriesView: 2388fec9dbb6ab639f8966de036394eeb753617d
-  SJUIKit: b43749089a1a57b7774fd63ceb9afa954e575b85
+  SJUIKit: 5809186aba80c089e90e7c8337eb95b5e42c7c87
   SJVideoPlayer: 9f819f56c17b0f5520a24fb2caffd06bac893343
 
 PODFILE CHECKSUM: 46cb95af908d9f530a878c2963cca6ecd5c8b512

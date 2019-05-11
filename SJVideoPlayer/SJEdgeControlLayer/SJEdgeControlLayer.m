@@ -87,9 +87,9 @@ SJEdgeControlButtonItemTag const SJEdgeControlLayerCenterItem_Replay = 40000;
 /// 切换器(player.switcher)重启该控制层
 - (void)restartControlLayer {
     _restarted = YES;
+    sj_view_makeAppear(self.controlView, YES);
     if ( _videoPlayer.URLAsset ) {
         [_videoPlayer controlLayerNeedAppear];
-        sj_view_makeAppear(self.controlView, YES);
     }
     else {
         [_videoPlayer controlLayerNeedDisappear];

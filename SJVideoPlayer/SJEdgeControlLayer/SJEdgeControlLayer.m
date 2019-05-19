@@ -79,6 +79,8 @@ SJEdgeControlButtonItemTag const SJEdgeControlLayerCenterItem_Replay = 40000;
 @property (nonatomic, strong, readonly) UIButton *residentBackButton;
 @property (nonatomic, strong, readonly) SJEdgeControlButtonItem *backItem;
 @property (nonatomic, strong, nullable) id<SJReachabilityObserver> reachabilityObserver;
+
+@property (nonatomic, strong, nullable) NSString *durationStr;
 @end
 
 @implementation SJEdgeControlLayer
@@ -443,27 +445,28 @@ SJEdgeControlButtonItemTag const SJEdgeControlLayerCenterItem_Replay = 40000;
         make.append(currentTimeStr).font([UIFont systemFontOfSize:11]).textColor([UIColor whiteColor]).alignment(NSTextAlignmentCenter);
     }];
     
-    [_bottomAdapter updateContentForItemWithTag:SJEdgeControlLayerBottomItem_CurrentTime];
-    
-    if ( ![durationStr isEqualToString:durationTimeItem.title.string?:@""] ) {
+    if ( [durationStr isEqualToString:_durationStr?:@""] ) {
+        [_bottomAdapter updateContentForItemWithTag:SJEdgeControlLayerBottomItem_CurrentTime];
+    }
+    else {
+        _durationStr = durationStr;
         durationTimeItem.title = [NSAttributedString sj_UIKitText:^(id<SJUIKitTextMakerProtocol>  _Nonnull make) {
             make.append(durationStr).font([UIFont systemFontOfSize:11]).textColor([UIColor whiteColor]).alignment(NSTextAlignmentCenter);
         }];
-        currentTimeItem.size = durationTimeItem.size = [self _timeLabelMaxWidthByDurationStr:durationStr];
+        
+        // 00:00
+        // 00:00:00
+        NSString *ms = @"00:00";
+        NSString *hms = @"00:00:00";
+        NSString *format = (durationStr.length == ms.length)?ms:hms;
+        CGSize formatSize = [[NSAttributedString sj_UIKitText:^(id<SJUIKitTextMakerProtocol>  _Nonnull make) {
+            make.append(format).font([UIFont systemFontOfSize:11]).textColor([UIColor whiteColor]);
+        }] sj_textSize];
+        
+        currentTimeItem.size = formatSize.width;
+        durationTimeItem.size = formatSize.width;
         [_bottomAdapter reload];
     }
-}
-
-- (CGFloat)_timeLabelMaxWidthByDurationStr:(NSString *)durationStr {
-    // 00:00
-    // 00:00:00
-    NSString *ms = @"00:00";
-    NSString *hms = @"00:00:00";
-    NSString *format = (durationStr.length == ms.length)?ms:hms;
-    CGSize size = [[NSAttributedString sj_UIKitText:^(id<SJUIKitTextMakerProtocol>  _Nonnull make) {
-        make.append(format).font([UIFont systemFontOfSize:11]).textColor([UIColor whiteColor]);
-    }] sj_textSize];
-    return size.width;
 }
 
 /// 更新播放进度

@@ -46,6 +46,7 @@
     
     _player.URLAsset = [[SJVideoPlayerURLAsset alloc] initWithURL:[NSURL URLWithString:@"https://xy2.v.netease.com/r/video/20190308/31cbdd25-3cc9-49d4-934c-8d29b54fc15b.mp4"]];
     _player.URLAsset.title = @"一次邂逅, 遇见一生所爱";
+//    _player.URLAsset.playableLimit = 10;
     
     _player.hideBackButtonWhenOrientationIsPortrait = YES;
     _player.pausedToKeepAppearState = YES; 

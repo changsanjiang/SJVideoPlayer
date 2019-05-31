@@ -259,7 +259,11 @@
       
       [[Item alloc] initWithTitle:@"Test"
                          subTitle:@"测试"
-                             path:@"player/test"]];
+                             path:@"player/test"],
+      
+      [[Item alloc] initWithTitle:@"QueuePlayerTest"
+                         subTitle:@"测试 QueuePlayer"
+                             path:@"queuePlayer/test"]];
 }
 
 - (NSArray<Item *> *)_createItemsByTestAdapter {

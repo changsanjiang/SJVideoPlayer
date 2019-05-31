@@ -7,7 +7,7 @@ Pod::Spec.new do |s|
     s.homepage     = 'https://github.com/changsanjiang/SJVideoPlayer'
     s.license      = { :type => 'MIT', :file => 'LICENSE.md' }
     s.author       = { 'SanJiang' => 'changsanjiang@gmail.com' }
-    s.platform     = :ios, '8.0'
+    s.platform     = :ios, '9.0'
     s.source       = { :git => 'https://github.com/changsanjiang/SJVideoPlayer.git', :tag => "v#{s.version}" }
     s.requires_arc = true
     s.dependency 'Masonry'

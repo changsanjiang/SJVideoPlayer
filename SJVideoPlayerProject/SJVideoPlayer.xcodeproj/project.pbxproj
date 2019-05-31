@@ -25,6 +25,8 @@
 		77E8D75821797FDA00B025A7 /* ViewControllerVideoFlip.m in Sources */ = {isa = PBXBuildFile; fileRef = 77E8D75721797FDA00B025A7 /* ViewControllerVideoFlip.m */; };
 		77E8D75A2179817300B025A7 /* ViewControllerVideoFlip.xib in Resources */ = {isa = PBXBuildFile; fileRef = 77E8D7592179817300B025A7 /* ViewControllerVideoFlip.xib */; };
 		77E8D7622179A0E700B025A7 /* ViewControllerTest.m in Sources */ = {isa = PBXBuildFile; fileRef = 77E8D7612179A0E700B025A7 /* ViewControllerTest.m */; };
+		77EE3E4F22A1698300D3C422 /* ViewControllerQueuePlayerTest.m in Sources */ = {isa = PBXBuildFile; fileRef = 77EE3E4D22A1698300D3C422 /* ViewControllerQueuePlayerTest.m */; };
+		77EE3E5022A1698300D3C422 /* ViewControllerQueuePlayerTest.xib in Resources */ = {isa = PBXBuildFile; fileRef = 77EE3E4E22A1698300D3C422 /* ViewControllerQueuePlayerTest.xib */; };
 		77EECF4E219C074B00736073 /* BaseViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 77EECF4D219C074B00736073 /* BaseViewController.m */; };
 		77EECF51219C08FC00736073 /* PresentingViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 77EECF50219C08FC00736073 /* PresentingViewController.m */; };
 		77EECF58219C0CEC00736073 /* ViewControllerPresentFitOnScreenDemo.m in Sources */ = {isa = PBXBuildFile; fileRef = 77EECF56219C0CEC00736073 /* ViewControllerPresentFitOnScreenDemo.m */; };
@@ -139,6 +141,9 @@
 		77E8D7592179817300B025A7 /* ViewControllerVideoFlip.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = ViewControllerVideoFlip.xib; sourceTree = "<group>"; };
 		77E8D7602179A0E700B025A7 /* ViewControllerTest.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = ViewControllerTest.h; sourceTree = "<group>"; };
 		77E8D7612179A0E700B025A7 /* ViewControllerTest.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = ViewControllerTest.m; sourceTree = "<group>"; };
+		77EE3E4C22A1698300D3C422 /* ViewControllerQueuePlayerTest.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = ViewControllerQueuePlayerTest.h; sourceTree = "<group>"; };
+		77EE3E4D22A1698300D3C422 /* ViewControllerQueuePlayerTest.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = ViewControllerQueuePlayerTest.m; sourceTree = "<group>"; };
+		77EE3E4E22A1698300D3C422 /* ViewControllerQueuePlayerTest.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = ViewControllerQueuePlayerTest.xib; sourceTree = "<group>"; };
 		77EECF4C219C074B00736073 /* BaseViewController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = BaseViewController.h; sourceTree = "<group>"; };
 		77EECF4D219C074B00736073 /* BaseViewController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = BaseViewController.m; sourceTree = "<group>"; };
 		77EECF4F219C08FC00736073 /* PresentingViewController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = PresentingViewController.h; sourceTree = "<group>"; };
@@ -382,6 +387,16 @@
 			path = Test;
 			sourceTree = "<group>";
 		};
+		77EE3E4B22A1696900D3C422 /* QueuePlayer */ = {
+			isa = PBXGroup;
+			children = (
+				77EE3E4C22A1698300D3C422 /* ViewControllerQueuePlayerTest.h */,
+				77EE3E4D22A1698300D3C422 /* ViewControllerQueuePlayerTest.m */,
+				77EE3E4E22A1698300D3C422 /* ViewControllerQueuePlayerTest.xib */,
+			);
+			path = QueuePlayer;
+			sourceTree = "<group>";
+		};
 		77EECF5D219D0DCF00736073 /* TestAdapter */ = {
 			isa = PBXGroup;
 			children = (
@@ -475,6 +490,7 @@
 		A6006646215F97D50001B5F8 /* Demo */ = {
 			isa = PBXGroup;
 			children = (
+				77EE3E4B22A1696900D3C422 /* QueuePlayer */,
 				77F3114F227DA189003421C5 /* 列表自动播放 */,
 				77359A0C22322C75009FE031 /* Rate(调速) */,
 				A600667D2160AC700001B5F8 /* 播放器类型 (Player_Type) */,
@@ -809,6 +825,7 @@
 				A6006565215F947E0001B5F8 /* Main.storyboard in Resources */,
 				77EECF59219C0CEC00736073 /* ViewControllerPresentFitOnScreenDemo.xib in Resources */,
 				A6D1A26321845F02006FF2C1 /* ViewController_Adjust.xib in Resources */,
+				77EE3E5022A1698300D3C422 /* ViewControllerQueuePlayerTest.xib in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -936,6 +953,7 @@
 				A6006649216041510001B5F8 /* LWZTableSectionShrinker.m in Sources */,
 				A6D1A26921855EF5006FF2C1 /* ViewControllerControlLayerSwitcherDemo.m in Sources */,
 				A60066882160B82A0001B5F8 /* ViewControllerControlRotation.m in Sources */,
+				77EE3E4F22A1698300D3C422 /* ViewControllerQueuePlayerTest.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1115,7 +1133,7 @@
 					SJMAC,
 				);
 				INFOPLIST_FILE = SJVideoPlayer/Info.plist;
-				IPHONEOS_DEPLOYMENT_TARGET = 8.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 9.0;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
@@ -1135,7 +1153,7 @@
 				CODE_SIGN_STYLE = Manual;
 				DEVELOPMENT_TEAM = "";
 				INFOPLIST_FILE = SJVideoPlayer/Info.plist;
-				IPHONEOS_DEPLOYMENT_TARGET = 8.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 9.0;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",

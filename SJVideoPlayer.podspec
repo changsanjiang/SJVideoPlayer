@@ -46,6 +46,7 @@ Pod::Spec.new do |s|
         ss.source_files = 'SJVideoPlayer/Settings/*.{h,m}'
         ss.dependency 'SJVideoPlayer/SJFilmEditingControlLayer/ResourceLoader'
         ss.dependency 'SJVideoPlayer/SJEdgeControlLayer/ResourceLoader'
+        ss.dependency 'SJVideoPlayer/SJFloatSmallViewControlLayer/ResourceLoader'
     end
 
     # 边缘控制层
@@ -113,6 +114,7 @@ Pod::Spec.new do |s|
         a.resource = 'SJVideoPlayer/SJFloatSmallViewControlLayer/ResourceLoader/SJFloatSmallViewControlLayer.bundle'
       end
       ss.dependency 'SJVideoPlayer/Common'
+      ss.dependency 'SJVideoPlayer/Adapters'
     end
 
 end

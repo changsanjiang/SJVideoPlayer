@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="14490.70" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES">
+    <device id="retina6_1" orientation="portrait">
+        <adaptation id="fullscreen"/>
+    </device>
+    <dependencies>
+        <deployment identifier="iOS"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="14490.49"/>
+        <capability name="Safe area layout guides" minToolsVersion="9.0"/>
+        <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
+    </dependencies>
+    <objects>
+        <placeholder placeholderIdentifier="IBFilesOwner" id="-1" userLabel="File's Owner" customClass="SJViewController1">
+            <connections>
+                <outlet property="playerContainerVIew" destination="H4w-vu-Xuh" id="22B-Ms-BF2"/>
+                <outlet property="tableView" destination="KjV-rg-GcJ" id="9BB-1B-8cv"/>
+                <outlet property="view" destination="fmr-6f-4pL" id="nmZ-YJ-8jC"/>
+            </connections>
+        </placeholder>
+        <placeholder placeholderIdentifier="IBFirstResponder" id="-2" customClass="UIResponder"/>
+        <view contentMode="scaleToFill" id="fmr-6f-4pL">
+            <rect key="frame" x="0.0" y="0.0" width="414" height="896"/>
+            <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+            <subviews>
+                <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="H4w-vu-Xuh">
+                    <rect key="frame" x="0.0" y="44" width="414" height="233"/>
+                    <color key="backgroundColor" red="0.0" green="0.47843137250000001" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                    <constraints>
+                        <constraint firstAttribute="width" secondItem="H4w-vu-Xuh" secondAttribute="height" multiplier="16:9" id="rav-qY-OkT"/>
+                    </constraints>
+                </view>
+                <tableView clipsSubviews="YES" contentMode="scaleToFill" alwaysBounceVertical="YES" style="plain" separatorStyle="default" rowHeight="-1" estimatedRowHeight="-1" sectionHeaderHeight="28" sectionFooterHeight="28" translatesAutoresizingMaskIntoConstraints="NO" id="KjV-rg-GcJ">
+                    <rect key="frame" x="40" y="317" width="334" height="180"/>
+                    <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                    <constraints>
+                        <constraint firstAttribute="height" constant="180" id="6ZK-bU-me9"/>
+                    </constraints>
+                </tableView>
+                <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="ckI-0R-gbt">
+                    <rect key="frame" x="131" y="547" width="32" height="30"/>
+                    <state key="normal" title="Next"/>
+                    <connections>
+                        <action selector="playNextMedia:" destination="-1" eventType="touchUpInside" id="RWg-7r-iDI"/>
+                    </connections>
+                </button>
+                <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="BL6-er-D9U">
+                    <rect key="frame" x="40" y="547" width="59" height="30"/>
+                    <state key="normal" title="Previous"/>
+                    <connections>
+                        <action selector="playPreviousMedia:" destination="-1" eventType="touchUpInside" id="6J4-lc-f23"/>
+                    </connections>
+                </button>
+            </subviews>
+            <color key="backgroundColor" red="1" green="1" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+            <constraints>
+                <constraint firstItem="H4w-vu-Xuh" firstAttribute="top" secondItem="MkL-kO-mGU" secondAttribute="top" id="6sM-1P-yXe"/>
+                <constraint firstItem="ckI-0R-gbt" firstAttribute="leading" secondItem="BL6-er-D9U" secondAttribute="trailing" constant="32" id="AeU-2y-zRa"/>
+                <constraint firstItem="KjV-rg-GcJ" firstAttribute="top" secondItem="H4w-vu-Xuh" secondAttribute="bottom" constant="40" id="Srt-07-HHR"/>
+                <constraint firstItem="KjV-rg-GcJ" firstAttribute="leading" secondItem="MkL-kO-mGU" secondAttribute="leading" constant="40" id="dT6-kD-A0W"/>
+                <constraint firstItem="H4w-vu-Xuh" firstAttribute="leading" secondItem="MkL-kO-mGU" secondAttribute="leading" id="hI6-iE-zJb"/>
+                <constraint firstItem="BL6-er-D9U" firstAttribute="leading" secondItem="KjV-rg-GcJ" secondAttribute="leading" id="ib8-1A-5z5"/>
+                <constraint firstItem="MkL-kO-mGU" firstAttribute="trailing" secondItem="KjV-rg-GcJ" secondAttribute="trailing" constant="40" id="kKM-or-8e8"/>
+                <constraint firstItem="BL6-er-D9U" firstAttribute="top" secondItem="KjV-rg-GcJ" secondAttribute="bottom" constant="50" id="lMl-kT-vA7"/>
+                <constraint firstItem="ckI-0R-gbt" firstAttribute="centerY" secondItem="BL6-er-D9U" secondAttribute="centerY" id="wwP-rR-5b9"/>
+                <constraint firstItem="MkL-kO-mGU" firstAttribute="trailing" secondItem="H4w-vu-Xuh" secondAttribute="trailing" id="z0m-6s-aBz"/>
+            </constraints>
+            <viewLayoutGuide key="safeArea" id="MkL-kO-mGU"/>
+            <point key="canvasLocation" x="-532" y="-123"/>
+        </view>
+    </objects>
+</document>

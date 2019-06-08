@@ -1,0 +1,366 @@
+// !$*UTF8*$!
+{
+	archiveVersion = 1;
+	classes = {
+	};
+	objectVersion = 46;
+	objects = {
+
+/* Begin PBXBuildFile section */
+		80AC22E15D125C08351E41F1769E1F00 /* SJRouter.m in Sources */ = {isa = PBXBuildFile; fileRef = 466FD57386257618F717BAF2B5B10614 /* SJRouter.m */; };
+		AEF19E839BD90A84F1C70A5D0DE63888 /* SJRouteRequest.m in Sources */ = {isa = PBXBuildFile; fileRef = 11F66C63D6E8DF1B104DB4F2094F1877 /* SJRouteRequest.m */; };
+		C28311827914553C9F84B2FE133E937A /* SJRouter-dummy.m in Sources */ = {isa = PBXBuildFile; fileRef = 5E8C9F81AEC4B91C253B232F8C2EC1EF /* SJRouter-dummy.m */; };
+		C995B2B9D6259BFE544A6B1608F1C753 /* SJRouteHandler.h in Headers */ = {isa = PBXBuildFile; fileRef = FE051A04B89A015FD06C59BF4C050D5B /* SJRouteHandler.h */; settings = {ATTRIBUTES = (Project, ); }; };
+		E97D8EB8CB4BA86D776F7449E70BF72F /* SJRouteRequest.h in Headers */ = {isa = PBXBuildFile; fileRef = 32A2024991FB77AD5710DE17BF023BE2 /* SJRouteRequest.h */; settings = {ATTRIBUTES = (Project, ); }; };
+		FCE11A656A1CF2E0FBC5FBC6479C64CF /* SJRouter.h in Headers */ = {isa = PBXBuildFile; fileRef = 59A424B19238F98F434221EFB182B3D0 /* SJRouter.h */; settings = {ATTRIBUTES = (Project, ); }; };
+/* End PBXBuildFile section */
+
+/* Begin PBXFileReference section */
+		11F66C63D6E8DF1B104DB4F2094F1877 /* SJRouteRequest.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = SJRouteRequest.m; path = SJRouter/Core/SJRouteRequest.m; sourceTree = "<group>"; };
+		26D25B13948563094615730D46E3BF1D /* libSJRouter.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; name = libSJRouter.a; path = libSJRouter.a; sourceTree = BUILT_PRODUCTS_DIR; };
+		32A2024991FB77AD5710DE17BF023BE2 /* SJRouteRequest.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = SJRouteRequest.h; path = SJRouter/Core/SJRouteRequest.h; sourceTree = "<group>"; };
+		466FD57386257618F717BAF2B5B10614 /* SJRouter.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = SJRouter.m; path = SJRouter/SJRouter.m; sourceTree = "<group>"; };
+		4E7F7E666FC8CE3176E6EC1E1CDADF4F /* SJRouter.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; path = SJRouter.xcconfig; sourceTree = "<group>"; };
+		59A424B19238F98F434221EFB182B3D0 /* SJRouter.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = SJRouter.h; path = SJRouter/SJRouter.h; sourceTree = "<group>"; };
+		5E8C9F81AEC4B91C253B232F8C2EC1EF /* SJRouter-dummy.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; path = "SJRouter-dummy.m"; sourceTree = "<group>"; };
+		E13DCCF39B4CA928A8F170420F0D8BBF /* SJRouter-prefix.pch */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = "SJRouter-prefix.pch"; sourceTree = "<group>"; };
+		FE051A04B89A015FD06C59BF4C050D5B /* SJRouteHandler.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = SJRouteHandler.h; path = SJRouter/Core/SJRouteHandler.h; sourceTree = "<group>"; };
+/* End PBXFileReference section */
+
+/* Begin PBXFrameworksBuildPhase section */
+		D08475476BFDB05DEDCD576F57F73D33 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXFrameworksBuildPhase section */
+
+/* Begin PBXGroup section */
+		140311A41DC612676DA9DF14D47101E3 = {
+			isa = PBXGroup;
+			children = (
+				2503FE4918B227145E47B98DB0C9C998 /* Frameworks */,
+				E05CBD2F3917ACBDB15A01534D15E163 /* Products */,
+				2F395FABAA1A11352B36CCC590F42E2E /* SJRouter */,
+			);
+			sourceTree = "<group>";
+		};
+		2503FE4918B227145E47B98DB0C9C998 /* Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+			);
+			name = Frameworks;
+			sourceTree = "<group>";
+		};
+		2F395FABAA1A11352B36CCC590F42E2E /* SJRouter */ = {
+			isa = PBXGroup;
+			children = (
+				59A424B19238F98F434221EFB182B3D0 /* SJRouter.h */,
+				466FD57386257618F717BAF2B5B10614 /* SJRouter.m */,
+				E13F4113E7F55013431C14D89BD21CDA /* Core */,
+				83872B6B9E4AB3C9741349CD259C8A25 /* Support Files */,
+			);
+			name = SJRouter;
+			path = SJRouter;
+			sourceTree = "<group>";
+		};
+		83872B6B9E4AB3C9741349CD259C8A25 /* Support Files */ = {
+			isa = PBXGroup;
+			children = (
+				4E7F7E666FC8CE3176E6EC1E1CDADF4F /* SJRouter.xcconfig */,
+				5E8C9F81AEC4B91C253B232F8C2EC1EF /* SJRouter-dummy.m */,
+				E13DCCF39B4CA928A8F170420F0D8BBF /* SJRouter-prefix.pch */,
+			);
+			name = "Support Files";
+			path = "../Target Support Files/SJRouter";
+			sourceTree = "<group>";
+		};
+		E05CBD2F3917ACBDB15A01534D15E163 /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				26D25B13948563094615730D46E3BF1D /* libSJRouter.a */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		E13F4113E7F55013431C14D89BD21CDA /* Core */ = {
+			isa = PBXGroup;
+			children = (
+				FE051A04B89A015FD06C59BF4C050D5B /* SJRouteHandler.h */,
+				32A2024991FB77AD5710DE17BF023BE2 /* SJRouteRequest.h */,
+				11F66C63D6E8DF1B104DB4F2094F1877 /* SJRouteRequest.m */,
+			);
+			name = Core;
+			sourceTree = "<group>";
+		};
+/* End PBXGroup section */
+
+/* Begin PBXHeadersBuildPhase section */
+		0F4A491E905BAC555BBD0E6B4F8C401E /* Headers */ = {
+			isa = PBXHeadersBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				C995B2B9D6259BFE544A6B1608F1C753 /* SJRouteHandler.h in Headers */,
+				FCE11A656A1CF2E0FBC5FBC6479C64CF /* SJRouter.h in Headers */,
+				E97D8EB8CB4BA86D776F7449E70BF72F /* SJRouteRequest.h in Headers */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXHeadersBuildPhase section */
+
+/* Begin PBXNativeTarget section */
+		71F2B5B6805C2BDEAC21ACA3A0ABE1CE /* SJRouter */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 95FE258352663C62CD5C97C9567E098E /* Build configuration list for PBXNativeTarget "SJRouter" */;
+			buildPhases = (
+				0F4A491E905BAC555BBD0E6B4F8C401E /* Headers */,
+				3446BC8911A27C1D55B376FA035C3FF6 /* Sources */,
+				D08475476BFDB05DEDCD576F57F73D33 /* Frameworks */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = SJRouter;
+			productName = SJRouter;
+			productReference = 26D25B13948563094615730D46E3BF1D /* libSJRouter.a */;
+			productType = "com.apple.product-type.library.static";
+		};
+/* End PBXNativeTarget section */
+
+/* Begin PBXProject section */
+		7B010D10D33BB3EF91DB08D4D98EB159 /* Project object */ = {
+			isa = PBXProject;
+			attributes = {
+				LastSwiftUpdateCheck = 0930;
+				LastUpgradeCheck = 0930;
+			};
+			buildConfigurationList = DE51B747A9C9F332C3C68F7A7C18BFC2 /* Build configuration list for PBXProject "SJRouter" */;
+			compatibilityVersion = "Xcode 3.2";
+			developmentRegion = English;
+			hasScannedForEncodings = 0;
+			knownRegions = (
+				en,
+			);
+			mainGroup = 140311A41DC612676DA9DF14D47101E3;
+			productRefGroup = E05CBD2F3917ACBDB15A01534D15E163 /* Products */;
+			projectDirPath = "";
+			projectRoot = "";
+			targets = (
+				71F2B5B6805C2BDEAC21ACA3A0ABE1CE /* SJRouter */,
+			);
+		};
+/* End PBXProject section */
+
+/* Begin PBXSourcesBuildPhase section */
+		3446BC8911A27C1D55B376FA035C3FF6 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				C28311827914553C9F84B2FE133E937A /* SJRouter-dummy.m in Sources */,
+				80AC22E15D125C08351E41F1769E1F00 /* SJRouter.m in Sources */,
+				AEF19E839BD90A84F1C70A5D0DE63888 /* SJRouteRequest.m in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXSourcesBuildPhase section */
+
+/* Begin XCBuildConfiguration section */
+		0E2904C266CB1344F1904EBE80F3E89C /* Debug */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReference = 4E7F7E666FC8CE3176E6EC1E1CDADF4F /* SJRouter.xcconfig */;
+			buildSettings = {
+				CODE_SIGN_IDENTITY = "iPhone Developer";
+				"CODE_SIGN_IDENTITY[sdk=appletvos*]" = "";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "";
+				"CODE_SIGN_IDENTITY[sdk=watchos*]" = "";
+				GCC_PREFIX_HEADER = "Target Support Files/SJRouter/SJRouter-prefix.pch";
+				IPHONEOS_DEPLOYMENT_TARGET = 8.0;
+				OTHER_LDFLAGS = "";
+				OTHER_LIBTOOLFLAGS = "";
+				PRIVATE_HEADERS_FOLDER_PATH = "";
+				PRODUCT_MODULE_NAME = SJRouter;
+				PRODUCT_NAME = SJRouter;
+				PUBLIC_HEADERS_FOLDER_PATH = "";
+				SDKROOT = iphoneos;
+				SKIP_INSTALL = YES;
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "$(inherited) ";
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Debug;
+		};
+		725BF7B424B5B34638128870CFF6C7AF /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = dwarf;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				ENABLE_TESTABILITY = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu11;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"POD_CONFIGURATION_DEBUG=1",
+					"DEBUG=1",
+					"$(inherited)",
+				);
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 8.0;
+				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
+				MTL_FAST_MATH = YES;
+				ONLY_ACTIVE_ARCH = YES;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				STRIP_INSTALLED_PRODUCT = NO;
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = DEBUG;
+				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
+				SWIFT_VERSION = 4.2;
+				SYMROOT = "${SRCROOT}/../build";
+			};
+			name = Debug;
+		};
+		7B4F633D2D9B8611CABCDAB7FDC23E7A /* Release */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReference = 4E7F7E666FC8CE3176E6EC1E1CDADF4F /* SJRouter.xcconfig */;
+			buildSettings = {
+				CODE_SIGN_IDENTITY = "iPhone Developer";
+				"CODE_SIGN_IDENTITY[sdk=appletvos*]" = "";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "";
+				"CODE_SIGN_IDENTITY[sdk=watchos*]" = "";
+				GCC_PREFIX_HEADER = "Target Support Files/SJRouter/SJRouter-prefix.pch";
+				IPHONEOS_DEPLOYMENT_TARGET = 8.0;
+				OTHER_LDFLAGS = "";
+				OTHER_LIBTOOLFLAGS = "";
+				PRIVATE_HEADERS_FOLDER_PATH = "";
+				PRODUCT_MODULE_NAME = SJRouter;
+				PRODUCT_NAME = SJRouter;
+				PUBLIC_HEADERS_FOLDER_PATH = "";
+				SDKROOT = iphoneos;
+				SKIP_INSTALL = YES;
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "$(inherited) ";
+				TARGETED_DEVICE_FAMILY = "1,2";
+				VALIDATE_PRODUCT = YES;
+			};
+			name = Release;
+		};
+		85B48533C1DF23EEFD0D66E60DC3FF62 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				ENABLE_NS_ASSERTIONS = NO;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu11;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"POD_CONFIGURATION_RELEASE=1",
+					"$(inherited)",
+				);
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 8.0;
+				MTL_ENABLE_DEBUG_INFO = NO;
+				MTL_FAST_MATH = YES;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				STRIP_INSTALLED_PRODUCT = NO;
+				SWIFT_COMPILATION_MODE = wholemodule;
+				SWIFT_OPTIMIZATION_LEVEL = "-O";
+				SWIFT_VERSION = 4.2;
+				SYMROOT = "${SRCROOT}/../build";
+			};
+			name = Release;
+		};
+/* End XCBuildConfiguration section */
+
+/* Begin XCConfigurationList section */
+		95FE258352663C62CD5C97C9567E098E /* Build configuration list for PBXNativeTarget "SJRouter" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				0E2904C266CB1344F1904EBE80F3E89C /* Debug */,
+				7B4F633D2D9B8611CABCDAB7FDC23E7A /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		DE51B747A9C9F332C3C68F7A7C18BFC2 /* Build configuration list for PBXProject "SJRouter" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				725BF7B424B5B34638128870CFF6C7AF /* Debug */,
+				85B48533C1DF23EEFD0D66E60DC3FF62 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+/* End XCConfigurationList section */
+	};
+	rootObject = 7B010D10D33BB3EF91DB08D4D98EB159 /* Project object */;
+}

@@ -39,6 +39,7 @@ NS_ASSUME_NONNULL_BEGIN
 static SJEdgeControlButtonItemTag SJTopItem_Back = 1;
 
 @interface SJFilmEditingGenerateResultControlLayer ()
+@property (nonatomic, weak, nullable) __kindof SJBaseVideoPlayer *player;
 @property (nonatomic, strong, readonly) SJFilmEditingSaveResultToAlbumHandler *saveHandler;
 @property (nonatomic, strong, readonly) SJFilmEditingSettingsUpdatedObserver *settingsUpdatedObserver;
 @property (nonatomic, strong, readonly) SJFilmEditingButtonContainerView *backButtonContainerView;
@@ -46,7 +47,6 @@ static SJEdgeControlButtonItemTag SJTopItem_Back = 1;
 
 @property (nonatomic, strong, readonly) UILabel *promptLabel;
 @property (nonatomic, strong, readonly) UIImageView *coverImageView;
-@property (nonatomic, weak, nullable) SJBaseVideoPlayer *player;
 
 @property (nonatomic, strong, nullable) SJVideoPlayerFilmEditingGeneratedResult *result;
 @property (nonatomic, strong, readonly) SJBaseVideoPlayer *exportedVideoPlayer;

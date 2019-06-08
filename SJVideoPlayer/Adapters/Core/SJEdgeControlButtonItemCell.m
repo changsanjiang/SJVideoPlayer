@@ -10,22 +10,36 @@
 #import "SJEdgeControlButtonItem.h"
 
 NS_ASSUME_NONNULL_BEGIN
-@interface _SJEdgeControlButtonItemCell_Blank : SJEdgeControlButtonItemCell
-@property (nonatomic, strong, readonly) UIButton *backgroundButton;
+@interface SJUITapGestureRecognizerDelegate : NSObject<UIGestureRecognizerDelegate>
+@property (nonatomic, strong, nullable) SJEdgeControlButtonItem *item;
 @end
+
+@implementation SJUITapGestureRecognizerDelegate
+- (BOOL)gestureRecognizerShouldBegin:(UIGestureRecognizer *)gestureRecognizer {
+    return [_item.target respondsToSelector:_item.action];
+}
+@end
+
+@interface _SJEdgeControlButtonItemCell_Blank : SJEdgeControlButtonItemCell<UIGestureRecognizerDelegate>
+@property (nonatomic, strong, readonly) UITapGestureRecognizer *tap;
+@property (nonatomic, strong) SJUITapGestureRecognizerDelegate *tapGestureRecognizerDelegate;
+@end
+
 @implementation _SJEdgeControlButtonItemCell_Blank
 - (instancetype)initWithFrame:(CGRect)frame {
     self = [super initWithFrame:frame];
     if ( !self ) return nil;
-    _backgroundButton = [UIButton buttonWithType:UIButtonTypeCustom];
-    [_backgroundButton addTarget:self action:@selector(clickedBackgroundBtn:) forControlEvents:UIControlEventTouchUpInside];
-    _backgroundButton.frame = self.contentView.bounds;
-    _backgroundButton.autoresizingMask = UIViewAutoresizingFlexibleHeight | UIViewAutoresizingFlexibleWidth;
-    [self.contentView addSubview:_backgroundButton];
+    _tap = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(tapped)];
+    _tapGestureRecognizerDelegate = [[SJUITapGestureRecognizerDelegate alloc] init];
+    _tap.delegate = _tapGestureRecognizerDelegate;
+    [self.contentView addGestureRecognizer:_tap];
     return self;
 }
-
-- (void)clickedBackgroundBtn:(UIButton *)btn {
+- (void)setItem:(nullable SJEdgeControlButtonItem *)item {
+    [super setItem:item];
+    _tapGestureRecognizerDelegate.item = item;
+}
+- (void)tapped {
     if ( self.item.hidden )
         return;
     [self.item performAction];

@@ -47,11 +47,12 @@ static SJControlLayerIdentifier SJFilmEditingGenerateResultControlLayerIdentifie
 @property (nonatomic, strong, readonly) SJFilmEditingSettingsUpdatedObserver *settingsUpdatedObserver;
 @property (nonatomic, strong, nullable) SJControlLayerSwitcher *switcher;
 @property (nonatomic, strong, readonly) UITapGestureRecognizer *tap;
-@property (nonatomic, weak, nullable) SJBaseVideoPlayer *player;
+@property (nonatomic, weak, nullable) __kindof SJBaseVideoPlayer *player;
 @end
 
 @implementation SJFilmEditingControlLayer 
 @synthesize restarted = _restarted;
+
 - (void)restartControlLayer {
     _restarted = YES;
     

@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="14490.70" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES">
+    <device id="retina6_1" orientation="portrait">
+        <adaptation id="fullscreen"/>
+    </device>
+    <dependencies>
+        <deployment identifier="iOS"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="14490.49"/>
+        <capability name="Safe area layout guides" minToolsVersion="9.0"/>
+        <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
+    </dependencies>
+    <objects>
+        <placeholder placeholderIdentifier="IBFilesOwner" id="-1" userLabel="File's Owner" customClass="SJViewController4">
+            <connections>
+                <outlet property="playerContainerView" destination="EX5-qF-VQv" id="rmp-r5-evC"/>
+                <outlet property="view" destination="Gge-zR-l2A" id="vM5-Lw-EMo"/>
+            </connections>
+        </placeholder>
+        <placeholder placeholderIdentifier="IBFirstResponder" id="-2" customClass="UIResponder"/>
+        <view contentMode="scaleToFill" id="Gge-zR-l2A">
+            <rect key="frame" x="0.0" y="0.0" width="414" height="896"/>
+            <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+            <subviews>
+                <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="EX5-qF-VQv">
+                    <rect key="frame" x="0.0" y="44" width="414" height="233"/>
+                    <color key="backgroundColor" red="0.0" green="0.47843137250000001" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                    <constraints>
+                        <constraint firstAttribute="width" secondItem="EX5-qF-VQv" secondAttribute="height" multiplier="16:9" id="Vux-Mu-Ywm"/>
+                    </constraints>
+                </view>
+            </subviews>
+            <color key="backgroundColor" red="1" green="1" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+            <constraints>
+                <constraint firstItem="6DZ-PO-3Xg" firstAttribute="trailing" secondItem="EX5-qF-VQv" secondAttribute="trailing" id="GLd-KA-pWV"/>
+                <constraint firstItem="EX5-qF-VQv" firstAttribute="leading" secondItem="6DZ-PO-3Xg" secondAttribute="leading" id="LSo-vo-5bT"/>
+                <constraint firstItem="EX5-qF-VQv" firstAttribute="top" secondItem="6DZ-PO-3Xg" secondAttribute="top" id="vRs-t3-QWW"/>
+            </constraints>
+            <viewLayoutGuide key="safeArea" id="6DZ-PO-3Xg"/>
+            <point key="canvasLocation" x="-626" y="-300"/>
+        </view>
+    </objects>
+</document>

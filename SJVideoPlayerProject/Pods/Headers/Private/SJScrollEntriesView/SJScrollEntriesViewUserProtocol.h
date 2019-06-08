@@ -1,1 +1,0 @@
-../../../SJScrollEntriesView/SJScrollEntriesView/SJScrollEntriesViewUserProtocol.h

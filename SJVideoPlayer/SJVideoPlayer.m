@@ -56,6 +56,7 @@ NS_ASSUME_NONNULL_BEGIN
 @interface SJVideoPlayer ()
 @property (nonatomic, strong, readonly) SJVideoPlayerControlSettingRecorder *recorder;
 @property (nonatomic, strong, readonly) id<SJPlayStatusObserver> playStatusObserver;
+@property (nonatomic, strong, nullable) id<SJFloatSmallViewControllerObserverProtocol> fscObs;
 @end
 
 @implementation SJVideoPlayer {
@@ -84,7 +85,7 @@ NS_ASSUME_NONNULL_BEGIN
 #endif
 
 + (NSString *)version {
-    return @"v2.5.7";
+    return @"v2.5.8";
 }
 
 + (instancetype)player {
@@ -133,6 +134,8 @@ NS_ASSUME_NONNULL_BEGIN
             return self.defaultMoreSettingControlLayer;
         else if ( identifier == SJControlLayer_LoadFailed )
             return self.defaultLoadFailedControlLayer;
+        else if ( identifier == SJControlLayer_FloatSmallView )
+            return self.defaultFloatSmallViewControlLayer;
         return nil;
     };
     
@@ -145,7 +148,8 @@ NS_ASSUME_NONNULL_BEGIN
     return self;
 }
 
-#pragma mark -
+// - observers -
+
 - (void)_initializeSwitcherObserver {
     _switcherObserver = [_switcher getObserver];
     __weak typeof(self) _self = self;
@@ -191,11 +195,33 @@ NS_ASSUME_NONNULL_BEGIN
     }];
 }
 
+- (void)_initializeFloatSmallViewControllerObserverIfNeeded:(nullable id<SJFloatSmallViewControllerProtocol>)floatSmallViewController {
+    if ( _fscObs.controller != floatSmallViewController ) {
+        _fscObs = [floatSmallViewController getObserver];
+        __weak typeof(self) _self = self;
+        _fscObs.appearStateDidChangeExeBlock = ^(id<SJFloatSmallViewControllerProtocol>  _Nonnull controller) {
+            __strong typeof(_self) self = _self;
+            if ( !self ) return ;
+            if ( controller.isAppeared ) {
+                if ( self.switcher.currentIdentifier != SJControlLayer_FloatSmallView ) {
+                    [self.controlLayerDataSource.controlView removeFromSuperview];
+                    [self.switcher switchControlLayerForIdentitfier:SJControlLayer_FloatSmallView];
+                }
+            }
+            else {
+                if ( self.switcher.currentIdentifier == SJControlLayer_FloatSmallView ) {
+                    [self.controlLayerDataSource.controlView removeFromSuperview];
+                    [self.switcher switchToPreviousControlLayer];
+                }
+            }
+        };
+    }
+}
+
 - (void)_updateCommonProperties {
     if ( !self.placeholderImageView.image )
         self.placeholderImageView.image = SJVideoPlayerSettings.commonSettings.placeholder;
 }
-
 
 // - default control layers -
 
@@ -297,6 +323,16 @@ NS_ASSUME_NONNULL_BEGIN
     return _defaultNotReachableControlLayer;
 }
 
+@synthesize defaultFloatSmallViewControlLayer = _defaultFloatSmallViewControlLayer;
+- (SJFloatSmallViewControlLayer *)defaultFloatSmallViewControlLayer {
+    if ( _defaultFloatSmallViewControlLayer == nil ) {
+        _defaultFloatSmallViewControlLayer = [[SJFloatSmallViewControlLayer alloc] initWithFrame:self.view.bounds];
+    }
+    return _defaultFloatSmallViewControlLayer;
+}
+
+// - actions -
+
 - (void)_handleClickedBackButtonEvent {
     if ( self.needPresentModalViewControlller &&
          self.modalViewControllerManager.isPresentedModalViewControlller ) {
@@ -314,12 +350,24 @@ NS_ASSUME_NONNULL_BEGIN
     }
 }
 
-/// 播放器是否只支持一个方向
+// 播放器是否只支持一个方向
 - (BOOL)_whetherToSupportOnlyOneOrientation {
     if ( self.supportedOrientation == SJAutoRotateSupportedOrientation_Portrait ) return YES;
     if ( self.supportedOrientation == SJAutoRotateSupportedOrientation_LandscapeLeft ) return YES;
     if ( self.supportedOrientation == SJAutoRotateSupportedOrientation_LandscapeRight ) return YES;
     return NO;
+}
+
+// - float small view -
+
+- (void)setFloatSmallViewController:(nullable id<SJFloatSmallViewControllerProtocol>)floatSmallViewController {
+    [super setFloatSmallViewController:floatSmallViewController];
+    [self _initializeFloatSmallViewControllerObserverIfNeeded:floatSmallViewController];
+}
+- (id<SJFloatSmallViewControllerProtocol>)floatSmallViewController {
+    id<SJFloatSmallViewControllerProtocol> floatSmallViewController = [super floatSmallViewController];
+    [self _initializeFloatSmallViewControllerObserverIfNeeded:floatSmallViewController];
+    return floatSmallViewController;
 }
 
 @end
@@ -525,6 +573,7 @@ SJControlLayerIdentifier const SJControlLayer_FilmEditing = LONG_MAX - 2;
 SJControlLayerIdentifier const SJControlLayer_MoreSettting = LONG_MAX - 3;
 SJControlLayerIdentifier const SJControlLayer_LoadFailed = LONG_MAX - 4;
 SJControlLayerIdentifier const SJControlLayer_NotReachableAndPlaybackStalled = LONG_MAX - 5;
+SJControlLayerIdentifier const SJControlLayer_FloatSmallView = LONG_MAX - 6;
 
 SJEdgeControlButtonItemTag const SJEdgeControlLayerBottomItem_FilmEditing = LONG_MAX - 1;   // GIF/导出/截屏
 SJEdgeControlButtonItemTag const SJEdgeControlLayerTopItem_More = LONG_MAX - 2;             // More

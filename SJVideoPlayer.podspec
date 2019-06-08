@@ -1,7 +1,7 @@
 
 Pod::Spec.new do |s|
     s.name         = 'SJVideoPlayer'
-    s.version      = '2.5.7'
+    s.version      = '2.5.8'
     s.summary      = 'video player.'
     s.description  = 'https://github.com/changsanjiang/SJVideoPlayer/blob/master/README.md'
     s.homepage     = 'https://github.com/changsanjiang/SJVideoPlayer'
@@ -103,6 +103,16 @@ Pod::Spec.new do |s|
         ss.subspec 'Core' do |sss|
             sss.source_files = 'SJVideoPlayer/SJMoreSettingControlLayer/Core/*.{h,m}'
         end
+    end
+    
+    # 浮窗小视图的控制层
+    s.subspec 'SJFloatSmallViewControlLayer' do |ss|
+      ss.source_files = 'SJVideoPlayer/SJFloatSmallViewControlLayer/*.{h,m}'
+      ss.subspec 'ResourceLoader' do |a|
+        a.source_files = 'SJVideoPlayer/SJFloatSmallViewControlLayer/ResourceLoader/*.{h,m}'
+        a.resource = 'SJVideoPlayer/SJFloatSmallViewControlLayer/ResourceLoader/SJFloatSmallViewControlLayer.bundle'
+      end
+      ss.dependency 'SJVideoPlayer/Common'
     end
 
 end

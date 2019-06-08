@@ -10,6 +10,7 @@
 #import <UIKit/UIKit.h>
 #import "SJFilmEditingSettings.h"
 #import "SJEdgeControlLayerSettings.h"
+#import "SJFloatSmallViewControlLayerResourceLoader.h"
 #import <objc/message.h>
 
 @interface _SJVideoPlayerNothingSettings : NSObject
@@ -45,12 +46,17 @@ static void sj_nothing(id self, SEL _cmd) {
 - (instancetype)init {
     self = [super init];
     if ( !self ) return nil;
-    _group = dispatch_group_create();
-    dispatch_group_async(_group, dispatch_get_global_queue(0, 0), ^{
+    dispatch_queue_t queue = dispatch_get_global_queue(0, 0);
+    dispatch_group_t group = dispatch_group_create();
+    _group = group;
+    dispatch_group_async(group, queue, ^{
         [SJEdgeControlLayerSettings commonSettings];
     });
-    dispatch_group_async(_group, dispatch_get_global_queue(0, 0), ^{
+    dispatch_group_async(group, queue, ^{
         [SJFilmEditingSettings commonSettings];
+    });
+    dispatch_group_async(group, queue, ^{
+        [SJFloatSmallViewControlLayerResourceLoader shared];
     });
     return self;
 }
@@ -69,16 +75,19 @@ static void sj_nothing(id self, SEL _cmd) {
     dispatch_group_notify(_group, dispatch_get_global_queue(0, 0), ^{
         [SJEdgeControlLayerSettings.commonSettings reset];
         [SJFilmEditingSettings.commonSettings reset];
+        [SJFloatSmallViewControlLayerResourceLoader.shared reset];
         [SJEdgeControlLayerSettings.commonSettings postUpdateNotify];
         [SJFilmEditingSettings.commonSettings postUpdateNotify];
     });
-} 
+}
 
 - (id)forwardingTargetForSelector:(SEL)aSelector {
     if ( [SJEdgeControlLayerSettings.commonSettings respondsToSelector:aSelector] )
         return SJEdgeControlLayerSettings.commonSettings;
     else if ( [SJFilmEditingSettings.commonSettings respondsToSelector:aSelector] )
         return SJFilmEditingSettings.commonSettings;
+    else if ( [SJFloatSmallViewControlLayerResourceLoader.shared respondsToSelector:aSelector] )
+        return SJFloatSmallViewControlLayerResourceLoader.shared;
     return [[_SJVideoPlayerNothingSettings alloc] initWithSelector:aSelector];
 }
 @end

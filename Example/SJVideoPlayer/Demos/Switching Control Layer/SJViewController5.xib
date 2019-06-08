@@ -1,0 +1,96 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="14490.70" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES">
+    <device id="retina6_1" orientation="portrait">
+        <adaptation id="fullscreen"/>
+    </device>
+    <dependencies>
+        <deployment identifier="iOS"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="14490.49"/>
+        <capability name="Safe area layout guides" minToolsVersion="9.0"/>
+        <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
+    </dependencies>
+    <objects>
+        <placeholder placeholderIdentifier="IBFilesOwner" id="-1" userLabel="File's Owner" customClass="SJViewController5">
+            <connections>
+                <outlet property="playerContainerView" destination="pUE-EL-uvx" id="5GZ-bO-bMC"/>
+                <outlet property="view" destination="64m-fW-bFV" id="qBC-t0-7hh"/>
+            </connections>
+        </placeholder>
+        <placeholder placeholderIdentifier="IBFirstResponder" id="-2" customClass="UIResponder"/>
+        <view contentMode="scaleToFill" id="64m-fW-bFV">
+            <rect key="frame" x="0.0" y="0.0" width="414" height="896"/>
+            <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+            <subviews>
+                <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="pUE-EL-uvx">
+                    <rect key="frame" x="0.0" y="44" width="414" height="233"/>
+                    <color key="backgroundColor" red="0.0" green="0.47843137250000001" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                    <constraints>
+                        <constraint firstAttribute="width" secondItem="pUE-EL-uvx" secondAttribute="height" multiplier="16:9" id="qWm-Jl-6cF"/>
+                    </constraints>
+                </view>
+                <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="6g9-UI-1QL">
+                    <rect key="frame" x="12" y="302" width="250" height="30"/>
+                    <state key="normal" title="Switch To SJLoadFailedControlLayer"/>
+                    <connections>
+                        <action selector="switchToSJLoadFailedControlLayer:" destination="-1" eventType="touchUpInside" id="cvd-Bs-BpV"/>
+                    </connections>
+                </button>
+                <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="rUE-9y-rxQ">
+                    <rect key="frame" x="12" y="340" width="251" height="30"/>
+                    <state key="normal" title="Switch To SJFilmEditingControlLayer"/>
+                    <connections>
+                        <action selector="swithToSJFilmEditingControlLayer:" destination="-1" eventType="touchUpInside" id="a3b-P7-Vva"/>
+                    </connections>
+                </button>
+                <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="Mng-iS-EUm">
+                    <rect key="frame" x="12" y="378" width="280" height="30"/>
+                    <state key="normal" title="Switch To SJFloatSmallViewControlLayer"/>
+                    <connections>
+                        <action selector="switchTOSJFloatSmallViewControlLayer:" destination="-1" eventType="touchUpInside" id="lNj-fI-NKH"/>
+                    </connections>
+                </button>
+                <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="B3P-nP-5Y7">
+                    <rect key="frame" x="12" y="416" width="260" height="30"/>
+                    <state key="normal" title="Switch To SJMoreSettingControlLayer"/>
+                    <connections>
+                        <action selector="switchToSJMoreSettingControlLayer:" destination="-1" eventType="touchUpInside" id="dg4-2q-z17"/>
+                    </connections>
+                </button>
+                <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="cFx-aL-5tn">
+                    <rect key="frame" x="12" y="454" width="272" height="30"/>
+                    <state key="normal" title="Switch To SJNotReachableControlLayer"/>
+                    <connections>
+                        <action selector="switchToSJNotReachableControlLayer:" destination="-1" eventType="touchUpInside" id="zWG-Yz-OOw"/>
+                    </connections>
+                </button>
+                <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="owJ-Nc-9lu">
+                    <rect key="frame" x="12" y="492" width="211" height="30"/>
+                    <state key="normal" title="Switch To SJEdgeControlLayer"/>
+                    <connections>
+                        <action selector="switchToSJEdgeControlLayer:" destination="-1" eventType="touchUpInside" id="FJM-0F-Mk8"/>
+                    </connections>
+                </button>
+            </subviews>
+            <color key="backgroundColor" red="1" green="1" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+            <constraints>
+                <constraint firstItem="Mng-iS-EUm" firstAttribute="top" secondItem="rUE-9y-rxQ" secondAttribute="bottom" constant="8" id="0E2-pX-W5c"/>
+                <constraint firstItem="pUE-EL-uvx" firstAttribute="top" secondItem="Zbe-sv-1Yc" secondAttribute="top" id="7m7-d4-9dg"/>
+                <constraint firstItem="cFx-aL-5tn" firstAttribute="top" secondItem="B3P-nP-5Y7" secondAttribute="bottom" constant="8" id="KHU-kZ-i9w"/>
+                <constraint firstItem="owJ-Nc-9lu" firstAttribute="leading" secondItem="cFx-aL-5tn" secondAttribute="leading" id="MRZ-Jp-yLy"/>
+                <constraint firstItem="Mng-iS-EUm" firstAttribute="leading" secondItem="rUE-9y-rxQ" secondAttribute="leading" id="Pfr-du-yMx"/>
+                <constraint firstItem="B3P-nP-5Y7" firstAttribute="top" secondItem="Mng-iS-EUm" secondAttribute="bottom" constant="8" id="Wng-An-mZE"/>
+                <constraint firstItem="rUE-9y-rxQ" firstAttribute="leading" secondItem="6g9-UI-1QL" secondAttribute="leading" id="X8B-gb-Q6g"/>
+                <constraint firstItem="Zbe-sv-1Yc" firstAttribute="trailing" secondItem="pUE-EL-uvx" secondAttribute="trailing" id="XKx-09-iWH"/>
+                <constraint firstItem="6g9-UI-1QL" firstAttribute="top" secondItem="pUE-EL-uvx" secondAttribute="bottom" constant="25" id="baM-GA-t6r"/>
+                <constraint firstItem="rUE-9y-rxQ" firstAttribute="top" secondItem="6g9-UI-1QL" secondAttribute="bottom" constant="8" id="bl9-71-Bqv"/>
+                <constraint firstItem="owJ-Nc-9lu" firstAttribute="top" secondItem="cFx-aL-5tn" secondAttribute="bottom" constant="8" id="fLN-C1-P8d"/>
+                <constraint firstItem="B3P-nP-5Y7" firstAttribute="leading" secondItem="Mng-iS-EUm" secondAttribute="leading" id="gfF-qY-tm5"/>
+                <constraint firstItem="pUE-EL-uvx" firstAttribute="leading" secondItem="Zbe-sv-1Yc" secondAttribute="leading" id="ivs-dS-iEx"/>
+                <constraint firstItem="cFx-aL-5tn" firstAttribute="leading" secondItem="B3P-nP-5Y7" secondAttribute="leading" id="j9r-RB-env"/>
+                <constraint firstItem="6g9-UI-1QL" firstAttribute="leading" secondItem="pUE-EL-uvx" secondAttribute="leading" constant="12" id="sco-BL-eWA"/>
+            </constraints>
+            <viewLayoutGuide key="safeArea" id="Zbe-sv-1Yc"/>
+            <point key="canvasLocation" x="-626" y="-300"/>
+        </view>
+    </objects>
+</document>

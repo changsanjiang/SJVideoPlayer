@@ -1,0 +1,370 @@
+// !$*UTF8*$!
+{
+	archiveVersion = 1;
+	classes = {
+	};
+	objectVersion = 46;
+	objects = {
+
+/* Begin PBXBuildFile section */
+		158A67FFB337231D356AD0B5FD68FD4B /* SJPlaybackListController.m in Sources */ = {isa = PBXBuildFile; fileRef = 6CA0D259C1539DE41FE25F67B51CD8D5 /* SJPlaybackListController.m */; };
+		26A659D5ED072C4C354DB9CEE4D8FDB3 /* SJPlaybackListControllerObserver.m in Sources */ = {isa = PBXBuildFile; fileRef = 4BDA7092F06F617E7DCCB5927B56A1CB /* SJPlaybackListControllerObserver.m */; };
+		2746E10D8706B9402D84BD6E53DCAAD1 /* SJPlaybackListControllerProtocol.h in Headers */ = {isa = PBXBuildFile; fileRef = 404A042195C9C5D0FAB4E26121AA2513 /* SJPlaybackListControllerProtocol.h */; settings = {ATTRIBUTES = (Project, ); }; };
+		310BAC7E41733B8636AFD8313208D242 /* SJPlaybackListController-dummy.m in Sources */ = {isa = PBXBuildFile; fileRef = 118C9133CC15020514E4B64B0CE52462 /* SJPlaybackListController-dummy.m */; };
+		4D019808A6F922D42E6D8A5C655E2F23 /* SJPlaybackListControllerObserver.h in Headers */ = {isa = PBXBuildFile; fileRef = 172FA21B931971763D7B60D37934B017 /* SJPlaybackListControllerObserver.h */; settings = {ATTRIBUTES = (Project, ); }; };
+		8BE1511757C8448A0ED6C050F6C82C1B /* SJPlaybackListControllerProtocol.m in Sources */ = {isa = PBXBuildFile; fileRef = 234D55CC4E06578313B3F1C00FCD3CA7 /* SJPlaybackListControllerProtocol.m */; };
+		B527AC9902FFA0FE7503657166B0D52D /* SJPlaybackListController.h in Headers */ = {isa = PBXBuildFile; fileRef = D730440E4C6A71F8419EDD6A2A247DA0 /* SJPlaybackListController.h */; settings = {ATTRIBUTES = (Project, ); }; };
+/* End PBXBuildFile section */
+
+/* Begin PBXFileReference section */
+		118C9133CC15020514E4B64B0CE52462 /* SJPlaybackListController-dummy.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; path = "SJPlaybackListController-dummy.m"; sourceTree = "<group>"; };
+		172FA21B931971763D7B60D37934B017 /* SJPlaybackListControllerObserver.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = SJPlaybackListControllerObserver.h; path = SJPlaybackListController/Core/SJPlaybackListControllerObserver.h; sourceTree = "<group>"; };
+		234D55CC4E06578313B3F1C00FCD3CA7 /* SJPlaybackListControllerProtocol.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = SJPlaybackListControllerProtocol.m; path = SJPlaybackListController/Core/SJPlaybackListControllerProtocol.m; sourceTree = "<group>"; };
+		2A3FC16C222E80742DB3643B8E4F7CEC /* SJPlaybackListController.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; path = SJPlaybackListController.xcconfig; sourceTree = "<group>"; };
+		374809A4C28CFEADA7C3109714D64F18 /* libSJPlaybackListController.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; name = libSJPlaybackListController.a; path = libSJPlaybackListController.a; sourceTree = BUILT_PRODUCTS_DIR; };
+		404A042195C9C5D0FAB4E26121AA2513 /* SJPlaybackListControllerProtocol.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = SJPlaybackListControllerProtocol.h; path = SJPlaybackListController/Core/SJPlaybackListControllerProtocol.h; sourceTree = "<group>"; };
+		4BDA7092F06F617E7DCCB5927B56A1CB /* SJPlaybackListControllerObserver.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = SJPlaybackListControllerObserver.m; path = SJPlaybackListController/Core/SJPlaybackListControllerObserver.m; sourceTree = "<group>"; };
+		6CA0D259C1539DE41FE25F67B51CD8D5 /* SJPlaybackListController.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = SJPlaybackListController.m; path = SJPlaybackListController/SJPlaybackListController.m; sourceTree = "<group>"; };
+		D730440E4C6A71F8419EDD6A2A247DA0 /* SJPlaybackListController.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = SJPlaybackListController.h; path = SJPlaybackListController/SJPlaybackListController.h; sourceTree = "<group>"; };
+		F9B8E39605C7AA3B2DB63B296D902873 /* SJPlaybackListController-prefix.pch */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = "SJPlaybackListController-prefix.pch"; sourceTree = "<group>"; };
+/* End PBXFileReference section */
+
+/* Begin PBXFrameworksBuildPhase section */
+		67F48A732DBF772BF3433AFD00485880 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXFrameworksBuildPhase section */
+
+/* Begin PBXGroup section */
+		0D4E56B1D18AF21372BEA5B0809C822E /* Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+			);
+			name = Frameworks;
+			sourceTree = "<group>";
+		};
+		7FDC1312AD01462D044ED99021486B49 /* Support Files */ = {
+			isa = PBXGroup;
+			children = (
+				2A3FC16C222E80742DB3643B8E4F7CEC /* SJPlaybackListController.xcconfig */,
+				118C9133CC15020514E4B64B0CE52462 /* SJPlaybackListController-dummy.m */,
+				F9B8E39605C7AA3B2DB63B296D902873 /* SJPlaybackListController-prefix.pch */,
+			);
+			name = "Support Files";
+			path = "../Target Support Files/SJPlaybackListController";
+			sourceTree = "<group>";
+		};
+		C0C3F0616AEDCA9519143C25220CA95D /* Core */ = {
+			isa = PBXGroup;
+			children = (
+				172FA21B931971763D7B60D37934B017 /* SJPlaybackListControllerObserver.h */,
+				4BDA7092F06F617E7DCCB5927B56A1CB /* SJPlaybackListControllerObserver.m */,
+				404A042195C9C5D0FAB4E26121AA2513 /* SJPlaybackListControllerProtocol.h */,
+				234D55CC4E06578313B3F1C00FCD3CA7 /* SJPlaybackListControllerProtocol.m */,
+			);
+			name = Core;
+			sourceTree = "<group>";
+		};
+		C57607D4008C32153ABF34BA5B02E8DB /* SJPlaybackListController */ = {
+			isa = PBXGroup;
+			children = (
+				D730440E4C6A71F8419EDD6A2A247DA0 /* SJPlaybackListController.h */,
+				6CA0D259C1539DE41FE25F67B51CD8D5 /* SJPlaybackListController.m */,
+				C0C3F0616AEDCA9519143C25220CA95D /* Core */,
+				7FDC1312AD01462D044ED99021486B49 /* Support Files */,
+			);
+			name = SJPlaybackListController;
+			path = SJPlaybackListController;
+			sourceTree = "<group>";
+		};
+		EA8686D9FD5DFC70D6159EE66FBBDAD7 /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				374809A4C28CFEADA7C3109714D64F18 /* libSJPlaybackListController.a */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		F91B56E3C160419B30831941D98D67B0 = {
+			isa = PBXGroup;
+			children = (
+				0D4E56B1D18AF21372BEA5B0809C822E /* Frameworks */,
+				EA8686D9FD5DFC70D6159EE66FBBDAD7 /* Products */,
+				C57607D4008C32153ABF34BA5B02E8DB /* SJPlaybackListController */,
+			);
+			sourceTree = "<group>";
+		};
+/* End PBXGroup section */
+
+/* Begin PBXHeadersBuildPhase section */
+		54E559A5055DDB5E911C4BAFC3572C9B /* Headers */ = {
+			isa = PBXHeadersBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				B527AC9902FFA0FE7503657166B0D52D /* SJPlaybackListController.h in Headers */,
+				4D019808A6F922D42E6D8A5C655E2F23 /* SJPlaybackListControllerObserver.h in Headers */,
+				2746E10D8706B9402D84BD6E53DCAAD1 /* SJPlaybackListControllerProtocol.h in Headers */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXHeadersBuildPhase section */
+
+/* Begin PBXNativeTarget section */
+		2F09E295257F9C9E06841A58E6D113BA /* SJPlaybackListController */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 03B648E9AAFF439EA10890DD6C5FCFFA /* Build configuration list for PBXNativeTarget "SJPlaybackListController" */;
+			buildPhases = (
+				54E559A5055DDB5E911C4BAFC3572C9B /* Headers */,
+				09DB2040B9463894E49B2009DA8A1F07 /* Sources */,
+				67F48A732DBF772BF3433AFD00485880 /* Frameworks */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = SJPlaybackListController;
+			productName = SJPlaybackListController;
+			productReference = 374809A4C28CFEADA7C3109714D64F18 /* libSJPlaybackListController.a */;
+			productType = "com.apple.product-type.library.static";
+		};
+/* End PBXNativeTarget section */
+
+/* Begin PBXProject section */
+		A02D752EBF3BD5F09F102F869DE9D6C0 /* Project object */ = {
+			isa = PBXProject;
+			attributes = {
+				LastSwiftUpdateCheck = 0930;
+				LastUpgradeCheck = 0930;
+			};
+			buildConfigurationList = B57C4FC6450F074D9F8338B6FCB26ED3 /* Build configuration list for PBXProject "SJPlaybackListController" */;
+			compatibilityVersion = "Xcode 3.2";
+			developmentRegion = English;
+			hasScannedForEncodings = 0;
+			knownRegions = (
+				en,
+			);
+			mainGroup = F91B56E3C160419B30831941D98D67B0;
+			productRefGroup = EA8686D9FD5DFC70D6159EE66FBBDAD7 /* Products */;
+			projectDirPath = "";
+			projectRoot = "";
+			targets = (
+				2F09E295257F9C9E06841A58E6D113BA /* SJPlaybackListController */,
+			);
+		};
+/* End PBXProject section */
+
+/* Begin PBXSourcesBuildPhase section */
+		09DB2040B9463894E49B2009DA8A1F07 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				310BAC7E41733B8636AFD8313208D242 /* SJPlaybackListController-dummy.m in Sources */,
+				158A67FFB337231D356AD0B5FD68FD4B /* SJPlaybackListController.m in Sources */,
+				26A659D5ED072C4C354DB9CEE4D8FDB3 /* SJPlaybackListControllerObserver.m in Sources */,
+				8BE1511757C8448A0ED6C050F6C82C1B /* SJPlaybackListControllerProtocol.m in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXSourcesBuildPhase section */
+
+/* Begin XCBuildConfiguration section */
+		28D188D491D1085D4AAC6A744DE55609 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = dwarf;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				ENABLE_TESTABILITY = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu11;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"POD_CONFIGURATION_DEBUG=1",
+					"DEBUG=1",
+					"$(inherited)",
+				);
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 8.0;
+				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
+				MTL_FAST_MATH = YES;
+				ONLY_ACTIVE_ARCH = YES;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				STRIP_INSTALLED_PRODUCT = NO;
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = DEBUG;
+				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
+				SWIFT_VERSION = 4.2;
+				SYMROOT = "${SRCROOT}/../build";
+			};
+			name = Debug;
+		};
+		38E66E89E7EFE41F693F89F0BED1164B /* Release */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReference = 2A3FC16C222E80742DB3643B8E4F7CEC /* SJPlaybackListController.xcconfig */;
+			buildSettings = {
+				CODE_SIGN_IDENTITY = "iPhone Developer";
+				"CODE_SIGN_IDENTITY[sdk=appletvos*]" = "";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "";
+				"CODE_SIGN_IDENTITY[sdk=watchos*]" = "";
+				GCC_PREFIX_HEADER = "Target Support Files/SJPlaybackListController/SJPlaybackListController-prefix.pch";
+				IPHONEOS_DEPLOYMENT_TARGET = 8.0;
+				OTHER_LDFLAGS = "";
+				OTHER_LIBTOOLFLAGS = "";
+				PRIVATE_HEADERS_FOLDER_PATH = "";
+				PRODUCT_MODULE_NAME = SJPlaybackListController;
+				PRODUCT_NAME = SJPlaybackListController;
+				PUBLIC_HEADERS_FOLDER_PATH = "";
+				SDKROOT = iphoneos;
+				SKIP_INSTALL = YES;
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "$(inherited) ";
+				TARGETED_DEVICE_FAMILY = "1,2";
+				VALIDATE_PRODUCT = YES;
+			};
+			name = Release;
+		};
+		9514DE8BB27DFC598922D49B8473CAC0 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReference = 2A3FC16C222E80742DB3643B8E4F7CEC /* SJPlaybackListController.xcconfig */;
+			buildSettings = {
+				CODE_SIGN_IDENTITY = "iPhone Developer";
+				"CODE_SIGN_IDENTITY[sdk=appletvos*]" = "";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "";
+				"CODE_SIGN_IDENTITY[sdk=watchos*]" = "";
+				GCC_PREFIX_HEADER = "Target Support Files/SJPlaybackListController/SJPlaybackListController-prefix.pch";
+				IPHONEOS_DEPLOYMENT_TARGET = 8.0;
+				OTHER_LDFLAGS = "";
+				OTHER_LIBTOOLFLAGS = "";
+				PRIVATE_HEADERS_FOLDER_PATH = "";
+				PRODUCT_MODULE_NAME = SJPlaybackListController;
+				PRODUCT_NAME = SJPlaybackListController;
+				PUBLIC_HEADERS_FOLDER_PATH = "";
+				SDKROOT = iphoneos;
+				SKIP_INSTALL = YES;
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "$(inherited) ";
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Debug;
+		};
+		B99446E755B1F09651117EF6E35E9601 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				ENABLE_NS_ASSERTIONS = NO;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu11;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"POD_CONFIGURATION_RELEASE=1",
+					"$(inherited)",
+				);
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 8.0;
+				MTL_ENABLE_DEBUG_INFO = NO;
+				MTL_FAST_MATH = YES;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				STRIP_INSTALLED_PRODUCT = NO;
+				SWIFT_COMPILATION_MODE = wholemodule;
+				SWIFT_OPTIMIZATION_LEVEL = "-O";
+				SWIFT_VERSION = 4.2;
+				SYMROOT = "${SRCROOT}/../build";
+			};
+			name = Release;
+		};
+/* End XCBuildConfiguration section */
+
+/* Begin XCConfigurationList section */
+		03B648E9AAFF439EA10890DD6C5FCFFA /* Build configuration list for PBXNativeTarget "SJPlaybackListController" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				9514DE8BB27DFC598922D49B8473CAC0 /* Debug */,
+				38E66E89E7EFE41F693F89F0BED1164B /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		B57C4FC6450F074D9F8338B6FCB26ED3 /* Build configuration list for PBXProject "SJPlaybackListController" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				28D188D491D1085D4AAC6A744DE55609 /* Debug */,
+				B99446E755B1F09651117EF6E35E9601 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+/* End XCConfigurationList section */
+	};
+	rootObject = A02D752EBF3BD5F09F102F869DE9D6C0 /* Project object */;
+}

@@ -158,7 +158,7 @@ SJEdgeControlButtonItemTag const SJEdgeControlLayerCenterItem_Replay = 40000;
          [_bottomAdapter containsItem:item] ||
          [_rightAdapter containsItem:item] ||
          [_centerAdapter containsItem:item] ) {
-        [_videoPlayer controlLayerNeedAppear]; // 如果点击到当前控制层上的item, 则重置控制层的隐藏间隔
+        [_videoPlayer controlLayerNeedAppear]; // 此处为重置控制层的隐藏间隔.(如果点击到当前控制层上的item, 则重置控制层的隐藏间隔)
     }
 }
 
@@ -1098,12 +1098,14 @@ SJEdgeControlButtonItemTag const SJEdgeControlLayerCenterItem_Replay = 40000;
     return [self _edgeControlButtonItem:item gestureRecognizerShouldTrigger:type atPoint:point];
 }
 - (BOOL)_edgeControlButtonItem:(SJEdgeControlButtonItem *)item gestureRecognizerShouldTrigger:(SJPlayerGestureType)type atPoint:(CGPoint)point {
-    if ( item.target != nil ) return NO;
-    if ( !item ) return YES;
+    if ( [item.target respondsToSelector:item.action] ) {
+        return YES;
+    }
+    
     if ( [item.delegate respondsToSelector:@selector(edgeControlButtonItem:gestureRecognizerShouldTrigger:atPoint:)] ) {
         return [item.delegate edgeControlButtonItem:item gestureRecognizerShouldTrigger:type atPoint:point];
     }
-    return NO;
+    return YES;
 }
 
 - (void)_callUpdatePropertiesMethodOfItemsForAdapter:(SJEdgeControlLayerItemAdapter *)adapter videoPlayer:(__kindof SJBaseVideoPlayer *)videoPlayer {
@@ -1185,7 +1187,7 @@ SJEdgeControlButtonItemTag const SJEdgeControlLayerCenterItem_Replay = 40000;
 
 - (void)_top_updateTitleItem:(SJEdgeControlButtonItem *)titleItem {
     if ( _SJSlowPath(!titleItem) ) return;
-    SJVideoPlayerURLAsset *asset = _videoPlayer.URLAsset.otherMedia?:_videoPlayer.URLAsset;
+    SJVideoPlayerURLAsset *asset = _videoPlayer.URLAsset.originAsset?:_videoPlayer.URLAsset;
     BOOL alwaysShowTitle = asset.alwaysShowTitle;
     BOOL isFullscreen = _videoPlayer.isFullScreen;
     BOOL isFitOnScreen = _videoPlayer.isFitOnScreen;

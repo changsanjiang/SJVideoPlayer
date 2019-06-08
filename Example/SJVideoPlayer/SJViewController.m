@@ -1,0 +1,167 @@
+//
+//  SJViewController.m
+//  SJVideoPlayer
+//
+//  Created by changsanjiang on 06/08/2019.
+//  Copyright (c) 2019 changsanjiang. All rights reserved.
+//
+
+#import "SJViewController.h"
+#import <Masonry/Masonry.h>
+#import <SJRouter/SJRouter.h>
+#import "LWZTableSectionShrinker.h"
+#import <SJVideoPlayer/SJVideoPlayer.h>
+
+@interface Item : NSObject
+- (instancetype)initWithTitle:(NSString *)title subTitle:(NSString *)subTitle path:(NSString *)path;
+@property (nonatomic, strong, readonly) NSString *title;
+@property (nonatomic, strong, readonly) NSString *subTitle;
+@property (nonatomic, strong, readonly) NSString *path;
+@end
+@implementation Item
+- (instancetype)initWithTitle:(NSString *)title subTitle:(NSString *)subTitle path:(NSString *)path {
+    self = [super init];
+    if ( !self ) return nil;
+    _title = title;
+    _subTitle = subTitle;
+    _path = path;
+    return self;
+}
+@end
+
+@interface SJViewController ()<UITableViewDelegate, UITableViewDataSource>
+@property (nonatomic, strong) UITableView *tableView;
+@property (nonatomic, strong) NSArray<LWZTableSectionShrinker<Item *> *> *data;
+@end
+
+@implementation SJViewController
+
+- (void)viewDidLoad
+{
+    [super viewDidLoad];
+    self.view.backgroundColor = [UIColor whiteColor];
+    self.edgesForExtendedLayout = UIRectEdgeNone;
+    
+    [self _createDemoData];
+    _tableView = [[UITableView alloc] initWithFrame:CGRectZero style:UITableViewStyleGrouped];
+    _tableView.delegate = self;
+    _tableView.dataSource = self;
+    _tableView.estimatedRowHeight = 0;
+    _tableView.estimatedSectionFooterHeight = 0;
+    _tableView.estimatedSectionHeaderHeight = 0;
+    [self.view addSubview:_tableView];
+    [_tableView mas_makeConstraints:^(MASConstraintMaker *make) {
+        make.edges.offset(0);
+    }];
+    _tableView.rowHeight = 44;
+
+	// Do any additional setup after loading the view, typically from a nib.
+}
+
+- (void)_createDemoData {
+    NSMutableArray<LWZTableSectionShrinker<Item *> *> *m = [NSMutableArray new];
+    
+    [m addObject:[[LWZTableSectionShrinker alloc] initWithTitle:@"Rotation Control" titleWhenShrank:nil dataArr:[self _createRotationControlDemoItems]]];
+    
+    [m addObject:[[LWZTableSectionShrinker alloc] initWithTitle:@"Switching Control Layer" titleWhenShrank:nil dataArr:[self _createSwitchingControlLayerDemoItems]]];
+    
+    [m addObject:[[LWZTableSectionShrinker alloc] initWithTitle:@"UITableView UICollectionView" titleWhenShrank:nil dataArr:[self _createScrollViewDemoItems]]];
+    
+    [m addObject:[[LWZTableSectionShrinker alloc] initWithTitle:@"Playback List Control" titleWhenShrank:nil dataArr:[self _createPlaybackListControlDemoItems]]];
+    
+    [m addObject:[[LWZTableSectionShrinker alloc] initWithTitle:@"Add Button Item To Control Layer" titleWhenShrank:nil dataArr:[self _createAddButtonItemToControlLayerDemoItems]]];
+    
+    _data = m.copy;
+}
+
+
+- (NSArray<Item *> *)_createRotationControlDemoItems {
+    return
+    @[
+      [[Item alloc] initWithTitle:@"Rotate Player View"
+                         subTitle:@"旋转`播放器视图`1"
+                             path:@"rotationMode/vc3"],
+      [[Item alloc] initWithTitle:@"Rotate Player View And View Controller2"
+                         subTitle:@"旋转`播放器视图`和`视图控制器`2"
+                             path:@"rotationMode/vc2"],
+      [[Item alloc] initWithTitle:@"Rotate Player View And View Controller1"
+                         subTitle:@"旋转`播放器视图`和`视图控制器`1"
+                             path:@"rotationMode/vc1"],
+      ];
+}
+
+- (NSArray<Item *> *)_createPlaybackListControlDemoItems {
+    return
+    @[
+      [[Item alloc] initWithTitle:@"Playback List Control"
+                         subTitle:@"播放列表控制"
+                             path:@"playbackListControl/vc1"],
+      ];
+}
+
+- (NSArray<Item *> *)_createAddButtonItemToControlLayerDemoItems {
+    return
+    @[
+      [[Item alloc] initWithTitle:@"Add Button Item To Control Layer"
+                         subTitle:@"添加按钮到控制层"
+                             path:@"controlLayer/edgeButtonItem"],
+      ];
+}
+
+- (NSArray<Item *> *)_createScrollViewDemoItems {
+    return
+    @[
+      [[Item alloc] initWithTitle:@"Float Small View"
+                         subTitle:@"开启小浮窗 (注: 当播放器视图滑动消失时, 显示小浮窗视图)"
+                             path:@"scrollView/floatSmallView"],
+      
+      [[Item alloc] initWithTitle:@"Autoplay in Table View"
+                         subTitle:@"TableView 中自动播放"
+                             path:@"tableView/autoplay2"]
+      ];
+}
+
+- (NSArray<Item *> *)_createSwitchingControlLayerDemoItems {
+    return
+    @[
+      [[Item alloc] initWithTitle:@"Switching Control Layer"
+                         subTitle:@"切换控制层 (注: 此为手动切换, 实际过程中播放器将会根据状态自动切换)"
+                             path:@"controlLayer/switching"],
+      ];
+}
+
+#pragma mark -
+
+- (NSInteger)numberOfSectionsInTableView:(UITableView *)tableView {
+    return _data.count;
+}
+
+- (NSString *)tableView:(UITableView *)tableView titleForHeaderInSection:(NSInteger)section {
+    return _data[section].titleForShrinkStatus;
+}
+
+- (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section {
+    return _data[section].dataArrByShrinkStatus.count;
+}
+
+- (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath {
+    static NSString *UITableViewCellID = @"UITableViewCell";
+    UITableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:UITableViewCellID];
+    if ( !cell ) {
+        cell = [[UITableViewCell alloc] initWithStyle:UITableViewCellStyleSubtitle reuseIdentifier:UITableViewCellID];
+        cell.textLabel.font = [UIFont systemFontOfSize:12];
+        cell.detailTextLabel.font = [UIFont systemFontOfSize:10];
+    }
+    return cell;
+}
+
+- (void)tableView:(UITableView *)tableView willDisplayCell:(UITableViewCell *)cell forRowAtIndexPath:(NSIndexPath *)indexPath {
+    cell.textLabel.text = _data[indexPath.section].dataArrByShrinkStatus[indexPath.row].title;
+    cell.detailTextLabel.text = _data[indexPath.section].dataArrByShrinkStatus[indexPath.row].subTitle;
+}
+
+- (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath {
+    SJRouteRequest *reqeust = [[SJRouteRequest alloc] initWithPath:_data[indexPath.section].dataArrByShrinkStatus[indexPath.row].path parameters:nil];
+    [SJRouter.shared handleRequest:reqeust completionHandler:nil];
+}
+@end

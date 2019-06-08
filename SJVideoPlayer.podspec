@@ -115,6 +115,7 @@ Pod::Spec.new do |s|
       end
       ss.dependency 'SJVideoPlayer/Common'
       ss.dependency 'SJVideoPlayer/Adapters'
+      ss.dependency 'SJVideoPlayer/Switcher'
     end
 
 end

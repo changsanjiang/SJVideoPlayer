@@ -102,20 +102,20 @@ static NSString *const SJTableViewCell1ID = @"SJTableViewCell1";
         };
         
         _player.pauseWhenAppDidEnterBackground = NO; ///< 开启后台播放
-        _player.playTimeDidChangeExeBlok = ^(__kindof SJBaseVideoPlayer * _Nonnull videoPlayer) {
-            NSDictionary *info =
-            @{MPMediaItemPropertyTitle:item.medianame,
-              MPMediaItemPropertyMediaType:@(MPMediaTypeAnyAudio),
-              MPNowPlayingInfoPropertyElapsedPlaybackTime:@(videoPlayer.currentTime),
-              MPMediaItemPropertyPlaybackDuration:@(videoPlayer.totalTime),
-              MPNowPlayingInfoPropertyPlaybackRate:@(videoPlayer.rate)};
-            [SJRemoteCommandHandler.shared updateNowPlayingInfo:info];
-        };
     }
     
     _player.URLAsset = [[SJVideoPlayerURLAsset alloc] initWithURL:item.URL];
     _player.URLAsset.title = item.medianame;
-    
+    _player.playTimeDidChangeExeBlok = ^(__kindof SJBaseVideoPlayer * _Nonnull videoPlayer) {
+        NSDictionary *info =
+        @{MPMediaItemPropertyTitle:item.medianame,
+          MPMediaItemPropertyMediaType:@(MPMediaTypeAny),
+          MPNowPlayingInfoPropertyElapsedPlaybackTime:@(videoPlayer.currentTime),
+          MPMediaItemPropertyPlaybackDuration:@(videoPlayer.totalTime),
+          MPNowPlayingInfoPropertyPlaybackRate:@(videoPlayer.rate)};
+        [SJRemoteCommandHandler.shared updateNowPlayingInfo:info];
+    };
+
     [self.tableView selectRowAtIndexPath:[NSIndexPath indexPathForRow:[listController indexForMediaId:media.id] inSection:0] animated:YES scrollPosition:UITableViewScrollPositionMiddle];
 }
 

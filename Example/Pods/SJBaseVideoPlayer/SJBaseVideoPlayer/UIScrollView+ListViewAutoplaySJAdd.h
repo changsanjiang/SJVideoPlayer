@@ -28,7 +28,7 @@ NS_ASSUME_NONNULL_BEGIN
 - (void)sj_playNextVisibleAsset;
 
 @end
-
+    
 
 /// Developers don't need to care, this category is automatically maintained by the SJBaseVideoPlayer.
 /// 开发者无需关心, 此分类由播放器自动维护

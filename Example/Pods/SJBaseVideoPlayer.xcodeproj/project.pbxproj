@@ -155,13 +155,13 @@
 		26C2BBA8526522381C88EEC4A8FE2FF3 /* SJFitOnScreenManager.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = SJFitOnScreenManager.h; path = SJBaseVideoPlayer/Tool/SJFitOnScreenManager.h; sourceTree = "<group>"; };
 		2BCD6A2AC590A5D0F919AA1ED7B387DA /* SJAVMediaPlayerLoader.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = SJAVMediaPlayerLoader.h; path = SJBaseVideoPlayer/SJAVMediaPlaybackController/Core/SJAVMediaPlayerLoader.h; sourceTree = "<group>"; };
 		2E5BEDDC5E8C1B12F3BE8132FEA16C23 /* SJModalViewControlllerManagerDefines.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = SJModalViewControlllerManagerDefines.h; path = SJBaseVideoPlayer/Header/SJModalViewControlllerManagerDefines.h; sourceTree = "<group>"; };
-		2EBC5C8212FCA9C346023D5FD6ACA3C3 /* libSJBaseVideoPlayer.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; name = libSJBaseVideoPlayer.a; path = libSJBaseVideoPlayer.a; sourceTree = BUILT_PRODUCTS_DIR; };
 		2FC17D3ED5D1932450EB6C0DADF3E30E /* SJPlayerGestureControlDefines.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = SJPlayerGestureControlDefines.h; path = SJBaseVideoPlayer/Header/SJPlayerGestureControlDefines.h; sourceTree = "<group>"; };
 		355A8CCFC70329B9914DBD0DB0CB5948 /* SJFlipTransitionManager.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = SJFlipTransitionManager.h; path = SJBaseVideoPlayer/Tool/SJFlipTransitionManager.h; sourceTree = "<group>"; };
 		362A615549E0AC3D18315193267A7D87 /* SJRotationManagerDefines.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = SJRotationManagerDefines.h; path = SJBaseVideoPlayer/Header/SJRotationManagerDefines.h; sourceTree = "<group>"; };
 		372CB7C26F4587E1F1FC036C49C3C178 /* SJControlLayerAppearManagerDefines.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = SJControlLayerAppearManagerDefines.h; path = SJBaseVideoPlayer/Header/SJControlLayerAppearManagerDefines.h; sourceTree = "<group>"; };
 		377923AFEEA8481155A5EAE505DE9C87 /* SJBaseVideoPlayer.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; path = SJBaseVideoPlayer.xcconfig; sourceTree = "<group>"; };
 		391D99E36FE47740EF7351F385CFCF9A /* UIScrollView+ListViewAutoplaySJAdd.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = "UIScrollView+ListViewAutoplaySJAdd.h"; path = "SJBaseVideoPlayer/UIScrollView+ListViewAutoplaySJAdd.h"; sourceTree = "<group>"; };
+		3FAB94D13F615D1D2CC506E3DD6EFF42 /* libSJBaseVideoPlayer.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; name = libSJBaseVideoPlayer.a; path = libSJBaseVideoPlayer.a; sourceTree = BUILT_PRODUCTS_DIR; };
 		3FBD6637187F76A92003225E4BD536FA /* SJVCRotationManager.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = SJVCRotationManager.m; path = SJBaseVideoPlayer/SJRotationManager/SJVCRotationManager.m; sourceTree = "<group>"; };
 		41FF306AF28EBB72451E9795705CDB3B /* SJVideoPlayerPresentView.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = SJVideoPlayerPresentView.h; path = SJBaseVideoPlayer/Tool/SJVideoPlayerPresentView.h; sourceTree = "<group>"; };
 		46B68584B83DD4EBB532C27606ED3A23 /* SJUIKit */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = SJUIKit; path = SJUIKit.xcodeproj; sourceTree = "<group>"; };
@@ -322,7 +322,7 @@
 		48D04C386162AA678287C6D6A039AE18 /* Products */ = {
 			isa = PBXGroup;
 			children = (
-				2EBC5C8212FCA9C346023D5FD6ACA3C3 /* libSJBaseVideoPlayer.a */,
+				3FAB94D13F615D1D2CC506E3DD6EFF42 /* libSJBaseVideoPlayer.a */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -574,7 +574,7 @@
 			);
 			name = SJBaseVideoPlayer;
 			productName = SJBaseVideoPlayer;
-			productReference = 2EBC5C8212FCA9C346023D5FD6ACA3C3 /* libSJBaseVideoPlayer.a */;
+			productReference = 3FAB94D13F615D1D2CC506E3DD6EFF42 /* libSJBaseVideoPlayer.a */;
 			productType = "com.apple.product-type.library.static";
 		};
 /* End PBXNativeTarget section */
@@ -583,12 +583,12 @@
 		2447FF5CB197E2B168086360FEEF35AE /* Project object */ = {
 			isa = PBXProject;
 			attributes = {
-				LastSwiftUpdateCheck = 0930;
-				LastUpgradeCheck = 0930;
+				LastSwiftUpdateCheck = 1020;
+				LastUpgradeCheck = 1020;
 			};
 			buildConfigurationList = 589607B09AC96BABC15ED00ABDC26E08 /* Build configuration list for PBXProject "SJBaseVideoPlayer" */;
 			compatibilityVersion = "Xcode 3.2";
-			developmentRegion = English;
+			developmentRegion = en;
 			hasScannedForEncodings = 0;
 			knownRegions = (
 				en,
@@ -684,30 +684,7 @@
 /* End PBXTargetDependency section */
 
 /* Begin XCBuildConfiguration section */
-		61BB0EDB009C10270346B739A83CCC17 /* Debug */ = {
-			isa = XCBuildConfiguration;
-			baseConfigurationReference = 377923AFEEA8481155A5EAE505DE9C87 /* SJBaseVideoPlayer.xcconfig */;
-			buildSettings = {
-				CODE_SIGN_IDENTITY = "iPhone Developer";
-				"CODE_SIGN_IDENTITY[sdk=appletvos*]" = "";
-				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "";
-				"CODE_SIGN_IDENTITY[sdk=watchos*]" = "";
-				GCC_PREFIX_HEADER = "Target Support Files/SJBaseVideoPlayer/SJBaseVideoPlayer-prefix.pch";
-				IPHONEOS_DEPLOYMENT_TARGET = 9.0;
-				OTHER_LDFLAGS = "";
-				OTHER_LIBTOOLFLAGS = "";
-				PRIVATE_HEADERS_FOLDER_PATH = "";
-				PRODUCT_MODULE_NAME = SJBaseVideoPlayer;
-				PRODUCT_NAME = SJBaseVideoPlayer;
-				PUBLIC_HEADERS_FOLDER_PATH = "";
-				SDKROOT = iphoneos;
-				SKIP_INSTALL = YES;
-				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "$(inherited) ";
-				TARGETED_DEVICE_FAMILY = "1,2";
-			};
-			name = Debug;
-		};
-		6459F4CAE8A945CFBCD9FA34F1B93832 /* Release */ = {
+		487F527877B163429EE319FFA06A752E /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
@@ -762,10 +739,33 @@
 				STRIP_INSTALLED_PRODUCT = NO;
 				SWIFT_COMPILATION_MODE = wholemodule;
 				SWIFT_OPTIMIZATION_LEVEL = "-O";
-				SWIFT_VERSION = 4.2;
+				SWIFT_VERSION = 5.0;
 				SYMROOT = "${SRCROOT}/../build";
 			};
 			name = Release;
+		};
+		61BB0EDB009C10270346B739A83CCC17 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReference = 377923AFEEA8481155A5EAE505DE9C87 /* SJBaseVideoPlayer.xcconfig */;
+			buildSettings = {
+				CODE_SIGN_IDENTITY = "iPhone Developer";
+				"CODE_SIGN_IDENTITY[sdk=appletvos*]" = "";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "";
+				"CODE_SIGN_IDENTITY[sdk=watchos*]" = "";
+				GCC_PREFIX_HEADER = "Target Support Files/SJBaseVideoPlayer/SJBaseVideoPlayer-prefix.pch";
+				IPHONEOS_DEPLOYMENT_TARGET = 9.0;
+				OTHER_LDFLAGS = "";
+				OTHER_LIBTOOLFLAGS = "";
+				PRIVATE_HEADERS_FOLDER_PATH = "";
+				PRODUCT_MODULE_NAME = SJBaseVideoPlayer;
+				PRODUCT_NAME = SJBaseVideoPlayer;
+				PUBLIC_HEADERS_FOLDER_PATH = "";
+				SDKROOT = iphoneos;
+				SKIP_INSTALL = YES;
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "$(inherited) ";
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Debug;
 		};
 		B05DD0A7E5FB854A18284D2C20354791 /* Release */ = {
 			isa = XCBuildConfiguration;
@@ -791,7 +791,7 @@
 			};
 			name = Release;
 		};
-		B5B574B83A5EE32390C9FB2B1C6C0F6F /* Debug */ = {
+		C3AF123944D6CBD50F4E6E9DD1281A9F /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
@@ -850,7 +850,7 @@
 				STRIP_INSTALLED_PRODUCT = NO;
 				SWIFT_ACTIVE_COMPILATION_CONDITIONS = DEBUG;
 				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
-				SWIFT_VERSION = 4.2;
+				SWIFT_VERSION = 5.0;
 				SYMROOT = "${SRCROOT}/../build";
 			};
 			name = Debug;
@@ -861,8 +861,8 @@
 		589607B09AC96BABC15ED00ABDC26E08 /* Build configuration list for PBXProject "SJBaseVideoPlayer" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
-				B5B574B83A5EE32390C9FB2B1C6C0F6F /* Debug */,
-				6459F4CAE8A945CFBCD9FA34F1B93832 /* Release */,
+				C3AF123944D6CBD50F4E6E9DD1281A9F /* Debug */,
+				487F527877B163429EE319FFA06A752E /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;

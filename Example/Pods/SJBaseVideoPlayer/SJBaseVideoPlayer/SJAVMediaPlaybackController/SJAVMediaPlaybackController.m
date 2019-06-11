@@ -358,9 +358,10 @@ NS_ASSUME_NONNULL_BEGIN
     [player pause];
 }
 - (void)seekToTime:(NSTimeInterval)secs completionHandler:(void (^_Nullable)(BOOL))completionHandler {
-    SJRunLoopTaskQueue.main.enqueue(^{
-        [self.player seekToTime:CMTimeMakeWithSeconds(secs, NSEC_PER_SEC) completionHandler:completionHandler];
-    });
+    [self.player seekToTime:CMTimeMakeWithSeconds(secs, NSEC_PER_SEC) completionHandler:completionHandler];
+}
+- (void)seekToTime:(CMTime)time toleranceBefore:(CMTime)toleranceBefore toleranceAfter:(CMTime)toleranceAfter completionHandler:(void (^_Nullable)(BOOL))completionHandler {
+    [self.player seekToTime:time toleranceBefore:toleranceBefore toleranceAfter:toleranceAfter completionHandler:completionHandler];
 }
 - (void)switchVideoDefinition:(id<SJMediaModelProtocol>)media {
     if ( !media ) return;

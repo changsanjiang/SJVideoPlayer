@@ -12,7 +12,7 @@
 //
 
 #import <Foundation/Foundation.h>
-#import "SJRouteRequest.h"
+#import "SJRouteHandler.h"
 @class UIViewController;
 
 NS_ASSUME_NONNULL_BEGIN

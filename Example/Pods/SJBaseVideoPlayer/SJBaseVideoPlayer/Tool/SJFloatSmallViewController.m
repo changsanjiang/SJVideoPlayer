@@ -66,14 +66,14 @@ NS_ASSUME_NONNULL_BEGIN
         sjkvo_observe(controller, @"isAppeared", ^(id  _Nonnull target, NSDictionary<NSKeyValueChangeKey,id> * _Nullable change) {
             dispatch_async(dispatch_get_main_queue(), ^{
                 if ( self.appearStateDidChangeExeBlock )
-                    self.appearStateDidChangeExeBlock(controller);
+                    self.appearStateDidChangeExeBlock(target);
             });
         });
         
         sjkvo_observe(controller, @"enabled", ^(id  _Nonnull target, NSDictionary<NSKeyValueChangeKey,id> * _Nullable change) {
             dispatch_async(dispatch_get_main_queue(), ^{
                 if ( self.enabledControllerExeBlock )
-                    self.enabledControllerExeBlock(controller);
+                    self.enabledControllerExeBlock(target);
             });
         });
     }

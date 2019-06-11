@@ -40,6 +40,7 @@ extern SJEdgeControlButtonItemTag const SJEdgeControlLayerCenterItem_Replay;    
 @property (nonatomic) BOOL hideBottomProgressSlider; // 隐藏底部进度条
 @property (nonatomic) BOOL showResidentBackButton;   // 返回按钮常驻
 @property (nonatomic) BOOL showNetworkSpeedToLoadingView;
+@property (nonatomic) BOOL showLoadingViewWhenPlaybackStatusIsSeeking;
 @end
 
 

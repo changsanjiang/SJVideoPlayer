@@ -58,28 +58,24 @@
 - (void)start {
     if ( _animating ) return;
     _animating = YES;
-    dispatch_async(dispatch_get_main_queue(), ^{
-        self.alpha = 1;
-        CABasicAnimation *rotationAnim = [CABasicAnimation animationWithKeyPath:@"transform.rotation.z"];
-        rotationAnim.toValue = [NSNumber numberWithFloat:2 * M_PI];
-        rotationAnim.duration = self->_speed;
-        rotationAnim.repeatCount = CGFLOAT_MAX;
-        rotationAnim.removedOnCompletion = NO;
-        [self->_gradientLayer addAnimation:rotationAnim forKey:@"rotation"];
-    });
+    self.alpha = 1;
+    CABasicAnimation *rotationAnim = [CABasicAnimation animationWithKeyPath:@"transform.rotation.z"];
+    rotationAnim.toValue = [NSNumber numberWithFloat:2 * M_PI];
+    rotationAnim.duration = self->_speed;
+    rotationAnim.repeatCount = CGFLOAT_MAX;
+    rotationAnim.removedOnCompletion = NO;
+    [self->_gradientLayer addAnimation:rotationAnim forKey:@"rotation"];
 }
 
 - (void)stop {
     if ( !_animating ) return;
     _animating = NO;
-    dispatch_async(dispatch_get_main_queue(), ^{
-        [UIView animateWithDuration:0.3 animations:^{
-            self.alpha = 0.001;
-        } completion:^(BOOL finished) {
-            if ( !self->_animating )
-                [self->_gradientLayer removeAnimationForKey:@"rotation"];
-        }];
-    });
+    [UIView animateWithDuration:0.3 animations:^{
+        self.alpha = 0.001;
+    } completion:^(BOOL finished) {
+        if ( !self->_animating )
+            [self->_gradientLayer removeAnimationForKey:@"rotation"];
+    }];
 }
 
 - (void)layoutSubviews {

@@ -39,7 +39,7 @@ NS_ASSUME_NONNULL_BEGIN
 
     id<SJRotationManagerProtocol> mgr = object;
     if ( mgr.isTransitioning ) {
-        !_rotationDidEndExeBlock?:_rotationDidEndExeBlock(mgr);
+        !_rotationDidStartExeBlock?:_rotationDidStartExeBlock(mgr);
     }
     else {
         !_rotationDidEndExeBlock?:_rotationDidEndExeBlock(mgr);

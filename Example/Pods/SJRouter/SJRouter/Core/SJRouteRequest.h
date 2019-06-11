@@ -6,7 +6,7 @@
 //
 
 #import <Foundation/Foundation.h>
-#import "SJRouteHandler.h"
+typedef id SJParameters;
 
 NS_ASSUME_NONNULL_BEGIN
 @interface SJRouteRequest : NSObject

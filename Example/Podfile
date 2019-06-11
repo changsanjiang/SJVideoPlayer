@@ -2,10 +2,12 @@
 platform :ios, '9.0'
 
 post_install do |installer|
-  installer.pods_project.targets.each do |target|
-    target.build_configurations.each do |config|
-      if config.build_settings['IPHONEOS_DEPLOYMENT_TARGET'].to_f < 9.0
-        config.build_settings['IPHONEOS_DEPLOYMENT_TARGET'] = '9.0'
+  installer.pod_target_subprojects.each do |project|
+    project.targets.each do |target|
+      target.build_configurations.each do |config|
+        if config.build_settings['IPHONEOS_DEPLOYMENT_TARGET'].to_f < 9.0
+          config.build_settings['IPHONEOS_DEPLOYMENT_TARGET'] = '9.0'
+        end
       end
     end
   end
@@ -19,7 +21,7 @@ target 'SJVideoPlayer_Example' do
 
   # Pods for SJVideoPlayer
 
-  pod 'SJBaseVideoPlayer'#, :path => '../../SJBaseVideoPlayer'
+  #pod 'SJBaseVideoPlayer', :path => '../../SJBaseVideoPlayer'
   pod 'SJVideoPlayer', :path => '../../SJVideoPlayer'
   
   

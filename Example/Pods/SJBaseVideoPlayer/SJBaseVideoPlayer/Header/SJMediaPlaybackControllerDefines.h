@@ -68,6 +68,7 @@ NS_ASSUME_NONNULL_BEGIN
 - (void)pause;
 - (void)stop;
 - (void)seekToTime:(NSTimeInterval)secs completionHandler:(void (^ __nullable)(BOOL finished))completionHandler;
+- (void)seekToTime:(CMTime)time toleranceBefore:(CMTime)toleranceBefore toleranceAfter:(CMTime)toleranceAfter completionHandler:(void (^ __nullable)(BOOL))completionHandler;
 - (nullable UIImage *)screenshot;
 - (void)switchVideoDefinition:(id<SJMediaModelProtocol>)media;
 @end

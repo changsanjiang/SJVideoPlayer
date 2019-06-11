@@ -293,7 +293,7 @@ sj_swizzleMethod(Class cls, SEL originalSelector, SEL swizzledSelector) {
 }
 
 + (NSString *)version {
-    return @"2.4.4";
+    return @"2.4.6";
 }
 
 - (nullable __kindof UIViewController *)atViewController {
@@ -1022,6 +1022,19 @@ sj_swizzleMethod(Class cls, SEL originalSelector, SEL swizzledSelector) {
     [self.playbackController seekToTime:secs completionHandler:completionHandler];
 }
 
+- (void)seekToTime:(CMTime)time toleranceBefore:(CMTime)toleranceBefore toleranceAfter:(CMTime)toleranceAfter completionHandler:(void (^ _Nullable)(BOOL))completionHandler {
+    if ( self.canPlayAnAsset && !self.canPlayAnAsset(self) ) {
+        return;
+    }
+    
+    if ( [self playStatus_isUnknown] || [self playStatus_isInactivity_ReasonPlayFailed] ) {
+        if ( completionHandler ) completionHandler(NO);
+        return;
+    }
+    
+    [self.playbackController seekToTime:time toleranceBefore:toleranceBefore toleranceAfter:toleranceAfter completionHandler:completionHandler];
+}
+
 - (void)setRate:(float)rate {
     if ( self.canPlayAnAsset && !self.canPlayAnAsset(self) ) {
         return;
@@ -1177,7 +1190,7 @@ sj_swizzleMethod(Class cls, SEL originalSelector, SEL swizzledSelector) {
 }
 
 - (void)_playTimeDidChange {
-    if ( [self playStatus_isPaused] ) return;
+//    if ( [self playStatus_isPaused] ) return;
     if ( [self.controlLayerDelegate respondsToSelector:@selector(videoPlayer:currentTime:currentTimeStr:totalTime:totalTimeStr:)] ) {
         [self.controlLayerDelegate videoPlayer:self currentTime:self.currentTime currentTimeStr:self.currentTimeStr totalTime:self.totalTime totalTimeStr:self.totalTimeStr];
     }
@@ -2637,10 +2650,10 @@ static id<SJBaseVideoPlayerStatistics> _statistics;
         return;
     }
     
-    _controlInfo->scrollControl.isScrollAppeared = NO;
-    
     if ( _rotationManager.isTransitioning )
         return;
+
+    _controlInfo->scrollControl.isScrollAppeared = NO;
     
     _view.hidden = _controlInfo->scrollControl.hiddenPlayerViewWhenScrollDisappeared;
     

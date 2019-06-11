@@ -167,6 +167,7 @@ NS_ASSUME_NONNULL_BEGIN
         [self.subviews.firstObject removeFromSuperview];
     }
     [_container resetPresenter:nil];
+    self.readyForDisplay = NO;
 }
 @end
 NS_ASSUME_NONNULL_END

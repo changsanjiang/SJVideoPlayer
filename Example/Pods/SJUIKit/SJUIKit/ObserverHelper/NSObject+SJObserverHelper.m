@@ -69,6 +69,15 @@ NS_ASSUME_NONNULL_BEGIN
     helper.factor = sub;
     sub.factor = helper;
     
+    __weak typeof(self) _self = self;
+    [observer sj_addDeallocCallbackTask:^(id  _Nonnull obj) {
+        __strong typeof(_self) self = _self;
+        if ( !self ) return;
+        @synchronized (self) {
+            [[self sj_observerhashSet] removeObject:hashstr];
+        }
+    }];
+    
     objc_setAssociatedObject(self, &helper->_key, helper, OBJC_ASSOCIATION_RETAIN_NONATOMIC);
     objc_setAssociatedObject(observer, &sub->_key, sub, OBJC_ASSOCIATION_RETAIN_NONATOMIC);
 }

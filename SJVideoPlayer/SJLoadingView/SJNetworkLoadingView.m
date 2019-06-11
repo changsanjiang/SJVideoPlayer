@@ -59,7 +59,17 @@
 }
 
 - (void)start {
-    if ( _loadingView.isAnimating )
+    [NSObject cancelPreviousPerformRequestsWithTarget:self];
+    [self performSelector:@selector(_start) withObject:nil afterDelay:0.1 inModes:@[NSRunLoopCommonModes]];
+}
+
+- (void)stop {
+    [NSObject cancelPreviousPerformRequestsWithTarget:self];
+    [self performSelector:@selector(_stop) withObject:nil afterDelay:0.1 inModes:@[NSRunLoopCommonModes]];
+}
+
+- (void)_start {
+    if ( self->_loadingView.isAnimating )
         return;
     [UIView animateWithDuration:0.3 animations:^{
         [self->_loadingView start];
@@ -67,8 +77,8 @@
     }];
 }
 
-- (void)stop {
-    if ( !_loadingView.isAnimating )
+- (void)_stop {
+    if ( !self->_loadingView.isAnimating )
         return;
     [UIView animateWithDuration:0.3 animations:^{
         [self->_loadingView stop];

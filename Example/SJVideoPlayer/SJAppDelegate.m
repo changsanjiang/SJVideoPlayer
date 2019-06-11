@@ -46,7 +46,7 @@ static BOOL _isCustomClass(Class cls) {
         common.progress_bufferColor = [UIColor whiteColor];
     });
     
-    [UIApplication.sharedApplication setStatusBarOrientation:UIInterfaceOrientationPortrait];
+    UIApplication.sharedApplication.statusBarOrientation = UIInterfaceOrientationPortrait;
     _window = [[UIWindow alloc] initWithFrame:UIScreen.mainScreen.bounds];
     _window.backgroundColor = UIColor.whiteColor;
     _window.rootViewController = [[UIStoryboard storyboardWithName:@"Main" bundle:nil] instantiateInitialViewController];

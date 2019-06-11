@@ -1,6 +1,6 @@
 {
   "name": "SJVideoPlayer",
-  "version": "2.5.7",
+  "version": "2.5.8",
   "summary": "video player.",
   "description": "https://github.com/changsanjiang/SJVideoPlayer/blob/master/README.md",
   "homepage": "https://github.com/changsanjiang/SJVideoPlayer",
@@ -16,7 +16,7 @@
   },
   "source": {
     "git": "https://github.com/changsanjiang/SJVideoPlayer.git",
-    "tag": "v2.5.7"
+    "tag": "v2.5.8"
   },
   "requires_arc": true,
   "dependencies": {
@@ -65,6 +65,9 @@
 
         ],
         "SJVideoPlayer/SJEdgeControlLayer/ResourceLoader": [
+
+        ],
+        "SJVideoPlayer/SJFloatSmallViewControlLayer/ResourceLoader": [
 
         ]
       }
@@ -173,6 +176,17 @@
     {
       "name": "SJFloatSmallViewControlLayer",
       "source_files": "SJVideoPlayer/SJFloatSmallViewControlLayer/*.{h,m}",
+      "dependencies": {
+        "SJVideoPlayer/Common": [
+
+        ],
+        "SJVideoPlayer/Adapters": [
+
+        ],
+        "SJVideoPlayer/Switcher": [
+
+        ]
+      },
       "subspecs": [
         {
           "name": "ResourceLoader",

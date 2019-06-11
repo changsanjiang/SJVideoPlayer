@@ -124,6 +124,7 @@ SJEdgeControlButtonItemTag const SJEdgeControlLayerCenterItem_Replay = 40000;
     [self _setupView];
     self.autoAdjustTopSpacing = YES;
     self.hideBottomProgressSlider = YES;
+    self.showLoadingViewWhenPlaybackStatusIsSeeking = YES;
     return self;
 }
 
@@ -911,9 +912,12 @@ SJEdgeControlButtonItemTag const SJEdgeControlLayerCenterItem_Replay = 40000;
     }
     
     SJPlayerBufferStatus bufferStatus = self.videoPlayer.playbackController.bufferStatus;
-    if ( [_videoPlayer playStatus_isPaused_ReasonSeeking] ||
-         [_videoPlayer playStatus_isPrepare] ) {
+    if ( [_videoPlayer playStatus_isPrepare] ) {
         [_loadingView start];
+    }
+    else if ( [_videoPlayer playStatus_isPaused_ReasonSeeking] ) {
+        if ( _showLoadingViewWhenPlaybackStatusIsSeeking )
+            [_loadingView start];
     }
     else if ( _videoPlayer.playbackController.bufferStatus == SJPlayerBufferStatusPlayable ||
              [_videoPlayer playStatus_isInactivity] ) {

@@ -24,6 +24,9 @@ static UIViewController *_sj_get_top_view_controller() {
     return vc;
 }
 
+static SEL sel_handler_v1;
+static SEL sel_handler_v2;
+
 @interface SJRouter()
 @property (nonatomic, strong, readonly) NSMutableDictionary<NSString *, Class> *handlersM;
 @end
@@ -44,6 +47,9 @@ static UIViewController *_sj_get_top_view_controller() {
 - (instancetype)init {
     self = [super init];
     if ( !self ) return nil;
+    sel_handler_v1 = @selector(handleRequestWithParameters:topViewController:completionHandler:);
+    sel_handler_v2 = @selector(handleRequest:topViewController:completionHandler:);
+    
     _handlersM = [NSMutableDictionary new];
     _group = dispatch_group_create();
     dispatch_group_async(_group, dispatch_get_global_queue(0, 0), ^{
@@ -53,7 +59,6 @@ static UIViewController *_sj_get_top_view_controller() {
         unsigned int img_count = 0;
         const char **imgs = objc_copyImageNames(&img_count);
         const char *main = NSBundle.mainBundle.bundlePath.UTF8String;
-        SEL sel_handler = @selector(handleRequestWithParameters:topViewController:completionHandler:);
         SEL sel_path = @selector(routePath);
         SEL sel_multiPath = @selector(multiRoutePath);
         Protocol *protocol = @protocol(SJRouteHandler);
@@ -72,7 +77,6 @@ static UIViewController *_sj_get_top_view_controller() {
                 if ( !supercls ) continue;
 
                 Class metaClass = (Class)object_getClass(cls);
-                if ( !class_respondsToSelector(metaClass, sel_handler) ) continue;
                 if ( class_respondsToSelector(metaClass, sel_path) ) {
                     IMP func = class_getMethodImplementation(metaClass, sel_path);
                     NSString *routePath = ((NSString *(*)(id, SEL))func)(cls, sel_path);
@@ -99,9 +103,12 @@ static UIViewController *_sj_get_top_view_controller() {
 - (void)handleRequest:(SJRouteRequest *)request completionHandler:(nullable SJCompletionHandler)completionHandler {
     NSParameterAssert(request); if ( !request ) return;
     dispatch_group_notify(_group, dispatch_get_main_queue(), ^{
-        Class<SJRouteHandler> handler = self->_handlersM[request.requestPath];
-        if ( handler ) {
+        Class<SJRouteHandler, SJRouteHandlerDeprecatedMethods> _Nullable handler = self->_handlersM[request.requestPath];
+        if ( [(id)handler respondsToSelector:sel_handler_v1] ) {
             [handler handleRequestWithParameters:request.prts topViewController:_sj_get_top_view_controller() completionHandler:completionHandler];
+        }
+        else if ( [(id)handler respondsToSelector:sel_handler_v2] ) {
+            [handler handleRequest:request topViewController:_sj_get_top_view_controller() completionHandler:completionHandler];
         }
         else {
 #ifdef DEBUG

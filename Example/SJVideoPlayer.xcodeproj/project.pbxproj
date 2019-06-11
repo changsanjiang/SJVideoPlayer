@@ -22,6 +22,7 @@
 		6003F5BA195388D20070C39A /* InfoPlist.strings in Resources */ = {isa = PBXBuildFile; fileRef = 6003F5B8195388D20070C39A /* InfoPlist.strings */; };
 		6003F5BC195388D20070C39A /* Tests.m in Sources */ = {isa = PBXBuildFile; fileRef = 6003F5BB195388D20070C39A /* Tests.m */; };
 		71719F9F1E33DC2100824A3D /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 71719F9D1E33DC2100824A3D /* LaunchScreen.storyboard */; };
+		77F373C122AE53F100722D86 /* AHCellScreenControlLayer.m in Sources */ = {isa = PBXBuildFile; fileRef = 77F373C022AE53F100722D86 /* AHCellScreenControlLayer.m */; };
 		873B8AEB1B1F5CCA007FD442 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 873B8AEA1B1F5CCA007FD442 /* Main.storyboard */; };
 		A6A208F922AB9E59001ED610 /* SJRotationModeDemoViewController1.xib in Resources */ = {isa = PBXBuildFile; fileRef = A6A208E322AB9E59001ED610 /* SJRotationModeDemoViewController1.xib */; };
 		A6A208FA22AB9E59001ED610 /* SJRotationModeDemoViewController1.m in Sources */ = {isa = PBXBuildFile; fileRef = A6A208E422AB9E59001ED610 /* SJRotationModeDemoViewController1.m */; };
@@ -90,6 +91,8 @@
 		6003F5BB195388D20070C39A /* Tests.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = Tests.m; sourceTree = "<group>"; };
 		606FC2411953D9B200FFA9A0 /* Tests-Prefix.pch */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "Tests-Prefix.pch"; sourceTree = "<group>"; };
 		71719F9E1E33DC2100824A3D /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/LaunchScreen.storyboard; sourceTree = "<group>"; };
+		77F373C022AE53F100722D86 /* AHCellScreenControlLayer.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = AHCellScreenControlLayer.m; sourceTree = "<group>"; };
+		77F373C222AE540400722D86 /* AHCellScreenControlLayer.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = AHCellScreenControlLayer.h; sourceTree = "<group>"; };
 		7D124A339A8A3126BD5D15EA /* README.md */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = net.daringfireball.markdown; name = README.md; path = ../README.md; sourceTree = "<group>"; };
 		873B8AEA1B1F5CCA007FD442 /* Main.storyboard */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.storyboard; path = Main.storyboard; sourceTree = "<group>"; };
 		A6A208E222AB9E59001ED610 /* SJRotationModeDemoViewController1.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SJRotationModeDemoViewController1.h; sourceTree = "<group>"; };
@@ -220,6 +223,8 @@
 				6003F59D195388D20070C39A /* SJAppDelegate.m */,
 				6003F5A5195388D20070C39A /* SJViewController.h */,
 				6003F5A6195388D20070C39A /* SJViewController.m */,
+				77F373C222AE540400722D86 /* AHCellScreenControlLayer.h */,
+				77F373C022AE53F100722D86 /* AHCellScreenControlLayer.m */,
 				A6A208DE22AB9E59001ED610 /* Demos */,
 				6003F594195388D20070C39A /* Supporting Files */,
 			);
@@ -641,6 +646,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				77F373C122AE53F100722D86 /* AHCellScreenControlLayer.m in Sources */,
 				6003F59E195388D20070C39A /* SJAppDelegate.m in Sources */,
 				A6A2555922ABDAA500E42998 /* SJViewController2.m in Sources */,
 				A6A2556B22AC015B00E42998 /* SJViewController4.m in Sources */,

@@ -21,7 +21,7 @@
 		172FA21B931971763D7B60D37934B017 /* SJPlaybackListControllerObserver.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = SJPlaybackListControllerObserver.h; path = SJPlaybackListController/Core/SJPlaybackListControllerObserver.h; sourceTree = "<group>"; };
 		234D55CC4E06578313B3F1C00FCD3CA7 /* SJPlaybackListControllerProtocol.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = SJPlaybackListControllerProtocol.m; path = SJPlaybackListController/Core/SJPlaybackListControllerProtocol.m; sourceTree = "<group>"; };
 		2A3FC16C222E80742DB3643B8E4F7CEC /* SJPlaybackListController.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; path = SJPlaybackListController.xcconfig; sourceTree = "<group>"; };
-		374809A4C28CFEADA7C3109714D64F18 /* libSJPlaybackListController.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; name = libSJPlaybackListController.a; path = libSJPlaybackListController.a; sourceTree = BUILT_PRODUCTS_DIR; };
+		31A74322F59C0990E3E45B080EB44FAB /* libSJPlaybackListController.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; name = libSJPlaybackListController.a; path = libSJPlaybackListController.a; sourceTree = BUILT_PRODUCTS_DIR; };
 		404A042195C9C5D0FAB4E26121AA2513 /* SJPlaybackListControllerProtocol.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = SJPlaybackListControllerProtocol.h; path = SJPlaybackListController/Core/SJPlaybackListControllerProtocol.h; sourceTree = "<group>"; };
 		4BDA7092F06F617E7DCCB5927B56A1CB /* SJPlaybackListControllerObserver.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = SJPlaybackListControllerObserver.m; path = SJPlaybackListController/Core/SJPlaybackListControllerObserver.m; sourceTree = "<group>"; };
 		6CA0D259C1539DE41FE25F67B51CD8D5 /* SJPlaybackListController.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = SJPlaybackListController.m; path = SJPlaybackListController/SJPlaybackListController.m; sourceTree = "<group>"; };
@@ -84,7 +84,7 @@
 		EA8686D9FD5DFC70D6159EE66FBBDAD7 /* Products */ = {
 			isa = PBXGroup;
 			children = (
-				374809A4C28CFEADA7C3109714D64F18 /* libSJPlaybackListController.a */,
+				31A74322F59C0990E3E45B080EB44FAB /* libSJPlaybackListController.a */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -128,7 +128,7 @@
 			);
 			name = SJPlaybackListController;
 			productName = SJPlaybackListController;
-			productReference = 374809A4C28CFEADA7C3109714D64F18 /* libSJPlaybackListController.a */;
+			productReference = 31A74322F59C0990E3E45B080EB44FAB /* libSJPlaybackListController.a */;
 			productType = "com.apple.product-type.library.static";
 		};
 /* End PBXNativeTarget section */
@@ -137,12 +137,12 @@
 		A02D752EBF3BD5F09F102F869DE9D6C0 /* Project object */ = {
 			isa = PBXProject;
 			attributes = {
-				LastSwiftUpdateCheck = 0930;
-				LastUpgradeCheck = 0930;
+				LastSwiftUpdateCheck = 1020;
+				LastUpgradeCheck = 1020;
 			};
 			buildConfigurationList = B57C4FC6450F074D9F8338B6FCB26ED3 /* Build configuration list for PBXProject "SJPlaybackListController" */;
 			compatibilityVersion = "Xcode 3.2";
-			developmentRegion = English;
+			developmentRegion = en;
 			hasScannedForEncodings = 0;
 			knownRegions = (
 				en,
@@ -172,7 +172,7 @@
 /* End PBXSourcesBuildPhase section */
 
 /* Begin XCBuildConfiguration section */
-		28D188D491D1085D4AAC6A744DE55609 /* Debug */ = {
+		37CC4C93079E5FFB5B6A9E0DD05CF2B1 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
@@ -231,7 +231,7 @@
 				STRIP_INSTALLED_PRODUCT = NO;
 				SWIFT_ACTIVE_COMPILATION_CONDITIONS = DEBUG;
 				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
-				SWIFT_VERSION = 4.2;
+				SWIFT_VERSION = 5.0;
 				SYMROOT = "${SRCROOT}/../build";
 			};
 			name = Debug;
@@ -245,7 +245,7 @@
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "";
 				"CODE_SIGN_IDENTITY[sdk=watchos*]" = "";
 				GCC_PREFIX_HEADER = "Target Support Files/SJPlaybackListController/SJPlaybackListController-prefix.pch";
-				IPHONEOS_DEPLOYMENT_TARGET = 8.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 9.0;
 				OTHER_LDFLAGS = "";
 				OTHER_LIBTOOLFLAGS = "";
 				PRIVATE_HEADERS_FOLDER_PATH = "";
@@ -260,30 +260,7 @@
 			};
 			name = Release;
 		};
-		9514DE8BB27DFC598922D49B8473CAC0 /* Debug */ = {
-			isa = XCBuildConfiguration;
-			baseConfigurationReference = 2A3FC16C222E80742DB3643B8E4F7CEC /* SJPlaybackListController.xcconfig */;
-			buildSettings = {
-				CODE_SIGN_IDENTITY = "iPhone Developer";
-				"CODE_SIGN_IDENTITY[sdk=appletvos*]" = "";
-				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "";
-				"CODE_SIGN_IDENTITY[sdk=watchos*]" = "";
-				GCC_PREFIX_HEADER = "Target Support Files/SJPlaybackListController/SJPlaybackListController-prefix.pch";
-				IPHONEOS_DEPLOYMENT_TARGET = 8.0;
-				OTHER_LDFLAGS = "";
-				OTHER_LIBTOOLFLAGS = "";
-				PRIVATE_HEADERS_FOLDER_PATH = "";
-				PRODUCT_MODULE_NAME = SJPlaybackListController;
-				PRODUCT_NAME = SJPlaybackListController;
-				PUBLIC_HEADERS_FOLDER_PATH = "";
-				SDKROOT = iphoneos;
-				SKIP_INSTALL = YES;
-				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "$(inherited) ";
-				TARGETED_DEVICE_FAMILY = "1,2";
-			};
-			name = Debug;
-		};
-		B99446E755B1F09651117EF6E35E9601 /* Release */ = {
+		7175EF8ADAEC8A43C03DE6F07712275F /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
@@ -338,10 +315,33 @@
 				STRIP_INSTALLED_PRODUCT = NO;
 				SWIFT_COMPILATION_MODE = wholemodule;
 				SWIFT_OPTIMIZATION_LEVEL = "-O";
-				SWIFT_VERSION = 4.2;
+				SWIFT_VERSION = 5.0;
 				SYMROOT = "${SRCROOT}/../build";
 			};
 			name = Release;
+		};
+		9514DE8BB27DFC598922D49B8473CAC0 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReference = 2A3FC16C222E80742DB3643B8E4F7CEC /* SJPlaybackListController.xcconfig */;
+			buildSettings = {
+				CODE_SIGN_IDENTITY = "iPhone Developer";
+				"CODE_SIGN_IDENTITY[sdk=appletvos*]" = "";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "";
+				"CODE_SIGN_IDENTITY[sdk=watchos*]" = "";
+				GCC_PREFIX_HEADER = "Target Support Files/SJPlaybackListController/SJPlaybackListController-prefix.pch";
+				IPHONEOS_DEPLOYMENT_TARGET = 9.0;
+				OTHER_LDFLAGS = "";
+				OTHER_LIBTOOLFLAGS = "";
+				PRIVATE_HEADERS_FOLDER_PATH = "";
+				PRODUCT_MODULE_NAME = SJPlaybackListController;
+				PRODUCT_NAME = SJPlaybackListController;
+				PUBLIC_HEADERS_FOLDER_PATH = "";
+				SDKROOT = iphoneos;
+				SKIP_INSTALL = YES;
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "$(inherited) ";
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Debug;
 		};
 /* End XCBuildConfiguration section */
 
@@ -358,8 +358,8 @@
 		B57C4FC6450F074D9F8338B6FCB26ED3 /* Build configuration list for PBXProject "SJPlaybackListController" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
-				28D188D491D1085D4AAC6A744DE55609 /* Debug */,
-				B99446E755B1F09651117EF6E35E9601 /* Release */,
+				37CC4C93079E5FFB5B6A9E0DD05CF2B1 /* Debug */,
+				7175EF8ADAEC8A43C03DE6F07712275F /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;

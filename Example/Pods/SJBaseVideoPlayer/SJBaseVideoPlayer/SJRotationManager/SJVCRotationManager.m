@@ -53,6 +53,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 @implementation SJVCRotationManager {
     __weak UIViewController *_Nullable _atViewController;
+    __weak UIView *_Nullable _fullscreenToView;
     void(^_Nullable _rotateCompletionHandler)(id<SJRotationManagerProtocol> mgr);
     UIView *_containerView;
     UIDeviceOrientation _deviceOrientation;
@@ -69,8 +70,13 @@ NS_ASSUME_NONNULL_BEGIN
 @synthesize target = _target; 
 
 - (instancetype)initWithViewController:(__weak UIViewController *)atViewController {
+    return [self initWithViewController:atViewController fullscreenToView:nil];
+}
+
+- (instancetype)initWithViewController:(UIViewController * _Nonnull __weak)atViewController fullscreenToView:(nullable UIView *)fullscreenToView {
     self = [super init];
     if ( !self ) return nil;
+    _fullscreenToView = fullscreenToView;
     _atViewController = atViewController;
     _currentOrientation = SJOrientation_Portrait;
     _deviceOrientation = UIDeviceOrientationPortrait;
@@ -182,7 +188,11 @@ NS_ASSUME_NONNULL_BEGIN
             self.target.frame = isFullscreen?fullscreenRect:self->_smlFrame;
             [self.target layoutIfNeeded];
         } completion:^(BOOL finished) {
-            UIView *superview = isFullscreen?window.rootViewController.view:self.superview;
+            UIView *superview = nil;
+            if ( isFullscreen )
+                superview = self->_fullscreenToView?:window.rootViewController.view;
+            else
+                superview = self->_superview;
             [superview addSubview:self.target];
             self.transitioning = NO;
             self->_containerView.hidden = YES;

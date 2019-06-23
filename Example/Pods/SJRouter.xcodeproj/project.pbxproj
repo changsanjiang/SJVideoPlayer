@@ -7,12 +7,12 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		80AC22E15D125C08351E41F1769E1F00 /* SJRouter.m in Sources */ = {isa = PBXBuildFile; fileRef = 466FD57386257618F717BAF2B5B10614 /* SJRouter.m */; };
-		AEF19E839BD90A84F1C70A5D0DE63888 /* SJRouteRequest.m in Sources */ = {isa = PBXBuildFile; fileRef = 11F66C63D6E8DF1B104DB4F2094F1877 /* SJRouteRequest.m */; };
-		C28311827914553C9F84B2FE133E937A /* SJRouter-dummy.m in Sources */ = {isa = PBXBuildFile; fileRef = 5E8C9F81AEC4B91C253B232F8C2EC1EF /* SJRouter-dummy.m */; };
-		C995B2B9D6259BFE544A6B1608F1C753 /* SJRouteHandler.h in Headers */ = {isa = PBXBuildFile; fileRef = FE051A04B89A015FD06C59BF4C050D5B /* SJRouteHandler.h */; settings = {ATTRIBUTES = (Project, ); }; };
-		E97D8EB8CB4BA86D776F7449E70BF72F /* SJRouteRequest.h in Headers */ = {isa = PBXBuildFile; fileRef = 32A2024991FB77AD5710DE17BF023BE2 /* SJRouteRequest.h */; settings = {ATTRIBUTES = (Project, ); }; };
-		FCE11A656A1CF2E0FBC5FBC6479C64CF /* SJRouter.h in Headers */ = {isa = PBXBuildFile; fileRef = 59A424B19238F98F434221EFB182B3D0 /* SJRouter.h */; settings = {ATTRIBUTES = (Project, ); }; };
+		04C9FAC4AE2F14D4A1587604D1BCD8F1 /* SJRouter-dummy.m in Sources */ = {isa = PBXBuildFile; fileRef = 5E8C9F81AEC4B91C253B232F8C2EC1EF /* SJRouter-dummy.m */; };
+		636BDE05FC247477B02B1FBCC67F559C /* SJRouteHandler.h in Headers */ = {isa = PBXBuildFile; fileRef = FE051A04B89A015FD06C59BF4C050D5B /* SJRouteHandler.h */; settings = {ATTRIBUTES = (Project, ); }; };
+		7A85B58A4FB857936608E45CA42814B8 /* SJRouteRequest.m in Sources */ = {isa = PBXBuildFile; fileRef = 11F66C63D6E8DF1B104DB4F2094F1877 /* SJRouteRequest.m */; };
+		8C7D3C0506C30B0C6201ABA1967FC85A /* SJRouteRequest.h in Headers */ = {isa = PBXBuildFile; fileRef = 32A2024991FB77AD5710DE17BF023BE2 /* SJRouteRequest.h */; settings = {ATTRIBUTES = (Project, ); }; };
+		D1568064B3F6BD8878F253690D53535F /* SJRouter.m in Sources */ = {isa = PBXBuildFile; fileRef = 466FD57386257618F717BAF2B5B10614 /* SJRouter.m */; };
+		E615B5D6E8B6579FF536FEFC9EDD79EE /* SJRouter.h in Headers */ = {isa = PBXBuildFile; fileRef = 59A424B19238F98F434221EFB182B3D0 /* SJRouter.h */; settings = {ATTRIBUTES = (Project, ); }; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -28,7 +28,7 @@
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
-		D08475476BFDB05DEDCD576F57F73D33 /* Frameworks */ = {
+		CDA6592B0CC79B359D96AC15A48E9492 /* Frameworks */ = {
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
@@ -98,13 +98,13 @@
 /* End PBXGroup section */
 
 /* Begin PBXHeadersBuildPhase section */
-		0F4A491E905BAC555BBD0E6B4F8C401E /* Headers */ = {
+		10169532A4811E9D586CC438B94A5206 /* Headers */ = {
 			isa = PBXHeadersBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				C995B2B9D6259BFE544A6B1608F1C753 /* SJRouteHandler.h in Headers */,
-				FCE11A656A1CF2E0FBC5FBC6479C64CF /* SJRouter.h in Headers */,
-				E97D8EB8CB4BA86D776F7449E70BF72F /* SJRouteRequest.h in Headers */,
+				636BDE05FC247477B02B1FBCC67F559C /* SJRouteHandler.h in Headers */,
+				E615B5D6E8B6579FF536FEFC9EDD79EE /* SJRouter.h in Headers */,
+				8C7D3C0506C30B0C6201ABA1967FC85A /* SJRouteRequest.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -113,11 +113,11 @@
 /* Begin PBXNativeTarget section */
 		71F2B5B6805C2BDEAC21ACA3A0ABE1CE /* SJRouter */ = {
 			isa = PBXNativeTarget;
-			buildConfigurationList = 95FE258352663C62CD5C97C9567E098E /* Build configuration list for PBXNativeTarget "SJRouter" */;
+			buildConfigurationList = FD719CC6744E36F6225644493F78BD81 /* Build configuration list for PBXNativeTarget "SJRouter" */;
 			buildPhases = (
-				0F4A491E905BAC555BBD0E6B4F8C401E /* Headers */,
-				3446BC8911A27C1D55B376FA035C3FF6 /* Sources */,
-				D08475476BFDB05DEDCD576F57F73D33 /* Frameworks */,
+				10169532A4811E9D586CC438B94A5206 /* Headers */,
+				FDFEA969629B2D3867EF6CC0F510E00A /* Sources */,
+				CDA6592B0CC79B359D96AC15A48E9492 /* Frameworks */,
 			);
 			buildRules = (
 			);
@@ -134,8 +134,8 @@
 		7B010D10D33BB3EF91DB08D4D98EB159 /* Project object */ = {
 			isa = PBXProject;
 			attributes = {
-				LastSwiftUpdateCheck = 1020;
-				LastUpgradeCheck = 1020;
+				LastSwiftUpdateCheck = 1100;
+				LastUpgradeCheck = 1100;
 			};
 			buildConfigurationList = DE51B747A9C9F332C3C68F7A7C18BFC2 /* Build configuration list for PBXProject "SJRouter" */;
 			compatibilityVersion = "Xcode 3.2";
@@ -155,13 +155,13 @@
 /* End PBXProject section */
 
 /* Begin PBXSourcesBuildPhase section */
-		3446BC8911A27C1D55B376FA035C3FF6 /* Sources */ = {
+		FDFEA969629B2D3867EF6CC0F510E00A /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				C28311827914553C9F84B2FE133E937A /* SJRouter-dummy.m in Sources */,
-				80AC22E15D125C08351E41F1769E1F00 /* SJRouter.m in Sources */,
-				AEF19E839BD90A84F1C70A5D0DE63888 /* SJRouteRequest.m in Sources */,
+				04C9FAC4AE2F14D4A1587604D1BCD8F1 /* SJRouter-dummy.m in Sources */,
+				D1568064B3F6BD8878F253690D53535F /* SJRouter.m in Sources */,
+				7A85B58A4FB857936608E45CA42814B8 /* SJRouteRequest.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -232,29 +232,6 @@
 			};
 			name = Debug;
 		};
-		0E2904C266CB1344F1904EBE80F3E89C /* Debug */ = {
-			isa = XCBuildConfiguration;
-			baseConfigurationReference = 4E7F7E666FC8CE3176E6EC1E1CDADF4F /* SJRouter.xcconfig */;
-			buildSettings = {
-				CODE_SIGN_IDENTITY = "iPhone Developer";
-				"CODE_SIGN_IDENTITY[sdk=appletvos*]" = "";
-				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "";
-				"CODE_SIGN_IDENTITY[sdk=watchos*]" = "";
-				GCC_PREFIX_HEADER = "Target Support Files/SJRouter/SJRouter-prefix.pch";
-				IPHONEOS_DEPLOYMENT_TARGET = 9.0;
-				OTHER_LDFLAGS = "";
-				OTHER_LIBTOOLFLAGS = "";
-				PRIVATE_HEADERS_FOLDER_PATH = "";
-				PRODUCT_MODULE_NAME = SJRouter;
-				PRODUCT_NAME = SJRouter;
-				PUBLIC_HEADERS_FOLDER_PATH = "";
-				SDKROOT = iphoneos;
-				SKIP_INSTALL = YES;
-				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "$(inherited) ";
-				TARGETED_DEVICE_FAMILY = "1,2";
-			};
-			name = Debug;
-		};
 		14614FFC5A8545363BCFEB92F799A523 /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
@@ -315,7 +292,30 @@
 			};
 			name = Release;
 		};
-		7B4F633D2D9B8611CABCDAB7FDC23E7A /* Release */ = {
+		7A4B7985BFAC383A87626AE5EC8F7892 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReference = 4E7F7E666FC8CE3176E6EC1E1CDADF4F /* SJRouter.xcconfig */;
+			buildSettings = {
+				CODE_SIGN_IDENTITY = "iPhone Developer";
+				"CODE_SIGN_IDENTITY[sdk=appletvos*]" = "";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "";
+				"CODE_SIGN_IDENTITY[sdk=watchos*]" = "";
+				GCC_PREFIX_HEADER = "Target Support Files/SJRouter/SJRouter-prefix.pch";
+				IPHONEOS_DEPLOYMENT_TARGET = 9.0;
+				OTHER_LDFLAGS = "";
+				OTHER_LIBTOOLFLAGS = "";
+				PRIVATE_HEADERS_FOLDER_PATH = "";
+				PRODUCT_MODULE_NAME = SJRouter;
+				PRODUCT_NAME = SJRouter;
+				PUBLIC_HEADERS_FOLDER_PATH = "";
+				SDKROOT = iphoneos;
+				SKIP_INSTALL = YES;
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "$(inherited) ";
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Debug;
+		};
+		B57F35D1B3E176A2D3D4046A339C918C /* Release */ = {
 			isa = XCBuildConfiguration;
 			baseConfigurationReference = 4E7F7E666FC8CE3176E6EC1E1CDADF4F /* SJRouter.xcconfig */;
 			buildSettings = {
@@ -342,20 +342,20 @@
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
-		95FE258352663C62CD5C97C9567E098E /* Build configuration list for PBXNativeTarget "SJRouter" */ = {
-			isa = XCConfigurationList;
-			buildConfigurations = (
-				0E2904C266CB1344F1904EBE80F3E89C /* Debug */,
-				7B4F633D2D9B8611CABCDAB7FDC23E7A /* Release */,
-			);
-			defaultConfigurationIsVisible = 0;
-			defaultConfigurationName = Release;
-		};
 		DE51B747A9C9F332C3C68F7A7C18BFC2 /* Build configuration list for PBXProject "SJRouter" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				04ED8C9082E4178469D235422A154A1C /* Debug */,
 				14614FFC5A8545363BCFEB92F799A523 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		FD719CC6744E36F6225644493F78BD81 /* Build configuration list for PBXNativeTarget "SJRouter" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				7A4B7985BFAC383A87626AE5EC8F7892 /* Debug */,
+				B57F35D1B3E176A2D3D4046A339C918C /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;

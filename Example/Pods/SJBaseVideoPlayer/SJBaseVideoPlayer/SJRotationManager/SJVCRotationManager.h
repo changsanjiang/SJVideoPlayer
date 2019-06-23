@@ -12,6 +12,7 @@
 NS_ASSUME_NONNULL_BEGIN
 @interface SJVCRotationManager : NSObject<SJRotationManagerProtocol>
 - (instancetype)initWithViewController:(__weak UIViewController *)atViewController;
+- (instancetype)initWithViewController:(__weak UIViewController *)atViewController fullscreenToView:(nullable UIView *)fullscreenToView;
 - (instancetype)init NS_UNAVAILABLE;
 + (instancetype)new  NS_UNAVAILABLE;
 

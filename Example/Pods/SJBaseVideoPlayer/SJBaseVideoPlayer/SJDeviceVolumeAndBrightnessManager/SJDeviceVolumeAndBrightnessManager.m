@@ -73,6 +73,7 @@ static NSNotificationName const SJDeviceBrightnessDidChangeNotification = @"SJDe
 @property (nonatomic, strong, readonly) UISlider *volumeSlider;
 @property (nonatomic, strong, readonly) UIView *brightnessView;
 @property (nonatomic, strong, nullable) id brightnessDidChangeToken;
+@property (nonatomic, strong, nullable) id volumeDidChangeToken;
 @end
 
 @implementation SJDeviceVolumeAndBrightnessManager
@@ -155,6 +156,7 @@ static NSNotificationName const SJDeviceBrightnessDidChangeNotification = @"SJDe
     return _brightnessView;
 }
 
+@synthesize volume = _volume;
 - (void)setVolume:(float)volume {
     if ( isnan(volume) )
         return;
@@ -164,13 +166,14 @@ static NSNotificationName const SJDeviceBrightnessDidChangeNotification = @"SJDe
     else if ( volume > 1 )
         volume = 1;
     
+    _volume = volume;
     _volumeSlider.value = volume;
-    
+
     [NSNotificationCenter.defaultCenter postNotificationName:SJDeviceVolumeDidChangeNotification object:self];
 }
 
 - (float)volume {
-    return _volumeSlider.value;
+    return _volume;
 }
 
 - (void)setBrightness:(float)brightness {

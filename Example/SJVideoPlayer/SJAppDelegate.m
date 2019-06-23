@@ -8,37 +8,63 @@
 
 #import "SJAppDelegate.h"
 #import "SJVideoPlayer.h"
-#import <SJRouter/SJRouter.h>
-#import "SJFloatSmallViewControllerDefines.h"
 
-@implementation UIViewController (Rotation)
-static BOOL _isCustomClass(Class cls) {
-    NSString *clsStr = NSStringFromClass(cls);
-    return [clsStr hasPrefix:@"SJ"] || [clsStr hasPrefix:@"V"];
-}
+#warning Configuring rotation control. 请配置旋转控制!
 
+@implementation UIViewController (RotationControl)
+/// 该控制器是否可以旋转
 - (BOOL)shouldAutorotate {
-    return !_isCustomClass([self class]);
+    // 此处为设置 iPhone 哪些控制器可以旋转
+    // - 请根据实际情况进行修改.
+    if ( UIUserInterfaceIdiomPhone == UI_USER_INTERFACE_IDIOM() )
+        return _iPhone_shouldAutorotate(self);
+    
+    // 此处为设置 iPad 所有控制器都可以旋转
+    // - 请根据实际情况进行修改.
+    else if ( UIUserInterfaceIdiomPad == UI_USER_INTERFACE_IDIOM() ) {
+        return YES;
+    }
+    return NO;
 }
 
+/// 旋转支持的方向
 - (UIInterfaceOrientationMask)supportedInterfaceOrientations {
-    if ( _isCustomClass([self class]) )
-        return UIInterfaceOrientationMaskPortrait;
+    // 此处为设置 iPhone 某个控制器旋转支持的方向
+    // - 请根据实际情况进行修改.
+    if ( UIUserInterfaceIdiomPhone == UI_USER_INTERFACE_IDIOM() ) {
+        // 如果self不支持旋转, 返回仅支持竖屏
+        if ( _iPhone_shouldAutorotate(self) == NO )
+            return UIInterfaceOrientationMaskPortrait;
+    }
+    // 此处为设置 iPad 仅支持横屏
+    // - 请根据实际情况进行修改.
+    else if ( UIUserInterfaceIdiomPad == UI_USER_INTERFACE_IDIOM() ) {
+        return UIInterfaceOrientationMaskLandscape;
+    }
+
     return UIInterfaceOrientationMaskAllButUpsideDown;
 }
 
-- (UIInterfaceOrientation)preferredInterfaceOrientationForPresentation {
-    return UIInterfaceOrientationPortrait;
+static BOOL _iPhone_shouldAutorotate(UIViewController *vc) { ///< 返回YES, 表示该控制器可以旋转.
+    NSString *class = NSStringFromClass(vc.class);
+    
+    // 禁止哪些控制器旋转. (此处为禁止Demo中SJ前缀的控制器旋转)
+    // - 请根据实际情况进行修改.
+    if ( [class hasPrefix:@"SJ"] ) {
+        return NO;
+    }
+    
+    return YES;
 }
 @end
+
+
+#pragma mark -
 
 @implementation SJAppDelegate
 
 - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions
 {
-    NSLog(@"%@", NSTemporaryDirectory());
-    
-    
     SJVideoPlayer.update(^(SJVideoPlayerSettings * _Nonnull common) {
         common.placeholder = [UIImage imageNamed:@"placeholder"];
         common.progress_thumbSize = 8;
@@ -46,41 +72,7 @@ static BOOL _isCustomClass(Class cls) {
         common.progress_bufferColor = [UIColor whiteColor];
     });
     
-    UIApplication.sharedApplication.statusBarOrientation = UIInterfaceOrientationPortrait;
-    _window = [[UIWindow alloc] initWithFrame:UIScreen.mainScreen.bounds];
-    _window.backgroundColor = UIColor.whiteColor;
-    _window.rootViewController = [[UIStoryboard storyboardWithName:@"Main" bundle:nil] instantiateInitialViewController];
-    [_window makeKeyAndVisible];
-
     // Override point for customization after application launch.
     return YES;
 }
-
-- (void)applicationWillResignActive:(UIApplication *)application
-{
-    // Sent when the application is about to move from active to inactive state. This can occur for certain types of temporary interruptions (such as an incoming phone call or SMS message) or when the user quits the application and it begins the transition to the background state.
-    // Use this method to pause ongoing tasks, disable timers, and throttle down OpenGL ES frame rates. Games should use this method to pause the game.
-}
-
-- (void)applicationDidEnterBackground:(UIApplication *)application
-{
-    // Use this method to release shared resources, save user data, invalidate timers, and store enough application state information to restore your application to its current state in case it is terminated later.
-    // If your application supports background execution, this method is called instead of applicationWillTerminate: when the user quits.
-}
-
-- (void)applicationWillEnterForeground:(UIApplication *)application
-{
-    // Called as part of the transition from the background to the inactive state; here you can undo many of the changes made on entering the background.
-}
-
-- (void)applicationDidBecomeActive:(UIApplication *)application
-{
-    // Restart any tasks that were paused (or not yet started) while the application was inactive. If the application was previously in the background, optionally refresh the user interface.
-}
-
-- (void)applicationWillTerminate:(UIApplication *)application
-{
-    // Called when the application is about to terminate. Save data if appropriate. See also applicationDidEnterBackground:.
-}
-
 @end

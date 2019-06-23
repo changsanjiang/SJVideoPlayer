@@ -29,16 +29,17 @@ bool sj_isAppeared1(NSInteger viewTag, NSIndexPath *viewAtIndexPath, UIScrollVie
     return sj_isAppeared2(sj_getTarget(scrollView, viewAtIndexPath, viewTag), scrollView);
 }
 
-bool sj_isAppeared2(UIView *_Nullable childView, UIScrollView *_Nullable scrollView) {
-    return !CGRectIsEmpty(sj_intersection(childView, scrollView));
+bool sj_isAppeared2(UIView *_Nullable childView, UIView *_Nullable rootView) {
+    return !CGRectIsEmpty(sj_intersection(childView, rootView));
 }
 
-extern CGRect sj_intersection(UIView *_Nullable childView, UIScrollView *_Nullable scrollView) {
-    if ( !childView || !scrollView || !scrollView.window )
+CGRect sj_intersection(UIView *_Nullable childView, UIView *_Nullable rootView) {
+    __unsafe_unretained UIWindow *_Nullable window = rootView.window;
+    if ( childView == nil || rootView == nil || window == nil )
         return CGRectZero;
-    CGRect rect = [childView.superview convertRect:childView.frame toView:scrollView];
-    CGRect rect_max = (CGRect){scrollView.contentOffset, scrollView.frame.size};
-    CGRect ist = CGRectIntersection(rect, rect_max);
+    CGRect child = [childView convertRect:childView.bounds toView:window];
+    CGRect root = [rootView convertRect:rootView.bounds toView:window];
+    CGRect ist = CGRectIntersection(child, root);
     if ( CGRectIsEmpty(ist) || CGRectIsNull(ist) )
         return CGRectZero;
     return ist;

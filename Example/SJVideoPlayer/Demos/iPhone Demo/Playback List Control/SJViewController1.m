@@ -203,7 +203,7 @@ NS_ASSUME_NONNULL_END
     return @"playbackListControl/vc1";
 }
 
-+ (void)handleRequestWithParameters:(SJParameters)parameters topViewController:(UIViewController *)topViewController completionHandler:(SJCompletionHandler)completionHandler {
++ (void)handleRequest:(SJRouteRequest *)request topViewController:(UIViewController *)topViewController completionHandler:(SJCompletionHandler)completionHandler {
     [topViewController.navigationController pushViewController:[[SJViewController1 alloc] initWithNibName:@"SJViewController1" bundle:nil] animated:YES];
 }
 

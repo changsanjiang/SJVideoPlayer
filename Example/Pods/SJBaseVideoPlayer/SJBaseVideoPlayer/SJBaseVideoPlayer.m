@@ -107,6 +107,12 @@ typedef struct _SJPlayerControlInfo {
         BOOL autoDisappearFloatSmallView;
     } floatSmallViewControl;
     
+    
+    struct GestureControl {
+        BOOL allowHorizontalTriggeringOfPanGesturesInCells;
+        SJPlayerDisabledGestures disabledGestures;
+    } gestureControl;
+    
 } _SJPlayerControlInfo;
 
 @interface SJBaseVideoPlayer ()
@@ -135,101 +141,6 @@ typedef struct _SJPlayerControlInfo {
 
 /// - 播放失败时, 自动刷新(当设置 `delayToAutoRefreshWhenPlayFailed` 才会触发)
 @property (nonatomic, strong, nullable) SJBaseVideoPlayerAutoRefreshController *autoRefresh;
-@end
-
-@implementation UITabBarController (SJBaseVideoPlayerAdded)
-- (UIViewController *)sj_topViewController {
-    if ( self.selectedIndex == NSNotFound )
-        return self.viewControllers.firstObject;
-    return self.selectedViewController;
-}
-
-- (BOOL)shouldAutorotate {
-    return [[self sj_topViewController] shouldAutorotate];
-}
-
-- (UIInterfaceOrientationMask)supportedInterfaceOrientations {
-    return [[self sj_topViewController] supportedInterfaceOrientations];
-}
-
-- (UIInterfaceOrientation)preferredInterfaceOrientationForPresentation {
-    return [[self sj_topViewController] preferredInterfaceOrientationForPresentation];
-}
-@end
-
-@implementation UINavigationController (SJBaseVideoPlayerAdded)
-- (BOOL)shouldAutorotate {
-    return self.topViewController.shouldAutorotate;
-}
-
-- (UIInterfaceOrientationMask)supportedInterfaceOrientations {
-    return self.topViewController.supportedInterfaceOrientations;
-}
-
-- (UIInterfaceOrientation)preferredInterfaceOrientationForPresentation {
-    return self.topViewController.preferredInterfaceOrientationForPresentation;
-}
-
-- (nullable UIViewController *)childViewControllerForStatusBarStyle {
-    return self.topViewController;
-}
-
-- (nullable UIViewController *)childViewControllerForStatusBarHidden {
-    return self.topViewController;
-}
-@end
-
-@interface UIViewController (SJBaseVideoPlayerAdded)
-- (BOOL)sj_shouldAutorotate;
-- (UIInterfaceOrientationMask)sj_supportedInterfaceOrientations;
-@end
-
-@implementation UIViewController (SJBaseVideoPlayerAdded)
-static void
-sj_swizzleMethod(Class cls, SEL originalSelector, SEL swizzledSelector) {
-    Method originalMethod = class_getInstanceMethod(cls, originalSelector);
-    Method swizzledMethod = class_getInstanceMethod(cls, swizzledSelector);
-    method_exchangeImplementations(originalMethod, swizzledMethod);
-}
-
-+ (void)load {
-    sj_swizzleMethod([UIViewController class], @selector(shouldAutorotate), @selector(sj_shouldAutorotate));
-    sj_swizzleMethod([UIViewController class], @selector(supportedInterfaceOrientations), @selector(sj_supportedInterfaceOrientations));
-}
-
-- (BOOL)sj_shouldAutorotate {
-    if ( !self.nextResponder ) return NO;
-    SJBaseVideoPlayer *_Nullable player = [self sj_viewPlayer];
-    if ( player ) {
-        if ( [player.rotationManager isKindOfClass:[SJVCRotationManager class]] ) {
-            SJVCRotationManager *mgr = player.rotationManager;
-            return [mgr vc_shouldAutorotate];
-        }
-        return NO;
-    }
-    return [self sj_shouldAutorotate];
-}
-
-- (UIInterfaceOrientationMask)sj_supportedInterfaceOrientations {
-    if ( !self.nextResponder ) return UIInterfaceOrientationMaskPortrait;
-    SJBaseVideoPlayer *_Nullable player = [self sj_viewPlayer];
-    if ( player ) {
-        if ( [player.rotationManager isKindOfClass:[SJVCRotationManager class]] ) {
-            SJVCRotationManager *mgr = player.rotationManager;
-            return [mgr vc_supportedInterfaceOrientations];
-        }
-        return UIInterfaceOrientationMaskPortrait;
-    }
-    return [self sj_supportedInterfaceOrientations];
-}
-
-- (SJBaseVideoPlayer *_Nullable)sj_viewPlayer {
-    __kindof UIView *_Nullable view = [self.view viewWithTag:_SJBaseVideoPlayerViewTag];
-    if ( view && [view isKindOfClass:[SJPlayerView class]] ) {
-        return [(SJPlayerView *)view player];
-    }
-    return nil;
-}
 @end
 
 @implementation SJBaseVideoPlayer {
@@ -293,7 +204,7 @@ sj_swizzleMethod(Class cls, SEL originalSelector, SEL swizzledSelector) {
 }
 
 + (NSString *)version {
-    return @"2.4.6";
+    return @"2.5.0";
 }
 
 - (nullable __kindof UIViewController *)atViewController {
@@ -1427,8 +1338,9 @@ sj_swizzleMethod(Class cls, SEL originalSelector, SEL swizzledSelector) {
             return !self.controlLayerIsAppeared;
     }
     // 全屏播放时, 使状态栏根据控制层显示或隐藏
-    if ( self.isFullScreen )
+    if ( self.isFullScreen || self.isFitOnScreen )
         return !self.controlLayerIsAppeared;
+    
     return NO;
 }
 - (UIStatusBarStyle)vc_preferredStatusBarStyle {
@@ -1557,6 +1469,8 @@ sj_swizzleMethod(Class cls, SEL originalSelector, SEL swizzledSelector) {
     if ( !_gestureControl )
         return;
     
+    _gestureControl.disabledGestures = _controlInfo->gestureControl.disabledGestures;
+    
     __weak typeof(self) _self = self;
     _gestureControl.gestureRecognizerShouldTrigger = ^BOOL(id<SJPlayerGestureControl>  _Nonnull control, SJPlayerGestureType type, CGPoint location) {
         __strong typeof(_self) self = _self;
@@ -1572,43 +1486,58 @@ sj_swizzleMethod(Class cls, SEL originalSelector, SEL swizzledSelector) {
             return NO;
         
         if ( SJPlayerGestureType_Pan == type ) {
-            if ( self.isPlayOnScrollView ) {
-                if ( self.useFitOnScreenAndDisableRotation ) {
-                    if ( !self.isFitOnScreen ) return NO;
-                }
-                else {
-                    if ( !self.isFullScreen ) return NO;
-                }
-            }
-            
             switch ( control.movingDirection ) {
                 case SJPanGestureMovingDirection_H: {
-                    if ( [self playStatus_isPrepare] ||
-                         [self playStatus_isUnknown] )
+                    if ( self.playbackType == SJMediaPlaybackTypeLIVE )
+                        return NO;
+                    
+                    if ( [self playStatus_isPrepare] || [self playStatus_isUnknown] )
                         return NO;
                     
                     if ( self.totalTime <= 0 )
                         return NO;
                     
-                    if ( self.canSeekToTime ) {
-                        if ( !self.canSeekToTime(self) ) {
-                            return NO;
-                        }
-                    }
-                    
-                    if ( self.playbackType == SJMediaPlaybackTypeLIVE ) {
+                    if ( self.canSeekToTime != nil && !self.canSeekToTime(self) )
                         return NO;
+                    
+                    if ( self.isPlayOnScrollView ) {
+                        if ( NO == self.controlInfo->gestureControl.allowHorizontalTriggeringOfPanGesturesInCells ) {
+                            if ( YES == self.useFitOnScreenAndDisableRotation ) {
+                                if ( NO == self.isFitOnScreen )
+                                    return NO;
+                            }
+                            else {
+                                if ( NO == self.isFullScreen )
+                                    return NO;
+                            }
+                        }
                     }
                 }
                     break;
                 case SJPanGestureMovingDirection_V: {
+                    if ( self.isPlayOnScrollView ) {
+                        if ( YES == self.useFitOnScreenAndDisableRotation ) {
+                            if ( NO == self.isFitOnScreen )
+                                return NO;
+                        }
+                        else {
+                            if ( NO == self.isFullScreen )
+                                return NO;
+                        }
+                    }
                     switch ( control.triggeredPosition ) {
                             /// Brightness
-                        case SJPanGestureTriggeredPosition_Left:
-                            return !self.controlInfo->deviceVolumeAndBrightness.disableBrightnessSetting;
+                        case SJPanGestureTriggeredPosition_Left: {
+                            if ( self.controlInfo->deviceVolumeAndBrightness.disableBrightnessSetting )
+                                return NO;
+                        }
+                            break;
                             /// Volume
-                        case SJPanGestureTriggeredPosition_Right:
-                            return !self.controlInfo->deviceVolumeAndBrightness.disableVolumeSetting || self.mute;
+                        case SJPanGestureTriggeredPosition_Right: {
+                            if ( self.controlInfo->deviceVolumeAndBrightness.disableVolumeSetting || self.isMute )
+                                return NO;
+                        }
+                            break;
                     }
                 }
             }
@@ -1755,8 +1684,17 @@ sj_swizzleMethod(Class cls, SEL originalSelector, SEL swizzledSelector) {
     };
 }
 
+- (void)setAllowHorizontalTriggeringOfPanGesturesInCells:(BOOL)allowHorizontalTriggeringOfPanGesturesInCells {
+    _controlInfo->gestureControl.allowHorizontalTriggeringOfPanGesturesInCells = allowHorizontalTriggeringOfPanGesturesInCells;
+}
+
+- (BOOL)allowHorizontalTriggeringOfPanGesturesInCells {
+    return _controlInfo->gestureControl.allowHorizontalTriggeringOfPanGesturesInCells;
+}
+
 - (void)setDisabledGestures:(SJPlayerDisabledGestures)disabledGestures {
-    self.gestureControl.disabledGestures = disabledGestures;
+    _controlInfo->gestureControl.disabledGestures = disabledGestures;
+    _gestureControl.disabledGestures = disabledGestures;
 }
 
 - (SJPlayerDisabledGestures)disabledGestures {

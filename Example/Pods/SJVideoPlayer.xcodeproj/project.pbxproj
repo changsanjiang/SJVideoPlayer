@@ -7,147 +7,147 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		025A14B0936313E08759D91D1D2B8830 /* SJVideoPlayerFilmEditingConfig.m in Sources */ = {isa = PBXBuildFile; fileRef = 69B86CA2B0F217DD83B9C47F45D37404 /* SJVideoPlayerFilmEditingConfig.m */; };
-		045F4B2CCBBC7EA220A3EF3E957076B8 /* SJFilmEditingGIFCountDownView.m in Sources */ = {isa = PBXBuildFile; fileRef = 6929502826CE4258AD3D41D417CC48AC /* SJFilmEditingGIFCountDownView.m */; };
-		05FA2341296E535CC2CF4804A9EFD4EC /* SJFilmEditingVideoCountDownView.h in Headers */ = {isa = PBXBuildFile; fileRef = A5C3EFA721F1FD13A2925BA029205F2B /* SJFilmEditingVideoCountDownView.h */; settings = {ATTRIBUTES = (Project, ); }; };
-		0A653D8F14782119D90FC4EECCBADCAA /* SJVideoPlayerMoreSettingsView.h in Headers */ = {isa = PBXBuildFile; fileRef = 2ABB2484B1A03637A4C36EFA1AAB6C01 /* SJVideoPlayerMoreSettingsView.h */; settings = {ATTRIBUTES = (Project, ); }; };
-		0B092F62BE4F74FFEA003F0F01C28852 /* SJVideoPlayerMoreSettingsView.m in Sources */ = {isa = PBXBuildFile; fileRef = 245A47EC7AEE2A61E08F4B97484CF694 /* SJVideoPlayerMoreSettingsView.m */; };
-		0B3EA58955633B34EACA8DE486A6766C /* SJVideoPlayerSettings.m in Sources */ = {isa = PBXBuildFile; fileRef = 29AA6A5C119E84F916CF84152E2D9A75 /* SJVideoPlayerSettings.m */; };
-		0D196A2225190744EBD47CA987A99A0C /* SJMoreSettingsSlidersViewModel.m in Sources */ = {isa = PBXBuildFile; fileRef = CA164B369BE6D09B41B2CE9790DF2025 /* SJMoreSettingsSlidersViewModel.m */; };
-		1216844871E2BA06818D3EF9C24ACC6B /* SJVideoPlayerMoreSettingSecondary.m in Sources */ = {isa = PBXBuildFile; fileRef = C84B468F064C5401AD379CD818C81F9F /* SJVideoPlayerMoreSettingSecondary.m */; };
-		148840BF179EA040FF0C465E36C189D0 /* SJFilmEditingLoader.h in Headers */ = {isa = PBXBuildFile; fileRef = 5892DF20C836D2CE21E30E610177B1EB /* SJFilmEditingLoader.h */; settings = {ATTRIBUTES = (Project, ); }; };
-		1585E26C0E3B462A94E286B15EC70078 /* SJVideoPlayer-dummy.m in Sources */ = {isa = PBXBuildFile; fileRef = 8265A47F5A4F0B820CBD22BDFB4D3BBA /* SJVideoPlayer-dummy.m */; };
-		1A0CB0191DAC59F17FA9EE5606F25C01 /* SJVideoPlayerFilmEditingParameters.m in Sources */ = {isa = PBXBuildFile; fileRef = 929D8041D9C1AA46C677EE4964AA08EB /* SJVideoPlayerFilmEditingParameters.m */; };
-		1B96DB3A89C8AE93921D5288169692F9 /* SJFloatSmallViewControlLayer.h in Headers */ = {isa = PBXBuildFile; fileRef = 6143FEAC708DEAA015E9946E4CBF4573 /* SJFloatSmallViewControlLayer.h */; settings = {ATTRIBUTES = (Project, ); }; };
-		2170DDB84F0928252F97B900C22D701E /* SJVideoPlayerAnimationHeader.m in Sources */ = {isa = PBXBuildFile; fileRef = 317825EDCB1CDD5D05630DEBB56545C0 /* SJVideoPlayerAnimationHeader.m */; };
-		220561F301DD783700C8701A01E48272 /* SJEdgeControlLayerSettings.h in Headers */ = {isa = PBXBuildFile; fileRef = 63FD65602F0B474B5CE6444E17260E70 /* SJEdgeControlLayerSettings.h */; settings = {ATTRIBUTES = (Project, ); }; };
-		22348E823D2E9A11884FD8F8EDEAD1E8 /* SJNetworkLoadingView.m in Sources */ = {isa = PBXBuildFile; fileRef = 1A4AF8F0FAD0FDCC6A5477C7970F15DC /* SJNetworkLoadingView.m */; };
-		26F5C5846E9BB0F85BE26AC9E3152C9F /* SJFilmEditingResultShareItemsContainerView.h in Headers */ = {isa = PBXBuildFile; fileRef = 4925A03E62D616FE75E46569CFBCD351 /* SJFilmEditingResultShareItemsContainerView.h */; settings = {ATTRIBUTES = (Project, ); }; };
-		2AC88EE6A10A868AEF33F9AC88A70693 /* SJFloatSmallViewControlLayerResourceLoader.m in Sources */ = {isa = PBXBuildFile; fileRef = ED58822D5ACA35CD0C32660274543E86 /* SJFloatSmallViewControlLayerResourceLoader.m */; };
-		2AE6DAC2072C3D424A4945E54F7AAE2C /* SJFilmEditingGIFCountDownView.h in Headers */ = {isa = PBXBuildFile; fileRef = 16076D1B21A8EE512AF2F27DA314295C /* SJFilmEditingGIFCountDownView.h */; settings = {ATTRIBUTES = (Project, ); }; };
-		2B85E9A22CC60A39F5A13BB49D05E06C /* SJControlLayerCarrier.m in Sources */ = {isa = PBXBuildFile; fileRef = C344F3F4885E54F33B5DA6100E94A495 /* SJControlLayerCarrier.m */; };
-		2C6332761BEF410CEABE6D8E4AA35F7A /* SJProgressSlider.m in Sources */ = {isa = PBXBuildFile; fileRef = 00E0905ADA73D28EDBD891E083ECB964 /* SJProgressSlider.m */; };
-		2D4E184F689889A7141998B52B60F663 /* SJVideoPlayerDraggingProgressView.m in Sources */ = {isa = PBXBuildFile; fileRef = 37F0165B9B1922B0CE95508910B430DE /* SJVideoPlayerDraggingProgressView.m */; };
-		2F0E7AF79968E49728AE0D7EF2464930 /* SJProgressSlider.h in Headers */ = {isa = PBXBuildFile; fileRef = DBAFEEA698D0A589DE27C3C570BD4229 /* SJProgressSlider.h */; settings = {ATTRIBUTES = (Project, ); }; };
-		35555A228FF170AF3E901607CA8D4C17 /* SJVideoPlayerMoreSettingSecondaryColCell.h in Headers */ = {isa = PBXBuildFile; fileRef = 8F6EBD61B220507306C4B07AEA6D1156 /* SJVideoPlayerMoreSettingSecondaryColCell.h */; settings = {ATTRIBUTES = (Project, ); }; };
-		360AA03A6E75C5B4D3E05FC85B16CE85 /* SJVideoPlayer.m in Sources */ = {isa = PBXBuildFile; fileRef = A2F94B5DC9A88AD3AC5DA862512286E2 /* SJVideoPlayer.m */; };
-		36C1C70F2100DDC05392004E4F55ACC0 /* SJLoadFailedControlLayer.m in Sources */ = {isa = PBXBuildFile; fileRef = DCF053EB0DFED02EDFC782F659AD5722 /* SJLoadFailedControlLayer.m */; };
-		3A6344DDB7CC7C7877E2AFEC87149DEA /* SJVideoPlayerMoreSettingsSlidersView.m in Sources */ = {isa = PBXBuildFile; fileRef = 99AB1227ECC2BB786A2DDF7B6694AF82 /* SJVideoPlayerMoreSettingsSlidersView.m */; };
-		3CB088ED24BC684FD204CF790B2EAAE5 /* SJButtonProgressSlider.h in Headers */ = {isa = PBXBuildFile; fileRef = 15ECD3914382BF51EED03CCC0BDBF530 /* SJButtonProgressSlider.h */; settings = {ATTRIBUTES = (Project, ); }; };
-		3D0A91D8E3E0F0E1DA07D4947CE9A954 /* SJMoreSettingControlLayer.m in Sources */ = {isa = PBXBuildFile; fileRef = 6A561F11AFE36A647B602DD7EC2111FB /* SJMoreSettingControlLayer.m */; };
-		40A3C6475E3202B4BBA2293F2162F6E5 /* SJVideoPlayerURLAsset+SJControlAdd.h in Headers */ = {isa = PBXBuildFile; fileRef = DBCF1FFFBB68EB18F1E4944960E2532A /* SJVideoPlayerURLAsset+SJControlAdd.h */; settings = {ATTRIBUTES = (Project, ); }; };
-		433B9C2DEE78A1C241E82FFF8974467D /* UIView+SJAnimationAdded.h in Headers */ = {isa = PBXBuildFile; fileRef = B1209222EF758055FBBBDB8E833F36AE /* UIView+SJAnimationAdded.h */; settings = {ATTRIBUTES = (Project, ); }; };
-		44842A92207E1C536B257CBB758D849E /* SJEdgeControlButtonItemCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 920D52187915F5694D2487F44E5FD678 /* SJEdgeControlButtonItemCell.m */; };
-		44D8E26401C69418D96A41433EBDD376 /* SJEdgeControlLayerLoader.m in Sources */ = {isa = PBXBuildFile; fileRef = 05B73A060362E47C9D1C86D01154EF04 /* SJEdgeControlLayerLoader.m */; };
-		47C2168A81A7904131033B8080016AF8 /* SJFilmEditingSaveResultToAlbumHandler.h in Headers */ = {isa = PBXBuildFile; fileRef = C1255F7B00C9BEBAFC20825E4F7E6F4D /* SJFilmEditingSaveResultToAlbumHandler.h */; settings = {ATTRIBUTES = (Project, ); }; };
-		4A163D87457C28F3212B39A9127534FA /* SJEdgeControlButtonItemCell.h in Headers */ = {isa = PBXBuildFile; fileRef = 6A4CFD3C583AE86569292B05EF1996B5 /* SJEdgeControlButtonItemCell.h */; settings = {ATTRIBUTES = (Project, ); }; };
-		4AC35F5D54ADB0E28BB5A04E534700F0 /* SJCommonProgressSlider.h in Headers */ = {isa = PBXBuildFile; fileRef = A5BD1C0C09C08A3CB6614D07FBE1CEB1 /* SJCommonProgressSlider.h */; settings = {ATTRIBUTES = (Project, ); }; };
-		4DA1ABE944166BC51DFF7B4C2D73E270 /* SJVideoPlayerFilmEditingConfig.h in Headers */ = {isa = PBXBuildFile; fileRef = 13CD299918165CC7AE81A688938A7645 /* SJVideoPlayerFilmEditingConfig.h */; settings = {ATTRIBUTES = (Project, ); }; };
-		50B7491818FC6D295ECEA1851BAF6921 /* SJLightweightTopItem.h in Headers */ = {isa = PBXBuildFile; fileRef = CEE41F9817D24042CE88E4D6402770FB /* SJLightweightTopItem.h */; settings = {ATTRIBUTES = (Project, ); }; };
-		513A4C44222AF8DE1FFF3A8A891A9DF6 /* UIView+SJVideoPlayerSetting.m in Sources */ = {isa = PBXBuildFile; fileRef = 1C38C67D91E87DA89379A79F5FFD5DC0 /* UIView+SJVideoPlayerSetting.m */; };
-		51FFC86BB432A20064B395775BF4FA3D /* SJNetworkLoadingView.h in Headers */ = {isa = PBXBuildFile; fileRef = 3099B3082C52CF2C82811E9BF1F4F954 /* SJNetworkLoadingView.h */; settings = {ATTRIBUTES = (Project, ); }; };
-		5459AD5E5ACBD7EE54B7B6D20F8A0A90 /* SJLightweightTopItem.m in Sources */ = {isa = PBXBuildFile; fileRef = C1738245CA12E8007C85831C0B66F55E /* SJLightweightTopItem.m */; };
-		54A7B4101BCF96B05E0899FD8692CA15 /* SJFilmEditingLoader.m in Sources */ = {isa = PBXBuildFile; fileRef = 4C6AA1520A21B0436C9FA53A1212C4A7 /* SJFilmEditingLoader.m */; };
-		561B466A3F030406D095E3BECEDB0A59 /* SJVideoPlayer.h in Headers */ = {isa = PBXBuildFile; fileRef = 5729E82965B0793B8534C3710166A887 /* SJVideoPlayer.h */; settings = {ATTRIBUTES = (Project, ); }; };
-		59258D0DBD90719106929B91035A1936 /* SJVideoPlayerMoreSettingSecondaryView.h in Headers */ = {isa = PBXBuildFile; fileRef = EF4B79679F4942C3893ED8574A6860AA /* SJVideoPlayerMoreSettingSecondaryView.h */; settings = {ATTRIBUTES = (Project, ); }; };
-		598EA2A6630A3008830450CBD21B5193 /* SJFilmEditingButtonContainerView.m in Sources */ = {isa = PBXBuildFile; fileRef = 765775C76E38306348F2F8FBB8E8FD4C /* SJFilmEditingButtonContainerView.m */; };
-		5F4CDBA52815871EDF5D3508783216FE /* SJFilmEditingControlLayer.h in Headers */ = {isa = PBXBuildFile; fileRef = BF2EB851ABFBC2A79C8818DCD475B6B7 /* SJFilmEditingControlLayer.h */; settings = {ATTRIBUTES = (Project, ); }; };
-		656F94ED28058EEC2170730780993BB3 /* SJFilmEditingResultShareItemsContainerView.m in Sources */ = {isa = PBXBuildFile; fileRef = E2A7EBA8F70C30A73CCC50A33C1248F0 /* SJFilmEditingResultShareItemsContainerView.m */; };
-		65A59DFB4D6ABC3863ADCD5388AB8F14 /* UIView+SJControlAdd.h in Headers */ = {isa = PBXBuildFile; fileRef = 70289ABED66EF29504E511D011DDBF16 /* UIView+SJControlAdd.h */; settings = {ATTRIBUTES = (Project, ); }; };
-		68D522B438596C84017282F564322C52 /* SJVideoPlayerMoreSettingsSecondaryHeaderView.m in Sources */ = {isa = PBXBuildFile; fileRef = DB1DA01A637BB0074DA3ABA312D4681B /* SJVideoPlayerMoreSettingsSecondaryHeaderView.m */; };
-		6AD5CAA59C21383DE847833FB93A1328 /* SJEdgeControlLayer.h in Headers */ = {isa = PBXBuildFile; fileRef = E3874ACE073DA91D22FD6D46CB4B384C /* SJEdgeControlLayer.h */; settings = {ATTRIBUTES = (Project, ); }; };
-		6FC283B3C545F08B0B2B3F2F3F8AF3CA /* SJFloatSmallViewControlLayer.m in Sources */ = {isa = PBXBuildFile; fileRef = 7FD5E1CC0DCC9E27475199BE0813F8EA /* SJFloatSmallViewControlLayer.m */; };
-		74BB4F61A923E2954407164CB19F7681 /* SJFilmEditingStatus.h in Headers */ = {isa = PBXBuildFile; fileRef = 191AC925668B59CE19A928ABC121CEEC /* SJFilmEditingStatus.h */; settings = {ATTRIBUTES = (Project, ); }; };
-		75926D615C31152F7295191A98705C9D /* SJEdgeControlLayer.m in Sources */ = {isa = PBXBuildFile; fileRef = B5A15EC84B3DDCDF21F58045B9A516C2 /* SJEdgeControlLayer.m */; };
-		7628391E4ADF7E9DA9D1F9BB44C584D0 /* SJFilmEditingInGIFRecordingsControlLayer.m in Sources */ = {isa = PBXBuildFile; fileRef = 633770CB0FC031971E756191B12C759F /* SJFilmEditingInGIFRecordingsControlLayer.m */; };
-		76E85D014936EC5DFE44951669E7E819 /* SJFilmEditingInGIFRecordingsControlLayer.h in Headers */ = {isa = PBXBuildFile; fileRef = 42D9141DBAA033DB5E26D2A0A9E8ABD4 /* SJFilmEditingInGIFRecordingsControlLayer.h */; settings = {ATTRIBUTES = (Project, ); }; };
-		770D6938C43254F857C730B5F116AA85 /* SJVideoPlayerMoreSetting+Exe.m in Sources */ = {isa = PBXBuildFile; fileRef = 8D4F859F9B6BE8B993139CCF98065B93 /* SJVideoPlayerMoreSetting+Exe.m */; };
-		78511DE7D6E0FEC4F256325DB0E4CB65 /* SJEdgeControlLayerAdapters.m in Sources */ = {isa = PBXBuildFile; fileRef = 9B86C03D9B84952FB9053623B199F1AF /* SJEdgeControlLayerAdapters.m */; };
-		79578051E277206D5AE4CEAD8BF46F27 /* SJVideoPlayerMoreSettingsColCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 875454AA053A08341377DEF7364C0999 /* SJVideoPlayerMoreSettingsColCell.m */; };
-		7A0F5913FB21128FDC3B5BD2F85D9F4C /* SJVideoPlayerAnimationHeader.h in Headers */ = {isa = PBXBuildFile; fileRef = 939331794E4A5891E272B3159A3DE602 /* SJVideoPlayerAnimationHeader.h */; settings = {ATTRIBUTES = (Project, ); }; };
-		7BF8687989FAD0501B5E92AB709FC9E4 /* SJEdgeControlLayerItemAdapter.h in Headers */ = {isa = PBXBuildFile; fileRef = 8B0C5BAEB3FD864FCAC53D45B19157C9 /* SJEdgeControlLayerItemAdapter.h */; settings = {ATTRIBUTES = (Project, ); }; };
-		7DFA4B6840EFB96D7F7A85AAE3E6155F /* SJFilmEditingCommonViewLayer.m in Sources */ = {isa = PBXBuildFile; fileRef = DA14D3889A5BA45D19A7EF1F40B330E4 /* SJFilmEditingCommonViewLayer.m */; };
-		7FAE2C1ECB38AC14EF907C9CA397EE17 /* SJVideoPlayerControlMaskView.m in Sources */ = {isa = PBXBuildFile; fileRef = 8F6EE7704813285D9AF95E57591B23EB /* SJVideoPlayerControlMaskView.m */; };
-		818583E0DB481184F7586ACB63C47740 /* SJFilmEditingControlLayer.m in Sources */ = {isa = PBXBuildFile; fileRef = 0455F82E946D66BCE1C61CA67D687787 /* SJFilmEditingControlLayer.m */; };
-		839C558382A933E0446BBE974F61C5A1 /* SJFilmEditingBackButton.h in Headers */ = {isa = PBXBuildFile; fileRef = 0C1165319E1BC6BC57DD4483AAA12F2B /* SJFilmEditingBackButton.h */; settings = {ATTRIBUTES = (Project, ); }; };
-		86C3777F435355AD817729CFED7F2599 /* SJVideoPlayerMoreSetting+Exe.h in Headers */ = {isa = PBXBuildFile; fileRef = FACE794A8D6DA806626599CD69C8FE9A /* SJVideoPlayerMoreSetting+Exe.h */; settings = {ATTRIBUTES = (Project, ); }; };
-		88BB01A99AD14D5DBB2F20C12E50A58C /* SJVideoPlayerControlMaskView.h in Headers */ = {isa = PBXBuildFile; fileRef = A8802F4E88A4D2F6EEB7F7870F26BF1D /* SJVideoPlayerControlMaskView.h */; settings = {ATTRIBUTES = (Project, ); }; };
-		89EAEE875A50906ABAB929C11725EF44 /* SJVideoPlayerFilmEditingParameters.h in Headers */ = {isa = PBXBuildFile; fileRef = 17D258B387D5D9C182A38206D5245C1D /* SJVideoPlayerFilmEditingParameters.h */; settings = {ATTRIBUTES = (Project, ); }; };
-		8A2E91F610407C7E4F51495E09F2385B /* SJVideoPlayerMoreSettingsFooterView.h in Headers */ = {isa = PBXBuildFile; fileRef = F5309130BDA91BEA3E2B7356F2E062DB /* SJVideoPlayerMoreSettingsFooterView.h */; settings = {ATTRIBUTES = (Project, ); }; };
-		8D7503ECC67E7F9ECD6C482102E496BA /* SJFilmEditingSettings.h in Headers */ = {isa = PBXBuildFile; fileRef = E3B8C8B7B1009CBA42AF39C1640E4128 /* SJFilmEditingSettings.h */; settings = {ATTRIBUTES = (Project, ); }; };
-		8DA971758341A33A0189069A0F1B7FA6 /* SJVideoPlayerMoreSettingsColCell.h in Headers */ = {isa = PBXBuildFile; fileRef = 9EF4CEBB1C2CD181934E41DC18E127A3 /* SJVideoPlayerMoreSettingsColCell.h */; settings = {ATTRIBUTES = (Project, ); }; };
-		927A708E4E8CC757DC358425E9988A1F /* SJControlLayerSwitcher.h in Headers */ = {isa = PBXBuildFile; fileRef = 68F7A95299FF0AE15563B52DE477038D /* SJControlLayerSwitcher.h */; settings = {ATTRIBUTES = (Project, ); }; };
-		93EA3882C740E140AC8BCFC578B1CB79 /* SJFilmEditingSettings.m in Sources */ = {isa = PBXBuildFile; fileRef = 80C6219E20317C5BE7F4EBFA0F827B29 /* SJFilmEditingSettings.m */; };
-		9AB7F4FD26A503E773C8577A2301B132 /* SJFloatSmallViewControlLayerResourceLoader.h in Headers */ = {isa = PBXBuildFile; fileRef = 46F235C5B97D4762321A36460EB08DD5 /* SJFloatSmallViewControlLayerResourceLoader.h */; settings = {ATTRIBUTES = (Project, ); }; };
-		9ADF14A9961B7AF88BC9FDD890D3F6E8 /* SJCommonProgressSlider.m in Sources */ = {isa = PBXBuildFile; fileRef = 78C3A5ED244F0F06FA6A6DD1D9DC41CA /* SJCommonProgressSlider.m */; };
-		9D3A002CA36D57EB40D86D20F17027FE /* SJFilmEditingInVideoRecordingsControlLayer.h in Headers */ = {isa = PBXBuildFile; fileRef = B9D45000A314FD695E8437DA9A0CC604 /* SJFilmEditingInVideoRecordingsControlLayer.h */; settings = {ATTRIBUTES = (Project, ); }; };
-		9D544F4D828705F950015C0FF6C51BCB /* SJEdgeControlLayerLoader.h in Headers */ = {isa = PBXBuildFile; fileRef = 4285F1385C04308BB4C1B6480B892EF6 /* SJEdgeControlLayerLoader.h */; settings = {ATTRIBUTES = (Project, ); }; };
-		A1DF6E798372C41095671B1ECF38481D /* SJFilmEditingBackButton.m in Sources */ = {isa = PBXBuildFile; fileRef = 495C5D9B5205B89B03D8B99545BFBE2B /* SJFilmEditingBackButton.m */; };
-		A216F24BAFF65458A8F68249301E04D5 /* SJVideoPlayerMoreSettingSecondary.h in Headers */ = {isa = PBXBuildFile; fileRef = 8824F29F35F8C1ABB1CA12304C19E71C /* SJVideoPlayerMoreSettingSecondary.h */; settings = {ATTRIBUTES = (Project, ); }; };
-		A797ECF70A2DF083A9230F2016BEE8D2 /* SJVideoPlayerMoreSettingsSecondaryHeaderView.h in Headers */ = {isa = PBXBuildFile; fileRef = 653B1606B78AE17596EA5C14913202E9 /* SJVideoPlayerMoreSettingsSecondaryHeaderView.h */; settings = {ATTRIBUTES = (Project, ); }; };
-		A8643E80D28B9AFEACD9AC8E38303136 /* SJEdgeControlButtonItem.m in Sources */ = {isa = PBXBuildFile; fileRef = EA50731B1395AE22837498712A24215C /* SJEdgeControlButtonItem.m */; };
-		AA4C315ED4381ADF97F0C996100F8006 /* SJControlLayerDefines.h in Headers */ = {isa = PBXBuildFile; fileRef = 266A64EFE37099D58DB1EFF07BF21188 /* SJControlLayerDefines.h */; settings = {ATTRIBUTES = (Project, ); }; };
-		AE4F3F4035FC152602C259EB3C0E0764 /* UIView+SJAnimationAdded.m in Sources */ = {isa = PBXBuildFile; fileRef = 55DCBF15703F2362327C2824AEBBFD19 /* UIView+SJAnimationAdded.m */; };
-		AEE32D1D593D33DCFD7601BCF1CC7FE7 /* SJLoadFailedControlLayer.h in Headers */ = {isa = PBXBuildFile; fileRef = 7056283734DECA069D581965E02371EF /* SJLoadFailedControlLayer.h */; settings = {ATTRIBUTES = (Project, ); }; };
-		B38641D14E73033D2B75D74FB0207FFB /* SJFilmEditingResultShareItem.m in Sources */ = {isa = PBXBuildFile; fileRef = 8E44BC022580454A02A043E3BBB4F14A /* SJFilmEditingResultShareItem.m */; };
-		B481CDABD756E1DDC7930F85C5F3D000 /* SJEdgeControlLayerSettings.m in Sources */ = {isa = PBXBuildFile; fileRef = 7D8A45A2681A79A4538A4D5E187D6B38 /* SJEdgeControlLayerSettings.m */; };
-		B6F9B7B2C7BFAA65E593D448EFFD68E8 /* SJVideoPlayerFilmEditingGeneratedResult.h in Headers */ = {isa = PBXBuildFile; fileRef = AFD40CEA54B6FEBDDAC3678FF2F18548 /* SJVideoPlayerFilmEditingGeneratedResult.h */; settings = {ATTRIBUTES = (Project, ); }; };
-		B7D317652F31DE280FCC35122C05BA09 /* SJLoadingView.h in Headers */ = {isa = PBXBuildFile; fileRef = 990FB23A0B47357D2DF0AF391E6E236D /* SJLoadingView.h */; settings = {ATTRIBUTES = (Project, ); }; };
-		BA17FCBD965601D761C5FEC2158D51C7 /* SJFilmEditingVideoCountDownView.m in Sources */ = {isa = PBXBuildFile; fileRef = 7599394889AEE59EE70ABA4D2DF6DC60 /* SJFilmEditingVideoCountDownView.m */; };
-		BBDD837E904C0310D37D2DBED4D2E1B1 /* SJVideoPlayerFilmEditingGeneratedResult.m in Sources */ = {isa = PBXBuildFile; fileRef = 89E00A2563E288AF5F1054F88740332D /* SJVideoPlayerFilmEditingGeneratedResult.m */; };
-		C19DD70E51EA82872047B540E59B1257 /* SJButtonProgressSlider.m in Sources */ = {isa = PBXBuildFile; fileRef = 3740BEE4936AB6A596EEDDD777A3FE0B /* SJButtonProgressSlider.m */; };
-		C219E7CFC945626E002202DD1DC6CB58 /* SJFilmEditingButtonContainerView.h in Headers */ = {isa = PBXBuildFile; fileRef = 153A16ABF447E2CF8DCB0854D93B659A /* SJFilmEditingButtonContainerView.h */; settings = {ATTRIBUTES = (Project, ); }; };
-		C4C19426278A2C013E99F99353B755A5 /* SJMoreSettingControlLayer.h in Headers */ = {isa = PBXBuildFile; fileRef = C81CA7FD66AB68126160002F98C4D9E4 /* SJMoreSettingControlLayer.h */; settings = {ATTRIBUTES = (Project, ); }; };
-		C71AD5D6C0525F7E59CE0F8A09DE1D58 /* SJVideoPlayerFilmEditingCommonHeader.h in Headers */ = {isa = PBXBuildFile; fileRef = 11552D2279A12A1A297D803462C3D313 /* SJVideoPlayerFilmEditingCommonHeader.h */; settings = {ATTRIBUTES = (Project, ); }; };
-		CB860069CDE07B5950FBA74B9D2FA718 /* SJControlLayerCarrier.h in Headers */ = {isa = PBXBuildFile; fileRef = 26D8E265A0525D304238BE3267943B24 /* SJControlLayerCarrier.h */; settings = {ATTRIBUTES = (Project, ); }; };
-		CD54B9BA35DBDBA7BFA94DCA538B12EB /* SJEdgeControlButtonItem.h in Headers */ = {isa = PBXBuildFile; fileRef = 9C02947C457EFE29D73784E2C113989A /* SJEdgeControlButtonItem.h */; settings = {ATTRIBUTES = (Project, ); }; };
-		CD9FC263AE9AAD429D5544079D89E745 /* SJControlLayerSwitcher.m in Sources */ = {isa = PBXBuildFile; fileRef = 55A734E590CAA592FF8A60A346DDEF65 /* SJControlLayerSwitcher.m */; };
-		CE569408814F95AB7D47076023D4C7AF /* SJVideoPlayerMoreSettingSecondaryView.m in Sources */ = {isa = PBXBuildFile; fileRef = A9C8B63F562843E5B9D5063A9CBF50FB /* SJVideoPlayerMoreSettingSecondaryView.m */; };
-		D0DE5E485829E2C3F50758024CEF8E05 /* SJVideoPlayerMoreSettingsSlidersView.h in Headers */ = {isa = PBXBuildFile; fileRef = 6F6CB1C47D3BEBDB76C4B66716A740D9 /* SJVideoPlayerMoreSettingsSlidersView.h */; settings = {ATTRIBUTES = (Project, ); }; };
-		D2E90BA757F72CE79B3E9FCA44F82BCE /* SJFilmEditingSaveResultToAlbumHandler.m in Sources */ = {isa = PBXBuildFile; fileRef = 4FD502F847E2253E8AA92799B5816C95 /* SJFilmEditingSaveResultToAlbumHandler.m */; };
-		D3CE425F414AC33A1E899053BA2451D5 /* SJVideoPlayerMoreSettingsFooterView.m in Sources */ = {isa = PBXBuildFile; fileRef = 7E273A0155201CE79A33EAC2FB8543E7 /* SJVideoPlayerMoreSettingsFooterView.m */; };
-		D91039A90097CE7688014C3CB3014FD3 /* SJFilmEditingCommonViewLayer.h in Headers */ = {isa = PBXBuildFile; fileRef = 69BE4399122CE56AFE7AF43A6682EAF4 /* SJFilmEditingCommonViewLayer.h */; settings = {ATTRIBUTES = (Project, ); }; };
-		D9704684D42BB4E31CE838221C3C5C9B /* SJEdgeControlLayerItemAdapter.m in Sources */ = {isa = PBXBuildFile; fileRef = D1B19C4881D8C61793EC8605759674C6 /* SJEdgeControlLayerItemAdapter.m */; };
-		DA921339BB227724EB5329AC031F6FE0 /* UIView+SJControlAdd.m in Sources */ = {isa = PBXBuildFile; fileRef = A0A0723DCC4CA9EE3059F920026EA4C2 /* UIView+SJControlAdd.m */; };
-		DAC0E948A63B462A8E1D4906C0F46F8B /* SJFilmEditingInVideoRecordingsControlLayer.m in Sources */ = {isa = PBXBuildFile; fileRef = 6ED1B6DDD690ED9A8CD8AFAC0353FB7E /* SJFilmEditingInVideoRecordingsControlLayer.m */; };
-		E107C7EDFC869E7C17DCD81EDDBB84CE /* SJFilmEditingGenerateResultControlLayer.m in Sources */ = {isa = PBXBuildFile; fileRef = D66A3AAD821B2ADD814158483AF37BA7 /* SJFilmEditingGenerateResultControlLayer.m */; };
-		E1D29F79F4AA18AAB1A292844DCD82DC /* SJMoreSettingsSlidersViewModel.h in Headers */ = {isa = PBXBuildFile; fileRef = AC9B37EB6F7854A757832C7F6320E6CD /* SJMoreSettingsSlidersViewModel.h */; settings = {ATTRIBUTES = (Project, ); }; };
-		E3411D18A62A47AAD78E5F33D3159D05 /* SJEdgeControlLayerAdapters.h in Headers */ = {isa = PBXBuildFile; fileRef = A2E55208755DCAD81AECBDEBB97AFB59 /* SJEdgeControlLayerAdapters.h */; settings = {ATTRIBUTES = (Project, ); }; };
-		E498521309B6FB676BBBE109A3F8018E /* UIView+SJVideoPlayerSetting.h in Headers */ = {isa = PBXBuildFile; fileRef = B20C690F21A750BFAA1619B4E0AA4F85 /* UIView+SJVideoPlayerSetting.h */; settings = {ATTRIBUTES = (Project, ); }; };
-		EAF3A1DF115931C351681683C9F55A04 /* SJVideoPlayerMoreSettingSecondaryColCell.m in Sources */ = {isa = PBXBuildFile; fileRef = AEF6DFFD9E687410AF557C127620E652 /* SJVideoPlayerMoreSettingSecondaryColCell.m */; };
-		EF6BA092A55A85986981D6C56C75C0A1 /* SJVideoPlayerDraggingProgressView.h in Headers */ = {isa = PBXBuildFile; fileRef = 7F9C48242511EDEBCD5418B87496D9AE /* SJVideoPlayerDraggingProgressView.h */; settings = {ATTRIBUTES = (Project, ); }; };
-		F0DBF209EFA89FA274479BB998BAECA6 /* SJVideoPlayerMoreSetting.m in Sources */ = {isa = PBXBuildFile; fileRef = 5F4A8CABF292A563F14F3D669221509D /* SJVideoPlayerMoreSetting.m */; };
-		F1C2EE613A69FAA62A89B1E76053249D /* SJLoadingView.m in Sources */ = {isa = PBXBuildFile; fileRef = 7488B95F88D1777D16339B1EA3045D03 /* SJLoadingView.m */; };
-		F2656AAF9DCBF80F86057A2E18B72969 /* SJFilmEditingResultShareItem.h in Headers */ = {isa = PBXBuildFile; fileRef = 98EDFD657FFD36E7AE3987C70D9E1FED /* SJFilmEditingResultShareItem.h */; settings = {ATTRIBUTES = (Project, ); }; };
-		F30806AEE1F9355B99B1136B95ECDA33 /* SJVideoPlayerMoreSetting.h in Headers */ = {isa = PBXBuildFile; fileRef = CA5A3C868A45B9CAE1331C2BC7909107 /* SJVideoPlayerMoreSetting.h */; settings = {ATTRIBUTES = (Project, ); }; };
-		F40B46FA99AA00AA717020322B7A0E88 /* SJFilmEditingGenerateResultControlLayer.h in Headers */ = {isa = PBXBuildFile; fileRef = 20DB11C1D665C05133860D64302BCCCA /* SJFilmEditingGenerateResultControlLayer.h */; settings = {ATTRIBUTES = (Project, ); }; };
-		FA44333686A3747072B2D760F04D9CC3 /* SJNotReachableControlLayer.m in Sources */ = {isa = PBXBuildFile; fileRef = 19B3B4A3B702A87F9AE33123133DF90D /* SJNotReachableControlLayer.m */; };
-		FACAB070B1E360018CC6C7DDCC30CF41 /* SJVideoPlayerSettings.h in Headers */ = {isa = PBXBuildFile; fileRef = 9C280206E036F47DF49F7F9FD1A08743 /* SJVideoPlayerSettings.h */; settings = {ATTRIBUTES = (Project, ); }; };
-		FDA6F033A171DF42C7D06F06DF38F27C /* SJNotReachableControlLayer.h in Headers */ = {isa = PBXBuildFile; fileRef = 524D211A741003E36FC9AE2C3E1742CC /* SJNotReachableControlLayer.h */; settings = {ATTRIBUTES = (Project, ); }; };
-		FE003465950A3C193B0BD58019777DBA /* SJVideoPlayerURLAsset+SJControlAdd.m in Sources */ = {isa = PBXBuildFile; fileRef = 56C83343AF49A489EBEED551D15834F9 /* SJVideoPlayerURLAsset+SJControlAdd.m */; };
+		009DD0523C0F43C09ECDF0399B5FF909 /* SJFilmEditingResultShareItem.m in Sources */ = {isa = PBXBuildFile; fileRef = 8E44BC022580454A02A043E3BBB4F14A /* SJFilmEditingResultShareItem.m */; };
+		0362139F1C247F4B7DCEBD0540558DEE /* SJEdgeControlLayer.h in Headers */ = {isa = PBXBuildFile; fileRef = E3874ACE073DA91D22FD6D46CB4B384C /* SJEdgeControlLayer.h */; settings = {ATTRIBUTES = (Project, ); }; };
+		03B687289B2725529AC6EBE0664B02FC /* SJVideoPlayerMoreSettingSecondaryView.h in Headers */ = {isa = PBXBuildFile; fileRef = EF4B79679F4942C3893ED8574A6860AA /* SJVideoPlayerMoreSettingSecondaryView.h */; settings = {ATTRIBUTES = (Project, ); }; };
+		054B7A7BD239EBB3A40B8B6F41C99516 /* SJFilmEditingButtonContainerView.m in Sources */ = {isa = PBXBuildFile; fileRef = 765775C76E38306348F2F8FBB8E8FD4C /* SJFilmEditingButtonContainerView.m */; };
+		0A8529748192476DC7A4B6AF2FC37630 /* SJCommonProgressSlider.h in Headers */ = {isa = PBXBuildFile; fileRef = A5BD1C0C09C08A3CB6614D07FBE1CEB1 /* SJCommonProgressSlider.h */; settings = {ATTRIBUTES = (Project, ); }; };
+		0BD64B21757EF324E26A8456A215B0EB /* UIView+SJAnimationAdded.m in Sources */ = {isa = PBXBuildFile; fileRef = 55DCBF15703F2362327C2824AEBBFD19 /* UIView+SJAnimationAdded.m */; };
+		0BDFC70EDB22241872876DA42BC7541E /* SJVideoPlayer.m in Sources */ = {isa = PBXBuildFile; fileRef = A2F94B5DC9A88AD3AC5DA862512286E2 /* SJVideoPlayer.m */; };
+		1440986EE611FAB17D48D34C27390DB1 /* SJFloatSmallViewControlLayer.h in Headers */ = {isa = PBXBuildFile; fileRef = 6143FEAC708DEAA015E9946E4CBF4573 /* SJFloatSmallViewControlLayer.h */; settings = {ATTRIBUTES = (Project, ); }; };
+		1DBB2A72A9485CF8EA87CD8B52CB4BFA /* SJVideoPlayerMoreSettingsView.m in Sources */ = {isa = PBXBuildFile; fileRef = 245A47EC7AEE2A61E08F4B97484CF694 /* SJVideoPlayerMoreSettingsView.m */; };
+		1E238F821DC72BBD570F66CD32E65412 /* SJVideoPlayerAnimationHeader.h in Headers */ = {isa = PBXBuildFile; fileRef = 939331794E4A5891E272B3159A3DE602 /* SJVideoPlayerAnimationHeader.h */; settings = {ATTRIBUTES = (Project, ); }; };
+		1EE3B4E095F7A56739899EB08D9BF3D2 /* SJFilmEditingInVideoRecordingsControlLayer.h in Headers */ = {isa = PBXBuildFile; fileRef = B9D45000A314FD695E8437DA9A0CC604 /* SJFilmEditingInVideoRecordingsControlLayer.h */; settings = {ATTRIBUTES = (Project, ); }; };
+		252BD8F1C359EF894A44AC5032C0CAEF /* UIView+SJControlAdd.h in Headers */ = {isa = PBXBuildFile; fileRef = 70289ABED66EF29504E511D011DDBF16 /* UIView+SJControlAdd.h */; settings = {ATTRIBUTES = (Project, ); }; };
+		26D5585D26BB65E3285C08CB7CCEE77B /* SJEdgeControlLayer.m in Sources */ = {isa = PBXBuildFile; fileRef = B5A15EC84B3DDCDF21F58045B9A516C2 /* SJEdgeControlLayer.m */; };
+		28775A3FE48DB28A0196776464913666 /* SJCommonProgressSlider.m in Sources */ = {isa = PBXBuildFile; fileRef = 78C3A5ED244F0F06FA6A6DD1D9DC41CA /* SJCommonProgressSlider.m */; };
+		2899BF2235C6B6B6649B2CEE381CE7CC /* SJEdgeControlLayerAdapters.m in Sources */ = {isa = PBXBuildFile; fileRef = 9B86C03D9B84952FB9053623B199F1AF /* SJEdgeControlLayerAdapters.m */; };
+		2BEF2372906EE462E2B88C24FA719D44 /* SJVideoPlayerMoreSettingSecondary.m in Sources */ = {isa = PBXBuildFile; fileRef = C84B468F064C5401AD379CD818C81F9F /* SJVideoPlayerMoreSettingSecondary.m */; };
+		305DAF780B6F748E93640E4BC46CB3FA /* SJFilmEditingInGIFRecordingsControlLayer.m in Sources */ = {isa = PBXBuildFile; fileRef = 633770CB0FC031971E756191B12C759F /* SJFilmEditingInGIFRecordingsControlLayer.m */; };
+		30FDF56A38EF34EAE467AD0256690E92 /* SJFilmEditingCommonViewLayer.m in Sources */ = {isa = PBXBuildFile; fileRef = DA14D3889A5BA45D19A7EF1F40B330E4 /* SJFilmEditingCommonViewLayer.m */; };
+		31C43AA02AC8D676CB0DE9977965351D /* SJVideoPlayerMoreSettingsColCell.h in Headers */ = {isa = PBXBuildFile; fileRef = 9EF4CEBB1C2CD181934E41DC18E127A3 /* SJVideoPlayerMoreSettingsColCell.h */; settings = {ATTRIBUTES = (Project, ); }; };
+		346066FD9F59CB909A3D982D8BD38F72 /* SJEdgeControlLayerItemAdapter.h in Headers */ = {isa = PBXBuildFile; fileRef = 8B0C5BAEB3FD864FCAC53D45B19157C9 /* SJEdgeControlLayerItemAdapter.h */; settings = {ATTRIBUTES = (Project, ); }; };
+		3CC9823370A68C365184ED10A0DFB6C0 /* SJFloatSmallViewControlLayerResourceLoader.h in Headers */ = {isa = PBXBuildFile; fileRef = 46F235C5B97D4762321A36460EB08DD5 /* SJFloatSmallViewControlLayerResourceLoader.h */; settings = {ATTRIBUTES = (Project, ); }; };
+		3DD8CD336455A72893F47206EB3F403A /* SJControlLayerCarrier.m in Sources */ = {isa = PBXBuildFile; fileRef = C344F3F4885E54F33B5DA6100E94A495 /* SJControlLayerCarrier.m */; };
+		3E3D6A0EA7F21C15C7599F96FEE38427 /* SJProgressSlider.h in Headers */ = {isa = PBXBuildFile; fileRef = DBAFEEA698D0A589DE27C3C570BD4229 /* SJProgressSlider.h */; settings = {ATTRIBUTES = (Project, ); }; };
+		3E737431EC099C40EC70CA1E75588807 /* SJFilmEditingResultShareItem.h in Headers */ = {isa = PBXBuildFile; fileRef = 98EDFD657FFD36E7AE3987C70D9E1FED /* SJFilmEditingResultShareItem.h */; settings = {ATTRIBUTES = (Project, ); }; };
+		3FB75A2D2AC183CDBF452ABBA114595E /* SJVideoPlayerMoreSetting.h in Headers */ = {isa = PBXBuildFile; fileRef = CA5A3C868A45B9CAE1331C2BC7909107 /* SJVideoPlayerMoreSetting.h */; settings = {ATTRIBUTES = (Project, ); }; };
+		4160A08F88E8E5522E80BD325928627B /* SJFilmEditingGIFCountDownView.m in Sources */ = {isa = PBXBuildFile; fileRef = 6929502826CE4258AD3D41D417CC48AC /* SJFilmEditingGIFCountDownView.m */; };
+		4345B450E33AD5C9DBB7F1088E607C3E /* SJFilmEditingControlLayer.h in Headers */ = {isa = PBXBuildFile; fileRef = BF2EB851ABFBC2A79C8818DCD475B6B7 /* SJFilmEditingControlLayer.h */; settings = {ATTRIBUTES = (Project, ); }; };
+		43BB06B96EFC42AD23B310F3FF67F9B0 /* SJLoadingView.h in Headers */ = {isa = PBXBuildFile; fileRef = 990FB23A0B47357D2DF0AF391E6E236D /* SJLoadingView.h */; settings = {ATTRIBUTES = (Project, ); }; };
+		44A980FE8457B22ED1998189246376B8 /* SJMoreSettingsSlidersViewModel.h in Headers */ = {isa = PBXBuildFile; fileRef = AC9B37EB6F7854A757832C7F6320E6CD /* SJMoreSettingsSlidersViewModel.h */; settings = {ATTRIBUTES = (Project, ); }; };
+		44DC9DB402435AC1B0E8EF9E0B1A3384 /* SJFilmEditingLoader.h in Headers */ = {isa = PBXBuildFile; fileRef = 5892DF20C836D2CE21E30E610177B1EB /* SJFilmEditingLoader.h */; settings = {ATTRIBUTES = (Project, ); }; };
+		4630923C558389C28B2E78390EE382BE /* SJVideoPlayer.h in Headers */ = {isa = PBXBuildFile; fileRef = 5729E82965B0793B8534C3710166A887 /* SJVideoPlayer.h */; settings = {ATTRIBUTES = (Project, ); }; };
+		464AACC22BF9F986E7A5D1AF57325626 /* SJFilmEditingGenerateResultControlLayer.h in Headers */ = {isa = PBXBuildFile; fileRef = 20DB11C1D665C05133860D64302BCCCA /* SJFilmEditingGenerateResultControlLayer.h */; settings = {ATTRIBUTES = (Project, ); }; };
+		483B1D408DDD8CC54C0CF46BDFB1662C /* SJVideoPlayerMoreSettingsSecondaryHeaderView.h in Headers */ = {isa = PBXBuildFile; fileRef = 653B1606B78AE17596EA5C14913202E9 /* SJVideoPlayerMoreSettingsSecondaryHeaderView.h */; settings = {ATTRIBUTES = (Project, ); }; };
+		4DF075141F40429C66B2FDBA9CD08F9F /* SJVideoPlayerMoreSetting.m in Sources */ = {isa = PBXBuildFile; fileRef = 5F4A8CABF292A563F14F3D669221509D /* SJVideoPlayerMoreSetting.m */; };
+		4EF047C4E227385D86C85848D2A48856 /* SJLoadingView.m in Sources */ = {isa = PBXBuildFile; fileRef = 7488B95F88D1777D16339B1EA3045D03 /* SJLoadingView.m */; };
+		4F2D322E5F45613ACF3450EA9D44B9E8 /* SJFilmEditingSaveResultToAlbumHandler.h in Headers */ = {isa = PBXBuildFile; fileRef = C1255F7B00C9BEBAFC20825E4F7E6F4D /* SJFilmEditingSaveResultToAlbumHandler.h */; settings = {ATTRIBUTES = (Project, ); }; };
+		51E8F3FC0E8B68993943C4CF242081F7 /* SJButtonProgressSlider.h in Headers */ = {isa = PBXBuildFile; fileRef = 15ECD3914382BF51EED03CCC0BDBF530 /* SJButtonProgressSlider.h */; settings = {ATTRIBUTES = (Project, ); }; };
+		53343592F72DC83EC067AA6380005D33 /* SJVideoPlayerControlMaskView.m in Sources */ = {isa = PBXBuildFile; fileRef = 8F6EE7704813285D9AF95E57591B23EB /* SJVideoPlayerControlMaskView.m */; };
+		5378DABAC1CA9A628457E29603FA8EF8 /* SJNotReachableControlLayer.h in Headers */ = {isa = PBXBuildFile; fileRef = 524D211A741003E36FC9AE2C3E1742CC /* SJNotReachableControlLayer.h */; settings = {ATTRIBUTES = (Project, ); }; };
+		55DBEA080C5297DC8D350BD161BDF83D /* SJVideoPlayerMoreSettingsColCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 875454AA053A08341377DEF7364C0999 /* SJVideoPlayerMoreSettingsColCell.m */; };
+		5AC0EBA4B7D63CB11A2F0BA147917157 /* SJVideoPlayerMoreSettingSecondaryColCell.m in Sources */ = {isa = PBXBuildFile; fileRef = AEF6DFFD9E687410AF557C127620E652 /* SJVideoPlayerMoreSettingSecondaryColCell.m */; };
+		5C37ED032839B8FA43D4B4E35B3CD28F /* SJVideoPlayerDraggingProgressView.m in Sources */ = {isa = PBXBuildFile; fileRef = 37F0165B9B1922B0CE95508910B430DE /* SJVideoPlayerDraggingProgressView.m */; };
+		5E1562BF632C0BF76E360A037734A455 /* SJMoreSettingsSlidersViewModel.m in Sources */ = {isa = PBXBuildFile; fileRef = CA164B369BE6D09B41B2CE9790DF2025 /* SJMoreSettingsSlidersViewModel.m */; };
+		5FEB53545176403833172148144CDA0C /* SJVideoPlayerFilmEditingGeneratedResult.h in Headers */ = {isa = PBXBuildFile; fileRef = AFD40CEA54B6FEBDDAC3678FF2F18548 /* SJVideoPlayerFilmEditingGeneratedResult.h */; settings = {ATTRIBUTES = (Project, ); }; };
+		608B459DAD61F27B8AF63E6948A92787 /* SJVideoPlayerMoreSetting+Exe.m in Sources */ = {isa = PBXBuildFile; fileRef = 8D4F859F9B6BE8B993139CCF98065B93 /* SJVideoPlayerMoreSetting+Exe.m */; };
+		67C6B2E9CCDF691DC4A9DA4C7686952F /* SJVideoPlayerMoreSettingsFooterView.m in Sources */ = {isa = PBXBuildFile; fileRef = 7E273A0155201CE79A33EAC2FB8543E7 /* SJVideoPlayerMoreSettingsFooterView.m */; };
+		69BCC3DC9AE6A2B9296D8600A2B6E7F5 /* SJVideoPlayerMoreSetting+Exe.h in Headers */ = {isa = PBXBuildFile; fileRef = FACE794A8D6DA806626599CD69C8FE9A /* SJVideoPlayerMoreSetting+Exe.h */; settings = {ATTRIBUTES = (Project, ); }; };
+		6A29F32F8501519294CDAC3DF21FE479 /* SJVideoPlayerMoreSettingSecondaryColCell.h in Headers */ = {isa = PBXBuildFile; fileRef = 8F6EBD61B220507306C4B07AEA6D1156 /* SJVideoPlayerMoreSettingSecondaryColCell.h */; settings = {ATTRIBUTES = (Project, ); }; };
+		6A417FE3E9857C37E2D5B2D4CDD735D6 /* SJVideoPlayerSettings.m in Sources */ = {isa = PBXBuildFile; fileRef = 29AA6A5C119E84F916CF84152E2D9A75 /* SJVideoPlayerSettings.m */; };
+		6AF3A74B3884C991DF5009CD1B30C5AA /* SJControlLayerSwitcher.h in Headers */ = {isa = PBXBuildFile; fileRef = 68F7A95299FF0AE15563B52DE477038D /* SJControlLayerSwitcher.h */; settings = {ATTRIBUTES = (Project, ); }; };
+		6B078557867D797B1382D5FE2F07459A /* SJVideoPlayerMoreSettingsSlidersView.m in Sources */ = {isa = PBXBuildFile; fileRef = 99AB1227ECC2BB786A2DDF7B6694AF82 /* SJVideoPlayerMoreSettingsSlidersView.m */; };
+		701BC2B3A3EB12DE6091CCDA21C2BCBA /* SJVideoPlayerURLAsset+SJControlAdd.m in Sources */ = {isa = PBXBuildFile; fileRef = 56C83343AF49A489EBEED551D15834F9 /* SJVideoPlayerURLAsset+SJControlAdd.m */; };
+		7043518C88163F47B791D2B9F53983C9 /* SJLightweightTopItem.m in Sources */ = {isa = PBXBuildFile; fileRef = C1738245CA12E8007C85831C0B66F55E /* SJLightweightTopItem.m */; };
+		78FC8DBFF65B51BA6AF5708F4C05C27B /* SJFilmEditingResultShareItemsContainerView.h in Headers */ = {isa = PBXBuildFile; fileRef = 4925A03E62D616FE75E46569CFBCD351 /* SJFilmEditingResultShareItemsContainerView.h */; settings = {ATTRIBUTES = (Project, ); }; };
+		7CBAA58BF43F8B0C3DFD65AC6AD7CD82 /* SJFilmEditingSettings.h in Headers */ = {isa = PBXBuildFile; fileRef = E3B8C8B7B1009CBA42AF39C1640E4128 /* SJFilmEditingSettings.h */; settings = {ATTRIBUTES = (Project, ); }; };
+		7DD0D22DF16FE9E24F673310175ECF83 /* SJVideoPlayerFilmEditingConfig.m in Sources */ = {isa = PBXBuildFile; fileRef = 69B86CA2B0F217DD83B9C47F45D37404 /* SJVideoPlayerFilmEditingConfig.m */; };
+		7EFA21F4317A704C703DE5CE509D28BA /* SJEdgeControlLayerItemAdapter.m in Sources */ = {isa = PBXBuildFile; fileRef = D1B19C4881D8C61793EC8605759674C6 /* SJEdgeControlLayerItemAdapter.m */; };
+		7F12FF57E6FB79CB7083B1B8DFD0B124 /* UIView+SJAnimationAdded.h in Headers */ = {isa = PBXBuildFile; fileRef = B1209222EF758055FBBBDB8E833F36AE /* UIView+SJAnimationAdded.h */; settings = {ATTRIBUTES = (Project, ); }; };
+		7FE7671D045A330EC2AE6B9830124D72 /* SJVideoPlayer-dummy.m in Sources */ = {isa = PBXBuildFile; fileRef = 8265A47F5A4F0B820CBD22BDFB4D3BBA /* SJVideoPlayer-dummy.m */; };
+		80798CE7CAA293CE06BADF51C4E56369 /* UIView+SJControlAdd.m in Sources */ = {isa = PBXBuildFile; fileRef = A0A0723DCC4CA9EE3059F920026EA4C2 /* UIView+SJControlAdd.m */; };
+		830DB7D7505C3DD6028A76A3B3FE3DBB /* SJEdgeControlButtonItem.h in Headers */ = {isa = PBXBuildFile; fileRef = 9C02947C457EFE29D73784E2C113989A /* SJEdgeControlButtonItem.h */; settings = {ATTRIBUTES = (Project, ); }; };
+		832FF689A9BD7CE32D6694FAEF7CFBF1 /* SJVideoPlayerMoreSettingSecondaryView.m in Sources */ = {isa = PBXBuildFile; fileRef = A9C8B63F562843E5B9D5063A9CBF50FB /* SJVideoPlayerMoreSettingSecondaryView.m */; };
+		8687CAE91B269854A1267344C73F28E5 /* SJVideoPlayerFilmEditingCommonHeader.h in Headers */ = {isa = PBXBuildFile; fileRef = 11552D2279A12A1A297D803462C3D313 /* SJVideoPlayerFilmEditingCommonHeader.h */; settings = {ATTRIBUTES = (Project, ); }; };
+		901C2F86296C01E95051CE09C1C3B268 /* SJVideoPlayerDraggingProgressView.h in Headers */ = {isa = PBXBuildFile; fileRef = 7F9C48242511EDEBCD5418B87496D9AE /* SJVideoPlayerDraggingProgressView.h */; settings = {ATTRIBUTES = (Project, ); }; };
+		90D20C8C1CEF9CABBF7C925037EDD002 /* SJVideoPlayerControlMaskView.h in Headers */ = {isa = PBXBuildFile; fileRef = A8802F4E88A4D2F6EEB7F7870F26BF1D /* SJVideoPlayerControlMaskView.h */; settings = {ATTRIBUTES = (Project, ); }; };
+		99CE685F529A42FC81218F7A6CF28F89 /* SJMoreSettingControlLayer.h in Headers */ = {isa = PBXBuildFile; fileRef = C81CA7FD66AB68126160002F98C4D9E4 /* SJMoreSettingControlLayer.h */; settings = {ATTRIBUTES = (Project, ); }; };
+		9C3ACFB33AA4D0CE39A46C03A2E35E3F /* SJProgressSlider.m in Sources */ = {isa = PBXBuildFile; fileRef = 00E0905ADA73D28EDBD891E083ECB964 /* SJProgressSlider.m */; };
+		A1A967B6A5B267B7E6156AD1D9FD5A1B /* SJEdgeControlButtonItemCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 920D52187915F5694D2487F44E5FD678 /* SJEdgeControlButtonItemCell.m */; };
+		A2A49F695EFFC8214CD403424A7ECEA4 /* SJFilmEditingGenerateResultControlLayer.m in Sources */ = {isa = PBXBuildFile; fileRef = D66A3AAD821B2ADD814158483AF37BA7 /* SJFilmEditingGenerateResultControlLayer.m */; };
+		A350844D02F1D9BF506B83CC066DE46B /* SJLightweightTopItem.h in Headers */ = {isa = PBXBuildFile; fileRef = CEE41F9817D24042CE88E4D6402770FB /* SJLightweightTopItem.h */; settings = {ATTRIBUTES = (Project, ); }; };
+		A5E8D03CC6A8C1E159FB21017556519C /* UIView+SJVideoPlayerSetting.h in Headers */ = {isa = PBXBuildFile; fileRef = B20C690F21A750BFAA1619B4E0AA4F85 /* UIView+SJVideoPlayerSetting.h */; settings = {ATTRIBUTES = (Project, ); }; };
+		A711C3052A9744B18D1F8063C83B0B1A /* SJEdgeControlLayerSettings.h in Headers */ = {isa = PBXBuildFile; fileRef = 63FD65602F0B474B5CE6444E17260E70 /* SJEdgeControlLayerSettings.h */; settings = {ATTRIBUTES = (Project, ); }; };
+		A8F1F0AF843AEA0B0B921167B2C46E8F /* SJButtonProgressSlider.m in Sources */ = {isa = PBXBuildFile; fileRef = 3740BEE4936AB6A596EEDDD777A3FE0B /* SJButtonProgressSlider.m */; };
+		AA7094E8DF75086F718B55CE31574574 /* SJFilmEditingLoader.m in Sources */ = {isa = PBXBuildFile; fileRef = 4C6AA1520A21B0436C9FA53A1212C4A7 /* SJFilmEditingLoader.m */; };
+		AE2D8E23C512E02B07D463BFDA4CBCD7 /* SJVideoPlayerMoreSettingSecondary.h in Headers */ = {isa = PBXBuildFile; fileRef = 8824F29F35F8C1ABB1CA12304C19E71C /* SJVideoPlayerMoreSettingSecondary.h */; settings = {ATTRIBUTES = (Project, ); }; };
+		AF84846B61ED46DDC011DD61EE700A7A /* SJVideoPlayerMoreSettingsFooterView.h in Headers */ = {isa = PBXBuildFile; fileRef = F5309130BDA91BEA3E2B7356F2E062DB /* SJVideoPlayerMoreSettingsFooterView.h */; settings = {ATTRIBUTES = (Project, ); }; };
+		B07870EBBD8E0C5C45F162E6B4F5FE3C /* SJFloatSmallViewControlLayerResourceLoader.m in Sources */ = {isa = PBXBuildFile; fileRef = ED58822D5ACA35CD0C32660274543E86 /* SJFloatSmallViewControlLayerResourceLoader.m */; };
+		B0D2B80BD208880207445344F342E673 /* SJFilmEditingBackButton.h in Headers */ = {isa = PBXBuildFile; fileRef = 0C1165319E1BC6BC57DD4483AAA12F2B /* SJFilmEditingBackButton.h */; settings = {ATTRIBUTES = (Project, ); }; };
+		B12D921D83DE14A4C01816337A3E2A39 /* SJNetworkLoadingView.h in Headers */ = {isa = PBXBuildFile; fileRef = 3099B3082C52CF2C82811E9BF1F4F954 /* SJNetworkLoadingView.h */; settings = {ATTRIBUTES = (Project, ); }; };
+		B14D2FE17BBEBFA325D995A827B91D91 /* SJEdgeControlButtonItem.m in Sources */ = {isa = PBXBuildFile; fileRef = EA50731B1395AE22837498712A24215C /* SJEdgeControlButtonItem.m */; };
+		B522BFF1078F33C88BB18BF86704C3B5 /* SJFilmEditingInGIFRecordingsControlLayer.h in Headers */ = {isa = PBXBuildFile; fileRef = 42D9141DBAA033DB5E26D2A0A9E8ABD4 /* SJFilmEditingInGIFRecordingsControlLayer.h */; settings = {ATTRIBUTES = (Project, ); }; };
+		B630C5ABEA8FE96A1562393CC4B18211 /* SJFilmEditingVideoCountDownView.h in Headers */ = {isa = PBXBuildFile; fileRef = A5C3EFA721F1FD13A2925BA029205F2B /* SJFilmEditingVideoCountDownView.h */; settings = {ATTRIBUTES = (Project, ); }; };
+		B6A29136F95D3F0B1D3E7165F7F6DF13 /* SJVideoPlayerURLAsset+SJControlAdd.h in Headers */ = {isa = PBXBuildFile; fileRef = DBCF1FFFBB68EB18F1E4944960E2532A /* SJVideoPlayerURLAsset+SJControlAdd.h */; settings = {ATTRIBUTES = (Project, ); }; };
+		BA7F68AC7033E868813F56513A0D6DC7 /* SJLoadFailedControlLayer.h in Headers */ = {isa = PBXBuildFile; fileRef = 7056283734DECA069D581965E02371EF /* SJLoadFailedControlLayer.h */; settings = {ATTRIBUTES = (Project, ); }; };
+		BB46915363FC86038D3C43110CE163D3 /* SJFilmEditingSettings.m in Sources */ = {isa = PBXBuildFile; fileRef = 80C6219E20317C5BE7F4EBFA0F827B29 /* SJFilmEditingSettings.m */; };
+		C03A3B2B24DB95D5058DBDE329BF2800 /* SJEdgeControlLayerSettings.m in Sources */ = {isa = PBXBuildFile; fileRef = 7D8A45A2681A79A4538A4D5E187D6B38 /* SJEdgeControlLayerSettings.m */; };
+		C281C370E5762BC7BC55F4628281E8D8 /* SJFilmEditingInVideoRecordingsControlLayer.m in Sources */ = {isa = PBXBuildFile; fileRef = 6ED1B6DDD690ED9A8CD8AFAC0353FB7E /* SJFilmEditingInVideoRecordingsControlLayer.m */; };
+		C418B206B3F4A45D634B31700490FD33 /* SJVideoPlayerSettings.h in Headers */ = {isa = PBXBuildFile; fileRef = 9C280206E036F47DF49F7F9FD1A08743 /* SJVideoPlayerSettings.h */; settings = {ATTRIBUTES = (Project, ); }; };
+		C5CE78DF335B80D4EAD77ED5F698F6FF /* SJControlLayerDefines.h in Headers */ = {isa = PBXBuildFile; fileRef = 266A64EFE37099D58DB1EFF07BF21188 /* SJControlLayerDefines.h */; settings = {ATTRIBUTES = (Project, ); }; };
+		C5D9EDFEF621325B97FAD18CBBB6004E /* SJVideoPlayerMoreSettingsSlidersView.h in Headers */ = {isa = PBXBuildFile; fileRef = 6F6CB1C47D3BEBDB76C4B66716A740D9 /* SJVideoPlayerMoreSettingsSlidersView.h */; settings = {ATTRIBUTES = (Project, ); }; };
+		C641178F15BDF53F5DF9ED76974AC099 /* SJFilmEditingVideoCountDownView.m in Sources */ = {isa = PBXBuildFile; fileRef = 7599394889AEE59EE70ABA4D2DF6DC60 /* SJFilmEditingVideoCountDownView.m */; };
+		D49736E0E993D0C2327D9CAE14FD80DF /* SJFilmEditingGIFCountDownView.h in Headers */ = {isa = PBXBuildFile; fileRef = 16076D1B21A8EE512AF2F27DA314295C /* SJFilmEditingGIFCountDownView.h */; settings = {ATTRIBUTES = (Project, ); }; };
+		D4D7A518C12108C1D532DE657AEA1485 /* SJFilmEditingResultShareItemsContainerView.m in Sources */ = {isa = PBXBuildFile; fileRef = E2A7EBA8F70C30A73CCC50A33C1248F0 /* SJFilmEditingResultShareItemsContainerView.m */; };
+		D70611FE82F48609BB569F4299D21B85 /* SJEdgeControlLayerLoader.m in Sources */ = {isa = PBXBuildFile; fileRef = 05B73A060362E47C9D1C86D01154EF04 /* SJEdgeControlLayerLoader.m */; };
+		D7379CB21391EF3672BA160E96286704 /* UIView+SJVideoPlayerSetting.m in Sources */ = {isa = PBXBuildFile; fileRef = 1C38C67D91E87DA89379A79F5FFD5DC0 /* UIView+SJVideoPlayerSetting.m */; };
+		D89343FBECA43691930190DC18BBF5A9 /* SJFilmEditingBackButton.m in Sources */ = {isa = PBXBuildFile; fileRef = 495C5D9B5205B89B03D8B99545BFBE2B /* SJFilmEditingBackButton.m */; };
+		DB74914759C92ECB195D95F214F0B6C5 /* SJFilmEditingButtonContainerView.h in Headers */ = {isa = PBXBuildFile; fileRef = 153A16ABF447E2CF8DCB0854D93B659A /* SJFilmEditingButtonContainerView.h */; settings = {ATTRIBUTES = (Project, ); }; };
+		DB913AA4A5CF2EA7858A8464C231BAB6 /* SJFilmEditingCommonViewLayer.h in Headers */ = {isa = PBXBuildFile; fileRef = 69BE4399122CE56AFE7AF43A6682EAF4 /* SJFilmEditingCommonViewLayer.h */; settings = {ATTRIBUTES = (Project, ); }; };
+		DC232C5065BAADFA72B7E753CB16F9F4 /* SJMoreSettingControlLayer.m in Sources */ = {isa = PBXBuildFile; fileRef = 6A561F11AFE36A647B602DD7EC2111FB /* SJMoreSettingControlLayer.m */; };
+		DC60E45131E8DD6E750344B11569A1DB /* SJVideoPlayerMoreSettingsSecondaryHeaderView.m in Sources */ = {isa = PBXBuildFile; fileRef = DB1DA01A637BB0074DA3ABA312D4681B /* SJVideoPlayerMoreSettingsSecondaryHeaderView.m */; };
+		DDDE9BB768FA5D8C0B03364DB1616A79 /* SJFilmEditingStatus.h in Headers */ = {isa = PBXBuildFile; fileRef = 191AC925668B59CE19A928ABC121CEEC /* SJFilmEditingStatus.h */; settings = {ATTRIBUTES = (Project, ); }; };
+		DDE3948F37A5D766FE0546DEFAC94FDC /* SJFilmEditingControlLayer.m in Sources */ = {isa = PBXBuildFile; fileRef = 0455F82E946D66BCE1C61CA67D687787 /* SJFilmEditingControlLayer.m */; };
+		DF8BC20C4DFCCD89EF8F5F95E19C4B6A /* SJVideoPlayerFilmEditingParameters.h in Headers */ = {isa = PBXBuildFile; fileRef = 17D258B387D5D9C182A38206D5245C1D /* SJVideoPlayerFilmEditingParameters.h */; settings = {ATTRIBUTES = (Project, ); }; };
+		E04903CDFD6B1A2CA6AA3468FA0A9A4B /* SJVideoPlayerFilmEditingGeneratedResult.m in Sources */ = {isa = PBXBuildFile; fileRef = 89E00A2563E288AF5F1054F88740332D /* SJVideoPlayerFilmEditingGeneratedResult.m */; };
+		E4B7D90F3A92C711B624D49A1B7B493F /* SJNotReachableControlLayer.m in Sources */ = {isa = PBXBuildFile; fileRef = 19B3B4A3B702A87F9AE33123133DF90D /* SJNotReachableControlLayer.m */; };
+		E58966026F5BDEBEC06AFBE0D22E6511 /* SJNetworkLoadingView.m in Sources */ = {isa = PBXBuildFile; fileRef = 1A4AF8F0FAD0FDCC6A5477C7970F15DC /* SJNetworkLoadingView.m */; };
+		EA7BDDCC93B7CB560C5E6EF840FDC471 /* SJLoadFailedControlLayer.m in Sources */ = {isa = PBXBuildFile; fileRef = DCF053EB0DFED02EDFC782F659AD5722 /* SJLoadFailedControlLayer.m */; };
+		ECFA0BC8F343E5EAADEFFCB32EDE2D6C /* SJControlLayerCarrier.h in Headers */ = {isa = PBXBuildFile; fileRef = 26D8E265A0525D304238BE3267943B24 /* SJControlLayerCarrier.h */; settings = {ATTRIBUTES = (Project, ); }; };
+		F010B5AB4C850154D9C89FD48D92AC07 /* SJEdgeControlLayerAdapters.h in Headers */ = {isa = PBXBuildFile; fileRef = A2E55208755DCAD81AECBDEBB97AFB59 /* SJEdgeControlLayerAdapters.h */; settings = {ATTRIBUTES = (Project, ); }; };
+		F09DD26565D8CE93E0B553CACF291C17 /* SJFilmEditingSaveResultToAlbumHandler.m in Sources */ = {isa = PBXBuildFile; fileRef = 4FD502F847E2253E8AA92799B5816C95 /* SJFilmEditingSaveResultToAlbumHandler.m */; };
+		F1DB5FF95A355960A12DB99E016C9E7D /* SJControlLayerSwitcher.m in Sources */ = {isa = PBXBuildFile; fileRef = 55A734E590CAA592FF8A60A346DDEF65 /* SJControlLayerSwitcher.m */; };
+		F21C84CE743B66AF152A635631C82251 /* SJVideoPlayerAnimationHeader.m in Sources */ = {isa = PBXBuildFile; fileRef = 317825EDCB1CDD5D05630DEBB56545C0 /* SJVideoPlayerAnimationHeader.m */; };
+		F4D352E3BF103AD7992325CC54C8BE5F /* SJVideoPlayerMoreSettingsView.h in Headers */ = {isa = PBXBuildFile; fileRef = 2ABB2484B1A03637A4C36EFA1AAB6C01 /* SJVideoPlayerMoreSettingsView.h */; settings = {ATTRIBUTES = (Project, ); }; };
+		F79C35FF605AF69DE59D913D7DE6525F /* SJEdgeControlLayerLoader.h in Headers */ = {isa = PBXBuildFile; fileRef = 4285F1385C04308BB4C1B6480B892EF6 /* SJEdgeControlLayerLoader.h */; settings = {ATTRIBUTES = (Project, ); }; };
+		FBA970752CF5CADCCA09B2365D70CF31 /* SJFloatSmallViewControlLayer.m in Sources */ = {isa = PBXBuildFile; fileRef = 7FD5E1CC0DCC9E27475199BE0813F8EA /* SJFloatSmallViewControlLayer.m */; };
+		FCA7C4E3704493896A5FC6BCB7963F1F /* SJVideoPlayerFilmEditingConfig.h in Headers */ = {isa = PBXBuildFile; fileRef = 13CD299918165CC7AE81A688938A7645 /* SJVideoPlayerFilmEditingConfig.h */; settings = {ATTRIBUTES = (Project, ); }; };
+		FD41758530508E0B7268E059C9AB44C8 /* SJEdgeControlButtonItemCell.h in Headers */ = {isa = PBXBuildFile; fileRef = 6A4CFD3C583AE86569292B05EF1996B5 /* SJEdgeControlButtonItemCell.h */; settings = {ATTRIBUTES = (Project, ); }; };
+		FF802559B8A15E191577165BBC54EFE8 /* SJVideoPlayerFilmEditingParameters.m in Sources */ = {isa = PBXBuildFile; fileRef = 929D8041D9C1AA46C677EE4964AA08EB /* SJVideoPlayerFilmEditingParameters.m */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
-		ABC3EFAEECE5FE9B59CF3DBE355BCC21 /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = F27C5AEA4713671FE9BB3CAF57A3380E /* SJUIKit.xcodeproj */;
-			proxyType = 1;
-			remoteGlobalIDString = 9E2227563BC9245899E47F2E79D382F8;
-			remoteInfo = SJUIKit;
-		};
-		C09019E7C5FC5B74776F2BB14FCAB258 /* PBXContainerItemProxy */ = {
+		0E1C78406E3C176A7424BCAFE429F130 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = 013B321388D4A631053D58E7475D164E /* Masonry.xcodeproj */;
 			proxyType = 1;
 			remoteGlobalIDString = C0965FF775F51458AD4A8E41ABAB7D1E;
 			remoteInfo = Masonry;
 		};
-		CDAB4EF74569D8BAD782B022CD430F49 /* PBXContainerItemProxy */ = {
+		2632739B4945D6A25CB1C6222336E63C /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = 83DDF3FA615A937B59A2EF2583B8B002 /* SJBaseVideoPlayer.xcodeproj */;
 			proxyType = 1;
 			remoteGlobalIDString = 4443B442617D117E485DCA3453FD856E;
 			remoteInfo = SJBaseVideoPlayer;
+		};
+		8A842928A0EC6981248EAF1C2E80C570 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = F27C5AEA4713671FE9BB3CAF57A3380E /* SJUIKit.xcodeproj */;
+			proxyType = 1;
+			remoteGlobalIDString = 9E2227563BC9245899E47F2E79D382F8;
+			remoteInfo = SJUIKit;
 		};
 /* End PBXContainerItemProxy section */
 
@@ -285,7 +285,7 @@
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
-		40F6503C75157CA3F1456C3F56D67E9F /* Frameworks */ = {
+		E070D0119743569C9A2DBB281AE1A38A /* Frameworks */ = {
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
@@ -706,70 +706,70 @@
 /* End PBXGroup section */
 
 /* Begin PBXHeadersBuildPhase section */
-		FE4D624C01B2BC9852B2D6DEAE3EED7A /* Headers */ = {
+		B68EA940F103CDA8FD7BC0B34F4E35C2 /* Headers */ = {
 			isa = PBXHeadersBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				3CB088ED24BC684FD204CF790B2EAAE5 /* SJButtonProgressSlider.h in Headers */,
-				4AC35F5D54ADB0E28BB5A04E534700F0 /* SJCommonProgressSlider.h in Headers */,
-				CB860069CDE07B5950FBA74B9D2FA718 /* SJControlLayerCarrier.h in Headers */,
-				AA4C315ED4381ADF97F0C996100F8006 /* SJControlLayerDefines.h in Headers */,
-				927A708E4E8CC757DC358425E9988A1F /* SJControlLayerSwitcher.h in Headers */,
-				CD54B9BA35DBDBA7BFA94DCA538B12EB /* SJEdgeControlButtonItem.h in Headers */,
-				4A163D87457C28F3212B39A9127534FA /* SJEdgeControlButtonItemCell.h in Headers */,
-				6AD5CAA59C21383DE847833FB93A1328 /* SJEdgeControlLayer.h in Headers */,
-				E3411D18A62A47AAD78E5F33D3159D05 /* SJEdgeControlLayerAdapters.h in Headers */,
-				7BF8687989FAD0501B5E92AB709FC9E4 /* SJEdgeControlLayerItemAdapter.h in Headers */,
-				9D544F4D828705F950015C0FF6C51BCB /* SJEdgeControlLayerLoader.h in Headers */,
-				220561F301DD783700C8701A01E48272 /* SJEdgeControlLayerSettings.h in Headers */,
-				839C558382A933E0446BBE974F61C5A1 /* SJFilmEditingBackButton.h in Headers */,
-				C219E7CFC945626E002202DD1DC6CB58 /* SJFilmEditingButtonContainerView.h in Headers */,
-				D91039A90097CE7688014C3CB3014FD3 /* SJFilmEditingCommonViewLayer.h in Headers */,
-				5F4CDBA52815871EDF5D3508783216FE /* SJFilmEditingControlLayer.h in Headers */,
-				F40B46FA99AA00AA717020322B7A0E88 /* SJFilmEditingGenerateResultControlLayer.h in Headers */,
-				2AE6DAC2072C3D424A4945E54F7AAE2C /* SJFilmEditingGIFCountDownView.h in Headers */,
-				76E85D014936EC5DFE44951669E7E819 /* SJFilmEditingInGIFRecordingsControlLayer.h in Headers */,
-				9D3A002CA36D57EB40D86D20F17027FE /* SJFilmEditingInVideoRecordingsControlLayer.h in Headers */,
-				148840BF179EA040FF0C465E36C189D0 /* SJFilmEditingLoader.h in Headers */,
-				F2656AAF9DCBF80F86057A2E18B72969 /* SJFilmEditingResultShareItem.h in Headers */,
-				26F5C5846E9BB0F85BE26AC9E3152C9F /* SJFilmEditingResultShareItemsContainerView.h in Headers */,
-				47C2168A81A7904131033B8080016AF8 /* SJFilmEditingSaveResultToAlbumHandler.h in Headers */,
-				8D7503ECC67E7F9ECD6C482102E496BA /* SJFilmEditingSettings.h in Headers */,
-				74BB4F61A923E2954407164CB19F7681 /* SJFilmEditingStatus.h in Headers */,
-				05FA2341296E535CC2CF4804A9EFD4EC /* SJFilmEditingVideoCountDownView.h in Headers */,
-				1B96DB3A89C8AE93921D5288169692F9 /* SJFloatSmallViewControlLayer.h in Headers */,
-				9AB7F4FD26A503E773C8577A2301B132 /* SJFloatSmallViewControlLayerResourceLoader.h in Headers */,
-				50B7491818FC6D295ECEA1851BAF6921 /* SJLightweightTopItem.h in Headers */,
-				AEE32D1D593D33DCFD7601BCF1CC7FE7 /* SJLoadFailedControlLayer.h in Headers */,
-				B7D317652F31DE280FCC35122C05BA09 /* SJLoadingView.h in Headers */,
-				C4C19426278A2C013E99F99353B755A5 /* SJMoreSettingControlLayer.h in Headers */,
-				E1D29F79F4AA18AAB1A292844DCD82DC /* SJMoreSettingsSlidersViewModel.h in Headers */,
-				51FFC86BB432A20064B395775BF4FA3D /* SJNetworkLoadingView.h in Headers */,
-				FDA6F033A171DF42C7D06F06DF38F27C /* SJNotReachableControlLayer.h in Headers */,
-				2F0E7AF79968E49728AE0D7EF2464930 /* SJProgressSlider.h in Headers */,
-				561B466A3F030406D095E3BECEDB0A59 /* SJVideoPlayer.h in Headers */,
-				7A0F5913FB21128FDC3B5BD2F85D9F4C /* SJVideoPlayerAnimationHeader.h in Headers */,
-				88BB01A99AD14D5DBB2F20C12E50A58C /* SJVideoPlayerControlMaskView.h in Headers */,
-				EF6BA092A55A85986981D6C56C75C0A1 /* SJVideoPlayerDraggingProgressView.h in Headers */,
-				C71AD5D6C0525F7E59CE0F8A09DE1D58 /* SJVideoPlayerFilmEditingCommonHeader.h in Headers */,
-				4DA1ABE944166BC51DFF7B4C2D73E270 /* SJVideoPlayerFilmEditingConfig.h in Headers */,
-				B6F9B7B2C7BFAA65E593D448EFFD68E8 /* SJVideoPlayerFilmEditingGeneratedResult.h in Headers */,
-				89EAEE875A50906ABAB929C11725EF44 /* SJVideoPlayerFilmEditingParameters.h in Headers */,
-				86C3777F435355AD817729CFED7F2599 /* SJVideoPlayerMoreSetting+Exe.h in Headers */,
-				F30806AEE1F9355B99B1136B95ECDA33 /* SJVideoPlayerMoreSetting.h in Headers */,
-				8DA971758341A33A0189069A0F1B7FA6 /* SJVideoPlayerMoreSettingsColCell.h in Headers */,
-				A216F24BAFF65458A8F68249301E04D5 /* SJVideoPlayerMoreSettingSecondary.h in Headers */,
-				35555A228FF170AF3E901607CA8D4C17 /* SJVideoPlayerMoreSettingSecondaryColCell.h in Headers */,
-				59258D0DBD90719106929B91035A1936 /* SJVideoPlayerMoreSettingSecondaryView.h in Headers */,
-				8A2E91F610407C7E4F51495E09F2385B /* SJVideoPlayerMoreSettingsFooterView.h in Headers */,
-				A797ECF70A2DF083A9230F2016BEE8D2 /* SJVideoPlayerMoreSettingsSecondaryHeaderView.h in Headers */,
-				D0DE5E485829E2C3F50758024CEF8E05 /* SJVideoPlayerMoreSettingsSlidersView.h in Headers */,
-				0A653D8F14782119D90FC4EECCBADCAA /* SJVideoPlayerMoreSettingsView.h in Headers */,
-				FACAB070B1E360018CC6C7DDCC30CF41 /* SJVideoPlayerSettings.h in Headers */,
-				40A3C6475E3202B4BBA2293F2162F6E5 /* SJVideoPlayerURLAsset+SJControlAdd.h in Headers */,
-				433B9C2DEE78A1C241E82FFF8974467D /* UIView+SJAnimationAdded.h in Headers */,
-				65A59DFB4D6ABC3863ADCD5388AB8F14 /* UIView+SJControlAdd.h in Headers */,
-				E498521309B6FB676BBBE109A3F8018E /* UIView+SJVideoPlayerSetting.h in Headers */,
+				51E8F3FC0E8B68993943C4CF242081F7 /* SJButtonProgressSlider.h in Headers */,
+				0A8529748192476DC7A4B6AF2FC37630 /* SJCommonProgressSlider.h in Headers */,
+				ECFA0BC8F343E5EAADEFFCB32EDE2D6C /* SJControlLayerCarrier.h in Headers */,
+				C5CE78DF335B80D4EAD77ED5F698F6FF /* SJControlLayerDefines.h in Headers */,
+				6AF3A74B3884C991DF5009CD1B30C5AA /* SJControlLayerSwitcher.h in Headers */,
+				830DB7D7505C3DD6028A76A3B3FE3DBB /* SJEdgeControlButtonItem.h in Headers */,
+				FD41758530508E0B7268E059C9AB44C8 /* SJEdgeControlButtonItemCell.h in Headers */,
+				0362139F1C247F4B7DCEBD0540558DEE /* SJEdgeControlLayer.h in Headers */,
+				F010B5AB4C850154D9C89FD48D92AC07 /* SJEdgeControlLayerAdapters.h in Headers */,
+				346066FD9F59CB909A3D982D8BD38F72 /* SJEdgeControlLayerItemAdapter.h in Headers */,
+				F79C35FF605AF69DE59D913D7DE6525F /* SJEdgeControlLayerLoader.h in Headers */,
+				A711C3052A9744B18D1F8063C83B0B1A /* SJEdgeControlLayerSettings.h in Headers */,
+				B0D2B80BD208880207445344F342E673 /* SJFilmEditingBackButton.h in Headers */,
+				DB74914759C92ECB195D95F214F0B6C5 /* SJFilmEditingButtonContainerView.h in Headers */,
+				DB913AA4A5CF2EA7858A8464C231BAB6 /* SJFilmEditingCommonViewLayer.h in Headers */,
+				4345B450E33AD5C9DBB7F1088E607C3E /* SJFilmEditingControlLayer.h in Headers */,
+				464AACC22BF9F986E7A5D1AF57325626 /* SJFilmEditingGenerateResultControlLayer.h in Headers */,
+				D49736E0E993D0C2327D9CAE14FD80DF /* SJFilmEditingGIFCountDownView.h in Headers */,
+				B522BFF1078F33C88BB18BF86704C3B5 /* SJFilmEditingInGIFRecordingsControlLayer.h in Headers */,
+				1EE3B4E095F7A56739899EB08D9BF3D2 /* SJFilmEditingInVideoRecordingsControlLayer.h in Headers */,
+				44DC9DB402435AC1B0E8EF9E0B1A3384 /* SJFilmEditingLoader.h in Headers */,
+				3E737431EC099C40EC70CA1E75588807 /* SJFilmEditingResultShareItem.h in Headers */,
+				78FC8DBFF65B51BA6AF5708F4C05C27B /* SJFilmEditingResultShareItemsContainerView.h in Headers */,
+				4F2D322E5F45613ACF3450EA9D44B9E8 /* SJFilmEditingSaveResultToAlbumHandler.h in Headers */,
+				7CBAA58BF43F8B0C3DFD65AC6AD7CD82 /* SJFilmEditingSettings.h in Headers */,
+				DDDE9BB768FA5D8C0B03364DB1616A79 /* SJFilmEditingStatus.h in Headers */,
+				B630C5ABEA8FE96A1562393CC4B18211 /* SJFilmEditingVideoCountDownView.h in Headers */,
+				1440986EE611FAB17D48D34C27390DB1 /* SJFloatSmallViewControlLayer.h in Headers */,
+				3CC9823370A68C365184ED10A0DFB6C0 /* SJFloatSmallViewControlLayerResourceLoader.h in Headers */,
+				A350844D02F1D9BF506B83CC066DE46B /* SJLightweightTopItem.h in Headers */,
+				BA7F68AC7033E868813F56513A0D6DC7 /* SJLoadFailedControlLayer.h in Headers */,
+				43BB06B96EFC42AD23B310F3FF67F9B0 /* SJLoadingView.h in Headers */,
+				99CE685F529A42FC81218F7A6CF28F89 /* SJMoreSettingControlLayer.h in Headers */,
+				44A980FE8457B22ED1998189246376B8 /* SJMoreSettingsSlidersViewModel.h in Headers */,
+				B12D921D83DE14A4C01816337A3E2A39 /* SJNetworkLoadingView.h in Headers */,
+				5378DABAC1CA9A628457E29603FA8EF8 /* SJNotReachableControlLayer.h in Headers */,
+				3E3D6A0EA7F21C15C7599F96FEE38427 /* SJProgressSlider.h in Headers */,
+				4630923C558389C28B2E78390EE382BE /* SJVideoPlayer.h in Headers */,
+				1E238F821DC72BBD570F66CD32E65412 /* SJVideoPlayerAnimationHeader.h in Headers */,
+				90D20C8C1CEF9CABBF7C925037EDD002 /* SJVideoPlayerControlMaskView.h in Headers */,
+				901C2F86296C01E95051CE09C1C3B268 /* SJVideoPlayerDraggingProgressView.h in Headers */,
+				8687CAE91B269854A1267344C73F28E5 /* SJVideoPlayerFilmEditingCommonHeader.h in Headers */,
+				FCA7C4E3704493896A5FC6BCB7963F1F /* SJVideoPlayerFilmEditingConfig.h in Headers */,
+				5FEB53545176403833172148144CDA0C /* SJVideoPlayerFilmEditingGeneratedResult.h in Headers */,
+				DF8BC20C4DFCCD89EF8F5F95E19C4B6A /* SJVideoPlayerFilmEditingParameters.h in Headers */,
+				69BCC3DC9AE6A2B9296D8600A2B6E7F5 /* SJVideoPlayerMoreSetting+Exe.h in Headers */,
+				3FB75A2D2AC183CDBF452ABBA114595E /* SJVideoPlayerMoreSetting.h in Headers */,
+				31C43AA02AC8D676CB0DE9977965351D /* SJVideoPlayerMoreSettingsColCell.h in Headers */,
+				AE2D8E23C512E02B07D463BFDA4CBCD7 /* SJVideoPlayerMoreSettingSecondary.h in Headers */,
+				6A29F32F8501519294CDAC3DF21FE479 /* SJVideoPlayerMoreSettingSecondaryColCell.h in Headers */,
+				03B687289B2725529AC6EBE0664B02FC /* SJVideoPlayerMoreSettingSecondaryView.h in Headers */,
+				AF84846B61ED46DDC011DD61EE700A7A /* SJVideoPlayerMoreSettingsFooterView.h in Headers */,
+				483B1D408DDD8CC54C0CF46BDFB1662C /* SJVideoPlayerMoreSettingsSecondaryHeaderView.h in Headers */,
+				C5D9EDFEF621325B97FAD18CBBB6004E /* SJVideoPlayerMoreSettingsSlidersView.h in Headers */,
+				F4D352E3BF103AD7992325CC54C8BE5F /* SJVideoPlayerMoreSettingsView.h in Headers */,
+				C418B206B3F4A45D634B31700490FD33 /* SJVideoPlayerSettings.h in Headers */,
+				B6A29136F95D3F0B1D3E7165F7F6DF13 /* SJVideoPlayerURLAsset+SJControlAdd.h in Headers */,
+				7F12FF57E6FB79CB7083B1B8DFD0B124 /* UIView+SJAnimationAdded.h in Headers */,
+				252BD8F1C359EF894A44AC5032C0CAEF /* UIView+SJControlAdd.h in Headers */,
+				A5E8D03CC6A8C1E159FB21017556519C /* UIView+SJVideoPlayerSetting.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -778,18 +778,18 @@
 /* Begin PBXNativeTarget section */
 		8CC1DB947C011C4B3218A06EEB7FBFCD /* SJVideoPlayer */ = {
 			isa = PBXNativeTarget;
-			buildConfigurationList = 4C87FE93634603C3E0A60DB1CE290A77 /* Build configuration list for PBXNativeTarget "SJVideoPlayer" */;
+			buildConfigurationList = 9D48EE90AF7D9BF31B929C06E940A8FC /* Build configuration list for PBXNativeTarget "SJVideoPlayer" */;
 			buildPhases = (
-				FE4D624C01B2BC9852B2D6DEAE3EED7A /* Headers */,
-				B53858010EA47236EEBE18384C2D7380 /* Sources */,
-				40F6503C75157CA3F1456C3F56D67E9F /* Frameworks */,
+				B68EA940F103CDA8FD7BC0B34F4E35C2 /* Headers */,
+				258FB57E5534996664C64625D528AAD8 /* Sources */,
+				E070D0119743569C9A2DBB281AE1A38A /* Frameworks */,
 			);
 			buildRules = (
 			);
 			dependencies = (
-				C4239B22670A3FDE765F794F2BB07E8C /* PBXTargetDependency */,
-				E40FAC5BEB88A96716A5E3FDE4157265 /* PBXTargetDependency */,
-				2697E77AD3E8DD3E6DA6197B8195CDB9 /* PBXTargetDependency */,
+				EEC9E501A735B2692E12A808A22045A6 /* PBXTargetDependency */,
+				2257A169C383AC5815CB8875283210C7 /* PBXTargetDependency */,
+				940226B1335D409F5D623FCC8786F96C /* PBXTargetDependency */,
 			);
 			name = SJVideoPlayer;
 			productName = SJVideoPlayer;
@@ -802,8 +802,8 @@
 		5E2D6B98012A56019829BC0C43D483C6 /* Project object */ = {
 			isa = PBXProject;
 			attributes = {
-				LastSwiftUpdateCheck = 1020;
-				LastUpgradeCheck = 1020;
+				LastSwiftUpdateCheck = 1100;
+				LastUpgradeCheck = 1100;
 			};
 			buildConfigurationList = B4A3BBDB94D10741FA37B1C3E8B265AA /* Build configuration list for PBXProject "SJVideoPlayer" */;
 			compatibilityVersion = "Xcode 3.2";
@@ -834,115 +834,92 @@
 /* End PBXProject section */
 
 /* Begin PBXSourcesBuildPhase section */
-		B53858010EA47236EEBE18384C2D7380 /* Sources */ = {
+		258FB57E5534996664C64625D528AAD8 /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				C19DD70E51EA82872047B540E59B1257 /* SJButtonProgressSlider.m in Sources */,
-				9ADF14A9961B7AF88BC9FDD890D3F6E8 /* SJCommonProgressSlider.m in Sources */,
-				2B85E9A22CC60A39F5A13BB49D05E06C /* SJControlLayerCarrier.m in Sources */,
-				CD9FC263AE9AAD429D5544079D89E745 /* SJControlLayerSwitcher.m in Sources */,
-				A8643E80D28B9AFEACD9AC8E38303136 /* SJEdgeControlButtonItem.m in Sources */,
-				44842A92207E1C536B257CBB758D849E /* SJEdgeControlButtonItemCell.m in Sources */,
-				75926D615C31152F7295191A98705C9D /* SJEdgeControlLayer.m in Sources */,
-				78511DE7D6E0FEC4F256325DB0E4CB65 /* SJEdgeControlLayerAdapters.m in Sources */,
-				D9704684D42BB4E31CE838221C3C5C9B /* SJEdgeControlLayerItemAdapter.m in Sources */,
-				44D8E26401C69418D96A41433EBDD376 /* SJEdgeControlLayerLoader.m in Sources */,
-				B481CDABD756E1DDC7930F85C5F3D000 /* SJEdgeControlLayerSettings.m in Sources */,
-				A1DF6E798372C41095671B1ECF38481D /* SJFilmEditingBackButton.m in Sources */,
-				598EA2A6630A3008830450CBD21B5193 /* SJFilmEditingButtonContainerView.m in Sources */,
-				7DFA4B6840EFB96D7F7A85AAE3E6155F /* SJFilmEditingCommonViewLayer.m in Sources */,
-				818583E0DB481184F7586ACB63C47740 /* SJFilmEditingControlLayer.m in Sources */,
-				E107C7EDFC869E7C17DCD81EDDBB84CE /* SJFilmEditingGenerateResultControlLayer.m in Sources */,
-				045F4B2CCBBC7EA220A3EF3E957076B8 /* SJFilmEditingGIFCountDownView.m in Sources */,
-				7628391E4ADF7E9DA9D1F9BB44C584D0 /* SJFilmEditingInGIFRecordingsControlLayer.m in Sources */,
-				DAC0E948A63B462A8E1D4906C0F46F8B /* SJFilmEditingInVideoRecordingsControlLayer.m in Sources */,
-				54A7B4101BCF96B05E0899FD8692CA15 /* SJFilmEditingLoader.m in Sources */,
-				B38641D14E73033D2B75D74FB0207FFB /* SJFilmEditingResultShareItem.m in Sources */,
-				656F94ED28058EEC2170730780993BB3 /* SJFilmEditingResultShareItemsContainerView.m in Sources */,
-				D2E90BA757F72CE79B3E9FCA44F82BCE /* SJFilmEditingSaveResultToAlbumHandler.m in Sources */,
-				93EA3882C740E140AC8BCFC578B1CB79 /* SJFilmEditingSettings.m in Sources */,
-				BA17FCBD965601D761C5FEC2158D51C7 /* SJFilmEditingVideoCountDownView.m in Sources */,
-				6FC283B3C545F08B0B2B3F2F3F8AF3CA /* SJFloatSmallViewControlLayer.m in Sources */,
-				2AC88EE6A10A868AEF33F9AC88A70693 /* SJFloatSmallViewControlLayerResourceLoader.m in Sources */,
-				5459AD5E5ACBD7EE54B7B6D20F8A0A90 /* SJLightweightTopItem.m in Sources */,
-				36C1C70F2100DDC05392004E4F55ACC0 /* SJLoadFailedControlLayer.m in Sources */,
-				F1C2EE613A69FAA62A89B1E76053249D /* SJLoadingView.m in Sources */,
-				3D0A91D8E3E0F0E1DA07D4947CE9A954 /* SJMoreSettingControlLayer.m in Sources */,
-				0D196A2225190744EBD47CA987A99A0C /* SJMoreSettingsSlidersViewModel.m in Sources */,
-				22348E823D2E9A11884FD8F8EDEAD1E8 /* SJNetworkLoadingView.m in Sources */,
-				FA44333686A3747072B2D760F04D9CC3 /* SJNotReachableControlLayer.m in Sources */,
-				2C6332761BEF410CEABE6D8E4AA35F7A /* SJProgressSlider.m in Sources */,
-				1585E26C0E3B462A94E286B15EC70078 /* SJVideoPlayer-dummy.m in Sources */,
-				360AA03A6E75C5B4D3E05FC85B16CE85 /* SJVideoPlayer.m in Sources */,
-				2170DDB84F0928252F97B900C22D701E /* SJVideoPlayerAnimationHeader.m in Sources */,
-				7FAE2C1ECB38AC14EF907C9CA397EE17 /* SJVideoPlayerControlMaskView.m in Sources */,
-				2D4E184F689889A7141998B52B60F663 /* SJVideoPlayerDraggingProgressView.m in Sources */,
-				025A14B0936313E08759D91D1D2B8830 /* SJVideoPlayerFilmEditingConfig.m in Sources */,
-				BBDD837E904C0310D37D2DBED4D2E1B1 /* SJVideoPlayerFilmEditingGeneratedResult.m in Sources */,
-				1A0CB0191DAC59F17FA9EE5606F25C01 /* SJVideoPlayerFilmEditingParameters.m in Sources */,
-				770D6938C43254F857C730B5F116AA85 /* SJVideoPlayerMoreSetting+Exe.m in Sources */,
-				F0DBF209EFA89FA274479BB998BAECA6 /* SJVideoPlayerMoreSetting.m in Sources */,
-				79578051E277206D5AE4CEAD8BF46F27 /* SJVideoPlayerMoreSettingsColCell.m in Sources */,
-				1216844871E2BA06818D3EF9C24ACC6B /* SJVideoPlayerMoreSettingSecondary.m in Sources */,
-				EAF3A1DF115931C351681683C9F55A04 /* SJVideoPlayerMoreSettingSecondaryColCell.m in Sources */,
-				CE569408814F95AB7D47076023D4C7AF /* SJVideoPlayerMoreSettingSecondaryView.m in Sources */,
-				D3CE425F414AC33A1E899053BA2451D5 /* SJVideoPlayerMoreSettingsFooterView.m in Sources */,
-				68D522B438596C84017282F564322C52 /* SJVideoPlayerMoreSettingsSecondaryHeaderView.m in Sources */,
-				3A6344DDB7CC7C7877E2AFEC87149DEA /* SJVideoPlayerMoreSettingsSlidersView.m in Sources */,
-				0B092F62BE4F74FFEA003F0F01C28852 /* SJVideoPlayerMoreSettingsView.m in Sources */,
-				0B3EA58955633B34EACA8DE486A6766C /* SJVideoPlayerSettings.m in Sources */,
-				FE003465950A3C193B0BD58019777DBA /* SJVideoPlayerURLAsset+SJControlAdd.m in Sources */,
-				AE4F3F4035FC152602C259EB3C0E0764 /* UIView+SJAnimationAdded.m in Sources */,
-				DA921339BB227724EB5329AC031F6FE0 /* UIView+SJControlAdd.m in Sources */,
-				513A4C44222AF8DE1FFF3A8A891A9DF6 /* UIView+SJVideoPlayerSetting.m in Sources */,
+				A8F1F0AF843AEA0B0B921167B2C46E8F /* SJButtonProgressSlider.m in Sources */,
+				28775A3FE48DB28A0196776464913666 /* SJCommonProgressSlider.m in Sources */,
+				3DD8CD336455A72893F47206EB3F403A /* SJControlLayerCarrier.m in Sources */,
+				F1DB5FF95A355960A12DB99E016C9E7D /* SJControlLayerSwitcher.m in Sources */,
+				B14D2FE17BBEBFA325D995A827B91D91 /* SJEdgeControlButtonItem.m in Sources */,
+				A1A967B6A5B267B7E6156AD1D9FD5A1B /* SJEdgeControlButtonItemCell.m in Sources */,
+				26D5585D26BB65E3285C08CB7CCEE77B /* SJEdgeControlLayer.m in Sources */,
+				2899BF2235C6B6B6649B2CEE381CE7CC /* SJEdgeControlLayerAdapters.m in Sources */,
+				7EFA21F4317A704C703DE5CE509D28BA /* SJEdgeControlLayerItemAdapter.m in Sources */,
+				D70611FE82F48609BB569F4299D21B85 /* SJEdgeControlLayerLoader.m in Sources */,
+				C03A3B2B24DB95D5058DBDE329BF2800 /* SJEdgeControlLayerSettings.m in Sources */,
+				D89343FBECA43691930190DC18BBF5A9 /* SJFilmEditingBackButton.m in Sources */,
+				054B7A7BD239EBB3A40B8B6F41C99516 /* SJFilmEditingButtonContainerView.m in Sources */,
+				30FDF56A38EF34EAE467AD0256690E92 /* SJFilmEditingCommonViewLayer.m in Sources */,
+				DDE3948F37A5D766FE0546DEFAC94FDC /* SJFilmEditingControlLayer.m in Sources */,
+				A2A49F695EFFC8214CD403424A7ECEA4 /* SJFilmEditingGenerateResultControlLayer.m in Sources */,
+				4160A08F88E8E5522E80BD325928627B /* SJFilmEditingGIFCountDownView.m in Sources */,
+				305DAF780B6F748E93640E4BC46CB3FA /* SJFilmEditingInGIFRecordingsControlLayer.m in Sources */,
+				C281C370E5762BC7BC55F4628281E8D8 /* SJFilmEditingInVideoRecordingsControlLayer.m in Sources */,
+				AA7094E8DF75086F718B55CE31574574 /* SJFilmEditingLoader.m in Sources */,
+				009DD0523C0F43C09ECDF0399B5FF909 /* SJFilmEditingResultShareItem.m in Sources */,
+				D4D7A518C12108C1D532DE657AEA1485 /* SJFilmEditingResultShareItemsContainerView.m in Sources */,
+				F09DD26565D8CE93E0B553CACF291C17 /* SJFilmEditingSaveResultToAlbumHandler.m in Sources */,
+				BB46915363FC86038D3C43110CE163D3 /* SJFilmEditingSettings.m in Sources */,
+				C641178F15BDF53F5DF9ED76974AC099 /* SJFilmEditingVideoCountDownView.m in Sources */,
+				FBA970752CF5CADCCA09B2365D70CF31 /* SJFloatSmallViewControlLayer.m in Sources */,
+				B07870EBBD8E0C5C45F162E6B4F5FE3C /* SJFloatSmallViewControlLayerResourceLoader.m in Sources */,
+				7043518C88163F47B791D2B9F53983C9 /* SJLightweightTopItem.m in Sources */,
+				EA7BDDCC93B7CB560C5E6EF840FDC471 /* SJLoadFailedControlLayer.m in Sources */,
+				4EF047C4E227385D86C85848D2A48856 /* SJLoadingView.m in Sources */,
+				DC232C5065BAADFA72B7E753CB16F9F4 /* SJMoreSettingControlLayer.m in Sources */,
+				5E1562BF632C0BF76E360A037734A455 /* SJMoreSettingsSlidersViewModel.m in Sources */,
+				E58966026F5BDEBEC06AFBE0D22E6511 /* SJNetworkLoadingView.m in Sources */,
+				E4B7D90F3A92C711B624D49A1B7B493F /* SJNotReachableControlLayer.m in Sources */,
+				9C3ACFB33AA4D0CE39A46C03A2E35E3F /* SJProgressSlider.m in Sources */,
+				7FE7671D045A330EC2AE6B9830124D72 /* SJVideoPlayer-dummy.m in Sources */,
+				0BDFC70EDB22241872876DA42BC7541E /* SJVideoPlayer.m in Sources */,
+				F21C84CE743B66AF152A635631C82251 /* SJVideoPlayerAnimationHeader.m in Sources */,
+				53343592F72DC83EC067AA6380005D33 /* SJVideoPlayerControlMaskView.m in Sources */,
+				5C37ED032839B8FA43D4B4E35B3CD28F /* SJVideoPlayerDraggingProgressView.m in Sources */,
+				7DD0D22DF16FE9E24F673310175ECF83 /* SJVideoPlayerFilmEditingConfig.m in Sources */,
+				E04903CDFD6B1A2CA6AA3468FA0A9A4B /* SJVideoPlayerFilmEditingGeneratedResult.m in Sources */,
+				FF802559B8A15E191577165BBC54EFE8 /* SJVideoPlayerFilmEditingParameters.m in Sources */,
+				608B459DAD61F27B8AF63E6948A92787 /* SJVideoPlayerMoreSetting+Exe.m in Sources */,
+				4DF075141F40429C66B2FDBA9CD08F9F /* SJVideoPlayerMoreSetting.m in Sources */,
+				55DBEA080C5297DC8D350BD161BDF83D /* SJVideoPlayerMoreSettingsColCell.m in Sources */,
+				2BEF2372906EE462E2B88C24FA719D44 /* SJVideoPlayerMoreSettingSecondary.m in Sources */,
+				5AC0EBA4B7D63CB11A2F0BA147917157 /* SJVideoPlayerMoreSettingSecondaryColCell.m in Sources */,
+				832FF689A9BD7CE32D6694FAEF7CFBF1 /* SJVideoPlayerMoreSettingSecondaryView.m in Sources */,
+				67C6B2E9CCDF691DC4A9DA4C7686952F /* SJVideoPlayerMoreSettingsFooterView.m in Sources */,
+				DC60E45131E8DD6E750344B11569A1DB /* SJVideoPlayerMoreSettingsSecondaryHeaderView.m in Sources */,
+				6B078557867D797B1382D5FE2F07459A /* SJVideoPlayerMoreSettingsSlidersView.m in Sources */,
+				1DBB2A72A9485CF8EA87CD8B52CB4BFA /* SJVideoPlayerMoreSettingsView.m in Sources */,
+				6A417FE3E9857C37E2D5B2D4CDD735D6 /* SJVideoPlayerSettings.m in Sources */,
+				701BC2B3A3EB12DE6091CCDA21C2BCBA /* SJVideoPlayerURLAsset+SJControlAdd.m in Sources */,
+				0BD64B21757EF324E26A8456A215B0EB /* UIView+SJAnimationAdded.m in Sources */,
+				80798CE7CAA293CE06BADF51C4E56369 /* UIView+SJControlAdd.m in Sources */,
+				D7379CB21391EF3672BA160E96286704 /* UIView+SJVideoPlayerSetting.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXSourcesBuildPhase section */
 
 /* Begin PBXTargetDependency section */
-		2697E77AD3E8DD3E6DA6197B8195CDB9 /* PBXTargetDependency */ = {
-			isa = PBXTargetDependency;
-			name = SJUIKit;
-			targetProxy = ABC3EFAEECE5FE9B59CF3DBE355BCC21 /* PBXContainerItemProxy */;
-		};
-		C4239B22670A3FDE765F794F2BB07E8C /* PBXTargetDependency */ = {
-			isa = PBXTargetDependency;
-			name = Masonry;
-			targetProxy = C09019E7C5FC5B74776F2BB14FCAB258 /* PBXContainerItemProxy */;
-		};
-		E40FAC5BEB88A96716A5E3FDE4157265 /* PBXTargetDependency */ = {
+		2257A169C383AC5815CB8875283210C7 /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
 			name = SJBaseVideoPlayer;
-			targetProxy = CDAB4EF74569D8BAD782B022CD430F49 /* PBXContainerItemProxy */;
+			targetProxy = 2632739B4945D6A25CB1C6222336E63C /* PBXContainerItemProxy */;
+		};
+		940226B1335D409F5D623FCC8786F96C /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			name = SJUIKit;
+			targetProxy = 8A842928A0EC6981248EAF1C2E80C570 /* PBXContainerItemProxy */;
+		};
+		EEC9E501A735B2692E12A808A22045A6 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			name = Masonry;
+			targetProxy = 0E1C78406E3C176A7424BCAFE429F130 /* PBXContainerItemProxy */;
 		};
 /* End PBXTargetDependency section */
 
 /* Begin XCBuildConfiguration section */
-		0B197127A5D0CD6DED2A4A2D59BC265F /* Debug */ = {
-			isa = XCBuildConfiguration;
-			baseConfigurationReference = C8A85FD9C880D95CDB6183A1C4A1FCA9 /* SJVideoPlayer.xcconfig */;
-			buildSettings = {
-				CODE_SIGN_IDENTITY = "iPhone Developer";
-				"CODE_SIGN_IDENTITY[sdk=appletvos*]" = "";
-				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "";
-				"CODE_SIGN_IDENTITY[sdk=watchos*]" = "";
-				GCC_PREFIX_HEADER = "Target Support Files/SJVideoPlayer/SJVideoPlayer-prefix.pch";
-				IPHONEOS_DEPLOYMENT_TARGET = 9.0;
-				OTHER_LDFLAGS = "";
-				OTHER_LIBTOOLFLAGS = "";
-				PRIVATE_HEADERS_FOLDER_PATH = "";
-				PRODUCT_MODULE_NAME = SJVideoPlayer;
-				PRODUCT_NAME = SJVideoPlayer;
-				PUBLIC_HEADERS_FOLDER_PATH = "";
-				SDKROOT = iphoneos;
-				SKIP_INSTALL = YES;
-				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "$(inherited) ";
-				TARGETED_DEVICE_FAMILY = "1,2";
-			};
-			name = Debug;
-		};
 		6884C9681C3F8A5CED96B1696FAAD028 /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
@@ -1003,7 +980,30 @@
 			};
 			name = Release;
 		};
-		E013CFE472DC8B110FF588CD5C850420 /* Release */ = {
+		6EE6C4E80D4D6139033862F331E19D90 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReference = C8A85FD9C880D95CDB6183A1C4A1FCA9 /* SJVideoPlayer.xcconfig */;
+			buildSettings = {
+				CODE_SIGN_IDENTITY = "iPhone Developer";
+				"CODE_SIGN_IDENTITY[sdk=appletvos*]" = "";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "";
+				"CODE_SIGN_IDENTITY[sdk=watchos*]" = "";
+				GCC_PREFIX_HEADER = "Target Support Files/SJVideoPlayer/SJVideoPlayer-prefix.pch";
+				IPHONEOS_DEPLOYMENT_TARGET = 9.0;
+				OTHER_LDFLAGS = "";
+				OTHER_LIBTOOLFLAGS = "";
+				PRIVATE_HEADERS_FOLDER_PATH = "";
+				PRODUCT_MODULE_NAME = SJVideoPlayer;
+				PRODUCT_NAME = SJVideoPlayer;
+				PUBLIC_HEADERS_FOLDER_PATH = "";
+				SDKROOT = iphoneos;
+				SKIP_INSTALL = YES;
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "$(inherited) ";
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Debug;
+		};
+		9E26284BE9CE2F84C09167A944C72A67 /* Release */ = {
 			isa = XCBuildConfiguration;
 			baseConfigurationReference = C8A85FD9C880D95CDB6183A1C4A1FCA9 /* SJVideoPlayer.xcconfig */;
 			buildSettings = {
@@ -1094,11 +1094,11 @@
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
-		4C87FE93634603C3E0A60DB1CE290A77 /* Build configuration list for PBXNativeTarget "SJVideoPlayer" */ = {
+		9D48EE90AF7D9BF31B929C06E940A8FC /* Build configuration list for PBXNativeTarget "SJVideoPlayer" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
-				0B197127A5D0CD6DED2A4A2D59BC265F /* Debug */,
-				E013CFE472DC8B110FF588CD5C850420 /* Release */,
+				6EE6C4E80D4D6139033862F331E19D90 /* Debug */,
+				9E26284BE9CE2F84C09167A944C72A67 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;

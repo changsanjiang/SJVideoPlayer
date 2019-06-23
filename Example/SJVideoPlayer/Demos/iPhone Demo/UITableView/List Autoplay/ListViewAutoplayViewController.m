@@ -127,7 +127,7 @@ NS_ASSUME_NONNULL_END
     return @"tableView/autoplay2";
 }
 
-+ (void)handleRequestWithParameters:(nullable SJParameters)parameters topViewController:(UIViewController *)topViewController completionHandler:(nullable SJCompletionHandler)completionHandler {
++ (void)handleRequest:(SJRouteRequest *)request topViewController:(UIViewController *)topViewController completionHandler:(SJCompletionHandler)completionHandler {
     [topViewController.navigationController pushViewController:[self new] animated:YES];
 }
 @end

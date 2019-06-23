@@ -13,9 +13,9 @@ extern __kindof UIView *_Nullable sj_getTarget(UIScrollView *scrollView, NSIndex
 
 extern bool sj_isAppeared1(NSInteger viewTag, NSIndexPath *viewAtIndexPath, UIScrollView *scrollView);
 
-extern bool sj_isAppeared2(UIView *_Nullable childView, UIScrollView *_Nullable scrollView);
+extern bool sj_isAppeared2(UIView *_Nullable childView, UIView *_Nullable rootView);
 
-extern CGRect sj_intersection(UIView *_Nullable childView, UIScrollView *_Nullable scrollView);
+extern CGRect sj_intersection(UIView *_Nullable childView, UIView *_Nullable rootView);
 
 extern UIScrollView *_Nullable sj_getScrollView(SJPlayModel *playModel);
 NS_ASSUME_NONNULL_END

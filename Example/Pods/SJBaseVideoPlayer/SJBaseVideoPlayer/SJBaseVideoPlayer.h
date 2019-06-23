@@ -403,6 +403,10 @@ NS_ASSUME_NONNULL_BEGIN
  */
 @interface SJBaseVideoPlayer (GestureControl)
 
+/// 在cell中, 允许水平方向触发Pan手势, 默认为不允许
+///
+@property (nonatomic) BOOL allowHorizontalTriggeringOfPanGesturesInCells;
+
 @property (nonatomic, strong, null_resettable) id<SJPlayerGestureControl> gestureControl;
 
 @property (nonatomic) SJPlayerDisabledGestures disabledGestures;

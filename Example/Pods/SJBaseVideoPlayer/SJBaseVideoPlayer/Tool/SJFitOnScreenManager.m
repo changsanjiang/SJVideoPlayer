@@ -81,7 +81,7 @@ NS_ASSUME_NONNULL_BEGIN
     [self setFitOnScreen:fitOnScreen animated:animated completionHandler:nil];
 }
 - (void)setFitOnScreen:(BOOL)fitOnScreen animated:(BOOL)animated completionHandler:(nullable void (^)(id<SJFitOnScreenManager>))completionHandler {
-    if ( fitOnScreen == self.isFitOnScreen ) { return; }
+    if ( fitOnScreen == self.isFitOnScreen ) { if ( completionHandler ) completionHandler(self); return; }
     __weak typeof(self) _self = self;
     dispatch_async(dispatch_get_main_queue(), ^{
         __strong typeof(_self) self = _self;

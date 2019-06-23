@@ -136,7 +136,7 @@ static SJEdgeControlButtonItemTag const SJTestCustomItemTag = 103;
     return @"controlLayer/edgeButtonItem";
 }
 
-+ (void)handleRequestWithParameters:(SJParameters)parameters topViewController:(UIViewController *)topViewController completionHandler:(SJCompletionHandler)completionHandler {
++ (void)handleRequest:(SJRouteRequest *)request topViewController:(UIViewController *)topViewController completionHandler:(SJCompletionHandler)completionHandler {
     [topViewController.navigationController pushViewController:[[SJViewController2 alloc] initWithNibName:@"SJViewController2" bundle:nil] animated:YES];
 }
 

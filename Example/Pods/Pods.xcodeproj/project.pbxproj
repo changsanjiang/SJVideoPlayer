@@ -7,72 +7,72 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		7375347B731CF79464F8E43BB304D30E /* Pods-SJVideoPlayer_Example-dummy.m in Sources */ = {isa = PBXBuildFile; fileRef = 7A961442A951AD4743D626428CC377BF /* Pods-SJVideoPlayer_Example-dummy.m */; };
+		96675B9070D0814BE50BD78F5BE1F17E /* Pods-SJVideoPlayer_Example-dummy.m in Sources */ = {isa = PBXBuildFile; fileRef = 7A961442A951AD4743D626428CC377BF /* Pods-SJVideoPlayer_Example-dummy.m */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
-		1B1E1DC5E08CAC1991851DE297A2B62F /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = BA6585A88B249F8125DF08F18E127119 /* SDWebImage.xcodeproj */;
-			proxyType = 1;
-			remoteGlobalIDString = 4ECF4E662EEBE4FA58102FF984D920CC;
-			remoteInfo = SDWebImage;
-		};
-		52FC15769380E24FD12A0A85C3455D86 /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = 0EA387DEC1340C5FF804BBBD84D34E9E /* SJBaseVideoPlayer.xcodeproj */;
-			proxyType = 1;
-			remoteGlobalIDString = 4443B442617D117E485DCA3453FD856E;
-			remoteInfo = SJBaseVideoPlayer;
-		};
-		8F847FC575CC3825225B4C0BEA2B6628 /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = 5D3D4B2B0BA79D7E43FCE9333147D51A /* SJUIKit.xcodeproj */;
-			proxyType = 1;
-			remoteGlobalIDString = 9E2227563BC9245899E47F2E79D382F8;
-			remoteInfo = SJUIKit;
-		};
-		977B101B6303AA5C28900494718B6635 /* PBXContainerItemProxy */ = {
+		3AA21D9EB8E16929EA4ECBA604B6CFFC /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = D0B5962E9A816F5ABB990C3091572190 /* SJPlaybackListController.xcodeproj */;
 			proxyType = 1;
 			remoteGlobalIDString = 2F09E295257F9C9E06841A58E6D113BA;
 			remoteInfo = SJPlaybackListController;
 		};
-		AE5B46DEFC39DEACD65885AA497D7924 /* PBXContainerItemProxy */ = {
+		6FAB28365E541284D7F841EE247E53A8 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
-			containerPortal = DACD592F5728101E1ADC4FA07B79A3D1 /* Reachability.xcodeproj */;
+			containerPortal = 5D3D4B2B0BA79D7E43FCE9333147D51A /* SJUIKit.xcodeproj */;
 			proxyType = 1;
-			remoteGlobalIDString = DA1EBD7850A215E94DBD19A247725F9F;
-			remoteInfo = Reachability;
+			remoteGlobalIDString = 9E2227563BC9245899E47F2E79D382F8;
+			remoteInfo = SJUIKit;
 		};
-		BDF2518E976D8F8EF6ADE5BE7472213C /* PBXContainerItemProxy */ = {
+		90BDECBE569CFC407A26BE0D38FB7027 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = 17786113A287B7F151A05938DACF586E /* SJVideoPlayer.xcodeproj */;
 			proxyType = 1;
 			remoteGlobalIDString = 8CC1DB947C011C4B3218A06EEB7FBFCD;
 			remoteInfo = SJVideoPlayer;
 		};
-		E044480D720B97BC04EEC8E8D05AA3D3 /* PBXContainerItemProxy */ = {
+		9CF55061C7647116F056BCEEFC4BC8B6 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = DE3E703BC03864BC68234590C6CBAA62 /* Masonry.xcodeproj */;
 			proxyType = 1;
 			remoteGlobalIDString = C0965FF775F51458AD4A8E41ABAB7D1E;
 			remoteInfo = Masonry;
 		};
-		F4FCD8BFD4D9B1B9BB472DE8770422D0 /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = CF315460C64DAC31946EAC6B81DD4278 /* MJRefresh.xcodeproj */;
-			proxyType = 1;
-			remoteGlobalIDString = E94AEF767442EDAAAAB2129CDFA2C2ED;
-			remoteInfo = MJRefresh;
-		};
-		FAAAC555640E722C293D328FD83EE03D /* PBXContainerItemProxy */ = {
+		CC987B243CF648F93F289D3626710C1F /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = 35D8FE8DBF684565C04BB8ED11FF7596 /* SJRouter.xcodeproj */;
 			proxyType = 1;
 			remoteGlobalIDString = 71F2B5B6805C2BDEAC21ACA3A0ABE1CE;
 			remoteInfo = SJRouter;
+		};
+		D5075E4448F99ED49967B65878307501 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = BA6585A88B249F8125DF08F18E127119 /* SDWebImage.xcodeproj */;
+			proxyType = 1;
+			remoteGlobalIDString = 4ECF4E662EEBE4FA58102FF984D920CC;
+			remoteInfo = SDWebImage;
+		};
+		DF0D5DF29CC6203D9CF178678DC4FED7 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 0EA387DEC1340C5FF804BBBD84D34E9E /* SJBaseVideoPlayer.xcodeproj */;
+			proxyType = 1;
+			remoteGlobalIDString = 4443B442617D117E485DCA3453FD856E;
+			remoteInfo = SJBaseVideoPlayer;
+		};
+		E90F74C7832A06939065A5A0A800445B /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = DACD592F5728101E1ADC4FA07B79A3D1 /* Reachability.xcodeproj */;
+			proxyType = 1;
+			remoteGlobalIDString = DA1EBD7850A215E94DBD19A247725F9F;
+			remoteInfo = Reachability;
+		};
+		FCC9C6565FB392F9491016C4547A798B /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = CF315460C64DAC31946EAC6B81DD4278 /* MJRefresh.xcodeproj */;
+			proxyType = 1;
+			remoteGlobalIDString = E94AEF767442EDAAAAB2129CDFA2C2ED;
+			remoteInfo = MJRefresh;
 		};
 /* End PBXContainerItemProxy section */
 
@@ -97,7 +97,7 @@
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
-		84A10B037E710038C3F8A0FFA5CAA3EE /* Frameworks */ = {
+		80DB06772CC66313E4DA0B5F00142CB5 /* Frameworks */ = {
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
@@ -182,7 +182,7 @@
 /* End PBXGroup section */
 
 /* Begin PBXHeadersBuildPhase section */
-		E0FF7105A3F7AA7CBEFB52894E8908FC /* Headers */ = {
+		130B78F895F92DCC3EEFCC69C9183BF5 /* Headers */ = {
 			isa = PBXHeadersBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
@@ -194,24 +194,24 @@
 /* Begin PBXNativeTarget section */
 		9A9B347029007D05E4CC442439A61C51 /* Pods-SJVideoPlayer_Example */ = {
 			isa = PBXNativeTarget;
-			buildConfigurationList = 241CAF68F1FF766FF56ECDDD5BCF37F4 /* Build configuration list for PBXNativeTarget "Pods-SJVideoPlayer_Example" */;
+			buildConfigurationList = 97A8B9EB4AC2966CB8F455E9A78247F1 /* Build configuration list for PBXNativeTarget "Pods-SJVideoPlayer_Example" */;
 			buildPhases = (
-				E0FF7105A3F7AA7CBEFB52894E8908FC /* Headers */,
-				05F5615294A769F2660E56C8BF1279CA /* Sources */,
-				84A10B037E710038C3F8A0FFA5CAA3EE /* Frameworks */,
+				130B78F895F92DCC3EEFCC69C9183BF5 /* Headers */,
+				3C00DD451E9919F6CCB54A43B8844259 /* Sources */,
+				80DB06772CC66313E4DA0B5F00142CB5 /* Frameworks */,
 			);
 			buildRules = (
 			);
 			dependencies = (
-				A87F21436352EEC969548A6382117953 /* PBXTargetDependency */,
-				260E3A402E4DA5947E1EB3A1CDD2F0F6 /* PBXTargetDependency */,
-				6576B2A135E638544A384284CD0F9DB5 /* PBXTargetDependency */,
-				CB2BEF2E1FF551FF71C80929F26C95AA /* PBXTargetDependency */,
-				B359412666B3CFB673C807FB4FFD89E4 /* PBXTargetDependency */,
-				173570620206A4B395FC69043ECF0EEC /* PBXTargetDependency */,
-				CF69F060C8A016F72663CA46DDF5C838 /* PBXTargetDependency */,
-				A2FC0E4D0B78A7923E0AE07153B7C2BC /* PBXTargetDependency */,
-				46608C40780011F5985A75A6232F19F9 /* PBXTargetDependency */,
+				EEEEC7A27494B5ADA460801D33DF48E5 /* PBXTargetDependency */,
+				5E90D3E44E03264A9CC47B7756C665C4 /* PBXTargetDependency */,
+				8005CDCC612C3F7202F3A985456F0940 /* PBXTargetDependency */,
+				B814FDF7D03DCB7D6F32ED0470E4F748 /* PBXTargetDependency */,
+				D2912891891CD75049300ECC091A10C1 /* PBXTargetDependency */,
+				2640DAD4BC27194D9E48BD57388BCC3A /* PBXTargetDependency */,
+				9FDC042D3EB758B8544FCB1982D84A4A /* PBXTargetDependency */,
+				BD2228A988061070A9B98E0A1FD76B9B /* PBXTargetDependency */,
+				804CC707C45EF7053BFF6D5AAAE24B90 /* PBXTargetDependency */,
 			);
 			name = "Pods-SJVideoPlayer_Example";
 			productName = "Pods-SJVideoPlayer_Example";
@@ -224,8 +224,8 @@
 		BFDFE7DC352907FC980B868725387E98 /* Project object */ = {
 			isa = PBXProject;
 			attributes = {
-				LastSwiftUpdateCheck = 1020;
-				LastUpgradeCheck = 1020;
+				LastSwiftUpdateCheck = 1100;
+				LastUpgradeCheck = 1100;
 			};
 			buildConfigurationList = 4821239608C13582E20E6DA73FD5F1F9 /* Build configuration list for PBXProject "Pods" */;
 			compatibilityVersion = "Xcode 3.2";
@@ -274,108 +274,65 @@
 /* End PBXProject section */
 
 /* Begin PBXSourcesBuildPhase section */
-		05F5615294A769F2660E56C8BF1279CA /* Sources */ = {
+		3C00DD451E9919F6CCB54A43B8844259 /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				7375347B731CF79464F8E43BB304D30E /* Pods-SJVideoPlayer_Example-dummy.m in Sources */,
+				96675B9070D0814BE50BD78F5BE1F17E /* Pods-SJVideoPlayer_Example-dummy.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXSourcesBuildPhase section */
 
 /* Begin PBXTargetDependency section */
-		173570620206A4B395FC69043ECF0EEC /* PBXTargetDependency */ = {
+		2640DAD4BC27194D9E48BD57388BCC3A /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
 			name = SJPlaybackListController;
-			targetProxy = 977B101B6303AA5C28900494718B6635 /* PBXContainerItemProxy */;
+			targetProxy = 3AA21D9EB8E16929EA4ECBA604B6CFFC /* PBXContainerItemProxy */;
 		};
-		260E3A402E4DA5947E1EB3A1CDD2F0F6 /* PBXTargetDependency */ = {
+		5E90D3E44E03264A9CC47B7756C665C4 /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
 			name = Masonry;
-			targetProxy = E044480D720B97BC04EEC8E8D05AA3D3 /* PBXContainerItemProxy */;
+			targetProxy = 9CF55061C7647116F056BCEEFC4BC8B6 /* PBXContainerItemProxy */;
 		};
-		46608C40780011F5985A75A6232F19F9 /* PBXTargetDependency */ = {
-			isa = PBXTargetDependency;
-			name = SJVideoPlayer;
-			targetProxy = BDF2518E976D8F8EF6ADE5BE7472213C /* PBXContainerItemProxy */;
-		};
-		6576B2A135E638544A384284CD0F9DB5 /* PBXTargetDependency */ = {
+		8005CDCC612C3F7202F3A985456F0940 /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
 			name = Reachability;
-			targetProxy = AE5B46DEFC39DEACD65885AA497D7924 /* PBXContainerItemProxy */;
+			targetProxy = E90F74C7832A06939065A5A0A800445B /* PBXContainerItemProxy */;
 		};
-		A2FC0E4D0B78A7923E0AE07153B7C2BC /* PBXTargetDependency */ = {
+		804CC707C45EF7053BFF6D5AAAE24B90 /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
-			name = SJUIKit;
-			targetProxy = 8F847FC575CC3825225B4C0BEA2B6628 /* PBXContainerItemProxy */;
+			name = SJVideoPlayer;
+			targetProxy = 90BDECBE569CFC407A26BE0D38FB7027 /* PBXContainerItemProxy */;
 		};
-		A87F21436352EEC969548A6382117953 /* PBXTargetDependency */ = {
-			isa = PBXTargetDependency;
-			name = MJRefresh;
-			targetProxy = F4FCD8BFD4D9B1B9BB472DE8770422D0 /* PBXContainerItemProxy */;
-		};
-		B359412666B3CFB673C807FB4FFD89E4 /* PBXTargetDependency */ = {
-			isa = PBXTargetDependency;
-			name = SJBaseVideoPlayer;
-			targetProxy = 52FC15769380E24FD12A0A85C3455D86 /* PBXContainerItemProxy */;
-		};
-		CB2BEF2E1FF551FF71C80929F26C95AA /* PBXTargetDependency */ = {
-			isa = PBXTargetDependency;
-			name = SDWebImage;
-			targetProxy = 1B1E1DC5E08CAC1991851DE297A2B62F /* PBXContainerItemProxy */;
-		};
-		CF69F060C8A016F72663CA46DDF5C838 /* PBXTargetDependency */ = {
+		9FDC042D3EB758B8544FCB1982D84A4A /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
 			name = SJRouter;
-			targetProxy = FAAAC555640E722C293D328FD83EE03D /* PBXContainerItemProxy */;
+			targetProxy = CC987B243CF648F93F289D3626710C1F /* PBXContainerItemProxy */;
+		};
+		B814FDF7D03DCB7D6F32ED0470E4F748 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			name = SDWebImage;
+			targetProxy = D5075E4448F99ED49967B65878307501 /* PBXContainerItemProxy */;
+		};
+		BD2228A988061070A9B98E0A1FD76B9B /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			name = SJUIKit;
+			targetProxy = 6FAB28365E541284D7F841EE247E53A8 /* PBXContainerItemProxy */;
+		};
+		D2912891891CD75049300ECC091A10C1 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			name = SJBaseVideoPlayer;
+			targetProxy = DF0D5DF29CC6203D9CF178678DC4FED7 /* PBXContainerItemProxy */;
+		};
+		EEEEC7A27494B5ADA460801D33DF48E5 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			name = MJRefresh;
+			targetProxy = FCC9C6565FB392F9491016C4547A798B /* PBXContainerItemProxy */;
 		};
 /* End PBXTargetDependency section */
 
 /* Begin XCBuildConfiguration section */
-		117CD5808E0ECA9BCFBDF249BC923DAC /* Debug */ = {
-			isa = XCBuildConfiguration;
-			baseConfigurationReference = 780634E729C4D79FBA038A7CA9ED0127 /* Pods-SJVideoPlayer_Example.debug.xcconfig */;
-			buildSettings = {
-				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = NO;
-				CODE_SIGN_IDENTITY = "iPhone Developer";
-				"CODE_SIGN_IDENTITY[sdk=appletvos*]" = "";
-				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "";
-				"CODE_SIGN_IDENTITY[sdk=watchos*]" = "";
-				IPHONEOS_DEPLOYMENT_TARGET = 9.0;
-				MACH_O_TYPE = staticlib;
-				OTHER_LDFLAGS = "";
-				OTHER_LIBTOOLFLAGS = "";
-				PODS_ROOT = "$(SRCROOT)";
-				PRODUCT_BUNDLE_IDENTIFIER = "org.cocoapods.${PRODUCT_NAME:rfc1034identifier}";
-				SDKROOT = iphoneos;
-				SKIP_INSTALL = YES;
-				TARGETED_DEVICE_FAMILY = "1,2";
-			};
-			name = Debug;
-		};
-		551F9C831F9D4F28D3A7820267425282 /* Release */ = {
-			isa = XCBuildConfiguration;
-			baseConfigurationReference = 09FAD31258382D3E1171F30A6A61D033 /* Pods-SJVideoPlayer_Example.release.xcconfig */;
-			buildSettings = {
-				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = NO;
-				CODE_SIGN_IDENTITY = "iPhone Developer";
-				"CODE_SIGN_IDENTITY[sdk=appletvos*]" = "";
-				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "";
-				"CODE_SIGN_IDENTITY[sdk=watchos*]" = "";
-				IPHONEOS_DEPLOYMENT_TARGET = 9.0;
-				MACH_O_TYPE = staticlib;
-				OTHER_LDFLAGS = "";
-				OTHER_LIBTOOLFLAGS = "";
-				PODS_ROOT = "$(SRCROOT)";
-				PRODUCT_BUNDLE_IDENTIFIER = "org.cocoapods.${PRODUCT_NAME:rfc1034identifier}";
-				SDKROOT = iphoneos;
-				SKIP_INSTALL = YES;
-				TARGETED_DEVICE_FAMILY = "1,2";
-				VALIDATE_PRODUCT = YES;
-			};
-			name = Release;
-		};
 		8F17DC3A99F99FBAD606CE6963886315 /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
@@ -500,23 +457,66 @@
 			};
 			name = Debug;
 		};
+		D7294072EC62F948B9682BD62097B8E0 /* Release */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReference = 09FAD31258382D3E1171F30A6A61D033 /* Pods-SJVideoPlayer_Example.release.xcconfig */;
+			buildSettings = {
+				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = NO;
+				CODE_SIGN_IDENTITY = "iPhone Developer";
+				"CODE_SIGN_IDENTITY[sdk=appletvos*]" = "";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "";
+				"CODE_SIGN_IDENTITY[sdk=watchos*]" = "";
+				IPHONEOS_DEPLOYMENT_TARGET = 9.0;
+				MACH_O_TYPE = staticlib;
+				OTHER_LDFLAGS = "";
+				OTHER_LIBTOOLFLAGS = "";
+				PODS_ROOT = "$(SRCROOT)";
+				PRODUCT_BUNDLE_IDENTIFIER = "org.cocoapods.${PRODUCT_NAME:rfc1034identifier}";
+				SDKROOT = iphoneos;
+				SKIP_INSTALL = YES;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				VALIDATE_PRODUCT = YES;
+			};
+			name = Release;
+		};
+		F949F1931E87E963EF8BEB201715C3B9 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReference = 780634E729C4D79FBA038A7CA9ED0127 /* Pods-SJVideoPlayer_Example.debug.xcconfig */;
+			buildSettings = {
+				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = NO;
+				CODE_SIGN_IDENTITY = "iPhone Developer";
+				"CODE_SIGN_IDENTITY[sdk=appletvos*]" = "";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "";
+				"CODE_SIGN_IDENTITY[sdk=watchos*]" = "";
+				IPHONEOS_DEPLOYMENT_TARGET = 9.0;
+				MACH_O_TYPE = staticlib;
+				OTHER_LDFLAGS = "";
+				OTHER_LIBTOOLFLAGS = "";
+				PODS_ROOT = "$(SRCROOT)";
+				PRODUCT_BUNDLE_IDENTIFIER = "org.cocoapods.${PRODUCT_NAME:rfc1034identifier}";
+				SDKROOT = iphoneos;
+				SKIP_INSTALL = YES;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Debug;
+		};
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
-		241CAF68F1FF766FF56ECDDD5BCF37F4 /* Build configuration list for PBXNativeTarget "Pods-SJVideoPlayer_Example" */ = {
-			isa = XCConfigurationList;
-			buildConfigurations = (
-				117CD5808E0ECA9BCFBDF249BC923DAC /* Debug */,
-				551F9C831F9D4F28D3A7820267425282 /* Release */,
-			);
-			defaultConfigurationIsVisible = 0;
-			defaultConfigurationName = Release;
-		};
 		4821239608C13582E20E6DA73FD5F1F9 /* Build configuration list for PBXProject "Pods" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				916E0404255105F480DC4950B7625F7A /* Debug */,
 				8F17DC3A99F99FBAD606CE6963886315 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		97A8B9EB4AC2966CB8F455E9A78247F1 /* Build configuration list for PBXNativeTarget "Pods-SJVideoPlayer_Example" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				F949F1931E87E963EF8BEB201715C3B9 /* Debug */,
+				D7294072EC62F948B9682BD62097B8E0 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;

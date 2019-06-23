@@ -183,7 +183,7 @@
     return @"scrollView/floatSmallView";
 }
 
-+ (void)handleRequestWithParameters:(SJParameters)parameters topViewController:(UIViewController *)topViewController completionHandler:(SJCompletionHandler)completionHandler {
++ (void)handleRequest:(SJRouteRequest *)request topViewController:(UIViewController *)topViewController completionHandler:(SJCompletionHandler)completionHandler {
     [topViewController.navigationController pushViewController:[[SJViewController3 alloc] initWithNibName:@"SJViewController3" bundle:nil] animated:YES];
 }
 

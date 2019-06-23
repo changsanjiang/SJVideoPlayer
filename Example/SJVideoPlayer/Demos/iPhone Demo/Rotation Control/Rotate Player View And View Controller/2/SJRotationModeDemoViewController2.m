@@ -51,6 +51,7 @@
 - (void)tappedOnTheCoverAtTableViewCell:(SJMediaTableViewCell *)cell {
     if ( _player == nil ) {
         _player = [SJVideoPlayer player];
+        _player.allowHorizontalTriggeringOfPanGesturesInCells = YES;
         _player.rotationManager = self.rotationManager;
         [self _observePlayerViewAppearState];
         [self _addTestEdgeItemsToPlayer];
@@ -224,7 +225,7 @@
     return @"rotationMode/vc2";
 }
 
-+ (void)handleRequestWithParameters:(SJParameters)parameters topViewController:(UIViewController *)topViewController completionHandler:(SJCompletionHandler)completionHandler {
++ (void)handleRequest:(SJRouteRequest *)request topViewController:(UIViewController *)topViewController completionHandler:(SJCompletionHandler)completionHandler {
     [topViewController.navigationController pushViewController:[[SJRotationModeDemoViewController2 alloc] initWithNibName:@"SJRotationModeDemoViewController2" bundle:nil] animated:YES];
 }
 

@@ -117,7 +117,7 @@
     return @"controlLayer/switching";
 }
 
-+ (void)handleRequestWithParameters:(SJParameters)parameters topViewController:(UIViewController *)topViewController completionHandler:(SJCompletionHandler)completionHandler {
++ (void)handleRequest:(SJRouteRequest *)request topViewController:(UIViewController *)topViewController completionHandler:(SJCompletionHandler)completionHandler {
     [topViewController.navigationController pushViewController:[[SJViewController5 alloc] initWithNibName:@"SJViewController5" bundle:nil] animated:YES];
 }
 

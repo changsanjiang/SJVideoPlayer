@@ -7,13 +7,13 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		158A67FFB337231D356AD0B5FD68FD4B /* SJPlaybackListController.m in Sources */ = {isa = PBXBuildFile; fileRef = 6CA0D259C1539DE41FE25F67B51CD8D5 /* SJPlaybackListController.m */; };
-		26A659D5ED072C4C354DB9CEE4D8FDB3 /* SJPlaybackListControllerObserver.m in Sources */ = {isa = PBXBuildFile; fileRef = 4BDA7092F06F617E7DCCB5927B56A1CB /* SJPlaybackListControllerObserver.m */; };
-		2746E10D8706B9402D84BD6E53DCAAD1 /* SJPlaybackListControllerProtocol.h in Headers */ = {isa = PBXBuildFile; fileRef = 404A042195C9C5D0FAB4E26121AA2513 /* SJPlaybackListControllerProtocol.h */; settings = {ATTRIBUTES = (Project, ); }; };
-		310BAC7E41733B8636AFD8313208D242 /* SJPlaybackListController-dummy.m in Sources */ = {isa = PBXBuildFile; fileRef = 118C9133CC15020514E4B64B0CE52462 /* SJPlaybackListController-dummy.m */; };
-		4D019808A6F922D42E6D8A5C655E2F23 /* SJPlaybackListControllerObserver.h in Headers */ = {isa = PBXBuildFile; fileRef = 172FA21B931971763D7B60D37934B017 /* SJPlaybackListControllerObserver.h */; settings = {ATTRIBUTES = (Project, ); }; };
-		8BE1511757C8448A0ED6C050F6C82C1B /* SJPlaybackListControllerProtocol.m in Sources */ = {isa = PBXBuildFile; fileRef = 234D55CC4E06578313B3F1C00FCD3CA7 /* SJPlaybackListControllerProtocol.m */; };
-		B527AC9902FFA0FE7503657166B0D52D /* SJPlaybackListController.h in Headers */ = {isa = PBXBuildFile; fileRef = D730440E4C6A71F8419EDD6A2A247DA0 /* SJPlaybackListController.h */; settings = {ATTRIBUTES = (Project, ); }; };
+		536C43460AE174E34F394EDB9FE717B3 /* SJPlaybackListControllerProtocol.m in Sources */ = {isa = PBXBuildFile; fileRef = 234D55CC4E06578313B3F1C00FCD3CA7 /* SJPlaybackListControllerProtocol.m */; };
+		63C2A894E1A03A92CF043CB279502DF9 /* SJPlaybackListControllerProtocol.h in Headers */ = {isa = PBXBuildFile; fileRef = 404A042195C9C5D0FAB4E26121AA2513 /* SJPlaybackListControllerProtocol.h */; settings = {ATTRIBUTES = (Project, ); }; };
+		AC114A330A9290D49BF9C0631C9FE64F /* SJPlaybackListController.h in Headers */ = {isa = PBXBuildFile; fileRef = D730440E4C6A71F8419EDD6A2A247DA0 /* SJPlaybackListController.h */; settings = {ATTRIBUTES = (Project, ); }; };
+		BB7C2208C54B264041439D09B78C7385 /* SJPlaybackListControllerObserver.h in Headers */ = {isa = PBXBuildFile; fileRef = 172FA21B931971763D7B60D37934B017 /* SJPlaybackListControllerObserver.h */; settings = {ATTRIBUTES = (Project, ); }; };
+		C796CD380512862DEAFC4147BABD7286 /* SJPlaybackListController-dummy.m in Sources */ = {isa = PBXBuildFile; fileRef = 118C9133CC15020514E4B64B0CE52462 /* SJPlaybackListController-dummy.m */; };
+		D75CD1CE626D0CF1C965327CE53344AF /* SJPlaybackListController.m in Sources */ = {isa = PBXBuildFile; fileRef = 6CA0D259C1539DE41FE25F67B51CD8D5 /* SJPlaybackListController.m */; };
+		F7584BACC4C81CA2FE9C894210897EB9 /* SJPlaybackListControllerObserver.m in Sources */ = {isa = PBXBuildFile; fileRef = 4BDA7092F06F617E7DCCB5927B56A1CB /* SJPlaybackListControllerObserver.m */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -30,7 +30,7 @@
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
-		67F48A732DBF772BF3433AFD00485880 /* Frameworks */ = {
+		E29582D7DCFA7452F0CCA5ED3AA8CD4C /* Frameworks */ = {
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
@@ -101,13 +101,13 @@
 /* End PBXGroup section */
 
 /* Begin PBXHeadersBuildPhase section */
-		54E559A5055DDB5E911C4BAFC3572C9B /* Headers */ = {
+		3045B2A01FC26FB303A192F95CE46623 /* Headers */ = {
 			isa = PBXHeadersBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				B527AC9902FFA0FE7503657166B0D52D /* SJPlaybackListController.h in Headers */,
-				4D019808A6F922D42E6D8A5C655E2F23 /* SJPlaybackListControllerObserver.h in Headers */,
-				2746E10D8706B9402D84BD6E53DCAAD1 /* SJPlaybackListControllerProtocol.h in Headers */,
+				AC114A330A9290D49BF9C0631C9FE64F /* SJPlaybackListController.h in Headers */,
+				BB7C2208C54B264041439D09B78C7385 /* SJPlaybackListControllerObserver.h in Headers */,
+				63C2A894E1A03A92CF043CB279502DF9 /* SJPlaybackListControllerProtocol.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -116,11 +116,11 @@
 /* Begin PBXNativeTarget section */
 		2F09E295257F9C9E06841A58E6D113BA /* SJPlaybackListController */ = {
 			isa = PBXNativeTarget;
-			buildConfigurationList = 03B648E9AAFF439EA10890DD6C5FCFFA /* Build configuration list for PBXNativeTarget "SJPlaybackListController" */;
+			buildConfigurationList = 25DA0FDBD5CA249FAF234EF7588863C5 /* Build configuration list for PBXNativeTarget "SJPlaybackListController" */;
 			buildPhases = (
-				54E559A5055DDB5E911C4BAFC3572C9B /* Headers */,
-				09DB2040B9463894E49B2009DA8A1F07 /* Sources */,
-				67F48A732DBF772BF3433AFD00485880 /* Frameworks */,
+				3045B2A01FC26FB303A192F95CE46623 /* Headers */,
+				65A17E51809898ED4104BA6E0472A148 /* Sources */,
+				E29582D7DCFA7452F0CCA5ED3AA8CD4C /* Frameworks */,
 			);
 			buildRules = (
 			);
@@ -137,8 +137,8 @@
 		A02D752EBF3BD5F09F102F869DE9D6C0 /* Project object */ = {
 			isa = PBXProject;
 			attributes = {
-				LastSwiftUpdateCheck = 1020;
-				LastUpgradeCheck = 1020;
+				LastSwiftUpdateCheck = 1100;
+				LastUpgradeCheck = 1100;
 			};
 			buildConfigurationList = B57C4FC6450F074D9F8338B6FCB26ED3 /* Build configuration list for PBXProject "SJPlaybackListController" */;
 			compatibilityVersion = "Xcode 3.2";
@@ -158,14 +158,14 @@
 /* End PBXProject section */
 
 /* Begin PBXSourcesBuildPhase section */
-		09DB2040B9463894E49B2009DA8A1F07 /* Sources */ = {
+		65A17E51809898ED4104BA6E0472A148 /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				310BAC7E41733B8636AFD8313208D242 /* SJPlaybackListController-dummy.m in Sources */,
-				158A67FFB337231D356AD0B5FD68FD4B /* SJPlaybackListController.m in Sources */,
-				26A659D5ED072C4C354DB9CEE4D8FDB3 /* SJPlaybackListControllerObserver.m in Sources */,
-				8BE1511757C8448A0ED6C050F6C82C1B /* SJPlaybackListControllerProtocol.m in Sources */,
+				C796CD380512862DEAFC4147BABD7286 /* SJPlaybackListController-dummy.m in Sources */,
+				D75CD1CE626D0CF1C965327CE53344AF /* SJPlaybackListController.m in Sources */,
+				F7584BACC4C81CA2FE9C894210897EB9 /* SJPlaybackListControllerObserver.m in Sources */,
+				536C43460AE174E34F394EDB9FE717B3 /* SJPlaybackListControllerProtocol.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -236,7 +236,7 @@
 			};
 			name = Debug;
 		};
-		38E66E89E7EFE41F693F89F0BED1164B /* Release */ = {
+		60618BD25F8003FD5B9F21A3CB437A31 /* Release */ = {
 			isa = XCBuildConfiguration;
 			baseConfigurationReference = 2A3FC16C222E80742DB3643B8E4F7CEC /* SJPlaybackListController.xcconfig */;
 			buildSettings = {
@@ -320,7 +320,7 @@
 			};
 			name = Release;
 		};
-		9514DE8BB27DFC598922D49B8473CAC0 /* Debug */ = {
+		FBE0D2D0B4B674DEAA278C5581927975 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			baseConfigurationReference = 2A3FC16C222E80742DB3643B8E4F7CEC /* SJPlaybackListController.xcconfig */;
 			buildSettings = {
@@ -346,11 +346,11 @@
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
-		03B648E9AAFF439EA10890DD6C5FCFFA /* Build configuration list for PBXNativeTarget "SJPlaybackListController" */ = {
+		25DA0FDBD5CA249FAF234EF7588863C5 /* Build configuration list for PBXNativeTarget "SJPlaybackListController" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
-				9514DE8BB27DFC598922D49B8473CAC0 /* Debug */,
-				38E66E89E7EFE41F693F89F0BED1164B /* Release */,
+				FBE0D2D0B4B674DEAA278C5581927975 /* Debug */,
+				60618BD25F8003FD5B9F21A3CB437A31 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;

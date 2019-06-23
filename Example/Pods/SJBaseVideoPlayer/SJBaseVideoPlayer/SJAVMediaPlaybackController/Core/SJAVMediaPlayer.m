@@ -169,11 +169,11 @@ inline static bool isFloatZero(float value) {
         if ( !self ) return;
         [self _postNotificationWithName:SJAVMediaLoadedPresentationSizeNotification];
     });
-    sjkvo_observe(item, @"duration", ^(id  _Nonnull target, NSDictionary<NSKeyValueChangeKey,id> * _Nullable change) {
+    [self.currentItem.asset loadValuesAsynchronouslyForKeys:@[@"duration"] completionHandler:^{
         __strong typeof(_self) self = _self;
         if ( !self ) return;
         [self _durationDidChange];
-    });
+    }];
 
     // - interruption -
     [self sj_observeWithNotification:AVAudioSessionInterruptionNotification target:nil usingBlock:^(SJAVMediaPlayer *self, NSNotification * _Nonnull note) {
@@ -301,7 +301,7 @@ inline static bool isFloatZero(float value) {
 
 - (void)_durationDidChange {
     if ( !_sj_controlInfo->isForceDuration ) {
-        NSTimeInterval duration = CMTimeGetSeconds(self.currentItem.duration);
+        NSTimeInterval duration = CMTimeGetSeconds(self.currentItem.asset.duration);
         if ( _sj_controlInfo->duration != duration ) {
             _sj_controlInfo->duration = duration;
             [self _postNotificationWithName:SJAVMediaLoadedDurationNotification];

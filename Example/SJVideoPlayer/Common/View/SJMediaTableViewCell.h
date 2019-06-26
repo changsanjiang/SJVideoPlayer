@@ -22,7 +22,7 @@ NS_ASSUME_NONNULL_BEGIN
 @protocol SJMediaTableViewCellDataSource
 @property (nonatomic, readonly) NSInteger coverTag;
 @property (nonatomic, copy, readonly, nullable) NSString *cover;
-@property (nonatomic, copy, readonly, nullable) NSAttributedString *medianame;
+@property (nonatomic, copy, readonly, nullable) NSAttributedString *mediaTitle;
 @property (nonatomic, copy, readonly, nullable) NSString *avatar;
 @property (nonatomic, copy, readonly, nullable) NSAttributedString *username;
 @end

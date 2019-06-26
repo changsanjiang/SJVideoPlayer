@@ -10,10 +10,18 @@
 #import "SJSourceURLs.h"
 
 @implementation SJMeidaItemModel
++ (NSArray<SJMeidaItemModel *> *)testItems {
+    NSMutableArray<SJMeidaItemModel *> *m = [[NSMutableArray alloc] initWithCapacity:20];
+    for ( int i = 0 ; i < 20 ; ++ i ) {
+        [m addObject:[SJMeidaItemModel testItem]];
+    }
+    return m;
+}
+
 + (instancetype)testItem {
     SJMeidaItemModel *item = [SJMeidaItemModel new];
     
-    static NSArray<NSString *> *medianames;
+    static NSArray<NSString *> *mediaTitles;
     static NSArray<NSString *> *usernames;
     static NSArray<NSString *> *covers;
     static NSArray<NSString *> *avatars;
@@ -21,7 +29,7 @@
     
     static dispatch_once_t onceToken;
     dispatch_once(&onceToken, ^{
-        medianames =
+        mediaTitles =
         @[@"打天梯遇到火力队，开场先被对面三炮轮番轰炸，主视角溃不成军。正当觉的失败钟声即将敲响时，主视角女鬼...",
           @"女鬼刚刚换了仙，队伍是三魔一炮一睡人，宝宝方面还是提升!以下是十五星首回合睡八录像一场，供大家欣赏。",
           @"天下第一比武大会全面升级 你敢来战吗？",
@@ -33,7 +41,7 @@
         
         
         usernames =
-        @[@"悲哀化身-内蒙专区", @"车迟国@最终幻想-剑侠风骨", @"老虎222-天竺国", @"云中殿", @"杀手阿七-五明宫", @"浅墨淋雨桥-剑胆琴心"];
+        @[@"悲哀化身-内蒙专区", @"车迟国@最终幻想-剑侠风骨", @"老虎222-天竺国", @"今朝醉-云中殿", @"杀手阿七-五明宫", @"浅墨淋雨桥-剑胆琴心"];
         
         covers =
         @[@"http://res.xy2.netease.com/pc/zt/20151230152108/images/pic9_2a7191a.png",
@@ -56,7 +64,7 @@
         URLs = SourceURLs;
     });
 
-    item.medianame = medianames[arc4random()%medianames.count];
+    item.mediaTitle = mediaTitles[arc4random()%mediaTitles.count];
     item.cover = covers[arc4random()%covers.count];
     item.avatar = avatars[arc4random()%avatars.count];
     item.username = usernames[arc4random()%usernames.count];

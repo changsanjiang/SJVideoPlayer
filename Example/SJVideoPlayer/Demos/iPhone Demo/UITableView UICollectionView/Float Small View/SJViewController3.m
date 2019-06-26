@@ -180,7 +180,7 @@
 @implementation SJViewController3 (RouteHandler)
 
 + (NSString *)routePath {
-    return @"scrollView/floatSmallView";
+    return @"demo/scrollView/floatSmallView";
 }
 
 + (void)handleRequest:(SJRouteRequest *)request topViewController:(UIViewController *)topViewController completionHandler:(SJCompletionHandler)completionHandler {

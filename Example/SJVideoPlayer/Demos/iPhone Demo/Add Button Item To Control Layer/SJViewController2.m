@@ -133,7 +133,7 @@ static SJEdgeControlButtonItemTag const SJTestCustomItemTag = 103;
 @implementation SJViewController2 (RouteHandler)
 
 + (NSString *)routePath {
-    return @"controlLayer/edgeButtonItem";
+    return @"demo/controlLayer/edgeButtonItem";
 }
 
 + (void)handleRequest:(SJRouteRequest *)request topViewController:(UIViewController *)topViewController completionHandler:(SJCompletionHandler)completionHandler {

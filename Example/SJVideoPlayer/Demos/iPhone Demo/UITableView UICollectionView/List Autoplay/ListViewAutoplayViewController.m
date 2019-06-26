@@ -124,7 +124,7 @@ NS_ASSUME_NONNULL_END
 @implementation ListViewAutoplayViewController (RouteHandler)
 
 + (NSString *)routePath {
-    return @"tableView/autoplay2";
+    return @"demo/tableView/autoplay2";
 }
 
 + (void)handleRequest:(SJRouteRequest *)request topViewController:(UIViewController *)topViewController completionHandler:(SJCompletionHandler)completionHandler {

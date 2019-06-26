@@ -65,7 +65,7 @@ char const SJRefreshingNonePageSize = -1;
         [self addSubview:view];
         view.translatesAutoresizingMaskIntoConstraints = NO;
         [self addConstraint:[NSLayoutConstraint constraintWithItem:view attribute:NSLayoutAttributeCenterX relatedBy:NSLayoutRelationEqual toItem:self attribute:NSLayoutAttributeCenterX multiplier:1 constant:0]];
-        [self addConstraint:[NSLayoutConstraint constraintWithItem:view attribute:NSLayoutAttributeCenterY relatedBy:NSLayoutRelationEqual toItem:self attribute:NSLayoutAttributeCenterY multiplier:1 constant:0]];
+        [self addConstraint:[NSLayoutConstraint constraintWithItem:view attribute:NSLayoutAttributeCenterY relatedBy:NSLayoutRelationEqual toItem:self attribute:NSLayoutAttributeCenterY multiplier:1 constant:-64]];
         
         objc_setAssociatedObject(self, _cmd, view, OBJC_ASSOCIATION_RETAIN_NONATOMIC);
     }
@@ -262,6 +262,11 @@ char const SJRefreshingNonePageSize = -1;
     self.mj_footer.hidden = NO;
     if ( self.mj_footer.state != MJRefreshStateIdle ) [self.mj_footer endRefreshing];
     [self.mj_footer beginRefreshing];
+    [self _showOrHiddenPlaceholderViewIfNeeded];
+}
+
+- (void)sj_resetState {
+    self.mj_footer.hidden = YES;
     [self _showOrHiddenPlaceholderViewIfNeeded];
 }
 

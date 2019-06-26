@@ -105,10 +105,10 @@ static NSString *const SJTableViewCell1ID = @"SJTableViewCell1";
     }
     
     _player.URLAsset = [[SJVideoPlayerURLAsset alloc] initWithURL:item.URL];
-    _player.URLAsset.title = item.medianame;
+    _player.URLAsset.title = item.mediaTitle;
     _player.playTimeDidChangeExeBlok = ^(__kindof SJBaseVideoPlayer * _Nonnull videoPlayer) {
         NSDictionary *info =
-        @{MPMediaItemPropertyTitle:item.medianame,
+        @{MPMediaItemPropertyTitle:item.mediaTitle,
           MPMediaItemPropertyMediaType:@(MPMediaTypeAny),
           MPNowPlayingInfoPropertyElapsedPlaybackTime:@(videoPlayer.currentTime),
           MPMediaItemPropertyPlaybackDuration:@(videoPlayer.totalTime),
@@ -174,7 +174,7 @@ static NSString *const SJTableViewCell1ID = @"SJTableViewCell1";
 
 - (void)tableView:(UITableView *)tableView willDisplayCell:(SJTableViewCell1 *)cell forRowAtIndexPath:(NSIndexPath *)indexPath {
     SJMeidaItemModel *item = [self.listController mediaAtIndex:indexPath.row];
-    cell.textLabel.text = [NSString stringWithFormat:@"%ld: %@", indexPath.row, item.medianame];
+    cell.textLabel.text = [NSString stringWithFormat:@"%ld: %@", indexPath.row, item.mediaTitle];
 }
 
 #pragma mark -
@@ -200,7 +200,7 @@ NS_ASSUME_NONNULL_END
 @implementation SJViewController1 (RouteHandler)
 
 + (NSString *)routePath {
-    return @"playbackListControl/vc1";
+    return @"demo/playbackListControl/vc1";
 }
 
 + (void)handleRequest:(SJRouteRequest *)request topViewController:(UIViewController *)topViewController completionHandler:(SJCompletionHandler)completionHandler {

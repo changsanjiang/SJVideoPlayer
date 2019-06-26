@@ -1,28 +1,27 @@
 //
-//  SJMediaTableViewModel.m
-//  SJVideoPlayer
+//  SJExtendedMediaCollectionViewModel.m
+//  SJVideoPlayer_Example
 //
-//  Created by 畅三江 on 2019/6/8.
-//  Copyright © 2019 畅三江. All rights reserved.
+//  Created by BlueDancer on 2019/6/26.
+//  Copyright © 2019 changsanjiang. All rights reserved.
 //
 
-#import "SJMediaTableViewModel.h"
+#import "SJExtendedMediaCollectionViewModel.h"
 #import <SJUIKit/NSAttributedString+SJMake.h>
 
-NSInteger const SJMediaCoverTag = 101;
-
-@implementation SJMediaTableViewModel
-- (instancetype)initWithItem:(SJMeidaItemModel *)item {
+NS_ASSUME_NONNULL_BEGIN
+@implementation SJExtendedMediaCollectionViewModel
+- (instancetype)initWithItem:(SJMeidaItemModel *)item mediaTitleFont:(nonnull UIFont *)font {
     self = [super init];
     if ( self ) {
         _coverTag = SJMediaCoverTag;
         _url = item.URL;
         _cover = item.cover;
         _avatar = item.avatar;
-
+        
         _mediaTitle = [NSAttributedString sj_UIKitText:^(id<SJUIKitTextMakerProtocol>  _Nonnull make) {
             make.textColor([UIColor blackColor]);
-            make.font([UIFont boldSystemFontOfSize:16]);
+            make.font(font);
             make.append(item.mediaTitle);
         }];
         
@@ -31,12 +30,8 @@ NSInteger const SJMediaCoverTag = 101;
             make.font([UIFont systemFontOfSize:14]);
             make.append(item.username);
         }];
-        
-        CGFloat coverWidth = UIScreen.mainScreen.bounds.size.width - 40;
-        CGFloat coverHeight = coverWidth * 9 / 16.0;
-        
-        _height = 16 + coverHeight + 8 + [_mediaTitle sj_textSizeForPreferredMaxLayoutWidth:coverWidth].height + 8 + 0.5 + 8 + 40 + 8 + 8;
     }
     return self;
 }
 @end
+NS_ASSUME_NONNULL_END

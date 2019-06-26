@@ -190,8 +190,15 @@ typedef id<SJUTAttributesProtocol>_Nonnull(^SJUTBaseLineOffsetAttribute)(double 
 @property (nonatomic) NSUnderlineStyle style;
 @end
 
+typedef enum : NSUInteger {
+    SJUTVerticalAlignmentBottom = 0,
+    SJUTVerticalAlignmentCenter = 1,
+    SJUTVerticalAlignmentTop = 2,
+} SJUTVerticalAlignment;
+
 @protocol SJUTImageAttachment <NSObject>
 @property (nonatomic, strong, nullable) UIImage *image;
+@property (nonatomic) SJUTVerticalAlignment alignment; ///< Text为统一的字体时生效
 @property (nonatomic) CGRect bounds;
 @end
 NS_ASSUME_NONNULL_END

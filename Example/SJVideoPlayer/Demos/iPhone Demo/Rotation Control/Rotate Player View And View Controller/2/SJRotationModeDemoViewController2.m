@@ -222,7 +222,7 @@
 @implementation SJRotationModeDemoViewController2 (RouteHandler)
 
 + (NSString *)routePath {
-    return @"rotationMode/vc2";
+    return @"demo/rotationMode/vc2";
 }
 
 + (void)handleRequest:(SJRouteRequest *)request topViewController:(UIViewController *)topViewController completionHandler:(SJCompletionHandler)completionHandler {

@@ -36,6 +36,8 @@ NS_ASSUME_NONNULL_BEGIN
 - (void)sj_exeHeaderRefreshing;
 - (void)sj_exeHeaderRefreshingAnimated:(BOOL)animated;
 - (void)sj_exeFooterRefreshing;
+
+- (void)sj_resetState;
 @end
 
 @interface UIScrollView (SJRefreshUIConfig)

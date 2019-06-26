@@ -48,7 +48,11 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (SJUTKernAttribute)kern {
     return ^id<SJUTAttributesProtocol>(CGFloat kern) {
-        self.recorder->lineSpacing = @(kern);
+        ///
+        /// Thanks @donggelaile
+        /// https://github.com/changsanjiang/SJAttributesFactory/issues/9
+        ///
+        self.recorder->kern = @(kern);
         return self;
     };
 }

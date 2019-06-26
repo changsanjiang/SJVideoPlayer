@@ -137,7 +137,7 @@
 @implementation SJRotationModeDemoViewController1 (RouteHandler)
 
 + (NSString *)routePath {
-    return @"rotationMode/vc1";
+    return @"demo/rotationMode/vc1";
 }
 
 + (void)handleRequest:(SJRouteRequest *)request topViewController:(UIViewController *)topViewController completionHandler:(SJCompletionHandler)completionHandler {

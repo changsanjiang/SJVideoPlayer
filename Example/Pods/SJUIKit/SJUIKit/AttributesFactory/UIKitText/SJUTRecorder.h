@@ -23,6 +23,7 @@ NS_ASSUME_NONNULL_BEGIN
 @interface SJUTImageAttachment : NSObject<SJUTImageAttachment>
 @property (nonatomic, strong, nullable) UIImage *image;
 @property (nonatomic) CGRect bounds;
+@property (nonatomic) SJUTVerticalAlignment alignment;
 @end
 
 @interface SJUTReplace : NSObject
@@ -31,7 +32,7 @@ NS_ASSUME_NONNULL_BEGIN
 @end
 
 @interface SJUTRecorder : NSObject {
-    @public
+    @package
     UIFont *_Nullable font;
     UIColor *_Nullable textColor;
     UIColor *_Nullable backgroundColor;

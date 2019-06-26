@@ -19,6 +19,9 @@ NS_ASSUME_NONNULL_BEGIN
     return self;
 }
 
+- (NSInteger)count {
+    return _flags.count;
+}
 - (void)addFlag:(SJFlagObject *)flagObject {
     if ( !flagObject ) return;
     [_flags addObject:flagObject];

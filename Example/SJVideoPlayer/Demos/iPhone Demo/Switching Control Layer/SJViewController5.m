@@ -114,7 +114,7 @@
 @implementation SJViewController5 (RouteHandler)
 
 + (NSString *)routePath {
-    return @"controlLayer/switching";
+    return @"demo/controlLayer/switching";
 }
 
 + (void)handleRequest:(SJRouteRequest *)request topViewController:(UIViewController *)topViewController completionHandler:(SJCompletionHandler)completionHandler {

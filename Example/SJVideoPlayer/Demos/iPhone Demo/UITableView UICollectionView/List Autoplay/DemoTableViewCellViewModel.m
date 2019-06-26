@@ -19,7 +19,7 @@ NSInteger DemoTableViewCellCoverTag = 101;
 - (instancetype)initWithModel:(SJMeidaItemModel *)model {
     self = [super init];
     if ( !self ) return nil;
-    _title = model.medianame;
+    _title = model.mediaTitle;
     _coverURL = model.cover;
     _URL = model.URL;
     _height = UIScreen.mainScreen.bounds.size.width * 9 / 16.0 + 8;

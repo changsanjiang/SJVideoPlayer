@@ -12,7 +12,7 @@
 NS_ASSUME_NONNULL_BEGIN
 @interface SJObjectContainer : NSObject
 @property (nonatomic, strong, readonly) NSArray<SJFlagObject *> *flags;
-
+@property (nonatomic, readonly) NSInteger count;
 - (void)addFlag:(SJFlagObject *)flagObject;
 - (void)removeFlag:(NSInteger)flag;
 - (nullable SJFlagObject *)objectForFlag:(NSInteger)flag;

@@ -131,9 +131,12 @@ inline static NSRange _textRange(NSAttributedString *text) {
         current = [[NSMutableAttributedString alloc] initWithString:recorder->string];
     }
     else if ( recorder->attachment != nil ) {
+        SJUTVerticalAlignment alignment = recorder->attachment.alignment;
+        UIImage *image = recorder->attachment.image;
+        CGRect bounds = recorder->attachment.bounds;
         NSTextAttachment *attachment = [[NSTextAttachment alloc] init];
         attachment.image = recorder->attachment.image;
-        attachment.bounds = recorder->attachment.bounds;
+        attachment.bounds = [self _adjustVerticalOffsetOfImageAttachmentForBounds:bounds imageSize:image.size alignment:alignment commonFont:self.recorder->font];
         current = [NSAttributedString attributedStringWithAttachment:attachment].mutableCopy;
     }
     
@@ -306,6 +309,30 @@ inline static NSRange _textRange(NSAttributedString *text) {
     }
     if ( recorder->baseLineOffset != nil ) attrs[NSBaselineOffsetAttributeName] = recorder->baseLineOffset;
     return attrs;
+}
+
+- (CGRect)_adjustVerticalOffsetOfImageAttachmentForBounds:(CGRect)bounds imageSize:(CGSize)imageSize alignment:(SJUTVerticalAlignment)alignment commonFont:(UIFont *)font {
+    switch ( alignment ) {
+        case SJUTVerticalAlignmentTop: {
+            if ( CGSizeEqualToSize(CGSizeZero, bounds.size) ) {
+                bounds.size = imageSize;
+            }
+            CGFloat offset = -(bounds.size.height - ABS(font.capHeight));
+            bounds.origin.y = offset;
+        }
+            break;
+        case SJUTVerticalAlignmentCenter: {
+            if ( CGSizeEqualToSize(CGSizeZero, bounds.size) ) {
+                bounds.size = imageSize;
+            }
+            CGFloat offset = -(bounds.size.height * 0.5 - ABS(font.descender));
+            bounds.origin.y = offset;
+        }
+            break;
+        case SJUTVerticalAlignmentBottom: { }
+            break;
+    }
+    return bounds;
 }
 @end
 NS_ASSUME_NONNULL_END

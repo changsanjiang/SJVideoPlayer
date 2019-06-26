@@ -13,7 +13,7 @@
 
 @interface SJMediaTableViewCell ()
 @property (weak, nonatomic) IBOutlet UIImageView *coverImageView;
-@property (weak, nonatomic) IBOutlet UILabel *medianameLabel;
+@property (weak, nonatomic) IBOutlet UILabel *mediaTitleLabel;
 @property (weak, nonatomic) IBOutlet UIImageView *avatarImageView;
 @property (weak, nonatomic) IBOutlet UILabel *usernameLabel;
 @end
@@ -67,7 +67,7 @@
         
         _coverImageView.tag = _dataSource.coverTag;
         [_coverImageView sd_setImageWithURL:[NSURL URLWithString:_dataSource.cover] placeholderImage:[UIImage imageNamed:@"p1"]];
-        _medianameLabel.attributedText = _dataSource.medianame;
+        _mediaTitleLabel.attributedText = _dataSource.mediaTitle;
         [_avatarImageView sd_setImageWithURL:[NSURL URLWithString:_dataSource.avatar] placeholderImage:[UIImage imageNamed:@"p2"]];
         _usernameLabel.attributedText = _dataSource.username;
     }

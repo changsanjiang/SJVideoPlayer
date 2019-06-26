@@ -80,13 +80,13 @@
     @[
       [[Item alloc] initWithTitle:@"Rotate Player View"
                          subTitle:@"旋转`播放器视图`1"
-                             path:@"rotationMode/vc3"],
+                             path:@"demo/rotationMode/vc3"],
       [[Item alloc] initWithTitle:@"Rotate Player View And View Controller2"
                          subTitle:@"旋转`播放器视图`和`视图控制器`2"
-                             path:@"rotationMode/vc2"],
+                             path:@"demo/rotationMode/vc2"],
       [[Item alloc] initWithTitle:@"Rotate Player View And View Controller1"
                          subTitle:@"旋转`播放器视图`和`视图控制器`1"
-                             path:@"rotationMode/vc1"],
+                             path:@"demo/rotationMode/vc1"],
       ];
 }
 
@@ -95,7 +95,7 @@
     @[
       [[Item alloc] initWithTitle:@"Playback List Control"
                          subTitle:@"播放列表控制"
-                             path:@"playbackListControl/vc1"],
+                             path:@"demo/playbackListControl/vc1"],
       ];
 }
 
@@ -104,7 +104,7 @@
     @[
       [[Item alloc] initWithTitle:@"Add Button Item To Control Layer"
                          subTitle:@"添加按钮到控制层"
-                             path:@"controlLayer/edgeButtonItem"],
+                             path:@"demo/controlLayer/edgeButtonItem"],
       ];
 }
 
@@ -113,11 +113,15 @@
     @[
       [[Item alloc] initWithTitle:@"Float Small View"
                          subTitle:@"开启小浮窗 (注: 当播放器视图滑动消失时, 显示小浮窗视图)"
-                             path:@"scrollView/floatSmallView"],
+                             path:@"demo/scrollView/floatSmallView"],
+      
+      [[Item alloc] initWithTitle:@"Nested View"
+                         subTitle:@"嵌套"
+                             path:@"demo/scrollView/nested"],
       
       [[Item alloc] initWithTitle:@"Autoplay in Table View"
                          subTitle:@"TableView 中自动播放"
-                             path:@"tableView/autoplay2"]
+                             path:@"demo/tableView/autoplay2"]
       ];
 }
 
@@ -126,7 +130,7 @@
     @[
       [[Item alloc] initWithTitle:@"Switching Control Layer"
                          subTitle:@"切换控制层 (注: 此为手动切换, 实际过程中播放器将会根据状态自动切换)"
-                             path:@"controlLayer/switching"],
+                             path:@"demo/controlLayer/switching"],
       ];
 }
 

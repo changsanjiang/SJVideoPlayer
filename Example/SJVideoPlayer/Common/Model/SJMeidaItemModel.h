@@ -11,10 +11,11 @@
 NS_ASSUME_NONNULL_BEGIN
 
 @interface SJMeidaItemModel : NSObject
++ (NSArray<SJMeidaItemModel *> *)testItems;
 + (instancetype)testItem;
 
 @property (nonatomic, readonly) NSInteger id;
-@property (nonatomic, copy, nullable) NSString *medianame;
+@property (nonatomic, copy, nullable) NSString *mediaTitle;
 @property (nonatomic, copy, nullable) NSString *cover;
 @property (nonatomic, copy, nullable) NSString *avatar;
 @property (nonatomic, copy, nullable) NSString *username;

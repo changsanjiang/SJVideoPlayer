@@ -24,7 +24,6 @@ target 'SJVideoPlayer_Example' do
   #pod 'SJBaseVideoPlayer', :path => '../../SJBaseVideoPlayer'
   pod 'SJVideoPlayer', :path => '../../SJVideoPlayer'
   
-  
   # 全屏手势
   #pod 'SJFullscreenPopGesture'
   pod 'SJPlaybackListController'#, :path => '../../SJPlaybackListController'
@@ -32,5 +31,5 @@ target 'SJVideoPlayer_Example' do
   pod 'MJRefresh', :inhibit_warnings => true
   pod 'SJRouter'
   pod 'SJUIKit'
-  pod 'SDWebImage'
+  pod 'SDWebImage' 
 end

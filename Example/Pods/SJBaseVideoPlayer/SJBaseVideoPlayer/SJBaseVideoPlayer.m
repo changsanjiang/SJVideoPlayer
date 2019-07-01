@@ -36,7 +36,8 @@
 #import "SJVCRotationManager.h"
 #import "SJPlayerView.h"
 #import "SJPlayStatusObserver.h"
-#import "SJFloatSmallViewController.h" 
+#import "SJFloatSmallViewController.h"
+#import "SJEdgeFastForwardViewController.h"
 
 #if __has_include(<Masonry/Masonry.h>)
 #import <Masonry/Masonry.h>
@@ -159,6 +160,7 @@ typedef struct _SJPlayerControlInfo {
     /// gestures
     UITapGestureRecognizer *_lockStateTapGesture;
     SJPlayerGestureControl *_gestureControl;
+    id<SJEdgeFastForwardViewControllerProtocol> _fastForwardViewController;
     
     /// playback controller
     NSError *_Nullable _error;
@@ -1465,6 +1467,25 @@ typedef struct _SJPlayerControlInfo {
     return objc_getAssociatedObject(self, _cmd);
 }
 
+- (void)setFastForwardViewController:(nullable id<SJEdgeFastForwardViewControllerProtocol>)fastForwardViewController {
+    _fastForwardViewController = fastForwardViewController;
+    [self _needUpdateFastForwardControllerProperties];
+}
+- (id<SJEdgeFastForwardViewControllerProtocol>)fastForwardViewController {
+    if ( _fastForwardViewController == nil ) {
+        _fastForwardViewController = [[SJEdgeFastForwardViewController alloc] init];
+        [self _needUpdateFastForwardControllerProperties];
+    }
+    return _fastForwardViewController;
+}
+- (BOOL)_isEnabledForFastForwardViewController {
+    return _fastForwardViewController.isEnabled;
+}
+
+- (void)_needUpdateFastForwardControllerProperties {
+    _fastForwardViewController.target = self.presentView;
+}
+
 - (void)_needUpdateGestureControlProperties {
     if ( !_gestureControl )
         return;
@@ -1570,6 +1591,27 @@ typedef struct _SJPlayerControlInfo {
     _gestureControl.doubleTapHandler = ^(id<SJPlayerGestureControl>  _Nonnull control, CGPoint location) {
         __strong typeof(_self) self = _self;
         if ( !self ) return ;
+        
+        if ( [self _isEnabledForFastForwardViewController] ) {
+            CGRect bounds = self.presentView.bounds;
+            CGFloat width = self.fastForwardViewController.triggerAreaWidth;
+            CGRect left = CGRectMake(0, 0, width, bounds.size.height);
+            CGFloat spanSecs = self.fastForwardViewController.spanSecs;
+            if ( CGRectContainsPoint(left, location) ) {
+                // 快退10秒
+                [self seekToTime:self.currentTime - spanSecs completionHandler:nil];
+                [self.fastForwardViewController showFastForwardView:SJFastForwardTriggeredPosition_Left];
+                return;
+            }
+            
+            CGRect right = CGRectMake(bounds.size.width - width, 0, width, bounds.size.height);
+            if ( CGRectContainsPoint(right, location) ) {
+                // 快进10秒
+                [self seekToTime:self.currentTime + spanSecs completionHandler:nil];
+                [self.fastForwardViewController showFastForwardView:SJFastForwardTriggeredPosition_Right];
+                return;
+            }
+        }
         
         if ( [self playStatus_isPlaying] )
             [self pause];

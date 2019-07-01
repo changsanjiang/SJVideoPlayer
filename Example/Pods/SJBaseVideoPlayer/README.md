@@ -22,6 +22,22 @@ SJBaseVideoPlayer is available under the MIT license. See the LICENSE file for m
 
 ___
 
+## 最近新增
+
+* 新增 左右边缘快进快退. 开启如下:
+```Objective-C
+    // 开启左右边缘快进快退. 其余配置请查看`fastForwardViewController`
+    _player.fastForwardViewController.enabled = YES;
+```
+
+* 新增 小浮窗播放. 开启如下:
+```Objective-C
+    // 开启小浮窗. 其余配置请查看`floatSmallViewController`
+    _player.floatSmallViewController.enabled = YES;
+```
+
+___
+
 ## Documents
 
 #### [1 视图层次](#1)

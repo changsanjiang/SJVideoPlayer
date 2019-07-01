@@ -96,7 +96,7 @@ static SJEdgeControlButtonItemTag const SJTestCustomItemTag = 103;
     
     // 以下方法为显示控制层
     [_player controlLayerNeedAppear];
-    [_player showTitle:@"已添加到顶部 `text item`" duration:3];\
+    [_player showTitle:@"已添加到顶部 `text item`" duration:3];
 }
 - (IBAction)customViewItem:(id)sender {
     UIView *view = [[UIView alloc] initWithFrame:CGRectMake(0, 0, 80, 49)];
@@ -119,6 +119,7 @@ static SJEdgeControlButtonItemTag const SJTestCustomItemTag = 103;
         make.edges.offset(0);
     }];
     _player.assetURL = SourceURL1;
+    _player.fastForwardViewController.enabled = YES; // 开启左右边缘快进快退功能
 }
 
 @end

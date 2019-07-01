@@ -45,6 +45,7 @@ NS_ASSUME_NONNULL_BEGIN
 - (void)mediaItemsTableViewCell:(SJMediaItemsTableViewCell *)tab_cell tappedOnTheCoverAtIndexPath:(nonnull NSIndexPath *)indexPath {
     if ( _player == nil ) {
         _player = [SJVideoPlayer player];
+        _player.resumePlaybackWhenScrollAppeared = NO; //< 滚动出现时, 是否恢复播放, 此处设置为NO.
     }
     
     SJMediasTableViewModel *medias_vm = tab_cell.dataSource;

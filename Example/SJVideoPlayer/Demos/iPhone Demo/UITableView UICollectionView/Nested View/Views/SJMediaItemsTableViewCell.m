@@ -31,8 +31,8 @@ NS_ASSUME_NONNULL_BEGIN
 - (void)awakeFromNib {
     [super awakeFromNib];
     
-    _flowLayout.minimumLineSpacing = 0;
-    _flowLayout.minimumInteritemSpacing = 8;
+    _flowLayout.minimumLineSpacing = 8;
+    _flowLayout.minimumInteritemSpacing = 0;
     _collectionView.contentInset = UIEdgeInsetsMake(0, 20, 0, 20);
     _collectionView.dataSource = self;
     _collectionView.delegate = self;

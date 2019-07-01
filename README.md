@@ -27,12 +27,27 @@ $ pod update --no-repo-update   (不要用 pod install 了, 用这个命令安�
 ___
 
 ## Contact
-* Email: changsanjiang@gmail.com
-* QQGroup: 719616775 
+* Email: changsanjiang@gmail.com 
 ___
 
 ## License
 SJVideoPlayer is available under the MIT license. See the LICENSE file for more info.
+
+___
+
+## 最近更新
+
+* 新增 左右边缘快进快退. 开启如下:
+```Objective-C
+    // 开启左右边缘快进快退. 如需进行更多配置, 请查看`fastForwardViewController`
+    _player.fastForwardViewController.enabled = YES;
+```
+
+* 新增 小浮窗播放. 开启如下:
+```Objective-C
+    // 开启小浮窗. 如需进行更多配置, 请查看`floatSmallViewController`
+    _player.floatSmallViewController.enabled = YES;
+```
 
 ___
 

@@ -42,6 +42,7 @@
 #import "SJModalViewControlllerManagerDefines.h"
 #import "SJBaseVideoPlayerStatisticsDefines.h"
 #import "SJFloatSmallViewControllerDefines.h"
+#import "SJEdgeFastForwardViewControllerDefines.h"
 
 NS_ASSUME_NONNULL_BEGIN
 
@@ -406,6 +407,11 @@ NS_ASSUME_NONNULL_BEGIN
 /// 在cell中, 允许水平方向触发Pan手势, 默认为不允许
 ///
 @property (nonatomic) BOOL allowHorizontalTriggeringOfPanGesturesInCells;
+
+/// 左右快进快退
+///
+/// 默认不启用, 当需要开启时, 请设置`player.fastForwardViewController.enabled = YES;`
+@property (nonatomic, strong, null_resettable) id<SJEdgeFastForwardViewControllerProtocol> fastForwardViewController;
 
 @property (nonatomic, strong, null_resettable) id<SJPlayerGestureControl> gestureControl;
 

@@ -29,6 +29,10 @@ typedef enum : NSUInteger {
 ///
 @property (nonatomic) NSTimeInterval spanSecs;
 
+///
+/// - default value is UIColor.orangeColor
+@property (nonatomic, strong, null_resettable) UIColor *blockColor;
+
 /// 显示
 ///
 - (void)showFastForwardView:(SJFastForwardTriggeredPosition)position;

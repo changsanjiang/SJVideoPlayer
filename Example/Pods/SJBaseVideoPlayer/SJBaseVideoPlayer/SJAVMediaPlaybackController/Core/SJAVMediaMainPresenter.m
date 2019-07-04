@@ -45,14 +45,17 @@ NS_ASSUME_NONNULL_BEGIN
 - (instancetype)initWithFrame:(CGRect)frame {
     self = [super initWithFrame:frame];
     if ( self ) {
-        __weak typeof(self) _self = self;
-        sjkvo_observe(self.playerLayer, @"readyForDisplay", ^(AVPlayerLayer *playerLayer, NSDictionary<NSKeyValueChangeKey,id> * _Nullable change) {
-            __strong typeof(_self) self = _self;
-            if ( !self ) return;
-            self.readyForDisplay = self.playerLayer.isReadyForDisplay;
-        });
+        [self.playerLayer addObserver:self forKeyPath:@"readyForDisplay" options:NSKeyValueObservingOptionInitial | NSKeyValueObservingOptionNew context:NULL];
     }
     return self;
+}
+
+- (void)dealloc {
+    [self.playerLayer removeObserver:self forKeyPath:@"readyForDisplay"];
+}
+
+- (void)observeValueForKeyPath:(nullable NSString *)keyPath ofObject:(nullable id)object change:(nullable NSDictionary<NSKeyValueChangeKey,id> *)change context:(nullable void *)context {
+    self.readyForDisplay = self.playerLayer.isReadyForDisplay;
 }
 
 - (void)setVideoGravity:(AVLayerVideoGravity _Nullable)videoGravity {

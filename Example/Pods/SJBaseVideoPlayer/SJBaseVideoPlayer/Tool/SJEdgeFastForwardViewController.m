@@ -33,6 +33,7 @@ _getControlPoint(CGFloat p0, CGFloat p2, CGFloat t, CGFloat c) {
 @property (nonatomic, strong, readonly) CAShapeLayer *roundLayer;
 @property (nonatomic, strong, readonly) NSArray<_SJShapeLayer *> *triangles;
 @property (nonatomic, strong, readonly) CATextLayer *textLayer;
+@property (nonatomic, strong, nullable) UIColor *blockColor;
 @end
 
 @implementation _SJEdgeFastForwardView
@@ -54,8 +55,6 @@ _getControlPoint(CGFloat p0, CGFloat p2, CGFloat t, CGFloat c) {
         CGFloat size = 8;
         for ( int i = 0 ; i < 3 ; ++ i ) {
             _SJShapeLayer *triangleLayer = [_SJShapeLayer layer];
-            triangleLayer.strokeColor = UIColor.orangeColor.CGColor;
-            triangleLayer.fillColor = UIColor.orangeColor.CGColor;
             triangleLayer.bounds = CGRectMake(0, 0, size, size);
             
             CGFloat angle = 60 * M_PI/180.0;
@@ -114,6 +113,14 @@ _getControlPoint(CGFloat p0, CGFloat p2, CGFloat t, CGFloat c) {
         [self.layer addSublayer:_textLayer];
     }
     return self;
+}
+
+- (void)setBlockColor:(nullable UIColor *)blockColor {
+    _blockColor = blockColor;
+    for ( CAShapeLayer *triangleLayer in _triangles ) {
+        triangleLayer.strokeColor = blockColor.CGColor;
+        triangleLayer.fillColor = blockColor.CGColor;
+    }
 }
 
 - (void)layoutSubviews {
@@ -241,6 +248,7 @@ _getControlPoint(CGFloat p0, CGFloat p2, CGFloat t, CGFloat c) {
 @synthesize target = _target;
 @synthesize triggerAreaWidth = _triggerAreaWidth;
 @synthesize spanSecs = _spanSecs;
+@synthesize blockColor = _blockColor;
 
 - (instancetype)init {
     self = [super init];
@@ -256,6 +264,13 @@ _getControlPoint(CGFloat p0, CGFloat p2, CGFloat t, CGFloat c) {
         _leftWidth.constant = triggerAreaWidth;
         _rightWidth.constant = triggerAreaWidth;
     }
+}
+
+- (UIColor *)blockColor {
+    if ( _blockColor == nil ) {
+        _blockColor = UIColor.orangeColor;
+    }
+    return _blockColor;
 }
 
 - (void)showFastForwardView:(SJFastForwardTriggeredPosition)position {
@@ -277,6 +292,7 @@ _getControlPoint(CGFloat p0, CGFloat p2, CGFloat t, CGFloat c) {
             }
             
             self.leftView.textLayer.string = [NSString stringWithFormat:@"快退%.0lf秒", self.spanSecs];
+            self.leftView.blockColor = self.blockColor;
             [self.leftView showAnimations];
         }
             break;
@@ -294,6 +310,7 @@ _getControlPoint(CGFloat p0, CGFloat p2, CGFloat t, CGFloat c) {
             }
             
             self.rightView.textLayer.string = [NSString stringWithFormat:@"快进%.0lf秒", self.spanSecs];
+            self.rightView.blockColor = self.blockColor;
             [self.rightView showAnimations];
         }
             break;

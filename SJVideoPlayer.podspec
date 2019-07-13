@@ -108,6 +108,8 @@ Pod::Spec.new do |s|
     
     s.subspec 'SJSwitchVideoDefinitionControlLayer' do |ss|
         ss.source_files = 'SJVideoPlayer/SJSwitchVideoDefinitionControlLayer/*.{h,m}'
+        ss.dependency 'SJVideoPlayer/Adapters'
+        ss.dependency 'SJVideoPlayer/Common'
     end
     
     # 浮窗小视图的控制层

@@ -22,10 +22,17 @@ NS_ASSUME_NONNULL_BEGIN
 @interface SJEdgeControlLayerItemAdapter : NSObject
 - (instancetype)initWithLayoutType:(SJAdapterItemsLayoutType)layoutType;
 /// 刷新
+///
 - (void)reload;
 - (void)updateContentForItemWithTag:(SJEdgeControlButtonItemTag)tag;
 
+/// 布局方式
+///
+/// - 注意: 修改后, 记得调用刷新
+@property (nonatomic) SJAdapterItemsLayoutType layoutType;
+
 /// 获取
+///
 - (nullable SJEdgeControlButtonItem *)itemAtIndex:(NSInteger)index;
 - (nullable SJEdgeControlButtonItem *)itemForTag:(SJEdgeControlButtonItemTag)tag;
 - (NSInteger)indexOfItemForTag:(SJEdgeControlButtonItemTag)tag;
@@ -36,19 +43,24 @@ NS_ASSUME_NONNULL_BEGIN
 - (BOOL)containsItem:(SJEdgeControlButtonItem *)item;
 
 /// 添加
+///
 /// - 注意: 添加后, 记得调用刷新
 - (void)addItem:(SJEdgeControlButtonItem *)item;
+- (void)addItemsFromArray:(NSArray<SJEdgeControlButtonItem *> *)items;
 - (void)insertItem:(SJEdgeControlButtonItem *)item atIndex:(NSInteger)index;
 - (void)insertItem:(SJEdgeControlButtonItem *)item frontItem:(SJEdgeControlButtonItemTag)tag;
 - (void)insertItem:(SJEdgeControlButtonItem *)item rearItem:(SJEdgeControlButtonItemTag)tag;
 
 /// 删除
+///
 /// - 注意: 删除后, 记得调用刷新
 - (void)removeItemAtIndex:(NSInteger)index;
 - (void)removeItemForTag:(SJEdgeControlButtonItemTag)tag;
+- (void)removeAllItems;
 
 /// 交互位置
-/// - 注意: 交互后, 记得调用刷新
+///
+/// - 注意: 交换后, 记得调用刷新
 - (void)exchangeItemAtIndex:(NSInteger)idx1 withItemAtIndex:(NSInteger)idx2;
 - (void)exchangeItemForTag:(SJEdgeControlButtonItemTag)tag1 withItemForTag:(SJEdgeControlButtonItemTag)tag2;
 

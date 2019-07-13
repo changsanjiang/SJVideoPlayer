@@ -120,6 +120,7 @@ static SJEdgeControlButtonItemTag const SJTestCustomItemTag = 103;
     }];
     _player.assetURL = SourceURL1;
     _player.fastForwardViewController.enabled = YES; // 开启左右边缘快进快退功能
+    _player.enableFilmEditing = YES;
 }
 
 @end

@@ -43,6 +43,8 @@
 #import "SJBaseVideoPlayerStatisticsDefines.h"
 #import "SJFloatSmallViewControllerDefines.h"
 #import "SJEdgeFastForwardViewControllerDefines.h"
+#import "SJVideoDefinitionSwitchingInfo.h"
+#import "SJPopPromptControllerProtocol.h"
 
 NS_ASSUME_NONNULL_BEGIN
 
@@ -80,6 +82,11 @@ NS_ASSUME_NONNULL_BEGIN
 ///
 /// - 默认为0.8s
 @property (nonatomic) NSTimeInterval delayInSecondsForHiddenPlaceholderImageView;
+
+@property (nonatomic, readonly, getter=isPlaceholderImageViewHidden) BOOL placeholderImageViewHidden;
+
+- (void)showPlaceholderImageView;
+- (void)hiddenPlaceholderImageView;
 @end
 
 
@@ -175,11 +182,17 @@ NS_ASSUME_NONNULL_BEGIN
 /// - 默认是0, 即不自动刷新
 /// - 单位是秒
 @property (nonatomic) NSTimeInterval delayToAutoRefreshWhenPlayFailed;
-/// 使播放
-- (void)play;
+
+// - Switch Video Definition -
+
 /// 切换`清晰度` (v1.6.5 新增)
 /// - 切换当前播放的视频清晰度
 - (void)switchVideoDefinition:(SJVideoPlayerURLAsset *)URLAsset;
+
+@property (nonatomic, strong, readonly) SJVideoDefinitionSwitchingInfo *definitionSwitchingInfo;
+
+/// 使播放
+- (void)play;
 
 /// 是否恢复播放, 进入前台时.
 ///
@@ -336,6 +349,15 @@ NS_ASSUME_NONNULL_BEGIN
 
 #pragma mark - 提示
 
+/// `左下角`弹出提示
+@interface SJBaseVideoPlayer (PopPromptControl)
+
+@property (nonatomic, strong, null_resettable) id<SJPopPromptControllerProtocol> popPromptController;
+
+@end
+
+
+/// `中心`弹出提示
 @interface SJBaseVideoPlayer (Prompt)
 
 /**

@@ -175,7 +175,7 @@ static NSString *const SJTableViewCell1ID = @"SJTableViewCell1";
 
 - (void)tableView:(UITableView *)tableView willDisplayCell:(SJTableViewCell1 *)cell forRowAtIndexPath:(NSIndexPath *)indexPath {
     SJMeidaItemModel *item = [self.listController mediaAtIndex:indexPath.row];
-    cell.textLabel.text = [NSString stringWithFormat:@"%ld: %@", indexPath.row, item.mediaTitle];
+    cell.textLabel.text = [NSString stringWithFormat:@"%ld: %@", (long)indexPath.row, item.mediaTitle];
 }
 
 #pragma mark -

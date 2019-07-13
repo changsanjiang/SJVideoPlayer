@@ -85,6 +85,10 @@ NS_ASSUME_NONNULL_BEGIN
         if ( _needHiddenNavigationBar ) {
             [self.navigationController setNavigationBarHidden:YES animated:YES];
         }
+        else if ( [self.navigationController isNavigationBarHidden] &&
+                  [self.navigationController.viewControllers containsObject:self] ) {
+            [self.navigationController setNavigationBarHidden:NO animated:YES];
+        }
     }
     else if ( SJAppearState_WillDisappear == _appearState ) {
         /// 是否恢复导航栏显示

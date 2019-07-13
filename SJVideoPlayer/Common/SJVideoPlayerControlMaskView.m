@@ -14,10 +14,7 @@
 
 @end
 
-@implementation SJVideoPlayerControlMaskView {
-    CAGradientLayer *_maskGradientLayer;
-}
-
+@implementation SJVideoPlayerControlMaskView
 + (Class)layerClass {
     return [CAGradientLayer class];
 }
@@ -29,13 +26,13 @@
     CAGradientLayer *maskGradientLayer = (id)self.layer;
     switch (_style) {
         case SJMaskStyle_top: {
-            maskGradientLayer.colors = @[(__bridge id)[UIColor colorWithWhite:0 alpha:0.42].CGColor,
+            maskGradientLayer.colors = @[(__bridge id)[UIColor colorWithWhite:0 alpha:0.8].CGColor,
                                          (__bridge id)[UIColor clearColor].CGColor];
         }
             break;
         case SJMaskStyle_bottom: {
             maskGradientLayer.colors = @[(__bridge id)[UIColor clearColor].CGColor,
-                                         (__bridge id)[UIColor colorWithWhite:0 alpha:0.42].CGColor];
+                                         (__bridge id)[UIColor colorWithWhite:0 alpha:0.8].CGColor];
         }
             break;
     }

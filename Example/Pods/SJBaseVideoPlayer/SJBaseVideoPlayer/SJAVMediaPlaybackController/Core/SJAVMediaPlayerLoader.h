@@ -12,5 +12,7 @@
 NS_ASSUME_NONNULL_BEGIN
 @interface SJAVMediaPlayerLoader : NSObject
 + (void)loadPlayerForMedia:(id<SJMediaModelProtocol>)media completionHandler:(void(^_Nullable)(id<SJMediaModelProtocol> media, id<SJAVMediaPlayerProtocol> player))completionHandler;
+
++ (void)clearPlayerForMedia:(id<SJMediaModelProtocol>)media;
 @end
 NS_ASSUME_NONNULL_END

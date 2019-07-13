@@ -65,6 +65,16 @@ static BOOL _iPhone_shouldAutorotate(UIViewController *vc) { ///< 返回YES, 表
 
 - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions
 {
+    application.statusBarStyle = UIStatusBarStyleDefault;
+    application.statusBarOrientation = UIInterfaceOrientationPortrait;
+    
+    _window = [[UIWindow alloc] initWithFrame:[[UIScreen mainScreen] bounds]];
+    _window.backgroundColor = [UIColor whiteColor];
+    NSString *name = UIUserInterfaceIdiomPhone == UI_USER_INTERFACE_IDIOM()?@"Main":@"iPadMain";
+    _window.rootViewController = [[UIStoryboard storyboardWithName:name bundle:nil] instantiateInitialViewController];
+    [_window makeKeyAndVisible];
+
+
     SJVideoPlayer.update(^(SJVideoPlayerSettings * _Nonnull common) {
         common.placeholder = [UIImage imageNamed:@"placeholder"];
         common.progress_thumbSize = 8;

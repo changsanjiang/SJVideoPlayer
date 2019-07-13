@@ -294,9 +294,19 @@ NS_ASSUME_NONNULL_BEGIN
 - (NSInteger)numberOfItems {
     return _itemsM.count;
 }
+- (void)setLayoutType:(SJAdapterItemsLayoutType)layoutType {
+    _layout.layoutType = layoutType;
+}
+- (SJAdapterItemsLayoutType)layoutType {
+    return _layout.layoutType;
+}
 - (void)addItem:(SJEdgeControlButtonItem *)item {
     if ( !item ) return;
     [_itemsM addObject:item];
+}
+- (void)addItemsFromArray:(NSArray<SJEdgeControlButtonItem *> *)items {
+    if ( !items ) return;
+    [_itemsM addObjectsFromArray:items];
 }
 - (void)insertItem:(SJEdgeControlButtonItem *)item atIndex:(NSInteger)index {
     if ( !item ) return;
@@ -318,6 +328,9 @@ NS_ASSUME_NONNULL_BEGIN
 - (void)removeItemForTag:(SJEdgeControlButtonItemTag)tag {
     NSInteger idx = [self indexOfItemForTag:tag];
     [self removeItemAtIndex:idx];
+}
+- (void)removeAllItems {
+    [_itemsM removeAllObjects];
 }
 - (nullable SJEdgeControlButtonItem *)itemAtIndex:(NSInteger)index {
     if ( index >= self.numberOfItems ) return nil;

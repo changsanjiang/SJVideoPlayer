@@ -172,5 +172,10 @@ NS_ASSUME_NONNULL_BEGIN
     [_container resetPresenter:nil];
     self.readyForDisplay = NO;
 }
+
+
+- (void)setReadyForDisplay:(BOOL)readyForDisplay {
+    _readyForDisplay = readyForDisplay;
+}
 @end
 NS_ASSUME_NONNULL_END

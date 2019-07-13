@@ -248,7 +248,10 @@ NS_ASSUME_NONNULL_BEGIN
     return (NSInteger)_player.sj_getAVPlayerItemStatus;
 }
 - (void)_reset:(id<SJMediaModelProtocol>)meida player:(id<SJAVMediaPlayerProtocol>)player presenter:(id<SJAVMediaPresenter>)presenter {
-    self.media = meida;
+    [SJAVMediaPlayerLoader clearPlayerForMedia:_media];
+    _media = meida;
+    [self removePeriodicTimeObserver];
+    [self.player pause];
     self.player = player;
     SJRunLoopTaskQueue.main.enqueue(^{
         [self.mainPresenter takeOverSubPresenter:presenter];
@@ -419,7 +422,7 @@ NS_ASSUME_NONNULL_BEGIN
         [self.delegate playbackController:self switchingDefinitionStatusDidChange:status media:media];
     }
     
-#ifdef SJMAC
+#ifdef DEBUG
     char *str = nil;
     switch ( status ) {
         case SJMediaPlaybackSwitchDefinitionStatusUnknown: break;

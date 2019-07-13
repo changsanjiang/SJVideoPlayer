@@ -26,8 +26,8 @@ SJCornerMaskSetRectCorner(__kindof UIView *view, UIRectCorner corners, CGFloat r
             [view.layer addSublayer:border];
         }
         
-        __auto_type updateSublayersLayout = ^(UIImageView *imageView, CAShapeLayer *mask, CAShapeLayer *_Nullable border) {
-            CGRect bounds = imageView.bounds;
+        SJKVOObservedChangeHandler handler = ^(__kindof UIView *target, NSDictionary<NSKeyValueChangeKey,id> * _Nullable change) {
+            CGRect bounds = target.bounds;
             if ( !CGSizeEqualToSize(CGSizeZero, bounds.size) ) {
                 mask.frame = bounds;
                 UIBezierPath *path = [UIBezierPath bezierPathWithRoundedRect:bounds byRoundingCorners:corners cornerRadii:CGSizeMake(radius, radius)];
@@ -39,14 +39,9 @@ SJCornerMaskSetRectCorner(__kindof UIView *view, UIRectCorner corners, CGFloat r
                 }
             }
         };
-        
-        sjkvo_observe(view, @"frame", ^(id  _Nonnull target, NSDictionary<NSKeyValueChangeKey,id> * _Nullable change) {
-            updateSublayersLayout(target, mask, border);
-        });
-        
-        sjkvo_observe(view, @"bounds", ^(id  _Nonnull target, NSDictionary<NSKeyValueChangeKey,id> * _Nullable change) {
-            updateSublayersLayout(target, mask, border);
-        });
+
+        sjkvo_observe(view, @"frame", handler);
+        sjkvo_observe(view, @"bounds", handler);
     }
 }
 
@@ -74,8 +69,8 @@ SJCornerMaskSetRound(__kindof UIView *view, CGFloat borderWidth, UIColor *_Nulla
             [view.layer addSublayer:border];
         }
         
-        __auto_type updateSublayersLayout = ^(UIImageView *imageView, CAShapeLayer *mask, CAShapeLayer *_Nullable border) {
-            CGRect bounds = imageView.bounds;
+        SJKVOObservedChangeHandler handler = ^(__kindof UIView *target, NSDictionary<NSKeyValueChangeKey,id> * _Nullable change) {
+            CGRect bounds = target.bounds;
             if ( !CGSizeEqualToSize(CGSizeZero, bounds.size) ) {
                 mask.frame = bounds;
                 UIBezierPath *path = [UIBezierPath bezierPathWithArcCenter:CGPointMake(bounds.size.width * 0.5, bounds.size.width * 0.5) radius:bounds.size.width * 0.5 startAngle:0 endAngle:M_PI * 2 clockwise:YES];
@@ -88,13 +83,8 @@ SJCornerMaskSetRound(__kindof UIView *view, CGFloat borderWidth, UIColor *_Nulla
             }
         };
         
-        sjkvo_observe(view, @"frame", ^(id  _Nonnull target, NSDictionary<NSKeyValueChangeKey,id> * _Nullable change) {
-            updateSublayersLayout(target, mask, border);
-        });
-        
-        sjkvo_observe(view, @"bounds", ^(id  _Nonnull target, NSDictionary<NSKeyValueChangeKey,id> * _Nullable change) {
-            updateSublayersLayout(target, mask, border);
-        });
+        sjkvo_observe(view, @"frame", handler);
+        sjkvo_observe(view, @"bounds", handler);
     }
 
 }

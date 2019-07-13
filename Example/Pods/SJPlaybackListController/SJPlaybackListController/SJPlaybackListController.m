@@ -222,10 +222,22 @@ NS_ASSUME_NONNULL_BEGIN
         [self playAtIndex:(idx2<_m.count)?idx2:0];
     }
 }
+
+///
+/// Thanks @szdkkk
+/// https://github.com/changsanjiang/SJPlaybackListController/issues/1
+///
 - (void)_randomModePlayNextMedia {
-    NSInteger idx = [self indexForMediaId:self.currentMediaId];
-    NSInteger next = idx; while ( next == idx ) next = arc4random() % _m.count;
-    [self playAtIndex:next];
+    if ( _m.count == 0 )
+        return;
+    if ( __builtin_expect(_m.count == 1, 0) ) {
+        [self playAtIndex:0];
+    }
+    else {
+        NSInteger idx = [self indexForMediaId:self.currentMediaId];
+        NSInteger next = idx; while ( next == idx ) next = arc4random() % _m.count;
+        [self playAtIndex:next];
+    }
 }
 - (void)playAtIndex:(NSInteger)idx {
     id<SJMediaInfo>_Nullable info = [self mediaAtIndex:idx];

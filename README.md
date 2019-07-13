@@ -37,6 +37,25 @@ ___
 
 ## 最近更新
 
+* 新增 切换清晰度的控制层. 开启如下:
+```Objective-C
+    SJVideoPlayerURLAsset *asset1 = [[SJVideoPlayerURLAsset alloc] initWithURL:VideoURL_Level4];
+    asset1.definition_fullName = @"超清 1080P";
+    asset1.definition_lastName = @"超清";
+    
+    SJVideoPlayerURLAsset *asset2 = [[SJVideoPlayerURLAsset alloc] initWithURL:VideoURL_Level3];
+    asset2.definition_fullName = @"高清 720P";
+    asset2.definition_lastName = @"AAAAAAA";
+    
+    SJVideoPlayerURLAsset *asset3 = [[SJVideoPlayerURLAsset alloc] initWithURL:VideoURL_Level2];
+    asset3.definition_fullName = @"清晰 480P";
+    asset3.definition_lastName = @"480P";
+    _player.definitionURLAssets = @[asset1, asset2, asset3];
+    
+    // 先播放asset1. (asset2 和 asset3 将会在用户选择后进行切换)
+    _player.URLAsset = asset1;
+```
+
 * 新增 左右边缘快进快退. 开启如下:
 ```Objective-C
     // 开启左右边缘快进快退. 如需进行更多配置, 请查看`fastForwardViewController`

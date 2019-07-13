@@ -19,4 +19,5 @@
 #import "SJUIMaker.h"
 #import "SJAttributesFactory.h"
 #import "NSObject+SJObserverHelper.h"
+#import "SJImagePickerController.h"
 #endif /* SJUIKit_h */

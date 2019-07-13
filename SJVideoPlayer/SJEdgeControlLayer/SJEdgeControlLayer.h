@@ -35,12 +35,13 @@ extern SJEdgeControlButtonItemTag const SJEdgeControlLayerCenterItem_Replay;    
 @interface SJEdgeControlLayer : SJEdgeControlLayerAdapters<SJControlLayer>
 @property (nonatomic, copy, nullable) void(^clickedBackItemExeBlock)(SJEdgeControlLayer *control);
 
-@property (nonatomic) BOOL hideBackButtonWhenOrientationIsPortrait; // 竖屏时隐藏返回按钮
-@property (nonatomic) BOOL disablePromptWhenNetworkStatusChanges; // 禁止网络状态变化提示
-@property (nonatomic) BOOL hideBottomProgressSlider; // 隐藏底部进度条
-@property (nonatomic) BOOL showResidentBackButton;   // 返回按钮常驻
-@property (nonatomic) BOOL showNetworkSpeedToLoadingView;
-@property (nonatomic) BOOL showLoadingViewWhenPlaybackStatusIsSeeking;
+@property (nonatomic) BOOL hideBackButtonWhenOrientationIsPortrait; ///< 竖屏时隐藏返回按钮
+@property (nonatomic) BOOL disablePromptWhenNetworkStatusChanges; ///< 禁止网络状态变化提示
+@property (nonatomic) BOOL hideBottomProgressSlider; ///< 隐藏底部进度条
+@property (nonatomic) BOOL showResidentBackButton;   ///< 返回按钮常驻
+
+@property (nonatomic) BOOL showNetworkSpeedToLoadingView; ///< 是否在loadingView上显示网速
+@property (nonatomic) BOOL showLoadingViewWhenPlaybackStatusIsSeeking; ///< seek时是否显示loadingView
 @end
 
 

@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="14490.70" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES">
+    <device id="retina6_1" orientation="portrait">
+        <adaptation id="fullscreen"/>
+    </device>
+    <dependencies>
+        <deployment identifier="iOS"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="14490.49"/>
+        <capability name="Safe area layout guides" minToolsVersion="9.0"/>
+        <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
+    </dependencies>
+    <objects>
+        <placeholder placeholderIdentifier="IBFilesOwner" id="-1" userLabel="File's Owner" customClass="SJViewController8">
+            <connections>
+                <outlet property="playerContainerView" destination="4tf-Jg-bpp" id="eII-v1-2V4"/>
+                <outlet property="view" destination="i5M-Pr-FkT" id="sfx-zR-JGt"/>
+            </connections>
+        </placeholder>
+        <placeholder placeholderIdentifier="IBFirstResponder" id="-2" customClass="UIResponder"/>
+        <view clearsContextBeforeDrawing="NO" contentMode="scaleToFill" id="i5M-Pr-FkT">
+            <rect key="frame" x="0.0" y="0.0" width="414" height="896"/>
+            <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+            <subviews>
+                <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="4tf-Jg-bpp">
+                    <rect key="frame" x="0.0" y="44" width="414" height="233"/>
+                    <color key="backgroundColor" red="0.0" green="0.47843137250000001" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                    <constraints>
+                        <constraint firstAttribute="width" secondItem="4tf-Jg-bpp" secondAttribute="height" multiplier="16:9" id="trr-R1-Vgv"/>
+                    </constraints>
+                </view>
+                <button opaque="NO" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="NZo-eZ-nVp">
+                    <rect key="frame" x="123" y="413" width="38" height="30"/>
+                    <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                    <state key="normal" title="Show"/>
+                    <connections>
+                        <action selector="show:" destination="-1" eventType="touchUpInside" id="VZ5-mA-1Bn"/>
+                    </connections>
+                </button>
+                <button opaque="NO" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="RcB-qK-qZs">
+                    <rect key="frame" x="117" y="473" width="50" height="30"/>
+                    <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                    <state key="normal" title="Hidden"/>
+                    <connections>
+                        <action selector="hidden:" destination="-1" eventType="touchUpInside" id="dO4-e4-Dad"/>
+                    </connections>
+                </button>
+            </subviews>
+            <color key="backgroundColor" red="1" green="1" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+            <constraints>
+                <constraint firstItem="4tf-Jg-bpp" firstAttribute="width" secondItem="4tf-Jg-bpp" secondAttribute="height" multiplier="16:9" id="7SK-FN-dfg"/>
+                <constraint firstItem="4tf-Jg-bpp" firstAttribute="width" secondItem="4tf-Jg-bpp" secondAttribute="height" multiplier="16:9" id="C0C-HS-gxv"/>
+                <constraint firstItem="4tf-Jg-bpp" firstAttribute="leading" secondItem="Q5M-cg-NOt" secondAttribute="leading" id="XDo-a7-09s"/>
+                <constraint firstItem="4tf-Jg-bpp" firstAttribute="top" secondItem="Q5M-cg-NOt" secondAttribute="top" id="ckN-wy-63D"/>
+                <constraint firstAttribute="trailing" secondItem="4tf-Jg-bpp" secondAttribute="trailing" id="oT9-Pt-1mc"/>
+            </constraints>
+            <viewLayoutGuide key="safeArea" id="Q5M-cg-NOt"/>
+        </view>
+    </objects>
+</document>

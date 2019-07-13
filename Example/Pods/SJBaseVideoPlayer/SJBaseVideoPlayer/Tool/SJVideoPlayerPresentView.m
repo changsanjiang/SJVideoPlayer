@@ -35,7 +35,7 @@ NS_ASSUME_NONNULL_BEGIN
     if ( _layoutSubviewsExeBlock ) _layoutSubviewsExeBlock(self);
 }
 
-- (BOOL)placeholderImageViewIsHidden {
+- (BOOL)isPlaceholderImageViewHidden {
     return _isHidden;
 }
 

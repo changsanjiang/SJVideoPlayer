@@ -71,6 +71,10 @@
     
     [m addObject:[[LWZTableSectionShrinker alloc] initWithTitle:@"Add Button Item To Control Layer" titleWhenShrank:nil dataArr:[self _createAddButtonItemToControlLayerDemoItems]]];
     
+    [m addObject:[[LWZTableSectionShrinker alloc] initWithTitle:@"Pop Prompt Control" titleWhenShrank:nil dataArr:[self _createPromptDemoItems]]];
+    
+    [m addObject:[[LWZTableSectionShrinker alloc] initWithTitle:@"Switch Video Definition" titleWhenShrank:nil dataArr:[self _createSwitchVideoDefinitionDemoItems]]];
+    
     _data = m.copy;
 }
 
@@ -133,6 +137,30 @@
                              path:@"demo/controlLayer/switching"],
       ];
 }
+
+- (NSArray<Item *> *)_createPromptDemoItems {
+    return
+    @[
+      [[Item alloc] initWithTitle:@"Prompt 1"
+                         subTitle:@"弹出提示(左下角)"
+                             path:@"demo/prompt1"],
+      
+      [[Item alloc] initWithTitle:@"Prompt 2"
+                         subTitle:@"弹出提示(中间)"
+                             path:@"demo/prompt2"],
+      ];
+}
+
+- (NSArray<Item *> *)_createSwitchVideoDefinitionDemoItems {
+    return
+    @[
+      [[Item alloc] initWithTitle:@"Switch Video Definition"
+                         subTitle:@"切换视频清晰度"
+                             path:@"demo/SwitchVideoDefinition"],
+      ];
+}
+
+
 
 #pragma mark -
 

@@ -38,6 +38,8 @@
 #import "SJPlayStatusObserver.h"
 #import "SJFloatSmallViewController.h"
 #import "SJEdgeFastForwardViewController.h"
+#import "SJVideoDefinitionSwitchingInfo+Private.h"
+#import "SJPopPromptController.h"
 
 #if __has_include(<Masonry/Masonry.h>)
 #import <Masonry/Masonry.h>
@@ -206,7 +208,7 @@ typedef struct _SJPlayerControlInfo {
 }
 
 + (NSString *)version {
-    return @"2.5.0";
+    return @"2.5.3";
 }
 
 - (nullable __kindof UIViewController *)atViewController {
@@ -565,6 +567,16 @@ typedef struct _SJPlayerControlInfo {
 - (NSTimeInterval)delayInSecondsForHiddenPlaceholderImageView {
     return _controlInfo->placeholder.delayHidden;
 }
+
+- (BOOL)isPlaceholderImageViewHidden {
+    return self.presentView.isPlaceholderImageViewHidden;
+}
+- (void)showPlaceholderImageView {
+    [self.presentView showPlaceholderAnimated:YES];
+}
+- (void)hiddenPlaceholderImageView {
+    [self.presentView hiddenPlaceholderAnimated:YES delay:0];
+}
 @end
 
 
@@ -673,7 +685,25 @@ typedef struct _SJPlayerControlInfo {
 }
 
 - (void)switchVideoDefinition:(SJVideoPlayerURLAsset *)URLAsset {
+    self.definitionSwitchingInfo.switchingAsset = URLAsset;
+    self.definitionSwitchingInfo.status = SJMediaPlaybackSwitchDefinitionStatusSwitching;
     [self.playbackController switchVideoDefinition:URLAsset];
+}
+
+- (SJVideoDefinitionSwitchingInfo *)definitionSwitchingInfo {
+    SJVideoDefinitionSwitchingInfo *_Nullable definitionSwitchingInfo = objc_getAssociatedObject(self, _cmd);
+    if ( definitionSwitchingInfo == nil ) {
+        definitionSwitchingInfo = [SJVideoDefinitionSwitchingInfo new];
+        objc_setAssociatedObject(self, @selector(definitionSwitchingInfo), definitionSwitchingInfo, OBJC_ASSOCIATION_RETAIN_NONATOMIC);
+    }
+    return definitionSwitchingInfo;
+}
+
+- (void)_resetDefinitionSwitchingInfo {
+    SJVideoDefinitionSwitchingInfo *info = self.definitionSwitchingInfo;
+    info.currentPlayingAsset = nil;
+    info.switchingAsset = nil;
+    info.status = SJMediaPlaybackSwitchDefinitionStatusUnknown;
 }
 
 - (SJMediaPlaybackType)playbackType {
@@ -698,13 +728,19 @@ typedef struct _SJPlayerControlInfo {
 // 1.
 - (void)setURLAsset:(nullable SJVideoPlayerURLAsset *)URLAsset {
     if ( _URLAsset ) {
-        if ( self.assetDeallocExeBlock )
-            self.assetDeallocExeBlock(self);
+        if ( self.assetDeallocExeBlock ) self.assetDeallocExeBlock(self);
     }
+
+    [self _resetDefinitionSwitchingInfo];
+    
     _URLAsset = URLAsset;
+    
     [self _updateAssetObservers];
+    
     // prepareToPlay
     self.playbackController.media = URLAsset;
+    self.definitionSwitchingInfo.currentPlayingAsset = URLAsset;
+    
     if ( URLAsset ) {
         if ( [self.controlLayerDelegate respondsToSelector:@selector(videoPlayer:prepareToPlay:)] ) {
             [self.controlLayerDelegate videoPlayer:self prepareToPlay:URLAsset];
@@ -716,6 +752,7 @@ typedef struct _SJPlayerControlInfo {
     }
     
     [self _showOrHiddenPlaceholderImageViewIfNeeded];
+
 }
 - (nullable SJVideoPlayerURLAsset *)URLAsset {
     return _URLAsset;
@@ -877,10 +914,10 @@ typedef struct _SJPlayerControlInfo {
     }
     
     _operationOfInitializing = nil;
-    [_playbackController stop];
     _playModelObserver = nil;
     _URLAsset = nil;
-    
+    [_playbackController stop];
+    [self _resetDefinitionSwitchingInfo];
     [self _showOrHiddenPlaceholderImageViewIfNeeded];
 }
 
@@ -1091,11 +1128,14 @@ typedef struct _SJPlayerControlInfo {
 }
 
 - (void)playbackController:(id<SJMediaPlaybackController>)controller switchingDefinitionStatusDidChange:(SJMediaPlaybackSwitchDefinitionStatus)status media:(id<SJMediaModelProtocol>)media {
-
+    
     if ( status == SJMediaPlaybackSwitchDefinitionStatusFinished ) {
         _URLAsset = (id)media;
+        self.definitionSwitchingInfo.currentPlayingAsset = _URLAsset;
         [self _updateAssetObservers];
     }
+    
+    self.definitionSwitchingInfo.status = status;
     
     if ( [self.controlLayerDelegate respondsToSelector:@selector(videoPlayer:switchingDefinitionStatusDidChange:media:)] ) {
         [self.controlLayerDelegate videoPlayer:self switchingDefinitionStatusDidChange:status media:media];
@@ -2492,6 +2532,29 @@ typedef struct _SJPlayerControlInfo {
 
 
 #pragma mark - 提示
+
+@implementation SJBaseVideoPlayer (PopPromptControl)
+- (void)setPopPromptController:(nullable id<SJPopPromptControllerProtocol>)popPromptController {
+    objc_setAssociatedObject(self, @selector(popPromptController), popPromptController, OBJC_ASSOCIATION_RETAIN_NONATOMIC);
+    if ( popPromptController != nil ) {
+        [self _setupPopPromptController];
+    }
+}
+
+- (id<SJPopPromptControllerProtocol>)popPromptController {
+    id<SJPopPromptControllerProtocol>_Nullable controller = objc_getAssociatedObject(self, _cmd);
+    if ( controller == nil ) {
+        controller = [SJPopPromptController new];
+        objc_setAssociatedObject(self, _cmd, controller, OBJC_ASSOCIATION_RETAIN_NONATOMIC);
+        [self _setupPopPromptController];
+    }
+    return controller;
+}
+
+- (void)_setupPopPromptController {
+    self.popPromptController.target = self.presentView;
+}
+@end
 
 @implementation SJBaseVideoPlayer (Prompt)
 

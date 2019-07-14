@@ -44,9 +44,10 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (void)restartControlLayer {
     _restarted = YES;
-    [_videoPlayer controlLayerNeedAppear];
+    sj_view_makeAppear(_moreSettingsView, YES);
     sj_view_makeAppear(self.controlView, YES);
     [_moreSettingsView update];
+    [self.videoPlayer needHiddenStatusBar];
 }
 
 - (void)exitControlLayer {
@@ -108,7 +109,6 @@ NS_ASSUME_NONNULL_BEGIN
             __strong typeof(_self) self = _self;
             if ( !self ) return;
             setting.clickedExeBlock(setting);
-            if ( self.disappearExeBlock ) self.disappearExeBlock(self);
         };
     }
 }
@@ -210,12 +210,6 @@ NS_ASSUME_NONNULL_BEGIN
     return self;
 }
 
-- (BOOL)videoPlayer:(__kindof SJBaseVideoPlayer *)videoPlayer gestureRecognizerShouldTrigger:(SJPlayerGestureType)type location:(CGPoint)location {
-    if ( CGRectContainsPoint( _moreSettingsView.frame, location) ||
-         CGRectContainsPoint( _moreSecondarySettingView.frame, location) ) return NO;
-    return YES;
-}
-
 /// 禁止自动隐藏
 - (BOOL)controlLayerOfVideoPlayerCanAutomaticallyDisappear:(__kindof SJBaseVideoPlayer *)videoPlayer {
     return NO;
@@ -227,19 +221,28 @@ NS_ASSUME_NONNULL_BEGIN
     sj_view_makeDisappear(_moreSecondarySettingView, NO);
 }
 
-- (void)controlLayerNeedAppear:(__kindof SJBaseVideoPlayer *)videoPlayer {
-    sj_view_makeAppear(_moreSettingsView, YES);
-    [UIView animateWithDuration:0.25 animations:^{
-        [videoPlayer needHiddenStatusBar];
-    }];
+- (void)controlLayerNeedAppear:(__kindof SJBaseVideoPlayer *)videoPlayer { }
+
+- (void)controlLayerNeedDisappear:(__kindof SJBaseVideoPlayer *)videoPlayer {}
+
+- (BOOL)videoPlayer:(__kindof SJBaseVideoPlayer *)videoPlayer gestureRecognizerShouldTrigger:(SJPlayerGestureType)type location:(CGPoint)location {
+    
+    if ( type == SJPlayerGestureType_SingleTap ) {
+        if ( !CGRectContainsPoint(self.moreSettingsView.frame, location) &&
+             !CGRectContainsPoint( _moreSecondarySettingView.frame, location) ) {
+            if ( [self.delegate respondsToSelector:@selector(tappedOnTheBlankAreaOfControlLayer:)] ) {
+                [self.delegate tappedOnTheBlankAreaOfControlLayer:self];
+            }
+        }
+        
+        return NO;
+    }
+    
+    return YES;
 }
 
-- (void)controlLayerNeedDisappear:(__kindof SJBaseVideoPlayer *)videoPlayer {
-    if ( _disappearExeBlock ) _disappearExeBlock(self);
-}
-
-- (void)videoPlayer:(__kindof SJBaseVideoPlayer *)videoPlayer willRotateView:(BOOL)isFull {
-    if ( _disappearExeBlock ) _disappearExeBlock(self);
+- (BOOL)canTriggerRotationOfVideoPlayer:(__kindof SJBaseVideoPlayer *)videoPlayer {
+    return NO;
 }
 
 /// 声音被改变.

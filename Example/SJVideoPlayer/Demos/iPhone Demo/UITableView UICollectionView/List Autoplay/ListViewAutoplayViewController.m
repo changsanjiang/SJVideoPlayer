@@ -14,6 +14,7 @@
 #import <SJBaseVideoPlayer/UIScrollView+ListViewAutoplaySJAdd.h>
 
 #import "SJMeidaItemModel.h"
+#import "SJRotationManager.h"
 
 NS_ASSUME_NONNULL_BEGIN
 static NSString *kDemoTableViewCell = @"DemoTableViewCell";
@@ -25,6 +26,10 @@ static NSString *kDemoTableViewCell = @"DemoTableViewCell";
 @end
 
 @implementation ListViewAutoplayViewController
+
+- (BOOL)shouldAutorotate {
+    return NO;
+}
 
 - (void)viewDidLoad {
     [super viewDidLoad];
@@ -104,7 +109,7 @@ static NSString *kDemoTableViewCell = @"DemoTableViewCell";
     if ( indexPath != nil ) {
         DemoTableViewCellViewModel *vm = _models[indexPath.row];
         if ( !_player ) {
-            _player = [SJVideoPlayer player];
+            _player = [SJVideoPlayer player]; 
         }
         
         _player.URLAsset = [[SJVideoPlayerURLAsset alloc] initWithURL:vm.URL playModel:[SJPlayModel UITableViewCellPlayModelWithPlayerSuperviewTag:vm.coverTag atIndexPath:indexPath tableView:self.tableView]];

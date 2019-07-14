@@ -527,11 +527,6 @@ NS_ASSUME_NONNULL_BEGIN
 // - Rotation -
 
 @interface SJBaseVideoPlayer (Rotation)
-/// Default is SJRotationManager. It only rotates the player view.
-/// When you want to rotate the view controller, You can use the SJVCRotationManager.
-/// 默认情况下, 播放器将只旋转播放界面, ViewController并不会旋转.
-/// 当您想要旋转ViewController时, 可以采用此管理类进行旋转.
-/// - 使用示例请看`SJVCRotationManager`第36行注释。
 @property (nonatomic, strong, null_resettable) id<SJRotationManagerProtocol> rotationManager;
 
 @property (nonatomic, copy, nullable) BOOL(^shouldTriggerRotation)(__kindof SJBaseVideoPlayer *player);
@@ -562,7 +557,6 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic, readonly) BOOL isTransitioning;
 
 @property (nonatomic) BOOL disableAutoRotation;
-@property (nonatomic) NSTimeInterval rotationTime;
 @property (nonatomic) SJOrientation orientation;
 @property (nonatomic) SJAutoRotateSupportedOrientation supportedOrientation;
 @property (nonatomic, copy, nullable) void(^viewWillRotateExeBlock)(__kindof SJBaseVideoPlayer *player, BOOL isFullScreen);

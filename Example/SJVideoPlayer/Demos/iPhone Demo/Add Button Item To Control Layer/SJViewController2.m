@@ -11,6 +11,7 @@
 #import <Masonry/Masonry.h>
 #import <SJUIKit/SJUIKit.h>
 #import "SJSourceURLs.h"
+#import "SJRotationManager.h"
 
 static SJEdgeControlButtonItemTag const SJTestItemTag1 = 100;
 static SJEdgeControlButtonItemTag const SJTestImageItemTag = 101;
@@ -118,9 +119,10 @@ static SJEdgeControlButtonItemTag const SJTestCustomItemTag = 103;
     [_player.view mas_makeConstraints:^(MASConstraintMaker *make) {
         make.edges.offset(0);
     }];
-    _player.assetURL = SourceURL1;
+//    _player.assetURL = SourceURL1;
     _player.fastForwardViewController.enabled = YES; // 开启左右边缘快进快退功能
     _player.enableFilmEditing = YES;
+    
 }
 
 @end

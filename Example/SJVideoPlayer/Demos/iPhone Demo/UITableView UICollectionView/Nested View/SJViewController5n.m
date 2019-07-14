@@ -7,7 +7,6 @@
 //
 
 #import "SJViewController5n.h"
-#import <SJBaseVideoPlayer/SJVCRotationManager.h>
 #import <SJVideoPlayer/SJVideoPlayer.h>
 #import <SJUIKit/SJUIKit.h>
 #import <Masonry/Masonry.h>

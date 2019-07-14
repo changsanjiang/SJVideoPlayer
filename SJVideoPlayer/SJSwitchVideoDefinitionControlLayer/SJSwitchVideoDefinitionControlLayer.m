@@ -98,6 +98,13 @@ NS_ASSUME_NONNULL_BEGIN
 
 #pragma mark -
 
+- (UIColor *)selectedTextColor {
+   if ( _selectedTextColor == nil )
+       return UIColor.orangeColor;
+    
+    return _selectedTextColor;
+}
+
 - (void)setAssets:(nullable NSArray<SJVideoPlayerURLAsset *> *)assets {
     _assets = assets.copy;
     [self.rightAdapter removeAllItems];
@@ -125,11 +132,8 @@ NS_ASSUME_NONNULL_BEGIN
                 make.alignment(NSTextAlignmentCenter);
                 
                 UIColor *textColor = nil;
-                if ( asset == info.switchingAsset ) {
-                    textColor = UIColor.orangeColor;
-                }
-                else if ( info.switchingAsset == nil && asset == current ) {
-                    textColor = UIColor.orangeColor;
+                if ( asset == info.switchingAsset || (info.switchingAsset == nil && asset == current) ) {
+                    textColor = self.selectedTextColor;
                 }
                 else {
                     textColor = UIColor.whiteColor;

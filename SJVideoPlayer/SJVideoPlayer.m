@@ -30,7 +30,7 @@
 #endif
 
 NS_ASSUME_NONNULL_BEGIN
-@interface SJVideoPlayer ()<SJSwitchVideoDefinitionControlLayerDelegate>
+@interface SJVideoPlayer ()<SJSwitchVideoDefinitionControlLayerDelegate, SJMoreSettingControlLayerDelegate>
 @property (nonatomic, strong, readonly) SJVideoPlayerControlSettingRecorder *recorder;
 
 @property (nonatomic, strong, nullable) id<SJFloatSmallViewControllerObserverProtocol> sj_floatSmallViewControllerObserver;
@@ -52,7 +52,7 @@ NS_ASSUME_NONNULL_BEGIN
 #endif
 
 + (NSString *)version {
-    return @"v2.6.0";
+    return @"v2.6.1";
 }
 
 + (instancetype)player {
@@ -261,12 +261,7 @@ NS_ASSUME_NONNULL_BEGIN
 - (SJMoreSettingControlLayer *)defaultMoreSettingControlLayer {
     if ( !_defaultMoreSettingControlLayer ) {
         _defaultMoreSettingControlLayer = [SJMoreSettingControlLayer new];
-        __weak typeof(self) _self = self;
-        _defaultMoreSettingControlLayer.disappearExeBlock = ^(SJMoreSettingControlLayer * _Nonnull control) {
-            __strong typeof(_self) self = _self;
-            if ( !self ) return ;
-            [self.switcher switchToPreviousControlLayer];
-        };
+        _defaultMoreSettingControlLayer.delegate = self;
     }
     return _defaultMoreSettingControlLayer;
 }
@@ -420,6 +415,7 @@ NS_ASSUME_NONNULL_BEGIN
 // 播放器是否只支持一个方向
 - (BOOL)_whetherToSupportOnlyOneOrientation {
     if ( self.supportedOrientation == SJAutoRotateSupportedOrientation_Portrait ) return YES;
+    if ( self.supportedOrientation == SJAutoRotateSupportedOrientation_PortraitUpsideDown ) return YES;
     if ( self.supportedOrientation == SJAutoRotateSupportedOrientation_LandscapeLeft ) return YES;
     if ( self.supportedOrientation == SJAutoRotateSupportedOrientation_LandscapeRight ) return YES;
     return NO;
@@ -475,7 +471,7 @@ NS_ASSUME_NONNULL_BEGIN
     }
     
     return ^ (SJVideoPlayer *player) {
-        UIViewController *vc = [player atViewController];
+        UIViewController *vc = _atViewController(player.view);
         [vc.view endEditing:YES];
         if ( vc.presentingViewController ) {
             [vc dismissViewControllerAnimated:YES completion:nil];
@@ -484,6 +480,18 @@ NS_ASSUME_NONNULL_BEGIN
             [vc.navigationController popViewControllerAnimated:YES];
         }
     };
+}
+
+static inline __kindof UIViewController *_Nullable
+_atViewController(UIView *view) {
+    UIResponder *_Nullable responder = view;
+    if ( responder != nil ) {
+        while ( ![responder isKindOfClass:[UIViewController class]] ) {
+            responder = responder.nextResponder;
+            if ( [responder isMemberOfClass:[UIResponder class]] || !responder ) return nil;
+        }
+    }
+    return (__kindof UIViewController *)responder;
 }
 @end
 

@@ -82,15 +82,17 @@
 - (NSArray<Item *> *)_createRotationControlDemoItems {
     return
     @[
-      [[Item alloc] initWithTitle:@"Rotate Player View"
-                         subTitle:@"旋转`播放器视图`1"
-                             path:@"demo/rotationMode/vc3"],
-      [[Item alloc] initWithTitle:@"Rotate Player View And View Controller2"
-                         subTitle:@"旋转`播放器视图`和`视图控制器`2"
-                             path:@"demo/rotationMode/vc2"],
-      [[Item alloc] initWithTitle:@"Rotate Player View And View Controller1"
-                         subTitle:@"旋转`播放器视图`和`视图控制器`1"
+      [[Item alloc] initWithTitle:@"Rotation Control 1"
+                         subTitle:@"旋转控制 1"
                              path:@"demo/rotationMode/vc1"],
+      
+      [[Item alloc] initWithTitle:@"Rotation Control 2"
+                         subTitle:@"旋转控制 2"
+                             path:@"demo/rotationMode/vc2"],
+      
+      [[Item alloc] initWithTitle:@"Rotation Control 3"
+                         subTitle:@"旋转控制 3"
+                             path:@"demo/rotationMode/vc3"]
       ];
 }
 

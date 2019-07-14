@@ -52,10 +52,21 @@ NS_ASSUME_NONNULL_BEGIN
     
     NSString *hashstr = [NSString stringWithFormat:@"%lu-%@", (unsigned long)[observer hash], keyPath];
     
-    @synchronized (self) {
-        if ( [[self sj_observerhashSet] containsObject:hashstr] ) return;
-        else [[self sj_observerhashSet] addObject:hashstr];
+    static dispatch_semaphore_t lock = nil;
+    static dispatch_once_t onceToken;
+    dispatch_once(&onceToken, ^{
+        lock = dispatch_semaphore_create(1);
+    });
+    
+    dispatch_semaphore_wait(lock, DISPATCH_TIME_FOREVER);
+    NSMutableSet *set = [self sj_observerhashSet];
+    if ( [set containsObject:hashstr] ) {
+        dispatch_semaphore_signal(lock);
+        return;
     }
+    
+    [set addObject:hashstr];
+    dispatch_semaphore_signal(lock);
     
     [self addObserver:observer forKeyPath:keyPath options:options context:context];
     
@@ -73,9 +84,9 @@ NS_ASSUME_NONNULL_BEGIN
     [observer sj_addDeallocCallbackTask:^(id  _Nonnull obj) {
         __strong typeof(_self) self = _self;
         if ( !self ) return;
-        @synchronized (self) {
-            [[self sj_observerhashSet] removeObject:hashstr];
-        }
+        dispatch_semaphore_wait(lock, DISPATCH_TIME_FOREVER);
+        [set removeObject:hashstr];
+        dispatch_semaphore_signal(lock);
     }];
     
     objc_setAssociatedObject(self, &helper->_key, helper, OBJC_ASSOCIATION_RETAIN_NONATOMIC);

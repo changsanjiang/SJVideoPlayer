@@ -1,19 +1,27 @@
 //
 //  SJRotationManager.h
-//  SJOrentationObserverProject
+//  SJVideoPlayer_Example
 //
-//  Created by 畅三江 on 2018/6/25.
-//  Copyright © 2018年 SanJiang. All rights reserved.
-//
-//  https://github.com/changsanjiang/SJOrentationObserver
-//  changsanjiang@gmail.com
+//  Created by 畅三江 on 2019/7/13.
+//  Copyright © 2019 changsanjiang. All rights reserved.
 //
 
-#import <UIKit/UIKit.h>
+#import <Foundation/Foundation.h>
+
+#if __has_include(<<SJBaseVideoPlayer/SJBaseVideoPlayer.h>)
+#import <SJBaseVideoPlayer/SJRotationManagerDefines.h>
+#else
 #import "SJRotationManagerDefines.h"
+#endif
+@protocol SJRotationManagerDelegate;
 
 NS_ASSUME_NONNULL_BEGIN
 @interface SJRotationManager : NSObject<SJRotationManagerProtocol>
+@property (nonatomic, weak, nullable) id<SJRotationManagerDelegate> delegate;
+@end
 
+@protocol SJRotationManagerDelegate <NSObject>
+- (BOOL)vc_prefersStatusBarHidden;
+- (UIStatusBarStyle)vc_preferredStatusBarStyle;
 @end
 NS_ASSUME_NONNULL_END

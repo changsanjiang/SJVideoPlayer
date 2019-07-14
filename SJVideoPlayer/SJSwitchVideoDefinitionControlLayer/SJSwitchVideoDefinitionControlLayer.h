@@ -18,6 +18,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 @property (nonatomic, weak, nullable) id<SJSwitchVideoDefinitionControlLayerDelegate> delegate;
 
+@property (nonatomic, strong, null_resettable) UIColor *selectedTextColor;
 @end
 
 @protocol SJSwitchVideoDefinitionControlLayerDelegate <NSObject>

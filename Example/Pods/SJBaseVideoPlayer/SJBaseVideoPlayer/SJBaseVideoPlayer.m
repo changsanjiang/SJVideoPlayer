@@ -33,7 +33,6 @@
 #import "SJModalViewControlllerManager.h"
 #import "SJBaseVideoPlayerStatistics.h"
 #import "SJBaseVideoPlayerAutoRefreshController.h"
-#import "SJVCRotationManager.h"
 #import "SJPlayerView.h"
 #import "SJPlayStatusObserver.h"
 #import "SJFloatSmallViewController.h"
@@ -208,7 +207,7 @@ typedef struct _SJPlayerControlInfo {
 }
 
 + (NSString *)version {
-    return @"2.5.3";
+    return @"2.6.0";
 }
 
 - (nullable __kindof UIViewController *)atViewController {
@@ -217,7 +216,7 @@ typedef struct _SJPlayerControlInfo {
          self.modalViewControllerManager.isPresentedModalViewControlller )
         responder = _mvcm_targetSuperView.nextResponder;
     else
-        responder = _view.nextResponder;
+        responder = _presentView.nextResponder;
     
     if ( !responder )
         return nil;
@@ -275,7 +274,8 @@ typedef struct _SJPlayerControlInfo {
 #endif
     free(_controlInfo);
     if ( _autoRefresh ) [_autoRefresh cancel];
-    if ( _URLAsset && self.assetDeallocExeBlock ) self.assetDeallocExeBlock(self);
+    if ( _URLAsset != nil && self.assetDeallocExeBlock )
+        self.assetDeallocExeBlock(self);
     [_presentView removeFromSuperview];
     [_view removeFromSuperview];
 }
@@ -915,6 +915,8 @@ typedef struct _SJPlayerControlInfo {
     
     _operationOfInitializing = nil;
     _playModelObserver = nil;
+    if ( _URLAsset != nil && self.assetDeallocExeBlock )
+        self.assetDeallocExeBlock(self);
     _URLAsset = nil;
     [_playbackController stop];
     [self _resetDefinitionSwitchingInfo];
@@ -1365,7 +1367,7 @@ typedef struct _SJPlayerControlInfo {
         return YES;
     if ( self.lockedScreen )
         return YES;
-    if ( self.rotationManager.transitioning ) {
+    if ( self.rotationManager.isTransitioning ) {
         if ( !self.rotationManager.isFullscreen )
             return NO;
         else if ( !self.disabledControlLayerAppearManager && self.controlLayerIsAppeared )
@@ -1801,13 +1803,14 @@ typedef struct _SJPlayerControlInfo {
 
 - (void)setControlLayerAppearManager:(id<SJControlLayerAppearManager> _Nullable)controlLayerAppearManager {
     _controlLayerAppearManager = controlLayerAppearManager;
-    [self _needUpdateControlLayerAppearManagerProperties];
+    [self _setupControlLayerAppearManager];
 }
+
 - (id<SJControlLayerAppearManager>)controlLayerAppearManager {
     if ( _controlLayerAppearManager )
         return _controlLayerAppearManager;
     _controlLayerAppearManager = [[SJControlLayerAppearStateManager alloc] init];
-    [self _needUpdateControlLayerAppearManagerProperties];
+    [self _setupControlLayerAppearManager];
     return _controlLayerAppearManager;
 }
 
@@ -1818,7 +1821,7 @@ typedef struct _SJPlayerControlInfo {
     return objc_getAssociatedObject(self, _cmd);
 }
 
-- (void)_needUpdateControlLayerAppearManagerProperties {
+- (void)_setupControlLayerAppearManager {
     if ( !_controlLayerAppearManager )
         return;
     
@@ -1867,7 +1870,7 @@ typedef struct _SJPlayerControlInfo {
             self.controlLayerAppearStateDidChangeExeBlock(self, mgr.isAppeared);
 
         if ( !self.rotationManager.isFullscreen ||
-              self.rotationManager.transitioning ) {
+              self.rotationManager.isTransitioning ) {
             [UIView animateWithDuration:0 animations:^{
             } completion:^(BOOL finished) {
                 [[self atViewController] setNeedsStatusBarAppearanceUpdate];
@@ -2120,7 +2123,9 @@ typedef struct _SJPlayerControlInfo {
 
 - (id<SJRotationManagerProtocol>)rotationManager {
     if ( _rotationManager ) return _rotationManager;
-    _rotationManager = [[SJRotationManager alloc] init];
+    SJRotationManager *rotationManager = [[SJRotationManager alloc] init];
+    rotationManager.delegate = (id)self;
+    _rotationManager = rotationManager;
     [self _configRotationManager:_rotationManager];
     return _rotationManager;
 }
@@ -2144,8 +2149,8 @@ typedef struct _SJPlayerControlInfo {
         if ( mgr.isFullscreen == NO ) {
             if ( self.playModelObserver.isScrolling ) return NO;
             if ( !self.view.superview ) return NO;
-            UIWindow *_Nullable window = self.view.window;
-            if ( window && !window.isKeyWindow ) return NO;
+//            UIWindow *_Nullable window = self.view.window;
+//            if ( window && !window.isKeyWindow ) return NO;
             if ( self.isPlayOnScrollView && !(self.isScrollAppeared || self.controlInfo->floatSmallViewControl.isAppeared) ) return NO;
             if ( self.touchedOnTheScrollView ) return NO;
         }
@@ -2224,22 +2229,7 @@ typedef struct _SJPlayerControlInfo {
 }
 
 - (UIInterfaceOrientation)currentOrientation {
-    UIInterfaceOrientation orientation = UIInterfaceOrientationUnknown;
-    switch ( self.orientation ) {
-        case SJOrientation_Portrait: {
-            orientation = UIInterfaceOrientationPortrait;
-        }
-            break;
-        case SJOrientation_LandscapeLeft: {
-            orientation = UIInterfaceOrientationLandscapeRight;
-        }
-            break;
-        case SJOrientation_LandscapeRight: {
-            orientation = UIInterfaceOrientationLandscapeLeft;
-        }
-            break;
-    }
-    return orientation;
+    return (NSInteger)self.orientation;
 }
 
 - (void)rotate {
@@ -2267,16 +2257,8 @@ typedef struct _SJPlayerControlInfo {
     return self.rotationManager.disableAutorotation;
 }
 
-- (void)setRotationTime:(NSTimeInterval)rotationTime {
-    self.rotationManager.duration = rotationTime;
-}
-
-- (NSTimeInterval)rotationTime {
-    return self.rotationManager.duration;
-}
-
 - (BOOL)isTransitioning {
-    return self.rotationManager.transitioning;
+    return self.rotationManager.isTransitioning;
 }
 
 - (BOOL)isFullScreen {

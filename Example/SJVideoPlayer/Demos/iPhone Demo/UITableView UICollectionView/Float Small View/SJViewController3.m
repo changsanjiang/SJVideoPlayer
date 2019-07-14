@@ -10,7 +10,6 @@
 #import "SJRotationMode2ViewModel.h"
 #import <SJUIKit/SJUIKit.h>
 #import <SJVideoPlayer/SJVideoPlayer.h>
-#import <SJBaseVideoPlayer/SJVCRotationManager.h>
 #import <Masonry/Masonry.h>
 #import "SJViewController4.h"
 

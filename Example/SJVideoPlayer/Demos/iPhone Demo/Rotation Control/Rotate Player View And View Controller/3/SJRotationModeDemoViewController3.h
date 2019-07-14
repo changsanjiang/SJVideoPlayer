@@ -2,7 +2,7 @@
 //  SJRotationModeDemoViewController3.h
 //  SJVideoPlayer_Example
 //
-//  Created by 畅三江 on 2019/6/8.
+//  Created by 畅三江 on 2019/7/14.
 //  Copyright © 2019 changsanjiang. All rights reserved.
 //
 

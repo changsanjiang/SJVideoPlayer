@@ -154,6 +154,16 @@ SJEdgeControlButtonItemTag const SJEdgeControlLayerCenterItem_Replay = 40000;
 }
 
 - (void)_buttonItemPerformedAction:(SJEdgeControlButtonItem *)item {
+    if ( [_topAdapter containsItem:item] ) {
+        if ( item.tag == SJEdgeControlLayerTopItem_Back )
+            return;
+    }
+    
+    if ( [_bottomAdapter containsItem:item] ) {
+        if ( item.tag == SJEdgeControlLayerBottomItem_FullBtn )
+            return;
+    }
+    
     if ( [_topAdapter containsItem:item] ||
          [_leftAdapter containsItem:item] ||
          [_bottomAdapter containsItem:item] ||

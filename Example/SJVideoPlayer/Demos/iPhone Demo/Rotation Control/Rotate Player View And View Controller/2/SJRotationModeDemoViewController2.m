@@ -10,14 +10,14 @@
 #import "SJRotationMode2ViewModel.h"
 #import <SJUIKit/SJUIKit.h>
 #import <SJVideoPlayer/SJVideoPlayer.h>
-#import <SJBaseVideoPlayer/SJVCRotationManager.h>
 #import <Masonry/Masonry.h>
+
+#import "SJRotationManager.h"
 
 @interface SJRotationModeDemoViewController2 ()<UITableViewDelegate, UITableViewDataSource, SJMediaTableViewCellDelegate>
 @property (weak, nonatomic) IBOutlet UITableView *tableView;
 @property (nonatomic, strong, nullable) SJRotationMode2ViewModel *viewModel;
 @property (nonatomic, strong, nullable) SJVideoPlayer *player;
-@property (nonatomic, strong, readonly) SJVCRotationManager *rotationManager;
 @end
 
 @implementation SJRotationModeDemoViewController2
@@ -38,7 +38,7 @@
     [alertController addAction:[UIAlertAction actionWithTitle:@"OK" style:0 handler:^(UIAlertAction * _Nonnull action) {}]];
     
     dispatch_async(dispatch_get_main_queue(), ^{
-        [self presentViewController:alertController animated:YES completion:nil];
+        [self.player.atViewController presentViewController:alertController animated:YES completion:nil];
     });
 }
 
@@ -52,7 +52,6 @@
     if ( _player == nil ) {
         _player = [SJVideoPlayer player];
         _player.allowHorizontalTriggeringOfPanGesturesInCells = YES;
-        _player.rotationManager = self.rotationManager;
         [self _observePlayerViewAppearState];
         [self _addTestEdgeItemsToPlayer];
     }
@@ -154,31 +153,9 @@
 }
 
 #pragma mark -
-@synthesize rotationManager = _rotationManager;
-- (SJVCRotationManager *)rotationManager {
-    if ( _rotationManager == nil ) {
-        _rotationManager = [[SJVCRotationManager alloc] initWithViewController:self];
-    }
-    return _rotationManager;
-}
-
-- (void)viewWillTransitionToSize:(CGSize)size withTransitionCoordinator:(id<UIViewControllerTransitionCoordinator>)coordinator {
-    [_rotationManager vc_viewWillTransitionToSize:size withTransitionCoordinator:coordinator];
-    [super viewWillTransitionToSize:size withTransitionCoordinator:coordinator];
-}
 
 - (BOOL)shouldAutorotate {
-    if ( _player == nil )
-        return NO;
-    return [self.rotationManager vc_shouldAutorotate];
-}
-
-- (UIInterfaceOrientationMask)supportedInterfaceOrientations {
-    return [self.rotationManager vc_supportedInterfaceOrientations];
-}
-
-- (UIInterfaceOrientation)preferredInterfaceOrientationForPresentation {
-    return [self.rotationManager vc_preferredInterfaceOrientationForPresentation];
+    return NO;
 }
 
 #pragma mark -

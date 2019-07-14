@@ -8,8 +8,21 @@
 
 #import "SJAppDelegate.h"
 #import "SJVideoPlayer.h"
+#import "SJRotationManager.h"
 
 #warning Configuring rotation control. 请配置旋转控制!
+
+static BOOL _iPhone_shouldAutorotate(UIViewController *vc) { ///< 返回YES, 表示该控制器可以旋转.
+    NSString *class = NSStringFromClass(vc.class);
+    
+    // 禁止哪些控制器旋转. (此处为禁止Demo中SJ前缀的控制器旋转)
+    // - 请根据实际情况进行修改.
+    if ( [class hasPrefix:@"SJ"] ) {
+        return NO;
+    }
+    
+    return YES;
+}
 
 @implementation UIViewController (RotationControl)
 /// 该控制器是否可以旋转
@@ -36,6 +49,7 @@
         if ( _iPhone_shouldAutorotate(self) == NO )
             return UIInterfaceOrientationMaskPortrait;
     }
+    
     // 此处为设置 iPad 仅支持横屏
     // - 请根据实际情况进行修改.
     else if ( UIUserInterfaceIdiomPad == UI_USER_INTERFACE_IDIOM() ) {
@@ -45,16 +59,48 @@
     return UIInterfaceOrientationMaskAllButUpsideDown;
 }
 
-static BOOL _iPhone_shouldAutorotate(UIViewController *vc) { ///< 返回YES, 表示该控制器可以旋转.
-    NSString *class = NSStringFromClass(vc.class);
-    
-    // 禁止哪些控制器旋转. (此处为禁止Demo中SJ前缀的控制器旋转)
-    // - 请根据实际情况进行修改.
-    if ( [class hasPrefix:@"SJ"] ) {
-        return NO;
-    }
-    
-    return YES;
+@end
+
+
+@implementation UITabBarController (RotationControl)
+- (UIViewController *)sj_topViewController {
+    if ( self.selectedIndex == NSNotFound )
+        return self.viewControllers.firstObject;
+    return self.selectedViewController;
+}
+
+- (BOOL)shouldAutorotate {
+    return [[self sj_topViewController] shouldAutorotate];
+}
+
+- (UIInterfaceOrientationMask)supportedInterfaceOrientations {
+    return [[self sj_topViewController] supportedInterfaceOrientations];
+}
+
+- (UIInterfaceOrientation)preferredInterfaceOrientationForPresentation {
+    return [[self sj_topViewController] preferredInterfaceOrientationForPresentation];
+}
+@end
+
+@implementation UINavigationController (RotationControl)
+- (BOOL)shouldAutorotate {
+    return self.topViewController.shouldAutorotate;
+}
+
+- (UIInterfaceOrientationMask)supportedInterfaceOrientations {
+    return self.topViewController.supportedInterfaceOrientations;
+}
+
+- (UIInterfaceOrientation)preferredInterfaceOrientationForPresentation {
+    return self.topViewController.preferredInterfaceOrientationForPresentation;
+}
+
+- (nullable UIViewController *)childViewControllerForStatusBarStyle {
+    return self.topViewController;
+}
+
+- (nullable UIViewController *)childViewControllerForStatusBarHidden {
+    return self.topViewController;
 }
 @end
 

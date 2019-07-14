@@ -8,13 +8,11 @@
 
 #import "SJRotationModeDemoViewController1.h"
 #import <SJVideoPlayer/SJVideoPlayer.h>
-#import <SJBaseVideoPlayer/SJVCRotationManager.h>
 #import <Masonry/Masonry.h>
 #import "SJSourceURLs.h"
 
 @interface SJRotationModeDemoViewController1 ()
 @property (weak, nonatomic) IBOutlet UIView *playerContainerView;
-@property (nonatomic, strong, readonly) SJVCRotationManager *rotationManager;
 @property (nonatomic, strong) SJBaseVideoPlayer *player;
 @end
 
@@ -36,7 +34,6 @@
     self.edgesForExtendedLayout = UIRectEdgeNone;
     
     _player = [SJVideoPlayer player];
-    _player.rotationManager = self.rotationManager;
     _player.URLAsset = [[SJVideoPlayerURLAsset alloc] initWithURL:SourceURL1];
     [_playerContainerView addSubview:_player.view];
     [_player.view mas_makeConstraints:^(MASConstraintMaker *make) {
@@ -59,7 +56,7 @@
 }
 
 - (IBAction)disableAction:(UISwitch *)sender {
-    _rotationManager.disableAutorotation = sender.isOn;
+    _player.disableAutoRotation = sender.isOn;
     
     if ( sender.isOn ) {
         [_player showTitle:@"已禁止自动旋转. 此时旋转设备, 播放器将不会自动旋转" duration:3];
@@ -67,34 +64,6 @@
     else {
         [_player showTitle:@"已开启自动旋转. 此时旋转设备, 播放器将自动旋转" duration:3];
     }
-}
-
-#pragma mark -
-@synthesize rotationManager = _rotationManager;
-- (SJVCRotationManager *)rotationManager {
-    if ( _rotationManager == nil ) {
-        _rotationManager = [[SJVCRotationManager alloc] initWithViewController:self];
-    }
-    return _rotationManager;
-}
-
-- (void)viewWillTransitionToSize:(CGSize)size withTransitionCoordinator:(id<UIViewControllerTransitionCoordinator>)coordinator {
-    [_rotationManager vc_viewWillTransitionToSize:size withTransitionCoordinator:coordinator];
-    [super viewWillTransitionToSize:size withTransitionCoordinator:coordinator];
-}
-
-- (BOOL)shouldAutorotate {
-    if ( _player == nil )
-        return NO;
-    return [self.rotationManager vc_shouldAutorotate];
-}
-
-- (UIInterfaceOrientationMask)supportedInterfaceOrientations {
-    return [self.rotationManager vc_supportedInterfaceOrientations];
-}
-
-- (UIInterfaceOrientation)preferredInterfaceOrientationForPresentation {
-    return [self.rotationManager vc_preferredInterfaceOrientationForPresentation];
 }
 
 #pragma mark -

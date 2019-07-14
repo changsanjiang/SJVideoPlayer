@@ -134,9 +134,8 @@ ___
 * [6.5 是否全屏](#6.5)
 * [6.6 是否正在旋转](#6.6)
 * [6.7 当前旋转的方向 ](#6.7)
-* [6.8 旋转开始和结束的回调](#6.8)
-* [6.9 使 ViewController 一起旋转](#6.9)
-* [6.10 自己动手撸一个 SJRotationManager, 替换作者原始实现](#6.1)
+* [6.8 旋转开始和结束的回调](#6.8) 
+* [6.9 自己动手撸一个 SJRotationManager, 替换作者原始实现](#6.9)
 
 #### [7. 直接全屏而不旋转](#7)
 * [7.1 全屏和恢复](#7.1)
@@ -991,45 +990,9 @@ _observer.rotationDidEndExeBlock = ^(id<SJRotationManagerProtocol>  _Nonnull mgr
 };
 ```
 
-<h3 id ="6.9">6.9 使 ViewController 一起旋转</h3>
+<h3 id ="6.9">6.9 自己动手撸一个 SJRotationManager, 替换作者原始实现</h3>
 
-<p>
-默认情况下, _player.rotationManager 使用的是 SJRotationManager 的实例. 它只会旋转播放器视图. 
-
-当我们需要 ViewController 也一起旋转时, 需要切换 旋转管理类为 SJVCRotationManager. 如下: 
-</p>
-
-```Objective-C
-- (void)viewDidLoad {
-    [super viewDidLoad];
-    _player.rotationManager = [[SJVCRotationManager alloc] initWithViewController:vc];
-}
-
-- (void)viewWillTransitionToSize:(CGSize)size withTransitionCoordinator:(id<UIViewControllerTransitionCoordinator>)coordinator {
-    SJVCRotationManager *mgr = _player.rotationManager;
-    [mgr vc_viewWillTransitionToSize:size withTransitionCoordinator:coordinator];
-    [super viewWillTransitionToSize:size withTransitionCoordinator:coordinator];
-}
-
-- (BOOL)shouldAutorotate {
-    SJVCRotationManager *mgr = _player.rotationManager;
-    return [mgr vc_shouldAutorotate];
-}
-
-- (UIInterfaceOrientationMask)supportedInterfaceOrientations {
-    SJVCRotationManager *mgr = _player.rotationManager;
-    return [mgr vc_supportedInterfaceOrientations];
-}
-
-- (UIInterfaceOrientation)preferredInterfaceOrientationForPresentation {
-    SJVCRotationManager *mgr = _player.rotationManager;
-    return [mgr vc_preferredInterfaceOrientationForPresentation];
-}
-```
-
-<h3 id ="6.10">6.10 自己动手撸一个 SJRotationManager, 替换作者原始实现</h3>
-
-正如使用 [6.9 使 ViewController 一起旋转](#6.9) 中使用 SJVCRotationManager 替换 SJRotationManager 一样, 当你想替换原始实现时, 可以实现 SJRotationManagerProtocol 中定义的方法.
+当你想替换原始实现时, 可以实现 SJRotationManagerProtocol 中定义的方法.
 
 ___
 
@@ -1419,7 +1382,7 @@ ___
     if ( _tmpShowStatusBar ) return NO;         // 临时显示
     if ( _tmpHiddenStatusBar ) return YES;      // 临时隐藏
     if ( self.lockedScreen ) return YES;        // 锁屏时, 不显示
-    if ( self.rotationManager.transitioning ) { // 旋转时, 不显示
+    if ( self.rotationManager.isTransitioning ) { // 旋转时, 不显示
         if ( !self.disabledControlLayerAppearManager && self.controlLayerIsAppeared ) return NO;
         return YES;
     }

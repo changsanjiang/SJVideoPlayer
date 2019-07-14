@@ -33,6 +33,8 @@
 		77805D6B22BF7DE1007076B9 /* SJiPadDemoViewController1.m in Sources */ = {isa = PBXBuildFile; fileRef = 77805D6922BF7DE1007076B9 /* SJiPadDemoViewController1.m */; };
 		77805D6F22BF7EDB007076B9 /* iPadMain.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 77805D6E22BF7EDB007076B9 /* iPadMain.storyboard */; };
 		873B8AEB1B1F5CCA007FD442 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 873B8AEA1B1F5CCA007FD442 /* Main.storyboard */; };
+		A601803C22DB5CAC00ED840D /* SJRotationModeDemoViewController3.m in Sources */ = {isa = PBXBuildFile; fileRef = A601803A22DB5CAC00ED840D /* SJRotationModeDemoViewController3.m */; };
+		A601803D22DB5CAC00ED840D /* SJRotationModeDemoViewController3.xib in Resources */ = {isa = PBXBuildFile; fileRef = A601803B22DB5CAC00ED840D /* SJRotationModeDemoViewController3.xib */; };
 		A69FD22B22D9F5280031E4E7 /* SJViewController8.m in Sources */ = {isa = PBXBuildFile; fileRef = A69FD22922D9F5280031E4E7 /* SJViewController8.m */; };
 		A69FD22C22D9F5280031E4E7 /* SJViewController8.xib in Resources */ = {isa = PBXBuildFile; fileRef = A69FD22A22D9F5280031E4E7 /* SJViewController8.xib */; };
 		A6A208F922AB9E59001ED610 /* SJRotationModeDemoViewController1.xib in Resources */ = {isa = PBXBuildFile; fileRef = A6A208E322AB9E59001ED610 /* SJRotationModeDemoViewController1.xib */; };
@@ -63,8 +65,6 @@
 		A6A2562622AC1C3500E42998 /* SJViewController5.m in Sources */ = {isa = PBXBuildFile; fileRef = A6A2562422AC1C3500E42998 /* SJViewController5.m */; };
 		A6A2562722AC1C3500E42998 /* SJViewController5.xib in Resources */ = {isa = PBXBuildFile; fileRef = A6A2562522AC1C3500E42998 /* SJViewController5.xib */; };
 		A6C5D23422AC249800D63D1C /* SJRemoteCommandHandler.m in Sources */ = {isa = PBXBuildFile; fileRef = A6C5D23322AC249800D63D1C /* SJRemoteCommandHandler.m */; };
-		A6CF829022ABC07500FED97D /* SJRotationModeDemoViewController3.m in Sources */ = {isa = PBXBuildFile; fileRef = A6CF828E22ABC07500FED97D /* SJRotationModeDemoViewController3.m */; };
-		A6CF829122ABC07500FED97D /* SJRotationModeDemoViewController3.xib in Resources */ = {isa = PBXBuildFile; fileRef = A6CF828F22ABC07500FED97D /* SJRotationModeDemoViewController3.xib */; };
 		A6F19DFB22D9C1390043B508 /* SJViewController6.m in Sources */ = {isa = PBXBuildFile; fileRef = A6F19DF922D9C1390043B508 /* SJViewController6.m */; };
 		A6F19DFC22D9C1390043B508 /* SJViewController6.xib in Resources */ = {isa = PBXBuildFile; fileRef = A6F19DFA22D9C1390043B508 /* SJViewController6.xib */; };
 		A6F19E0122D9D8050043B508 /* SJViewController7.m in Sources */ = {isa = PBXBuildFile; fileRef = A6F19DFF22D9D8050043B508 /* SJViewController7.m */; };
@@ -125,6 +125,9 @@
 		77805D6E22BF7EDB007076B9 /* iPadMain.storyboard */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; path = iPadMain.storyboard; sourceTree = "<group>"; };
 		7D124A339A8A3126BD5D15EA /* README.md */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = net.daringfireball.markdown; name = README.md; path = ../README.md; sourceTree = "<group>"; };
 		873B8AEA1B1F5CCA007FD442 /* Main.storyboard */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.storyboard; path = Main.storyboard; sourceTree = "<group>"; };
+		A601803922DB5CAC00ED840D /* SJRotationModeDemoViewController3.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = SJRotationModeDemoViewController3.h; sourceTree = "<group>"; };
+		A601803A22DB5CAC00ED840D /* SJRotationModeDemoViewController3.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = SJRotationModeDemoViewController3.m; sourceTree = "<group>"; };
+		A601803B22DB5CAC00ED840D /* SJRotationModeDemoViewController3.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = SJRotationModeDemoViewController3.xib; sourceTree = "<group>"; };
 		A69FD22822D9F5280031E4E7 /* SJViewController8.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = SJViewController8.h; sourceTree = "<group>"; };
 		A69FD22922D9F5280031E4E7 /* SJViewController8.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = SJViewController8.m; sourceTree = "<group>"; };
 		A69FD22A22D9F5280031E4E7 /* SJViewController8.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = SJViewController8.xib; sourceTree = "<group>"; };
@@ -176,9 +179,6 @@
 		A6A2562522AC1C3500E42998 /* SJViewController5.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = SJViewController5.xib; sourceTree = "<group>"; };
 		A6C5D23222AC249800D63D1C /* SJRemoteCommandHandler.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SJRemoteCommandHandler.h; sourceTree = "<group>"; };
 		A6C5D23322AC249800D63D1C /* SJRemoteCommandHandler.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SJRemoteCommandHandler.m; sourceTree = "<group>"; };
-		A6CF828D22ABC07500FED97D /* SJRotationModeDemoViewController3.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = SJRotationModeDemoViewController3.h; sourceTree = "<group>"; };
-		A6CF828E22ABC07500FED97D /* SJRotationModeDemoViewController3.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = SJRotationModeDemoViewController3.m; sourceTree = "<group>"; };
-		A6CF828F22ABC07500FED97D /* SJRotationModeDemoViewController3.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = SJRotationModeDemoViewController3.xib; sourceTree = "<group>"; };
 		A6F19DF822D9C1390043B508 /* SJViewController6.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = SJViewController6.h; sourceTree = "<group>"; };
 		A6F19DF922D9C1390043B508 /* SJViewController6.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = SJViewController6.m; sourceTree = "<group>"; };
 		A6F19DFA22D9C1390043B508 /* SJViewController6.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = SJViewController6.xib; sourceTree = "<group>"; };
@@ -372,6 +372,16 @@
 			path = "iPhone Demo";
 			sourceTree = "<group>";
 		};
+		A601803322DB5C4200ED840D /* 3 */ = {
+			isa = PBXGroup;
+			children = (
+				A601803922DB5CAC00ED840D /* SJRotationModeDemoViewController3.h */,
+				A601803A22DB5CAC00ED840D /* SJRotationModeDemoViewController3.m */,
+				A601803B22DB5CAC00ED840D /* SJRotationModeDemoViewController3.xib */,
+			);
+			path = 3;
+			sourceTree = "<group>";
+		};
 		A6A208DE22AB9E59001ED610 /* Demos */ = {
 			isa = PBXGroup;
 			children = (
@@ -387,7 +397,6 @@
 			isa = PBXGroup;
 			children = (
 				A6A208E022AB9E59001ED610 /* Rotate Player View And View Controller */,
-				A6A208EB22AB9E59001ED610 /* Rotate Player View */,
 			);
 			path = "Rotation Control";
 			sourceTree = "<group>";
@@ -397,6 +406,7 @@
 			children = (
 				A6A208E122AB9E59001ED610 /* 1 */,
 				A6A208E522AB9E59001ED610 /* 2 */,
+				A601803322DB5C4200ED840D /* 3 */,
 			);
 			path = "Rotate Player View And View Controller";
 			sourceTree = "<group>";
@@ -421,14 +431,6 @@
 				A6A208E822AB9E59001ED610 /* SJRotationModeDemoViewController2.xib */,
 			);
 			path = 2;
-			sourceTree = "<group>";
-		};
-		A6A208EB22AB9E59001ED610 /* Rotate Player View */ = {
-			isa = PBXGroup;
-			children = (
-				A6A2553222ABC33100E42998 /* 1 */,
-			);
-			path = "Rotate Player View";
 			sourceTree = "<group>";
 		};
 		A6A208EC22AB9E59001ED610 /* Definies */ = {
@@ -479,16 +481,6 @@
 				77788FE322C36D8300E26599 /* SJMediaCollectionViewCell.xib */,
 			);
 			path = View;
-			sourceTree = "<group>";
-		};
-		A6A2553222ABC33100E42998 /* 1 */ = {
-			isa = PBXGroup;
-			children = (
-				A6CF828D22ABC07500FED97D /* SJRotationModeDemoViewController3.h */,
-				A6CF828E22ABC07500FED97D /* SJRotationModeDemoViewController3.m */,
-				A6CF828F22ABC07500FED97D /* SJRotationModeDemoViewController3.xib */,
-			);
-			path = 1;
 			sourceTree = "<group>";
 		};
 		A6A2553322ABC71F00E42998 /* List Autoplay */ = {
@@ -704,11 +696,11 @@
 				A6A2555A22ABDAA500E42998 /* SJViewController2.xib in Resources */,
 				A6F19E0222D9D8050043B508 /* SJViewController7.xib in Resources */,
 				6003F598195388D20070C39A /* InfoPlist.strings in Resources */,
-				A6CF829122ABC07500FED97D /* SJRotationModeDemoViewController3.xib in Resources */,
 				77788FE022C36CF300E26599 /* SJMediaItemsTableViewCell.xib in Resources */,
 				A6A208FC22AB9E59001ED610 /* SJRotationModeDemoViewController2.xib in Resources */,
 				A6F19DFC22D9C1390043B508 /* SJViewController6.xib in Resources */,
 				A6A2556022ABFAFA00E42998 /* SJViewController3.xib in Resources */,
+				A601803D22DB5CAC00ED840D /* SJRotationModeDemoViewController3.xib in Resources */,
 				A6A2562722AC1C3500E42998 /* SJViewController5.xib in Resources */,
 				77805D6F22BF7EDB007076B9 /* iPadMain.storyboard in Resources */,
 				A6A208F922AB9E59001ED610 /* SJRotationModeDemoViewController1.xib in Resources */,
@@ -791,12 +783,12 @@
 				A6A2554422ABCE9200E42998 /* SJViewController1.m in Sources */,
 				A6A2553F22ABC71F00E42998 /* DemoTableViewCell.m in Sources */,
 				77805D6B22BF7DE1007076B9 /* SJiPadDemoViewController1.m in Sources */,
-				A6CF829022ABC07500FED97D /* SJRotationModeDemoViewController3.m in Sources */,
 				A6A208FF22AB9E59001ED610 /* SJMeidaItemModel.m in Sources */,
 				A6A2553C22ABC71F00E42998 /* ListViewAutoplayViewController.m in Sources */,
 				A6A208FD22AB9E59001ED610 /* SJRotationModeDemoViewController2.m in Sources */,
 				77788FED22C37C2000E26599 /* SJExtendedMediaCollectionViewModel.m in Sources */,
 				A6A2555F22ABFAFA00E42998 /* SJViewController3.m in Sources */,
+				A601803C22DB5CAC00ED840D /* SJRotationModeDemoViewController3.m in Sources */,
 				A6A208FE22AB9E59001ED610 /* SJMediaTableViewModel.m in Sources */,
 				A6A2090022AB9E59001ED610 /* SJMediaTableViewCell.m in Sources */,
 				77788FE422C36D8300E26599 /* SJMediaCollectionViewCell.m in Sources */,

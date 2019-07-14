@@ -1,6 +1,6 @@
 {
   "name": "SJVideoPlayer",
-  "version": "2.5.8",
+  "version": "2.6.0",
   "summary": "video player.",
   "description": "https://github.com/changsanjiang/SJVideoPlayer/blob/master/README.md",
   "homepage": "https://github.com/changsanjiang/SJVideoPlayer",
@@ -16,7 +16,7 @@
   },
   "source": {
     "git": "https://github.com/changsanjiang/SJVideoPlayer.git",
-    "tag": "v2.5.8"
+    "tag": "v2.6.0"
   },
   "requires_arc": true,
   "dependencies": {
@@ -175,7 +175,18 @@
     },
     {
       "name": "SJSwitchVideoDefinitionControlLayer",
-      "source_files": "SJVideoPlayer/SJSwitchVideoDefinitionControlLayer/*.{h,m}"
+      "source_files": "SJVideoPlayer/SJSwitchVideoDefinitionControlLayer/*.{h,m}",
+      "dependencies": {
+        "SJVideoPlayer/Adapters": [
+
+        ],
+        "SJVideoPlayer/Common": [
+
+        ],
+        "SJVideoPlayer/Switcher": [
+
+        ]
+      }
     },
     {
       "name": "SJFloatSmallViewControlLayer",

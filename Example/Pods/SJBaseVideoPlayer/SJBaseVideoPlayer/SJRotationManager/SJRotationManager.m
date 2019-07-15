@@ -284,18 +284,16 @@ NS_ASSUME_NONNULL_BEGIN
 }
 
 - (void)rotate:(SJOrientation)orientation animated:(BOOL)animated completionHandler:(nullable void(^)(id<SJRotationManagerProtocol> mgr))completionHandler {
+    _completionHandler = completionHandler;
     if ( orientation == (NSInteger)_window.rootViewController.currentOrientation ) {
-        self.transitioning = NO;
-        if ( completionHandler ) completionHandler(self);
+        [self _finishTransition];
         return;
     }
     
     _forcedRotation = YES;
-    _completionHandler = completionHandler;
     [UIDevice.currentDevice setValue:@(UIDeviceOrientationUnknown) forKey:@"orientation"];
     [UIDevice.currentDevice setValue:@(orientation) forKey:@"orientation"];
     _forcedRotation = NO;
-    self.transitioning = NO;
 }
 
 #pragma mark -
@@ -328,7 +326,7 @@ NS_ASSUME_NONNULL_BEGIN
     if ( _shouldTriggerRotation && !_shouldTriggerRotation(self) )
         return NO;
     
-    self.transitioning = YES;
+    [self _beginTransition];
 
     if ( orientation == UIDeviceOrientationLandscapeLeft ||
          orientation == UIDeviceOrientationLandscapeRight ) {
@@ -350,9 +348,20 @@ NS_ASSUME_NONNULL_BEGIN
         }).enqueue(^{
             [snapshot removeFromSuperview];
             self.window.hidden = YES;
+            [self _finishTransition];
         });
     }
+    else {
+        [self _finishTransition];
+    }
     
+}
+
+- (void)_beginTransition {
+    self.transitioning = YES;
+}
+
+- (void)_finishTransition {
     self.transitioning = NO;
     
     if ( _completionHandler )

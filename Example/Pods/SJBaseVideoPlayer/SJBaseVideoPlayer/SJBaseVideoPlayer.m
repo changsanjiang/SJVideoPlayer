@@ -207,7 +207,7 @@ typedef struct _SJPlayerControlInfo {
 }
 
 + (NSString *)version {
-    return @"2.6.0";
+    return @"2.6.1";
 }
 
 - (nullable __kindof UIViewController *)atViewController {
@@ -215,6 +215,8 @@ typedef struct _SJPlayerControlInfo {
     if ( self.needPresentModalViewControlller &&
          self.modalViewControllerManager.isPresentedModalViewControlller )
         responder = _mvcm_targetSuperView.nextResponder;
+    else if ( self.useFitOnScreenAndDisableRotation )
+        responder = _view.nextResponder;
     else
         responder = _presentView.nextResponder;
     
@@ -618,7 +620,7 @@ typedef struct _SJPlayerControlInfo {
 }
 
 - (BOOL)isFlipTransitioning {
-    return self.flipTransitionManager.state == SJFlipTransitionStateStart;
+    return self.flipTransitionManager.isTransitioning;
 }
 - (SJViewFlipTransition)flipTransition {
     return self.flipTransitionManager.flipTransition;
@@ -1375,6 +1377,9 @@ typedef struct _SJPlayerControlInfo {
         else
             return YES;
     }
+    if ( self.fitOnScreenManager.isTransitioning )
+        return NO;
+    
     if ( self.modalViewControllerManager.isPresentedModalViewControlller ) {
         if ( self.modalViewControllerManager.isTransitioning )
             return NO;
@@ -1388,9 +1393,13 @@ typedef struct _SJPlayerControlInfo {
     return NO;
 }
 - (UIStatusBarStyle)vc_preferredStatusBarStyle {
+    if ( self.rotationManager.isTransitioning || self.fitOnScreenManager.isTransitioning )
+        return UIStatusBarStyleLightContent;
+    
     if ( self.modalViewControllerManager.isPresentedModalViewControlller ) {
         return UIStatusBarStyleLightContent;
     }
+    
     // 全屏播放时, 使状态栏变成白色
     if ( self.isFullScreen || self.fitOnScreen ) return UIStatusBarStyleLightContent;
     return UIStatusBarStyleDefault;
@@ -2065,6 +2074,10 @@ typedef struct _SJPlayerControlInfo {
         
         if ( self.fitOnScreenDidEndExeBlock )
             self.fitOnScreenDidEndExeBlock(self);
+        
+        [UIView performWithoutAnimation:^{
+            [[self atViewController] setNeedsStatusBarAppearanceUpdate];
+        }];
     };
 }
 

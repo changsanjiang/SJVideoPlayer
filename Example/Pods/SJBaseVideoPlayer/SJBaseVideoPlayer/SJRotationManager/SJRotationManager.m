@@ -13,6 +13,12 @@
 #import "NSObject+SJObserverHelper.h"
 #endif
 
+#if __has_include(<SJUIKit/SJRunLoopTaskQueue.h>)
+#import <SJUIKit/SJRunLoopTaskQueue.h>
+#else
+#import "SJRunLoopTaskQueue.h"
+#endif
+
 @class SJFullscreenModeViewController;
 
 NS_ASSUME_NONNULL_BEGIN
@@ -31,7 +37,6 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic, weak, nullable) id<SJFullscreenModeViewControllerDelegate> delegate;
 @property (nonatomic) UIDeviceOrientation currentOrientation;
 @property (nonatomic, readonly) BOOL isFullscreen;
-@property (nonatomic) BOOL isTransitioning;
 @end
 
 @implementation SJFullscreenModeViewController
@@ -56,7 +61,6 @@ NS_ASSUME_NONNULL_BEGIN
 }
 
 - (void)viewWillTransitionToSize:(CGSize)size withTransitionCoordinator:(id<UIViewControllerTransitionCoordinator>)coordinator {
-    self.isTransitioning = YES;
     
     [super viewWillTransitionToSize:size withTransitionCoordinator:coordinator];
 
@@ -88,7 +92,6 @@ NS_ASSUME_NONNULL_BEGIN
         [self.delegate.target layoutIfNeeded];
     } completion:^(BOOL finished) {
         dispatch_async(dispatch_get_main_queue(), ^{
-            self.isTransitioning = NO;
             [self.delegate fullscreenModeViewController:self didRotateFromOrientation:self.currentOrientation];
         });
     }];
@@ -176,6 +179,7 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic, strong) SJFullscreenModeWindow *window;
 @property (nonatomic) UIDeviceOrientation deviceOrientation;
 @property (nonatomic) BOOL forcedRotation;
+@property (nonatomic, getter=isTransitioning) BOOL transitioning;
 @end
 
 @implementation SJRotationManager {
@@ -229,10 +233,6 @@ NS_ASSUME_NONNULL_BEGIN
     return (NSInteger)self.window.rootViewController.currentOrientation;
 }
 
-- (BOOL)isTransitioning {
-    return self.window.rootViewController.isTransitioning;
-}
-
 - (BOOL)isFullscreen {
     return self.window.rootViewController.isFullscreen;
 }
@@ -284,11 +284,18 @@ NS_ASSUME_NONNULL_BEGIN
 }
 
 - (void)rotate:(SJOrientation)orientation animated:(BOOL)animated completionHandler:(nullable void(^)(id<SJRotationManagerProtocol> mgr))completionHandler {
+    if ( orientation == (NSInteger)_window.rootViewController.currentOrientation ) {
+        self.transitioning = NO;
+        if ( completionHandler ) completionHandler(self);
+        return;
+    }
+    
     _forcedRotation = YES;
     _completionHandler = completionHandler;
     [UIDevice.currentDevice setValue:@(UIDeviceOrientationUnknown) forKey:@"orientation"];
     [UIDevice.currentDevice setValue:@(orientation) forKey:@"orientation"];
     _forcedRotation = NO;
+    self.transitioning = NO;
 }
 
 #pragma mark -
@@ -310,7 +317,7 @@ NS_ASSUME_NONNULL_BEGIN
     if ( _disableAutorotation && !_forcedRotation )
         return NO;
     
-    if ( _window.rootViewController.isTransitioning )
+    if ( self.isTransitioning )
         return NO;
     
     if ( !_forcedRotation ) {
@@ -321,6 +328,8 @@ NS_ASSUME_NONNULL_BEGIN
     if ( _shouldTriggerRotation && !_shouldTriggerRotation(self) )
         return NO;
     
+    self.transitioning = YES;
+
     if ( orientation == UIDeviceOrientationLandscapeLeft ||
          orientation == UIDeviceOrientationLandscapeRight ) {
         self.window.hidden = NO;
@@ -333,14 +342,18 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (void)fullscreenModeViewController:(SJFullscreenModeViewController *)vc didRotateFromOrientation:(UIDeviceOrientation)orientation {
     if ( !vc.isFullscreen ) {
-        [self.superview addSubview:self.target];
-        [UIView animateWithDuration:0 animations:^{
-            self.window.alpha = 0.001;
-        } completion:^(BOOL finished) {
+        UIView *snapshot = [self.target snapshotViewAfterScreenUpdates:NO];
+        snapshot.frame = self.superview.bounds;
+        [self.superview insertSubview:snapshot atIndex:0];
+        SJRunLoopTaskQueue.main.enqueue(^{
+            [self.superview addSubview:self.target];
+        }).enqueue(^{
+            [snapshot removeFromSuperview];
             self.window.hidden = YES;
-            self.window.alpha = 1;
-        }];
+        });
     }
+    
+    self.transitioning = NO;
     
     if ( _completionHandler )
         _completionHandler(self);
@@ -352,8 +365,6 @@ NS_ASSUME_NONNULL_BEGIN
     switch ( orientation ) {
         case SJOrientation_Portrait:
             return _autorotationSupportedOrientation & SJAutoRotateSupportedOrientation_Portrait;
-        case SJOrientation_PortraitUpsideDown:
-            return _autorotationSupportedOrientation & SJAutoRotateSupportedOrientation_PortraitUpsideDown;
         case SJOrientation_LandscapeLeft:
             return _autorotationSupportedOrientation & SJAutoRotateSupportedOrientation_LandscapeLeft;
         case SJOrientation_LandscapeRight:
@@ -376,7 +387,7 @@ NS_ASSUME_NONNULL_BEGIN
     if ( !self )
         return nil;
     _mgr = mgr;
-    [mgr.window.rootViewController sj_addObserver:self forKeyPath:@"isTransitioning"];
+    [mgr sj_addObserver:self forKeyPath:@"transitioning"];
     return self;
 }
 

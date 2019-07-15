@@ -118,6 +118,12 @@ inline static bool isFloatZero(float value) {
         [self _playerItemStatusDidChange];
     });
     
+    sjkvo_observe(self, @"status", ^(SJAVMediaPlayer *target, NSDictionary<NSKeyValueChangeKey,id> * _Nullable change) {
+        if ( target.status == AVPlayerStatusFailed ) {
+            [target _onError:target.error];
+        }
+    });
+    
     // - did play to end time -
     [self sj_observeWithNotification:AVPlayerItemDidPlayToEndTimeNotification target:item usingBlock:^(SJAVMediaPlayer  *self, NSNotification * _Nonnull note) {
         [self _successfullyToPlayEndTime:note];
@@ -425,6 +431,10 @@ inline static bool isFloatZero(float value) {
 }
 
 - (void)_onError:(NSError *)error {
+#ifdef DEBUG
+    NSLog(@"SJAVMediaPlayer.error ==> %@", error);
+#endif
+    
     _sj_controlInfo->isError = YES;
     _sj_error = error;
     [self _playbackStatusDidChange];

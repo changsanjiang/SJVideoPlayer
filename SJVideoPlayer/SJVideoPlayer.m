@@ -52,7 +52,7 @@ NS_ASSUME_NONNULL_BEGIN
 #endif
 
 + (NSString *)version {
-    return @"v2.6.1";
+    return @"v2.6.2";
 }
 
 + (instancetype)player {
@@ -415,7 +415,6 @@ NS_ASSUME_NONNULL_BEGIN
 // 播放器是否只支持一个方向
 - (BOOL)_whetherToSupportOnlyOneOrientation {
     if ( self.supportedOrientation == SJAutoRotateSupportedOrientation_Portrait ) return YES;
-    if ( self.supportedOrientation == SJAutoRotateSupportedOrientation_PortraitUpsideDown ) return YES;
     if ( self.supportedOrientation == SJAutoRotateSupportedOrientation_LandscapeLeft ) return YES;
     if ( self.supportedOrientation == SJAutoRotateSupportedOrientation_LandscapeRight ) return YES;
     return NO;

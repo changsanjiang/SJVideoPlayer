@@ -20,7 +20,6 @@
  */
 typedef NS_ENUM(NSUInteger, SJOrientation) {
     SJOrientation_Portrait = UIDeviceOrientationPortrait,
-    SJOrientation_PortraitUpsideDown = UIDeviceOrientationPortraitUpsideDown,
     SJOrientation_LandscapeLeft = UIDeviceOrientationLandscapeLeft,
     SJOrientation_LandscapeRight = UIDeviceOrientationLandscapeRight,
 };
@@ -35,11 +34,9 @@ typedef NS_ENUM(NSUInteger, SJOrientation) {
  */
 typedef NS_ENUM(NSUInteger, SJAutoRotateSupportedOrientation) {
     SJAutoRotateSupportedOrientation_Portrait = 1 << 0,
-    SJAutoRotateSupportedOrientation_PortraitUpsideDown = 1 << 1,
-    SJAutoRotateSupportedOrientation_LandscapeLeft = 1 << 2,  // UIDeviceOrientationLandscapeLeft
-    SJAutoRotateSupportedOrientation_LandscapeRight = 1 << 3, // UIDeviceOrientationLandscapeRight
-    SJAutoRotateSupportedOrientation_AllButUpsideDown = SJAutoRotateSupportedOrientation_Portrait | SJAutoRotateSupportedOrientation_LandscapeLeft | SJAutoRotateSupportedOrientation_LandscapeRight,
-    SJAutoRotateSupportedOrientation_All = SJAutoRotateSupportedOrientation_AllButUpsideDown | SJAutoRotateSupportedOrientation_PortraitUpsideDown,
+    SJAutoRotateSupportedOrientation_LandscapeLeft = 1 << 1,  // UIDeviceOrientationLandscapeLeft
+    SJAutoRotateSupportedOrientation_LandscapeRight = 1 << 2, // UIDeviceOrientationLandscapeRight
+    SJAutoRotateSupportedOrientation_All = SJAutoRotateSupportedOrientation_Portrait | SJAutoRotateSupportedOrientation_LandscapeLeft | SJAutoRotateSupportedOrientation_LandscapeRight,
 };
 
 NS_ASSUME_NONNULL_BEGIN

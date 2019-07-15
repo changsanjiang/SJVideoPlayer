@@ -15,17 +15,12 @@ typedef enum : NSUInteger {
     SJViewFlipTransition_Horizontally, // 水平翻转
 } SJViewFlipTransition;
 
-typedef enum : NSUInteger {
-    SJFlipTransitionStateStart,
-    SJFlipTransitionStateEnd,
-} SJFlipTransitionState;
-
 NS_ASSUME_NONNULL_BEGIN
 @protocol SJFlipTransitionManager <NSObject>
 - (instancetype)initWithTarget:(__strong UIView *)target;
 - (id<SJFlipTransitionManagerObserver>)getObserver;
 
-@property (nonatomic, readonly) SJFlipTransitionState state;
+@property (nonatomic, readonly, getter=isTransitioning) BOOL transitioning;
 @property (nonatomic) NSTimeInterval duration;
 
 @property (nonatomic) SJViewFlipTransition flipTransition;

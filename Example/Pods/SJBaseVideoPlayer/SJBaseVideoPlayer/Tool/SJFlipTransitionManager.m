@@ -26,7 +26,7 @@ NS_ASSUME_NONNULL_BEGIN
     self = [super init];
     if ( !self )
         return nil;
-    [(id)mgr sj_addObserver:self forKeyPath:@"state"];
+    [(id)mgr sj_addObserver:self forKeyPath:@"transitioning"];
     return self;
 }
 
@@ -35,11 +35,11 @@ NS_ASSUME_NONNULL_BEGIN
         return;
     
     id<SJFlipTransitionManager> mgr = object;
-    if ( mgr.state == SJFlipTransitionStateStart ) {
+    if ( mgr.isTransitioning ) {
         if ( _flipTransitionDidStartExeBlock )
             _flipTransitionDidStartExeBlock(mgr);
     }
-    else if ( mgr.state == SJFlipTransitionStateEnd ) {
+    else {
         if ( _flipTransitionDidStopExeBlock )
             _flipTransitionDidStopExeBlock(mgr);
     }
@@ -49,7 +49,7 @@ NS_ASSUME_NONNULL_BEGIN
 @interface SJFlipTransitionManager ()<CAAnimationDelegate>
 @property (nonatomic) SJViewFlipTransition innerFlipTransition;
 @property (nonatomic, strong, readonly) UIView *target;
-@property (nonatomic) SJFlipTransitionState state;
+@property (nonatomic, getter=isTransitioning) BOOL transitioning;
 @end
 
 @implementation SJFlipTransitionManager {
@@ -57,7 +57,6 @@ NS_ASSUME_NONNULL_BEGIN
 }
 
 @synthesize duration = _duration;
-@synthesize state = _state;
 
 - (instancetype)initWithTarget:(UIView *)target {
     self = [super init];
@@ -65,18 +64,11 @@ NS_ASSUME_NONNULL_BEGIN
         return nil;
     _target = target;
     _duration = 1.0;
-    _state = SJFlipTransitionStateEnd;
     return self;
 }
 
 - (id<SJFlipTransitionManagerObserver>)getObserver {
     return [[SJFlipTransitionManagerObserver alloc] initWithManager:self];
-}
-
-- (void)setState:(SJFlipTransitionState)state {
-    if ( state == _state )
-        return;
-    _state = state;
 }
 
 - (SJViewFlipTransition)flipTransition {
@@ -95,11 +87,11 @@ NS_ASSUME_NONNULL_BEGIN
     if ( t == _innerFlipTransition )
         return;
     
-    if ( _state == SJFlipTransitionStateStart )
+    if ( self.isTransitioning )
         return;
     
     _innerFlipTransition = t;
-    self.state = SJFlipTransitionStateStart;
+    self.transitioning = YES;
     
     CATransform3D transform = CATransform3DIdentity;
     switch ( t ) {
@@ -127,7 +119,7 @@ NS_ASSUME_NONNULL_BEGIN
 - (void)animationDidStart:(CAAnimation *)anim { }
 
 - (void)animationDidStop:(CAAnimation *)anim finished:(BOOL)flag {
-    _state = SJFlipTransitionStateEnd;
+    self.transitioning = NO;
     
     if ( _completionHandler ) {
         _completionHandler(self);

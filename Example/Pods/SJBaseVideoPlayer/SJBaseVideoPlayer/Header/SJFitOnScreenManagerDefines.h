@@ -10,17 +10,12 @@
 #import <UIKit/UIKit.h>
 @protocol SJFitOnScreenManagerObserver;
 
-typedef enum : NSUInteger {
-    SJFitOnScreenStateStart,
-    SJFitOnScreenStateEnd,
-} SJFitOnScreenState;
-
 NS_ASSUME_NONNULL_BEGIN
 @protocol SJFitOnScreenManager <NSObject>
 - (instancetype)initWithTarget:(__strong UIView *)target targetSuperview:(__strong UIView *)superview;
 - (id<SJFitOnScreenManagerObserver>)getObserver;
 
-@property (nonatomic, readonly) SJFitOnScreenState state;
+@property (nonatomic, readonly, getter=isTransitioning) BOOL transitioning;
 @property (nonatomic) NSTimeInterval duration;
 
 /// Fit On Screen

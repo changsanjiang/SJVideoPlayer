@@ -14,10 +14,10 @@
             buildForArchiving = "YES">
             <BuildableReference
                BuildableIdentifier = "primary"
-               BlueprintIdentifier = "4443B442617D117E485DCA3453FD856E"
-               BuildableName = "libSJBaseVideoPlayer.a"
-               BlueprintName = "SJBaseVideoPlayer"
-               ReferencedContainer = "container:SJBaseVideoPlayer.xcodeproj">
+               BlueprintIdentifier = "66EF777DAC384165A40F94DC7D0BD98F"
+               BuildableName = "libSJUIKit.a"
+               BlueprintName = "SJUIKit"
+               ReferencedContainer = "container:Pods.xcodeproj">
             </BuildableReference>
          </BuildActionEntry>
       </BuildActionEntries>

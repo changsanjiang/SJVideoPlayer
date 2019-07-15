@@ -21,7 +21,7 @@
             <rect key="frame" x="0.0" y="0.0" width="414" height="896"/>
             <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
             <subviews>
-                <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="tt5-Bv-yki">
+                <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="tt5-Bv-yki" customClass="SJView">
                     <rect key="frame" x="0.0" y="44" width="414" height="233"/>
                     <color key="backgroundColor" red="0.0" green="0.47843137250000001" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                     <constraints>

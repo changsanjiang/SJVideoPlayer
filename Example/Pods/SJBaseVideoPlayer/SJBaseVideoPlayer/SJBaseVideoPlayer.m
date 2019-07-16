@@ -207,7 +207,7 @@ typedef struct _SJPlayerControlInfo {
 }
 
 + (NSString *)version {
-    return @"2.6.1";
+    return @"2.6.2";
 }
 
 - (nullable __kindof UIViewController *)atViewController {
@@ -1369,14 +1369,10 @@ typedef struct _SJPlayerControlInfo {
         return YES;
     if ( self.lockedScreen )
         return YES;
-    if ( self.rotationManager.isTransitioning ) {
-        if ( !self.rotationManager.isFullscreen )
-            return NO;
-        else if ( !self.disabledControlLayerAppearManager && self.controlLayerIsAppeared )
-            return NO;
-        else
-            return YES;
-    }
+    if ( self.controlLayerIsAppeared )
+        return NO;
+    if ( self.rotationManager.isTransitioning )
+        return NO;
     if ( self.fitOnScreenManager.isTransitioning )
         return NO;
     
@@ -2221,9 +2217,15 @@ typedef struct _SJPlayerControlInfo {
             [self.controlLayerDelegate videoPlayer:self didEndRotation:mgr.isFullscreen];
         }
         if ( self.viewDidRotateExeBlock ) self.viewDidRotateExeBlock(self, mgr.isFullscreen);
-        [UIView animateWithDuration:0.25 animations:^{
+        
+        if ( mgr.isFullscreen ) {
             [[self atViewController] setNeedsStatusBarAppearanceUpdate];
-        }];
+        }
+        else {
+            [UIView animateWithDuration:0.25 animations:^{
+                [[self atViewController] setNeedsStatusBarAppearanceUpdate];
+            }];
+        }
     };
 }
 

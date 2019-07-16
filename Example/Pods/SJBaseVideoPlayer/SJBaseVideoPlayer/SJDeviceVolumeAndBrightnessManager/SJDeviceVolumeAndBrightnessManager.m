@@ -74,8 +74,6 @@ static NSNotificationName const SJDeviceBrightnessDidChangeNotification = @"SJDe
 @property (nonatomic, strong, readonly) UIView *brightnessView;
 @property (nonatomic, strong, nullable) id brightnessDidChangeToken;
 @property (nonatomic, strong, nullable) id volumeDidChangeToken;
-
-@property (nonatomic, getter=isBrightnessViewHidden) BOOL brightnessViewHidden;
 @end
 
 @implementation SJDeviceVolumeAndBrightnessManager
@@ -94,8 +92,6 @@ static NSNotificationName const SJDeviceBrightnessDidChangeNotification = @"SJDe
 - (instancetype)init {
     self = [super init];
     if ( !self ) return nil;
-    _brightnessViewHidden = YES;
-    
     for ( UIView *subview in [[MPVolumeView new] subviews] ) {
         if ( [subview.class.description isEqualToString:@"MPVolumeSlider"] ) {
             _volumeSlider = (UISlider *)subview;
@@ -143,7 +139,7 @@ static NSNotificationName const SJDeviceBrightnessDidChangeNotification = @"SJDe
 }
 
 - (SJDeviceBrightnessView *)brightnessView {
-    if ( !_brightnessView ) {
+    if ( _brightnessView == nil ) {
         SJDeviceBrightnessView *brightnessView = [SJDeviceBrightnessView new];
         dispatch_async(dispatch_get_global_queue(0, 0), ^{
             UIImage *image = [SJDeviceVolumeAndBrightnessManagerResourceLoader imageNamed:@"sj_video_player_brightness"];
@@ -154,9 +150,9 @@ static NSNotificationName const SJDeviceBrightnessDidChangeNotification = @"SJDe
             });
         });
         _brightnessView = brightnessView;
+        _brightnessView.alpha = 0.001;
     }
     _brightnessView.value = self.brightness;
-    _brightnessView.alpha = 0.001;
     return _brightnessView;
 }
 
@@ -204,33 +200,27 @@ static NSNotificationName const SJDeviceBrightnessDidChangeNotification = @"SJDe
 }
 
 - (void)_show_brightnessView {
-    if ( !self.isBrightnessViewHidden )
-        return;
-    
     UIWindow *_Nullable window = self.targetView.window;
     if ( window == nil )
         return;
     
-    _brightnessViewHidden = NO;
+    if ( self.brightnessView.superview != window ) {
+        [window addSubview:self.brightnessView];
+        [_brightnessView mas_remakeConstraints:^(MASConstraintMaker *make) {
+            make.size.mas_offset(CGSizeMake(155, 155));
+            make.center.offset(0);
+        }];
+    }
     
-    [window addSubview:self.brightnessView];
-    [_brightnessView mas_remakeConstraints:^(MASConstraintMaker *make) {
-        make.size.mas_offset(CGSizeMake(155, 155));
-        make.center.offset(0);
-    }];
-    
-    _brightnessView.transform = _targetView.transform;
-    [UIView animateWithDuration:0.25 animations:^{
-        self->_brightnessView.alpha = 1;
-    }];
+    if ( self.brightnessView.alpha < 0.1 ) {    
+        [UIView animateWithDuration:0.25 animations:^{
+            self.brightnessView.transform = self.targetView.transform;
+            self.brightnessView.alpha = 1;
+        }];
+    }
 }
 
 - (void)_hidden_brightnessView {
-    if ( self.isBrightnessViewHidden )
-        return;
-    
-    _brightnessViewHidden = YES;
-    
     [UIView animateWithDuration:0.25 animations:^{
         self->_brightnessView.alpha = 0.001;
     }];

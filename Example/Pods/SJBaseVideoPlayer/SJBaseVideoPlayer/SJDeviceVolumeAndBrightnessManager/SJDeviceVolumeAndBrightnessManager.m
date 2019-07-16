@@ -74,6 +74,8 @@ static NSNotificationName const SJDeviceBrightnessDidChangeNotification = @"SJDe
 @property (nonatomic, strong, readonly) UIView *brightnessView;
 @property (nonatomic, strong, nullable) id brightnessDidChangeToken;
 @property (nonatomic, strong, nullable) id volumeDidChangeToken;
+
+@property (nonatomic, getter=isBrightnessViewHidden) BOOL brightnessViewHidden;
 @end
 
 @implementation SJDeviceVolumeAndBrightnessManager
@@ -92,6 +94,8 @@ static NSNotificationName const SJDeviceBrightnessDidChangeNotification = @"SJDe
 - (instancetype)init {
     self = [super init];
     if ( !self ) return nil;
+    _brightnessViewHidden = YES;
+    
     for ( UIView *subview in [[MPVolumeView new] subviews] ) {
         if ( [subview.class.description isEqualToString:@"MPVolumeSlider"] ) {
             _volumeSlider = (UISlider *)subview;
@@ -200,16 +204,21 @@ static NSNotificationName const SJDeviceBrightnessDidChangeNotification = @"SJDe
 }
 
 - (void)_show_brightnessView {
-    if ( !_brightnessView ) {
-        [[UIApplication sharedApplication].keyWindow addSubview:self.brightnessView];
-    }
-    else {
-        [UIApplication.sharedApplication.keyWindow bringSubviewToFront:_brightnessView];
-    }
+    if ( !self.isBrightnessViewHidden )
+        return;
+    
+    UIWindow *_Nullable window = self.targetView.window;
+    if ( window == nil )
+        return;
+    
+    _brightnessViewHidden = NO;
+    
+    [window addSubview:self.brightnessView];
     [_brightnessView mas_remakeConstraints:^(MASConstraintMaker *make) {
         make.size.mas_offset(CGSizeMake(155, 155));
-        make.center.equalTo([UIApplication sharedApplication].keyWindow);
+        make.center.offset(0);
     }];
+    
     _brightnessView.transform = _targetView.transform;
     [UIView animateWithDuration:0.25 animations:^{
         self->_brightnessView.alpha = 1;
@@ -217,6 +226,11 @@ static NSNotificationName const SJDeviceBrightnessDidChangeNotification = @"SJDe
 }
 
 - (void)_hidden_brightnessView {
+    if ( self.isBrightnessViewHidden )
+        return;
+    
+    _brightnessViewHidden = YES;
+    
     [UIView animateWithDuration:0.25 animations:^{
         self->_brightnessView.alpha = 0.001;
     }];

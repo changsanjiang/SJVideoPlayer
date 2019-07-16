@@ -54,6 +54,8 @@ NS_ASSUME_NONNULL_BEGIN
 }
 
 - (UIInterfaceOrientationMask)supportedInterfaceOrientations {
+    if ( self.presentedViewController != nil )
+        return 1 << _currentOrientation;
     return UIInterfaceOrientationMaskAll;
 }
 
@@ -334,8 +336,15 @@ NS_ASSUME_NONNULL_BEGIN
             return NO;
     }
     
-    if ( _shouldTriggerRotation && !_shouldTriggerRotation(self) )
+    BOOL trigger = _shouldTriggerRotation(self);
+    
+    NSLog(@"%d", trigger);
+
+    if ( !trigger )
         return NO;
+    
+//    if ( _shouldTriggerRotation && !_shouldTriggerRotation(self) )
+//        return NO;
     
     if ( self.isTransitioning == NO )
         [self _beginTransition];

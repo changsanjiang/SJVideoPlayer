@@ -121,6 +121,7 @@ SJEdgeControlButtonItemTag const SJEdgeControlLayerCenterItem_Replay = 40000;
 - (instancetype)initWithFrame:(CGRect)frame {
     self = [super initWithFrame:frame];
     if ( !self ) return nil;
+    _bottomProgressSliderHeight = 1;
     [self _setupView];
     self.autoAdjustTopSpacing = YES;
     self.hideBottomProgressSlider = YES;
@@ -383,12 +384,11 @@ SJEdgeControlButtonItemTag const SJEdgeControlLayerCenterItem_Replay = 40000;
              [self.videoPlayer playStatus_isPrepare] ) {
             return;
         }
-        
-        [self.videoPlayer seekToTime:location completionHandler:^(BOOL finished) {
-            __strong typeof(_self) self = _self;
-            if ( !self ) return;
-            if ( finished ) [self.videoPlayer play];
-        }];
+    
+        [self.videoPlayer seekToTime:CMTimeMakeWithSeconds(location, NSEC_PER_SEC)
+                     toleranceBefore:self.accurateSeeking?kCMTimeZero:kCMTimePositiveInfinity
+                      toleranceAfter:self.accurateSeeking?kCMTimeZero:kCMTimePositiveInfinity
+                   completionHandler:nil];
     };
     SJEdgeControlButtonItem *progressItem = [[SJEdgeControlButtonItem alloc] initWithCustomView:slider tag:SJEdgeControlLayerBottomItem_Progress];
     progressItem.delegate = self;
@@ -582,13 +582,25 @@ SJEdgeControlButtonItemTag const SJEdgeControlLayerCenterItem_Replay = 40000;
 }
 
 - (void)setHideBottomProgressSlider:(BOOL)hideBottomProgressSlider {
-    if ( hideBottomProgressSlider == _hideBottomProgressSlider )
-        return;
-    
-    _hideBottomProgressSlider = hideBottomProgressSlider;
-    dispatch_async(dispatch_get_main_queue(), ^{
-        [self _showOrRemoveBottomProgressSlider];
-    });
+    if ( hideBottomProgressSlider != _hideBottomProgressSlider ) {
+        _hideBottomProgressSlider = hideBottomProgressSlider;
+        dispatch_async(dispatch_get_main_queue(), ^{
+            [self _showOrRemoveBottomProgressSlider];
+        });
+    }
+}
+
+- (void)setBottomProgressSliderHeight:(CGFloat)bottomProgressSliderHeight {
+    if ( bottomProgressSliderHeight != _bottomProgressSliderHeight ) {
+        
+        _bottomProgressSliderHeight = bottomProgressSliderHeight;
+        dispatch_async(dispatch_get_main_queue(), ^{
+            self->_bottomProgressSlider.trackHeight = bottomProgressSliderHeight;
+            [self->_bottomProgressSlider mas_updateConstraints:^(MASConstraintMaker *make) {
+                make.height.offset(bottomProgressSliderHeight);
+            }];
+        });
+    }
 }
 
 - (void)_showOrRemoveBottomProgressSlider {
@@ -798,12 +810,11 @@ SJEdgeControlButtonItemTag const SJEdgeControlLayerCenterItem_Replay = 40000;
 
 /// 拖拽结束
 - (void)_draggingDidEnd:(__kindof SJBaseVideoPlayer *)videoPlayer {
-    __weak typeof(self) _self = self;
-    [videoPlayer seekToTime:_draggingProgressView.progressTime completionHandler:^(BOOL finished) {
-        __strong typeof(_self) self = _self;
-        if ( !self ) return;
-        [self.videoPlayer play];
-    }];
+    [videoPlayer seekToTime:CMTimeMakeWithSeconds(_draggingProgressView.progressTime, NSEC_PER_SEC)
+            toleranceBefore:self.accurateSeeking?kCMTimeZero:kCMTimePositiveInfinity
+             toleranceAfter:self.accurateSeeking?kCMTimeZero:kCMTimePositiveInfinity
+          completionHandler:nil];
+    
     sj_view_makeDisappear(_draggingProgressView, YES, ^{
         if ( sj_view_isDisappeared(self->_draggingProgressView) ) {
             [self->_draggingProgressView removeFromSuperview];
@@ -1201,7 +1212,14 @@ SJEdgeControlButtonItemTag const SJEdgeControlLayerCenterItem_Replay = 40000;
 
 - (void)_top_updateTitleItem:(SJEdgeControlButtonItem *)titleItem {
     if ( _SJSlowPath(!titleItem) ) return;
+    
     SJVideoPlayerURLAsset *asset = _videoPlayer.URLAsset.originAsset?:_videoPlayer.URLAsset;
+    
+    if ( asset.title.length == 0 ) {
+        titleItem.hidden = YES;
+        return;
+    }
+    
     BOOL alwaysShowTitle = asset.alwaysShowTitle;
     BOOL isFullscreen = _videoPlayer.isFullScreen;
     BOOL isFitOnScreen = _videoPlayer.isFitOnScreen;
@@ -1213,7 +1231,7 @@ SJEdgeControlButtonItemTag const SJEdgeControlLayerCenterItem_Replay = 40000;
     
     if ( titleItem.hidden ) return;
     
-    NSString *title = asset.title?:@" ";
+    NSString *title = asset.title;
     // margin
     CGFloat left =
     [_topAdapter itemsIsHiddenWithRange:NSMakeRange(0, [_topAdapter indexOfItemForTag:SJEdgeControlLayerTopItem_Title])]?16:0;

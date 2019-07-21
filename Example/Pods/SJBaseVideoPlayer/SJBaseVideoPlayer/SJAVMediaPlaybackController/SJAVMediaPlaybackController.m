@@ -343,6 +343,7 @@ NS_ASSUME_NONNULL_BEGIN
 }
 - (void)play {
     SJRunLoopTaskQueue.main.enqueue(^{
+        self.player.sj_playbackRate = self.rate;
         [self.player play];
     });
 }

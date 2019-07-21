@@ -1,68 +1,39 @@
-
 //
 //  SJMoreSettingControlLayer.m
-//  SJVideoPlayer
+//  SJVideoPlayer_Example
 //
-//  Created by BlueDancer on 2018/10/26.
-//  Copyright © 2018 畅三江. All rights reserved.
+//  Created by BlueDancer on 2019/7/19.
+//  Copyright © 2019 changsanjiang. All rights reserved.
 //
 
 #import "SJMoreSettingControlLayer.h"
-#import "SJVideoPlayerMoreSettingsView.h"
-#import "SJVideoPlayerMoreSettingSecondaryView.h"
+#if __has_include(<SJUIKit/SJAttributesFactory.h>)
+#import <SJUIKit/SJAttributesFactory.h>
+#else
+#import "SJAttributesFactory.h"
+#endif
+
 #if __has_include(<SJBaseVideoPlayer/SJBaseVideoPlayer.h>)
 #import <SJBaseVideoPlayer/SJBaseVideoPlayer.h>
 #else
 #import "SJBaseVideoPlayer.h"
 #endif
-#if __has_include(<Masonry/Masonry.h>)
-#import <Masonry/Masonry.h>
-#else
-#import "Masonry.h"
-#endif
+
 #import "UIView+SJAnimationAdded.h"
-#import "SJVideoPlayerAnimationHeader.h"
-#import "SJMoreSettingsSlidersViewModel.h"
-#import "SJVideoPlayerMoreSetting.h"
-#import "SJVideoPlayerMoreSetting+Exe.h"
-#import "SJEdgeControlLayerSettings.h"
+#import "SJButtonProgressSlider.h"
 #import "UIView+SJVideoPlayerSetting.h"
 
 NS_ASSUME_NONNULL_BEGIN
-@interface SJMoreSettingControlLayer ()
-@property (nonatomic, strong, readonly) SJMoreSettingsSlidersViewModel *footerViewModel;
-@property (nonatomic, strong, readonly) SJVideoPlayerMoreSettingsView *moreSettingsView;
-@property (nonatomic, strong, readonly) SJVideoPlayerMoreSettingSecondaryView *moreSecondarySettingView;
+SJEdgeControlButtonItemTag const SJMoreSettingControlLayerItem_Volume = 10000;
+SJEdgeControlButtonItemTag const SJMoreSettingControlLayerItem_Brightness = 10001;
+SJEdgeControlButtonItemTag const SJMoreSettingControlLayerItem_Rate = 10002;
+
+@interface SJMoreSettingControlLayer ()<SJProgressSliderDelegate>
 @property (nonatomic, weak, nullable) SJBaseVideoPlayer *videoPlayer;
 @end
 
 @implementation SJMoreSettingControlLayer
-@synthesize moreSettingsView = _moreSettingsView;
-@synthesize moreSecondarySettingView = _moreSecondarySettingView;
-@synthesize footerViewModel = _footerViewModel;
 @synthesize restarted = _restarted;
-
-- (void)restartControlLayer {
-    _restarted = YES;
-    sj_view_makeAppear(_moreSettingsView, YES);
-    sj_view_makeAppear(self.controlView, YES);
-    [_moreSettingsView update];
-    [self.videoPlayer needHiddenStatusBar];
-}
-
-- (void)exitControlLayer {
-    _restarted= NO;
-    /// clean
-    _videoPlayer.controlLayerDataSource = nil;
-    _videoPlayer.controlLayerDelegate = nil;
-    _videoPlayer = nil;
-    
-    sj_view_makeDisappear(_moreSettingsView, YES);
-    sj_view_makeDisappear(_moreSecondarySettingView, YES);
-    sj_view_makeDisappear(self.controlView, YES, ^{
-        if ( !self->_restarted ) [self.controlView removeFromSuperview];
-    });
-}
 
 - (instancetype)initWithFrame:(CGRect)frame {
     self = [super initWithFrame:frame];
@@ -71,194 +42,181 @@ NS_ASSUME_NONNULL_BEGIN
     return self;
 }
 
-- (void)setMoreSettings:(NSArray<SJVideoPlayerMoreSetting *> *_Nullable)moreSettings {
-    _moreSettingsView.moreSettings = moreSettings;
-    
-    NSMutableSet<SJVideoPlayerMoreSetting *> *moreSettingsM = [NSMutableSet new];
-    [moreSettings enumerateObjectsUsingBlock:^(SJVideoPlayerMoreSetting * _Nonnull obj, NSUInteger idx, BOOL * _Nonnull stop) {
-        [self _addSetting:obj container:moreSettingsM];
-    }];
-    [moreSettingsM enumerateObjectsUsingBlock:^(SJVideoPlayerMoreSetting * _Nonnull obj, BOOL * _Nonnull stop) {
-        [self _dressSetting:obj];
-    }];
-}
-
-- (void)_addSetting:(SJVideoPlayerMoreSetting *)setting container:(NSMutableSet<SJVideoPlayerMoreSetting *> *)moreSttingsM {
-    [moreSttingsM addObject:setting];
-    if ( !setting.showTowSetting ) return;
-    [setting.twoSettingItems enumerateObjectsUsingBlock:^(SJVideoPlayerMoreSettingSecondary * _Nonnull obj, NSUInteger idx, BOOL * _Nonnull stop) {
-        [self _addSetting:(SJVideoPlayerMoreSetting *)obj container:moreSttingsM];
-    }];
-}
-
-- (void)_dressSetting:(SJVideoPlayerMoreSetting *)setting {
-    if ( !setting.clickedExeBlock ) return;
-    __weak typeof(self) _self = self;
-    if ( setting.isShowTowSetting ) {
-        setting._exeBlock = ^(SJVideoPlayerMoreSetting * _Nonnull setting) {
-            __strong typeof(_self) self = _self;
-            if ( !self ) return;
-            sj_view_makeDisappear(self.moreSettingsView, YES);
-            sj_view_makeAppear(self.moreSecondarySettingView, YES);
-            self.moreSecondarySettingView.twoLevelSettings = setting;
-            setting.clickedExeBlock(setting);
-        };
-    }
-    else {
-        setting._exeBlock = ^(SJVideoPlayerMoreSetting * _Nonnull setting) {
-            __strong typeof(_self) self = _self;
-            if ( !self ) return;
-            setting.clickedExeBlock(setting);
-        };
-    }
-}
-
-- (NSArray<SJVideoPlayerMoreSetting *> *_Nullable)moreSettings {
-    return _moreSettingsView.moreSettings;
-}
-
-- (void)_setupView {
-    [self.controlView addSubview:self.moreSettingsView];
-    [_moreSettingsView mas_makeConstraints:^(MASConstraintMaker *make) {
-        make.top.bottom.trailing.offset(0);
-    }];
-    
-    _moreSettingsView.sjv_disappearDirection = SJViewDisappearAnimation_Right;
-    sj_view_initializes(_moreSettingsView);
-}
-
-- (SJVideoPlayerMoreSettingsView *)moreSettingsView {
-    if ( _moreSettingsView ) return _moreSettingsView;
-    _moreSettingsView = [SJVideoPlayerMoreSettingsView new];
-    _moreSettingsView.footerViewModel = self.footerViewModel;
-
-    __weak typeof(self) _self = self;
-    _moreSettingsView.settingRecroder = [[SJVideoPlayerControlSettingRecorder alloc] initWithSettings:^(SJEdgeControlLayerSettings * _Nonnull setting) {
-        __strong typeof(_self) self = _self;
-        if ( !self ) return ;
-        self.moreSettingsView.backgroundColor = setting.moreBackgroundColor;
-    }];
-    _moreSettingsView.backgroundColor = SJEdgeControlLayerSettings.commonSettings.moreBackgroundColor;
-    return _moreSettingsView;
-}
-
-- (SJMoreSettingsSlidersViewModel *)footerViewModel {
-    if ( _footerViewModel ) return _footerViewModel;
-    _footerViewModel = [SJMoreSettingsSlidersViewModel new];
-    
-    __weak typeof(self) _self = self;
-    _footerViewModel.initialBrightnessValue = ^float{
-        __strong typeof(_self) self = _self;
-        if ( !self ) return 0;
-        return self.videoPlayer.deviceBrightness;
-    };
-    
-    _footerViewModel.initialVolumeValue = ^float{
-        __strong typeof(_self) self = _self;
-        if ( !self ) return 0;
-        return self.videoPlayer.deviceVolume;
-    };
-    
-    _footerViewModel.initialPlayerRateValue = ^float{
-        __strong typeof(_self) self = _self;
-        if ( !self ) return 1;
-        return self.videoPlayer.rate;
-    };
-    
-    _footerViewModel.needChangeVolume = ^(float volume) {
-        __strong typeof(_self) self = _self;
-        if ( !self ) return;
-        self.videoPlayer.deviceVolume = volume;
-    };
-    
-    _footerViewModel.needChangeBrightness = ^(float brightness) {
-        __strong typeof(_self) self = _self;
-        if ( !self ) return;
-        self.videoPlayer.deviceBrightness = brightness;
-    };
-    
-    _footerViewModel.needChangePlayerRate = ^(float rate) {
-        __strong typeof(_self) self = _self;
-        if ( !self ) return;
-        self.videoPlayer.rate = rate;
-    };
-    return _footerViewModel;
-}
-
-- (SJVideoPlayerMoreSettingSecondaryView *)moreSecondarySettingView {
-    if ( _moreSecondarySettingView ) return _moreSecondarySettingView;
-    _moreSecondarySettingView = [SJVideoPlayerMoreSettingSecondaryView new];
-    _moreSecondarySettingView.sjv_disappearDirection = SJViewDisappearAnimation_Right;
-    [self addSubview:_moreSecondarySettingView];
-    [_moreSecondarySettingView mas_makeConstraints:^(MASConstraintMaker *make) {
-        make.edges.equalTo(self.moreSettingsView);
-    }];
-    __weak typeof(self) _self = self;
-    _moreSecondarySettingView.settingRecroder = [[SJVideoPlayerControlSettingRecorder alloc] initWithSettings:^(SJEdgeControlLayerSettings * _Nonnull setting) {
-        __strong typeof(_self) self = _self;
-        if ( !self ) return ;
-        self.moreSecondarySettingView.backgroundColor = setting.moreBackgroundColor;
-    }];
-    self.moreSecondarySettingView.backgroundColor = SJEdgeControlLayerSettings.commonSettings.moreBackgroundColor;
-    [self.controlView layoutIfNeeded];
-    sj_view_makeDisappear(_moreSecondarySettingView, NO);
-    return _moreSecondarySettingView;
-}
-
-#pragma mark - player delegate method
 - (UIView *)controlView {
     return self;
 }
 
-/// 禁止自动隐藏
-- (BOOL)controlLayerOfVideoPlayerCanAutomaticallyDisappear:(__kindof SJBaseVideoPlayer *)videoPlayer {
-    return NO;
-}
-
 - (void)installedControlViewToVideoPlayer:(__kindof SJBaseVideoPlayer *)videoPlayer {
     _videoPlayer = videoPlayer;
-    sj_view_makeDisappear(_moreSettingsView, NO);
-    sj_view_makeDisappear(_moreSecondarySettingView, NO);
+    
+    sj_view_initializes(self.rightContainerView);
+    
+    [self layoutIfNeeded];
+    
+    sj_view_makeDisappear(self.rightContainerView, NO);
+}
+
+- (void)exitControlLayer {
+    _restarted = NO;
+    
+    sj_view_makeDisappear(self.rightContainerView, YES);
+    sj_view_makeDisappear(self.controlView, YES, ^{
+        if ( !self->_restarted ) [self.controlView removeFromSuperview];
+    });
+}
+
+- (void)restartControlLayer {
+    _restarted = YES;
+    
+    if ( self.videoPlayer.isFullScreen )
+        [self.videoPlayer needHiddenStatusBar];
+    [self _refreshValueForSliderItems];
+    sj_view_makeAppear(self.controlView, YES);
+    sj_view_makeAppear(self.rightContainerView, YES);
 }
 
 - (void)controlLayerNeedAppear:(__kindof SJBaseVideoPlayer *)videoPlayer { }
 
-- (void)controlLayerNeedDisappear:(__kindof SJBaseVideoPlayer *)videoPlayer {}
+- (void)controlLayerNeedDisappear:(__kindof SJBaseVideoPlayer *)videoPlayer { }
 
 - (BOOL)videoPlayer:(__kindof SJBaseVideoPlayer *)videoPlayer gestureRecognizerShouldTrigger:(SJPlayerGestureType)type location:(CGPoint)location {
-    
     if ( type == SJPlayerGestureType_SingleTap ) {
-        if ( !CGRectContainsPoint(self.moreSettingsView.frame, location) &&
-             !CGRectContainsPoint( _moreSecondarySettingView.frame, location) ) {
-            if ( [self.delegate respondsToSelector:@selector(tappedOnTheBlankAreaOfControlLayer:)] ) {
-                [self.delegate tappedOnTheBlankAreaOfControlLayer:self];
+        if ( !CGRectContainsPoint(self.rightContainerView.frame, location) ) {
+            if ( [self.delegate respondsToSelector:@selector(tappedBlankAreaOnTheControlLayer:)] ) {
+                [self.delegate tappedBlankAreaOnTheControlLayer:self];
             }
         }
-        
-        return NO;
+    }
+    else if ( type == SJPlayerGestureType_Pan && !CGRectContainsPoint(self.rightContainerView.frame, location) ) {
+        return videoPlayer.gestureControl.movingDirection == SJPanGestureMovingDirection_V;
     }
     
-    return YES;
+    return NO;
 }
 
 - (BOOL)canTriggerRotationOfVideoPlayer:(__kindof SJBaseVideoPlayer *)videoPlayer {
     return NO;
 }
 
-/// 声音被改变.
-- (void)videoPlayer:(SJBaseVideoPlayer *)videoPlayer volumeChanged:(float)volume {
-    if ( _footerViewModel.volumeChanged ) _footerViewModel.volumeChanged(volume);
+- (void)videoPlayer:(__kindof SJBaseVideoPlayer *)videoPlayer volumeChanged:(float)volume {
+    [self _setSliderValueForItemTag:SJMoreSettingControlLayerItem_Volume value:volume];
 }
 
-/// 亮度被改变.
-- (void)videoPlayer:(SJBaseVideoPlayer *)videoPlayer brightnessChanged:(float)brightness {
-    if ( _footerViewModel.brightnessChanged ) _footerViewModel.brightnessChanged(brightness);
+- (void)videoPlayer:(__kindof SJBaseVideoPlayer *)videoPlayer brightnessChanged:(float)brightness {
+    [self _setSliderValueForItemTag:SJMoreSettingControlLayerItem_Brightness value:brightness];
 }
 
-/// 播放速度被改变.
-- (void)videoPlayer:(SJBaseVideoPlayer *)videoPlayer rateChanged:(float)rate {
+- (void)videoPlayer:(__kindof SJBaseVideoPlayer *)videoPlayer rateChanged:(float)rate {
     [videoPlayer showTitle:[NSString stringWithFormat:@"%.0f %%", rate * 100]];
-    if ( _footerViewModel.playerRateChanged ) _footerViewModel.playerRateChanged(rate);
+    [self _setSliderValueForItemTag:SJMoreSettingControlLayerItem_Rate value:rate];
+}
+
+#pragma mark -
+
+- (void)sliderDidDrag:(SJProgressSlider *)slider {
+    if ( slider.tag == SJMoreSettingControlLayerItem_Volume ) {
+        _videoPlayer.deviceVolume = slider.value;
+    }
+    else if ( slider.tag == SJMoreSettingControlLayerItem_Brightness ) {
+        _videoPlayer.deviceBrightness = slider.value;
+    }
+    else {
+        _videoPlayer.rate = slider.value;
+    }
+}
+
+#pragma mark -
+
+- (void)_setupView {
+    self.rightContainerView.sjv_disappearDirection = SJViewDisappearAnimation_Right;
+    
+    CGFloat max = MAX(UIScreen.mainScreen.bounds.size.width, UIScreen.mainScreen.bounds.size.height);
+    self.rightWidth = floor(max * 0.382);
+    
+    CGFloat height = 60;
+    
+    {
+        SJEdgeControlButtonItem *volumeItem = [SJEdgeControlButtonItem placeholderWithSize:height tag:SJMoreSettingControlLayerItem_Volume];
+        SJButtonProgressSlider *progressView = SJButtonProgressSlider.new;
+        progressView.slider.delegate = self;
+        progressView.slider.tag = volumeItem.tag;
+        volumeItem.customView = progressView;
+        [self.rightAdapter addItem:volumeItem];
+    }
+    
+    {
+        SJEdgeControlButtonItem *brightnessItem = [SJEdgeControlButtonItem placeholderWithSize:height tag:SJMoreSettingControlLayerItem_Brightness];
+        SJButtonProgressSlider *progressView = SJButtonProgressSlider.new;
+        progressView.slider.delegate = self;
+        progressView.slider.tag = brightnessItem.tag;
+        brightnessItem.customView = progressView;
+        [self.rightAdapter addItem:brightnessItem];
+    }
+    
+    {
+        SJEdgeControlButtonItem *rateItem = [SJEdgeControlButtonItem placeholderWithSize:height tag:SJMoreSettingControlLayerItem_Rate];
+        SJButtonProgressSlider *progressView = SJButtonProgressSlider.new;
+        progressView.slider.delegate = self;
+        progressView.slider.tag = rateItem.tag;
+        progressView.slider.maxValue = 1.5;
+        progressView.slider.minValue = 0.5;
+        rateItem.customView = progressView;
+        [self.rightAdapter addItem:rateItem];
+    }
+    
+    [self _refreshSettings];
+    [self.rightAdapter reload];
+
+    __weak typeof(self) _self = self;
+    self.settingRecroder = [[SJVideoPlayerControlSettingRecorder alloc] initWithSettings:^(SJEdgeControlLayerSettings * _Nonnull setting) {
+        __strong typeof(_self) self = _self;
+        if ( !self ) return;
+        [self _refreshSettings];
+    }];
+}
+
+- (void)_refreshValueForSliderItems {
+    [self _setSliderValueForItemTag:SJMoreSettingControlLayerItem_Volume value:_videoPlayer.deviceVolume];
+    [self _setSliderValueForItemTag:SJMoreSettingControlLayerItem_Brightness value:_videoPlayer.deviceBrightness];
+    [self _setSliderValueForItemTag:SJMoreSettingControlLayerItem_Rate value:_videoPlayer.rate];
+}
+
+- (void)_setSliderValueForItemTag:(SJEdgeControlButtonItemTag)itemTag value:(float)value {
+    SJEdgeControlButtonItem *item = [self.rightAdapter itemForTag:itemTag];
+    SJButtonProgressSlider *progressView = item.customView;
+    if ( !progressView.slider.isDragging )
+        progressView.slider.value = value;
+}
+
+- (void)_refreshSettings {
+    SJEdgeControlLayerSettings *setting = SJEdgeControlLayerSettings.commonSettings;
+    self.rightContainerView.backgroundColor = setting.moreBackgroundColor;
+    
+    __auto_type _configProgressView = ^(SJButtonProgressSlider *progressView, UIImage *left, UIImage *right) {
+        [progressView.rightBtn setImage:right forState:UIControlStateNormal];
+        [progressView.leftBtn setImage:left forState:UIControlStateNormal];
+
+        progressView.slider.traceImageView.backgroundColor = setting.more_traceColor;
+        progressView.slider.trackImageView.backgroundColor = setting.more_trackColor;
+        progressView.slider.trackHeight = setting.more_trackHeight;
+        
+        if ( setting.more_thumbImage == nil ) {
+            CGSize size = CGSizeMake(setting.more_thumbSize, setting.more_thumbSize);
+            CGFloat radius = setting.more_thumbSize * 0.5;
+            [progressView.slider setThumbCornerRadius:radius size:size];
+        }
+        else {
+            progressView.slider.thumbImageView.image = setting.more_thumbImage;
+        }
+    };
+    SJEdgeControlButtonItem *volumeItem = [self.rightAdapter itemForTag:SJMoreSettingControlLayerItem_Volume];
+    _configProgressView(volumeItem.customView, setting.more_minVolumeImage, setting.more_maxVolumeImage);
+    
+    SJEdgeControlButtonItem *brightness = [self.rightAdapter itemForTag:SJMoreSettingControlLayerItem_Brightness];
+    _configProgressView(brightness.customView, setting.more_minBrightnessImage, setting.more_maxBrightnessImage);
+    
+    SJEdgeControlButtonItem *rateItem = [self.rightAdapter itemForTag:SJMoreSettingControlLayerItem_Rate];
+    _configProgressView(rateItem.customView, setting.more_minRateImage, setting.more_maxRateImage);
 }
 @end
 NS_ASSUME_NONNULL_END

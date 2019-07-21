@@ -165,13 +165,7 @@
         "SJVideoPlayer/SJEdgeControlLayer": [
 
         ]
-      },
-      "subspecs": [
-        {
-          "name": "Core",
-          "source_files": "SJVideoPlayer/SJMoreSettingControlLayer/Core/*.{h,m}"
-        }
-      ]
+      }
     },
     {
       "name": "SJSwitchVideoDefinitionControlLayer",

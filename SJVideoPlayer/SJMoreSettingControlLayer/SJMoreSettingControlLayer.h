@@ -1,24 +1,25 @@
 //
 //  SJMoreSettingControlLayer.h
-//  SJVideoPlayer
+//  SJVideoPlayer_Example
 //
-//  Created by BlueDancer on 2018/10/26.
-//  Copyright © 2018 畅三江. All rights reserved.
+//  Created by BlueDancer on 2019/7/19.
+//  Copyright © 2019 changsanjiang. All rights reserved.
 //
 
-#import <UIKit/UIKit.h>
+#import "SJEdgeControlLayerAdapters.h"
 #import "SJControlLayerDefines.h"
-@class SJVideoPlayerMoreSetting;
-
 @protocol SJMoreSettingControlLayerDelegate;
 
 NS_ASSUME_NONNULL_BEGIN
-@interface SJMoreSettingControlLayer : UIView<SJControlLayer>
-@property (nonatomic, strong, nullable) NSArray<SJVideoPlayerMoreSetting *> *moreSettings;
+extern SJEdgeControlButtonItemTag const SJMoreSettingControlLayerItem_Volume;
+extern SJEdgeControlButtonItemTag const SJMoreSettingControlLayerItem_Brightness;
+extern SJEdgeControlButtonItemTag const SJMoreSettingControlLayerItem_Rate;
+
+@interface SJMoreSettingControlLayer : SJEdgeControlLayerAdapters<SJControlLayer>
 @property (nonatomic, weak, nullable) id<SJMoreSettingControlLayerDelegate> delegate;
 @end
 
 @protocol SJMoreSettingControlLayerDelegate <NSObject>
-- (void)tappedOnTheBlankAreaOfControlLayer:(id<SJControlLayer>)controlLayer;
+- (void)tappedBlankAreaOnTheControlLayer:(id<SJControlLayer>)controlLayer;
 @end
 NS_ASSUME_NONNULL_END

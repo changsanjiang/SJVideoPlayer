@@ -7,20 +7,41 @@
 //
 
 #import "SJVideoPlayerPresentView.h"
+#import <UIKit/UIGestureRecognizerSubclass.h>
+
 NS_ASSUME_NONNULL_BEGIN
-@interface SJVideoPlayerPresentView ()
+@interface _SJPerformRequestInfo : NSObject
+@property (nonatomic) SEL selector;
+@property (nonatomic, strong, nullable) id object;
 @end
 
-@implementation SJVideoPlayerPresentView {
-    BOOL _isHidden;
-    BOOL _isDelayed;
-}
+@implementation _SJPerformRequestInfo
+@end
 
+
+@interface SJVideoPlayerPresentView ()<UIGestureRecognizerDelegate>
+@property (nonatomic, strong, readonly) UIPanGestureRecognizer *pan;
+@property (nonatomic, strong, readonly) UIPinchGestureRecognizer *pinch;
+
+@property (nonatomic, strong, nullable) _SJPerformRequestInfo *placeholderRequestInfo;
+@property (nonatomic, strong, nullable) _SJPerformRequestInfo *touchRequestInfo;
+@end
+
+@implementation SJVideoPlayerPresentView
 @synthesize placeholderImageView = _placeholderImageView;
+@synthesize disabledGestures = _disabledGestures;
+@synthesize gestureRecognizerShouldTrigger = _gestureRecognizerShouldTrigger;
+@synthesize singleTapHandler = _singleTapHandler;
+@synthesize doubleTapHandler = _doubleTapHandler;
+@synthesize panHandler = _panHandler;
+@synthesize pinchHandler = _pinchHandler;
+@synthesize movingDirection = _movingDirection;
+@synthesize triggeredPosition = _triggeredPosition;
+
 - (instancetype)initWithFrame:(CGRect)frame {
     self = [super initWithFrame:frame];
     if ( !self ) return nil;
-    [self _presentSetupView];
+    [self _setupViews];
     return self;
 }
 
@@ -30,19 +51,76 @@ NS_ASSUME_NONNULL_BEGIN
 }
 #endif
 
-- (void)layoutSubviews {
-    [super layoutSubviews];
-    if ( _layoutSubviewsExeBlock ) _layoutSubviewsExeBlock(self);
+- (void)handleSingleTap:(UITouch *)tap {
+    if ( _disabledGestures & SJPlayerGestureType_SingleTap )
+        return;
+    
+    CGPoint location = [tap locationInView:self];
+    if ( _gestureRecognizerShouldTrigger && _gestureRecognizerShouldTrigger(self, SJPlayerGestureType_SingleTap, location) ) {
+        if ( _singleTapHandler )
+            _singleTapHandler(self, [tap locationInView:tap.view]);
+    }
 }
 
-- (BOOL)isPlaceholderImageViewHidden {
-    return _isHidden;
+- (void)handleDoubleTap:(UITouch *)tap {
+    if ( _disabledGestures & SJPlayerGestureType_DoubleTap )
+        return;
+    
+    CGPoint location = [tap locationInView:self];
+    if ( _gestureRecognizerShouldTrigger && _gestureRecognizerShouldTrigger(self, SJPlayerGestureType_DoubleTap, location) ) {
+        if ( _doubleTapHandler )
+            _doubleTapHandler(self, [tap locationInView:tap.view]);
+    }
+}
+
+- (void)handlePan:(UIPanGestureRecognizer *)pan {
+    CGPoint translate = [pan translationInView:pan.view];
+    switch (pan.state) {
+        case UIGestureRecognizerStateBegan: {
+            if ( _panHandler ) _panHandler(self, _triggeredPosition, _movingDirection, SJPanGestureRecognizerStateBegan, translate);
+        }
+            break;
+        case UIGestureRecognizerStateChanged: {
+            if ( _panHandler ) _panHandler(self, _triggeredPosition, _movingDirection, SJPanGestureRecognizerStateChanged, translate);
+        }
+            break;
+        case UIGestureRecognizerStateFailed:
+        case UIGestureRecognizerStateCancelled:
+        case UIGestureRecognizerStateEnded: {
+            if ( _panHandler ) _panHandler(self, _triggeredPosition, _movingDirection, SJPanGestureRecognizerStateEnded, translate);
+        }
+            break;
+        default: break;
+    }
+    [pan setTranslation:CGPointZero inView:pan.view];
+}
+
+- (void)handlePinch:(UIPinchGestureRecognizer *)pinch {
+    switch ( pinch.state ) {
+        case UIGestureRecognizerStateEnded: {
+            if ( _pinchHandler )
+                _pinchHandler(self, pinch.scale);
+        }
+            break;
+        default:
+            break;
+    }
 }
 
 - (void)showPlaceholderAnimated:(BOOL)animated {
-    if ( _isDelayed )
-        [NSObject cancelPreviousPerformRequestsWithTarget:self selector:@selector(_hiddenPlaceholderAnimated:) object:nil];
-    if ( !_isHidden ) return; _isHidden = NO;
+    if ( _placeholderImageView.isHidden == NO )
+        return;
+    
+    if ( _placeholderRequestInfo != nil ) {
+        [NSObject cancelPreviousPerformRequestsWithTarget:self
+                                                 selector:_placeholderRequestInfo.selector
+                                                   object:_placeholderRequestInfo.object];
+        _placeholderRequestInfo = nil;
+    }
+
+    _placeholderImageView.alpha = 0.001;
+    _placeholderImageView.hidden = NO;
+    
     if ( animated ) {
         [UIView animateWithDuration:0.4 animations:^{
             self->_placeholderImageView.alpha = 1;
@@ -54,15 +132,25 @@ NS_ASSUME_NONNULL_BEGIN
 }
 
 - (void)hiddenPlaceholderAnimated:(BOOL)animated delay:(NSTimeInterval)secs {
-    if ( _isDelayed )
-        [NSObject cancelPreviousPerformRequestsWithTarget:self selector:@selector(_hiddenPlaceholderAnimated:) object:nil];
-    if ( _isHidden ) return; _isHidden = YES;
+    if ( _placeholderImageView.isHidden == YES )
+        return;
+    
+    if ( _placeholderRequestInfo != nil ) {
+        [NSObject cancelPreviousPerformRequestsWithTarget:self
+                                                 selector:_placeholderRequestInfo.selector
+                                                   object:_placeholderRequestInfo.object];
+        _placeholderRequestInfo = nil;
+    }
+    
     if ( secs == 0 ) {
         [self _hiddenPlaceholderAnimated:@(animated)];
     }
     else {
-        [self performSelector:@selector(_hiddenPlaceholderAnimated:) withObject:@(animated) afterDelay:secs];
-        _isDelayed = YES;
+        _placeholderRequestInfo = [_SJPerformRequestInfo new];
+        _placeholderRequestInfo.selector = @selector(_hiddenPlaceholderAnimated:);
+        _placeholderRequestInfo.object = @(animated);
+        [self performSelector:_placeholderRequestInfo.selector
+                   withObject:_placeholderRequestInfo.object afterDelay:secs inModes:@[NSRunLoopCommonModes]];
     }
 }
 
@@ -70,20 +158,66 @@ NS_ASSUME_NONNULL_BEGIN
     if ( [animated boolValue] ) {
         [UIView animateWithDuration:0.4 animations:^{
             self->_placeholderImageView.alpha = 0.001;
+        } completion:^(BOOL finished) {
+            self->_placeholderImageView.hidden = YES;
         }];
     }
     else {
         _placeholderImageView.alpha = 0.001;
+        _placeholderImageView.hidden = YES;
     }
-    _isDelayed = NO;
 }
 
-- (void)_presentSetupView {
+- (void)cancelGesture:(SJPlayerGestureType)type {
+    UIGestureRecognizer *gesture = nil;
+    switch ( type ) {
+        default: break;
+        case SJPlayerGestureType_Pan:
+            gesture = _pan;
+            break;
+        case SJPlayerGestureType_Pinch:
+            gesture = _pinch;
+            break;
+    }
+    [gesture setValue:@(UIGestureRecognizerStateCancelled) forKey:@"state"];
+}
+
+- (UIGestureRecognizerState)stateOfGesture:(SJPlayerGestureType)type {
+    UIGestureRecognizer *gesture = nil;
+    switch ( type ) {
+        default: break;
+        case SJPlayerGestureType_Pan:
+            gesture = _pan;
+            break;
+        case SJPlayerGestureType_Pinch:
+            gesture = _pinch;
+            break;
+    }
+    return gesture.state;
+}
+
+#pragma mark -
+
+- (void)_setupViews {
     self.backgroundColor = [UIColor blackColor];
     self.placeholderImageView.frame = self.bounds;
     _placeholderImageView.autoresizingMask = UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight;
+    _placeholderImageView.hidden = YES;
     [self addSubview:_placeholderImageView];
-    [self hiddenPlaceholderAnimated:NO delay:0];
+    
+    /// Pan
+    _pan = [[UIPanGestureRecognizer alloc] initWithTarget:self action:@selector(handlePan:)];
+    _pan.minimumNumberOfTouches = 1;
+    _pan.maximumNumberOfTouches = 1;
+    _pan.delegate = self;
+    _pan.delaysTouchesBegan = YES;
+    
+    /// Pinch
+    _pinch = [[UIPinchGestureRecognizer alloc] initWithTarget:self action:@selector(handlePinch:)];
+    _pinch.delegate = self;
+
+    [self addGestureRecognizer:_pan];
+    [self addGestureRecognizer:_pinch];
 }
 
 - (UIImageView *)placeholderImageView {
@@ -94,5 +228,132 @@ NS_ASSUME_NONNULL_BEGIN
     return _placeholderImageView;
 }
 
+- (void)layoutSubviews {
+    [super layoutSubviews];
+    if ( [self.delegate respondsToSelector:@selector(presentViewDidLayoutSubviews:)] ) {
+        [self.delegate presentViewDidLayoutSubviews:self];
+    }
+}
+
+- (BOOL)isPlaceholderImageViewHidden {
+    return _placeholderImageView.isHidden;
+}
+
+#pragma mark - gestures
+
+- (BOOL)gestureRecognizerShouldBegin:(UIGestureRecognizer *)gestureRecognizer {
+    SJPlayerGestureType type = SJPlayerGestureType_Pan;
+    if ( gestureRecognizer == _pinch )
+        type = SJPlayerGestureType_Pinch;
+    
+    switch ( type ) {
+        default: break;
+        case SJPlayerGestureType_Pan: {
+            CGPoint location = [_pan locationInView:self];
+            if ( location.x > self.bounds.size.width * 0.5 ) {
+                _triggeredPosition = SJPanGestureTriggeredPosition_Right;
+            }
+            else {
+                _triggeredPosition = SJPanGestureTriggeredPosition_Left;
+            }
+            
+            CGPoint velocity = [_pan velocityInView:_pan.view];
+            CGFloat x = fabs(velocity.x);
+            CGFloat y = fabs(velocity.y);
+            if (x > y) {
+                _movingDirection = SJPanGestureMovingDirection_H;
+            }
+            else {
+                _movingDirection = SJPanGestureMovingDirection_V;
+            }
+            
+            if ( SJPlayerDisabledGestures_Pan & _disabledGestures )
+                return NO;
+            
+            if ( SJPanGestureMovingDirection_H == _movingDirection &&
+                SJPlayerDisabledGestures_Pan_H & _disabledGestures )
+                return NO;
+            
+            if ( SJPanGestureMovingDirection_V == _movingDirection &&
+                SJPlayerDisabledGestures_Pan_V & _disabledGestures )
+                return NO;
+        }
+            break;
+        case SJPlayerGestureType_Pinch: {
+            if ( SJPlayerDisabledGestures_Pinch & _disabledGestures )
+                return NO;
+        }
+            break;
+    }
+    
+    if ( _gestureRecognizerShouldTrigger && !_gestureRecognizerShouldTrigger(self, type, [gestureRecognizer locationInView:gestureRecognizer.view]) )
+        return NO;
+    
+    return YES;
+}
+
+- (BOOL)gestureRecognizer:(UIGestureRecognizer *)gestureRecognizer shouldRecognizeSimultaneouslyWithGestureRecognizer:(UIGestureRecognizer *)otherGestureRecognizer {
+    if ( UIGestureRecognizerStateFailed == gestureRecognizer.state ||
+         UIGestureRecognizerStateCancelled == gestureRecognizer.state )
+        return NO;
+    
+    if ( otherGestureRecognizer != _pan &&
+         otherGestureRecognizer != _pinch )
+        return NO;
+    
+    if ( gestureRecognizer.numberOfTouches >= 2 )
+        return NO;
+    
+    return YES;
+}
+
+- (void)touchesBegan:(NSSet<UITouch *> *)touches withEvent:(nullable UIEvent *)event {
+    if ( event.allTouches.count != 1 ) {
+        if ( _touchRequestInfo != nil ) {
+            [NSObject cancelPreviousPerformRequestsWithTarget:self
+                                                     selector:_touchRequestInfo.selector
+                                                       object:_touchRequestInfo.object];
+            _touchRequestInfo = nil;
+        }
+    }
+}
+
+- (void)touchesEnded:(NSSet<UITouch *> *)touches withEvent:(nullable UIEvent *)event {
+    if ( event.allTouches.count == 1 ) {
+        if ( _touchRequestInfo != nil ) {
+            [NSObject cancelPreviousPerformRequestsWithTarget:self
+                                                     selector:_touchRequestInfo.selector
+                                                       object:_touchRequestInfo.object];
+            _touchRequestInfo = nil;
+        }
+        
+        UITouch *touch = touches.anyObject;
+        if ( touch.tapCount == 2 ) {
+            [self _recognize:touch];
+        }
+        else {
+            _touchRequestInfo = [_SJPerformRequestInfo new];
+            _touchRequestInfo.selector = @selector(_recognize:);
+            _touchRequestInfo.object = touch;
+            [self performSelector:_touchRequestInfo.selector
+                       withObject:_touchRequestInfo.object
+                       afterDelay:0.180 inModes:@[NSRunLoopCommonModes]];
+        }
+    }
+}
+
+- (void)_recognize:(UITouch *)touch {
+    if ( _touchRequestInfo != nil ) {
+        [NSObject cancelPreviousPerformRequestsWithTarget:self
+                                                 selector:_touchRequestInfo.selector
+                                                   object:_touchRequestInfo.object];
+        _touchRequestInfo = nil;
+    }
+
+    if ( touch.tapCount % 2 == 0 )
+        [self handleDoubleTap:touch];
+    else
+        [self handleSingleTap:touch];
+}
 @end
 NS_ASSUME_NONNULL_END

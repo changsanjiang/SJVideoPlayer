@@ -12,8 +12,6 @@
 #import "SJBaseVideoPlayer.h"
 #endif
 #import "SJVideoPlayerSettings.h"
-#import "SJVideoPlayerMoreSetting.h"
-#import "SJVideoPlayerMoreSettingSecondary.h"
 #import "SJVideoPlayerURLAsset+SJControlAdd.h"
 #import "SJVideoPlayerFilmEditingCommonHeader.h"
 #import "SJVideoPlayerFilmEditingConfig.h"
@@ -130,16 +128,12 @@ NS_ASSUME_NONNULL_BEGIN
 /// Default is YES.
 @property (nonatomic) BOOL showMoreItemForTopControlLayer;
 
-/// clicked More button to display items.
-///
-/// 点击`更多(右上角的三个点)`按钮, 弹出来的选项.
-@property (nonatomic, strong, nullable) NSArray<SJVideoPlayerMoreSetting *> *moreSettings;
 @end
 
 
 #pragma mark - 配置 defaultFilmEditingControlLayer
 /// 配置`剪辑的控制层`
-/// 以下为控制层items的扩展tag
+///
 @interface SJVideoPlayer (SettingFilmEditingControlLayer)
 /// The player will display the right control view if YES
 /// If the format of the video is m3u8, it does not work

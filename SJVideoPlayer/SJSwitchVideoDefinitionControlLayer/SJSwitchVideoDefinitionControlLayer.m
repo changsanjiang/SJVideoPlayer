@@ -39,6 +39,20 @@ NS_ASSUME_NONNULL_BEGIN
     return self;
 }
 
+- (UIView *)controlView {
+    return self;
+}
+
+- (void)installedControlViewToVideoPlayer:(__kindof SJBaseVideoPlayer *)videoPlayer {
+    _videoPlayer = videoPlayer;
+    
+    sj_view_initializes(self.rightContainerView);
+    
+    [self layoutIfNeeded];
+    
+    sj_view_makeDisappear(self.rightContainerView, NO);
+}
+
 - (void)exitControlLayer {
     _restarted = NO;
     
@@ -59,27 +73,15 @@ NS_ASSUME_NONNULL_BEGIN
     sj_view_makeAppear(self.rightContainerView, YES);
 }
 
-- (UIView *)controlView {
-    return self;
-}
-
 - (void)controlLayerNeedAppear:(__kindof SJBaseVideoPlayer *)videoPlayer { }
 
 - (void)controlLayerNeedDisappear:(__kindof SJBaseVideoPlayer *)videoPlayer { }
 
-- (void)installedControlViewToVideoPlayer:(__kindof SJBaseVideoPlayer *)videoPlayer {
-    _videoPlayer = videoPlayer;
-    
-    [self layoutIfNeeded];
-    
-    sj_view_makeDisappear(self.rightContainerView, NO);
-}
-
 - (BOOL)videoPlayer:(__kindof SJBaseVideoPlayer *)videoPlayer gestureRecognizerShouldTrigger:(SJPlayerGestureType)type location:(CGPoint)location {
     if ( type == SJPlayerGestureType_SingleTap ) {
         if ( !CGRectContainsPoint(self.rightContainerView.frame, location) ) {
-            if ( [self.delegate respondsToSelector:@selector(tappedOnTheBlankAreaOfControlLayer:)] ) {
-                [self.delegate tappedOnTheBlankAreaOfControlLayer:self];
+            if ( [self.delegate respondsToSelector:@selector(tappedBlankAreaOnTheControlLayer:)] ) {
+                [self.delegate tappedBlankAreaOnTheControlLayer:self];
             }
         }
     }

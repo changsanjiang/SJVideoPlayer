@@ -55,7 +55,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 // - View -
 
-@property (nonatomic, strong, readonly) UIView *view;
+@property (nonatomic, strong, readonly) __kindof UIView *view;
 @property (nonatomic, strong, null_resettable) AVLayerVideoGravity videoGravity;
 - (nullable __kindof UIViewController *)atViewController;
 
@@ -233,6 +233,12 @@ NS_ASSUME_NONNULL_BEGIN
 
 /// 是否可以调用 seekToTime:
 @property (nonatomic, copy, nullable) BOOL(^canSeekToTime)(__kindof SJBaseVideoPlayer *player);
+
+/// 当跳转完成后, 是否恢复播放
+///
+/// default value is YES
+@property (nonatomic) BOOL resumePlaybackWhenPlayerHasFinishedSeeking;
+
 /// 跳转到指定位置播放
 - (void)seekToTime:(NSTimeInterval)secs completionHandler:(void (^ __nullable)(BOOL finished))completionHandler;
 - (void)seekToTime:(CMTime)time toleranceBefore:(CMTime)toleranceBefore toleranceAfter:(CMTime)toleranceAfter completionHandler:(void (^ __nullable)(BOOL finished))completionHandler;
@@ -435,7 +441,7 @@ NS_ASSUME_NONNULL_BEGIN
 /// 默认不启用, 当需要开启时, 请设置`player.fastForwardViewController.enabled = YES;`
 @property (nonatomic, strong, null_resettable) id<SJEdgeFastForwardViewControllerProtocol> fastForwardViewController;
 
-@property (nonatomic, strong, null_resettable) id<SJPlayerGestureControl> gestureControl;
+@property (nonatomic, strong, readonly) id<SJPlayerGestureControl> gestureControl;
 
 @property (nonatomic) SJPlayerDisabledGestures disabledGestures;
 

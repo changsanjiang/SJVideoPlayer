@@ -45,6 +45,8 @@
         make.centerX.offset(0);
         make.width.offset(80);
     }];
+    
+    self.alpha = 0.001;
 }
 
 - (void)setLineColor:(nullable UIColor *)lineColor {

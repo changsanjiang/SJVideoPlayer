@@ -47,7 +47,6 @@ NS_ASSUME_NONNULL_BEGIN
     _value = value;
     CGFloat showTipsCount = value * _tipsViewsArr.count;
     for ( NSInteger i = 0 ; i < _tipsViewsArr.count ; i ++ ) { _tipsViewsArr[i].hidden = i >= showTipsCount; }
-    _tipsContainerView.hidden = (0 == value);
 }
 
 - (void)setImage:(UIImage *_Nullable)image {

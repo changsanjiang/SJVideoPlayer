@@ -29,7 +29,6 @@
 #import "SJFitOnScreenManager.h"
 #import "SJFlipTransitionManager.h"
 #import "SJIsAppeared.h"
-#import "SJPlayerGestureControl.h"
 #import "SJModalViewControlllerManager.h"
 #import "SJBaseVideoPlayerStatistics.h"
 #import "SJBaseVideoPlayerAutoRefreshController.h"
@@ -53,8 +52,6 @@
 #endif
 
 NS_ASSUME_NONNULL_BEGIN
-static NSInteger _SJBaseVideoPlayerViewTag = 10000;
-
 typedef struct _SJPlayerControlInfo {
     struct PanGesture {
         NSTimeInterval offsetTime; ///< pan手势触发过程中的偏移量(secs)
@@ -95,6 +92,7 @@ typedef struct _SJPlayerControlInfo {
         BOOL autoPlayWhenPlayStatusIsReadyToPlay;
         BOOL pauseWhenAppDidEnterBackground: 1;
         BOOL resumePlaybackWhenAppDidEnterForeground;
+        BOOL resumePlaybackWhenPlayerHasFinishedSeeking;
         NSTimeInterval delayToAutoRefreshWhenPlayFailed;
     } plabackControl;
     
@@ -117,7 +115,7 @@ typedef struct _SJPlayerControlInfo {
     
 } _SJPlayerControlInfo;
 
-@interface SJBaseVideoPlayer ()
+@interface SJBaseVideoPlayer ()<SJVideoPlayerPresentViewDelegate, SJPlayerViewDelegate>
 @property (nonatomic) SJVideoPlayerPlayState state __deprecated_msg("已弃用, 请使用`playStatus`");
 @property (nonatomic) SJVideoPlayerPlayStatus playStatus;
 @property (nonatomic) _SJPlayerControlInfo *controlInfo;
@@ -134,10 +132,6 @@ typedef struct _SJPlayerControlInfo {
 /// - 视频画面的呈现层
 @property (nonatomic, strong, readonly) SJVideoPlayerPresentView *presentView;
 
-/// - 锁屏状态下触发的手势.
-/// - 当播放器被锁屏时, 用户单击后, 会触发这个手势, 调用`controlLayerDelegate`的方法: `tappedPlayerOnTheLockedState:`
-@property (nonatomic, strong, readonly) UITapGestureRecognizer *lockStateTapGesture;
-
 /// - observe视图的滚动
 @property (nonatomic, strong, nullable) SJPlayModelPropertiesObserver *playModelObserver;
 
@@ -146,8 +140,6 @@ typedef struct _SJPlayerControlInfo {
 @end
 
 @implementation SJBaseVideoPlayer {
-    UIView *_view;
-    SJVideoPlayerPresentView *_presentView;
     SJVideoPlayerRegistrar *_registrar;
     
     /// 当前资源是否播放过
@@ -159,8 +151,6 @@ typedef struct _SJPlayerControlInfo {
     id<SJDeviceVolumeAndBrightnessManagerObserver> _deviceVolumeAndBrightnessManagerObserver;
 
     /// gestures
-    UITapGestureRecognizer *_lockStateTapGesture;
-    SJPlayerGestureControl *_gestureControl;
     id<SJEdgeFastForwardViewControllerProtocol> _fastForwardViewController;
     
     /// playback controller
@@ -207,7 +197,7 @@ typedef struct _SJPlayerControlInfo {
 }
 
 + (NSString *)version {
-    return @"2.6.2";
+    return @"2.6.3";
 }
 
 - (nullable __kindof UIViewController *)atViewController {
@@ -241,17 +231,17 @@ typedef struct _SJPlayerControlInfo {
     _controlInfo->scrollControl.resumePlaybackWhenScrollAppeared = YES;
     _controlInfo->plabackControl.autoPlayWhenPlayStatusIsReadyToPlay = YES; // 是否自动播放, 默认yes
     _controlInfo->plabackControl.pauseWhenAppDidEnterBackground = YES; // App进入后台是否暂停播放, 默认yes
+    _controlInfo->plabackControl.resumePlaybackWhenPlayerHasFinishedSeeking = YES;
     _controlInfo->floatSmallViewControl.autoDisappearFloatSmallView = YES;
     self.autoManageViewToFitOnScreenOrRotation = YES;
     
-    [self view];
+    [self _setupViews];
     [self _showOrHiddenPlaceholderImageViewIfNeeded];
     [self _setRotationAbleValue:@(YES)];
     [self rotationManager];
     [self registrar];
 
     dispatch_async(dispatch_get_global_queue(0, 0), ^{
-        [self addInterceptTapGR];
         [self reachability];
         [self gestureControl];
         [self _configAVAudioSession];
@@ -376,51 +366,321 @@ typedef struct _SJPlayerControlInfo {
 }
 
 #pragma mark -
-- (UIView *)view {
-    if ( _view ) return _view;
-    SJPlayerView *view = [SJPlayerView new];
-    _view = view;
-    view.tag = _SJBaseVideoPlayerViewTag;
-    view.player = self;
+- (void)_setupViews {
+    _view = [SJPlayerView new];
+    SJPlayerView *view = _view;
+    view.delegate = self;
     view.backgroundColor = [UIColor blackColor];
     
+    _presentView = [SJVideoPlayerPresentView new];
+    _presentView.delegate = self;
+    [self _configGestureControl:_presentView];
+    [view addSubview:self.presentView];
+}
+
+- (void)playerViewDidLayoutSubviews:(SJPlayerView *)playerView {
+    if ( _presentView.superview == playerView ) {
+        _presentView.frame = playerView.bounds;
+    }
+}
+
+- (void)playerViewWillMoveToWindow:(SJPlayerView *)playerView {
+    [self.playModelObserver refreshAppearState];
+}
+
+/// 此处拦截父视图的Tap手势
+- (nullable UIView *)playerView:(SJPlayerView *)playerView hitTestForView:(nullable __kindof UIView *)view {
+
+    for ( UIGestureRecognizer *gesture in playerView.superview.gestureRecognizers ) {
+        if ( [gesture isKindOfClass:UITapGestureRecognizer.class] && gesture.isEnabled ) {
+            gesture.enabled = NO;
+            dispatch_async(dispatch_get_main_queue(), ^{
+                gesture.enabled = YES;
+            });
+        }
+    }
+    
+    return view;
+}
+
+- (void)presentViewDidLayoutSubviews:(SJVideoPlayerPresentView *)presentView {
+    self.controlLayerView.frame = presentView.bounds;
+}
+
+#pragma mark -
+
+// - gesture control -
+
+- (void)_configGestureControl:(id<SJPlayerGestureControl>)gestureControl {
+    gestureControl.disabledGestures = _controlInfo->gestureControl.disabledGestures;
+    
     __weak typeof(self) _self = self;
-    [(SJPlayerView *)_view setWillMoveToWindowExeBlock:^(SJPlayerView * _Nonnull view, UIWindow *window) {
+    gestureControl.gestureRecognizerShouldTrigger = ^BOOL(id<SJPlayerGestureControl>  _Nonnull control, SJPlayerGestureType type, CGPoint location) {
+        __strong typeof(_self) self = _self;
+        if ( !self ) return NO;
+        
+        if ( self.isTransitioning )
+            return NO;
+        
+        if ( type != SJPlayerGestureType_SingleTap && self.isLockedScreen )
+            return NO;
+        
+        if ( SJPlayerGestureType_Pan == type ) {
+            switch ( control.movingDirection ) {
+                case SJPanGestureMovingDirection_H: {
+                    if ( self.playbackType == SJMediaPlaybackTypeLIVE )
+                        return NO;
+                    
+                    if ( [self playStatus_isPrepare] || [self playStatus_isUnknown] )
+                        return NO;
+                    
+                    if ( self.totalTime <= 0 )
+                        return NO;
+                    
+                    if ( self.canSeekToTime != nil && !self.canSeekToTime(self) )
+                        return NO;
+                    
+                    if ( self.isPlayOnScrollView ) {
+                        if ( NO == self.controlInfo->gestureControl.allowHorizontalTriggeringOfPanGesturesInCells ) {
+                            if ( YES == self.useFitOnScreenAndDisableRotation ) {
+                                if ( NO == self.isFitOnScreen )
+                                    return NO;
+                            }
+                            else {
+                                if ( NO == self.isFullScreen )
+                                    return NO;
+                            }
+                        }
+                    }
+                }
+                    break;
+                case SJPanGestureMovingDirection_V: {
+                    if ( self.isPlayOnScrollView ) {
+                        if ( YES == self.useFitOnScreenAndDisableRotation ) {
+                            if ( NO == self.isFitOnScreen )
+                                return NO;
+                        }
+                        else {
+                            if ( NO == self.isFullScreen )
+                                return NO;
+                        }
+                    }
+                    switch ( control.triggeredPosition ) {
+                            /// Brightness
+                        case SJPanGestureTriggeredPosition_Left: {
+                            if ( self.controlInfo->deviceVolumeAndBrightness.disableBrightnessSetting )
+                                return NO;
+                        }
+                            break;
+                            /// Volume
+                        case SJPanGestureTriggeredPosition_Right: {
+                            if ( self.controlInfo->deviceVolumeAndBrightness.disableVolumeSetting || self.isMute )
+                                return NO;
+                        }
+                            break;
+                    }
+                }
+            }
+        }
+        
+        if ( [self.controlLayerDelegate respondsToSelector:@selector(videoPlayer:gestureRecognizerShouldTrigger:location:)] ) {
+            if ( ![self.controlLayerDelegate videoPlayer:self gestureRecognizerShouldTrigger:type location:location] )
+                return NO;
+        }
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wdeprecated-declarations"
+        else if ( [self.controlLayerDelegate respondsToSelector:@selector(triggerGesturesCondition:)] ) {
+            if ( ![self.controlLayerDelegate triggerGesturesCondition:location] )
+                return NO;
+        }
+#pragma clang diagnostic pop
+        
+        if ( self.gestureRecognizerShouldTrigger && !self.gestureRecognizerShouldTrigger(self, type, location) ) {
+            return NO;
+        }
+        return YES;
+    };
+    
+    gestureControl.singleTapHandler = ^(id<SJPlayerGestureControl>  _Nonnull control, CGPoint location) {
         __strong typeof(_self) self = _self;
         if ( !self ) return ;
-        [self.playModelObserver refreshAppearState];
-    }];
+        [self _handleSingleTap:location];
+    };
     
-    UIView *presentView = self.presentView;
-    [view addSubview:_presentView];
-    [view setLayoutSubviewsExeBlock:^(SJPlayerView * _Nonnull view) {
-        if ( presentView.superview == view ) {
-            presentView.frame = view.bounds;
-        }
-    }];
-    
-    [_presentView setLayoutSubviewsExeBlock:^(SJVideoPlayerPresentView * _Nonnull view) {
+    gestureControl.doubleTapHandler = ^(id<SJPlayerGestureControl>  _Nonnull control, CGPoint location) {
         __strong typeof(_self) self = _self;
-        if ( !self ) return;
-        self.controlLayerView.frame = view.bounds;
-    }];
-    return _view;
+        if ( !self ) return ;
+        [self _handleDoubleTap:location];
+    };
+    
+    gestureControl.panHandler = ^(id<SJPlayerGestureControl>  _Nonnull control, SJPanGestureTriggeredPosition position, SJPanGestureMovingDirection direction, SJPanGestureRecognizerState state, CGPoint translate) {
+        __strong typeof(_self) self = _self;
+        if ( !self ) return ;
+        [self _handlePan:position direction:direction state:state translate:translate];
+    };
+    
+    gestureControl.pinchHandler = ^(id<SJPlayerGestureControl>  _Nonnull control, CGFloat scale) {
+        __strong typeof(_self) self = _self;
+        if ( !self ) return ;
+        [self _handlePinch:scale];
+    };
 }
 
-- (void)addInterceptTapGR {
-    UITapGestureRecognizer *intercept = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(handleInterceptTapGR:)];
-    dispatch_async(dispatch_get_main_queue(), ^{
-        [self.view addGestureRecognizer:intercept];
-    });
+- (void)_handleSingleTap:(CGPoint)location {
+    if ( self.controlInfo->floatSmallViewControl.isAppeared ) {
+        if ( self.floatSmallViewController.singleTappedOnTheFloatViewExeBlock ) {
+            self.floatSmallViewController.singleTappedOnTheFloatViewExeBlock(self.floatSmallViewController);
+        }
+        return;
+    }
+    
+    if ( self.isLockedScreen ) {
+        if ( [self.controlLayerDelegate respondsToSelector:@selector(tappedPlayerOnTheLockedState:)] ) {
+            [self.controlLayerDelegate tappedPlayerOnTheLockedState:self];
+        }
+    }
+    else {
+        [self.controlLayerAppearManager switchAppearState];
+    }
 }
 
-- (void)handleInterceptTapGR:(UITapGestureRecognizer *)tap { }
-
-- (SJVideoPlayerPresentView *)presentView {
-    if ( _presentView ) return _presentView;
-    _presentView = [SJVideoPlayerPresentView new];
-    return _presentView;
+- (void)_handleDoubleTap:(CGPoint)location {
+    if ( self.controlInfo->floatSmallViewControl.isAppeared ) {
+        if ( self.floatSmallViewController.doubleTappedOnTheFloatViewExeBlock ) {
+            self.floatSmallViewController.doubleTappedOnTheFloatViewExeBlock(self.floatSmallViewController);
+        }
+        return;
+    }
+    
+    if ( _fastForwardViewController.isEnabled ) {
+        CGRect bounds = self.presentView.bounds;
+        CGFloat width = self.fastForwardViewController.triggerAreaWidth;
+        CGRect left = CGRectMake(0, 0, width, bounds.size.height);
+        CGFloat spanSecs = self.fastForwardViewController.spanSecs;
+        if ( CGRectContainsPoint(left, location) ) {
+            // 快退10秒
+            [self seekToTime:self.currentTime - spanSecs completionHandler:nil];
+            [self.fastForwardViewController showFastForwardView:SJFastForwardTriggeredPosition_Left];
+            return;
+        }
+        
+        CGRect right = CGRectMake(bounds.size.width - width, 0, width, bounds.size.height);
+        if ( CGRectContainsPoint(right, location) ) {
+            // 快进10秒
+            [self seekToTime:self.currentTime + spanSecs completionHandler:nil];
+            [self.fastForwardViewController showFastForwardView:SJFastForwardTriggeredPosition_Right];
+            return;
+        }
+    }
+    
+    [self playStatus_isPlaying]?[self pause]:[self play];
 }
+
+- (void)_handlePan:(SJPanGestureTriggeredPosition)position direction:(SJPanGestureMovingDirection)direction state:(SJPanGestureRecognizerState)state translate:(CGPoint)translate {
+    switch ( state ) {
+        case SJPanGestureRecognizerStateBegan: {
+            switch ( direction ) {
+                    /// 水平
+                case SJPanGestureMovingDirection_H: {
+                    if ( self.totalTime == 0 ) {
+                        [self.presentView cancelGesture:SJPlayerGestureType_Pan];
+                        return;
+                    }
+                    
+                    self.controlInfo->pan.offsetTime = self.currentTime;
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wdeprecated-declarations"
+                    if ( [self.controlLayerDelegate respondsToSelector:@selector(horizontalDirectionWillBeginDragging:)] ) {
+                        [self.controlLayerDelegate horizontalDirectionWillBeginDragging:self];
+                    }
+#pragma clang diagnostic pop
+                }
+                    break;
+                    /// 垂直
+                case SJPanGestureMovingDirection_V: { }
+                    break;
+            }
+        }
+            break;
+        case SJPanGestureRecognizerStateChanged: {
+            switch ( direction ) {
+                    /// 水平
+                case SJPanGestureMovingDirection_H: {
+                    NSTimeInterval totalTime = self.totalTime;
+                    NSTimeInterval beforeOffsetTime = self.controlInfo->pan.offsetTime;
+                    CGFloat tlt = translate.x;
+                    CGFloat add = tlt / 667 * self.totalTime;
+                    CGFloat offsetTime = beforeOffsetTime + add;
+                    if ( offsetTime > totalTime ) offsetTime = totalTime;
+                    else if ( offsetTime < 0 ) offsetTime = 0;
+                    self.controlInfo->pan.offsetTime = offsetTime;
+                    
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wdeprecated-declarations"
+                    if ( [self.controlLayerDelegate respondsToSelector:@selector(videoPlayer:horizontalDirectionDidMove:)] ) {
+                        CGFloat progress = offsetTime / totalTime;
+                        [self.controlLayerDelegate videoPlayer:self horizontalDirectionDidMove:progress];
+                    }
+                    else if ( [self.controlLayerDelegate respondsToSelector:@selector(videoPlayer:horizontalDirectionDidDrag:)] ) {
+                        [self.controlLayerDelegate videoPlayer:self horizontalDirectionDidDrag:add];
+                    }
+#pragma clang diagnostic pop
+                }
+                    break;
+                    /// 垂直
+                case SJPanGestureMovingDirection_V: {
+                    switch ( position ) {
+                            /// brightness
+                        case SJPanGestureTriggeredPosition_Left: {
+                            CGFloat value = self.deviceBrightness - translate.y * 0.005;
+                            if ( value < 1.0 / 16 ) value = 1.0 / 16;
+                            self.deviceBrightness = value;
+                        }
+                            break;
+                            /// volume
+                        case SJPanGestureTriggeredPosition_Right: {
+                            CGFloat value = translate.y * 0.005;
+                            self.deviceVolume -= value;
+                        }
+                            break;
+                    }
+                }
+                    break;
+            }
+        }
+            break;
+        case SJPanGestureRecognizerStateEnded: {
+            switch ( direction ) {
+                case SJPanGestureMovingDirection_H: {
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wdeprecated-declarations"
+                    if ( [self.controlLayerDelegate respondsToSelector:@selector(horizontalDirectionDidEndDragging:)] ) {
+                        [self.controlLayerDelegate horizontalDirectionDidEndDragging:self];
+                    }
+#pragma clang diagnostic pop
+                }
+                    break;
+                case SJPanGestureMovingDirection_V: { }
+                    break;
+            }
+        }
+            break;
+    }
+    
+    if ( direction == SJPanGestureMovingDirection_H ) {
+        if ( [self.controlLayerDelegate respondsToSelector:@selector(videoPlayer:panGestureTriggeredInTheHorizontalDirection:progressTime:)] ) {
+            [self.controlLayerDelegate videoPlayer:self panGestureTriggeredInTheHorizontalDirection:state progressTime:self.controlInfo->pan.offsetTime];
+        }
+    }
+}
+
+- (void)_handlePinch:(CGFloat)scale {
+    self.playbackController.videoGravity = scale > 1 ?AVLayerVideoGravityResizeAspectFill:AVLayerVideoGravityResizeAspect;
+}
+
+#pragma mark -
+
+// - registrar -
 
 - (SJVideoPlayerRegistrar *)registrar {
     if ( _registrar ) return _registrar;
@@ -513,18 +773,6 @@ typedef struct _SJPlayerControlInfo {
             break;
     }
     return SJVideoPlayerPlayState_Unknown;
-}
-
-- (UITapGestureRecognizer *)lockStateTapGesture {
-    if ( _lockStateTapGesture ) return _lockStateTapGesture;
-    _lockStateTapGesture = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(handleLockStateTapGesture:)];
-    return _lockStateTapGesture;
-}
-
-- (void)handleLockStateTapGesture:(UITapGestureRecognizer *)tap {
-    if ( [self.controlLayerDelegate respondsToSelector:@selector(tappedPlayerOnTheLockedState:)] ) {
-        [self.controlLayerDelegate tappedPlayerOnTheLockedState:self];
-    }
 }
 
 - (void)_updateCurrentPlayingIndexPathIfNeeded:(SJPlayModel *)playModel {
@@ -814,14 +1062,7 @@ typedef struct _SJPlayerControlInfo {
 - (void)setLockedScreen:(BOOL)lockedScreen {
     if ( lockedScreen != _controlInfo->rotation.isLockedScreen ) {
         _controlInfo->rotation.isLockedScreen = lockedScreen;
-       
-        if ( lockedScreen ) {
-            [self.controlLayerDataSource.controlView addGestureRecognizer:self.lockStateTapGesture];
-        }
-        else {
-            [self.controlLayerDataSource.controlView removeGestureRecognizer:self.lockStateTapGesture];
-        }
-        
+    
         if      ( lockedScreen && [self.controlLayerDelegate respondsToSelector:@selector(lockedVideoPlayer:)] ) {
             [self.controlLayerDelegate lockedVideoPlayer:self];
         }
@@ -861,6 +1102,13 @@ typedef struct _SJPlayerControlInfo {
 }
 - (nullable BOOL (^)(__kindof SJBaseVideoPlayer * _Nonnull))canPlayAnAsset {
     return objc_getAssociatedObject(self, _cmd);
+}
+
+- (void)setResumePlaybackWhenPlayerHasFinishedSeeking:(BOOL)resumePlaybackWhenPlayerHasFinishedSeeking {
+    _controlInfo->plabackControl.resumePlaybackWhenPlayerHasFinishedSeeking = resumePlaybackWhenPlayerHasFinishedSeeking;
+}
+- (BOOL)resumePlaybackWhenPlayerHasFinishedSeeking {
+    return _controlInfo->plabackControl.resumePlaybackWhenPlayerHasFinishedSeeking;
 }
 
 - (void)play {
@@ -958,22 +1206,14 @@ typedef struct _SJPlayerControlInfo {
         return;
     }
     
-    if ( self.canPlayAnAsset && !self.canPlayAnAsset(self) ) {
-        return;
-    }
-
-    if ( [self playStatus_isUnknown] || [self playStatus_isInactivity_ReasonPlayFailed] ) {
-        if ( completionHandler ) completionHandler(NO);
-        return;
-    }
-    
     if ( secs > self.playbackController.duration ) {
         secs = self.playbackController.duration * 0.98;
     }
     else if ( secs < 0 ) {
         secs = 0;
     }
-    [self.playbackController seekToTime:secs completionHandler:completionHandler];
+    
+    [self seekToTime:CMTimeMakeWithSeconds(secs, NSEC_PER_SEC) toleranceBefore:kCMTimePositiveInfinity toleranceAfter:kCMTimePositiveInfinity completionHandler:completionHandler];
 }
 
 - (void)seekToTime:(CMTime)time toleranceBefore:(CMTime)toleranceBefore toleranceAfter:(CMTime)toleranceAfter completionHandler:(void (^ _Nullable)(BOOL))completionHandler {
@@ -986,7 +1226,12 @@ typedef struct _SJPlayerControlInfo {
         return;
     }
     
-    [self.playbackController seekToTime:time toleranceBefore:toleranceBefore toleranceAfter:toleranceAfter completionHandler:completionHandler];
+    [self.playbackController seekToTime:time toleranceBefore:toleranceBefore toleranceAfter:toleranceAfter completionHandler:^(BOOL finished) {
+        if ( finished && self.controlInfo->plabackControl.resumePlaybackWhenPlayerHasFinishedSeeking ) {
+            [self play];
+        }
+        if ( completionHandler ) completionHandler(finished);
+    }];
 }
 
 - (void)setRate:(float)rate {
@@ -1494,17 +1739,8 @@ typedef struct _SJPlayerControlInfo {
 
 @implementation SJBaseVideoPlayer (GestureControl)
 
-- (void)setGestureControl:(id<SJPlayerGestureControl> _Nullable)gestureControl {
-    _gestureControl = gestureControl;
-    [self _needUpdateGestureControlProperties];
-}
-
 - (id<SJPlayerGestureControl>)gestureControl {
-    if ( _gestureControl )
-        return _gestureControl;
-    _gestureControl = [[SJPlayerGestureControl alloc] initWithTargetView:self.presentView];
-    [self _needUpdateGestureControlProperties];
-    return _gestureControl;
+    return self.presentView;
 }
 
 - (void)setGestureRecognizerShouldTrigger:(BOOL (^_Nullable)(__kindof SJBaseVideoPlayer * _Nonnull, SJPlayerGestureType, CGPoint))gestureRecognizerShouldTrigger {
@@ -1525,252 +1761,8 @@ typedef struct _SJPlayerControlInfo {
     }
     return _fastForwardViewController;
 }
-- (BOOL)_isEnabledForFastForwardViewController {
-    return _fastForwardViewController.isEnabled;
-}
-
 - (void)_needUpdateFastForwardControllerProperties {
     _fastForwardViewController.target = self.presentView;
-}
-
-- (void)_needUpdateGestureControlProperties {
-    if ( !_gestureControl )
-        return;
-    
-    _gestureControl.disabledGestures = _controlInfo->gestureControl.disabledGestures;
-    
-    __weak typeof(self) _self = self;
-    _gestureControl.gestureRecognizerShouldTrigger = ^BOOL(id<SJPlayerGestureControl>  _Nonnull control, SJPlayerGestureType type, CGPoint location) {
-        __strong typeof(_self) self = _self;
-        if ( !self ) return NO;
-        
-        if ( self.controlInfo->floatSmallViewControl.isAppeared )
-            return NO;
-        
-        if ( self.isTransitioning )
-            return NO;
-        
-        if ( self.isLockedScreen )
-            return NO;
-        
-        if ( SJPlayerGestureType_Pan == type ) {
-            switch ( control.movingDirection ) {
-                case SJPanGestureMovingDirection_H: {
-                    if ( self.playbackType == SJMediaPlaybackTypeLIVE )
-                        return NO;
-                    
-                    if ( [self playStatus_isPrepare] || [self playStatus_isUnknown] )
-                        return NO;
-                    
-                    if ( self.totalTime <= 0 )
-                        return NO;
-                    
-                    if ( self.canSeekToTime != nil && !self.canSeekToTime(self) )
-                        return NO;
-                    
-                    if ( self.isPlayOnScrollView ) {
-                        if ( NO == self.controlInfo->gestureControl.allowHorizontalTriggeringOfPanGesturesInCells ) {
-                            if ( YES == self.useFitOnScreenAndDisableRotation ) {
-                                if ( NO == self.isFitOnScreen )
-                                    return NO;
-                            }
-                            else {
-                                if ( NO == self.isFullScreen )
-                                    return NO;
-                            }
-                        }
-                    }
-                }
-                    break;
-                case SJPanGestureMovingDirection_V: {
-                    if ( self.isPlayOnScrollView ) {
-                        if ( YES == self.useFitOnScreenAndDisableRotation ) {
-                            if ( NO == self.isFitOnScreen )
-                                return NO;
-                        }
-                        else {
-                            if ( NO == self.isFullScreen )
-                                return NO;
-                        }
-                    }
-                    switch ( control.triggeredPosition ) {
-                            /// Brightness
-                        case SJPanGestureTriggeredPosition_Left: {
-                            if ( self.controlInfo->deviceVolumeAndBrightness.disableBrightnessSetting )
-                                return NO;
-                        }
-                            break;
-                            /// Volume
-                        case SJPanGestureTriggeredPosition_Right: {
-                            if ( self.controlInfo->deviceVolumeAndBrightness.disableVolumeSetting || self.isMute )
-                                return NO;
-                        }
-                            break;
-                    }
-                }
-            }
-        }
-        
-        if ( [self.controlLayerDelegate respondsToSelector:@selector(videoPlayer:gestureRecognizerShouldTrigger:location:)] ) {
-            if ( ![self.controlLayerDelegate videoPlayer:self gestureRecognizerShouldTrigger:type location:location] )
-                return NO;
-        }
-#pragma clang diagnostic push
-#pragma clang diagnostic ignored "-Wdeprecated-declarations"
-        else if ( [self.controlLayerDelegate respondsToSelector:@selector(triggerGesturesCondition:)] ) {
-            if ( ![self.controlLayerDelegate triggerGesturesCondition:location] )
-                return NO;
-        }
-#pragma clang diagnostic pop
-        
-        if ( self.gestureRecognizerShouldTrigger && !self.gestureRecognizerShouldTrigger(self, type, location) ) {
-            return NO;
-        }
-        return YES;
-    };
-    
-    _gestureControl.singleTapHandler = ^(id<SJPlayerGestureControl>  _Nonnull control, CGPoint location) {
-        __strong typeof(_self) self = _self;
-        if ( !self ) return ;
-        [self.controlLayerAppearManager switchAppearState];
-    };
-    
-    _gestureControl.doubleTapHandler = ^(id<SJPlayerGestureControl>  _Nonnull control, CGPoint location) {
-        __strong typeof(_self) self = _self;
-        if ( !self ) return ;
-        
-        if ( [self _isEnabledForFastForwardViewController] ) {
-            CGRect bounds = self.presentView.bounds;
-            CGFloat width = self.fastForwardViewController.triggerAreaWidth;
-            CGRect left = CGRectMake(0, 0, width, bounds.size.height);
-            CGFloat spanSecs = self.fastForwardViewController.spanSecs;
-            if ( CGRectContainsPoint(left, location) ) {
-                // 快退10秒
-                [self seekToTime:self.currentTime - spanSecs completionHandler:nil];
-                [self.fastForwardViewController showFastForwardView:SJFastForwardTriggeredPosition_Left];
-                return;
-            }
-            
-            CGRect right = CGRectMake(bounds.size.width - width, 0, width, bounds.size.height);
-            if ( CGRectContainsPoint(right, location) ) {
-                // 快进10秒
-                [self seekToTime:self.currentTime + spanSecs completionHandler:nil];
-                [self.fastForwardViewController showFastForwardView:SJFastForwardTriggeredPosition_Right];
-                return;
-            }
-        }
-        
-        if ( [self playStatus_isPlaying] )
-            [self pause];
-        else
-            [self play];
-    };
-    
-    _gestureControl.panHandler = ^(id<SJPlayerGestureControl>  _Nonnull control, SJPanGestureTriggeredPosition position, SJPanGestureMovingDirection direction, SJPanGestureRecognizerState state, CGPoint translate) {
-        __strong typeof(_self) self = _self;
-        if ( !self ) return ;
-        switch ( state ) {
-            case SJPanGestureRecognizerStateBegan: {
-                switch ( direction ) {
-                        /// 水平
-                    case SJPanGestureMovingDirection_H: {
-                        if ( self.totalTime == 0 ) {
-                            [control cancelGesture:SJPlayerGestureType_Pan];
-                            return;
-                        }
-                        
-                        self.controlInfo->pan.offsetTime = self.currentTime;
-                    #pragma clang diagnostic push
-                    #pragma clang diagnostic ignored "-Wdeprecated-declarations"
-                        if ( [self.controlLayerDelegate respondsToSelector:@selector(horizontalDirectionWillBeginDragging:)] ) {
-                            [self.controlLayerDelegate horizontalDirectionWillBeginDragging:self];
-                        }
-                    #pragma clang diagnostic pop
-                    }
-                        break;
-                        /// 垂直
-                    case SJPanGestureMovingDirection_V: { }
-                        break;
-                }
-            }
-                break;
-            case SJPanGestureRecognizerStateChanged: {
-                switch ( direction ) {
-                        /// 水平
-                    case SJPanGestureMovingDirection_H: {
-                        NSTimeInterval totalTime = self.totalTime;
-                        NSTimeInterval beforeOffsetTime = self.controlInfo->pan.offsetTime;
-                        CGFloat tlt = translate.x;
-                        CGFloat add = tlt / 667 * self.totalTime;
-                        CGFloat offsetTime = beforeOffsetTime + add;
-                        if ( offsetTime > totalTime ) offsetTime = totalTime;
-                        else if ( offsetTime < 0 ) offsetTime = 0;
-                        self.controlInfo->pan.offsetTime = offsetTime;
-                        
-                    #pragma clang diagnostic push
-                    #pragma clang diagnostic ignored "-Wdeprecated-declarations"
-                        if ( [self.controlLayerDelegate respondsToSelector:@selector(videoPlayer:horizontalDirectionDidMove:)] ) {
-                            CGFloat progress = offsetTime / totalTime;
-                            [self.controlLayerDelegate videoPlayer:self horizontalDirectionDidMove:progress];
-                        }
-                        else if ( [self.controlLayerDelegate respondsToSelector:@selector(videoPlayer:horizontalDirectionDidDrag:)] ) {
-                            [self.controlLayerDelegate videoPlayer:self horizontalDirectionDidDrag:add];
-                        }
-                    #pragma clang diagnostic pop
-                    }
-                        break;
-                        /// 垂直
-                    case SJPanGestureMovingDirection_V: {
-                        switch ( position ) {
-                                /// brightness
-                            case SJPanGestureTriggeredPosition_Left: {
-                                CGFloat value = self.deviceBrightness - translate.y * 0.005;
-                                if ( value < 1.0 / 16 ) value = 1.0 / 16;
-                                self.deviceBrightness = value;
-                            }
-                                break;
-                                /// volume
-                            case SJPanGestureTriggeredPosition_Right: {
-                                CGFloat value = translate.y * 0.005;
-                                self.deviceVolume -= value;
-                            }
-                                break;
-                        }
-                    }
-                        break;
-                }
-            }
-                break;
-            case SJPanGestureRecognizerStateEnded: {
-                switch ( direction ) {
-                    case SJPanGestureMovingDirection_H: {
-                    #pragma clang diagnostic push
-                    #pragma clang diagnostic ignored "-Wdeprecated-declarations"
-                        if ( [self.controlLayerDelegate respondsToSelector:@selector(horizontalDirectionDidEndDragging:)] ) {
-                            [self.controlLayerDelegate horizontalDirectionDidEndDragging:self];
-                        }
-                    #pragma clang diagnostic pop
-                    }
-                        break;
-                    case SJPanGestureMovingDirection_V: { }
-                        break;
-                }
-            }
-                break;
-        }
-        
-        if ( direction == SJPanGestureMovingDirection_H ) {
-            if ( [self.controlLayerDelegate respondsToSelector:@selector(videoPlayer:panGestureTriggeredInTheHorizontalDirection:progressTime:)] ) {
-                [self.controlLayerDelegate videoPlayer:self panGestureTriggeredInTheHorizontalDirection:state progressTime:self.controlInfo->pan.offsetTime];
-            }
-        }
-    };
-    
-    _gestureControl.pinchHandler = ^(id<SJPlayerGestureControl>  _Nonnull control, CGFloat scale) {
-        __strong typeof(_self) self = _self;
-        if ( !self ) return ;
-        self.playbackController.videoGravity = scale > 1 ?AVLayerVideoGravityResizeAspectFill:AVLayerVideoGravityResizeAspect;
-    };
 }
 
 - (void)setAllowHorizontalTriggeringOfPanGesturesInCells:(BOOL)allowHorizontalTriggeringOfPanGesturesInCells {
@@ -1783,11 +1775,11 @@ typedef struct _SJPlayerControlInfo {
 
 - (void)setDisabledGestures:(SJPlayerDisabledGestures)disabledGestures {
     _controlInfo->gestureControl.disabledGestures = disabledGestures;
-    _gestureControl.disabledGestures = disabledGestures;
+    self.gestureControl.disabledGestures = disabledGestures;
 }
 
 - (SJPlayerDisabledGestures)disabledGestures {
-    return _gestureControl.disabledGestures;
+    return self.gestureControl.disabledGestures;
 }
 
 @end

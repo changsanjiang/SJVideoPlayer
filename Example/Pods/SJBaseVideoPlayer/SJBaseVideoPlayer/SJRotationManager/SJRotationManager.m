@@ -140,8 +140,8 @@ NS_ASSUME_NONNULL_BEGIN
     self = [super initWithFrame:frame];
     if ( !self ) return nil;
 //    self.windowLevel = UIWindowLevelStatusBar - 1;
-    self.hidden = YES;
     self.rootViewController = SJFullscreenModeViewController.new;;
+    self.hidden = YES;
     return self;
 }
 
@@ -377,8 +377,8 @@ NS_ASSUME_NONNULL_BEGIN
 }
 
 - (void)_finishTransition {
-    self.transitioning = NO;
     self.window.rootViewController.isRotated = YES;
+    self.transitioning = NO;
     
     if ( _completionHandler )
         _completionHandler(self);

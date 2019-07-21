@@ -11,7 +11,6 @@
 #else
 #import "NSObject+SJObserverHelper.h"
 #endif
-
 NS_ASSUME_NONNULL_BEGIN
 @interface SJFloatSmallView : UIView
 @end
@@ -83,18 +82,19 @@ NS_ASSUME_NONNULL_BEGIN
 
 @interface SJFloatSmallViewController ()<UIGestureRecognizerDelegate> {
     SJFloatSmallView *_Nullable _floatView;
-    BOOL _isDelayed;
 }
 @property (nonatomic) BOOL isAppeared;
 @property (nonatomic, strong, readonly) UIPanGestureRecognizer *panGesture;
-@property (nonatomic, strong, readonly) UITapGestureRecognizer *doubleTapGesture;
-@property (nonatomic, strong, readonly) UITapGestureRecognizer *singleTapGesture;
 @end
 
 @implementation SJFloatSmallViewController
-@synthesize floatViewShouldAppear = _floatViewShouldAppear;
+// 由于tap手势会阻断事件响应链, 为了避免此种情况, 此处无需添加单击和双击手势, 已改为由播放器主动调用这两个block.
+//
+// 这两个block将来可能会直接移动到播放器中.
 @synthesize singleTappedOnTheFloatViewExeBlock = _singleTappedOnTheFloatViewExeBlock;
 @synthesize doubleTappedOnTheFloatViewExeBlock = _doubleTappedOnTheFloatViewExeBlock;
+
+@synthesize floatViewShouldAppear = _floatViewShouldAppear;
 @synthesize targetSuperview = _targetSuperview;
 @synthesize enabled = _enabled;
 @synthesize target = _target;
@@ -199,19 +199,6 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (void)_addGesturesToFloatView:(SJFloatSmallView *)floatView {
     [floatView addGestureRecognizer:self.panGesture];
-    [floatView addGestureRecognizer:self.doubleTapGesture];
-    [floatView addGestureRecognizer:self.singleTapGesture];
-    [self.singleTapGesture requireGestureRecognizerToFail:self.doubleTapGesture];
-}
-
-- (void)setSingleTappedOnTheFloatViewExeBlock:(void (^_Nullable)(id<SJFloatSmallViewControllerProtocol> _Nonnull))singleTappedOnTheFloatViewExeBlock {
-    _singleTappedOnTheFloatViewExeBlock = singleTappedOnTheFloatViewExeBlock;
-    self.singleTapGesture.enabled = singleTappedOnTheFloatViewExeBlock != nil;
-}
-
-- (void)setDoubleTappedOnTheFloatViewExeBlock:(void (^_Nullable)(id<SJFloatSmallViewControllerProtocol> _Nonnull))doubleTappedOnTheFloatViewExeBlock {
-    _doubleTappedOnTheFloatViewExeBlock = doubleTappedOnTheFloatViewExeBlock;
-    self.doubleTapGesture.enabled = doubleTappedOnTheFloatViewExeBlock != nil;
 }
 
 - (void)setSlidable:(BOOL)slidable {
@@ -227,59 +214,6 @@ NS_ASSUME_NONNULL_BEGIN
         _panGesture = [[UIPanGestureRecognizer alloc] initWithTarget:self action:@selector(_handlePanGesture:)];
     }
     return _panGesture;
-}
-
-@synthesize doubleTapGesture = _doubleTapGesture;
-- (UITapGestureRecognizer *)doubleTapGesture {
-    if ( _doubleTapGesture == nil ) {
-        _doubleTapGesture = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(_doubleTappedOnTheFloatSmallView:)];
-        _doubleTapGesture.numberOfTapsRequired = 2;
-        _doubleTapGesture.enabled = NO;
-    }
-    return _doubleTapGesture;
-}
-
-@synthesize singleTapGesture = _singleTapGesture;
-- (UITapGestureRecognizer *)singleTapGesture {
-    if ( _singleTapGesture == nil ) {
-        _singleTapGesture = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(_nothing)];
-        _singleTapGesture.delegate = self;
-        _singleTapGesture.enabled = NO;
-    }
-    return _singleTapGesture;
-}
-
-- (BOOL)gestureRecognizerShouldBegin:(__kindof UIGestureRecognizer *)gestureRecognizer {
-    if ( gestureRecognizer == self.singleTapGesture ) {
-        if ( self.doubleTapGesture.enabled == YES ) {
-            _isDelayed = YES;
-            [self performSelector:@selector(_singleTappedOnTheFloatSmallView:) withObject:gestureRecognizer afterDelay:200/1000.0 inModes:@[NSRunLoopCommonModes]];
-        }
-    }
-    
-    return YES;
-}
-
-- (void)_nothing {
-    if ( _isDelayed ) {
-        _isDelayed = NO;
-        [NSObject cancelPreviousPerformRequestsWithTarget:self];
-        _singleTappedOnTheFloatViewExeBlock(self);
-    }
-}
-
-- (void)_doubleTappedOnTheFloatSmallView:(UITapGestureRecognizer *)tapGesture {
-    if ( _isDelayed ) {
-        _isDelayed = NO;
-        [NSObject cancelPreviousPerformRequestsWithTarget:self];
-    }
-    _doubleTappedOnTheFloatViewExeBlock(self);
-}
-
-- (void)_singleTappedOnTheFloatSmallView:(UITapGestureRecognizer *)tapGesture {
-    _isDelayed = NO;
-    if ( tapGesture.state != UIGestureRecognizerStateFailed )
-        _singleTappedOnTheFloatViewExeBlock(self);
 }
 
 - (void)_handlePanGesture:(UIPanGestureRecognizer *)panGesture {

@@ -50,6 +50,8 @@ NS_ASSUME_NONNULL_BEGIN
 
 
 - (void)_setupViews {
+    self.edgesForExtendedLayout = UIRectEdgeNone;
+    
     _player = [SJVideoPlayer player];
     [_playerContainerView addSubview:self.player.view];
     [_player.view mas_makeConstraints:^(MASConstraintMaker *make) {

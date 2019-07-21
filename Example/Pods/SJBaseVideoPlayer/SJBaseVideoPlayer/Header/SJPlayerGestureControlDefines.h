@@ -50,9 +50,6 @@ typedef enum : NSUInteger {
 
 
 @protocol SJPlayerGestureControl <NSObject>
-- (instancetype)initWithTargetView:(__weak UIView *)view;
-
-@property (nonatomic, weak, readonly, nullable) UIView *targetView;
 @property (nonatomic, copy, nullable) BOOL(^gestureRecognizerShouldTrigger)(id<SJPlayerGestureControl> control, SJPlayerGestureType type, CGPoint location);
 @property (nonatomic, copy, nullable) void(^singleTapHandler)(id<SJPlayerGestureControl> control, CGPoint location);
 @property (nonatomic, copy, nullable) void(^doubleTapHandler)(id<SJPlayerGestureControl> control, CGPoint location);
@@ -62,8 +59,6 @@ typedef enum : NSUInteger {
 @property (nonatomic) SJPlayerDisabledGestures disabledGestures;
 - (void)cancelGesture:(SJPlayerGestureType)type;
 - (UIGestureRecognizerState)stateOfGesture:(SJPlayerGestureType)type;
-- (instancetype)init NS_UNAVAILABLE;
-+ (instancetype)new NS_UNAVAILABLE;
 
 @property (nonatomic, readonly) SJPanGestureMovingDirection movingDirection;
 @property (nonatomic, readonly) SJPanGestureTriggeredPosition triggeredPosition;

@@ -30,7 +30,7 @@
 #endif
 
 NS_ASSUME_NONNULL_BEGIN
-@interface SJVideoPlayer ()<SJSwitchVideoDefinitionControlLayerDelegate, SJMoreSettingControlLayerDelegate>
+@interface SJVideoPlayer ()<SJSwitchVideoDefinitionControlLayerDelegate, SJMoreSettingControlLayerDelegate, SJNotReachableControlLayerDelegate>
 @property (nonatomic, strong, readonly) SJVideoPlayerControlSettingRecorder *recorder;
 
 @property (nonatomic, strong, nullable) id<SJFloatSmallViewControllerObserverProtocol> sj_floatSmallViewControllerObserver;
@@ -52,7 +52,7 @@ NS_ASSUME_NONNULL_BEGIN
 #endif
 
 + (NSString *)version {
-    return @"v2.6.2";
+    return @"v2.6.3";
 }
 
 + (instancetype)player {
@@ -270,23 +270,7 @@ NS_ASSUME_NONNULL_BEGIN
 - (SJLoadFailedControlLayer *)defaultLoadFailedControlLayer {
     if ( !_defaultLoadFailedControlLayer ) {
         _defaultLoadFailedControlLayer = [SJLoadFailedControlLayer new];
-        __weak typeof(self) _self = self;
-        _defaultLoadFailedControlLayer.clickedBackButtonExeBlock = ^(SJLoadFailedControlLayer * _Nonnull controlLayer) {
-            __strong typeof(_self) self = _self;
-            if ( !self ) return;
-            [self _handleClickedBackButtonEvent];
-        };
-        _defaultLoadFailedControlLayer.clickedReloadButtonExeBlock = ^(SJLoadFailedControlLayer * _Nonnull controlLayer) {
-            __strong typeof(_self) self = _self;
-            if ( !self ) return;
-            [self refresh];
-            [self.switcher switchControlLayerForIdentitfier:SJControlLayer_Edge];
-        };
-        _defaultLoadFailedControlLayer.prepareToPlayNewAssetExeBlock = ^(SJLoadFailedControlLayer * _Nonnull control) {
-            __strong typeof(_self) self = _self;
-            if ( !self ) return;
-            [self.switcher switchControlLayerForIdentitfier:SJControlLayer_Edge];
-        };
+        _defaultLoadFailedControlLayer.delegate = self;
     }
     return _defaultLoadFailedControlLayer;
 }
@@ -295,30 +279,7 @@ NS_ASSUME_NONNULL_BEGIN
 - (SJNotReachableControlLayer *)defaultNotReachableControlLayer {
     if ( !_defaultNotReachableControlLayer ) {
         _defaultNotReachableControlLayer = [[SJNotReachableControlLayer alloc] initWithFrame:self.view.bounds];
-        __weak typeof(self) _self = self;
-        _defaultNotReachableControlLayer.clickedBackButtonExeBlock = ^(SJNotReachableControlLayer * _Nonnull controlLayer) {
-            __strong typeof(_self) self = _self;
-            if ( !self ) return;
-            [self _handleClickedBackButtonEvent];
-        };
-        _defaultNotReachableControlLayer.clickedReloadButtonExeBlock = ^(SJNotReachableControlLayer * _Nonnull controlLayer) {
-            __strong typeof(_self) self = _self;
-            if ( !self ) return;
-            [self refresh];
-            [self.switcher switchControlLayerForIdentitfier:SJControlLayer_Edge];
-        };
-        _defaultNotReachableControlLayer.prepareToPlayNewAssetExeBlock = ^(SJNotReachableControlLayer * _Nonnull control) {
-            __strong typeof(_self) self = _self;
-            if ( !self ) return;
-            [self.switcher switchControlLayerForIdentitfier:SJControlLayer_Edge];
-        };
-        _defaultNotReachableControlLayer.playStatusDidChangeExeBlock = ^(__kindof SJNotReachableControlLayer * _Nonnull control) {
-            __strong typeof(_self) self = _self;
-            if ( !self ) return;
-            if ( ![self playStatus_isInactivity_ReasonNotReachableAndPlaybackStalled] ) {
-                [self.switcher switchToPreviousControlLayer];
-            }
-        };
+        _defaultNotReachableControlLayer.delegate = self;
     }
     return _defaultNotReachableControlLayer;
 }
@@ -381,7 +342,6 @@ NS_ASSUME_NONNULL_BEGIN
 // - actions -
 
 - (void)clickedMoreButtonItem:(SJEdgeControlButtonItem *)moreButtonItem {
-    self.defaultMoreSettingControlLayer.moreSettings = self.moreSettings;
     [self.switcher switchControlLayerForIdentitfier:SJControlLayer_MoreSettting];
 }
 
@@ -442,8 +402,17 @@ NS_ASSUME_NONNULL_BEGIN
     [self.switcher switchToPreviousControlLayer];
 }
 
-- (void)tappedOnTheBlankAreaOfControlLayer:(id<SJControlLayer>)controlLayer {
+- (void)tappedBlankAreaOnTheControlLayer:(id<SJControlLayer>)controlLayer {
     [self.switcher switchToPreviousControlLayer];
+}
+
+- (void)tappedBackButtonOnTheControlLayer:(id<SJControlLayer>)controlLayer {
+    [self _handleClickedBackButtonEvent];
+}
+
+- (void)tappedReloadButtonOnTheControlLayer:(id<SJControlLayer>)controlLayer {
+    [self refresh];
+    [self.switcher switchControlLayerForIdentitfier:SJControlLayer_Edge];
 }
 @end
 
@@ -568,14 +537,6 @@ _atViewController(UIView *view) {
 }
 - (BOOL)hideBackButtonWhenOrientationIsPortrait {
     return [objc_getAssociatedObject(self, _cmd) boolValue];
-}
-
-- (void)setMoreSettings:(nullable NSArray<SJVideoPlayerMoreSetting *> *)moreSettings {
-    objc_setAssociatedObject(self, @selector(moreSettings), moreSettings, OBJC_ASSOCIATION_RETAIN_NONATOMIC);
-}
-
-- (nullable NSArray<SJVideoPlayerMoreSetting *> *)moreSettings {
-    return objc_getAssociatedObject(self, _cmd);
 }
 
 - (void)setShowMoreItemForTopControlLayer:(BOOL)showMoreItemForTopControlLayer {

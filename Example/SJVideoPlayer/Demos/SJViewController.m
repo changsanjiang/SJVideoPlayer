@@ -75,6 +75,8 @@
     
     [m addObject:[[LWZTableSectionShrinker alloc] initWithTitle:@"Switch Video Definition" titleWhenShrank:nil dataArr:[self _createSwitchVideoDefinitionDemoItems]]];
     
+    [m addObject:[[LWZTableSectionShrinker alloc] initWithTitle:@"Test" titleWhenShrank:nil dataArr:[self _createTestItems]]];
+
     _data = m.copy;
 }
 
@@ -162,6 +164,14 @@
       ];
 }
 
+- (NSArray<Item *> *)_createTestItems {
+    return
+    @[
+      [[Item alloc] initWithTitle:@"Test"
+                         subTitle:@"Test"
+                             path:@"test"],
+      ];
+}
 
 
 #pragma mark -

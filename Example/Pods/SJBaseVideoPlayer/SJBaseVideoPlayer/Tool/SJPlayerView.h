@@ -7,10 +7,16 @@
 
 #import <UIKit/UIKit.h>
 
+@protocol SJPlayerViewDelegate;
+
 NS_ASSUME_NONNULL_BEGIN
 @interface SJPlayerView : UIView
-@property (nonatomic, copy, nullable) void(^willMoveToWindowExeBlock)(SJPlayerView *view, UIWindow * window);
-@property (nonatomic, copy, nullable) void(^layoutSubviewsExeBlock)(SJPlayerView *view);
-@property (nonatomic, weak, nullable) id player;
+@property (nonatomic, weak, nullable) id<SJPlayerViewDelegate> delegate;
+@end
+
+@protocol SJPlayerViewDelegate <NSObject>
+- (void)playerViewDidLayoutSubviews:(SJPlayerView *)playerView;
+- (void)playerViewWillMoveToWindow:(SJPlayerView *)playerView;
+- (nullable UIView *)playerView:(SJPlayerView *)playerView hitTestForView:(nullable __kindof UIView *)view;
 @end
 NS_ASSUME_NONNULL_END

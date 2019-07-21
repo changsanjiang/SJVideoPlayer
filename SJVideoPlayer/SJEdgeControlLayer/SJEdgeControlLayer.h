@@ -37,11 +37,15 @@ extern SJEdgeControlButtonItemTag const SJEdgeControlLayerCenterItem_Replay;    
 
 @property (nonatomic) BOOL hideBackButtonWhenOrientationIsPortrait; ///< 竖屏时隐藏返回按钮
 @property (nonatomic) BOOL disablePromptWhenNetworkStatusChanges; ///< 禁止网络状态变化提示
-@property (nonatomic) BOOL hideBottomProgressSlider; ///< 隐藏底部进度条
 @property (nonatomic) BOOL showResidentBackButton;   ///< 返回按钮常驻
+
+@property (nonatomic) BOOL hideBottomProgressSlider; ///< 隐藏底部进度条
+@property (nonatomic) CGFloat bottomProgressSliderHeight; ///< default value is 1
 
 @property (nonatomic) BOOL showNetworkSpeedToLoadingView; ///< 是否在loadingView上显示网速
 @property (nonatomic) BOOL showLoadingViewWhenPlaybackStatusIsSeeking; ///< seek时是否显示loadingView
+
+@property (nonatomic) BOOL accurateSeeking; ///< 是否精确的seeking, default value is NO.
 @end
 
 

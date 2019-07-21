@@ -98,7 +98,7 @@
         [self _show];
         [NSObject cancelPreviousPerformRequestsWithTarget:self selector:@selector(_hidden) object:nil];
         if ( duration == - 1 ) return;
-        [self performSelector:@selector(_hidden) withObject:nil afterDelay:duration];
+        [self performSelector:@selector(_hidden) withObject:nil afterDelay:duration inModes:@[NSRunLoopCommonModes]];
     });
 }
 

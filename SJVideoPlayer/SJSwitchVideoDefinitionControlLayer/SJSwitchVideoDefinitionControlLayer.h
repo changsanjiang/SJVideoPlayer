@@ -25,7 +25,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (void)controlLayer:(SJSwitchVideoDefinitionControlLayer *)controlLayer didSelectAsset:(SJVideoPlayerURLAsset *)asset;
 
-- (void)tappedOnTheBlankAreaOfControlLayer:(SJSwitchVideoDefinitionControlLayer *)controlLayer;
+- (void)tappedBlankAreaOnTheControlLayer:(id<SJControlLayer>)controlLayer;
 
 @end
 NS_ASSUME_NONNULL_END

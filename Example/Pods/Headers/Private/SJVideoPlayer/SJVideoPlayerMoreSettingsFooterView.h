@@ -1,1 +1,0 @@
-../../../../../SJVideoPlayer/SJMoreSettingControlLayer/Core/SJVideoPlayerMoreSettingsFooterView.h

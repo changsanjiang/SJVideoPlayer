@@ -35,6 +35,8 @@
 		77788FED22C37C2000E26599 /* SJExtendedMediaCollectionViewModel.m in Sources */ = {isa = PBXBuildFile; fileRef = 77788FEC22C37C2000E26599 /* SJExtendedMediaCollectionViewModel.m */; };
 		77805D6B22BF7DE1007076B9 /* SJiPadDemoViewController1.m in Sources */ = {isa = PBXBuildFile; fileRef = 77805D6922BF7DE1007076B9 /* SJiPadDemoViewController1.m */; };
 		77805D6F22BF7EDB007076B9 /* iPadMain.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 77805D6E22BF7EDB007076B9 /* iPadMain.storyboard */; };
+		77E87F6622E84D4E0047A253 /* SJViewController10.m in Sources */ = {isa = PBXBuildFile; fileRef = 77E87F6422E84D4E0047A253 /* SJViewController10.m */; };
+		77E87F6722E84D4E0047A253 /* SJViewController10.xib in Resources */ = {isa = PBXBuildFile; fileRef = 77E87F6522E84D4E0047A253 /* SJViewController10.xib */; };
 		873B8AEB1B1F5CCA007FD442 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 873B8AEA1B1F5CCA007FD442 /* Main.storyboard */; };
 		A601803C22DB5CAC00ED840D /* SJRotationModeDemoViewController3.m in Sources */ = {isa = PBXBuildFile; fileRef = A601803A22DB5CAC00ED840D /* SJRotationModeDemoViewController3.m */; };
 		A601803D22DB5CAC00ED840D /* SJRotationModeDemoViewController3.xib in Resources */ = {isa = PBXBuildFile; fileRef = A601803B22DB5CAC00ED840D /* SJRotationModeDemoViewController3.xib */; };
@@ -131,6 +133,9 @@
 		77805D6822BF7DE1007076B9 /* SJiPadDemoViewController1.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = SJiPadDemoViewController1.h; sourceTree = "<group>"; };
 		77805D6922BF7DE1007076B9 /* SJiPadDemoViewController1.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = SJiPadDemoViewController1.m; sourceTree = "<group>"; };
 		77805D6E22BF7EDB007076B9 /* iPadMain.storyboard */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; path = iPadMain.storyboard; sourceTree = "<group>"; };
+		77E87F6322E84D4E0047A253 /* SJViewController10.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = SJViewController10.h; sourceTree = "<group>"; };
+		77E87F6422E84D4E0047A253 /* SJViewController10.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = SJViewController10.m; sourceTree = "<group>"; };
+		77E87F6522E84D4E0047A253 /* SJViewController10.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = SJViewController10.xib; sourceTree = "<group>"; };
 		7D124A339A8A3126BD5D15EA /* README.md */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = net.daringfireball.markdown; name = README.md; path = ../README.md; sourceTree = "<group>"; };
 		873B8AEA1B1F5CCA007FD442 /* Main.storyboard */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.storyboard; path = Main.storyboard; sourceTree = "<group>"; };
 		A601803922DB5CAC00ED840D /* SJRotationModeDemoViewController3.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = SJRotationModeDemoViewController3.h; sourceTree = "<group>"; };
@@ -386,8 +391,19 @@
 				A6A2562222AC1BBA00E42998 /* Switching Control Layer */,
 				A6F19DF722D9C1090043B508 /* Pop Prompt */,
 				A6F19DFD22D9D7C30043B508 /* Switch Video Definition */,
+				77E87F6222E84D2B0047A253 /* GIF Screenshot Export */,
 			);
 			path = "iPhone Demo";
+			sourceTree = "<group>";
+		};
+		77E87F6222E84D2B0047A253 /* GIF Screenshot Export */ = {
+			isa = PBXGroup;
+			children = (
+				77E87F6322E84D4E0047A253 /* SJViewController10.h */,
+				77E87F6422E84D4E0047A253 /* SJViewController10.m */,
+				77E87F6522E84D4E0047A253 /* SJViewController10.xib */,
+			);
+			path = "GIF Screenshot Export";
 			sourceTree = "<group>";
 		};
 		A601803322DB5C4200ED840D /* 3 */ = {
@@ -716,6 +732,7 @@
 				A69FD22C22D9F5280031E4E7 /* SJViewController8.xib in Resources */,
 				A6A2554A22ABCFB100E42998 /* SJTableViewCell1.xib in Resources */,
 				A6A2555A22ABDAA500E42998 /* SJViewController2.xib in Resources */,
+				77E87F6722E84D4E0047A253 /* SJViewController10.xib in Resources */,
 				A6F19E0222D9D8050043B508 /* SJViewController7.xib in Resources */,
 				6003F598195388D20070C39A /* InfoPlist.strings in Resources */,
 				77788FE022C36CF300E26599 /* SJMediaItemsTableViewCell.xib in Resources */,
@@ -800,6 +817,7 @@
 				A6F19E0122D9D8050043B508 /* SJViewController7.m in Sources */,
 				A6A2555922ABDAA500E42998 /* SJViewController2.m in Sources */,
 				A6F19DFB22D9C1390043B508 /* SJViewController6.m in Sources */,
+				77E87F6622E84D4E0047A253 /* SJViewController10.m in Sources */,
 				A6A2556B22AC015B00E42998 /* SJViewController4.m in Sources */,
 				A6A208FA22AB9E59001ED610 /* SJRotationModeDemoViewController1.m in Sources */,
 				A6A2554422ABCE9200E42998 /* SJViewController1.m in Sources */,

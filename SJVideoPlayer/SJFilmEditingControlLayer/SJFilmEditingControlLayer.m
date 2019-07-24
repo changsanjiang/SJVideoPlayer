@@ -46,7 +46,6 @@ static SJControlLayerIdentifier SJFilmEditingGenerateResultControlLayerIdentifie
 @interface SJFilmEditingControlLayer ()
 @property (nonatomic, strong, readonly) SJFilmEditingSettingsUpdatedObserver *settingsUpdatedObserver;
 @property (nonatomic, strong, nullable) SJControlLayerSwitcher *switcher;
-@property (nonatomic, strong, readonly) UITapGestureRecognizer *tap;
 @property (nonatomic, weak, nullable) __kindof SJBaseVideoPlayer *player;
 @end
 
@@ -74,7 +73,6 @@ static SJControlLayerIdentifier SJFilmEditingGenerateResultControlLayerIdentifie
     if (self) {
         [self _setupViews];
         [self _initializeObserver];
-        [self _initializeTapGesture];
     }
     return self;
 }
@@ -120,14 +118,6 @@ static SJControlLayerIdentifier SJFilmEditingGenerateResultControlLayerIdentifie
 //    [self exitControlLayer];
     
     [self.switcher switchControlLayerForIdentitfier:SJFilmEditingInGIFRecordingsControlLayerIdentifier];
-}
-
-- (void)tapHandler:(UITapGestureRecognizer *)tap {
-    CGPoint location = [tap locationInView:tap.view];
-    if ( ![self.rightAdapter itemContainsPoint:location] ) {
-        if ( _cancelledOperationExeBlock )
-            _cancelledOperationExeBlock(self);
-    }
 }
 
 - (void)cancel {
@@ -270,11 +260,6 @@ static SJControlLayerIdentifier SJFilmEditingGenerateResultControlLayerIdentifie
     };
 }
 
-- (void)_initializeTapGesture {
-    _tap = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(tapHandler:)];
-    [self.controlView addGestureRecognizer:_tap];
-}
-
 - (void)setConfig:(nullable SJVideoPlayerFilmEditingConfig *)config {
     _config = config;
     [self _updateRightItemSettings];
@@ -298,6 +283,12 @@ static SJControlLayerIdentifier SJFilmEditingGenerateResultControlLayerIdentifie
 }
 
 - (BOOL)videoPlayer:(__kindof SJBaseVideoPlayer *)videoPlayer gestureRecognizerShouldTrigger:(SJPlayerGestureType)type location:(CGPoint)location {
+    if ( type == SJPlayerGestureType_SingleTap ) {
+        if ( ![self.rightAdapter itemContainsPoint:location] ) {
+            if ( _cancelledOperationExeBlock )
+                _cancelledOperationExeBlock(self);
+        }
+    }
     return NO;
 }
 - (void)controlLayerNeedAppear:(__kindof SJBaseVideoPlayer *)videoPlayer { }

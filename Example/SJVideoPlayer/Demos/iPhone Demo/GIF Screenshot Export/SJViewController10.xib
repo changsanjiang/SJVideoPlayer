@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="14490.70" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES">
+    <device id="retina6_1" orientation="portrait">
+        <adaptation id="fullscreen"/>
+    </device>
+    <dependencies>
+        <deployment identifier="iOS"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="14490.49"/>
+        <capability name="Safe area layout guides" minToolsVersion="9.0"/>
+        <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
+    </dependencies>
+    <objects>
+        <placeholder placeholderIdentifier="IBFilesOwner" id="-1" userLabel="File's Owner" customClass="SJViewController10">
+            <connections>
+                <outlet property="playerContainerView" destination="UYK-6P-V1R" id="eRa-4S-u87"/>
+                <outlet property="view" destination="i5M-Pr-FkT" id="sfx-zR-JGt"/>
+            </connections>
+        </placeholder>
+        <placeholder placeholderIdentifier="IBFirstResponder" id="-2" customClass="UIResponder"/>
+        <view clearsContextBeforeDrawing="NO" contentMode="scaleToFill" id="i5M-Pr-FkT">
+            <rect key="frame" x="0.0" y="0.0" width="414" height="896"/>
+            <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+            <subviews>
+                <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="UYK-6P-V1R">
+                    <rect key="frame" x="0.0" y="44" width="414" height="233"/>
+                    <color key="backgroundColor" red="0.0" green="0.47843137250000001" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                    <constraints>
+                        <constraint firstAttribute="width" secondItem="UYK-6P-V1R" secondAttribute="height" multiplier="16:9" id="jlr-c8-UHr"/>
+                    </constraints>
+                </view>
+            </subviews>
+            <color key="backgroundColor" red="1" green="1" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+            <constraints>
+                <constraint firstItem="UYK-6P-V1R" firstAttribute="top" secondItem="Q5M-cg-NOt" secondAttribute="top" id="6fK-5T-Ovt"/>
+                <constraint firstItem="UYK-6P-V1R" firstAttribute="width" secondItem="UYK-6P-V1R" secondAttribute="height" multiplier="16:9" id="K3W-fk-uKR"/>
+                <constraint firstItem="UYK-6P-V1R" firstAttribute="leading" secondItem="Q5M-cg-NOt" secondAttribute="leading" id="Y4P-2U-I14"/>
+                <constraint firstAttribute="trailing" secondItem="UYK-6P-V1R" secondAttribute="trailing" id="Ycc-zT-YMp"/>
+                <constraint firstItem="UYK-6P-V1R" firstAttribute="width" secondItem="UYK-6P-V1R" secondAttribute="height" multiplier="16:9" id="sIg-2x-cJx"/>
+                <constraint firstItem="UYK-6P-V1R" firstAttribute="width" secondItem="UYK-6P-V1R" secondAttribute="height" multiplier="16:9" id="xSA-Dj-g4k"/>
+            </constraints>
+            <viewLayoutGuide key="safeArea" id="Q5M-cg-NOt"/>
+        </view>
+    </objects>
+</document>

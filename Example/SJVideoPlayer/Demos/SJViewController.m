@@ -75,6 +75,8 @@
     
     [m addObject:[[LWZTableSectionShrinker alloc] initWithTitle:@"Switch Video Definition" titleWhenShrank:nil dataArr:[self _createSwitchVideoDefinitionDemoItems]]];
     
+    [m addObject:[[LWZTableSectionShrinker alloc] initWithTitle:@"GIF Screenshot Export" titleWhenShrank:nil dataArr:[self _createExportDemoItems]]];
+    
     [m addObject:[[LWZTableSectionShrinker alloc] initWithTitle:@"Test" titleWhenShrank:nil dataArr:[self _createTestItems]]];
 
     _data = m.copy;
@@ -161,6 +163,15 @@
       [[Item alloc] initWithTitle:@"Switch Video Definition"
                          subTitle:@"切换视频清晰度"
                              path:@"demo/SwitchVideoDefinition"],
+      ];
+}
+
+- (NSArray<Item *> *)_createExportDemoItems {
+    return
+    @[
+      [[Item alloc] initWithTitle:@"GIF Screenshot Export"
+                         subTitle:@"GIF Screenshot Export"
+                             path:@"demo/export"],
       ];
 }
 

@@ -68,6 +68,8 @@
 #pragma mark -
 
 - (void)_setupViews {
+    self.edgesForExtendedLayout = UIRectEdgeNone;
+    
      _player = [SJVideoPlayer player];
     _player.assetURL = SourceURL0;
     [_playerContainerView addSubview:self.player.view];

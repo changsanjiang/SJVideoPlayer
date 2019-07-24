@@ -203,7 +203,7 @@ SJEdgeControlButtonItemTag const SJMoreSettingControlLayerItem_Rate = 10002;
         if ( setting.more_thumbImage == nil ) {
             CGSize size = CGSizeMake(setting.more_thumbSize, setting.more_thumbSize);
             CGFloat radius = setting.more_thumbSize * 0.5;
-            [progressView.slider setThumbCornerRadius:radius size:size];
+            [progressView.slider setThumbCornerRadius:radius size:size thumbBackgroundColor:setting.more_traceColor];
         }
         else {
             progressView.slider.thumbImageView.image = setting.more_thumbImage;

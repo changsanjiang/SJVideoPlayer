@@ -203,10 +203,12 @@ NS_ASSUME_NONNULL_BEGIN
     self = [super init];
     if (self) {
         _currentOrientation = SJOrientation_Portrait;
-        _window = [SJFullscreenModeWindow new];
-        _window.rootViewController.delegate = self;
-        [_window.rootViewController loadViewIfNeeded];
         _autorotationSupportedOrientation = SJAutoRotateSupportedOrientation_All;
+        dispatch_async(dispatch_get_main_queue(), ^{
+            self->_window = [SJFullscreenModeWindow new];
+            self->_window.rootViewController.delegate = self;
+            [self->_window.rootViewController loadViewIfNeeded];
+        });
         [self _observeDeviceOrientationChangeNotification];
     }
     return self;

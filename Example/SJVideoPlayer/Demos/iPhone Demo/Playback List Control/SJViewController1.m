@@ -129,6 +129,7 @@ static NSString *const SJTableViewCell1ID = @"SJTableViewCell1";
 #pragma mark -
 
 - (void)_setupViews {
+    self.edgesForExtendedLayout = UIRectEdgeNone;
     self.title = NSStringFromClass(self.class);
     
     _listController = [SJPlaybackListController new];

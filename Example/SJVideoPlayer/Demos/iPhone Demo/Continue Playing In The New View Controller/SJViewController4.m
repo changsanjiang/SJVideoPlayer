@@ -34,6 +34,8 @@
 }
 
 - (void)_setupViews {
+    self.edgesForExtendedLayout = UIRectEdgeNone;
+    
     [_playerContainerView addSubview:self.player.view];
     [_player.view mas_makeConstraints:^(MASConstraintMaker *make) {
         make.edges.offset(0);

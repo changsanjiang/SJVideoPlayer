@@ -58,7 +58,7 @@ NS_ASSUME_NONNULL_BEGIN
     CGPoint location = [tap locationInView:self];
     if ( _gestureRecognizerShouldTrigger && _gestureRecognizerShouldTrigger(self, SJPlayerGestureType_SingleTap, location) ) {
         if ( _singleTapHandler )
-            _singleTapHandler(self, [tap locationInView:tap.view]);
+            _singleTapHandler(self, location);
     }
 }
 
@@ -69,7 +69,7 @@ NS_ASSUME_NONNULL_BEGIN
     CGPoint location = [tap locationInView:self];
     if ( _gestureRecognizerShouldTrigger && _gestureRecognizerShouldTrigger(self, SJPlayerGestureType_DoubleTap, location) ) {
         if ( _doubleTapHandler )
-            _doubleTapHandler(self, [tap locationInView:tap.view]);
+            _doubleTapHandler(self, location);
     }
 }
 
@@ -328,6 +328,10 @@ NS_ASSUME_NONNULL_BEGIN
         }
         
         UITouch *touch = touches.anyObject;
+        
+        if ( touch.tapCount == 0 )
+            return;
+        
         if ( touch.tapCount == 2 ) {
             [self _recognize:touch];
         }

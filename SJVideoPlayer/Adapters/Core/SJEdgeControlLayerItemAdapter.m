@@ -53,12 +53,20 @@ NS_ASSUME_NONNULL_BEGIN
     }
 }
 
+- (SJEdgeControlButtonItem *_Nullable)itemAtIndex:(NSUInteger)index {
+    if ( index >= _items.count )
+        return nil;
+    return _items[index];
+}
+
 - (SJEdgeControlButtonItem *_Nullable)itemAtPoint:(CGPoint)point {
     for ( int i = 0 ; i < _layoutAttributes.count ; ++ i ) {
         UICollectionViewLayoutAttributes *atr = _layoutAttributes[i];
-        SJEdgeControlButtonItem *item = _items[i];
-        if ( !item.isHidden && CGRectContainsPoint(atr.frame, point) ) {
-            return item;
+        SJEdgeControlButtonItem *_Nullable item = [self itemAtIndex:i];
+        if ( item != nil ) {
+            if ( !item.isHidden && CGRectContainsPoint(atr.frame, point) ) {
+                return item;
+            }
         }
     }
     return nil;

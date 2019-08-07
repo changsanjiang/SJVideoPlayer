@@ -77,6 +77,8 @@
     
     [m addObject:[[LWZTableSectionShrinker alloc] initWithTitle:@"GIF Screenshot Export" titleWhenShrank:nil dataArr:[self _createExportDemoItems]]];
     
+    [m addObject:[[LWZTableSectionShrinker alloc] initWithTitle:@"Other" titleWhenShrank:nil dataArr:[self _createOtherItems]]];
+    
     [m addObject:[[LWZTableSectionShrinker alloc] initWithTitle:@"Test" titleWhenShrank:nil dataArr:[self _createTestItems]]];
 
     _data = m.copy;
@@ -184,6 +186,14 @@
       ];
 }
 
+- (NSArray<Item *> *)_createOtherItems {
+    return
+    @[
+      [[Item alloc] initWithTitle:@"Right and left edge fast forward and fast backward"
+                         subTitle:@"左右边缘双击 快进快退"
+                             path:@"demo/11"],
+      ];
+}
 
 #pragma mark -
 

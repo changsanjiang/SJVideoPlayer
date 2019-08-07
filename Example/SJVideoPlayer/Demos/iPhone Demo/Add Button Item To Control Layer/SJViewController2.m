@@ -119,8 +119,7 @@ static SJEdgeControlButtonItemTag const SJTestCustomItemTag = 103;
     [_player.view mas_makeConstraints:^(MASConstraintMaker *make) {
         make.edges.offset(0);
     }];
-//    _player.assetURL = SourceURL1;
-    _player.assetURL = [NSURL URLWithString:@"https://cdn.1home.online/video/ec63f30db770e60ca620f7e0f76ca164.mp4"];
+    _player.assetURL = SourceURL1;
     _player.fastForwardViewController.enabled = YES; // 开启左右边缘快进快退功能
     _player.enableFilmEditing = YES;
     

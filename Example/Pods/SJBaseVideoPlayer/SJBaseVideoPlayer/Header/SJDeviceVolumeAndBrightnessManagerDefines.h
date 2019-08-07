@@ -20,6 +20,7 @@ NS_ASSUME_NONNULL_BEGIN
 ///
 @property (nonatomic, getter=isVolumeTracking) BOOL volumeTracking;
 @property (nonatomic, getter=isBrightnessTracking) BOOL brightnessTracking;
+- (void)prepare;
 @end
 
 

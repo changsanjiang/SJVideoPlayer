@@ -126,15 +126,12 @@ static NSNotificationName const SJDeviceBrightnessDidChangeNotification = @"SJDe
             [self handleBrightnessDidChangeNotification];
         }];
         
-        self.volumeDidChangeToken = [NSNotificationCenter.defaultCenter addObserverForName:@"AVSystemController_SystemVolumeDidChangeNotification" object:nil queue:NSOperationQueue.mainQueue usingBlock:^(NSNotification * _Nonnull note) {
-            __strong typeof(_self) self = _self;
-            if ( !self ) return ;
-            [self handleVolumeDidChangeEvent];
-        }];
-        
-        float volume = [AVAudioSession sharedInstance].outputVolume;
-        dispatch_async(dispatch_get_main_queue(), ^{
-            self->_volume = volume;
+        sjkvo_observe(AVAudioSession.sharedInstance, @"outputVolume", ^(id  _Nonnull target, NSDictionary<NSKeyValueChangeKey,id> * _Nullable change) {
+            dispatch_async(dispatch_get_main_queue(), ^{
+                __strong typeof(_self) self = _self;
+                if ( !self ) return ;
+                [self handleVolumeDidChangeEvent];
+            });
         });
     });
     
@@ -160,6 +157,10 @@ static NSNotificationName const SJDeviceBrightnessDidChangeNotification = @"SJDe
 }
 
 #pragma mark - target view
+
+- (void)prepare {
+    [self _addOrRemoveSysVolumeView:[self targetView].window];
+}
 
 - (nullable UIView *)targetView {
     return [UIApplication.sharedApplication.keyWindow.rootViewController.view viewWithTag:SJBaseVideoPlayerPresentViewTag];

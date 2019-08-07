@@ -241,7 +241,7 @@ typedef struct _SJPlayerControlInfo {
     [self _showOrHiddenPlaceholderImageViewIfNeeded];
     [self rotationManager];
     [self registrar];
-    dispatch_async(dispatch_get_main_queue(), ^{    
+    dispatch_async(dispatch_get_main_queue(), ^{
         [self.deviceVolumeAndBrightnessManager prepare];
     });
 

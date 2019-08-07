@@ -47,9 +47,6 @@
 #ifdef DEBUG
         NSLog(@"%d - %s", (int)__LINE__, __func__);
 #endif
-        dispatch_async(dispatch_get_main_queue(), ^{
-            [self.navigationController setNavigationBarHidden:NO animated:YES];
-        });
     };
 }
 

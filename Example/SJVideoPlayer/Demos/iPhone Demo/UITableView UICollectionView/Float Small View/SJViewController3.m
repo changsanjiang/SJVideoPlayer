@@ -33,7 +33,7 @@
     [self.tableView sj_exeHeaderRefreshingAnimated:YES];
 }
 
-- (void)tappedOnTheCoverAtTableViewCell:(SJMediaTableViewCell *)cell {
+- (void)tappedCoverOnTheTableViewCell:(SJMediaTableViewCell *)cell {
     if ( _player == nil ) {
         _player = [SJVideoPlayer player];
         [self _setupFloatSmallViewControllerOfPlayer];

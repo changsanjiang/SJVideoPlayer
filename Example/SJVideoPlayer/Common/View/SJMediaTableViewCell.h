@@ -28,6 +28,6 @@ NS_ASSUME_NONNULL_BEGIN
 @end
 
 @protocol SJMediaTableViewCellDelegate
-- (void)tappedOnTheCoverAtTableViewCell:(SJMediaTableViewCell *)cell;
+- (void)tappedCoverOnTheTableViewCell:(SJMediaTableViewCell *)cell;
 @end
 NS_ASSUME_NONNULL_END

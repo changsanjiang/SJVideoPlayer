@@ -56,8 +56,8 @@
 }
 
 - (void)handleTapGesture:(id)sender {
-    if ( [(id)_delegate respondsToSelector:@selector(tappedOnTheCoverAtTableViewCell:)] ) {
-        [_delegate tappedOnTheCoverAtTableViewCell:self];
+    if ( [(id)_delegate respondsToSelector:@selector(tappedCoverOnTheTableViewCell:)] ) {
+        [_delegate tappedCoverOnTheTableViewCell:self];
     }
 }
 

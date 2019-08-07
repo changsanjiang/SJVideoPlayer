@@ -56,6 +56,7 @@ Pod::Spec.new do |s|
         ss.subspec 'View' do |v|
             v.source_files = 'SJVideoPlayer/SJEdgeControlLayer/View/*.{h,m}'
             v.dependency 'SJVideoPlayer/SJEdgeControlLayer/ResourceLoader'
+            v.dependency 'SJVideoPlayer/SJEdgeControlLayer/Defines'
         end
         
         ss.subspec 'Defines' do |ss|

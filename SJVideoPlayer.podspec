@@ -1,7 +1,7 @@
 
 Pod::Spec.new do |s|
     s.name         = 'SJVideoPlayer'
-    s.version      = '2.6.4'
+    s.version      = '2.6.5'
     s.summary      = 'video player.'
     s.description  = 'https://github.com/changsanjiang/SJVideoPlayer/blob/master/README.md'
     s.homepage     = 'https://github.com/changsanjiang/SJVideoPlayer'
@@ -11,7 +11,7 @@ Pod::Spec.new do |s|
     s.source       = { :git => 'https://github.com/changsanjiang/SJVideoPlayer.git', :tag => "v#{s.version}" }
     s.requires_arc = true
     s.dependency 'Masonry'
-    s.dependency 'SJBaseVideoPlayer', '>= 2.6.4'
+    s.dependency 'SJBaseVideoPlayer', '>= 2.7.0'
     s.dependency 'SJUIKit/AttributesFactory'
 
     s.source_files = 'SJVideoPlayer/*.{h,m}'
@@ -37,11 +37,6 @@ Pod::Spec.new do |s|
         ss.source_files = 'SJVideoPlayer/SJProgressSlider/*.{h,m}'
     end
 
-    # 加载圈圈
-    s.subspec 'SJLoadingView' do |ss|
-        ss.source_files = 'SJVideoPlayer/SJLoadingView/*.{h,m}'
-    end
-
     s.subspec 'Settings' do |ss|
         ss.source_files = 'SJVideoPlayer/Settings/*.{h,m}'
         ss.dependency 'SJVideoPlayer/SJFilmEditingControlLayer/ResourceLoader'
@@ -62,12 +57,15 @@ Pod::Spec.new do |s|
             v.source_files = 'SJVideoPlayer/SJEdgeControlLayer/View/*.{h,m}'
             v.dependency 'SJVideoPlayer/SJEdgeControlLayer/ResourceLoader'
         end
+        
+        ss.subspec 'Defines' do |ss|
+            ss.source_files = 'SJVideoPlayer/SJEdgeControlLayer/Defines/*.{h}'
+        end
 
         ss.dependency 'SJVideoPlayer/Adapters'
         ss.dependency 'SJVideoPlayer/Switcher'
         ss.dependency 'SJVideoPlayer/Common'
         ss.dependency 'SJVideoPlayer/SJProgressSlider'
-        ss.dependency 'SJVideoPlayer/SJLoadingView'
     end
     
     s.subspec 'SJFilmEditingControlLayer' do |f|

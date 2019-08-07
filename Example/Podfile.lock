@@ -133,7 +133,6 @@ PODS:
     - SJVideoPlayer/SJFilmEditingControlLayer (= 2.6.4)
     - SJVideoPlayer/SJFloatSmallViewControlLayer (= 2.6.4)
     - SJVideoPlayer/SJLoadFailedControlLayer (= 2.6.4)
-    - SJVideoPlayer/SJLoadingView (= 2.6.4)
     - SJVideoPlayer/SJMoreSettingControlLayer (= 2.6.4)
     - SJVideoPlayer/SJNotReachableControlLayer (= 2.6.4)
     - SJVideoPlayer/SJProgressSlider (= 2.6.4)
@@ -161,9 +160,17 @@ PODS:
     - SJUIKit/AttributesFactory
     - SJVideoPlayer/Adapters
     - SJVideoPlayer/Common
+    - SJVideoPlayer/SJEdgeControlLayer/Defines (= 2.6.4)
     - SJVideoPlayer/SJEdgeControlLayer/ResourceLoader (= 2.6.4)
     - SJVideoPlayer/SJEdgeControlLayer/View (= 2.6.4)
-    - SJVideoPlayer/SJLoadingView
+    - SJVideoPlayer/SJProgressSlider
+    - SJVideoPlayer/Switcher
+  - SJVideoPlayer/SJEdgeControlLayer/Defines (2.6.4):
+    - Masonry
+    - SJBaseVideoPlayer (>= 2.6.4)
+    - SJUIKit/AttributesFactory
+    - SJVideoPlayer/Adapters
+    - SJVideoPlayer/Common
     - SJVideoPlayer/SJProgressSlider
     - SJVideoPlayer/Switcher
   - SJVideoPlayer/SJEdgeControlLayer/ResourceLoader (2.6.4):
@@ -172,7 +179,6 @@ PODS:
     - SJUIKit/AttributesFactory
     - SJVideoPlayer/Adapters
     - SJVideoPlayer/Common
-    - SJVideoPlayer/SJLoadingView
     - SJVideoPlayer/SJProgressSlider
     - SJVideoPlayer/Switcher
   - SJVideoPlayer/SJEdgeControlLayer/View (2.6.4):
@@ -182,7 +188,6 @@ PODS:
     - SJVideoPlayer/Adapters
     - SJVideoPlayer/Common
     - SJVideoPlayer/SJEdgeControlLayer/ResourceLoader
-    - SJVideoPlayer/SJLoadingView
     - SJVideoPlayer/SJProgressSlider
     - SJVideoPlayer/Switcher
   - SJVideoPlayer/SJFilmEditingControlLayer (2.6.4):
@@ -229,10 +234,6 @@ PODS:
     - SJBaseVideoPlayer (>= 2.6.4)
     - SJUIKit/AttributesFactory
     - SJVideoPlayer/SJNotReachableControlLayer
-  - SJVideoPlayer/SJLoadingView (2.6.4):
-    - Masonry
-    - SJBaseVideoPlayer (>= 2.6.4)
-    - SJUIKit/AttributesFactory
   - SJVideoPlayer/SJMoreSettingControlLayer (2.6.4):
     - Masonry
     - SJBaseVideoPlayer (>= 2.6.4)
@@ -292,7 +293,7 @@ SPEC CHECKSUMS:
   SJPlaybackListController: e135c789fcd63d63a62d5e2e2965ab1e6d52a2bd
   SJRouter: 702a0d06811fc2da02d6145bc7abb9f633fdc612
   SJUIKit: 9fc7b17d7f421ca64304c42d1a9ae387bed35bb1
-  SJVideoPlayer: 3812bfaedf5f1de30ef630d851fefd03d09488bb
+  SJVideoPlayer: acb505bbbd6da0d8722717afaa38bf8aa72da443
 
 PODFILE CHECKSUM: d1a35650b72e179e7a1b03dce0b27a01610c8aac
 

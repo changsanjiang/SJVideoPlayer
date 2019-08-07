@@ -72,7 +72,6 @@ SJEdgeControlButtonItemTag const SJEdgeControlLayerCenterItem_Replay = 40000;
 
 @property (nonatomic, strong, readonly) SJTimerControl *lockStateTappedTimerControl;
 @property (nonatomic, strong, readonly) SJVideoPlayerDraggingProgressView *draggingProgressView;
-@property (nonatomic, strong, readonly) SJNetworkLoadingView *loadingView;
 @property (nonatomic, strong, readonly) SJProgressSlider *bottomProgressSlider;
 
 // back
@@ -136,11 +135,6 @@ SJEdgeControlButtonItemTag const SJEdgeControlLayerCenterItem_Replay = 40000;
     [self _addItemsToBottomAdapter];
     [self _addItemsToRightAdapter];
     [self _addItemsToCenterAdapter];
-    
-    [self.controlView addSubview:self.loadingView];
-    [_loadingView mas_makeConstraints:^(MASConstraintMaker *make) {
-        make.center.offset(0);
-    }];
     
     self.topContainerView.sjv_disappearDirection = SJViewDisappearAnimation_Top;
     self.leftContainerView.sjv_disappearDirection = SJViewDisappearAnimation_Left;
@@ -224,7 +218,9 @@ SJEdgeControlButtonItemTag const SJEdgeControlLayerCenterItem_Replay = 40000;
 }
 
 - (void)clickedBackItem {
-    if ( _clickedBackItemExeBlock ) _clickedBackItemExeBlock(self);
+    if ( [self.delegate respondsToSelector:@selector(tappedBackButtonOnTheControlLayer:)] ) {
+        [self.delegate tappedBackButtonOnTheControlLayer:self];
+    }
 }
 
 - (void)setShowResidentBackButton:(BOOL)showResidentBackButton {
@@ -715,26 +711,45 @@ SJEdgeControlButtonItemTag const SJEdgeControlLayerCenterItem_Replay = 40000;
     [_videoPlayer replay];
 }
 
+- (void)setLoadingView:(nullable id<SJEdgeControlLayerLoadingViewProtocol>)loadingView {
+    if ( loadingView != _loadingView ) {
+        [(UIView *)_loadingView removeFromSuperview];
+        _loadingView = loadingView;
+        
+        if ( loadingView ) {
+            [self.controlView addSubview:(UIView *)loadingView];
+            [(UIView *)loadingView mas_makeConstraints:^(MASConstraintMaker *make) {
+                make.center.offset(0);
+            }];
+        }
+    }
+}
+
 @synthesize loadingView = _loadingView;
-- (SJNetworkLoadingView *)loadingView {
+- (id<SJEdgeControlLayerLoadingViewProtocol>)loadingView {
     if ( _loadingView ) return _loadingView;
     _loadingView = [SJNetworkLoadingView new];
     __weak typeof(self) _self = self;
-    _loadingView.settingRecroder = [[SJVideoPlayerControlSettingRecorder alloc] initWithSettings:^(SJEdgeControlLayerSettings * _Nonnull setting) {
+    ((UIView *)_loadingView).settingRecroder = [[SJVideoPlayerControlSettingRecorder alloc] initWithSettings:^(SJEdgeControlLayerSettings * _Nonnull setting) {
         __strong typeof(_self) self = _self;
         if ( !self ) return;
         self.loadingView.lineColor = setting.loadingLineColor;
     }];
     self.loadingView.lineColor = SJEdgeControlLayerSettings.commonSettings.loadingLineColor;
+    
+    [self.controlView addSubview:(UIView *)self.loadingView];
+    [(UIView *)_loadingView mas_makeConstraints:^(MASConstraintMaker *make) {
+        make.center.offset(0);
+    }];
     return _loadingView;
 }
 
 - (void)_updateNetworkSpeedStrForLoadingView {
-    if ( !_videoPlayer || !_loadingView.isAnimating )
+    if ( !_videoPlayer || !self.loadingView.isAnimating )
         return;
     
     if ( _showNetworkSpeedToLoadingView && !_videoPlayer.assetURL.isFileURL ) {
-        _loadingView.networkSpeedStr = [NSAttributedString sj_UIKitText:^(id<SJUIKitTextMakerProtocol>  _Nonnull make) {
+        self.loadingView.networkSpeedStr = [NSAttributedString sj_UIKitText:^(id<SJUIKitTextMakerProtocol>  _Nonnull make) {
             SJEdgeControlLayerSettings *settings = [SJEdgeControlLayerSettings commonSettings];
             make.font(settings.loadingNetworkSpeedTextFont);
             make.textColor(settings.loadingNetworkSpeedTextColor);
@@ -743,14 +758,14 @@ SJEdgeControlButtonItemTag const SJEdgeControlLayerCenterItem_Replay = 40000;
         }];
     }
     else {
-        _loadingView.networkSpeedStr = nil;
+        self.loadingView.networkSpeedStr = nil;
     }
 }
 
 - (void)setShowNetworkSpeedToLoadingView:(BOOL)showNetworkSpeedToLoadingView {
     _showNetworkSpeedToLoadingView = showNetworkSpeedToLoadingView;
     if ( !showNetworkSpeedToLoadingView )
-        _loadingView.networkSpeedStr = nil;
+        self.loadingView.networkSpeedStr = nil;
 }
 
 @synthesize draggingProgressView = _draggingProgressView;
@@ -928,31 +943,31 @@ SJEdgeControlButtonItemTag const SJEdgeControlLayerCenterItem_Replay = 40000;
 
 - (void)_startOrStopLoadingView {
     if ( !_videoPlayer ) {
-        [_loadingView stop];
+        [self.loadingView stop];
         return;
     }
     
     SJPlayerBufferStatus bufferStatus = self.videoPlayer.playbackController.bufferStatus;
     if ( [_videoPlayer playStatus_isPrepare] ) {
-        [_loadingView start];
+        [self.loadingView start];
     }
     else if ( [_videoPlayer playStatus_isPaused_ReasonSeeking] ) {
         if ( _showLoadingViewWhenPlaybackStatusIsSeeking )
-            [_loadingView start];
+            [self.loadingView start];
     }
     else if ( _videoPlayer.playbackController.bufferStatus == SJPlayerBufferStatusPlayable ||
              [_videoPlayer playStatus_isInactivity] ) {
-        [_loadingView stop];
+        [self.loadingView stop];
     }
     else {
         switch ( bufferStatus ) {
             case SJPlayerBufferStatusUnknown:
             case SJPlayerBufferStatusPlayable: {
-                [_loadingView stop];
+                [self.loadingView stop];
             }
                 break;
             case SJPlayerBufferStatusUnplayable: {
-                [_loadingView start];
+                [self.loadingView start];
                 [self _updateNetworkSpeedStrForLoadingView];
             }
                 break;

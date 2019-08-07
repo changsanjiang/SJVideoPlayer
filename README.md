@@ -37,6 +37,97 @@ ___
 
 ## 最近更新
 
+* 适配 iOS 13.0.
+
+* v2.6.0 开始 旋转的配置已从播放器内部移出, 现在需开发者自己添加配置, 代码如下: 
+```Objective-C
+static BOOL _iPhone_shouldAutorotate(UIViewController *vc) {
+    NSString *class = NSStringFromClass(vc.class);
+    
+    // 禁止哪些控制器旋转.
+    // - 如果返回 NO, 则只旋转`播放器`.  
+    // - 如果返回 YES, 则`所有控制器`同`播放器`一起旋转.
+    //
+    // return NO;
+    
+    // - 为了避免控制器同播放器一起旋转, 此处禁止Demo中SJ前缀的控制器旋转.
+    if ( [class hasPrefix:@"SJ"] ) {
+        return NO;
+    }
+    
+    // 其余情况 return YES. 此时系统的播放器(如在网页播放全屏后)可以触发旋转.  
+    return YES;
+}
+
+@implementation UIViewController (RotationControl)
+/// 该控制器是否可以旋转
+- (BOOL)shouldAutorotate {
+    // 此处为设置 iPhone 哪些控制器可以旋转
+    if ( UIUserInterfaceIdiomPhone == UI_USER_INTERFACE_IDIOM() )
+        return _iPhone_shouldAutorotate(self);
+    
+    return NO;
+}
+
+/// 旋转支持的方向
+- (UIInterfaceOrientationMask)supportedInterfaceOrientations {
+    // 此处为设置 iPhone 某个控制器旋转支持的方向
+    // - 请根据实际情况进行修改.
+    if ( UIUserInterfaceIdiomPhone == UI_USER_INTERFACE_IDIOM() ) {
+        // 如果self不支持旋转, 返回仅支持竖屏
+        if ( _iPhone_shouldAutorotate(self) == NO )
+            return UIInterfaceOrientationMaskPortrait;
+    }
+
+    return UIInterfaceOrientationMaskAllButUpsideDown;
+}
+
+@end
+
+
+@implementation UITabBarController (RotationControl)
+- (UIViewController *)sj_topViewController {
+    if ( self.selectedIndex == NSNotFound )
+        return self.viewControllers.firstObject;
+    return self.selectedViewController;
+}
+
+- (BOOL)shouldAutorotate {
+    return [[self sj_topViewController] shouldAutorotate];
+}
+
+- (UIInterfaceOrientationMask)supportedInterfaceOrientations {
+    return [[self sj_topViewController] supportedInterfaceOrientations];
+}
+
+- (UIInterfaceOrientation)preferredInterfaceOrientationForPresentation {
+    return [[self sj_topViewController] preferredInterfaceOrientationForPresentation];
+}
+@end
+
+@implementation UINavigationController (RotationControl)
+- (BOOL)shouldAutorotate {
+    return self.topViewController.shouldAutorotate;
+}
+
+- (UIInterfaceOrientationMask)supportedInterfaceOrientations {
+    return self.topViewController.supportedInterfaceOrientations;
+}
+
+- (UIInterfaceOrientation)preferredInterfaceOrientationForPresentation {
+    return self.topViewController.preferredInterfaceOrientationForPresentation;
+}
+
+- (nullable UIViewController *)childViewControllerForStatusBarStyle {
+    return self.topViewController;
+}
+
+- (nullable UIViewController *)childViewControllerForStatusBarHidden {
+    return self.topViewController;
+}
+@end
+```
+
 * 新增 切换清晰度的控制层. 开启如下:
 ```Objective-C
     SJVideoPlayerURLAsset *asset1 = [[SJVideoPlayerURLAsset alloc] initWithURL:VideoURL_Level4];

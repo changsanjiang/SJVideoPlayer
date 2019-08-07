@@ -30,7 +30,7 @@
 #endif
 
 NS_ASSUME_NONNULL_BEGIN
-@interface SJVideoPlayer ()<SJSwitchVideoDefinitionControlLayerDelegate, SJMoreSettingControlLayerDelegate, SJNotReachableControlLayerDelegate>
+@interface SJVideoPlayer ()<SJSwitchVideoDefinitionControlLayerDelegate, SJMoreSettingControlLayerDelegate, SJNotReachableControlLayerDelegate, SJEdgeControlLayerDelegate>
 @property (nonatomic, strong, readonly) SJVideoPlayerControlSettingRecorder *recorder;
 
 @property (nonatomic, strong, nullable) id<SJFloatSmallViewControllerObserverProtocol> sj_floatSmallViewControllerObserver;
@@ -52,7 +52,7 @@ NS_ASSUME_NONNULL_BEGIN
 #endif
 
 + (NSString *)version {
-    return @"v2.6.4";
+    return @"v2.6.5";
 }
 
 + (instancetype)player {
@@ -233,12 +233,7 @@ NS_ASSUME_NONNULL_BEGIN
 - (SJEdgeControlLayer *)defaultEdgeControlLayer {
     if ( !_defaultEdgeControlLayer ) {
         _defaultEdgeControlLayer = [SJEdgeControlLayer new];
-        __weak typeof(self) _self = self;
-        _defaultEdgeControlLayer.clickedBackItemExeBlock = ^(SJEdgeControlLayer * _Nonnull control) {
-            __strong typeof(_self) self = _self;
-            if ( !self ) return ;
-            [self _handleClickedBackButtonEvent];
-        };
+        _defaultEdgeControlLayer.delegate = self;
     }
     return _defaultEdgeControlLayer;
 }

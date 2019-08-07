@@ -8,6 +8,8 @@
 
 #import "SJEdgeControlLayerAdapters.h"
 #import "SJControlLayerDefines.h"
+#import "SJEdgeControlLayerLoadingViewDefines.h"
+@protocol SJEdgeControlLayerDelegate;
 
 NS_ASSUME_NONNULL_BEGIN
 // - Top Items -
@@ -33,7 +35,7 @@ extern SJEdgeControlButtonItemTag const SJEdgeControlLayerCenterItem_Replay;    
 
 
 @interface SJEdgeControlLayer : SJEdgeControlLayerAdapters<SJControlLayer>
-@property (nonatomic, copy, nullable) void(^clickedBackItemExeBlock)(SJEdgeControlLayer *control);
+@property (nonatomic, strong, null_resettable) id<SJEdgeControlLayerLoadingViewProtocol> loadingView;
 
 @property (nonatomic) BOOL hideBackButtonWhenOrientationIsPortrait; ///< 竖屏时隐藏返回按钮
 @property (nonatomic) BOOL disablePromptWhenNetworkStatusChanges; ///< 禁止网络状态变化提示
@@ -46,8 +48,14 @@ extern SJEdgeControlButtonItemTag const SJEdgeControlLayerCenterItem_Replay;    
 @property (nonatomic) BOOL showLoadingViewWhenPlaybackStatusIsSeeking; ///< seek时是否显示loadingView
 
 @property (nonatomic) BOOL accurateSeeking; ///< 是否精确的seeking, default value is NO.
+
+@property (nonatomic, weak, nullable) id<SJEdgeControlLayerDelegate> delegate;
 @end
 
+
+@protocol SJEdgeControlLayerDelegate <NSObject>
+- (void)tappedBackButtonOnTheControlLayer:(id<SJControlLayer>)controlLayer;
+@end
 
 // - Deprecated -
 extern SJEdgeControlButtonItemTag const SJEdgeControlLayerTopItem_Preview __deprecated; // 预览按钮

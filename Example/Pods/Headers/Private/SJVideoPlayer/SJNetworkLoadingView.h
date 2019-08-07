@@ -1,1 +1,1 @@
-../../../../../SJVideoPlayer/SJLoadingView/SJNetworkLoadingView.h
+../../../../../SJVideoPlayer/SJEdgeControlLayer/View/SJNetworkLoadingView.h

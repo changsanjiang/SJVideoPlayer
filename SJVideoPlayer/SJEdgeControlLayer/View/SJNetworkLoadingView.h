@@ -7,9 +7,10 @@
 //
 
 #import <UIKit/UIKit.h>
+#import "SJEdgeControlLayerLoadingViewDefines.h"
 
 NS_ASSUME_NONNULL_BEGIN
-@interface SJNetworkLoadingView : UIView
+@interface SJNetworkLoadingView : UIView<SJEdgeControlLayerLoadingViewProtocol>
 @property (nonatomic, readonly, getter=isAnimating) BOOL animating;
 
 @property (nonatomic, strong, null_resettable) UIColor *lineColor;

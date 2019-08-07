@@ -54,10 +54,6 @@
       "source_files": "SJVideoPlayer/SJProgressSlider/*.{h,m}"
     },
     {
-      "name": "SJLoadingView",
-      "source_files": "SJVideoPlayer/SJLoadingView/*.{h,m}"
-    },
-    {
       "name": "Settings",
       "source_files": "SJVideoPlayer/Settings/*.{h,m}",
       "dependencies": {
@@ -87,9 +83,6 @@
         ],
         "SJVideoPlayer/SJProgressSlider": [
 
-        ],
-        "SJVideoPlayer/SJLoadingView": [
-
         ]
       },
       "subspecs": [
@@ -106,6 +99,10 @@
 
             ]
           }
+        },
+        {
+          "name": "Defines",
+          "source_files": "SJVideoPlayer/SJEdgeControlLayer/Defines/*.{h}"
         }
       ]
     },

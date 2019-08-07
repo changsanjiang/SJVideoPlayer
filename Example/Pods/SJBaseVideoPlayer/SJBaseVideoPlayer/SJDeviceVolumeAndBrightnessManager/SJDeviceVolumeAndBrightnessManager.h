@@ -12,6 +12,9 @@
 NS_ASSUME_NONNULL_BEGIN
 @interface SJDeviceVolumeAndBrightnessManager : NSObject<SJDeviceVolumeAndBrightnessManager>
 + (instancetype)shared;
+
+@property (nonatomic, strong, null_resettable) UIColor *traceColor;
+@property (nonatomic, strong, null_resettable) UIColor *trackColor;
 @end
 NS_ASSUME_NONNULL_END
 

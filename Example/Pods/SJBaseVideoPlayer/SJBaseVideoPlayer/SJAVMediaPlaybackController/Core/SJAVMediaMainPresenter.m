@@ -55,7 +55,9 @@ NS_ASSUME_NONNULL_BEGIN
 }
 
 - (void)observeValueForKeyPath:(nullable NSString *)keyPath ofObject:(nullable id)object change:(nullable NSDictionary<NSKeyValueChangeKey,id> *)change context:(nullable void *)context {
-    self.readyForDisplay = self.playerLayer.isReadyForDisplay;
+    dispatch_async(dispatch_get_main_queue(), ^{
+        self.readyForDisplay = self.playerLayer.isReadyForDisplay;
+    });
 }
 
 - (void)setVideoGravity:(AVLayerVideoGravity _Nullable)videoGravity {
@@ -162,7 +164,9 @@ NS_ASSUME_NONNULL_BEGIN
     sjkvo_observe(presenter, @"readyForDisplay", ^(SJAVMediaSubPresenter *presenter, NSDictionary<NSKeyValueChangeKey,id> * _Nullable change) {
         __strong typeof(_self) self = _self;
         if ( !self ) return;
-        self.readyForDisplay = presenter.isReadyForDisplay;
+        dispatch_async(dispatch_get_main_queue(), ^{        
+            self.readyForDisplay = presenter.isReadyForDisplay;
+        });
     });
 }
 - (void)removeAllPresenters {

@@ -6,11 +6,14 @@
 //
 
 #import "SJPlayerView.h"
+#import "SJBaseVideoPlayerConst.h"
+
 NS_ASSUME_NONNULL_BEGIN
 @implementation SJPlayerView
 - (instancetype)initWithFrame:(CGRect)frame {
     self = [super initWithFrame:frame];
     if (self) {
+        self.tag = SJBaseVideoPlayerViewTag;
     }
     return self;
 }

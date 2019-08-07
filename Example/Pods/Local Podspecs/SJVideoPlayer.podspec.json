@@ -1,6 +1,6 @@
 {
   "name": "SJVideoPlayer",
-  "version": "2.6.3",
+  "version": "2.6.4",
   "summary": "video player.",
   "description": "https://github.com/changsanjiang/SJVideoPlayer/blob/master/README.md",
   "homepage": "https://github.com/changsanjiang/SJVideoPlayer",
@@ -16,7 +16,7 @@
   },
   "source": {
     "git": "https://github.com/changsanjiang/SJVideoPlayer.git",
-    "tag": "v2.6.3"
+    "tag": "v2.6.4"
   },
   "requires_arc": true,
   "dependencies": {

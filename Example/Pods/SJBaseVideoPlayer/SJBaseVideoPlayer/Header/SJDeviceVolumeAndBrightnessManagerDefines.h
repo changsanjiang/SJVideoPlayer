@@ -13,10 +13,13 @@
 NS_ASSUME_NONNULL_BEGIN
 @protocol SJDeviceVolumeAndBrightnessManager
 - (id<SJDeviceVolumeAndBrightnessManagerObserver>)getObserver;
-@property (nonatomic, weak, nullable) UIView *targetView;
-
 @property (nonatomic) float volume; // device volume
 @property (nonatomic) float brightness; // device brightness
+
+/// 以下属性由播放器自动维护
+///
+@property (nonatomic, getter=isVolumeTracking) BOOL volumeTracking;
+@property (nonatomic, getter=isBrightnessTracking) BOOL brightnessTracking;
 @end
 
 

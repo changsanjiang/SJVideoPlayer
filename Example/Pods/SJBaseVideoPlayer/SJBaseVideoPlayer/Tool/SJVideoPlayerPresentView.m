@@ -7,7 +7,7 @@
 //
 
 #import "SJVideoPlayerPresentView.h"
-#import <UIKit/UIGestureRecognizerSubclass.h>
+#import "SJBaseVideoPlayerConst.h"
 
 NS_ASSUME_NONNULL_BEGIN
 @interface _SJPerformRequestInfo : NSObject
@@ -41,6 +41,7 @@ NS_ASSUME_NONNULL_BEGIN
 - (instancetype)initWithFrame:(CGRect)frame {
     self = [super initWithFrame:frame];
     if ( !self ) return nil;
+    self.tag = SJBaseVideoPlayerPresentViewTag;
     [self _setupViews];
     return self;
 }
@@ -50,6 +51,20 @@ NS_ASSUME_NONNULL_BEGIN
     NSLog(@"%d - %s", (int)__LINE__, __func__);
 }
 #endif
+
+- (void)layoutSubviews {
+    [super layoutSubviews];
+    if ( [self.delegate respondsToSelector:@selector(presentViewDidLayoutSubviews:)] ) {
+        [self.delegate presentViewDidLayoutSubviews:self];
+    }
+}
+
+- (void)willMoveToWindow:(nullable UIWindow *)newWindow {
+    [super willMoveToWindow:newWindow];
+    if ( [self.delegate respondsToSelector:@selector(presentViewWillMoveToWindow:)] ) {
+        [self.delegate presentViewWillMoveToWindow:newWindow];
+    }
+}
 
 - (void)handleSingleTap:(UITouch *)tap {
     if ( _disabledGestures & SJPlayerGestureType_SingleTap )
@@ -226,13 +241,6 @@ NS_ASSUME_NONNULL_BEGIN
     _placeholderImageView.contentMode = UIViewContentModeScaleAspectFill;
     _placeholderImageView.clipsToBounds = YES;
     return _placeholderImageView;
-}
-
-- (void)layoutSubviews {
-    [super layoutSubviews];
-    if ( [self.delegate respondsToSelector:@selector(presentViewDidLayoutSubviews:)] ) {
-        [self.delegate presentViewDidLayoutSubviews:self];
-    }
 }
 
 - (BOOL)isPlaceholderImageViewHidden {

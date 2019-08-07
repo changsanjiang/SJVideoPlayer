@@ -38,6 +38,7 @@
 #import "SJEdgeFastForwardViewController.h"
 #import "SJVideoDefinitionSwitchingInfo+Private.h"
 #import "SJPopPromptController.h"
+#import "SJBaseVideoPlayerConst.h"
 
 #if __has_include(<Masonry/Masonry.h>)
 #import <Masonry/Masonry.h>
@@ -197,7 +198,7 @@ typedef struct _SJPlayerControlInfo {
 }
 
 + (NSString *)version {
-    return @"2.6.4";
+    return @"2.7.0";
 }
 
 - (nullable __kindof UIViewController *)atViewController {
@@ -233,13 +234,14 @@ typedef struct _SJPlayerControlInfo {
     _controlInfo->plabackControl.pauseWhenAppDidEnterBackground = YES; // App进入后台是否暂停播放, 默认yes
     _controlInfo->plabackControl.resumePlaybackWhenPlayerHasFinishedSeeking = YES;
     _controlInfo->floatSmallViewControl.autoDisappearFloatSmallView = YES;
+    _controlInfo->rotation.able = YES;
     self.autoManageViewToFitOnScreenOrRotation = YES;
     
     [self _setupViews];
     [self _showOrHiddenPlaceholderImageViewIfNeeded];
-    [self _setRotationAbleValue:@(YES)];
     [self rotationManager];
     [self registrar];
+    [self deviceVolumeAndBrightnessManager];
 
     dispatch_async(dispatch_get_global_queue(0, 0), ^{
         [self reachability];
@@ -406,6 +408,8 @@ typedef struct _SJPlayerControlInfo {
 - (void)presentViewDidLayoutSubviews:(SJVideoPlayerPresentView *)presentView {
     self.controlLayerView.frame = presentView.bounds;
 }
+
+//- (void)presentViewWillMoveToWindow:(nullable UIWindow *)window { }
 
 #pragma mark -
 
@@ -597,7 +601,20 @@ typedef struct _SJPlayerControlInfo {
                 }
                     break;
                     /// 垂直
-                case SJPanGestureMovingDirection_V: { }
+                case SJPanGestureMovingDirection_V: {
+                    switch ( position ) {
+                            /// brightness
+                        case SJPanGestureTriggeredPosition_Left: {
+                            self.deviceVolumeAndBrightnessManager.brightnessTracking = YES;
+                        }
+                            break;
+                            /// volume
+                        case SJPanGestureTriggeredPosition_Right: {
+                            self.deviceVolumeAndBrightnessManager.volumeTracking = YES;
+                        }
+                            break;
+                    }
+                }
                     break;
             }
         }
@@ -633,7 +650,7 @@ typedef struct _SJPlayerControlInfo {
                             /// brightness
                         case SJPanGestureTriggeredPosition_Left: {
                             CGFloat value = self.deviceBrightness - translate.y * 0.005;
-                            if ( value < 1.0 / 16 ) value = 1.0 / 16;
+                            if ( value < 0 ) value = 0;
                             self.deviceBrightness = value;
                         }
                             break;
@@ -660,7 +677,20 @@ typedef struct _SJPlayerControlInfo {
 #pragma clang diagnostic pop
                 }
                     break;
-                case SJPanGestureMovingDirection_V: { }
+                case SJPanGestureMovingDirection_V: {
+                    switch ( position ) {
+                            /// brightness
+                        case SJPanGestureTriggeredPosition_Left: {
+                            self.deviceVolumeAndBrightnessManager.brightnessTracking = NO;
+                        }
+                            break;
+                            /// volume
+                        case SJPanGestureTriggeredPosition_Right: {
+                            self.deviceVolumeAndBrightnessManager.volumeTracking = NO;
+                        }
+                            break;
+                    }
+                }
                     break;
             }
         }
@@ -1521,23 +1551,19 @@ typedef struct _SJPlayerControlInfo {
 
 - (void)setDeviceVolumeAndBrightnessManager:(id<SJDeviceVolumeAndBrightnessManager> _Nullable)deviceVolumeAndBrightnessManager {
     _deviceVolumeAndBrightnessManager = deviceVolumeAndBrightnessManager;
-    [self _needUpdateDeviceVolumeAndBrightnessManagerProperties];
+    [self _configDeviceVolumeAndBrightnessManager:self.deviceVolumeAndBrightnessManager];
 }
 
 - (id<SJDeviceVolumeAndBrightnessManager>)deviceVolumeAndBrightnessManager {
     if ( _deviceVolumeAndBrightnessManager )
         return _deviceVolumeAndBrightnessManager;
     _deviceVolumeAndBrightnessManager = [SJDeviceVolumeAndBrightnessManager shared];
-    [self _needUpdateDeviceVolumeAndBrightnessManagerProperties];
+    [self _configDeviceVolumeAndBrightnessManager:_deviceVolumeAndBrightnessManager];
     return _deviceVolumeAndBrightnessManager;
 }
 
-- (void)_needUpdateDeviceVolumeAndBrightnessManagerProperties {
-    if ( !_deviceVolumeAndBrightnessManager )
-        return;
-    _deviceVolumeAndBrightnessManager.targetView = self.presentView;
-    
-    _deviceVolumeAndBrightnessManagerObserver = [_deviceVolumeAndBrightnessManager getObserver];
+- (void)_configDeviceVolumeAndBrightnessManager:(id<SJDeviceVolumeAndBrightnessManager>)mgr {
+    _deviceVolumeAndBrightnessManagerObserver = [mgr getObserver];
     __weak typeof(self) _self = self;
     _deviceVolumeAndBrightnessManagerObserver.volumeDidChangeExeBlock = ^(id<SJDeviceVolumeAndBrightnessManager>  _Nonnull mgr, float volume) {
         __strong typeof(_self) self = _self;

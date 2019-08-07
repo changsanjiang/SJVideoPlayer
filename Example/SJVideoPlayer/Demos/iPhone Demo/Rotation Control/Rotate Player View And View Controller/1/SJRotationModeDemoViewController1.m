@@ -39,6 +39,18 @@
     [_player.view mas_makeConstraints:^(MASConstraintMaker *make) {
         make.edges.offset(0);
     }];
+    
+    __weak typeof(self) _self = self;
+    _player.viewDidRotateExeBlock = ^(__kindof SJBaseVideoPlayer * _Nonnull player, BOOL isFullScreen) {
+        __strong typeof(_self) self = _self;
+        if ( !self ) return;
+#ifdef DEBUG
+        NSLog(@"%d - %s", (int)__LINE__, __func__);
+#endif
+        dispatch_async(dispatch_get_main_queue(), ^{
+            [self.navigationController setNavigationBarHidden:NO animated:YES];
+        });
+    };
 }
 
 - (IBAction)rotate:(id)sender {

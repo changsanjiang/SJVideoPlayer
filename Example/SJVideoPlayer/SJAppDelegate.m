@@ -12,11 +12,14 @@
 
 #warning Configuring rotation control. 请配置旋转控制!
 
-static BOOL _iPhone_shouldAutorotate(UIViewController *vc) { ///< 返回YES, 表示该控制器可以旋转.
+static BOOL _iPhone_shouldAutorotate(UIViewController *vc) {
     NSString *class = NSStringFromClass(vc.class);
     
-    // 禁止哪些控制器旋转. (此处为禁止Demo中SJ前缀的控制器旋转)
-    // - 请根据实际情况进行修改.
+    // 禁止哪些控制器旋转.
+    // - 触发旋转时, 为了避免`所有控制器`同`播放器`一起旋转, 可以在此直接`return NO;`.
+    // return NO;
+    
+    // - 此处为禁止Demo中SJ前缀的控制器旋转
     if ( [class hasPrefix:@"SJ"] ) {
         return NO;
     }
@@ -28,7 +31,6 @@ static BOOL _iPhone_shouldAutorotate(UIViewController *vc) { ///< 返回YES, 表
 /// 该控制器是否可以旋转
 - (BOOL)shouldAutorotate {
     // 此处为设置 iPhone 哪些控制器可以旋转
-    // - 请根据实际情况进行修改.
     if ( UIUserInterfaceIdiomPhone == UI_USER_INTERFACE_IDIOM() )
         return _iPhone_shouldAutorotate(self);
     

@@ -14,10 +14,10 @@
             buildForArchiving = "YES">
             <BuildableReference
                BuildableIdentifier = "primary"
-               BlueprintIdentifier = "C0965FF775F51458AD4A8E41ABAB7D1E"
-               BuildableName = "libMasonry.a"
-               BlueprintName = "Masonry"
-               ReferencedContainer = "container:Masonry.xcodeproj">
+               BlueprintIdentifier = "4443B442617D117E485DCA3453FD856E"
+               BuildableName = "libSJBaseVideoPlayer.a"
+               BlueprintName = "SJBaseVideoPlayer"
+               ReferencedContainer = "container:SJBaseVideoPlayer.xcodeproj">
             </BuildableReference>
          </BuildActionEntry>
       </BuildActionEntries>

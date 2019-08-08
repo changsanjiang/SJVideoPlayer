@@ -1,6 +1,6 @@
 {
   "name": "SJVideoPlayer",
-  "version": "2.6.4",
+  "version": "2.6.5",
   "summary": "video player.",
   "description": "https://github.com/changsanjiang/SJVideoPlayer/blob/master/README.md",
   "homepage": "https://github.com/changsanjiang/SJVideoPlayer",
@@ -16,7 +16,7 @@
   },
   "source": {
     "git": "https://github.com/changsanjiang/SJVideoPlayer.git",
-    "tag": "v2.6.4"
+    "tag": "v2.6.5"
   },
   "requires_arc": true,
   "dependencies": {
@@ -24,7 +24,7 @@
 
     ],
     "SJBaseVideoPlayer": [
-      ">= 2.6.4"
+      ">= 2.7.0"
     ],
     "SJUIKit/AttributesFactory": [
 
@@ -96,6 +96,9 @@
           "source_files": "SJVideoPlayer/SJEdgeControlLayer/View/*.{h,m}",
           "dependencies": {
             "SJVideoPlayer/SJEdgeControlLayer/ResourceLoader": [
+
+            ],
+            "SJVideoPlayer/SJEdgeControlLayer/Defines": [
 
             ]
           }

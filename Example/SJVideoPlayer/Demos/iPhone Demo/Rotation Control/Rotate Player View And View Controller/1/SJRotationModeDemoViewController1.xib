@@ -13,6 +13,7 @@
         <placeholder placeholderIdentifier="IBFilesOwner" id="-1" userLabel="File's Owner" customClass="SJRotationModeDemoViewController1">
             <connections>
                 <outlet property="playerContainerView" destination="tt5-Bv-yki" id="Xf1-G5-anB"/>
+                <outlet property="textField" destination="rPd-Yj-DuV" id="P8m-tS-MDO"/>
                 <outlet property="view" destination="iN0-l3-epB" id="B5D-1k-pyH"/>
             </connections>
         </placeholder>
@@ -61,25 +62,42 @@
                         <action selector="disableAction:" destination="-1" eventType="valueChanged" id="aLG-4K-Lql"/>
                     </connections>
                 </switch>
+                <textField opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="center" borderStyle="roundedRect" placeholder="请输入播放地址" textAlignment="natural" minimumFontSize="17" translatesAutoresizingMaskIntoConstraints="NO" id="rPd-Yj-DuV">
+                    <rect key="frame" x="273" y="300" width="121" height="30"/>
+                    <nil key="textColor"/>
+                    <fontDescription key="fontDescription" type="system" pointSize="14"/>
+                    <textInputTraits key="textInputTraits"/>
+                </textField>
+                <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="4ZT-pY-bQ2">
+                    <rect key="frame" x="364" y="338" width="30" height="30"/>
+                    <state key="normal" title="Play"/>
+                    <connections>
+                        <action selector="clickedPlayButton:" destination="-1" eventType="touchUpInside" id="4Fu-1t-Vbx"/>
+                    </connections>
+                </button>
             </subviews>
             <color key="backgroundColor" red="1" green="1" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
             <constraints>
                 <constraint firstItem="vUN-kp-3ea" firstAttribute="trailing" secondItem="tt5-Bv-yki" secondAttribute="trailing" id="3ua-ME-5P1"/>
+                <constraint firstItem="4ZT-pY-bQ2" firstAttribute="top" secondItem="rPd-Yj-DuV" secondAttribute="bottom" constant="8" id="7wC-zi-rBs"/>
                 <constraint firstItem="NGs-cl-BmD" firstAttribute="top" secondItem="WLj-nW-KUJ" secondAttribute="bottom" constant="8" id="8Eq-5q-wEs"/>
                 <constraint firstItem="Rcz-Lm-6iX" firstAttribute="top" secondItem="Cpw-C8-HUi" secondAttribute="bottom" constant="8" id="FJy-of-3ux"/>
                 <constraint firstItem="NGs-cl-BmD" firstAttribute="leading" secondItem="WLj-nW-KUJ" secondAttribute="leading" id="Gpj-pb-zTf"/>
+                <constraint firstItem="4ZT-pY-bQ2" firstAttribute="trailing" secondItem="rPd-Yj-DuV" secondAttribute="trailing" id="Hhy-U4-G2l"/>
                 <constraint firstItem="tt5-Bv-yki" firstAttribute="top" secondItem="vUN-kp-3ea" secondAttribute="top" id="HiY-Qb-UuE"/>
                 <constraint firstItem="6cr-hN-QRa" firstAttribute="top" secondItem="Rcz-Lm-6iX" secondAttribute="bottom" constant="8" id="NPg-MM-Ena"/>
+                <constraint firstItem="rPd-Yj-DuV" firstAttribute="top" secondItem="tt5-Bv-yki" secondAttribute="bottom" constant="23" id="Ydn-0H-ZEi"/>
                 <constraint firstItem="Rcz-Lm-6iX" firstAttribute="leading" secondItem="Cpw-C8-HUi" secondAttribute="leading" id="Z6v-hT-wcT"/>
                 <constraint firstItem="Cpw-C8-HUi" firstAttribute="top" secondItem="tt5-Bv-yki" secondAttribute="bottom" constant="23" id="cCX-1w-3JZ"/>
                 <constraint firstItem="tt5-Bv-yki" firstAttribute="leading" secondItem="vUN-kp-3ea" secondAttribute="leading" id="h36-8I-cPV"/>
                 <constraint firstItem="Cpw-C8-HUi" firstAttribute="leading" secondItem="tt5-Bv-yki" secondAttribute="leading" constant="20" id="hQV-45-1YL"/>
                 <constraint firstItem="WLj-nW-KUJ" firstAttribute="top" secondItem="6cr-hN-QRa" secondAttribute="bottom" constant="54" id="ibF-qY-5oo"/>
                 <constraint firstItem="WLj-nW-KUJ" firstAttribute="leading" secondItem="6cr-hN-QRa" secondAttribute="leading" id="q4m-OX-FDM"/>
+                <constraint firstItem="vUN-kp-3ea" firstAttribute="trailing" secondItem="rPd-Yj-DuV" secondAttribute="trailing" constant="20" id="qF6-2S-oTM"/>
                 <constraint firstItem="6cr-hN-QRa" firstAttribute="leading" secondItem="Rcz-Lm-6iX" secondAttribute="leading" id="vvQ-h7-E39"/>
             </constraints>
             <viewLayoutGuide key="safeArea" id="vUN-kp-3ea"/>
-            <point key="canvasLocation" x="-433" y="25"/>
+            <point key="canvasLocation" x="-433.33333333333337" y="24.776785714285712"/>
         </view>
     </objects>
 </document>

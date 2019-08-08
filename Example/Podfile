@@ -40,5 +40,5 @@ target 'SJVideoPlayer_Example' do
   pod 'MJRefresh', :inhibit_warnings => true
   pod 'SJRouter'
   pod 'SJUIKit'
-  pod 'SDWebImage' 
+  pod 'SDWebImage'
 end

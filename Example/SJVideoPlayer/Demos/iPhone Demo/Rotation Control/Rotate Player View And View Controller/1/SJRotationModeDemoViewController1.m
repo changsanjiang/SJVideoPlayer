@@ -14,6 +14,7 @@
 @interface SJRotationModeDemoViewController1 ()
 @property (weak, nonatomic) IBOutlet UIView *playerContainerView;
 @property (nonatomic, strong) SJBaseVideoPlayer *player;
+@property (weak, nonatomic) IBOutlet UITextField *textField;
 @end
 
 @implementation SJRotationModeDemoViewController1
@@ -101,6 +102,12 @@
 
 - (BOOL)prefersHomeIndicatorAutoHidden {
     return YES;
+}
+
+#pragma mark - Test
+
+- (IBAction)clickedPlayButton:(id)sender {
+    self.player.assetURL = [NSURL URLWithString:[_textField.text stringByAddingPercentEncodingWithAllowedCharacters:[NSCharacterSet URLQueryAllowedCharacterSet]]];
 }
 
 @end

@@ -1,5 +1,5 @@
 language: objective-c
-osx_image: xcode9.4
+osx_image: xcode10.3
 xcode_workspace: SJVideoPlayerProject/SJVideoPlayerProject.xcworkspace
 podfile: SJVideoPlayerProject/Podfile
 
@@ -11,14 +11,7 @@ env:
 notifications:
   email: false
 
-before_install:
-    - env
-    - locale
-    - gem install cocoapods --no-rdoc --no-ri --no-document --quiet
-    - gem install xcpretty --no-rdoc --no-ri --no-document --quiet
+before_install: 
+    - gem install cocoapods 
     - pod --version
-    - pod setup --silent > /dev/null
-    - pod repo update --silent
-    - xcpretty --version
-    - xcodebuild -version
-    - xcodebuild -showsdks
+    - pod update 

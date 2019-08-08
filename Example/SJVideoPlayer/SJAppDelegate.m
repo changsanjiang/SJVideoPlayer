@@ -112,6 +112,10 @@ static BOOL _iPhone_shouldAutorotate(UIViewController *vc) {
 
 @implementation SJAppDelegate
 
+- (UIInterfaceOrientationMask)application:(UIApplication *)application supportedInterfaceOrientationsForWindow:(UIWindow *)window {
+    return UIInterfaceOrientationMaskAll;
+}
+
 - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions
 {
     application.statusBarStyle = UIStatusBarStyleDefault;

@@ -14,4 +14,3 @@ notifications:
 before_install: 
     - gem install cocoapods 
     - pod --version
-    - pod update --project-directory=Example/

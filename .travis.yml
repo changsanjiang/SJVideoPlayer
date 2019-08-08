@@ -1,7 +1,7 @@
 language: objective-c
 osx_image: xcode10.3
-xcode_workspace: /Example/SJVideoPlayer.xcworkspace
-podfile: /Example/Podfile
+xcode_workspace: Example/SJVideoPlayer.xcworkspace
+podfile: Example/Podfile
 
 env:
   global:

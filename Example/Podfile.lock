@@ -5,56 +5,56 @@ PODS:
   - SDWebImage (5.1.0):
     - SDWebImage/Core (= 5.1.0)
   - SDWebImage/Core (5.1.0)
-  - SJBaseVideoPlayer (2.7.0):
+  - SJBaseVideoPlayer (2.7.1):
     - Masonry
     - Reachability
-    - SJBaseVideoPlayer/Const (= 2.7.0)
-    - SJBaseVideoPlayer/Header (= 2.7.0)
-    - SJBaseVideoPlayer/Model (= 2.7.0)
-    - SJBaseVideoPlayer/SJAVMediaPlaybackController (= 2.7.0)
-    - SJBaseVideoPlayer/SJDeviceVolumeAndBrightnessManager (= 2.7.0)
-    - SJBaseVideoPlayer/Tool (= 2.7.0)
+    - SJBaseVideoPlayer/Const (= 2.7.1)
+    - SJBaseVideoPlayer/Header (= 2.7.1)
+    - SJBaseVideoPlayer/Model (= 2.7.1)
+    - SJBaseVideoPlayer/SJAVMediaPlaybackController (= 2.7.1)
+    - SJBaseVideoPlayer/SJDeviceVolumeAndBrightnessManager (= 2.7.1)
+    - SJBaseVideoPlayer/Tool (= 2.7.1)
     - SJUIKit/ObserverHelper (>= 0.0.0.31)
     - SJUIKit/Queues (>= 0.0.0.31)
-  - SJBaseVideoPlayer/Const (2.7.0):
-    - Masonry
-    - Reachability
-    - SJUIKit/ObserverHelper (>= 0.0.0.31)
-    - SJUIKit/Queues (>= 0.0.0.31)
-  - SJBaseVideoPlayer/Header (2.7.0):
+  - SJBaseVideoPlayer/Const (2.7.1):
     - Masonry
     - Reachability
     - SJUIKit/ObserverHelper (>= 0.0.0.31)
     - SJUIKit/Queues (>= 0.0.0.31)
-  - SJBaseVideoPlayer/Model (2.7.0):
+  - SJBaseVideoPlayer/Header (2.7.1):
+    - Masonry
+    - Reachability
+    - SJUIKit/ObserverHelper (>= 0.0.0.31)
+    - SJUIKit/Queues (>= 0.0.0.31)
+  - SJBaseVideoPlayer/Model (2.7.1):
     - Masonry
     - Reachability
     - SJBaseVideoPlayer/Header
     - SJUIKit/ObserverHelper (>= 0.0.0.31)
     - SJUIKit/Queues (>= 0.0.0.31)
-  - SJBaseVideoPlayer/SJAVMediaPlaybackController (2.7.0):
+  - SJBaseVideoPlayer/SJAVMediaPlaybackController (2.7.1):
     - Masonry
     - Reachability
-    - SJBaseVideoPlayer/SJAVMediaPlaybackController/Core (= 2.7.0)
+    - SJBaseVideoPlayer/SJAVMediaPlaybackController/Core (= 2.7.1)
     - SJBaseVideoPlayer/Tool
     - SJUIKit/ObserverHelper (>= 0.0.0.31)
     - SJUIKit/Queues (>= 0.0.0.31)
-  - SJBaseVideoPlayer/SJAVMediaPlaybackController/Core (2.7.0):
+  - SJBaseVideoPlayer/SJAVMediaPlaybackController/Core (2.7.1):
     - Masonry
     - Reachability
     - SJBaseVideoPlayer/Tool
     - SJUIKit/ObserverHelper (>= 0.0.0.31)
     - SJUIKit/Queues (>= 0.0.0.31)
-  - SJBaseVideoPlayer/SJDeviceVolumeAndBrightnessManager (2.7.0):
+  - SJBaseVideoPlayer/SJDeviceVolumeAndBrightnessManager (2.7.1):
     - Masonry
     - Reachability
     - SJBaseVideoPlayer/Const
     - SJBaseVideoPlayer/Header
-    - SJBaseVideoPlayer/SJDeviceVolumeAndBrightnessManager/Core (= 2.7.0)
-    - SJBaseVideoPlayer/SJDeviceVolumeAndBrightnessManager/ResourceLoader (= 2.7.0)
+    - SJBaseVideoPlayer/SJDeviceVolumeAndBrightnessManager/Core (= 2.7.1)
+    - SJBaseVideoPlayer/SJDeviceVolumeAndBrightnessManager/ResourceLoader (= 2.7.1)
     - SJUIKit/ObserverHelper (>= 0.0.0.31)
     - SJUIKit/Queues (>= 0.0.0.31)
-  - SJBaseVideoPlayer/SJDeviceVolumeAndBrightnessManager/Core (2.7.0):
+  - SJBaseVideoPlayer/SJDeviceVolumeAndBrightnessManager/Core (2.7.1):
     - Masonry
     - Reachability
     - SJBaseVideoPlayer/Const
@@ -62,14 +62,14 @@ PODS:
     - SJBaseVideoPlayer/SJDeviceVolumeAndBrightnessManager/ResourceLoader
     - SJUIKit/ObserverHelper (>= 0.0.0.31)
     - SJUIKit/Queues (>= 0.0.0.31)
-  - SJBaseVideoPlayer/SJDeviceVolumeAndBrightnessManager/ResourceLoader (2.7.0):
+  - SJBaseVideoPlayer/SJDeviceVolumeAndBrightnessManager/ResourceLoader (2.7.1):
     - Masonry
     - Reachability
     - SJBaseVideoPlayer/Const
     - SJBaseVideoPlayer/Header
     - SJUIKit/ObserverHelper (>= 0.0.0.31)
     - SJUIKit/Queues (>= 0.0.0.31)
-  - SJBaseVideoPlayer/Tool (2.7.0):
+  - SJBaseVideoPlayer/Tool (2.7.1):
     - Masonry
     - Reachability
     - SJBaseVideoPlayer/Const
@@ -265,13 +265,14 @@ DEPENDENCIES:
   - Masonry
   - MJRefresh
   - SDWebImage
+  - SJBaseVideoPlayer
   - SJPlaybackListController
   - SJRouter
   - SJUIKit
   - SJVideoPlayer (from `../../SJVideoPlayer`)
 
 SPEC REPOS:
-  https://github.com/CocoaPods/Specs.git:
+  https://github.com/cocoapods/specs.git:
     - Masonry
     - MJRefresh
     - Reachability
@@ -290,12 +291,12 @@ SPEC CHECKSUMS:
   MJRefresh: ed450d6eb9d3346a2cb033ab7eb6de090aeef437
   Reachability: 33e18b67625424e47b6cde6d202dce689ad7af96
   SDWebImage: fb387001955223213dde14bc08c8b73f371f8d8f
-  SJBaseVideoPlayer: 54cb3761825d54a4a34e63404edabf2ddc81cf14
+  SJBaseVideoPlayer: 35fa3f846811f3ae44f71c292c8034cc669aeb17
   SJPlaybackListController: e135c789fcd63d63a62d5e2e2965ab1e6d52a2bd
   SJRouter: 702a0d06811fc2da02d6145bc7abb9f633fdc612
   SJUIKit: 9fc7b17d7f421ca64304c42d1a9ae387bed35bb1
   SJVideoPlayer: 40fb746684a9e973c4910b5cbdf39a0a38864261
 
-PODFILE CHECKSUM: 4636b59c38d4a7e163e0bc42e50d99b9c127b65b
+PODFILE CHECKSUM: a27839bc8501c8ec57217986386c153b555a31cd
 
-COCOAPODS: 1.8.0.beta.1
+COCOAPODS: 1.7.5

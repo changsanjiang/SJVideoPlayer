@@ -82,13 +82,11 @@ static NSNotificationName const SJDeviceBrightnessDidChangeNotification = @"SJDe
 
 @property (nonatomic, strong, readonly) SJDeviceOutputPromptView *brightnessView;
 @property (nonatomic, strong, readonly) SJDeviceOutputPromptViewModel *brightnessViewModel;
-@property (nonatomic, strong, nullable) id brightnessDidChangeToken;
 
 @property (nonatomic, strong, readonly) MPVolumeView *sysVolumeView;
 @property (nonatomic, strong, readonly) UISlider *sysVolumeSlider;
 @property (nonatomic, strong, readonly) SJDeviceOutputPromptView *volumeView;
 @property (nonatomic, strong, readonly) SJDeviceOutputPromptViewModel *volumeViewModel;
-@property (nonatomic, strong, nullable) id volumeDidChangeToken;
 @end
 
 @implementation SJDeviceVolumeAndBrightnessManager
@@ -118,13 +116,13 @@ static NSNotificationName const SJDeviceBrightnessDidChangeNotification = @"SJDe
     
     __weak typeof(self) _self = self;
     dispatch_async(dispatch_get_global_queue(0, 0), ^{
-        __strong typeof(_self) self = _self;
-        if ( !self ) return ;
-        self.brightnessDidChangeToken = [NSNotificationCenter.defaultCenter addObserverForName:UIScreenBrightnessDidChangeNotification object:nil queue:NSOperationQueue.mainQueue usingBlock:^(NSNotification * _Nonnull note) {
-            __strong typeof(_self) self = _self;
-            if ( !self ) return ;
-            [self handleBrightnessDidChangeNotification];
-        }];
+        sjkvo_observe(UIScreen.mainScreen, @"brightness", ^(id  _Nonnull target, NSDictionary<NSKeyValueChangeKey,id> * _Nullable change) {
+            dispatch_async(dispatch_get_main_queue(), ^{
+                __strong typeof(_self) self = _self;
+                if ( !self ) return ;
+                [self handleBrightnessDidChangeNotification];
+            });
+        });
         
         sjkvo_observe(AVAudioSession.sharedInstance, @"outputVolume", ^(id  _Nonnull target, NSDictionary<NSKeyValueChangeKey,id> * _Nullable change) {
             dispatch_async(dispatch_get_main_queue(), ^{
@@ -151,11 +149,6 @@ static NSNotificationName const SJDeviceBrightnessDidChangeNotification = @"SJDe
     return [[SJDeviceVolumeAndBrightnessManagerObserver alloc] initWithMgr:self];
 }
 
-- (void)dealloc {
-    if ( _volumeDidChangeToken ) [NSNotificationCenter.defaultCenter removeObserver:_volumeDidChangeToken];
-    if ( _brightnessDidChangeToken ) [NSNotificationCenter.defaultCenter removeObserver:_brightnessDidChangeToken];
-}
-
 #pragma mark - target view
 
 - (void)prepare {
@@ -163,7 +156,7 @@ static NSNotificationName const SJDeviceBrightnessDidChangeNotification = @"SJDe
 }
 
 - (nullable UIView *)targetView {
-    return [UIApplication.sharedApplication.keyWindow.rootViewController.view viewWithTag:SJBaseVideoPlayerPresentViewTag];
+    return [UIApplication.sharedApplication.keyWindow viewWithTag:SJBaseVideoPlayerPresentViewTag];
 }
 
 - (void)_addOrRemoveSysVolumeView:(nullable UIWindow *)newWindow {
@@ -205,7 +198,7 @@ static NSNotificationName const SJDeviceBrightnessDidChangeNotification = @"SJDe
     [self _volumeDidChange];
 }
 
-- (void)_updateDeviceVolume {
+- (void)_syncVolume {
     _volume = [AVAudioSession sharedInstance].outputVolume;
 }
 
@@ -358,7 +351,7 @@ static UIImage *volumeImage = nil;
     UIView *targetView = self.targetView;
     [self _addOrRemoveSysVolumeView:targetView.window];
     if ( self.isVolumeTracking == NO ) {
-        [self _updateDeviceVolume];
+        [self _syncVolume];
         if ( targetView.window != nil ) {
             self.volumeTracking = YES;
             [self _volumeDidChange];

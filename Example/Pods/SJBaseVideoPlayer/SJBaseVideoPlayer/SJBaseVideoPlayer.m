@@ -9,8 +9,6 @@
 //
 //  Contact:    changsanjiang@gmail.com
 //
-//  QQGroup:    719616775
-//
 
 #import "SJBaseVideoPlayer.h"
 #import <objc/message.h>
@@ -116,6 +114,15 @@ typedef struct _SJPlayerControlInfo {
     
 } _SJPlayerControlInfo;
 
+static inline __kindof UIResponder *_Nullable
+_lookupResponder(UIView *view, Class cls) {
+    __kindof UIResponder *_Nullable next = view.nextResponder;
+    while ( next != nil && [next isKindOfClass:cls] == NO ) {
+        next = next.nextResponder;
+    }
+    return next;
+}
+
 @interface SJBaseVideoPlayer ()<SJVideoPlayerPresentViewDelegate, SJPlayerViewDelegate>
 @property (nonatomic) SJVideoPlayerPlayState state __deprecated_msg("已弃用, 请使用`playStatus`");
 @property (nonatomic) SJVideoPlayerPlayStatus playStatus;
@@ -202,23 +209,16 @@ typedef struct _SJPlayerControlInfo {
 }
 
 - (nullable __kindof UIViewController *)atViewController {
-    UIResponder *responder = nil;
+    UIView *view = nil;
     if ( self.needPresentModalViewControlller &&
          self.modalViewControllerManager.isPresentedModalViewControlller )
-        responder = _mvcm_targetSuperView.nextResponder;
+        view = _mvcm_targetSuperView;
     else if ( self.useFitOnScreenAndDisableRotation )
-        responder = _view.nextResponder;
+        view = _view;
     else
-        responder = _presentView.nextResponder;
-    
-    if ( !responder )
-        return nil;
-    
-    while ( ![responder isKindOfClass:[UIViewController class]] ) {
-        responder = responder.nextResponder;
-        if ( [responder isMemberOfClass:[UIResponder class]] || !responder ) return nil;
-    }
-    return (__kindof UIViewController *)responder;
+        view = _presentView;
+
+    return _lookupResponder(view, UIViewController.class);
 }
 
 - (instancetype)init {
@@ -241,7 +241,7 @@ typedef struct _SJPlayerControlInfo {
     [self _showOrHiddenPlaceholderImageViewIfNeeded];
     [self rotationManager];
     [self registrar];
-    dispatch_async(dispatch_get_main_queue(), ^{
+    dispatch_async(dispatch_get_main_queue(), ^{    
         [self.deviceVolumeAndBrightnessManager prepare];
     });
 
@@ -680,18 +680,20 @@ typedef struct _SJPlayerControlInfo {
                 }
                     break;
                 case SJPanGestureMovingDirection_V: {
-                    switch ( position ) {
-                            /// brightness
-                        case SJPanGestureTriggeredPosition_Left: {
-                            self.deviceVolumeAndBrightnessManager.brightnessTracking = NO;
+                    dispatch_async(dispatch_get_main_queue(), ^{
+                        switch ( position ) {
+                                /// brightness
+                            case SJPanGestureTriggeredPosition_Left: {
+                                self.deviceVolumeAndBrightnessManager.brightnessTracking = NO;
+                            }
+                                break;
+                                /// volume
+                            case SJPanGestureTriggeredPosition_Right: {
+                                self.deviceVolumeAndBrightnessManager.volumeTracking = NO;
+                            }
+                                break;
                         }
-                            break;
-                            /// volume
-                        case SJPanGestureTriggeredPosition_Right: {
-                            self.deviceVolumeAndBrightnessManager.volumeTracking = NO;
-                        }
-                            break;
-                    }
+                    });
                 }
                     break;
             }
@@ -1697,6 +1699,18 @@ typedef struct _SJPlayerControlInfo {
     dispatch_async(dispatch_get_main_queue(), ^{
         self.controlInfo->statusBar.needTmpHidden = NO;
     });
+}
+
+// private
+
+- (void)vc_forwardPushViewController:(UIViewController *)viewController animated:(BOOL)animated {
+    UINavigationController *nav = _lookupResponder(self.view, UINavigationController.class);
+    if ( nav ) {
+        self.controlInfo->rotation.able = YES;
+        [self rotate:SJOrientation_Portrait animated:YES completion:^(__kindof SJBaseVideoPlayer * _Nonnull player) {
+            [nav pushViewController:viewController animated:animated];
+        }];
+    }
 }
 @end
 

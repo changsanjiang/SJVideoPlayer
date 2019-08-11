@@ -35,7 +35,7 @@
     self.edgesForExtendedLayout = UIRectEdgeNone;
     
     _player = [SJVideoPlayer player];
-    _player.URLAsset = [[SJVideoPlayerURLAsset alloc] initWithURL:SourceURL1];
+    _player.URLAsset = [[SJVideoPlayerURLAsset alloc] initWithURL:SourceURL4];
     [_playerContainerView addSubview:_player.view];
     [_player.view mas_makeConstraints:^(MASConstraintMaker *make) {
         make.edges.offset(0);

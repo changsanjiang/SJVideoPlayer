@@ -1,6 +1,6 @@
 {
   "name": "SJBaseVideoPlayer",
-  "version": "2.6.4",
+  "version": "2.7.0",
   "summary": "video player.",
   "description": "https://github.com/changsanjiang/SJBaseVideoPlayer/blob/master/README.md",
   "homepage": "https://github.com/changsanjiang/SJBaseVideoPlayer",
@@ -16,7 +16,7 @@
   },
   "source": {
     "git": "https://github.com/changsanjiang/SJBaseVideoPlayer.git",
-    "tag": "v2.6.4"
+    "tag": "v2.7.0"
   },
   "frameworks": [
     "UIKit",
@@ -56,6 +56,9 @@
         ],
         "SJBaseVideoPlayer/Model": [
 
+        ],
+        "SJBaseVideoPlayer/Const": [
+
         ]
       }
     },
@@ -84,13 +87,12 @@
       ]
     },
     {
-      "name": "SJPrompt",
-      "source_files": "SJBaseVideoPlayer/SJPrompt/*.{h,m}"
-    },
-    {
       "name": "SJDeviceVolumeAndBrightnessManager",
       "dependencies": {
         "SJBaseVideoPlayer/Header": [
+
+        ],
+        "SJBaseVideoPlayer/Const": [
 
         ]
       },

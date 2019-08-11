@@ -9,8 +9,6 @@
 //
 //  Contact:    changsanjiang@gmail.com
 //
-//  QQGroup:    719616775
-//
 
 /**
  ------------------------

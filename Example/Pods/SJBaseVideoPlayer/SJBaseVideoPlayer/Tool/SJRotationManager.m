@@ -19,7 +19,7 @@
 #import "SJRunLoopTaskQueue.h"
 #endif
 
-@class SJFullscreenModeViewController;
+@class SJFullscreenModeViewController, SJFullscreenModeNavigationController;
 
 NS_ASSUME_NONNULL_BEGIN
 @protocol SJFullscreenModeViewControllerDelegate <NSObject>
@@ -118,11 +118,59 @@ NS_ASSUME_NONNULL_BEGIN
 - (BOOL)prefersHomeIndicatorAutoHidden {
     return YES;
 }
+
+- (void)setNeedsStatusBarAppearanceUpdate {
+    [super setNeedsStatusBarAppearanceUpdate];
+}
 @end
 
 
+@protocol SJFullscreenModeNavigationControllerDelegate <NSObject>
+- (void)vc_forwardPushViewController:(UIViewController *)viewController animated:(BOOL)animated;
+@end
+
+@interface SJFullscreenModeNavigationController : UINavigationController
+@property (nonatomic, weak, nullable) id<SJFullscreenModeNavigationControllerDelegate> sj_delegate;
+@end
+
+@implementation SJFullscreenModeNavigationController
+- (void)viewDidLoad {
+    [super viewDidLoad];
+    self.navigationBarHidden = YES;
+}
+- (BOOL)shouldAutorotate {
+    return self.topViewController.shouldAutorotate;
+}
+- (UIInterfaceOrientationMask)supportedInterfaceOrientations {
+    return self.topViewController.supportedInterfaceOrientations;
+}
+- (UIInterfaceOrientation)preferredInterfaceOrientationForPresentation {
+    return self.topViewController.preferredInterfaceOrientationForPresentation;
+}
+- (nullable UIViewController *)childViewControllerForStatusBarStyle {
+    return self.topViewController;
+}
+- (nullable UIViewController *)childViewControllerForStatusBarHidden {
+    return self.topViewController;
+}
+- (BOOL)prefersHomeIndicatorAutoHidden {
+    return YES;
+}
+- (void)pushViewController:(UIViewController *)viewController animated:(BOOL)animated {
+    if ( [viewController isKindOfClass:SJFullscreenModeViewController.class] ) {
+        [super pushViewController:viewController animated:animated];
+    }
+    else if ( [self.sj_delegate respondsToSelector:@selector(vc_forwardPushViewController:animated:)] ) {
+        [self.sj_delegate vc_forwardPushViewController:viewController animated:animated];
+    }
+}
+@end
+
+#pragma mark -
+
 @interface SJFullscreenModeWindow : UIWindow
-@property (nonatomic, strong, nullable) SJFullscreenModeViewController *rootViewController;
+@property (nonatomic, strong, nullable) SJFullscreenModeNavigationController *rootViewController;
+@property (nonatomic, strong, readonly) SJFullscreenModeViewController *fullscreenModeViewController;
 @end
 
 @implementation SJFullscreenModeWindow
@@ -139,7 +187,9 @@ NS_ASSUME_NONNULL_BEGIN
 - (instancetype)initWithFrame:(CGRect)frame {
     self = [super initWithFrame:frame];
     if ( !self ) return nil;
-    self.rootViewController = SJFullscreenModeViewController.new;
+    self.windowLevel = UIWindowLevelNormal;
+    _fullscreenModeViewController = SJFullscreenModeViewController.new;
+    self.rootViewController = [[SJFullscreenModeNavigationController alloc] initWithRootViewController:_fullscreenModeViewController];
 #if __IPHONE_OS_VERSION_MAX_ALLOWED >= 130000
     if ( @available(iOS 13.0, *) ) {
         if ( self.windowScene == nil )
@@ -193,7 +243,7 @@ NS_ASSUME_NONNULL_BEGIN
 @end
 
 
-@interface SJRotationManager ()<SJFullscreenModeViewControllerDelegate>
+@interface SJRotationManager ()<SJFullscreenModeViewControllerDelegate, SJFullscreenModeNavigationControllerDelegate>
 @property (nonatomic, strong) SJFullscreenModeWindow *window;
 @property (nonatomic, weak, nullable) UIWindow *previousKeyWindow;
 
@@ -220,7 +270,8 @@ NS_ASSUME_NONNULL_BEGIN
         _autorotationSupportedOrientation = SJAutoRotateSupportedOrientation_All;
         dispatch_async(dispatch_get_main_queue(), ^{
             self->_window = [SJFullscreenModeWindow new];
-            self->_window.rootViewController.delegate = self;
+            self->_window.fullscreenModeViewController.delegate = self;
+            self->_window.rootViewController.sj_delegate = self;
             [self->_window.rootViewController loadViewIfNeeded];
         });
         [self _observeDeviceOrientationChangeNotification];
@@ -281,7 +332,7 @@ NS_ASSUME_NONNULL_BEGIN
     if ( [self _isSupported:SJOrientation_LandscapeLeft] &&
          [self _isSupported:SJOrientation_LandscapeRight] ) {
         SJOrientation orientation = (NSInteger)_deviceOrientation;
-        if ( self.window.rootViewController.currentOrientation == SJOrientation_Portrait )
+        if ( self.window.fullscreenModeViewController.currentOrientation == SJOrientation_Portrait )
             orientation = SJOrientation_LandscapeLeft;
         [self rotate:orientation animated:YES];
         return;
@@ -306,7 +357,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (void)rotate:(SJOrientation)orientation animated:(BOOL)animated completionHandler:(nullable void(^)(id<SJRotationManagerProtocol> mgr))completionHandler {
     _completionHandler = completionHandler;
-    if ( orientation == (NSInteger)self.window.rootViewController.currentOrientation ) {
+    if ( orientation == (NSInteger)self.window.fullscreenModeViewController.currentOrientation ) {
         [self _finishTransition];
         return;
     }
@@ -333,14 +384,22 @@ NS_ASSUME_NONNULL_BEGIN
     return self.delegate.vc_preferredStatusBarStyle;
 }
 
+- (void)vc_forwardPushViewController:(UIViewController *)viewController animated:(BOOL)animated {
+    if ( [self.delegate respondsToSelector:@selector(vc_forwardPushViewController:animated:)] ) {
+        [self.delegate vc_forwardPushViewController:viewController animated:animated];
+    }
+}
+
+#pragma mark -
+
 - (BOOL)shouldAutorotateToOrientation:(UIDeviceOrientation)orientation {
-    if ( orientation == (NSInteger)_window.rootViewController.currentOrientation )
+    if ( orientation == (NSInteger)_window.fullscreenModeViewController.currentOrientation )
         return NO;
     
     if ( _disableAutorotation && !_forcedRotation )
         return NO;
     
-    if ( self.isTransitioning && _window.rootViewController.isRotated )
+    if ( self.isTransitioning && _window.fullscreenModeViewController.isRotated )
         return NO;
     
     if ( !_forcedRotation ) {
@@ -394,7 +453,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (void)_beginTransition {
     self.transitioning = YES;
-    self.window.rootViewController.isRotated = NO;
+    self.window.fullscreenModeViewController.isRotated = NO;
     
 //#ifdef DEBUG
 //    NSLog(@"%d - %s", (int)__LINE__, __func__);
@@ -402,7 +461,7 @@ NS_ASSUME_NONNULL_BEGIN
 }
 
 - (void)_finishTransition {
-    self.window.rootViewController.isRotated = YES;
+    self.window.fullscreenModeViewController.isRotated = YES;
     self.transitioning = NO;
     
     if ( _completionHandler )

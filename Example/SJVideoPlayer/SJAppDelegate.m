@@ -118,8 +118,10 @@ static BOOL _iPhone_shouldAutorotate(UIViewController *vc) {
 
 - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions
 {
-    application.statusBarStyle = UIStatusBarStyleDefault;
-    application.statusBarOrientation = UIInterfaceOrientationPortrait;
+
+#ifdef DEBUG
+    NSLog(@"%@", NSTemporaryDirectory());
+#endif
     
     _window = [[UIWindow alloc] initWithFrame:[[UIScreen mainScreen] bounds]];
     _window.backgroundColor = [UIColor whiteColor];

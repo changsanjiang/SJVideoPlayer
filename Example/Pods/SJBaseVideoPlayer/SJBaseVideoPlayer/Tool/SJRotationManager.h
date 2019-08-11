@@ -23,5 +23,6 @@ NS_ASSUME_NONNULL_BEGIN
 @protocol SJRotationManagerDelegate <NSObject>
 - (BOOL)vc_prefersStatusBarHidden;
 - (UIStatusBarStyle)vc_preferredStatusBarStyle;
+- (void)vc_forwardPushViewController:(UIViewController *)viewController animated:(BOOL)animated;
 @end
 NS_ASSUME_NONNULL_END

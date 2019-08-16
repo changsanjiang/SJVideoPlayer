@@ -31,6 +31,7 @@
     [_player rotate:SJOrientation_Portrait animated:YES completion:^(__kindof SJBaseVideoPlayer * _Nonnull player) {
         [self.navigationController pushViewController:[[SJRotationModeDemoViewController2 alloc] initWithNibName:@"SJRotationModeDemoViewController2" bundle:nil] animated:YES];
     }];
+
 }
 
 - (void)testAlertItem:(SJEdgeControlButtonItem *)item {

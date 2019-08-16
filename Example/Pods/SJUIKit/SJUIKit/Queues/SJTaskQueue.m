@@ -6,6 +6,7 @@
 //
 
 #import "SJTaskQueue.h"
+#import <stdlib.h>
 
 NS_ASSUME_NONNULL_BEGIN
 @interface SJTaskQueues : NSObject
@@ -46,7 +47,16 @@ typedef struct SJTaskItem {
     CFTypeRef _Nullable task;
 } SJTaskItem;
 
-static inline void _SJTaskItemFree(SJTaskItem *item) {
+static inline SJTaskItem *
+_SJTaskItemCreate(SJTaskHandler task) {
+    SJTaskItem *new_item = malloc(sizeof(SJTaskItem));
+    new_item->next = NULL;
+    new_item->task = CFBridgingRetain(task);
+    return new_item;
+}
+
+static inline void
+_SJTaskItemFree(SJTaskItem *item) {
     if ( item->task != NULL ) {
         CFRelease(item->task);
         item->task = NULL;
@@ -114,9 +124,7 @@ static SJTaskQueues *_queues;
 
 - (SJTaskQueue * _Nullable (^)(SJTaskHandler _Nonnull))enqueue {
     return ^SJTaskQueue *(SJTaskHandler task) {
-        SJTaskItem *new_item = (SJTaskItem *)malloc(sizeof(SJTaskItem));
-        new_item->next = NULL;
-        new_item->task = CFBridgingRetain(task);
+        SJTaskItem *new_item = _SJTaskItemCreate(task);
         [self _enqueue:new_item];
         [self _performNextTaskIfNeeded];
         return self;

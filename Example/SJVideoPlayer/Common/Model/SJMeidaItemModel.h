@@ -12,6 +12,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 @interface SJMeidaItemModel : NSObject
 + (NSArray<SJMeidaItemModel *> *)testItems;
++ (NSArray<SJMeidaItemModel *> *)testItemsWithCount:(NSInteger)count;
 + (instancetype)testItem;
 
 @property (nonatomic, readonly) NSInteger id;

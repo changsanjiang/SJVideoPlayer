@@ -7,6 +7,7 @@
 //
 
 #import "SJRunLoopTaskQueue.h"
+#import <stdlib.h>
 
 NS_ASSUME_NONNULL_BEGIN
 @interface SJRunLoopTaskQueues : NSObject
@@ -54,7 +55,16 @@ typedef struct SJRunLoopTaskItem {
     CFTypeRef _Nullable task;
 } SJRunLoopTaskItem;
 
-static inline void _SJRunLoopTaskItemFree(SJRunLoopTaskItem *item) {
+static inline SJRunLoopTaskItem *
+_SJRunLoopTaskItemCreate(SJRunLoopTaskHandler task) {
+    SJRunLoopTaskItem *new_item = malloc(sizeof(SJRunLoopTaskItem));
+    new_item->next = NULL;
+    new_item->task = CFBridgingRetain(task);
+    return new_item;
+}
+
+static inline void
+_SJRunLoopTaskItemFree(SJRunLoopTaskItem *item) {
     if ( item->task != NULL ) {
         CFRelease(item->task);
         item->task = NULL;
@@ -146,9 +156,7 @@ static SJRunLoopTaskQueues *_queues;
 
 - (SJRunLoopTaskQueue * _Nullable (^)(SJRunLoopTaskHandler _Nonnull))enqueue {
     return ^SJRunLoopTaskQueue *(SJRunLoopTaskHandler task) {
-        SJRunLoopTaskItem *new_item = (SJRunLoopTaskItem *)malloc(sizeof(SJRunLoopTaskItem));
-        new_item->next = NULL;
-        new_item->task = CFBridgingRetain(task);
+        SJRunLoopTaskItem *new_item = _SJRunLoopTaskItemCreate(task);
         [self _enqueue:new_item];
         [self _addRunLoopObserverIfNeeded];
         return self;

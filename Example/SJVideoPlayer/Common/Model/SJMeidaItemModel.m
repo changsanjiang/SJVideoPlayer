@@ -18,6 +18,14 @@
     return m;
 }
 
++ (NSArray<SJMeidaItemModel *> *)testItemsWithCount:(NSInteger)count {
+    NSMutableArray<SJMeidaItemModel *> *m = [[NSMutableArray alloc] initWithCapacity:count];
+    for ( int i = 0 ; i < count ; ++ i ) {
+        [m addObject:[SJMeidaItemModel testItem]];
+    }
+    return m;
+}
+
 + (instancetype)testItem {
     SJMeidaItemModel *item = [SJMeidaItemModel new];
     
@@ -44,12 +52,12 @@
         @[@"悲哀化身-内蒙专区", @"车迟国@最终幻想-剑侠风骨", @"老虎222-天竺国", @"今朝醉-云中殿", @"杀手阿七-五明宫", @"浅墨淋雨桥-剑胆琴心"];
         
         covers =
-        @[@"http://res.xy2.netease.com/pc/zt/20151230152108/images/pic9_2a7191a.png",
-          @"http://res.xy2.netease.com/pc/zt/20151230152108/images/pic6_e525c2b.png",
-          @"http://res.xy2.netease.com/pc/zt/20151230152108/images/pic7_9da8ffb.png",
-          @"http://res.xy2.netease.com/pc/zt/20151230152108/images/pic8_f71d07d.png",
-          @"http://res.xy2.netease.com/pc/zt/20151230152108/images/pic3_329e20b.png",
-          @"http://res.xy2.netease.com/pc/zt/20151230152108/images/pic1_239fe73.png"];
+        @[@"https://xy2.res.netease.com/pc/zt/20151203150349/images/pic/b3_2a6166c.jpg",
+          @"https://xy2.res.netease.com/pc/zt/20151203150349/images/pic/b4_ca39119.jpg",
+          @"https://xy2.res.netease.com/pc/zt/20151203150349/images/pic/c2_c9e7cc0.jpg",
+          @"https://xy2.res.netease.com/pc/zt/20151203150349/images/pic/b7_f9a43d6.jpg",
+          @"https://xy2.res.netease.com/pc/zt/20151203150349/images/pic/b10_e52c929.jpg",
+          @"https://xy2.res.netease.com/pc/zt/20151203150349/images/pic/b5_a9bc2f1.jpg"];
         
         avatars =
         @[@"https://xy2.res.netease.com/pc/zt/20160104090145/data/01.png",
@@ -68,7 +76,11 @@
     item.cover = covers[arc4random()%covers.count];
     item.avatar = avatars[arc4random()%avatars.count];
     item.username = usernames[arc4random()%usernames.count];
-    item.URL = URLs[arc4random()%URLs.count];
+    NSURL *URL = URLs[arc4random()%URLs.count];
+    NSURLComponents *comp = [NSURLComponents componentsWithURL:URL resolvingAgainstBaseURL:NO];
+    static NSInteger idx;
+    [comp setQuery:[NSString stringWithFormat:@"idx=%ld", ++idx]];
+    item.URL = comp.URL;
     return item;
 }
 

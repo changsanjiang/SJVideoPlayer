@@ -1,1 +1,1 @@
-../../../SJBaseVideoPlayer/SJBaseVideoPlayer/Tool/SJPrompt.h
+../../../../../../SJBaseVideoPlayer/SJBaseVideoPlayer/Tool/SJPrompt.h

@@ -1,1 +1,1 @@
-../../../SJBaseVideoPlayer/SJBaseVideoPlayer/Header/SJPlayerGestureControlDefines.h
+../../../../../../SJBaseVideoPlayer/SJBaseVideoPlayer/Header/SJPlayerGestureControlDefines.h

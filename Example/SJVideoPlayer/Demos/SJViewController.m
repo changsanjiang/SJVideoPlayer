@@ -133,7 +133,11 @@
       
       [[Item alloc] initWithTitle:@"Autoplay in Table View"
                          subTitle:@"TableView 中自动播放"
-                             path:@"demo/tableView/autoplay2"]
+                             path:@"demo/tableView/autoplay2"],
+      
+      [[Item alloc] initWithTitle:@"Autoplay in CollectionView View"
+                         subTitle:@"CollectionViewView 中自动播放"
+                             path:@"demo/collectionView/autoplay3"]
       ];
 }
 

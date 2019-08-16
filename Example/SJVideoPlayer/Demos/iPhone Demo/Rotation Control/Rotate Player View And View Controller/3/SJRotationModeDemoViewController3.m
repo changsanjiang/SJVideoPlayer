@@ -25,9 +25,6 @@
     
     [self _setupViews];
     
-    [UIDevice.currentDevice setValue:@(UIDeviceOrientationUnknown) forKey:@"orientation"];
-    [UIDevice.currentDevice setValue:@(UIInterfaceOrientationLandscapeRight) forKey:@"orientation"];
-    
     // Do any additional setup after loading the view from its nib.
 }
 
@@ -47,7 +44,7 @@
 }
 
 - (UIInterfaceOrientationMask)supportedInterfaceOrientations {
-    return UIInterfaceOrientationMaskLandscapeRight;
+    return UIInterfaceOrientationMaskLandscape;
 }
 
 - (UIInterfaceOrientation)preferredInterfaceOrientationForPresentation {
@@ -111,7 +108,7 @@
 }
 
 + (void)handleRequest:(SJRouteRequest *)request topViewController:(UIViewController *)topViewController completionHandler:(SJCompletionHandler)completionHandler {
-    [topViewController.navigationController pushViewController:[[SJRotationModeDemoViewController3 alloc] initWithNibName:@"SJRotationModeDemoViewController3" bundle:nil] animated:YES];
+    [topViewController presentViewController:[[SJRotationModeDemoViewController3 alloc] initWithNibName:@"SJRotationModeDemoViewController3" bundle:nil] animated:YES completion:nil];
 }
 
 @end

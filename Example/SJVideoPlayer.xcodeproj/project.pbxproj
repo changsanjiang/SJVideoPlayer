@@ -859,7 +859,7 @@
 			inputPaths = (
 				"${PODS_ROOT}/Target Support Files/Pods-SJVideoPlayer_Example/Pods-SJVideoPlayer_Example-resources.sh",
 				"${PODS_ROOT}/MJRefresh/MJRefresh/MJRefresh.bundle",
-				"${PODS_ROOT}/../../../SJBaseVideoPlayer/SJBaseVideoPlayer/SJDeviceVolumeAndBrightnessManager/ResourceLoader/SJDeviceVolumeAndBrightnessManager.bundle",
+				"${PODS_ROOT}/SJBaseVideoPlayer/SJBaseVideoPlayer/SJDeviceVolumeAndBrightnessManager/ResourceLoader/SJDeviceVolumeAndBrightnessManager.bundle",
 				"${PODS_ROOT}/../../SJVideoPlayer/SJEdgeControlLayer/ResourceLoader/SJEdgeControlLayer.bundle",
 				"${PODS_ROOT}/../../SJVideoPlayer/SJFilmEditingControlLayer/ResourceLoader/SJFilmEditing.bundle",
 				"${PODS_ROOT}/../../SJVideoPlayer/SJFloatSmallViewControlLayer/ResourceLoader/SJFloatSmallViewControlLayer.bundle",

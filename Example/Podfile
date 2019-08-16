@@ -30,7 +30,7 @@ target 'SJVideoPlayer_Example' do
 
   # Pods for SJVideoPlayer
 
-  pod 'SJBaseVideoPlayer', :path => '../../SJBaseVideoPlayer'
+  pod 'SJBaseVideoPlayer'#, :path => '../../SJBaseVideoPlayer'
   pod 'SJVideoPlayer', :path => '../../SJVideoPlayer'
   
   # 全屏手势

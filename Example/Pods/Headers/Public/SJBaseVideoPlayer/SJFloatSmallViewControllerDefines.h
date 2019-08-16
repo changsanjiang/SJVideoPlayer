@@ -1,1 +1,1 @@
-../../../../../../SJBaseVideoPlayer/SJBaseVideoPlayer/Header/SJFloatSmallViewControllerDefines.h
+../../../SJBaseVideoPlayer/SJBaseVideoPlayer/Header/SJFloatSmallViewControllerDefines.h

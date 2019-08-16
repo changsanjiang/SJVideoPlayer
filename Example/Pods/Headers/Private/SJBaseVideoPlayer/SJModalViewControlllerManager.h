@@ -1,1 +1,1 @@
-../../../../../../SJBaseVideoPlayer/SJBaseVideoPlayer/Tool/SJModalViewControlllerManager.h
+../../../SJBaseVideoPlayer/SJBaseVideoPlayer/Tool/SJModalViewControlllerManager.h

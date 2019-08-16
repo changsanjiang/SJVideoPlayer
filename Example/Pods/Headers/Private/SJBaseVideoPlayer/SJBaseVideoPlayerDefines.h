@@ -1,1 +1,1 @@
-../../../../../../SJBaseVideoPlayer/SJBaseVideoPlayer/Header/SJBaseVideoPlayerDefines.h
+../../../SJBaseVideoPlayer/SJBaseVideoPlayer/Header/SJBaseVideoPlayerDefines.h

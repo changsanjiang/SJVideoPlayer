@@ -1,1 +1,1 @@
-../../../../../../SJBaseVideoPlayer/SJBaseVideoPlayer/Tool/SJVideoDefinitionSwitchingInfo+Private.h
+../../../SJBaseVideoPlayer/SJBaseVideoPlayer/Tool/SJVideoDefinitionSwitchingInfo+Private.h

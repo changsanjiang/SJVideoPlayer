@@ -1,1 +1,1 @@
-../../../../../../SJBaseVideoPlayer/SJBaseVideoPlayer/Tool/SJBaseVideoPlayerAutoRefreshController.h
+../../../SJBaseVideoPlayer/SJBaseVideoPlayer/Tool/SJBaseVideoPlayerAutoRefreshController.h

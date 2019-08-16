@@ -77,8 +77,6 @@ PODS:
     - SJBaseVideoPlayer/Model
     - SJUIKit/ObserverHelper (>= 0.0.0.31)
     - SJUIKit/Queues (>= 0.0.0.31)
-  - SJFullscreenPopGesture (1.5.1):
-    - SJFullscreenPopGesture/ObjC (= 1.5.1)
   - SJFullscreenPopGesture/ObjC (1.5.1)
   - SJPlaybackListController (0.0.5):
     - SJPlaybackListController/Core (= 0.0.5)
@@ -275,8 +273,8 @@ DEPENDENCIES:
   - Masonry
   - MJRefresh
   - SDWebImage
-  - SJBaseVideoPlayer (from `../../SJBaseVideoPlayer`)
-  - SJFullscreenPopGesture
+  - SJBaseVideoPlayer
+  - SJFullscreenPopGesture/ObjC
   - SJPlaybackListController
   - SJRouter
   - SJUIKit
@@ -288,14 +286,13 @@ SPEC REPOS:
     - MJRefresh
     - Reachability
     - SDWebImage
+    - SJBaseVideoPlayer
     - SJFullscreenPopGesture
     - SJPlaybackListController
     - SJRouter
     - SJUIKit
 
 EXTERNAL SOURCES:
-  SJBaseVideoPlayer:
-    :path: "../../SJBaseVideoPlayer"
   SJVideoPlayer:
     :path: "../../SJVideoPlayer"
 
@@ -311,6 +308,6 @@ SPEC CHECKSUMS:
   SJUIKit: b3d9a9834cd66e2b8d9c053fa699cba5ba49243d
   SJVideoPlayer: 40fb746684a9e973c4910b5cbdf39a0a38864261
 
-PODFILE CHECKSUM: 271840c1871c74dccb483421068192c6aaff536c
+PODFILE CHECKSUM: 3e78edb986fca035610acf2f0f2b0cc408696d8c
 
 COCOAPODS: 1.7.5

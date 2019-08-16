@@ -89,9 +89,11 @@ NS_ASSUME_NONNULL_BEGIN
 }
 
 - (void)_refreshCellContent {
-    SJListViewAutoplayMediaViewModel *vm = self.viewModels[self.collectionView.sj_currentPlayingIndexPath.item];
-    vm.showPausedImageView = [self.player playStatus_isPaused_ReasonPause] || [self.player playStatus_isInactivity];
-    [(SJListViewAutoplayCollectionViewCell *)[self.collectionView cellForItemAtIndexPath:self.collectionView.sj_currentPlayingIndexPath] refreshData];
+    if ( self.collectionView.sj_currentPlayingIndexPath.item < self.viewModels.count ) {
+        SJListViewAutoplayMediaViewModel *vm = self.viewModels[self.collectionView.sj_currentPlayingIndexPath.item];
+        vm.showPausedImageView = [self.player playStatus_isPaused_ReasonPause] || [self.player playStatus_isInactivity];
+        [(SJListViewAutoplayCollectionViewCell *)[self.collectionView cellForItemAtIndexPath:self.collectionView.sj_currentPlayingIndexPath] refreshData];
+    }
 }
 
 - (void)viewWillAppear:(BOOL)animated {

@@ -190,6 +190,15 @@ _player.URLAsset = [[SJVideoPlayerURLAsset alloc] initWithURL:URL];
 * [19.2 设置隐藏](#19.2)
 * [19.3 填充剩余空间](#19.3)
 
+#### [20. SJEdgeControlLayer 的补充](#20)
+* [20.1 是否竖屏时隐藏返回按钮](#20.1)
+* [20.2 是否禁止网络状态变化提示](#20.2)
+* [20.3 是否使返回按钮常驻](#20.3)
+* [20.4 是否隐藏底部进度条](#20.4)
+* [20.5 是否在loadingView上显示网速](#20.5)
+* [20.6 自定义loadingView](#20.6)
+* [20.7 调整边距](#20.7)
+* [20.8 取消控制层上下视图的阴影](#20.8)
 ___
 
 
@@ -1680,4 +1689,57 @@ titleItem.hidden = YES;
 SJEdgeControlButtonItem *titleItem = [_player.defaultEdgeControlLayer.topAdapter itemForTag:SJEdgeControlLayerTopItem_Title];
 titleItem.fill = YES;
 [_player.defaultEdgeControlLayer.topAdapter reload];
+```
+
+<h2 id="20">20. SJEdgeControlLayer 的补充</h2>
+
+<h3 id="20.1">20.1 是否竖屏时隐藏返回按钮</h3>
+
+```Objective-C
+_player.defaultEdgeControlLayer.hiddenBackButtonWhenOrientationIsPortrait = YES;
+```
+
+<h3 id="20.2">20.2 是否禁止网络状态变化提示</h3>
+
+```Objective-C
+_player.defaultEdgeControlLayer.disabledPromptWhenNetworkStatusChanges = YES;
+```
+
+<h3 id="20.3">20.3 是否使返回按钮常驻</h3>
+
+```Objective-C
+_player.defaultEdgeControlLayer.showResidentBackButton = YES;
+```
+
+<h3 id="20.4">20.4 是否隐藏底部进度条</h3>
+
+```Objective-C
+_player.defaultEdgeControlLayer.hiddenBottomProgressIndicator = YES;
+```
+
+<h3 id="20.5">20.5 是否在loadingView上显示网速</h3>
+
+```Objective-C
+_player.defaultEdgeControlLayer.showNetworkSpeedToLoadingView = YES;
+```
+
+<h3 id="20.6">20.6 自定义loadingView</h3>
+
+```Objective-C
+// 实现协议`SJEdgeControlLayerLoadingViewProtocol`即可, 然后赋值给控制层
+_player.defaultEdgeControlLayer.loadingView = Your Loading View;
+```
+
+<h3 id="20.7">20.7 调整边距</h3>
+
+```Objective-C
+_player.defaultEdgeControlLayer.leftMargin = 16;
+_player.defaultEdgeControlLayer.rightMargin = 16;
+```
+
+<h3 id="20.8">20.8 取消控制层上下视图的阴影</h3>
+
+```Objective-C
+[_player.defaultEdgeControlLayer.topContainerView cleanColors];
+[_player.defaultEdgeControlLayer.bottomContainerView cleanColors];
 ```

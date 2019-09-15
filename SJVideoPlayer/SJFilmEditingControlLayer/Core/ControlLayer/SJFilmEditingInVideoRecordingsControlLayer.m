@@ -22,15 +22,12 @@
 
 #if __has_include(<SJBaseVideoPlayer/NSTimer+SJAssetAdd.h>)
 #import <SJBaseVideoPlayer/NSTimer+SJAssetAdd.h>
+#import <SJBaseVideoPlayer/SJBaseVideoPlayer.h>
 #else
 #import "NSTimer+SJAssetAdd.h"
+#import "SJBaseVideoPlayer.h"
 #endif
 
-#if __has_include(<SJBaseVideoPlayer/SJBaseVideoPlayer+PlayStatus.h>)
-#import <SJBaseVideoPlayer/SJBaseVideoPlayer+PlayStatus.h>
-#else
-#import "SJBaseVideoPlayer+PlayStatus.h"
-#endif
 
 NS_ASSUME_NONNULL_BEGIN
 static SJEdgeControlButtonItemTag SJTopItem_Back = 1;
@@ -71,7 +68,7 @@ static SJEdgeControlButtonItemTag SJBottomItem_RightFill = 5;
     sj_view_makeAppear(self.controlView, YES);
     self.status = SJFilmEditingStatus_Unknown;
     self.countDownNum = _maxCountDownNum;
-    if ( [_player playStatus_isInactivity_ReasonPlayEnd] ) {
+    if ( _player.isPlayedToEndTime ) {
         self.start = kCMTimeZero;
     }
     else {
@@ -273,8 +270,8 @@ static SJEdgeControlButtonItemTag SJBottomItem_RightFill = 5;
 
 - (void)_updateBottomItemSettings {
     SJFilmEditingSettings * _Nonnull setting = [SJFilmEditingSettings commonSettings];
-    NSString *current = [_player timeStringWithSeconds:_maxCountDownNum - _countDownNum]?:@"00:00";
-    NSString *max = [_player timeStringWithSeconds:_maxCountDownNum]?:@"00:00";
+    NSString *current = [_player stringForSeconds:_maxCountDownNum - _countDownNum]?:@"00:00";
+    NSString *max = [_player stringForSeconds:_maxCountDownNum]?:@"00:00";
     _countDownView.timeLabel.text = [NSString stringWithFormat:@"%@/%@", current, max];
     if ( CMTimeGetSeconds(self.duration) < 2 ) {
         _countDownView.promptLabel.text = setting.waitingText;
@@ -322,28 +319,18 @@ static SJEdgeControlButtonItemTag SJBottomItem_RightFill = 5;
     return NO;
 }
 
-- (void)videoPlayer:(__kindof SJBaseVideoPlayer *)videoPlayer statusDidChanged:(SJVideoPlayerPlayStatus)status {
-    switch ( videoPlayer.playStatus ) {
-        case SJVideoPlayerPlayStatusUnknown: break;
-        case SJVideoPlayerPlayStatusPrepare: break;
-        case SJVideoPlayerPlayStatusReadyToPlay: break;
-        case SJVideoPlayerPlayStatusPlaying: {
-            if ( _restarted ) [self resume];
-        }
-            break;
-        case SJVideoPlayerPlayStatusPaused: {
-            if ( self.status == SJFilmEditingStatus_Recording ) [self pause];
-        }
-            break;
-        case SJVideoPlayerPlayStatusInactivity: {
-            if ( [videoPlayer playStatus_isInactivity_ReasonPlayEnd] ) {
-                [self finished];
-            }
-            else {
-                [self cancel];
-            }
-        }
-            break;
+- (void)videoPlayerPlaybackStatusDidChange:(__kindof SJBaseVideoPlayer *)videoPlayer {
+    if ( videoPlayer.isPlayedToEndTime ) {
+        [self finished];
+    }
+    else if ( videoPlayer.assetStatus == SJAssetStatusFailed ) {
+        [self cancel];
+    }
+    else if ( videoPlayer.timeControlStatus == SJPlaybackTimeControlStatusPlaying ) {
+        [self resume];
+    }
+    else if ( self.status == SJFilmEditingStatus_Recording ) {
+        [self pause];
     }
 }
 

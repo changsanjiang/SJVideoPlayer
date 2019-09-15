@@ -11,94 +11,15 @@
 
 @implementation SJVideoPlayerURLAsset (SJControlAdd)
 
-- (instancetype)initWithTitle:(NSString *)title URL:(NSURL *)URL playModel:(__kindof SJPlayModel *)playModel {
-    return [self initWithTitle:title alwaysShowTitle:NO URL:URL playModel:playModel];
+- (nullable instancetype)initWithTitle:(NSString *)title URL:(NSURL *)URL playModel:(__kindof SJPlayModel *)playModel {
+    return [self initWithTitle:title URL:URL specifyStartTime:0 playModel:playModel];
 }
 
-- (instancetype)initWithTitle:(NSString *)title alwaysShowTitle:(BOOL)alwaysShowTitle URL:(NSURL *)URL playModel:(__kindof SJPlayModel *)playModel {
-    return [self initWithTitle:title alwaysShowTitle:alwaysShowTitle URL:URL specifyStartTime:0 playModel:playModel];
-}
-
-- (instancetype)initWithTitle:(NSString *)title alwaysShowTitle:(BOOL)alwaysShowTitle URL:(NSURL *)URL specifyStartTime:(NSTimeInterval)specifyStartTime playModel:(__kindof SJPlayModel *)playModel {
+- (nullable instancetype)initWithTitle:(NSString *)title URL:(NSURL *)URL specifyStartTime:(NSTimeInterval)specifyStartTime playModel:(__kindof SJPlayModel *)playModel {
+    if ( URL == nil ) return nil;
     self = [self initWithURL:URL specifyStartTime:specifyStartTime playModel:playModel];
     if ( !self ) return nil;
-    self.title = title;
-    self.alwaysShowTitle = alwaysShowTitle;
-    return self;
-}
-
-- (instancetype)initWithTitle:(NSString *)title
-              alwaysShowTitle:(BOOL)alwaysShowTitle
-                     assetURL:(NSURL *)assetURL __deprecated_msg("已弃用, 请使用`initWithTitle:URL:playModel`") {
-    return [self initWithTitle:title alwaysShowTitle:alwaysShowTitle assetURL:assetURL beginTime:0];
-}
-
-- (instancetype)initWithTitle:(NSString *)title
-              alwaysShowTitle:(BOOL)alwaysShowTitle
-                     assetURL:(NSURL *)assetURL
-                    beginTime:(NSTimeInterval)beginTime __deprecated_msg("已弃用, 请使用`initWithTitle:URL:playModel`") {
-    self = [self initWithAssetURL:assetURL beginTime:beginTime];
-    if ( !self ) return nil;
-    self.title = title;
-    self.alwaysShowTitle = alwaysShowTitle;
-    return self;
-}
-
-- (instancetype)initWithTitle:(NSString *)title
-              alwaysShowTitle:(BOOL)alwaysShowTitle
-                     assetURL:(NSURL *)assetURL
-                    beginTime:(NSTimeInterval)beginTime // unit is sec.
-                   scrollView:(__unsafe_unretained UIScrollView *__nullable)tableOrCollectionView
-                    indexPath:(NSIndexPath *__nullable)indexPath
-                 superviewTag:(NSInteger)superviewTag __deprecated_msg("已弃用, 请使用`initWithTitle:URL:playModel`") {
-    self = [self initWithAssetURL:assetURL beginTime:beginTime scrollView:tableOrCollectionView indexPath:indexPath superviewTag:superviewTag];
-    if ( !self ) return nil;
-    self.title = title;
-    self.alwaysShowTitle = alwaysShowTitle;
-    return self;
-}
-
-- (instancetype)initWithTitle:(NSString *)title
-              alwaysShowTitle:(BOOL)alwaysShowTitle
-                     assetURL:(NSURL *)assetURL
-                    beginTime:(NSTimeInterval)beginTime
- playerSuperViewOfTableHeader:(__weak UIView *)superView
-                    tableView:(UITableView *)tableView __deprecated_msg("已弃用, 请使用`initWithTitle:URL:playModel`") {
-    self = [self initWithAssetURL:assetURL beginTime:beginTime playerSuperViewOfTableHeader:superView tableView:tableView];
-    if ( !self ) return nil;
-    self.title = title;
-    self.alwaysShowTitle = alwaysShowTitle;
-    return self;
-}
-
-- (instancetype)initWithTitle:(NSString *)title
-              alwaysShowTitle:(BOOL)alwaysShowTitle
-                     assetURL:(NSURL *)assetURL
-                    beginTime:(NSTimeInterval)beginTime
-  collectionViewOfTableHeader:(__weak UICollectionView *)collectionView
-      collectionCellIndexPath:(NSIndexPath *)indexPath
-           playerSuperViewTag:(NSInteger)playerSuperViewTag
-                rootTableView:(UITableView *)rootTableView __deprecated_msg("已弃用, 请使用`initWithTitle:URL:playModel`") {
-    self = [self initWithAssetURL:assetURL beginTime:beginTime collectionViewOfTableHeader:collectionView collectionCellIndexPath:indexPath playerSuperViewTag:playerSuperViewTag rootTableView:rootTableView];
-    if ( !self ) return nil;
-    self.title = title;
-    self.alwaysShowTitle = alwaysShowTitle;
-    return self;
-}
-
-- (instancetype)initWithTitle:(NSString *)title
-              alwaysShowTitle:(BOOL)alwaysShowTitle
-                     assetURL:(NSURL *)assetURL
-                    beginTime:(NSTimeInterval)beginTime // unit is sec.
-                    indexPath:(NSIndexPath *__nullable)indexPath
-                 superviewTag:(NSInteger)superviewTag
-          scrollViewIndexPath:(NSIndexPath *__nullable)scrollViewIndexPath
-                scrollViewTag:(NSInteger)scrollViewTag
-               rootScrollView:(__unsafe_unretained UIScrollView *__nullable)rootScrollView __deprecated_msg("已弃用, 请使用`initWithTitle:URL:playModel`") {
-    self = [self initWithAssetURL:assetURL beginTime:beginTime indexPath:indexPath superviewTag:superviewTag scrollViewIndexPath:scrollViewIndexPath scrollViewTag:scrollViewTag rootScrollView:rootScrollView];
-    if ( !self ) return nil;
-    self.title = title;
-    self.alwaysShowTitle = alwaysShowTitle;
+    self.title = title; 
     return self;
 }
 
@@ -109,15 +30,4 @@
 - (NSString *)title {
     return objc_getAssociatedObject(self, _cmd);
 }
-
-- (void)setAlwaysShowTitle:(BOOL)alwaysShowTitle {
-    objc_setAssociatedObject(self, @selector(alwaysShowTitle), @(alwaysShowTitle), OBJC_ASSOCIATION_RETAIN_NONATOMIC);
-}
-
-- (BOOL)alwaysShowTitle {
-    NSNumber *_Nullable num = objc_getAssociatedObject(self, _cmd);
-    if ( num != nil ) return [num boolValue];
-    return YES;
-}
-
 @end

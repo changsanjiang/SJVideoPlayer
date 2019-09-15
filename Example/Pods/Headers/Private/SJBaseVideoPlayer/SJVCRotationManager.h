@@ -1,1 +1,0 @@
-../../../SJBaseVideoPlayer/SJBaseVideoPlayer/Tool/SJVCRotationManager.h

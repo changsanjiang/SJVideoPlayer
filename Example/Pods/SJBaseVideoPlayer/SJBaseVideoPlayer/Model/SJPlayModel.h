@@ -35,6 +35,8 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (instancetype)init;
 
++ (instancetype)UIViewPlayModel;
+
 /// - UITableView
 ///     - UITableViewCell
 ///         - player super view

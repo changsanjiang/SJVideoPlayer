@@ -29,7 +29,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 @implementation SJVideoPlayerPresentView
 @synthesize placeholderImageView = _placeholderImageView;
-@synthesize disabledGestures = _disabledGestures;
+@synthesize supportedGestureTypes = _supportedGestureTypes;
 @synthesize gestureRecognizerShouldTrigger = _gestureRecognizerShouldTrigger;
 @synthesize singleTapHandler = _singleTapHandler;
 @synthesize doubleTapHandler = _doubleTapHandler;
@@ -41,7 +41,6 @@ NS_ASSUME_NONNULL_BEGIN
 - (instancetype)initWithFrame:(CGRect)frame {
     self = [super initWithFrame:frame];
     if ( !self ) return nil;
-    self.tag = SJBaseVideoPlayerPresentViewTag;
     [self _setupViews];
     return self;
 }
@@ -67,7 +66,7 @@ NS_ASSUME_NONNULL_BEGIN
 }
 
 - (void)handleSingleTap:(UITouch *)tap {
-    if ( _disabledGestures & SJPlayerGestureType_SingleTap )
+    if ( ![self _isSupporedGestureType:SJPlayerGestureTypeMask_SingleTap ] )
         return;
     
     CGPoint location = [tap locationInView:self];
@@ -78,7 +77,7 @@ NS_ASSUME_NONNULL_BEGIN
 }
 
 - (void)handleDoubleTap:(UITouch *)tap {
-    if ( _disabledGestures & SJPlayerGestureType_DoubleTap )
+    if ( ![self _isSupporedGestureType:SJPlayerGestureTypeMask_DoubleTap] )
         return;
     
     CGPoint location = [tap locationInView:self];
@@ -144,6 +143,10 @@ NS_ASSUME_NONNULL_BEGIN
     else {
         _placeholderImageView.alpha = 1;
     }
+}
+
+- (void)hiddenPlaceholderAnimated:(BOOL)animated {
+    [self hiddenPlaceholderAnimated:animated delay:0];
 }
 
 - (void)hiddenPlaceholderAnimated:(BOOL)animated delay:(NSTimeInterval)secs {
@@ -214,6 +217,8 @@ NS_ASSUME_NONNULL_BEGIN
 #pragma mark -
 
 - (void)_setupViews {
+    self.supportedGestureTypes = SJPlayerGestureTypeMask_All;
+    self.tag = SJBaseVideoPlayerPresentViewTag;
     self.backgroundColor = [UIColor blackColor];
     self.placeholderImageView.frame = self.bounds;
     _placeholderImageView.autoresizingMask = UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight;
@@ -275,20 +280,18 @@ NS_ASSUME_NONNULL_BEGIN
                 _movingDirection = SJPanGestureMovingDirection_V;
             }
             
-            if ( SJPlayerDisabledGestures_Pan & _disabledGestures )
+            if ( ![self _isSupporedGestureType:SJPlayerGestureTypeMask_Pan] )
                 return NO;
             
-            if ( SJPanGestureMovingDirection_H == _movingDirection &&
-                SJPlayerDisabledGestures_Pan_H & _disabledGestures )
+            if ( _movingDirection == SJPanGestureMovingDirection_H && ![self _isSupporedGestureType:SJPlayerGestureTypeMask_Pan_H] )
                 return NO;
             
-            if ( SJPanGestureMovingDirection_V == _movingDirection &&
-                SJPlayerDisabledGestures_Pan_V & _disabledGestures )
+            if ( _movingDirection == SJPanGestureMovingDirection_V && ![self _isSupporedGestureType:SJPlayerGestureTypeMask_Pan_H] )
                 return NO;
         }
             break;
         case SJPlayerGestureType_Pinch: {
-            if ( SJPlayerDisabledGestures_Pinch & _disabledGestures )
+            if ( ![self _isSupporedGestureType:SJPlayerGestureTypeMask_Pinch] )
                 return NO;
         }
             break;
@@ -366,6 +369,10 @@ NS_ASSUME_NONNULL_BEGIN
         [self handleDoubleTap:touch];
     else
         [self handleSingleTap:touch];
+}
+
+- (BOOL)_isSupporedGestureType:(SJPlayerGestureTypeMask)type {
+    return _supportedGestureTypes & type;
 }
 @end
 NS_ASSUME_NONNULL_END

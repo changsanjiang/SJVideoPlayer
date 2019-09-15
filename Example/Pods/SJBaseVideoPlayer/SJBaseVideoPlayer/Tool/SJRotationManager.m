@@ -138,6 +138,15 @@ NS_ASSUME_NONNULL_BEGIN
     [super viewDidLoad];
     self.navigationBarHidden = YES;
 }
+
+- (void)setNavigationBarHidden:(BOOL)navigationBarHidden {
+    [super setNavigationBarHidden:YES];
+}
+
+- (void)setNavigationBarHidden:(BOOL)hidden animated:(BOOL)animated {
+    [super setNavigationBarHidden:YES animated:animated];
+}
+
 - (BOOL)shouldAutorotate {
     return self.topViewController.shouldAutorotate;
 }
@@ -257,9 +266,9 @@ NS_ASSUME_NONNULL_BEGIN
     void(^_Nullable _completionHandler)(id<SJRotationManagerProtocol> mgr);
 }
 
-@synthesize autorotationSupportedOrientation = _autorotationSupportedOrientation;
+@synthesize autorotationSupportedOrientations = _autorotationSupportedOrientations;
 @synthesize shouldTriggerRotation = _shouldTriggerRotation;
-@synthesize disableAutorotation = _disableAutorotation;
+@synthesize disabledAutorotation = _disabledAutorotation;
 @synthesize superview = _superview;
 @synthesize target = _target;
 
@@ -267,7 +276,7 @@ NS_ASSUME_NONNULL_BEGIN
     self = [super init];
     if (self) {
         _currentOrientation = SJOrientation_Portrait;
-        _autorotationSupportedOrientation = SJAutoRotateSupportedOrientation_All;
+        _autorotationSupportedOrientations = SJOrientationMaskAll;
         dispatch_async(dispatch_get_main_queue(), ^{
             self->_window = [SJFullscreenModeWindow new];
             self->_window.fullscreenModeViewController.delegate = self;
@@ -396,7 +405,7 @@ NS_ASSUME_NONNULL_BEGIN
     if ( orientation == (NSInteger)_window.fullscreenModeViewController.currentOrientation )
         return NO;
     
-    if ( _disableAutorotation && !_forcedRotation )
+    if ( self.isDisabledAutorotation && !_forcedRotation )
         return NO;
     
     if ( self.isTransitioning && _window.fullscreenModeViewController.isRotated )
@@ -477,11 +486,11 @@ NS_ASSUME_NONNULL_BEGIN
 - (BOOL)_isSupported:(SJOrientation)orientation {
     switch ( orientation ) {
         case SJOrientation_Portrait:
-            return _autorotationSupportedOrientation & SJAutoRotateSupportedOrientation_Portrait;
+            return _autorotationSupportedOrientations & SJOrientationMaskPortrait;
         case SJOrientation_LandscapeLeft:
-            return _autorotationSupportedOrientation & SJAutoRotateSupportedOrientation_LandscapeLeft;
+            return _autorotationSupportedOrientations & SJOrientationMaskLandscapeLeft;
         case SJOrientation_LandscapeRight:
-            return _autorotationSupportedOrientation & SJAutoRotateSupportedOrientation_LandscapeRight;
+            return _autorotationSupportedOrientations & SJOrientationMaskLandscapeRight;
     }
     return NO;
 }

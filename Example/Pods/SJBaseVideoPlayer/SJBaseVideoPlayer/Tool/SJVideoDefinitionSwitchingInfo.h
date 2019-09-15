@@ -7,7 +7,7 @@
 
 #import <Foundation/Foundation.h>
 #import "SJVideoPlayerURLAsset.h"
-#import "SJMediaPlaybackControllerDefines.h"
+#import "SJVideoPlayerPlaybackControllerDefines.h"
 @class SJVideoDefinitionSwitchingInfoObserver;
 
 NS_ASSUME_NONNULL_BEGIN
@@ -20,7 +20,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 @property (nonatomic, weak, readonly, nullable) SJVideoPlayerURLAsset *switchingAsset;
 
-@property (nonatomic, readonly) SJMediaPlaybackSwitchDefinitionStatus status;
+@property (nonatomic, readonly) SJDefinitionSwitchStatus status;
 
 @end
 

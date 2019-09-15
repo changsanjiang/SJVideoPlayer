@@ -10,6 +10,7 @@
 #import <SJVideoPlayer/SJVideoPlayer.h>
 #import <Masonry/Masonry.h>
 #import "SJSourceURLs.h"
+#import <SJUIKit/NSAttributedString+SJMake.h>
 
 @interface SJRotationModeDemoViewController1 ()
 @property (weak, nonatomic) IBOutlet UIView *playerContainerView;
@@ -42,9 +43,9 @@
     }];
     
     __weak typeof(self) _self = self;
-    _player.viewDidRotateExeBlock = ^(__kindof SJBaseVideoPlayer * _Nonnull player, BOOL isFullScreen) {
+    _player.rotationObserver.rotationDidStartExeBlock = ^(id<SJRotationManagerProtocol>  _Nonnull mgr) {
         __strong typeof(_self) self = _self;
-        if ( !self ) return;
+        if ( !self ) return ;
 #ifdef DEBUG
         NSLog(@"%d - %s", (int)__LINE__, __func__);
 #endif
@@ -66,13 +67,19 @@
 }
 
 - (IBAction)disableAction:(UISwitch *)sender {
-    _player.disableAutoRotation = sender.isOn;
+    _player.rotationManager.disabledAutorotation = sender.isOn;
     
     if ( sender.isOn ) {
-        [_player showTitle:@"已禁止自动旋转. 此时旋转设备, 播放器将不会自动旋转" duration:3];
+        [_player.prompt show:[NSAttributedString sj_UIKitText:^(id<SJUIKitTextMakerProtocol>  _Nonnull make) {
+            make.append(@"已禁止自动旋转. 此时旋转设备, 播放器将不会自动旋转");
+            make.textColor(UIColor.whiteColor);
+        }] duration:3];
     }
     else {
-        [_player showTitle:@"已开启自动旋转. 此时旋转设备, 播放器将自动旋转" duration:3];
+        [_player.prompt show:[NSAttributedString sj_UIKitText:^(id<SJUIKitTextMakerProtocol>  _Nonnull make) {
+            make.append(@"已开启自动旋转. 此时旋转设备, 播放器将自动旋转");
+            make.textColor(UIColor.whiteColor);
+        }] duration:3];
     }
 }
 

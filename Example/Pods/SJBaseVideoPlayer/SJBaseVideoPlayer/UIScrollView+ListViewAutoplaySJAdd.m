@@ -185,7 +185,7 @@ static void sj_playNextAssetAfterEndScroll(__kindof __kindof UIScrollView *scrol
             // 中线, 距离中心最近的那个玩意儿
             CGFloat mid = 0;
             {
-                CGFloat offset = scrollView.contentOffset.y;
+                CGFloat offset = 0;
                 if (@available(iOS 11.0, *))
                     mid = floor((CGRectGetHeight(scrollView.bounds) - scrollView.adjustedContentInset.top) * 0.5 + offset);
                 else

@@ -9,7 +9,6 @@
 #import <UIKit/UIKit.h>
 #import <SJBaseVideoPlayer/SJPlayerGestureControlDefines.h>
 typedef NSInteger SJEdgeControlButtonItemTag;
-@protocol SJEdgeControlButtonItemDelegate;
 @class SJBaseVideoPlayer;
 
 typedef struct SJEdgeInsets {
@@ -54,22 +53,11 @@ UIKIT_EXTERN NSNotificationName const SJEdgeControlButtonItemPerformedActionNoti
 @property (nonatomic, nullable) SEL action;
 - (instancetype)init NS_UNAVAILABLE;
 + (instancetype)new  NS_UNAVAILABLE;
-@property (nonatomic) BOOL fill; // 当想要填充剩余空间时, 可以设置为`Yes`. 
-@property (nonatomic, weak, nullable) id<SJEdgeControlButtonItemDelegate> delegate;
+@property (nonatomic) BOOL fill; // 当想要填充剩余空间时, 可以设置为`Yes`.
 
 - (void)addTarget:(id)target action:(nonnull SEL)action;
 - (void)performAction;
 @end
-
-@protocol SJEdgeControlButtonItemDelegate <NSObject>
-@optional
-/// 每次控制层显示, 这个方法都会被调用
-- (void)updatePropertiesIfNeeded:(SJEdgeControlButtonItem *)item videoPlayer:(__kindof SJBaseVideoPlayer *)player;
-/// 手势是否可以触发
-- (BOOL)edgeControlButtonItem:(SJEdgeControlButtonItem *)item gestureRecognizerShouldTrigger:(SJPlayerGestureType)type atPoint:(CGPoint)point;
-@end
-
-
 
 typedef enum : NSUInteger {
     SJButtonItemPlaceholderType_Unknown,

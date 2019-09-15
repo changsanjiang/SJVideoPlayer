@@ -7,18 +7,13 @@
 //
 
 #import <UIKit/UIKit.h>
+#import "SJVideoPlayerPresentViewDefines.h"
 #import "SJPlayerGestureControlDefines.h"
-
 @protocol SJVideoPlayerPresentViewDelegate;
 
 NS_ASSUME_NONNULL_BEGIN
-@interface SJVideoPlayerPresentView : UIView<SJPlayerGestureControl>
+@interface SJVideoPlayerPresentView : UIView<SJVideoPlayerPresentView, SJPlayerGestureControl>
 @property (nonatomic, weak, nullable) id<SJVideoPlayerPresentViewDelegate> delegate;
-
-@property (nonatomic, strong, readonly) UIImageView *placeholderImageView;
-@property (nonatomic, readonly, getter=isPlaceholderImageViewHidden) BOOL placeholderImageViewHidden;
-- (void)showPlaceholderAnimated:(BOOL)animated;
-- (void)hiddenPlaceholderAnimated:(BOOL)animated delay:(NSTimeInterval)secs;
 @end
 
 @protocol SJVideoPlayerPresentViewDelegate <NSObject>

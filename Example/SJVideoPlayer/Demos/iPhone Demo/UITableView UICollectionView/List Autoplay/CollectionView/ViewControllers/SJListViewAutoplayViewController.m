@@ -11,7 +11,6 @@
 #import <SJBaseVideoPlayer/SJBaseVideoPlayer.h>
 #import <SJBaseVideoPlayer/UIScrollView+ListViewAutoplaySJAdd.h>
 #import <SJBaseVideoPlayer/SJVideoPlayerURLAssetPrefetcher.h>
-#import <SJBaseVideoPlayer/SJBaseVideoPlayer+PlayStatus.h>
 #import <SJUIKit/UIScrollView+SJRefreshAdd.h>
 #import <SDWebImage/UIImageView+WebCache.h>
 #import "SJListViewAutoplayMediaViewModel.h"
@@ -35,7 +34,7 @@ NS_ASSUME_NONNULL_BEGIN
 }
 
 - (void)collectionView:(UICollectionView *)collectionView didSelectItemAtIndexPath:(NSIndexPath *)indexPath {
-    [self.player playStatus_isPlaying] ? [self.player pause] : [self.player play];
+    self.player.timeControlStatus == SJPlaybackTimeControlStatusPaused ? [self.player play] : [self.player pause];
 }
 
 - (void)sj_playerNeedPlayNewAssetAtIndexPath:(NSIndexPath *)indexPath {
@@ -47,14 +46,19 @@ NS_ASSUME_NONNULL_BEGIN
         if ( !_player ) {
             _player = [SJBaseVideoPlayer player];
             _player.delayInSecondsForHiddenPlaceholderImageView = 0.3;
-            _player.disableAutoRotation = YES;
-            _player.disabledGestures = SJPlayerDisabledGestures_All;
-            _player.disabledControlLayerAppearManager = YES;
+            _player.rotationManager.disabledAutorotation = YES;
+            _player.gestureControl.supportedGestureTypes = SJPlayerGestureTypeMask_None;
+            _player.controlLayerAppearManager.disabled = YES;
             _player.videoGravity = AVLayerVideoGravityResizeAspectFill;
             _player.view.backgroundColor = UIColor.clearColor;
             _player.view.subviews.firstObject.backgroundColor = UIColor.clearColor;
             __weak typeof(self) _self = self;
-            _player.playStatusDidChangeExeBlock = ^(__kindof SJBaseVideoPlayer * _Nonnull videoPlayer) {
+            _player.playbackObserver.timeControlStatusDidChangeExeBlock = ^(__kindof SJBaseVideoPlayer * _Nonnull player) {
+                __strong typeof(_self) self = _self;
+                if ( !self ) return;
+                [self _refreshCellContent];
+            };
+            _player.playbackObserver.assetStatusDidChangeExeBlock = ^(__kindof SJBaseVideoPlayer * _Nonnull player) {
                 __strong typeof(_self) self = _self;
                 if ( !self ) return;
                 [self _refreshCellContent];
@@ -82,16 +86,29 @@ NS_ASSUME_NONNULL_BEGIN
             [self.prefetcher prefetchAsset:asset];
         }
         
-        [self.player.placeholderImageView sd_setImageWithURL:[NSURL URLWithString:_viewModels[curr].cover]];
+        [self.player.presentView.placeholderImageView sd_setImageWithURL:[NSURL URLWithString:_viewModels[curr].cover]];
         self.viewModels[self.collectionView.sj_currentPlayingIndexPath.item].showPausedImageView = NO;
         self.player.URLAsset = asset;
+        [self.player play];
     }
 }
 
 - (void)_refreshCellContent {
     if ( self.collectionView.sj_currentPlayingIndexPath.item < self.viewModels.count ) {
         SJListViewAutoplayMediaViewModel *vm = self.viewModels[self.collectionView.sj_currentPlayingIndexPath.item];
-        vm.showPausedImageView = [self.player playStatus_isPaused_ReasonPause] || [self.player playStatus_isInactivity];
+        switch ( self.player.assetStatus ) {
+            case SJAssetStatusUnknown:
+            case SJAssetStatusPreparing:
+                vm.showPausedImageView = NO;
+                break;
+            case SJAssetStatusReadyToPlay: {
+                vm.showPausedImageView = self.player.timeControlStatus == SJPlaybackTimeControlStatusPaused;
+            }
+                break;
+            case SJAssetStatusFailed:
+                // .. failed
+                break;
+        }
         [(SJListViewAutoplayCollectionViewCell *)[self.collectionView cellForItemAtIndexPath:self.collectionView.sj_currentPlayingIndexPath] refreshData];
     }
 }

@@ -38,7 +38,7 @@ static NSNotificationName const _SJVideoDefinitionSwitchingStatusDidChangeNotifi
 
 @property (nonatomic, weak, nullable) SJVideoPlayerURLAsset *switchingAsset;
 
-@property (nonatomic) SJMediaPlaybackSwitchDefinitionStatus status;
+@property (nonatomic) SJDefinitionSwitchStatus status;
 @end
 
 @implementation SJVideoDefinitionSwitchingInfo
@@ -46,7 +46,7 @@ static NSNotificationName const _SJVideoDefinitionSwitchingStatusDidChangeNotifi
     return [[SJVideoDefinitionSwitchingInfoObserver alloc] initWithInfo:self];
 }
 
-- (void)setStatus:(SJMediaPlaybackSwitchDefinitionStatus)status {
+- (void)setStatus:(SJDefinitionSwitchStatus)status {
     if ( status != _status ) {
         _status = status;
         [NSNotificationCenter.defaultCenter postNotificationName:_SJVideoDefinitionSwitchingStatusDidChangeNotification object:self];

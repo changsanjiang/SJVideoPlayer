@@ -19,7 +19,7 @@ extern SJEdgeControlButtonItemTag const SJNotReachableControlLayerTopItem_Back;
 @property (nonatomic, weak, nullable) id<SJNotReachableControlLayerDelegate> delegate;
 @property (nonatomic, strong, readonly) UILabel *promptLabel;
 @property (nonatomic, strong, readonly) SJButtonContainerView *reloadView;
-@property (nonatomic) BOOL hideBackButtonWhenOrientationIsPortrait;
+@property (nonatomic) BOOL hiddenBackButtonWhenOrientationIsPortrait;
 @end
 
 

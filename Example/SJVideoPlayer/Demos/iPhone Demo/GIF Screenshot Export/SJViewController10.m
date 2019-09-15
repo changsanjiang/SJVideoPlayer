@@ -24,8 +24,14 @@ NS_ASSUME_NONNULL_BEGIN
     [super viewDidLoad];
     [self _setupViews];
     
-    _player.enableFilmEditing = YES;
+    _player.enabledFilmEditing = YES;
     _player.filmEditingConfig.saveResultToAlbumWhenExportSuccess = YES;
+    
+    
+    [_player.prompt show:[NSAttributedString sj_UIKitText:^(id<SJUIKitTextMakerProtocol>  _Nonnull make) {
+        make.append(@"请旋转至全屏后, 点击右侧剪辑按钮");
+        make.textColor(UIColor.whiteColor);
+    }] duration:3];
 }
 
 - (void)_setupViews {
@@ -39,12 +45,15 @@ NS_ASSUME_NONNULL_BEGIN
         make.edges.offset(0);
     }];
     
-    _player.controlLayerAppearStateDidChangeExeBlock = ^(SJVideoPlayer * _Nonnull player, BOOL isAppeared) {
-        if ( isAppeared ) {
-            player.popPromptController.bottomMargin = player.defaultEdgeControlLayer.bottomContainerView.bounds.size.height;
+    __weak typeof(self) _self = self;
+    _player.controlLayerAppearObserver.appearStateDidChangeExeBlock = ^(id<SJControlLayerAppearManager>  _Nonnull mgr) {
+        __strong typeof(_self) self = _self;
+        if ( !self ) return ;
+        if ( mgr.isAppeared ) {
+            self.player.popPromptController.bottomMargin = self.player.defaultEdgeControlLayer.bottomContainerView.bounds.size.height;
         }
         else {
-            player.popPromptController.bottomMargin = 16;
+            self.player.popPromptController.bottomMargin = 16;
         }
     };
 }

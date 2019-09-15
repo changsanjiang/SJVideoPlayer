@@ -231,25 +231,28 @@ static NSNotificationName const SJDeviceBrightnessDidChangeNotification = @"SJDe
     return _volumeViewModel;
 }
  
-static UIImage *muteImage = nil;
-static UIImage *volumeImage = nil;
+static UIImage *_muteImage = nil;
+static UIImage *_volumeImage = nil;
 - (void)_refreshDataForVolumeView {
     float volume = self.volume;
     
     self.volumeViewModel.progress = volume;
-    self.volumeViewModel.image = (self.volume > 0) ? volumeImage : muteImage;
+    self.volumeViewModel.image = (self.volume > 0) ? _volumeImage : _muteImage;
     [self.volumeView refreshData];
     
-    if ( muteImage == nil ) {
+    static dispatch_once_t onceToken;
+    dispatch_once(&onceToken, ^{
         dispatch_async(dispatch_get_global_queue(0, 0), ^{
-            muteImage = [SJDeviceVolumeAndBrightnessManagerResourceLoader imageNamed:@"mute"];
-            volumeImage = [SJDeviceVolumeAndBrightnessManagerResourceLoader imageNamed:@"volume"];
+            UIImage *muteImage = [SJDeviceVolumeAndBrightnessManagerResourceLoader imageNamed:@"mute"];
+            UIImage *volumeImage = [SJDeviceVolumeAndBrightnessManagerResourceLoader imageNamed:@"volume"];
             dispatch_async(dispatch_get_main_queue(), ^{
-                self.volumeViewModel.image = (self.volume > 0) ? volumeImage : muteImage;
+                _muteImage = muteImage;
+                _volumeImage = volumeImage;
+                self.volumeViewModel.image = (self.volume > 0) ? _volumeImage : _muteImage;
                 [self.volumeView refreshData];
             });
         });
-    }
+    });
 }
 
 - (void)_showVolumeViewIfNeeded {

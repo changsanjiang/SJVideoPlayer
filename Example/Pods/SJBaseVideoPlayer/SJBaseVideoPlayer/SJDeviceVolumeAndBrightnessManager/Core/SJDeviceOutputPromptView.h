@@ -16,14 +16,14 @@ NS_ASSUME_NONNULL_BEGIN
 @end
 
 @protocol SJDeviceOutputPromptViewDataSource <NSObject>
-@property (nonatomic, copy, readonly, nullable) UIImage *image;
+@property (nonatomic, strong, readonly, nullable) UIImage *image;
 @property (nonatomic, readonly) float progress;
 @property (nonatomic, strong, readonly, nullable) UIColor *traceColor;
 @property (nonatomic, strong, readonly, nullable) UIColor *trackColor;
 @end
 
 @interface SJDeviceOutputPromptViewModel : NSObject<SJDeviceOutputPromptViewDataSource>
-@property (nonatomic, copy, nullable) UIImage *image;
+@property (nonatomic, strong, nullable) UIImage *image;
 @property (nonatomic) float progress;
 @property (nonatomic, strong, nullable) UIColor *traceColor;
 @property (nonatomic, strong, nullable) UIColor *trackColor;

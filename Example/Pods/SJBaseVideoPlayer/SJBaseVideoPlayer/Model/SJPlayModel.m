@@ -41,6 +41,10 @@ NS_ASSUME_NONNULL_BEGIN
  player view 在`UICollectionViewCell`中, 但嵌套在`UITableViewCell`里
  */
 @implementation SJPlayModel
++ (instancetype)UIViewPlayModel {
+    return SJPlayModel.alloc.init;
+}
+
 + (instancetype)UITableViewCellPlayModelWithPlayerSuperviewTag:(NSInteger)playerSuperviewTag
                                                    atIndexPath:(__strong NSIndexPath *)indexPath
                                                      tableView:(__weak UITableView *)tableView {

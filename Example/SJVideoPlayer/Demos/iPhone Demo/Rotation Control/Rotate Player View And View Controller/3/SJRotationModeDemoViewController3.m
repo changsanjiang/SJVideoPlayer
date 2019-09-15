@@ -53,8 +53,8 @@
 
 - (void)_setupViews {
     _player = [SJVideoPlayer player];
-    _player.disableAutoRotation = YES;
-    _player.supportedOrientation = SJAutoRotateSupportedOrientation_LandscapeLeft;
+    _player.rotationManager.disabledAutorotation = YES;
+    _player.rotationManager.autorotationSupportedOrientations = SJOrientationMaskLandscapeLeft;
     
     [_player.defaultEdgeControlLayer.bottomAdapter removeItemForTag:SJEdgeControlLayerBottomItem_FullBtn];
     [_player.defaultEdgeControlLayer.bottomAdapter removeItemForTag:SJEdgeControlLayerBottomItem_Separator];
@@ -82,7 +82,7 @@
 }
 
 - (BOOL)prefersStatusBarHidden {
-    return !self.player.controlLayerIsAppeared;
+    return !self.player.isControlLayerAppeared;
 }
 
 - (UIStatusBarStyle)preferredStatusBarStyle {

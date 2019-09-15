@@ -99,15 +99,6 @@ NS_ASSUME_NONNULL_BEGIN
 
 // SJFloatSmallViewControlLayer
 @property (nonatomic, strong) UIImage *floatSmallViewCloseImage;
-
-// - deprecated properties -
-@property (nonatomic, strong, readonly) NSString *playFailedBtnTitle __deprecated;
-@property (nonatomic, strong, nullable) UIImage *playFailedBtnImage __deprecated;
-@property (nonatomic, strong) UIFont *playFailedBtnFont __deprecated;
-@property (nonatomic, strong) UIColor *playFailedBtnTitleColor __deprecated;
-@property (nonatomic, strong, nullable) UIImage *previewBtnImage __deprecated;
-@property (nonatomic, strong) UIFont *previewBtnFont __deprecated;
-@property (nonatomic, strong, readonly) NSString *previewBtnTitle __deprecated;
 @end
 
 

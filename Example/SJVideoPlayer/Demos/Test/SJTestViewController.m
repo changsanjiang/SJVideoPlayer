@@ -69,13 +69,11 @@ NS_ASSUME_NONNULL_BEGIN
         make.edges.offset(0);
     }];
     
-    _player.controlLayerAppearStateDidChangeExeBlock = ^(SJVideoPlayer * _Nonnull player, BOOL isAppeared) {
-        if ( isAppeared ) {
-            player.popPromptController.bottomMargin = player.defaultEdgeControlLayer.bottomContainerView.bounds.size.height;
-        }
-        else {
-            player.popPromptController.bottomMargin = 16;
-        }
+    __weak typeof(self) _self = self;
+    _player.controlLayerAppearObserver.appearStateDidChangeExeBlock = ^(id<SJControlLayerAppearManager>  _Nonnull mgr) {
+        __strong typeof(_self) self = _self;
+        if ( !self ) return ;
+        self.player.popPromptController.bottomMargin = mgr.isAppeared ? self.player.defaultEdgeControlLayer.bottomContainerView.bounds.size.height : 16;
     };
 }
 

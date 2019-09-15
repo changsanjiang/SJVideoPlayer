@@ -14,10 +14,13 @@
 #endif
 #if __has_include(<SJBaseVideoPlayer/SJBaseVideoPlayer.h>)
 #import <SJBaseVideoPlayer/SJBaseVideoPlayer.h>
-#import <SJBaseVideoPlayer/SJBaseVideoPlayer+PlayStatus.h>
 #else
-#import "SJBaseVideoPlayer.h"
-#import "SJBaseVideoPlayer+PlayStatus.h"
+#import "SJBaseVideoPlayer.h"  
+#endif
+#if __has_include(<SJUIKit/SJAttributesFactory.h>)
+#import <SJUIKit/SJAttributesFactory.h>
+#else
+#import "SJAttributesFactory.h"
 #endif
 
 #import "UIView+SJAnimationAdded.h"
@@ -78,10 +81,11 @@ static SJControlLayerIdentifier SJFilmEditingGenerateResultControlLayerIdentifie
 }
 
 - (void)clickedScreenshotItem {
-    if ( [self.player playStatus_isUnknown] ||
-         [self.player playStatus_isPrepare] ||
-         [self.player playStatus_isInactivity_ReasonPlayFailed] ) {
-        [self.player showTitle:@"开启失败"];
+    if ( _player.assetStatus != SJAssetStatusReadyToPlay ) {
+        [self.player.prompt show:[NSAttributedString sj_UIKitText:^(id<SJUIKitTextMakerProtocol>  _Nonnull make) {
+            make.append(@"开启失败");
+            make.textColor(UIColor.whiteColor);
+        }]];
         return;
     }
     

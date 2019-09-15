@@ -417,12 +417,12 @@ static UIImage *getImage(NSData *data, CGFloat scale) {
     
     NSUInteger frames[count];
     double oneFrameTime = 1 / 50.0; // 50 fps
-    NSTimeInterval totalTime = 0;
+    NSTimeInterval duration = 0;
     NSUInteger totalFrame = 0;
     NSUInteger gcdFrame = 0;
     for (size_t i = 0; i < count; i++) {
         NSTimeInterval delay = _yy_CGImageSourceGetGIFFrameDelayAtIndex(source, i);
-        totalTime += delay;
+        duration += delay;
         NSInteger frame = lrint(delay / oneFrameTime);
         if (frame < 1) frame = 1;
         frames[i] = frame;
@@ -496,7 +496,7 @@ static UIImage *getImage(NSData *data, CGFloat scale) {
         }
     }
     CFRelease(source);
-    UIImage *image = [UIImage animatedImageWithImages:array duration:totalTime];
+    UIImage *image = [UIImage animatedImageWithImages:array duration:duration];
     return image;
 }
 

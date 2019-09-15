@@ -11,13 +11,14 @@
 
 NS_ASSUME_NONNULL_BEGIN
 @implementation SJVideoPlayerURLAsset (SJAVMediaPlaybackAdd)
-- (instancetype)initWithAVAsset:(__kindof AVAsset *)asset {
+- (nullable instancetype)initWithAVAsset:(__kindof AVAsset *)asset {
     return [self initWithAVAsset:asset playModel:[SJPlayModel new]];
 }
-- (instancetype)initWithAVAsset:(__kindof AVAsset *)asset playModel:(__kindof SJPlayModel *)playModel {
+- (nullable instancetype)initWithAVAsset:(__kindof AVAsset *)asset playModel:(__kindof SJPlayModel *)playModel {
     return [self initWithAVAsset:asset specifyStartTime:0 playModel:playModel];
 }
-- (instancetype)initWithAVAsset:(__kindof AVAsset *)asset specifyStartTime:(NSTimeInterval)specifyStartTime playModel:(__kindof SJPlayModel *)playModel {
+- (nullable instancetype)initWithAVAsset:(__kindof AVAsset *)asset specifyStartTime:(NSTimeInterval)specifyStartTime playModel:(__kindof SJPlayModel *)playModel {
+    if ( asset == nil ) return nil;
     self = [super init];
     if ( !self ) return nil;
     self.specifyStartTime = specifyStartTime;

@@ -38,7 +38,7 @@ NS_ASSUME_NONNULL_BEGIN
                 [_m removeObjectAtIndex:0];
             }
             // load asset
-            [SJAVMediaPlayerLoader loadPlayerForMedia:asset completionHandler:nil];
+            [SJAVMediaPlayerLoader loadPlayerForMedia:asset];
             [_m addObject:asset];
         }
     }

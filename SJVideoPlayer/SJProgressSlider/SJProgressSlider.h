@@ -179,10 +179,8 @@ NS_ASSUME_NONNULL_BEGIN
  */
 - (void)sliderWillBeginDragging:(SJProgressSlider *)slider;
 
-/*!
- *  正在滑动
- */
-- (void)sliderDidDrag:(SJProgressSlider *)slider;
+
+- (void)slider:(SJProgressSlider *)slider valueDidChange:(CGFloat)value;
 
 /*!
  *  滑动完成
@@ -190,6 +188,7 @@ NS_ASSUME_NONNULL_BEGIN
 - (void)sliderDidEndDragging:(SJProgressSlider *)slider;
 
 
-- (void)sliderValueDidChange:(SJProgressSlider *)slider;
+
+- (void)sliderDidDrag:(SJProgressSlider *)slider __deprecated_msg("use `slider:valueDidChange:`");
 @end
 NS_ASSUME_NONNULL_END

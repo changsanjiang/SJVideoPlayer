@@ -18,7 +18,9 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic, readonly, getter=isTransitioning) BOOL transitioning;
 @property (nonatomic) NSTimeInterval duration;
 
-/// Fit On Screen
+///
+/// 是否已充满屏幕
+///
 @property (nonatomic, getter=isFitOnScreen) BOOL fitOnScreen;
 - (void)setFitOnScreen:(BOOL)fitOnScreen animated:(BOOL)animated;
 - (void)setFitOnScreen:(BOOL)fitOnScreen animated:(BOOL)animated completionHandler:(nullable void(^)(id<SJFitOnScreenManager> mgr))completionHandler;

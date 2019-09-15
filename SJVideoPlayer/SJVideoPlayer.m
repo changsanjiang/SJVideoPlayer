@@ -12,15 +12,20 @@
 #import "UIView+SJAnimationAdded.h"
 #import <objc/message.h>
 
+#if __has_include(<SJBaseVideoPlayer/SJBaseVideoPlayer.h>)
+#import <SJBaseVideoPlayer/SJBaseVideoPlayer.h>
+#import <SJBaseVideoPlayer/SJBaseVideoPlayerConst.h>
+#import <SJBaseVideoPlayer/SJReachability.h>
+#else
+#import "SJReachability.h"
+#import "SJBaseVideoPlayer.h"
+#import "SJBaseVideoPlayerConst.h"
+#endif
+
 #if __has_include(<SJUIKit/NSObject+SJObserverHelper.h>)
 #import <SJUIKit/NSObject+SJObserverHelper.h>
 #else
 #import "NSObject+SJObserverHelper.h"
-#endif
-#if __has_include(<SJBaseVideoPlayer/SJBaseVideoPlayer.h>)
-#import <SJBaseVideoPlayer/SJBaseVideoPlayer+PlayStatus.h>
-#else
-#import "SJBaseVideoPlayer+PlayStatus.h"
 #endif
 
 #if __has_include(<SJUIKit/SJAttributesFactory.h>)
@@ -37,7 +42,6 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic, strong, readonly) SJVideoDefinitionSwitchingInfoObserver *sj_switchingInfoObserver;
 @property (nonatomic, strong, readonly) id<SJControlLayerAppearManagerObserver> sj_appearManagerObserver;
 @property (nonatomic, strong, readonly) id<SJControlLayerSwitcherObsrever> sj_switcherObserver;
-@property (nonatomic, strong, readonly) id<SJPlayStatusObserver> sj_playStatusObserver;
 
 @property (nonatomic, strong, nullable) SJEdgeControlButtonItem *moreButtonItem;
 @property (nonatomic, strong, nullable) SJEdgeControlButtonItem *filmEditingButtonItem;
@@ -52,7 +56,7 @@ NS_ASSUME_NONNULL_BEGIN
 #endif
 
 + (NSString *)version {
-    return @"v2.6.5";
+    return @"v3.0.0";
 }
 
 + (instancetype)player {
@@ -63,9 +67,9 @@ NS_ASSUME_NONNULL_BEGIN
     self = [self _init];
     if ( !self ) return nil;
     [self.switcher switchControlLayerForIdentitfier:SJControlLayer_Edge]; // 切换到添加的控制层
-    self.showNetworkSpeedToLoadingView = YES; // 显示加载网速
-    self.showMoreItemForTopControlLayer = YES; // 显示更多按钮
-    self.defaultEdgeControlLayer.hideBottomProgressSlider = NO; // 显示底部进度条
+    self.showMoreItemToTopControlLayer = YES; // 显示更多按钮
+    self.defaultEdgeControlLayer.hiddenBottomProgressIndicator = NO; // 显示底部进度条
+    self.defaultEdgeControlLayer.showNetworkSpeedToLoadingView = YES; // 显示网速
     return self;
 }
 
@@ -73,7 +77,7 @@ NS_ASSUME_NONNULL_BEGIN
 + (instancetype)lightweightPlayer {
     SJVideoPlayer *videoPlayer = [[SJVideoPlayer alloc] _init];
     SJEdgeControlLayer *controlLayer = videoPlayer.defaultEdgeControlLayer;
-    controlLayer.hideBottomProgressSlider = NO;
+    controlLayer.hiddenBottomProgressIndicator = NO;
     controlLayer.topContainerView.sjv_disappearDirection =
     controlLayer.leftContainerView.sjv_disappearDirection =
     controlLayer.bottomContainerView.sjv_disappearDirection =
@@ -90,7 +94,7 @@ NS_ASSUME_NONNULL_BEGIN
     dispatch_async(dispatch_get_global_queue(0, 0), ^{
         [self _initializeSwitcherObserver];
         [self _initializeSettingsRecorder];
-        [self _initializePlayStatusObserver];
+        [self _initializeAssetStatusObserver];
         [self _initializeAppearManagerObserver];
     });
     [self _updateCommonProperties];
@@ -129,34 +133,39 @@ NS_ASSUME_NONNULL_BEGIN
     _sj_switcherObserver.playerWillBeginSwitchControlLayer = ^(id<SJControlLayerSwitcher>  _Nonnull switcher, id<SJControlLayer>  _Nonnull controlLayer) {
         __strong typeof(_self) self = _self;
         if ( !self ) return;
-        if ( [controlLayer respondsToSelector:@selector(setHideBackButtonWhenOrientationIsPortrait:)] ) {
-            [(SJEdgeControlLayer *)controlLayer setHideBackButtonWhenOrientationIsPortrait:self.hideBackButtonWhenOrientationIsPortrait];
+        if ( [controlLayer respondsToSelector:@selector(setHiddenBackButtonWhenOrientationIsPortrait:)] ) {
+            [(SJEdgeControlLayer *)controlLayer setHiddenBackButtonWhenOrientationIsPortrait:self.defaultEdgeControlLayer.isHiddenBackButtonWhenOrientationIsPortrait];
         }
     };
 }
 
-- (void)_initializePlayStatusObserver {
-    __weak typeof(self) _self = self;
-    _sj_playStatusObserver = [self getPlayStatusObserver];
-    _sj_playStatusObserver.playStatusDidChangeExeBlock = ^(SJBaseVideoPlayer * _Nonnull player) {
-        __strong typeof(_self) self = _self;
-        if ( !self ) return ;
-        // 加载失败
-        if ( [player playStatus_isInactivity_ReasonPlayFailed] ) {
+- (void)_initializeAssetStatusObserver {
+    [self sj_observeWithNotification:SJVideoPlayerAssetStatusDidChangeNotification target:self usingBlock:^(SJVideoPlayer *self, NSNotification * _Nonnull note) {
+        // 资源出错时
+        // - 发生错误时, 切换到加载失败控制层
+        //
+        if ( self.assetStatus == SJAssetStatusFailed ) {
             [self.switcher switchControlLayerForIdentitfier:SJControlLayer_LoadFailed];
         }
-        // 无网, 无缓冲
-        else if ( [player playStatus_isInactivity_ReasonNotReachableAndPlaybackStalled] ) {
-            [self.switcher switchControlLayerForIdentitfier:SJControlLayer_NotReachableAndPlaybackStalled];
+    }];
+    
+    [self sj_observeWithNotification:SJVideoPlayerPlaybackTimeControlStatusDidChangeNotification target:self usingBlock:^(SJVideoPlayer *self, NSNotification * _Nonnull note) {
+        // 当处于缓冲状态时
+        // - 当前如果没有网络, 则切换到无网空制层
+        //
+        if ( self.reasonForWaitingToPlay == SJWaitingToMinimizeStallsReason ) {
+            if ( SJReachability.shared.networkStatus == SJNetworkStatus_NotReachable ) {
+                // 切换
+                [self.switcher switchControlLayerForIdentitfier:SJControlLayer_NotReachableAndPlaybackStalled];
+            }
         }
-        else if ( self.switcher.currentIdentifier == SJControlLayer_NotReachableAndPlaybackStalled ||
-                  self.switcher.currentIdentifier == SJControlLayer_LoadFailed ) {
-            if ( ![player playStatus_isInactivity_ReasonPlayFailed] &&
-                 ![player playStatus_isInactivity_ReasonNotReachableAndPlaybackStalled] ) {
+        else {
+            if ( self.switcher.currentIdentifier == SJControlLayer_LoadFailed ||
+                 self.switcher.currentIdentifier == SJControlLayer_NotReachableAndPlaybackStalled ) {
                 [self.switcher switchControlLayerForIdentitfier:SJControlLayer_Edge];
             }
         }
-    };
+    }];
 }
 
 - (void)_initializeSettingsRecorder {
@@ -218,13 +227,15 @@ NS_ASSUME_NONNULL_BEGIN
                 make.append(asset.definition_lastName);
                 make.textColor(UIColor.whiteColor);
             }];
+            
+            [self.defaultEdgeControlLayer.rightAdapter reload];
         }
     };
 }
 
 - (void)_updateCommonProperties {
-    if ( !self.placeholderImageView.image )
-        self.placeholderImageView.image = SJVideoPlayerSettings.commonSettings.placeholder;
+    if ( !self.presentView.placeholderImageView.image )
+        self.presentView.placeholderImageView.image = SJVideoPlayerSettings.commonSettings.placeholder;
 }
 
 // - default control layers -
@@ -305,23 +316,23 @@ NS_ASSUME_NONNULL_BEGIN
             __strong typeof(_self) self = _self;
             if ( !self ) return ;
             switch ( info.status ) {
-                case SJMediaPlaybackSwitchDefinitionStatusUnknown:
+                case SJDefinitionSwitchStatusUnknown:
                     break;
-                case SJMediaPlaybackSwitchDefinitionStatusSwitching: {
+                case SJDefinitionSwitchStatusSwitching: {
                     [self.popPromptController show:[NSAttributedString sj_UIKitText:^(id<SJUIKitTextMakerProtocol>  _Nonnull make) {
                         make.append(@"切换中, 请稍等");
                         make.textColor(UIColor.whiteColor);
                     }]];
                 }
                     break;
-                case SJMediaPlaybackSwitchDefinitionStatusFinished: {
+                case SJDefinitionSwitchStatusFinished: {
                     [self.popPromptController show:[NSAttributedString sj_UIKitText:^(id<SJUIKitTextMakerProtocol>  _Nonnull make) {
                         make.append([NSString stringWithFormat:@"已成功切换至 %@", self.URLAsset.definition_lastName]);
                         make.textColor(UIColor.whiteColor);
                     }]];
                 }
                     break;
-                case SJMediaPlaybackSwitchDefinitionStatusFailed: {
+                case SJDefinitionSwitchStatusFailed: {
                     [self.popPromptController show:[NSAttributedString sj_UIKitText:^(id<SJUIKitTextMakerProtocol>  _Nonnull make) {
                         make.append(@"切换失败");
                         make.textColor(UIColor.whiteColor);
@@ -351,11 +362,7 @@ NS_ASSUME_NONNULL_BEGIN
 }
 
 - (void)_handleClickedBackButtonEvent {
-    if ( self.needPresentModalViewControlller &&
-         self.modalViewControllerManager.isPresentedModalViewControlller ) {
-        [self dismissModalViewControlller];
-    }
-    else if ( self.isFullScreen &&
+    if ( self.isFullScreen &&
         ![self _whetherToSupportOnlyOneOrientation] ) {
         [self rotate];
     }
@@ -363,15 +370,34 @@ NS_ASSUME_NONNULL_BEGIN
         self.fitOnScreen = NO;
     }
     else {
-        self.clickedBackEvent(self);
+        UIViewController *vc = _atViewController(self.view);
+        [vc.view endEditing:YES];
+        if ( vc.presentingViewController ) {
+            [vc dismissViewControllerAnimated:YES completion:nil];
+        }
+        else {
+            [vc.navigationController popViewControllerAnimated:YES];
+        }
     }
+}
+
+static inline __kindof UIViewController *_Nullable
+_atViewController(UIView *view) {
+    UIResponder *_Nullable responder = view;
+    if ( responder != nil ) {
+        while ( ![responder isKindOfClass:[UIViewController class]] ) {
+            responder = responder.nextResponder;
+            if ( [responder isMemberOfClass:[UIResponder class]] || !responder ) return nil;
+        }
+    }
+    return (__kindof UIViewController *)responder;
 }
 
 // 播放器是否只支持一个方向
 - (BOOL)_whetherToSupportOnlyOneOrientation {
-    if ( self.supportedOrientation == SJAutoRotateSupportedOrientation_Portrait ) return YES;
-    if ( self.supportedOrientation == SJAutoRotateSupportedOrientation_LandscapeLeft ) return YES;
-    if ( self.supportedOrientation == SJAutoRotateSupportedOrientation_LandscapeRight ) return YES;
+    if ( self.rotationManager.autorotationSupportedOrientations == SJOrientationMaskPortrait ) return YES;
+    if ( self.rotationManager.autorotationSupportedOrientations == SJOrientationMaskLandscapeLeft ) return YES;
+    if ( self.rotationManager.autorotationSupportedOrientations == SJOrientationMaskLandscapeRight ) return YES;
     return NO;
 }
 
@@ -422,46 +448,12 @@ NS_ASSUME_NONNULL_BEGIN
         [commonSettings reset];
     });
 }
-
-- (void)setClickedBackEvent:(nullable void (^)(SJVideoPlayer * _Nonnull))clickedBackEvent {
-    objc_setAssociatedObject(self, @selector(clickedBackEvent), clickedBackEvent, OBJC_ASSOCIATION_COPY_NONATOMIC);
-}
-
-- (void (^)(SJVideoPlayer * _Nonnull))clickedBackEvent {
-    id _Nullable value = objc_getAssociatedObject(self, _cmd);
-    if ( value != nil ) {
-        return value;
-    }
-    
-    return ^ (SJVideoPlayer *player) {
-        UIViewController *vc = _atViewController(player.view);
-        [vc.view endEditing:YES];
-        if ( vc.presentingViewController ) {
-            [vc dismissViewControllerAnimated:YES completion:nil];
-        }
-        else {
-            [vc.navigationController popViewControllerAnimated:YES];
-        }
-    };
-}
-
-static inline __kindof UIViewController *_Nullable
-_atViewController(UIView *view) {
-    UIResponder *_Nullable responder = view;
-    if ( responder != nil ) {
-        while ( ![responder isKindOfClass:[UIViewController class]] ) {
-            responder = responder.nextResponder;
-            if ( [responder isMemberOfClass:[UIResponder class]] || !responder ) return nil;
-        }
-    }
-    return (__kindof UIViewController *)responder;
-}
 @end
 
 
 
 #pragma mark -
-@implementation SJVideoPlayer (SettingSwitchVideoDefinitionControlLayer)
+@implementation SJVideoPlayer (SJExtendedSwitchVideoDefinitionControlLayer)
 
 - (void)setDefinitionURLAssets:(nullable NSArray<SJVideoPlayerURLAsset *> *)definitionURLAssets {
     objc_setAssociatedObject(self, @selector(definitionURLAssets), definitionURLAssets, OBJC_ASSOCIATION_RETAIN_NONATOMIC);
@@ -490,56 +482,13 @@ _atViewController(UIView *view) {
 
 
 #pragma mark -
-@implementation SJVideoPlayer (SettingDefaultControlLayer)
-
-- (void)setShowNetworkSpeedToLoadingView:(BOOL)showNetworkSpeedToLoadingView {
-    self.defaultEdgeControlLayer.showNetworkSpeedToLoadingView = showNetworkSpeedToLoadingView;
-}
-- (BOOL)showNetworkSpeedToLoadingView {
-    return self.defaultEdgeControlLayer.showNetworkSpeedToLoadingView;
-}
-
-- (void)setDisablePromptWhenNetworkStatusChanges:(BOOL)disablePromptWhenNetworkStatusChanges {
-    self.defaultEdgeControlLayer.disablePromptWhenNetworkStatusChanges = disablePromptWhenNetworkStatusChanges;
-}
-- (BOOL)disablePromptWhenNetworkStatusChanges {
-    return self.defaultEdgeControlLayer.disablePromptWhenNetworkStatusChanges;
-}
-
-- (void)setHideBottomProgressSlider:(BOOL)hideBottomProgressSlider {
-    self.defaultEdgeControlLayer.hideBottomProgressSlider = hideBottomProgressSlider;
-}
-- (BOOL)hideBottomProgressSlider {
-    return self.defaultEdgeControlLayer.hideBottomProgressSlider;
-}
-
-- (void)setShowResidentBackButton:(BOOL)showResidentBackButton {
-    self.defaultEdgeControlLayer.showResidentBackButton = showResidentBackButton;
-}
-- (BOOL)showResidentBackButton {
-    return self.defaultEdgeControlLayer.showResidentBackButton;
-}
-
-- (void)setHideBackButtonWhenOrientationIsPortrait:(BOOL)hideBackButtonWhenOrientationIsPortrait {
-    if ( hideBackButtonWhenOrientationIsPortrait != self.hideBackButtonWhenOrientationIsPortrait ) {
-        objc_setAssociatedObject(self, @selector(hideBackButtonWhenOrientationIsPortrait), @(hideBackButtonWhenOrientationIsPortrait), OBJC_ASSOCIATION_RETAIN_NONATOMIC);
-        
-        id<SJControlLayer> controlLayer = [self.switcher controlLayerForIdentifier:self.switcher.currentIdentifier];
-        if ( [controlLayer respondsToSelector:@selector(setHideBackButtonWhenOrientationIsPortrait:)] ) {
-            [(SJEdgeControlLayer *)controlLayer setHideBackButtonWhenOrientationIsPortrait:hideBackButtonWhenOrientationIsPortrait];
-        }
-    }
-}
-- (BOOL)hideBackButtonWhenOrientationIsPortrait {
-    return [objc_getAssociatedObject(self, _cmd) boolValue];
-}
-
-- (void)setShowMoreItemForTopControlLayer:(BOOL)showMoreItemForTopControlLayer {
-    if ( showMoreItemForTopControlLayer != self.showMoreItemForTopControlLayer ) {
-        objc_setAssociatedObject(self, @selector(showMoreItemForTopControlLayer), @(showMoreItemForTopControlLayer), OBJC_ASSOCIATION_RETAIN_NONATOMIC);
+@implementation SJVideoPlayer (SJExtendedEdgeControlLayer)
+- (void)setShowMoreItemToTopControlLayer:(BOOL)showMoreItemToTopControlLayer {
+    if ( showMoreItemToTopControlLayer != self.showMoreItemToTopControlLayer ) {
+        objc_setAssociatedObject(self, @selector(showMoreItemToTopControlLayer), @(showMoreItemToTopControlLayer), OBJC_ASSOCIATION_RETAIN_NONATOMIC);
         
         dispatch_async(dispatch_get_main_queue(), ^{
-            if ( showMoreItemForTopControlLayer ) {
+            if ( showMoreItemToTopControlLayer ) {
                 self.moreButtonItem = [SJEdgeControlButtonItem placeholderWithType:SJButtonItemPlaceholderType_49x49 tag:SJEdgeControlLayerTopItem_More];
                 [self.moreButtonItem addTarget:self action:@selector(clickedMoreButtonItem:)];
                 [self.defaultEdgeControlLayer.topAdapter addItem:self.moreButtonItem];
@@ -554,19 +503,19 @@ _atViewController(UIView *view) {
         });
     }
 }
-- (BOOL)showMoreItemForTopControlLayer {
+- (BOOL)showMoreItemToTopControlLayer {
     return [objc_getAssociatedObject(self, _cmd) boolValue];
 }
 @end
 
 
-@implementation SJVideoPlayer (SettingFilmEditingControlLayer)
-- (void)setEnableFilmEditing:(BOOL)enableFilmEditing {
-    if ( enableFilmEditing != self.enableFilmEditing ) {
-        objc_setAssociatedObject(self, @selector(enableFilmEditing), @(enableFilmEditing), OBJC_ASSOCIATION_RETAIN_NONATOMIC);
+@implementation SJVideoPlayer (SJExtendedFilmEditingControlLayer)
+- (void)setEnabledFilmEditing:(BOOL)enabledFilmEditing {
+    if ( enabledFilmEditing != self.isEnabledFilmEditing ) {
+        objc_setAssociatedObject(self, @selector(isEnabledFilmEditing), @(enabledFilmEditing), OBJC_ASSOCIATION_RETAIN_NONATOMIC);
 
         dispatch_async(dispatch_get_main_queue(), ^{
-            if ( enableFilmEditing ) {
+            if ( enabledFilmEditing ) {
                 self.filmEditingButtonItem = [SJEdgeControlButtonItem placeholderWithType:SJButtonItemPlaceholderType_49x49 tag:SJEdgeControlLayerBottomItem_FilmEditing];
                 [self.filmEditingButtonItem addTarget:self action:@selector(clickedFilmEditingItem:)];
                 [self.defaultEdgeControlLayer.rightAdapter addItem:self.filmEditingButtonItem];
@@ -582,7 +531,7 @@ _atViewController(UIView *view) {
         });
     }
 }
-- (BOOL)enableFilmEditing {
+- (BOOL)isEnabledFilmEditing {
     return [objc_getAssociatedObject(self, _cmd) boolValue];
 }
 
@@ -597,69 +546,9 @@ _atViewController(UIView *view) {
 @end
 
 
-@implementation SJVideoPlayer (SwitcherExtension)
+@implementation SJVideoPlayer (SJExtendedControlLayerSwitcher)
 - (void)switchControlLayerForIdentitfier:(SJControlLayerIdentifier)identifier {
     [self.switcher switchControlLayerForIdentitfier:identifier];
-}
-@end
-
-@implementation SJVideoPlayer (SJVideoPlayerDeprecated)
-
-- (void)setDisableNetworkStatusChangePrompt:(BOOL)disableNetworkStatusChangePrompt __deprecated_msg("use `disablePromptWhenNetworkStatusChanges`") {
-    [self setDisablePromptWhenNetworkStatusChanges:disableNetworkStatusChangePrompt];
-}
-- (BOOL)disableNetworkStatusChangePrompt __deprecated_msg("use `disablePromptWhenNetworkStatusChanges`") {
-    return [self disablePromptWhenNetworkStatusChanges];
-}
-
-
-- (void)setGeneratePreviewImages:(BOOL)generatePreviewImages __deprecated_msg("use `此功能已移除, 设置将无效`") {
-}
-- (BOOL)generatePreviewImages __deprecated_msg("use `此功能已移除, 设置将无效`") {
-    return NO;
-}
-
-- (nullable SJEdgeControlLayer *)defaultEdgeLightweightControlLayer __deprecated_msg("use `defaultEdgeControlLayer`") {
-    return self.defaultEdgeControlLayer;
-}
-- (void)setTopControlItems:(nullable NSArray<SJLightweightTopItem *> *)topControlItems __deprecated_msg("use [player.defaultEdgeControlLayer.topAdapter addItem:item];") {
-    objc_setAssociatedObject(self, @selector(topControlItems), topControlItems, OBJC_ASSOCIATION_COPY_NONATOMIC);
-    [topControlItems enumerateObjectsUsingBlock:^(SJLightweightTopItem * _Nonnull obj, NSUInteger idx, BOOL * _Nonnull stop) {
-        SJEdgeControlButtonItem *item = [[SJEdgeControlButtonItem alloc] initWithImage:[UIImage imageNamed:obj.imageName] target:self action:@selector(_handleLightweightTopItemClickedEvent:) tag:obj.flag];
-        [self.defaultEdgeControlLayer.topAdapter addItem:item];
-    }];
-    [self.defaultEdgeControlLayer.topAdapter reload];
-}
-- (nullable NSArray<SJLightweightTopItem *> *)topControlItems __deprecated_msg("use [player.defaultEdgeControlLayer.topAdapter addItem:item];") {
-    return objc_getAssociatedObject(self, _cmd);
-}
-
-- (void)setClickedTopControlItemExeBlock:(nullable void (^)(SJVideoPlayer * _Nonnull, SJLightweightTopItem * _Nonnull))clickedTopControlItemExeBlock __deprecated {
-    objc_setAssociatedObject(self, @selector(clickedTopControlItemExeBlock), clickedTopControlItemExeBlock, OBJC_ASSOCIATION_COPY_NONATOMIC);
-}
-- (nullable void (^)(SJVideoPlayer * _Nonnull, SJLightweightTopItem * _Nonnull))clickedTopControlItemExeBlock __deprecated {
-    return objc_getAssociatedObject(self, _cmd);
-}
-- (void)_handleLightweightTopItemClickedEvent:(SJEdgeControlButtonItem *)item __deprecated {
-    SJLightweightTopItem *topItem = nil;
-    for ( SJLightweightTopItem *i in self.topControlItems ) {
-        if ( i.flag == item.tag ) {
-            topItem = i;
-            break;
-        }
-    }
-    if ( self.clickedTopControlItemExeBlock ) self.clickedTopControlItemExeBlock(self, topItem);
-}
-- (void)setResumePlaybackWhenPlayerViewScrollAppears:(BOOL)resumePlaybackWhenPlayerViewScrollAppears {
-    self.resumePlaybackWhenScrollAppeared = resumePlaybackWhenPlayerViewScrollAppears;
-}
-- (BOOL)resumePlaybackWhenPlayerViewScrollAppears {
-    return self.resumePlaybackWhenScrollAppeared;
-}
-
-- (void)dismissFilmEditingViewCompletion:(void(^__nullable)(SJVideoPlayer *player))completion {
-    [self.switcher switchControlLayerForIdentitfier:SJControlLayer_Edge];
-    if ( completion ) completion(self);
 }
 @end
 

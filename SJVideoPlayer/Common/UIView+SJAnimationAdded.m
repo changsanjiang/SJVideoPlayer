@@ -74,35 +74,15 @@ BOOL sj_view_isDisappeared(UIView *view) {
         return NO;
     return view.sjv_disappeared;
 }
-void sj_view_makeAppear(UIView *view, BOOL animated, void(^_Nullable completionHandler)(void)) {
-    if ( !view )
-        return;
-    view.sjv_disappeared = NO;
-    [UIView animateWithDuration:0 animations:^{} completion:^(BOOL finished) {
-        if ( animated ) {
-            UIView_Animations(CommonAnimaDuration, ^{
-                [view sjv_appear];
-            }, completionHandler);
-        }
-        else {
-            [view sjv_appear];
-        }
-    }];
+void __attribute__((overloadable))
+sj_view_makeAppear(UIView *view, BOOL animated, void(^_Nullable completionHandler)(void)) {
+    if ( !view ) return;
+    sj_view_makeAppear(@[view], animated, completionHandler);
 }
-void sj_view_makeDisappear(UIView *view, BOOL animated, void(^_Nullable completionHandler)(void)) {
-    if ( !view )
-        return;
-    view.sjv_disappeared = YES;
-    [UIView animateWithDuration:0 animations:^{} completion:^(BOOL finished) {
-        if ( animated ) {
-            UIView_Animations(CommonAnimaDuration, ^{
-                [view sjv_disapear];
-            }, completionHandler);
-        }
-        else {
-            [view sjv_disapear];
-        }
-    }];
+void __attribute__((overloadable))
+sj_view_makeDisappear(UIView *view, BOOL animated, void(^_Nullable completionHandler)(void)) {
+    if ( !view ) return;
+    sj_view_makeDisappear(@[view], animated, completionHandler);
 }
 void sj_view_initializes(UIView *view) {
     view.alpha = 0.001;
@@ -117,6 +97,56 @@ void __attribute__((overloadable)) sj_view_makeDisappear(UIView *view, BOOL anim
 void __attribute__((overloadable)) sj_view_initializes(NSArray<UIView *> *views) {
     for ( UIView *view in views ) {
         sj_view_initializes(view);
+    }
+}
+
+void __attribute__((overloadable))
+sj_view_makeAppear(NSArray<UIView *> *views, BOOL animated) {
+    sj_view_makeAppear(views, animated, nil);
+}
+void
+sj_view_makeAppear(NSArray<UIView *> *views, BOOL animated, void(^_Nullable completionHandler)(void)) {
+    if ( views.count == 0 ) return;
+    for ( UIView *view in views ) {
+        view.sjv_disappeared = NO;
+        [UIView animateWithDuration:0 animations:^{} completion:^(BOOL finished) {
+            if ( animated ) {
+                [UIView animateWithDuration:CommonAnimaDuration animations:^{
+                    [view sjv_appear];
+                } completion:^(BOOL finished) {
+                    if ( view == views.lastObject && completionHandler ) completionHandler();
+                }];
+            }
+            else {
+                [view sjv_appear];
+                if ( view == views.lastObject && completionHandler ) completionHandler();
+            }
+        }];
+    }
+}
+
+void __attribute__((overloadable))
+sj_view_makeDisappear(NSArray<UIView *> *views, BOOL animated) {
+    sj_view_makeDisappear(views, animated, nil);
+}
+void
+sj_view_makeDisappear(NSArray<UIView *> *views, BOOL animated, void(^_Nullable completionHandler)(void)) {
+    if ( views.count == 0 ) return;
+    for ( UIView *view in views ) {
+        view.sjv_disappeared = YES;
+        [UIView animateWithDuration:0 animations:^{} completion:^(BOOL finished) {
+            if ( animated ) {
+                [UIView animateWithDuration:CommonAnimaDuration animations:^{
+                    [view sjv_disapear];
+                } completion:^(BOOL finished) {
+                    if ( view == views.lastObject && completionHandler ) completionHandler();
+                }];
+            }
+            else {
+                [view sjv_disapear];
+                if ( view == views.lastObject && completionHandler ) completionHandler();
+            }
+        }];
     }
 }
 NS_ASSUME_NONNULL_END

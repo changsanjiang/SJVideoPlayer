@@ -20,14 +20,31 @@ typedef enum : NSUInteger {
 } SJViewDisappearAnimation;
 
 NS_ASSUME_NONNULL_BEGIN
-extern BOOL sj_view_isDisappeared(UIView *view);
-extern void sj_view_makeAppear(UIView *view, BOOL animated, void(^_Nullable completionHandler)(void));
-extern void sj_view_makeDisappear(UIView *view, BOOL animated, void(^_Nullable completionHandler)(void));
-extern void sj_view_initializes(UIView *view);
+extern BOOL
+sj_view_isDisappeared(UIView *view);
 
-extern void __attribute__((overloadable)) sj_view_makeAppear(UIView *view, BOOL animated);
-extern void __attribute__((overloadable)) sj_view_makeDisappear(UIView *view, BOOL animated);
-extern void __attribute__((overloadable)) sj_view_initializes(NSArray<UIView *> *views);
+extern void
+sj_view_initializes(UIView *view);
+extern void __attribute__((overloadable))
+sj_view_initializes(NSArray<UIView *> *views);
+
+extern void
+sj_view_makeAppear(NSArray<UIView *> *views, BOOL animated, void(^_Nullable completionHandler)(void));
+extern void __attribute__((overloadable))
+sj_view_makeAppear(UIView *view, BOOL animated);
+extern void __attribute__((overloadable))
+sj_view_makeAppear(UIView *view, BOOL animated, void(^_Nullable completionHandler)(void));
+extern void __attribute__((overloadable))
+sj_view_makeAppear(NSArray<UIView *> *views, BOOL animated);
+
+extern void
+sj_view_makeDisappear(NSArray<UIView *> *views, BOOL animated, void(^_Nullable completionHandler)(void));
+extern void __attribute__((overloadable))
+sj_view_makeDisappear(UIView *view, BOOL animated);
+extern void __attribute__((overloadable))
+sj_view_makeDisappear(UIView *view, BOOL animated, void(^_Nullable completionHandler)(void));
+extern void __attribute__((overloadable))
+sj_view_makeDisappear(NSArray<UIView *> *views, BOOL animated);
 
 @interface UIView (SJAnimationAdded)
 @property (nonatomic) SJViewDisappearAnimation sjv_disappearDirection;

@@ -78,15 +78,3 @@ extern SJControlLayerIdentifier SJControlLayer_Uninitialized;
 @property (nonatomic, copy, nullable) void(^playerDidEndSwitchControlLayer)(id<SJControlLayerSwitcher> switcher, id<SJControlLayer> controlLayer);
 @end
 NS_ASSUME_NONNULL_END
-
-
-
-#import "SJControlLayerCarrier.h"
-NS_ASSUME_NONNULL_BEGIN
-// - deprecated
-@interface SJControlLayerSwitcher (Deprecated)
-- (void)switchControlLayerForIdentitfier:(SJControlLayerIdentifier)identifier
-                           toVideoPlayer:(__kindof SJBaseVideoPlayer *)videoPlayer __deprecated_msg("use `switchControlLayerForIdentitfier`;");
-- (void)addControlLayer:(SJControlLayerCarrier *)carrier __deprecated_msg("use `addControlLayerForIdentifier:lazyLoading`;");
-@end
-NS_ASSUME_NONNULL_END

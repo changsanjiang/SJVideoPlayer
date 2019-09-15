@@ -53,7 +53,7 @@ static NSString *kDemoTableViewCell = @"DemoTableViewCell";
     }];
     
     SJPlayerAutoplayConfig *config = [SJPlayerAutoplayConfig configWithPlayerSuperviewTag:DemoTableViewCellCoverTag autoplayDelegate:self];
-    config.autoplayPosition = SJAutoplayPositionTop;
+    config.autoplayPosition = SJAutoplayPositionMiddle;
     [self.tableView sj_enableAutoplayWithConfig:config];
     
     [self.tableView registerClass:[DemoTableViewCell class] forCellReuseIdentifier:kDemoTableViewCell];

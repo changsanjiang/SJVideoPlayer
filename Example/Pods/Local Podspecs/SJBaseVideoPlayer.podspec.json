@@ -1,6 +1,6 @@
 {
   "name": "SJBaseVideoPlayer",
-  "version": "2.7.1",
+  "version": "3.0.0",
   "summary": "video player.",
   "description": "https://github.com/changsanjiang/SJBaseVideoPlayer/blob/master/README.md",
   "homepage": "https://github.com/changsanjiang/SJBaseVideoPlayer",
@@ -16,7 +16,7 @@
   },
   "source": {
     "git": "https://github.com/changsanjiang/SJBaseVideoPlayer.git",
-    "tag": "v2.7.1"
+    "tag": "v3.0.0"
   },
   "frameworks": [
     "UIKit",

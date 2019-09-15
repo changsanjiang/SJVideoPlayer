@@ -152,18 +152,3 @@ static NSNotificationName const SJPlayerDidEndSwitchControlLayerNotification = @
 }
 @end
 NS_ASSUME_NONNULL_END
-
-
-NS_ASSUME_NONNULL_BEGIN
-@implementation SJControlLayerSwitcher (Deprecated)
-- (void)switchControlLayerForIdentitfier:(SJControlLayerIdentifier)identifier toVideoPlayer:(__kindof SJBaseVideoPlayer *)videoPlayer __deprecated_msg("use `switchControlLayerForIdentitfier`;") {
-    [self switchControlLayerForIdentitfier:identifier];
-}
-
-- (void)addControlLayer:(SJControlLayerCarrier *)carrier __deprecated_msg("use `addControlLayerForIdentifier:lazyLoading`;") {
-    [self addControlLayerForIdentifier:carrier.identifier lazyLoading:^id<SJControlLayer> _Nonnull(SJControlLayerIdentifier identifier) {
-        return carrier.controlLayer;
-    }];
-}
-@end
-NS_ASSUME_NONNULL_END

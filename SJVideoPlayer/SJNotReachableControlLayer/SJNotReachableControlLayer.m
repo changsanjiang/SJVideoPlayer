@@ -162,7 +162,7 @@ SJEdgeControlButtonItemTag const SJNotReachableControlLayerTopItem_Back = 10000;
         if ( isFull || isFitOnScreen )
             backItem.hidden = NO;
         else {
-            if ( _hideBackButtonWhenOrientationIsPortrait )
+            if ( _hiddenBackButtonWhenOrientationIsPortrait )
                 backItem.hidden = YES;
             else
                 backItem.hidden = videoPlayer.isPlayOnScrollView;

@@ -14,7 +14,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 @property (nonatomic, weak, nullable) SJVideoPlayerURLAsset *switchingAsset;
 
-@property (nonatomic) SJMediaPlaybackSwitchDefinitionStatus status;
+@property (nonatomic) SJDefinitionSwitchStatus status;
 @end
 
 NS_ASSUME_NONNULL_END

@@ -6,43 +6,28 @@
 //  Copyright © 2018年 SanJiang. All rights reserved.
 //
 //  GitHub:     https://github.com/changsanjiang/SJBaseVideoPlayer
+//  GitHub:     https://github.com/changsanjiang/SJVideoPlayer
 //
-//  Contact:    changsanjiang@gmail.com
+//  Email:      changsanjiang@gmail.com
 //
-
-/**
- ------------------------
- *  PlayControl
- *  Network
- *  Prompt
- *  Time
- *  GestureControl
- *  ControlLayer
- *  Rotation
- *  Screenshot
- *  Export
- *  ScrollView
- *  ControlLayerProtocol
- -------------------------
- */
 
 #import <UIKit/UIKit.h>
-#import "SJPrompt.h"
 #import "SJFitOnScreenManagerDefines.h"
 #import "SJRotationManagerDefines.h"
 #import "SJVideoPlayerControlLayerProtocol.h"
 #import "SJControlLayerAppearManagerDefines.h"
 #import "SJFlipTransitionManagerDefines.h"
-#import "SJMediaPlaybackControllerDefines.h"
+#import "SJVideoPlayerPlaybackControllerDefines.h"
 #import "SJVideoPlayerURLAsset+SJAVMediaPlaybackAdd.h"
 #import "SJPlayerGestureControlDefines.h"
 #import "SJDeviceVolumeAndBrightnessManagerDefines.h"
-#import "SJModalViewControlllerManagerDefines.h"
-#import "SJBaseVideoPlayerStatisticsDefines.h"
 #import "SJFloatSmallViewControllerDefines.h"
 #import "SJEdgeFastForwardViewControllerDefines.h"
 #import "SJVideoDefinitionSwitchingInfo.h"
 #import "SJPopPromptControllerProtocol.h"
+#import "SJBaseVideoPlayerObservation.h"
+#import "SJVideoPlayerPresentViewDefines.h"
+#import "SJPromptDefines.h"
 
 NS_ASSUME_NONNULL_BEGIN
 
@@ -51,225 +36,250 @@ NS_ASSUME_NONNULL_BEGIN
 + (instancetype)player;
 - (instancetype)init;
 
-// - View -
+///
+/// 视频画面填充模式
+///
+@property (nonatomic) SJVideoGravity videoGravity;
 
+///
+/// 播放器视图
+///
+/// \code
+/// _player = SJBaseVideoPlayer.player;
+/// _player.view.frame = ...;
+/// [self.view addSubview:_player.view];
+/// \endcode
+///
 @property (nonatomic, strong, readonly) __kindof UIView *view;
-@property (nonatomic, strong, null_resettable) AVLayerVideoGravity videoGravity;
-- (nullable __kindof UIViewController *)atViewController;
-
-// - Control Layer Delegate -
-
 @property (nonatomic, weak, nullable) id <SJVideoPlayerControlLayerDataSource> controlLayerDataSource;
 @property (nonatomic, weak, nullable) id <SJVideoPlayerControlLayerDelegate> controlLayerDelegate;
 @end
 
+#pragma mark - present view
 
 @interface SJBaseVideoPlayer (Placeholder)
-
-// - Placeholder -
-
-/// 初始化资源时, 可能会短暂黑屏, 建议设置一下占位图
-@property (nonatomic, strong, readonly) UIImageView *placeholderImageView;
-
-/// 播放器准备好显示时, 是否隐藏占位图
 ///
-/// - 默认为YES
+/// 显示播放画面
+///
+///         内部自带placeholderImageView, 可以设置占位图(本地图片或URL)
+///         了解更多请前往协议头文件查看
+///
+@property (nonatomic, strong, readonly) UIView<SJVideoPlayerPresentView> *presentView;
+
+///
+/// 准备好显示画面时, 是否隐藏占位图
+///
+///         default value is YES
+///
 @property (nonatomic) BOOL hiddenPlaceholderImageViewWhenPlayerIsReadyForDisplay;
 
-/// 将要隐藏 placeholderImageView 时, 延迟多少秒才去隐藏
 ///
-/// - 默认为0.8s
+/// 将要隐藏占位图时, 延迟多少秒才去隐藏
+///
+///         default value is 0.8s
+///
 @property (nonatomic) NSTimeInterval delayInSecondsForHiddenPlaceholderImageView;
-
-@property (nonatomic, readonly, getter=isPlaceholderImageViewHidden) BOOL placeholderImageViewHidden;
-
-- (void)showPlaceholderImageView;
-- (void)hiddenPlaceholderImageView;
 @end
-
 
 #pragma mark - 镜像翻转
 
 @interface SJBaseVideoPlayer (VideoFlipTransition)
-@property (nonatomic, strong, null_resettable) id<SJFlipTransitionManager> flipTransitionManager;
 
-@property (nonatomic, readonly) BOOL isFlipTransitioning;
-@property (nonatomic) SJViewFlipTransition flipTransition; // Animated.
-- (void)setFlipTransition:(SJViewFlipTransition)t animated:(BOOL)animated;
-- (void)setFlipTransition:(SJViewFlipTransition)t animated:(BOOL)animated completionHandler:(void(^_Nullable)(__kindof SJBaseVideoPlayer *player))completionHandler;
+///
+/// 镜像翻转
+///
+///         如果需要水平镜像翻转, 可以`player.flipTransitionManager.flipTransition = SJViewFlipTransition_Horizontally;`
+///         了解更多请前往协议头文件查看
+///
+@property (nonatomic, strong, null_resettable) id<SJFlipTransitionManager> flipTransitionManager; ///< 镜像翻转
 
-@property (nonatomic, copy, nullable) void(^flipTransitionDidStartExeBlock)(__kindof SJBaseVideoPlayer *player);
-@property (nonatomic, copy, nullable) void(^flipTransitionDidStopExeBlock)(__kindof SJBaseVideoPlayer *player);
+///
+/// 观察者
+///
+///         可以如下设置block, 来监听某个状态的改变
+///
+///         player.flipTransitionObserver.flipTransitionDidStartExeBlock = ...;
+///         player.flipTransitionObserver.flipTransitionDidStopExeBlock = ...;
+///
+@property (nonatomic, strong, readonly) id<SJFlipTransitionManagerObserver> flipTransitionObserver;
 @end
-
-
-#pragma mark - 时间
-
-@interface SJBaseVideoPlayer (Time)
-
-// - Time -
-
-@property (nonatomic, readonly) NSTimeInterval currentTime;
-@property (nonatomic, readonly) NSTimeInterval totalTime;
-@property (nonatomic, strong, readonly) NSString *currentTimeStr;
-@property (nonatomic, strong, readonly) NSString *totalTimeStr;
-
-@property (nonatomic, copy, nullable) void(^playTimeDidChangeExeBlok)(__kindof SJBaseVideoPlayer *videoPlayer);
-@property (nonatomic, copy, nullable) void(^playDidToEndExeBlock)(__kindof SJBaseVideoPlayer *player);
-
-// - Progress -
-
-@property (nonatomic, readonly) float progress;
-@property (nonatomic, readonly) float bufferProgress;
-
-- (NSString *)timeStringWithSeconds:(NSInteger)secs; // format: 00:00:00
-@end
-
 
 
 
 #pragma mark - 播放控制
 
-@interface SJBaseVideoPlayer (PlayControl)<SJMediaPlaybackControllerDelegate>
+@interface SJBaseVideoPlayer (PlayControl)<SJVideoPlayerPlaybackControllerDelegate>
 
-@property (nonatomic, strong, null_resettable) id<SJMediaPlaybackController> playbackController;
-
-
-// - Asset -
-
-/// 资源
 ///
-/// - 播放一个资源
-/// - 使用URL及相关的视图信息进行初始化
+/// 播放控制
+///
+///         此模块将是对视频播放的控制, 例如播放, 暂停, 调速, 跳转等等...
+///         了解更多请前往协议头文件查看
+///
+@property (nonatomic, strong, null_resettable) id<SJVideoPlayerPlaybackController> playbackController;
+
+///
+/// 观察者
+///
+///         可以如下设置block, 来监听某个状态的改变
+///
+///         player.playbackObserver.currentTimeDidChangeExeBlock = ...;
+///         player.playbackObserver.durationDidChangeExeBlock = ...;
+///         player.playbackObserver.timeControlStatusDidChangeExeBlock = ...;
+///
+@property (nonatomic, strong, readonly) SJPlaybackObservation *playbackObserver;
+
+///
+/// 设置资源进行播放
+///
+///         使用URL及相关的视图信息进行初始化
+///
 @property (nonatomic, strong, nullable) SJVideoPlayerURLAsset *URLAsset;
-/// asset`dealloc`时的回调
-/// - 可以在这里做一些记录的工作. 如播放记录.
+
+///
+/// 资源销毁前的回调
+///
+///         可以在这里做一些记录的工作. 如播放记录(未来可能会支持)
+///
 @property (nonatomic, copy, nullable) void(^assetDeallocExeBlock)(__kindof SJBaseVideoPlayer *videoPlayer);
 
-// - Playback Type -
-
-@property (nonatomic, readonly) SJMediaPlaybackType playbackType;
-
-// - Playback Status -
-
-/// 播放状态观察者
-- (id<SJPlayStatusObserver>)getPlayStatusObserver; // 需要对它强引用, 否则观察者会被释放
-/// 播放失败时的错误
+///
+/// 播放出错
+///
+///         当播放发生错误时, 可以通过它来获取错误信息
+///
 @property (nonatomic, strong, readonly, nullable) NSError *error;
-/// 播放状态
-@property (nonatomic, readonly) SJVideoPlayerPlayStatus playStatus;
-/// 暂停原因
-@property (nonatomic, readonly) SJVideoPlayerPausedReason pausedReason;
-/// 不活跃原因
-@property (nonatomic, readonly) SJVideoPlayerInactivityReason inactivityReason;
 
-
-// - Play -
-
-/// 刷新
-- (void)refresh;
-/// 初始化完成后, 是否自动播放
-@property (nonatomic) BOOL autoPlayWhenPlayStatusIsReadyToPlay;
-/// 播放器是否可以执行`play`
 ///
-/// - 当调用`play`时, 会回调该block, 如果返回YES, 则执行`play`方法, 否之.
-/// - 如果该block == nil, 则调用`play`时, 默认为执行.
-@property (nonatomic, copy, nullable) BOOL(^canPlayAnAsset)(__kindof SJBaseVideoPlayer *player);
-/// 自动刷新, 播放失败时每隔多少秒刷新一次.
+/// 暂停或播放的控制状态
 ///
-/// - 默认是0, 即不自动刷新
-/// - 单位是秒
-@property (nonatomic) NSTimeInterval delayToAutoRefreshWhenPlayFailed;
-
-// - Switch Video Definition -
-
-/// 切换`清晰度` (v1.6.5 新增)
-/// - 切换当前播放的视频清晰度
-- (void)switchVideoDefinition:(SJVideoPlayerURLAsset *)URLAsset;
-
-@property (nonatomic, strong, readonly) SJVideoDefinitionSwitchingInfo *definitionSwitchingInfo;
-
-/// 使播放
-- (void)play;
-
-/// 是否恢复播放, 进入前台时.
+///         当调用了暂停时, 此时 player.timeControlStatus = .paused
 ///
-/// 正常情况下, 进入后台时, 播放器将会暂停. 此属性表示App进入前台后, 播放器是否恢复播放. 默认为NO.
-@property (nonatomic) BOOL resumePlaybackWhenAppDidEnterForeground;
+///         当调用了播放时, 此时 将可能处于以下两种状态中的任意一个:
+///                         - player.timeControlStatus = .playing
+///                             正在播放中.
+///
+///                         - player.timeControlStatus = .waitingToPlay
+///                             等待播放, 等待的原因请查看 player.reasonForWaitingToPlay
+///
+@property (nonatomic, readonly) SJPlaybackTimeControlStatus timeControlStatus;
 
+///
+/// 当调用了播放, 播放器未能播放处于等待状态时的原因
+///
+///         等待原因有以下3种状态:
+///             1.未设置资源, 此时设置资源后, 当`player.assetStatus = .readyToPlay`, 播放器将自动进行播放.
+///             2.可能是由于缓冲不足, 播放器在等待缓存足够时自动恢复播放, 此时可以显示loading视图.
+///             3.可能是正在评估缓冲中, 这个过程会进行的很快, 不需要显示loading视图.
+///
+@property (nonatomic, readonly, nullable) SJWaitingReason reasonForWaitingToPlay;
 
-// - Pause -
+///
+/// 资源准备(或初始化)的状态
+///
+///         当未设置资源时, 此时 player.assetStatus = .unknown
+///         当设置新资源时, 此时 player.assetStatus = .preparing
+///         当准备好播放时, 此时 player.assetStatus = .readyToPlay
+///         当初始化失败时, 此时 player.assetStatus = .failed
+///
+@property (nonatomic, readonly) SJAssetStatus assetStatus;
 
+///
+/// 设置 进入后台时, 是否暂停播放. 默认为 YES.
+///
 /// 关于后台播放视频, 引用自: https://juejin.im/post/5a38e1a0f265da4327185a26
 ///
 /// 当您想在后台播放视频时:
 /// 1. 需要设置 videoPlayer.pauseWhenAppDidEnterBackground = NO; (该值默认为YES, 即App进入后台默认暂停).
 /// 2. 前往 `TARGETS` -> `Capability` -> enable `Background Modes` -> select this mode `Audio, AirPlay, and Picture in Picture`
+///
 @property (nonatomic) BOOL pauseWhenAppDidEnterBackground;
-/// 使暂停
-- (void)pause;
+@property (nonatomic) BOOL autoplayWhenSetNewAsset;                    ///< 设置新的资源后, 是否自动调用播放. 默认为 YES
+@property (nonatomic) BOOL resumePlaybackWhenAppDidEnterForeground;    ///< 进入前台时, 是否恢复播放. 默认为 NO
+@property (nonatomic) BOOL resumePlaybackWhenPlayerHasFinishedSeeking; ///< 当`seekToTime:`操作完成后, 是否恢复播放. 默认为 YES
 
+- (void)play;       ///< 使播放
+- (void)pause;      ///< 使暂停
+- (void)refresh;    ///< 刷新当前资源, 将重新初始化当前的资源, 适合播放失败时调用
+- (void)replay;     ///< 重播, 适合播放完毕后调用进行重播
+- (void)stop;       ///< 使停止, 请注意: 当前资源将会被清空, 如需重播, 请重新设置新资源
 
-// - Stop -
+@property (nonatomic, getter=isMuted) BOOL muted;                                   ///< 是否禁音
+@property (nonatomic) float playerVolume;                                           ///< 设置播放声音
+@property (nonatomic) float rate;                                                   ///< 设置播放速率
 
-/// 使停止
-- (void)stop;
+@property (nonatomic, readonly) NSTimeInterval currentTime;                         ///< 当前播放到的时间
+@property (nonatomic, readonly) NSTimeInterval duration;                            ///< 总时长
+@property (nonatomic, readonly) NSTimeInterval playableDuration;                    ///< 缓冲到的时间
+@property (nonatomic, readonly) NSTimeInterval durationWatched;                     ///< 已观看的时长(当前资源)
 
-/// 使停止, 并淡出
-- (void)stopAndFadeOut;
+@property (nonatomic, readonly) BOOL isPlayedToEndTime;                             ///< 当前资源是否已播放结束
+@property (nonatomic, readonly) BOOL isPlayed;                                      ///< 是否播放过当前的资源
+@property (nonatomic, readonly) BOOL isReplayed;                                    ///< 是否重播过当前的资源
+@property (nonatomic, readonly) SJPlaybackType playbackType;                        ///< 播放类型
+- (NSString *)stringForSeconds:(NSInteger)secs;                                     ///< 转换时间为字符串, format: 00:00:00
 
+///
+/// 设置 能否调用`play`.
+///
+/// - 当调用`play`时, 会回调该`block`, 如果返回 YES, 则执行.
+/// - 当`block == nil`时, 默认为执行.
+///
+@property (nonatomic, copy, nullable) BOOL(^canPlayAnAsset)(__kindof SJBaseVideoPlayer *player);
 
-// - Replay -
-
-/// 是否重播过 - 当前的资源.
-@property (nonatomic, readonly, getter=isReplayed) BOOL replayed;
-/// 重播
-- (void)replay;
-
-
-// - Seek To Time -
-
-/// 是否可以调用 seekToTime:
+///
+/// 是否可以执行跳转`seekToTime:`.
+///
+/// - 当调用任意`seekToTime:`时, 会回调该`block`, 如果返回 YES, 则执行.
+/// - 当`block == nil`时, 默认为执行.
+///
 @property (nonatomic, copy, nullable) BOOL(^canSeekToTime)(__kindof SJBaseVideoPlayer *player);
 
-/// 当跳转完成后, 是否恢复播放
 ///
-/// default value is YES
-@property (nonatomic) BOOL resumePlaybackWhenPlayerHasFinishedSeeking;
+/// 是否精确跳转, default value is NO.
+///
+@property (nonatomic) BOOL accurateSeeking;
 
+///
 /// 跳转到指定位置播放
+///
 - (void)seekToTime:(NSTimeInterval)secs completionHandler:(void (^ __nullable)(BOOL finished))completionHandler;
 - (void)seekToTime:(CMTime)time toleranceBefore:(CMTime)toleranceBefore toleranceAfter:(CMTime)toleranceAfter completionHandler:(void (^ __nullable)(BOOL finished))completionHandler;
 
-// - Rate -
+///
+/// 切换清晰度
+///
+- (void)switchVideoDefinition:(SJVideoPlayerURLAsset *)URLAsset;
 
-/// 调速
-@property (nonatomic) float rate;
-/// 速率改变的回调
-@property (nonatomic, copy, nullable) void(^rateDidChangeExeBlock)(__kindof SJBaseVideoPlayer *player);
-
-
-// - Volume -
-
-/// 是否静音🔇
-@property (nonatomic, getter=isMute) BOOL mute;
-@property (nonatomic) float playerVolume;
-
-
-/// 是否锁屏
-@property (nonatomic, getter=isLockedScreen) BOOL lockedScreen;
+///
+/// 当前清晰度切换的信息
+///
+@property (nonatomic, strong, readonly) SJVideoDefinitionSwitchingInfo *definitionSwitchingInfo;
 @end
 
 
-#pragma mark - 设备 音量和亮度
+#pragma mark - 设置 设备的音量和亮度
 
 @interface SJBaseVideoPlayer (DeviceVolumeAndBrightness)
+
+///
+/// 设备 音量和亮度调整管理类
+///
 @property (nonatomic, strong, null_resettable) id<SJDeviceVolumeAndBrightnessManager> deviceVolumeAndBrightnessManager;
 
-@property (nonatomic) float deviceVolume;
-@property (nonatomic) float deviceBrightness;
+///
+/// 观察者
+///
+@property (nonatomic, strong, readonly) id<SJDeviceVolumeAndBrightnessManagerObserver> deviceVolumeAndBrightnessObserver;
 
+///
+/// 禁止设置亮度
+///
 @property (nonatomic) BOOL disableBrightnessSetting;
+
+///
+/// 禁止设置音量
+///
 @property (nonatomic) BOOL disableVolumeSetting;
 @end
 
@@ -336,77 +346,49 @@ NS_ASSUME_NONNULL_BEGIN
 
 
 
-#pragma mark - Network
+#pragma mark - 网络状态
 
 @interface SJBaseVideoPlayer (Network)
+
+///
+/// 网络状态监测
+///
+///         了解更多请前往协议头文件查看
+///
 @property (nonatomic, strong, null_resettable) id<SJReachability> reachability;
 
-/// 当前网速
-@property (nonatomic, strong, readonly) NSString *networkSpeedStr;
-@property (nonatomic, readonly) SJNetworkStatus networkStatus;
-@property (nonatomic, copy, nullable) void(^networkStatusDidChangeExeBlock)(__kindof SJBaseVideoPlayer *player);
+///
+/// 观察者
+///
+@property (nonatomic, strong, readonly) id<SJReachabilityObserver> reachabilityObserver;
 @end
 
 
 
 
 
-#pragma mark - 提示
+#pragma mark - 弹出提示文本
 
-/// `左下角`弹出提示
-@interface SJBaseVideoPlayer (PopPromptControl)
+@interface SJBaseVideoPlayer (PromptControl)
 
+///
+/// 中心弹出文本提示
+///
+///         了解更多请前往协议头文件查看
+///
+@property (nonatomic, strong, null_resettable) id<SJPromptProtocol> prompt;
+
+///
+/// 右下角弹出提示
+///
+///         了解更多请前往协议头文件查看
+///
 @property (nonatomic, strong, null_resettable) id<SJPopPromptControllerProtocol> popPromptController;
-
-@end
-
-
-/// `中心`弹出提示
-@interface SJBaseVideoPlayer (Prompt)
-
-/**
- prompt.update(^(SJPromptConfig * _Nonnull config) {
-    config.cornerRadius = 4;                    // default cornerRadius.
-    config.font = [UIFont systemFontOfSize:12]; // default font.
- });
- 
- readonly.
- */
-@property (nonatomic, strong, readonly) SJPrompt *prompt;
-
-/**
- The middle of the player view shows the specified title. duration default is 1.0.
-
- @param title       prompt.
- */
-- (void)showTitle:(NSString *)title;
-
-/**
- The middle of the view shows the specified title.
-
- @param title       prompt.
- @param duration    prompt duration. duration if value set -1, prompt will always show.
- */
-- (void)showTitle:(NSString *)title duration:(NSTimeInterval)duration;
-
-- (void)showTitle:(NSString *)title duration:(NSTimeInterval)duration hiddenExeBlock:(void(^__nullable)(__kindof SJBaseVideoPlayer *player))hiddenExeBlock;
-
-- (void)showAttributedString:(NSAttributedString *)attributedString duration:(NSTimeInterval)duration;
-
-- (void)showAttributedString:(NSAttributedString *)attributedString duration:(NSTimeInterval)duration hiddenExeBlock:(void(^__nullable)(__kindof SJBaseVideoPlayer *player))hiddenExeBlock;
-
-/**
- Hidden Prompt.
- */
-- (void)hiddenTitle;
-
 @end
 
 
 
-
-
-#pragma mark - 手势
+#pragma mark - 手势控制相关操作
 /**
  播放器的手势介绍:
  base video player 默认会存在四种手势, Single Tap, double Tap, Pan, Pinch.
@@ -430,20 +412,34 @@ NS_ASSUME_NONNULL_BEGIN
  */
 @interface SJBaseVideoPlayer (GestureControl)
 
-/// 在cell中, 允许水平方向触发Pan手势, 默认为不允许
+///
+/// 手势控制
+///
+///         如果想自己设置支持的手势类型, 可以`player.gestureControl.supportedGestureTypes = SJPlayerGestureTypeMask_SingleTap | ....;`
+///         了解更多请前往头文件查看
+///
+@property (nonatomic, strong, readonly) id<SJPlayerGestureControl> gestureControl;
+
+///
+/// 是否可以触发某个手势
+///
+///         这个block的返回值将会作为触发手势的一个条件, 当`return NO`时, 相应的手势将不会触发
+///
+@property (nonatomic, copy, nullable) BOOL(^gestureRecognizerShouldTrigger)(__kindof SJBaseVideoPlayer *player, SJPlayerGestureType type, CGPoint location);
+
+///
+/// 在cell中播放时, 是否允许水平方向触发Pan手势.
+///
+///         default value is NO
 ///
 @property (nonatomic) BOOL allowHorizontalTriggeringOfPanGesturesInCells;
 
+///
 /// 左右快进快退
 ///
-/// 默认不启用, 当需要开启时, 请设置`player.fastForwardViewController.enabled = YES;`
+///         default value is NO, 当需要开启时, 请设置`player.fastForwardViewController.enabled = YES;`
+///
 @property (nonatomic, strong, null_resettable) id<SJEdgeFastForwardViewControllerProtocol> fastForwardViewController;
-
-@property (nonatomic, strong, readonly) id<SJPlayerGestureControl> gestureControl;
-
-@property (nonatomic) SJPlayerDisabledGestures disabledGestures;
-
-@property (nonatomic, copy, nullable) BOOL(^gestureRecognizerShouldTrigger)(__kindof SJBaseVideoPlayer *player, SJPlayerGestureType type, CGPoint location);
 @end
 
 
@@ -453,12 +449,36 @@ NS_ASSUME_NONNULL_BEGIN
 #pragma mark - 播放器控制层 显示/隐藏 控制
 
 @interface SJBaseVideoPlayer (ControlLayer)
-
+///
+/// 对控制层显示/隐藏的控制
+///
+///         仅仅对控制层的显示和隐藏做控制(如控制层显示后, 一段时间该管理类将尝试隐藏控制层)
+///         其他操作由开发者自己处理, 当不需要该管理类时, 可以禁用`player.controlLayerAppearManager.disabled = YES;`
+///
 @property (nonatomic, strong, null_resettable) id<SJControlLayerAppearManager> controlLayerAppearManager;
 
+///
+/// 观察者
+///
+///         当需要监听控制层的显示和隐藏时, 可以设置`player.controlLayerAppearObserver.appearStateDidChangeExeBlock = ...;`
+///
+@property (nonatomic, strong, readonly) id<SJControlLayerAppearManagerObserver> controlLayerAppearObserver;
+
+///
+/// 控制层的显示状态(是否已显示)
+///
+@property (nonatomic, getter=isControlLayerAppeared) BOOL controlLayerAppeared;
+
+///
+/// 控制层是否可以隐藏
+///
+///         这个block的返回值将会作为触发隐藏控制层的一个条件, 当`return NO`时, 将不会触发隐藏控制层
+///
 @property (nonatomic, copy, nullable) BOOL(^canAutomaticallyDisappear)(__kindof SJBaseVideoPlayer *player);
 
 /**
+ 显示控制层
+ 
  When you want to appear the control layer, you should call this method to appear.
  This method will call the control layer delegate method.
  
@@ -467,6 +487,8 @@ NS_ASSUME_NONNULL_BEGIN
 - (void)controlLayerNeedAppear;
 
 /**
+ 隐藏控制层
+ 
  When you want to disappear the control layer, you should call this method to disappear.
  This method will call the control layer delegate method.
  
@@ -474,41 +496,63 @@ NS_ASSUME_NONNULL_BEGIN
  */
 - (void)controlLayerNeedDisappear;
 
-@property (nonatomic) BOOL disabledControlLayerAppearManager; // default value is NO.
-@property (nonatomic) BOOL controlLayerIsAppeared;
+///
+/// 暂停的时候是否保持控制层显示
+///
+///         default value is NO
+///
 @property (nonatomic) BOOL pausedToKeepAppearState;
-@property (nonatomic) BOOL controlLayerAutoAppearWhenAssetInitialized; // default value is NO.
-@property (nonatomic, copy, nullable) void(^controlLayerAppearStateDidChangeExeBlock)(__kindof SJBaseVideoPlayer *player, BOOL state);
 @end
 
 
-/// v2.1.1 新增
-@interface SJBaseVideoPlayer (ModalViewControlller)
-@property (nonatomic, strong, null_resettable) id<SJModalViewControlllerManagerProtocol> modalViewControllerManager;
-@property (nonatomic) BOOL needPresentModalViewControlller;
 
-- (void)presentModalViewControlller;
-- (void)dismissModalViewControlller;
-@end
-
-
-// - Auto Manage Player View to Fit On Screen Or Rotation -
+#pragma mark - 自动管理 旋转和充满全屏
 
 @interface SJBaseVideoPlayer (AutoManageViewToFitOnScreenOrRotation)
+
+///
+/// 自动管理 旋转和充满全屏
+///
+///         自动管理: 当视频宽>高时, 将触发旋转. 当视频宽<高时, 将触发充满全屏
+///
 @property (nonatomic) BOOL autoManageViewToFitOnScreenOrRotation; // default value is YES.
+
 @end
 
 
-// - Fit On Screen
+#pragma mark - 充满全屏, 禁止旋转
 
+///
 /// 全屏或小屏, 但不触发旋转
 /// v1.3.1 新增
+///
 @interface SJBaseVideoPlayer (FitOnScreen)
+
+///
+/// 使用充满全屏并且禁止旋转
+///
+///         当调用[player.fitOnScreenManager setFitOnScreen:... animated:...]时, 将自动设置为YES
+///
+@property (nonatomic) BOOL useFitOnScreenAndDisableRotation;
+
+///
+/// 使播放器充满屏幕并且禁止旋转
+///
+///         充满屏幕后, 播放器将无法触发旋转
+///         了解更多请前往头文件查看
+///
 @property (nonatomic, strong, null_resettable) id<SJFitOnScreenManager> fitOnScreenManager;
 
+///
+/// 观察者
+///
+@property (nonatomic, strong, readonly) id<SJFitOnScreenManagerObserver> fitOnScreenObserver;
+
+///
 /// Whether fullscreen or smallscreen, this method does not trigger rotation.
 /// 全屏或小屏, 此方法不触发旋转
 /// Animated
+///
 @property (nonatomic, getter=isFitOnScreen) BOOL fitOnScreen;
 
 /// Whether fullscreen or smallscreen, this method does not trigger rotation.
@@ -516,23 +560,40 @@ NS_ASSUME_NONNULL_BEGIN
 /// - animated : 是否动画
 - (void)setFitOnScreen:(BOOL)fitOnScreen animated:(BOOL)animated;
 
+///
 /// Whether fullscreen or smallscreen, this method does not trigger rotation.
 /// 全屏或小屏, 此方法不触发旋转
 /// - animated : 是否动画
 /// - completionHandler : 操作完成的回调
+///
 - (void)setFitOnScreen:(BOOL)fitOnScreen animated:(BOOL)animated completionHandler:(nullable void(^)(__kindof SJBaseVideoPlayer *player))completionHandler;
-
-@property (nonatomic) BOOL useFitOnScreenAndDisableRotation;
-@property (nonatomic, copy, nullable) void(^fitOnScreenWillBeginExeBlock)(__kindof SJBaseVideoPlayer *player);
-@property (nonatomic, copy, nullable) void(^fitOnScreenDidEndExeBlock)(__kindof SJBaseVideoPlayer *player);;
 @end
 
-
-// - Rotation -
+#pragma mark - 旋转
 
 @interface SJBaseVideoPlayer (Rotation)
+
+///
+/// 旋转管理类
+///
+///         如果需要禁止自动旋转, 可以设置`player.rotationManager.disabledAutorotation = YES;`
+///         了解更多请前往头文件查看
+///
 @property (nonatomic, strong, null_resettable) id<SJRotationManagerProtocol> rotationManager;
 
+///
+/// 观察者
+///
+///         当需要监听旋转时, 可以设置`player.rotationObserver.rotationDidStartExeBlock = ...;`
+///         了解更多请前往头文件查看
+///
+@property (nonatomic, strong, readonly) id<SJRotationManagerObserver> rotationObserver;
+
+///
+/// 是否可以触发旋转
+///
+///         这个block的返回值将会作为触发旋转的一个条件, 当`return NO`时, 将不会触发旋转
+///
 @property (nonatomic, copy, nullable) BOOL(^shouldTriggerRotation)(__kindof SJBaseVideoPlayer *player);
 
 /**
@@ -557,15 +618,10 @@ NS_ASSUME_NONNULL_BEGIN
  */
 - (void)rotate:(SJOrientation)orientation animated:(BOOL)animated completion:(void (^ _Nullable)(__kindof SJBaseVideoPlayer *player))block;
 
-@property (nonatomic, readonly) BOOL isFullScreen;
 @property (nonatomic, readonly) BOOL isTransitioning;
-
-@property (nonatomic) BOOL disableAutoRotation;
-@property (nonatomic) SJOrientation orientation;
-@property (nonatomic) SJAutoRotateSupportedOrientation supportedOrientation;
-@property (nonatomic, copy, nullable) void(^viewWillRotateExeBlock)(__kindof SJBaseVideoPlayer *player, BOOL isFullScreen);
-@property (nonatomic, copy, nullable) void(^viewDidRotateExeBlock)(__kindof SJBaseVideoPlayer *player, BOOL isFullScreen);
-@property (nonatomic, readonly) UIInterfaceOrientation currentOrientation;
+@property (nonatomic, readonly) BOOL isFullScreen;                              ///< 是否已全屏
+@property (nonatomic, getter=isLockedScreen) BOOL lockedScreen;                 ///< 是否锁屏
+@property (nonatomic, readonly) UIInterfaceOrientation currentOrientation;      ///< 当前的方向
 @end
 
 
@@ -602,19 +658,8 @@ NS_ASSUME_NONNULL_BEGIN
 #pragma mark - 输出
 
 @interface SJBaseVideoPlayer (Export)
-
-/**
- export session.
- 
- @param beginTime           unit is sec.
- @param endTime             unit is sec.
- @param presetName 	        default is `AVAssetExportPresetMediumQuality`.
- @param progressBlock       progressBlock
- @param completion 	        completion
- @param failure 	        failure
- */
 - (void)exportWithBeginTime:(NSTimeInterval)beginTime
-                    endTime:(NSTimeInterval)endTime
+                   duration:(NSTimeInterval)duration
                  presetName:(nullable NSString *)presetName
                    progress:(void(^)(__kindof SJBaseVideoPlayer *videoPlayer, float progress))progressBlock
                  completion:(void(^)(__kindof SJBaseVideoPlayer *videoPlayer, NSURL *fileURL, UIImage *thumbnailImage))completion
@@ -638,39 +683,53 @@ NS_ASSUME_NONNULL_BEGIN
 
 @interface SJBaseVideoPlayer (ScrollView)
 
+///
 /// 小浮窗控制
 ///
 /// 默认不启用, 当需要开启时, 请设置`player.floatSmallViewController.enabled = YES;`
+///
 @property (nonatomic, strong, null_resettable) id<SJFloatSmallViewControllerProtocol> floatSmallViewController;
 
+///
 /// 当开启小浮窗控制时, 播放结束后, 会默认隐藏小浮窗
 ///
 /// - default value is YES.
+///
 @property (nonatomic) BOOL autoDisappearFloatSmallView;
 
+///
 /// 滚动出去后, 是否暂停. 默认为YES
 ///
 /// - default value is YES.
+///
 @property (nonatomic) BOOL pauseWhenScrollDisappeared;
 
+///
 /// 滚动进入时, 是否恢复播放. 默认为YES
 ///
 /// - default values is YES.
+///
 @property (nonatomic) BOOL resumePlaybackWhenScrollAppeared;
 
+///
 /// 滚动出去后, 是否隐藏播放器视图. 默认为YES
 ///
 /// - default value is YES.
+///
 @property (nonatomic) BOOL hiddenViewWhenScrollDisappeared;
 
+///
 /// 是否在 scrollView 中播放
 ///
 /// Whether to play on scrollView.
+///
 @property (nonatomic, readonly) BOOL isPlayOnScrollView;
 
+///
 /// 播放器视图是否显示
 ///
 /// Whether the player is appeared when playing on scrollView. Because scrollview may be scrolled.
+///
 @property (nonatomic, readonly) BOOL isScrollAppeared;
 
 @property (nonatomic, copy, nullable) void(^playerViewWillAppearExeBlock)(__kindof SJBaseVideoPlayer *videoPlayer);
@@ -679,44 +738,11 @@ NS_ASSUME_NONNULL_BEGIN
 
 
 
-#pragma mark - 播放时长统计
-@interface SJBaseVideoPlayer (Statistics)
-// default value is NO.
-@property (class, nonatomic, getter=isEnabledStatistics) BOOL enabledStatistics;
-@property (class, nonatomic, strong, null_resettable) id<SJBaseVideoPlayerStatistics> statistics;
-@property (nonatomic, strong, null_resettable) id<SJBaseVideoPlayerStatistics> statistics;
-@end
-
-
 
 #pragma mark - 已弃用
 
 @interface SJBaseVideoPlayer (Deprecated)
-@property (nonatomic, copy, nullable) void(^playDidToEnd)(__kindof SJBaseVideoPlayer *player) __deprecated_msg("use `playDidToEndExeBlock`");
-@property (nonatomic, readonly) BOOL playOnCell __deprecated_msg("use `isPlayOnScrollView`");
-@property (nonatomic, readonly) BOOL scrollIntoTheCell __deprecated_msg("use `isScrollAppeared`");
-- (void)jumpedToTime:(NSTimeInterval)secs completionHandler:(void (^ __nullable)(BOOL finished))completionHandler __deprecated_msg("use `seekToTime:completionHandler:`"); // unit is sec. 单位是秒.
-@property (nonatomic, readonly) BOOL controlViewDisplayed __deprecated_msg("use `controlLayerIsAppeared`");
-@property (nonatomic, copy, nullable) void(^controlViewDisplayStatus)(__kindof SJBaseVideoPlayer *player, BOOL displayed) __deprecated_msg("use `controlLayerAppearStateChanged`");
-@property (nonatomic, copy, nullable) void(^willRotateScreen)(__kindof SJBaseVideoPlayer *player, BOOL isFullScreen) __deprecated_msg("use `viewWillRotateExeBlock`");
-@property (nonatomic, copy, nullable) void(^rotatedScreen)(__kindof SJBaseVideoPlayer *player, BOOL isFullScreen) __deprecated_msg("use `viewDidRotateExeBlock`");
-@property (nonatomic, strong, nullable) UIImage *placeholder __deprecated_msg("use `player.placeholderImageView`");
-@property (nonatomic, readonly) SJVideoPlayerPlayState state __deprecated_msg("use `player.playStatus`");
-@property (nonatomic) BOOL playFailedToKeepAppearState __deprecated;
-@property (nonatomic, copy, nullable) void(^controlLayerAppearStateChanged)(__kindof SJBaseVideoPlayer *player, BOOL state) __deprecated_msg("use `controlLayerAppearStateDidChangeExeBlock`");
-@property (nonatomic) BOOL controlLayerAppeared __deprecated_msg("use `controlLayerIsAppeared`");
-@property (nonatomic) BOOL enableControlLayerDisplayController __deprecated_msg("use `disabledControlLayerAppearManager`");
-@property (nonatomic, copy, nullable) void(^fitOnScreenWillChangeExeBlock)(__kindof SJBaseVideoPlayer *player) __deprecated_msg("use `fitOnScreenWillBeginExeBlock`");
-@property (nonatomic, copy, nullable) void(^fitOnScreenDidChangeExeBlock)(__kindof SJBaseVideoPlayer *player) __deprecated_msg("use `fitOnScreenDidEndExeBlock`");
-@property (nonatomic, getter=isAutoPlay) BOOL autoPlay __deprecated_msg("use `autoPlayWhenPlayStatusIsReadyToPlay`");
-@property (nonatomic, copy, nullable) void(^rateChanged)(__kindof SJBaseVideoPlayer *player) __deprecated_msg("use `rateDidChangeExeBlock`");
-@property (nonatomic) SJDisablePlayerGestureTypes disableGestureTypes __deprecated_msg("use `disabledGestures`");
-@property (nonatomic) float volume __deprecated_msg("use `deviceVolume`");
-@property (nonatomic) float brightness __deprecated_msg("use `deviceBrightness`");
-@property (nonatomic, copy, nullable) void(^playStatusDidChangeExeBlock)(__kindof SJBaseVideoPlayer *videoPlayer);
 - (void)playWithURL:(NSURL *)URL; // 不再建议使用, 请使用`URLAsset`进行初始化
 @property (nonatomic, strong, nullable) NSURL *assetURL;
-@property (nonatomic, copy, nullable) void(^presentationSize)(__kindof SJBaseVideoPlayer *videoPlayer, CGSize size) __deprecated_msg("use `presentationSizeDidChangeExeBlock`");
-- (void)switchVideoDefinitionByURL:(NSURL *)URL; // 切换清晰度, 推荐使用 `switchVideoDefinition:`
 @end
 NS_ASSUME_NONNULL_END

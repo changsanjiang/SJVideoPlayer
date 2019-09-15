@@ -64,10 +64,8 @@
     self.player.floatSmallViewController.doubleTappedOnTheFloatViewExeBlock = ^(id<SJFloatSmallViewControllerProtocol>  _Nonnull controller) {
         __strong typeof(_self) self = _self;
         if ( !self ) return ;
-        if ( self.player.playStatus == SJVideoPlayerPlayStatusPlaying )
-            [self.player pause];
-        else
-            [self.player play];
+        
+        self.player.timeControlStatus == SJPlaybackTimeControlStatusPaused ? [self.player play] : [self.player pause];
     };
     
     // 其他设置请前往头文件`SJFloatSmallViewControllerDefines.h`查看

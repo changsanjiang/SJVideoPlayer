@@ -10,10 +10,8 @@
 #import "SJFloatSmallViewControlLayerResourceLoader.h"
 #if __has_include(<SJBaseVideoPlayer/SJBaseVideoPlayer.h>)
 #import <SJBaseVideoPlayer/SJBaseVideoPlayer.h>
-#import <SJBaseVideoPlayer/SJBaseVideoPlayer+PlayStatus.h>
 #else
-#import "SJBaseVideoPlayer.h"
-#import "SJBaseVideoPlayer+PlayStatus.h"
+#import "SJBaseVideoPlayer.h" 
 #endif
 
 NS_ASSUME_NONNULL_BEGIN

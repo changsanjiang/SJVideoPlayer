@@ -51,8 +51,10 @@ static SJEdgeControlButtonItemTag const SJTestCustomItemTag = 103;
     
 // 以下方法为显示控制层
     [_player controlLayerNeedAppear];
-    [_player showTitle:@"已添加到右侧 `text item`" duration:3];
-
+    [_player.prompt show:[NSAttributedString sj_UIKitText:^(id<SJUIKitTextMakerProtocol>  _Nonnull make) {
+        make.append(@"已添加到右侧 `text item`");
+        make.textColor(UIColor.whiteColor);
+    }] duration:3];
 }
 - (IBAction)exchangeItem:(id)sender {
     [_player.defaultEdgeControlLayer.bottomAdapter exchangeItemForTag:SJEdgeControlLayerBottomItem_DurationTime withItemForTag:SJEdgeControlLayerBottomItem_Progress];
@@ -62,8 +64,10 @@ static SJEdgeControlButtonItemTag const SJTestCustomItemTag = 103;
     
 // 以下方法为显示控制层
     [_player controlLayerNeedAppear];
-    [_player showTitle:@"已交换底部 `时长item`与`进度item`的位置" duration:3];
-
+    [_player.prompt show:[NSAttributedString sj_UIKitText:^(id<SJUIKitTextMakerProtocol>  _Nonnull make) {
+        make.append(@"已交换底部 `时长item`与`进度item`的位置");
+        make.textColor(UIColor.whiteColor);
+    }] duration:3];
 }
 - (IBAction)removeItem:(id)sender {
     [_player.defaultEdgeControlLayer.bottomAdapter removeItemForTag:SJEdgeControlLayerBottomItem_Separator];
@@ -72,7 +76,10 @@ static SJEdgeControlButtonItemTag const SJTestCustomItemTag = 103;
     
     // 以下方法为显示控制层
     [_player controlLayerNeedAppear];
-    [_player showTitle:@"已删除底部 `分割线item`" duration:3];
+    [_player.prompt show:[NSAttributedString sj_UIKitText:^(id<SJUIKitTextMakerProtocol>  _Nonnull make) {
+        make.append(@"已删除底部 `分割线item`");
+        make.textColor(UIColor.whiteColor);
+    }] duration:3];
 }
 
 - (IBAction)imageItem:(id)sender {
@@ -83,7 +90,10 @@ static SJEdgeControlButtonItemTag const SJTestCustomItemTag = 103;
     
     // 以下方法为显示控制层
     [_player controlLayerNeedAppear];
-    [_player showTitle:@"已添加到顶部 `image item`" duration:3];
+    [_player.prompt show:[NSAttributedString sj_UIKitText:^(id<SJUIKitTextMakerProtocol>  _Nonnull make) {
+        make.append(@"已添加到顶部 `image item`");
+        make.textColor(UIColor.whiteColor);
+    }] duration:3];
 }
 - (IBAction)textItem:(id)sender {
     SJEdgeControlButtonItem *item = [[SJEdgeControlButtonItem alloc] initWithTitle:[NSAttributedString sj_UIKitText:^(id<SJUIKitTextMakerProtocol>  _Nonnull make) {
@@ -97,7 +107,10 @@ static SJEdgeControlButtonItemTag const SJTestCustomItemTag = 103;
     
     // 以下方法为显示控制层
     [_player controlLayerNeedAppear];
-    [_player showTitle:@"已添加到顶部 `text item`" duration:3];
+    [_player.prompt show:[NSAttributedString sj_UIKitText:^(id<SJUIKitTextMakerProtocol>  _Nonnull make) {
+        make.append(@"已添加到顶部 `text item`");
+        make.textColor(UIColor.whiteColor);
+    }] duration:3];
 }
 - (IBAction)customViewItem:(id)sender {
     UIView *view = [[UIView alloc] initWithFrame:CGRectMake(0, 0, 80, 49)];
@@ -109,7 +122,10 @@ static SJEdgeControlButtonItemTag const SJTestCustomItemTag = 103;
 
     // 以下方法为显示控制层
     [_player controlLayerNeedAppear];
-    [_player showTitle:@"已添加到顶部 `custom view`" duration:3];
+    [_player.prompt show:[NSAttributedString sj_UIKitText:^(id<SJUIKitTextMakerProtocol>  _Nonnull make) {
+        make.append(@"已添加到顶部 `custom view`");
+        make.textColor(UIColor.whiteColor);
+    }] duration:3];
 }
 
 #pragma mark -
@@ -121,7 +137,7 @@ static SJEdgeControlButtonItemTag const SJTestCustomItemTag = 103;
     }];
     _player.assetURL = SourceURL1;
     _player.fastForwardViewController.enabled = YES; // 开启左右边缘快进快退功能
-    _player.enableFilmEditing = YES;
+    _player.enabledFilmEditing = YES;
     
 }
 

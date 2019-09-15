@@ -14,6 +14,23 @@
 NS_ASSUME_NONNULL_BEGIN
 
 extern NSInteger const SJBaseVideoPlayerViewTag;
-
 extern NSInteger const SJBaseVideoPlayerPresentViewTag;
+
+// - Playback Control -
+
+
+extern NSNotificationName const SJVideoPlayerAssetStatusDidChangeNotification;
+extern NSNotificationName const SJVideoPlayerPlaybackTimeControlStatusDidChangeNotification;
+extern NSNotificationName const SJVideoPlayerDidPlayToEndTimeNotification;
+
+extern NSNotificationName const SJVideoPlayerCurrentTimeDidChangeNotification;
+extern NSNotificationName const SJVideoPlayerDurationDidChangeNotification;
+extern NSNotificationName const SJVideoPlayerPlayableDurationDidChangeNotification;
+extern NSNotificationName const SJVideoPlayerPresentationSizeDidChangeNotification;
+extern NSNotificationName const SJVideoPlayerPlaybackTypeDidChangeNotification;
+
+extern NSNotificationName const SJVideoPlayerRateDidChangeNotification;
+extern NSNotificationName const SJVideoPlayerMutedDidChangeNotification;
+extern NSNotificationName const SJVideoPlayerVolumeDidChangeNotification;
+extern NSNotificationName const SJVideoPlayerLockedScreenDidChangeNotification;
 NS_ASSUME_NONNULL_END

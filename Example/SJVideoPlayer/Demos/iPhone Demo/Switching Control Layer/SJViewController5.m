@@ -26,42 +26,60 @@
 - (IBAction)switchToSJLoadFailedControlLayer:(id)sender {
     [_player.switcher switchControlLayerForIdentitfier:SJControlLayer_LoadFailed];
     
-    [_player showTitle:@"已切换至 加载失败的控制层" duration:3];
+    [_player.prompt show:[NSAttributedString sj_UIKitText:^(id<SJUIKitTextMakerProtocol>  _Nonnull make) {
+        make.append(@"已切换至 加载失败的控制层");
+        make.textColor(UIColor.whiteColor);
+    }] duration:3];
     [_player controlLayerNeedAppear];
 }
 
 - (IBAction)swithToSJFilmEditingControlLayer:(id)sender {
     [_player.switcher switchControlLayerForIdentitfier:SJControlLayer_FilmEditing];
     
-    [_player showTitle:@"已切换至 剪辑的控制层" duration:3];
+    [_player.prompt show:[NSAttributedString sj_UIKitText:^(id<SJUIKitTextMakerProtocol>  _Nonnull make) {
+        make.append(@"已切换至 剪辑的控制层");
+        make.textColor(UIColor.whiteColor);
+    }] duration:3];
     [_player controlLayerNeedAppear];
 }
 
 - (IBAction)switchTOSJFloatSmallViewControlLayer:(id)sender {
     [_player.switcher switchControlLayerForIdentitfier:SJControlLayer_FloatSmallView];
     
-    [_player showTitle:@"已切换至 小浮窗的控制层 (注: 小浮窗控制层, 目前只有右上角一个按钮)" duration:3];
+    [_player.prompt show:[NSAttributedString sj_UIKitText:^(id<SJUIKitTextMakerProtocol>  _Nonnull make) {
+        make.append(@"已切换至 小浮窗的控制层 (注: 小浮窗控制层, 目前只有右上角一个按钮)");
+        make.textColor(UIColor.whiteColor);
+    }] duration:3];
     [_player controlLayerNeedAppear];
 }
 
 - (IBAction)switchToSJMoreSettingControlLayer:(id)sender {
     [_player.switcher switchControlLayerForIdentitfier:SJControlLayer_MoreSettting];
     
-    [_player showTitle:@"已切换至 more控制层" duration:3];
+    [_player.prompt show:[NSAttributedString sj_UIKitText:^(id<SJUIKitTextMakerProtocol>  _Nonnull make) {
+        make.append(@"已切换至 more控制层");
+        make.textColor(UIColor.whiteColor);
+    }] duration:3];
     [_player controlLayerNeedAppear];
 }
 
 - (IBAction)switchToSJNotReachableControlLayer:(id)sender {
     [_player.switcher switchControlLayerForIdentitfier:SJControlLayer_NotReachableAndPlaybackStalled];
     
-    [_player showTitle:@"已切换至 无网无缓冲时的控制层" duration:3];
+    [_player.prompt show:[NSAttributedString sj_UIKitText:^(id<SJUIKitTextMakerProtocol>  _Nonnull make) {
+        make.append(@"已切换至 无网无缓冲时的控制层");
+        make.textColor(UIColor.whiteColor);
+    }] duration:3];
     [_player controlLayerNeedAppear];
 }
 
 - (IBAction)switchToSJEdgeControlLayer:(id)sender {
     [_player.switcher switchControlLayerForIdentitfier:SJControlLayer_Edge];
     
-    [_player showTitle:@"已切换至 默认边缘的控制层" duration:3];
+    [_player.prompt show:[NSAttributedString sj_UIKitText:^(id<SJUIKitTextMakerProtocol>  _Nonnull make) {
+        make.append(@"已切换至 默认边缘的控制层");
+        make.textColor(UIColor.whiteColor);
+    }] duration:3];
     [_player controlLayerNeedAppear];
 }
 

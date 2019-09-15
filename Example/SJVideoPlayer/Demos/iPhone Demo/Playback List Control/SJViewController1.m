@@ -94,26 +94,25 @@ static NSString *const SJTableViewCell1ID = @"SJTableViewCell1";
         [_player.view mas_makeConstraints:^(MASConstraintMaker *make) {
             make.edges.offset(0);
         }];
-        
         __weak typeof(self) _self = self;
-        _player.playDidToEndExeBlock = ^(__kindof SJBaseVideoPlayer * _Nonnull player) {
+        _player.playbackObserver.didPlayToEndTimeExeBlock = ^(__kindof SJBaseVideoPlayer * _Nonnull player) {
             __strong typeof(_self) self = _self;
-            if ( !self ) return ;
+            if ( !self ) return;
             [self.listController currentMediaFinishedPlaying];
         };
-        
         _player.pauseWhenAppDidEnterBackground = NO; ///< 开启后台播放
     }
     
     _player.URLAsset = [[SJVideoPlayerURLAsset alloc] initWithURL:item.URL];
     _player.URLAsset.title = item.mediaTitle;
-    _player.playTimeDidChangeExeBlok = ^(__kindof SJBaseVideoPlayer * _Nonnull videoPlayer) {
+    
+    _player.playbackObserver.currentTimeDidChangeExeBlock = ^(__kindof SJBaseVideoPlayer * _Nonnull player) {
         NSDictionary *info =
         @{MPMediaItemPropertyTitle:item.mediaTitle,
           MPMediaItemPropertyMediaType:@(MPMediaTypeAny),
-          MPNowPlayingInfoPropertyElapsedPlaybackTime:@(videoPlayer.currentTime),
-          MPMediaItemPropertyPlaybackDuration:@(videoPlayer.totalTime),
-          MPNowPlayingInfoPropertyPlaybackRate:@(videoPlayer.rate)};
+          MPNowPlayingInfoPropertyElapsedPlaybackTime:@(player.currentTime),
+          MPMediaItemPropertyPlaybackDuration:@(player.duration),
+          MPNowPlayingInfoPropertyPlaybackRate:@(player.rate)};
         [SJRemoteCommandHandler.shared updateNowPlayingInfo:info];
     };
 

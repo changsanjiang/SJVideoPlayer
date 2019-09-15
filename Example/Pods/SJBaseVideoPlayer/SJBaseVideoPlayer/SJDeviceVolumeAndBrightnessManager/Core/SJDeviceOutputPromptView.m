@@ -27,7 +27,8 @@ NS_ASSUME_NONNULL_BEGIN
 }
 
 - (void)refreshData {
-    _imageView.image = _dataSource.image;
+    if ( _dataSource.image != _imageView.image )
+        _imageView.image = _dataSource.image;
     _progressView.progress = _dataSource.progress;
     _progressView.trackTintColor = _dataSource.trackColor;
     _progressView.progressTintColor = _dataSource.traceColor;

@@ -7,9 +7,18 @@
 //
 
 #import <Foundation/Foundation.h>
-#import "SJMediaPlaybackControllerDefines.h"
+#import "SJVideoPlayerPlaybackControllerDefines.h"
 
 NS_ASSUME_NONNULL_BEGIN
-@interface SJAVMediaPlaybackController : NSObject<SJMediaPlaybackController, SJMediaPlaybackScreenshotController, SJMediaPlaybackExportController>
+@interface SJAVMediaPlaybackController : NSObject<SJVideoPlayerPlaybackController>
+
+@end
+
+@interface SJAVMediaPlaybackController (SJExtendedScreenshot)<SJMediaPlaybackScreenshotController>
+
+@end
+
+@interface SJAVMediaPlaybackController (SJExtendedExport)<SJMediaPlaybackExportController>
+
 @end
 NS_ASSUME_NONNULL_END

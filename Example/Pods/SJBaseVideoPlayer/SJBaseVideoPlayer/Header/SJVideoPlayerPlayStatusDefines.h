@@ -11,77 +11,81 @@
 @class SJBaseVideoPlayer;
 
 NS_ASSUME_NONNULL_BEGIN
-/**
- 当前播放的状态
-
- - SJVideoPlayerPlayStatusUnknown:      未播放任何资源时的状态
- - SJVideoPlayerPlayStatusPrepare:      准备播放一个资源
- - SJVideoPlayerPlayStatusReadyToPlay:  准备就绪, 可以播放
- - SJVideoPlayerPlayStatusPlaying:      播放中
- - SJVideoPlayerPlayStatusPaused:       暂停状态, 请通过`SJVideoPlayerPausedReason`, 查看暂停原因
- - SJVideoPlayerPlayStatusInactivity:   不活跃状态, 请通过`SJVideoPlayerInactivityReason`, 查看暂停原因
- */
-typedef NS_ENUM(NSUInteger, SJVideoPlayerPlayStatus) {
-    SJVideoPlayerPlayStatusUnknown,
-    SJVideoPlayerPlayStatusPrepare,
-    SJVideoPlayerPlayStatusReadyToPlay,
-    SJVideoPlayerPlayStatusPlaying,
-    SJVideoPlayerPlayStatusPaused,
-    SJVideoPlayerPlayStatusInactivity,
-};
-
-/**
- 暂停的理由
-
- - SJVideoPlayerPausedReasonBuffering:   正在缓冲
- - SJVideoPlayerPausedReasonPause:       被暂停
- - SJVideoPlayerPausedReasonSeeking:     正在跳转(调用seekToTime:时)
- */
-typedef NS_ENUM(NSUInteger, SJVideoPlayerPausedReason) {
-    SJVideoPlayerPausedReasonUnknown,
-    SJVideoPlayerPausedReasonBuffering,
-    SJVideoPlayerPausedReasonPause,
-    SJVideoPlayerPausedReasonSeeking,
-};
-
-/**
- 不活跃的原因
- 
- - SJVideoPlayerInactivityReasonPlayEnd:    播放完毕
- - SJVideoPlayerInactivityReasonPlayFailed: 播放失败
- - SJVideoPlayerInactivityReasonNotReachableAndPlaybackStalled: 无网并且缓冲为空, 无法继续播放
- */
-typedef NS_ENUM(NSUInteger, SJVideoPlayerInactivityReason) {
-    SJVideoPlayerInactivityReasonUnknown,
-    SJVideoPlayerInactivityReasonPlayEnd,
-    SJVideoPlayerInactivityReasonPlayFailed,
-    SJVideoPlayerInactivityReasonNotReachableAndPlaybackStalled
-};
-
-
-//Playback type (LIVE, VOD, FILE).
 typedef enum : NSUInteger {
-    SJMediaPlaybackTypeUnknown,
-    SJMediaPlaybackTypeLIVE,
-    SJMediaPlaybackTypeVOD,
-    SJMediaPlaybackTypeFILE
-} SJMediaPlaybackType;
+    SJPlaybackTypeUnknown,
+    SJPlaybackTypeLIVE,
+    SJPlaybackTypeVOD,
+    SJPlaybackTypeFILE
+} SJPlaybackType;
 
-@protocol SJPlayStatusObserver <NSObject>
-@property (nonatomic, copy, nullable) void(^playStatusDidChangeExeBlock)(__kindof SJBaseVideoPlayer *player);
-@end
+typedef NS_ENUM(NSInteger, SJAssetStatus) {
+    ///
+    /// 未知状态
+    ///
+    SJAssetStatusUnknown,
+    
+    ///
+    /// 准备中
+    ///
+    SJAssetStatusPreparing,
+    
+    ///
+    /// 当前资源可随时进行播放(播放控制请查看`timeControlStatus`)
+    ///
+    SJAssetStatusReadyToPlay,
+    
+    ///
+    /// 发生错误
+    ///
+    SJAssetStatusFailed
+};
 
-// deprecated
+typedef NS_ENUM(NSInteger, SJPlaybackTimeControlStatus) {
+    ///
+    /// 暂停状态(已调用暂停或未执行任何操作的状态)
+    ///
+    SJPlaybackTimeControlStatusPaused,
+    
+    ///
+    /// 播放状态(已调用播放), 当前正在缓冲或正在评估能否播放. 可以通过`reasonForWaitingToPlay`来获取原因, UI层可以根据原因来控制loading视图的状态.
+    ///
+    SJPlaybackTimeControlStatusWaitingToPlay,
+    
+    ///
+    /// 播放状态(已调用播放), 当前播放器正在播放
+    ///
+    SJPlaybackTimeControlStatusPlaying
+};
 
-typedef NS_ENUM(NSUInteger, SJVideoPlayerPlayState) {
-    SJVideoPlayerPlayState_Unknown = 0,
-    SJVideoPlayerPlayState_Prepare,
-    SJVideoPlayerPlayState_Playing,
-    SJVideoPlayerPlayState_Buffing,
-    SJVideoPlayerPlayState_Paused,
-    SJVideoPlayerPlayState_PlayEnd,
-    SJVideoPlayerPlayState_PlayFailed,
-} __deprecated_msg("已弃用, 请使用`SJVideoPlayerPlayStatus`");
 
+typedef NSString *SJWaitingReason;
+
+///
+/// 缓冲中, UI层建议显示loading视图 
+///
+extern SJWaitingReason const SJWaitingToMinimizeStallsReason;
+
+///
+/// 正在评估能否播放, 处于此状态时, 不建议UI层显示loading视图
+///
+extern SJWaitingReason const SJWaitingWhileEvaluatingBufferingRateReason;
+
+///
+/// 未设置资源
+///
+extern SJWaitingReason const SJWaitingWithNoAssetToPlayReason;
+
+
+
+
+///
+/// 清晰度的切换状态
+///
+typedef NS_ENUM(NSInteger, SJDefinitionSwitchStatus) {
+    SJDefinitionSwitchStatusUnknown,
+    SJDefinitionSwitchStatusSwitching,
+    SJDefinitionSwitchStatusFinished,
+    SJDefinitionSwitchStatusFailed,
+};
 NS_ASSUME_NONNULL_END
 #endif /* SJVideoPlayerPlayStatusDefines_h */

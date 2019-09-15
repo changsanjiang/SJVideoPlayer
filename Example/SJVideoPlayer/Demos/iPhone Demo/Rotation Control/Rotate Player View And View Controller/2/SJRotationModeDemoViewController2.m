@@ -39,7 +39,7 @@
     [alertController addAction:[UIAlertAction actionWithTitle:@"OK" style:0 handler:^(UIAlertAction * _Nonnull action) {}]];
     
     dispatch_async(dispatch_get_main_queue(), ^{
-        [self.player.atViewController presentViewController:alertController animated:YES completion:nil];
+        [UIApplication.sharedApplication.keyWindow.rootViewController presentViewController:alertController animated:YES completion:nil];
     });
 }
 
@@ -52,6 +52,7 @@
 - (void)tappedCoverOnTheTableViewCell:(SJMediaTableViewCell *)cell {
     if ( _player == nil ) {
         _player = [SJVideoPlayer player];
+        _player.fastForwardViewController.enabled = YES;
         _player.allowHorizontalTriggeringOfPanGesturesInCells = YES;
         [self _observePlayerViewAppearState];
         [self _addTestEdgeItemsToPlayer];

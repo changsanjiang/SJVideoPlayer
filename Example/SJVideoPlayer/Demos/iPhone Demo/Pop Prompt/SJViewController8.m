@@ -34,19 +34,15 @@ NS_ASSUME_NONNULL_BEGIN
         arr = @[@"悲哀化身-内蒙专区", @"车迟国@最终幻想-剑侠风骨", @"老虎222-天竺国", @"今朝醉-云中殿", @"杀手阿七-五明宫", @"浅墨淋雨桥-剑胆琴心"];
     });
     
-    NSAttributedString *text = [NSAttributedString sj_UIKitText:^(id<SJUIKitTextMakerProtocol>  _Nonnull make) {
+    // show
+    [_player.prompt show:[NSAttributedString sj_UIKitText:^(id<SJUIKitTextMakerProtocol>  _Nonnull make) {
         make.append(arr[arc4random() % arr.count]);
         make.textColor(UIColor.whiteColor);
-    }];
-    
-    NSTimeInterval duration = arc4random() % 10 + 2;
-    
-    // show
-    [_player showAttributedString:text duration:duration];
+    }] duration:arc4random() % 10 + 2];
 }
 
 - (IBAction)hidden:(id)sender {
-    [_player hiddenTitle];
+    [_player.prompt hidden];
 }
 
 
@@ -59,13 +55,11 @@ NS_ASSUME_NONNULL_BEGIN
         make.edges.offset(0);
     }];
     
-    _player.controlLayerAppearStateDidChangeExeBlock = ^(SJVideoPlayer * _Nonnull player, BOOL isAppeared) {
-        if ( isAppeared ) {
-            player.popPromptController.bottomMargin = player.defaultEdgeControlLayer.bottomContainerView.bounds.size.height + 8;
-        }
-        else {
-            player.popPromptController.bottomMargin = 16;
-        }
+    __weak typeof(self) _self = self;
+    _player.controlLayerAppearObserver.appearStateDidChangeExeBlock = ^(id<SJControlLayerAppearManager>  _Nonnull mgr) {
+        __strong typeof(_self) self = _self;
+        if ( !self ) return ;
+        self.player.popPromptController.bottomMargin = mgr.isAppeared ? self.player.defaultEdgeControlLayer.bottomContainerView.bounds.size.height : 16;
     };
 }
 

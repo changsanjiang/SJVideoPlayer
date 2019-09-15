@@ -90,6 +90,27 @@
 			remoteGlobalIDString = 6003F589195388D20070C39A;
 			remoteInfo = SJVideoPlayer;
 		};
+		77F2FE9D232E7402003625EA /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 77F2FE97232E7402003625EA /* SJVideoPlayerExample-ObjC.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = 77F2FE62232E73E5003625EA;
+			remoteInfo = "SJVideoPlayerExample-ObjC";
+		};
+		77F2FE9F232E7402003625EA /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 77F2FE97232E7402003625EA /* SJVideoPlayerExample-ObjC.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = 77F2FE7A232E73E6003625EA;
+			remoteInfo = "SJVideoPlayerExample-ObjCTests";
+		};
+		77F2FEA1232E7402003625EA /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 77F2FE97232E7402003625EA /* SJVideoPlayerExample-ObjC.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = 77F2FE85232E73E6003625EA;
+			remoteInfo = "SJVideoPlayerExample-ObjCUITests";
+		};
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
@@ -153,6 +174,7 @@
 		77F2F5D922FAC43000EA0B91 /* SJViewController11.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = SJViewController11.h; sourceTree = "<group>"; };
 		77F2F5DA22FAC43000EA0B91 /* SJViewController11.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = SJViewController11.m; sourceTree = "<group>"; };
 		77F2F5DB22FAC43000EA0B91 /* SJViewController11.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = SJViewController11.xib; sourceTree = "<group>"; };
+		77F2FE97232E7402003625EA /* SJVideoPlayerExample-ObjC.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = "SJVideoPlayerExample-ObjC.xcodeproj"; path = "2 ObjC Example/SJVideoPlayerExample-ObjC/SJVideoPlayerExample-ObjC.xcodeproj"; sourceTree = "<group>"; };
 		7D124A339A8A3126BD5D15EA /* README.md */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = net.daringfireball.markdown; name = README.md; path = ../README.md; sourceTree = "<group>"; };
 		873B8AEA1B1F5CCA007FD442 /* Main.storyboard */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.storyboard; path = Main.storyboard; sourceTree = "<group>"; };
 		A601803922DB5CAC00ED840D /* SJRotationModeDemoViewController3.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = SJRotationModeDemoViewController3.h; sourceTree = "<group>"; };
@@ -255,6 +277,7 @@
 		6003F581195388D10070C39A = {
 			isa = PBXGroup;
 			children = (
+				77F2FE97232E7402003625EA /* SJVideoPlayerExample-ObjC.xcodeproj */,
 				60FF7A9C1954A5C5007DD14C /* Podspec Metadata */,
 				6003F593195388D20070C39A /* Example for SJVideoPlayer */,
 				6003F5B5195388D20070C39A /* Tests */,
@@ -500,6 +523,16 @@
 				77F2F5DB22FAC43000EA0B91 /* SJViewController11.xib */,
 			);
 			path = Other;
+			sourceTree = "<group>";
+		};
+		77F2FE98232E7402003625EA /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				77F2FE9E232E7402003625EA /* SJVideoPlayerExample-ObjC.app */,
+				77F2FEA0232E7402003625EA /* SJVideoPlayerExample-ObjCTests.xctest */,
+				77F2FEA2232E7402003625EA /* SJVideoPlayerExample-ObjCUITests.xctest */,
+			);
+			name = Products;
 			sourceTree = "<group>";
 		};
 		A601803322DB5C4200ED840D /* 3 */ = {
@@ -800,6 +833,12 @@
 			mainGroup = 6003F581195388D10070C39A;
 			productRefGroup = 6003F58B195388D20070C39A /* Products */;
 			projectDirPath = "";
+			projectReferences = (
+				{
+					ProductGroup = 77F2FE98232E7402003625EA /* Products */;
+					ProjectRef = 77F2FE97232E7402003625EA /* SJVideoPlayerExample-ObjC.xcodeproj */;
+				},
+			);
 			projectRoot = "";
 			targets = (
 				6003F589195388D20070C39A /* SJVideoPlayer_Example */,
@@ -807,6 +846,30 @@
 			);
 		};
 /* End PBXProject section */
+
+/* Begin PBXReferenceProxy section */
+		77F2FE9E232E7402003625EA /* SJVideoPlayerExample-ObjC.app */ = {
+			isa = PBXReferenceProxy;
+			fileType = wrapper.application;
+			path = "SJVideoPlayerExample-ObjC.app";
+			remoteRef = 77F2FE9D232E7402003625EA /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+		77F2FEA0232E7402003625EA /* SJVideoPlayerExample-ObjCTests.xctest */ = {
+			isa = PBXReferenceProxy;
+			fileType = wrapper.cfbundle;
+			path = "SJVideoPlayerExample-ObjCTests.xctest";
+			remoteRef = 77F2FE9F232E7402003625EA /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+		77F2FEA2232E7402003625EA /* SJVideoPlayerExample-ObjCUITests.xctest */ = {
+			isa = PBXReferenceProxy;
+			fileType = wrapper.cfbundle;
+			path = "SJVideoPlayerExample-ObjCUITests.xctest";
+			remoteRef = 77F2FEA1232E7402003625EA /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+/* End PBXReferenceProxy section */
 
 /* Begin PBXResourcesBuildPhase section */
 		6003F588195388D20070C39A /* Resources */ = {

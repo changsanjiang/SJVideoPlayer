@@ -199,6 +199,7 @@ _player.URLAsset = [[SJVideoPlayerURLAsset alloc] initWithURL:URL];
 * [20.6 自定义loadingView](#20.6)
 * [20.7 调整边距](#20.7)
 * [20.8 取消控制层上下视图的阴影](#20.8)
+
 ___
 
 

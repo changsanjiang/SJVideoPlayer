@@ -1,0 +1,6 @@
+framework module SJVideoPlayer {
+  umbrella header "SJVideoPlayer-umbrella.h"
+
+  export *
+  module * { export * }
+}

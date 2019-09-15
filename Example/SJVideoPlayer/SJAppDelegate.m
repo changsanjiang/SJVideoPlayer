@@ -20,7 +20,7 @@ static BOOL _iPhone_shouldAutorotate(UIViewController *vc) {
     //
     // return NO;
     
-    // - 为避免控制器同播放器一起旋转, 此处为禁止SJ前缀的控制器旋转.
+    // - 为避免控制器同播放器一起旋转, 此处为禁止Demo中SJ前缀的控制器旋转.
     if ( [class hasPrefix:@"SJ"] ) {
         return NO;
     }

@@ -180,6 +180,15 @@ _player.URLAsset = [[SJVideoPlayerURLAsset alloc] initWithURL:URL];
 * [17.3 关闭](#17.3)
 * [17.4 主动调用播放下一个资源](#17.4)
 
+#### [18. 对控制层上的Item的操作](#18)
+* [18.1 添加](#18.1)
+* [18.2 删除](#18.2)
+* [18.3 调整位置](#18.3)
+
+#### [19. 对控制层上的Item的一些补充](#19)
+* [19.1 设置与前后item的间距](#19.1)
+* [19.2 设置隐藏](#19.2)
+* [19.3 填充剩余空间](#19.3)
 
 ___
 
@@ -1623,4 +1632,52 @@ autoplayDelegate:(id<SJPlayerAutoplayDelegate>)autoplayDelegate;
 [_tableView sj_needPlayNextAsset];
 ```
 
-___
+<h2 id="18">18. 对控制层上面的Item的操作</h2>
+
+<h3 id="18.1">18.1 添加</h3>
+
+```Objective-C
+SJEdgeControlButtonItem *item = [[SJEdgeControlButtonItem alloc] initWithImage:[UIImage imageNamed:@"test"] target:self action:@selector(test) tag:SJTestImageItemTag];
+[_player.defaultEdgeControlLayer.topAdapter addItem:item];
+[_player.defaultEdgeControlLayer.topAdapter reload];
+```
+
+<h3 id="18.2">18.2 删除</h3>
+
+```Objective-C
+[_player.defaultEdgeControlLayer.bottomAdapter removeItemForTag:SJEdgeControlLayerBottomItem_Separator];
+[_player.defaultEdgeControlLayer.bottomAdapter reload];
+```
+
+<h3 id="18.3">18.3 调整位置</h3>
+
+```Objective-C
+[_player.defaultEdgeControlLayer.bottomAdapter exchangeItemForTag:SJEdgeControlLayerBottomItem_DurationTime withItemForTag:SJEdgeControlLayerBottomItem_Progress];
+[_player.defaultEdgeControlLayer.bottomAdapter reload];
+```
+
+<h2 id="19">19. 对控制层上的Item的一些补充</h2>
+
+<h3 id="19.1">19.1 设置与前后item的间距</h3>
+
+```Objective-C
+SJEdgeControlButtonItem *titleItem = [_player.defaultEdgeControlLayer.topAdapter itemForTag:SJEdgeControlLayerTopItem_Title];
+titleItem.insets = SJEdgeInsetsMake(16, 16);
+[_player.defaultEdgeControlLayer.topAdapter reload];
+```
+
+<h3 id="19.2">19.2 设置隐藏</h3>
+
+```Objective-C
+SJEdgeControlButtonItem *titleItem = [_player.defaultEdgeControlLayer.topAdapter itemForTag:SJEdgeControlLayerTopItem_Title];
+titleItem.hidden = YES;
+[_player.defaultEdgeControlLayer.topAdapter reload];
+```
+
+<h3 id="19.3">19.3 填充剩余空间</h3>
+
+```Objective-C
+SJEdgeControlButtonItem *titleItem = [_player.defaultEdgeControlLayer.topAdapter itemForTag:SJEdgeControlLayerTopItem_Title];
+titleItem.fill = YES;
+[_player.defaultEdgeControlLayer.topAdapter reload];
+```

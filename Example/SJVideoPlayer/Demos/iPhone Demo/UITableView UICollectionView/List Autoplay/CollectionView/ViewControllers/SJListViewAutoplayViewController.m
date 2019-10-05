@@ -2,7 +2,7 @@
 //  SJListViewAutoplayViewController.m
 //  SJVideoPlayer_Example
 //
-//  Created by BlueDancer on 2019/8/16.
+//  Created by 畅三江 on 2019/8/16.
 //  Copyright © 2019 changsanjiang. All rights reserved.
 //
 
@@ -39,7 +39,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (void)sj_playerNeedPlayNewAssetAtIndexPath:(NSIndexPath *)indexPath {
 #ifdef DEBUG
-    NSLog(@"%d - %s", (int)__LINE__, __func__);
+    NSLog(@"%d \t %s", (int)__LINE__, __func__);
 #endif
     
     if ( indexPath != nil ) {

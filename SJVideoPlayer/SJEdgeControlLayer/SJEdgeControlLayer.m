@@ -2,7 +2,7 @@
 //  SJEdgeControlLayer.m
 //  SJVideoPlayer
 //
-//  Created by BlueDancer on 2018/10/24.
+//  Created by 畅三江 on 2018/10/24.
 //  Copyright © 2018 畅三江. All rights reserved.
 //
 
@@ -10,12 +10,6 @@
 #import <SJUIKit/SJAttributesFactory.h>
 #else
 #import "SJAttributesFactory.h"
-#endif
-
-#if __has_include(<SJUIKit/NSObject+SJObserverHelper.h>)
-#import <SJUIKit/NSObject+SJObserverHelper.h>
-#else
-#import "NSObject+SJObserverHelper.h"
 #endif
 
 #if __has_include(<Masonry/Masonry.h>)
@@ -90,6 +84,10 @@ SJEdgeControlButtonItemTag const SJEdgeControlLayerCenterItem_Replay = 40000;
     return self;
 }
 
+- (void)dealloc {
+    [NSNotificationCenter.defaultCenter removeObserver:self];
+}
+
 #pragma mark -
 
 ///
@@ -123,8 +121,8 @@ SJEdgeControlButtonItemTag const SJEdgeControlLayerCenterItem_Replay = 40000;
 #pragma mark - item actions
 
 - (void)_tappedBackItem {
-    if ( [self.delegate respondsToSelector:@selector(tappedBackButtonOnTheControlLayer:)] ) {
-        [self.delegate tappedBackButtonOnTheControlLayer:self];
+    if ( [self.delegate respondsToSelector:@selector(backItemWasTappedForControlLayer:)] ) {
+        [self.delegate backItemWasTappedForControlLayer:self];
     }
 }
 
@@ -162,9 +160,7 @@ SJEdgeControlButtonItemTag const SJEdgeControlLayerCenterItem_Replay = 40000;
     sj_view_initializes(@[self.topContainerView, self.leftContainerView,
                           self.bottomContainerView, self.rightContainerView]);
     
-    [self sj_observeWithNotification:SJEdgeControlButtonItemPerformedActionNotification target:nil usingBlock:^(SJEdgeControlLayer *self, NSNotification * _Nonnull note) {
-        [self _resetControlLayerAppearIntervalForItemIfNeeded:note.object];
-    }];
+    [NSNotificationCenter.defaultCenter addObserver:self selector:@selector(_resetControlLayerAppearIntervalForItemIfNeeded:) name:SJEdgeControlButtonItemPerformedActionNotification object:nil];
 }
 
 - (void)_addItemsToTopAdapter {
@@ -1051,7 +1047,8 @@ SJEdgeControlButtonItemTag const SJEdgeControlLayerCenterItem_Replay = 40000;
     }];
 }
 
-- (void)_resetControlLayerAppearIntervalForItemIfNeeded:(SJEdgeControlButtonItem *)item {
+- (void)_resetControlLayerAppearIntervalForItemIfNeeded:(NSNotification *)note {
+    SJEdgeControlButtonItem *item = note.object;
     if ( [_topAdapter containsItem:item] ) {
         if ( item.tag == SJEdgeControlLayerTopItem_Back )
             return;

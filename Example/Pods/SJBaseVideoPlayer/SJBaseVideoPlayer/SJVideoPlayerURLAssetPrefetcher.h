@@ -2,7 +2,7 @@
 //  SJVideoPlayerURLAssetPrefetcher.h
 //  Pods
 //
-//  Created by BlueDancer on 2019/3/28.
+//  Created by 畅三江 on 2019/3/28.
 //
 
 #import <Foundation/Foundation.h>

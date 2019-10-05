@@ -2,8 +2,8 @@
 //  SJDeviceVolumeAndBrightnessManager.m
 //  SJDeviceVolumeAndBrightnessManager
 //
-//  Created by BlueDancer on 2017/12/10.
-//  Copyright © 2017年 SanJiang. All rights reserved.
+//  Created by 畅三江 on 2017/12/10.
+//  Copyright © 2017年 changsanjiang. All rights reserved.
 //
 
 #import "SJDeviceVolumeAndBrightnessManager.h"
@@ -133,15 +133,12 @@ static NSNotificationName const SJDeviceBrightnessDidChangeNotification = @"SJDe
         });
     });
     
-    SJRunLoopTaskQueue.main.enqueue(^{
-        for ( UIView *subview in self.sysVolumeView.subviews ) {
-            if ( [subview.class.description isEqualToString:@"MPVolumeSlider"] ) {
-                self->_sysVolumeSlider = (UISlider *)subview;
-                break;
-            }
+    for ( UIView *subview in self.sysVolumeView.subviews ) {
+        if ( [subview.class.description isEqualToString:@"MPVolumeSlider"] ) {
+            self->_sysVolumeSlider = (UISlider *)subview;
+            break;
         }
-    });
-
+    }
     return self;
 }
 

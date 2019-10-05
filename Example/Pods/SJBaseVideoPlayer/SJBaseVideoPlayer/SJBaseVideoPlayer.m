@@ -2,8 +2,8 @@
 //  SJBaseVideoPlayer.m
 //  SJBaseVideoPlayerProject
 //
-//  Created by BlueDancer on 2018/2/2.
-//  Copyright © 2018年 SanJiang. All rights reserved.
+//  Created by 畅三江 on 2018/2/2.
+//  Copyright © 2018年 changsanjiang. All rights reserved.
 //
 
 #import "SJBaseVideoPlayer.h"
@@ -35,12 +35,6 @@
 #import <Masonry/Masonry.h>
 #else
 #import "Masonry.h"
-#endif
-
-#if __has_include(<SJUIKit/NSObject+SJObserverHelper.h>)
-#import <SJUIKit/NSObject+SJObserverHelper.h>
-#else
-#import "NSObject+SJObserverHelper.h"
 #endif
 
 NS_ASSUME_NONNULL_BEGIN
@@ -247,7 +241,7 @@ _lookupResponder(UIView *view, Class cls) {
 
 - (void)dealloc {
 #ifdef DEBUG
-    NSLog(@"SJVideoPlayerLog: %d - %s", (int)__LINE__, __func__);
+    NSLog(@"%d \t %s", (int)__LINE__, __func__);
 #endif
     if ( _URLAsset != nil && self.assetDeallocExeBlock )
         self.assetDeallocExeBlock(self);
@@ -332,7 +326,9 @@ _lookupResponder(UIView *view, Class cls) {
 }
 
 - (void)presentViewDidLayoutSubviews:(SJVideoPlayerPresentView *)presentView {
-    _controlLayerDataSource.controlView.frame = presentView.bounds;
+    if ( !CGSizeEqualToSize(_controlLayerDataSource.controlView.frame.size, presentView.bounds.size) ) {    
+        _controlLayerDataSource.controlView.frame = presentView.bounds;
+    }
 }
 
 //- (void)presentViewWillMoveToWindow:(nullable UIWindow *)window { }

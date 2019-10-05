@@ -2,8 +2,8 @@
 //  NSTimer+SJAssetAdd.m
 //  SJVideoPlayerAssetCarrier
 //
-//  Created by BlueDancer on 2018/5/21.
-//  Copyright © 2018年 SanJiang. All rights reserved.
+//  Created by 畅三江 on 2018/5/21.
+//  Copyright © 2018年 changsanjiang. All rights reserved.
 //
 
 #import "NSTimer+SJAssetAdd.h"

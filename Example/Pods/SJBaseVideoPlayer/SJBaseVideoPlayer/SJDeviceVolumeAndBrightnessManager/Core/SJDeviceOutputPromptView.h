@@ -2,7 +2,7 @@
 //  SJDeviceOutputPromptView.h
 //  Pods
 //
-//  Created by BlueDancer on 2019/8/6.
+//  Created by 畅三江 on 2019/8/6.
 //
 
 #import <UIKit/UIKit.h>

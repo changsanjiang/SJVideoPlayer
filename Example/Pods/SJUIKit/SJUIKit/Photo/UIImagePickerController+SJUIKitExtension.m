@@ -2,7 +2,7 @@
 //  UIImagePickerController+Extension.m
 //  dancebaby
 //
-//  Created by BlueDancer on 2017/7/31.
+//  Created by 畅三江 on 2017/7/31.
 //  Copyright © 2017年 hunter. All rights reserved.
 //
 

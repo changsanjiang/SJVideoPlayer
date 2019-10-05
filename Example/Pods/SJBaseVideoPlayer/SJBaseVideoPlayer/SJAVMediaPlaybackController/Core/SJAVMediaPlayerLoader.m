@@ -2,7 +2,7 @@
 //  SJAVMediaPlayerLoader.m
 //  Pods
 //
-//  Created by BlueDancer on 2019/4/10.
+//  Created by 畅三江 on 2019/4/10.
 //
 
 #import "SJAVMediaPlayerLoader.h"

@@ -2,7 +2,7 @@
 //  SJPlayerAutoplayConfig.h
 //  Masonry
 //
-//  Created by BlueDancer on 2018/7/10.
+//  Created by 畅三江 on 2018/7/10.
 //
 
 #import <Foundation/Foundation.h>

@@ -5,7 +5,7 @@
 [![Platform](https://img.shields.io/badge/platform-iOS-blue.svg)](https://github.com/changsanjiang)
 [![License](https://img.shields.io/github/license/changsanjiang/SJVideoPlayer.svg)](https://github.com/changsanjiang/SJVideoPlayer/blob/master/LICENSE.md)
 
-### Installation
+## Installation
 ```ruby
 # Player with default control layer.
 pod 'SJVideoPlayer'
@@ -14,7 +14,7 @@ pod 'SJVideoPlayer'
 pod 'SJBaseVideoPlayer'
 ```
 
-### 天朝
+## 天朝
 ```ruby
 # 如果网络不行安装不了, 可改成以下方式进行安装
 pod 'SJBaseVideoPlayer', :git => 'https://gitee.com/changsanjiang/SJBaseVideoPlayer.git'
@@ -37,6 +37,11 @@ _player.URLAsset = [[SJVideoPlayerURLAsset alloc] initWithURL:URL];
 
 ... 等等, 更多设置, 请查看头文件. 相应功能均为懒加载, 用到时才会创建. 
 ```
+
+## Author
+
+Email: changsanjiang@gmail.com
+QQGroup: 930508201 (iOS 开发)
 
 ## Documents
 

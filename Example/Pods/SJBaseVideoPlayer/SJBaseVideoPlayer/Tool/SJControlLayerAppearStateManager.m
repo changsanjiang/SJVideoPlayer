@@ -2,18 +2,15 @@
 //  SJControlLayerAppearStateManager.m
 //  SJBaseVideoPlayer
 //
-//  Created by BlueDancer on 2018/12/28.
+//  Created by 畅三江 on 2018/12/28.
 //
 
 #import "SJControlLayerAppearStateManager.h"
-#if __has_include(<SJUIKit/NSObject+SJObserverHelper.h>)
-#import <SJUIKit/NSObject+SJObserverHelper.h>
-#else
-#import "NSObject+SJObserverHelper.h"
-#endif
 #import "SJTimerControl.h"
 
 NS_ASSUME_NONNULL_BEGIN
+static NSNotificationName const SJControlLayerAppearStateDidChangeNotification = @"SJControlLayerAppearStateDidChangeNotification";
+
 @interface SJControlLayerAppearManagerObserver : NSObject<SJControlLayerAppearManagerObserver>
 - (instancetype)initWithManager:(id<SJControlLayerAppearManager>)mgr;
 @end
@@ -24,14 +21,20 @@ NS_ASSUME_NONNULL_BEGIN
     self = [super init];
     if ( !self )
         return nil;
-    [mgr sj_addObserver:self forKeyPath:@"isAppeared"];
+    
+    [NSNotificationCenter.defaultCenter addObserver:self selector:@selector(appearStateDidChange:) name:SJControlLayerAppearStateDidChangeNotification object:mgr];
+    
     return self;
 }
 
-- (void)observeValueForKeyPath:(NSString *_Nullable)keyPath ofObject:(id _Nullable)object change:(NSDictionary<NSKeyValueChangeKey,id> *_Nullable)change context:(void *_Nullable)context {
+- (void)dealloc {
+    [NSNotificationCenter.defaultCenter removeObserver:self];
+}
 
+- (void)appearStateDidChange:(NSNotification *)note {
+    SJControlLayerAppearStateManager *mgr = note.object;
     if ( _appearStateDidChangeExeBlock )
-        _appearStateDidChangeExeBlock(object);
+        _appearStateDidChangeExeBlock(mgr);
 }
 @end
 
@@ -106,6 +109,11 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (void)keepDisappearState {
     [self needDisappear];
+}
+
+- (void)setIsAppeared:(BOOL)isAppeared {
+    _isAppeared = isAppeared;
+    [NSNotificationCenter.defaultCenter postNotificationName:SJControlLayerAppearStateDidChangeNotification object:self];
 }
 
 #pragma mark -

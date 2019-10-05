@@ -3,7 +3,7 @@
 //  Pods-SJSQLite3_Example
 //
 //  Created by 畅三江 on 2019/7/26.
-//  Copyright © 2019 SanJiang. All rights reserved.
+//  Copyright © 2019 changsanjiang. All rights reserved.
 //
 
 #import "SJSQLiteTableModelConstraints.h"

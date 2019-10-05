@@ -2,8 +2,8 @@
 //  SJDeviceVolumeAndBrightnessManagerResourceLoader.h
 //  SJDeviceVolumeAndBrightnessManager
 //
-//  Created by BlueDancer on 2017/12/10.
-//  Copyright © 2017年 SanJiang. All rights reserved.
+//  Created by 畅三江 on 2017/12/10.
+//  Copyright © 2017年 changsanjiang. All rights reserved.
 //
 
 #import <UIKit/UIKit.h>

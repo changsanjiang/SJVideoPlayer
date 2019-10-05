@@ -2,8 +2,8 @@
 //  SJBaseVideoPlayer.h
 //  SJBaseVideoPlayerProject
 //
-//  Created by BlueDancer on 2018/2/2.
-//  Copyright © 2018年 SanJiang. All rights reserved.
+//  Created by 畅三江 on 2018/2/2.
+//  Copyright © 2018年 changsanjiang. All rights reserved.
 //
 //  GitHub:     https://github.com/changsanjiang/SJBaseVideoPlayer
 //  GitHub:     https://github.com/changsanjiang/SJVideoPlayer
@@ -25,7 +25,7 @@
 #import "SJEdgeFastForwardViewControllerDefines.h"
 #import "SJVideoDefinitionSwitchingInfo.h"
 #import "SJPopPromptControllerProtocol.h"
-#import "SJBaseVideoPlayerObservation.h"
+#import "SJPlaybackObservation.h"
 #import "SJVideoPlayerPresentViewDefines.h"
 #import "SJPromptDefines.h"
 

@@ -2,8 +2,8 @@
 //  DemoTableViewCell.h
 //  MJRefreshDemo
 //
-//  Created by BlueDancer on 2019/5/4.
-//  Copyright © 2019 SanJiang. All rights reserved.
+//  Created by 畅三江 on 2019/5/4.
+//  Copyright © 2019 changsanjiang. All rights reserved.
 //
 
 #import <UIKit/UIKit.h>

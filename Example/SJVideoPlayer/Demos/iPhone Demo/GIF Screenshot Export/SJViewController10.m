@@ -2,7 +2,7 @@
 //  SJViewController10.m
 //  SJVideoPlayer_Example
 //
-//  Created by BlueDancer on 2019/7/24.
+//  Created by 畅三江 on 2019/7/24.
 //  Copyright © 2019 changsanjiang. All rights reserved.
 //
 

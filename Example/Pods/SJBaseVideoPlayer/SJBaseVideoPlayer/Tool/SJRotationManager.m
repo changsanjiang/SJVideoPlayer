@@ -7,11 +7,6 @@
 //
 
 #import "SJRotationManager.h"
-#if __has_include(<SJUIKit/NSObject+SJObserverHelper.h>)
-#import <SJUIKit/NSObject+SJObserverHelper.h>
-#else
-#import "NSObject+SJObserverHelper.h"
-#endif
 
 #if __has_include(<SJUIKit/SJRunLoopTaskQueue.h>)
 #import <SJUIKit/SJRunLoopTaskQueue.h>
@@ -187,7 +182,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 #ifdef DEBUG
 - (void)dealloc {
-    NSLog(@"%d - -[%@ %s]", (int)__LINE__, NSStringFromClass([self class]), sel_getName(_cmd));
+    NSLog(@"%d \t %s", (int)__LINE__, __func__);
 }
 #endif
 
@@ -247,10 +242,11 @@ NS_ASSUME_NONNULL_BEGIN
 
 
 
+static NSNotificationName const SJRotationManagerTransitioningValueDidChangeNotification = @"SJRotationManagerTransitioningValueDidChangeNotification";
+
 @interface SJRotationManagerObserver : NSObject<SJRotationManagerObserver>
 - (instancetype)initWithRotationManager:(SJRotationManager *)mgr;
 @end
-
 
 @interface SJRotationManager ()<SJFullscreenModeViewControllerDelegate, SJFullscreenModeNavigationControllerDelegate>
 @property (nonatomic, strong) SJFullscreenModeWindow *window;
@@ -465,7 +461,7 @@ NS_ASSUME_NONNULL_BEGIN
     self.window.fullscreenModeViewController.isRotated = NO;
     
 //#ifdef DEBUG
-//    NSLog(@"%d - %s", (int)__LINE__, __func__);
+//    NSLog(@"%d \t %s", (int)__LINE__, __func__);
 //#endif
 }
 
@@ -479,7 +475,7 @@ NS_ASSUME_NONNULL_BEGIN
     _completionHandler = nil;
 
 //#ifdef DEBUG
-//    NSLog(@"%d - %s", (int)__LINE__, __func__);
+//    NSLog(@"%d \t %s", (int)__LINE__, __func__);
 //#endif
 }
 
@@ -494,9 +490,13 @@ NS_ASSUME_NONNULL_BEGIN
     }
     return NO;
 }
+
+#pragma mark -
+- (void)setTransitioning:(BOOL)transitioning {
+    _transitioning = transitioning;
+    [NSNotificationCenter.defaultCenter postNotificationName:SJRotationManagerTransitioningValueDidChangeNotification object:self];
+}
 @end
-
-
 
 @implementation SJRotationManagerObserver {
     __weak SJRotationManager *_Nullable _mgr;
@@ -508,22 +508,23 @@ NS_ASSUME_NONNULL_BEGIN
     self = [super init];
     if ( !self )
         return nil;
-    _mgr = mgr;
-    [mgr sj_addObserver:self forKeyPath:@"transitioning"];
+    [NSNotificationCenter.defaultCenter addObserver:self selector:@selector(transitioningValueDidChange:) name:SJRotationManagerTransitioningValueDidChangeNotification object:mgr];
     return self;
 }
 
-- (void)observeValueForKeyPath:(NSString *_Nullable)keyPath ofObject:(id _Nullable)object change:(NSDictionary<NSKeyValueChangeKey,id> * _Nullable)change context:(void * _Nullable)context {
-    if ( [change[NSKeyValueChangeOldKey] boolValue] == [change[NSKeyValueChangeNewKey] boolValue] )
-        return;
-    
-    if ( _mgr.isTransitioning ) {
+- (void)dealloc {
+    [NSNotificationCenter.defaultCenter removeObserver:self];
+}
+
+- (void)transitioningValueDidChange:(NSNotification *)note {
+    SJRotationManager *mgr = note.object;
+    if ( mgr.isTransitioning ) {
         if ( _rotationDidStartExeBlock )
-            _rotationDidStartExeBlock(_mgr);
+            _rotationDidStartExeBlock(mgr);
     }
     else {
         if ( _rotationDidEndExeBlock )
-            _rotationDidEndExeBlock(_mgr);
+            _rotationDidEndExeBlock(mgr);
     }
 }
 @end

@@ -22,12 +22,6 @@
 #import "SJBaseVideoPlayerConst.h"
 #endif
 
-#if __has_include(<SJUIKit/NSObject+SJObserverHelper.h>)
-#import <SJUIKit/NSObject+SJObserverHelper.h>
-#else
-#import "NSObject+SJObserverHelper.h"
-#endif
-
 #if __has_include(<SJUIKit/SJAttributesFactory.h>)
 #import <SJUIKit/SJAttributesFactory.h>
 #else
@@ -49,14 +43,15 @@ NS_ASSUME_NONNULL_BEGIN
 @end
 
 @implementation SJVideoPlayer
-#ifdef DEBUG
 - (void)dealloc {
-    NSLog(@"%d - %s", (int)__LINE__, __func__);
-}
+    [NSNotificationCenter.defaultCenter removeObserver:self];
+#ifdef DEBUG
+    NSLog(@"%d \t %s", (int)__LINE__, __func__);
 #endif
+}
 
 + (NSString *)version {
-    return @"v3.0.0";
+    return @"v3.0.1";
 }
 
 + (instancetype)player {
@@ -140,32 +135,9 @@ NS_ASSUME_NONNULL_BEGIN
 }
 
 - (void)_initializeAssetStatusObserver {
-    [self sj_observeWithNotification:SJVideoPlayerAssetStatusDidChangeNotification target:self usingBlock:^(SJVideoPlayer *self, NSNotification * _Nonnull note) {
-        // 资源出错时
-        // - 发生错误时, 切换到加载失败控制层
-        //
-        if ( self.assetStatus == SJAssetStatusFailed ) {
-            [self.switcher switchControlLayerForIdentitfier:SJControlLayer_LoadFailed];
-        }
-    }];
-    
-    [self sj_observeWithNotification:SJVideoPlayerPlaybackTimeControlStatusDidChangeNotification target:self usingBlock:^(SJVideoPlayer *self, NSNotification * _Nonnull note) {
-        // 当处于缓冲状态时
-        // - 当前如果没有网络, 则切换到无网空制层
-        //
-        if ( self.reasonForWaitingToPlay == SJWaitingToMinimizeStallsReason ) {
-            if ( SJReachability.shared.networkStatus == SJNetworkStatus_NotReachable ) {
-                // 切换
-                [self.switcher switchControlLayerForIdentitfier:SJControlLayer_NotReachableAndPlaybackStalled];
-            }
-        }
-        else {
-            if ( self.switcher.currentIdentifier == SJControlLayer_LoadFailed ||
-                 self.switcher.currentIdentifier == SJControlLayer_NotReachableAndPlaybackStalled ) {
-                [self.switcher switchControlLayerForIdentitfier:SJControlLayer_Edge];
-            }
-        }
-    }];
+    [NSNotificationCenter.defaultCenter addObserver:self selector:@selector(_switchControlLayerIfNeeded) name:SJVideoPlayerPlaybackTimeControlStatusDidChangeNotification object:self];
+    [NSNotificationCenter.defaultCenter addObserver:self selector:@selector(_switchControlLayerIfNeeded) name:SJVideoPlayerAssetStatusDidChangeNotification object:self];
+    [NSNotificationCenter.defaultCenter addObserver:self selector:@selector(_switchControlLayerIfNeeded) name:SJVideoPlayerDidPlayToEndTimeNotification object:self];
 }
 
 - (void)_initializeSettingsRecorder {
@@ -347,6 +319,30 @@ NS_ASSUME_NONNULL_BEGIN
 
 // - actions -
 
+- (void)_switchControlLayerIfNeeded {
+    // 资源出错时
+    // - 发生错误时, 切换到加载失败控制层
+    //
+    if ( self.assetStatus == SJAssetStatusFailed ) {
+        [self.switcher switchControlLayerForIdentitfier:SJControlLayer_LoadFailed];
+    }
+    // 当处于缓冲状态时
+    // - 当前如果没有网络, 则切换到无网空制层
+    //
+    else if ( self.reasonForWaitingToPlay == SJWaitingToMinimizeStallsReason ) {
+        if ( SJReachability.shared.networkStatus == SJNetworkStatus_NotReachable ) {
+            // 切换
+            [self.switcher switchControlLayerForIdentitfier:SJControlLayer_NotReachableAndPlaybackStalled];
+        }
+    }
+    else {
+        if ( self.switcher.currentIdentifier == SJControlLayer_LoadFailed ||
+             self.switcher.currentIdentifier == SJControlLayer_NotReachableAndPlaybackStalled ) {
+            [self.switcher switchControlLayerForIdentitfier:SJControlLayer_Edge];
+        }
+    }
+}
+
 - (void)clickedMoreButtonItem:(SJEdgeControlButtonItem *)moreButtonItem {
     [self.switcher switchControlLayerForIdentitfier:SJControlLayer_MoreSettting];
 }
@@ -427,11 +423,11 @@ _atViewController(UIView *view) {
     [self.switcher switchToPreviousControlLayer];
 }
 
-- (void)tappedBackButtonOnTheControlLayer:(id<SJControlLayer>)controlLayer {
+- (void)backItemWasTappedForControlLayer:(id<SJControlLayer>)controlLayer {
     [self _handleClickedBackButtonEvent];
 }
 
-- (void)tappedReloadButtonOnTheControlLayer:(id<SJControlLayer>)controlLayer {
+- (void)reloadItemWasTappedForControlLayer:(id<SJControlLayer>)controlLayer {
     [self refresh];
     [self.switcher switchControlLayerForIdentitfier:SJControlLayer_Edge];
 }

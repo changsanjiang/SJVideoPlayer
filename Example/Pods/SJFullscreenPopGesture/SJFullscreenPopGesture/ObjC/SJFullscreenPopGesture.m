@@ -3,7 +3,7 @@
 //  SJBackGRProject
 //
 //  Created by 畅三江 on 2019/7/17.
-//  Copyright © 2019 SanJiang. All rights reserved.
+//  Copyright © 2019 changsanjiang. All rights reserved.
 //
 
 #import "SJFullscreenPopGesture.h"
@@ -455,6 +455,7 @@ NS_ASSUME_NONNULL_BEGIN
     self.view.layer.shadowRadius = 2;
     self.view.layer.shadowPath = [UIBezierPath bezierPathWithRect:self.view.bounds].CGPath;
     [CATransaction commit];
+    self.view.clipsToBounds = NO;
     
     [self.view addGestureRecognizer:self.sj_fullscreenGesture];
 }

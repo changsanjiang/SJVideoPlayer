@@ -1,8 +1,8 @@
 //
 //  SJButtonProgressSlider.h
 //
-//  Created by BlueDancer on 2017/11/20.
-//  Copyright © 2017年 SanJiang. All rights reserved.
+//  Created by 畅三江 on 2017/11/20.
+//  Copyright © 2017年 changsanjiang. All rights reserved.
 //
 
 #import "SJCommonProgressSlider.h"

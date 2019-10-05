@@ -2,25 +2,15 @@
 //  SJAVBasePlayer.m
 //  SJUIKit
 //
-//  Created by BlueDancer on 2019/8/26.
+//  Created by 畅三江 on 2019/8/26.
 //
 
 #import "SJAVBasePlayer.h"
-#if __has_include(<SJUIKit/NSObject+SJObserverHelper.h>)
-#import <SJUIKit/NSObject+SJObserverHelper.h>
-#else
-#import "NSObject+SJObserverHelper.h"
-#endif
 
 NS_ASSUME_NONNULL_BEGIN
 SJWaitingReason const SJWaitingToMinimizeStallsReason = @"AVPlayerWaitingToMinimizeStallsReason";
 SJWaitingReason const SJWaitingWhileEvaluatingBufferingRateReason = @"AVPlayerWaitingWhileEvaluatingBufferingRateReason";
 SJWaitingReason const SJWaitingWithNoAssetToPlayReason = @"AVPlayerWaitingWithNoItemToPlayReason";
-
-typedef struct {
-    BOOL isSeeking;
-    CMTime time;
-} SJAVBasePlayerSeekingInfo;
 
 @interface SJAVBasePlayer ()
 @property (nonatomic, nullable) SJWaitingReason sj_reasonForWaitingToPlay;
@@ -30,20 +20,38 @@ typedef struct {
 @property (nonatomic) SJAssetStatus sj_assetStatus;
 
 @property (nonatomic) SJAVBasePlayerSeekingInfo seekingInfo;
+
+@property (nonatomic, strong) SJAVBasePlayerItemObserver *sj_itemObsever;
 @end
 
 @implementation SJAVBasePlayer
-- (instancetype)initWithPlayerItem:(nullable AVPlayerItem *)item {
+static NSString *kStatus = @"status";
+static NSString *kTimeControlStatus = @"timeControlStatus";
+
+- (nullable instancetype)initWithBasePlayerItem:(SJAVBasePlayerItem *)item {
+    if ( item == nil ) return nil;
     self = [super initWithPlayerItem:item];
-    if ( !self ) return nil;
-    
-    __weak typeof(self) _self = self;
-    dispatch_async(dispatch_get_main_queue(), ^{
-        __strong typeof(_self) self = _self;
-        if ( !self ) return;
+    if ( self ) {
+        __weak typeof(self) _self = self;
+        dispatch_async(dispatch_get_global_queue(0, 0), ^{
+            __strong typeof(_self) self = _self;
+            if ( !self ) return;
+            [self _sjbase_initItemObserver];
+        });
+        
         [self _sjbase_initObservations];
-    });
+    }
     return self;
+}
+
+- (void)dealloc {
+#ifdef DEBUG
+    NSLog(@"%d \t %s", (int)__LINE__, __func__);
+#endif
+    [self removeObserver:self forKeyPath:kStatus];
+    if ( @available(iOS 10.0, *) ) {
+        [self removeObserver:self forKeyPath:kTimeControlStatus];
+    }
 }
 
 - (nullable NSError *)sj_error {
@@ -149,52 +157,17 @@ typedef struct {
 
 #pragma mark -
 
-- (void)_sjbase_initObservations {
-#ifdef DEBUG
-    NSParameterAssert(self.currentItem);
-#endif
-    
-    if ( self.currentItem == nil ) return;
-    
+- (void)observeValueForKeyPath:(nullable NSString *)keyPath ofObject:(nullable id)object change:(nullable NSDictionary<NSKeyValueChangeKey,id> *)change context:(nullable void *)context {
     __weak typeof(self) _self = self;
-    sjkvo_observe(self.currentItem, @"status", ^(id  _Nonnull target, NSDictionary<NSKeyValueChangeKey,id> * _Nullable change) {
+    if ( context == &kStatus ) {
         dispatch_async(dispatch_get_main_queue(), ^{
             __strong typeof(_self) self = _self;
             if ( !self ) return;
             [self _sjbase_refreshPlayerStatus];
-           
-            if ( @available(iOS 10.0, *) ) { }
-            else if ( self.sj_timeControlStatus != SJPlaybackTimeControlStatusPaused ) {
-                [self _sjbase_toEvaluating];
-            }
         });
-    });
-    
-    [self sj_observeWithNotification:AVPlayerItemFailedToPlayToEndTimeNotification target:self.currentItem usingBlock:^(SJAVBasePlayer *self, NSNotification * _Nonnull note) {
-        NSError *_Nullable error = note.userInfo[AVPlayerItemFailedToPlayToEndTimeErrorKey];
-        if ( error ) {
-            self.sj_failedToPlayEndTimeError = error;
-            [self _sjbase_refreshPlayerStatus];
-        }
-    }];
-    
-    if ( @available(iOS 10.0, *) ) { }
-    else {
-        [self sj_observeWithNotification:AVPlayerItemDidPlayToEndTimeNotification target:self.currentItem usingBlock:^(SJAVBasePlayer *self, NSNotification * _Nonnull note) {
-            [self pause];
-        }];
     }
-    
-    sjkvo_observe(self, @"status", ^(id target, NSDictionary<NSKeyValueChangeKey,id> * _Nullable change) {
-        dispatch_async(dispatch_get_main_queue(), ^{
-            __strong typeof(_self) self = _self;
-            if ( !self ) return;
-            [self _sjbase_refreshPlayerStatus];
-        });
-    });
-    
-    if ( @available(iOS 10.0, *) ) {
-        sjkvo_observe(self, @"timeControlStatus", ^(id  _Nonnull target, NSDictionary<NSKeyValueChangeKey,id> * _Nullable change) {
+    else if ( context == &kTimeControlStatus ) {
+        if ( @available(iOS 10.0, *) ) {
             dispatch_async(dispatch_get_main_queue(), ^{
                 __strong typeof(_self) self = _self;
                 if ( !self ) return;
@@ -203,13 +176,13 @@ typedef struct {
                 
                 SJWaitingReason reason = nil;
                 SJPlaybackTimeControlStatus status = (NSInteger)self.timeControlStatus;
-                if ( self.reasonForWaitingToPlay == AVPlayerWaitingToMinimizeStallsReason )
+                if ( self.sj_error != nil )
+                    status = SJPlaybackTimeControlStatusPaused;
+                else if ( self.reasonForWaitingToPlay == AVPlayerWaitingToMinimizeStallsReason )
                     reason = SJWaitingToMinimizeStallsReason;
-                
-                if ( self.reasonForWaitingToPlay == AVPlayerWaitingWhileEvaluatingBufferingRateReason )
+                else if ( self.reasonForWaitingToPlay == AVPlayerWaitingWhileEvaluatingBufferingRateReason )
                     reason = SJWaitingWhileEvaluatingBufferingRateReason;
-                
-                if ( self.reasonForWaitingToPlay == AVPlayerWaitingWithNoItemToPlayReason )
+                else if ( self.reasonForWaitingToPlay == AVPlayerWaitingWithNoItemToPlayReason )
                     reason = SJWaitingWithNoAssetToPlayReason;
                 
                 if ( status != self.sj_timeControlStatus || reason != self.sj_reasonForWaitingToPlay ) {
@@ -217,20 +190,58 @@ typedef struct {
                     self.sj_timeControlStatus = status;
                 }
             });
-        });
+        }
     }
+}
+
+- (void)_sjbase_initObservations {
+    NSKeyValueObservingOptions ops = NSKeyValueObservingOptionNew;
+    [self addObserver:self forKeyPath:kStatus options:ops context:&kStatus];
+    if ( @available(iOS 10.0, *) ) {
+        [self addObserver:self forKeyPath:kTimeControlStatus options:ops context:&kTimeControlStatus];
+    }
+}
+
+- (void)_sjbase_initItemObserver {
+#ifdef DEBUG
+    NSParameterAssert(self.currentItem);
+#endif
+    
+    __weak typeof(self) _self = self;
+    _sj_itemObsever = [SJAVBasePlayerItemObserver.alloc initWithBasePlayerItem:(SJAVBasePlayerItem *)self.currentItem];
+    _sj_itemObsever.statusDidChangeExeBlock = ^(SJAVBasePlayerItem * _Nonnull item) {
+        dispatch_async(dispatch_get_main_queue(), ^{
+            __strong typeof(_self) self = _self;
+            if ( !self ) return;
+            [self _sjbase_refreshPlayerStatus];
+            
+            if ( @available(iOS 10.0, *) ) { }
+            else if ( self.sj_timeControlStatus != SJPlaybackTimeControlStatusPaused ) {
+                [self _sjbase_toEvaluating];
+            }
+        });
+    };
+    
+    _sj_itemObsever.failedToPlayToEndTimeExeBlock = ^(SJAVBasePlayerItem * _Nonnull item, NSError * _Nonnull error) {
+        dispatch_async(dispatch_get_main_queue(), ^{
+            __strong typeof(_self) self = _self;
+            if ( !self ) return;
+            self.sj_failedToPlayEndTimeError = error;
+            [self _sjbase_refreshPlayerStatus];
+        });
+    };
+    
+    if ( @available(iOS 10.0, *) ) { }
     else {
-        sjkvo_observe(self.currentItem, @"playbackLikelyToKeepUp", ^(id  _Nonnull target, NSDictionary<NSKeyValueChangeKey,id> * _Nullable change) {
+        _sj_itemObsever.didPlayToEndTimeExeBlock = ^(SJAVBasePlayerItem * _Nonnull item) {
             dispatch_async(dispatch_get_main_queue(), ^{
                 __strong typeof(_self) self = _self;
                 if ( !self ) return;
-                if ( self.sj_timeControlStatus != SJPlaybackTimeControlStatusPaused ) {
-                    [self _sjbase_toEvaluating];
-                }
+                [self pause];
             });
-        });
+        };
         
-        sjkvo_observe(self.currentItem, @"playbackBufferEmpty", ^(id  _Nonnull target, NSDictionary<NSKeyValueChangeKey,id> * _Nullable change) {
+        _sj_itemObsever.playbackLikelyToKeepUpExeBlock = ^(SJAVBasePlayerItem * _Nonnull item) {
             dispatch_async(dispatch_get_main_queue(), ^{
                 __strong typeof(_self) self = _self;
                 if ( !self ) return;
@@ -238,9 +249,9 @@ typedef struct {
                     [self _sjbase_toEvaluating];
                 }
             });
-        });
+        };
         
-        sjkvo_observe(self.currentItem, @"playbackBufferFull", ^(id  _Nonnull target, NSDictionary<NSKeyValueChangeKey,id> * _Nullable change) {
+        _sj_itemObsever.playbackBufferEmptyDidChangeExeBlock = ^(SJAVBasePlayerItem * _Nonnull item) {
             dispatch_async(dispatch_get_main_queue(), ^{
                 __strong typeof(_self) self = _self;
                 if ( !self ) return;
@@ -248,7 +259,17 @@ typedef struct {
                     [self _sjbase_toEvaluating];
                 }
             });
-        });
+        };
+        
+        _sj_itemObsever.playbackBufferFullDidChangeExeBlock = ^(SJAVBasePlayerItem * _Nonnull item) {
+            dispatch_async(dispatch_get_main_queue(), ^{
+                __strong typeof(_self) self = _self;
+                if ( !self ) return;
+                if ( self.sj_timeControlStatus != SJPlaybackTimeControlStatusPaused ) {
+                    [self _sjbase_toEvaluating];
+                }
+            });
+        };
     }
 }
 
@@ -270,7 +291,7 @@ typedef struct {
         self.sj_timeControlStatus = timeControlStatus;
     }
     
-    if ( self.rate == 0 ) [super play];
+    if ( timeControlStatus == SJPlaybackTimeControlStatusPlaying ) [super play];
 }
 
 - (void)_sjbase_refreshPlayerStatus {

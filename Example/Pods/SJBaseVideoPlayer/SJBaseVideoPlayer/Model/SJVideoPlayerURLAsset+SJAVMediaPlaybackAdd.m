@@ -3,7 +3,7 @@
 //  Project
 //
 //  Created by 畅三江 on 2018/8/12.
-//  Copyright © 2018 SanJiang. All rights reserved.
+//  Copyright © 2018 changsanjiang. All rights reserved.
 //
 
 #import "SJVideoPlayerURLAsset+SJAVMediaPlaybackAdd.h"

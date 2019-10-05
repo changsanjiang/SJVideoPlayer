@@ -2,7 +2,7 @@
 //  UIScrollView+ListViewAutoplaySJAdd.h
 //  Masonry
 //
-//  Created by BlueDancer on 2018/7/9.
+//  Created by 畅三江 on 2018/7/9.
 //
 
 #import <UIKit/UIKit.h>

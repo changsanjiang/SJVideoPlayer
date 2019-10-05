@@ -2,7 +2,7 @@
 //  SJTestViewController.m
 //  SJVideoPlayer_Example
 //
-//  Created by BlueDancer on 2019/7/19.
+//  Created by 畅三江 on 2019/7/19.
 //  Copyright © 2019 changsanjiang. All rights reserved.
 //
 
@@ -54,7 +54,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath {
 #ifdef DEBUG
-    NSLog(@"%d - %s", (int)__LINE__, __func__);
+    NSLog(@"%d \t %s", (int)__LINE__, __func__);
 #endif
 }
 

@@ -3,7 +3,7 @@
 //  Pods-SJSQLite3_Example
 //
 //  Created by 畅三江 on 2019/7/30.
-//  Copyright © 2019 SanJiang. All rights reserved.
+//  Copyright © 2019 changsanjiang. All rights reserved.
 //
 
 #import "SJSQLite3.h"
@@ -98,7 +98,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (void)dealloc {
 #ifdef DEBUG
-    NSLog(@"%d - %s", (int)__LINE__, __func__);
+    NSLog(@"%d \t %s", (int)__LINE__, __func__);
 #endif
     sqlite3_obj_close_database(_db);
 }

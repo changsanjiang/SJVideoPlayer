@@ -2,7 +2,7 @@
 //  SJNotReachableControlLayer.h
 //  SJVideoPlayer
 //
-//  Created by BlueDancer on 2019/1/15.
+//  Created by 畅三江 on 2019/1/15.
 //  Copyright © 2019 畅三江. All rights reserved.
 //
 
@@ -32,7 +32,7 @@ extern SJEdgeControlButtonItemTag const SJNotReachableControlLayerTopItem_Back;
 
 
 @protocol SJNotReachableControlLayerDelegate <NSObject>
-- (void)tappedBackButtonOnTheControlLayer:(id<SJControlLayer>)controlLayer;
-- (void)tappedReloadButtonOnTheControlLayer:(id<SJControlLayer>)controlLayer;
+- (void)backItemWasTappedForControlLayer:(id<SJControlLayer>)controlLayer;
+- (void)reloadItemWasTappedForControlLayer:(id<SJControlLayer>)controlLayer;
 @end
 NS_ASSUME_NONNULL_END

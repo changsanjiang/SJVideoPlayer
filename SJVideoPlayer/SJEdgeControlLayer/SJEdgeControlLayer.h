@@ -2,7 +2,7 @@
 //  SJEdgeControlLayer.h
 //  SJVideoPlayer
 //
-//  Created by BlueDancer on 2018/10/24.
+//  Created by 畅三江 on 2018/10/24.
 //  Copyright © 2018 畅三江. All rights reserved.
 //
 
@@ -79,6 +79,6 @@ extern SJEdgeControlButtonItemTag const SJEdgeControlLayerCenterItem_Replay;    
 
 
 @protocol SJEdgeControlLayerDelegate <NSObject>
-- (void)tappedBackButtonOnTheControlLayer:(id<SJControlLayer>)controlLayer;
+- (void)backItemWasTappedForControlLayer:(id<SJControlLayer>)controlLayer;
 @end
 NS_ASSUME_NONNULL_END

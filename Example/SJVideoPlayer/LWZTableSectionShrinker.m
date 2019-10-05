@@ -2,7 +2,7 @@
 //  LWZTableSectionShrinker.m
 //  LWZAudioModule_Example
 //
-//  Created by BlueDancer on 2018/9/3.
+//  Created by 畅三江 on 2018/9/3.
 //  Copyright © 2018年 changsanjiang@gmail.com. All rights reserved.
 //
 

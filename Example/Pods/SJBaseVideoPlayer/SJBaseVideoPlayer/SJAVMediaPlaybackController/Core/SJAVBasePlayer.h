@@ -2,23 +2,28 @@
 //  SJAVBasePlayer.h
 //  SJUIKit
 //
-//  Created by BlueDancer on 2019/8/26.
+//  Created by 畅三江 on 2019/8/26.
 //
 
 #import <AVFoundation/AVFoundation.h>
 #import "SJVideoPlayerPlaybackControllerDefines.h"
+#import "SJAVBasePlayerItem.h"
 
 NS_ASSUME_NONNULL_BEGIN
 extern SJWaitingReason const SJWaitingToMinimizeStallsReason;
 extern SJWaitingReason const SJWaitingWhileEvaluatingBufferingRateReason;
 extern SJWaitingReason const SJWaitingWithNoAssetToPlayReason;
 
-@interface SJAVBasePlayer : AVPlayer
+typedef struct {
+    BOOL isSeeking;
+    CMTime time;
+} SJAVBasePlayerSeekingInfo;
 
+@interface SJAVBasePlayer : AVPlayer
 ///
-/// 初始化时, 请传入 playerItem. playerItem 不可为空!
+/// 初始化时, 请传入 playerItem. 不可为空!
 ///
-- (instancetype)initWithPlayerItem:(nullable AVPlayerItem *)item;
+- (nullable instancetype)initWithBasePlayerItem:(SJAVBasePlayerItem *)item;
 
 /// - Note: you should recreate new player when an error occurs
 ///
@@ -51,10 +56,17 @@ extern SJWaitingReason const SJWaitingWithNoAssetToPlayReason;
 ///
 @property (nonatomic, strong, readonly, nullable) NSError *sj_error;
 
+@property (nonatomic, readonly) SJAVBasePlayerSeekingInfo seekingInfo;
+
 - (void)sj_playImmediatelyAtRate:(float)rate;
 
++ (instancetype)playerWithURL:(NSURL *)URL NS_UNAVAILABLE;
++ (instancetype)playerWithPlayerItem:(nullable AVPlayerItem *)item NS_UNAVAILABLE;
+- (instancetype)initWithPlayerItem:(nullable AVPlayerItem *)item NS_UNAVAILABLE;
 - (instancetype)initWithURL:(NSURL *)URL NS_UNAVAILABLE;
 - (instancetype)init NS_UNAVAILABLE;
 + (instancetype)new NS_UNAVAILABLE;
+
+- (void)observeValueForKeyPath:(nullable NSString *)keyPath ofObject:(nullable id)object change:(nullable NSDictionary<NSKeyValueChangeKey,id> *)change context:(nullable void *)context NS_REQUIRES_SUPER;
 @end
 NS_ASSUME_NONNULL_END

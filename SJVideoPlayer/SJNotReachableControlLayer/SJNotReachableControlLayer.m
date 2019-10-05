@@ -2,7 +2,7 @@
 //  SJNotReachableControlLayer.m
 //  SJVideoPlayer
 //
-//  Created by BlueDancer on 2019/1/15.
+//  Created by 畅三江 on 2019/1/15.
 //  Copyright © 2019 畅三江. All rights reserved.
 //
 
@@ -91,14 +91,14 @@ SJEdgeControlButtonItemTag const SJNotReachableControlLayerTopItem_Back = 10000;
 }
 
 - (void)clickedBackItem:(SJEdgeControlButtonItem *)item {
-    if ( [self.delegate respondsToSelector:@selector(tappedBackButtonOnTheControlLayer:)] ) {
-        [self.delegate tappedBackButtonOnTheControlLayer:self];
+    if ( [self.delegate respondsToSelector:@selector(backItemWasTappedForControlLayer:)] ) {
+        [self.delegate backItemWasTappedForControlLayer:self];
     }
 }
 
 - (void)clickedReloadButton {
-    if ( [self.delegate respondsToSelector:@selector(tappedReloadButtonOnTheControlLayer:)] ) {
-        [self.delegate tappedReloadButtonOnTheControlLayer:self];
+    if ( [self.delegate respondsToSelector:@selector(reloadItemWasTappedForControlLayer:)] ) {
+        [self.delegate reloadItemWasTappedForControlLayer:self];
     }
 }
 

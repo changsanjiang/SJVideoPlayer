@@ -47,7 +47,7 @@
         __strong typeof(_self) self = _self;
         if ( !self ) return ;
 #ifdef DEBUG
-        NSLog(@"%d - %s", (int)__LINE__, __func__);
+        NSLog(@"%d \t %s", (int)__LINE__, __func__);
 #endif
     };
 }

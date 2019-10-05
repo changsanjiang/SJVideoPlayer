@@ -2,8 +2,8 @@
 //  SJReachabilityObserver.h
 //  Project
 //
-//  Created by BlueDancer on 2018/12/28.
-//  Copyright © 2018 SanJiang. All rights reserved.
+//  Created by 畅三江 on 2018/12/28.
+//  Copyright © 2018 changsanjiang. All rights reserved.
 //
 
 #import <Foundation/Foundation.h>

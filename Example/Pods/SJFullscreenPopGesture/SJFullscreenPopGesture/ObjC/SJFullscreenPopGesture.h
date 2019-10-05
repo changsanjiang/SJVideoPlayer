@@ -3,7 +3,7 @@
 //  SJBackGRProject
 //
 //  Created by 畅三江 on 2019/7/17.
-//  Copyright © 2019 SanJiang. All rights reserved.
+//  Copyright © 2019 changsanjiang. All rights reserved.
 //
 
 #import <UIKit/UIKit.h>

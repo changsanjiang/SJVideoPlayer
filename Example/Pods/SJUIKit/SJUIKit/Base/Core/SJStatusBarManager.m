@@ -2,7 +2,7 @@
 //  SJStatusBarManager.m
 //  Pods
 //
-//  Created by BlueDancer on 2019/1/10.
+//  Created by 畅三江 on 2019/1/10.
 //
 
 #import "SJStatusBarManager.h"

@@ -1,11 +1,11 @@
 //
-//  SJBaseVideoPlayerObservation.m
+//  SJPlaybackObservation.m
 //  Pods
 //
-//  Created by BlueDancer on 2019/8/27.
+//  Created by 畅三江 on 2019/8/27.
 //
 
-#import "SJBaseVideoPlayerObservation.h"
+#import "SJPlaybackObservation.h"
 #import "SJBaseVideoPlayerConst.h"
 
 NS_ASSUME_NONNULL_BEGIN
@@ -23,18 +23,21 @@ NS_ASSUME_NONNULL_BEGIN
             __strong typeof(_self) self = _self;
             if ( !self ) return;
             if ( self.assetStatusDidChangeExeBlock ) self.assetStatusDidChangeExeBlock(self.player);
+            if ( self.playbackStatusDidChangeExeBlock ) self.playbackStatusDidChangeExeBlock(self.player);
         }]];
         
         [_tokens addObject:[NSNotificationCenter.defaultCenter addObserverForName:SJVideoPlayerPlaybackTimeControlStatusDidChangeNotification object:player queue:NSOperationQueue.mainQueue usingBlock:^(NSNotification * _Nonnull note) {
             __strong typeof(_self) self = _self;
             if ( !self ) return;
             if ( self.timeControlStatusDidChangeExeBlock ) self.timeControlStatusDidChangeExeBlock(self.player);
+            if ( self.playbackStatusDidChangeExeBlock ) self.playbackStatusDidChangeExeBlock(self.player);
         }]];
 
         [_tokens addObject:[NSNotificationCenter.defaultCenter addObserverForName:SJVideoPlayerDidPlayToEndTimeNotification object:player queue:NSOperationQueue.mainQueue usingBlock:^(NSNotification * _Nonnull note) {
             __strong typeof(_self) self = _self;
             if ( !self ) return;
             if ( self.didPlayToEndTimeExeBlock ) self.didPlayToEndTimeExeBlock(self.player);
+            if ( self.playbackStatusDidChangeExeBlock ) self.playbackStatusDidChangeExeBlock(self.player);
         }]];
 
         [_tokens addObject:[NSNotificationCenter.defaultCenter addObserverForName:SJVideoPlayerCurrentTimeDidChangeNotification object:player queue:NSOperationQueue.mainQueue usingBlock:^(NSNotification * _Nonnull note) {

@@ -2,15 +2,10 @@
 //  SJAVMediaPlayer.m
 //  SJVideoPlayer
 //
-//  Created by BlueDancer on 2019/8/26.
+//  Created by 畅三江 on 2019/8/26.
 //
 
 #import "SJAVMediaPlayer.h"
-#if __has_include(<SJUIKit/NSObject+SJObserverHelper.h>)
-#import <SJUIKit/NSObject+SJObserverHelper.h>
-#else
-#import "NSObject+SJObserverHelper.h"
-#endif
 
 NSNotificationName const SJAVMediaPlayerAssetStatusDidChangeNotification = @"SJAVMediaPlayerAssetStatusDidChangeNotification";
 NSNotificationName const SJAVMediaPlayerTimeControlStatusDidChangeNotification = @"SJAVMediaPlayerTimeControlStatusDidChangeNotification";
@@ -22,29 +17,32 @@ NSNotificationName const SJAVMediaPlayerDidPlayToEndTimeNotification = @"SJAVMed
 
 NS_ASSUME_NONNULL_BEGIN
 @interface SJAVMediaPlayer()
-
+@property (nonatomic, strong) SJAVBasePlayerItemObserver *itemObsever;
 @end
 
 @implementation SJAVMediaPlayer
 @synthesize sj_playbackInfo = _sj_playbackInfo;
 @synthesize sj_minBufferedDuration = _sj_minBufferedDuration;
 
-#ifdef DEBUG
+static NSString *kAssetStatus = @"sj_assetStatus";
+static NSString *kTimeControlStatus = @"sj_timeControlStatus";
+
 - (void)dealloc {
-    NSLog(@"%d - %s", (int)__LINE__, __func__);
-}
+#ifdef DEBUG
+    NSLog(@"%d \t %s", (int)__LINE__, __func__);
 #endif
+    [self removeObserver:self forKeyPath:kAssetStatus];
+    [self removeObserver:self forKeyPath:kTimeControlStatus];
+    [NSNotificationCenter.defaultCenter removeObserver:self];
+}
 - (instancetype)initWithURL:(NSURL *)URL specifyStartTime:(NSTimeInterval)specifyStartTime {
     return [self initWithAVAsset:[AVAsset assetWithURL:URL] specifyStartTime:specifyStartTime];
 }
 - (instancetype)initWithAVAsset:(__kindof AVAsset *)asset specifyStartTime:(NSTimeInterval)specifyStartTime {
-    return [self initWithPlayerItem:[[AVPlayerItem alloc] initWithAsset:asset] specifyStartTime:specifyStartTime];
+    return [self initWithPlayerItem:[[SJAVBasePlayerItem alloc] initWithAsset:asset] specifyStartTime:specifyStartTime];
 }
-- (instancetype)initWithPlayerItem:(nullable AVPlayerItem *)item {
-    return [self initWithPlayerItem:item specifyStartTime:0];
-}
-- (instancetype)initWithPlayerItem:(AVPlayerItem *)item specifyStartTime:(NSTimeInterval)specifyStartTime {
-    self = [super initWithPlayerItem:item];
+- (instancetype)initWithPlayerItem:(SJAVBasePlayerItem *)item specifyStartTime:(NSTimeInterval)specifyStartTime {
+    self = [super initWithBasePlayerItem:item];
     if ( self ) {
         _sj_playbackInfo.rate = 1;
         _sj_playbackInfo.specifyStartTime = specifyStartTime;
@@ -106,55 +104,28 @@ NS_ASSUME_NONNULL_BEGIN
     [NSNotificationCenter.defaultCenter postNotificationName:name object:self];
 }
 
-- (void)_sj_initObservations {
-    if ( self.currentItem == nil ) return;
-    
-    __weak typeof(self) _self = self;
-    sjkvo_observe(self, @"sj_assetStatus", ^(id  _Nonnull target, NSDictionary<NSKeyValueChangeKey,id> * _Nullable change) {
-        __strong typeof(_self) self = _self;
-        if ( !self ) return;
+- (void)observeValueForKeyPath:(nullable NSString *)keyPath ofObject:(nullable id)object change:(nullable NSDictionary<NSKeyValueChangeKey,id> *)change context:(nullable void *)context {
+    if ( context == &kAssetStatus ) {
         [self sj_postNotification:SJAVMediaPlayerAssetStatusDidChangeNotification];
-        
-        
-#ifdef DEBUG
+    #ifdef DEBUG
         if ( self.sj_error ) {
             NSLog(@"SJAVMediaPlayer: %d - %s - %@", (int)__LINE__, __func__, self.sj_error);
         }
-#endif
-    });
-    
-    sjkvo_observe(self, @"sj_timeControlStatus", ^(id  _Nonnull target, NSDictionary<NSKeyValueChangeKey,id> * _Nullable change) {
-        __strong typeof(_self) self = _self;
-        if ( !self ) return;
+    #endif
+    }
+    else if ( context == &kTimeControlStatus ) {
         [self sj_postNotification:SJAVMediaPlayerTimeControlStatusDidChangeNotification];
-    });
+    }
     
-    sjkvo_observe(self.currentItem, @"status", ^(id  _Nonnull target, NSDictionary<NSKeyValueChangeKey,id> * _Nullable change) {
-        dispatch_async(dispatch_get_main_queue(), ^{
-            __strong typeof(_self) self = _self;
-            if ( !self ) return;
-            if ( self.currentItem.status == AVPlayerItemStatusReadyToPlay && self.sj_playbackInfo.specifyStartTime != 0 ) {
-                [self seekToTime:CMTimeMakeWithSeconds(self.sj_playbackInfo.specifyStartTime, NSEC_PER_SEC) toleranceBefore:kCMTimeZero toleranceAfter:kCMTimeZero completionHandler:^(BOOL finished) {}];
-            }
-        });
-    });
+    [super observeValueForKeyPath:keyPath ofObject:object change:change context:context];
+}
+
+- (void)_sj_initObservations {
+    NSKeyValueObservingOptions ops = NSKeyValueObservingOptionNew;
+    [self addObserver:self forKeyPath:kAssetStatus options:ops context:&kAssetStatus];
+    [self addObserver:self forKeyPath:kTimeControlStatus options:ops context:&kTimeControlStatus];
     
-    sjkvo_observe(self.currentItem, @"loadedTimeRanges", ^(id  _Nonnull target, NSDictionary<NSKeyValueChangeKey,id> * _Nullable change) {
-        dispatch_async(dispatch_get_main_queue(), ^{
-            __strong typeof(_self) self = _self;
-            if ( !self ) return;
-            [self _sj_playableDurationDidChange];
-        });
-    });
-    
-    sjkvo_observe(self.currentItem, @"presentationSize", ^(id  _Nonnull target, NSDictionary<NSKeyValueChangeKey,id> * _Nullable change) {
-        dispatch_async(dispatch_get_main_queue(), ^{
-            __strong typeof(_self) self = _self;
-            if ( !self ) return;
-            [self _sj_presentationSizeDidChange];
-        });
-    });
-    
+    __weak typeof(self) _self = self;
     [self.currentItem.asset loadValuesAsynchronouslyForKeys:@[@"duration"] completionHandler:^{
         dispatch_async(dispatch_get_main_queue(), ^{
             __strong typeof(_self) self = _self;
@@ -163,28 +134,50 @@ NS_ASSUME_NONNULL_BEGIN
         });
     }];
     
-    [self sj_observeWithNotification:AVPlayerItemNewAccessLogEntryNotification target:self.currentItem usingBlock:^(SJAVMediaPlayer *self, NSNotification * _Nonnull note) {
+    _itemObsever = [SJAVBasePlayerItemObserver.alloc initWithBasePlayerItem:(SJAVBasePlayerItem *)self.currentItem];
+    _itemObsever.statusDidChangeExeBlock = ^(SJAVBasePlayerItem * _Nonnull item) {
+        dispatch_async(dispatch_get_main_queue(), ^{
+            __strong typeof(_self) self = _self;
+            if ( !self ) return;
+            if ( self.currentItem.status == AVPlayerItemStatusReadyToPlay && self.sj_playbackInfo.specifyStartTime != 0 ) {
+                [self seekToTime:CMTimeMakeWithSeconds(self.sj_playbackInfo.specifyStartTime, NSEC_PER_SEC) toleranceBefore:kCMTimeZero toleranceAfter:kCMTimeZero completionHandler:^(BOOL finished) {}];
+            }
+        });
+    };
+    
+    _itemObsever.loadedTimeRangesDidChangeExeBlock = ^(SJAVBasePlayerItem * _Nonnull item) {
+        dispatch_async(dispatch_get_main_queue(), ^{
+            __strong typeof(_self) self = _self;
+            if ( !self ) return;
+            [self _sj_playableDurationDidChange];
+        });
+    };
+    
+    _itemObsever.presentationSizeDidChangeExeBlock = ^(SJAVBasePlayerItem * _Nonnull item) {
+        dispatch_async(dispatch_get_main_queue(), ^{
+            __strong typeof(_self) self = _self;
+            if ( !self ) return;
+            [self _sj_presentationSizeDidChange];
+        });
+    };
+    
+    _itemObsever.newAccessLogEntryExeBlock = ^(SJAVBasePlayerItem * _Nonnull item) {
+        __strong typeof(_self) self = _self;
+        if ( !self ) return;
         [self _sj_newAcessLogEntry];
-    }];
+    };
     
-    [self sj_observeWithNotification:AVPlayerItemDidPlayToEndTimeNotification target:self.currentItem usingBlock:^(SJAVMediaPlayer *self, NSNotification * _Nonnull note) {
-        [self _sj_didPlayToEndTime];
-    }];
+    _itemObsever.didPlayToEndTimeExeBlock = ^(SJAVBasePlayerItem * _Nonnull item) {
+        dispatch_async(dispatch_get_main_queue(), ^{
+            __strong typeof(_self) self = _self;
+            if ( !self ) return;
+            [self _sj_didPlayToEndTime];
+        });
+    };
     
-    [self sj_observeWithNotification:AVAudioSessionInterruptionNotification target:nil usingBlock:^(SJAVMediaPlayer *self, NSNotification * _Nonnull note) {
-        NSDictionary *info = note.userInfo;
-        if( (AVAudioSessionInterruptionType)[info[AVAudioSessionInterruptionTypeKey] integerValue] == AVAudioSessionInterruptionTypeBegan ) {
-            [self pause];
-        }
-    }];
+    [NSNotificationCenter.defaultCenter addObserver:self selector:@selector(sj_audioSessionInterruption:) name:AVAudioSessionInterruptionNotification object:nil];
     
-    [self sj_observeWithNotification:AVAudioSessionRouteChangeNotification target:nil usingBlock:^(SJAVMediaPlayer *self, NSNotification * _Nonnull note) {
-        NSDictionary *interuptionDict = note.userInfo;
-        NSInteger reason = [[interuptionDict valueForKey:AVAudioSessionRouteChangeReasonKey] integerValue];
-        if ( reason == AVAudioSessionRouteChangeReasonOldDeviceUnavailable ) {
-            [self pause];
-        }
-    }];
+    [NSNotificationCenter.defaultCenter addObserver:self selector:@selector(sj_audioSessionRouteChange:) name:AVAudioSessionRouteChangeNotification object:nil];
 }
 
 - (void)_sj_playableDurationDidChange {
@@ -199,7 +192,7 @@ NS_ASSUME_NONNULL_BEGIN
         NSInteger currentMilli  = currTime * 1000;
         NSInteger bufferedMilli = playableMilli - currentMilli;
         if ( bufferedMilli > 0 ) {
-            NSInteger maxMilli = ( self.sj_minBufferedDuration != 0 ? self.sj_minBufferedDuration : 5) * 1000;
+            NSInteger maxMilli = ( self.sj_minBufferedDuration != 0 ? self.sj_minBufferedDuration : 8) * 1000;
             if ( bufferedMilli >= maxMilli ) {
                 [self sj_playImmediatelyAtRate:self.sj_rate];
             }
@@ -254,6 +247,25 @@ NS_ASSUME_NONNULL_BEGIN
 - (void)_sj_didPlayToEndTime {
     _sj_playbackInfo.isPlayedToEndTime = YES;
     [self sj_postNotification:SJAVMediaPlayerDidPlayToEndTimeNotification];
+}
+
+- (void)sj_audioSessionInterruption:(NSNotification *)note {
+    dispatch_async(dispatch_get_main_queue(), ^{
+        NSDictionary *info = note.userInfo;
+        if( (AVAudioSessionInterruptionType)[info[AVAudioSessionInterruptionTypeKey] integerValue] == AVAudioSessionInterruptionTypeBegan ) {
+            [self pause];
+        }
+    });
+}
+
+- (void)sj_audioSessionRouteChange:(NSNotification *)note {
+    dispatch_async(dispatch_get_main_queue(), ^{
+        NSDictionary *interuptionDict = note.userInfo;
+        NSInteger reason = [[interuptionDict valueForKey:AVAudioSessionRouteChangeReasonKey] integerValue];
+        if ( reason == AVAudioSessionRouteChangeReasonOldDeviceUnavailable ) {
+            [self pause];
+        }
+    });
 }
 @end
 NS_ASSUME_NONNULL_END

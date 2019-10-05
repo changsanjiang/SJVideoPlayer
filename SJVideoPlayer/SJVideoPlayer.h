@@ -5,6 +5,12 @@
 //  Created by 畅三江 on 2018/5/29.
 //  Copyright © 2018年 畅三江. All rights reserved.
 //
+//  GitHub:     https://github.com/changsanjiang/SJBaseVideoPlayer
+//  GitHub:     https://github.com/changsanjiang/SJVideoPlayer
+//
+//  Email:      changsanjiang@gmail.com
+//  QQGroup:    930508201
+//
 
 #if __has_include(<SJBaseVideoPlayer/SJBaseVideoPlayer.h>)
 #import <SJBaseVideoPlayer/SJBaseVideoPlayer.h>

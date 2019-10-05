@@ -7,11 +7,6 @@
 //
 
 #import "SJControlLayerSwitcher.h"
-#if __has_include(<SJUIKit/NSObject+SJObserverHelper.h>)
-#import <SJUIKit/NSObject+SJObserverHelper.h>
-#else
-#import "NSObject+SJObserverHelper.h"
-#endif
 
 NS_ASSUME_NONNULL_BEGIN
 SJControlLayerIdentifier SJControlLayer_Uninitialized = LONG_MAX;
@@ -29,14 +24,25 @@ static NSNotificationName const SJPlayerDidEndSwitchControlLayerNotification = @
 - (instancetype)initWithSwitcher:(id<SJControlLayerSwitcher>)switcher {
     self = [super init];
     if ( !self ) return nil;
-    [self sj_observeWithNotification:SJPlayerWillBeginSwitchControlLayerNotification target:switcher usingBlock:^(SJControlLayerSwitcherObsrever *  _Nonnull self, NSNotification * _Nonnull note) {
-        if ( self.playerWillBeginSwitchControlLayer ) self.playerWillBeginSwitchControlLayer(note.object, note.userInfo[SJPlayerSwitchControlLayerUserInfoKey]);
-    }];
+#ifdef DEBUG
+    NSLog(@"%d \t %s", (int)__LINE__, __func__);
+#endif
+    [NSNotificationCenter.defaultCenter addObserver:self selector:@selector(willBeginSwitchControlLayer:) name:SJPlayerWillBeginSwitchControlLayerNotification object:switcher];
     
-    [self sj_observeWithNotification:SJPlayerDidEndSwitchControlLayerNotification target:switcher usingBlock:^(SJControlLayerSwitcherObsrever *_Nonnull self, NSNotification * _Nonnull note) {
-        if ( self.playerDidEndSwitchControlLayer ) self.playerDidEndSwitchControlLayer(note.object, note.userInfo[SJPlayerSwitchControlLayerUserInfoKey]);
-    }];
+    [NSNotificationCenter.defaultCenter addObserver:self selector:@selector(didEndSwitchControlLayer:) name:SJPlayerDidEndSwitchControlLayerNotification object:switcher];
     return self;
+}
+
+- (void)dealloc {
+    [NSNotificationCenter.defaultCenter removeObserver:self];
+}
+
+- (void)willBeginSwitchControlLayer:(NSNotification *)note {
+    if ( self.playerWillBeginSwitchControlLayer ) self.playerWillBeginSwitchControlLayer(note.object, note.userInfo[SJPlayerSwitchControlLayerUserInfoKey]);
+}
+
+- (void)didEndSwitchControlLayer:(NSNotification *)note {
+    if ( self.playerDidEndSwitchControlLayer ) self.playerDidEndSwitchControlLayer(note.object, note.userInfo[SJPlayerSwitchControlLayerUserInfoKey]);
 }
 @end
 
@@ -53,7 +59,7 @@ static NSNotificationName const SJPlayerDidEndSwitchControlLayerNotification = @
 
 #ifdef DEBUG
 - (void)dealloc {
-    NSLog(@"%d - %s", (int)__LINE__, __func__);
+    NSLog(@"%d \t %s", (int)__LINE__, __func__);
 }
 #endif
 

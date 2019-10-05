@@ -2,8 +2,8 @@
 //  SJReachabilityObserver.m
 //  Project
 //
-//  Created by BlueDancer on 2018/12/28.
-//  Copyright © 2018 SanJiang. All rights reserved.
+//  Created by 畅三江 on 2018/12/28.
+//  Copyright © 2018 changsanjiang. All rights reserved.
 //
 
 #import "SJReachability.h"
@@ -20,15 +20,11 @@
 #import "Reachability.h"
 #endif
 
-#if __has_include(<SJUIKit/NSObject+SJObserverHelper.h>)
-#import <SJUIKit/NSObject+SJObserverHelper.h>
-#else
-#import "NSObject+SJObserverHelper.h"
-#endif
-
 NS_ASSUME_NONNULL_BEGIN
 static NSNotificationName const GSDownloadNetworkSpeedNotificationKey = @"__GSDownloadNetworkSpeedNotificationKey";
 static NSNotificationName const GSUploadNetworkSpeedNotificationKey = @"__GSUploadNetworkSpeedNotificationKey";
+
+static NSNotificationName const SJReachabilityNetworkStatusDidChangeNotification = @"SJReachabilityNetworkStatusDidChange";
 
 ///
 /// Thanks @18138870200
@@ -181,6 +177,10 @@ static Reachability *_reachability;
     return self;
 }
 
+- (void)dealloc {
+    [NSNotificationCenter.defaultCenter removeObserver:self];
+}
+
 - (NSString *)networkSpeedStr {
     return _networkSpeedObserver->_networkSpeedStr;
 }
@@ -193,10 +193,13 @@ static Reachability *_reachability;
     });
     
     [self _updateNetworkStatus];
-    [self sj_observeWithNotification:kReachabilityChangedNotification target:_reachability usingBlock:^(SJReachability *self, NSNotification * _Nonnull note) {
-        [self _updateNetworkStatus];
-        [self _startOrStopSpeedObserver];
-    }];
+    
+    [NSNotificationCenter.defaultCenter addObserver:self selector:@selector(reachabilityChanged) name:kReachabilityChangedNotification object:_reachability];
+}
+
+- (void)reachabilityChanged {
+    [self _updateNetworkStatus];
+    [self _startOrStopSpeedObserver];
 }
 
 - (void)_updateNetworkStatus {
@@ -217,26 +220,31 @@ static Reachability *_reachability;
 }
 @end
 
-@implementation SJReachabilityObserver
+@implementation SJReachabilityObserver {
+    __weak SJReachability *_reachability;
+}
 @synthesize networkStatusDidChangeExeBlock = _networkStatusDidChangeExeBlock;
 @synthesize networkSpeedDidChangeExeBlock = _networkSpeedDidChangeExeBlock;
 - (instancetype)initWithReachability:(SJReachability *)reachability {
     self = [super init];
     if ( !self ) return nil;
-    [(id)reachability sj_addObserver:self forKeyPath:@"networkStatus"];
-    __weak typeof(reachability) _reachability = reachability;
-    [self sj_observeWithNotification:GSDownloadNetworkSpeedNotificationKey target:reachability.networkSpeedObserver usingBlock:^(SJReachabilityObserver *self, NSNotification * _Nonnull note) {
-        if ( self.networkSpeedDidChangeExeBlock ) self.networkSpeedDidChangeExeBlock(_reachability, _reachability.networkSpeedStr);
-    }];
+    _reachability = reachability;
+    [NSNotificationCenter.defaultCenter addObserver:self selector:@selector(networkStatusDidChange:) name:SJReachabilityNetworkStatusDidChangeNotification object:reachability];
+    [NSNotificationCenter.defaultCenter addObserver:self selector:@selector(networkSpeedDidChange:) name:GSDownloadNetworkSpeedNotificationKey object:reachability.networkSpeedObserver];
     return self;
 }
 
-- (void)observeValueForKeyPath:(NSString *_Nullable)keyPath ofObject:(id _Nullable)object change:(NSDictionary<NSKeyValueChangeKey,id> *_Nullable)change context:(void *_Nullable)context {
-    if ( [change[NSKeyValueChangeOldKey] integerValue] == [change[NSKeyValueChangeNewKey] integerValue] )
-        return;
-    id<SJReachability> mgr = object;
+- (void)dealloc {
+    [NSNotificationCenter.defaultCenter removeObserver:self];
+}
+
+- (void)networkStatusDidChange:(NSNotification *)note {
+    id<SJReachability> mgr = note.object;
     if ( _networkStatusDidChangeExeBlock )
         _networkStatusDidChangeExeBlock(mgr, mgr.networkStatus);
+}
+- (void)networkSpeedDidChange:(NSNotification *)note {
+    if ( _networkSpeedDidChangeExeBlock ) _networkSpeedDidChangeExeBlock(_reachability, _reachability.networkSpeedStr);
 }
 @end
 NS_ASSUME_NONNULL_END

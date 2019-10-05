@@ -2,7 +2,7 @@
 //  SJEdgeControlButtonItemCell.m
 //  SJVideoPlayer
 //
-//  Created by BlueDancer on 2018/10/20.
+//  Created by 畅三江 on 2018/10/20.
 //  Copyright © 2018 畅三江. All rights reserved.
 //
 

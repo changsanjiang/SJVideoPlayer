@@ -2,18 +2,15 @@
 //  SJFlipTransitionManager.h
 //  SJVideoPlayerProject
 //
-//  Created by BlueDancer on 2018/2/2.
-//  Copyright © 2018年 SanJiang. All rights reserved.
+//  Created by 畅三江 on 2018/2/2.
+//  Copyright © 2018年 changsanjiang. All rights reserved.
 //
 
 #import "SJFlipTransitionManager.h"
-#if __has_include(<SJUIKit/NSObject+SJObserverHelper.h>)
-#import <SJUIKit/NSObject+SJObserverHelper.h>
-#else
-#import "NSObject+SJObserverHelper.h"
-#endif
 
 NS_ASSUME_NONNULL_BEGIN
+static NSNotificationName const SJFlipTransitionManagerTransitioningValueDidChangeNotification = @"SJFlipTransitionManagerTransitioningValueDidChange";
+
 @interface SJFlipTransitionManagerObserver : NSObject<SJFlipTransitionManagerObserver>
 - (instancetype)initWithManager:(id<SJFlipTransitionManager>)mgr;
 @end
@@ -26,15 +23,17 @@ NS_ASSUME_NONNULL_BEGIN
     self = [super init];
     if ( !self )
         return nil;
-    [(id)mgr sj_addObserver:self forKeyPath:@"transitioning"];
+    
+    [NSNotificationCenter.defaultCenter addObserver:self selector:@selector(transitioningValueDidChange:) name:SJFlipTransitionManagerTransitioningValueDidChangeNotification object:mgr];
     return self;
 }
 
-- (void)observeValueForKeyPath:(NSString *_Nullable)keyPath ofObject:(id _Nullable)object change:(NSDictionary<NSKeyValueChangeKey,id> *_Nullable)change context:(void *_Nullable)context {
-    if ( [change[NSKeyValueChangeOldKey] integerValue] == [change[NSKeyValueChangeNewKey] integerValue] )
-        return;
-    
-    id<SJFlipTransitionManager> mgr = object;
+- (void)dealloc {
+    [NSNotificationCenter.defaultCenter removeObserver:self];
+}
+
+- (void)transitioningValueDidChange:(NSNotification *)note {
+    id<SJFlipTransitionManager> mgr = note.object;
     if ( mgr.isTransitioning ) {
         if ( _flipTransitionDidStartExeBlock )
             _flipTransitionDidStartExeBlock(mgr);
@@ -125,6 +124,11 @@ NS_ASSUME_NONNULL_BEGIN
         _completionHandler(self);
         _completionHandler = nil;
     }
+}
+
+- (void)setTransitioning:(BOOL)transitioning {
+    _transitioning = transitioning;
+    [NSNotificationCenter.defaultCenter postNotificationName:SJFlipTransitionManagerTransitioningValueDidChangeNotification object:self];
 }
 @end
 NS_ASSUME_NONNULL_END

@@ -2,7 +2,7 @@
 //  SJEdgeControlLayerLoadingViewDefines.h
 //  Pods
 //
-//  Created by BlueDancer on 2019/8/7.
+//  Created by 畅三江 on 2019/8/7.
 //
 
 #ifndef SJEdgeControlLayerLoadingViewDefines_h

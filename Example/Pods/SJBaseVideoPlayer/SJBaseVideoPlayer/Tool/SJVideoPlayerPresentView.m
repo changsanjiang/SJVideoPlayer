@@ -2,8 +2,8 @@
 //  SJVideoPlayerPresentView.m
 //  SJVideoPlayerProject
 //
-//  Created by BlueDancer on 2017/11/29.
-//  Copyright © 2017年 SanJiang. All rights reserved.
+//  Created by 畅三江 on 2017/11/29.
+//  Copyright © 2017年 changsanjiang. All rights reserved.
 //
 
 #import "SJVideoPlayerPresentView.h"
@@ -47,7 +47,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 #ifdef SJ_MAC
 - (void)dealloc {
-    NSLog(@"%d - %s", (int)__LINE__, __func__);
+    NSLog(@"%d \t %s", (int)__LINE__, __func__);
 }
 #endif
 
@@ -286,7 +286,7 @@ NS_ASSUME_NONNULL_BEGIN
             if ( _movingDirection == SJPanGestureMovingDirection_H && ![self _isSupporedGestureType:SJPlayerGestureTypeMask_Pan_H] )
                 return NO;
             
-            if ( _movingDirection == SJPanGestureMovingDirection_V && ![self _isSupporedGestureType:SJPlayerGestureTypeMask_Pan_H] )
+            if ( _movingDirection == SJPanGestureMovingDirection_V && ![self _isSupporedGestureType:SJPlayerGestureTypeMask_Pan_V] )
                 return NO;
         }
             break;

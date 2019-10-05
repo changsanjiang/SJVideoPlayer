@@ -2,7 +2,7 @@
 //  SJMediaItemsTableViewCell.m
 //  SJVideoPlayer_Example
 //
-//  Created by BlueDancer on 2019/6/26.
+//  Created by 畅三江 on 2019/6/26.
 //  Copyright © 2019 changsanjiang. All rights reserved.
 //
 

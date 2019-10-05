@@ -2,7 +2,7 @@
 //  SJPromptDefines.h
 //  Pods
 //
-//  Created by BlueDancer on 2019/9/15.
+//  Created by 畅三江 on 2019/9/15.
 //
 
 #ifndef SJPromptDefines_h

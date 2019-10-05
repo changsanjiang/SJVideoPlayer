@@ -2,7 +2,7 @@
 //  SJVideoPlayerPresentViewDefines.h
 //  SJBaseVideoPlayer
 //
-//  Created by BlueDancer on 2019/9/10.
+//  Created by 畅三江 on 2019/9/10.
 //
 
 #ifndef SJVideoPlayerPresentViewDefines_h

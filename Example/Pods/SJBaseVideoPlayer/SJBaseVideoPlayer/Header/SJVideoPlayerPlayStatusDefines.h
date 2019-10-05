@@ -2,8 +2,8 @@
 //  SJVideoPlayerPlayStatusDefines.h
 //  SJVideoPlayerProject
 //
-//  Created by BlueDancer on 2017/11/29.
-//  Copyright © 2017年 SanJiang. All rights reserved.
+//  Created by 畅三江 on 2017/11/29.
+//  Copyright © 2017年 changsanjiang. All rights reserved.
 //
 
 #ifndef SJVideoPlayerPlayStatusDefines_h

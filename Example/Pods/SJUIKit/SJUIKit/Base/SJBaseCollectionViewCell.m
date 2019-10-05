@@ -2,7 +2,7 @@
 //  SJBaseCollectionViewCell.m
 //  LWZBaseViews_Example
 //
-//  Created by BlueDancer on 2018/12/10.
+//  Created by 畅三江 on 2018/12/10.
 //  Copyright © 2018 changsanjiang@gmail.com. All rights reserved.
 //
 

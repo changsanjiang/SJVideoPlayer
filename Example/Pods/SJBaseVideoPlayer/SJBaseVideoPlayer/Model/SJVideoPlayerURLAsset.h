@@ -3,7 +3,7 @@
 //  SJVideoPlayerProject
 //
 //  Created by 畅三江 on 2018/1/29.
-//  Copyright © 2018年 SanJiang. All rights reserved.
+//  Copyright © 2018年 changsanjiang. All rights reserved.
 //
 
 #import <UIKit/UIKit.h>

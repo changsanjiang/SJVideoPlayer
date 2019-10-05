@@ -2,7 +2,7 @@
 //  SJAVMediaPlayer.h
 //  SJVideoPlayer
 //
-//  Created by BlueDancer on 2019/8/26.
+//  Created by 畅三江 on 2019/8/26.
 //
 
 #import <Foundation/Foundation.h>
@@ -25,15 +25,15 @@ typedef struct {
     CGSize presentationSize;
     SJPlaybackType playbackType;
     float rate;
-    BOOL isPlayedToEndTime;               ///< 是否播放结束
+    BOOL isPlayedToEndTime;             ///< 是否播放结束
     BOOL isReplayed;                    ///< 是否重播过
     BOOL isPlayed;                      ///< 是否调用过播放
 } SJAVMediaPlayerPlaybackInfo;
 
 @interface SJAVMediaPlayer : SJAVBasePlayer
-- (instancetype)initWithAVAsset:(__kindof AVAsset *)asset specifyStartTime:(NSTimeInterval)specifyStartTime;
-- (instancetype)initWithPlayerItem:(AVPlayerItem *)item specifyStartTime:(NSTimeInterval)specifyStartTime;
 - (instancetype)initWithURL:(NSURL *)URL specifyStartTime:(NSTimeInterval)specifyStartTime;
+- (instancetype)initWithAVAsset:(__kindof AVAsset *)asset specifyStartTime:(NSTimeInterval)specifyStartTime;
+- (instancetype)initWithPlayerItem:(SJAVBasePlayerItem *)item specifyStartTime:(NSTimeInterval)specifyStartTime;
 
 @property (nonatomic, readonly) SJAVMediaPlayerPlaybackInfo sj_playbackInfo;
 

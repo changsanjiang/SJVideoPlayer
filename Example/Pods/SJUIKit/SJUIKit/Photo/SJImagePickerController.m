@@ -2,7 +2,7 @@
 //  SJImagePickerController.m
 //  Pods
 //
-//  Created by BlueDancer on 2019/7/3.
+//  Created by 畅三江 on 2019/7/3.
 //
 
 #import "SJImagePickerController.h"

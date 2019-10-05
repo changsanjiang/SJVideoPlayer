@@ -2,7 +2,7 @@
 //  UIView+SJAnimationAdded.m
 //  SJVideoPlayer
 //
-//  Created by BlueDancer on 2018/10/23.
+//  Created by 畅三江 on 2018/10/23.
 //  Copyright © 2018 畅三江. All rights reserved.
 //
 

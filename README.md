@@ -41,23 +41,23 @@ _player.URLAsset = [[SJVideoPlayerURLAsset alloc] initWithURL:URL];
 ## Author
 
 Email: changsanjiang@gmail.com
-QQGroup: 930508201 (iOS 开发)
+QQGroup:    
 
 ## Documents
 
 #### [1. 视图层次结构](#1)
 * [1.1 UIView](#1.1)
 * [1.2 UITableView 中的层次结构](#1.2)
-* [1.2.1 UITableViewCell](#1.2.1)
-* [1.2.2 UITableView.tableHeaderView](#1.2.2)
-* [1.2.3 UITableView.tableFooterView](#1.2.3)
-* [1.2.4 UITableViewHeaderFooterView](#1.2.4)
+    * [1.2.1 UITableViewCell](#1.2.1)
+    * [1.2.2 UITableView.tableHeaderView](#1.2.2)
+    * [1.2.3 UITableView.tableFooterView](#1.2.3)
+    * [1.2.4 UITableViewHeaderFooterView](#1.2.4)
 * [1.3 UICollectionView 中的层次结构](#1.3)
-* [1.3.1 UICollectionViewCell](#1.3.1)
+    * [1.3.1 UICollectionViewCell](#1.3.1)
 * [1.4  嵌套时的层次结构](#1.4)
-* [1.4.1 UICollectionView 嵌套在 UITableViewCell 中](#1.4.1)
-* [1.4.2 UICollectionView 嵌套在 UITableViewHeaderView 中](#1.4.2)
-* [1.4.3 UICollectionView 嵌套在 UICollectionViewCell 中](#1.4.3)
+    * [1.4.1 UICollectionView 嵌套在 UITableViewCell 中](#1.4.1)
+    * [1.4.2 UICollectionView 嵌套在 UITableViewHeaderView 中](#1.4.2)
+    * [1.4.3 UICollectionView 嵌套在 UICollectionViewCell 中](#1.4.3)
 
 #### [2. URLAsset](#2)
 * [2.1 播放 URL(本地文件或远程资源)](#2.1)

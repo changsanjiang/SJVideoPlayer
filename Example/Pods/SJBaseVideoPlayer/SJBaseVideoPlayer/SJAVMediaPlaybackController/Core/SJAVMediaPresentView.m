@@ -11,23 +11,21 @@ NS_ASSUME_NONNULL_BEGIN
 NSNotificationName const SJAVMediaPresentViewReadyForDisplayDidChangeNotification = @"SJAVMediaPresentViewReadyForDisplayDidChangeNotification";
 
 @interface SJAVMediaPresentView ()
-@property (nonatomic, getter=isReadyForDisplay) BOOL readyForDisplay;
-@property (nonatomic, strong, readonly) AVPlayerLayer *playerLayer;
 @property (nonatomic, strong, readonly) AVPlayerLayer *layer;
 @end
 
 @implementation SJAVMediaPresentView
-@synthesize readyForDisplay = _readyForDisplay;
 @dynamic layer;
 
 static NSString *kReadyForDisplay = @"readyForDisplay";
 + (Class)layerClass { return [AVPlayerLayer class]; }
-- (instancetype)initWithFrame:(CGRect)frame player:(AVPlayer *)player {
+- (instancetype)initWithFrame:(CGRect)frame { return [self initWithFrame:frame player:nil]; }
+- (instancetype)initWithFrame:(CGRect)frame player:(nullable AVPlayer *)player {
     self = [super initWithFrame:frame];
     if ( self != nil ) {
+        self.player = player;
         NSKeyValueObservingOptions ops = NSKeyValueObservingOptionInitial | NSKeyValueObservingOptionNew;
         [self.layer addObserver:self forKeyPath:kReadyForDisplay options:ops context:&kReadyForDisplay];
-        self.layer.player = player;
     }
     return self;
 }
@@ -42,7 +40,10 @@ static NSString *kReadyForDisplay = @"readyForDisplay";
     }
 }
 
-- (AVPlayer *_Nullable)player {
+- (void)setPlayer:(nullable AVPlayer *)player {
+    self.layer.player = player;
+}
+- (nullable AVPlayer *)player {
     return self.layer.player;
 }
 

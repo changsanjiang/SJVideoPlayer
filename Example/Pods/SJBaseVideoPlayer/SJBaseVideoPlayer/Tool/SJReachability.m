@@ -36,8 +36,10 @@ static NSNotificationName const SJReachabilityNetworkStatusDidChangeNotification
     
     SJVideoPlayerRegistrar *_registrar;
     @public
-    NSString *_networkSpeedStr;
+    uint32_t _speed;
 }
+
+- (NSString *)speedString;
 @end
 
 @interface __DJNetworkSpeedObserver ()
@@ -49,7 +51,6 @@ static NSNotificationName const SJReachabilityNetworkStatusDidChangeNotification
 - (instancetype)init {
     self = [super init];
     if ( !self ) return nil;
-    _networkSpeedStr = @"0KB/s";
     dispatch_async(dispatch_get_main_queue(), ^{
         self->_registrar = [SJVideoPlayerRegistrar new];
         __weak typeof(self) _self = self;
@@ -94,19 +95,19 @@ static NSNotificationName const SJReachabilityNetworkStatusDidChangeNotification
     }
 }
 
-- (NSString*)stringWithbytes:(int)bytes{
+- (NSString*)speedString {
     // B
-    if ( bytes < 1024 )
+    if ( _speed < 1024 )
         return @"0KB";
     // KB
-    else if (bytes >= 1024 && bytes < 1024 * 1024)
-        return [NSString stringWithFormat:@"%.fKB", (double)bytes / 1024];
+    else if (_speed >= 1024 && _speed < 1024 * 1024)
+        return [NSString stringWithFormat:@"%.fKB/s", (double)_speed / 1024];
     // MB
-    else if (bytes >= 1024 * 1024 && bytes < 1024 * 1024 * 1024)
-        return [NSString stringWithFormat:@"%.1fMB", (double)bytes / (1024 * 1024)];
+    else if (_speed >= 1024 * 1024 && _speed < 1024 * 1024 * 1024)
+        return [NSString stringWithFormat:@"%.1fMB/s", (double)_speed / (1024 * 1024)];
     // GB
     else
-        return [NSString stringWithFormat:@"%.1fGB", (double)bytes / (1024 * 1024 * 1024)];
+        return [NSString stringWithFormat:@"%.1fGB/s", (double)_speed / (1024 * 1024 * 1024)];
 }
 
 - (void)checkNetworkSpeed{
@@ -133,9 +134,10 @@ static NSNotificationName const SJReachabilityNetworkStatusDidChangeNotification
         
         uint32_t __iBytes = self.iBytes;
         if ( __iBytes != 0 ) {
-            NSString *speed = [[self stringWithbytes:iBytes - __iBytes] stringByAppendingString:@"/s"];
+            
+            uint32_t speed = iBytes - __iBytes;
             dispatch_async(dispatch_get_main_queue(), ^{
-                self->_networkSpeedStr = speed;
+                self->_speed = speed;
                 [[NSNotificationCenter defaultCenter] postNotificationName:GSDownloadNetworkSpeedNotificationKey object:self];
             });
         }
@@ -182,7 +184,7 @@ static Reachability *_reachability;
 }
 
 - (NSString *)networkSpeedStr {
-    return _networkSpeedObserver->_networkSpeedStr;
+    return [_networkSpeedObserver speedString];
 }
 
 - (void)_initializeReachability {
@@ -218,6 +220,14 @@ static Reachability *_reachability;
 - (void)_initializeSpeedObserver {
     _networkSpeedObserver = [[__DJNetworkSpeedObserver alloc] init];
 }
+
+- (void)startRefresh {
+    [_networkSpeedObserver start];
+}
+
+- (void)stopRefresh {
+    [_networkSpeedObserver stop];
+}
 @end
 
 @implementation SJReachabilityObserver {
@@ -241,10 +251,10 @@ static Reachability *_reachability;
 - (void)networkStatusDidChange:(NSNotification *)note {
     id<SJReachability> mgr = note.object;
     if ( _networkStatusDidChangeExeBlock )
-        _networkStatusDidChangeExeBlock(mgr, mgr.networkStatus);
+        _networkStatusDidChangeExeBlock(mgr);
 }
 - (void)networkSpeedDidChange:(NSNotification *)note {
-    if ( _networkSpeedDidChangeExeBlock ) _networkSpeedDidChangeExeBlock(_reachability, _reachability.networkSpeedStr);
+    if ( _networkSpeedDidChangeExeBlock ) _networkSpeedDidChangeExeBlock(note.object);
 }
 @end
 NS_ASSUME_NONNULL_END

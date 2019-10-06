@@ -424,7 +424,7 @@ SJEdgeControlButtonItemTag const SJEdgeControlLayerCenterItem_Replay = 40000;
     
     _reachabilityObserver = [videoPlayer.reachability getObserver];
     __weak typeof(self) _self = self;
-    _reachabilityObserver.networkSpeedDidChangeExeBlock = ^(id<SJReachability> r, NSString *speedStr) {
+    _reachabilityObserver.networkSpeedDidChangeExeBlock = ^(id<SJReachability> r) {
         __strong typeof(_self) self = _self;
         if ( !self ) return;
         [self _updateNetworkSpeedStrForLoadingView];

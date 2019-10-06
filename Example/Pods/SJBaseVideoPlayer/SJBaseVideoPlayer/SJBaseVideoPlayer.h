@@ -9,6 +9,7 @@
 //  GitHub:     https://github.com/changsanjiang/SJVideoPlayer
 //
 //  Email:      changsanjiang@gmail.com
+//  QQGroup:    930508201
 //
 
 #import <UIKit/UIKit.h>

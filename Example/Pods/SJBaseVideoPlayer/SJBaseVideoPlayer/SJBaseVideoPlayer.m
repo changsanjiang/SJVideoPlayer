@@ -174,7 +174,7 @@ _lookupResponder(UIView *view, Class cls) {
 }
 
 + (NSString *)version {
-    return @"v3.0.0";
+    return @"v3.0.2";
 }
 
 - (void)setVideoGravity:(SJVideoGravity)videoGravity {
@@ -1139,6 +1139,9 @@ _lookupResponder(UIView *view, Class cls) {
 }
 
 - (void)playbackController:(id<SJVideoPlayerPlaybackController>)controller timeControlStatusDidChange:(SJPlaybackTimeControlStatus)status {
+    
+    BOOL isBuffering = controller.reasonForWaitingToPlay == SJWaitingToMinimizeStallsReason;
+    isBuffering ? [self.reachability startRefresh] : [self.reachability stopRefresh];
         
     if ( [self.controlLayerDelegate respondsToSelector:@selector(videoPlayerPlaybackStatusDidChange:)] ) {
         [self.controlLayerDelegate videoPlayerPlaybackStatusDidChange:self];
@@ -1251,11 +1254,11 @@ _lookupResponder(UIView *view, Class cls) {
     
     _reachabilityObserver = [_reachability getObserver];
     __weak typeof(self) _self = self;
-    _reachabilityObserver.networkStatusDidChangeExeBlock = ^(id<SJReachability> r, SJNetworkStatus status) {
+    _reachabilityObserver.networkStatusDidChangeExeBlock = ^(id<SJReachability> r) {
         __strong typeof(_self) self = _self;
         if ( !self ) return;
         if ( [self.controlLayerDelegate respondsToSelector:@selector(videoPlayer:reachabilityChanged:)] ) {
-            [self.controlLayerDelegate videoPlayer:self reachabilityChanged:status];
+            [self.controlLayerDelegate videoPlayer:self reachabilityChanged:r.networkStatus];
         }
     };
 }
@@ -1722,7 +1725,6 @@ _lookupResponder(UIView *view, Class cls) {
             if ( self.touchedOnTheScrollView ) return NO;
         }
         if ( self.isLockedScreen ) return NO;
-        if ( self.registrar.state == SJVideoPlayerAppState_ResignActive ) return NO;
         if ( !self.controlInfo->rotation.able ) return NO;
         if ( self.useFitOnScreenAndDisableRotation ) return NO;
         if ( self.controlInfo->viewController.isDisappeared ) return NO;

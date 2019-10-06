@@ -11,9 +11,8 @@
 NS_ASSUME_NONNULL_BEGIN
 
 typedef NS_ENUM(NSUInteger, SJVideoPlayerAppState) {
-    SJVideoPlayerAppState_ResignActive,
-    SJVideoPlayerAppState_BecomeActive,
-    SJVideoPlayerAppState_Forground,  // 从后台进入前台
+    SJVideoPlayerAppState_Active,
+    SJVideoPlayerAppState_Inactive,
     SJVideoPlayerAppState_Background, // 从前台进入后台
 };
 

@@ -46,7 +46,9 @@ static NSString *kTimeControlStatus = @"sj_timeControlStatus";
     if ( self ) {
         _sj_playbackInfo.rate = 1;
         _sj_playbackInfo.specifyStartTime = specifyStartTime;
-        [self _sj_initObservations];
+        dispatch_async(dispatch_get_global_queue(0, 0), ^{
+            [self _sj_initObservations];
+        });
     }
     return self;
 }

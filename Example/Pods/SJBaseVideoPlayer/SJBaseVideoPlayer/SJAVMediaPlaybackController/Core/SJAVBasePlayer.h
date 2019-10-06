@@ -17,7 +17,7 @@ extern SJWaitingReason const SJWaitingWithNoAssetToPlayReason;
 typedef struct {
     BOOL isSeeking;
     CMTime time;
-} SJAVBasePlayerSeekingInfo;
+} SJSeekingInfo;
 
 @interface SJAVBasePlayer : AVPlayer
 ///
@@ -56,9 +56,19 @@ typedef struct {
 ///
 @property (nonatomic, strong, readonly, nullable) NSError *sj_error;
 
-@property (nonatomic, readonly) SJAVBasePlayerSeekingInfo seekingInfo;
+@property (nonatomic, readonly) SJSeekingInfo seekingInfo;
 
 - (void)sj_playImmediatelyAtRate:(float)rate;
+
+///
+/// 该观察者可以不移除, 当播放器销毁时, 内部将自动移除
+///
+- (id)addPeriodicTimeObserverForInterval:(CMTime)interval queue:(nullable dispatch_queue_t)queue usingBlock:(void (^)(CMTime))block;
+
+///
+/// 主动移除
+///
+- (void)removeTimeObserver:(id)observer;
 
 + (instancetype)playerWithURL:(NSURL *)URL NS_UNAVAILABLE;
 + (instancetype)playerWithPlayerItem:(nullable AVPlayerItem *)item NS_UNAVAILABLE;

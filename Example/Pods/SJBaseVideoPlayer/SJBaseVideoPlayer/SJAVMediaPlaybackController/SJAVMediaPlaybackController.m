@@ -54,7 +54,6 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (void)dealloc {
     [NSNotificationCenter.defaultCenter removeObserver:self];
-    [self _removePeriodicTimeObserver];
 }
 - (void)setPeriodicTimeInterval:(NSTimeInterval)periodicTimeInterval {
     if ( periodicTimeInterval == _periodicTimeInterval )
@@ -147,13 +146,17 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (void)prepareToPlay {
     if ( _media == nil ) return;
-    self.player = [SJAVMediaPlayerLoader loadPlayerForMedia:_media];
-    [self _resetMainPresenterIfNeeded];
-    dispatch_async(dispatch_get_main_queue(), ^{
-        SJRunLoopTaskQueue.main.enqueue(^{
-            [self.player report];
+    SJAVMediaPlayer *player = [SJAVMediaPlayerLoader loadPlayerForMedia:_media];
+    self.player = player;
+    SJAVMediaPresentView *view = [SJAVMediaPresentView.alloc initWithFrame:CGRectZero player:(_registrar.state == SJVideoPlayerAppState_Background) ? nil : player];
+    [self.presentController makeKeyPresentView:view];
+    if ( player.sj_playbackInfo.isPlayed ) {
+        dispatch_async(dispatch_get_main_queue(), ^{
+            SJRunLoopTaskQueue.main.enqueue(^{
+                [player report];
+            });
         });
-    });
+    }
 }
 
 - (void)replay {
@@ -358,30 +361,6 @@ NS_ASSUME_NONNULL_BEGIN
     }
 }
 
-- (void)_resetMainPresenterIfNeeded {
-    if ( self.registrar.state == SJVideoPlayerAppState_Background )
-        return;
-    
-    AVPlayer *player = self.player;
-    if ( self.presentController.keyPresentView.player != player ) {
-        SJAVMediaPresentView *view = [SJAVMediaPresentView.alloc initWithFrame:CGRectZero player:player];
-        [self.presentController makeKeyPresentView:view];
-    }
-}
-
-- (void)_applicationEnterBackgrond {
-    if ( self.pauseWhenAppDidEnterBackground ) {
-        [self pause];
-    }
-    else {
-        if ( self.timeControlStatus == SJPlaybackTimeControlStatusPlaying ) {
-            if ( @available(iOS 13.0, *) )
-                [self play];
-        }
-        [self.presentController removeAllPresentView];
-    }
-}
-
 - (void)_initObservations {
     [NSNotificationCenter.defaultCenter addObserver:self selector:@selector(playerAssetStatusDidChange:) name:SJAVMediaPlayerAssetStatusDidChangeNotification object:nil];
     [NSNotificationCenter.defaultCenter addObserver:self selector:@selector(playerTimeControlStatusDidChange:) name:SJAVMediaPlayerTimeControlStatusDidChangeNotification object:nil];
@@ -396,13 +375,16 @@ NS_ASSUME_NONNULL_BEGIN
     _registrar.didBecomeActive = ^(SJVideoPlayerRegistrar * _Nonnull registrar) {
         __strong typeof(_self) self = _self;
         if ( !self ) return;
-        [self _resetMainPresenterIfNeeded];
+        if ( self.presentController.keyPresentView.player == nil )
+            self.presentController.keyPresentView.player = self.player;
     };
     
     _registrar.didEnterBackground = ^(SJVideoPlayerRegistrar * _Nonnull registrar) {
         __strong typeof(_self) self = _self;
         if ( !self ) return;
-        [self _applicationEnterBackgrond];
+        if ( self.pauseWhenAppDidEnterBackground == NO ) {
+            self.presentController.keyPresentView.player = nil;
+        }
     };
 }
 

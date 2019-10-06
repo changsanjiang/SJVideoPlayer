@@ -14,10 +14,6 @@
 #import "NSObject+SJObserverHelper.h"
 #endif
 
-@interface SJVideoPlayerRegistrar ()
-@property (nonatomic) SJVideoPlayerAppState state;
-@end
-
 @implementation SJVideoPlayerRegistrar
 - (instancetype)init {
     self = [super init];
@@ -43,22 +39,18 @@
         }];
 
         [self sj_observeWithNotification:UIApplicationWillResignActiveNotification target:nil usingBlock:^(SJVideoPlayerRegistrar *_Nonnull self, NSNotification * _Nonnull note) {
-            self.state = SJVideoPlayerAppState_ResignActive;
             if ( self.willResignActive ) self.willResignActive(self);
         }];
         
         [self sj_observeWithNotification:UIApplicationDidBecomeActiveNotification target:nil usingBlock:^(SJVideoPlayerRegistrar *_Nonnull self, NSNotification * _Nonnull note) {
-            self.state = SJVideoPlayerAppState_BecomeActive;
             if ( self.didBecomeActive ) self.didBecomeActive(self);
         }];
         
         [self sj_observeWithNotification:UIApplicationWillEnterForegroundNotification target:nil usingBlock:^(SJVideoPlayerRegistrar *_Nonnull self, NSNotification * _Nonnull note) {
-            self.state = SJVideoPlayerAppState_Forground;
             if ( self.willEnterForeground ) self.willEnterForeground(self);
         }];
         
         [self sj_observeWithNotification:UIApplicationDidEnterBackgroundNotification target:nil usingBlock:^(SJVideoPlayerRegistrar *_Nonnull self, NSNotification * _Nonnull note) {
-            self.state = SJVideoPlayerAppState_Background;
             if ( self.didEnterBackground ) self.didEnterBackground(self);
         }];
         
@@ -68,19 +60,11 @@
                 if ( self.audioSessionInterruption ) self.audioSessionInterruption(self);
             }
         }];
-    });
-    
-    switch ( UIApplication.sharedApplication.applicationState ) {
-        case UIApplicationStateActive:
-            self->_state = SJVideoPlayerAppState_Forground;
-            break;
-        case UIApplicationStateInactive:
-            self->_state = SJVideoPlayerAppState_ResignActive;
-            break;
-        case UIApplicationStateBackground:
-            self->_state = SJVideoPlayerAppState_Background;
-            break;
-    }
+    }); 
     return self;
+}
+
+- (SJVideoPlayerAppState)state {
+    return UIApplication.sharedApplication.applicationState;
 }
 @end

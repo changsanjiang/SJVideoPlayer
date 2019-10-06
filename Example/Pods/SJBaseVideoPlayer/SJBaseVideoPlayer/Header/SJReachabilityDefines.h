@@ -33,11 +33,14 @@ typedef NS_ENUM(NSInteger, SJNetworkStatus) {
 @property (nonatomic, readonly) SJNetworkStatus networkStatus;
 
 @property (nonatomic, strong, readonly) NSString *networkSpeedStr;
+
+- (void)startRefresh;
+- (void)stopRefresh;
 @end
 
 @protocol SJReachabilityObserver <NSObject>
-@property (nonatomic, copy, nullable) void(^networkStatusDidChangeExeBlock)(id<SJReachability> r, SJNetworkStatus status);
-@property (nonatomic, copy, nullable) void(^networkSpeedDidChangeExeBlock)(id<SJReachability> r, NSString *speedStr);
+@property (nonatomic, copy, nullable) void(^networkStatusDidChangeExeBlock)(id<SJReachability> r);
+@property (nonatomic, copy, nullable) void(^networkSpeedDidChangeExeBlock)(id<SJReachability> r);
 @end
 NS_ASSUME_NONNULL_END
 #endif /* SJNetworkStatus_h */

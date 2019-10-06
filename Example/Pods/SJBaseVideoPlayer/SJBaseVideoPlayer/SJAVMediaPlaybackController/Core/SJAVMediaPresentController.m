@@ -56,26 +56,33 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (void)insertPresentViewToBack:(SJAVMediaPresentView *)view {
     if ( view != nil ) {
+        [CATransaction begin];
+        [CATransaction setDisableActions:YES];
         view.videoGravity = _videoGravity;
+        [CATransaction commit];
         [self.view insertSubview:view atIndex:0];
     }
 }
 
 - (void)removePresentView:(SJAVMediaPresentView *)view {
-    if ( view != nil )
+    if ( view != nil ) {
         [view removeFromSuperview];
+    }
 }
 
 - (void)makeKeyPresentView:(SJAVMediaPresentView *)view {
-    if ( view != nil ) {
+    [CATransaction begin];
+    [CATransaction setDisableActions:YES];
+    view.videoGravity = _videoGravity;
+    [CATransaction commit];
+    if ( view != nil && self.keyPresentView != view ) {
         [self removePresentView:view];
-        view.videoGravity = _videoGravity;
         [self.view addSubview:view];
     }
 }
 
 - (void)removeAllPresentView {
-    [self.view.subviews enumerateObjectsWithOptions:NSEnumerationReverse usingBlock:^(__kindof UIView * _Nonnull obj, NSUInteger idx, BOOL * _Nonnull stop) {
+    [self.view.subviews enumerateObjectsWithOptions:NSEnumerationReverse usingBlock:^(SJAVMediaPresentView * _Nonnull obj, NSUInteger idx, BOOL * _Nonnull stop) {
         [self removePresentView:obj];
     }];
 }

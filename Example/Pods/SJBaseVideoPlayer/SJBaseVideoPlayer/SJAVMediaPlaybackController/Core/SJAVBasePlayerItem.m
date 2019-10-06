@@ -20,7 +20,9 @@ static NSNotificationName const SJAVBasePlayerItemPresentationSizeDidChangeNotif
 - (instancetype)initWithAsset:(AVAsset *)asset {
     self = [super initWithAsset:asset];
     if ( self ) {
-        [self _initObservations];
+        dispatch_async(dispatch_get_global_queue(0, 0), ^{
+            [self _initObservations];
+        });
     }
     return self;
 }

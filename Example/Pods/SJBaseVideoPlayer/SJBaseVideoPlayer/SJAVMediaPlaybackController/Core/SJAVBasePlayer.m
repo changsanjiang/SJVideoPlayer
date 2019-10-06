@@ -19,9 +19,11 @@ SJWaitingReason const SJWaitingWithNoAssetToPlayReason = @"AVPlayerWaitingWithNo
 @property (nonatomic, strong, nullable) NSError *sj_failedToPlayEndTimeError;
 @property (nonatomic) SJAssetStatus sj_assetStatus;
 
-@property (nonatomic) SJAVBasePlayerSeekingInfo seekingInfo;
+@property (nonatomic) SJSeekingInfo seekingInfo;
 
 @property (nonatomic, strong) SJAVBasePlayerItemObserver *sj_itemObsever;
+
+@property (nonatomic, strong, readonly) NSMutableArray *sj_periodicTimeObservers;
 @end
 
 @implementation SJAVBasePlayer
@@ -32,14 +34,10 @@ static NSString *kTimeControlStatus = @"timeControlStatus";
     if ( item == nil ) return nil;
     self = [super initWithPlayerItem:item];
     if ( self ) {
-        __weak typeof(self) _self = self;
         dispatch_async(dispatch_get_global_queue(0, 0), ^{
-            __strong typeof(_self) self = _self;
-            if ( !self ) return;
             [self _sjbase_initItemObserver];
+            [self _sjbase_initObservations];
         });
-        
-        [self _sjbase_initObservations];
     }
     return self;
 }
@@ -48,9 +46,27 @@ static NSString *kTimeControlStatus = @"timeControlStatus";
 #ifdef DEBUG
     NSLog(@"%d \t %s", (int)__LINE__, __func__);
 #endif
+    if ( _sj_periodicTimeObservers.count != 0 ) {
+        for ( id observer in _sj_periodicTimeObservers )
+            [super removeTimeObserver:observer];
+    }
+    
     [self removeObserver:self forKeyPath:kStatus];
     if ( @available(iOS 10.0, *) ) {
         [self removeObserver:self forKeyPath:kTimeControlStatus];
+    }
+}
+
+- (id)addPeriodicTimeObserverForInterval:(CMTime)interval queue:(nullable dispatch_queue_t)queue usingBlock:(void (^)(CMTime))block {
+    id observer = [super addPeriodicTimeObserverForInterval:interval queue:queue usingBlock:block];
+    [self.sj_periodicTimeObservers addObject:observer];
+    return observer;
+}
+
+- (void)removeTimeObserver:(id)observer {
+    if ( [_sj_periodicTimeObservers containsObject:observer] ) {
+        [_sj_periodicTimeObservers removeObject:observer];
+        [self removeTimeObserver:observer];
     }
 }
 
@@ -307,6 +323,14 @@ static NSString *kTimeControlStatus = @"timeControlStatus";
     if ( status != self.sj_assetStatus ) {
         self.sj_assetStatus = status;
     }
+}
+
+@synthesize sj_periodicTimeObservers = _sj_periodicTimeObservers;
+- (NSMutableArray *)sj_periodicTimeObservers {
+    if ( _sj_periodicTimeObservers == nil ) {
+        _sj_periodicTimeObservers = [NSMutableArray arrayWithCapacity:3];
+    }
+    return _sj_periodicTimeObservers;
 }
 @end
 NS_ASSUME_NONNULL_END

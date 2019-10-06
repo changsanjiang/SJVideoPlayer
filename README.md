@@ -41,7 +41,7 @@ _player.URLAsset = [[SJVideoPlayerURLAsset alloc] initWithURL:URL];
 ## Author
 
 Email: changsanjiang@gmail.com
-QQGroup:    
+QQGroup: 930508201 (iOS 开发)
 
 ## Documents
 

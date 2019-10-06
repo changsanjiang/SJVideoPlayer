@@ -1749,3 +1749,9 @@ _player.defaultEdgeControlLayer.rightMargin = 16;
 [_player.defaultEdgeControlLayer.topContainerView cleanColors];
 [_player.defaultEdgeControlLayer.bottomContainerView cleanColors];
 ```
+
+## 赞助
+如果对您有所帮助，欢迎您的赞赏
+
+<img src="https://github.com/changsanjiang/SJBaseVideoPlayer/blob/master/Project/Project/imgs/thanks_zfb.JPG?raw=true" width="200">
+<img src="https://github.com/changsanjiang/SJBaseVideoPlayer/blob/master/Project/Project/imgs/thanks_wechat.JPG?raw=true" width="200">

@@ -34,9 +34,12 @@ static NSString *kReadyForDisplay = @"readyForDisplay";
     [self.layer removeObserver:self forKeyPath:kReadyForDisplay];
 }
 
+
 - (void)observeValueForKeyPath:(nullable NSString *)keyPath ofObject:(nullable id)object change:(nullable NSDictionary<NSKeyValueChangeKey,id> *)change context:(nullable void *)context {
     if ( context == &kReadyForDisplay ) {
-        [NSNotificationCenter.defaultCenter postNotificationName:SJAVMediaPresentViewReadyForDisplayDidChangeNotification object:self];
+        dispatch_async(dispatch_get_main_queue(), ^{
+            [NSNotificationCenter.defaultCenter postNotificationName:SJAVMediaPresentViewReadyForDisplayDidChangeNotification object:self];
+        });
     }
 }
 

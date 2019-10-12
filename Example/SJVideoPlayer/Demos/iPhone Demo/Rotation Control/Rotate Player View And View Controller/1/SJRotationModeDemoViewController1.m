@@ -36,7 +36,11 @@
     self.edgesForExtendedLayout = UIRectEdgeNone;
     
     _player = [SJVideoPlayer player];
-    _player.URLAsset = [[SJVideoPlayerURLAsset alloc] initWithURL:SourceURL4];
+    _player.autoplayWhenSetNewAsset = NO;
+    
+    SJVideoPlayerURLAsset *asset = [[SJVideoPlayerURLAsset alloc] initWithURL:SourceURL4];
+    asset.title = @"123456789";
+    _player.URLAsset = asset;
     [_playerContainerView addSubview:_player.view];
     [_player.view mas_makeConstraints:^(MASConstraintMaker *make) {
         make.edges.offset(0);
@@ -84,6 +88,12 @@
 }
 
 #pragma mark -
+
+- (void)viewWillAppear:(BOOL)animated {
+    [super viewWillAppear:animated];
+    [self.navigationController setNavigationBarHidden:YES animated:NO];
+}
+
 - (void)viewDidAppear:(BOOL)animated {
     [super viewDidAppear:animated];
     [self.player vc_viewDidAppear];
@@ -91,6 +101,7 @@
 
 - (void)viewWillDisappear:(BOOL)animated {
     [super viewWillDisappear:animated];
+    [self.navigationController setNavigationBarHidden:NO animated:NO];
     [self.player vc_viewWillDisappear];
 }
 

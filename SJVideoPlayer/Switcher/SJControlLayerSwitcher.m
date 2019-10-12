@@ -23,10 +23,7 @@ static NSNotificationName const SJPlayerDidEndSwitchControlLayerNotification = @
 @synthesize playerDidEndSwitchControlLayer = _playerDidEndSwitchControlLayer;
 - (instancetype)initWithSwitcher:(id<SJControlLayerSwitcher>)switcher {
     self = [super init];
-    if ( !self ) return nil;
-#ifdef DEBUG
-    NSLog(@"%d \t %s", (int)__LINE__, __func__);
-#endif
+    if ( !self ) return nil; 
     [NSNotificationCenter.defaultCenter addObserver:self selector:@selector(willBeginSwitchControlLayer:) name:SJPlayerWillBeginSwitchControlLayerNotification object:switcher];
     
     [NSNotificationCenter.defaultCenter addObserver:self selector:@selector(didEndSwitchControlLayer:) name:SJPlayerDidEndSwitchControlLayerNotification object:switcher];

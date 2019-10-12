@@ -12,28 +12,30 @@
 
 #warning Configuring rotation control. 请配置旋转控制!
 
-static BOOL _iPhone_shouldAutorotate(UIViewController *vc) {
-    NSString *class = NSStringFromClass(vc.class);
-    
-    // 禁止哪些控制器旋转.
-    // - `return NO` 将只旋转播放器视图. 为了避免`所有控制器`同`播放器`一起旋转, 可以在此直接`return NO;`.
-    //
-    // return NO;
-    
-    // - 为避免控制器同播放器一起旋转, 此处为禁止Demo中SJ前缀的控制器旋转.
-    if ( [class hasPrefix:@"SJ"] ) {
-        return NO;
-    }
-    
-    return YES;
-}
-
 @implementation UIViewController (RotationControl)
-/// 该控制器是否可以旋转
+///
+/// 控制器是否可以旋转
+///
 - (BOOL)shouldAutorotate {
     // 此处为设置 iPhone 哪些控制器可以旋转
-    if ( UIUserInterfaceIdiomPhone == UI_USER_INTERFACE_IDIOM() )
-        return _iPhone_shouldAutorotate(self);
+    if ( UIUserInterfaceIdiomPhone == UI_USER_INTERFACE_IDIOM() ) {
+        
+        
+        // 如果项目仅支持竖屏, 可以直接返回 NO
+        //
+        // return NO;
+        
+        
+        // 此处为禁止当前Demo中SJ前缀的控制器旋转, 请根据实际项目修改前缀
+        NSString *class = NSStringFromClass(self.class);
+        if ( [class hasPrefix:@"SJ"] ) {
+            // 返回 NO, 不允许控制器旋转
+            return NO;
+        }
+        
+        // 返回 YES, 允许控制器旋转
+        return YES;
+    }
     
     // 此处为设置 iPad 所有控制器都可以旋转
     // - 请根据实际情况进行修改.
@@ -43,13 +45,15 @@ static BOOL _iPhone_shouldAutorotate(UIViewController *vc) {
     return NO;
 }
 
-/// 旋转支持的方向
+///
+/// 控制器旋转支持的方向
+///
 - (UIInterfaceOrientationMask)supportedInterfaceOrientations {
     // 此处为设置 iPhone 某个控制器旋转支持的方向
     // - 请根据实际情况进行修改.
     if ( UIUserInterfaceIdiomPhone == UI_USER_INTERFACE_IDIOM() ) {
         // 如果self不支持旋转, 返回仅支持竖屏
-        if ( _iPhone_shouldAutorotate(self) == NO )
+        if ( self.shouldAutorotate == NO )
             return UIInterfaceOrientationMaskPortrait;
     }
     

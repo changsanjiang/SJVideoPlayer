@@ -65,6 +65,8 @@
     
     [m addObject:[[LWZTableSectionShrinker alloc] initWithTitle:@"Switching Control Layer" titleWhenShrank:nil dataArr:[self _createSwitchingControlLayerDemoItems]]];
     
+    [m addObject:[[LWZTableSectionShrinker alloc] initWithTitle:@"Custom Control Layer" titleWhenShrank:nil dataArr:[self _createCustomControlLayerDemoItems]]];
+    
     [m addObject:[[LWZTableSectionShrinker alloc] initWithTitle:@"UITableView UICollectionView" titleWhenShrank:nil dataArr:[self _createScrollViewDemoItems]]];
     
     [m addObject:[[LWZTableSectionShrinker alloc] initWithTitle:@"Playback List Control" titleWhenShrank:nil dataArr:[self _createPlaybackListControlDemoItems]]];
@@ -147,6 +149,15 @@
       [[Item alloc] initWithTitle:@"Switching Control Layer"
                          subTitle:@"切换控制层 (注: 此为手动切换, 实际过程中播放器将会根据状态自动切换)"
                              path:@"demo/controlLayer/switching"],
+      ];
+}
+
+- (NSArray<Item *> *)_createCustomControlLayerDemoItems {
+    return
+    @[
+      [[Item alloc] initWithTitle:@"Custom Control Layer"
+                         subTitle:@"自定义控制层"
+                             path:@"demo/CustomControlLayer/vc12"],
       ];
 }
 

@@ -1,1 +1,1 @@
-../../../SJBaseVideoPlayer/SJBaseVideoPlayer/Tool/SJPopPromptController.h
+../../../../../../SJBaseVideoPlayer/SJBaseVideoPlayer/Tool/SJPopPromptController.h

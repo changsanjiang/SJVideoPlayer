@@ -1325,7 +1325,7 @@ ___
 @property (nonatomic, strong, null_resettable) id<SJPromptProtocol> prompt;
 
 ///
-/// 右下角弹出提示
+/// 左下角弹出提示
 ///
 ///         了解更多请前往协议头文件查看
 ///

@@ -30,4 +30,29 @@
 - (NSString *)title {
     return objc_getAssociatedObject(self, _cmd);
 }
+
+- (nullable instancetype)initWithAttributedTitle:(NSAttributedString *)title
+                                             URL:(NSURL *)URL
+                                       playModel:(__kindof SJPlayModel *)playModel {
+    return [self initWithAttributedTitle:title URL:URL specifyStartTime:0 playModel:playModel];
+}
+
+- (nullable instancetype)initWithAttributedTitle:(NSAttributedString *)title
+                                             URL:(NSURL *)URL
+                                specifyStartTime:(NSTimeInterval)specifyStartTime
+                                       playModel:(__kindof SJPlayModel *)playModel {
+    if ( URL == nil ) return nil;
+    self = [self initWithURL:URL specifyStartTime:specifyStartTime playModel:playModel];
+    if ( self ) {
+        self.attributedTitle = title;
+    }
+    return self;
+}
+
+- (void)setAttributedTitle:(nullable NSAttributedString *)attributedTitle {
+    objc_setAssociatedObject(self, @selector(attributedTitle), attributedTitle, OBJC_ASSOCIATION_COPY_NONATOMIC);
+}
+- (NSAttributedString *)attributedTitle {
+    return objc_getAssociatedObject(self, _cmd);
+}
 @end

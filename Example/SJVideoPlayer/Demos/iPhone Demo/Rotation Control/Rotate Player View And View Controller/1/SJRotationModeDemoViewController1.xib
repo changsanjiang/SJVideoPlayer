@@ -1,11 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="14490.70" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES">
-    <device id="retina6_1" orientation="portrait">
-        <adaptation id="fullscreen"/>
-    </device>
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="14868" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES">
+    <device id="retina6_1" orientation="portrait" appearance="light"/>
     <dependencies>
         <deployment identifier="iOS"/>
-        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="14490.49"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="14824"/>
         <capability name="Safe area layout guides" minToolsVersion="9.0"/>
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
     </dependencies>
@@ -23,53 +21,52 @@
             <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
             <subviews>
                 <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="tt5-Bv-yki" customClass="SJView">
-                    <rect key="frame" x="0.0" y="44" width="414" height="233"/>
+                    <rect key="frame" x="0.0" y="64" width="414" height="233"/>
                     <color key="backgroundColor" red="0.0" green="0.47843137250000001" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                     <constraints>
                         <constraint firstAttribute="width" secondItem="tt5-Bv-yki" secondAttribute="height" multiplier="16:9" id="3fg-6O-Uor"/>
                     </constraints>
                 </view>
                 <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="Cpw-C8-HUi">
-                    <rect key="frame" x="20" y="300" width="45" height="30"/>
+                    <rect key="frame" x="20" y="320" width="45" height="30"/>
                     <state key="normal" title="Rotate"/>
                     <connections>
                         <action selector="rotate:" destination="-1" eventType="touchUpInside" id="EBW-Wm-5Bx"/>
                     </connections>
                 </button>
                 <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="Rcz-Lm-6iX">
-                    <rect key="frame" x="20" y="338" width="263" height="30"/>
+                    <rect key="frame" x="20" y="358" width="263" height="30"/>
                     <state key="normal" title="RotateToTheLandscapeLeftOrientation"/>
                     <connections>
                         <action selector="rotateToTheLLO:" destination="-1" eventType="touchUpInside" id="YCe-NE-imV"/>
                     </connections>
                 </button>
                 <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="6cr-hN-QRa">
-                    <rect key="frame" x="20" y="376" width="272" height="30"/>
+                    <rect key="frame" x="20" y="396" width="272" height="30"/>
                     <state key="normal" title="RotateToTheLandscapeRightOrientation"/>
                     <connections>
                         <action selector="rotateToTheLRO:" destination="-1" eventType="touchUpInside" id="4bl-p2-alv"/>
                     </connections>
                 </button>
                 <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="DisableAutorotation" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="WLj-nW-KUJ">
-                    <rect key="frame" x="20" y="460" width="151" height="21"/>
+                    <rect key="frame" x="20" y="480" width="151" height="21"/>
                     <fontDescription key="fontDescription" type="system" pointSize="17"/>
                     <nil key="textColor"/>
                     <nil key="highlightedColor"/>
                 </label>
                 <switch opaque="NO" contentMode="scaleToFill" horizontalHuggingPriority="750" verticalHuggingPriority="750" contentHorizontalAlignment="center" contentVerticalAlignment="center" translatesAutoresizingMaskIntoConstraints="NO" id="NGs-cl-BmD">
-                    <rect key="frame" x="20" y="489" width="51" height="31"/>
+                    <rect key="frame" x="20" y="509" width="51" height="31"/>
                     <connections>
                         <action selector="disableAction:" destination="-1" eventType="valueChanged" id="aLG-4K-Lql"/>
                     </connections>
                 </switch>
                 <textField opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="center" borderStyle="roundedRect" placeholder="请输入播放地址" textAlignment="natural" minimumFontSize="17" translatesAutoresizingMaskIntoConstraints="NO" id="rPd-Yj-DuV">
-                    <rect key="frame" x="273" y="300" width="121" height="30"/>
-                    <nil key="textColor"/>
+                    <rect key="frame" x="266" y="320" width="128" height="34"/>
                     <fontDescription key="fontDescription" type="system" pointSize="14"/>
                     <textInputTraits key="textInputTraits"/>
                 </textField>
                 <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="4ZT-pY-bQ2">
-                    <rect key="frame" x="364" y="338" width="30" height="30"/>
+                    <rect key="frame" x="364" y="362" width="30" height="30"/>
                     <state key="normal" title="Play"/>
                     <connections>
                         <action selector="clickedPlayButton:" destination="-1" eventType="touchUpInside" id="4Fu-1t-Vbx"/>
@@ -84,7 +81,7 @@
                 <constraint firstItem="Rcz-Lm-6iX" firstAttribute="top" secondItem="Cpw-C8-HUi" secondAttribute="bottom" constant="8" id="FJy-of-3ux"/>
                 <constraint firstItem="NGs-cl-BmD" firstAttribute="leading" secondItem="WLj-nW-KUJ" secondAttribute="leading" id="Gpj-pb-zTf"/>
                 <constraint firstItem="4ZT-pY-bQ2" firstAttribute="trailing" secondItem="rPd-Yj-DuV" secondAttribute="trailing" id="Hhy-U4-G2l"/>
-                <constraint firstItem="tt5-Bv-yki" firstAttribute="top" secondItem="vUN-kp-3ea" secondAttribute="top" id="HiY-Qb-UuE"/>
+                <constraint firstItem="tt5-Bv-yki" firstAttribute="top" secondItem="vUN-kp-3ea" secondAttribute="top" constant="20" id="HiY-Qb-UuE"/>
                 <constraint firstItem="6cr-hN-QRa" firstAttribute="top" secondItem="Rcz-Lm-6iX" secondAttribute="bottom" constant="8" id="NPg-MM-Ena"/>
                 <constraint firstItem="rPd-Yj-DuV" firstAttribute="top" secondItem="tt5-Bv-yki" secondAttribute="bottom" constant="23" id="Ydn-0H-ZEi"/>
                 <constraint firstItem="Rcz-Lm-6iX" firstAttribute="leading" secondItem="Cpw-C8-HUi" secondAttribute="leading" id="Z6v-hT-wcT"/>

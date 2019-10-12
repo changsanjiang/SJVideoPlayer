@@ -1,1 +1,1 @@
-../../../SJBaseVideoPlayer/SJBaseVideoPlayer/Header/SJPopPromptControllerProtocol.h
+../../../../../../SJBaseVideoPlayer/SJBaseVideoPlayer/Header/SJPopPromptControllerProtocol.h

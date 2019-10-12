@@ -11,6 +11,7 @@
 #import <Masonry/Masonry.h>
 #import <SJUIKit/SJUIKit.h>
 #import "SJSourceURLs.h"
+#import "SJPopPromptCustomView.h"
 
 NS_ASSUME_NONNULL_BEGIN
 @interface SJViewController6 ()
@@ -41,13 +42,27 @@ NS_ASSUME_NONNULL_BEGIN
     
     NSTimeInterval duration = arc4random() % 10 + 2;
     
+    ///
+    /// 显示富文本提示
+    ///
     [_player.popPromptController show:text duration:duration];
 }
 
+///
+/// 清空所有提示
+///
 - (IBAction)clear:(id)sender {
     [_player.popPromptController clear];
 }
 
+///
+/// 显示自定义视图
+///
+- (IBAction)showCustomView:(id)sender {
+    [_player.popPromptController showCustomView:SJPopPromptCustomView.new duration:3];
+}
+
+#pragma mark -
 
 - (void)_setupViews {
     self.edgesForExtendedLayout = UIRectEdgeNone;

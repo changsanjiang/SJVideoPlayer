@@ -805,14 +805,12 @@ SJEdgeControlButtonItemTag const SJEdgeControlLayerCenterItem_Replay = 40000;
         SJEdgeControlButtonItem *titleItem = [self.topAdapter itemForTag:SJEdgeControlLayerTopItem_Title];
         if ( titleItem != nil ) {
             SJVideoPlayerURLAsset *asset = _videoPlayer.URLAsset.originAsset ? : _videoPlayer.URLAsset;
-            NSString *title = asset.title;
-            titleItem.hidden = title.length == 0;
-            if ( titleItem.hidden == NO && ![titleItem.title.string isEqualToString:title] ) {
-                NSInteger atIndex = [_topAdapter indexOfItemForTag:SJEdgeControlLayerTopItem_Title];
-                // margin
-                CGFloat left  = [_topAdapter itemsIsHiddenWithRange:NSMakeRange(0, atIndex)] ? 16 : 0;
-                CGFloat right = [_topAdapter itemsIsHiddenWithRange:NSMakeRange(atIndex, _topAdapter.itemCount)] ? 16 : 0;
-                titleItem.insets = SJEdgeInsetsMake(left, right);
+            NSAttributedString *_Nullable attributedTitle = asset.attributedTitle;
+            NSString *_Nullable title = asset.title;
+            if ( attributedTitle.length != 0 ) {
+                titleItem.title = attributedTitle;
+            }
+            else if ( title.length != 0 && ![titleItem.title.string isEqualToString:title] ) {
                 titleItem.title = [NSAttributedString sj_UIKitText:^(id<SJUIKitTextMakerProtocol>  _Nonnull make) {
                     make.append(title);
                     make.font(sources.titleFont);
@@ -823,6 +821,16 @@ SJEdgeControlButtonItemTag const SJEdgeControlLayerCenterItem_Replay = 40000;
                         make.shadowColor = UIColor.blackColor;
                     });
                 }];
+            }
+            
+            titleItem.hidden = (titleItem.title.length == 0);
+
+            if ( titleItem.hidden == NO ) {
+                // margin
+                NSInteger atIndex = [_topAdapter indexOfItemForTag:SJEdgeControlLayerTopItem_Title];
+                CGFloat left  = [_topAdapter itemsIsHiddenWithRange:NSMakeRange(0, atIndex)] ? 16 : 0;
+                CGFloat right = [_topAdapter itemsIsHiddenWithRange:NSMakeRange(atIndex, _topAdapter.itemCount)] ? 16 : 0;
+                titleItem.insets = SJEdgeInsetsMake(left, right);
             }
         }
     }

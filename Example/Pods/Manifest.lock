@@ -273,7 +273,7 @@ DEPENDENCIES:
   - Masonry
   - MJRefresh
   - SDWebImage
-  - SJBaseVideoPlayer
+  - SJBaseVideoPlayer (from `../../SJBaseVideoPlayer`)
   - SJFullscreenPopGesture/ObjC
   - SJPlaybackListController
   - SJRouter
@@ -286,13 +286,14 @@ SPEC REPOS:
     - MJRefresh
     - Reachability
     - SDWebImage
-    - SJBaseVideoPlayer
     - SJFullscreenPopGesture
     - SJPlaybackListController
     - SJRouter
     - SJUIKit
 
 EXTERNAL SOURCES:
+  SJBaseVideoPlayer:
+    :path: "../../SJBaseVideoPlayer"
   SJVideoPlayer:
     :path: "../../SJVideoPlayer"
 
@@ -301,13 +302,13 @@ SPEC CHECKSUMS:
   MJRefresh: ed450d6eb9d3346a2cb033ab7eb6de090aeef437
   Reachability: 33e18b67625424e47b6cde6d202dce689ad7af96
   SDWebImage: 96d7f03415ccb28d299d765f93557ff8a617abd8
-  SJBaseVideoPlayer: 81d6bbd59c7a6ee027a8eab63f8281b32d7004a2
+  SJBaseVideoPlayer: 48b342062b092908555bad2169563680becee2ed
   SJFullscreenPopGesture: 15751a2258e4e087cc1fd07bb76195066ba64710
   SJPlaybackListController: e135c789fcd63d63a62d5e2e2965ab1e6d52a2bd
   SJRouter: 702a0d06811fc2da02d6145bc7abb9f633fdc612
   SJUIKit: b3d9a9834cd66e2b8d9c053fa699cba5ba49243d
-  SJVideoPlayer: 6fa57ffdba6354e54948a4b1cec9ebb8342725af
+  SJVideoPlayer: 3c7953a8d0b8f191f5c426d05f70ac84fbdbd045
 
-PODFILE CHECKSUM: 3e78edb986fca035610acf2f0f2b0cc408696d8c
+PODFILE CHECKSUM: a98a481a4928aa749572897c2c66b350f1e13e7f
 
 COCOAPODS: 1.7.5

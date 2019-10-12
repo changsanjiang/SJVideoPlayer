@@ -22,9 +22,12 @@
 		6003F5BA195388D20070C39A /* InfoPlist.strings in Resources */ = {isa = PBXBuildFile; fileRef = 6003F5B8195388D20070C39A /* InfoPlist.strings */; };
 		6003F5BC195388D20070C39A /* Tests.m in Sources */ = {isa = PBXBuildFile; fileRef = 6003F5BB195388D20070C39A /* Tests.m */; };
 		71719F9F1E33DC2100824A3D /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 71719F9D1E33DC2100824A3D /* LaunchScreen.storyboard */; };
+		7740C1BA2350A16700DD7ECE /* SJViewController12.m in Sources */ = {isa = PBXBuildFile; fileRef = 7740C1B92350A16700DD7ECE /* SJViewController12.m */; };
+		7740C1BD2350A18500DD7ECE /* SJCustomControlLayerViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 7740C1BC2350A18500DD7ECE /* SJCustomControlLayerViewController.m */; };
 		774AF08722DC790D005FE462 /* SJView.m in Sources */ = {isa = PBXBuildFile; fileRef = 774AF08622DC790D005FE462 /* SJView.m */; };
 		7756F58522E173D400F9DC7D /* SJTestViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 7756F58322E173D400F9DC7D /* SJTestViewController.m */; };
 		7756F58622E173D400F9DC7D /* SJTestViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 7756F58422E173D400F9DC7D /* SJTestViewController.xib */; };
+		7774C8D623519F5000FE6FCA /* SJPopPromptCustomView.m in Sources */ = {isa = PBXBuildFile; fileRef = 7774C8D523519F5000FE6FCA /* SJPopPromptCustomView.m */; };
 		77788F6F22C35FF200E26599 /* SJViewController5n.m in Sources */ = {isa = PBXBuildFile; fileRef = 77788F6D22C35FF200E26599 /* SJViewController5n.m */; };
 		77788FBB22C3654D00E26599 /* SJTableViewHeaderFooterView5n.m in Sources */ = {isa = PBXBuildFile; fileRef = 77788FBA22C3654D00E26599 /* SJTableViewHeaderFooterView5n.m */; };
 		77788FDF22C36CF300E26599 /* SJMediaItemsTableViewCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 77788FDD22C36CF300E26599 /* SJMediaItemsTableViewCell.m */; };
@@ -117,11 +120,17 @@
 		6003F5BB195388D20070C39A /* Tests.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = Tests.m; sourceTree = "<group>"; };
 		606FC2411953D9B200FFA9A0 /* Tests-Prefix.pch */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "Tests-Prefix.pch"; sourceTree = "<group>"; };
 		71719F9E1E33DC2100824A3D /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/LaunchScreen.storyboard; sourceTree = "<group>"; };
+		7740C1B82350A16700DD7ECE /* SJViewController12.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = SJViewController12.h; sourceTree = "<group>"; };
+		7740C1B92350A16700DD7ECE /* SJViewController12.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = SJViewController12.m; sourceTree = "<group>"; };
+		7740C1BB2350A18500DD7ECE /* SJCustomControlLayerViewController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = SJCustomControlLayerViewController.h; sourceTree = "<group>"; };
+		7740C1BC2350A18500DD7ECE /* SJCustomControlLayerViewController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = SJCustomControlLayerViewController.m; sourceTree = "<group>"; };
 		774AF08522DC790D005FE462 /* SJView.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = SJView.h; sourceTree = "<group>"; };
 		774AF08622DC790D005FE462 /* SJView.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = SJView.m; sourceTree = "<group>"; };
 		7756F58222E173D400F9DC7D /* SJTestViewController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = SJTestViewController.h; sourceTree = "<group>"; };
 		7756F58322E173D400F9DC7D /* SJTestViewController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = SJTestViewController.m; sourceTree = "<group>"; };
 		7756F58422E173D400F9DC7D /* SJTestViewController.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = SJTestViewController.xib; sourceTree = "<group>"; };
+		7774C8D423519F5000FE6FCA /* SJPopPromptCustomView.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = SJPopPromptCustomView.h; sourceTree = "<group>"; };
+		7774C8D523519F5000FE6FCA /* SJPopPromptCustomView.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = SJPopPromptCustomView.m; sourceTree = "<group>"; };
 		77788F6C22C35FF200E26599 /* SJViewController5n.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = SJViewController5n.h; sourceTree = "<group>"; };
 		77788F6D22C35FF200E26599 /* SJViewController5n.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = SJViewController5n.m; sourceTree = "<group>"; };
 		77788FB922C3654D00E26599 /* SJTableViewHeaderFooterView5n.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = SJTableViewHeaderFooterView5n.h; sourceTree = "<group>"; };
@@ -344,6 +353,17 @@
 			name = "Podspec Metadata";
 			sourceTree = "<group>";
 		};
+		7740C1B72350A14200DD7ECE /* CustomControlLayer */ = {
+			isa = PBXGroup;
+			children = (
+				7740C1B82350A16700DD7ECE /* SJViewController12.h */,
+				7740C1B92350A16700DD7ECE /* SJViewController12.m */,
+				7740C1BB2350A18500DD7ECE /* SJCustomControlLayerViewController.h */,
+				7740C1BC2350A18500DD7ECE /* SJCustomControlLayerViewController.m */,
+			);
+			path = CustomControlLayer;
+			sourceTree = "<group>";
+		};
 		7756F57E22E1732D00F9DC7D /* Test */ = {
 			isa = PBXGroup;
 			children = (
@@ -409,6 +429,7 @@
 				A6F19DF722D9C1090043B508 /* Pop Prompt */,
 				A6F19DFD22D9D7C30043B508 /* Switch Video Definition */,
 				77E87F6222E84D2B0047A253 /* GIF Screenshot Export */,
+				7740C1B72350A14200DD7ECE /* CustomControlLayer */,
 				77F2F5D822FAC41B00EA0B91 /* Other */,
 			);
 			path = "iPhone Demo";
@@ -707,6 +728,8 @@
 			children = (
 				A6F19DF822D9C1390043B508 /* SJViewController6.h */,
 				A6F19DF922D9C1390043B508 /* SJViewController6.m */,
+				7774C8D423519F5000FE6FCA /* SJPopPromptCustomView.h */,
+				7774C8D523519F5000FE6FCA /* SJPopPromptCustomView.m */,
 				A6F19DFA22D9C1390043B508 /* SJViewController6.xib */,
 				A69FD22822D9F5280031E4E7 /* SJViewController8.h */,
 				A69FD22922D9F5280031E4E7 /* SJViewController8.m */,
@@ -858,7 +881,7 @@
 			inputPaths = (
 				"${PODS_ROOT}/Target Support Files/Pods-SJVideoPlayer_Example/Pods-SJVideoPlayer_Example-resources.sh",
 				"${PODS_ROOT}/MJRefresh/MJRefresh/MJRefresh.bundle",
-				"${PODS_ROOT}/SJBaseVideoPlayer/SJBaseVideoPlayer/SJDeviceVolumeAndBrightnessManager/ResourceLoader/SJDeviceVolumeAndBrightnessManager.bundle",
+				"${PODS_ROOT}/../../../SJBaseVideoPlayer/SJBaseVideoPlayer/SJDeviceVolumeAndBrightnessManager/ResourceLoader/SJDeviceVolumeAndBrightnessManager.bundle",
 				"${PODS_ROOT}/../../SJVideoPlayer/SJEdgeControlLayer/ResourceLoader/SJEdgeControlLayer.bundle",
 				"${PODS_ROOT}/../../SJVideoPlayer/SJFilmEditingControlLayer/ResourceLoader/SJFilmEditing.bundle",
 				"${PODS_ROOT}/../../SJVideoPlayer/SJFloatSmallViewControlLayer/ResourceLoader/SJFloatSmallViewControlLayer.bundle",
@@ -915,8 +938,10 @@
 				A6A2554422ABCE9200E42998 /* SJViewController1.m in Sources */,
 				77F2F5DC22FAC43000EA0B91 /* SJViewController11.m in Sources */,
 				A6A2553F22ABC71F00E42998 /* DemoTableViewCell.m in Sources */,
+				7740C1BA2350A16700DD7ECE /* SJViewController12.m in Sources */,
 				77805D6B22BF7DE1007076B9 /* SJiPadDemoViewController1.m in Sources */,
 				A6A208FF22AB9E59001ED610 /* SJMeidaItemModel.m in Sources */,
+				7740C1BD2350A18500DD7ECE /* SJCustomControlLayerViewController.m in Sources */,
 				A6A2553C22ABC71F00E42998 /* ListViewAutoplayViewController.m in Sources */,
 				A6A208FD22AB9E59001ED610 /* SJRotationModeDemoViewController2.m in Sources */,
 				77788FED22C37C2000E26599 /* SJExtendedMediaCollectionViewModel.m in Sources */,
@@ -937,6 +962,7 @@
 				77A0CDFD230658DB00FE353C /* SJListViewAutoplayMediaViewModel.m in Sources */,
 				7756F58522E173D400F9DC7D /* SJTestViewController.m in Sources */,
 				A6A2562622AC1C3500E42998 /* SJViewController5.m in Sources */,
+				7774C8D623519F5000FE6FCA /* SJPopPromptCustomView.m in Sources */,
 				6003F5A7195388D20070C39A /* SJViewController.m in Sources */,
 				6003F59A195388D20070C39A /* main.m in Sources */,
 				A6A208FB22AB9E59001ED610 /* SJRotationMode2ViewModel.m in Sources */,

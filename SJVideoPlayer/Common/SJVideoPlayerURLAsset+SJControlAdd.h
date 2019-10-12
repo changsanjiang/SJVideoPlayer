@@ -25,7 +25,20 @@ NS_ASSUME_NONNULL_BEGIN
              specifyStartTime:(NSTimeInterval)specifyStartTime
                     playModel:(__kindof SJPlayModel *)playModel;
 
-@property (nonatomic, copy, nullable) NSString *title;
-@end
+///
+/// v3.0.3 新增富文本标题
+///
+- (nullable instancetype)initWithAttributedTitle:(NSAttributedString *)title
+                                             URL:(NSURL *)URL
+                                       playModel:(__kindof SJPlayModel *)playModel;
 
+- (nullable instancetype)initWithAttributedTitle:(NSAttributedString *)title
+                                             URL:(NSURL *)URL
+                                specifyStartTime:(NSTimeInterval)specifyStartTime
+                                       playModel:(__kindof SJPlayModel *)playModel;
+
+
+@property (nonatomic, copy, nullable) NSString *title;
+@property (nonatomic, copy, nullable) NSAttributedString *attributedTitle;
+@end
 NS_ASSUME_NONNULL_END

@@ -2,8 +2,8 @@
 //  SJUTRangeHandler.h
 //  AttributesFactory
 //
-//  Created by 畅三江 on 2019/4/13.
-//  Copyright © 2019 changsanjiang. All rights reserved.
+//  Created by BlueDancer on 2019/4/13.
+//  Copyright © 2019 SanJiang. All rights reserved.
 //
 
 #import "SJUIKitAttributesDefines.h"

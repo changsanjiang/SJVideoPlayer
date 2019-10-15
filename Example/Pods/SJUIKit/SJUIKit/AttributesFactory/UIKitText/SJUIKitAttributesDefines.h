@@ -3,7 +3,7 @@
 //  AttributesFactory
 //
 //  Created by 畅三江 on 2019/4/12.
-//  Copyright © 2019 changsanjiang. All rights reserved.
+//  Copyright © 2019 SanJiang. All rights reserved.
 //
 
 #ifndef SJUIKitAttributesDefines_h

@@ -16,16 +16,18 @@ NS_ASSUME_NONNULL_BEGIN
 
 #define _AnimDuration (0.4)
 
-@interface SJPopTextContainerView : UIView
+@interface _SJPopItemContainerView : UIView
 @property (nonatomic, strong, readonly) UILabel *titleLabel;
+@property (nonatomic, strong, readonly) UIView *customView;
 @end
 
-@implementation SJPopTextContainerView
+@implementation _SJPopItemContainerView
 - (instancetype)initWithFrame:(CGRect)frame contentInset:(UIEdgeInsets)contentInset {
-    self = [super initWithFrame:frame];
+    self = [self initWithFrame:frame];
     if (self) {
         self.backgroundColor = [UIColor colorWithWhite:0 alpha:0.8];
         self.layer.cornerRadius = 5;
+        
         _titleLabel = [[UILabel alloc] initWithFrame:CGRectZero];
         _titleLabel.numberOfLines = 0;
         [self addSubview:_titleLabel];
@@ -35,11 +37,29 @@ NS_ASSUME_NONNULL_BEGIN
     }
     return self;
 }
+
+- (instancetype)initWithFrame:(CGRect)frame customView:(UIView *)customView {
+    self = [self initWithFrame:frame];
+    if ( self ) {
+        _customView = customView;
+        [self addSubview:customView];
+        [customView mas_makeConstraints:^(MASConstraintMaker *make) {
+            make.edges.offset(0);
+        }];
+    }
+    return self;
+}
+
+- (instancetype)initWithFrame:(CGRect)frame {
+    self = [super initWithFrame:frame];
+    if ( self ) { }
+    return self;
+}
 @end
 
 
 @interface SJPopPromptController ()
-@property (nonatomic, strong, readonly) NSMutableArray<SJPopTextContainerView *> *subviews;
+@property (nonatomic, strong, readonly) NSMutableArray<_SJPopItemContainerView *> *subviews;
 @end
 
 @implementation SJPopPromptController
@@ -78,30 +98,51 @@ NS_ASSUME_NONNULL_BEGIN
 }
 
 - (void)show:(NSAttributedString *)title duration:(NSTimeInterval)duration {
-    SJPopTextContainerView *view = [[SJPopTextContainerView alloc] initWithFrame:CGRectZero contentInset:_contentInset];
+    _SJPopItemContainerView *view = [[_SJPopItemContainerView alloc] initWithFrame:CGRectZero contentInset:_contentInset];
     view.titleLabel.attributedText = title;
-    [self _addSubview:view];
-    
-    __weak typeof(view) _view = view;
-    __weak typeof(self) _self = self;
-    dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(duration * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
-        __strong typeof(_self) self = _self;
-        if ( !self ) return ;
-        [self _removeSubview:_view];
-    });
+    [self _show:view duration:duration];
+}
+
+- (void)showCustomView:(UIView *)view {
+    [self showCustomView:view duration:3];
+}
+
+- (void)showCustomView:(UIView *)customView duration:(NSTimeInterval)duration {
+    _SJPopItemContainerView *view = [[_SJPopItemContainerView alloc] initWithFrame:CGRectZero customView:customView];
+    [self _show:view duration:duration];
+}
+
+- (BOOL)isShowingWithCustomView:(UIView *)view {
+    for ( _SJPopItemContainerView *containerView in self.subviews ) {
+        if ( containerView.customView == view )
+            return YES;
+    }
+    return NO;
 }
 
 - (void)clear {
     [self _removeAllSubviews];
 }
 
-- (void)_addSubview:(SJPopTextContainerView *)view {
+- (void)_show:(_SJPopItemContainerView *)view duration:(NSTimeInterval)duration {
+    [self _addSubview:view];
+    __weak typeof(view) _view = view;
+    __weak typeof(self) _self = self;
+    dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(duration * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
+        __strong typeof(_self) self = _self;
+        if ( !self ) return ;
+        if ( !_view ) return ;
+        [self _removeSubview:_view];
+    });
+}
+
+- (void)_addSubview:(_SJPopItemContainerView *)view {
     CGRect bounds = self.target.bounds;
     view.frame = CGRectMake(-bounds.size.width, bounds.size.height - _bottomMargin, 0, 0);
     [self.target addSubview:view];
     [self.subviews addObject:view];
 
-    [self.subviews enumerateObjectsUsingBlock:^(SJPopTextContainerView * _Nonnull obj, NSUInteger idx, BOOL * _Nonnull stop) {
+    [self.subviews enumerateObjectsUsingBlock:^(_SJPopItemContainerView * _Nonnull obj, NSUInteger idx, BOOL * _Nonnull stop) {
         [self _remakeConstraintsAtIndex:idx];
     }];
     
@@ -110,7 +151,7 @@ NS_ASSUME_NONNULL_BEGIN
     } completion:nil];
 }
 
-- (void)_removeSubview:(SJPopTextContainerView *)view {
+- (void)_removeSubview:(_SJPopItemContainerView *)view {
     NSUInteger idx = [self.subviews indexOfObject:view];
     if ( idx == NSNotFound )
         return;
@@ -130,14 +171,14 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (void)_removeAllSubviews {
     if ( self.subviews.count != 0 ) {
-        NSArray<SJPopTextContainerView *> *subviews = self.subviews.copy;
+        NSArray<_SJPopItemContainerView *> *subviews = self.subviews.copy;
         [self.subviews removeAllObjects];
         [UIView animateWithDuration:_AnimDuration animations:^{
             for ( UIView *subview in subviews ) {
                 subview.alpha = 0.001;
             }
         } completion:^(BOOL finished) {
-            [subviews enumerateObjectsWithOptions:NSEnumerationReverse usingBlock:^(SJPopTextContainerView * _Nonnull subview, NSUInteger idx, BOOL * _Nonnull stop) {
+            [subviews enumerateObjectsWithOptions:NSEnumerationReverse usingBlock:^(_SJPopItemContainerView * _Nonnull subview, NSUInteger idx, BOOL * _Nonnull stop) {
                 [subview removeFromSuperview];
             }];
         }];
@@ -149,7 +190,7 @@ NS_ASSUME_NONNULL_BEGIN
         return;
     
     NSUInteger count = self.subviews.count;
-    SJPopTextContainerView *view = self.subviews[idx];
+    _SJPopItemContainerView *view = self.subviews[idx];
     [view mas_remakeConstraints:^(MASConstraintMaker *make) {
         if (@available(iOS 11.0, *)) {
             make.left.equalTo(self.target.mas_safeAreaLayoutGuideLeft).offset(self.leftMargin);

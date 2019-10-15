@@ -198,6 +198,9 @@
       [[Item alloc] initWithTitle:@"Test"
                          subTitle:@"Test"
                              path:@"test"],
+      [[Item alloc] initWithTitle:@"Test2"
+                         subTitle:@"Test2"
+                             path:@"test2"],
       ];
 }
 

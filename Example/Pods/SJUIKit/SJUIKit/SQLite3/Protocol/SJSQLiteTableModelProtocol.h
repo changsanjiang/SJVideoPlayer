@@ -3,7 +3,7 @@
 //  Pods-SJSQLite3_Example
 //
 //  Created by 畅三江 on 2019/7/26.
-//  Copyright © 2019 changsanjiang. All rights reserved.
+//  Copyright © 2019 SanJiang. All rights reserved.
 //
 
 #ifndef SJSQLiteTableModelProtocol_h
@@ -29,13 +29,19 @@ NS_ASSUME_NONNULL_BEGIN
 ///
 /// e.g. return @{ @"items":Item.class };
 ///
-+ (nullable NSDictionary<NSString *, Class<SJSQLiteTableModelProtocol>> *)sql_containerPropertyGenericClass;
++ (nullable NSDictionary<NSString *, Class> *)sql_arrayPropertyGenericClass;
 
 /// 自定义映射字段
 ///
 /// e.g. return @{ @"id":@"itemId" };
 ///
 + (nullable NSDictionary<NSString *, NSString *> *)sql_customKeyMapper;
+
+/// 唯一键: 防止在一个特定的列存在多个具有相同值的记录
+///
+/// e.g. return @[ @"key1", @"key2" ];
+///
++ (nullable NSArray<NSString *> *)sql_uniquelist;
 
 /// 白名单
 ///

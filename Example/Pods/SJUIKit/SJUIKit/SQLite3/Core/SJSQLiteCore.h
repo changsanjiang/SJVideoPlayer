@@ -3,7 +3,7 @@
 //  Pods-SJSQLite3_Example
 //
 //  Created by 畅三江 on 2019/6/18.
-//  Copyright © 2019 changsanjiang. All rights reserved.
+//  Copyright © 2019 SanJiang. All rights reserved.
 //
 
 #ifndef SJSQLiteCore_h
@@ -21,6 +21,11 @@ NS_ASSUME_NONNULL_BEGIN
 
 #define sqlite3_obj_copy_str(_str_)     char cstr[_str_.length + 1]; strcpy(cstr, _str_.UTF8String)
 
+@interface NSMutableString (SJSQLite3CoreExtended)
+- (void)sjsql_deleteSubffix:(NSString *)str;
+@end
+
+
 FOUNDATION_EXPORT NSString *
 sqlite3_obj_get_default_table_name(Class cls);
 
@@ -36,6 +41,15 @@ sqlite3_stmt_create_table(SJSQLiteTableInfo *table);
 ///
 FOUNDATION_EXPORT NSString *
 sqlite3_stmt_insert_or_update(SJSQLiteObjectInfo *objInfo);
+
+FOUNDATION_EXPORT NSString *
+sqlite3_stmt_get_column_value(SJSQLiteColumnInfo *column, id value);
+
+FOUNDATION_EXPORT NSString *_Nullable
+sqlite3_stmt_get_primary_values_json_string(NSArray *models, NSString *primaryKey);
+
+FOUNDATION_EXPORT NSArray<id> *_Nullable
+sqlite3_stmt_get_primary_values_array(NSString *jsonString);
 
 FOUNDATION_EXPORT NSString *
 sqlite3_stmt_get_last_row(SJSQLiteObjectInfo *objInfo);
@@ -90,12 +104,12 @@ sqlite3_obj_drop_table(sqlite3 *db, NSString *name, NSError **error);
 /// 删除指定的行数据
 ///
 FOUNDATION_EXPORT void
-sqlite3_obj_delete_row_datas(sqlite3 *db, SJSQLiteTableInfo *table, NSArray<NSNumber *> *primaryKeyValues, NSError **error);
+sqlite3_obj_delete_row_datas(sqlite3 *db, SJSQLiteTableInfo *table, NSArray<id> *primaryKeyValues, NSError **error);
 
 /// 获取行数据
 ///
 FOUNDATION_EXPORT NSDictionary *_Nullable
-sqlite3_obj_get_row_data(sqlite3 *db, SJSQLiteTableInfo *table, NSInteger primaryKeyValue, NSError **error);
+sqlite3_obj_get_row_data(sqlite3 *db, SJSQLiteTableInfo *table, id primaryKeyValue, NSError **error);
 NS_ASSUME_NONNULL_END
 
 #endif /* SJSQLiteCore_h */

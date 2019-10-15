@@ -15,6 +15,9 @@ sqlite3_error_make_error(NSString *error_msg);
 FOUNDATION_EXTERN NSError *
 sqlite3_error_get_table_failed(Class cls);
 
+FOUNDATION_EXPORT NSError *
+sqlite3_error_get_column_failed(Class cls);
+
 FOUNDATION_EXTERN NSError *
 sqlite3_error_invalid_parameter(void);
 

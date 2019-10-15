@@ -36,7 +36,6 @@
     self.edgesForExtendedLayout = UIRectEdgeNone;
     
     _player = [SJVideoPlayer player];
-    _player.autoplayWhenSetNewAsset = NO;
     
     SJVideoPlayerURLAsset *asset = [[SJVideoPlayerURLAsset alloc] initWithURL:SourceURL4];
     asset.title = @"123456789";

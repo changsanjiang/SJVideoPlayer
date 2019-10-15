@@ -12,6 +12,9 @@
 
 
 NS_ASSUME_NONNULL_BEGIN
+///
+/// 查询数据(返回的结果已转为对应的模型). 如需未转换的数据, 请查看分类`SJSQLite3 (SJSQLite3QueryDataExtended)`
+///
 @interface SJSQLite3 (SJSQLite3Extended)
 
 - (nullable NSArray *)objectsForClass:(Class)cls conditions:(nullable NSArray<SJSQLite3Condition *> *)conditions orderBy:(nullable NSArray<SJSQLite3ColumnOrder *> *)orders error:(NSError **)error;
@@ -21,6 +24,18 @@ NS_ASSUME_NONNULL_BEGIN
 - (NSUInteger)countOfObjectsForClass:(Class)cls conditions:(nullable NSArray<SJSQLite3Condition *> *)conditions error:(NSError **)error;
 @end
 
+
+///
+/// 查询数据(返回的结果为字典数组, 未转换成模型). 如需转换为对应的模型, 请查看分类`SJSQLite3 (SJSQLite3Extended)`
+///
+@interface SJSQLite3 (SJSQLite3QueryDataExtended)
+
+- (nullable NSArray<NSDictionary *> *)queryDataForClass:(Class)cls resultColumns:(nullable NSArray<NSString *> *)columns conditions:(nullable NSArray<SJSQLite3Condition *> *)conditions orderBy:(nullable NSArray<SJSQLite3ColumnOrder *> *)orders error:(NSError **)error;
+
+- (nullable NSArray<NSDictionary *> *)queryDataForClass:(Class)cls resultColumns:(nullable NSArray<NSString *> *)columns conditions:(nullable NSArray<SJSQLite3Condition *> *)conditions orderBy:(nullable NSArray<SJSQLite3ColumnOrder *> *)orders range:(NSRange)range error:(NSError **)error;
+
+@end
+
 #pragma mark -
 
 typedef enum : NSInteger {
@@ -28,23 +43,19 @@ typedef enum : NSInteger {
     SJSQLite3RelationEqual,
     SJSQLite3RelationGreaterThanOrEqual,
     SJSQLite3RelationUnequal,
+    
+    SJSQLite3RelationLessThan,
+    SJSQLite3RelationGreaterThan,
 } SJSQLite3Relation;
 
 /// WHERE
 ///
 @interface SJSQLite3Condition : NSObject
 + (instancetype)conditionWithColumn:(NSString *)column relatedBy:(SJSQLite3Relation)relation value:(id)value;
++ (instancetype)conditionWithColumn:(NSString *)column value:(id)value; ///< `relation == SJSQLite3RelationEqual`
 + (instancetype)conditionWithColumn:(NSString *)column in:(NSArray *)values;
-+ (instancetype)conditionWithColumn:(NSString *)column between:(id)value1 and:(id)value2;
++ (instancetype)conditionWithColumn:(NSString *)column between:(id)start and:(id)end;
 + (instancetype)conditionWithIsNullColumn:(NSString *)column;
-/// 可自定义查询条件, 例如:
-///    name LIKE '200%'     查找以 200 开头的任意值
-///    name LIKE '%200%'    查找任意位置包含 200 的任意值
-///    name LIKE '_00%'     查找第二位和第三位为 00 的任意值
-///    name LIKE '2_%_%'    查找以 2 开头，且长度至少为 3 个字符的任意值
-///    name LIKE '%2'       查找以 2 结尾的任意值
-///    name LIKE '_2%3'     查找第二位为 2，且以 3 结尾的任意值
-///    name LIKE '2___3'    查找长度为 5 位数，且以 2 开头以 3 结尾的任意值
 - (instancetype)initWithCondition:(NSString *)condition;
 - (instancetype)init NS_UNAVAILABLE;
 + (instancetype)new NS_UNAVAILABLE;

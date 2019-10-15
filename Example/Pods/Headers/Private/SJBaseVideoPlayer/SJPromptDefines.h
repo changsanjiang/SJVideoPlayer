@@ -1,1 +1,1 @@
-../../../../../../SJBaseVideoPlayer/SJBaseVideoPlayer/Header/SJPromptDefines.h
+../../../SJBaseVideoPlayer/SJBaseVideoPlayer/Header/SJPromptDefines.h

@@ -277,7 +277,12 @@ static NSNotificationName const SJRotationManagerTransitioningValueDidChangeNoti
             self->_window = [SJFullscreenModeWindow new];
             self->_window.fullscreenModeViewController.delegate = self;
             self->_window.rootViewController.sj_delegate = self;
-            [self->_window.rootViewController loadViewIfNeeded];
+            if ( @available(iOS 9.0, *) ) {
+                [self->_window.rootViewController loadViewIfNeeded];
+            }
+            else {
+                [self->_window.rootViewController view];
+            }
         });
         [self _observeDeviceOrientationChangeNotification];
     }

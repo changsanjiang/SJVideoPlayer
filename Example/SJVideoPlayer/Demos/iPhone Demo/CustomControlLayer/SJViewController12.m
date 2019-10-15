@@ -36,6 +36,7 @@ static SJControlLayerIdentifier SJTestControlLayerIdentifier = 101;
 
 ///
 /// 添加控制层到切换器中
+///     只需添加一次, 之后直接切换即可.
 ///
 - (void)_addCustomControlLayerToSwitcher {
     __weak typeof(self) _self = self;
@@ -132,7 +133,7 @@ static SJControlLayerIdentifier SJTestControlLayerIdentifier = 101;
 }
 
 ///
-/// 添加一个切换控制层的item
+/// 添加一个切换控制层的item(在右侧)
 ///
 - (void)_addSwitchItem {
     _player.defaultEdgeControlLayer.rightMargin = 12; // 距离右边屏幕的间隔

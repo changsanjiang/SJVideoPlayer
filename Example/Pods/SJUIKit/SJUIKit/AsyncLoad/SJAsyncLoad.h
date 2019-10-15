@@ -14,5 +14,6 @@
 #import "UILabel+AsyncLoad.h"
 #import "NSObject+SJAsyncLoad.h"
 #import "UISearchBar+AsyncLoad.h"
+#import "UITextField+AsyncLoadImage.h"
 
 #endif /* SJAsyncLoad_h */

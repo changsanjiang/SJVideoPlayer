@@ -3,7 +3,7 @@
 //  Pods-SJSQLite3_Example
 //
 //  Created by 畅三江 on 2019/7/26.
-//  Copyright © 2019 changsanjiang. All rights reserved.
+//  Copyright © 2019 SanJiang. All rights reserved.
 //
 
 #import "SJSQLiteTableModelConstraints.h"
@@ -34,8 +34,12 @@ NS_ASSUME_NONNULL_BEGIN
             _sql_customKeyMapper = [cls sql_customKeyMapper];
         }
         
-        if ( [cls respondsToSelector:@selector(sql_containerPropertyGenericClass)] ) {
-            _sql_containerPropertyGenericClass = [cls sql_containerPropertyGenericClass];
+        if ( [cls respondsToSelector:@selector(sql_uniquelist)] ) {
+            _sql_uniquelist = [cls sql_uniquelist];
+        }
+        
+        if ( [cls respondsToSelector:@selector(sql_arrayPropertyGenericClass)] ) {
+            _sql_arrayPropertyGenericClass = [cls sql_arrayPropertyGenericClass];
         }
         
         if ( [cls respondsToSelector:@selector(sql_autoincrementlist)] ) {

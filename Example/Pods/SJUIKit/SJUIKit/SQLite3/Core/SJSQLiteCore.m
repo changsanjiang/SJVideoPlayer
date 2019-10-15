@@ -3,7 +3,7 @@
 //  Pods-SJSQLite3_Example
 //
 //  Created by 畅三江 on 2019/7/30.
-//  Copyright © 2019 changsanjiang. All rights reserved.
+//  Copyright © 2019 SanJiang. All rights reserved.
 //
 
 #import "SJSQLiteCore.h"
@@ -13,6 +13,15 @@
 #import "SJSQLiteObjectInfo.h"
 
 NS_ASSUME_NONNULL_BEGIN
+@implementation NSMutableString (SJSQLite3CoreExtended)
+- (void)sjsql_deleteSubffix:(NSString *)str {
+    if ( [self hasSuffix:str] ) {
+        [self deleteCharactersInRange:NSMakeRange(self.length - str.length, str.length)];
+    }
+}
+@end
+
+
 NSString *
 sqlite3_obj_get_default_table_name(Class cls) {
     return [NSString stringWithFormat:@"%s", object_getClassName(cls)];
@@ -87,34 +96,49 @@ sqlite3_stmt_insert_or_update(SJSQLiteObjectInfo *objInfo) {
         if ( column != last) [fields appendString:@","];
         
         // - values
-        if ( column.associatedTableInfo == nil ) {
-            [values appendFormat:@"'%@'", sqlite3_obj_filter_obj_value(value)];
-            if ( column != last) [values appendFormat:@","];
+        [values appendFormat:@"'%@'", sqlite3_stmt_get_column_value(column, value)];
+        if ( column != last) [values appendFormat:@","];
+    }
+    [fields sjsql_deleteSubffix:@","];
+    [values sjsql_deleteSubffix:@","];
+    [sql appendFormat:@"REPLACE INTO '%@' (%@) VALUES (%@);", objInfo.table.name, fields, values];
+    return sql.copy;
+}
+
+NSString *
+sqlite3_stmt_get_column_value(SJSQLiteColumnInfo *column, id value) {
+    NSString *data = nil;
+    if ( column.associatedTableInfo == nil ) {
+        data = [NSString stringWithFormat:@"%@", sqlite3_obj_filter_obj_value(value)];
+    }
+    else {
+        SJSQLiteTableInfo *subtable = column.associatedTableInfo;
+        if ( column.isModelArray ) {
+            data = sqlite3_stmt_get_primary_values_json_string(value, subtable.primaryKey);
         }
         else {
-            SJSQLiteTableInfo *subtable = column.associatedTableInfo;
-            if ( column.isArrayJSONText ) {
-                NSMutableArray *subvalues = [NSMutableArray arrayWithCapacity:[value count]];
-                [value enumerateObjectsUsingBlock:^(id  _Nonnull obj, NSUInteger idx, BOOL * _Nonnull stop) {
-                    id subvalue = [obj valueForKey:subtable.primaryKey];
-                    [subvalues addObject:subvalue];
-                }];
-                NSData *subvaluesData = [NSJSONSerialization dataWithJSONObject:subvalues options:0 error:nil];
-                NSString *subvaluesStr = [[NSString alloc] initWithData:subvaluesData encoding:NSUTF8StringEncoding];
-                [values appendFormat:@"'%@'", subvaluesStr];
-                if ( column != last) [values appendFormat:@","];
-            }
-            else {
-                id subvalue = [value valueForKey:subtable.primaryKey];
-                [values appendFormat:@"'%@'", subvalue];
-                if ( column != last) [values appendFormat:@","];
-            }
+            id subvalue = [value valueForKey:subtable.primaryKey];
+            data = [NSString stringWithFormat:@"%@", subvalue];
         }
     }
-    if ( [fields hasSuffix:@","] ) [fields deleteCharactersInRange:NSMakeRange(fields.length - 1, 1)];
-    if ( [values hasSuffix:@","] ) [values deleteCharactersInRange:NSMakeRange(values.length - 1, 1)];
-    [sql appendFormat:@"INSERT OR REPLACE INTO '%@' (%@) VALUES (%@);", objInfo.table.name, fields, values];
-    return sql.copy;
+    return data;
+}
+
+NSString *_Nullable
+sqlite3_stmt_get_primary_values_json_string(NSArray *models, NSString *primaryKey) {
+    NSMutableArray *subvalues = [NSMutableArray arrayWithCapacity:[models count]];
+    [models enumerateObjectsUsingBlock:^(id  _Nonnull obj, NSUInteger idx, BOOL * _Nonnull stop) {
+        id subvalue = [obj valueForKey:primaryKey];
+        [subvalues addObject:subvalue];
+    }];
+    NSData *subvaluesData = [NSJSONSerialization dataWithJSONObject:subvalues options:0 error:nil];
+    return [[NSString alloc] initWithData:subvaluesData encoding:NSUTF8StringEncoding];
+}
+
+NSArray<id> *_Nullable
+sqlite3_stmt_get_primary_values_array(NSString *jsonString) {
+    NSData *data = [jsonString dataUsingEncoding:NSUTF8StringEncoding];
+    return [NSJSONSerialization JSONObjectWithData:data options:NSJSONReadingMutableContainers error:nil];
 }
 
 NSString *
@@ -239,12 +263,12 @@ sqlite3_obj_drop_table(sqlite3 *db, NSString *name, NSError **error) {
 /// 删除指定的行数据
 ///
 void
-sqlite3_obj_delete_row_datas(sqlite3 *db, SJSQLiteTableInfo *table, NSArray<NSNumber *> *primaryKeyValues, NSError **error) {
+sqlite3_obj_delete_row_datas(sqlite3 *db, SJSQLiteTableInfo *table, NSArray<id> *primaryKeyValues, NSError **error) {
     NSMutableString *values = NSMutableString.new;
     NSNumber *last = primaryKeyValues.lastObject;
-    for ( NSNumber *num in primaryKeyValues ) {
-        [values appendFormat:@"%@", num];
-        if ( num != last ) [values appendString:@","];
+    for ( id value in primaryKeyValues ) {
+        [values appendFormat:@"'%@'", sqlite3_obj_filter_obj_value(value)];
+        if ( value != last ) [values appendString:@","];
     }
     
     NSString *sql = [NSString stringWithFormat:@"DELETE FROM '%@' WHERE \"%@\" in (%@);", table.name, table.primaryKey, values];
@@ -254,8 +278,8 @@ sqlite3_obj_delete_row_datas(sqlite3 *db, SJSQLiteTableInfo *table, NSArray<NSNu
 /// 获取行数据
 ///
 NSDictionary *_Nullable
-sqlite3_obj_get_row_data(sqlite3 *db, SJSQLiteTableInfo *table, NSInteger primaryKeyValue, NSError **error) {
-    NSString *sql = [NSString stringWithFormat:@"SELECT * FROM %@ WHERE \"%@\"=%ld;", table.name, table.primaryKey, (long)primaryKeyValue];
+sqlite3_obj_get_row_data(sqlite3 *db, SJSQLiteTableInfo *table, id primaryKeyValue, NSError **error) {
+    NSString *sql = [NSString stringWithFormat:@"SELECT * FROM %@ WHERE \"%@\"='%@';", table.name, table.primaryKey, sqlite3_obj_filter_obj_value(primaryKeyValue)];
     return [[sqlite3_obj_exec(db, sql, error) firstObject] mutableCopy];
 }
 NS_ASSUME_NONNULL_END

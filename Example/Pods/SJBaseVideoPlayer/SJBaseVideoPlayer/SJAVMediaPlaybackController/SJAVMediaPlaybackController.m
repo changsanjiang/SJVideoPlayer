@@ -146,17 +146,26 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (void)prepareToPlay {
     if ( _media == nil ) return;
-    SJAVMediaPlayer *player = [SJAVMediaPlayerLoader loadPlayerForMedia:_media];
-    self.player = player;
-    SJAVMediaPresentView *view = [SJAVMediaPresentView.alloc initWithFrame:CGRectZero player:(_registrar.state == SJVideoPlayerAppState_Background) ? nil : player];
-    [self.presentController makeKeyPresentView:view];
-    if ( player.sj_playbackInfo.isPlayed ) {
-        dispatch_async(dispatch_get_main_queue(), ^{
-            SJRunLoopTaskQueue.main.enqueue(^{
-                [player report];
+    
+    __weak typeof(self) _self = self;
+    id<SJMediaModelProtocol> media = _media;
+    SJAVMediaPlayer *player = [SJAVMediaPlayerLoader loadPlayerForMedia:media];
+    dispatch_async(dispatch_get_main_queue(), ^{
+        __strong typeof(_self) self = _self;
+        if ( !self ) return;
+        if ( media != self.media ) return ;
+        self.player = player;
+        SJAVMediaPresentView *view = [SJAVMediaPresentView.alloc initWithFrame:CGRectZero player:(self.registrar.state == SJVideoPlayerAppState_Background) ? nil : player];
+        [self.presentController makeKeyPresentView:view];
+        
+        if ( player.sj_playbackInfo.isPlayed ) {
+            dispatch_async(dispatch_get_main_queue(), ^{
+                SJRunLoopTaskQueue.main.enqueue(^{
+                    [player report];
+                });
             });
-        });
-    }
+        }
+    });
 }
 
 - (void)replay {

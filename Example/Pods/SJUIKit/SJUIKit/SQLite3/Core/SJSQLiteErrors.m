@@ -19,6 +19,11 @@ sqlite3_error_get_table_failed(Class cls) {
 }
 
 NSError *
+sqlite3_error_get_column_failed(Class cls) {
+    return sqlite3_error_make_error([NSString stringWithFormat:@"<%@>获取行信息失败, 请检查相关配置", NSStringFromClass(cls)]);
+}
+
+NSError *
 sqlite3_error_invalid_parameter(void) {
     return sqlite3_error_make_error(@"无效的参数!");
 }

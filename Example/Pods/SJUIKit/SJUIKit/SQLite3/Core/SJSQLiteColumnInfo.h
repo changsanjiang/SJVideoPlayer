@@ -3,7 +3,7 @@
 //  Pods-SJSQLite3_Example
 //
 //  Created by 畅三江 on 2019/7/26.
-//  Copyright © 2019 changsanjiang. All rights reserved.
+//  Copyright © 2019 SanJiang. All rights reserved.
 //
 
 #import <Foundation/Foundation.h>
@@ -25,7 +25,13 @@ NS_ASSUME_NONNULL_BEGIN
 ///
 @property (nonatomic, copy, nullable) NSString *constraints;
 
-@property (nonatomic) BOOL isArrayJSONText;
+///
+/// 当前列映射的属性
+///
+@property (nonatomic, copy, nullable) NSString *property;
+
+@property (nonatomic) BOOL isModelArray;
+@property (nonatomic) BOOL isJsonString;
 @property (nonatomic) BOOL isPrimaryKey;
 @property (nonatomic) BOOL isAutoincrement;
 //@property (nonatomic) BOOL notNull;

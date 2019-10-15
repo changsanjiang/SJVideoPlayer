@@ -148,10 +148,14 @@ static NSString *kTimeControlStatus = @"sj_timeControlStatus";
     };
     
     _itemObsever.loadedTimeRangesDidChangeExeBlock = ^(SJAVBasePlayerItem * _Nonnull item) {
-        dispatch_async(dispatch_get_main_queue(), ^{
-            __strong typeof(_self) self = _self;
-            if ( !self ) return;
-            [self _sj_playableDurationDidChange];
+        dispatch_async(dispatch_get_global_queue(0, 0), ^{
+            NSValue *_Nullable value = item.loadedTimeRanges.firstObject;
+            NSTimeInterval playableDuration = value ? CMTimeGetSeconds(CMTimeRangeGetEnd(value.CMTimeRangeValue)) : 0;
+            dispatch_async(dispatch_get_main_queue(), ^{
+                __strong typeof(_self) self = _self;
+                if ( !self ) return;
+                [self _sj_playableDurationDidChange:playableDuration];
+            });
         });
     };
     
@@ -182,9 +186,7 @@ static NSString *kTimeControlStatus = @"sj_timeControlStatus";
     [NSNotificationCenter.defaultCenter addObserver:self selector:@selector(sj_audioSessionRouteChange:) name:AVAudioSessionRouteChangeNotification object:nil];
 }
 
-- (void)_sj_playableDurationDidChange {
-    NSValue *_Nullable value = self.currentItem.loadedTimeRanges.firstObject;
-    NSTimeInterval playableDuration = value ? CMTimeGetSeconds(CMTimeRangeGetEnd(value.CMTimeRangeValue)) : 0;
+- (void)_sj_playableDurationDidChange:(NSTimeInterval)playableDuration {
     _sj_playbackInfo.playableDuration = playableDuration;
     [self sj_postNotification:SJAVMediaPlayerPlayableDurationDidChangeNotification];
     

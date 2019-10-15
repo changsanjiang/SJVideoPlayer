@@ -174,7 +174,7 @@ _lookupResponder(UIView *view, Class cls) {
 }
 
 + (NSString *)version {
-    return @"v3.0.2";
+    return @"v3.0.3";
 }
 
 - (void)setVideoGravity:(SJVideoGravity)videoGravity {
@@ -872,8 +872,12 @@ _lookupResponder(UIView *view, Class cls) {
         if ( [self.controlLayerDelegate respondsToSelector:@selector(videoPlayer:prepareToPlay:)] ) {
             [self.controlLayerDelegate videoPlayer:self prepareToPlay:URLAsset];
         }
-        [self.playbackController prepareToPlay];
-        [self _tryToPlayIfNeeded];
+        dispatch_async(dispatch_get_global_queue(0, 0), ^{
+            [self.playbackController prepareToPlay];
+            dispatch_async(dispatch_get_main_queue(), ^{
+                [self _tryToPlayIfNeeded];
+            });
+        });
     }
     else {
         [self stop];
@@ -1589,6 +1593,7 @@ _lookupResponder(UIView *view, Class cls) {
 @implementation SJBaseVideoPlayer (FitOnScreen)
 - (void)setUseFitOnScreenAndDisableRotation:(BOOL)useFitOnScreenAndDisableRotation {
     _useFitOnScreenAndDisableRotation = useFitOnScreenAndDisableRotation;
+    if ( useFitOnScreenAndDisableRotation ) _autoManageViewToFitOnScreenOrRotation = NO;
 }
 - (BOOL)useFitOnScreenAndDisableRotation {
     return _useFitOnScreenAndDisableRotation;

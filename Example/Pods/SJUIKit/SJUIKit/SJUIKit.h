@@ -7,7 +7,7 @@
 
 #ifndef SJUIKit_h
 #define SJUIKit_h
-#import "SJApplicationObserver.h"
+#import "SJApplicationInfo.h"
 #import "SJAsyncLoad.h"
 #import "SJBase.h"
 #import "NSDate+SJAdded.h"

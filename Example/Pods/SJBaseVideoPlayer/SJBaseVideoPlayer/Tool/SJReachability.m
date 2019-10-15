@@ -11,7 +11,6 @@
 #include <ifaddrs.h>
 #include <net/if.h>
 #include <net/if_dl.h>
-#import "SJVideoPlayerRegistrar.h"
 
 #import "NSTimer+SJAssetAdd.h"
 #if __has_include(<Reachability/Reachability.h>)
@@ -33,8 +32,7 @@ static NSNotificationName const SJReachabilityNetworkStatusDidChangeNotification
 @interface __DJNetworkSpeedObserver : NSObject {
     // refresh timer
     NSTimer *_Nullable _timer;
-    
-    SJVideoPlayerRegistrar *_registrar;
+     
     @public
     uint32_t _speed;
 }
@@ -48,32 +46,12 @@ static NSNotificationName const SJReachabilityNetworkStatusDidChangeNotification
 @end
 
 @implementation __DJNetworkSpeedObserver
-- (instancetype)init {
-    self = [super init];
-    if ( !self ) return nil;
-    dispatch_async(dispatch_get_main_queue(), ^{
-        self->_registrar = [SJVideoPlayerRegistrar new];
-        __weak typeof(self) _self = self;
-        self->_registrar.willEnterForeground = ^(SJVideoPlayerRegistrar * _Nonnull registrar) {
-            __strong typeof(_self) self = _self;
-            if ( !self ) return;
-            [self start];
-        };
-        self->_registrar.didEnterBackground = ^(SJVideoPlayerRegistrar * _Nonnull registrar) {
-            __strong typeof(_self) self = _self;
-            if ( !self ) return;
-            [self stop];
-        };
-    });
-    return self;
-}
-
 - (void)dealloc {
     [self stop];
 }
 
 - (void)start {
-    if ( !_timer ) {
+    if ( _timer == nil ) {
         __weak typeof(self) _self = self;
         _timer = [NSTimer assetAdd_timerWithTimeInterval:1 block:^(NSTimer *timer) {
             __strong typeof(_self) self = _self;
@@ -175,7 +153,6 @@ static Reachability *_reachability;
     if ( !self ) return nil;
     [self _initializeReachability];
     [self _initializeSpeedObserver];
-    [self _startOrStopSpeedObserver];
     return self;
 }
 
@@ -201,20 +178,10 @@ static Reachability *_reachability;
 
 - (void)reachabilityChanged {
     [self _updateNetworkStatus];
-    [self _startOrStopSpeedObserver];
 }
 
 - (void)_updateNetworkStatus {
     self.networkStatus = (NSInteger)[_reachability currentReachabilityStatus];
-}
-
-- (void)_startOrStopSpeedObserver {
-    if ( _networkStatus == SJNetworkStatus_NotReachable ) {
-        [_networkSpeedObserver stop];
-    }
-    else {
-        [_networkSpeedObserver start];
-    }
 }
 
 - (void)_initializeSpeedObserver {
@@ -227,6 +194,11 @@ static Reachability *_reachability;
 
 - (void)stopRefresh {
     [_networkSpeedObserver stop];
+}
+
+- (void)setNetworkStatus:(SJNetworkStatus)networkStatus {
+    _networkStatus = networkStatus;
+    [NSNotificationCenter.defaultCenter postNotificationName:SJReachabilityNetworkStatusDidChangeNotification object:self];
 }
 @end
 

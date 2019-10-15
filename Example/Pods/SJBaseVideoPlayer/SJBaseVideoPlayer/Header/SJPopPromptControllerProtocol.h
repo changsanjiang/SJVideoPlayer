@@ -11,14 +11,18 @@
 
 NS_ASSUME_NONNULL_BEGIN
 @protocol SJPopPromptControllerProtocol <NSObject>
+@property (nonatomic) UIEdgeInsets contentInset; ///< default value is UIEdgeInsetsMake(12, 22, 12, 22);
 - (void)show:(NSAttributedString *)title;
 - (void)show:(NSAttributedString *)title duration:(NSTimeInterval)duration;
-- (void)clear;
 
+- (void)showCustomView:(UIView *)view;
+- (void)showCustomView:(UIView *)view duration:(NSTimeInterval)duration;
+- (BOOL)isShowingWithCustomView:(UIView *)view;
+
+- (void)clear;
 @property (nonatomic) CGFloat leftMargin; ///< default value is 16
 @property (nonatomic) CGFloat bottomMargin; ///< default value is 16
 @property (nonatomic) CGFloat itemSpacing; ///< default value is 12
-@property (nonatomic) UIEdgeInsets contentInset; ///< default value is UIEdgeInsetsMake(12, 22, 12, 22);
 
 /// 以下属性由播放器维护
 ///

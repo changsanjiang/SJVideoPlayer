@@ -1306,7 +1306,7 @@ ___
 @property (nonatomic, strong, null_resettable) id<SJPromptProtocol> prompt;
 
 ///
-/// 右下角弹出提示
+/// 左下角弹出提示
 ///
 ///         了解更多请前往协议头文件查看
 ///
@@ -1629,3 +1629,10 @@ typedef NS_ENUM(NSUInteger, SJAutoplayScrollAnimationType) {
 ```
 
 ___
+
+
+## 赞助
+如果对您有所帮助，欢迎您的赞赏
+
+<img src="https://github.com/changsanjiang/SJBaseVideoPlayer/blob/master/Project/Project/imgs/thanks_zfb.JPG?raw=true" width="200">
+<img src="https://github.com/changsanjiang/SJBaseVideoPlayer/blob/master/Project/Project/imgs/thanks_wechat.JPG?raw=true" width="200">

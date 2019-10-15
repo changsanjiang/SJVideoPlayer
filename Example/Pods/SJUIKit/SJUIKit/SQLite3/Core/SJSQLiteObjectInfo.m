@@ -38,7 +38,7 @@ NS_ASSUME_NONNULL_BEGIN
         if ( column.associatedTableInfo != nil ) {
             id _Nullable value = [obj valueForKey:column.name];
             if ( value != nil ) {
-                if ( column.isArrayJSONText ) {
+                if ( column.isModelArray ) {
                     NSMutableArray<SJSQLiteObjectInfo *> *infos = [[NSMutableArray alloc] initWithCapacity:[value count]];
                     [value enumerateObjectsUsingBlock:^(id  _Nonnull obj, NSUInteger idx, BOOL * _Nonnull stop) {
                         SJSQLiteObjectInfo *_Nullable info = [SJSQLiteObjectInfo objectInfoWithObject:obj];

@@ -1,6 +1,6 @@
 {
   "name": "SJBaseVideoPlayer",
-  "version": "3.0.2",
+  "version": "3.0.4",
   "summary": "video player.",
   "description": "https://github.com/changsanjiang/SJBaseVideoPlayer/blob/master/README.md",
   "homepage": "https://github.com/changsanjiang/SJBaseVideoPlayer",
@@ -12,11 +12,11 @@
     "SanJiang": "changsanjiang@gmail.com"
   },
   "platforms": {
-    "ios": "8.0"
+    "ios": "9.0"
   },
   "source": {
     "git": "https://github.com/changsanjiang/SJBaseVideoPlayer.git",
-    "tag": "v3.0.2"
+    "tag": "v3.0.4"
   },
   "frameworks": [
     "UIKit",
@@ -38,6 +38,14 @@
     ]
   },
   "source_files": "SJBaseVideoPlayer/*.{h,m}",
+  "default_subspecs": [
+    "Header",
+    "Const",
+    "Tool",
+    "Model",
+    "SJDeviceVolumeAndBrightnessManager",
+    "AVPlayer"
+  ],
   "subspecs": [
     {
       "name": "Header",
@@ -72,21 +80,6 @@
       }
     },
     {
-      "name": "SJAVMediaPlaybackController",
-      "source_files": "SJBaseVideoPlayer/SJAVMediaPlaybackController/*.{h,m}",
-      "dependencies": {
-        "SJBaseVideoPlayer/Tool": [
-
-        ]
-      },
-      "subspecs": [
-        {
-          "name": "Core",
-          "source_files": "SJBaseVideoPlayer/SJAVMediaPlaybackController/Core/*.{h,m}"
-        }
-      ]
-    },
-    {
       "name": "SJDeviceVolumeAndBrightnessManager",
       "dependencies": {
         "SJBaseVideoPlayer/Header": [
@@ -111,6 +104,39 @@
           "name": "ResourceLoader",
           "source_files": "SJBaseVideoPlayer/SJDeviceVolumeAndBrightnessManager/ResourceLoader/*.{h,m}",
           "resources": "SJBaseVideoPlayer/SJDeviceVolumeAndBrightnessManager/ResourceLoader/SJDeviceVolumeAndBrightnessManager.bundle"
+        }
+      ]
+    },
+    {
+      "name": "AVPlayer",
+      "source_files": "SJBaseVideoPlayer/AVPlayer/*.{h,m}",
+      "dependencies": {
+        "SJBaseVideoPlayer/Tool": [
+
+        ]
+      },
+      "subspecs": [
+        {
+          "name": "Core",
+          "source_files": "SJBaseVideoPlayer/AVPlayer/Core/*.{h,m}"
+        }
+      ]
+    },
+    {
+      "name": "IJKPlayer",
+      "source_files": "SJBaseVideoPlayer/IJKPlayer/*.{h,m}",
+      "dependencies": {
+        "SJBaseVideoPlayer/AVPlayer": [
+
+        ],
+        "ijkplayerssl": [
+
+        ]
+      },
+      "subspecs": [
+        {
+          "name": "Core",
+          "source_files": "SJBaseVideoPlayer/IJKPlayer/Core/*.{h,m}"
         }
       ]
     }

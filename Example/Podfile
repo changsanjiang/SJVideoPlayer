@@ -34,7 +34,7 @@ target 'SJVideoPlayer_Example' do
   pod 'SJVideoPlayer', :path => '../../SJVideoPlayer'
   
   #pod 'ijkplayer'
-  pod 'ijkplayerssl'
+  #pod 'ijkplayerssl'
   
   # 全屏手势
   pod 'SJFullscreenPopGesture/ObjC'

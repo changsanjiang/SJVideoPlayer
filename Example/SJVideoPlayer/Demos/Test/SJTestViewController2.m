@@ -7,11 +7,16 @@
 //
 
 #import "SJTestViewController2.h"
-#import "SJIJKMediaPlayer.h"
 #import "SJSourceURLs.h"
+#import "SJVideoPlayer.h"
+#import "Masonry.h"
+
+#if __has_include(<IJKMediaFrameworkWithSSL/IJKMediaFrameworkWithSSL.h>)
+#import "SJIJKMediaPlaybackController.h"
+#endif
 
 @interface SJTestViewController2 ()
-@property (nonatomic, strong) SJIJKMediaPlayer *player;
+@property (nonatomic, strong) SJVideoPlayer *player;
 @end
 
 @implementation SJTestViewController2
@@ -19,15 +24,29 @@
 - (void)viewDidLoad {
     [super viewDidLoad];
     self.view.backgroundColor = UIColor.whiteColor;
-     
-    NSURL *URL = SourceURL0;
     
-    _player = [[SJIJKMediaPlayer alloc] initWithURL:URL specifyStartTime:0];
+    _player = SJVideoPlayer.player;
+#if __has_include(<IJKMediaFrameworkWithSSL/IJKMediaFrameworkWithSSL.h>)
+    _player.playbackController = SJIJKMediaPlaybackController.new;
+#endif
     
-    _player.view.frame = CGRectMake(20, 120, 200, 120);
+    _player.URLAsset = [SJVideoPlayerURLAsset.alloc initWithURL:SourceURL0];
     _player.view.backgroundColor = UIColor.blackColor;
-    [self.player play];
     [self.view addSubview:_player.view];
+    [_player.view mas_makeConstraints:^(MASConstraintMaker *make) {
+        make.top.offset(100);
+        make.left.right.offset(0);
+        make.height.equalTo(self.player.view.mas_width).multipliedBy(9/16.0);
+    }];
+}
+- (IBAction)seek:(id)sender {
+    [_player seekToTime:_player.currentTime + 60 completionHandler:^(BOOL finished) {}];
+}
+- (IBAction)play:(id)sender {
+    [_player play];
+}
+- (IBAction)pause:(id)sender {
+    [_player pause];
 }
 @end
 

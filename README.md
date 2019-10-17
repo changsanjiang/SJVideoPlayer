@@ -58,6 +58,7 @@ _player.URLAsset = [[SJVideoPlayerURLAsset alloc] initWithURL:URL];
 
 Email: changsanjiang@gmail.com
 QQGroup: 930508201 (iOS 开发)
+[大佬辛苦, 犒劳一下[Facepalm]](#赞助)
 
 ## Documents
 

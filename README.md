@@ -60,7 +60,7 @@ Email: changsanjiang@gmail.com
 
 QQGroup: 930508201 (iOS 开发)
 
-[大佬辛苦, 犒赏一下[Facepalm]](#赞助)
+[大佬辛苦, 犒赏一下🤕](#赞助)
 
 ## Documents
 

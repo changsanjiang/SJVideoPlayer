@@ -29,6 +29,7 @@ $ pod update --no-repo-update   (不要用 pod install 了, 用这个命令安�
 - 改成以下方式重新安装
 ```ruby
 pod 'SJBaseVideoPlayer/IJKPlayer'
+pod 'SJVideoPlayer'
 ```
 
 - 使用

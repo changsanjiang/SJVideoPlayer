@@ -5,6 +5,9 @@
 [![Platform](https://img.shields.io/badge/platform-iOS-blue.svg)](https://github.com/changsanjiang)
 [![License](https://img.shields.io/github/license/changsanjiang/SJVideoPlayer.svg)](https://github.com/changsanjiang/SJVideoPlayer/blob/master/LICENSE.md)
 
+##  Getting Started
+wiki: https://github.com/changsanjiang/SJVideoPlayer/wiki
+
 ## Installation
 ```ruby
 # Player with default control layer.
@@ -25,7 +28,7 @@ pod 'SJUIKit/Queues', :git => 'https://gitee.com/changsanjiang/SJUIKit.git'
 $ pod update --no-repo-update   (不要用 pod install 了, 用这个命令安装)
 ```
 
-## AVPlayer 切换为 ijkplayer, 其他功能不变
+## 将 AVPlayer 切换为 ijkplayer, 其他功能不变
 - 改成以下方式重新安装
 ```ruby
 pod 'SJBaseVideoPlayer/IJKPlayer'
@@ -64,6 +67,8 @@ QQGroup: 930508201 (iOS 开发)
 [大佬辛苦, 犒赏一下🤕](#赞助)
 
 ## Documents
+
+v2.6.5 往后的版本, 请[配置旋转 !!](https://github.com/changsanjiang/SJVideoPlayer/issues/148)
 
 #### [1. 视图层次结构](#1)
 * [1.1 UIView](#1.1)

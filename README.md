@@ -29,6 +29,9 @@ $ pod update --no-repo-update   (不要用 pod install 了, 用这个命令安�
 ```
 
 ## 将 AVPlayer 切换为 ijkplayer, 其他功能不变
+
+wiki: https://github.com/changsanjiang/SJVideoPlayer/wiki/Use-ijkplayer
+
 - 改成以下方式重新安装
 ```ruby
 pod 'SJBaseVideoPlayer/IJKPlayer'

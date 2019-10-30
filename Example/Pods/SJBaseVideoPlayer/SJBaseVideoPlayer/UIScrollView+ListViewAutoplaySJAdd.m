@@ -68,18 +68,7 @@ static void sj_removeContentOffsetObserver(UIScrollView *scrollView);
             self.sj_hasDelayedEndScrollTask = NO;
             [NSObject cancelPreviousPerformRequestsWithTarget:self selector:@selector(sj_playNextAssetAfterEndScroll) object:nil];
         }
-        
-        queue.empty();
-        ///
-        /// Thanks @YangYus
-        ///
-        /// Fix [#180](https://github.com/changsanjiang/SJVideoPlayer/issues/180)
-        ///
-        if ( self.window == nil ) {
-            return;
-        }
-
-        queue.enqueue(^{
+        queue.empty().enqueue(^{
             self.sj_hasDelayedEndScrollTask = YES;
             [self performSelector:@selector(sj_playNextAssetAfterEndScroll) withObject:nil afterDelay:0.4];
         });

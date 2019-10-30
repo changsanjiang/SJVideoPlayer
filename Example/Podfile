@@ -9,6 +9,12 @@ post_install do |installer|
       if config.build_settings['IPHONEOS_DEPLOYMENT_TARGET'].to_f < 9.0
         config.build_settings['IPHONEOS_DEPLOYMENT_TARGET'] = '9.0'
       end
+      
+      if config.name != 'Release'
+        if target.name == 'SJBaseVideoPlayer'
+          config.build_settings['GCC_PREPROCESSOR_DEFINITIONS'] = '$(inherited) SJDEBUG'
+        end
+      end
     end
   end
   
@@ -34,7 +40,6 @@ target 'SJVideoPlayer_Example' do
   pod 'SJVideoPlayer', :path => '../../SJVideoPlayer'
   
   #pod 'ijkplayer'
-  #pod 'ijkplayerssl'
   
   # 全屏手势
   pod 'SJFullscreenPopGesture/ObjC'

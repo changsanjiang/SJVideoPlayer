@@ -332,8 +332,10 @@ SJEdgeControlButtonItemTag const SJEdgeControlLayerCenterItem_Replay = 40000;
     _bottomProgressIndicator.pan.enabled = NO;
     _bottomProgressIndicator.trackHeight = _bottomProgressIndicatorHeight;
     SJEdgeControlLayerSettings *setting = SJEdgeControlLayerSettings.commonSettings;
-    _bottomProgressIndicator.traceImageView.backgroundColor = setting.progress_traceColor;
-    _bottomProgressIndicator.trackImageView.backgroundColor = setting.progress_trackColor;
+    UIColor *traceColor = setting.bottomIndicator_traceColor ?: setting.progress_traceColor;
+    UIColor *trackColor = setting.bottomIndicator_trackColor ?: setting.progress_trackColor;
+    _bottomProgressIndicator.traceImageView.backgroundColor = traceColor;
+    _bottomProgressIndicator.trackImageView.backgroundColor = trackColor;
     return _bottomProgressIndicator;
 }
 

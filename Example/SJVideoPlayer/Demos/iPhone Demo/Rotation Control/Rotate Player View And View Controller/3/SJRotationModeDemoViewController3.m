@@ -44,7 +44,6 @@
 - (void)viewWillDisappear:(BOOL)animated {
     [super viewWillDisappear:animated];
     [self.navigationController setNavigationBarHidden:NO animated:YES];
-    [self.player vc_viewWillDisappear];
 }
 
 - (BOOL)shouldAutorotate {
@@ -77,16 +76,6 @@
     [_player.view mas_makeConstraints:^(MASConstraintMaker *make) {
         make.edges.offset(0);
     }];
-}
-
-- (void)viewDidAppear:(BOOL)animated {
-    [super viewDidAppear:animated];
-    [self.player vc_viewDidAppear];
-}
-
-- (void)viewDidDisappear:(BOOL)animated {
-    [super viewDidDisappear:animated];
-    [self.player vc_viewDidDisappear];
 }
 
 - (BOOL)prefersStatusBarHidden {

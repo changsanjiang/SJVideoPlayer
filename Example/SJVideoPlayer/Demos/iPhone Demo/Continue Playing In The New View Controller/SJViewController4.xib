@@ -1,11 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="14490.70" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES">
-    <device id="retina6_1" orientation="portrait">
-        <adaptation id="fullscreen"/>
-    </device>
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="14868" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES">
+    <device id="retina6_1" orientation="portrait" appearance="light"/>
     <dependencies>
         <deployment identifier="iOS"/>
-        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="14490.49"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="14824"/>
         <capability name="Safe area layout guides" minToolsVersion="9.0"/>
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
     </dependencies>
@@ -28,15 +26,24 @@
                         <constraint firstAttribute="width" secondItem="EX5-qF-VQv" secondAttribute="height" multiplier="16:9" id="Vux-Mu-Ywm"/>
                     </constraints>
                 </view>
+                <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="bQe-NN-Xbw">
+                    <rect key="frame" x="0.0" y="348" width="35" height="30"/>
+                    <state key="normal" title="Push"/>
+                    <connections>
+                        <action selector="push:" destination="-1" eventType="touchUpInside" id="h53-Oa-xBI"/>
+                    </connections>
+                </button>
             </subviews>
             <color key="backgroundColor" red="1" green="1" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
             <constraints>
                 <constraint firstItem="6DZ-PO-3Xg" firstAttribute="trailing" secondItem="EX5-qF-VQv" secondAttribute="trailing" id="GLd-KA-pWV"/>
+                <constraint firstItem="bQe-NN-Xbw" firstAttribute="top" secondItem="EX5-qF-VQv" secondAttribute="bottom" constant="71" id="LCg-HN-p0V"/>
                 <constraint firstItem="EX5-qF-VQv" firstAttribute="leading" secondItem="6DZ-PO-3Xg" secondAttribute="leading" id="LSo-vo-5bT"/>
+                <constraint firstItem="bQe-NN-Xbw" firstAttribute="leading" secondItem="EX5-qF-VQv" secondAttribute="leading" id="beG-hf-ahh"/>
                 <constraint firstItem="EX5-qF-VQv" firstAttribute="top" secondItem="6DZ-PO-3Xg" secondAttribute="top" id="vRs-t3-QWW"/>
             </constraints>
             <viewLayoutGuide key="safeArea" id="6DZ-PO-3Xg"/>
-            <point key="canvasLocation" x="-626" y="-300"/>
+            <point key="canvasLocation" x="-626.08695652173913" y="-300"/>
         </view>
     </objects>
 </document>

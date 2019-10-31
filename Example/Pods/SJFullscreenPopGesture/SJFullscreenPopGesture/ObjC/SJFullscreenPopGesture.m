@@ -3,7 +3,7 @@
 //  SJBackGRProject
 //
 //  Created by 畅三江 on 2019/7/17.
-//  Copyright © 2019 changsanjiang. All rights reserved.
+//  Copyright © 2019 SanJiang. All rights reserved.
 //
 
 #import "SJFullscreenPopGesture.h"
@@ -247,7 +247,9 @@ NS_ASSUME_NONNULL_BEGIN
 }
 
 - (void)began {
-    [_rootView insertSubview:_target.view atIndex:0];
+    if ( _target.sj_displayMode == SJPreViewDisplayModeOrigin ) {
+        [_rootView insertSubview:_target.view atIndex:0];
+    }
 }
 
 - (void)completed {
@@ -455,7 +457,6 @@ NS_ASSUME_NONNULL_BEGIN
     self.view.layer.shadowRadius = 2;
     self.view.layer.shadowPath = [UIBezierPath bezierPathWithRect:self.view.bounds].CGPath;
     [CATransaction commit];
-    self.view.clipsToBounds = NO;
     
     [self.view addGestureRecognizer:self.sj_fullscreenGesture];
 }
@@ -534,7 +535,7 @@ static CGFloat _maxOffsetToTriggerPop = 0.35;
     self.edgesForExtendedLayout = UIRectEdgeNone;
     objc_setAssociatedObject(self, @selector(sj_displayMode), @(sj_displayMode), OBJC_ASSOCIATION_RETAIN_NONATOMIC);
 }
-- (SJPreViewDisplayMode)sj_displayMode {
+- (SJPreViewDisplayMode)sj_displayMode { return SJPreViewDisplayModeOrigin;
     return [objc_getAssociatedObject(self, _cmd) integerValue];
 }
 

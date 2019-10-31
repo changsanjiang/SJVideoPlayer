@@ -44,17 +44,18 @@
 
 - (void)viewDidAppear:(BOOL)animated {
     [super viewDidAppear:animated];
-    [self.player vc_viewDidAppear];
-}
-
-- (void)viewWillDisappear:(BOOL)animated {
-    [super viewWillDisappear:animated];
-    [self.player vc_viewWillDisappear];
+    [_player play];
+#ifdef DEBUG
+    NSLog(@"AA: %d - %s", (int)__LINE__, __func__);
+#endif
 }
 
 - (void)viewDidDisappear:(BOOL)animated {
     [super viewDidDisappear:animated];
-    [self.player vc_viewDidDisappear];
+    [_player pause];
+#ifdef DEBUG
+        NSLog(@"AA: %d - %s", (int)__LINE__, __func__);
+#endif
 }
 
 - (BOOL)prefersStatusBarHidden {
@@ -67,6 +68,12 @@
 
 - (BOOL)prefersHomeIndicatorAutoHidden {
     return YES;
+}
+
+- (IBAction)push:(id)sender {
+    UIViewController *vc = UIViewController.new;
+    vc.view.backgroundColor = UIColor.whiteColor;
+    [self.navigationController pushViewController:vc animated:YES];
 }
 
 @end

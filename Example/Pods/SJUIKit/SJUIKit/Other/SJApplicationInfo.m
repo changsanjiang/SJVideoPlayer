@@ -75,7 +75,7 @@ NS_ASSUME_NONNULL_BEGIN
 }
 
 - (NSString *)machineModel {
-    __block NSString *model = nil;
+    static NSString *model = nil;
     static dispatch_once_t onceToken;
     dispatch_once(&onceToken, ^{
         struct utsname systemInfo;
@@ -99,7 +99,7 @@ NS_ASSUME_NONNULL_BEGIN
 }
 
 - (NSString *)version {
-    __block NSString *version = nil;
+    static NSString *version = nil;
     static dispatch_once_t onceToken;
     dispatch_once(&onceToken, ^{
         version = [[[NSBundle mainBundle] infoDictionary] objectForKey:@"CFBundleShortVersionString"];
@@ -108,7 +108,7 @@ NS_ASSUME_NONNULL_BEGIN
 }
 
 - (NSString *)systemVersion {
-    __block NSString *version = nil;
+    static NSString *version = nil;
     static dispatch_once_t onceToken;
     dispatch_once(&onceToken, ^{
         version = [UIDevice currentDevice].systemVersion;

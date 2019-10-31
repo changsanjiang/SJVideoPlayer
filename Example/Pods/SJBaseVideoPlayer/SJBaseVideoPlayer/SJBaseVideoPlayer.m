@@ -174,7 +174,7 @@ _lookupResponder(UIView *view, Class cls) {
 }
 
 + (NSString *)version {
-    return @"v3.0.4";
+    return @"v3.0.6";
 }
 
 - (void)setVideoGravity:(SJVideoGravity)videoGravity {

@@ -226,7 +226,7 @@ static Reachability *_reachability;
         _networkStatusDidChangeExeBlock(mgr);
 }
 - (void)networkSpeedDidChange:(NSNotification *)note {
-    if ( _networkSpeedDidChangeExeBlock ) _networkSpeedDidChangeExeBlock(note.object);
+    if ( _networkSpeedDidChangeExeBlock ) _networkSpeedDidChangeExeBlock(_reachability);
 }
 @end
 NS_ASSUME_NONNULL_END

@@ -27,12 +27,12 @@ NS_ASSUME_NONNULL_BEGIN
 #define SJSQLite3_Unlock()                      dispatch_semaphore_signal(_lock)
 
 #define SJSQLite3_TANSACTION_BEGIN()            SJSQLite3_Lock(); \
-                                                sqlite3_obj_begin_transaction(self.db);
+                                                sj_sqlite3_obj_begin_transaction(self.db);
 
-#define SJSQLite3_TANSACTION_ROLLBACK()         sqlite3_obj_rollback(self.db); \
+#define SJSQLite3_TANSACTION_ROLLBACK()         sj_sqlite3_obj_rollback(self.db); \
                                                 SJSQLite3_Unlock();
 
-#define SJSQLite3_TANSACTION_COMMIT()           sqlite3_obj_commit(self.db);    \
+#define SJSQLite3_TANSACTION_COMMIT()           sj_sqlite3_obj_commit(self.db);    \
                                                 SJSQLite3_Unlock();
 
 
@@ -103,7 +103,7 @@ NS_ASSUME_NONNULL_BEGIN
 }
 - (nullable instancetype)initWithDatabasePath:(NSString *)dbPath {
     sqlite3 *db = NULL;
-    if ( sqlite3_obj_open_database(dbPath, &db) == NO )
+    if ( sj_sqlite3_obj_open_database(dbPath, &db) == NO )
         return nil;
     
     self = [super init];
@@ -120,7 +120,7 @@ NS_ASSUME_NONNULL_BEGIN
 #ifdef DEBUG
     NSLog(@"%d - %s", (int)__LINE__, __func__);
 #endif
-    sqlite3_obj_close_database(_db);
+    sj_sqlite3_obj_close_database(_db);
 }
 
 #pragma mark - Common Methods
@@ -232,7 +232,7 @@ NS_ASSUME_NONNULL_BEGIN
     NSError *_Nullable inner_error = nil;
     id _Nullable result = nil;
     SJSQLite3_Lock();
-    NSDictionary *_Nullable rowData = sqlite3_obj_get_row_data(self.db, table, primaryKeyValue, &inner_error);
+    NSDictionary *_Nullable rowData = sj_sqlite3_obj_get_row_data(self.db, table, primaryKeyValue, &inner_error);
     if ( inner_error == nil ) {
         result = [self _transformRowData:rowData toObjectOfClass:cls error:&inner_error];
     }
@@ -258,7 +258,7 @@ NS_ASSUME_NONNULL_BEGIN
 
     SJSQLite3_TANSACTION_BEGIN();
     NSError *inner_error = nil;
-    sqlite3_obj_drop_table(self.db, table.name, &inner_error);
+    sj_sqlite3_obj_drop_table(self.db, table.name, &inner_error);
     if ( inner_error != nil ) {
         if ( error != nil ) *error = inner_error;
         SJSQLite3_TANSACTION_ROLLBACK();
@@ -294,7 +294,7 @@ NS_ASSUME_NONNULL_BEGIN
     
     SJSQLite3_TANSACTION_BEGIN();
     NSError *inner_error = nil;
-    sqlite3_obj_delete_row_datas(self.db, table, primaryKeyValues, error);
+    sj_sqlite3_obj_delete_row_datas(self.db, table, primaryKeyValues, error);
     if ( inner_error != nil ) {
         if ( error != nil ) *error = inner_error;
         SJSQLite3_TANSACTION_ROLLBACK();
@@ -313,7 +313,7 @@ NS_ASSUME_NONNULL_BEGIN
 ///
 - (nullable NSArray<NSDictionary *> *)exec:(NSString *)sql error:(NSError *_Nullable *_Nullable)error {
     SJSQLite3_Lock();
-    id result = sqlite3_obj_exec(self.db, sql, error);;
+    id result = sj_sqlite3_obj_exec(self.db, sql, error);;
     SJSQLite3_Unlock();
     return result;
 }
@@ -329,7 +329,7 @@ NS_ASSUME_NONNULL_BEGIN
 - (nullable NSArray<SJSQLite3RowData *> *)execInTransaction:(NSString *)sql error:(NSError **)error {
     SJSQLite3_TANSACTION_BEGIN();
     NSError *innser_error = nil;
-    id result = sqlite3_obj_exec(self.db, sql, &innser_error);
+    id result = sj_sqlite3_obj_exec(self.db, sql, &innser_error);
     if ( innser_error != nil ) {
         if ( error != nil ) *error = innser_error;
         SJSQLite3_TANSACTION_ROLLBACK();
@@ -373,7 +373,7 @@ NS_ASSUME_NONNULL_BEGIN
 ///
 - (BOOL)_tableExists:(Class)cls {
     SJSQLiteTableInfo *table = [SJSQLite3TableInfosCache.shared getTableInfoForClass:cls];
-    return sqlite3_obj_table_exists(self.db, table.name);
+    return sj_sqlite3_obj_table_exists(self.db, table.name);
 }
 
 /// 只处理参数类, 不处理相关类
@@ -382,8 +382,8 @@ NS_ASSUME_NONNULL_BEGIN
     SJSQLiteTableInfo *table = [SJSQLite3TableInfosCache.shared getTableInfoForClass:cls];
     
     NSString *query = [NSString stringWithFormat:@"SELECT sql FROM sqlite_master WHERE name='%@';", table.name];
-    NSString *stosql = [[sqlite3_obj_exec(self.db, query, NULL) firstObject][@"sql"] stringByAppendingString:@";"];
-    NSString *cursql = sqlite3_stmt_create_table(table);
+    NSString *stosql = [[sj_sqlite3_obj_exec(self.db, query, NULL) firstObject][@"sql"] stringByAppendingString:@";"];
+    NSString *cursql = sj_sqlite3_stmt_create_table(table);
     if ( [cursql isEqualToString:stosql] ) {
         return nil;
     }
@@ -391,17 +391,17 @@ NS_ASSUME_NONNULL_BEGIN
     NSString *tmpname = [NSString stringWithFormat:@"%@_ME_TMP", table.name];
     NSString *altsql = [NSString stringWithFormat:@"ALTER TABLE '%@' RENAME TO '%@';", table.name, tmpname];
     NSError *_Nullable error = nil;
-    sqlite3_obj_exec(self.db, altsql, &error);
+    sj_sqlite3_obj_exec(self.db, altsql, &error);
     if ( error != nil ) return error;
     
-    sqlite3_obj_exec(self.db, cursql, &error);
+    sj_sqlite3_obj_exec(self.db, cursql, &error);
     if ( error != nil ) return error;
     
     NSString *tmpinfosql = [NSString stringWithFormat:@"PRAGMA table_info('%@');", tmpname];
     NSString *curinfosql = [NSString stringWithFormat:@"PRAGMA table_info('%@');", table.name];
-    NSArray<NSDictionary *> *tmpInfo = sqlite3_obj_exec(self.db, tmpinfosql, &error);
+    NSArray<NSDictionary *> *tmpInfo = sj_sqlite3_obj_exec(self.db, tmpinfosql, &error);
     if ( error != nil ) return error;
-    NSArray<NSDictionary *> *curInfo = sqlite3_obj_exec(self.db, curinfosql, &error);
+    NSArray<NSDictionary *> *curInfo = sj_sqlite3_obj_exec(self.db, curinfosql, &error);
     if ( error != nil ) return error;
     
     NSMutableSet<NSString *> *tmpFieldsSet = NSMutableSet.new;
@@ -423,10 +423,10 @@ NS_ASSUME_NONNULL_BEGIN
     [fields sjsql_deleteSubffix:@","];
     
     NSString *inssql = [NSString stringWithFormat:@"INSERT INTO '%@' (%@) SELECT %@ FROM '%@';", table.name, fields, fields, tmpname];
-    sqlite3_obj_exec(self.db, inssql, &error);
+    sj_sqlite3_obj_exec(self.db, inssql, &error);
     if ( error != nil ) return error;
     
-    sqlite3_obj_drop_table(self.db, tmpname, &error);
+    sj_sqlite3_obj_drop_table(self.db, tmpname, &error);
     return error;
 }
 
@@ -434,9 +434,9 @@ NS_ASSUME_NONNULL_BEGIN
 ///
 - (nullable NSError *)_createTable:(Class)cls {
     SJSQLiteTableInfo *table = [SJSQLite3TableInfosCache.shared getTableInfoForClass:cls];
-    NSString *sql = sqlite3_stmt_create_table(table);
+    NSString *sql = sj_sqlite3_stmt_create_table(table);
     NSError *error = nil;
-    sqlite3_obj_exec(self.db, sql, &error);
+    sj_sqlite3_obj_exec(self.db, sql, &error);
     return error;
 }
 
@@ -494,7 +494,7 @@ NS_ASSUME_NONNULL_BEGIN
             return [self _insertOrUpdateObjects:column.isModelArray ? newvalue : @[newvalue]];
         }
         if ( newvalue ) {
-            [sql appendFormat:@"'%@' = '%@',", column.name, sqlite3_stmt_get_column_value(column, newvalue)];
+            [sql appendFormat:@"'%@' = '%@',", column.name, sj_sqlite3_stmt_get_column_value(column, newvalue)];
         }
         else {
             [sql appendFormat:@"'%@' = NULL,", column.name];
@@ -506,7 +506,7 @@ NS_ASSUME_NONNULL_BEGIN
     id primaryValue = [objectInfo.obj valueForKey:primaryKey];
     [sql appendFormat:@" WHERE %@ = %@;", primaryKey, primaryValue];
     NSError *_Nullable error = nil;
-    sqlite3_obj_exec(self.db, sql, &error);
+    sj_sqlite3_obj_exec(self.db, sql, &error);
     return error;
 }
 
@@ -541,13 +541,13 @@ NS_ASSUME_NONNULL_BEGIN
         }
     }
     
-    NSString *sql = sqlite3_stmt_insert_or_update(objectInfo);
+    NSString *sql = sj_sqlite3_stmt_insert_or_update(objectInfo);
     
-    sqlite3_obj_exec(self.db, sql, &error);
+    sj_sqlite3_obj_exec(self.db, sql, &error);
     
     if ( error == nil && objectInfo.autoincrementColumns ) {
-        NSString *sql = sqlite3_stmt_get_last_row(objectInfo);
-        __auto_type _Nullable results = [sqlite3_obj_exec(self.db, sql, &error) firstObject];
+        NSString *sql = sj_sqlite3_stmt_get_last_row(objectInfo);
+        __auto_type _Nullable results = [sj_sqlite3_obj_exec(self.db, sql, &error) firstObject];
         if ( error != nil ) return error;
         id obj = objectInfo.obj;
         for ( SJSQLiteColumnInfo *column in objectInfo.autoincrementColumns ) {
@@ -576,11 +576,11 @@ NS_ASSUME_NONNULL_BEGIN
         
         SJSQLiteTableInfo *subtable = column.associatedTableInfo;
         if ( column.isModelArray ) {
-            __auto_type primaryValues = sqlite3_stmt_get_primary_values_array(value);
+            __auto_type primaryValues = sj_sqlite3_stmt_get_primary_values_array(value);
             NSMutableArray<id> *subObjArr = NSMutableArray.new;
             BOOL intact = YES;
             for ( NSNumber *num in primaryValues ) {
-                NSDictionary *subrow = sqlite3_obj_get_row_data(self.db, subtable, num, &inner_error);
+                NSDictionary *subrow = sj_sqlite3_obj_get_row_data(self.db, subtable, num, &inner_error);
                 if ( inner_error != nil ) goto handle_error;
                 id _Nullable subobj = [self _transformRowData:subrow toObjectOfClass:subtable.cls error:&inner_error];
                 if ( inner_error != nil ) goto handle_error;
@@ -590,7 +590,7 @@ NS_ASSUME_NONNULL_BEGIN
             result[column.name] = intact?subObjArr.copy:nil;
         }
         else {
-            NSDictionary *subrow = sqlite3_obj_get_row_data(self.db, subtable, value, &inner_error);
+            NSDictionary *subrow = sj_sqlite3_obj_get_row_data(self.db, subtable, value, &inner_error);
             if ( inner_error != nil ) goto handle_error;
             id _Nullable subobj = [self _transformRowData:subrow toObjectOfClass:subtable.cls error:&inner_error];
             if ( inner_error != nil ) goto handle_error;

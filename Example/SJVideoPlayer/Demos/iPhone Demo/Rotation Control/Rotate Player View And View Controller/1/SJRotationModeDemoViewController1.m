@@ -11,6 +11,7 @@
 #import <Masonry/Masonry.h>
 #import "SJSourceURLs.h"
 #import <SJUIKit/NSAttributedString+SJMake.h>
+#import "SJViewController4.h"
 
 @interface SJRotationModeDemoViewController1 ()
 @property (weak, nonatomic) IBOutlet UIView *playerContainerView;
@@ -93,20 +94,25 @@
     [self.navigationController setNavigationBarHidden:YES animated:NO];
 }
 
-- (void)viewDidAppear:(BOOL)animated {
-    [super viewDidAppear:animated];
-    [self.player vc_viewDidAppear];
-}
-
 - (void)viewWillDisappear:(BOOL)animated {
     [super viewWillDisappear:animated];
     [self.navigationController setNavigationBarHidden:NO animated:NO];
-    [self.player vc_viewWillDisappear];
+}
+
+- (void)viewDidAppear:(BOOL)animated {
+    [super viewDidAppear:animated];
+    [_player play];
+#ifdef DEBUG
+    NSLog(@"AA: %d - %s", (int)__LINE__, __func__);
+#endif
 }
 
 - (void)viewDidDisappear:(BOOL)animated {
     [super viewDidDisappear:animated];
-    [self.player vc_viewDidDisappear];
+    [_player pause];
+#ifdef DEBUG
+        NSLog(@"AA: %d - %s", (int)__LINE__, __func__);
+#endif
 }
 
 - (BOOL)prefersStatusBarHidden {
@@ -125,6 +131,15 @@
 
 - (IBAction)clickedPlayButton:(id)sender {
     self.player.assetURL = [NSURL URLWithString:[_textField.text stringByAddingPercentEncodingWithAllowedCharacters:[NSCharacterSet URLQueryAllowedCharacterSet]]];
+}
+
+- (IBAction)push:(id)sender {
+    SJViewController4 *vc = [SJViewController4.alloc initWithAsset:self.player.URLAsset];
+    [self.navigationController pushViewController:vc animated:YES];
+}
+
+- (IBAction)change:(id)sender {
+    self.player.assetURL = SourceURL1;
 }
 
 @end

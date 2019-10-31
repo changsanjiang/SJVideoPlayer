@@ -179,6 +179,7 @@ NS_ASSUME_NONNULL_BEGIN
     [self _stop];
     [SJAVMediaPlayerLoader clearPlayerForMedia:self.media];
     [self prepareToPlay];
+    [self play];
 }
 - (void)play {
     SJRunLoopTaskQueue.main.enqueue(^{

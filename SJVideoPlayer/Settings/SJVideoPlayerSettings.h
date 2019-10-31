@@ -59,6 +59,9 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic, strong, nullable) UIImage *shrinkscreenImage;
 @property (nonatomic, strong) NSString *liveText;                       // 实时直播
 
+@property (nonatomic, strong, nullable) UIColor *bottomIndicator_traceColor;
+@property (nonatomic, strong, nullable) UIColor *bottomIndicator_trackColor;
+
 // - Right Adapter Item -
 @property (nonatomic, strong) UIImage *filmEditingBtnImage;
 

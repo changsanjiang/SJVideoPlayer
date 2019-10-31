@@ -44,7 +44,7 @@ static SJSQLITEColumnType const SJSQLITEColumnType_TEXT = @"TEXT";
     YYClassInfo *_Nullable classInfo = [YYClassInfo classInfoWithClass:cls];
     if ( classInfo == nil || classInfo.superCls == nil )
         return nil;
-    NSString *tablename = cons.sql_tableName ? : sqlite3_obj_get_default_table_name(cls);
+    NSString *tablename = cons.sql_tableName ? : sj_sqlite3_obj_get_default_table_name(cls);
     NSMutableDictionary<SJSQLiteColumnInfo *, SJSQLiteTableInfo *> *associatedTableInfos = NSMutableDictionary.new;
     NSMutableArray<SJSQLiteColumnInfo *> *columns = NSMutableArray.new;
     NSMutableSet<Class> *allClasses = NSMutableSet.new;

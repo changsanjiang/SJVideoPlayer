@@ -183,9 +183,6 @@ v2.6.5 往后的版本, 请[配置旋转 !!](https://github.com/changsanjiang/SJ
 * [12.2 配置提示文本](#12.2)
 
 #### [13. 一些固定代码](#13)
-* [13.1 - (void)vc_viewDidAppear; ](#13.1)
-* [13.2 - (void)vc_viewWillDisappear;](#13.2)
-* [13.3 - (void)vc_viewDidDisappear;](#13.3)
 * [13.4 - (BOOL)vc_prefersStatusBarHidden;](#13.4)
 * [13.5 - (UIStatusBarStyle)vc_preferredStatusBarStyle;](#13.5)
 * [13.6 - 临时显示状态栏](#13.6)
@@ -1373,68 +1370,9 @@ ___
 <h2 id="13">13. 一些固定代码</h2>
 
 <p>
-接入播放器的 ViewController 中, 会写一些固定的代码, 我将这些固定代码(例如 进入下个页面时, 需要当前页面的播放器暂停), 都封装在了以下方法中. 
-
-```Objective-C
-- (void)viewDidAppear:(BOOL)animated {
-[super viewDidAppear:animated];
-[_player vc_viewDidAppear];
-}
-```
+接入播放器的 ViewController 中, 会写一些固定的代码, 我将这些固定代码都封装在了以下方法中. 
 
 在适当的时候直接调用即可, 以下为内部实现:
-</p>
-
-<h3 id="13.1">13.1 - (void)vc_viewDidAppear; </h3>
-
-<p>
-当 ViewController 的 viewDidAppear 调用时, 恢复播放
-
-实现如下:
-</p>
-
-```Objective-C
-- (void)vc_viewDidAppear {
-if ( !self.isPlayOnScrollView || (self.isPlayOnScrollView && self.isScrollAppeared) ) {
-/// 恢复播放
-[self play];
-}
-
-/// 标识vc已显示 
-/// vc_isDisappeared 是自动旋转触发的条件之一, 如果控制器 disappear 了, 就不会触发旋转 
-self.vc_isDisappeared = NO;
-}
-```
-
-<h3 id="13.2">13.2 - (void)vc_viewWillDisappear;</h3>
-
-<p>
-当 ViewController 的 viewWillDisappear 调用时, 设置标识为YES
-
-实现如下:
-</p>
-
-```Objective-C
-- (void)vc_viewWillDisappear {
-/// 标识vc已显示 
-/// vc_isDisappeared 是自动旋转触发的条件之一, 如果控制器 disappear 了, 就不会触发旋转 
-self.vc_isDisappeared = YES;
-}
-```
-
-<h3 id="13.3">13.3 - (void)vc_viewDidDisappear;</h3>
-
-<p>
-当 ViewController 的 viewDidDisappear 调用时, 暂停播放
-
-实现如下:
-</p>
-
-```Objective-C
-- (void)vc_viewDidDisappear {
-[self pause];
-}
-```
 
 <h3 id="13.4">13.4 - (BOOL)vc_prefersStatusBarHidden;</h3>
 

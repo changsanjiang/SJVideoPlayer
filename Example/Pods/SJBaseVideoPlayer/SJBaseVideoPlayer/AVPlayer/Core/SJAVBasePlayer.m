@@ -311,7 +311,7 @@ static NSString *kTimeControlStatus = @"timeControlStatus";
 }
 
 - (void)_sjbase_refreshPlayerStatus {
-    SJAssetStatus status = SJAssetStatusPreparing;
+    SJAssetStatus status = self.sj_assetStatus;
     
     if ( self.sj_error ) {
         status = SJAssetStatusFailed;

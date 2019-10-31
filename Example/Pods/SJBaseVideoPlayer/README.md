@@ -25,6 +25,22 @@ pod 'SJUIKit/Queues', :git => 'https://gitee.com/changsanjiang/SJUIKit.git'
 $ pod update --no-repo-update   (不要用 pod install 了, 用这个命令安装)
 ```
 
+## AVPlayer 切换为 ijkplayer, 其他功能不变
+- 改成以下方式重新安装
+```ruby
+pod 'SJBaseVideoPlayer/IJKPlayer'
+```
+
+- 使用
+```Objective-C
+// 导入头文件
+#import "SJIJKMediaPlaybackController.h"
+
+_player = SJVideoPlayer.player;
+// 将播放控制切换为 SJIJKMediaPlaybackController 即可, 其它操作不变
+_player.playbackController = SJIJKMediaPlaybackController.new;
+```
+
 ## Example
 
 ```Objective-C

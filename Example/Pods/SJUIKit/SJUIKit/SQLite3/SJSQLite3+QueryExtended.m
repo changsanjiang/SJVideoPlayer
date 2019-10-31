@@ -1,16 +1,16 @@
 //
-//  SJSQLite3+SJSQLite3Extended.m
+//  SJSQLite3+QueryExtended.m
 //  Pods-SJSQLite3_Example
 //
 //  Created by 畅三江 on 2019/7/30.
 //
 
-#import "SJSQLite3+SJSQLite3Extended.h"
+#import "SJSQLite3+QueryExtended.h"
 #import "SJSQLite3TableInfosCache.h"
 #import "SJSQLiteErrors.h"
 
 NS_ASSUME_NONNULL_BEGIN
-@implementation SJSQLite3 (SJSQLite3Extended)
+@implementation SJSQLite3 (QueryObjectsExtended)
 /// 获取满足指定条件的数据. (返回的数据已转为相应的模型)
 ///
 /// @param cls              数据库表所对应的类. (该类必须实现`SJSQLiteTableModelProtocol.sql_primaryKey`)
@@ -134,7 +134,7 @@ NS_ASSUME_NONNULL_BEGIN
 }
 @end
 
-@implementation SJSQLite3 (SJSQLite3QueryDataExtended)
+@implementation SJSQLite3 (QueryDataExtended)
 
 /// 获取满足指定条件的数据. (返回的数据未做转换)
 ///
@@ -212,7 +212,7 @@ NS_ASSUME_NONNULL_BEGIN
             if ( value == nil ) continue;
             SJSQLite3Condition *conditon = nil;
             if ( column.isModelArray ) {
-                __auto_type primaryValues = sqlite3_stmt_get_primary_values_array(value);
+                __auto_type primaryValues = sj_sqlite3_stmt_get_primary_values_array(value);
                 conditon = [SJSQLite3Condition conditionWithColumn:column.associatedTableInfo.primaryKey in:primaryValues];
             }
             else {
@@ -258,22 +258,22 @@ NS_ASSUME_NONNULL_BEGIN
     [conds appendFormat:@"\"%@\" ", column];
     switch ( relation ) {
         case SJSQLite3RelationLessThanOrEqual:
-            [conds appendFormat:@"<= '%@'", sqlite3_obj_filter_obj_value(value)];
+            [conds appendFormat:@"<= '%@'", sj_sqlite3_obj_filter_obj_value(value)];
             break;
         case SJSQLite3RelationEqual:
-            [conds appendFormat:@"= '%@'", sqlite3_obj_filter_obj_value(value)];
+            [conds appendFormat:@"= '%@'", sj_sqlite3_obj_filter_obj_value(value)];
             break;
         case SJSQLite3RelationGreaterThanOrEqual:
-            [conds appendFormat:@">= '%@'", sqlite3_obj_filter_obj_value(value)];
+            [conds appendFormat:@">= '%@'", sj_sqlite3_obj_filter_obj_value(value)];
             break;
         case SJSQLite3RelationUnequal:
-            [conds appendFormat:@"!= '%@'", sqlite3_obj_filter_obj_value(value)];
+            [conds appendFormat:@"!= '%@'", sj_sqlite3_obj_filter_obj_value(value)];
             break;
         case SJSQLite3RelationLessThan:
-            [conds appendFormat:@"> '%@'", sqlite3_obj_filter_obj_value(value)];
+            [conds appendFormat:@"> '%@'", sj_sqlite3_obj_filter_obj_value(value)];
             break;
         case SJSQLite3RelationGreaterThan:
-            [conds appendFormat:@"< '%@'", sqlite3_obj_filter_obj_value(value)];
+            [conds appendFormat:@"< '%@'", sj_sqlite3_obj_filter_obj_value(value)];
             break;
     }
     return [[SJSQLite3Condition alloc] initWithCondition:conds];
@@ -297,7 +297,7 @@ NS_ASSUME_NONNULL_BEGIN
     [conds appendFormat:@"\"%@\" IN (", column];
     id last = values.lastObject;
     for ( id value in values ) {
-        [conds appendFormat:@"'%@'%@", sqlite3_obj_filter_obj_value(value), last!=value?@",":@""];
+        [conds appendFormat:@"'%@'%@", sj_sqlite3_obj_filter_obj_value(value), last!=value?@",":@""];
     }
     [conds appendString:@")"];
     return [[SJSQLite3Condition alloc] initWithCondition:conds];
@@ -321,9 +321,9 @@ NS_ASSUME_NONNULL_BEGIN
 //    WHERE prod_price BETWEEN 3.49 AND 5;
     NSMutableString *conds = NSMutableString.new;
     [conds appendFormat:@"(\"%@\" BETWEEN ", column];
-    [conds appendFormat:@"%@", sqlite3_obj_filter_obj_value(start)];
+    [conds appendFormat:@"%@", sj_sqlite3_obj_filter_obj_value(start)];
     [conds appendString:@" AND "];
-    [conds appendFormat:@"%@", sqlite3_obj_filter_obj_value(end)];
+    [conds appendFormat:@"%@", sj_sqlite3_obj_filter_obj_value(end)];
     [conds appendFormat:@")"];
     return [[SJSQLite3Condition alloc] initWithCondition:conds];
 }

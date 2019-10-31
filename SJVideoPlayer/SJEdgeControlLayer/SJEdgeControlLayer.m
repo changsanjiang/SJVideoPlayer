@@ -450,6 +450,7 @@ SJEdgeControlButtonItemTag const SJEdgeControlLayerCenterItem_Replay = 40000;
     [self _updateContainerViewsAppearState];
     [self _updateAdaptersIfNeeded];
     [self _updateBottomCurrentTimeItemIfNeeded];
+    [self _updateBottomProgressSliderItemIfNeeded];
 }
 
 - (void)controlLayerNeedDisappear:(__kindof SJBaseVideoPlayer *)videoPlayer {

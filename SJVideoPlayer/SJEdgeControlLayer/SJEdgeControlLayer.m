@@ -1091,7 +1091,7 @@ SJEdgeControlButtonItemTag const SJEdgeControlLayerCenterItem_Replay = 40000;
             [self.controlView addSubview:self.bottomProgressIndicator];
             [_bottomProgressIndicator mas_makeConstraints:^(MASConstraintMaker *make) {
                 make.left.bottom.right.offset(0);
-                make.height.offset(1);
+                make.height.offset(_bottomProgressIndicatorHeight);
             }];
         }
     }

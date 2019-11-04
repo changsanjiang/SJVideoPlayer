@@ -39,7 +39,7 @@ target 'SJVideoPlayer_Example' do
   pod 'SJBaseVideoPlayer'#, :path => '../../SJBaseVideoPlayer'
   pod 'SJVideoPlayer', :path => '../../SJVideoPlayer'
   
-  #pod 'ijkplayer'
+#  pod 'ijkplayerssl', :git => 'https://gitee.com/changsanjiang/ijkplayer.git'
   
   # 全屏手势
   pod 'SJFullscreenPopGesture/ObjC'

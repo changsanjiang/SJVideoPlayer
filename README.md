@@ -22,9 +22,6 @@ pod 'SJBaseVideoPlayer'
 # 如果网络不行安装不了, 可改成以下方式进行安装
 pod 'SJBaseVideoPlayer', :git => 'https://gitee.com/changsanjiang/SJBaseVideoPlayer.git'
 pod 'SJVideoPlayer', :git => 'https://gitee.com/changsanjiang/SJVideoPlayer.git'
-pod 'SJUIKit/AttributesFactory', :git => 'https://gitee.com/changsanjiang/SJUIKit.git'
-pod 'SJUIKit/ObserverHelper', :git => 'https://gitee.com/changsanjiang/SJUIKit.git'
-pod 'SJUIKit/Queues', :git => 'https://gitee.com/changsanjiang/SJUIKit.git'
 $ pod update --no-repo-update   (不要用 pod install 了, 用这个命令安装)
 ```
 

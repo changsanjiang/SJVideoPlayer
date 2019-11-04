@@ -82,6 +82,11 @@ NS_ASSUME_NONNULL_BEGIN
         }
     }
     _beforeBounds = self.bounds;
+    _topAdapter.frameLayoutItemFillSize = _beforeBounds.size;
+    _leftAdapter.frameLayoutItemFillSize = _beforeBounds.size;
+    _bottomAdapter.frameLayoutItemFillSize = _beforeBounds.size;
+    _rightAdapter.frameLayoutItemFillSize = _beforeBounds.size;
+    _centerAdapter.frameLayoutItemFillSize = _beforeBounds.size;
 }
 
 - (void)_updateLayout_isNormal_iPhone_X {
@@ -324,6 +329,7 @@ NS_ASSUME_NONNULL_BEGIN
 - (SJEdgeControlLayerItemAdapter *)topAdapter {
     if ( _topAdapter ) return _topAdapter;
     _topAdapter = [[SJEdgeControlLayerItemAdapter alloc] initWithLayoutType:SJAdapterItemsLayoutTypeHorizontalLayout];
+    _topAdapter.frameLayoutItemFillSize = self.bounds.size;
     [self.topContainerView addSubview:_topAdapter.view];
     [self _updateTopLayout:nil];
     return _topAdapter;
@@ -332,6 +338,7 @@ NS_ASSUME_NONNULL_BEGIN
 - (SJEdgeControlLayerItemAdapter *)leftAdapter {
     if ( _leftAdapter ) return _leftAdapter;
     _leftAdapter = [[SJEdgeControlLayerItemAdapter alloc] initWithLayoutType:SJAdapterItemsLayoutTypeVerticalLayout];
+    _leftAdapter.frameLayoutItemFillSize = self.bounds.size;
     [self.leftContainerView addSubview:_leftAdapter.view];
     [_leftAdapter.view mas_makeConstraints:^(MASConstraintMaker *make) {
         make.top.bottom.right.offset(0);
@@ -348,6 +355,7 @@ NS_ASSUME_NONNULL_BEGIN
 - (SJEdgeControlLayerItemAdapter *)bottomAdapter {
     if ( _bottomAdapter ) return _bottomAdapter;
     _bottomAdapter = [[SJEdgeControlLayerItemAdapter alloc] initWithLayoutType:SJAdapterItemsLayoutTypeHorizontalLayout];
+    _bottomAdapter.frameLayoutItemFillSize = self.bounds.size;
     [self.bottomContainerView addSubview:_bottomAdapter.view];
     [_bottomAdapter.view mas_makeConstraints:^(MASConstraintMaker *make) {
         make.top.offset(0);
@@ -368,6 +376,7 @@ NS_ASSUME_NONNULL_BEGIN
 - (SJEdgeControlLayerItemAdapter *)rightAdapter {
     if ( _rightAdapter ) return _rightAdapter;
     _rightAdapter = [[SJEdgeControlLayerItemAdapter alloc] initWithLayoutType:SJAdapterItemsLayoutTypeVerticalLayout];
+    _rightAdapter.frameLayoutItemFillSize = self.bounds.size;
     [self.rightContainerView addSubview:_rightAdapter.view];
     [_rightAdapter.view mas_makeConstraints:^(MASConstraintMaker *make) {
         make.top.left.bottom.offset(0);
@@ -384,9 +393,10 @@ NS_ASSUME_NONNULL_BEGIN
 - (SJEdgeControlLayerItemAdapter *)centerAdapter {
     if ( _centerAdapter ) return _centerAdapter;
     _centerAdapter = [[SJEdgeControlLayerItemAdapter alloc] initWithLayoutType:SJAdapterItemsLayoutTypeFrameLayout];
+    _centerAdapter.frameLayoutItemFillSize = self.bounds.size;
     [self.centerContainerView addSubview:_centerAdapter.view];
     __weak typeof(self) _self = self;
-    _centerAdapter.maxSizeDidUpdateOfFrameLayoutExeBlock = ^(CGSize size) {
+    _centerAdapter.frameLayoutContentSizeDidChangeExeBlock = ^(CGSize size) {
         __strong typeof(_self) self = _self;
         if ( !self ) return;
         [self.centerAdapter.view mas_remakeConstraints:^(MASConstraintMaker *make) {

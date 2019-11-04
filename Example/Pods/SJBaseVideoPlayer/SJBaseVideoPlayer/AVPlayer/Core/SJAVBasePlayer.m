@@ -34,6 +34,7 @@ static NSString *kTimeControlStatus = @"timeControlStatus";
     if ( item == nil ) return nil;
     self = [super initWithPlayerItem:item];
     if ( self ) {
+        self.sj_assetStatus = SJAssetStatusPreparing;
         dispatch_async(dispatch_get_global_queue(0, 0), ^{
             [self _sjbase_initItemObserver];
             [self _sjbase_initObservations];

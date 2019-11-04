@@ -20,6 +20,7 @@ NS_ASSUME_NONNULL_BEGIN
 @protocol SJVideoPlayerPlaybackController<NSObject>
 @required
 @property (nonatomic) NSTimeInterval periodicTimeInterval; // default value is 0.5
+@property (nonatomic) NSTimeInterval minBufferedDuration; // default value is 8.0
 @property (nonatomic, strong, readonly, nullable) NSError *error;
 @property (nonatomic, weak, nullable) id<SJVideoPlayerPlaybackControllerDelegate> delegate;
 

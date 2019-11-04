@@ -8,7 +8,41 @@
 
 #import "SJAppDelegate.h"
 #import "SJVideoPlayer.h"
-#import "SJRotationManager.h"
+
+@implementation SJAppDelegate
+
+- (UIInterfaceOrientationMask)application:(UIApplication *)application supportedInterfaceOrientationsForWindow:(UIWindow *)window {
+    return UIInterfaceOrientationMaskAll;
+}
+
+- (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions {
+
+#ifdef DEBUG
+    NSLog(@"%@", NSTemporaryDirectory());
+#endif
+    
+    _window = [[UIWindow alloc] initWithFrame:[[UIScreen mainScreen] bounds]];
+    _window.backgroundColor = [UIColor whiteColor];
+    NSString *name = UIUserInterfaceIdiomPhone == UI_USER_INTERFACE_IDIOM()?@"Main":@"iPadMain";
+    _window.rootViewController = [[UIStoryboard storyboardWithName:name bundle:nil] instantiateInitialViewController];
+    [_window makeKeyAndVisible];
+
+
+    SJVideoPlayer.update(^(SJVideoPlayerSettings * _Nonnull common) {
+        common.placeholder = [UIImage imageNamed:@"placeholder"];
+        common.progress_thumbSize = 8;
+        common.progress_trackColor = [UIColor colorWithWhite:0.8 alpha:1];
+        common.progress_bufferColor = [UIColor whiteColor];
+    });
+    
+    // Override point for customization after application launch.
+    return YES;
+}
+@end
+
+
+#pragma mark -
+
 
 #warning Configuring rotation control. 请配置旋转控制!
 
@@ -111,37 +145,3 @@
 }
 @end
 
-
-#pragma mark -
-
-@implementation SJAppDelegate
-
-- (UIInterfaceOrientationMask)application:(UIApplication *)application supportedInterfaceOrientationsForWindow:(UIWindow *)window {
-    return UIInterfaceOrientationMaskAll;
-}
-
-- (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions
-{
-
-#ifdef DEBUG
-    NSLog(@"%@", NSTemporaryDirectory());
-#endif
-    
-    _window = [[UIWindow alloc] initWithFrame:[[UIScreen mainScreen] bounds]];
-    _window.backgroundColor = [UIColor whiteColor];
-    NSString *name = UIUserInterfaceIdiomPhone == UI_USER_INTERFACE_IDIOM()?@"Main":@"iPadMain";
-    _window.rootViewController = [[UIStoryboard storyboardWithName:name bundle:nil] instantiateInitialViewController];
-    [_window makeKeyAndVisible];
-
-
-    SJVideoPlayer.update(^(SJVideoPlayerSettings * _Nonnull common) {
-        common.placeholder = [UIImage imageNamed:@"placeholder"];
-        common.progress_thumbSize = 8;
-        common.progress_trackColor = [UIColor colorWithWhite:0.8 alpha:1];
-        common.progress_bufferColor = [UIColor whiteColor];
-    });
-    
-    // Override point for customization after application launch.
-    return YES;
-}
-@end

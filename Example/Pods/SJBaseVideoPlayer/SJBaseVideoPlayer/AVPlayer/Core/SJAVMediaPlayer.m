@@ -18,7 +18,7 @@ NSNotificationName const SJAVMediaPlayerDidPlayToEndTimeNotification = @"SJAVMed
 NS_ASSUME_NONNULL_BEGIN
 @interface SJAVMediaPlayer()
 @property (nonatomic, strong) SJAVBasePlayerItemObserver *itemObsever;
-@property (nonatomic) BOOL isSeeked;
+@property (nonatomic) BOOL needSeekToSpecifyStartTime;
 @end
 
 @implementation SJAVMediaPlayer
@@ -47,6 +47,7 @@ static NSString *kTimeControlStatus = @"sj_timeControlStatus";
     if ( self ) {
         _sj_playbackInfo.rate = 1;
         _sj_playbackInfo.specifyStartTime = specifyStartTime;
+        _needSeekToSpecifyStartTime = specifyStartTime != 0;
         dispatch_async(dispatch_get_global_queue(0, 0), ^{
             [self _sj_initObservations];
         });
@@ -142,8 +143,8 @@ static NSString *kTimeControlStatus = @"sj_timeControlStatus";
         dispatch_async(dispatch_get_main_queue(), ^{
             __strong typeof(_self) self = _self;
             if ( !self ) return;
-            if ( !self.isSeeked && self.currentItem.status == AVPlayerItemStatusReadyToPlay && self.sj_playbackInfo.specifyStartTime != 0 ) {
-                self.isSeeked = YES;
+            if ( self.needSeekToSpecifyStartTime && self.currentItem.status == AVPlayerItemStatusReadyToPlay && self.sj_playbackInfo.specifyStartTime != 0 ) {
+                self.needSeekToSpecifyStartTime = NO;
                 [self seekToTime:CMTimeMakeWithSeconds(self.sj_playbackInfo.specifyStartTime, NSEC_PER_SEC) toleranceBefore:kCMTimeZero toleranceAfter:kCMTimeZero completionHandler:^(BOOL finished) {}];
             }
         });

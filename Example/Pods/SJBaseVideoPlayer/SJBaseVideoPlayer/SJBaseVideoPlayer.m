@@ -174,7 +174,7 @@ _lookupResponder(UIView *view, Class cls) {
 }
 
 + (NSString *)version {
-    return @"v3.0.6";
+    return @"v3.0.7";
 }
 
 - (void)setVideoGravity:(SJVideoGravity)videoGravity {
@@ -1184,7 +1184,7 @@ _lookupResponder(UIView *view, Class cls) {
 
 - (void)playbackController:(id<SJVideoPlayerPlaybackController>)controller presentationSizeDidChange:(CGSize)presentationSize {
     if ( _autoManageViewToFitOnScreenOrRotation && !self.isFullScreen && !self.isFitOnScreen ) {
-        self.useFitOnScreenAndDisableRotation = presentationSize.width < presentationSize.height;
+        _useFitOnScreenAndDisableRotation = presentationSize.width < presentationSize.height;
     }
 
     if ( self.presentationSizeDidChangeExeBlock )

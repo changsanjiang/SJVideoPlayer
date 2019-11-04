@@ -69,6 +69,7 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic, readonly) NSInteger itemCount;
 - (instancetype)init NS_UNAVAILABLE;
 + (instancetype)new  NS_UNAVAILABLE;
-@property (nonatomic, copy, nullable) void(^maxSizeDidUpdateOfFrameLayoutExeBlock)(CGSize size); // 只有在frameLayout布局时, 才会被调用
+@property (nonatomic, copy, nullable) void(^frameLayoutContentSizeDidChangeExeBlock)(CGSize size); // 只有在frameLayout布局时, 才会被调用
+@property (nonatomic) CGSize frameLayoutItemFillSize;
 @end
 NS_ASSUME_NONNULL_END

@@ -33,6 +33,7 @@ NS_ASSUME_NONNULL_BEGIN
 @implementation SJAVMediaPlaybackController
 @synthesize pauseWhenAppDidEnterBackground = _pauseWhenAppDidEnterBackground;
 @synthesize periodicTimeInterval = _periodicTimeInterval;
+@synthesize minBufferedDuration = _minBufferedDuration;
 @synthesize delegate = _delegate;
 @synthesize volume = _volume;
 @synthesize rate = _rate;
@@ -45,6 +46,7 @@ NS_ASSUME_NONNULL_BEGIN
     _rate =
     _volume = 1;
     _periodicTimeInterval = 0.5;
+    _minBufferedDuration = 8.0;
     _pauseWhenAppDidEnterBackground = YES;
     _presentController = SJAVMediaPresentController.alloc.init;
     _presentController.delegate = self;
@@ -61,6 +63,10 @@ NS_ASSUME_NONNULL_BEGIN
     _periodicTimeInterval = periodicTimeInterval;
     [self _removePeriodicTimeObserver];
     [self _addPeriodicTimeObserver];
+}
+- (void)setMinBufferedDuration:(NSTimeInterval)minBufferedDuration {
+    _minBufferedDuration = minBufferedDuration;
+    self.player.sj_minBufferedDuration = minBufferedDuration;
 }
 - (NSError *_Nullable)error {
     return _player.sj_error;
@@ -141,6 +147,7 @@ NS_ASSUME_NONNULL_BEGIN
     player.muted = self.muted;
     player.volume = self.volume;
     player.sj_rate = self.rate;
+    player.sj_minBufferedDuration = self.minBufferedDuration;
     [self _addPeriodicTimeObserver];
 }
 

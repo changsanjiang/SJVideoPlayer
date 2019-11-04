@@ -11,16 +11,17 @@
 
 NS_ASSUME_NONNULL_BEGIN
 @interface SJCollectionViewLayout : UICollectionViewLayout
-@property (nonatomic, readonly) CGSize maxSizeOfFrameLayout;
+@property (nonatomic, readonly) CGSize frameLayoutContentSize;
+@property (nonatomic) CGSize frameLayoutItemFillSize;
 
-@property (nonatomic, copy, nullable) void(^maxSizeDidUpdateOfFrameLayoutExeBlock)(CGSize size);
+@property (nonatomic, copy, nullable) void(^frameLayoutContentSizeDidChangeExeBlock)(CGSize size);
 @property (nonatomic, copy, nullable) NSArray<SJEdgeControlButtonItem *> *items;
 @property (nonatomic) SJAdapterItemsLayoutType layoutType;
 @end
 
 @implementation SJCollectionViewLayout {
     @public NSMutableArray<UICollectionViewLayoutAttributes *> *_layoutAttributes;
-    CGSize _maxSizeOfFrameLayout;
+    CGSize _frameLayoutContentSize;
 }
 - (instancetype)init {
     self = [super init];
@@ -190,22 +191,42 @@ NS_ASSUME_NONNULL_BEGIN
 }
 
 - (void)_prepareLayout_Frame {
-    CGSize beforeMaxSize = _maxSizeOfFrameLayout;
-    _maxSizeOfFrameLayout = CGSizeZero;
-    
+    CGSize contentSize = _frameLayoutContentSize;
     CGRect bounds_arr[_items.count];
     for ( NSInteger i = 0 ; i < _items.count ; ++ i ) {
-        CGRect bounds = CGRectZero;
+        CGSize size = CGSizeZero;
         SJEdgeControlButtonItem *item = _items[i];
-        bounds = item.customView.bounds;
+        if ( item.isHidden ) { }
+        else if ( item.fill ) {
+            size = _frameLayoutItemFillSize;
+        }
+        else if ( item.isFrameLayout ) {
+            if ( !CGSizeEqualToSize(CGSizeZero, item.customView.bounds.size) ) {
+                size = item.customView.bounds.size;
+            }
+            else {
+                size = [self autoresizingWithView:item.customView maxSize:CGSizeMake(CGFLOAT_MAX, CGFLOAT_MAX)];
+            }
+        }
+        else if ( 0 != item.size ) {
+            size = CGSizeMake(item.size, item.size);
+        }
+        else if ( item.placeholderType == SJButtonItemPlaceholderType_49x49 || item.image != nil ) {
+            size = CGSizeMake(49, 49);
+        }
+        else if ( 0 != item.title.length ) {
+            size = [self sizeWithAttrString:item.title width:CGFLOAT_MAX height:CGFLOAT_MAX];
+        }
+        
+        CGRect bounds = (CGRect){0, 0, size};
         bounds_arr[i] = bounds;
-        if ( bounds.size.width > _maxSizeOfFrameLayout.width )
-            _maxSizeOfFrameLayout.width = bounds.size.width;
-        if ( bounds.size.height > _maxSizeOfFrameLayout.height )
-            _maxSizeOfFrameLayout.height = bounds.size.height;
+        if ( bounds.size.width > contentSize.width )
+            contentSize.width = bounds.size.width;
+        if ( bounds.size.height > contentSize.height )
+            contentSize.height = bounds.size.height;
     }
     
-    CGPoint center = (CGPoint){_maxSizeOfFrameLayout.width * 0.5, _maxSizeOfFrameLayout.height * 0.5};
+    CGPoint center = (CGPoint){contentSize.width * 0.5, contentSize.height * 0.5};
     for ( NSInteger i = 0 ; i < _items.count ; ++ i ) {
         CGRect bounds = bounds_arr[i];
         NSIndexPath *indexPath = [NSIndexPath indexPathForItem:i inSection:0];
@@ -215,8 +236,9 @@ NS_ASSUME_NONNULL_BEGIN
         [_layoutAttributes addObject:attributes];
     }
     
-    if ( !CGSizeEqualToSize(beforeMaxSize, _maxSizeOfFrameLayout) ) {
-        if ( _maxSizeDidUpdateOfFrameLayoutExeBlock ) _maxSizeDidUpdateOfFrameLayoutExeBlock(_maxSizeOfFrameLayout);
+    if ( !CGSizeEqualToSize(contentSize, _frameLayoutContentSize) ) {
+        _frameLayoutContentSize = contentSize;
+        if ( _frameLayoutContentSizeDidChangeExeBlock ) _frameLayoutContentSizeDidChangeExeBlock(_frameLayoutContentSize);
     }
 }
 
@@ -232,7 +254,7 @@ NS_ASSUME_NONNULL_BEGIN
 - (CGSize)collectionViewContentSize {
     if ( _layoutType != SJAdapterItemsLayoutTypeFrameLayout )
         return CGSizeMake(CGRectGetMaxX(_layoutAttributes.lastObject.frame), CGRectGetMaxY(_layoutAttributes.lastObject.frame));
-    return _maxSizeOfFrameLayout;
+    return _frameLayoutContentSize;
 }
 
 - (BOOL)shouldInvalidateLayoutForBoundsChange:(CGRect)newBounds {
@@ -314,11 +336,20 @@ NS_ASSUME_NONNULL_BEGIN
 - (UIView *)view {
     return _collectionView;
 }
-- (void)setMaxSizeDidUpdateOfFrameLayoutExeBlock:(void (^_Nullable)(CGSize))maxSizeDidUpdateOfFrameLayoutExeBlock {
-    _layout.maxSizeDidUpdateOfFrameLayoutExeBlock = maxSizeDidUpdateOfFrameLayoutExeBlock;
+- (void)setFrameLayoutContentSizeDidChangeExeBlock:(nullable void (^)(CGSize))frameLayoutContentSizeDidChangeExeBlock {
+    _layout.frameLayoutContentSizeDidChangeExeBlock = frameLayoutContentSizeDidChangeExeBlock;
 }
-- (void (^_Nullable)(CGSize))maxSizeDidUpdateOfFrameLayoutExeBlock {
-    return _layout.maxSizeDidUpdateOfFrameLayoutExeBlock;
+- (void (^_Nullable)(CGSize))frameLayoutContentSizeDidChangeExeBlock {
+    return _layout.frameLayoutContentSizeDidChangeExeBlock;
+}
+- (void)setFrameLayoutItemFillSize:(CGSize)frameLayoutItemFillSize {
+    if ( !CGSizeEqualToSize(frameLayoutItemFillSize, _layout.frameLayoutItemFillSize) ) {
+        _layout.frameLayoutItemFillSize = frameLayoutItemFillSize;
+        if ( _layout.layoutType == SJAdapterItemsLayoutTypeFrameLayout ) [self reload];
+    }
+}
+- (CGSize)frameLayoutItemFillSize {
+    return _layout.frameLayoutItemFillSize;
 }
 - (void)reload {
     _layout.items = _itemsM;

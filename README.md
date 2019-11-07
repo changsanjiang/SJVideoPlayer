@@ -25,26 +25,59 @@ pod 'SJVideoPlayer', :git => 'https://gitee.com/changsanjiang/SJVideoPlayer.git'
 $ pod update --no-repo-update   (不要用 pod install 了, 用这个命令安装)
 ```
 
-## 将 AVPlayer 切换为 ijkplayer, 其他功能不变
+## 切换别的播放器SDK
+本项目对播放控制默认封装的是 AVPlayer, 以下为切换别的播放器SDK: 
 
+#### 播放控制切换为: ijkplayer
+
+<p>
 wiki: https://github.com/changsanjiang/SJVideoPlayer/wiki/Use-ijkplayer
 
 - 改成以下方式重新安装
 ```ruby
+# 改成以下方式重新安装
 pod 'SJBaseVideoPlayer/IJKPlayer'
 pod 'ijkplayerssl', :git => 'https://gitee.com/changsanjiang/ijkplayer.git'
 pod 'SJVideoPlayer'
 ```
 
-- 使用
 ```Objective-C
-// 导入头文件
+// 使用: 
+// 1. 导入头文件
 #import "SJIJKMediaPlaybackController.h"
 
 _player = SJVideoPlayer.player;
-// 将播放控制切换为 SJIJKMediaPlaybackController 即可, 其它操作不变
+// 2. 将播放控制切换为 SJIJKMediaPlaybackController 即可, 其它操作不变
 _player.playbackController = SJIJKMediaPlaybackController.new;
+// 3. play video
+_player.URLAsset = [SJVideoPlayerURLAsset.alloc initWithURL:URL];
 ```
+</p>
+
+####  播放控制切换为: AliPlayer
+
+<p>
+wiki: https://github.com/changsanjiang/SJVideoPlayer/wiki/Use-AliPlayer
+
+```ruby
+# 改成以下方式重新安装
+pod 'SJBaseVideoPlayer/AliPlayer'
+pod 'SJVideoPlayer'
+```
+
+```Objective-C
+// 使用: 
+// 1. import header file
+#import "SJAliMediaPlaybackController.h"
+
+_player = SJVideoPlayer.player;
+// 2. Switch playback control to SJAliMediaPlaybackController
+_player.playbackController = SJAliMediaPlaybackController.new;
+// 3. play video
+AVPUrlSource *source = [AVPUrlSource.alloc urlWithString:@"https://....mp4"];
+_player.URLAsset = [SJVideoPlayerURLAsset.alloc initWithSource:source];
+```
+</p>
 
 ## Example
 
@@ -136,6 +169,7 @@ v2.6.5 往后的版本, 请[配置旋转 !!](https://github.com/changsanjiang/SJ
 * [5.5 自己动手撸一个 SJDeviceVolumeAndBrightnessManager, 替换作者原始实现](#5.5)
 
 #### [6. 旋转](#6)
+* [6.0 旋转的配置(必须)](#6.0)
 * [6.1 自动旋转](#6.1)
 * [6.2 设置自动旋转支持的方向](#6.2)
 * [6.3 禁止自动旋转](#6.3)
@@ -971,13 +1005,12 @@ ___
 
 对于旋转, 我们开发者肯定需要绝对的控制, 例如: 设置自动旋转所支持方向. 能够主动+自动旋转, 而且还需要能在适当的时候禁止自动旋转. 旋转前后的回调等等... 放心这些功能都有, 我挨个给大家介绍.
 
-另外旋转有两种方式:
-
-- 仅旋转播放器视图 (默认情况下)
-- 使 ViewController 也一起旋转
-
 具体请看下面介绍.
 </p>
+
+<h3 id ="6.0">6.0 旋转的配置(必须)</h3>
+
+请查看该指南: https://github.com/changsanjiang/SJVideoPlayer/wiki/Getting-Started#configure-rotation
 
 <h3 id ="6.1">6.1 自动旋转</h3>
 
@@ -1001,10 +1034,10 @@ _player.supportedOrientations = SJOrientationMaskLandscapeLeft | SJOrientationMa
 - SJOrientationMaskAll:            全部方向
 */
 typedef enum : NSUInteger {
-SJOrientationMaskPortrait = 1 << SJOrientation_Portrait,
-SJOrientationMaskLandscapeLeft = 1 << SJOrientation_LandscapeLeft,
-SJOrientationMaskLandscapeRight = 1 << SJOrientation_LandscapeRight,
-SJOrientationMaskAll = SJOrientationMaskPortrait | SJOrientationMaskLandscapeLeft | SJOrientationMaskLandscapeRight,
+    SJOrientationMaskPortrait = 1 << SJOrientation_Portrait,
+    SJOrientationMaskLandscapeLeft = 1 << SJOrientation_LandscapeLeft,
+    SJOrientationMaskLandscapeRight = 1 << SJOrientation_LandscapeRight,
+    SJOrientationMaskAll = SJOrientationMaskPortrait | SJOrientationMaskLandscapeLeft | SJOrientationMaskLandscapeRight,
 } SJOrientationMask;
 ```
 

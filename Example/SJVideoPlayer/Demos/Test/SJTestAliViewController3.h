@@ -1,8 +1,8 @@
 //
-//  SJTestViewController2.h
+//  SJTestAliViewController3.h
 //  SJVideoPlayer_Example
 //
-//  Created by BlueDancer on 2019/10/12.
+//  Created by BlueDancer on 2019/11/7.
 //  Copyright © 2019 changsanjiang. All rights reserved.
 //
 
@@ -10,7 +10,7 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
-@interface SJTestViewController2 : UIViewController
+@interface SJTestAliViewController3 : UIViewController
 
 @end
 

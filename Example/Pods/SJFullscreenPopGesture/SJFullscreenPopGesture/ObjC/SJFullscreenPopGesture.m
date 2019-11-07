@@ -209,7 +209,8 @@ NS_ASSUME_NONNULL_BEGIN
         // snapshot
         switch ( target.sj_displayMode ) {
             case SJPreViewDisplayModeSnapshot: {
-                UIView *snapshot = [nav.view.window snapshotViewAfterScreenUpdates:NO];
+                UIView *superview = nav.tabBarController != nil ? nav.tabBarController.view : nav.view;
+                UIView *snapshot = [superview snapshotViewAfterScreenUpdates:NO];
                 [_rootView addSubview:snapshot];
             }
                 break;
@@ -218,7 +219,7 @@ NS_ASSUME_NONNULL_BEGIN
                     CGRect rect = [nav.view convertRect:nav.navigationBar.frame toView:nav.view.window];
                     rect.size.height += rect.origin.y + 1;
                     rect.origin.y = 0;
-                    UIView *navbarSnapshot = [nav.view.window resizableSnapshotViewFromRect:rect afterScreenUpdates:false withCapInsets:UIEdgeInsetsZero];
+                    UIView *navbarSnapshot = [nav.view.superview resizableSnapshotViewFromRect:rect afterScreenUpdates:false withCapInsets:UIEdgeInsetsZero];
                     [_rootView addSubview:navbarSnapshot];
                 }
                 
@@ -448,6 +449,7 @@ NS_ASSUME_NONNULL_BEGIN
     objc_setAssociatedObject(self, _cmd, @(YES), OBJC_ASSOCIATION_RETAIN_NONATOMIC);
     
     self.interactivePopGestureRecognizer.enabled = false;
+    self.view.clipsToBounds = false;
     
     [CATransaction begin];
     [CATransaction setDisableActions:true];
@@ -535,7 +537,7 @@ static CGFloat _maxOffsetToTriggerPop = 0.35;
     self.edgesForExtendedLayout = UIRectEdgeNone;
     objc_setAssociatedObject(self, @selector(sj_displayMode), @(sj_displayMode), OBJC_ASSOCIATION_RETAIN_NONATOMIC);
 }
-- (SJPreViewDisplayMode)sj_displayMode { return SJPreViewDisplayModeOrigin;
+- (SJPreViewDisplayMode)sj_displayMode {
     return [objc_getAssociatedObject(self, _cmd) integerValue];
 }
 

@@ -12,6 +12,8 @@
 #import <SJUIKit/SJUIKit.h>
 #import "SJSourceURLs.h"
 
+#import "SJAliMediaPlaybackController.h"
+
 NS_ASSUME_NONNULL_BEGIN
 @interface SJViewController7 ()
 @property (weak, nonatomic) IBOutlet UIView *playerContainerView;

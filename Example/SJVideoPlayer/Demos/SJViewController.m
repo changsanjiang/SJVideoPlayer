@@ -198,9 +198,12 @@
       [[Item alloc] initWithTitle:@"Test"
                          subTitle:@"Test"
                              path:@"test"],
-      [[Item alloc] initWithTitle:@"Test2"
-                         subTitle:@"Test2"
+      [[Item alloc] initWithTitle:@"Test IJK"
+                         subTitle:@"Test IJK"
                              path:@"test2"],
+      [[Item alloc] initWithTitle:@"Test Ali"
+                         subTitle:@"Test Ali"
+                             path:@"test3"],
       ];
 }
 

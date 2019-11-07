@@ -6,7 +6,7 @@
 //  Copyright © 2019 changsanjiang. All rights reserved.
 //
 
-#import "SJTestViewController2.h"
+#import "SJTestIJKViewController2.h"
 #import "SJSourceURLs.h"
 #import "SJVideoPlayer.h"
 #import "Masonry.h"
@@ -15,11 +15,11 @@
 #import "SJIJKMediaPlaybackController.h"
 #endif
 
-@interface SJTestViewController2 ()
+@interface SJTestIJKViewController2 ()
 @property (nonatomic, strong) SJVideoPlayer *player;
 @end
 
-@implementation SJTestViewController2
+@implementation SJTestIJKViewController2
 
 - (void)viewDidLoad {
     [super viewDidLoad];
@@ -54,15 +54,15 @@
 
 #import <SJRouter/SJRouter.h>
 
-@interface SJTestViewController2 (RouteHandler)<SJRouteHandler>
+@interface SJTestIJKViewController2 (RouteHandler)<SJRouteHandler>
 @end
 
-@implementation SJTestViewController2 (RouteHandler)
+@implementation SJTestIJKViewController2 (RouteHandler)
 + (NSString *)routePath {
     return @"test2";
 }
 
 + (void)handleRequest:(SJRouteRequest *)request topViewController:(UIViewController *)topViewController completionHandler:(SJCompletionHandler)completionHandler {
-    [topViewController.navigationController pushViewController:SJTestViewController2.new animated:YES];
+    [topViewController.navigationController pushViewController:SJTestIJKViewController2.new animated:YES];
 }
 @end

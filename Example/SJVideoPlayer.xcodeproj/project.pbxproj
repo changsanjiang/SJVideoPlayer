@@ -22,14 +22,16 @@
 		6003F5BA195388D20070C39A /* InfoPlist.strings in Resources */ = {isa = PBXBuildFile; fileRef = 6003F5B8195388D20070C39A /* InfoPlist.strings */; };
 		6003F5BC195388D20070C39A /* Tests.m in Sources */ = {isa = PBXBuildFile; fileRef = 6003F5BB195388D20070C39A /* Tests.m */; };
 		71719F9F1E33DC2100824A3D /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 71719F9D1E33DC2100824A3D /* LaunchScreen.storyboard */; };
+		77357E462373DA3E00B81EE4 /* SJTestAliViewController3.m in Sources */ = {isa = PBXBuildFile; fileRef = 77357E442373DA3E00B81EE4 /* SJTestAliViewController3.m */; };
+		77357E472373DA3E00B81EE4 /* SJTestAliViewController3.xib in Resources */ = {isa = PBXBuildFile; fileRef = 77357E452373DA3E00B81EE4 /* SJTestAliViewController3.xib */; };
 		7740C1BA2350A16700DD7ECE /* SJViewController12.m in Sources */ = {isa = PBXBuildFile; fileRef = 7740C1B92350A16700DD7ECE /* SJViewController12.m */; };
 		7740C1BD2350A18500DD7ECE /* SJCustomControlLayerViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 7740C1BC2350A18500DD7ECE /* SJCustomControlLayerViewController.m */; };
 		774AF08722DC790D005FE462 /* SJView.m in Sources */ = {isa = PBXBuildFile; fileRef = 774AF08622DC790D005FE462 /* SJView.m */; };
 		7756F58522E173D400F9DC7D /* SJTestViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 7756F58322E173D400F9DC7D /* SJTestViewController.m */; };
 		7756F58622E173D400F9DC7D /* SJTestViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 7756F58422E173D400F9DC7D /* SJTestViewController.xib */; };
-		77661EF72356CBE900514BED /* SJTestViewController2.xib in Resources */ = {isa = PBXBuildFile; fileRef = 77661EF62356CBE900514BED /* SJTestViewController2.xib */; };
+		77661EF72356CBE900514BED /* SJTestIJKViewController2.xib in Resources */ = {isa = PBXBuildFile; fileRef = 77661EF62356CBE900514BED /* SJTestIJKViewController2.xib */; };
 		7774C8D623519F5000FE6FCA /* SJPopPromptCustomView.m in Sources */ = {isa = PBXBuildFile; fileRef = 7774C8D523519F5000FE6FCA /* SJPopPromptCustomView.m */; };
-		777829402351D4AB00A2D933 /* SJTestViewController2.m in Sources */ = {isa = PBXBuildFile; fileRef = 7778293F2351D4AB00A2D933 /* SJTestViewController2.m */; };
+		777829402351D4AB00A2D933 /* SJTestIJKViewController2.m in Sources */ = {isa = PBXBuildFile; fileRef = 7778293F2351D4AB00A2D933 /* SJTestIJKViewController2.m */; };
 		77788F6F22C35FF200E26599 /* SJViewController5n.m in Sources */ = {isa = PBXBuildFile; fileRef = 77788F6D22C35FF200E26599 /* SJViewController5n.m */; };
 		77788FBB22C3654D00E26599 /* SJTableViewHeaderFooterView5n.m in Sources */ = {isa = PBXBuildFile; fileRef = 77788FBA22C3654D00E26599 /* SJTableViewHeaderFooterView5n.m */; };
 		77788FDF22C36CF300E26599 /* SJMediaItemsTableViewCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 77788FDD22C36CF300E26599 /* SJMediaItemsTableViewCell.m */; };
@@ -123,6 +125,9 @@
 		6003F5BB195388D20070C39A /* Tests.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = Tests.m; sourceTree = "<group>"; };
 		606FC2411953D9B200FFA9A0 /* Tests-Prefix.pch */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "Tests-Prefix.pch"; sourceTree = "<group>"; };
 		71719F9E1E33DC2100824A3D /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/LaunchScreen.storyboard; sourceTree = "<group>"; };
+		77357E432373DA3E00B81EE4 /* SJTestAliViewController3.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = SJTestAliViewController3.h; sourceTree = "<group>"; };
+		77357E442373DA3E00B81EE4 /* SJTestAliViewController3.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = SJTestAliViewController3.m; sourceTree = "<group>"; };
+		77357E452373DA3E00B81EE4 /* SJTestAliViewController3.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = SJTestAliViewController3.xib; sourceTree = "<group>"; };
 		7740C1B82350A16700DD7ECE /* SJViewController12.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = SJViewController12.h; sourceTree = "<group>"; };
 		7740C1B92350A16700DD7ECE /* SJViewController12.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = SJViewController12.m; sourceTree = "<group>"; };
 		7740C1BB2350A18500DD7ECE /* SJCustomControlLayerViewController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = SJCustomControlLayerViewController.h; sourceTree = "<group>"; };
@@ -132,11 +137,11 @@
 		7756F58222E173D400F9DC7D /* SJTestViewController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = SJTestViewController.h; sourceTree = "<group>"; };
 		7756F58322E173D400F9DC7D /* SJTestViewController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = SJTestViewController.m; sourceTree = "<group>"; };
 		7756F58422E173D400F9DC7D /* SJTestViewController.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = SJTestViewController.xib; sourceTree = "<group>"; };
-		77661EF62356CBE900514BED /* SJTestViewController2.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = SJTestViewController2.xib; sourceTree = "<group>"; };
+		77661EF62356CBE900514BED /* SJTestIJKViewController2.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = SJTestIJKViewController2.xib; sourceTree = "<group>"; };
 		7774C8D423519F5000FE6FCA /* SJPopPromptCustomView.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = SJPopPromptCustomView.h; sourceTree = "<group>"; };
 		7774C8D523519F5000FE6FCA /* SJPopPromptCustomView.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = SJPopPromptCustomView.m; sourceTree = "<group>"; };
-		7778293E2351D4AB00A2D933 /* SJTestViewController2.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = SJTestViewController2.h; sourceTree = "<group>"; };
-		7778293F2351D4AB00A2D933 /* SJTestViewController2.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = SJTestViewController2.m; sourceTree = "<group>"; };
+		7778293E2351D4AB00A2D933 /* SJTestIJKViewController2.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = SJTestIJKViewController2.h; sourceTree = "<group>"; };
+		7778293F2351D4AB00A2D933 /* SJTestIJKViewController2.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = SJTestIJKViewController2.m; sourceTree = "<group>"; };
 		77788F6C22C35FF200E26599 /* SJViewController5n.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = SJViewController5n.h; sourceTree = "<group>"; };
 		77788F6D22C35FF200E26599 /* SJViewController5n.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = SJViewController5n.m; sourceTree = "<group>"; };
 		77788FB922C3654D00E26599 /* SJTableViewHeaderFooterView5n.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = SJTableViewHeaderFooterView5n.h; sourceTree = "<group>"; };
@@ -379,9 +384,12 @@
 				7756F58222E173D400F9DC7D /* SJTestViewController.h */,
 				7756F58322E173D400F9DC7D /* SJTestViewController.m */,
 				7756F58422E173D400F9DC7D /* SJTestViewController.xib */,
-				7778293E2351D4AB00A2D933 /* SJTestViewController2.h */,
-				7778293F2351D4AB00A2D933 /* SJTestViewController2.m */,
-				77661EF62356CBE900514BED /* SJTestViewController2.xib */,
+				7778293E2351D4AB00A2D933 /* SJTestIJKViewController2.h */,
+				7778293F2351D4AB00A2D933 /* SJTestIJKViewController2.m */,
+				77661EF62356CBE900514BED /* SJTestIJKViewController2.xib */,
+				77357E432373DA3E00B81EE4 /* SJTestAliViewController3.h */,
+				77357E442373DA3E00B81EE4 /* SJTestAliViewController3.m */,
+				77357E452373DA3E00B81EE4 /* SJTestAliViewController3.xib */,
 			);
 			path = Test;
 			sourceTree = "<group>";
@@ -863,8 +871,9 @@
 				6003F598195388D20070C39A /* InfoPlist.strings in Resources */,
 				77788FE022C36CF300E26599 /* SJMediaItemsTableViewCell.xib in Resources */,
 				77F2F5DD22FAC43000EA0B91 /* SJViewController11.xib in Resources */,
+				77357E472373DA3E00B81EE4 /* SJTestAliViewController3.xib in Resources */,
 				A6A208FC22AB9E59001ED610 /* SJRotationModeDemoViewController2.xib in Resources */,
-				77661EF72356CBE900514BED /* SJTestViewController2.xib in Resources */,
+				77661EF72356CBE900514BED /* SJTestIJKViewController2.xib in Resources */,
 				A6F19DFC22D9C1390043B508 /* SJViewController6.xib in Resources */,
 				A6A2556022ABFAFA00E42998 /* SJViewController3.xib in Resources */,
 				A601803D22DB5CAC00ED840D /* SJRotationModeDemoViewController3.xib in Resources */,
@@ -941,6 +950,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				77357E462373DA3E00B81EE4 /* SJTestAliViewController3.m in Sources */,
 				6003F59E195388D20070C39A /* SJAppDelegate.m in Sources */,
 				A6F19E0122D9D8050043B508 /* SJViewController7.m in Sources */,
 				A6A2555922ABDAA500E42998 /* SJViewController2.m in Sources */,
@@ -954,7 +964,7 @@
 				7740C1BA2350A16700DD7ECE /* SJViewController12.m in Sources */,
 				77805D6B22BF7DE1007076B9 /* SJiPadDemoViewController1.m in Sources */,
 				A6A208FF22AB9E59001ED610 /* SJMeidaItemModel.m in Sources */,
-				777829402351D4AB00A2D933 /* SJTestViewController2.m in Sources */,
+				777829402351D4AB00A2D933 /* SJTestIJKViewController2.m in Sources */,
 				7740C1BD2350A18500DD7ECE /* SJCustomControlLayerViewController.m in Sources */,
 				A6A2553C22ABC71F00E42998 /* ListViewAutoplayViewController.m in Sources */,
 				A6A208FD22AB9E59001ED610 /* SJRotationModeDemoViewController2.m in Sources */,

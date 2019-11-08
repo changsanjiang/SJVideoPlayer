@@ -7,7 +7,7 @@ env:
     - LANG=en_US.UTF-8
 
 notifications:
-  email: true
+  email: false
 
 before_install: 
     - gem install cocoapods 

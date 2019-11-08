@@ -9,6 +9,8 @@ env:
 notifications:
   email: false
 
+cache: cocoapods
+
 before_install: 
     - gem install cocoapods 
     - pod --version
@@ -16,7 +18,7 @@ before_install:
 script:
   - pwd
   - ls
-  - pod trunk register changsanjiang@gmail.com changsanjiang
-  - pod trunk me
-  - pod trunk push --allow-warnings --use-libraries
+#  - pod trunk register changsanjiang@gmail.com changsanjiang
+#  - pod trunk me
+#  - pod trunk push --allow-warnings --use-libraries
   

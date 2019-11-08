@@ -195,6 +195,10 @@
 - (NSArray<Item *> *)_createTestItems {
     return
     @[
+        [[Item alloc] initWithTitle:@"Test subtitles"
+                           subTitle:@"测试 字幕"
+                               path:@"subtitles/demo"],
+        
       [[Item alloc] initWithTitle:@"Test"
                          subTitle:@"Test"
                              path:@"test"],

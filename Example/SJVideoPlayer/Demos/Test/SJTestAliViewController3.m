@@ -27,7 +27,7 @@
     
 #if __has_include(<AliyunPlayer/AliyunPlayer.h>)
     _player.playbackController = SJAliMediaPlaybackController.new;
-    AVPUrlSource *source = [AVPUrlSource.alloc urlWithString:@"https://nie.v.netease.com/r/video/20190810/39d108cb-3a65-4036-a574-48dff2a8764e.mp4"];
+    AVPUrlSource *source = [AVPUrlSource.alloc urlWithString:@"rtmp://58.200.131.2:1935/livetv/hunantv"];
     _player.URLAsset = [SJVideoPlayerURLAsset.alloc initWithSource:source];
 #endif
     

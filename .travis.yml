@@ -1,7 +1,5 @@
 language: objective-c
-osx_image: xcode10.3
-xcode_workspace: Example/SJVideoPlayer.xcworkspace
-podfile: Example/Podfile
+osx_image: xcode11.2
 
 env:
   global:
@@ -9,8 +7,13 @@ env:
     - LANG=en_US.UTF-8
 
 notifications:
-  email: false
+  email: true
 
 before_install: 
     - gem install cocoapods 
     - pod --version
+
+script:
+  - pwd
+  - ls
+  - pod trunk push --allow-warnings --verbose --use-libraries

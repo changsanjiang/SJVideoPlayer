@@ -28,6 +28,7 @@
 #import "SJPopPromptControllerProtocol.h"
 #import "SJPlaybackObservation.h"
 #import "SJVideoPlayerPresentViewDefines.h"
+#import "SJSubtitlesPromptControllerDefines.h"
 #import "SJPromptDefines.h"
 
 NS_ASSUME_NONNULL_BEGIN
@@ -689,6 +690,17 @@ NS_ASSUME_NONNULL_BEGIN
 ///
 /// 默认不启用, 当需要开启时, 请设置`player.floatSmallViewController.enabled = YES;`
 ///
+/// \code
+///
+///     // 1. 开启小浮窗控制. 滑动列表当视图消失时, 将显示小浮窗视图
+///     _player.floatSmallViewController.enabled = YES;
+///     // 2. 设置单击小浮窗执行的block
+///     _player.floatSmallViewController.singleTappedOnTheFloatViewExeBlock = ...;
+///     // 3. 设置双击小浮窗执行的block
+///     _player.floatSmallViewController.doubleTappedOnTheFloatViewExeBlock = ...;
+///
+/// \endcode
+///
 @property (nonatomic, strong, null_resettable) id<SJFloatSmallViewControllerProtocol> floatSmallViewController;
 
 ///
@@ -738,6 +750,50 @@ NS_ASSUME_NONNULL_BEGIN
 @end
 
 
+#pragma mark - 字幕
+
+@interface SJBaseVideoPlayer (Subtitles)
+///
+/// 字幕管理
+///
+/// \code
+///
+/// #import <SJBaseVideoPlayer/SJVideoPlayerURLAsset+SJSubtitlesAdd.h>
+///
+///     // 1. 创建资源
+///     SJVideoPlayerURLAsset *asset = [SJVideoPlayerURLAsset.alloc initWithURL:URL];
+///     // 2. 设置资源的字幕
+///     asset.subtitles = @[[SJSubtitleItem.alloc initWithContent:@"我的故事" range:SJMakeTimeRange(start, duration)],
+///                         [SJSubtitleItem.alloc initWithContent:@"从这里开始" range:SJMakeTimeRange(start, duration)]];
+///     // 3. 进行播放, 字幕将在相应的时机自动显示
+///     _player.URLAsset = asset;
+///
+///
+///     // 以下是更多设置
+///     _player.subtitleBottomMargin = 22.0;
+///     _player.subtitleHorizontalMinMargin = 22.0;
+///     _player.subtitlesPromptController.view.backgroundColor = [UIColor colorWithWhite:0 alpha:0.8];
+///     _player.subtitlesPromptController.view.layer.cornerRadius = 5;
+///     _player.subtitlesPromptController.contentInsets = UIEdgeInsetsMake(12, 22, 12, 22);
+///
+/// \endcode
+///
+@property (nonatomic, strong, null_resettable) id<SJSubtitlesPromptController> subtitlesPromptController;
+
+///
+/// 字幕底部间距
+///
+///     default value is 22
+///
+@property (nonatomic) CGFloat subtitleBottomMargin;
+
+///
+/// 左右距离屏幕最小间距
+///
+///     default value is 22
+///
+@property (nonatomic) CGFloat subtitleHorizontalMinMargin;
+@end
 
 
 #pragma mark - 已弃用

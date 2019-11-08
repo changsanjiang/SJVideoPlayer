@@ -8,6 +8,7 @@
 #import "UIScrollView+ListViewAutoplaySJAdd.h"
 #import <objc/message.h>
 #import "SJIsAppeared.h"
+#import "SJBaseVideoPlayerConst.h"
 
 #if __has_include(<SJUIKit/NSObject+SJObserverHelper.h>)
 #import <SJUIKit/NSObject+SJObserverHelper.h>
@@ -89,6 +90,7 @@ static void sj_removeContentOffsetObserver(UIScrollView *scrollView);
 - (void)sj_disenableAutoplay {
     self.sj_enabledAutoplay = NO;
     self.sj_autoplayConfig = nil;
+    self.sj_currentPlayingIndexPath = nil;
     sj_removeContentOffsetObserver(self);
 }
 
@@ -96,6 +98,11 @@ static void sj_removeContentOffsetObserver(UIScrollView *scrollView);
     dispatch_async(dispatch_get_main_queue(), ^{
         sj_playNextVisibleAsset(self);
     });
+}
+
+- (void)sj_removeCurrentPlayerView {
+    self.sj_currentPlayingIndexPath = nil;
+    [[self viewWithTag:SJBaseVideoPlayerViewTag] removeFromSuperview];
 }
 
 - (void)sj_playNextAssetAfterEndScroll {

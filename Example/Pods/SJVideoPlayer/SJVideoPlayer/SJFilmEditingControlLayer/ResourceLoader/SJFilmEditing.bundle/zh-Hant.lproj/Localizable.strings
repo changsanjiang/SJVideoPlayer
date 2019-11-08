@@ -1,0 +1,65 @@
+///**
+// top btn
+// 左上角按钮
+// - 取消
+// - 完成
+// */
+//@property (nonatomic, strong) NSString *cancelText;
+//@property (nonatomic, strong) NSString *doneText;
+"SJFilmEditing_cancelText" = "取消";
+"SJFilmEditing_doneText" = "完成";
+
+///**
+// 录制时右侧按钮
+// - 等待中
+// - 可完成
+// */
+//@property (nonatomic, strong) NSString *waitingText;
+//@property (nonatomic, strong) NSString *finishText;
+"SJFilmEditing_waitingText" = "錄製中，請稍等...";
+"SJFilmEditing_finishText" = "點擊右側按鈕完成錄製";
+
+///**
+// export
+// 导出
+// - 导出中
+// - 导出失败
+// - 导出成功
+// - 录制成功
+// - 截屏成功
+// */
+//@property (nonatomic, strong) NSString *exportingText;
+//@property (nonatomic, strong) NSString *exportFailedText;
+//@property (nonatomic, strong) NSString *exportSuccessText;
+//@property (nonatomic, strong) NSString *screenshotSuccessText;
+"SJFilmEditing_exportingText" = "導出中";
+"SJFilmEditing_exportFailedText" = "導出失敗";
+"SJFilmEditing_exportSuccessText" = "錄製成功";
+"SJFilmEditing_screenshotSuccessText" = "截屏成功";
+
+///**
+// album
+// 保存至相册
+// - 已保存至相册
+// - 保存失败, 相册访问权限未开启
+// */
+//@property (nonatomic, strong) NSString *albumAuthDeniedText;
+//@property (nonatomic, strong) NSString *savingToAlbumText;
+//@property (nonatomic, strong) NSString *saveToAlbumSuccessText;
+"SJFilmEditing_albumAuthDeniedText" = "保存失敗, 請到設置中開啟相冊訪問權限";
+"SJFilmEditing_savingToAlbumText" = "正在保存...";
+"SJFilmEditing_saveToAlbumSuccessText" = "已保存到相冊";
+
+///**
+// upload
+// 上传
+// - 上传中
+// - 上传成功
+// - 上传失败
+// */
+//@property (nonatomic, strong) NSString *uploadingText;
+//@property (nonatomic, strong) NSString *uploadFailedText;
+//@property (nonatomic, strong) NSString *uploadSuccessText;
+"SJFilmEditing_uploadingText" = "上傳中";
+"SJFilmEditing_uploadFailedText" = "上傳失敗";
+"SJFilmEditing_uploadSuccessText" = "上傳成功";

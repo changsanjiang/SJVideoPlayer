@@ -320,7 +320,7 @@ _player.URLAsset = [[SJVideoPlayerURLAsset alloc] initWithURL:URL playModel:play
 
 在 UITableViewCell 中播放时, 需指定 Cell 所处的 indexPath 以及播放器父视图的 tag. 
 
-在滑动时, 管理类将会通过这两个参数控制播放器父视图的显示与隐藏.
+在滑动时, 管理类将会通过这两个参数控制播放器视图的显示与隐藏.
 
 </p>
 

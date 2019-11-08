@@ -30,7 +30,7 @@
     _player.playbackController = SJIJKMediaPlaybackController.new;
 #endif
     
-    _player.URLAsset = [SJVideoPlayerURLAsset.alloc initWithURL:SourceURL0];
+    _player.URLAsset = [SJVideoPlayerURLAsset.alloc initWithURL:VideoURL_Level4];
     _player.view.backgroundColor = UIColor.blackColor;
     [self.view addSubview:_player.view];
     [_player.view mas_makeConstraints:^(MASConstraintMaker *make) {
@@ -47,6 +47,9 @@
 }
 - (IBAction)pause:(id)sender {
     [_player pause];
+}
+- (IBAction)next:(id)sender {
+    _player.URLAsset = [SJVideoPlayerURLAsset.alloc initWithURL:VideoURL_Level1];
 }
 @end
 

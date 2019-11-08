@@ -27,6 +27,8 @@ NS_ASSUME_NONNULL_BEGIN
 /// 播放下一个(在已显示的cell中查找)
 - (void)sj_playNextVisibleAsset;
 
+/// 移除当前播放视图
+- (void)sj_removeCurrentPlayerView;
 @end
 
 

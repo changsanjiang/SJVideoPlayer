@@ -29,7 +29,9 @@
 #import "SJPopPromptController.h"
 #import "SJPrompt.h"
 #import "SJBaseVideoPlayerConst.h"
+#import "SJSubtitlesPromptController.h"
 #import "SJBaseVideoPlayer+TestLog.h"
+#import "SJVideoPlayerURLAsset+SJSubtitlesAdd.h"
 
 #if __has_include(<Masonry/Masonry.h>)
 #import <Masonry/Masonry.h>
@@ -167,6 +169,8 @@ _lookupResponder(UIView *view, Class cls) {
     /// Scroll
     id<SJFloatSmallViewControllerProtocol> _Nullable _floatSmallViewController;
     id<SJFloatSmallViewControllerObserverProtocol> _Nullable _floatSmallViewControllerObesrver;
+    
+    id<SJSubtitlesPromptController> _Nullable _subtitlesPromptController;
 }
 
 + (instancetype)player {
@@ -174,7 +178,7 @@ _lookupResponder(UIView *view, Class cls) {
 }
 
 + (NSString *)version {
-    return @"v3.0.8";
+    return @"v3.0.9";
 }
 
 - (void)setVideoGravity:(SJVideoGravity)videoGravity {
@@ -864,26 +868,28 @@ _lookupResponder(UIView *view, Class cls) {
     //
     // prepareToPlay
     //
-    [self _updateAssetObservers];
     self.playbackController.media = URLAsset;
     self.definitionSwitchingInfo.currentPlayingAsset = URLAsset;
-    
-    if ( URLAsset != nil ) {
-        if ( [self.controlLayerDelegate respondsToSelector:@selector(videoPlayer:prepareToPlay:)] ) {
-            [self.controlLayerDelegate videoPlayer:self prepareToPlay:URLAsset];
-        }
-        dispatch_async(dispatch_get_global_queue(0, 0), ^{
-            [self.playbackController prepareToPlay];
-            dispatch_async(dispatch_get_main_queue(), ^{
-                [self _tryToPlayIfNeeded];
-            });
-        });
-    }
-    else {
-        [self stop];
-    }
-    
+    [self _updateAssetObservers];
     [self _showOrHiddenPlaceholderImageViewIfNeeded];
+    
+    if ( [self.controlLayerDelegate respondsToSelector:@selector(videoPlayer:prepareToPlay:)] ) {
+        [self.controlLayerDelegate videoPlayer:self prepareToPlay:URLAsset];
+    }
+    
+    if ( URLAsset == nil ) {
+        [self stop];
+        return;
+    }
+
+    if ( URLAsset.subtitles != nil ) self.subtitlesPromptController.subtitles = URLAsset.subtitles;
+    
+    dispatch_async(dispatch_get_global_queue(0, 0), ^{
+        [self.playbackController prepareToPlay];
+        dispatch_async(dispatch_get_main_queue(), ^{
+            [self _tryToPlayIfNeeded];
+        });
+    });
 }
 - (nullable SJVideoPlayerURLAsset *)URLAsset {
     return _URLAsset;
@@ -896,9 +902,7 @@ _lookupResponder(UIView *view, Class cls) {
         return;
     if ( self.isPlayOnScrollView && self.isScrollAppeared == NO && self.pauseWhenScrollDisappeared )
         return;
-    if ( self.vc_isDisappeared )
-        return;
-
+    
     [self play];
 }
 
@@ -1022,6 +1026,7 @@ _lookupResponder(UIView *view, Class cls) {
         self.assetDeallocExeBlock(self);
     }
     
+    _subtitlesPromptController.subtitles = nil;
     _playModelObserver = nil;
     _URLAsset = nil;
     [_playbackController stop];
@@ -1167,6 +1172,8 @@ _lookupResponder(UIView *view, Class cls) {
 }
 
 - (void)playbackController:(id<SJVideoPlayerPlaybackController>)controller currentTimeDidChange:(NSTimeInterval)currentTime {
+    _subtitlesPromptController.currentTime = currentTime;
+    
     if ( [self.controlLayerDelegate respondsToSelector:@selector(videoPlayer:currentTimeDidChange:)] ) {
         [self.controlLayerDelegate videoPlayer:self currentTimeDidChange:currentTime];
     }
@@ -2055,6 +2062,53 @@ _lookupResponder(UIView *view, Class cls) {
 }
 - (void (^_Nullable)(__kindof SJBaseVideoPlayer * _Nonnull))playerViewWillDisappearExeBlock {
     return objc_getAssociatedObject(self, _cmd);
+}
+@end
+
+
+@implementation SJBaseVideoPlayer (Subtitles)
+- (void)setSubtitlesPromptController:(nullable id<SJSubtitlesPromptController>)subtitlesPromptController {
+    [_subtitlesPromptController.view removeFromSuperview];
+    _subtitlesPromptController = subtitlesPromptController;
+    if ( subtitlesPromptController ) {
+        [self.presentView insertSubview:subtitlesPromptController.view aboveSubview:self.playbackController.playerView];
+        [subtitlesPromptController.view mas_makeConstraints:^(MASConstraintMaker *make) {
+            make.left.mas_greaterThanOrEqualTo(self.subtitleHorizontalMinMargin);
+            make.right.mas_lessThanOrEqualTo(-self.subtitleHorizontalMinMargin);
+            make.centerX.offset(0);
+            make.bottom.offset(-self.subtitleBottomMargin);
+        }];
+    }
+}
+
+- (id<SJSubtitlesPromptController>)subtitlesPromptController {
+    if ( _subtitlesPromptController == nil ) {
+        self.subtitlesPromptController = SJSubtitlesPromptController.alloc.init;
+    }
+    return _subtitlesPromptController;
+}
+
+- (void)setSubtitleBottomMargin:(CGFloat)subtitleBottomMargin {
+    objc_setAssociatedObject(self, @selector(subtitleBottomMargin), @(subtitleBottomMargin), OBJC_ASSOCIATION_RETAIN_NONATOMIC);
+    [self.subtitlesPromptController.view mas_updateConstraints:^(MASConstraintMaker *make) {
+        make.bottom.offset(-subtitleBottomMargin);
+    }];
+}
+- (CGFloat)subtitleBottomMargin {
+    id value = objc_getAssociatedObject(self, _cmd);
+    return value != nil ? [value doubleValue] : 22;
+}
+
+- (void)setSubtitleHorizontalMinMargin:(CGFloat)subtitleHorizontalMinMargin {
+    objc_setAssociatedObject(self, @selector(subtitleHorizontalMinMargin), @(subtitleHorizontalMinMargin), OBJC_ASSOCIATION_RETAIN_NONATOMIC);
+    [self.subtitlesPromptController.view mas_updateConstraints:^(MASConstraintMaker *make) {
+        make.left.mas_greaterThanOrEqualTo(subtitleHorizontalMinMargin);
+        make.right.mas_lessThanOrEqualTo(-subtitleHorizontalMinMargin);
+    }];
+}
+- (CGFloat)subtitleHorizontalMinMargin {
+    id value = objc_getAssociatedObject(self, _cmd);
+    return value != nil ? [value doubleValue] : 22;
 }
 @end
 

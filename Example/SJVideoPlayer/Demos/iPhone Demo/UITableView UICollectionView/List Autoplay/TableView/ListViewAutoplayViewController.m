@@ -70,9 +70,8 @@ static NSString *kDemoTableViewCell = @"DemoTableViewCell";
         
         if ( requestPageNum == tableView.sj_beginPageNum ) {
             [self.models removeAllObjects];
-            [self.player.view removeFromSuperview];
-            self.player.URLAsset = nil;
-            self.tableView.sj_currentPlayingIndexPath = nil;
+            [self.player stop];
+            [self.tableView sj_removeCurrentPlayerView];
             [self.tableView sj_playNextVisibleAsset];
         }
         

@@ -35,9 +35,22 @@ wiki: https://github.com/changsanjiang/SJVideoPlayer/wiki/Use-ijkplayer
 
 - 改成以下方式重新安装
 ```ruby
+# 改成以下方式重新安装
 pod 'SJBaseVideoPlayer/IJKPlayer'
 pod 'ijkplayerssl', :git => 'https://gitee.com/changsanjiang/ijkplayer.git'
 pod 'SJVideoPlayer'
+```
+
+```Objective-C
+// 使用: 
+// 1. 导入头文件
+#import "SJIJKMediaPlaybackController.h"
+
+_player = SJVideoPlayer.player;
+// 2. 将播放控制切换为 SJIJKMediaPlaybackController 即可, 其它操作不变
+_player.playbackController = SJIJKMediaPlaybackController.new;
+// 3. play video
+_player.URLAsset = [SJVideoPlayerURLAsset.alloc initWithURL:URL];
 ```
 </p>
 
@@ -46,22 +59,25 @@ pod 'SJVideoPlayer'
 <p>
 wiki: https://github.com/changsanjiang/SJVideoPlayer/wiki/Use-AliPlayer
 
-- 改成以下方式重新安装
 ```ruby
+# 改成以下方式重新安装
 pod 'SJBaseVideoPlayer/AliPlayer'
 pod 'SJVideoPlayer'
 ```
-</p>
 
-- 使用
 ```Objective-C
-// 导入头文件
-#import "SJIJKMediaPlaybackController.h"
+// 使用: 
+// 1. import header file
+#import "SJAliMediaPlaybackController.h"
 
 _player = SJVideoPlayer.player;
-// 将播放控制切换为 SJIJKMediaPlaybackController 即可, 其它操作不变
-_player.playbackController = SJIJKMediaPlaybackController.new;
+// 2. Switch playback control to SJAliMediaPlaybackController
+_player.playbackController = SJAliMediaPlaybackController.new;
+// 3. play video
+AVPUrlSource *source = [AVPUrlSource.alloc urlWithString:@"https://....mp4"];
+_player.URLAsset = [SJVideoPlayerURLAsset.alloc initWithSource:source];
 ```
+</p>
 
 ## Example
 

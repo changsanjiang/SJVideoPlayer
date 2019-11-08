@@ -71,20 +71,22 @@ NS_ASSUME_NONNULL_BEGIN
         
         // 预加载前一个视频
         if ( previous >= 0 ) {
-            [self.prefetcher prefetchAsset:[[SJVideoPlayerURLAsset alloc] initWithURL:_viewModels[previous].media.URL playModel:[SJPlayModel UICollectionViewCellPlayModelWithPlayerSuperviewTag:PlayerSuperviewTag atIndexPath:[NSIndexPath indexPathForItem:previous inSection:indexPath.section] collectionView:self.collectionView]]];
+            [self.prefetcher prefetchAsset:[[SJVideoPlayerURLAsset alloc] initWithURL:_viewModels[previous].media.URL]];
         }
         
         // 预加载下一个视频
         if ( next < _viewModels.count ) {
-            [self.prefetcher prefetchAsset:[[SJVideoPlayerURLAsset alloc] initWithURL:_viewModels[next].media.URL playModel:[SJPlayModel UICollectionViewCellPlayModelWithPlayerSuperviewTag:PlayerSuperviewTag atIndexPath:[NSIndexPath indexPathForItem:next inSection:indexPath.section] collectionView:self.collectionView]]];
+            [self.prefetcher prefetchAsset:[[SJVideoPlayerURLAsset alloc] initWithURL:_viewModels[next].media.URL]];
         }
         
         SJVideoPlayerURLAsset *_Nullable asset = [self.prefetcher assetForURL:_viewModels[curr].media.URL];
         
         if ( asset == nil ) {
-            asset = [[SJVideoPlayerURLAsset alloc] initWithURL:_viewModels[curr].media.URL playModel:[SJPlayModel UICollectionViewCellPlayModelWithPlayerSuperviewTag:PlayerSuperviewTag atIndexPath:indexPath collectionView:self.collectionView]];
+            asset = [[SJVideoPlayerURLAsset alloc] initWithURL:_viewModels[curr].media.URL];
             [self.prefetcher prefetchAsset:asset];
         }
+        
+        asset.playModel = [SJPlayModel UICollectionViewCellPlayModelWithPlayerSuperviewTag:PlayerSuperviewTag atIndexPath:indexPath collectionView:self.collectionView];
         
         [self.player.presentView.placeholderImageView sd_setImageWithURL:[NSURL URLWithString:_viewModels[curr].cover]];
         self.viewModels[self.collectionView.sj_currentPlayingIndexPath.item].showPausedImageView = NO;

@@ -24,6 +24,7 @@
 		71719F9F1E33DC2100824A3D /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 71719F9D1E33DC2100824A3D /* LaunchScreen.storyboard */; };
 		77357E462373DA3E00B81EE4 /* SJTestAliViewController3.m in Sources */ = {isa = PBXBuildFile; fileRef = 77357E442373DA3E00B81EE4 /* SJTestAliViewController3.m */; };
 		77357E472373DA3E00B81EE4 /* SJTestAliViewController3.xib in Resources */ = {isa = PBXBuildFile; fileRef = 77357E452373DA3E00B81EE4 /* SJTestAliViewController3.xib */; };
+		77357E622375523C00B81EE4 /* SJSubtitlesTestViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 77357E612375523C00B81EE4 /* SJSubtitlesTestViewController.m */; };
 		7740C1BA2350A16700DD7ECE /* SJViewController12.m in Sources */ = {isa = PBXBuildFile; fileRef = 7740C1B92350A16700DD7ECE /* SJViewController12.m */; };
 		7740C1BD2350A18500DD7ECE /* SJCustomControlLayerViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 7740C1BC2350A18500DD7ECE /* SJCustomControlLayerViewController.m */; };
 		774AF08722DC790D005FE462 /* SJView.m in Sources */ = {isa = PBXBuildFile; fileRef = 774AF08622DC790D005FE462 /* SJView.m */; };
@@ -128,6 +129,8 @@
 		77357E432373DA3E00B81EE4 /* SJTestAliViewController3.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = SJTestAliViewController3.h; sourceTree = "<group>"; };
 		77357E442373DA3E00B81EE4 /* SJTestAliViewController3.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = SJTestAliViewController3.m; sourceTree = "<group>"; };
 		77357E452373DA3E00B81EE4 /* SJTestAliViewController3.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = SJTestAliViewController3.xib; sourceTree = "<group>"; };
+		77357E602375523C00B81EE4 /* SJSubtitlesTestViewController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = SJSubtitlesTestViewController.h; sourceTree = "<group>"; };
+		77357E612375523C00B81EE4 /* SJSubtitlesTestViewController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = SJSubtitlesTestViewController.m; sourceTree = "<group>"; };
 		7740C1B82350A16700DD7ECE /* SJViewController12.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = SJViewController12.h; sourceTree = "<group>"; };
 		7740C1B92350A16700DD7ECE /* SJViewController12.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = SJViewController12.m; sourceTree = "<group>"; };
 		7740C1BB2350A18500DD7ECE /* SJCustomControlLayerViewController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = SJCustomControlLayerViewController.h; sourceTree = "<group>"; };
@@ -367,6 +370,15 @@
 			name = "Podspec Metadata";
 			sourceTree = "<group>";
 		};
+		77357E5F2375522800B81EE4 /* Subtitles(字幕) */ = {
+			isa = PBXGroup;
+			children = (
+				77357E602375523C00B81EE4 /* SJSubtitlesTestViewController.h */,
+				77357E612375523C00B81EE4 /* SJSubtitlesTestViewController.m */,
+			);
+			path = "Subtitles(字幕)";
+			sourceTree = "<group>";
+		};
 		7740C1B72350A14200DD7ECE /* CustomControlLayer */ = {
 			isa = PBXGroup;
 			children = (
@@ -440,6 +452,7 @@
 		77805D6D22BF7EBD007076B9 /* iPhone Demo */ = {
 			isa = PBXGroup;
 			children = (
+				77357E5F2375522800B81EE4 /* Subtitles(字幕) */,
 				A6A2555522ABDA8400E42998 /* Add Button Item To Control Layer */,
 				A6A208DF22AB9E59001ED610 /* Rotation Control */,
 				A6A2554022ABCE2800E42998 /* Playback List Control */,
@@ -980,6 +993,7 @@
 				77A0CDFA2306541700FE353C /* SJListViewAutoplayCollectionViewCell.m in Sources */,
 				77788F6F22C35FF200E26599 /* SJViewController5n.m in Sources */,
 				A6C5D23422AC249800D63D1C /* SJRemoteCommandHandler.m in Sources */,
+				77357E622375523C00B81EE4 /* SJSubtitlesTestViewController.m in Sources */,
 				77788FDF22C36CF300E26599 /* SJMediaItemsTableViewCell.m in Sources */,
 				774AF08722DC790D005FE462 /* SJView.m in Sources */,
 				A6A2090322AB9EE6001ED610 /* LWZTableSectionShrinker.m in Sources */,

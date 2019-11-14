@@ -1,15 +1,15 @@
 source 'https://cdn.cocoapods.org/'
 
 # Uncomment the next line to define a global platform for your project
-platform :ios, '9.0'
+platform :ios, '8.0'
 
 #install! 'cocoapods', disable_input_output_paths: true, generate_multiple_pod_projects: true
 
 post_install do |installer|
   installer.pods_project.targets.each do |target|
     target.build_configurations.each do |config|
-      if config.build_settings['IPHONEOS_DEPLOYMENT_TARGET'].to_f < 9.0
-        config.build_settings['IPHONEOS_DEPLOYMENT_TARGET'] = '9.0'
+      if config.build_settings['IPHONEOS_DEPLOYMENT_TARGET'].to_f < 8.0
+        config.build_settings['IPHONEOS_DEPLOYMENT_TARGET'] = '8.0'
       end
       
       if config.name != 'Release'
@@ -33,19 +33,18 @@ end
 
 
 target 'SJVideoPlayer_Example' do
-  # Uncomment the next line if you're using Swift or would like to use dynamic frameworks
-  # use_frameworks!
-
-  # Pods for SJVideoPlayer
-
-  # ijkplayer
-#  pod 'SJBaseVideoPlayer/IJKPlayer'#, :path => '../../SJBaseVideoPlayer'
+  # 切换为 ijkplayer
+#  pod 'SJBaseVideoPlayer/IJKPlayer'
 #  pod 'ijkplayerssl', :git => 'https://gitee.com/changsanjiang/ijkplayer.git'
   
-  # aliplayer
-#  pod 'SJBaseVideoPlayer/AliPlayer'#, :path => '../../SJBaseVideoPlayer'
+  # 切换为 Aliplayer
+#  pod 'SJBaseVideoPlayer/AliPlayer', :path => '../../SJBaseVideoPlayer'
 
-  pod 'SJBaseVideoPlayer'
+  # 切换为 AliVodPlayer
+#  pod 'SJBaseVideoPlayer/AliVodPlayer', :path => '../../SJBaseVideoPlayer'
+
+
+  pod 'SJBaseVideoPlayer', '3.1.0'#, :path => '../../SJBaseVideoPlayer'
   pod 'SJVideoPlayer', :path => '../../SJVideoPlayer'
   
   # 全屏手势
@@ -54,6 +53,6 @@ target 'SJVideoPlayer_Example' do
   pod 'Masonry', :inhibit_warnings => true
   pod 'MJRefresh', :inhibit_warnings => true
   pod 'SJRouter'
-  pod 'SJUIKit'
+  pod 'SJUIKit'#, :path => '../../SJUIKit'
   pod 'SDWebImage'
 end

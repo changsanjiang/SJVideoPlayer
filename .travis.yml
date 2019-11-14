@@ -21,4 +21,3 @@ script:
 #  - pod trunk register changsanjiang@gmail.com changsanjiang
 #  - pod trunk me
 #  - pod trunk push --allow-warnings --use-libraries
-  

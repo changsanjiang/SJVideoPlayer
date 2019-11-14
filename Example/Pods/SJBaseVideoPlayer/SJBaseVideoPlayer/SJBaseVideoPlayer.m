@@ -32,6 +32,7 @@
 #import "SJSubtitlesPromptController.h"
 #import "SJBaseVideoPlayer+TestLog.h"
 #import "SJVideoPlayerURLAsset+SJSubtitlesAdd.h"
+#import "SJBarrageQueueController.h"
 
 #if __has_include(<Masonry/Masonry.h>)
 #import <Masonry/Masonry.h>
@@ -178,7 +179,7 @@ _lookupResponder(UIView *view, Class cls) {
 }
 
 + (NSString *)version {
-    return @"v3.0.9";
+    return @"v3.1.0";
 }
 
 - (void)setVideoGravity:(SJVideoGravity)videoGravity {
@@ -1151,12 +1152,16 @@ _lookupResponder(UIView *view, Class cls) {
     
     BOOL isBuffering = controller.reasonForWaitingToPlay == SJWaitingToMinimizeStallsReason;
     isBuffering ? [self.reachability startRefresh] : [self.reachability stopRefresh];
-        
+    
     if ( [self.controlLayerDelegate respondsToSelector:@selector(videoPlayerPlaybackStatusDidChange:)] ) {
         [self.controlLayerDelegate videoPlayerPlaybackStatusDidChange:self];
     }
-    
+
     [self _postNotification:SJVideoPlayerPlaybackTimeControlStatusDidChangeNotification];
+        
+    if ( status == SJPlaybackTimeControlStatusPaused && self.pausedToKeepAppearState ) {
+        [self.controlLayerAppearManager keepAppearState];
+    }
     
 #ifdef SJDEBUG
     [self showLog_TimeControlStatus];
@@ -2153,6 +2158,29 @@ _lookupResponder(UIView *view, Class cls) {
 - (void)_setupPrompt {
     id<SJPromptProtocol> prompt = objc_getAssociatedObject(self, @selector(prompt));
     prompt.target = self.presentView;
+}
+@end
+
+
+@implementation SJBaseVideoPlayer (Barrages)
+- (void)setBarrageQueueController:(nullable id<SJBarrageQueueController>)barrageQueueController {
+    id<SJBarrageQueueController> controller = objc_getAssociatedObject(self, _cmd);
+    if ( controller != nil ) [controller.view removeFromSuperview];
+    objc_setAssociatedObject(self, @selector(barrageQueueController), barrageQueueController, OBJC_ASSOCIATION_RETAIN_NONATOMIC);
+    if ( barrageQueueController != nil ) {
+        [self.presentView insertSubview:barrageQueueController.view aboveSubview:self.presentView.placeholderImageView];
+        [barrageQueueController.view mas_makeConstraints:^(MASConstraintMaker *make) {
+            make.top.left.right.offset(0);
+        }];
+    }
+}
+- (id<SJBarrageQueueController>)barrageQueueController {
+    id<SJBarrageQueueController> controller = objc_getAssociatedObject(self, _cmd);
+    if ( controller == nil ) {
+        controller = [SJBarrageQueueController.alloc initWithLines:4];
+        [self setBarrageQueueController:controller];
+    }
+    return controller;
 }
 @end
 

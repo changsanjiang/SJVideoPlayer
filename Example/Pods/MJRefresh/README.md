@@ -1,7 +1,5 @@
-![(logo)](http://images.cnitblog.com/blog2015/497279/201505/051004492043385.png)
-
 ## MJRefresh
-
+[![Carthage compatible](https://img.shields.io/badge/Carthage-compatible-4BC51D.svg?style=flat)](https://github.com/Carthage/Carthage)
 ![podversion](https://img.shields.io/cocoapods/v/MJRefresh.svg)
 
 * An easy way to use pull-to-refresh
@@ -345,23 +343,8 @@ self.webView.scrollView.mj_header = [MJRefreshNormalHeader headerWithRefreshingB
 
 ## Remind
 * ARC
-* iOS>=6.0
+* iOS>=8.0
 * iPhone \ iPad screen anyway
-
-## <a id="Hope"></a>Hope
-* If you find bug when used，Hope you can Issues me，Thank you or try to download the latest code of this framework to see the BUG has been fixed or not）
-* If you find the function is not enough when used，Hope you can Issues me，I very much to add more useful function to this framework ，Thank you !
-* If you want to contribute code for MJRefresh，please Pull Requests me
-*  If you use MJRefresh in your develop app，Hope you can go to[CocoaControls](https://www.cocoacontrols.com/controls/mjrefresh)to add the iTunes path
- of you app，I Will install your app，and according to the usage of many app，to be a better design and improve to MJRefresh，Thank you !
-   * StepO1（WeChat is just an Example，Explore“Your app name itunes”）
-![(step01)](http://ww4.sinaimg.cn/mw1024/800cdf9ctw1eq0viiv5rsj20sm0ea41t.jpg)
-   * StepO2
-![(step02)](http://ww2.sinaimg.cn/mw1024/800cdf9ctw1eq0vilejxlj20tu0me7a0.jpg)
-   * StepO3
-![(step03)](http://ww1.sinaimg.cn/mw1024/800cdf9ctw1eq0viocpo5j20wc0dc0un.jpg)
-   * StepO4
-![(step04)](http://ww3.sinaimg.cn/mw1024/800cdf9ctw1eq0vir137xj20si0gewgu.jpg)
 
 ## 寻求志同道合的小伙伴
 

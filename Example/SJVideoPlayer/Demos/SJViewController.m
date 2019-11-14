@@ -198,16 +198,21 @@
         [[Item alloc] initWithTitle:@"Test subtitles"
                            subTitle:@"测试 字幕"
                                path:@"subtitles/demo"],
-        
-      [[Item alloc] initWithTitle:@"Test"
-                         subTitle:@"Test"
-                             path:@"test"],
-      [[Item alloc] initWithTitle:@"Test IJK"
-                         subTitle:@"Test IJK"
-                             path:@"test2"],
-      [[Item alloc] initWithTitle:@"Test Ali"
-                         subTitle:@"Test Ali"
-                             path:@"test3"],
+        [[Item alloc] initWithTitle:@"Test barrages"
+                           subTitle:@"测试 弹幕"
+                               path:@"barrage/demo"],
+        [[Item alloc] initWithTitle:@"Test"
+                           subTitle:@"Test"
+                               path:@"test"],
+        [[Item alloc] initWithTitle:@"Test IJK"
+                           subTitle:@"Test IJK"
+                               path:@"test2"],
+        [[Item alloc] initWithTitle:@"Test Ali"
+                           subTitle:@"Test Ali"
+                               path:@"test3"],
+        [[Item alloc] initWithTitle:@"Test AliyunVod"
+                           subTitle:@"Test AliyunVod"
+                               path:@"test4"],
       ];
 }
 

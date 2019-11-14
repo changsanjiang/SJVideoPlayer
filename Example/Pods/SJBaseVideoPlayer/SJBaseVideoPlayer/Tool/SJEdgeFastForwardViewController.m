@@ -282,12 +282,13 @@ _getControlPoint(CGFloat p0, CGFloat p2, CGFloat t, CGFloat c) {
             if ( self.leftView.superview == nil ) {
                 [self.target addSubview:self.leftView];
                 self.leftView.translatesAutoresizingMaskIntoConstraints = NO;
-                [self.leftView.topAnchor constraintEqualToAnchor:self.target.topAnchor].active = YES;
-                [self.leftView.leftAnchor constraintEqualToAnchor:self.target.leftAnchor].active = YES;
-                [self.leftView.bottomAnchor constraintEqualToAnchor:self.target.bottomAnchor].active = YES;
-                _leftWidth = [self.leftView.widthAnchor constraintEqualToConstant:_triggerAreaWidth];
-                _leftWidth.active = YES;
-                
+                if ( @available(iOS 9.0, *) ) {
+                    [self.leftView.topAnchor constraintEqualToAnchor:self.target.topAnchor].active = YES;
+                    [self.leftView.leftAnchor constraintEqualToAnchor:self.target.leftAnchor].active = YES;
+                    [self.leftView.bottomAnchor constraintEqualToAnchor:self.target.bottomAnchor].active = YES;
+                    _leftWidth = [self.leftView.widthAnchor constraintEqualToConstant:_triggerAreaWidth];
+                    _leftWidth.active = YES;
+                }
                 [self.target layoutIfNeeded];
             }
             
@@ -300,11 +301,13 @@ _getControlPoint(CGFloat p0, CGFloat p2, CGFloat t, CGFloat c) {
             if ( self.rightView.superview == nil ) {
                 [self.target addSubview:self.rightView];
                 self.rightView.translatesAutoresizingMaskIntoConstraints = NO;
-                [self.rightView.topAnchor constraintEqualToAnchor:self.target.topAnchor].active = YES;
-                [self.rightView.rightAnchor constraintEqualToAnchor:self.target.rightAnchor].active = YES;
-                [self.rightView.bottomAnchor constraintEqualToAnchor:self.target.bottomAnchor].active = YES;
-                _rightWidth = [self.rightView.widthAnchor constraintEqualToConstant:_triggerAreaWidth];
-                _rightWidth.active = YES;
+                if ( @available(iOS 9.0, *) ) {
+                    [self.rightView.topAnchor constraintEqualToAnchor:self.target.topAnchor].active = YES;
+                    [self.rightView.rightAnchor constraintEqualToAnchor:self.target.rightAnchor].active = YES;
+                    [self.rightView.bottomAnchor constraintEqualToAnchor:self.target.bottomAnchor].active = YES;
+                    _rightWidth = [self.rightView.widthAnchor constraintEqualToConstant:_triggerAreaWidth];
+                    _rightWidth.active = YES;
+                }
                 
                 [self.target layoutIfNeeded];
             }

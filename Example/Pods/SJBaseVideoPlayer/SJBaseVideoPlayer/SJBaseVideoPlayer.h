@@ -29,6 +29,7 @@
 #import "SJPlaybackObservation.h"
 #import "SJVideoPlayerPresentViewDefines.h"
 #import "SJSubtitlesPromptControllerDefines.h"
+#import "SJBarrageQueueControllerDefines.h"
 #import "SJPromptDefines.h"
 
 NS_ASSUME_NONNULL_BEGIN
@@ -795,6 +796,36 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic) CGFloat subtitleHorizontalMinMargin;
 @end
 
+
+#pragma mark - 弹幕
+
+@interface SJBaseVideoPlayer (Barrages)
+
+///
+/// 弹幕控制
+///
+/// \code
+///
+/// #import <SJBaseVideoPlayer/SJBarrageItem.h>
+///
+///     // 创建一条弹幕
+///     SJBarrageItem *item = [SJBarrageItem.alloc initWithContent:[NSAttributedString sj_UIKitText:^(id<SJUIKitTextMakerProtocol>  _Nonnull make) {
+///         make.append( @"我是一条弹幕消息" );
+///         make.font([UIFont boldSystemFontOfSize:16]);
+///         make.textColor(UIColor.whiteColor);
+///         make.stroke(^(id<SJUTStroke>  _Nonnull make) {
+///         make.color = UIColor.blackColor;
+///         make.width = -1;
+///         });
+///     }]];
+///
+///     // 发送一条弹幕, 弹幕将自动显示
+///     [self.player.barrageQueueController enqueue:item];
+///
+/// \endcode
+///
+@property (nonatomic, strong, null_resettable) id<SJBarrageQueueController> barrageQueueController;
+@end
 
 #pragma mark - 已弃用
 

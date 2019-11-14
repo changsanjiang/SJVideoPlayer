@@ -12,7 +12,7 @@ NS_ASSUME_NONNULL_BEGIN
 - (BOOL)save:(id)value forKey:(NSString *)key error:(NSError **)error;
 - (void)removeValueForKey:(NSString *)key error:(NSError **)error;
 
-- (nullable NSString *)jsonStrongForKey:(NSString *)key;
+- (nullable NSString *)jsonStringForKey:(NSString *)key;
 
 // - container -
 - (nullable NSDictionary *)dictionaryForKey:(NSString *)key;

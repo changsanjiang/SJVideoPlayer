@@ -108,7 +108,7 @@ static NSString *kDemoTableViewCell = @"DemoTableViewCell";
     if ( indexPath != nil ) {
         DemoTableViewCellViewModel *vm = _models[indexPath.row];
         if ( !_player ) {
-            _player = [SJVideoPlayer player]; 
+            _player = [SJVideoPlayer player];
         }
         
         _player.URLAsset = [[SJVideoPlayerURLAsset alloc] initWithURL:vm.URL playModel:[SJPlayModel UITableViewCellPlayModelWithPlayerSuperviewTag:vm.coverTag atIndexPath:indexPath tableView:self.tableView]];

@@ -82,7 +82,7 @@ NS_ASSUME_NONNULL_BEGIN
     return [self _containerValueForKey:key];
 }
 
-- (nullable NSString *)jsonStrongForKey:(NSString *)key {
+- (nullable NSString *)jsonStringForKey:(NSString *)key {
     return [self _itemValueForKey:key];
 }
 

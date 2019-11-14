@@ -27,7 +27,9 @@
     
 #if __has_include(<AliyunPlayer/AliyunPlayer.h>)
     _player.playbackController = SJAliMediaPlaybackController.new;
-    AVPUrlSource *source = [AVPUrlSource.alloc urlWithString:@"rtmp://58.200.131.2:1935/livetv/hunantv"];
+//    AVPUrlSource *source = [AVPUrlSource.alloc urlWithString:@"rtmp://58.200.131.2:1935/livetv/hunantv"];
+    AVPUrlSource *source = [AVPUrlSource.alloc init];
+    source.playerUrl = SourceURL1;
     _player.URLAsset = [SJVideoPlayerURLAsset.alloc initWithSource:source];
 #endif
     

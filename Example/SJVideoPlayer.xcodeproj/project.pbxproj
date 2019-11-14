@@ -1209,7 +1209,7 @@
 					SJDEBUG,
 				);
 				INFOPLIST_FILE = "SJVideoPlayer/SJVideoPlayer-Info.plist";
-				IPHONEOS_DEPLOYMENT_TARGET = 8.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 9.0;
 				MODULE_NAME = ExampleApp;
 				PRODUCT_BUNDLE_IDENTIFIER = org.cocoapods.demo.SJVideoPlayer;
 				PRODUCT_NAME = "$(TARGET_NAME)";
@@ -1235,7 +1235,7 @@
 					"COCOAPODS=1",
 				);
 				INFOPLIST_FILE = "SJVideoPlayer/SJVideoPlayer-Info.plist";
-				IPHONEOS_DEPLOYMENT_TARGET = 8.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 9.0;
 				MODULE_NAME = ExampleApp;
 				PRODUCT_BUNDLE_IDENTIFIER = org.cocoapods.demo.SJVideoPlayer;
 				PRODUCT_NAME = "$(TARGET_NAME)";

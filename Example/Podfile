@@ -44,7 +44,7 @@ target 'SJVideoPlayer_Example' do
 #  pod 'SJBaseVideoPlayer/AliVodPlayer', :path => '../../SJBaseVideoPlayer'
 
 
-  pod 'SJBaseVideoPlayer', '3.1.0'#, :path => '../../SJBaseVideoPlayer'
+  pod 'SJBaseVideoPlayer'
   pod 'SJVideoPlayer', :path => '../../SJVideoPlayer'
   
   # 全屏手势

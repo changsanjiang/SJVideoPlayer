@@ -195,7 +195,11 @@ NS_ASSUME_NONNULL_BEGIN
             
             // definition item
             self.definitionButtonItem.title = [NSAttributedString sj_UIKitText:^(id<SJUIKitTextMakerProtocol>  _Nonnull make) {
-                SJVideoPlayerURLAsset *asset = self.definitionSwitchingInfo.switchingAsset?:self.URLAsset;
+                SJVideoPlayerURLAsset *asset = self.URLAsset;
+                if ( self.definitionSwitchingInfo.switchingAsset != nil &&
+                     self.definitionSwitchingInfo.status != SJDefinitionSwitchStatusFailed ) {
+                    asset = self.definitionSwitchingInfo.switchingAsset;
+                }
                 make.append(asset.definition_lastName);
                 make.textColor(UIColor.whiteColor);
             }];
@@ -330,7 +334,7 @@ NS_ASSUME_NONNULL_BEGIN
     // - 当前如果没有网络, 则切换到无网空制层
     //
     else if ( self.reasonForWaitingToPlay == SJWaitingToMinimizeStallsReason ) {
-        if ( SJReachability.shared.networkStatus == SJNetworkStatus_NotReachable ) {
+        if ( SJReachability.shared.networkStatus == SJNetworkStatus_NotReachable && !self.assetURL.isFileURL ) {
             // 切换
             [self.switcher switchControlLayerForIdentitfier:SJControlLayer_NotReachableAndPlaybackStalled];
         }

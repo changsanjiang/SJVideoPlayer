@@ -123,9 +123,14 @@ NS_ASSUME_NONNULL_BEGIN
 }
 
 - (void)_refreshItems {
-    SJVideoPlayerURLAsset *_Nullable current = _videoPlayer.URLAsset;
-    if ( current != nil ) {
+    SJVideoPlayerURLAsset *_Nullable cur = _videoPlayer.URLAsset;
+    if ( cur != nil ) {
         SJVideoDefinitionSwitchingInfo *info = _videoPlayer.definitionSwitchingInfo;
+        SJVideoPlayerURLAsset *selected = cur;
+        if ( info.switchingAsset != nil && info.status != SJDefinitionSwitchStatusFailed ) {
+            selected = info.switchingAsset;
+        }
+        
         for ( SJEdgeControlButtonItem *item in self.items ) {
             SJVideoPlayerURLAsset *asset = self.assets[item.tag];
             item.title = [NSAttributedString sj_UIKitText:^(id<SJUIKitTextMakerProtocol>  _Nonnull make) {
@@ -133,13 +138,7 @@ NS_ASSUME_NONNULL_BEGIN
                 make.font([UIFont systemFontOfSize:14]);
                 make.alignment(NSTextAlignmentCenter);
                 
-                UIColor *textColor = nil;
-                if ( asset == info.switchingAsset || (info.switchingAsset == nil && asset == current) ) {
-                    textColor = self.selectedTextColor;
-                }
-                else {
-                    textColor = UIColor.whiteColor;
-                }
+                UIColor *textColor = asset == selected ? self.selectedTextColor : UIColor.whiteColor;
                 make.textColor(textColor);
             }];
         }

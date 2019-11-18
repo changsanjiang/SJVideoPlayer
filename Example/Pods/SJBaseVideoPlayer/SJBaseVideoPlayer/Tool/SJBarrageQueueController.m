@@ -24,7 +24,6 @@
 NS_ASSUME_NONNULL_BEGIN
 
 #define POINT_SPEED_FAST (0.01)
-#define POINT_SPEED_SLOW (POINT_SPEED_FAST * 1.1)
 
 @interface SJBarrageView : UILabel<CAAnimationDelegate>
 @property (nonatomic, strong, nullable) SJBarrageViewModel *viewModel;
@@ -149,7 +148,7 @@ NS_ASSUME_NONNULL_BEGIN
 - (void)resume {
     if ( _paused == YES ) {
         __weak typeof(self) _self = self;
-        _timer = [NSTimer assetAdd_timerWithTimeInterval:0.01 block:^(NSTimer *timer) {
+        _timer = [NSTimer assetAdd_timerWithTimeInterval:0.1 block:^(NSTimer *timer) {
             __strong typeof(_self) self = _self;
             if ( !self ) {
                 [timer invalidate];

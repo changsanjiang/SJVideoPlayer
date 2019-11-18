@@ -32,6 +32,7 @@
 		7756F58522E173D400F9DC7D /* SJTestViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 7756F58322E173D400F9DC7D /* SJTestViewController.m */; };
 		7756F58622E173D400F9DC7D /* SJTestViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 7756F58422E173D400F9DC7D /* SJTestViewController.xib */; };
 		77661EF72356CBE900514BED /* SJTestIJKViewController2.xib in Resources */ = {isa = PBXBuildFile; fileRef = 77661EF62356CBE900514BED /* SJTestIJKViewController2.xib */; };
+		7771D3D12382C4FD006A4044 /* audio.wav in Resources */ = {isa = PBXBuildFile; fileRef = 7771D3D02382C4FD006A4044 /* audio.wav */; };
 		7774C8D623519F5000FE6FCA /* SJPopPromptCustomView.m in Sources */ = {isa = PBXBuildFile; fileRef = 7774C8D523519F5000FE6FCA /* SJPopPromptCustomView.m */; };
 		777829402351D4AB00A2D933 /* SJTestIJKViewController2.m in Sources */ = {isa = PBXBuildFile; fileRef = 7778293F2351D4AB00A2D933 /* SJTestIJKViewController2.m */; };
 		77788F6F22C35FF200E26599 /* SJViewController5n.m in Sources */ = {isa = PBXBuildFile; fileRef = 77788F6D22C35FF200E26599 /* SJViewController5n.m */; };
@@ -147,6 +148,7 @@
 		7756F58322E173D400F9DC7D /* SJTestViewController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = SJTestViewController.m; sourceTree = "<group>"; };
 		7756F58422E173D400F9DC7D /* SJTestViewController.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = SJTestViewController.xib; sourceTree = "<group>"; };
 		77661EF62356CBE900514BED /* SJTestIJKViewController2.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = SJTestIJKViewController2.xib; sourceTree = "<group>"; };
+		7771D3D02382C4FD006A4044 /* audio.wav */ = {isa = PBXFileReference; lastKnownFileType = audio.wav; path = audio.wav; sourceTree = "<group>"; };
 		7774C8D423519F5000FE6FCA /* SJPopPromptCustomView.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = SJPopPromptCustomView.h; sourceTree = "<group>"; };
 		7774C8D523519F5000FE6FCA /* SJPopPromptCustomView.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = SJPopPromptCustomView.m; sourceTree = "<group>"; };
 		7778293E2351D4AB00A2D933 /* SJTestIJKViewController2.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = SJTestIJKViewController2.h; sourceTree = "<group>"; };
@@ -411,6 +413,7 @@
 				7756F58422E173D400F9DC7D /* SJTestViewController.xib */,
 				7778293E2351D4AB00A2D933 /* SJTestIJKViewController2.h */,
 				7778293F2351D4AB00A2D933 /* SJTestIJKViewController2.m */,
+				7771D3D02382C4FD006A4044 /* audio.wav */,
 				77661EF62356CBE900514BED /* SJTestIJKViewController2.xib */,
 				77357E432373DA3E00B81EE4 /* SJTestAliViewController3.h */,
 				77357E442373DA3E00B81EE4 /* SJTestAliViewController3.m */,
@@ -918,6 +921,7 @@
 				A6A208FC22AB9E59001ED610 /* SJRotationModeDemoViewController2.xib in Resources */,
 				77661EF72356CBE900514BED /* SJTestIJKViewController2.xib in Resources */,
 				A6F19DFC22D9C1390043B508 /* SJViewController6.xib in Resources */,
+				7771D3D12382C4FD006A4044 /* audio.wav in Resources */,
 				A6A2556022ABFAFA00E42998 /* SJViewController3.xib in Resources */,
 				A601803D22DB5CAC00ED840D /* SJRotationModeDemoViewController3.xib in Resources */,
 				A6A2562722AC1C3500E42998 /* SJViewController5.xib in Resources */,

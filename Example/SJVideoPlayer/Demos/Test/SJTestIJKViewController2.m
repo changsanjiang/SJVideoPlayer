@@ -13,6 +13,7 @@
 
 #if __has_include(<IJKMediaFrameworkWithSSL/IJKMediaFrameworkWithSSL.h>)
 #import "SJIJKMediaPlaybackController.h"
+#import <IJKMediaFrameworkWithSSL/IJKFFOptions.h>
 #endif
 
 @interface SJTestIJKViewController2 ()
@@ -27,10 +28,16 @@
     
     _player = SJVideoPlayer.player;
 #if __has_include(<IJKMediaFrameworkWithSSL/IJKMediaFrameworkWithSSL.h>)
-    _player.playbackController = SJIJKMediaPlaybackController.new;
+    SJIJKMediaPlaybackController *controller = SJIJKMediaPlaybackController.new;
+    IJKFFOptions *options = [IJKFFOptions optionsByDefault];
+    [options setPlayerOptionIntValue:1 forKey:@"enable-accurate-seek"];
+    controller.options = options;
+    _player.playbackController = controller;
 #endif
     
     _player.URLAsset = [SJVideoPlayerURLAsset.alloc initWithURL:VideoURL_Level4];
+    
+//    _player.assetURL = [NSBundle.mainBundle URLForResource:@"audio" withExtension:@"wav"];
     _player.view.backgroundColor = UIColor.blackColor;
     [self.view addSubview:_player.view];
     [_player.view mas_makeConstraints:^(MASConstraintMaker *make) {

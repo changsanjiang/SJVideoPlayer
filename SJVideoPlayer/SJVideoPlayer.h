@@ -108,13 +108,16 @@ NS_ASSUME_NONNULL_BEGIN
 /// Configure the player, Note: This `block` is run on the child thread.
 /// 配置播放器, 例如: 滚动条的颜色等... 注意: 这个`block`在子线程运行
 ///
-/// SJVideoPlayer.update(^(SJVideoPlayerSettings * _Nonnull commonSettings) {
-///     ..... setting player ......
-///     commonSettings.placeholder = [UIImage imageNamed:@"placeholder"];
-///     commonSettings.more_trackColor = [UIColor whiteColor];
-///     commonSettings.progress_trackColor = [UIColor colorWithWhite:0.4 alpha:1];
-///     commonSettings.progress_bufferColor = [UIColor whiteColor];
-/// });
+/// \code
+///
+///     SJVideoPlayer.update(^(SJVideoPlayerSettings * _Nonnull commonSettings) {
+///         commonSettings.placeholder = [UIImage imageNamed:@"placeholder"];
+///         commonSettings.more_trackColor = [UIColor whiteColor];
+///         commonSettings.progress_trackColor = [UIColor colorWithWhite:0.4 alpha:1];
+///         commonSettings.progress_bufferColor = [UIColor whiteColor];
+///     });
+///
+/// \endcode
 ///
 @property (class, nonatomic, copy, readonly) void(^update)(void(^block)(SJVideoPlayerSettings *commonSettings));
 + (void)resetSetting; // 重置配置, 恢复默认设置
@@ -124,7 +127,29 @@ NS_ASSUME_NONNULL_BEGIN
 @interface SJVideoPlayer (SJExtendedSwitchVideoDefinitionControlLayer)
 
 ///
-/// 配置清晰度资源
+/// 切换清晰度
+///
+/// \code
+///
+///     SJVideoPlayerURLAsset *asset1 = [[SJVideoPlayerURLAsset alloc] initWithURL:VideoURL_Level4];
+///     asset1.definition_fullName = @"超清 1080P";
+///     asset1.definition_lastName = @"超清";
+///
+///     SJVideoPlayerURLAsset *asset2 = [[SJVideoPlayerURLAsset alloc] initWithURL:VideoURL_Level3];
+///     asset2.definition_fullName = @"高清 720P";
+///     asset2.definition_lastName = @"AAAAAAA";
+///
+///     SJVideoPlayerURLAsset *asset3 = [[SJVideoPlayerURLAsset alloc] initWithURL:VideoURL_Level2];
+///     asset3.definition_fullName = @"清晰 480P";
+///     asset3.definition_lastName = @"480P";
+///
+///     // 1. 配置清晰度资源
+///     _player.definitionURLAssets = @[asset1, asset2, asset3];
+///
+///     // 2. 先播放asset1 (asset2 和 asset3 将会在用户选择后进行切换)
+///     _player.URLAsset = asset1;
+///
+/// \endcode
 ///
 @property (nonatomic, copy, nullable) NSArray<SJVideoPlayerURLAsset *> *definitionURLAssets;
 

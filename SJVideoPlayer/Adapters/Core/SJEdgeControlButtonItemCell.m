@@ -11,10 +11,12 @@
 
 NS_ASSUME_NONNULL_BEGIN
 @interface _SJEdgeControlButtonItemCell_CustomView : SJEdgeControlButtonItemCell
+@property (nonatomic, strong, nullable) UIView *customView;
 @end
 
 @implementation _SJEdgeControlButtonItemCell_CustomView
 - (void)setItem:(SJEdgeControlButtonItem *_Nullable)item {
+    if ( item.customView != _customView ) [_customView removeFromSuperview];
     item.customView.frame = self.contentView.bounds;
     item.customView.autoresizingMask = UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight;
     [self.contentView addSubview:item.customView];

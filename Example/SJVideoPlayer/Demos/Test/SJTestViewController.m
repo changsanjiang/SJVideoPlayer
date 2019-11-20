@@ -11,6 +11,7 @@
 #import <Masonry/Masonry.h>
 #import <SJUIKit/SJUIKit.h>
 #import "SJSourceURLs.h"
+#import <SDWebImage.h>
 
 NS_ASSUME_NONNULL_BEGIN
 @interface SJTestViewController ()<UITableViewDelegate, UITableViewDataSource>
@@ -26,7 +27,6 @@ NS_ASSUME_NONNULL_BEGIN
 - (void)viewDidLoad {
     [super viewDidLoad];
     [self _setupViews];
-    
     
     _tableView = [[UITableView alloc] initWithFrame:CGRectMake(0, 0, 200, 200)];
     _tableView.backgroundColor = UIColor.whiteColor;

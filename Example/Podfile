@@ -33,22 +33,23 @@ end
 
 
 target 'SJVideoPlayer_Example' do
-  # 切换为 ijkplayer
-#  pod 'SJBaseVideoPlayer/IJKPlayer', :path => '../../SJBaseVideoPlayer'
+# 切换为 ijkplayer, 详见: https://github.com/changsanjiang/SJVideoPlayer/wiki/Use-ijkplayer
+#  pod 'SJBaseVideoPlayer/IJKPlayer'#, :path => '../../SJBaseVideoPlayer'
 #  pod 'ijkplayerssl', :git => 'https://gitee.com/changsanjiang/ijkplayer.git'
   
-  # 切换为 Aliplayer
-#  pod 'SJBaseVideoPlayer/AliPlayer', :path => '../../SJBaseVideoPlayer'
+# 切换为 Aliplayer, 详见: https://github.com/changsanjiang/SJVideoPlayer/wiki/Use-AliPlayer
+#  pod 'SJBaseVideoPlayer/AliPlayer'#, :path => '../../SJBaseVideoPlayer'
 
-  # 切换为 AliVodPlayer
-#  pod 'SJBaseVideoPlayer/AliVodPlayer', :path => '../../SJBaseVideoPlayer'
+# 切换为 AliVodPlayer, 详见: https://github.com/changsanjiang/SJVideoPlayer/wiki/Use-AliVodPlayer
+#  pod 'SJBaseVideoPlayer/AliVodPlayer'#, :path => '../../SJBaseVideoPlayer'
 
-
-  pod 'SJBaseVideoPlayer'
+  # 默认为 AVPlayer
+  pod 'SJBaseVideoPlayer'#, :path => '../../SJBaseVideoPlayer'
   pod 'SJVideoPlayer', :path => '../../SJVideoPlayer'
   
   # 全屏手势
   pod 'SJFullscreenPopGesture/ObjC'
+  # 列表控制
   pod 'SJPlaybackListController'#, :path => '../../SJPlaybackListController'
   pod 'Masonry', :inhibit_warnings => true
   pod 'MJRefresh', :inhibit_warnings => true

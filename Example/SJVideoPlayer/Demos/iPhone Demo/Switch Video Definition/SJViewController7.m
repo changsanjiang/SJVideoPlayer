@@ -12,6 +12,18 @@
 #import <SJUIKit/SJUIKit.h>
 #import "SJSourceURLs.h"
 
+#if __has_include(<IJKMediaFrameworkWithSSL/IJKMediaFrameworkWithSSL.h>)
+#import "SJIJKMediaPlaybackController.h"
+#endif
+
+#if __has_include(<AliyunPlayer/AliyunPlayer.h>)
+#import "SJAliMediaPlaybackController.h"
+#endif
+
+#if __has_include(<AliyunPlayerSDK/AliyunPlayerSDK.h>)
+#import "SJAliyunVodPlaybackController.h"
+#endif
+
 NS_ASSUME_NONNULL_BEGIN
 @interface SJViewController7 ()
 @property (weak, nonatomic) IBOutlet UIView *playerContainerView;
@@ -40,6 +52,8 @@ NS_ASSUME_NONNULL_BEGIN
     asset4.definition_fullName = @"流畅 320P";
     asset4.definition_lastName = @"流畅";
 
+    
+//    _player.playbackController = SJAliyunVodPlaybackController.new;
     _player.definitionURLAssets = @[asset1, asset2, asset3, asset4];
     _player.URLAsset = asset1;
 } 

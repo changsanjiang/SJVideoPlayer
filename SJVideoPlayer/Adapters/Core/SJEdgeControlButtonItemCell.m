@@ -8,6 +8,7 @@
 
 #import "SJEdgeControlButtonItemCell.h"
 #import "SJEdgeControlButtonItem.h"
+#import <Masonry/Masonry.h>
 
 NS_ASSUME_NONNULL_BEGIN
 @interface _SJEdgeControlButtonItemCell_CustomView : SJEdgeControlButtonItemCell
@@ -16,13 +17,20 @@ NS_ASSUME_NONNULL_BEGIN
 
 @implementation _SJEdgeControlButtonItemCell_CustomView
 - (void)setItem:(SJEdgeControlButtonItem *_Nullable)item {
-    if ( item.customView != _customView ) [_customView removeFromSuperview];
-    item.customView.frame = self.contentView.bounds;
-    item.customView.autoresizingMask = UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight;
-    [self.contentView addSubview:item.customView];
+    if ( item.customView != _customView ) {
+        if ( _customView.superview == self.contentView ) {
+            [_customView removeFromSuperview];
+        }
+        _customView = item.customView;
+        [self.contentView addSubview:_customView];
+        [_customView mas_makeConstraints:^(MASConstraintMaker *make) {
+            make.edges.offset(0);
+        }];
+    }
     [super setItem:item];
 }
 @end
+
 
 @interface _SJEdgeControlButtonItemCell_Title : SJEdgeControlButtonItemCell
 @property (nonatomic, strong, readonly) UILabel *titleLabel;

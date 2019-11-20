@@ -30,7 +30,6 @@
 #if __has_include(<IJKMediaFrameworkWithSSL/IJKMediaFrameworkWithSSL.h>)
     SJIJKMediaPlaybackController *controller = SJIJKMediaPlaybackController.new;
     IJKFFOptions *options = [IJKFFOptions optionsByDefault];
-    [options setPlayerOptionIntValue:1 forKey:@"enable-accurate-seek"];
     controller.options = options;
     _player.playbackController = controller;
 #endif

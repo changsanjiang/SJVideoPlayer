@@ -51,7 +51,7 @@ NS_ASSUME_NONNULL_BEGIN
 }
 
 + (NSString *)version {
-    return @"v3.0.5";
+    return @"v3.0.6";
 }
 
 + (instancetype)player {
@@ -416,7 +416,7 @@ _atViewController(UIView *view) {
 // - switch video definition -
 
 - (void)controlLayer:(SJSwitchVideoDefinitionControlLayer *)controlLayer didSelectAsset:(SJVideoPlayerURLAsset *)asset {
-    if ( asset != self.URLAsset ) {
+    if ( asset != self.definitionSwitchingInfo.switchingAsset ) {
         [self sj_switchingInfoObserver];
         [self switchVideoDefinition:asset];
     }

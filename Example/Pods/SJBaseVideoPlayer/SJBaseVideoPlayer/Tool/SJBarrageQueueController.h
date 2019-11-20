@@ -15,6 +15,8 @@ NS_ASSUME_NONNULL_BEGIN
 - (nullable SJBarrageLineConfiguration *)configurationAtIndex:(NSInteger)idx;
 - (void)updateForConfigurations;
 
+@property (nonatomic, getter=isDisabled) BOOL disabled;
+
 - (void)enqueue:(id<SJBarrageItem>)barrage;
 - (void)emptyQueue;
 - (void)removeDisplayedBarrages;
@@ -23,6 +25,10 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic, readonly, getter=isPaused) BOOL paused;
 - (void)pause;
 - (void)resume;
+
+- (UIView *)view;
+
+- (id<SJBarrageQueueControllerObserver>)getObserver;
 
 - (instancetype)init NS_UNAVAILABLE;
 + (instancetype)new NS_UNAVAILABLE;

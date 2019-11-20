@@ -9,7 +9,7 @@
 #define SJBarrageControllerDefines_h
 #import <Foundation/Foundation.h>
 #import <UIKit/UIKit.h>
-@protocol SJBarrageItem;
+@protocol SJBarrageItem, SJBarrageQueueControllerObserver;
 
 ///
 /// 弹幕控制
@@ -17,6 +17,13 @@
 NS_ASSUME_NONNULL_BEGIN
 @protocol SJBarrageQueueController <NSObject>
 - (instancetype)initWithLines:(NSUInteger)lines;
+
+///
+/// 是否禁用
+///
+///     禁用后, 将无法添加弹幕
+///
+@property (nonatomic, getter=isDisabled) BOOL disabled;
 
 ///
 /// 发送一条弹幕, 弹幕将自动显示
@@ -60,6 +67,11 @@ NS_ASSUME_NONNULL_BEGIN
 ///
 - (UIView *)view;
 
+///
+/// 获取观察者
+///
+- (id<SJBarrageQueueControllerObserver>)getObserver;
+
 - (instancetype)init NS_UNAVAILABLE;
 + (instancetype)new NS_UNAVAILABLE;
 @end
@@ -74,6 +86,11 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (instancetype)init NS_UNAVAILABLE;
 + (instancetype)new NS_UNAVAILABLE;
+@end
+
+@protocol SJBarrageQueueControllerObserver <NSObject>
+@property (nonatomic, copy, nullable) void(^disabledDidChangeExeBlock)(id<SJBarrageQueueController> controller);
+@property (nonatomic, copy, nullable) void(^pausedDidChangeExeBlock)(id<SJBarrageQueueController> controller);
 @end
 NS_ASSUME_NONNULL_END
 #endif /* SJBarrageControllerDefines_h */

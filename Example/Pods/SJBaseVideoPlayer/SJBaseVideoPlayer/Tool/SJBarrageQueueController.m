@@ -25,6 +25,9 @@ NS_ASSUME_NONNULL_BEGIN
 
 #define POINT_SPEED_FAST (0.01)
 
+static NSNotificationName const SJBarrageQueueControllerDisabledDidChangeNotification = @"SJBarrageQueueControllerDisabledDidChangeNotification";
+static NSNotificationName const SJBarrageQueueControllerPausedDidChangeNotification = @"SJBarrageQueueControllerPausedDidChangeNotification";
+
 @interface SJBarrageView : UILabel<CAAnimationDelegate>
 @property (nonatomic, strong, nullable) SJBarrageViewModel *viewModel;
 @property (nonatomic, copy, nullable) void(^animationDidStopExeBlock)(SJBarrageView *view, BOOL isFinished);
@@ -244,6 +247,34 @@ NS_ASSUME_NONNULL_BEGIN
 
 #pragma mark -
 
+@interface SJBarrageQueueControllerObserver : NSObject<SJBarrageQueueControllerObserver>
+- (instancetype)initWithController:(SJBarrageQueueController *)controller;
+@end
+
+@implementation SJBarrageQueueControllerObserver
+@synthesize disabledDidChangeExeBlock = _disabledDidChangeExeBlock;
+@synthesize pausedDidChangeExeBlock = _pausedDidChangeExeBlock;
+- (instancetype)initWithController:(SJBarrageQueueController *)controller {
+    self = [super init];
+    if ( self ) {
+        [NSNotificationCenter.defaultCenter addObserver:self selector:@selector(_pausedDidChange:) name:SJBarrageQueueControllerPausedDidChangeNotification object:controller];
+        [NSNotificationCenter.defaultCenter addObserver:self selector:@selector(_disabledDidChange:) name:SJBarrageQueueControllerDisabledDidChangeNotification object:controller];
+    }
+    return self;
+}
+- (void)dealloc {
+    [NSNotificationCenter.defaultCenter removeObserver:self];
+}
+- (void)_pausedDidChange:(NSNotification *)note {
+    if ( _pausedDidChangeExeBlock ) _pausedDidChangeExeBlock(note.object);
+}
+- (void)_disabledDidChange:(NSNotification *)note {
+    if ( _disabledDidChangeExeBlock ) _disabledDidChangeExeBlock(note.object);
+}
+@end
+
+#pragma mark -
+
 static CGFloat SJScreenMaxWidth;
 
 @interface SJBarrageQueueController ()<SJBarrageQueueControllerViewDelegate, SJBarrageClockDelegate>
@@ -253,6 +284,7 @@ static CGFloat SJScreenMaxWidth;
 @property (nonatomic, strong, readonly) NSArray<SJBarrageLineConfiguration *> *configurations;
 @property (nonatomic, strong, readonly) NSArray<SJBarrageContainerView *> *containerViews;
 @property (nonatomic, strong, readonly) SJBarrageQueueControllerView *view;
+@property (nonatomic, getter=isPaused) BOOL paused;
 @end
 
 @implementation SJBarrageQueueController
@@ -291,6 +323,14 @@ static CGFloat SJScreenMaxWidth;
     return self;
 }
 
+- (void)setDisabled:(BOOL)disabled {
+    if ( disabled != _disabled ) {
+        _disabled = disabled;
+        if ( disabled ) [self removeAll];
+        [self _postNotification:SJBarrageQueueControllerDisabledDidChangeNotification];
+    }
+}
+
 - (nullable SJBarrageLineConfiguration *)configurationAtIndex:(NSInteger)idx {
     if ( idx < 0 || idx >= _configurations.count )
         return nil;
@@ -311,6 +351,7 @@ static CGFloat SJScreenMaxWidth;
 }
 
 - (void)enqueue:(id<SJBarrageItem>)barrage {
+    if ( _disabled ) return;
     [_queue enqueue:barrage];
     if ( _paused == NO ) [_clock resume];
 }
@@ -335,13 +376,19 @@ static CGFloat SJScreenMaxWidth;
 }
 
 - (void)pause {
-    _paused = YES;
+    if ( _disabled ) return;
     [_clock pause];
+    self.paused = YES;
 }
 
 - (void)resume {
-    _paused = NO;
+    if ( _disabled ) return;
     [_clock resume];
+    self.paused = NO;
+}
+
+- (id<SJBarrageQueueControllerObserver>)getObserver {
+    return [SJBarrageQueueControllerObserver.alloc initWithController:self];
 }
 
 - (void)clock:(SJBarrageClock *)clock timeDidChange:(NSTimeInterval)time {
@@ -401,7 +448,18 @@ static CGFloat SJScreenMaxWidth;
     [self.containerViews makeObjectsPerformSelector:isPaused ? @selector(pauseAnimations) : @selector(resumeAnimations)];
 }
 
+- (void)barrageQueueControllerView:(SJBarrageQueueControllerView *)view boundsDidChange:(CGRect)bounds {
+    [self removeDisplayedBarrages];
+}
+
 #pragma mark -
+
+- (void)setPaused:(BOOL)paused {
+    if ( paused != _paused ) {
+        _paused = paused;
+        [self _postNotification:SJBarrageQueueControllerPausedDidChangeNotification];
+    }
+}
 
 - (NSTimeInterval)_pointDuration {
     return POINT_SPEED_FAST;
@@ -421,8 +479,10 @@ static CGFloat SJScreenMaxWidth;
     }
 }
 
-- (void)barrageQueueControllerView:(SJBarrageQueueControllerView *)view boundsDidChange:(CGRect)bounds {
-    [self removeDisplayedBarrages];
+- (void)_postNotification:(NSNotificationName)note {
+    dispatch_async(dispatch_get_main_queue(), ^{
+        [NSNotificationCenter.defaultCenter postNotificationName:note object:self];
+    });
 }
 @end
 

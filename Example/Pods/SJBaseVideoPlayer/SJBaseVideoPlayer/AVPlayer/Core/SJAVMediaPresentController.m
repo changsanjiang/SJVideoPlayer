@@ -59,6 +59,7 @@ NS_ASSUME_NONNULL_BEGIN
         [CATransaction begin];
         [CATransaction setDisableActions:YES];
         view.videoGravity = _videoGravity;
+        view.frame = self.view.bounds;
         [CATransaction commit];
         [self.view insertSubview:view atIndex:0];
     }

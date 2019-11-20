@@ -62,10 +62,13 @@ NS_ASSUME_NONNULL_BEGIN
 
 @interface SJBaseVideoPlayer (Placeholder)
 ///
-/// 显示播放画面
+/// 播放画面显示层
 ///
-///         内部自带placeholderImageView, 可以设置占位图(本地图片或URL)
-///         了解更多请前往协议头文件查看
+/// \code
+///     // 设置占位图
+///     _player.presentView.placeholderImageView.image = [UIImage imageNamed:@"..."];
+///     // [_player.presentView.placeholderImageView sd_setImageWithURL:URL];
+/// \endcode
 ///
 @property (nonatomic, strong, readonly) UIView<SJVideoPlayerPresentView> *presentView;
 
@@ -291,7 +294,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 /// v1.3.0 新增
 /// 请在适当的时候调用这些方法
-@interface SJBaseVideoPlayer (ViewController)
+@interface SJBaseVideoPlayer (Life)
 
 /// You should call it when view did appear
 - (void)vc_viewDidAppear; 
@@ -814,8 +817,8 @@ NS_ASSUME_NONNULL_BEGIN
 ///         make.font([UIFont boldSystemFontOfSize:16]);
 ///         make.textColor(UIColor.whiteColor);
 ///         make.stroke(^(id<SJUTStroke>  _Nonnull make) {
-///         make.color = UIColor.blackColor;
-///         make.width = -1;
+///             make.color = UIColor.blackColor;
+///             make.width = -1;
 ///         });
 ///     }]];
 ///

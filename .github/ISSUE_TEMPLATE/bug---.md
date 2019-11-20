@@ -2,37 +2,33 @@
 name: Bug 上报
 about: Create a report to help us improve
 title: ''
-labels: ''
+labels: bug
 assignees: ''
 
 ---
 
-**Describe the bug**
-A clear and concise description of what the bug is.
+**描述bug**
+清晰简单地描述这个bug是啥
 
-**To Reproduce**
-Steps to reproduce the behavior:
-1. Go to '...'
-2. Click on '....'
-3. Scroll down to '....'
-4. See error
+**必现/偶发?**
+必现
 
-**Expected behavior**
-A clear and concise description of what you expected to happen.
+**怎么样重现这个bug**
+1. 显示哪个页面
+2. 点击哪个位置
+3. 滚动到哪个位置
+4. 发生了什么错误
 
-**Screenshots**
-If applicable, add screenshots to help explain your problem.
+**你期望的结果是什么？**
+你本来期望得到的正确结果是怎样的？就是解决bug之后的结果
 
-**Desktop (please complete the following information):**
- - OS: [e.g. iOS]
- - Browser [e.g. chrome, safari]
- - Version [e.g. 22]
+**截图**
+如果有必要的话，请上传几张截图
 
-**Smartphone (please complete the following information):**
- - Device: [e.g. iPhone6]
- - OS: [e.g. iOS8.1]
- - Browser [e.g. stock browser, safari]
- - Version [e.g. 22]
+**运行环境**
+ - iPhone6
+ - iOS8.1
+ - Xcode10
 
-**Additional context**
-Add any other context about the problem here.
+**额外的**
+最好能提供出现bug的Demo

@@ -416,7 +416,13 @@ _atViewController(UIView *view) {
 // - switch video definition -
 
 - (void)controlLayer:(SJSwitchVideoDefinitionControlLayer *)controlLayer didSelectAsset:(SJVideoPlayerURLAsset *)asset {
-    if ( asset != self.definitionSwitchingInfo.switchingAsset ) {
+    SJVideoPlayerURLAsset *selected = self.URLAsset;
+    SJVideoDefinitionSwitchingInfo *info = self.definitionSwitchingInfo;
+    if ( info.switchingAsset != nil && info.status != SJDefinitionSwitchStatusFailed ) {
+        selected = info.switchingAsset;
+    }
+    
+    if ( asset != selected ) {
         [self sj_switchingInfoObserver];
         [self switchVideoDefinition:asset];
     }

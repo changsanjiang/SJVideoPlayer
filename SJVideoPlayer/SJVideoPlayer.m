@@ -465,18 +465,19 @@ _atViewController(UIView *view) {
     objc_setAssociatedObject(self, @selector(definitionURLAssets), definitionURLAssets, OBJC_ASSOCIATION_RETAIN_NONATOMIC);
     
     dispatch_async(dispatch_get_main_queue(), ^{
+        SJEdgeControlLayerItemAdapter *adapter = self.defaultEdgeControlLayer.bottomAdapter;
         if ( definitionURLAssets != nil ) {
+            if ( self.definitionButtonItem != nil ) return;
             self.definitionButtonItem = [SJEdgeControlButtonItem placeholderWithType:SJButtonItemPlaceholderType_49xAutoresizing tag:SJEdgeControlLayerBottomItem_Definition];
             [self.definitionButtonItem addTarget:self action:@selector(clickedDefinitionButtonItem:)];
-            [self.defaultEdgeControlLayer.bottomAdapter insertItem:self.definitionButtonItem rearItem:SJEdgeControlLayerBottomItem_FullBtn];
+            [adapter insertItem:self.definitionButtonItem rearItem:SJEdgeControlLayerBottomItem_FullBtn];
+            [self.defaultEdgeControlLayer.bottomAdapter reload];
         }
-        else {
-            self.definitionButtonItem = nil;
-            [self.defaultEdgeControlLayer.bottomAdapter removeItemForTag:SJEdgeControlLayerBottomItem_Definition];
+        else if ( [adapter containsItem:self.definitionButtonItem] ) {
+            [adapter removeItemForTag:SJEdgeControlLayerBottomItem_Definition];
             [self.switcher deleteControlLayerForIdentifier:SJControlLayer_SwitchVideoDefinition];
+            [self.defaultEdgeControlLayer.bottomAdapter reload];
         }
-        
-        [self.defaultEdgeControlLayer.bottomAdapter reload];
     });
 }
 

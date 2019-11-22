@@ -37,14 +37,27 @@ NS_ASSUME_NONNULL_BEGIN
     [sender setTitle:self.player.barrageQueueController.isPaused ? @"Resume" : @"Pause" forState:UIControlStateNormal];
 }
 
-- (void)touchesEnded:(NSSet<UITouch *> *)touches withEvent:(nullable UIEvent *)event {
-    [self _test];
+- (IBAction)send1:(id)sender {
+    [self _test:1];
 }
 
-- (void)_test {
+- (IBAction)send100:(id)sender {
+    [self _test:100];
+}
+
+- (IBAction)rate:(UISlider *)sender {
+    SJBarrageQueueController *controller = (id)_player.barrageQueueController;
+    for ( int i = 0 ; i < 4 ; ++ i ) {
+        SJBarrageLineConfiguration *config = [controller configurationAtIndex:i];
+        config.rate = sender.value;
+        [controller updateForConfigurations];
+    }
+}
+
+- (void)_test:(NSInteger)count {
     NSArray<NSString *> *testtitles = @[@"悲哀化身-内蒙专区", @"车迟国@最终幻想-剑侠风骨车迟国", @"老虎222-天竺国", @"今朝醉-云中殿今朝醉-云中殿今朝醉-云中殿", @"杀手阿七-五明宫杀手阿七-五明宫", @"浅墨淋雨桥-剑胆琴心"];
     
-    for ( int i = 0 ; i < 10 ; ++ i ) {
+    for ( int i = 0 ; i < count ; ++ i ) {
         SJBarrageItem *item = [SJBarrageItem.alloc initWithContent:[NSAttributedString sj_UIKitText:^(id<SJUIKitTextMakerProtocol>  _Nonnull make) {
             make.append(testtitles[arc4random() % testtitles.count]);
             make.font([UIFont boldSystemFontOfSize:16]);
@@ -60,15 +73,17 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (void)_setupViews {
     self.view.backgroundColor = UIColor.blackColor;
+    self.edgesForExtendedLayout = UIRectEdgeNone;
     
     _player = SJVideoPlayer.player;
+    _player.videoGravity = AVLayerVideoGravityResizeAspectFill;
     _player.URLAsset = [SJVideoPlayerURLAsset.alloc initWithURL:SourceURL1];
     [self.view addSubview:_player.view];
     [_player.view mas_makeConstraints:^(MASConstraintMaker *make) {
         if (@available(iOS 11.0, *)) {
             make.top.equalTo(self.view.mas_safeAreaLayoutGuideTop);
         } else {
-            make.top.offset(20);
+            make.top.offset(0);
         }
         make.left.right.offset(0);
         make.height.equalTo(self.view.mas_width).multipliedBy(9/16.0);

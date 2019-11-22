@@ -180,7 +180,7 @@ _lookupResponder(UIView *view, Class cls) {
 }
 
 + (NSString *)version {
-    return @"v3.1.2";
+    return @"v3.1.3";
 }
 
 - (void)setVideoGravity:(SJVideoGravity)videoGravity {

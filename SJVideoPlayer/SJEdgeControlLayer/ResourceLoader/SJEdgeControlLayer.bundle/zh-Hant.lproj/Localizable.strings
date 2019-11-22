@@ -1,6 +1,6 @@
 "SJVideoPlayer_ReplayText" = "重播";
 "SJVideoPlayer_PreviewText" = "預覽";
-"SJVideoPlayer_PlayFailedText" = "視頻加載失敗, 請確認網絡後重試";
+"SJVideoPlayer_PlayFailedText" = "視頻加載失敗, 請稍後重試";
 "SJVideoPlayer_PlayFailedButtonText" = "點擊重試";
 
 "SJVideoPlayer_NotReachablePrompt" = "網絡不穩定，請檢查網絡";

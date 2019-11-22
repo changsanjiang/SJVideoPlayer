@@ -5,56 +5,56 @@ PODS:
   - SDWebImage (5.3.1):
     - SDWebImage/Core (= 5.3.1)
   - SDWebImage/Core (5.3.1)
-  - SJBaseVideoPlayer (3.1.2):
+  - SJBaseVideoPlayer (3.1.3):
     - Masonry
     - Reachability
-    - SJBaseVideoPlayer/AVPlayer (= 3.1.2)
-    - SJBaseVideoPlayer/Const (= 3.1.2)
-    - SJBaseVideoPlayer/Header (= 3.1.2)
-    - SJBaseVideoPlayer/Model (= 3.1.2)
-    - SJBaseVideoPlayer/SJDeviceVolumeAndBrightnessManager (= 3.1.2)
-    - SJBaseVideoPlayer/Tool (= 3.1.2)
+    - SJBaseVideoPlayer/AVPlayer (= 3.1.3)
+    - SJBaseVideoPlayer/Const (= 3.1.3)
+    - SJBaseVideoPlayer/Header (= 3.1.3)
+    - SJBaseVideoPlayer/Model (= 3.1.3)
+    - SJBaseVideoPlayer/SJDeviceVolumeAndBrightnessManager (= 3.1.3)
+    - SJBaseVideoPlayer/Tool (= 3.1.3)
     - SJUIKit/ObserverHelper (>= 0.0.0.31)
     - SJUIKit/Queues (>= 0.0.0.31)
-  - SJBaseVideoPlayer/AVPlayer (3.1.2):
+  - SJBaseVideoPlayer/AVPlayer (3.1.3):
     - Masonry
     - Reachability
-    - SJBaseVideoPlayer/AVPlayer/Core (= 3.1.2)
+    - SJBaseVideoPlayer/AVPlayer/Core (= 3.1.3)
     - SJBaseVideoPlayer/Tool
     - SJUIKit/ObserverHelper (>= 0.0.0.31)
     - SJUIKit/Queues (>= 0.0.0.31)
-  - SJBaseVideoPlayer/AVPlayer/Core (3.1.2):
+  - SJBaseVideoPlayer/AVPlayer/Core (3.1.3):
     - Masonry
     - Reachability
     - SJBaseVideoPlayer/Tool
     - SJUIKit/ObserverHelper (>= 0.0.0.31)
     - SJUIKit/Queues (>= 0.0.0.31)
-  - SJBaseVideoPlayer/Const (3.1.2):
+  - SJBaseVideoPlayer/Const (3.1.3):
     - Masonry
     - Reachability
     - SJUIKit/ObserverHelper (>= 0.0.0.31)
     - SJUIKit/Queues (>= 0.0.0.31)
-  - SJBaseVideoPlayer/Header (3.1.2):
+  - SJBaseVideoPlayer/Header (3.1.3):
     - Masonry
     - Reachability
     - SJUIKit/ObserverHelper (>= 0.0.0.31)
     - SJUIKit/Queues (>= 0.0.0.31)
-  - SJBaseVideoPlayer/Model (3.1.2):
+  - SJBaseVideoPlayer/Model (3.1.3):
     - Masonry
     - Reachability
     - SJBaseVideoPlayer/Header
     - SJUIKit/ObserverHelper (>= 0.0.0.31)
     - SJUIKit/Queues (>= 0.0.0.31)
-  - SJBaseVideoPlayer/SJDeviceVolumeAndBrightnessManager (3.1.2):
+  - SJBaseVideoPlayer/SJDeviceVolumeAndBrightnessManager (3.1.3):
     - Masonry
     - Reachability
     - SJBaseVideoPlayer/Const
     - SJBaseVideoPlayer/Header
-    - SJBaseVideoPlayer/SJDeviceVolumeAndBrightnessManager/Core (= 3.1.2)
-    - SJBaseVideoPlayer/SJDeviceVolumeAndBrightnessManager/ResourceLoader (= 3.1.2)
+    - SJBaseVideoPlayer/SJDeviceVolumeAndBrightnessManager/Core (= 3.1.3)
+    - SJBaseVideoPlayer/SJDeviceVolumeAndBrightnessManager/ResourceLoader (= 3.1.3)
     - SJUIKit/ObserverHelper (>= 0.0.0.31)
     - SJUIKit/Queues (>= 0.0.0.31)
-  - SJBaseVideoPlayer/SJDeviceVolumeAndBrightnessManager/Core (3.1.2):
+  - SJBaseVideoPlayer/SJDeviceVolumeAndBrightnessManager/Core (3.1.3):
     - Masonry
     - Reachability
     - SJBaseVideoPlayer/Const
@@ -62,14 +62,14 @@ PODS:
     - SJBaseVideoPlayer/SJDeviceVolumeAndBrightnessManager/ResourceLoader
     - SJUIKit/ObserverHelper (>= 0.0.0.31)
     - SJUIKit/Queues (>= 0.0.0.31)
-  - SJBaseVideoPlayer/SJDeviceVolumeAndBrightnessManager/ResourceLoader (3.1.2):
+  - SJBaseVideoPlayer/SJDeviceVolumeAndBrightnessManager/ResourceLoader (3.1.3):
     - Masonry
     - Reachability
     - SJBaseVideoPlayer/Const
     - SJBaseVideoPlayer/Header
     - SJUIKit/ObserverHelper (>= 0.0.0.31)
     - SJUIKit/Queues (>= 0.0.0.31)
-  - SJBaseVideoPlayer/Tool (3.1.2):
+  - SJBaseVideoPlayer/Tool (3.1.3):
     - Masonry
     - Reachability
     - SJBaseVideoPlayer/Const
@@ -301,7 +301,7 @@ SPEC CHECKSUMS:
   MJRefresh: 72a46ecaa2a0feaf48fc5198dff95f25f8bb27c6
   Reachability: 33e18b67625424e47b6cde6d202dce689ad7af96
   SDWebImage: 7137d57385fb632129838c1e6ab9528a22c666cc
-  SJBaseVideoPlayer: 0e5056f5bd1cff2760b2bdc4219fbbd0bdb9717a
+  SJBaseVideoPlayer: 86a70367da01a97daa1f83104af70c3944e2485c
   SJFullscreenPopGesture: d4994917bc900e79cd686970866834b4c5883565
   SJPlaybackListController: e135c789fcd63d63a62d5e2e2965ab1e6d52a2bd
   SJRouter: 702a0d06811fc2da02d6145bc7abb9f633fdc612

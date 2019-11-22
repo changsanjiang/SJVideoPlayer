@@ -196,7 +196,6 @@ static NSNotificationName const SJBarrageQueueControllerPausedDidChangeNotificat
 
 @interface SJBarrageContainerView : UIView
 @property (nonatomic, strong, readonly, nullable) SJBarrageView *lastView;
-
 - (void)pauseAnimations;
 - (void)resumeAnimations;
 @end
@@ -338,10 +337,11 @@ static CGFloat SJScreenMaxWidth;
 }
 
 - (void)updateForConfigurations {
-    [self.containerViews enumerateObjectsUsingBlock:^(SJBarrageContainerView * _Nonnull view, NSUInteger idx, BOOL * _Nonnull stop) {
-        [view mas_remakeConstraints:^(MASConstraintMaker *make) {
-            CGFloat topMargin = self.configurations[idx].topMargin;
-            CGFloat height = self.configurations[idx].height;
+    [self.containerViews enumerateObjectsUsingBlock:^(SJBarrageContainerView * _Nonnull container, NSUInteger idx, BOOL * _Nonnull stop) {
+        SJBarrageLineConfiguration *config = self.configurations[idx];
+        [container mas_remakeConstraints:^(MASConstraintMaker *make) {
+            CGFloat topMargin = config.topMargin;
+            CGFloat height = config.height;
             idx == 0 ? make.top.offset(0) : make.top.equalTo(self.containerViews[idx - 1].mas_bottom).offset(topMargin);
             make.left.right.offset(0);
             make.height.offset(height);

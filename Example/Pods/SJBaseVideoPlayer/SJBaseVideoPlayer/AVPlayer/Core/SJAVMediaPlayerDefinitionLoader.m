@@ -60,6 +60,12 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (void)_seekToCurPos {
     _isSeeking = YES;
+    
+    if ( _innerPlayer.sj_playbackInfo.playbackType == SJPlaybackTypeLIVE ) {
+        [self _didCompleteLoad:YES];
+        return;
+    }
+    
     __weak typeof(self) _self = self;
     [_innerPlayer seekToTime:self.dataSource.player ? self.dataSource.player.currentTime : kCMTimeZero toleranceBefore:kCMTimeZero toleranceAfter:kCMTimeZero completionHandler:^(BOOL finished) {
         __strong typeof(_self) self = _self;

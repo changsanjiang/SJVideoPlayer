@@ -120,6 +120,11 @@ SJEdgeControlButtonItemTag const SJEdgeControlLayerCenterItem_Replay = 40000;
 
 #pragma mark - item actions
 
+- (void)_tappedResidentBackButton {
+    SJEdgeControlButtonItem *backItem = [self.topAdapter itemForTag:SJEdgeControlLayerTopItem_Back];
+    [backItem performAction];
+}
+
 - (void)_tappedBackItem {
     if ( [self.delegate respondsToSelector:@selector(backItemWasTappedForControlLayer:)] ) {
         [self.delegate backItemWasTappedForControlLayer:self];
@@ -260,7 +265,7 @@ SJEdgeControlButtonItemTag const SJEdgeControlLayerCenterItem_Replay = 40000;
     if ( _residentBackButton ) return _residentBackButton;
     _residentBackButton = [UIButton buttonWithType:UIButtonTypeCustom];
     [_residentBackButton setImage:SJEdgeControlLayerSettings.commonSettings.backBtnImage forState:UIControlStateNormal];
-    [_residentBackButton addTarget:self action:@selector(_tappedBackItem) forControlEvents:UIControlEventTouchUpInside];
+    [_residentBackButton addTarget:self action:@selector(_tappedResidentBackButton) forControlEvents:UIControlEventTouchUpInside];
     return _residentBackButton;
 }
 

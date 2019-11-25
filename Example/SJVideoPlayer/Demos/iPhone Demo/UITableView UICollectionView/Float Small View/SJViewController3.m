@@ -52,7 +52,7 @@
     self.player.pauseWhenScrollDisappeared = NO;
     
     // 单击小浮窗时的回调
-    self.player.floatSmallViewController.singleTappedOnTheFloatViewExeBlock = ^(id<SJFloatSmallViewControllerProtocol>  _Nonnull controller) {
+    self.player.floatSmallViewController.singleTappedOnTheFloatViewExeBlock = ^(id<SJFloatSmallViewController>  _Nonnull controller) {
         __strong typeof(_self) self = _self;
         if ( !self ) return ;
         self.pauseWhenViewDidDisappear = NO;
@@ -61,7 +61,7 @@
     };
     
     // 双击小浮窗时的回调
-    self.player.floatSmallViewController.doubleTappedOnTheFloatViewExeBlock = ^(id<SJFloatSmallViewControllerProtocol>  _Nonnull controller) {
+    self.player.floatSmallViewController.doubleTappedOnTheFloatViewExeBlock = ^(id<SJFloatSmallViewController>  _Nonnull controller) {
         __strong typeof(_self) self = _self;
         if ( !self ) return ;
         

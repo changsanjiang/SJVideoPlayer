@@ -29,7 +29,7 @@ NS_ASSUME_NONNULL_BEGIN
     _player.fastForwardViewController.blockColor = SJVideoPlayerSettings.commonSettings.progress_traceColor;
     [self _updateTriggerAreaWidth];
     __weak typeof(self) _self = self;
-    _player.rotationObserver.rotationDidEndExeBlock = ^(id<SJRotationManagerProtocol>  _Nonnull mgr) {
+    _player.rotationObserver.rotationDidEndExeBlock = ^(id<SJRotationManager>  _Nonnull mgr) {
         __strong typeof(_self) self = _self;
         if ( !self ) return ;
         [self _updateTriggerAreaWidth];

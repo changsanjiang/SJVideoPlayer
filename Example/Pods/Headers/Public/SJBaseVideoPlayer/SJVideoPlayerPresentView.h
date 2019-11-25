@@ -1,1 +1,1 @@
-../../../SJBaseVideoPlayer/SJBaseVideoPlayer/Tool/SJVideoPlayerPresentView.h
+../../../SJBaseVideoPlayer/SJBaseVideoPlayer/Common/Implements/SJVideoPlayerPresentView.h

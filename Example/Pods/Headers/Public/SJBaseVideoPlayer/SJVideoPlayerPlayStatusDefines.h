@@ -1,1 +1,1 @@
-../../../SJBaseVideoPlayer/SJBaseVideoPlayer/Header/SJVideoPlayerPlayStatusDefines.h
+../../../SJBaseVideoPlayer/SJBaseVideoPlayer/Common/Const/SJVideoPlayerPlayStatusDefines.h

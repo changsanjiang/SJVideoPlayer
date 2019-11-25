@@ -1,1 +1,1 @@
-../../../SJBaseVideoPlayer/SJBaseVideoPlayer/Header/SJSubtitlesPromptControllerDefines.h
+../../../SJBaseVideoPlayer/SJBaseVideoPlayer/Common/Interfaces/SJSubtitlesPromptControllerDefines.h

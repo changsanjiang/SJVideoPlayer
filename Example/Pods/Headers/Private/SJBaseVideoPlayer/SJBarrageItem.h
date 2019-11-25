@@ -1,1 +1,1 @@
-../../../SJBaseVideoPlayer/SJBaseVideoPlayer/Model/SJBarrageItem.h
+../../../SJBaseVideoPlayer/SJBaseVideoPlayer/Common/Implements/SJBarrageItem.h

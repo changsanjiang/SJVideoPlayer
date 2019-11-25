@@ -8,10 +8,6 @@
 #import "SJAVBasePlayer.h"
 
 NS_ASSUME_NONNULL_BEGIN
-SJWaitingReason const SJWaitingToMinimizeStallsReason = @"AVPlayerWaitingToMinimizeStallsReason";
-SJWaitingReason const SJWaitingWhileEvaluatingBufferingRateReason = @"AVPlayerWaitingWhileEvaluatingBufferingRateReason";
-SJWaitingReason const SJWaitingWithNoAssetToPlayReason = @"AVPlayerWaitingWithNoItemToPlayReason";
-
 @interface SJAVBasePlayer ()
 @property (nonatomic, nullable) SJWaitingReason sj_reasonForWaitingToPlay;
 @property (nonatomic) SJPlaybackTimeControlStatus sj_timeControlStatus;
@@ -60,6 +56,12 @@ static NSString *kTimeControlStatus = @"timeControlStatus";
 
 - (id)addPeriodicTimeObserverForInterval:(CMTime)interval queue:(nullable dispatch_queue_t)queue usingBlock:(void (^)(CMTime))block {
     id observer = [super addPeriodicTimeObserverForInterval:interval queue:queue usingBlock:block];
+    [self.sj_periodicTimeObservers addObject:observer];
+    return observer;
+}
+
+- (id)addBoundaryTimeObserverForTimes:(NSArray<NSValue *> *)times queue:(nullable dispatch_queue_t)queue usingBlock:(void (^)(void))block {
+    id observer = [super addBoundaryTimeObserverForTimes:times queue:queue usingBlock:block];
     [self.sj_periodicTimeObservers addObject:observer];
     return observer;
 }

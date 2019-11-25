@@ -25,7 +25,7 @@
 #import "SJFloatSmallViewControllerDefines.h"
 #import "SJEdgeFastForwardViewControllerDefines.h"
 #import "SJVideoDefinitionSwitchingInfo.h"
-#import "SJPopPromptControllerProtocol.h"
+#import "SJPopPromptControllerDefines.h"
 #import "SJPlaybackObservation.h"
 #import "SJVideoPlayerPresentViewDefines.h"
 #import "SJSubtitlesPromptControllerDefines.h"
@@ -389,7 +389,7 @@ NS_ASSUME_NONNULL_BEGIN
 ///
 ///         了解更多请前往协议头文件查看
 ///
-@property (nonatomic, strong, null_resettable) id<SJPopPromptControllerProtocol> popPromptController;
+@property (nonatomic, strong, null_resettable) id<SJPopPromptController> popPromptController;
 @end
 
 
@@ -445,7 +445,7 @@ NS_ASSUME_NONNULL_BEGIN
 ///
 ///         default value is NO, 当需要开启时, 请设置`player.fastForwardViewController.enabled = YES;`
 ///
-@property (nonatomic, strong, null_resettable) id<SJEdgeFastForwardViewControllerProtocol> fastForwardViewController;
+@property (nonatomic, strong, null_resettable) id<SJEdgeFastForwardViewController> fastForwardViewController;
 @end
 
 
@@ -585,7 +585,7 @@ NS_ASSUME_NONNULL_BEGIN
 ///         如果需要禁止自动旋转, 可以设置`player.rotationManager.disabledAutorotation = YES;`
 ///         了解更多请前往头文件查看
 ///
-@property (nonatomic, strong, null_resettable) id<SJRotationManagerProtocol> rotationManager;
+@property (nonatomic, strong, null_resettable) id<SJRotationManager> rotationManager;
 
 ///
 /// 观察者
@@ -705,7 +705,7 @@ NS_ASSUME_NONNULL_BEGIN
 ///
 /// \endcode
 ///
-@property (nonatomic, strong, null_resettable) id<SJFloatSmallViewControllerProtocol> floatSmallViewController;
+@property (nonatomic, strong, null_resettable) id<SJFloatSmallViewController> floatSmallViewController;
 
 ///
 /// 当开启小浮窗控制时, 播放结束后, 会默认隐藏小浮窗

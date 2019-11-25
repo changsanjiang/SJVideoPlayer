@@ -1,1 +1,1 @@
-../../../SJBaseVideoPlayer/SJBaseVideoPlayer/Tool/SJFitOnScreenManager.h
+../../../SJBaseVideoPlayer/SJBaseVideoPlayer/Common/Implements/SJFitOnScreenManager.h

@@ -1,1 +1,1 @@
-../../../SJBaseVideoPlayer/SJBaseVideoPlayer/Tool/SJPlaybackObservation.h
+../../../SJBaseVideoPlayer/SJBaseVideoPlayer/Common/Implements/SJPlaybackObservation.h

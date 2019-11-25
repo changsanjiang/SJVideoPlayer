@@ -5,7 +5,11 @@
 //  Created by 畅三江 on 2019/7/12.
 //
 
+#if __has_include(<SJBaseVideoPlayer/SJVideoPlayerURLAsset.h>)
+#import <SJBaseVideoPlayer/SJVideoPlayerURLAsset.h>
+#else
 #import "SJVideoPlayerURLAsset.h"
+#endif
 
 NS_ASSUME_NONNULL_BEGIN
 

@@ -1,1 +1,1 @@
-../../../SJBaseVideoPlayer/SJBaseVideoPlayer/Tool/SJFloatSmallViewController.h
+../../../SJBaseVideoPlayer/SJBaseVideoPlayer/Common/Implements/SJFloatSmallViewController.h

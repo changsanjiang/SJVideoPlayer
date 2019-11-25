@@ -13,8 +13,7 @@
 #import "SJRunLoopTaskQueue.h"
 #endif
 #import "SJAVMediaPlayer.h"
-#import "SJAVMediaPlayerLoader.h"
-#import "SJReachability.h"
+#import "SJAVMediaPlayerLoader.h" 
 #import "SJVideoPlayerRegistrar.h"
 #import "AVAsset+SJAVMediaExport.h"
 #import "NSTimer+SJAssetAdd.h"
@@ -388,6 +387,9 @@ NS_ASSUME_NONNULL_BEGIN
         if ( !self ) return;
         if ( self.pauseWhenAppDidEnterBackground == NO ) {
             self.presentController.keyPresentView.player = nil;
+        }
+        else if ( self.timeControlStatus != SJPlaybackTimeControlStatusPaused ) {
+            [self pause];
         }
     };
 }

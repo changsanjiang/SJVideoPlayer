@@ -14,11 +14,6 @@ extern SJWaitingReason const SJWaitingToMinimizeStallsReason;
 extern SJWaitingReason const SJWaitingWhileEvaluatingBufferingRateReason;
 extern SJWaitingReason const SJWaitingWithNoAssetToPlayReason;
 
-typedef struct {
-    BOOL isSeeking;
-    CMTime time;
-} SJSeekingInfo;
-
 @interface SJAVBasePlayer : AVPlayer
 ///
 /// 初始化时, 请传入 playerItem. 不可为空!

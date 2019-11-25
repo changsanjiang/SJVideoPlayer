@@ -1001,7 +1001,7 @@ ___
 <h2 id="6">6. 旋转</h2>
 
 <p>
-此部分的内容由 "id &lt;SJRotationManagerProtocol&gt; rotationManager" 提供支持.
+此部分的内容由 "id &lt;SJRotationManager&gt; rotationManager" 提供支持.
 
 对于旋转, 我们开发者肯定需要绝对的控制, 例如: 设置自动旋转所支持方向. 能够主动+自动旋转, 而且还需要能在适当的时候禁止自动旋转. 旋转前后的回调等等... 放心这些功能都有, 我挨个给大家介绍.
 
@@ -1106,7 +1106,7 @@ _player.rotationManager.currentOrientation
 
 <h3 id ="6.9">6.9 自己动手撸一个 SJRotationManager, 替换作者原始实现</h3>
 
-当你想替换原始实现时, 可以实现 SJRotationManagerProtocol 中定义的方法.
+当你想替换原始实现时, 可以实现 SJRotationManager 中定义的方法.
 
 ___
 
@@ -1385,7 +1385,7 @@ ___
 ///
 ///         了解更多请前往协议头文件查看
 ///
-@property (nonatomic, strong, null_resettable) id<SJPopPromptControllerProtocol> popPromptController;
+@property (nonatomic, strong, null_resettable) id<SJPopPromptController> popPromptController;
 ```
 
 <h3 id="12.1">12.2 配置提示文本</h3>

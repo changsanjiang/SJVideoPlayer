@@ -149,11 +149,11 @@ NS_ASSUME_NONNULL_BEGIN
     }];
 }
 
-- (void)_initializeFloatSmallViewControllerObserverIfNeeded:(nullable id<SJFloatSmallViewControllerProtocol>)floatSmallViewController {
+- (void)_initializeFloatSmallViewControllerObserverIfNeeded:(nullable id<SJFloatSmallViewController>)floatSmallViewController {
     if ( _sj_floatSmallViewControllerObserver.controller != floatSmallViewController ) {
         _sj_floatSmallViewControllerObserver = [floatSmallViewController getObserver];
         __weak typeof(self) _self = self;
-        _sj_floatSmallViewControllerObserver.appearStateDidChangeExeBlock = ^(id<SJFloatSmallViewControllerProtocol>  _Nonnull controller) {
+        _sj_floatSmallViewControllerObserver.appearStateDidChangeExeBlock = ^(id<SJFloatSmallViewController>  _Nonnull controller) {
             __strong typeof(_self) self = _self;
             if ( !self ) return ;
             if ( controller.isAppeared ) {
@@ -403,12 +403,12 @@ _atViewController(UIView *view) {
 
 // - float small view -
 
-- (void)setFloatSmallViewController:(nullable id<SJFloatSmallViewControllerProtocol>)floatSmallViewController {
+- (void)setFloatSmallViewController:(nullable id<SJFloatSmallViewController>)floatSmallViewController {
     [super setFloatSmallViewController:floatSmallViewController];
     [self _initializeFloatSmallViewControllerObserverIfNeeded:floatSmallViewController];
 }
-- (id<SJFloatSmallViewControllerProtocol>)floatSmallViewController {
-    id<SJFloatSmallViewControllerProtocol> floatSmallViewController = [super floatSmallViewController];
+- (id<SJFloatSmallViewController>)floatSmallViewController {
+    id<SJFloatSmallViewController> floatSmallViewController = [super floatSmallViewController];
     [self _initializeFloatSmallViewControllerObserverIfNeeded:floatSmallViewController];
     return floatSmallViewController;
 }

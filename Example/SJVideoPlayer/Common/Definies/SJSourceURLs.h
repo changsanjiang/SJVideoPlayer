@@ -32,4 +32,5 @@
 #define VideoURL_Level3 [NSURL URLWithString:@"http://asp.cntv.myalicdn.com/asp/hls/1200/0303000a/3/default/4f4c61936bec8164557673a34fe21123/1200.m3u8"]
 
 #define VideoURL_Level4 [NSURL URLWithString:@"http://asp.cntv.myalicdn.com/asp/hls/2000/0303000a/3/default/4f4c61936bec8164557673a34fe21123/2000.m3u8"]
+
 #endif /* SJSourceURLs_h */

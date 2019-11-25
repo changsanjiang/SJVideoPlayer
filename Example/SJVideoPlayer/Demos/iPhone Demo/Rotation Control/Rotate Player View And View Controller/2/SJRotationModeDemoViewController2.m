@@ -205,14 +205,14 @@
  _player.floatSmallViewController.enabled = YES;     ///< 开启小浮窗
  __weak typeof(self) _self = self;
  _player.floatSmallViewController.singleTappedOnTheFloatViewExeBlock =  ///< 单击小浮窗执行的block
- ^(id<SJFloatSmallViewControllerProtocol>  _Nonnull controller) {
+ ^(id<SJFloatSmallViewController>  _Nonnull controller) {
  __strong typeof(_self) self = _self;
  if ( !self ) return ;
  [controller dismissFloatView];
  //            [self.navigationController pushViewController:[[ViewControllerContinuePlaying alloc] initWithAsset:self.player.URLAsset] animated:YES];
  };
  _player.floatSmallViewController.doubleTappedOnTheFloatViewExeBlock = ///< 双击小浮窗执行的block
- ^(id<SJFloatSmallViewControllerProtocol>  _Nonnull controller) {
+ ^(id<SJFloatSmallViewController>  _Nonnull controller) {
  __strong typeof(_self) self = _self;
  if ( !self ) return ;
  if ( self.player.playStatus == SJVideoPlayerPlayStatusPlaying )

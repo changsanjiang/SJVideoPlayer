@@ -15,7 +15,7 @@
 
 @interface SJRotationModeDemoViewController1 ()
 @property (weak, nonatomic) IBOutlet UIView *playerContainerView;
-@property (nonatomic, strong) SJBaseVideoPlayer *player;
+@property (nonatomic, strong) SJVideoPlayer *player;
 @property (weak, nonatomic) IBOutlet UITextField *textField;
 @end
 
@@ -37,6 +37,7 @@
     self.edgesForExtendedLayout = UIRectEdgeNone;
     
     _player = [SJVideoPlayer player];
+    _player.defaultEdgeControlLayer.showResidentBackButton = YES;
     
     SJVideoPlayerURLAsset *asset = [[SJVideoPlayerURLAsset alloc] initWithURL:SourceURL4];
     asset.title = @"123456789";

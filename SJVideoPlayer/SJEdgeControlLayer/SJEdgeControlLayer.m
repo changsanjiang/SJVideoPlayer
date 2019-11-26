@@ -121,8 +121,7 @@ SJEdgeControlButtonItemTag const SJEdgeControlLayerCenterItem_Replay = 40000;
 #pragma mark - item actions
 
 - (void)_tappedResidentBackButton {
-    SJEdgeControlButtonItem *backItem = [self.topAdapter itemForTag:SJEdgeControlLayerTopItem_Back];
-    [backItem performAction];
+    [self.backItem performAction];
 }
 
 - (void)_tappedBackItem {
@@ -470,6 +469,7 @@ SJEdgeControlButtonItemTag const SJEdgeControlLayerCenterItem_Replay = 40000;
     [self _updateBottomTimeLabelSize];
     [self _updateBottomDurationItemIfNeeded];
     [self _updateBottomCurrentTimeItemIfNeeded];
+    [self _updateBottomProgressSliderItemIfNeeded];
     [self _updateBottomProgressIndicatorIfNeeded];
     [self _updateResidentBackButtonAppearStateIfNeeded];
     [self _updateAdaptersIfNeeded];

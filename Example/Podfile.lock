@@ -237,7 +237,7 @@ DEPENDENCIES:
   - SJVideoPlayer (from `../../SJVideoPlayer`)
 
 SPEC REPOS:
-  https://cdn.cocoapods.org/:
+  trunk:
     - Masonry
     - MJRefresh
     - Reachability

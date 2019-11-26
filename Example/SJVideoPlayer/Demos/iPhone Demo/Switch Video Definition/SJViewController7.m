@@ -53,7 +53,7 @@ NS_ASSUME_NONNULL_BEGIN
     asset4.definition_lastName = @"流畅";
 
     
-    _player.playbackController = SJAliyunVodPlaybackController.new;
+//    _player.playbackController = SJAliyunVodPlaybackController.new;
     _player.definitionURLAssets = @[asset1, asset2, asset3, asset4];
     _player.URLAsset = asset1;
     _player.defaultSwitchVideoDefinitionControlLayer.delegate = self;

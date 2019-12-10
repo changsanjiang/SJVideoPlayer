@@ -43,6 +43,11 @@
     });
 }
 
+- (void)viewSafeAreaInsetsDidChange {
+    NSLog(@"A: %@", NSStringFromUIEdgeInsets(self.view.safeAreaInsets));
+    [super viewSafeAreaInsetsDidChange];
+}
+
 - (void)viewDidLoad {
     [super viewDidLoad];
     [self _setupViews];
@@ -161,6 +166,21 @@
 }
 
 #pragma mark -
+
+- (void)viewDidAppear:(BOOL)animated {
+    [super viewDidAppear:animated];
+    [self.player vc_viewDidAppear];
+}
+
+- (void)viewWillDisappear:(BOOL)animated {
+    [super viewWillDisappear:animated];
+    [self.player vc_viewWillDisappear];
+}
+
+- (void)viewDidDisappear:(BOOL)animated {
+    [super viewDidDisappear:animated];
+    [self.player vc_viewDidDisappear];
+}
 
 - (BOOL)prefersStatusBarHidden {
     return [self.player vc_prefersStatusBarHidden];

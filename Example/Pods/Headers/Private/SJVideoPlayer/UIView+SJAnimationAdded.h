@@ -1,1 +1,1 @@
-../../../../../SJVideoPlayer/Common/UIView+SJAnimationAdded.h
+../../../../../SJVideoPlayer/Common/UIKit/UIView+SJAnimationAdded.h

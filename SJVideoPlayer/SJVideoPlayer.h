@@ -19,7 +19,7 @@
 #endif
 #import "SJVideoPlayerSettings.h"
 #import "SJVideoPlayerURLAsset+SJControlAdd.h"
-#import "SJVideoPlayerFilmEditingCommonHeader.h"
+#import "SJVideoPlayerFilmEditingDefines.h"
 #import "SJVideoPlayerFilmEditingConfig.h"
 #import "SJControlLayerSwitcher.h"
 

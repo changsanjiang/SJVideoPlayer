@@ -1,1 +1,1 @@
-../../../../../SJVideoPlayer/SJFloatSmallViewControlLayer/SJFloatSmallViewControlLayer.h
+../../../../../SJVideoPlayer/ControlLayers/SJFloatSmallViewControlLayer/SJFloatSmallViewControlLayer.h

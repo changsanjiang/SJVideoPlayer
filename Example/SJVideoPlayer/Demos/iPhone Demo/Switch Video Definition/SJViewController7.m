@@ -25,7 +25,7 @@
 #endif
 
 NS_ASSUME_NONNULL_BEGIN
-@interface SJViewController7 ()<SJSwitchVideoDefinitionControlLayerDelegate>
+@interface SJViewController7 ()
 @property (weak, nonatomic) IBOutlet UIView *playerContainerView;
 @property (nonatomic, strong) SJVideoPlayer *player;
 @end
@@ -56,17 +56,6 @@ NS_ASSUME_NONNULL_BEGIN
 //    _player.playbackController = SJAliyunVodPlaybackController.new;
     _player.definitionURLAssets = @[asset1, asset2, asset3, asset4];
     _player.URLAsset = asset1;
-    _player.defaultSwitchVideoDefinitionControlLayer.delegate = self;
-}
-
-- (void)controlLayer:(SJSwitchVideoDefinitionControlLayer *)controlLayer didSelectAsset:(SJVideoPlayerURLAsset *)asset {
-    asset.specifyStartTime = _player.currentTime;
-    _player.URLAsset = asset;
-    [_player.switcher switchToPreviousControlLayer];
-}
-
-- (void)tappedBlankAreaOnTheControlLayer:(id<SJControlLayer>)controlLayer {
-    [_player.switcher switchToPreviousControlLayer];
 }
 
 - (void)_setupViews {

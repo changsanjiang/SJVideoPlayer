@@ -1,1 +1,1 @@
-../../../../../SJVideoPlayer/SJFilmEditingControlLayer/Core/ControlLayer/SJFilmEditingInGIFRecordingsControlLayer.h
+../../../../../SJVideoPlayer/ControlLayers/SJFilmEditingControlLayer/Core/ControlLayer/SJFilmEditingInGIFRecordingsControlLayer.h

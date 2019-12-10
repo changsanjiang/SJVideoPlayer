@@ -29,7 +29,7 @@
         <!--Navigation Controller-->
         <scene sceneID="IDz-7A-j2o">
             <objects>
-                <navigationController automaticallyAdjustsScrollViewInsets="NO" id="Gsg-81-KBF" sceneMemberID="viewController">
+                <navigationController automaticallyAdjustsScrollViewInsets="NO" id="Gsg-81-KBF" customClass="SJNavigationController" sceneMemberID="viewController">
                     <toolbarItems/>
                     <navigationBar key="navigationBar" contentMode="scaleToFill" insetsLayoutMarginsFromSafeArea="NO" id="FT2-KH-lco">
                         <rect key="frame" x="0.0" y="0.0" width="375" height="44"/>
@@ -42,7 +42,7 @@
                 </navigationController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="hlj-GE-OEE" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="-65" y="432"/>
+            <point key="canvasLocation" x="-258" y="432"/>
         </scene>
     </scenes>
 </document>

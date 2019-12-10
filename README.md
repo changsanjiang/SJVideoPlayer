@@ -1687,7 +1687,7 @@ _player.defaultEdgeControlLayer.showNetworkSpeedToLoadingView = YES;
 <h3 id="20.6">20.6 自定义loadingView</h3>
 
 ```Objective-C
-// 实现协议`SJEdgeControlLayerLoadingViewProtocol`即可, 然后赋值给控制层
+// 实现协议`SJLoadingView`即可, 然后赋值给控制层
 _player.defaultEdgeControlLayer.loadingView = Your Loading View;
 ```
 

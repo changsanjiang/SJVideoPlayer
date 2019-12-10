@@ -1,1 +1,1 @@
-../../../../../SJVideoPlayer/SJNotReachableControlLayer/SJNotReachableControlLayer.h
+../../../../../SJVideoPlayer/ControlLayers/SJNotReachableControlLayer/SJNotReachableControlLayer.h

@@ -1,1 +1,1 @@
-../../../../../SJVideoPlayer/SJFilmEditingControlLayer/Core/Model/SJFilmEditingSaveResultToAlbumHandler.h
+../../../../../SJVideoPlayer/ControlLayers/SJFilmEditingControlLayer/Core/Model/SJFilmEditingSaveResultToAlbumHandler.h

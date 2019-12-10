@@ -469,17 +469,15 @@ static NSNotificationName const SJRotationManagerTransitioningValueDidChangeNoti
 }
 
 - (void)fullscreenModeViewController:(SJFullscreenModeViewController *)vc willRotateToOrientation:(UIDeviceOrientation)orientation {
-    ///
-    /// 修复 导航栏从后台进入前台后, 高度异常的问题
-    ///
     if ( orientation == UIDeviceOrientationPortrait || orientation == UIDeviceOrientationPortraitUpsideDown ) {
-        UINavigationController *nav = [self.superview lookupResponderForClass:UINavigationController.class];
-#pragma clang diagnostic push
-#pragma clang diagnostic ignored "-Wundeclared-selector"
-        if ( [nav respondsToSelector:@selector(_updateBarsForCurrentInterfaceOrientation)] )
-            [nav performSelector:@selector(_updateBarsForCurrentInterfaceOrientation) onThread:NSThread.mainThread withObject:nil waitUntilDone:NO];
-#pragma clang diagnostic pop
+        [self performSelector:@selector(_fixNavigationBarLayout) onThread:NSThread.mainThread withObject:@(NO) waitUntilDone:NO];
     }
+}
+
+- (void)_fixNavigationBarLayout {
+    UINavigationController *nav = [self.superview lookupResponderForClass:UINavigationController.class];
+    [nav viewDidAppear:NO];
+    [nav.navigationBar layoutSubviews];
 }
 
 - (void)fullscreenModeViewController:(SJFullscreenModeViewController *)vc didRotateFromOrientation:(UIDeviceOrientation)orientation {

@@ -1,1 +1,1 @@
-../../../../../SJVideoPlayer/SJEdgeControlLayer/View/SJLoadingView.h
+../../../../../SJVideoPlayer/Common/Implements/SJLoadingView.h

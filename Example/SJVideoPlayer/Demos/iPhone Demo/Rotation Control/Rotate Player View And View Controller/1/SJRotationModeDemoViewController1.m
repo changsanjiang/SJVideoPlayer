@@ -38,9 +38,15 @@
     
     _player = [SJVideoPlayer player];
     _player.defaultEdgeControlLayer.showResidentBackButton = YES;
+    _player.pausedToKeepAppearState = YES;
+    _player.controlLayerAppearManager.interval = 5; // 设置控制层隐藏间隔
     
-    SJVideoPlayerURLAsset *asset = [[SJVideoPlayerURLAsset alloc] initWithURL:SourceURL4];
-    asset.title = @"123456789";
+    SJVideoPlayerURLAsset *asset = [[SJVideoPlayerURLAsset alloc] initWithURL:SourceURL2];
+    asset.attributedTitle = [NSAttributedString sj_UIKitText:^(id<SJUIKitTextMakerProtocol>  _Nonnull make) {
+        make.append(@"SJVideoPlayerURLAsset *asset = [[SJVideoPlayerURLAsset");
+        make.textColor(UIColor.whiteColor);
+    }];
+    
     _player.URLAsset = asset;
     [_playerContainerView addSubview:_player.view];
     [_player.view mas_makeConstraints:^(MASConstraintMaker *make) {
@@ -131,6 +137,13 @@
 #pragma mark - Test
 
 - (IBAction)clickedPlayButton:(id)sender {
+    if ( _textField.text.length == 0 ) {
+        [_player.prompt show:[NSAttributedString sj_UIKitText:^(id<SJUIKitTextMakerProtocol>  _Nonnull make) {
+            make.append(@"请输入播放地址!!");
+            make.textColor(UIColor.whiteColor);
+        }] duration:5];
+        return;
+    }
     self.player.assetURL = [NSURL URLWithString:[_textField.text stringByAddingPercentEncodingWithAllowedCharacters:[NSCharacterSet URLQueryAllowedCharacterSet]]];
 }
 

@@ -1,0 +1,47 @@
+//
+//  SJVideoPlayerConst.h
+//  Pods
+//
+//  Created by BlueDancer on 2019/11/27.
+//
+
+#import <Foundation/Foundation.h>
+
+NS_ASSUME_NONNULL_BEGIN
+extern NSTimeInterval const CommonAnimaDuration;
+
+///
+/// 本地化
+///
+typedef NSString * SJVideoPlayerLocalizedStringKey;
+/// 边缘控制层
+UIKIT_EXTERN SJVideoPlayerLocalizedStringKey const SJVideoPlayer_ReplayButtonTitle;
+UIKIT_EXTERN SJVideoPlayerLocalizedStringKey const SJVideoPlayer_UnstableNetworkPromptText;
+UIKIT_EXTERN SJVideoPlayerLocalizedStringKey const SJVideoPlayer_CellularNetworkPromptText;
+UIKIT_EXTERN SJVideoPlayerLocalizedStringKey const SJVideoPlayer_LiveText;
+
+/// 播放失败控制层
+UIKIT_EXTERN SJVideoPlayerLocalizedStringKey const SJVideoPlayer_PlayFailedPromptText;
+UIKIT_EXTERN SJVideoPlayerLocalizedStringKey const SJVideoPlayer_PlayFailedButtonTitle;
+
+/// 无网控制层
+UIKIT_EXTERN SJVideoPlayerLocalizedStringKey const SJVideoPlayer_NotNetworkPromptText;
+UIKIT_EXTERN SJVideoPlayerLocalizedStringKey const SJVideoPlayer_NotNetworkButtonTitle;
+
+/// 剪辑控制层
+UIKIT_EXTERN SJVideoPlayerLocalizedStringKey const SJVideoPlayer_CancelButtonTitle;
+UIKIT_EXTERN SJVideoPlayerLocalizedStringKey const SJVideoPlayer_DoneButtonTitle;
+UIKIT_EXTERN SJVideoPlayerLocalizedStringKey const SJVideoPlayer_WaitingPromptText;
+UIKIT_EXTERN SJVideoPlayerLocalizedStringKey const SJVideoPlayer_FinishedPromptText;
+UIKIT_EXTERN SJVideoPlayerLocalizedStringKey const SJVideoPlayer_ExportingPromptText;
+UIKIT_EXTERN SJVideoPlayerLocalizedStringKey const SJVideoPlayer_ExportFailedPromptText;
+UIKIT_EXTERN SJVideoPlayerLocalizedStringKey const SJVideoPlayer_ExportSucceededPromptText;
+UIKIT_EXTERN SJVideoPlayerLocalizedStringKey const SJVideoPlayer_ScreenshotSucceededPromptText;
+UIKIT_EXTERN SJVideoPlayerLocalizedStringKey const SJVideoPlayer_AlbumAuthDeniedPromptText;
+UIKIT_EXTERN SJVideoPlayerLocalizedStringKey const SJVideoPlayer_SavingToAlbumPromptText;
+UIKIT_EXTERN SJVideoPlayerLocalizedStringKey const SJVideoPlayer_SavedToAlbumPromptText;
+UIKIT_EXTERN SJVideoPlayerLocalizedStringKey const SJVideoPlayer_UplodingPromptText;
+UIKIT_EXTERN SJVideoPlayerLocalizedStringKey const SJVideoPlayer_UploadFailedPromptText;
+UIKIT_EXTERN SJVideoPlayerLocalizedStringKey const SJVideoPlayer_UploadSucceededPromptText;
+UIKIT_EXTERN SJVideoPlayerLocalizedStringKey const SJVideoPlayer_OperationFailedPromptText;
+NS_ASSUME_NONNULL_END

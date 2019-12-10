@@ -1,1 +1,1 @@
-../../../../../SJVideoPlayer/SJFilmEditingControlLayer/Core/Model/SJFilmEditingResultShareItem.h
+../../../../../SJVideoPlayer/ControlLayers/SJFilmEditingControlLayer/Core/Model/SJFilmEditingResultShareItem.h

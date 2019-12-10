@@ -7,7 +7,6 @@
 //
 
 #import "SJVideoPlayer.h"
-#import "UIView+SJVideoPlayerSetting.h"
 #import "SJFilmEditingControlLayer.h"
 #import "UIView+SJAnimationAdded.h"
 #import <objc/message.h>
@@ -30,8 +29,6 @@
 
 NS_ASSUME_NONNULL_BEGIN
 @interface SJVideoPlayer ()<SJSwitchVideoDefinitionControlLayerDelegate, SJMoreSettingControlLayerDelegate, SJNotReachableControlLayerDelegate, SJEdgeControlLayerDelegate>
-@property (nonatomic, strong, readonly) SJVideoPlayerControlSettingRecorder *recorder;
-
 @property (nonatomic, strong, nullable) id<SJFloatSmallViewControllerObserverProtocol> sj_floatSmallViewControllerObserver;
 @property (nonatomic, strong, readonly) SJVideoDefinitionSwitchingInfoObserver *sj_switchingInfoObserver;
 @property (nonatomic, strong, readonly) id<SJControlLayerAppearManagerObserver> sj_appearManagerObserver;
@@ -51,7 +48,7 @@ NS_ASSUME_NONNULL_BEGIN
 }
 
 + (NSString *)version {
-    return @"v3.0.9";
+    return @"v3.1.0";
 }
 
 + (instancetype)player {
@@ -88,7 +85,7 @@ NS_ASSUME_NONNULL_BEGIN
     [self _initializeSwitcher];
     dispatch_async(dispatch_get_global_queue(0, 0), ^{
         [self _initializeSwitcherObserver];
-        [self _initializeSettingsRecorder];
+        [self _initializeSettingsObserver];
         [self _initializeAssetStatusObserver];
         [self _initializeAppearManagerObserver];
     });
@@ -140,13 +137,8 @@ NS_ASSUME_NONNULL_BEGIN
     [NSNotificationCenter.defaultCenter addObserver:self selector:@selector(_switchControlLayerIfNeeded) name:SJVideoPlayerDidPlayToEndTimeNotification object:self];
 }
 
-- (void)_initializeSettingsRecorder {
-    __weak typeof(self) _self = self;
-    _recorder = [[SJVideoPlayerControlSettingRecorder alloc] initWithSettings:^(SJEdgeControlLayerSettings * _Nonnull setting) {
-        __strong typeof(_self) self = _self;
-        if ( !self ) return ;
-        [self _updateCommonProperties];
-    }];
+- (void)_initializeSettingsObserver {
+    [NSNotificationCenter.defaultCenter addObserver:self selector:@selector(_updateCommonProperties) name:SJVideoPlayerSettingsUpdatedNotification object:nil];
 }
 
 - (void)_initializeFloatSmallViewControllerObserverIfNeeded:(nullable id<SJFloatSmallViewController>)floatSmallViewController {
@@ -204,6 +196,7 @@ NS_ASSUME_NONNULL_BEGIN
                 make.textColor(UIColor.whiteColor);
             }];
             
+            [self.defaultEdgeControlLayer.topAdapter reload];
             [self.defaultEdgeControlLayer.rightAdapter reload];
         }
     };
@@ -465,7 +458,7 @@ _atViewController(UIView *view) {
     objc_setAssociatedObject(self, @selector(definitionURLAssets), definitionURLAssets, OBJC_ASSOCIATION_RETAIN_NONATOMIC);
     
     dispatch_async(dispatch_get_main_queue(), ^{
-        SJEdgeControlLayerItemAdapter *adapter = self.defaultEdgeControlLayer.bottomAdapter;
+        SJEdgeControlButtonItemAdapter *adapter = self.defaultEdgeControlLayer.bottomAdapter;
         if ( definitionURLAssets != nil ) {
             if ( self.definitionButtonItem != nil ) return;
             self.definitionButtonItem = [SJEdgeControlButtonItem placeholderWithType:SJButtonItemPlaceholderType_49xAutoresizing tag:SJEdgeControlLayerBottomItem_Definition];

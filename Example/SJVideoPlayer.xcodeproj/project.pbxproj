@@ -25,9 +25,9 @@
 		77357E462373DA3E00B81EE4 /* SJTestAliViewController3.m in Sources */ = {isa = PBXBuildFile; fileRef = 77357E442373DA3E00B81EE4 /* SJTestAliViewController3.m */; };
 		77357E472373DA3E00B81EE4 /* SJTestAliViewController3.xib in Resources */ = {isa = PBXBuildFile; fileRef = 77357E452373DA3E00B81EE4 /* SJTestAliViewController3.xib */; };
 		77357E622375523C00B81EE4 /* SJSubtitlesTestViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 77357E612375523C00B81EE4 /* SJSubtitlesTestViewController.m */; };
-		77357E642375A62800B81EE4 /* .travis.yml in Resources */ = {isa = PBXBuildFile; fileRef = 77357E632375A62800B81EE4 /* .travis.yml */; };
 		7740C1BA2350A16700DD7ECE /* SJViewController12.m in Sources */ = {isa = PBXBuildFile; fileRef = 7740C1B92350A16700DD7ECE /* SJViewController12.m */; };
 		7740C1BD2350A18500DD7ECE /* SJCustomControlLayerViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 7740C1BC2350A18500DD7ECE /* SJCustomControlLayerViewController.m */; };
+		7748925E239100C7002825FC /* SJNavigationController.m in Sources */ = {isa = PBXBuildFile; fileRef = 7748925D239100C7002825FC /* SJNavigationController.m */; };
 		774AF08722DC790D005FE462 /* SJView.m in Sources */ = {isa = PBXBuildFile; fileRef = 774AF08622DC790D005FE462 /* SJView.m */; };
 		7756F58522E173D400F9DC7D /* SJTestViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 7756F58322E173D400F9DC7D /* SJTestViewController.m */; };
 		7756F58622E173D400F9DC7D /* SJTestViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 7756F58422E173D400F9DC7D /* SJTestViewController.xib */; };
@@ -136,11 +136,12 @@
 		77357E452373DA3E00B81EE4 /* SJTestAliViewController3.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = SJTestAliViewController3.xib; sourceTree = "<group>"; };
 		77357E602375523C00B81EE4 /* SJSubtitlesTestViewController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = SJSubtitlesTestViewController.h; sourceTree = "<group>"; };
 		77357E612375523C00B81EE4 /* SJSubtitlesTestViewController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = SJSubtitlesTestViewController.m; sourceTree = "<group>"; };
-		77357E632375A62800B81EE4 /* .travis.yml */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.yaml; name = .travis.yml; path = ../.travis.yml; sourceTree = "<group>"; };
 		7740C1B82350A16700DD7ECE /* SJViewController12.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = SJViewController12.h; sourceTree = "<group>"; };
 		7740C1B92350A16700DD7ECE /* SJViewController12.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = SJViewController12.m; sourceTree = "<group>"; };
 		7740C1BB2350A18500DD7ECE /* SJCustomControlLayerViewController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = SJCustomControlLayerViewController.h; sourceTree = "<group>"; };
 		7740C1BC2350A18500DD7ECE /* SJCustomControlLayerViewController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = SJCustomControlLayerViewController.m; sourceTree = "<group>"; };
+		7748925C239100C7002825FC /* SJNavigationController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = SJNavigationController.h; sourceTree = "<group>"; };
+		7748925D239100C7002825FC /* SJNavigationController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = SJNavigationController.m; sourceTree = "<group>"; };
 		774AF08522DC790D005FE462 /* SJView.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = SJView.h; sourceTree = "<group>"; };
 		774AF08622DC790D005FE462 /* SJView.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = SJView.m; sourceTree = "<group>"; };
 		7756F58222E173D400F9DC7D /* SJTestViewController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = SJTestViewController.h; sourceTree = "<group>"; };
@@ -344,6 +345,8 @@
 				71719F9D1E33DC2100824A3D /* LaunchScreen.storyboard */,
 				6003F5A8195388D20070C39A /* Images.xcassets */,
 				A6A2090222AB9EE6001ED610 /* LWZTableSectionShrinker.h */,
+				7748925C239100C7002825FC /* SJNavigationController.h */,
+				7748925D239100C7002825FC /* SJNavigationController.m */,
 				A6A2090122AB9EE5001ED610 /* LWZTableSectionShrinker.m */,
 				6003F595195388D20070C39A /* SJVideoPlayer-Info.plist */,
 				6003F596195388D20070C39A /* InfoPlist.strings */,
@@ -375,7 +378,6 @@
 		60FF7A9C1954A5C5007DD14C /* Podspec Metadata */ = {
 			isa = PBXGroup;
 			children = (
-				77357E632375A62800B81EE4 /* .travis.yml */,
 				3DE6356926AEF70F060F33F3 /* SJVideoPlayer.podspec */,
 				7D124A339A8A3126BD5D15EA /* README.md */,
 				15E7E925B7E2B14A6F5CC435 /* LICENSE */,
@@ -912,7 +914,6 @@
 				A6F19E0222D9D8050043B508 /* SJViewController7.xib in Resources */,
 				6003F598195388D20070C39A /* InfoPlist.strings in Resources */,
 				77788FE022C36CF300E26599 /* SJMediaItemsTableViewCell.xib in Resources */,
-				77357E642375A62800B81EE4 /* .travis.yml in Resources */,
 				77F2F5DD22FAC43000EA0B91 /* SJViewController11.xib in Resources */,
 				77357E472373DA3E00B81EE4 /* SJTestAliViewController3.xib in Resources */,
 				A6A208FC22AB9E59001ED610 /* SJRotationModeDemoViewController2.xib in Resources */,
@@ -947,17 +948,13 @@
 				"${PODS_ROOT}/Target Support Files/Pods-SJVideoPlayer_Example/Pods-SJVideoPlayer_Example-resources.sh",
 				"${PODS_ROOT}/MJRefresh/MJRefresh/MJRefresh.bundle",
 				"${PODS_ROOT}/SJBaseVideoPlayer/SJBaseVideoPlayer/ResourceLoader/SJBaseVideoPlayerResources.bundle",
-				"${PODS_ROOT}/../../SJVideoPlayer/SJEdgeControlLayer/ResourceLoader/SJEdgeControlLayer.bundle",
-				"${PODS_ROOT}/../../SJVideoPlayer/SJFilmEditingControlLayer/ResourceLoader/SJFilmEditing.bundle",
-				"${PODS_ROOT}/../../SJVideoPlayer/SJFloatSmallViewControlLayer/ResourceLoader/SJFloatSmallViewControlLayer.bundle",
+				"${PODS_ROOT}/../../SJVideoPlayer/ResourceLoader/SJVideoPlayer.bundle",
 			);
 			name = "[CP] Copy Pods Resources";
 			outputPaths = (
 				"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/MJRefresh.bundle",
 				"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/SJBaseVideoPlayerResources.bundle",
-				"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/SJEdgeControlLayer.bundle",
-				"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/SJFilmEditing.bundle",
-				"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/SJFloatSmallViewControlLayer.bundle",
+				"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/SJVideoPlayer.bundle",
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
@@ -1021,6 +1018,7 @@
 				77788FEA22C37C0800E26599 /* SJMediasTableViewModel.m in Sources */,
 				A6A2555322ABCFF700E42998 /* SJTableCellViewModel.m in Sources */,
 				77A0CDFA2306541700FE353C /* SJListViewAutoplayCollectionViewCell.m in Sources */,
+				7748925E239100C7002825FC /* SJNavigationController.m in Sources */,
 				77788F6F22C35FF200E26599 /* SJViewController5n.m in Sources */,
 				A6C5D23422AC249800D63D1C /* SJRemoteCommandHandler.m in Sources */,
 				77357E622375523C00B81EE4 /* SJSubtitlesTestViewController.m in Sources */,

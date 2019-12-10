@@ -1,1 +1,1 @@
-../../../../../SJVideoPlayer/SJFilmEditingControlLayer/Core/View/SJFilmEditingButtonContainerView.h
+../../../../../SJVideoPlayer/ControlLayers/SJFilmEditingControlLayer/Core/View/SJFilmEditingButtonContainerView.h

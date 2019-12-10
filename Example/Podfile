@@ -35,7 +35,6 @@ end
 target 'SJVideoPlayer_Example' do
 # 切换为 ijkplayer, 详见: https://github.com/changsanjiang/SJVideoPlayer/wiki/Use-ijkplayer
 #  pod 'SJBaseVideoPlayer/IJKPlayer'#, :path => '../../SJBaseVideoPlayer'
-#  pod 'ijkplayerssl', :git => 'https://gitee.com/changsanjiang/ijkplayer.git'
   
 # 切换为 Aliplayer, 详见: https://github.com/changsanjiang/SJVideoPlayer/wiki/Use-AliPlayer
 #  pod 'SJBaseVideoPlayer/AliPlayer'#, :path => '../../SJBaseVideoPlayer'

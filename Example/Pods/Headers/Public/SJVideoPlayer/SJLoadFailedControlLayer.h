@@ -1,1 +1,1 @@
-../../../../../SJVideoPlayer/SJLoadFailedControlLayer/SJLoadFailedControlLayer.h
+../../../../../SJVideoPlayer/ControlLayers/SJLoadFailedControlLayer/SJLoadFailedControlLayer.h

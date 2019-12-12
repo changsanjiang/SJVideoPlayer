@@ -180,7 +180,7 @@ NS_ASSUME_NONNULL_BEGIN
     });
 }
 - (void)refresh {
-    if ( self.player.sj_playbackInfo.isPlayed )
+    if ( self.player.sj_playbackInfo.isPlayed && self.currentTime != 0 )
         self.media.specifyStartTime = self.currentTime;
     [self _stop];
     [SJAVMediaPlayerLoader clearPlayerForMedia:self.media];
@@ -364,6 +364,14 @@ NS_ASSUME_NONNULL_BEGIN
     }
 }
 
+- (void)playerDidReplay:(NSNotification *)note {
+    if ( self.player == note.object ) {
+        if ( [self.delegate respondsToSelector:@selector(playbackController:didReplay:)] ) {
+            [self.delegate playbackController:self didReplay:self.media];
+        }
+    }
+}
+
 - (void)_initObservations {
     [NSNotificationCenter.defaultCenter addObserver:self selector:@selector(playerAssetStatusDidChange:) name:SJAVMediaPlayerAssetStatusDidChangeNotification object:nil];
     [NSNotificationCenter.defaultCenter addObserver:self selector:@selector(playerTimeControlStatusDidChange:) name:SJAVMediaPlayerTimeControlStatusDidChangeNotification object:nil];
@@ -372,6 +380,7 @@ NS_ASSUME_NONNULL_BEGIN
     [NSNotificationCenter.defaultCenter addObserver:self selector:@selector(playerPresentationSizeDidChange:) name:SJAVMediaPlayerPresentationSizeDidChangeNotification object:nil];
     [NSNotificationCenter.defaultCenter addObserver:self selector:@selector(playerPlaybackTypeDidChange:) name:SJAVMediaPlayerPlaybackTypeDidChangeNotification object:nil];
     [NSNotificationCenter.defaultCenter addObserver:self selector:@selector(playerPlayableDurationDidChange:) name:SJAVMediaPlayerPlayableDurationDidChangeNotification object:nil];
+    [NSNotificationCenter.defaultCenter addObserver:self selector:@selector(playerDidReplay:) name:SJAVMediaPlayerDidReplayNotification object:nil];
 
     __weak typeof(self) _self = self;
     _registrar = [[SJVideoPlayerRegistrar alloc] init];

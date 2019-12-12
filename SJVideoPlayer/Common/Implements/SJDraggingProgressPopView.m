@@ -14,6 +14,12 @@
 #import "Masonry.h"
 #endif
 
+#if __has_include(<SJBaseVideoPlayer/NSString+SJBaseVideoPlayerExtended.h>)
+#import <SJBaseVideoPlayer/NSString+SJBaseVideoPlayerExtended.h>
+#else
+#import "NSString+SJBaseVideoPlayerExtended.h"
+#endif
+
 NS_ASSUME_NONNULL_BEGIN
 @interface SJDraggingProgressPopView ()
 @property (nonatomic, strong, readonly) UIView *contentView;
@@ -61,7 +67,7 @@ NS_ASSUME_NONNULL_BEGIN
     _directionImageView.image = dragProgressTime > _dragProgressTime ? sources.fastImage : sources.forwardImage;
     
     _progressSlider.value = dragProgressTime;
-    _dragProgressTimeLabel.text = [_handler stringForSeconds:dragProgressTime];
+    _dragProgressTimeLabel.text = [NSString stringWithCurrentTime:dragProgressTime duration:_duration];
     _dragProgressTime = dragProgressTime;
 }
 
@@ -76,7 +82,7 @@ NS_ASSUME_NONNULL_BEGIN
     if ( _duration != duration ) {
         _duration = duration;
         _progressSlider.maxValue = duration ?: 1;
-        _durationLabel.text = [_handler stringForSeconds:duration];
+        _durationLabel.text = [NSString stringWithCurrentTime:duration duration:duration];
     }
 }
 

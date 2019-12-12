@@ -51,6 +51,14 @@ UIKIT_EXTERN NSNotificationName const SJVideoPlayerSettingsUpdatedNotification;
 @property (nonatomic, strong, nullable) NSString *unstableNetworkPrompt;
 @property (nonatomic, strong, nullable) NSString *cellularNetworkPrompt;
 
+// custom status bar
+@property (nonatomic, strong, nullable) NSString *statusBarNoNetworkText;
+@property (nonatomic, strong, nullable) NSString *statusBarWiFiText;
+@property (nonatomic, strong, nullable) NSString *statusBarCellularNetworkText;
+@property (nonatomic, strong, nullable) UIImage *batteryBorderImage;
+@property (nonatomic, strong, nullable) UIImage *batteryNubImage;
+@property (nonatomic, strong, nullable) UIImage *batteryLightningImage;
+
 // top adapter items
 @property (nonatomic, strong, nullable) UIImage *backBtnImage;
 @property (nonatomic, strong, nullable) UIImage *moreBtnImage;
@@ -71,8 +79,8 @@ UIKIT_EXTERN NSNotificationName const SJVideoPlayerSettingsUpdatedNotification;
 @property (nonatomic) float progress_traceHeight;                                 // 轨道高度
 @property (nonatomic, strong, nullable) UIColor *progress_traceColor;             // 轨迹颜色, 走过的痕迹
 @property (nonatomic, strong, nullable) UIColor *progress_bufferColor;            // 缓冲颜色
-@property (nonatomic, strong, nullable) UIImage *progress_thumbImage;             // 滑块图片, 无需设置滑块大小
 @property (nonatomic, strong, nullable) UIColor *progress_thumbColor;             // 滑块颜色, 请设置滑块大小
+@property (nonatomic, strong, nullable) UIImage *progress_thumbImage;             // 滑块图片, 优先使用, 为nil时将会使用滑块颜色
 @property (nonatomic) float progress_thumbSize;                                   // 滑块大小
 @property (nonatomic, strong, nullable) UIColor *bottomIndicator_trackColor;      // 底部指示条轨道颜色
 @property (nonatomic, strong, nullable) UIColor *bottomIndicator_traceColor;      // 底部指示条轨迹颜色
@@ -113,9 +121,9 @@ UIKIT_EXTERN NSNotificationName const SJVideoPlayerSettingsUpdatedNotification;
 
 
 @interface SJVideoPlayerSettings (SJNotReachableControlLayer)
-@property (nonatomic, strong, nullable) NSString *notNetworkPromptText;
-@property (nonatomic, strong, nullable) NSString *notNetworkButtonTitle;
-@property (nonatomic, strong, nullable) UIColor *notNetworkButtonBackgroundColor;
+@property (nonatomic, strong, nullable) NSString *noNetworkPromptText;
+@property (nonatomic, strong, nullable) NSString *noNetworkReloadButtonTitle;
+@property (nonatomic, strong, nullable) UIColor *noNetworkButtonBackgroundColor;
 @end
 
 

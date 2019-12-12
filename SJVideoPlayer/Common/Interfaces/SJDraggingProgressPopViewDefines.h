@@ -8,7 +8,6 @@
 #ifndef SJDraggingProgressPopViewDefines_h
 #define SJDraggingProgressPopViewDefines_h
 #import <UIKit/UIKit.h>
-#import "SJTimeToStringHandlerDefines.h"
 
 NS_ASSUME_NONNULL_BEGIN
 typedef enum : NSUInteger {
@@ -28,7 +27,6 @@ typedef enum : NSUInteger {
 ///
 @property (nonatomic, readonly, getter=isPreviewImageHidden) BOOL previewImageHidden;
 @property (nonatomic, strong, nullable) UIImage *previewImage;
-@property (nonatomic, weak, nullable) id<SJTimeToStringHandler> handler;
 @end
 NS_ASSUME_NONNULL_END
 

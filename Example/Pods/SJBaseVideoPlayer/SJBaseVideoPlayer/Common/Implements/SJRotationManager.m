@@ -35,7 +35,7 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic, weak, nullable) id<SJFullscreenModeViewControllerDelegate> delegate;
 @property (nonatomic) UIDeviceOrientation currentOrientation;
 @property (nonatomic, readonly) BOOL isFullscreen;
-@property (nonatomic) BOOL isRotated;
+@property (nonatomic, readonly, getter=isRotating) BOOL rotating;
 @end
 
 @implementation SJFullscreenModeViewController
@@ -62,6 +62,7 @@ NS_ASSUME_NONNULL_BEGIN
 }
 
 - (void)viewWillTransitionToSize:(CGSize)size withTransitionCoordinator:(id<UIViewControllerTransitionCoordinator>)coordinator {
+    _rotating = YES;
     
     [super viewWillTransitionToSize:size withTransitionCoordinator:coordinator];
 
@@ -92,12 +93,8 @@ NS_ASSUME_NONNULL_BEGIN
         
         [self.delegate.target layoutIfNeeded];
     } completion:^(BOOL finished) {
-//
-//        NSAssert(self.delegate, @"HHHH");
-        
-        dispatch_async(dispatch_get_main_queue(), ^{
-            [self.delegate fullscreenModeViewController:self didRotateFromOrientation:self.currentOrientation];
-        });
+        self->_rotating = NO;
+        [self.delegate fullscreenModeViewController:self didRotateFromOrientation:self.currentOrientation];
     }];
 }
 
@@ -405,7 +402,6 @@ static NSNotificationName const SJRotationManagerTransitioningValueDidChangeNoti
     _forcedRotation = YES;
     [UIDevice.currentDevice setValue:@(UIDeviceOrientationUnknown) forKey:@"orientation"];
     [UIDevice.currentDevice setValue:@(orientation) forKey:@"orientation"];
-    _forcedRotation = NO;
 }
 
 #pragma mark -
@@ -440,7 +436,7 @@ static NSNotificationName const SJRotationManagerTransitioningValueDidChangeNoti
     if ( self.isDisabledAutorotation && !_forcedRotation )
         return NO;
     
-    if ( self.isTransitioning && _window.fullscreenModeViewController.isRotated )
+    if ( self.isTransitioning && _window.fullscreenModeViewController.isRotating )
         return NO;
     
     if ( !_forcedRotation ) {
@@ -504,7 +500,6 @@ static NSNotificationName const SJRotationManagerTransitioningValueDidChangeNoti
 
 - (void)_beginTransition {
     self.transitioning = YES;
-    self.window.fullscreenModeViewController.isRotated = NO;
     
 //#ifdef DEBUG
 //    NSLog(@"%d \t %s", (int)__LINE__, __func__);
@@ -512,7 +507,7 @@ static NSNotificationName const SJRotationManagerTransitioningValueDidChangeNoti
 }
 
 - (void)_finishTransition {
-    self.window.fullscreenModeViewController.isRotated = YES;
+    self.forcedRotation = NO;
     self.transitioning = NO;
     
     if ( _completionHandler )

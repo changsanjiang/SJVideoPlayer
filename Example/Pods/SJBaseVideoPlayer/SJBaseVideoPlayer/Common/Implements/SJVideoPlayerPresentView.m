@@ -8,23 +8,15 @@
 
 #import "SJVideoPlayerPresentView.h"
 #import "SJBaseVideoPlayerConst.h"
+#import "NSTimer+SJAssetAdd.h"
 
 NS_ASSUME_NONNULL_BEGIN
-@interface _SJPerformRequestInfo : NSObject
-@property (nonatomic) SEL selector;
-@property (nonatomic, strong, nullable) id object;
-@end
-
-@implementation _SJPerformRequestInfo
-@end
-
-
 @interface SJVideoPlayerPresentView ()<UIGestureRecognizerDelegate>
 @property (nonatomic, strong, readonly) UIPanGestureRecognizer *pan;
 @property (nonatomic, strong, readonly) UIPinchGestureRecognizer *pinch;
 
-@property (nonatomic, strong, nullable) _SJPerformRequestInfo *placeholderRequestInfo;
-@property (nonatomic, strong, nullable) _SJPerformRequestInfo *touchRequestInfo;
+@property (nonatomic, strong, nullable) NSTimer *timer; ///< 单击与双击手势识别timer
+@property (nonatomic) NSInteger numberOfTaps;
 @end
 
 @implementation SJVideoPlayerPresentView
@@ -125,12 +117,7 @@ NS_ASSUME_NONNULL_BEGIN
     if ( _placeholderImageView.isHidden == NO )
         return;
     
-    if ( _placeholderRequestInfo != nil ) {
-        [NSObject cancelPreviousPerformRequestsWithTarget:self
-                                                 selector:_placeholderRequestInfo.selector
-                                                   object:_placeholderRequestInfo.object];
-        _placeholderRequestInfo = nil;
-    }
+    [NSObject cancelPreviousPerformRequestsWithTarget:self];
 
     _placeholderImageView.alpha = 0.001;
     _placeholderImageView.hidden = NO;
@@ -153,22 +140,14 @@ NS_ASSUME_NONNULL_BEGIN
     if ( _placeholderImageView.isHidden == YES )
         return;
     
-    if ( _placeholderRequestInfo != nil ) {
-        [NSObject cancelPreviousPerformRequestsWithTarget:self
-                                                 selector:_placeholderRequestInfo.selector
-                                                   object:_placeholderRequestInfo.object];
-        _placeholderRequestInfo = nil;
-    }
+    [NSObject cancelPreviousPerformRequestsWithTarget:self];
     
     if ( secs == 0 ) {
         [self _hiddenPlaceholderAnimated:@(animated)];
     }
     else {
-        _placeholderRequestInfo = [_SJPerformRequestInfo new];
-        _placeholderRequestInfo.selector = @selector(_hiddenPlaceholderAnimated:);
-        _placeholderRequestInfo.object = @(animated);
-        [self performSelector:_placeholderRequestInfo.selector
-                   withObject:_placeholderRequestInfo.object afterDelay:secs inModes:@[NSRunLoopCommonModes]];
+        [self performSelector:@selector(_hiddenPlaceholderAnimated:)
+                   withObject:@(animated) afterDelay:secs inModes:@[NSRunLoopCommonModes]];
     }
 }
 
@@ -320,55 +299,64 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (void)touchesBegan:(NSSet<UITouch *> *)touches withEvent:(nullable UIEvent *)event {
     if ( event.allTouches.count != 1 ) {
-        if ( _touchRequestInfo != nil ) {
-            [NSObject cancelPreviousPerformRequestsWithTarget:self
-                                                     selector:_touchRequestInfo.selector
-                                                       object:_touchRequestInfo.object];
-            _touchRequestInfo = nil;
-        }
+        [self _reset];
     }
 }
 
 - (void)touchesEnded:(NSSet<UITouch *> *)touches withEvent:(nullable UIEvent *)event {
-    if ( event.allTouches.count == 1 ) {
-        if ( _touchRequestInfo != nil ) {
-            [NSObject cancelPreviousPerformRequestsWithTarget:self
-                                                     selector:_touchRequestInfo.selector
-                                                       object:_touchRequestInfo.object];
-            _touchRequestInfo = nil;
-        }
-        
-        UITouch *touch = touches.anyObject;
-        
-        if ( touch.tapCount == 0 )
-            return;
-        
-        if ( touch.tapCount == 2 ) {
-            [self _recognize:touch];
-        }
-        else {
-            _touchRequestInfo = [_SJPerformRequestInfo new];
-            _touchRequestInfo.selector = @selector(_recognize:);
-            _touchRequestInfo.object = touch;
-            [self performSelector:_touchRequestInfo.selector
-                       withObject:_touchRequestInfo.object
-                       afterDelay:0.180 inModes:@[NSRunLoopCommonModes]];
-        }
+    /// 由于pan手势的存在, 拖动事件将会被pan手势拦截, 因此 此处可以放心的处理点击事件
+    
+    ///
+    /// 只识别单指操作, 此处取消识别, return
+    ///
+    if ( event.allTouches.count != 1 ) {
+        [self _reset];
+        return;
+    }
+    
+    ///
+    /// 增加点击数
+    ///
+    _numberOfTaps += 1;
+    
+    ///
+    /// 开启timer, 用于间隔到达之后, 识别单击手势
+    ///
+    if ( _timer == nil ) {
+        _timer = [NSTimer sj_timerWithTimeInterval:0.2 repeats:YES];
+        [_timer sj_fire];
+        [NSRunLoop.currentRunLoop addTimer:_timer forMode:NSRunLoopCommonModes];
+    }
+    
+    ///
+    /// 间隔到达之后, 识别为单击手势, 执行单击处理
+    ///
+    __weak typeof(self) _self = self;
+    _timer.sj_usingBlock = ^(NSTimer * _Nonnull timer) {
+        __strong typeof(_self) self = _self;
+        if ( !self ) return;
+        [self _reset];
+        [self handleSingleTap:touches.anyObject];
+    };
+    
+    ///
+    /// 计数为2时, 识别为双击手势, 执行双击处理
+    ///
+    if ( _numberOfTaps >= 2 ) {
+        [self _reset];
+        [_timer invalidate];
+        [self handleDoubleTap:touches.anyObject];
     }
 }
 
-- (void)_recognize:(UITouch *)touch {
-    if ( _touchRequestInfo != nil ) {
-        [NSObject cancelPreviousPerformRequestsWithTarget:self
-                                                 selector:_touchRequestInfo.selector
-                                                   object:_touchRequestInfo.object];
-        _touchRequestInfo = nil;
-    }
+#pragma mark -
 
-    if ( touch.tapCount % 2 == 0 )
-        [self handleDoubleTap:touch];
-    else
-        [self handleSingleTap:touch];
+- (void)_reset {
+    if ( _timer != nil ) {
+        [_timer invalidate];
+        _timer = nil;
+    }
+    _numberOfTaps = 0;
 }
 
 - (BOOL)_isSupporedGestureType:(SJPlayerGestureTypeMask)type {

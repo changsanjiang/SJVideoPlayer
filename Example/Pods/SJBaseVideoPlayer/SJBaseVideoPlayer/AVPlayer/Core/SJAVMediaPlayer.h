@@ -16,6 +16,7 @@ extern NSNotificationName const SJAVMediaPlayerPlayableDurationDidChangeNotifica
 extern NSNotificationName const SJAVMediaPlayerPresentationSizeDidChangeNotification;
 extern NSNotificationName const SJAVMediaPlayerPlaybackTypeDidChangeNotification;
 extern NSNotificationName const SJAVMediaPlayerDidPlayToEndTimeNotification;
+extern NSNotificationName const SJAVMediaPlayerDidReplayNotification;
 
 typedef struct {
     NSTimeInterval specifyStartTime;    ///< 初始化完成后, 跳转到指定的时间开始播放

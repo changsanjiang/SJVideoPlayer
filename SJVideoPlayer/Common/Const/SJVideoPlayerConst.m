@@ -20,14 +20,17 @@ SJVideoPlayerLocalizedStringKey const SJVideoPlayer_ReplayButtonTitle = @"SJVide
 SJVideoPlayerLocalizedStringKey const SJVideoPlayer_UnstableNetworkPromptText = @"SJVideoPlayer_UnstableNetworkPromptText";
 SJVideoPlayerLocalizedStringKey const SJVideoPlayer_CellularNetworkPromptText = @"SJVideoPlayer_CellularNetworkPromptText";
 SJVideoPlayerLocalizedStringKey const SJVideoPlayer_LiveText = @"SJVideoPlayer_LiveText";
+SJVideoPlayerLocalizedStringKey const SJVideoPlayer_StatusBarNoNetworkText = @"SJVideoPlayer_StatusBarNoNetworkText";
+SJVideoPlayerLocalizedStringKey const SJVideoPlayer_StatusBarWiFiText = @"SJVideoPlayer_StatusBarWiFiText";
+SJVideoPlayerLocalizedStringKey const SJVideoPlayer_StatusBarCellularNetworkText = @"SJVideoPlayer_StatusBarCellularNetworkText";
 
 /// 播放失败控制层
 SJVideoPlayerLocalizedStringKey const SJVideoPlayer_PlayFailedPromptText = @"SJVideoPlayer_PlayFailedPromptText";
 SJVideoPlayerLocalizedStringKey const SJVideoPlayer_PlayFailedButtonTitle = @"SJVideoPlayer_PlayFailedButtonTitle";
 
 /// 无网控制层
-SJVideoPlayerLocalizedStringKey const SJVideoPlayer_NotNetworkPromptText = @"SJVideoPlayer_NotNetworkPromptText";
-SJVideoPlayerLocalizedStringKey const SJVideoPlayer_NotNetworkButtonTitle = @"SJVideoPlayer_NotNetworkButtonTitle";
+SJVideoPlayerLocalizedStringKey const SJVideoPlayer_NoNetworkPromptText = @"SJVideoPlayer_NoNetworkPromptText";
+SJVideoPlayerLocalizedStringKey const SJVideoPlayer_NoNetworkReloadButtonTitle = @"SJVideoPlayer_NoNetworkReloadButtonTitle";
 
 /// 剪辑控制层
 SJVideoPlayerLocalizedStringKey const SJVideoPlayer_CancelButtonTitle = @"SJVideoPlayer_CancelButtonTitle";

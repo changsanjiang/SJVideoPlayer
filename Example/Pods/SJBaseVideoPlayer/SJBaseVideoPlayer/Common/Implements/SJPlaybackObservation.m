@@ -99,6 +99,12 @@ NS_ASSUME_NONNULL_BEGIN
             if ( !self ) return;
             if ( self.rateDidChangeExeBlock ) self.rateDidChangeExeBlock(self.player);
         }]];
+        
+        [_tokens addObject:[NSNotificationCenter.defaultCenter addObserverForName:SJVideoPlayerDidReplayNotification object:player queue:NSOperationQueue.mainQueue usingBlock:^(NSNotification * _Nonnull note) {
+            __strong typeof(_self) self = _self;
+            if ( !self ) return;
+            if ( self.didReplayExeBlock ) self.didReplayExeBlock(self.player);
+        }]];
     }
     return self;
 }

@@ -34,6 +34,11 @@ NSNotificationName const SJVideoPlayerDidPlayToEndTimeNotification = @"SJVideoPl
 NSNotificationName const SJVideoPlayerDefinitionSwitchStatusDidChangeNotification = @"SJVideoPlayerDefinitionSwitchStatusDidChangeNotification";
 
 ///
+/// 重播的通知
+///
+NSNotificationName const SJVideoPlayerDidReplayNotification = @"SJVideoPlayerDidReplayNotification";
+
+///
 /// 当前播放时间 改变的通知
 ///
 NSNotificationName const SJVideoPlayerCurrentTimeDidChangeNotification = @"SJVideoPlayerCurrentTimeDidChangeNotification";

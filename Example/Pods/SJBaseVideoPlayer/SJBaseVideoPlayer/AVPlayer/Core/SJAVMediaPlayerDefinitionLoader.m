@@ -37,6 +37,8 @@ NS_ASSUME_NONNULL_BEGIN
         
         [NSNotificationCenter.defaultCenter addObserver:self selector:@selector(_statusDidChange) name:SJAVMediaPlayerAssetStatusDidChangeNotification object:_innerPlayer];
         [NSNotificationCenter.defaultCenter addObserver:self selector:@selector(_statusDidChange) name:SJAVMediaPresentViewReadyForDisplayDidChangeNotification object:_innerPresentView];
+        
+        [self _statusDidChange];
     }
     return self;
 }

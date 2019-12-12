@@ -14,6 +14,7 @@ NSNotificationName const SJAVMediaPlayerPlayableDurationDidChangeNotification = 
 NSNotificationName const SJAVMediaPlayerPresentationSizeDidChangeNotification = @"SJAVMediaPlayerPresentationSizeDidChangeNotification";
 NSNotificationName const SJAVMediaPlayerPlaybackTypeDidChangeNotification = @"SJAVMediaPlayerPlaybackTypeDidChangeNotification";
 NSNotificationName const SJAVMediaPlayerDidPlayToEndTimeNotification = @"SJAVMediaPlayerDidPlayToEndTimeNotification";
+NSNotificationName const SJAVMediaPlayerDidReplayNotification = @"SJAVMediaPlayerDidReplayNotification";
 
 NS_ASSUME_NONNULL_BEGIN
 @interface SJAVMediaPlayer()
@@ -79,6 +80,7 @@ static NSString *kTimeControlStatus = @"sj_timeControlStatus";
     [self seekToTime:kCMTimeZero];
     [super play];
     self.rate = _sj_playbackInfo.rate;
+    [self sj_postNotification:SJAVMediaPlayerDidReplayNotification];
 }
 
 - (void)play {

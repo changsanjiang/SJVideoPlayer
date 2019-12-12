@@ -23,6 +23,7 @@ NS_ASSUME_NONNULL_BEGIN
 - (BOOL)isPlayInCollectionView;
 - (nullable UIView *)playerSuperview;
 - (nullable __kindof UIScrollView *)inScrollView;
+- (nullable NSIndexPath *)indexPath;
 @end
 
 

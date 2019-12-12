@@ -15,8 +15,6 @@ NS_ASSUME_NONNULL_BEGIN
 ///
 @property (nonatomic, readonly, getter=isPreviewImageHidden) BOOL previewImageHidden;
 @property (nonatomic, strong, nullable) UIImage *previewImage;
-
-@property (nonatomic, weak, nullable) id<SJTimeToStringHandler> handler;
 @property (nonatomic) SJDraggingProgressPopViewStyle style;
 @property (nonatomic) NSTimeInterval dragProgressTime;
 @property (nonatomic) NSTimeInterval currentTime;

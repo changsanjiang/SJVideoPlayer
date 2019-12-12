@@ -6,6 +6,7 @@
 //
 
 #import "SJFloatSmallViewController.h"
+#import "UIView+SJBaseVideoPlayerExtended.h"
 #if __has_include(<SJUIKit/NSObject+SJObserverHelper.h>)
 #import <SJUIKit/NSObject+SJObserverHelper.h>
 #else
@@ -130,7 +131,7 @@ NS_ASSUME_NONNULL_BEGIN
         //
         UIView *superview = nil;
         if ( _addFloatViewToKeyWindow == NO ) {
-            UIViewController *currentViewController = [self atViewController];
+            UIViewController *currentViewController = [_targetSuperview lookupResponderForClass:UIViewController.class];
             superview = currentViewController.view;
         }
         else {
@@ -183,17 +184,6 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (id<SJFloatSmallViewControllerObserverProtocol>)getObserver {
     return [[SJFloatSmallViewControllerObserver alloc] initWithController:self];
-}
-
-- (nullable __kindof UIViewController *)atViewController {
-    UIResponder *_Nullable responder = _targetSuperview;
-    if ( responder != nil ) {
-        while ( ![responder isKindOfClass:[UIViewController class]] ) {
-            responder = responder.nextResponder;
-            if ( [responder isMemberOfClass:[UIResponder class]] || !responder ) return nil;
-        }
-    }
-    return (__kindof UIViewController *)responder;
 }
 
 // - gestures -

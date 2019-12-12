@@ -2,10 +2,14 @@
 "SJVideoPlayer_PlayFailedPromptText" = "視頻加載失敗, 請稍後重試";
 "SJVideoPlayer_PlayFailedButtonTitle" = "點擊重試";
 
+"SJVideoPlayer_StatusBarNoNetworkText" = "無網絡";
+"SJVideoPlayer_StatusBarWiFiText" = "Wi-Fi";
+"SJVideoPlayer_StatusBarCellularNetworkText" = "蜂窩網絡";
+
 "SJVideoPlayer_UnstableNetworkPromptText" = "網絡不穩定，請檢查網絡";
 "SJVideoPlayer_CellularNetworkPromptText" = "當前非WiFi環境, 請注意流量消耗";
-"SJVideoPlayer_NotNetworkPromptText" = "網絡超時, 請在穩定的網絡下重試";
-"SJVideoPlayer_NotNetworkButtonTitle" = "重新加載";
+"SJVideoPlayer_NoNetworkPromptText" = "網絡超時, 請在穩定的網絡下重試";
+"SJVideoPlayer_NoNetworkReloadButtonTitle" = "重新加載";
 "SJVideoPlayer_LiveText" = "實時直播";
 
 ///**

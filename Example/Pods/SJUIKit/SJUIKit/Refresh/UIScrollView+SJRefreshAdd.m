@@ -261,7 +261,14 @@ char const SJRefreshingNonePageSize = -1;
     }
     self.mj_footer.hidden = NO;
     if ( self.mj_footer.state != MJRefreshStateIdle ) [self.mj_footer endRefreshing];
-    [self.mj_footer beginRefreshing];
+    if ( [self.mj_footer respondsToSelector:NSSelectorFromString(@"labelIsTrigger")] ) {
+        [self.mj_footer setValue:@(YES) forKey:@"labelIsTrigger"];
+        [self.mj_footer beginRefreshing];
+        [self.mj_footer setValue:@(NO) forKey:@"labelIsTrigger"];
+    }
+    else {
+        [self.mj_footer beginRefreshing];
+    }
     [self _showOrHiddenPlaceholderViewIfNeeded];
 }
 

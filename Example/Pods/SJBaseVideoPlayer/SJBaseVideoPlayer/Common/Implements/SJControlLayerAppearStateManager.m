@@ -52,6 +52,7 @@ static NSNotificationName const SJControlLayerAppearStateDidChangeNotification =
     self = [super init];
     if ( !self ) return nil;
     _timer = [[SJTimerControl alloc] init];
+    _timer.interval = 5;
     __weak typeof(self) _self = self;
     _timer.exeBlock = ^(SJTimerControl * _Nonnull control) {
         __strong typeof(_self) self = _self;

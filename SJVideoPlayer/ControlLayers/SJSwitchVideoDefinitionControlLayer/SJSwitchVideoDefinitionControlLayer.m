@@ -127,7 +127,8 @@ NS_ASSUME_NONNULL_BEGIN
     if ( cur != nil ) {
         SJVideoDefinitionSwitchingInfo *info = _videoPlayer.definitionSwitchingInfo;
         SJVideoPlayerURLAsset *selected = cur;
-        if ( info.switchingAsset != nil && info.status != SJDefinitionSwitchStatusFailed ) {
+        if ( info.switchingAsset != nil &&
+             info.status != SJDefinitionSwitchStatusFailed ) {
             selected = info.switchingAsset;
         }
         

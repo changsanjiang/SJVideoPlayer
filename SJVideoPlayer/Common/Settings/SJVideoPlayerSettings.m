@@ -30,6 +30,14 @@ NSNotificationName const SJVideoPlayerSettingsUpdatedNotification = @"SJVideoPla
 @property (nonatomic, strong, nullable) NSString *unstableNetworkPrompt;
 @property (nonatomic, strong, nullable) NSString *cellularNetworkPrompt;
 
+// custom status bar
+@property (nonatomic, strong, nullable) NSString *statusBarNoNetworkText;
+@property (nonatomic, strong, nullable) NSString *statusBarWiFiText;
+@property (nonatomic, strong, nullable) NSString *statusBarCellularNetworkText;
+@property (nonatomic, strong, nullable) UIImage *batteryBorderImage;
+@property (nonatomic, strong, nullable) UIImage *batteryNubImage;
+@property (nonatomic, strong, nullable) UIImage *batteryLightningImage;
+
 // top adapter items
 @property (nonatomic, strong, nullable) UIImage *backBtnImage;
 @property (nonatomic, strong, nullable) UIImage *moreBtnImage;
@@ -89,9 +97,9 @@ NSNotificationName const SJVideoPlayerSettingsUpdatedNotification = @"SJVideoPla
 //@end
 //
 //@interface SJVideoPlayerSettings (SJNotReachableControlLayer)
-@property (nonatomic, strong, nullable) NSString *notNetworkPromptText;
-@property (nonatomic, strong, nullable) NSString *notNetworkButtonTitle;
-@property (nonatomic, strong, nullable) UIColor *notNetworkButtonBackgroundColor;
+@property (nonatomic, strong, nullable) NSString *noNetworkPromptText;
+@property (nonatomic, strong, nullable) NSString *noNetworkReloadButtonTitle;
+@property (nonatomic, strong, nullable) UIColor *noNetworkButtonBackgroundColor;
 //@end
 //
 //@interface SJVideoPlayerSettings (SJFloatSmallViewControlLayer)
@@ -208,6 +216,9 @@ NSNotificationName const SJVideoPlayerSettingsUpdatedNotification = @"SJVideoPla
     dispatch_group_async(group, queue, ^{
         [self _resetSJFilmEditingControlLayer];
     });
+    dispatch_group_notify(group, dispatch_get_main_queue(), ^{
+       [NSNotificationCenter.defaultCenter postNotificationName:SJVideoPlayerSettingsUpdatedNotification object:self];
+    });
 }
 
 - (void)_resetSJEdgeControlLayer {
@@ -221,6 +232,13 @@ NSNotificationName const SJVideoPlayerSettingsUpdatedNotification = @"SJVideoPla
     _unstableNetworkPrompt = [SJVideoPlayerResourceLoader localizedStringForKey:SJVideoPlayer_UnstableNetworkPromptText];
     _cellularNetworkPrompt = [SJVideoPlayerResourceLoader localizedStringForKey:SJVideoPlayer_CellularNetworkPromptText];
     
+    _statusBarNoNetworkText = [SJVideoPlayerResourceLoader localizedStringForKey:SJVideoPlayer_StatusBarNoNetworkText];
+    _statusBarWiFiText = [SJVideoPlayerResourceLoader localizedStringForKey:SJVideoPlayer_StatusBarWiFiText];
+    _statusBarCellularNetworkText = [SJVideoPlayerResourceLoader localizedStringForKey:SJVideoPlayer_StatusBarCellularNetworkText];
+    _batteryBorderImage = [SJVideoPlayerResourceLoader imageNamed:@"battery_border"];
+    _batteryNubImage = [SJVideoPlayerResourceLoader imageNamed:@"battery_nub"];
+    _batteryLightningImage = [SJVideoPlayerResourceLoader imageNamed:@"battery_lightning"];
+
     _backBtnImage = [SJVideoPlayerResourceLoader imageNamed:@"sj_video_player_back"];
     _moreBtnImage = [SJVideoPlayerResourceLoader imageNamed:@"sj_video_player_more"];
     _titleFont = [UIFont boldSystemFontOfSize:14];
@@ -273,9 +291,9 @@ NSNotificationName const SJVideoPlayerSettingsUpdatedNotification = @"SJVideoPla
 }
 
 - (void)_resetSJNotReachableControlLayer {
-    _notNetworkPromptText = [SJVideoPlayerResourceLoader localizedStringForKey:SJVideoPlayer_NotNetworkPromptText];
-    _notNetworkButtonTitle = [SJVideoPlayerResourceLoader localizedStringForKey:SJVideoPlayer_NotNetworkButtonTitle];
-    _notNetworkButtonBackgroundColor = _playFailedButtonBackgroundColor;
+    _noNetworkPromptText = [SJVideoPlayerResourceLoader localizedStringForKey:SJVideoPlayer_NoNetworkPromptText];
+    _noNetworkReloadButtonTitle = [SJVideoPlayerResourceLoader localizedStringForKey:SJVideoPlayer_NoNetworkReloadButtonTitle];
+    _noNetworkButtonBackgroundColor = [UIColor colorWithRed:36/255.0 green:171/255.0 blue:1 alpha:1];
 }
 
 - (void)_resetSJFloatSmallViewControlLayer {

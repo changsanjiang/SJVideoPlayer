@@ -107,7 +107,7 @@ SJFreeItem(SJItem *item) {
 
 - (void)empty {
     dispatch_semaphore_wait(_lock, DISPATCH_TIME_FOREVER);
-    [super empty];
+    while ( self.head != NULL ) [super dequeue];
     dispatch_semaphore_signal(_lock);
 }
 @end

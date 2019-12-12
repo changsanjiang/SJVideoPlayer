@@ -140,14 +140,16 @@ SJEdgeControlButtonItemTag const SJNotReachableControlLayerTopItem_Back = 10000;
 - (void)_setupView {
     self.backgroundColor = [UIColor blackColor];
     
+    SJVideoPlayerSettings *sources = SJVideoPlayerSettings.commonSettings;
+    
     SJEdgeControlButtonItem *backItem = [SJEdgeControlButtonItem placeholderWithType:SJButtonItemPlaceholderType_49x49 tag:SJNotReachableControlLayerTopItem_Back];
     [backItem addTarget:self action:@selector(backItemWasTapped:)];
-    backItem.image = SJVideoPlayerSettings.commonSettings.backBtnImage;
+    backItem.image = sources.backBtnImage;
     [self.topAdapter addItem:backItem];
     [self.topAdapter reload];
 
     _promptLabel = [[UILabel alloc] initWithFrame:CGRectZero];
-    _promptLabel.text = SJVideoPlayerSettings.commonSettings.notNetworkPromptText;
+    _promptLabel.text = sources.noNetworkPromptText;
     _promptLabel.font = [UIFont systemFontOfSize:14];
     _promptLabel.textColor = [UIColor whiteColor];
     _promptLabel.textAlignment = NSTextAlignmentCenter;
@@ -163,10 +165,10 @@ SJEdgeControlButtonItemTag const SJNotReachableControlLayerTopItem_Back = 10000;
     _reloadView = [[SJButtonContainerView alloc] initWithEdgeInsets:UIEdgeInsetsMake(0, 20, 0, 20)];
     [_reloadView.button addTarget:self action:@selector(reloadButtonWasTapped) forControlEvents:UIControlEventTouchUpInside];
     _reloadView.roundedRect = YES;
-    [_reloadView.button setTitle:SJVideoPlayerSettings.commonSettings.notNetworkButtonTitle forState:UIControlStateNormal];
+    [_reloadView.button setTitle:sources.noNetworkReloadButtonTitle forState:UIControlStateNormal];
     _reloadView.button.titleLabel.font = [UIFont systemFontOfSize:14];
     _reloadView.backgroundColor = [UIColor redColor];
-    _reloadView.backgroundColor = SJVideoPlayerSettings.commonSettings.notNetworkButtonBackgroundColor;
+    _reloadView.backgroundColor = sources.noNetworkButtonBackgroundColor;
     [self addSubview:_reloadView];
     [_reloadView mas_makeConstraints:^(MASConstraintMaker *make) {
         make.top.equalTo(self.promptLabel.mas_bottom).offset(20);

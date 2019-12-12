@@ -187,9 +187,12 @@ NS_ASSUME_NONNULL_BEGIN
     // 移除多余的视图
     //
     if ( items.count < _views.count ) {
-        for ( NSInteger i = _views.count - 1 ; i >= items.count ; -- i ) {
-            [[_views objectAtIndex:i] removeFromSuperview];
-        }
+        NSRange range = NSMakeRange(items.count, _views.count - items.count);
+        NSArray<UIView *> *uselessViews = [_views subarrayWithRange:range];
+        [uselessViews enumerateObjectsWithOptions:NSEnumerationReverse usingBlock:^(UIView * _Nonnull obj, NSUInteger idx, BOOL * _Nonnull stop) {
+            if ( obj.superview == self ) [obj removeFromSuperview];
+        }];
+        [_views removeObjectsInRange:range];
     }
     //
     // 补充新增的视图

@@ -19,7 +19,7 @@
 #endif
 
 NS_ASSUME_NONNULL_BEGIN
-@interface SJScrollingTextMarqueeView ()<CAAnimationDelegate>
+@interface SJScrollingTextMarqueeView ()
 @property (nonatomic, strong, readonly) UIView *contentView;
 @property (nonatomic, strong, readonly) UILabel *leftLabel;
 @property (nonatomic, strong, readonly) UILabel *rightLabel;
@@ -132,58 +132,40 @@ NS_ASSUME_NONNULL_BEGIN
 #pragma mark -
 
 - (void)reset {
-    if ( self.isScrolling ) {
-        [self stop];
-    }
+    [self stop];
     [self startScrollingIfNeeded];
 }
 
+static NSInteger indexKey = 0;
 - (void)startScrollingIfNeeded {
-    if ( _scrolling ) return;
-    if ( [self _shouldStartScrolling] ) {
+    if ( self.isScrolling ) return;
+    if ( self.isScrollEnabled == NO ) return;
+    if ( self.bounds.size.width == 0 ) return;
+    NSAttributedString *astr = self.attributedText;
+    CGSize size = [astr sj_textSize];
+    if ( size.width > self.bounds.size.width ) {
         _scrolling = YES;
         _rightLabel.hidden = NO;
-        _rightLabel.attributedText = _leftLabel.attributedText;
+        _rightLabel.attributedText = astr;
         
-        CGFloat points = _leftLabel.bounds.size.width + self.margin;
+        CGFloat points = size.width + self.margin;
         CABasicAnimation *animation = [CABasicAnimation animationWithKeyPath:@"transform"];
         animation.fromValue = [NSValue valueWithCATransform3D:CATransform3DIdentity];
         animation.toValue = [NSValue valueWithCATransform3D:CATransform3DMakeTranslation(-points, 0, 0)];
         animation.duration = points * 0.02;
         animation.repeatCount = HUGE_VALF;
-        animation.delegate = self;
-        [_contentView.layer addAnimation:animation forKey:nil];
+        [_contentView.layer addAnimation:animation forKey:[NSString stringWithFormat:@"%ld", (long)(indexKey += 1)]];
         self.layer.mask = self.fadeMaskLayer;
     }
 }
 
 - (void)stop {
-    if ( _scrolling == NO ) return;
-    _scrolling = NO;
-    _rightLabel.hidden = YES;
-    self.layer.mask = nil;
-    [_contentView.layer removeAllAnimations];
-}
-
-#pragma mark -
-
-- (void)animationDidStop:(CAAnimation *)anim finished:(BOOL)flag {
-    _scrolling = NO;
-}
-
-#pragma mark -
-
-- (BOOL)_shouldStartScrolling {
-    if ( self.isScrollEnabled == NO ) return NO;
-    if ( self.window == nil ) return NO;
-    
-    [self layoutIfNeeded];
-    
-    if ( self.bounds.size.width == 0 ) return NO;
-
-    NSAttributedString *astr = self.attributedText;
-    CGSize size = [astr sj_textSize];
-    return size.width > self.bounds.size.width;
+    if ( _scrolling ) {
+        _scrolling = NO;
+        _rightLabel.hidden = YES;
+        self.layer.mask = nil;
+        [_contentView.layer removeAnimationForKey:[NSString stringWithFormat:@"%ld", (long)indexKey]];
+    }
 }
 @end
 NS_ASSUME_NONNULL_END

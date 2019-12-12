@@ -8,6 +8,7 @@
 
 #import "SJAppDelegate.h"
 #import "SJVideoPlayer.h"
+#import "RSA.h"
 
 @implementation SJAppDelegate
 

@@ -116,6 +116,7 @@ NS_ASSUME_NONNULL_BEGIN
 - (void)playbackController:(id<SJVideoPlayerPlaybackController>)controller playableDurationDidChange:(NSTimeInterval)playableDuration;
 - (void)playbackControllerIsReadyForDisplay:(id<SJVideoPlayerPlaybackController>)controller;
 - (void)playbackController:(id<SJVideoPlayerPlaybackController>)controller switchingDefinitionStatusDidChange:(SJDefinitionSwitchStatus)status media:(id<SJMediaModelProtocol>)media;
+- (void)playbackController:(id<SJVideoPlayerPlaybackController>)controller didReplay:(id<SJMediaModelProtocol>)media;
 @end
 
 

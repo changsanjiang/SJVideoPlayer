@@ -33,6 +33,7 @@
 #import "SJBarrageQueueController.h"
 #import "SJViewControllerManager.h"
 #import "UIView+SJBaseVideoPlayerExtended.h"
+#import "NSString+SJBaseVideoPlayerExtended.h"
 
 #if __has_include(<Masonry/Masonry.h>)
 #import <Masonry/Masonry.h>
@@ -158,7 +159,7 @@ typedef struct _SJPlayerControlInfo {
 }
 
 + (NSString *)version {
-    return @"v3.1.4";
+    return @"v3.1.7";
 }
 
 - (void)setVideoGravity:(SJVideoGravity)videoGravity {
@@ -654,7 +655,7 @@ typedef struct _SJPlayerControlInfo {
     // 维护当前播放的indexPath
     UIScrollView *scrollView = playModel.inScrollView;
     if ( scrollView.sj_enabledAutoplay ) {
-        scrollView.sj_currentPlayingIndexPath = [playModel performSelector:@selector(indexPath)];
+        scrollView.sj_currentPlayingIndexPath = playModel.indexPath;
     }
 }
 
@@ -820,22 +821,7 @@ typedef struct _SJPlayerControlInfo {
 }
 
 - (NSString *)stringForSeconds:(NSInteger)secs {
-    long min = 60;
-    long hour = 60 * min;
-    
-    long hours, seconds, minutes;
-    hours = secs / hour;
-    minutes = (secs - hours * hour) / 60;
-    seconds = (NSInteger)secs % 60;
-    if ( self.duration < hour ) {
-        return [NSString stringWithFormat:@"%02ld:%02ld", minutes, seconds];
-    }
-    else if ( hours < 100 ) {
-        return [NSString stringWithFormat:@"%02ld:%02ld:%02ld", hours, minutes, seconds];
-    }
-    else {
-        return [NSString stringWithFormat:@"%ld:%02ld:%02ld", hours, minutes, seconds];
-    }
+    return [NSString stringWithCurrentTime:secs duration:self.duration];
 }
 
 #pragma mark -
@@ -1170,6 +1156,10 @@ typedef struct _SJPlayerControlInfo {
 }
 
 - (void)mediaDidPlayToEndForPlaybackController:(id<SJVideoPlayerPlaybackController>)controller {
+    if ( _floatSmallViewController.isAppeared && self.autoDisappearFloatSmallView ) {
+        [_floatSmallViewController dismissFloatView];
+    }
+    
     if ( [self.controlLayerDelegate respondsToSelector:@selector(videoPlayerPlaybackStatusDidChange:)] ) {
         [self.controlLayerDelegate videoPlayerPlaybackStatusDidChange:self];
     }
@@ -1229,6 +1219,10 @@ typedef struct _SJPlayerControlInfo {
     }
     
     [self _postNotification:SJVideoPlayerDefinitionSwitchStatusDidChangeNotification];
+}
+
+- (void)playbackController:(id<SJVideoPlayerPlaybackController>)controller didReplay:(id<SJMediaModelProtocol>)media {
+    [self _postNotification:SJVideoPlayerDidReplayNotification];
 }
 @end
 
@@ -1939,16 +1933,14 @@ typedef struct _SJPlayerControlInfo {
 }
 - (id<SJFloatSmallViewController>)floatSmallViewController {
     if ( _floatSmallViewController == nil ) {
-        _floatSmallViewController = [[SJFloatSmallViewController alloc] init];
-
         __weak typeof(self) _self = self;
-        _floatSmallViewController.floatViewShouldAppear = ^BOOL(id<SJFloatSmallViewController>  _Nonnull controller) {
+        SJFloatSmallViewController *controller = SJFloatSmallViewController.alloc.init;
+        controller.floatViewShouldAppear = ^BOOL(id<SJFloatSmallViewController>  _Nonnull controller) {
             __strong typeof(_self) self = _self;
             if ( !self ) return NO;
             return self.timeControlStatus != SJPlaybackTimeControlStatusPaused && self.assetStatus != SJAssetStatusUnknown;
         };
-        
-        [self _resetFloatSmallViewControllerObserver:_floatSmallViewController];
+        [self setFloatSmallViewController:controller];
     }
     return _floatSmallViewController;
 }

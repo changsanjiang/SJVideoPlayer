@@ -12,6 +12,8 @@
 #import "SJControlLayerDefines.h"
 #import "SJLoadingViewDefinies.h"
 #import "SJScrollingTextMarqueeViewDefines.h"
+#import "SJFullscreenCustomStatusBarDefines.h"
+
 @protocol SJEdgeControlLayerDelegate;
 
 NS_ASSUME_NONNULL_BEGIN
@@ -102,6 +104,15 @@ extern SJEdgeControlButtonItemTag const SJEdgeControlLayerCenterItem_Replay;    
 ///
 @property (nonatomic) BOOL showNetworkSpeedToLoadingView;
 
+///
+/// 自定义状态栏, 当 shouldShowCustomStatusBar 返回YES, 将会显示该状态栏
+///
+@property (nonatomic, strong, null_resettable) UIView<SJFullscreenCustomStatusBar> *customStatusBar NS_AVAILABLE_IOS(11.0);
+
+///
+/// 是否应该显示自定义状态栏
+///
+@property (nonatomic, copy, null_resettable) BOOL(^shouldShowCustomStatusBar)(SJEdgeControlLayer *controlLayer) NS_AVAILABLE_IOS(11.0);
 
 @property (nonatomic, weak, nullable) id<SJEdgeControlLayerDelegate> delegate;
 @end

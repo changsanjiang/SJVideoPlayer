@@ -7,6 +7,7 @@
 //
 
 #import "SJRunLoopTaskQueue.h"
+#import "SJQueue.h"
 #import <stdlib.h>
 
 NS_ASSUME_NONNULL_BEGIN
@@ -50,34 +51,11 @@ typedef struct {
     CFRunLoopObserverRef _Nullable obr;
 } SJRunLoopObserverRef;
 
-typedef struct SJRunLoopTaskItem {
-    struct SJRunLoopTaskItem *_Nullable next;
-    CFTypeRef _Nullable task;
-} SJRunLoopTaskItem;
-
-static inline SJRunLoopTaskItem *
-_SJRunLoopTaskItemCreate(SJRunLoopTaskHandler task) {
-    SJRunLoopTaskItem *new_item = malloc(sizeof(SJRunLoopTaskItem));
-    new_item->next = NULL;
-    new_item->task = CFBridgingRetain(task);
-    return new_item;
-}
-
-static inline void
-_SJRunLoopTaskItemFree(SJRunLoopTaskItem *item) {
-    if ( item->task != NULL ) {
-        CFRelease(item->task);
-        item->task = NULL;
-    }
-    free(item);
-}
-
 static NSString *const kSJRunLoopTaskMainQueue = @"com.SJRunLoopTaskQueue.main";
 
 @interface SJRunLoopTaskQueue ()
+@property (nonatomic, strong, readonly) SJQueue<SJRunLoopTaskHandler> *queue;
 @property (nonatomic, readonly) SJRunLoopObserverRef observerRef;
-@property (nonatomic, nullable) SJRunLoopTaskItem *head;
-@property (nonatomic, nullable) SJRunLoopTaskItem *tail;
 @property (nonatomic) NSUInteger delayNum;
 @property (nonatomic) NSUInteger countDown;
 @property (nonatomic, weak, readonly) NSThread *onThread;
@@ -131,6 +109,7 @@ static SJRunLoopTaskQueues *_queues;
     self = [super init];
     if (self) {
         _name = name;
+        _queue = SJQueue.queue;
         _observerRef = (SJRunLoopObserverRef){runLoop, mode, NULL};
         _onThread = (runLoop == CFRunLoopGetMain())?NSThread.mainThread:NSThread.currentThread;
     }
@@ -141,7 +120,7 @@ static SJRunLoopTaskQueues *_queues;
 #ifdef DEBUG
     NSLog(@"%d - -[%@ %s]", (int)__LINE__, NSStringFromClass([self class]), sel_getName(_cmd));
 #endif
-    if ( _head != nil ) [self _empty];
+    [_queue empty];
     [self _removeRunLoopObserver];
 }
 
@@ -156,8 +135,7 @@ static SJRunLoopTaskQueues *_queues;
 
 - (SJRunLoopTaskQueue * _Nullable (^)(SJRunLoopTaskHandler _Nonnull))enqueue {
     return ^SJRunLoopTaskQueue *(SJRunLoopTaskHandler task) {
-        SJRunLoopTaskItem *new_item = _SJRunLoopTaskItemCreate(task);
-        [self _enqueue:new_item];
+        [self.queue enqueue:task];
         [self _addRunLoopObserverIfNeeded];
         return self;
     };
@@ -165,7 +143,7 @@ static SJRunLoopTaskQueues *_queues;
 
 - (SJRunLoopTaskQueue * _Nullable (^)(void))dequeue {
     return ^SJRunLoopTaskQueue *(void) {
-        [self _dequeue:NO];
+        [self.queue dequeue];
         return self;
     };
 }
@@ -179,46 +157,24 @@ static SJRunLoopTaskQueues *_queues;
 
 - (SJRunLoopTaskQueue * _Nullable (^)(void))empty {
     return ^SJRunLoopTaskQueue *(void) {
-        [self _empty];
+        [self.queue empty];
         return self;
     };
 }
 
 - (void (^)(void))destroy {
     return ^ {
-        [self _empty];
+        [self.queue empty];
         [self _removeRunLoopObserver];
         [_queues removeQueue:self.name];
     };
 }
 
-#pragma mark -
-- (void)_performTask:(SJRunLoopTaskHandler)task {
-    !task?:task();
+- (NSInteger)count {
+    return _queue.size;
 }
 
-- (void)_addRunLoopObserverIfNeeded {
-    if ( !_observerRef.obr && _head != nil ) {
-        __weak typeof(self) _self = self;
-        CFRunLoopObserverRef obr = CFRunLoopObserverCreateWithHandler(NULL, kCFRunLoopBeforeWaiting, YES, 0, ^(CFRunLoopObserverRef observer, CFRunLoopActivity activity) {
-            __strong typeof(_self) self = _self;
-            if ( !self ) return;
-            if ( !self.head )
-                return;
-            
-            if ( self.countDown > 0 ) {
-                --self.countDown;
-            }
-            else {
-                [self _dequeue:YES];
-                self.countDown = self.delayNum;
-            }
-        });
-        CFRunLoopAddObserver(_observerRef.rlr, obr, _observerRef.mode);
-        CFRelease(obr);
-        _observerRef.obr = obr;
-    }
-}
+#pragma mark -
 
 - (void)_removeRunLoopObserver {
     if ( _observerRef.obr != NULL ) {
@@ -239,49 +195,37 @@ static SJRunLoopTaskQueues *_queues;
     }
 }
 
-- (void)_dequeue:(BOOL)needPerformTask {
-    if ( _head != nil ) {
-        SJRunLoopTaskItem *item = _head;
-        _head = item->next;
-        if ( !_head ) {
-            _tail = NULL;
-        }
-        
-        if ( needPerformTask ) {
-            [self performSelector:@selector(_performTask:)
-                         onThread:_onThread
-                       withObject:(__bridge id _Nullable)(item->task)
-                    waitUntilDone:NO
-                            modes:@[(__bridge NSString *)(_observerRef.mode)]];
-        }
-        _SJRunLoopTaskItemFree(item);
+- (void)_addRunLoopObserverIfNeeded {
+    if ( !_observerRef.obr && _queue.size != 0 ) {
+        __weak typeof(self) _self = self;
+        CFRunLoopObserverRef obr = CFRunLoopObserverCreateWithHandler(NULL, kCFRunLoopBeforeWaiting, YES, 0, ^(CFRunLoopObserverRef observer, CFRunLoopActivity activity) {
+            __strong typeof(_self) self = _self;
+            if ( !self ) return;
+            if ( self.queue.size == 0 ) {
+                return;
+            }
+            
+            if ( self.countDown > 0 ) {
+                --self.countDown;
+            }
+            else {
+                __auto_type task = self.queue.dequeue;
+                [self performSelector:@selector(_performTask:)
+                             onThread:self.onThread
+                           withObject:task
+                        waitUntilDone:NO
+                                modes:@[(__bridge NSString *)(self.observerRef.mode)]];
+                self.countDown = self.delayNum;
+            }
+        });
+        CFRunLoopAddObserver(_observerRef.rlr, obr, _observerRef.mode);
+        CFRelease(obr);
+        _observerRef.obr = obr;
     }
 }
 
-- (void)_enqueue:(SJRunLoopTaskItem *)new_item {
-    if (__builtin_expect(!_head, 0) ) {
-        _head = new_item;
-    }
-    else {
-        _tail->next = new_item;
-    }
-    _tail = new_item;
-}
-
-- (void)_empty {
-    while ( _head != nil ) {
-        [self _dequeue:NO];
-    }
-}
-
-- (NSInteger)count {
-    NSInteger count = 0;
-    SJRunLoopTaskItem *_Nullable  next = _head;
-    while ( next != nil ) {
-        count += 1;
-        next = next ->next;
-    }
-    return count;
+- (void)_performTask:(SJRunLoopTaskHandler)task {
+    !task?:task();
 }
 @end
 NS_ASSUME_NONNULL_END

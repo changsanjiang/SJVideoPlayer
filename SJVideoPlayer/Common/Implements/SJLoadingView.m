@@ -69,8 +69,8 @@ NS_ASSUME_NONNULL_BEGIN
     _lineColor = lineColor ?: UIColor.whiteColor;
     _gradientLayer.colors = @[
                               (id)[UIColor colorWithWhite:0.001 alpha:0.001].CGColor,
-                              (id)[lineColor colorWithAlphaComponent:0.25].CGColor,
-                              (id)lineColor.CGColor];
+                              (id)[_lineColor colorWithAlphaComponent:0.25].CGColor,
+                              (id)_lineColor.CGColor];
 }
 
 - (UIColor *)lineColor {

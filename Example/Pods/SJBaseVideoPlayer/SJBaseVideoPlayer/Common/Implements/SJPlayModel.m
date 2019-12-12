@@ -98,6 +98,7 @@ NS_ASSUME_NONNULL_BEGIN
 - (BOOL)isPlayInCollectionView { return NO; }
 - (nullable UIView *)playerSuperview { return nil; }
 - (nullable __kindof UIScrollView *)inScrollView { return nil; }
+- (nullable NSIndexPath *)indexPath { return nil; }
 @end
 
 @implementation SJUITableViewCellPlayModel

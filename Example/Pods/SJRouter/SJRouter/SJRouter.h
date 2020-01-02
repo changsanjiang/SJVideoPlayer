@@ -6,24 +6,30 @@
 //
 //  https://github.com/changsanjiang/SJRouter
 //
-//  QQ群: 719616775
+//  QQ群: 930508201
 //
 //  Email: changsanjiang@gmail.com
 //
 
 #import <Foundation/Foundation.h>
 #import "SJRouteHandler.h"
+#import "SJRouteObject.h"
 @class UIViewController;
 
 NS_ASSUME_NONNULL_BEGIN
-typedef void(^SJRouterUnhandledCallback)(SJRouteRequest *request, UIViewController *topViewController); // 无法处理时的回调
-
 @interface SJRouter : NSObject
 + (instancetype)shared;
 
+/// `-instanceWithRequest:completionHandler:`无对应handler时, 将会回调该block
+@property (nonatomic, copy, nullable) SJRouterUnableToGetAnInstanceCallback unableToGetAnInstanceCallback;
+- (void)instanceWithRequest:(SJRouteRequest *)request completionHandler:(nullable SJCompletionHandler)completionHandler;
+
+/// `-handleRequest:completionHandler:`无对应handler时, 将会回调该block
+@property (nonatomic, copy, nullable) SJRouterUnhandledCallback unhandledCallback;
 - (void)handleRequest:(SJRouteRequest *)request completionHandler:(nullable SJCompletionHandler)completionHandler;
 
-@property (nonatomic, copy, nullable) SJRouterUnhandledCallback unhandledCallback;
-- (BOOL)canHandleRoutePath:(NSString *)routePath; // 是否可以处理某个路径
+- (BOOL)canHandleRoutePath:(NSString *)routePath; 
+
+- (void)addRoute:(SJRouteObject *)object;
 @end
 NS_ASSUME_NONNULL_END

@@ -2,32 +2,32 @@ PODS:
   - Masonry (1.1.0)
   - MJRefresh (3.3.1)
   - Reachability (3.2)
-  - SDWebImage (5.4.0):
-    - SDWebImage/Core (= 5.4.0)
-  - SDWebImage/Core (5.4.0)
-  - SJBaseVideoPlayer (3.1.7):
+  - SDWebImage (5.4.1):
+    - SDWebImage/Core (= 5.4.1)
+  - SDWebImage/Core (5.4.1)
+  - SJBaseVideoPlayer (3.1.8):
     - Masonry
     - Reachability
-    - SJBaseVideoPlayer/AVPlayer (= 3.1.7)
-    - SJBaseVideoPlayer/Common (= 3.1.7)
+    - SJBaseVideoPlayer/AVPlayer (= 3.1.8)
+    - SJBaseVideoPlayer/Common (= 3.1.8)
     - SJUIKit/AttributesFactory (>= 0.0.0.38)
     - SJUIKit/ObserverHelper (>= 0.0.0.38)
     - SJUIKit/Queues (>= 0.0.0.38)
-  - SJBaseVideoPlayer/AVPlayer (3.1.7):
+  - SJBaseVideoPlayer/AVPlayer (3.1.8):
     - Masonry
     - Reachability
     - SJBaseVideoPlayer/Common
     - SJUIKit/AttributesFactory (>= 0.0.0.38)
     - SJUIKit/ObserverHelper (>= 0.0.0.38)
     - SJUIKit/Queues (>= 0.0.0.38)
-  - SJBaseVideoPlayer/Common (3.1.7):
+  - SJBaseVideoPlayer/Common (3.1.8):
     - Masonry
     - Reachability
     - SJBaseVideoPlayer/ResourceLoader
     - SJUIKit/AttributesFactory (>= 0.0.0.38)
     - SJUIKit/ObserverHelper (>= 0.0.0.38)
     - SJUIKit/Queues (>= 0.0.0.38)
-  - SJBaseVideoPlayer/ResourceLoader (3.1.7):
+  - SJBaseVideoPlayer/ResourceLoader (3.1.8):
     - Masonry
     - Reachability
     - SJUIKit/AttributesFactory (>= 0.0.0.38)
@@ -37,9 +37,9 @@ PODS:
   - SJPlaybackListController (0.0.5):
     - SJPlaybackListController/Core (= 0.0.5)
   - SJPlaybackListController/Core (0.0.5)
-  - SJRouter (0.0.12):
-    - SJRouter/Core (= 0.0.12)
-  - SJRouter/Core (0.0.12)
+  - SJRouter (0.0.16):
+    - SJRouter/Core (= 0.0.16)
+  - SJRouter/Core (0.0.16)
   - SJUIKit (0.0.0.39):
     - SJUIKit/AsyncLoad (= 0.0.0.39)
     - SJUIKit/AttributesFactory (= 0.0.0.39)
@@ -133,11 +133,11 @@ SPEC CHECKSUMS:
   Masonry: 678fab65091a9290e40e2832a55e7ab731aad201
   MJRefresh: eeda70fbf0ad277f3178cef1cd0c3532591d6237
   Reachability: 33e18b67625424e47b6cde6d202dce689ad7af96
-  SDWebImage: 5bf6aec6481ae2a062bdc59f9d6c1d1e552090e0
-  SJBaseVideoPlayer: 9e18423fd106835ce84a882e7ac65959a2dec212
+  SDWebImage: 29c340dbdcef342bb13125553f4e19ce056b07a7
+  SJBaseVideoPlayer: 7c3d6d0e8c9cbd731143d2ddb53a2157e74479de
   SJFullscreenPopGesture: d4994917bc900e79cd686970866834b4c5883565
   SJPlaybackListController: e135c789fcd63d63a62d5e2e2965ab1e6d52a2bd
-  SJRouter: 702a0d06811fc2da02d6145bc7abb9f633fdc612
+  SJRouter: 65f831b647c80bbaff491d6252af8e7950b0f70b
   SJUIKit: 5479a150083e606937a796801ecaae6317e046f5
   SJVideoPlayer: 02bafffeb014806167be201f2860462fdc4d9e87
 

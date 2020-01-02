@@ -159,7 +159,7 @@ typedef struct _SJPlayerControlInfo {
 }
 
 + (NSString *)version {
-    return @"v3.1.7";
+    return @"v3.1.8";
 }
 
 - (void)setVideoGravity:(SJVideoGravity)videoGravity {
@@ -467,7 +467,9 @@ typedef struct _SJPlayerControlInfo {
     _registrar.didBecomeActive = ^(SJVideoPlayerRegistrar * _Nonnull registrar) {
         __strong typeof(_self) self = _self;
         if ( !self ) return;
-        BOOL canPlay = self.timeControlStatus == SJPlaybackTimeControlStatusPaused && self.controlInfo->plabackControl.resumePlaybackWhenAppDidEnterForeground;
+        BOOL canPlay = self.timeControlStatus == SJPlaybackTimeControlStatusPaused &&
+                       self.controlInfo->plabackControl.resumePlaybackWhenAppDidEnterForeground &&
+                      !self.vc_isDisappeared;
         if ( self.isPlayOnScrollView ) {
             if ( canPlay && self.isScrollAppeared ) [self play];
         }

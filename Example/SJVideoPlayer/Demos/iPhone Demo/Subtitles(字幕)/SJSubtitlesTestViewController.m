@@ -72,6 +72,33 @@ NS_ASSUME_NONNULL_BEGIN
         make.height.equalTo(self.view.mas_width).multipliedBy(9/16.0);
     }];
 }
+
+- (void)viewDidAppear:(BOOL)animated {
+    [super viewDidAppear:animated];
+    [self.player vc_viewDidAppear];
+}
+
+- (void)viewWillDisappear:(BOOL)animated {
+    [super viewWillDisappear:animated];
+    [self.player vc_viewWillDisappear];
+}
+
+- (void)viewDidDisappear:(BOOL)animated {
+    [super viewDidDisappear:animated];
+    [self.player vc_viewDidDisappear];
+}
+
+- (BOOL)prefersStatusBarHidden {
+    return [self.player vc_prefersStatusBarHidden];
+}
+
+- (UIStatusBarStyle)preferredStatusBarStyle {
+    return [self.player vc_preferredStatusBarStyle];
+}
+
+- (BOOL)prefersHomeIndicatorAutoHidden {
+    return YES;
+}
 @end
 NS_ASSUME_NONNULL_END
 

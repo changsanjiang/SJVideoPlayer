@@ -138,6 +138,12 @@
 - (void)viewDidAppear:(BOOL)animated {
     [super viewDidAppear:animated];
     _pauseWhenViewDidDisappear = YES; ///< resume
+    _player.vc_isDisappeared = NO;
+}
+
+- (void)viewWillDisappear:(BOOL)animated {
+    [super viewWillDisappear:animated];
+    _player.vc_isDisappeared = YES;
 }
 
 - (void)viewDidDisappear:(BOOL)animated {

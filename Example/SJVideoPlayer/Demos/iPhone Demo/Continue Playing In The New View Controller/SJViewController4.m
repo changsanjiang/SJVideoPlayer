@@ -44,14 +44,21 @@
 
 - (void)viewDidAppear:(BOOL)animated {
     [super viewDidAppear:animated];
+    [_player vc_viewDidAppear];
     [_player play];
 #ifdef DEBUG
     NSLog(@"AA: %d - %s", (int)__LINE__, __func__);
 #endif
 }
 
+- (void)viewWillDisappear:(BOOL)animated {
+    [super viewWillDisappear:animated];
+    [_player vc_viewWillDisappear];
+}
+
 - (void)viewDidDisappear:(BOOL)animated {
     [super viewDidDisappear:animated];
+    [_player vc_viewDidDisappear];
     [_player pause];
 #ifdef DEBUG
         NSLog(@"AA: %d - %s", (int)__LINE__, __func__);

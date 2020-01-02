@@ -120,9 +120,20 @@ NS_ASSUME_NONNULL_BEGIN
     [self.navigationController setNavigationBarHidden:YES animated:YES];
 }
 
+- (void)viewDidAppear:(BOOL)animated {
+    [super viewDidAppear:animated];
+    [self.player vc_viewDidAppear];
+}
+
 - (void)viewWillDisappear:(BOOL)animated {
     [super viewWillDisappear:animated];
+    [self.player vc_viewWillDisappear];
     [self.navigationController setNavigationBarHidden:NO animated:YES];
+}
+
+- (void)viewDidDisappear:(BOOL)animated {
+    [super viewDidDisappear:animated];
+    [self.player vc_viewDidDisappear];
 }
 
 - (BOOL)prefersStatusBarHidden {

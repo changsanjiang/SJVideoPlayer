@@ -44,7 +44,6 @@
 		77788FED22C37C2000E26599 /* SJExtendedMediaCollectionViewModel.m in Sources */ = {isa = PBXBuildFile; fileRef = 77788FEC22C37C2000E26599 /* SJExtendedMediaCollectionViewModel.m */; };
 		77805D6B22BF7DE1007076B9 /* SJiPadDemoViewController1.m in Sources */ = {isa = PBXBuildFile; fileRef = 77805D6922BF7DE1007076B9 /* SJiPadDemoViewController1.m */; };
 		77805D6F22BF7EDB007076B9 /* iPadMain.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 77805D6E22BF7EDB007076B9 /* iPadMain.storyboard */; };
-		77828F9023A229060055C957 /* RSA.m in Sources */ = {isa = PBXBuildFile; fileRef = 77828F8E23A229060055C957 /* RSA.m */; };
 		7784A7D1237CF75F000BA67E /* SJTestAliVodPlayerViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 7784A7CF237CF75F000BA67E /* SJTestAliVodPlayerViewController.m */; };
 		7784A7D2237CF75F000BA67E /* SJTestAliVodPlayerViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 7784A7D0237CF75F000BA67E /* SJTestAliVodPlayerViewController.xib */; };
 		7784A7FA237D3860000BA67E /* SJBarrageTestViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 7784A7F9237D3860000BA67E /* SJBarrageTestViewController.m */; };
@@ -170,8 +169,6 @@
 		77805D6822BF7DE1007076B9 /* SJiPadDemoViewController1.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = SJiPadDemoViewController1.h; sourceTree = "<group>"; };
 		77805D6922BF7DE1007076B9 /* SJiPadDemoViewController1.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = SJiPadDemoViewController1.m; sourceTree = "<group>"; };
 		77805D6E22BF7EDB007076B9 /* iPadMain.storyboard */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; path = iPadMain.storyboard; sourceTree = "<group>"; };
-		77828F8E23A229060055C957 /* RSA.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RSA.m; sourceTree = "<group>"; };
-		77828F8F23A229060055C957 /* RSA.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RSA.h; sourceTree = "<group>"; };
 		7784A7CE237CF75F000BA67E /* SJTestAliVodPlayerViewController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = SJTestAliVodPlayerViewController.h; sourceTree = "<group>"; };
 		7784A7CF237CF75F000BA67E /* SJTestAliVodPlayerViewController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = SJTestAliVodPlayerViewController.m; sourceTree = "<group>"; };
 		7784A7D0237CF75F000BA67E /* SJTestAliVodPlayerViewController.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = SJTestAliVodPlayerViewController.xib; sourceTree = "<group>"; };
@@ -332,8 +329,6 @@
 			children = (
 				6003F59C195388D20070C39A /* SJAppDelegate.h */,
 				6003F59D195388D20070C39A /* SJAppDelegate.m */,
-				77828F8F23A229060055C957 /* RSA.h */,
-				77828F8E23A229060055C957 /* RSA.m */,
 				A6A208DE22AB9E59001ED610 /* Demos */,
 				6003F594195388D20070C39A /* Supporting Files */,
 			);
@@ -1043,7 +1038,6 @@
 				A6A2553D22ABC71F00E42998 /* DemoTableViewCellViewModel.m in Sources */,
 				77788FBB22C3654D00E26599 /* SJTableViewHeaderFooterView5n.m in Sources */,
 				A6A2554D22ABCFD800E42998 /* SJViewModel1.m in Sources */,
-				77828F9023A229060055C957 /* RSA.m in Sources */,
 				A69FD22B22D9F5280031E4E7 /* SJViewController8.m in Sources */,
 				77A0CDEF230652DD00FE353C /* SJListViewAutoplayViewController.m in Sources */,
 			);

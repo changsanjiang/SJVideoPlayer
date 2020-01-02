@@ -101,22 +101,24 @@
     [self.navigationController setNavigationBarHidden:YES animated:NO];
 }
 
-- (void)viewWillDisappear:(BOOL)animated {
-    [super viewWillDisappear:animated];
-    [self.navigationController setNavigationBarHidden:NO animated:NO];
-}
 
 - (void)viewDidAppear:(BOOL)animated {
     [super viewDidAppear:animated];
-    [_player play];
+    [_player vc_viewDidAppear];
 #ifdef DEBUG
     NSLog(@"AA: %d - %s", (int)__LINE__, __func__);
 #endif
 }
 
+- (void)viewWillDisappear:(BOOL)animated {
+    [super viewWillDisappear:animated];
+    [self.navigationController setNavigationBarHidden:NO animated:NO];
+    [_player vc_viewWillDisappear];
+}
+
 - (void)viewDidDisappear:(BOOL)animated {
     [super viewDidDisappear:animated];
-    [_player pause];
+    [_player vc_viewDidDisappear];
 #ifdef DEBUG
         NSLog(@"AA: %d - %s", (int)__LINE__, __func__);
 #endif

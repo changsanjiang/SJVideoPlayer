@@ -8,7 +8,7 @@
 
 #import "SJViewController5n.h"
 #import <SJVideoPlayer/SJVideoPlayer.h>
-#import <SJUIKit/SJUIKit.h>
+#import <SJUIKit/NSAttributedString+SJMake.h>
 #import <Masonry/Masonry.h>
 #import "SJTableViewHeaderFooterView5n.h"
 #import "SJMediasTableViewModel.h"

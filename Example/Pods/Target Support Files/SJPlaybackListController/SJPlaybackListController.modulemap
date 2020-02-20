@@ -1,0 +1,6 @@
+framework module SJPlaybackListController {
+  umbrella header "SJPlaybackListController-umbrella.h"
+
+  export *
+  module * { export * }
+}

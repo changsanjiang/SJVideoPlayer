@@ -8,7 +8,8 @@
 
 #import "SJViewController3.h"
 #import "SJRotationMode2ViewModel.h"
-#import <SJUIKit/SJUIKit.h>
+#import <SJUIKit/NSAttributedString+SJMake.h>
+#import <SJUIKit/UIScrollView+SJRefreshAdd.h>
 #import <SJVideoPlayer/SJVideoPlayer.h>
 #import <Masonry/Masonry.h>
 #import "SJViewController4.h"

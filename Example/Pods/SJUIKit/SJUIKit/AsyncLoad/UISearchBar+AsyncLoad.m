@@ -2,7 +2,7 @@
 //  UISearchBar+AsyncLoad.m
 //  Pods
 //
-//  Created by BlueDancer on 2019/1/8.
+//  Created by 畅三江 on 2019/1/8.
 //
 
 #import "UISearchBar+AsyncLoad.h"

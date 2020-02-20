@@ -1,0 +1,6 @@
+framework module SJFullscreenPopGesture {
+  umbrella header "SJFullscreenPopGesture-umbrella.h"
+
+  export *
+  module * { export * }
+}

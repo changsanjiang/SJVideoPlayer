@@ -2,7 +2,7 @@
 //  SJDraggingProgressPopView.m
 //  Pods
 //
-//  Created by BlueDancer on 2019/11/27.
+//  Created by 畅三江 on 2019/11/27.
 //
 
 #import "SJDraggingProgressPopView.h"
@@ -64,8 +64,12 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (void)setDragProgressTime:(NSTimeInterval)dragProgressTime {
     SJVideoPlayerSettings *sources = SJVideoPlayerSettings.commonSettings;
-    _directionImageView.image = dragProgressTime > _dragProgressTime ? sources.fastImage : sources.forwardImage;
-    
+    if ( dragProgressTime > _dragProgressTime ) {
+        _directionImageView.image = sources.fastImage;
+    }
+    else if ( dragProgressTime < _dragProgressTime ) {
+        _directionImageView.image = sources.forwardImage;
+    }
     _progressSlider.value = dragProgressTime;
     _dragProgressTimeLabel.text = [NSString stringWithCurrentTime:dragProgressTime duration:_duration];
     _dragProgressTime = dragProgressTime;

@@ -68,10 +68,15 @@ NS_ASSUME_NONNULL_BEGIN
 @synthesize bottomMargin = _bottomMargin;
 @synthesize itemSpacing = _itemSpacing;
 @synthesize contentInset = _contentInset;
+@synthesize automaticallyAdjustsLeftInset = _automaticallyAdjustsLeftInset;
+@synthesize automaticallyAdjustsBottomInset = _automaticallyAdjustsBottomInset;
 
 - (instancetype)init {
     self = [super init];
     if (self) {
+        _automaticallyAdjustsLeftInset = YES;
+        _automaticallyAdjustsBottomInset = YES;
+        
         _subviews = [NSMutableArray new];
         _leftMargin = 16;
         _bottomMargin = 16;
@@ -120,8 +125,28 @@ NS_ASSUME_NONNULL_BEGIN
     return NO;
 }
 
+- (nullable __kindof NSArray<UIView *> *)displayingViews {
+    if ( self.subviews.count != 0 ) {
+        NSMutableArray *m = [NSMutableArray arrayWithCapacity:self.subviews.count];
+        for ( _SJPopItemContainerView *containerView  in self.subviews ) {
+            [m addObject:containerView.customView ?: containerView.titleLabel];
+        }
+        return m;
+    }
+    return nil;
+}
+
 - (void)clear {
     [self _removeAllSubviews];
+}
+
+- (void)remove:(UIView *)view {
+    for ( _SJPopItemContainerView *containerView  in self.subviews ) {
+        if ( containerView.customView == view || containerView.titleLabel == view ) {
+            [self _removeSubview:containerView];
+            break;
+        }
+    }
 }
 
 - (void)_show:(_SJPopItemContainerView *)view duration:(NSTimeInterval)duration {
@@ -192,9 +217,14 @@ NS_ASSUME_NONNULL_BEGIN
     NSUInteger count = self.subviews.count;
     _SJPopItemContainerView *view = self.subviews[idx];
     [view mas_remakeConstraints:^(MASConstraintMaker *make) {
-        if (@available(iOS 11.0, *)) {
-            make.left.equalTo(self.target.mas_safeAreaLayoutGuideLeft).offset(self.leftMargin);
-        } else {
+        if ( self.automaticallyAdjustsLeftInset ) {
+            if ( @available(iOS 11.0, *) ) {
+                make.left.equalTo(self.target.mas_safeAreaLayoutGuideLeft).offset(self.leftMargin);
+            } else {
+                make.left.offset(self.leftMargin);
+            }
+        }
+        else {
             make.left.offset(self.leftMargin);
         }
         
@@ -202,9 +232,14 @@ NS_ASSUME_NONNULL_BEGIN
             make.bottom.equalTo(self.subviews[idx + 1].mas_top).offset(-self.itemSpacing);
         }
         else {
-            if (@available(iOS 11.0, *)) {
-                make.bottom.equalTo(self.target.mas_safeAreaLayoutGuideBottom).offset(-self.bottomMargin);
-            } else {
+            if ( self.automaticallyAdjustsBottomInset ) {
+                if ( @available(iOS 11.0, *) ) {
+                    make.bottom.equalTo(self.target.mas_safeAreaLayoutGuideBottom).offset(-self.bottomMargin);
+                } else {
+                    make.bottom.offset(-self.bottomMargin);
+                }
+            }
+            else {
                 make.bottom.offset(-self.bottomMargin);
             }
         }

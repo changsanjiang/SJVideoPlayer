@@ -2,7 +2,7 @@
 //  SJTestAliViewController3.m
 //  SJVideoPlayer_Example
 //
-//  Created by BlueDancer on 2019/11/7.
+//  Created by 畅三江 on 2019/11/7.
 //  Copyright © 2019 changsanjiang. All rights reserved.
 //
 
@@ -12,7 +12,7 @@
 #import "Masonry.h"
 
 #if __has_include(<AliyunPlayer/AliyunPlayer.h>)
-#import "SJAliMediaPlaybackController.h"
+#import <SJBaseVideoPlayer/SJAliMediaPlaybackController.h>
 #endif
 
 @interface SJTestAliViewController3 ()
@@ -40,6 +40,14 @@
         make.height.equalTo(self.player.view.mas_width).multipliedBy(9/16.0);
     }];
     // Do any additional setup after loading the view from its nib.
+}
+
+- (IBAction)play:(id)sender {
+    _player.URLAsset = [SJVideoPlayerURLAsset.alloc initWithURL:SourceURL1];
+}
+
+- (IBAction)pause:(id)sender {
+    [_player pause];
 }
 
 @end

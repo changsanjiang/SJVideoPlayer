@@ -2,7 +2,7 @@
 //  SJTestAliVodPlayerViewController.m
 //  SJVideoPlayer_Example
 //
-//  Created by BlueDancer on 2019/11/14.
+//  Created by 畅三江 on 2019/11/14.
 //  Copyright © 2019 changsanjiang. All rights reserved.
 //
 
@@ -27,7 +27,7 @@
     
 #if __has_include(<AliyunPlayerSDK/AliyunPlayerSDK.h>)
     _player.playbackController = SJAliyunVodPlaybackController.new;
-    _player.URLAsset = [SJVideoPlayerURLAsset.alloc initWithAliyunVodModel:[SJAliyunVodURLModel.alloc initWithURL:VideoURL_Level1]];
+    _player.URLAsset = [SJVideoPlayerURLAsset.alloc initWithAliyunVodModel:[SJAliyunVodURLModel.alloc initWithURL:SourceURL2]];
 #endif
     
     [self.view addSubview:_player.view];

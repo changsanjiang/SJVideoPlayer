@@ -5,12 +5,23 @@ platform :ios, '8.0'
 
 #install! 'cocoapods', disable_input_output_paths: true, generate_multiple_pod_projects: true
 
+#post_install do |installer|
+#  installer.pods_project.build_configuration_list.build_configurations.each do |configuration|
+#    configuration.build_settings['CLANG_ALLOW_NON_MODULAR_INCLUDES_IN_FRAMEWORK_MODULES'] = 'YES'
+#  end
+#end
+
+
 post_install do |installer|
   installer.pods_project.targets.each do |target|
     target.build_configurations.each do |config|
       if config.build_settings['IPHONEOS_DEPLOYMENT_TARGET'].to_f < 9.0
         config.build_settings['IPHONEOS_DEPLOYMENT_TARGET'] = '9.0'
       end
+      
+#      if target.name == 'SJBaseVideoPlayer' || target.name == 'SJVideoPlayer' || target.name == 'AliPlayerSDK_iOS'
+#        config.build_settings['CLANG_ALLOW_NON_MODULAR_INCLUDES_IN_FRAMEWORK_MODULES'] = 'YES'
+#      end
       
       if config.name != 'Release'
         if target.name == 'SJBaseVideoPlayer'
@@ -33,11 +44,14 @@ end
 
 
 target 'SJVideoPlayer_Example' do
+#  use_frameworks!
+  
 # 切换为 ijkplayer, 详见: https://github.com/changsanjiang/SJVideoPlayer/wiki/Use-ijkplayer
 #  pod 'SJBaseVideoPlayer/IJKPlayer'#, :path => '../../SJBaseVideoPlayer'
   
 # 切换为 Aliplayer, 详见: https://github.com/changsanjiang/SJVideoPlayer/wiki/Use-AliPlayer
 #  pod 'SJBaseVideoPlayer/AliPlayer'#, :path => '../../SJBaseVideoPlayer'
+#  pod 'AliPlayerSDK_iOS'#, :path => '/Users/bluedancer/Documents/OSChina/AliPlayerSDK'
 
 # 切换为 AliVodPlayer, 详见: https://github.com/changsanjiang/SJVideoPlayer/wiki/Use-AliVodPlayer
 #  pod 'SJBaseVideoPlayer/AliVodPlayer'#, :path => '../../SJBaseVideoPlayer'
@@ -45,7 +59,8 @@ target 'SJVideoPlayer_Example' do
   # 默认为 AVPlayer
   pod 'SJBaseVideoPlayer'#, :path => '../../SJBaseVideoPlayer'
   pod 'SJVideoPlayer', :path => '../../SJVideoPlayer'
-  
+  pod 'SJUIKit', :git => 'https://gitee.com/changsanjiang/SJUIKitv2.git', :inhibit_warnings => true
+
   # 全屏手势
   pod 'SJFullscreenPopGesture/ObjC'
   # 列表控制
@@ -53,6 +68,5 @@ target 'SJVideoPlayer_Example' do
   pod 'Masonry', :inhibit_warnings => true
   pod 'MJRefresh', :inhibit_warnings => true
   pod 'SJRouter'
-  pod 'SJUIKit'#, :path => '../../SJUIKit'
   pod 'SDWebImage'
 end

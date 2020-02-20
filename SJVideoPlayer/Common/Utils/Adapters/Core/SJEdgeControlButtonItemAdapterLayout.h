@@ -2,7 +2,7 @@
 //  SJEdgeControlButtonItemAdapterLayout.h
 //  Pods
 //
-//  Created by BlueDancer on 2019/12/9.
+//  Created by 畅三江 on 2019/12/9.
 //
 
 #import <Foundation/Foundation.h>

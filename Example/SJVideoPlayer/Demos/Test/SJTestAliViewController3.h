@@ -2,7 +2,7 @@
 //  SJTestAliViewController3.h
 //  SJVideoPlayer_Example
 //
-//  Created by BlueDancer on 2019/11/7.
+//  Created by 畅三江 on 2019/11/7.
 //  Copyright © 2019 changsanjiang. All rights reserved.
 //
 

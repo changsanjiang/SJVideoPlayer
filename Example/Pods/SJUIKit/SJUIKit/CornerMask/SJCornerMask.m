@@ -7,8 +7,22 @@
 
 #import "SJCornerMask.h"
 #import "NSObject+SJObserverHelper.h"
+#import <objc/message.h>
 
 NS_ASSUME_NONNULL_BEGIN
+@interface UIView (SJCornerMaskExtended)
+@property (nonatomic, strong, nullable) CAShapeLayer *sj_borderLayer;
+@end
+
+@implementation UIView (SJCornerMaskExtended)
+- (void)setSj_borderLayer:(nullable CAShapeLayer *)sj_borderLayer {
+    objc_setAssociatedObject(self, @selector(sj_borderLayer), sj_borderLayer, OBJC_ASSOCIATION_RETAIN_NONATOMIC);
+}
+- (nullable CAShapeLayer *)sj_borderLayer {
+    return objc_getAssociatedObject(self, _cmd);
+}
+@end
+
 void
 SJCornerMaskSetRectCorner(__kindof UIView *view, UIRectCorner corners, CGFloat radius, CGFloat borderWidth, UIColor *_Nullable borderColor) {
     if ( view == nil )
@@ -23,10 +37,12 @@ SJCornerMaskSetRectCorner(__kindof UIView *view, UIRectCorner corners, CGFloat r
             border.strokeColor = borderColor.CGColor;
             border.lineWidth = borderWidth;
             border.fillColor = UIColor.clearColor.CGColor;
+            view.sj_borderLayer = border;
             [view.layer addSublayer:border];
         }
         
-        SJKVOObservedChangeHandler handler = ^(__kindof UIView *target, NSDictionary<NSKeyValueChangeKey,id> * _Nullable change) {
+        __block SJKVOObservedChangeHandler handler = ^(__kindof UIView *target, NSDictionary<NSKeyValueChangeKey,id> * _Nullable change) {
+            CAShapeLayer *_Nullable border = target.sj_borderLayer;
             CGRect bounds = target.bounds;
             if ( !CGSizeEqualToSize(CGSizeZero, bounds.size) ) {
                 mask.frame = bounds;
@@ -43,6 +59,10 @@ SJCornerMaskSetRectCorner(__kindof UIView *view, UIRectCorner corners, CGFloat r
         sjkvo_observe(view, @"frame", handler);
         sjkvo_observe(view, @"bounds", handler);
     }
+    
+    CAShapeLayer *_Nullable border = view.sj_borderLayer;
+    border.strokeColor = borderColor.CGColor;
+    border.lineWidth = borderWidth;
 }
 
 /// rect corner
@@ -66,6 +86,7 @@ SJCornerMaskSetRound(__kindof UIView *view, CGFloat borderWidth, UIColor *_Nulla
             border.strokeColor = borderColor.CGColor;
             border.lineWidth = borderWidth;
             border.fillColor = UIColor.clearColor.CGColor;
+            view.sj_borderLayer = border;
             [view.layer addSublayer:border];
         }
         
@@ -86,7 +107,10 @@ SJCornerMaskSetRound(__kindof UIView *view, CGFloat borderWidth, UIColor *_Nulla
         sjkvo_observe(view, @"frame", handler);
         sjkvo_observe(view, @"bounds", handler);
     }
-
+    
+    CAShapeLayer *_Nullable border = view.sj_borderLayer;
+    border.strokeColor = borderColor.CGColor;
+    border.lineWidth = borderWidth;
 }
 
 /// round

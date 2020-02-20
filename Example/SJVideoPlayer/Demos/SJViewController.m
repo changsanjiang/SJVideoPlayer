@@ -201,6 +201,9 @@
         [[Item alloc] initWithTitle:@"Test barrages"
                            subTitle:@"测试 弹幕"
                                path:@"barrage/demo"],
+        [[Item alloc] initWithTitle:@"Test playback history"
+                           subTitle:@"测试 播放记录"
+                               path:@"playbackHistory"],
         [[Item alloc] initWithTitle:@"Test"
                            subTitle:@"Test"
                                path:@"test"],

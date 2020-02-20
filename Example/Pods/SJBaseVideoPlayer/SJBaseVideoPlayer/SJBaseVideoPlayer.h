@@ -143,13 +143,6 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic, strong, nullable) SJVideoPlayerURLAsset *URLAsset;
 
 ///
-/// 资源销毁前的回调
-///
-///         可以在这里做一些记录的工作. 如播放记录(未来可能会支持)
-///
-@property (nonatomic, copy, nullable) void(^assetDeallocExeBlock)(__kindof SJBaseVideoPlayer *videoPlayer);
-
-///
 /// 播放出错
 ///
 ///         当播放发生错误时, 可以通过它来获取错误信息
@@ -179,6 +172,11 @@ NS_ASSUME_NONNULL_BEGIN
 ///             3.可能是正在评估缓冲中, 这个过程会进行的很快, 不需要显示loading视图.
 ///
 @property (nonatomic, readonly, nullable) SJWaitingReason reasonForWaitingToPlay;
+@property (nonatomic, readonly) BOOL isPaused;          ///< 调用了暂停, 暂停播放
+@property (nonatomic, readonly) BOOL isPlaying;         ///< 调用了播放, 处于播放中
+@property (nonatomic, readonly) BOOL isBuffering;       ///< 调用了播放, 处于缓冲中(等待缓存足够时自动恢复播放, 建议显示loading视图)
+@property (nonatomic, readonly) BOOL isEvaluating;      ///< 调用了播放, 正在评估缓冲中(这个过程会进行的很快, 不需要显示loading视图)
+@property (nonatomic, readonly) BOOL isNoAssetToPlay;   ///< 调用了播放, 但未设置播放资源(设置资源后将会自动播放 )
 
 ///
 /// 资源准备(或初始化)的状态
@@ -217,11 +215,11 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic, readonly) NSTimeInterval currentTime;                         ///< 当前播放到的时间
 @property (nonatomic, readonly) NSTimeInterval duration;                            ///< 总时长
 @property (nonatomic, readonly) NSTimeInterval playableDuration;                    ///< 缓冲到的时间
-@property (nonatomic, readonly) NSTimeInterval durationWatched;                     ///< 已观看的时长(当前资源)
+@property (nonatomic, readonly) NSTimeInterval durationWatched;                     ///< 已观看的时长(当前资源已观看的时长)
 
-@property (nonatomic, readonly) BOOL isPlayedToEndTime;                             ///< 当前资源是否已播放结束
-@property (nonatomic, readonly) BOOL isPlayed;                                      ///< 是否播放过当前的资源
-@property (nonatomic, readonly) BOOL isReplayed;                                    ///< 是否重播过当前的资源
+@property (nonatomic, readonly) BOOL isPlayedToEndTime;                             ///< 是否已播放结束(当前资源是否已播放结束)
+@property (nonatomic, readonly) BOOL isPlayed;                                      ///< 是否播放过(对当前的资源是否调用过play方法)
+@property (nonatomic, readonly) BOOL isReplayed;                                    ///< 是否重播过(对当前的资源是否调用过replay方法)
 @property (nonatomic, readonly) SJPlaybackType playbackType;                        ///< 播放类型
 - (NSString *)stringForSeconds:(NSInteger)secs;                                     ///< 转换时间为字符串, format: 00:00:00
 
@@ -320,14 +318,6 @@ NS_ASSUME_NONNULL_BEGIN
 //- (void)viewDidDisappear:(BOOL)animated {
 //    [super viewDidDisappear:animated];
 //    [self.player vc_viewDidDisappear];
-//}
-//
-//- (BOOL)prefersStatusBarHidden {
-//    return [self.player vc_prefersStatusBarHidden];
-//}
-//
-//- (UIStatusBarStyle)preferredStatusBarStyle {
-//    return [self.player vc_preferredStatusBarStyle];
 //}
 //
 //- (BOOL)prefersHomeIndicatorAutoHidden {

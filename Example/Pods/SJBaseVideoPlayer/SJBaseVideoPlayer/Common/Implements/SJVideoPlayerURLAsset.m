@@ -36,37 +36,24 @@ NS_ASSUME_NONNULL_BEGIN
 @implementation SJVideoPlayerURLAsset
 @synthesize mediaURL = _mediaURL; 
 
-- (nullable instancetype)initWithURL:(NSURL *)URL specifyStartTime:(NSTimeInterval)specifyStartTime playModel:(__kindof SJPlayModel *)playModel {
+- (nullable instancetype)initWithURL:(NSURL *)URL startPosition:(NSTimeInterval)startPosition playModel:(__kindof SJPlayModel *)playModel {
     if ( !URL ) return nil;
     self = [super init];
     if ( !self ) return nil;
     _mediaURL = URL;
-    _specifyStartTime = specifyStartTime;
+    _startPosition = startPosition;
     _playModel = playModel?:[SJPlayModel new];
     return self;
 }
-- (nullable instancetype)initWithURL:(NSURL *)URL specifyStartTime:(NSTimeInterval)specifyStartTime {
-    return [self initWithURL:URL specifyStartTime:specifyStartTime playModel:[SJPlayModel new]];
+- (nullable instancetype)initWithURL:(NSURL *)URL startPosition:(NSTimeInterval)startPosition {
+    return [self initWithURL:URL startPosition:startPosition playModel:[SJPlayModel new]];
 }
 - (nullable instancetype)initWithURL:(NSURL *)URL playModel:(__kindof SJPlayModel *)playModel {
-    return [self initWithURL:URL specifyStartTime:0 playModel:playModel];
+    return [self initWithURL:URL startPosition:0 playModel:playModel];
 }
 - (nullable instancetype)initWithURL:(NSURL *)URL {
-    return [self initWithURL:URL specifyStartTime:0];
+    return [self initWithURL:URL startPosition:0];
 }
-- (nullable instancetype)initWithOtherAsset:(SJVideoPlayerURLAsset *)otherAsset playModel:(nullable __kindof SJPlayModel *)playModel {
-    if ( !otherAsset ) return nil;
-    self = [super init];
-    if ( !self ) return nil;
-    SJVideoPlayerURLAsset *curr = otherAsset;
-    while ( curr.originAsset != nil && curr != curr.originAsset ) {
-        curr = curr.originAsset;
-    }
-    _originAsset = curr;
-    _mediaURL = curr.mediaURL;
-    _playModel = playModel?:[SJPlayModel new];
-    return self;
-} 
 - (BOOL)isM3u8 {
     return [_mediaURL.pathExtension containsString:@"m3u8"];
 } 
@@ -77,9 +64,6 @@ NS_ASSUME_NONNULL_BEGIN
 }
 - (id<SJVideoPlayerURLAssetObserver>)getObserver {
     return [[SJVideoPlayerURLAssetObserver alloc] initWithAsset:self];
-}
-- (nullable id<SJMediaModelProtocol>)originMedia {
-    return _originAsset;
 }
 @end
 NS_ASSUME_NONNULL_END

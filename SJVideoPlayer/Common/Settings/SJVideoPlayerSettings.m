@@ -51,6 +51,7 @@ NSNotificationName const SJVideoPlayerSettingsUpdatedNotification = @"SJVideoPla
 // bottom adapter items
 @property (nonatomic, strong, nullable) UIImage *pauseBtnImage;
 @property (nonatomic, strong, nullable) UIImage *playBtnImage;
+@property (nonatomic, strong, nullable) UIFont *timeFont;
 @property (nonatomic, strong, nullable) UIImage *shrinkscreenImage;               // 缩回小屏的图片
 @property (nonatomic, strong, nullable) UIImage *fullBtnImage;                    // 全屏的图片
 @property (nonatomic, strong, nullable) UIColor *progress_trackColor;             // 轨道颜色
@@ -249,6 +250,7 @@ NSNotificationName const SJVideoPlayerSettingsUpdatedNotification = @"SJVideoPla
 
     _pauseBtnImage = [SJVideoPlayerResourceLoader imageNamed:@"sj_video_player_pause"];
     _playBtnImage = [SJVideoPlayerResourceLoader imageNamed:@"sj_video_player_play"];
+    _timeFont = [UIFont systemFontOfSize:11];
     _shrinkscreenImage = [SJVideoPlayerResourceLoader imageNamed:@"sj_video_player_shrinkscreen"];
     _fullBtnImage = [SJVideoPlayerResourceLoader imageNamed:@"sj_video_player_fullscreen"];
     _liveText = [SJVideoPlayerResourceLoader localizedStringForKey:SJVideoPlayer_LiveText];

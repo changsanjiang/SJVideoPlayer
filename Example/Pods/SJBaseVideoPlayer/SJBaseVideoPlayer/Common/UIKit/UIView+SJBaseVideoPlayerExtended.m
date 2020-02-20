@@ -2,7 +2,7 @@
 //  UIView+SJBaseVideoPlayerExtended.m
 //  SJBaseVideoPlayer
 //
-//  Created by BlueDancer on 2019/11/22.
+//  Created by 畅三江 on 2019/11/22.
 //
 
 #import "UIView+SJBaseVideoPlayerExtended.h"
@@ -36,6 +36,56 @@ NS_ASSUME_NONNULL_BEGIN
         next = next.nextResponder;
     }
     return next;
+}
+
+- (void)setSj_x:(CGFloat)sj_x {
+    CGRect frame = self.frame;
+    frame.origin.x = sj_x;
+    self.frame = frame;
+}
+
+- (CGFloat)sj_x {
+    return self.frame.origin.x;
+}
+
+- (void)setSj_y:(CGFloat)sj_y {
+    CGRect frame = self.frame;
+    frame.origin.y = sj_y;
+    self.frame = frame;
+}
+
+- (CGFloat)sj_y {
+    return self.frame.origin.y;
+}
+
+- (void)setSj_w:(CGFloat)sj_w {
+    CGRect frame = self.frame;
+    frame.size.width = sj_w;
+    self.frame = frame;
+}
+
+- (CGFloat)sj_w {
+    return self.frame.size.width;
+}
+
+- (void)setSj_h:(CGFloat)sj_h {
+    CGRect frame = self.frame;
+    frame.size.height = sj_h;
+    self.frame = frame;
+}
+
+- (CGFloat)sj_h {
+    return self.frame.size.height;
+}
+
+- (void)setSj_size:(CGSize)sj_size {
+    CGRect frame = self.frame;
+    frame.size = sj_size;
+    self.frame = frame;
+}
+
+- (CGSize)sj_size {
+    return self.frame.size;
 }
 @end
 NS_ASSUME_NONNULL_END

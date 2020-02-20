@@ -2,7 +2,7 @@
 //  UIScrollView+SJBaseVideoPlayerExtended.h
 //  SJBaseVideoPlayer
 //
-//  Created by BlueDancer on 2019/11/22.
+//  Created by 畅三江 on 2019/11/22.
 //
 
 #import <UIKit/UIKit.h>

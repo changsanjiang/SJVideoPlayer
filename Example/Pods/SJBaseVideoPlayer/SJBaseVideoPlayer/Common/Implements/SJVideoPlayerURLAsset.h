@@ -15,18 +15,16 @@
 NS_ASSUME_NONNULL_BEGIN
 
 @interface SJVideoPlayerURLAsset : NSObject<SJMediaModelProtocol>
-- (nullable instancetype)initWithURL:(NSURL *)URL specifyStartTime:(NSTimeInterval)specifyStartTime playModel:(__kindof SJPlayModel *)playModel;
-- (nullable instancetype)initWithURL:(NSURL *)URL specifyStartTime:(NSTimeInterval)specifyStartTime;
+- (nullable instancetype)initWithURL:(NSURL *)URL startPosition:(NSTimeInterval)startPosition playModel:(__kindof SJPlayModel *)playModel;
+- (nullable instancetype)initWithURL:(NSURL *)URL startPosition:(NSTimeInterval)startPosition;
 - (nullable instancetype)initWithURL:(NSURL *)URL playModel:(__kindof SJPlayModel *)playModel;
 - (nullable instancetype)initWithURL:(NSURL *)URL;
 
-@property (nonatomic, strong, readonly, nullable) SJVideoPlayerURLAsset *originAsset;
-- (nullable instancetype)initWithOtherAsset:(SJVideoPlayerURLAsset *)otherAsset playModel:(nullable __kindof SJPlayModel *)playModel;
-
-@property (nonatomic) NSTimeInterval specifyStartTime;
+@property (nonatomic) NSTimeInterval startPosition;
 
 @property (nonatomic, strong, null_resettable) SJPlayModel *playModel;
 - (id<SJVideoPlayerURLAssetObserver>)getObserver;
+
 - (instancetype)init NS_UNAVAILABLE;
 + (instancetype)new NS_UNAVAILABLE;
 @property (nonatomic, readonly) BOOL isM3u8;

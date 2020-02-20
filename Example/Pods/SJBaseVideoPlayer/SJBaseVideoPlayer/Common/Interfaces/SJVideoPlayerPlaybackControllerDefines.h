@@ -125,14 +125,7 @@ NS_ASSUME_NONNULL_BEGIN
 /// played by URL
 @property (nonatomic, strong, nullable) NSURL *mediaURL;
 
-/// played by other media
-@property (nonatomic, weak, readonly, nullable) id<SJMediaModelProtocol> originMedia;
-
-@property (nonatomic) NSTimeInterval specifyStartTime;
-@end
-
-@protocol SJAVMediaModelProtocol<SJMediaModelProtocol>
-@property (nonatomic, strong, readonly, nullable) __kindof AVAsset *avAsset;
+@property (nonatomic) NSTimeInterval startPosition;
 @end
 NS_ASSUME_NONNULL_END
 

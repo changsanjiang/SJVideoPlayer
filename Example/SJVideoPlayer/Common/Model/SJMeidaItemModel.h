@@ -15,7 +15,7 @@ NS_ASSUME_NONNULL_BEGIN
 + (NSArray<SJMeidaItemModel *> *)testItemsWithCount:(NSInteger)count;
 + (instancetype)testItem;
 
-@property (nonatomic, readonly) NSInteger id;
+@property (nonatomic) NSInteger id;
 @property (nonatomic, copy, nullable) NSString *mediaTitle;
 @property (nonatomic, copy, nullable) NSString *cover;
 @property (nonatomic, copy, nullable) NSString *avatar;

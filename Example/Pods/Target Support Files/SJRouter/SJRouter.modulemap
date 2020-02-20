@@ -1,0 +1,6 @@
+framework module SJRouter {
+  umbrella header "SJRouter-umbrella.h"
+
+  export *
+  module * { export * }
+}

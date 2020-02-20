@@ -100,7 +100,8 @@ SJEdgeControlButtonItemTag const SJEdgeControlLayerCenterItem_Replay = 40000;
     _restarted = YES;
     sj_view_makeAppear(self.controlView, YES);
     [self _showOrHiddenLoadingView];
-    _videoPlayer.URLAsset != nil ? [_videoPlayer controlLayerNeedAppear] : [_videoPlayer controlLayerNeedDisappear];
+    [self _updateAppearStateForContainerViews];
+    [self _reloadAdaptersIfNeeded];
 }
 
 ///
@@ -138,7 +139,7 @@ SJEdgeControlButtonItemTag const SJEdgeControlLayerCenterItem_Replay = 40000;
 }
 
 - (void)_playItemWasTapped {
-    self.videoPlayer.timeControlStatus == SJPlaybackTimeControlStatusPaused ? [self.videoPlayer play] : [self.videoPlayer pause];
+    _videoPlayer.isPaused ? [self.videoPlayer play] : [self.videoPlayer pause];
 }
 
 - (void)_fullItemWasTapped {
@@ -938,7 +939,7 @@ SJEdgeControlButtonItemTag const SJEdgeControlLayerCenterItem_Replay = 40000;
             else {
                 if ( titleItem.customView != self.titleView )
                     titleItem.customView = self.titleView;
-                SJVideoPlayerURLAsset *asset = _videoPlayer.URLAsset.originAsset ?: _videoPlayer.URLAsset;
+                SJVideoPlayerURLAsset *asset = _videoPlayer.URLAsset.original ?: _videoPlayer.URLAsset;
                 NSAttributedString *_Nullable attributedTitle = asset.attributedTitle;
                 self.titleView.attributedText = attributedTitle;
                 titleItem.hidden = (attributedTitle.length == 0);
@@ -984,8 +985,7 @@ SJEdgeControlButtonItemTag const SJEdgeControlLayerCenterItem_Replay = 40000;
     {
         SJEdgeControlButtonItem *playItem = [self.bottomAdapter itemForTag:SJEdgeControlLayerBottomItem_Play];
         if ( playItem != nil && playItem.hidden == NO ) {
-            BOOL isPaused = _videoPlayer.timeControlStatus == SJPlaybackTimeControlStatusPaused;
-            playItem.image = isPaused ? sources.playBtnImage : sources.pauseBtnImage;
+            playItem.image = _videoPlayer.isPaused ? sources.playBtnImage : sources.pauseBtnImage;
         }
     }
     
@@ -1195,8 +1195,9 @@ SJEdgeControlButtonItemTag const SJEdgeControlLayerCenterItem_Replay = 40000;
 }
 
 - (nullable NSAttributedString *)_textForTimeString:(NSString *)timeStr {
+    SJVideoPlayerSettings *source = SJVideoPlayerSettings.commonSettings;
     return [NSAttributedString sj_UIKitText:^(id<SJUIKitTextMakerProtocol>  _Nonnull make) {
-        make.append(timeStr).font([UIFont systemFontOfSize:11]).textColor([UIColor whiteColor]).alignment(NSTextAlignmentCenter);
+        make.append(timeStr).font(source.timeFont).textColor([UIColor whiteColor]).alignment(NSTextAlignmentCenter);
     }];
 }
 
@@ -1245,7 +1246,10 @@ SJEdgeControlButtonItemTag const SJEdgeControlLayerCenterItem_Replay = 40000;
         return;
     }
     
-    if ( _videoPlayer.assetStatus == SJAssetStatusPreparing ) {
+    if ( _videoPlayer.isPaused ) {
+        [self.loadingView stop];
+    }
+    else if ( _videoPlayer.assetStatus == SJAssetStatusPreparing ) {
         [self.loadingView start];
     }
     else if ( _videoPlayer.assetStatus == SJAssetStatusFailed ) {

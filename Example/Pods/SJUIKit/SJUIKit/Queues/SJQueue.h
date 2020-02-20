@@ -2,7 +2,7 @@
 //  SJQueue.h
 //  Pods
 //
-//  Created by BlueDancer on 2019/11/13.
+//  Created by 畅三江 on 2019/11/13.
 //
 
 #import <Foundation/Foundation.h>
@@ -12,6 +12,9 @@ NS_ASSUME_NONNULL_BEGIN
 + (instancetype)queue;
 
 @property (nonatomic, readonly) NSInteger size;
+
+@property (nonatomic, strong, readonly, nullable) ObjectType firstObject;
+@property (nonatomic, strong, readonly, nullable) ObjectType lastObject;
 
 - (void)enqueue:(ObjectType)obj;
 - (nullable ObjectType)dequeue;

@@ -2,7 +2,7 @@
 //  SJTestViewController2.h
 //  SJVideoPlayer_Example
 //
-//  Created by BlueDancer on 2019/10/12.
+//  Created by 畅三江 on 2019/10/12.
 //  Copyright © 2019 changsanjiang. All rights reserved.
 //
 

@@ -19,12 +19,12 @@ NS_ASSUME_NONNULL_BEGIN
 @implementation SJVideoPlayerURLAsset (SJControlAdd)
 
 - (nullable instancetype)initWithTitle:(NSString *)title URL:(NSURL *)URL playModel:(__kindof SJPlayModel *)playModel {
-    return [self initWithTitle:title URL:URL specifyStartTime:0 playModel:playModel];
+    return [self initWithTitle:title URL:URL startPosition:0 playModel:playModel];
 }
 
-- (nullable instancetype)initWithTitle:(NSString *)title URL:(NSURL *)URL specifyStartTime:(NSTimeInterval)specifyStartTime playModel:(__kindof SJPlayModel *)playModel {
+- (nullable instancetype)initWithTitle:(NSString *)title URL:(NSURL *)URL startPosition:(NSTimeInterval)startPosition playModel:(__kindof SJPlayModel *)playModel {
     if ( URL == nil ) return nil;
-    self = [self initWithURL:URL specifyStartTime:specifyStartTime playModel:playModel];
+    self = [self initWithURL:URL startPosition:startPosition playModel:playModel];
     if ( !self ) return nil;
     self.title = title; 
     return self;
@@ -41,15 +41,15 @@ NS_ASSUME_NONNULL_BEGIN
 - (nullable instancetype)initWithAttributedTitle:(NSAttributedString *)title
                                              URL:(NSURL *)URL
                                        playModel:(__kindof SJPlayModel *)playModel {
-    return [self initWithAttributedTitle:title URL:URL specifyStartTime:0 playModel:playModel];
+    return [self initWithAttributedTitle:title URL:URL startPosition:0 playModel:playModel];
 }
 
 - (nullable instancetype)initWithAttributedTitle:(NSAttributedString *)title
                                              URL:(NSURL *)URL
-                                specifyStartTime:(NSTimeInterval)specifyStartTime
+                                startPosition:(NSTimeInterval)startPosition
                                        playModel:(__kindof SJPlayModel *)playModel {
     if ( URL == nil ) return nil;
-    self = [self initWithURL:URL specifyStartTime:specifyStartTime playModel:playModel];
+    self = [self initWithURL:URL startPosition:startPosition playModel:playModel];
     if ( self ) {
         self.attributedTitle = title;
     }

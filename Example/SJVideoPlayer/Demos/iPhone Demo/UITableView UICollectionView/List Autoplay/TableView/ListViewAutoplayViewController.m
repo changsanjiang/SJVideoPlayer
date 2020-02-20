@@ -16,6 +16,8 @@
 #import "SJMeidaItemModel.h"
 #import "SJRotationManager.h"
 
+#import <SJVideoPlayer/SJProgressSlider.h>
+
 NS_ASSUME_NONNULL_BEGIN
 static NSString *kDemoTableViewCell = @"DemoTableViewCell";
 

@@ -5,9 +5,6 @@
 [![Platform](https://img.shields.io/badge/platform-iOS-blue.svg)](https://github.com/changsanjiang)
 [![License](https://img.shields.io/github/license/changsanjiang/SJVideoPlayer.svg)](https://github.com/changsanjiang/SJVideoPlayer/blob/master/LICENSE.md)
 
-##  Getting Started
-wiki: https://github.com/changsanjiang/SJVideoPlayer/wiki
-
 ## Installation
 ```ruby
 # Player with default control layer.
@@ -17,12 +14,15 @@ pod 'SJVideoPlayer'
 pod 'SJBaseVideoPlayer'
 ```
 
+##  Getting Started
+- wiki: https://github.com/changsanjiang/SJVideoPlayer/wiki
+- 快速开始: https://github.com/changsanjiang/SJVideoPlayer/wiki/%E5%BF%AB%E9%80%9F%E5%BC%80%E5%A7%8B
+
 ## 天朝
 ```ruby
 # 如果网络不行安装不了, 可改成以下方式进行安装
 pod 'SJBaseVideoPlayer', :git => 'https://gitee.com/changsanjiang/SJBaseVideoPlayer.git'
 pod 'SJVideoPlayer', :git => 'https://gitee.com/changsanjiang/SJVideoPlayer.git'
-pod 'SJUIKit/Queues', :git => 'https://gitee.com/changsanjiang/SJUIKit.git'
 $ pod update --no-repo-update   (不要用 pod install 了, 用这个命令安装)
 ```
 
@@ -35,20 +35,7 @@ $ pod update --no-repo-update   (不要用 pod install 了, 用这个命令安�
     - wiki: https://github.com/changsanjiang/SJVideoPlayer/wiki/Use-AliPlayer
 - 播放控制切换为: AliyunVodPlayer
     - wiki: https://github.com/changsanjiang/SJVideoPlayer/wiki/Use-AliVodPlayer
-
-
-## Example
-
-```Objective-C
-_player = [SJVideoPlayer player];
-_player.view.frame = CGRectMake(0, 0, 200, 200);
-[self.view addSubview:_player.view];
-
-// 设置资源进行播放
-_player.URLAsset = [[SJVideoPlayerURLAsset alloc] initWithURL:URL];
-
-... 等等, 更多设置, 请查看头文件. 相应功能均为懒加载, 用到时才会创建. 
-```
+ 
 
 ## Author
 
@@ -81,7 +68,7 @@ v2.6.5 往后的版本, 请[配置旋转 !!](https://github.com/changsanjiang/SJ
 * [2.2 播放 AVAsset 或其子类](#2.2)
 * [2.3 从指定的位置开始播放](#2.3)
 * [2.4 续播(进入下个页面时, 继续播放)](#2.4)
-* [2.5 销毁时的回调. 可在此做一些记录工作, 如播放记录](#2.5)
+* [2.5 播放记录](#2.5)
 
 #### [3. 播放控制](#3)
 * [3.1 播放](#3.1)
@@ -450,7 +437,7 @@ _player.URLAsset = [[SJVideoPlayerURLAsset alloc] initWithAVAsset:avAsset];
 
 ```Objective-C
 NSTimeInterval secs = 20.0;
-_player.URLAsset = [[SJVideoPlayerURLAsset alloc] initWithURL:URL specifyStartTime:secs]; // 直接从20秒处开始播放
+_player.URLAsset = [[SJVideoPlayerURLAsset alloc] initWithURL:URL startPosition:secs]; // 直接从20秒处开始播放
 ```
 
 <h3 id="2.4">2.4 续播(进入下个页面时, 继续播放)</h3>
@@ -467,16 +454,11 @@ _player.URLAsset = [[SJVideoPlayerURLAsset alloc] initWithURL:URL specifyStartTi
 _player.URLAsset = [SJVideoPlayerURLAsset.alloc initWithOtherAsset:otherAsset]; 
 ```
 
-<h3 id="2.5">2.5 销毁时的回调. 可在此做一些记录工作, 如播放记录</h3>
+<h3 id="2.5">2.5 播放记录</h3>
 
-```Objective-C
-// 每个资源dealloc时的回调
-_player.assetDeallocExeBlock = ^(__kindof SJBaseVideoPlayer * _Nonnull videoPlayer) {
-// .....
-};
-```
-
-当资源销毁时, 播放器将会回调该 block. 
+<p>
+内容已迁移至wiki: https://github.com/changsanjiang/SJVideoPlayer/wiki/%E6%92%AD%E6%94%BE%E8%AE%B0%E5%BD%95
+</p>
 
 ___
 

@@ -2,7 +2,7 @@
 //  UILabel+AsyncLoad.h
 //  SJUIKit_Example
 //
-//  Created by BlueDancer on 2018/12/22.
+//  Created by 畅三江 on 2018/12/22.
 //  Copyright © 2018 changsanjiang@gmail.com. All rights reserved.
 //
 

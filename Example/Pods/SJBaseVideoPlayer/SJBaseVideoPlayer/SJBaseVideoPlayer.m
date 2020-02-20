@@ -159,7 +159,7 @@ typedef struct _SJPlayerControlInfo {
 }
 
 + (NSString *)version {
-    return @"v3.1.8";
+    return @"v3.2.1";
 }
 
 - (void)setVideoGravity:(SJVideoGravity)videoGravity {
@@ -213,8 +213,7 @@ typedef struct _SJPlayerControlInfo {
 #ifdef DEBUG
     NSLog(@"%d \t %s", (int)__LINE__, __func__);
 #endif
-    if ( _URLAsset != nil && self.assetDeallocExeBlock )
-        self.assetDeallocExeBlock(self);
+    [NSNotificationCenter.defaultCenter postNotificationName:SJVideoPlayerPlaybackControllerWillDeallocateNotification object:_playbackController];
     [_presentView removeFromSuperview];
     [_view removeFromSuperview];
     free(_controlInfo);
@@ -306,7 +305,7 @@ typedef struct _SJPlayerControlInfo {
         }
     }
     
-    self.timeControlStatus == SJPlaybackTimeControlStatusPaused ? [self play] : [self pause];
+    self.isPaused ? [self play] : [self pause];
 }
 
 - (void)_handlePan:(SJPanGestureTriggeredPosition)position direction:(SJPanGestureMovingDirection)direction state:(SJPanGestureRecognizerState)state translate:(CGPoint)translate {
@@ -467,7 +466,7 @@ typedef struct _SJPlayerControlInfo {
     _registrar.didBecomeActive = ^(SJVideoPlayerRegistrar * _Nonnull registrar) {
         __strong typeof(_self) self = _self;
         if ( !self ) return;
-        BOOL canPlay = self.timeControlStatus == SJPlaybackTimeControlStatusPaused &&
+        BOOL canPlay = self.isPaused &&
                        self.controlInfo->plabackControl.resumePlaybackWhenAppDidEnterForeground &&
                       !self.vc_isDisappeared;
         if ( self.isPlayOnScrollView ) {
@@ -488,6 +487,7 @@ typedef struct _SJPlayerControlInfo {
         if ( [self.controlLayerDelegate respondsToSelector:@selector(receivedApplicationWillEnterForegroundNotification:)] ) {
             [self.controlLayerDelegate receivedApplicationWillEnterForegroundNotification:self];
         }
+        [self _postNotification:SJVideoPlayerApplicationWillEnterForegroundNotification];
     };
     
     _registrar.didEnterBackground = ^(SJVideoPlayerRegistrar * _Nonnull registrar) {
@@ -496,6 +496,13 @@ typedef struct _SJPlayerControlInfo {
         if ( [self.controlLayerDelegate respondsToSelector:@selector(receivedApplicationDidEnterBackgroundNotification:)] ) {
             [self.controlLayerDelegate receivedApplicationDidEnterBackgroundNotification:self];
         }
+        [self _postNotification:SJVideoPlayerApplicationDidEnterBackgroundNotification];
+    };
+    
+    _registrar.willTerminate = ^(SJVideoPlayerRegistrar * _Nonnull registrar) {
+        __strong typeof(_self) self = _self;
+        if ( !self ) return;
+        [self _postNotification:SJVideoPlayerApplicationWillTerminateNotification];
     };
     return _registrar;
 }
@@ -530,7 +537,7 @@ typedef struct _SJPlayerControlInfo {
 }
 
 - (void)_showOrHiddenPlaceholderImageViewIfNeeded {
-    if ( _URLAsset.originMedia != nil ) { ///< URLAsset is subasset
+    if ( _URLAsset.original != nil ) { ///< URLAsset is subasset
         [_presentView hiddenPlaceholderAnimated:NO delay:0];
         return;
     }
@@ -718,7 +725,10 @@ typedef struct _SJPlayerControlInfo {
 #pragma mark - 控制
 @implementation SJBaseVideoPlayer (PlayControl)
 - (void)setPlaybackController:(nullable id<SJVideoPlayerPlaybackController>)playbackController {
-    [_playbackController.playerView removeFromSuperview];
+    if ( _playbackController != nil ) {
+        [_playbackController.playerView removeFromSuperview];
+        [NSNotificationCenter.defaultCenter postNotificationName:SJVideoPlayerPlaybackControllerWillDeallocateNotification object:_playbackController];
+    }
     _playbackController = playbackController;
     [self _needUpdatePlaybackControllerProperties];
 }
@@ -790,6 +800,12 @@ typedef struct _SJPlayerControlInfo {
     return _playbackController.timeControlStatus;
 }
 
+- (BOOL)isPaused { return self.timeControlStatus == SJPlaybackTimeControlStatusPaused; }
+- (BOOL)isPlaying { return self.timeControlStatus == SJPlaybackTimeControlStatusPlaying; }
+- (BOOL)isBuffering { return self.timeControlStatus == SJPlaybackTimeControlStatusWaitingToPlay && self.reasonForWaitingToPlay == SJWaitingToMinimizeStallsReason; }
+- (BOOL)isEvaluating { return self.timeControlStatus == SJPlaybackTimeControlStatusWaitingToPlay && self.reasonForWaitingToPlay == SJWaitingWhileEvaluatingBufferingRateReason; }
+- (BOOL)isNoAssetToPlay { return self.timeControlStatus == SJPlaybackTimeControlStatusWaitingToPlay && self.reasonForWaitingToPlay == SJWaitingWithNoAssetToPlayReason; }
+
 - (nullable SJWaitingReason)reasonForWaitingToPlay {
     return _playbackController.reasonForWaitingToPlay;
 }
@@ -829,13 +845,14 @@ typedef struct _SJPlayerControlInfo {
 #pragma mark -
 // 1.
 - (void)setURLAsset:(nullable SJVideoPlayerURLAsset *)URLAsset {
-    if ( _URLAsset && self.assetDeallocExeBlock != nil ) {
-        self.assetDeallocExeBlock(self);
-    }
-
+    
     [self _resetDefinitionSwitchingInfo];
+
+    [self _postNotification:SJVideoPlayerURLAssetWillChangeNotification];
     
     _URLAsset = URLAsset;
+    
+    [self _postNotification:SJVideoPlayerURLAssetDidChangeNotification];
       
     //
     // prepareToPlay
@@ -854,14 +871,12 @@ typedef struct _SJPlayerControlInfo {
         return;
     }
 
-    if ( URLAsset.subtitles != nil ) self.subtitlesPromptController.subtitles = URLAsset.subtitles;
+    if ( URLAsset.subtitles != nil ) {
+        self.subtitlesPromptController.subtitles = URLAsset.subtitles;
+    }
     
-    dispatch_async(dispatch_get_global_queue(0, 0), ^{
-        [self.playbackController prepareToPlay];
-        dispatch_async(dispatch_get_main_queue(), ^{
-            [self _tryToPlayIfNeeded];
-        });
-    });
+    [self.playbackController prepareToPlay];
+    [self _tryToPlayIfNeeded];
 }
 - (nullable SJVideoPlayerURLAsset *)URLAsset {
     return _URLAsset;
@@ -895,13 +910,6 @@ typedef struct _SJPlayerControlInfo {
     if ( !self.URLAsset ) return;
     [_playbackController refresh];
     [self play];
-}
-
-- (void)setAssetDeallocExeBlock:(nullable void (^)(__kindof SJBaseVideoPlayer * _Nonnull))assetDeallocExeBlock {
-    objc_setAssociatedObject(self, @selector(assetDeallocExeBlock), assetDeallocExeBlock, OBJC_ASSOCIATION_COPY_NONATOMIC);
-}
-- (nullable void (^)(__kindof SJBaseVideoPlayer * _Nonnull))assetDeallocExeBlock {
-    return objc_getAssociatedObject(self, _cmd);
 }
 
 - (void)setPlayerVolume:(float)playerVolume {
@@ -993,17 +1001,17 @@ typedef struct _SJPlayerControlInfo {
         if ( ![self.controlLayerDelegate canPerformStopForVideoPlayer:self] )
             return;
     }
-
-    if ( _URLAsset != nil && self.assetDeallocExeBlock ) {
-        self.assetDeallocExeBlock(self);
-    }
     
+    [self _postNotification:SJVideoPlayerPlaybackWillStopNotification];
+
     _subtitlesPromptController.subtitles = nil;
     _playModelObserver = nil;
     _URLAsset = nil;
     [_playbackController stop];
     [self _resetDefinitionSwitchingInfo];
     [self _showOrHiddenPlaceholderImageViewIfNeeded];
+    
+    [self _postNotification:SJVideoPlayerPlaybackDidStopNotification];
 }
 
 - (void)replay {

@@ -72,6 +72,7 @@ UIKIT_EXTERN NSNotificationName const SJVideoPlayerSettingsUpdatedNotification;
 // bottom adapter items
 @property (nonatomic, strong, nullable) UIImage *pauseBtnImage;
 @property (nonatomic, strong, nullable) UIImage *playBtnImage;
+@property (nonatomic, strong, nullable) UIFont *timeFont;
 @property (nonatomic, strong, nullable) NSString *liveText;                       // 实时直播
 @property (nonatomic, strong, nullable) UIImage *shrinkscreenImage;               // 缩回小屏的图片
 @property (nonatomic, strong, nullable) UIImage *fullBtnImage;                    // 全屏的图片

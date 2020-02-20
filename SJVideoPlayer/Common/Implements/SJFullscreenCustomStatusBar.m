@@ -2,7 +2,7 @@
 //  SJFullscreenCustomStatusBar.m
 //  Pods
 //
-//  Created by BlueDancer on 2019/12/11.
+//  Created by 畅三江 on 2019/12/11.
 //
 
 #import "SJFullscreenCustomStatusBar.h"
@@ -166,7 +166,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (void)_setupViews {
     UIColor *textColor = [UIColor whiteColor];
-    UIFont *font = [UIFont boldSystemFontOfSize:13];
+    UIFont *font = [UIFont boldSystemFontOfSize:12];
     
     _networkStatusLabel = [UILabel.alloc initWithFrame:CGRectZero];
     _networkStatusLabel.textColor = textColor;

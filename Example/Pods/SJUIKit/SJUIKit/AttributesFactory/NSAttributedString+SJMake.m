@@ -2,7 +2,7 @@
 //  NSAttributedString+SJMake.m
 //  AttributesFactory
 //
-//  Created by BlueDancer on 2019/4/12.
+//  Created by 畅三江 on 2019/4/12.
 //  Copyright © 2019 SanJiang. All rights reserved.
 //
 

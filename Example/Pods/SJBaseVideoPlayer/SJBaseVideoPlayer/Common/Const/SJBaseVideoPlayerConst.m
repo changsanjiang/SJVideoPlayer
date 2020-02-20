@@ -39,6 +39,46 @@ NSNotificationName const SJVideoPlayerDefinitionSwitchStatusDidChangeNotificatio
 NSNotificationName const SJVideoPlayerDidReplayNotification = @"SJVideoPlayerDidReplayNotification";
 
 ///
+/// 播放资源将要改变前发出的通知
+///
+NSNotificationName const SJVideoPlayerURLAssetWillChangeNotification = @"SJVideoPlayerURLAssetWillChangeNotification";
+
+///
+/// 播放资源改变后发出的通知
+///
+NSNotificationName const SJVideoPlayerURLAssetDidChangeNotification = @"SJVideoPlayerURLAssetDidChangeNotification";
+
+///
+/// 播放器执行stop前的通知
+///
+NSNotificationName const SJVideoPlayerPlaybackWillStopNotification = @"SJVideoPlayerPlaybackWillStopNotification";
+
+///
+/// 播放器执行stop后的通知
+///
+NSNotificationName const SJVideoPlayerPlaybackDidStopNotification = @"SJVideoPlayerPlaybackDidStopNotification";
+
+///
+/// 播放器收到App进入后台的通知后发出的通知
+///
+NSNotificationName const SJVideoPlayerApplicationDidEnterBackgroundNotification = @"SJVideoPlayerApplicationDidEnterBackgroundNotification";
+
+///
+/// 播放器收到App进入前台的通知后发出的通知
+///
+NSNotificationName const SJVideoPlayerApplicationWillEnterForegroundNotification = @"SJVideoPlayerApplicationWillEnterForegroundNotification";
+
+///
+/// 播放器收到App将要关闭的通知后发出的通知
+///
+NSNotificationName const SJVideoPlayerApplicationWillTerminateNotification = @"SJVideoPlayerApplicationWillTerminateNotification";
+
+///
+/// 播放器的playbackController将要进行销毁前的通知
+///
+NSNotificationName const SJVideoPlayerPlaybackControllerWillDeallocateNotification = @"SJVideoPlayerPlaybackControllerWillDeallocateNotification"; ///< 注意: object 为 SJMediaPlaybackController 的对象
+
+///
 /// 当前播放时间 改变的通知
 ///
 NSNotificationName const SJVideoPlayerCurrentTimeDidChangeNotification = @"SJVideoPlayerCurrentTimeDidChangeNotification";

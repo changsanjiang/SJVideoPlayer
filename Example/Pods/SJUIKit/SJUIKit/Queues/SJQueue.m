@@ -2,7 +2,7 @@
 //  SJQueue.m
 //  Pods
 //
-//  Created by BlueDancer on 2019/11/13.
+//  Created by 畅三江 on 2019/11/13.
 //
 
 #import "SJQueue.h"
@@ -12,7 +12,7 @@ NS_ASSUME_NONNULL_BEGIN
 typedef struct SJItem {
     CFTypeRef _Nullable obj;
     struct SJItem *_Nullable next;
-} SJItem;
+} SJItem, *SJItemQueue;
 
 static inline SJItem *
 SJCreateItem(id obj) {
@@ -45,6 +45,14 @@ SJFreeItem(SJItem *item) {
 
 - (void)dealloc {
     [self empty];
+}
+
+- (nullable id)firstObject {
+    return (__bridge id _Nullable)(_head->obj);
+}
+
+- (nullable id)lastObject {
+    return (__bridge id _Nullable)(_tail->obj);
 }
 
 - (void)enqueue:(id)obj {
@@ -90,6 +98,20 @@ SJFreeItem(SJItem *item) {
         _lock = dispatch_semaphore_create(1);
     }
     return self;
+}
+
+- (nullable id)firstObject {
+    dispatch_semaphore_wait(_lock, DISPATCH_TIME_FOREVER);
+    id _Nullable obj = [super firstObject];
+    dispatch_semaphore_signal(_lock);
+    return obj;
+}
+
+- (nullable id)lastObject {
+    dispatch_semaphore_wait(_lock, DISPATCH_TIME_FOREVER);
+    id _Nullable obj = [super lastObject];
+    dispatch_semaphore_signal(_lock);
+    return obj;
 }
 
 - (void)enqueue:(id)obj {

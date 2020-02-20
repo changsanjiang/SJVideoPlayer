@@ -28,6 +28,8 @@ typedef NS_ENUM(NSUInteger, SJVideoPlayerAppState) {
 
 @property (nonatomic, copy, nullable) void(^didEnterBackground)(SJVideoPlayerRegistrar *registrar);
 
+@property (nonatomic, copy, nullable) void(^willTerminate)(SJVideoPlayerRegistrar *registrar);
+
 @property (nonatomic, copy, nullable) void(^newDeviceAvailable)(SJVideoPlayerRegistrar *registrar);
 
 @property (nonatomic, copy, nullable) void(^oldDeviceUnavailable)(SJVideoPlayerRegistrar *registrar);

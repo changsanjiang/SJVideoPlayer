@@ -27,7 +27,6 @@ static UIViewController *_sj_get_top_view_controller() {
 
 @interface SJRouter()
 @property (nonatomic, strong, readonly) NSMutableDictionary<NSString *, id<SJRouteHandler>> *handlersM;
-@property (nonatomic, strong, readonly) dispatch_semaphore_t lock;
 @end
 
 @implementation SJRouter
@@ -59,60 +58,56 @@ static SEL sel_instance;
 - (instancetype)init {
     self = [super init];
     if ( !self ) return nil;
-    _lock = dispatch_semaphore_create(0);
     _handlersM = [NSMutableDictionary new];
-
-    dispatch_async(dispatch_get_global_queue(0, 0), ^{
-        /// Thanks @yehot, @Potato121
-        /// https://www.jianshu.com/p/534eccb63974
-        /// https://github.com/changsanjiang/SJRouter/pull/1
-        unsigned int img_count = 0;
-        const char **imgs = objc_copyImageNames(&img_count);
-        const char *main = NSBundle.mainBundle.bundlePath.UTF8String;
-        SEL sel_path = @selector(routePath);
-        SEL sel_multiPath = @selector(multiRoutePath);
-        SEL sel_add_routes = @selector(addRoutesToRouter:);
-        Protocol *protocol = @protocol(SJRouteHandler);
-        for ( unsigned int i = 0 ; i < img_count ; ++ i ) {
-            const char *image = imgs[i];
-            if ( !strstr(image, main) ) continue;
-            unsigned int cls_count = 0;
-            const char **names = objc_copyClassNamesForImage(image, &cls_count);
-            for ( unsigned int i = 0 ; i < cls_count ; ++ i ) {
-                const char *cls_name = names[i];
-                Class _Nullable cls = objc_getClass(cls_name);
-                Class _Nullable supercls = cls;
-                /// Thanks @Patrick-Q  2019/3/20 14:43:37
-                while ( supercls && !class_conformsToProtocol(supercls, protocol) )
-                    supercls = class_getSuperclass(supercls);
-                if ( !supercls ) continue;
-
-                Class metaClass = (Class)object_getClass(cls);
-                if ( class_respondsToSelector(metaClass, sel_path) ) {
-                    IMP func = class_getMethodImplementation(metaClass, sel_path);
-                    NSString *routePath = ((NSString *(*)(id, SEL))func)(cls, sel_path);
+ 
+    /// Thanks @yehot, @Potato121
+    /// https://www.jianshu.com/p/534eccb63974
+    /// https://github.com/changsanjiang/SJRouter/pull/1
+    unsigned int img_count = 0;
+    const char **imgs = objc_copyImageNames(&img_count);
+    const char *main = NSBundle.mainBundle.bundlePath.UTF8String;
+    SEL sel_path = @selector(routePath);
+    SEL sel_multiPath = @selector(multiRoutePath);
+    SEL sel_add_routes = @selector(addRoutesToRouter:);
+    Protocol *protocol = @protocol(SJRouteHandler);
+    for ( unsigned int i = 0 ; i < img_count ; ++ i ) {
+        const char *image = imgs[i];
+        if ( !strstr(image, main) ) continue;
+        unsigned int cls_count = 0;
+        const char **names = objc_copyClassNamesForImage(image, &cls_count);
+        for ( unsigned int i = 0 ; i < cls_count ; ++ i ) {
+            const char *cls_name = names[i];
+            Class _Nullable cls = objc_getClass(cls_name);
+            Class _Nullable supercls = cls;
+            /// Thanks @Patrick-Q  2019/3/20 14:43:37
+            while ( supercls && !class_conformsToProtocol(supercls, protocol) )
+                supercls = class_getSuperclass(supercls);
+            if ( !supercls ) continue;
+            
+            Class metaClass = (Class)object_getClass(cls);
+            if ( class_respondsToSelector(metaClass, sel_path) ) {
+                IMP func = class_getMethodImplementation(metaClass, sel_path);
+                NSString *routePath = ((NSString *(*)(id, SEL))func)(cls, sel_path);
+                if ( routePath.length > 0 ) {
+                    self->_handlersM[routePath] = (id)cls;
+                }
+            }
+            else if ( class_respondsToSelector(metaClass, sel_multiPath) ) {
+                IMP func = class_getMethodImplementation(metaClass, sel_multiPath);
+                for ( NSString *routePath in ((NSArray<NSString *> *(*)(id, SEL))func)(cls, sel_multiPath) ) {
                     if ( routePath.length > 0 ) {
                         self->_handlersM[routePath] = (id)cls;
                     }
                 }
-                else if ( class_respondsToSelector(metaClass, sel_multiPath) ) {
-                    IMP func = class_getMethodImplementation(metaClass, sel_multiPath);
-                    for ( NSString *routePath in ((NSArray<NSString *> *(*)(id, SEL))func)(cls, sel_multiPath) ) {
-                        if ( routePath.length > 0 ) {
-                            self->_handlersM[routePath] = (id)cls;
-                        }
-                    }
-                }
-                if ( class_respondsToSelector(metaClass, sel_add_routes) ) {
-                    IMP func = class_getMethodImplementation(metaClass, sel_add_routes);
-                    ((void(*)(id, SEL, SJRouter *))func)(cls, sel_add_routes, self);
-                }
             }
-            if ( names ) free(names);
+            if ( class_respondsToSelector(metaClass, sel_add_routes) ) {
+                IMP func = class_getMethodImplementation(metaClass, sel_add_routes);
+                ((void(*)(id, SEL, SJRouter *))func)(cls, sel_add_routes, self);
+            }
         }
-        if ( imgs ) free(imgs);
-        dispatch_semaphore_signal(self->_lock);
-    });
+        if ( names ) free(names);
+    }
+    if ( imgs ) free(imgs);
     return self;
 }
 
@@ -247,9 +242,7 @@ static SEL sel_instance;
 - (nullable id)_handlerForRoutePath:(NSString *)path {
     id handler = nil;
     if ( path.length != 0 ) {
-        dispatch_semaphore_wait(_lock, DISPATCH_TIME_FOREVER);
         handler = self->_handlersM[path];
-        dispatch_semaphore_signal(_lock);
     }
     return handler;
 }

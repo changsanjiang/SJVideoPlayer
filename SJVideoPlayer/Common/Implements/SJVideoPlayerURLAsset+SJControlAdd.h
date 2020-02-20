@@ -22,7 +22,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (nullable instancetype)initWithTitle:(NSString *)title
                           URL:(NSURL *)URL
-             specifyStartTime:(NSTimeInterval)specifyStartTime
+             startPosition:(NSTimeInterval)startPosition
                     playModel:(__kindof SJPlayModel *)playModel;
 
 ///
@@ -34,7 +34,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (nullable instancetype)initWithAttributedTitle:(NSAttributedString *)title
                                              URL:(NSURL *)URL
-                                specifyStartTime:(NSTimeInterval)specifyStartTime
+                                startPosition:(NSTimeInterval)startPosition
                                        playModel:(__kindof SJPlayModel *)playModel;
 
 

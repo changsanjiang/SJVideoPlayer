@@ -7,7 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		3B0E073EE5F3D78C13D61732 /* libPods-SJVideoPlayer_Example.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 41E839F3F62A386EBE034220 /* libPods-SJVideoPlayer_Example.a */; };
+		13FEB85DCAAE0D2C731299D6 /* libPods-SJVideoPlayer_Example.a in Frameworks */ = {isa = PBXBuildFile; fileRef = CCD2CA6C02217556CFBFA7AB /* libPods-SJVideoPlayer_Example.a */; };
 		6003F58E195388D20070C39A /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 6003F58D195388D20070C39A /* Foundation.framework */; };
 		6003F590195388D20070C39A /* CoreGraphics.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 6003F58F195388D20070C39A /* CoreGraphics.framework */; };
 		6003F592195388D20070C39A /* UIKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 6003F591195388D20070C39A /* UIKit.framework */; };
@@ -31,6 +31,7 @@
 		774AF08722DC790D005FE462 /* SJView.m in Sources */ = {isa = PBXBuildFile; fileRef = 774AF08622DC790D005FE462 /* SJView.m */; };
 		7756F58522E173D400F9DC7D /* SJTestViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 7756F58322E173D400F9DC7D /* SJTestViewController.m */; };
 		7756F58622E173D400F9DC7D /* SJTestViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 7756F58422E173D400F9DC7D /* SJTestViewController.xib */; };
+		77633ABB23FD97B700D7A269 /* SJPlaybackHistoryViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 77633ABA23FD97B700D7A269 /* SJPlaybackHistoryViewController.m */; };
 		77661EF72356CBE900514BED /* SJTestIJKViewController2.xib in Resources */ = {isa = PBXBuildFile; fileRef = 77661EF62356CBE900514BED /* SJTestIJKViewController2.xib */; };
 		7774C8D623519F5000FE6FCA /* SJPopPromptCustomView.m in Sources */ = {isa = PBXBuildFile; fileRef = 7774C8D523519F5000FE6FCA /* SJPopPromptCustomView.m */; };
 		777829402351D4AB00A2D933 /* SJTestIJKViewController2.m in Sources */ = {isa = PBXBuildFile; fileRef = 7778293F2351D4AB00A2D933 /* SJTestIJKViewController2.m */; };
@@ -110,7 +111,6 @@
 		0913D8D9BFC4EE68E3F1EF64 /* Pods-SJVideoPlayer_Example.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-SJVideoPlayer_Example.release.xcconfig"; path = "Target Support Files/Pods-SJVideoPlayer_Example/Pods-SJVideoPlayer_Example.release.xcconfig"; sourceTree = "<group>"; };
 		15E7E925B7E2B14A6F5CC435 /* LICENSE */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text; name = LICENSE; path = ../LICENSE; sourceTree = "<group>"; };
 		3DE6356926AEF70F060F33F3 /* SJVideoPlayer.podspec */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text; name = SJVideoPlayer.podspec; path = ../SJVideoPlayer.podspec; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.ruby; };
-		41E839F3F62A386EBE034220 /* libPods-SJVideoPlayer_Example.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-SJVideoPlayer_Example.a"; sourceTree = BUILT_PRODUCTS_DIR; };
 		6003F58A195388D20070C39A /* SJVideoPlayer_Example.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = SJVideoPlayer_Example.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		6003F58D195388D20070C39A /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = System/Library/Frameworks/Foundation.framework; sourceTree = SDKROOT; };
 		6003F58F195388D20070C39A /* CoreGraphics.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreGraphics.framework; path = System/Library/Frameworks/CoreGraphics.framework; sourceTree = SDKROOT; };
@@ -147,6 +147,8 @@
 		7756F58222E173D400F9DC7D /* SJTestViewController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = SJTestViewController.h; sourceTree = "<group>"; };
 		7756F58322E173D400F9DC7D /* SJTestViewController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = SJTestViewController.m; sourceTree = "<group>"; };
 		7756F58422E173D400F9DC7D /* SJTestViewController.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = SJTestViewController.xib; sourceTree = "<group>"; };
+		77633AB923FD97B700D7A269 /* SJPlaybackHistoryViewController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = SJPlaybackHistoryViewController.h; sourceTree = "<group>"; };
+		77633ABA23FD97B700D7A269 /* SJPlaybackHistoryViewController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = SJPlaybackHistoryViewController.m; sourceTree = "<group>"; };
 		77661EF62356CBE900514BED /* SJTestIJKViewController2.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = SJTestIJKViewController2.xib; sourceTree = "<group>"; };
 		7774C8D423519F5000FE6FCA /* SJPopPromptCustomView.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = SJPopPromptCustomView.h; sourceTree = "<group>"; };
 		7774C8D523519F5000FE6FCA /* SJPopPromptCustomView.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = SJPopPromptCustomView.m; sourceTree = "<group>"; };
@@ -252,6 +254,7 @@
 		A6F19DFE22D9D8050043B508 /* SJViewController7.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = SJViewController7.h; sourceTree = "<group>"; };
 		A6F19DFF22D9D8050043B508 /* SJViewController7.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = SJViewController7.m; sourceTree = "<group>"; };
 		A6F19E0022D9D8050043B508 /* SJViewController7.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = SJViewController7.xib; sourceTree = "<group>"; };
+		CCD2CA6C02217556CFBFA7AB /* libPods-SJVideoPlayer_Example.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-SJVideoPlayer_Example.a"; sourceTree = BUILT_PRODUCTS_DIR; };
 		FD50424EAFCFA1AF356F36DF /* Pods-SJVideoPlayer_Example.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-SJVideoPlayer_Example.debug.xcconfig"; path = "Target Support Files/Pods-SJVideoPlayer_Example/Pods-SJVideoPlayer_Example.debug.xcconfig"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -264,7 +267,7 @@
 				77D0CFBA235727D90081C855 /* MediaPlayer.framework in Frameworks */,
 				6003F592195388D20070C39A /* UIKit.framework in Frameworks */,
 				6003F58E195388D20070C39A /* Foundation.framework in Frameworks */,
-				3B0E073EE5F3D78C13D61732 /* libPods-SJVideoPlayer_Example.a in Frameworks */,
+				13FEB85DCAAE0D2C731299D6 /* libPods-SJVideoPlayer_Example.a in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -319,7 +322,7 @@
 				6003F58F195388D20070C39A /* CoreGraphics.framework */,
 				6003F591195388D20070C39A /* UIKit.framework */,
 				6003F5AF195388D20070C39A /* XCTest.framework */,
-				41E839F3F62A386EBE034220 /* libPods-SJVideoPlayer_Example.a */,
+				CCD2CA6C02217556CFBFA7AB /* libPods-SJVideoPlayer_Example.a */,
 			);
 			name = Frameworks;
 			sourceTree = "<group>";
@@ -394,7 +397,7 @@
 			path = "Subtitles(字幕)";
 			sourceTree = "<group>";
 		};
-		7740C1B72350A14200DD7ECE /* CustomControlLayer */ = {
+		7740C1B72350A14200DD7ECE /* CustomControlLayer(自定义控制层) */ = {
 			isa = PBXGroup;
 			children = (
 				7740C1B82350A16700DD7ECE /* SJViewController12.h */,
@@ -402,7 +405,7 @@
 				7740C1BB2350A18500DD7ECE /* SJCustomControlLayerViewController.h */,
 				7740C1BC2350A18500DD7ECE /* SJCustomControlLayerViewController.m */,
 			);
-			path = CustomControlLayer;
+			path = "CustomControlLayer(自定义控制层)";
 			sourceTree = "<group>";
 		};
 		7756F57E22E1732D00F9DC7D /* Test */ = {
@@ -422,6 +425,15 @@
 				7784A7D0237CF75F000BA67E /* SJTestAliVodPlayerViewController.xib */,
 			);
 			path = Test;
+			sourceTree = "<group>";
+		};
+		77633AB823FD97A000D7A269 /* PlaybackHistory(播放记录) */ = {
+			isa = PBXGroup;
+			children = (
+				77633AB923FD97B700D7A269 /* SJPlaybackHistoryViewController.h */,
+				77633ABA23FD97B700D7A269 /* SJPlaybackHistoryViewController.m */,
+			);
+			path = "PlaybackHistory(播放记录)";
 			sourceTree = "<group>";
 		};
 		77788F6622C35F6F00E26599 /* Nested View */ = {
@@ -470,18 +482,19 @@
 		77805D6D22BF7EBD007076B9 /* iPhone Demo */ = {
 			isa = PBXGroup;
 			children = (
+				77633AB823FD97A000D7A269 /* PlaybackHistory(播放记录) */,
 				7784A7F7237D384F000BA67E /* Barrage( 弹幕) */,
 				77357E5F2375522800B81EE4 /* Subtitles(字幕) */,
-				A6A2555522ABDA8400E42998 /* Add Button Item To Control Layer */,
-				A6A208DF22AB9E59001ED610 /* Rotation Control */,
-				A6A2554022ABCE2800E42998 /* Playback List Control */,
+				A6A2555522ABDA8400E42998 /* Add Button Item To Control Layer(添加按钮到控制层) */,
+				A6A208DF22AB9E59001ED610 /* Rotation Control(旋转控制) */,
+				A6A2554022ABCE2800E42998 /* Playback List Control(播放列表控制) */,
 				A6A2562122AC1B0F00E42998 /* UITableView UICollectionView */,
-				A6A2556422AC00C600E42998 /* Continue Playing In The New View Controller */,
-				A6A2562222AC1BBA00E42998 /* Switching Control Layer */,
-				A6F19DF722D9C1090043B508 /* Pop Prompt */,
-				A6F19DFD22D9D7C30043B508 /* Switch Video Definition */,
+				A6A2556422AC00C600E42998 /* Continue Playing In The New View Controller(在新的界面继续播放) */,
+				A6A2562222AC1BBA00E42998 /* Switching Control Layer(切换控制层) */,
+				A6F19DF722D9C1090043B508 /* Pop Prompt(弹窗提示) */,
+				A6F19DFD22D9D7C30043B508 /* Switch Video Definition(切换清晰度) */,
 				77E87F6222E84D2B0047A253 /* GIF Screenshot Export */,
-				7740C1B72350A14200DD7ECE /* CustomControlLayer */,
+				7740C1B72350A14200DD7ECE /* CustomControlLayer(自定义控制层) */,
 				77F2F5D822FAC41B00EA0B91 /* Other */,
 			);
 			path = "iPhone Demo";
@@ -607,12 +620,12 @@
 			path = Demos;
 			sourceTree = "<group>";
 		};
-		A6A208DF22AB9E59001ED610 /* Rotation Control */ = {
+		A6A208DF22AB9E59001ED610 /* Rotation Control(旋转控制) */ = {
 			isa = PBXGroup;
 			children = (
 				A6A208E022AB9E59001ED610 /* Rotate Player View And View Controller */,
 			);
-			path = "Rotation Control";
+			path = "Rotation Control(旋转控制)";
 			sourceTree = "<group>";
 		};
 		A6A208E022AB9E59001ED610 /* Rotate Player View And View Controller */ = {
@@ -708,7 +721,7 @@
 			path = "List Autoplay";
 			sourceTree = "<group>";
 		};
-		A6A2554022ABCE2800E42998 /* Playback List Control */ = {
+		A6A2554022ABCE2800E42998 /* Playback List Control(播放列表控制) */ = {
 			isa = PBXGroup;
 			children = (
 				A6C5D23222AC249800D63D1C /* SJRemoteCommandHandler.h */,
@@ -718,7 +731,7 @@
 				A6A2554322ABCE9200E42998 /* SJViewController1.xib */,
 				A6A2555422ABD00200E42998 /* Core */,
 			);
-			path = "Playback List Control";
+			path = "Playback List Control(播放列表控制)";
 			sourceTree = "<group>";
 		};
 		A6A2555422ABD00200E42998 /* Core */ = {
@@ -735,14 +748,14 @@
 			path = Core;
 			sourceTree = "<group>";
 		};
-		A6A2555522ABDA8400E42998 /* Add Button Item To Control Layer */ = {
+		A6A2555522ABDA8400E42998 /* Add Button Item To Control Layer(添加按钮到控制层) */ = {
 			isa = PBXGroup;
 			children = (
 				A6A2555622ABDAA500E42998 /* SJViewController2.h */,
 				A6A2555722ABDAA500E42998 /* SJViewController2.m */,
 				A6A2555822ABDAA500E42998 /* SJViewController2.xib */,
 			);
-			path = "Add Button Item To Control Layer";
+			path = "Add Button Item To Control Layer(添加按钮到控制层)";
 			sourceTree = "<group>";
 		};
 		A6A2555B22ABFAD800E42998 /* Float Small View */ = {
@@ -755,14 +768,14 @@
 			path = "Float Small View";
 			sourceTree = "<group>";
 		};
-		A6A2556422AC00C600E42998 /* Continue Playing In The New View Controller */ = {
+		A6A2556422AC00C600E42998 /* Continue Playing In The New View Controller(在新的界面继续播放) */ = {
 			isa = PBXGroup;
 			children = (
 				A6A2556822AC015B00E42998 /* SJViewController4.h */,
 				A6A2556922AC015B00E42998 /* SJViewController4.m */,
 				A6A2556A22AC015B00E42998 /* SJViewController4.xib */,
 			);
-			path = "Continue Playing In The New View Controller";
+			path = "Continue Playing In The New View Controller(在新的界面继续播放)";
 			sourceTree = "<group>";
 		};
 		A6A2562122AC1B0F00E42998 /* UITableView UICollectionView */ = {
@@ -775,17 +788,17 @@
 			path = "UITableView UICollectionView";
 			sourceTree = "<group>";
 		};
-		A6A2562222AC1BBA00E42998 /* Switching Control Layer */ = {
+		A6A2562222AC1BBA00E42998 /* Switching Control Layer(切换控制层) */ = {
 			isa = PBXGroup;
 			children = (
 				A6A2562322AC1C3500E42998 /* SJViewController5.h */,
 				A6A2562422AC1C3500E42998 /* SJViewController5.m */,
 				A6A2562522AC1C3500E42998 /* SJViewController5.xib */,
 			);
-			path = "Switching Control Layer";
+			path = "Switching Control Layer(切换控制层)";
 			sourceTree = "<group>";
 		};
-		A6F19DF722D9C1090043B508 /* Pop Prompt */ = {
+		A6F19DF722D9C1090043B508 /* Pop Prompt(弹窗提示) */ = {
 			isa = PBXGroup;
 			children = (
 				A6F19DF822D9C1390043B508 /* SJViewController6.h */,
@@ -797,17 +810,17 @@
 				A69FD22922D9F5280031E4E7 /* SJViewController8.m */,
 				A69FD22A22D9F5280031E4E7 /* SJViewController8.xib */,
 			);
-			path = "Pop Prompt";
+			path = "Pop Prompt(弹窗提示)";
 			sourceTree = "<group>";
 		};
-		A6F19DFD22D9D7C30043B508 /* Switch Video Definition */ = {
+		A6F19DFD22D9D7C30043B508 /* Switch Video Definition(切换清晰度) */ = {
 			isa = PBXGroup;
 			children = (
 				A6F19DFE22D9D8050043B508 /* SJViewController7.h */,
 				A6F19DFF22D9D8050043B508 /* SJViewController7.m */,
 				A6F19E0022D9D8050043B508 /* SJViewController7.xib */,
 			);
-			path = "Switch Video Definition";
+			path = "Switch Video Definition(切换清晰度)";
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -821,7 +834,7 @@
 				6003F586195388D20070C39A /* Sources */,
 				6003F587195388D20070C39A /* Frameworks */,
 				6003F588195388D20070C39A /* Resources */,
-				03DB6D2A7AB4A23BD6742E1B /* [CP] Copy Pods Resources */,
+				09CC984351C8AA5FD418E7BC /* [CP] Copy Pods Resources */,
 			);
 			buildRules = (
 			);
@@ -939,7 +952,7 @@
 /* End PBXResourcesBuildPhase section */
 
 /* Begin PBXShellScriptBuildPhase section */
-		03DB6D2A7AB4A23BD6742E1B /* [CP] Copy Pods Resources */ = {
+		09CC984351C8AA5FD418E7BC /* [CP] Copy Pods Resources */ = {
 			isa = PBXShellScriptBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
@@ -1010,6 +1023,7 @@
 				A6A208FD22AB9E59001ED610 /* SJRotationModeDemoViewController2.m in Sources */,
 				77788FED22C37C2000E26599 /* SJExtendedMediaCollectionViewModel.m in Sources */,
 				A6A2555F22ABFAFA00E42998 /* SJViewController3.m in Sources */,
+				77633ABB23FD97B700D7A269 /* SJPlaybackHistoryViewController.m in Sources */,
 				A601803C22DB5CAC00ED840D /* SJRotationModeDemoViewController3.m in Sources */,
 				A6A208FE22AB9E59001ED610 /* SJMediaTableViewModel.m in Sources */,
 				77A0CE002306856900FE353C /* SJListViewAutoplayMediaInfoView.m in Sources */,

@@ -2,7 +2,7 @@
 //  SJBarrageQueueController.m
 //  Pods
 //
-//  Created by BlueDancer on 2019/11/12.
+//  Created by 畅三江 on 2019/11/12.
 //
 
 #import "SJBarrageQueueController.h"

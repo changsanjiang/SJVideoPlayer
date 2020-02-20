@@ -9,8 +9,10 @@
 #import "SJViewController11.h"
 #import <SJVideoPlayer/SJVideoPlayer.h>
 #import <Masonry/Masonry.h>
-#import <SJUIKit/SJUIKit.h>
+#import <SJUIKit/NSAttributedString+SJMake.h>
 #import "SJSourceURLs.h"
+
+#import <SJVideoPlayer/SJProgressSlider.h>
 
 NS_ASSUME_NONNULL_BEGIN
 @interface SJViewController11 ()

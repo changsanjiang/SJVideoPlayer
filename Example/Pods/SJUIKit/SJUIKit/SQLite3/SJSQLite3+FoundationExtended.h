@@ -28,5 +28,5 @@ NS_ASSUME_NONNULL_BEGIN
 @end
 
 extern NSArray<id> *
-SJFoundationExtendedValuesForKey(NSArray<NSDictionary *> *array, NSString *key);
+SJFoundationExtendedValuesForKey(NSString *key, NSArray<NSDictionary *> *array);
 NS_ASSUME_NONNULL_END

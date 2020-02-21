@@ -88,7 +88,6 @@ static NSString *const SJTableViewCell1ID = @"SJTableViewCell1";
     SJMeidaItemModel *item = (id)media;
     if ( _player == nil ) {
         _player = [SJVideoPlayer player];
-        _player.fastForwardViewController.enabled = YES; // 开启左右边缘快进快退功能
         [self _addListControlItemsToPlayer];
         [_playerContainerVIew addSubview:_player.view];
         [_player.view mas_makeConstraints:^(MASConstraintMaker *make) {

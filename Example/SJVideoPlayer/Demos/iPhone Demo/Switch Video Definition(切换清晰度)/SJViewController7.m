@@ -24,6 +24,10 @@
 #import "SJAliyunVodPlaybackController.h"
 #endif
 
+#if __has_include(<PLPlayerKit/PLPlayerKit.h>)
+#import <SJBaseVideoPlayer/SJPLPlayerPlaybackController.h>
+#endif
+
 NS_ASSUME_NONNULL_BEGIN
 @interface SJViewController7 ()
 @property (weak, nonatomic) IBOutlet UIView *playerContainerView;
@@ -67,17 +71,16 @@ NS_ASSUME_NONNULL_BEGIN
 #if __has_include(<IJKMediaFrameworkWithSSL/IJKMediaFrameworkWithSSL.h>)
     SJIJKMediaPlaybackController *playbackController = SJIJKMediaPlaybackController.new;
     _player.playbackController = playbackController;
-#endif
-    
-#if __has_include(<AliyunPlayer/AliyunPlayer.h>)
+#elif __has_include(<AliyunPlayer/AliyunPlayer.h>)
     SJAliMediaPlaybackController *playbackController = SJAliMediaPlaybackController.new;
     playbackController.seekMode = AVP_SEEKMODE_ACCURATE;
     _player.playbackController = playbackController;
-#endif
-    
-#if __has_include(<AliyunPlayerSDK/AliyunPlayerSDK.h>)
+#elif __has_include(<AliyunPlayerSDK/AliyunPlayerSDK.h>)
     SJAliyunVodPlaybackController *playbackController = SJAliyunVodPlaybackController.new;
     _player.playbackController = playbackController;
+#elif __has_include(<PLPlayerKit/PLPlayerKit.h>)
+    _player.playbackController = SJPLPlayerPlaybackController.new;
+    _player.resumePlaybackWhenAppDidEnterForeground = YES;
 #endif
     
     [_playerContainerView addSubview:self.player.view];

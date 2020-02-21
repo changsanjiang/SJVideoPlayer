@@ -10,6 +10,7 @@
 #import "SJSourceURLs.h"
 #import "SJVideoPlayer.h"
 #import "Masonry.h"
+#import <SJUIKit/NSAttributedString+SJMake.h>
 
 #if __has_include(<IJKMediaFrameworkWithSSL/IJKMediaFrameworkWithSSL.h>)
 #import "SJIJKMediaPlaybackController.h"
@@ -32,11 +33,15 @@
     IJKFFOptions *options = [IJKFFOptions optionsByDefault];
     controller.options = options;
     _player.playbackController = controller;
-#endif
-    
     _player.URLAsset = [SJVideoPlayerURLAsset.alloc initWithURL:VideoURL_Level4];
-    
-//    _player.assetURL = [NSBundle.mainBundle URLForResource:@"audio" withExtension:@"wav"];
+#else
+    // 切换为 ijkplayer, 详见: https://github.com/changsanjiang/SJVideoPlayer/wiki/Use-ijkplayer
+    [_player.prompt show:[NSAttributedString sj_UIKitText:^(id<SJUIKitTextMakerProtocol>  _Nonnull make) {
+        make.append(@"请按照指南导入ijkplayer");
+        make.textColor(UIColor.whiteColor);
+    }] duration:-1];
+#endif
+        
     _player.view.backgroundColor = UIColor.blackColor;
     [self.view addSubview:_player.view];
     [_player.view mas_makeConstraints:^(MASConstraintMaker *make) {
@@ -68,7 +73,7 @@
 
 @implementation SJTestIJKViewController2 (RouteHandler)
 + (NSString *)routePath {
-    return @"test2";
+    return @"thirdpartyPlayer/ijkplayer";
 }
 
 + (void)handleRequest:(SJRouteRequest *)request topViewController:(UIViewController *)topViewController completionHandler:(SJCompletionHandler)completionHandler {

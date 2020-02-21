@@ -10,6 +10,7 @@
 #import <SJVideoPlayer.h>
 #import "SJSourceURLs.h"
 #import "Masonry.h"
+#import <SJUIKit/NSAttributedString+SJMake.h>
 
 #if __has_include(<AliyunPlayer/AliyunPlayer.h>)
 #import <SJBaseVideoPlayer/SJAliMediaPlaybackController.h>
@@ -27,10 +28,15 @@
     
 #if __has_include(<AliyunPlayer/AliyunPlayer.h>)
     _player.playbackController = SJAliMediaPlaybackController.new;
-//    AVPUrlSource *source = [AVPUrlSource.alloc urlWithString:@"rtmp://58.200.131.2:1935/livetv/hunantv"];
     AVPUrlSource *source = [AVPUrlSource.alloc init];
     source.playerUrl = SourceURL1;
     _player.URLAsset = [SJVideoPlayerURLAsset.alloc initWithSource:source];
+#else
+    // 切换为 Aliplayer, 详见: https://github.com/changsanjiang/SJVideoPlayer/wiki/Use-AliPlayer
+    [_player.prompt show:[NSAttributedString sj_UIKitText:^(id<SJUIKitTextMakerProtocol>  _Nonnull make) {
+        make.append(@"请按照指南导入AliPlayer");
+        make.textColor(UIColor.whiteColor);
+    }] duration:-1];
 #endif
     
     [self.view addSubview:_player.view];
@@ -62,7 +68,7 @@
 
 @implementation SJTestAliViewController3 (RouteHandler)
 + (NSString *)routePath {
-    return @"test3";
+    return @"thirdpartyPlayer/AliPlayer";
 }
 
 + (void)handleRequest:(SJRouteRequest *)request topViewController:(UIViewController *)topViewController completionHandler:(SJCompletionHandler)completionHandler {

@@ -176,6 +176,17 @@ NS_ASSUME_NONNULL_BEGIN
                                  userInfo:nil];
 }
 
+- (void)receivedApplicationDidBecomeActiveNotification { }
+
+- (void)receivedApplicationWillResignActiveNotification { }
+
+- (void)receivedApplicationWillEnterForegroundNotification { }
+
+- (void)receivedApplicationDidEnterBackgroundNotification {
+    if ( self.pauseWhenAppDidEnterBackground )
+        [self pause];
+}
+
 - (void)prepareToPlay {
     SJVideoPlayerURLAsset *media = _media;
     __weak typeof(self) _self = self;
@@ -203,7 +214,7 @@ NS_ASSUME_NONNULL_BEGIN
     }
     
     // no item to play
-    if ( self.media == nil ) {
+    if ( self.currentPlayer == nil ) {
         self.reasonForWaitingToPlay = SJWaitingWithNoAssetToPlayReason;
         self.timeControlStatus = SJPlaybackTimeControlStatusWaitingToPlay;
     }
@@ -299,7 +310,7 @@ NS_ASSUME_NONNULL_BEGIN
                 self.currentPlayer = newPlayer;
                 self.currentPlayerView = definitionMediaPlayerView;
                 [oldPlayer pause];
-                [newPlayer play];
+                self.timeControlStatus != SJPlaybackTimeControlStatusPaused ? [newPlayer play] : [newPlayer pause];
                 [self _definitionMedia:media switchStatusDidChange:SJDefinitionSwitchStatusFinished];
             }
         }];
@@ -391,6 +402,7 @@ NS_ASSUME_NONNULL_BEGIN
  
 - (void)setRate:(float)rate {
     _rate = rate;
+    if ( self.timeControlStatus == SJPlaybackTimeControlStatusPaused ) [self play];
     _currentPlayer.rate = rate;
 }
 
@@ -442,20 +454,26 @@ NS_ASSUME_NONNULL_BEGIN
         self.timeControlStatus = SJPlaybackTimeControlStatusPaused;
     }
     
+    if ( self.currentPlayer.isPlayedToEndTime ) {
+        self.timeControlStatus = SJPlaybackTimeControlStatusPaused;
+    }
+    
     if ( self.timeControlStatus == SJPlaybackTimeControlStatusPaused ) {
         return;
     }
     
-    if ( self.media != nil && self.currentPlayer.timeControlStatus != SJPlaybackTimeControlStatusPaused ) {
-        if ( self.timeControlStatus != self.currentPlayer.timeControlStatus ||
-             self.reasonForWaitingToPlay != self.currentPlayer.reasonForWaitingToPlay ) {
-            if ( self.reasonForWaitingToPlay == SJWaitingWithNoAssetToPlayReason ) {
-                [self.currentPlayer play];
-            }
-            else {
-                self.reasonForWaitingToPlay = self.currentPlayer.reasonForWaitingToPlay;
-                self.timeControlStatus = self.currentPlayer.timeControlStatus;
-            }
+    // 处于准备|失败中
+    if ( self.currentPlayer.assetStatus != SJAssetStatusReadyToPlay )
+        return;
+
+    if ( self.reasonForWaitingToPlay == SJWaitingWithNoAssetToPlayReason )
+        [self.currentPlayer play];
+    
+    if ( self.timeControlStatus != self.currentPlayer.timeControlStatus ||
+         self.reasonForWaitingToPlay != self.currentPlayer.reasonForWaitingToPlay ) {
+        if ( self.currentPlayer.timeControlStatus != SJPlaybackTimeControlStatusPaused ) {
+            self.reasonForWaitingToPlay = self.currentPlayer.reasonForWaitingToPlay;
+            self.timeControlStatus = self.currentPlayer.timeControlStatus;
         }
     }
 }
@@ -521,6 +539,10 @@ NS_ASSUME_NONNULL_BEGIN
     [NSNotificationCenter.defaultCenter addObserver:self selector:@selector(playerDidReplay:) name:SJMediaPlayerDidReplayNotification object:nil];
     [NSNotificationCenter.defaultCenter addObserver:self selector:@selector(audioSessionInterruption:) name:AVAudioSessionInterruptionNotification object:nil];
     [NSNotificationCenter.defaultCenter addObserver:self selector:@selector(audioSessionRouteChange:) name:AVAudioSessionRouteChangeNotification object:nil];
+    
+    [NSNotificationCenter.defaultCenter addObserver:self selector:@selector(receivedApplicationDidBecomeActiveNotification) name:UIApplicationDidBecomeActiveNotification object:nil];
+    [NSNotificationCenter.defaultCenter addObserver:self selector:@selector(receivedApplicationWillResignActiveNotification) name:UIApplicationWillResignActiveNotification object:nil];
+    [NSNotificationCenter.defaultCenter addObserver:self selector:@selector(receivedApplicationDidEnterBackgroundNotification) name:UIApplicationDidEnterBackgroundNotification object:nil];
 }
 
 - (void)playerAssetStatusDidChange:(NSNotification *)note {
@@ -692,4 +714,5 @@ NSNotificationName const SJMediaPlayerDurationDidChangeNotification = @"SJMediaP
 NSNotificationName const SJMediaPlayerPlayableDurationDidChangeNotification = @"SJMediaPlayerPlayableDurationDidChangeNotification";
 
 NSNotificationName const SJMediaPlayerViewReadyForDisplayNotification = @"SJMediaPlayerViewReadyForDisplayNotification";
+NSNotificationName const SJMediaPlayerPlaybackTypeDidChangeNotification = @"SJMediaPlayerPlaybackTypeDidChangeNotification";
 NS_ASSUME_NONNULL_END

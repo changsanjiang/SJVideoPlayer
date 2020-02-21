@@ -27,7 +27,6 @@ NS_ASSUME_NONNULL_BEGIN
 @synthesize duration = _duration;
 @synthesize isPlayed = _isPlayed;
 @synthesize isReplayed = _isReplayed;
-@synthesize shouldAutoplay = _shouldAutoplay;
 @synthesize isPlayedToEndTime = _isPlayedToEndTime;
 
 - (instancetype)initWithAVPlayer:(AVPlayer *)player startPosition:(NSTimeInterval)time {
@@ -491,6 +490,4 @@ static NSString *kTimeControlStatus = @"timeControlStatus";
     }
 }
 @end
-
-NSNotificationName const SJMediaPlayerPlaybackTypeDidChangeNotification = @"SJMediaPlayerPlaybackTypeDidChangeNotification";
 NS_ASSUME_NONNULL_END

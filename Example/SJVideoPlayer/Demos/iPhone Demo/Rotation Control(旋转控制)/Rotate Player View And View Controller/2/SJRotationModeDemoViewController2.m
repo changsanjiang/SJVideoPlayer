@@ -57,7 +57,6 @@
 - (void)tappedCoverOnTheTableViewCell:(SJMediaTableViewCell *)cell {
     if ( _player == nil ) {
         _player = [SJVideoPlayer player];
-        _player.fastForwardViewController.enabled = YES;
         _player.allowHorizontalTriggeringOfPanGesturesInCells = YES;
         [self _observePlayerViewAppearState];
         [self _addTestEdgeItemsToPlayer];

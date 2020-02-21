@@ -10,6 +10,7 @@
 #import <SJVideoPlayer.h>
 #import "SJSourceURLs.h"
 #import "Masonry.h"
+#import <SJUIKit/NSAttributedString+SJMake.h>
 
 #if __has_include(<AliyunPlayerSDK/AliyunPlayerSDK.h>)
 #import <SJBaseVideoPlayer/SJAliyunVodPlaybackController.h>
@@ -28,7 +29,14 @@
 #if __has_include(<AliyunPlayerSDK/AliyunPlayerSDK.h>)
     _player.playbackController = SJAliyunVodPlaybackController.new;
     _player.URLAsset = [SJVideoPlayerURLAsset.alloc initWithAliyunVodModel:[SJAliyunVodURLModel.alloc initWithURL:SourceURL2]];
+#else
+    // 切换为 AliVodPlayer, 详见: https://github.com/changsanjiang/SJVideoPlayer/wiki/Use-AliVodPlayer
+    [_player.prompt show:[NSAttributedString sj_UIKitText:^(id<SJUIKitTextMakerProtocol>  _Nonnull make) {
+        make.append(@"请按照指南导入AliVodPlayer");
+        make.textColor(UIColor.whiteColor);
+    }] duration:-1];
 #endif
+    
     
     [self.view addSubview:_player.view];
     [_player.view mas_makeConstraints:^(MASConstraintMaker *make) {
@@ -51,7 +59,7 @@
 
 @implementation SJTestAliVodPlayerViewController (RouteHandler)
 + (NSString *)routePath {
-    return @"test4";
+    return @"thirdpartyPlayer/AliyunVodPlayer";
 }
 
 + (void)handleRequest:(SJRouteRequest *)request topViewController:(UIViewController *)topViewController completionHandler:(SJCompletionHandler)completionHandler {

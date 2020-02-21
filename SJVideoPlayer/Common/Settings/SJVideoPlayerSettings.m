@@ -17,6 +17,14 @@ NSNotificationName const SJVideoPlayerSettingsUpdatedNotification = @"SJVideoPla
 //@interface SJVideoPlayerSettings (SJEdgeControlLayer)
 @property (nonatomic, strong, nullable) UIImage *placeholder;
 
+// fast forward view(长按快进时显示的视图)
+@property (nonatomic, strong, nullable) UIColor  *fastForwardTriangleColor;
+@property (nonatomic, strong, nullable) UIColor  *fastForwardRateTextColor;
+@property (nonatomic, strong, nullable) UIFont   *fastForwardRateTextFont;
+@property (nonatomic, strong, nullable) UIColor  *fastForwardFFTextColor;
+@property (nonatomic, strong, nullable) UIFont   *fastForwardFFTextFont;
+@property (nonatomic, strong, nullable) NSString *fastForwardFFText;
+
 // loading view
 @property (nonatomic, strong, nullable) UIColor *loadingNetworkSpeedTextColor;
 @property (nonatomic, strong, nullable) UIFont  *loadingNetworkSpeedTextFont;
@@ -223,6 +231,13 @@ NSNotificationName const SJVideoPlayerSettingsUpdatedNotification = @"SJVideoPla
 }
 
 - (void)_resetSJEdgeControlLayer {
+    _fastForwardTriangleColor = UIColor.whiteColor;
+    _fastForwardRateTextColor = UIColor.whiteColor;
+    _fastForwardRateTextFont = [UIFont boldSystemFontOfSize:12];
+    _fastForwardFFTextColor = UIColor.whiteColor;
+    _fastForwardFFTextFont = [UIFont boldSystemFontOfSize:12];
+    _fastForwardFFText = [SJVideoPlayerResourceLoader localizedStringForKey:SJVideoPlayer_FastForwardFFText];;
+    
     _loadingNetworkSpeedTextColor = UIColor.whiteColor;
     _loadingNetworkSpeedTextFont = [UIFont systemFontOfSize:11];
     _loadingLineColor = UIColor.whiteColor;

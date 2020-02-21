@@ -33,6 +33,8 @@
 		7756F58622E173D400F9DC7D /* SJTestViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 7756F58422E173D400F9DC7D /* SJTestViewController.xib */; };
 		77633ABB23FD97B700D7A269 /* SJPlaybackHistoryViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 77633ABA23FD97B700D7A269 /* SJPlaybackHistoryViewController.m */; };
 		77661EF72356CBE900514BED /* SJTestIJKViewController2.xib in Resources */ = {isa = PBXBuildFile; fileRef = 77661EF62356CBE900514BED /* SJTestIJKViewController2.xib */; };
+		776EB8C623FE98D600085F94 /* SJTestPLPlayerViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 776EB8C423FE98D600085F94 /* SJTestPLPlayerViewController.m */; };
+		776EB8C723FE98D600085F94 /* SJTestPLPlayerViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 776EB8C523FE98D600085F94 /* SJTestPLPlayerViewController.xib */; };
 		7774C8D623519F5000FE6FCA /* SJPopPromptCustomView.m in Sources */ = {isa = PBXBuildFile; fileRef = 7774C8D523519F5000FE6FCA /* SJPopPromptCustomView.m */; };
 		777829402351D4AB00A2D933 /* SJTestIJKViewController2.m in Sources */ = {isa = PBXBuildFile; fileRef = 7778293F2351D4AB00A2D933 /* SJTestIJKViewController2.m */; };
 		77788F6F22C35FF200E26599 /* SJViewController5n.m in Sources */ = {isa = PBXBuildFile; fileRef = 77788F6D22C35FF200E26599 /* SJViewController5n.m */; };
@@ -111,7 +113,7 @@
 		0913D8D9BFC4EE68E3F1EF64 /* Pods-SJVideoPlayer_Example.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-SJVideoPlayer_Example.release.xcconfig"; path = "Target Support Files/Pods-SJVideoPlayer_Example/Pods-SJVideoPlayer_Example.release.xcconfig"; sourceTree = "<group>"; };
 		15E7E925B7E2B14A6F5CC435 /* LICENSE */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text; name = LICENSE; path = ../LICENSE; sourceTree = "<group>"; };
 		3DE6356926AEF70F060F33F3 /* SJVideoPlayer.podspec */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text; name = SJVideoPlayer.podspec; path = ../SJVideoPlayer.podspec; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.ruby; };
-		6003F58A195388D20070C39A /* SJVideoPlayer_Example.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = SJVideoPlayer_Example.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		6003F58A195388D20070C39A /* 播放器.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "播放器.app"; sourceTree = BUILT_PRODUCTS_DIR; };
 		6003F58D195388D20070C39A /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = System/Library/Frameworks/Foundation.framework; sourceTree = SDKROOT; };
 		6003F58F195388D20070C39A /* CoreGraphics.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreGraphics.framework; path = System/Library/Frameworks/CoreGraphics.framework; sourceTree = SDKROOT; };
 		6003F591195388D20070C39A /* UIKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = UIKit.framework; path = System/Library/Frameworks/UIKit.framework; sourceTree = SDKROOT; };
@@ -150,6 +152,9 @@
 		77633AB923FD97B700D7A269 /* SJPlaybackHistoryViewController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = SJPlaybackHistoryViewController.h; sourceTree = "<group>"; };
 		77633ABA23FD97B700D7A269 /* SJPlaybackHistoryViewController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = SJPlaybackHistoryViewController.m; sourceTree = "<group>"; };
 		77661EF62356CBE900514BED /* SJTestIJKViewController2.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = SJTestIJKViewController2.xib; sourceTree = "<group>"; };
+		776EB8C323FE98D600085F94 /* SJTestPLPlayerViewController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = SJTestPLPlayerViewController.h; sourceTree = "<group>"; };
+		776EB8C423FE98D600085F94 /* SJTestPLPlayerViewController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = SJTestPLPlayerViewController.m; sourceTree = "<group>"; };
+		776EB8C523FE98D600085F94 /* SJTestPLPlayerViewController.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = SJTestPLPlayerViewController.xib; sourceTree = "<group>"; };
 		7774C8D423519F5000FE6FCA /* SJPopPromptCustomView.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = SJPopPromptCustomView.h; sourceTree = "<group>"; };
 		7774C8D523519F5000FE6FCA /* SJPopPromptCustomView.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = SJPopPromptCustomView.m; sourceTree = "<group>"; };
 		7778293E2351D4AB00A2D933 /* SJTestIJKViewController2.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = SJTestIJKViewController2.h; sourceTree = "<group>"; };
@@ -308,7 +313,7 @@
 		6003F58B195388D20070C39A /* Products */ = {
 			isa = PBXGroup;
 			children = (
-				6003F58A195388D20070C39A /* SJVideoPlayer_Example.app */,
+				6003F58A195388D20070C39A /* 播放器.app */,
 				6003F5AE195388D20070C39A /* SJVideoPlayer_Tests.xctest */,
 			);
 			name = Products;
@@ -414,15 +419,6 @@
 				7756F58222E173D400F9DC7D /* SJTestViewController.h */,
 				7756F58322E173D400F9DC7D /* SJTestViewController.m */,
 				7756F58422E173D400F9DC7D /* SJTestViewController.xib */,
-				7778293E2351D4AB00A2D933 /* SJTestIJKViewController2.h */,
-				7778293F2351D4AB00A2D933 /* SJTestIJKViewController2.m */,
-				77661EF62356CBE900514BED /* SJTestIJKViewController2.xib */,
-				77357E432373DA3E00B81EE4 /* SJTestAliViewController3.h */,
-				77357E442373DA3E00B81EE4 /* SJTestAliViewController3.m */,
-				77357E452373DA3E00B81EE4 /* SJTestAliViewController3.xib */,
-				7784A7CE237CF75F000BA67E /* SJTestAliVodPlayerViewController.h */,
-				7784A7CF237CF75F000BA67E /* SJTestAliVodPlayerViewController.m */,
-				7784A7D0237CF75F000BA67E /* SJTestAliVodPlayerViewController.xib */,
 			);
 			path = Test;
 			sourceTree = "<group>";
@@ -434,6 +430,25 @@
 				77633ABA23FD97B700D7A269 /* SJPlaybackHistoryViewController.m */,
 			);
 			path = "PlaybackHistory(播放记录)";
+			sourceTree = "<group>";
+		};
+		776EB8D523FF912500085F94 /* 第三方播放器 */ = {
+			isa = PBXGroup;
+			children = (
+				7778293E2351D4AB00A2D933 /* SJTestIJKViewController2.h */,
+				7778293F2351D4AB00A2D933 /* SJTestIJKViewController2.m */,
+				77661EF62356CBE900514BED /* SJTestIJKViewController2.xib */,
+				77357E432373DA3E00B81EE4 /* SJTestAliViewController3.h */,
+				77357E442373DA3E00B81EE4 /* SJTestAliViewController3.m */,
+				77357E452373DA3E00B81EE4 /* SJTestAliViewController3.xib */,
+				7784A7CE237CF75F000BA67E /* SJTestAliVodPlayerViewController.h */,
+				7784A7CF237CF75F000BA67E /* SJTestAliVodPlayerViewController.m */,
+				7784A7D0237CF75F000BA67E /* SJTestAliVodPlayerViewController.xib */,
+				776EB8C323FE98D600085F94 /* SJTestPLPlayerViewController.h */,
+				776EB8C423FE98D600085F94 /* SJTestPLPlayerViewController.m */,
+				776EB8C523FE98D600085F94 /* SJTestPLPlayerViewController.xib */,
+			);
+			path = "第三方播放器";
 			sourceTree = "<group>";
 		};
 		77788F6622C35F6F00E26599 /* Nested View */ = {
@@ -616,6 +631,7 @@
 				77805D6D22BF7EBD007076B9 /* iPhone Demo */,
 				77805D6722BF7DC6007076B9 /* iPad Demo */,
 				7756F57E22E1732D00F9DC7D /* Test */,
+				776EB8D523FF912500085F94 /* 第三方播放器 */,
 			);
 			path = Demos;
 			sourceTree = "<group>";
@@ -842,7 +858,7 @@
 			);
 			name = SJVideoPlayer_Example;
 			productName = SJVideoPlayer;
-			productReference = 6003F58A195388D20070C39A /* SJVideoPlayer_Example.app */;
+			productReference = 6003F58A195388D20070C39A /* 播放器.app */;
 			productType = "com.apple.product-type.application";
 		};
 		6003F5AD195388D20070C39A /* SJVideoPlayer_Tests */ = {
@@ -911,6 +927,7 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				776EB8C723FE98D600085F94 /* SJTestPLPlayerViewController.xib in Resources */,
 				7784A7FC237D4E97000BA67E /* SJBarrageTestViewController.xib in Resources */,
 				873B8AEB1B1F5CCA007FD442 /* Main.storyboard in Resources */,
 				7784A7D2237CF75F000BA67E /* SJTestAliVodPlayerViewController.xib in Resources */,
@@ -1017,6 +1034,7 @@
 				7740C1BA2350A16700DD7ECE /* SJViewController12.m in Sources */,
 				77805D6B22BF7DE1007076B9 /* SJiPadDemoViewController1.m in Sources */,
 				A6A208FF22AB9E59001ED610 /* SJMeidaItemModel.m in Sources */,
+				776EB8C623FE98D600085F94 /* SJTestPLPlayerViewController.m in Sources */,
 				777829402351D4AB00A2D933 /* SJTestIJKViewController2.m in Sources */,
 				7740C1BD2350A18500DD7ECE /* SJCustomControlLayerViewController.m in Sources */,
 				A6A2553C22ABC71F00E42998 /* ListViewAutoplayViewController.m in Sources */,
@@ -1224,7 +1242,7 @@
 				IPHONEOS_DEPLOYMENT_TARGET = 9.0;
 				MODULE_NAME = ExampleApp;
 				PRODUCT_BUNDLE_IDENTIFIER = org.cocoapods.demo.SJVideoPlayer;
-				PRODUCT_NAME = "$(TARGET_NAME)";
+				PRODUCT_NAME = "播放器";
 				PROVISIONING_PROFILE_SPECIFIER = "";
 				VALID_ARCHS = "arm64 arm64e";
 				WRAPPER_EXTENSION = app;
@@ -1250,7 +1268,7 @@
 				IPHONEOS_DEPLOYMENT_TARGET = 9.0;
 				MODULE_NAME = ExampleApp;
 				PRODUCT_BUNDLE_IDENTIFIER = org.cocoapods.demo.SJVideoPlayer;
-				PRODUCT_NAME = "$(TARGET_NAME)";
+				PRODUCT_NAME = "播放器";
 				PROVISIONING_PROFILE_SPECIFIER = "";
 				VALID_ARCHS = "arm64 arm64e";
 				WRAPPER_EXTENSION = app;

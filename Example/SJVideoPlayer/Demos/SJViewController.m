@@ -83,6 +83,8 @@
     
     [m addObject:[[LWZTableSectionShrinker alloc] initWithTitle:@"Test" titleWhenShrank:nil dataArr:[self _createTestItems]]];
 
+    [m addObject:[[LWZTableSectionShrinker alloc] initWithTitle:@"Third-party Player" titleWhenShrank:nil dataArr:[self _thirdpartyPlayerItems]]];
+    
     _data = m.copy;
 }
 
@@ -207,23 +209,33 @@
         [[Item alloc] initWithTitle:@"Test"
                            subTitle:@"Test"
                                path:@"test"],
-        [[Item alloc] initWithTitle:@"Test IJK"
-                           subTitle:@"Test IJK"
-                               path:@"test2"],
-        [[Item alloc] initWithTitle:@"Test Ali"
-                           subTitle:@"Test Ali"
-                               path:@"test3"],
-        [[Item alloc] initWithTitle:@"Test AliyunVod"
-                           subTitle:@"Test AliyunVod"
-                               path:@"test4"],
       ];
+}
+
+- (NSArray<Item *> *)_thirdpartyPlayerItems {
+    return
+    @[
+        [[Item alloc] initWithTitle:@"ijkplayer"
+                           subTitle:@""
+                               path:@"thirdpartyPlayer/ijkplayer"],
+        [[Item alloc] initWithTitle:@"AliPlayer"
+                           subTitle:@""
+                               path:@"thirdpartyPlayer/AliPlayer"],
+        [[Item alloc] initWithTitle:@"AliyunVodPlayer"
+                           subTitle:@""
+                               path:@"thirdpartyPlayer/AliyunVodPlayer"],
+        [[Item alloc] initWithTitle:@"PLPlayer"
+                           subTitle:@""
+                               path:@"thirdpartyPlayer/PLPlayer"],
+      ];
+
 }
 
 - (NSArray<Item *> *)_createOtherItems {
     return
     @[
-      [[Item alloc] initWithTitle:@"Right and left edge fast forward and fast backward"
-                         subTitle:@"左右边缘双击 快进快退"
+      [[Item alloc] initWithTitle:@"Long Press Fast-forward"
+                         subTitle:@"长按快进"
                              path:@"demo/11"],
       ];
 }

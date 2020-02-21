@@ -9,7 +9,7 @@
 #ifndef SJSourceURLs_h
 #define SJSourceURLs_h
 
-#define SourceURL0 [NSURL URLWithString:@"https://nie.v.netease.com/r/video/20190810/39d108cb-3a65-4036-a574-48dff2a8764e.mp4"]
+#define SourceURL0 [NSURL URLWithString:@"https://dh2.v.netease.com/2017/cg/fxtpty.mp4"]
 
 #define SourceURL1 [NSURL URLWithString:@"https://crazynote.v.netease.com/2019/0811/6bc0a084ee8655bfb2fa31757a0570f4qt.mp4"]
 

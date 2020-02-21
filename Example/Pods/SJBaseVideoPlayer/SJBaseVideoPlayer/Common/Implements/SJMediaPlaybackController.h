@@ -31,6 +31,13 @@ NS_ASSUME_NONNULL_BEGIN
 ///
 - (UIView<SJMediaPlayerView> *)playerViewWithPlayer:(id<SJMediaPlayer>)player;
 
+///
+/// 以下方法在接收到通知后执行
+///
+- (void)receivedApplicationDidBecomeActiveNotification;
+- (void)receivedApplicationWillResignActiveNotification;
+- (void)receivedApplicationWillEnterForegroundNotification;
+- (void)receivedApplicationDidEnterBackgroundNotification;
 @end
 
 ///
@@ -54,7 +61,6 @@ extern NSNotificationName const SJMediaPlayerViewReadyForDisplayNotification;
 @end
 
 @protocol SJMediaPlayer <NSObject>
-@property (nonatomic, readonly) NSTimeInterval startPosition;
 @property (nonatomic, readonly, nullable) SJWaitingReason reasonForWaitingToPlay;
 @property (nonatomic, readonly) SJPlaybackTimeControlStatus timeControlStatus;
 @property (nonatomic, readonly) SJAssetStatus assetStatus;
@@ -66,7 +72,6 @@ extern NSNotificationName const SJMediaPlayerViewReadyForDisplayNotification;
 @property (nonatomic) float rate;
 @property (nonatomic) float volume;
 @property (nonatomic, getter=isMuted) BOOL muted;
-@property (nonatomic) BOOL shouldAutoplay;
 
 - (void)seekToTime:(CMTime)time completionHandler:(nullable void (^)(BOOL finished))completionHandler;
 
@@ -84,4 +89,7 @@ extern NSNotificationName const SJMediaPlayerViewReadyForDisplayNotification;
 - (instancetype)init NS_UNAVAILABLE;
 + (instancetype)new NS_UNAVAILABLE;
 @end
+
+/// 这个通知是可选的(如果可以获取到playbacType, 请发送该通知)
+extern NSNotificationName const SJMediaPlayerPlaybackTypeDidChangeNotification;
 NS_ASSUME_NONNULL_END

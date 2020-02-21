@@ -8,8 +8,6 @@
 #import "SJMediaPlaybackController.h"
 
 NS_ASSUME_NONNULL_BEGIN
-extern NSNotificationName const SJMediaPlayerPlaybackTypeDidChangeNotification;
-
 @interface SJAVMediaPlayer : NSObject<SJMediaPlayer>
 - (instancetype)initWithAVPlayer:(AVPlayer *)player startPosition:(NSTimeInterval)time;
 @property (nonatomic, strong, readonly) AVPlayer *avPlayer;

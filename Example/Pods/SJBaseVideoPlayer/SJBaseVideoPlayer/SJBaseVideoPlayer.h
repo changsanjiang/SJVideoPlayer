@@ -23,7 +23,6 @@
 #import "SJPlayerGestureControlDefines.h"
 #import "SJDeviceVolumeAndBrightnessManagerDefines.h"
 #import "SJFloatSmallViewControllerDefines.h"
-#import "SJEdgeFastForwardViewControllerDefines.h"
 #import "SJVideoDefinitionSwitchingInfo.h"
 #import "SJPopPromptControllerDefines.h"
 #import "SJPlaybackObservation.h"
@@ -387,24 +386,28 @@ NS_ASSUME_NONNULL_BEGIN
 #pragma mark - 手势控制相关操作
 /**
  播放器的手势介绍:
- base video player 默认会存在四种手势, Single Tap, double Tap, Pan, Pinch.
+ base video player 默认会存在 Single Tap, double Tap, Pan, Pinch, LongPress 这些手势.
  
- SingleTap
+ SingleTapGesture
  单击手势
  当用户单击播放器时, 播放器会调用显示或隐藏控制层的相关代理方法. 见 `controlLayerDelegate`
  
- DoubleTap
+ DoubleTapGesture
  双击手势
  双击会触发暂停或播放的操作
  
- Pan
+ PanGesture
  移动手势
  当用户水平滑动时, 会触发控制层相应的代理方法. 见 `controlLayerDelegate`
  当用户垂直滑动时, 如果在屏幕左边, 则会触发调整亮度的操作, 并显示亮度提示视图. 如果在屏幕右边, 则会触发调整声音的操作, 并显示系统音量提示视图
  
- Pinch
+ PinchGesture
  捏合手势
  当用户做放大或收缩触发该手势时, 会设置播放器显示模式`Aspect`或`AspectFill`.
+ 
+ LongPressGesture
+ 长按手势
+ 当用户长按播放器时, 将加速播放
  */
 @interface SJBaseVideoPlayer (GestureControl)
 
@@ -431,11 +434,12 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic) BOOL allowHorizontalTriggeringOfPanGesturesInCells;
 
 ///
-/// 左右快进快退
+/// 长按手势触发时的播放速度
 ///
-///         default value is NO, 当需要开启时, 请设置`player.fastForwardViewController.enabled = YES;`
+///         default value is 2.0
 ///
-@property (nonatomic, strong, null_resettable) id<SJEdgeFastForwardViewController> fastForwardViewController;
+@property (nonatomic) CGFloat rateWhenLongPressGestureTriggered;
+
 @end
 
 

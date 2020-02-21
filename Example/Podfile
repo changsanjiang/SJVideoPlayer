@@ -51,10 +51,12 @@ target 'SJVideoPlayer_Example' do
   
 # 切换为 Aliplayer, 详见: https://github.com/changsanjiang/SJVideoPlayer/wiki/Use-AliPlayer
 #  pod 'SJBaseVideoPlayer/AliPlayer'#, :path => '../../SJBaseVideoPlayer'
-#  pod 'AliPlayerSDK_iOS'#, :path => '/Users/bluedancer/Documents/OSChina/AliPlayerSDK'
 
 # 切换为 AliVodPlayer, 详见: https://github.com/changsanjiang/SJVideoPlayer/wiki/Use-AliVodPlayer
 #  pod 'SJBaseVideoPlayer/AliVodPlayer'#, :path => '../../SJBaseVideoPlayer'
+
+# 切换为 PLPlayer, 详见: https://github.com/changsanjiang/SJVideoPlayer/wiki/Use-PLPlayerKit
+#  pod 'SJBaseVideoPlayer/PLPlayer'#, :path => '../../SJBaseVideoPlayer'
 
   # 默认为 AVPlayer
   pod 'SJBaseVideoPlayer'#, :path => '../../SJBaseVideoPlayer'

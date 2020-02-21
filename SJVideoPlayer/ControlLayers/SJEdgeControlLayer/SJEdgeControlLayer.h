@@ -13,6 +13,7 @@
 #import "SJLoadingViewDefinies.h"
 #import "SJScrollingTextMarqueeViewDefines.h"
 #import "SJFullscreenCustomStatusBarDefines.h"
+#import "SJFastForwardViewDefines.h"
 
 @protocol SJEdgeControlLayerDelegate;
 
@@ -73,6 +74,11 @@ extern SJEdgeControlButtonItemTag const SJEdgeControlLayerCenterItem_Replay;    
 /// 是否竖屏时隐藏标题
 ///
 @property (nonatomic, getter=isHiddenTitleItemWhenOrientationIsPortrait) BOOL hiddenTitleItemWhenOrientationIsPortrait;
+
+///
+/// 长按手势触发加速播放时显示的视图
+///
+@property (nonatomic, strong, null_resettable) UIView<SJFastForwardView> *fastForwardView;
 
 ///
 /// 是否竖屏时隐藏返回按钮

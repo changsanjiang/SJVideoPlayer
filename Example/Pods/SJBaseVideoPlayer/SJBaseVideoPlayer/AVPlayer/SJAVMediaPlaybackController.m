@@ -20,8 +20,6 @@ NS_ASSUME_NONNULL_BEGIN
 - (instancetype)init {
     self = [super init];
     if ( self ) {
-        [NSNotificationCenter.defaultCenter addObserver:self selector:@selector(_av_didEnterBackground:) name:UIApplicationDidEnterBackgroundNotification object:nil];
-        [NSNotificationCenter.defaultCenter addObserver:self selector:@selector(_av_didBecomeActive:) name:UIApplicationDidBecomeActiveNotification object:nil];
         [NSNotificationCenter.defaultCenter addObserver:self selector:@selector(_av_playbackTypeDidChange:) name:SJMediaPlayerPlaybackTypeDidChangeNotification object:nil];
     }
     return self;
@@ -34,20 +32,24 @@ NS_ASSUME_NONNULL_BEGIN
 #pragma mark -
 
 - (void)playerWithMedia:(SJVideoPlayerURLAsset *)media completionHandler:(void (^)(id<SJMediaPlayer> _Nullable))completionHandler {
-    SJAVMediaPlayer *player = [SJAVMediaPlayerLoader loadPlayerForMedia:media];
-    player.minBufferedDuration = self.minBufferedDuration;
-    player.accurateSeeking = self.accurateSeeking;
-
-    if ( (player.isPlayed && media.original == nil) || player.isPlayedToEndTime ) {
-        [player seekToTime:kCMTimeZero completionHandler:^(BOOL finished) {
-            dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(0.1 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
+    dispatch_async(dispatch_get_global_queue(0, 0), ^{
+        SJAVMediaPlayer *player = [SJAVMediaPlayerLoader loadPlayerForMedia:media];
+        player.minBufferedDuration = self.minBufferedDuration;
+        player.accurateSeeking = self.accurateSeeking;
+        
+        if ( (player.isPlayed && media.original == nil) || player.isPlayedToEndTime ) {
+            [player seekToTime:kCMTimeZero completionHandler:^(BOOL finished) {
+                dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(0.1 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
+                    if ( completionHandler ) completionHandler(player);
+                });
+            }];
+        }
+        else {
+            dispatch_async(dispatch_get_main_queue(), ^{
                 if ( completionHandler ) completionHandler(player);
             });
-        }];
-    }
-    else {
-        if ( completionHandler ) completionHandler(player);
-    }
+        }
+    });
 }
 
 - (UIView<SJMediaPlayerView> *)playerViewWithPlayer:(SJAVMediaPlayer *)player {
@@ -56,6 +58,21 @@ NS_ASSUME_NONNULL_BEGIN
     return view;
 }
  
+- (void)receivedApplicationDidBecomeActiveNotification {
+    SJAVMediaPlayerLayerView *view = self.currentPlayerView;
+    view.layer.player = self.currentPlayer.avPlayer;
+}
+ 
+- (void)receivedApplicationDidEnterBackgroundNotification {
+    if ( self.pauseWhenAppDidEnterBackground ) {
+        [self pause];
+    }
+    else {
+        SJAVMediaPlayerLayerView *view = self.currentPlayerView;
+        view.layer.player = nil;
+    }
+}
+
 #pragma mark -
 
 - (void)seekToTime:(CMTime)time toleranceBefore:(CMTime)toleranceBefore toleranceAfter:(CMTime)toleranceAfter completionHandler:(void (^_Nullable)(BOOL))completionHandler {
@@ -97,21 +114,6 @@ NS_ASSUME_NONNULL_BEGIN
 }
 
 #pragma mark -
-
-- (void)_av_didEnterBackground:(NSNotification *)note {
-    if ( self.pauseWhenAppDidEnterBackground ) {
-        [self pause];
-    }
-    else {
-        SJAVMediaPlayerLayerView *view = self.currentPlayerView;
-        view.layer.player = nil;
-    }
-}
-
-- (void)_av_didBecomeActive:(NSNotification *)note {
-    SJAVMediaPlayerLayerView *view = self.currentPlayerView;
-    view.layer.player = self.currentPlayer.avPlayer;
-}
 
 - (void)_av_playbackTypeDidChange:(NSNotification *)note {
     if ( note.object == self.currentPlayer ) {

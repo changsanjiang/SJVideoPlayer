@@ -5,16 +5,16 @@ PODS:
   - SDWebImage (5.5.2):
     - SDWebImage/Core (= 5.5.2)
   - SDWebImage/Core (5.5.2)
-  - SJBaseVideoPlayer (3.2.1):
+  - SJBaseVideoPlayer (3.2.2):
     - Masonry
     - Reachability
-    - SJBaseVideoPlayer/AVPlayer (= 3.2.1)
-    - SJBaseVideoPlayer/Common (= 3.2.1)
+    - SJBaseVideoPlayer/AVPlayer (= 3.2.2)
+    - SJBaseVideoPlayer/Common (= 3.2.2)
     - SJUIKit/AttributesFactory (>= 0.0.0.38)
     - SJUIKit/ObserverHelper
     - SJUIKit/Queues
     - SJUIKit/SQLite3
-  - SJBaseVideoPlayer/AVPlayer (3.2.1):
+  - SJBaseVideoPlayer/AVPlayer (3.2.2):
     - Masonry
     - Reachability
     - SJBaseVideoPlayer/Common
@@ -22,7 +22,7 @@ PODS:
     - SJUIKit/ObserverHelper
     - SJUIKit/Queues
     - SJUIKit/SQLite3
-  - SJBaseVideoPlayer/Common (3.2.1):
+  - SJBaseVideoPlayer/Common (3.2.2):
     - Masonry
     - Reachability
     - SJBaseVideoPlayer/ResourceLoader
@@ -30,7 +30,7 @@ PODS:
     - SJUIKit/ObserverHelper
     - SJUIKit/Queues
     - SJUIKit/SQLite3
-  - SJBaseVideoPlayer/ResourceLoader (3.2.1):
+  - SJBaseVideoPlayer/ResourceLoader (3.2.2):
     - Masonry
     - Reachability
     - SJUIKit/AttributesFactory (>= 0.0.0.38)
@@ -159,7 +159,7 @@ SPEC CHECKSUMS:
   MJRefresh: eeda70fbf0ad277f3178cef1cd0c3532591d6237
   Reachability: 33e18b67625424e47b6cde6d202dce689ad7af96
   SDWebImage: 4d5c027c935438f341ed33dbac53ff9f479922ca
-  SJBaseVideoPlayer: 787a8fb3b492bc35ae8122d95a628146b60408de
+  SJBaseVideoPlayer: 4bd1d5a0103aabaeeedbae3c2f3482c5017425b6
   SJFullscreenPopGesture: d4994917bc900e79cd686970866834b4c5883565
   SJPlaybackListController: e135c789fcd63d63a62d5e2e2965ab1e6d52a2bd
   SJRouter: b822f45c4eed29cfa1d75100492ff227d481fb91
@@ -167,6 +167,6 @@ SPEC CHECKSUMS:
   SJVideoPlayer: 5118b9cc63535347c669007a7560d8841bdc1567
   YYModel: 2a7fdd96aaa4b86a824e26d0c517de8928c04b30
 
-PODFILE CHECKSUM: 81e66a46a318ff918030e236931bec7b6d03959f
+PODFILE CHECKSUM: 893f2de0b671d7c09f522269748940594aea6b30
 
 COCOAPODS: 1.8.4

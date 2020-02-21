@@ -36,6 +36,7 @@
 #import "SJDraggingObservation.h"
 #import "SJScrollingTextMarqueeView.h"
 #import "SJFullscreenCustomStatusBar.h"
+#import "SJFastForwardView.h"
 
 #pragma mark - Top
 SJEdgeControlButtonItemTag const SJEdgeControlLayerTopItem_Back = 10000;
@@ -366,6 +367,26 @@ SJEdgeControlButtonItemTag const SJEdgeControlLayerCenterItem_Replay = 40000;
     }
 }
 
+- (void)videoPlayer:(__kindof SJBaseVideoPlayer *)videoPlayer longPressGestureStateDidChange:(SJLongPressGestureRecognizerState)state {
+    switch ( state ) {
+        case SJLongPressGestureRecognizerStateChanged: break;
+        case SJLongPressGestureRecognizerStateBegan: {
+            if ( self.fastForwardView.superview != self ) {
+                [self insertSubview:self.fastForwardView atIndex:0];
+                [self.fastForwardView mas_makeConstraints:^(MASConstraintMaker *make) {
+                    make.center.equalTo(self.topAdapter);
+                }];
+            }
+            [self.fastForwardView show];
+        }
+            break;
+        case SJLongPressGestureRecognizerStateEnded: {
+            [self.fastForwardView hidden];
+        }
+            break;
+    }
+}
+
 /// 这是一个只有在播放器锁屏状态下, 才会回调的方法
 /// 当播放器锁屏后, 用户每次点击都会回调这个方法
 - (void)tappedPlayerOnTheLockedState:(__kindof SJBaseVideoPlayer *)videoPlayer {
@@ -514,13 +535,23 @@ SJEdgeControlButtonItemTag const SJEdgeControlLayerCenterItem_Replay = 40000;
 }
 
 - (void)setCustomStatusBar:(UIView<SJFullscreenCustomStatusBar> *)customStatusBar NS_AVAILABLE_IOS(11.0) {
-    _customStatusBar = customStatusBar;
-    [self _reloadCustomStatusBarIfNeeded];
+    if ( customStatusBar != _customStatusBar ) {
+        [_customStatusBar removeFromSuperview];
+        _customStatusBar = customStatusBar;
+        [self _reloadCustomStatusBarIfNeeded];
+    }
 }
 
 - (void)setShouldShowCustomStatusBar:(BOOL (^)(SJEdgeControlLayer * _Nonnull))shouldShowCustomStatusBar NS_AVAILABLE_IOS(11.0) {
     _shouldShowCustomStatusBar = shouldShowCustomStatusBar;
     [self _updateAppearStateForCustomStatusBar];
+}
+
+- (void)setFastForwardView:(UIView<SJFastForwardView> *)fastForwardView {
+    if ( _fastForwardView != fastForwardView ) {
+        [_fastForwardView removeFromSuperview];
+        _fastForwardView = fastForwardView;
+    }
 }
 
 #pragma mark - setup view
@@ -609,6 +640,14 @@ SJEdgeControlButtonItemTag const SJEdgeControlLayerCenterItem_Replay = 40000;
         [self setTitleView:[SJScrollingTextMarqueeView.alloc initWithFrame:CGRectZero]];
     }
     return _titleView;
+}
+
+@synthesize fastForwardView = _fastForwardView;
+- (UIView<SJFastForwardView> *)fastForwardView {
+    if ( _fastForwardView == nil ) {
+        _fastForwardView = [SJFastForwardView.alloc initWithFrame:CGRectZero];
+    }
+    return _fastForwardView;
 }
 
 @synthesize customStatusBar = _customStatusBar;

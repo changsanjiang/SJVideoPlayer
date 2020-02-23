@@ -16,23 +16,28 @@ NS_ASSUME_NONNULL_BEGIN
 extern NSInteger const SJBaseVideoPlayerViewTag;
 extern NSInteger const SJBaseVideoPlayerPresentViewTag;
 
-// - Playback Control -
+// - Playback Notifications -
 
 
 extern NSNotificationName const SJVideoPlayerAssetStatusDidChangeNotification;
-extern NSNotificationName const SJVideoPlayerPlaybackTimeControlStatusDidChangeNotification;
-extern NSNotificationName const SJVideoPlayerDidPlayToEndTimeNotification;
 extern NSNotificationName const SJVideoPlayerDefinitionSwitchStatusDidChangeNotification;
-extern NSNotificationName const SJVideoPlayerDidReplayNotification;
 
 extern NSNotificationName const SJVideoPlayerURLAssetWillChangeNotification;
 extern NSNotificationName const SJVideoPlayerURLAssetDidChangeNotification;
-extern NSNotificationName const SJVideoPlayerPlaybackWillStopNotification;
-extern NSNotificationName const SJVideoPlayerPlaybackDidStopNotification;
+
 extern NSNotificationName const SJVideoPlayerApplicationDidEnterBackgroundNotification;
 extern NSNotificationName const SJVideoPlayerApplicationWillEnterForegroundNotification;
 extern NSNotificationName const SJVideoPlayerApplicationWillTerminateNotification;
-extern NSNotificationName const SJVideoPlayerPlaybackControllerWillDeallocateNotification; ///< 注意: object 为 SJMediaPlaybackController 的对象
+
+extern NSNotificationName const SJVideoPlayerPlaybackControllerWillDeallocateNotification; ///< 注意: 发送对象变为了`SJMediaPlaybackController`(目前只此一个, 其他都为player对象)
+
+extern NSNotificationName const SJVideoPlayerPlaybackTimeControlStatusDidChangeNotification;
+extern NSNotificationName const SJVideoPlayerPlaybackDidPlayToEndTimeNotification;  // 正常播放完毕后发出的通知
+extern NSNotificationName const SJVideoPlayerPlaybackDidReplayNotification;         // 调用了replay发出的通知
+extern NSNotificationName const SJVideoPlayerPlaybackWillStopNotification;          // 调用了stop前发出的通知
+extern NSNotificationName const SJVideoPlayerPlaybackDidStopNotification;           // 调用了stop后发出的通知
+extern NSNotificationName const SJVideoPlayerPlaybackWillRereshNotification;        // 调用了refresh前发出的通知
+extern NSNotificationName const SJVideoPlayerPlaybackDidRereshNotification;         // 调用了refresh后发出的通知
 
 extern NSNotificationName const SJVideoPlayerCurrentTimeDidChangeNotification;
 extern NSNotificationName const SJVideoPlayerDurationDidChangeNotification;
@@ -43,6 +48,6 @@ extern NSNotificationName const SJVideoPlayerPlaybackTypeDidChangeNotification;
 extern NSNotificationName const SJVideoPlayerRateDidChangeNotification;
 extern NSNotificationName const SJVideoPlayerMutedDidChangeNotification;
 extern NSNotificationName const SJVideoPlayerVolumeDidChangeNotification;
-extern NSNotificationName const SJVideoPlayerLockedScreenDidChangeNotification;
+extern NSNotificationName const SJVideoPlayeScreenLockStateDidChangeNotification;
 
 NS_ASSUME_NONNULL_END

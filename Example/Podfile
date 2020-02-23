@@ -46,16 +46,16 @@ end
 target 'SJVideoPlayer_Example' do
 #  use_frameworks!
   
-# 切换为 ijkplayer, 详见: https://github.com/changsanjiang/SJVideoPlayer/wiki/Use-ijkplayer
+## 切换为 ijkplayer, 详见: https://github.com/changsanjiang/SJVideoPlayer/wiki/Use-ijkplayer
 #  pod 'SJBaseVideoPlayer/IJKPlayer'#, :path => '../../SJBaseVideoPlayer'
-  
-# 切换为 Aliplayer, 详见: https://github.com/changsanjiang/SJVideoPlayer/wiki/Use-AliPlayer
+#
+## 切换为 Aliplayer, 详见: https://github.com/changsanjiang/SJVideoPlayer/wiki/Use-AliPlayer
 #  pod 'SJBaseVideoPlayer/AliPlayer'#, :path => '../../SJBaseVideoPlayer'
-
-# 切换为 AliVodPlayer, 详见: https://github.com/changsanjiang/SJVideoPlayer/wiki/Use-AliVodPlayer
+#
+## 切换为 AliVodPlayer, 详见: https://github.com/changsanjiang/SJVideoPlayer/wiki/Use-AliVodPlayer
 #  pod 'SJBaseVideoPlayer/AliVodPlayer'#, :path => '../../SJBaseVideoPlayer'
-
-# 切换为 PLPlayer, 详见: https://github.com/changsanjiang/SJVideoPlayer/wiki/Use-PLPlayerKit
+#
+## 切换为 PLPlayer, 详见: https://github.com/changsanjiang/SJVideoPlayer/wiki/Use-PLPlayerKit
 #  pod 'SJBaseVideoPlayer/PLPlayer'#, :path => '../../SJBaseVideoPlayer'
 
   # 默认为 AVPlayer

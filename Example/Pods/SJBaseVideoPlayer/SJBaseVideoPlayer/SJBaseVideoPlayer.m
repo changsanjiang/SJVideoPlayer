@@ -155,7 +155,7 @@ typedef struct _SJPlayerControlInfo {
 }
 
 + (NSString *)version {
-    return @"v3.2.1";
+    return @"v3.2.3";
 }
 
 - (void)setVideoGravity:(SJVideoGravity)videoGravity {
@@ -910,8 +910,10 @@ typedef struct _SJPlayerControlInfo {
 
 - (void)refresh {
     if ( !self.URLAsset ) return;
+    [self _postNotification:SJVideoPlayerPlaybackWillRereshNotification];
     [_playbackController refresh];
     [self play];
+    [self _postNotification:SJVideoPlayerPlaybackDidRereshNotification];
 }
 
 - (void)setPlayerVolume:(float)playerVolume {
@@ -1176,7 +1178,7 @@ typedef struct _SJPlayerControlInfo {
         [self.controlLayerDelegate videoPlayerPlaybackStatusDidChange:self];
     }
     
-    [self _postNotification:SJVideoPlayerDidPlayToEndTimeNotification];
+    [self _postNotification:SJVideoPlayerPlaybackDidPlayToEndTimeNotification];
 }
 
 - (void)playbackController:(id<SJVideoPlayerPlaybackController>)controller presentationSizeDidChange:(CGSize)presentationSize {
@@ -1234,7 +1236,7 @@ typedef struct _SJPlayerControlInfo {
 }
 
 - (void)playbackController:(id<SJVideoPlayerPlaybackController>)controller didReplay:(id<SJMediaModelProtocol>)media {
-    [self _postNotification:SJVideoPlayerDidReplayNotification];
+    [self _postNotification:SJVideoPlayerPlaybackDidReplayNotification];
 }
 @end
 
@@ -1790,7 +1792,7 @@ typedef struct _SJPlayerControlInfo {
             [self.controlLayerDelegate unlockedVideoPlayer:self];
         }
         
-        [self _postNotification:SJVideoPlayerLockedScreenDidChangeNotification];
+        [self _postNotification:SJVideoPlayeScreenLockStateDidChangeNotification];
     }
 }
 

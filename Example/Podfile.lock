@@ -5,16 +5,16 @@ PODS:
   - SDWebImage (5.5.2):
     - SDWebImage/Core (= 5.5.2)
   - SDWebImage/Core (5.5.2)
-  - SJBaseVideoPlayer (3.2.2):
+  - SJBaseVideoPlayer (3.2.3):
     - Masonry
     - Reachability
-    - SJBaseVideoPlayer/AVPlayer (= 3.2.2)
-    - SJBaseVideoPlayer/Common (= 3.2.2)
+    - SJBaseVideoPlayer/AVPlayer (= 3.2.3)
+    - SJBaseVideoPlayer/Common (= 3.2.3)
     - SJUIKit/AttributesFactory (>= 0.0.0.38)
     - SJUIKit/ObserverHelper
     - SJUIKit/Queues
     - SJUIKit/SQLite3
-  - SJBaseVideoPlayer/AVPlayer (3.2.2):
+  - SJBaseVideoPlayer/AVPlayer (3.2.3):
     - Masonry
     - Reachability
     - SJBaseVideoPlayer/Common
@@ -22,7 +22,7 @@ PODS:
     - SJUIKit/ObserverHelper
     - SJUIKit/Queues
     - SJUIKit/SQLite3
-  - SJBaseVideoPlayer/Common (3.2.2):
+  - SJBaseVideoPlayer/Common (3.2.3):
     - Masonry
     - Reachability
     - SJBaseVideoPlayer/ResourceLoader
@@ -30,7 +30,7 @@ PODS:
     - SJUIKit/ObserverHelper
     - SJUIKit/Queues
     - SJUIKit/SQLite3
-  - SJBaseVideoPlayer/ResourceLoader (3.2.2):
+  - SJBaseVideoPlayer/ResourceLoader (3.2.3):
     - Masonry
     - Reachability
     - SJUIKit/AttributesFactory (>= 0.0.0.38)
@@ -103,21 +103,21 @@ PODS:
   - SJUIKit/UIMaker (0.0.0.40):
     - SJUIKit/UIMaker/Core (= 0.0.0.40)
   - SJUIKit/UIMaker/Core (0.0.0.40)
-  - SJVideoPlayer (3.2.0):
-    - SJBaseVideoPlayer (>= 3.2.1)
-    - SJVideoPlayer/Common (= 3.2.0)
-    - SJVideoPlayer/ControlLayers (= 3.2.0)
-    - SJVideoPlayer/ResourceLoader (= 3.2.0)
-  - SJVideoPlayer/Common (3.2.0):
+  - SJVideoPlayer (3.2.1):
+    - SJBaseVideoPlayer (>= 3.2.2)
+    - SJVideoPlayer/Common (= 3.2.1)
+    - SJVideoPlayer/ControlLayers (= 3.2.1)
+    - SJVideoPlayer/ResourceLoader (= 3.2.1)
+  - SJVideoPlayer/Common (3.2.1):
     - Masonry
-    - SJBaseVideoPlayer (>= 3.2.1)
+    - SJBaseVideoPlayer (>= 3.2.2)
     - SJUIKit/AttributesFactory
     - SJVideoPlayer/ResourceLoader
-  - SJVideoPlayer/ControlLayers (3.2.0):
-    - SJBaseVideoPlayer (>= 3.2.1)
+  - SJVideoPlayer/ControlLayers (3.2.1):
+    - SJBaseVideoPlayer (>= 3.2.2)
     - SJVideoPlayer/Common
-  - SJVideoPlayer/ResourceLoader (3.2.0):
-    - SJBaseVideoPlayer (>= 3.2.1)
+  - SJVideoPlayer/ResourceLoader (3.2.1):
+    - SJBaseVideoPlayer (>= 3.2.2)
   - YYModel (1.0.4)
 
 DEPENDENCIES:
@@ -159,14 +159,14 @@ SPEC CHECKSUMS:
   MJRefresh: eeda70fbf0ad277f3178cef1cd0c3532591d6237
   Reachability: 33e18b67625424e47b6cde6d202dce689ad7af96
   SDWebImage: 4d5c027c935438f341ed33dbac53ff9f479922ca
-  SJBaseVideoPlayer: 4bd1d5a0103aabaeeedbae3c2f3482c5017425b6
+  SJBaseVideoPlayer: 682d5373d0e9e1ecab754e970b6d7a19543b717c
   SJFullscreenPopGesture: d4994917bc900e79cd686970866834b4c5883565
   SJPlaybackListController: e135c789fcd63d63a62d5e2e2965ab1e6d52a2bd
   SJRouter: b822f45c4eed29cfa1d75100492ff227d481fb91
   SJUIKit: b582377cbcc52de0a78ea18ec51022e846e1475c
-  SJVideoPlayer: 5118b9cc63535347c669007a7560d8841bdc1567
+  SJVideoPlayer: fb072e8eb06feeed5450f21fe5af04e703f184e0
   YYModel: 2a7fdd96aaa4b86a824e26d0c517de8928c04b30
 
-PODFILE CHECKSUM: 893f2de0b671d7c09f522269748940594aea6b30
+PODFILE CHECKSUM: 5a53470f62784f6bd2a66149ed4506d403f1f901
 
 COCOAPODS: 1.8.4

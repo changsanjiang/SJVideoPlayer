@@ -15,7 +15,7 @@
             <BuildableReference
                BuildableIdentifier = "primary"
                BlueprintIdentifier = "6003F589195388D20070C39A"
-               BuildableName = "SJVideoPlayer_Example.app"
+               BuildableName = "&#x64ad;&#x653e;&#x5668;.app"
                BlueprintName = "SJVideoPlayer_Example"
                ReferencedContainer = "container:SJVideoPlayer.xcodeproj">
             </BuildableReference>
@@ -31,7 +31,7 @@
          <BuildableReference
             BuildableIdentifier = "primary"
             BlueprintIdentifier = "6003F589195388D20070C39A"
-            BuildableName = "SJVideoPlayer_Example.app"
+            BuildableName = "&#x64ad;&#x653e;&#x5668;.app"
             BlueprintName = "SJVideoPlayer_Example"
             ReferencedContainer = "container:SJVideoPlayer.xcodeproj">
          </BuildableReference>
@@ -65,7 +65,7 @@
          <BuildableReference
             BuildableIdentifier = "primary"
             BlueprintIdentifier = "6003F589195388D20070C39A"
-            BuildableName = "SJVideoPlayer_Example.app"
+            BuildableName = "&#x64ad;&#x653e;&#x5668;.app"
             BlueprintName = "SJVideoPlayer_Example"
             ReferencedContainer = "container:SJVideoPlayer.xcodeproj">
          </BuildableReference>
@@ -82,7 +82,7 @@
          <BuildableReference
             BuildableIdentifier = "primary"
             BlueprintIdentifier = "6003F589195388D20070C39A"
-            BuildableName = "SJVideoPlayer_Example.app"
+            BuildableName = "&#x64ad;&#x653e;&#x5668;.app"
             BlueprintName = "SJVideoPlayer_Example"
             ReferencedContainer = "container:SJVideoPlayer.xcodeproj">
          </BuildableReference>

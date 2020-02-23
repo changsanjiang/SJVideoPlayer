@@ -377,6 +377,7 @@ SJEdgeControlButtonItemTag const SJEdgeControlLayerCenterItem_Replay = 40000;
                     make.center.equalTo(self.topAdapter);
                 }];
             }
+            self.fastForwardView.rate = videoPlayer.rateWhenLongPressGestureTriggered;
             [self.fastForwardView show];
         }
             break;

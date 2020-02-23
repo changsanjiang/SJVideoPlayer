@@ -8,37 +8,79 @@
 
 #if __has_include(<YYModel/YYModel.h>) || __has_include(<YYKit/YYKit.h>)
 
+// 播放记录保存管理类
+
 #import <Foundation/Foundation.h>
 #import "SJPlaybackHistoryController.h"
 typedef enum : NSUInteger {
-    /// 播放器暂停时保存
-    SJPlaybackRecordSaveTimeMaskPlayerPaused                            = 1 << 0,
-    /// 播放器资源将要改变时保存
-    SJPlaybackRecordSaveTimeMaskPlayerURLAssetWillChange                = 1 << 1,
-    /// 播放控制将要销毁前保存
-    SJPlaybackRecordSaveTimeMaskPlayerPlaybackControllerWillDeallocate  = 1 << 2,
-    /// 播放器将要执行stop前保存
-    SJPlaybackRecordSaveTimeMaskPlayerPlaybackWillStop                  = 1 << 3,
-
-    /// 播放器接收到App进入后台时保存
-    SJPlaybackRecordSaveTimeMaskApplicationDidEnterBackground           = 1 << 5,
-    /// 播放器接收到App将要销毁时保存
-    SJPlaybackRecordSaveTimeMaskApplicationWillTerminate                = 1 << 6,
+    ///
+    /// 播放器资源将要改变时
+    ///
+    SJPlayerEventURLAssetWillChange,
+    ///
+    /// 播放控制将要销毁前
+    ///
+    SJPlayerEventPlaybackControllerWillDeallocate,
+    ///
+    /// 播放器执行了暂停
+    ///
+    SJPlayerEventPlaybackDidPause,
+    ///
+    /// 播放器将要执行stop前
+    ///
+    SJPlayerEventPlaybackWillStop,
+    ///
+    /// 播放器将要执行refresh前
+    ///
+    SJPlayerEventPlaybackWillRefresh,
     
-    SJPlaybackRecordSaveTimeMaskAll = (SJPlaybackRecordSaveTimeMaskPlayerPaused | SJPlaybackRecordSaveTimeMaskPlayerURLAssetWillChange | SJPlaybackRecordSaveTimeMaskPlayerPlaybackControllerWillDeallocate | SJPlaybackRecordSaveTimeMaskPlayerPlaybackWillStop | SJPlaybackRecordSaveTimeMaskApplicationDidEnterBackground | SJPlaybackRecordSaveTimeMaskApplicationWillTerminate),
-} SJPlaybackRecordSaveTimeMask;
+    
+    ///
+    /// 播放器接收到App进入后台时
+    ///
+    SJPlayerEventApplicationDidEnterBackground,
+    ///
+    /// 播放器接收到App将要销毁时
+    ///
+    SJPlayerEventApplicationWillTerminate,
+} SJPlayerEvent;
 
+typedef enum : NSUInteger {
+    SJPlayerEventMaskURLAssetWillChange = 1 << SJPlayerEventURLAssetWillChange,
+    
+    SJPlayerEventMaskPlaybackControllerWillDeallocate = 1 << SJPlayerEventPlaybackControllerWillDeallocate,
+    SJPlayerEventMaskPlaybackDidPause = 1 << SJPlayerEventPlaybackDidPause,
+    SJPlayerEventMaskPlaybackWillStop = 1 << SJPlayerEventPlaybackWillStop,
+    SJPlayerEventMaskPlaybackWillRefresh = 1 << SJPlayerEventPlaybackWillRefresh,
+    
+    SJPlayerEventMaskApplicationDidEnterBackground = 1 << SJPlayerEventApplicationDidEnterBackground,
+    SJPlayerEventMaskApplicationWillTerminate = 1 << SJPlayerEventApplicationWillTerminate,
+    
+    SJPlayerEventMaskPlaybackEvents = SJPlayerEventMaskPlaybackControllerWillDeallocate | SJPlayerEventMaskPlaybackWillStop | SJPlayerEventMaskPlaybackWillRefresh | SJPlayerEventMaskPlaybackDidPause,
+    
+    SJPlayerEventMaskApplicationEvents = SJPlayerEventMaskApplicationDidEnterBackground | SJPlayerEventMaskApplicationWillTerminate,
+    
+    SJPlayerEventMaskAll = (SJPlayerEventMaskURLAssetWillChange | SJPlayerEventMaskPlaybackEvents | SJPlayerEventMaskApplicationEvents),
+} SJPlayerEventMask;
+ 
 NS_ASSUME_NONNULL_BEGIN
 @interface SJVideoPlayerURLAsset (SJPlaybackRecordSaveHandlerExtended)
 @property (nonatomic, strong, nullable) SJPlaybackRecord *record;
 @end
 
+
 @interface SJPlaybackRecordSaveHandler : NSObject
 + (instancetype)shared;
-- (instancetype)initWithSaveTimes:(SJPlaybackRecordSaveTimeMask)times playbackHistoryController:(id<SJPlaybackHistoryController>)controller;
+- (instancetype)initWithEvents:(SJPlayerEventMask)events playbackHistoryController:(id<SJPlaybackHistoryController>)controller;
 
-/// 保存的时机
-@property (nonatomic) SJPlaybackRecordSaveTimeMask times;
+/// 设置保存的时机(当发生某个事件之后, handler内部会自动保存播放记录)
+@property (nonatomic) SJPlayerEventMask events;
+@end
+
+
+@interface SJPlayerEventObserver : NSObject
+- (instancetype)initWithEvents:(SJPlayerEventMask)events handler:(void(^)(id target, SJPlayerEvent event))block;
+@property (nonatomic) SJPlayerEventMask events;
 @end
 NS_ASSUME_NONNULL_END
 

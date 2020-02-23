@@ -85,7 +85,7 @@
     // 步骤3: 初始化保存管理类
     SJPlaybackRecordSaveHandler *handler = SJPlaybackRecordSaveHandler.shared;
     // 指定保存的时机, handler 将自动进行保存
-    handler.times = SJPlaybackRecordSaveTimeMaskAll;
+    handler.events = SJPlayerEventMaskAll;
 }
 
 - (void)_setupViews {

@@ -76,7 +76,7 @@ NS_ASSUME_NONNULL_BEGIN
 ///
 /// 锁屏状态改变的回调
 ///
-@property (nonatomic, copy, nullable) void(^lockedScreenDidChangeExeBlock)(__kindof SJBaseVideoPlayer *player);
+@property (nonatomic, copy, nullable) void(^screenLockStateDidChangeExeBlock)(__kindof SJBaseVideoPlayer *player);
 
 ///
 /// 播放器的静音状态改变的回调

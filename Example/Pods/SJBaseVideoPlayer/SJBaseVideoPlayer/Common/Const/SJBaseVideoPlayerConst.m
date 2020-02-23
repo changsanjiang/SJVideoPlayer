@@ -19,55 +19,30 @@ NSInteger const SJBaseVideoPlayerPresentViewTag = 10001;
 NSNotificationName const SJVideoPlayerAssetStatusDidChangeNotification = @"SJVideoPlayerAssetStatusDidChangeNotification";
 
 ///
-/// timeControlStatus 改变的通知
-///
-NSNotificationName const SJVideoPlayerPlaybackTimeControlStatusDidChangeNotification = @"SJVideoPlayerPlaybackTimeControlStatusDidChangeNotification";
-
-///
-/// 播放完毕的通知
-///
-NSNotificationName const SJVideoPlayerDidPlayToEndTimeNotification = @"SJVideoPlayerDidPlayToEndTimeNotification";
-
-///
 /// 切换清晰度状态 改变的通知
 ///
 NSNotificationName const SJVideoPlayerDefinitionSwitchStatusDidChangeNotification = @"SJVideoPlayerDefinitionSwitchStatusDidChangeNotification";
 
 ///
-/// 重播的通知
-///
-NSNotificationName const SJVideoPlayerDidReplayNotification = @"SJVideoPlayerDidReplayNotification";
-
-///
 /// 播放资源将要改变前发出的通知
 ///
 NSNotificationName const SJVideoPlayerURLAssetWillChangeNotification = @"SJVideoPlayerURLAssetWillChangeNotification";
-
 ///
 /// 播放资源改变后发出的通知
 ///
 NSNotificationName const SJVideoPlayerURLAssetDidChangeNotification = @"SJVideoPlayerURLAssetDidChangeNotification";
 
-///
-/// 播放器执行stop前的通知
-///
-NSNotificationName const SJVideoPlayerPlaybackWillStopNotification = @"SJVideoPlayerPlaybackWillStopNotification";
 
-///
-/// 播放器执行stop后的通知
-///
-NSNotificationName const SJVideoPlayerPlaybackDidStopNotification = @"SJVideoPlayerPlaybackDidStopNotification";
+
 
 ///
 /// 播放器收到App进入后台的通知后发出的通知
 ///
 NSNotificationName const SJVideoPlayerApplicationDidEnterBackgroundNotification = @"SJVideoPlayerApplicationDidEnterBackgroundNotification";
-
 ///
 /// 播放器收到App进入前台的通知后发出的通知
 ///
 NSNotificationName const SJVideoPlayerApplicationWillEnterForegroundNotification = @"SJVideoPlayerApplicationWillEnterForegroundNotification";
-
 ///
 /// 播放器收到App将要关闭的通知后发出的通知
 ///
@@ -77,6 +52,39 @@ NSNotificationName const SJVideoPlayerApplicationWillTerminateNotification = @"S
 /// 播放器的playbackController将要进行销毁前的通知
 ///
 NSNotificationName const SJVideoPlayerPlaybackControllerWillDeallocateNotification = @"SJVideoPlayerPlaybackControllerWillDeallocateNotification"; ///< 注意: object 为 SJMediaPlaybackController 的对象
+
+
+///
+/// timeControlStatus 改变的通知
+///
+NSNotificationName const SJVideoPlayerPlaybackTimeControlStatusDidChangeNotification = @"SJVideoPlayerPlaybackTimeControlStatusDidChangeNotification";
+///
+/// 正常播放完毕后发出的通知
+///
+NSNotificationName const SJVideoPlayerPlaybackDidPlayToEndTimeNotification = @"SJVideoPlayerPlaybackDidPlayToEndTimeNotification";
+///
+/// 调用了replay发出的通知
+///
+NSNotificationName const SJVideoPlayerPlaybackDidReplayNotification = @"SJVideoPlayerPlaybackDidReplayNotification";
+///
+/// 调用了stop前发出的通知
+///
+NSNotificationName const SJVideoPlayerPlaybackWillStopNotification = @"SJVideoPlayerPlaybackWillStopNotification";
+///
+/// 调用了stop后发出的通知
+///
+NSNotificationName const SJVideoPlayerPlaybackDidStopNotification = @"SJVideoPlayerPlaybackDidStopNotification";
+///
+/// 调用了refresh前发出的通知
+///
+NSNotificationName const SJVideoPlayerPlaybackWillRereshNotification = @"SJVideoPlayerPlaybackWillRereshNotification";
+///
+/// 调用了refresh后发出的通知
+///
+NSNotificationName const SJVideoPlayerPlaybackDidRereshNotification = @"SJVideoPlayerPlaybackDidRereshNotification";
+
+
+
 
 ///
 /// 当前播放时间 改变的通知
@@ -106,7 +114,7 @@ NSNotificationName const SJVideoPlayerPlaybackTypeDidChangeNotification = @"SJVi
 ///
 /// 锁屏状态 改变的通知
 ///
-NSNotificationName const SJVideoPlayerLockedScreenDidChangeNotification = @"SJVideoPlayerLockedScreenDidChangeNotification";
+NSNotificationName const SJVideoPlayeScreenLockStateDidChangeNotification = @"SJVideoPlayeScreenLockStateDidChangeNotification";
 
 ///
 /// 静音状态 改变的通知

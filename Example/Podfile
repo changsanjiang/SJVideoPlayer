@@ -19,6 +19,7 @@ post_install do |installer|
         config.build_settings['IPHONEOS_DEPLOYMENT_TARGET'] = '9.0'
       end
       
+#      https://www.jianshu.com/p/a1d2d148fdd3
 #      if target.name == 'SJBaseVideoPlayer' || target.name == 'SJVideoPlayer' || target.name == 'AliPlayerSDK_iOS'
 #        config.build_settings['CLANG_ALLOW_NON_MODULAR_INCLUDES_IN_FRAMEWORK_MODULES'] = 'YES'
 #      end

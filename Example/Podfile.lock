@@ -103,21 +103,21 @@ PODS:
   - SJUIKit/UIMaker (0.0.0.40):
     - SJUIKit/UIMaker/Core (= 0.0.0.40)
   - SJUIKit/UIMaker/Core (0.0.0.40)
-  - SJVideoPlayer (3.2.1):
-    - SJBaseVideoPlayer (>= 3.2.2)
-    - SJVideoPlayer/Common (= 3.2.1)
-    - SJVideoPlayer/ControlLayers (= 3.2.1)
-    - SJVideoPlayer/ResourceLoader (= 3.2.1)
-  - SJVideoPlayer/Common (3.2.1):
+  - SJVideoPlayer (3.2.2):
+    - SJBaseVideoPlayer (>= 3.2.3)
+    - SJVideoPlayer/Common (= 3.2.2)
+    - SJVideoPlayer/ControlLayers (= 3.2.2)
+    - SJVideoPlayer/ResourceLoader (= 3.2.2)
+  - SJVideoPlayer/Common (3.2.2):
     - Masonry
-    - SJBaseVideoPlayer (>= 3.2.2)
+    - SJBaseVideoPlayer (>= 3.2.3)
     - SJUIKit/AttributesFactory
     - SJVideoPlayer/ResourceLoader
-  - SJVideoPlayer/ControlLayers (3.2.1):
-    - SJBaseVideoPlayer (>= 3.2.2)
+  - SJVideoPlayer/ControlLayers (3.2.2):
+    - SJBaseVideoPlayer (>= 3.2.3)
     - SJVideoPlayer/Common
-  - SJVideoPlayer/ResourceLoader (3.2.1):
-    - SJBaseVideoPlayer (>= 3.2.2)
+  - SJVideoPlayer/ResourceLoader (3.2.2):
+    - SJBaseVideoPlayer (>= 3.2.3)
   - YYModel (1.0.4)
 
 DEPENDENCIES:
@@ -164,9 +164,9 @@ SPEC CHECKSUMS:
   SJPlaybackListController: e135c789fcd63d63a62d5e2e2965ab1e6d52a2bd
   SJRouter: b822f45c4eed29cfa1d75100492ff227d481fb91
   SJUIKit: b582377cbcc52de0a78ea18ec51022e846e1475c
-  SJVideoPlayer: fb072e8eb06feeed5450f21fe5af04e703f184e0
+  SJVideoPlayer: d1244007e03b4d2a4b4963aca6bfdaed1fcd40ff
   YYModel: 2a7fdd96aaa4b86a824e26d0c517de8928c04b30
 
-PODFILE CHECKSUM: 5a53470f62784f6bd2a66149ed4506d403f1f901
+PODFILE CHECKSUM: 5046bd9748a2093ed3d6f3794601153dbf6406a9
 
 COCOAPODS: 1.8.4

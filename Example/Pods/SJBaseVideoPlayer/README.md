@@ -14,10 +14,6 @@ pod 'SJVideoPlayer'
 pod 'SJBaseVideoPlayer'
 ```
 
-##  Getting Started
-- wiki: https://github.com/changsanjiang/SJVideoPlayer/wiki
-- 快速开始: https://github.com/changsanjiang/SJVideoPlayer/wiki/%E5%BF%AB%E9%80%9F%E5%BC%80%E5%A7%8B
-
 ## 天朝
 ```ruby
 # 如果网络不行安装不了, 可改成以下方式进行安装
@@ -26,18 +22,28 @@ pod 'SJVideoPlayer', :git => 'https://gitee.com/changsanjiang/SJVideoPlayer.git'
 $ pod update --no-repo-update   (不要用 pod install 了, 用这个命令安装)
 ```
 
-## 切换别的播放器SDK
-本项目对播放控制默认封装的是 AVPlayer, 以下为切换别的播放器SDK: 
+##  Wiki
+[Welcome to the SJVideoPlayer wiki!](https://github.com/changsanjiang/SJVideoPlayer/wiki)
 
-- 播放控制切换为: ijkplayer
-    - wiki: https://github.com/changsanjiang/SJVideoPlayer/wiki/Use-ijkplayer
-- 播放控制切换为: AliPlayer
-    - wiki: https://github.com/changsanjiang/SJVideoPlayer/wiki/Use-AliPlayer
-- 播放控制切换为: AliyunVodPlayer
-    - wiki: https://github.com/changsanjiang/SJVideoPlayer/wiki/Use-AliVodPlayer
-- 播放控制切换为: PLPlayerKit 
-    - wiki: https://github.com/changsanjiang/SJVideoPlayer/wiki/Use-PLPlayerKit
-    
+- [Getting Started](https://github.com/changsanjiang/SJVideoPlayer/wiki/Getting-Started)
+- [快速开始](https://github.com/changsanjiang/SJVideoPlayer/wiki/%E5%BF%AB%E9%80%9F%E5%BC%80%E5%A7%8B)
+- [旋转和直接全屏](https://github.com/changsanjiang/SJVideoPlayer/wiki/旋转和直接全屏)
+- [播放记录](https://github.com/changsanjiang/SJVideoPlayer/wiki/%E6%92%AD%E6%94%BE%E8%AE%B0%E5%BD%95)
+- [长按快进](https://github.com/changsanjiang/SJVideoPlayer/wiki/%E9%95%BF%E6%8C%89%E5%BF%AB%E8%BF%9B)
+- [弹幕](https://github.com/changsanjiang/SJVideoPlayer/wiki/%E5%BC%B9%E5%B9%95)
+- 切换到第三方SDK
+    - [切换至 ijkplayer](https://github.com/changsanjiang/SJVideoPlayer/wiki/Use-ijkplayer)
+    - [切换至  AliPlayer](https://github.com/changsanjiang/SJVideoPlayer/wiki/Use-AliPlayer)
+    - [切换至  AliyunVodPlayer](https://github.com/changsanjiang/SJVideoPlayer/wiki/Use-AliVodPlayer)
+    - [切换至  PLPlayerKit](https://github.com/changsanjiang/SJVideoPlayer/wiki/Use-PLPlayerKit)
+- 控制层
+    - [Control Layer Views](https://github.com/changsanjiang/SJVideoPlayer/wiki/Control-Layer-Views)
+    - [Setup Control Layer View](https://github.com/changsanjiang/SJVideoPlayer/wiki/Setup-Control-Layer-View)
+    - [Use AriaContorlLayer](https://github.com/changsanjiang/SJVideoPlayer/wiki/Use-AriaContorlLayer)
+- [Setup Placeholder Image](https://github.com/changsanjiang/SJVideoPlayer/wiki/Setup-Placeholder-Image)
+- [Setup Progress Slider](https://github.com/changsanjiang/SJVideoPlayer/wiki/Setup-Progress-Slider)
+
+
 ## Author
 
 Email: changsanjiang@gmail.com
@@ -115,22 +121,10 @@ v2.6.5 往后的版本, 请[配置旋转 !!](https://github.com/changsanjiang/SJ
 * [5.5 自己动手撸一个 SJDeviceVolumeAndBrightnessManager, 替换作者原始实现](#5.5)
 
 #### [6. 旋转](#6)
-* [6.0 旋转的配置(必须)](#6.0)
-* [6.1 自动旋转](#6.1)
-* [6.2 设置自动旋转支持的方向](#6.2)
-* [6.3 禁止自动旋转](#6.3)
-* [6.4 主动调用旋转](#6.4)
-* [6.5 是否全屏](#6.5)
-* [6.6 是否正在旋转](#6.6)
-* [6.7 当前旋转的方向 ](#6.7)
-* [6.8 监听状态改变🔥](#6.8) 
-* [6.9 自己动手撸一个 SJRotationManager, 替换作者原始实现](#6.9)
+内容已经迁移至[Wiki](https://github.com/changsanjiang/SJVideoPlayer/wiki/旋转和直接全屏)
 
 #### [7. 直接全屏而不旋转](#7)
-* [7.1 全屏和恢复](#7.1)
-* [7.2 监听状态改变🔥](#7.2)
-* [7.3 是否是全屏](#7.3)
-* [7.4 自己动手撸一个 SJFitOnScreenManager, 替换作者原始实现](#7.4)
+内容已经迁移至[Wiki](https://github.com/changsanjiang/SJVideoPlayer/wiki/旋转和直接全屏)
 
 #### [8. 镜像翻转](#8)
 * [8.1 翻转和恢复](#8.1)
@@ -936,157 +930,6 @@ _player.disableVolumeSetting = YES;
 ```Objective-C
 _player.deviceVolumeAndBrightnessManager = Your deviceVolumeAndBrightnessManager;
 ```
-
-___
-
-<h2 id="6">6. 旋转</h2>
-
-<p>
-此部分的内容由 "id &lt;SJRotationManager&gt; rotationManager" 提供支持.
-
-对于旋转, 我们开发者肯定需要绝对的控制, 例如: 设置自动旋转所支持方向. 能够主动+自动旋转, 而且还需要能在适当的时候禁止自动旋转. 旋转前后的回调等等... 放心这些功能都有, 我挨个给大家介绍.
-
-具体请看下面介绍.
-</p>
-
-<h3 id ="6.0">6.0 旋转的配置(必须)</h3>
-
-请查看该指南: https://github.com/changsanjiang/SJVideoPlayer/wiki/Getting-Started#configure-rotation
-
-<h3 id ="6.1">6.1 自动旋转</h3>
-
-<p>
-先说说何为自动旋转. 其实就是当设备方向变更时, 播放器根据设备方向进行自动旋转.
-</p>
-
-<h3 id ="6.2">6.2 设置自动旋转支持的方向</h3>
-
-```Objective-C
-/// 设置自动旋转支持的方向
-_player.supportedOrientations = SJOrientationMaskLandscapeLeft | SJOrientationMaskLandscapeRight;
-
-
-/**
-自动旋转支持的方向
-
-- SJOrientationMaskPortrait:       竖屏
-- SJOrientationMaskLandscapeLeft:  支持全屏, Home键在右侧
-- SJOrientationMaskLandscapeRight: 支持全屏, Home键在左侧
-- SJOrientationMaskAll:            全部方向
-*/
-typedef enum : NSUInteger {
-    SJOrientationMaskPortrait = 1 << SJOrientation_Portrait,
-    SJOrientationMaskLandscapeLeft = 1 << SJOrientation_LandscapeLeft,
-    SJOrientationMaskLandscapeRight = 1 << SJOrientation_LandscapeRight,
-    SJOrientationMaskAll = SJOrientationMaskPortrait | SJOrientationMaskLandscapeLeft | SJOrientationMaskLandscapeRight,
-} SJOrientationMask;
-```
-
-<h3 id ="6.3">6.3 禁止自动旋转</h3>
-
-<p>
-这里有两点需要注意: 
-
-- 合适的时候要记得恢复自动旋转. 
-- 禁止自动旋转后, 主动调用旋转, 还是可以旋转的.
-</p>
-
-```Objective-C
-_player.rotationManager.disabledAutorotation = YES;
-```
-
-<h3 id ="6.4">6.4 主动调用旋转</h3>
-
-<p>
-主动旋转. 当我们想主动旋转时, 大概分为以下三点:
-
--   播放器旋转到用户当前的设备方向或恢复小屏.
--   主动旋转到指定方向.
--   主动旋转完成后的回调.
-
-请看以下方法, 分别对应以上三点:
-</p>
-
-```Objective-C
-- (void)rotate;
-- (void)rotate:(SJOrientation)orientation animated:(BOOL)animated;
-- (void)rotate:(SJOrientation)orientation animated:(BOOL)animated completion:(void (^ _Nullable)(__kindof SJBaseVideoPlayer *player))block;
-```
-
-<h3 id ="6.5">6.5 是否全屏</h3>
-
-```Objective-C
-/// 如果为YES, 表示全屏
-@property (nonatomic, readonly) BOOL isFullScreen;                              ///< 是否已全屏
-```
-
-<h3 id ="6.6">6.6 是否正在旋转</h3>
-
-```Objective-C
-/// 如果为YES, 表示正在旋转中
-@property (nonatomic, readonly) BOOL isTransitioning;
-```
-
-<h3 id ="6.7">6.7 当前旋转的方向</h3>
-
-```Objective-C
-_player.rotationManager.currentOrientation
-```
-
-<h3 id ="6.8">6.8 监听状态改变🔥</h3>
-
-```Objective-C
-///
-/// 观察者
-///
-///         当需要监听旋转时, 可以设置`player.rotationObserver.rotationDidStartExeBlock = ...;`
-///         了解更多请前往头文件查看
-///
-@property (nonatomic, strong, readonly) id<SJRotationManagerObserver> rotationObserver;
-```
-
-<h3 id ="6.9">6.9 自己动手撸一个 SJRotationManager, 替换作者原始实现</h3>
-
-当你想替换原始实现时, 可以实现 SJRotationManager 中定义的方法.
-
-___
-
-<h2 id="7">7. 直接全屏而不旋转</h2>
-
-<p>
-直接全屏, 或者说充满屏幕, 但不旋转.
-</p>
-
-<h3 id="7.1">7.1 全屏和恢复</h3>
-
-```Objective-C
-_player.fitOnScreen = YES;
-
-[_player setFitOnScreen:NO animated:NO];
-
-[_player setFitOnScreen:YES animated:YES completionHandler:^(__kindof SJBaseVideoPlayer * _Nonnull player) {
-/// ...
-}];
-```
-
-<h3 id="7.2">7.2 监听状态改变🔥</h3>
-
-```Objective-C
-@property (nonatomic, copy, nullable) void(^fitOnScreenWillBeginExeBlock)(__kindof SJBaseVideoPlayer *player);
-@property (nonatomic, copy, nullable) void(^fitOnScreenDidEndExeBlock)(__kindof SJBaseVideoPlayer *player);;
-```
-
-<h3 id="7.3">7.3 是否是全屏</h3>
-
-```Objective-C
-/// YES 为充满屏幕 
-_player.isFitOnScreen
-```
-
-<h3 id="7.4">7.4 自己动手撸一个 SJFitOnScreenManager, 替换作者原始实现</h3>
-
-该部分管理类的协议定义在 SJFitOnScreenManagerProtocol 中, 实现该协议的任何对象, 均可赋值给播放器, 替换原始实现.
-
 ___
 
 <h2 id="8">8. 镜像翻转</h2>

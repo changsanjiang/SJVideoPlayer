@@ -8,8 +8,8 @@
 #import <QuartzCore/QuartzCore.h>
 
 NS_ASSUME_NONNULL_BEGIN
-typedef void(^SJAnimationDidStartHandler)(CAAnimation *anim);
-typedef void(^SJAnimationDidStopHandler)(CAAnimation *anim, BOOL isFinished);
+typedef void(^SJAnimationDidStartHandler)(__kindof CAAnimation *anim);
+typedef void(^SJAnimationDidStopHandler)(__kindof CAAnimation *anim, BOOL isFinished);
 
 @interface CALayer (SJBaseVideoPlayerExtended)
 

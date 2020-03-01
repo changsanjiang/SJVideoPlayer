@@ -134,6 +134,11 @@
       [[Item alloc] initWithTitle:@"Nested View"
                          subTitle:@"嵌套"
                              path:@"demo/scrollView/nested"],
+
+      [[Item alloc] initWithTitle:@"Nested View 2"
+                         subTitle:@"嵌套2"
+                             path:@"demo/scrollView/nested2"],
+      
       
       [[Item alloc] initWithTitle:@"Autoplay in Table View"
                          subTitle:@"TableView 中自动播放"

@@ -562,6 +562,7 @@ static NSNotificationName const SJRotationManagerTransitioningValueDidChangeNoti
     self = [super init];
     if ( !self )
         return nil;
+    _mgr = mgr;
     [NSNotificationCenter.defaultCenter addObserver:self selector:@selector(transitioningValueDidChange:) name:SJRotationManagerTransitioningValueDidChangeNotification object:mgr];
     return self;
 }

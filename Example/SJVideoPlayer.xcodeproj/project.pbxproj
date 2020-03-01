@@ -31,6 +31,7 @@
 		774AF08722DC790D005FE462 /* SJView.m in Sources */ = {isa = PBXBuildFile; fileRef = 774AF08622DC790D005FE462 /* SJView.m */; };
 		7756F58522E173D400F9DC7D /* SJTestViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 7756F58322E173D400F9DC7D /* SJTestViewController.m */; };
 		7756F58622E173D400F9DC7D /* SJTestViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 7756F58422E173D400F9DC7D /* SJTestViewController.xib */; };
+		775A7EE5240BDF9000250505 /* SJViewController5mm.m in Sources */ = {isa = PBXBuildFile; fileRef = 775A7EE4240BDF9000250505 /* SJViewController5mm.m */; };
 		77633ABB23FD97B700D7A269 /* SJPlaybackHistoryViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 77633ABA23FD97B700D7A269 /* SJPlaybackHistoryViewController.m */; };
 		77661EF72356CBE900514BED /* SJTestIJKViewController2.xib in Resources */ = {isa = PBXBuildFile; fileRef = 77661EF62356CBE900514BED /* SJTestIJKViewController2.xib */; };
 		776EB8C623FE98D600085F94 /* SJTestPLPlayerViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 776EB8C423FE98D600085F94 /* SJTestPLPlayerViewController.m */; };
@@ -149,6 +150,8 @@
 		7756F58222E173D400F9DC7D /* SJTestViewController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = SJTestViewController.h; sourceTree = "<group>"; };
 		7756F58322E173D400F9DC7D /* SJTestViewController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = SJTestViewController.m; sourceTree = "<group>"; };
 		7756F58422E173D400F9DC7D /* SJTestViewController.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = SJTestViewController.xib; sourceTree = "<group>"; };
+		775A7EE3240BDF9000250505 /* SJViewController5mm.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = SJViewController5mm.h; sourceTree = "<group>"; };
+		775A7EE4240BDF9000250505 /* SJViewController5mm.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = SJViewController5mm.m; sourceTree = "<group>"; };
 		77633AB923FD97B700D7A269 /* SJPlaybackHistoryViewController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = SJPlaybackHistoryViewController.h; sourceTree = "<group>"; };
 		77633ABA23FD97B700D7A269 /* SJPlaybackHistoryViewController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = SJPlaybackHistoryViewController.m; sourceTree = "<group>"; };
 		77661EF62356CBE900514BED /* SJTestIJKViewController2.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = SJTestIJKViewController2.xib; sourceTree = "<group>"; };
@@ -458,6 +461,8 @@
 				77788FE622C37BED00E26599 /* Views */,
 				77788F6C22C35FF200E26599 /* SJViewController5n.h */,
 				77788F6D22C35FF200E26599 /* SJViewController5n.m */,
+				775A7EE3240BDF9000250505 /* SJViewController5mm.h */,
+				775A7EE4240BDF9000250505 /* SJViewController5mm.m */,
 			);
 			path = "Nested View";
 			sourceTree = "<group>";
@@ -1060,6 +1065,7 @@
 				A6A2090322AB9EE6001ED610 /* LWZTableSectionShrinker.m in Sources */,
 				77A0CDFD230658DB00FE353C /* SJListViewAutoplayMediaViewModel.m in Sources */,
 				7756F58522E173D400F9DC7D /* SJTestViewController.m in Sources */,
+				775A7EE5240BDF9000250505 /* SJViewController5mm.m in Sources */,
 				A6A2562622AC1C3500E42998 /* SJViewController5.m in Sources */,
 				7774C8D623519F5000FE6FCA /* SJPopPromptCustomView.m in Sources */,
 				6003F5A7195388D20070C39A /* SJViewController.m in Sources */,

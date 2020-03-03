@@ -52,7 +52,8 @@ NS_ASSUME_NONNULL_BEGIN
 
 @property (nonatomic, readonly) BOOL isPlayed;                      ///< 当前media是否调用过play
 @property (nonatomic, readonly, getter=isReplayed) BOOL replayed;   ///< 当前media是否调用过replay
-@property (nonatomic, readonly) BOOL isPlayedToEndTime;               ///< 是否已播放完毕
+@property (nonatomic, readonly) BOOL isPlaybackFinished;                        ///< 播放结束
+@property (nonatomic, readonly, nullable) SJFinishedReason finishedReason;      ///< 播放结束的reason
 - (void)prepareToPlay;
 - (void)replay;
 - (void)refresh;
@@ -108,9 +109,9 @@ NS_ASSUME_NONNULL_BEGIN
 
 
 // - new -
+- (void)playbackController:(id<SJVideoPlayerPlaybackController>)controller playbackDidFinish:(SJFinishedReason)reason;
 - (void)playbackController:(id<SJVideoPlayerPlaybackController>)controller durationDidChange:(NSTimeInterval)duration;
 - (void)playbackController:(id<SJVideoPlayerPlaybackController>)controller currentTimeDidChange:(NSTimeInterval)currentTime;
-- (void)mediaDidPlayToEndForPlaybackController:(id<SJVideoPlayerPlaybackController>)controller;
 - (void)playbackController:(id<SJVideoPlayerPlaybackController>)controller presentationSizeDidChange:(CGSize)presentationSize;
 - (void)playbackController:(id<SJVideoPlayerPlaybackController>)controller playbackTypeDidChange:(SJPlaybackType)playbackType;
 - (void)playbackController:(id<SJVideoPlayerPlaybackController>)controller playableDurationDidChange:(NSTimeInterval)playableDuration;
@@ -125,7 +126,11 @@ NS_ASSUME_NONNULL_BEGIN
 /// played by URL
 @property (nonatomic, strong, nullable) NSURL *mediaURL;
 
+/// 开始播放的位置, 单位秒
 @property (nonatomic) NSTimeInterval startPosition;
+
+/// 试用结束的位置, 单位秒
+@property (nonatomic) NSTimeInterval trialEndPosition;
 @end
 NS_ASSUME_NONNULL_END
 

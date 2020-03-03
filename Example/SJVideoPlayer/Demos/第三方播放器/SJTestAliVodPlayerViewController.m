@@ -28,7 +28,9 @@
     
 #if __has_include(<AliyunPlayerSDK/AliyunPlayerSDK.h>)
     _player.playbackController = SJAliyunVodPlaybackController.new;
-    _player.URLAsset = [SJVideoPlayerURLAsset.alloc initWithAliyunVodModel:[SJAliyunVodURLModel.alloc initWithURL:SourceURL2]];
+    SJVideoPlayerURLAsset *asset =  [SJVideoPlayerURLAsset.alloc initWithAliyunVodModel:[SJAliyunVodURLModel.alloc initWithURL:SourceURL2]];
+//    asset.trialEndPosition = 30; // 试看30秒
+    _player.URLAsset = asset;
 #else
     // 切换为 AliVodPlayer, 详见: https://github.com/changsanjiang/SJVideoPlayer/wiki/Use-AliVodPlayer
     [_player.prompt show:[NSAttributedString sj_UIKitText:^(id<SJUIKitTextMakerProtocol>  _Nonnull make) {

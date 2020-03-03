@@ -10,6 +10,8 @@
 NS_ASSUME_NONNULL_BEGIN
 @interface SJAVMediaPlayer : NSObject<SJMediaPlayer>
 - (instancetype)initWithAVPlayer:(AVPlayer *)player startPosition:(NSTimeInterval)time;
+
+@property (nonatomic) NSTimeInterval trialEndPosition;
 @property (nonatomic, strong, readonly) AVPlayer *avPlayer;
 @property (nonatomic, readonly) SJPlaybackType playbackType;
 @property (nonatomic) NSTimeInterval minBufferedDuration;

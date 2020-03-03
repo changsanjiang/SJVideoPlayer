@@ -56,7 +56,7 @@ NS_ASSUME_NONNULL_BEGIN
 }
 
 + (NSString *)version {
-    return @"v3.2.2";
+    return @"v3.2.3";
 }
 
 + (instancetype)player {
@@ -69,7 +69,6 @@ NS_ASSUME_NONNULL_BEGIN
     [self.switcher switchControlLayerForIdentitfier:SJControlLayer_Edge];   // 切换到添加的控制层
     self.showMoreItemToTopControlLayer = YES;                               // 显示更多按钮
     self.defaultEdgeControlLayer.hiddenBottomProgressIndicator = NO;        // 显示底部进度条
-    self.defaultEdgeControlLayer.showNetworkSpeedToLoadingView = YES;       // 显示网速
     return self;
 }
 
@@ -348,7 +347,7 @@ NS_ASSUME_NONNULL_BEGIN
     [NSNotificationCenter.defaultCenter addObserver:self selector:@selector(_switchControlLayerIfNeeded) name:SJVideoPlayerPlaybackTimeControlStatusDidChangeNotification object:self];
     [NSNotificationCenter.defaultCenter addObserver:self selector:@selector(_resumeOrStopTimeoutTimer) name:SJVideoPlayerPlaybackTimeControlStatusDidChangeNotification object:self];
     [NSNotificationCenter.defaultCenter addObserver:self selector:@selector(_switchControlLayerIfNeeded) name:SJVideoPlayerAssetStatusDidChangeNotification object:self];
-    [NSNotificationCenter.defaultCenter addObserver:self selector:@selector(_switchControlLayerIfNeeded) name:SJVideoPlayerPlaybackDidPlayToEndTimeNotification object:self];
+    [NSNotificationCenter.defaultCenter addObserver:self selector:@selector(_switchControlLayerIfNeeded) name:SJVideoPlayerPlaybackDidFinishNotification object:self];
 }
 
 - (void)_initializeSettingsObserver {

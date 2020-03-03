@@ -66,7 +66,7 @@ static SJEdgeControlButtonItemTag SJBottomItem_RightFill = 5;
     sj_view_makeAppear(self.controlView, YES);
     self.status = SJFilmEditingStatus_Unknown;
     self.countDownNum = _maxCountDownNum;
-    if ( _player.isPlayedToEndTime ) {
+    if ( _player.isPlaybackFinished ) {
         self.start = kCMTimeZero;
     }
     else {
@@ -299,7 +299,7 @@ static SJEdgeControlButtonItemTag SJBottomItem_RightFill = 5;
 }
 
 - (void)videoPlayerPlaybackStatusDidChange:(__kindof SJBaseVideoPlayer *)videoPlayer {
-    if ( videoPlayer.isPlayedToEndTime ) {
+    if ( videoPlayer.isPlaybackFinished ) {
         [self finished];
     }
     else if ( videoPlayer.assetStatus == SJAssetStatusFailed ) {

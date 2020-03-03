@@ -171,11 +171,15 @@ NS_ASSUME_NONNULL_BEGIN
 ///             3.可能是正在评估缓冲中, 这个过程会进行的很快, 不需要显示loading视图.
 ///
 @property (nonatomic, readonly, nullable) SJWaitingReason reasonForWaitingToPlay;
+
 @property (nonatomic, readonly) BOOL isPaused;          ///< 调用了暂停, 暂停播放
 @property (nonatomic, readonly) BOOL isPlaying;         ///< 调用了播放, 处于播放中
 @property (nonatomic, readonly) BOOL isBuffering;       ///< 调用了播放, 处于缓冲中(等待缓存足够时自动恢复播放, 建议显示loading视图)
 @property (nonatomic, readonly) BOOL isEvaluating;      ///< 调用了播放, 正在评估缓冲中(这个过程会进行的很快, 不需要显示loading视图)
 @property (nonatomic, readonly) BOOL isNoAssetToPlay;   ///< 调用了播放, 但未设置播放资源(设置资源后将会自动播放 )
+
+@property (nonatomic, readonly) BOOL isPlaybackFinished;                            ///< 播放结束
+@property (nonatomic, readonly, nullable) SJFinishedReason finishedReason;          ///< 播放结束的reason
 
 ///
 /// 资源准备(或初始化)的状态
@@ -183,7 +187,7 @@ NS_ASSUME_NONNULL_BEGIN
 ///         当未设置资源时, 此时 player.assetStatus = .unknown
 ///         当设置新资源时, 此时 player.assetStatus = .preparing
 ///         当准备好播放时, 此时 player.assetStatus = .readyToPlay
-///         当初始化失败时, 此时 player.assetStatus = .failed
+///         当播放器出错时, 此时 player.assetStatus = .failed
 ///
 @property (nonatomic, readonly) SJAssetStatus assetStatus;
 
@@ -207,18 +211,17 @@ NS_ASSUME_NONNULL_BEGIN
 - (void)replay;     ///< 重播, 适合播放完毕后调用进行重播
 - (void)stop;       ///< 使停止, 请注意: 当前资源将会被清空, 如需重播, 请重新设置新资源
 
-@property (nonatomic, getter=isMuted) BOOL muted;                                   ///< 是否禁音
+@property (nonatomic, getter=isMuted) BOOL muted;                                   ///< 禁音
 @property (nonatomic) float playerVolume;                                           ///< 设置播放声音
 @property (nonatomic) float rate;                                                   ///< 设置播放速率
 
 @property (nonatomic, readonly) NSTimeInterval currentTime;                         ///< 当前播放到的时间
 @property (nonatomic, readonly) NSTimeInterval duration;                            ///< 总时长
 @property (nonatomic, readonly) NSTimeInterval playableDuration;                    ///< 缓冲到的时间
-@property (nonatomic, readonly) NSTimeInterval durationWatched;                     ///< 已观看的时长(当前资源已观看的时长)
+@property (nonatomic, readonly) NSTimeInterval durationWatched;                     ///< 当前资源已观看的时长
 
-@property (nonatomic, readonly) BOOL isPlayedToEndTime;                             ///< 是否已播放结束(当前资源是否已播放结束)
-@property (nonatomic, readonly) BOOL isPlayed;                                      ///< 是否播放过(对当前的资源是否调用过play方法)
-@property (nonatomic, readonly) BOOL isReplayed;                                    ///< 是否重播过(对当前的资源是否调用过replay方法)
+@property (nonatomic, readonly) BOOL isPlayed;                                      ///< 当前的资源是否调用过`play`
+@property (nonatomic, readonly) BOOL isReplayed;                                    ///< 当前的资源是否调用过`replay`
 @property (nonatomic, readonly) SJPlaybackType playbackType;                        ///< 播放类型
 - (NSString *)stringForSeconds:(NSInteger)secs;                                     ///< 转换时间为字符串, format: 00:00:00
 
@@ -829,5 +832,6 @@ NS_ASSUME_NONNULL_BEGIN
 @interface SJBaseVideoPlayer (Deprecated)
 - (void)playWithURL:(NSURL *)URL; // 不再建议使用, 请使用`URLAsset`进行初始化
 @property (nonatomic, strong, nullable) NSURL *assetURL;
+@property (nonatomic, readonly) BOOL isPlayedToEndTime __deprecated_msg("use `isPlaybackFinished`;"); ///< 是否已播放结束(当前资源是否已播放结束)
 @end
 NS_ASSUME_NONNULL_END

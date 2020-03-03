@@ -34,6 +34,7 @@
 #if __has_include(<PLPlayerKit/PLPlayerKit.h>)
     _player.playbackController = SJPLPlayerPlaybackController.new;
     SJVideoPlayerURLAsset *asset = [SJVideoPlayerURLAsset.alloc initWithURL:SourceURL0];
+//    asset.trialEndPosition = 30; // 试看30秒
     asset.pl_playerOptions = PLPlayerOption.defaultOption;
     _player.URLAsset = asset;
 #else

@@ -33,7 +33,9 @@
     IJKFFOptions *options = [IJKFFOptions optionsByDefault];
     controller.options = options;
     _player.playbackController = controller;
-    _player.URLAsset = [SJVideoPlayerURLAsset.alloc initWithURL:VideoURL_Level4];
+    SJVideoPlayerURLAsset *asset = [SJVideoPlayerURLAsset.alloc initWithURL:VideoURL_Level4];
+//    asset.trialEndPosition = 30; // 试看30秒
+    _player.URLAsset = asset;
 #else
     // 切换为 ijkplayer, 详见: https://github.com/changsanjiang/SJVideoPlayer/wiki/Use-ijkplayer
     [_player.prompt show:[NSAttributedString sj_UIKitText:^(id<SJUIKitTextMakerProtocol>  _Nonnull make) {

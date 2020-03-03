@@ -58,6 +58,9 @@ typedef NS_ENUM(NSInteger, SJPlaybackTimeControlStatus) {
 };
 
 
+#pragma mark -
+
+
 typedef NSString *SJWaitingReason;
 
 ///
@@ -76,6 +79,22 @@ extern SJWaitingReason const SJWaitingWhileEvaluatingBufferingRateReason;
 extern SJWaitingReason const SJWaitingWithNoAssetToPlayReason;
 
 
+#pragma mark -
+
+
+typedef NSString *SJFinishedReason;
+
+///
+/// 正常播放完毕
+///
+extern SJFinishedReason const SJFinishedReasonToEndTimePosition;
+///
+/// 播放到了试看结束的位置
+///
+extern SJFinishedReason const SJFinishedReasonToTrialEndPosition;
+
+
+#pragma mark -
 
 
 ///

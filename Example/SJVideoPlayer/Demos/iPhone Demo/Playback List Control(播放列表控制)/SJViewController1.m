@@ -94,7 +94,7 @@ static NSString *const SJTableViewCell1ID = @"SJTableViewCell1";
             make.edges.offset(0);
         }];
         __weak typeof(self) _self = self;
-        _player.playbackObserver.didPlayToEndTimeExeBlock = ^(__kindof SJBaseVideoPlayer * _Nonnull player) {
+        _player.playbackObserver.playbackDidFinishExeBlock = ^(__kindof SJBaseVideoPlayer * _Nonnull player) {
             __strong typeof(_self) self = _self;
             if ( !self ) return;
             [self.listController currentMediaFinishedPlaying];

@@ -607,7 +607,7 @@ _player.URLAsset = asset1;
 <h3 id="3.14">3.14 是否已播放完毕</h3>
 
 ```Objective-C
-@property (nonatomic, readonly) BOOL isPlayedToEndTime;                             ///< 当前资源是否已播放结束
+@property (nonatomic, readonly) BOOL isPlaybackFinished;                            ///< 当前资源是否已播放结束
 ```
 
 <h3 id="3.15">3.15 是否调用过播放</h3>

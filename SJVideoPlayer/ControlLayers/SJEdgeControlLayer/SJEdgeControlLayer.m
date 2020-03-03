@@ -246,6 +246,10 @@ SJEdgeControlButtonItemTag const SJEdgeControlLayerCenterItem_Replay = 40000;
 - (void)videoPlayerPlaybackStatusDidChange:(__kindof SJBaseVideoPlayer *)videoPlayer {
     [self _reloadAdaptersIfNeeded];
     [self _showOrHiddenLoadingView];
+    
+    if ( videoPlayer.isPlaybackFinished ) {
+        [self _updateContentForBottomCurrentTimeItemIfNeeded];
+    }
 }
 
 - (void)videoPlayer:(__kindof SJBaseVideoPlayer *)videoPlayer currentTimeDidChange:(NSTimeInterval)currentTime {
@@ -517,12 +521,6 @@ SJEdgeControlButtonItemTag const SJEdgeControlLayerCenterItem_Replay = 40000;
             }];
         }
     }
-}
-
-- (void)setShowNetworkSpeedToLoadingView:(BOOL)showNetworkSpeedToLoadingView {
-    _showNetworkSpeedToLoadingView = showNetworkSpeedToLoadingView;
-    if ( !showNetworkSpeedToLoadingView )
-        self.loadingView.networkSpeedStr = nil;
 }
 
 - (void)setDraggingProgressPopView:(nullable __kindof UIView<SJDraggingProgressPopView> *)draggingProgressPopView {
@@ -1088,7 +1086,7 @@ SJEdgeControlButtonItemTag const SJEdgeControlLayerCenterItem_Replay = 40000;
     
     SJEdgeControlButtonItem *replayItem = [self.centerAdapter itemForTag:SJEdgeControlLayerCenterItem_Replay];
     if ( replayItem != nil ) {
-        replayItem.hidden = !_videoPlayer.isPlayedToEndTime;
+        replayItem.hidden = !_videoPlayer.isPlaybackFinished;
         if ( replayItem.hidden == NO && replayItem.title == nil ) {
             SJVideoPlayerSettings *sources = SJVideoPlayerSettings.commonSettings;
             UILabel *textLabel = replayItem.customView;
@@ -1192,7 +1190,7 @@ SJEdgeControlButtonItemTag const SJEdgeControlLayerCenterItem_Replay = 40000;
     if ( !_videoPlayer || !self.loadingView.isAnimating )
         return;
     
-    if ( _showNetworkSpeedToLoadingView && !_videoPlayer.assetURL.isFileURL ) {
+    if ( self.loadingView.showNetworkSpeed && !_videoPlayer.assetURL.isFileURL ) {
         self.loadingView.networkSpeedStr = [NSAttributedString sj_UIKitText:^(id<SJUIKitTextMakerProtocol>  _Nonnull make) {
             SJVideoPlayerSettings *settings = [SJVideoPlayerSettings commonSettings];
             make.font(settings.loadingNetworkSpeedTextFont);

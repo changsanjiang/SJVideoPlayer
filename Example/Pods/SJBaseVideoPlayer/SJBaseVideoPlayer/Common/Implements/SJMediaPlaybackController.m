@@ -198,6 +198,7 @@ NS_ASSUME_NONNULL_BEGIN
         if ( !self ) return;
         if ( self.media != media ) return;
         if ( player == nil ) return;
+        player.trialEndPosition = media.trialEndPosition;
         self.currentPlayer = player;
         self.currentPlayerView = [self playerViewWithPlayer:player];
     }];
@@ -225,7 +226,7 @@ NS_ASSUME_NONNULL_BEGIN
     else {
         self.reasonForWaitingToPlay = SJWaitingWhileEvaluatingBufferingRateReason;
         self.timeControlStatus = SJPlaybackTimeControlStatusWaitingToPlay;
-        self.isPlayedToEndTime ? [self.currentPlayer replay] : [self.currentPlayer play];
+        self.isPlaybackFinished ? [self.currentPlayer replay] : [self.currentPlayer play];
         [self _toEvaluating];
     }
 }
@@ -259,7 +260,7 @@ NS_ASSUME_NONNULL_BEGIN
 }
 
 - (void)seekToTime:(NSTimeInterval)secs completionHandler:(void (^ _Nullable)(BOOL))completionHandler {
-    [self.currentPlayer seekToTime:CMTimeMakeWithSeconds(secs, NSEC_PER_SEC) completionHandler:completionHandler];
+    [self seekToTime:CMTimeMakeWithSeconds(secs, NSEC_PER_SEC) toleranceBefore:kCMTimeZero toleranceAfter:kCMTimeZero completionHandler:completionHandler];
 }
 
 - (void)seekToTime:(CMTime)time toleranceBefore:(CMTime)toleranceBefore toleranceAfter:(CMTime)toleranceAfter completionHandler:(void (^ _Nullable)(BOOL))completionHandler {
@@ -325,8 +326,6 @@ NS_ASSUME_NONNULL_BEGIN
 }
 
 - (NSTimeInterval)currentTime {
-    if ( _currentPlayer.isPlayedToEndTime ) return _currentPlayer.duration;
-    if ( _currentPlayer.seekingInfo.isSeeking ) return CMTimeGetSeconds(_currentPlayer.seekingInfo.time);
     return _currentPlayer.currentTime;
 }
 
@@ -350,8 +349,12 @@ NS_ASSUME_NONNULL_BEGIN
     return _currentPlayer.isReplayed;
 }
 
-- (BOOL)isPlayedToEndTime {
-    return _currentPlayer.isPlayedToEndTime;
+- (BOOL)isPlaybackFinished {
+    return _currentPlayer.isPlaybackFinished;
+}
+
+- (nullable SJFinishedReason)finishedReason {
+    return _currentPlayer.finishedReason;
 }
 
 - (NSTimeInterval)playableDuration {
@@ -424,7 +427,7 @@ NS_ASSUME_NONNULL_BEGIN
     if ( currentPlayer != nil ) {
         currentPlayer.volume = self.volume;
         currentPlayer.muted = self.muted;
-        currentPlayer.rate = self.rate;
+        if ( self.timeControlStatus != SJPlaybackTimeControlStatusPaused ) currentPlayer.rate = self.rate;
         [self _addPeriodicTimeObserver];
         [currentPlayer report];
     }
@@ -457,7 +460,7 @@ NS_ASSUME_NONNULL_BEGIN
         self.timeControlStatus = SJPlaybackTimeControlStatusPaused;
     }
     
-    if ( self.currentPlayer.isPlayedToEndTime ) {
+    if ( self.currentPlayer.isPlaybackFinished ) {
         self.timeControlStatus = SJPlaybackTimeControlStatusPaused;
     }
     
@@ -536,7 +539,7 @@ NS_ASSUME_NONNULL_BEGIN
 - (void)_initObservations {
     [NSNotificationCenter.defaultCenter addObserver:self selector:@selector(playerAssetStatusDidChange:) name:SJMediaPlayerAssetStatusDidChangeNotification object:nil];
     [NSNotificationCenter.defaultCenter addObserver:self selector:@selector(playerTimeControlStatusDidChange:) name:SJMediaPlayerTimeControlStatusDidChangeNotification object:nil];
-    [NSNotificationCenter.defaultCenter addObserver:self selector:@selector(playerDidPlayToEndTime:) name:SJMediaPlayerDidPlayToEndTimeNotification object:nil];
+    [NSNotificationCenter.defaultCenter addObserver:self selector:@selector(playbackDidFinish:) name:SJMediaPlayerPlaybackDidFinishNotification object:nil];
     [NSNotificationCenter.defaultCenter addObserver:self selector:@selector(playerPresentationSizeDidChange:) name:SJMediaPlayerPresentationSizeDidChangeNotification object:nil];
     [NSNotificationCenter.defaultCenter addObserver:self selector:@selector(playerViewReadyForDisplay:) name:SJMediaPlayerViewReadyForDisplayNotification object:nil];
     [NSNotificationCenter.defaultCenter addObserver:self selector:@selector(playerDidReplay:) name:SJMediaPlayerDidReplayNotification object:nil];
@@ -565,11 +568,11 @@ NS_ASSUME_NONNULL_BEGIN
     }
 }
 
-- (void)playerDidPlayToEndTime:(NSNotification *)note {
+- (void)playbackDidFinish:(NSNotification *)note {
     if ( self.currentPlayer == note.object ) {
         [self _toEvaluating];
-        if ( [self.delegate respondsToSelector:@selector(mediaDidPlayToEndForPlaybackController:)] ) {
-            [self.delegate mediaDidPlayToEndForPlaybackController:self];
+        if ( [self.delegate respondsToSelector:@selector(playbackController:playbackDidFinish:)] ) {
+            [self.delegate playbackController:self playbackDidFinish:self.finishedReason];
         }
     }
 }
@@ -711,7 +714,7 @@ NS_ASSUME_NONNULL_BEGIN
 NSNotificationName const SJMediaPlayerAssetStatusDidChangeNotification = @"SJMediaPlayerAssetStatusDidChangeNotification";
 NSNotificationName const SJMediaPlayerTimeControlStatusDidChangeNotification = @"SJMediaPlayerTimeControlStatusDidChangeNotification";
 NSNotificationName const SJMediaPlayerPresentationSizeDidChangeNotification = @"SJMediaPlayerPresentationSizeDidChangeNotification";
-NSNotificationName const SJMediaPlayerDidPlayToEndTimeNotification = @"SJMediaPlayerDidPlayToEndTimeNotification";
+NSNotificationName const SJMediaPlayerPlaybackDidFinishNotification = @"SJMediaPlayerPlaybackDidFinishNotification";
 NSNotificationName const SJMediaPlayerDidReplayNotification = @"SJMediaPlayerDidReplayNotification";
 NSNotificationName const SJMediaPlayerDurationDidChangeNotification = @"SJMediaPlayerDurationDidChangeNotification";
 NSNotificationName const SJMediaPlayerPlayableDurationDidChangeNotification = @"SJMediaPlayerPlayableDurationDidChangeNotification";

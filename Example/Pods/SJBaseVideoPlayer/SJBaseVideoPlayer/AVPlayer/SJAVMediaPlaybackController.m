@@ -37,7 +37,7 @@ NS_ASSUME_NONNULL_BEGIN
         player.minBufferedDuration = self.minBufferedDuration;
         player.accurateSeeking = self.accurateSeeking;
         
-        if ( (player.isPlayed && media.original == nil) || player.isPlayedToEndTime ) {
+        if ( (player.isPlayed && media.original == nil) || player.isPlaybackFinished ) {
             [player seekToTime:kCMTimeZero completionHandler:^(BOOL finished) {
                 dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(0.1 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
                     if ( completionHandler ) completionHandler(player);
@@ -76,6 +76,9 @@ NS_ASSUME_NONNULL_BEGIN
 #pragma mark -
 
 - (void)seekToTime:(CMTime)time toleranceBefore:(CMTime)toleranceBefore toleranceAfter:(CMTime)toleranceAfter completionHandler:(void (^_Nullable)(BOOL))completionHandler {
+    if ( self.media.trialEndPosition != 0 && CMTimeGetSeconds(time) >= self.media.trialEndPosition ) {
+        time = CMTimeMakeWithSeconds(self.media.trialEndPosition * 0.98, NSEC_PER_SEC);
+    }
     [self.currentPlayer seekToTime:time toleranceBefore:toleranceBefore toleranceAfter:toleranceAfter completionHandler:completionHandler];
 }
 

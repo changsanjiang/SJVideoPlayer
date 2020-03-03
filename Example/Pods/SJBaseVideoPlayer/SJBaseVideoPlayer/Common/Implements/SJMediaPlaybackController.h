@@ -47,7 +47,7 @@ NS_ASSUME_NONNULL_BEGIN
 extern NSNotificationName const SJMediaPlayerAssetStatusDidChangeNotification;
 extern NSNotificationName const SJMediaPlayerTimeControlStatusDidChangeNotification;
 extern NSNotificationName const SJMediaPlayerPresentationSizeDidChangeNotification;
-extern NSNotificationName const SJMediaPlayerDidPlayToEndTimeNotification;
+extern NSNotificationName const SJMediaPlayerPlaybackDidFinishNotification;
 extern NSNotificationName const SJMediaPlayerDidReplayNotification;
 extern NSNotificationName const SJMediaPlayerDurationDidChangeNotification;
 extern NSNotificationName const SJMediaPlayerPlayableDurationDidChangeNotification;
@@ -68,7 +68,9 @@ extern NSNotificationName const SJMediaPlayerViewReadyForDisplayNotification;
 @property (nonatomic, readonly) CGSize presentationSize;
 @property (nonatomic, readonly) BOOL isReplayed; ///< 是否调用过`replay`方法
 @property (nonatomic, readonly) BOOL isPlayed; ///< 是否调用过`play`方法
-@property (nonatomic, readonly) BOOL isPlayedToEndTime;
+@property (nonatomic, readonly) BOOL isPlaybackFinished;                        ///< 播放结束
+@property (nonatomic, readonly, nullable) SJFinishedReason finishedReason;      ///< 播放结束的reason
+@property (nonatomic) NSTimeInterval trialEndPosition;                          ///< 试用结束的位置, 单位秒
 @property (nonatomic) float rate;
 @property (nonatomic) float volume;
 @property (nonatomic, getter=isMuted) BOOL muted;

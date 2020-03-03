@@ -167,6 +167,13 @@ NS_ASSUME_NONNULL_BEGIN
     [self performSelector:@selector(_stop) withObject:nil afterDelay:0.1 inModes:@[NSRunLoopCommonModes]];
 }
 
+- (void)setShowNetworkSpeed:(BOOL)showNetworkSpeed {
+    _speedLabel.hidden = !showNetworkSpeed;
+}
+- (BOOL)showNetworkSpeed {
+    return _speedLabel.isHidden;
+}
+
 - (void)setNetworkSpeedStr:(nullable NSAttributedString *)networkSpeedStr {
     _speedLabel.attributedText = networkSpeedStr;
 }

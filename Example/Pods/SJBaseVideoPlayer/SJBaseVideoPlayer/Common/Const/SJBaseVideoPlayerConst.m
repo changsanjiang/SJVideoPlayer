@@ -59,9 +59,10 @@ NSNotificationName const SJVideoPlayerPlaybackControllerWillDeallocateNotificati
 ///
 NSNotificationName const SJVideoPlayerPlaybackTimeControlStatusDidChangeNotification = @"SJVideoPlayerPlaybackTimeControlStatusDidChangeNotification";
 ///
-/// 正常播放完毕后发出的通知
+/// 播放完毕后发出的通知
 ///
-NSNotificationName const SJVideoPlayerPlaybackDidPlayToEndTimeNotification = @"SJVideoPlayerPlaybackDidPlayToEndTimeNotification";
+NSNotificationName const SJVideoPlayerPlaybackDidFinishNotification = @"SJVideoPlayerPlaybackDidFinishNotification";
+
 ///
 /// 调用了replay发出的通知
 ///
@@ -135,4 +136,8 @@ NSNotificationName const SJVideoPlayerRateDidChangeNotification = @"SJVideoPlaye
 SJWaitingReason const SJWaitingToMinimizeStallsReason = @"AVPlayerWaitingToMinimizeStallsReason";
 SJWaitingReason const SJWaitingWhileEvaluatingBufferingRateReason = @"AVPlayerWaitingWhileEvaluatingBufferingRateReason";
 SJWaitingReason const SJWaitingWithNoAssetToPlayReason = @"AVPlayerWaitingWithNoItemToPlayReason";
+
+SJFinishedReason const SJFinishedReasonToEndTimePosition = @"SJFinishedReasonToEndTimePosition";
+SJFinishedReason const SJFinishedReasonToTrialEndPosition = @"SJFinishedReasonToTrialEndPosition";
+
 NS_ASSUME_NONNULL_END

@@ -7,6 +7,7 @@
 
 #import "SJAVMediaPlayer.h"
 #import "AVAsset+SJAVMediaExport.h"
+#import "NSTimer+SJAssetAdd.h"
 
 NS_ASSUME_NONNULL_BEGIN
 @interface SJAVMediaPlayer ()
@@ -16,6 +17,10 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic, nullable) SJWaitingReason reasonForWaitingToPlay;
 @property (nonatomic) NSTimeInterval startPosition;
 @property (nonatomic) BOOL needSeekToStartPosition;
+@property (nonatomic) BOOL isPlaybackFinished;                        ///< 播放结束
+@property (nonatomic, nullable) SJFinishedReason finishedReason;      ///< 播放结束的reason
+@property (nonatomic, strong, nullable) NSTimer *refreshTimer;
+@property (nonatomic, readonly) BOOL isPlayedToTrialEndPosition;
 @end
 
 @implementation SJAVMediaPlayer
@@ -27,7 +32,7 @@ NS_ASSUME_NONNULL_BEGIN
 @synthesize duration = _duration;
 @synthesize isPlayed = _isPlayed;
 @synthesize isReplayed = _isReplayed;
-@synthesize isPlayedToEndTime = _isPlayedToEndTime;
+@synthesize playableDuration = _playableDuration;
 
 - (instancetype)initWithAVPlayer:(AVPlayer *)player startPosition:(NSTimeInterval)time {
     self = [super init];
@@ -48,7 +53,7 @@ NS_ASSUME_NONNULL_BEGIN
         return;
     }
     
-    if ( self.isPlayedToEndTime ) {
+    if ( self.isPlaybackFinished ) {
         [self replay];
         return;
     }
@@ -101,7 +106,7 @@ NS_ASSUME_NONNULL_BEGIN
         return;
     }
     
-    self.isPlayedToEndTime = NO;
+    time = [self _adjustSeekTimeIfNeeded:time];
     
     [self _willSeeking:time];
     __weak typeof(self) _self = self;
@@ -122,6 +127,13 @@ NS_ASSUME_NONNULL_BEGIN
 }
 
 #pragma mark -
+
+- (void)setTrialEndPosition:(NSTimeInterval)trialEndPosition {
+    if ( trialEndPosition != _trialEndPosition ) {
+        _trialEndPosition = trialEndPosition;
+        [self _refreshOrStop];
+    }
+}
 
 - (void)setAssetStatus:(SJAssetStatus)assetStatus {
     _assetStatus = assetStatus;
@@ -144,17 +156,20 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (void)setTimeControlStatus:(SJPlaybackTimeControlStatus)timeControlStatus {
     _timeControlStatus = timeControlStatus;
+    
+    [self _refreshOrStop];
+    
     [self _postNotification:SJMediaPlayerTimeControlStatusDidChangeNotification];
 }
 
-- (void)setIsPlayedToEndTime:(BOOL)isPlayedToEndTime {
-    _isPlayedToEndTime = isPlayedToEndTime;
-    if ( isPlayedToEndTime ) {
-        [self _postNotification:SJMediaPlayerDidPlayToEndTimeNotification];
+- (void)setIsPlaybackFinished:(BOOL)isPlaybackFinished {
+    if ( isPlaybackFinished != _isPlaybackFinished ) {
+        if ( !isPlaybackFinished ) _finishedReason = nil;
+        _isPlaybackFinished = isPlaybackFinished;
+        if ( isPlaybackFinished ) {
+            [self _postNotification:SJMediaPlayerPlaybackDidFinishNotification];
+        }
     }
-}
-- (BOOL)isPlayedToEndTime {
-    return _isPlayedToEndTime;
 }
 
 - (void)setPlaybackType:(SJPlaybackType)playbackType {
@@ -203,7 +218,20 @@ NS_ASSUME_NONNULL_BEGIN
 }
 
 - (NSTimeInterval)currentTime {
+    if ( _isPlaybackFinished ) {
+        if ( _finishedReason == SJFinishedReasonToEndTimePosition )
+            return _duration;
+        else if ( _finishedReason == SJFinishedReasonToTrialEndPosition )
+            return _trialEndPosition;
+    }
     return CMTimeGetSeconds(_avPlayer.currentTime);
+}
+
+- (NSTimeInterval)playableDuration {
+    if ( _trialEndPosition != 0 && _playableDuration >= _trialEndPosition ) {
+        return _trialEndPosition;
+    }
+    return _playableDuration;
 }
 
 - (CGSize)presentationSize {
@@ -227,6 +255,7 @@ NS_ASSUME_NONNULL_BEGIN
         [_avPlayer.currentItem cancelPendingSeeks];
     }
     
+    self.isPlaybackFinished = NO;
     _seekingInfo.time = time;
     _seekingInfo.isSeeking = YES;
 }
@@ -270,7 +299,7 @@ static NSString *kTimeControlStatus = @"timeControlStatus";
 }
 
 - (void)observeValueForKeyPath:(nullable NSString *)keyPath ofObject:(nullable id)object change:(nullable NSDictionary<NSKeyValueChangeKey,id> *)change context:(nullable void *)context {
-#ifdef SJDEBUG
+#ifdef SJDEBUG1
     if (@available(iOS 10.0, *)) {
         if ( context == &kTimeControlStatus ) {
             switch ( _avPlayer.timeControlStatus ) {
@@ -360,6 +389,11 @@ static NSString *kTimeControlStatus = @"timeControlStatus";
             self.timeControlStatus = SJPlaybackTimeControlStatusPaused;
         }
         
+        if ( self.isPlayedToTrialEndPosition ) {
+            [self _didPlayToTrialEndPosition];
+            return ;
+        }
+        
         if ( @available(iOS 10.0, *) ) {
             __auto_type avt = [self _timeControlStatusForAVPlayerTimeControlStatus:self.avPlayer.timeControlStatus];
             __auto_type avr = [self _waitingReasonForAVPlayerWaitingReason:self.avPlayer.reasonForWaitingToPlay];
@@ -446,7 +480,8 @@ static NSString *kTimeControlStatus = @"timeControlStatus";
 
 - (void)_didPlayToEndTime:(NSNotification *)note {
     dispatch_async(dispatch_get_main_queue(), ^{
-        self.isPlayedToEndTime = YES;
+        self.finishedReason = SJFinishedReasonToEndTimePosition;
+        self.isPlaybackFinished = YES;
         [self pause];
     });
 }
@@ -492,5 +527,58 @@ static NSString *kTimeControlStatus = @"timeControlStatus";
             return SJPlaybackTimeControlStatusPlaying;
     }
 }
+
+- (BOOL)isPlayedToTrialEndPosition {
+    return self.trialEndPosition != 0 && self.currentTime >= self.trialEndPosition;
+}
+
+- (void)_didPlayToTrialEndPosition {
+    if ( self.finishedReason != SJFinishedReasonToTrialEndPosition ) {
+        self.finishedReason = SJFinishedReasonToTrialEndPosition;
+        self.isPlaybackFinished = YES;
+        [self pause];
+    }
+}
+
+- (void)_didPlayToEndPositoion {
+    if ( self.finishedReason != SJFinishedReasonToEndTimePosition ) {
+        self.finishedReason = SJFinishedReasonToEndTimePosition;
+        self.isPlaybackFinished = YES;
+        self.reasonForWaitingToPlay = nil;
+        self.timeControlStatus = SJPlaybackTimeControlStatusPaused;
+    }
+}
+
+- (CMTime)_adjustSeekTimeIfNeeded:(CMTime)time {
+    if ( _trialEndPosition != 0 && CMTimeGetSeconds(time) >= _trialEndPosition ) {
+        time = CMTimeMakeWithSeconds(_trialEndPosition * 0.98, NSEC_PER_SEC);
+    }
+    return time;
+}
+
+- (void)_refreshOrStop {
+    if ( _trialEndPosition == 0 || _timeControlStatus == SJPlaybackTimeControlStatusPaused ) {
+        if ( _refreshTimer != nil ) {
+            [_refreshTimer invalidate];
+            _refreshTimer = nil;
+        }
+    }
+    else {
+        if ( _refreshTimer == nil ) {
+            __weak typeof(self) _self = self;
+            _refreshTimer = [NSTimer sj_timerWithTimeInterval:0.5 repeats:YES usingBlock:^(NSTimer * _Nonnull timer) {
+                __strong typeof(_self) self = _self;
+                if ( !self ) return;
+                if ( self.isPlayedToTrialEndPosition ) {
+                    [self _didPlayToTrialEndPosition];
+                }
+            }];
+            [_refreshTimer sj_fire];
+            [NSRunLoop.mainRunLoop addTimer:_refreshTimer forMode:NSRunLoopCommonModes];
+        }
+    }
+    
+}
+
 @end
 NS_ASSUME_NONNULL_END

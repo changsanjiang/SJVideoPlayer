@@ -30,7 +30,9 @@
     _player.playbackController = SJAliMediaPlaybackController.new;
     AVPUrlSource *source = [AVPUrlSource.alloc init];
     source.playerUrl = SourceURL1;
-    _player.URLAsset = [SJVideoPlayerURLAsset.alloc initWithSource:source];
+    SJVideoPlayerURLAsset *asset = [SJVideoPlayerURLAsset.alloc initWithSource:source];
+//    asset.trialEndPosition = 30; // 试看30秒
+    _player.URLAsset = asset;
 #else
     // 切换为 Aliplayer, 详见: https://github.com/changsanjiang/SJVideoPlayer/wiki/Use-AliPlayer
     [_player.prompt show:[NSAttributedString sj_UIKitText:^(id<SJUIKitTextMakerProtocol>  _Nonnull make) {

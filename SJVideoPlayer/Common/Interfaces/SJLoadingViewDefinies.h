@@ -12,9 +12,10 @@
 
 NS_ASSUME_NONNULL_BEGIN
 @protocol SJLoadingView <NSObject>
+@property (nonatomic, readonly, getter=isAnimating) BOOL animating;
+@property (nonatomic) BOOL showNetworkSpeed;
 @property (nonatomic, strong, nullable) NSAttributedString *networkSpeedStr;
 
-@property (nonatomic, readonly, getter=isAnimating) BOOL animating;
 - (void)start;
 - (void)stop;
 @end

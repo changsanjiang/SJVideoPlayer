@@ -155,7 +155,7 @@ typedef struct _SJPlayerControlInfo {
 }
 
 + (NSString *)version {
-    return @"v3.2.4";
+    return @"v3.2.5";
 }
 
 - (void)setVideoGravity:(SJVideoGravity)videoGravity {
@@ -812,8 +812,12 @@ typedef struct _SJPlayerControlInfo {
     return _playbackController.reasonForWaitingToPlay;
 }
 
-- (BOOL)isPlayedToEndTime {
-    return _playbackController.isPlayedToEndTime;
+- (BOOL)isPlaybackFinished {
+    return _playbackController.isPlaybackFinished;
+}
+
+- (nullable SJFinishedReason)finishedReason {
+    return _playbackController.finishedReason;
 }
 
 - (BOOL)isPlayed {
@@ -1133,7 +1137,7 @@ typedef struct _SJPlayerControlInfo {
 
 - (void)playbackController:(id<SJVideoPlayerPlaybackController>)controller timeControlStatusDidChange:(SJPlaybackTimeControlStatus)status {
     
-    BOOL isBuffering = controller.reasonForWaitingToPlay == SJWaitingToMinimizeStallsReason;
+    BOOL isBuffering = self.isBuffering || self.assetStatus == SJAssetStatusPreparing;
     isBuffering ? [self.reachability startRefresh] : [self.reachability stopRefresh];
     
     if ( [self.controlLayerDelegate respondsToSelector:@selector(videoPlayerPlaybackStatusDidChange:)] ) {
@@ -1169,7 +1173,7 @@ typedef struct _SJPlayerControlInfo {
     [self _postNotification:SJVideoPlayerCurrentTimeDidChangeNotification];
 }
 
-- (void)mediaDidPlayToEndForPlaybackController:(id<SJVideoPlayerPlaybackController>)controller {
+- (void)playbackController:(id<SJVideoPlayerPlaybackController>)controller playbackDidFinish:(SJFinishedReason)reason {
     if ( _floatSmallViewController.isAppeared && self.autoDisappearFloatSmallView ) {
         [_floatSmallViewController dismissFloatView];
     }
@@ -1178,7 +1182,7 @@ typedef struct _SJPlayerControlInfo {
         [self.controlLayerDelegate videoPlayerPlaybackStatusDidChange:self];
     }
     
-    [self _postNotification:SJVideoPlayerPlaybackDidPlayToEndTimeNotification];
+    [self _postNotification:SJVideoPlayerPlaybackDidFinishNotification];
 }
 
 - (void)playbackController:(id<SJVideoPlayerPlaybackController>)controller presentationSizeDidChange:(CGSize)presentationSize {
@@ -2226,6 +2230,10 @@ typedef struct _SJPlayerControlInfo {
 
 - (nullable NSURL *)assetURL {
     return self.URLAsset.mediaURL;
+}
+
+- (BOOL)isPlayedToEndTime {
+    return self.isPlaybackFinished && self.finishedReason == SJFinishedReasonToEndTimePosition;
 }
 @end
 NS_ASSUME_NONNULL_END

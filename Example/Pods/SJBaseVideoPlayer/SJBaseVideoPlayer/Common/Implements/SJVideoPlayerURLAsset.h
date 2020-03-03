@@ -20,7 +20,11 @@ NS_ASSUME_NONNULL_BEGIN
 - (nullable instancetype)initWithURL:(NSURL *)URL playModel:(__kindof SJPlayModel *)playModel;
 - (nullable instancetype)initWithURL:(NSURL *)URL;
 
+/// 开始播放的位置, 单位秒
 @property (nonatomic) NSTimeInterval startPosition;
+
+/// 试用结束的位置, 单位秒
+@property (nonatomic) NSTimeInterval trialEndPosition;
 
 @property (nonatomic, strong, null_resettable) SJPlayModel *playModel;
 - (id<SJVideoPlayerURLAssetObserver>)getObserver;

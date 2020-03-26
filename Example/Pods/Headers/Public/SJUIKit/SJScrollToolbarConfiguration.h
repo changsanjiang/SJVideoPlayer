@@ -1,1 +1,0 @@
-../../../SJUIKit/SJUIKit/ScrollToolbar/Core/Model/SJScrollToolbarConfiguration.h

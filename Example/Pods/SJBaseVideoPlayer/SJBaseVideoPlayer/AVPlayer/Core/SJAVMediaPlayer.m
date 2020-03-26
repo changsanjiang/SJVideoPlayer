@@ -409,7 +409,7 @@ static NSString *kTimeControlStatus = @"timeControlStatus";
             }
             __auto_type timeControlStatus = self.timeControlStatus;
             __auto_type reasonForWaitingToPlay = self.reasonForWaitingToPlay;
-            if ( playerItem.status == SJAssetStatusReadyToPlay && (playerItem.isPlaybackBufferFull || playerItem.isPlaybackLikelyToKeepUp) ) {
+            if ( assetStatus == SJAssetStatusReadyToPlay && (playerItem.isPlaybackBufferFull || playerItem.isPlaybackLikelyToKeepUp) ) {
                 reasonForWaitingToPlay = nil;
                 timeControlStatus = SJPlaybackTimeControlStatusPlaying;
             }

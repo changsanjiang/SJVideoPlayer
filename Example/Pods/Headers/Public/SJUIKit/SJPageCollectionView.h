@@ -1,1 +1,1 @@
-../../../SJUIKit/SJUIKit/PageViewController/Core/View/SJPageCollectionView.h
+../../../SJUIKit/SJUIKit/PageViewController/PageViewController/Core/SJPageCollectionView.h

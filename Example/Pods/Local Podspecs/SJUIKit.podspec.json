@@ -1,6 +1,6 @@
 {
   "name": "SJUIKit",
-  "version": "0.0.0.40",
+  "version": "0.0.0.42",
   "summary": "SJUIKit.",
   "description": "`Objective-C` UIKit",
   "homepage": "https://gitee.com/changsanjiang/SJUIKit",
@@ -13,7 +13,7 @@
   },
   "source": {
     "git": "https://gitee.com/changsanjiang/SJUIKit.git",
-    "tag": "0.0.0.40"
+    "tag": "0.0.0.42"
   },
   "platforms": {
     "ios": "8.0"
@@ -141,29 +141,26 @@
     },
     {
       "name": "PageViewController",
-      "source_files": "SJUIKit/PageViewController/*.{h,m}",
       "subspecs": [
         {
-          "name": "Core",
-          "source_files": "SJUIKit/PageViewController/Core/**/*.{h,m}"
-        }
-      ]
-    },
-    {
-      "name": "ScrollToolbar",
-      "source_files": "SJUIKit/ScrollToolbar/*.{h,m}",
-      "subspecs": [
+          "name": "PageViewController",
+          "source_files": "SJUIKit/PageViewController/PageViewController/*.{h,m}",
+          "subspecs": [
+            {
+              "name": "Core",
+              "source_files": "SJUIKit/PageViewController/PageViewController/Core/**/*.{h,m}"
+            }
+          ]
+        },
         {
-          "name": "Core",
-          "source_files": "SJUIKit/ScrollToolbar/Core/**/*.{h,m}",
-          "dependencies": {
-            "Masonry": [
-
-            ],
-            "SDWebImage": [
-
-            ]
-          }
+          "name": "PageMenuBar",
+          "source_files": "SJUIKit/PageViewController/PageMenuBar/*.{h,m}",
+          "subspecs": [
+            {
+              "name": "Core",
+              "source_files": "SJUIKit/PageViewController/PageMenuBar/Core/**/*.{h,m}"
+            }
+          ]
         }
       ]
     }

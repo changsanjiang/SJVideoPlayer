@@ -57,7 +57,7 @@ target 'SJVideoPlayer_Example' do
   # 默认为 AVPlayer
   pod 'SJBaseVideoPlayer'#, :path => '../../SJBaseVideoPlayer'
   pod 'SJVideoPlayer', :path => '../../SJVideoPlayer'
-  pod 'SJUIKit/SQLite3', :podspec => 'https://gitee.com/changsanjiang/SJUIKit/raw/master/SJUIKit-YYModel.podspec'
+  pod 'SJUIKit', :podspec => 'https://gitee.com/changsanjiang/SJUIKit/raw/master/SJUIKit-YYModel.podspec'
 
   # 全屏手势
   pod 'SJFullscreenPopGesture/ObjC'

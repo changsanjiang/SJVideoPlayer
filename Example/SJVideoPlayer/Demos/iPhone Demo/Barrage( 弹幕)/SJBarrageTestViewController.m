@@ -23,10 +23,6 @@ NS_ASSUME_NONNULL_BEGIN
 
 @implementation SJBarrageTestViewController
 
-- (BOOL)shouldAutorotate {
-    return NO;
-}
-
 - (void)viewDidLoad {
     [super viewDidLoad];
     [self _setupViews];
@@ -105,12 +101,8 @@ NS_ASSUME_NONNULL_BEGIN
     [self.player vc_viewDidDisappear];
 }
 
-- (BOOL)prefersStatusBarHidden {
-    return [self.player vc_prefersStatusBarHidden];
-}
-
-- (UIStatusBarStyle)preferredStatusBarStyle {
-    return [self.player vc_preferredStatusBarStyle];
+- (BOOL)shouldAutorotate {
+    return NO;
 }
 
 - (BOOL)prefersHomeIndicatorAutoHidden {

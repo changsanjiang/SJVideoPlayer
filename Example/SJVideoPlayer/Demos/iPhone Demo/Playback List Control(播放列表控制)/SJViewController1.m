@@ -204,12 +204,8 @@ static NSString *const SJTableViewCell1ID = @"SJTableViewCell1";
     [self.player vc_viewDidDisappear];
 }
 
-- (BOOL)prefersStatusBarHidden {
-    return [self.player vc_prefersStatusBarHidden];
-}
-
-- (UIStatusBarStyle)preferredStatusBarStyle {
-    return [self.player vc_preferredStatusBarStyle];
+- (BOOL)shouldAutorotate {
+    return NO;
 }
 
 - (BOOL)prefersHomeIndicatorAutoHidden {

@@ -95,12 +95,8 @@ static SJControlLayerIdentifier SJTestControlLayerIdentifier = 101;
     }];
 }
 
-- (BOOL)prefersStatusBarHidden {
-    return !self.player.isControlLayerAppeared;
-}
-
-- (UIStatusBarStyle)preferredStatusBarStyle {
-    return UIStatusBarStyleLightContent;
+- (BOOL)shouldAutorotate {
+    return NO;
 }
 
 - (BOOL)prefersHomeIndicatorAutoHidden {

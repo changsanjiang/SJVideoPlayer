@@ -29,10 +29,6 @@ static NSString *kDemoTableViewCell = @"DemoTableViewCell";
 
 @implementation ListViewAutoplayViewController
 
-- (BOOL)shouldAutorotate {
-    return NO;
-}
-
 - (void)viewDidLoad {
     [super viewDidLoad];
     _models = [NSMutableArray array];
@@ -133,12 +129,8 @@ static NSString *kDemoTableViewCell = @"DemoTableViewCell";
     [self.player vc_viewDidDisappear];
 }
 
-- (BOOL)prefersStatusBarHidden {
-    return [self.player vc_prefersStatusBarHidden];
-}
-
-- (UIStatusBarStyle)preferredStatusBarStyle {
-    return [self.player vc_preferredStatusBarStyle];
+- (BOOL)shouldAutorotate {
+    return NO;
 }
 
 - (BOOL)prefersHomeIndicatorAutoHidden {

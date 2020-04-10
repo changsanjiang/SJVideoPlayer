@@ -357,7 +357,7 @@ static CGFloat SJScreenMaxWidth;
         [container mas_remakeConstraints:^(MASConstraintMaker *make) {
             CGFloat topMargin = config.topMargin;
             CGFloat height = config.height;
-            idx == 0 ? make.top.offset(0) : make.top.equalTo(self.containerViews[idx - 1].mas_bottom).offset(topMargin);
+            idx == 0 ? make.top.offset(topMargin) : make.top.equalTo(self.containerViews[idx - 1].mas_bottom).offset(topMargin);
             make.left.right.offset(0);
             make.height.offset(height);
             if ( idx == self.containerViews.count - 1 ) { make.bottom.offset(0); }

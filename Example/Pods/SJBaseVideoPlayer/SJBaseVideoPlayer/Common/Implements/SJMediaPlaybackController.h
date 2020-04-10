@@ -94,4 +94,14 @@ extern NSNotificationName const SJMediaPlayerViewReadyForDisplayNotification;
 
 /// 这个通知是可选的(如果可以获取到playbacType, 请发送该通知)
 extern NSNotificationName const SJMediaPlayerPlaybackTypeDidChangeNotification;
+
+
+@interface SJMediaPlaybackController (SJSwitchDefinitionExtended)
+///
+/// 该方法通知子类, 切换清晰度即将完成, 将要设置media为新的清晰度资源
+///
+///         子类可根据自己需求决定是否重写该方法用于清理旧的资源
+///
+- (void)replaceMediaForDefinitionMedia:(SJVideoPlayerURLAsset *)definitionMedia NS_REQUIRES_SUPER;
+@end
 NS_ASSUME_NONNULL_END

@@ -122,4 +122,14 @@ extern SJEdgeControlButtonItemTag const SJEdgeControlLayerCenterItem_Replay;    
 @protocol SJEdgeControlLayerDelegate <NSObject>
 - (void)backItemWasTappedForControlLayer:(id<SJControlLayer>)controlLayer;
 @end
+
+
+@interface SJEdgeControlButtonItem (SJControlLayerExtended)
+///
+/// 点击item时是否重置控制层的显示间隔
+///
+///     default value is YES
+///
+@property (nonatomic) BOOL resetAppearIntervalWhenPerformingItemAction;
+@end
 NS_ASSUME_NONNULL_END

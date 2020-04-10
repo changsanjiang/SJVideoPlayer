@@ -77,13 +77,10 @@ NS_ASSUME_NONNULL_BEGIN
     };
 }
 
-- (BOOL)prefersStatusBarHidden {
-    return [self.player vc_prefersStatusBarHidden];
+- (BOOL)shouldAutorotate {
+    return NO;
 }
 
-- (UIStatusBarStyle)preferredStatusBarStyle {
-    return [self.player vc_preferredStatusBarStyle];
-}
 
 - (BOOL)prefersHomeIndicatorAutoHidden {
     return YES;

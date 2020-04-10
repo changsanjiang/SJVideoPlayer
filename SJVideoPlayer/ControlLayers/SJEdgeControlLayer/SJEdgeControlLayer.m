@@ -37,6 +37,7 @@
 #import "SJScrollingTextMarqueeView.h"
 #import "SJFullscreenCustomStatusBar.h"
 #import "SJFastForwardView.h"
+#import <objc/message.h>
 
 #pragma mark - Top
 SJEdgeControlButtonItemTag const SJEdgeControlLayerTopItem_Back = 10000;
@@ -709,6 +710,7 @@ SJEdgeControlButtonItemTag const SJEdgeControlLayerCenterItem_Replay = 40000;
 
 - (void)_addItemsToTopAdapter {
     SJEdgeControlButtonItem *backItem = [SJEdgeControlButtonItem placeholderWithType:SJButtonItemPlaceholderType_49x49 tag:SJEdgeControlLayerTopItem_Back];
+    backItem.resetAppearIntervalWhenPerformingItemAction = NO;
     [backItem addTarget:self action:@selector(_backItemWasTapped)];
     [self.topAdapter addItem:backItem];
     _backItem = backItem;
@@ -778,6 +780,7 @@ SJEdgeControlButtonItemTag const SJEdgeControlLayerCenterItem_Replay = 40000;
 
     // 全屏按钮
     SJEdgeControlButtonItem *fullItem = [SJEdgeControlButtonItem placeholderWithType:SJButtonItemPlaceholderType_49x49 tag:SJEdgeControlLayerBottomItem_FullBtn];
+    fullItem.resetAppearIntervalWhenPerformingItemAction = NO;
     [fullItem addTarget:self action:@selector(_fullItemWasTapped)];
     [self.bottomAdapter addItem:fullItem];
 
@@ -1239,24 +1242,15 @@ SJEdgeControlButtonItemTag const SJEdgeControlLayerCenterItem_Replay = 40000;
     }];
 }
 
+/// 此处为重置控制层的隐藏间隔.(如果点击到当前控制层上的item, 则重置控制层的隐藏间隔)
 - (void)_resetControlLayerAppearIntervalForItemIfNeeded:(NSNotification *)note {
     SJEdgeControlButtonItem *item = note.object;
-    if ( [_topAdapter containsItem:item] ) {
-        if ( item.tag == SJEdgeControlLayerTopItem_Back )
-            return;
-    }
-    
-    if ( [_bottomAdapter containsItem:item] ) {
-        if ( item.tag == SJEdgeControlLayerBottomItem_FullBtn )
-            return;
-    }
-    
-    if ( [_topAdapter containsItem:item] ||
-         [_leftAdapter containsItem:item] ||
-         [_bottomAdapter containsItem:item] ||
-         [_rightAdapter containsItem:item] ||
-         [_centerAdapter containsItem:item] ) {
-        [_videoPlayer controlLayerNeedAppear]; // 此处为重置控制层的隐藏间隔.(如果点击到当前控制层上的item, 则重置控制层的隐藏间隔)
+    if ( item.resetAppearIntervalWhenPerformingItemAction ) {
+        if ( [_topAdapter containsItem:item] ||
+             [_leftAdapter containsItem:item] ||
+             [_bottomAdapter containsItem:item] ||
+             [_rightAdapter containsItem:item] )
+            [_videoPlayer controlLayerNeedAppear];
     }
 }
 
@@ -1343,5 +1337,16 @@ SJEdgeControlButtonItemTag const SJEdgeControlLayerCenterItem_Replay = 40000;
     
     if ( _draggingObserver.didEndDraggingExeBlock )
         _draggingObserver.didEndDraggingExeBlock(time);
+}
+@end
+
+
+@implementation SJEdgeControlButtonItem (SJControlLayerExtended)
+- (void)setResetAppearIntervalWhenPerformingItemAction:(BOOL)resetAppearIntervalWhenPerformingItemAction {
+    objc_setAssociatedObject(self, @selector(resetAppearIntervalWhenPerformingItemAction), @(resetAppearIntervalWhenPerformingItemAction), OBJC_ASSOCIATION_RETAIN_NONATOMIC);
+}
+- (BOOL)resetAppearIntervalWhenPerformingItemAction {
+    id result = objc_getAssociatedObject(self, _cmd);
+    return result == nil ? YES : [result boolValue];
 }
 @end

@@ -89,14 +89,6 @@
     }];
 }
 
-- (BOOL)prefersStatusBarHidden {
-    return !self.player.isControlLayerAppeared;
-}
-
-- (UIStatusBarStyle)preferredStatusBarStyle {
-    return UIStatusBarStyleLightContent;
-}
-
 - (BOOL)prefersHomeIndicatorAutoHidden {
     return YES;
 }

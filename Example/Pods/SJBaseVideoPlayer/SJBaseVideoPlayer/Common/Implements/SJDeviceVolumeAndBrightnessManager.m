@@ -184,6 +184,7 @@ static NSNotificationName const SJDeviceBrightnessDidChangeNotification = @"SJDe
 - (instancetype)init {
     self = [super init];
     if ( !self ) return nil;
+    _showsPromptView = YES;
     _taskQueue = SJRunLoopTaskQueue.queue(@"SJDeviceVolumeAndBrightnessManagerTaskQueue").update(CFRunLoopGetMain(), kCFRunLoopCommonModes).delay(5);
      
     dispatch_async(dispatch_get_global_queue(0, 0), ^{
@@ -228,7 +229,7 @@ static NSNotificationName const SJDeviceBrightnessDidChangeNotification = @"SJDe
 }
 
 - (void)_addOrRemoveSysVolumeView:(nullable UIWindow *)newWindow {
-    if ( newWindow != nil ) {
+    if ( _showsPromptView && newWindow != nil ) {
         if ( self.sysVolumeView.superview != newWindow )
             [newWindow addSubview:self.sysVolumeView];
     }
@@ -242,11 +243,6 @@ static NSNotificationName const SJDeviceBrightnessDidChangeNotification = @"SJDe
 - (void)_volumeDidChange {
     [self _refreshDataForVolumeView];
     [self _showVolumeViewIfNeeded];
-    [NSObject cancelPreviousPerformRequestsWithTarget:self selector:@selector(_hiddenVolumeView) object:nil];
-    [self performSelector:@selector(_hiddenVolumeView)
-               withObject:nil
-               afterDelay:1
-                  inModes:@[NSRunLoopCommonModes]];
 }
 
 @synthesize volume = _volume;
@@ -324,6 +320,7 @@ static UIImage *_volumeImage = nil;
 }
 
 - (void)_showVolumeViewIfNeeded {
+    if ( !_showsPromptView ) return;
     UIView *targetView = self.targetView;
     if ( targetView.window != nil && self.volumeView.superview != targetView ) {
         [targetView addSubview:self.volumeView];
@@ -331,6 +328,12 @@ static UIImage *_volumeImage = nil;
             make.center.offset(0);
         }];
     }
+    
+    [NSObject cancelPreviousPerformRequestsWithTarget:self selector:@selector(_hiddenVolumeView) object:nil];
+    [self performSelector:@selector(_hiddenVolumeView)
+               withObject:nil
+               afterDelay:1
+                  inModes:@[NSRunLoopCommonModes]];
 }
 
 - (void)_hiddenVolumeView {
@@ -342,11 +345,6 @@ static UIImage *_volumeImage = nil;
 - (void)_brightnessDidChange {
     [self _refreshDataForBrightnessView];
     [self _showBrightnessViewIfNeeded];
-    [NSObject cancelPreviousPerformRequestsWithTarget:self selector:@selector(_hiddenBrightnessView) object:nil];
-    [self performSelector:@selector(_hiddenBrightnessView)
-               withObject:nil
-               afterDelay:1
-                  inModes:@[NSRunLoopCommonModes]];
 }
 
 - (void)setBrightness:(float)brightness {
@@ -403,6 +401,7 @@ static UIImage *_volumeImage = nil;
 }
 
 - (void)_showBrightnessViewIfNeeded {
+    if ( !_showsPromptView ) return;
     UIView *targetView = self.targetView;
     if ( targetView != nil && self.brightnessView.superview != targetView ) {
         [targetView addSubview:self.brightnessView];
@@ -410,6 +409,12 @@ static UIImage *_volumeImage = nil;
             make.center.offset(0);
         }];
     }
+    
+    [NSObject cancelPreviousPerformRequestsWithTarget:self selector:@selector(_hiddenBrightnessView) object:nil];
+    [self performSelector:@selector(_hiddenBrightnessView)
+               withObject:nil
+               afterDelay:1
+                  inModes:@[NSRunLoopCommonModes]];
 }
 
 - (void)_hiddenBrightnessView {

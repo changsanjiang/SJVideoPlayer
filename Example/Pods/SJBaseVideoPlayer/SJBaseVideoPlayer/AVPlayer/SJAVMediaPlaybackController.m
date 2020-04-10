@@ -73,6 +73,11 @@ NS_ASSUME_NONNULL_BEGIN
     }
 }
 
+- (void)replaceMediaForDefinitionMedia:(SJVideoPlayerURLAsset *)definitionMedia {
+    [SJAVMediaPlayerLoader clearPlayerForMedia:self.media];
+    [super replaceMediaForDefinitionMedia:definitionMedia];
+}
+
 #pragma mark -
 
 - (void)seekToTime:(CMTime)time toleranceBefore:(CMTime)toleranceBefore toleranceAfter:(CMTime)toleranceAfter completionHandler:(void (^_Nullable)(BOOL))completionHandler {

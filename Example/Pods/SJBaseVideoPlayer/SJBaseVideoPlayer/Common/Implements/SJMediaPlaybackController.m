@@ -238,6 +238,7 @@ NS_ASSUME_NONNULL_BEGIN
 - (void)stop {
     [_definitionMediaPlayerLoader cancel];
     _definitionMediaPlayerLoader = nil;
+    _definitionMedia = nil;
     [self _removePeriodicTimeObserver];
     [self.currentPlayerView removeFromSuperview];
     _playerView.view = nil;
@@ -300,6 +301,8 @@ NS_ASSUME_NONNULL_BEGIN
         self.definitionMediaPlayerLoader = [SJDefinitionMediaPlayerLoader.alloc initWithDefinitionMediaPlayer:definitionMediaPlayer definitionMediaPlayerView:definitionMediaPlayerView currentPlayer:currentPlayer currentPlayerView:currentPlayerView completionHandler:^(SJDefinitionMediaPlayerLoader * _Nonnull loader, BOOL isFinished) {
             __strong typeof(_self) self = _self;
             if ( !self ) return;
+            if ( media != self.definitionMedia ) return;
+            self.definitionMedia = nil;
             self.definitionMediaPlayerLoader = nil;
             if ( !isFinished ) {
                 [self _definitionMedia:media switchStatusDidChange:SJDefinitionSwitchStatusFailed];
@@ -307,7 +310,7 @@ NS_ASSUME_NONNULL_BEGIN
             else {
                 id<SJMediaPlayer> player = loader.definitionMediaPlayer;
                 SJVideoPlayerURLAsset *newMedia = media;
-                [self _replaceMediaForDefinitionMedia:newMedia];
+                [self replaceMediaForDefinitionMedia:newMedia];
                 
                 id<SJMediaPlayer> oldPlayer = self.currentPlayer;
                 id<SJMediaPlayer> newPlayer = player;
@@ -396,7 +399,7 @@ NS_ASSUME_NONNULL_BEGIN
     _media = media;
 }
 
-- (void)_replaceMediaForDefinitionMedia:(SJVideoPlayerURLAsset *)definitionMedia {
+- (void)replaceMediaForDefinitionMedia:(SJVideoPlayerURLAsset *)definitionMedia {
     _media = definitionMedia;
 }
 
@@ -505,7 +508,7 @@ NS_ASSUME_NONNULL_BEGIN
             str = "Failed";
             break;
     }
-    printf("SJAliMediaPlaybackController<%p>.switchStatus = %s\n", self, str);
+    printf("SJMediaPlaybackController<%p>.switchStatus = %s\n", self, str);
 #endif
 }
 

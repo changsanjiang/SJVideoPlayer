@@ -2,19 +2,19 @@ PODS:
   - Masonry (1.1.0)
   - MJRefresh (3.3.1)
   - Reachability (3.2)
-  - SDWebImage (5.6.1):
-    - SDWebImage/Core (= 5.6.1)
-  - SDWebImage/Core (5.6.1)
-  - SJBaseVideoPlayer (3.2.5.1):
+  - SDWebImage (5.7.1):
+    - SDWebImage/Core (= 5.7.1)
+  - SDWebImage/Core (5.7.1)
+  - SJBaseVideoPlayer (3.2.6):
     - Masonry
     - Reachability
-    - SJBaseVideoPlayer/AVPlayer (= 3.2.5.1)
-    - SJBaseVideoPlayer/Common (= 3.2.5.1)
+    - SJBaseVideoPlayer/AVPlayer (= 3.2.6)
+    - SJBaseVideoPlayer/Common (= 3.2.6)
     - SJUIKit/AttributesFactory (>= 0.0.0.38)
     - SJUIKit/ObserverHelper
     - SJUIKit/Queues
     - SJUIKit/SQLite3
-  - SJBaseVideoPlayer/AVPlayer (3.2.5.1):
+  - SJBaseVideoPlayer/AVPlayer (3.2.6):
     - Masonry
     - Reachability
     - SJBaseVideoPlayer/Common
@@ -22,7 +22,7 @@ PODS:
     - SJUIKit/ObserverHelper
     - SJUIKit/Queues
     - SJUIKit/SQLite3
-  - SJBaseVideoPlayer/Common (3.2.5.1):
+  - SJBaseVideoPlayer/Common (3.2.6):
     - Masonry
     - Reachability
     - SJBaseVideoPlayer/ResourceLoader
@@ -30,7 +30,7 @@ PODS:
     - SJUIKit/ObserverHelper
     - SJUIKit/Queues
     - SJUIKit/SQLite3
-  - SJBaseVideoPlayer/ResourceLoader (3.2.5.1):
+  - SJBaseVideoPlayer/ResourceLoader (3.2.6):
     - Masonry
     - Reachability
     - SJUIKit/AttributesFactory (>= 0.0.0.38)
@@ -132,7 +132,7 @@ DEPENDENCIES:
   - SJVideoPlayer (from `../../SJVideoPlayer`)
 
 SPEC REPOS:
-  https://cdn.cocoapods.org/:
+  trunk:
     - Masonry
     - MJRefresh
     - Reachability
@@ -158,8 +158,8 @@ SPEC CHECKSUMS:
   Masonry: 678fab65091a9290e40e2832a55e7ab731aad201
   MJRefresh: eeda70fbf0ad277f3178cef1cd0c3532591d6237
   Reachability: 33e18b67625424e47b6cde6d202dce689ad7af96
-  SDWebImage: 7edb9c3ea661e77a66661f7f044de8c1b55d1120
-  SJBaseVideoPlayer: 6e99f0f76da61ebeeaf4d9ceb9c7657694cd1411
+  SDWebImage: 5d4cf6afccd9ac1d2ee701ed0c4917cbb1b80536
+  SJBaseVideoPlayer: 6d12484e40ae56aeb7cd33d4c8588adb7e113798
   SJFullscreenPopGesture: d4994917bc900e79cd686970866834b4c5883565
   SJPlaybackListController: e135c789fcd63d63a62d5e2e2965ab1e6d52a2bd
   SJRouter: b822f45c4eed29cfa1d75100492ff227d481fb91

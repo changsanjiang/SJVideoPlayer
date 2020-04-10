@@ -296,6 +296,10 @@ static NSString *kTimeControlStatus = @"timeControlStatus";
     if ( @available(iOS 10.0, *) ) {
         [_avPlayer removeObserver:self forKeyPath:kTimeControlStatus];
     }
+
+#ifdef SJDEBUG
+    NSLog(@"%d \t %s", (int)__LINE__, __func__);
+#endif
 }
 
 - (void)observeValueForKeyPath:(nullable NSString *)keyPath ofObject:(nullable id)object change:(nullable NSDictionary<NSKeyValueChangeKey,id> *)change context:(nullable void *)context {

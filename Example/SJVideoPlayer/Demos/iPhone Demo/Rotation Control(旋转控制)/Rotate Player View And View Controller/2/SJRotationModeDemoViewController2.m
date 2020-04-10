@@ -160,12 +160,6 @@
 
 #pragma mark -
 
-- (BOOL)shouldAutorotate {
-    return NO;
-}
-
-#pragma mark -
-
 - (void)viewDidAppear:(BOOL)animated {
     [super viewDidAppear:animated];
     [self.player vc_viewDidAppear];
@@ -181,12 +175,8 @@
     [self.player vc_viewDidDisappear];
 }
 
-- (BOOL)prefersStatusBarHidden {
-    return [self.player vc_prefersStatusBarHidden];
-}
-
-- (UIStatusBarStyle)preferredStatusBarStyle {
-    return [self.player vc_preferredStatusBarStyle];
+- (BOOL)shouldAutorotate {
+    return NO;
 }
 
 - (BOOL)prefersHomeIndicatorAutoHidden {

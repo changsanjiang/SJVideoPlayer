@@ -60,9 +60,12 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (void)layoutSubviews {
     [super layoutSubviews];
-    
+    [self _updateLayoutIfNeeded];
+    _centerAdapter.itemFillSizeForFrameLayout = self.bounds.size;
+}
+
+- (void)_updateLayoutIfNeeded {
     CGRect curr = self.bounds;
-    
     if ( _screen.is_iPhoneX && _autoAdjustLayoutWhenDeviceIsiPhoneX ) {
         if ( !CGRectEqualToRect(_beforeBounds, curr) ) {
             CGFloat viewW = curr.size.width;
@@ -78,13 +81,9 @@ NS_ASSUME_NONNULL_BEGIN
             }
         }
     }
-    else {
-        if ( !CGRectEqualToRect(_beforeBounds, curr) ) {
-            [self _updateTopLayout:nil];
-        }
+    else if ( !CGRectEqualToRect(_beforeBounds, curr) ) {
+        [self _updateTopLayout:nil];
     }
-
-    _centerAdapter.itemFillSizeForFrameLayout = curr.size;
     _beforeBounds = curr;
 }
 
@@ -180,7 +179,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (void)_updateTopLayout:(nullable NSNotification *)notify {
     if ( !_topAdapter ) return;
-    if ( _screen.is_iPhoneX ) return;
+    if ( _screen.is_iPhoneX && _autoAdjustLayoutWhenDeviceIsiPhoneX ) return;
     [UIView animateWithDuration:0 animations:^{} completion:^(BOOL finished) {
         UIInterfaceOrientation orientation = notify?[notify.userInfo[UIApplicationStatusBarOrientationUserInfoKey] integerValue]: UIApplication.sharedApplication.statusBarOrientation;
         switch ( orientation ) {
@@ -431,7 +430,7 @@ NS_ASSUME_NONNULL_BEGIN
 - (void)setTopMargin:(CGFloat)topMargin {
     _topMargin = topMargin;
     
-    [self _updateTopLayout:nil];
+    [self _updateLayoutIfNeeded];
 }
 
 - (void)setLeftMargin:(CGFloat)leftMargin {

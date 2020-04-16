@@ -90,6 +90,7 @@ NS_ASSUME_NONNULL_BEGIN
         
         [self.player.presentView.placeholderImageView sd_setImageWithURL:[NSURL URLWithString:_viewModels[curr].cover]];
         self.viewModels[self.collectionView.sj_currentPlayingIndexPath.item].showPausedImageView = NO;
+        [self.player pause];
         self.player.URLAsset = asset;
         [self.player play];
     }

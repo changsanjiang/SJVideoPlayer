@@ -88,7 +88,7 @@ UIKIT_EXTERN SJPageViewControllerOptionsKey const SJPageViewControllerOptionInte
 ///
 - (void)pageViewController:(SJPageViewController *)pageViewController didScrollInRange:(NSRange)range distanceProgress:(CGFloat)progress;
 
-- (void)pageViewController:(SJPageViewController *)pageViewController focusedIndexDidChange:(NSInteger)index;
+- (void)pageViewController:(SJPageViewController *)pageViewController focusedIndexDidChange:(NSUInteger)index;
 - (void)pageViewController:(SJPageViewController *)pageViewController willDisplayViewController:(nullable __kindof UIViewController *)viewController atIndex:(NSInteger)index;
 - (void)pageViewController:(SJPageViewController *)pageViewController didEndDisplayingViewController:(nullable __kindof UIViewController *)viewController atIndex:(NSInteger)index;
 @end

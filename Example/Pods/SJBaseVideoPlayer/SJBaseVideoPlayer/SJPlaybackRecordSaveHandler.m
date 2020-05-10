@@ -119,7 +119,7 @@ NS_ASSUME_NONNULL_BEGIN
         [NSNotificationCenter.defaultCenter addObserver:self selector:@selector(_timeControlStatusDidChange:) name:SJVideoPlayerPlaybackTimeControlStatusDidChangeNotification object:nil];
         [NSNotificationCenter.defaultCenter addObserver:self selector:@selector(_URLAssetWillChange:) name:SJVideoPlayerURLAssetWillChangeNotification object:nil];
         [NSNotificationCenter.defaultCenter addObserver:self selector:@selector(_playbackWillStop:) name:SJVideoPlayerPlaybackWillStopNotification object:nil];
-        [NSNotificationCenter.defaultCenter addObserver:self selector:@selector(_playbackWillRefresh:) name:SJVideoPlayerPlaybackWillRereshNotification object:nil];
+        [NSNotificationCenter.defaultCenter addObserver:self selector:@selector(_playbackWillRefresh:) name:SJVideoPlayerPlaybackWillRefreshNotification object:nil];
         [NSNotificationCenter.defaultCenter addObserver:self selector:@selector(_didEnterBackground:) name:SJVideoPlayerApplicationDidEnterBackgroundNotification object:nil];
         [NSNotificationCenter.defaultCenter addObserver:self selector:@selector(_willTerminate:) name:SJVideoPlayerApplicationWillTerminateNotification object:nil];
         [NSNotificationCenter.defaultCenter addObserver:self selector:@selector(_playbackControllerWillDeallocate:) name:SJVideoPlayerPlaybackControllerWillDeallocateNotification object:nil];

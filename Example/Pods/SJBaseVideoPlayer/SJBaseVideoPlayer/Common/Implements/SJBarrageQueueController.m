@@ -30,6 +30,10 @@ NS_ASSUME_NONNULL_BEGIN
 
 static NSNotificationName const SJBarrageQueueControllerDisabledDidChangeNotification = @"SJBarrageQueueControllerDisabledDidChangeNotification";
 static NSNotificationName const SJBarrageQueueControllerPausedDidChangeNotification = @"SJBarrageQueueControllerPausedDidChangeNotification";
+static NSNotificationName const SJBarrageQueueControllerWillDisplayBarrageNotification = @"SJBarrageQueueControllerWillDisplayBarrageNotification";
+static NSNotificationName const SJBarrageQueueControllerDidEndDisplayBarrageNotification = @"SJBarrageQueueControllerDidEndDisplayBarrageNotification";
+static NSString *const SJBarrageQueueControllerBarrageItemKey = @"barrageItem";
+
 
 @interface SJBarrageViewModel : NSObject
 - (instancetype)initWithBarrageItem:(id<SJBarrageItem>)item;
@@ -38,10 +42,10 @@ static NSNotificationName const SJBarrageQueueControllerPausedDidChangeNotificat
 @property (nonatomic, strong, readonly, nullable) __kindof UIView *customView;
 @property (nonatomic, readonly) CGSize contentSize;
 
-@property (nonatomic) NSTimeInterval startTime;
 @property (nonatomic) NSTimeInterval duration;
 @property (nonatomic) NSTimeInterval nextBarrageStartTime;
 @property (nonatomic) NSTimeInterval delay;
+@property (nonatomic) CGFloat points;
 @end
 
 @implementation SJBarrageViewModel
@@ -54,9 +58,10 @@ static NSNotificationName const SJBarrageQueueControllerPausedDidChangeNotificat
         }
         else {
             _customView = item.customView;
-            _contentSize = item.customView.bounds.size;
             if ( CGSizeEqualToSize(CGSizeZero, _contentSize) )
                 _contentSize = [item.customView systemLayoutSizeFittingSize:UILayoutFittingCompressedSize];
+            else
+                _contentSize = item.customView.bounds.size;
         }
     }
     return self;
@@ -143,7 +148,7 @@ static NSNotificationName const SJBarrageQueueControllerPausedDidChangeNotificat
 @protocol SJBarrageClockDelegate;
 
 @interface SJBarrageClock : NSObject
-+ (instancetype)clock;
++ (instancetype)clockWithDelegate:(id<SJBarrageClockDelegate>)delegate;
 @property (nonatomic, weak, nullable) id<SJBarrageClockDelegate> delegate;
 @property (nonatomic, readonly) NSTimeInterval time;
 
@@ -163,8 +168,10 @@ static NSNotificationName const SJBarrageQueueControllerPausedDidChangeNotificat
 @property (nonatomic, getter=isPaused) BOOL paused;
 @end
 @implementation SJBarrageClock
-+ (instancetype)clock {
-    return SJBarrageClock.alloc.init;
++ (instancetype)clockWithDelegate:(id<SJBarrageClockDelegate>)delegate {
+    SJBarrageClock *clock = SJBarrageClock.alloc.init;
+    clock.delegate = delegate;
+    return clock;
 }
 - (instancetype)init {
     self = [super init];
@@ -209,25 +216,97 @@ static NSNotificationName const SJBarrageQueueControllerPausedDidChangeNotificat
 
 #pragma mark -
 
-@interface SJBarrageContainerView : UIView
-@property (nonatomic, strong, readonly, nullable) SJBarrageView *lastView;
-- (void)pauseAnimations;
-- (void)resumeAnimations;
+@interface SJBarrageLineView : UIView
 @end
 
-@implementation SJBarrageContainerView
-- (void)pauseAnimations {
-    for ( UIView *subview in self.subviews ) {
+@implementation SJBarrageLineView
+@end
+
+#pragma mark -
+
+@interface SJBarrageLineConfiguration ()
+- (CGFloat)rateForLineAtIndex:(NSInteger)index;
+- (CGFloat)topMarginForLineAtIndex:(NSInteger)index;
+- (CGFloat)itemSpacingForLineAtIndex:(NSInteger)index;
+- (CGFloat)heightForLineAtIndex:(NSInteger)index;
+@end
+
+#pragma mark -
+
+@interface SJBarrageLine : NSObject
+- (instancetype)initWithPool:(SJBarrageViewReusablePool *)pool;
+@property (nonatomic, strong, readonly) SJBarrageViewReusablePool *pool;
+@property (nonatomic, strong, readonly) SJBarrageLineView *view;
+
+@property (nonatomic, strong, readonly, nullable) SJBarrageViewModel *last;
+- (void)pause;
+- (void)resume;
+- (void)clear;
+- (void)fire:(SJBarrageViewModel *)viewModel stoppedCallback:(void(^)(void))completion;
+@end
+
+@implementation SJBarrageLine
+- (instancetype)initWithPool:(SJBarrageViewReusablePool *)pool {
+    self = [super init];
+    if ( self ) {
+        _pool = pool;
+        _view = [SJBarrageLineView.alloc initWithFrame:CGRectZero];
+    }
+    return self;
+}
+
+- (nullable SJBarrageViewModel *)last {
+    __auto_type view = (SJBarrageView *)_view.subviews.lastObject;
+    return view.viewModel;
+}
+
+- (void)pause {
+    for ( UIView *subview in _view.subviews ) {
         [subview.layer pauseAnimation];
     }
 }
-- (void)resumeAnimations {
-    for ( UIView *subview in self.subviews ) {
+
+- (void)resume {
+    for ( UIView *subview in _view.subviews ) {
         [subview.layer resumeAnimation];
     }
 }
-- (nullable SJBarrageView *)lastView {
-    return self.subviews.lastObject;
+
+- (void)clear {
+    [_view.subviews enumerateObjectsWithOptions:NSEnumerationReverse usingBlock:^(__kindof UIView * _Nonnull view, NSUInteger idx, BOOL * _Nonnull stop) {
+        [view.layer removeAllAnimations];
+        [view removeFromSuperview];
+    }];
+}
+
+- (void)fire:(SJBarrageViewModel *)viewModel stoppedCallback:(void(^)(void))completion {
+    SJBarrageView *barrageView = [_pool dequeueReusableBarrageView];
+    barrageView.viewModel = viewModel;
+    [_view addSubview:barrageView];
+    
+    CGRect frame = CGRectZero;
+    CGRect bounds = _view.bounds;
+    frame.origin.x = bounds.size.width;
+    frame.origin.y = (CGRectGetHeight(bounds) - barrageView.viewModel.contentSize.height) * 0.5;
+    frame.size = barrageView.viewModel.contentSize;
+    barrageView.frame = frame;
+    
+    CABasicAnimation *animation = [CABasicAnimation animationWithKeyPath:@"transform"];
+    animation.fromValue = [NSValue valueWithCATransform3D:CATransform3DIdentity];
+    animation.toValue = [NSValue valueWithCATransform3D:CATransform3DMakeTranslation(-barrageView.viewModel.points, 0, 0)];
+    animation.duration = barrageView.viewModel.duration;
+    animation.fillMode = kCAFillModeForwards;
+    animation.removedOnCompletion = NO;
+    [barrageView.layer addAnimation:animation forKey:@"anim"];
+    __weak typeof(self) _self = self;
+    __weak typeof(barrageView) _barrageView = barrageView;
+    [barrageView.layer addAnimation:animation stopHandler:^(CAAnimation * _Nonnull anim, BOOL isFinished) {
+        __strong typeof(_self) self = _self;
+        if ( !self ) return;
+        [_barrageView removeFromSuperview];
+        [self.pool addBarrageView:_barrageView];
+        if ( completion ) completion();
+    }];
 }
 @end
 
@@ -236,26 +315,35 @@ static NSNotificationName const SJBarrageQueueControllerPausedDidChangeNotificat
 @protocol SJBarrageQueueControllerViewDelegate;
 
 @interface SJBarrageQueueControllerView : UIView
+- (instancetype)initWithDelegate:(id<SJBarrageQueueControllerViewDelegate>)delegate;
 @property (nonatomic, weak, nullable) id<SJBarrageQueueControllerViewDelegate> delegate;
 @end
 
 @protocol SJBarrageQueueControllerViewDelegate <NSObject>
-- (void)barrageQueueControllerView:(SJBarrageQueueControllerView *)view boundsDidChange:(CGRect)bounds;
+- (void)barrageQueueControllerView:(SJBarrageQueueControllerView *)view boundsDidChange:(CGRect)bounds previousBounds:(CGRect)previousBounds;
 @end
 
 @implementation SJBarrageQueueControllerView {
-    CGRect _bounds;
+    CGRect _previousBounds;
+}
+
+- (instancetype)initWithDelegate:(id<SJBarrageQueueControllerViewDelegate>)delegate {
+    self = [super init];
+    if ( self ) {
+        _delegate = delegate;
+    }
+    return self;
 }
 
 - (void)layoutSubviews {
     [super layoutSubviews];
     CGRect bounds = self.bounds;
-    if ( !CGRectEqualToRect(bounds, _bounds) ) {
-        if ( [self.delegate respondsToSelector:@selector(barrageQueueControllerView:boundsDidChange:)] ) {
-            [self.delegate barrageQueueControllerView:self boundsDidChange:bounds];
+    if ( !CGRectEqualToRect(bounds, _previousBounds) ) {
+        if ( [self.delegate respondsToSelector:@selector(barrageQueueControllerView:boundsDidChange:previousBounds:)] ) {
+            [self.delegate barrageQueueControllerView:self boundsDidChange:bounds previousBounds:_previousBounds];
         }
     }
-    _bounds = bounds;
+    _previousBounds = bounds;
 }
 @end
 
@@ -268,11 +356,15 @@ static NSNotificationName const SJBarrageQueueControllerPausedDidChangeNotificat
 @implementation SJBarrageQueueControllerObserver
 @synthesize disabledDidChangeExeBlock = _disabledDidChangeExeBlock;
 @synthesize pausedDidChangeExeBlock = _pausedDidChangeExeBlock;
+@synthesize willDisplayBarrageExeBlock = _willDisplayBarrageExeBlock;
+@synthesize didEndDisplayBarrageExeBlock = _didEndDisplayBarrageExeBlock;
 - (instancetype)initWithController:(SJBarrageQueueController *)controller {
     self = [super init];
     if ( self ) {
         [NSNotificationCenter.defaultCenter addObserver:self selector:@selector(_pausedDidChange:) name:SJBarrageQueueControllerPausedDidChangeNotification object:controller];
         [NSNotificationCenter.defaultCenter addObserver:self selector:@selector(_disabledDidChange:) name:SJBarrageQueueControllerDisabledDidChangeNotification object:controller];
+        [NSNotificationCenter.defaultCenter addObserver:self selector:@selector(_willDisplayBarrage:) name:SJBarrageQueueControllerWillDisplayBarrageNotification object:controller];
+        [NSNotificationCenter.defaultCenter addObserver:self selector:@selector(_didEndDisplayBarrage:) name:SJBarrageQueueControllerDidEndDisplayBarrageNotification object:controller];
     }
     return self;
 }
@@ -285,23 +377,29 @@ static NSNotificationName const SJBarrageQueueControllerPausedDidChangeNotificat
 - (void)_disabledDidChange:(NSNotification *)note {
     if ( _disabledDidChangeExeBlock ) _disabledDidChangeExeBlock(note.object);
 }
+- (void)_willDisplayBarrage:(NSNotification *)note {
+    if ( _willDisplayBarrageExeBlock ) _willDisplayBarrageExeBlock(note.object, note.userInfo[SJBarrageQueueControllerBarrageItemKey]);
+}
+- (void)_didEndDisplayBarrage:(NSNotification *)note {
+    if ( _didEndDisplayBarrageExeBlock ) _didEndDisplayBarrageExeBlock(note.object, note.userInfo[SJBarrageQueueControllerBarrageItemKey]);
+}
 @end
-
+ 
 #pragma mark -
 
-static CGFloat SJScreenMaxWidth;
 
-@interface SJBarrageQueueController ()<SJBarrageQueueControllerViewDelegate, SJBarrageClockDelegate>
-@property (nonatomic, strong, readonly) SJQueue<id<SJBarrageItem>> *queue;
+@interface SJBarrageQueueController ()<SJBarrageQueueControllerViewDelegate, SJBarrageClockDelegate> {
+    SJQueue<id<SJBarrageItem>> *_queue;
+    SJBarrageClock *_clock;
+}
 @property (nonatomic, strong, readonly) SJBarrageViewReusablePool *reusablePool;
-@property (nonatomic, strong, readonly) SJBarrageClock *clock;
-@property (nonatomic, strong, readonly) NSArray<SJBarrageLineConfiguration *> *configurations;
-@property (nonatomic, strong, readonly) NSArray<SJBarrageContainerView *> *containerViews;
-@property (nonatomic, strong, readonly) SJBarrageQueueControllerView *view;
+@property (nonatomic, strong, readonly) NSMutableArray<SJBarrageLine *> *lines;
 @property (nonatomic, getter=isPaused) BOOL paused;
 @end
 
 @implementation SJBarrageQueueController
+@synthesize view = _view;
+static CGFloat SJScreenMaxWidth;
 + (void)initialize {
     static dispatch_once_t onceToken;
     dispatch_once(&onceToken, ^{
@@ -309,32 +407,45 @@ static CGFloat SJScreenMaxWidth;
     });
 }
 
-- (instancetype)initWithLines:(NSUInteger)lines {
+- (instancetype)initWithNumberOfLines:(NSUInteger)numberOfLines {
     self = [super init];
     if ( self ) {
-        _queue = SJQueue.queue;
         _reusablePool = SJBarrageViewReusablePool.pool;
-        _clock = SJBarrageClock.clock;
-        _clock.delegate = self;
-        _view = [SJBarrageQueueControllerView.alloc initWithFrame:CGRectZero];
-        _view.delegate = self;
-
-        NSMutableArray<SJBarrageLineConfiguration *> *configurations = [NSMutableArray arrayWithCapacity:lines];
-        NSMutableArray<SJBarrageContainerView *> *containerViews = [NSMutableArray arrayWithCapacity:lines];
-        for ( NSUInteger i = 0; i < lines; ++ i ) {
-            SJBarrageLineConfiguration *config = SJBarrageLineConfiguration.alloc.init;
-            config.rate = (i % 2 == 0) ? 1 : 0.9;
-            [configurations addObject:config];
-            
-            SJBarrageContainerView *containerView = [SJBarrageContainerView.alloc initWithFrame:CGRectZero];
-            [containerViews addObject:containerView];
-            [_view addSubview:containerView];
-        }
-        _configurations = configurations.copy;
-        _containerViews = containerViews.copy;
-        [self updateForConfigurations];
+        _queue = SJQueue.queue;
+        _clock = [SJBarrageClock clockWithDelegate:self];
+        _view = [SJBarrageQueueControllerView.alloc initWithDelegate:self];
+        _lines = [NSMutableArray arrayWithCapacity:4];
+        _configuration = SJBarrageLineConfiguration.alloc.init;
+        
+        self.numberOfLines = numberOfLines;
     }
     return self;
+}
+
+- (void)setNumberOfLines:(NSInteger)numberOfLines {
+    if ( numberOfLines != _numberOfLines ) {
+        _numberOfLines = numberOfLines;
+         
+        // 移除多余的行
+        if ( numberOfLines < _lines.count ) {
+            NSRange range = NSMakeRange(numberOfLines, _lines.count - numberOfLines);
+            NSArray<SJBarrageLine *> *useless = [_lines subarrayWithRange:range];
+            [useless enumerateObjectsUsingBlock:^(SJBarrageLine * _Nonnull obj, NSUInteger idx, BOOL * _Nonnull stop) {
+                [obj.view removeFromSuperview];
+            }];
+            [_lines removeObjectsInRange:range];
+        }
+        // 创建新增的行
+        else if ( numberOfLines > _lines.count ) {
+            for ( NSInteger i = _lines.count ; i < numberOfLines ; ++ i ) {
+                SJBarrageLine *line = [SJBarrageLine.alloc initWithPool:_reusablePool];
+                [_view addSubview:line.view];
+                [_lines addObject:line];
+            }
+        }
+        
+        [self reloadConfiguration];
+    }
 }
 
 - (void)setDisabled:(BOOL)disabled {
@@ -345,23 +456,20 @@ static CGFloat SJScreenMaxWidth;
     }
 }
 
-- (nullable SJBarrageLineConfiguration *)configurationAtIndex:(NSInteger)idx {
-    if ( idx < 0 || idx >= _configurations.count )
-        return nil;
-    return _configurations[idx];
-}
-
-- (void)updateForConfigurations {
-    [self.containerViews enumerateObjectsUsingBlock:^(SJBarrageContainerView * _Nonnull container, NSUInteger idx, BOOL * _Nonnull stop) {
-        SJBarrageLineConfiguration *config = self.configurations[idx];
-        [container mas_remakeConstraints:^(MASConstraintMaker *make) {
-            CGFloat topMargin = config.topMargin;
-            CGFloat height = config.height;
-            idx == 0 ? make.top.offset(topMargin) : make.top.equalTo(self.containerViews[idx - 1].mas_bottom).offset(topMargin);
+- (void)reloadConfiguration {
+    SJBarrageLine *last = _lines.lastObject;
+    __block SJBarrageLine *prel = nil;
+    [_lines enumerateObjectsUsingBlock:^(SJBarrageLine * _Nonnull line, NSUInteger idx, BOOL * _Nonnull stop) {
+        CGFloat topMargin = [self.configuration topMarginForLineAtIndex:idx];
+        CGFloat height = [self.configuration heightForLineAtIndex:idx];
+        [line.view mas_remakeConstraints:^(MASConstraintMaker *make) {
+            prel == nil ? make.top.offset(topMargin) : make.top.equalTo(prel.view.mas_bottom).offset(topMargin);
             make.left.right.offset(0);
             make.height.offset(height);
-            if ( idx == self.containerViews.count - 1 ) { make.bottom.offset(0); }
+            if ( line == last ) make.bottom.offset(0);
         }];
+    
+        prel = line;
     }];
 }
 
@@ -376,12 +484,7 @@ static CGFloat SJScreenMaxWidth;
 }
 
 - (void)removeDisplayedBarrages {
-    for ( SJBarrageContainerView *container in _containerViews ) {
-        [container.subviews enumerateObjectsWithOptions:NSEnumerationReverse usingBlock:^(__kindof UIView * _Nonnull view, NSUInteger idx, BOOL * _Nonnull stop) {
-            [view.layer removeAllAnimations];
-            [view removeFromSuperview];
-        }];
-    }
+    [_lines makeObjectsPerformSelector:@selector(clear)];
 }
 
 - (void)removeAll {
@@ -406,52 +509,38 @@ static CGFloat SJScreenMaxWidth;
     return [SJBarrageQueueControllerObserver.alloc initWithController:self];
 }
 
+- (NSInteger)queueSize {
+    return _queue.size;
+}
+
+#pragma mark -
+
 - (void)clock:(SJBarrageClock *)clock timeDidChange:(NSTimeInterval)time {
     if ( CGRectIsEmpty(self.view.bounds) )
         return;
     
-    for ( NSInteger i = 0 ; i < _containerViews.count ; ++ i ) {
-        SJBarrageContainerView *container = _containerViews[i];
-        SJBarrageViewModel *_Nullable last = container.lastView.viewModel;
+    for ( NSInteger index = 0 ; index < _numberOfLines ; ++ index ) {
+        SJBarrageLine *line = _lines[index];
+        SJBarrageViewModel *_Nullable last = line.last;
         if ( time >= last.nextBarrageStartTime + last.delay ) {
-            id<SJBarrageItem> _Nullable item = self.queue.dequeue;
+            id<SJBarrageItem> _Nullable item = _queue.dequeue;
             if ( item != nil ) {
-                SJBarrageLineConfiguration *config = self.configurations[i];
+                [self _postNotification:SJBarrageQueueControllerWillDisplayBarrageNotification userInfo:@{SJBarrageQueueControllerBarrageItemKey:item}];
                 SJBarrageViewModel *viewModel = [SJBarrageViewModel.alloc initWithBarrageItem:item];
-                NSTimeInterval pointDuration = [self _pointDuration] / config.rate;
+                CGFloat itemSpacing = [_configuration itemSpacingForLineAtIndex:index];
                 CGFloat barragePoints = viewModel.contentSize.width;
-                CGFloat itemMargin = config.itemMargin;
-                CGFloat allPoints = [self _allPoints:barragePoints];
+                NSTimeInterval pointDuration = [self _pointDurationForLineAtIndex:index];
+                CGFloat allPoints = [self _allPointsWithBarragePoints:barragePoints];
                 
-                viewModel.startTime = time;
                 viewModel.duration = allPoints * pointDuration;
-                viewModel.nextBarrageStartTime = time + (barragePoints + itemMargin) * pointDuration;
+                viewModel.nextBarrageStartTime = time + (barragePoints + itemSpacing) * pointDuration;
+                viewModel.points = allPoints;
                 
-                SJBarrageView *barrageView = [self.reusablePool dequeueReusableBarrageView];
-                barrageView.viewModel = viewModel;
-                [container addSubview:barrageView];
-                
-                CGRect frame = CGRectZero;
-                CGRect bounds = container.bounds;
-                frame.origin.x = bounds.size.width;
-                frame.origin.y = CGRectGetHeight(bounds) * 0.5 - viewModel.contentSize.height * 0.5;
-                frame.size = viewModel.contentSize;
-                barrageView.frame = frame;
-                
-                CABasicAnimation *animation = [CABasicAnimation animationWithKeyPath:@"transform"];
-                animation.fromValue = [NSValue valueWithCATransform3D:CATransform3DIdentity];
-                animation.toValue = [NSValue valueWithCATransform3D:CATransform3DMakeTranslation(-allPoints, 0, 0)];
-                animation.duration = viewModel.duration;
-                animation.fillMode = kCAFillModeForwards;
-                animation.removedOnCompletion = NO;
-                [barrageView.layer addAnimation:animation forKey:@"anim"];
                 __weak typeof(self) _self = self;
-                __weak typeof(barrageView) _barrageView = barrageView;
-                [barrageView.layer addAnimation:animation stopHandler:^(CAAnimation * _Nonnull anim, BOOL isFinished) {
+                [line fire:viewModel stoppedCallback:^{
                     __strong typeof(_self) self = _self;
                     if ( !self ) return;
-                    [_barrageView removeFromSuperview];
-                    [self.reusablePool addBarrageView:_barrageView];
+                    [self _postNotification:SJBarrageQueueControllerDidEndDisplayBarrageNotification userInfo:@{SJBarrageQueueControllerBarrageItemKey:item}];
                     [self _pauseClockIfNeeded];
                 }];
             }
@@ -460,11 +549,17 @@ static CGFloat SJScreenMaxWidth;
 }
 
 - (void)clock:(SJBarrageClock *)clock pausedDidChange:(BOOL)isPaused {
-    [self.containerViews makeObjectsPerformSelector:isPaused ? @selector(pauseAnimations) : @selector(resumeAnimations)];
+    [_lines makeObjectsPerformSelector:isPaused ? @selector(pause) : @selector(resume)];
 }
 
-- (void)barrageQueueControllerView:(SJBarrageQueueControllerView *)view boundsDidChange:(CGRect)bounds {
-    [self removeDisplayedBarrages];
+- (void)barrageQueueControllerView:(SJBarrageQueueControllerView *)view boundsDidChange:(CGRect)bounds previousBounds:(CGRect)previousBounds {
+    if ( previousBounds.size.width > bounds.size.width ) {
+        CGFloat points = previousBounds.size.width - bounds.size.width;
+        for ( NSInteger i = 0 ; i < _numberOfLines ; ++ i ) {
+            _lines[i].last.delay += points * [self _pointDurationForLineAtIndex:i];
+        }
+    }
+    previousBounds = bounds;
 }
 
 #pragma mark -
@@ -476,18 +571,18 @@ static CGFloat SJScreenMaxWidth;
     }
 }
 
-- (NSTimeInterval)_pointDuration {
-    return POINT_SPEED_FAST;
+- (NSTimeInterval)_pointDurationForLineAtIndex:(NSInteger)index {
+    return POINT_SPEED_FAST / [_configuration rateForLineAtIndex:index];
 }
 
-- (CGFloat)_allPoints:(CGFloat)barragePoints {
+- (CGFloat)_allPointsWithBarragePoints:(CGFloat)barragePoints {
     return barragePoints + SJScreenMaxWidth;
 }
-
+ 
 - (void)_pauseClockIfNeeded {
-    if ( self.queue.size == 0 ) {
-        for ( SJBarrageContainerView *container in _containerViews ) {
-            if ( container.lastView != nil ) return;
+    if ( _queue.size == 0 ) {
+        for ( SJBarrageLine *line in _lines ) {
+            if ( line.last != nil ) return;
         }
         
         [_clock pause];
@@ -495,22 +590,56 @@ static CGFloat SJScreenMaxWidth;
 }
 
 - (void)_postNotification:(NSNotificationName)note {
+    [self _postNotification:note userInfo:nil];
+}
+
+- (void)_postNotification:(NSNotificationName)note userInfo:(nullable NSDictionary *)userInfo {
     dispatch_async(dispatch_get_main_queue(), ^{
-        [NSNotificationCenter.defaultCenter postNotificationName:note object:self];
+        [NSNotificationCenter.defaultCenter postNotificationName:note object:self userInfo:userInfo];
     });
 }
 @end
 
-@implementation SJBarrageLineConfiguration
+#pragma mark -
+
+@implementation SJBarrageLineConfiguration {
+    BOOL _isResponse_rateForLineAtIndex;
+    BOOL _isResponse_topMarginForLineAtIndex;
+    BOOL _isResponse_itemSpacingForLineAtIndex;
+    BOOL _isResponse_heightForLineAtIndex;
+}
+
 - (instancetype)init {
     self = [super init];
     if ( self ) {
         _rate = 1;
         _topMargin = 3.0;
-        _itemMargin = 38.0;
+        _itemSpacing = 38.0;
         _height = 26.0;
     }
     return self;
+}
+
+- (void)setDelegate:(nullable id<SJBarrageLineConfigurationDelegate>)delegate {
+    _delegate = delegate;
+    _isResponse_rateForLineAtIndex = [delegate respondsToSelector:@selector(barrageLineConfiguration:rateForLineAtIndex:)];
+    _isResponse_topMarginForLineAtIndex = [delegate respondsToSelector:@selector(barrageLineConfiguration:topMarginForLineAtIndex:)];
+    _isResponse_itemSpacingForLineAtIndex = [delegate respondsToSelector:@selector(barrageLineConfiguration:itemSpacingForLineAtIndex:)];
+    _isResponse_heightForLineAtIndex = [delegate respondsToSelector:@selector(barrageLineConfiguration:heightForLineAtIndex:)];
+}
+
+- (CGFloat)rateForLineAtIndex:(NSInteger)index {
+    CGFloat rate = _isResponse_rateForLineAtIndex ? [_delegate barrageLineConfiguration:self rateForLineAtIndex:index] : _rate;
+    return rate ?: CGFLOAT_MIN;
+}
+- (CGFloat)topMarginForLineAtIndex:(NSInteger)index {
+    return _isResponse_topMarginForLineAtIndex ? [_delegate barrageLineConfiguration:self topMarginForLineAtIndex:index] : _topMargin;
+}
+- (CGFloat)itemSpacingForLineAtIndex:(NSInteger)index {
+    return _isResponse_itemSpacingForLineAtIndex ? [_delegate barrageLineConfiguration:self itemSpacingForLineAtIndex:index] : _itemSpacing;
+}
+- (CGFloat)heightForLineAtIndex:(NSInteger)index {
+    return _isResponse_heightForLineAtIndex ? [_delegate barrageLineConfiguration:self heightForLineAtIndex:index] : _height;
 }
 @end
 NS_ASSUME_NONNULL_END

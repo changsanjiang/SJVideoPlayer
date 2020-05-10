@@ -10,7 +10,7 @@
 
 NS_ASSUME_NONNULL_BEGIN
 @implementation SJRotationMode2ViewModel {
-    NSMutableArray<SJMediaTableViewModel *> *_m;
+    NSMutableArray<SJVideoCellViewModel *> *_m;
 }
 - (instancetype)init {
     self = [super init];
@@ -20,11 +20,11 @@ NS_ASSUME_NONNULL_BEGIN
     return self;
 }
 
-- (NSArray<SJMediaTableViewModel *> *)tableItems {
+- (NSArray<SJVideoCellViewModel *> *)tableItems {
     return _m;
 }
 
-- (void)addItems:(NSArray<SJMediaTableViewModel *> *)items {
+- (void)addItems:(NSArray<SJVideoCellViewModel *> *)items {
     if ( items.count != 0 ) {
         [_m addObjectsFromArray:items];
     }

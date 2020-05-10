@@ -15,6 +15,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 @implementation SJPageMenuItemView
 @synthesize focusedMenuItem = _focusedMenuItem;
+@synthesize transitionProgress = _transitionProgress;
 - (instancetype)initWithFrame:(CGRect)frame {
     self = [super initWithFrame:frame];
     if ( self ) {
@@ -28,23 +29,6 @@ NS_ASSUME_NONNULL_BEGIN
 }
 
 #pragma mark -
-
-- (void)setBounds:(CGRect)bounds {
-    [super setBounds:bounds];
-    CGPoint center = CGPointMake(bounds.size.width * 0.5, bounds.size.height * 0.5);
-    _label.center = center;
-}
-
-- (CGSize)sizeThatFits:(CGSize)size {
-    return [_label sizeThatFits:size];
-}
-
-- (void)sizeToFit {
-    [_label sizeToFit];
-    CGRect bounds = self.bounds;
-    bounds.size = _label.bounds.size;
-    self.bounds = bounds;
-}
 
 - (void)setFont:(nullable UIFont *)font {
     _label.font = font;
@@ -74,5 +58,25 @@ NS_ASSUME_NONNULL_BEGIN
 - (UIColor *)tintColor {
     return _label.textColor;
 }
+
+#pragma mark -
+
+- (void)setBounds:(CGRect)bounds {
+    [super setBounds:bounds];
+    CGPoint center = CGPointMake(bounds.size.width * 0.5, bounds.size.height * 0.5);
+    _label.center = center;
+}
+
+- (CGSize)sizeThatFits:(CGSize)size {
+    return [_label sizeThatFits:size];
+}
+
+- (void)sizeToFit {
+    [_label sizeToFit];
+    CGRect bounds = self.bounds;
+    bounds.size = _label.bounds.size;
+    self.bounds = bounds;
+}
+
 @end
 NS_ASSUME_NONNULL_END

@@ -38,6 +38,21 @@ NS_ASSUME_NONNULL_BEGIN
     return next;
 }
 
+///
+/// 寻找实现了该协议的视图, 包括自己
+///
+- (__kindof UIView *_Nullable)viewWithProtocol:(Protocol *)protocol {
+    if ( [self conformsToProtocol:protocol] ) {
+        return self;
+    }
+    
+    for ( UIView *subview in self.subviews ) {
+        UIView *target = [subview viewWithProtocol:protocol];
+        if ( target != nil ) return target;
+    }
+    return nil;
+}
+
 - (void)setSj_x:(CGFloat)sj_x {
     CGRect frame = self.frame;
     frame.origin.x = sj_x;

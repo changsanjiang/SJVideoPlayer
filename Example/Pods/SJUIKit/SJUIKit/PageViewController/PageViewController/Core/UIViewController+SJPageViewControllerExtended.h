@@ -18,6 +18,6 @@ NS_ASSUME_NONNULL_BEGIN
 @interface SJPageItem : NSObject
 @property (nonatomic, strong, nullable) __kindof UIScrollView *scrollView;
 @property (nonatomic) CGFloat intersection;
-@property (nonatomic) CGPoint conentOffset;
+@property (nonatomic) CGPoint contentOffset;
 @end
 NS_ASSUME_NONNULL_END

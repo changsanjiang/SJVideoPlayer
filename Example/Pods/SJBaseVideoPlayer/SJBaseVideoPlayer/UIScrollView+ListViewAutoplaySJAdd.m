@@ -9,6 +9,7 @@
 #import "UIScrollView+SJBaseVideoPlayerExtended.h"
 #import "UIView+SJBaseVideoPlayerExtended.h"
 #import "SJBaseVideoPlayerConst.h"
+#import "SJPlayModel.h"
 #import <objc/message.h>
 
 #if __has_include(<SJUIKit/NSObject+SJObserverHelper.h>)
@@ -180,17 +181,23 @@ static void sj_playNextAssetAfterEndScroll(__kindof __kindof UIScrollView *scrol
  
     SJPlayerAutoplayConfig *config = [scrollView sj_autoplayConfig];
     NSIndexPath *_Nullable current = [scrollView sj_currentPlayingIndexPath];
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wdeprecated-declarations"
     NSInteger superviewTag = config.playerSuperviewTag;
-    {
-        if ( [scrollView isViewAppearedWithTag:superviewTag atIndexPath:current] )
-            return;
-    }
+#pragma clang diagnostic pop
+    
+    if ( superviewTag != 0 && [scrollView isViewAppearedWithTag:superviewTag atIndexPath:current] )
+        return;
+    else if ( [scrollView isViewAppearedWithProtocol:@protocol(SJPlayModelPlayerSuperview) atIndexPath:current] )
+        return;
     
     NSIndexPath *_Nullable next = nil;
     switch ( config.autoplayPosition ) {
         case SJAutoplayPositionTop: {
             for ( NSIndexPath *indexPath in visibleIndexPaths ) {
-                UIView *_Nullable target = [scrollView viewWithTag:superviewTag atIndexPath:indexPath];
+                UIView *_Nullable target = superviewTag != 0 ?
+                                    [scrollView viewWithTag:superviewTag atIndexPath:indexPath] :
+                                    [scrollView viewWithProtocol:@protocol(SJPlayModelPlayerSuperview) atIndexPath:indexPath];
                 if ( !target ) continue;
                 CGRect intersection = [scrollView intersectionWithView:target];
                 if ( floor(intersection.size.height) >= floor(target.bounds.size.height) ) {
@@ -218,7 +225,9 @@ static void sj_playNextAssetAfterEndScroll(__kindof __kindof UIScrollView *scrol
             CGFloat sub = CGFLOAT_MAX;
             for ( NSInteger i = 0 ; i < count ; ++ i ) {
                 NSIndexPath *indexPath = visibleIndexPaths[i];
-                UIView *_Nullable target = [scrollView viewWithTag:superviewTag atIndexPath:indexPath];
+                UIView *_Nullable target = superviewTag != 0 ?
+                                    [scrollView viewWithTag:superviewTag atIndexPath:indexPath] :
+                                    [scrollView viewWithProtocol:@protocol(SJPlayModelPlayerSuperview) atIndexPath:indexPath];
                 if ( !target ) continue;
                 CGRect intersection = [scrollView intersectionWithView:target];
                 CGFloat result = floor(ABS(mid - CGRectGetMidY(intersection)));
@@ -289,9 +298,14 @@ static void sj_playNextVisibleAsset(__kindof UIScrollView *scrollView) {
     }
     
     NSIndexPath *_Nullable next = nil;
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wdeprecated-declarations"
     NSInteger superviewTag = [scrollView sj_autoplayConfig].playerSuperviewTag;
+#pragma clang diagnostic pop
     for ( NSIndexPath *indexPath in remain ) {
-        UIView *_Nullable target = [scrollView viewWithTag:superviewTag atIndexPath:indexPath];
+        UIView *_Nullable target = superviewTag != 0 ?
+                            [scrollView viewWithTag:superviewTag atIndexPath:indexPath] :
+                            [scrollView viewWithProtocol:@protocol(SJPlayModelPlayerSuperview) atIndexPath:indexPath];
         if ( !target ) continue;
         CGRect intersection = [scrollView intersectionWithView:target];
         if ( floor(intersection.size.height) >= floor(target.bounds.size.height) ) {

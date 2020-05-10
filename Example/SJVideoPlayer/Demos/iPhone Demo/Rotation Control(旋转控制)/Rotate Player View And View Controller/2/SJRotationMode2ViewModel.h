@@ -7,15 +7,15 @@
 //
 
 #import <Foundation/Foundation.h>
-#import "SJMeidaItemModel.h"
-#import "SJMediaTableViewModel.h"
+#import "SJVideoModel.h"
+#import "SJVideoCellViewModel.h"
 
 NS_ASSUME_NONNULL_BEGIN
 
 @interface SJRotationMode2ViewModel : NSObject
-@property (nonatomic, strong, readonly) NSArray<SJMediaTableViewModel *> *tableItems;
+@property (nonatomic, strong, readonly) NSArray<SJVideoCellViewModel *> *tableItems;
 
-- (void)addItems:(NSArray<SJMediaTableViewModel *> *)items;
+- (void)addItems:(NSArray<SJVideoCellViewModel *> *)items;
 - (void)removeAllItems;
 @end
 

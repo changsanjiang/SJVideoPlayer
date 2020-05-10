@@ -81,7 +81,7 @@ NS_ASSUME_NONNULL_BEGIN
             if ( self.playbackTypeDidChangeExeBlock ) self.playbackTypeDidChangeExeBlock(self.player);
         }]];
         
-        [_tokens addObject:[NSNotificationCenter.defaultCenter addObserverForName:SJVideoPlayeScreenLockStateDidChangeNotification object:player queue:NSOperationQueue.mainQueue usingBlock:^(NSNotification * _Nonnull note) {
+        [_tokens addObject:[NSNotificationCenter.defaultCenter addObserverForName:SJVideoPlayerScreenLockStateDidChangeNotification object:player queue:NSOperationQueue.mainQueue usingBlock:^(NSNotification * _Nonnull note) {
             __strong typeof(_self) self = _self;
             if ( !self ) return;
             if ( self.screenLockStateDidChangeExeBlock ) self.screenLockStateDidChangeExeBlock(self.player);

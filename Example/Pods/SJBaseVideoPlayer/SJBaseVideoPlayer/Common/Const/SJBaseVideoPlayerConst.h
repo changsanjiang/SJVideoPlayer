@@ -36,8 +36,8 @@ extern NSNotificationName const SJVideoPlayerPlaybackDidFinishNotification;     
 extern NSNotificationName const SJVideoPlayerPlaybackDidReplayNotification;         // 调用了replay发出的通知
 extern NSNotificationName const SJVideoPlayerPlaybackWillStopNotification;          // 调用了stop前发出的通知
 extern NSNotificationName const SJVideoPlayerPlaybackDidStopNotification;           // 调用了stop后发出的通知
-extern NSNotificationName const SJVideoPlayerPlaybackWillRereshNotification;        // 调用了refresh前发出的通知
-extern NSNotificationName const SJVideoPlayerPlaybackDidRereshNotification;         // 调用了refresh后发出的通知
+extern NSNotificationName const SJVideoPlayerPlaybackWillRefreshNotification;       // 调用了refresh前发出的通知
+extern NSNotificationName const SJVideoPlayerPlaybackDidRefreshNotification;        // 调用了refresh后发出的通知
 
 extern NSNotificationName const SJVideoPlayerCurrentTimeDidChangeNotification;
 extern NSNotificationName const SJVideoPlayerDurationDidChangeNotification;
@@ -48,6 +48,6 @@ extern NSNotificationName const SJVideoPlayerPlaybackTypeDidChangeNotification;
 extern NSNotificationName const SJVideoPlayerRateDidChangeNotification;
 extern NSNotificationName const SJVideoPlayerMutedDidChangeNotification;
 extern NSNotificationName const SJVideoPlayerVolumeDidChangeNotification;
-extern NSNotificationName const SJVideoPlayeScreenLockStateDidChangeNotification;
+extern NSNotificationName const SJVideoPlayerScreenLockStateDidChangeNotification;
 
 NS_ASSUME_NONNULL_END

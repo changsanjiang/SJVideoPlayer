@@ -13,7 +13,7 @@
 #import <objc/message.h>
 #import <SJBaseVideoPlayer/SJPlaybackRecordSaveHandler.h>
 #import "SJPopPromptCustomView.h"
-#import "SJMeidaItemModel.h"
+#import "SJVideoModel.h"
 #import "SJSourceURLs.h"
 
 ///
@@ -36,7 +36,7 @@
 #pragma mark -
 
 @interface SJPlaybackHistoryViewController ()
-@property (nonatomic, strong, nullable) SJMeidaItemModel *media;
+@property (nonatomic, strong, nullable) SJVideoModel *media;
 @property (nonatomic, strong, readonly) SJVideoPlayer *player;
 @end
 
@@ -47,7 +47,7 @@
     [self _setupViews];
 
     // 请根据自己的业务模型来操作, 此处为模拟服务器返回的数据模型
-    _media = SJMeidaItemModel.alloc.init;
+    _media = SJVideoModel.alloc.init;
     _media.id = 50;
     _media.URL = SourceURL2;
     _media.mediaTitle = @"Hello world!";

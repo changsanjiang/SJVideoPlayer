@@ -10,7 +10,7 @@ typedef id SJParameters;
 
 NS_ASSUME_NONNULL_BEGIN
 @interface SJRouteRequest : NSObject
-- (instancetype)initWithPath:(NSString *)requestPath parameters:(nullable SJParameters)parameters;
+- (nullable instancetype)initWithPath:(NSString *)requestPath parameters:(nullable SJParameters)parameters;
 @property (nonatomic, strong, readonly, nullable) NSString *requestPath;
 @property (nonatomic, strong, readonly, nullable) SJParameters prts; // 请求的参数
 - (instancetype)init NS_UNAVAILABLE;

@@ -14,7 +14,7 @@
 
 #import "SJRotationManager.h"
 
-@interface SJRotationModeDemoViewController2 ()<UITableViewDelegate, UITableViewDataSource, SJMediaTableViewCellDelegate>
+@interface SJRotationModeDemoViewController2 ()<UITableViewDelegate, UITableViewDataSource, SJVideoTableViewCellDelegate>
 @property (weak, nonatomic) IBOutlet UITableView *tableView;
 @property (nonatomic, strong, nullable) SJRotationMode2ViewModel *viewModel;
 @property (nonatomic, strong, nullable) SJVideoPlayer *player;
@@ -42,19 +42,14 @@
         [UIApplication.sharedApplication.keyWindow.rootViewController presentViewController:alertController animated:YES completion:nil];
     });
 }
-
-- (void)viewSafeAreaInsetsDidChange {
-    NSLog(@"A: %@", NSStringFromUIEdgeInsets(self.view.safeAreaInsets));
-    [super viewSafeAreaInsetsDidChange];
-}
-
+ 
 - (void)viewDidLoad {
     [super viewDidLoad];
     [self _setupViews];
     [self.tableView sj_exeHeaderRefreshingAnimated:YES];
 }
 
-- (void)tappedCoverOnTheTableViewCell:(SJMediaTableViewCell *)cell {
+- (void)coverItemWasTapped:(SJVideoTableViewCell *)cell {
     if ( _player == nil ) {
         _player = [SJVideoPlayer player];
         _player.allowHorizontalTriggeringOfPanGesturesInCells = YES;
@@ -63,8 +58,8 @@
     }
     
     NSIndexPath *indexPath = [_tableView indexPathForCell:cell];
-    SJMediaTableViewModel *item = _viewModel.tableItems[indexPath.row];
-    SJPlayModel *cellModel = [SJPlayModel UITableViewCellPlayModelWithPlayerSuperviewTag:item.coverTag atIndexPath:indexPath tableView:_tableView];
+    SJVideoCellViewModel *item = _viewModel.tableItems[indexPath.row];
+    SJPlayModel *cellModel = [SJPlayModel playModelWithTableView:_tableView indexPath:indexPath];
     _player.URLAsset = [[SJVideoPlayerURLAsset alloc] initWithURL:item.url playModel:cellModel];
 }
 
@@ -112,7 +107,7 @@
         make.top.left.bottom.offset(0);
         make.width.offset(UIScreen.mainScreen.bounds.size.width);
     }];
-    [SJMediaTableViewCell registerWithTableView:_tableView];
+    [SJVideoTableViewCell registerWithTableView:_tableView];
     _tableView.dataSource = self;
     _tableView.delegate = self;
     _tableView.estimatedRowHeight = 0;
@@ -125,10 +120,10 @@
         if ( !self ) return ;
 
         // 模拟数据
-        NSMutableArray<SJMediaTableViewModel *> *m = [NSMutableArray arrayWithCapacity:tableView.sj_pageSize];
+        NSMutableArray<SJVideoCellViewModel *> *m = [NSMutableArray arrayWithCapacity:tableView.sj_pageSize];
         for ( int i = 0; i < tableView.sj_pageSize ; ++ i ) {
-            SJMeidaItemModel *model = [SJMeidaItemModel testItem];
-            [m addObject:[[SJMediaTableViewModel alloc] initWithItem:model]];
+            SJVideoModel *model = [SJVideoModel testItem];
+            [m addObject:[[SJVideoCellViewModel alloc] initWithItem:model]];
         }
         
         if ( requestPageNum == tableView.sj_beginPageNum ) {
@@ -150,10 +145,10 @@
 }
 
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath {
-    return [SJMediaTableViewCell cellWithTableView:tableView indexPath:indexPath];
+    return [SJVideoTableViewCell cellWithTableView:tableView indexPath:indexPath];
 }
 
-- (void)tableView:(UITableView *)tableView willDisplayCell:(SJMediaTableViewCell *)cell forRowAtIndexPath:(NSIndexPath *)indexPath {
+- (void)tableView:(UITableView *)tableView willDisplayCell:(SJVideoTableViewCell *)cell forRowAtIndexPath:(NSIndexPath *)indexPath {
     cell.dataSource = _viewModel.tableItems[indexPath.row];
     cell.delegate = self;
 }

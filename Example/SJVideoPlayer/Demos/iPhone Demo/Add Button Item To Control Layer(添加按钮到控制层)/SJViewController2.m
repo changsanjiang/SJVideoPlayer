@@ -83,7 +83,7 @@ static SJEdgeControlButtonItemTag const SJTestCustomItemTag = 103;
 }
 
 - (IBAction)imageItem:(id)sender {
-    SJEdgeControlButtonItem *item = [[SJEdgeControlButtonItem alloc] initWithImage:[UIImage imageNamed:@"db_play_big"] target:self action:@selector(test) tag:SJTestImageItemTag];
+    SJEdgeControlButtonItem *item = [[SJEdgeControlButtonItem alloc] initWithImage:[UIImage imageNamed:@"play"] target:self action:@selector(test) tag:SJTestImageItemTag];
     [_player.defaultEdgeControlLayer.topAdapter addItem:item];
     [_player.defaultEdgeControlLayer.topAdapter reload];
     

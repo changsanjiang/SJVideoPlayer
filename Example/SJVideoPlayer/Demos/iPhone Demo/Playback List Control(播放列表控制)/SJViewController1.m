@@ -8,7 +8,7 @@
 
 #import "SJViewController1.h"
 #import "SJTableViewCell1.h"
-#import "SJMeidaItemModel.h"
+#import "SJVideoModel.h"
 #import <SJUIKit/SJUIKit.h>
 #import <SJPlaybackListController/SJPlaybackListController.h>
 #import <SJVideoPlayer/SJVideoPlayer.h>
@@ -85,7 +85,7 @@ static NSString *const SJTableViewCell1ID = @"SJTableViewCell1";
 }
 
 - (void)listController:(id<SJPlaybackListController>)listController needToPlayMedia:(id<SJMediaInfo>)media {
-    SJMeidaItemModel *item = (id)media;
+    SJVideoModel *item = (id)media;
     if ( _player == nil ) {
         _player = [SJVideoPlayer player];
         [self _addListControlItemsToPlayer];
@@ -147,9 +147,9 @@ static NSString *const SJTableViewCell1ID = @"SJTableViewCell1";
         if ( !self ) return ;
         
         // 模拟数据
-        NSMutableArray<SJMeidaItemModel *> *m = [NSMutableArray arrayWithCapacity:tableView.sj_pageSize];
+        NSMutableArray<SJVideoModel *> *m = [NSMutableArray arrayWithCapacity:tableView.sj_pageSize];
         for ( int i = 0; i < tableView.sj_pageSize ; ++ i ) {
-            SJMeidaItemModel *model = [SJMeidaItemModel testItem];
+            SJVideoModel *model = [SJVideoModel testItem];
             [m addObject:model];
         }
         
@@ -173,7 +173,7 @@ static NSString *const SJTableViewCell1ID = @"SJTableViewCell1";
 }
 
 - (void)tableView:(UITableView *)tableView willDisplayCell:(SJTableViewCell1 *)cell forRowAtIndexPath:(NSIndexPath *)indexPath {
-    SJMeidaItemModel *item = [self.listController mediaAtIndex:indexPath.row];
+    SJVideoModel *item = [self.listController mediaAtIndex:indexPath.row];
     cell.textLabel.text = [NSString stringWithFormat:@"%ld: %@", (long)indexPath.row, item.mediaTitle];
 }
 

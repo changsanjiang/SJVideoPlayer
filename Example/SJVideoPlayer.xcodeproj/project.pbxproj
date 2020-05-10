@@ -25,37 +25,51 @@
 		77357E462373DA3E00B81EE4 /* SJTestAliViewController3.m in Sources */ = {isa = PBXBuildFile; fileRef = 77357E442373DA3E00B81EE4 /* SJTestAliViewController3.m */; };
 		77357E472373DA3E00B81EE4 /* SJTestAliViewController3.xib in Resources */ = {isa = PBXBuildFile; fileRef = 77357E452373DA3E00B81EE4 /* SJTestAliViewController3.xib */; };
 		77357E622375523C00B81EE4 /* SJSubtitlesTestViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 77357E612375523C00B81EE4 /* SJSubtitlesTestViewController.m */; };
+		77391C042466EE3400443844 /* SJPlayerSuperview.m in Sources */ = {isa = PBXBuildFile; fileRef = 77391C032466EE3400443844 /* SJPlayerSuperview.m */; };
+		77391C072466F08200443844 /* SJCollectionView.m in Sources */ = {isa = PBXBuildFile; fileRef = 77391C062466F08200443844 /* SJCollectionView.m */; };
+		77391C0A2466F15900443844 /* SJCoverImageView.m in Sources */ = {isa = PBXBuildFile; fileRef = 77391C092466F15900443844 /* SJCoverImageView.m */; };
+		77391C112467CCEA00443844 /* SJUITableViewDemoViewController1.m in Sources */ = {isa = PBXBuildFile; fileRef = 77391C102467CCEA00443844 /* SJUITableViewDemoViewController1.m */; };
+		77391C142467CD0100443844 /* SJRouteHandlers.m in Sources */ = {isa = PBXBuildFile; fileRef = 77391C132467CD0100443844 /* SJRouteHandlers.m */; };
+		77391C172467D13500443844 /* SJUITableViewDemoViewController2.m in Sources */ = {isa = PBXBuildFile; fileRef = 77391C162467D13500443844 /* SJUITableViewDemoViewController2.m */; };
+		77391C1A2467D62200443844 /* SJUITableViewDemoViewController3.m in Sources */ = {isa = PBXBuildFile; fileRef = 77391C192467D62200443844 /* SJUITableViewDemoViewController3.m */; };
+		77391C1D2467D6EF00443844 /* SJUITableViewDemoViewController4.m in Sources */ = {isa = PBXBuildFile; fileRef = 77391C1C2467D6EF00443844 /* SJUITableViewDemoViewController4.m */; };
+		77391C202467D8A300443844 /* SJUITableViewDemoViewController5.m in Sources */ = {isa = PBXBuildFile; fileRef = 77391C1F2467D8A300443844 /* SJUITableViewDemoViewController5.m */; };
+		77391C232467DAD500443844 /* SJUITableViewDemoViewController6.m in Sources */ = {isa = PBXBuildFile; fileRef = 77391C222467DAD500443844 /* SJUITableViewDemoViewController6.m */; };
+		77391C262467DF4500443844 /* SJUITableViewDemoViewController7.m in Sources */ = {isa = PBXBuildFile; fileRef = 77391C242467DF4500443844 /* SJUITableViewDemoViewController7.m */; };
+		77391C292467DFA500443844 /* SJTopView.m in Sources */ = {isa = PBXBuildFile; fileRef = 77391C282467DFA500443844 /* SJTopView.m */; };
+		77391C2C2467E36300443844 /* SJUITableViewDemoViewController8.m in Sources */ = {isa = PBXBuildFile; fileRef = 77391C2A2467E36300443844 /* SJUITableViewDemoViewController8.m */; };
+		77391C2F2467E4EC00443844 /* SJUICollectionViewDemoViewController1.m in Sources */ = {isa = PBXBuildFile; fileRef = 77391C2E2467E4EC00443844 /* SJUICollectionViewDemoViewController1.m */; };
+		77391C322467E98A00443844 /* SJUICollectionViewDemoViewController2.m in Sources */ = {isa = PBXBuildFile; fileRef = 77391C312467E98A00443844 /* SJUICollectionViewDemoViewController2.m */; };
+		77391C352467EF6300443844 /* SJUICollectionViewDemoViewController3.m in Sources */ = {isa = PBXBuildFile; fileRef = 77391C332467EF6300443844 /* SJUICollectionViewDemoViewController3.m */; };
+		77391C382467F01500443844 /* SJUICollectionViewDemoViewController4.m in Sources */ = {isa = PBXBuildFile; fileRef = 77391C372467F01500443844 /* SJUICollectionViewDemoViewController4.m */; };
+		77391C3C2467F04C00443844 /* SJRecommendVideosCollectionViewCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 77391C3A2467F04C00443844 /* SJRecommendVideosCollectionViewCell.m */; };
+		77391C3D2467F04C00443844 /* SJRecommendVideosCollectionViewCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = 77391C3B2467F04C00443844 /* SJRecommendVideosCollectionViewCell.xib */; };
+		77391C402467FEA100443844 /* SJUICollectionViewDemoViewController5.m in Sources */ = {isa = PBXBuildFile; fileRef = 77391C3E2467FEA100443844 /* SJUICollectionViewDemoViewController5.m */; };
+		77391C432468001300443844 /* SJUITableViewDemoViewController9.m in Sources */ = {isa = PBXBuildFile; fileRef = 77391C412468001200443844 /* SJUITableViewDemoViewController9.m */; };
+		77391C46246801D100443844 /* SJExtendedMediaCollectionViewModel.m in Sources */ = {isa = PBXBuildFile; fileRef = 77391C45246801D100443844 /* SJExtendedMediaCollectionViewModel.m */; };
 		7740C1BA2350A16700DD7ECE /* SJViewController12.m in Sources */ = {isa = PBXBuildFile; fileRef = 7740C1B92350A16700DD7ECE /* SJViewController12.m */; };
 		7740C1BD2350A18500DD7ECE /* SJCustomControlLayerViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 7740C1BC2350A18500DD7ECE /* SJCustomControlLayerViewController.m */; };
 		7748925E239100C7002825FC /* SJNavigationController.m in Sources */ = {isa = PBXBuildFile; fileRef = 7748925D239100C7002825FC /* SJNavigationController.m */; };
 		774AF08722DC790D005FE462 /* SJView.m in Sources */ = {isa = PBXBuildFile; fileRef = 774AF08622DC790D005FE462 /* SJView.m */; };
 		7756F58522E173D400F9DC7D /* SJTestViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 7756F58322E173D400F9DC7D /* SJTestViewController.m */; };
 		7756F58622E173D400F9DC7D /* SJTestViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 7756F58422E173D400F9DC7D /* SJTestViewController.xib */; };
-		775A7EE5240BDF9000250505 /* SJViewController5mm.m in Sources */ = {isa = PBXBuildFile; fileRef = 775A7EE4240BDF9000250505 /* SJViewController5mm.m */; };
 		77633ABB23FD97B700D7A269 /* SJPlaybackHistoryViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 77633ABA23FD97B700D7A269 /* SJPlaybackHistoryViewController.m */; };
 		77661EF72356CBE900514BED /* SJTestIJKViewController2.xib in Resources */ = {isa = PBXBuildFile; fileRef = 77661EF62356CBE900514BED /* SJTestIJKViewController2.xib */; };
 		776EB8C623FE98D600085F94 /* SJTestPLPlayerViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 776EB8C423FE98D600085F94 /* SJTestPLPlayerViewController.m */; };
 		776EB8C723FE98D600085F94 /* SJTestPLPlayerViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 776EB8C523FE98D600085F94 /* SJTestPLPlayerViewController.xib */; };
 		7774C8D623519F5000FE6FCA /* SJPopPromptCustomView.m in Sources */ = {isa = PBXBuildFile; fileRef = 7774C8D523519F5000FE6FCA /* SJPopPromptCustomView.m */; };
 		777829402351D4AB00A2D933 /* SJTestIJKViewController2.m in Sources */ = {isa = PBXBuildFile; fileRef = 7778293F2351D4AB00A2D933 /* SJTestIJKViewController2.m */; };
-		77788F6F22C35FF200E26599 /* SJViewController5n.m in Sources */ = {isa = PBXBuildFile; fileRef = 77788F6D22C35FF200E26599 /* SJViewController5n.m */; };
-		77788FBB22C3654D00E26599 /* SJTableViewHeaderFooterView5n.m in Sources */ = {isa = PBXBuildFile; fileRef = 77788FBA22C3654D00E26599 /* SJTableViewHeaderFooterView5n.m */; };
-		77788FDF22C36CF300E26599 /* SJMediaItemsTableViewCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 77788FDD22C36CF300E26599 /* SJMediaItemsTableViewCell.m */; };
-		77788FE022C36CF300E26599 /* SJMediaItemsTableViewCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = 77788FDE22C36CF300E26599 /* SJMediaItemsTableViewCell.xib */; };
-		77788FE422C36D8300E26599 /* SJMediaCollectionViewCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 77788FE222C36D8300E26599 /* SJMediaCollectionViewCell.m */; };
-		77788FE522C36D8300E26599 /* SJMediaCollectionViewCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = 77788FE322C36D8300E26599 /* SJMediaCollectionViewCell.xib */; };
-		77788FEA22C37C0800E26599 /* SJMediasTableViewModel.m in Sources */ = {isa = PBXBuildFile; fileRef = 77788FE922C37C0800E26599 /* SJMediasTableViewModel.m */; };
-		77788FED22C37C2000E26599 /* SJExtendedMediaCollectionViewModel.m in Sources */ = {isa = PBXBuildFile; fileRef = 77788FEC22C37C2000E26599 /* SJExtendedMediaCollectionViewModel.m */; };
+		77788FDF22C36CF300E26599 /* SJRecommendVideosTableViewCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 77788FDD22C36CF300E26599 /* SJRecommendVideosTableViewCell.m */; };
+		77788FE022C36CF300E26599 /* SJRecommendVideosTableViewCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = 77788FDE22C36CF300E26599 /* SJRecommendVideosTableViewCell.xib */; };
+		77788FE422C36D8300E26599 /* SJVideoCollectionViewCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 77788FE222C36D8300E26599 /* SJVideoCollectionViewCell.m */; };
+		77788FE522C36D8300E26599 /* SJVideoCollectionViewCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = 77788FE322C36D8300E26599 /* SJVideoCollectionViewCell.xib */; };
+		77788FEA22C37C0800E26599 /* SJRecommendVideosViewModel.m in Sources */ = {isa = PBXBuildFile; fileRef = 77788FE922C37C0800E26599 /* SJRecommendVideosViewModel.m */; };
 		77805D6B22BF7DE1007076B9 /* SJiPadDemoViewController1.m in Sources */ = {isa = PBXBuildFile; fileRef = 77805D6922BF7DE1007076B9 /* SJiPadDemoViewController1.m */; };
 		77805D6F22BF7EDB007076B9 /* iPadMain.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 77805D6E22BF7EDB007076B9 /* iPadMain.storyboard */; };
 		7784A7D1237CF75F000BA67E /* SJTestAliVodPlayerViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 7784A7CF237CF75F000BA67E /* SJTestAliVodPlayerViewController.m */; };
 		7784A7D2237CF75F000BA67E /* SJTestAliVodPlayerViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 7784A7D0237CF75F000BA67E /* SJTestAliVodPlayerViewController.xib */; };
 		7784A7FA237D3860000BA67E /* SJBarrageTestViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 7784A7F9237D3860000BA67E /* SJBarrageTestViewController.m */; };
 		7784A7FC237D4E97000BA67E /* SJBarrageTestViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 7784A7FB237D4E97000BA67E /* SJBarrageTestViewController.xib */; };
-		77A0CDEF230652DD00FE353C /* SJListViewAutoplayViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 77A0CDEE230652DD00FE353C /* SJListViewAutoplayViewController.m */; };
-		77A0CDFA2306541700FE353C /* SJListViewAutoplayCollectionViewCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 77A0CDF92306541700FE353C /* SJListViewAutoplayCollectionViewCell.m */; };
-		77A0CDFD230658DB00FE353C /* SJListViewAutoplayMediaViewModel.m in Sources */ = {isa = PBXBuildFile; fileRef = 77A0CDFC230658DB00FE353C /* SJListViewAutoplayMediaViewModel.m */; };
-		77A0CE002306856900FE353C /* SJListViewAutoplayMediaInfoView.m in Sources */ = {isa = PBXBuildFile; fileRef = 77A0CDFF2306856900FE353C /* SJListViewAutoplayMediaInfoView.m */; };
 		77D0CFBA235727D90081C855 /* MediaPlayer.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 77D0CFB9235727D80081C855 /* MediaPlayer.framework */; };
 		77E87F6622E84D4E0047A253 /* SJViewController10.m in Sources */ = {isa = PBXBuildFile; fileRef = 77E87F6422E84D4E0047A253 /* SJViewController10.m */; };
 		77E87F6722E84D4E0047A253 /* SJViewController10.xib in Resources */ = {isa = PBXBuildFile; fileRef = 77E87F6522E84D4E0047A253 /* SJViewController10.xib */; };
@@ -71,14 +85,11 @@
 		A6A208FB22AB9E59001ED610 /* SJRotationMode2ViewModel.m in Sources */ = {isa = PBXBuildFile; fileRef = A6A208E622AB9E59001ED610 /* SJRotationMode2ViewModel.m */; };
 		A6A208FC22AB9E59001ED610 /* SJRotationModeDemoViewController2.xib in Resources */ = {isa = PBXBuildFile; fileRef = A6A208E822AB9E59001ED610 /* SJRotationModeDemoViewController2.xib */; };
 		A6A208FD22AB9E59001ED610 /* SJRotationModeDemoViewController2.m in Sources */ = {isa = PBXBuildFile; fileRef = A6A208EA22AB9E59001ED610 /* SJRotationModeDemoViewController2.m */; };
-		A6A208FE22AB9E59001ED610 /* SJMediaTableViewModel.m in Sources */ = {isa = PBXBuildFile; fileRef = A6A208F122AB9E59001ED610 /* SJMediaTableViewModel.m */; };
-		A6A208FF22AB9E59001ED610 /* SJMeidaItemModel.m in Sources */ = {isa = PBXBuildFile; fileRef = A6A208F522AB9E59001ED610 /* SJMeidaItemModel.m */; };
-		A6A2090022AB9E59001ED610 /* SJMediaTableViewCell.m in Sources */ = {isa = PBXBuildFile; fileRef = A6A208F822AB9E59001ED610 /* SJMediaTableViewCell.m */; };
+		A6A208FE22AB9E59001ED610 /* SJVideoCellViewModel.m in Sources */ = {isa = PBXBuildFile; fileRef = A6A208F122AB9E59001ED610 /* SJVideoCellViewModel.m */; };
+		A6A208FF22AB9E59001ED610 /* SJVideoModel.m in Sources */ = {isa = PBXBuildFile; fileRef = A6A208F522AB9E59001ED610 /* SJVideoModel.m */; };
+		A6A2090022AB9E59001ED610 /* SJVideoTableViewCell.m in Sources */ = {isa = PBXBuildFile; fileRef = A6A208F822AB9E59001ED610 /* SJVideoTableViewCell.m */; };
 		A6A2090322AB9EE6001ED610 /* LWZTableSectionShrinker.m in Sources */ = {isa = PBXBuildFile; fileRef = A6A2090122AB9EE5001ED610 /* LWZTableSectionShrinker.m */; };
-		A6A2090522AB9FD7001ED610 /* SJMediaTableViewCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = A6A2090422AB9FD7001ED610 /* SJMediaTableViewCell.xib */; };
-		A6A2553C22ABC71F00E42998 /* ListViewAutoplayViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = A6A2553522ABC71F00E42998 /* ListViewAutoplayViewController.m */; };
-		A6A2553D22ABC71F00E42998 /* DemoTableViewCellViewModel.m in Sources */ = {isa = PBXBuildFile; fileRef = A6A2553722ABC71F00E42998 /* DemoTableViewCellViewModel.m */; };
-		A6A2553F22ABC71F00E42998 /* DemoTableViewCell.m in Sources */ = {isa = PBXBuildFile; fileRef = A6A2553A22ABC71F00E42998 /* DemoTableViewCell.m */; };
+		A6A2090522AB9FD7001ED610 /* SJVideoTableViewCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = A6A2090422AB9FD7001ED610 /* SJVideoTableViewCell.xib */; };
 		A6A2554422ABCE9200E42998 /* SJViewController1.m in Sources */ = {isa = PBXBuildFile; fileRef = A6A2554222ABCE9200E42998 /* SJViewController1.m */; };
 		A6A2554522ABCE9200E42998 /* SJViewController1.xib in Resources */ = {isa = PBXBuildFile; fileRef = A6A2554322ABCE9200E42998 /* SJViewController1.xib */; };
 		A6A2554922ABCFB100E42998 /* SJTableViewCell1.m in Sources */ = {isa = PBXBuildFile; fileRef = A6A2554722ABCFB100E42998 /* SJTableViewCell1.m */; };
@@ -87,8 +98,6 @@
 		A6A2555322ABCFF700E42998 /* SJTableCellViewModel.m in Sources */ = {isa = PBXBuildFile; fileRef = A6A2555222ABCFF700E42998 /* SJTableCellViewModel.m */; };
 		A6A2555922ABDAA500E42998 /* SJViewController2.m in Sources */ = {isa = PBXBuildFile; fileRef = A6A2555722ABDAA500E42998 /* SJViewController2.m */; };
 		A6A2555A22ABDAA500E42998 /* SJViewController2.xib in Resources */ = {isa = PBXBuildFile; fileRef = A6A2555822ABDAA500E42998 /* SJViewController2.xib */; };
-		A6A2555F22ABFAFA00E42998 /* SJViewController3.m in Sources */ = {isa = PBXBuildFile; fileRef = A6A2555D22ABFAFA00E42998 /* SJViewController3.m */; };
-		A6A2556022ABFAFA00E42998 /* SJViewController3.xib in Resources */ = {isa = PBXBuildFile; fileRef = A6A2555E22ABFAFA00E42998 /* SJViewController3.xib */; };
 		A6A2556B22AC015B00E42998 /* SJViewController4.m in Sources */ = {isa = PBXBuildFile; fileRef = A6A2556922AC015B00E42998 /* SJViewController4.m */; };
 		A6A2556C22AC015B00E42998 /* SJViewController4.xib in Resources */ = {isa = PBXBuildFile; fileRef = A6A2556A22AC015B00E42998 /* SJViewController4.xib */; };
 		A6A2562622AC1C3500E42998 /* SJViewController5.m in Sources */ = {isa = PBXBuildFile; fileRef = A6A2562422AC1C3500E42998 /* SJViewController5.m */; };
@@ -139,6 +148,49 @@
 		77357E452373DA3E00B81EE4 /* SJTestAliViewController3.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = SJTestAliViewController3.xib; sourceTree = "<group>"; };
 		77357E602375523C00B81EE4 /* SJSubtitlesTestViewController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = SJSubtitlesTestViewController.h; sourceTree = "<group>"; };
 		77357E612375523C00B81EE4 /* SJSubtitlesTestViewController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = SJSubtitlesTestViewController.m; sourceTree = "<group>"; };
+		77391C022466EE3400443844 /* SJPlayerSuperview.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = SJPlayerSuperview.h; sourceTree = "<group>"; };
+		77391C032466EE3400443844 /* SJPlayerSuperview.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = SJPlayerSuperview.m; sourceTree = "<group>"; };
+		77391C052466F08200443844 /* SJCollectionView.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = SJCollectionView.h; sourceTree = "<group>"; };
+		77391C062466F08200443844 /* SJCollectionView.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = SJCollectionView.m; sourceTree = "<group>"; };
+		77391C082466F15900443844 /* SJCoverImageView.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = SJCoverImageView.h; sourceTree = "<group>"; };
+		77391C092466F15900443844 /* SJCoverImageView.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = SJCoverImageView.m; sourceTree = "<group>"; };
+		77391C0F2467CCEA00443844 /* SJUITableViewDemoViewController1.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = SJUITableViewDemoViewController1.h; sourceTree = "<group>"; };
+		77391C102467CCEA00443844 /* SJUITableViewDemoViewController1.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = SJUITableViewDemoViewController1.m; sourceTree = "<group>"; };
+		77391C122467CD0100443844 /* SJRouteHandlers.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = SJRouteHandlers.h; sourceTree = "<group>"; };
+		77391C132467CD0100443844 /* SJRouteHandlers.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = SJRouteHandlers.m; sourceTree = "<group>"; };
+		77391C152467D13500443844 /* SJUITableViewDemoViewController2.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = SJUITableViewDemoViewController2.h; sourceTree = "<group>"; };
+		77391C162467D13500443844 /* SJUITableViewDemoViewController2.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = SJUITableViewDemoViewController2.m; sourceTree = "<group>"; };
+		77391C182467D62200443844 /* SJUITableViewDemoViewController3.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SJUITableViewDemoViewController3.h; sourceTree = "<group>"; };
+		77391C192467D62200443844 /* SJUITableViewDemoViewController3.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SJUITableViewDemoViewController3.m; sourceTree = "<group>"; };
+		77391C1B2467D6EF00443844 /* SJUITableViewDemoViewController4.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SJUITableViewDemoViewController4.h; sourceTree = "<group>"; };
+		77391C1C2467D6EF00443844 /* SJUITableViewDemoViewController4.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SJUITableViewDemoViewController4.m; sourceTree = "<group>"; };
+		77391C1E2467D8A300443844 /* SJUITableViewDemoViewController5.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SJUITableViewDemoViewController5.h; sourceTree = "<group>"; };
+		77391C1F2467D8A300443844 /* SJUITableViewDemoViewController5.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SJUITableViewDemoViewController5.m; sourceTree = "<group>"; };
+		77391C212467DAD500443844 /* SJUITableViewDemoViewController6.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = SJUITableViewDemoViewController6.h; sourceTree = "<group>"; };
+		77391C222467DAD500443844 /* SJUITableViewDemoViewController6.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = SJUITableViewDemoViewController6.m; sourceTree = "<group>"; };
+		77391C242467DF4500443844 /* SJUITableViewDemoViewController7.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SJUITableViewDemoViewController7.m; sourceTree = "<group>"; };
+		77391C252467DF4500443844 /* SJUITableViewDemoViewController7.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SJUITableViewDemoViewController7.h; sourceTree = "<group>"; };
+		77391C272467DFA500443844 /* SJTopView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SJTopView.h; sourceTree = "<group>"; };
+		77391C282467DFA500443844 /* SJTopView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SJTopView.m; sourceTree = "<group>"; };
+		77391C2A2467E36300443844 /* SJUITableViewDemoViewController8.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SJUITableViewDemoViewController8.m; sourceTree = "<group>"; };
+		77391C2B2467E36300443844 /* SJUITableViewDemoViewController8.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SJUITableViewDemoViewController8.h; sourceTree = "<group>"; };
+		77391C2D2467E4EC00443844 /* SJUICollectionViewDemoViewController1.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = SJUICollectionViewDemoViewController1.h; sourceTree = "<group>"; };
+		77391C2E2467E4EC00443844 /* SJUICollectionViewDemoViewController1.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = SJUICollectionViewDemoViewController1.m; sourceTree = "<group>"; };
+		77391C302467E98A00443844 /* SJUICollectionViewDemoViewController2.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SJUICollectionViewDemoViewController2.h; sourceTree = "<group>"; };
+		77391C312467E98A00443844 /* SJUICollectionViewDemoViewController2.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SJUICollectionViewDemoViewController2.m; sourceTree = "<group>"; };
+		77391C332467EF6300443844 /* SJUICollectionViewDemoViewController3.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SJUICollectionViewDemoViewController3.m; sourceTree = "<group>"; };
+		77391C342467EF6300443844 /* SJUICollectionViewDemoViewController3.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SJUICollectionViewDemoViewController3.h; sourceTree = "<group>"; };
+		77391C362467F01400443844 /* SJUICollectionViewDemoViewController4.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SJUICollectionViewDemoViewController4.h; sourceTree = "<group>"; };
+		77391C372467F01500443844 /* SJUICollectionViewDemoViewController4.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SJUICollectionViewDemoViewController4.m; sourceTree = "<group>"; };
+		77391C392467F04C00443844 /* SJRecommendVideosCollectionViewCell.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = SJRecommendVideosCollectionViewCell.h; sourceTree = "<group>"; };
+		77391C3A2467F04C00443844 /* SJRecommendVideosCollectionViewCell.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = SJRecommendVideosCollectionViewCell.m; sourceTree = "<group>"; };
+		77391C3B2467F04C00443844 /* SJRecommendVideosCollectionViewCell.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = SJRecommendVideosCollectionViewCell.xib; sourceTree = "<group>"; };
+		77391C3E2467FEA100443844 /* SJUICollectionViewDemoViewController5.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SJUICollectionViewDemoViewController5.m; sourceTree = "<group>"; };
+		77391C3F2467FEA100443844 /* SJUICollectionViewDemoViewController5.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SJUICollectionViewDemoViewController5.h; sourceTree = "<group>"; };
+		77391C412468001200443844 /* SJUITableViewDemoViewController9.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SJUITableViewDemoViewController9.m; sourceTree = "<group>"; };
+		77391C422468001300443844 /* SJUITableViewDemoViewController9.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SJUITableViewDemoViewController9.h; sourceTree = "<group>"; };
+		77391C44246801D100443844 /* SJExtendedMediaCollectionViewModel.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SJExtendedMediaCollectionViewModel.h; sourceTree = "<group>"; };
+		77391C45246801D100443844 /* SJExtendedMediaCollectionViewModel.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SJExtendedMediaCollectionViewModel.m; sourceTree = "<group>"; };
 		7740C1B82350A16700DD7ECE /* SJViewController12.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = SJViewController12.h; sourceTree = "<group>"; };
 		7740C1B92350A16700DD7ECE /* SJViewController12.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = SJViewController12.m; sourceTree = "<group>"; };
 		7740C1BB2350A18500DD7ECE /* SJCustomControlLayerViewController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = SJCustomControlLayerViewController.h; sourceTree = "<group>"; };
@@ -150,8 +202,6 @@
 		7756F58222E173D400F9DC7D /* SJTestViewController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = SJTestViewController.h; sourceTree = "<group>"; };
 		7756F58322E173D400F9DC7D /* SJTestViewController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = SJTestViewController.m; sourceTree = "<group>"; };
 		7756F58422E173D400F9DC7D /* SJTestViewController.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = SJTestViewController.xib; sourceTree = "<group>"; };
-		775A7EE3240BDF9000250505 /* SJViewController5mm.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = SJViewController5mm.h; sourceTree = "<group>"; };
-		775A7EE4240BDF9000250505 /* SJViewController5mm.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = SJViewController5mm.m; sourceTree = "<group>"; };
 		77633AB923FD97B700D7A269 /* SJPlaybackHistoryViewController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = SJPlaybackHistoryViewController.h; sourceTree = "<group>"; };
 		77633ABA23FD97B700D7A269 /* SJPlaybackHistoryViewController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = SJPlaybackHistoryViewController.m; sourceTree = "<group>"; };
 		77661EF62356CBE900514BED /* SJTestIJKViewController2.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = SJTestIJKViewController2.xib; sourceTree = "<group>"; };
@@ -162,20 +212,14 @@
 		7774C8D523519F5000FE6FCA /* SJPopPromptCustomView.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = SJPopPromptCustomView.m; sourceTree = "<group>"; };
 		7778293E2351D4AB00A2D933 /* SJTestIJKViewController2.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = SJTestIJKViewController2.h; sourceTree = "<group>"; };
 		7778293F2351D4AB00A2D933 /* SJTestIJKViewController2.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = SJTestIJKViewController2.m; sourceTree = "<group>"; };
-		77788F6C22C35FF200E26599 /* SJViewController5n.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = SJViewController5n.h; sourceTree = "<group>"; };
-		77788F6D22C35FF200E26599 /* SJViewController5n.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = SJViewController5n.m; sourceTree = "<group>"; };
-		77788FB922C3654D00E26599 /* SJTableViewHeaderFooterView5n.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = SJTableViewHeaderFooterView5n.h; sourceTree = "<group>"; };
-		77788FBA22C3654D00E26599 /* SJTableViewHeaderFooterView5n.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = SJTableViewHeaderFooterView5n.m; sourceTree = "<group>"; };
-		77788FDC22C36CF300E26599 /* SJMediaItemsTableViewCell.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = SJMediaItemsTableViewCell.h; sourceTree = "<group>"; };
-		77788FDD22C36CF300E26599 /* SJMediaItemsTableViewCell.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = SJMediaItemsTableViewCell.m; sourceTree = "<group>"; };
-		77788FDE22C36CF300E26599 /* SJMediaItemsTableViewCell.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = SJMediaItemsTableViewCell.xib; sourceTree = "<group>"; };
-		77788FE122C36D8300E26599 /* SJMediaCollectionViewCell.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = SJMediaCollectionViewCell.h; sourceTree = "<group>"; };
-		77788FE222C36D8300E26599 /* SJMediaCollectionViewCell.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = SJMediaCollectionViewCell.m; sourceTree = "<group>"; };
-		77788FE322C36D8300E26599 /* SJMediaCollectionViewCell.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = SJMediaCollectionViewCell.xib; sourceTree = "<group>"; };
-		77788FE822C37C0800E26599 /* SJMediasTableViewModel.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = SJMediasTableViewModel.h; sourceTree = "<group>"; };
-		77788FE922C37C0800E26599 /* SJMediasTableViewModel.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = SJMediasTableViewModel.m; sourceTree = "<group>"; };
-		77788FEB22C37C2000E26599 /* SJExtendedMediaCollectionViewModel.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = SJExtendedMediaCollectionViewModel.h; sourceTree = "<group>"; };
-		77788FEC22C37C2000E26599 /* SJExtendedMediaCollectionViewModel.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = SJExtendedMediaCollectionViewModel.m; sourceTree = "<group>"; };
+		77788FDC22C36CF300E26599 /* SJRecommendVideosTableViewCell.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = SJRecommendVideosTableViewCell.h; sourceTree = "<group>"; };
+		77788FDD22C36CF300E26599 /* SJRecommendVideosTableViewCell.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = SJRecommendVideosTableViewCell.m; sourceTree = "<group>"; };
+		77788FDE22C36CF300E26599 /* SJRecommendVideosTableViewCell.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = SJRecommendVideosTableViewCell.xib; sourceTree = "<group>"; };
+		77788FE122C36D8300E26599 /* SJVideoCollectionViewCell.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = SJVideoCollectionViewCell.h; sourceTree = "<group>"; };
+		77788FE222C36D8300E26599 /* SJVideoCollectionViewCell.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = SJVideoCollectionViewCell.m; sourceTree = "<group>"; };
+		77788FE322C36D8300E26599 /* SJVideoCollectionViewCell.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = SJVideoCollectionViewCell.xib; sourceTree = "<group>"; };
+		77788FE822C37C0800E26599 /* SJRecommendVideosViewModel.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = SJRecommendVideosViewModel.h; sourceTree = "<group>"; };
+		77788FE922C37C0800E26599 /* SJRecommendVideosViewModel.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = SJRecommendVideosViewModel.m; sourceTree = "<group>"; };
 		77805D6822BF7DE1007076B9 /* SJiPadDemoViewController1.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = SJiPadDemoViewController1.h; sourceTree = "<group>"; };
 		77805D6922BF7DE1007076B9 /* SJiPadDemoViewController1.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = SJiPadDemoViewController1.m; sourceTree = "<group>"; };
 		77805D6E22BF7EDB007076B9 /* iPadMain.storyboard */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; path = iPadMain.storyboard; sourceTree = "<group>"; };
@@ -185,14 +229,6 @@
 		7784A7F8237D3860000BA67E /* SJBarrageTestViewController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = SJBarrageTestViewController.h; sourceTree = "<group>"; };
 		7784A7F9237D3860000BA67E /* SJBarrageTestViewController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = SJBarrageTestViewController.m; sourceTree = "<group>"; };
 		7784A7FB237D4E97000BA67E /* SJBarrageTestViewController.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = SJBarrageTestViewController.xib; sourceTree = "<group>"; };
-		77A0CDED230652DD00FE353C /* SJListViewAutoplayViewController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = SJListViewAutoplayViewController.h; sourceTree = "<group>"; };
-		77A0CDEE230652DD00FE353C /* SJListViewAutoplayViewController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = SJListViewAutoplayViewController.m; sourceTree = "<group>"; };
-		77A0CDF82306541700FE353C /* SJListViewAutoplayCollectionViewCell.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = SJListViewAutoplayCollectionViewCell.h; sourceTree = "<group>"; };
-		77A0CDF92306541700FE353C /* SJListViewAutoplayCollectionViewCell.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = SJListViewAutoplayCollectionViewCell.m; sourceTree = "<group>"; };
-		77A0CDFB230658DB00FE353C /* SJListViewAutoplayMediaViewModel.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = SJListViewAutoplayMediaViewModel.h; sourceTree = "<group>"; };
-		77A0CDFC230658DB00FE353C /* SJListViewAutoplayMediaViewModel.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = SJListViewAutoplayMediaViewModel.m; sourceTree = "<group>"; };
-		77A0CDFE2306856900FE353C /* SJListViewAutoplayMediaInfoView.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = SJListViewAutoplayMediaInfoView.h; sourceTree = "<group>"; };
-		77A0CDFF2306856900FE353C /* SJListViewAutoplayMediaInfoView.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = SJListViewAutoplayMediaInfoView.m; sourceTree = "<group>"; };
 		77D0CFB9235727D80081C855 /* MediaPlayer.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = MediaPlayer.framework; path = System/Library/Frameworks/MediaPlayer.framework; sourceTree = SDKROOT; };
 		77E87F6322E84D4E0047A253 /* SJViewController10.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = SJViewController10.h; sourceTree = "<group>"; };
 		77E87F6422E84D4E0047A253 /* SJViewController10.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = SJViewController10.m; sourceTree = "<group>"; };
@@ -217,21 +253,15 @@
 		A6A208E922AB9E59001ED610 /* SJRotationMode2ViewModel.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SJRotationMode2ViewModel.h; sourceTree = "<group>"; };
 		A6A208EA22AB9E59001ED610 /* SJRotationModeDemoViewController2.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SJRotationModeDemoViewController2.m; sourceTree = "<group>"; };
 		A6A208ED22AB9E59001ED610 /* SJSourceURLs.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SJSourceURLs.h; sourceTree = "<group>"; };
-		A6A208F022AB9E59001ED610 /* SJMediaTableViewModel.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SJMediaTableViewModel.h; sourceTree = "<group>"; };
-		A6A208F122AB9E59001ED610 /* SJMediaTableViewModel.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SJMediaTableViewModel.m; sourceTree = "<group>"; };
-		A6A208F422AB9E59001ED610 /* SJMeidaItemModel.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SJMeidaItemModel.h; sourceTree = "<group>"; };
-		A6A208F522AB9E59001ED610 /* SJMeidaItemModel.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SJMeidaItemModel.m; sourceTree = "<group>"; };
-		A6A208F722AB9E59001ED610 /* SJMediaTableViewCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SJMediaTableViewCell.h; sourceTree = "<group>"; };
-		A6A208F822AB9E59001ED610 /* SJMediaTableViewCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SJMediaTableViewCell.m; sourceTree = "<group>"; };
+		A6A208F022AB9E59001ED610 /* SJVideoCellViewModel.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SJVideoCellViewModel.h; sourceTree = "<group>"; };
+		A6A208F122AB9E59001ED610 /* SJVideoCellViewModel.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SJVideoCellViewModel.m; sourceTree = "<group>"; };
+		A6A208F422AB9E59001ED610 /* SJVideoModel.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SJVideoModel.h; sourceTree = "<group>"; };
+		A6A208F522AB9E59001ED610 /* SJVideoModel.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SJVideoModel.m; sourceTree = "<group>"; };
+		A6A208F722AB9E59001ED610 /* SJVideoTableViewCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SJVideoTableViewCell.h; sourceTree = "<group>"; };
+		A6A208F822AB9E59001ED610 /* SJVideoTableViewCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SJVideoTableViewCell.m; sourceTree = "<group>"; };
 		A6A2090122AB9EE5001ED610 /* LWZTableSectionShrinker.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = LWZTableSectionShrinker.m; sourceTree = "<group>"; };
 		A6A2090222AB9EE6001ED610 /* LWZTableSectionShrinker.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = LWZTableSectionShrinker.h; sourceTree = "<group>"; };
-		A6A2090422AB9FD7001ED610 /* SJMediaTableViewCell.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = SJMediaTableViewCell.xib; sourceTree = "<group>"; };
-		A6A2553522ABC71F00E42998 /* ListViewAutoplayViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ListViewAutoplayViewController.m; sourceTree = "<group>"; };
-		A6A2553622ABC71F00E42998 /* DemoTableViewCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DemoTableViewCell.h; sourceTree = "<group>"; };
-		A6A2553722ABC71F00E42998 /* DemoTableViewCellViewModel.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = DemoTableViewCellViewModel.m; sourceTree = "<group>"; };
-		A6A2553822ABC71F00E42998 /* ListViewAutoplayViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ListViewAutoplayViewController.h; sourceTree = "<group>"; };
-		A6A2553A22ABC71F00E42998 /* DemoTableViewCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = DemoTableViewCell.m; sourceTree = "<group>"; };
-		A6A2553B22ABC71F00E42998 /* DemoTableViewCellViewModel.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DemoTableViewCellViewModel.h; sourceTree = "<group>"; };
+		A6A2090422AB9FD7001ED610 /* SJVideoTableViewCell.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = SJVideoTableViewCell.xib; sourceTree = "<group>"; };
 		A6A2554122ABCE9200E42998 /* SJViewController1.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = SJViewController1.h; sourceTree = "<group>"; };
 		A6A2554222ABCE9200E42998 /* SJViewController1.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = SJViewController1.m; sourceTree = "<group>"; };
 		A6A2554322ABCE9200E42998 /* SJViewController1.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = SJViewController1.xib; sourceTree = "<group>"; };
@@ -245,9 +275,6 @@
 		A6A2555622ABDAA500E42998 /* SJViewController2.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = SJViewController2.h; sourceTree = "<group>"; };
 		A6A2555722ABDAA500E42998 /* SJViewController2.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = SJViewController2.m; sourceTree = "<group>"; };
 		A6A2555822ABDAA500E42998 /* SJViewController2.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = SJViewController2.xib; sourceTree = "<group>"; };
-		A6A2555C22ABFAFA00E42998 /* SJViewController3.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = SJViewController3.h; sourceTree = "<group>"; };
-		A6A2555D22ABFAFA00E42998 /* SJViewController3.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = SJViewController3.m; sourceTree = "<group>"; };
-		A6A2555E22ABFAFA00E42998 /* SJViewController3.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = SJViewController3.xib; sourceTree = "<group>"; };
 		A6A2556822AC015B00E42998 /* SJViewController4.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = SJViewController4.h; sourceTree = "<group>"; };
 		A6A2556922AC015B00E42998 /* SJViewController4.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = SJViewController4.m; sourceTree = "<group>"; };
 		A6A2556A22AC015B00E42998 /* SJViewController4.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = SJViewController4.xib; sourceTree = "<group>"; };
@@ -405,6 +432,48 @@
 			path = "Subtitles(字幕)";
 			sourceTree = "<group>";
 		};
+		77391C0D2467CC2B00443844 /* UITableView */ = {
+			isa = PBXGroup;
+			children = (
+				77391C0F2467CCEA00443844 /* SJUITableViewDemoViewController1.h */,
+				77391C102467CCEA00443844 /* SJUITableViewDemoViewController1.m */,
+				77391C152467D13500443844 /* SJUITableViewDemoViewController2.h */,
+				77391C162467D13500443844 /* SJUITableViewDemoViewController2.m */,
+				77391C182467D62200443844 /* SJUITableViewDemoViewController3.h */,
+				77391C192467D62200443844 /* SJUITableViewDemoViewController3.m */,
+				77391C1B2467D6EF00443844 /* SJUITableViewDemoViewController4.h */,
+				77391C1C2467D6EF00443844 /* SJUITableViewDemoViewController4.m */,
+				77391C1E2467D8A300443844 /* SJUITableViewDemoViewController5.h */,
+				77391C1F2467D8A300443844 /* SJUITableViewDemoViewController5.m */,
+				77391C212467DAD500443844 /* SJUITableViewDemoViewController6.h */,
+				77391C222467DAD500443844 /* SJUITableViewDemoViewController6.m */,
+				77391C252467DF4500443844 /* SJUITableViewDemoViewController7.h */,
+				77391C242467DF4500443844 /* SJUITableViewDemoViewController7.m */,
+				77391C2B2467E36300443844 /* SJUITableViewDemoViewController8.h */,
+				77391C2A2467E36300443844 /* SJUITableViewDemoViewController8.m */,
+				77391C422468001300443844 /* SJUITableViewDemoViewController9.h */,
+				77391C412468001200443844 /* SJUITableViewDemoViewController9.m */,
+			);
+			path = UITableView;
+			sourceTree = "<group>";
+		};
+		77391C0E2467CC3800443844 /* UICollectionView */ = {
+			isa = PBXGroup;
+			children = (
+				77391C2D2467E4EC00443844 /* SJUICollectionViewDemoViewController1.h */,
+				77391C2E2467E4EC00443844 /* SJUICollectionViewDemoViewController1.m */,
+				77391C302467E98A00443844 /* SJUICollectionViewDemoViewController2.h */,
+				77391C312467E98A00443844 /* SJUICollectionViewDemoViewController2.m */,
+				77391C342467EF6300443844 /* SJUICollectionViewDemoViewController3.h */,
+				77391C332467EF6300443844 /* SJUICollectionViewDemoViewController3.m */,
+				77391C362467F01400443844 /* SJUICollectionViewDemoViewController4.h */,
+				77391C372467F01500443844 /* SJUICollectionViewDemoViewController4.m */,
+				77391C3F2467FEA100443844 /* SJUICollectionViewDemoViewController5.h */,
+				77391C3E2467FEA100443844 /* SJUICollectionViewDemoViewController5.m */,
+			);
+			path = UICollectionView;
+			sourceTree = "<group>";
+		};
 		7740C1B72350A14200DD7ECE /* CustomControlLayer(自定义控制层) */ = {
 			isa = PBXGroup;
 			children = (
@@ -454,42 +523,6 @@
 			path = "第三方播放器";
 			sourceTree = "<group>";
 		};
-		77788F6622C35F6F00E26599 /* Nested View */ = {
-			isa = PBXGroup;
-			children = (
-				77788FE722C37BF500E26599 /* ViewModels */,
-				77788FE622C37BED00E26599 /* Views */,
-				77788F6C22C35FF200E26599 /* SJViewController5n.h */,
-				77788F6D22C35FF200E26599 /* SJViewController5n.m */,
-				775A7EE3240BDF9000250505 /* SJViewController5mm.h */,
-				775A7EE4240BDF9000250505 /* SJViewController5mm.m */,
-			);
-			path = "Nested View";
-			sourceTree = "<group>";
-		};
-		77788FE622C37BED00E26599 /* Views */ = {
-			isa = PBXGroup;
-			children = (
-				77788FDC22C36CF300E26599 /* SJMediaItemsTableViewCell.h */,
-				77788FDD22C36CF300E26599 /* SJMediaItemsTableViewCell.m */,
-				77788FDE22C36CF300E26599 /* SJMediaItemsTableViewCell.xib */,
-				77788FB922C3654D00E26599 /* SJTableViewHeaderFooterView5n.h */,
-				77788FBA22C3654D00E26599 /* SJTableViewHeaderFooterView5n.m */,
-			);
-			path = Views;
-			sourceTree = "<group>";
-		};
-		77788FE722C37BF500E26599 /* ViewModels */ = {
-			isa = PBXGroup;
-			children = (
-				77788FE822C37C0800E26599 /* SJMediasTableViewModel.h */,
-				77788FE922C37C0800E26599 /* SJMediasTableViewModel.m */,
-				77788FEB22C37C2000E26599 /* SJExtendedMediaCollectionViewModel.h */,
-				77788FEC22C37C2000E26599 /* SJExtendedMediaCollectionViewModel.m */,
-			);
-			path = ViewModels;
-			sourceTree = "<group>";
-		};
 		77805D6722BF7DC6007076B9 /* iPad Demo */ = {
 			isa = PBXGroup;
 			children = (
@@ -502,13 +535,14 @@
 		77805D6D22BF7EBD007076B9 /* iPhone Demo */ = {
 			isa = PBXGroup;
 			children = (
+				77391C0D2467CC2B00443844 /* UITableView */,
+				77391C0E2467CC3800443844 /* UICollectionView */,
+				A6A208DF22AB9E59001ED610 /* Rotation Control(旋转控制) */,
 				77633AB823FD97A000D7A269 /* PlaybackHistory(播放记录) */,
 				7784A7F7237D384F000BA67E /* Barrage( 弹幕) */,
 				77357E5F2375522800B81EE4 /* Subtitles(字幕) */,
 				A6A2555522ABDA8400E42998 /* Add Button Item To Control Layer(添加按钮到控制层) */,
-				A6A208DF22AB9E59001ED610 /* Rotation Control(旋转控制) */,
 				A6A2554022ABCE2800E42998 /* Playback List Control(播放列表控制) */,
-				A6A2562122AC1B0F00E42998 /* UITableView UICollectionView */,
 				A6A2556422AC00C600E42998 /* Continue Playing In The New View Controller(在新的界面继续播放) */,
 				A6A2562222AC1BBA00E42998 /* Switching Control Layer(切换控制层) */,
 				A6F19DF722D9C1090043B508 /* Pop Prompt(弹窗提示) */,
@@ -530,74 +564,6 @@
 			path = "Barrage( 弹幕)";
 			sourceTree = "<group>";
 		};
-		77A0CDF1230652EC00FE353C /* TableView */ = {
-			isa = PBXGroup;
-			children = (
-				A6A2553622ABC71F00E42998 /* DemoTableViewCell.h */,
-				A6A2553A22ABC71F00E42998 /* DemoTableViewCell.m */,
-				A6A2553B22ABC71F00E42998 /* DemoTableViewCellViewModel.h */,
-				A6A2553722ABC71F00E42998 /* DemoTableViewCellViewModel.m */,
-				A6A2553822ABC71F00E42998 /* ListViewAutoplayViewController.h */,
-				A6A2553522ABC71F00E42998 /* ListViewAutoplayViewController.m */,
-			);
-			path = TableView;
-			sourceTree = "<group>";
-		};
-		77A0CDF2230652F700FE353C /* CollectionView */ = {
-			isa = PBXGroup;
-			children = (
-				77A0CDF72306539400FE353C /* DataProvider */,
-				77A0CDF62306538A00FE353C /* Models */,
-				77A0CDF52306538300FE353C /* VIewModels */,
-				77A0CDF42306537E00FE353C /* Views */,
-				77A0CDF32306537500FE353C /* ViewControllers */,
-			);
-			path = CollectionView;
-			sourceTree = "<group>";
-		};
-		77A0CDF32306537500FE353C /* ViewControllers */ = {
-			isa = PBXGroup;
-			children = (
-				77A0CDED230652DD00FE353C /* SJListViewAutoplayViewController.h */,
-				77A0CDEE230652DD00FE353C /* SJListViewAutoplayViewController.m */,
-			);
-			path = ViewControllers;
-			sourceTree = "<group>";
-		};
-		77A0CDF42306537E00FE353C /* Views */ = {
-			isa = PBXGroup;
-			children = (
-				77A0CDF82306541700FE353C /* SJListViewAutoplayCollectionViewCell.h */,
-				77A0CDF92306541700FE353C /* SJListViewAutoplayCollectionViewCell.m */,
-				77A0CDFE2306856900FE353C /* SJListViewAutoplayMediaInfoView.h */,
-				77A0CDFF2306856900FE353C /* SJListViewAutoplayMediaInfoView.m */,
-			);
-			path = Views;
-			sourceTree = "<group>";
-		};
-		77A0CDF52306538300FE353C /* VIewModels */ = {
-			isa = PBXGroup;
-			children = (
-				77A0CDFB230658DB00FE353C /* SJListViewAutoplayMediaViewModel.h */,
-				77A0CDFC230658DB00FE353C /* SJListViewAutoplayMediaViewModel.m */,
-			);
-			path = VIewModels;
-			sourceTree = "<group>";
-		};
-		77A0CDF62306538A00FE353C /* Models */ = {
-			isa = PBXGroup;
-			children = (
-			);
-			path = Models;
-			sourceTree = "<group>";
-		};
-		77A0CDF72306539400FE353C /* DataProvider */ = {
-			isa = PBXGroup;
-			children = (
-			);
-			path = DataProvider;
-			sourceTree = "<group>";
-		};
 		77E87F6222E84D2B0047A253 /* GIF Screenshot Export */ = {
 			isa = PBXGroup;
 			children = (
@@ -614,6 +580,8 @@
 				77F2F5D922FAC43000EA0B91 /* SJViewController11.h */,
 				77F2F5DA22FAC43000EA0B91 /* SJViewController11.m */,
 				77F2F5DB22FAC43000EA0B91 /* SJViewController11.xib */,
+				77391C122467CD0100443844 /* SJRouteHandlers.h */,
+				77391C132467CD0100443844 /* SJRouteHandlers.m */,
 			);
 			path = Other;
 			sourceTree = "<group>";
@@ -705,8 +673,12 @@
 		A6A208EF22AB9E59001ED610 /* ViewModel */ = {
 			isa = PBXGroup;
 			children = (
-				A6A208F022AB9E59001ED610 /* SJMediaTableViewModel.h */,
-				A6A208F122AB9E59001ED610 /* SJMediaTableViewModel.m */,
+				A6A208F022AB9E59001ED610 /* SJVideoCellViewModel.h */,
+				A6A208F122AB9E59001ED610 /* SJVideoCellViewModel.m */,
+				77391C44246801D100443844 /* SJExtendedMediaCollectionViewModel.h */,
+				77391C45246801D100443844 /* SJExtendedMediaCollectionViewModel.m */,
+				77788FE822C37C0800E26599 /* SJRecommendVideosViewModel.h */,
+				77788FE922C37C0800E26599 /* SJRecommendVideosViewModel.m */,
 			);
 			path = ViewModel;
 			sourceTree = "<group>";
@@ -714,8 +686,8 @@
 		A6A208F322AB9E59001ED610 /* Model */ = {
 			isa = PBXGroup;
 			children = (
-				A6A208F422AB9E59001ED610 /* SJMeidaItemModel.h */,
-				A6A208F522AB9E59001ED610 /* SJMeidaItemModel.m */,
+				A6A208F422AB9E59001ED610 /* SJVideoModel.h */,
+				A6A208F522AB9E59001ED610 /* SJVideoModel.m */,
 			);
 			path = Model;
 			sourceTree = "<group>";
@@ -723,23 +695,28 @@
 		A6A208F622AB9E59001ED610 /* View */ = {
 			isa = PBXGroup;
 			children = (
-				A6A208F722AB9E59001ED610 /* SJMediaTableViewCell.h */,
-				A6A208F822AB9E59001ED610 /* SJMediaTableViewCell.m */,
-				A6A2090422AB9FD7001ED610 /* SJMediaTableViewCell.xib */,
-				77788FE122C36D8300E26599 /* SJMediaCollectionViewCell.h */,
-				77788FE222C36D8300E26599 /* SJMediaCollectionViewCell.m */,
-				77788FE322C36D8300E26599 /* SJMediaCollectionViewCell.xib */,
+				77391C272467DFA500443844 /* SJTopView.h */,
+				77391C282467DFA500443844 /* SJTopView.m */,
+				77788FDC22C36CF300E26599 /* SJRecommendVideosTableViewCell.h */,
+				77788FDD22C36CF300E26599 /* SJRecommendVideosTableViewCell.m */,
+				77788FDE22C36CF300E26599 /* SJRecommendVideosTableViewCell.xib */,
+				77391C392467F04C00443844 /* SJRecommendVideosCollectionViewCell.h */,
+				77391C3A2467F04C00443844 /* SJRecommendVideosCollectionViewCell.m */,
+				77391C3B2467F04C00443844 /* SJRecommendVideosCollectionViewCell.xib */,
+				A6A208F722AB9E59001ED610 /* SJVideoTableViewCell.h */,
+				A6A208F822AB9E59001ED610 /* SJVideoTableViewCell.m */,
+				A6A2090422AB9FD7001ED610 /* SJVideoTableViewCell.xib */,
+				77788FE122C36D8300E26599 /* SJVideoCollectionViewCell.h */,
+				77788FE222C36D8300E26599 /* SJVideoCollectionViewCell.m */,
+				77788FE322C36D8300E26599 /* SJVideoCollectionViewCell.xib */,
+				77391C022466EE3400443844 /* SJPlayerSuperview.h */,
+				77391C032466EE3400443844 /* SJPlayerSuperview.m */,
+				77391C052466F08200443844 /* SJCollectionView.h */,
+				77391C062466F08200443844 /* SJCollectionView.m */,
+				77391C082466F15900443844 /* SJCoverImageView.h */,
+				77391C092466F15900443844 /* SJCoverImageView.m */,
 			);
 			path = View;
-			sourceTree = "<group>";
-		};
-		A6A2553322ABC71F00E42998 /* List Autoplay */ = {
-			isa = PBXGroup;
-			children = (
-				77A0CDF1230652EC00FE353C /* TableView */,
-				77A0CDF2230652F700FE353C /* CollectionView */,
-			);
-			path = "List Autoplay";
 			sourceTree = "<group>";
 		};
 		A6A2554022ABCE2800E42998 /* Playback List Control(播放列表控制) */ = {
@@ -779,16 +756,6 @@
 			path = "Add Button Item To Control Layer(添加按钮到控制层)";
 			sourceTree = "<group>";
 		};
-		A6A2555B22ABFAD800E42998 /* Float Small View */ = {
-			isa = PBXGroup;
-			children = (
-				A6A2555C22ABFAFA00E42998 /* SJViewController3.h */,
-				A6A2555D22ABFAFA00E42998 /* SJViewController3.m */,
-				A6A2555E22ABFAFA00E42998 /* SJViewController3.xib */,
-			);
-			path = "Float Small View";
-			sourceTree = "<group>";
-		};
 		A6A2556422AC00C600E42998 /* Continue Playing In The New View Controller(在新的界面继续播放) */ = {
 			isa = PBXGroup;
 			children = (
@@ -797,16 +764,6 @@
 				A6A2556A22AC015B00E42998 /* SJViewController4.xib */,
 			);
 			path = "Continue Playing In The New View Controller(在新的界面继续播放)";
-			sourceTree = "<group>";
-		};
-		A6A2562122AC1B0F00E42998 /* UITableView UICollectionView */ = {
-			isa = PBXGroup;
-			children = (
-				A6A2553322ABC71F00E42998 /* List Autoplay */,
-				A6A2555B22ABFAD800E42998 /* Float Small View */,
-				77788F6622C35F6F00E26599 /* Nested View */,
-			);
-			path = "UITableView UICollectionView";
 			sourceTree = "<group>";
 		};
 		A6A2562222AC1BBA00E42998 /* Switching Control Layer(切换控制层) */ = {
@@ -935,31 +892,31 @@
 				776EB8C723FE98D600085F94 /* SJTestPLPlayerViewController.xib in Resources */,
 				7784A7FC237D4E97000BA67E /* SJBarrageTestViewController.xib in Resources */,
 				873B8AEB1B1F5CCA007FD442 /* Main.storyboard in Resources */,
+				77391C3D2467F04C00443844 /* SJRecommendVideosCollectionViewCell.xib in Resources */,
 				7784A7D2237CF75F000BA67E /* SJTestAliVodPlayerViewController.xib in Resources */,
 				71719F9F1E33DC2100824A3D /* LaunchScreen.storyboard in Resources */,
 				A6A2556C22AC015B00E42998 /* SJViewController4.xib in Resources */,
 				7756F58622E173D400F9DC7D /* SJTestViewController.xib in Resources */,
 				6003F5A9195388D20070C39A /* Images.xcassets in Resources */,
 				A6A2554522ABCE9200E42998 /* SJViewController1.xib in Resources */,
-				77788FE522C36D8300E26599 /* SJMediaCollectionViewCell.xib in Resources */,
+				77788FE522C36D8300E26599 /* SJVideoCollectionViewCell.xib in Resources */,
 				A69FD22C22D9F5280031E4E7 /* SJViewController8.xib in Resources */,
 				A6A2554A22ABCFB100E42998 /* SJTableViewCell1.xib in Resources */,
 				A6A2555A22ABDAA500E42998 /* SJViewController2.xib in Resources */,
 				77E87F6722E84D4E0047A253 /* SJViewController10.xib in Resources */,
 				A6F19E0222D9D8050043B508 /* SJViewController7.xib in Resources */,
 				6003F598195388D20070C39A /* InfoPlist.strings in Resources */,
-				77788FE022C36CF300E26599 /* SJMediaItemsTableViewCell.xib in Resources */,
+				77788FE022C36CF300E26599 /* SJRecommendVideosTableViewCell.xib in Resources */,
 				77F2F5DD22FAC43000EA0B91 /* SJViewController11.xib in Resources */,
 				77357E472373DA3E00B81EE4 /* SJTestAliViewController3.xib in Resources */,
 				A6A208FC22AB9E59001ED610 /* SJRotationModeDemoViewController2.xib in Resources */,
 				77661EF72356CBE900514BED /* SJTestIJKViewController2.xib in Resources */,
 				A6F19DFC22D9C1390043B508 /* SJViewController6.xib in Resources */,
-				A6A2556022ABFAFA00E42998 /* SJViewController3.xib in Resources */,
 				A601803D22DB5CAC00ED840D /* SJRotationModeDemoViewController3.xib in Resources */,
 				A6A2562722AC1C3500E42998 /* SJViewController5.xib in Resources */,
 				77805D6F22BF7EDB007076B9 /* iPadMain.storyboard in Resources */,
 				A6A208F922AB9E59001ED610 /* SJRotationModeDemoViewController1.xib in Resources */,
-				A6A2090522AB9FD7001ED610 /* SJMediaTableViewCell.xib in Resources */,
+				A6A2090522AB9FD7001ED610 /* SJVideoTableViewCell.xib in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1025,59 +982,68 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				77391C042466EE3400443844 /* SJPlayerSuperview.m in Sources */,
 				77357E462373DA3E00B81EE4 /* SJTestAliViewController3.m in Sources */,
+				77391C112467CCEA00443844 /* SJUITableViewDemoViewController1.m in Sources */,
 				6003F59E195388D20070C39A /* SJAppDelegate.m in Sources */,
 				A6F19E0122D9D8050043B508 /* SJViewController7.m in Sources */,
 				A6A2555922ABDAA500E42998 /* SJViewController2.m in Sources */,
 				A6F19DFB22D9C1390043B508 /* SJViewController6.m in Sources */,
+				77391C432468001300443844 /* SJUITableViewDemoViewController9.m in Sources */,
 				77E87F6622E84D4E0047A253 /* SJViewController10.m in Sources */,
 				A6A2556B22AC015B00E42998 /* SJViewController4.m in Sources */,
 				A6A208FA22AB9E59001ED610 /* SJRotationModeDemoViewController1.m in Sources */,
 				A6A2554422ABCE9200E42998 /* SJViewController1.m in Sources */,
 				77F2F5DC22FAC43000EA0B91 /* SJViewController11.m in Sources */,
-				A6A2553F22ABC71F00E42998 /* DemoTableViewCell.m in Sources */,
 				7740C1BA2350A16700DD7ECE /* SJViewController12.m in Sources */,
 				77805D6B22BF7DE1007076B9 /* SJiPadDemoViewController1.m in Sources */,
-				A6A208FF22AB9E59001ED610 /* SJMeidaItemModel.m in Sources */,
+				77391C262467DF4500443844 /* SJUITableViewDemoViewController7.m in Sources */,
+				77391C072466F08200443844 /* SJCollectionView.m in Sources */,
+				A6A208FF22AB9E59001ED610 /* SJVideoModel.m in Sources */,
 				776EB8C623FE98D600085F94 /* SJTestPLPlayerViewController.m in Sources */,
+				77391C142467CD0100443844 /* SJRouteHandlers.m in Sources */,
+				77391C352467EF6300443844 /* SJUICollectionViewDemoViewController3.m in Sources */,
 				777829402351D4AB00A2D933 /* SJTestIJKViewController2.m in Sources */,
 				7740C1BD2350A18500DD7ECE /* SJCustomControlLayerViewController.m in Sources */,
-				A6A2553C22ABC71F00E42998 /* ListViewAutoplayViewController.m in Sources */,
+				77391C232467DAD500443844 /* SJUITableViewDemoViewController6.m in Sources */,
+				77391C0A2466F15900443844 /* SJCoverImageView.m in Sources */,
 				A6A208FD22AB9E59001ED610 /* SJRotationModeDemoViewController2.m in Sources */,
-				77788FED22C37C2000E26599 /* SJExtendedMediaCollectionViewModel.m in Sources */,
-				A6A2555F22ABFAFA00E42998 /* SJViewController3.m in Sources */,
+				77391C322467E98A00443844 /* SJUICollectionViewDemoViewController2.m in Sources */,
 				77633ABB23FD97B700D7A269 /* SJPlaybackHistoryViewController.m in Sources */,
+				77391C402467FEA100443844 /* SJUICollectionViewDemoViewController5.m in Sources */,
 				A601803C22DB5CAC00ED840D /* SJRotationModeDemoViewController3.m in Sources */,
-				A6A208FE22AB9E59001ED610 /* SJMediaTableViewModel.m in Sources */,
-				77A0CE002306856900FE353C /* SJListViewAutoplayMediaInfoView.m in Sources */,
-				A6A2090022AB9E59001ED610 /* SJMediaTableViewCell.m in Sources */,
-				77788FE422C36D8300E26599 /* SJMediaCollectionViewCell.m in Sources */,
-				77788FEA22C37C0800E26599 /* SJMediasTableViewModel.m in Sources */,
+				A6A208FE22AB9E59001ED610 /* SJVideoCellViewModel.m in Sources */,
+				A6A2090022AB9E59001ED610 /* SJVideoTableViewCell.m in Sources */,
+				77788FE422C36D8300E26599 /* SJVideoCollectionViewCell.m in Sources */,
+				77788FEA22C37C0800E26599 /* SJRecommendVideosViewModel.m in Sources */,
 				A6A2555322ABCFF700E42998 /* SJTableCellViewModel.m in Sources */,
-				77A0CDFA2306541700FE353C /* SJListViewAutoplayCollectionViewCell.m in Sources */,
+				77391C3C2467F04C00443844 /* SJRecommendVideosCollectionViewCell.m in Sources */,
 				7748925E239100C7002825FC /* SJNavigationController.m in Sources */,
-				77788F6F22C35FF200E26599 /* SJViewController5n.m in Sources */,
+				77391C172467D13500443844 /* SJUITableViewDemoViewController2.m in Sources */,
 				A6C5D23422AC249800D63D1C /* SJRemoteCommandHandler.m in Sources */,
 				77357E622375523C00B81EE4 /* SJSubtitlesTestViewController.m in Sources */,
 				7784A7FA237D3860000BA67E /* SJBarrageTestViewController.m in Sources */,
-				77788FDF22C36CF300E26599 /* SJMediaItemsTableViewCell.m in Sources */,
+				77788FDF22C36CF300E26599 /* SJRecommendVideosTableViewCell.m in Sources */,
 				774AF08722DC790D005FE462 /* SJView.m in Sources */,
+				77391C46246801D100443844 /* SJExtendedMediaCollectionViewModel.m in Sources */,
 				A6A2090322AB9EE6001ED610 /* LWZTableSectionShrinker.m in Sources */,
-				77A0CDFD230658DB00FE353C /* SJListViewAutoplayMediaViewModel.m in Sources */,
+				77391C292467DFA500443844 /* SJTopView.m in Sources */,
 				7756F58522E173D400F9DC7D /* SJTestViewController.m in Sources */,
-				775A7EE5240BDF9000250505 /* SJViewController5mm.m in Sources */,
+				77391C1A2467D62200443844 /* SJUITableViewDemoViewController3.m in Sources */,
+				77391C1D2467D6EF00443844 /* SJUITableViewDemoViewController4.m in Sources */,
+				77391C382467F01500443844 /* SJUICollectionViewDemoViewController4.m in Sources */,
 				A6A2562622AC1C3500E42998 /* SJViewController5.m in Sources */,
+				77391C2F2467E4EC00443844 /* SJUICollectionViewDemoViewController1.m in Sources */,
 				7774C8D623519F5000FE6FCA /* SJPopPromptCustomView.m in Sources */,
 				6003F5A7195388D20070C39A /* SJViewController.m in Sources */,
 				6003F59A195388D20070C39A /* main.m in Sources */,
+				77391C202467D8A300443844 /* SJUITableViewDemoViewController5.m in Sources */,
 				A6A208FB22AB9E59001ED610 /* SJRotationMode2ViewModel.m in Sources */,
 				7784A7D1237CF75F000BA67E /* SJTestAliVodPlayerViewController.m in Sources */,
 				A6A2554922ABCFB100E42998 /* SJTableViewCell1.m in Sources */,
-				A6A2553D22ABC71F00E42998 /* DemoTableViewCellViewModel.m in Sources */,
-				77788FBB22C3654D00E26599 /* SJTableViewHeaderFooterView5n.m in Sources */,
 				A6A2554D22ABCFD800E42998 /* SJViewModel1.m in Sources */,
 				A69FD22B22D9F5280031E4E7 /* SJViewController8.m in Sources */,
-				77A0CDEF230652DD00FE353C /* SJListViewAutoplayViewController.m in Sources */,
+				77391C2C2467E36300443844 /* SJUITableViewDemoViewController8.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

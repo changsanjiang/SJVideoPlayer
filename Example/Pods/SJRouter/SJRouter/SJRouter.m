@@ -27,6 +27,7 @@ static UIViewController *_sj_get_top_view_controller() {
 
 @interface SJRouter()
 @property (nonatomic, strong, readonly) NSMutableDictionary<NSString *, id<SJRouteHandler>> *handlersM;
+@property (nonatomic, strong, readonly) NSMutableDictionary<NSString *, SJRouteInterceptor *> *interceptors;
 @end
 
 @implementation SJRouter
@@ -59,6 +60,7 @@ static SEL sel_instance;
     self = [super init];
     if ( !self ) return nil;
     _handlersM = [NSMutableDictionary new];
+    _interceptors = [NSMutableDictionary new];
  
     /// Thanks @yehot, @Potato121
     /// https://www.jianshu.com/p/534eccb63974
@@ -68,7 +70,7 @@ static SEL sel_instance;
     const char *main = NSBundle.mainBundle.bundlePath.UTF8String;
     SEL sel_path = @selector(routePath);
     SEL sel_multiPath = @selector(multiRoutePath);
-    SEL sel_add_routes = @selector(addRoutesToRouter:);
+    SEL sel_add_route = @selector(addRoutesToRouter:);
     Protocol *protocol = @protocol(SJRouteHandler);
     for ( unsigned int i = 0 ; i < img_count ; ++ i ) {
         const char *image = imgs[i];
@@ -100,9 +102,9 @@ static SEL sel_instance;
                     }
                 }
             }
-            if ( class_respondsToSelector(metaClass, sel_add_routes) ) {
-                IMP func = class_getMethodImplementation(metaClass, sel_add_routes);
-                ((void(*)(id, SEL, SJRouter *))func)(cls, sel_add_routes, self);
+            if ( class_respondsToSelector(metaClass, sel_add_route) ) {
+                IMP func = class_getMethodImplementation(metaClass, sel_add_route);
+                ((void(*)(id, SEL, SJRouter *))func)(cls, sel_add_route, self);
             }
         }
         if ( names ) free(names);
@@ -153,15 +155,16 @@ static SEL sel_instance;
 ///
 - (void)instanceWithRequest:(SJRouteRequest *)request completionHandler:(nullable SJCompletionHandler)completionHandler {
     if ( request == nil ) return;
-    id _Nullable handler = [self _handlerForRoutePath:request.requestPath];
-    if ( [handler respondsToSelector:sel_instance] ) {
-        [handler instanceWithRequest:request completionHandler:completionHandler];
+    SJRouteInterceptor *interceptor = [self _interceptorForRoutePath:request.requestPath];
+    if ( interceptor != nil ) {
+        interceptor.handler(request, ^(SJRouterInterceptionPolicy policy) {
+            if ( policy == SJRouterInterceptionPolicyAllow ) {
+                [self _instanceWithRequest:request completionHandler:completionHandler];
+            }
+        });
     }
     else {
-#ifdef DEBUG
-        printf("\n(-_-) unable to get an instance: [%s]\n", request.description.UTF8String);
-#endif
-        if ( self->_unableToGetAnInstanceCallback ) self->_unableToGetAnInstanceCallback(request, completionHandler);
+        [self _instanceWithRequest:request completionHandler:completionHandler];
     }
 }
 
@@ -200,21 +203,16 @@ static SEL sel_instance;
 ///
 - (void)handleRequest:(SJRouteRequest *)request completionHandler:(nullable SJCompletionHandler)completionHandler {
     if ( request == nil ) return;
-    id _Nullable handler = [self _handlerForRoutePath:request.requestPath];
-    if      ( [handler respondsToSelector:sel_handler_v2] ) {
-        [handler handleRequest:request topViewController:_sj_get_top_view_controller() completionHandler:completionHandler];
+    SJRouteInterceptor *interceptor = [self _interceptorForRoutePath:request.requestPath];
+    if ( interceptor != nil ) {
+        interceptor.handler(request, ^(SJRouterInterceptionPolicy policy) {
+            if ( policy == SJRouterInterceptionPolicyAllow ) {
+                [self _handleRequest:request completionHandler:completionHandler];
+            }
+        });
     }
-#pragma clang diagnostic push
-#pragma clang diagnostic ignored "-Wdeprecated-declarations"
-    else if ( [handler respondsToSelector:sel_handler_v1] ) {
-        [(id<SJRouteHandlerDeprecatedMethods>)handler handleRequestWithParameters:request.prts topViewController:_sj_get_top_view_controller() completionHandler:completionHandler];
-    }
-#pragma clang diagnostic pop
     else {
-#ifdef DEBUG
-        printf("\n(-_-) Unhandled request: [%s]\n", request.description.UTF8String);
-#endif
-        if ( self->_unhandledCallback ) self->_unhandledCallback(request, _sj_get_top_view_controller(), completionHandler);
+        [self _handleRequest:request completionHandler:completionHandler];
     }
 }
 
@@ -238,13 +236,76 @@ static SEL sel_instance;
     }
 }
 
+///
+/// 添加拦截器
+///
+///     注意: 每个`routePath`只能创建单个拦截器. 重复设置, 会被替换.
+///
+///     注意: 为保证线程安全应该总是在`+addRoutesToRouter:`中调用该方法
+///
+- (void)addInterceptor:(SJRouteInterceptor *)interceptor {
+    if ( interceptor != nil ) {
+        for ( NSString *path in interceptor.paths ) {
+#ifdef DEBUG
+            __auto_type oldValue = self.interceptors[path];
+            if ( oldValue != nil ) {
+                printf("\n(-_-) The interceptor was replaced: \"%s\" => ([%p] to [%p])\n", path.UTF8String, oldValue, interceptor);
+            }
+#endif
+            self.interceptors[path] = interceptor;
+        }
+    }
+}
+
 #pragma mark -
+
 - (nullable id)_handlerForRoutePath:(NSString *)path {
     id handler = nil;
     if ( path.length != 0 ) {
-        handler = self->_handlersM[path];
+        handler = _handlersM[path];
     }
     return handler;
+}
+
+- (SJRouteInterceptor *)_interceptorForRoutePath:(NSString *)path {
+    id interceptor = nil;
+    if ( path.length != 0 ) {
+        interceptor = _interceptors[path];
+    }
+    return interceptor;
+}
+
+- (void)_instanceWithRequest:(SJRouteRequest *)request completionHandler:(nullable SJCompletionHandler)completionHandler {
+    id _Nullable handler = [self _handlerForRoutePath:request.requestPath];
+    if ( [handler respondsToSelector:sel_instance] ) {
+        [handler instanceWithRequest:request completionHandler:completionHandler];
+    }
+    else {
+#ifdef DEBUG
+        printf("\n(-_-) unable to get an instance: [%s]\n", request.description.UTF8String);
+#endif
+        if ( self->_unableToGetAnInstanceCallback ) self->_unableToGetAnInstanceCallback(request, completionHandler);
+    }
+}
+
+- (void)_handleRequest:(SJRouteRequest *)request completionHandler:(nullable SJCompletionHandler)completionHandler {
+    if ( request == nil ) return;
+    id _Nullable handler = [self _handlerForRoutePath:request.requestPath];
+    if      ( [handler respondsToSelector:sel_handler_v2] ) {
+        [handler handleRequest:request topViewController:_sj_get_top_view_controller() completionHandler:completionHandler];
+    }
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wdeprecated-declarations"
+    else if ( [handler respondsToSelector:sel_handler_v1] ) {
+        [(id<SJRouteHandlerDeprecatedMethods>)handler handleRequestWithParameters:request.prts topViewController:_sj_get_top_view_controller() completionHandler:completionHandler];
+    }
+#pragma clang diagnostic pop
+    else {
+#ifdef DEBUG
+        printf("\n(-_-) Unhandled request: [%s]\n", request.description.UTF8String);
+#endif
+        if ( self->_unhandledCallback ) self->_unhandledCallback(request, _sj_get_top_view_controller(), completionHandler);
+    }
 }
 @end
 NS_ASSUME_NONNULL_END

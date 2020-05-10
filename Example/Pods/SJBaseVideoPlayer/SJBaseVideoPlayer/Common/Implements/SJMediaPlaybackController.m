@@ -232,7 +232,19 @@ NS_ASSUME_NONNULL_BEGIN
 }
 
 - (void)replay {
-    [self play];
+    if ( self.assetStatus == SJAssetStatusFailed ) {
+        [self refresh];
+        return;
+    }
+    
+    if ( self.currentPlayer == nil ) {
+        return;
+    }
+    
+    self.reasonForWaitingToPlay = SJWaitingWhileEvaluatingBufferingRateReason;
+    self.timeControlStatus = SJPlaybackTimeControlStatusWaitingToPlay;
+    [self.currentPlayer replay];
+    [self _toEvaluating];
 }
 
 - (void)stop {

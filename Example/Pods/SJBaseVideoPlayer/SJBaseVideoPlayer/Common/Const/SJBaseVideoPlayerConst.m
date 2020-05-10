@@ -10,8 +10,8 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
-NSInteger const SJBaseVideoPlayerViewTag = 10000;
-NSInteger const SJBaseVideoPlayerPresentViewTag = 10001;
+NSInteger const SJBaseVideoPlayerViewTag = 0xFFFFFFF0;
+NSInteger const SJBaseVideoPlayerPresentViewTag = 0xFFFFFFF1;
 
 ///
 /// assetStatus 改变的通知
@@ -78,11 +78,11 @@ NSNotificationName const SJVideoPlayerPlaybackDidStopNotification = @"SJVideoPla
 ///
 /// 调用了refresh前发出的通知
 ///
-NSNotificationName const SJVideoPlayerPlaybackWillRereshNotification = @"SJVideoPlayerPlaybackWillRereshNotification";
+NSNotificationName const SJVideoPlayerPlaybackWillRefreshNotification = @"SJVideoPlayerPlaybackWillRefreshNotification";
 ///
 /// 调用了refresh后发出的通知
 ///
-NSNotificationName const SJVideoPlayerPlaybackDidRereshNotification = @"SJVideoPlayerPlaybackDidRereshNotification";
+NSNotificationName const SJVideoPlayerPlaybackDidRefreshNotification = @"SJVideoPlayerPlaybackDidRefreshNotification";
 
 
 
@@ -115,7 +115,7 @@ NSNotificationName const SJVideoPlayerPlaybackTypeDidChangeNotification = @"SJVi
 ///
 /// 锁屏状态 改变的通知
 ///
-NSNotificationName const SJVideoPlayeScreenLockStateDidChangeNotification = @"SJVideoPlayeScreenLockStateDidChangeNotification";
+NSNotificationName const SJVideoPlayerScreenLockStateDidChangeNotification = @"SJVideoPlayerScreenLockStateDidChangeNotification";
 
 ///
 /// 静音状态 改变的通知

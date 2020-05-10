@@ -82,6 +82,11 @@ static NSString *const kReuseIdentifierForCell = @"1";
     [self reloadPageViewController];
 }
 
+- (void)viewWillAppear:(BOOL)animated {
+    [super viewWillAppear:animated];
+    [self setViewControllerAtIndex:_focusedIndex];
+}
+
 - (void)reloadPageViewController {
     if ( self.isViewLoaded ) {
         [NSObject cancelPreviousPerformRequestsWithTarget:self selector:@selector(_reloadPageViewController) object:nil];
@@ -119,7 +124,12 @@ static NSString *const kReuseIdentifierForCell = @"1";
     if ( [self _isSafeIndex:idx] ) {
         if ( idx == _focusedIndex ) return YES;
         for ( NSIndexPath *indexPath in self.collectionView.indexPathsForVisibleItems ) {
-            if ( indexPath.item == idx ) return YES;
+            if ( indexPath.item == idx ) {
+                SJPageViewControllerItemCell *cell = (id)[self.collectionView cellForItemAtIndexPath:indexPath];
+                return cell.viewController != nil &&
+                CGRectContainsRect([cell convertRect:cell.bounds toView:self.view],
+                                   [_collectionView convertRect:_collectionView.bounds toView:self.view]);
+            }
         }
     }
     return NO;
@@ -165,8 +175,9 @@ static NSString *const kReuseIdentifierForCell = @"1";
 }
 
 - (void)setDelegate:(nullable id<SJPageViewControllerDelegate>)delegate {
-    _delegate = delegate;
-    if ( delegate != nil ) {
+    if ( delegate != _delegate ) {
+        _delegate = delegate;
+        
         _isResponse_focusedIndexDidChange = [delegate respondsToSelector:@selector(pageViewController:focusedIndexDidChange:)];
         _isResponse_willDisplayViewController = [delegate respondsToSelector:@selector(pageViewController:willDisplayViewController:atIndex:)];
         _isResponse_didEndDisplayingViewController = [delegate respondsToSelector:@selector(pageViewController:didEndDisplayingViewController:atIndex:)];
@@ -228,7 +239,7 @@ static NSString *const kReuseIdentifierForCell = @"1";
         for ( UIViewController *vc in self.viewControllers.allValues ) {
             SJPageItem *pageItem = vc.sj_pageItem;
             if ( childScrollView == pageItem.scrollView ) {
-                pageItem.conentOffset = childScrollView.contentOffset;
+                pageItem.contentOffset = childScrollView.contentOffset;
                 break;
             }
         }
@@ -290,6 +301,7 @@ static NSString *const kReuseIdentifierForCell = @"1";
         }
         
         _headerView.frame = frame;
+        if ( modeForHeader == SJPageViewControllerHeaderModeAspectFill ) [_headerView layoutIfNeeded];
         
         CGFloat indictorTopInset = heightForHeaderBounds;
         if ( y <= -heightForHeaderBounds ) indictorTopInset = -y;
@@ -400,7 +412,7 @@ static NSString *const kReuseIdentifierForCell = @"1";
             
             if ( [pageItem.scrollView sj_locked] == NO ) {
                 CGFloat intersection = self.heightForIntersectionBounds;
-                CGPoint contentOffset = pageItem.conentOffset;
+                CGPoint contentOffset = pageItem.contentOffset;
                 contentOffset.y += pageItem.intersection - intersection;
                 if ( !CGPointEqualToPoint(pageItem.scrollView.contentOffset, contentOffset) ) {
                     [pageItem.scrollView sj_lock];
@@ -425,7 +437,7 @@ static NSString *const kReuseIdentifierForCell = @"1";
     if ( _hasHeader ) {
         SJPageItem *pageItem = viewController.sj_pageItem;
         pageItem.intersection = self.heightForIntersectionBounds;
-        pageItem.conentOffset = pageItem.scrollView.contentOffset;
+        pageItem.contentOffset = pageItem.scrollView.contentOffset;
     }
 
     if ( _isResponse_didEndDisplayingViewController ) {
@@ -573,7 +585,7 @@ static NSString *const kReuseIdentifierForCell = @"1";
         CGFloat horizontalOffset = _collectionView.contentOffset.x;
         CGRect frame = [_headerView.superview convertRect:_headerView.frame toView:self.view];
         CGFloat lastItemOffset = ( self.numberOfViewControllers - 1 ) * self.collectionView.bounds.size.width;
-        if ( horizontalOffset <= 0 ) {
+        if      ( horizontalOffset <= 0 ) {
             frame.origin.x = -horizontalOffset;
         }
         else if ( horizontalOffset >= lastItemOffset ) {
@@ -582,6 +594,7 @@ static NSString *const kReuseIdentifierForCell = @"1";
         else {
             frame.origin.x = 0;
         }
+        frame.size = CGSizeMake(self.view.bounds.size.width, self.heightForHeaderBounds);
         _headerView.frame = frame;
         if ( _headerView.superview != self.view ) {
             [self.view insertSubview:_headerView aboveSubview:_collectionView];
@@ -594,6 +607,7 @@ static NSString *const kReuseIdentifierForCell = @"1";
         // 停止滑动时, 将 headerView 恢复到 child scrollView 中
         UIScrollView *childScrollView = self.focusedViewController.sj_pageItem.scrollView;
         CGRect frame = [_headerView.superview convertRect:_headerView.frame toView:childScrollView];
+        frame.size = CGSizeMake(self.view.bounds.size.width, self.heightForHeaderBounds);
         _headerView.frame = frame;
         [childScrollView addSubview:_headerView];
     }
@@ -615,16 +629,6 @@ static NSString *const kReuseIdentifierForCell = @"1";
         rect.size.height = self.view.bounds.size.height;
     }
     return rect;
-}
-
-- (NSInteger)_indexOfScrollIndicatorInScrollView:(UIScrollView *)scrollView {
-    __auto_type subviews = scrollView.subviews;
-    for ( NSInteger i = 0 ; i < subviews.count ; ++ i ) {
-        if ( [subviews[i] isKindOfClass:NSClassFromString(@"_UIScrollViewScrollIndicator")] ) {
-            return i;
-        }
-    }
-    return NSNotFound;
 }
 
 - (void)_cleanPageItems {
@@ -674,6 +678,7 @@ static NSString *const kReuseIdentifierForCell = @"1";
     [self _cleanHeaderView];
     [self _cleanPageItems];
     [self.viewControllers removeAllObjects];
+    [self.collectionView reloadData];
     
     NSInteger numberOfViewControllers = self.numberOfViewControllers;
     if ( numberOfViewControllers != 0 ) {
@@ -681,11 +686,7 @@ static NSString *const kReuseIdentifierForCell = @"1";
         if ( _hasHeader ) {
             [_headerView addObserver:self forKeyPath:kBounds options:NSKeyValueObservingOptionNew | NSKeyValueObservingOptionInitial context:(void *)&kBounds];
         }
-    }
-    
-    [self.collectionView reloadData];
-    
-    if ( numberOfViewControllers != 0 ) {
+        
         NSInteger focusedIndex = _focusedIndex;
         if ( focusedIndex == NSNotFound )
             focusedIndex = 0;
@@ -696,14 +697,24 @@ static NSString *const kReuseIdentifierForCell = @"1";
 }
 
 - (void)_remakeConstraints {
+    CGRect bounds = self.view.bounds;
 #ifdef SJDEBUG
     self.view.clipsToBounds = NO;
     // 扩大两倍 用于调试
-    self.collectionView.frame = CGRectMake(0, 0, (self.view.bounds.size.width + [_options[SJPageViewControllerOptionInterPageSpacingKey] doubleValue]) * 2, self.view.bounds.size.height);
+    self.collectionView.frame = CGRectMake(0, 0, (bounds.size.width + [_options[SJPageViewControllerOptionInterPageSpacingKey] doubleValue]) * 2, bounds.size.height);
 #else
-    self.collectionView.frame = CGRectMake(0, 0, (self.view.bounds.size.width + [_options[SJPageViewControllerOptionInterPageSpacingKey] doubleValue]), self.view.bounds.size.height);
+    self.collectionView.frame = CGRectMake(0, 0, (bounds.size.width + [_options[SJPageViewControllerOptionInterPageSpacingKey] doubleValue]), bounds.size.height);
 #endif
 
+    if ( _hasHeader ) {
+        CGRect frame = _headerView.frame;
+        CGFloat width = bounds.size.width;
+        if ( frame.size.width != width ) {
+            frame.size.width = width;
+            _headerView.frame = frame;
+        }
+    }
+    
     [self setViewControllerAtIndex:self.focusedIndex];
 }
 

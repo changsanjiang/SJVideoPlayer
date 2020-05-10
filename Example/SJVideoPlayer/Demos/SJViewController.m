@@ -61,14 +61,17 @@
 - (void)_createDemoData {
     NSMutableArray<LWZTableSectionShrinker<Item *> *> *m = [NSMutableArray new];
     
+    [m addObject:[[LWZTableSectionShrinker alloc] initWithTitle:@"UITableView Demo" titleWhenShrank:nil dataArr:[self _UITableViewDemoItems]]];
+    
+    [m addObject:[[LWZTableSectionShrinker alloc] initWithTitle:@"UITableView Demo" titleWhenShrank:nil dataArr:[self _UICollectionViewDemoItems]]];
+    
+    
     [m addObject:[[LWZTableSectionShrinker alloc] initWithTitle:@"Rotation Control" titleWhenShrank:nil dataArr:[self _createRotationControlDemoItems]]];
     
     [m addObject:[[LWZTableSectionShrinker alloc] initWithTitle:@"Switching Control Layer" titleWhenShrank:nil dataArr:[self _createSwitchingControlLayerDemoItems]]];
     
     [m addObject:[[LWZTableSectionShrinker alloc] initWithTitle:@"Custom Control Layer" titleWhenShrank:nil dataArr:[self _createCustomControlLayerDemoItems]]];
-    
-    [m addObject:[[LWZTableSectionShrinker alloc] initWithTitle:@"UITableView UICollectionView" titleWhenShrank:nil dataArr:[self _createScrollViewDemoItems]]];
-    
+     
     [m addObject:[[LWZTableSectionShrinker alloc] initWithTitle:@"Playback List Control" titleWhenShrank:nil dataArr:[self _createPlaybackListControlDemoItems]]];
     
     [m addObject:[[LWZTableSectionShrinker alloc] initWithTitle:@"Add Button Item To Control Layer" titleWhenShrank:nil dataArr:[self _createAddButtonItemToControlLayerDemoItems]]];
@@ -85,9 +88,47 @@
 
     [m addObject:[[LWZTableSectionShrinker alloc] initWithTitle:@"Third-party Player" titleWhenShrank:nil dataArr:[self _thirdpartyPlayerItems]]];
     
+
     _data = m.copy;
 }
 
+- (NSArray<Item *> *)_UICollectionViewDemoItems {
+    return @[
+        [Item.alloc initWithTitle:@"1 Play In `collectionView.cell`" subTitle:@"在`collectionView.cell`中播放" path:@"UICollectionView/1"],
+        
+        [Item.alloc initWithTitle:@"2 Play In `collectionView.sectionHeaderView`" subTitle:@"在`collectionView.sectionHeaderView`中播放" path:@"UICollectionView/2"],
+        
+        [Item.alloc initWithTitle:@"3 Play In `collectionView.sectionFooterView`" subTitle:@"在`collectionView.sectionFooterView`中播放" path:@"UICollectionView/3"],
+
+        [Item.alloc initWithTitle:@"4 Play In `collectionView.cell.collectionView.cell`" subTitle:@"在`collectionView.cell.collectionView.cell`中播放" path:@"UICollectionView/4"],
+
+        [Item.alloc initWithTitle:@"5 Autoplay In `collectionView.cell`" subTitle:@"在`collectionView.cell`中自动播放" path:@"UICollectionView/5"],
+
+    ];
+}
+
+- (NSArray<Item *> *)_UITableViewDemoItems {
+    return @[
+        [Item.alloc initWithTitle:@"1 Play In `tableView.cell`" subTitle:@"在`tableView.cell`中播放" path:@"UITableViewDemo/1"],
+        
+        [Item.alloc initWithTitle:@"2 Play In `tableView.tableHeaderView`" subTitle:@"在`tableView.tableHeaderView`中播放" path:@"UITableViewDemo/2"],
+        
+        [Item.alloc initWithTitle:@"3 Play In `tableView.tableFooterView`" subTitle:@"在`tableView.tableFooterView`中播放" path:@"UITableViewDemo/3"],
+        
+        [Item.alloc initWithTitle:@"4 Play In `tableView.sectionHeaderView`" subTitle:@"在`tableView.sectionHeaderView`中播放" path:@"UITableViewDemo/4"],
+        
+        [Item.alloc initWithTitle:@"5 Play In `tableView.sectionFooterView`" subTitle:@"在`tableView.sectionFooterView`中播放" path:@"UITableViewDemo/5"],
+        
+        [Item.alloc initWithTitle:@"6 Play In `tableView.cell.collectionView.cell`" subTitle:@"在`tableView.cell.collectionView.cell`中播放" path:@"UITableViewDemo/6"],
+
+        [Item.alloc initWithTitle:@"7 🔥 Play In `pageViewController.headerView`" subTitle:@"在`pageViewController.headerView`中播放" path:@"UITableViewDemo/7"],
+
+        [Item.alloc initWithTitle:@"8 Autoplay In `tableView.cell`" subTitle:@"在`tableView.cell`中自动播放" path:@"UITableViewDemo/8"],
+        
+        [Item.alloc initWithTitle:@"9 Enable floatSmallView" subTitle:@"开启小浮窗 (注: 当播放器视图滑动消失时, 显示小浮窗视图)" path:@"UITableViewDemo/9"],
+
+    ];
+}
 
 - (NSArray<Item *> *)_createRotationControlDemoItems {
     return
@@ -121,32 +162,6 @@
       [[Item alloc] initWithTitle:@"Add Button Item To Control Layer"
                          subTitle:@"添加按钮到控制层"
                              path:@"demo/controlLayer/edgeButtonItem"],
-      ];
-}
-
-- (NSArray<Item *> *)_createScrollViewDemoItems {
-    return
-    @[
-      [[Item alloc] initWithTitle:@"Float Small View"
-                         subTitle:@"开启小浮窗 (注: 当播放器视图滑动消失时, 显示小浮窗视图)"
-                             path:@"demo/scrollView/floatSmallView"],
-      
-      [[Item alloc] initWithTitle:@"Nested View"
-                         subTitle:@"嵌套"
-                             path:@"demo/scrollView/nested"],
-
-      [[Item alloc] initWithTitle:@"Nested View 2"
-                         subTitle:@"嵌套2"
-                             path:@"demo/scrollView/nested2"],
-      
-      
-      [[Item alloc] initWithTitle:@"Autoplay in Table View"
-                         subTitle:@"TableView 中自动播放"
-                             path:@"demo/tableView/autoplay2"],
-      
-      [[Item alloc] initWithTitle:@"Autoplay in CollectionView View"
-                         subTitle:@"CollectionViewView 中自动播放"
-                             path:@"demo/collectionView/autoplay3"]
       ];
 }
 
@@ -244,6 +259,7 @@
                              path:@"demo/11"],
       ];
 }
+
 
 #pragma mark -
 

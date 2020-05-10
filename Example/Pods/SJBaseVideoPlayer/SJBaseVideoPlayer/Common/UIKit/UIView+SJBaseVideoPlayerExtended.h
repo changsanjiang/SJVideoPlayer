@@ -16,6 +16,8 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (__kindof UIResponder *_Nullable)lookupResponderForClass:(Class)cls;
 
+- (__kindof UIView *_Nullable)viewWithProtocol:(Protocol *)protocol;
+
 @property (nonatomic) CGFloat sj_x;
 @property (nonatomic) CGFloat sj_y;
 @property (nonatomic) CGFloat sj_w;

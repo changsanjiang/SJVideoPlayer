@@ -7,7 +7,11 @@
 //
 
 #import "SJAppDelegate.h"
-#import "SJVideoPlayer.h" 
+#import "SJVideoPlayer.h"
+
+@protocol SJTestProtocol <NSObject>
+@end
+
 
 @implementation SJAppDelegate
 

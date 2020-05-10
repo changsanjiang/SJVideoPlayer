@@ -142,11 +142,14 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic, strong, nullable) SJVideoPlayerURLAsset *URLAsset;
 
 ///
-/// 播放出错
+/// 资源准备(或初始化)的状态
 ///
-///         当播放发生错误时, 可以通过它来获取错误信息
+///         当未设置资源时, 此时 player.assetStatus = .unknown
+///         当设置新资源时, 此时 player.assetStatus = .preparing
+///         当准备好播放时, 此时 player.assetStatus = .readyToPlay
+///         当播放器出错时, 此时 player.assetStatus = .failed
 ///
-@property (nonatomic, strong, readonly, nullable) NSError *error;
+@property (nonatomic, readonly) SJAssetStatus assetStatus;
 
 ///
 /// 暂停或播放的控制状态
@@ -172,6 +175,12 @@ NS_ASSUME_NONNULL_BEGIN
 ///
 @property (nonatomic, readonly, nullable) SJWaitingReason reasonForWaitingToPlay;
 
+//
+// 以下的bool属性是对`assetStatus`及`timeControlStatus`的封装
+//
+// 例如: 当 player.isPlaying 返回 YES 时, 则相当于 player.timeControlStatus == SJPlaybackTimeControlStatusPlaying;
+//
+
 @property (nonatomic, readonly) BOOL isPaused;          ///< 调用了暂停, 暂停播放
 @property (nonatomic, readonly) BOOL isPlaying;         ///< 调用了播放, 处于播放中
 @property (nonatomic, readonly) BOOL isBuffering;       ///< 调用了播放, 处于缓冲中(等待缓存足够时自动恢复播放, 建议显示loading视图)
@@ -180,16 +189,6 @@ NS_ASSUME_NONNULL_BEGIN
 
 @property (nonatomic, readonly) BOOL isPlaybackFinished;                            ///< 播放结束
 @property (nonatomic, readonly, nullable) SJFinishedReason finishedReason;          ///< 播放结束的reason
-
-///
-/// 资源准备(或初始化)的状态
-///
-///         当未设置资源时, 此时 player.assetStatus = .unknown
-///         当设置新资源时, 此时 player.assetStatus = .preparing
-///         当准备好播放时, 此时 player.assetStatus = .readyToPlay
-///         当播放器出错时, 此时 player.assetStatus = .failed
-///
-@property (nonatomic, readonly) SJAssetStatus assetStatus;
 
 ///
 /// 设置 进入后台时, 是否暂停播放. 默认为 YES.
@@ -261,6 +260,13 @@ NS_ASSUME_NONNULL_BEGIN
 /// 当前清晰度切换的信息
 ///
 @property (nonatomic, strong, readonly) SJVideoDefinitionSwitchingInfo *definitionSwitchingInfo;
+
+///
+/// 播放出错
+///
+///         当播放发生错误时, 可以通过它来获取错误信息
+///
+@property (nonatomic, strong, readonly, nullable) NSError *error;
 @end
 
 
@@ -410,14 +416,14 @@ NS_ASSUME_NONNULL_BEGIN
  
  LongPressGesture
  长按手势
- 当用户长按播放器时, 将加速播放
+ 当用户长按播放器时, 将加速播放. 该手势默认不会启用, 如需开启请设置`player.gestureControl.supportedGestureTypes = SJPlayerGestureTypeMask_LongPress | 其他支持的手势;`
  */
 @interface SJBaseVideoPlayer (GestureControl)
 
 ///
 /// 手势控制
 ///
-///         如果想自己设置支持的手势类型, 可以`player.gestureControl.supportedGestureTypes = SJPlayerGestureTypeMask_SingleTap | ....;`
+///         如果想自己设置支持的手势类型, 可以`player.gestureControl.supportedGestureTypes = SJPlayerGestureTypeMask_SingleTap | 其他支持的手势;`
 ///         了解更多请前往头文件查看
 ///
 @property (nonatomic, strong, readonly) id<SJPlayerGestureControl> gestureControl;

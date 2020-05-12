@@ -61,12 +61,12 @@
 - (void)_createDemoData {
     NSMutableArray<LWZTableSectionShrinker<Item *> *> *m = [NSMutableArray new];
     
+    
+    [m addObject:[[LWZTableSectionShrinker alloc] initWithTitle:@"Rotation Control" titleWhenShrank:nil dataArr:[self _createRotationControlDemoItems]]];
+    
     [m addObject:[[LWZTableSectionShrinker alloc] initWithTitle:@"UITableView Demo" titleWhenShrank:nil dataArr:[self _UITableViewDemoItems]]];
     
     [m addObject:[[LWZTableSectionShrinker alloc] initWithTitle:@"UITableView Demo" titleWhenShrank:nil dataArr:[self _UICollectionViewDemoItems]]];
-    
-    
-    [m addObject:[[LWZTableSectionShrinker alloc] initWithTitle:@"Rotation Control" titleWhenShrank:nil dataArr:[self _createRotationControlDemoItems]]];
     
     [m addObject:[[LWZTableSectionShrinker alloc] initWithTitle:@"Switching Control Layer" titleWhenShrank:nil dataArr:[self _createSwitchingControlLayerDemoItems]]];
     

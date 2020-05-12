@@ -45,7 +45,8 @@
     
     self.selectionStyle = UITableViewCellSelectionStyleNone;
     
-    _coverImageView.contentMode = UIViewContentModeScaleAspectFit;
+    _coverImageView.contentMode = UIViewContentModeScaleAspectFill;
+    _coverImageView.clipsToBounds = YES;
     _coverImageView.backgroundColor = UIColor.clearColor;
     _coverImageView.sd_imageTransition = [SDWebImageTransition fadeTransition];
     _coverImageView.userInteractionEnabled = YES;

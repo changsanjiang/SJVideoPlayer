@@ -535,9 +535,9 @@
 		77805D6D22BF7EBD007076B9 /* iPhone Demo */ = {
 			isa = PBXGroup;
 			children = (
+				A6A208DF22AB9E59001ED610 /* Rotation Control(旋转控制) */,
 				77391C0D2467CC2B00443844 /* UITableView */,
 				77391C0E2467CC3800443844 /* UICollectionView */,
-				A6A208DF22AB9E59001ED610 /* Rotation Control(旋转控制) */,
 				77633AB823FD97A000D7A269 /* PlaybackHistory(播放记录) */,
 				7784A7F7237D384F000BA67E /* Barrage( 弹幕) */,
 				77357E5F2375522800B81EE4 /* Subtitles(字幕) */,

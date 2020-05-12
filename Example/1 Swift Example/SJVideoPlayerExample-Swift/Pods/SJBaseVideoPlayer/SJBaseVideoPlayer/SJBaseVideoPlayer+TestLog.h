@@ -2,7 +2,7 @@
 //  SJBaseVideoPlayer+TestLog.h
 //  SJBaseVideoPlayer
 //
-//  Created by BlueDancer on 2019/9/11.
+//  Created by 畅三江 on 2019/9/11.
 //
 
 #ifdef SJDEBUG

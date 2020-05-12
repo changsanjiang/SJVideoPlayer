@@ -2,13 +2,14 @@
 //  SJBaseVideoPlayer.h
 //  SJBaseVideoPlayerProject
 //
-//  Created by BlueDancer on 2018/2/2.
-//  Copyright © 2018年 SanJiang. All rights reserved.
+//  Created by 畅三江 on 2018/2/2.
+//  Copyright © 2018年 changsanjiang. All rights reserved.
 //
 //  GitHub:     https://github.com/changsanjiang/SJBaseVideoPlayer
 //  GitHub:     https://github.com/changsanjiang/SJVideoPlayer
 //
 //  Email:      changsanjiang@gmail.com
+//  QQGroup:    930508201
 //
 
 #import <UIKit/UIKit.h>
@@ -22,11 +23,12 @@
 #import "SJPlayerGestureControlDefines.h"
 #import "SJDeviceVolumeAndBrightnessManagerDefines.h"
 #import "SJFloatSmallViewControllerDefines.h"
-#import "SJEdgeFastForwardViewControllerDefines.h"
 #import "SJVideoDefinitionSwitchingInfo.h"
-#import "SJPopPromptControllerProtocol.h"
-#import "SJBaseVideoPlayerObservation.h"
+#import "SJPopPromptControllerDefines.h"
+#import "SJPlaybackObservation.h"
 #import "SJVideoPlayerPresentViewDefines.h"
+#import "SJSubtitlesPromptControllerDefines.h"
+#import "SJBarrageQueueControllerDefines.h"
 #import "SJPromptDefines.h"
 
 NS_ASSUME_NONNULL_BEGIN
@@ -59,10 +61,13 @@ NS_ASSUME_NONNULL_BEGIN
 
 @interface SJBaseVideoPlayer (Placeholder)
 ///
-/// 显示播放画面
+/// 播放画面显示层
 ///
-///         内部自带placeholderImageView, 可以设置占位图(本地图片或URL)
-///         了解更多请前往协议头文件查看
+/// \code
+///     // 设置占位图
+///     _player.presentView.placeholderImageView.image = [UIImage imageNamed:@"..."];
+///     // [_player.presentView.placeholderImageView sd_setImageWithURL:URL];
+/// \endcode
 ///
 @property (nonatomic, strong, readonly) UIView<SJVideoPlayerPresentView> *presentView;
 
@@ -137,18 +142,14 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic, strong, nullable) SJVideoPlayerURLAsset *URLAsset;
 
 ///
-/// 资源销毁前的回调
+/// 资源准备(或初始化)的状态
 ///
-///         可以在这里做一些记录的工作. 如播放记录(未来可能会支持)
+///         当未设置资源时, 此时 player.assetStatus = .unknown
+///         当设置新资源时, 此时 player.assetStatus = .preparing
+///         当准备好播放时, 此时 player.assetStatus = .readyToPlay
+///         当播放器出错时, 此时 player.assetStatus = .failed
 ///
-@property (nonatomic, copy, nullable) void(^assetDeallocExeBlock)(__kindof SJBaseVideoPlayer *videoPlayer);
-
-///
-/// 播放出错
-///
-///         当播放发生错误时, 可以通过它来获取错误信息
-///
-@property (nonatomic, strong, readonly, nullable) NSError *error;
+@property (nonatomic, readonly) SJAssetStatus assetStatus;
 
 ///
 /// 暂停或播放的控制状态
@@ -174,15 +175,20 @@ NS_ASSUME_NONNULL_BEGIN
 ///
 @property (nonatomic, readonly, nullable) SJWaitingReason reasonForWaitingToPlay;
 
-///
-/// 资源准备(或初始化)的状态
-///
-///         当未设置资源时, 此时 player.assetStatus = .unknown
-///         当设置新资源时, 此时 player.assetStatus = .preparing
-///         当准备好播放时, 此时 player.assetStatus = .readyToPlay
-///         当初始化失败时, 此时 player.assetStatus = .failed
-///
-@property (nonatomic, readonly) SJAssetStatus assetStatus;
+//
+// 以下的bool属性是对`assetStatus`及`timeControlStatus`的封装
+//
+// 例如: 当 player.isPlaying 返回 YES 时, 则相当于 player.timeControlStatus == SJPlaybackTimeControlStatusPlaying;
+//
+
+@property (nonatomic, readonly) BOOL isPaused;          ///< 调用了暂停, 暂停播放
+@property (nonatomic, readonly) BOOL isPlaying;         ///< 调用了播放, 处于播放中
+@property (nonatomic, readonly) BOOL isBuffering;       ///< 调用了播放, 处于缓冲中(等待缓存足够时自动恢复播放, 建议显示loading视图)
+@property (nonatomic, readonly) BOOL isEvaluating;      ///< 调用了播放, 正在评估缓冲中(这个过程会进行的很快, 不需要显示loading视图)
+@property (nonatomic, readonly) BOOL isNoAssetToPlay;   ///< 调用了播放, 但未设置播放资源(设置资源后将会自动播放 )
+
+@property (nonatomic, readonly) BOOL isPlaybackFinished;                            ///< 播放结束
+@property (nonatomic, readonly, nullable) SJFinishedReason finishedReason;          ///< 播放结束的reason
 
 ///
 /// 设置 进入后台时, 是否暂停播放. 默认为 YES.
@@ -204,18 +210,17 @@ NS_ASSUME_NONNULL_BEGIN
 - (void)replay;     ///< 重播, 适合播放完毕后调用进行重播
 - (void)stop;       ///< 使停止, 请注意: 当前资源将会被清空, 如需重播, 请重新设置新资源
 
-@property (nonatomic, getter=isMuted) BOOL muted;                                   ///< 是否禁音
+@property (nonatomic, getter=isMuted) BOOL muted;                                   ///< 禁音
 @property (nonatomic) float playerVolume;                                           ///< 设置播放声音
 @property (nonatomic) float rate;                                                   ///< 设置播放速率
 
 @property (nonatomic, readonly) NSTimeInterval currentTime;                         ///< 当前播放到的时间
 @property (nonatomic, readonly) NSTimeInterval duration;                            ///< 总时长
 @property (nonatomic, readonly) NSTimeInterval playableDuration;                    ///< 缓冲到的时间
-@property (nonatomic, readonly) NSTimeInterval durationWatched;                     ///< 已观看的时长(当前资源)
+@property (nonatomic, readonly) NSTimeInterval durationWatched;                     ///< 当前资源已观看的时长
 
-@property (nonatomic, readonly) BOOL isPlayedToEndTime;                             ///< 当前资源是否已播放结束
-@property (nonatomic, readonly) BOOL isPlayed;                                      ///< 是否播放过当前的资源
-@property (nonatomic, readonly) BOOL isReplayed;                                    ///< 是否重播过当前的资源
+@property (nonatomic, readonly) BOOL isPlayed;                                      ///< 当前的资源是否调用过`play`
+@property (nonatomic, readonly) BOOL isReplayed;                                    ///< 当前的资源是否调用过`replay`
 @property (nonatomic, readonly) SJPlaybackType playbackType;                        ///< 播放类型
 - (NSString *)stringForSeconds:(NSInteger)secs;                                     ///< 转换时间为字符串, format: 00:00:00
 
@@ -255,6 +260,13 @@ NS_ASSUME_NONNULL_BEGIN
 /// 当前清晰度切换的信息
 ///
 @property (nonatomic, strong, readonly) SJVideoDefinitionSwitchingInfo *definitionSwitchingInfo;
+
+///
+/// 播放出错
+///
+///         当播放发生错误时, 可以通过它来获取错误信息
+///
+@property (nonatomic, strong, readonly, nullable) NSError *error;
 @end
 
 
@@ -288,7 +300,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 /// v1.3.0 新增
 /// 请在适当的时候调用这些方法
-@interface SJBaseVideoPlayer (ViewController)
+@interface SJBaseVideoPlayer (Life)
 
 /// You should call it when view did appear
 - (void)vc_viewDidAppear; 
@@ -314,14 +326,6 @@ NS_ASSUME_NONNULL_BEGIN
 //- (void)viewDidDisappear:(BOOL)animated {
 //    [super viewDidDisappear:animated];
 //    [self.player vc_viewDidDisappear];
-//}
-//
-//- (BOOL)prefersStatusBarHidden {
-//    return [self.player vc_prefersStatusBarHidden];
-//}
-//
-//- (UIStatusBarStyle)preferredStatusBarStyle {
-//    return [self.player vc_preferredStatusBarStyle];
 //}
 //
 //- (BOOL)prefersHomeIndicatorAutoHidden {
@@ -379,11 +383,11 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic, strong, null_resettable) id<SJPromptProtocol> prompt;
 
 ///
-/// 右下角弹出提示
+/// 左下角弹出提示
 ///
 ///         了解更多请前往协议头文件查看
 ///
-@property (nonatomic, strong, null_resettable) id<SJPopPromptControllerProtocol> popPromptController;
+@property (nonatomic, strong, null_resettable) id<SJPopPromptController> popPromptController;
 @end
 
 
@@ -391,31 +395,35 @@ NS_ASSUME_NONNULL_BEGIN
 #pragma mark - 手势控制相关操作
 /**
  播放器的手势介绍:
- base video player 默认会存在四种手势, Single Tap, double Tap, Pan, Pinch.
+ base video player 默认会存在 Single Tap, double Tap, Pan, Pinch, LongPress 这些手势.
  
- SingleTap
+ SingleTapGesture
  单击手势
  当用户单击播放器时, 播放器会调用显示或隐藏控制层的相关代理方法. 见 `controlLayerDelegate`
  
- DoubleTap
+ DoubleTapGesture
  双击手势
  双击会触发暂停或播放的操作
  
- Pan
+ PanGesture
  移动手势
  当用户水平滑动时, 会触发控制层相应的代理方法. 见 `controlLayerDelegate`
  当用户垂直滑动时, 如果在屏幕左边, 则会触发调整亮度的操作, 并显示亮度提示视图. 如果在屏幕右边, 则会触发调整声音的操作, 并显示系统音量提示视图
  
- Pinch
+ PinchGesture
  捏合手势
  当用户做放大或收缩触发该手势时, 会设置播放器显示模式`Aspect`或`AspectFill`.
+ 
+ LongPressGesture
+ 长按手势
+ 当用户长按播放器时, 将加速播放. 该手势默认不会启用, 如需开启请设置`player.gestureControl.supportedGestureTypes = SJPlayerGestureTypeMask_LongPress | 其他支持的手势;`
  */
 @interface SJBaseVideoPlayer (GestureControl)
 
 ///
 /// 手势控制
 ///
-///         如果想自己设置支持的手势类型, 可以`player.gestureControl.supportedGestureTypes = SJPlayerGestureTypeMask_SingleTap | ....;`
+///         如果想自己设置支持的手势类型, 可以`player.gestureControl.supportedGestureTypes = SJPlayerGestureTypeMask_SingleTap | 其他支持的手势;`
 ///         了解更多请前往头文件查看
 ///
 @property (nonatomic, strong, readonly) id<SJPlayerGestureControl> gestureControl;
@@ -435,11 +443,12 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic) BOOL allowHorizontalTriggeringOfPanGesturesInCells;
 
 ///
-/// 左右快进快退
+/// 长按手势触发时的播放速度
 ///
-///         default value is NO, 当需要开启时, 请设置`player.fastForwardViewController.enabled = YES;`
+///         default value is 2.0
 ///
-@property (nonatomic, strong, null_resettable) id<SJEdgeFastForwardViewControllerProtocol> fastForwardViewController;
+@property (nonatomic) CGFloat rateWhenLongPressGestureTriggered;
+
 @end
 
 
@@ -579,7 +588,7 @@ NS_ASSUME_NONNULL_BEGIN
 ///         如果需要禁止自动旋转, 可以设置`player.rotationManager.disabledAutorotation = YES;`
 ///         了解更多请前往头文件查看
 ///
-@property (nonatomic, strong, null_resettable) id<SJRotationManagerProtocol> rotationManager;
+@property (nonatomic, strong, null_resettable) id<SJRotationManager> rotationManager;
 
 ///
 /// 观察者
@@ -688,7 +697,18 @@ NS_ASSUME_NONNULL_BEGIN
 ///
 /// 默认不启用, 当需要开启时, 请设置`player.floatSmallViewController.enabled = YES;`
 ///
-@property (nonatomic, strong, null_resettable) id<SJFloatSmallViewControllerProtocol> floatSmallViewController;
+/// \code
+///
+///     // 1. 开启小浮窗控制. 滑动列表当视图消失时, 将显示小浮窗视图
+///     _player.floatSmallViewController.enabled = YES;
+///     // 2. 设置单击小浮窗执行的block
+///     _player.floatSmallViewController.singleTappedOnTheFloatViewExeBlock = ...;
+///     // 3. 设置双击小浮窗执行的block
+///     _player.floatSmallViewController.doubleTappedOnTheFloatViewExeBlock = ...;
+///
+/// \endcode
+///
+@property (nonatomic, strong, null_resettable) id<SJFloatSmallViewController> floatSmallViewController;
 
 ///
 /// 当开启小浮窗控制时, 播放结束后, 会默认隐藏小浮窗
@@ -737,12 +757,87 @@ NS_ASSUME_NONNULL_BEGIN
 @end
 
 
+#pragma mark - 字幕
 
+@interface SJBaseVideoPlayer (Subtitles)
+///
+/// 字幕管理
+///
+/// \code
+///
+/// #import <SJBaseVideoPlayer/SJVideoPlayerURLAsset+SJSubtitlesAdd.h>
+///
+///     // 1. 创建资源
+///     SJVideoPlayerURLAsset *asset = [SJVideoPlayerURLAsset.alloc initWithURL:URL];
+///     // 2. 设置资源的字幕
+///     asset.subtitles = @[[SJSubtitleItem.alloc initWithContent:@"我的故事" range:SJMakeTimeRange(start, duration)],
+///                         [SJSubtitleItem.alloc initWithContent:@"从这里开始" range:SJMakeTimeRange(start, duration)]];
+///     // 3. 进行播放, 字幕将在相应的时机自动显示
+///     _player.URLAsset = asset;
+///
+///
+///     // 以下是更多设置
+///     _player.subtitleBottomMargin = 22.0;
+///     _player.subtitleHorizontalMinMargin = 22.0;
+///     _player.subtitlesPromptController.view.backgroundColor = [UIColor colorWithWhite:0 alpha:0.8];
+///     _player.subtitlesPromptController.view.layer.cornerRadius = 5;
+///     _player.subtitlesPromptController.contentInsets = UIEdgeInsetsMake(12, 22, 12, 22);
+///
+/// \endcode
+///
+@property (nonatomic, strong, null_resettable) id<SJSubtitlesPromptController> subtitlesPromptController;
+
+///
+/// 字幕底部间距
+///
+///     default value is 22
+///
+@property (nonatomic) CGFloat subtitleBottomMargin;
+
+///
+/// 左右距离屏幕最小间距
+///
+///     default value is 22
+///
+@property (nonatomic) CGFloat subtitleHorizontalMinMargin;
+@end
+
+
+#pragma mark - 弹幕
+
+@interface SJBaseVideoPlayer (Barrages)
+
+///
+/// 弹幕控制
+///
+/// \code
+///
+/// #import <SJBaseVideoPlayer/SJBarrageItem.h>
+///
+///     // 创建一条弹幕
+///     SJBarrageItem *item = [SJBarrageItem.alloc initWithContent:[NSAttributedString sj_UIKitText:^(id<SJUIKitTextMakerProtocol>  _Nonnull make) {
+///         make.append( @"我是一条弹幕消息" );
+///         make.font([UIFont boldSystemFontOfSize:16]);
+///         make.textColor(UIColor.whiteColor);
+///         make.stroke(^(id<SJUTStroke>  _Nonnull make) {
+///             make.color = UIColor.blackColor;
+///             make.width = -1;
+///         });
+///     }]];
+///
+///     // 发送一条弹幕, 弹幕将自动显示
+///     [self.player.barrageQueueController enqueue:item];
+///
+/// \endcode
+///
+@property (nonatomic, strong, null_resettable) id<SJBarrageQueueController> barrageQueueController;
+@end
 
 #pragma mark - 已弃用
 
 @interface SJBaseVideoPlayer (Deprecated)
 - (void)playWithURL:(NSURL *)URL; // 不再建议使用, 请使用`URLAsset`进行初始化
 @property (nonatomic, strong, nullable) NSURL *assetURL;
+@property (nonatomic, readonly) BOOL isPlayedToEndTime __deprecated_msg("use `isPlaybackFinished`;"); ///< 是否已播放结束(当前资源是否已播放结束)
 @end
 NS_ASSUME_NONNULL_END

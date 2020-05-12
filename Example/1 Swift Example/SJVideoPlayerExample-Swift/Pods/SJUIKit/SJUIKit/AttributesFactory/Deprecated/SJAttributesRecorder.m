@@ -2,7 +2,7 @@
 //  SJAttributesRecorder.m
 //  SJAttributesFactory
 //
-//  Created by BlueDancer on 2018/1/27.
+//  Created by 畅三江 on 2018/1/27.
 //  Copyright © 2018年 畅三江. All rights reserved.
 //
 

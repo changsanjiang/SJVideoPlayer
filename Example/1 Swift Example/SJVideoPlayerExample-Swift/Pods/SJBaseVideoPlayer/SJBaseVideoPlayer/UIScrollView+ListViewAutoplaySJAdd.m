@@ -2,12 +2,15 @@
 //  UIScrollView+ListViewAutoplaySJAdd.m
 //  Masonry
 //
-//  Created by BlueDancer on 2018/7/9.
+//  Created by 畅三江 on 2018/7/9.
 //
 
 #import "UIScrollView+ListViewAutoplaySJAdd.h"
+#import "UIScrollView+SJBaseVideoPlayerExtended.h"
+#import "UIView+SJBaseVideoPlayerExtended.h"
+#import "SJBaseVideoPlayerConst.h"
+#import "SJPlayModel.h"
 #import <objc/message.h>
-#import "SJIsAppeared.h"
 
 #if __has_include(<SJUIKit/NSObject+SJObserverHelper.h>)
 #import <SJUIKit/NSObject+SJObserverHelper.h>
@@ -68,7 +71,18 @@ static void sj_removeContentOffsetObserver(UIScrollView *scrollView);
             self.sj_hasDelayedEndScrollTask = NO;
             [NSObject cancelPreviousPerformRequestsWithTarget:self selector:@selector(sj_playNextAssetAfterEndScroll) object:nil];
         }
-        queue.empty().enqueue(^{
+
+        queue.empty();
+        ///
+        /// Thanks @YangYus
+        ///
+        /// Fix [#180](https://github.com/changsanjiang/SJVideoPlayer/issues/180)
+        ///
+        if ( self.window == nil ) {
+            return;
+        }
+
+        queue.enqueue(^{
             self.sj_hasDelayedEndScrollTask = YES;
             [self performSelector:@selector(sj_playNextAssetAfterEndScroll) withObject:nil afterDelay:0.4];
         });
@@ -78,6 +92,7 @@ static void sj_removeContentOffsetObserver(UIScrollView *scrollView);
 - (void)sj_disenableAutoplay {
     self.sj_enabledAutoplay = NO;
     self.sj_autoplayConfig = nil;
+    self.sj_currentPlayingIndexPath = nil;
     sj_removeContentOffsetObserver(self);
 }
 
@@ -85,6 +100,11 @@ static void sj_removeContentOffsetObserver(UIScrollView *scrollView);
     dispatch_async(dispatch_get_main_queue(), ^{
         sj_playNextVisibleAsset(self);
     });
+}
+
+- (void)sj_removeCurrentPlayerView {
+    self.sj_currentPlayingIndexPath = nil;
+    [[self viewWithTag:SJBaseVideoPlayerViewTag] removeFromSuperview];
 }
 
 - (void)sj_playNextAssetAfterEndScroll {
@@ -161,20 +181,26 @@ static void sj_playNextAssetAfterEndScroll(__kindof __kindof UIScrollView *scrol
  
     SJPlayerAutoplayConfig *config = [scrollView sj_autoplayConfig];
     NSIndexPath *_Nullable current = [scrollView sj_currentPlayingIndexPath];
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wdeprecated-declarations"
     NSInteger superviewTag = config.playerSuperviewTag;
-    {
-        if ( sj_isAppeared1(superviewTag, current, scrollView) )
-            return;
-    }
+#pragma clang diagnostic pop
+    
+    if ( superviewTag != 0 && [scrollView isViewAppearedWithTag:superviewTag atIndexPath:current] )
+        return;
+    else if ( [scrollView isViewAppearedWithProtocol:@protocol(SJPlayModelPlayerSuperview) atIndexPath:current] )
+        return;
     
     NSIndexPath *_Nullable next = nil;
     switch ( config.autoplayPosition ) {
         case SJAutoplayPositionTop: {
             for ( NSIndexPath *indexPath in visibleIndexPaths ) {
-                UIView *_Nullable target = sj_getTarget(scrollView, indexPath, superviewTag);
+                UIView *_Nullable target = superviewTag != 0 ?
+                                    [scrollView viewWithTag:superviewTag atIndexPath:indexPath] :
+                                    [scrollView viewWithProtocol:@protocol(SJPlayModelPlayerSuperview) atIndexPath:indexPath];
                 if ( !target ) continue;
-                CGRect its = sj_intersection(target, scrollView);
-                if ( floor(its.size.height) >= floor(target.bounds.size.height) ) {
+                CGRect intersection = [scrollView intersectionWithView:target];
+                if ( floor(intersection.size.height) >= floor(target.bounds.size.height) ) {
                     next = indexPath;
                     break;
                 }
@@ -199,13 +225,14 @@ static void sj_playNextAssetAfterEndScroll(__kindof __kindof UIScrollView *scrol
             CGFloat sub = CGFLOAT_MAX;
             for ( NSInteger i = 0 ; i < count ; ++ i ) {
                 NSIndexPath *indexPath = visibleIndexPaths[i];
-                UIView *_Nullable target = sj_getTarget(scrollView, indexPath, superviewTag);
-                if ( !target )
-                    continue;
-                CGRect its = sj_intersection(target, scrollView);
-                CGFloat s = floor(ABS(mid - CGRectGetMidY(its)));
-                if ( s < sub ) {
-                    sub = s;
+                UIView *_Nullable target = superviewTag != 0 ?
+                                    [scrollView viewWithTag:superviewTag atIndexPath:indexPath] :
+                                    [scrollView viewWithProtocol:@protocol(SJPlayModelPlayerSuperview) atIndexPath:indexPath];
+                if ( !target ) continue;
+                CGRect intersection = [scrollView intersectionWithView:target];
+                CGFloat result = floor(ABS(mid - CGRectGetMidY(intersection)));
+                if ( result < sub ) {
+                    sub = result;
                     next = indexPath;
                 }
             }
@@ -271,12 +298,17 @@ static void sj_playNextVisibleAsset(__kindof UIScrollView *scrollView) {
     }
     
     NSIndexPath *_Nullable next = nil;
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wdeprecated-declarations"
     NSInteger superviewTag = [scrollView sj_autoplayConfig].playerSuperviewTag;
+#pragma clang diagnostic pop
     for ( NSIndexPath *indexPath in remain ) {
-        UIView *_Nullable target = sj_getTarget(scrollView, indexPath, superviewTag);
+        UIView *_Nullable target = superviewTag != 0 ?
+                            [scrollView viewWithTag:superviewTag atIndexPath:indexPath] :
+                            [scrollView viewWithProtocol:@protocol(SJPlayModelPlayerSuperview) atIndexPath:indexPath];
         if ( !target ) continue;
-        CGRect its = sj_intersection(target, scrollView);
-        if ( floor(its.size.height) >= floor(target.bounds.size.height) ) {
+        CGRect intersection = [scrollView intersectionWithView:target];
+        if ( floor(intersection.size.height) >= floor(target.bounds.size.height) ) {
             next = indexPath;
             break;
         }

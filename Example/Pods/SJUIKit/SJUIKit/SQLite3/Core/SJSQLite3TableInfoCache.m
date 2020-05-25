@@ -1,14 +1,14 @@
 //
-//  SJSQLite3TableInfosCache.m
+//  SJSQLite3TableInfoCache.m
 //  Pods-SJSQLite3_Example
 //
 //  Created by 畅三江 on 2019/7/30.
 //
 
-#import "SJSQLite3TableInfosCache.h"
+#import "SJSQLite3TableInfoCache.h"
 #import "SJSQLiteTableInfo.h"
 
-@implementation SJSQLite3TableInfosCache {
+@implementation SJSQLite3TableInfoCache {
     NSMutableDictionary<NSString *, SJSQLiteTableInfo *> *_map;
     dispatch_semaphore_t _lock;
 }

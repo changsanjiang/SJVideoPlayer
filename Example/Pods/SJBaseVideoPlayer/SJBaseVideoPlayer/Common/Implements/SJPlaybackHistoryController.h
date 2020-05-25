@@ -7,13 +7,14 @@
 
 #import <Foundation/Foundation.h>
 #import "SJPlaybackHistoryControllerDefines.h"
+#import "SJPlaybackRecord.h"
 #import <objc/message.h>
 NS_ASSUME_NONNULL_BEGIN
 ///
-/// 播放记录
+/// `SJPlaybackRecord`播放记录
 ///
 /// \code
-/// 如需扩充其他属性, 请参照如下步骤:
+/// 如需为播放记录扩充自己的属性, 请参照如下步骤:
 ///
 ///    步骤1: 创建分类, 添加自己需要的属性
 ///    @interface SJPlaybackRecord (Extended)
@@ -38,16 +39,19 @@ NS_ASSUME_NONNULL_BEGIN
 ///    }
 ///    @end
 ///
-///    完成以上步骤即可. 管理类保存该条记录时, 相应的扩充属性也会被保存进数据库中
-/// \endcod
+///    步骤3: 赋值
+///    record.title = @"标题adc";
+///    record.test = YES;
 ///
+///    完成以上步骤即可. 管理类保存该条记录时, 相应的扩充属性也会被保存进数据库中
+/// \endcode
+///
+@interface SJPlaybackRecord(SJSQLite3Extended)<SJSQLiteTableModelProtocol>
 
-@interface SJPlaybackRecord : NSObject<SJPlaybackRecord, SJSQLiteTableModelProtocol>
-@property (nonatomic) NSInteger mediaId;
-@property (nonatomic) NSInteger userId;
-@property (nonatomic) NSTimeInterval position;
 @end
 
+extern SJMediaType const SJMediaTypeVideo;
+extern SJMediaType const SJMediaTypeAudio;
 
 ///
 /// \code
@@ -55,6 +59,7 @@ NS_ASSUME_NONNULL_BEGIN
 ///    SJPlaybackRecord *record = SJPlaybackRecord.alloc.init;
 ///    record.mediaId = media.id;
 ///    record.userId = user.id; // The user id of the current login
+///    record.mediaType = SJMediaTypeVideo;
 ///    record.position = _player.currentTime;
 ///    record.title = media.title; // 可对record扩充自定义属性, 详情请前往`SJPlaybackHistoryController.h`查看
 ///    [SJPlaybackHistoryController.shared save:record];
@@ -69,44 +74,96 @@ NS_ASSUME_NONNULL_BEGIN
 ///
 - (void)save:(SJPlaybackRecord *)record;
 
-///
-/// 获取某个播放记录(如不存在, 返回nil)
-///
-- (nullable SJPlaybackRecord *)recordForMedia:(NSInteger)mediaId user:(NSInteger)userId;
+#pragma mark -
 
 ///
-/// 获取所有历史记录
+/// 查询, 如不存在将返回 nil
 ///
-- (nullable NSArray<SJPlaybackRecord *> *)allRecordsForUser:(NSInteger)userId;
+- (nullable SJPlaybackRecord *)recordForMedia:(NSInteger)mediaId user:(NSInteger)userId mediaType:(SJMediaType)mediaType;
 
 ///
-/// 获取满足条件的记录
+/// 查询
 ///
-- (nullable NSArray<SJPlaybackRecord *> *)recordsForConditions:(nullable NSArray<SJSQLite3Condition *> *)conditions orderBy:(nullable NSArray<SJSQLite3ColumnOrder *> *)orders;
+- (nullable NSArray<SJPlaybackRecord *> *)recordsForUser:(NSInteger)userId mediaType:(SJMediaType)mediaType range:(NSRange)range;
 
 ///
-/// 获取满足条件指定范围的记录
+/// 查询
+///
+- (nullable NSArray<SJPlaybackRecord *> *)recordsForUser:(NSInteger)userId mediaType:(SJMediaType)mediaType;
+
+///
+/// 查询
+///
+/// \code
+///    // 这个方法适合分页查询的场景, 当数据量过大时, 可以指定请求的range
+///    // 根据指定的`用户id`以及`mediaType`进行查询, 并将结果排序(以更新的时间倒序排列), 返回满足条件的前20条数据
+///    NSArray *records = [SJPlaybackHistoryController.shared recordsForConditions:@[
+///        [SJSQLite3Condition conditionWithColumn:@"userId" value:@(userId)],
+///        [SJSQLite3Condition conditionWithColumn:@"mediaType" value:SJMediaTypeVideo],
+///    ] orderBy:@[
+///        [SJSQLite3ColumnOrder orderWithColumn:@"updatedTime" ascending:NO]
+///    ] range:NSMakeRange(0, 20)];
+/// \endcode
 ///
 - (nullable NSArray<SJPlaybackRecord *> *)recordsForConditions:(nullable NSArray<SJSQLite3Condition *> *)conditions orderBy:(nullable NSArray<SJSQLite3ColumnOrder *> *)orders range:(NSRange)range;
 
 ///
-/// 获取满足条件的记录的数量
+/// 查询
+///
+/// \code
+///    // 根据指定的`用户id`以及`mediaType`进行查询, 并将结果排序(以更新的时间倒序排列), 返回满足条件的数据
+///    NSArray *records = [SJPlaybackHistoryController.shared recordsForConditions:@[
+///        [SJSQLite3Condition conditionWithColumn:@"userId" value:@(userId)],
+///        [SJSQLite3Condition conditionWithColumn:@"mediaType" value:SJMediaTypeVideo],
+///    ] orderBy:@[
+///        [SJSQLite3ColumnOrder orderWithColumn:@"updatedTime" ascending:NO]
+///    ]];
+/// \endcode
+///
+- (nullable NSArray<SJPlaybackRecord *> *)recordsForConditions:(nullable NSArray<SJSQLite3Condition *> *)conditions orderBy:(nullable NSArray<SJSQLite3ColumnOrder *> *)orders;
+
+#pragma mark -
+
+///
+/// 查询数量
+///
+- (NSUInteger)countOfRecordsForUser:(NSInteger)userId mediaType:(SJMediaType)mediaType;
+
+///
+/// 查询数量
+///
+/// \code
+///    // 根据指定的`用户id`以及`mediaType`进行查询
+///    [SJPlaybackHistoryController.shared countOfRecordsForConditions:@[
+///        [SJSQLite3Condition conditionWithColumn:@"userId" value:@(userId)],
+///        [SJSQLite3Condition conditionWithColumn:@"mediaType" value:SJMediaTypeVideo],
+///    ]];
+/// \endcode
 ///
 - (NSUInteger)countOfRecordsForConditions:(nullable NSArray<SJSQLite3Condition *> *)conditions;
 
-///
-/// 获取所有记录的数量
-///
-- (NSUInteger)count;
+#pragma mark -
 
 ///
-/// 删除指定的记录
+/// 删除
 ///
-- (void)remove:(NSInteger)media user:(NSInteger)userId;
+- (void)remove:(NSInteger)media user:(NSInteger)userId mediaType:(SJMediaType)mediaType;
 
 ///
-/// 删除全部
+/// 删除
 ///
-- (void)removeAllRecords;
+- (void)removeAllRecordsForUser:(NSInteger)userId mediaType:(SJMediaType)mediaType;
+
+///
+/// 删除
+///
+/// \code
+///    [SJPlaybackHistoryController.shared removeForConditions:@[
+///        [SJSQLite3Condition conditionWithColumn:@"userId" value:@(userId)],
+///        [SJSQLite3Condition conditionWithColumn:@"mediaType" value:SJMediaTypeVideo],
+///    ]];
+/// \endcode
+///
+- (void)removeForConditions:(nullable NSArray<SJSQLite3Condition *> *)conditions;
 @end
 NS_ASSUME_NONNULL_END

@@ -123,11 +123,11 @@ static NSNotificationName const SJFitOnScreenManagerTransitioningValueDidChangeN
 }
 
 - (UIViewController *)topMostController {
-  UIViewController *topController = [UIApplication sharedApplication].keyWindow.rootViewController;
-  while(topController.presentedViewController) {
-    topController=topController.presentedViewController;
-  }
-  return topController;
+    UIViewController *topController = UIApplication.sharedApplication.keyWindow.rootViewController;
+    while( topController.presentedViewController != nil ) {
+        topController = topController.presentedViewController;
+    }
+    return topController;
 }
 
 - (void)setInnerFitOnScreen:(BOOL)innerFitOnScreen {

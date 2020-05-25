@@ -9,6 +9,12 @@
 #import "AVAsset+SJAVMediaExport.h"
 #import "NSTimer+SJAssetAdd.h"
 
+#if __has_include(<SJUIKit/NSObject+SJObserverHelper.h>)
+#import <SJUIKit/NSObject+SJObserverHelper.h>
+#else
+#import "NSObject+SJObserverHelper.h"
+#endif
+
 NS_ASSUME_NONNULL_BEGIN
 @interface SJAVMediaPlayer ()
 @property (nonatomic, strong, nullable) NSError *innerError;
@@ -284,19 +290,6 @@ static NSString *kPresentationSize = @"presentationSize";
 static NSString *kTimeControlStatus = @"timeControlStatus";
 
 - (void)dealloc {
-    AVPlayerItem *playerItem = _avPlayer.currentItem;
-    [NSNotificationCenter.defaultCenter removeObserver:self];
-    [playerItem removeObserver:self forKeyPath:kStatus];
-    [playerItem removeObserver:self forKeyPath:kPlaybackLikelyToKeepUp];
-    [playerItem removeObserver:self forKeyPath:kPlaybackBufferEmpty];
-    [playerItem removeObserver:self forKeyPath:kPlaybackBufferFull];
-    [playerItem removeObserver:self forKeyPath:kLoadedTimeRanges];
-    [playerItem removeObserver:self forKeyPath:kPresentationSize];
-    [_avPlayer removeObserver:self forKeyPath:kStatus];
-    if ( @available(iOS 10.0, *) ) {
-        [_avPlayer removeObserver:self forKeyPath:kTimeControlStatus];
-    }
-
 #ifdef SJDEBUG
     NSLog(@"%d \t %s", (int)__LINE__, __func__);
 #endif
@@ -355,22 +348,28 @@ static NSString *kTimeControlStatus = @"timeControlStatus";
     }];
     
     NSKeyValueObservingOptions options = NSKeyValueObservingOptionNew;
-    [playerItem addObserver:self forKeyPath:kStatus options:options context:&kStatus];
-    [playerItem addObserver:self forKeyPath:kPlaybackLikelyToKeepUp options:options context:&kPlaybackLikelyToKeepUp];
-    [playerItem addObserver:self forKeyPath:kPlaybackBufferEmpty options:options context:&kPlaybackBufferEmpty];
-    [playerItem addObserver:self forKeyPath:kPlaybackBufferFull options:options context:&kPlaybackBufferFull];
-    [playerItem addObserver:self forKeyPath:kLoadedTimeRanges options:options context:&kLoadedTimeRanges];
-    [playerItem addObserver:self forKeyPath:kPresentationSize options:options context:&kPresentationSize];
+    [playerItem sj_addObserver:self forKeyPath:kStatus options:options context:&kStatus];
+    [playerItem sj_addObserver:self forKeyPath:kPlaybackLikelyToKeepUp options:options context:&kPlaybackLikelyToKeepUp];
+    [playerItem sj_addObserver:self forKeyPath:kPlaybackBufferEmpty options:options context:&kPlaybackBufferEmpty];
+    [playerItem sj_addObserver:self forKeyPath:kPlaybackBufferFull options:options context:&kPlaybackBufferFull];
+    [playerItem sj_addObserver:self forKeyPath:kLoadedTimeRanges options:options context:&kLoadedTimeRanges];
+    [playerItem sj_addObserver:self forKeyPath:kPresentationSize options:options context:&kPresentationSize];
     
-    [_avPlayer addObserver:self forKeyPath:kStatus options:options context:&kStatus];
+    [_avPlayer sj_addObserver:self forKeyPath:kStatus options:options context:&kStatus];
     if ( @available(iOS 10.0, *) ) {
-        [_avPlayer addObserver:self forKeyPath:kTimeControlStatus options:options context:&kTimeControlStatus];
+        [_avPlayer sj_addObserver:self forKeyPath:kTimeControlStatus options:options context:&kTimeControlStatus];
     }
     
-    [NSNotificationCenter.defaultCenter addObserver:self selector:@selector(_failedToPlayToEndTime:) name:AVPlayerItemFailedToPlayToEndTimeNotification object:playerItem];
-    [NSNotificationCenter.defaultCenter addObserver:self selector:@selector(_didPlayToEndTime:) name:AVPlayerItemDidPlayToEndTimeNotification object:playerItem];
-    [NSNotificationCenter.defaultCenter addObserver:self selector:@selector(_updatePlaybackType:) name:AVPlayerItemNewAccessLogEntryNotification object:playerItem];
-    
+    [self sj_observeWithNotification:AVPlayerItemFailedToPlayToEndTimeNotification target:playerItem usingBlock:^(SJAVMediaPlayer *self, NSNotification * _Nonnull note) {
+        [self _failedToPlayToEndTime:note];
+    }];
+    [self sj_observeWithNotification:AVPlayerItemDidPlayToEndTimeNotification target:playerItem usingBlock:^(SJAVMediaPlayer *self, NSNotification * _Nonnull note) {
+        [self _didPlayToEndTime:note];
+    }];
+    [self sj_observeWithNotification:AVPlayerItemNewAccessLogEntryNotification target:playerItem usingBlock:^(SJAVMediaPlayer *self, NSNotification * _Nonnull note) {
+        [self _updatePlaybackType:note];
+    }];
+
     [self _toEvaluating];
 }
 
@@ -396,6 +395,17 @@ static NSString *kTimeControlStatus = @"timeControlStatus";
         if ( self.isPlayedToTrialEndPosition ) {
             [self _didPlayToTrialEndPosition];
             return ;
+        }
+        
+        if ( self.needSeekToStartPosition && !self.seekingInfo.isSeeking && assetStatus == SJAssetStatusReadyToPlay ) {
+            __weak typeof(self) _self = self;
+            [self seekToTime:CMTimeMakeWithSeconds(self.startPosition, NSEC_PER_SEC) completionHandler:^(BOOL finished) {
+                __strong typeof(_self) self = _self;
+                if ( !self ) return;
+                self.needSeekToStartPosition = NO;
+                [self _toEvaluating];
+            }];
+            return;
         }
         
         if ( @available(iOS 10.0, *) ) {
@@ -429,11 +439,6 @@ static NSString *kTimeControlStatus = @"timeControlStatus";
                     [self.avPlayer play];
                 }
             }
-        }
-        
-        if ( self.needSeekToStartPosition && assetStatus == SJAssetStatusReadyToPlay ) {
-            self.needSeekToStartPosition = NO;
-            [self seekToTime:CMTimeMakeWithSeconds(self.startPosition, NSEC_PER_SEC) completionHandler:nil];
         }
     });
 }

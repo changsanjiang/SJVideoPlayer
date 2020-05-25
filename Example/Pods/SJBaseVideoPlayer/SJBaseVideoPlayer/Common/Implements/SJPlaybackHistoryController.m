@@ -6,15 +6,21 @@
 //
 
 #import "SJPlaybackHistoryController.h"
+#if __has_include(<SJUIKit/SJSQLite3.h>)
+#import <SJUIKit/SJSQLite3+Private.h>
+#import <SJUIKit/SJSQLite3+RemoveExtended.h>
+#import <SJUIKit/SJSQLite3+TableExtended.h>
+#else
+#import "SJSQLite3+Private.h"
+#import "SJSQLite3+RemoveExtended.h"
+#import "SJSQLite3+TableExtended.h"
+#endif
 
 NS_ASSUME_NONNULL_BEGIN
-@interface SJPlaybackRecord ()
-@property (nonatomic) NSInteger id;
-@property (nonatomic) NSTimeInterval createdTime;
-@property (nonatomic) NSTimeInterval updatedTime;
-@end
+SJMediaType const SJMediaTypeVideo = @"video";
+SJMediaType const SJMediaTypeAudio = @"audio";
 
-@implementation SJPlaybackRecord
+@implementation SJPlaybackRecord(SJSQLite3Extended)
 + (nullable NSString *)sql_primaryKey {
     return @"id";
 }
@@ -42,14 +48,14 @@ NS_ASSUME_NONNULL_BEGIN
 - (instancetype)initWithPath:(NSString *)path {
     self = [super init];
     if ( self ) {
-        _sqlite = [SJSQLite3.alloc initWithDatabasePath:path];
+        self.sqlite = [SJSQLite3.alloc initWithDatabasePath:path];
     }
     return self;
 }
 
 - (void)save:(SJPlaybackRecord *)record {
     if ( record != nil ) {
-        SJPlaybackRecord *_Nullable old = [self recordForMedia:record.mediaId user:record.userId];
+        SJPlaybackRecord *_Nullable old = [self recordForMedia:record.mediaId user:record.userId mediaType:record.mediaType];
         if ( old != nil ) record.id = old.id;
         else record.createdTime = NSDate.date.timeIntervalSince1970;
         record.updatedTime = NSDate.date.timeIntervalSince1970;
@@ -57,43 +63,64 @@ NS_ASSUME_NONNULL_BEGIN
     }
 }
 
-- (nullable SJPlaybackRecord *)recordForMedia:(NSInteger)mediaId user:(NSInteger)userId {
+- (nullable SJPlaybackRecord *)recordForMedia:(NSInteger)mediaId user:(NSInteger)userId mediaType:(SJMediaType)mediaType {
+    NSParameterAssert(mediaType);
     return [self recordsForConditions:@[
         [SJSQLite3Condition conditionWithColumn:@"mediaId" value:@(mediaId)],
-        [SJSQLite3Condition conditionWithColumn:@"userId" value:@(userId)]
+        [SJSQLite3Condition conditionWithColumn:@"userId" value:@(userId)],
+        [SJSQLite3Condition conditionWithColumn:@"mediaType" value:mediaType]
     ] orderBy:nil].lastObject;
 }
 
-- (nullable NSArray<SJPlaybackRecord *> *)allRecordsForUser:(NSInteger)userId {
+- (nullable NSArray<SJPlaybackRecord *> *)recordsForUser:(NSInteger)userId mediaType:(SJMediaType)mediaType range:(NSRange)range {
     return [self recordsForConditions:@[
-        [SJSQLite3Condition conditionWithColumn:@"userId" value:@(userId)]
-    ] orderBy:nil];
+        [SJSQLite3Condition conditionWithColumn:@"userId" value:@(userId)],
+        [SJSQLite3Condition conditionWithColumn:@"mediaType" value:mediaType],
+    ] orderBy:@[
+        [SJSQLite3ColumnOrder orderWithColumn:@"updatedTime" ascending:NO]
+    ] range:range];
+}
+
+- (nullable NSArray<SJPlaybackRecord *> *)recordsForUser:(NSInteger)userId mediaType:(SJMediaType)mediaType {
+    return [self recordsForUser:userId mediaType:mediaType range:NSMakeRange(0, NSUIntegerMax)];
 }
 
 - (nullable NSArray<SJPlaybackRecord *> *)recordsForConditions:(nullable NSArray<SJSQLite3Condition *> *)conditions orderBy:(nullable NSArray<SJSQLite3ColumnOrder *> *)orders {
-    return [_sqlite objectsForClass:SJPlaybackRecord.class conditions:conditions orderBy:orders error:NULL];
+    return [self recordsForConditions:conditions orderBy:orders range:NSMakeRange(0, NSUIntegerMax)];
 }
 
 - (nullable NSArray<SJPlaybackRecord *> *)recordsForConditions:(nullable NSArray<SJSQLite3Condition *> *)conditions orderBy:(nullable NSArray<SJSQLite3ColumnOrder *> *)orders range:(NSRange)range {
     return [_sqlite objectsForClass:SJPlaybackRecord.class conditions:conditions orderBy:orders range:range error:NULL];
 }
 
+- (NSUInteger)countOfRecordsForUser:(NSInteger)userId mediaType:(SJMediaType)mediaType {
+    return [self countOfRecordsForConditions:@[
+        [SJSQLite3Condition conditionWithColumn:@"userId" value:@(userId)],
+        [SJSQLite3Condition conditionWithColumn:@"mediaType" value:mediaType],
+    ]];
+}
+
 - (NSUInteger)countOfRecordsForConditions:(nullable NSArray<SJSQLite3Condition *> *)conditions {
     return [_sqlite countOfObjectsForClass:SJPlaybackRecord.class conditions:conditions error:NULL];
 }
 
-- (NSUInteger)count {
-    return [self countOfRecordsForConditions:nil];
-}
-
-- (void)remove:(NSInteger)media user:(NSInteger)userId {
-    SJPlaybackRecord *record = [self recordForMedia:media user:userId];
+- (void)remove:(NSInteger)media user:(NSInteger)userId mediaType:(SJMediaType)mediaType {
+    NSParameterAssert(mediaType);
+    SJPlaybackRecord *record = [self recordForMedia:media user:userId mediaType:mediaType];
     if ( record == nil ) return;
     [_sqlite removeObjectsForClass:SJPlaybackRecord.class primaryKeyValues:@[@(record.id)] error:NULL];
 }
 
-- (void)removeAllRecords {
-    [_sqlite removeAllObjectsForClass:SJPlaybackRecord.class error:NULL];
+- (void)removeAllRecordsForUser:(NSInteger)userId mediaType:(SJMediaType)mediaType {
+    NSParameterAssert(mediaType);
+    [_sqlite removeAllObjectsForClass:SJPlaybackRecord.class conditions:@[
+        [SJSQLite3Condition conditionWithColumn:@"userId" value:@(userId)],
+        [SJSQLite3Condition conditionWithColumn:@"mediaType" value:mediaType],
+    ] error:NULL];
+}
+
+- (void)removeForConditions:(nullable NSArray<SJSQLite3Condition *> *)conditions {
+    [_sqlite removeAllObjectsForClass:SJPlaybackRecord.class conditions:conditions error:NULL];
 }
 @end
 NS_ASSUME_NONNULL_END

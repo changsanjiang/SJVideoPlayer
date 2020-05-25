@@ -17,56 +17,115 @@
 @protocol SJPlaybackRecord;
 
 NS_ASSUME_NONNULL_BEGIN
+
+typedef NSString *SJMediaType; // 目前存在两种类型, 分别是: `SJMediaTypeVideo`(视频) 与 `SJMediaTypeAudio`(音乐)
+extern SJMediaType const SJMediaTypeVideo;
+extern SJMediaType const SJMediaTypeAudio;
+
 @protocol SJPlaybackHistoryController <NSObject>
+
 ///
 /// 保存或更新播放记录
 ///
 - (void)save:(id<SJPlaybackRecord>)record;
 
-///
-/// 获取某个播放记录(如不存在, 返回nil)
-///
-- (nullable id<SJPlaybackRecord>)recordForMedia:(NSInteger)mediaId user:(NSInteger)userId;
+#pragma mark -
 
 ///
-/// 获取所有历史记录
+/// 查询, 如不存在将返回 nil
 ///
-- (nullable NSArray<id<SJPlaybackRecord>> *)allRecordsForUser:(NSInteger)userId;
+- (nullable id<SJPlaybackRecord>)recordForMedia:(NSInteger)mediaId user:(NSInteger)userId mediaType:(SJMediaType)mediaType;
 
 ///
-/// 获取满足条件的记录
+/// 查询
 ///
-- (nullable NSArray<id<SJPlaybackRecord>> *)recordsForConditions:(nullable NSArray<SJSQLite3Condition *> *)conditions orderBy:(nullable NSArray<SJSQLite3ColumnOrder *> *)orders;
+- (nullable NSArray<id<SJPlaybackRecord>> *)recordsForUser:(NSInteger)userId mediaType:(SJMediaType)mediaType range:(NSRange)range;
 
 ///
-/// 获取满足条件指定范围的记录
+/// 查询
+///
+- (nullable NSArray<id<SJPlaybackRecord>> *)recordsForUser:(NSInteger)userId mediaType:(SJMediaType)mediaType;
+
+///
+/// 查询
+///
+/// \code
+///    // 这个方法适合分页查询的场景, 当数据量过大时, 可以指定请求的range
+///    // 根据指定的`用户id`以及`mediaType`进行查询, 并将结果排序(以更新的时间倒序排列), 返回满足条件的前20条数据
+///    NSArray *records = [SJPlaybackHistoryController.shared recordsForConditions:@[
+///        [SJSQLite3Condition conditionWithColumn:@"userId" value:@(userId)],
+///        [SJSQLite3Condition conditionWithColumn:@"mediaType" value:SJMediaTypeVideo],
+///    ] orderBy:@[
+///        [SJSQLite3ColumnOrder orderWithColumn:@"updatedTime" ascending:NO]
+///    ] range:NSMakeRange(0, 20)];
+/// \endcode
 ///
 - (nullable NSArray<id<SJPlaybackRecord>> *)recordsForConditions:(nullable NSArray<SJSQLite3Condition *> *)conditions orderBy:(nullable NSArray<SJSQLite3ColumnOrder *> *)orders range:(NSRange)range;
 
 ///
-/// 获取满足条件的记录的数量
+/// 查询
+///
+/// \code
+///    // 根据指定的`用户id`以及`mediaType`进行查询, 并将结果排序(以更新的时间倒序排列), 返回满足条件的数据
+///    NSArray *records = [SJPlaybackHistoryController.shared recordsForConditions:@[
+///        [SJSQLite3Condition conditionWithColumn:@"userId" value:@(userId)],
+///        [SJSQLite3Condition conditionWithColumn:@"mediaType" value:SJMediaTypeVideo],
+///    ] orderBy:@[
+///        [SJSQLite3ColumnOrder orderWithColumn:@"updatedTime" ascending:NO]
+///    ]];
+/// \endcode
+///
+- (nullable NSArray<id<SJPlaybackRecord>> *)recordsForConditions:(nullable NSArray<SJSQLite3Condition *> *)conditions orderBy:(nullable NSArray<SJSQLite3ColumnOrder *> *)orders;
+
+#pragma mark -
+
+///
+/// 查询数量
+///
+- (NSUInteger)countOfRecordsForUser:(NSInteger)userId mediaType:(SJMediaType)mediaType;
+
+///
+/// 查询数量
+///
+/// \code
+///    // 根据指定的`用户id`以及`mediaType`进行查询
+///    [SJPlaybackHistoryController.shared countOfRecordsForConditions:@[
+///        [SJSQLite3Condition conditionWithColumn:@"userId" value:@(userId)],
+///        [SJSQLite3Condition conditionWithColumn:@"mediaType" value:SJMediaTypeVideo],
+///    ]];
+/// \endcode
 ///
 - (NSUInteger)countOfRecordsForConditions:(nullable NSArray<SJSQLite3Condition *> *)conditions;
 
-///
-/// 获取所有记录的数量
-///
-- (NSUInteger)count;
+#pragma mark -
 
 ///
-/// 删除指定的记录
+/// 删除
 ///
-- (void)remove:(NSInteger)media user:(NSInteger)userId;
+- (void)remove:(NSInteger)media user:(NSInteger)userId mediaType:(SJMediaType)mediaType;
 
 ///
-/// 删除全部
+/// 删除
 ///
-- (void)removeAllRecords;
+- (void)removeAllRecordsForUser:(NSInteger)userId mediaType:(SJMediaType)mediaType;
+
+///
+/// 删除
+///
+/// \code
+///    [SJPlaybackHistoryController.shared removeForConditions:@[
+///        [SJSQLite3Condition conditionWithColumn:@"userId" value:@(userId)],
+///        [SJSQLite3Condition conditionWithColumn:@"mediaType" value:SJMediaTypeVideo],
+///    ]];
+/// \endcode
+///
+- (void)removeForConditions:(nullable NSArray<SJSQLite3Condition *> *)conditions;
 @end
 
 @protocol SJPlaybackRecord <NSObject>
 @property (nonatomic, readonly) NSInteger mediaId;
 @property (nonatomic, readonly) NSInteger userId;
+@property (nonatomic, readonly) SJMediaType mediaType;
 @property (nonatomic, readonly) NSTimeInterval position; ///< 上次观看到的位置
 @property (nonatomic, readonly) NSTimeInterval createdTime;
 @property (nonatomic, readonly) NSTimeInterval updatedTime;

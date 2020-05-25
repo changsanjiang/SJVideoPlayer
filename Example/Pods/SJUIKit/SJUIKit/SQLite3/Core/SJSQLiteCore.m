@@ -14,7 +14,7 @@
 
 NS_ASSUME_NONNULL_BEGIN
 @implementation NSMutableString (SJSQLite3CoreExtended)
-- (void)sjsql_deleteSubffix:(NSString *)str {
+- (void)sjsql_deleteSuffix:(NSString *)str {
     if ( [self hasSuffix:str] ) {
         [self deleteCharactersInRange:NSMakeRange(self.length - str.length, str.length)];
     }
@@ -99,8 +99,8 @@ sj_sqlite3_stmt_insert_or_update(SJSQLiteObjectInfo *objInfo) {
         [values appendFormat:@"'%@'", sj_sqlite3_stmt_get_column_value(column, value)];
         if ( column != last) [values appendFormat:@","];
     }
-    [fields sjsql_deleteSubffix:@","];
-    [values sjsql_deleteSubffix:@","];
+    [fields sjsql_deleteSuffix:@","];
+    [values sjsql_deleteSuffix:@","];
     [sql appendFormat:@"REPLACE INTO '%@' (%@) VALUES (%@);", objInfo.table.name, fields, values];
     return sql.copy;
 }

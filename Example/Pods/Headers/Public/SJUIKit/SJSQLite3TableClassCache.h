@@ -1,0 +1,1 @@
+../../../SJUIKit/SJUIKit/SQLite3/Core/SJSQLite3TableClassCache.h

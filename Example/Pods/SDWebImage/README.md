@@ -133,6 +133,7 @@ You can use those directly, or create similar components of your own, by using t
 
 - If you **want to contribute**, read the [Contributing Guide](https://github.com/SDWebImage/SDWebImage/blob/master/.github/CONTRIBUTING.md)
 - For **development contribution guide**, read the [How-To-Contribute](https://github.com/SDWebImage/SDWebImage/wiki/How-to-Contribute)
+- For **understanding code architecture**, read the [Code Architecture Analysis](https://github.com/SDWebImage/SDWebImage/wiki/5.6-Code-Architecture-Analysis)
 
 ## How To Use
 
@@ -283,6 +284,12 @@ In the source files where you need to use the library, import the umbrella heade
 #import <SDWebImage/SDWebImage.h>
 ```
 
+It's also recommend to use the module import syntax, available for CocoaPods(enable `modular_headers`)/Carthage/SwiftPM.
+
+```objecitivec
+@import SDWebImage;
+```
+
 ### Build Project
 
 At this point your workspace should build without error. If you are having problem, post to the Issue and the
@@ -309,6 +316,8 @@ Thank you to all the people who have already contributed to SDWebImage.
 All source code is licensed under the [MIT License](https://github.com/SDWebImage/SDWebImage/blob/master/LICENSE).
 
 ## Architecture
+
+To learn about SDWebImage's architecture design for contribution, read [The Core of SDWebImage v5.6 Architecture](https://github.com/SDWebImage/SDWebImage/wiki/5.6-Code-Architecture-Analysis). Thanks @looseyi for the post and translation.
 
 #### High Level Diagram
 <p align="center" >

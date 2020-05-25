@@ -57,7 +57,7 @@
 
     {
         // 步骤1: 查询播放记录(如不存在, 将返回nil)
-        SJPlaybackRecord *record = [SJPlaybackHistoryController.shared recordForMedia:_media.id user:userId];
+        SJPlaybackRecord *record = [SJPlaybackHistoryController.shared recordForMedia:_media.id user:userId mediaType:SJMediaTypeVideo];
         // - 不存在则创建
         if ( record == nil ) {
             record = SJPlaybackRecord.alloc.init;

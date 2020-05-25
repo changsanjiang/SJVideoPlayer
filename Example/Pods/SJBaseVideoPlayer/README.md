@@ -1334,3 +1334,4 @@ _player.defaultEdgeControlLayer.rightMargin = 16;
 
 <img src="https://github.com/changsanjiang/SJBaseVideoPlayer/blob/master/Project/Project/imgs/thanks_zfb.JPG?raw=true" width="200">
 <img src="https://github.com/changsanjiang/SJBaseVideoPlayer/blob/master/Project/Project/imgs/thanks_wechat.JPG?raw=true" width="200">
+

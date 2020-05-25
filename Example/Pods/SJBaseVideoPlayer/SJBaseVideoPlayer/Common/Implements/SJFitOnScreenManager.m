@@ -109,7 +109,7 @@ static NSNotificationName const SJFitOnScreenManagerTransitioningValueDidChangeN
         if ( fitOnScreen ) {
             UIViewController *top = [self topMostController];
             if ( !animated ) [self _presentedAnimationWithDuration:0 completionHandler:nil];
-            [rootViewController presentViewController:self.viewController animated:animated completion:^{
+            [top presentViewController:self.viewController animated:animated completion:^{
                 if ( completionHandler ) completionHandler(self);
             }];
         }

@@ -9,7 +9,7 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
-@interface SJPlaybackRecord : NSObject
+@interface SJPlaybackRecord : NSObject<SJPlaybackRecord>
 - (instancetype)initWithMediaId:(NSInteger)mediaId mediaType:(SJMediaType)mediaType userId:(NSInteger)userId;
 @property (nonatomic) NSInteger mediaId;
 @property (nonatomic) NSInteger userId;

@@ -68,6 +68,8 @@
     
     [m addObject:[[LWZTableSectionShrinker alloc] initWithTitle:@"UITableView Demo" titleWhenShrank:nil dataArr:[self _UICollectionViewDemoItems]]];
     
+    [m addObject:[[LWZTableSectionShrinker alloc] initWithTitle:@"Keyboard Handle Demo" titleWhenShrank:nil dataArr:[self _KeyboardHandleDemoItems]]];
+    
     [m addObject:[[LWZTableSectionShrinker alloc] initWithTitle:@"Switching Control Layer" titleWhenShrank:nil dataArr:[self _createSwitchingControlLayerDemoItems]]];
     
     [m addObject:[[LWZTableSectionShrinker alloc] initWithTitle:@"Custom Control Layer" titleWhenShrank:nil dataArr:[self _createCustomControlLayerDemoItems]]];
@@ -90,6 +92,12 @@
     
 
     _data = m.copy;
+}
+
+- (NSArray<Item *> *)_KeyboardHandleDemoItems {
+    return @[
+        [Item.alloc initWithTitle:@"1 TextField" subTitle:nil path:@"Keyboard/1"],
+    ];
 }
 
 - (NSArray<Item *> *)_UICollectionViewDemoItems {

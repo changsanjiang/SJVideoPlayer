@@ -78,6 +78,7 @@
 		873B8AEB1B1F5CCA007FD442 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 873B8AEA1B1F5CCA007FD442 /* Main.storyboard */; };
 		A601803C22DB5CAC00ED840D /* SJRotationModeDemoViewController3.m in Sources */ = {isa = PBXBuildFile; fileRef = A601803A22DB5CAC00ED840D /* SJRotationModeDemoViewController3.m */; };
 		A601803D22DB5CAC00ED840D /* SJRotationModeDemoViewController3.xib in Resources */ = {isa = PBXBuildFile; fileRef = A601803B22DB5CAC00ED840D /* SJRotationModeDemoViewController3.xib */; };
+		A65FE539248A891700A5D4A6 /* SJKeyboardDemoViewController1.m in Sources */ = {isa = PBXBuildFile; fileRef = A65FE538248A891700A5D4A6 /* SJKeyboardDemoViewController1.m */; };
 		A69FD22B22D9F5280031E4E7 /* SJViewController8.m in Sources */ = {isa = PBXBuildFile; fileRef = A69FD22922D9F5280031E4E7 /* SJViewController8.m */; };
 		A69FD22C22D9F5280031E4E7 /* SJViewController8.xib in Resources */ = {isa = PBXBuildFile; fileRef = A69FD22A22D9F5280031E4E7 /* SJViewController8.xib */; };
 		A6A208F922AB9E59001ED610 /* SJRotationModeDemoViewController1.xib in Resources */ = {isa = PBXBuildFile; fileRef = A6A208E322AB9E59001ED610 /* SJRotationModeDemoViewController1.xib */; };
@@ -241,6 +242,8 @@
 		A601803922DB5CAC00ED840D /* SJRotationModeDemoViewController3.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = SJRotationModeDemoViewController3.h; sourceTree = "<group>"; };
 		A601803A22DB5CAC00ED840D /* SJRotationModeDemoViewController3.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = SJRotationModeDemoViewController3.m; sourceTree = "<group>"; };
 		A601803B22DB5CAC00ED840D /* SJRotationModeDemoViewController3.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = SJRotationModeDemoViewController3.xib; sourceTree = "<group>"; };
+		A65FE537248A891700A5D4A6 /* SJKeyboardDemoViewController1.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = SJKeyboardDemoViewController1.h; sourceTree = "<group>"; };
+		A65FE538248A891700A5D4A6 /* SJKeyboardDemoViewController1.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = SJKeyboardDemoViewController1.m; sourceTree = "<group>"; };
 		A69FD22822D9F5280031E4E7 /* SJViewController8.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = SJViewController8.h; sourceTree = "<group>"; };
 		A69FD22922D9F5280031E4E7 /* SJViewController8.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = SJViewController8.m; sourceTree = "<group>"; };
 		A69FD22A22D9F5280031E4E7 /* SJViewController8.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = SJViewController8.xib; sourceTree = "<group>"; };
@@ -538,6 +541,7 @@
 				A6A208DF22AB9E59001ED610 /* Rotation Control(旋转控制) */,
 				77391C0D2467CC2B00443844 /* UITableView */,
 				77391C0E2467CC3800443844 /* UICollectionView */,
+				A65FE536248A88D200A5D4A6 /* Keyboard */,
 				77633AB823FD97A000D7A269 /* PlaybackHistory(播放记录) */,
 				7784A7F7237D384F000BA67E /* Barrage( 弹幕) */,
 				77357E5F2375522800B81EE4 /* Subtitles(字幕) */,
@@ -594,6 +598,15 @@
 				A601803B22DB5CAC00ED840D /* SJRotationModeDemoViewController3.xib */,
 			);
 			path = 3;
+			sourceTree = "<group>";
+		};
+		A65FE536248A88D200A5D4A6 /* Keyboard */ = {
+			isa = PBXGroup;
+			children = (
+				A65FE537248A891700A5D4A6 /* SJKeyboardDemoViewController1.h */,
+				A65FE538248A891700A5D4A6 /* SJKeyboardDemoViewController1.m */,
+			);
+			path = Keyboard;
 			sourceTree = "<group>";
 		};
 		A6A208DE22AB9E59001ED610 /* Demos */ = {
@@ -1024,6 +1037,7 @@
 				77357E622375523C00B81EE4 /* SJSubtitlesTestViewController.m in Sources */,
 				7784A7FA237D3860000BA67E /* SJBarrageTestViewController.m in Sources */,
 				77788FDF22C36CF300E26599 /* SJRecommendVideosTableViewCell.m in Sources */,
+				A65FE539248A891700A5D4A6 /* SJKeyboardDemoViewController1.m in Sources */,
 				774AF08722DC790D005FE462 /* SJView.m in Sources */,
 				77391C46246801D100443844 /* SJExtendedMediaCollectionViewModel.m in Sources */,
 				A6A2090322AB9EE6001ED610 /* LWZTableSectionShrinker.m in Sources */,

@@ -142,7 +142,7 @@ static SJEdgeControlButtonItemTag SJKeyboardDemoSendCommentItemTag = 1;
         [_textField mas_makeConstraints:^(MASConstraintMaker *make) {
             make.top.offset(8);
             if (@available(iOS 11.0, *)) {
-                make.left.equalTo(self.mas_safeAreaLayoutGuideLeft);
+                make.left.equalTo(self.mas_safeAreaLayoutGuideLeft).offset(12);
             } else {
                 make.left.offset(12);
             }

@@ -8,7 +8,6 @@
 
 #import "SJSQLiteCore.h"
 #import "SJSQLiteTableModelProtocol.h"
-#import <sqlite3.h>
 
 NS_ASSUME_NONNULL_BEGIN
 /// 数据库模型映射及增删改查

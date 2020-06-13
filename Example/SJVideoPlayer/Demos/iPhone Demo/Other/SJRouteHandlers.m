@@ -27,6 +27,8 @@
 
 #import "SJKeyboardDemoViewController1.h"
 
+#import "SJDYMainViewController.h"
+
 @implementation SJRouteHandlers
 + (void)addRoutesToRouter:(SJRouter *)router {
     __auto_type addBlock = ^(NSArray<SJRouteObject *> *array) {
@@ -35,9 +37,19 @@
         }
     };
     
+    addBlock([self routeObjectArrayForDYDemo]);
     addBlock([self routeObjectArrayForUITableViewDemo]);
     addBlock([self routeObjectArrayForUICollectionViewDemo]);
     addBlock([self routeObjectArrayForKeyboardDemo]);
+}
+
++ (NSArray<SJRouteObject *> *)routeObjectArrayForDYDemo {
+    return @[
+        [SJRouteObject.alloc initWithPath:@"dy/1" transitionMode:SJViewControllerTransitionModeNavigation createInstanceBlock:^(SJRouteRequest * _Nonnull request, SJCompletionHandler  _Nullable completionHandler) {
+            __auto_type vc = SJDYMainViewController.new;
+            if ( completionHandler ) completionHandler(vc, nil);
+        }],
+    ];
 }
 
 + (NSArray<SJRouteObject *> *)routeObjectArrayForKeyboardDemo {

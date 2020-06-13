@@ -22,6 +22,11 @@
 		6003F5BA195388D20070C39A /* InfoPlist.strings in Resources */ = {isa = PBXBuildFile; fileRef = 6003F5B8195388D20070C39A /* InfoPlist.strings */; };
 		6003F5BC195388D20070C39A /* Tests.m in Sources */ = {isa = PBXBuildFile; fileRef = 6003F5BB195388D20070C39A /* Tests.m */; };
 		71719F9F1E33DC2100824A3D /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 71719F9D1E33DC2100824A3D /* LaunchScreen.storyboard */; };
+		7727A5342493A84300D820FE /* SJDYMainViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 7727A5332493A84300D820FE /* SJDYMainViewController.m */; };
+		7727A5372493AA4D00D820FE /* SJDYPlaybackListViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 7727A5362493AA4D00D820FE /* SJDYPlaybackListViewController.m */; };
+		7727A53A2493B02A00D820FE /* SJDYTableViewCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 7727A5392493B02A00D820FE /* SJDYTableViewCell.m */; };
+		7727A53D249473C200D820FE /* SJDYDataProvider.m in Sources */ = {isa = PBXBuildFile; fileRef = 7727A53C249473C200D820FE /* SJDYDataProvider.m */; };
+		7727A5452494B1BA00D820FE /* SJDYUserHomepageViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 7727A5442494B1BA00D820FE /* SJDYUserHomepageViewController.m */; };
 		77357E462373DA3E00B81EE4 /* SJTestAliViewController3.m in Sources */ = {isa = PBXBuildFile; fileRef = 77357E442373DA3E00B81EE4 /* SJTestAliViewController3.m */; };
 		77357E472373DA3E00B81EE4 /* SJTestAliViewController3.xib in Resources */ = {isa = PBXBuildFile; fileRef = 77357E452373DA3E00B81EE4 /* SJTestAliViewController3.xib */; };
 		77357E622375523C00B81EE4 /* SJSubtitlesTestViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 77357E612375523C00B81EE4 /* SJSubtitlesTestViewController.m */; };
@@ -144,6 +149,16 @@
 		6003F5BB195388D20070C39A /* Tests.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = Tests.m; sourceTree = "<group>"; };
 		606FC2411953D9B200FFA9A0 /* Tests-Prefix.pch */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "Tests-Prefix.pch"; sourceTree = "<group>"; };
 		71719F9E1E33DC2100824A3D /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/LaunchScreen.storyboard; sourceTree = "<group>"; };
+		7727A5322493A84300D820FE /* SJDYMainViewController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = SJDYMainViewController.h; sourceTree = "<group>"; };
+		7727A5332493A84300D820FE /* SJDYMainViewController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = SJDYMainViewController.m; sourceTree = "<group>"; };
+		7727A5352493AA4D00D820FE /* SJDYPlaybackListViewController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = SJDYPlaybackListViewController.h; sourceTree = "<group>"; };
+		7727A5362493AA4D00D820FE /* SJDYPlaybackListViewController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = SJDYPlaybackListViewController.m; sourceTree = "<group>"; };
+		7727A5382493B02A00D820FE /* SJDYTableViewCell.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = SJDYTableViewCell.h; sourceTree = "<group>"; };
+		7727A5392493B02A00D820FE /* SJDYTableViewCell.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = SJDYTableViewCell.m; sourceTree = "<group>"; };
+		7727A53B249473C200D820FE /* SJDYDataProvider.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = SJDYDataProvider.h; sourceTree = "<group>"; };
+		7727A53C249473C200D820FE /* SJDYDataProvider.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = SJDYDataProvider.m; sourceTree = "<group>"; };
+		7727A5432494B1BA00D820FE /* SJDYUserHomepageViewController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = SJDYUserHomepageViewController.h; sourceTree = "<group>"; };
+		7727A5442494B1BA00D820FE /* SJDYUserHomepageViewController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = SJDYUserHomepageViewController.m; sourceTree = "<group>"; };
 		77357E432373DA3E00B81EE4 /* SJTestAliViewController3.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = SJTestAliViewController3.h; sourceTree = "<group>"; };
 		77357E442373DA3E00B81EE4 /* SJTestAliViewController3.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = SJTestAliViewController3.m; sourceTree = "<group>"; };
 		77357E452373DA3E00B81EE4 /* SJTestAliViewController3.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = SJTestAliViewController3.xib; sourceTree = "<group>"; };
@@ -426,6 +441,39 @@
 			name = "Podspec Metadata";
 			sourceTree = "<group>";
 		};
+		7727A5312493A7FC00D820FE /* DY */ = {
+			isa = PBXGroup;
+			children = (
+				7727A5322493A84300D820FE /* SJDYMainViewController.h */,
+				7727A5332493A84300D820FE /* SJDYMainViewController.m */,
+				7727A5472494C79F00D820FE /* List */,
+				7727A5462494C79400D820FE /* UserHomepage */,
+			);
+			path = DY;
+			sourceTree = "<group>";
+		};
+		7727A5462494C79400D820FE /* UserHomepage */ = {
+			isa = PBXGroup;
+			children = (
+				7727A5432494B1BA00D820FE /* SJDYUserHomepageViewController.h */,
+				7727A5442494B1BA00D820FE /* SJDYUserHomepageViewController.m */,
+			);
+			path = UserHomepage;
+			sourceTree = "<group>";
+		};
+		7727A5472494C79F00D820FE /* List */ = {
+			isa = PBXGroup;
+			children = (
+				7727A5352493AA4D00D820FE /* SJDYPlaybackListViewController.h */,
+				7727A5362493AA4D00D820FE /* SJDYPlaybackListViewController.m */,
+				7727A5382493B02A00D820FE /* SJDYTableViewCell.h */,
+				7727A5392493B02A00D820FE /* SJDYTableViewCell.m */,
+				7727A53B249473C200D820FE /* SJDYDataProvider.h */,
+				7727A53C249473C200D820FE /* SJDYDataProvider.m */,
+			);
+			path = List;
+			sourceTree = "<group>";
+		};
 		77357E5F2375522800B81EE4 /* Subtitles(字幕) */ = {
 			isa = PBXGroup;
 			children = (
@@ -614,6 +662,7 @@
 			children = (
 				6003F5A5195388D20070C39A /* SJViewController.h */,
 				6003F5A6195388D20070C39A /* SJViewController.m */,
+				7727A5312493A7FC00D820FE /* DY */,
 				77805D6D22BF7EBD007076B9 /* iPhone Demo */,
 				77805D6722BF7DC6007076B9 /* iPad Demo */,
 				7756F57E22E1732D00F9DC7D /* Test */,
@@ -996,6 +1045,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				77391C042466EE3400443844 /* SJPlayerSuperview.m in Sources */,
+				7727A53D249473C200D820FE /* SJDYDataProvider.m in Sources */,
 				77357E462373DA3E00B81EE4 /* SJTestAliViewController3.m in Sources */,
 				77391C112467CCEA00443844 /* SJUITableViewDemoViewController1.m in Sources */,
 				6003F59E195388D20070C39A /* SJAppDelegate.m in Sources */,
@@ -1007,6 +1057,7 @@
 				A6A2556B22AC015B00E42998 /* SJViewController4.m in Sources */,
 				A6A208FA22AB9E59001ED610 /* SJRotationModeDemoViewController1.m in Sources */,
 				A6A2554422ABCE9200E42998 /* SJViewController1.m in Sources */,
+				7727A5372493AA4D00D820FE /* SJDYPlaybackListViewController.m in Sources */,
 				77F2F5DC22FAC43000EA0B91 /* SJViewController11.m in Sources */,
 				7740C1BA2350A16700DD7ECE /* SJViewController12.m in Sources */,
 				77805D6B22BF7DE1007076B9 /* SJiPadDemoViewController1.m in Sources */,
@@ -1015,6 +1066,7 @@
 				A6A208FF22AB9E59001ED610 /* SJVideoModel.m in Sources */,
 				776EB8C623FE98D600085F94 /* SJTestPLPlayerViewController.m in Sources */,
 				77391C142467CD0100443844 /* SJRouteHandlers.m in Sources */,
+				7727A5452494B1BA00D820FE /* SJDYUserHomepageViewController.m in Sources */,
 				77391C352467EF6300443844 /* SJUICollectionViewDemoViewController3.m in Sources */,
 				777829402351D4AB00A2D933 /* SJTestIJKViewController2.m in Sources */,
 				7740C1BD2350A18500DD7ECE /* SJCustomControlLayerViewController.m in Sources */,
@@ -1044,6 +1096,7 @@
 				77391C292467DFA500443844 /* SJTopView.m in Sources */,
 				7756F58522E173D400F9DC7D /* SJTestViewController.m in Sources */,
 				77391C1A2467D62200443844 /* SJUITableViewDemoViewController3.m in Sources */,
+				7727A5342493A84300D820FE /* SJDYMainViewController.m in Sources */,
 				77391C1D2467D6EF00443844 /* SJUITableViewDemoViewController4.m in Sources */,
 				77391C382467F01500443844 /* SJUICollectionViewDemoViewController4.m in Sources */,
 				A6A2562622AC1C3500E42998 /* SJViewController5.m in Sources */,
@@ -1052,6 +1105,7 @@
 				6003F5A7195388D20070C39A /* SJViewController.m in Sources */,
 				6003F59A195388D20070C39A /* main.m in Sources */,
 				77391C202467D8A300443844 /* SJUITableViewDemoViewController5.m in Sources */,
+				7727A53A2493B02A00D820FE /* SJDYTableViewCell.m in Sources */,
 				A6A208FB22AB9E59001ED610 /* SJRotationMode2ViewModel.m in Sources */,
 				7784A7D1237CF75F000BA67E /* SJTestAliVodPlayerViewController.m in Sources */,
 				A6A2554922ABCFB100E42998 /* SJTableViewCell1.m in Sources */,

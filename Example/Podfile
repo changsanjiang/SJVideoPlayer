@@ -59,6 +59,9 @@ target 'SJVideoPlayer_Example' do
   pod 'SJVideoPlayer', :path => '../../SJVideoPlayer'
   pod 'SJUIKit', :podspec => 'https://gitee.com/changsanjiang/SJUIKit/raw/master/SJUIKit-YYModel.podspec'
 
+  # 边播边缓存的库
+  pod 'SJMediaCacheServer'
+  
   # 全屏手势
   pod 'SJFullscreenPopGesture/ObjC'
   # 列表控制
@@ -67,4 +70,5 @@ target 'SJVideoPlayer_Example' do
   pod 'MJRefresh', :inhibit_warnings => true
   pod 'SJRouter'
   pod 'SDWebImage'
+  pod 'YYModel'
 end

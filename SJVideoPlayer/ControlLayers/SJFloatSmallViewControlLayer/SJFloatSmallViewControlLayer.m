@@ -81,7 +81,7 @@ SJEdgeControlButtonItemTag const SJFloatSmallViewControlLayerTopItem_Close = 100
 }
 
 - (void)tappedCloseItem:(SJEdgeControlButtonItem *)item {
-    [self.player pause];
+    [self.player pauseForUser];
     [self.player.floatSmallViewController dismissFloatView];
 }
 

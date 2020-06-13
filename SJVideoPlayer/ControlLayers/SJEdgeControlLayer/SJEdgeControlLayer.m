@@ -141,7 +141,7 @@ SJEdgeControlButtonItemTag const SJEdgeControlLayerCenterItem_Replay = 40000;
 }
 
 - (void)_playItemWasTapped {
-    _videoPlayer.isPaused ? [self.videoPlayer play] : [self.videoPlayer pause];
+    _videoPlayer.isPaused ? [self.videoPlayer play] : [self.videoPlayer pauseForUser];
 }
 
 - (void)_fullItemWasTapped {

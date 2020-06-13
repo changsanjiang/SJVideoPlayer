@@ -37,7 +37,7 @@ NS_ASSUME_NONNULL_BEGIN
                 if ( column.isModelArray ) {
                     NSMutableArray<SJSQLiteObjectInfo *> *infos = [[NSMutableArray alloc] initWithCapacity:[value count]];
                     [value enumerateObjectsUsingBlock:^(id  _Nonnull obj, NSUInteger idx, BOOL * _Nonnull stop) {
-                        SJSQLiteObjectInfo *_Nullable info = [SJSQLiteObjectInfo objectInfoWithObject:obj];
+                        SJSQLiteObjectInfo *_Nullable info = [SJSQLiteObjectInfo objectInfoWithObject:obj tableInfo:column.associatedTableInfo];
                         if ( info != nil ) {
                             [infos addObject:info];
                         }
@@ -48,7 +48,7 @@ NS_ASSUME_NONNULL_BEGIN
                     }
                 }
                 else {
-                    SJSQLiteObjectInfo *_Nullable info = [SJSQLiteObjectInfo objectInfoWithObject:value];
+                    SJSQLiteObjectInfo *_Nullable info = [SJSQLiteObjectInfo objectInfoWithObject:value tableInfo:column.associatedTableInfo];
                     if ( info != nil ) {
                         column.associatedObjectInfos = @[info];
                     }
@@ -63,56 +63,6 @@ NS_ASSUME_NONNULL_BEGIN
     info->_primaryKeyColumnInfo = primaryKeyColumnInfo;
     if ( autoincrementColumns.count != 0 ) info->_autoincrementColumns = autoincrementColumns;
     return info;
-}
-
-+ (nullable instancetype)objectInfoWithObject:(id)obj {
-#warning next .. 移除改方法
-    return nil;
-//    SJSQLiteTableInfo *_Nullable table = [SJSQLiteTableInfo tableInfoWithClass:[obj class]];
-//    if ( table == nil )
-//        return nil;
-//
-//    NSMutableArray<SJSQLiteColumnInfo *> *autoincrementColumns = NSMutableArray.new;
-//    SJSQLiteColumnInfo *primaryKeyColumnInfo = nil;
-//    for ( SJSQLiteColumnInfo *column in table.columns ) {
-//        if ( column.isPrimaryKey )
-//            primaryKeyColumnInfo = column;
-//
-//        if ( column.isAutoincrement )
-//            [autoincrementColumns addObject:column];
-//
-//        if ( column.associatedTableInfo != nil ) {
-//            id _Nullable value = [obj valueForKey:column.name];
-//            if ( value != nil ) {
-//                if ( column.isModelArray ) {
-//                    NSMutableArray<SJSQLiteObjectInfo *> *infos = [[NSMutableArray alloc] initWithCapacity:[value count]];
-//                    [value enumerateObjectsUsingBlock:^(id  _Nonnull obj, NSUInteger idx, BOOL * _Nonnull stop) {
-//                        SJSQLiteObjectInfo *_Nullable info = [SJSQLiteObjectInfo objectInfoWithObject:obj];
-//                        if ( info != nil ) {
-//                            [infos addObject:info];
-//                        }
-//                    }];
-//
-//                    if ( infos.count != 0 ) {
-//                        column.associatedObjectInfos = infos.copy;
-//                    }
-//                }
-//                else {
-//                    SJSQLiteObjectInfo *_Nullable info = [SJSQLiteObjectInfo objectInfoWithObject:value];
-//                    if ( info != nil ) {
-//                        column.associatedObjectInfos = @[info];
-//                    }
-//                }
-//            }
-//        }
-//    }
-//
-//    SJSQLiteObjectInfo *info = [SJSQLiteObjectInfo new];
-//    info->_obj = obj;
-//    info->_table = table;
-//    info->_primaryKeyColumnInfo = primaryKeyColumnInfo;
-//    if ( autoincrementColumns.count != 0 ) info->_autoincrementColumns = autoincrementColumns;
-//    return info;
 }
 @end
 NS_ASSUME_NONNULL_END

@@ -15,6 +15,7 @@
 #import "SJSQLite3ColumnOrder.h"
 #import <objc/message.h>
 #import <stdlib.h>
+#import <sqlite3.h>
 
 #if __has_include(<YYModel/YYModel.h>)
 #import <YYModel/NSObject+YYModel.h>

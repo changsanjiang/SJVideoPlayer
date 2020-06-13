@@ -12,9 +12,7 @@
 #import "SJSourceURLs.h"
 #import <SJUIKit/NSAttributedString+SJMake.h>
 #import "SJViewController4.h"
-
-#import <SJBaseVideoPlayer/SJPlaybackHistoryController.h>
-
+ 
 @interface SJRotationModeDemoViewController1 ()
 @property (weak, nonatomic) IBOutlet UIView *playerContainerView;
 @property (nonatomic, strong) SJVideoPlayer *player;
@@ -39,10 +37,7 @@
     self.view.backgroundColor = [UIColor whiteColor];
     self.edgesForExtendedLayout = UIRectEdgeNone;
     
-    _player = [SJVideoPlayer player];
-    _player.autoManageViewToFitOnScreenOrRotation = NO;
-    _player.useFitOnScreenAndDisableRotation = YES;
-    
+    _player = [SJVideoPlayer player]; 
     _player.defaultEdgeControlLayer.showResidentBackButton = YES;
     _player.pausedToKeepAppearState = YES;
     _player.controlLayerAppearManager.interval = 5; // 设置控制层隐藏间隔

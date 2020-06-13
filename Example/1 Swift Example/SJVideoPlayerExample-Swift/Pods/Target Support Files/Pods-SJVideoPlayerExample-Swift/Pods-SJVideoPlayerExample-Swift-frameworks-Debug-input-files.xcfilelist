@@ -1,6 +1,0 @@
-${PODS_ROOT}/Target Support Files/Pods-SJVideoPlayerExample-Swift/Pods-SJVideoPlayerExample-Swift-frameworks.sh
-${BUILT_PRODUCTS_DIR}/Masonry/Masonry.framework
-${BUILT_PRODUCTS_DIR}/Reachability/Reachability.framework
-${BUILT_PRODUCTS_DIR}/SJBaseVideoPlayer/SJBaseVideoPlayer.framework
-${BUILT_PRODUCTS_DIR}/SJUIKit/SJUIKit.framework
-${BUILT_PRODUCTS_DIR}/SJVideoPlayer/SJVideoPlayer.framework

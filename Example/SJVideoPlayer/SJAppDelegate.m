@@ -14,6 +14,20 @@
 
 
 @implementation SJAppDelegate
++ (void)initialize {
+    static dispatch_once_t onceToken;
+    dispatch_once(&onceToken, ^{
+        if ( @available(iOS 11.0, *) ) {
+            [UITableView appearance].estimatedRowHeight = 0;
+            [UITableView appearance].estimatedSectionFooterHeight = 0;
+            [UITableView appearance].estimatedSectionHeaderHeight = 0;
+            [UIScrollView appearance].contentInsetAdjustmentBehavior = UIScrollViewContentInsetAdjustmentNever;
+        }
+        if ( @available(iOS 13.0, *) ) {
+            [UIScrollView appearance].automaticallyAdjustsScrollIndicatorInsets = NO;
+        }
+    });
+}
 
 - (UIInterfaceOrientationMask)application:(UIApplication *)application supportedInterfaceOrientationsForWindow:(UIWindow *)window {
     return UIInterfaceOrientationMaskAll;

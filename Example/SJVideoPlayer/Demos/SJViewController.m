@@ -61,7 +61,8 @@
 - (void)_createDemoData {
     NSMutableArray<LWZTableSectionShrinker<Item *> *> *m = [NSMutableArray new];
     
-    
+    [m addObject:[[LWZTableSectionShrinker alloc] initWithTitle:@"DY" titleWhenShrank:nil dataArr:[self _DYDemoItems]]];
+
     [m addObject:[[LWZTableSectionShrinker alloc] initWithTitle:@"Rotation Control" titleWhenShrank:nil dataArr:[self _createRotationControlDemoItems]]];
     
     [m addObject:[[LWZTableSectionShrinker alloc] initWithTitle:@"UITableView Demo" titleWhenShrank:nil dataArr:[self _UITableViewDemoItems]]];
@@ -92,6 +93,13 @@
     
 
     _data = m.copy;
+}
+
+
+- (NSArray<Item *> *)_DYDemoItems {
+    return @[
+        [Item.alloc initWithTitle:@"1 DY" subTitle:nil path:@"dy/1"],
+    ];
 }
 
 - (NSArray<Item *> *)_KeyboardHandleDemoItems {

@@ -31,13 +31,14 @@ $ pod update --no-repo-update   (不要用 pod install 了, 用这个命令安�
 - [播放记录](https://github.com/changsanjiang/SJVideoPlayer/wiki/%E6%92%AD%E6%94%BE%E8%AE%B0%E5%BD%95)
 - [长按快进](https://github.com/changsanjiang/SJVideoPlayer/wiki/%E9%95%BF%E6%8C%89%E5%BF%AB%E8%BF%9B)
 - [弹幕](https://github.com/changsanjiang/SJVideoPlayer/wiki/%E5%BC%B9%E5%B9%95)
+- [水印视图](https://github.com/changsanjiang/SJVideoPlayer/wiki/水印视图)
 - [UITableView及UICollectionView中播放的解决方案](https://github.com/changsanjiang/SJVideoPlayer/wiki/UITableView%E5%8F%8AUICollectionView%E4%B8%AD%E6%92%AD%E6%94%BE%E7%9A%84%E8%A7%A3%E5%86%B3%E6%96%B9%E6%A1%88v2)
 - 切换到第三方SDK
-    - [切换至 ijkplayer](https://github.com/changsanjiang/SJVideoPlayer/wiki/Use-ijkplayer)
-    - [切换至  AliPlayer](https://github.com/changsanjiang/SJVideoPlayer/wiki/Use-AliPlayer)
-    - [切换至  AliyunVodPlayer](https://github.com/changsanjiang/SJVideoPlayer/wiki/Use-AliVodPlayer)
-    - [切换至  PLPlayerKit](https://github.com/changsanjiang/SJVideoPlayer/wiki/Use-PLPlayerKit)
-- 控制层
+    - [Use ijkplayer](https://github.com/changsanjiang/SJVideoPlayer/wiki/Use-ijkplayer)
+    - [Use AliPlayer](https://github.com/changsanjiang/SJVideoPlayer/wiki/Use-AliPlayer)
+    - [Use AliyunVodPlayer](https://github.com/changsanjiang/SJVideoPlayer/wiki/Use-AliVodPlayer)
+    - [Use PLPlayerKit](https://github.com/changsanjiang/SJVideoPlayer/wiki/Use-PLPlayerKit)
+- Control Layer
     - [Control Layer Views](https://github.com/changsanjiang/SJVideoPlayer/wiki/Control-Layer-Views)
     - [Setup Control Layer View](https://github.com/changsanjiang/SJVideoPlayer/wiki/Setup-Control-Layer-View)
     - [Use AriaContorlLayer](https://github.com/changsanjiang/SJVideoPlayer/wiki/Use-AriaContorlLayer)

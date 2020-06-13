@@ -30,6 +30,7 @@
 #import "SJSubtitlesPromptControllerDefines.h"
 #import "SJBarrageQueueControllerDefines.h"
 #import "SJPromptDefines.h"
+#import "SJWatermarkViewDefines.h"
 
 NS_ASSUME_NONNULL_BEGIN
 
@@ -190,6 +191,28 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic, readonly) BOOL isPlaybackFinished;                            ///< 播放结束
 @property (nonatomic, readonly, nullable) SJFinishedReason finishedReason;          ///< 播放结束的reason
 
+- (void)play;           ///< 使播放
+- (void)pause;          ///< 使暂停, 方法`pauseForUser`与`pause`两者都能使播放器暂停, 它们主要用来`区分是用户还是开发者暂停的`
+- (void)pauseForUser;   ///< 使暂停, 表示是用户暂停的. 可通过`player.isUserPaused`查看
+- (void)refresh;        ///< 刷新当前资源, 将重新初始化当前的资源, 适合播放失败时调用
+- (void)replay;         ///< 重播, 适合播放完毕后调用进行重播
+- (void)stop;           ///< 使停止, 请注意: 当前资源将会被清空, 如需重播, 请重新设置新资源
+
+@property (nonatomic, getter=isMuted) BOOL muted;                                   ///< 禁音
+@property (nonatomic) float playerVolume;                                           ///< 设置播放声音
+@property (nonatomic) float rate;                                                   ///< 设置播放速率
+
+@property (nonatomic, readonly) NSTimeInterval currentTime;                         ///< 当前播放到的时间
+@property (nonatomic, readonly) NSTimeInterval duration;                            ///< 总时长
+@property (nonatomic, readonly) NSTimeInterval playableDuration;                    ///< 缓冲到的时间
+@property (nonatomic, readonly) NSTimeInterval durationWatched;                     ///< 当前资源已观看的时长
+
+@property (nonatomic, readonly) BOOL isUserPaused;                                  ///< 表示是否是用户暂停的
+@property (nonatomic, readonly) BOOL isPlayed;                                      ///< 当前的资源是否调用过`play`
+@property (nonatomic, readonly) BOOL isReplayed;                                    ///< 当前的资源是否调用过`replay`
+@property (nonatomic, readonly) SJPlaybackType playbackType;                        ///< 播放类型
+- (NSString *)stringForSeconds:(NSInteger)secs;                                     ///< 转换时间为字符串, format: 00:00:00
+
 ///
 /// 设置 进入后台时, 是否暂停播放. 默认为 YES.
 ///
@@ -203,26 +226,6 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic) BOOL autoplayWhenSetNewAsset;                    ///< 设置新的资源后, 是否自动调用播放. 默认为 YES
 @property (nonatomic) BOOL resumePlaybackWhenAppDidEnterForeground;    ///< 进入前台时, 是否恢复播放. 默认为 NO
 @property (nonatomic) BOOL resumePlaybackWhenPlayerHasFinishedSeeking; ///< 当`seekToTime:`操作完成后, 是否恢复播放. 默认为 YES
-
-- (void)play;       ///< 使播放
-- (void)pause;      ///< 使暂停
-- (void)refresh;    ///< 刷新当前资源, 将重新初始化当前的资源, 适合播放失败时调用
-- (void)replay;     ///< 重播, 适合播放完毕后调用进行重播
-- (void)stop;       ///< 使停止, 请注意: 当前资源将会被清空, 如需重播, 请重新设置新资源
-
-@property (nonatomic, getter=isMuted) BOOL muted;                                   ///< 禁音
-@property (nonatomic) float playerVolume;                                           ///< 设置播放声音
-@property (nonatomic) float rate;                                                   ///< 设置播放速率
-
-@property (nonatomic, readonly) NSTimeInterval currentTime;                         ///< 当前播放到的时间
-@property (nonatomic, readonly) NSTimeInterval duration;                            ///< 总时长
-@property (nonatomic, readonly) NSTimeInterval playableDuration;                    ///< 缓冲到的时间
-@property (nonatomic, readonly) NSTimeInterval durationWatched;                     ///< 当前资源已观看的时长
-
-@property (nonatomic, readonly) BOOL isPlayed;                                      ///< 当前的资源是否调用过`play`
-@property (nonatomic, readonly) BOOL isReplayed;                                    ///< 当前的资源是否调用过`replay`
-@property (nonatomic, readonly) SJPlaybackType playbackType;                        ///< 播放类型
-- (NSString *)stringForSeconds:(NSInteger)secs;                                     ///< 转换时间为字符串, format: 00:00:00
 
 ///
 /// 设置 能否调用`play`.
@@ -614,7 +617,7 @@ NS_ASSUME_NONNULL_BEGIN
  Rotate to the specified orientation.
  
  @param orientation     Any value of SJOrientation.
- @param animated        Whether or not animation.
+ @param animated        Pass YES to animate the rotation; otherwise, pass NO.
  */
 - (void)rotate:(SJOrientation)orientation animated:(BOOL)animated;
 
@@ -622,7 +625,7 @@ NS_ASSUME_NONNULL_BEGIN
  Rotate to the specified orientation.
  
  @param orientation     Any value of SJOrientation.
- @param animated        Whether or not animation.
+ @param animated        Pass YES to animate the rotation; otherwise, pass NO.
  @param block           The block invoked when player rotated.
  */
 - (void)rotate:(SJOrientation)orientation animated:(BOOL)animated completion:(void (^ _Nullable)(__kindof SJBaseVideoPlayer *player))block;
@@ -831,6 +834,26 @@ NS_ASSUME_NONNULL_BEGIN
 /// \endcode
 ///
 @property (nonatomic, strong, null_resettable) id<SJBarrageQueueController> barrageQueueController;
+@end
+
+
+#pragma mark - 水印视图
+
+@interface SJBaseVideoPlayer (Watermark)
+
+///
+/// 添加水印视图
+///
+/// \code
+/// #import <SJBaseVideoPlayer/SJWatermarkView.h>
+///
+///     UIImage *watermark = [UIImage imageNamed:@"watermark"];
+///     SJWatermarkView *watermarkView = [SJWatermarkView.alloc initWithImage:watermark];
+///     _player.watermarkView = watermarkView;
+/// \endcode
+///
+@property (nonatomic, strong, nullable) UIView<SJWatermarkView> *watermarkView;
+
 @end
 
 #pragma mark - 已弃用

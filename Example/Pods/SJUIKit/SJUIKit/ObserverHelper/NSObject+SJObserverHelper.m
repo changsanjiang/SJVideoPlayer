@@ -80,9 +80,11 @@ NS_ASSUME_NONNULL_BEGIN
     helper.factor = sub;
     sub.factor = helper;
     
+    __weak typeof(set) _set = set;
     [observer sj_addDeallocCallbackTask:^(id  _Nonnull obj) {
+        if ( _set == nil ) return;
         dispatch_semaphore_wait(lock, DISPATCH_TIME_FOREVER);
-        [set removeObject:hashstr];
+        [_set removeObject:hashstr];
         dispatch_semaphore_signal(lock);
     }];
     

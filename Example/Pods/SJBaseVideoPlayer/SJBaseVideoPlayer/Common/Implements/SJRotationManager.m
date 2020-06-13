@@ -288,17 +288,7 @@ static NSNotificationName const SJRotationManagerTransitioningValueDidChangeNoti
     if (self) {
         _currentOrientation = SJOrientation_Portrait;
         _autorotationSupportedOrientations = SJOrientationMaskAll;
-        dispatch_async(dispatch_get_main_queue(), ^{
-            self->_window = [SJFullscreenModeWindow new];
-            self->_window.fullscreenModeViewController.delegate = self;
-            self->_window.rootViewController.sj_delegate = self;
-            if ( @available(iOS 9.0, *) ) {
-                [self->_window.rootViewController loadViewIfNeeded];
-            }
-            else {
-                [self->_window.rootViewController view];
-            }
-        });
+        [self performSelectorOnMainThread:@selector(_setupWindow) withObject:nil waitUntilDone:YES];
         [self _observeNotifies];
     }
     return self;
@@ -306,6 +296,20 @@ static NSNotificationName const SJRotationManagerTransitioningValueDidChangeNoti
 
 - (void)dealloc {
     [NSNotificationCenter.defaultCenter removeObserver:self];
+}
+
+- (void)_setupWindow {
+    self->_window = [SJFullscreenModeWindow new];
+    self->_window.fullscreenModeViewController.delegate = self;
+    self->_window.rootViewController.sj_delegate = self;
+    self->_window.frame = UIScreen.mainScreen.bounds;
+    if ( @available(iOS 9.0, *) ) {
+        [self->_window.rootViewController loadViewIfNeeded];
+    }
+    else {
+        [self->_window.rootViewController loadView];
+        [self->_window.rootViewController viewDidLoad];
+    }
 }
 
 - (void)_observeNotifies {

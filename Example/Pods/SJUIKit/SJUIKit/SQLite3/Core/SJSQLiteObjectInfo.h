@@ -11,7 +11,6 @@
 NS_ASSUME_NONNULL_BEGIN
 
 @interface SJSQLiteObjectInfo : NSObject
-+ (nullable instancetype)objectInfoWithObject:(id)obj;
 + (nullable instancetype)objectInfoWithObject:(id)obj tableInfo:(SJSQLiteTableInfo *)tableInfo;
 
 @property (nonatomic, strong, readonly) id obj;

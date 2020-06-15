@@ -14,6 +14,7 @@
 #import "MCSDownload.h"
 #import "MCSUtils.h"
 #import "MCSError.h"
+#import "MCSFileManager.h"
 
 @interface MCSHLSTSDataReader ()<MCSDownloadTaskDelegate>
 @property (nonatomic, weak, nullable) MCSHLSResource *resource;
@@ -32,6 +33,8 @@
 @property (nonatomic, strong, nullable) NSFileHandle *writer;
 
 @property (nonatomic) float networkTaskPriority;
+
+@property (nonatomic, strong, nullable) NSURL *URL;
 @end
 
 @implementation MCSHLSTSDataReader
@@ -48,14 +51,17 @@
 }
 
 - (NSString *)description {
-    return [NSString stringWithFormat:@"%@:<%p> { proxyURL: %@\n };", NSStringFromClass(self.class), self, _request.URL];
+    return [NSString stringWithFormat:@"%@:<%p> { URL: %@\n };", NSStringFromClass(self.class), self, _URL];
 }
 
 - (void)prepare {
     if ( _isClosed || _isCalledPrepare )
         return;
     
-    MCSLog(@"%@: <%p>.prepare { proxyURL: %@ };\n", NSStringFromClass(self.class), self, _request.URL);
+    NSString *tsName = [_resource tsNameForTsProxyURL:_request.URL];
+    _URL = [_resource.parser tsURLWithTsName:tsName];
+    
+    MCSLog(@"%@: <%p>.prepare { URL: %@ };\n", NSStringFromClass(self.class), self, _URL);
 
     _isCalledPrepare = YES;
     
@@ -64,12 +70,10 @@
         [self _prepare];
     }
     else {
-        NSString *tsName = [_resource tsNameForTsProxyURL:_request.URL];
-        NSURL *URL = [_resource.parser tsURLWithTsName:tsName];
         
-        MCSLog(@"%@: <%p>.request { URL: %@ };\n", NSStringFromClass(self.class), self, URL);
+        MCSLog(@"%@: <%p>.request { URL: %@ };\n", NSStringFromClass(self.class), self, _URL);
 
-        NSMutableURLRequest *request = [NSMutableURLRequest requestWithURL:URL];
+        NSMutableURLRequest *request = [NSMutableURLRequest requestWithURL:_URL];
         [_request.allHTTPHeaderFields enumerateKeysAndObjectsUsingBlock:^(NSString * _Nonnull key, NSString * _Nonnull obj, BOOL * _Nonnull stop) {
             [request setValue:obj forHTTPHeaderField:key];
         }];
@@ -93,7 +97,7 @@
                 MCSLog(@"%@: <%p>.read { offset: %lu, length: %lu };\n", NSStringFromClass(self.class), self, (unsigned long)_offset, (unsigned long)data.length);
 #ifdef DEBUG
                 if ( _isDone ) {
-                    MCSLog(@"%@: <%p>.done { proxyURL: %@ };\n", NSStringFromClass(self.class), self, _request.URL);
+                    MCSLog(@"%@: <%p>.done { URL: %@ };\n", NSStringFromClass(self.class), self, _URL);
                 }
 #endif
             }
@@ -128,7 +132,7 @@
 - (void)_prepare {
     [_content readWrite_retain];
     NSString *filepath = [_resource filePathOfContent:_content];
-    _availableLength = (NSUInteger)[NSFileManager.defaultManager attributesOfItemAtPath:filepath error:NULL].fileSize;
+    _availableLength = [MCSFileManager fileSizeAtPath:filepath];
     _reader = [NSFileHandle fileHandleForReadingAtPath:filepath];
     _writer = [NSFileHandle fileHandleForWritingAtPath:filepath];
     _response = [MCSResourceResponse.alloc initWithServer:@"localhost" contentType:_resource.tsContentType totalLength:_content.tsTotalLength];

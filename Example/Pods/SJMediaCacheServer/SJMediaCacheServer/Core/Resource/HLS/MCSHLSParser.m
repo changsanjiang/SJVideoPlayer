@@ -139,9 +139,9 @@
     NSString *tsNameFilePath = [MCSFileManager hls_tsNamesFilePathInResource:_resourceName];
     NSString *tsFragmentsFilePath = [MCSFileManager hls_tsFragmentsFilePathInResource:_resourceName];
     // 已解析过, 将直接读取本地
-    if ( [NSFileManager.defaultManager fileExistsAtPath:indexFilePath] &&
-         [NSFileManager.defaultManager fileExistsAtPath:tsNameFilePath] &&
-         [NSFileManager.defaultManager fileExistsAtPath:tsFragmentsFilePath] ) {
+    if ( [MCSFileManager fileExistsAtPath:indexFilePath] &&
+         [MCSFileManager fileExistsAtPath:tsNameFilePath] &&
+         [MCSFileManager fileExistsAtPath:tsFragmentsFilePath] ) {
         [self lock];
         _tsFragments = [NSDictionary dictionaryWithContentsOfFile:tsFragmentsFilePath];
         _tsNames = [NSArray arrayWithContentsOfFile:tsNameFilePath];

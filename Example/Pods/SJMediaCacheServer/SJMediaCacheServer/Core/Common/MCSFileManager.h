@@ -63,4 +63,13 @@ NS_ASSUME_NONNULL_BEGIN
 + (NSUInteger)fileSizeAtPath:(NSString *)path;
 + (NSUInteger)directorySizeAtPath:(NSString *)path;
 @end
+
+@interface MCSFileManager (FileManager)
++ (BOOL)removeItemAtPath:(NSString *)path error:(NSError **)error;
++ (BOOL)fileExistsAtPath:(NSString *)path;
+
++ (BOOL)checkoutResourceWithName:(NSString *)name error:(NSError **)error;
++ (BOOL)removeResourceWithName:(NSString *)name error:(NSError **)error;
++ (BOOL)removeContentWithName:(NSString *)name inResource:(NSString *)resourceName error:(NSError **)error;
+@end
 NS_ASSUME_NONNULL_END

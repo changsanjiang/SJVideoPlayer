@@ -128,5 +128,13 @@ NS_ASSUME_NONNULL_BEGIN
 /// Empties the cache. This method may blocks the calling thread until file delete finished.
 ///
 - (void)removeAllCaches; // 删除全部缓存
+
+/// Removes the cache of the specified URL.
+///
+- (void)removeCacheForURL:(NSURL *)URL; // 删除某个缓存
+
+/// Returns the total cache size (in bytes).
+///
+@property (nonatomic, readonly) NSUInteger cachedSize; // 返回已占用的缓存大小
 @end
 NS_ASSUME_NONNULL_END

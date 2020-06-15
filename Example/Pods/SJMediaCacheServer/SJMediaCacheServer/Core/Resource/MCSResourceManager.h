@@ -49,7 +49,11 @@ FOUNDATION_EXTERN NSString *MCSResourceManagerUserInfoResourceKey;
 
 /// Empties the cache. This method may blocks the calling thread until file delete finished.
 ///
-- (void)removeAllCaches;
+- (void)removeAllResources;
+
+- (void)removeResourceForURL:(NSURL *)URL;
+
+@property (nonatomic, readonly) NSUInteger cachedSizeForResources;
 
 /// Decode the read data.
 ///
@@ -65,6 +69,7 @@ FOUNDATION_EXTERN NSString *MCSResourceManagerUserInfoResourceKey;
 - (void)reader:(id<MCSResourceReader>)reader willReadResource:(MCSResource *)resource;
 - (void)reader:(id<MCSResourceReader>)reader didEndReadResource:(MCSResource *)resource;
 - (void)didWriteDataForResource:(MCSResource *)resource length:(NSUInteger)length;
+- (void)didDeleteDataForResource:(MCSResource *)resource length:(NSUInteger)length;
 @end
 
 NS_ASSUME_NONNULL_END

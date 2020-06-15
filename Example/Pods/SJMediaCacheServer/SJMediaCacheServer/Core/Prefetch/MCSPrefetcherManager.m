@@ -55,10 +55,10 @@
 
 - (void)prefetcher:(id<MCSPrefetcher>)prefetcher didCompleteWithError:(NSError *_Nullable)error {
     if ( _mcs_completionBlock != nil ) {
+        [self _completeOperation];
         dispatch_async(dispatch_get_main_queue(), ^{
             self->_mcs_completionBlock(error);
         });
-        [self _completeOperation];
     }
 }
 

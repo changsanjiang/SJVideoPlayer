@@ -282,10 +282,7 @@ typedef NS_ENUM(NSUInteger, MCSLimit) {
             }
             
             // directory
-            NSString *path = [MCSFileManager getResourcePathWithName:name];
-            if ( ![NSFileManager.defaultManager fileExistsAtPath:path] ) {
-                [NSFileManager.defaultManager createDirectoryAtPath:path withIntermediateDirectories:YES attributes:nil error:NULL];
-            }
+            [MCSFileManager checkoutResourceWithName:name error:NULL];
             
             // contents
             [resource addContents:[MCSFileManager getContentsInResource:name]];
@@ -346,7 +343,14 @@ typedef NS_ENUM(NSUInteger, MCSLimit) {
     [self unlock];
 }
 
-- (void)removeAllCaches {
+- (void)didDeleteDataForResource:(MCSResource *)resource length:(NSUInteger)length {
+    [self lock];
+    _cacheDiskSpace -= length;
+    _freeDiskSpace += length;
+    [self unlock];
+}
+
+- (void)removeAllResources {
     [self lock];
     @try {
         NSArray<MCSVODResource *> *VODResources = [_sqlite3 objectsForClass:MCSVODResource.class conditions:nil orderBy:nil error:NULL];
@@ -359,6 +363,17 @@ typedef NS_ENUM(NSUInteger, MCSLimit) {
     } @finally {
         [self unlock];
     }
+}
+
+- (void)removeResourceForURL:(NSURL *)URL {
+    if ( URL == nil )
+        return;
+    MCSResource *resource = [self resourceWithURL:URL];
+    [self _removeResources:@[resource]];
+}
+
+- (NSUInteger)cachedSizeForResources {
+    return [MCSFileManager rootDirectorySize];
 }
 
 - (void)_removeResourcesForLimit:(NSNumber *)limitValue {
@@ -458,8 +473,7 @@ typedef NS_ENUM(NSUInteger, MCSLimit) {
 
     [resources enumerateObjectsUsingBlock:^(MCSResource * _Nonnull r, NSUInteger idx, BOOL * _Nonnull stop) {
         [NSNotificationCenter.defaultCenter postNotificationName:MCSResourceManagerWillRemoveResourceNotification object:self userInfo:@{ MCSResourceManagerUserInfoResourceKey : r }];
-        NSString *path = [MCSFileManager getResourcePathWithName:r.name];
-        [NSFileManager.defaultManager removeItemAtPath:path error:NULL];
+        [MCSFileManager removeResourceWithName:r.name error:NULL];
         [self.resources removeObjectForKey:r.name];
         [self.sqlite3 removeObjectForClass:r.class primaryKeyValue:@(r.id) error:NULL];
         if ( r.log != nil ) [self.sqlite3 removeObjectForClass:r.log.class primaryKeyValue:@(r.log.id) error:NULL];

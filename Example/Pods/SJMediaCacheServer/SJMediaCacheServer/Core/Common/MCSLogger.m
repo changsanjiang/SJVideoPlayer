@@ -22,11 +22,13 @@
 - (void)addLog:(NSString *)format, ... {
     if ( format == nil )
         return;
-    va_list ap;
-    va_start(ap, format);
-    NSString *string = [NSString.alloc initWithFormat:format arguments:ap];
-    va_end(ap);
+
     if ( _enabledConsoleLog ) {
+        va_list ap;
+        va_start(ap, format);
+        NSString *string = [NSString.alloc initWithFormat:format arguments:ap];
+        va_end(ap);
+        
         printf("%s", string.UTF8String);
     }
 }

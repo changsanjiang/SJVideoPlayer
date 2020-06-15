@@ -11,6 +11,7 @@
 #import "MCSResourceFileDataReader.h"
 #import "MCSResourceResponse.h"
 #import "MCSHLSResource.h"
+#import "MCSFileManager.h"
 
 @interface MCSHLSIndexDataReader ()<MCSHLSParserDelegate, MCSResourceDataReaderDelegate>
 @property (nonatomic, strong) NSURL *URL;
@@ -81,7 +82,7 @@
     }
     
     NSString *indexFilePath = _parser.indexFilePath;
-    NSUInteger fileSize = (NSUInteger)[NSFileManager.defaultManager attributesOfItemAtPath:indexFilePath error:NULL].fileSize;
+    NSUInteger fileSize = [MCSFileManager fileSizeAtPath:indexFilePath];
     NSRange range = NSMakeRange(0, fileSize);
     _reader = [MCSResourceFileDataReader.alloc initWithRange:range path:indexFilePath readRange:range];
     _reader.delegate = self;
@@ -102,7 +103,7 @@
 
 - (void)readerPrepareDidFinish:(id<MCSResourceDataReader>)reader {
     NSString *indexFilePath = _parser.indexFilePath;
-    NSUInteger length = (NSUInteger)[NSFileManager.defaultManager attributesOfItemAtPath:indexFilePath error:NULL].fileSize;
+    NSUInteger length = [MCSFileManager fileSizeAtPath:indexFilePath];
     _response = [MCSResourceResponse.alloc initWithServer:@"localhost" contentType:@"application/x-mpegurl" totalLength:length];
     [_delegate readerPrepareDidFinish:self];
 }

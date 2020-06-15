@@ -153,6 +153,15 @@
 }
 
 - (void)removeAllCaches {
-    [MCSResourceManager.shared removeAllCaches];
+    [MCSResourceManager.shared removeAllResources];
 }
+
+- (void)removeCacheForURL:(NSURL *)URL {
+    [MCSResourceManager.shared removeResourceForURL:URL];
+}
+
+- (NSUInteger)cachedSize {
+    return [MCSResourceManager.shared cachedSizeForResources];
+}
+
 @end

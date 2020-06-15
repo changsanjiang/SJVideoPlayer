@@ -194,10 +194,7 @@
         }
         
         for ( MCSResourcePartialContent *content in deleteContents ) {
-            NSString *path = [self filePathOfContent:content];
-            if ( [NSFileManager.defaultManager removeItemAtPath:path error:NULL] ) {
-                [self removeContent:content];
-            }
+            [self removeContent:content];
         }
         
         [self _contentsDidChange];

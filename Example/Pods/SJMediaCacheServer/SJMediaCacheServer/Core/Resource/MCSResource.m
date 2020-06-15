@@ -145,6 +145,7 @@
 - (void)removeContent:(MCSResourcePartialContent *)content {
     [self lock];
     [_m removeObject:content];
+    [MCSFileManager removeContentWithName:content.name inResource:_name error:NULL];
     [self unlock];
 }
 

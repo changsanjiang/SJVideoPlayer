@@ -18,8 +18,8 @@ static NSString *HLSPrefix = @"hls";
     static dispatch_once_t onceToken;
     dispatch_once(&onceToken, ^{
         rootDirectoryPath = [NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES).lastObject stringByAppendingPathComponent:@"com.SJMediaCacheServer.cache"];
-        if ( ![[NSFileManager defaultManager] fileExistsAtPath:rootDirectoryPath] ) {
-            [[NSFileManager defaultManager] createDirectoryAtPath:rootDirectoryPath withIntermediateDirectories:YES attributes:nil error:NULL];
+        if ( ![NSFileManager.defaultManager fileExistsAtPath:rootDirectoryPath] ) {
+            [NSFileManager.defaultManager createDirectoryAtPath:rootDirectoryPath withIntermediateDirectories:YES attributes:nil error:NULL];
             const char *filePath = [rootDirectoryPath fileSystemRepresentation];
             const char *attrName = "com.apple.MobileBackup";
             u_int8_t attrValue = 1;
@@ -200,5 +200,33 @@ static NSString *HLSPrefix = @"hls";
 
 + (NSUInteger)fileSizeAtPath:(NSString *)path {
     return (NSUInteger)[NSFileManager.defaultManager attributesOfItemAtPath:path error:NULL].fileSize;
+}
+@end
+
+@implementation MCSFileManager (FileManager)
++ (BOOL)removeItemAtPath:(NSString *)path error:(NSError *__autoreleasing  _Nullable *)error {
+    return [NSFileManager.defaultManager removeItemAtPath:path error:error];
+}
+
++ (BOOL)fileExistsAtPath:(NSString *)path {
+    return [NSFileManager.defaultManager fileExistsAtPath:path];
+}
+
++ (BOOL)checkoutResourceWithName:(NSString *)name error:(NSError **)error {
+    NSString *path = [MCSFileManager getResourcePathWithName:name];
+    if ( ![MCSFileManager fileExistsAtPath:path] ) {
+        return [NSFileManager.defaultManager createDirectoryAtPath:path withIntermediateDirectories:YES attributes:nil error:error];
+    }
+    return YES;
+}
+
++ (BOOL)removeResourceWithName:(NSString *)name error:(NSError **)error {
+    NSString *path = [MCSFileManager getResourcePathWithName:name];
+    return [NSFileManager.defaultManager removeItemAtPath:path error:NULL];
+}
+
++ (BOOL)removeContentWithName:(NSString *)name inResource:(NSString *)resourceName error:(NSError **)error {
+    NSString *path = [MCSFileManager getFilePathWithName:name inResource:resourceName];
+    return [self removeItemAtPath:path error:error];
 }
 @end

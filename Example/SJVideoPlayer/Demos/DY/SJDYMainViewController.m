@@ -18,6 +18,11 @@
 #import "SJDYPlaybackListViewController.h"
 #import "SJDYUserHomepageViewController.h"
 
+typedef enum : NSUInteger {
+    DYApplicationStateBecomeActive,
+    DYApplicationStateResignActive,
+} DYApplicationState;
+
 @interface SJDYMainViewController ()<SJPageViewControllerDelegate, SJPageViewControllerDataSource, SJPageMenuBarDelegate, UIGestureRecognizerDelegate, SJDYPlaybackListViewControllerDelegate>
 @property (nonatomic, strong, nullable) SJPageViewController *pageViewController;
 @property (nonatomic, strong, nullable) SJPageMenuBar *pageMenuBar;
@@ -25,6 +30,8 @@
 
 @property (nonatomic, strong, nullable) SJDYUserHomepageViewController *homepageViewController;
 @property (nonatomic) CGFloat shift;
+
+@property (nonatomic) DYApplicationState applicationState;
 @end
 
 @implementation SJDYMainViewController
@@ -33,6 +40,15 @@
     [super viewDidLoad];
     [self _setupViews];
     [self _setupGesture];
+    [self _setupObservers];
+}
+
+- (void)dealloc {
+#ifdef DEBUG
+    NSLog(@"%d - -[%@ %s]", (int)__LINE__, NSStringFromClass([self class]), sel_getName(_cmd));
+#endif
+    
+    [NSNotificationCenter.defaultCenter removeObserver:self];
 }
 
 - (void)_handlePan:(UIPanGestureRecognizer *)pan {
@@ -50,6 +66,7 @@
             _homepageViewController.view.transform = CGAffineTransformIdentity;
             _pageViewController.view.transform = CGAffineTransformIdentity;
             [self.view addSubview:_homepageViewController.view];
+            [self playOrPause];
         }
             break;
         case UIGestureRecognizerStateChanged: {
@@ -68,6 +85,7 @@
                 self.homepageViewController.view.transform = CGAffineTransformIdentity;
                 [self.homepageViewController.view removeFromSuperview];
                 if ( push ) [self.navigationController pushViewController:self.homepageViewController animated:NO];
+                [self playOrPause];
             }];
         }
             break;
@@ -103,6 +121,7 @@
     _pageViewController.view.backgroundColor = UIColor.blackColor;
     _pageViewController.dataSource = self;
     _pageViewController.delegate = self;
+    _pageViewController.bounces = YES;
     [self addChildViewController:_pageViewController];
     [self.view addSubview:_pageViewController.view];
     [_pageViewController.view mas_makeConstraints:^(MASConstraintMaker *make) {
@@ -151,6 +170,21 @@
     [collectionView addGestureRecognizer:_panGesture];
 }
 
+- (void)_setupObservers {
+    [NSNotificationCenter.defaultCenter addObserver:self selector:@selector(applicationDidBecomeActive) name:UIApplicationDidBecomeActiveNotification object:nil];
+    [NSNotificationCenter.defaultCenter addObserver:self selector:@selector(applicationWillResignActive) name:UIApplicationWillResignActiveNotification object:nil];
+}
+
+- (void)applicationDidBecomeActive {
+    _applicationState = DYApplicationStateBecomeActive;
+    [self playOrPause];
+}
+
+- (void)applicationWillResignActive {
+    _applicationState = DYApplicationStateResignActive;
+    [self playOrPause];
+}
+
 #pragma mark - UIGestureRecognizerDelegate
 
 // 是否允许左滑弹出用户个人主页
@@ -166,17 +200,7 @@
 #pragma mark - SJDYPlaybackListViewControllerDelegate
 
 - (BOOL)canPerformPlayForListViewController:(SJDYPlaybackListViewController *)vc {
-    // 如果 pageViewController 处于拖拽中, 则禁止播放
-    switch ( _pageViewController.panGestureRecognizer.state ) {
-        case UIGestureRecognizerStateBegan:
-        case UIGestureRecognizerStateChanged:
-            return NO;
-        case UIGestureRecognizerStatePossible:
-        case UIGestureRecognizerStateEnded:
-        case UIGestureRecognizerStateCancelled:
-        case UIGestureRecognizerStateFailed:
-            return YES;
-    }
+    return !_pageViewController.isDragging && !_pageViewController.isDecelerating;
 }
 
 #pragma mark - SJPageMenuBarDelegate, SJPageViewControllerDataSource, SJPageViewControllerDelegate
@@ -185,7 +209,7 @@
     if ( ![_pageViewController isViewControllerVisibleAtIndex:index] ) {
         if ( _pageViewController.focusedIndex != NSNotFound ) {
             dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(0.1 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
-                [(SJDYPlaybackListViewController *)self.pageViewController.focusedViewController playIfNeeded];
+                [self playOrPause];
             });
         }
         [_pageViewController setViewControllerAtIndex:index];
@@ -206,16 +230,42 @@
     [_pageMenuBar scrollInRange:range distanceProgress:progress];
 }
 
-- (void)pageViewController:(SJPageViewController *)pageViewController willDisplayViewController:(SJDYPlaybackListViewController *)viewController atIndex:(NSInteger)index {
-    for ( SJDYPlaybackListViewController *vc in pageViewController.cachedViewControllers ) {
+#pragma mark -
+
+- (void)pageViewControllerWillBeginDragging:(SJPageViewController *)pageViewController {
+    [self playOrPause];
+}
+
+- (void)pageViewControllerDidEndDragging:(SJPageViewController *)pageViewController willDecelerate:(BOOL)decelerate {
+    if ( !decelerate ) [self playOrPause];
+}
+
+- (void)pageViewControllerDidEndDecelerating:(SJPageViewController *)pageViewController {
+    [self playOrPause];
+}
+
+- (void)pageViewControllerDidScroll:(SJPageViewController *)pageViewController {
+    [self playOrPause];
+}
+
+#pragma mark -
+
+- (void)playOrPause {
+    _applicationState == DYApplicationStateResignActive ||
+    _pageViewController.isDragging ||
+    _pageViewController.isDecelerating ||
+    _panGesture.state == UIGestureRecognizerStateBegan ||
+    _panGesture.state == UIGestureRecognizerStateChanged ||
+    self.navigationController.topViewController != self ? [self pause] : [self play];
+}
+
+- (void)pause {
+    for ( SJDYPlaybackListViewController *vc in _pageViewController.cachedViewControllers ) {
         [vc pause];
     }
 }
 
-- (void)pageViewController:(SJPageViewController *)pageViewController didEndDisplayingViewController:(SJDYPlaybackListViewController *)viewController atIndex:(NSInteger)index {
-    [viewController pause];
-
-    SJDYPlaybackListViewController *vc = pageViewController.focusedViewController;
-    [vc playIfNeeded];
+- (void)play {
+    [(SJDYPlaybackListViewController *)_pageViewController.focusedViewController playIfNeeded];
 }
 @end

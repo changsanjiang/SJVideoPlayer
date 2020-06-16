@@ -2,7 +2,7 @@
 //  SJPlaybackListControllerObserver.h
 //  SJPlaybackListController
 //
-//  Created by 畅三江 on 2019/1/23.
+//  Created by BlueDancer on 2019/1/23.
 //
 
 #import <Foundation/Foundation.h>

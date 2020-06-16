@@ -1,6 +1,0 @@
-framework module Pods_SJVideoPlayer_Example {
-  umbrella header "Pods-SJVideoPlayer_Example-umbrella.h"
-
-  export *
-  module * { export * }
-}

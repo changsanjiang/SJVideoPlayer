@@ -46,10 +46,10 @@
             [conds appendFormat:@"!= '%@'", sj_sqlite3_obj_filter_obj_value(value)];
             break;
         case SJSQLite3RelationLessThan:
-            [conds appendFormat:@"> '%@'", sj_sqlite3_obj_filter_obj_value(value)];
+            [conds appendFormat:@"< '%@'", sj_sqlite3_obj_filter_obj_value(value)];
             break;
         case SJSQLite3RelationGreaterThan:
-            [conds appendFormat:@"< '%@'", sj_sqlite3_obj_filter_obj_value(value)];
+            [conds appendFormat:@"> '%@'", sj_sqlite3_obj_filter_obj_value(value)];
             break;
     }
     return [[SJSQLite3Condition alloc] initWithCondition:conds];
@@ -68,9 +68,39 @@
 /// \endcode
 ///
 + (instancetype)conditionWithColumn:(NSString *)column in:(NSArray *)values {
+    if ( values.count == 0 ) {
+        return [SJSQLite3Condition.alloc initWithCondition:@""];
+    }
 //    WHERE prod_price IN (3.49, 5);
     NSMutableString *conds = NSMutableString.new;
     [conds appendFormat:@"\"%@\" IN (", column];
+    id last = values.lastObject;
+    for ( id value in values ) {
+        [conds appendFormat:@"'%@'%@", sj_sqlite3_obj_filter_obj_value(value), last!=value?@",":@""];
+    }
+    [conds appendString:@")"];
+    return [[SJSQLite3Condition alloc] initWithCondition:conds];
+}
+
+/// IN操作符 指定一组值, 匹配不在其中的数据
+///
+/// @param  column          指定比较的列名.
+///
+/// @param  values          指定一组值, 匹配其中的任意值.
+///
+/// \code
+/// // 例如查询`price = 12.0 或 price = 9.0`的商品, 创建条件如下:
+/// SJSQLite3Condition *cond =[SJSQLite3Condition conditionWithColumn:@"price" in:@[@(12.0), @(9.0)]];
+/// NSArray *results = [SJSQLite3.shared objectsForClass:Product.class conditions:@[cond] orderBy:nil error:NULL];
+/// \endcode
+///
++ (instancetype)conditionWithColumn:(NSString *)column notIn:(NSArray *)values {
+    if ( values.count == 0 ) {
+        return [SJSQLite3Condition.alloc initWithCondition:@""];
+    }
+    //    WHERE prod_price IN (3.49, 5);
+    NSMutableString *conds = NSMutableString.new;
+    [conds appendFormat:@"\"%@\" NOT IN (", column];
     id last = values.lastObject;
     for ( id value in values ) {
         [conds appendFormat:@"'%@'%@", sj_sqlite3_obj_filter_obj_value(value), last!=value?@",":@""];

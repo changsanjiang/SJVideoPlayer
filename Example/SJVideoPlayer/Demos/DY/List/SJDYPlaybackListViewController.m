@@ -60,7 +60,7 @@
 
 // 暂停播放. 如果该方法调用之前用户已暂停播放了, 当执行此操作时不会影响用户暂停态
 - (void)pause {
-    [_player pause];
+    if ( !_player.isPaused ) [_player pause];
 }
 
 #pragma mark -
@@ -105,20 +105,13 @@
 }
 
 #pragma mark -
-
-- (void)dealloc {
-    [NSNotificationCenter.defaultCenter removeObserver:self];
-}
-
+ 
 - (void)_setupViews {
     self.edgesForExtendedLayout = UIRectEdgeNone;
     self.view.backgroundColor = UIColor.blackColor;
     self.view.clipsToBounds = YES;
     _list = NSMutableArray.alloc.init;
     _dataProvider = SJDYDataProvider.alloc.init;
-
-    [NSNotificationCenter.defaultCenter addObserver:self selector:@selector(playIfNeeded) name:UIApplicationDidBecomeActiveNotification object:nil];
-    [NSNotificationCenter.defaultCenter addObserver:self selector:@selector(pause) name:UIApplicationWillResignActiveNotification object:nil];
 }
 
 - (void)_setupVideoPlayer {

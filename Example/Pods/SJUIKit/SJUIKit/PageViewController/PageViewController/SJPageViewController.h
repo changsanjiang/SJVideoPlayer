@@ -57,6 +57,10 @@ UIKIT_EXTERN SJPageViewControllerOptionsKey const SJPageViewControllerOptionInte
 @property (nonatomic, readonly) CGFloat heightForHeaderPinToVisibleBounds;
 @property (nonatomic, readonly) CGFloat heightForHeaderBounds;
 @property (nonatomic, readonly) UIPanGestureRecognizer *panGestureRecognizer;
+
+@property (nonatomic, readonly) CGPoint contentOffset;
+@property (nonatomic, readonly, getter=isDragging) BOOL dragging;
+@property (nonatomic, readonly, getter=isDecelerating) BOOL decelerating;
 @end
 
 
@@ -91,6 +95,14 @@ UIKIT_EXTERN SJPageViewControllerOptionsKey const SJPageViewControllerOptionInte
 - (void)pageViewController:(SJPageViewController *)pageViewController focusedIndexDidChange:(NSUInteger)index;
 - (void)pageViewController:(SJPageViewController *)pageViewController willDisplayViewController:(nullable __kindof UIViewController *)viewController atIndex:(NSInteger)index;
 - (void)pageViewController:(SJPageViewController *)pageViewController didEndDisplayingViewController:(nullable __kindof UIViewController *)viewController atIndex:(NSInteger)index;
+
+- (void)pageViewControllerDidScroll:(SJPageViewController *)pageViewController;
+
+- (void)pageViewControllerWillBeginDragging:(SJPageViewController *)pageViewController;
+- (void)pageViewControllerDidEndDragging:(SJPageViewController *)pageViewController willDecelerate:(BOOL)decelerate;
+
+- (void)pageViewControllerWillBeginDecelerating:(SJPageViewController *)pageViewController;
+- (void)pageViewControllerDidEndDecelerating:(SJPageViewController *)pageViewController;
 @end
 NS_ASSUME_NONNULL_END
 

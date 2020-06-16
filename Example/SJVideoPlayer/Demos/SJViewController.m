@@ -12,6 +12,8 @@
 #import "LWZTableSectionShrinker.h"
 #import <SJVideoPlayer/SJVideoPlayer.h>
 
+#import <SJUIKit/SJPageViewController.h>
+
 @interface Item : NSObject
 - (instancetype)initWithTitle:(NSString *)title subTitle:(NSString *)subTitle path:(NSString *)path;
 @property (nonatomic, strong, readonly) NSString *title;
@@ -25,6 +27,9 @@
     _title = title;
     _subTitle = subTitle;
     _path = path;
+    
+    
+    
     return self;
 }
 @end

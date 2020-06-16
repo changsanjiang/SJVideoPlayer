@@ -26,6 +26,7 @@ typedef enum : NSInteger {
 + (instancetype)conditionWithColumn:(NSString *)column relatedBy:(SJSQLite3Relation)relation value:(id)value;
 + (instancetype)conditionWithColumn:(NSString *)column value:(id)value; ///< `relation == SJSQLite3RelationEqual`
 + (instancetype)conditionWithColumn:(NSString *)column in:(NSArray *)values;
++ (instancetype)conditionWithColumn:(NSString *)column notIn:(NSArray *)values;
 + (instancetype)conditionWithColumn:(NSString *)column between:(id)start and:(id)end;
 + (instancetype)conditionWithColumn:(NSString *)column like:(NSString *)like;
 + (instancetype)conditionWithIsNullColumn:(NSString *)column;

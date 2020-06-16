@@ -37,6 +37,12 @@ static NSString *const kReuseIdentifierForCell = @"1";
     BOOL _isResponse_heightForHeaderBounds;
     BOOL _isResponse_modeForHeader;
     BOOL _isResponse_viewForHeader;
+     
+    BOOL _isResponse_willBeginDragging;
+    BOOL _isResponse_didEndDragging;
+    BOOL _isResponse_didScroll;
+    BOOL _isResponse_willBeginDecelerating;
+    BOOL _isResponse_didEndDecelerating;
 }
 @property (nonatomic, getter=isDataSourceLoaded) BOOL dataSourceLoaded;
 @property (nonatomic, strong, readonly) NSMutableDictionary<NSNumber *, __kindof UIViewController *> *viewControllers;
@@ -147,6 +153,18 @@ static NSString *const kReuseIdentifierForCell = @"1";
     return self.collectionView.panGestureRecognizer;
 }
 
+- (CGPoint)contentOffset {
+    return _collectionView.contentOffset;
+}
+
+- (BOOL)isDragging {
+    return _collectionView.isDragging;
+}
+
+- (BOOL)isDecelerating {
+    return _collectionView.isDecelerating;
+}
+
 #pragma mark -
 
 - (void)setFocusedIndex:(NSInteger)focusedIndex {
@@ -183,11 +201,16 @@ static NSString *const kReuseIdentifierForCell = @"1";
         _isResponse_didEndDisplayingViewController = [delegate respondsToSelector:@selector(pageViewController:didEndDisplayingViewController:atIndex:)];
         _isResponse_didScrollInRange = [delegate respondsToSelector:@selector(pageViewController:didScrollInRange:distanceProgress:)];
         _isResponse_headerViewVisibleRectDidChange = [delegate respondsToSelector:@selector(pageViewController:headerViewVisibleRectDidChange:)];
+        _isResponse_didScroll = [delegate respondsToSelector:@selector(pageViewControllerDidScroll:)];
+        _isResponse_willBeginDragging = [delegate respondsToSelector:@selector(pageViewControllerWillBeginDragging:)];
+        _isResponse_didEndDragging = [delegate respondsToSelector:@selector(pageViewControllerDidEndDragging:willDecelerate:)];
+        _isResponse_willBeginDecelerating = [delegate respondsToSelector:@selector(pageViewControllerWillBeginDecelerating:)];
+        _isResponse_didEndDecelerating = [delegate respondsToSelector:@selector(pageViewControllerDidEndDecelerating:)];
     }
 }
 
 #pragma mark - SJPageCollectionView
-
+ 
 // SJPageCollectionView
 - (void)scrollViewDidScroll:(UIScrollView *)scrollView {
     if ( scrollView.isDragging || scrollView.isDecelerating ) {
@@ -195,16 +218,37 @@ static NSString *const kReuseIdentifierForCell = @"1";
         [self _callScrollInRange];
     }
     [self _insertHeaderViewForRootViewController];
+    
+    if ( _isResponse_didScroll )
+        [_delegate pageViewControllerDidScroll:self];
+}
+
+// SJPageCollectionView
+- (void)scrollViewWillBeginDragging:(UIScrollView *)scrollView {
+    if ( _isResponse_willBeginDragging )
+        [_delegate pageViewControllerWillBeginDragging:self];
 }
 
 // SJPageCollectionView
 - (void)scrollViewDidEndDragging:(UIScrollView *)scrollView willDecelerate:(BOOL)decelerate {
-    if ( !decelerate ) [self scrollViewDidEndDecelerating:scrollView];
+    if ( !decelerate ) [self _insertHeaderViewForFocusedViewController];
+    
+    if ( _isResponse_didEndDragging )
+        [_delegate pageViewControllerDidEndDragging:self willDecelerate:decelerate];
+}
+
+// SJPageCollectionView
+- (void)scrollViewWillBeginDecelerating:(UIScrollView *)scrollView {
+    if ( _isResponse_willBeginDecelerating )
+        [_delegate pageViewControllerWillBeginDecelerating:self];
 }
 
 // SJPageCollectionView
 - (void)scrollViewDidEndDecelerating:(UIScrollView *)scrollView {
     [self _insertHeaderViewForFocusedViewController];
+    
+    if ( _isResponse_didEndDecelerating )
+        [_delegate pageViewControllerDidEndDecelerating:self];
 }
  
 #pragma mark - child scroll view

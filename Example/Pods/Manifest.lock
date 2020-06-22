@@ -9,9 +9,9 @@ PODS:
   - Masonry (1.1.0)
   - MJRefresh (3.4.3)
   - Reachability (3.2)
-  - SDWebImage (5.8.0):
-    - SDWebImage/Core (= 5.8.0)
-  - SDWebImage/Core (5.8.0)
+  - SDWebImage (5.8.1):
+    - SDWebImage/Core (= 5.8.1)
+  - SDWebImage/Core (5.8.1)
   - SJBaseVideoPlayer (3.3.3):
     - Masonry
     - Reachability
@@ -45,11 +45,11 @@ PODS:
     - SJUIKit/Queues
     - SJUIKit/SQLite3
   - SJFullscreenPopGesture/ObjC (1.5.3)
-  - SJMediaCacheServer (1.0.1):
+  - SJMediaCacheServer (1.0.2):
     - CocoaHTTPServer
-    - SJMediaCacheServer/Core (= 1.0.1)
+    - SJMediaCacheServer/Core (= 1.0.2)
     - SJUIKit/SQLite3
-  - SJMediaCacheServer/Core (1.0.1):
+  - SJMediaCacheServer/Core (1.0.2):
     - CocoaHTTPServer
     - SJUIKit/SQLite3
   - SJPlaybackListController (0.0.5):
@@ -176,10 +176,10 @@ SPEC CHECKSUMS:
   Masonry: 678fab65091a9290e40e2832a55e7ab731aad201
   MJRefresh: 53e3e3219f204425ee6d3e62e8733d3295944cd6
   Reachability: 33e18b67625424e47b6cde6d202dce689ad7af96
-  SDWebImage: 84000f962cbfa70c07f19d2234cbfcf5d779b5dc
+  SDWebImage: e3eae2eda88578db0685a0c88597fdadd9433f05
   SJBaseVideoPlayer: 259d13f93937c7f92e888ba7107c3d47308ee37f
   SJFullscreenPopGesture: d4994917bc900e79cd686970866834b4c5883565
-  SJMediaCacheServer: 3d55a05a566401c5b94322f11ec73af152633ee1
+  SJMediaCacheServer: a7409fefa02087de9d020ca5d482133e857a7239
   SJPlaybackListController: e135c789fcd63d63a62d5e2e2965ab1e6d52a2bd
   SJRouter: a866e7884fc9219bed523be0a0318c3a84e85022
   SJUIKit: 351c92c2e667dec319d66d102d42b3c45b7288d0

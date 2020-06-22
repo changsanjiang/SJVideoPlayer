@@ -164,7 +164,7 @@ static NSString *HLSPrefix = @"hls";
 // format: // VOD前缀_偏移量_序号_扩展名
 // VOD
 + (NSUInteger)offsetOfContent:(NSString *)name {
-    return (NSUInteger)[[name componentsSeparatedByString:name][1] longLongValue];
+    return (NSUInteger)[[name componentsSeparatedByString:@"_"][1] longLongValue];
 }
 
 // format: HLS前缀_ts长度_序号_ts文件名

@@ -11,7 +11,7 @@ NS_ASSUME_NONNULL_BEGIN
 NSTimeInterval const CommonAnimaDuration = 0.4;
 
 #if 0
-(UIKIT_EXTERN\s)(SJVideoPlayerLocalizedString\sconst\s)([^;]
+(UIKIT_EXTERN\s)(SJVideoPlayerLocalizedString\sconst\s)([^;])
 $2$3 = @"$3"
 #endif
 

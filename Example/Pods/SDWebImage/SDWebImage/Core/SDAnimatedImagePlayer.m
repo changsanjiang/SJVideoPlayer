@@ -209,6 +209,7 @@
     }
     self.currentFrameIndex = index;
     self.currentLoopCount = loopCount;
+    self.currentFrame = [self.animatedProvider animatedImageFrameAtIndex:index];
     [self handleFrameChange];
 }
 
@@ -284,7 +285,7 @@
             return;
         }
         
-        // Otherwise, we shoudle be ready to display next frame
+        // Otherwise, we should be ready to display next frame
         self.needsDisplayWhenImageBecomesAvailable = YES;
         self.currentFrameIndex = nextFrameIndex;
         self.currentTime -= currentDuration;
@@ -299,7 +300,7 @@
         if (nextFrameIndex == 0) {
             // Update the loop count
             self.currentLoopCount++;
-            [self handleLoopChnage];
+            [self handleLoopChange];
             
             // if reached the max loop count, stop animating, 0 means loop indefinitely
             NSUInteger maxLoopCount = self.totalLoopCount;
@@ -352,7 +353,7 @@
     }
 }
 
-- (void)handleLoopChnage {
+- (void)handleLoopChange {
     if (self.animationLoopHandler) {
         self.animationLoopHandler(self.currentLoopCount);
     }

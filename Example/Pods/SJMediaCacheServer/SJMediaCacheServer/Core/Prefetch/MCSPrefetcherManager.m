@@ -95,15 +95,13 @@
 - (void)cancel {
     @synchronized (self) {
         _isCancelled = YES;
-        _URL = nil;
-        [_prefetcher close];
+        if ( _isExecuting ) [self _completeOperation];
     }
 }
 
 - (void)finished {
     @synchronized (self) {
         if ( _isExecuting ) [self _completeOperation];
-        _URL = nil;
     }
 }
 

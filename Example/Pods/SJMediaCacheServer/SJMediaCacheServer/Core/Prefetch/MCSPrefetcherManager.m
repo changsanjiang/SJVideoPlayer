@@ -96,6 +96,7 @@
     @synchronized (self) {
         _isCancelled = YES;
         _URL = nil;
+        [_prefetcher close];
     }
 }
 

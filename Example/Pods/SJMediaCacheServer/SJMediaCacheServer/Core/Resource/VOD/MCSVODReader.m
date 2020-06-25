@@ -12,14 +12,14 @@
 #import "MCSResourceManager.h"
 #import "MCSFileManager.h"
 #import "MCSResourceFileDataReader.h"
-#import "MCSResourceNetworkDataReader.h"
-#import "MCSUtils.h"
 #import "MCSError.h"
 #import "MCSLogger.h"
 #import "MCSVODResource.h"
 #import "MCSResourceSubclass.h"
+#import "MCSVODMetaDataReader.h"
+#import "MCSVODNetworkDataReader.h"
 
-@interface MCSVODReader ()<NSLocking, MCSResourceDataReaderDelegate> {
+@interface MCSVODReader ()<NSLocking, MCSResourceDataReaderDelegate, MCSVODMetaDataReaderDelegate> {
     dispatch_semaphore_t _semaphore;
 }
 
@@ -29,13 +29,14 @@
 
 @property (nonatomic) NSInteger currentIndex;
 @property (nonatomic, strong, readonly, nullable) id<MCSResourceDataReader> currentReader;
-@property (nonatomic, strong, nullable) MCSResourceNetworkDataReader *tmpReader; // 用于获取资源contentLength, contentType等信息
 @property (nonatomic) NSUInteger offset;
 
 @property (nonatomic, weak, nullable) MCSVODResource *resource;
 @property (nonatomic, strong) NSURLRequest *request;
 @property (nonatomic, copy, nullable) NSArray<id<MCSResourceDataReader>> *readers;
 @property (nonatomic, strong, nullable) id<MCSResourceResponse> response;
+
+@property (nonatomic, strong, nullable) MCSVODMetaDataReader *metaDataReader;
 
 @property (nonatomic, strong) NSMutableArray<MCSResourcePartialContent *> *readWriteContents;
 @end
@@ -58,7 +59,8 @@
         [_resource readWrite_retain];
         [MCSResourceManager.shared reader:self willReadResource:_resource];
         
-        [NSNotificationCenter.defaultCenter addObserver:self selector:@selector(willRemoveResource:) name:MCSResourceManagerWillRemoveResourceNotification object:nil];
+        [NSNotificationCenter.defaultCenter addObserver:self selector:@selector(didRemoveResource:) name:MCSResourceManagerDidRemoveResourceNotification object:nil];
+        [NSNotificationCenter.defaultCenter addObserver:self selector:@selector(userCancelledReading:) name:MCSResourceManagerUserCancelledReadingNotification object:nil];
     }
     return self;
 }
@@ -75,14 +77,21 @@
     return [NSString stringWithFormat:@"%@:<%p> { range: %@\n };", NSStringFromClass(self.class), self, NSStringFromRange(_request.mcs_range)];
 }
 
-- (void)willRemoveResource:(NSNotification *)note {
+- (void)didRemoveResource:(NSNotification *)note {
     MCSResource *resource = note.userInfo[MCSResourceManagerUserInfoResourceKey];
     if ( resource == _resource && !self.isClosed )  {
         [self lock];
-        [self _close];
+        [self _onError:[NSError mcs_removedResource:self.request.URL]];
         [self unlock];
-        
-        [_delegate reader:self anErrorOccurred:[NSError mcs_errorForRemovedResource:self.request.URL]];
+    }
+}
+
+- (void)userCancelledReading:(NSNotification *)note {
+    MCSResource *resource = note.userInfo[MCSResourceManagerUserInfoResourceKey];
+    if ( resource == _resource && !self.isClosed )  {
+        [self lock];
+        [self _onError:[NSError mcs_userCancelledError:_request.URL]];
+        [self unlock];
     }
 }
 
@@ -92,21 +101,16 @@
         if ( _isClosed || _isCalledPrepare )
             return;
         
-        MCSLog(@"%@: <%p>.prepare { range: %@ };\n", NSStringFromClass(self.class), self, NSStringFromRange(_request.mcs_range));
+        MCSLog(@"%@: <%p>.prepare { name: %@, range: %@ };\n", NSStringFromClass(self.class), self, _resource.name, NSStringFromRange(_request.mcs_range));
         
         _isCalledPrepare = YES;
         
-        if ( _resource.totalLength == 0 || _resource.contentType.length == 0 ) {
-            _tmpReader = [MCSResourceNetworkDataReader.alloc initWithURL:_request.URL requestHeaders:_request.mcs_headers range:NSMakeRange(0, 2)  networkTaskPriority:_networkTaskPriority];
-            _tmpReader.delegate = self;
-            
-            MCSLog(@"%@: <%p>.createTmpReader: <%p>;\n", NSStringFromClass(self.class), self, _tmpReader);
-
-            [_tmpReader prepare];
+        if ( _resource.totalLength == 0 || _resource.pathExtension.length == 0 ) {
+            _metaDataReader = [MCSVODMetaDataReader.alloc initWithRequest:_request delegate:self delegateQueue:_resource.readerOperationQueue];
+            return;
         }
-        else {
-            [self _prepare];
-        }
+        
+        [self _prepare];
     } @catch (__unused NSException *exception) {
         
     } @finally {
@@ -117,12 +121,12 @@
 - (NSData *)readDataOfLength:(NSUInteger)length {
     [self lock];
     @try {
-        if ( _isClosed || _currentIndex == NSNotFound )
+        if ( _isClosed || _currentIndex == NSNotFound || !self.currentReader.isPrepared )
             return nil;
         
         NSData *data = [self.currentReader readDataOfLength:length];
-        if ( _readDataDecoder != nil ) data = _readDataDecoder(_request, _offset, data);
         _offset += data.length;
+        if ( _readDataDecoder != nil ) data = _readDataDecoder(_request, _offset, data);
         return data;
     } @catch (__unused NSException *exception) {
         
@@ -242,8 +246,7 @@
             // undownloaded part
             NSRange leftRange = NSMakeRange(current.location, intersection.location - current.location);
             if ( leftRange.length != 0 ) {
-                MCSResourceNetworkDataReader *reader = [MCSResourceNetworkDataReader.alloc initWithURL:_request.URL requestHeaders:_request.mcs_headers range:leftRange networkTaskPriority:_networkTaskPriority];
-                reader.delegate = self;
+                MCSVODNetworkDataReader *reader = [MCSVODNetworkDataReader.alloc initWithResource:_resource request:[_request mcs_requestWithRange:leftRange] networkTaskPriority:_networkTaskPriority delegate:self delegateQueue:_resource.readerOperationQueue];
                 [readers addObject:reader];
             }
             
@@ -251,8 +254,7 @@
             NSRange matchedRange = NSMakeRange(NSMaxRange(leftRange), intersection.length);
             NSRange fileRange = NSMakeRange(matchedRange.location - content.offset, intersection.length);
             NSString *path = [MCSFileManager getFilePathWithName:content.name inResource:_resource.name];
-            MCSResourceFileDataReader *reader = [MCSResourceFileDataReader.alloc initWithRange:matchedRange path:path readRange:fileRange];
-            reader.delegate = self;
+            MCSResourceFileDataReader *reader = [MCSResourceFileDataReader.alloc initWithRange:matchedRange path:path readRange:fileRange delegate:self delegateQueue:_resource.readerOperationQueue];
             [readers addObject:reader];
             
             // retain
@@ -268,11 +270,11 @@
     
     if ( current.length != 0 ) {
         // undownloaded part
-        MCSResourceNetworkDataReader *reader = [MCSResourceNetworkDataReader.alloc initWithURL:_request.URL requestHeaders:_request.mcs_headers range:current  networkTaskPriority:_networkTaskPriority];
-        reader.delegate = self;
+        MCSVODNetworkDataReader *reader = [MCSVODNetworkDataReader.alloc initWithResource:_resource request:[_request mcs_requestWithRange:current] networkTaskPriority:_networkTaskPriority delegate:self delegateQueue:_resource.readerOperationQueue];
         [readers addObject:reader];
     }
     
+    _metaDataReader = nil;
     _readers = readers.copy;
      
     MCSLog(@"%@: <%p>.createSubreaders { range: %@, count: %lu };\n", NSStringFromClass(self.class), self, NSStringFromRange(_request.mcs_range), (unsigned long)_readers.count);
@@ -327,20 +329,19 @@
     dispatch_semaphore_signal(_semaphore);
 }
 
-#pragma mark - MCSResourceNetworkDataReaderDelegate
+#pragma mark - MCSVODMetaDataReaderDelegate
 
-- (MCSResourcePartialContent *)newPartialContentForReader:(MCSResourceNetworkDataReader *)reader {
-    MCSResourcePartialContent *content = [_resource createContentWithOffset:reader.range.location];
-    [content readWrite_retain];
+- (void)metaDataReader:(MCSVODMetaDataReader *)reader didCompleteWithError:(NSError *_Nullable)error {
+    if ( error ) {
+        [self lock];
+        [self _onError:error];
+        [self unlock];
+        return;
+    }
     
-    [self lock];
-    [_readWriteContents addObject:content];
-    [self unlock];
-    return content;
-}
-
-- (NSString *)writePathOfPartialContent:(MCSResourcePartialContent *)content {
-    return [_resource filePathOfContent:content];
+    [_resource updateServer:reader.server contentType:reader.contentType totalLength:reader.totalLength pathExtension:reader.pathExtension];
+    
+    [self _prepare];
 }
 
 #pragma mark - MCSResourceDataReaderDelegate
@@ -351,34 +352,34 @@
     
     [self lock];
     @try {
-        if      ( _response != nil ) {
-            _isPrepared = YES;
-        }
-        else if ( reader == _tmpReader ) {
-            // update contentType & totalLength & server for `resource`
-            [_resource updateServer:MCSGetResponseServer(_tmpReader.response) contentType:MCSGetResponseContentType(_tmpReader.response) totalLength:MCSGetResponseContentRange(_tmpReader.response).totalLength pathExtension:_tmpReader.response.suggestedFilename.pathExtension];
-
-            // clean
-            [_tmpReader close];
-            _tmpReader = nil;
-            
-            // prepare
-            [self _prepare];
-        }
+        _isPrepared = YES;
+        
+        dispatch_async(_resource.readerOperationQueue, ^{
+            [self.delegate readerPrepareDidFinish:self];
+        });
     } @catch (__unused NSException *exception) {
         
     } @finally {
         [self unlock];
     }
-    
-    [_delegate readerPrepareDidFinish:self];
 }
 
 - (void)readerHasAvailableData:(id<MCSResourceDataReader>)reader {
-    [_delegate readerHasAvailableData:self];
+    [self.delegate readerHasAvailableData:self];
 }
 
 - (void)reader:(id<MCSResourceDataReader>)reader anErrorOccurred:(NSError *)error {
-    [_delegate reader:self anErrorOccurred:error];
+    [self _onError:error];
+}
+
+- (void)_onError:(NSError *)error {
+    [self _close];
+    
+    dispatch_async(_resource.readerOperationQueue, ^{
+        
+        MCSLog(@"%@: <%p>.error { error: %@ };\n", NSStringFromClass(self.class), self, error);
+
+        [self.delegate reader:self anErrorOccurred:error];
+    });
 }
 @end

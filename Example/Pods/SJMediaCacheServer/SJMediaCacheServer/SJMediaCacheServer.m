@@ -66,6 +66,13 @@
     return [MCSPrefetcherManager.shared prefetchWithURL:URL preloadSize:preloadSize progress:progressBlock completed:completionBlock];
 }
 
+- (void)cancelCurrentRequestsForURL:(NSURL *)URL {
+    if ( URL == nil )
+        return;
+    MCSResource *resource = [MCSResourceManager.shared resourceWithURL:URL];
+    [MCSResourceManager.shared cancelCurrentReadsForResource:resource];
+}
+
 #pragma mark - MCSProxyServerDelegate
 
 - (id<MCSSessionTask>)server:(MCSProxyServer *)server taskWithRequest:(NSURLRequest *)request delegate:(id<MCSSessionTaskDelegate>)delegate {

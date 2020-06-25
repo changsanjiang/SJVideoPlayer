@@ -15,6 +15,7 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic, readonly) NSUInteger tsCount;
 @property (nonatomic, strong, nullable) MCSHLSParser *parser;
 
+- (NSString *)AESKeyFilePath;
 - (NSString *)tsNameForTsProxyURL:(NSURL *)URL;
 - (nullable MCSResourcePartialContent *)contentForTsProxyURL:(NSURL *)URL;
 - (MCSResourcePartialContent *)createContentWithTsProxyURL:(NSURL *)URL tsTotalLength:(NSUInteger)totalLength;

@@ -12,7 +12,7 @@
 NS_ASSUME_NONNULL_BEGIN
 
 @interface MCSHLSParser : NSObject
-- (instancetype)initWithURL:(NSURL *)URL inResource:(NSString *)resourceName delegate:(id<MCSHLSParserDelegate>)delegate;
+- (instancetype)initWithURL:(NSURL *)URL inResource:(NSString *)resourceName delegate:(id<MCSHLSParserDelegate>)delegate delegateQueue:(dispatch_queue_t)queue;
 
 - (void)prepare;
 

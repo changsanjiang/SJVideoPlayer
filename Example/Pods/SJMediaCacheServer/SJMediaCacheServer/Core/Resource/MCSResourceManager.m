@@ -22,8 +22,10 @@
 #import <SJUIKit/SJSQLite3.h>
 #import <SJUIKit/SJSQLite3+Private.h>
 #import <SJUIKit/SJSQLite3+QueryExtended.h>
+#import <SJUIKit/SJSQLite3+RemoveExtended.h>
 
-NSNotificationName const MCSResourceManagerWillRemoveResourceNotification = @"MCSResourceManagerWillRemoveResourceNotification";
+NSNotificationName const MCSResourceManagerDidRemoveResourceNotification = @"MCSResourceManagerDidRemoveResourceNotification";
+NSNotificationName const MCSResourceManagerUserCancelledReadingNotification = @"MCSResourceManagerUserCancelledReadingNotification";
 NSString *MCSResourceManagerUserInfoResourceKey = @"resource";
 
 typedef NS_ENUM(NSUInteger, MCSLimit) {
@@ -108,7 +110,7 @@ typedef NS_ENUM(NSUInteger, MCSLimit) {
 #pragma mark -
 
 @interface MCSResourceManager ()<NSLocking> {
-    NSRecursiveLock *_lock;
+    dispatch_semaphore_t _semaphore;
 }
 @property (nonatomic, strong) NSMutableDictionary<NSString *, MCSResource *> *resources;
 @property (nonatomic, strong) SJSQLite3 *sqlite3;
@@ -131,12 +133,10 @@ typedef NS_ENUM(NSUInteger, MCSLimit) {
 - (instancetype)init {
     self = [super init];
     if ( self ) {
+        _semaphore = dispatch_semaphore_create(1);
         _sqlite3 = [SJSQLite3.alloc initWithDatabasePath:[MCSFileManager databasePath]];
         _count = [_sqlite3 countOfObjectsForClass:MCSResourceUsageLog.class conditions:nil error:NULL];
-        _lock = NSRecursiveLock.alloc.init;
         _resources = NSMutableDictionary.dictionary;
-        [self _removeResourcesForLimit:@(MCSLimitFreeDiskSpace)];
-        
         // 获取磁盘剩余空间, 以及所有资源已占空间大小
         _freeDiskSpace = [MCSFileManager systemFreeSize];
         _cacheDiskSpace = [MCSFileManager rootDirectorySize];
@@ -153,7 +153,7 @@ typedef NS_ENUM(NSUInteger, MCSLimit) {
         if ( _cacheCountLimit != cacheCountLimit ) {
             _cacheCountLimit = cacheCountLimit;
             if ( cacheCountLimit != 0 ) {
-                [self _removeResourcesForLimit:@(MCSLimitCount)];
+                [self _removeResourcesForLimit:MCSLimitCount];
             }
         }
     } @catch (__unused NSException *exception) {
@@ -181,7 +181,7 @@ typedef NS_ENUM(NSUInteger, MCSLimit) {
         if ( maxDiskAgeForCache != _maxDiskAgeForCache ) {
             _maxDiskAgeForCache = maxDiskAgeForCache;
             if ( maxDiskAgeForCache != 0 ) {
-                [self _removeResourcesForLimit:@(MCSLimitExpires)];
+                [self _removeResourcesForLimit:MCSLimitExpires];
             }
         }
     } @catch (__unused NSException *exception) {
@@ -209,7 +209,7 @@ typedef NS_ENUM(NSUInteger, MCSLimit) {
         if ( _maxDiskSizeForCache != maxDiskSizeForCache ) {
             _maxDiskSizeForCache = maxDiskSizeForCache;
             if ( maxDiskSizeForCache != 0 ) {
-                [self _removeResourcesForLimit:@(MCSLimitCacheDiskSpace)];
+                [self _removeResourcesForLimit:MCSLimitCacheDiskSpace];
             }
         }
     } @catch (__unused NSException *exception) {
@@ -236,7 +236,7 @@ typedef NS_ENUM(NSUInteger, MCSLimit) {
         if ( reservedFreeDiskSpace != _reservedFreeDiskSpace ) {
             _reservedFreeDiskSpace = reservedFreeDiskSpace;
             if ( reservedFreeDiskSpace != 0 ) {
-                [self _removeResourcesForLimit:@(MCSLimitFreeDiskSpace)];
+                [self _removeResourcesForLimit:MCSLimitFreeDiskSpace];
             }
         }
     } @catch (__unused NSException *exception) {
@@ -297,7 +297,15 @@ typedef NS_ENUM(NSUInteger, MCSLimit) {
 }
 
 - (void)saveMetadata:(MCSResource *)resource {
+    [self lock];
     [self _update:resource];
+    [self unlock];
+}
+
+- (void)cancelCurrentReadsForResource:(MCSResource *)resource {
+    if ( resource.readWriteCount != 0 ) {
+        [NSNotificationCenter.defaultCenter postNotificationName:MCSResourceManagerUserCancelledReadingNotification object:self userInfo:@{ MCSResourceManagerUserInfoResourceKey : resource }];
+    }
 }
 
 - (id<MCSResourceReader>)readerWithRequest:(NSURLRequest *)request {
@@ -308,22 +316,21 @@ typedef NS_ENUM(NSUInteger, MCSLimit) {
 }
 
 - (void)reader:(id<MCSResourceReader>)reader willReadResource:(MCSResource *)resource {
+    [self lock];
     // update
     resource.log.usageCount += 1;
     resource.log.updatedTime = NSDate.date.timeIntervalSince1970;
     [_sqlite3 update:resource.log forKeys:@[@"usageCount", @"updatedTime"] error:NULL];
+    [self unlock];
 }
 
 // 读取结束, 清理剩余的超出个数限制的资源
 - (void)reader:(id<MCSResourceReader>)reader didEndReadResource:(MCSResource *)resource {
-    if ( self.cacheCountLimit == 0 )
-        return;
-    
     [self lock];
     @try {
-        if ( _count < _cacheCountLimit )
+        if ( _cacheCountLimit == 0 || _count < _cacheCountLimit )
             return;
-        [self _removeResourcesForLimit:@(MCSLimitCount)];
+        [self _removeResourcesForLimit:MCSLimitCount];
     } @catch (__unused NSException *exception) {
         
     } @finally {
@@ -333,17 +340,22 @@ typedef NS_ENUM(NSUInteger, MCSLimit) {
 
 // 剩余磁盘空间在发生变化
 - (void)didWriteDataForResource:(MCSResource *)resource length:(NSUInteger)length {
-    if ( self.reservedFreeDiskSpace == 0 && self.maxDiskSizeForCache == 0 )
-        return;
     [self lock];
-    _cacheDiskSpace += length;
-    _freeDiskSpace -= length;
-    [self _removeResourcesForLimit:@(MCSLimitFreeDiskSpace)];
-    [self _removeResourcesForLimit:@(MCSLimitCacheDiskSpace)];
-    [self unlock];
+    @try {
+        if ( _reservedFreeDiskSpace == 0 && _maxDiskSizeForCache == 0 )
+            return;
+        _cacheDiskSpace += length;
+        _freeDiskSpace -= length;
+        [self _removeResourcesForLimit:MCSLimitFreeDiskSpace];
+        [self _removeResourcesForLimit:MCSLimitCacheDiskSpace];
+    } @catch (__unused NSException *exception) {
+
+    } @finally {
+        [self unlock];
+    }
 }
 
-- (void)didDeleteDataForResource:(MCSResource *)resource length:(NSUInteger)length {
+- (void)didRemoveDataForResource:(MCSResource *)resource length:(NSUInteger)length {
     [self lock];
     _cacheDiskSpace -= length;
     _freeDiskSpace += length;
@@ -369,16 +381,18 @@ typedef NS_ENUM(NSUInteger, MCSLimit) {
     if ( URL == nil )
         return;
     MCSResource *resource = [self resourceWithURL:URL];
+    [self lock];
     [self _removeResources:@[resource]];
+    [self unlock];
 }
 
 - (NSUInteger)cachedSizeForResources {
     return [MCSFileManager rootDirectorySize];
 }
 
-- (void)_removeResourcesForLimit:(NSNumber *)limitValue {
-    MCSLimit limit = [limitValue integerValue];
-    
+#pragma mark -
+
+- (void)_removeResourcesForLimit:(MCSLimit)limit {
     switch ( limit ) {
         case MCSLimitNone:
             break;
@@ -386,8 +400,11 @@ typedef NS_ENUM(NSUInteger, MCSLimit) {
             if ( _cacheCountLimit == 0 )
                 return;
             
+            if ( _count == 1 )
+                return;
+            
             // 资源数量少于限制的个数
-            if ( _count < _cacheCountLimit )
+            if ( _cacheCountLimit > _count )
                 return;
         }
             break;
@@ -409,7 +426,7 @@ typedef NS_ENUM(NSUInteger, MCSLimit) {
                 return;
             
             // 获取已缓存的数据大小
-            if ( _cacheDiskSpace < _maxDiskSizeForCache )
+            if ( _maxDiskSizeForCache > _cacheDiskSpace )
                 return;
         }
             break;
@@ -426,16 +443,22 @@ typedef NS_ENUM(NSUInteger, MCSLimit) {
         return;
 
     NSArray<MCSResourceUsageLog *> *logs = nil;
+    // 清理60s之前的
+    NSTimeInterval before = NSDate.date.timeIntervalSince1970 - 60;
     switch ( limit ) {
         case MCSLimitNone:
             break;
         case MCSLimitCount:
         case MCSLimitCacheDiskSpace:
         case MCSLimitFreeDiskSpace: {
-            NSInteger length = _count - usingResources.count + 1;
+            // 清理一半
+            NSInteger length = (NSInteger)ceil((_count - usingResources.count) * 0.5);
             logs = [_sqlite3 objectsForClass:MCSResourceUsageLog.class conditions:@[
-                [SJSQLite3Condition mcs_conditionWithColumn:@"resource" notIn:usingResources]
+                // 检索60s之前未被使用的资源
+                [SJSQLite3Condition mcs_conditionWithColumn:@"resource" notIn:usingResources],
+                [SJSQLite3Condition conditionWithColumn:@"updatedTime" relatedBy:SJSQLite3RelationLessThanOrEqual value:@(before)],
             ] orderBy:@[
+                // 按照更新的时间与使用次数进行排序
                 [SJSQLite3ColumnOrder orderWithColumn:@"updatedTime" ascending:YES],
                 [SJSQLite3ColumnOrder orderWithColumn:@"usageCount" ascending:YES],
             ] range:NSMakeRange(0, length) error:NULL];
@@ -446,10 +469,7 @@ typedef NS_ENUM(NSUInteger, MCSLimit) {
             logs = [_sqlite3 objectsForClass:MCSResourceUsageLog.class conditions:@[
                 [SJSQLite3Condition mcs_conditionWithColumn:@"resource" notIn:usingResources],
                 [SJSQLite3Condition conditionWithColumn:@"updatedTime" relatedBy:SJSQLite3RelationLessThanOrEqual value:@(time)],
-            ] orderBy:@[
-                [SJSQLite3ColumnOrder orderWithColumn:@"updatedTime" ascending:YES],
-                [SJSQLite3ColumnOrder orderWithColumn:@"usageCount" ascending:YES],
-            ] error:NULL];
+            ] orderBy:nil error:NULL];
         }
             break;
     }
@@ -472,14 +492,23 @@ typedef NS_ENUM(NSUInteger, MCSLimit) {
         return;
 
     [resources enumerateObjectsUsingBlock:^(MCSResource * _Nonnull r, NSUInteger idx, BOOL * _Nonnull stop) {
-        [NSNotificationCenter.defaultCenter postNotificationName:MCSResourceManagerWillRemoveResourceNotification object:self userInfo:@{ MCSResourceManagerUserInfoResourceKey : r }];
+        NSUInteger length = [MCSFileManager fileSizeAtPath:[MCSFileManager getResourcePathWithName:r.name]];
+        self->_cacheDiskSpace -= length;
+        self->_freeDiskSpace += length;
+
         [MCSFileManager removeResourceWithName:r.name error:NULL];
         [self.resources removeObjectForKey:r.name];
         [self.sqlite3 removeObjectForClass:r.class primaryKeyValue:@(r.id) error:NULL];
-        if ( r.log != nil ) [self.sqlite3 removeObjectForClass:r.log.class primaryKeyValue:@(r.log.id) error:NULL];
+        [self.sqlite3 removeAllObjectsForClass:MCSResourceUsageLog.class conditions:@[
+            [SJSQLite3Condition conditionWithColumn:@"resource" value:@(r.id)],
+            [SJSQLite3Condition conditionWithColumn:@"resourceType" value:@(r.type)],
+        ] error:NULL];
+        dispatch_async(r.readerOperationQueue, ^{
+            [NSNotificationCenter.defaultCenter postNotificationName:MCSResourceManagerDidRemoveResourceNotification object:self userInfo:@{ MCSResourceManagerUserInfoResourceKey : r }];
+        });
     }];
     
-    self.count -= resources.count;
+    _count -= resources.count;
 }
 
 - (void)_update:(MCSResource *)resource {
@@ -490,11 +519,11 @@ typedef NS_ENUM(NSUInteger, MCSLimit) {
 #pragma mark -
 
 - (void)lock {
-    [_lock lock];
+    dispatch_semaphore_wait(_semaphore, DISPATCH_TIME_FOREVER);
 }
 
 - (void)unlock {
-    [_lock unlock];
+    dispatch_semaphore_signal(_semaphore);
 }
 
 - (Class)resourceClassForType:(MCSResourceType)type {

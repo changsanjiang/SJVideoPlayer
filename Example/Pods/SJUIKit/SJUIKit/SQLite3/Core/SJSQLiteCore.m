@@ -143,8 +143,8 @@ sj_sqlite3_stmt_get_primary_values_array(NSString *jsonString) {
 }
 
 NSString *
-sj_sqlite3_stmt_get_last_row(SJSQLiteObjectInfo *objInfo) {
-    return [NSString stringWithFormat:@"SELECT * FROM '%@' ORDER BY \"%@\" DESC LIMIT 1;", objInfo.table.name, objInfo.primaryKeyColumnInfo.name];
+sj_sqlite3_stmt_get_last_row(SJSQLiteTableInfo *table) {
+    return [NSString stringWithFormat:@"SELECT * FROM '%@' ORDER BY \"%@\" DESC LIMIT 1;", table.name, table.primaryKey];
 }
 
 #pragma mark -

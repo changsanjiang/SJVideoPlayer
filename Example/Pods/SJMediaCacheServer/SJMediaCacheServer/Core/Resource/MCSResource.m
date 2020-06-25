@@ -9,6 +9,7 @@
 #import "MCSResource.h"
 #import "MCSFileManager.h"
 #import "MCSResourceSubclass.h"
+#import "MCSResourceManager.h"
 
 @interface MCSResource ()<NSLocking, MCSResourcePartialContentDelegate> {
     NSRecursiveLock *_lock;
@@ -28,6 +29,7 @@
     if ( self ) {
         _lock = NSRecursiveLock.alloc.init;
         _m = NSMutableArray.array;
+        _readerOperationQueue = dispatch_queue_create("lib.changsanjiang.SJMediaCacheServer.readerOperationQueue", DISPATCH_QUEUE_SERIAL);
     }
     return self;
 }
@@ -146,6 +148,7 @@
     [self lock];
     [_m removeObject:content];
     [MCSFileManager removeContentWithName:content.name inResource:_name error:NULL];
+    [MCSResourceManager.shared didRemoveDataForResource:self length:content.length];
     [self unlock];
 }
 

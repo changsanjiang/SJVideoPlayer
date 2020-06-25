@@ -51,7 +51,7 @@ FOUNDATION_EXPORT NSArray<id> *_Nullable
 sj_sqlite3_stmt_get_primary_values_array(NSString *jsonString);
 
 FOUNDATION_EXPORT NSString *
-sj_sqlite3_stmt_get_last_row(SJSQLiteObjectInfo *objInfo);
+sj_sqlite3_stmt_get_last_row(SJSQLiteTableInfo *table);
 
 #pragma mark -
 

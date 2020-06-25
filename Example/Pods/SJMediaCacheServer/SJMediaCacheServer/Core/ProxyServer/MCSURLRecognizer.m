@@ -60,9 +60,11 @@ MCSMD5(NSString *str) {
 
 - (NSString *)resourceNameForURL:(NSURL *)URL {
     // 包含ts的URL一般为内部代理发送的请求, 此处返回ts对应的root资源的名字
-    if ( [URL.absoluteString containsString:@".ts"] ) {
+    if ( [URL.absoluteString containsString:MCSHLSTsFileExtension] )
         return [MCSFileManager hls_resourceNameForTsProxyURL:URL];
-    }
+    // 同样的 aes.key 也一般为内部代理发送的请求
+    if ( [URL.absoluteString containsString:MCSHLSAESKeyFileExtension] )
+        return [MCSFileManager hls_resourceNameForAESKeyProxyURL:URL];
     
     NSString *str = self.resolveResourceIdentifier != nil ? self.resolveResourceIdentifier(URL) : URL.absoluteString;
     NSParameterAssert(str);
@@ -70,7 +72,9 @@ MCSMD5(NSString *str) {
 }
 
 - (MCSResourceType)resourceTypeForURL:(NSURL *)URL {
-    return [URL.absoluteString containsString:@".m3u8"] || [URL.absoluteString containsString:@".ts"] ? MCSResourceTypeHLS : MCSResourceTypeVOD;
+    return [URL.absoluteString containsString:MCSHLSIndexFileExtension] ||
+           [URL.absoluteString containsString:MCSHLSTsFileExtension] ||
+           [URL.absoluteString containsString:MCSHLSAESKeyFileExtension] ? MCSResourceTypeHLS : MCSResourceTypeVOD;
 }
 
 - (NSURL *)proxyURLWithTsName:(NSString *)tsName {

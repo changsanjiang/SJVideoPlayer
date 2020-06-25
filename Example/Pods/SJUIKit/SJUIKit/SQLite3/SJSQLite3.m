@@ -470,21 +470,32 @@ NS_ASSUME_NONNULL_BEGIN
         }
     }
     
-    NSString *sql = sj_sqlite3_stmt_insert_or_update(objectInfo);
-    
-    sj_sqlite3_obj_exec(self.db, sql, &error);
-    
-    if ( error == nil && objectInfo.autoincrementColumns ) {
-        NSString *sql = sj_sqlite3_stmt_get_last_row(objectInfo);
-        __auto_type _Nullable results = [sj_sqlite3_obj_exec(self.db, sql, &error) firstObject];
-        if ( error != nil ) return error;
-        id obj = objectInfo.obj;
-        for ( SJSQLiteColumnInfo *column in objectInfo.autoincrementColumns ) {
-            NSString *key = column.name;
-            [obj setValue:results[key] forKey:key];
+    if ( objectInfo.autoincrementColumns != nil ) {
+        id object = objectInfo.obj;
+        // 对于新增数据, 它的自增键在执行到这里之前是不能有值的
+        //
+        // 执行到这里后, 会进行自增键赋值
+        //
+        // 此处检测了自增键中的某个字段是否有值, 依据此条件来判断是否是新增的数据
+        SJSQLiteColumnInfo *column = objectInfo.autoincrementColumns.firstObject;
+        NSString *key = column.name;
+        NSInteger value = [[object valueForKey:key] integerValue];
+        if ( value == 0 ) {
+            NSString *sql = sj_sqlite3_stmt_get_last_row(objectInfo.table);
+            __auto_type _Nullable result = [sj_sqlite3_obj_exec(self.db, sql, &error) firstObject];
+            if ( error != nil ) return error;
+            for ( SJSQLiteColumnInfo *column in objectInfo.autoincrementColumns ) {
+                NSString *key = column.name;
+                // 自增键进行+1操作
+                NSInteger value = [[result valueForKey:key] integerValue] + 1;
+                [object setValue:@(value) forKey:key];
+            }
         }
     }
     
+    NSString *sql = sj_sqlite3_stmt_insert_or_update(objectInfo);
+    
+    sj_sqlite3_obj_exec(self.db, sql, &error);
     return error;
 }
 

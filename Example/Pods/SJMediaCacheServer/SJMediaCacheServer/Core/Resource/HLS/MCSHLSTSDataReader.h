@@ -14,7 +14,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 @interface MCSHLSTSDataReader : NSObject<MCSHLSDataReader>
 
-- (instancetype)initWithResource:(MCSHLSResource *)resource request:(NSURLRequest *)request networkTaskPriority:(float)networkTaskPriority;
+- (instancetype)initWithResource:(MCSHLSResource *)resource request:(NSURLRequest *)request networkTaskPriority:(float)networkTaskPriority delegate:(id<MCSResourceDataReaderDelegate>)delegate delegateQueue:(dispatch_queue_t)queue;
 
 - (void)prepare;
 @property (nonatomic, readonly) BOOL isDone;

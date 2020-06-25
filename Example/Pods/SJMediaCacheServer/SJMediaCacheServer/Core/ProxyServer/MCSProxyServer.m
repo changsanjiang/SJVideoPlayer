@@ -189,6 +189,11 @@
 - (void)dealloc {
     MCSLog(@"%@: <%p>.dealloc;\n\n", NSStringFromClass(self.class), self);
 }
+
+- (void)responseDidAbort:(NSObject<HTTPResponse> *)sender {
+    [super responseDidAbort:sender];
+    MCSLog(@"%@: <%p>.abort;\n", NSStringFromClass(self.class), self);
+}
 @end
 
 @implementation NSURLRequest (MCSHTTPConnectionExtended)
@@ -255,5 +260,9 @@
 
 - (void)task:(id<MCSSessionTask>)task anErrorOccurred:(NSError *)error {
     [_connection responseDidAbort:self];
+}
+
+- (BOOL)isChunked {
+    return YES;
 }
 @end

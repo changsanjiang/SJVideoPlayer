@@ -13,7 +13,8 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
-FOUNDATION_EXTERN NSNotificationName const MCSResourceManagerWillRemoveResourceNotification;
+FOUNDATION_EXTERN NSNotificationName const MCSResourceManagerDidRemoveResourceNotification;
+FOUNDATION_EXPORT NSNotificationName const MCSResourceManagerUserCancelledReadingNotification;
 FOUNDATION_EXTERN NSString *MCSResourceManagerUserInfoResourceKey;
 
 @interface MCSResourceManager : NSObject
@@ -23,7 +24,7 @@ FOUNDATION_EXTERN NSString *MCSResourceManagerUserInfoResourceKey;
 ///
 ///     If 0, there is no count limit. The default value is 0.
 ///
-///     This is not a strict limit—if the cache goes over the limit, a resource in the cache could be evicted instantly, later, or possibly never, depending on the usage details of the resource.
+///     This is not a strict limit—if the cache goes over the limit, a resource in the cache could be removed instantly, later, or possibly never, depending on the usage details of the resource.
 ///
 @property (nonatomic) NSUInteger cacheCountLimit; // 个数限制
 
@@ -64,12 +65,13 @@ FOUNDATION_EXTERN NSString *MCSResourceManagerUserInfoResourceKey;
 
 - (__kindof MCSResource *)resourceWithURL:(NSURL *)URL;
 - (void)saveMetadata:(MCSResource *)resource;
+- (void)cancelCurrentReadsForResource:(MCSResource *)resource;
 
 - (id<MCSResourceReader>)readerWithRequest:(NSURLRequest *)request;
 - (void)reader:(id<MCSResourceReader>)reader willReadResource:(MCSResource *)resource;
 - (void)reader:(id<MCSResourceReader>)reader didEndReadResource:(MCSResource *)resource;
 - (void)didWriteDataForResource:(MCSResource *)resource length:(NSUInteger)length;
-- (void)didDeleteDataForResource:(MCSResource *)resource length:(NSUInteger)length;
+- (void)didRemoveDataForResource:(MCSResource *)resource length:(NSUInteger)length;
 @end
 
 NS_ASSUME_NONNULL_END

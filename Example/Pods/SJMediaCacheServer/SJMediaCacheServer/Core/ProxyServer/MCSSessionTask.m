@@ -65,14 +65,15 @@
 #pragma mark -
 
 - (void)readerPrepareDidFinish:(id<MCSResourceReader>)reader {
-    if ( !_reader.isClosed ) [_delegate taskPrepareDidFinish:self];
+    if ( !reader.isClosed ) [_delegate taskPrepareDidFinish:self];
 }
 
 - (void)readerHasAvailableData:(id<MCSResourceReader>)reader {
-    if ( !_reader.isClosed ) [_delegate taskHasAvailableData:self];
+    if ( !reader.isClosed ) [_delegate taskHasAvailableData:self];
 }
 
 - (void)reader:(id<MCSResourceReader>)reader anErrorOccurred:(NSError *)error {
-    if ( !_reader.isClosed ) [_delegate task:self anErrorOccurred:error];
+    [reader close];
+    [_delegate task:self anErrorOccurred:error];
 }
 @end

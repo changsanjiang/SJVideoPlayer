@@ -10,6 +10,11 @@
 #import "MCSResourcePartialContent.h"
 
 NS_ASSUME_NONNULL_BEGIN
+typedef NSString *MCSFileExtension;
+
+UIKIT_EXTERN MCSFileExtension const MCSHLSIndexFileExtension;
+UIKIT_EXTERN MCSFileExtension const MCSHLSTsFileExtension;
+UIKIT_EXTERN MCSFileExtension const MCSHLSAESKeyFileExtension;
 
 @interface MCSFileManager : NSObject
 + (NSString *)rootDirectoryPath;
@@ -18,7 +23,7 @@ NS_ASSUME_NONNULL_BEGIN
 + (NSString *)getFilePathWithName:(NSString *)name inResource:(NSString *)resourceName;
 // HLS
 //
-+ (nullable NSString *)hls_AESKeyFilenameForURI:(NSString *)URI;
++ (nullable NSString *)hls_AESKeyFilenameInResource:(NSString *)resource;
 
 // HLS
 //
@@ -27,10 +32,6 @@ NS_ASSUME_NONNULL_BEGIN
 // HLS
 //
 + (nullable NSString *)hls_tsNameForTsProxyURL:(NSURL *)URL;
-
-// HLS
-//
-+ (nullable NSString *)hls_resourceNameForTsProxyURL:(NSURL *)URL;
 
 // HLS
 //
@@ -43,6 +44,14 @@ NS_ASSUME_NONNULL_BEGIN
 // HLS
 //
 + (nullable NSString *)hls_tsNamesFilePathInResource:(NSString *)resourceName;
+
+// HLS
+//
++ (nullable NSString *)hls_resourceNameForTsProxyURL:(NSURL *)URL;
+
+// HLS
+//
++ (nullable NSString *)hls_resourceNameForAESKeyProxyURL:(NSURL *)URL;
 
 // VOD
 //      注意: 返回文件名

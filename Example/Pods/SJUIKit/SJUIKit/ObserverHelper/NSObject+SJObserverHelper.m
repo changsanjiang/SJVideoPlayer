@@ -51,8 +51,7 @@ NS_ASSUME_NONNULL_BEGIN
     if ( !observer || !keyPath ) return;
     
     NSString *hashstr = [NSString stringWithFormat:@"%lu-%@", (unsigned long)[observer hash], keyPath];
-    id _self = self;
-
+    
     static dispatch_semaphore_t lock = nil;
     static dispatch_once_t onceToken;
     dispatch_once(&onceToken, ^{
@@ -69,7 +68,7 @@ NS_ASSUME_NONNULL_BEGIN
     [set addObject:hashstr];
     dispatch_semaphore_signal(lock);
     
-    [_self addObserver:observer forKeyPath:keyPath options:options context:context];
+    [self addObserver:observer forKeyPath:keyPath options:options context:context];
     
     __SJKVOAutoremove *helper = [__SJKVOAutoremove new];
     __SJKVOAutoremove *sub = [__SJKVOAutoremove new];

@@ -35,6 +35,11 @@
     return [MCSURLRecognizer.shared proxyURLWithURL:URL];
 }
 
+- (NSString *)AESKeyFilePath {
+    NSString *filename = [MCSFileManager hls_AESKeyFilenameInResource:self.name];
+    return [MCSFileManager getFilePathWithName:filename inResource:self.name];
+}
+
 - (NSString *)tsNameForTsProxyURL:(NSURL *)URL {
     return [MCSFileManager hls_tsNameForTsProxyURL:URL];
 }

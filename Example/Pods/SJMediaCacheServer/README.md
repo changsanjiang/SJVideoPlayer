@@ -14,6 +14,10 @@ pod 'SJUIKit/SQLite3', :podspec => 'https://gitee.com/changsanjiang/SJUIKit/raw/
 pod 'SJMediaCacheServer'
 ```
 
+## 使用介绍
+
+- https://juejin.im/post/5ee31be851882557525a8b18
+
 ## Usage
 
 - Play

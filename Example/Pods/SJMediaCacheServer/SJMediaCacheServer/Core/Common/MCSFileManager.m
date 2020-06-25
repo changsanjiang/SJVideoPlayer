@@ -12,6 +12,10 @@
 static NSString *VODPrefix = @"vod";
 static NSString *HLSPrefix = @"hls";
 
+MCSFileExtension const MCSHLSIndexFileExtension = @".m3u8";
+MCSFileExtension const MCSHLSTsFileExtension = @".ts";
+MCSFileExtension const MCSHLSAESKeyFileExtension = @".key";
+
 @implementation MCSFileManager
 + (NSString *)rootDirectoryPath {
     static NSString *rootDirectoryPath;
@@ -40,10 +44,17 @@ static NSString *HLSPrefix = @"hls";
 + (NSString *)getFilePathWithName:(NSString *)name inResource:(NSString *)resourceName {
     return [[self getResourcePathWithName:resourceName] stringByAppendingPathComponent:name];
 }
+
+// format: resourceName_aes.key
 // HLS
-//
-+ (nullable NSString *)hls_AESKeyFilenameForURI:(NSString *)URI {
-    return @"aes.key";
++ (nullable NSString *)hls_AESKeyFilenameInResource:(NSString *)resource {
+    return [NSString stringWithFormat:@"%@_aes.key", resource];
+}
+
+// format: resourceName_aes.key
+// HLS
++ (nullable NSString *)hls_resourceNameForAESKeyProxyURL:(NSURL *)URL {
+    return [URL.lastPathComponent componentsSeparatedByString:@"_"].firstObject;
 }
 
 // format: resourceName_tsName

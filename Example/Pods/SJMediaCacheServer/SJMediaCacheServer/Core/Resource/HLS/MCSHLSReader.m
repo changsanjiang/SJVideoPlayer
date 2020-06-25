@@ -9,6 +9,7 @@
 #import "MCSHLSReader.h"
 #import "MCSHLSResource.h"
 #import "MCSHLSIndexDataReader.h"
+#import "MCSHLSAESKeyDataReader.h"
 #import "MCSHLSTSDataReader.h"
 #import "MCSFileManager.h"
 #import "MCSLogger.h"
@@ -39,7 +40,8 @@
         _semaphore = dispatch_semaphore_create(1);
         [_resource readWrite_retain];
         [MCSResourceManager.shared reader:self willReadResource:resource];
-        [NSNotificationCenter.defaultCenter addObserver:self selector:@selector(willRemoveResource:) name:MCSResourceManagerWillRemoveResourceNotification object:nil];
+        [NSNotificationCenter.defaultCenter addObserver:self selector:@selector(didRemoveResource:) name:MCSResourceManagerDidRemoveResourceNotification object:nil];
+        [NSNotificationCenter.defaultCenter addObserver:self selector:@selector(userCancelledReading:) name:MCSResourceManagerUserCancelledReadingNotification object:nil];
     }
     return self;
 }
@@ -52,13 +54,21 @@
     MCSLog(@"%@: <%p>.dealloc;\n", NSStringFromClass(self.class), self);
 }
 
-- (void)willRemoveResource:(NSNotification *)note {
+- (void)didRemoveResource:(NSNotification *)note {
     MCSResource *resource = note.userInfo[MCSResourceManagerUserInfoResourceKey];
     if ( resource == _resource && !self.isClosed )  {
         [self lock];
-        [self _close];
+        [self _onError:[NSError mcs_removedResource:_request.URL]];
         [self unlock];
-        [_delegate reader:self anErrorOccurred:[NSError mcs_errorForRemovedResource:_request.URL]];
+    }
+}
+
+- (void)userCancelledReading:(NSNotification *)note {
+    MCSResource *resource = note.userInfo[MCSResourceManagerUserInfoResourceKey];
+    if ( resource == _resource && !self.isClosed )  {
+        [self lock];
+        [self _onError:[NSError mcs_userCancelledError:_request.URL]];
+        [self unlock];
     }
 }
 
@@ -68,20 +78,22 @@
         if ( _isClosed || _isCalledPrepare )
             return;
         
-        MCSLog(@"%@: <%p>.prepare { URL: %@ };\n", NSStringFromClass(self.class), self, _request.URL);
+        MCSLog(@"%@: <%p>.prepare { name: %@, URL: %@ };\n", NSStringFromClass(self.class), self, _resource.name, _request.URL);
 
         
         _isCalledPrepare = YES;
         
-        if ( [_request.URL.absoluteString containsString:@".m3u8"] ) {
-            _reader = [MCSHLSIndexDataReader.alloc initWithResource:_resource URL:_request.URL];
+        if      ( [_request.URL.absoluteString containsString:MCSHLSIndexFileExtension] ) {
+            _reader = [MCSHLSIndexDataReader.alloc initWithResource:_resource URL:_request.URL delegate:self delegateQueue:_resource.readerOperationQueue];
+        }
+        else if ( [_request.URL.absoluteString containsString:MCSHLSAESKeyFileExtension] ) {
+            _reader = [MCSHLSAESKeyDataReader.alloc initWithResource:_resource URL:_request.URL delegate:self delegateQueue:_resource.readerOperationQueue];
         }
         else {
             NSAssert(_resource.parser != nil, @"`parser`不能为nil!");
-            _reader = [MCSHLSTSDataReader.alloc initWithResource:_resource request:_request networkTaskPriority:_networkTaskPriority];
+            _reader = [MCSHLSTSDataReader.alloc initWithResource:_resource request:_request networkTaskPriority:_networkTaskPriority delegate:self delegateQueue:_resource.readerOperationQueue];
         }
         
-        _reader.delegate = self;
         [_reader prepare];
     } @catch (__unused NSException *exception) {
         
@@ -97,13 +109,13 @@
             return nil;
         
         NSData *data = [_reader readDataOfLength:length];
-        if ( _readDataDecoder != nil ) data = _readDataDecoder(_request, _offset, data);
         _offset += data.length;
+        if ( _readDataDecoder != nil ) data = _readDataDecoder(_request, _offset, data);
         return data;
     } @catch (__unused NSException *exception) {
         
     } @finally {
-        if ( self.reader.isDone ) {
+        if ( _reader.isDone ) {
             MCSLog(@"%@: <%p>.done { URL: %@ };\n", NSStringFromClass(self.class), self, _request.URL);
             [self _close];
         }
@@ -190,13 +202,29 @@
         if ( parser != nil && _resource.parser != parser )
             _resource.parser = parser;
     }
+    dispatch_async(_resource.readerOperationQueue, ^{
+        [self.delegate readerPrepareDidFinish:self];
+    });
     [self unlock];
-    [self.delegate readerPrepareDidFinish:self];
 }
 - (void)readerHasAvailableData:(id<MCSResourceDataReader>)reader {
-    [self.delegate readerHasAvailableData:self];
+    dispatch_async(_resource.readerOperationQueue, ^{
+        [self.delegate readerHasAvailableData:self];
+    });
 }
 - (void)reader:(id<MCSResourceDataReader>)reader anErrorOccurred:(NSError *)error {
-    [self.delegate reader:self anErrorOccurred:error];
+    [self lock];
+    [self _onError:error];
+    [self unlock];
+}
+
+- (void)_onError:(NSError *)error {
+    [self _close];
+    dispatch_async(_resource.readerOperationQueue, ^{
+        
+        MCSLog(@"%@: <%p>.error { error: %@ };\n", NSStringFromClass(self.class), self, error);
+
+        [self.delegate reader:self anErrorOccurred:error];
+    });
 }
 @end

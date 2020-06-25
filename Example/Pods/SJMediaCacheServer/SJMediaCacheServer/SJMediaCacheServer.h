@@ -28,6 +28,8 @@ NS_ASSUME_NONNULL_BEGIN
 
 /// Prefetch some resources in the cache for future use. resources are downloaded in low priority.
 ///
+/// @param URL      An instance of NSURL that references a media resource.
+///
 /// @param bytes    Preload size in bytes.
 ///
 /// @return The task to cancel the current prefetching.
@@ -35,6 +37,8 @@ NS_ASSUME_NONNULL_BEGIN
 - (id<MCSPrefetchTask>)prefetchWithURL:(NSURL *)URL preloadSize:(NSUInteger)bytes; // 预加载
 
 /// Prefetch some resources in the cache for future use. resources are downloaded in low priority.
+///
+/// @param URL      An instance of NSURL that references a media resource.
 ///
 /// @param bytes    Preload size in bytes.
 ///
@@ -45,6 +49,12 @@ NS_ASSUME_NONNULL_BEGIN
 /// @return The task to cancel the current prefetching.
 ///
 - (id<MCSPrefetchTask>)prefetchWithURL:(NSURL *)URL preloadSize:(NSUInteger)bytes progress:(void(^_Nullable)(float progress))progressBlock completed:(void(^_Nullable)(NSError *_Nullable error))completionBlock; // 预加载
+
+/// Cancel current requests for a resource, including prefetch requests.
+///
+/// @param URL      An instance of NSURL that references a media resource.
+///
+- (void)cancelCurrentRequestsForURL:(NSURL *)URL; // 取消当前的请求, 包括预加载(MCSPrefetchTask)的请求
 @end
 
 
@@ -101,7 +111,7 @@ NS_ASSUME_NONNULL_BEGIN
 ///
 ///     If 0, there is no count limit. The default value is 0.
 ///
-///     This is not a strict limit—if the cache goes over the limit, a resource in the cache could be evicted instantly, later, or possibly never, depending on the usage details of the resource.
+///     This is not a strict limit—if the cache goes over the limit, a resource in the cache could be removed instantly, later, or possibly never, depending on the usage details of the resource.
 ///
 @property (nonatomic) NSUInteger cacheCountLimit; // 个数限制
 

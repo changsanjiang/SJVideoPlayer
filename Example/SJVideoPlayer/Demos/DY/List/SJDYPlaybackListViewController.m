@@ -37,6 +37,11 @@
     [self _setupTableView];
 }
 
+- (void)dealloc {
+    [_prePrefetchTask cancel];
+    [_nextPrefetchTask cancel];
+}
+
 - (void)sj_playerNeedPlayNewAssetAtIndexPath:(NSIndexPath *)indexPath {
     if ( indexPath == nil )
         return;

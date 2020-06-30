@@ -56,7 +56,7 @@ NS_ASSUME_NONNULL_BEGIN
 }
 
 + (NSString *)version {
-    return @"v3.2.5";
+    return @"v3.2.6";
 }
 
 + (instancetype)player {
@@ -90,13 +90,11 @@ NS_ASSUME_NONNULL_BEGIN
     self = [super init];
     if ( !self ) return nil;
     [self _initializeSwitcher];
-    dispatch_async(dispatch_get_global_queue(0, 0), ^{
-        [self _initializeSwitcherObserver];
-        [self _initializeSettingsObserver];
-        [self _initializeAssetStatusObserver];
-        [self _initializeAppearManagerObserver];
-        [self _initializeReachbilityObserver];
-    });
+    [self _initializeSwitcherObserver];
+    [self _initializeSettingsObserver];
+    [self _initializeAssetStatusObserver];
+    [self _initializeAppearManagerObserver];
+    [self _initializeReachbilityObserver];
     [self _updateCommonProperties];
     return self;
 }

@@ -45,36 +45,34 @@ MCSFileExtension const MCSHLSAESKeyFileExtension = @".key";
     return [[self getResourcePathWithName:resourceName] stringByAppendingPathComponent:name];
 }
 
-// format: resourceName_aes.key
+// format: resourceName_aes_index.key
 // HLS
-+ (nullable NSString *)hls_AESKeyFilenameInResource:(NSString *)resource {
-    return [NSString stringWithFormat:@"%@_aes.key", resource];
++ (nullable NSString *)hls_AESKeyFilenameAtIndex:(NSInteger)index inResource:(NSString *)resource {
+    return [NSString stringWithFormat:@"%@_aes_%ld.key", resource, (long)index];
 }
 
-// format: resourceName_aes.key
+// format: resourceName_aes_index.key
 // HLS
 + (nullable NSString *)hls_resourceNameForAESKeyProxyURL:(NSURL *)URL {
     return [URL.lastPathComponent componentsSeparatedByString:@"_"].firstObject;
 }
 
+// format: resourceName_aes_index.key
+// HLS
++ (nullable NSString *)hls_AESKeyFilePathForAESKeyProxyURL:(NSURL *)URL inResource:(NSString *)resource {
+    NSString *filename = [self _filenameForUrl:URL.absoluteString];
+    return [self getFilePathWithName:filename inResource:resource];
+}
+
 // format: resourceName_tsName
 // HLS
 + (nullable NSString *)hls_tsNameForUrl:(NSString *)url inResource:(nonnull NSString *)resource {
-    NSString *component = url.lastPathComponent;
-    NSRange range = [component rangeOfString:@"?"];
-    if ( range.location != NSNotFound ) {
-        component = [component substringToIndex:range.location];
-    }
-    return [NSString stringWithFormat:@"%@_%@", resource, component];
+    NSString *filename = [self _filenameForUrl:url];
+    return [NSString stringWithFormat:@"%@_%@", resource, filename];
 }
 
 + (nullable NSString *)hls_tsNameForTsProxyURL:(NSURL *)URL {
-    NSString *component = URL.absoluteString.lastPathComponent;
-    NSRange range = [component rangeOfString:@"?"];
-    if ( range.location != NSNotFound ) {
-        component = [component substringToIndex:range.location];
-    }
-    return component;
+    return [self _filenameForUrl:URL.absoluteString];
 }
 
 // format: resourceName_tsName
@@ -190,6 +188,17 @@ MCSFileExtension const MCSHLSAESKeyFileExtension = @".key";
 // HLS
 + (NSUInteger)tsTotalLengthOfContent:(NSString *)name {
     return (NSUInteger)[[name componentsSeparatedByString:@"_"][1] longLongValue];
+}
+
+#pragma mark -
+
++ (NSString *)_filenameForUrl:(NSString *)url {
+    NSString *name = url.lastPathComponent;
+    NSRange range = [name rangeOfString:@"?"];
+    if ( range.location != NSNotFound ) {
+        name = [name substringToIndex:range.location];
+    }
+    return name;
 }
 @end
 

@@ -23,7 +23,11 @@ UIKIT_EXTERN MCSFileExtension const MCSHLSAESKeyFileExtension;
 + (NSString *)getFilePathWithName:(NSString *)name inResource:(NSString *)resourceName;
 // HLS
 //
-+ (nullable NSString *)hls_AESKeyFilenameInResource:(NSString *)resource;
++ (nullable NSString *)hls_AESKeyFilenameAtIndex:(NSInteger)index inResource:(NSString *)resource;
+
+// HLS
+//
++ (nullable NSString *)hls_AESKeyFilePathForAESKeyProxyURL:(NSURL *)URL inResource:(NSString *)resource;
 
 // HLS
 //

@@ -86,6 +86,10 @@ NS_ASSUME_NONNULL_BEGIN
     CGPoint translate = [pan translationInView:pan.view];
     switch (pan.state) {
         case UIGestureRecognizerStateBegan: {
+            if ( _gestureRecognizerShouldTrigger && !_gestureRecognizerShouldTrigger(self, SJPlayerGestureType_Pan, [_pan locationInView:_pan.view]) ) {
+                pan.state = UIGestureRecognizerStateFailed;
+                return;
+            }
             if ( _panHandler ) _panHandler(self, _triggeredPosition, _movingDirection, SJPanGestureRecognizerStateBegan, translate);
         }
             break;
@@ -106,6 +110,13 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (void)handlePinch:(UIPinchGestureRecognizer *)pinch {
     switch ( pinch.state ) {
+        case UIGestureRecognizerStateBegan: {
+            if ( _gestureRecognizerShouldTrigger && !_gestureRecognizerShouldTrigger(self, SJPlayerGestureType_Pinch, [pinch locationInView:pinch.view]) ) {
+                pinch.state = UIGestureRecognizerStateFailed;
+                return;
+            }
+        }
+            break;
         case UIGestureRecognizerStateEnded: {
             if ( _pinchHandler )
                 _pinchHandler(self, pinch.scale);
@@ -119,6 +130,10 @@ NS_ASSUME_NONNULL_BEGIN
 - (void)handleLongPress:(UILongPressGestureRecognizer *)longPress {
     switch ( longPress.state ) {
         case UIGestureRecognizerStateBegan: {
+            if ( _gestureRecognizerShouldTrigger && !_gestureRecognizerShouldTrigger(self, SJPlayerGestureType_LongPress, [longPress locationInView:longPress.view]) ) {
+                longPress.state = UIGestureRecognizerStateFailed;
+                return;
+            }
             if ( _longPressHandler ) _longPressHandler(self, SJLongPressGestureRecognizerStateBegan);
         }
             break;
@@ -318,9 +333,6 @@ NS_ASSUME_NONNULL_BEGIN
         }
             break;
     }
-    
-    if ( _gestureRecognizerShouldTrigger && !_gestureRecognizerShouldTrigger(self, type, [gestureRecognizer locationInView:gestureRecognizer.view]) )
-        return NO;
     
     return YES;
 }

@@ -175,8 +175,8 @@
 - (void)_close {
     if ( _isClosed )
         return;
-    _isClosed = YES;
     [_reader close];
+    _isClosed = YES;
     
     MCSLog(@"%@: <%p>.close { URL: %@ };\n", NSStringFromClass(self.class), self, _URL);
 }

@@ -113,6 +113,7 @@
         [self willChangeValueForKey:@"isExecuting"];
         
         [_prefetcher close];
+        _prefetcher = nil;
         _isExecuting = NO;
         _isFinished = YES;
         

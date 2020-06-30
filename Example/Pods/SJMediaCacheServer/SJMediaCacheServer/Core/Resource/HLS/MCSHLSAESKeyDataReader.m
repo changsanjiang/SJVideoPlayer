@@ -18,7 +18,7 @@
 
 @implementation MCSHLSAESKeyDataReader
 - (instancetype)initWithResource:(MCSHLSResource *)resource URL:(nonnull NSURL *)URL delegate:(id<MCSResourceDataReaderDelegate>)delegate delegateQueue:(dispatch_queue_t)queue {
-    NSString *path = [resource AESKeyFilePath];
+    NSString *path = [resource AESKeyFilePathForAESKeyProxyURL:URL];
     NSRange range = NSMakeRange(0, [MCSFileManager fileSizeAtPath:path]);
     NSRange readRange = range;
     self = [super initWithRange:range path:path readRange:readRange delegate:delegate delegateQueue:queue];

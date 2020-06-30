@@ -55,7 +55,8 @@
 
         _resource = resource;
         _request = request;
-
+        _offset = _request.mcs_range.location;
+        
         [_resource readWrite_retain];
         [MCSResourceManager.shared reader:self willReadResource:_resource];
         
@@ -158,7 +159,7 @@
 - (NSUInteger)offset {
     [self lock];
     @try {
-        return _offset + _request.mcs_range.location;
+        return _offset;
     } @catch (__unused NSException *exception) {
         
     } @finally {
@@ -201,13 +202,8 @@
 
 - (void)close {
     [self lock];
-    @try {
-        [self _close];
-    } @catch (__unused NSException *exception) {
-        
-    } @finally {
-        [self unlock];
-    }
+    [self _close];
+    [self unlock];
 }
 
 #pragma mark -
@@ -307,7 +303,6 @@
     if ( _isClosed )
         return;
     
-    _isClosed = YES;
     for ( id<MCSResourceDataReader> reader in _readers ) {
         [reader close];
     }
@@ -316,6 +311,7 @@
         [content readWrite_release];
     }
     
+    _isClosed = YES;
     MCSLog(@"%@: <%p>.close { range: %@ };\n", NSStringFromClass(self.class), self, NSStringFromRange(_request.mcs_range));
 }
 
@@ -332,16 +328,21 @@
 #pragma mark - MCSVODMetaDataReaderDelegate
 
 - (void)metaDataReader:(MCSVODMetaDataReader *)reader didCompleteWithError:(NSError *_Nullable)error {
-    if ( error ) {
-        [self lock];
-        [self _onError:error];
+    [self lock];
+    @try {
+        if ( error ) {
+            [self _onError:error];
+            return;
+        }
+        
+        [_resource updateServer:reader.server contentType:reader.contentType totalLength:reader.totalLength pathExtension:reader.pathExtension];
+        
+        [self _prepare];
+    } @catch (__unused NSException *exception) {
+        
+    } @finally {
         [self unlock];
-        return;
     }
-    
-    [_resource updateServer:reader.server contentType:reader.contentType totalLength:reader.totalLength pathExtension:reader.pathExtension];
-    
-    [self _prepare];
 }
 
 #pragma mark - MCSResourceDataReaderDelegate

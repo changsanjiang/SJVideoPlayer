@@ -149,9 +149,9 @@
         return;
     
     @try {
-        _isClosed = YES;
         [_reader closeFile];
         _reader = nil;
+        _isClosed = YES;
         
         MCSLog(@"%@: <%p>.close;\n", NSStringFromClass(self.class), self);
     } @catch (__unused NSException *exception) {

@@ -72,8 +72,8 @@
         if ( _isClosed )
             return;
         
-        _isClosed = YES;
         [_reader close];
+        _isClosed = YES;
         
         MCSLog(@"%@: <%p>.close { preloadSize: %lu };\n", NSStringFromClass(self.class), self, (unsigned long)self.preloadSize);
     } @catch (__unused NSException *exception) {

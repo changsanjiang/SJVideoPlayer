@@ -55,6 +55,7 @@
 
 @interface NSString (MCSRegexMatching)
 - (nullable NSArray<NSValue *> *)mcs_rangesByMatchingPattern:(NSString *)pattern;
+- (nullable NSArray<NSTextCheckingResult *> *)mcs_textCheckingResultsByMatchPattern:(NSString *)pattern;
 @end
 
 @interface MCSHLSParser ()<NSLocking> {
@@ -205,7 +206,7 @@
             break;
 
         // 是否重定向
-        url = [self _urlsWithPattern:@"(?:.*\\.m3u8[^\\s]*)" url:url source:contents].firstObject;
+        url = [self _urlsWithPattern:@".*\\.m3u8[^\\s]*" url:url source:contents].firstObject;
     } while ( url != nil );
 
     if ( error != nil || contents == nil || ![contents hasPrefix:@"#"] ) {
@@ -216,7 +217,7 @@
     NSMutableString *indexFileContents = contents.mutableCopy;
     NSMutableDictionary<NSString *, NSString *> *tsFragments = NSMutableDictionary.dictionary;
     NSMutableArray<NSString *> *reversedTsNames = NSMutableArray.array;
-    [[contents mcs_rangesByMatchingPattern:@"(?:.*\\.ts[^\\s]*)"] enumerateObjectsWithOptions:NSEnumerationReverse usingBlock:^(NSValue * _Nonnull range, NSUInteger idx, BOOL * _Nonnull stop) {
+    [[contents mcs_rangesByMatchingPattern:@".*\\.ts[^\\s]*"] enumerateObjectsWithOptions:NSEnumerationReverse usingBlock:^(NSValue * _Nonnull range, NSUInteger idx, BOOL * _Nonnull stop) {
         NSRange rangeValue = range.rangeValue;
         NSString *matched = [contents substringWithRange:rangeValue];
         NSString *url = [self _urlWithMatchedString:matched];
@@ -229,27 +230,23 @@
     ///
     /// #EXT-X-KEY:METHOD=AES-128,URI="...",IV=...
     ///
-    [[indexFileContents mcs_rangesByMatchingPattern:@"#EXT-X-KEY:METHOD=AES-128,URI=\".*\""] enumerateObjectsUsingBlock:^(NSValue * _Nonnull range, NSUInteger idx, BOOL * _Nonnull stop) {
-        NSRange rangeValue = range.rangeValue;
-        NSString *matched = [contents substringWithRange:rangeValue];
-        NSInteger URILocation = [matched rangeOfString:@"\""].location + 1;
-        NSRange URIRange = NSMakeRange(URILocation, matched.length-URILocation-1);
-        NSString *URI = [matched substringWithRange:URIRange];
+    [[indexFileContents mcs_textCheckingResultsByMatchPattern:@"#EXT-X-KEY:METHOD=AES-128,URI=\"(.*)\""] enumerateObjectsWithOptions:NSEnumerationReverse usingBlock:^(NSTextCheckingResult * _Nonnull result, NSUInteger idx, BOOL * _Nonnull stop) {
+        NSRange URIRange = [result rangeAtIndex:1];
+        NSString *URI = [indexFileContents substringWithRange:URIRange];
         NSString *url = [self _urlWithMatchedString:URI];
         NSData *keyData = [MCSData dataWithContentsOfURL:[NSURL URLWithString:url] error:&error];
         if ( error != nil ) {
             *stop = YES;
             return ;
         }
-        NSString *filename = [MCSFileManager hls_AESKeyFilenameInResource:self.resourceName];
+        NSString *filename = [MCSFileManager hls_AESKeyFilenameAtIndex:idx inResource:self.resourceName];
         NSString *filepath = [MCSFileManager getFilePathWithName:filename inResource:self.resourceName];
         [keyData writeToFile:filepath options:0 error:&error];
         if ( error != nil ) {
             *stop = YES;
             return ;
         }
-        NSString *reset = [matched stringByReplacingCharactersInRange:URIRange withString:filename];
-        [indexFileContents replaceCharactersInRange:rangeValue withString:reset];
+        [indexFileContents replaceCharactersInRange:URIRange withString:filename];
     }];
 
     if ( error != nil ) {
@@ -335,11 +332,18 @@
 
 @implementation NSString (MCSRegexMatching)
 - (nullable NSArray<NSValue *> *)mcs_rangesByMatchingPattern:(NSString *)pattern {
-    NSRegularExpression *regex = [NSRegularExpression regularExpressionWithPattern:pattern options:kNilOptions error:NULL];
     NSMutableArray<NSValue *> *m = NSMutableArray.array;
-    [regex enumerateMatchesInString:self options:NSMatchingWithoutAnchoringBounds range:NSMakeRange(0, self.length) usingBlock:^(NSTextCheckingResult * _Nullable result, NSMatchingFlags flags, BOOL * _Nonnull stop) {
+    for ( NSTextCheckingResult *result in [self mcs_textCheckingResultsByMatchPattern:pattern])
+        [m addObject:[NSValue valueWithRange:result.range]];
+    return m.count != 0 ? m.copy : nil;
+}
+
+- (nullable NSArray<NSTextCheckingResult *> *)mcs_textCheckingResultsByMatchPattern:(NSString *)pattern {
+    NSRegularExpression *regex = [NSRegularExpression regularExpressionWithPattern:pattern options:kNilOptions error:NULL];
+    NSMutableArray<NSTextCheckingResult *> *m = NSMutableArray.array;
+    [regex enumerateMatchesInString:self options:kNilOptions range:NSMakeRange(0, self.length) usingBlock:^(NSTextCheckingResult * _Nullable result, NSMatchingFlags flags, BOOL * _Nonnull stop) {
         if ( result != nil ) {
-            [m addObject:[NSValue valueWithRange:result.range]];
+            [m addObject:result];
         }
     }];
     return m.count != 0 ? m.copy : nil;

@@ -156,7 +156,7 @@ typedef struct _SJPlayerControlInfo {
 }
 
 + (NSString *)version {
-    return @"v3.3.3";
+    return @"v3.3.5";
 }
 
 - (void)setVideoGravity:(SJVideoGravity)videoGravity {
@@ -201,15 +201,10 @@ typedef struct _SJPlayerControlInfo {
     [self _showOrHiddenPlaceholderImageViewIfNeeded];
     [self rotationManager];
     [self registrar];
-    dispatch_async(dispatch_get_main_queue(), ^{    
-        [self.deviceVolumeAndBrightnessManager prepare];
-    });
-
-    dispatch_async(dispatch_get_global_queue(0, 0), ^{
-        [self reachability];
-        [self gestureControl];
-        [self _configAVAudioSession];
-    });
+    [self reachability];
+    [self gestureControl];
+    [self.deviceVolumeAndBrightnessManager prepare];
+    [self performSelectorInBackground:@selector(_configAVAudioSession) withObject:nil];
     return self;
 }
 

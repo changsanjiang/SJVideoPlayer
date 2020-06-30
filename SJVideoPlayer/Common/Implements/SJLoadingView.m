@@ -171,7 +171,7 @@ NS_ASSUME_NONNULL_BEGIN
     _speedLabel.hidden = !showNetworkSpeed;
 }
 - (BOOL)showNetworkSpeed {
-    return _speedLabel.isHidden;
+    return !_speedLabel.isHidden;
 }
 
 - (void)setNetworkSpeedStr:(nullable NSAttributedString *)networkSpeedStr {

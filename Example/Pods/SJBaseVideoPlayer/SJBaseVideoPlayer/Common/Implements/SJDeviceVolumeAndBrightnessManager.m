@@ -166,8 +166,9 @@ static NSNotificationName const SJDeviceBrightnessDidChangeNotification = @"SJDe
 @synthesize volumeTracking = _volumeTracking;
 @synthesize brightnessTracking = _brightnessTracking;
 
-+ (void)load {
-    dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(0.1 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
++ (void)initialize {
+    static dispatch_once_t onceToken;
+    dispatch_once(&onceToken, ^{
         [self shared];
     });
 }

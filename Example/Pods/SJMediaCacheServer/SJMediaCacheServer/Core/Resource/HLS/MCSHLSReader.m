@@ -125,15 +125,8 @@
 
 - (void)close {
     [self lock];
-    @try {
-        [self _close];
-    } @catch (__unused NSException *exception) {
-        
-    } @finally {
-        [self unlock];
-    }
-    
-//    MCSLog(@"%@: <%p>.close { range: %@ };\n", NSStringFromClass(self.class), self, NSStringFromRange(_request.mcs_range));
+    [self _close];
+    [self unlock];
 }
 
 - (BOOL)isReadingEndOfData {
@@ -176,8 +169,8 @@
     if ( _isClosed )
         return;
     
-    _isClosed = YES;
     [_reader close];
+    _isClosed = YES;
     
     MCSLog(@"%@: <%p>.close { URL: %@ };\n", NSStringFromClass(self.class), self, _request.URL);
 }

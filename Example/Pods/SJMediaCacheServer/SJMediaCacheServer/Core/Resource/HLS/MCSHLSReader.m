@@ -83,15 +83,22 @@
         
         _isCalledPrepare = YES;
         
+        NSURL *URL = [MCSURLRecognizer.shared URLWithProxyURL:_request.URL];
+
         if      ( [_request.URL.absoluteString containsString:MCSHLSIndexFileExtension] ) {
-            _reader = [MCSHLSIndexDataReader.alloc initWithResource:_resource URL:_request.URL delegate:self delegateQueue:_resource.readerOperationQueue];
+            _reader = [MCSHLSIndexDataReader.alloc initWithResource:_resource URL:URL delegate:self delegateQueue:_resource.readerOperationQueue];
         }
         else if ( [_request.URL.absoluteString containsString:MCSHLSAESKeyFileExtension] ) {
-            _reader = [MCSHLSAESKeyDataReader.alloc initWithResource:_resource URL:_request.URL delegate:self delegateQueue:_resource.readerOperationQueue];
+            NSAssert(_resource.parser != nil, @"`parser`不能为nil!");
+            _reader = [MCSHLSAESKeyDataReader.alloc initWithResource:_resource URL:URL networkTaskPriority:_networkTaskPriority delegate:self delegateQueue:_resource.readerOperationQueue];
         }
         else {
             NSAssert(_resource.parser != nil, @"`parser`不能为nil!");
-            _reader = [MCSHLSTSDataReader.alloc initWithResource:_resource request:_request networkTaskPriority:_networkTaskPriority delegate:self delegateQueue:_resource.readerOperationQueue];
+            NSMutableURLRequest *request = [NSMutableURLRequest requestWithURL:URL];
+            [_request.allHTTPHeaderFields enumerateKeysAndObjectsUsingBlock:^(NSString * _Nonnull key, NSString * _Nonnull obj, BOOL * _Nonnull stop) {
+                [request setValue:obj forHTTPHeaderField:key];
+            }];
+            _reader = [MCSHLSTSDataReader.alloc initWithResource:_resource request:request networkTaskPriority:_networkTaskPriority delegate:self delegateQueue:_resource.readerOperationQueue];
         }
         
         [_reader prepare];

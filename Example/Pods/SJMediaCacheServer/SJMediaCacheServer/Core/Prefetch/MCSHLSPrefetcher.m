@@ -14,7 +14,7 @@
 #import "MCSHLSIndexDataReader.h"
 
 @interface MCSHLSPrefetcher ()<NSLocking, MCSResourceReaderDelegate> {
-    NSRecursiveLock *_lock;
+    dispatch_semaphore_t _semaphore;
 }
 @property (nonatomic) BOOL isCalledPrepare;
 @property (nonatomic) BOOL isPrepared;
@@ -33,13 +33,16 @@
 
 @implementation MCSHLSPrefetcher
 @synthesize delegate = _delegate;
-- (instancetype)initWithURL:(NSURL *)URL preloadSize:(NSUInteger)bytes {
+@synthesize delegateQueue = _delegateQueue;
+- (instancetype)initWithURL:(NSURL *)URL preloadSize:(NSUInteger)bytes delegate:(nonnull id<MCSPrefetcherDelegate>)delegate delegateQueue:(nonnull dispatch_queue_t)queue {
     self = [super init];
     if ( self ) {
+        _delegate = delegate;
+        _delegateQueue = queue;
         _URL = URL;
         _preloadSize = bytes;
         _fragmentIndex = NSNotFound;
-        _lock = NSRecursiveLock.alloc.init;
+        _semaphore = dispatch_semaphore_create(1);
     }
     return self;
 }
@@ -58,10 +61,10 @@
         if ( _isClosed || _isCalledPrepare )
             return;
 
-        MCSLog(@"%@: <%p>.prepare { preloadSize: %lu };\n", NSStringFromClass(self.class), self, (unsigned long)self.preloadSize);
+        MCSLog(@"%@: <%p>.prepare { preloadSize: %lu };\n", NSStringFromClass(self.class), self, (unsigned long)_preloadSize);
         
         _isCalledPrepare = YES;
-        _resource = [MCSResourceManager.shared resourceWithURL:self.URL];
+        _resource = [MCSResourceManager.shared resourceWithURL:_URL];
         _resource.parser == nil ? [self _parse] : [self _prepareNextFragment];
     } @catch (__unused NSException *exception) {
         
@@ -72,19 +75,8 @@
 
 - (void)close {
     [self lock];
-    @try {
-        if ( _isClosed )
-            return;
-        
-        [_reader close];
-        _isClosed = YES;
-        
-        MCSLog(@"%@: <%p>.close { preloadSize: %lu };\n", NSStringFromClass(self.class), self, (unsigned long)self.preloadSize);
-    } @catch (__unused NSException *exception) {
-        
-    } @finally {
-        [self unlock];
-    }
+    [self _close];
+    [self unlock];
 }
 
 - (float)progress {
@@ -113,7 +105,7 @@
 - (BOOL)isDone {
     [self lock];
     @try {
-        return _reader.isReadingEndOfData;
+        return _progress >= 1;
     } @catch (__unused NSException *exception) {
             
     } @finally {
@@ -124,7 +116,7 @@
 #pragma mark -
 
 - (void)_parse {
-    NSURLRequest *request = [NSURLRequest.alloc initWithURL:self.URL];
+    NSURLRequest *request = [NSURLRequest.alloc initWithURL:_URL];
     _reader = [MCSResourceManager.shared readerWithRequest:request];
     _reader.delegate = self;
     [_reader prepare];
@@ -133,8 +125,8 @@
 - (void)_prepareNextFragment {
     _fragmentIndex = (_fragmentIndex == NSNotFound) ? 0 : (_fragmentIndex + 1);
     
-    NSString *name = [_resource.parser tsNameAtIndex:_fragmentIndex];
-    NSURL *proxyURL = [MCSURLRecognizer.shared proxyURLWithTsName:name];
+    NSString *TsURI = [_resource.parser TsURIAtIndex:_fragmentIndex];
+    NSURL *proxyURL = [MCSURLRecognizer.shared proxyURLWithTsURI:TsURI];
     NSURLRequest *request = [NSURLRequest requestWithURL:proxyURL];
     _reader = [MCSResourceManager.shared readerWithRequest:request];
     _reader.networkTaskPriority = 0;
@@ -150,59 +142,83 @@
 
 - (void)readerHasAvailableData:(id<MCSResourceReader>)reader {
     [self lock];
-    @try {
-        while (true) {
-            @autoreleasepool {
-                NSData *data = [_reader readDataOfLength:1 * 1024 * 1024];
-                if ( data.length == 0 )
-                    break;
-                
-                if ( _fragmentIndex != NSNotFound )
-                    _offset += data.length;
-                
-                _progress = _offset * 1.0 / self.preloadSize;
-                [self.delegate prefetcher:self progressDidChange:_progress];
-                
-                MCSLog(@"%@: <%p>.preload { preloadSize: %lu, progress: %f };\n", NSStringFromClass(self.class), self, (unsigned long)self.preloadSize, _progress);
-
-                BOOL isEnd = _progress >= 1;
-                if ( !isEnd && reader.isReadingEndOfData && _fragmentIndex == _resource.parser.tsCount - 1 ) {
-                    isEnd = YES;
-                    _progress = 1;
-                }
-                
-                if ( !isEnd ) {
-                    if ( reader.isReadingEndOfData ) [self _prepareNextFragment];
-                }
-                else {
-                    MCSLog(@"%@: <%p>.done { preloadSize: %lu };\n", NSStringFromClass(self.class), self, (unsigned long)self.preloadSize);
-                    [self close];
-                    [self.delegate prefetcher:self didCompleteWithError:nil];
+    while (true) {
+        @autoreleasepool {
+            NSData *data = [_reader readDataOfLength:1 * 1024 * 1024];
+            if ( data.length == 0 )
+                break;
+            
+            if ( _fragmentIndex != NSNotFound )
+                _offset += data.length;
+            
+            CGFloat progress = _offset * 1.0 / _preloadSize;
+            if ( progress >= 1 ) progress = 1;
+            _progress = progress;
+            
+            MCSLog(@"%@: <%p>.preload { preloadSize: %lu, progress: %f };\n", NSStringFromClass(self.class), self, (unsigned long)_preloadSize, _progress);
+            
+            if ( _delegate != nil ) {
+                dispatch_async(_delegateQueue, ^{
+                    [self.delegate prefetcher:self progressDidChange:progress];
+                });
+            }
+            
+            if ( progress >= 1 || reader.isReadingEndOfData ) {
+                BOOL isLastFragment = reader.isReadingEndOfData && _fragmentIndex == _resource.parser.TsCount - 1;
+                BOOL isFinished = progress >= 1 || isLastFragment;
+                if ( !isFinished ) {
+                    [self _prepareNextFragment];
                     break;
                 }
+                
+                [self _didCompleteWithError:nil];
+                break;
             }
         }
-    } @catch (__unused NSException *exception) {
-        
-    } @finally {
-        [self unlock];
     }
+    [self unlock];
 }
 
 - (void)reader:(id<MCSResourceReader>)reader anErrorOccurred:(NSError *)error {
-    MCSLog(@"%@: <%p>.error { preloadSize: %lu };\n", NSStringFromClass(self.class), self, (unsigned long)self.preloadSize);
+    [self lock];
+    [self _didCompleteWithError:error];
+    [self unlock];
+}
 
-    [self close];
-    [self.delegate prefetcher:self didCompleteWithError:error];
+#pragma mark -
+
+- (void)_didCompleteWithError:(nullable NSError *)error {
+#ifdef DEBUG
+    if ( error == nil )
+        MCSLog(@"%@: <%p>.done { preloadSize: %lu };\n", NSStringFromClass(self.class), self, (unsigned long)_preloadSize);
+    else
+        MCSLog(@"%@: <%p>.error { preloadSize: %lu };\n", NSStringFromClass(self.class), self, (unsigned long)_preloadSize);
+#endif
+    [self _close];
+    if ( _delegate != nil ) {
+        dispatch_async(_delegateQueue, ^{
+            [self.delegate prefetcher:self didCompleteWithError:error];
+        });
+    }
+}
+
+- (void)_close {
+    if ( _isClosed )
+        return;
+    
+    [_reader close];
+    _isClosed = YES;
+
+    MCSLog(@"%@: <%p>.close { preloadSize: %lu };\n", NSStringFromClass(self.class), self, (unsigned long)_preloadSize);
 }
 
 #pragma mark -
 
 - (void)lock {
-    [_lock lock];
+    dispatch_semaphore_wait(_semaphore, DISPATCH_TIME_FOREVER);
 }
 
 - (void)unlock {
-    [_lock unlock];
+    dispatch_semaphore_signal(_semaphore);
 }
 @end

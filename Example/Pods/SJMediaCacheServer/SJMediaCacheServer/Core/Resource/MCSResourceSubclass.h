@@ -14,7 +14,10 @@
 
 NS_ASSUME_NONNULL_BEGIN
 @interface MCSResourcePartialContent (MCSPrivate)<MCSReadWrite>
-@property (nonatomic, weak, nullable) id<MCSResourcePartialContentDelegate> delegate;
+@property (nonatomic, weak, readonly, nullable) id<MCSResourcePartialContentDelegate> delegate;
+@property (nonatomic, strong, readonly, nullable) dispatch_queue_t delegateQueue;
+
+- (void)setDelegate:(id<MCSResourcePartialContentDelegate> _Nullable)delegate delegateQueue:(dispatch_queue_t)delegateQueue;
 
 @property (nonatomic, readonly) NSInteger readWriteCount;
 - (void)readWrite_retain;

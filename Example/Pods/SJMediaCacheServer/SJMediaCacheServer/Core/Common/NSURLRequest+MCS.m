@@ -45,4 +45,12 @@
     [request setValue:[NSString stringWithFormat:@"bytes=%lu-%lu", (unsigned long)range.location, (unsigned long)NSMaxRange(range) - 1] forHTTPHeaderField:@"Range"];
     return request;
 }
+
+- (NSMutableURLRequest *)mcs_requestWithRedirectURL:(NSURL *)URL range:(NSRange)range {
+    return [NSMutableURLRequest mcs_requestWithURL:URL headers:self.allHTTPHeaderFields range:range];
+}
+
+- (NSMutableURLRequest *)mcs_requestWithRedirectURL:(NSURL *)URL {
+    return [NSMutableURLRequest mcs_requestWithURL:URL headers:self.allHTTPHeaderFields];
+}
 @end

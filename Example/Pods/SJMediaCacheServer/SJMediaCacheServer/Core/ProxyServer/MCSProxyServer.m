@@ -8,7 +8,6 @@
 
 #import "MCSProxyServer.h"
 #import "NSURLRequest+MCS.h"
-#import "MCSURLRecognizer.h"
 #import "MCSLogger.h"
 #import <objc/message.h>
 #import <CocoaHTTPServer/HTTPServer.h>
@@ -85,7 +84,7 @@
             _serverURL = [NSURL URLWithString:[NSString stringWithFormat:@"http://127.0.0.1:%d", _port]];
             break;
         }
-        [_localServer setPort:_port += 2];
+        [_localServer setPort:_port += (UInt16)(arc4random() % 1000 + 1)];
     }
 }
 
@@ -198,8 +197,7 @@
 
 @implementation NSURLRequest (MCSHTTPConnectionExtended)
 + (NSMutableURLRequest *)mcs_requestWithMessage:(HTTPMessage *)message {
-    NSURL *URL = [MCSURLRecognizer.shared URLWithProxyURL:message.url];
-    return [self mcs_requestWithURL:URL headers:message.allHeaderFields];
+    return [self mcs_requestWithURL:message.url headers:message.allHeaderFields];
 }
 @end
 

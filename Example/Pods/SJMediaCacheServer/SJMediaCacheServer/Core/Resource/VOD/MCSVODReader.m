@@ -107,7 +107,8 @@
         _isCalledPrepare = YES;
         
         if ( _resource.totalLength == 0 || _resource.pathExtension.length == 0 ) {
-            _metaDataReader = [MCSVODMetaDataReader.alloc initWithRequest:_request delegate:self delegateQueue:_resource.readerOperationQueue];
+            NSURL *URL = [MCSURLRecognizer.shared URLWithProxyURL:_request.URL];
+            _metaDataReader = [MCSVODMetaDataReader.alloc initWithRequest:[_request mcs_requestWithRedirectURL:URL] delegate:self delegateQueue:_resource.readerOperationQueue];
             return;
         }
         
@@ -235,6 +236,7 @@
     _response = [MCSResourceResponse.alloc initWithServer:_resource.server contentType:_resource.contentType totalLength:totalLength contentRange:current];
 
     NSMutableArray<id<MCSResourceDataReader>> *readers = NSMutableArray.array;
+    NSURL *URL = [MCSURLRecognizer.shared URLWithProxyURL:_request.URL];
     for ( MCSResourcePartialContent *content in contents ) {
         NSRange available = NSMakeRange(content.offset, content.length);
         NSRange intersection = NSIntersectionRange(current, available);
@@ -242,14 +244,14 @@
             // undownloaded part
             NSRange leftRange = NSMakeRange(current.location, intersection.location - current.location);
             if ( leftRange.length != 0 ) {
-                MCSVODNetworkDataReader *reader = [MCSVODNetworkDataReader.alloc initWithResource:_resource request:[_request mcs_requestWithRange:leftRange] networkTaskPriority:_networkTaskPriority delegate:self delegateQueue:_resource.readerOperationQueue];
+                MCSVODNetworkDataReader *reader = [MCSVODNetworkDataReader.alloc initWithResource:_resource request:[_request mcs_requestWithRedirectURL:URL range:leftRange] networkTaskPriority:_networkTaskPriority delegate:self delegateQueue:_resource.readerOperationQueue];
                 [readers addObject:reader];
             }
             
             // downloaded part
             NSRange matchedRange = NSMakeRange(NSMaxRange(leftRange), intersection.length);
             NSRange fileRange = NSMakeRange(matchedRange.location - content.offset, intersection.length);
-            NSString *path = [MCSFileManager getFilePathWithName:content.name inResource:_resource.name];
+            NSString *path = [MCSFileManager getFilePathWithName:content.filename inResource:_resource.name];
             MCSResourceFileDataReader *reader = [MCSResourceFileDataReader.alloc initWithRange:matchedRange path:path readRange:fileRange delegate:self delegateQueue:_resource.readerOperationQueue];
             [readers addObject:reader];
             
@@ -266,7 +268,7 @@
     
     if ( current.length != 0 ) {
         // undownloaded part
-        MCSVODNetworkDataReader *reader = [MCSVODNetworkDataReader.alloc initWithResource:_resource request:[_request mcs_requestWithRange:current] networkTaskPriority:_networkTaskPriority delegate:self delegateQueue:_resource.readerOperationQueue];
+        MCSVODNetworkDataReader *reader = [MCSVODNetworkDataReader.alloc initWithResource:_resource request:[_request mcs_requestWithRedirectURL:URL range:current] networkTaskPriority:_networkTaskPriority delegate:self delegateQueue:_resource.readerOperationQueue];
         [readers addObject:reader];
     }
     

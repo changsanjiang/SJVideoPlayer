@@ -11,15 +11,18 @@
 
 NS_ASSUME_NONNULL_BEGIN
 @interface MCSHLSResource : MCSResource
-@property (nonatomic, copy, readonly, nullable) NSString *tsContentType;
-@property (nonatomic, readonly) NSUInteger tsCount;
+@property (nonatomic, copy, readonly, nullable) NSString *TsContentType;
+@property (nonatomic, readonly) NSUInteger TsCount;
 @property (nonatomic, strong, nullable) MCSHLSParser *parser;
 
-- (NSString *)AESKeyFilePathForAESKeyProxyURL:(NSURL *)URL;
-- (NSString *)tsNameForTsProxyURL:(NSURL *)URL;
-- (nullable MCSResourcePartialContent *)contentForTsProxyURL:(NSURL *)URL;
-- (MCSResourcePartialContent *)createContentWithTsProxyURL:(NSURL *)URL tsTotalLength:(NSUInteger)totalLength;
+
 - (NSString *)filePathOfContent:(MCSResourcePartialContent *)content;
-- (void)updateTsContentType:(NSString * _Nullable)tsContentType;
+- (void)updateTsContentType:(NSString * _Nullable)TsContentType;
+
+- (nullable MCSResourcePartialContent *)contentForTsURL:(NSURL *)URL;
+- (MCSResourcePartialContent *)createContentWithTsURL:(NSURL *)URL totalLength:(NSUInteger)totalLength;
+
+- (nullable MCSResourcePartialContent *)contentForAESKeyURL:(NSURL *)URL;
+- (MCSResourcePartialContent *)createContentWithAESKeyURL:(NSURL *)URL totalLength:(NSUInteger)totalLength;
 @end
 NS_ASSUME_NONNULL_END

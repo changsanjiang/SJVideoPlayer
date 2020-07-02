@@ -11,7 +11,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 @interface MCSVODPrefetcher : NSObject<MCSPrefetcher>
 
-- (instancetype)initWithURL:(NSURL *)URL preloadSize:(NSUInteger)bytes;
+- (instancetype)initWithURL:(NSURL *)URL preloadSize:(NSUInteger)bytes delegate:(id<MCSPrefetcherDelegate>)delegate delegateQueue:(dispatch_queue_t)queue;
 
 @end
 

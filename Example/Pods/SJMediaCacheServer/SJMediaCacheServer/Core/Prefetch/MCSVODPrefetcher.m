@@ -11,7 +11,7 @@
 #import "NSURLRequest+MCS.h"
 
 @interface MCSVODPrefetcher () <NSLocking, MCSResourceReaderDelegate> {
-    NSRecursiveLock *_lock;
+    dispatch_semaphore_t _semaphore;
 }
 @property (nonatomic) BOOL isCalledPrepare;
 @property (nonatomic) BOOL isPrepared;
@@ -22,16 +22,20 @@
 
 @property (nonatomic, strong) NSURL *URL;
 @property (nonatomic) NSUInteger preloadSize;
+@property (nonatomic) float progress;
 @end
 
 @implementation MCSVODPrefetcher
 @synthesize delegate = _delegate;
-- (instancetype)initWithURL:(NSURL *)URL preloadSize:(NSUInteger)bytes {
+@synthesize delegateQueue = _delegateQueue;
+- (instancetype)initWithURL:(NSURL *)URL preloadSize:(NSUInteger)bytes delegate:(nonnull id<MCSPrefetcherDelegate>)delegate delegateQueue:(nonnull dispatch_queue_t)queue {
     self = [super init];
     if ( self ) {
+        _delegate = delegate;
+        _delegateQueue = queue;
         _URL = URL;
         _preloadSize = bytes;
-        _lock = NSRecursiveLock.alloc.init;
+        _semaphore = dispatch_semaphore_create(1);
     }
     return self;
 }
@@ -50,11 +54,11 @@
         if ( _isClosed || _isCalledPrepare )
             return;
         
-        MCSLog(@"%@: <%p>.prepare { preloadSize: %lu };\n", NSStringFromClass(self.class), self, (unsigned long)self.preloadSize);
+        MCSLog(@"%@: <%p>.prepare { preloadSize: %lu };\n", NSStringFromClass(self.class), self, (unsigned long)_preloadSize);
 
         _isCalledPrepare = YES;
         
-        NSURLRequest *request = [NSURLRequest mcs_requestWithURL:self.URL range:NSMakeRange(0, self.preloadSize)];
+        NSURLRequest *request = [NSURLRequest mcs_requestWithURL:_URL range:NSMakeRange(0, _preloadSize)];
         _reader = [MCSResourceManager.shared readerWithRequest:request];
         _reader.networkTaskPriority = 0;
         _reader.delegate = self;
@@ -86,7 +90,7 @@
 - (float)progress {
     [self lock];
     @try {
-        return _reader.isPrepared ? _offset * 1.0 / _reader.response.contentRange.length : 0;
+        return _progress;
     } @catch (__unused NSException *exception) {
             
     } @finally {
@@ -135,14 +139,19 @@
                 _offset += data.length;
                 
                 float progress = _offset * 1.0 / reader.response.contentRange.length;
-                [self.delegate prefetcher:self progressDidChange:progress];
+                if ( progress >= 1 ) progress = 1;
+                _progress = progress;
                 
-                MCSLog(@"%@: <%p>.preload { preloadSize: %lu, progress: %f };\n", NSStringFromClass(self.class), self, (unsigned long)self.preloadSize, progress);
+                MCSLog(@"%@: <%p>.preload { preloadSize: %lu, progress: %f };\n", NSStringFromClass(self.class), self, (unsigned long)_preloadSize, progress);
 
-                if ( _reader.isReadingEndOfData ) {
-                    MCSLog(@"%@: <%p>.done { preloadSize: %lu };\n", NSStringFromClass(self.class), self, (unsigned long)self.preloadSize);
-                    [self close];
-                    [self.delegate prefetcher:self didCompleteWithError:nil];
+                if ( _delegate != nil ) {
+                    dispatch_async(_delegateQueue, ^{
+                        [self.delegate prefetcher:self progressDidChange:progress];
+                    });
+                }
+                
+                if ( _progress >= 1 || _reader.isReadingEndOfData ) {
+                    [self _didCompleteWithError:nil];
                     break;
                 }
             }
@@ -155,20 +164,45 @@
 }
 
 - (void)reader:(id<MCSResourceReader>)reader anErrorOccurred:(NSError *)error {
-    MCSLog(@"%@: <%p>.error { preloadSize: %lu };\n", NSStringFromClass(self.class), self, (unsigned long)self.preloadSize);
+    [self lock];
+    [self _didCompleteWithError:error];
+    [self unlock];
+}
 
-    [self close];
-    [self.delegate prefetcher:self didCompleteWithError:error];
+#pragma mark -
+
+- (void)_didCompleteWithError:(nullable NSError *)error {
+#ifdef DEBUG
+    if ( error == nil )
+        MCSLog(@"%@: <%p>.done { preloadSize: %lu };\n", NSStringFromClass(self.class), self, (unsigned long)_preloadSize);
+    else
+        MCSLog(@"%@: <%p>.error { preloadSize: %lu };\n", NSStringFromClass(self.class), self, (unsigned long)_preloadSize);
+#endif
+    [self _close];
+    if ( _delegate != nil ) {
+        dispatch_async(_delegateQueue, ^{
+            [self.delegate prefetcher:self didCompleteWithError:error];
+        });
+    }
+}
+
+- (void)_close {
+    if ( _isClosed )
+        return;
+    
+    [_reader close];
+    _isClosed = YES;
+
+    MCSLog(@"%@: <%p>.close { preloadSize: %lu };\n", NSStringFromClass(self.class), self, (unsigned long)_preloadSize);
 }
 
 #pragma mark -
 
 - (void)lock {
-    [_lock lock];
+    dispatch_semaphore_wait(_semaphore, DISPATCH_TIME_FOREVER);
 }
 
 - (void)unlock {
-    [_lock unlock];
+    dispatch_semaphore_signal(_semaphore);
 }
-
 @end

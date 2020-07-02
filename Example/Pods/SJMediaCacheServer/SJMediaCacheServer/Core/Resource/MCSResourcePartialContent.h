@@ -10,19 +10,27 @@
 
 NS_ASSUME_NONNULL_BEGIN
 @interface MCSResourcePartialContent : NSObject
-@property (nonatomic, copy, readonly) NSString *name;
+@property (nonatomic, copy, readonly) NSString *filename;
 @property (nonatomic, readonly) NSUInteger length;
 - (void)didWriteDataWithLength:(NSUInteger)length;
 @end
 
 @interface MCSResourcePartialContent (VOD)
-- (instancetype)initWithName:(NSString *)name offset:(NSUInteger)offset;
-- (instancetype)initWithName:(NSString *)name offset:(NSUInteger)offset length:(NSUInteger)length;
+- (instancetype)initWithFilename:(NSString *)filename offset:(NSUInteger)offset;
+- (instancetype)initWithFilename:(NSString *)filename offset:(NSUInteger)offset length:(NSUInteger)length;
 @property (nonatomic, readonly) NSUInteger offset;
 @end
 
-@interface MCSResourcePartialContent (HLS)
-- (instancetype)initWithName:(NSString *)name tsName:(NSString *)tsName tsTotalLength:(NSUInteger)tsTotalLength length:(NSUInteger)length;
+
+@interface MCSResourcePartialContent (HLS_AESKey)
+- (instancetype)initWithFilename:(NSString *)filename AESKeyName:(NSString *)AESKeyName AESKeyTotalLength:(NSUInteger)AESKeyTotalLength length:(NSUInteger)length;
+
+@property (nonatomic, copy, readonly) NSString *AESKeyName;
+@property (nonatomic, readonly) NSUInteger AESKeyTotalLength;
+@end
+
+@interface MCSResourcePartialContent (HLS_TS)
+- (instancetype)initWithFilename:(NSString *)filename tsName:(NSString *)tsName tsTotalLength:(NSUInteger)tsTotalLength length:(NSUInteger)length;
 @property (nonatomic, copy, readonly) NSString *tsName;
 @property (nonatomic, readonly) NSUInteger tsTotalLength;
 @end

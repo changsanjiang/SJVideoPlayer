@@ -443,14 +443,14 @@ typedef NS_ENUM(NSUInteger, MCSLimit) {
         return;
 
     NSArray<MCSResourceUsageLog *> *logs = nil;
-    // 清理60s之前的
-    NSTimeInterval before = NSDate.date.timeIntervalSince1970 - 60;
     switch ( limit ) {
         case MCSLimitNone:
             break;
         case MCSLimitCount:
         case MCSLimitCacheDiskSpace:
         case MCSLimitFreeDiskSpace: {
+            // 清理60s之前的
+            NSTimeInterval before = NSDate.date.timeIntervalSince1970 - 60;
             // 清理一半
             NSInteger length = (NSInteger)ceil((_count - usingResources.count) * 0.5);
             logs = [_sqlite3 objectsForClass:MCSResourceUsageLog.class conditions:@[

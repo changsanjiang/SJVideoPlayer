@@ -13,7 +13,8 @@
 
 NS_ASSUME_NONNULL_BEGIN
 @protocol MCSPrefetcher <NSObject>
-@property (nonatomic, weak, nullable) id<MCSPrefetcherDelegate> delegate;
+@property (nonatomic, weak, readonly, nullable) id<MCSPrefetcherDelegate> delegate;
+@property (nonatomic, strong, readonly, nullable) dispatch_queue_t delegateQueue;
 
 - (void)prepare;
 - (void)close;

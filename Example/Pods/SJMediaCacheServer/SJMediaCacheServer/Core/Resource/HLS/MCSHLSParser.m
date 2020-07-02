@@ -10,6 +10,7 @@
 #import "MCSError.h"
 #import "MCSFileManager.h"
 #import "MCSDownload.h"
+#import "MCSURLRecognizer.h"
 
 @interface MCSData : NSObject<MCSDownloadTaskDelegate>
 + (NSData *)dataWithContentsOfURL:(NSURL *)url error:(NSError **)error;
@@ -64,9 +65,8 @@
 @property (nonatomic) BOOL isCalledPrepare;
 @property (nonatomic, strong, nullable) NSURL *URL;
 @property (nonatomic, weak, nullable) id<MCSHLSParserDelegate> delegate;
-@property (nonatomic, strong, nullable) NSDictionary<NSString *, NSString *> *tsFragments;
-@property (nonatomic, strong, nullable) NSArray<NSString *> *tsNames;
 @property (nonatomic) dispatch_queue_t delegateQueue;
+@property (nonatomic, strong) NSArray<NSString *> *TsURIArray;
 @end
 
 @implementation MCSHLSParser
@@ -82,21 +82,10 @@
     return self;
 }
 
-- (NSURL *)tsURLWithTsName:(NSString *)tsName {
+- (nullable NSString *)TsURIAtIndex:(NSUInteger)index {
     [self lock];
     @try {
-        return [NSURL URLWithString:_tsFragments[tsName]];
-    } @catch (__unused NSException *exception) {
-        
-    } @finally {
-        [self unlock];
-    }
-}
-
-- (NSString *)tsNameAtIndex:(NSUInteger)index {
-    [self lock];
-    @try {
-        return index < _tsNames.count ? _tsNames[index] : nil;
+        return index < _TsURIArray.count ? _TsURIArray[index] : nil;
     } @catch (__unused NSException *exception) {
         
     } @finally {
@@ -160,10 +149,10 @@
     }
 }
 
-- (NSUInteger)tsCount {
+- (NSUInteger)TsCount {
     [self lock];
     @try {
-        return _tsNames.count;
+        return _TsURIArray.count;
     } @catch (__unused NSException *exception) {
         
     } @finally {
@@ -178,15 +167,24 @@
 #pragma mark -
 
 - (void)_parse {
+#define MCSURIMatchingPattern_Index     @".*\\.m3u8[^\\s]*"
+#define MCSURIMatchingPattern_Ts        @".*\\.ts[^\\s]*"
+    
     NSString *indexFilePath = [MCSFileManager hls_indexFilePathInResource:_resourceName];
-    NSString *tsNameFilePath = [MCSFileManager hls_tsNamesFilePathInResource:_resourceName];
-    NSString *tsFragmentsFilePath = [MCSFileManager hls_tsFragmentsFilePathInResource:_resourceName];
     // 已解析过, 将直接读取本地
-    if ( [MCSFileManager fileExistsAtPath:indexFilePath] &&
-         [MCSFileManager fileExistsAtPath:tsNameFilePath] &&
-         [MCSFileManager fileExistsAtPath:tsFragmentsFilePath] ) {
-        _tsFragments = [NSDictionary dictionaryWithContentsOfFile:tsFragmentsFilePath];
-        _tsNames = [NSArray arrayWithContentsOfFile:tsNameFilePath];
+    if ( [MCSFileManager fileExistsAtPath:indexFilePath] ) {
+        NSError *error = nil;
+        NSString *content = [NSString stringWithContentsOfFile:indexFilePath encoding:NSUTF8StringEncoding error:&error];
+        if ( content == nil ) {
+            [self _onError:error];
+            return;
+        }
+        
+        NSMutableArray<NSString *> *TsURIArray = NSMutableArray.array;
+        [[content mcs_textCheckingResultsByMatchPattern:MCSURIMatchingPattern_Ts] enumerateObjectsUsingBlock:^(NSTextCheckingResult * _Nonnull obj, NSUInteger idx, BOOL * _Nonnull stop) {
+            [TsURIArray addObject:[content substringWithRange:obj.range]];
+        }];
+        _TsURIArray = TsURIArray.copy;
         _isDone = YES;
         
         dispatch_async(_delegateQueue, ^{
@@ -201,12 +199,13 @@
     do {
         NSURL *URL = [NSURL URLWithString:url];
         NSData *data = [MCSData dataWithContentsOfURL:URL error:&error];
+        if ( _isClosed ) return;
         contents = [NSString.alloc initWithData:data encoding:0];
         if ( contents == nil )
             break;
 
         // 是否重定向
-        url = [self _urlsWithPattern:@".*\\.m3u8[^\\s]*" url:url source:contents].firstObject;
+        url = [self _urlsWithPattern:MCSURIMatchingPattern_Index url:url source:contents].firstObject;
     } while ( url != nil );
 
     if ( error != nil || contents == nil || ![contents hasPrefix:@"#"] ) {
@@ -215,16 +214,22 @@
     }
  
     NSMutableString *indexFileContents = contents.mutableCopy;
-    NSMutableDictionary<NSString *, NSString *> *tsFragments = NSMutableDictionary.dictionary;
-    NSMutableArray<NSString *> *reversedTsNames = NSMutableArray.array;
-    [[contents mcs_rangesByMatchingPattern:@".*\\.ts[^\\s]*"] enumerateObjectsWithOptions:NSEnumerationReverse usingBlock:^(NSValue * _Nonnull range, NSUInteger idx, BOOL * _Nonnull stop) {
+    ///
+    /// 000000.ts
+    ///
+    NSArray<NSValue *> *TsURIRanges = [contents mcs_rangesByMatchingPattern:MCSURIMatchingPattern_Ts];
+    if ( TsURIRanges.count == 0 ) {
+        [self _onError:[NSError mcs_HLSFileParseError:_URL]];
+        return;
+    }
+    NSMutableArray<NSString *> *reversedTsURIArray = [NSMutableArray arrayWithCapacity:TsURIRanges.count];
+    [TsURIRanges enumerateObjectsWithOptions:NSEnumerationReverse usingBlock:^(NSValue * _Nonnull range, NSUInteger idx, BOOL * _Nonnull stop) {
         NSRange rangeValue = range.rangeValue;
         NSString *matched = [contents substringWithRange:rangeValue];
         NSString *url = [self _urlWithMatchedString:matched];
-        NSString *tsName = [MCSFileManager hls_tsNameForUrl:url inResource:self.resourceName];
-        tsFragments[tsName] = url;
-        [reversedTsNames addObject:tsName];
-        if ( tsName != nil ) [indexFileContents replaceCharactersInRange:rangeValue withString:tsName];
+        NSString *proxy = [MCSURLRecognizer.shared proxyTsURIWithUrl:url inResource:self.resourceName];
+        [reversedTsURIArray addObject:proxy];
+        [indexFileContents replaceCharactersInRange:rangeValue withString:proxy];
     }];
  
     ///
@@ -234,53 +239,29 @@
         NSRange URIRange = [result rangeAtIndex:1];
         NSString *URI = [indexFileContents substringWithRange:URIRange];
         NSString *url = [self _urlWithMatchedString:URI];
-        NSData *keyData = [MCSData dataWithContentsOfURL:[NSURL URLWithString:url] error:&error];
-        if ( error != nil ) {
-            *stop = YES;
-            return ;
-        }
-        NSString *filename = [MCSFileManager hls_AESKeyFilenameAtIndex:idx inResource:self.resourceName];
-        NSString *filepath = [MCSFileManager getFilePathWithName:filename inResource:self.resourceName];
-        [keyData writeToFile:filepath options:0 error:&error];
-        if ( error != nil ) {
-            *stop = YES;
-            return ;
-        }
-        [indexFileContents replaceCharactersInRange:URIRange withString:filename];
+        NSString *proxy = [MCSURLRecognizer.shared proxyAESKeyURIWithUrl:url inResource:self.resourceName];
+        [indexFileContents replaceCharactersInRange:URIRange withString:proxy];
     }];
-
-    if ( error != nil ) {
-        [self _onError:error];
-        return;
-    }
     
-    if ( tsFragments.count == 0 ) {
-        [self _onError:[NSError mcs_HLSFileParseError:_URL]];
-        return;
+    [MCSFileManager lock];
+    if ( ![MCSFileManager fileExistsAtPath:indexFilePath] ) {
+        if ( ![indexFileContents writeToFile:indexFilePath atomically:YES encoding:NSUTF8StringEncoding error:&error] ) {
+            [self _onError:error];
+            [MCSFileManager unlock];
+            return;
+        }
     }
+    [MCSFileManager unlock];
     
-    if ( ![tsFragments writeToFile:tsFragmentsFilePath atomically:YES] ) {
-        [self _onError:[NSError mcs_HLSFileParseError:_URL]];
-        return;
-    }
-    NSArray<NSString *> *tsNames = [[reversedTsNames reverseObjectEnumerator] allObjects];
-    if ( ![tsNames writeToFile:tsNameFilePath atomically:YES] ) {
-        [self _onError:[NSError mcs_HLSFileParseError:_URL]];
-        return;
-    }
-    
-    if ( ![indexFileContents writeToFile:indexFilePath atomically:YES encoding:NSUTF8StringEncoding error:&error] ) {
-        [self _onError:error];
-        return;
-    }
-    
-    _tsNames = tsNames;
-    _tsFragments = tsFragments;
+    _TsURIArray = [reversedTsURIArray reverseObjectEnumerator].allObjects;
     _isDone = YES;
 
     dispatch_async(_delegateQueue, ^{
         [self.delegate parserParseDidFinish:self];
     });
+    
+#undef MCSURIMatchingPattern_Ts
+#undef MCSURIMatchingPattern_Index
 }
 
 - (nullable NSArray<NSString *> *)_urlsWithPattern:(NSString *)pattern url:(NSString *)url source:(NSString *)source {

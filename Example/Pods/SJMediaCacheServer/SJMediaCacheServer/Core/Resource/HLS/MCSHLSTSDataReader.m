@@ -46,6 +46,7 @@
 - (instancetype)initWithResource:(MCSHLSResource *)resource request:(NSURLRequest *)request networkTaskPriority:(float)networkTaskPriority delegate:(id<MCSResourceDataReaderDelegate>)delegate delegateQueue:(dispatch_queue_t)queue {
     self = [super init];
     if ( self ) {
+        _URL = request.URL;
         _networkTaskPriority = networkTaskPriority;
         _resource = resource;
         _request = request;
@@ -66,14 +67,11 @@
         if ( _isClosed || _isCalledPrepare )
             return;
         
-        NSString *tsName = [_resource tsNameForTsProxyURL:_request.URL];
-        _URL = [_resource.parser tsURLWithTsName:tsName];
-        
         MCSLog(@"%@: <%p>.prepare { URL: %@ };\n", NSStringFromClass(self.class), self, _URL);
 
         _isCalledPrepare = YES;
         
-        _content = [_resource contentForTsProxyURL:_request.URL];
+        _content = [_resource contentForTsURL:_URL];
         
         if ( _content != nil ) {
             // go to read the content
@@ -83,12 +81,8 @@
         
         MCSLog(@"%@: <%p>.request { URL: %@ };\n", NSStringFromClass(self.class), self, _URL);
         
-        NSMutableURLRequest *request = [NSMutableURLRequest requestWithURL:_URL];
-        [_request.allHTTPHeaderFields enumerateKeysAndObjectsUsingBlock:^(NSString * _Nonnull key, NSString * _Nonnull obj, BOOL * _Nonnull stop) {
-            [request setValue:obj forHTTPHeaderField:key];
-        }];
         // download the content
-        _task = [MCSDownload.shared downloadWithRequest:request priority:_networkTaskPriority delegate:self];
+        _task = [MCSDownload.shared downloadWithRequest:_request priority:_networkTaskPriority delegate:self];
     } @catch (__unused NSException *exception) {
         
     } @finally {
@@ -167,7 +161,8 @@
         [self unlock];
     }
 }
-#pragma mark -
+
+#pragma mark - MCSDownloadTaskDelegate
 
 - (void)downloadTask:(NSURLSessionTask *)task didReceiveResponse:(NSHTTPURLResponse *)response {
     [self lock];
@@ -176,9 +171,8 @@
             return;
         
         NSString *contentType = MCSGetResponseContentType(response);
-        NSUInteger totalLength = MCSGetResponseContentLength(response);
         [_resource updateTsContentType:contentType];
-        _content = [_resource createContentWithTsProxyURL:_request.URL tsTotalLength:totalLength];
+        _content = [_resource createContentWithTsURL:_request.URL totalLength:response.expectedContentLength];
         [self _prepare];
     } @catch (__unused NSException *exception) {
         
@@ -245,7 +239,7 @@
     _availableLength = [MCSFileManager fileSizeAtPath:filepath];
     _reader = [NSFileHandle fileHandleForReadingAtPath:filepath];
     _writer = [NSFileHandle fileHandleForWritingAtPath:filepath];
-    _response = [MCSResourceResponse.alloc initWithServer:@"localhost" contentType:_resource.tsContentType totalLength:_content.tsTotalLength];
+    _response = [MCSResourceResponse.alloc initWithServer:@"localhost" contentType:_resource.TsContentType totalLength:_content.tsTotalLength];
         
     if ( _reader == nil || _writer == nil ) {
         [self _onError:[NSError mcs_fileNotExistError:_request.URL]];

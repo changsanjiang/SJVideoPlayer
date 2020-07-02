@@ -47,18 +47,14 @@
 
 - (void)prefetcher:(id<MCSPrefetcher>)prefetcher progressDidChange:(float)progress {
     if ( _mcs_progressBlock != nil ) {
-        dispatch_async(dispatch_get_main_queue(), ^{
-            self->_mcs_progressBlock(progress);
-        });
+        _mcs_progressBlock(progress);
     }
 }
 
 - (void)prefetcher:(id<MCSPrefetcher>)prefetcher didCompleteWithError:(NSError *_Nullable)error {
+    [self _completeOperation];
     if ( _mcs_completionBlock != nil ) {
-        [self _completeOperation];
-        dispatch_async(dispatch_get_main_queue(), ^{
-            self->_mcs_completionBlock(error);
-        });
+        _mcs_completionBlock(error);
     }
 }
 
@@ -78,16 +74,15 @@
         [self didChangeValueForKey:@"isExecuting"];
  
         MCSResourceType type = [MCSURLRecognizer.shared resourceTypeForURL:_URL];
+        id<MCSPrefetcherDelegate> delegate = _mcs_progressBlock != nil || _mcs_completionBlock != nil ? self : nil;
         switch ( type ) {
             case MCSResourceTypeVOD:
-                _prefetcher = [MCSVODPrefetcher.alloc initWithURL:_URL preloadSize:_preloadSize];
+                _prefetcher = [MCSVODPrefetcher.alloc initWithURL:_URL preloadSize:_preloadSize delegate:delegate delegateQueue:dispatch_get_main_queue()];
                 break;
             case MCSResourceTypeHLS:
-                _prefetcher = [MCSHLSPrefetcher.alloc initWithURL:_URL preloadSize:_preloadSize];
+                _prefetcher = [MCSHLSPrefetcher.alloc initWithURL:_URL preloadSize:_preloadSize delegate:delegate delegateQueue:dispatch_get_main_queue()];
                 break;
         }
-        if ( _mcs_progressBlock != nil || _mcs_completionBlock != nil )
-            _prefetcher.delegate = self;
         [_prefetcher prepare];
     }
 }
@@ -95,12 +90,6 @@
 - (void)cancel {
     @synchronized (self) {
         _isCancelled = YES;
-        if ( _isExecuting ) [self _completeOperation];
-    }
-}
-
-- (void)finished {
-    @synchronized (self) {
         if ( _isExecuting ) [self _completeOperation];
     }
 }
@@ -166,6 +155,7 @@
     if ( self ) {
         _operationQueue = NSOperationQueue.alloc.init;
         _operationQueue.maxConcurrentOperationCount = 3;
+        _operationQueue.qualityOfService = NSQualityOfServiceBackground;
     }
     return self;
 }

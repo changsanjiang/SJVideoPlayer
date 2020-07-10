@@ -23,13 +23,12 @@
 @property (nonatomic) BOOL isCalledPrepare;
 @property (nonatomic, weak, nullable) MCSHLSResource *resource;
 @property (nonatomic, strong, nullable) NSURLRequest *request;
-
 @property (nonatomic, strong, nullable) id<MCSHLSDataReader> reader;
-@property (nonatomic) NSUInteger offset;
 @end
 
 @implementation MCSHLSReader
 @synthesize readDataDecoder = _readDataDecoder;
+@synthesize isPrepared = _isPrepared;
 
 - (instancetype)initWithResource:(__weak MCSHLSResource *)resource request:(NSURLRequest *)request {
     self = [super init];
@@ -82,22 +81,17 @@
 
         
         _isCalledPrepare = YES;
-        
         NSURL *URL = [MCSURLRecognizer.shared URLWithProxyURL:_request.URL];
-
+        NSMutableURLRequest *request = [_request mcs_requestWithRedirectURL:URL];
         if      ( [_request.URL.absoluteString containsString:MCSHLSIndexFileExtension] ) {
-            _reader = [MCSHLSIndexDataReader.alloc initWithResource:_resource URL:URL delegate:self delegateQueue:_resource.readerOperationQueue];
+            _reader = [MCSHLSIndexDataReader.alloc initWithResource:_resource request:request networkTaskPriority:_networkTaskPriority delegate:self delegateQueue:_resource.readerOperationQueue];
         }
         else if ( [_request.URL.absoluteString containsString:MCSHLSAESKeyFileExtension] ) {
             NSAssert(_resource.parser != nil, @"`parser`不能为nil!");
-            _reader = [MCSHLSAESKeyDataReader.alloc initWithResource:_resource URL:URL networkTaskPriority:_networkTaskPriority delegate:self delegateQueue:_resource.readerOperationQueue];
+            _reader = [MCSHLSAESKeyDataReader.alloc initWithResource:_resource request:request networkTaskPriority:_networkTaskPriority delegate:self delegateQueue:_resource.readerOperationQueue];
         }
         else {
             NSAssert(_resource.parser != nil, @"`parser`不能为nil!");
-            NSMutableURLRequest *request = [NSMutableURLRequest requestWithURL:URL];
-            [_request.allHTTPHeaderFields enumerateKeysAndObjectsUsingBlock:^(NSString * _Nonnull key, NSString * _Nonnull obj, BOOL * _Nonnull stop) {
-                [request setValue:obj forHTTPHeaderField:key];
-            }];
             _reader = [MCSHLSTSDataReader.alloc initWithResource:_resource request:request networkTaskPriority:_networkTaskPriority delegate:self delegateQueue:_resource.readerOperationQueue];
         }
         
@@ -112,20 +106,33 @@
 - (NSData *)readDataOfLength:(NSUInteger)length {
     [self lock];
     @try {
-        if ( _isClosed || _reader.isDone )
-            return nil;
-        
+        NSUInteger offset = _reader.offset;
         NSData *data = [_reader readDataOfLength:length];
-        _offset += data.length;
-        if ( _readDataDecoder != nil ) data = _readDataDecoder(_request, _offset, data);
-        return data;
+        
+        if ( data != nil ) {
+            if ( _readDataDecoder != nil ) data = _readDataDecoder(_request, offset, data);
+            return data;
+        }
+        return nil;
     } @catch (__unused NSException *exception) {
         
     } @finally {
+#ifdef DEBUG
         if ( _reader.isDone ) {
             MCSLog(@"%@: <%p>.done { URL: %@ };\n", NSStringFromClass(self.class), self, _request.URL);
-            [self _close];
         }
+#endif
+        [self unlock];
+    }
+}
+
+- (BOOL)seekToOffset:(NSUInteger)offset {
+    [self lock];
+    @try {
+        return [_reader seekToOffset:offset];
+    } @catch (__unused NSException *exception) {
+        
+    } @finally {
         [self unlock];
     }
 }
@@ -134,6 +141,41 @@
     [self lock];
     [self _close];
     [self unlock];
+}
+
+#pragma mark -
+
+- (NSUInteger)availableLength {
+    [self lock];
+    @try {
+        return _reader.availableLength;
+    } @catch (__unused NSException *exception) {
+        
+    } @finally {
+        [self unlock];
+    }
+}
+
+- (NSUInteger)offset {
+    [self lock];
+    @try {
+        return _reader.offset;
+    } @catch (__unused NSException *exception) {
+        
+    } @finally {
+        [self unlock];
+    }
+}
+
+- (BOOL)isPrepared {
+    [self lock];
+    @try {
+        return _isPrepared;
+    } @catch (__unused NSException *exception) {
+        
+    } @finally {
+        [self unlock];
+    }
 }
 
 - (BOOL)isReadingEndOfData {
@@ -202,16 +244,14 @@
         if ( parser != nil && _resource.parser != parser )
             _resource.parser = parser;
     }
-    dispatch_async(_resource.readerOperationQueue, ^{
-        [self.delegate readerPrepareDidFinish:self];
-    });
     [self unlock];
+    [self.delegate readerPrepareDidFinish:self];
 }
-- (void)readerHasAvailableData:(id<MCSResourceDataReader>)reader {
-    dispatch_async(_resource.readerOperationQueue, ^{
-        [self.delegate readerHasAvailableData:self];
-    });
+
+- (void)reader:(id<MCSResourceDataReader>)reader hasAvailableDataWithLength:(NSUInteger)length {
+    [self.delegate reader:self hasAvailableDataWithLength:length];
 }
+
 - (void)reader:(id<MCSResourceDataReader>)reader anErrorOccurred:(NSError *)error {
     [self lock];
     [self _onError:error];

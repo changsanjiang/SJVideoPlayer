@@ -156,7 +156,7 @@ typedef struct _SJPlayerControlInfo {
 }
 
 + (NSString *)version {
-    return @"v3.3.5";
+    return @"v3.3.6";
 }
 
 - (void)setVideoGravity:(SJVideoGravity)videoGravity {
@@ -213,8 +213,8 @@ typedef struct _SJPlayerControlInfo {
     NSLog(@"%d \t %s", (int)__LINE__, __func__);
 #endif
     [NSNotificationCenter.defaultCenter postNotificationName:SJVideoPlayerPlaybackControllerWillDeallocateNotification object:_playbackController];
-    [_presentView removeFromSuperview];
-    [_view removeFromSuperview];
+    [_presentView performSelectorOnMainThread:@selector(removeFromSuperview) withObject:nil waitUntilDone:YES];
+    [_view performSelectorOnMainThread:@selector(removeFromSuperview) withObject:nil waitUntilDone:YES];
     free(_controlInfo);
 }
 
@@ -677,7 +677,7 @@ typedef struct _SJPlayerControlInfo {
 /// - 当用户触摸到TableView或者ScrollView时, 这个值为YES.
 /// - 这个值用于旋转的条件之一, 如果用户触摸在TableView或者ScrollView上时, 将不会自动旋转.
 - (BOOL)touchedOnTheScrollView {
-    return _playModelObserver.isTouchedTableView || _playModelObserver.isTouchedCollectionView;
+    return _playModelObserver.isTouched;
 }
 @end
 
@@ -2022,7 +2022,7 @@ typedef struct _SJPlayerControlInfo {
 }
 
 - (BOOL)isPlayOnScrollView {
-    return [self.playModelObserver isPlayInCollectionView] || [self.playModelObserver isPlayInTableView];
+    return self.playModelObserver.isPlayInScrollView;
 }
 
 - (BOOL)isScrollAppeared {

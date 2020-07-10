@@ -18,7 +18,6 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (nullable NSURLSessionTask *)downloadWithRequest:(NSURLRequest *)request priority:(float)priority delegate:(id<MCSDownloadTaskDelegate>)delegate;
 
-
 @property (nonatomic, copy, nullable) NSData *(^dataEncoder)(NSURLRequest *request, NSUInteger offset, NSData *data);
 
 + (instancetype)new NS_UNAVAILABLE;

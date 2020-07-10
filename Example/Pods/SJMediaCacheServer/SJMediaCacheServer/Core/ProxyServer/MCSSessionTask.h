@@ -6,7 +6,7 @@
 //  Copyright © 2020 changsanjiang@gmail.com. All rights reserved.
 //
 
-#import "MCSDefines.h"
+#import "MCSInterfaces.h"
 
 NS_ASSUME_NONNULL_BEGIN
 

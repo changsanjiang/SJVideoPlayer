@@ -23,10 +23,9 @@ NS_ASSUME_NONNULL_BEGIN
 
 
 @interface MCSResourcePartialContent (HLS_AESKey)
-- (instancetype)initWithFilename:(NSString *)filename AESKeyName:(NSString *)AESKeyName AESKeyTotalLength:(NSUInteger)AESKeyTotalLength length:(NSUInteger)length;
+- (instancetype)initWithFilename:(NSString *)filename AESKeyName:(NSString *)AESKeyName length:(NSUInteger)length;
 
 @property (nonatomic, copy, readonly) NSString *AESKeyName;
-@property (nonatomic, readonly) NSUInteger AESKeyTotalLength;
 @end
 
 @interface MCSResourcePartialContent (HLS_TS)

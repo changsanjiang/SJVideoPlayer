@@ -68,7 +68,7 @@
     if ( !reader.isClosed ) [_delegate taskPrepareDidFinish:self];
 }
 
-- (void)readerHasAvailableData:(id<MCSResourceReader>)reader {
+- (void)reader:(id<MCSResourceReader>)reader hasAvailableDataWithLength:(NSUInteger)length {
     if ( !reader.isClosed ) [_delegate taskHasAvailableData:self];
 }
 

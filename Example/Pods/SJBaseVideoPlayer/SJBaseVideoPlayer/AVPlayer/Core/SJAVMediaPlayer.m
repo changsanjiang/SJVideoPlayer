@@ -257,9 +257,7 @@ NS_ASSUME_NONNULL_BEGIN
 }
 
 - (void)_willSeeking:(CMTime)time {
-    if ( self.seekingInfo.isSeeking ) {
-        [_avPlayer.currentItem cancelPendingSeeks];
-    }
+    [_avPlayer.currentItem cancelPendingSeeks];
     
     self.isPlaybackFinished = NO;
     _seekingInfo.time = time;

@@ -6,7 +6,7 @@
 //  Copyright © 2020 changsanjiang@gmail.com. All rights reserved.
 //
 
-#import "MCSDefines.h"
+#import "MCSInterfaces.h"
 #import "MCSResourceDefines.h"
 #import "MCSResourceResponse.h"
 @class MCSVODResource;
@@ -20,8 +20,10 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (void)prepare;
 @property (nonatomic, strong, readonly, nullable) id<MCSResourceResponse> response;
+@property (nonatomic, readonly) NSUInteger availableLength;
 @property (nonatomic, readonly) NSUInteger offset;
 - (nullable NSData *)readDataOfLength:(NSUInteger)length;
+- (BOOL)seekToOffset:(NSUInteger)offset;
 @property (nonatomic, readonly) BOOL isPrepared;
 @property (nonatomic, readonly) BOOL isReadingEndOfData;
 @property (nonatomic, readonly) BOOL isClosed;

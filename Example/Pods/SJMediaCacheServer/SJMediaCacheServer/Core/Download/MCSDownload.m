@@ -59,20 +59,6 @@
 - (void)dealloc {
     [[NSNotificationCenter defaultCenter] removeObserver:self];
 }
-
-- (NSArray<NSString *> *)availableHeaderKeys {
-    static NSArray<NSString *> *obj = nil;
-    static dispatch_once_t onceToken;
-    dispatch_once(&onceToken, ^{
-        obj = @[@"User-Agent",
-                @"Connection",
-                @"Accept",
-                @"Accept-Encoding",
-                @"Accept-Language",
-                @"Range"];
-    });
-    return obj;
-}
  
 - (nullable NSURLSessionTask *)downloadWithRequest:(NSURLRequest *)requestParam priority:(float)priority delegate:(id<MCSDownloadTaskDelegate>)delegate {
     [self lock];
@@ -192,13 +178,9 @@
 #pragma mark -
 
 - (NSURLRequest *)_requestWithParam:(NSURLRequest *)param {
-    NSMutableURLRequest *request = [NSMutableURLRequest requestWithURL:param.URL cachePolicy:NSURLRequestReloadIgnoringCacheData timeoutInterval:_timeoutInterval];
-    __auto_type availableHeaderKeys = self.availableHeaderKeys;
-    [param.allHTTPHeaderFields enumerateKeysAndObjectsUsingBlock:^(NSString * _Nonnull key, NSString * _Nonnull obj, BOOL * _Nonnull stop) {
-        if ( [availableHeaderKeys containsObject:key] ) {
-            [request setValue:obj forHTTPHeaderField:key];
-        }
-    }];
+    NSMutableURLRequest *request = [param mutableCopy];
+    request.cachePolicy = NSURLRequestReloadIgnoringCacheData;
+    request.timeoutInterval = _timeoutInterval;
     
     if ( _requestHandler != nil )
         request = _requestHandler(request);

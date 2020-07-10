@@ -58,6 +58,14 @@
     return URL;
 }
 
+- (void)setMaxConcurrentPrefetchCount:(NSInteger)maxConcurrentPrefetchCount {
+    MCSPrefetcherManager.shared.maxConcurrentPrefetchCount = maxConcurrentPrefetchCount;
+}
+ 
+- (NSInteger)maxConcurrentPrefetchCount {
+    return MCSPrefetcherManager.shared.maxConcurrentPrefetchCount;
+}
+
 - (id<MCSPrefetchTask>)prefetchWithURL:(NSURL *)URL preloadSize:(NSUInteger)preloadSize {
     return [MCSPrefetcherManager.shared prefetchWithURL:URL preloadSize:preloadSize];
 }
@@ -71,6 +79,10 @@
         return;
     MCSResource *resource = [MCSResourceManager.shared resourceWithURL:URL];
     [MCSResourceManager.shared cancelCurrentReadsForResource:resource];
+}
+
+- (void)cancelAllPrefetchTasks {
+    [MCSPrefetcherManager.shared cancelAllPrefetchTasks];
 }
 
 #pragma mark - MCSProxyServerDelegate
@@ -90,6 +102,14 @@
     return MCSDownload.shared.requestHandler;
 }
 
+- (void)resourceURL:(NSURL *)URL setValue:(nullable NSString *)value forHTTPAdditionalHeaderField:(NSString *)field ofType:(MCSDataType)type {
+    MCSResource *resource = [MCSResourceManager.shared resourceWithURL:URL];
+    [resource.configuration setValue:value forHTTPAdditionalHeaderField:field ofType:type];
+}
+- (nullable NSDictionary *)resourceURL:(NSURL *)URL HTTPAdditionalHeadersForDataRequestsOfType:(MCSDataType)type {
+    MCSResource *resource = [MCSResourceManager.shared resourceWithURL:URL];
+    return [resource.configuration HTTPAdditionalHeadersForDataRequestsOfType:type];
+}
 @end
 
 

@@ -139,7 +139,7 @@ MCSMD5(NSString *str) {
 
 @implementation MCSURLRecognizer (HLS)
 - (NSURL *)proxyURLWithTsURI:(NSString *)TsURI {
-    return [NSURL URLWithString:[_server.serverURL.absoluteString stringByAppendingPathComponent:TsURI]];
+    return [NSURL URLWithString:[_server.serverURL.absoluteString stringByAppendingFormat:@"/%@", TsURI]];
 }
 
 - (NSString *)proxyTsURIWithUrl:(NSString *)url inResource:(NSString *)resource {

@@ -6,7 +6,7 @@
 //  Copyright © 2020 changsanjiang@gmail.com. All rights reserved.
 //
 
-#import "MCSDefines.h"
+#import "MCSInterfaces.h"
 @class MCSResourceUsageLog;
 
 NS_ASSUME_NONNULL_BEGIN
@@ -15,6 +15,8 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic, readonly) MCSResourceType type;
 
 - (id<MCSResourceReader>)readerWithRequest:(NSURLRequest *)request;
+
+@property (nonatomic, strong, readonly) id<MCSConfiguration> configuration;
 
 @property (nonatomic, strong, readonly) MCSResourceUsageLog *log;
 

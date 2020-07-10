@@ -13,6 +13,7 @@ NS_ASSUME_NONNULL_BEGIN
 /// 子视图是否显示中
 ///
 - (BOOL)isViewAppeared:(UIView *_Nullable)childView {
+    if ( !childView ) return NO;
     return !CGRectIsEmpty([self intersectionWithView:childView]);
 }
 
@@ -51,6 +52,14 @@ NS_ASSUME_NONNULL_BEGIN
         if ( target != nil ) return target;
     }
     return nil;
+}
+
+
+///
+/// 对应视图是否在window中显示
+///
+- (BOOL)isViewAppearedWithProtocol:(Protocol *)protocol {
+   return [self isViewAppeared:[self viewWithProtocol:protocol]];
 }
 
 - (void)setSj_x:(CGFloat)sj_x {

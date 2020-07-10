@@ -19,6 +19,10 @@ NS_ASSUME_NONNULL_BEGIN
     return self;
 }
 
++ (instancetype)playModelWithScrollView:(__weak UIScrollView *)scrollView {
+    return [SJScrollViewPlayModel.alloc initWithScrollView:scrollView];
+}
+
 + (instancetype)playModelWithTableView:(__weak UITableView *)tableView indexPath:(NSIndexPath *)indexPath {
     return [SJTableViewCellPlayModel.alloc initWithTableView:tableView indexPath:indexPath];
 }
@@ -52,11 +56,33 @@ NS_ASSUME_NONNULL_BEGIN
 }
 
 
-- (BOOL)isPlayInTableView { return NO; }
-- (BOOL)isPlayInCollectionView { return NO; }
+- (BOOL)isPlayInScrollView { return NO; }
 - (nullable UIView *)playerSuperview { return nil; }
 - (nullable __kindof UIScrollView *)inScrollView { return nil; }
 - (nullable NSIndexPath *)indexPath { return nil; }
+@end
+
+
+@implementation SJScrollViewPlayModel
+- (instancetype)initWithScrollView:(__weak UIScrollView *)scrollView {
+    self = [super init];
+    if ( self ) {
+        _scrollView = scrollView;
+    }
+    return self;
+}
+
+- (BOOL)isPlayInScrollView {
+    return YES;
+}
+
+- (nullable UIView *)playerSuperview {
+    return [_scrollView viewWithProtocol:@protocol(SJPlayModelPlayerSuperview)];
+}
+
+- (nullable __kindof UIScrollView *)inScrollView {
+    return _scrollView;
+}
 @end
 
 
@@ -70,11 +96,8 @@ NS_ASSUME_NONNULL_BEGIN
     return self;
 }
 
-- (BOOL)isPlayInTableView {
+- (BOOL)isPlayInScrollView {
     return YES;
-}
-- (BOOL)isPlayInCollectionView {
-    return NO;
 }
 - (nullable UIView *)playerSuperview {
     return [_tableView viewWithProtocol:@protocol(SJPlayModelPlayerSuperview) atIndexPath:_indexPath];
@@ -95,11 +118,8 @@ NS_ASSUME_NONNULL_BEGIN
     return self;
 }
 
-- (BOOL)isPlayInTableView {
+- (BOOL)isPlayInScrollView {
     return YES;
-}
-- (BOOL)isPlayInCollectionView {
-    return NO;
 }
 - (nullable UIView *)playerSuperview {
     return [_tableHeaderView viewWithProtocol:@protocol(SJPlayModelPlayerSuperview)];
@@ -120,11 +140,8 @@ NS_ASSUME_NONNULL_BEGIN
     return self;
 }
 
-- (BOOL)isPlayInTableView {
+- (BOOL)isPlayInScrollView {
     return YES;
-}
-- (BOOL)isPlayInCollectionView {
-    return NO;
 }
 - (nullable UIView *)playerSuperview {
     return [_tableFooterView viewWithProtocol:@protocol(SJPlayModelPlayerSuperview)];
@@ -145,11 +162,8 @@ NS_ASSUME_NONNULL_BEGIN
     return self;
 }
 
-- (BOOL)isPlayInTableView {
+- (BOOL)isPlayInScrollView {
     return YES;
-}
-- (BOOL)isPlayInCollectionView {
-    return NO;
 }
 - (nullable UIView *)playerSuperview {
     return [_tableView viewWithProtocol:@protocol(SJPlayModelPlayerSuperview) inHeaderForSection:_section];
@@ -170,11 +184,8 @@ NS_ASSUME_NONNULL_BEGIN
     return self;
 }
 
-- (BOOL)isPlayInTableView {
+- (BOOL)isPlayInScrollView {
     return YES;
-}
-- (BOOL)isPlayInCollectionView {
-    return NO;
 }
 - (nullable UIView *)playerSuperview {
     return [_tableView viewWithProtocol:@protocol(SJPlayModelPlayerSuperview) inFooterForSection:_section];
@@ -227,11 +238,7 @@ NS_ASSUME_NONNULL_BEGIN
     }
 }
 
-- (BOOL)isPlayInTableView {
-    return NO;
-}
-
-- (BOOL)isPlayInCollectionView {
+- (BOOL)isPlayInScrollView {
     return YES;
 }
 
@@ -275,11 +282,7 @@ NS_ASSUME_NONNULL_BEGIN
     return self;
 }
 
-- (BOOL)isPlayInTableView {
-    return NO;
-}
-
-- (BOOL)isPlayInCollectionView {
+- (BOOL)isPlayInScrollView {
     return YES;
 }
 
@@ -301,12 +304,8 @@ NS_ASSUME_NONNULL_BEGIN
     }
     return self;
 }
-
-- (BOOL)isPlayInTableView {
-    return NO;
-}
-
-- (BOOL)isPlayInCollectionView {
+ 
+- (BOOL)isPlayInScrollView {
     return YES;
 }
 
@@ -396,8 +395,7 @@ NS_ASSUME_NONNULL_BEGIN
     _tableView = tableView;
     return self;
 }
-- (BOOL)isPlayInTableView { return YES; }
-- (BOOL)isPlayInCollectionView { return NO; }
+- (BOOL)isPlayInScrollView { return YES; }
 - (nullable UIView *)playerSuperview {
     return [[self.tableView cellForRowAtIndexPath:self.indexPath] viewWithTag:self.playerSuperviewTag];
 }
@@ -428,8 +426,7 @@ NS_ASSUME_NONNULL_BEGIN
     _collectionView = collectionView;
     return self;
 }
-- (BOOL)isPlayInTableView { return NO; }
-- (BOOL)isPlayInCollectionView { return YES; }
+- (BOOL)isPlayInScrollView { return YES; }
 - (nullable UIView *)playerSuperview {
     return [[self.collectionView cellForItemAtIndexPath:self.indexPath] viewWithTag:self.playerSuperviewTag];
 }
@@ -452,8 +449,7 @@ NS_ASSUME_NONNULL_BEGIN
     return self;
 }
 
-- (BOOL)isPlayInTableView { return YES; }
-- (BOOL)isPlayInCollectionView { return NO; }
+- (BOOL)isPlayInScrollView { return YES; }
 - (nullable __kindof UIScrollView *)inScrollView {
     return _tableView;
 }
@@ -485,9 +481,8 @@ NS_ASSUME_NONNULL_BEGIN
     _tableView = tableView;
     return self;
 }
-
-- (BOOL)isPlayInTableView { return NO; }
-- (BOOL)isPlayInCollectionView { return YES; }
+ 
+- (BOOL)isPlayInScrollView { return YES; }
 - (nullable UIView *)playerSuperview {
     return [[self.collectionView cellForItemAtIndexPath:self.indexPath] viewWithTag:self.playerSuperviewTag];
 }
@@ -525,9 +520,8 @@ NS_ASSUME_NONNULL_BEGIN
     _tableView = tableView;
     return self;
 }
-
-- (BOOL)isPlayInTableView { return NO; }
-- (BOOL)isPlayInCollectionView { return YES; }
+ 
+- (BOOL)isPlayInScrollView { return YES; }
 - (nullable UIView *)playerSuperview {
     return [[self.collectionView cellForItemAtIndexPath:self.indexPath] viewWithTag:self.playerSuperviewTag];
 }
@@ -560,9 +554,8 @@ NS_ASSUME_NONNULL_BEGIN
     _rootCollectionView = rootCollectionView;
     return self;
 }
-
-- (BOOL)isPlayInTableView { return NO; }
-- (BOOL)isPlayInCollectionView { return YES; }
+ 
+- (BOOL)isPlayInScrollView { return YES; }
 - (nullable UIView *)playerSuperview {
     return [[[self collectionView] cellForItemAtIndexPath:self.indexPath] viewWithTag:self.playerSuperviewTag];
 }
@@ -593,8 +586,7 @@ NS_ASSUME_NONNULL_BEGIN
     return self;
 }
 
-- (BOOL)isPlayInTableView { return YES; }
-- (BOOL)isPlayInCollectionView { return NO; }
+- (BOOL)isPlayInScrollView { return YES; }
 - (UIView *_Nullable)playerSuperview {
     return _isHeader?[[[self tableView] headerViewForSection:_inSection] viewWithTag:_playerSuperviewTag]:
     [[[self tableView] footerViewForSection:_inSection] viewWithTag:_playerSuperviewTag];

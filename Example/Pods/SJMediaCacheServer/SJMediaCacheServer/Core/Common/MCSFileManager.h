@@ -36,17 +36,13 @@ UIKIT_EXTERN MCSFileExtension const MCSHLSAESKeyFileExtension;
 
 
 @interface MCSFileManager (HLS_Index)
-+ (nullable NSString *)hls_indexFilePathInResource:(NSString *)resourceName;
++ (NSString *)hls_indexFilePathInResource:(NSString *)resourceName;
 @end
 
 
 @interface MCSFileManager (HLS_AESKey)
-//      注意: 返回文件名
-+ (nullable NSString *)hls_createContentFileInResource:(NSString *)resourceName AESKeyName:(NSString *)AESKeyName totalLength:(NSUInteger)totalLength;
 
-+ (nullable NSString *)hls_AESKeyNameOfContent:(NSString *)contentFilename;
-
-+ (NSUInteger)hls_AESKeyTotalLengthOfContent:(NSString *)contentFilename;
++ (NSString *)hls_AESKeyFilePathInResource:(NSString *)resourceName AESKeyName:(NSString *)AESKeyName;
 
 @end
 

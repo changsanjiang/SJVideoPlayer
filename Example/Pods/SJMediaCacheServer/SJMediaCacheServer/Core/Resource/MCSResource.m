@@ -10,6 +10,7 @@
 #import "MCSFileManager.h"
 #import "MCSResourceSubclass.h"
 #import "MCSResourceManager.h"
+#import "MCSConfiguration.h"
 
 @interface MCSResource ()<NSLocking, MCSResourcePartialContentDelegate> {
     NSRecursiveLock *_lock;
@@ -27,6 +28,7 @@
 - (instancetype)init {
     self = [super init];
     if ( self ) {
+        _configuration = MCSConfiguration.alloc.init;
         _lock = NSRecursiveLock.alloc.init;
         _m = NSMutableArray.array;
         _readerOperationQueue = dispatch_queue_create("lib.changsanjiang.SJMediaCacheServer.readerOperationQueue", DISPATCH_QUEUE_SERIAL);

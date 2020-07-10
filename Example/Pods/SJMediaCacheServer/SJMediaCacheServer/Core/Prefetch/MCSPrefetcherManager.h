@@ -12,8 +12,12 @@ NS_ASSUME_NONNULL_BEGIN
 @interface MCSPrefetcherManager : NSObject
 + (instancetype)shared;
 
+@property (nonatomic) NSInteger maxConcurrentPrefetchCount;
+
 - (id<MCSPrefetchTask>)prefetchWithURL:(NSURL *)URL preloadSize:(NSUInteger)preloadSize;
 - (id<MCSPrefetchTask>)prefetchWithURL:(NSURL *)URL preloadSize:(NSUInteger)preloadSize progress:(void(^_Nullable)(float progress))progressBlock completed:(void(^_Nullable)(NSError *_Nullable error))completionBlock;
+
+- (void)cancelAllPrefetchTasks;
 @end
 
 @protocol MCSPrefetchTask <NSObject>

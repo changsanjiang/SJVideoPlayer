@@ -21,7 +21,7 @@
 @property (nonatomic) BOOL isClosed;
  
 @property (nonatomic, strong, nullable) id<MCSResourceReader> reader;
-@property (nonatomic) NSUInteger offset;
+@property (nonatomic) NSUInteger loadedLength;
 @property (nonatomic) float progress;
 
 @property (nonatomic, weak, nullable) MCSHLSResource *resource;
@@ -34,7 +34,7 @@
 @implementation MCSHLSPrefetcher
 @synthesize delegate = _delegate;
 @synthesize delegateQueue = _delegateQueue;
-- (instancetype)initWithURL:(NSURL *)URL preloadSize:(NSUInteger)bytes delegate:(nonnull id<MCSPrefetcherDelegate>)delegate delegateQueue:(nonnull dispatch_queue_t)queue {
+- (instancetype)initWithURL:(NSURL *)URL preloadSize:(NSUInteger)bytes delegate:(nullable id<MCSPrefetcherDelegate>)delegate delegateQueue:(nonnull dispatch_queue_t)queue {
     self = [super init];
     if ( self ) {
         _delegate = delegate;
@@ -125,7 +125,7 @@
 - (void)_prepareNextFragment {
     _fragmentIndex = (_fragmentIndex == NSNotFound) ? 0 : (_fragmentIndex + 1);
     
-    NSString *TsURI = [_resource.parser TsURIAtIndex:_fragmentIndex];
+    NSString *TsURI = [_resource.parser URIAtIndex:_fragmentIndex];
     NSURL *proxyURL = [MCSURLRecognizer.shared proxyURLWithTsURI:TsURI];
     NSURLRequest *request = [NSURLRequest requestWithURL:proxyURL];
     _reader = [MCSResourceManager.shared readerWithRequest:request];
@@ -137,21 +137,17 @@
 #pragma mark -
 
 - (void)readerPrepareDidFinish:(id<MCSResourceReader>)reader {
-    [self readerHasAvailableData:reader];
+    /* nothing */
 }
 
-- (void)readerHasAvailableData:(id<MCSResourceReader>)reader {
-    [self lock];
-    while (true) {
-        @autoreleasepool {
-            NSData *data = [_reader readDataOfLength:1 * 1024 * 1024];
-            if ( data.length == 0 )
-                break;
-            
+- (void)reader:(id<MCSResourceReader>)reader hasAvailableDataWithLength:(NSUInteger)length {
+    if ( [reader seekToOffset:reader.offset + length] ) {
+        [self lock];
+        @try {
             if ( _fragmentIndex != NSNotFound )
-                _offset += data.length;
+                _loadedLength += length;
             
-            CGFloat progress = _offset * 1.0 / _preloadSize;
+            CGFloat progress = _loadedLength * 1.0 / _preloadSize;
             if ( progress >= 1 ) progress = 1;
             _progress = progress;
             
@@ -168,17 +164,20 @@
                 BOOL isFinished = progress >= 1 || isLastFragment;
                 if ( !isFinished ) {
                     [self _prepareNextFragment];
-                    break;
+                    return;
                 }
                 
                 [self _didCompleteWithError:nil];
-                break;
             }
+            
+        } @catch (__unused NSException *exception) {
+            
+        } @finally {
+            [self unlock];
         }
     }
-    [self unlock];
 }
-
+  
 - (void)reader:(id<MCSResourceReader>)reader anErrorOccurred:(NSError *)error {
     [self lock];
     [self _didCompleteWithError:error];

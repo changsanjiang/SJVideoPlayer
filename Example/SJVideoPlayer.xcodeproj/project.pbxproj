@@ -75,6 +75,7 @@
 		7784A7D2237CF75F000BA67E /* SJTestAliVodPlayerViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 7784A7D0237CF75F000BA67E /* SJTestAliVodPlayerViewController.xib */; };
 		7784A7FA237D3860000BA67E /* SJBarrageTestViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 7784A7F9237D3860000BA67E /* SJBarrageTestViewController.m */; };
 		7784A7FC237D4E97000BA67E /* SJBarrageTestViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 7784A7FB237D4E97000BA67E /* SJBarrageTestViewController.xib */; };
+		77A8DDE324B59B3400782C85 /* SJUIScrollViewDemoViewController1.m in Sources */ = {isa = PBXBuildFile; fileRef = 77A8DDE224B59B3400782C85 /* SJUIScrollViewDemoViewController1.m */; };
 		77D0CFBA235727D90081C855 /* MediaPlayer.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 77D0CFB9235727D80081C855 /* MediaPlayer.framework */; };
 		77E87F6622E84D4E0047A253 /* SJViewController10.m in Sources */ = {isa = PBXBuildFile; fileRef = 77E87F6422E84D4E0047A253 /* SJViewController10.m */; };
 		77E87F6722E84D4E0047A253 /* SJViewController10.xib in Resources */ = {isa = PBXBuildFile; fileRef = 77E87F6522E84D4E0047A253 /* SJViewController10.xib */; };
@@ -245,6 +246,8 @@
 		7784A7F8237D3860000BA67E /* SJBarrageTestViewController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = SJBarrageTestViewController.h; sourceTree = "<group>"; };
 		7784A7F9237D3860000BA67E /* SJBarrageTestViewController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = SJBarrageTestViewController.m; sourceTree = "<group>"; };
 		7784A7FB237D4E97000BA67E /* SJBarrageTestViewController.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = SJBarrageTestViewController.xib; sourceTree = "<group>"; };
+		77A8DDE124B59B3400782C85 /* SJUIScrollViewDemoViewController1.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = SJUIScrollViewDemoViewController1.h; sourceTree = "<group>"; };
+		77A8DDE224B59B3400782C85 /* SJUIScrollViewDemoViewController1.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = SJUIScrollViewDemoViewController1.m; sourceTree = "<group>"; };
 		77D0CFB9235727D80081C855 /* MediaPlayer.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = MediaPlayer.framework; path = System/Library/Frameworks/MediaPlayer.framework; sourceTree = SDKROOT; };
 		77E87F6322E84D4E0047A253 /* SJViewController10.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = SJViewController10.h; sourceTree = "<group>"; };
 		77E87F6422E84D4E0047A253 /* SJViewController10.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = SJViewController10.m; sourceTree = "<group>"; };
@@ -587,6 +590,7 @@
 			isa = PBXGroup;
 			children = (
 				A6A208DF22AB9E59001ED610 /* Rotation Control(旋转控制) */,
+				77A8DDE024B59B0F00782C85 /* UIScrollVIew */,
 				77391C0D2467CC2B00443844 /* UITableView */,
 				77391C0E2467CC3800443844 /* UICollectionView */,
 				A65FE536248A88D200A5D4A6 /* Keyboard */,
@@ -614,6 +618,15 @@
 				7784A7FB237D4E97000BA67E /* SJBarrageTestViewController.xib */,
 			);
 			path = "Barrage( 弹幕)";
+			sourceTree = "<group>";
+		};
+		77A8DDE024B59B0F00782C85 /* UIScrollVIew */ = {
+			isa = PBXGroup;
+			children = (
+				77A8DDE124B59B3400782C85 /* SJUIScrollViewDemoViewController1.h */,
+				77A8DDE224B59B3400782C85 /* SJUIScrollViewDemoViewController1.m */,
+			);
+			path = UIScrollVIew;
 			sourceTree = "<group>";
 		};
 		77E87F6222E84D2B0047A253 /* GIF Screenshot Export */ = {
@@ -1075,6 +1088,7 @@
 				77633ABB23FD97B700D7A269 /* SJPlaybackHistoryViewController.m in Sources */,
 				77391C402467FEA100443844 /* SJUICollectionViewDemoViewController5.m in Sources */,
 				A601803C22DB5CAC00ED840D /* SJRotationModeDemoViewController3.m in Sources */,
+				77A8DDE324B59B3400782C85 /* SJUIScrollViewDemoViewController1.m in Sources */,
 				A6A208FE22AB9E59001ED610 /* SJVideoCellViewModel.m in Sources */,
 				A6A2090022AB9E59001ED610 /* SJVideoTableViewCell.m in Sources */,
 				77788FE422C36D8300E26599 /* SJVideoCollectionViewCell.m in Sources */,

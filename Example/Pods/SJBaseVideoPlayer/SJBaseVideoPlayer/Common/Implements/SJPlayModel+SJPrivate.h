@@ -8,6 +8,12 @@
 #import "SJPlayModel.h"
 
 NS_ASSUME_NONNULL_BEGIN
+@interface SJScrollViewPlayModel : SJPlayModel
+- (instancetype)initWithScrollView:(__weak UIScrollView *)scrollView;
+
+@property (nonatomic, weak, readonly, nullable) UIScrollView *scrollView;
+@end
+
 @interface SJTableViewCellPlayModel : SJPlayModel
 - (instancetype)initWithTableView:(__weak UITableView *)tableView indexPath:(NSIndexPath *)indexPath;
 

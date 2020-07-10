@@ -29,6 +29,8 @@
 
 #import "SJDYMainViewController.h"
 
+#import "SJUIScrollViewDemoViewController1.h"
+
 @implementation SJRouteHandlers
 + (void)addRoutesToRouter:(SJRouter *)router {
     __auto_type addBlock = ^(NSArray<SJRouteObject *> *array) {
@@ -37,10 +39,20 @@
         }
     };
     
+    addBlock([self routeObjectArrayForUIScrollViewDemo]);
     addBlock([self routeObjectArrayForDYDemo]);
     addBlock([self routeObjectArrayForUITableViewDemo]);
     addBlock([self routeObjectArrayForUICollectionViewDemo]);
     addBlock([self routeObjectArrayForKeyboardDemo]);
+}
+
++ (NSArray<SJRouteObject *> *)routeObjectArrayForUIScrollViewDemo {
+    return @[
+        [SJRouteObject.alloc initWithPath:@"UIScrollView/1" transitionMode:SJViewControllerTransitionModeNavigation createInstanceBlock:^(SJRouteRequest * _Nonnull request, SJCompletionHandler  _Nullable completionHandler) {
+            __auto_type vc = SJUIScrollViewDemoViewController1.new;
+            if ( completionHandler ) completionHandler(vc, nil);
+        }],
+    ];
 }
 
 + (NSArray<SJRouteObject *> *)routeObjectArrayForDYDemo {

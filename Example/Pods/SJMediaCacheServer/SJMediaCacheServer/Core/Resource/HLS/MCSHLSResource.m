@@ -72,6 +72,7 @@
 }
 
 - (void)readWriteCountDidChangeForPartialContent:(MCSResourcePartialContent *)content {
+    if ( self.isCacheFinished ) return;
     if ( content.readWriteCount > 0 ) return;
     [self lock];
     @try {
@@ -122,16 +123,20 @@
 
 - (void)_contentsDidChange {
     NSArray *contents = self.contents.copy;
-    if ( _TsCount != 0 && contents.count == _TsCount ) {
-        BOOL isFinished = YES;
-        for ( MCSResourcePartialContent *content in contents ) {
+    
+    BOOL isContentsFinished = YES;
+    NSUInteger count = 0;
+    for ( MCSResourcePartialContent *content in contents ) {
+        if ( content.tsName != nil ) {
             if ( content.length != content.tsTotalLength ) {
-                isFinished = NO;
+                isContentsFinished = NO;
                 break;
             }
+            count += 1;
         }
-        self.isCacheFinished = isFinished;
     }
+    
+    self.isCacheFinished = isContentsFinished && count == _TsCount;
 }
 
  
@@ -174,40 +179,6 @@
         NSString *TsName = [MCSURLRecognizer.shared nameWithUrl:URL.absoluteString extension:MCSHLSTsFileExtension];
         NSString *filename = [MCSFileManager hls_createContentFileInResource:self.name tsName:TsName tsTotalLength:totalLength];
         MCSResourcePartialContent *content = [MCSResourcePartialContent.alloc initWithFilename:filename tsName:TsName tsTotalLength:totalLength length:0];
-        [self addContent:content];
-        return content;
-    } @catch (__unused NSException *exception) {
-        
-    } @finally {
-        [self unlock];
-    }
-}
-
-- (nullable MCSResourcePartialContent *)contentForAESKeyURL:(NSURL *)URL {
-    [self lock];
-    @try {
-        NSString *AESKeyName = [MCSURLRecognizer.shared nameWithUrl:URL.absoluteString extension:MCSHLSAESKeyFileExtension];
-        for ( MCSResourcePartialContent *content in self.contents ) {
-            if ( [content.AESKeyName isEqualToString:AESKeyName] ) {
-                NSString *contentPath = [MCSFileManager getFilePathWithName:content.filename inResource:self.name];
-                NSUInteger length = [MCSFileManager fileSizeAtPath:contentPath];
-                if ( length == content.AESKeyTotalLength )
-                    return content;
-            }
-        }
-        return nil;
-    } @catch (__unused NSException *exception) {
-        
-    } @finally {
-        [self unlock];
-    }
-}
-- (MCSResourcePartialContent *)createContentWithAESKeyURL:(NSURL *)URL totalLength:(NSUInteger)totalLength {
-    [self lock];
-    @try {
-        NSString *AESKeyName = [MCSURLRecognizer.shared nameWithUrl:URL.absoluteString extension:MCSHLSAESKeyFileExtension];
-        NSString *filename = [MCSFileManager hls_createContentFileInResource:self.name AESKeyName:AESKeyName totalLength:totalLength];
-        MCSResourcePartialContent *content = [MCSResourcePartialContent.alloc initWithFilename:filename AESKeyName:AESKeyName AESKeyTotalLength:totalLength length:0];
         [self addContent:content];
         return content;
     } @catch (__unused NSException *exception) {

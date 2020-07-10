@@ -18,6 +18,8 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (__kindof UIView *_Nullable)viewWithProtocol:(Protocol *)protocol;
 
+- (BOOL)isViewAppearedWithProtocol:(Protocol *)protocol;
+
 @property (nonatomic) CGFloat sj_x;
 @property (nonatomic) CGFloat sj_y;
 @property (nonatomic) CGFloat sj_w;

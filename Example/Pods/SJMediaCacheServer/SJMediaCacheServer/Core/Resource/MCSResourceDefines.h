@@ -18,15 +18,19 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic, strong, readonly, nullable) dispatch_queue_t delegateQueue;
 
 - (void)prepare;
+@property (nonatomic, readonly) NSRange range;
+@property (nonatomic, readonly) NSUInteger availableLength;
+@property (nonatomic, readonly) NSUInteger offset;
 @property (nonatomic, readonly) BOOL isPrepared;
 @property (nonatomic, readonly) BOOL isDone;
 - (nullable NSData *)readDataOfLength:(NSUInteger)length;
+- (BOOL)seekToOffset:(NSUInteger)offset;
 - (void)close;
 @end
 
 @protocol MCSResourceDataReaderDelegate <NSObject>
 - (void)readerPrepareDidFinish:(id<MCSResourceDataReader>)reader;
-- (void)readerHasAvailableData:(id<MCSResourceDataReader>)reader;
+- (void)reader:(id<MCSResourceDataReader>)reader hasAvailableDataWithLength:(NSUInteger)length;
 - (void)reader:(id<MCSResourceDataReader>)reader anErrorOccurred:(NSError *)error;
 @end
 

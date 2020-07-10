@@ -17,7 +17,6 @@
 @property (nonatomic, readonly) NSUInteger offset;
 @property (nonatomic) NSInteger readWriteCount;
 @property (nonatomic, copy) NSString *AESKeyName;
-@property (nonatomic) NSUInteger AESKeyTotalLength;
 @property (nonatomic, copy) NSString *tsName;
 @property (nonatomic) NSUInteger tsTotalLength;
 
@@ -26,11 +25,10 @@
 @end
 
 @implementation MCSResourcePartialContent
-- (instancetype)initWithFilename:(NSString *)filename AESKeyName:(NSString *)AESKeyName AESKeyTotalLength:(NSUInteger)AESKeyTotalLength length:(NSUInteger)length {
+- (instancetype)initWithFilename:(NSString *)filename AESKeyName:(NSString *)AESKeyName length:(NSUInteger)length {
     self = [self initWithFilename:filename offset:0 length:length];
     if ( self ) {
         _AESKeyName = AESKeyName.copy;
-        _AESKeyTotalLength = AESKeyTotalLength;
     }
     return self;
 }

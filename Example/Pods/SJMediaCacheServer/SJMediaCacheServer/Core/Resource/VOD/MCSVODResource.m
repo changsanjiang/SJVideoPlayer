@@ -129,6 +129,7 @@
 }
 
 - (void)readWriteCountDidChangeForPartialContent:(MCSResourcePartialContent *)content {
+    if ( self.isCacheFinished ) return;
     if ( content.readWriteCount > 0 ) return;
     if ( self.contents.count <= 1 ) return;
 

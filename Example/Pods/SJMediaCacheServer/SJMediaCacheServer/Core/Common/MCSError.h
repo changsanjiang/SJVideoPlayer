@@ -21,9 +21,11 @@ typedef NS_ENUM(NSUInteger, MCSErrorCode) {
     
     MCSHLSFileParseError           = 100005,
     
-    MCSFileNotExistError           = 100006,
+    MCSHLSAESKeyWriteFailedError   = 100006,
     
-    MCSUserCancelledError          = 100007,
+    MCSFileNotExistError           = 100007,
+    
+    MCSUserCancelledError          = 100008,
 };
 
 FOUNDATION_EXTERN NSString * const MCSErrorDomain;
@@ -42,6 +44,8 @@ FOUNDATION_EXTERN NSString * const MCSErrorUserInfoResponseKey;
 + (NSError *)mcs_removedResource:(NSURL *)URL;
 
 + (NSError *)mcs_HLSFileParseError:(NSURL *)URL;
+
++ (NSError *)mcs_HLSAESKeyWriteFailedError:(NSURL *)URL;
 
 + (NSError *)mcs_fileNotExistError:(NSURL *)URL;
 

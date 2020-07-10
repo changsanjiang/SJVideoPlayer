@@ -160,6 +160,14 @@
     return self;
 }
 
+- (void)setMaxConcurrentPrefetchCount:(NSInteger)maxConcurrentPrefetchCount {
+    _operationQueue.maxConcurrentOperationCount = maxConcurrentPrefetchCount;
+}
+
+- (NSInteger)maxConcurrentPrefetchCount {
+    return _operationQueue.maxConcurrentOperationCount;
+}
+
 - (id<MCSPrefetchTask>)prefetchWithURL:(NSURL *)URL preloadSize:(NSUInteger)preloadSize {
     return [self prefetchWithURL:URL preloadSize:preloadSize progress:nil completed:nil];
 }
@@ -168,5 +176,9 @@
     MCSPrefetchOperation *operation = [MCSPrefetchOperation.alloc initWithURL:URL preloadSize:preloadSize progress:progressBlock completed:completionBlock];
     [_operationQueue addOperation:operation];
     return operation;
+}
+
+- (void)cancelAllPrefetchTasks {
+    [_operationQueue cancelAllOperations];
 }
 @end

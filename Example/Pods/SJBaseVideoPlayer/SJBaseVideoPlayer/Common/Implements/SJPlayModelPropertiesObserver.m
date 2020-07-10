@@ -41,7 +41,7 @@ NS_ASSUME_NONNULL_BEGIN
     if ( !self ) return nil;
     _playModel = playModel;
     _taskQueue = SJRunLoopTaskQueue.queue(@"SJPlayModelObserverRunLoopTaskQueue").delay(3);
-    
+    _beforeOffset = CGPointMake(-1, -1);
     if ( [playModel isMemberOfClass:[SJPlayModel class]] ) {
         _isAppeared = YES;
     }
@@ -55,7 +55,8 @@ NS_ASSUME_NONNULL_BEGIN
 }
 
 - (void)_observeProperties {
-    if ( [_playModel isKindOfClass:SJCollectionViewCellPlayModel.class] ||
+    if ( [_playModel isKindOfClass:SJScrollViewPlayModel.class] ||
+         [_playModel isKindOfClass:SJCollectionViewCellPlayModel.class] ||
          [_playModel isKindOfClass:SJCollectionViewSectionHeaderViewPlayModel.class] ||
          [_playModel isKindOfClass:SJCollectionViewSectionFooterViewPlayModel.class] ||
          [_playModel isKindOfClass:SJTableViewCellPlayModel.class]  ||
@@ -131,46 +132,19 @@ static NSString *kState = @"state";
 - (void)_panGestureStateDidChange:(UIPanGestureRecognizer *)pan {
     if ( !pan ) return;
     UIGestureRecognizerState state = pan.state;
-    BOOL isTableView = NO;
-    BOOL isCollectionView = NO;
     switch ( state ) {
         case UIGestureRecognizerStateChanged: return;
         case UIGestureRecognizerStatePossible: return;
         case UIGestureRecognizerStateBegan: {
-            if ( [pan.view isKindOfClass:[UITableView class]] ) {
-                _isTouchedTableView = YES;
-                isTableView = YES;
-            }
-            else if ( [pan.view isKindOfClass:[UICollectionView class]] ) {
-                _isTouchedCollectionView = YES;
-                isCollectionView = YES;
-            }
+            _isTouched = YES;
         }
             break;
         case UIGestureRecognizerStateEnded:
         case UIGestureRecognizerStateFailed:
         case UIGestureRecognizerStateCancelled: {
-            if ( [pan.view isKindOfClass:[UITableView class]] ) {
-                _isTouchedTableView = NO;
-                isTableView = YES;
-            }
-            else if ( [pan.view isKindOfClass:[UICollectionView class]] ) {
-                _isTouchedCollectionView = NO;
-                isCollectionView = YES;
-            }
+            _isTouched = NO;
         }
             break;
-    }
-    
-    if ( isTableView ) {
-        if ( [self.delegate respondsToSelector:@selector(observer:userTouchedTableView:)] ) {
-            [self.delegate observer:self userTouchedTableView:_isTouchedTableView];
-        }
-    }
-    else if ( isCollectionView ) {
-        if ( [self.delegate respondsToSelector:@selector(observer:userTouchedCollectionView:)] ) {
-            [self.delegate observer:self userTouchedCollectionView:_isTouchedCollectionView];
-        }
     }
 }
 
@@ -227,12 +201,8 @@ static NSString *kState = @"state";
     }
 }
 
-- (BOOL)isPlayInTableView {
-    return _playModel.isPlayInTableView;
-}
-
-- (BOOL)isPlayInCollectionView {
-    return _playModel.isPlayInCollectionView;
+- (BOOL)isPlayInScrollView {
+    return _playModel.isPlayInScrollView;
 }
 
 - (void)refreshAppearState {
@@ -251,7 +221,8 @@ static NSString *kState = @"state";
 }
 
 - (BOOL)isScrolling {
-    if ( [_playModel isKindOfClass:SJCollectionViewCellPlayModel.class] ||
+    if ( [_playModel isKindOfClass:SJScrollViewPlayModel.class] ||
+         [_playModel isKindOfClass:SJCollectionViewCellPlayModel.class] ||
          [_playModel isKindOfClass:SJCollectionViewSectionHeaderViewPlayModel.class] ||
          [_playModel isKindOfClass:SJCollectionViewSectionFooterViewPlayModel.class] ||
          [_playModel isKindOfClass:SJTableViewCellPlayModel.class]  ||

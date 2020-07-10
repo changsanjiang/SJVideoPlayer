@@ -11,16 +11,17 @@
 NS_ASSUME_NONNULL_BEGIN
 
 @interface NSURLRequest (MCS)
++ (NSMutableURLRequest *)mcs_requestWithURL:(NSURL *)URL headers:(nullable NSDictionary<NSString *, NSString *> *)headers;
+
++ (NSMutableURLRequest *)mcs_requestWithURL:(NSURL *)URL headers:(nullable NSDictionary<NSString *, NSString *> *)headers range:(NSRange)range;
+
 + (NSMutableURLRequest *)mcs_requestWithURL:(NSURL *)URL range:(NSRange)range;
-
-+ (NSMutableURLRequest *)mcs_requestWithURL:(NSURL *)URL headers:(nullable NSDictionary *)headers;
-
-+ (NSMutableURLRequest *)mcs_requestWithURL:(NSURL *)URL headers:(nullable NSDictionary *)headers range:(NSRange)range;
 
 - (NSMutableURLRequest *)mcs_requestWithRange:(NSRange)range;
 
 - (NSMutableURLRequest *)mcs_requestWithRedirectURL:(NSURL *)URL range:(NSRange)range;
 - (NSMutableURLRequest *)mcs_requestWithRedirectURL:(NSURL *)URL;
+- (NSMutableURLRequest *)mcs_requestWithHTTPAdditionalHeaders:(nullable NSDictionary<NSString *, NSString *> *)HTTPAdditionalHeaders;
 
 - (NSDictionary *)mcs_headers;
 - (NSRange)mcs_range;

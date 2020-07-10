@@ -70,6 +70,8 @@
 
     [m addObject:[[LWZTableSectionShrinker alloc] initWithTitle:@"Rotation Control" titleWhenShrank:nil dataArr:[self _createRotationControlDemoItems]]];
     
+    [m addObject:[[LWZTableSectionShrinker alloc] initWithTitle:@"UIScrollView Demo" titleWhenShrank:nil dataArr:[self _UIScrollViewDemoItems]]];
+
     [m addObject:[[LWZTableSectionShrinker alloc] initWithTitle:@"UITableView Demo" titleWhenShrank:nil dataArr:[self _UITableViewDemoItems]]];
     
     [m addObject:[[LWZTableSectionShrinker alloc] initWithTitle:@"UITableView Demo" titleWhenShrank:nil dataArr:[self _UICollectionViewDemoItems]]];
@@ -100,6 +102,11 @@
     _data = m.copy;
 }
 
+- (NSArray<Item *> *)_UIScrollViewDemoItems {
+    return @[
+        [Item.alloc initWithTitle:@"1 Play in UIScrollView" subTitle:@"在`UIScrollView`中播放" path:@"UIScrollView/1"],
+    ];
+}
 
 - (NSArray<Item *> *)_DYDemoItems {
     return @[

@@ -10,10 +10,25 @@
 #import "MCSUtils.h"
 
 @implementation NSURLRequest (MCS)
-+ (instancetype)mcs_requestWithURL:(NSURL *)URL headers:(nullable NSDictionary *)headers {
++ (instancetype)mcs_requestWithURL:(NSURL *)URL headers:(nullable NSDictionary<NSString *, NSString *> *)headers {
     NSMutableURLRequest *request = [NSMutableURLRequest requestWithURL:URL cachePolicy:NSURLRequestReloadIgnoringCacheData timeoutInterval:30];
-    [headers enumerateKeysAndObjectsUsingBlock:^(id  _Nonnull key, id  _Nonnull obj, BOOL * _Nonnull stop) {
-        [request setValue:obj forHTTPHeaderField:key];
+    static NSArray<NSString *> *availableHeaderKeys = nil;
+    static dispatch_once_t onceToken;
+    dispatch_once(&onceToken, ^{
+        availableHeaderKeys = @[
+            @"User-Agent",
+            @"Connection",
+            @"Accept",
+            @"Accept-Encoding",
+            @"Accept-Language",
+            @"Range"
+        ];
+    });
+    
+    [headers enumerateKeysAndObjectsUsingBlock:^(NSString * _Nonnull key, NSString * _Nonnull obj, BOOL * _Nonnull stop) {
+        if ( [availableHeaderKeys containsObject:key] ) {
+            [request setValue:obj forHTTPHeaderField:key];
+        }
     }];
     return request;
 }
@@ -52,5 +67,24 @@
 
 - (NSMutableURLRequest *)mcs_requestWithRedirectURL:(NSURL *)URL {
     return [NSMutableURLRequest mcs_requestWithURL:URL headers:self.allHTTPHeaderFields];
+}
+
+- (NSMutableURLRequest *)mcs_requestWithHTTPAdditionalHeaders:(nullable NSDictionary<NSString *,NSString *> *)HTTPAdditionalHeaders {
+    NSMutableURLRequest *request = nil;
+    if ( [self isKindOfClass:NSMutableURLRequest.class] ) {
+        request = (NSMutableURLRequest *)self;
+    }
+    else {
+        request = [self mutableCopy];
+    }
+    
+    if ( HTTPAdditionalHeaders != nil ) {
+        NSDictionary *current = request.allHTTPHeaderFields;
+        [HTTPAdditionalHeaders enumerateKeysAndObjectsUsingBlock:^(NSString * _Nonnull key, NSString * _Nonnull obj, BOOL * _Nonnull stop) {
+            if ( current[key] == nil )
+                [request setValue:obj forHTTPHeaderField:key];
+        }];
+    }
+    return request;
 }
 @end

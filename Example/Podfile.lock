@@ -12,16 +12,16 @@ PODS:
   - SDWebImage (5.8.3):
     - SDWebImage/Core (= 5.8.3)
   - SDWebImage/Core (5.8.3)
-  - SJBaseVideoPlayer (3.3.5):
+  - SJBaseVideoPlayer (3.3.6):
     - Masonry
     - Reachability
-    - SJBaseVideoPlayer/AVPlayer (= 3.3.5)
-    - SJBaseVideoPlayer/Common (= 3.3.5)
+    - SJBaseVideoPlayer/AVPlayer (= 3.3.6)
+    - SJBaseVideoPlayer/Common (= 3.3.6)
     - SJUIKit/AttributesFactory (>= 0.0.0.38)
     - SJUIKit/ObserverHelper
     - SJUIKit/Queues
     - SJUIKit/SQLite3
-  - SJBaseVideoPlayer/AVPlayer (3.3.5):
+  - SJBaseVideoPlayer/AVPlayer (3.3.6):
     - Masonry
     - Reachability
     - SJBaseVideoPlayer/Common
@@ -29,7 +29,7 @@ PODS:
     - SJUIKit/ObserverHelper
     - SJUIKit/Queues
     - SJUIKit/SQLite3
-  - SJBaseVideoPlayer/Common (3.3.5):
+  - SJBaseVideoPlayer/Common (3.3.6):
     - Masonry
     - Reachability
     - SJBaseVideoPlayer/ResourceLoader
@@ -37,7 +37,7 @@ PODS:
     - SJUIKit/ObserverHelper
     - SJUIKit/Queues
     - SJUIKit/SQLite3
-  - SJBaseVideoPlayer/ResourceLoader (3.3.5):
+  - SJBaseVideoPlayer/ResourceLoader (3.3.6):
     - Masonry
     - Reachability
     - SJUIKit/AttributesFactory (>= 0.0.0.38)
@@ -45,11 +45,11 @@ PODS:
     - SJUIKit/Queues
     - SJUIKit/SQLite3
   - SJFullscreenPopGesture/ObjC (1.5.3)
-  - SJMediaCacheServer (1.1.0):
+  - SJMediaCacheServer (1.1.2):
     - CocoaHTTPServer
-    - SJMediaCacheServer/Core (= 1.1.0)
+    - SJMediaCacheServer/Core (= 1.1.2)
     - SJUIKit/SQLite3
-  - SJMediaCacheServer/Core (1.1.0):
+  - SJMediaCacheServer/Core (1.1.2):
     - CocoaHTTPServer
     - SJUIKit/SQLite3
   - SJPlaybackListController (0.0.5):
@@ -177,9 +177,9 @@ SPEC CHECKSUMS:
   MJRefresh: 53e3e3219f204425ee6d3e62e8733d3295944cd6
   Reachability: 33e18b67625424e47b6cde6d202dce689ad7af96
   SDWebImage: 112503ec94a5a2a41869503844a15e8d8f1ead5c
-  SJBaseVideoPlayer: ebe3f08587d1af6c98cd450ecea73b89ba68d9f8
+  SJBaseVideoPlayer: d51e031dce27bdc72eb62c452b0a28ba45e4c86c
   SJFullscreenPopGesture: d4994917bc900e79cd686970866834b4c5883565
-  SJMediaCacheServer: e008d86d3915408a33c89ae1702d511cc4de84f3
+  SJMediaCacheServer: 6d7150891db453be0bc3c2e253e0f87d412c350c
   SJPlaybackListController: e135c789fcd63d63a62d5e2e2965ab1e6d52a2bd
   SJRouter: a866e7884fc9219bed523be0a0318c3a84e85022
   SJUIKit: dd52a4c3879610d9382e5a26b01cb56bcf25e205

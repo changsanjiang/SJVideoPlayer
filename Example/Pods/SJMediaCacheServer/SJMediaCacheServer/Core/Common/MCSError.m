@@ -46,6 +46,12 @@ NSString * const MCSErrorUserInfoResponseKey = @"Response";
     return [NSError errorWithDomain:MCSErrorDomain code:MCSHLSFileParseError userInfo:userInfo];
 }
 
++ (NSError *)mcs_HLSAESKeyWriteFailedError:(NSURL *)URL {
+    NSMutableDictionary *userInfo = NSMutableDictionary.dictionary;
+    userInfo[MCSErrorUserInfoURLKey] = URL;
+    return [NSError errorWithDomain:MCSErrorDomain code:MCSHLSAESKeyWriteFailedError userInfo:userInfo];
+}
+
 + (NSError *)mcs_fileNotExistError:(NSURL *)URL {
     NSMutableDictionary *userInfo = NSMutableDictionary.dictionary;
     userInfo[MCSErrorUserInfoURLKey] = URL;

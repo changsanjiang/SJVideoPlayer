@@ -6,6 +6,7 @@
 //
 
 #import "SJFloatSmallViewController.h"
+#import <UIKit/UIGraphicsRendererSubclass.h>
 #import "UIView+SJBaseVideoPlayerExtended.h"
 #if __has_include(<SJUIKit/NSObject+SJObserverHelper.h>)
 #import <SJUIKit/NSObject+SJObserverHelper.h>
@@ -112,7 +113,7 @@ NS_ASSUME_NONNULL_BEGIN
 }
 
 - (void)dealloc {
-    [_floatView removeFromSuperview];
+    [_floatView performSelectorOnMainThread:@selector(removeFromSuperview) withObject:nil waitUntilDone:YES];
 }
 
 - (__kindof UIView *)floatView {
@@ -203,8 +204,17 @@ NS_ASSUME_NONNULL_BEGIN
 - (UIPanGestureRecognizer *)panGesture {
     if ( _panGesture == nil ) {
         _panGesture = [[UIPanGestureRecognizer alloc] initWithTarget:self action:@selector(_handlePanGesture:)];
+        _panGesture.delegate = self;
     }
     return _panGesture;
+}
+
+- (BOOL)gestureRecognizer:(UIGestureRecognizer *)gestureRecognizer shouldRecognizeSimultaneouslyWithGestureRecognizer:(UIGestureRecognizer *)otherGestureRecognizer {
+    if ( [otherGestureRecognizer isKindOfClass:UIPanGestureRecognizer.class] ) {
+        otherGestureRecognizer.state = UIGestureRecognizerStateCancelled;
+        return YES;
+    }
+    return NO;
 }
 
 - (void)_handlePanGesture:(UIPanGestureRecognizer *)panGesture {

@@ -21,8 +21,5 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (nullable MCSResourcePartialContent *)contentForTsURL:(NSURL *)URL;
 - (MCSResourcePartialContent *)createContentWithTsURL:(NSURL *)URL totalLength:(NSUInteger)totalLength;
-
-- (nullable MCSResourcePartialContent *)contentForAESKeyURL:(NSURL *)URL;
-- (MCSResourcePartialContent *)createContentWithAESKeyURL:(NSURL *)URL totalLength:(NSUInteger)totalLength;
 @end
 NS_ASSUME_NONNULL_END

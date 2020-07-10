@@ -28,6 +28,13 @@ NS_ASSUME_NONNULL_BEGIN
 #pragma mark - UIView
 
 - (instancetype)init;
+
+#pragma mark - UIScrollView
+
+/// - UIScrollView
+///     - PlayerSuperview<SJPlayModelPlayerSuperview>
+///         - player
++ (instancetype)playModelWithScrollView:(__weak UIScrollView *)scrollView;
  
 #pragma mark - UITableView
 
@@ -127,8 +134,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 #pragma mark - 
 
-- (BOOL)isPlayInTableView;
-- (BOOL)isPlayInCollectionView;
+- (BOOL)isPlayInScrollView;
 - (nullable UIView *)playerSuperview;
 - (nullable __kindof UIScrollView *)inScrollView;
 - (nullable NSIndexPath *)indexPath;

@@ -9,6 +9,8 @@
 #import "MCSResourceFileDataReader.h"
 #import "MCSError.h"
 #import "MCSLogger.h"
+#import "MCSFileManager.h"
+#import "NSFileHandle+MCS.h"
 
 @interface MCSResourceFileDataReader() {
     dispatch_semaphore_t _semaphore;
@@ -19,12 +21,14 @@
 @property (nonatomic, copy) NSString *path;
 @property (nonatomic, strong) NSFileHandle *reader;
 
-@property (nonatomic) NSUInteger offset;
+@property (nonatomic) NSUInteger availableLength;
+@property (nonatomic) NSUInteger readLength;
 
 @property (nonatomic) BOOL isCalledPrepare;
 @property (nonatomic) BOOL isPrepared;
 @property (nonatomic) BOOL isClosed;
 @property (nonatomic) BOOL isDone;
+@property (nonatomic) BOOL isSought;
 @end
 
 @implementation MCSResourceFileDataReader
@@ -34,12 +38,13 @@
 - (instancetype)initWithRange:(NSRange)range path:(NSString *)path readRange:(NSRange)readRange delegate:(id<MCSResourceDataReaderDelegate>)delegate delegateQueue:(dispatch_queue_t)queue {
     self = [super init];
     if ( self ) {
-        _path = path.copy;
         _range = range;
+        _path = path.copy;
         _readRange = readRange;
         _delegate = delegate;
         _delegateQueue = queue;
         _semaphore = dispatch_semaphore_create(1);
+        _availableLength = readRange.length;
     }
     return self;
 }
@@ -58,12 +63,17 @@
         MCSLog(@"%@: <%p>.prepare { range: %@, file: %@.%@ };\n", NSStringFromClass(self.class), self, NSStringFromRange(_range), _path.lastPathComponent, NSStringFromRange(_readRange));
 
         _reader = [NSFileHandle fileHandleForReadingAtPath:_path];
-
+        
         [_reader seekToFileOffset:_readRange.location];
         _isPrepared = YES;
         
         dispatch_async(_delegateQueue, ^{
             [self.delegate readerPrepareDidFinish:self];
+        });
+        
+        NSUInteger length = _readRange.length;
+        dispatch_async(_delegateQueue, ^{
+            [self.delegate reader:self hasAvailableDataWithLength:length];
         });
     } @catch (NSException *exception) {
         [self _onError:[NSError mcs_exception:exception]];
@@ -78,15 +88,27 @@
         if ( _isClosed || _isDone || !_isPrepared )
             return nil;
         
-        NSUInteger length = MIN(lengthParam, _readRange.length - _offset);
+        if ( _isSought ) {
+            _isSought = NO;
+            NSError *error = nil;
+            if ( ![_reader mcs_seekToFileOffset:_readRange.location + _readLength error:&error] ) {
+                [self _onError:error];
+                return nil;
+            }
+        }
+        
+        NSUInteger length = MIN(lengthParam, _readRange.length - _readLength);
         NSData *data = [_reader readDataOfLength:length];
 
-        MCSLog(@"%@: <%p>.read { offset: %lu, readLength: %lu };\n", NSStringFromClass(self.class), self, (unsigned long)_offset, (unsigned long)data.length);
+        NSUInteger readLength = data.length;
+        if ( readLength == 0 )
+            return nil;
         
-        _offset += data.length;
-        _isDone = _offset == _readRange.length;
-                
+        _readLength += readLength;
+        _isDone = _readLength == _readRange.length;
+        
 #ifdef DEBUG
+        MCSLog(@"%@: <%p>.read { offset: %lu, readLength: %lu };\n", NSStringFromClass(self.class), self, (unsigned long)(_range.location + _readLength), (unsigned long)readLength);
         if ( _isDone ) {
             MCSLog(@"%@: <%p>.done { range: %@ , file: %@.%@ };\n", NSStringFromClass(self.class), self, NSStringFromRange(_range), _path.lastPathComponent, NSStringFromRange(_readRange));
         }
@@ -96,6 +118,31 @@
         [self _onError:[NSError mcs_exception:exception]];
     } @finally {
            [self unlock];
+    }
+}
+
+- (BOOL)seekToOffset:(NSUInteger)offset {
+    [self lock];
+    @try {
+        if ( _isClosed || !_isPrepared )
+            return NO;
+    
+        if ( !NSLocationInRange(offset - 1, _range) )
+            return NO;
+        
+        // offset     = range.location + readLength;
+        // readLength = offset - range.location
+        NSUInteger readLength = offset - _range.location;
+        if ( readLength != _readLength ) {
+            _isSought = YES;
+            _readLength = readLength;
+            _isDone = _readLength == _readRange.length;
+        }
+        return YES;
+    } @catch (NSException *exception) {
+        [self _onError:[NSError mcs_exception:exception]];
+    } @finally {
+        [self unlock];
     }
 }
 
@@ -112,6 +159,17 @@
 }
 
 #pragma mark -
+
+- (NSUInteger)offset {
+    [self lock];
+    @try {
+        return _range.location + _readLength;
+    } @catch (__unused NSException *exception) {
+        
+    } @finally {
+        [self unlock];
+    }
+}
 
 - (BOOL)isPrepared {
     [self lock];

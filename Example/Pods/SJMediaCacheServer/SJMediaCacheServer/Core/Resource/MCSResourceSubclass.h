@@ -25,7 +25,8 @@ NS_ASSUME_NONNULL_BEGIN
 - (void)partialContent:(MCSResourcePartialContent *)content didWriteDataWithLength:(NSUInteger)length;
 @end
 
-@interface MCSResource (Private)<NSLocking, MCSResourcePartialContentDelegate>
+@interface MCSResource (Private)<MCSResourcePartialContentDelegate>
+@property (nonatomic, strong, readonly) dispatch_queue_t queue;
 @property (nonatomic) NSInteger id;
 @property (nonatomic, copy) NSString *name;
 @property (nonatomic, strong) MCSResourceUsageLog *log;

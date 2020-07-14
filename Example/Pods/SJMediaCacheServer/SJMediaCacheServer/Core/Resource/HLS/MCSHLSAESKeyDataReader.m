@@ -80,18 +80,14 @@
             return;
         }
         
-        // lock
-        [MCSFileManager lock];
-        if ( ![MCSFileManager fileExistsAtPath:filePath] ) {
-            if ( ![data writeToFile:filePath atomically:YES] ) {
-                // unlock
-                [MCSFileManager unlock];
-                [self _onError:[NSError mcs_HLSAESKeyWriteFailedError:self->_request.URL]];
-                return;
+        [MCSFileManager lockWithBlock:^{
+            if ( ![MCSFileManager fileExistsAtPath:filePath] ) {
+                if ( ![data writeToFile:filePath atomically:YES] ) {
+                    [self _onError:[NSError mcs_HLSAESKeyWriteFailedError:self->_request.URL]];
+                    return;
+                }
             }
-        }
-        // unlock
-        [MCSFileManager unlock];
+        }];
         
         [self _prepare:filePath];
     });

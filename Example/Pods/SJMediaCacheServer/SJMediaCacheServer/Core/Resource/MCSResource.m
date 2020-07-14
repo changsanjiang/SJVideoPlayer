@@ -12,8 +12,7 @@
 #import "MCSResourceManager.h"
 #import "MCSConfiguration.h"
 
-@interface MCSResource ()<NSLocking, MCSResourcePartialContentDelegate> {
-    NSRecursiveLock *_lock;
+@interface MCSResource ()<MCSResourcePartialContentDelegate> {
     NSMutableArray<MCSResourcePartialContent *> *_m;
 }
 @property (nonatomic) NSInteger id;
@@ -21,6 +20,7 @@
 @property (nonatomic, strong) MCSResourceUsageLog *log;
 @property (nonatomic) NSInteger readWriteCount;
 @property (nonatomic) BOOL isCacheFinished;
+@property (nonatomic, strong) dispatch_queue_t queue;
 @end
 
 @implementation MCSResource
@@ -29,7 +29,7 @@
     self = [super init];
     if ( self ) {
         _configuration = MCSConfiguration.alloc.init;
-        _lock = NSRecursiveLock.alloc.init;
+        _queue = dispatch_get_global_queue(0, 0);
         _m = NSMutableArray.array; 
     }
     return self;
@@ -54,27 +54,24 @@
 }
 
 - (void)partialContent:(MCSResourcePartialContent *)content didWriteDataWithLength:(NSUInteger)length {
-    
+    [MCSResourceManager.shared didWriteDataForResource:self length:length];
 }
 
 #pragma mark -
 
 @synthesize isCacheFinished = _isCacheFinished;
 - (void)setIsCacheFinished:(BOOL)isCacheFinished {
-    [self lock];
-    _isCacheFinished = isCacheFinished;
-    [self unlock];
+    dispatch_barrier_sync(_queue, ^{
+        self->_isCacheFinished = isCacheFinished;
+    });
 }
 
 - (BOOL)isCacheFinished {
-    [self lock];
-    @try {
-        return _isCacheFinished;
-    } @catch (__unused NSException *exception) {
-        
-    } @finally {
-        [self unlock];
-    }
+    __block BOOL isCacheFinished = NO;
+    dispatch_barrier_sync(_queue, ^{
+        isCacheFinished = self->_isCacheFinished;
+    });
+    return isCacheFinished;
 }
 
 - (nullable NSURL *)playbackURLForCacheWithURL:(NSURL *)URL {
@@ -85,27 +82,17 @@
 
 @synthesize readWriteCount = _readWriteCount;
 - (void)setReadWriteCount:(NSInteger)readWriteCount {
-    [self lock];
-    @try {
-        if ( _readWriteCount != readWriteCount ) {
-            _readWriteCount = readWriteCount;
-        }
-    } @catch (__unused NSException *exception) {
-        
-    } @finally {
-        [self unlock];
-    }
+    dispatch_barrier_sync(_queue, ^{
+        self->_readWriteCount = readWriteCount;
+    });
 }
 
 - (NSInteger)readWriteCount {
-    [self lock];
-    @try {
-        return _readWriteCount;;
-    } @catch (__unused NSException *exception) {
-        
-    } @finally {
-        [self unlock];
-    }
+    __block NSInteger readWriteCount;
+    dispatch_barrier_sync(_queue, ^{
+        readWriteCount = _readWriteCount;
+    });
+    return readWriteCount;
 }
 
 - (void)readWrite_retain {
@@ -119,24 +106,20 @@
 #pragma mark -
 
 - (NSArray<MCSResourcePartialContent *> *)contents {
-    [self lock];
-    @try {
-        return _m.count >= 0 ? _m : nil;
-    } @catch (__unused NSException *exception) {
-        
-    } @finally {
-        [self unlock];
-    }
+    __block NSArray<MCSResourcePartialContent *> *contents = nil;
+    dispatch_barrier_sync(_queue, ^{
+        contents = self->_m.count >= 0 ? _m : nil;
+    });
+    return contents;
 }
 
 - (void)addContents:(NSArray<MCSResourcePartialContent *> *)contents {
     if ( contents.count != 0 ) {
-        [self lock];
-        for ( MCSResourcePartialContent *content in contents ) {
-            content.delegate = self;
-        }
-        [_m addObjectsFromArray:contents];
-        [self unlock];
+        dispatch_barrier_sync(_queue, ^{
+            for ( MCSResourcePartialContent *content in contents )
+                content.delegate = self;
+            [_m addObjectsFromArray:contents];
+        });
     }
 }
 
@@ -145,24 +128,14 @@
 }
 
 - (void)removeContent:(MCSResourcePartialContent *)content {
-    [self lock];
-    [_m removeObject:content];
-    [MCSFileManager removeContentWithName:content.filename inResource:_name error:NULL];
-    [MCSResourceManager.shared didRemoveDataForResource:self length:content.length];
-    [self unlock];
+    dispatch_barrier_sync(_queue, ^{
+        [self->_m removeObject:content];
+        [MCSFileManager removeContentWithName:content.filename inResource:self->_name error:NULL];
+        [MCSResourceManager.shared didRemoveDataForResource:self length:content.length];
+    });
 }
 
 - (NSString *)filePathOfContent:(MCSResourcePartialContent *)content {
     return [MCSFileManager getFilePathWithName:content.filename inResource:_name];
-}
-
-#pragma mark -
-
-- (void)lock {
-    [_lock lock];
-}
-
-- (void)unlock {
-    [_lock unlock];
 }
 @end

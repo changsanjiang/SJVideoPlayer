@@ -17,8 +17,7 @@ UIKIT_EXTERN MCSFileExtension const MCSHLSTsFileExtension;
 UIKIT_EXTERN MCSFileExtension const MCSHLSAESKeyFileExtension;
 
 @interface MCSFileManager : NSObject
-+ (void)lock;
-+ (void)unlock;
++ (void)lockWithBlock:(void(^)(void))block;
 + (NSString *)rootDirectoryPath;
 + (NSString *)databasePath;
 + (NSString *)getResourcePathWithName:(NSString *)name;

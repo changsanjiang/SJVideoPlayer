@@ -166,15 +166,14 @@
         [indexFileContents replaceCharactersInRange:URIRange withString:proxy];
     }];
     
-    [MCSFileManager lock];
-    if ( ![MCSFileManager fileExistsAtPath:indexFilePath] ) {
-        if ( ![indexFileContents writeToFile:indexFilePath atomically:YES encoding:NSUTF8StringEncoding error:&error] ) {
-            [MCSFileManager unlock];
-            [self _onError:error];
-            return;
+    [MCSFileManager lockWithBlock:^{
+        if ( ![MCSFileManager fileExistsAtPath:indexFilePath] ) {
+            if ( ![indexFileContents writeToFile:indexFilePath atomically:YES encoding:NSUTF8StringEncoding error:&error] ) {
+                [self _onError:error];
+                return;
+            }
         }
-    }
-    [MCSFileManager unlock];
+    }];
     
     [self _finished];
 }

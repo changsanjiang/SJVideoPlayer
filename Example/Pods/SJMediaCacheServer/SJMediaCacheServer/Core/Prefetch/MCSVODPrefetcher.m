@@ -121,7 +121,7 @@
             MCSLog(@"%@: <%p>.preload { preloadSize: %lu, progress: %f };\n", NSStringFromClass(self.class), self, (unsigned long)self->_preloadSize, progress);
             
             if ( self->_delegate != nil ) {
-                dispatch_async(_delegateQueue, ^{
+                dispatch_sync(_delegateQueue, ^{
                     [self.delegate prefetcher:self progressDidChange:progress];
                 });
             }
@@ -152,7 +152,7 @@
     [self _close];
     
     if ( _delegate != nil ) {
-        dispatch_async(_delegateQueue, ^{
+        dispatch_sync(_delegateQueue, ^{
             [self.delegate prefetcher:self didCompleteWithError:error];
         });
     }

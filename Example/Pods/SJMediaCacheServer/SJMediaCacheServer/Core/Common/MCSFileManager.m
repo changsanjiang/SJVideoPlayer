@@ -14,23 +14,11 @@ MCSFileExtension const MCSHLSTsFileExtension = @".ts";
 MCSFileExtension const MCSHLSAESKeyFileExtension = @".key";
 
 @implementation MCSFileManager
-static dispatch_semaphore_t _semaphore;
 static NSString *VODPrefix = @"vod";
 static NSString *HLSPrefix = @"hls";
 
-+ (void)initialize {
-    static dispatch_once_t onceToken;
-    dispatch_once(&onceToken, ^{
-        _semaphore = dispatch_semaphore_create(1);
-    });
-}
-
-+ (void)lock {
-    dispatch_semaphore_wait(_semaphore, DISPATCH_TIME_FOREVER);
-}
-
-+ (void)unlock {
-    dispatch_semaphore_signal(_semaphore);
++ (void)lockWithBlock:(void (^)(void))block {
+    dispatch_barrier_sync(dispatch_get_global_queue(0, 0), block);
 }
 
 + (NSString *)rootDirectoryPath {
@@ -97,25 +85,22 @@ static NSString *HLSPrefix = @"hls";
 // VOD
 //      注意: 返回文件名
 + (nullable NSString *)vod_createContentFileInResource:(NSString *)resourceName atOffset:(NSUInteger)offset pathExtension:(nullable NSString *)pathExtension {
-    [self lock];
-    @try {
+    __block NSString *filename = nil;
+    dispatch_barrier_sync(dispatch_get_global_queue(0, 0), ^{
         NSUInteger sequence = 0;
         while (true) {
             // VOD前缀_偏移量_序号.扩展名
-            NSString *filename = [NSString stringWithFormat:@"%@_%lu_%lu", VODPrefix, (unsigned long)offset, (unsigned long)sequence++];
-            if ( pathExtension.length != 0 ) filename = [filename stringByAppendingPathExtension:pathExtension];
-            NSString *filepath = [self getFilePathWithName:filename inResource:resourceName];
+            NSString *fname = [NSString stringWithFormat:@"%@_%lu_%lu", VODPrefix, (unsigned long)offset, (unsigned long)sequence++];
+            if ( pathExtension.length != 0 ) fname = [fname stringByAppendingPathExtension:pathExtension];
+            NSString *filepath = [self getFilePathWithName:fname inResource:resourceName];
             if ( ![NSFileManager.defaultManager fileExistsAtPath:filepath] ) {
                 [NSFileManager.defaultManager createFileAtPath:filepath contents:nil attributes:nil];
-                return filename;
+                filename = fname;
+                return;
             }
         }
-        return nil;
-    } @catch (__unused NSException *exception) {
-        
-    } @finally {
-        [self unlock];
-    }
+    });
+    return filename;
 }
 
 // format: VOD前缀_偏移量_序号.扩展名
@@ -149,25 +134,22 @@ static NSString *HLSPrefix = @"hls";
 @implementation MCSFileManager (HLS_TS)
 //      注意: 返回文件名
 + (nullable NSString *)hls_createContentFileInResource:(NSString *)resourceName tsName:(NSString *)tsName tsTotalLength:(NSUInteger)length {
-    [self lock];
-    @try {
+    __block NSString *filename = nil;
+    dispatch_barrier_sync(dispatch_get_global_queue(0, 0), ^{
         NSUInteger sequence = 0;
         while (true) {
             // format: HLS前缀_长度_序号_tsName
             //
-            NSString *filename = [NSString stringWithFormat:@"%@_%lu_%lu_%@", HLSPrefix, (unsigned long)length, (unsigned long)sequence++, tsName];
-            NSString *filepath = [self getFilePathWithName:filename inResource:resourceName];
+            NSString *fname = [NSString stringWithFormat:@"%@_%lu_%lu_%@", HLSPrefix, (unsigned long)length, (unsigned long)sequence++, tsName];
+            NSString *filepath = [self getFilePathWithName:fname inResource:resourceName];
             if ( ![NSFileManager.defaultManager fileExistsAtPath:filepath] ) {
                 [NSFileManager.defaultManager createFileAtPath:filepath contents:nil attributes:nil];
-                return filename;
+                filename = fname;
+                return;
             }
         }
-        return nil;
-    } @catch (__unused NSException *exception) {
-        
-    } @finally {
-        [self unlock];
-    }
+    });
+    return filename;
 }
 
 // format: HLS前缀_长度_序号_tsName

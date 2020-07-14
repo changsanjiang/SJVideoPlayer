@@ -30,8 +30,7 @@
     if ( self ) {
         _configuration = MCSConfiguration.alloc.init;
         _lock = NSRecursiveLock.alloc.init;
-        _m = NSMutableArray.array;
-        _readerOperationQueue = dispatch_queue_create("lib.changsanjiang.SJMediaCacheServer.readerOperationQueue", DISPATCH_QUEUE_SERIAL);
+        _m = NSMutableArray.array; 
     }
     return self;
 }
@@ -133,9 +132,8 @@
 - (void)addContents:(NSArray<MCSResourcePartialContent *> *)contents {
     if ( contents.count != 0 ) {
         [self lock];
-        dispatch_queue_t globalQueue = dispatch_get_global_queue(0, 0);
         for ( MCSResourcePartialContent *content in contents ) {
-            [content setDelegate:self delegateQueue:globalQueue];
+            content.delegate = self;
         }
         [_m addObjectsFromArray:contents];
         [self unlock];

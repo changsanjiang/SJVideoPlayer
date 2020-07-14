@@ -22,10 +22,8 @@
     self = [super init];
     if ( self ) {
         _m = NSMutableData.data;
+        [MCSDownload.shared downloadWithRequest:request priority:networkTaskPriority delegate:self];
         _semaphore = dispatch_semaphore_create(0);
-        dispatch_async(dispatch_get_global_queue(0, 0), ^{
-            [MCSDownload.shared downloadWithRequest:request priority:networkTaskPriority delegate:self];
-        });
         dispatch_semaphore_wait(_semaphore, DISPATCH_TIME_FOREVER);
         if ( _error != nil && error != NULL ) *error = _error;
     }

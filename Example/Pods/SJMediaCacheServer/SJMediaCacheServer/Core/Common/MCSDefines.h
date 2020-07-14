@@ -13,7 +13,7 @@ typedef NS_ENUM(NSUInteger, MCSResourceType) {
     MCSResourceTypeHLS
 };
 
-typedef enum : NSUInteger {
+typedef NS_OPTIONS(NSUInteger, MCSDataType) {
     MCSDataTypeHLSMask      = 0xFF,
     MCSDataTypeHLSPlaylist  = 1,
     MCSDataTypeHLSAESKey    = 2,
@@ -22,6 +22,6 @@ typedef enum : NSUInteger {
 
     MCSDataTypeVODMask      = 0xFF00,
     MCSDataTypeVOD          = 1 << 8,
-} MCSDataType;
+};
 
 #endif /* MCSDefines_h */

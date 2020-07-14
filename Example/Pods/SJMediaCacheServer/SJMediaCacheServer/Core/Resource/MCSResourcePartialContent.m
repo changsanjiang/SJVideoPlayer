@@ -9,16 +9,14 @@
 #import "MCSResourcePartialContent.h"
 #import "MCSResourceSubclass.h"
 
-@interface MCSResourcePartialContent ()<NSLocking> {
-    dispatch_semaphore_t _semaphore;
-}
+@interface MCSResourcePartialContent ()
 @property (nonatomic, weak, nullable) id<MCSResourcePartialContentDelegate> delegate;
-@property (nonatomic, strong, nullable) dispatch_queue_t delegateQueue;
 @property (nonatomic, readonly) NSUInteger offset;
 @property (nonatomic) NSInteger readWriteCount;
 @property (nonatomic, copy) NSString *AESKeyName;
 @property (nonatomic, copy) NSString *tsName;
 @property (nonatomic) NSUInteger tsTotalLength;
+@property (nonatomic, strong) dispatch_queue_t queue;
 
 - (void)readWrite_retain;
 - (void)readWrite_release;
@@ -48,10 +46,10 @@
 - (instancetype)initWithFilename:(NSString *)filename offset:(NSUInteger)offset length:(NSUInteger)length {
     self = [super init];
     if ( self ) {
-        _semaphore = dispatch_semaphore_create(1);
         _filename = filename;
         _offset = offset;
         _length = length;
+        _queue = dispatch_get_global_queue(0, 0);
     }
     return self;
 }
@@ -60,9 +58,18 @@
     return [NSString stringWithFormat:@"%s: <%p> { name: %@, offset: %lu, length: %lu };", NSStringFromClass(self.class).UTF8String, self, _filename, (unsigned long)_offset, (unsigned long)self.length];
 }
 
-- (void)setDelegate:(id<MCSResourcePartialContentDelegate>)delegate delegateQueue:(nonnull dispatch_queue_t)delegateQueue {
-    _delegate = delegate;
-    _delegateQueue = delegateQueue;
+@synthesize delegate = _delegate;
+- (void)setDelegate:(nullable id<MCSResourcePartialContentDelegate>)delegate {
+    dispatch_barrier_sync(_queue, ^{
+        self->_delegate = delegate;
+    });
+}
+- (nullable id<MCSResourcePartialContentDelegate>)delegate {
+    __block id<MCSResourcePartialContentDelegate> delegate;
+    dispatch_sync(_queue, ^{
+        delegate = _delegate;
+    });
+    return delegate;
 }
 
 @synthesize length = _length;
@@ -70,51 +77,36 @@
     if ( length == 0 )
         return;
     
-    [self lock];
-    _length += length;
-    dispatch_async(_delegateQueue, ^{
-        [self.delegate partialContent:self didWriteDataWithLength:length];
+    dispatch_barrier_sync(_queue, ^{
+        _length += length;
+        [self->_delegate partialContent:self didWriteDataWithLength:length];
     });
-    [self unlock];
 }
 
 - (NSUInteger)length {
-    [self lock];
-    @try {
-        return _length;;
-    } @catch (__unused NSException *exception) {
-        
-    } @finally {
-        [self unlock];
-    }
+    __block NSUInteger length;
+    dispatch_sync(_queue, ^{
+        length = _length;
+    });
+    return length;
 }
 
 @synthesize readWriteCount = _readWriteCount;
 - (void)setReadWriteCount:(NSInteger)readWriteCount {
-    [self lock];
-    @try {
+    dispatch_barrier_sync(_queue, ^{
         if ( _readWriteCount != readWriteCount ) {
             _readWriteCount = readWriteCount;;
-            dispatch_async(_delegateQueue, ^{
-                [self.delegate readWriteCountDidChangeForPartialContent:self];
-            });
+            [self->_delegate readWriteCountDidChangeForPartialContent:self];
         }
-    } @catch (__unused NSException *exception) {
-        
-    } @finally {
-        [self unlock];
-    }
+    });
 }
 
 - (NSInteger)readWriteCount {
-    [self lock];
-    @try {
-        return _readWriteCount;;
-    } @catch (__unused NSException *exception) {
-        
-    } @finally {
-        [self unlock];
-    }
+    __block NSInteger readWriteCount;
+    dispatch_sync(_queue, ^{
+        readWriteCount = _readWriteCount;
+    });
+    return readWriteCount;
 }
  
 - (void)readWrite_retain {
@@ -123,13 +115,5 @@
 
 - (void)readWrite_release {
     self.readWriteCount -= 1;
-}
-
-- (void)lock {
-    dispatch_semaphore_wait(_semaphore, DISPATCH_TIME_FOREVER);
-}
-
-- (void)unlock {
-    dispatch_semaphore_signal(_semaphore);
 }
 @end

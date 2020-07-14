@@ -7,8 +7,8 @@
 
 #import "MCSConfiguration.h"
 
-@interface MCSConfiguration ()<NSLocking> {
-    dispatch_semaphore_t _semaphore;
+@interface MCSConfiguration () {
+    dispatch_queue_t _queue;
     NSMutableDictionary <NSNumber *, NSMutableDictionary<NSString *, NSString *> *> *_map;
 }
 @end
@@ -17,56 +17,61 @@
 - (instancetype)init {
     self = [super init];
     if ( self ) {
-        _semaphore = dispatch_semaphore_create(1);
+        _queue = dispatch_get_global_queue(0, 0);
     }
     return self;
 }
 
 - (void)setValue:(nullable NSString *)value forHTTPAdditionalHeaderField:(NSString *)HTTPHeaderField ofType:(MCSDataType)type {
-    [self lock];
-    if ( _map == nil ) _map = NSMutableDictionary.dictionary;
-    
-    BOOL fallThrough = NO;
-    switch ( type & MCSDataTypeHLSMask ) {
-        case MCSDataTypeHLS: {
-            [self _setValue:value forHTTPAdditionalHeaderField:HTTPHeaderField ofType:MCSDataTypeHLS fallThrough:fallThrough];
-            fallThrough = YES;
+    dispatch_barrier_sync(_queue, ^{
+        if ( self->_map == nil ) self->_map = NSMutableDictionary.dictionary;
+        
+        BOOL fallThrough = NO;
+        switch ( (MCSDataType)(type & MCSDataTypeHLSMask) ) {
+            case MCSDataTypeHLSMask:
+            case MCSDataTypeVODMask:
+            case MCSDataTypeVOD:
+                break;
+            case MCSDataTypeHLS: {
+                [self _setValue:value forHTTPAdditionalHeaderField:HTTPHeaderField ofType:MCSDataTypeHLS fallThrough:fallThrough];
+                fallThrough = YES;
+            }
+            case MCSDataTypeHLSPlaylist: {
+                [self _setValue:value forHTTPAdditionalHeaderField:HTTPHeaderField ofType:MCSDataTypeHLSPlaylist fallThrough:fallThrough];
+                if ( !fallThrough ) break;
+            }
+            case MCSDataTypeHLSAESKey: {
+                [self _setValue:value forHTTPAdditionalHeaderField:HTTPHeaderField ofType:MCSDataTypeHLSAESKey fallThrough:fallThrough];
+                if ( !fallThrough ) break;
+            }
+            case MCSDataTypeHLSTs: {
+                [self _setValue:value forHTTPAdditionalHeaderField:HTTPHeaderField ofType:MCSDataTypeHLSTs fallThrough:fallThrough];
+                if ( !fallThrough ) break;
+            }
         }
-        case MCSDataTypeHLSPlaylist: {
-            [self _setValue:value forHTTPAdditionalHeaderField:HTTPHeaderField ofType:MCSDataTypeHLSPlaylist fallThrough:fallThrough];
-            if ( !fallThrough ) break;
+        
+        switch ( (MCSDataType)(type & MCSDataTypeVODMask) ) {
+            case MCSDataTypeHLSMask:
+            case MCSDataTypeHLSPlaylist:
+            case MCSDataTypeHLSAESKey:
+            case MCSDataTypeHLSTs:
+            case MCSDataTypeHLS:
+            case MCSDataTypeVODMask:
+                break;
+            case MCSDataTypeVOD: {
+                [self _setValue:value forHTTPAdditionalHeaderField:HTTPHeaderField ofType:MCSDataTypeVOD fallThrough:fallThrough];
+                break;
+            }
         }
-        case MCSDataTypeHLSAESKey: {
-            [self _setValue:value forHTTPAdditionalHeaderField:HTTPHeaderField ofType:MCSDataTypeHLSAESKey fallThrough:fallThrough];
-            if ( !fallThrough ) break;
-        }
-        case MCSDataTypeHLSTs: {
-            [self _setValue:value forHTTPAdditionalHeaderField:HTTPHeaderField ofType:MCSDataTypeHLSTs fallThrough:fallThrough];
-            if ( !fallThrough ) break;
-        }
-        default: break;
-    }
-    
-    switch ( type & MCSDataTypeVODMask ) {
-        case MCSDataTypeVOD: {
-            [self _setValue:value forHTTPAdditionalHeaderField:HTTPHeaderField ofType:MCSDataTypeVOD fallThrough:fallThrough];
-            break;
-        }
-        default: break;
-    }
-    
-    [self unlock];
+    });
 }
 
 - (nullable NSDictionary<NSString *, NSString *> *)HTTPAdditionalHeadersForDataRequestsOfType:(MCSDataType)type {
-    [self lock];
-    @try {
-        return _map[@(type)];
-    } @catch (__unused NSException *exception) {
-        
-    } @finally {
-        [self unlock];
-    }
+    __block NSDictionary<NSString *, NSString *> *headers = nil;
+    dispatch_sync(_queue, ^{
+        headers = _map[@(type)];
+    });
+    return headers;
 }
 
 - (void)_setValue:(nullable NSString *)value forHTTPAdditionalHeaderField:(NSString *)HTTPHeaderField ofType:(MCSDataType)type fallThrough:(BOOL)fallThrough {
@@ -80,13 +85,4 @@
     _map[key][HTTPHeaderField] = value;
 }
 
-#pragma mark -
-
-- (void)lock {
-    dispatch_semaphore_wait(_semaphore, DISPATCH_TIME_FOREVER);
-}
-
-- (void)unlock {
-    dispatch_semaphore_signal(_semaphore);
-}
 @end

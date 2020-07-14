@@ -7,11 +7,12 @@
 //
 
 #import "MCSResourceDefines.h"
+@class MCSResource;
 
 NS_ASSUME_NONNULL_BEGIN
 
-@interface MCSResourceFileDataReader : NSObject<MCSResourceDataReader, NSLocking>
-- (instancetype)initWithRange:(NSRange)range path:(NSString *)path readRange:(NSRange)readRange delegate:(id<MCSResourceDataReaderDelegate>)delegate delegateQueue:(dispatch_queue_t)queue;
+@interface MCSResourceFileDataReader : NSObject<MCSResourceDataReader>
+- (instancetype)initWithResource:(MCSResource *)resource range:(NSRange)range path:(NSString *)path readRange:(NSRange)readRange delegate:(id<MCSResourceDataReaderDelegate>)delegate;
 
 - (void)prepare;
 @property (nonatomic, readonly) NSRange range;

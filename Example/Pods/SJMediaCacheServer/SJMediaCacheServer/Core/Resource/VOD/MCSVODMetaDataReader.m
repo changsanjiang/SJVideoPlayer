@@ -39,9 +39,7 @@
     _pathExtension = response.suggestedFilename.pathExtension;
     [task cancel];
     
-    dispatch_async(_delegateQueue, ^{
-        [self.delegate metaDataReader:self didCompleteWithError:nil];
-    });
+    [_delegate metaDataReader:self didCompleteWithError:nil];
 }
 
 - (void)downloadTask:(NSURLSessionTask *)task didReceiveData:(NSData *)data {

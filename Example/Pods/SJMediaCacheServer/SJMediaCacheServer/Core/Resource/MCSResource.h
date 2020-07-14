@@ -24,7 +24,6 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (nullable NSURL *)playbackURLForCacheWithURL:(NSURL *)URL;
 
-@property (nonatomic, strong, readonly) dispatch_queue_t readerOperationQueue;
 @end
 
 NS_ASSUME_NONNULL_END

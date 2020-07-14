@@ -15,7 +15,6 @@ NS_ASSUME_NONNULL_BEGIN
 @protocol MCSResourceDataReader <NSObject>
 
 @property (nonatomic, weak, readonly, nullable) id<MCSResourceDataReaderDelegate> delegate;
-@property (nonatomic, strong, readonly, nullable) dispatch_queue_t delegateQueue;
 
 - (void)prepare;
 @property (nonatomic, readonly) NSRange range;

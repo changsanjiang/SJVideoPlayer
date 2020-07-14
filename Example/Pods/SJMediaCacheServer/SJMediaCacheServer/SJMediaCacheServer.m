@@ -180,6 +180,7 @@
 }
 
 - (void)removeAllCaches {
+    [MCSPrefetcherManager.shared cancelAllPrefetchTasks];
     [MCSResourceManager.shared removeAllResources];
 }
 

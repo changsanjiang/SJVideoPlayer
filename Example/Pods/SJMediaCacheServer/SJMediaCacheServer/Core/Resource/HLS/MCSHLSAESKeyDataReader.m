@@ -15,6 +15,7 @@
 #import "MCSUtils.h"
 #import "MCSURLRecognizer.h"
 #import "MCSResourceFileDataReader.h"
+#import "MCSQueue.h"
 
 @interface MCSHLSAESKeyDataReader ()<MCSResourceDataReaderDelegate>
 @property (nonatomic, weak) MCSHLSResource *resource;
@@ -25,7 +26,6 @@
 @property (nonatomic) BOOL isClosed;
 
 @property (nonatomic, strong, nullable) MCSResourceFileDataReader *reader;
-@property (nonatomic, strong) dispatch_queue_t queue;
 @end
 
 @implementation MCSHLSAESKeyDataReader
@@ -35,7 +35,6 @@
 - (instancetype)initWithResource:(MCSHLSResource *)resource request:(NSURLRequest *)request networkTaskPriority:(float)networkTaskPriority delegate:(id<MCSResourceDataReaderDelegate>)delegate {
     self = [super init];
     if ( self ) {
-        _queue = dispatch_get_global_queue(0, 0);
         _resource = resource;
         _request = request;
         _networkTaskPriority = networkTaskPriority;
@@ -49,16 +48,16 @@
 }
 
 - (void)prepare {
-    dispatch_barrier_async(_queue, ^{
-        if ( self->_isClosed || self->_isCalledPrepare )
+    dispatch_barrier_sync(MCSHLSAESDataReaderQueue(), ^{
+        if ( _isClosed || _isCalledPrepare )
             return;
         
-        MCSLog(@"%@: <%p>.prepare { URL: %@ };\n", NSStringFromClass(self.class), self, self->_request.URL);
+        MCSLog(@"%@: <%p>.prepare { URL: %@ };\n", NSStringFromClass(self.class), self, _request.URL);
         
-        self->_isCalledPrepare = YES;
+        _isCalledPrepare = YES;
         
-        NSString *name = [MCSURLRecognizer.shared nameWithUrl:self->_request.URL.absoluteString extension:MCSHLSAESKeyFileExtension];
-        NSString *filePath = [MCSFileManager hls_AESKeyFilePathInResource:self->_resource.name AESKeyName:name];
+        NSString *name = [MCSURLRecognizer.shared nameWithUrl:_request.URL.absoluteString extension:MCSHLSAESKeyFileExtension];
+        NSString *filePath = [MCSFileManager hls_AESKeyFilePathInResource:_resource.name AESKeyName:name];
         
         if ( [MCSFileManager fileExistsAtPath:filePath] ) {
             // go to read the content
@@ -66,14 +65,14 @@
             return;
         }
         
-        MCSLog(@"%@: <%p>.request { URL: %@ };\n", NSStringFromClass(self.class), self, self->_request.URL);
+        MCSLog(@"%@: <%p>.request { URL: %@ };\n", NSStringFromClass(self.class), self, _request.URL);
         
         // download the content
         
         NSError *error = nil;
         
         // Wait until the download is complete
-        NSData *data = [MCSData dataWithContentsOfRequest:[self->_request mcs_requestWithHTTPAdditionalHeaders:[self->_resource.configuration HTTPAdditionalHeadersForDataRequestsOfType:MCSDataTypeHLSAESKey]] networkTaskPriority:self->_networkTaskPriority error:&error];
+        NSData *data = [MCSData dataWithContentsOfRequest:[_request mcs_requestWithHTTPAdditionalHeaders:[_resource.configuration HTTPAdditionalHeadersForDataRequestsOfType:MCSDataTypeHLSAESKey]] networkTaskPriority:_networkTaskPriority error:&error];
         
         if ( error != nil ) {
             [self _onError:error];
@@ -95,7 +94,7 @@
 
 - (nullable MCSResourceFileDataReader *)reader {
     __block MCSResourceFileDataReader *reader = nil;
-    dispatch_sync(_queue, ^{
+    dispatch_sync(MCSHLSAESDataReaderQueue(), ^{
         reader = _reader;
     });
     return reader;
@@ -110,7 +109,7 @@
 }
 
 - (void)close {
-    dispatch_barrier_sync(_queue, ^{
+    dispatch_barrier_sync(MCSHLSAESDataReaderQueue(), ^{
         [self _close];
     });
 }
@@ -139,8 +138,8 @@
 
 - (id<MCSResourceResponse>)response {
     __block id<MCSResourceResponse> response = nil;
-    dispatch_sync(_queue, ^{
-        response = self->_response;
+    dispatch_sync(MCSHLSAESDataReaderQueue(), ^{
+        response = _response;
     });
     return response;
 }
@@ -156,7 +155,7 @@
 }
 
 - (void)reader:(id<MCSResourceDataReader>)reader anErrorOccurred:(NSError *)error {
-    dispatch_barrier_sync(_queue, ^{
+    dispatch_barrier_sync(MCSHLSAESDataReaderQueue(), ^{
         [self _onError:error];
     });
 }
@@ -164,9 +163,14 @@
 #pragma mark -
 
 - (void)_onError:(NSError *)error {
+    if ( _isClosed )
+        return;
+    
     [self _close];
     
-    [_delegate reader:self anErrorOccurred:error];
+    dispatch_async(MCSDelegateQueue(), ^{
+        [self->_delegate reader:self anErrorOccurred:error];
+    });
 }
 
 - (void)_prepare:(NSString *)filePath {

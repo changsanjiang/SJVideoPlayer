@@ -16,6 +16,7 @@
 #import "MCSFileManager.h"
 #import "MCSResourceResponse.h"
 #import "NSFileHandle+MCS.h"
+#import "MCSQueue.h"
 
 @interface MCSHLSTSDataReader ()<MCSDownloadTaskDelegate>
 @property (nonatomic, weak, nullable) MCSHLSResource *resource;
@@ -36,8 +37,6 @@
 @property (nonatomic, strong, nullable) NSFileHandle *reader;
 @property (nonatomic, strong, nullable) NSFileHandle *writer;
 @property (nonatomic) float networkTaskPriority;
-
-@property (nonatomic, strong) dispatch_queue_t queue;
 @end
 
 @implementation MCSHLSTSDataReader
@@ -47,7 +46,6 @@
 - (instancetype)initWithResource:(MCSHLSResource *)resource request:(NSURLRequest *)request networkTaskPriority:(float)networkTaskPriority delegate:(id<MCSResourceDataReaderDelegate>)delegate {
     self = [super init];
     if ( self ) {
-        _queue = dispatch_get_global_queue(0, 0);
         _networkTaskPriority = networkTaskPriority;
         _resource = resource;
         _request = request;
@@ -61,58 +59,58 @@
 }
 
 - (void)prepare {
-    dispatch_barrier_sync(_queue, ^{
-        if ( self->_isClosed || self->_isCalledPrepare )
+    dispatch_barrier_sync(MCSHLSTsDataReaderQueue(), ^{
+        if ( _isClosed || _isCalledPrepare )
             return;
         
-        MCSLog(@"%@: <%p>.prepare { URL: %@ };\n", NSStringFromClass(self.class), self, self->_request.URL);
+        MCSLog(@"%@: <%p>.prepare { URL: %@ };\n", NSStringFromClass(self.class), self, _request.URL);
 
-        self->_isCalledPrepare = YES;
+        _isCalledPrepare = YES;
         
-        self->_content = [self->_resource contentForTsURL:self->_request.URL];
+        _content = [_resource contentForTsURL:_request.URL];
         
-        if ( self->_content != nil ) {
+        if ( _content != nil ) {
             // go to read the content
             [self _prepare];
             return;
         }
         
-        MCSLog(@"%@: <%p>.request { URL: %@ };\n", NSStringFromClass(self.class), self, self->_request.URL);
+        MCSLog(@"%@: <%p>.request { URL: %@ };\n", NSStringFromClass(self.class), self, _request.URL);
         
         // download the content
-        self->_task = [MCSDownload.shared downloadWithRequest:[self->_request mcs_requestWithHTTPAdditionalHeaders:[self->_resource.configuration HTTPAdditionalHeadersForDataRequestsOfType:MCSDataTypeHLSTs]] priority:self->_networkTaskPriority delegate:self];
+        _task = [MCSDownload.shared downloadWithRequest:[_request mcs_requestWithHTTPAdditionalHeaders:[_resource.configuration HTTPAdditionalHeadersForDataRequestsOfType:MCSDataTypeHLSTs]] priority:_networkTaskPriority delegate:self];
     });
 }
 
 - (NSData *)readDataOfLength:(NSUInteger)lengthParam {
     __block NSData *data = nil;
-    dispatch_barrier_sync(_queue, ^{
+    dispatch_barrier_sync(MCSHLSTsDataReaderQueue(), ^{
         @try {
-            if ( self->_isClosed || self->_isDone || !self->_isPrepared )
+            if ( _isClosed || _isDone || !_isPrepared )
                 return;
             
-            if ( self->_isSought ) {
-                self->_isSought = NO;
+            if ( _isSought ) {
+                _isSought = NO;
                 NSError *error = nil;
-                if ( ![self->_reader mcs_seekToFileOffset:self->_offset error:&error] ) {
+                if ( ![_reader mcs_seekToFileOffset:_offset error:&error] ) {
                     [self _onError:error];
                     return;
                 }
             }
             
-            if ( self->_offset < self->_availableLength ) {
-                NSUInteger length = MIN(lengthParam, self->_availableLength - self->_offset);
+            if ( _offset < _availableLength ) {
+                NSUInteger length = MIN(lengthParam, _availableLength - _offset);
                 if ( length > 0 ) {
-                    data = [self->_reader readDataOfLength:length];
-                    self->_offset += data.length;
-                    self->_isDone = (self->_offset == self->_response.totalLength);
-                    MCSLog(@"%@: <%p>.read { offset: %lu, length: %lu };\n", NSStringFromClass(self.class), self, (unsigned long)self->_offset, (unsigned long)data.length);
+                    data = [_reader readDataOfLength:length];
+                    _offset += data.length;
+                    _isDone = (_offset == _response.totalLength);
+                    MCSLog(@"%@: <%p>.read { offset: %lu, length: %lu };\n", NSStringFromClass(self.class), self, (unsigned long)_offset, (unsigned long)data.length);
                 }
             }
             
 #ifdef DEBUG
-            if ( self->_isDone ) {
-                MCSLog(@"%@: <%p>.done { URL: %@ };\n", NSStringFromClass(self.class), self, self->_request.URL);
+            if ( _isDone ) {
+                MCSLog(@"%@: <%p>.done { URL: %@ };\n", NSStringFromClass(self.class), self, _request.URL);
             }
 #endif
         } @catch (NSException *exception) {
@@ -124,14 +122,14 @@
 
 - (BOOL)seekToOffset:(NSUInteger)offset {
     __block BOOL result = NO;
-    dispatch_barrier_sync(_queue, ^{
-        if ( self->_isClosed || !self->_isPrepared || offset > self->_availableLength )
+    dispatch_barrier_sync(MCSHLSTsDataReaderQueue(), ^{
+        if ( _isClosed || !_isPrepared || offset > _availableLength )
             return;
         
-        if ( offset != self->_offset ) {
-            self->_isSought = YES;
-            self->_offset = offset;
-            self->_isDone = (self->_offset == self->_response.totalLength);
+        if ( offset != _offset ) {
+            _isSought = YES;
+            _offset = offset;
+            _isDone = (_offset == _response.totalLength);
         }
         result = YES;
     });
@@ -139,7 +137,7 @@
 }
 
 - (void)close {
-    dispatch_barrier_sync(_queue, ^{
+    dispatch_barrier_sync(MCSHLSTsDataReaderQueue(), ^{
         [self _close];
     });
 }
@@ -148,7 +146,7 @@
 
 - (NSRange)range {
     __block NSRange range = NSMakeRange(0, 0);
-    dispatch_sync(_queue, ^{
+    dispatch_sync(MCSHLSTsDataReaderQueue(), ^{
         range = _range;
     });
     return range;
@@ -156,7 +154,7 @@
 
 - (NSUInteger)availableLength {
     __block NSUInteger availableLength = 0;
-    dispatch_sync(_queue, ^{
+    dispatch_sync(MCSHLSTsDataReaderQueue(), ^{
         availableLength = _availableLength;
     });
     return availableLength;
@@ -164,7 +162,7 @@
 
 - (NSUInteger)offset {
     __block NSUInteger offset = 0;
-    dispatch_sync(_queue, ^{
+    dispatch_sync(MCSHLSTsDataReaderQueue(), ^{
         offset = _offset;
     });
     return offset;
@@ -172,7 +170,7 @@
 
 - (BOOL)isPrepared {
     __block BOOL isPrepared = NO;
-    dispatch_sync(_queue, ^{
+    dispatch_sync(MCSHLSTsDataReaderQueue(), ^{
         isPrepared = _isPrepared;
     });
     return isPrepared;
@@ -180,7 +178,7 @@
 
 - (BOOL)isDone {
     __block BOOL isDone = NO;
-    dispatch_sync(_queue, ^{
+    dispatch_sync(MCSHLSTsDataReaderQueue(), ^{
         isDone = _isDone;
     });
     return isDone;
@@ -188,7 +186,7 @@
 
 - (id<MCSResourceResponse>)response {
     __block id<MCSResourceResponse> response = nil;
-    dispatch_sync(_queue, ^{
+    dispatch_sync(MCSHLSTsDataReaderQueue(), ^{
         response = _response;
     });
     return response;
@@ -197,28 +195,35 @@
 #pragma mark - MCSDownloadTaskDelegate
 
 - (void)downloadTask:(NSURLSessionTask *)task didReceiveResponse:(NSHTTPURLResponse *)response {
-    dispatch_barrier_sync(_queue, ^{
-        if ( self->_isClosed )
+    dispatch_barrier_sync(MCSHLSTsDataReaderQueue(), ^{
+        if ( _isClosed )
             return;
         
         NSString *contentType = MCSGetResponseContentType(response);
-        [self->_resource updateTsContentType:contentType];
-        self->_content = [self->_resource createContentWithTsURL:self->_request.URL totalLength:response.expectedContentLength];
+        [_resource updateTsContentType:contentType];
+        _content = [_resource createContentWithTsURL:_request.URL totalLength:response.expectedContentLength];
         [self _prepare];
     });
 }
 
 - (void)downloadTask:(NSURLSessionTask *)task didReceiveData:(NSData *)data {
-    dispatch_barrier_sync(_queue, ^{
+    dispatch_barrier_sync(MCSHLSTsDataReaderQueue(), ^{
         @try {
-            if ( self->_isClosed )
+            if ( _isClosed )
                 return;
             
-            [self->_writer writeData:data];
+            if ( _resource == nil ) {
+                [self _close];
+                return;
+            }
+            
+            [_writer writeData:data];
             NSUInteger length = data.length;
-            self->_availableLength += length;
-            [self->_content didWriteDataWithLength:length];
-            [self->_delegate reader:self hasAvailableDataWithLength:length];
+            _availableLength += length;
+            [_content didWriteDataWithLength:length];
+            dispatch_async(MCSDelegateQueue(), ^{
+                [self->_delegate reader:self hasAvailableDataWithLength:length];
+            });
         } @catch (NSException *exception) {
             [self _onError:[NSError mcs_exception:exception]];
             
@@ -227,8 +232,8 @@
 }
 
 - (void)downloadTask:(NSURLSessionTask *)task didCompleteWithError:(NSError *)error {
-    dispatch_barrier_sync(_queue, ^{
-        if ( self->_isClosed )
+    dispatch_barrier_sync(MCSHLSTsDataReaderQueue(), ^{
+        if ( _isClosed )
             return;
         
         if ( error != nil && error.code != NSURLErrorCancelled ) {
@@ -245,7 +250,9 @@
 - (void)_onError:(NSError *)error {
     [self _close];
     
-    [_delegate reader:self anErrorOccurred:error];
+    dispatch_async(MCSDelegateQueue(), ^{
+        [self->_delegate reader:self anErrorOccurred:error];
+    });
 }
 
 - (void)_prepare {
@@ -264,11 +271,14 @@
     }
 
     _isPrepared = YES;
-    [_delegate readerPrepareDidFinish:self];
     
-    if ( availableLength != 0 ) {
-        [_delegate reader:self hasAvailableDataWithLength:availableLength];
-    }
+    dispatch_async(MCSDelegateQueue(), ^{
+        [self->_delegate readerPrepareDidFinish:self];
+        
+        if ( availableLength != 0 ) {
+            [self->_delegate reader:self hasAvailableDataWithLength:availableLength];
+        }
+    });
 }
 
 - (void)_close {

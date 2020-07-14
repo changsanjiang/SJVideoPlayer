@@ -13,7 +13,6 @@
 @property (nonatomic, weak, nullable) id<MCSResourcePartialContentDelegate> delegate;
 @property (nonatomic, readonly) NSUInteger offset;
 @property (nonatomic) NSInteger readWriteCount;
-@property (nonatomic, copy) NSString *AESKeyName;
 @property (nonatomic, copy) NSString *tsName;
 @property (nonatomic) NSUInteger tsTotalLength;
 @property (nonatomic, strong) dispatch_queue_t queue;
@@ -23,13 +22,6 @@
 @end
 
 @implementation MCSResourcePartialContent
-- (instancetype)initWithFilename:(NSString *)filename AESKeyName:(NSString *)AESKeyName length:(NSUInteger)length {
-    self = [self initWithFilename:filename offset:0 length:length];
-    if ( self ) {
-        _AESKeyName = AESKeyName.copy;
-    }
-    return self;
-}
 - (instancetype)initWithFilename:(NSString *)filename tsName:(NSString *)tsName tsTotalLength:(NSUInteger)tsTotalLength length:(NSUInteger)length {
     self = [self initWithFilename:filename offset:0 length:length];
     if ( self ) {
@@ -79,8 +71,8 @@
     
     dispatch_barrier_sync(_queue, ^{
         _length += length;
-        [self->_delegate partialContent:self didWriteDataWithLength:length];
     });
+    [self->_delegate partialContent:self didWriteDataWithLength:length];
 }
 
 - (NSUInteger)length {
@@ -94,11 +86,9 @@
 @synthesize readWriteCount = _readWriteCount;
 - (void)setReadWriteCount:(NSInteger)readWriteCount {
     dispatch_barrier_sync(_queue, ^{
-        if ( _readWriteCount != readWriteCount ) {
-            _readWriteCount = readWriteCount;;
-            [self->_delegate readWriteCountDidChangeForPartialContent:self];
-        }
+        _readWriteCount = readWriteCount;;
     });
+    [self->_delegate readWriteCountDidChangeForPartialContent:self];
 }
 
 - (NSInteger)readWriteCount {

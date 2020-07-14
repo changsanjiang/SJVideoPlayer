@@ -7,11 +7,17 @@
 //
 
 #import "MCSInterfaces.h"
-@class MCSResourceUsageLog;
+@class MCSResourceUsageLog, MCSResourcePartialContent;
 
 NS_ASSUME_NONNULL_BEGIN
 
-@interface MCSResource : NSObject<MCSResource>
+@interface MCSResource : NSObject<MCSResource> {
+    @protected
+    NSMutableArray<MCSResourcePartialContent *> *_m;
+    BOOL _isCacheFinished;
+    NSString *_name;
+}
+
 @property (nonatomic, readonly) MCSResourceType type;
 
 - (id<MCSResourceReader>)readerWithRequest:(NSURLRequest *)request;
@@ -23,7 +29,6 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic, readonly) BOOL isCacheFinished;
 
 - (nullable NSURL *)playbackURLForCacheWithURL:(NSURL *)URL;
-
 @end
 
 NS_ASSUME_NONNULL_END

@@ -11,7 +11,7 @@
 NS_ASSUME_NONNULL_BEGIN
 @interface MCSVODMetaDataReader : NSObject
 
-- (instancetype)initWithRequest:(NSURLRequest *)request delegate:(id<MCSVODMetaDataReaderDelegate>)delegate delegateQueue:(dispatch_queue_t)queue;
+- (instancetype)initWithRequest:(NSURLRequest *)request delegate:(id<MCSVODMetaDataReaderDelegate>)delegate;
 
 @property (nonatomic, weak, readonly, nullable) id<MCSVODMetaDataReaderDelegate> delegate;
 @property (nonatomic, copy, readonly, nullable) NSString *contentType;

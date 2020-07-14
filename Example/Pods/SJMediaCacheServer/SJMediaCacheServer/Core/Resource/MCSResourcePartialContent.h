@@ -21,13 +21,6 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic, readonly) NSUInteger offset;
 @end
 
-
-@interface MCSResourcePartialContent (HLS_AESKey)
-- (instancetype)initWithFilename:(NSString *)filename AESKeyName:(NSString *)AESKeyName length:(NSUInteger)length;
-
-@property (nonatomic, copy, readonly) NSString *AESKeyName;
-@end
-
 @interface MCSResourcePartialContent (HLS_TS)
 - (instancetype)initWithFilename:(NSString *)filename tsName:(NSString *)tsName tsTotalLength:(NSUInteger)tsTotalLength length:(NSUInteger)length;
 @property (nonatomic, copy, readonly) NSString *tsName;

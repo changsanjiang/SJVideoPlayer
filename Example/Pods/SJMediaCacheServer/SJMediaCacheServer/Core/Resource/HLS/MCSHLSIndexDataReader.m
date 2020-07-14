@@ -12,6 +12,7 @@
 #import "MCSResourceResponse.h"
 #import "MCSHLSResource.h"
 #import "MCSFileManager.h"
+#import "MCSQueue.h"
 
 @interface MCSHLSIndexDataReader ()<MCSHLSParserDelegate, MCSResourceDataReaderDelegate>
 @property (nonatomic, strong) NSURLRequest *request;
@@ -23,8 +24,6 @@
 @property (nonatomic, strong, nullable) MCSResourceFileDataReader *reader;
 @property (nonatomic, strong, nullable) id<MCSResourceResponse> response;
 @property (nonatomic) float networkTaskPriority;
-
-@property (nonatomic, strong) dispatch_queue_t queue;
 @end
 
 @implementation MCSHLSIndexDataReader
@@ -32,7 +31,6 @@
 - (instancetype)initWithResource:(MCSHLSResource *)resource request:(NSURLRequest *)request networkTaskPriority:(float)networkTaskPriority delegate:(id<MCSResourceDataReaderDelegate>)delegate {
     self = [super init];
     if ( self ) {
-        _queue = dispatch_get_global_queue(0, 0);
         _networkTaskPriority = networkTaskPriority;
         _request = request;
         _resource = resource;
@@ -47,18 +45,20 @@
 }
 
 - (void)prepare {
-    dispatch_barrier_async(_queue, ^{
-        if ( self->_isClosed || self->_isCalledPrepare )
+    dispatch_barrier_sync(MCSHLSIndexDataReaderQueue(), ^{
+        if ( _isClosed || _isCalledPrepare )
             return;
         
-        MCSLog(@"%@: <%p>.prepare { URL: %@ };\n", NSStringFromClass(self.class), self, self->_request.URL);
+        MCSLog(@"%@: <%p>.prepare { URL: %@ };\n", NSStringFromClass(self.class), self, _request.URL);
         
-        self->_isCalledPrepare = YES;
+        NSParameterAssert(_resource);
+        
+        _isCalledPrepare = YES;
         
         // parse the m3u8 file
-        if ( self->_parser == nil ) {
-            self->_parser = [MCSHLSParser.alloc initWithResource:self->_resource.name request:[self->_request mcs_requestWithHTTPAdditionalHeaders:[self->_resource.configuration HTTPAdditionalHeadersForDataRequestsOfType:MCSDataTypeHLSPlaylist]] networkTaskPriority:self->_networkTaskPriority delegate:self];
-            [self->_parser prepare];
+        if ( _parser == nil ) {
+            _parser = [MCSHLSParser.alloc initWithResource:_resource.name request:[_request mcs_requestWithHTTPAdditionalHeaders:[_resource.configuration HTTPAdditionalHeadersForDataRequestsOfType:MCSDataTypeHLSPlaylist]] networkTaskPriority:_networkTaskPriority delegate:self];
+            [_parser prepare];
             return;
         }
         
@@ -68,7 +68,7 @@
 
 - (nullable MCSResourceFileDataReader *)reader {
     __block MCSResourceFileDataReader *reader = nil;
-    dispatch_sync(_queue, ^{
+    dispatch_sync(MCSHLSIndexDataReaderQueue(), ^{
         reader = _reader;
     });
     return reader;
@@ -83,7 +83,7 @@
 }
 
 - (void)close {
-    dispatch_barrier_sync(_queue, ^{
+    dispatch_barrier_sync(MCSHLSIndexDataReaderQueue(), ^{
         [self _close];
     });
 }
@@ -108,7 +108,7 @@
 
 - (id<MCSResourceResponse>)response {
     __block id<MCSResourceResponse> response = nil;
-    dispatch_sync(_queue, ^{
+    dispatch_sync(MCSHLSIndexDataReaderQueue(), ^{
         response = _response;
     });
     return response;
@@ -117,13 +117,13 @@
 #pragma mark - MCSHLSParserDelegate
 
 - (void)parserParseDidFinish:(MCSHLSParser *)parser {
-    dispatch_barrier_sync(_queue, ^{
+    dispatch_barrier_sync(MCSHLSIndexDataReaderQueue(), ^{
         [self _parseDidFinish];
     });
 }
 
 - (void)parser:(MCSHLSParser *)parser anErrorOccurred:(NSError *)error {
-    dispatch_barrier_sync(_queue, ^{
+    dispatch_barrier_sync(MCSHLSIndexDataReaderQueue(), ^{
         [self _onError:error];
     });
 }
@@ -131,10 +131,10 @@
 #pragma mark - MCSResourceDataReaderDelegate
 
 - (void)readerPrepareDidFinish:(id<MCSResourceDataReader>)reader {
-    dispatch_barrier_sync(_queue, ^{
-        NSString *indexFilePath = self->_parser.indexFilePath;
+    dispatch_barrier_sync(MCSHLSIndexDataReaderQueue(), ^{
+        NSString *indexFilePath = _parser.indexFilePath;
         NSUInteger length = [MCSFileManager fileSizeAtPath:indexFilePath];
-        self->_response = [MCSResourceResponse.alloc initWithServer:@"localhost" contentType:@"application/x-mpegurl" totalLength:length];
+        _response = [MCSResourceResponse.alloc initWithServer:@"localhost" contentType:@"application/x-mpegurl" totalLength:length];
     });
     [_delegate readerPrepareDidFinish:self];
 }
@@ -144,7 +144,7 @@
 }
 
 - (void)reader:(id<MCSResourceDataReader>)reader anErrorOccurred:(NSError *)error {
-    dispatch_barrier_sync(_queue, ^{
+    dispatch_barrier_sync(MCSHLSIndexDataReaderQueue(), ^{
         [self _onError:error];
     });
 }
@@ -152,8 +152,14 @@
 #pragma mark -
 
 - (void)_onError:(NSError *)error {
+    if ( _isClosed )
+        return;
+    
     [self _close];
-    [_delegate reader:self anErrorOccurred:error];
+    
+    dispatch_async(MCSDelegateQueue(), ^{
+        [self->_delegate reader:self anErrorOccurred:error];
+    });
 }
 
 - (void)_close {

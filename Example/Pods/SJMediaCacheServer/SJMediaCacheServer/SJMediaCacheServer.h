@@ -29,7 +29,7 @@ NS_ASSUME_NONNULL_BEGIN
  
 /// The maximum number of queued prefetch tasks that can execute at same time.
 ///
-///     The default value is 3.
+///     The default value is 1.
 ///
 @property (nonatomic) NSInteger maxConcurrentPrefetchCount;
 

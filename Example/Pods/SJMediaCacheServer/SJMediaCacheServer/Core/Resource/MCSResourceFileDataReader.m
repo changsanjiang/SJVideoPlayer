@@ -12,6 +12,7 @@
 #import "MCSFileManager.h"
 #import "NSFileHandle+MCS.h"
 #import "MCSResource.h"
+#import "MCSQueue.h"
 
 @interface MCSResourceFileDataReader()
 @property (nonatomic) NSRange range;
@@ -29,7 +30,6 @@
 @property (nonatomic) BOOL isSought;
 
 @property (nonatomic, weak, nullable) MCSResource *resource;
-@property (nonatomic, strong) dispatch_queue_t queue;
 @end
 
 @implementation MCSResourceFileDataReader
@@ -38,7 +38,6 @@
 - (instancetype)initWithResource:(MCSResource *)resource range:(NSRange)range path:(NSString *)path readRange:(NSRange)readRange delegate:(id<MCSResourceDataReaderDelegate>)delegate {
     self = [super init];
     if ( self ) {
-        _queue = dispatch_get_global_queue(0, 0);
         _resource = resource;
         _range = range;
         _path = path.copy;
@@ -54,22 +53,24 @@
 }
 
 - (void)prepare {
-    dispatch_barrier_sync(_queue, ^{
+    dispatch_barrier_sync(MCSFileDataReaderQueue(), ^{
         @try {
-            if ( self->_isClosed || self->_isCalledPrepare )
+            if ( _isClosed || _isCalledPrepare )
                 return;
             
-            self->_isCalledPrepare = YES;
+            _isCalledPrepare = YES;
             
-            MCSLog(@"%@: <%p>.prepare { range: %@, file: %@.%@ };\n", NSStringFromClass(self.class), self, NSStringFromRange(self->_range), self->_path.lastPathComponent, NSStringFromRange(self->_readRange));
+            MCSLog(@"%@: <%p>.prepare { range: %@, file: %@.%@ };\n", NSStringFromClass(self.class), self, NSStringFromRange(_range), _path.lastPathComponent, NSStringFromRange(_readRange));
             
-            self->_reader = [NSFileHandle fileHandleForReadingAtPath:self->_path];
+            _reader = [NSFileHandle fileHandleForReadingAtPath:_path];
             
-            [self->_reader seekToFileOffset:self->_readRange.location];
-            self->_isPrepared = YES;
+            [_reader seekToFileOffset:_readRange.location];
+            _isPrepared = YES;
             
-            [self->_delegate readerPrepareDidFinish:self];
-            [self->_delegate reader:self hasAvailableDataWithLength:self->_readRange.length];
+            dispatch_async(MCSDelegateQueue(), ^{
+                [self->_delegate readerPrepareDidFinish:self];
+                [self->_delegate reader:self hasAvailableDataWithLength:self->_readRange.length];
+            });
             
         } @catch (NSException *exception) {
             [self _onError:[NSError mcs_exception:exception]];
@@ -79,35 +80,35 @@
 
 - (nullable NSData *)readDataOfLength:(NSUInteger)lengthParam {
     __block NSData *data = nil;
-    dispatch_barrier_sync(_queue, ^{
+    dispatch_barrier_sync(MCSFileDataReaderQueue(), ^{
         @try {
-            if ( self->_isClosed || self->_isDone || !self->_isPrepared )
+            if ( _isClosed || _isDone || !_isPrepared )
                 return;
             
-            if ( self->_isSought ) {
-                self->_isSought = NO;
+            if ( _isSought ) {
+                _isSought = NO;
                 NSError *error = nil;
-                NSUInteger offset = self->_readRange.location + self->_readLength;
-                if ( ![self->_reader mcs_seekToFileOffset:offset error:&error] ) {
+                NSUInteger offset = _readRange.location + _readLength;
+                if ( ![_reader mcs_seekToFileOffset:offset error:&error] ) {
                     [self _onError:error];
                     return;
                 }
             }
             
-            NSUInteger length = MIN(lengthParam, self->_readRange.length - self->_readLength);
-            data = [self->_reader readDataOfLength:length];
+            NSUInteger length = MIN(lengthParam, _readRange.length - _readLength);
+            data = [_reader readDataOfLength:length];
             
             NSUInteger readLength = data.length;
             if ( readLength == 0 )
                 return;
             
-            self->_readLength += readLength;
-            self->_isDone = (self->_readLength == self->_readRange.length);
+            _readLength += readLength;
+            _isDone = (_readLength == _readRange.length);
             
 #ifdef DEBUG
-            MCSLog(@"%@: <%p>.read { offset: %lu, readLength: %lu };\n", NSStringFromClass(self.class), self, (unsigned long)(self->_range.location + self->_readLength), (unsigned long)readLength);
+            MCSLog(@"%@: <%p>.read { offset: %lu, readLength: %lu };\n", NSStringFromClass(self.class), self, (unsigned long)(_range.location + _readLength), (unsigned long)readLength);
             if ( _isDone ) {
-                MCSLog(@"%@: <%p>.done { range: %@ , file: %@.%@ };\n", NSStringFromClass(self.class), self, NSStringFromRange(self->_range), self->_path.lastPathComponent, NSStringFromRange(self->_readRange));
+                MCSLog(@"%@: <%p>.done { range: %@ , file: %@.%@ };\n", NSStringFromClass(self.class), self, NSStringFromRange(_range), _path.lastPathComponent, NSStringFromRange(_readRange));
             }
 #endif
         } @catch (NSException *exception) {
@@ -119,19 +120,19 @@
 
 - (BOOL)seekToOffset:(NSUInteger)offset {
     __block BOOL result = NO;
-    dispatch_barrier_sync(_queue, ^{
-        if ( self->_isClosed || !self->_isPrepared )
+    dispatch_barrier_sync(MCSFileDataReaderQueue(), ^{
+        if ( _isClosed || !_isPrepared )
             return;
-        if ( !NSLocationInRange(offset - 1, self->_range) )
+        if ( !NSLocationInRange(offset - 1, _range) )
             return;
         
         // offset     = range.location + readLength;
         // readLength = offset - range.location
-        NSUInteger readLength = offset - self->_range.location;
-        if ( readLength != self->_readLength ) {
-            self->_isSought = YES;
-            self->_readLength = readLength;
-            self->_isDone = (self->_readLength == self->_readRange.length);
+        NSUInteger readLength = offset - _range.location;
+        if ( readLength != _readLength ) {
+            _isSought = YES;
+            _readLength = readLength;
+            _isDone = (_readLength == _readRange.length);
         }
         result = YES;
     });
@@ -139,7 +140,7 @@
 }
 
 - (void)close {
-    dispatch_barrier_sync(_queue, ^{
+    dispatch_barrier_sync(MCSFileDataReaderQueue(), ^{
         [self _close];
     });
 }
@@ -148,24 +149,24 @@
 
 - (NSUInteger)offset {
     __block NSUInteger offset = 0;
-    dispatch_sync(_queue, ^{
-        offset = self->_range.location + _readLength;
+    dispatch_sync(MCSFileDataReaderQueue(), ^{
+        offset = _range.location + _readLength;
     });
     return offset;
 }
 
 - (BOOL)isPrepared {
     __block BOOL isPrepared = NO;
-    dispatch_sync(_queue, ^{
-        isPrepared = self->_isPrepared;
+    dispatch_sync(MCSFileDataReaderQueue(), ^{
+        isPrepared = _isPrepared;
     });
     return isPrepared;
 }
 
 - (BOOL)isDone {
     __block BOOL isDone = NO;
-    dispatch_sync(_queue, ^{
-        isDone = self->_isDone;
+    dispatch_sync(MCSFileDataReaderQueue(), ^{
+        isDone = _isDone;
     });
     return isDone;
 }
@@ -175,7 +176,9 @@
 - (void)_onError:(NSError *)error {
     [self _close];
     
-    [_delegate reader:self anErrorOccurred:error];
+    dispatch_async(MCSDelegateQueue(), ^{
+        [self->_delegate reader:self anErrorOccurred:error];
+    });
 }
 
 - (void)_close {

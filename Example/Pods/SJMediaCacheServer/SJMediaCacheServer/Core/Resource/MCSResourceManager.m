@@ -133,15 +133,13 @@ typedef NS_ENUM(NSUInteger, MCSLimit) {
 - (instancetype)init {
     self = [super init];
     if ( self ) {
-        _queue = dispatch_get_global_queue(0, 0);
-        dispatch_barrier_async(_queue, ^{
-            self->_sqlite3 = [SJSQLite3.alloc initWithDatabasePath:[MCSFileManager databasePath]];
-            self->_count = [self->_sqlite3 countOfObjectsForClass:MCSResourceUsageLog.class conditions:nil error:NULL];
-            self->_resources = NSMutableDictionary.dictionary;
-            // 获取磁盘剩余空间, 以及所有资源已占空间大小
-            self->_freeDiskSpace = [MCSFileManager systemFreeSize];
-            self->_cacheDiskSpace = [MCSFileManager rootDirectorySize];
-        });
+        _queue = dispatch_queue_create(NSStringFromClass(self.class).UTF8String, DISPATCH_QUEUE_CONCURRENT);
+        _sqlite3 = [SJSQLite3.alloc initWithDatabasePath:[MCSFileManager databasePath]];
+        _count = [_sqlite3 countOfObjectsForClass:MCSResourceUsageLog.class conditions:nil error:NULL];
+        _resources = NSMutableDictionary.dictionary;
+        // 获取磁盘剩余空间, 以及所有资源已占空间大小
+        _freeDiskSpace = [MCSFileManager systemFreeSize];
+        _cacheDiskSpace = [MCSFileManager rootDirectorySize];
     }
     return self;
 }
@@ -448,13 +446,13 @@ typedef NS_ENUM(NSUInteger, MCSLimit) {
         self->_freeDiskSpace += length;
 
         [MCSFileManager removeResourceWithName:r.name error:NULL];
-        [self.resources removeObjectForKey:r.name];
+        [NSNotificationCenter.defaultCenter postNotificationName:MCSResourceManagerDidRemoveResourceNotification object:self userInfo:@{ MCSResourceManagerUserInfoResourceKey : r }];
         [self.sqlite3 removeObjectForClass:r.class primaryKeyValue:@(r.id) error:NULL];
         [self.sqlite3 removeAllObjectsForClass:MCSResourceUsageLog.class conditions:@[
             [SJSQLite3Condition conditionWithColumn:@"resource" value:@(r.id)],
             [SJSQLite3Condition conditionWithColumn:@"resourceType" value:@(r.type)],
         ] error:NULL];
-        [NSNotificationCenter.defaultCenter postNotificationName:MCSResourceManagerDidRemoveResourceNotification object:self userInfo:@{ MCSResourceManagerUserInfoResourceKey : r }];
+        [self.resources removeObjectForKey:r.name];
     }];
     
     _count -= resources.count;

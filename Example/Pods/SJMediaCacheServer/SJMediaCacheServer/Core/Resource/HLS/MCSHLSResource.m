@@ -10,7 +10,8 @@
 #import "MCSResourceManager.h"
 #import "MCSHLSReader.h"
 #import "MCSHLSParser.h"
-#import "MCSFileManager.h" 
+#import "MCSFileManager.h"
+#import "MCSQueue.h"
 
 @interface MCSHLSResource ()
 @property (nonatomic) NSUInteger TsCount;
@@ -26,27 +27,22 @@
     return [MCSHLSReader.alloc initWithResource:self request:request];
 }
  
-- (void)addContents:(NSArray<MCSResourcePartialContent *> *)contents {
-    [super addContents:contents];
-    [self _contentsDidChange];
-}
-
 - (NSURL *)playbackURLForCacheWithURL:(NSURL *)URL {
     return [MCSURLRecognizer.shared proxyURLWithURL:URL];
 }
 
 @synthesize parser = _parser;
 - (void)setParser:(MCSHLSParser *)parser {
-    dispatch_barrier_sync(self.queue, ^{
-        self->_parser = parser;
-        self->_TsCount = parser.TsCount;
-        [MCSResourceManager.shared saveMetadata:self];
+    dispatch_barrier_sync(MCSResourceQueue(), ^{
+        _parser = parser;
+        _TsCount = parser.TsCount;
     });
+    [MCSResourceManager.shared saveMetadata:self];
 }
 
 - (MCSHLSParser *)parser {
     __block MCSHLSParser *parser = nil;
-    dispatch_sync(self.queue, ^{
+    dispatch_sync(MCSResourceQueue(), ^{
         parser = _parser;
     });
     return parser;
@@ -55,22 +51,25 @@
 @synthesize TsContentType = _TsContentType;
 - (NSString *)TsContentType {
     __block NSString *TsContentType = nil;
-    dispatch_sync(self.queue, ^{
+    dispatch_sync(MCSResourceQueue(), ^{
         TsContentType = _TsContentType;
     });
     return TsContentType;
 }
 
 - (void)readWriteCountDidChangeForPartialContent:(MCSResourcePartialContent *)content {
-    dispatch_barrier_sync(self.queue, ^{
-        if ( self.isCacheFinished )
+    if ( content.readWriteCount > 0 )
+        return;
+    
+    dispatch_barrier_sync(MCSResourceQueue(), ^{
+        if ( _isCacheFinished )
             return;
-        if ( content.readWriteCount > 0 )
+        
+        if ( _m.count <= 1 )
             return;
-        if ( self.contents.count <= 1 )
-            return;
+        
         NSMutableArray<MCSResourcePartialContent *> *list = NSMutableArray.alloc.init;
-        for ( MCSResourcePartialContent *content in self.contents ) {
+        for ( MCSResourcePartialContent *content in _m ) {
             if ( content.readWriteCount == 0 )
                 [list addObject:content];
         }
@@ -86,9 +85,6 @@
                 if ( [obj1.tsName isEqualToString:obj2.tsName] ) {
                     [deleteContents addObject:obj1.length >= obj2.length ? obj2 : obj1];
                 }
-                else if ( [obj1.AESKeyName isEqualToString:obj2.AESKeyName] ) {
-                    [deleteContents addObject:obj1.length >= obj2.length ? obj2 : obj1];
-                }
             }
         }
         
@@ -98,57 +94,37 @@
         for ( MCSResourcePartialContent *content in deleteContents ) {
             [self removeContent:content];
         }
-        
-        [self _contentsDidChange];
     });
 }
-
-- (void)_contentsDidChange {
-    NSArray *contents = self.contents.copy;
-    
-    BOOL isContentsFinished = YES;
-    NSUInteger count = 0;
-    for ( MCSResourcePartialContent *content in contents ) {
-        if ( content.tsName != nil ) {
-            if ( content.length != content.tsTotalLength ) {
-                isContentsFinished = NO;
-                break;
-            }
-            count += 1;
-        }
-    }
-    
-    self.isCacheFinished = isContentsFinished && count == _TsCount;
-}
-
  
 #pragma mark -
-
 
 - (NSString *)filePathOfContent:(MCSResourcePartialContent *)content {
     return [MCSFileManager getFilePathWithName:content.filename inResource:self.name];
 }
 
 - (void)updateTsContentType:(NSString * _Nullable)TsContentType {
-    dispatch_barrier_sync(self.queue, ^{
-        self->_TsContentType = TsContentType;
+    dispatch_barrier_sync(MCSResourceQueue(), ^{
+        _TsContentType = TsContentType;
         [MCSResourceManager.shared saveMetadata:self];
     });
 }
 
 - (nullable MCSResourcePartialContent *)contentForTsURL:(NSURL *)URL {
-    MCSResourcePartialContent *content = nil;
+    __block MCSResourcePartialContent *content = nil;
     NSString *TsName = [MCSURLRecognizer.shared nameWithUrl:URL.absoluteString extension:MCSHLSTsFileExtension];
-    for ( MCSResourcePartialContent *c in self.contents ) {
-        if ( [c.tsName isEqualToString:TsName] ) {
-            NSString *contentPath = [MCSFileManager getFilePathWithName:c.filename inResource:self.name];
-            NSUInteger length = [MCSFileManager fileSizeAtPath:contentPath];
-            if ( length == c.tsTotalLength ) {
-                content = c;
-                break;
+    dispatch_barrier_sync(MCSResourceQueue(), ^{
+        for ( MCSResourcePartialContent *c in _m ) {
+            if ( [c.tsName isEqualToString:TsName] ) {
+                NSString *contentPath = [MCSFileManager getFilePathWithName:c.filename inResource:self.name];
+                NSUInteger length = [MCSFileManager fileSizeAtPath:contentPath];
+                if ( length == c.tsTotalLength ) {
+                    content = c;
+                    break;
+                }
             }
         }
-    }
+    });
     return content;
 }
 
@@ -161,4 +137,17 @@
     return content;
 }
 
+- (void)contentsDidChange:(NSArray<MCSResourcePartialContent *> *)contents {
+    BOOL isContentsFinished = YES;
+    NSUInteger count = 0;
+    for ( MCSResourcePartialContent *c in contents ) {
+        if ( c.length != c.tsTotalLength ) {
+            isContentsFinished = NO;
+            break;
+        }
+        count += 1;
+    }
+    
+    _isCacheFinished = isContentsFinished && count == _TsCount;
+}
 @end

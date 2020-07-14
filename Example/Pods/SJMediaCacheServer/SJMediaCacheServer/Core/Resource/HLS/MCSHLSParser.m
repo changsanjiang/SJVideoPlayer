@@ -12,6 +12,7 @@
 #import "MCSData.h"
 #import "MCSURLRecognizer.h"
 #import "NSURLRequest+MCS.h"
+#import "MCSQueue.h"
 
 #define MCSURIMatchingPattern_Index     @".*\\.m3u8[^\\s]*"
 #define MCSURIMatchingPattern_Ts        @".*\\.ts[^\\s]*"
@@ -37,6 +38,8 @@
 - (instancetype)initWithResource:(NSString *)resourceName request:(NSURLRequest *)request networkTaskPriority:(float)networkTaskPriority delegate:(id<MCSHLSParserDelegate>)delegate {
     self = [super init];
     if ( self ) {
+        NSParameterAssert(resourceName);
+        
         _networkTaskPriority = networkTaskPriority;
         _resourceName = resourceName;
         _request = request;
@@ -211,7 +214,9 @@
         error = [NSError mcs_HLSFileParseError:_request.URL];
     }
     
-    [_delegate parser:self anErrorOccurred:error];
+    dispatch_async(MCSDelegateQueue(), ^{
+        [self->_delegate parser:self anErrorOccurred:error];
+    });
 }
 
 - (void)_finished {
@@ -247,7 +252,9 @@
     
     _isDone = YES;
     
-    [_delegate parserParseDidFinish:self];
+    dispatch_async(MCSDelegateQueue(), ^{
+        [self->_delegate parserParseDidFinish:self];
+    });
 }
 @end
 

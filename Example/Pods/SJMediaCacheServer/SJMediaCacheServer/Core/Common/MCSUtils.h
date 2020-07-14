@@ -51,4 +51,7 @@ MCSNSRangeIsUndefined(NSRange range);
 
 FOUNDATION_EXPORT BOOL
 MCSNSRangeContains(NSRange main, NSRange sub);
+
+FOUNDATION_EXPORT NSString *_Nullable
+MCSSuggestedFilePathExtension(NSHTTPURLResponse *response);
 NS_ASSUME_NONNULL_END

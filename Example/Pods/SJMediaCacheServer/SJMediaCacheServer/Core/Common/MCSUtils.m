@@ -176,3 +176,13 @@ BOOL
 MCSNSRangeContains(NSRange main, NSRange sub) {
     return (main.location <= sub.location) && (main.location + main.length >= sub.location + sub.length);
 }
+
+NSString *
+MCSSuggestedFilePathExtension(NSHTTPURLResponse *response) {
+    NSString *extension = response.suggestedFilename.pathExtension;
+    if ( extension.length != 0 )
+        return extension;
+    
+    NSString *contentType = MCSGetResponseContentType(response);
+    return contentType.lastPathComponent;
+}

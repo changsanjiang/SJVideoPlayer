@@ -29,5 +29,12 @@ NS_ASSUME_NONNULL_BEGIN
     }
     return self->style;
 }
+
+- (void)setCustomValue:(nullable id)value forAttributeKey:(NSString *)key {
+    if ( customAttributes == nil ) {
+        customAttributes = NSMutableDictionary.dictionary;
+    }
+    if ( key != nil ) customAttributes[key] = value;
+}
 @end
 NS_ASSUME_NONNULL_END

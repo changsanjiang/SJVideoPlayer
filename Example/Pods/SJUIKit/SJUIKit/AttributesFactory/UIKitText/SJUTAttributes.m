@@ -132,5 +132,12 @@ NS_ASSUME_NONNULL_BEGIN
         return self;
     };
 }
+
+- (SJUTSetAttribute)set {
+    return ^id<SJUTAttributesProtocol>(id _Nullable value, NSString *forKey) {
+        [self.recorder setCustomValue:value forAttributeKey:forKey];
+        return self;
+    };
+}
 @end
 NS_ASSUME_NONNULL_END

@@ -11,6 +11,7 @@
 #import "SJSQLiteTableInfo.h"
 #import "SJSQLiteColumnInfo.h"
 #import "SJSQLiteObjectInfo.h"
+#import "SJSQLite3Logger.h"
 #import <sqlite3.h>
 
 NS_ASSUME_NONNULL_BEGIN
@@ -215,9 +216,10 @@ sj_sqlite3_obj_exec(void *db, NSString *sql, NSError *_Nullable*_Nullable error)
         dateFormatter.dateFormat = @"HH:mm:ss";
     });
     
-    printf("SJSQLite: %s\t%s\n", [dateFormatter stringFromDate:NSDate.date].UTF8String, cstr);
+    SJSQLite3Log(@"SJSQLite: %@\t%s\n", [dateFormatter stringFromDate:NSDate.date], cstr);
+    
     if ( errmsg != NULL ) {
-        printf("SJSQLite: %s\terror_msg=%s\n", [dateFormatter stringFromDate:NSDate.date].UTF8String, errmsg);
+        SJSQLite3Log(@"SJSQLite: %@\t%s\n", [dateFormatter stringFromDate:NSDate.date], errmsg);
     }
 #endif
     

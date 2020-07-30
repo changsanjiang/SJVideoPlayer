@@ -52,7 +52,10 @@ NS_ASSUME_NONNULL_BEGIN
     NSRange range;
     SJUTImageAttachment *_Nullable attachment;
     NSMutableAttributedString *_Nullable attrStr;
+    NSMutableDictionary *_Nullable customAttributes;
 }
+
+- (void)setCustomValue:(nullable id)value forAttributeKey:(NSString *)key;
 
 - (NSParagraphStyle *)paragraphStyle;
 @end

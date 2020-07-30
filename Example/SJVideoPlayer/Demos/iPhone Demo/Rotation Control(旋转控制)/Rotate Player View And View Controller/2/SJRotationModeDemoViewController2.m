@@ -53,6 +53,25 @@
     if ( _player == nil ) {
         _player = [SJVideoPlayer player];
         _player.allowHorizontalTriggeringOfPanGesturesInCells = YES;
+        // 开启小浮窗
+        _player.floatSmallViewController.enabled = YES;
+        __weak typeof(self) _self = self;
+        _player.floatSmallViewController.singleTappedOnTheFloatViewExeBlock = ^(id<SJFloatSmallViewController>  _Nonnull controller) {
+            [controller dismissFloatView];
+            __strong typeof(_self) self = _self;
+            if ( !self ) return;
+            UIViewController *vc = UIViewController.new;
+            vc.view.backgroundColor = [UIColor colorWithRed:arc4random() % 256 / 255.0
+                                                      green:arc4random() % 256 / 255.0
+                                                       blue:arc4random() % 256 / 255.0
+                                                      alpha:1];
+            [self.navigationController pushViewController:vc animated:YES];
+        };
+        _player.floatSmallViewController.doubleTappedOnTheFloatViewExeBlock = ^(id<SJFloatSmallViewController>  _Nonnull controller) {
+            __strong typeof(_self) self = _self;
+            if ( !self ) return;
+            self.player.isPaused ? [self.player play] : [self.player pause];
+        };
         [self _observePlayerViewAppearState];
         [self _addTestEdgeItemsToPlayer];
     }

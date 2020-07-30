@@ -736,17 +736,17 @@ typedef struct _SJPlayerControlInfo {
         [NSNotificationCenter.defaultCenter postNotificationName:SJVideoPlayerPlaybackControllerWillDeallocateNotification object:_playbackController];
     }
     _playbackController = playbackController;
-    [self _needUpdatePlaybackControllerProperties];
+    [self _playbackControllerDidChange];
 }
 
 - (id<SJVideoPlayerPlaybackController>)playbackController {
     if ( _playbackController ) return _playbackController;
     _playbackController = [SJAVMediaPlaybackController new];
-    [self _needUpdatePlaybackControllerProperties];
+    [self _playbackControllerDidChange];
     return _playbackController;
 }
 
-- (void)_needUpdatePlaybackControllerProperties {
+- (void)_playbackControllerDidChange {
     if ( !_playbackController )
         return;
     
@@ -756,6 +756,12 @@ typedef struct _SJPlayerControlInfo {
         _playbackController.playerView.autoresizingMask = UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight;
         [_presentView insertSubview:_playbackController.playerView atIndex:0];
     }
+    
+    _flipTransitionManager.target = _playbackController.playerView;
+    if ( _subtitlesPromptController.view != nil )
+        [self.presentView insertSubview:_subtitlesPromptController.view aboveSubview:_playbackController.playerView];
+    if ( self.watermarkView != nil )
+        [self.presentView insertSubview:self.watermarkView aboveSubview:_playbackController.playerView];
 }
 
 - (SJPlaybackObservation *)playbackObserver {
@@ -1082,6 +1088,10 @@ typedef struct _SJPlayerControlInfo {
 }
 
 - (void)seekToTime:(CMTime)time toleranceBefore:(CMTime)toleranceBefore toleranceAfter:(CMTime)toleranceAfter completionHandler:(void (^ _Nullable)(BOOL))completionHandler {
+    if ( self.canSeekToTime && !self.canSeekToTime(self) ) {
+        return;
+    }
+    
     if ( self.canPlayAnAsset && !self.canPlayAnAsset(self) ) {
         return;
     }

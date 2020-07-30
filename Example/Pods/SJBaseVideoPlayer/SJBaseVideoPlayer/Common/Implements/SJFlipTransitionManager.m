@@ -47,14 +47,13 @@ static NSNotificationName const SJFlipTransitionManagerTransitioningValueDidChan
 
 @interface SJFlipTransitionManager ()<CAAnimationDelegate>
 @property (nonatomic) SJViewFlipTransition innerFlipTransition;
-@property (nonatomic, strong, readonly) UIView *target;
 @property (nonatomic, getter=isTransitioning) BOOL transitioning;
 @end
 
 @implementation SJFlipTransitionManager {
     void(^_Nullable _completionHandler)(id<SJFlipTransitionManager> mgr);
 }
-
+@synthesize target = _target;
 @synthesize duration = _duration;
 
 - (instancetype)initWithTarget:(UIView *)target {

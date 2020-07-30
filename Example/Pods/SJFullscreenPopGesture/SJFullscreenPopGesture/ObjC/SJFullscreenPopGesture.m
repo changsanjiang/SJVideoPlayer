@@ -204,7 +204,7 @@ NS_ASSUME_NONNULL_BEGIN
         // nav
         UINavigationController *nav = target.navigationController;
         _rootView = [[UIView alloc] initWithFrame:nav.view.bounds];
-        _rootView.backgroundColor = UIColor.whiteColor;
+        _rootView.backgroundColor = UIColor.clearColor;
         
         // snapshot
         switch ( target.sj_displayMode ) {
@@ -280,11 +280,34 @@ NS_ASSUME_NONNULL_BEGIN
 
 
 #pragma mark -
+@interface SJTransitionBackgroundView : UIView
+@end
+
+@implementation SJTransitionBackgroundView
+- (instancetype)initWithFrame:(CGRect)frame {
+    self = [super initWithFrame:frame];
+    if ( self ) {
+        self.backgroundColor = UIColor.whiteColor;
+        self.layer.shadowOffset = CGSizeMake(0.5, 0);
+        self.layer.shadowColor = [[UIColor alloc] initWithWhite:0.2 alpha:1].CGColor;
+        self.layer.shadowOpacity = 1;
+        self.layer.shadowRadius = 2;
+    }
+    return self;
+}
+
+- (void)layoutSubviews {
+    [super layoutSubviews];
+    self.layer.shadowPath = [UIBezierPath bezierPathWithRect:self.bounds].CGPath;
+}
+@end
+
 
 @interface SJTransitionHandler : NSObject
 + (instancetype)shared;
 
 @property (nonatomic) CGFloat shift;
+@property (nonatomic, strong, readonly) SJTransitionBackgroundView *backgroundView;
 @end
 
 @implementation SJTransitionHandler
@@ -301,6 +324,7 @@ NS_ASSUME_NONNULL_BEGIN
     self = [super init];
     if (self) {
         _shift = - UIScreen.mainScreen.bounds.size.width * 0.382;
+        _backgroundView = [SJTransitionBackgroundView.alloc initWithFrame:CGRectZero];
     }
     return self;
 }
@@ -319,7 +343,11 @@ NS_ASSUME_NONNULL_BEGIN
     
     // keyboard
     [nav.view endEditing:YES];
+    
+    //
     [nav.view.superview insertSubview:snapshot.rootView belowSubview:nav.view];
+    [nav.view insertSubview:_backgroundView atIndex:0];
+    _backgroundView.frame = nav.view.bounds;
     
     //
     [snapshot began];
@@ -397,6 +425,7 @@ NS_ASSUME_NONNULL_BEGIN
             nav.view.transform = CGAffineTransformIdentity;
         }
     } completion:^(BOOL finished) {
+        [self.backgroundView removeFromSuperview];
         [snapshot.rootView removeFromSuperview];
         [snapshot completed];
         
@@ -450,15 +479,6 @@ NS_ASSUME_NONNULL_BEGIN
     
     self.interactivePopGestureRecognizer.enabled = false;
     self.view.clipsToBounds = false;
-    
-    [CATransaction begin];
-    [CATransaction setDisableActions:true];
-    self.view.layer.shadowOffset = CGSizeMake(0.5, 0);
-    self.view.layer.shadowColor = [[UIColor alloc] initWithWhite:0.2 alpha:1].CGColor;
-    self.view.layer.shadowOpacity = 1;
-    self.view.layer.shadowRadius = 2;
-    self.view.layer.shadowPath = [UIBezierPath bezierPathWithRect:self.view.bounds].CGPath;
-    [CATransaction commit];
     
     [self.view addGestureRecognizer:self.sj_fullscreenGesture];
 }

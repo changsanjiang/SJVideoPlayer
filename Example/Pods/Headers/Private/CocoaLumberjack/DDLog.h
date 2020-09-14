@@ -1,1 +1,1 @@
-../../../CocoaLumberjack/Sources/CocoaLumberjack/include/DDLog.h
+../../../CocoaLumberjack/Sources/CocoaLumberjack/include/CocoaLumberjack/DDLog.h

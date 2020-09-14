@@ -97,6 +97,7 @@ NS_ASSUME_NONNULL_BEGIN
     [self seekToTime:kCMTimeZero completionHandler:^(BOOL finished) {
         __strong typeof(_self) self = _self;
         if ( !self ) return;
+        [self _postNotification:SJMediaPlayerDidReplayNotification];
         [self play];
     }];
 }

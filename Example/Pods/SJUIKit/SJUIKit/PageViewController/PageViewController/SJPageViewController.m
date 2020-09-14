@@ -651,7 +651,7 @@ static NSString *const kReuseIdentifierForCell = @"1";
         // 停止滑动时, 将 headerView 恢复到 child scrollView 中
         UIScrollView *childScrollView = self.focusedViewController.sj_pageItem.scrollView;
         CGRect frame = [_headerView.superview convertRect:_headerView.frame toView:childScrollView];
-        frame.size = CGSizeMake(self.view.bounds.size.width, self.heightForHeaderBounds);
+//        frame.size = CGSizeMake(self.view.bounds.size.width, self.heightForHeaderBounds);
         _headerView.frame = frame;
         [childScrollView addSubview:_headerView];
     }

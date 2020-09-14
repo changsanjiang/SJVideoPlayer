@@ -22,8 +22,8 @@ NS_ASSUME_NONNULL_BEGIN
     if ( 0 == name.length )
         return nil;
     NSString *path = [self.bundle pathForResource:name ofType:@"png"];
-    UIImage *image = [UIImage imageWithContentsOfFile:path];
-    image = [UIImage imageWithCGImage:image.CGImage scale:3.0 orientation:image.imageOrientation];
+    NSData *data = [NSData dataWithContentsOfFile:path];
+    UIImage *image = [UIImage imageWithData:data scale:3.0];
     return image;
 }
 

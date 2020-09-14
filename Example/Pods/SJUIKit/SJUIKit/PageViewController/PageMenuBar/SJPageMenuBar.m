@@ -300,6 +300,16 @@ NS_ASSUME_NONNULL_BEGIN
     }
 }
 
+- (void)setScrollIndicator:(nullable UIView<SJPageMenuBarScrollIndicator> *)scrollIndicator {
+    if ( _scrollIndicator != scrollIndicator ) {
+        [_scrollIndicator removeFromSuperview];
+        _scrollIndicator = scrollIndicator;
+        [self.scrollView addSubview:self.scrollIndicator];
+        if ( [self _isSafeIndex:_focusedIndex] )
+            [self _remakeConstraintsForScrollIndicatorWithFocusedIndex:_focusedIndex];
+    }
+}
+
 #pragma mark -
  
 - (UIColor *)itemTintColor {

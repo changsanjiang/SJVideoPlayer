@@ -16,6 +16,23 @@ NS_ASSUME_NONNULL_BEGIN
 @implementation SJPageMenuItemView
 @synthesize focusedMenuItem = _focusedMenuItem;
 @synthesize transitionProgress = _transitionProgress;
+- (instancetype)initWithText:(NSString *)text font:(UIFont *)font {
+    self = [self initWithFrame:CGRectZero];
+    if ( self ) {
+        _label.text = text;
+        _label.font = font;
+    }
+    return self;
+}
+
+- (instancetype)initWithAttributedText:(NSAttributedString *)attributedText {
+    self = [self initWithFrame:CGRectZero];
+    if ( self ) {
+        _label.attributedText = attributedText;
+    }
+    return self;
+}
+
 - (instancetype)initWithFrame:(CGRect)frame {
     self = [super initWithFrame:frame];
     if ( self ) {

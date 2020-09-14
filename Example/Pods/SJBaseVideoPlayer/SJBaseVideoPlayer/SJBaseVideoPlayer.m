@@ -43,6 +43,7 @@
 NS_ASSUME_NONNULL_BEGIN
 typedef struct _SJPlayerControlInfo {
     struct {
+        CGFloat factor;
         NSTimeInterval offsetTime; ///< pan手势触发过程中的偏移量(secs)
     } pan;
     
@@ -195,6 +196,7 @@ typedef struct _SJPlayerControlInfo {
     _controlInfo->playbackControl.resumePlaybackWhenPlayerHasFinishedSeeking = YES;
     _controlInfo->floatSmallViewControl.autoDisappearFloatSmallView = YES;
     _controlInfo->gestureControl.rateWhenLongPressGestureTriggered = 2.0;
+    _controlInfo->pan.factor = 667;
     self.autoManageViewToFitOnScreenOrRotation = YES;
     
     [self _setupViews];
@@ -326,10 +328,10 @@ typedef struct _SJPlayerControlInfo {
                     /// 水平
                 case SJPanGestureMovingDirection_H: {
                     NSTimeInterval duration = self.duration;
-                    NSTimeInterval beforeOffsetTime = self.controlInfo->pan.offsetTime;
+                    NSTimeInterval previous = self.controlInfo->pan.offsetTime;
                     CGFloat tlt = translate.x;
-                    CGFloat add = tlt / 667 * self.duration;
-                    CGFloat offsetTime = beforeOffsetTime + add;
+                    CGFloat add = tlt / self.controlInfo->pan.factor * self.duration;
+                    CGFloat offsetTime = previous + add;
                     if ( offsetTime > duration ) offsetTime = duration;
                     else if ( offsetTime < 0 ) offsetTime = 0;
                     self.controlInfo->pan.offsetTime = offsetTime;
@@ -514,8 +516,6 @@ typedef struct _SJPlayerControlInfo {
     _presentView.delegate = self;
     [self _configGestureControl:_presentView];
     [_view addSubview:_presentView];
-    
-    self.viewControllerManager.presentView = _presentView;
 }
 
 - (void)_configAVAudioSession {
@@ -1449,6 +1449,13 @@ typedef struct _SJPlayerControlInfo {
     return _controlInfo->gestureControl.rateWhenLongPressGestureTriggered;
 }
 
+- (void)setOffsetFactorForHorizontalPanGesture:(CGFloat)offsetFactorForHorizontalPanGesture {
+    NSAssert(offsetFactorForHorizontalPanGesture != 0, @"The factor can't be set to 0!");
+    _controlInfo->pan.factor = offsetFactorForHorizontalPanGesture;
+}
+- (CGFloat)offsetFactorForHorizontalPanGesture {
+    return _controlInfo->pan.factor;
+}
 @end
 
 

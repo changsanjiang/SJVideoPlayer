@@ -193,9 +193,8 @@ typedef id<SJUTAttributesProtocol>_Nonnull(^SJUTSetAttribute)(id _Nullable value
 @end
 
 typedef enum : NSUInteger {
-    SJUTVerticalAlignmentBottom = 0,
+    SJUTVerticalAlignmentDefault = 0,
     SJUTVerticalAlignmentCenter = 1,
-    SJUTVerticalAlignmentTop = 2,
 } SJUTVerticalAlignment;
 
 @protocol SJUTImageAttachment <NSObject>

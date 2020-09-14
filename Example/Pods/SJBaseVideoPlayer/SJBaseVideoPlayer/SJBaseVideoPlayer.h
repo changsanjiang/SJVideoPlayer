@@ -452,6 +452,12 @@ NS_ASSUME_NONNULL_BEGIN
 ///
 @property (nonatomic) CGFloat rateWhenLongPressGestureTriggered;
 
+///
+/// 调整水平pan手势移动时的速率
+///
+///         default value is 667.0
+///
+@property (nonatomic) CGFloat offsetFactorForHorizontalPanGesture;
 @end
 
 

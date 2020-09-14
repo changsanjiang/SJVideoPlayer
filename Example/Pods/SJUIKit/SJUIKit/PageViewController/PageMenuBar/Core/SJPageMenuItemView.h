@@ -11,6 +11,9 @@
 
 NS_ASSUME_NONNULL_BEGIN
 @interface SJPageMenuItemView : UIView<SJPageMenuItemView>
+- (instancetype)initWithText:(NSString *)text font:(UIFont *)font;
+- (instancetype)initWithAttributedText:(NSAttributedString *)attributedText;
+
 @property (nonatomic, strong, null_resettable) UIFont *font;
 @property (nonatomic, copy, nullable) NSString *text;
 @property (nonatomic, copy, nullable) NSAttributedString *attributedText;

@@ -288,8 +288,8 @@ static NSNotificationName const SJRotationManagerTransitioningValueDidChangeNoti
     if (self) {
         _currentOrientation = SJOrientation_Portrait;
         _autorotationSupportedOrientations = SJOrientationMaskAll;
-        [self performSelectorOnMainThread:@selector(_setupWindow) withObject:nil waitUntilDone:YES];
         [self _observeNotifies];
+        [self performSelectorOnMainThread:@selector(_setupWindow) withObject:nil waitUntilDone:NO];
     }
     return self;
 }

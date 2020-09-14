@@ -67,7 +67,7 @@ target 'SJVideoPlayer_Example' do
   # 列表控制
   pod 'SJPlaybackListController'#, :path => '../../SJPlaybackListController'
   pod 'Masonry', :inhibit_warnings => true
-  pod 'MJRefresh', :inhibit_warnings => true
+  pod 'MJRefresh', '3.4.3', :inhibit_warnings => true
   pod 'SJRouter'
   pod 'SDWebImage'
   pod 'YYModel'

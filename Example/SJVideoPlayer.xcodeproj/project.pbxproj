@@ -128,7 +128,6 @@
 
 /* Begin PBXFileReference section */
 		0913D8D9BFC4EE68E3F1EF64 /* Pods-SJVideoPlayer_Example.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-SJVideoPlayer_Example.release.xcconfig"; path = "Target Support Files/Pods-SJVideoPlayer_Example/Pods-SJVideoPlayer_Example.release.xcconfig"; sourceTree = "<group>"; };
-		15E7E925B7E2B14A6F5CC435 /* LICENSE */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text; name = LICENSE; path = ../LICENSE; sourceTree = "<group>"; };
 		3DE6356926AEF70F060F33F3 /* SJVideoPlayer.podspec */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text; name = SJVideoPlayer.podspec; path = ../SJVideoPlayer.podspec; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.ruby; };
 		6003F58A195388D20070C39A /* 播放器.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "播放器.app"; sourceTree = BUILT_PRODUCTS_DIR; };
 		6003F58D195388D20070C39A /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = System/Library/Frameworks/Foundation.framework; sourceTree = SDKROOT; };
@@ -439,7 +438,6 @@
 			children = (
 				3DE6356926AEF70F060F33F3 /* SJVideoPlayer.podspec */,
 				7D124A339A8A3126BD5D15EA /* README.md */,
-				15E7E925B7E2B14A6F5CC435 /* LICENSE */,
 			);
 			name = "Podspec Metadata";
 			sourceTree = "<group>";

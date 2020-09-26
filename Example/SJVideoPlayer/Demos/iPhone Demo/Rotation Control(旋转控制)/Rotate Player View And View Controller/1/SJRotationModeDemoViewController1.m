@@ -69,7 +69,7 @@
 
 // 手动开启画中画
 - (IBAction)startPiP:(id)sender {
-    
+
     [_player.prompt show:[NSAttributedString sj_UIKitText:^(id<SJUIKitTextMakerProtocol>  _Nonnull make) {
         make.append(@"画中画模式 请在真机(14.0系统)中测试!");
         make.textColor(UIColor.whiteColor);

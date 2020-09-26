@@ -23,11 +23,12 @@ $ pod update --no-repo-update   (不要用 pod install 了, 用这个命令安�
 ```
 
 ##  Wiki
-[Welcome to the SJVideoPlayer wiki!](https://github.com/changsanjiang/SJVideoPlayer/wiki)
+Welcome to the SJVideoPlayer wiki!
 
 - [Getting Started](https://github.com/changsanjiang/SJVideoPlayer/wiki/Getting-Started)
 - [快速开始](https://github.com/changsanjiang/SJVideoPlayer/wiki/%E5%BF%AB%E9%80%9F%E5%BC%80%E5%A7%8B)
 - [旋转和直接全屏](https://github.com/changsanjiang/SJVideoPlayer/wiki/旋转和直接全屏)
+- [14.0 画中画 ꫛꫀꪝ](https://github.com/changsanjiang/SJVideoPlayer/wiki/iOS-14-%E7%94%BB%E4%B8%AD%E7%94%BB)
 - [播放记录](https://github.com/changsanjiang/SJVideoPlayer/wiki/%E6%92%AD%E6%94%BE%E8%AE%B0%E5%BD%95)
 - [长按快进](https://github.com/changsanjiang/SJVideoPlayer/wiki/%E9%95%BF%E6%8C%89%E5%BF%AB%E8%BF%9B)
 - [弹幕](https://github.com/changsanjiang/SJVideoPlayer/wiki/%E5%BC%B9%E5%B9%95)

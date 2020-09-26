@@ -209,6 +209,35 @@ NS_ASSUME_NONNULL_BEGIN
     }];
 }
 
+
+#pragma mark - PiP
+
+- (BOOL)isPictureInPictureSupported API_AVAILABLE(ios(14.0)) {
+#ifdef DEBUG
+    NSLog(@"%@ 暂不支持画中画", NSStringFromClass(self.class));
+#endif
+    return NO;
+}
+
+- (SJPictureInPictureStatus)pictureInPictureStatus API_AVAILABLE(ios(14.0)) {
+#ifdef DEBUG
+    NSLog(@"%@ 暂不支持画中画", NSStringFromClass(self.class));
+#endif
+    return SJPictureInPictureStatusUnknown;
+}
+
+- (void)startPictureInPicture API_AVAILABLE(ios(14.0)) {
+#ifdef DEBUG
+    NSLog(@"%@ 暂不支持画中画", NSStringFromClass(self.class));
+#endif
+}
+
+- (void)stopPictureInPicture API_AVAILABLE(ios(14.0)) {
+#ifdef DEBUG
+    NSLog(@"%@ 暂不支持画中画", NSStringFromClass(self.class));
+#endif
+}
+
 #pragma mark -
 
 - (void)pause {
@@ -485,7 +514,7 @@ NS_ASSUME_NONNULL_BEGIN
         self.timeControlStatus = SJPlaybackTimeControlStatusPaused;
     }
     
-    if ( self.timeControlStatus == SJPlaybackTimeControlStatusPaused ) {
+    if ( self.timeControlStatus == SJPlaybackTimeControlStatusPaused && self.currentPlayer.timeControlStatus != SJPlaybackTimeControlStatusPlaying ) {
         return;
     }
     
@@ -498,10 +527,8 @@ NS_ASSUME_NONNULL_BEGIN
     
     if ( self.timeControlStatus != self.currentPlayer.timeControlStatus ||
          self.reasonForWaitingToPlay != self.currentPlayer.reasonForWaitingToPlay ) {
-        if ( self.currentPlayer.timeControlStatus != SJPlaybackTimeControlStatusPaused ) {
-            self.reasonForWaitingToPlay = self.currentPlayer.reasonForWaitingToPlay;
-            self.timeControlStatus = self.currentPlayer.timeControlStatus;
-        }
+        self.reasonForWaitingToPlay = self.currentPlayer.reasonForWaitingToPlay;
+        self.timeControlStatus = self.currentPlayer.timeControlStatus;
     }
 }
 

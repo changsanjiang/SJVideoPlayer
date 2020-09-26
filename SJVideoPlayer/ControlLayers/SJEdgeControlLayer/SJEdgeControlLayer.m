@@ -43,6 +43,7 @@
 SJEdgeControlButtonItemTag const SJEdgeControlLayerTopItem_Back = 10000;
 SJEdgeControlButtonItemTag const SJEdgeControlLayerTopItem_Title = 10001;
 static SJEdgeControlButtonItemTag const SJEdgeControlLayerTopItem_PlaceholderBack = 10002;
+SJEdgeControlButtonItemTag const SJEdgeControlLayerTopItem_PictureInPicture API_AVAILABLE(ios(14.0)) = 10003;
 
 #pragma mark - Left
 SJEdgeControlButtonItemTag const SJEdgeControlLayerLeftItem_Lock = 20000;
@@ -71,7 +72,8 @@ SJEdgeControlButtonItemTag const SJEdgeControlLayerCenterItem_Replay = 40000;
 @property (nonatomic, strong, readonly) SJEdgeControlButtonItem *backItem;
 
 @property (nonatomic, strong, nullable) id<SJReachabilityObserver> reachabilityObserver;
-@property (nonatomic, strong, readonly) SJTimerControl *dateTimerControl NS_AVAILABLE_IOS(11.0); // refresh date for custom status bar
+@property (nonatomic, strong, readonly) SJTimerControl *dateTimerControl API_AVAILABLE(ios(11.0)); // refresh date for custom status bar
+@property (nonatomic, strong, readonly) SJEdgeControlButtonItem *pictureInPictureItem API_AVAILABLE(ios(14.0));
 @end
 
 @implementation SJEdgeControlLayer
@@ -86,6 +88,9 @@ SJEdgeControlButtonItemTag const SJEdgeControlLayerCenterItem_Replay = 40000;
     [self _setupView];
     self.autoAdjustTopSpacing = YES;
     self.hiddenBottomProgressIndicator = YES;
+    if (@available(iOS 14.0, *)) {
+        self.automaticallyShowsPictureInPictureItem = YES;
+    }
     return self;
 }
 
@@ -150,6 +155,20 @@ SJEdgeControlButtonItemTag const SJEdgeControlLayerCenterItem_Replay = 40000;
 
 - (void)_replayItemWasTapped {
     [_videoPlayer replay];
+}
+
+- (void)pictureInPictureItemWasTapped API_AVAILABLE(ios(14.0)) {
+    switch (_videoPlayer.playbackController.pictureInPictureStatus) {
+        case SJPictureInPictureStatusStarting:
+        case SJPictureInPictureStatusRunning:
+            [_videoPlayer.playbackController stopPictureInPicture];
+            break;
+        case SJPictureInPictureStatusUnknown:
+        case SJPictureInPictureStatusStopping:
+        case SJPictureInPictureStatusStopped:
+            [_videoPlayer.playbackController startPictureInPicture];
+            break;
+    }
 }
 
 #pragma mark - slider delegate methods
@@ -251,6 +270,11 @@ SJEdgeControlButtonItemTag const SJEdgeControlLayerCenterItem_Replay = 40000;
     if ( videoPlayer.isPlaybackFinished ) {
         [self _updateContentForBottomCurrentTimeItemIfNeeded];
     }
+}
+
+- (void)videoPlayer:(__kindof SJBaseVideoPlayer *)videoPlayer pictureInPictureStatusDidChange:(SJPictureInPictureStatus)status API_AVAILABLE(ios(14.0)) {
+    [self _updateContentForPictureInPictureItem];
+    [self.topAdapter reload];
 }
 
 - (void)videoPlayer:(__kindof SJBaseVideoPlayer *)videoPlayer currentTimeDidChange:(NSTimeInterval)currentTime {
@@ -554,6 +578,13 @@ SJEdgeControlButtonItemTag const SJEdgeControlLayerCenterItem_Replay = 40000;
     }
 }
 
+- (void)setAutomaticallyShowsPictureInPictureItem:(BOOL)automaticallyShowsPictureInPictureItem {
+    if ( automaticallyShowsPictureInPictureItem != _automaticallyShowsPictureInPictureItem ) {
+        _automaticallyShowsPictureInPictureItem = automaticallyShowsPictureInPictureItem;
+        [self _reloadTopAdapterIfNeeded];
+    }
+}
+
 #pragma mark - setup view
 
 - (void)_setupView {
@@ -648,6 +679,15 @@ SJEdgeControlButtonItemTag const SJEdgeControlLayerCenterItem_Replay = 40000;
         _fastForwardView = [SJFastForwardView.alloc initWithFrame:CGRectZero];
     }
     return _fastForwardView;
+}
+
+@synthesize pictureInPictureItem = _pictureInPictureItem;
+- (SJEdgeControlButtonItem *)pictureInPictureItem API_AVAILABLE(ios(14.0)) {
+    if ( _pictureInPictureItem == nil ) {
+        _pictureInPictureItem = [SJEdgeControlButtonItem.alloc initWithTag:SJEdgeControlLayerTopItem_PictureInPicture];
+        [_pictureInPictureItem addTarget:self action:@selector(pictureInPictureItemWasTapped)];
+    }
+    return _pictureInPictureItem;
 }
 
 @synthesize customStatusBar = _customStatusBar;
@@ -937,6 +977,21 @@ SJEdgeControlButtonItemTag const SJEdgeControlLayerCenterItem_Replay = 40000;
     _customStatusBar.isHidden ? [self.dateTimerControl clear] : [self.dateTimerControl start];
 }
 
+- (void)_updateContentForPictureInPictureItem API_AVAILABLE(ios(14.0)) {
+    SJVideoPlayerSettings *sources = SJVideoPlayerSettings.commonSettings;
+    switch ( self.videoPlayer.playbackController.pictureInPictureStatus ) {
+        case SJPictureInPictureStatusRunning:
+            self.pictureInPictureItem.image = sources.pictureInPictureItemStopImage;
+            break;
+        case SJPictureInPictureStatusUnknown:
+        case SJPictureInPictureStatusStarting:
+        case SJPictureInPictureStatusStopping:
+        case SJPictureInPictureStatusStopped:
+            self.pictureInPictureItem.image = sources.pictureInPictureItemStartImage;
+            break;
+    }
+}
+
 #pragma mark - update items
 
 - (void)_reloadAdaptersIfNeeded {
@@ -953,6 +1008,7 @@ SJEdgeControlButtonItemTag const SJEdgeControlLayerCenterItem_Replay = 40000;
     BOOL isFullscreen = _videoPlayer.isFullScreen;
     BOOL isFitOnScreen = _videoPlayer.isFitOnScreen;
     BOOL isPlayOnScrollView = _videoPlayer.isPlayOnScrollView;
+    BOOL isSmallscreen = !isFullscreen && !isFitOnScreen;
 
     // back item
     {
@@ -974,7 +1030,7 @@ SJEdgeControlButtonItemTag const SJEdgeControlLayerCenterItem_Replay = 40000;
     {
         SJEdgeControlButtonItem *titleItem = [self.topAdapter itemForTag:SJEdgeControlLayerTopItem_Title];
         if ( titleItem != nil ) {
-            if ( self.isHiddenTitleItemWhenOrientationIsPortrait && !isFullscreen && !isFitOnScreen ) {
+            if ( self.isHiddenTitleItemWhenOrientationIsPortrait && isSmallscreen ) {
                 titleItem.hidden = YES;
             }
             else {
@@ -992,6 +1048,21 @@ SJEdgeControlButtonItemTag const SJEdgeControlLayerCenterItem_Replay = 40000;
                 CGFloat left  = [_topAdapter isHiddenWithRange:NSMakeRange(0, atIndex)] ? 16 : 0;
                 CGFloat right = [_topAdapter isHiddenWithRange:NSMakeRange(atIndex, _topAdapter.numberOfItems)] ? 16 : 0;
                 titleItem.insets = SJEdgeInsetsMake(left, right);
+            }
+        }
+    }
+    
+    // picture in picture item
+    {
+        if (@available(iOS 14.0, *)) {
+            if ( !self.automaticallyShowsPictureInPictureItem || (self.videoPlayer.isPlayOnScrollView && isSmallscreen) ) {
+                [self.topAdapter removeItemForTag:SJEdgeControlLayerTopItem_PictureInPicture];
+            }
+            else if ( self.videoPlayer.playbackController.isPictureInPictureSupported ) {
+                if ( ![self.topAdapter containsItem:self.pictureInPictureItem] ) {
+                    [self _updateContentForPictureInPictureItem];
+                    [self.topAdapter insertItem:self.pictureInPictureItem frontItem:SJEdgeControlLayerTopItem_Title];
+                }
             }
         }
     }

@@ -21,6 +21,7 @@ NS_ASSUME_NONNULL_BEGIN
 // - Top Items -
 extern SJEdgeControlButtonItemTag const SJEdgeControlLayerTopItem_Back;             // 返回按钮
 extern SJEdgeControlButtonItemTag const SJEdgeControlLayerTopItem_Title;            // 标题
+extern SJEdgeControlButtonItemTag const SJEdgeControlLayerTopItem_PictureInPicture API_AVAILABLE(ios(14.0)); // 画中画item
 
 
 // - Left Items -
@@ -74,6 +75,11 @@ extern SJEdgeControlButtonItemTag const SJEdgeControlLayerCenterItem_Replay;    
 /// 长按手势触发加速播放时显示的视图
 ///
 @property (nonatomic, strong, null_resettable) UIView<SJFastForwardView> *fastForwardView;
+
+///
+/// 当设备支持画中画时, 自动显示画中画按钮. default value is Yes
+///
+@property (nonatomic) BOOL automaticallyShowsPictureInPictureItem API_AVAILABLE(ios(14.0));
 
 ///
 /// 是否竖屏时隐藏标题

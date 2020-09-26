@@ -8,6 +8,7 @@
 
 #import "SJVideoPlayerSettings.h"
 #import <UIKit/UIKit.h>
+#import <AVKit/AVPictureInPictureController.h>
 #import "SJVideoPlayerResourceLoader.h"
 
 NS_ASSUME_NONNULL_BEGIN
@@ -16,6 +17,10 @@ NSNotificationName const SJVideoPlayerSettingsUpdatedNotification = @"SJVideoPla
 @interface SJVideoPlayerSettings ()
 //@interface SJVideoPlayerSettings (SJEdgeControlLayer)
 @property (nonatomic, strong, nullable) UIImage *placeholder;
+
+// picture in picture
+@property (nonatomic, strong, nullable) UIImage *pictureInPictureItemStartImage API_AVAILABLE(ios(14.0));
+@property (nonatomic, strong, nullable) UIImage *pictureInPictureItemStopImage API_AVAILABLE(ios(14.0));
 
 // fast forward view(长按快进时显示的视图)
 @property (nonatomic, strong, nullable) UIColor  *fastForwardTriangleColor;
@@ -231,6 +236,11 @@ NSNotificationName const SJVideoPlayerSettingsUpdatedNotification = @"SJVideoPla
 }
 
 - (void)_resetSJEdgeControlLayer {
+    if (@available(iOS 14.0, *)) {
+        _pictureInPictureItemStartImage = [AVPictureInPictureController.pictureInPictureButtonStartImage imageWithTintColor:UIColor.whiteColor];
+        _pictureInPictureItemStopImage = [AVPictureInPictureController.pictureInPictureButtonStopImage imageWithTintColor:UIColor.whiteColor];
+    }
+
     _fastForwardTriangleColor = UIColor.whiteColor;
     _fastForwardRateTextColor = UIColor.whiteColor;
     _fastForwardRateTextFont = [UIFont boldSystemFontOfSize:12];

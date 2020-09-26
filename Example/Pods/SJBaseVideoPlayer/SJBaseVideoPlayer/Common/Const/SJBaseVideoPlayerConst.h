@@ -32,6 +32,7 @@ extern NSNotificationName const SJVideoPlayerApplicationWillTerminateNotificatio
 extern NSNotificationName const SJVideoPlayerPlaybackControllerWillDeallocateNotification; ///< 注意: 发送对象变为了`SJMediaPlaybackController`(目前只此一个, 其他都为player对象)
 
 extern NSNotificationName const SJVideoPlayerPlaybackTimeControlStatusDidChangeNotification;
+extern NSNotificationName const SJVideoPlayerPictureInPictureStatusDidChangeNotification;
 extern NSNotificationName const SJVideoPlayerPlaybackDidFinishNotification;         // 播放完毕后发出的通知
 extern NSNotificationName const SJVideoPlayerPlaybackDidReplayNotification;         // 调用了replay发出的通知
 extern NSNotificationName const SJVideoPlayerPlaybackWillStopNotification;          // 调用了stop前发出的通知

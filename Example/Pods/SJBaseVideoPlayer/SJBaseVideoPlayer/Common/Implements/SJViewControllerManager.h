@@ -10,9 +10,10 @@
 #import "SJRotationManagerDefines.h"
 #import "SJControlLayerAppearManagerDefines.h"
 #import "SJVideoPlayerPresentViewDefines.h"
+#import "SJRotationManager.h"
 
 NS_ASSUME_NONNULL_BEGIN
-@interface SJViewControllerManager : NSObject<SJViewControllerManager>
+@interface SJViewControllerManager : NSObject<SJViewControllerManager, SJRotationManagerDelegate>
 @property (nonatomic, weak, nullable) id<SJFitOnScreenManager> fitOnScreenManager;
 @property (nonatomic, weak, nullable) id<SJRotationManager> rotationManager;
 @property (nonatomic, weak, nullable) id<SJControlLayerAppearManager> controlLayerAppearManager;

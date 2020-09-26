@@ -11,11 +11,16 @@
 #import "SJAVMediaPlayerLayerView.h"
 #import "SJVideoPlayerURLAsset+SJAVMediaPlaybackAdd.h"
 #import "AVAsset+SJAVMediaExport.h"
+#import "SJAVPictureInPictureController.h"
 
 NS_ASSUME_NONNULL_BEGIN
- 
+@interface SJAVMediaPlaybackController ()<SJPictureInPictureControllerDelegate>
+@property (nonatomic, strong, nullable) SJAVPictureInPictureController *pictureInPictureController API_AVAILABLE(ios(14.0));
+@end
+
 @implementation SJAVMediaPlaybackController
 @dynamic currentPlayer;
+@dynamic currentPlayerView;
 
 - (instancetype)init {
     self = [super init];
@@ -59,11 +64,21 @@ NS_ASSUME_NONNULL_BEGIN
 }
  
 - (void)receivedApplicationDidBecomeActiveNotification {
+    if (@available(iOS 14.0, *)) {
+        if ( _pictureInPictureController.isEnabled )
+            return;
+    }
+    
     SJAVMediaPlayerLayerView *view = self.currentPlayerView;
     view.layer.player = self.currentPlayer.avPlayer;
 }
  
 - (void)receivedApplicationDidEnterBackgroundNotification {
+    if (@available(iOS 14.0, *)) {
+        if ( _pictureInPictureController.isEnabled )
+            return;
+    }
+    
     if ( self.pauseWhenAppDidEnterBackground ) {
         [self pause];
     }
@@ -73,9 +88,60 @@ NS_ASSUME_NONNULL_BEGIN
     }
 }
 
+- (void)receivedApplicationWillResignActiveNotification {
+    if (@available(iOS 14.0, *)) {
+        if ( _pictureInPictureController.isEnabled )
+            return;
+    }
+    
+    if ( @available(iOS 14.0, *) ) {
+        if ( !self.pauseWhenAppDidEnterBackground ) {
+            SJAVMediaPlayerLayerView *view = self.currentPlayerView;
+            view.layer.player = nil;
+        }
+    }
+}
+
 - (void)replaceMediaForDefinitionMedia:(SJVideoPlayerURLAsset *)definitionMedia {
+    if (@available(iOS 14.0, *)) {
+        [self cancelPictureInPicture];
+    }
     [SJAVMediaPlayerLoader clearPlayerForMedia:self.media];
     [super replaceMediaForDefinitionMedia:definitionMedia];
+}
+
+#pragma mark - PiP
+
+- (BOOL)isPictureInPictureSupported API_AVAILABLE(ios(14.0)) {
+    return SJAVPictureInPictureController.isPictureInPictureSupported;
+}
+
+- (SJPictureInPictureStatus)pictureInPictureStatus API_AVAILABLE(ios(14.0)) {
+    return _pictureInPictureController.status;
+}
+
+- (void)startPictureInPicture API_AVAILABLE(ios(14.0)) {
+    if ( self.currentPlayerView != nil ) {
+        if ( _pictureInPictureController == nil ) {
+            _pictureInPictureController = [SJAVPictureInPictureController.alloc initWithLayer:self.currentPlayerView.layer delegate:self];
+        }
+        [_pictureInPictureController startPictureInPicture];
+    }
+}
+
+- (void)stopPictureInPicture API_AVAILABLE(ios(14.0)) {
+    [_pictureInPictureController stopPictureInPicture];
+}
+
+- (void)cancelPictureInPicture API_AVAILABLE(ios(14.0)) {
+    [_pictureInPictureController stopPictureInPicture];
+    _pictureInPictureController = nil;
+}
+
+- (void)pictureInPictureController:(id<SJPictureInPictureController>)controller statusDidChange:(SJPictureInPictureStatus)status API_AVAILABLE(ios(14.0)) {
+    if ( [self.delegate respondsToSelector:@selector(playbackController:pictureInPictureStatusDidChange:)] ) {
+        [self.delegate playbackController:self pictureInPictureStatusDidChange:status];
+    }
 }
 
 #pragma mark -
@@ -108,12 +174,20 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (void)refresh {
     if ( self.media != nil ) [SJAVMediaPlayerLoader clearPlayerForMedia:self.media];
+    if (@available(iOS 14.0, *)) {
+        [self cancelPictureInPicture];
+    }
+    [self cancelGenerateGIFOperation];
+    [self cancelExportOperation];
     [super refresh];
 }
 
 - (void)stop {
     [self cancelGenerateGIFOperation];
     [self cancelExportOperation];
+    if (@available(iOS 14.0, *)) {
+        [self cancelPictureInPicture];
+    }
     [super stop];
 }
 

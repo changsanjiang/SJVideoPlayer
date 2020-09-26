@@ -422,15 +422,15 @@ static NSNotificationName const SJRotationManagerTransitioningValueDidChangeNoti
 }
 
 - (BOOL)prefersStatusBarHidden {
-    return self.viewControllerManager.prefersStatusBarHidden;
+    return self.delegate.prefersStatusBarHidden;
 }
 
 - (UIStatusBarStyle)preferredStatusBarStyle {
-    return self.viewControllerManager.preferredStatusBarStyle;
+    return self.delegate.preferredStatusBarStyle;
 }
 
 - (void)vc_forwardPushViewController:(UIViewController *)viewController animated:(BOOL)animated {
-    [self.viewControllerManager pushViewController:viewController animated:animated];
+    [self.delegate pushViewController:viewController animated:animated];
 }
 
 #pragma mark -

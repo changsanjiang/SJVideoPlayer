@@ -34,6 +34,14 @@ NS_ASSUME_NONNULL_BEGIN
             if ( self.playbackStatusDidChangeExeBlock ) self.playbackStatusDidChangeExeBlock(self.player);
         }]];
 
+        if (@available(iOS 14.0, *)) {
+            [_tokens addObject:[NSNotificationCenter.defaultCenter addObserverForName:SJVideoPlayerPictureInPictureStatusDidChangeNotification object:player queue:NSOperationQueue.mainQueue usingBlock:^(NSNotification * _Nonnull note) {
+                __strong typeof(_self) self = _self;
+                if ( !self ) return;
+                if ( self.pictureInPictureStatusDidChangeExeBlock ) self.pictureInPictureStatusDidChangeExeBlock(self.player);
+            }]];
+        }
+        
         [_tokens addObject:[NSNotificationCenter.defaultCenter addObserverForName:SJVideoPlayerPlaybackDidFinishNotification object:player queue:NSOperationQueue.mainQueue usingBlock:^(NSNotification * _Nonnull note) {
             __strong typeof(_self) self = _self;
             if ( !self ) return;

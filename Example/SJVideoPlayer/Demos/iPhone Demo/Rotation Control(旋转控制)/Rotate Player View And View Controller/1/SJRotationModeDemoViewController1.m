@@ -12,6 +12,7 @@
 #import "SJSourceURLs.h"
 #import <SJUIKit/NSAttributedString+SJMake.h>
 #import "SJViewController4.h"
+#import <AVKit/AVPictureInPictureController.h>
  
 @interface SJRotationModeDemoViewController1 ()
 @property (weak, nonatomic) IBOutlet UIView *playerContainerView;
@@ -57,13 +58,35 @@
     }];
     
     __weak typeof(self) _self = self;
-    _player.rotationObserver.rotationDidStartExeBlock = ^(id<SJRotationManagerProtocol>  _Nonnull mgr) {
+    _player.rotationObserver.rotationDidStartExeBlock = ^(id<SJRotationManager>  _Nonnull mgr) {
         __strong typeof(_self) self = _self;
         if ( !self ) return ;
 #ifdef DEBUG
         NSLog(@"%d \t %s", (int)__LINE__, __func__);
 #endif
     };
+}
+
+// 手动开启画中画
+- (IBAction)startPiP:(id)sender {
+    
+    [_player.prompt show:[NSAttributedString sj_UIKitText:^(id<SJUIKitTextMakerProtocol>  _Nonnull make) {
+        make.append(@"画中画模式 请在真机(14.0系统)中测试!");
+        make.textColor(UIColor.whiteColor);
+    }] duration:5];
+    
+    if (@available(iOS 14.0, *)) {
+        if ( _player.playbackController.isPictureInPictureSupported ) {
+            [_player.playbackController startPictureInPicture];
+        }
+    }
+}
+
+// 退出画中画
+- (IBAction)stopPiP:(id)sender {
+    if (@available(iOS 14.0, *)) {
+        [_player.playbackController stopPictureInPicture];
+    }
 }
 
 - (IBAction)rotate:(id)sender {

@@ -56,7 +56,7 @@ NS_ASSUME_NONNULL_BEGIN
 }
 
 + (NSString *)version {
-    return @"v3.2.6";
+    return @"v3.2.7";
 }
 
 + (instancetype)player {
@@ -474,7 +474,12 @@ NS_ASSUME_NONNULL_BEGIN
         // film editing item
         // 小屏或者 M3U8的时候 自动隐藏
         // M3u8 暂时无法剪辑
-        self.filmEditingButtonItem.hidden = (!self.isFullScreen || self.URLAsset.isM3u8) || !self.URLAsset;
+        BOOL isUnsupportedFormat = self.URLAsset.isM3u8;
+        BOOL isPictureInPictureEnabled = NO;
+        if (@available(iOS 14.0, *)) {
+            isPictureInPictureEnabled = self.playbackController.pictureInPictureStatus != SJPictureInPictureStatusUnknown;
+        }
+        self.filmEditingButtonItem.hidden = (self.URLAsset == nil) || !self.isFullScreen || isUnsupportedFormat || isPictureInPictureEnabled;
         self.filmEditingButtonItem.image = SJVideoPlayerSettings.commonSettings.filmEditingBtnImage;
         [self.defaultEdgeControlLayer.rightAdapter reload];
     }

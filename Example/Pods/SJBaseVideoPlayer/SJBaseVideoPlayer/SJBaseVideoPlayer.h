@@ -122,7 +122,7 @@ NS_ASSUME_NONNULL_BEGIN
 ///         此模块将是对视频播放的控制, 例如播放, 暂停, 调速, 跳转等等...
 ///         了解更多请前往协议头文件查看
 ///
-@property (nonatomic, strong, null_resettable) id<SJVideoPlayerPlaybackController> playbackController;
+@property (nonatomic, strong, null_resettable) __kindof id<SJVideoPlayerPlaybackController> playbackController;
 
 ///
 /// 观察者

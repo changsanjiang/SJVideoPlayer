@@ -23,11 +23,10 @@ NS_ASSUME_NONNULL_BEGIN
 + (nullable UIImage *)imageNamed:(NSString *)name {
     if ( 0 == name.length )
         return nil;
-    int scale = (int)UIScreen.mainScreen.scale;
-    if ( scale < 2 ) scale = 2;
-    else if ( scale > 3 ) scale = 3;
-    NSString *n = [NSString stringWithFormat:@"%@@%dx.png", name, scale];
-    return [UIImage imageWithContentsOfFile:[self.bundle pathForResource:n ofType:nil]];
+    NSString *path = [self.bundle pathForResource:name ofType:@"png"];
+    NSData *data = [NSData dataWithContentsOfFile:path];
+    UIImage *image = [UIImage imageWithData:data scale:3.0];
+    return image;
 }
 
 @end

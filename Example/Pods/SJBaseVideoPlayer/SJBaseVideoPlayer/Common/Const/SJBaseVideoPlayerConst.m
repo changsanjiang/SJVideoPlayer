@@ -59,6 +59,10 @@ NSNotificationName const SJVideoPlayerPlaybackControllerWillDeallocateNotificati
 ///
 NSNotificationName const SJVideoPlayerPlaybackTimeControlStatusDidChangeNotification = @"SJVideoPlayerPlaybackTimeControlStatusDidChangeNotification";
 ///
+/// picture in picture status 改变的通知
+///
+NSNotificationName const SJVideoPlayerPictureInPictureStatusDidChangeNotification = @"SJVideoPlayerPictureInPictureStatusDidChangeNotification";
+///
 /// 播放完毕后发出的通知
 ///
 NSNotificationName const SJVideoPlayerPlaybackDidFinishNotification = @"SJVideoPlayerPlaybackDidFinishNotification";

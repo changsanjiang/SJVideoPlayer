@@ -39,6 +39,11 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic, copy, nullable) void(^timeControlStatusDidChangeExeBlock)(__kindof SJBaseVideoPlayer *player);
 
 ///
+/// 画中画状态改变的回调
+///
+@property (nonatomic, copy, nullable) void(^pictureInPictureStatusDidChangeExeBlock)(__kindof SJBaseVideoPlayer *player) API_AVAILABLE(ios(14.0));
+
+///
 /// 调用了重播的回调
 ///
 @property (nonatomic, copy, nullable) void(^didReplayExeBlock)(__kindof SJBaseVideoPlayer *player);

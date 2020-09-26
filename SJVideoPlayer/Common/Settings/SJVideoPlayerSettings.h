@@ -38,6 +38,10 @@ UIKIT_EXTERN NSNotificationName const SJVideoPlayerSettingsUpdatedNotification;
 @interface SJVideoPlayerSettings (SJEdgeControlLayer)
 @property (nonatomic, strong, nullable) UIImage *placeholder;
 
+// picture in picture
+@property (nonatomic, strong, nullable) UIImage *pictureInPictureItemStartImage API_AVAILABLE(ios(14.0));
+@property (nonatomic, strong, nullable) UIImage *pictureInPictureItemStopImage API_AVAILABLE(ios(14.0));
+
 // fast forward view(长按快进时显示的视图)
 @property (nonatomic, strong, nullable) UIColor  *fastForwardTriangleColor;
 @property (nonatomic, strong, nullable) UIColor  *fastForwardRateTextColor;

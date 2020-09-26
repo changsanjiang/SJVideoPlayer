@@ -1298,7 +1298,6 @@
 				PRODUCT_BUNDLE_IDENTIFIER = org.cocoapods.demo.SJVideoPlayer;
 				PRODUCT_NAME = "播放器";
 				PROVISIONING_PROFILE_SPECIFIER = "";
-				VALID_ARCHS = "arm64 arm64e";
 				WRAPPER_EXTENSION = app;
 			};
 			name = Debug;
@@ -1324,7 +1323,6 @@
 				PRODUCT_BUNDLE_IDENTIFIER = org.cocoapods.demo.SJVideoPlayer;
 				PRODUCT_NAME = "播放器";
 				PROVISIONING_PROFILE_SPECIFIER = "";
-				VALID_ARCHS = "arm64 arm64e";
 				WRAPPER_EXTENSION = app;
 			};
 			name = Release;

@@ -96,6 +96,8 @@ NSNotificationName const SJVideoPlayerSettingsUpdatedNotification = @"SJVideoPla
 @property (nonatomic) float more_trackHeight;                         // sider track height of more view
 @property (nonatomic, strong, nullable) UIImage *more_thumbImage;     // sider thumb image of more view
 @property (nonatomic) float more_thumbSize;                           // sider thumb size of more view
+@property (nonatomic) float more_minRateValue;
+@property (nonatomic) float more_maxRateValue;
 @property (nonatomic, strong, nullable) UIImage *more_minRateImage;
 @property (nonatomic, strong, nullable) UIImage *more_maxRateImage;
 @property (nonatomic, strong, nullable) UIImage *more_minVolumeImage;
@@ -303,6 +305,8 @@ NSNotificationName const SJVideoPlayerSettingsUpdatedNotification = @"SJVideoPla
     _more_traceColor = [UIColor colorWithRed:2 / 256.0 green:141 / 256.0 blue:140 / 256.0 alpha:1];
     _more_trackColor = [UIColor whiteColor];
     _more_trackHeight = 4;
+    _more_minRateValue = 0.5;
+    _more_maxRateValue = 1.5;
     _more_minRateImage = [SJVideoPlayerResourceLoader imageNamed:@"sj_video_player_minRate"];
     _more_maxRateImage = [SJVideoPlayerResourceLoader imageNamed:@"sj_video_player_maxRate"];
     _more_minVolumeImage = [SJVideoPlayerResourceLoader imageNamed:@"sj_video_player_minVolume"];

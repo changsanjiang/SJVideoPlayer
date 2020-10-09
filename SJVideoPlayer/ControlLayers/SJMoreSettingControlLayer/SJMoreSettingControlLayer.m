@@ -183,8 +183,8 @@ SJEdgeControlButtonItemTag const SJMoreSettingControlLayerItem_Rate = 10002;
         SJButtonProgressSlider *progressView = SJButtonProgressSlider.new;
         progressView.slider.delegate = self;
         progressView.slider.tag = rateItem.tag;
-        progressView.slider.maxValue = 1.5;
-        progressView.slider.minValue = 0.5;
+        progressView.slider.maxValue = SJVideoPlayerSettings.commonSettings.more_maxRateValue;
+        progressView.slider.minValue = SJVideoPlayerSettings.commonSettings.more_minRateValue;
         rateItem.customView = progressView;
         [self.rightAdapter addItem:rateItem];
     }

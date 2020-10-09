@@ -117,8 +117,10 @@ UIKIT_EXTERN NSNotificationName const SJVideoPlayerSettingsUpdatedNotification;
 @property (nonatomic) float more_trackHeight;                         // sider track height of more view
 @property (nonatomic, strong, nullable) UIImage *more_thumbImage;     // sider thumb image of more view
 @property (nonatomic) float more_thumbSize;                           // sider thumb size of more view
-@property (nonatomic, strong, nullable) UIImage *more_minRateImage;
-@property (nonatomic, strong, nullable) UIImage *more_maxRateImage;
+@property (nonatomic) float more_minRateValue;                        // 最小播放倍速值
+@property (nonatomic) float more_maxRateValue;                        // 最大播放倍速值
+@property (nonatomic, strong, nullable) UIImage *more_minRateImage;   // 最小播放倍速图标
+@property (nonatomic, strong, nullable) UIImage *more_maxRateImage;   // 最大播放倍速图标
 @property (nonatomic, strong, nullable) UIImage *more_minVolumeImage;
 @property (nonatomic, strong, nullable) UIImage *more_maxVolumeImage;
 @property (nonatomic, strong, nullable) UIImage *more_minBrightnessImage;

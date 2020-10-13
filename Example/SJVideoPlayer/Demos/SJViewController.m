@@ -105,6 +105,7 @@
 - (NSArray<Item *> *)_UIScrollViewDemoItems {
     return @[
         [Item.alloc initWithTitle:@"1 Play in UIScrollView" subTitle:@"在`UIScrollView`中播放" path:@"UIScrollView/1"],
+        [Item.alloc initWithTitle:@"2 Play in UIScrollView" subTitle:@"在`UIScrollView`中播放" path:@"UIScrollView/2"],
     ];
 }
 

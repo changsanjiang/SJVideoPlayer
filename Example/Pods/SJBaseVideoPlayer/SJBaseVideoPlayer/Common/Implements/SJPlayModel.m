@@ -23,6 +23,10 @@ NS_ASSUME_NONNULL_BEGIN
     return [SJScrollViewPlayModel.alloc initWithScrollView:scrollView];
 }
 
++ (instancetype)playModelWithScrollView:(UIScrollView *__weak)scrollView containerTag:(NSInteger)containerTag{
+    return  [SJScrollViewPlayModel.alloc initWithScrollView:scrollView containerTag: containerTag];
+}
+
 + (instancetype)playModelWithTableView:(__weak UITableView *)tableView indexPath:(NSIndexPath *)indexPath {
     return [SJTableViewCellPlayModel.alloc initWithTableView:tableView indexPath:indexPath];
 }
@@ -64,10 +68,25 @@ NS_ASSUME_NONNULL_BEGIN
 
 
 @implementation SJScrollViewPlayModel
+{
+    BOOL _hasTag;
+}
+
 - (instancetype)initWithScrollView:(__weak UIScrollView *)scrollView {
     self = [super init];
     if ( self ) {
         _scrollView = scrollView;
+        _hasTag = NO;
+    }
+    return self;
+}
+
+- (instancetype)initWithScrollView:(UIScrollView *__weak)scrollView containerTag:(NSInteger)containerTag {
+    self = [super init];
+    if ( self ) {
+        _scrollView = scrollView;
+        _containerTag = containerTag;
+        _hasTag = YES;
     }
     return self;
 }
@@ -77,7 +96,12 @@ NS_ASSUME_NONNULL_BEGIN
 }
 
 - (nullable UIView *)playerSuperview {
-    return [_scrollView viewWithProtocol:@protocol(SJPlayModelPlayerSuperview)];
+    
+    if (_hasTag) {
+        return [_scrollView viewWithProtocol:@protocol(SJPlayModelPlayerSuperview) containerTag:_containerTag];
+    } else {
+        return [_scrollView viewWithProtocol:@protocol(SJPlayModelPlayerSuperview)];
+    }
 }
 
 - (nullable __kindof UIScrollView *)inScrollView {

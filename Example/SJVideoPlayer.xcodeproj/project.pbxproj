@@ -81,6 +81,7 @@
 		77E87F6722E84D4E0047A253 /* SJViewController10.xib in Resources */ = {isa = PBXBuildFile; fileRef = 77E87F6522E84D4E0047A253 /* SJViewController10.xib */; };
 		77F2F5DC22FAC43000EA0B91 /* SJViewController11.m in Sources */ = {isa = PBXBuildFile; fileRef = 77F2F5DA22FAC43000EA0B91 /* SJViewController11.m */; };
 		77F2F5DD22FAC43000EA0B91 /* SJViewController11.xib in Resources */ = {isa = PBXBuildFile; fileRef = 77F2F5DB22FAC43000EA0B91 /* SJViewController11.xib */; };
+		815EB5632535A55D002DAFF4 /* SJUIScrollViewDemoViewController2.m in Sources */ = {isa = PBXBuildFile; fileRef = 815EB5622535A55D002DAFF4 /* SJUIScrollViewDemoViewController2.m */; };
 		873B8AEB1B1F5CCA007FD442 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 873B8AEA1B1F5CCA007FD442 /* Main.storyboard */; };
 		A601803C22DB5CAC00ED840D /* SJRotationModeDemoViewController3.m in Sources */ = {isa = PBXBuildFile; fileRef = A601803A22DB5CAC00ED840D /* SJRotationModeDemoViewController3.m */; };
 		A601803D22DB5CAC00ED840D /* SJRotationModeDemoViewController3.xib in Resources */ = {isa = PBXBuildFile; fileRef = A601803B22DB5CAC00ED840D /* SJRotationModeDemoViewController3.xib */; };
@@ -255,6 +256,8 @@
 		77F2F5DA22FAC43000EA0B91 /* SJViewController11.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = SJViewController11.m; sourceTree = "<group>"; };
 		77F2F5DB22FAC43000EA0B91 /* SJViewController11.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = SJViewController11.xib; sourceTree = "<group>"; };
 		7D124A339A8A3126BD5D15EA /* README.md */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = net.daringfireball.markdown; name = README.md; path = ../README.md; sourceTree = "<group>"; };
+		815EB5612535A55D002DAFF4 /* SJUIScrollViewDemoViewController2.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = SJUIScrollViewDemoViewController2.h; sourceTree = "<group>"; };
+		815EB5622535A55D002DAFF4 /* SJUIScrollViewDemoViewController2.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = SJUIScrollViewDemoViewController2.m; sourceTree = "<group>"; };
 		873B8AEA1B1F5CCA007FD442 /* Main.storyboard */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.storyboard; path = Main.storyboard; sourceTree = "<group>"; };
 		A601803922DB5CAC00ED840D /* SJRotationModeDemoViewController3.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = SJRotationModeDemoViewController3.h; sourceTree = "<group>"; };
 		A601803A22DB5CAC00ED840D /* SJRotationModeDemoViewController3.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = SJRotationModeDemoViewController3.m; sourceTree = "<group>"; };
@@ -623,6 +626,8 @@
 			children = (
 				77A8DDE124B59B3400782C85 /* SJUIScrollViewDemoViewController1.h */,
 				77A8DDE224B59B3400782C85 /* SJUIScrollViewDemoViewController1.m */,
+				815EB5612535A55D002DAFF4 /* SJUIScrollViewDemoViewController2.h */,
+				815EB5622535A55D002DAFF4 /* SJUIScrollViewDemoViewController2.m */,
 			);
 			path = UIScrollVIew;
 			sourceTree = "<group>";
@@ -925,7 +930,7 @@
 				ORGANIZATIONNAME = changsanjiang;
 				TargetAttributes = {
 					6003F589195388D20070C39A = {
-						DevelopmentTeam = U5A7L7SMNP;
+						DevelopmentTeam = C67ZA79SMN;
 						ProvisioningStyle = Automatic;
 						SystemCapabilities = {
 							com.apple.BackgroundModes = {
@@ -1073,6 +1078,7 @@
 				77805D6B22BF7DE1007076B9 /* SJiPadDemoViewController1.m in Sources */,
 				77391C262467DF4500443844 /* SJUITableViewDemoViewController7.m in Sources */,
 				77391C072466F08200443844 /* SJNestedCollectionView.m in Sources */,
+				815EB5632535A55D002DAFF4 /* SJUIScrollViewDemoViewController2.m in Sources */,
 				A6A208FF22AB9E59001ED610 /* SJVideoModel.m in Sources */,
 				776EB8C623FE98D600085F94 /* SJTestPLPlayerViewController.m in Sources */,
 				77391C142467CD0100443844 /* SJRouteHandlers.m in Sources */,
@@ -1281,7 +1287,7 @@
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CODE_SIGN_IDENTITY = "iPhone Developer";
 				CODE_SIGN_STYLE = Automatic;
-				DEVELOPMENT_TEAM = "";
+				DEVELOPMENT_TEAM = C67ZA79SMN;
 				ENABLE_BITCODE = NO;
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = "SJVideoPlayer/SJVideoPlayer-Prefix.pch";
@@ -1307,7 +1313,7 @@
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CODE_SIGN_IDENTITY = "iPhone Developer";
 				CODE_SIGN_STYLE = Automatic;
-				DEVELOPMENT_TEAM = "";
+				DEVELOPMENT_TEAM = C67ZA79SMN;
 				ENABLE_BITCODE = NO;
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = "SJVideoPlayer/SJVideoPlayer-Prefix.pch";

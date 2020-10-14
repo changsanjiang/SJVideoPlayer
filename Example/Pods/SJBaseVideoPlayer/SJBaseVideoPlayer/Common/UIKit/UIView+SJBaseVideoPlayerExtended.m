@@ -54,6 +54,12 @@ NS_ASSUME_NONNULL_BEGIN
     return nil;
 }
 
+/// 这里没有实现 Protocol 不知道有不有影响 暂时先保留 @changshanjiang 看看怎么调整
+/// @param containerTag containerTag description
+- (nullable __kindof UIView *)viewWithProtocol:(Protocol *)protocol containerTag:(NSInteger )containerTag {
+    UIView *view = [self viewWithTag:containerTag];
+    return view;
+}
 
 ///
 /// 对应视图是否在window中显示

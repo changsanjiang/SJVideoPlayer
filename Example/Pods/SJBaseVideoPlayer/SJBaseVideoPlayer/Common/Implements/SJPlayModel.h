@@ -35,7 +35,14 @@ NS_ASSUME_NONNULL_BEGIN
 ///     - PlayerSuperview<SJPlayModelPlayerSuperview>
 ///         - player
 + (instancetype)playModelWithScrollView:(__weak UIScrollView *)scrollView;
- 
+
+/// - UIScrollView
+///    - PlayerSuperview1
+///    - PlayerSuperview2
+///         - player
+/// @param containerTag containerTag description
++ (instancetype)playModelWithScrollView:(UIScrollView *__weak)scrollView containerTag:(NSInteger)containerTag;
+
 #pragma mark - UITableView
 
 /// - UITableView

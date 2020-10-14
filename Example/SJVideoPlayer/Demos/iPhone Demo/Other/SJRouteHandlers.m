@@ -30,6 +30,7 @@
 #import "SJDYMainViewController.h"
 
 #import "SJUIScrollViewDemoViewController1.h"
+#import "SJUIScrollViewDemoViewController2.h"
 
 @implementation SJRouteHandlers
 + (void)addRoutesToRouter:(SJRouter *)router {
@@ -50,6 +51,10 @@
     return @[
         [SJRouteObject.alloc initWithPath:@"UIScrollView/1" transitionMode:SJViewControllerTransitionModeNavigation createInstanceBlock:^(SJRouteRequest * _Nonnull request, SJCompletionHandler  _Nullable completionHandler) {
             __auto_type vc = SJUIScrollViewDemoViewController1.new;
+            if ( completionHandler ) completionHandler(vc, nil);
+        }],
+        [SJRouteObject.alloc initWithPath:@"UIScrollView/2" transitionMode:SJViewControllerTransitionModeNavigation createInstanceBlock:^(SJRouteRequest * _Nonnull request, SJCompletionHandler  _Nullable completionHandler) {
+            __auto_type vc = SJUIScrollViewDemoViewController2.new;
             if ( completionHandler ) completionHandler(vc, nil);
         }],
     ];

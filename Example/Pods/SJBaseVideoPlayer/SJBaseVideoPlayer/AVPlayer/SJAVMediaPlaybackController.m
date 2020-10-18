@@ -64,7 +64,7 @@ NS_ASSUME_NONNULL_BEGIN
 }
  
 - (void)receivedApplicationDidBecomeActiveNotification {
-    if (@available(iOS 14.0, *)) {
+    if ( @available(iOS 14.0, *) ) {
         if ( _pictureInPictureController.isEnabled )
             return;
     }
@@ -74,7 +74,7 @@ NS_ASSUME_NONNULL_BEGIN
 }
  
 - (void)receivedApplicationDidEnterBackgroundNotification {
-    if (@available(iOS 14.0, *)) {
+    if ( @available(iOS 14.0, *) ) {
         if ( _pictureInPictureController.isEnabled )
             return;
     }
@@ -83,27 +83,24 @@ NS_ASSUME_NONNULL_BEGIN
         [self pause];
     }
     else {
-        SJAVMediaPlayerLayerView *view = self.currentPlayerView;
-        view.layer.player = nil;
+        [self _removePlayerForLayerIfNeeded];
     }
 }
 
 - (void)receivedApplicationWillResignActiveNotification {
-    if (@available(iOS 14.0, *)) {
+    if ( @available(iOS 14.0, *) ) {
         if ( _pictureInPictureController.isEnabled )
             return;
     }
     
+    // 修复 14.0 后台播放失效的问题
     if ( @available(iOS 14.0, *) ) {
-        if ( !self.pauseWhenAppDidEnterBackground ) {
-            SJAVMediaPlayerLayerView *view = self.currentPlayerView;
-            view.layer.player = nil;
-        }
+        [self _removePlayerForLayerIfNeeded];
     }
 }
 
 - (void)replaceMediaForDefinitionMedia:(SJVideoPlayerURLAsset *)definitionMedia {
-    if (@available(iOS 14.0, *)) {
+    if ( @available(iOS 14.0, *) ) {
         [self cancelPictureInPicture];
     }
     [SJAVMediaPlayerLoader clearPlayerForMedia:self.media];
@@ -116,6 +113,11 @@ NS_ASSUME_NONNULL_BEGIN
     return SJAVPictureInPictureController.isPictureInPictureSupported;
 }
 
+- (void)setRequiresLinearPlaybackInPictureInPicture:(BOOL)requiresLinearPlaybackInPictureInPicture API_AVAILABLE(ios(14.0)) {
+    [super setRequiresLinearPlaybackInPictureInPicture:requiresLinearPlaybackInPictureInPicture];
+    _pictureInPictureController.requiresLinearPlayback = requiresLinearPlaybackInPictureInPicture;
+}
+
 - (SJPictureInPictureStatus)pictureInPictureStatus API_AVAILABLE(ios(14.0)) {
     return _pictureInPictureController.status;
 }
@@ -124,6 +126,7 @@ NS_ASSUME_NONNULL_BEGIN
     if ( self.currentPlayerView != nil ) {
         if ( _pictureInPictureController == nil ) {
             _pictureInPictureController = [SJAVPictureInPictureController.alloc initWithLayer:self.currentPlayerView.layer delegate:self];
+            _pictureInPictureController.requiresLinearPlayback = self.requiresLinearPlaybackInPictureInPicture;
         }
         [_pictureInPictureController startPictureInPicture];
     }
@@ -174,7 +177,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (void)refresh {
     if ( self.media != nil ) [SJAVMediaPlayerLoader clearPlayerForMedia:self.media];
-    if (@available(iOS 14.0, *)) {
+    if ( @available(iOS 14.0, *) ) {
         [self cancelPictureInPicture];
     }
     [self cancelGenerateGIFOperation];
@@ -185,7 +188,7 @@ NS_ASSUME_NONNULL_BEGIN
 - (void)stop {
     [self cancelGenerateGIFOperation];
     [self cancelExportOperation];
-    if (@available(iOS 14.0, *)) {
+    if ( @available(iOS 14.0, *) ) {
         [self cancelPictureInPicture];
     }
     [super stop];
@@ -203,6 +206,20 @@ NS_ASSUME_NONNULL_BEGIN
             [self.delegate playbackController:self playbackTypeDidChange:self.playbackType];
         }
     }
+}
+
+- (void)_removePlayerForLayerIfNeeded {
+    if ( self.pauseWhenAppDidEnterBackground )
+        return;
+    
+    if ( @available(iOS 14.0, *) ) {
+        if ( _pictureInPictureController != nil && self.timeControlStatus != SJPlaybackTimeControlStatusPaused ) {
+            return;
+        }
+    }
+    
+    SJAVMediaPlayerLayerView *view = self.currentPlayerView;
+    view.layer.player = nil;
 }
 @end
 

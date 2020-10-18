@@ -143,6 +143,7 @@ NS_ASSUME_NONNULL_BEGIN
 @end
 
 @implementation SJMediaPlaybackController
+@synthesize requiresLinearPlaybackInPictureInPicture = _requiresLinearPlaybackInPictureInPicture;
 @synthesize pauseWhenAppDidEnterBackground = _pauseWhenAppDidEnterBackground;
 @synthesize periodicTimeInterval = _periodicTimeInterval;
 @synthesize minBufferedDuration = _minBufferedDuration;
@@ -312,7 +313,18 @@ NS_ASSUME_NONNULL_BEGIN
 }
 
 - (void)seekToTime:(CMTime)time toleranceBefore:(CMTime)toleranceBefore toleranceAfter:(CMTime)toleranceAfter completionHandler:(void (^ _Nullable)(BOOL))completionHandler {
-    [self.currentPlayer seekToTime:time completionHandler:completionHandler];
+    if ( [self.delegate respondsToSelector:@selector(playbackController:willSeekToTime:)] ) {
+        [self.delegate playbackController:self willSeekToTime:time];
+    }
+    __weak typeof(self) _self = self;
+    [self.currentPlayer seekToTime:time completionHandler:^(BOOL finished) {
+        __strong typeof(_self) self = _self;
+        if ( !self ) return;
+        if ( completionHandler ) completionHandler(finished);
+        if ( [self.delegate respondsToSelector:@selector(playbackController:didSeekToTime:)] ) {
+            [self.delegate playbackController:self didSeekToTime:time];
+        }
+    }];
 }
 
 - (void)switchVideoDefinition:(SJVideoPlayerURLAsset *)media {

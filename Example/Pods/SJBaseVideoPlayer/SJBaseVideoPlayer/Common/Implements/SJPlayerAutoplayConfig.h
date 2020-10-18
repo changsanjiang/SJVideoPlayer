@@ -30,6 +30,8 @@ typedef enum : NSUInteger {
 @property (nonatomic) SJAutoplayScrollAnimationType animationType;
 /// default is .Middle;
 @property (nonatomic) SJAutoplayPosition autoplayPosition;
+/// 可播区域的insets
+@property (nonatomic) UIEdgeInsets playableAreaInsets;
 @end
 
 @protocol SJPlayerAutoplayDelegate <NSObject>

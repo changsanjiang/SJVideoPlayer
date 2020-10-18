@@ -35,14 +35,7 @@ NS_ASSUME_NONNULL_BEGIN
 ///     - PlayerSuperview<SJPlayModelPlayerSuperview>
 ///         - player
 + (instancetype)playModelWithScrollView:(__weak UIScrollView *)scrollView;
-
-/// - UIScrollView
-///    - PlayerSuperview1
-///    - PlayerSuperview2
-///         - player
-/// @param containerTag containerTag description
-+ (instancetype)playModelWithScrollView:(UIScrollView *__weak)scrollView containerTag:(NSInteger)containerTag;
-
+ 
 #pragma mark - UITableView
 
 /// - UITableView
@@ -97,6 +90,19 @@ NS_ASSUME_NONNULL_BEGIN
 + (instancetype)playModelWithCollectionView:(UICollectionView *__weak)collectionView inFooterForSection:(NSInteger)section;
 
 
+/// 视图tag.
+///
+///     当一个界面中, 需要同时存在多个播放器时, 用此tag来进一步区分对应的父视图(请设置`SJPlayModelPlayerSuperview.tag`, 不可为 0)
+///
+///     当多个父视图设置不同的tag后, 管理类将通过此tag来定位对应父视图, 从而实现同一个页面中多个播放器同时播放的效果
+///
+@property (nonatomic) NSUInteger superviewTag;
+
+/// 可播区域的insets
+///
+///
+@property (nonatomic) UIEdgeInsets playableAreaInsets;
+
 #pragma mark - 视图嵌套情况下使用
 
 /**
@@ -139,10 +145,15 @@ NS_ASSUME_NONNULL_BEGIN
  */
 @property (nonatomic, strong, nullable) __kindof SJPlayModel *nextPlayModel;
 
-#pragma mark - 
+#pragma mark -
+
+//@property (nonatomic, readonly) BOOL isPlayInScrollView;
+//@property (nonatomic, readonly, nullable) __kindof UIView<SJPlayModelPlayerSuperview> *superview;
+//@property (nonatomic, readonly, nullable) __kindof UIScrollView *scrollView;
+//@property (nonatomic, strong, readonly, nullable) NSIndexPath *indexPath;
 
 - (BOOL)isPlayInScrollView;
-- (nullable UIView *)playerSuperview;
+- (nullable UIView<SJPlayModelPlayerSuperview> *)playerSuperview;
 - (nullable __kindof UIScrollView *)inScrollView;
 - (nullable NSIndexPath *)indexPath;
 @end

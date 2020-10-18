@@ -10,9 +10,8 @@
 NS_ASSUME_NONNULL_BEGIN
 @interface SJScrollViewPlayModel : SJPlayModel
 - (instancetype)initWithScrollView:(__weak UIScrollView *)scrollView;
-- (instancetype)initWithScrollView:(UIScrollView *__weak)scrollView containerTag:(NSInteger)containerTag;
+
 @property (nonatomic, weak, readonly, nullable) UIScrollView *scrollView;
-@property (nonatomic, readonly) NSInteger containerTag;
 @end
 
 @interface SJTableViewCellPlayModel : SJPlayModel

@@ -23,10 +23,6 @@ NS_ASSUME_NONNULL_BEGIN
     return [SJScrollViewPlayModel.alloc initWithScrollView:scrollView];
 }
 
-+ (instancetype)playModelWithScrollView:(UIScrollView *__weak)scrollView containerTag:(NSInteger)containerTag{
-    return  [SJScrollViewPlayModel.alloc initWithScrollView:scrollView containerTag: containerTag];
-}
-
 + (instancetype)playModelWithTableView:(__weak UITableView *)tableView indexPath:(NSIndexPath *)indexPath {
     return [SJTableViewCellPlayModel.alloc initWithTableView:tableView indexPath:indexPath];
 }
@@ -68,25 +64,10 @@ NS_ASSUME_NONNULL_BEGIN
 
 
 @implementation SJScrollViewPlayModel
-{
-    BOOL _hasTag;
-}
-
 - (instancetype)initWithScrollView:(__weak UIScrollView *)scrollView {
     self = [super init];
     if ( self ) {
         _scrollView = scrollView;
-        _hasTag = NO;
-    }
-    return self;
-}
-
-- (instancetype)initWithScrollView:(UIScrollView *__weak)scrollView containerTag:(NSInteger)containerTag {
-    self = [super init];
-    if ( self ) {
-        _scrollView = scrollView;
-        _containerTag = containerTag;
-        _hasTag = YES;
     }
     return self;
 }
@@ -96,12 +77,7 @@ NS_ASSUME_NONNULL_BEGIN
 }
 
 - (nullable UIView *)playerSuperview {
-    
-    if (_hasTag) {
-        return [_scrollView viewWithProtocol:@protocol(SJPlayModelPlayerSuperview) containerTag:_containerTag];
-    } else {
-        return [_scrollView viewWithProtocol:@protocol(SJPlayModelPlayerSuperview)];
-    }
+    return [_scrollView viewWithProtocol:@protocol(SJPlayModelPlayerSuperview) tag:self.superviewTag];
 }
 
 - (nullable __kindof UIScrollView *)inScrollView {
@@ -124,7 +100,7 @@ NS_ASSUME_NONNULL_BEGIN
     return YES;
 }
 - (nullable UIView *)playerSuperview {
-    return [_tableView viewWithProtocol:@protocol(SJPlayModelPlayerSuperview) atIndexPath:_indexPath];
+    return [_tableView viewWithProtocol:@protocol(SJPlayModelPlayerSuperview) tag:self.superviewTag atIndexPath:_indexPath];
 }
 - (nullable __kindof UIScrollView *)inScrollView {
     return _tableView;
@@ -146,7 +122,7 @@ NS_ASSUME_NONNULL_BEGIN
     return YES;
 }
 - (nullable UIView *)playerSuperview {
-    return [_tableHeaderView viewWithProtocol:@protocol(SJPlayModelPlayerSuperview)];
+    return [_tableHeaderView viewWithProtocol:@protocol(SJPlayModelPlayerSuperview) tag:self.superviewTag];
 }
 - (nullable __kindof UIScrollView *)inScrollView {
     return _tableView;
@@ -168,7 +144,7 @@ NS_ASSUME_NONNULL_BEGIN
     return YES;
 }
 - (nullable UIView *)playerSuperview {
-    return [_tableFooterView viewWithProtocol:@protocol(SJPlayModelPlayerSuperview)];
+    return [_tableFooterView viewWithProtocol:@protocol(SJPlayModelPlayerSuperview) tag:self.superviewTag];
 }
 - (nullable __kindof UIScrollView *)inScrollView {
     return _tableView;
@@ -190,7 +166,7 @@ NS_ASSUME_NONNULL_BEGIN
     return YES;
 }
 - (nullable UIView *)playerSuperview {
-    return [_tableView viewWithProtocol:@protocol(SJPlayModelPlayerSuperview) inHeaderForSection:_section];
+    return [_tableView viewWithProtocol:@protocol(SJPlayModelPlayerSuperview) tag:self.superviewTag inHeaderForSection:_section];
 }
 - (nullable __kindof UIScrollView *)inScrollView {
     return _tableView;
@@ -212,7 +188,7 @@ NS_ASSUME_NONNULL_BEGIN
     return YES;
 }
 - (nullable UIView *)playerSuperview {
-    return [_tableView viewWithProtocol:@protocol(SJPlayModelPlayerSuperview) inFooterForSection:_section];
+    return [_tableView viewWithProtocol:@protocol(SJPlayModelPlayerSuperview) tag:self.superviewTag inFooterForSection:_section];
 }
 - (nullable __kindof UIScrollView *)inScrollView {
     return _tableView;
@@ -267,29 +243,29 @@ NS_ASSUME_NONNULL_BEGIN
 }
 
 - (nullable UIView *)playerSuperview {
-    return [[self inScrollView] viewWithProtocol:@protocol(SJPlayModelPlayerSuperview) atIndexPath:_indexPath];;
+    return [[self inScrollView] viewWithProtocol:@protocol(SJPlayModelPlayerSuperview) tag:self.superviewTag atIndexPath:_indexPath];;
 }
 
 - (nullable __kindof UIScrollView *)inScrollView {
     if      ( [self.nextPlayModel isKindOfClass:SJCollectionViewCellPlayModel.class] ||
               [self.nextPlayModel isKindOfClass:SJTableViewCellPlayModel.class] ) {
-        return [self.nextPlayModel.inScrollView viewWithProtocol:@protocol(SJPlayModelNestedView) atIndexPath:self.nextPlayModel.indexPath];
+        return [self.nextPlayModel.inScrollView viewWithProtocol:@protocol(SJPlayModelNestedView) tag:self.superviewTag atIndexPath:self.nextPlayModel.indexPath];
     }
     else if ( [self.nextPlayModel isKindOfClass:SJCollectionViewSectionHeaderViewPlayModel.class]) {
         SJCollectionViewSectionHeaderViewPlayModel *playModel = self.nextPlayModel;
-        return [playModel.inScrollView viewWithProtocol:@protocol(SJPlayModelNestedView) inHeaderForSection:playModel.section];
+        return [playModel.inScrollView viewWithProtocol:@protocol(SJPlayModelNestedView) tag:self.superviewTag inHeaderForSection:playModel.section];
     }
     else if ( [self.nextPlayModel isKindOfClass:SJCollectionViewSectionFooterViewPlayModel.class] ) {
         SJCollectionViewSectionFooterViewPlayModel *playModel = self.nextPlayModel;
-        return [playModel.inScrollView viewWithProtocol:@protocol(SJPlayModelNestedView) inFooterForSection:playModel.section];
+        return [playModel.inScrollView viewWithProtocol:@protocol(SJPlayModelNestedView) tag:self.superviewTag inFooterForSection:playModel.section];
     }
     else if ( [self.nextPlayModel isKindOfClass:SJTableViewSectionHeaderViewPlayModel.class]) {
         SJTableViewSectionHeaderViewPlayModel *playModel = self.nextPlayModel;
-        return [playModel.inScrollView viewWithProtocol:@protocol(SJPlayModelNestedView) inHeaderForSection:playModel.section];
+        return [playModel.inScrollView viewWithProtocol:@protocol(SJPlayModelNestedView) tag:self.superviewTag inHeaderForSection:playModel.section];
     }
     else if ( [self.nextPlayModel isKindOfClass:SJTableViewSectionFooterViewPlayModel.class] ) {
         SJTableViewSectionFooterViewPlayModel *playModel = self.nextPlayModel;
-        return [playModel.inScrollView viewWithProtocol:@protocol(SJPlayModelNestedView) inFooterForSection:playModel.section];
+        return [playModel.inScrollView viewWithProtocol:@protocol(SJPlayModelNestedView) tag:self.superviewTag inFooterForSection:playModel.section];
     }
     return _collectionView;
 }
@@ -311,7 +287,7 @@ NS_ASSUME_NONNULL_BEGIN
 }
 
 - (nullable UIView *)playerSuperview {
-    return [[self inScrollView] viewWithProtocol:@protocol(SJPlayModelPlayerSuperview) inHeaderForSection:_section];;
+    return [[self inScrollView] viewWithProtocol:@protocol(SJPlayModelPlayerSuperview) tag:self.superviewTag inHeaderForSection:_section];;
 }
 
 - (nullable __kindof UIScrollView *)inScrollView {
@@ -334,7 +310,7 @@ NS_ASSUME_NONNULL_BEGIN
 }
 
 - (nullable UIView *)playerSuperview {
-    return [[self inScrollView] viewWithProtocol:@protocol(SJPlayModelPlayerSuperview) inFooterForSection:_section];;
+    return [[self inScrollView] viewWithProtocol:@protocol(SJPlayModelPlayerSuperview) tag:self.superviewTag inFooterForSection:_section];;
 }
 
 - (nullable __kindof UIScrollView *)inScrollView {

@@ -68,26 +68,33 @@ NSNotificationName const SJVideoPlayerPictureInPictureStatusDidChangeNotificatio
 NSNotificationName const SJVideoPlayerPlaybackDidFinishNotification = @"SJVideoPlayerPlaybackDidFinishNotification";
 
 ///
-/// 调用了replay发出的通知
+/// 执行replay发出的通知
 ///
 NSNotificationName const SJVideoPlayerPlaybackDidReplayNotification = @"SJVideoPlayerPlaybackDidReplayNotification";
 ///
-/// 调用了stop前发出的通知
+/// 执行stop前发出的通知
 ///
 NSNotificationName const SJVideoPlayerPlaybackWillStopNotification = @"SJVideoPlayerPlaybackWillStopNotification";
 ///
-/// 调用了stop后发出的通知
+/// 执行stop后发出的通知
 ///
 NSNotificationName const SJVideoPlayerPlaybackDidStopNotification = @"SJVideoPlayerPlaybackDidStopNotification";
 ///
-/// 调用了refresh前发出的通知
+/// 执行refresh前发出的通知
 ///
 NSNotificationName const SJVideoPlayerPlaybackWillRefreshNotification = @"SJVideoPlayerPlaybackWillRefreshNotification";
 ///
-/// 调用了refresh后发出的通知
+/// 执行refresh后发出的通知
 ///
 NSNotificationName const SJVideoPlayerPlaybackDidRefreshNotification = @"SJVideoPlayerPlaybackDidRefreshNotification";
-
+///
+/// 执行seek前发出的通知
+///
+NSNotificationName const SJVideoPlayerPlaybackWillSeekNotification = @"SJVideoPlayerPlaybackWillSeekNotification";
+///
+/// 执行seek后发出的通知
+///
+NSNotificationName const SJVideoPlayerPlaybackDidSeekNotification = @"SJVideoPlayerPlaybackDidSeekNotification";
 
 
 
@@ -144,4 +151,5 @@ SJWaitingReason const SJWaitingWithNoAssetToPlayReason = @"AVPlayerWaitingWithNo
 SJFinishedReason const SJFinishedReasonToEndTimePosition = @"SJFinishedReasonToEndTimePosition";
 SJFinishedReason const SJFinishedReasonToTrialEndPosition = @"SJFinishedReasonToTrialEndPosition";
 
+NSString *const SJVideoPlayerNotificationUserInfoKeySeekTime = @"time";
 NS_ASSUME_NONNULL_END

@@ -68,6 +68,7 @@ NS_ASSUME_NONNULL_BEGIN
 - (void)switchVideoDefinition:(id<SJMediaModelProtocol>)media;
 
 - (BOOL)isPictureInPictureSupported API_AVAILABLE(ios(14.0));
+@property (nonatomic) BOOL requiresLinearPlaybackInPictureInPicture API_AVAILABLE(ios(14.0));
 @property (nonatomic, readonly) SJPictureInPictureStatus pictureInPictureStatus API_AVAILABLE(ios(14.0));
 - (void)startPictureInPicture API_AVAILABLE(ios(14.0));
 - (void)stopPictureInPicture API_AVAILABLE(ios(14.0));
@@ -126,6 +127,9 @@ NS_ASSUME_NONNULL_BEGIN
 - (void)playbackController:(id<SJVideoPlayerPlaybackController>)controller didReplay:(id<SJMediaModelProtocol>)media;
 
 - (void)playbackController:(id<SJVideoPlayerPlaybackController>)controller pictureInPictureStatusDidChange:(SJPictureInPictureStatus)status API_AVAILABLE(ios(14.0));
+
+- (void)playbackController:(id<SJVideoPlayerPlaybackController>)controller willSeekToTime:(CMTime)time;
+- (void)playbackController:(id<SJVideoPlayerPlaybackController>)controller didSeekToTime:(CMTime)time;
 @end
 
 

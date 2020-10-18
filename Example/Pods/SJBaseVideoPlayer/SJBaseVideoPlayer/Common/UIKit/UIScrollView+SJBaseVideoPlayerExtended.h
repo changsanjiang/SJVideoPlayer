@@ -12,11 +12,11 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (nullable __kindof UIView *)viewWithTag:(NSInteger)tag atIndexPath:(NSIndexPath *)indexPath;
 
-- (BOOL)isViewAppearedWithTag:(NSInteger)tag atIndexPath:(NSIndexPath *)indexPath;
+- (BOOL)isViewAppearedWithTag:(NSInteger)tag insets:(UIEdgeInsets)insets atIndexPath:(NSIndexPath *)indexPath;
 
-- (nullable __kindof UIView *)viewWithProtocol:(Protocol *)protocol atIndexPath:(NSIndexPath *)indexPath;
-- (nullable __kindof UIView *)viewWithProtocol:(Protocol *)protocol inHeaderForSection:(NSInteger)section;
-- (nullable __kindof UIView *)viewWithProtocol:(Protocol *)protocol inFooterForSection:(NSInteger)section;
-- (BOOL)isViewAppearedWithProtocol:(Protocol *)protocol atIndexPath:(NSIndexPath *)indexPath;
+- (nullable __kindof UIView *)viewWithProtocol:(Protocol *)protocol tag:(NSInteger)tag atIndexPath:(NSIndexPath *)indexPath;
+- (nullable __kindof UIView *)viewWithProtocol:(Protocol *)protocol tag:(NSInteger)tag inHeaderForSection:(NSInteger)section;
+- (nullable __kindof UIView *)viewWithProtocol:(Protocol *)protocol tag:(NSInteger)tag inFooterForSection:(NSInteger)section;
+- (BOOL)isViewAppearedWithProtocol:(Protocol *)protocol tag:(NSInteger)tag insets:(UIEdgeInsets)insets atIndexPath:(NSIndexPath *)indexPath;
 @end
 NS_ASSUME_NONNULL_END

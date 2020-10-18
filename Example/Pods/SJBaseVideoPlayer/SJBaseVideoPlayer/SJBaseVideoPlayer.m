@@ -157,7 +157,7 @@ typedef struct _SJPlayerControlInfo {
 }
 
 + (NSString *)version {
-    return @"v3.4.0";
+    return @"v3.4.1";
 }
 
 - (void)setVideoGravity:(SJVideoGravity)videoGravity {
@@ -165,7 +165,7 @@ typedef struct _SJPlayerControlInfo {
     
     if ( self.watermarkView != nil ) {
         [UIView animateWithDuration:0.28 animations:^{
-            [self.watermarkView layoutWatermarkInRect:self.presentView.bounds videoPresentationSize:self.videoPresentationSize videoGravity:videoGravity];
+            [self updateWatermarkViewLayout];
         }];
     }
 }
@@ -253,8 +253,7 @@ typedef struct _SJPlayerControlInfo {
 }
 
 - (void)presentViewDidLayoutSubviews:(SJVideoPlayerPresentView *)presentView {
-    [self.watermarkView layoutWatermarkInRect:presentView.bounds videoPresentationSize:self.videoPresentationSize videoGravity:self.videoGravity];
-
+    [self updateWatermarkViewLayout];
     if ( !CGSizeEqualToSize(_controlLayerDataSource.controlView.frame.size, presentView.bounds.size) ) {    
         _controlLayerDataSource.controlView.frame = presentView.bounds;
     }
@@ -535,7 +534,11 @@ typedef struct _SJPlayerControlInfo {
 }
 
 - (void)_postNotification:(NSNotificationName)name {
-    [NSNotificationCenter.defaultCenter postNotificationName:name object:self];
+    [self _postNotification:name userInfo:nil];
+}
+
+- (void)_postNotification:(NSNotificationName)name userInfo:(nullable NSDictionary *)userInfo {
+    [NSNotificationCenter.defaultCenter postNotificationName:name object:self userInfo:userInfo];
 }
 
 - (void)_showOrHiddenPlaceholderImageViewIfNeeded {
@@ -1231,8 +1234,8 @@ typedef struct _SJPlayerControlInfo {
         _useFitOnScreenAndDisableRotation = presentationSize.width < presentationSize.height;
     }
     
-    [self.watermarkView layoutWatermarkInRect:self.presentView.bounds videoPresentationSize:self.videoPresentationSize videoGravity:self.videoGravity];
-
+    [self updateWatermarkViewLayout];
+    
     if ( self.presentationSizeDidChangeExeBlock )
         self.presentationSizeDidChangeExeBlock(self);
     
@@ -1263,6 +1266,18 @@ typedef struct _SJPlayerControlInfo {
 
 - (void)playbackControllerIsReadyForDisplay:(id<SJVideoPlayerPlaybackController>)controller {
     [self _showOrHiddenPlaceholderImageViewIfNeeded];
+}
+
+- (void)playbackController:(id<SJVideoPlayerPlaybackController>)controller willSeekToTime:(CMTime)time {
+    [self _postNotification:SJVideoPlayerPlaybackWillSeekNotification userInfo:@{
+        SJVideoPlayerNotificationUserInfoKeySeekTime : [NSValue valueWithCMTime:time]
+    }];
+}
+
+- (void)playbackController:(id<SJVideoPlayerPlaybackController>)controller didSeekToTime:(CMTime)time {
+    [self _postNotification:SJVideoPlayerPlaybackDidSeekNotification userInfo:@{
+        SJVideoPlayerNotificationUserInfoKeySeekTime : [NSValue valueWithCMTime:time]
+    }];
 }
 
 - (void)playbackController:(id<SJVideoPlayerPlaybackController>)controller switchingDefinitionStatusDidChange:(SJDefinitionSwitchStatus)status media:(id<SJMediaModelProtocol>)media {
@@ -2210,6 +2225,10 @@ typedef struct _SJPlayerControlInfo {
 
 - (nullable UIView<SJWatermarkView> *)watermarkView {
     return objc_getAssociatedObject(self, _cmd);
+}
+
+- (void)updateWatermarkViewLayout {
+    [self.watermarkView layoutWatermarkInRect:self.presentView.bounds videoPresentationSize:self.videoPresentationSize videoGravity:self.videoGravity];
 }
 @end
 

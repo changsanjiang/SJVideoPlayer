@@ -118,6 +118,18 @@ NS_ASSUME_NONNULL_BEGIN
             if ( !self ) return;
             if ( self.didReplayExeBlock ) self.didReplayExeBlock(self.player);
         }]];
+        
+        [_tokens addObject:[NSNotificationCenter.defaultCenter addObserverForName:SJVideoPlayerPlaybackWillSeekNotification object:player queue:NSOperationQueue.mainQueue usingBlock:^(NSNotification * _Nonnull note) {
+            __strong typeof(_self) self = _self;
+            if ( !self ) return;
+            if ( self.willSeekToTimeExeBlock ) self.willSeekToTimeExeBlock(note.object, [(NSValue *)note.userInfo[SJVideoPlayerNotificationUserInfoKeySeekTime] CMTimeValue]);
+        }]];
+
+        [_tokens addObject:[NSNotificationCenter.defaultCenter addObserverForName:SJVideoPlayerPlaybackDidSeekNotification object:player queue:NSOperationQueue.mainQueue usingBlock:^(NSNotification * _Nonnull note) {
+            __strong typeof(_self) self = _self;
+            if ( !self ) return;
+            if ( self.didSeekToTimeExeBlock ) self.didSeekToTimeExeBlock(note.object, [(NSValue *)note.userInfo[SJVideoPlayerNotificationUserInfoKeySeekTime] CMTimeValue]);
+        }]];
     }
     return self;
 }

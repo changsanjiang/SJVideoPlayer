@@ -854,14 +854,13 @@ NS_ASSUME_NONNULL_BEGIN
 /// #import <SJBaseVideoPlayer/SJWatermarkView.h>
 ///
 ///     UIImage *watermark = [UIImage imageNamed:@"watermark"];
-///     SJWatermarkView *watermarkView = [SJWatermarkView.alloc initWithFrame:CGRectZero];
-///     watermarkView.image = watermark;
-///     watermarkView.referPos = SJPosTopLeft;
+///     SJWatermarkView *watermarkView = [SJWatermarkView.alloc initWithImage:watermark];
 ///     _player.watermarkView = watermarkView;
 /// \endcode
 ///
 @property (nonatomic, strong, nullable) UIView<SJWatermarkView> *watermarkView;
 
+- (void)updateWatermarkViewLayout;
 @end
 
 #pragma mark - 已弃用

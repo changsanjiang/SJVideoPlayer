@@ -12,6 +12,20 @@
 #import <SJVideoPlayer/SJVideoPlayer.h>
 #import "SJSourceURLs.h"
 
+
+@interface SJPlayModel (SJUIScrollViewDemoAdded)
++ (instancetype)playModelWithScrollView:(UIScrollView *__weak)scrollView superviewTag:(NSInteger)superviewTag;
+@end
+
+@implementation SJPlayModel (SJUIScrollViewDemoAdded)
++ (instancetype)playModelWithScrollView:(UIScrollView *__weak)scrollView superviewTag:(NSInteger)superviewTag {
+    SJPlayModel *model = [SJPlayModel playModelWithScrollView:scrollView];
+    model.superviewTag = superviewTag;
+    return model;
+}
+@end
+
+
 @interface SJUIScrollViewDemoViewController2 ()
 @property (nonatomic, strong) UIScrollView *scrollView;
 @property (nonatomic, strong) SJVideoPlayer *player;
@@ -66,7 +80,7 @@
     }];
     
     SJPlayerSuperview *playerSuperview1 = [SJPlayerSuperview.alloc initWithFrame:CGRectZero];
-    playerSuperview1.backgroundColor = UIColor.redColor;
+    playerSuperview1.backgroundColor = UIColor.greenColor;
     playerSuperview1.tag = 101;
     UITapGestureRecognizer *tap1 = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(tap1)];
     [playerSuperview1 addGestureRecognizer:tap1];
@@ -80,7 +94,7 @@
     
     SJPlayerSuperview *playerSuperview2 = [SJPlayerSuperview.alloc initWithFrame:CGRectZero];
     playerSuperview2.tag = 102;
-    playerSuperview2.backgroundColor = UIColor.redColor;
+    playerSuperview2.backgroundColor = UIColor.blueColor;
     UITapGestureRecognizer *tap2 = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(tap2)];
     [playerSuperview2 addGestureRecognizer:tap2];
     [_scrollView addSubview:playerSuperview2];
@@ -93,7 +107,7 @@
     
     SJPlayerSuperview *playerSuperview3 = [SJPlayerSuperview.alloc initWithFrame:CGRectZero];
     playerSuperview3.tag = 103;
-    playerSuperview3.backgroundColor = UIColor.redColor;
+    playerSuperview3.backgroundColor = UIColor.blackColor;
     UITapGestureRecognizer *tap3 = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(tap3)];
     [playerSuperview3 addGestureRecognizer:tap3];
     [_scrollView addSubview:playerSuperview3];
@@ -106,22 +120,22 @@
 }
 
 - (void)tap0{
-    _player.URLAsset = [SJVideoPlayerURLAsset.alloc initWithURL:SourceURL0 playModel:[SJPlayModel playModelWithScrollView:_scrollView containerTag:100]];
+    _player.URLAsset = [SJVideoPlayerURLAsset.alloc initWithURL:SourceURL0 playModel:[SJPlayModel playModelWithScrollView:_scrollView superviewTag:100]];
     [_player play];
 }
 
 - (void)tap1 {
-    _player.URLAsset = [SJVideoPlayerURLAsset.alloc initWithURL:SourceURL1 playModel:[SJPlayModel playModelWithScrollView:_scrollView containerTag:101]];
+    _player.URLAsset = [SJVideoPlayerURLAsset.alloc initWithURL:SourceURL1 playModel:[SJPlayModel playModelWithScrollView:_scrollView superviewTag:101]];
     [_player play];
 }
 
 - (void)tap2 {
-    _player.URLAsset = [SJVideoPlayerURLAsset.alloc initWithURL:SourceURL2 playModel:[SJPlayModel playModelWithScrollView:_scrollView containerTag:102]];
+    _player.URLAsset = [SJVideoPlayerURLAsset.alloc initWithURL:SourceURL2 playModel:[SJPlayModel playModelWithScrollView:_scrollView superviewTag:102]];
     [_player play];
 }
 
 - (void)tap3 {
-    _player.URLAsset = [SJVideoPlayerURLAsset.alloc initWithURL:SourceURL3 playModel:[SJPlayModel playModelWithScrollView:_scrollView containerTag:103]];
+    _player.URLAsset = [SJVideoPlayerURLAsset.alloc initWithURL:SourceURL3 playModel:[SJPlayModel playModelWithScrollView:_scrollView superviewTag:103]];
     [_player play];
 }
 

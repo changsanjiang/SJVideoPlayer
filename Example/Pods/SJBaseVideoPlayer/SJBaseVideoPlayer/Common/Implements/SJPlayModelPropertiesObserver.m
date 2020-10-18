@@ -149,7 +149,7 @@ static NSString *kState = @"state";
 }
 
 - (BOOL)_isAppearedInTheScrollingView:(UIScrollView *)scrollView {
-    return [scrollView isViewAppeared:_playModel.playerSuperview];
+    return [scrollView isViewAppeared:_playModel.playerSuperview insets:_playModel.playableAreaInsets];
 }
 
 - (void)_scrollViewDidScroll:(UIScrollView *)scrollView {

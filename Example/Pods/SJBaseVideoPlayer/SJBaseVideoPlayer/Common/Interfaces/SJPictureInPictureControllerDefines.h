@@ -27,6 +27,7 @@ NS_ASSUME_NONNULL_BEGIN
 API_AVAILABLE(ios(14.0)) @protocol SJPictureInPictureController <NSObject>
 + (BOOL)isPictureInPictureSupported;
 
+@property (nonatomic) BOOL requiresLinearPlayback;
 @property (nonatomic, weak, nullable) id<SJPictureInPictureControllerDelegate> delegate;
 @property (nonatomic, readonly) SJPictureInPictureStatus status;
 - (void)startPictureInPicture;

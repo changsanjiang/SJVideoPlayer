@@ -87,7 +87,7 @@
 /// 控制器旋转支持的方向
 ///
 - (UIInterfaceOrientationMask)supportedInterfaceOrientations {
-    // 此处为设置 iPhone demo 仅支持横屏的方向
+    // 此处为设置 iPhone demo 仅支持竖屏的方向
     if ( UIUserInterfaceIdiomPhone == UI_USER_INTERFACE_IDIOM() ) {
         return UIInterfaceOrientationMaskPortrait;
     }

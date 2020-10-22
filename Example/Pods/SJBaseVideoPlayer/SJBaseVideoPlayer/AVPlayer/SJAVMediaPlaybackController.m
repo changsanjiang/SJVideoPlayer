@@ -69,6 +69,16 @@ NS_ASSUME_NONNULL_BEGIN
             return;
     }
     
+    if ( @available(iOS 14.0, *) ) {
+        if ( self.pauseWhenAppDidEnterBackground ) {
+            if ( self.media.isM3u8 && self.timeControlStatus == SJPlaybackTimeControlStatusPaused ) {
+                [self refresh];
+                [self pause];
+                return;
+            }
+        }
+    }
+    
     SJAVMediaPlayerLayerView *view = self.currentPlayerView;
     view.layer.player = self.currentPlayer.avPlayer;
 }

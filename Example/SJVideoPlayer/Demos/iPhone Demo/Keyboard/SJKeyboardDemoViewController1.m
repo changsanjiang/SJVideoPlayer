@@ -230,14 +230,23 @@ static SJEdgeControlButtonItemTag SJKeyboardDemoSendCommentItemTag = 1;
     NSDictionary *userInfo = notification.userInfo;
     NSValue *userInfoFrameValue = userInfo[UIKeyboardFrameEndUserInfoKey];
     CGRect keyboardFrame = userInfoFrameValue.CGRectValue;
+    if ( @available(iOS 14.0, *) ) {
+        for ( UIWindow *window in UIApplication.sharedApplication.windows ) {
+            if ( [NSStringFromClass(window.class) hasPrefix:@"UIRemoteK"] ) {
+                if ( window.bounds.size.width != keyboardFrame.size.width ) {
+                    keyboardFrame = [[[[UIApplication.sharedApplication.windows.lastObject subviews] firstObject] subviews] firstObject].frame;
+                }
+            }
+        }
+    }
     
     [_sendView mas_updateConstraints:^(MASConstraintMaker *make) {
         make.bottom.equalTo(self.view).offset(keyboardFrame.origin.y - self.view.frame.size.height);
     }];
     
     NSNumber *userInfoDurationValue = userInfo[UIKeyboardAnimationDurationUserInfoKey];
-    NSTimeInterval animationDutation = userInfoDurationValue.doubleValue;
-    [UIView animateWithDuration:animationDutation animations:^{
+    NSTimeInterval animationDuration = userInfoDurationValue.doubleValue;
+    [UIView animateWithDuration:animationDuration animations:^{
         [self.view layoutIfNeeded];
     }];
 }

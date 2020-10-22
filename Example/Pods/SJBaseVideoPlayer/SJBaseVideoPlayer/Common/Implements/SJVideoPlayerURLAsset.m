@@ -43,6 +43,7 @@ NS_ASSUME_NONNULL_BEGIN
     _mediaURL = URL;
     _startPosition = startPosition;
     _playModel = playModel?:[SJPlayModel new];
+    _isM3u8 = [_mediaURL.pathExtension containsString:@"m3u8"];
     return self;
 }
 - (nullable instancetype)initWithURL:(NSURL *)URL startPosition:(NSTimeInterval)startPosition {
@@ -54,9 +55,10 @@ NS_ASSUME_NONNULL_BEGIN
 - (nullable instancetype)initWithURL:(NSURL *)URL {
     return [self initWithURL:URL startPosition:0];
 }
-- (BOOL)isM3u8 {
-    return [_mediaURL.pathExtension containsString:@"m3u8"];
-} 
+- (void)setMediaURL:(nullable NSURL *)mediaURL {
+    _mediaURL = mediaURL;
+    _isM3u8 = [mediaURL.pathExtension containsString:@"m3u8"];
+}
 - (SJPlayModel *)playModel {
     if ( _playModel )
         return _playModel;

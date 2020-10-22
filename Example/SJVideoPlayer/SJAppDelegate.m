@@ -69,31 +69,17 @@
 /// 控制器是否可以旋转
 ///
 - (BOOL)shouldAutorotate {
-    // 此处为设置 iPhone 哪些控制器可以旋转
+    // iPhone的demo用到了播放器的旋转, 这里返回NO, 除播放器外, 项目中的其他视图控制器都禁止旋转
     if ( UIUserInterfaceIdiomPhone == UI_USER_INTERFACE_IDIOM() ) {
-        
-        
-        // 如果项目仅支持竖屏, 可以直接返回 NO
-        //
-        // return NO;
-        
-        
-        // 此处为禁止当前Demo中SJ前缀的控制器旋转, 请根据实际项目修改前缀
-        NSString *class = NSStringFromClass(self.class);
-        if ( [class hasPrefix:@"SJ"] ) {
-            // 返回 NO, 不允许控制器旋转
-            return NO;
-        }
-        
-        // 返回 YES, 允许控制器旋转
-        return YES;
+        return NO;
     }
     
-    // 此处为设置 iPad 所有控制器都可以旋转
-    // - 请根据实际情况进行修改.
+    // iPad的demo未用到播放器的旋转, 这里返回YES, 允许所有控制器旋转
     else if ( UIUserInterfaceIdiomPad == UI_USER_INTERFACE_IDIOM() ) {
         return YES;
     }
+    
+    // 如果你的项目仅支持竖屏, 可以直接返回NO, 无需进行上述的判断区分.
     return NO;
 }
 

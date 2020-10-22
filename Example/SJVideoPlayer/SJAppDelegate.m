@@ -87,21 +87,18 @@
 /// 控制器旋转支持的方向
 ///
 - (UIInterfaceOrientationMask)supportedInterfaceOrientations {
-    // 此处为设置 iPhone 某个控制器旋转支持的方向
-    // - 请根据实际情况进行修改.
+    // 此处为设置 iPhone demo 仅支持横屏的方向
     if ( UIUserInterfaceIdiomPhone == UI_USER_INTERFACE_IDIOM() ) {
-        // 如果self不支持旋转, 返回仅支持竖屏
-        if ( self.shouldAutorotate == NO )
-            return UIInterfaceOrientationMaskPortrait;
+        return UIInterfaceOrientationMaskPortrait;
     }
     
-    // 此处为设置 iPad 仅支持横屏
-    // - 请根据实际情况进行修改.
+    // 此处为设置 iPad demo 仅支持横屏的方向
     else if ( UIUserInterfaceIdiomPad == UI_USER_INTERFACE_IDIOM() ) {
         return UIInterfaceOrientationMaskLandscape;
     }
-
-    return UIInterfaceOrientationMaskAllButUpsideDown;
+    
+    // 如果你的项目仅支持竖屏, 可以直接返回UIInterfaceOrientationMaskPortrait, 无需进行上述的判断区分.
+    return UIInterfaceOrientationMaskPortrait;
 }
 
 @end

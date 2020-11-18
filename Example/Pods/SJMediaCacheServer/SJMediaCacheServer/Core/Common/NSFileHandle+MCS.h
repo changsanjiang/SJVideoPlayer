@@ -11,8 +11,19 @@ NS_ASSUME_NONNULL_BEGIN
 
 @interface NSFileHandle (MCS)
 
-- (BOOL)mcs_seekToFileOffset:(NSUInteger)offset error:(out NSError **)error;
++ (nullable instancetype)mcs_fileHandleForReadingFromURL:(NSURL *)url error:(out NSError **)error;
 
++ (nullable instancetype)mcs_fileHandleForWritingToURL:(NSURL *)url error:(out NSError **)error;
+
+- (BOOL)mcs_seekToOffset:(NSUInteger)offset error:(out NSError **)error;
+
+- (nullable NSData *)mcs_readDataUpToLength:(NSUInteger)length error:(out NSError **)error;
+
+- (BOOL)mcs_writeData:(NSData *)data error:(out NSError **)error;
+
+- (BOOL)mcs_synchronizeAndReturnError:(out NSError **)error;
+
+- (BOOL)mcs_closeAndReturnError:(out NSError **)error;
 @end
 
 NS_ASSUME_NONNULL_END

@@ -29,8 +29,8 @@
         BOOL fallThrough = NO;
         switch ( (MCSDataType)(type & MCSDataTypeHLSMask) ) {
             case MCSDataTypeHLSMask:
-            case MCSDataTypeVODMask:
-            case MCSDataTypeVOD:
+            case MCSDataTypeFILEMask:
+            case MCSDataTypeFILE:
                 break;
             case MCSDataTypeHLS: {
                 [self _setValue:value forHTTPAdditionalHeaderField:HTTPHeaderField ofType:MCSDataTypeHLS fallThrough:fallThrough];
@@ -50,16 +50,16 @@
             }
         }
         
-        switch ( (MCSDataType)(type & MCSDataTypeVODMask) ) {
+        switch ( (MCSDataType)(type & MCSDataTypeFILEMask) ) {
             case MCSDataTypeHLSMask:
             case MCSDataTypeHLSPlaylist:
             case MCSDataTypeHLSAESKey:
             case MCSDataTypeHLSTs:
             case MCSDataTypeHLS:
-            case MCSDataTypeVODMask:
+            case MCSDataTypeFILEMask:
                 break;
-            case MCSDataTypeVOD: {
-                [self _setValue:value forHTTPAdditionalHeaderField:HTTPHeaderField ofType:MCSDataTypeVOD fallThrough:fallThrough];
+            case MCSDataTypeFILE: {
+                [self _setValue:value forHTTPAdditionalHeaderField:HTTPHeaderField ofType:MCSDataTypeFILE fallThrough:fallThrough];
                 break;
             }
         }

@@ -12,37 +12,42 @@
 #import "MCSDefines.h"
 #import "NSURLRequest+MCS.h"
 
-@protocol MCSSessionTaskDelegate, MCSResourceReaderDelegate;
-@protocol MCSResource, MCSConfiguration, MCSResourceResponse, MCSResourceReader;
+@protocol MCSProxyTaskDelegate, MCSAssetReaderDelegate;
+@protocol MCSResponse, MCSAsset, MCSConfiguration, MCSAssetReader;
 
 NS_ASSUME_NONNULL_BEGIN
-@protocol MCSSessionTask <NSObject>
-- (instancetype)initWithRequest:(NSURLRequest *)request delegate:(id<MCSSessionTaskDelegate>)delegate;
+@protocol MCSProxyTask <NSObject>
+- (instancetype)initWithRequest:(NSURLRequest *)request delegate:(id<MCSProxyTaskDelegate>)delegate;
 
 - (void)prepare;
-@property (nonatomic, copy, readonly, nullable) NSDictionary *responseHeaders;
-@property (nonatomic, readonly) NSUInteger contentLength;
 - (nullable NSData *)readDataOfLength:(NSUInteger)length;
+@property (nonatomic, strong, readonly, nullable) id<MCSResponse> response;
 @property (nonatomic, readonly) NSUInteger offset;
 @property (nonatomic, readonly) BOOL isPrepared;
 @property (nonatomic, readonly) BOOL isDone;
 - (void)close;
 @end
 
-
-@protocol MCSSessionTaskDelegate <NSObject>
-- (void)taskPrepareDidFinish:(id<MCSSessionTask>)task;
-- (void)taskHasAvailableData:(id<MCSSessionTask>)task;
-- (void)task:(id<MCSSessionTask>)task anErrorOccurred:(NSError *)error;
+@protocol MCSProxyTaskDelegate <NSObject>
+- (void)taskPrepareDidFinish:(id<MCSProxyTask>)task;
+- (void)taskHasAvailableData:(id<MCSProxyTask>)task;
+- (void)task:(id<MCSProxyTask>)task anErrorOccurred:(NSError *)error;
 @end
- 
+
 #pragma mark -
 
-@protocol MCSResource <NSObject>
-@property (nonatomic, readonly) MCSResourceType type;
+@protocol MCSResponse <NSObject>
+@property (nonatomic, readonly) NSUInteger totalLength;
+@property (nonatomic, readonly) NSRange range; // 206请求时length不为0
+@end
+
+#pragma mark -
+
+@protocol MCSAsset <NSObject>
+@property (nonatomic, readonly) MCSAssetType type;
 @property (nonatomic, strong, readonly) id<MCSConfiguration> configuration;
 
-- (id<MCSResourceReader>)readerWithRequest:(NSURLRequest *)request;
+- (id<MCSAssetReader>)readerWithRequest:(NSURLRequest *)request;
 @end
 
 #pragma mark -
@@ -53,24 +58,14 @@ NS_ASSUME_NONNULL_BEGIN
 - (void)setValue:(nullable NSString *)value forHTTPAdditionalHeaderField:(NSString *)key ofType:(MCSDataType)type;
 
 @end
-
+ 
 #pragma mark -
 
-@protocol MCSResourceResponse <NSObject>
-@property (nonatomic, copy, readonly, nullable) NSDictionary *responseHeaders;
-- (nullable NSString *)contentType;
-- (nullable NSString *)server;
-- (NSUInteger)totalLength;
-- (NSRange)contentRange;
-@end
-
-#pragma mark -
-
-@protocol MCSResourceReader <NSObject>
-@property (nonatomic, weak, nullable) id<MCSResourceReaderDelegate> delegate;
+@protocol MCSAssetReader <NSObject>
+@property (nonatomic, weak, nullable) id<MCSAssetReaderDelegate> delegate;
 
 - (void)prepare;
-@property (nonatomic, strong, readonly, nullable) id<MCSResourceResponse> response;
+@property (nonatomic, strong, readonly, nullable) id<MCSResponse> response;
 @property (nonatomic, readonly) NSUInteger availableLength;
 @property (nonatomic, readonly) NSUInteger offset;
 - (nullable NSData *)readDataOfLength:(NSUInteger)length;
@@ -85,10 +80,10 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic) float networkTaskPriority;
 @end
 
-@protocol MCSResourceReaderDelegate <NSObject>
-- (void)readerPrepareDidFinish:(id<MCSResourceReader>)reader;
-- (void)reader:(id<MCSResourceReader>)reader hasAvailableDataWithLength:(NSUInteger)length;
-- (void)reader:(id<MCSResourceReader>)reader anErrorOccurred:(NSError *)error;
+@protocol MCSAssetReaderDelegate <NSObject>
+- (void)reader:(id<MCSAssetReader>)reader prepareDidFinish:(id<MCSResponse>)response;
+- (void)reader:(id<MCSAssetReader>)reader hasAvailableDataWithLength:(NSUInteger)length;
+- (void)reader:(id<MCSAssetReader>)reader anErrorOccurred:(NSError *)error;
 @end
 NS_ASSUME_NONNULL_END
 

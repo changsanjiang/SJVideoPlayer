@@ -1,17 +1,13 @@
 PODS:
   - CocoaAsyncSocket (7.6.4)
-  - CocoaHTTPServer (2.3):
+  - KTVCocoaHTTPServer (1.0.0):
     - CocoaAsyncSocket
-    - CocoaLumberjack
-  - CocoaLumberjack (3.6.2):
-    - CocoaLumberjack/Core (= 3.6.2)
-  - CocoaLumberjack/Core (3.6.2)
   - Masonry (1.1.0)
   - MJRefresh (3.4.3)
   - Reachability (3.2)
-  - SDWebImage (5.9.3):
-    - SDWebImage/Core (= 5.9.3)
-  - SDWebImage/Core (5.9.3)
+  - SDWebImage (5.9.5):
+    - SDWebImage/Core (= 5.9.5)
+  - SDWebImage/Core (5.9.5)
   - SJBaseVideoPlayer (3.4.2):
     - Masonry
     - Reachability
@@ -45,12 +41,12 @@ PODS:
     - SJUIKit/Queues
     - SJUIKit/SQLite3
   - SJFullscreenPopGesture/ObjC (1.5.4)
-  - SJMediaCacheServer (1.1.5):
-    - CocoaHTTPServer
-    - SJMediaCacheServer/Core (= 1.1.5)
+  - SJMediaCacheServer (1.2.0):
+    - KTVCocoaHTTPServer
+    - SJMediaCacheServer/Core (= 1.2.0)
     - SJUIKit/SQLite3
-  - SJMediaCacheServer/Core (1.1.5):
-    - CocoaHTTPServer
+  - SJMediaCacheServer/Core (1.2.0):
+    - KTVCocoaHTTPServer
     - SJUIKit/SQLite3
   - SJPlaybackListController (0.0.5):
     - SJPlaybackListController/Core (= 0.0.5)
@@ -150,8 +146,7 @@ DEPENDENCIES:
 SPEC REPOS:
   trunk:
     - CocoaAsyncSocket
-    - CocoaHTTPServer
-    - CocoaLumberjack
+    - KTVCocoaHTTPServer
     - Masonry
     - MJRefresh
     - Reachability
@@ -171,15 +166,14 @@ EXTERNAL SOURCES:
 
 SPEC CHECKSUMS:
   CocoaAsyncSocket: 694058e7c0ed05a9e217d1b3c7ded962f4180845
-  CocoaHTTPServer: 5624681fc3473d43b18202f635f9b3abb013b530
-  CocoaLumberjack: bd155f2dd06c0e0b03f876f7a3ee55693122ec94
+  KTVCocoaHTTPServer: df8d7b861e603ff8037e9b2138aca2563a6b768d
   Masonry: 678fab65091a9290e40e2832a55e7ab731aad201
   MJRefresh: 53e3e3219f204425ee6d3e62e8733d3295944cd6
   Reachability: 33e18b67625424e47b6cde6d202dce689ad7af96
-  SDWebImage: a31ee8e90a97303529e03fb0c333eae0eacb88e9
+  SDWebImage: 0b2ba0d56479bf6a45ecddbfd5558bea93150d25
   SJBaseVideoPlayer: 7fa5425c220428b23dfef944ef93c76973ea3091
   SJFullscreenPopGesture: 7be57b1014cb77f4b7c1e6df5e797da6d05dc75d
-  SJMediaCacheServer: 9a5db126915a94c4ec308d5c4d83808a9816b9e5
+  SJMediaCacheServer: 06c1d75e2b28cf45b020ce1a6e3fa97fced69da5
   SJPlaybackListController: e135c789fcd63d63a62d5e2e2965ab1e6d52a2bd
   SJRouter: a866e7884fc9219bed523be0a0318c3a84e85022
   SJUIKit: bdf86af3648e70483c57e2bfe2fcc7531337fa54

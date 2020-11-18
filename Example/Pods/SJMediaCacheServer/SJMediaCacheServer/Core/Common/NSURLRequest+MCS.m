@@ -39,8 +39,7 @@
 
 + (NSMutableURLRequest *)mcs_requestWithURL:(NSURL *)URL headers:(nullable NSDictionary *)headers range:(NSRange)range {
     NSMutableURLRequest *request = [self mcs_requestWithURL:URL headers:headers];
-    [request setValue:[NSString stringWithFormat:@"bytes=%lu-%lu", (unsigned long)range.location, (unsigned long)NSMaxRange(range) - 1] forHTTPHeaderField:@"Range"];
-    return request;
+    return [request mcs_requestWithRange:range];
 }
 
 - (NSRange)mcs_range {
@@ -57,7 +56,15 @@
 
 - (NSMutableURLRequest *)mcs_requestWithRange:(NSRange)range {
     NSMutableURLRequest *request = [self mutableCopy];
-    [request setValue:[NSString stringWithFormat:@"bytes=%lu-%lu", (unsigned long)range.location, (unsigned long)NSMaxRange(range) - 1] forHTTPHeaderField:@"Range"];
+    if ( NSMaxRange(range) == NSNotFound ) {
+        if ( range.location != NSNotFound )
+            [request setValue:[NSString stringWithFormat:@"bytes=%lu-", (unsigned long)range.location] forHTTPHeaderField:@"Range"];
+        else
+            [request setValue:[NSString stringWithFormat:@"bytes=-%lu", (unsigned long)range.length] forHTTPHeaderField:@"Range"];
+    }
+    else {
+        [request setValue:[NSString stringWithFormat:@"bytes=%lu-%lu", (unsigned long)range.location, (unsigned long)NSMaxRange(range) - 1] forHTTPHeaderField:@"Range"];
+    }
     return request;
 }
 

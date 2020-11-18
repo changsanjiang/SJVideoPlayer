@@ -9,12 +9,7 @@
 			<key>isShown</key>
 			<false/>
 		</dict>
-		<key>CocoaHTTPServer.xcscheme</key>
-		<dict>
-			<key>isShown</key>
-			<false/>
-		</dict>
-		<key>CocoaLumberjack.xcscheme</key>
+		<key>KTVCocoaHTTPServer.xcscheme</key>
 		<dict>
 			<key>isShown</key>
 			<false/>

@@ -216,7 +216,7 @@
 - (void)_setupMediaCacheServer {
     // 开启控制台log
     SJMediaCacheServer.shared.enabledConsoleLog = YES;
-    SJMediaCacheServer.shared.resolveResourceIdentifier = ^NSString * _Nonnull(NSURL * _Nonnull URL) {
+    SJMediaCacheServer.shared.resolveAssetIdentifier = ^NSString * _Nonnull(NSURL * _Nonnull URL) {
         // 由于demo中同一个视频的URL后面的参数不一样, 为保证引用相同的缓存文件, 这里删除了URL后面的所有参数
         // 例如:
         //      - https://dh2.v.netease.com/2017/cg/fxtpty.mp4?id=0&key=value

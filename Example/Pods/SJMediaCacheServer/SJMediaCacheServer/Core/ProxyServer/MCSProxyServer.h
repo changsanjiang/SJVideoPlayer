@@ -23,6 +23,6 @@ NS_ASSUME_NONNULL_BEGIN
 @end
 
 @protocol MCSProxyServerDelegate <NSObject>
-- (id<MCSSessionTask>)server:(MCSProxyServer *)server taskWithRequest:(NSURLRequest *)request delegate:(id<MCSSessionTaskDelegate>)delegate;
+- (id<MCSProxyTask>)server:(MCSProxyServer *)server taskWithRequest:(NSURLRequest *)request delegate:(id<MCSProxyTaskDelegate>)delegate;
 @end
 NS_ASSUME_NONNULL_END

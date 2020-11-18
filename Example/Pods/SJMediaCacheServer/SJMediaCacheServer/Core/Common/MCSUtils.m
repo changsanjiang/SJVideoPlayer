@@ -7,6 +7,9 @@
 //
 
 #import "MCSUtils.h"
+#ifdef DEBUG
+#include <mach/mach_time.h>
+#endif
 
 MCSResponseContentRange
 MCSGetResponseContentRange(NSHTTPURLResponse *response) {
@@ -186,3 +189,29 @@ MCSSuggestedFilePathExtension(NSHTTPURLResponse *response) {
     NSString *contentType = MCSGetResponseContentType(response);
     return contentType.lastPathComponent;
 }
+
+#ifdef DEBUG
+uint64_t
+MCSStartTime(void) {
+    return mach_absolute_time();
+}
+
+NSTimeInterval
+MCSEndTime(uint64_t elapsed_time) {
+    static dispatch_once_t justOnce;
+    static double scale;
+    
+    dispatch_once(&justOnce, ^{
+        mach_timebase_info_data_t tbi;
+        mach_timebase_info(&tbi);
+        scale = tbi.numer;
+        scale = scale/tbi.denom;
+    });
+    
+    uint64_t now = mach_absolute_time() - elapsed_time;
+    double  fTotalT = now;
+    fTotalT = fTotalT * scale;          // convert this to nanoseconds...
+    fTotalT = fTotalT / 1000000000.0;
+    return fTotalT;
+}
+#endif

@@ -10,7 +10,7 @@
 NS_ASSUME_NONNULL_BEGIN
 
 FOUNDATION_EXPORT dispatch_queue_t
-MCSResourceQueue(void);
+MCSAssetQueue(void);
 
 FOUNDATION_EXPORT dispatch_queue_t
 MCSPrefetcherQueue(void);
@@ -26,18 +26,18 @@ MCSFileDataReaderQueue(void);
 #pragma mark -
 
 FOUNDATION_EXPORT dispatch_queue_t
-MCSHLSAESDataReaderQueue(void);
+HLSAESDataReaderQueue(void);
 
 FOUNDATION_EXPORT dispatch_queue_t
-MCSHLSIndexDataReaderQueue(void);
+HLSContentIndexReaderQueue(void);
 
 FOUNDATION_EXPORT dispatch_queue_t
-MCSHLSTsDataReaderQueue(void);
+HLSTsDataReaderQueue(void);
 
 #pragma mark -
 
 FOUNDATION_EXPORT dispatch_queue_t
-MCSVODNetworkDataReaderQueue(void);
+FILEContentReaderQueue(void);
 
 #pragma mark -
 

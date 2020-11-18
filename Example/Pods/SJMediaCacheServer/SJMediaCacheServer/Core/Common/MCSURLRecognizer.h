@@ -16,13 +16,13 @@ NS_ASSUME_NONNULL_BEGIN
 
 @property (nonatomic, strong, nullable) MCSProxyServer *server;
 
-@property (nonatomic, copy, nullable) NSString *(^resolveResourceIdentifier)(NSURL *URL);
+@property (nonatomic, copy, nullable) NSString *(^resolveAssetIdentifier)(NSURL *URL);
 
 - (NSURL *)proxyURLWithURL:(NSURL *)URL;
 - (NSURL *)URLWithProxyURL:(NSURL *)proxyURL;
 
-- (NSString *)resourceNameForURL:(NSURL *)URL;
-- (MCSResourceType)resourceTypeForURL:(NSURL *)URL;
+- (NSString *)assetNameForURL:(NSURL *)URL;
+- (MCSAssetType)assetTypeForURL:(NSURL *)URL;
 
 
 - (NSString *)nameWithUrl:(NSString *)url extension:(NSString *)extension;
@@ -31,7 +31,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 @interface MCSURLRecognizer (HLS)
 - (NSURL *)proxyURLWithTsURI:(NSString *)TsURI;
-- (NSString *)proxyTsURIWithUrl:(NSString *)url inResource:(NSString *)resource;
-- (NSString *)proxyAESKeyURIWithUrl:(NSString *)url inResource:(NSString *)resource;
+- (NSString *)proxyTsURIWithUrl:(NSString *)url inAsset:(NSString *)asset;
+- (NSString *)proxyAESKeyURIWithUrl:(NSString *)url inAsset:(NSString *)asset;
 @end
 NS_ASSUME_NONNULL_END

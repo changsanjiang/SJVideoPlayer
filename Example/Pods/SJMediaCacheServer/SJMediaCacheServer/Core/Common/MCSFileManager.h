@@ -7,52 +7,52 @@
 //
 
 #import <Foundation/Foundation.h>
-#import "MCSResourcePartialContent.h"
+#import "MCSAssetContent.h"
 
 NS_ASSUME_NONNULL_BEGIN
 typedef NSString *MCSFileExtension;
 
-UIKIT_EXTERN MCSFileExtension const MCSHLSIndexFileExtension;
-UIKIT_EXTERN MCSFileExtension const MCSHLSTsFileExtension;
-UIKIT_EXTERN MCSFileExtension const MCSHLSAESKeyFileExtension;
+UIKIT_EXTERN MCSFileExtension const HLSFileExtensionIndex;
+UIKIT_EXTERN MCSFileExtension const HLSFileExtensionTS;
+UIKIT_EXTERN MCSFileExtension const HLSFileExtensionAESKey;
 
 @interface MCSFileManager : NSObject
 + (void)lockWithBlock:(void(^)(void))block;
 + (NSString *)rootDirectoryPath;
 + (NSString *)databasePath;
-+ (NSString *)getResourcePathWithName:(NSString *)name;
-+ (NSString *)getFilePathWithName:(NSString *)name inResource:(NSString *)resourceName;
-+ (nullable NSArray<MCSResourcePartialContent *> *)getContentsInResource:(NSString *)resourceName;
++ (NSString *)getAssetPathWithName:(NSString *)name;
++ (NSString *)getFilePathWithName:(NSString *)name inAsset:(NSString *)assetName;
++ (nullable NSArray<MCSAssetContent *> *)getContentsInAsset:(NSString *)assetName;
 @end
 
 
-@interface MCSFileManager (VOD)
+@interface MCSFileManager (FILE)
 //      注意: 返回文件名
-+ (nullable NSString *)vod_createContentFileInResource:(NSString *)resourceName atOffset:(NSUInteger)offset pathExtension:(nullable NSString *)pathExtension;
++ (nullable NSString *)FILE_createContentFileInAsset:(NSString *)assetName atOffset:(NSUInteger)offset pathExtension:(nullable NSString *)pathExtension;
 
-+ (NSUInteger)vod_offsetOfContent:(NSString *)contentFilename;
++ (NSUInteger)FILE_offsetOfContent:(NSString *)contentFilename;
 @end
 
 
 @interface MCSFileManager (HLS_Index)
-+ (NSString *)hls_indexFilePathInResource:(NSString *)resourceName;
++ (NSString *)HLS_indexFilePathInAsset:(NSString *)assetName;
 @end
 
 
 @interface MCSFileManager (HLS_AESKey)
 
-+ (NSString *)hls_AESKeyFilePathInResource:(NSString *)resourceName AESKeyName:(NSString *)AESKeyName;
++ (NSString *)HLS_AESKeyFilePathInAsset:(NSString *)assetName AESKeyName:(NSString *)AESKeyName;
 
 @end
 
 
 @interface MCSFileManager (HLS_TS)
 //      注意: 返回文件名
-+ (nullable NSString *)hls_createContentFileInResource:(NSString *)resourceName tsName:(NSString *)tsName tsTotalLength:(NSUInteger)length;
++ (nullable NSString *)HLS_createContentFileInAsset:(NSString *)assetName tsName:(NSString *)tsName tsTotalLength:(NSUInteger)length;
 
-+ (nullable NSString *)hls_TsNameOfContent:(NSString *)contentFilename;
++ (nullable NSString *)HLS_TsNameOfContent:(NSString *)contentFilename;
 
-+ (NSUInteger)hls_TsTotalLengthOfContent:(NSString *)contentFilename;
++ (NSUInteger)HLS_TsTotalLengthOfContent:(NSString *)contentFilename;
 
 @end
 
@@ -68,8 +68,8 @@ UIKIT_EXTERN MCSFileExtension const MCSHLSAESKeyFileExtension;
 + (BOOL)removeItemAtPath:(NSString *)path error:(NSError **)error;
 + (BOOL)fileExistsAtPath:(NSString *)path;
 
-+ (BOOL)checkoutResourceWithName:(NSString *)name error:(NSError **)error;
-+ (BOOL)removeResourceWithName:(NSString *)name error:(NSError **)error;
-+ (BOOL)removeContentWithName:(NSString *)name inResource:(NSString *)resourceName error:(NSError **)error;
++ (BOOL)checkoutAssetWithName:(NSString *)name error:(NSError **)error;
++ (BOOL)removeAssetWithName:(NSString *)name error:(NSError **)error;
++ (BOOL)removeContentWithName:(NSString *)name inAsset:(NSString *)assetName error:(NSError **)error;
 @end
 NS_ASSUME_NONNULL_END

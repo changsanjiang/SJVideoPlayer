@@ -11,44 +11,26 @@
 NS_ASSUME_NONNULL_BEGIN
 
 typedef NS_ENUM(NSUInteger, MCSErrorCode) {
-    MCSResponseUnavailableError    = 100000,
-    MCSResourceHasBeenRemovedError = 100001,
-    MCSNonsupportContentTypeError  = 100002,
-    MCSExceptionError              = 100003,
-
-    // unused
-//    MCSOutOfDiskSpaceError        = 100004,
+    MCSUnknownError = 100000,
+    MCSExceptionError,
+    MCSFileError,
     
-    MCSHLSFileParseError           = 100005,
+    MCSUserCancelledError,
     
-    MCSHLSAESKeyWriteFailedError   = 100006,
-    
-    MCSFileNotExistError           = 100007,
-    
-    MCSUserCancelledError          = 100008,
+    MCSInvalidRequestError,
+    MCSInvalidResponseError,
+    MCSInvalidParameterError,
 };
 
-FOUNDATION_EXTERN NSString * const MCSErrorDomain;
-FOUNDATION_EXTERN NSString * const MCSErrorUserInfoURLKey;
-FOUNDATION_EXTERN NSString * const MCSErrorUserInfoRequestKey;
-FOUNDATION_EXTERN NSString * const MCSErrorUserInfoResponseKey;
-
+FOUNDATION_EXTERN NSString *const MCSErrorDomain;
+FOUNDATION_EXTERN NSString *const MCSErrorUserInfoObjectKey;
+FOUNDATION_EXTERN NSString *const MCSErrorUserInfoReasonKey;
+FOUNDATION_EXTERN NSString *const MCSErrorUserInfoExceptionKey;
+FOUNDATION_EXTERN NSString *const MCSErrorUserInfoErrorKey;
 
 @interface NSError (MCSExtended)
-+ (NSError *)mcs_responseUnavailable:(NSURL *)URL request:(NSURLRequest *)request response:(NSURLResponse *)response;
 
-+ (NSError *)mcs_nonsupportContentType:(NSURL *)URL request:(NSURLRequest *)request response:(NSURLResponse *)response;
++ (NSError *)mcs_errorWithCode:(MCSErrorCode)code userInfo:(NSDictionary *)userInfo;
 
-+ (NSError *)mcs_exception:(NSException *)exception;
-
-+ (NSError *)mcs_removedResource:(NSURL *)URL;
-
-+ (NSError *)mcs_HLSFileParseError:(NSURL *)URL;
-
-+ (NSError *)mcs_HLSAESKeyWriteFailedError:(NSURL *)URL;
-
-+ (NSError *)mcs_fileNotExistError:(NSURL *)URL;
-
-+ (NSError *)mcs_userCancelledError:(NSURL *)URL;
 @end
 NS_ASSUME_NONNULL_END

@@ -9,12 +9,12 @@
 #import "MCSFileManager.h"
 #import <sys/xattr.h>
 
-MCSFileExtension const MCSHLSIndexFileExtension = @".m3u8";
-MCSFileExtension const MCSHLSTsFileExtension = @".ts";
-MCSFileExtension const MCSHLSAESKeyFileExtension = @".key";
+MCSFileExtension const HLSFileExtensionIndex = @".m3u8";
+MCSFileExtension const HLSFileExtensionTS = @".ts";
+MCSFileExtension const HLSFileExtensionAESKey = @".key";
 
 @implementation MCSFileManager
-static NSString *VODPrefix = @"vod";
+static NSString *FILEPrefix = @"file";
 static NSString *HLSPrefix = @"hls";
 
 + (void)lockWithBlock:(void (^)(void))block {
@@ -41,33 +41,33 @@ static NSString *HLSPrefix = @"hls";
     return [[self rootDirectoryPath] stringByAppendingPathComponent:@"cache.db"];
 }
 
-+ (NSString *)getResourcePathWithName:(NSString *)name {
++ (NSString *)getAssetPathWithName:(NSString *)name {
     return [[self rootDirectoryPath] stringByAppendingPathComponent:name];
 }
 
-+ (NSString *)getFilePathWithName:(NSString *)name inResource:(NSString *)resourceName {
-    return [[self getResourcePathWithName:resourceName] stringByAppendingPathComponent:name];
++ (NSString *)getFilePathWithName:(NSString *)name inAsset:(NSString *)assetName {
+    return [[self getAssetPathWithName:assetName] stringByAppendingPathComponent:name];
 }
    
-+ (nullable NSArray<MCSResourcePartialContent *> *)getContentsInResource:(NSString *)resourceName {
-    NSString *resourcePath = [self getResourcePathWithName:resourceName];
++ (nullable NSArray<MCSAssetContent *> *)getContentsInAsset:(NSString *)assetName {
+    NSString *assetPath = [self getAssetPathWithName:assetName];
     NSMutableArray *m = NSMutableArray.array;
-    [[NSFileManager.defaultManager contentsOfDirectoryAtPath:resourcePath error:NULL] enumerateObjectsUsingBlock:^(NSString * _Nonnull filename, NSUInteger idx, BOOL * _Nonnull stop) {
-        // VOD
-        if      ( [filename hasPrefix:VODPrefix] ) {
-            NSString *path = [resourcePath stringByAppendingPathComponent:filename];
-            NSUInteger offset = [self vod_offsetOfContent:filename];
+    [[NSFileManager.defaultManager contentsOfDirectoryAtPath:assetPath error:NULL] enumerateObjectsUsingBlock:^(NSString * _Nonnull filename, NSUInteger idx, BOOL * _Nonnull stop) {
+        // FILE
+        if      ( [filename hasPrefix:FILEPrefix] ) {
+            NSString *path = [assetPath stringByAppendingPathComponent:filename];
+            NSUInteger offset = [self FILE_offsetOfContent:filename];
             NSUInteger length = [self fileSizeAtPath:path];
-            __auto_type content = [MCSResourcePartialContent.alloc initWithFilename:filename offset:offset length:length];
+            __auto_type content = [MCSAssetContent.alloc initWithFilename:filename offset:offset length:length];
             [m addObject:content];
         }
         // HLS
         else if ( [filename hasPrefix:HLSPrefix] ) {
-            NSString *path = [resourcePath stringByAppendingPathComponent:filename];
-            NSString *TsName = [self hls_TsNameOfContent:filename];
-            NSUInteger totalLength = [self hls_TsTotalLengthOfContent:filename];
+            NSString *path = [assetPath stringByAppendingPathComponent:filename];
+            NSString *TsName = [self HLS_TsNameOfContent:filename];
+            NSUInteger totalLength = [self HLS_TsTotalLengthOfContent:filename];
             NSUInteger length = [self fileSizeAtPath:path];
-            __auto_type content = [MCSResourcePartialContent.alloc initWithFilename:filename tsName:TsName  tsTotalLength:totalLength length:length];
+            __auto_type content = [MCSAssetContent.alloc initWithFilename:filename tsName:TsName  tsTotalLength:totalLength length:length];
             [m addObject:content];
         }
     }];
@@ -80,19 +80,19 @@ static NSString *HLSPrefix = @"hls";
 #pragma mark -
 
 
-@implementation MCSFileManager (VOD)
+@implementation MCSFileManager (FILE)
 
-// VOD
+// FILE
 //      注意: 返回文件名
-+ (nullable NSString *)vod_createContentFileInResource:(NSString *)resourceName atOffset:(NSUInteger)offset pathExtension:(nullable NSString *)pathExtension {
++ (nullable NSString *)FILE_createContentFileInAsset:(NSString *)assetName atOffset:(NSUInteger)offset pathExtension:(nullable NSString *)pathExtension {
     __block NSString *filename = nil;
     dispatch_barrier_sync(dispatch_get_global_queue(0, 0), ^{
         NSUInteger sequence = 0;
         while (true) {
-            // VOD前缀_偏移量_序号.扩展名
-            NSString *fname = [NSString stringWithFormat:@"%@_%lu_%lu", VODPrefix, (unsigned long)offset, (unsigned long)sequence++];
+            // FILE前缀_偏移量_序号.扩展名
+            NSString *fname = [NSString stringWithFormat:@"%@_%lu_%lu", FILEPrefix, (unsigned long)offset, (unsigned long)sequence++];
             if ( pathExtension.length != 0 ) fname = [fname stringByAppendingPathExtension:pathExtension];
-            NSString *filepath = [self getFilePathWithName:fname inResource:resourceName];
+            NSString *filepath = [self getFilePathWithName:fname inAsset:assetName];
             if ( ![NSFileManager.defaultManager fileExistsAtPath:filepath] ) {
                 [NSFileManager.defaultManager createFileAtPath:filepath contents:nil attributes:nil];
                 filename = fname;
@@ -103,8 +103,8 @@ static NSString *HLSPrefix = @"hls";
     return filename;
 }
 
-// format: VOD前缀_偏移量_序号.扩展名
-+ (NSUInteger)vod_offsetOfContent:(NSString *)contentFilename {
+// format: FILE前缀_偏移量_序号.扩展名
++ (NSUInteger)FILE_offsetOfContent:(NSString *)contentFilename {
     return (NSUInteger)[[contentFilename componentsSeparatedByString:@"_"][1] longLongValue];
 }
 @end
@@ -113,9 +113,9 @@ static NSString *HLSPrefix = @"hls";
 
 @implementation MCSFileManager (HLS_Index)
 
-+ (NSString *)hls_indexFilePathInResource:(NSString *)resourceName {
++ (NSString *)HLS_indexFilePathInAsset:(NSString *)assetName {
     NSString *filename = @"index.m3u8";
-    return [self getFilePathWithName:filename inResource:resourceName];
+    return [self getFilePathWithName:filename inAsset:assetName];
 }
 
 @end
@@ -125,15 +125,15 @@ static NSString *HLSPrefix = @"hls";
 
 @implementation MCSFileManager (HLS_AESKey)
 
-+ (NSString *)hls_AESKeyFilePathInResource:(NSString *)resourceName AESKeyName:(NSString *)AESKeyName {
-    return [self getFilePathWithName:AESKeyName inResource:resourceName];
++ (NSString *)HLS_AESKeyFilePathInAsset:(NSString *)assetName AESKeyName:(NSString *)AESKeyName {
+    return [self getFilePathWithName:AESKeyName inAsset:assetName];
 }
 
 @end
 
 @implementation MCSFileManager (HLS_TS)
 //      注意: 返回文件名
-+ (nullable NSString *)hls_createContentFileInResource:(NSString *)resourceName tsName:(NSString *)tsName tsTotalLength:(NSUInteger)length {
++ (nullable NSString *)HLS_createContentFileInAsset:(NSString *)assetName tsName:(NSString *)tsName tsTotalLength:(NSUInteger)length {
     __block NSString *filename = nil;
     dispatch_barrier_sync(dispatch_get_global_queue(0, 0), ^{
         NSUInteger sequence = 0;
@@ -141,7 +141,7 @@ static NSString *HLSPrefix = @"hls";
             // format: HLS前缀_长度_序号_tsName
             //
             NSString *fname = [NSString stringWithFormat:@"%@_%lu_%lu_%@", HLSPrefix, (unsigned long)length, (unsigned long)sequence++, tsName];
-            NSString *filepath = [self getFilePathWithName:fname inResource:resourceName];
+            NSString *filepath = [self getFilePathWithName:fname inAsset:assetName];
             if ( ![NSFileManager.defaultManager fileExistsAtPath:filepath] ) {
                 [NSFileManager.defaultManager createFileAtPath:filepath contents:nil attributes:nil];
                 filename = fname;
@@ -153,12 +153,12 @@ static NSString *HLSPrefix = @"hls";
 }
 
 // format: HLS前缀_长度_序号_tsName
-+ (nullable NSString *)hls_TsNameOfContent:(NSString *)contentFilename {
++ (nullable NSString *)HLS_TsNameOfContent:(NSString *)contentFilename {
     return [contentFilename componentsSeparatedByString:@"_"].lastObject;
 }
 
 // format: HLS前缀_长度_序号_tsName
-+ (NSUInteger)hls_TsTotalLengthOfContent:(NSString *)contentFilename {
++ (NSUInteger)HLS_TsTotalLengthOfContent:(NSString *)contentFilename {
     return (NSUInteger)[[contentFilename componentsSeparatedByString:@"_"][1] longLongValue];
 }
 
@@ -197,21 +197,21 @@ static NSString *HLSPrefix = @"hls";
     return [NSFileManager.defaultManager fileExistsAtPath:path];
 }
 
-+ (BOOL)checkoutResourceWithName:(NSString *)name error:(NSError **)error {
-    NSString *path = [MCSFileManager getResourcePathWithName:name];
++ (BOOL)checkoutAssetWithName:(NSString *)name error:(NSError **)error {
+    NSString *path = [MCSFileManager getAssetPathWithName:name];
     if ( ![MCSFileManager fileExistsAtPath:path] ) {
         return [NSFileManager.defaultManager createDirectoryAtPath:path withIntermediateDirectories:YES attributes:nil error:error];
     }
     return YES;
 }
 
-+ (BOOL)removeResourceWithName:(NSString *)name error:(NSError **)error {
-    NSString *path = [MCSFileManager getResourcePathWithName:name];
++ (BOOL)removeAssetWithName:(NSString *)name error:(NSError **)error {
+    NSString *path = [MCSFileManager getAssetPathWithName:name];
     return [NSFileManager.defaultManager removeItemAtPath:path error:NULL];
 }
 
-+ (BOOL)removeContentWithName:(NSString *)name inResource:(NSString *)resourceName error:(NSError **)error {
-    NSString *path = [MCSFileManager getFilePathWithName:name inResource:resourceName];
++ (BOOL)removeContentWithName:(NSString *)name inAsset:(NSString *)assetName error:(NSError **)error {
+    NSString *path = [MCSFileManager getFilePathWithName:name inAsset:assetName];
     return [self removeItemAtPath:path error:error];
 }
 @end

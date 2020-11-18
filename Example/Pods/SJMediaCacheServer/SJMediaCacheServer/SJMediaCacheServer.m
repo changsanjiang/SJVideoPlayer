@@ -8,10 +8,10 @@
 
 #import "SJMediaCacheServer.h"
 #import "MCSProxyServer.h"
-#import "MCSResourceManager.h"
-#import "MCSResource.h"
+#import "MCSAssetManager.h"
+#import "MCSAsset.h"
 #import "MCSURLRecognizer.h"
-#import "MCSSessionTask.h"
+#import "MCSProxyTask.h"
 #import "MCSLogger.h"
 #import "MCSDownload.h"
 
@@ -44,11 +44,11 @@
 - (NSURL *)playbackURLWithURL:(NSURL *)URL {
     if ( URL.isFileURL )
         return URL;
-    MCSResource *resource = [MCSResourceManager.shared resourceWithURL:URL];
+    MCSAsset *asset = [MCSAssetManager.shared assetWithURL:URL];
     
     // playback URL for cache
-    if ( resource.isCacheFinished )
-        return [resource playbackURLForCacheWithURL:URL];
+    if ( asset.isCacheFinished )
+        return [asset playbackURLForCacheWithURL:URL];
     
     // proxy URL
     if ( _server.isRunning )
@@ -77,8 +77,8 @@
 - (void)cancelCurrentRequestsForURL:(NSURL *)URL {
     if ( URL == nil )
         return;
-    MCSResource *resource = [MCSResourceManager.shared resourceWithURL:URL];
-    [MCSResourceManager.shared cancelCurrentReadsForResource:resource];
+    MCSAsset *asset = [MCSAssetManager.shared assetWithURL:URL];
+    [MCSAssetManager.shared cancelCurrentReadsForAsset:asset];
 }
 
 - (void)cancelAllPrefetchTasks {
@@ -87,8 +87,8 @@
 
 #pragma mark - MCSProxyServerDelegate
 
-- (id<MCSSessionTask>)server:(MCSProxyServer *)server taskWithRequest:(NSURLRequest *)request delegate:(id<MCSSessionTaskDelegate>)delegate {
-    return [MCSSessionTask.alloc initWithRequest:request delegate:delegate];
+- (id<MCSProxyTask>)server:(MCSProxyServer *)server taskWithRequest:(NSURLRequest *)request delegate:(id<MCSProxyTaskDelegate>)delegate {
+    return [MCSProxyTask.alloc initWithRequest:request delegate:delegate];
 }
 @end
 
@@ -102,24 +102,24 @@
     return MCSDownload.shared.requestHandler;
 }
 
-- (void)resourceURL:(NSURL *)URL setValue:(nullable NSString *)value forHTTPAdditionalHeaderField:(NSString *)field ofType:(MCSDataType)type {
-    MCSResource *resource = [MCSResourceManager.shared resourceWithURL:URL];
-    [resource.configuration setValue:value forHTTPAdditionalHeaderField:field ofType:type];
+- (void)assetURL:(NSURL *)URL setValue:(nullable NSString *)value forHTTPAdditionalHeaderField:(NSString *)field ofType:(MCSDataType)type {
+    MCSAsset *asset = [MCSAssetManager.shared assetWithURL:URL];
+    [asset.configuration setValue:value forHTTPAdditionalHeaderField:field ofType:type];
 }
-- (nullable NSDictionary *)resourceURL:(NSURL *)URL HTTPAdditionalHeadersForDataRequestsOfType:(MCSDataType)type {
-    MCSResource *resource = [MCSResourceManager.shared resourceWithURL:URL];
-    return [resource.configuration HTTPAdditionalHeadersForDataRequestsOfType:type];
+- (nullable NSDictionary *)assetURL:(NSURL *)URL HTTPAdditionalHeadersForDataRequestsOfType:(MCSDataType)type {
+    MCSAsset *asset = [MCSAssetManager.shared assetWithURL:URL];
+    return [asset.configuration HTTPAdditionalHeadersForDataRequestsOfType:type];
 }
 @end
 
 
 
 @implementation SJMediaCacheServer (Convert)
-- (void)setResolveResourceIdentifier:(NSString * _Nonnull (^)(NSURL * _Nonnull))resolveResourceIdentifier {
-    MCSURLRecognizer.shared.resolveResourceIdentifier = resolveResourceIdentifier;
+- (void)setResolveAssetIdentifier:(NSString * _Nonnull (^)(NSURL * _Nonnull))resolveAssetIdentifier {
+    MCSURLRecognizer.shared.resolveAssetIdentifier = resolveAssetIdentifier;
 }
-- (NSString * _Nonnull (^)(NSURL * _Nonnull))resolveResourceIdentifier {
-    return MCSURLRecognizer.shared.resolveResourceIdentifier;
+- (NSString * _Nonnull (^)(NSURL * _Nonnull))resolveAssetIdentifier {
+    return MCSURLRecognizer.shared.resolveAssetIdentifier;
 }
 
 - (void)setWriteDataEncoder:(NSData * _Nonnull (^)(NSURLRequest * _Nonnull, NSUInteger, NSData * _Nonnull))writeDataEncoder {
@@ -130,10 +130,10 @@
 }
 
 - (void)setReadDataDecoder:(NSData * _Nonnull (^)(NSURLRequest * _Nonnull, NSUInteger, NSData * _Nonnull))readDataDecoder {
-    MCSResourceManager.shared.readDataDecoder = readDataDecoder;
+    MCSAssetManager.shared.readDataDecoder = readDataDecoder;
 }
 - (NSData * _Nonnull (^)(NSURLRequest * _Nonnull, NSUInteger, NSData * _Nonnull))readDataDecoder {
-    return MCSResourceManager.shared.readDataDecoder;
+    return MCSAssetManager.shared.readDataDecoder;
 }
 @end
 
@@ -147,49 +147,66 @@
 - (BOOL)isEnabledConsoleLog {
     return MCSLogger.shared.enabledConsoleLog;
 }
+
+- (void)setLogOptions:(MCSLogOptions)logOptions {
+    MCSLogger.shared.options = logOptions;
+}
+
+- (MCSLogOptions)logOptions {
+    return MCSLogger.shared.options;
+}
+
+- (void)setLogLevel:(MCSLogLevel)logLevel {
+    MCSLogger.shared.level = logLevel;
+}
+
+- (MCSLogLevel)logLevel {
+    return MCSLogger.shared.level;
+}
 @end
 
 @implementation SJMediaCacheServer (Cache)
 - (void)setCacheCountLimit:(NSUInteger)cacheCountLimit {
-    MCSResourceManager.shared.cacheCountLimit = cacheCountLimit;
+    MCSAssetManager.shared.cacheCountLimit = cacheCountLimit;
 }
 
 - (NSUInteger)cacheCountLimit {
-    return MCSResourceManager.shared.cacheCountLimit;
+    return MCSAssetManager.shared.cacheCountLimit;
 }
 
 - (void)setMaxDiskAgeForCache:(NSTimeInterval)maxDiskAgeForCache {
-    MCSResourceManager.shared.maxDiskAgeForCache = maxDiskAgeForCache;
+    MCSAssetManager.shared.maxDiskAgeForCache = maxDiskAgeForCache;
 }
 - (NSTimeInterval)maxDiskAgeForCache {
-    return MCSResourceManager.shared.maxDiskAgeForCache;
+    return MCSAssetManager.shared.maxDiskAgeForCache;
 }
 
 - (void)setMaxDiskSizeForCache:(NSUInteger)maxDiskSizeForCache {
-    MCSResourceManager.shared.maxDiskSizeForCache = maxDiskSizeForCache;
+    MCSAssetManager.shared.maxDiskSizeForCache = maxDiskSizeForCache;
 }
 - (NSUInteger)maxDiskSizeForCache {
-    return MCSResourceManager.shared.maxDiskSizeForCache;
+    return MCSAssetManager.shared.maxDiskSizeForCache;
 }
 
 - (void)setReservedFreeDiskSpace:(NSUInteger)reservedFreeDiskSpace {
-    MCSResourceManager.shared.reservedFreeDiskSpace = reservedFreeDiskSpace;
+    MCSAssetManager.shared.reservedFreeDiskSpace = reservedFreeDiskSpace;
 }
 - (NSUInteger)reservedFreeDiskSpace {
-    return MCSResourceManager.shared.reservedFreeDiskSpace;
+    return MCSAssetManager.shared.reservedFreeDiskSpace;
 }
 
 - (void)removeAllCaches {
+    [MCSDownload.shared cancelAllDownloadTasks];
     [MCSPrefetcherManager.shared cancelAllPrefetchTasks];
-    [MCSResourceManager.shared removeAllResources];
+    [MCSAssetManager.shared removeAllAssets];
 }
 
 - (void)removeCacheForURL:(NSURL *)URL {
-    [MCSResourceManager.shared removeResourceForURL:URL];
+    [MCSAssetManager.shared removeAssetForURL:URL];
 }
 
 - (NSUInteger)cachedSize {
-    return [MCSResourceManager.shared cachedSizeForResources];
+    return [MCSAssetManager.shared cachedSizeForAssets];
 }
 
 @end

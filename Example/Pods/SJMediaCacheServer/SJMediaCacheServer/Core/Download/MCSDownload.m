@@ -65,51 +65,83 @@
     
     NSURLSessionDataTask *task = [_session dataTaskWithRequest:request];
     task.priority = priority;
+    dispatch_barrier_sync(MCSDownloadQueue(), ^{
+        _taskCount += 1;
+    });
     [self _setDelegate:delegate forTask:task];
     [task resume];
     return task;
 }
 
-- (void)URLSession:(NSURLSession *)session task:(NSURLSessionTask *)task willPerformHTTPRedirection:(NSHTTPURLResponse *)response newRequest:(NSURLRequest *)request completionHandler:(void (^)(NSURLRequest * _Nullable))completionHandler {
+- (void)cancelAllDownloadTasks {
     dispatch_barrier_sync(MCSDownloadQueue(), ^{
-        completionHandler(request);
+        dispatch_semaphore_t semaphore = dispatch_semaphore_create(0);
+        [_session getTasksWithCompletionHandler:^(NSArray<NSURLSessionDataTask *> * _Nonnull dataTasks, NSArray<NSURLSessionUploadTask *> * _Nonnull uploadTasks, NSArray<NSURLSessionDownloadTask *> * _Nonnull downloadTasks) {
+            [dataTasks makeObjectsPerformSelector:@selector(cancel)];
+            dispatch_semaphore_signal(semaphore);
+        }];
+        dispatch_semaphore_wait(semaphore, DISPATCH_TIME_FOREVER);
+        _taskCount = 0;
     });
 }
+ 
+@synthesize taskCount = _taskCount;
+- (NSInteger)taskCount {
+    __block NSInteger taskCount = 0;
+    dispatch_barrier_sync(MCSDownloadQueue(), ^{
+        taskCount = _taskCount;
+    });
+    return taskCount;
+}
 
-- (void)URLSession:(NSURLSession *)session dataTask:(NSURLSessionDataTask *)task didReceiveResponse:(NSHTTPURLResponse *)response completionHandler:(void (^)(NSURLSessionResponseDisposition))completionHandler {
+#pragma mark - mark
+
+- (void)URLSession:(NSURLSession *)session task:(NSURLSessionTask *)task willPerformHTTPRedirection:(NSHTTPURLResponse *)response newRequest:(NSURLRequest *)request completionHandler:(void (^)(NSURLRequest * _Nullable))completionHandler {
+    completionHandler(request);
+}
+
+- (void)URLSession:(NSURLSession *)session dataTask:(NSURLSessionDataTask *)task didReceiveResponse:(__kindof NSURLResponse *)response completionHandler:(void (^)(NSURLSessionResponseDisposition))completionHandler {
     NSError *error = nil;
-    if ( response.statusCode > 400 ) {
-        error = [NSError mcs_responseUnavailable:task.currentRequest.URL request:task.currentRequest response:task.response];
-    }
     
-    if ( error == nil && response.statusCode == 206 ) {
-        NSUInteger contentLength = MCSGetResponseContentLength(response);
-        if ( contentLength == 0 ) {
-            error = [NSError mcs_responseUnavailable:task.currentRequest.URL request:task.currentRequest response:response];
-        }
-    }
-    
-    if ( error == nil && response.statusCode == 206 ) {
-        NSRange requestRange = MCSGetRequestNSRange(MCSGetRequestContentRange(task.currentRequest.allHTTPHeaderFields));
-        NSRange responseRange = MCSGetResponseNSRange(MCSGetResponseContentRange(response));
+    if ( [response isKindOfClass:NSURLResponse.class] ) {
+        NSHTTPURLResponse *res = response;
         
-        if ( !MCSNSRangeIsUndefined(requestRange) ) {
-            if ( MCSNSRangeIsUndefined(responseRange) || !NSEqualRanges(requestRange, responseRange) ) {
-                error = [NSError mcs_nonsupportContentType:task.currentRequest.URL request:task.currentRequest response:task.response];
+        if      ( res.statusCode < 200 || res.statusCode > 400 ) {
+            error = [NSError mcs_errorWithCode:MCSInvalidResponseError userInfo:@{
+                MCSErrorUserInfoObjectKey : response,
+                MCSErrorUserInfoReasonKey : [NSString stringWithFormat:@"响应无效: statusCode(%ld)!", (long)res.statusCode]
+            }];
+        }
+        else if ( res.statusCode == 206 && 0 == MCSGetResponseContentLength(res) ) {
+            error = [NSError mcs_errorWithCode:MCSInvalidResponseError userInfo:@{
+                MCSErrorUserInfoObjectKey : response,
+                MCSErrorUserInfoReasonKey : @"响应无效: contentLength 为 0!"
+            }];
+        }
+        else if ( res.statusCode == 206 ) {
+            NSRange range1 = MCSGetRequestNSRange(MCSGetRequestContentRange(task.currentRequest.allHTTPHeaderFields));
+            NSRange range2 = MCSGetResponseNSRange(MCSGetResponseContentRange(res));
+            if ( !MCSNSRangeIsUndefined(range1) ) {
+                if ( MCSNSRangeIsUndefined(range2) || !NSEqualRanges(range1, range2) ) {
+                    error = [NSError mcs_errorWithCode:MCSInvalidResponseError userInfo:@{
+                        MCSErrorUserInfoObjectKey : response,
+                        MCSErrorUserInfoReasonKey : [NSString stringWithFormat:@"响应无效: range(%@)无效!", NSStringFromRange(range2)]
+                    }];
+                }
             }
         }
     }
     
-    if ( error == nil ) {
-        id<MCSDownloadTaskDelegate> delegate = [self _delegateForTask:task];
-        if ( delegate != nil ) {
-            [delegate downloadTask:task didReceiveResponse:response];
-            completionHandler(NSURLSessionResponseAllow);
-        }
-    }
-    else {
+    if ( error != nil ) {
         [self _setError:error forTask:task];
         completionHandler(NSURLSessionResponseCancel);
+        return;
+    }
+    
+    id<MCSDownloadTaskDelegate> delegate = [self _delegateForTask:task];
+    if ( delegate != nil ) {
+        [delegate downloadTask:task didReceiveResponse:response];
+        completionHandler(NSURLSessionResponseAllow);
     }
 }
 
@@ -122,6 +154,9 @@
 }
 
 - (void)URLSession:(NSURLSession *)session task:(NSURLSessionTask *)task didCompleteWithError:(NSError *)errorParam {
+    dispatch_barrier_sync(MCSDownloadQueue(), ^{
+        if ( _taskCount > 0 ) _taskCount -= 1;
+    });
     NSError *error = [self _errorForTask:task] ?: errorParam;
     
     __auto_type delegate = [self _delegateForTask:task];

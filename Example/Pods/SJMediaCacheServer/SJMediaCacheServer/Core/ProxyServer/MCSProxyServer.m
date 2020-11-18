@@ -10,10 +10,10 @@
 #import "NSURLRequest+MCS.h"
 #import "MCSLogger.h"
 #import <objc/message.h>
-#import <CocoaHTTPServer/HTTPServer.h>
-#import <CocoaHTTPServer/HTTPConnection.h>
-#import <CocoaHTTPServer/HTTPResponse.h>
-#import <CocoaHTTPServer/HTTPMessage.h>
+#import <KTVCocoaHTTPServer/HTTPServer.h>
+#import <KTVCocoaHTTPServer/HTTPConnection.h>
+#import <KTVCocoaHTTPServer/HTTPResponse.h>
+#import <KTVCocoaHTTPServer/HTTPMessage.h>
 
 
 @interface HTTPServer (MCSProxyServerExtended)
@@ -25,10 +25,10 @@
 - (MCSProxyServer *)mcs_server;
 @end
  
-@interface MCSHTTPResponse : NSObject<HTTPResponse, MCSSessionTaskDelegate>
+@interface MCSHTTPResponse : NSObject<HTTPResponse, MCSProxyTaskDelegate>
 - (instancetype)initWithConnection:(MCSHTTPConnection *)connection;
 @property (nonatomic, strong) NSURLRequest * request;
-@property (nonatomic, strong) id<MCSSessionTask> task;
+@property (nonatomic, strong) id<MCSProxyTask> task;
 @property (nonatomic, weak) MCSHTTPConnection *connection;
 - (void)prepareForReadingData;
 @end
@@ -43,7 +43,7 @@
 @property (nonatomic, strong) HTTPServer *localServer;
 @property (nonatomic) UIBackgroundTaskIdentifier backgroundTask;
 
-- (id<MCSSessionTask>)taskWithRequest:(NSURLRequest *)request delegate:(id<MCSSessionTaskDelegate>)delegate;
+- (id<MCSProxyTask>)taskWithRequest:(NSURLRequest *)request delegate:(id<MCSProxyTaskDelegate>)delegate;
 
 @end
 
@@ -92,7 +92,7 @@
     [self _stop];
 }
 
-- (id<MCSSessionTask>)taskWithRequest:(NSURLRequest *)request delegate:(id<MCSSessionTaskDelegate>)delegate {
+- (id<MCSProxyTask>)taskWithRequest:(NSURLRequest *)request delegate:(id<MCSProxyTaskDelegate>)delegate {
     return [self.delegate server:self taskWithRequest:request delegate:delegate];
 }
 
@@ -152,7 +152,7 @@
 - (id)initWithAsyncSocket:(GCDAsyncSocket *)newSocket configuration:(HTTPConfig *)aConfig {
     self = [super initWithAsyncSocket:newSocket configuration:aConfig];
     if ( self ) {
-        MCSLog(@"\n%@: <%p>.init;\n", NSStringFromClass(self.class), self);
+        MCSHTTPConnectionDebugLog(@"\n%@: <%p>.init;\n", NSStringFromClass(self.class), self);
     }
     return self;
 }
@@ -160,7 +160,7 @@
 - (NSObject<HTTPResponse> *)httpResponseForMethod:(NSString *)method URI:(NSString *)path {
     MCSHTTPResponse *response = [MCSHTTPResponse.alloc initWithConnection:self];
     
-    MCSLog(@"%@: <%p>.response { URL: %@, method: %@, range: %@ };\n", NSStringFromClass(self.class), self, method, response.request.URL, NSStringFromRange(response.request.mcs_range));
+    MCSHTTPConnectionDebugLog(@"%@: <%p>.response { URL: %@, method: %@, range: %@ };\n", NSStringFromClass(self.class), self, method, response.request.URL, NSStringFromRange(response.request.mcs_range));
     
     [response prepareForReadingData];
     return response;
@@ -177,21 +177,21 @@
 - (void)finishResponse {
     [super finishResponse];
     
-    MCSLog(@"%@: <%p>.finishResponse;\n", NSStringFromClass(self.class), self);
+    MCSHTTPConnectionDebugLog(@"%@: <%p>.finishResponse;\n", NSStringFromClass(self.class), self);
 }
 
 - (void)die {
     [super die];
-    MCSLog(@"%@: <%p>.die;\n", NSStringFromClass(self.class), self);
+    MCSHTTPConnectionDebugLog(@"%@: <%p>.die;\n", NSStringFromClass(self.class), self);
 }
 
 - (void)dealloc {
-    MCSLog(@"%@: <%p>.dealloc;\n\n", NSStringFromClass(self.class), self);
+    MCSHTTPConnectionDebugLog(@"%@: <%p>.dealloc;\n\n", NSStringFromClass(self.class), self);
 }
 
 - (void)responseDidAbort:(NSObject<HTTPResponse> *)sender {
     [super responseDidAbort:sender];
-    MCSLog(@"%@: <%p>.abort;\n", NSStringFromClass(self.class), self);
+    MCSHTTPConnectionDebugLog(@"%@: <%p>.abort;\n", NSStringFromClass(self.class), self);
 }
 @end
 
@@ -218,16 +218,6 @@
     [_task prepare];
 }
 
-- (UInt64)contentLength {
-    return (UInt64)_task.contentLength;
-}
-
-- (UInt64)offset {
-    return (UInt64)_task.offset;
-}
-
-- (void)setOffset:(UInt64)offset { }
-
 - (NSData *)readDataOfLength:(NSUInteger)length {
     return [_task readDataOfLength:length];
 }
@@ -241,26 +231,47 @@
 }
 
 - (NSDictionary *)httpHeaders {
-    return _task.responseHeaders;
+    NSMutableDictionary *headers = NSMutableDictionary.dictionary;
+    headers[@"Server"] = @"localhost";
+    headers[@"Content-Type"] = @"video/mp4";
+    headers[@"Accept-Ranges"] = @"bytes";
+    headers[@"Connection"] = @"keep-alive";
+    if ( _task.response.range.length != 0 ) {
+        headers[@"Content-Length"] = [NSString stringWithFormat:@"%lu", (unsigned long)_task.response.range.length];
+        headers[@"Content-Range"] = [NSString stringWithFormat:@"bytes %lu-%lu/%lu", (unsigned long)_task.response.range.location, (unsigned long)NSMaxRange(_task.response.range) - 1, (unsigned long)_task.response.totalLength];
+    }
+    return headers;
 }
 
 - (BOOL)delayResponseHeaders {
     return _task != nil ? !_task.isPrepared : YES;
 }
 
-- (void)taskPrepareDidFinish:(id<MCSSessionTask>)task {
+- (void)taskPrepareDidFinish:(id<MCSProxyTask>)task {
     [_connection responseHasAvailableData:self];
 }
 
-- (void)taskHasAvailableData:(id<MCSSessionTask>)task {
+- (void)taskHasAvailableData:(id<MCSProxyTask>)task {
     [_connection responseHasAvailableData:self];
 }
 
-- (void)task:(id<MCSSessionTask>)task anErrorOccurred:(NSError *)error {
+- (void)task:(id<MCSProxyTask>)task anErrorOccurred:(NSError *)error {
     [_connection responseDidAbort:self];
 }
 
 - (BOOL)isChunked {
     return YES;
 }
+
+#pragma mark - Chunked 不需要处理这些参数
+
+- (UInt64)contentLength {
+    return 0;
+}
+
+- (UInt64)offset {
+    return (UInt64)_task.offset;
+}
+
+- (void)setOffset:(UInt64)offset { }
 @end

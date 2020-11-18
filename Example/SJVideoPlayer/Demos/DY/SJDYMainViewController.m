@@ -121,7 +121,6 @@ typedef enum : NSUInteger {
     _pageViewController.view.backgroundColor = UIColor.blackColor;
     _pageViewController.dataSource = self;
     _pageViewController.delegate = self;
-    _pageViewController.bounces = YES;
     [self addChildViewController:_pageViewController];
     [self.view addSubview:_pageViewController.view];
     [_pageViewController.view mas_makeConstraints:^(MASConstraintMaker *make) {

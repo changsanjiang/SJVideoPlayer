@@ -14,6 +14,7 @@
 #import <SJUIKit/UIScrollView+SJRefreshAdd.h>
 #import <Masonry/Masonry.h>
 #import <SJBaseVideoPlayer/SJBaseVideoPlayer.h>
+#import <SJBaseVideoPlayer/SJAVMediaPlayer.h>
 #import <SJBaseVideoPlayer/UIScrollView+ListViewAutoplaySJAdd.h>
 #import <SJMediaCacheServer/SJMediaCacheServer.h>
 
@@ -80,6 +81,13 @@
 
 - (void)tableView:(UITableView *)tableView willDisplayCell:(SJDYTableViewCell *)cell forRowAtIndexPath:(NSIndexPath *)indexPath {
     [self _refreshCell:cell atIndexPath:indexPath];
+}
+
+- (void)tableView:(UITableView *)tableView didEndDisplayingCell:(UITableViewCell *)cell forRowAtIndexPath:(NSIndexPath *)indexPath {
+    if ( [_tableView.sj_currentPlayingIndexPath isEqual:indexPath] ) {
+        [_player stop];
+        [_tableView sj_removeCurrentPlayerView];
+    }
 }
 
 - (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath {

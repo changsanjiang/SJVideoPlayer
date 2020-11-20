@@ -16,6 +16,8 @@
 NS_ASSUME_NONNULL_BEGIN
 @interface SJAVMediaPlaybackController ()<SJPictureInPictureControllerDelegate>
 @property (nonatomic, strong, nullable) SJAVPictureInPictureController *pictureInPictureController API_AVAILABLE(ios(14.0));
+// https://github.com/changsanjiang/SJVideoPlayer/issues/339
+@property (nonatomic) BOOL needsToRefresh_fix339 API_AVAILABLE(ios(14.0));
 @end
 
 @implementation SJAVMediaPlaybackController
@@ -72,8 +74,9 @@ NS_ASSUME_NONNULL_BEGIN
     if ( @available(iOS 14.0, *) ) {
         if ( self.pauseWhenAppDidEnterBackground ) {
             if ( self.media.isM3u8 && self.timeControlStatus == SJPlaybackTimeControlStatusPaused ) {
-                [self refresh];
-                [self pause];
+                self.needsToRefresh_fix339 = YES;
+//                [self refresh];
+//                [self pause];
                 return;
             }
         }
@@ -188,6 +191,7 @@ NS_ASSUME_NONNULL_BEGIN
 - (void)refresh {
     if ( self.media != nil ) [SJAVMediaPlayerLoader clearPlayerForMedia:self.media];
     if ( @available(iOS 14.0, *) ) {
+        self.needsToRefresh_fix339 = NO;
         [self cancelPictureInPicture];
     }
     [self cancelGenerateGIFOperation];
@@ -195,10 +199,20 @@ NS_ASSUME_NONNULL_BEGIN
     [super refresh];
 }
 
+- (void)play {
+    if (@available(iOS 14.0, *)) {
+        self.needsToRefresh_fix339 ? [self refresh] : [super play];
+    }
+    else {
+        [super play];
+    }
+}
+
 - (void)stop {
     [self cancelGenerateGIFOperation];
     [self cancelExportOperation];
     if ( @available(iOS 14.0, *) ) {
+        self.needsToRefresh_fix339 = NO;
         [self cancelPictureInPicture];
     }
     [super stop];

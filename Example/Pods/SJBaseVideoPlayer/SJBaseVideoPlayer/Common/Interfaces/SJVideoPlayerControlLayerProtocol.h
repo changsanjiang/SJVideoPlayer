@@ -206,9 +206,9 @@ SJPlaybackControlDelegate;
 
 @protocol SJAppActivityControlDelegate <NSObject>
 @optional
-- (void)receivedApplicationWillResignActiveNotification:(__kindof SJBaseVideoPlayer *)videoPlayer;
-- (void)receivedApplicationDidBecomeActiveNotification:(__kindof SJBaseVideoPlayer *)videoPlayer;
-- (void)receivedApplicationWillEnterForegroundNotification:(__kindof SJBaseVideoPlayer *)videoPlayer;
-- (void)receivedApplicationDidEnterBackgroundNotification:(__kindof SJBaseVideoPlayer *)videoPlayer;
+- (void)applicationWillEnterForegroundWithVideoPlayer:(__kindof SJBaseVideoPlayer *)videoPlayer;
+- (void)applicationDidBecomeActiveWithVideoPlayer:(__kindof SJBaseVideoPlayer *)videoPlayer;
+- (void)applicationWillResignActiveWithVideoPlayer:(__kindof SJBaseVideoPlayer *)videoPlayer;
+- (void)applicationDidEnterBackgroundWithVideoPlayer:(__kindof SJBaseVideoPlayer *)videoPlayer;
 @end
 #endif /* SJVideoPlayerControlLayerProtocol_h */

@@ -266,10 +266,8 @@ SJEdgeControlButtonItemTag const SJEdgeControlLayerCenterItem_Replay = 40000;
 - (void)videoPlayerPlaybackStatusDidChange:(__kindof SJBaseVideoPlayer *)videoPlayer {
     [self _reloadAdaptersIfNeeded];
     [self _showOrHiddenLoadingView];
-    
-    if ( videoPlayer.isPlaybackFinished ) {
-        [self _updateContentForBottomCurrentTimeItemIfNeeded];
-    }
+    [self _updateContentForBottomCurrentTimeItemIfNeeded];
+    [self _updateContentForBottomDurationItemIfNeeded];
 }
 
 - (void)videoPlayer:(__kindof SJBaseVideoPlayer *)videoPlayer pictureInPictureStatusDidChange:(SJPictureInPictureStatus)status API_AVAILABLE(ios(14.0)) {

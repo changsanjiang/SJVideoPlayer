@@ -157,7 +157,7 @@ typedef struct _SJPlayerControlInfo {
 }
 
 + (NSString *)version {
-    return @"v3.4.2";
+    return @"v3.4.3";
 }
 
 - (void)setVideoGravity:(SJVideoGravity)videoGravity {
@@ -442,50 +442,6 @@ typedef struct _SJPlayerControlInfo {
     _registrar = [SJVideoPlayerRegistrar new];
     
     __weak typeof(self) _self = self;
-    _registrar.willResignActive = ^(SJVideoPlayerRegistrar * _Nonnull registrar) {
-        __strong typeof(_self) self = _self;
-        if ( !self ) return;
-        if ( [self.controlLayerDelegate respondsToSelector:@selector(receivedApplicationWillResignActiveNotification:)] ) {
-            [self.controlLayerDelegate receivedApplicationWillResignActiveNotification:self];
-        }
-    };
-    
-    _registrar.didBecomeActive = ^(SJVideoPlayerRegistrar * _Nonnull registrar) {
-        __strong typeof(_self) self = _self;
-        if ( !self ) return;
-        BOOL canPlay = self.isPaused &&
-                       self.controlInfo->playbackControl.resumePlaybackWhenAppDidEnterForeground &&
-                      !self.vc_isDisappeared;
-        if ( self.isPlayOnScrollView ) {
-            if ( canPlay && self.isScrollAppeared ) [self play];
-        }
-        else {
-            if ( canPlay ) [self play];
-        }
-        
-        if ( [self.controlLayerDelegate respondsToSelector:@selector(receivedApplicationDidBecomeActiveNotification:)] ) {
-            [self.controlLayerDelegate receivedApplicationDidBecomeActiveNotification:self];
-        }
-    };
-    
-    _registrar.willEnterForeground = ^(SJVideoPlayerRegistrar * _Nonnull registrar) {
-        __strong typeof(_self) self = _self;
-        if ( !self ) return ;
-        if ( [self.controlLayerDelegate respondsToSelector:@selector(receivedApplicationWillEnterForegroundNotification:)] ) {
-            [self.controlLayerDelegate receivedApplicationWillEnterForegroundNotification:self];
-        }
-        [self _postNotification:SJVideoPlayerApplicationWillEnterForegroundNotification];
-    };
-    
-    _registrar.didEnterBackground = ^(SJVideoPlayerRegistrar * _Nonnull registrar) {
-        __strong typeof(_self) self = _self;
-        if ( !self ) return ;
-        if ( [self.controlLayerDelegate respondsToSelector:@selector(receivedApplicationDidEnterBackgroundNotification:)] ) {
-            [self.controlLayerDelegate receivedApplicationDidEnterBackgroundNotification:self];
-        }
-        [self _postNotification:SJVideoPlayerApplicationDidEnterBackgroundNotification];
-    };
-    
     _registrar.willTerminate = ^(SJVideoPlayerRegistrar * _Nonnull registrar) {
         __strong typeof(_self) self = _self;
         if ( !self ) return;
@@ -542,14 +498,11 @@ typedef struct _SJPlayerControlInfo {
 }
 
 - (void)_showOrHiddenPlaceholderImageViewIfNeeded {
-    if ( _URLAsset.original != nil ) { ///< URLAsset is subasset
-        [_presentView hiddenPlaceholderAnimated:NO delay:0];
-        return;
-    }
-    
     if ( _playbackController.isReadyForDisplay ) {
         if ( _controlInfo->placeholder.needToHiddenWhenPlayerIsReadyForDisplay ) {
-            [self.presentView hiddenPlaceholderAnimated:YES delay:_controlInfo->placeholder.delayHidden];
+            NSTimeInterval delay = _URLAsset.original != nil ? 0 : _controlInfo->placeholder.delayHidden;
+            BOOL animated = _URLAsset.original == nil;
+            [self.presentView hiddenPlaceholderAnimated:animated delay:delay];
         }
     }
     else {
@@ -1300,6 +1253,43 @@ typedef struct _SJPlayerControlInfo {
 - (void)playbackController:(id<SJVideoPlayerPlaybackController>)controller didReplay:(id<SJMediaModelProtocol>)media {
     [self _postNotification:SJVideoPlayerPlaybackDidReplayNotification];
 }
+
+- (void)applicationDidBecomeActiveWithPlaybackController:(id<SJVideoPlayerPlaybackController>)controller {
+    BOOL canPlay = self.isPaused &&
+                   self.controlInfo->playbackControl.resumePlaybackWhenAppDidEnterForeground &&
+                  !self.vc_isDisappeared;
+    if ( self.isPlayOnScrollView ) {
+        if ( canPlay && self.isScrollAppeared ) [self play];
+    }
+    else {
+        if ( canPlay ) [self play];
+    }
+
+    if ( [self.controlLayerDelegate respondsToSelector:@selector(applicationDidBecomeActiveWithVideoPlayer:)] ) {
+        [self.controlLayerDelegate applicationDidBecomeActiveWithVideoPlayer:self];
+    }
+}
+
+- (void)applicationWillResignActiveWithPlaybackController:(id<SJVideoPlayerPlaybackController>)controller {
+    if ( [self.controlLayerDelegate respondsToSelector:@selector(applicationWillResignActiveWithVideoPlayer:)] ) {
+        [self.controlLayerDelegate applicationWillResignActiveWithVideoPlayer:self];
+    }
+}
+
+- (void)applicationWillEnterForegroundWithPlaybackController:(id<SJVideoPlayerPlaybackController>)controller {
+    if ( [self.controlLayerDelegate respondsToSelector:@selector(applicationDidEnterBackgroundWithVideoPlayer:)] ) {
+        [self.controlLayerDelegate applicationDidEnterBackgroundWithVideoPlayer:self];
+    }
+    [self _postNotification:SJVideoPlayerApplicationWillEnterForegroundNotification];
+}
+
+- (void)applicationDidEnterBackgroundWithPlaybackController:(id<SJVideoPlayerPlaybackController>)controller {
+    if ( [self.controlLayerDelegate respondsToSelector:@selector(applicationDidEnterBackgroundWithVideoPlayer:)] ) {
+        [self.controlLayerDelegate applicationDidEnterBackgroundWithVideoPlayer:self];
+    }
+    [self _postNotification:SJVideoPlayerApplicationDidEnterBackgroundNotification];
+}
+
 @end
 
 

@@ -146,7 +146,7 @@ NS_ASSUME_NONNULL_BEGIN
     CMTimeRange cutRange = CMTimeRangeMake(CMTimeMakeWithSeconds(startTime, NSEC_PER_SEC), CMTimeMakeWithSeconds(endTime - startTime, NSEC_PER_SEC));
     AVAssetTrack *assetAudioTrack = [asset tracksWithMediaType:AVMediaTypeAudio].firstObject;
     AVAssetTrack *assetVideoTrack = [asset tracksWithMediaType:AVMediaTypeVideo].firstObject;
-    NSError *error;
+    NSError *error = nil;
     [audioTrackM insertTimeRange:cutRange ofTrack:assetAudioTrack atTime:kCMTimeZero error:&error];
     if ( error ) { NSLog(@"Export Failed: error = %@", error); if ( failure ) failure(self.asset, error); return;}
     [videoTrackM insertTimeRange:cutRange ofTrack:assetVideoTrack atTime:kCMTimeZero error:&error];

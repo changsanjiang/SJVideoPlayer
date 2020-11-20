@@ -57,7 +57,7 @@ target 'SJVideoPlayer_Example' do
   # 默认为 AVPlayer
   pod 'SJBaseVideoPlayer'#, :path => '../../SJBaseVideoPlayer'
   pod 'SJVideoPlayer', :path => '../../SJVideoPlayer'
-  pod 'SJUIKit', :podspec => 'https://gitee.com/changsanjiang/SJUIKit/raw/master/SJUIKit-YYModel.podspec'
+  #pod 'SJUIKit'#, :podspec => 'https://gitee.com/changsanjiang/SJUIKit/raw/master/SJUIKit-YYModel.podspec'
 
   # 边播边缓存的库
   pod 'SJMediaCacheServer'

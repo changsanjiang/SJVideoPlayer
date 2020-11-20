@@ -1,1 +1,0 @@
-../../../SJUIKit/SJUIKit/Thread/SJResidentThread.h

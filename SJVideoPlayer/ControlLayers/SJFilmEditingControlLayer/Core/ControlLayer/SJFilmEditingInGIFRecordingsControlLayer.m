@@ -316,7 +316,7 @@ static SJEdgeControlButtonItemTag SJBottomItem_RightFill = 5;
 - (void)controlLayerNeedAppear:(__kindof SJBaseVideoPlayer *)videoPlayer { /* nothing */ }
 - (void)controlLayerNeedDisappear:(__kindof SJBaseVideoPlayer *)videoPlayer { /* nothing */ }
 
-- (void)receivedApplicationDidBecomeActiveNotification:(__kindof SJBaseVideoPlayer *)videoPlayer {
+- (void)applicationDidBecomeActiveWithVideoPlayer:(__kindof SJBaseVideoPlayer *)videoPlayer {
     if ( self.status == SJFilmEditingStatus_Paused ) {
         [videoPlayer play];
     }

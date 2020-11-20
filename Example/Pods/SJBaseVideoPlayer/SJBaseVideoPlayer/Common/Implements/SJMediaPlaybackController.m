@@ -607,9 +607,38 @@ NS_ASSUME_NONNULL_BEGIN
     [NSNotificationCenter.defaultCenter addObserver:self selector:@selector(audioSessionInterruption:) name:AVAudioSessionInterruptionNotification object:nil];
     [NSNotificationCenter.defaultCenter addObserver:self selector:@selector(audioSessionRouteChange:) name:AVAudioSessionRouteChangeNotification object:nil];
     
-    [NSNotificationCenter.defaultCenter addObserver:self selector:@selector(receivedApplicationDidBecomeActiveNotification) name:UIApplicationDidBecomeActiveNotification object:nil];
-    [NSNotificationCenter.defaultCenter addObserver:self selector:@selector(receivedApplicationWillResignActiveNotification) name:UIApplicationWillResignActiveNotification object:nil];
-    [NSNotificationCenter.defaultCenter addObserver:self selector:@selector(receivedApplicationDidEnterBackgroundNotification) name:UIApplicationDidEnterBackgroundNotification object:nil];
+    [NSNotificationCenter.defaultCenter addObserver:self selector:@selector(_receivedApplicationDidBecomeActiveNotification) name:UIApplicationDidBecomeActiveNotification object:nil];
+    [NSNotificationCenter.defaultCenter addObserver:self selector:@selector(_receivedApplicationWillResignActiveNotification) name:UIApplicationWillResignActiveNotification object:nil];
+    [NSNotificationCenter.defaultCenter addObserver:self selector:@selector(_receivedApplicationWillEnterForegroundNotification) name:UIApplicationWillEnterForegroundNotification object:nil];
+    [NSNotificationCenter.defaultCenter addObserver:self selector:@selector(_receivedApplicationDidEnterBackgroundNotification) name:UIApplicationDidEnterBackgroundNotification object:nil];
+}
+
+- (void)_receivedApplicationDidBecomeActiveNotification {
+    [self receivedApplicationDidBecomeActiveNotification];
+    if ( [self.delegate respondsToSelector:@selector(applicationDidBecomeActiveWithPlaybackController:)] ) {
+        [self.delegate applicationDidBecomeActiveWithPlaybackController:self];
+    }
+}
+
+- (void)_receivedApplicationWillResignActiveNotification {
+    [self receivedApplicationWillResignActiveNotification];
+    if ( [self.delegate respondsToSelector:@selector(applicationWillResignActiveWithPlaybackController:)] ) {
+        [self.delegate applicationWillResignActiveWithPlaybackController:self];
+    }
+}
+
+- (void)_receivedApplicationWillEnterForegroundNotification {
+    [self receivedApplicationWillEnterForegroundNotification];
+    if ( [self.delegate respondsToSelector:@selector(applicationWillEnterForegroundWithPlaybackController:)] ) {
+        [self.delegate applicationWillEnterForegroundWithPlaybackController:self];
+    }
+}
+
+- (void)_receivedApplicationDidEnterBackgroundNotification {
+    [self receivedApplicationDidEnterBackgroundNotification];
+    if ( [self.delegate respondsToSelector:@selector(applicationDidEnterBackgroundWithPlaybackController:)] ) {
+        [self.delegate applicationDidEnterBackgroundWithPlaybackController:self];
+    }
 }
 
 - (void)playerAssetStatusDidChange:(NSNotification *)note {

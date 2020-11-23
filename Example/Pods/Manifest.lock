@@ -49,13 +49,52 @@ PODS:
   - SJRouter (1.0.0):
     - SJRouter/Core (= 1.0.0)
   - SJRouter/Core (1.0.0)
+  - SJUIKit (0.0.0.51):
+    - SJUIKit/AsyncLoad (= 0.0.0.51)
+    - SJUIKit/AttributesFactory (= 0.0.0.51)
+    - SJUIKit/Base (= 0.0.0.51)
+    - SJUIKit/CornerMask (= 0.0.0.51)
+    - SJUIKit/Date (= 0.0.0.51)
+    - SJUIKit/ObserverHelper (= 0.0.0.51)
+    - SJUIKit/Other (= 0.0.0.51)
+    - SJUIKit/PageViewController (= 0.0.0.51)
+    - SJUIKit/Photo (= 0.0.0.51)
+    - SJUIKit/Queues (= 0.0.0.51)
+    - SJUIKit/Refresh (= 0.0.0.51)
+    - SJUIKit/SQLite3 (= 0.0.0.51)
+    - SJUIKit/Thread (= 0.0.0.51)
+    - SJUIKit/UIMaker (= 0.0.0.51)
+  - SJUIKit/AsyncLoad (0.0.0.51):
+    - SJUIKit/CornerMask
   - SJUIKit/AttributesFactory (0.0.0.51):
     - SJUIKit/AttributesFactory/Deprecated (= 0.0.0.51)
     - SJUIKit/AttributesFactory/UIKitText (= 0.0.0.51)
   - SJUIKit/AttributesFactory/Deprecated (0.0.0.51)
   - SJUIKit/AttributesFactory/UIKitText (0.0.0.51)
+  - SJUIKit/Base (0.0.0.51):
+    - SJUIKit/Base/Core (= 0.0.0.51)
+    - SJUIKit/ObserverHelper
+  - SJUIKit/Base/Core (0.0.0.51):
+    - SJUIKit/ObserverHelper
+  - SJUIKit/CornerMask (0.0.0.51):
+    - SJUIKit/ObserverHelper
+  - SJUIKit/Date (0.0.0.51)
   - SJUIKit/ObserverHelper (0.0.0.51)
+  - SJUIKit/Other (0.0.0.51):
+    - SJUIKit/Date
+  - SJUIKit/PageViewController (0.0.0.51):
+    - SJUIKit/PageViewController/PageMenuBar (= 0.0.0.51)
+    - SJUIKit/PageViewController/PageViewController (= 0.0.0.51)
+  - SJUIKit/PageViewController/PageMenuBar (0.0.0.51):
+    - SJUIKit/PageViewController/PageMenuBar/Core (= 0.0.0.51)
+  - SJUIKit/PageViewController/PageMenuBar/Core (0.0.0.51)
+  - SJUIKit/PageViewController/PageViewController (0.0.0.51):
+    - SJUIKit/PageViewController/PageViewController/Core (= 0.0.0.51)
+  - SJUIKit/PageViewController/PageViewController/Core (0.0.0.51)
+  - SJUIKit/Photo (0.0.0.51)
   - SJUIKit/Queues (0.0.0.51)
+  - SJUIKit/Refresh (0.0.0.51):
+    - MJRefresh
   - SJUIKit/SQLite3 (0.0.0.51):
     - SJUIKit/SQLite3/Core (= 0.0.0.51)
     - SJUIKit/SQLite3/Protocol (= 0.0.0.51)
@@ -65,6 +104,10 @@ PODS:
     - YYModel
   - SJUIKit/SQLite3/Protocol (0.0.0.51):
     - YYModel
+  - SJUIKit/Thread (0.0.0.51)
+  - SJUIKit/UIMaker (0.0.0.51):
+    - SJUIKit/UIMaker/Core (= 0.0.0.51)
+  - SJUIKit/UIMaker/Core (0.0.0.51)
   - SJVideoPlayer (3.2.8):
     - SJBaseVideoPlayer (>= 3.4.3)
     - SJVideoPlayer/Common (= 3.2.8)
@@ -91,6 +134,7 @@ DEPENDENCIES:
   - SJMediaCacheServer
   - SJPlaybackListController
   - SJRouter
+  - SJUIKit
   - SJVideoPlayer (from `../../SJVideoPlayer`)
   - YYModel
 
@@ -128,6 +172,6 @@ SPEC CHECKSUMS:
   SJVideoPlayer: 0cbef06cd6c762c4d672a664a87164ed430972dd
   YYModel: 2a7fdd96aaa4b86a824e26d0c517de8928c04b30
 
-PODFILE CHECKSUM: 6c35597b7a174db64409321f6930974cc5d7d170
+PODFILE CHECKSUM: 6267c2a571b00c2bc5ea1b3ffccbc66b168e68be
 
 COCOAPODS: 1.10.0

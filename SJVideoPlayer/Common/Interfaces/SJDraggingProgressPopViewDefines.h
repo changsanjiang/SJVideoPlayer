@@ -18,7 +18,7 @@ typedef enum : NSUInteger {
 
 @protocol SJDraggingProgressPopView <NSObject>
 @property (nonatomic) SJDraggingProgressPopViewStyle style;
-@property (nonatomic) NSTimeInterval dragProgressTime;  ///< 拖拽到的时间
+@property (nonatomic) NSTimeInterval dragTime;  ///< 拖拽到的时间
 @property (nonatomic) NSTimeInterval currentTime;   ///< 当前播放到的时间
 @property (nonatomic) NSTimeInterval duration;      ///< 播放时长
 

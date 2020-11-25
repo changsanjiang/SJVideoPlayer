@@ -27,7 +27,7 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic, strong, readonly) UIImageView *directionImageView;
 @property (nonatomic, strong, readonly) UIImageView *previewImageView;
 
-@property (nonatomic, strong, readonly) UILabel *dragProgressTimeLabel;
+@property (nonatomic, strong, readonly) UILabel *dragTimeLabel;
 @property (nonatomic, strong, readonly) UILabel *separatorLabel;    // `/`
 @property (nonatomic, strong, readonly) UILabel *durationLabel;
 @end
@@ -37,7 +37,7 @@ NS_ASSUME_NONNULL_BEGIN
 @synthesize directionImageView = _directionImageView;
 @synthesize previewImageView = _previewImageView;
 @synthesize progressSlider = _progressSlider;
-@synthesize dragProgressTimeLabel = _dragProgressTimeLabel;
+@synthesize dragTimeLabel = _dragTimeLabel;
 @synthesize separatorLabel = _separatorLabel;
 @synthesize durationLabel = _durationLabel;
 
@@ -62,17 +62,17 @@ NS_ASSUME_NONNULL_BEGIN
     }
 }
 
-- (void)setDragProgressTime:(NSTimeInterval)dragProgressTime {
+- (void)setDragTime:(NSTimeInterval)dragTime {
     SJVideoPlayerSettings *sources = SJVideoPlayerSettings.commonSettings;
-    if ( dragProgressTime > _dragProgressTime ) {
+    if ( dragTime > _dragTime ) {
         _directionImageView.image = sources.fastImage;
     }
-    else if ( dragProgressTime < _dragProgressTime ) {
+    else if ( dragTime < _dragTime ) {
         _directionImageView.image = sources.forwardImage;
     }
-    _progressSlider.value = dragProgressTime;
-    _dragProgressTimeLabel.text = [NSString stringWithCurrentTime:dragProgressTime duration:_duration];
-    _dragProgressTime = dragProgressTime;
+    _progressSlider.value = dragTime;
+    _dragTimeLabel.text = [NSString stringWithCurrentTime:dragTime duration:_duration];
+    _dragTime = dragTime;
 }
 
 - (void)setCurrentTime:(NSTimeInterval)currentTime {
@@ -106,14 +106,14 @@ NS_ASSUME_NONNULL_BEGIN
     [self addSubview:self.contentView];
     [_contentView addSubview:self.progressSlider];
     [_contentView addSubview:self.directionImageView];
-    [_contentView addSubview:self.dragProgressTimeLabel];
+    [_contentView addSubview:self.dragTimeLabel];
     [_contentView addSubview:self.separatorLabel];
     [_contentView addSubview:self.durationLabel];
     [_contentView addSubview:self.previewImageView];
     
     [self _resetLayout];
 
-    [_dragProgressTimeLabel mas_makeConstraints:^(MASConstraintMaker *make) {
+    [_dragTimeLabel mas_makeConstraints:^(MASConstraintMaker *make) {
         make.right.equalTo(self->_separatorLabel.mas_left);
         make.centerY.equalTo(self->_separatorLabel);
         make.left.offset(0);
@@ -163,14 +163,14 @@ NS_ASSUME_NONNULL_BEGIN
     return _previewImageView;
 }
 
-- (UILabel *)dragProgressTimeLabel {
-    if ( _dragProgressTimeLabel == nil ) {
-        _dragProgressTimeLabel = [[UILabel alloc] initWithFrame:CGRectZero];
-        _dragProgressTimeLabel.font = [UIFont systemFontOfSize:13];
-        _dragProgressTimeLabel.textColor = [UIColor whiteColor];
-        _dragProgressTimeLabel.textAlignment = NSTextAlignmentRight;
+- (UILabel *)dragTimeLabel {
+    if ( _dragTimeLabel == nil ) {
+        _dragTimeLabel = [[UILabel alloc] initWithFrame:CGRectZero];
+        _dragTimeLabel.font = [UIFont systemFontOfSize:13];
+        _dragTimeLabel.textColor = [UIColor whiteColor];
+        _dragTimeLabel.textAlignment = NSTextAlignmentRight;
     }
-    return _dragProgressTimeLabel;
+    return _dragTimeLabel;
 }
 
 - (UILabel *)separatorLabel {
@@ -278,7 +278,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (void)_updateSettings {
     SJVideoPlayerSettings *settings = SJVideoPlayerSettings.commonSettings;
-    _dragProgressTimeLabel.textColor = settings.progress_traceColor;
+    _dragTimeLabel.textColor = settings.progress_traceColor;
     _progressSlider.traceImageView.backgroundColor = settings.progress_traceColor;
     _progressSlider.trackImageView.backgroundColor = settings.progress_trackColor;
     _progressSlider.bufferProgressColor = settings.progress_bufferColor;

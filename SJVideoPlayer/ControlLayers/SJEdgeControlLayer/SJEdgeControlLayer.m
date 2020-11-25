@@ -395,23 +395,33 @@ SJEdgeControlButtonItemTag const SJEdgeControlLayerCenterItem_Replay = 40000;
 }
 
 - (void)videoPlayer:(__kindof SJBaseVideoPlayer *)videoPlayer longPressGestureStateDidChange:(SJLongPressGestureRecognizerState)state {
-    switch ( state ) {
-        case SJLongPressGestureRecognizerStateChanged: break;
-        case SJLongPressGestureRecognizerStateBegan: {
+    if ( [(id)self.fastForwardView respondsToSelector:@selector(layoutInRect:gestureState:playbackRate:)] ) {
+        if ( state == SJLongPressGestureRecognizerStateBegan ) {
             if ( self.fastForwardView.superview != self ) {
                 [self insertSubview:self.fastForwardView atIndex:0];
-                [self.fastForwardView mas_makeConstraints:^(MASConstraintMaker *make) {
-                    make.center.equalTo(self.topAdapter);
-                }];
             }
-            self.fastForwardView.rate = videoPlayer.rateWhenLongPressGestureTriggered;
-            [self.fastForwardView show];
         }
-            break;
-        case SJLongPressGestureRecognizerStateEnded: {
-            [self.fastForwardView hidden];
+        [self.fastForwardView layoutInRect:self.frame gestureState:state playbackRate:videoPlayer.rate];
+    }
+    else {
+        switch ( state ) {
+            case SJLongPressGestureRecognizerStateChanged: break;
+            case SJLongPressGestureRecognizerStateBegan: {
+                if ( self.fastForwardView.superview != self ) {
+                    [self insertSubview:self.fastForwardView atIndex:0];
+                    [self.fastForwardView mas_makeConstraints:^(MASConstraintMaker *make) {
+                        make.center.equalTo(self.topAdapter);
+                    }];
+                }
+                self.fastForwardView.rate = videoPlayer.rateWhenLongPressGestureTriggered;
+                [self.fastForwardView show];
+            }
+                break;
+            case SJLongPressGestureRecognizerStateEnded: {
+                [self.fastForwardView hidden];
+            }
+                break;
         }
-            break;
     }
 }
 
@@ -1301,7 +1311,7 @@ SJEdgeControlButtonItemTag const SJEdgeControlLayerCenterItem_Replay = 40000;
     _draggingProgressPopView.style = style;
     _draggingProgressPopView.duration = _videoPlayer.duration ?: 1;
     _draggingProgressPopView.currentTime = _videoPlayer.currentTime;
-    _draggingProgressPopView.dragProgressTime = _videoPlayer.currentTime;
+    _draggingProgressPopView.dragTime = _videoPlayer.currentTime;
 }
 
 - (nullable NSAttributedString *)_textForTimeString:(NSString *)timeStr {
@@ -1372,11 +1382,11 @@ SJEdgeControlButtonItemTag const SJEdgeControlLayerCenterItem_Replay = 40000;
     sj_view_makeAppear(_draggingProgressPopView, NO);
     
     if ( _draggingObserver.willBeginDraggingExeBlock )
-        _draggingObserver.willBeginDraggingExeBlock(_draggingProgressPopView.dragProgressTime);
+        _draggingObserver.willBeginDraggingExeBlock(_draggingProgressPopView.dragTime);
 }
 
 - (void)_didMove:(NSTimeInterval)progressTime {
-    _draggingProgressPopView.dragProgressTime = progressTime;
+    _draggingProgressPopView.dragTime = progressTime;
     // 是否生成预览图
     if ( _draggingProgressPopView.isPreviewImageHidden == NO ) {
         __weak typeof(self) _self = self;
@@ -1388,11 +1398,11 @@ SJEdgeControlButtonItemTag const SJEdgeControlLayerCenterItem_Replay = 40000;
     }
     
     if ( _draggingObserver.didMoveExeBlock )
-        _draggingObserver.didMoveExeBlock(_draggingProgressPopView.dragProgressTime);
+        _draggingObserver.didMoveExeBlock(_draggingProgressPopView.dragTime);
 }
 
 - (void)_endDragging {
-    NSTimeInterval time = _draggingProgressPopView.dragProgressTime;
+    NSTimeInterval time = _draggingProgressPopView.dragTime;
     if ( _draggingObserver.willEndDraggingExeBlock )
         _draggingObserver.willEndDraggingExeBlock(time);
     

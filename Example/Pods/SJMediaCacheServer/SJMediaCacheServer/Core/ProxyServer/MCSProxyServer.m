@@ -233,13 +233,9 @@
 - (NSDictionary *)httpHeaders {
     NSMutableDictionary *headers = NSMutableDictionary.dictionary;
     headers[@"Server"] = @"localhost";
-    headers[@"Content-Type"] = @"video/mp4";
+    headers[@"Content-Type"] = _task.response.contentType;
     headers[@"Accept-Ranges"] = @"bytes";
     headers[@"Connection"] = @"keep-alive";
-    if ( _task.response.range.length != 0 ) {
-        headers[@"Content-Length"] = [NSString stringWithFormat:@"%lu", (unsigned long)_task.response.range.length];
-        headers[@"Content-Range"] = [NSString stringWithFormat:@"bytes %lu-%lu/%lu", (unsigned long)_task.response.range.location, (unsigned long)NSMaxRange(_task.response.range) - 1, (unsigned long)_task.response.totalLength];
-    }
     return headers;
 }
 
@@ -259,14 +255,13 @@
     [_connection responseDidAbort:self];
 }
 
-- (BOOL)isChunked {
-    return YES;
-}
-
-#pragma mark - Chunked 不需要处理这些参数
-
+#pragma mark - Chunked
+ 
 - (UInt64)contentLength {
-    return 0;
+    if ( _task.isPrepared ) {
+        NSParameterAssert(_task.response.totalLength != 0);
+    }
+    return _task.response.totalLength;
 }
 
 - (UInt64)offset {

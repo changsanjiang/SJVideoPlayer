@@ -11,6 +11,8 @@
 #import "NSURLRequest+MCS.h"
 #import "MCSQueue.h"
 
+static dispatch_queue_t mcs_queue;
+
 @interface FILEPrefetcher () <MCSAssetReaderDelegate>
 @property (nonatomic) BOOL isCalledPrepare;
 @property (nonatomic) BOOL isClosed;
@@ -27,6 +29,14 @@
 @implementation FILEPrefetcher
 @synthesize delegate = _delegate;
 @synthesize delegateQueue = _delegateQueue;
+
++ (void)initialize {
+    static dispatch_once_t onceToken;
+    dispatch_once(&onceToken, ^{
+        mcs_queue = dispatch_queue_create("queue.FILEPrefetcher", DISPATCH_QUEUE_CONCURRENT);
+    });
+}
+
 - (instancetype)initWithURL:(NSURL *)URL preloadSize:(NSUInteger)bytes delegate:(nullable id<MCSPrefetcherDelegate>)delegate delegateQueue:(nonnull dispatch_queue_t)queue {
     self = [super init];
     if ( self ) {
@@ -47,7 +57,7 @@
 }
 
 - (void)prepare {
-    dispatch_barrier_sync(MCSPrefetcherQueue(), ^{
+    dispatch_barrier_sync(mcs_queue, ^{
        if ( _isClosed || _isCalledPrepare )
             return;
         
@@ -56,15 +66,13 @@
         _isCalledPrepare = YES;
         
         NSURLRequest *request = [NSURLRequest mcs_requestWithURL:_URL range:NSMakeRange(0, _preloadSize)];
-        _reader = [MCSAssetManager.shared readerWithRequest:request];
-        _reader.networkTaskPriority = 0;
-        _reader.delegate = self;
+        _reader = [MCSAssetManager.shared readerWithRequest:request networkTaskPriority:0 delegate:self];
         [_reader prepare];
     });
 }
 
 - (void)close {
-    dispatch_barrier_sync(MCSPrefetcherQueue(), ^{
+    dispatch_barrier_sync(mcs_queue, ^{
         if ( _isClosed )
             return;
         
@@ -76,7 +84,7 @@
 
 - (float)progress {
     __block float progress = 0;
-    dispatch_sync(MCSPrefetcherQueue(), ^{
+    dispatch_sync(mcs_queue, ^{
         progress = _progress;
     });
     return progress;
@@ -84,7 +92,7 @@
 
 - (BOOL)isClosed {
     __block BOOL isClosed;
-    dispatch_sync(MCSPrefetcherQueue(), ^{
+    dispatch_sync(mcs_queue, ^{
         isClosed = _reader.isClosed;
     });
     return isClosed;
@@ -92,7 +100,7 @@
 
 - (BOOL)isDone {
     __block BOOL isDone;
-    dispatch_sync(MCSPrefetcherQueue(), ^{
+    dispatch_sync(mcs_queue, ^{
         isDone = _isDone;
     });
     return isDone;
@@ -105,7 +113,7 @@
 }
 
 - (void)reader:(nonnull id<MCSAssetReader>)reader hasAvailableDataWithLength:(NSUInteger)length {
-    dispatch_barrier_sync(MCSPrefetcherQueue(), ^{
+    dispatch_barrier_sync(mcs_queue, ^{
         if ( _isDone || _isClosed )
             return;
         
@@ -116,8 +124,8 @@
             if ( progress >= 1 ) progress = 1;
             _progress = progress;
             
-            MCSPrefetcherDebugLog(@"%@: <%p>.preload { preloadSize: %lu, progress: %f };\n", NSStringFromClass(self.class), self, (unsigned long)_preloadSize, progress);
-            
+            MCSPrefetcherDebugLog(@"%@: <%p>.preload { preloadSize: %lu, total: %lu, progress: %f };\n", NSStringFromClass(self.class), self, (unsigned long)_preloadSize, (unsigned long)reader.response.totalLength, progress);
+                        
             if ( _delegate != nil ) {
                 dispatch_async(_delegateQueue, ^{
                     [self.delegate prefetcher:self progressDidChange:progress];
@@ -132,7 +140,7 @@
 }
 
 - (void)reader:(id<MCSAssetReader>)reader anErrorOccurred:(NSError *)error {
-    dispatch_barrier_sync(MCSPrefetcherQueue(), ^{
+    dispatch_barrier_sync(mcs_queue, ^{
         [self _didCompleteWithError:error];
     });
 }

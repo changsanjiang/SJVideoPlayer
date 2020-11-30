@@ -1,1 +1,1 @@
-../../../SJMediaCacheServer/SJMediaCacheServer/Core/Resource/MCSAssetDefines.h
+../../../SJMediaCacheServer/SJMediaCacheServer/Core/Asset/MCSAssetDefines.h

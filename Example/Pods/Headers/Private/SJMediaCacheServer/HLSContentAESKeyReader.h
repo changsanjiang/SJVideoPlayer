@@ -1,1 +1,1 @@
-../../../SJMediaCacheServer/SJMediaCacheServer/Core/Resource/HLS/HLSContentAESKeyReader.h
+../../../SJMediaCacheServer/SJMediaCacheServer/Core/Asset/HLS/HLSContentAESKeyReader.h

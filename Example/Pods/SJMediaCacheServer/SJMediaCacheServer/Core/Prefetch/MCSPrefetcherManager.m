@@ -10,57 +10,6 @@
 #import "FILEPrefetcher.h"
 #import "MCSURLRecognizer.h"
 
-@interface _MCSPrefetchOperation : NSObject
-@property (nonatomic, getter=isCancelled) BOOL cancelled;
-@property (nonatomic, getter=isExecuting) BOOL executing;
-@property (nonatomic, getter=isFinished) BOOL finished;
-@end
-
-@implementation _MCSPrefetchOperation
-@synthesize cancelled = _cancelled;
-@synthesize executing = _executing;
-@synthesize finished = _finished;
-
-- (void)setCancelled:(BOOL)cancelled {
-    dispatch_barrier_sync(dispatch_get_global_queue(0, 0), ^{
-        _cancelled = cancelled;
-    });
-}
-- (BOOL)isCancelled {
-    __block BOOL isCancelled = NO;
-    dispatch_sync(dispatch_get_global_queue(0, 0), ^{
-        isCancelled = _cancelled;
-    });
-    return isCancelled;
-}
-
-- (void)setExecuting:(BOOL)executing {
-    dispatch_barrier_sync(dispatch_get_global_queue(0, 0), ^{
-        _executing = executing;
-    });
-}
-- (BOOL)isExecuting {
-    __block BOOL isExecuting = NO;
-    dispatch_sync(dispatch_get_global_queue(0, 0), ^{
-        isExecuting = _executing;
-    });
-    return isExecuting;
-}
-
-- (void)setFinished:(BOOL)finished {
-    dispatch_barrier_sync(dispatch_get_global_queue(0, 0), ^{
-        _finished = finished;
-    });
-}
-- (BOOL)isFinished {
-    __block BOOL isFinished = NO;
-    dispatch_sync(dispatch_get_global_queue(0, 0), ^{
-        isFinished = _finished;
-    });
-    return isFinished;
-}
-@end
-
 @interface MCSPrefetchOperation : NSOperation<MCSPrefetchTask>
 - (instancetype)initWithURL:(NSURL *)URL preloadSize:(NSUInteger)bytes progress:(void(^_Nullable)(float progress))progressBlock completed:(void(^_Nullable)(NSError *_Nullable error))completionBlock;
 
@@ -77,7 +26,10 @@
 
 @interface MCSPrefetchOperation ()<MCSPrefetcherDelegate> {
     id<MCSPrefetcher> _prefetcher;
-    _MCSPrefetchOperation *_op;
+    dispatch_semaphore_t _semaphore;
+    BOOL _isCancelled;
+    BOOL _isExecuting;
+    BOOL _isFinished;
 }
 @end
 
@@ -85,7 +37,7 @@
 - (instancetype)initWithURL:(NSURL *)URL preloadSize:(NSUInteger)bytes progress:(void(^_Nullable)(float progress))progressBlock completed:(void(^_Nullable)(NSError *_Nullable error))completionBlock {
     self = [super init];
     if ( self ) {
-        _op = _MCSPrefetchOperation.alloc.init;
+        _semaphore = dispatch_semaphore_create(1);
         _URL = URL;
         _preloadSize = bytes;
         _mcs_progressBlock = progressBlock;
@@ -97,7 +49,7 @@
 - (instancetype)initWithURL:(NSURL *)URL numberOfPreloadFiles:(NSUInteger)num progress:(void(^_Nullable)(float progress))progressBlock completed:(void(^_Nullable)(NSError *_Nullable error))completionBlock {
     self = [super init];
     if ( self ) {
-        _op = _MCSPrefetchOperation.alloc.init;
+        _semaphore = dispatch_semaphore_create(1);
         _URL = URL;
         _numberOfPreloadFiles = num;
         _mcs_progressBlock = progressBlock;
@@ -124,52 +76,62 @@
  
 - (void)start {
     [self willChangeValueForKey:@"isExecuting"];
-    _op.executing = YES;
+    _isExecuting = YES;
     [self didChangeValueForKey:@"isExecuting"];
     
-    if ( _op.isCancelled ) {
+    dispatch_semaphore_wait(_semaphore, DISPATCH_TIME_FOREVER);
+    if ( _isCancelled ) {
+        dispatch_semaphore_signal(_semaphore);
         [self _completeOperationIfExecuting];
         return;
     }
+    dispatch_semaphore_signal(_semaphore);
     
-    MCSAssetType type = [MCSURLRecognizer.shared assetTypeForURL:self->_URL];
+    MCSAssetType type = [MCSURLRecognizer.shared assetTypeForURL:_URL];
     switch ( type ) {
         case MCSAssetTypeFILE:
-            self->_prefetcher = [FILEPrefetcher.alloc initWithURL:self->_URL preloadSize:self->_preloadSize delegate:self delegateQueue:dispatch_get_main_queue()];
+            _prefetcher = [FILEPrefetcher.alloc initWithURL:_URL preloadSize:_preloadSize delegate:self delegateQueue:dispatch_get_main_queue()];
             break;
         case MCSAssetTypeHLS: {
-            self->_prefetcher = _preloadSize != 0 ?
-                [HLSPrefetcher.alloc initWithURL:self->_URL preloadSize:self->_preloadSize delegate:self delegateQueue:dispatch_get_main_queue()] :
-                [HLSPrefetcher.alloc initWithURL:self->_URL numberOfPreloadFiles:self->_numberOfPreloadFiles delegate:self delegateQueue:dispatch_get_main_queue()];
+            _prefetcher = _preloadSize != 0 ?
+                [HLSPrefetcher.alloc initWithURL:_URL preloadSize:_preloadSize delegate:self delegateQueue:dispatch_get_main_queue()] :
+                [HLSPrefetcher.alloc initWithURL:_URL numberOfPreloadFiles:_numberOfPreloadFiles delegate:self delegateQueue:dispatch_get_main_queue()];
         }
             break;
     }
-    [self->_prefetcher prepare];
+    [_prefetcher prepare];
 }
 
 - (void)cancel {
-    if ( _op.isCancelled || _op.isFinished ) return;
-    
-    _op.cancelled = YES;
-    
+    dispatch_semaphore_wait(_semaphore, DISPATCH_TIME_FOREVER);
+    _isCancelled = YES;
+    dispatch_semaphore_signal(_semaphore);
     [self _completeOperationIfExecuting];
 }
 
 #pragma mark -
 
 - (void)_completeOperationIfExecuting {
-    if ( !_op.isExecuting || _op.isFinished ) return;
+    if ( !_isExecuting || _isFinished ) return;
     
     [self willChangeValueForKey:@"isFinished"];
     [self willChangeValueForKey:@"isExecuting"];
+
+    BOOL isChanged = NO;
+    dispatch_semaphore_wait(_semaphore, DISPATCH_TIME_FOREVER);
+    if ( !_isFinished ) {
+        [self->_prefetcher close];
+        self->_prefetcher = nil;
+        _isExecuting = NO;
+        _isFinished = YES;
+        isChanged = YES;
+    }
+    dispatch_semaphore_signal(_semaphore);
     
-    [self->_prefetcher close];
-    self->_prefetcher = nil;
-    _op.executing = NO;
-    _op.finished = YES;
-    
-    [self didChangeValueForKey:@"isExecuting"];
-    [self didChangeValueForKey:@"isFinished"];
+    if ( isChanged ) {
+        [self didChangeValueForKey:@"isExecuting"];
+        [self didChangeValueForKey:@"isFinished"];
+    }
 }
 
 #pragma mark -
@@ -179,15 +141,19 @@
 }
 
 - (BOOL)isExecuting {
-    return _op.isExecuting;
+    return _isExecuting;
 }
 
 - (BOOL)isFinished {
-    return _op.isFinished;
+    return _isFinished;
 }
 
 - (BOOL)isCancelled {
     return NO;
+}
+
+- (NSString *)description {
+    return [NSString stringWithFormat:@"%@:<%p> { isExecuting: %d, isFinished: %d, isCancelled: %d };", NSStringFromClass(self.class), self, _isExecuting, _isFinished, _isCancelled];
 }
 @end
 

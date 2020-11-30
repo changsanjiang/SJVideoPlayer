@@ -14,9 +14,6 @@ typedef NS_ENUM(NSUInteger, MCSErrorCode) {
     MCSUnknownError = 100000,
     MCSExceptionError,
     MCSFileError,
-    
-    MCSUserCancelledError,
-    
     MCSInvalidRequestError,
     MCSInvalidResponseError,
     MCSInvalidParameterError,

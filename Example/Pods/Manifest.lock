@@ -36,11 +36,11 @@ PODS:
     - SJUIKit/Queues
     - SJUIKit/SQLite3
   - SJFullscreenPopGesture/ObjC (1.5.4)
-  - SJMediaCacheServer (1.2.0):
+  - SJMediaCacheServer (1.3.0):
     - KTVCocoaHTTPServer
-    - SJMediaCacheServer/Core (= 1.2.0)
+    - SJMediaCacheServer/Core (= 1.3.0)
     - SJUIKit/SQLite3
-  - SJMediaCacheServer/Core (1.2.0):
+  - SJMediaCacheServer/Core (1.3.0):
     - KTVCocoaHTTPServer
     - SJUIKit/SQLite3
   - SJPlaybackListController (0.0.5):
@@ -165,7 +165,7 @@ SPEC CHECKSUMS:
   SDWebImage: 0b2ba0d56479bf6a45ecddbfd5558bea93150d25
   SJBaseVideoPlayer: 7af90105490cc751c2ddbfa615c943f88b256216
   SJFullscreenPopGesture: 7be57b1014cb77f4b7c1e6df5e797da6d05dc75d
-  SJMediaCacheServer: 06c1d75e2b28cf45b020ce1a6e3fa97fced69da5
+  SJMediaCacheServer: 3badbaedb7794c10226b2ab97a1f81bc71105ffb
   SJPlaybackListController: e135c789fcd63d63a62d5e2e2965ab1e6d52a2bd
   SJRouter: a866e7884fc9219bed523be0a0318c3a84e85022
   SJUIKit: bdf86af3648e70483c57e2bfe2fcc7531337fa54

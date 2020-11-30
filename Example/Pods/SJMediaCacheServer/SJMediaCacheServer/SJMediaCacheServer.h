@@ -23,9 +23,11 @@ NS_ASSUME_NONNULL_BEGIN
 ///
 /// @param URL      An instance of NSURL that references a media asset.
 ///
-/// @return         It may return the local cache playback URL or HTTP proxy URL, but when there is no cache file and the proxy service is not running, it will return the parameter URL.
+/// @return It may return the HTTP proxy URL, but when there is the proxy service is not running, it will return the parameter URL.
 ///
-- (NSURL *)playbackURLWithURL:(NSURL *)URL; // 获取播放地址
+/// @note return nil if URL is nil.
+///
+- (nullable NSURL *)playbackURLWithURL:(NSURL *)URL; // 获取播放地址
  
 /// The maximum number of queued prefetch tasks that can execute at same time.
 ///
@@ -41,7 +43,9 @@ NS_ASSUME_NONNULL_BEGIN
 ///
 /// @return The task to cancel the current prefetching.
 ///
-- (id<MCSPrefetchTask>)prefetchWithURL:(NSURL *)URL preloadSize:(NSUInteger)bytes; // 预加载
+/// @note return nil if URL is nil.
+///
+- (nullable id<MCSPrefetchTask>)prefetchWithURL:(NSURL *)URL preloadSize:(NSUInteger)bytes; // 预加载
 
 /// Prefetch some assets in the cache for future use. assets are downloaded in low priority.
 ///
@@ -55,13 +59,9 @@ NS_ASSUME_NONNULL_BEGIN
 ///
 /// @return The task to cancel the current prefetching.
 ///
-- (id<MCSPrefetchTask>)prefetchWithURL:(NSURL *)URL preloadSize:(NSUInteger)bytes progress:(void(^_Nullable)(float progress))progressBlock completed:(void(^_Nullable)(NSError *_Nullable error))completionBlock; // 预加载
-
-/// Cancel current requests for a asset, including prefetch requests.
+/// @note return nil if URL is nil.
 ///
-/// @param URL      An instance of NSURL that references a media asset.
-///
-- (void)cancelCurrentRequestsForURL:(NSURL *)URL; // 取消当前的请求, 包括预加载(MCSPrefetchTask)的请求
+- (nullable id<MCSPrefetchTask>)prefetchWithURL:(NSURL *)URL preloadSize:(NSUInteger)bytes progress:(void(^_Nullable)(float progress))progressBlock completed:(void(^_Nullable)(NSError *_Nullable error))completionBlock; // 预加载
 
 /// Cancels all queued and executing prefetch tasks.
 ///
@@ -181,5 +181,8 @@ NS_ASSUME_NONNULL_BEGIN
 /// Returns the total cache size (in bytes).
 ///
 @property (nonatomic, readonly) NSUInteger cachedSize; // 返回已占用的缓存大小
-@end
+
+- (BOOL)isStoredForURL:(NSURL *)URL;
+
+@end 
 NS_ASSUME_NONNULL_END

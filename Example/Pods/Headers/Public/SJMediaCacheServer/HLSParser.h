@@ -1,1 +1,1 @@
-../../../SJMediaCacheServer/SJMediaCacheServer/Core/Resource/HLS/HLSParser.h
+../../../SJMediaCacheServer/SJMediaCacheServer/Core/Asset/HLS/HLSParser.h

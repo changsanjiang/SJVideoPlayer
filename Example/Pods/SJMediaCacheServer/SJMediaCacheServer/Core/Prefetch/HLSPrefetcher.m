@@ -14,6 +14,8 @@
 #import "HLSContentIndexReader.h"
 #import "MCSQueue.h"
 
+static dispatch_queue_t mcs_queue;
+
 @interface HLSPrefetcher ()<MCSAssetReaderDelegate>
 @property (nonatomic) BOOL isCalledPrepare;
 @property (nonatomic) BOOL isClosed;
@@ -34,6 +36,14 @@
 @implementation HLSPrefetcher
 @synthesize delegate = _delegate;
 @synthesize delegateQueue = _delegateQueue;
+
++ (void)initialize {
+    static dispatch_once_t onceToken;
+    dispatch_once(&onceToken, ^{
+        mcs_queue = dispatch_queue_create("queue.HLSPrefetcher", DISPATCH_QUEUE_CONCURRENT);
+    });
+}
+
 - (instancetype)initWithURL:(NSURL *)URL preloadSize:(NSUInteger)bytes delegate:(nullable id<MCSPrefetcherDelegate>)delegate delegateQueue:(nonnull dispatch_queue_t)delegateQueue {
     self = [super init];
     if ( self ) {
@@ -67,7 +77,7 @@
 }
 
 - (void)prepare {
-    dispatch_barrier_sync(MCSPrefetcherQueue(), ^{
+    dispatch_barrier_sync(mcs_queue, ^{
         if ( _isClosed || _isCalledPrepare )
             return;
 
@@ -77,21 +87,20 @@
         _asset = [MCSAssetManager.shared assetWithURL:_URL];
 
         NSURLRequest *request = [NSURLRequest.alloc initWithURL:_URL];
-        _reader = [MCSAssetManager.shared readerWithRequest:request];
-        _reader.delegate = self;
+        _reader = [MCSAssetManager.shared readerWithRequest:request networkTaskPriority:0 delegate:self];
         [_reader prepare];
     });
 }
 
 - (void)close {
-    dispatch_barrier_sync(MCSPrefetcherQueue(), ^{
+    dispatch_barrier_sync(mcs_queue, ^{
         [self _close];
     });
 }
 
 - (float)progress {
     __block float progress = 0;
-    dispatch_sync(MCSPrefetcherQueue(), ^{
+    dispatch_sync(mcs_queue, ^{
         progress = _progress;
     });
     return progress;
@@ -99,7 +108,7 @@
 
 - (BOOL)isClosed {
     __block BOOL isClosed = NO;
-    dispatch_sync(MCSPrefetcherQueue(), ^{
+    dispatch_sync(mcs_queue, ^{
         isClosed = _isClosed;
     });
     return isClosed;
@@ -107,7 +116,7 @@
 
 - (BOOL)isDone {
     __block BOOL isDone = NO;
-    dispatch_sync(MCSPrefetcherQueue(), ^{
+    dispatch_sync(mcs_queue, ^{
         isDone = _isDone;
     });
     return isDone;
@@ -120,7 +129,7 @@
 }
 
 - (void)reader:(id<MCSAssetReader>)reader hasAvailableDataWithLength:(NSUInteger)length {
-    dispatch_barrier_sync(MCSPrefetcherQueue(), ^{
+    dispatch_barrier_sync(mcs_queue, ^{
         if ( _isClosed )
             return;
         
@@ -130,7 +139,8 @@
             
             CGFloat progress = 0;
             if ( _preloadSize != 0 ) {
-                progress = _loadedLength * 1.0 / _preloadSize;
+                NSUInteger size = _preloadSize < reader.response.totalLength ? reader.response.totalLength : _preloadSize;
+                progress = _loadedLength * 1.0 / size;
             }
             else {
                 CGFloat curr = reader.offset / reader.response.range.length;
@@ -163,7 +173,7 @@
 }
   
 - (void)reader:(id<MCSAssetReader>)reader anErrorOccurred:(NSError *)error {
-    dispatch_barrier_sync(MCSPrefetcherQueue(), ^{
+    dispatch_barrier_sync(mcs_queue, ^{
         [self _didCompleteWithError:error];
     });
 }
@@ -176,9 +186,7 @@
     NSString *TsURI = [_asset.parser URIAtIndex:_fragmentIndex];
     NSURL *proxyURL = [MCSURLRecognizer.shared proxyURLWithTsURI:TsURI];
     NSURLRequest *request = [NSURLRequest requestWithURL:proxyURL];
-    _reader = [MCSAssetManager.shared readerWithRequest:request];
-    _reader.networkTaskPriority = 0;
-    _reader.delegate = self;
+    _reader = [MCSAssetManager.shared readerWithRequest:request networkTaskPriority:0 delegate:self];
     [_reader prepare];
     
     MCSPrefetcherDebugLog(@"%@: <%p>.prepareFragment { index:%lu, request: %@ };\n", NSStringFromClass(self.class), self, (unsigned long)_fragmentIndex, request);

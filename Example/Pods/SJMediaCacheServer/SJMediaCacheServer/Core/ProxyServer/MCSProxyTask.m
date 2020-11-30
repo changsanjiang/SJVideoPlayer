@@ -10,6 +10,7 @@
 #import "MCSAssetManager.h"
 #import "MCSUtils.h"
 #import "MCSLogger.h"
+#import "NSURLRequest+MCS.h"
 
 @interface MCSProxyTask ()<MCSAssetReaderDelegate>
 @property (nonatomic, weak) id<MCSProxyTaskDelegate> delegate;
@@ -23,6 +24,8 @@
 
 @implementation MCSProxyTask
 - (instancetype)initWithRequest:(NSURLRequest *)request delegate:(id<MCSProxyTaskDelegate>)delegate {
+    NSParameterAssert(request.URL.absoluteString.length != 0);
+    
     self = [super init];
     if ( self ) {
         _request = request;
@@ -33,12 +36,11 @@
 
 - (void)prepare {
 #ifdef DEBUG
-    MCSProxyTaskDebugLog(@"%@: <%p>.prepare { request: %@ };\n", NSStringFromClass(self.class), self, _request);
+    MCSProxyTaskDebugLog(@"%@: <%p>.prepare { request: %@ };\n", NSStringFromClass(self.class), self, _request.mcs_description);
     _startTime = MCSStartTime();
 #endif
 
-    _reader = [MCSAssetManager.shared readerWithRequest:_request];
-    _reader.delegate = self;
+    _reader = [MCSAssetManager.shared readerWithRequest:_request networkTaskPriority:1.0 delegate:self];
     @autoreleasepool {
         [_reader prepare];
     }

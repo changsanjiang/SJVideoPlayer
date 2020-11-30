@@ -1,1 +1,1 @@
-../../../SJMediaCacheServer/SJMediaCacheServer/Core/Resource/FILE/FILEAsset.h
+../../../SJMediaCacheServer/SJMediaCacheServer/Core/Asset/FILE/FILEAsset.h

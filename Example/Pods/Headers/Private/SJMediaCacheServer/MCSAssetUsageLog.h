@@ -1,1 +1,1 @@
-../../../SJMediaCacheServer/SJMediaCacheServer/Core/Resource/MCSAssetUsageLog.h
+../../../SJMediaCacheServer/SJMediaCacheServer/Core/Asset/MCSAssetUsageLog.h

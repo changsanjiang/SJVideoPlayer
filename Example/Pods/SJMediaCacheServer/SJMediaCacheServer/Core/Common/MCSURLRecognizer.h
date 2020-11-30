@@ -25,7 +25,7 @@ NS_ASSUME_NONNULL_BEGIN
 - (MCSAssetType)assetTypeForURL:(NSURL *)URL;
 
 
-- (NSString *)nameWithUrl:(NSString *)url extension:(NSString *)extension;
+- (NSString *)nameWithUrl:(NSString *)url suffix:(NSString *)suffix;
 @end
 
 

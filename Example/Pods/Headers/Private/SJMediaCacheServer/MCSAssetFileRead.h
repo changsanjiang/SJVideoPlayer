@@ -1,1 +1,1 @@
-../../../SJMediaCacheServer/SJMediaCacheServer/Core/Resource/MCSAssetFileRead.h
+../../../SJMediaCacheServer/SJMediaCacheServer/Core/Asset/MCSAssetFileRead.h

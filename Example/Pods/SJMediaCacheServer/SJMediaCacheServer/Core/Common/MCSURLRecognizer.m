@@ -7,8 +7,8 @@
 //
 
 #import "MCSURLRecognizer.h"
+#import "MCSConsts.h"
 #include <CommonCrypto/CommonCrypto.h>
-#import "MCSFileManager.h"
 
 static NSString * const mcsproxy = @"mcsproxy";
 
@@ -29,6 +29,7 @@ MCSMD5(NSString *str) {
 @interface NSString (MCSFileManagerExtended)
 - (NSString *)mcs_fname;
 @end
+
 @implementation NSString (MCSFileManagerExtended)
 - (NSString *)mcs_fname {
     NSString *name = self.lastPathComponent;
@@ -112,16 +113,16 @@ MCSMD5(NSString *str) {
 }
 
 - (MCSAssetType)assetTypeForURL:(NSURL *)URL {
-    return [URL.absoluteString containsString:HLSFileExtensionIndex] ||
-           [URL.absoluteString containsString:HLSFileExtensionTS] ||
-           [URL.absoluteString containsString:HLSFileExtensionAESKey] ? MCSAssetTypeHLS : MCSAssetTypeFILE;
+    return [URL.path containsString:HLS_SUFFIX_INDEX] ||
+           [URL.path containsString:HLS_SUFFIX_TS] ||
+           [URL.path containsString:HLS_SUFFIX_AES_KEY] ? MCSAssetTypeHLS : MCSAssetTypeFILE;
 }
 
-- (NSString *)nameWithUrl:(NSString *)url extension:(NSString *)extension {
+- (NSString *)nameWithUrl:(NSString *)url suffix:(NSString *)suffix {
     NSString *filename = url.mcs_fname;
     // 添加扩展名
-    if ( ![filename hasSuffix:extension] )
-        filename = [filename stringByAppendingString:extension];
+    if ( ![filename hasSuffix:suffix] )
+        filename = [filename stringByAppendingString:suffix];
     return filename;
 }
 
@@ -148,17 +149,17 @@ MCSMD5(NSString *str) {
     NSParameterAssert(asset);
     
     // format: mcsproxy/asset/tsName.ts?url=base64EncodedUrl
-    return [self _proxyURIWithUrl:url inAsset:asset extension:HLSFileExtensionTS];
+    return [self _proxyURIWithUrl:url inAsset:asset suffix:HLS_SUFFIX_TS];
 }
 
 - (NSString *)proxyAESKeyURIWithUrl:(NSString *)url inAsset:(NSString *)asset {
     // format: mcsproxy/asset/AESName.key?url=base64EncodedUrl
-    return [self _proxyURIWithUrl:url inAsset:asset extension:HLSFileExtensionAESKey];
+    return [self _proxyURIWithUrl:url inAsset:asset suffix:HLS_SUFFIX_AES_KEY];
 }
 
 // format: mcsproxy/asset/name.extension?url=base64EncodedUrl
-- (NSString *)_proxyURIWithUrl:(NSString *)url inAsset:(NSString *)asset extension:(NSString *)extension {
-    NSString *fname = [self nameWithUrl:url extension:extension];
+- (NSString *)_proxyURIWithUrl:(NSString *)url inAsset:(NSString *)asset suffix:(NSString *)suffix {
+    NSString *fname = [self nameWithUrl:url suffix:suffix];
     NSURLQueryItem *query = [self encodedURLQueryItemWithUrl:url];
     NSString *URI = [NSString stringWithFormat:@"%@/%@/%@?%@=%@", mcsproxy, asset, fname, query.name, query.value];
     return URI;

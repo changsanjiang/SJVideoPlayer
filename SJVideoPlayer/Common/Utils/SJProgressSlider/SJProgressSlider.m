@@ -51,12 +51,25 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (instancetype)initWithFrame:(CGRect)frame {
     self = [super initWithFrame:frame];
-    if ( !self ) return nil;
+    if ( self ) {
+        [self _init];
+    }
+    return self;
+}
+
+- (nullable instancetype)initWithCoder:(NSCoder *)coder {
+    self = [super initWithCoder:coder];
+    if ( self ) {
+        [self _init];
+    }
+    return self;
+}
+
+- (void)_init {
     [self _setupDefaultValues];
     [self _setupView];
     [self _setupGestrue];
     [self _needUpdateContainerCornerRadius];
-    return self;
 }
 
 - (void)_setupDefaultValues {

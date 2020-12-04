@@ -102,12 +102,16 @@ NS_ASSUME_NONNULL_BEGIN
 @synthesize enabled = _enabled;
 @synthesize target = _target;
 @synthesize safeMargin = _safeMargin;
+@synthesize floatViewInsets = _floatViewInsets;
+@synthesize floatViewAlignment = _floatViewAlignment;
 @synthesize addFloatViewToKeyWindow = _addFloatViewToKeyWindow;
 
 - (instancetype)init {
     self = [super init];
     if ( self ) {
         _safeMargin = 12;
+        _floatViewInsets = UIEdgeInsetsZero;
+        _floatViewAlignment = SJFloatViewAlignmentBottomRight;
     }
     return self;
 }
@@ -142,13 +146,49 @@ NS_ASSUME_NONNULL_BEGIN
             [superview addSubview:_floatView];
             CGRect bounds = superview.bounds;
             CGFloat width = bounds.size.width;
-            
+            CGFloat height = bounds.size.height;
             //
             CGFloat maxW = ceil(width * 0.48);
             CGFloat w = maxW>300?300:maxW;
             CGFloat h = w * 9 /16.0;
-            CGFloat x = width - w - _safeMargin;
-            CGFloat y = _safeMargin;
+            CGFloat x = 0;
+            CGFloat y = 0;
+            
+            switch (_floatViewAlignment) {
+                case SJFloatViewAlignmentTop:
+                    x = (width - w)/2;
+                    y = _floatViewInsets.top;
+                    break;
+                case SJFloatViewAlignmentTopLeft:
+                    x = _floatViewInsets.left;
+                    y = _floatViewInsets.top;
+                    break;
+                case SJFloatViewAlignmentLeft:
+                    x = _floatViewInsets.left;
+                    y = (height - h)/2;
+                    break;
+                case SJFloatViewAlignmentBottomLeft:
+                    x = _floatViewInsets.left;
+                    y = height - h - _floatViewInsets.bottom;
+                    break;
+                case SJFloatViewAlignmentBottom:
+                    x = (width - w)/2;
+                    y = height - h - _floatViewInsets.bottom;
+                    break;
+                case SJFloatViewAlignmentBottomRight:
+                    x = width - w - _floatViewInsets.right;
+                    y = height - h - _floatViewInsets.bottom;
+                    break;
+                case SJFloatViewAlignmentRight:
+                    x = width - w - _floatViewInsets.right;
+                    y = (height - h)/2;
+                    break;
+                case SJFloatViewAlignmentTopRight:
+                    x = width - w - _floatViewInsets.right;
+                    y = _floatViewInsets.top;
+                    break;
+            }
+            
             if (@available(iOS 11.0, *)) {
                 y += superview.safeAreaInsets.top;
             }

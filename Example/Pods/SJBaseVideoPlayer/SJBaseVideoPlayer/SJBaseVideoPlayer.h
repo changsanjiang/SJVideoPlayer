@@ -715,6 +715,13 @@ NS_ASSUME_NONNULL_BEGIN
 ///     // 3. 设置双击小浮窗执行的block
 ///     _player.floatSmallViewController.doubleTappedOnTheFloatViewExeBlock = ...;
 ///
+///     // more
+/// #import <SJBaseVideoPlayer/SJFloatSmallViewController.h>
+///
+///     SJFloatSmallViewController *floatSmallViewController = _player.floatSmallViewController;
+///     floatSmallViewController.layoutPosition = SJFloatViewLayoutPositionTopRight;
+///     floatSmallViewController.layoutInsets = UIEdgeInsetsMake(20, 12, 20, 12);
+///     floatSmallViewController.layoutSize = CGSize(300, 300 * 9 / 16.0);
 /// \endcode
 ///
 @property (nonatomic, strong, null_resettable) id<SJFloatSmallViewController> floatSmallViewController;

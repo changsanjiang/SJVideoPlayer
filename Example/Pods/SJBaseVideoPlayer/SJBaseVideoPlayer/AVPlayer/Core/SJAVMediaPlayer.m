@@ -548,15 +548,6 @@ static NSString *kTimeControlStatus = @"timeControlStatus";
     }
 }
 
-- (void)_didPlayToEndPositoion {
-    if ( self.finishedReason != SJFinishedReasonToEndTimePosition ) {
-        self.finishedReason = SJFinishedReasonToEndTimePosition;
-        self.isPlaybackFinished = YES;
-        self.reasonForWaitingToPlay = nil;
-        self.timeControlStatus = SJPlaybackTimeControlStatusPaused;
-    }
-}
-
 - (CMTime)_adjustSeekTimeIfNeeded:(CMTime)time {
     if ( _trialEndPosition != 0 && CMTimeGetSeconds(time) >= _trialEndPosition ) {
         time = CMTimeMakeWithSeconds(_trialEndPosition * 0.98, NSEC_PER_SEC);

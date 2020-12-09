@@ -90,13 +90,8 @@ typedef NS_ENUM(NSUInteger, MCSLimit) {
 
 @synthesize cacheCountLimit = _cacheCountLimit;
 - (void)setCacheCountLimit:(NSUInteger)cacheCountLimit {
-    dispatch_barrier_async(mcs_queue, ^{
-        if ( cacheCountLimit != self->_cacheCountLimit ) {
-            self->_cacheCountLimit = cacheCountLimit;
-            if ( cacheCountLimit != 0 ) {
-                [self _removeAssetsForLimit:MCSLimitCount];
-            }
-        }
+    dispatch_barrier_sync(mcs_queue, ^{
+        _cacheCountLimit = cacheCountLimit;
     });
 }
 
@@ -110,13 +105,8 @@ typedef NS_ENUM(NSUInteger, MCSLimit) {
 
 @synthesize maxDiskAgeForCache = _maxDiskAgeForCache;
 - (void)setMaxDiskAgeForCache:(NSTimeInterval)maxDiskAgeForCache {
-    dispatch_barrier_async(mcs_queue, ^{
-        if ( maxDiskAgeForCache != self->_maxDiskAgeForCache ) {
-            self->_maxDiskAgeForCache = maxDiskAgeForCache;
-            if ( maxDiskAgeForCache != 0 ) {
-                [self _removeAssetsForLimit:MCSLimitExpires];
-            }
-        }
+    dispatch_barrier_sync(mcs_queue, ^{
+        _maxDiskAgeForCache = maxDiskAgeForCache;
     });
 }
 
@@ -130,13 +120,8 @@ typedef NS_ENUM(NSUInteger, MCSLimit) {
 
 @synthesize maxDiskSizeForCache = _maxDiskSizeForCache;
 - (void)setMaxDiskSizeForCache:(NSUInteger)maxDiskSizeForCache {
-    dispatch_barrier_async(mcs_queue, ^{
-        if ( maxDiskSizeForCache != self->_maxDiskSizeForCache ) {
-            self->_maxDiskSizeForCache = maxDiskSizeForCache;
-            if ( maxDiskSizeForCache != 0 ) {
-                [self _removeAssetsForLimit:MCSLimitCacheDiskSpace];
-            }
-        }
+    dispatch_barrier_sync(mcs_queue, ^{
+        _maxDiskSizeForCache = maxDiskSizeForCache;
     });
 }
 - (NSUInteger)maxDiskSizeForCache {
@@ -149,13 +134,8 @@ typedef NS_ENUM(NSUInteger, MCSLimit) {
 
 @synthesize reservedFreeDiskSpace = _reservedFreeDiskSpace;
 - (void)setReservedFreeDiskSpace:(NSUInteger)reservedFreeDiskSpace {
-    dispatch_barrier_async(mcs_queue, ^{
-        if ( reservedFreeDiskSpace != self->_reservedFreeDiskSpace ) {
-            self->_reservedFreeDiskSpace = reservedFreeDiskSpace;
-            if ( reservedFreeDiskSpace != 0 ) {
-                [self _removeAssetsForLimit:MCSLimitFreeDiskSpace];
-            }
-        }
+    dispatch_barrier_sync(mcs_queue, ^{
+        _reservedFreeDiskSpace = reservedFreeDiskSpace;
     });
 }
 

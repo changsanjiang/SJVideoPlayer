@@ -17,7 +17,7 @@ typedef NS_ENUM(NSInteger, SJFloatViewLayoutPosition) {
 };
 
 @interface SJFloatSmallViewController : NSObject<SJFloatSmallViewController>
-/// default value is SJFloatViewLayoutPositionTopRight.
+/// default value is SJFloatViewLayoutPositionBottomRight.
 @property (nonatomic) SJFloatViewLayoutPosition layoutPosition;
 /// default value is UIEdgeInsetsMake(20, 12, 20, 12).
 @property (nonatomic) UIEdgeInsets layoutInsets;

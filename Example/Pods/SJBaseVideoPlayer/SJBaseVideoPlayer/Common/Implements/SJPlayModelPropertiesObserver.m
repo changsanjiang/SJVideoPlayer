@@ -66,6 +66,7 @@ NS_ASSUME_NONNULL_BEGIN
          [_playModel isKindOfClass:SJTableViewTableFooterViewPlayModel.class]  ) {
         
         SJPlayModel *curr = _playModel;
+        _beforeOffset = curr.inScrollView.contentOffset;
         while ( curr != nil ) {
             [self _observeScrollView:curr.inScrollView];
             curr = curr.nextPlayModel;

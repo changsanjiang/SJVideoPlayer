@@ -110,7 +110,7 @@ NS_ASSUME_NONNULL_BEGIN
     self = [super init];
     if ( self ) {
         _layoutInsets = UIEdgeInsetsMake(20, 12, 20, 12);
-        _layoutPosition = SJFloatViewLayoutPositionTopRight;
+        _layoutPosition = SJFloatViewLayoutPositionBottomRight;
     }
     return self;
 }

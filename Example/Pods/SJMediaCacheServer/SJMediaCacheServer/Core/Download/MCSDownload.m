@@ -137,11 +137,11 @@ static dispatch_queue_t mcs_queue;
         else if ( res.statusCode == 206 ) {
             NSRange range1 = MCSGetRequestNSRange(MCSGetRequestContentRange(task.currentRequest.allHTTPHeaderFields));
             NSRange range2 = MCSGetResponseNSRange(MCSGetResponseContentRange(res));
-            if ( !MCSNSRangeIsUndefined(range1) ) {
-                if ( MCSNSRangeIsUndefined(range2) || !NSEqualRanges(range1, range2) ) {
+            if ( !MCSNSRangeIsUndefined(range1) && !NSEqualRanges(range1, range2)) {
+                if ( !MCSNSRangeIsUndefined(range2) && NSMaxRange(range1) <= NSMaxRange(range2) ) {
                     error = [NSError mcs_errorWithCode:MCSInvalidResponseError userInfo:@{
                         MCSErrorUserInfoObjectKey : response,
-                        MCSErrorUserInfoReasonKey : [NSString stringWithFormat:@"响应无效: range(%@)无效!", NSStringFromRange(range2)]
+                        MCSErrorUserInfoReasonKey : [NSString stringWithFormat:@"响应无效: requestRange(%@), responseRange(%@) range无效!", NSStringFromRange(range1), NSStringFromRange(range2)]
                     }];
                 }
             }

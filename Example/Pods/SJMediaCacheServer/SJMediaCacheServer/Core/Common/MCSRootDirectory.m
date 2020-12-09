@@ -10,31 +10,34 @@
 #import "NSFileManager+MCS.h"
 
 @implementation MCSRootDirectory
-+ (NSString *)path {
-    static NSString *path;
+static NSString *mcs_path;
++ (void)initialize {
     static dispatch_once_t onceToken;
     dispatch_once(&onceToken, ^{
-        path = [NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES).lastObject stringByAppendingPathComponent:@"com.SJMediaCacheServer.cache"];
-        if ( ![NSFileManager.defaultManager fileExistsAtPath:path] ) {
-            [NSFileManager.defaultManager createDirectoryAtPath:path withIntermediateDirectories:YES attributes:nil error:NULL];
-            const char *filePath = [path fileSystemRepresentation];
+        mcs_path = [NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES).lastObject stringByAppendingPathComponent:@"com.SJMediaCacheServer.cache"];
+        if ( ![NSFileManager.defaultManager fileExistsAtPath:mcs_path] ) {
+            [NSFileManager.defaultManager createDirectoryAtPath:mcs_path withIntermediateDirectories:YES attributes:nil error:NULL];
+            const char *filePath = [mcs_path fileSystemRepresentation];
             const char *attrName = "com.apple.MobileBackup";
             u_int8_t attrValue = 1;
             setxattr(filePath, attrName, &attrValue, sizeof(attrValue), 0, 0);
         }
     });
-    return path;
+}
+
++ (NSString *)path {
+    return mcs_path;
 }
 
 + (unsigned long long)size {
-    return [NSFileManager.defaultManager mcs_directorySizeAtPath:self.path];
+    return [NSFileManager.defaultManager mcs_directorySizeAtPath:mcs_path];
 }
 
 + (NSString *)assetPathForFilename:(NSString *)filename {
-    return [self.path stringByAppendingPathComponent:filename];
+    return [mcs_path stringByAppendingPathComponent:filename];
 }
 
 + (NSString *)databasePath {
-    return [self.path stringByAppendingPathComponent:@"mcs.db"];
+    return [mcs_path stringByAppendingPathComponent:@"mcs.db"];
 }
 @end

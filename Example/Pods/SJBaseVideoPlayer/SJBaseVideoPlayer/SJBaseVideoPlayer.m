@@ -48,6 +48,10 @@ typedef struct _SJPlayerControlInfo {
     } pan;
     
     struct {
+        CGFloat initialRate;
+    } longPress;
+    
+    struct {
         SJPlayerGestureTypeMask disabledGestures;
         CGFloat rateWhenLongPressGestureTriggered;
         BOOL allowHorizontalTriggeringOfPanGesturesInCells;
@@ -401,11 +405,12 @@ typedef struct _SJPlayerControlInfo {
 - (void)_handleLongPress:(SJLongPressGestureRecognizerState)state {
     switch ( state ) {
         case SJLongPressGestureRecognizerStateBegan:
+            self.controlInfo->longPress.initialRate = self.rate;
         case SJLongPressGestureRecognizerStateChanged:
             self.rate = self.rateWhenLongPressGestureTriggered;
             break;
         case SJLongPressGestureRecognizerStateEnded:
-            self.rate = 1.0;
+            self.rate = self.controlInfo->longPress.initialRate;
             break;
     }
     

@@ -290,6 +290,7 @@ NS_ASSUME_NONNULL_BEGIN
                 }
                     break;
             }
+            [self _updateContentForDefinitionButtonItemIfNeeded];
         };
     }
     return _sj_switchingInfoObserver;

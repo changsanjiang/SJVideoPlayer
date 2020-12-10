@@ -49,6 +49,25 @@
     // Do any additional setup after loading the view from its nib.
 }
 
+
+- (BOOL)shouldAutorotate {
+    return NO;
+}
+
+- (void)viewDidAppear:(BOOL)animated {
+    [super viewDidAppear:animated];
+    [_player vc_viewDidAppear];
+}
+
+- (void)viewWillDisappear:(BOOL)animated {
+    [super viewWillDisappear:animated];
+    [_player vc_viewWillDisappear];
+}
+
+- (void)viewDidDisappear:(BOOL)animated {
+    [super viewDidDisappear:animated];
+    [_player vc_viewDidDisappear];
+}
 @end
 
 

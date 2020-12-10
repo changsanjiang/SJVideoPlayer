@@ -46,7 +46,7 @@ target 'SJVideoPlayer_Example' do
 #  pod 'SJBaseVideoPlayer/IJKPlayer', :path => '../../SJBaseVideoPlayer'
 #
 ## 切换为 Aliplayer, 详见: https://github.com/changsanjiang/SJVideoPlayer/wiki/Use-AliPlayer
-#  pod 'SJBaseVideoPlayer/AliPlayer', :path => '../../SJBaseVideoPlayer'
+#  pod 'SJBaseVideoPlayer/AliPlayer'#, :path => '../../SJBaseVideoPlayer'
 #
 ## 切换为 AliVodPlayer, 详见: https://github.com/changsanjiang/SJVideoPlayer/wiki/Use-AliVodPlayer
 #  pod 'SJBaseVideoPlayer/AliVodPlayer', :path => '../../SJBaseVideoPlayer'

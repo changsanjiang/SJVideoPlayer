@@ -14,7 +14,10 @@
 
 #if __has_include(<AliyunPlayer/AliyunPlayer.h>)
 #import <SJBaseVideoPlayer/SJAliMediaPlaybackController.h>
+
 #endif
+
+#import <SJVideoPlayer/SJVideoPlayerURLAsset+SJExtendedDefinition.h>
 
 @interface SJTestAliViewController3 ()
 @property (nonatomic, strong) SJVideoPlayer *player;
@@ -33,6 +36,7 @@
     SJVideoPlayerURLAsset *asset = [SJVideoPlayerURLAsset.alloc initWithSource:source];
 //    asset.trialEndPosition = 30; // 试看30秒
     _player.URLAsset = asset;
+    
 #else
     // 切换为 Aliplayer, 详见: https://github.com/changsanjiang/SJVideoPlayer/wiki/Use-AliPlayer
     [_player.prompt show:[NSAttributedString sj_UIKitText:^(id<SJUIKitTextMakerProtocol>  _Nonnull make) {
@@ -58,6 +62,24 @@
     [_player pause];
 }
 
+- (BOOL)shouldAutorotate {
+    return NO;
+}
+
+- (void)viewDidAppear:(BOOL)animated {
+    [super viewDidAppear:animated];
+    [_player vc_viewDidAppear];
+}
+
+- (void)viewWillDisappear:(BOOL)animated {
+    [super viewWillDisappear:animated];
+    [_player vc_viewWillDisappear];
+}
+
+- (void)viewDidDisappear:(BOOL)animated {
+    [super viewDidDisappear:animated];
+    [_player vc_viewDidDisappear];
+}
 @end
 
 

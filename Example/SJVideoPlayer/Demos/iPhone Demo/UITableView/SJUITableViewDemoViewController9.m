@@ -31,7 +31,7 @@
         // 开启小浮窗(当播放器视图滑动消失时, 显示小浮窗视图)
         _player.floatSmallViewController.enabled = YES;
         // 自定义浮窗的初始位置
-        _player.floatSmallViewController.layoutPosition = SJFloatViewLayoutPositionBottomRight;
+//        _player.floatSmallViewController.layoutPosition = SJFloatViewLayoutPositionBottomRight;
         
         __weak typeof(self) _self = self;
         // 单击小浮窗时的回调

@@ -6,44 +6,45 @@
 //
 
 #import "SJAVMediaPlayerLoader.h"
-#import "SJAVMediaPlayer.h"
+#import "SJVideoPlayerURLAsset+SJAVMediaPlaybackAdd.h"
 #import <objc/message.h>
 
 NS_ASSUME_NONNULL_BEGIN
 @implementation SJAVMediaPlayerLoader
 static void *kPlayer = &kPlayer;
 
-+ (SJAVMediaPlayer *)loadPlayerForMedia:(id<SJMediaModelProtocol>)media {
++ (nullable SJAVMediaPlayer *)loadPlayerForMedia:(SJVideoPlayerURLAsset *)media {
 #ifdef DEBUG
     NSParameterAssert(media);
 #endif
     
-    id<SJMediaModelProtocol> target = media.originMedia ? : media;
+    SJVideoPlayerURLAsset *target = media.original ?: media;
     SJAVMediaPlayer *__block _Nullable player = objc_getAssociatedObject(target, kPlayer);
-    BOOL able = player.sj_assetStatus != SJAssetStatusFailed;
-    if ( player && able ) {
-        if ( target == media && player.sj_playbackInfo.isPlayed )
-            [player replay];
-        
+    if ( player != nil && player.assetStatus != SJAssetStatusFailed ) {
         return player;
     }
     
-    AVAsset *_Nullable asset = [(id)media respondsToSelector:@selector(avAsset)]?[(id)media avAsset]:nil;
-    if ( asset ) {
-        player = [[SJAVMediaPlayer alloc] initWithAVAsset:asset specifyStartTime:target.specifyStartTime];
-    }
-    else {
-        player = [[SJAVMediaPlayer alloc] initWithURL:target.mediaURL specifyStartTime:target.specifyStartTime];
+    AVPlayer *avPlayer = target.avPlayer;
+    if ( avPlayer == nil ) {
+        AVPlayerItem *avPlayerItem = target.avPlayerItem;
+        if ( avPlayerItem == nil ) {
+            AVAsset *avAsset = target.avAsset;
+            if ( avAsset == nil ) {
+                avAsset = [AVURLAsset URLAssetWithURL:target.mediaURL options:nil];
+            }
+            avPlayerItem = [AVPlayerItem playerItemWithAsset:avAsset];
+        }
+        avPlayer = [AVPlayer playerWithPlayerItem:avPlayerItem];
     }
     
+    player = [SJAVMediaPlayer.alloc initWithAVPlayer:avPlayer startPosition:media.startPosition];
     objc_setAssociatedObject(target, kPlayer, player, OBJC_ASSOCIATION_RETAIN_NONATOMIC);
-    
     return player;
 }
 
-+ (void)clearPlayerForMedia:(id<SJMediaModelProtocol>)media {
++ (void)clearPlayerForMedia:(SJVideoPlayerURLAsset *)media {
     if ( media != nil ) {
-        id<SJMediaModelProtocol> target = media.originMedia?:media;
+        id<SJMediaModelProtocol> target = media.original ?: media;
         objc_setAssociatedObject(target, kPlayer, nil, OBJC_ASSOCIATION_RETAIN_NONATOMIC);
     }
 }

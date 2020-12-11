@@ -15,11 +15,13 @@
 #import <SJBaseVideoPlayer/SJBaseVideoPlayerConst.h>
 #import <SJBaseVideoPlayer/SJReachability.h>
 #import <SJBaseVideoPlayer/UIView+SJBaseVideoPlayerExtended.h>
+#import <SJBaseVideoPlayer/NSTimer+SJAssetAdd.h>
 #else
 #import "SJReachability.h"
 #import "SJBaseVideoPlayer.h"
 #import "SJBaseVideoPlayerConst.h"
 #import "UIView+SJBaseVideoPlayerExtended.h"
+#import "NSTimer+SJAssetAdd.h"
 #endif
 
 #if __has_include(<SJUIKit/SJAttributesFactory.h>)
@@ -38,6 +40,11 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic, strong, nullable) SJEdgeControlButtonItem *moreButtonItem;
 @property (nonatomic, strong, nullable) SJEdgeControlButtonItem *filmEditingButtonItem;
 @property (nonatomic, strong, nullable) SJEdgeControlButtonItem *definitionButtonItem;
+
+/// 用于断网之后(当网络恢复后使播放器自动恢复播放)
+@property (nonatomic, strong, nullable) id<SJReachabilityObserver> sj_reachbilityObserver;
+@property (nonatomic, strong, nullable) NSTimer *sj_timeoutTimer;
+@property (nonatomic) BOOL sj_isTimeout;
 @end
 
 @implementation SJVideoPlayer
@@ -49,7 +56,7 @@ NS_ASSUME_NONNULL_BEGIN
 }
 
 + (NSString *)version {
-    return @"v3.1.1";
+    return @"v3.2.7";
 }
 
 + (instancetype)player {
@@ -62,7 +69,6 @@ NS_ASSUME_NONNULL_BEGIN
     [self.switcher switchControlLayerForIdentitfier:SJControlLayer_Edge];   // 切换到添加的控制层
     self.showMoreItemToTopControlLayer = YES;                               // 显示更多按钮
     self.defaultEdgeControlLayer.hiddenBottomProgressIndicator = NO;        // 显示底部进度条
-    self.defaultEdgeControlLayer.showNetworkSpeedToLoadingView = YES;       // 显示网速
     return self;
 }
 
@@ -84,12 +90,11 @@ NS_ASSUME_NONNULL_BEGIN
     self = [super init];
     if ( !self ) return nil;
     [self _initializeSwitcher];
-    dispatch_async(dispatch_get_global_queue(0, 0), ^{
-        [self _initializeSwitcherObserver];
-        [self _initializeSettingsObserver];
-        [self _initializeAssetStatusObserver];
-        [self _initializeAppearManagerObserver];
-    });
+    [self _initializeSwitcherObserver];
+    [self _initializeSettingsObserver];
+    [self _initializeAssetStatusObserver];
+    [self _initializeAppearManagerObserver];
+    [self _initializeReachbilityObserver];
     [self _updateCommonProperties];
     return self;
 }
@@ -285,6 +290,7 @@ NS_ASSUME_NONNULL_BEGIN
                 }
                     break;
             }
+            [self _updateContentForDefinitionButtonItemIfNeeded];
         };
     }
     return _sj_switchingInfoObserver;
@@ -338,8 +344,9 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (void)_initializeAssetStatusObserver {
     [NSNotificationCenter.defaultCenter addObserver:self selector:@selector(_switchControlLayerIfNeeded) name:SJVideoPlayerPlaybackTimeControlStatusDidChangeNotification object:self];
+    [NSNotificationCenter.defaultCenter addObserver:self selector:@selector(_resumeOrStopTimeoutTimer) name:SJVideoPlayerPlaybackTimeControlStatusDidChangeNotification object:self];
     [NSNotificationCenter.defaultCenter addObserver:self selector:@selector(_switchControlLayerIfNeeded) name:SJVideoPlayerAssetStatusDidChangeNotification object:self];
-    [NSNotificationCenter.defaultCenter addObserver:self selector:@selector(_switchControlLayerIfNeeded) name:SJVideoPlayerDidPlayToEndTimeNotification object:self];
+    [NSNotificationCenter.defaultCenter addObserver:self selector:@selector(_switchControlLayerIfNeeded) name:SJVideoPlayerPlaybackDidFinishNotification object:self];
 }
 
 - (void)_initializeSettingsObserver {
@@ -382,6 +389,32 @@ NS_ASSUME_NONNULL_BEGIN
     return NO;
 }
 
+- (void)_resumeOrStopTimeoutTimer {
+    if ( self.isBuffering || self.isEvaluating ) {
+        if ( SJReachability.shared.networkStatus == SJNetworkStatus_NotReachable && _sj_timeoutTimer == nil ) {
+            __weak typeof(self) _self = self;
+            _sj_timeoutTimer = [NSTimer sj_timerWithTimeInterval:3 repeats:YES usingBlock:^(NSTimer * _Nonnull timer) {
+                [timer invalidate];
+                __strong typeof(_self) self = _self;
+                if ( !self ) return;
+#ifdef DEBUG
+                NSLog(@"%d \t %s \t 网络超时, 切换到无网控制层!", (int)__LINE__, __func__);
+#endif
+                self.sj_isTimeout = YES;
+                [self _switchControlLayerIfNeeded];
+            }];
+            [_sj_timeoutTimer sj_fire];
+            [NSRunLoop.mainRunLoop addTimer:_sj_timeoutTimer forMode:NSRunLoopCommonModes];
+        }
+    }
+    else if ( _sj_timeoutTimer != nil ) {
+        [_sj_timeoutTimer invalidate];
+        _sj_timeoutTimer = nil;
+        self.sj_isTimeout = NO;
+    }
+
+}
+
 - (void)_switchControlLayerIfNeeded {
     // 资源出错时
     // - 发生错误时, 切换到加载失败控制层
@@ -392,11 +425,8 @@ NS_ASSUME_NONNULL_BEGIN
     // 当处于缓冲状态时
     // - 当前如果没有网络, 则切换到无网空制层
     //
-    else if ( self.reasonForWaitingToPlay == SJWaitingToMinimizeStallsReason ) {
-        if ( SJReachability.shared.networkStatus == SJNetworkStatus_NotReachable && !self.assetURL.isFileURL ) {
-            // 切换
-            [self.switcher switchControlLayerForIdentitfier:SJControlLayer_NotReachableAndPlaybackStalled];
-        }
+    else if ( self.sj_isTimeout ) {
+        [self.switcher switchControlLayerForIdentitfier:SJControlLayer_NotReachableAndPlaybackStalled];
     }
     else {
         if ( self.switcher.currentIdentifier == SJControlLayer_LoadFailed ||
@@ -422,12 +452,35 @@ NS_ASSUME_NONNULL_BEGIN
     };
 }
 
+- (void)_initializeReachbilityObserver {
+    _sj_reachbilityObserver = [self.reachability getObserver];
+    __weak typeof(self) _self = self;
+    _sj_reachbilityObserver.networkStatusDidChangeExeBlock = ^(id<SJReachability>  _Nonnull r) {
+        __strong typeof(_self) self = _self;
+        if ( !self ) return;
+        if ( r.networkStatus == SJNetworkStatus_NotReachable ) {
+            [self _resumeOrStopTimeoutTimer];
+        }
+        else if ( self.switcher.currentIdentifier == SJControlLayer_NotReachableAndPlaybackStalled ) {
+#ifdef DEBUG
+            NSLog(@"%d \t %s \t 网络恢复, 将刷新资源, 使播放器恢复播放!", (int)__LINE__, __func__);
+#endif
+            [self refresh];
+        }
+    };
+}
+
 - (void)_updateContentForFilmEditingButtonItemIfNeeded {
     if ( self.isEnabledFilmEditing ) {
         // film editing item
         // 小屏或者 M3U8的时候 自动隐藏
         // M3u8 暂时无法剪辑
-        self.filmEditingButtonItem.hidden = (!self.isFullScreen || self.URLAsset.isM3u8) || !self.URLAsset;
+        BOOL isUnsupportedFormat = self.URLAsset.isM3u8;
+        BOOL isPictureInPictureEnabled = NO;
+        if (@available(iOS 14.0, *)) {
+            isPictureInPictureEnabled = self.playbackController.pictureInPictureStatus != SJPictureInPictureStatusUnknown;
+        }
+        self.filmEditingButtonItem.hidden = (self.URLAsset == nil) || !self.isFullScreen || isUnsupportedFormat || isPictureInPictureEnabled;
         self.filmEditingButtonItem.image = SJVideoPlayerSettings.commonSettings.filmEditingBtnImage;
         [self.defaultEdgeControlLayer.rightAdapter reload];
     }

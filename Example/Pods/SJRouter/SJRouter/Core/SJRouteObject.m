@@ -52,6 +52,8 @@ NS_ASSUME_NONNULL_BEGIN
     return self;
 }
 
+#pragma mark -
+
 - (void)handleRequest:(SJRouteRequest *)request topViewController:(UIViewController *)topViewController completionHandler:(nullable SJCompletionHandler)completionHandler {
     if ( self.createInstanceBlock != nil ) {
         self.createInstanceBlock(request, ^(id  _Nullable result, NSError * _Nullable error) {

@@ -9,7 +9,7 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
-static NSNotificationName const _SJVideoDefinitionSwitchingStatusDidChangeNotification = @"_SJVideoDefinitionSwitchingStatusDidChangeNotification";
+static NSNotificationName const _SJVideoDefinitionSwitchStatusDidChangeNotification = @"_SJVideoDefinitionSwitchStatusDidChangeNotification";
 
 @implementation SJVideoDefinitionSwitchingInfoObserver {
     id _token;
@@ -19,7 +19,7 @@ static NSNotificationName const _SJVideoDefinitionSwitchingStatusDidChangeNotifi
     self = [super init];
     if ( self ) {
         __weak typeof(self) _self = self;
-        _token = [NSNotificationCenter.defaultCenter addObserverForName:_SJVideoDefinitionSwitchingStatusDidChangeNotification object:info queue:NSOperationQueue.mainQueue usingBlock:^(NSNotification * _Nonnull note) {
+        _token = [NSNotificationCenter.defaultCenter addObserverForName:_SJVideoDefinitionSwitchStatusDidChangeNotification object:info queue:NSOperationQueue.mainQueue usingBlock:^(NSNotification * _Nonnull note) {
             __strong typeof(_self) self = _self;
             if ( !self ) return ;
             if ( self.statusDidChangeExeBlock ) self.statusDidChangeExeBlock(note.object);
@@ -49,7 +49,7 @@ static NSNotificationName const _SJVideoDefinitionSwitchingStatusDidChangeNotifi
 - (void)setStatus:(SJDefinitionSwitchStatus)status {
     if ( status != _status ) {
         _status = status;
-        [NSNotificationCenter.defaultCenter postNotificationName:_SJVideoDefinitionSwitchingStatusDidChangeNotification object:self];
+        [NSNotificationCenter.defaultCenter postNotificationName:_SJVideoDefinitionSwitchStatusDidChangeNotification object:self];
     }
 }
 @end

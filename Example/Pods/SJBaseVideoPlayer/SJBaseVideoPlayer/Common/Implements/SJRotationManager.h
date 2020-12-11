@@ -8,12 +8,16 @@
 
 #import <Foundation/Foundation.h>
 #import "SJRotationManagerDefines.h"
-#import "SJViewControllerManagerDefines.h"
+@protocol SJRotationManagerDelegate;
 
 NS_ASSUME_NONNULL_BEGIN
 @interface SJRotationManager : NSObject<SJRotationManager>
+@property (nonatomic, weak, nullable) id<SJRotationManagerDelegate> delegate;
+@end
 
-@property (nonatomic, weak, nullable) id<SJViewControllerManager> viewControllerManager;
-
+@protocol SJRotationManagerDelegate <NSObject>
+- (BOOL)prefersStatusBarHidden;
+- (UIStatusBarStyle)preferredStatusBarStyle;
+- (void)pushViewController:(UIViewController *)viewController animated:(BOOL)animated;
 @end
 NS_ASSUME_NONNULL_END

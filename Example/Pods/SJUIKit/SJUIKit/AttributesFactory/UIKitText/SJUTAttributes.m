@@ -2,7 +2,7 @@
 //  SJUTAttributes.m
 //  AttributesFactory
 //
-//  Created by BlueDancer on 2019/4/12.
+//  Created by 畅三江 on 2019/4/12.
 //  Copyright © 2019 SanJiang. All rights reserved.
 //
 
@@ -129,6 +129,13 @@ NS_ASSUME_NONNULL_BEGIN
 - (SJUTBaseLineOffsetAttribute)baseLineOffset {
     return ^id<SJUTAttributesProtocol>(double offset) {
         self.recorder->baseLineOffset = @(offset);
+        return self;
+    };
+}
+
+- (SJUTSetAttribute)set {
+    return ^id<SJUTAttributesProtocol>(id _Nullable value, NSString *forKey) {
+        [self.recorder setCustomValue:value forAttributeKey:forKey];
         return self;
     };
 }

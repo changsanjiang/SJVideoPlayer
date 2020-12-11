@@ -86,7 +86,7 @@ static NSString * const SDDiskCacheExtendedAttributeName = @"com.hackemist.SDDis
     
     // get cache Path for image key
     NSString *cachePathForKey = [self cachePathForKey:key];
-    // transform to NSUrl
+    // transform to NSURL
     NSURL *fileURL = [NSURL fileURLWithPath:cachePathForKey];
     
     [data writeToURL:fileURL options:self.config.diskCacheWritingOptions error:nil];
@@ -146,11 +146,15 @@ static NSString * const SDDiskCacheExtendedAttributeName = @"com.hackemist.SDDis
         case SDImageCacheConfigExpireTypeAccessDate:
             cacheContentDateKey = NSURLContentAccessDateKey;
             break;
-            
         case SDImageCacheConfigExpireTypeModificationDate:
             cacheContentDateKey = NSURLContentModificationDateKey;
             break;
-            
+        case SDImageCacheConfigExpireTypeCreationDate:
+            cacheContentDateKey = NSURLCreationDateKey;
+            break;
+        case SDImageCacheConfigExpireTypeChangeDate:
+            cacheContentDateKey = NSURLAttributeModificationDateKey;
+            break;
         default:
             break;
     }

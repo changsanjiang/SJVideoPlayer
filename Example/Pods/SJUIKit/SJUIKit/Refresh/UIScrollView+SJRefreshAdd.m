@@ -22,38 +22,24 @@ char const SJRefreshingNonePageSize = -1;
 - (void)configFooter:(MJRefreshAutoGifFooter *)footer;
 @end
 
-@implementation SJRefreshConfig {
-    BOOL _is_set;
-    __weak UIScrollView *_scrollView;
-}
-- (instancetype)initWithScrollView:(__weak UIScrollView *)scrollView {
-    self = [super init];
-    if ( !self ) return nil;
-    _scrollView = scrollView;
-    return self;
-}
+@implementation SJRefreshConfig
 - (void)configHeader:(MJRefreshGifHeader *)header {
     header.gifView.image = self.gifImage_header;
     if ( self.textColor ) {
         header.stateLabel.textColor = self.textColor;
         header.lastUpdatedTimeLabel.textColor = self.textColor;
     }
+    if ( self.font ) {
+        header.stateLabel.font = self.font;
+        header.lastUpdatedTimeLabel.font = self.font;
+    }
     header.ignoredScrollViewContentInsetTop = self.ignoredTopEdgeInset;
 }
 - (void)configFooter:(MJRefreshAutoGifFooter *)footer {
     footer.gifView.image = self.gifImage_footer;
     if ( self.textColor ) footer.stateLabel.textColor = self.textColor;
-}
-
-- (void)setIgnoredTopEdgeInset:(CGFloat)ignoredTopEdgeInset {
-    _is_set = YES;
-    _ignoredTopEdgeInset = ignoredTopEdgeInset;
-}
-
-@synthesize ignoredTopEdgeInset = _ignoredTopEdgeInset;
-- (CGFloat)ignoredTopEdgeInset {
-    if ( !_is_set ) return _scrollView.contentInset.top;
-    return _ignoredTopEdgeInset;
+    if ( self.font ) footer.stateLabel.font = self.font;
+    footer.ignoredScrollViewContentInsetBottom = self.ignoredBottomEdgeInset;
 }
 @end
 
@@ -65,7 +51,7 @@ char const SJRefreshingNonePageSize = -1;
         [self addSubview:view];
         view.translatesAutoresizingMaskIntoConstraints = NO;
         [self addConstraint:[NSLayoutConstraint constraintWithItem:view attribute:NSLayoutAttributeCenterX relatedBy:NSLayoutRelationEqual toItem:self attribute:NSLayoutAttributeCenterX multiplier:1 constant:-self.mj_insetL]];
-        [self addConstraint:[NSLayoutConstraint constraintWithItem:view attribute:NSLayoutAttributeCenterY relatedBy:NSLayoutRelationEqual toItem:self attribute:NSLayoutAttributeCenterY multiplier:1 constant:-64]];
+        [self addConstraint:[NSLayoutConstraint constraintWithItem:view attribute:NSLayoutAttributeCenterY relatedBy:NSLayoutRelationEqual toItem:self attribute:NSLayoutAttributeCenterY multiplier:0.9 constant:0]];
         
         objc_setAssociatedObject(self, _cmd, view, OBJC_ASSOCIATION_RETAIN_NONATOMIC);
     }
@@ -78,7 +64,7 @@ char const SJRefreshingNonePageSize = -1;
             MJRefreshState headerState = self.mj_header.state;
             MJRefreshState footerState = self.mj_footer.state;
             if ( headerState == MJRefreshStateRefreshing || headerState == MJRefreshStateWillRefresh ||
-                footerState == MJRefreshStateRefreshing || footerState == MJRefreshStateWillRefresh ) {
+                 footerState == MJRefreshStateRefreshing || footerState == MJRefreshStateWillRefresh ) {
                 placeholderView.hidden = YES;
             }
             else if ( [self isKindOfClass:[UITableView class]] ) {
@@ -200,10 +186,7 @@ char const SJRefreshingNonePageSize = -1;
     config.sj_pageNum = beginPageNum;
     self.mj_footer.hidden = YES;
     
-    [UIScrollView.sj_commonConfig configHeader:(MJRefreshGifHeader *)self.mj_header];
-    [UIScrollView.sj_commonConfig configFooter:(MJRefreshAutoGifFooter *)self.mj_footer];
-    [config configHeader:(MJRefreshGifHeader *)self.mj_header];
-    [config configFooter:(MJRefreshAutoGifFooter *)self.mj_footer];
+    [self sj_updateRefreshConfig];
 }
 
 - (void)sj_endRefreshingWithItemCount:(NSUInteger)itemCount {
@@ -315,22 +298,24 @@ char const SJRefreshingNonePageSize = -1;
 
 - (SJRefreshConfig *)sj_refreshConfig {
     SJRefreshConfig *config = objc_getAssociatedObject(self, _cmd);
-    if ( config ) return config;
-    config = [SJRefreshConfig new];
-    unsigned int count = 0;
-    objc_property_t *list = class_copyPropertyList([SJRefreshConfig class], &count);
-    SJRefreshConfig *common = UIScrollView.sj_commonConfig;
-    if (list != NULL && count > 0) {
-        for ( int i = 0; i < count; ++i ) {
-            objc_property_t property_t = list[i];
-            const char *name  = property_getName(property_t);
-            NSString *property = [NSString stringWithUTF8String:name];
-            [config setValue:[common valueForKey:property] forKey:property];
-        }
-        free(list);
+    if ( config == nil ) {
+        config = [SJRefreshConfig new];
+        SJRefreshConfig *common = UIScrollView.sj_commonConfig;
+        config.textColor                = common.textColor;
+        config.font                     = common.font;
+        config.gifImage_header          = common.gifImage_header;
+        config.gifImage_footer          = common.gifImage_footer;
+        config.ignoredTopEdgeInset      = common.ignoredTopEdgeInset;
+        config.ignoredBottomEdgeInset   = common.ignoredBottomEdgeInset;
+        objc_setAssociatedObject(self, _cmd, config, OBJC_ASSOCIATION_RETAIN_NONATOMIC);
     }
-    objc_setAssociatedObject(self, _cmd, config, OBJC_ASSOCIATION_RETAIN_NONATOMIC);
     return config;
+}
+
+- (void)sj_updateRefreshConfig {
+    SJRefreshConfig *config = self.sj_refreshConfig;
+    [config configHeader:(MJRefreshGifHeader *)self.mj_header];
+    [config configFooter:(MJRefreshAutoGifFooter *)self.mj_footer];
 }
 @end
 NS_ASSUME_NONNULL_END

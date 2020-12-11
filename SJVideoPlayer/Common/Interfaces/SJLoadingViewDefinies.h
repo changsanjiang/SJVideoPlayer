@@ -2,7 +2,7 @@
 //  SJLoadingViewDefinies.h
 //  Pods
 //
-//  Created by BlueDancer on 2019/11/27.
+//  Created by 畅三江 on 2019/11/27.
 //
 
 #ifndef SJLoadingViewDefinies_h
@@ -12,9 +12,10 @@
 
 NS_ASSUME_NONNULL_BEGIN
 @protocol SJLoadingView <NSObject>
+@property (nonatomic, readonly, getter=isAnimating) BOOL animating;
+@property (nonatomic) BOOL showNetworkSpeed;
 @property (nonatomic, strong, nullable) NSAttributedString *networkSpeedStr;
 
-@property (nonatomic, readonly, getter=isAnimating) BOOL animating;
 - (void)start;
 - (void)stop;
 @end

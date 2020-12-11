@@ -9,11 +9,13 @@
 #import "SJVideoPlayerPresentView.h"
 #import "SJBaseVideoPlayerConst.h"
 #import "NSTimer+SJAssetAdd.h"
+#import <UIKit/UIGraphicsRendererSubclass.h>
 
 NS_ASSUME_NONNULL_BEGIN
 @interface SJVideoPlayerPresentView ()<UIGestureRecognizerDelegate>
 @property (nonatomic, strong, readonly) UIPanGestureRecognizer *pan;
 @property (nonatomic, strong, readonly) UIPinchGestureRecognizer *pinch;
+@property (nonatomic, strong, readonly) UILongPressGestureRecognizer *longPress;
 
 @property (nonatomic, strong, nullable) NSTimer *timer; ///< 单击与双击手势识别timer
 @property (nonatomic) NSInteger numberOfTaps;
@@ -27,6 +29,7 @@ NS_ASSUME_NONNULL_BEGIN
 @synthesize doubleTapHandler = _doubleTapHandler;
 @synthesize panHandler = _panHandler;
 @synthesize pinchHandler = _pinchHandler;
+@synthesize longPressHandler = _longPressHandler;
 @synthesize movingDirection = _movingDirection;
 @synthesize triggeredPosition = _triggeredPosition;
 
@@ -58,7 +61,7 @@ NS_ASSUME_NONNULL_BEGIN
 }
 
 - (void)handleSingleTap:(UITouch *)tap {
-    if ( ![self _isSupporedGestureType:SJPlayerGestureTypeMask_SingleTap ] )
+    if ( ![self _isSupported:SJPlayerGestureTypeMask_SingleTap ] )
         return;
     
     CGPoint location = [tap locationInView:self];
@@ -69,7 +72,7 @@ NS_ASSUME_NONNULL_BEGIN
 }
 
 - (void)handleDoubleTap:(UITouch *)tap {
-    if ( ![self _isSupporedGestureType:SJPlayerGestureTypeMask_DoubleTap] )
+    if ( ![self _isSupported:SJPlayerGestureTypeMask_DoubleTap] )
         return;
     
     CGPoint location = [tap locationInView:self];
@@ -110,6 +113,26 @@ NS_ASSUME_NONNULL_BEGIN
             break;
         default:
             break;
+    }
+}
+
+- (void)handleLongPress:(UILongPressGestureRecognizer *)longPress {
+    switch ( longPress.state ) {
+        case UIGestureRecognizerStateBegan: {
+            if ( _longPressHandler ) _longPressHandler(self, SJLongPressGestureRecognizerStateBegan);
+        }
+            break;
+        case UIGestureRecognizerStateChanged: {
+            if ( _longPressHandler ) _longPressHandler(self, SJLongPressGestureRecognizerStateChanged);
+        }
+            break;
+        case UIGestureRecognizerStateEnded:
+        case UIGestureRecognizerStateCancelled:
+        case UIGestureRecognizerStateFailed: {
+            if ( _longPressHandler ) _longPressHandler(self, SJLongPressGestureRecognizerStateEnded);
+        }
+            break;
+        default: break;
     }
 }
 
@@ -175,8 +198,11 @@ NS_ASSUME_NONNULL_BEGIN
         case SJPlayerGestureType_Pinch:
             gesture = _pinch;
             break;
+        case SJPlayerGestureType_LongPress:
+            gesture = _longPress;
+            break;
     }
-    [gesture setValue:@(UIGestureRecognizerStateCancelled) forKey:@"state"];
+    gesture.state = UIGestureRecognizerStateCancelled;
 }
 
 - (UIGestureRecognizerState)stateOfGesture:(SJPlayerGestureType)type {
@@ -196,7 +222,7 @@ NS_ASSUME_NONNULL_BEGIN
 #pragma mark -
 
 - (void)_setupViews {
-    self.supportedGestureTypes = SJPlayerGestureTypeMask_All;
+    self.supportedGestureTypes = SJPlayerGestureTypeMask_Default;
     self.tag = SJBaseVideoPlayerPresentViewTag;
     self.backgroundColor = [UIColor blackColor];
     self.placeholderImageView.frame = self.bounds;
@@ -215,8 +241,15 @@ NS_ASSUME_NONNULL_BEGIN
     _pinch = [[UIPinchGestureRecognizer alloc] initWithTarget:self action:@selector(handlePinch:)];
     _pinch.delegate = self;
 
+    /// LongPress
+    _longPress = [UILongPressGestureRecognizer.alloc initWithTarget:self action:@selector(handleLongPress:)];
+    _longPress.delaysTouchesBegan = YES;
+    _longPress.delegate = self;
+    [_pan shouldRequireFailureOfGestureRecognizer:_longPress];
+    
     [self addGestureRecognizer:_pan];
     [self addGestureRecognizer:_pinch];
+    [self addGestureRecognizer:_longPress];
 }
 
 - (UIImageView *)placeholderImageView {
@@ -237,10 +270,15 @@ NS_ASSUME_NONNULL_BEGIN
     SJPlayerGestureType type = SJPlayerGestureType_Pan;
     if ( gestureRecognizer == _pinch )
         type = SJPlayerGestureType_Pinch;
+    else if ( gestureRecognizer == _longPress )
+        type = SJPlayerGestureType_LongPress;
     
     switch ( type ) {
         default: break;
         case SJPlayerGestureType_Pan: {
+            if ( ![self _isSupported:SJPlayerGestureTypeMask_Pan] )
+                return NO;
+
             CGPoint location = [_pan locationInView:self];
             if ( location.x > self.bounds.size.width * 0.5 ) {
                 _triggeredPosition = SJPanGestureTriggeredPosition_Right;
@@ -259,26 +297,31 @@ NS_ASSUME_NONNULL_BEGIN
                 _movingDirection = SJPanGestureMovingDirection_V;
             }
             
-            if ( ![self _isSupporedGestureType:SJPlayerGestureTypeMask_Pan] )
+            if ( _movingDirection == SJPanGestureMovingDirection_H && ![self _isSupported:SJPlayerGestureTypeMask_Pan_H] )
                 return NO;
             
-            if ( _movingDirection == SJPanGestureMovingDirection_H && ![self _isSupporedGestureType:SJPlayerGestureTypeMask_Pan_H] )
+            if ( _movingDirection == SJPanGestureMovingDirection_V && ![self _isSupported:SJPlayerGestureTypeMask_Pan_V] )
                 return NO;
             
-            if ( _movingDirection == SJPanGestureMovingDirection_V && ![self _isSupporedGestureType:SJPlayerGestureTypeMask_Pan_V] )
+            if ( _longPress.state == UIGestureRecognizerStateChanged )
                 return NO;
         }
             break;
         case SJPlayerGestureType_Pinch: {
-            if ( ![self _isSupporedGestureType:SJPlayerGestureTypeMask_Pinch] )
+            if ( ![self _isSupported:SJPlayerGestureTypeMask_Pinch] )
+                return NO;
+        }
+            break;
+        case SJPlayerGestureType_LongPress: {
+            if ( ![self _isSupported:SJPlayerGestureTypeMask_LongPress] )
                 return NO;
         }
             break;
     }
     
-    if ( _gestureRecognizerShouldTrigger && !_gestureRecognizerShouldTrigger(self, type, [gestureRecognizer locationInView:gestureRecognizer.view]) )
+    if ( _gestureRecognizerShouldTrigger && !_gestureRecognizerShouldTrigger(self, type, [gestureRecognizer locationInView:self]) )
         return NO;
-    
+
     return YES;
 }
 
@@ -286,7 +329,7 @@ NS_ASSUME_NONNULL_BEGIN
     if ( UIGestureRecognizerStateFailed == gestureRecognizer.state ||
          UIGestureRecognizerStateCancelled == gestureRecognizer.state )
         return NO;
-    
+     
     if ( otherGestureRecognizer != _pan &&
          otherGestureRecognizer != _pinch )
         return NO;
@@ -359,7 +402,7 @@ NS_ASSUME_NONNULL_BEGIN
     _numberOfTaps = 0;
 }
 
-- (BOOL)_isSupporedGestureType:(SJPlayerGestureTypeMask)type {
+- (BOOL)_isSupported:(SJPlayerGestureTypeMask)type {
     return _supportedGestureTypes & type;
 }
 @end

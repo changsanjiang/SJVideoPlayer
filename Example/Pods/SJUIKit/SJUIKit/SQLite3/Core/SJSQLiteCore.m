@@ -11,10 +11,12 @@
 #import "SJSQLiteTableInfo.h"
 #import "SJSQLiteColumnInfo.h"
 #import "SJSQLiteObjectInfo.h"
+#import "SJSQLite3Logger.h"
+#import <sqlite3.h>
 
 NS_ASSUME_NONNULL_BEGIN
 @implementation NSMutableString (SJSQLite3CoreExtended)
-- (void)sjsql_deleteSubffix:(NSString *)str {
+- (void)sjsql_deleteSuffix:(NSString *)str {
     if ( [self hasSuffix:str] ) {
         [self deleteCharactersInRange:NSMakeRange(self.length - str.length, str.length)];
     }
@@ -99,8 +101,8 @@ sj_sqlite3_stmt_insert_or_update(SJSQLiteObjectInfo *objInfo) {
         [values appendFormat:@"'%@'", sj_sqlite3_stmt_get_column_value(column, value)];
         if ( column != last) [values appendFormat:@","];
     }
-    [fields sjsql_deleteSubffix:@","];
-    [values sjsql_deleteSubffix:@","];
+    [fields sjsql_deleteSuffix:@","];
+    [values sjsql_deleteSuffix:@","];
     [sql appendFormat:@"REPLACE INTO '%@' (%@) VALUES (%@);", objInfo.table.name, fields, values];
     return sql.copy;
 }
@@ -142,8 +144,8 @@ sj_sqlite3_stmt_get_primary_values_array(NSString *jsonString) {
 }
 
 NSString *
-sj_sqlite3_stmt_get_last_row(SJSQLiteObjectInfo *objInfo) {
-    return [NSString stringWithFormat:@"SELECT * FROM '%@' ORDER BY \"%@\" DESC LIMIT 1;", objInfo.table.name, objInfo.primaryKeyColumnInfo.name];
+sj_sqlite3_stmt_get_last_row(SJSQLiteTableInfo *table) {
+    return [NSString stringWithFormat:@"SELECT * FROM '%@' ORDER BY \"%@\" DESC LIMIT 1;", table.name, table.primaryKey];
 }
 
 #pragma mark -
@@ -166,7 +168,7 @@ sj_sqlite3_obj_exec_each_result_callback(void *para, int ncolumn, char **columnv
 /// 打开数据库链接
 ///
 BOOL
-sj_sqlite3_obj_open_database(NSString *path, sqlite3 **db) {
+sj_sqlite3_obj_open_database(NSString *path, void *db) {
     NSString *directory = [path stringByDeletingLastPathComponent];
     if ( ![NSFileManager.defaultManager fileExistsAtPath:directory] ) {
         [NSFileManager.defaultManager createDirectoryAtPath:directory withIntermediateDirectories:YES attributes:nil error:nil];
@@ -178,14 +180,14 @@ sj_sqlite3_obj_open_database(NSString *path, sqlite3 **db) {
 /// 关闭数据库链接
 ///
 BOOL
-sj_sqlite3_obj_close_database(sqlite3 *db) {
+sj_sqlite3_obj_close_database(void *db) {
     return sqlite3_close(db);
 }
 
 /// 执行sql
 ///
 NSArray<NSDictionary *> *_Nullable
-sj_sqlite3_obj_exec(sqlite3 *db, NSString *sql, NSError *_Nullable*_Nullable error) {
+sj_sqlite3_obj_exec(void *db, NSString *sql, NSError *_Nullable*_Nullable error) {
     if ( sql.length == 0 ) return nil;
     
     sj_sqlite3_obj_copy_str(sql);
@@ -214,9 +216,10 @@ sj_sqlite3_obj_exec(sqlite3 *db, NSString *sql, NSError *_Nullable*_Nullable err
         dateFormatter.dateFormat = @"HH:mm:ss";
     });
     
-    printf("SJSQLite: %s\t%s\n", [dateFormatter stringFromDate:NSDate.date].UTF8String, cstr);
+    SJSQLite3Log(@"SJSQLite: %@\t%s\n", [dateFormatter stringFromDate:NSDate.date], cstr);
+    
     if ( errmsg != NULL ) {
-        printf("SJSQLite: %s\terror_msg=%s\n", [dateFormatter stringFromDate:NSDate.date].UTF8String, errmsg);
+        SJSQLite3Log(@"SJSQLite: %@\t%s\n", [dateFormatter stringFromDate:NSDate.date], errmsg);
     }
 #endif
     
@@ -233,35 +236,35 @@ sj_sqlite3_obj_exec(sqlite3 *db, NSString *sql, NSError *_Nullable*_Nullable err
 /// 开启事物
 ///
 void
-sj_sqlite3_obj_begin_transaction(sqlite3 *db) {
+sj_sqlite3_obj_begin_transaction(void *db) {
     sj_sqlite3_obj_exec(db, @"BEGIN TRANSACTION", nil);
 }
 
 /// 提交事物
 ///
 void
-sj_sqlite3_obj_commit(sqlite3 *db) {
+sj_sqlite3_obj_commit(void *db) {
     sj_sqlite3_obj_exec(db, @"COMMIT", nil);
 }
 
 /// 回滚提交
 ///
 void
-sj_sqlite3_obj_rollback(sqlite3 *db) {
+sj_sqlite3_obj_rollback(void *db) {
     sj_sqlite3_obj_exec(db, @"ROLLBACK", nil);
 }
 
 /// 查询某个表是否存在
 ///
 BOOL
-sj_sqlite3_obj_table_exists(sqlite3 *db, NSString *name) {
+sj_sqlite3_obj_table_exists(void *db, NSString *name) {
     return sj_sqlite3_obj_exec(db, [NSString stringWithFormat:@"SELECT tbl_name FROM sqlite_master WHERE name='%@';", name], nil) != nil;
 }
 
 /// 删除表
 ///
 void
-sj_sqlite3_obj_drop_table(sqlite3 *db, NSString *name, NSError **error) {
+sj_sqlite3_obj_drop_table(void *db, NSString *name, NSError **error) {
     NSString *sql = [NSString stringWithFormat:@"DROP TABLE %@;", name];
     sj_sqlite3_obj_exec(db, sql, error);
 }
@@ -269,7 +272,7 @@ sj_sqlite3_obj_drop_table(sqlite3 *db, NSString *name, NSError **error) {
 /// 删除指定的行数据
 ///
 void
-sj_sqlite3_obj_delete_row_datas(sqlite3 *db, SJSQLiteTableInfo *table, NSArray<id> *primaryKeyValues, NSError **error) {
+sj_sqlite3_obj_delete_row_datas(void *db, SJSQLiteTableInfo *table, NSArray<id> *primaryKeyValues, NSError **error) {
     NSMutableString *values = NSMutableString.new;
     NSNumber *last = primaryKeyValues.lastObject;
     for ( id value in primaryKeyValues ) {
@@ -284,7 +287,7 @@ sj_sqlite3_obj_delete_row_datas(sqlite3 *db, SJSQLiteTableInfo *table, NSArray<i
 /// 获取行数据
 ///
 NSDictionary *_Nullable
-sj_sqlite3_obj_get_row_data(sqlite3 *db, SJSQLiteTableInfo *table, id primaryKeyValue, NSError **error) {
+sj_sqlite3_obj_get_row_data(void *db, SJSQLiteTableInfo *table, id primaryKeyValue, NSError **error) {
     NSString *sql = [NSString stringWithFormat:@"SELECT * FROM %@ WHERE \"%@\"='%@';", table.name, table.primaryKey, sj_sqlite3_obj_filter_obj_value(primaryKeyValue)];
     return [[sj_sqlite3_obj_exec(db, sql, error) firstObject] mutableCopy];
 }

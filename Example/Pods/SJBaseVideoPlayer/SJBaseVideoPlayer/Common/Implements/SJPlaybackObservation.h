@@ -6,6 +6,7 @@
 //
 
 #import <Foundation/Foundation.h>
+#import <AVFoundation/AVTime.h>
 @class SJBaseVideoPlayer;
 
 NS_ASSUME_NONNULL_BEGIN
@@ -19,9 +20,14 @@ NS_ASSUME_NONNULL_BEGIN
 ///     该block集合里以下3种回调
 ///     1.  timeControlStatusDidChangeExeBlock(播放控制改变的时候)
 ///     2.  assetStatusDidChangeExeBlock(资源状态改变的时候)
-///     3.  didPlayToEndTimeExeBlock(播放完毕的时候)
+///     3.  playbackDidFinishExeBlock(播放完毕的时候)
 ///
 @property (nonatomic, copy, nullable) void(^playbackStatusDidChangeExeBlock)(__kindof SJBaseVideoPlayer *player);
+
+///
+/// 播放完毕的回调
+///
+@property (nonatomic, copy, nullable) void(^playbackDidFinishExeBlock)(__kindof SJBaseVideoPlayer *player);
 
 ///
 /// 资源状态改变的回调
@@ -34,9 +40,19 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic, copy, nullable) void(^timeControlStatusDidChangeExeBlock)(__kindof SJBaseVideoPlayer *player);
 
 ///
-/// 播放完毕的回调
+/// 画中画状态改变的回调
 ///
-@property (nonatomic, copy, nullable) void(^didPlayToEndTimeExeBlock)(__kindof SJBaseVideoPlayer *player);
+@property (nonatomic, copy, nullable) void(^pictureInPictureStatusDidChangeExeBlock)(__kindof SJBaseVideoPlayer *player) API_AVAILABLE(ios(14.0));
+
+///
+/// 调用seek之前的回调
+///
+@property (nonatomic, copy, nullable) void(^willSeekToTimeExeBlock)(__kindof SJBaseVideoPlayer *player, CMTime time);
+
+///
+/// 调用seek之后的回调
+///
+@property (nonatomic, copy, nullable) void(^didSeekToTimeExeBlock)(__kindof SJBaseVideoPlayer *player, CMTime time);
 
 ///
 /// 调用了重播的回调
@@ -76,7 +92,7 @@ NS_ASSUME_NONNULL_BEGIN
 ///
 /// 锁屏状态改变的回调
 ///
-@property (nonatomic, copy, nullable) void(^lockedScreenDidChangeExeBlock)(__kindof SJBaseVideoPlayer *player);
+@property (nonatomic, copy, nullable) void(^screenLockStateDidChangeExeBlock)(__kindof SJBaseVideoPlayer *player);
 
 ///
 /// 播放器的静音状态改变的回调
@@ -94,6 +110,13 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic, copy, nullable) void(^rateDidChangeExeBlock)(__kindof SJBaseVideoPlayer *player);
 
 @property (nonatomic, weak, readonly, nullable) __kindof SJBaseVideoPlayer *player;
+
+///
+/// 播放完毕的回调
+///
+///         现在不仅仅有播放至结束的位置了, 还会有播放至试看结束, 由于该属性仅能表示第一种情况, 故不推荐使用了.
+///
+@property (nonatomic, copy, nullable) void(^didPlayToEndTimeExeBlock)(__kindof SJBaseVideoPlayer *player) __deprecated_msg("use `playbackDidFinishExeBlock`");
 
 - (instancetype)init NS_UNAVAILABLE;
 + (instancetype)new NS_UNAVAILABLE;

@@ -6,6 +6,7 @@
 //
 
 #import "SJFloatSmallViewController.h"
+#import <UIKit/UIGraphicsRendererSubclass.h>
 #import "UIView+SJBaseVideoPlayerExtended.h"
 #if __has_include(<SJUIKit/NSObject+SJObserverHelper.h>)
 #import <SJUIKit/NSObject+SJObserverHelper.h>
@@ -100,19 +101,22 @@ NS_ASSUME_NONNULL_BEGIN
 @synthesize targetSuperview = _targetSuperview;
 @synthesize enabled = _enabled;
 @synthesize target = _target;
-@synthesize safeMargin = _safeMargin;
+@synthesize layoutInsets = _layoutInsets;
+@synthesize layoutPosition = _layoutPosition;
 @synthesize addFloatViewToKeyWindow = _addFloatViewToKeyWindow;
+@synthesize layoutSize = _layoutSize;
 
 - (instancetype)init {
     self = [super init];
     if ( self ) {
-        _safeMargin = 12;
+        _layoutInsets = UIEdgeInsetsMake(20, 12, 20, 12);
+        _layoutPosition = SJFloatViewLayoutPositionBottomRight;
     }
     return self;
 }
 
 - (void)dealloc {
-    [_floatView removeFromSuperview];
+    [_floatView performSelectorOnMainThread:@selector(removeFromSuperview) withObject:nil waitUntilDone:YES];
 }
 
 - (__kindof UIView *)floatView {
@@ -137,21 +141,53 @@ NS_ASSUME_NONNULL_BEGIN
         else {
             superview = UIApplication.sharedApplication.keyWindow;
         }
+        
         if ( self.floatView.superview != superview ) {
             [superview addSubview:_floatView];
-            CGRect bounds = superview.bounds;
-            CGFloat width = bounds.size.width;
+            CGRect superViewBounds = superview.bounds;
+            CGFloat superViewWidth = superViewBounds.size.width;
+            CGFloat superViewHeight = superViewBounds.size.height;
             
-            //
-            CGFloat maxW = ceil(width * 0.48);
-            CGFloat w = maxW>300?300:maxW;
-            CGFloat h = w * 9 /16.0;
-            CGFloat x = width - w - _safeMargin;
-            CGFloat y = _safeMargin;
+            UIEdgeInsets safeAreaInsets = UIEdgeInsetsZero;
             if (@available(iOS 11.0, *)) {
-                y += superview.safeAreaInsets.top;
+                if ( !_ignoreSafeAreaInsets ) safeAreaInsets = superview.safeAreaInsets;
             }
 
+            //
+            CGSize size = _layoutSize;
+            CGFloat w = size.width;
+            CGFloat h = size.height;
+            CGFloat x = 0;
+            CGFloat y = 0;
+            
+            if ( CGSizeEqualToSize(CGSizeZero, size) ) {
+                CGFloat maxW = ceil(superViewWidth * 0.48);
+                w = maxW > 300.0 ? 300.0 : maxW;
+                h = w * 9.0 / 16.0;
+            }
+            
+            switch ( _layoutPosition ) {
+                case SJFloatViewLayoutPositionTopLeft:
+                case SJFloatViewLayoutPositionBottomLeft:
+                    x = safeAreaInsets.left + _layoutInsets.left;
+                    break;
+                case SJFloatViewLayoutPositionTopRight:
+                case SJFloatViewLayoutPositionBottomRight:
+                    x = superViewWidth - w - _layoutInsets.right - safeAreaInsets.right;
+                    break;
+            }
+              
+            switch ( _layoutPosition ) {
+                case SJFloatViewLayoutPositionTopLeft:
+                case SJFloatViewLayoutPositionTopRight:
+                    y = safeAreaInsets.top + _layoutInsets.top;
+                    break;
+                case SJFloatViewLayoutPositionBottomLeft:
+                case SJFloatViewLayoutPositionBottomRight:
+                    y = superViewHeight - h - _layoutInsets.bottom - safeAreaInsets.bottom;
+                    break;
+            }
+ 
             _floatView.frame = CGRectMake(x, y, w, h);
         }
         
@@ -203,8 +239,17 @@ NS_ASSUME_NONNULL_BEGIN
 - (UIPanGestureRecognizer *)panGesture {
     if ( _panGesture == nil ) {
         _panGesture = [[UIPanGestureRecognizer alloc] initWithTarget:self action:@selector(_handlePanGesture:)];
+        _panGesture.delegate = self;
     }
     return _panGesture;
+}
+
+- (BOOL)gestureRecognizer:(UIGestureRecognizer *)gestureRecognizer shouldRecognizeSimultaneouslyWithGestureRecognizer:(UIGestureRecognizer *)otherGestureRecognizer {
+    if ( [otherGestureRecognizer isKindOfClass:UIPanGestureRecognizer.class] ) {
+        otherGestureRecognizer.state = UIGestureRecognizerStateCancelled;
+        return YES;
+    }
+    return NO;
 }
 
 - (void)_handlePanGesture:(UIPanGestureRecognizer *)panGesture {
@@ -219,10 +264,14 @@ NS_ASSUME_NONNULL_BEGIN
         case UIGestureRecognizerStateEnded:
         case UIGestureRecognizerStateCancelled:
         case UIGestureRecognizerStateFailed: {
-            CGFloat safeMargin = _safeMargin;
             [UIView animateWithDuration:0.4 delay:0 options:UIViewAnimationOptionCurveEaseInOut animations:^{
-                CGFloat left = safeMargin;
-                CGFloat right = UIScreen.mainScreen.bounds.size.width - safeMargin - view.w;
+                UIEdgeInsets safeAreaInsets = UIEdgeInsetsZero;
+                if (@available(iOS 11.0, *)) {
+                    if ( !self.ignoreSafeAreaInsets ) safeAreaInsets = superview.safeAreaInsets;
+                }
+
+                CGFloat left = safeAreaInsets.left + self.layoutInsets.left;
+                CGFloat right = superview.bounds.size.width - view.w - self.layoutInsets.right - safeAreaInsets.right;
                 if ( view.x <= left ) {
                     [view setX:left];
                 }
@@ -230,12 +279,8 @@ NS_ASSUME_NONNULL_BEGIN
                     [view setX:right];
                 }
                 
-                UIEdgeInsets insets = UIEdgeInsetsZero;
-                if (@available(iOS 11.0, *)) {
-                    insets = superview.safeAreaInsets;
-                }
-                CGFloat top = insets.top + safeMargin;
-                CGFloat bottom = superview.bounds.size.height - (insets.bottom + safeMargin + view.h);
+                CGFloat top = safeAreaInsets.top + self.layoutInsets.top;
+                CGFloat bottom = superview.bounds.size.height - view.h - self.layoutInsets.bottom - safeAreaInsets.bottom;
                 if ( view.y <= top ) {
                     [view setY:top];
                 }

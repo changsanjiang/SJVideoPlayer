@@ -2,7 +2,7 @@
 //  SJScrollingTextMarqueeViewDefines.h
 //  Pods
 //
-//  Created by BlueDancer on 2019/12/7.
+//  Created by 畅三江 on 2019/12/7.
 //
 
 #ifndef SJScrollingTextMarqueeViewDefines_h

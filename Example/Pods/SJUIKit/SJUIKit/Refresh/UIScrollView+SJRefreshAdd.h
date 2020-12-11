@@ -43,14 +43,16 @@ NS_ASSUME_NONNULL_BEGIN
 @interface UIScrollView (SJRefreshUIConfig)
 @property (class, nonatomic, strong, readonly) SJRefreshConfig *sj_commonConfig;
 @property (nonatomic, strong, readonly) SJRefreshConfig *sj_refreshConfig;
+- (void)sj_updateRefreshConfig;
 @end
 
 @interface SJRefreshConfig : NSObject
-- (instancetype)initWithScrollView:(__weak UIScrollView *)scrollView;
 @property (nonatomic, strong, nullable) UIColor *textColor;
+@property (nonatomic, strong, nullable) UIFont *font;
 @property (nonatomic, strong, nullable) UIImage *gifImage_header;
 @property (nonatomic, strong, nullable) UIImage *gifImage_footer;
 @property (nonatomic) CGFloat ignoredTopEdgeInset;
+@property (nonatomic) CGFloat ignoredBottomEdgeInset;
 @end
 
 @interface UIScrollView (SJPlaceholder)

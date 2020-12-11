@@ -36,11 +36,14 @@
 #import "SJDraggingObservation.h"
 #import "SJScrollingTextMarqueeView.h"
 #import "SJFullscreenCustomStatusBar.h"
+#import "SJFastForwardView.h"
+#import <objc/message.h>
 
 #pragma mark - Top
 SJEdgeControlButtonItemTag const SJEdgeControlLayerTopItem_Back = 10000;
 SJEdgeControlButtonItemTag const SJEdgeControlLayerTopItem_Title = 10001;
 static SJEdgeControlButtonItemTag const SJEdgeControlLayerTopItem_PlaceholderBack = 10002;
+SJEdgeControlButtonItemTag const SJEdgeControlLayerTopItem_PictureInPicture API_AVAILABLE(ios(14.0)) = 10003;
 
 #pragma mark - Left
 SJEdgeControlButtonItemTag const SJEdgeControlLayerLeftItem_Lock = 20000;
@@ -69,7 +72,8 @@ SJEdgeControlButtonItemTag const SJEdgeControlLayerCenterItem_Replay = 40000;
 @property (nonatomic, strong, readonly) SJEdgeControlButtonItem *backItem;
 
 @property (nonatomic, strong, nullable) id<SJReachabilityObserver> reachabilityObserver;
-@property (nonatomic, strong, readonly) SJTimerControl *dateTimerControl NS_AVAILABLE_IOS(11.0); // refresh date for custom status bar
+@property (nonatomic, strong, readonly) SJTimerControl *dateTimerControl API_AVAILABLE(ios(11.0)); // refresh date for custom status bar
+@property (nonatomic, strong, readonly) SJEdgeControlButtonItem *pictureInPictureItem API_AVAILABLE(ios(14.0));
 @end
 
 @implementation SJEdgeControlLayer
@@ -84,6 +88,9 @@ SJEdgeControlButtonItemTag const SJEdgeControlLayerCenterItem_Replay = 40000;
     [self _setupView];
     self.autoAdjustTopSpacing = YES;
     self.hiddenBottomProgressIndicator = YES;
+    if (@available(iOS 14.0, *)) {
+        self.automaticallyShowsPictureInPictureItem = YES;
+    }
     return self;
 }
 
@@ -100,7 +107,8 @@ SJEdgeControlButtonItemTag const SJEdgeControlLayerCenterItem_Replay = 40000;
     _restarted = YES;
     sj_view_makeAppear(self.controlView, YES);
     [self _showOrHiddenLoadingView];
-    _videoPlayer.URLAsset != nil ? [_videoPlayer controlLayerNeedAppear] : [_videoPlayer controlLayerNeedDisappear];
+    [self _updateAppearStateForContainerViews];
+    [self _reloadAdaptersIfNeeded];
 }
 
 ///
@@ -138,7 +146,7 @@ SJEdgeControlButtonItemTag const SJEdgeControlLayerCenterItem_Replay = 40000;
 }
 
 - (void)_playItemWasTapped {
-    self.videoPlayer.timeControlStatus == SJPlaybackTimeControlStatusPaused ? [self.videoPlayer play] : [self.videoPlayer pause];
+    _videoPlayer.isPaused ? [self.videoPlayer play] : [self.videoPlayer pauseForUser];
 }
 
 - (void)_fullItemWasTapped {
@@ -147,6 +155,20 @@ SJEdgeControlButtonItemTag const SJEdgeControlLayerCenterItem_Replay = 40000;
 
 - (void)_replayItemWasTapped {
     [_videoPlayer replay];
+}
+
+- (void)pictureInPictureItemWasTapped API_AVAILABLE(ios(14.0)) {
+    switch (_videoPlayer.playbackController.pictureInPictureStatus) {
+        case SJPictureInPictureStatusStarting:
+        case SJPictureInPictureStatusRunning:
+            [_videoPlayer.playbackController stopPictureInPicture];
+            break;
+        case SJPictureInPictureStatusUnknown:
+        case SJPictureInPictureStatusStopping:
+        case SJPictureInPictureStatusStopped:
+            [_videoPlayer.playbackController startPictureInPicture];
+            break;
+    }
 }
 
 #pragma mark - slider delegate methods
@@ -244,6 +266,13 @@ SJEdgeControlButtonItemTag const SJEdgeControlLayerCenterItem_Replay = 40000;
 - (void)videoPlayerPlaybackStatusDidChange:(__kindof SJBaseVideoPlayer *)videoPlayer {
     [self _reloadAdaptersIfNeeded];
     [self _showOrHiddenLoadingView];
+    [self _updateContentForBottomCurrentTimeItemIfNeeded];
+    [self _updateContentForBottomDurationItemIfNeeded];
+}
+
+- (void)videoPlayer:(__kindof SJBaseVideoPlayer *)videoPlayer pictureInPictureStatusDidChange:(SJPictureInPictureStatus)status API_AVAILABLE(ios(14.0)) {
+    [self _updateContentForPictureInPictureItem];
+    [self.topAdapter reload];
 }
 
 - (void)videoPlayer:(__kindof SJBaseVideoPlayer *)videoPlayer currentTimeDidChange:(NSTimeInterval)currentTime {
@@ -362,6 +391,37 @@ SJEdgeControlButtonItemTag const SJEdgeControlLayerCenterItem_Replay = 40000;
         case SJPanGestureRecognizerStateEnded:
             [self _endDragging];
             break;
+    }
+}
+
+- (void)videoPlayer:(__kindof SJBaseVideoPlayer *)videoPlayer longPressGestureStateDidChange:(SJLongPressGestureRecognizerState)state {
+    if ( [(id)self.fastForwardView respondsToSelector:@selector(layoutInRect:gestureState:playbackRate:)] ) {
+        if ( state == SJLongPressGestureRecognizerStateBegan ) {
+            if ( self.fastForwardView.superview != self ) {
+                [self insertSubview:self.fastForwardView atIndex:0];
+            }
+        }
+        [self.fastForwardView layoutInRect:self.frame gestureState:state playbackRate:videoPlayer.rate];
+    }
+    else {
+        switch ( state ) {
+            case SJLongPressGestureRecognizerStateChanged: break;
+            case SJLongPressGestureRecognizerStateBegan: {
+                if ( self.fastForwardView.superview != self ) {
+                    [self insertSubview:self.fastForwardView atIndex:0];
+                    [self.fastForwardView mas_makeConstraints:^(MASConstraintMaker *make) {
+                        make.center.equalTo(self.topAdapter);
+                    }];
+                }
+                self.fastForwardView.rate = videoPlayer.rateWhenLongPressGestureTriggered;
+                [self.fastForwardView show];
+            }
+                break;
+            case SJLongPressGestureRecognizerStateEnded: {
+                [self.fastForwardView hidden];
+            }
+                break;
+        }
     }
 }
 
@@ -496,12 +556,6 @@ SJEdgeControlButtonItemTag const SJEdgeControlLayerCenterItem_Replay = 40000;
     }
 }
 
-- (void)setShowNetworkSpeedToLoadingView:(BOOL)showNetworkSpeedToLoadingView {
-    _showNetworkSpeedToLoadingView = showNetworkSpeedToLoadingView;
-    if ( !showNetworkSpeedToLoadingView )
-        self.loadingView.networkSpeedStr = nil;
-}
-
 - (void)setDraggingProgressPopView:(nullable __kindof UIView<SJDraggingProgressPopView> *)draggingProgressPopView {
     _draggingProgressPopView = draggingProgressPopView;
     [self _updateForDraggingProgressPopView];
@@ -513,13 +567,30 @@ SJEdgeControlButtonItemTag const SJEdgeControlLayerCenterItem_Replay = 40000;
 }
 
 - (void)setCustomStatusBar:(UIView<SJFullscreenCustomStatusBar> *)customStatusBar NS_AVAILABLE_IOS(11.0) {
-    _customStatusBar = customStatusBar;
-    [self _reloadCustomStatusBarIfNeeded];
+    if ( customStatusBar != _customStatusBar ) {
+        [_customStatusBar removeFromSuperview];
+        _customStatusBar = customStatusBar;
+        [self _reloadCustomStatusBarIfNeeded];
+    }
 }
 
 - (void)setShouldShowCustomStatusBar:(BOOL (^)(SJEdgeControlLayer * _Nonnull))shouldShowCustomStatusBar NS_AVAILABLE_IOS(11.0) {
     _shouldShowCustomStatusBar = shouldShowCustomStatusBar;
     [self _updateAppearStateForCustomStatusBar];
+}
+
+- (void)setFastForwardView:(UIView<SJFastForwardView> *)fastForwardView {
+    if ( _fastForwardView != fastForwardView ) {
+        [_fastForwardView removeFromSuperview];
+        _fastForwardView = fastForwardView;
+    }
+}
+
+- (void)setAutomaticallyShowsPictureInPictureItem:(BOOL)automaticallyShowsPictureInPictureItem {
+    if ( automaticallyShowsPictureInPictureItem != _automaticallyShowsPictureInPictureItem ) {
+        _automaticallyShowsPictureInPictureItem = automaticallyShowsPictureInPictureItem;
+        [self _reloadTopAdapterIfNeeded];
+    }
 }
 
 #pragma mark - setup view
@@ -610,6 +681,23 @@ SJEdgeControlButtonItemTag const SJEdgeControlLayerCenterItem_Replay = 40000;
     return _titleView;
 }
 
+@synthesize fastForwardView = _fastForwardView;
+- (UIView<SJFastForwardView> *)fastForwardView {
+    if ( _fastForwardView == nil ) {
+        _fastForwardView = [SJFastForwardView.alloc initWithFrame:CGRectZero];
+    }
+    return _fastForwardView;
+}
+
+@synthesize pictureInPictureItem = _pictureInPictureItem;
+- (SJEdgeControlButtonItem *)pictureInPictureItem API_AVAILABLE(ios(14.0)) {
+    if ( _pictureInPictureItem == nil ) {
+        _pictureInPictureItem = [SJEdgeControlButtonItem.alloc initWithTag:SJEdgeControlLayerTopItem_PictureInPicture];
+        [_pictureInPictureItem addTarget:self action:@selector(pictureInPictureItemWasTapped)];
+    }
+    return _pictureInPictureItem;
+}
+
 @synthesize customStatusBar = _customStatusBar;
 - (UIView<SJFullscreenCustomStatusBar> *)customStatusBar {
     if ( _customStatusBar == nil ) {
@@ -670,6 +758,7 @@ SJEdgeControlButtonItemTag const SJEdgeControlLayerCenterItem_Replay = 40000;
 
 - (void)_addItemsToTopAdapter {
     SJEdgeControlButtonItem *backItem = [SJEdgeControlButtonItem placeholderWithType:SJButtonItemPlaceholderType_49x49 tag:SJEdgeControlLayerTopItem_Back];
+    backItem.resetAppearIntervalWhenPerformingItemAction = NO;
     [backItem addTarget:self action:@selector(_backItemWasTapped)];
     [self.topAdapter addItem:backItem];
     _backItem = backItem;
@@ -739,6 +828,7 @@ SJEdgeControlButtonItemTag const SJEdgeControlLayerCenterItem_Replay = 40000;
 
     // 全屏按钮
     SJEdgeControlButtonItem *fullItem = [SJEdgeControlButtonItem placeholderWithType:SJButtonItemPlaceholderType_49x49 tag:SJEdgeControlLayerBottomItem_FullBtn];
+    fullItem.resetAppearIntervalWhenPerformingItemAction = NO;
     [fullItem addTarget:self action:@selector(_fullItemWasTapped)];
     [self.bottomAdapter addItem:fullItem];
 
@@ -895,6 +985,21 @@ SJEdgeControlButtonItemTag const SJEdgeControlLayerCenterItem_Replay = 40000;
     _customStatusBar.isHidden ? [self.dateTimerControl clear] : [self.dateTimerControl start];
 }
 
+- (void)_updateContentForPictureInPictureItem API_AVAILABLE(ios(14.0)) {
+    SJVideoPlayerSettings *sources = SJVideoPlayerSettings.commonSettings;
+    switch ( self.videoPlayer.playbackController.pictureInPictureStatus ) {
+        case SJPictureInPictureStatusRunning:
+            self.pictureInPictureItem.image = sources.pictureInPictureItemStopImage;
+            break;
+        case SJPictureInPictureStatusUnknown:
+        case SJPictureInPictureStatusStarting:
+        case SJPictureInPictureStatusStopping:
+        case SJPictureInPictureStatusStopped:
+            self.pictureInPictureItem.image = sources.pictureInPictureItemStartImage;
+            break;
+    }
+}
+
 #pragma mark - update items
 
 - (void)_reloadAdaptersIfNeeded {
@@ -911,6 +1016,7 @@ SJEdgeControlButtonItemTag const SJEdgeControlLayerCenterItem_Replay = 40000;
     BOOL isFullscreen = _videoPlayer.isFullScreen;
     BOOL isFitOnScreen = _videoPlayer.isFitOnScreen;
     BOOL isPlayOnScrollView = _videoPlayer.isPlayOnScrollView;
+    BOOL isSmallscreen = !isFullscreen && !isFitOnScreen;
 
     // back item
     {
@@ -932,13 +1038,13 @@ SJEdgeControlButtonItemTag const SJEdgeControlLayerCenterItem_Replay = 40000;
     {
         SJEdgeControlButtonItem *titleItem = [self.topAdapter itemForTag:SJEdgeControlLayerTopItem_Title];
         if ( titleItem != nil ) {
-            if ( self.isHiddenTitleItemWhenOrientationIsPortrait && !isFullscreen && !isFitOnScreen ) {
+            if ( self.isHiddenTitleItemWhenOrientationIsPortrait && isSmallscreen ) {
                 titleItem.hidden = YES;
             }
             else {
                 if ( titleItem.customView != self.titleView )
                     titleItem.customView = self.titleView;
-                SJVideoPlayerURLAsset *asset = _videoPlayer.URLAsset.originAsset ?: _videoPlayer.URLAsset;
+                SJVideoPlayerURLAsset *asset = _videoPlayer.URLAsset.original ?: _videoPlayer.URLAsset;
                 NSAttributedString *_Nullable attributedTitle = asset.attributedTitle;
                 self.titleView.attributedText = attributedTitle;
                 titleItem.hidden = (attributedTitle.length == 0);
@@ -950,6 +1056,21 @@ SJEdgeControlButtonItemTag const SJEdgeControlLayerCenterItem_Replay = 40000;
                 CGFloat left  = [_topAdapter isHiddenWithRange:NSMakeRange(0, atIndex)] ? 16 : 0;
                 CGFloat right = [_topAdapter isHiddenWithRange:NSMakeRange(atIndex, _topAdapter.numberOfItems)] ? 16 : 0;
                 titleItem.insets = SJEdgeInsetsMake(left, right);
+            }
+        }
+    }
+    
+    // picture in picture item
+    {
+        if (@available(iOS 14.0, *)) {
+            if ( !self.automaticallyShowsPictureInPictureItem || (self.videoPlayer.isPlayOnScrollView && isSmallscreen) ) {
+                [self.topAdapter removeItemForTag:SJEdgeControlLayerTopItem_PictureInPicture];
+            }
+            else if ( self.videoPlayer.playbackController.isPictureInPictureSupported ) {
+                if ( ![self.topAdapter containsItem:self.pictureInPictureItem] ) {
+                    [self _updateContentForPictureInPictureItem];
+                    [self.topAdapter insertItem:self.pictureInPictureItem frontItem:SJEdgeControlLayerTopItem_Title];
+                }
             }
         }
     }
@@ -984,8 +1105,7 @@ SJEdgeControlButtonItemTag const SJEdgeControlLayerCenterItem_Replay = 40000;
     {
         SJEdgeControlButtonItem *playItem = [self.bottomAdapter itemForTag:SJEdgeControlLayerBottomItem_Play];
         if ( playItem != nil && playItem.hidden == NO ) {
-            BOOL isPaused = _videoPlayer.timeControlStatus == SJPlaybackTimeControlStatusPaused;
-            playItem.image = isPaused ? sources.playBtnImage : sources.pauseBtnImage;
+            playItem.image = _videoPlayer.isPaused ? sources.playBtnImage : sources.pauseBtnImage;
         }
     }
     
@@ -1048,7 +1168,7 @@ SJEdgeControlButtonItemTag const SJEdgeControlLayerCenterItem_Replay = 40000;
     
     SJEdgeControlButtonItem *replayItem = [self.centerAdapter itemForTag:SJEdgeControlLayerCenterItem_Replay];
     if ( replayItem != nil ) {
-        replayItem.hidden = !_videoPlayer.isPlayedToEndTime;
+        replayItem.hidden = !_videoPlayer.isPlaybackFinished;
         if ( replayItem.hidden == NO && replayItem.title == nil ) {
             SJVideoPlayerSettings *sources = SJVideoPlayerSettings.commonSettings;
             UILabel *textLabel = replayItem.customView;
@@ -1152,7 +1272,7 @@ SJEdgeControlButtonItemTag const SJEdgeControlLayerCenterItem_Replay = 40000;
     if ( !_videoPlayer || !self.loadingView.isAnimating )
         return;
     
-    if ( _showNetworkSpeedToLoadingView && !_videoPlayer.assetURL.isFileURL ) {
+    if ( self.loadingView.showNetworkSpeed && !_videoPlayer.assetURL.isFileURL ) {
         self.loadingView.networkSpeedStr = [NSAttributedString sj_UIKitText:^(id<SJUIKitTextMakerProtocol>  _Nonnull make) {
             SJVideoPlayerSettings *settings = [SJVideoPlayerSettings commonSettings];
             make.font(settings.loadingNetworkSpeedTextFont);
@@ -1191,33 +1311,25 @@ SJEdgeControlButtonItemTag const SJEdgeControlLayerCenterItem_Replay = 40000;
     _draggingProgressPopView.style = style;
     _draggingProgressPopView.duration = _videoPlayer.duration ?: 1;
     _draggingProgressPopView.currentTime = _videoPlayer.currentTime;
-    _draggingProgressPopView.dragProgressTime = _videoPlayer.currentTime;
+    _draggingProgressPopView.dragTime = _videoPlayer.currentTime;
 }
 
 - (nullable NSAttributedString *)_textForTimeString:(NSString *)timeStr {
+    SJVideoPlayerSettings *source = SJVideoPlayerSettings.commonSettings;
     return [NSAttributedString sj_UIKitText:^(id<SJUIKitTextMakerProtocol>  _Nonnull make) {
-        make.append(timeStr).font([UIFont systemFontOfSize:11]).textColor([UIColor whiteColor]).alignment(NSTextAlignmentCenter);
+        make.append(timeStr).font(source.timeFont).textColor([UIColor whiteColor]).alignment(NSTextAlignmentCenter);
     }];
 }
 
+/// 此处为重置控制层的隐藏间隔.(如果点击到当前控制层上的item, 则重置控制层的隐藏间隔)
 - (void)_resetControlLayerAppearIntervalForItemIfNeeded:(NSNotification *)note {
     SJEdgeControlButtonItem *item = note.object;
-    if ( [_topAdapter containsItem:item] ) {
-        if ( item.tag == SJEdgeControlLayerTopItem_Back )
-            return;
-    }
-    
-    if ( [_bottomAdapter containsItem:item] ) {
-        if ( item.tag == SJEdgeControlLayerBottomItem_FullBtn )
-            return;
-    }
-    
-    if ( [_topAdapter containsItem:item] ||
-         [_leftAdapter containsItem:item] ||
-         [_bottomAdapter containsItem:item] ||
-         [_rightAdapter containsItem:item] ||
-         [_centerAdapter containsItem:item] ) {
-        [_videoPlayer controlLayerNeedAppear]; // 此处为重置控制层的隐藏间隔.(如果点击到当前控制层上的item, 则重置控制层的隐藏间隔)
+    if ( item.resetAppearIntervalWhenPerformingItemAction ) {
+        if ( [_topAdapter containsItem:item] ||
+             [_leftAdapter containsItem:item] ||
+             [_bottomAdapter containsItem:item] ||
+             [_rightAdapter containsItem:item] )
+            [_videoPlayer controlLayerNeedAppear];
     }
 }
 
@@ -1245,7 +1357,10 @@ SJEdgeControlButtonItemTag const SJEdgeControlLayerCenterItem_Replay = 40000;
         return;
     }
     
-    if ( _videoPlayer.assetStatus == SJAssetStatusPreparing ) {
+    if ( _videoPlayer.isPaused ) {
+        [self.loadingView stop];
+    }
+    else if ( _videoPlayer.assetStatus == SJAssetStatusPreparing ) {
         [self.loadingView start];
     }
     else if ( _videoPlayer.assetStatus == SJAssetStatusFailed ) {
@@ -1267,11 +1382,11 @@ SJEdgeControlButtonItemTag const SJEdgeControlLayerCenterItem_Replay = 40000;
     sj_view_makeAppear(_draggingProgressPopView, NO);
     
     if ( _draggingObserver.willBeginDraggingExeBlock )
-        _draggingObserver.willBeginDraggingExeBlock(_draggingProgressPopView.dragProgressTime);
+        _draggingObserver.willBeginDraggingExeBlock(_draggingProgressPopView.dragTime);
 }
 
 - (void)_didMove:(NSTimeInterval)progressTime {
-    _draggingProgressPopView.dragProgressTime = progressTime;
+    _draggingProgressPopView.dragTime = progressTime;
     // 是否生成预览图
     if ( _draggingProgressPopView.isPreviewImageHidden == NO ) {
         __weak typeof(self) _self = self;
@@ -1283,11 +1398,11 @@ SJEdgeControlButtonItemTag const SJEdgeControlLayerCenterItem_Replay = 40000;
     }
     
     if ( _draggingObserver.didMoveExeBlock )
-        _draggingObserver.didMoveExeBlock(_draggingProgressPopView.dragProgressTime);
+        _draggingObserver.didMoveExeBlock(_draggingProgressPopView.dragTime);
 }
 
 - (void)_endDragging {
-    NSTimeInterval time = _draggingProgressPopView.dragProgressTime;
+    NSTimeInterval time = _draggingProgressPopView.dragTime;
     if ( _draggingObserver.willEndDraggingExeBlock )
         _draggingObserver.willEndDraggingExeBlock(time);
     
@@ -1301,5 +1416,16 @@ SJEdgeControlButtonItemTag const SJEdgeControlLayerCenterItem_Replay = 40000;
     
     if ( _draggingObserver.didEndDraggingExeBlock )
         _draggingObserver.didEndDraggingExeBlock(time);
+}
+@end
+
+
+@implementation SJEdgeControlButtonItem (SJControlLayerExtended)
+- (void)setResetAppearIntervalWhenPerformingItemAction:(BOOL)resetAppearIntervalWhenPerformingItemAction {
+    objc_setAssociatedObject(self, @selector(resetAppearIntervalWhenPerformingItemAction), @(resetAppearIntervalWhenPerformingItemAction), OBJC_ASSOCIATION_RETAIN_NONATOMIC);
+}
+- (BOOL)resetAppearIntervalWhenPerformingItemAction {
+    id result = objc_getAssociatedObject(self, _cmd);
+    return result == nil ? YES : [result boolValue];
 }
 @end

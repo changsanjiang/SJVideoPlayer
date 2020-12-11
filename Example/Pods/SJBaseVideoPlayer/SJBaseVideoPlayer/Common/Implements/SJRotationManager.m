@@ -36,6 +36,7 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic) UIDeviceOrientation currentOrientation;
 @property (nonatomic, readonly) BOOL isFullscreen;
 @property (nonatomic, readonly, getter=isRotating) BOOL rotating;
+@property (nonatomic) BOOL disableAnimations;
 @end
 
 @implementation SJFullscreenModeViewController
@@ -57,9 +58,9 @@ NS_ASSUME_NONNULL_BEGIN
     return UIInterfaceOrientationMaskAll;
 }
 
-- (UIInterfaceOrientation)preferredInterfaceOrientationForPresentation {
-    return UIInterfaceOrientationPortrait;
-}
+//- (UIInterfaceOrientation)preferredInterfaceOrientationForPresentation {
+//    return UIInterfaceOrientationPortrait;
+//}
 
 - (void)viewWillTransitionToSize:(CGSize)size withTransitionCoordinator:(id<UIViewControllerTransitionCoordinator>)coordinator {
     _rotating = YES;
@@ -85,14 +86,17 @@ NS_ASSUME_NONNULL_BEGIN
     [self.delegate fullscreenModeViewController:self willRotateToOrientation:_currentOrientation];
     
     BOOL isFullscreen = size.width > size.height;
-    [UIView animateWithDuration:0.3 animations:^{
+    [CATransaction begin];
+    [CATransaction setDisableActions:self.disableAnimations];
+    [coordinator animateAlongsideTransition:^(id<UIViewControllerTransitionCoordinatorContext> _Nonnull context) {
         if ( isFullscreen )
             self.delegate.target.frame = CGRectMake(0, 0, size.width, size.height);
         else
             self.delegate.target.frame = self.delegate.targetOriginFrame;
         
         [self.delegate.target layoutIfNeeded];
-    } completion:^(BOOL finished) {
+    } completion:^(id<UIViewControllerTransitionCoordinatorContext> _Nonnull context) {
+        [CATransaction commit];
         self->_rotating = NO;
         [self.delegate fullscreenModeViewController:self didRotateFromOrientation:self.currentOrientation];
     }];
@@ -284,24 +288,28 @@ static NSNotificationName const SJRotationManagerTransitioningValueDidChangeNoti
     if (self) {
         _currentOrientation = SJOrientation_Portrait;
         _autorotationSupportedOrientations = SJOrientationMaskAll;
-        dispatch_async(dispatch_get_main_queue(), ^{
-            self->_window = [SJFullscreenModeWindow new];
-            self->_window.fullscreenModeViewController.delegate = self;
-            self->_window.rootViewController.sj_delegate = self;
-            if ( @available(iOS 9.0, *) ) {
-                [self->_window.rootViewController loadViewIfNeeded];
-            }
-            else {
-                [self->_window.rootViewController view];
-            }
-        });
         [self _observeNotifies];
+        [self performSelectorOnMainThread:@selector(_setupWindow) withObject:nil waitUntilDone:NO];
     }
     return self;
 }
 
 - (void)dealloc {
     [NSNotificationCenter.defaultCenter removeObserver:self];
+}
+
+- (void)_setupWindow {
+    self->_window = [SJFullscreenModeWindow new];
+    self->_window.fullscreenModeViewController.delegate = self;
+    self->_window.rootViewController.sj_delegate = self;
+    self->_window.frame = UIScreen.mainScreen.bounds;
+    if ( @available(iOS 9.0, *) ) {
+        [self->_window.rootViewController loadViewIfNeeded];
+    }
+    else {
+        [self->_window.rootViewController loadView];
+        [self->_window.rootViewController viewDidLoad];
+    }
 }
 
 - (void)_observeNotifies {
@@ -311,8 +319,8 @@ static NSNotificationName const SJRotationManagerTransitioningValueDidChangeNoti
     }
     
     [NSNotificationCenter.defaultCenter addObserver:self selector:@selector(deviceOrientationDidChange:) name:UIDeviceOrientationDidChangeNotification object:device];
-    [NSNotificationCenter.defaultCenter addObserver:self selector:@selector(enterBackground) name:UIApplicationDidEnterBackgroundNotification object:nil];
-    [NSNotificationCenter.defaultCenter addObserver:self selector:@selector(enterForeground) name:UIApplicationWillEnterForegroundNotification object:nil];
+    [NSNotificationCenter.defaultCenter addObserver:self selector:@selector(willResignActive) name:UIApplicationWillResignActiveNotification object:nil];
+    [NSNotificationCenter.defaultCenter addObserver:self selector:@selector(didBecomeActive) name:UIApplicationDidBecomeActiveNotification object:nil];
 }
 
 - (void)deviceOrientationDidChange:(NSNotification *)note {
@@ -329,12 +337,12 @@ static NSNotificationName const SJRotationManagerTransitioningValueDidChangeNoti
     }
 }
 
-- (void)enterBackground {
+- (void)willResignActive {
     [self.timerControl clear];
     _inactivated = YES;
 }
 
-- (void)enterForeground {
+- (void)didBecomeActive {
     [self.timerControl start];
 }
 
@@ -400,6 +408,7 @@ static NSNotificationName const SJRotationManagerTransitioningValueDidChangeNoti
     
     _inactivated = NO;
     _forcedRotation = YES;
+    _window.fullscreenModeViewController.disableAnimations = !animated;
     [UIDevice.currentDevice setValue:@(UIDeviceOrientationUnknown) forKey:@"orientation"];
     [UIDevice.currentDevice setValue:@(orientation) forKey:@"orientation"];
 }
@@ -413,15 +422,15 @@ static NSNotificationName const SJRotationManagerTransitioningValueDidChangeNoti
 }
 
 - (BOOL)prefersStatusBarHidden {
-    return self.viewControllerManager.prefersStatusBarHidden;
+    return self.delegate.prefersStatusBarHidden;
 }
 
 - (UIStatusBarStyle)preferredStatusBarStyle {
-    return self.viewControllerManager.preferredStatusBarStyle;
+    return self.delegate.preferredStatusBarStyle;
 }
 
 - (void)vc_forwardPushViewController:(UIViewController *)viewController animated:(BOOL)animated {
-    [self.viewControllerManager pushViewController:viewController animated:animated];
+    [self.delegate pushViewController:viewController animated:animated];
 }
 
 #pragma mark -
@@ -485,7 +494,7 @@ static NSNotificationName const SJRotationManagerTransitioningValueDidChangeNoti
             [self.superview addSubview:self.target];
         }).enqueue(^{
             [snapshot removeFromSuperview];
-            UIWindow *previousKeyWindow = self.previousKeyWindow?:UIApplication.sharedApplication.windows.firstObject;
+            UIWindow *previousKeyWindow = self.previousKeyWindow ?: UIApplication.sharedApplication.windows.firstObject;
             [previousKeyWindow makeKeyAndVisible];
             self.previousKeyWindow = nil;
             self.window.hidden = YES;
@@ -500,10 +509,7 @@ static NSNotificationName const SJRotationManagerTransitioningValueDidChangeNoti
 
 - (void)_beginTransition {
     self.transitioning = YES;
-    
-//#ifdef DEBUG
-//    NSLog(@"%d \t %s", (int)__LINE__, __func__);
-//#endif
+    if ( !_forcedRotation ) _window.fullscreenModeViewController.disableAnimations = NO; // 自动旋转时, 默认触发动画
 }
 
 - (void)_finishTransition {
@@ -514,10 +520,6 @@ static NSNotificationName const SJRotationManagerTransitioningValueDidChangeNoti
         _completionHandler(self);
     
     _completionHandler = nil;
-
-//#ifdef DEBUG
-//    NSLog(@"%d \t %s", (int)__LINE__, __func__);
-//#endif
 }
 
 - (BOOL)_isSupported:(SJOrientation)orientation {
@@ -564,6 +566,7 @@ static NSNotificationName const SJRotationManagerTransitioningValueDidChangeNoti
     self = [super init];
     if ( !self )
         return nil;
+    _mgr = mgr;
     [NSNotificationCenter.defaultCenter addObserver:self selector:@selector(transitioningValueDidChange:) name:SJRotationManagerTransitioningValueDidChangeNotification object:mgr];
     return self;
 }
@@ -573,6 +576,7 @@ static NSNotificationName const SJRotationManagerTransitioningValueDidChangeNoti
 }
 
 - (void)transitioningValueDidChange:(NSNotification *)note {
+    if ( _mgr == nil ) return;
     SJRotationManager *mgr = note.object;
     if ( mgr.isTransitioning ) {
         if ( _rotationDidStartExeBlock )

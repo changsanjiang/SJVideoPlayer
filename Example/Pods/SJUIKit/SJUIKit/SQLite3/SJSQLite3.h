@@ -8,7 +8,6 @@
 
 #import "SJSQLiteCore.h"
 #import "SJSQLiteTableModelProtocol.h"
-#import <sqlite3.h>
 
 NS_ASSUME_NONNULL_BEGIN
 /// 数据库模型映射及增删改查
@@ -27,24 +26,19 @@ NS_ASSUME_NONNULL_BEGIN
 - (instancetype)init NS_UNAVAILABLE;
 + (instancetype)new NS_UNAVAILABLE;
 
+// 以下为基本方法, 更多扩展方法请查看分类
+
 - (BOOL)save:(id)object error:(NSError **)error;
-- (BOOL)saveObjects:(NSArray *)objsArray error:(NSError **)error;
+- (BOOL)saveObjects:(NSArray *)objectArray error:(NSError **)error;
 
 - (BOOL)update:(id)object forKeys:(NSArray<NSString *> *)properties error:(NSError **)error;
 - (BOOL)update:(id)object forKey:(NSString *)property error:(NSError **)error;
+- (BOOL)updateObjects:(NSArray *)objectArray forKeys:(NSArray<NSString *> *)properties error:(NSError **)error;
 
 - (nullable id)objectForClass:(Class)cls primaryKeyValue:(id)value error:(NSError **)error;
 
 - (void)removeAllObjectsForClass:(Class)cls error:(NSError **)error;
 - (void)removeObjectsForClass:(Class)cls primaryKeyValues:(NSArray<id> *)values error:(NSError **)error;
 - (void)removeObjectForClass:(Class)cls primaryKeyValue:(id)value error:(NSError **)error;
-@end
-
-
-@interface SJSQLite3 (Core)
-typedef NSDictionary SJSQLite3RowData;
-- (nullable NSArray<SJSQLite3RowData *> *)exec:(NSString *)sql error:(NSError **)error;
-- (nullable NSArray<SJSQLite3RowData *> *)execInTransaction:(NSString *)sql error:(NSError **)error;
-- (nullable NSArray *)objectsForClass:(Class)cls rowDatas:(NSArray<SJSQLite3RowData *> *)rowDatas error:(NSError **)error;
 @end
 NS_ASSUME_NONNULL_END

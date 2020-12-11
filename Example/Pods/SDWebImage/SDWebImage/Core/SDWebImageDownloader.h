@@ -78,7 +78,7 @@ typedef NS_OPTIONS(NSUInteger, SDWebImageDownloaderOptions) {
     SDWebImageDownloaderAvoidDecodeImage = 1 << 9,
     
     /**
-     * By default, we decode the animated image. This flag can force decode the first frame only and produece the static image.
+     * By default, we decode the animated image. This flag can force decode the first frame only and produce the static image.
      */
     SDWebImageDownloaderDecodeFirstFrameOnly = 1 << 10,
     
@@ -127,6 +127,11 @@ typedef SDImageLoaderCompletedBlock SDWebImageDownloaderCompletedBlock;
  The download's response.
  */
 @property (nonatomic, strong, nullable, readonly) NSURLResponse *response;
+
+/**
+ The download's metrics. This will be nil if download operation does not support metrics.
+ */
+@property (nonatomic, strong, nullable, readonly) NSURLSessionTaskMetrics *metrics API_AVAILABLE(macosx(10.12), ios(10.0), watchos(3.0), tvos(10.0));
 
 @end
 

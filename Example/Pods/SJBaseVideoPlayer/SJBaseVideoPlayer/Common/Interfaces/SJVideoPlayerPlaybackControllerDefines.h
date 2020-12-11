@@ -11,6 +11,7 @@
 #import <UIKit/UIKit.h>
 #import <AVFoundation/AVFoundation.h>
 #import "SJVideoPlayerPlayStatusDefines.h"
+#import "SJPictureInPictureControllerDefines.h"
 
 @protocol SJVideoPlayerPlaybackControllerDelegate, SJMediaModelProtocol;
 
@@ -52,7 +53,8 @@ NS_ASSUME_NONNULL_BEGIN
 
 @property (nonatomic, readonly) BOOL isPlayed;                      ///< 当前media是否调用过play
 @property (nonatomic, readonly, getter=isReplayed) BOOL replayed;   ///< 当前media是否调用过replay
-@property (nonatomic, readonly) BOOL isPlayedToEndTime;               ///< 是否已播放完毕
+@property (nonatomic, readonly) BOOL isPlaybackFinished;                        ///< 播放结束
+@property (nonatomic, readonly, nullable) SJFinishedReason finishedReason;      ///< 播放结束的reason
 - (void)prepareToPlay;
 - (void)replay;
 - (void)refresh;
@@ -64,9 +66,15 @@ NS_ASSUME_NONNULL_BEGIN
 - (void)seekToTime:(CMTime)time toleranceBefore:(CMTime)toleranceBefore toleranceAfter:(CMTime)toleranceAfter completionHandler:(void (^ __nullable)(BOOL))completionHandler;
 - (nullable UIImage *)screenshot;
 - (void)switchVideoDefinition:(id<SJMediaModelProtocol>)media;
+
+- (BOOL)isPictureInPictureSupported API_AVAILABLE(ios(14.0));
+@property (nonatomic) BOOL requiresLinearPlaybackInPictureInPicture API_AVAILABLE(ios(14.0));
+@property (nonatomic, readonly) SJPictureInPictureStatus pictureInPictureStatus API_AVAILABLE(ios(14.0));
+- (void)startPictureInPicture API_AVAILABLE(ios(14.0));
+- (void)stopPictureInPicture API_AVAILABLE(ios(14.0));
 @end
 
-/// screenshot
+/// screenshot`
 @protocol SJMediaPlaybackScreenshotController
 - (void)screenshotWithTime:(NSTimeInterval)time
                       size:(CGSize)size
@@ -108,15 +116,25 @@ NS_ASSUME_NONNULL_BEGIN
 
 
 // - new -
+- (void)playbackController:(id<SJVideoPlayerPlaybackController>)controller playbackDidFinish:(SJFinishedReason)reason;
 - (void)playbackController:(id<SJVideoPlayerPlaybackController>)controller durationDidChange:(NSTimeInterval)duration;
 - (void)playbackController:(id<SJVideoPlayerPlaybackController>)controller currentTimeDidChange:(NSTimeInterval)currentTime;
-- (void)mediaDidPlayToEndForPlaybackController:(id<SJVideoPlayerPlaybackController>)controller;
 - (void)playbackController:(id<SJVideoPlayerPlaybackController>)controller presentationSizeDidChange:(CGSize)presentationSize;
 - (void)playbackController:(id<SJVideoPlayerPlaybackController>)controller playbackTypeDidChange:(SJPlaybackType)playbackType;
 - (void)playbackController:(id<SJVideoPlayerPlaybackController>)controller playableDurationDidChange:(NSTimeInterval)playableDuration;
 - (void)playbackControllerIsReadyForDisplay:(id<SJVideoPlayerPlaybackController>)controller;
 - (void)playbackController:(id<SJVideoPlayerPlaybackController>)controller switchingDefinitionStatusDidChange:(SJDefinitionSwitchStatus)status media:(id<SJMediaModelProtocol>)media;
 - (void)playbackController:(id<SJVideoPlayerPlaybackController>)controller didReplay:(id<SJMediaModelProtocol>)media;
+
+- (void)playbackController:(id<SJVideoPlayerPlaybackController>)controller pictureInPictureStatusDidChange:(SJPictureInPictureStatus)status API_AVAILABLE(ios(14.0));
+
+- (void)playbackController:(id<SJVideoPlayerPlaybackController>)controller willSeekToTime:(CMTime)time;
+- (void)playbackController:(id<SJVideoPlayerPlaybackController>)controller didSeekToTime:(CMTime)time;
+
+- (void)applicationWillEnterForegroundWithPlaybackController:(id<SJVideoPlayerPlaybackController>)controller;
+- (void)applicationDidBecomeActiveWithPlaybackController:(id<SJVideoPlayerPlaybackController>)controller;
+- (void)applicationWillResignActiveWithPlaybackController:(id<SJVideoPlayerPlaybackController>)controller;
+- (void)applicationDidEnterBackgroundWithPlaybackController:(id<SJVideoPlayerPlaybackController>)controller;
 @end
 
 
@@ -125,14 +143,11 @@ NS_ASSUME_NONNULL_BEGIN
 /// played by URL
 @property (nonatomic, strong, nullable) NSURL *mediaURL;
 
-/// played by other media
-@property (nonatomic, weak, readonly, nullable) id<SJMediaModelProtocol> originMedia;
+/// 开始播放的位置, 单位秒
+@property (nonatomic) NSTimeInterval startPosition;
 
-@property (nonatomic) NSTimeInterval specifyStartTime;
-@end
-
-@protocol SJAVMediaModelProtocol<SJMediaModelProtocol>
-@property (nonatomic, strong, readonly, nullable) __kindof AVAsset *avAsset;
+/// 试用结束的位置, 单位秒
+@property (nonatomic) NSTimeInterval trialEndPosition;
 @end
 NS_ASSUME_NONNULL_END
 

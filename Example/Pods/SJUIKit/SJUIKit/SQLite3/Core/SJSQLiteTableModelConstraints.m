@@ -7,9 +7,20 @@
 //
 
 #import "SJSQLiteTableModelConstraints.h"
+#import <objc/message.h>
 
 NS_ASSUME_NONNULL_BEGIN
 @implementation SJSQLiteTableModelConstraints
+static SEL sel_sql_blacklist;
+static SEL sel_sql_whitelist;
+static SEL sel_sql_customKeyMapper;
+static SEL sel_sql_uniquelist;
+static SEL sel_sql_arrayPropertyGenericClass;
+static SEL sel_sql_autoincrementlist;
+static SEL sel_sql_primaryKey;
+static SEL sel_sql_notnulllist;
+static SEL sel_sql_tableName;
+
 - (instancetype)initWithClass:(Class<SJSQLiteTableModelProtocol>)cls {
     self = [super init];
     if ( self ) {
@@ -18,44 +29,64 @@ NS_ASSUME_NONNULL_BEGIN
         static dispatch_once_t onceToken;
         dispatch_once(&onceToken, ^{
             objc_sysProperties = @[@"hash", @"debugDescription", @"description"];
+            sel_sql_blacklist = @selector(sql_blacklist);
+            sel_sql_whitelist = @selector(sql_whitelist);
+            sel_sql_customKeyMapper = @selector(sql_customKeyMapper);
+            sel_sql_uniquelist = @selector(sql_uniquelist);
+            sel_sql_arrayPropertyGenericClass = @selector(sql_arrayPropertyGenericClass);
+            sel_sql_autoincrementlist = @selector(sql_autoincrementlist);
+            sel_sql_primaryKey = @selector(sql_primaryKey);
+            sel_sql_notnulllist = @selector(sql_notnulllist);
+            sel_sql_tableName = @selector(sql_tableName);
         });
         
         _objc_sysProperties = objc_sysProperties;
         
-        if ( [cls respondsToSelector:@selector(sql_blacklist)] ) {
-            _sql_blacklist = [cls sql_blacklist];
+        Class metaClass = (Class)object_getClass(cls);
+        
+        if ( class_respondsToSelector(metaClass, sel_sql_blacklist) ) {
+            IMP func = class_getMethodImplementation(metaClass, sel_sql_blacklist);
+            _sql_blacklist = ((id(*)(id, SEL))func)(cls, sel_sql_blacklist);
         }
         
-        if ( [cls respondsToSelector:@selector(sql_whitelist)] ) {
-            _sql_whitelist = [cls sql_whitelist];
+        if ( class_respondsToSelector(metaClass, sel_sql_whitelist) ) {
+            IMP func = class_getMethodImplementation(metaClass, sel_sql_whitelist);
+            _sql_whitelist = ((id(*)(id, SEL))func)(cls, sel_sql_whitelist);
         }
         
-        if ( [cls respondsToSelector:@selector(sql_customKeyMapper)] ) {
-            _sql_customKeyMapper = [cls sql_customKeyMapper];
+        if ( class_respondsToSelector(metaClass, sel_sql_customKeyMapper) ) {
+            IMP func = class_getMethodImplementation(metaClass, sel_sql_customKeyMapper);
+            _sql_customKeyMapper = ((id(*)(id, SEL))func)(cls, sel_sql_customKeyMapper);
         }
         
-        if ( [cls respondsToSelector:@selector(sql_uniquelist)] ) {
-            _sql_uniquelist = [cls sql_uniquelist];
+        if ( class_respondsToSelector(metaClass, sel_sql_uniquelist) ) {
+            IMP func = class_getMethodImplementation(metaClass, sel_sql_uniquelist);
+            _sql_uniquelist = ((id(*)(id, SEL))func)(cls, sel_sql_uniquelist);
         }
         
-        if ( [cls respondsToSelector:@selector(sql_arrayPropertyGenericClass)] ) {
-            _sql_arrayPropertyGenericClass = [cls sql_arrayPropertyGenericClass];
+        if ( class_respondsToSelector(metaClass, sel_sql_arrayPropertyGenericClass) ) {
+            IMP func = class_getMethodImplementation(metaClass, sel_sql_arrayPropertyGenericClass);
+            _sql_arrayPropertyGenericClass = ((id(*)(id, SEL))func)(cls, sel_sql_arrayPropertyGenericClass);
         }
         
-        if ( [cls respondsToSelector:@selector(sql_autoincrementlist)] ) {
-            _sql_autoincrementlist = [cls sql_autoincrementlist];
+        if ( class_respondsToSelector(metaClass, sel_sql_autoincrementlist) ) {
+            IMP func = class_getMethodImplementation(metaClass, sel_sql_autoincrementlist);
+            _sql_autoincrementlist = ((id(*)(id, SEL))func)(cls, sel_sql_autoincrementlist);
         }
         
-        if ( [cls respondsToSelector:@selector(sql_primaryKey)] ) {
-            _sql_primaryKey = [cls sql_primaryKey];
+        if ( class_respondsToSelector(metaClass, sel_sql_primaryKey) ) {
+            IMP func = class_getMethodImplementation(metaClass, sel_sql_primaryKey);
+            _sql_primaryKey = ((id(*)(id, SEL))func)(cls, sel_sql_primaryKey);
         }
         
-        if ( [cls respondsToSelector:@selector(sql_notnulllist)] ) {
-            _sql_notnulllist = [cls sql_notnulllist];
+        if ( class_respondsToSelector(metaClass, sel_sql_notnulllist) ) {
+            IMP func = class_getMethodImplementation(metaClass, sel_sql_notnulllist);
+            _sql_notnulllist = ((id(*)(id, SEL))func)(cls, sel_sql_notnulllist);
         }
         
-        if ( [cls respondsToSelector:@selector(sql_tableName)] ) {
-            _sql_tableName = [cls sql_tableName];
+        if ( class_respondsToSelector(metaClass, sel_sql_tableName) ) {
+            IMP func = class_getMethodImplementation(metaClass, sel_sql_tableName);
+            _sql_tableName = ((id(*)(id, SEL))func)(cls, sel_sql_tableName);
         }
     }
     return self;

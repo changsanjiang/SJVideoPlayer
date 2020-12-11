@@ -10,7 +10,6 @@
 #define SJSQLiteCore_h
 
 #import <Foundation/Foundation.h>
-#import <sqlite3.h>
 #import "SJSQLiteTableInfo.h"
 #import "SJSQLiteColumnInfo.h"
 #import "SJSQLiteObjectInfo.h"
@@ -22,7 +21,7 @@ NS_ASSUME_NONNULL_BEGIN
 #define sj_sqlite3_obj_copy_str(_str_)     char cstr[strlen(_str_.UTF8String) + 1]; strcpy(cstr, _str_.UTF8String)
 
 @interface NSMutableString (SJSQLite3CoreExtended)
-- (void)sjsql_deleteSubffix:(NSString *)str;
+- (void)sjsql_deleteSuffix:(NSString *)str;
 @end
 
 
@@ -52,7 +51,7 @@ FOUNDATION_EXPORT NSArray<id> *_Nullable
 sj_sqlite3_stmt_get_primary_values_array(NSString *jsonString);
 
 FOUNDATION_EXPORT NSString *
-sj_sqlite3_stmt_get_last_row(SJSQLiteObjectInfo *objInfo);
+sj_sqlite3_stmt_get_last_row(SJSQLiteTableInfo *table);
 
 #pragma mark -
 
@@ -64,52 +63,52 @@ sj_sqlite3_obj_exec_each_result_callback(void *para, int ncolumn, char *_Nullabl
 /// 打开数据库链接
 ///
 FOUNDATION_EXPORT BOOL
-sj_sqlite3_obj_open_database(NSString *path, sqlite3 *_Nullable*_Nonnull db);
+sj_sqlite3_obj_open_database(NSString *path, void *db);
 
 /// 关闭数据库链接
 ///
 FOUNDATION_EXPORT BOOL
-sj_sqlite3_obj_close_database(sqlite3 *db);
+sj_sqlite3_obj_close_database(void *db);
 
 /// 执行sql
 ///
 FOUNDATION_EXPORT NSArray<NSDictionary *> *_Nullable
-sj_sqlite3_obj_exec(sqlite3 *db, NSString *sql, NSError *_Nullable*_Nullable error);
+sj_sqlite3_obj_exec(void *db, NSString *sql, NSError *_Nullable*_Nullable error);
 
 /// 开启事物
 ///
 FOUNDATION_EXPORT void
-sj_sqlite3_obj_begin_transaction(sqlite3 *db);
+sj_sqlite3_obj_begin_transaction(void *db);
 
 /// 提交事物
 ///
 FOUNDATION_EXPORT void
-sj_sqlite3_obj_commit(sqlite3 *db);
+sj_sqlite3_obj_commit(void *db);
 
 /// 回滚提交
 ///
 FOUNDATION_EXPORT void
-sj_sqlite3_obj_rollback(sqlite3 *db);
+sj_sqlite3_obj_rollback(void *db);
 
 /// 查询某个表是否存在
 ///
 FOUNDATION_EXPORT BOOL
-sj_sqlite3_obj_table_exists(sqlite3 *db, NSString *name);
+sj_sqlite3_obj_table_exists(void *db, NSString *name);
 
 /// 删除表
 ///
 FOUNDATION_EXPORT void
-sj_sqlite3_obj_drop_table(sqlite3 *db, NSString *name, NSError **error);
+sj_sqlite3_obj_drop_table(void *db, NSString *name, NSError **error);
 
 /// 删除指定的行数据
 ///
 FOUNDATION_EXPORT void
-sj_sqlite3_obj_delete_row_datas(sqlite3 *db, SJSQLiteTableInfo *table, NSArray<id> *primaryKeyValues, NSError **error);
+sj_sqlite3_obj_delete_row_datas(void *db, SJSQLiteTableInfo *table, NSArray<id> *primaryKeyValues, NSError **error);
 
 /// 获取行数据
 ///
 FOUNDATION_EXPORT NSDictionary *_Nullable
-sj_sqlite3_obj_get_row_data(sqlite3 *db, SJSQLiteTableInfo *table, id primaryKeyValue, NSError **error);
+sj_sqlite3_obj_get_row_data(void *db, SJSQLiteTableInfo *table, id primaryKeyValue, NSError **error);
 NS_ASSUME_NONNULL_END
 
 #endif /* SJSQLiteCore_h */

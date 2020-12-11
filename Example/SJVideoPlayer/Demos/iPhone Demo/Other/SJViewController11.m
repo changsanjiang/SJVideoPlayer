@@ -9,8 +9,10 @@
 #import "SJViewController11.h"
 #import <SJVideoPlayer/SJVideoPlayer.h>
 #import <Masonry/Masonry.h>
-#import <SJUIKit/SJUIKit.h>
+#import <SJUIKit/NSAttributedString+SJMake.h>
 #import "SJSourceURLs.h"
+
+#import <SJVideoPlayer/SJProgressSlider.h>
 
 NS_ASSUME_NONNULL_BEGIN
 @interface SJViewController11 ()
@@ -23,25 +25,10 @@ NS_ASSUME_NONNULL_BEGIN
 - (void)viewDidLoad {
     [super viewDidLoad];
     [self _setupViews];
-    
-    // 开启左右边缘快进快退
-    _player.fastForwardViewController.enabled = YES;
-    _player.fastForwardViewController.blockColor = SJVideoPlayerSettings.commonSettings.progress_traceColor;
-    [self _updateTriggerAreaWidth];
-    __weak typeof(self) _self = self;
-    _player.rotationObserver.rotationDidEndExeBlock = ^(id<SJRotationManager>  _Nonnull mgr) {
-        __strong typeof(_self) self = _self;
-        if ( !self ) return ;
-        [self _updateTriggerAreaWidth];
-    };
-}
-
-- (void)_updateTriggerAreaWidth {
-    CGRect bounds = UIScreen.mainScreen.bounds;
-    CGFloat max = _player.isFullScreen ? MAX(CGRectGetWidth(bounds), CGRectGetHeight(bounds)) : MIN(CGRectGetWidth(bounds), CGRectGetHeight(bounds));
-
-    CGFloat width = ceil(max * 0.18);
-    _player.fastForwardViewController.triggerAreaWidth = width;
+    // 1. 开启所有手势
+    _player.gestureControl.supportedGestureTypes |= SJPlayerGestureTypeMask_LongPress;
+    // 2. 设置长按播放器界面时的播放速率
+    _player.rateWhenLongPressGestureTriggered = 2.0;
 }
 
 - (void)_setupViews {
@@ -56,12 +43,8 @@ NS_ASSUME_NONNULL_BEGIN
     }];
 }
 
-- (BOOL)prefersStatusBarHidden {
-    return [self.player vc_prefersStatusBarHidden];
-}
-
-- (UIStatusBarStyle)preferredStatusBarStyle {
-    return [self.player vc_preferredStatusBarStyle];
+- (BOOL)shouldAutorotate {
+    return NO;
 }
 
 - (BOOL)prefersHomeIndicatorAutoHidden {

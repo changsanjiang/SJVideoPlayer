@@ -38,6 +38,18 @@ UIKIT_EXTERN NSNotificationName const SJVideoPlayerSettingsUpdatedNotification;
 @interface SJVideoPlayerSettings (SJEdgeControlLayer)
 @property (nonatomic, strong, nullable) UIImage *placeholder;
 
+// picture in picture
+@property (nonatomic, strong, nullable) UIImage *pictureInPictureItemStartImage API_AVAILABLE(ios(14.0));
+@property (nonatomic, strong, nullable) UIImage *pictureInPictureItemStopImage API_AVAILABLE(ios(14.0));
+
+// fast forward view(长按快进时显示的视图)
+@property (nonatomic, strong, nullable) UIColor  *fastForwardTriangleColor;
+@property (nonatomic, strong, nullable) UIColor  *fastForwardRateTextColor;
+@property (nonatomic, strong, nullable) UIFont   *fastForwardRateTextFont;
+@property (nonatomic, strong, nullable) UIColor  *fastForwardFFTextColor;
+@property (nonatomic, strong, nullable) UIFont   *fastForwardFFTextFont;
+@property (nonatomic, strong, nullable) NSString *fastForwardFFText;
+
 // loading view
 @property (nonatomic, strong, nullable) UIColor *loadingNetworkSpeedTextColor;
 @property (nonatomic, strong, nullable) UIFont  *loadingNetworkSpeedTextFont;
@@ -72,6 +84,7 @@ UIKIT_EXTERN NSNotificationName const SJVideoPlayerSettingsUpdatedNotification;
 // bottom adapter items
 @property (nonatomic, strong, nullable) UIImage *pauseBtnImage;
 @property (nonatomic, strong, nullable) UIImage *playBtnImage;
+@property (nonatomic, strong, nullable) UIFont *timeFont;
 @property (nonatomic, strong, nullable) NSString *liveText;                       // 实时直播
 @property (nonatomic, strong, nullable) UIImage *shrinkscreenImage;               // 缩回小屏的图片
 @property (nonatomic, strong, nullable) UIImage *fullBtnImage;                    // 全屏的图片
@@ -104,8 +117,10 @@ UIKIT_EXTERN NSNotificationName const SJVideoPlayerSettingsUpdatedNotification;
 @property (nonatomic) float more_trackHeight;                         // sider track height of more view
 @property (nonatomic, strong, nullable) UIImage *more_thumbImage;     // sider thumb image of more view
 @property (nonatomic) float more_thumbSize;                           // sider thumb size of more view
-@property (nonatomic, strong, nullable) UIImage *more_minRateImage;
-@property (nonatomic, strong, nullable) UIImage *more_maxRateImage;
+@property (nonatomic) float more_minRateValue;                        // 最小播放倍速值
+@property (nonatomic) float more_maxRateValue;                        // 最大播放倍速值
+@property (nonatomic, strong, nullable) UIImage *more_minRateImage;   // 最小播放倍速图标
+@property (nonatomic, strong, nullable) UIImage *more_maxRateImage;   // 最大播放倍速图标
 @property (nonatomic, strong, nullable) UIImage *more_minVolumeImage;
 @property (nonatomic, strong, nullable) UIImage *more_maxVolumeImage;
 @property (nonatomic, strong, nullable) UIImage *more_minBrightnessImage;

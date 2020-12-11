@@ -24,12 +24,9 @@ pod 'SJRouter'
 
 ## Author
 
-SanJiang, changsanjiang@gmail.com
+Email: changsanjiang@gmail.com
 
-## Contact
-
-* Email: changsanjiang@gmail.com
-* QQGroup: 719616775 <img src="https://github.com/changsanjiang/SJVideoPlayer/blob/master/SJVideoPlayerProject/SJVideoPlayerProject/Group.jpeg" width="100"  />
+QQGroup: 930508201 (iOS 开发)
 
 ## License
 

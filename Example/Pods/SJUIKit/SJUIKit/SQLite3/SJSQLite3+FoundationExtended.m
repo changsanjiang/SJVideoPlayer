@@ -122,7 +122,7 @@ NS_ASSUME_NONNULL_BEGIN
 @end
 
 NSArray<id> *
-SJFoundationExtendedValuesForKey(NSArray<NSDictionary *> *array, NSString *key) {
+SJFoundationExtendedValuesForKey(NSString *key, NSArray<NSDictionary *> *array) {
     NSMutableArray *values = [NSMutableArray arrayWithCapacity:array.count];
     for ( NSDictionary *dict in array ) {
         id value = dict[key];

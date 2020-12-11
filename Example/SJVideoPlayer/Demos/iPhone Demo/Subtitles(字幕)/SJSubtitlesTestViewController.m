@@ -2,7 +2,7 @@
 //  SJSubtitlesTestViewController.m
 //  SJVideoPlayer_Example
 //
-//  Created by BlueDancer on 2019/11/8.
+//  Created by 畅三江 on 2019/11/8.
 //  Copyright © 2019 changsanjiang. All rights reserved.
 //
 
@@ -19,10 +19,6 @@ NS_ASSUME_NONNULL_BEGIN
 @end
 
 @implementation SJSubtitlesTestViewController
-
-- (BOOL)shouldAutorotate {
-    return NO;
-}
 
 - (void)viewDidLoad {
     [super viewDidLoad];
@@ -88,12 +84,8 @@ NS_ASSUME_NONNULL_BEGIN
     [self.player vc_viewDidDisappear];
 }
 
-- (BOOL)prefersStatusBarHidden {
-    return [self.player vc_prefersStatusBarHidden];
-}
-
-- (UIStatusBarStyle)preferredStatusBarStyle {
-    return [self.player vc_preferredStatusBarStyle];
+- (BOOL)shouldAutorotate {
+    return NO;
 }
 
 - (BOOL)prefersHomeIndicatorAutoHidden {

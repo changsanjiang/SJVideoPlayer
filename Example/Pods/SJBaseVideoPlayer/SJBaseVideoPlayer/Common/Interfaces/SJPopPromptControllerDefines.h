@@ -19,10 +19,16 @@ NS_ASSUME_NONNULL_BEGIN
 - (void)showCustomView:(UIView *)view duration:(NSTimeInterval)duration;
 - (BOOL)isShowingWithCustomView:(UIView *)view;
 
+- (void)remove:(UIView *)view;
 - (void)clear;
 @property (nonatomic) CGFloat leftMargin; ///< default value is 16
 @property (nonatomic) CGFloat bottomMargin; ///< default value is 16
 @property (nonatomic) CGFloat itemSpacing; ///< default value is 12
+
+@property (nonatomic, copy, readonly, nullable) __kindof NSArray<UIView *> *displayingViews;
+
+@property (nonatomic) BOOL automaticallyAdjustsLeftInset;
+@property (nonatomic) BOOL automaticallyAdjustsBottomInset;
 
 /// 以下属性由播放器维护
 ///

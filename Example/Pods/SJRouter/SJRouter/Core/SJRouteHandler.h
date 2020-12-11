@@ -40,13 +40,38 @@ typedef void(^SJRouterUnableToGetAnInstanceCallback)(SJRouteRequest *request, SJ
 ///            MyViewController2 *vc = [[MyViewController2 alloc] init];
 ///            if ( completionHandler != nil ) completionHandler(vc, nil);
 ///        }]];
+///
+///         /// 添加拦截器
+///         ///
+///         ///     拦截向"video/list"的请求. 决定是否可以处理路由
+///         ///
+///         ///     什么场景下适合添加拦截器?
+///         ///         比如跳转B界面需要用户登录, 否则需要跳转至登录界面. 因此从任何地方跳转B界面, 都需要能够及时拦截到, 增加对用户登录态的判断来决定是否允许跳转B界面
+///         ///
+///        [router addInterceptor:[SJRouteInterceptor interceptorWithPath:@"video/list" handler:^(SJRouteRequest * _Nonnull request, SJRouterInterceptionPolicyDecisionHandler  _Nonnull decisionHandler) {
+///           // - 对登录态的判断
+///           if ( !User.isLogin ) {
+///                 // 取消此次路由
+///                 decisionHandler(SJRouterInterceptionPolicyCancel);
+///                 // 跳转登录页面
+///                 SJRouteRequest *newRequest = [SJRouteRequest.alloc initWithPath:@"user/login" parameters:nil];
+///                 [SJRouter.shared handleRequest:newRequest completionHandler:nil];
+///                return;
+///           }
+///
+///           // - 也可以添加一些自己需要的参数
+///           [request setValue:@"sjsjsjs" forParameterKey:@"keykeykey"];
+///
+///           // - 允许此次路由
+///           decisionHandler(SJRouterInterceptionPolicyAllow);
+///        }]];
 ///    }
 ///    @end
 ///\endcode
 ///
 + (void)addRoutesToRouter:(SJRouter *)router;
 
-#pragma mark - 为兼容老版本保留以下这些接口
+#pragma mark - 以下为第二种添加路由的方式
 
 + (NSArray<NSString *> *)multiRoutePath; // 多路径 可以从这个方法返回
 + (NSString *)routePath;                 // 单路径 可以用这个方法返回
@@ -54,14 +79,14 @@ typedef void(^SJRouterUnableToGetAnInstanceCallback)(SJRouteRequest *request, SJ
 ///
 /// 处理某个请求
 ///
-///     当调用SJRouter的`-handleRequest:completionHandler:`时, SJRouter将获取到对应的`handler`, 调用到此方法
+///     当调用SJRouter的`-handleRequest:completionHandler:`时, SJRouter将通过对应的`handler`调用到此方法
 ///
 + (void)handleRequest:(SJRouteRequest *)request topViewController:(UIViewController *)topViewController completionHandler:(nullable SJCompletionHandler)completionHandler;
 
 ///
 /// 获取某个实例
 ///
-///     当调用SJRouter的`-instanceWithRequest:completionHandler:`时, SJRouter将获取对应的`handler`, 调用到此方法
+///     当调用SJRouter的`-instanceWithRequest:completionHandler:`时, SJRouter将通过对应的`handler`调用到此方法
 ///
 + (void)instanceWithRequest:(SJRouteRequest *)request completionHandler:(nullable SJCompletionHandler)completionHandler;
 @end

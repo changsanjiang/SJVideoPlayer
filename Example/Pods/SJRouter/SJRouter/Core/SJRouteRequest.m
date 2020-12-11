@@ -14,10 +14,11 @@ NS_ASSUME_NONNULL_BEGIN
 @end
 
 @implementation SJRouteRequest
-- (instancetype)initWithPath:(NSString *)rq parameters:(nullable SJParameters)prts {
+- (nullable instancetype)initWithPath:(NSString *)rq parameters:(nullable SJParameters)prts {
 #ifdef DEBUG
     NSParameterAssert(rq);
 #endif
+    if ( rq == nil ) return nil;
     return [self _initWithPath:rq parameters:prts];
 }
 
@@ -27,6 +28,27 @@ NS_ASSUME_NONNULL_BEGIN
         while ( [rq hasPrefix:@"/"] ) rq = [rq substringFromIndex:1];
         _requestPath = rq.copy;
         _prts = prts;
+    }
+    return self;
+}
+
+- (nullable instancetype)initWithURL:(NSURL *)URL {
+#ifdef DEBUG
+    NSParameterAssert(URL);
+#endif
+    if ( URL == nil ) return nil;
+    SJParameters parameters = nil;
+    NSURLComponents *c = [[NSURLComponents alloc] initWithURL:URL resolvingAgainstBaseURL:YES];
+    if ( 0 != c.queryItems.count ) {
+        NSMutableDictionary *m = [NSMutableDictionary new];
+        for ( NSURLQueryItem *item in c.queryItems ) {
+            m[item.name] = item.value;
+        }
+        parameters = m.copy;
+    }
+    self = [self _initWithPath:URL.path.stringByDeletingPathExtension parameters:parameters];
+    if ( self ) {
+        _originalURL = URL;
     }
     return self;
 }
@@ -76,29 +98,6 @@ NS_ASSUME_NONNULL_BEGIN
      parameters = %@; \n \
      originalURL = %@; \n \
      }", NSStringFromClass([self class]), self, _requestPath, _prts, _originalURL];
-}
-@end
-
-@implementation SJRouteRequest(CreateByURL)
-- (nullable instancetype)initWithURL:(NSURL *)URL {
-#ifdef DEBUG
-    NSParameterAssert(URL);
-#endif
-    if ( URL == nil ) return nil;
-    SJParameters parameters = nil;
-    NSURLComponents *c = [[NSURLComponents alloc] initWithURL:URL resolvingAgainstBaseURL:YES];
-    if ( 0 != c.queryItems.count ) {
-        NSMutableDictionary *m = [NSMutableDictionary new];
-        for ( NSURLQueryItem *item in c.queryItems ) {
-            m[item.name] = item.value;
-        }
-        parameters = m.copy;
-    }
-    self = [self _initWithPath:URL.path.stringByDeletingPathExtension parameters:parameters];
-    if ( self ) {
-        _originalURL = URL;
-    }
-    return self;
 }
 @end
 NS_ASSUME_NONNULL_END

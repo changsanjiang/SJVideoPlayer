@@ -7,6 +7,7 @@
 
 #import "SJPlaybackObservation.h"
 #import "SJBaseVideoPlayerConst.h"
+#import "SJVideoPlayerPlayStatusDefines.h"
 
 NS_ASSUME_NONNULL_BEGIN
 @implementation SJPlaybackObservation {
@@ -33,10 +34,22 @@ NS_ASSUME_NONNULL_BEGIN
             if ( self.playbackStatusDidChangeExeBlock ) self.playbackStatusDidChangeExeBlock(self.player);
         }]];
 
-        [_tokens addObject:[NSNotificationCenter.defaultCenter addObserverForName:SJVideoPlayerDidPlayToEndTimeNotification object:player queue:NSOperationQueue.mainQueue usingBlock:^(NSNotification * _Nonnull note) {
+        if (@available(iOS 14.0, *)) {
+            [_tokens addObject:[NSNotificationCenter.defaultCenter addObserverForName:SJVideoPlayerPictureInPictureStatusDidChangeNotification object:player queue:NSOperationQueue.mainQueue usingBlock:^(NSNotification * _Nonnull note) {
+                __strong typeof(_self) self = _self;
+                if ( !self ) return;
+                if ( self.pictureInPictureStatusDidChangeExeBlock ) self.pictureInPictureStatusDidChangeExeBlock(self.player);
+            }]];
+        }
+        
+        [_tokens addObject:[NSNotificationCenter.defaultCenter addObserverForName:SJVideoPlayerPlaybackDidFinishNotification object:player queue:NSOperationQueue.mainQueue usingBlock:^(NSNotification * _Nonnull note) {
             __strong typeof(_self) self = _self;
             if ( !self ) return;
-            if ( self.didPlayToEndTimeExeBlock ) self.didPlayToEndTimeExeBlock(self.player);
+            if ( self.playbackDidFinishExeBlock ) self.playbackDidFinishExeBlock(self.player);
+            #pragma clang diagnostic push
+            #pragma clang diagnostic ignored "-Wdeprecated-declarations"
+            else if ( self.didPlayToEndTimeExeBlock && [(id)self.player valueForKey:@"finishedReason"] == SJFinishedReasonToEndTimePosition ) self.didPlayToEndTimeExeBlock(self.player);
+            #pragma clang diagnostic pop
             if ( self.playbackStatusDidChangeExeBlock ) self.playbackStatusDidChangeExeBlock(self.player);
         }]];
         
@@ -76,10 +89,10 @@ NS_ASSUME_NONNULL_BEGIN
             if ( self.playbackTypeDidChangeExeBlock ) self.playbackTypeDidChangeExeBlock(self.player);
         }]];
         
-        [_tokens addObject:[NSNotificationCenter.defaultCenter addObserverForName:SJVideoPlayerLockedScreenDidChangeNotification object:player queue:NSOperationQueue.mainQueue usingBlock:^(NSNotification * _Nonnull note) {
+        [_tokens addObject:[NSNotificationCenter.defaultCenter addObserverForName:SJVideoPlayerScreenLockStateDidChangeNotification object:player queue:NSOperationQueue.mainQueue usingBlock:^(NSNotification * _Nonnull note) {
             __strong typeof(_self) self = _self;
             if ( !self ) return;
-            if ( self.lockedScreenDidChangeExeBlock ) self.lockedScreenDidChangeExeBlock(self.player);
+            if ( self.screenLockStateDidChangeExeBlock ) self.screenLockStateDidChangeExeBlock(self.player);
         }]];
         
         [_tokens addObject:[NSNotificationCenter.defaultCenter addObserverForName:SJVideoPlayerMutedDidChangeNotification object:player queue:NSOperationQueue.mainQueue usingBlock:^(NSNotification * _Nonnull note) {
@@ -100,10 +113,22 @@ NS_ASSUME_NONNULL_BEGIN
             if ( self.rateDidChangeExeBlock ) self.rateDidChangeExeBlock(self.player);
         }]];
         
-        [_tokens addObject:[NSNotificationCenter.defaultCenter addObserverForName:SJVideoPlayerDidReplayNotification object:player queue:NSOperationQueue.mainQueue usingBlock:^(NSNotification * _Nonnull note) {
+        [_tokens addObject:[NSNotificationCenter.defaultCenter addObserverForName:SJVideoPlayerPlaybackDidReplayNotification object:player queue:NSOperationQueue.mainQueue usingBlock:^(NSNotification * _Nonnull note) {
             __strong typeof(_self) self = _self;
             if ( !self ) return;
             if ( self.didReplayExeBlock ) self.didReplayExeBlock(self.player);
+        }]];
+        
+        [_tokens addObject:[NSNotificationCenter.defaultCenter addObserverForName:SJVideoPlayerPlaybackWillSeekNotification object:player queue:NSOperationQueue.mainQueue usingBlock:^(NSNotification * _Nonnull note) {
+            __strong typeof(_self) self = _self;
+            if ( !self ) return;
+            if ( self.willSeekToTimeExeBlock ) self.willSeekToTimeExeBlock(note.object, [(NSValue *)note.userInfo[SJVideoPlayerNotificationUserInfoKeySeekTime] CMTimeValue]);
+        }]];
+
+        [_tokens addObject:[NSNotificationCenter.defaultCenter addObserverForName:SJVideoPlayerPlaybackDidSeekNotification object:player queue:NSOperationQueue.mainQueue usingBlock:^(NSNotification * _Nonnull note) {
+            __strong typeof(_self) self = _self;
+            if ( !self ) return;
+            if ( self.didSeekToTimeExeBlock ) self.didSeekToTimeExeBlock(note.object, [(NSValue *)note.userInfo[SJVideoPlayerNotificationUserInfoKeySeekTime] CMTimeValue]);
         }]];
     }
     return self;

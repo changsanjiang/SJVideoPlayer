@@ -8,6 +8,7 @@
 
 #import "SJPlayModelPropertiesObserver.h"
 #import "UIView+SJBaseVideoPlayerExtended.h"
+#import "SJPlayModel+SJPrivate.h"
 #import <objc/message.h>
 
 #if __has_include(<SJUIKit/SJRunLoopTaskQueue.h>)
@@ -24,7 +25,7 @@
 
 NS_ASSUME_NONNULL_BEGIN
 @interface SJPlayModelPropertiesObserver()
-@property (nonatomic, strong, readonly) id<SJPlayModel> playModel;
+@property (nonatomic, strong, readonly) __kindof SJPlayModel *playModel;
 @property (nonatomic) CGPoint beforeOffset;
 @property (nonatomic) BOOL isAppeared;
 @property (nonatomic, strong, readonly) SJRunLoopTaskQueue *taskQueue;
@@ -40,7 +41,7 @@ NS_ASSUME_NONNULL_BEGIN
     if ( !self ) return nil;
     _playModel = playModel;
     _taskQueue = SJRunLoopTaskQueue.queue(@"SJPlayModelObserverRunLoopTaskQueue").delay(3);
-    
+    _beforeOffset = CGPointMake(-1, -1);
     if ( [playModel isMemberOfClass:[SJPlayModel class]] ) {
         _isAppeared = YES;
     }
@@ -54,7 +55,25 @@ NS_ASSUME_NONNULL_BEGIN
 }
 
 - (void)_observeProperties {
-    if ( [_playModel isKindOfClass:[SJUITableViewCellPlayModel class]] ) {
+    if ( [_playModel isKindOfClass:SJScrollViewPlayModel.class] ||
+         [_playModel isKindOfClass:SJCollectionViewCellPlayModel.class] ||
+         [_playModel isKindOfClass:SJCollectionViewSectionHeaderViewPlayModel.class] ||
+         [_playModel isKindOfClass:SJCollectionViewSectionFooterViewPlayModel.class] ||
+         [_playModel isKindOfClass:SJTableViewCellPlayModel.class]  ||
+         [_playModel isKindOfClass:SJTableViewSectionHeaderViewPlayModel.class]  ||
+         [_playModel isKindOfClass:SJTableViewSectionFooterViewPlayModel.class]  ||
+         [_playModel isKindOfClass:SJTableViewTableHeaderViewPlayModel.class]  ||
+         [_playModel isKindOfClass:SJTableViewTableFooterViewPlayModel.class]  ) {
+        
+        SJPlayModel *curr = _playModel;
+        _beforeOffset = curr.inScrollView.contentOffset;
+        while ( curr != nil ) {
+            [self _observeScrollView:curr.inScrollView];
+            curr = curr.nextPlayModel;
+        }
+    }
+    // 以下已弃用, 未来可能会删除
+    else if ( [_playModel isKindOfClass:[SJUITableViewCellPlayModel class]] ) {
         SJUITableViewCellPlayModel *playModel = _playModel;
         [self _observeScrollView:playModel.tableView];
     }
@@ -114,62 +133,43 @@ static NSString *kState = @"state";
 - (void)_panGestureStateDidChange:(UIPanGestureRecognizer *)pan {
     if ( !pan ) return;
     UIGestureRecognizerState state = pan.state;
-    BOOL isTableView = NO;
-    BOOL isCollectionView = NO;
     switch ( state ) {
         case UIGestureRecognizerStateChanged: return;
         case UIGestureRecognizerStatePossible: return;
         case UIGestureRecognizerStateBegan: {
-            if ( [pan.view isKindOfClass:[UITableView class]] ) {
-                _isTouchedTablView = YES;
-                isTableView = YES;
-            }
-            else if ( [pan.view isKindOfClass:[UICollectionView class]] ) {
-                _isTouchedCollectionView = YES;
-                isCollectionView = YES;
-            }
+            _isTouched = YES;
         }
             break;
         case UIGestureRecognizerStateEnded:
         case UIGestureRecognizerStateFailed:
         case UIGestureRecognizerStateCancelled: {
-            if ( [pan.view isKindOfClass:[UITableView class]] ) {
-                _isTouchedTablView = NO;
-                isTableView = YES;
-            }
-            else if ( [pan.view isKindOfClass:[UICollectionView class]] ) {
-                _isTouchedCollectionView = NO;
-                isCollectionView = YES;
-            }
+            _isTouched = NO;
         }
             break;
-    }
-    
-    if ( isTableView ) {
-        if ( [self.delegate respondsToSelector:@selector(observer:userTouchedTableView:)] ) {
-            [self.delegate observer:self userTouchedTableView:_isTouchedTablView];
-        }
-    }
-    else if ( isCollectionView ) {
-        if ( [self.delegate respondsToSelector:@selector(observer:userTouchedCollectionView:)] ) {
-            [self.delegate observer:self userTouchedCollectionView:_isTouchedCollectionView];
-        }
     }
 }
 
 - (BOOL)_isAppearedInTheScrollingView:(UIScrollView *)scrollView {
-    return [scrollView isViewAppeared:_playModel.playerSuperview];
+    return [scrollView isViewAppeared:_playModel.playerSuperview insets:_playModel.playableAreaInsets];
 }
 
 - (void)_scrollViewDidScroll:(UIScrollView *)scrollView {
     if ( !scrollView ) return;
     if ( CGPointEqualToPoint(_beforeOffset, scrollView.contentOffset) ) return;
     
+    if ( _playModel.nextPlayModel != nil ) {
+        SJPlayModel *curr = _playModel.nextPlayModel;
+        while ( curr != nil ) {
+            [self _observeScrollView:curr.inScrollView];
+            curr = curr.nextPlayModel;
+        }
+    }
+    // 以下已弃用, 未来可能会删除
     ///
     /// Thanks @loveuqian
     /// https://github.com/changsanjiang/SJVideoPlayer/issues/62
     ///
-    if ( [_playModel isKindOfClass:[SJUICollectionViewNestedInUITableViewCellPlayModel class]] ) {
+    else if ( [_playModel isKindOfClass:[SJUICollectionViewNestedInUITableViewCellPlayModel class]] ) {
         SJUICollectionViewNestedInUITableViewCellPlayModel *playModel = _playModel;
         if ( scrollView == playModel.tableView ) {
             [self _observeScrollView:playModel.collectionView];
@@ -202,12 +202,8 @@ static NSString *kState = @"state";
     }
 }
 
-- (BOOL)isPlayInTableView {
-    return _playModel.isPlayInTableView;
-}
-
-- (BOOL)isPlayInCollectionView {
-    return _playModel.isPlayInCollectionView;
+- (BOOL)isPlayInScrollView {
+    return _playModel.isPlayInScrollView;
 }
 
 - (void)refreshAppearState {
@@ -226,7 +222,24 @@ static NSString *kState = @"state";
 }
 
 - (BOOL)isScrolling {
-    if ( [_playModel isKindOfClass:[SJUITableViewCellPlayModel class]] ) {
+    if ( [_playModel isKindOfClass:SJScrollViewPlayModel.class] ||
+         [_playModel isKindOfClass:SJCollectionViewCellPlayModel.class] ||
+         [_playModel isKindOfClass:SJCollectionViewSectionHeaderViewPlayModel.class] ||
+         [_playModel isKindOfClass:SJCollectionViewSectionFooterViewPlayModel.class] ||
+         [_playModel isKindOfClass:SJTableViewCellPlayModel.class]  ||
+         [_playModel isKindOfClass:SJTableViewSectionHeaderViewPlayModel.class]  ||
+         [_playModel isKindOfClass:SJTableViewSectionFooterViewPlayModel.class]  ||
+         [_playModel isKindOfClass:SJTableViewTableHeaderViewPlayModel.class]  ||
+         [_playModel isKindOfClass:SJTableViewTableFooterViewPlayModel.class]  ) {
+        SJPlayModel *curr = _playModel;
+        while ( curr != nil ) {
+            if ( curr.inScrollView.isDragging || curr.inScrollView.isDecelerating )
+                return YES;
+            curr = curr.nextPlayModel;
+        }
+    }
+    // 以下已弃用, 未来可能会删除
+    else if ( [_playModel isKindOfClass:[SJUITableViewCellPlayModel class]] ) {
         SJUITableViewCellPlayModel *playModel = _playModel;
         return playModel.tableView.isDragging || playModel.tableView.isDecelerating;
     }

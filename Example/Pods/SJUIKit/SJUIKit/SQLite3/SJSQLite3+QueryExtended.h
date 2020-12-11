@@ -8,8 +8,8 @@
 //
 
 #import "SJSQLite3.h"
-@class SJSQLite3ColumnOrder, SJSQLite3Condition;
-
+#import "SJSQLite3Condition.h" 
+#import "SJSQLite3ColumnOrder.h"
 
 NS_ASSUME_NONNULL_BEGIN
 ///
@@ -34,40 +34,5 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (nullable NSArray<NSDictionary *> *)queryDataForClass:(Class)cls resultColumns:(nullable NSArray<NSString *> *)columns conditions:(nullable NSArray<SJSQLite3Condition *> *)conditions orderBy:(nullable NSArray<SJSQLite3ColumnOrder *> *)orders range:(NSRange)range error:(NSError **)error;
 
-@end
-
-#pragma mark -
-
-typedef enum : NSInteger {
-    SJSQLite3RelationLessThanOrEqual = -1,
-    SJSQLite3RelationEqual,
-    SJSQLite3RelationGreaterThanOrEqual,
-    SJSQLite3RelationUnequal,
-    
-    SJSQLite3RelationLessThan,
-    SJSQLite3RelationGreaterThan,
-} SJSQLite3Relation;
-
-/// WHERE
-///
-@interface SJSQLite3Condition : NSObject
-+ (instancetype)conditionWithColumn:(NSString *)column relatedBy:(SJSQLite3Relation)relation value:(id)value;
-+ (instancetype)conditionWithColumn:(NSString *)column value:(id)value; ///< `relation == SJSQLite3RelationEqual`
-+ (instancetype)conditionWithColumn:(NSString *)column in:(NSArray *)values;
-+ (instancetype)conditionWithColumn:(NSString *)column between:(id)start and:(id)end;
-+ (instancetype)conditionWithIsNullColumn:(NSString *)column;
-- (instancetype)initWithCondition:(NSString *)condition;
-- (instancetype)init NS_UNAVAILABLE;
-+ (instancetype)new NS_UNAVAILABLE;
-@property (nonatomic, copy, readonly) NSString *condition;
-@end
-
-/// ORDER BY
-///
-@interface SJSQLite3ColumnOrder : NSObject
-+ (instancetype)orderWithColumn:(NSString *)column ascending:(BOOL)ascending;
-- (instancetype)init NS_UNAVAILABLE;
-+ (instancetype)new NS_UNAVAILABLE;
-@property (nonatomic, copy, readonly) NSString *order;
-@end
+@end 
 NS_ASSUME_NONNULL_END

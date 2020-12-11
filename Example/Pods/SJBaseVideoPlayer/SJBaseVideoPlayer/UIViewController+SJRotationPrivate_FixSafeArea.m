@@ -2,7 +2,7 @@
 //  UIViewController+SJRotationPrivate_FixSafeArea.m
 //  Pods
 //
-//  Created by BlueDancer on 2019/8/6.
+//  Created by 畅三江 on 2019/8/6.
 //
 
 #if __IPHONE_OS_VERSION_MAX_ALLOWED >= 130000
@@ -23,13 +23,26 @@ API_AVAILABLE(ios(13.0)) @implementation UIViewController (SJRotationPrivate_Fix
            [self.view viewWithTag:SJBaseVideoPlayerViewTag] != nil;
 }
 
-- (void)sj_setContentOverlayInsets:(UIEdgeInsets)insets andLeftMargin:(CGFloat)leftMargin rightMargin:(CGFloat)rightMargin {    
+- (void)sj_setContentOverlayInsets:(UIEdgeInsets)insets andLeftMargin:(CGFloat)leftMargin rightMargin:(CGFloat)rightMargin {
+    SJSafeAreaInsetsMask mask = self.disabledAdjustSafeAreaInsetsMask;
+    if ( mask & SJSafeAreaInsetsMaskTop ) insets.top = 0;
+    if ( mask & SJSafeAreaInsetsMaskLeft ) insets.left = 0;
+    if ( mask & SJSafeAreaInsetsMaskBottom ) insets.bottom = 0;
+    if ( mask & SJSafeAreaInsetsMaskRight ) insets.right = 0;
+    
     BOOL isFullscreen = self.view.bounds.size.width > self.view.bounds.size.height;
     if ( ![NSStringFromClass(self.class) isEqualToString:@"SJFullscreenModeViewController"] || isFullscreen ) {
         if ( isFullscreen || insets.top != 0 || [self sj_containsPlayerView] == NO ) {
             [self sj_setContentOverlayInsets:insets andLeftMargin:leftMargin rightMargin:rightMargin];
         }
     }
+}
+
+- (void)setDisabledAdjustSafeAreaInsetsMask:(SJSafeAreaInsetsMask)disabledAdjustSafeAreaInsetsMask {
+    objc_setAssociatedObject(self, @selector(disabledAdjustSafeAreaInsetsMask), @(disabledAdjustSafeAreaInsetsMask), OBJC_ASSOCIATION_RETAIN_NONATOMIC);
+}
+- (SJSafeAreaInsetsMask)disabledAdjustSafeAreaInsetsMask {
+    return [objc_getAssociatedObject(self, _cmd) integerValue];
 }
 @end
 

@@ -9,7 +9,7 @@
 #import "SJTestViewController.h"
 #import <SJVideoPlayer/SJVideoPlayer.h>
 #import <Masonry/Masonry.h>
-#import <SJUIKit/SJUIKit.h>
+#import <SJUIKit/NSAttributedString+SJMake.h>
 #import "SJSourceURLs.h"
 #import <SDWebImage.h>
 
@@ -77,13 +77,10 @@ NS_ASSUME_NONNULL_BEGIN
     };
 }
 
-- (BOOL)prefersStatusBarHidden {
-    return [self.player vc_prefersStatusBarHidden];
+- (BOOL)shouldAutorotate {
+    return NO;
 }
 
-- (UIStatusBarStyle)preferredStatusBarStyle {
-    return [self.player vc_preferredStatusBarStyle];
-}
 
 - (BOOL)prefersHomeIndicatorAutoHidden {
     return YES;

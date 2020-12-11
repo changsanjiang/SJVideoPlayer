@@ -2,14 +2,14 @@
 //  CALayer+SJBaseVideoPlayerExtended.h
 //  SJBaseVideoPlayer
 //
-//  Created by BlueDancer on 2019/11/22.
+//  Created by 畅三江 on 2019/11/22.
 //
 
 #import <QuartzCore/QuartzCore.h>
 
 NS_ASSUME_NONNULL_BEGIN
-typedef void(^SJAnimationDidStartHandler)(CAAnimation *anim);
-typedef void(^SJAnimationDidStopHandler)(CAAnimation *anim, BOOL isFinished);
+typedef void(^SJAnimationDidStartHandler)(__kindof CAAnimation *anim);
+typedef void(^SJAnimationDidStopHandler)(__kindof CAAnimation *anim, BOOL isFinished);
 
 @interface CALayer (SJBaseVideoPlayerExtended)
 

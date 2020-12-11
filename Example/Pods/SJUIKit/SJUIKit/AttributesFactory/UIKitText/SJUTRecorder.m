@@ -2,7 +2,7 @@
 //  SJUTRecorder.m
 //  AttributesFactory
 //
-//  Created by BlueDancer on 2019/4/12.
+//  Created by 畅三江 on 2019/4/12.
 //  Copyright © 2019 SanJiang. All rights reserved.
 //
 
@@ -28,6 +28,13 @@ NS_ASSUME_NONNULL_BEGIN
         return style;
     }
     return self->style;
+}
+
+- (void)setCustomValue:(nullable id)value forAttributeKey:(NSString *)key {
+    if ( customAttributes == nil ) {
+        customAttributes = NSMutableDictionary.dictionary;
+    }
+    if ( key != nil ) customAttributes[key] = value;
 }
 @end
 NS_ASSUME_NONNULL_END

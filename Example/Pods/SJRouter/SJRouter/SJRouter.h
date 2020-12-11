@@ -14,6 +14,7 @@
 #import <Foundation/Foundation.h>
 #import "SJRouteHandler.h"
 #import "SJRouteObject.h"
+#import "SJRouteInterceptor.h"
 @class UIViewController;
 
 NS_ASSUME_NONNULL_BEGIN
@@ -31,5 +32,12 @@ NS_ASSUME_NONNULL_BEGIN
 - (BOOL)canHandleRoutePath:(NSString *)routePath; 
 
 - (void)addRoute:(SJRouteObject *)object;
+@end
+
+
+@interface SJRouter (SJRouteInterceptorExtended)
+
+- (void)addInterceptor:(SJRouteInterceptor *)interceptor;
+
 @end
 NS_ASSUME_NONNULL_END

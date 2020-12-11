@@ -58,9 +58,7 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic) BOOL addFloatViewToKeyWindow;
 
 @property (nonatomic, strong, readonly) __kindof UIView *floatView; ///< float view
-
-@property (nonatomic) CGFloat safeMargin; ///< default value is 12.
-
+  
 /// 以下属性由播放器维护
 ///
 /// - target 为播放器呈现视图

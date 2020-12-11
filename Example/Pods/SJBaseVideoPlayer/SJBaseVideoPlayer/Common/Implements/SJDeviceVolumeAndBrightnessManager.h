@@ -15,6 +15,13 @@ NS_ASSUME_NONNULL_BEGIN
 
 @property (nonatomic, strong, null_resettable) UIColor *traceColor;
 @property (nonatomic, strong, null_resettable) UIColor *trackColor;
+
+///
+/// 是否在播放器中显示音量或亮度提示视图
+///
+///     default value is YES.
+///
+@property (nonatomic) BOOL showsPromptView;
 @end
 NS_ASSUME_NONNULL_END
 

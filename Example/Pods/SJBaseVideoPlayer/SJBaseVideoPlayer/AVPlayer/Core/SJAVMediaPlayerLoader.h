@@ -6,14 +6,15 @@
 //
 
 #import <Foundation/Foundation.h>
+#import "SJVideoPlayerURLAsset.h"
 #import "SJAVMediaPlayer.h"
-#import "SJVideoPlayerPlaybackControllerDefines.h"
 
 NS_ASSUME_NONNULL_BEGIN
 @interface SJAVMediaPlayerLoader : NSObject
 
-+ (SJAVMediaPlayer *)loadPlayerForMedia:(id<SJMediaModelProtocol>)media;
++ (nullable SJAVMediaPlayer *)loadPlayerForMedia:(SJVideoPlayerURLAsset *)media;
 
-+ (void)clearPlayerForMedia:(id<SJMediaModelProtocol>)media;
++ (void)clearPlayerForMedia:(SJVideoPlayerURLAsset *)media;
+
 @end
 NS_ASSUME_NONNULL_END

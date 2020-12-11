@@ -2,7 +2,7 @@
 //  SJMakeView.m
 //  Pods
 //
-//  Created by BlueDancer on 2019/2/27.
+//  Created by 畅三江 on 2019/2/27.
 //
 
 #import "SJMakeView.h"

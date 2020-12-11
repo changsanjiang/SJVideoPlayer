@@ -150,6 +150,7 @@ typedef id<SJUTAttributesProtocol>_Nonnull(^SJUTParagraphStyleAttribute)(void(^b
 typedef id<SJUTAttributesProtocol>_Nonnull(^SJUTLineBreakModeAttribute)(NSLineBreakMode lineBreakMode);
 typedef id<SJUTAttributesProtocol>_Nonnull(^SJUTDecorationAttribute)(void(^)(id<SJUTDecoration> make));
 typedef id<SJUTAttributesProtocol>_Nonnull(^SJUTBaseLineOffsetAttribute)(double offset);
+typedef id<SJUTAttributesProtocol>_Nonnull(^SJUTSetAttribute)(id _Nullable value, NSString *forKey);
 
 @protocol SJUTAttributesProtocol
 @property (nonatomic, copy, readonly) SJUTFontAttribute font;
@@ -165,6 +166,7 @@ typedef id<SJUTAttributesProtocol>_Nonnull(^SJUTBaseLineOffsetAttribute)(double 
 @property (nonatomic, copy, readonly) SJUTDecorationAttribute underLine;
 @property (nonatomic, copy, readonly) SJUTDecorationAttribute strikethrough;
 @property (nonatomic, copy, readonly) SJUTBaseLineOffsetAttribute baseLineOffset;
+@property (nonatomic, copy, readonly) SJUTSetAttribute set; // 添加或删除自定义的attribute
 @end
 
 @protocol SJUTRangeHandlerProtocol
@@ -191,9 +193,8 @@ typedef id<SJUTAttributesProtocol>_Nonnull(^SJUTBaseLineOffsetAttribute)(double 
 @end
 
 typedef enum : NSUInteger {
-    SJUTVerticalAlignmentBottom = 0,
+    SJUTVerticalAlignmentDefault = 0,
     SJUTVerticalAlignmentCenter = 1,
-    SJUTVerticalAlignmentTop = 2,
 } SJUTVerticalAlignment;
 
 @protocol SJUTImageAttachment <NSObject>

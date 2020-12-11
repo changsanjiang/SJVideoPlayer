@@ -563,7 +563,7 @@ static SJEdgeControlButtonItemTag SJTopItem_Back = 1;
     }
     _exportedVideoPlayer.gestureControl.supportedGestureTypes = SJPlayerGestureTypeMask_None;
     _exportedVideoPlayer.rotationManager.disabledAutorotation = YES;
-    _exportedVideoPlayer.playbackObserver.didPlayToEndTimeExeBlock = ^(__kindof SJBaseVideoPlayer * _Nonnull player) {
+    _exportedVideoPlayer.playbackObserver.playbackDidFinishExeBlock = ^(__kindof SJBaseVideoPlayer * _Nonnull player) {
         [player replay];
     };
     return _exportedVideoPlayer;

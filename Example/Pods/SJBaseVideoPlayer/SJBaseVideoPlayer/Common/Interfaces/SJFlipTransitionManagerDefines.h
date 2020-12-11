@@ -27,6 +27,7 @@ NS_ASSUME_NONNULL_BEGIN
 - (void)setFlipTransition:(SJViewFlipTransition)t animated:(BOOL)animated;
 - (void)setFlipTransition:(SJViewFlipTransition)t animated:(BOOL)animated completionHandler:(void(^_Nullable)(id<SJFlipTransitionManager> mgr))completionHandler;
 
+@property (nonatomic, strong, nullable) UIView *target;
 - (instancetype)init NS_UNAVAILABLE;
 + (instancetype)new  NS_UNAVAILABLE;
 @end

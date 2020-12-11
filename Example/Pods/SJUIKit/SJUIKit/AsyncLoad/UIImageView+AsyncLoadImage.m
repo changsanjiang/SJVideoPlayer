@@ -68,7 +68,7 @@ NS_ASSUME_NONNULL_BEGIN
 }
 
 - (void)asyncLoadRoundedImageWithURL:(NSURL *)URL borderWidth:(CGFloat)borderWidth borderColor:(nullable UIColor *)borderColor placeholderImage:(nullable UIImage *)placeholderImage {
-    [self sd_setImageWithURL:URL placeholderImage:placeholderImage];
+    [self sd_setImageWithURL:URL placeholderImage:placeholderImage options:SDWebImageForceTransition];
     SJCornerMaskSetRound(self, borderWidth, borderColor);
 }
 @end

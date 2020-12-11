@@ -2,7 +2,7 @@
 //  SJUTRangeHandler.m
 //  AttributesFactory
 //
-//  Created by BlueDancer on 2019/4/13.
+//  Created by 畅三江 on 2019/4/13.
 //  Copyright © 2019 SanJiang. All rights reserved.
 //
 

@@ -1,146 +1,177 @@
 PODS:
+  - CocoaAsyncSocket (7.6.4)
+  - KTVCocoaHTTPServer (1.0.0):
+    - CocoaAsyncSocket
   - Masonry (1.1.0)
-  - MJRefresh (3.3.1)
-  - Reachability (3.2)
-  - SDWebImage (5.4.1):
-    - SDWebImage/Core (= 5.4.1)
-  - SDWebImage/Core (5.4.1)
-  - SJBaseVideoPlayer (3.1.8):
+  - MJRefresh (3.4.3)
+  - SDWebImage (5.9.5):
+    - SDWebImage/Core (= 5.9.5)
+  - SDWebImage/Core (5.9.5)
+  - SJBaseVideoPlayer (3.4.5):
     - Masonry
-    - Reachability
-    - SJBaseVideoPlayer/AVPlayer (= 3.1.8)
-    - SJBaseVideoPlayer/Common (= 3.1.8)
+    - SJBaseVideoPlayer/AVPlayer (= 3.4.5)
+    - SJBaseVideoPlayer/Common (= 3.4.5)
     - SJUIKit/AttributesFactory (>= 0.0.0.38)
-    - SJUIKit/ObserverHelper (>= 0.0.0.38)
-    - SJUIKit/Queues (>= 0.0.0.38)
-  - SJBaseVideoPlayer/AVPlayer (3.1.8):
+    - SJUIKit/ObserverHelper
+    - SJUIKit/Queues
+    - SJUIKit/SQLite3
+  - SJBaseVideoPlayer/AVPlayer (3.4.5):
     - Masonry
-    - Reachability
     - SJBaseVideoPlayer/Common
     - SJUIKit/AttributesFactory (>= 0.0.0.38)
-    - SJUIKit/ObserverHelper (>= 0.0.0.38)
-    - SJUIKit/Queues (>= 0.0.0.38)
-  - SJBaseVideoPlayer/Common (3.1.8):
+    - SJUIKit/ObserverHelper
+    - SJUIKit/Queues
+    - SJUIKit/SQLite3
+  - SJBaseVideoPlayer/Common (3.4.5):
     - Masonry
-    - Reachability
     - SJBaseVideoPlayer/ResourceLoader
     - SJUIKit/AttributesFactory (>= 0.0.0.38)
-    - SJUIKit/ObserverHelper (>= 0.0.0.38)
-    - SJUIKit/Queues (>= 0.0.0.38)
-  - SJBaseVideoPlayer/ResourceLoader (3.1.8):
+    - SJUIKit/ObserverHelper
+    - SJUIKit/Queues
+    - SJUIKit/SQLite3
+  - SJBaseVideoPlayer/ResourceLoader (3.4.5):
     - Masonry
-    - Reachability
     - SJUIKit/AttributesFactory (>= 0.0.0.38)
-    - SJUIKit/ObserverHelper (>= 0.0.0.38)
-    - SJUIKit/Queues (>= 0.0.0.38)
-  - SJFullscreenPopGesture/ObjC (1.5.3)
+    - SJUIKit/ObserverHelper
+    - SJUIKit/Queues
+    - SJUIKit/SQLite3
+  - SJFullscreenPopGesture/ObjC (1.5.4)
+  - SJMediaCacheServer (1.3.2):
+    - KTVCocoaHTTPServer
+    - SJMediaCacheServer/Core (= 1.3.2)
+    - SJUIKit/SQLite3
+  - SJMediaCacheServer/Core (1.3.2):
+    - KTVCocoaHTTPServer
+    - SJUIKit/SQLite3
   - SJPlaybackListController (0.0.5):
     - SJPlaybackListController/Core (= 0.0.5)
   - SJPlaybackListController/Core (0.0.5)
-  - SJRouter (0.0.16):
-    - SJRouter/Core (= 0.0.16)
-  - SJRouter/Core (0.0.16)
-  - SJUIKit (0.0.0.39):
-    - SJUIKit/AsyncLoad (= 0.0.0.39)
-    - SJUIKit/AttributesFactory (= 0.0.0.39)
-    - SJUIKit/Base (= 0.0.0.39)
-    - SJUIKit/CornerMask (= 0.0.0.39)
-    - SJUIKit/Date (= 0.0.0.39)
-    - SJUIKit/ObserverHelper (= 0.0.0.39)
-    - SJUIKit/Other (= 0.0.0.39)
-    - SJUIKit/Photo (= 0.0.0.39)
-    - SJUIKit/Queues (= 0.0.0.39)
-    - SJUIKit/Refresh (= 0.0.0.39)
-    - SJUIKit/SQLite3 (= 0.0.0.39)
-    - SJUIKit/Thread (= 0.0.0.39)
-    - SJUIKit/UIMaker (= 0.0.0.39)
-  - SJUIKit/AsyncLoad (0.0.0.39):
+  - SJRouter (1.0.0):
+    - SJRouter/Core (= 1.0.0)
+  - SJRouter/Core (1.0.0)
+  - SJUIKit (0.0.0.51):
+    - SJUIKit/AsyncLoad (= 0.0.0.51)
+    - SJUIKit/AttributesFactory (= 0.0.0.51)
+    - SJUIKit/Base (= 0.0.0.51)
+    - SJUIKit/CornerMask (= 0.0.0.51)
+    - SJUIKit/Date (= 0.0.0.51)
+    - SJUIKit/ObserverHelper (= 0.0.0.51)
+    - SJUIKit/Other (= 0.0.0.51)
+    - SJUIKit/PageViewController (= 0.0.0.51)
+    - SJUIKit/Photo (= 0.0.0.51)
+    - SJUIKit/Queues (= 0.0.0.51)
+    - SJUIKit/Refresh (= 0.0.0.51)
+    - SJUIKit/SQLite3 (= 0.0.0.51)
+    - SJUIKit/Thread (= 0.0.0.51)
+    - SJUIKit/UIMaker (= 0.0.0.51)
+  - SJUIKit/AsyncLoad (0.0.0.51):
     - SJUIKit/CornerMask
-  - SJUIKit/AttributesFactory (0.0.0.39):
-    - SJUIKit/AttributesFactory/Deprecated (= 0.0.0.39)
-    - SJUIKit/AttributesFactory/UIKitText (= 0.0.0.39)
-  - SJUIKit/AttributesFactory/Deprecated (0.0.0.39)
-  - SJUIKit/AttributesFactory/UIKitText (0.0.0.39)
-  - SJUIKit/Base (0.0.0.39):
-    - SJUIKit/Base/Core (= 0.0.0.39)
+  - SJUIKit/AttributesFactory (0.0.0.51):
+    - SJUIKit/AttributesFactory/Deprecated (= 0.0.0.51)
+    - SJUIKit/AttributesFactory/UIKitText (= 0.0.0.51)
+  - SJUIKit/AttributesFactory/Deprecated (0.0.0.51)
+  - SJUIKit/AttributesFactory/UIKitText (0.0.0.51)
+  - SJUIKit/Base (0.0.0.51):
+    - SJUIKit/Base/Core (= 0.0.0.51)
     - SJUIKit/ObserverHelper
-  - SJUIKit/Base/Core (0.0.0.39):
+  - SJUIKit/Base/Core (0.0.0.51):
     - SJUIKit/ObserverHelper
-  - SJUIKit/CornerMask (0.0.0.39):
+  - SJUIKit/CornerMask (0.0.0.51):
     - SJUIKit/ObserverHelper
-  - SJUIKit/Date (0.0.0.39)
-  - SJUIKit/ObserverHelper (0.0.0.39)
-  - SJUIKit/Other (0.0.0.39):
+  - SJUIKit/Date (0.0.0.51)
+  - SJUIKit/ObserverHelper (0.0.0.51)
+  - SJUIKit/Other (0.0.0.51):
     - SJUIKit/Date
-  - SJUIKit/Photo (0.0.0.39)
-  - SJUIKit/Queues (0.0.0.39)
-  - SJUIKit/Refresh (0.0.0.39):
+  - SJUIKit/PageViewController (0.0.0.51):
+    - SJUIKit/PageViewController/PageMenuBar (= 0.0.0.51)
+    - SJUIKit/PageViewController/PageViewController (= 0.0.0.51)
+  - SJUIKit/PageViewController/PageMenuBar (0.0.0.51):
+    - SJUIKit/PageViewController/PageMenuBar/Core (= 0.0.0.51)
+  - SJUIKit/PageViewController/PageMenuBar/Core (0.0.0.51)
+  - SJUIKit/PageViewController/PageViewController (0.0.0.51):
+    - SJUIKit/PageViewController/PageViewController/Core (= 0.0.0.51)
+  - SJUIKit/PageViewController/PageViewController/Core (0.0.0.51)
+  - SJUIKit/Photo (0.0.0.51)
+  - SJUIKit/Queues (0.0.0.51)
+  - SJUIKit/Refresh (0.0.0.51):
     - MJRefresh
-  - SJUIKit/SQLite3 (0.0.0.39):
-    - SJUIKit/SQLite3/Core (= 0.0.0.39)
-    - SJUIKit/SQLite3/Protocol (= 0.0.0.39)
-  - SJUIKit/SQLite3/Core (0.0.0.39):
+  - SJUIKit/SQLite3 (0.0.0.51):
+    - SJUIKit/SQLite3/Core (= 0.0.0.51)
+    - SJUIKit/SQLite3/Protocol (= 0.0.0.51)
+    - YYModel
+  - SJUIKit/SQLite3/Core (0.0.0.51):
     - SJUIKit/SQLite3/Protocol
-  - SJUIKit/SQLite3/Protocol (0.0.0.39)
-  - SJUIKit/Thread (0.0.0.39)
-  - SJUIKit/UIMaker (0.0.0.39):
-    - SJUIKit/UIMaker/Core (= 0.0.0.39)
-  - SJUIKit/UIMaker/Core (0.0.0.39)
-  - SJVideoPlayer (3.1.1):
-    - SJBaseVideoPlayer (>= 3.1.7)
-    - SJVideoPlayer/Common (= 3.1.1)
-    - SJVideoPlayer/ControlLayers (= 3.1.1)
-    - SJVideoPlayer/ResourceLoader (= 3.1.1)
-  - SJVideoPlayer/Common (3.1.1):
+    - YYModel
+  - SJUIKit/SQLite3/Protocol (0.0.0.51):
+    - YYModel
+  - SJUIKit/Thread (0.0.0.51)
+  - SJUIKit/UIMaker (0.0.0.51):
+    - SJUIKit/UIMaker/Core (= 0.0.0.51)
+  - SJUIKit/UIMaker/Core (0.0.0.51)
+  - SJVideoPlayer (3.2.9):
+    - SJBaseVideoPlayer (>= 3.4.5)
+    - SJVideoPlayer/Common (= 3.2.9)
+    - SJVideoPlayer/ControlLayers (= 3.2.9)
+    - SJVideoPlayer/ResourceLoader (= 3.2.9)
+  - SJVideoPlayer/Common (3.2.9):
     - Masonry
-    - SJBaseVideoPlayer (>= 3.1.7)
+    - SJBaseVideoPlayer (>= 3.4.5)
     - SJUIKit/AttributesFactory
     - SJVideoPlayer/ResourceLoader
-  - SJVideoPlayer/ControlLayers (3.1.1):
-    - SJBaseVideoPlayer (>= 3.1.7)
+  - SJVideoPlayer/ControlLayers (3.2.9):
+    - SJBaseVideoPlayer (>= 3.4.5)
     - SJVideoPlayer/Common
-  - SJVideoPlayer/ResourceLoader (3.1.1):
-    - SJBaseVideoPlayer (>= 3.1.7)
+  - SJVideoPlayer/ResourceLoader (3.2.9):
+    - SJBaseVideoPlayer (>= 3.4.5)
+  - YYModel (1.0.4)
 
 DEPENDENCIES:
   - Masonry
-  - MJRefresh
+  - MJRefresh (= 3.4.3)
   - SDWebImage
   - SJBaseVideoPlayer
   - SJFullscreenPopGesture/ObjC
+  - SJMediaCacheServer
   - SJPlaybackListController
   - SJRouter
   - SJUIKit
   - SJVideoPlayer (from `../../SJVideoPlayer`)
+  - YYModel
 
 SPEC REPOS:
   trunk:
+    - CocoaAsyncSocket
+    - KTVCocoaHTTPServer
     - Masonry
     - MJRefresh
-    - Reachability
     - SDWebImage
     - SJBaseVideoPlayer
     - SJFullscreenPopGesture
+    - SJMediaCacheServer
     - SJPlaybackListController
     - SJRouter
     - SJUIKit
+    - YYModel
 
 EXTERNAL SOURCES:
   SJVideoPlayer:
     :path: "../../SJVideoPlayer"
 
 SPEC CHECKSUMS:
+  CocoaAsyncSocket: 694058e7c0ed05a9e217d1b3c7ded962f4180845
+  KTVCocoaHTTPServer: df8d7b861e603ff8037e9b2138aca2563a6b768d
   Masonry: 678fab65091a9290e40e2832a55e7ab731aad201
-  MJRefresh: eeda70fbf0ad277f3178cef1cd0c3532591d6237
-  Reachability: 33e18b67625424e47b6cde6d202dce689ad7af96
-  SDWebImage: 29c340dbdcef342bb13125553f4e19ce056b07a7
-  SJBaseVideoPlayer: 7c3d6d0e8c9cbd731143d2ddb53a2157e74479de
-  SJFullscreenPopGesture: d4994917bc900e79cd686970866834b4c5883565
+  MJRefresh: 53e3e3219f204425ee6d3e62e8733d3295944cd6
+  SDWebImage: 0b2ba0d56479bf6a45ecddbfd5558bea93150d25
+  SJBaseVideoPlayer: 0ecccbae3bf6cad55187113247ea88f711bef276
+  SJFullscreenPopGesture: 7be57b1014cb77f4b7c1e6df5e797da6d05dc75d
+  SJMediaCacheServer: 4e9203033c21d742b6030e7704aeb61dc38840cd
   SJPlaybackListController: e135c789fcd63d63a62d5e2e2965ab1e6d52a2bd
-  SJRouter: 65f831b647c80bbaff491d6252af8e7950b0f70b
-  SJUIKit: 5479a150083e606937a796801ecaae6317e046f5
-  SJVideoPlayer: 02bafffeb014806167be201f2860462fdc4d9e87
+  SJRouter: a866e7884fc9219bed523be0a0318c3a84e85022
+  SJUIKit: bdf86af3648e70483c57e2bfe2fcc7531337fa54
+  SJVideoPlayer: 3cccc263bc03edccedc1b2be887b903e3dfca106
+  YYModel: 2a7fdd96aaa4b86a824e26d0c517de8928c04b30
 
-PODFILE CHECKSUM: a2b2606a8ab3f794fe06129cb7249b61513ab980
+PODFILE CHECKSUM: 29e274b3a7b747f79a95901fcf2d39e60d7aef9d
 
-COCOAPODS: 1.8.4
+COCOAPODS: 1.10.0

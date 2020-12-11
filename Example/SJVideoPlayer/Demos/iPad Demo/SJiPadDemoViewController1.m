@@ -9,7 +9,7 @@
 #import "SJiPadDemoViewController1.h"
 #import <SJVideoPlayer/SJVideoPlayer.h>
 #import <Masonry/Masonry.h>
-#import <SJUIKit/SJUIKit.h>
+#import <SJUIKit/NSAttributedString+SJMake.h>
 #import "SJSourceURLs.h"
 static SJEdgeControlButtonItemTag const SJTestItemTag1 = 100;
 

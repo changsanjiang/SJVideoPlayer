@@ -160,14 +160,14 @@
     }
 }
 
-- (void)resetCurrentFrameIndex {
-    self.currentFrame = nil;
-    self.currentFrameIndex = 0;
-    self.currentLoopCount = 0;
-    self.currentTime = 0;
-    self.bufferMiss = NO;
-    self.needsDisplayWhenImageBecomesAvailable = NO;
-    [self handleFrameChange];
+- (void)resetCurrentFrameStatus {
+    // These should not trigger KVO, user don't need to receive an `index == 0, image == nil` callback.
+    _currentFrame = nil;
+    _currentFrameIndex = 0;
+    _currentLoopCount = 0;
+    _currentTime = 0;
+    _bufferMiss = NO;
+    _needsDisplayWhenImageBecomesAvailable = NO;
 }
 
 - (void)clearFrameBuffer {
@@ -179,19 +179,20 @@
 #pragma mark - Animation Control
 - (void)startPlaying {
     [self.displayLink start];
-    // Calculate max buffer size
-    [self calculateMaxBufferCount];
     // Setup frame
     if (self.currentFrameIndex == 0 && !self.currentFrame) {
         [self setupCurrentFrame];
     }
+    // Calculate max buffer size
+    [self calculateMaxBufferCount];
 }
 
 - (void)stopPlaying {
     [_fetchQueue cancelAllOperations];
     // Using `_displayLink` here because when UIImageView dealloc, it may trigger `[self stopAnimating]`, we already release the display link in SDAnimatedImageView's dealloc method.
     [_displayLink stop];
-    [self resetCurrentFrameIndex];
+    // We need to reset the frame status, but not trigger any handle. This can ensure next time's playing status correct.
+    [self resetCurrentFrameStatus];
 }
 
 - (void)pausePlaying {
@@ -209,6 +210,7 @@
     }
     self.currentFrameIndex = index;
     self.currentLoopCount = loopCount;
+    self.currentFrame = [self.animatedProvider animatedImageFrameAtIndex:index];
     [self handleFrameChange];
 }
 
@@ -284,7 +286,7 @@
             return;
         }
         
-        // Otherwise, we shoudle be ready to display next frame
+        // Otherwise, we should be ready to display next frame
         self.needsDisplayWhenImageBecomesAvailable = YES;
         self.currentFrameIndex = nextFrameIndex;
         self.currentTime -= currentDuration;
@@ -299,7 +301,7 @@
         if (nextFrameIndex == 0) {
             // Update the loop count
             self.currentLoopCount++;
-            [self handleLoopChnage];
+            [self handleLoopChange];
             
             // if reached the max loop count, stop animating, 0 means loop indefinitely
             NSUInteger maxLoopCount = self.totalLoopCount;
@@ -352,7 +354,7 @@
     }
 }
 
-- (void)handleLoopChnage {
+- (void)handleLoopChange {
     if (self.animationLoopHandler) {
         self.animationLoopHandler(self.currentLoopCount);
     }

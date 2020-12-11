@@ -9,6 +9,7 @@
 #import "UIScrollView+SJBaseVideoPlayerExtended.h"
 #import "UIView+SJBaseVideoPlayerExtended.h"
 #import "SJBaseVideoPlayerConst.h"
+#import "SJPlayModel.h"
 #import <objc/message.h>
 
 #if __has_include(<SJUIKit/NSObject+SJObserverHelper.h>)
@@ -25,8 +26,19 @@
 
 NS_ASSUME_NONNULL_BEGIN
 static NSString *const kQueue = @"SJBaseVideoPlayerAutoplayTaskQueue";
+static void sj_exeAnima(__kindof UIScrollView *scrollView, NSIndexPath *indexPath, SJAutoplayScrollAnimationType animationType);
+static void sj_playAsset(UIScrollView *scrollView, NSIndexPath *indexPath, BOOL animated);
+static SJRunLoopTaskQueue *
+sj_queue(void) {
+    static SJRunLoopTaskQueue *queue = nil;
+    static dispatch_once_t onceToken;
+    dispatch_once(&onceToken, ^{
+        queue = SJRunLoopTaskQueue.queue(kQueue).update(CFRunLoopGetMain(), kCFRunLoopDefaultMode);
+    });
+    return queue;
+}
 
-@implementation UIScrollView (SJPlayerCurrentPlayingIndexPath)
+@implementation UIScrollView (SJAutoplayPrivate)
 - (void)setSj_currentPlayingIndexPath:(nullable NSIndexPath *)sj_currentPlayingIndexPath {
     objc_setAssociatedObject(self, @selector(sj_currentPlayingIndexPath), sj_currentPlayingIndexPath, OBJC_ASSOCIATION_RETAIN_NONATOMIC);
 }
@@ -50,6 +62,55 @@ static void sj_removeContentOffsetObserver(UIScrollView *scrollView);
     return [objc_getAssociatedObject(self, _cmd) boolValue];
 }
 
+- (void)sj_playAssetAtIndexPath:(NSIndexPath *)indexPath scrollAnimated:(BOOL)animated {
+    if ( self.window == nil )
+        return;
+    
+    [self sj_removeCurrentPlayerView];
+
+    sj_queue().empty();
+    if ( [self isKindOfClass:UITableView.class] ) {
+        UITableView *tableView = (id)self;
+        UITableViewScrollPosition position = [self sj_autoplayConfig].animationType != SJAutoplayScrollAnimationTypeTop ? UITableViewScrollPositionMiddle : UITableViewScrollPositionTop;
+        if (@available(iOS 11.0, *)) {
+            [tableView performBatchUpdates:^{
+                [tableView reloadSections:[NSIndexSet indexSetWithIndex:indexPath.section] withRowAnimation:UITableViewRowAnimationNone];
+            } completion:^(BOOL finished) {
+                if ( [tableView numberOfRowsInSection:indexPath.section] > indexPath.row ) {
+                    [tableView scrollToRowAtIndexPath:indexPath atScrollPosition:position animated:animated];
+                    dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(0.3 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
+                        sj_queue().empty();
+                        [[self sj_autoplayConfig].autoplayDelegate sj_playerNeedPlayNewAssetAtIndexPath:indexPath];
+                    });
+                }
+            }];
+        } else {
+            [UIView animateWithDuration:animated ? 0.2 : 0 animations:^{
+                [tableView beginUpdates];
+                [tableView reloadSections:[NSIndexSet indexSetWithIndex:indexPath.section] withRowAnimation:UITableViewRowAnimationNone];
+                [tableView endUpdates];
+            } completion:^(BOOL finished) {
+                if ( [tableView numberOfRowsInSection:indexPath.section] > indexPath.row ) {
+                    [tableView scrollToRowAtIndexPath:indexPath atScrollPosition:position animated:animated];
+                    dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(0.3 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
+                        sj_queue().empty();
+                        [[self sj_autoplayConfig].autoplayDelegate sj_playerNeedPlayNewAssetAtIndexPath:indexPath];
+                    });
+                }
+            }];
+        }
+    }
+    else if ( [self isKindOfClass:UICollectionView.class] ) {
+        UICollectionView *collectionView = (id)self;
+        UICollectionViewScrollPosition position = [self sj_autoplayConfig].animationType != SJAutoplayScrollAnimationTypeTop ? UICollectionViewScrollPositionCenteredVertically : UICollectionViewScrollPositionTop;
+        [collectionView scrollToItemAtIndexPath:indexPath atScrollPosition:position animated:animated];
+        dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(0.3 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
+            sj_queue().empty();
+            [[self sj_autoplayConfig].autoplayDelegate sj_playerNeedPlayNewAssetAtIndexPath:indexPath];
+        });
+    }
+}
+
 - (void)setSj_autoplayConfig:(nullable SJPlayerAutoplayConfig *)sj_autoplayConfig {
     objc_setAssociatedObject(self, @selector(sj_autoplayConfig), sj_autoplayConfig, OBJC_ASSOCIATION_RETAIN_NONATOMIC);
 }
@@ -61,7 +122,6 @@ static void sj_removeContentOffsetObserver(UIScrollView *scrollView);
     self.sj_enabledAutoplay = YES;
     self.sj_autoplayConfig = autoplayConfig;
 
-    SJRunLoopTaskQueue *queue = SJRunLoopTaskQueue.queue(kQueue).update(CFRunLoopGetMain(), kCFRunLoopDefaultMode);
     __weak typeof(self) _self = self;
     sj_scrollViewContentOffsetDidChange(self, ^{
         __strong typeof(_self) self = _self;
@@ -71,7 +131,7 @@ static void sj_removeContentOffsetObserver(UIScrollView *scrollView);
             [NSObject cancelPreviousPerformRequestsWithTarget:self selector:@selector(sj_playNextAssetAfterEndScroll) object:nil];
         }
 
-        queue.empty();
+        sj_queue().empty();
         ///
         /// Thanks @YangYus
         ///
@@ -81,7 +141,7 @@ static void sj_removeContentOffsetObserver(UIScrollView *scrollView);
             return;
         }
 
-        queue.enqueue(^{
+        sj_queue().enqueue(^{
             self.sj_hasDelayedEndScrollTask = YES;
             [self performSelector:@selector(sj_playNextAssetAfterEndScroll) withObject:nil afterDelay:0.4];
         });
@@ -170,8 +230,6 @@ static void sj_removeContentOffsetObserver(UIScrollView *scrollView) {
 }
 
 #pragma mark -
-static void sj_playAsset(UIScrollView *scrollView, NSIndexPath *indexPath, BOOL animated);
-static void sj_exeAnima(__kindof UIScrollView *scrollView, NSIndexPath *indexPath, SJAutoplayScrollAnimationType animationType);
 
 static void sj_playNextAssetAfterEndScroll(__kindof __kindof UIScrollView *scrollView) {
     NSArray<NSIndexPath *> *_Nullable visibleIndexPaths = [scrollView sj_visibleIndexPaths];
@@ -180,19 +238,25 @@ static void sj_playNextAssetAfterEndScroll(__kindof __kindof UIScrollView *scrol
  
     SJPlayerAutoplayConfig *config = [scrollView sj_autoplayConfig];
     NSIndexPath *_Nullable current = [scrollView sj_currentPlayingIndexPath];
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wdeprecated-declarations"
     NSInteger superviewTag = config.playerSuperviewTag;
-    {
-        if ( [scrollView isViewAppearedWithTag:superviewTag atIndexPath:current] )
-            return;
-    }
+#pragma clang diagnostic pop
+    
+    if ( superviewTag != 0 && [scrollView isViewAppearedWithTag:superviewTag insets:config.playableAreaInsets atIndexPath:current] )
+        return;
+    else if ( [scrollView isViewAppearedWithProtocol:@protocol(SJPlayModelPlayerSuperview) tag:0 insets:config.playableAreaInsets atIndexPath:current] )
+        return;
     
     NSIndexPath *_Nullable next = nil;
     switch ( config.autoplayPosition ) {
         case SJAutoplayPositionTop: {
             for ( NSIndexPath *indexPath in visibleIndexPaths ) {
-                UIView *_Nullable target = [scrollView viewWithTag:superviewTag atIndexPath:indexPath];
+                UIView *_Nullable target = superviewTag != 0 ?
+                                    [scrollView viewWithTag:superviewTag atIndexPath:indexPath] :
+                [scrollView viewWithProtocol:@protocol(SJPlayModelPlayerSuperview) tag:0 atIndexPath:indexPath];
                 if ( !target ) continue;
-                CGRect intersection = [scrollView intersectionWithView:target];
+                CGRect intersection = [scrollView intersectionWithView:target insets:config.playableAreaInsets];
                 if ( floor(intersection.size.height) >= floor(target.bounds.size.height) ) {
                     next = indexPath;
                     break;
@@ -218,9 +282,11 @@ static void sj_playNextAssetAfterEndScroll(__kindof __kindof UIScrollView *scrol
             CGFloat sub = CGFLOAT_MAX;
             for ( NSInteger i = 0 ; i < count ; ++ i ) {
                 NSIndexPath *indexPath = visibleIndexPaths[i];
-                UIView *_Nullable target = [scrollView viewWithTag:superviewTag atIndexPath:indexPath];
+                UIView *_Nullable target = superviewTag != 0 ?
+                                    [scrollView viewWithTag:superviewTag atIndexPath:indexPath] :
+                                    [scrollView viewWithProtocol:@protocol(SJPlayModelPlayerSuperview) tag:0 atIndexPath:indexPath];
                 if ( !target ) continue;
-                CGRect intersection = [scrollView intersectionWithView:target];
+                CGRect intersection = [scrollView intersectionWithView:target insets:config.playableAreaInsets];
                 CGFloat result = floor(ABS(mid - CGRectGetMidY(intersection)));
                 if ( result < sub ) {
                     sub = result;
@@ -288,12 +354,18 @@ static void sj_playNextVisibleAsset(__kindof UIScrollView *scrollView) {
             return;
     }
     
+    SJPlayerAutoplayConfig *config = [scrollView sj_autoplayConfig];
     NSIndexPath *_Nullable next = nil;
-    NSInteger superviewTag = [scrollView sj_autoplayConfig].playerSuperviewTag;
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wdeprecated-declarations"
+    NSInteger superviewTag = config.playerSuperviewTag;
+#pragma clang diagnostic pop
     for ( NSIndexPath *indexPath in remain ) {
-        UIView *_Nullable target = [scrollView viewWithTag:superviewTag atIndexPath:indexPath];
+        UIView *_Nullable target = superviewTag != 0 ?
+                            [scrollView viewWithTag:superviewTag atIndexPath:indexPath] :
+                            [scrollView viewWithProtocol:@protocol(SJPlayModelPlayerSuperview) tag:0 atIndexPath:indexPath];
         if ( !target ) continue;
-        CGRect intersection = [scrollView intersectionWithView:target];
+        CGRect intersection = [scrollView intersectionWithView:target insets:config.playableAreaInsets];
         if ( floor(intersection.size.height) >= floor(target.bounds.size.height) ) {
             next = indexPath;
             break;

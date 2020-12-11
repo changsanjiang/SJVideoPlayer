@@ -2,7 +2,7 @@
 //  SJFullscreenCustomStatusBarDefines.h
 //  Pods
 //
-//  Created by BlueDancer on 2019/12/11.
+//  Created by 畅三江 on 2019/12/11.
 //
 
 #ifndef SJFullscreenCustomStatusBarDefines_h

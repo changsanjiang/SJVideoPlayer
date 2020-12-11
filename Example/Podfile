@@ -5,13 +5,20 @@ platform :ios, '8.0'
 
 #install! 'cocoapods', disable_input_output_paths: true, generate_multiple_pod_projects: true
 
+#post_install do |installer|
+#  installer.pods_project.build_configuration_list.build_configurations.each do |configuration|
+#    configuration.build_settings['CLANG_ALLOW_NON_MODULAR_INCLUDES_IN_FRAMEWORK_MODULES'] = 'YES'
+#  end
+#end
+
+
 post_install do |installer|
   installer.pods_project.targets.each do |target|
     target.build_configurations.each do |config|
       if config.build_settings['IPHONEOS_DEPLOYMENT_TARGET'].to_f < 9.0
         config.build_settings['IPHONEOS_DEPLOYMENT_TARGET'] = '9.0'
       end
-      
+
       if config.name != 'Release'
         if target.name == 'SJBaseVideoPlayer'
           config.build_settings['GCC_PREPROCESSOR_DEFINITIONS'] = '$(inherited) SJDEBUG'
@@ -33,26 +40,35 @@ end
 
 
 target 'SJVideoPlayer_Example' do
-# 切换为 ijkplayer, 详见: https://github.com/changsanjiang/SJVideoPlayer/wiki/Use-ijkplayer
-#  pod 'SJBaseVideoPlayer/IJKPlayer'#, :path => '../../SJBaseVideoPlayer'
+#  use_frameworks!
   
-# 切换为 Aliplayer, 详见: https://github.com/changsanjiang/SJVideoPlayer/wiki/Use-AliPlayer
+## 切换为 ijkplayer, 详见: https://github.com/changsanjiang/SJVideoPlayer/wiki/Use-ijkplayer
+#  pod 'SJBaseVideoPlayer/IJKPlayer', :path => '../../SJBaseVideoPlayer'
+#
+## 切换为 Aliplayer, 详见: https://github.com/changsanjiang/SJVideoPlayer/wiki/Use-AliPlayer
 #  pod 'SJBaseVideoPlayer/AliPlayer'#, :path => '../../SJBaseVideoPlayer'
-
-# 切换为 AliVodPlayer, 详见: https://github.com/changsanjiang/SJVideoPlayer/wiki/Use-AliVodPlayer
-#  pod 'SJBaseVideoPlayer/AliVodPlayer'#, :path => '../../SJBaseVideoPlayer'
+#
+## 切换为 AliVodPlayer, 详见: https://github.com/changsanjiang/SJVideoPlayer/wiki/Use-AliVodPlayer
+#  pod 'SJBaseVideoPlayer/AliVodPlayer', :path => '../../SJBaseVideoPlayer'
+#
+## 切换为 PLPlayer, 详见: https://github.com/changsanjiang/SJVideoPlayer/wiki/Use-PLPlayerKit
+#  pod 'SJBaseVideoPlayer/PLPlayer', :path => '../../SJBaseVideoPlayer'
 
   # 默认为 AVPlayer
   pod 'SJBaseVideoPlayer'#, :path => '../../SJBaseVideoPlayer'
   pod 'SJVideoPlayer', :path => '../../SJVideoPlayer'
+  pod 'SJUIKit'#, :podspec => 'https://gitee.com/changsanjiang/SJUIKit/raw/master/SJUIKit-YYModel.podspec'
+
+  # 边播边缓存的库
+  pod 'SJMediaCacheServer'
   
   # 全屏手势
   pod 'SJFullscreenPopGesture/ObjC'
   # 列表控制
   pod 'SJPlaybackListController'#, :path => '../../SJPlaybackListController'
   pod 'Masonry', :inhibit_warnings => true
-  pod 'MJRefresh', :inhibit_warnings => true
+  pod 'MJRefresh', '3.4.3', :inhibit_warnings => true
   pod 'SJRouter'
-  pod 'SJUIKit'#, :path => '../../SJUIKit'
   pod 'SDWebImage'
+  pod 'YYModel'
 end

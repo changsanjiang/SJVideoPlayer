@@ -13,6 +13,7 @@
 #import "SJLoadingViewDefinies.h"
 #import "SJScrollingTextMarqueeViewDefines.h"
 #import "SJFullscreenCustomStatusBarDefines.h"
+#import "SJFastForwardViewDefines.h"
 
 @protocol SJEdgeControlLayerDelegate;
 
@@ -20,6 +21,7 @@ NS_ASSUME_NONNULL_BEGIN
 // - Top Items -
 extern SJEdgeControlButtonItemTag const SJEdgeControlLayerTopItem_Back;             // 返回按钮
 extern SJEdgeControlButtonItemTag const SJEdgeControlLayerTopItem_Title;            // 标题
+extern SJEdgeControlButtonItemTag const SJEdgeControlLayerTopItem_PictureInPicture API_AVAILABLE(ios(14.0)); // 画中画item
 
 
 // - Left Items -
@@ -70,6 +72,16 @@ extern SJEdgeControlButtonItemTag const SJEdgeControlLayerCenterItem_Replay;    
 @property (nonatomic, strong, null_resettable) __kindof UIView<SJScrollingTextMarqueeView> *titleView;
 
 ///
+/// 长按手势触发加速播放时显示的视图
+///
+@property (nonatomic, strong, null_resettable) UIView<SJFastForwardView> *fastForwardView;
+
+///
+/// 当设备支持画中画时, 自动显示画中画按钮. default value is Yes
+///
+@property (nonatomic) BOOL automaticallyShowsPictureInPictureItem API_AVAILABLE(ios(14.0));
+
+///
 /// 是否竖屏时隐藏标题
 ///
 @property (nonatomic, getter=isHiddenTitleItemWhenOrientationIsPortrait) BOOL hiddenTitleItemWhenOrientationIsPortrait;
@@ -100,11 +112,6 @@ extern SJEdgeControlButtonItemTag const SJEdgeControlLayerCenterItem_Replay;    
 @property (nonatomic) CGFloat bottomProgressIndicatorHeight;
 
 ///
-/// 是否在loadingView上显示网速. default value is YES
-///
-@property (nonatomic) BOOL showNetworkSpeedToLoadingView;
-
-///
 /// 自定义状态栏, 当 shouldShowCustomStatusBar 返回YES, 将会显示该状态栏
 ///
 @property (nonatomic, strong, null_resettable) UIView<SJFullscreenCustomStatusBar> *customStatusBar NS_AVAILABLE_IOS(11.0);
@@ -120,5 +127,15 @@ extern SJEdgeControlButtonItemTag const SJEdgeControlLayerCenterItem_Replay;    
 
 @protocol SJEdgeControlLayerDelegate <NSObject>
 - (void)backItemWasTappedForControlLayer:(id<SJControlLayer>)controlLayer;
+@end
+
+
+@interface SJEdgeControlButtonItem (SJControlLayerExtended)
+///
+/// 点击item时是否重置控制层的显示间隔
+///
+///     default value is YES
+///
+@property (nonatomic) BOOL resetAppearIntervalWhenPerformingItemAction;
 @end
 NS_ASSUME_NONNULL_END

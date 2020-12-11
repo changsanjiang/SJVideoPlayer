@@ -5,9 +5,6 @@
 [![Platform](https://img.shields.io/badge/platform-iOS-blue.svg)](https://github.com/changsanjiang)
 [![License](https://img.shields.io/github/license/changsanjiang/SJVideoPlayer.svg)](https://github.com/changsanjiang/SJVideoPlayer/blob/master/LICENSE.md)
 
-##  Getting Started
-wiki: https://github.com/changsanjiang/SJVideoPlayer/wiki
-
 ## Installation
 ```ruby
 # Player with default control layer.
@@ -22,33 +19,33 @@ pod 'SJBaseVideoPlayer'
 # 如果网络不行安装不了, 可改成以下方式进行安装
 pod 'SJBaseVideoPlayer', :git => 'https://gitee.com/changsanjiang/SJBaseVideoPlayer.git'
 pod 'SJVideoPlayer', :git => 'https://gitee.com/changsanjiang/SJVideoPlayer.git'
-pod 'SJUIKit/Queues', :git => 'https://gitee.com/changsanjiang/SJUIKit.git'
 $ pod update --no-repo-update   (不要用 pod install 了, 用这个命令安装)
 ```
 
-## 切换别的播放器SDK
-本项目对播放控制默认封装的是 AVPlayer, 以下为切换别的播放器SDK: 
+##  Wiki
+Welcome to the SJVideoPlayer wiki!
 
-- 播放控制切换为: ijkplayer
-    - wiki: https://github.com/changsanjiang/SJVideoPlayer/wiki/Use-ijkplayer
-- 播放控制切换为: AliPlayer
-    - wiki: https://github.com/changsanjiang/SJVideoPlayer/wiki/Use-AliPlayer
-- 播放控制切换为: AliyunVodPlayer
-    - wiki: https://github.com/changsanjiang/SJVideoPlayer/wiki/Use-AliVodPlayer
+- [Getting Started](https://github.com/changsanjiang/SJVideoPlayer/wiki/Getting-Started)
+- [快速开始](https://github.com/changsanjiang/SJVideoPlayer/wiki/%E5%BF%AB%E9%80%9F%E5%BC%80%E5%A7%8B)
+- [旋转和直接全屏](https://github.com/changsanjiang/SJVideoPlayer/wiki/旋转和直接全屏)
+- [14.0 画中画 ꫛꫀꪝ](https://github.com/changsanjiang/SJVideoPlayer/wiki/iOS-14-%E7%94%BB%E4%B8%AD%E7%94%BB)
+- [播放记录](https://github.com/changsanjiang/SJVideoPlayer/wiki/%E6%92%AD%E6%94%BE%E8%AE%B0%E5%BD%95)
+- [长按快进](https://github.com/changsanjiang/SJVideoPlayer/wiki/%E9%95%BF%E6%8C%89%E5%BF%AB%E8%BF%9B)
+- [弹幕](https://github.com/changsanjiang/SJVideoPlayer/wiki/%E5%BC%B9%E5%B9%95)
+- [水印视图](https://github.com/changsanjiang/SJVideoPlayer/wiki/水印视图)
+- [UITableView及UICollectionView中播放的解决方案](https://github.com/changsanjiang/SJVideoPlayer/wiki/UITableView%E5%8F%8AUICollectionView%E4%B8%AD%E6%92%AD%E6%94%BE%E7%9A%84%E8%A7%A3%E5%86%B3%E6%96%B9%E6%A1%88v2)
+- 切换到第三方SDK
+    - [Use ijkplayer](https://github.com/changsanjiang/SJVideoPlayer/wiki/Use-ijkplayer)
+    - [Use AliPlayer](https://github.com/changsanjiang/SJVideoPlayer/wiki/Use-AliPlayer)
+    - [Use AliyunVodPlayer](https://github.com/changsanjiang/SJVideoPlayer/wiki/Use-AliVodPlayer)
+    - [Use PLPlayerKit](https://github.com/changsanjiang/SJVideoPlayer/wiki/Use-PLPlayerKit)
+- Control Layer
+    - [Control Layer Views](https://github.com/changsanjiang/SJVideoPlayer/wiki/Control-Layer-Views)
+    - [Setup Control Layer View](https://github.com/changsanjiang/SJVideoPlayer/wiki/Setup-Control-Layer-View)
+    - [Use AriaContorlLayer](https://github.com/changsanjiang/SJVideoPlayer/wiki/Use-AriaContorlLayer)
+- [Setup Placeholder Image](https://github.com/changsanjiang/SJVideoPlayer/wiki/Setup-Placeholder-Image)
+- [Setup Progress Slider](https://github.com/changsanjiang/SJVideoPlayer/wiki/Setup-Progress-Slider)
 
-
-## Example
-
-```Objective-C
-_player = [SJVideoPlayer player];
-_player.view.frame = CGRectMake(0, 0, 200, 200);
-[self.view addSubview:_player.view];
-
-// 设置资源进行播放
-_player.URLAsset = [[SJVideoPlayerURLAsset alloc] initWithURL:URL];
-
-... 等等, 更多设置, 请查看头文件. 相应功能均为懒加载, 用到时才会创建. 
-```
 
 ## Author
 
@@ -56,32 +53,22 @@ Email: changsanjiang@gmail.com
 
 QQGroup: 930508201 (iOS 开发)
 
-[大佬辛苦, 犒赏一下🤕](#赞助)
+[请我喝咖啡☕️](#赞助)
 
 ## Documents
 
 v2.6.5 往后的版本, 请[配置旋转 !!](https://github.com/changsanjiang/SJVideoPlayer/issues/148)
 
 #### [1. 视图层次结构](#1)
-* [1.1 UIView](#1.1)
-* [1.2 UITableView 中的层次结构](#1.2)
-    * [1.2.1 UITableViewCell](#1.2.1)
-    * [1.2.2 UITableView.tableHeaderView](#1.2.2)
-    * [1.2.3 UITableView.tableFooterView](#1.2.3)
-    * [1.2.4 UITableViewHeaderFooterView](#1.2.4)
-* [1.3 UICollectionView 中的层次结构](#1.3)
-    * [1.3.1 UICollectionViewCell](#1.3.1)
-* [1.4  嵌套时的层次结构](#1.4)
-    * [1.4.1 UICollectionView 嵌套在 UITableViewCell 中](#1.4.1)
-    * [1.4.2 UICollectionView 嵌套在 UITableViewHeaderView 中](#1.4.2)
-    * [1.4.3 UICollectionView 嵌套在 UICollectionViewCell 中](#1.4.3)
+
+该部分内容已迁移至[wiki](https://github.com/changsanjiang/SJVideoPlayer/wiki/UITableView%E5%8F%8AUICollectionView%E4%B8%AD%E6%92%AD%E6%94%BE%E7%9A%84%E8%A7%A3%E5%86%B3%E6%96%B9%E6%A1%88v2)
 
 #### [2. URLAsset](#2)
 * [2.1 播放 URL(本地文件或远程资源)](#2.1)
 * [2.2 播放 AVAsset 或其子类](#2.2)
 * [2.3 从指定的位置开始播放](#2.3)
 * [2.4 续播(进入下个页面时, 继续播放)](#2.4)
-* [2.5 销毁时的回调. 可在此做一些记录工作, 如播放记录](#2.5)
+* [2.5 播放记录](#2.5)
 
 #### [3. 播放控制](#3)
 * [3.1 播放](#3.1)
@@ -127,22 +114,10 @@ v2.6.5 往后的版本, 请[配置旋转 !!](https://github.com/changsanjiang/SJ
 * [5.5 自己动手撸一个 SJDeviceVolumeAndBrightnessManager, 替换作者原始实现](#5.5)
 
 #### [6. 旋转](#6)
-* [6.0 旋转的配置(必须)](#6.0)
-* [6.1 自动旋转](#6.1)
-* [6.2 设置自动旋转支持的方向](#6.2)
-* [6.3 禁止自动旋转](#6.3)
-* [6.4 主动调用旋转](#6.4)
-* [6.5 是否全屏](#6.5)
-* [6.6 是否正在旋转](#6.6)
-* [6.7 当前旋转的方向 ](#6.7)
-* [6.8 监听状态改变🔥](#6.8) 
-* [6.9 自己动手撸一个 SJRotationManager, 替换作者原始实现](#6.9)
+内容已经迁移至[Wiki](https://github.com/changsanjiang/SJVideoPlayer/wiki/旋转和直接全屏)
 
 #### [7. 直接全屏而不旋转](#7)
-* [7.1 全屏和恢复](#7.1)
-* [7.2 监听状态改变🔥](#7.2)
-* [7.3 是否是全屏](#7.3)
-* [7.4 自己动手撸一个 SJFitOnScreenManager, 替换作者原始实现](#7.4)
+内容已经迁移至[Wiki](https://github.com/changsanjiang/SJVideoPlayer/wiki/旋转和直接全屏)
 
 #### [8. 镜像翻转](#8)
 * [8.1 翻转和恢复](#8.1)
@@ -225,199 +200,6 @@ ___
 
 ## 以下为详细介绍: 
 
-
-<h2 id="1.1">1.1 UIView</h3>  
-
-```Objective-C
-_player = [SJVideoPlayer player];
-_player.view.frame = ...;
-[self.view addSubview:_player.view];
-
-// 设置资源进行播放
-SJVideoPlayerURLAsset *asset = [[SJVideoPlayerURLAsset alloc] initWithURL:URL];
-_player.URLAsset = asset;
-```
-
-<p>
-
-在普通视图中播放时, 不需要指定视图层次, 直接创建资源进行播放即可.  
-
-</p>
-
-___
-
-<h2 id="1.2">1.2 UITableView 中的层次结构</h3>
-
-<p>
-
-由于 UITableView 及 UICollectionView 的复用机制, 会导致播放器视图显示在错误的位置上, 为防止出现此种情况, 在创建资源时指定视图层次结构, 使得播放器能够定位具体的父视图, 依此来控制隐藏与显示. 
-
-</p>
-
-___
-
-
-<h3 id="1.2.1">1.2.1 UITableViewCell</h3>
-
-```Objective-C
---  UITableView
---  UITableViewCell
---  Player.superview
---  Player.view
-
-
-_player = [SJVideoPlayer player];
-
-UIView *playerSuperview = cell.coverImageView;
-SJPlayModel *playModel = [SJPlayModel UITableViewCellPlayModelWithPlayerSuperviewTag:playerSuperview.tag atIndexPath:indexPath tableView:self.tableView];
-
-_player.URLAsset = [[SJVideoPlayerURLAsset alloc] initWithURL:URL playModel:playModel];
-```
-
-<p>
-
-在 UITableViewCell 中播放时, 需指定 Cell 所处的 indexPath 以及播放器父视图的 tag. 
-
-在滑动时, 管理类将会通过这两个参数控制播放器视图的显示与隐藏.
-
-</p>
-
-___
-
-
-<h3 id="1.2.2">1.2.2 UITableView.tableHeaderView</h3>
-
-```Objective-C
---  UITableView
---  UITableView.tableHeaderView 或者 UITableView.tableFooterView  
---  Player.superview
---  Player.view
-
-UIView *playerSuperview = self.tableView.tableHeaderView;
-// 也可以设置子视图
-// playerSuperview = self.tableView.tableHeaderView.coverImageView;
-SJPlayModel *playModel = [SJPlayModel UITableViewHeaderViewPlayModelWithPlayerSuperview:playerSuperview tableView:self.tableView];
-```
-
-___
-
-
-<h3 id="1.2.3">1.2.3 UITableView.tableFooterView</h3>
-
-```Objective-C
---  UITableView
---  UITableView.tableHeaderView 或者 UITableView.tableFooterView  
---  Player.superview
---  Player.view
-
-UIView *playerSuperview = self.tableView.tableFooterView;
-// 也可以设置子视图
-// playerSuperview = self.tableView.tableFooterView.coverImageView;
-SJPlayModel *playModel = [SJPlayModel UITableViewHeaderViewPlayModelWithPlayerSuperview:playerSuperview tableView:self.tableView];
-```
-
-___
-
-
-<h3 id="1.2.4">1.2.4 UITableViewHeaderFooterView</h3>
-
-```Objective-C
---  UITableView
---  UITableViewHeaderFooterView 
---  Player.superview
---  Player.view            
-
-/// isHeader: 当在header中播放时, 传YES, 在footer时, 传NO.
-SJPlayModel *playModel = [SJPlayModel UITableViewHeaderFooterViewPlayModelWithPlayerSuperviewTag:sectionHeaderView.coverImageView.tag inSection:section isHeader:YES tableView:self.tableView];
-```
-
-___
-
-
-<h2 id="1.3">1.3 UICollectionView 中的层次结构</h3>
-
-<p>
-
-在 UICollectionView 中播放时, 同 [UITableView](#1.2) 中一样, 需指定视图层次, 使得播放器能够定位具体的父视图, 依此来控制隐藏与显示.
-
-</p>
-
-___
-
-
-<h3 id="1.3.1">1.3.1 UICollectionViewCell</h3>
-
-```Objective-C
---  UICollectionView
---  UICollectionViewCell
---  Player.superview
---  Player.view
-
-SJPlayModel *playModel = [SJPlayModel UICollectionViewCellPlayModelWithPlayerSuperviewTag:cell.coverImageView.tag atIndexPath:indexPath collectionView:self.collectionView];
-```
-
-___
-
-
-<h2 id="1.4">1.4 嵌套时的视图层次</h3>
-
-<p>
-
-嵌套的情况下, 传递的参数比较多, 不过熟悉了前面的套路, 下面的这些也不成问题.  (会被复用的视图, 传 tag. 如果不会被复用, 则直接传视图)
-
-</p>
-
-___
-
-
-<h3 id="1.4.1">1.4.1 UICollectionView 嵌套在 UITableViewCell 中</h3>
-
-```Objective-C
---  UITableView
---  UITableViewCell
---  UITableViewCell.UICollectionView
---  UICollectionViewCell
---  Player.superview
---  Player.view
-
-SJPlayModel *playModel = [SJPlayModel UICollectionViewNestedInUITableViewCellPlayModelWithPlayerSuperviewTag:collectionViewCell.coverImageView.tag atIndexPath:collectionViewCellAtIndexPath collectionViewTag:tableViewCell.collectionView.tag collectionViewAtIndexPath:tableViewCellAtIndexPath tableView:self.tableView];
-```
-
-___
-
-
-<h3 id="1.4.2">1.4.2 UICollectionView 嵌套在 UITableViewHeaderView 中</h3>
-
-```Objective-C
---  UITableView
---  UITableView.tableHeaderView 或者 UITableView.tableFooterView  
---  tableHeaderView.UICollectionView
---  UICollectionViewCell
---  Player.superview
---  Player.view
-
-SJPlayModel *playModel = [SJPlayModel UICollectionViewNestedInUITableViewHeaderViewPlayModelWithPlayerSuperviewTag:cell.coverImageView.tag atIndexPath:indexPath collectionView:tableHeaderView.collectionView tableView:self.tableView];
-```
-
-___
-
-
-<h3 id="1.4.3">1.4.3 UICollectionView 嵌套在 UICollectionViewCell 中</h3>
-
-```Objective-C
---  UICollectionView
---  UICollectionViewCell
---  UICollectionViewCell.UICollectionView
---  UICollectionViewCell
---  Player.superview
---  Player.view
-
-SJPlayModel *playModel = [SJPlayModel UICollectionViewNestedInUICollectionViewCellPlayModelWithPlayerSuperviewTag:collectionViewCell.coverImageView.tag atIndexPath:collectionViewCellAtIndexPath collectionViewTag:rootCollectionViewCell.collectionView.tag collectionViewAtIndexPath:collectionViewAtIndexPath rootCollectionView:self.collectionView];
-```
-
-___
-
-
 <h2 id="2">2. URLAsset</h3>
 
 <p>
@@ -450,7 +232,7 @@ _player.URLAsset = [[SJVideoPlayerURLAsset alloc] initWithAVAsset:avAsset];
 
 ```Objective-C
 NSTimeInterval secs = 20.0;
-_player.URLAsset = [[SJVideoPlayerURLAsset alloc] initWithURL:URL specifyStartTime:secs]; // 直接从20秒处开始播放
+_player.URLAsset = [[SJVideoPlayerURLAsset alloc] initWithURL:URL startPosition:secs]; // 直接从20秒处开始播放
 ```
 
 <h3 id="2.4">2.4 续播(进入下个页面时, 继续播放)</h3>
@@ -467,16 +249,11 @@ _player.URLAsset = [[SJVideoPlayerURLAsset alloc] initWithURL:URL specifyStartTi
 _player.URLAsset = [SJVideoPlayerURLAsset.alloc initWithOtherAsset:otherAsset]; 
 ```
 
-<h3 id="2.5">2.5 销毁时的回调. 可在此做一些记录工作, 如播放记录</h3>
+<h3 id="2.5">2.5 播放记录</h3>
 
-```Objective-C
-// 每个资源dealloc时的回调
-_player.assetDeallocExeBlock = ^(__kindof SJBaseVideoPlayer * _Nonnull videoPlayer) {
-// .....
-};
-```
-
-当资源销毁时, 播放器将会回调该 block. 
+<p>
+内容已迁移至wiki: https://github.com/changsanjiang/SJVideoPlayer/wiki/%E6%92%AD%E6%94%BE%E8%AE%B0%E5%BD%95
+</p>
 
 ___
 
@@ -630,7 +407,7 @@ _player.URLAsset = asset1;
 <h3 id="3.14">3.14 是否已播放完毕</h3>
 
 ```Objective-C
-@property (nonatomic, readonly) BOOL isPlayedToEndTime;                             ///< 当前资源是否已播放结束
+@property (nonatomic, readonly) BOOL isPlaybackFinished;                            ///< 当前资源是否已播放结束
 ```
 
 <h3 id="3.15">3.15 是否调用过播放</h3>
@@ -953,157 +730,6 @@ _player.disableVolumeSetting = YES;
 ```Objective-C
 _player.deviceVolumeAndBrightnessManager = Your deviceVolumeAndBrightnessManager;
 ```
-
-___
-
-<h2 id="6">6. 旋转</h2>
-
-<p>
-此部分的内容由 "id &lt;SJRotationManager&gt; rotationManager" 提供支持.
-
-对于旋转, 我们开发者肯定需要绝对的控制, 例如: 设置自动旋转所支持方向. 能够主动+自动旋转, 而且还需要能在适当的时候禁止自动旋转. 旋转前后的回调等等... 放心这些功能都有, 我挨个给大家介绍.
-
-具体请看下面介绍.
-</p>
-
-<h3 id ="6.0">6.0 旋转的配置(必须)</h3>
-
-请查看该指南: https://github.com/changsanjiang/SJVideoPlayer/wiki/Getting-Started#configure-rotation
-
-<h3 id ="6.1">6.1 自动旋转</h3>
-
-<p>
-先说说何为自动旋转. 其实就是当设备方向变更时, 播放器根据设备方向进行自动旋转.
-</p>
-
-<h3 id ="6.2">6.2 设置自动旋转支持的方向</h3>
-
-```Objective-C
-/// 设置自动旋转支持的方向
-_player.supportedOrientations = SJOrientationMaskLandscapeLeft | SJOrientationMaskLandscapeRight;
-
-
-/**
-自动旋转支持的方向
-
-- SJOrientationMaskPortrait:       竖屏
-- SJOrientationMaskLandscapeLeft:  支持全屏, Home键在右侧
-- SJOrientationMaskLandscapeRight: 支持全屏, Home键在左侧
-- SJOrientationMaskAll:            全部方向
-*/
-typedef enum : NSUInteger {
-    SJOrientationMaskPortrait = 1 << SJOrientation_Portrait,
-    SJOrientationMaskLandscapeLeft = 1 << SJOrientation_LandscapeLeft,
-    SJOrientationMaskLandscapeRight = 1 << SJOrientation_LandscapeRight,
-    SJOrientationMaskAll = SJOrientationMaskPortrait | SJOrientationMaskLandscapeLeft | SJOrientationMaskLandscapeRight,
-} SJOrientationMask;
-```
-
-<h3 id ="6.3">6.3 禁止自动旋转</h3>
-
-<p>
-这里有两点需要注意: 
-
-- 合适的时候要记得恢复自动旋转. 
-- 禁止自动旋转后, 主动调用旋转, 还是可以旋转的.
-</p>
-
-```Objective-C
-_player.rotationManager.disabledAutorotation = YES;
-```
-
-<h3 id ="6.4">6.4 主动调用旋转</h3>
-
-<p>
-主动旋转. 当我们想主动旋转时, 大概分为以下三点:
-
--   播放器旋转到用户当前的设备方向或恢复小屏.
--   主动旋转到指定方向.
--   主动旋转完成后的回调.
-
-请看以下方法, 分别对应以上三点:
-</p>
-
-```Objective-C
-- (void)rotate;
-- (void)rotate:(SJOrientation)orientation animated:(BOOL)animated;
-- (void)rotate:(SJOrientation)orientation animated:(BOOL)animated completion:(void (^ _Nullable)(__kindof SJBaseVideoPlayer *player))block;
-```
-
-<h3 id ="6.5">6.5 是否全屏</h3>
-
-```Objective-C
-/// 如果为YES, 表示全屏
-@property (nonatomic, readonly) BOOL isFullScreen;                              ///< 是否已全屏
-```
-
-<h3 id ="6.6">6.6 是否正在旋转</h3>
-
-```Objective-C
-/// 如果为YES, 表示正在旋转中
-@property (nonatomic, readonly) BOOL isTransitioning;
-```
-
-<h3 id ="6.7">6.7 当前旋转的方向</h3>
-
-```Objective-C
-_player.rotationManager.currentOrientation
-```
-
-<h3 id ="6.8">6.8 监听状态改变🔥</h3>
-
-```Objective-C
-///
-/// 观察者
-///
-///         当需要监听旋转时, 可以设置`player.rotationObserver.rotationDidStartExeBlock = ...;`
-///         了解更多请前往头文件查看
-///
-@property (nonatomic, strong, readonly) id<SJRotationManagerObserver> rotationObserver;
-```
-
-<h3 id ="6.9">6.9 自己动手撸一个 SJRotationManager, 替换作者原始实现</h3>
-
-当你想替换原始实现时, 可以实现 SJRotationManager 中定义的方法.
-
-___
-
-<h2 id="7">7. 直接全屏而不旋转</h2>
-
-<p>
-直接全屏, 或者说充满屏幕, 但不旋转.
-</p>
-
-<h3 id="7.1">7.1 全屏和恢复</h3>
-
-```Objective-C
-_player.fitOnScreen = YES;
-
-[_player setFitOnScreen:NO animated:NO];
-
-[_player setFitOnScreen:YES animated:YES completionHandler:^(__kindof SJBaseVideoPlayer * _Nonnull player) {
-/// ...
-}];
-```
-
-<h3 id="7.2">7.2 监听状态改变🔥</h3>
-
-```Objective-C
-@property (nonatomic, copy, nullable) void(^fitOnScreenWillBeginExeBlock)(__kindof SJBaseVideoPlayer *player);
-@property (nonatomic, copy, nullable) void(^fitOnScreenDidEndExeBlock)(__kindof SJBaseVideoPlayer *player);;
-```
-
-<h3 id="7.3">7.3 是否是全屏</h3>
-
-```Objective-C
-/// YES 为充满屏幕 
-_player.isFitOnScreen
-```
-
-<h3 id="7.4">7.4 自己动手撸一个 SJFitOnScreenManager, 替换作者原始实现</h3>
-
-该部分管理类的协议定义在 SJFitOnScreenManagerProtocol 中, 实现该协议的任何对象, 均可赋值给播放器, 替换原始实现.
-
 ___
 
 <h2 id="8">8. 镜像翻转</h2>
@@ -1263,20 +889,20 @@ self.playbackController.videoGravity = scale > 1 ?AVLayerVideoGravityResizeAspec
 <h3 id="10.5">10.5 设置支持的手势</h3>
 
 ```Objective-C
-_player.gestureControl.supportedGestureTypes = SJPlayerGestureTypeMask_All
+_player.gestureControl.supportedGestureTypes = SJPlayerGestureTypeMask_Default
 
 typedef enum : NSUInteger {
-SJPlayerGestureTypeMask_None,
-SJPlayerGestureTypeMask_SingleTap = 1 << 0,
-SJPlayerGestureTypeMask_DoubleTap = 1 << 1,
-SJPlayerGestureTypeMask_Pan_H = 1 << 2, // 水平方向
-SJPlayerGestureTypeMask_Pan_V = 1 << 3, // 垂直方向
-SJPlayerGestureTypeMask_Pinch = 1 << 4,
-SJPlayerGestureTypeMask_Pan = SJPlayerGestureTypeMask_Pan_H | SJPlayerGestureTypeMask_Pan_V,
-SJPlayerGestureTypeMask_All = SJPlayerGestureTypeMask_SingleTap |
-SJPlayerGestureTypeMask_DoubleTap |
-SJPlayerGestureTypeMask_Pan |
-SJPlayerGestureTypeMask_Pinch,
+    SJPlayerGestureTypeMask_None,
+    SJPlayerGestureTypeMask_SingleTap   = 1 << 0,
+    SJPlayerGestureTypeMask_DoubleTap   = 1 << 1,
+    SJPlayerGestureTypeMask_Pan_H       = 1 << 2, // 水平方向
+    SJPlayerGestureTypeMask_Pan_V       = 1 << 3, // 垂直方向
+    SJPlayerGestureTypeMask_Pinch       = 1 << 4,
+    SJPlayerGestureTypeMask_LongPress   = 1 << 5,
+    
+    SJPlayerGestureTypeMask_Pan = SJPlayerGestureTypeMask_Pan_H | SJPlayerGestureTypeMask_Pan_V,
+    SJPlayerGestureTypeMask_Default = SJPlayerGestureTypeMask_SingleTap | SJPlayerGestureTypeMask_DoubleTap | SJPlayerGestureTypeMask_Pan | SJPlayerGestureTypeMask_Pinch,
+    SJPlayerGestureTypeMask_All = SJPlayerGestureTypeMask_Default | SJPlayerGestureTypeMask_LongPress,
 } SJPlayerGestureTypeMask;
 ```
 

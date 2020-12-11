@@ -80,6 +80,7 @@ NS_ASSUME_NONNULL_BEGIN
                     });
                 }
                     break;
+                case PHAuthorizationStatusLimited:
                 case PHAuthorizationStatusAuthorized: {
                     [[PHPhotoLibrary sharedPhotoLibrary] performChanges:^{
                         [PHAssetChangeRequest creationRequestForAssetFromImageAtFileURL:result.fileURL];

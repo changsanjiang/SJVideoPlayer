@@ -7,13 +7,15 @@
 //
 
 #import "SJSQLite3.h"
-#import "SJSQLite3TableInfosCache.h"
-#import "SJSQLiteTableInfo.h"
-#import "SJSQLiteObjectInfo.h"
+#import "SJSQLite3+Private.h"
+#import "SJSQLite3TableInfoCache.h"
 #import "SJSQLiteErrors.h"
 #import "SJSQLiteCore.h"
+#import "SJSQLite3Condition.h"
+#import "SJSQLite3ColumnOrder.h"
 #import <objc/message.h>
 #import <stdlib.h>
+#import <sqlite3.h>
 
 #if __has_include(<YYModel/YYModel.h>)
 #import <YYModel/NSObject+YYModel.h>
@@ -34,60 +36,12 @@ NS_ASSUME_NONNULL_BEGIN
 
 #define SJSQLite3_TANSACTION_COMMIT()           sj_sqlite3_obj_commit(self.db);    \
                                                 SJSQLite3_Unlock();
-
-
-/// 存储 已创建了表的类
-///
-@interface SJSQLite3ClassesCache : NSObject
-- (BOOL)containsClass:(Class)cls;
-- (void)addClass:(Class)cls;
-- (void)addClasses:(NSSet<Class> *)set;
-- (void)removeClass:(Class)cls;
-- (void)removeClasses:(NSSet<Class> *)set;
-@end
-
-@implementation SJSQLite3ClassesCache {
-    NSMutableSet *_set;
-}
-
-- (instancetype)init {
-    self = [super init];
-    if ( self ) {
-        _set = NSMutableSet.new;
-    }
-    return self;
-}
-
-- (BOOL)containsClass:(Class)cls {
-    return [_set containsObject:cls];
-}
-- (void)addClass:(Class)cls {
-    if ( cls ) {
-        [_set addObject:cls];
-    }
-}
-- (void)addClasses:(NSSet<Class> *)set {
-    if ( set ) {
-        [_set unionSet:set];
-    }
-}
-- (void)removeClass:(Class)cls {
-    if ( cls ) {
-        [_set removeObject:cls];
-    }
-}
-- (void)removeClasses:(NSSet<Class> *)set {
-    if ( set ) {
-        [_set minusSet:set];
-    }
-}
-@end
-
+ 
 @interface SJSQLite3 ()
-@property (nonatomic, readonly) sqlite3 *db;
-@property (nonatomic, copy, readonly) NSString *dbPath;
-@property (nonatomic, strong, readonly) SJSQLite3ClassesCache *classesCache;
+@property (nonatomic, strong, readonly) SJSQLite3TableClassCache *tableClassCache;
 @property (nonatomic, strong, readonly) dispatch_semaphore_t lock;
+@property (nonatomic, copy, readonly) NSString *dbPath;
+@property (nonatomic, readonly) sqlite3 *db;
 @end
 
 @implementation SJSQLite3
@@ -101,6 +55,7 @@ NS_ASSUME_NONNULL_BEGIN
     });
     return _instance;
 }
+
 - (nullable instancetype)initWithDatabasePath:(NSString *)dbPath {
     sqlite3 *db = NULL;
     if ( sj_sqlite3_obj_open_database(dbPath, &db) == NO )
@@ -109,9 +64,9 @@ NS_ASSUME_NONNULL_BEGIN
     self = [super init];
     if ( self ) {
         _lock = dispatch_semaphore_create(1);
-        _classesCache = SJSQLite3ClassesCache.alloc.init;
         _dbPath = dbPath.copy;
         _db = db;
+        _tableClassCache = SJSQLite3TableClassCache.alloc.init;
     }
     return self;
 }
@@ -142,20 +97,20 @@ NS_ASSUME_NONNULL_BEGIN
 
 /// 将对象数据保存到数据库表中(insert or update). 该操作将会开启一个新的事务, 当执行出错时, 数据库将回滚到执行之前的状态.
 ///
-/// @param objsArray            需要保存的对象集合. 该集合中的对象的Class必须实现`SJSQLiteTableModelProtocol.sql_primaryKey`.
+/// @param objectArray          需要保存的对象集合. 该集合中的对象的Class必须实现`SJSQLiteTableModelProtocol.sql_primaryKey`.
 ///
 /// @param error                执行出错. 当执行发生错误时, 会暂停执行后续的sql语句, 数据库将回滚到执行之前的状态.
 ///
 /// @return                     操作是否成功.
 ///
-- (BOOL)saveObjects:(NSArray *)objsArray error:(NSError **)error {
-    if ( objsArray.count == 0 ) {
+- (BOOL)saveObjects:(NSArray *)objectArray error:(NSError **)error {
+    if ( objectArray.count == 0 ) {
         if ( error != NULL ) *error = sqlite3_error_invalid_parameter();
         return NO;
     }
     
     SJSQLite3_TANSACTION_BEGIN();
-    NSError *_Nullable inner_error = [self _insertOrUpdateObjects:objsArray];
+    NSError *_Nullable inner_error = [self _insertOrUpdateObjects:objectArray];
     if ( inner_error != nil ) {
         if ( error != NULL ) *error = inner_error;
         SJSQLite3_TANSACTION_ROLLBACK();
@@ -174,26 +129,11 @@ NS_ASSUME_NONNULL_BEGIN
 /// @return                     操作是否成功.
 ///
 - (BOOL)update:(id)object forKeys:(NSArray<NSString *> *)properties error:(NSError **)error {
-    if ( properties.count == 0 ) {
+    if ( object == nil || properties.count == 0 ) {
         if ( error != NULL ) *error = sqlite3_error_invalid_parameter();
         return NO;
     }
-    
-    SJSQLiteObjectInfo *_Nullable objectInfo = [SJSQLiteObjectInfo objectInfoWithObject:object];
-    if ( objectInfo == nil ) {
-        if ( error != NULL ) *error = sqlite3_error_get_table_failed([object class]);
-        return NO;
-    }
-    
-    SJSQLite3_TANSACTION_BEGIN();
-    NSError *inner_error = [self _update:objectInfo forKeys:properties];
-    if ( inner_error != nil ) {
-        if ( error != NULL ) *error = inner_error;
-        SJSQLite3_TANSACTION_ROLLBACK();
-        return NO;
-    }
-    SJSQLite3_TANSACTION_COMMIT();
-    return YES;
+    return [self updateObjects:@[object] forKeys:properties error:error];
 }
 
 /// 更新数据(update). 请确保数据已存在. 该操作将会开启一个新的事务, 当执行出错时, 数据库将回滚到执行之前的状态.
@@ -205,11 +145,43 @@ NS_ASSUME_NONNULL_BEGIN
 /// @return                     操作是否成功.
 ///
 - (BOOL)update:(id)object forKey:(NSString *)property error:(NSError **)error {
-    if ( property.length == 0 ) {
-        if ( error != nil ) *error = sqlite3_error_invalid_parameter();
+    if ( object == nil || property.length == 0 ) {
+        if ( error != NULL ) *error = sqlite3_error_invalid_parameter();
         return NO;
     }
     return [self update:object forKeys:@[property] error:error];
+}
+
+/// 更新数据(update). 请确保数据已存在. 该操作将会开启一个新的事务, 当执行出错时, 数据库将回滚到执行之前的状态.
+///
+/// @param properties           需要更新的属性集合.
+///
+/// @param error                执行出错. 当执行发生错误时, 会暂停执行后续的sql语句, 数据库将回滚到执行之前的状态.
+///
+/// @return                     操作是否成功.
+///
+- (BOOL)updateObjects:(NSArray *)objectArray forKeys:(NSArray<NSString *> *)properties error:(NSError **)error {
+    if ( objectArray.count == 0 || properties.count == 0 ) {
+        if ( error != NULL ) *error = sqlite3_error_invalid_parameter();
+        return NO;
+    }
+    
+    SJSQLite3_TANSACTION_BEGIN();
+    NSError *inner_error = nil;
+    for ( id object in objectArray ) {
+        SJSQLiteObjectInfo *_Nullable objectInfo = [self objectInfoWithObject:object error:&inner_error];
+        if ( inner_error != nil ) break;
+        inner_error = [self _update:objectInfo forKeys:properties];
+        if ( inner_error != nil ) break;
+    }
+    
+    if ( inner_error != nil ) {
+        if ( error != NULL ) *error = inner_error;
+        SJSQLite3_TANSACTION_ROLLBACK();
+        return NO;
+    }
+    SJSQLite3_TANSACTION_COMMIT();
+    return YES;
 }
 
 /// 获取指定的主键值所对应存储的对象.
@@ -223,11 +195,8 @@ NS_ASSUME_NONNULL_BEGIN
 /// @return 返回指定的主键值所对应存储的对象. 如果不存在, 将返回nil.
 ///
 - (nullable id)objectForClass:(Class)cls primaryKeyValue:(id)primaryKeyValue error:(NSError **)error {
-    SJSQLiteTableInfo *_Nullable table = [SJSQLite3TableInfosCache.shared getTableInfoForClass:cls];
-    if ( table == nil ) {
-        if ( error != nil ) *error = sqlite3_error_get_table_failed(cls);
-        return nil;
-    }
+    SJSQLiteTableInfo *_Nullable table = [self tableInfoForClass:cls error:error];
+    if ( table == nil ) return nil;
     
     NSError *_Nullable inner_error = nil;
     id _Nullable result = nil;
@@ -253,7 +222,7 @@ NS_ASSUME_NONNULL_BEGIN
 /// @param error            执行出错. 当执行发生错误时, 会暂停执行后续的sql语句, 数据库将回滚到执行之前的状态.
 ///
 - (void)removeAllObjectsForClass:(Class)cls error:(NSError **)error {
-    SJSQLiteTableInfo *_Nullable table = [SJSQLite3TableInfosCache.shared getTableInfoForClass:cls];
+    SJSQLiteTableInfo *_Nullable table = [self tableInfoForClass:cls error:error];
     if ( table == nil ) return;
 
     SJSQLite3_TANSACTION_BEGIN();
@@ -264,7 +233,7 @@ NS_ASSUME_NONNULL_BEGIN
         SJSQLite3_TANSACTION_ROLLBACK();
         return;
     }
-    [self.classesCache removeClass:cls];
+    [self.tableClassCache removeClass:cls];
     SJSQLite3_TANSACTION_COMMIT();
 }
 
@@ -289,7 +258,7 @@ NS_ASSUME_NONNULL_BEGIN
 /// @param error            执行出错. 当执行发生错误时, 会暂停执行后续的sql语句, 数据库将回滚到执行之前的状态.
 ///
 - (void)removeObjectsForClass:(Class)cls primaryKeyValues:(NSArray<id> *)primaryKeyValues error:(NSError **)error {
-    SJSQLiteTableInfo *_Nullable table = [SJSQLite3TableInfosCache.shared getTableInfoForClass:cls];
+    SJSQLiteTableInfo *_Nullable table = [self tableInfoForClass:cls error:error];
     if ( table == nil ) return;
     
     SJSQLite3_TANSACTION_BEGIN();
@@ -311,7 +280,7 @@ NS_ASSUME_NONNULL_BEGIN
 ///
 /// @return sql执行所返回的结果.
 ///
-- (nullable NSArray<NSDictionary *> *)exec:(NSString *)sql error:(NSError *_Nullable *_Nullable)error {
+- (nullable NSArray<SJSQLite3RowData *> *)exec:(NSString *)sql error:(NSError **)error {
     SJSQLite3_Lock();
     id result = sj_sqlite3_obj_exec(self.db, sql, error);;
     SJSQLite3_Unlock();
@@ -337,6 +306,22 @@ NS_ASSUME_NONNULL_BEGIN
     }
     SJSQLite3_TANSACTION_COMMIT();
     return result;
+}
+
+/// 开启一个新的事务, 同步执行block块. 当块执行返回NO时, 数据库将回滚到执行之前的状态.
+///
+/// @param block              需要执行的块.
+///
+- (void)execInTransaction:(BOOL (^)(SJSQLite3 * _Nonnull))block {
+    if ( block != nil ) {
+        SJSQLite3_TANSACTION_BEGIN();
+        if ( block(self) ) {
+            SJSQLite3_TANSACTION_COMMIT();
+        }
+        else {
+            SJSQLite3_TANSACTION_ROLLBACK();
+        }
+    }
 }
 
 /// 将执行的查询结果转换为对应的类的对象.
@@ -367,116 +352,62 @@ NS_ASSUME_NONNULL_BEGIN
     return arr;
 }
 
+/// 表信息.
+///
+///         根据该类遵守的`SJSQLiteTableModelProtocol`生成, 并不一定是数据库中对应的表信息
+///
+/// @param cls             实现了`SJSQLiteTableModelProtocol`的类
+///
+/// @param error           如果该类未正确实现`SJSQLiteTableModelProtocol`, 将返回错误
+///
+- (nullable SJSQLiteTableInfo *)tableInfoForClass:(Class)cls error:(NSError *__autoreleasing  _Nullable *)error {
+    if ( !cls ) {
+        if ( error != NULL ) *error = sqlite3_error_invalid_parameter();
+        return nil;
+    }
+    
+    SJSQLiteTableInfo *_Nullable table = [SJSQLite3TableInfoCache.shared getTableInfoForClass:cls];
+    if ( table == nil ) {
+        if ( error != NULL ) *error = sqlite3_error_get_table_failed(cls);
+        return nil;
+    }
+    return table;
+}
+
+/// 对象信息.
+///
+///         根据该实例的类遵守的`SJSQLiteTableModelProtocol`生成, 并不一定是数据库中对应的表信息
+///
+/// @param object          实现了`SJSQLiteTableModelProtocol`的类的实例
+///
+/// @param error           如果该实例的类未正确实现`SJSQLiteTableModelProtocol`, 将返回错误
+///
+- (nullable SJSQLiteObjectInfo *)objectInfoWithObject:(id)object error:(NSError **)error {
+    if ( !object ) {
+        if ( error != NULL ) *error = sqlite3_error_invalid_parameter();
+        return nil;
+    }
+    
+    SJSQLiteTableInfo *_Nullable table = [self tableInfoForClass:[object class] error:error];
+    if ( table == nil ) return nil;
+    
+    return [SJSQLiteObjectInfo objectInfoWithObject:object tableInfo:table];
+}
+
+/// 查询表是否已存在
+///
+///         只检测参数类, 不处理相关类
+///
+/// @param cls             数据库表所对应的类. (该类必须实现`SJSQLiteTableModelProtocol.sql_primaryKey`)
+///
+- (BOOL)containsTableForClass:(Class)cls {
+    SJSQLite3_Lock();
+    BOOL result = [self _containsTableForClass:cls];
+    SJSQLite3_Unlock();
+    return result;
+}
+
 #pragma mark -
-
-/// 只处理参数类, 不处理相关类
-///
-- (BOOL)_tableExists:(Class)cls {
-    SJSQLiteTableInfo *table = [SJSQLite3TableInfosCache.shared getTableInfoForClass:cls];
-    return sj_sqlite3_obj_table_exists(self.db, table.name);
-}
-
-/// 只处理参数类, 不处理相关类
-///
-- (nullable NSError *)_alterTableIfNeeded:(Class)cls {
-    SJSQLiteTableInfo *table = [SJSQLite3TableInfosCache.shared getTableInfoForClass:cls];
-    
-    NSString *query = [NSString stringWithFormat:@"SELECT sql FROM sqlite_master WHERE name='%@';", table.name];
-    NSString *stosql = [[sj_sqlite3_obj_exec(self.db, query, NULL) firstObject][@"sql"] stringByAppendingString:@";"];
-    NSString *cursql = sj_sqlite3_stmt_create_table(table);
-    if ( [cursql isEqualToString:stosql] ) {
-        return nil;
-    }
-    
-    NSString *tmpname = [NSString stringWithFormat:@"%@_ME_TMP", table.name];
-    NSString *altsql = [NSString stringWithFormat:@"ALTER TABLE '%@' RENAME TO '%@';", table.name, tmpname];
-    NSError *_Nullable error = nil;
-    sj_sqlite3_obj_exec(self.db, altsql, &error);
-    if ( error != nil ) return error;
-    
-    sj_sqlite3_obj_exec(self.db, cursql, &error);
-    if ( error != nil ) return error;
-    
-    NSString *tmpinfosql = [NSString stringWithFormat:@"PRAGMA table_info('%@');", tmpname];
-    NSString *curinfosql = [NSString stringWithFormat:@"PRAGMA table_info('%@');", table.name];
-    NSArray<NSDictionary *> *tmpInfo = sj_sqlite3_obj_exec(self.db, tmpinfosql, &error);
-    if ( error != nil ) return error;
-    NSArray<NSDictionary *> *curInfo = sj_sqlite3_obj_exec(self.db, curinfosql, &error);
-    if ( error != nil ) return error;
-    
-    NSMutableSet<NSString *> *tmpFieldsSet = NSMutableSet.new;
-    for ( NSDictionary *column in tmpInfo ) {
-        [tmpFieldsSet addObject:column[@"name"]];
-    }
-    
-    NSMutableSet<NSString *> *curFieldsSet = NSMutableSet.new;
-    for ( NSDictionary *column in curInfo ) {
-        [curFieldsSet addObject:column[@"name"]];
-    }
-    
-    [tmpFieldsSet intersectSet:curFieldsSet];
-    
-    NSMutableString *fields = NSMutableString.new;
-    for ( NSString *name in tmpFieldsSet ) {
-        [fields appendFormat:@"\"%@\",", name];
-    }
-    [fields sjsql_deleteSubffix:@","];
-    
-    NSString *inssql = [NSString stringWithFormat:@"INSERT INTO '%@' (%@) SELECT %@ FROM '%@';", table.name, fields, fields, tmpname];
-    sj_sqlite3_obj_exec(self.db, inssql, &error);
-    if ( error != nil ) return error;
-    
-    sj_sqlite3_obj_drop_table(self.db, tmpname, &error);
-    return error;
-}
-
-/// 只处理参数类, 不处理相关类
-///
-- (nullable NSError *)_createTable:(Class)cls {
-    SJSQLiteTableInfo *table = [SJSQLite3TableInfosCache.shared getTableInfoForClass:cls];
-    NSString *sql = sj_sqlite3_stmt_create_table(table);
-    NSError *error = nil;
-    sj_sqlite3_obj_exec(self.db, sql, &error);
-    return error;
-}
-
-/// 检出参数类相关的表, 相关类对应的表也会被创建或更新
-///
-- (nullable NSError *)_checkoutTable:(Class)cls {
-    if ( [self.classesCache containsClass:cls] )
-        return nil;
-    
-    // 获取表信息
-    SJSQLiteTableInfo *_Nullable tableInfo = [SJSQLite3TableInfosCache.shared getTableInfoForClass:cls];
-    if ( tableInfo == nil ) {
-        return sqlite3_error_get_table_failed(cls);
-    }
-    
-    for ( Class cls in tableInfo.allClasses ) {
-        // 查询是否已进行过缓存
-        if ( ![self.classesCache containsClass:cls] ) {
-            // 查询某个表是否已创建
-            if ( ![self _tableExists:cls] ) {
-                // 创建新表
-                NSError *_Nullable error = [self _createTable:cls];
-                if ( error != nil ) {
-                    return error;
-                }
-            }
-            else {
-                // 查询是否需要更新表字段
-                NSError *_Nullable error = [self _alterTableIfNeeded:cls];
-                if ( error != nil ) {
-                    return error;
-                }
-            }
-        }
-    }
-    
-    // 加入到缓存
-    [self.classesCache addClasses:tableInfo.allClasses];
-    return nil;
-}
 
 /// 更新. 
 ///
@@ -500,7 +431,7 @@ NS_ASSUME_NONNULL_BEGIN
             [sql appendFormat:@"'%@' = NULL,", column.name];
         }
     }
-    [sql sjsql_deleteSubffix:@","];
+    [sql sjsql_deleteSuffix:@","];
     
     NSString *primaryKey = objectInfo.table.primaryKey;
     id primaryValue = [objectInfo.obj valueForKey:primaryKey];
@@ -510,18 +441,16 @@ NS_ASSUME_NONNULL_BEGIN
     return error;
 }
 
+/// 插入或更新
+///
 - (nullable NSError *)_insertOrUpdateObjects:(NSArray *)objsArray {
     NSError *_Nullable error = nil;
     for ( id obj in objsArray ) {
-        SJSQLiteObjectInfo *_Nullable objectInfo = [SJSQLiteObjectInfo objectInfoWithObject:obj];
-        if ( objectInfo == nil ) {
-            error = sqlite3_error_get_table_failed([obj class]);
-            return error;
-        }
+        SJSQLiteObjectInfo *_Nullable objectInfo = [self objectInfoWithObject:obj error:&error];
+        if ( error != nil ) return error;
         
         for ( Class cls in objectInfo.table.allClasses ) {
-            error = [self _checkoutTable:cls];
-            if ( error != nil ) return error;
+            if ( ![self _checkoutAllTablesForClass:cls error:&error] ) return error;
         }
         
         error = [self _insertOrUpdateObject:objectInfo];
@@ -541,21 +470,32 @@ NS_ASSUME_NONNULL_BEGIN
         }
     }
     
-    NSString *sql = sj_sqlite3_stmt_insert_or_update(objectInfo);
-    
-    sj_sqlite3_obj_exec(self.db, sql, &error);
-    
-    if ( error == nil && objectInfo.autoincrementColumns ) {
-        NSString *sql = sj_sqlite3_stmt_get_last_row(objectInfo);
-        __auto_type _Nullable results = [sj_sqlite3_obj_exec(self.db, sql, &error) firstObject];
-        if ( error != nil ) return error;
-        id obj = objectInfo.obj;
-        for ( SJSQLiteColumnInfo *column in objectInfo.autoincrementColumns ) {
-            NSString *key = column.name;
-            [obj setValue:results[key] forKey:key];
+    if ( objectInfo.autoincrementColumns != nil ) {
+        id object = objectInfo.obj;
+        // 对于新增数据, 它的自增键在执行到这里之前是不能有值的
+        //
+        // 执行到这里后, 会进行自增键赋值
+        //
+        // 此处检测了自增键中的某个字段是否有值, 依据此条件来判断是否是新增的数据
+        SJSQLiteColumnInfo *column = objectInfo.autoincrementColumns.firstObject;
+        NSString *key = column.name;
+        NSInteger value = [[object valueForKey:key] integerValue];
+        if ( value == 0 ) {
+            NSString *sql = sj_sqlite3_stmt_get_last_row(objectInfo.table);
+            __auto_type _Nullable result = [sj_sqlite3_obj_exec(self.db, sql, &error) firstObject];
+            if ( error != nil ) return error;
+            for ( SJSQLiteColumnInfo *column in objectInfo.autoincrementColumns ) {
+                NSString *key = column.name;
+                // 自增键进行+1操作
+                NSInteger value = [[result valueForKey:key] integerValue] + 1;
+                [object setValue:@(value) forKey:key];
+            }
         }
     }
     
+    NSString *sql = sj_sqlite3_stmt_insert_or_update(objectInfo);
+    
+    sj_sqlite3_obj_exec(self.db, sql, &error);
     return error;
 }
 
@@ -563,11 +503,8 @@ NS_ASSUME_NONNULL_BEGIN
     if ( rowData == nil || cls == nil ) return nil;
     NSError *inner_error = nil;
     NSMutableDictionary *result = [rowData mutableCopy];
-    SJSQLiteTableInfo *_Nullable table = [SJSQLite3TableInfosCache.shared getTableInfoForClass:cls];
-    if ( table == nil ) {
-        inner_error = sqlite3_error_get_table_failed(cls);
-        goto handle_error;
-    }
+    SJSQLiteTableInfo *_Nullable table = [self tableInfoForClass:cls error:&inner_error];
+    if ( inner_error != nil ) goto handle_error;
     
     for ( SJSQLiteColumnInfo *column in table.columns ) {
         if ( column.associatedTableInfo == nil ) continue;
@@ -611,6 +548,142 @@ handle_error:
     obj = [table.cls modelWithDictionary:result];
 #endif
     return obj;
+}
+
+/// 检出所有相关的表
+///
+///         相关类对应的表也会被创建或更新, 请在开启事物的情况下调用
+///
+/// @param cls             实现了`SJSQLiteTableModelProtocol`的类.
+///
+/// @param error           执行出错.
+///
+- (BOOL)_checkoutAllTablesForClass:(Class)cls error:(NSError **)error {
+    if ( [self.tableClassCache containsClass:cls] ) return YES;
+    
+    SJSQLiteTableInfo *_Nullable tableInfo = [self tableInfoForClass:cls error:error];
+    if ( tableInfo == nil ) return NO;
+
+    NSError *inner_error = nil;
+    for ( Class cls in tableInfo.allClasses ) {
+        if ( [self.tableClassCache containsClass:cls] ) continue;
+
+        if ( [self _containsTableForClass:cls]) {
+            if ( ![self _alterTableIfNeeded:cls error:&inner_error] ) break;
+        }
+        else {
+            if ( ![self _createTableForClass:cls error:&inner_error] ) break;
+        }
+    }
+    
+    if ( inner_error != nil ) {
+        if ( error != NULL ) *error = inner_error;
+        return NO;
+    }
+    
+    [self.tableClassCache addClasses:tableInfo.allClasses];
+    
+    return YES;
+}
+  
+/// 只处理参数类, 不处理相关类
+///
+- (BOOL)_createTableForClass:(Class)cls error:(NSError *__autoreleasing  _Nullable *)error {
+    SJSQLiteTableInfo *_Nullable table = [self tableInfoForClass:cls error:error];
+    if ( table == nil ) return NO;
+    NSString *sql = sj_sqlite3_stmt_create_table(table);
+    NSError *inner_error = nil;
+    sj_sqlite3_obj_exec(self.db, sql, &inner_error);
+    if ( error != NULL ) *error = inner_error;
+    return inner_error == nil;
+}
+
+/// 只处理参数类, 不处理相关类
+///
+- (BOOL)_alterTableIfNeeded:(Class)cls error:(NSError **)error {
+    SJSQLiteTableInfo *_Nullable table = [self tableInfoForClass:cls error:error];
+    if ( table == nil ) return NO;
+    
+    NSString *query = [NSString stringWithFormat:@"SELECT sql FROM sqlite_master WHERE name='%@';", table.name];
+    NSString *stosql = [[sj_sqlite3_obj_exec(self.db, query, NULL) firstObject][@"sql"] stringByAppendingString:@";"];
+    NSString *cursql = sj_sqlite3_stmt_create_table(table);
+    if ( [cursql isEqualToString:stosql] ) {
+        return YES;
+    }
+
+    NSString *tmpname = [NSString stringWithFormat:@"%@_ME_TMP", table.name];
+    NSString *altsql = [NSString stringWithFormat:@"ALTER TABLE '%@' RENAME TO '%@';", table.name, tmpname];
+    NSError *_Nullable inner_error = nil;
+    sj_sqlite3_obj_exec(self.db, altsql, &inner_error);
+    if ( inner_error != nil ) {
+        if ( error != NULL ) *error = inner_error;
+        return NO;
+    }
+    
+    sj_sqlite3_obj_exec(self.db, cursql, &inner_error);
+    if ( inner_error != nil ) {
+        if ( error != NULL ) *error = inner_error;
+        return NO;
+    }
+    
+    NSString *tmpinfosql = [NSString stringWithFormat:@"PRAGMA table_info('%@');", tmpname];
+    NSString *curinfosql = [NSString stringWithFormat:@"PRAGMA table_info('%@');", table.name];
+    NSArray<NSDictionary *> *tmpInfo = sj_sqlite3_obj_exec(self.db, tmpinfosql, &inner_error);
+        if ( inner_error != nil ) {
+        if ( error != NULL ) *error = inner_error;
+        return NO;
+    }
+    
+    NSArray<NSDictionary *> *curInfo = sj_sqlite3_obj_exec(self.db, curinfosql, &inner_error);
+    if ( inner_error != nil ) {
+        if ( error != NULL ) *error = inner_error;
+        return NO;
+    }
+
+    NSMutableSet<NSString *> *tmpFieldsSet = NSMutableSet.new;
+    for ( NSDictionary *column in tmpInfo ) {
+        [tmpFieldsSet addObject:column[@"name"]];
+    }
+
+    NSMutableSet<NSString *> *curFieldsSet = NSMutableSet.new;
+    for ( NSDictionary *column in curInfo ) {
+        [curFieldsSet addObject:column[@"name"]];
+    }
+
+    [tmpFieldsSet intersectSet:curFieldsSet];
+
+    NSMutableString *fields = NSMutableString.new;
+    for ( NSString *name in tmpFieldsSet ) {
+        [fields appendFormat:@"\"%@\",", name];
+    }
+    [fields sjsql_deleteSuffix:@","];
+
+    NSString *inssql = [NSString stringWithFormat:@"INSERT INTO '%@' (%@) SELECT %@ FROM '%@';", table.name, fields, fields, tmpname];
+    sj_sqlite3_obj_exec(self.db, inssql, &inner_error);
+    if ( inner_error != nil ) {
+        if ( error != NULL ) *error = inner_error;
+        return NO;
+    }
+    
+    sj_sqlite3_obj_drop_table(self.db, tmpname, &inner_error);
+    if ( inner_error != nil ) {
+        if ( error != NULL ) *error = inner_error;
+        return NO;
+    }
+    
+    return YES;
+}
+
+/// 查询表是否已存在
+///
+///         只检测参数类, 不处理相关类
+///
+/// @param cls             数据库表所对应的类. (该类必须实现`SJSQLiteTableModelProtocol.sql_primaryKey`)
+///
+- (BOOL)_containsTableForClass:(Class)cls {
+    SJSQLiteTableInfo *table = [self tableInfoForClass:cls error:NULL];
+    if ( table == nil ) return nil;
+    return sj_sqlite3_obj_table_exists(self.db, table.name);
 }
 @end
 NS_ASSUME_NONNULL_END

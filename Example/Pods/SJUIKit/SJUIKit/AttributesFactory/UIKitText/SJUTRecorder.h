@@ -2,7 +2,7 @@
 //  SJUTRecorder.h
 //  AttributesFactory
 //
-//  Created by BlueDancer on 2019/4/12.
+//  Created by 畅三江 on 2019/4/12.
 //  Copyright © 2019 SanJiang. All rights reserved.
 //
 
@@ -52,7 +52,10 @@ NS_ASSUME_NONNULL_BEGIN
     NSRange range;
     SJUTImageAttachment *_Nullable attachment;
     NSMutableAttributedString *_Nullable attrStr;
+    NSMutableDictionary *_Nullable customAttributes;
 }
+
+- (void)setCustomValue:(nullable id)value forAttributeKey:(NSString *)key;
 
 - (NSParagraphStyle *)paragraphStyle;
 @end

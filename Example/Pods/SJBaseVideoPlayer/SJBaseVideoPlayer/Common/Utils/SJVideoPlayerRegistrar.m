@@ -51,6 +51,10 @@ NS_ASSUME_NONNULL_BEGIN
             if ( self.willEnterForeground ) self.willEnterForeground(self);
         }];
         
+        [self sj_observeWithNotification:UIApplicationWillTerminateNotification target:nil usingBlock:^(SJVideoPlayerRegistrar *_Nonnull self, NSNotification * _Nonnull note) {
+            if ( self.willTerminate ) self.willTerminate(self);
+        }];
+        
         [self sj_observeWithNotification:UIApplicationDidEnterBackgroundNotification target:nil usingBlock:^(SJVideoPlayerRegistrar *_Nonnull self, NSNotification * _Nonnull note) {
             if ( self.didEnterBackground ) self.didEnterBackground(self);
         }];

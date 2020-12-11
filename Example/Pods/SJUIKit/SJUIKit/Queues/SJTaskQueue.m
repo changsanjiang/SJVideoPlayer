@@ -2,7 +2,7 @@
 //  SJTaskQueue.m
 //  Pods
 //
-//  Created by BlueDancer on 2019/2/28.
+//  Created by 畅三江 on 2019/2/28.
 //
 
 #import "SJTaskQueue.h"
@@ -97,7 +97,6 @@ static SJTaskQueues *_queues;
 #ifdef DEBUG
     NSLog(@"%d - -[%@ %s]", (int)__LINE__, NSStringFromClass([self class]), sel_getName(_cmd));
 #endif
-    [self _cancelPreviousPerformRequests];
     [_queue empty];
 }
 
@@ -135,6 +134,7 @@ static SJTaskQueues *_queues;
 
 - (void (^)(void))destroy {
     return ^ {
+        [self _cancelPreviousPerformRequests];
         self.empty();
         [_queues removeQueue:self->_name];
     };

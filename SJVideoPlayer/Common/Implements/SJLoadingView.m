@@ -2,7 +2,7 @@
 //  SJLoadingView.m
 //  Pods
 //
-//  Created by BlueDancer on 2019/11/27.
+//  Created by 畅三江 on 2019/11/27.
 //
 
 #import "SJLoadingView.h"
@@ -165,6 +165,13 @@ NS_ASSUME_NONNULL_BEGIN
 - (void)stop {
     [NSObject cancelPreviousPerformRequestsWithTarget:self];
     [self performSelector:@selector(_stop) withObject:nil afterDelay:0.1 inModes:@[NSRunLoopCommonModes]];
+}
+
+- (void)setShowNetworkSpeed:(BOOL)showNetworkSpeed {
+    _speedLabel.hidden = !showNetworkSpeed;
+}
+- (BOOL)showNetworkSpeed {
+    return !_speedLabel.isHidden;
 }
 
 - (void)setNetworkSpeedStr:(nullable NSAttributedString *)networkSpeedStr {

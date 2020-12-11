@@ -2,7 +2,7 @@
 //  SJUIKitTextMaker.m
 //  AttributesFactory
 //
-//  Created by BlueDancer on 2019/4/12.
+//  Created by 畅三江 on 2019/4/12.
 //  Copyright © 2019 SanJiang. All rights reserved.
 //
 
@@ -282,6 +282,7 @@ inline static NSRange _textRange(NSAttributedString *text) {
     SJUTSetRecorderCommonValueIfNeeded(underLine);
     SJUTSetRecorderCommonValueIfNeeded(strikethrough);
     SJUTSetRecorderCommonValueIfNeeded(baseLineOffset);
+#undef SJUTSetRecorderCommonValueIfNeeded
 }
 
 - (NSDictionary *)_convertToUIKitTextAttributesForUTAttributesRecorder:(SJUTRecorder *)recorder {
@@ -313,23 +314,17 @@ inline static NSRange _textRange(NSAttributedString *text) {
 
 - (CGRect)_adjustVerticalOffsetOfImageAttachmentForBounds:(CGRect)bounds imageSize:(CGSize)imageSize alignment:(SJUTVerticalAlignment)alignment commonFont:(UIFont *)font {
     switch ( alignment ) {
-        case SJUTVerticalAlignmentTop: {
-            if ( CGSizeEqualToSize(CGSizeZero, bounds.size) ) {
-                bounds.size = imageSize;
-            }
-            CGFloat offset = -(bounds.size.height - ABS(font.capHeight));
-            bounds.origin.y = offset;
-        }
-            break;
         case SJUTVerticalAlignmentCenter: {
             if ( CGSizeEqualToSize(CGSizeZero, bounds.size) ) {
                 bounds.size = imageSize;
             }
-            CGFloat offset = -(bounds.size.height * 0.5 - ABS(font.descender));
-            bounds.origin.y = offset;
+            
+            CGFloat fontHeight = font.lineHeight;
+            CGFloat centerline = fontHeight * 0.5 - ABS(font.descender);
+            bounds.origin.y = centerline - imageSize.height * 0.5;
         }
             break;
-        case SJUTVerticalAlignmentBottom: { }
+        case SJUTVerticalAlignmentDefault: { }
             break;
     }
     return bounds;

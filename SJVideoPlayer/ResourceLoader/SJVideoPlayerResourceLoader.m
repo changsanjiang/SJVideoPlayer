@@ -36,7 +36,7 @@ NS_ASSUME_NONNULL_BEGIN
             language = @"en";
         }
         else if ( [language hasPrefix:@"zh"] ) {
-            if ( [language containsString:@"Hans"] ) {
+            if ( [language containsString:@"Hans"] || [language containsString:@"CN"] ) {
                 language = @"zh-Hans";
             }
             else {

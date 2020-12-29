@@ -630,6 +630,15 @@ NS_ASSUME_NONNULL_BEGIN
 }
 @end
 
+@implementation SJVideoPlayer (MultiLanguage)
+
++ (void)languageUpdate {
+    SJVideoPlayerResourceLoader.update(^{
+        [SJVideoPlayer resetSetting];
+    });
+}
+@end
+
 SJControlLayerIdentifier const SJControlLayer_Edge = LONG_MAX - 1;
 SJControlLayerIdentifier const SJControlLayer_FilmEditing = LONG_MAX - 2;
 SJControlLayerIdentifier const SJControlLayer_MoreSettting = LONG_MAX - 3;

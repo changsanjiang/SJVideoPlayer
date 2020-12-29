@@ -8,7 +8,28 @@
 #import "SJVideoPlayerResourceLoader.h"
 
 NS_ASSUME_NONNULL_BEGIN
+@interface SJVideoPlayerResourceLoader ()
+@property (nonatomic, strong) NSBundle *currentBundle;
+@end
+
 @implementation SJVideoPlayerResourceLoader
++ (SJVideoPlayerResourceLoader *)loader {
+    static SJVideoPlayerResourceLoader *loader = nil;
+    static dispatch_once_t onceToken;
+    dispatch_once(&onceToken, ^{
+        loader = [[SJVideoPlayerResourceLoader alloc] init];
+    });
+    return loader;
+}
+
+- (instancetype)init {
+    self = [super init];
+    if (self) {
+        _currentBundle = [SJVideoPlayerResourceLoader currentBundle];
+    }
+    return self;
+}
+
 + (NSBundle *)bundle {
     static NSBundle *bundle = nil;
     static dispatch_once_t onceToken;
@@ -16,6 +37,25 @@ NS_ASSUME_NONNULL_BEGIN
        bundle = [NSBundle bundleWithPath:[[NSBundle bundleForClass:[self class]] pathForResource:@"SJVideoPlayer" ofType:@"bundle"]];
     });
     return bundle;
+}
+
++ (NSBundle *)currentBundle {
+    NSString *language = [NSLocale preferredLanguages].firstObject;
+    if ( [language hasPrefix:@"en"] ) {
+        language = @"en";
+    }
+    else if ( [language hasPrefix:@"zh"] ) {
+        if ( [language containsString:@"Hans"]) {
+            language = @"zh-Hans";
+        }
+        else {
+            language = @"zh-Hant";
+        }
+    }
+    else {
+        language = @"en";
+    }
+    return [NSBundle bundleWithPath:[[self bundle] pathForResource:language ofType:@"lproj"]];
 }
 
 + (nullable UIImage *)imageNamed:(NSString *)name {
@@ -28,28 +68,15 @@ NS_ASSUME_NONNULL_BEGIN
 }
 
 + (nullable NSString *)localizedStringForKey:(NSString *)key {
-    static NSBundle *bundle = nil;
-    static dispatch_once_t onceToken;
-    dispatch_once(&onceToken, ^{
-        NSString *language = [NSLocale preferredLanguages].firstObject;
-        if ( [language hasPrefix:@"en"] ) {
-            language = @"en";
-        }
-        else if ( [language hasPrefix:@"zh"] ) {
-            if ( [language containsString:@"Hans"] ) {
-                language = @"zh-Hans";
-            }
-            else {
-                language = @"zh-Hant";
-            }
-        }
-        else {
-            language = @"en";
-        }
-        bundle = [NSBundle bundleWithPath:[[self bundle] pathForResource:language ofType:@"lproj"]];
-    });
-    NSString *value = [bundle localizedStringForKey:key value:nil table:nil];
+    NSString *value = [[SJVideoPlayerResourceLoader loader].currentBundle localizedStringForKey:key value:nil table:nil];
     return [[NSBundle mainBundle] localizedStringForKey:key value:value table:nil];
+}
+
++ (void (^)(void (^ _Nonnull)(void)))update {
+    return ^(void (^block)(void)) {
+        [SJVideoPlayerResourceLoader loader].currentBundle = [SJVideoPlayerResourceLoader currentBundle];
+        block();
+    };
 }
 @end
 NS_ASSUME_NONNULL_END

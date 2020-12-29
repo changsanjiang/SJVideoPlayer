@@ -30,6 +30,7 @@
 #import "SJNotReachableControlLayer.h"
 #import "SJFloatSmallViewControlLayer.h"
 #import "SJSwitchVideoDefinitionControlLayer.h"
+#import "SJVideoPlayerResourceLoader.h"
 
 NS_ASSUME_NONNULL_BEGIN
 @interface SJVideoPlayer : SJBaseVideoPlayer
@@ -190,6 +191,13 @@ NS_ASSUME_NONNULL_BEGIN
 - (void)switchControlLayerForIdentitfier:(SJControlLayerIdentifier)identifier;
 @end
 
+@interface SJVideoPlayer (MultiLanguage)
+
+///
+/// 多语言切换
+///
++ (void)languageUpdate;
+@end
 
 // - control layer -
 

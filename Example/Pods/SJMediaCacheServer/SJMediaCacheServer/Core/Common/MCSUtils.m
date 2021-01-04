@@ -13,18 +13,26 @@
 
 MCSResponseContentRange
 MCSGetResponseContentRange(NSHTTPURLResponse *response) {
-    NSDictionary *responseHeaders = response.allHeaderFields;
-    NSString *bytes = responseHeaders[@"Content-Range"];
-    if ( bytes.length == 0 )
-        return (MCSResponseContentRange){NSNotFound, NSNotFound, NSNotFound};
+    if      ( response.statusCode == 200 ) {
+        NSUInteger totalLength = MCSGetResponseContentLength(response);
+        if ( totalLength != 0 )
+            return (MCSResponseContentRange){0, totalLength, totalLength};
+    }
+    else if ( response.statusCode == 206 ) {
+        NSDictionary *responseHeaders = response.allHeaderFields;
+        NSString *bytes = responseHeaders[@"Content-Range"];
+        if ( bytes.length != 0 ) {
+            NSString *prefix = @"bytes ";
+            NSString *rangeString = [bytes substringWithRange:NSMakeRange(prefix.length, bytes.length - prefix.length)];
+            NSArray<NSString *> *components = [rangeString componentsSeparatedByString:@"-"];
+            NSUInteger start = (NSUInteger)[components.firstObject longLongValue];
+            NSUInteger end = (NSUInteger)[components.lastObject longLongValue];
+            NSUInteger totalLength = (NSUInteger)[components.lastObject.lastPathComponent longLongValue];
+            return (MCSResponseContentRange){start, end, totalLength};
+        }
+    }
     
-    NSString *prefix = @"bytes ";
-    NSString *rangeString = [bytes substringWithRange:NSMakeRange(prefix.length, bytes.length - prefix.length)];
-    NSArray<NSString *> *components = [rangeString componentsSeparatedByString:@"-"];
-    NSUInteger start = (NSUInteger)[components.firstObject longLongValue];
-    NSUInteger end = (NSUInteger)[components.lastObject longLongValue];
-    NSUInteger totalLength = (NSUInteger)[components.lastObject.lastPathComponent longLongValue];
-    return (MCSResponseContentRange){start, end, totalLength};
+    return (MCSResponseContentRange){NSNotFound, NSNotFound, NSNotFound};
 }
 
 NSRange
@@ -47,7 +55,8 @@ MCSGetResponseContentType(NSHTTPURLResponse *response) {
 NSUInteger
 MCSGetResponseContentLength(NSHTTPURLResponse *response) {
     NSDictionary *responseHeaders = response.allHeaderFields;
-    return (NSUInteger)[responseHeaders[@"Content-Length"] longLongValue];
+    NSNumber *contentLength = responseHeaders[@"Content-Length"] ?: responseHeaders[@"content-length"];
+    return (NSUInteger)[contentLength longLongValue];
 }
 
 MCSRequestContentRange

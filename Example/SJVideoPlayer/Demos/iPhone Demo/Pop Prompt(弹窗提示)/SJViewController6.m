@@ -45,21 +45,21 @@ NS_ASSUME_NONNULL_BEGIN
     ///
     /// 显示富文本提示
     ///
-    [_player.popPromptController show:text duration:duration];
+    [_player.promptPopupController show:text duration:duration];
 }
 
 ///
 /// 清空所有提示
 ///
 - (IBAction)clear:(id)sender {
-    [_player.popPromptController clear];
+    [_player.promptPopupController clear];
 }
 
 ///
 /// 显示自定义视图
 ///
 - (IBAction)showCustomView:(id)sender {
-    [_player.popPromptController showCustomView:SJPopPromptCustomView.new duration:3];
+    [_player.promptPopupController showCustomView:SJPopPromptCustomView.new duration:3];
 }
 
 #pragma mark -
@@ -78,10 +78,10 @@ NS_ASSUME_NONNULL_BEGIN
         __strong typeof(_self) self = _self;
         if ( !self ) return ;
         if ( mgr.isAppeared ) {
-            self.player.popPromptController.bottomMargin = self.player.defaultEdgeControlLayer.bottomContainerView.bounds.size.height + 8;
+            self.player.promptPopupController.bottomMargin = self.player.defaultEdgeControlLayer.bottomContainerView.bounds.size.height + 8;
         }
         else {
-            self.player.popPromptController.bottomMargin = 16;
+            self.player.promptPopupController.bottomMargin = 16;
         }
     };
 }

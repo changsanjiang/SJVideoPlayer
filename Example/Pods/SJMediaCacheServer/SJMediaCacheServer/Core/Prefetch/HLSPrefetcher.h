@@ -14,6 +14,9 @@ NS_ASSUME_NONNULL_BEGIN
 - (instancetype)initWithURL:(NSURL *)URL preloadSize:(NSUInteger)bytes delegate:(nullable id<MCSPrefetcherDelegate>)delegate delegateQueue:(dispatch_queue_t)delegateQueue;
 
 - (instancetype)initWithURL:(NSURL *)URL numberOfPreloadFiles:(NSUInteger)num delegate:(nullable id<MCSPrefetcherDelegate>)delegate delegateQueue:(dispatch_queue_t)delegateQueue;
+
+- (instancetype)initWithURL:(NSURL *)URL delegate:(nullable id<MCSPrefetcherDelegate>)delegate delegateQueue:(dispatch_queue_t)delegateQueue;
+
 @end
 
 NS_ASSUME_NONNULL_END

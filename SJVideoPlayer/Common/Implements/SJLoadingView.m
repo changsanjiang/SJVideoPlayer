@@ -6,7 +6,7 @@
 //
 
 #import "SJLoadingView.h"
-#import "SJVideoPlayerSettings.h"
+#import "SJVideoPlayerConfigurations.h"
 #if __has_include(<Masonry/Masonry.h>)
 #import <Masonry/Masonry.h>
 #else
@@ -146,7 +146,7 @@ NS_ASSUME_NONNULL_BEGIN
     if ( !self ) return nil;
     [self _setupView];
     [self _updateSettings];
-    [NSNotificationCenter.defaultCenter addObserver:self selector:@selector(_updateSettings) name:SJVideoPlayerSettingsUpdatedNotification object:nil];
+    [NSNotificationCenter.defaultCenter addObserver:self selector:@selector(_updateSettings) name:SJVideoPlayerConfigurationsDidUpdateNotification object:nil];
     return self;
 }
 
@@ -167,10 +167,10 @@ NS_ASSUME_NONNULL_BEGIN
     [self performSelector:@selector(_stop) withObject:nil afterDelay:0.1 inModes:@[NSRunLoopCommonModes]];
 }
 
-- (void)setShowNetworkSpeed:(BOOL)showNetworkSpeed {
-    _speedLabel.hidden = !showNetworkSpeed;
+- (void)setShowsNetworkSpeed:(BOOL)showsNetworkSpeed {
+    _speedLabel.hidden = !showsNetworkSpeed;
 }
-- (BOOL)showNetworkSpeed {
+- (BOOL)showsNetworkSpeed {
     return !_speedLabel.isHidden;
 }
 
@@ -225,7 +225,7 @@ NS_ASSUME_NONNULL_BEGIN
 }
 
 - (void)_updateSettings {
-    _animationView.lineColor = SJVideoPlayerSettings.commonSettings.loadingLineColor;
+    _animationView.lineColor = SJVideoPlayerConfigurations.shared.resources.loadingLineColor;
 }
 @end
 NS_ASSUME_NONNULL_END

@@ -8,6 +8,9 @@
 
 #import "SJEdgeControlLayerAdapters.h"
 #import "SJControlLayerDefines.h"
+
+#pragma mark - 无网状态下显示的控制层
+
 @protocol SJNotReachableControlLayerDelegate;
 @class SJButtonContainerView;
 

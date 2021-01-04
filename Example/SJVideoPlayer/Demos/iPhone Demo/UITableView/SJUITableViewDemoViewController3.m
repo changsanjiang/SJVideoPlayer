@@ -94,5 +94,7 @@
         self.player.URLAsset = [SJVideoPlayerURLAsset.alloc initWithURL:SourceURL0 playModel:[SJPlayModel playModelWithTableView:self.tableView tableFooterView:headerView]];
     };
 }
-
+- (BOOL)shouldAutorotate {
+    return NO;
+}
 @end

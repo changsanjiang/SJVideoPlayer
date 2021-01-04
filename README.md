@@ -969,7 +969,7 @@ ___
 ///
 ///         了解更多请前往协议头文件查看
 ///
-@property (nonatomic, strong, null_resettable) id<SJPopPromptController> popPromptController;
+@property (nonatomic, strong, null_resettable) id<SJPromptPopupController> promptPopupController;
 ```
 
 <h3 id="12.1">12.2 配置提示文本</h3>
@@ -1292,10 +1292,10 @@ _player.defaultEdgeControlLayer.hiddenBackButtonWhenOrientationIsPortrait = YES;
 _player.defaultEdgeControlLayer.disabledPromptWhenNetworkStatusChanges = YES;
 ```
 
-<h3 id="20.3">20.3 是否使返回按钮常驻</h3>
+<h3 id="20.3">20.3 是否将返回按钮固定</h3>
 
 ```Objective-C
-_player.defaultEdgeControlLayer.showResidentBackButton = YES;
+_player.defaultEdgeControlLayer.fixesBackItem = YES;
 ```
 
 <h3 id="20.4">20.4 是否隐藏底部进度条</h3>
@@ -1307,7 +1307,7 @@ _player.defaultEdgeControlLayer.hiddenBottomProgressIndicator = YES;
 <h3 id="20.5">20.5 是否在loadingView上显示网速</h3>
 
 ```Objective-C
-_player.defaultEdgeControlLayer.showNetworkSpeedToLoadingView = YES;
+_player.defaultEdgeControlLayer.showsNetworkSpeedToLoadingView = YES;
 ```
 
 <h3 id="20.6">20.6 自定义loadingView</h3>

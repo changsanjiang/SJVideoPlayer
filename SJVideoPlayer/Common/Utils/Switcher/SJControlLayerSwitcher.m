@@ -14,11 +14,11 @@ static NSString *const SJPlayerSwitchControlLayerUserInfoKey = @"SJPlayerSwitchC
 static NSNotificationName const SJPlayerWillBeginSwitchControlLayerNotification = @"SJPlayerWillBeginSwitchControlLayerNotification";
 static NSNotificationName const SJPlayerDidEndSwitchControlLayerNotification = @"SJPlayerDidEndSwitchControlLayerNotification";
 
-@interface SJControlLayerSwitcherObsrever : NSObject<SJControlLayerSwitcherObsrever>
+@interface SJControlLayerSwitcherObserver : NSObject<SJControlLayerSwitcherObserver>
 - (instancetype)initWithSwitcher:(id<SJControlLayerSwitcher>)switcher;
 @end
 
-@implementation SJControlLayerSwitcherObsrever
+@implementation SJControlLayerSwitcherObserver
 @synthesize playerWillBeginSwitchControlLayer = _playerWillBeginSwitchControlLayer;
 @synthesize playerDidEndSwitchControlLayer = _playerDidEndSwitchControlLayer;
 - (instancetype)initWithSwitcher:(id<SJControlLayerSwitcher>)switcher {
@@ -70,11 +70,16 @@ static NSNotificationName const SJPlayerDidEndSwitchControlLayerNotification = @
     return self;
 }
 
-- (id<SJControlLayerSwitcherObsrever>)getObserver {
-    return [[SJControlLayerSwitcherObsrever alloc] initWithSwitcher:self];
+- (id<SJControlLayerSwitcherObserver>)getObserver {
+    return [[SJControlLayerSwitcherObserver alloc] initWithSwitcher:self];
 }
 
-- (void)switchControlLayerForIdentitfier:(SJControlLayerIdentifier)identifier {
+- (void)switchControlLayerForIdentifier:(SJControlLayerIdentifier)identifier {
+    if ( [self.delegate respondsToSelector:@selector(switcher:shouldSwitchToControlLayer:)] ) {
+        if ( ![self.delegate switcher:self shouldSwitchToControlLayer:identifier] )
+            return;
+    }
+
     id<SJControlLayer> _Nullable oldValue = (id)self.videoPlayer.controlLayerDataSource;
     id<SJControlLayer> _Nullable newValue = [self controlLayerForIdentifier:identifier];
     if ( !newValue && _resolveControlLayer ) {
@@ -86,11 +91,6 @@ static NSNotificationName const SJPlayerDidEndSwitchControlLayerNotification = @
     NSParameterAssert(newValue); if ( !newValue ) return;
     if ( oldValue == newValue )
         return;
-    
-    if ( [self.delegate respondsToSelector:@selector(switcher:shouldSwitchToControlLayer:)] ) {
-        if ( ![self.delegate switcher:self shouldSwitchToControlLayer:identifier] )
-            return;
-    }
     
     // - begin -
     [NSNotificationCenter.defaultCenter postNotificationName:SJPlayerWillBeginSwitchControlLayerNotification object:self userInfo:newValue?@{SJPlayerSwitchControlLayerUserInfoKey:newValue}:nil];
@@ -114,7 +114,7 @@ static NSNotificationName const SJPlayerDidEndSwitchControlLayerNotification = @
 - (BOOL)switchToPreviousControlLayer {
     if ( self.previousIdentifier == SJControlLayer_Uninitialized ) return NO;
     if ( !self.videoPlayer ) return NO;
-    [self switchControlLayerForIdentitfier:self.previousIdentifier];
+    [self switchControlLayerForIdentifier:self.previousIdentifier];
     return YES;
 }
 
@@ -126,7 +126,7 @@ static NSNotificationName const SJPlayerDidEndSwitchControlLayerNotification = @
     
     [self.map setObject:loading forKey:@(identifier)];
     if ( self.currentIdentifier == identifier ) {
-        [self switchControlLayerForIdentitfier:identifier];
+        [self switchControlLayerForIdentifier:identifier];
     }
 }
 
@@ -135,23 +135,29 @@ static NSNotificationName const SJPlayerDidEndSwitchControlLayerNotification = @
 }
 
 - (nullable id<SJControlLayer>)controlLayerForIdentifier:(SJControlLayerIdentifier)identifier {
-    id _Nullable result = self.map[@(identifier)];
-    if ( !result )
+    if ( [self.delegate respondsToSelector:@selector(switcher:controlLayerForIdentifier:)] ) {
+        id<SJControlLayer> controlLayer = [self.delegate switcher:self controlLayerForIdentifier:identifier];
+        if ( controlLayer != nil )
+            return controlLayer;
+    }
+    
+    id _Nullable controlLayerOrBlock = self.map[@(identifier)];
+    if ( !controlLayerOrBlock )
         return nil;
     
     // loaded
-    if ( [result conformsToProtocol:@protocol(SJControlLayer)] ) {
-        return result;
+    if ( [controlLayerOrBlock conformsToProtocol:@protocol(SJControlLayer)] ) {
+        return controlLayerOrBlock;
     }
     
     // lazy loading
-    id<SJControlLayer> controlLayer = ((id<SJControlLayer>(^)(SJControlLayerIdentifier))result)(identifier);
+    id<SJControlLayer> controlLayer = ((id<SJControlLayer>(^)(SJControlLayerIdentifier))controlLayerOrBlock)(identifier);
     [self.map setObject:controlLayer forKey:@(identifier)];
     return controlLayer;
 }
 
 - (BOOL)containsControlLayer:(SJControlLayerIdentifier)identifier {
-    return self.map[@(identifier)] != nil;
+    return [self controlLayerForIdentifier:identifier] != nil;
 }
 @end
 NS_ASSUME_NONNULL_END

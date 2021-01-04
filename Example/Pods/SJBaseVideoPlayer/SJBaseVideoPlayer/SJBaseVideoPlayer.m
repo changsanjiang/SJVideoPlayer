@@ -23,7 +23,7 @@
 #import "SJPlayerView.h"
 #import "SJFloatSmallViewController.h"
 #import "SJVideoDefinitionSwitchingInfo+Private.h"
-#import "SJPopPromptController.h"
+#import "SJPromptPopupController.h"
 #import "SJPrompt.h"
 #import "SJBaseVideoPlayerConst.h"
 #import "SJSubtitlesPromptController.h"
@@ -46,6 +46,10 @@ typedef struct _SJPlayerControlInfo {
         CGFloat factor;
         NSTimeInterval offsetTime; ///< pan手势触发过程中的偏移量(secs)
     } pan;
+    
+    struct {
+        CGFloat initialRate;
+    } longPress;
     
     struct {
         SJPlayerGestureTypeMask disabledGestures;
@@ -84,7 +88,7 @@ typedef struct _SJPlayerControlInfo {
     
     struct {
         BOOL isAppeared;
-        BOOL autoDisappearFloatSmallView;
+        BOOL hiddenFloatSmallViewWhenPlaybackFinished;
     } floatSmallViewControl;
     
 } _SJPlayerControlInfo;
@@ -157,7 +161,7 @@ typedef struct _SJPlayerControlInfo {
 }
 
 + (NSString *)version {
-    return @"v3.4.3";
+    return @"v3.5.0";
 }
 
 - (void)setVideoGravity:(SJVideoGravity)videoGravity {
@@ -194,7 +198,7 @@ typedef struct _SJPlayerControlInfo {
     _controlInfo->scrollControl.resumePlaybackWhenScrollAppeared = YES;
     _controlInfo->playbackControl.autoplayWhenSetNewAsset = YES;
     _controlInfo->playbackControl.resumePlaybackWhenPlayerHasFinishedSeeking = YES;
-    _controlInfo->floatSmallViewControl.autoDisappearFloatSmallView = YES;
+    _controlInfo->floatSmallViewControl.hiddenFloatSmallViewWhenPlaybackFinished = YES;
     _controlInfo->gestureControl.rateWhenLongPressGestureTriggered = 2.0;
     _controlInfo->pan.factor = 667;
     self.autoManageViewToFitOnScreenOrRotation = YES;
@@ -401,11 +405,12 @@ typedef struct _SJPlayerControlInfo {
 - (void)_handleLongPress:(SJLongPressGestureRecognizerState)state {
     switch ( state ) {
         case SJLongPressGestureRecognizerStateBegan:
+            self.controlInfo->longPress.initialRate = self.rate;
         case SJLongPressGestureRecognizerStateChanged:
             self.rate = self.rateWhenLongPressGestureTriggered;
             break;
         case SJLongPressGestureRecognizerStateEnded:
-            self.rate = 1.0;
+            self.rate = self.controlInfo->longPress.initialRate;
             break;
     }
     
@@ -1171,7 +1176,7 @@ typedef struct _SJPlayerControlInfo {
 }
 
 - (void)playbackController:(id<SJVideoPlayerPlaybackController>)controller playbackDidFinish:(SJFinishedReason)reason {
-    if ( _floatSmallViewController.isAppeared && self.autoDisappearFloatSmallView ) {
+    if ( _floatSmallViewController.isAppeared && self.hiddenFloatSmallViewWhenPlaybackFinished ) {
         [_floatSmallViewController dismissFloatView];
     }
     
@@ -2028,11 +2033,11 @@ typedef struct _SJPlayerControlInfo {
     };
 }
 
-- (void)setAutoDisappearFloatSmallView:(BOOL)autoDisappearFloatSmallView {
-    _controlInfo->floatSmallViewControl.autoDisappearFloatSmallView = autoDisappearFloatSmallView;
+- (void)setHiddenFloatSmallViewWhenPlaybackFinished:(BOOL)hiddenFloatSmallViewWhenPlaybackFinished {
+    _controlInfo->floatSmallViewControl.hiddenFloatSmallViewWhenPlaybackFinished = hiddenFloatSmallViewWhenPlaybackFinished;
 }
-- (BOOL)autoDisappearFloatSmallView {
-    return _controlInfo->floatSmallViewControl.autoDisappearFloatSmallView;
+- (BOOL)isHiddenFloatSmallViewWhenPlaybackFinished {
+    return _controlInfo->floatSmallViewControl.hiddenFloatSmallViewWhenPlaybackFinished;
 }
 
 - (void)setPauseWhenScrollDisappeared:(BOOL)pauseWhenScrollDisappeared {
@@ -2130,24 +2135,24 @@ typedef struct _SJPlayerControlInfo {
 #pragma mark - 提示
 
 @implementation SJBaseVideoPlayer (PromptControl)
-- (void)setPopPromptController:(nullable id<SJPopPromptController>)popPromptController {
-    objc_setAssociatedObject(self, @selector(popPromptController), popPromptController, OBJC_ASSOCIATION_RETAIN_NONATOMIC);
-    if ( popPromptController != nil ) {
-        [self _setupPopPromptController];
+- (void)setPromptPopupController:(nullable id<SJPromptPopupController>)promptPopupController {
+    objc_setAssociatedObject(self, @selector(promptPopupController), promptPopupController, OBJC_ASSOCIATION_RETAIN_NONATOMIC);
+    if ( promptPopupController != nil ) {
+        [self _setupPromptPopupController];
     }
 }
 
-- (id<SJPopPromptController>)popPromptController {
-    id<SJPopPromptController>_Nullable controller = objc_getAssociatedObject(self, _cmd);
+- (id<SJPromptPopupController>)promptPopupController {
+    id<SJPromptPopupController>_Nullable controller = objc_getAssociatedObject(self, _cmd);
     if ( controller == nil ) {
-        controller = [SJPopPromptController new];
+        controller = [SJPromptPopupController new];
         objc_setAssociatedObject(self, _cmd, controller, OBJC_ASSOCIATION_RETAIN_NONATOMIC);
-        [self _setupPopPromptController];
+        [self _setupPromptPopupController];
     }
     return controller;
 }
-- (void)_setupPopPromptController {
-    id<SJPopPromptController>_Nullable controller = objc_getAssociatedObject(self, @selector(popPromptController));
+- (void)_setupPromptPopupController {
+    id<SJPromptPopupController>_Nullable controller = objc_getAssociatedObject(self, @selector(promptPopupController));
     controller.target = self.presentView;
 }
 

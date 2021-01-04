@@ -24,7 +24,7 @@
     [self _setupViews];
 }
 - (IBAction)switchToSJLoadFailedControlLayer:(id)sender {
-    [_player.switcher switchControlLayerForIdentitfier:SJControlLayer_LoadFailed];
+    [_player.switcher switchControlLayerForIdentifier:SJControlLayer_LoadFailed];
     
     [_player.prompt show:[NSAttributedString sj_UIKitText:^(id<SJUIKitTextMakerProtocol>  _Nonnull make) {
         make.append(@"已切换至 加载失败的控制层");
@@ -33,8 +33,8 @@
     [_player controlLayerNeedAppear];
 }
 
-- (IBAction)swithToSJFilmEditingControlLayer:(id)sender {
-    [_player.switcher switchControlLayerForIdentitfier:SJControlLayer_FilmEditing];
+- (IBAction)swithToSJClipsControlLayer:(id)sender {
+    [_player.switcher switchControlLayerForIdentifier:SJControlLayer_Clips];
     
     [_player.prompt show:[NSAttributedString sj_UIKitText:^(id<SJUIKitTextMakerProtocol>  _Nonnull make) {
         make.append(@"已切换至 剪辑的控制层");
@@ -44,7 +44,7 @@
 }
 
 - (IBAction)switchTOSJFloatSmallViewControlLayer:(id)sender {
-    [_player.switcher switchControlLayerForIdentitfier:SJControlLayer_FloatSmallView];
+    [_player.switcher switchControlLayerForIdentifier:SJControlLayer_FloatSmallView];
     
     [_player.prompt show:[NSAttributedString sj_UIKitText:^(id<SJUIKitTextMakerProtocol>  _Nonnull make) {
         make.append(@"已切换至 小浮窗的控制层 (注: 小浮窗控制层, 目前只有右上角一个按钮)");
@@ -54,7 +54,7 @@
 }
 
 - (IBAction)switchToSJMoreSettingControlLayer:(id)sender {
-    [_player.switcher switchControlLayerForIdentitfier:SJControlLayer_MoreSettting];
+    [_player.switcher switchControlLayerForIdentifier:SJControlLayer_More];
     
     [_player.prompt show:[NSAttributedString sj_UIKitText:^(id<SJUIKitTextMakerProtocol>  _Nonnull make) {
         make.append(@"已切换至 more控制层");
@@ -64,7 +64,7 @@
 }
 
 - (IBAction)switchToSJNotReachableControlLayer:(id)sender {
-    [_player.switcher switchControlLayerForIdentitfier:SJControlLayer_NotReachableAndPlaybackStalled];
+    [_player.switcher switchControlLayerForIdentifier:SJControlLayer_NotReachableAndPlaybackStalled];
     
     [_player.prompt show:[NSAttributedString sj_UIKitText:^(id<SJUIKitTextMakerProtocol>  _Nonnull make) {
         make.append(@"已切换至 无网无缓冲时的控制层");
@@ -74,7 +74,7 @@
 }
 
 - (IBAction)switchToSJEdgeControlLayer:(id)sender {
-    [_player.switcher switchControlLayerForIdentitfier:SJControlLayer_Edge];
+    [_player.switcher switchControlLayerForIdentifier:SJControlLayer_Edge];
     
     [_player.prompt show:[NSAttributedString sj_UIKitText:^(id<SJUIKitTextMakerProtocol>  _Nonnull make) {
         make.append(@"已切换至 默认边缘的控制层");

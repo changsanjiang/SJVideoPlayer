@@ -8,6 +8,10 @@
 #import "SJAVMediaPlayerLayerView.h"
 
 NS_ASSUME_NONNULL_BEGIN
+@interface SJAVMediaPlayerLayerView ()
+@property (nonatomic, strong) CALayer *screenshotLayer;
+@end
+
 @implementation SJAVMediaPlayerLayerView
 @dynamic layer;
 
@@ -22,6 +26,9 @@ static NSString *kReadyForDisplay = @"readyForDisplay";
     if ( self ) {
         NSKeyValueObservingOptions ops = NSKeyValueObservingOptionNew;
         [self.layer addObserver:self forKeyPath:kReadyForDisplay options:ops context:&kReadyForDisplay];
+        
+        _screenshotLayer = [CALayer.alloc init];
+        [self.layer addSublayer:_screenshotLayer];
     }
     return self;
 }
@@ -32,10 +39,23 @@ static NSString *kReadyForDisplay = @"readyForDisplay";
 
 - (void)setVideoGravity:(SJVideoGravity)videoGravity {
     self.layer.videoGravity = videoGravity;
+    if      ( videoGravity == AVLayerVideoGravityResize ) {
+        _screenshotLayer.contentsGravity = kCAGravityResize;
+    }
+    else if ( videoGravity == AVLayerVideoGravityResizeAspect ) {
+        _screenshotLayer.contentsGravity = kCAGravityResizeAspect;
+    }
+    else if ( videoGravity == AVLayerVideoGravityResizeAspectFill ) {
+        _screenshotLayer.contentsGravity = kCAGravityResizeAspectFill;
+    }
 }
 
 - (SJVideoGravity)videoGravity {
     return self.layer.videoGravity;
+}
+
+- (void)setScreenshot:(nullable UIImage *)image {
+    _screenshotLayer.contents = image != nil ? (__bridge id)(image.CGImage) : nil;
 }
 
 - (void)dealloc {
@@ -48,6 +68,11 @@ static NSString *kReadyForDisplay = @"readyForDisplay";
             [NSNotificationCenter.defaultCenter postNotificationName:SJMediaPlayerViewReadyForDisplayNotification object:self];
         });
     }
+}
+
+- (void)layoutSubviews {
+    [super layoutSubviews];
+    _screenshotLayer.frame = self.bounds;
 }
 @end
 NS_ASSUME_NONNULL_END

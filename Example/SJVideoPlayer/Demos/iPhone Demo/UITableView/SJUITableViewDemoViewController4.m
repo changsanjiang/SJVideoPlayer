@@ -107,4 +107,7 @@
     };
     return view;
 }
+- (BOOL)shouldAutorotate {
+    return NO;
+}
 @end

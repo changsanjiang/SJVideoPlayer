@@ -24,7 +24,9 @@ static SJEdgeControlButtonItemTag const SJTestCustomItemTag = 103;
 @end
 
 @implementation SJViewController2
-
+- (BOOL)shouldAutorotate {
+    return NO;
+}
 - (void)viewDidLoad {
     [super viewDidLoad];
     [self _setupViews];
@@ -136,7 +138,7 @@ static SJEdgeControlButtonItemTag const SJTestCustomItemTag = 103;
         make.edges.offset(0);
     }];
     _player.assetURL = SourceURL1;
-    _player.enabledFilmEditing = YES;
+    _player.defaultEdgeControlLayer.enabledClips = YES;
     
 }
 

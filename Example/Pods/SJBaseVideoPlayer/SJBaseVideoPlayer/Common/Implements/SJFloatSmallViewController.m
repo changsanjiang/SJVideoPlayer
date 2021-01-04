@@ -101,17 +101,16 @@ NS_ASSUME_NONNULL_BEGIN
 @synthesize targetSuperview = _targetSuperview;
 @synthesize enabled = _enabled;
 @synthesize target = _target;
-@synthesize safeMargin = _safeMargin;
-@synthesize floatViewInsets = _floatViewInsets;
-@synthesize floatViewAlignment = _floatViewAlignment;
+@synthesize layoutInsets = _layoutInsets;
+@synthesize layoutPosition = _layoutPosition;
 @synthesize addFloatViewToKeyWindow = _addFloatViewToKeyWindow;
+@synthesize layoutSize = _layoutSize;
 
 - (instancetype)init {
     self = [super init];
     if ( self ) {
-        _safeMargin = 12;
-        _floatViewInsets = UIEdgeInsetsZero;
-        _floatViewAlignment = SJFloatViewAlignmentBottomRight;
+        _layoutInsets = UIEdgeInsetsMake(20, 12, 20, 12);
+        _layoutPosition = SJFloatViewLayoutPositionBottomRight;
     }
     return self;
 }
@@ -142,57 +141,53 @@ NS_ASSUME_NONNULL_BEGIN
         else {
             superview = UIApplication.sharedApplication.keyWindow;
         }
+        
         if ( self.floatView.superview != superview ) {
             [superview addSubview:_floatView];
-            CGRect bounds = superview.bounds;
-            CGFloat width = bounds.size.width;
-            CGFloat height = bounds.size.height;
+            CGRect superViewBounds = superview.bounds;
+            CGFloat superViewWidth = superViewBounds.size.width;
+            CGFloat superViewHeight = superViewBounds.size.height;
+            
+            UIEdgeInsets safeAreaInsets = UIEdgeInsetsZero;
+            if (@available(iOS 11.0, *)) {
+                if ( !_ignoreSafeAreaInsets ) safeAreaInsets = superview.safeAreaInsets;
+            }
+
             //
-            CGFloat maxW = ceil(width * 0.48);
-            CGFloat w = maxW>300?300:maxW;
-            CGFloat h = w * 9 /16.0;
+            CGSize size = _layoutSize;
+            CGFloat w = size.width;
+            CGFloat h = size.height;
             CGFloat x = 0;
             CGFloat y = 0;
             
-            switch (_floatViewAlignment) {
-                case SJFloatViewAlignmentTop:
-                    x = (width - w)/2;
-                    y = _floatViewInsets.top;
-                    break;
-                case SJFloatViewAlignmentTopLeft:
-                    x = _floatViewInsets.left;
-                    y = _floatViewInsets.top;
-                    break;
-                case SJFloatViewAlignmentLeft:
-                    x = _floatViewInsets.left;
-                    y = (height - h)/2;
-                    break;
-                case SJFloatViewAlignmentBottomLeft:
-                    x = _floatViewInsets.left;
-                    y = height - h - _floatViewInsets.bottom;
-                    break;
-                case SJFloatViewAlignmentBottom:
-                    x = (width - w)/2;
-                    y = height - h - _floatViewInsets.bottom;
-                    break;
-                case SJFloatViewAlignmentBottomRight:
-                    x = width - w - _floatViewInsets.right;
-                    y = height - h - _floatViewInsets.bottom;
-                    break;
-                case SJFloatViewAlignmentRight:
-                    x = width - w - _floatViewInsets.right;
-                    y = (height - h)/2;
-                    break;
-                case SJFloatViewAlignmentTopRight:
-                    x = width - w - _floatViewInsets.right;
-                    y = _floatViewInsets.top;
-                    break;
+            if ( CGSizeEqualToSize(CGSizeZero, size) ) {
+                CGFloat maxW = ceil(superViewWidth * 0.48);
+                w = maxW > 300.0 ? 300.0 : maxW;
+                h = w * 9.0 / 16.0;
             }
             
-            if (@available(iOS 11.0, *)) {
-                y += superview.safeAreaInsets.top;
+            switch ( _layoutPosition ) {
+                case SJFloatViewLayoutPositionTopLeft:
+                case SJFloatViewLayoutPositionBottomLeft:
+                    x = safeAreaInsets.left + _layoutInsets.left;
+                    break;
+                case SJFloatViewLayoutPositionTopRight:
+                case SJFloatViewLayoutPositionBottomRight:
+                    x = superViewWidth - w - _layoutInsets.right - safeAreaInsets.right;
+                    break;
             }
-
+              
+            switch ( _layoutPosition ) {
+                case SJFloatViewLayoutPositionTopLeft:
+                case SJFloatViewLayoutPositionTopRight:
+                    y = safeAreaInsets.top + _layoutInsets.top;
+                    break;
+                case SJFloatViewLayoutPositionBottomLeft:
+                case SJFloatViewLayoutPositionBottomRight:
+                    y = superViewHeight - h - _layoutInsets.bottom - safeAreaInsets.bottom;
+                    break;
+            }
+ 
             _floatView.frame = CGRectMake(x, y, w, h);
         }
         
@@ -269,10 +264,14 @@ NS_ASSUME_NONNULL_BEGIN
         case UIGestureRecognizerStateEnded:
         case UIGestureRecognizerStateCancelled:
         case UIGestureRecognizerStateFailed: {
-            CGFloat safeMargin = _safeMargin;
             [UIView animateWithDuration:0.4 delay:0 options:UIViewAnimationOptionCurveEaseInOut animations:^{
-                CGFloat left = safeMargin;
-                CGFloat right = UIScreen.mainScreen.bounds.size.width - safeMargin - view.w;
+                UIEdgeInsets safeAreaInsets = UIEdgeInsetsZero;
+                if (@available(iOS 11.0, *)) {
+                    if ( !self.ignoreSafeAreaInsets ) safeAreaInsets = superview.safeAreaInsets;
+                }
+
+                CGFloat left = safeAreaInsets.left + self.layoutInsets.left;
+                CGFloat right = superview.bounds.size.width - view.w - self.layoutInsets.right - safeAreaInsets.right;
                 if ( view.x <= left ) {
                     [view setX:left];
                 }
@@ -280,12 +279,8 @@ NS_ASSUME_NONNULL_BEGIN
                     [view setX:right];
                 }
                 
-                UIEdgeInsets insets = UIEdgeInsetsZero;
-                if (@available(iOS 11.0, *)) {
-                    insets = superview.safeAreaInsets;
-                }
-                CGFloat top = insets.top + safeMargin;
-                CGFloat bottom = superview.bounds.size.height - (insets.bottom + safeMargin + view.h);
+                CGFloat top = safeAreaInsets.top + self.layoutInsets.top;
+                CGFloat bottom = superview.bounds.size.height - view.h - self.layoutInsets.bottom - safeAreaInsets.bottom;
                 if ( view.y <= top ) {
                     [view setY:top];
                 }

@@ -90,11 +90,13 @@ static NSNotificationName const SJControlLayerAppearStateDidChangeNotification =
 }
 
 - (void)needAppear {
+    if ( _disabled ) return;
     [self _start];
     self.isAppeared = YES;
 }
 
 - (void)needDisappear {
+    if ( _disabled ) return;
     [self _clear];
     self.isAppeared = NO;
 }

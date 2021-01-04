@@ -35,6 +35,9 @@ typedef enum : NSUInteger {
 @end
 
 @implementation SJDYMainViewController
+- (BOOL)shouldAutorotate {
+    return NO;
+}
 
 - (void)viewDidLoad {
     [super viewDidLoad];

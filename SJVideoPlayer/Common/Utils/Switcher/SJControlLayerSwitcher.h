@@ -13,7 +13,7 @@
 #else
 #import "SJBaseVideoPlayer.h"
 #endif
-@protocol SJControlLayerSwitcherObsrever, SJControlLayerSwitcherDelegate;
+@protocol SJControlLayerSwitcherObserver, SJControlLayerSwitcherDelegate;
 
 NS_ASSUME_NONNULL_BEGIN
 extern SJControlLayerIdentifier SJControlLayer_Uninitialized;
@@ -27,7 +27,7 @@ extern SJControlLayerIdentifier SJControlLayer_Uninitialized;
 /// 切换控制层
 ///
 /// - 将当前的控制层切换为指定标识的控制层
-- (void)switchControlLayerForIdentitfier:(SJControlLayerIdentifier)identifier;
+- (void)switchControlLayerForIdentifier:(SJControlLayerIdentifier)identifier;
 - (BOOL)switchToPreviousControlLayer;
 
 /// 添加或替换原有控制层
@@ -50,9 +50,9 @@ extern SJControlLayerIdentifier SJControlLayer_Uninitialized;
 /// 获取一个切换器观察者
 ///
 /// - 你需要对它强引用, 否则会被释放
-- (id<SJControlLayerSwitcherObsrever>)getObserver;
+- (id<SJControlLayerSwitcherObserver>)getObserver;
 
-/// 当`switchControlLayerForIdentitfier:`无对应的控制层时, 该block将会被调用
+/// 当`switchControlLayerForIdentifier:`无对应的控制层时, 该block将会被调用
 @property (nonatomic, copy, nullable) id<SJControlLayer> _Nullable (^resolveControlLayer)(SJControlLayerIdentifier identifier);
 
 @property (nonatomic, weak, nullable) id<SJControlLayerSwitcherDelegate> delegate;
@@ -70,10 +70,11 @@ extern SJControlLayerIdentifier SJControlLayer_Uninitialized;
 @protocol SJControlLayerSwitcherDelegate <NSObject>
 @optional
 - (BOOL)switcher:(id<SJControlLayerSwitcher>)switcher shouldSwitchToControlLayer:(SJControlLayerIdentifier)identifier;
+- (nullable id<SJControlLayer>)switcher:(id<SJControlLayerSwitcher>)switcher controlLayerForIdentifier:(SJControlLayerIdentifier)identifier;
 @end
 
 // - observer -
-@protocol SJControlLayerSwitcherObsrever <NSObject>
+@protocol SJControlLayerSwitcherObserver <NSObject>
 @property (nonatomic, copy, nullable) void(^playerWillBeginSwitchControlLayer)(id<SJControlLayerSwitcher> switcher, id<SJControlLayer> controlLayer);
 @property (nonatomic, copy, nullable) void(^playerDidEndSwitchControlLayer)(id<SJControlLayerSwitcher> switcher, id<SJControlLayer> controlLayer);
 @end

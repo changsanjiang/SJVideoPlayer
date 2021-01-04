@@ -34,6 +34,14 @@
     return self;
 }
 
+- (nullable instancetype)initWithCoder:(NSCoder *)coder {
+    self = [super initWithCoder:coder];
+    if ( !self ) return nil;
+    [self _c_setupView];
+    self.spacing = 4;
+    return self;
+}
+
 - (void)setSpacing:(float)spacing {
     _spacing = spacing;
     [_slider mas_updateConstraints:^(MASConstraintMaker *make) {

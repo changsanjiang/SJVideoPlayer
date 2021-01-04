@@ -8,7 +8,7 @@
 
 #import "UIView+SJAnimationAdded.h"
 #import <objc/message.h>
-#import "SJVideoPlayerConst.h"
+#import "SJVideoPlayerConfigurations.h"
 
 NS_ASSUME_NONNULL_BEGIN
 @implementation UIView (SJAnimationAdded)
@@ -111,7 +111,7 @@ sj_view_makeAppear(NSArray<UIView *> *views, BOOL animated, void(^_Nullable comp
         view.sjv_disappeared = NO;
         [UIView animateWithDuration:0 animations:^{} completion:^(BOOL finished) {
             if ( animated ) {
-                [UIView animateWithDuration:CommonAnimaDuration animations:^{
+                [UIView animateWithDuration:SJVideoPlayerConfigurations.shared.animationDuration animations:^{
                     [view sjv_appear];
                 } completion:^(BOOL finished) {
                     if ( view == views.lastObject && completionHandler ) completionHandler();
@@ -136,7 +136,7 @@ sj_view_makeDisappear(NSArray<UIView *> *views, BOOL animated, void(^_Nullable c
         view.sjv_disappeared = YES;
         [UIView animateWithDuration:0 animations:^{} completion:^(BOOL finished) {
             if ( animated ) {
-                [UIView animateWithDuration:CommonAnimaDuration animations:^{
+                [UIView animateWithDuration:SJVideoPlayerConfigurations.shared.animationDuration animations:^{
                     [view sjv_disapear];
                 } completion:^(BOOL finished) {
                     if ( view == views.lastObject && completionHandler ) completionHandler();

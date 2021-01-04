@@ -77,6 +77,12 @@
     return [MCSPrefetcherManager.shared prefetchWithURL:URL preloadSize:preloadSize progress:progressBlock completed:completionBlock];
 }
 
+- (nullable id<MCSPrefetchTask>)prefetchWithURL:(NSURL *)URL progress:(void(^_Nullable)(float progress))progressBlock completed:(void(^_Nullable)(NSError *_Nullable error))completionBlock {
+    if ( URL == nil )
+        return nil;
+    return [MCSPrefetcherManager.shared prefetchWithURL:URL progress:progressBlock completed:completionBlock];
+}
+
 - (void)cancelAllPrefetchTasks {
     [MCSPrefetcherManager.shared cancelAllPrefetchTasks];
 }
@@ -207,7 +213,7 @@
     [MCSAssetManager.shared removeAssetForURL:URL];
 }
 
-- (NSUInteger)cachedSize {
+- (unsigned long long)cachedSize {
     return [MCSAssetManager.shared cachedSizeForAssets];
 }
 

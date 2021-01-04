@@ -1,0 +1,1 @@
+../../../../../SJVideoPlayer/ControlLayers/SJClipsControlLayer/Core/Model/SJVideoPlayerClipsParameters.h

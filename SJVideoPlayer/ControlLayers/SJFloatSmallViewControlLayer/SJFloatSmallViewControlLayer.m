@@ -7,7 +7,7 @@
 
 #import "SJFloatSmallViewControlLayer.h"
 #import "UIView+SJAnimationAdded.h"
-#import "SJVideoPlayerSettings.h"
+#import "SJVideoPlayerConfigurations.h"
 #if __has_include(<SJBaseVideoPlayer/SJBaseVideoPlayer.h>)
 #import <SJBaseVideoPlayer/SJBaseVideoPlayer.h>
 #else
@@ -95,7 +95,7 @@ SJEdgeControlButtonItemTag const SJFloatSmallViewControlLayerTopItem_Close = 100
     
     SJEdgeControlButtonItem *closeItem = [SJEdgeControlButtonItem placeholderWithType:SJButtonItemPlaceholderType_49x49 tag:SJFloatSmallViewControlLayerTopItem_Close];
     [closeItem addTarget:self action:@selector(tappedCloseItem:)];
-    closeItem.image = SJVideoPlayerSettings.commonSettings.floatSmallViewCloseImage;
+    closeItem.image = SJVideoPlayerConfigurations.shared.resources.floatSmallViewCloseImage;
     [self.topAdapter addItem:closeItem];
     
     [self.topAdapter reload];

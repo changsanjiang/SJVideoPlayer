@@ -29,6 +29,14 @@
     return self;
 }
 
+- (nullable instancetype)initWithCoder:(NSCoder *)coder {
+    self = [super initWithCoder:coder];
+    if ( self ) {
+        [self _buttonSetupView];
+    }
+    return self;
+}
+
 - (void)setLeftText:(NSString *)leftText {
     [_leftBtn setTitle:leftText forState:UIControlStateNormal];
 }
@@ -37,9 +45,14 @@
     [_rightBtn setTitle:rightText forState:UIControlStateNormal];
 }
 
-- (void)setTitleColor:(UIColor *)titleColor {
-    [_leftBtn setTitleColor:titleColor forState:UIControlStateNormal];
-    [_rightBtn setTitleColor:titleColor forState:UIControlStateNormal];
+- (void)setTitleColor:(UIColor *)titleLabelColor {
+    [_leftBtn setTitleColor:titleLabelColor forState:UIControlStateNormal];
+    [_rightBtn setTitleColor:titleLabelColor forState:UIControlStateNormal];
+}
+
+- (void)setFont:(UIFont *)font {
+    _leftBtn.titleLabel.font = font;
+    _rightBtn.titleLabel.font = font;
 }
 
 - (void)_buttonSetupView {

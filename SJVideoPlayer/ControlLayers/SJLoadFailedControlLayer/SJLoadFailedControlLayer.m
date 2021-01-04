@@ -7,7 +7,7 @@
 //
 
 #import "SJLoadFailedControlLayer.h"
-#import "SJVideoPlayerSettings.h"
+#import "SJVideoPlayerConfigurations.h"
 
 NS_ASSUME_NONNULL_BEGIN
 @interface SJLoadFailedControlLayer ()
@@ -22,10 +22,11 @@ NS_ASSUME_NONNULL_BEGIN
 }
 
 - (void)_updateSettings {
-    SJVideoPlayerSettings *sources = SJVideoPlayerSettings.commonSettings;
-    [self.reloadView.button setTitle:sources.playFailedButtonText forState:UIControlStateNormal];
-    self.reloadView.backgroundColor = sources.playFailedButtonBackgroundColor;
-    self.promptLabel.text = sources.playFailedText;
+    id<SJVideoPlayerControlLayerResources> resources = SJVideoPlayerConfigurations.shared.resources;
+    id<SJVideoPlayerLocalizedStrings> strings = SJVideoPlayerConfigurations.shared.localizedStrings;
+    [self.reloadView.button setTitle:strings.reload forState:UIControlStateNormal];
+    self.reloadView.backgroundColor = resources.playFailedButtonBackgroundColor;
+    self.promptLabel.text = strings.playbackFailedPrompt;
 }
 @end
 NS_ASSUME_NONNULL_END

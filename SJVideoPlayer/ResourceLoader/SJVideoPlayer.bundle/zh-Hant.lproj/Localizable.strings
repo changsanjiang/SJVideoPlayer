@@ -1,83 +1,30 @@
-"SJVideoPlayer_FastForwardFFText" = "快進中";
-
-"SJVideoPlayer_ReplayButtonTitle" = "重播";
-"SJVideoPlayer_PlayFailedPromptText" = "視頻加載失敗, 請稍後重試";
-"SJVideoPlayer_PlayFailedButtonTitle" = "點擊重試";
-
-"SJVideoPlayer_StatusBarNoNetworkText" = "無網絡";
-"SJVideoPlayer_StatusBarWiFiText" = "Wi-Fi";
-"SJVideoPlayer_StatusBarCellularNetworkText" = "蜂窩網絡";
-
-"SJVideoPlayer_UnstableNetworkPromptText" = "網絡不穩定，請檢查網絡";
-"SJVideoPlayer_CellularNetworkPromptText" = "當前非WiFi環境, 請注意流量消耗";
-"SJVideoPlayer_NoNetworkPromptText" = "網絡超時, 請在穩定的網絡下重試";
-"SJVideoPlayer_NoNetworkReloadButtonTitle" = "重新加載";
-"SJVideoPlayer_LiveText" = "實時直播";
-
-///**
-// top btn
-// 左上角按钮
-// - 取消
-// - 完成
-// */
-//@property (nonatomic, strong) NSString *cancelText;
-//@property (nonatomic, strong) NSString *doneText;
-"SJVideoPlayer_CancelButtonTitle" = "取消";
-"SJVideoPlayer_DoneButtonTitle" = "完成";
-
-///**
-// 录制时右侧按钮
-// - 等待中
-// - 可完成
-// */
-//@property (nonatomic, strong) NSString *waitingText;
-//@property (nonatomic, strong) NSString *finishText;
-"SJVideoPlayer_WaitingPromptText" = "錄製中，請稍等...";
-"SJVideoPlayer_FinishedPromptText" = "點擊右側按鈕完成錄製";
-
-///**
-// export
-// 导出
-// - 导出中
-// - 导出失败
-// - 导出成功
-// - 录制成功
-// - 截屏成功
-// */
-//@property (nonatomic, strong) NSString *exportingText;
-//@property (nonatomic, strong) NSString *exportFailedText;
-//@property (nonatomic, strong) NSString *exportSucceededText;
-//@property (nonatomic, strong) NSString *screenshotSucceededText;
-"SJVideoPlayer_ExportingPromptText" = "導出中";
-"SJVideoPlayer_ExportFailedPromptText" = "導出失敗";
-"SJVideoPlayer_ExportSucceededPromptText" = "錄製成功";
-"SJVideoPlayer_ScreenshotSucceededPromptText" = "截屏成功";
-
-///**
-// album
-// 保存至相册
-// - 已保存至相册
-// - 保存失败, 相册访问权限未开启
-// */
-//@property (nonatomic, strong) NSString *albumAuthDeniedText;
-//@property (nonatomic, strong) NSString *savingToAlbumText;
-//@property (nonatomic, strong) NSString *savedToAlbumText;
-"SJVideoPlayer_AlbumAuthDeniedPromptText" = "保存失敗, 請到設置中開啟相冊訪問權限";
-"SJVideoPlayer_SavingToAlbumPromptText" = "正在保存...";
-"SJVideoPlayer_SavedToAlbumPromptText" = "已保存到相冊";
-
-///**
-// upload
-// 上传
-// - 上传中
-// - 上传成功
-// - 上传失败
-// */
-//@property (nonatomic, strong) NSString *uploadingText;
-//@property (nonatomic, strong) NSString *uploadFailedText;
-//@property (nonatomic, strong) NSString *uploadSucceededText;
-"SJVideoPlayer_UplodingPromptText" = "上傳中";
-"SJVideoPlayer_UploadFailedPromptText" = "上傳失敗";
-"SJVideoPlayer_UploadSucceededPromptText" = "上傳成功";
-
-"SJVideoPlayer_OperationFailedPromptText" = "操作失敗";
+"SJVideoPlayerLocalizedStringKeyLongPressSpeedupPlayback" = "快進中";
+"SJVideoPlayerLocalizedStringKeyNoNetwork" = "無網絡";
+"SJVideoPlayerLocalizedStringKeyWiFiNetWork" = "Wi-Fi";
+"SJVideoPlayerLocalizedStringKeyCellularNetwork" = "蜂窩網絡";
+"SJVideoPlayerLocalizedStringKeyReplay" = "重播";
+"SJVideoPlayerLocalizedStringKeyRetry" = "點擊重試";
+"SJVideoPlayerLocalizedStringKeyReload" = "重新加載";
+"SJVideoPlayerLocalizedStringKeyLiveBroadcast" = "實时直播";
+"SJVideoPlayerLocalizedStringKeyCancel" = "取消";
+"SJVideoPlayerLocalizedStringKeyDone" = "完成";
+"SJVideoPlayerLocalizedStringKeyUnstableNetworkPrompt" = "網絡不穩定，請檢查網絡";
+"SJVideoPlayerLocalizedStringKeyCellularNetworkPrompt" = "當前非WiFi環境，請注意流量消耗";
+"SJVideoPlayerLocalizedStringKeyNoNetworkPrompt" = "網絡超時，請在穩定的網絡下重試";
+"SJVideoPlayerLocalizedStringKeyPlaybackFailedPrompt" = "視頻加載失敗，請稍後重試";
+"SJVideoPlayerLocalizedStringKeyRecordsPreparingPrompt" = "正在準備中，請稍等";
+"SJVideoPlayerLocalizedStringKeyRecordsToFinishRecordingPrompt" = "點擊右側按鈕完成錄製";
+"SJVideoPlayerLocalizedStringKeyExportsExportingPrompt" = "匯出中";
+"SJVideoPlayerLocalizedStringKeyExportsExportFailedPrompt" = "匯出失敗";
+"SJVideoPlayerLocalizedStringKeyExportsExportSuccessfullyPrompt" = "匯出成功";
+"SJVideoPlayerLocalizedStringKeyUploadsUploadingPrompt" = "正在上傳";
+"SJVideoPlayerLocalizedStringKeyUploadsUploadFailedPrompt" = "上傳失敗";
+"SJVideoPlayerLocalizedStringKeyUploadsUploadSuccessfullyPrompt" = "上傳成功";
+"SJVideoPlayerLocalizedStringKeyScreenshotSuccessfullyPrompt" = "截圖成功";
+"SJVideoPlayerLocalizedStringKeyAlbumAuthDeniedPrompt" = "無法保存，請到設定中開啟相册存取權限";
+"SJVideoPlayerLocalizedStringKeyAlbumSavingScreenshotToAlbumPrompt" = "正在保存";
+"SJVideoPlayerLocalizedStringKeyAlbumSavedToAlbumPrompt" = "已保存到相册";
+"SJVideoPlayerLocalizedStringKeyOperationFailedPrompt" = "操作失敗";
+"SJVideoPlayerLocalizedStringKeyDefinitionSwitchingPrompt" = "正在切換至";
+"SJVideoPlayerLocalizedStringKeyDefinitionSwitchSuccessfullyPrompt" = "已成功切換至";
+"SJVideoPlayerLocalizedStringKeyDefinitionSwitchFailedPrompt" = "切換清晰度失敗";

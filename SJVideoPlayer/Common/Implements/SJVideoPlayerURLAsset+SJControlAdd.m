@@ -8,7 +8,7 @@
 
 #import "SJVideoPlayerURLAsset+SJControlAdd.h"
 #import <objc/message.h>
-#import "SJVideoPlayerSettings.h"
+#import "SJVideoPlayerConfigurations.h"
 #if __has_include(<SJUIKit/SJAttributesFactory.h>)
 #import <SJUIKit/SJAttributesFactory.h>
 #else
@@ -62,11 +62,11 @@ NS_ASSUME_NONNULL_BEGIN
 - (nullable NSAttributedString *)attributedTitle {
     NSAttributedString *_Nullable astr = objc_getAssociatedObject(self, _cmd);
     if ( astr == nil && self.title != nil ) {
-        SJVideoPlayerSettings *sources = SJVideoPlayerSettings.commonSettings;
+        id<SJVideoPlayerControlLayerResources> sources = SJVideoPlayerConfigurations.shared.resources;
         astr = [[NSAttributedString sj_UIKitText:^(id<SJUIKitTextMakerProtocol>  _Nonnull make) {
             make.append(self.title);
-            make.font(sources.titleFont);
-            make.textColor(sources.titleColor);
+            make.font(sources.titleLabelFont);
+            make.textColor(sources.titleLabelColor);
             make.lineBreakMode(NSLineBreakByTruncatingTail);
             make.shadow(^(NSShadow * _Nonnull make) {
                 make.shadowOffset = CGSizeMake(0, 0.5);

@@ -10,6 +10,9 @@
 #import "SJEdgeControlLayerAdapters.h"
 #import "SJControlLayerDefines.h"
 
+#pragma mark - 小浮窗模式下的控制层
+
+
 NS_ASSUME_NONNULL_BEGIN
 extern SJEdgeControlButtonItemTag const SJFloatSmallViewControlLayerTopItem_Close;
 

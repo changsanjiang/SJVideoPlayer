@@ -24,8 +24,8 @@ NS_ASSUME_NONNULL_BEGIN
     [super viewDidLoad];
     [self _setupViews];
     
-    _player.enabledFilmEditing = YES;
-    _player.filmEditingConfig.saveResultToAlbumWhenExportSuccess = YES;
+    _player.defaultEdgeControlLayer.enabledClips = YES;
+    _player.defaultEdgeControlLayer.clipsConfig.saveResultToAlbum = YES;
     
     
     [_player.prompt show:[NSAttributedString sj_UIKitText:^(id<SJUIKitTextMakerProtocol>  _Nonnull make) {
@@ -50,10 +50,10 @@ NS_ASSUME_NONNULL_BEGIN
         __strong typeof(_self) self = _self;
         if ( !self ) return ;
         if ( mgr.isAppeared ) {
-            self.player.popPromptController.bottomMargin = self.player.defaultEdgeControlLayer.bottomContainerView.bounds.size.height;
+            self.player.promptPopupController.bottomMargin = self.player.defaultEdgeControlLayer.bottomContainerView.bounds.size.height;
         }
         else {
-            self.player.popPromptController.bottomMargin = 16;
+            self.player.promptPopupController.bottomMargin = 16;
         }
     };
 }

@@ -29,6 +29,9 @@
 @end
 
 @implementation SJDYPlaybackListViewController
+- (BOOL)shouldAutorotate {
+    return NO;
+}
 
 - (void)viewDidLoad {
     [super viewDidLoad];

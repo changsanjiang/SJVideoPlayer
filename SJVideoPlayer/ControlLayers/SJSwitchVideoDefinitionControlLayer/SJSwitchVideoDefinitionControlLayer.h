@@ -8,6 +8,9 @@
 #import "SJEdgeControlLayerAdapters.h"
 #import "SJControlLayerDefines.h"
 #import "SJVideoPlayerURLAsset+SJExtendedDefinition.h"
+
+#pragma mark - 切换清晰度时的控制层
+
 @protocol SJSwitchVideoDefinitionControlLayerDelegate;
 
 NS_ASSUME_NONNULL_BEGIN

@@ -15,21 +15,21 @@ NS_ASSUME_NONNULL_BEGIN
 
 @property (nonatomic, weak) id <SJProgressSliderDelegate>delegate;
 
-/// Defualt is YES. 是否切园角. 默认YES
+/// Default is YES. 是否切园角. 默认YES
 @property (nonatomic, getter=isRound) BOOL round;
 
 /// Track height. default is 8.0. 轨道高度
 @property (nonatomic) CGFloat trackHeight;
 
 /*!
- *  this is view, If you don't want to set up photos, You can set the background color.
+ *  this is view, If you don't want to set image, You can set the background color.
  *
  *  轨道, 你可以设置图片或者将他当做`view`, 设置背景颜色来使用. 以下`trace` & `thumb` 相同.
  */
 @property (nonatomic, strong, readonly) UIImageView *trackImageView;
 
 /*!
- *  this is view, If you don't want to set up photos, You can set the background color.
+ *  this is view, If you don't want to set image, You can set the background color.
  *
  *  走过的痕迹.
  */
@@ -121,13 +121,12 @@ NS_ASSUME_NONNULL_BEGIN
 
 
 #pragma mark - Border
-@interface SJProgressSlider (BorderLine)
+@interface SJProgressSlider (Border)
 
 /*!
- *  visual border line.
  *  default is NO.
  */
-@property (nonatomic) BOOL visualBorder;
+@property (nonatomic) BOOL showsBorder;
 
 /*!
  *  borderColor
@@ -146,12 +145,13 @@ NS_ASSUME_NONNULL_BEGIN
 
 
 #pragma mark - Buffer
-@interface SJProgressSlider (SJBufferProgress)
+
+@interface SJProgressSlider (Buffer)
 
 /*!
  *  开启缓冲进度. default is NO.
  */
-@property (nonatomic) BOOL enableBufferProgress;
+@property (nonatomic) BOOL showsBufferProgress;
 
 /*!
  *  缓冲进度颜色. default is grayColor
@@ -160,11 +160,28 @@ NS_ASSUME_NONNULL_BEGIN
 
 /*!
  *  缓冲进度
+ *
+ *  0...1
  */
 @property (nonatomic) CGFloat bufferProgress;
 
 @end
 
+
+#pragma mark - Stop Node
+
+@interface SJProgressSlider (StopNode)
+
+@property (nonatomic) BOOL showsStopNode;
+
+@property (nonatomic, strong, null_resettable) UIView *stopNodeView;
+
+/// 0..1
+@property (nonatomic) CGFloat stopNodeLocation;
+
+- (void)setStopNodeViewCornerRadius:(CGFloat)cornerRadius size:(CGSize)size;
+- (void)setStopNodeViewCornerRadius:(CGFloat)cornerRadius size:(CGSize)size backgroundColor:(UIColor *)backgroundColor;
+@end
 
 
 #pragma mark - Delegate

@@ -35,6 +35,16 @@ NS_ASSUME_NONNULL_BEGIN
 ///
 @property (nonatomic) NSInteger maxConcurrentPrefetchCount;
 
+/// Prefetch all data for the specified asset.
+///
+/// @param URL      An instance of NSURL that references a media asset.
+///
+/// @return The task to cancel the current prefetching.
+///
+/// @note return nil if URL is nil.
+///
+- (nullable id<MCSPrefetchTask>)prefetchWithURL:(NSURL *)URL progress:(void(^_Nullable)(float progress))progressBlock completed:(void(^_Nullable)(NSError *_Nullable error))completionBlock; // 预加载所有数据
+
 /// Prefetch some assets in the cache for future use. assets are downloaded in low priority.
 ///
 /// @param URL      An instance of NSURL that references a media asset.
@@ -45,7 +55,7 @@ NS_ASSUME_NONNULL_BEGIN
 ///
 /// @note return nil if URL is nil.
 ///
-- (nullable id<MCSPrefetchTask>)prefetchWithURL:(NSURL *)URL preloadSize:(NSUInteger)bytes; // 预加载
+- (nullable id<MCSPrefetchTask>)prefetchWithURL:(NSURL *)URL preloadSize:(NSUInteger)bytes; // 预加载指定大小的数据
 
 /// Prefetch some assets in the cache for future use. assets are downloaded in low priority.
 ///
@@ -61,7 +71,7 @@ NS_ASSUME_NONNULL_BEGIN
 ///
 /// @note return nil if URL is nil.
 ///
-- (nullable id<MCSPrefetchTask>)prefetchWithURL:(NSURL *)URL preloadSize:(NSUInteger)bytes progress:(void(^_Nullable)(float progress))progressBlock completed:(void(^_Nullable)(NSError *_Nullable error))completionBlock; // 预加载
+- (nullable id<MCSPrefetchTask>)prefetchWithURL:(NSURL *)URL preloadSize:(NSUInteger)bytes progress:(void(^_Nullable)(float progress))progressBlock completed:(void(^_Nullable)(NSError *_Nullable error))completionBlock; // 预加载指定大小的数据
 
 /// Cancels all queued and executing prefetch tasks.
 ///
@@ -180,7 +190,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 /// Returns the total cache size (in bytes).
 ///
-@property (nonatomic, readonly) NSUInteger cachedSize; // 返回已占用的缓存大小
+@property (nonatomic, readonly) unsigned long long cachedSize; // 返回已占用的缓存大小
 
 - (BOOL)isStoredForURL:(NSURL *)URL;
 

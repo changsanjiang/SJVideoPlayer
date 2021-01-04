@@ -46,11 +46,11 @@
     [_window makeKeyAndVisible];
 
 
-    SJVideoPlayer.update(^(SJVideoPlayerSettings * _Nonnull common) {
-        common.placeholder = [UIImage imageNamed:@"placeholder"];
-        common.progress_thumbSize = 8;
-        common.progress_trackColor = [UIColor colorWithWhite:0.8 alpha:1];
-        common.progress_bufferColor = [UIColor whiteColor];
+    SJVideoPlayer.updateResources(^(id<SJVideoPlayerControlLayerResources>  _Nonnull resources) {
+        resources.placeholder = [UIImage imageNamed:@"placeholder"];
+        resources.progressThumbSize = 8;
+        resources.progressTrackColor = [UIColor colorWithWhite:0.8 alpha:1];
+        resources.progressBufferColor = [UIColor whiteColor];
     });
     
     // Override point for customization after application launch.

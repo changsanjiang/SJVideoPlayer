@@ -5,12 +5,12 @@
 //  Created by 畅三江 on 2019/11/27.
 //
 
-#import "SJLoadingViewDefinies.h"
+#import "SJLoadingViewDefines.h"
 
 NS_ASSUME_NONNULL_BEGIN
 @interface SJLoadingView : UIView<SJLoadingView>
 @property (nonatomic, readonly, getter=isAnimating) BOOL animating;
-@property (nonatomic) BOOL showNetworkSpeed;
+@property (nonatomic) BOOL showsNetworkSpeed;
 @property (nonatomic, strong, nullable) NSAttributedString *networkSpeedStr;
 
 - (void)start;

@@ -36,13 +36,25 @@ NS_ASSUME_NONNULL_BEGIN
 - (instancetype)initWithFrame:(CGRect)frame {
     self = [super initWithFrame:frame];
     if ( self ) {
-        _margin = 28;
-        _scrollEnabled = YES;
-        self.clipsToBounds = YES;
-        [NSNotificationCenter.defaultCenter addObserver:self selector:@selector(_reset) name:UIApplicationWillEnterForegroundNotification object:nil];
-        [self _setupViews];
+        [self _init];
     }
     return self;
+}
+
+- (nullable instancetype)initWithCoder:(NSCoder *)coder {
+    self = [super initWithCoder:coder];
+    if (self) {
+        [self _init];
+    }
+    return self;
+}
+
+- (void)_init {
+    _margin = 28;
+    _scrollEnabled = YES;
+    self.clipsToBounds = YES;
+    [NSNotificationCenter.defaultCenter addObserver:self selector:@selector(_reset) name:UIApplicationWillEnterForegroundNotification object:nil];
+    [self _setupViews];
 }
 
 - (void)dealloc {

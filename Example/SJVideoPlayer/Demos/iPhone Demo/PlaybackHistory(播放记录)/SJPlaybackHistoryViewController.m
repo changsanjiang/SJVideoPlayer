@@ -41,6 +41,9 @@
 @end
 
 @implementation SJPlaybackHistoryViewController
+- (BOOL)shouldAutorotate {
+    return NO;
+}
 
 - (void)viewDidLoad {
     [super viewDidLoad];

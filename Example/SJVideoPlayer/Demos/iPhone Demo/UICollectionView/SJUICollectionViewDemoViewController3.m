@@ -81,7 +81,9 @@
 @end
 
 @implementation SJUICollectionViewDemoViewController3
-
+- (BOOL)shouldAutorotate {
+    return NO;
+}
 - (void)viewDidLoad {
     [super viewDidLoad];
  

@@ -17,14 +17,15 @@
 #else
 #import "SJBaseVideoPlayer.h"
 #endif
-#import "SJVideoPlayerSettings.h"
+#import "SJControlLayerIdentifiers.h"
+#import "SJVideoPlayerConfigurations.h"
 #import "SJVideoPlayerURLAsset+SJControlAdd.h"
-#import "SJVideoPlayerFilmEditingDefines.h"
-#import "SJVideoPlayerFilmEditingConfig.h"
+#import "SJVideoPlayerClipsDefines.h"
+#import "SJVideoPlayerClipsConfig.h"
 #import "SJControlLayerSwitcher.h"
 
 #import "SJEdgeControlLayer.h"
-#import "SJFilmEditingControlLayer.h"
+#import "SJClipsControlLayer.h"
 #import "SJMoreSettingControlLayer.h"
 #import "SJLoadFailedControlLayer.h"
 #import "SJNotReachableControlLayer.h"
@@ -74,7 +75,7 @@ NS_ASSUME_NONNULL_BEGIN
 ///
 /// 默认的剪辑(GIF, Export, Screenshot)控制层
 ///
-@property (nonatomic, strong, readonly) SJFilmEditingControlLayer *defaultFilmEditingControlLayer;
+@property (nonatomic, strong, readonly) SJClipsControlLayer *defaultClipsControlLayer;
 
 ///
 /// 默认的`more setting`控制层(调整音量/亮度/速率)
@@ -101,27 +102,56 @@ NS_ASSUME_NONNULL_BEGIN
 + (NSString *)version;
 @end
 
+@interface SJEdgeControlLayer (SJVideoPlayerExtended)
+///
+/// 是否在Top栏上显示`more item`(三个点). default value is YES
+///
+/// 如果需要关闭, 可以设置: player.defaultEdgeControlLayer.showsMoreItem = NO;
+///
+@property (nonatomic) BOOL showsMoreItem;
+
+///
+/// 是否开启剪辑功能
+///         - 默认是NO
+///         - 不支持剪辑m3u8(如果开启, 将会自动隐藏剪辑按钮)
+///
+@property (nonatomic, getter=isEnabledClips) BOOL enabledClips;
+
+///
+/// 剪辑功能配置
+///
+@property (nonatomic, strong, null_resettable) SJVideoPlayerClipsConfig *clipsConfig;
+
+@end
 
 @interface SJVideoPlayer (CommonSettings)
-
 ///
-/// 配置`播放器图片或slider的颜色等`
-/// Configure the player, Note: This `block` is run on the child thread.
-/// 配置播放器, 例如: 滚动条的颜色等... 注意: 这个`block`在子线程运行
+/// Note: The `block` runs on the sub thread.
 ///
 /// \code
+///    SJVideoPlayer.updateResources(^(id<SJVideoPlayerControlLayerResources>  _Nonnull resources) {
+///        resources.placeholder = [UIImage imageNamed:@"placeholder"];
+///        resources.progressThumbSize = 8;
+///        resources.progressTrackColor = [UIColor colorWithWhite:0.8 alpha:1];
+///        resources.progressBufferColor = [UIColor whiteColor];
+///    });
+/// \endcode
+@property (class, nonatomic, copy, readonly) void(^updateResources)(void(^block)(id<SJVideoPlayerControlLayerResources> resources));
+@property (class, nonatomic, copy, readonly) void(^updateLocalizedStrings)(void(^block)(id<SJVideoPlayerLocalizedStrings> strings));
+@property (class, nonatomic, copy, readonly) void(^setLocalizedStrings)(NSBundle *bundle);
 ///
-///     SJVideoPlayer.update(^(SJVideoPlayerSettings * _Nonnull commonSettings) {
-///         commonSettings.placeholder = [UIImage imageNamed:@"placeholder"];
-///         commonSettings.more_trackColor = [UIColor whiteColor];
-///         commonSettings.progress_trackColor = [UIColor colorWithWhite:0.4 alpha:1];
-///         commonSettings.progress_bufferColor = [UIColor whiteColor];
+/// Note: The `block` runs on the sub thread.
+///
+/// \code
+///     SJVideoPlayer.update(^(SJVideoPlayerConfigurations * _Nonnull commonSettings) {
+///         // 注意, 该block将在子线程执行
+///         configs.resources.backImage = [UIImage imageNamed:@"icon_back"];
+///         configs.resources.placeholder = [UIImage imageNamed:@"placeholder"];
+///         configs.resources.progressTrackColor = [UIColor colorWithWhite:0.4 alpha:1];
 ///     });
-///
 /// \endcode
 ///
-@property (class, nonatomic, copy, readonly) void(^update)(void(^block)(SJVideoPlayerSettings *commonSettings));
-+ (void)resetSetting; // 重置配置, 恢复默认设置
+@property (class, nonatomic, copy, readonly) void(^update)(void(^block)(SJVideoPlayerConfigurations *configs));
 @end
 
 
@@ -154,68 +184,20 @@ NS_ASSUME_NONNULL_BEGIN
 ///
 @property (nonatomic, copy, nullable) NSArray<SJVideoPlayerURLAsset *> *definitionURLAssets;
 
-@end
-
-
-@interface SJVideoPlayer (SJExtendedEdgeControlLayer)
-
+/// 切换清晰度时, 是否关掉切换进度的提示
 ///
-/// 是否在默认控制层的Top栏上显示`more item`(三个点). default value is YES
+///     default value is NO.
 ///
-@property (nonatomic) BOOL showMoreItemToTopControlLayer;
+@property (nonatomic, getter=isDisabledDefinitionSwitchingPrompt) BOOL disabledDefinitionSwitchingPrompt;
 
 @end
-
-
-@interface SJVideoPlayer (SJExtendedFilmEditingControlLayer)
-
-///
-/// 是否开启剪辑功能
-///         - 默认是NO
-///         - 不支持剪辑m3u8(如果开启, 将会自动隐藏剪辑按钮)
-///
-@property (nonatomic, getter=isEnabledFilmEditing) BOOL enabledFilmEditing;
-
-///
-/// 剪辑功能配置
-///
-@property (nonatomic, strong, readonly) SJVideoPlayerFilmEditingConfig *filmEditingConfig;
-@end
-
+ 
 
 @interface SJVideoPlayer (SJExtendedControlLayerSwitcher)
 
 ///
 /// 切换控制层
 ///
-- (void)switchControlLayerForIdentitfier:(SJControlLayerIdentifier)identifier;
+- (void)switchControlLayerForIdentifier:(SJControlLayerIdentifier)identifier;
 @end
-
-@interface SJVideoPlayer (MultiLanguage)
-
-///
-/// 多语言切换
-///
-+ (void)languageUpdate;
-@end
-
-// - control layer -
-
-/// 以下标识是默认存在的控制层标识
-/// - 可以像下面这样扩展您的标识, 将相应的控制层加入到switcher(切换器)中, 通过switcher进行切换.
-/// - SJControlLayerIdentifier YourControlLayerIdentifier;
-/// - 当然, 也可以直接将已存在控制层, 替换成您的控制层.
-extern SJControlLayerIdentifier const SJControlLayer_Edge;            ///< 默认的边缘控制层
-extern SJControlLayerIdentifier const SJControlLayer_FilmEditing;     ///< 默认的剪辑层
-extern SJControlLayerIdentifier const SJControlLayer_MoreSettting;    ///< 默认的更多设置控制层
-extern SJControlLayerIdentifier const SJControlLayer_LoadFailed;      ///< 默认加载失败时显示的控制层
-extern SJControlLayerIdentifier const SJControlLayer_NotReachableAndPlaybackStalled;    ///< 默认加载失败时显示的控制层
-extern SJControlLayerIdentifier const SJControlLayer_FloatSmallView;  ///< 默认的小浮窗控制层
-extern SJControlLayerIdentifier const SJControlLayer_SwitchVideoDefinition; ///< 默认的切换视频清晰度控制层
-
-// - edge button item -
-
-extern SJEdgeControlButtonItemTag const SJEdgeControlLayerBottomItem_FilmEditing;   ///< GIF/导出/截屏
-extern SJEdgeControlButtonItemTag const SJEdgeControlLayerTopItem_More;             ///< More
-extern SJEdgeControlButtonItemTag const SJEdgeControlLayerBottomItem_Definition;    ///< 清晰度
 NS_ASSUME_NONNULL_END

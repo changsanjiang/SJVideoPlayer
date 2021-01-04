@@ -967,7 +967,7 @@ ___
 ///
 ///         了解更多请前往协议头文件查看
 ///
-@property (nonatomic, strong, null_resettable) id<SJPopPromptController> popPromptController;
+@property (nonatomic, strong, null_resettable) id<SJPromptPopupController> promptPopupController;
 ```
 
 <h3 id="12.1">12.2 配置提示文本</h3>

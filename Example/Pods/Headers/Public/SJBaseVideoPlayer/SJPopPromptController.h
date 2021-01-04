@@ -1,1 +1,0 @@
-../../../SJBaseVideoPlayer/SJBaseVideoPlayer/Common/Implements/SJPopPromptController.h

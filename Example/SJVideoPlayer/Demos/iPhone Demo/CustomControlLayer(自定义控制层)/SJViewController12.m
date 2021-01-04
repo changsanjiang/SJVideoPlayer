@@ -55,11 +55,11 @@ static SJControlLayerIdentifier SJTestControlLayerIdentifier = 101;
 - (void)switchControlLayer {
     if ( _player.isFullScreen == NO ) {
         [_player rotate:SJOrientation_LandscapeLeft animated:YES completion:^(SJVideoPlayer * _Nonnull player) {
-           [player.switcher switchControlLayerForIdentitfier:SJTestControlLayerIdentifier];
+           [player.switcher switchControlLayerForIdentifier:SJTestControlLayerIdentifier];
         }];
     }
     else {
-        [self.player.switcher switchControlLayerForIdentitfier:SJTestControlLayerIdentifier];
+        [self.player.switcher switchControlLayerForIdentifier:SJTestControlLayerIdentifier];
     }
 }
 
@@ -67,7 +67,7 @@ static SJControlLayerIdentifier SJTestControlLayerIdentifier = 101;
 /// 点击空白区域, 切换回旧控制层
 ///
 - (void)tappedBlankAreaOnTheControlLayer:(id<SJControlLayer>)controlLayer {
-    [self.player.switcher switchControlLayerForIdentitfier:SJControlLayer_Edge];
+    [self.player.switcher switchControlLayerForIdentifier:SJControlLayer_Edge];
 }
 
 #pragma mark -
@@ -107,7 +107,7 @@ static SJControlLayerIdentifier SJTestControlLayerIdentifier = 101;
 /// 删除当前demo不需要的item
 ///
 - (void)_removeExtraItems {
-    [_player.defaultEdgeControlLayer.bottomAdapter removeItemForTag:SJEdgeControlLayerBottomItem_FullBtn];
+    [_player.defaultEdgeControlLayer.bottomAdapter removeItemForTag:SJEdgeControlLayerBottomItem_Full];
     [_player.defaultEdgeControlLayer.bottomAdapter removeItemForTag:SJEdgeControlLayerBottomItem_Separator];
     [_player.defaultEdgeControlLayer.bottomAdapter exchangeItemForTag:SJEdgeControlLayerBottomItem_DurationTime withItemForTag:SJEdgeControlLayerBottomItem_Progress];
     SJEdgeControlButtonItem *durationItem = [_player.defaultEdgeControlLayer.bottomAdapter itemForTag:SJEdgeControlLayerBottomItem_DurationTime];

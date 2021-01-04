@@ -1,1 +1,0 @@
-../../../../../SJVideoPlayer/Common/Settings/SJVideoPlayerSettings.h

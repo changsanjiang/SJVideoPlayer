@@ -58,9 +58,9 @@ NS_ASSUME_NONNULL_BEGIN
     return UIInterfaceOrientationMaskAll;
 }
 
-- (UIInterfaceOrientation)preferredInterfaceOrientationForPresentation {
-    return UIInterfaceOrientationPortrait;
-}
+//- (UIInterfaceOrientation)preferredInterfaceOrientationForPresentation {
+//    return UIInterfaceOrientationPortrait;
+//}
 
 - (void)viewWillTransitionToSize:(CGSize)size withTransitionCoordinator:(id<UIViewControllerTransitionCoordinator>)coordinator {
     _rotating = YES;

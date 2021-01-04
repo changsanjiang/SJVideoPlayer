@@ -251,6 +251,7 @@ static dispatch_queue_t mcs_queue;
 #ifdef DEBUG
     NSLog(@"%d - %s - %@", (int)__LINE__, __func__, error);
 #endif
+    [self _close];
     
     dispatch_async(MCSDelegateQueue(), ^{
         [self->_delegate parser:self anErrorOccurred:error];

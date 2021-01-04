@@ -10,10 +10,10 @@
 #import "NSURLRequest+MCS.h"
 #import "MCSLogger.h"
 #import <objc/message.h>
-#import <KTVCocoaHTTPServer/HTTPServer.h>
-#import <KTVCocoaHTTPServer/HTTPConnection.h>
-#import <KTVCocoaHTTPServer/HTTPResponse.h>
-#import <KTVCocoaHTTPServer/HTTPMessage.h>
+#import "HTTPServer.h"
+#import "HTTPConnection.h"
+#import "HTTPResponse.h"
+#import "HTTPMessage.h"
 
 
 @interface HTTPServer (MCSProxyServerExtended)

@@ -11,18 +11,6 @@
 #import <UIKit/UIKit.h>
 
 NS_ASSUME_NONNULL_BEGIN
-
-typedef NS_ENUM(NSInteger, SJFloatViewAlignment) {
-    SJFloatViewAlignmentTop           = 0,
-    SJFloatViewAlignmentTopLeft       = 1,
-    SJFloatViewAlignmentTopRight      = 2,
-    SJFloatViewAlignmentLeft          = 3,
-    SJFloatViewAlignmentBottomLeft    = 4,
-    SJFloatViewAlignmentBottom        = 5,
-    SJFloatViewAlignmentBottomRight   = 6,
-    SJFloatViewAlignmentRight         = 7
-};
-
 @protocol SJFloatSmallViewController
 - (id<SJFloatSmallViewControllerObserverProtocol>)getObserver;
 
@@ -70,13 +58,7 @@ typedef NS_ENUM(NSInteger, SJFloatViewAlignment) {
 @property (nonatomic) BOOL addFloatViewToKeyWindow;
 
 @property (nonatomic, strong, readonly) __kindof UIView *floatView; ///< float view
-
-@property (nonatomic) CGFloat safeMargin; ///< default value is 12.
-
-@property (nonatomic) UIEdgeInsets floatViewInsets; ///
-
-@property (nonatomic) SJFloatViewAlignment floatViewAlignment; /// default value is SJFloatViewAlignmentBottomRight
-
+  
 /// 以下属性由播放器维护
 ///
 /// - target 为播放器呈现视图

@@ -28,6 +28,7 @@ NS_ASSUME_NONNULL_BEGIN
     self = [super init];
     if ( self ) {
         [NSNotificationCenter.defaultCenter addObserver:self selector:@selector(_av_playbackTypeDidChange:) name:SJMediaPlayerPlaybackTypeDidChangeNotification object:nil];
+        [NSNotificationCenter.defaultCenter addObserver:self selector:@selector(_av_playerViewReadyForDisplay:) name:SJMediaPlayerViewReadyForDisplayNotification object:nil];
     }
     return self;
 }
@@ -64,7 +65,7 @@ NS_ASSUME_NONNULL_BEGIN
     view.layer.player = player.avPlayer;
     return view;
 }
- 
+
 - (void)receivedApplicationDidBecomeActiveNotification {
     if ( @available(iOS 14.0, *) ) {
         if ( _pictureInPictureController.isEnabled )
@@ -105,6 +106,9 @@ NS_ASSUME_NONNULL_BEGIN
         if ( _pictureInPictureController.isEnabled )
             return;
     }
+    
+    if ( self.pauseWhenAppDidEnterBackground )
+        [self.currentPlayerView setScreenshot:self.screenshot];
     
     // 修复 14.0 后台播放失效的问题
     if ( @available(iOS 14.0, *) ) {
@@ -228,6 +232,14 @@ NS_ASSUME_NONNULL_BEGIN
     if ( note.object == self.currentPlayer ) {
         if ( [self.delegate respondsToSelector:@selector(playbackController:playbackTypeDidChange:)] ) {
             [self.delegate playbackController:self playbackTypeDidChange:self.playbackType];
+        }
+    }
+}
+
+- (void)_av_playerViewReadyForDisplay:(NSNotification *)note {
+    if ( self.currentPlayerView == note.object ) {
+        if ( self.currentPlayerView.isReadyForDisplay ) {
+            [self.currentPlayerView setScreenshot:nil];
         }
     }
 }

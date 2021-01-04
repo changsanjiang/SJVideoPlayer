@@ -9,7 +9,7 @@
 #import "SJMoreSettingControlLayer.h"
 #import "UIView+SJAnimationAdded.h"
 #import "SJButtonProgressSlider.h"
-#import "SJVideoPlayerSettings.h"
+#import "SJVideoPlayerConfigurations.h"
 
 #if __has_include(<SJUIKit/SJAttributesFactory.h>)
 #import <SJUIKit/SJAttributesFactory.h>
@@ -183,8 +183,8 @@ SJEdgeControlButtonItemTag const SJMoreSettingControlLayerItem_Rate = 10002;
         SJButtonProgressSlider *progressView = SJButtonProgressSlider.new;
         progressView.slider.delegate = self;
         progressView.slider.tag = rateItem.tag;
-        progressView.slider.maxValue = SJVideoPlayerSettings.commonSettings.more_maxRateValue;
-        progressView.slider.minValue = SJVideoPlayerSettings.commonSettings.more_minRateValue;
+        progressView.slider.maxValue = SJVideoPlayerConfigurations.shared.resources.moreSliderMaxRateValue;
+        progressView.slider.minValue = SJVideoPlayerConfigurations.shared.resources.moreSliderMinRateValue;
         rateItem.customView = progressView;
         [self.rightAdapter addItem:rateItem];
     }
@@ -207,34 +207,34 @@ SJEdgeControlButtonItemTag const SJMoreSettingControlLayerItem_Rate = 10002;
 }
 
 - (void)_refreshSettings {
-    SJVideoPlayerSettings *sources = SJVideoPlayerSettings.commonSettings;
-    self.rightContainerView.backgroundColor = sources.moreBackgroundColor;
+    id<SJVideoPlayerControlLayerResources> sources = SJVideoPlayerConfigurations.shared.resources;
+    self.rightContainerView.backgroundColor = sources.moreControlLayerBackgroundColor;
     
     __auto_type _configProgressView = ^(SJButtonProgressSlider *progressView, UIImage *left, UIImage *right) {
         [progressView.rightBtn setImage:right forState:UIControlStateNormal];
         [progressView.leftBtn setImage:left forState:UIControlStateNormal];
 
-        progressView.slider.traceImageView.backgroundColor = sources.more_traceColor;
-        progressView.slider.trackImageView.backgroundColor = sources.more_trackColor;
-        progressView.slider.trackHeight = sources.more_trackHeight;
+        progressView.slider.traceImageView.backgroundColor = sources.moreSliderTraceColor;
+        progressView.slider.trackImageView.backgroundColor = sources.moreSliderTrackColor;
+        progressView.slider.trackHeight = sources.moreSliderTrackHeight;
         
-        if ( sources.more_thumbImage == nil ) {
-            CGSize size = CGSizeMake(sources.more_thumbSize, sources.more_thumbSize);
-            CGFloat radius = sources.more_thumbSize * 0.5;
-            [progressView.slider setThumbCornerRadius:radius size:size thumbBackgroundColor:sources.more_traceColor];
+        if ( sources.moreSliderThumbImage == nil ) {
+            CGSize size = CGSizeMake(sources.moreSliderThumbSize, sources.moreSliderThumbSize);
+            CGFloat radius = sources.moreSliderThumbSize * 0.5;
+            [progressView.slider setThumbCornerRadius:radius size:size thumbBackgroundColor:sources.moreSliderTraceColor];
         }
         else {
-            progressView.slider.thumbImageView.image = sources.more_thumbImage;
+            progressView.slider.thumbImageView.image = sources.moreSliderThumbImage;
         }
     };
     SJEdgeControlButtonItem *volumeItem = [self.rightAdapter itemForTag:SJMoreSettingControlLayerItem_Volume];
-    _configProgressView(volumeItem.customView, sources.more_minVolumeImage, sources.more_maxVolumeImage);
+    _configProgressView(volumeItem.customView, sources.moreSliderMinVolumeImage, sources.moreSliderMaxVolumeImage);
     
     SJEdgeControlButtonItem *brightness = [self.rightAdapter itemForTag:SJMoreSettingControlLayerItem_Brightness];
-    _configProgressView(brightness.customView, sources.more_minBrightnessImage, sources.more_maxBrightnessImage);
+    _configProgressView(brightness.customView, sources.moreSliderMinBrightnessImage, sources.moreSliderMaxBrightnessImage);
     
     SJEdgeControlButtonItem *rateItem = [self.rightAdapter itemForTag:SJMoreSettingControlLayerItem_Rate];
-    _configProgressView(rateItem.customView, sources.more_minRateImage, sources.more_maxRateImage);
+    _configProgressView(rateItem.customView, sources.moreSliderMinRateImage, sources.moreSliderMaxRateImage);
 }
 @end
 NS_ASSUME_NONNULL_END

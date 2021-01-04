@@ -472,8 +472,8 @@
 		7700905824988F6900A99906 /* UserHomepage */ = {
 			isa = PBXGroup;
 			children = (
-				7700905924988F6900A99906 /* SJDYUserHomepageViewController.m */,
 				7700905A24988F6900A99906 /* SJDYUserHomepageViewController.h */,
+				7700905924988F6900A99906 /* SJDYUserHomepageViewController.m */,
 			);
 			path = UserHomepage;
 			sourceTree = "<group>";

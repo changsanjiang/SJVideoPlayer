@@ -128,4 +128,8 @@
 - (BOOL)prefersHomeIndicatorAutoHidden {
     return YES;
 }
+
+- (BOOL)shouldAutorotate {
+    return NO;
+}
 @end

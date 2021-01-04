@@ -32,6 +32,8 @@ static dispatch_queue_t mcs_queue;
 @synthesize isClosed = _isClosed;
 @synthesize response = _response;
 @synthesize isPrepared = _isPrepared;
+@synthesize isReadingEndOfData = _isReadingEndOfData;
+@synthesize offset = _offset;
 
 + (void)initialize {
     static dispatch_once_t onceToken;
@@ -40,9 +42,13 @@ static dispatch_queue_t mcs_queue;
     });
 }
 
-- (instancetype)initWithAsset:(__weak HLSAsset *)asset request:(NSURLRequest *)request networkTaskPriority:(float)networkTaskPriority readDataDecoder:(NSData *(^)(NSURLRequest *request, NSUInteger offset, NSData *data))readDataDecoder delegate:(id<MCSAssetReaderDelegate>)delegate {
+- (instancetype)initWithAsset:(__weak HLSAsset *)asset request:(NSURLRequest *)request networkTaskPriority:(float)networkTaskPriority readDataDecoder:(NSData *(^_Nullable)(NSURLRequest *request, NSUInteger offset, NSData *data))readDataDecoder delegate:(id<MCSAssetReaderDelegate>)delegate {
     self = [super init];
     if ( self ) {
+#ifdef DEBUG
+        MCSAssetReaderDebugLog(@"%@: <%p>.init { URL: %@, asset: %@, proxyURL: %@, headers: %@ };\n", NSStringFromClass(self.class), self, [MCSURLRecognizer.shared URLWithProxyURL:request.URL], asset, request.URL, request.allHTTPHeaderFields);
+#endif
+
         _asset = asset;
         _request = request;
         _networkTaskPriority = networkTaskPriority;
@@ -177,7 +183,13 @@ static dispatch_queue_t mcs_queue;
 }
 
 - (NSUInteger)offset {
-    return self.reader.offset;
+    if ( self.reader != nil )
+        return self.reader.offset;
+    __block NSUInteger offset = NO;
+    dispatch_sync(mcs_queue, ^{
+        offset = _offset;
+    });
+    return offset;
 }
 
 - (BOOL)isPrepared {
@@ -189,7 +201,11 @@ static dispatch_queue_t mcs_queue;
 }
 
 - (BOOL)isReadingEndOfData {
-    return self.reader.isDone;
+    __block BOOL isReadingEndOfData = NO;
+    dispatch_sync(mcs_queue, ^{
+        isReadingEndOfData = _isReadingEndOfData;
+    });
+    return isReadingEndOfData;
 }
 
 - (BOOL)isClosed {
@@ -206,7 +222,12 @@ static dispatch_queue_t mcs_queue;
     if ( _isClosed )
         return;
     
+    _isReadingEndOfData = _reader.isDone;
+    _offset = _reader.offset;
+    
     [_reader close];
+    
+    _reader = nil;
      
     _isClosed = YES;
     

@@ -103,7 +103,7 @@
     
     _backButton = [UIButton buttonWithType:UIButtonTypeCustom];
     [_backButton addTarget:self action:@selector(backButtonWasTapped) forControlEvents:UIControlEventTouchUpInside];
-    [_backButton setImage:SJVideoPlayerSettings.commonSettings.backBtnImage forState:UIControlStateNormal];
+    [_backButton setImage:SJVideoPlayerConfigurations.shared.resources.backImage forState:UIControlStateNormal];
     [self.view addSubview:_backButton];
     
     [_backButton mas_makeConstraints:^(MASConstraintMaker *make) {

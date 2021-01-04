@@ -48,6 +48,10 @@ static dispatch_queue_t mcs_queue;
     return self;
 }
 
+- (instancetype)initWithURL:(NSURL *)URL delegate:(nullable id<MCSPrefetcherDelegate>)delegate delegateQueue:(dispatch_queue_t)queue {
+    return [self initWithURL:URL preloadSize:NSUIntegerMax delegate:delegate delegateQueue:queue];
+}
+
 - (NSString *)description {
     return [NSString stringWithFormat:@"%@:<%p> { preloadSize: %lu };\n", NSStringFromClass(self.class), self, (unsigned long)self.preloadSize];
 }

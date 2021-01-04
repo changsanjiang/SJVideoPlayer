@@ -14,14 +14,18 @@
  *  两个按钮, 分别在左边和右边.
  *  你可以设置父类中的`spacing`, 来调整他们之间的间距.
  **/
+NS_ASSUME_NONNULL_BEGIN
 @interface SJButtonProgressSlider : SJCommonProgressSlider
 
 @property (nonatomic, strong, readonly) UIButton *leftBtn;
 @property (nonatomic, strong, readonly) UIButton *rightBtn;
 
-@property (nonatomic, strong, readwrite) NSString *leftText;
-@property (nonatomic, strong, readwrite) NSString *rightText;
+@property (nonatomic, strong, nullable) NSString *leftText;
+@property (nonatomic, strong, nullable) NSString *rightText;
 
-@property (nonatomic, strong, readwrite) UIColor *titleColor;
+@property (nonatomic, strong, nullable) UIColor *titleLabelColor;
+
+@property (nonatomic, strong, nullable) UIFont *font;
 
 @end
+NS_ASSUME_NONNULL_END

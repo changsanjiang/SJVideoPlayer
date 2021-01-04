@@ -92,7 +92,7 @@ NS_ASSUME_NONNULL_BEGIN
     _player.controlLayerAppearObserver.appearStateDidChangeExeBlock = ^(id<SJControlLayerAppearManager>  _Nonnull mgr) {
         __strong typeof(_self) self = _self;
         if ( !self ) return ;
-        self.player.popPromptController.bottomMargin = mgr.isAppeared ? self.player.defaultEdgeControlLayer.bottomContainerView.bounds.size.height : 16;
+        self.player.promptPopupController.bottomMargin = mgr.isAppeared ? self.player.defaultEdgeControlLayer.bottomContainerView.bounds.size.height : 16;
     };
 }
 

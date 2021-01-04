@@ -68,6 +68,10 @@ static dispatch_queue_t mcs_queue;
     return self;
 }
 
+- (instancetype)initWithURL:(NSURL *)URL delegate:(nullable id<MCSPrefetcherDelegate>)delegate delegateQueue:(dispatch_queue_t)delegateQueue {
+    return [self initWithURL:URL numberOfPreloadFiles:NSUIntegerMax delegate:delegate delegateQueue:delegateQueue];
+}
+
 - (NSString *)description {
     return [NSString stringWithFormat:@"%@:<%p> { preloadSize: %lu, numberOfPreloadFiles: %lu };\n", NSStringFromClass(self.class), self, (unsigned long)_preloadSize, (unsigned long)_numberOfPreloadFiles];
 }
@@ -143,8 +147,9 @@ static dispatch_queue_t mcs_queue;
                 progress = _loadedLength * 1.0 / size;
             }
             else {
-                CGFloat curr = reader.offset / reader.response.range.length;
-                progress = (_fragmentIndex + curr) / _numberOfPreloadFiles;
+                CGFloat curr = (reader.offset * 1.0) / reader.response.totalLength;
+                NSUInteger files = _numberOfPreloadFiles < _asset.TsCount ? _numberOfPreloadFiles : _asset.TsCount;
+                progress = ((_fragmentIndex != NSNotFound ? _fragmentIndex : 0) + curr) / files;
             }
             
             if ( progress >= 1 ) progress = 1;

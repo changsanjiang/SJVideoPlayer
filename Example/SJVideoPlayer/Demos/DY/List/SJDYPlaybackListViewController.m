@@ -112,10 +112,6 @@
     [self.player vc_viewDidDisappear];
 }
 
-- (BOOL)shouldAutorotate {
-    return NO;
-}
-
 - (BOOL)prefersHomeIndicatorAutoHidden {
     return YES;
 }

@@ -35,10 +35,10 @@ Welcome to the SJVideoPlayer wiki!
 - [水印视图](https://github.com/changsanjiang/SJVideoPlayer/wiki/水印视图)
 - [UITableView及UICollectionView中播放的解决方案](https://github.com/changsanjiang/SJVideoPlayer/wiki/UITableView%E5%8F%8AUICollectionView%E4%B8%AD%E6%92%AD%E6%94%BE%E7%9A%84%E8%A7%A3%E5%86%B3%E6%96%B9%E6%A1%88v2)
 - 切换到第三方SDK
-    - [Use ijkplayer](https://github.com/changsanjiang/SJVideoPlayer/wiki/Use-ijkplayer)
-    - [Use AliPlayer](https://github.com/changsanjiang/SJVideoPlayer/wiki/Use-AliPlayer)
-    - [Use AliyunVodPlayer](https://github.com/changsanjiang/SJVideoPlayer/wiki/Use-AliVodPlayer)
-    - [Use PLPlayerKit](https://github.com/changsanjiang/SJVideoPlayer/wiki/Use-PLPlayerKit)
+    - [切换至 ijkplayer](https://github.com/changsanjiang/SJVideoPlayer/wiki/Use-ijkplayer)
+    - [切换至 AliPlayer](https://github.com/changsanjiang/SJVideoPlayer/wiki/Use-AliPlayer)
+    - [切换至 AliyunVodPlayer](https://github.com/changsanjiang/SJVideoPlayer/wiki/Use-AliVodPlayer)
+    - [切换至 PLPlayerKit](https://github.com/changsanjiang/SJVideoPlayer/wiki/Use-PLPlayerKit)
 - Control Layer
     - [Control Layer Views](https://github.com/changsanjiang/SJVideoPlayer/wiki/Control-Layer-Views)
     - [Setup Control Layer View](https://github.com/changsanjiang/SJVideoPlayer/wiki/Setup-Control-Layer-View)

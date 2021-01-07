@@ -22,8 +22,7 @@ pod 'SJVideoPlayer', :git => 'https://gitee.com/changsanjiang/SJVideoPlayer.git'
 $ pod update --no-repo-update   (不要用 pod install 了, 用这个命令安装)
 ```
 
-##  Wiki
-Welcome to the SJVideoPlayer wiki!
+##  [Wiki](https://github.com/changsanjiang/SJVideoPlayer/wiki)
 
 ### FAQs
 - 旋转

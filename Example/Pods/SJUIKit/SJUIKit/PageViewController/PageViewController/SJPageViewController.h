@@ -71,13 +71,16 @@ UIKIT_EXTERN SJPageViewControllerOptionsKey const SJPageViewControllerOptionInte
 
 @optional
 - (nullable __kindof UIView *)viewForHeaderInPageViewController:(SJPageViewController *)pageViewController;
-- (CGFloat)heightForHeaderPinToVisibleBoundsWithPageViewController:(SJPageViewController *)pageViewController;
-- (SJPageViewControllerHeaderMode)modeForHeaderWithPageViewController:(SJPageViewController *)pageViewController;
 @end
 
 
 @protocol SJPageViewControllerDelegate <NSObject>
 @optional
+/// HeaderView 钉在顶部时保留的高度
+///
+- (CGFloat)heightForHeaderPinToVisibleBoundsWithPageViewController:(SJPageViewController *)pageViewController;
+- (SJPageViewControllerHeaderMode)modeForHeaderWithPageViewController:(SJPageViewController *)pageViewController;
+
 ///
 /// HeaderView 可见范围发生改变的回调
 ///

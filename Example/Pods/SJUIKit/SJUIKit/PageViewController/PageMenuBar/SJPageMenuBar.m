@@ -49,17 +49,14 @@ NS_ASSUME_NONNULL_BEGIN
 - (instancetype)initWithFrame:(CGRect)frame {
     self = [super initWithFrame:frame];
     if ( self ) {
-        _distribution = SJPageMenuBarDistributionEqualSpacing;
-        _focusedIndex = NSNotFound;
-        _itemSpacing = 16;
-        _minimumZoomScale = 1.0;
-        _maximumZoomScale = 1.0;
-        _scrollIndicatorSize = CGSizeMake(12, 2);
-        _scrollIndicatorBottomInset = 3.0;
-        if ( @available(iOS 13.0, *) )
-            self.backgroundColor = UIColor.systemGroupedBackgroundColor;
-        else
-            self.backgroundColor = UIColor.groupTableViewBackgroundColor;
+        [self _setupViews];
+    }
+    return self;
+}
+
+- (nullable instancetype)initWithCoder:(NSCoder *)coder {
+    self = [super initWithCoder:coder];
+    if ( self ) {
         [self _setupViews];
     }
     return self;
@@ -340,6 +337,18 @@ NS_ASSUME_NONNULL_BEGIN
 #pragma mark -
  
 - (void)_setupViews {
+    _distribution = SJPageMenuBarDistributionEqualSpacing;
+    _focusedIndex = NSNotFound;
+    _itemSpacing = 16;
+    _minimumZoomScale = 1.0;
+    _maximumZoomScale = 1.0;
+    _scrollIndicatorSize = CGSizeMake(12, 2);
+    _scrollIndicatorBottomInset = 3.0;
+    if ( @available(iOS 13.0, *) )
+        self.backgroundColor = UIColor.systemGroupedBackgroundColor;
+    else
+        self.backgroundColor = UIColor.groupTableViewBackgroundColor;
+
     [self addSubview:self.scrollView];
     [self.scrollView addSubview:self.scrollIndicator];
     
@@ -357,6 +366,8 @@ NS_ASSUME_NONNULL_BEGIN
         [self _remakeConstraints];
         [self _setContentOffsetForScrollViewToIndex:_focusedIndex];
     }
+    
+    if ( _layoutSubviewsExecuteBlock != nil ) _layoutSubviewsExecuteBlock(self);
 }
 
 @synthesize scrollIndicator = _scrollIndicator;

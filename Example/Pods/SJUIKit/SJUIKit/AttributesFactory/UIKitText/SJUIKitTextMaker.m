@@ -7,17 +7,33 @@
 //
 
 #import "SJUIKitTextMaker.h"
+#import <CoreText/CTStringAttributes.h>
 #import "SJUTRegexHandler.h"
 #import "SJUTRangeHandler.h"
+#import "SJUTUtils.h"
 
 NS_ASSUME_NONNULL_BEGIN
-inline static BOOL _rangeContains(NSRange main, NSRange sub) {
-    return (main.location <= sub.location) && (main.location + main.length >= sub.location + sub.length);
-}
+@interface NSMutableAttributedString (SJUTExtended)
+- (void)addAttributesForRecorder:(SJUTRecorder *)recorder range:(NSRange)range;
+@end
 
-inline static NSRange _textRange(NSAttributedString *text) {
-    return NSMakeRange(0, text.length);
+@implementation NSMutableAttributedString (SJUTExtended)
+- (void)addAttributesForRecorder:(SJUTRecorder *)recorder range:(NSRange)subrange {
+    // text attributes
+    NSDictionary<NSAttributedStringKey, id> *textAttributes = recorder.textAttributes;
+    if ( textAttributes.count != 0 ) [self addAttributes:textAttributes range:subrange];
+
+    // paragraph attributes
+    NSRange styleRange = NSMakeRange(0, 0);
+    NSParagraphStyle *style = subrange.location < self.length ? [self attribute:NSParagraphStyleAttributeName atIndex:subrange.location effectiveRange:&styleRange] : nil;
+    NSParagraphStyle *paragraphAttributes = [recorder paragraphAttributesForStyle:SJUTRangeContains(styleRange, subrange) ? style : nil];
+    [self addAttributes:@{NSParagraphStyleAttributeName : paragraphAttributes} range:subrange];
+    
+    // custom attributes
+    NSDictionary<NSAttributedStringKey, id> *customAttributes = recorder.customAttributes;
+    if ( customAttributes.count != 0 ) [self addAttributes:customAttributes range:subrange];
 }
+@end
 
 @interface SJUIKitTextMaker ()
 @property (nonatomic, strong, readonly) NSMutableArray<SJUTAttributes *> *uts;
@@ -78,6 +94,7 @@ inline static NSRange _textRange(NSAttributedString *text) {
     return ^id<SJUTAttributesProtocol>(NSAttributedString *attrStr) {
         SJUTAttributes *ut = [SJUTAttributes new];
         ut.recorder->attrStr = [attrStr mutableCopy];
+        [ut.recorder setValuesForAttributedString:attrStr];
         [self.uts addObject:ut];
         return ut;
     };
@@ -130,6 +147,9 @@ inline static NSRange _textRange(NSAttributedString *text) {
     if      ( recorder->string != nil ) {
         current = [[NSMutableAttributedString alloc] initWithString:recorder->string];
     }
+    else if ( recorder->attrStr != nil ) {
+        current = recorder->attrStr;
+    }
     else if ( recorder->attachment != nil ) {
         SJUTVerticalAlignment alignment = recorder->attachment.alignment;
         UIImage *image = recorder->attachment.image;
@@ -139,20 +159,11 @@ inline static NSRange _textRange(NSAttributedString *text) {
         attachment.bounds = [self _adjustVerticalOffsetOfImageAttachmentForBounds:bounds imageSize:image.size alignment:alignment commonFont:self.recorder->font];
         current = [NSAttributedString attributedStringWithAttachment:attachment].mutableCopy;
     }
-    
-    if      ( current != nil ) {
-        [self _setCommonValuesForUTAttributesRecorderIfNeeded:recorder];
-        id attributes = [self _convertToUIKitTextAttributesForUTAttributesRecorder:recorder];
-        [current addAttributes:attributes range:_textRange(current)];
+
+    if ( current != nil ) {
+        [recorder setValuesForCommonRecorder:self.recorder];
+        [current addAttributesForRecorder:recorder range:SJUTGetTextRange(current)];
     }
-    else if ( recorder->attrStr != nil ) {
-        current = recorder->attrStr;
-        // ignore common values
-        // [self _setCommonValuesForUTAttributesRecorderIfNeeded:recorder];
-        id attributes = [self _convertToUIKitTextAttributesForUTAttributesRecorder:recorder];
-        [current addAttributes:attributes range:_textRange(current)];
-    }
-    
     return current;
 }
 
@@ -160,7 +171,7 @@ inline static NSRange _textRange(NSAttributedString *text) {
     if ( _ranges ) {
         for ( SJUTRangeHandler *handler in _ranges ) {
             SJUTRangeRecorder *recorder = handler.recorder;
-            if ( _rangeContains(_textRange(result), recorder.range) ) {
+            if ( SJUTRangeContains(SJUTGetTextRange(result), recorder.range) ) {
                 if      ( recorder.utOfReplaceWithString != nil ) {
                     [self _executeReplaceWithString:result ut:recorder.utOfReplaceWithString inRange:recorder.range];
                 }
@@ -212,7 +223,7 @@ inline static NSRange _textRange(NSAttributedString *text) {
 }
 
 - (void)_executeReplaceWithString:(NSMutableAttributedString *)result ut:(id<SJUTAttributesProtocol>)ut inRange:(NSRange)range {
-    if ( _rangeContains(_textRange(result), range) ) {
+    if ( SJUTRangeContains(SJUTGetTextRange(result), range) ) {
         SJUTAttributes *uta = (id)ut;
         [self _setSubtextCommonValuesToRecorder:uta.recorder inRange:range result:result];
         id _Nullable subtext = [self _convertToUIKitTextForUTAttributes:uta];
@@ -223,9 +234,9 @@ inline static NSRange _textRange(NSAttributedString *text) {
 }
 
 - (void)_executeReplaceWithText:(NSMutableAttributedString *)result handler:(void(^)(id<SJUIKitTextMakerProtocol> maker))handler inRange:(NSRange)range {
-    if ( _rangeContains(_textRange(result), range) ) {
+    if ( SJUTRangeContains(SJUTGetTextRange(result), range) ) {
         SJUIKitTextMaker *maker = [SJUIKitTextMaker new];
-        [self _setCommonValuesForUTAttributesRecorderIfNeeded:maker.recorder];
+        [maker.recorder setValuesForCommonRecorder:self.recorder];
         [self _setSubtextCommonValuesToRecorder:maker.recorder inRange:range result:result];
         handler(maker);
         [result replaceCharactersInRange:range withAttributedString:maker.install];
@@ -238,10 +249,9 @@ inline static NSRange _textRange(NSAttributedString *text) {
         for ( SJUTAttributes *ut in _updates ) {
             SJUTRecorder *recorder = ut.recorder;
             NSRange range = recorder->range;
-            if ( _rangeContains(resultRange, range) ) {
-                [self _setCommonValuesForUTAttributesRecorderIfNeeded:recorder];
-                id attributes = [self _convertToUIKitTextAttributesForUTAttributesRecorder:recorder];
-                [result addAttributes:attributes range:range];
+            if ( SJUTRangeContains(resultRange, range) ) {
+                [recorder setValuesForCommonRecorder:self.recorder];
+                [result addAttributesForRecorder:recorder range:range];
             }
         }
         _updates = nil;
@@ -256,60 +266,12 @@ inline static NSRange _textRange(NSAttributedString *text) {
 }
 
 - (void)_setSubtextCommonValuesToRecorder:(SJUTRecorder *)recorder inRange:(NSRange)range result:(NSAttributedString *)result {
-    if ( _rangeContains(_textRange(result), range) ) {
+    if ( SJUTRangeContains(SJUTGetTextRange(result), range) ) {
         NSAttributedString *subtext = [result attributedSubstringFromRange:range];
         NSDictionary<NSAttributedStringKey, id> *dict = [subtext attributesAtIndex:0 effectiveRange:NULL];
         recorder->font = dict[NSFontAttributeName];
         recorder->textColor = dict[NSForegroundColorAttributeName];
     }
-}
-
-- (void)_setCommonValuesForUTAttributesRecorderIfNeeded:(SJUTRecorder *)recorder {
-    SJUTRecorder *common = self.recorder;
-#define SJUTSetRecorderCommonValueIfNeeded(__var__) if ( recorder->__var__ == nil ) recorder->__var__ = common->__var__;
-    SJUTSetRecorderCommonValueIfNeeded(font);
-    SJUTSetRecorderCommonValueIfNeeded(textColor);
-    SJUTSetRecorderCommonValueIfNeeded(backgroundColor);
-    
-    SJUTSetRecorderCommonValueIfNeeded(alignment);
-    SJUTSetRecorderCommonValueIfNeeded(lineSpacing);
-    SJUTSetRecorderCommonValueIfNeeded(lineBreakMode);
-    SJUTSetRecorderCommonValueIfNeeded(style);
-    
-    SJUTSetRecorderCommonValueIfNeeded(kern);
-    SJUTSetRecorderCommonValueIfNeeded(stroke);
-    SJUTSetRecorderCommonValueIfNeeded(shadow);
-    SJUTSetRecorderCommonValueIfNeeded(underLine);
-    SJUTSetRecorderCommonValueIfNeeded(strikethrough);
-    SJUTSetRecorderCommonValueIfNeeded(baseLineOffset);
-#undef SJUTSetRecorderCommonValueIfNeeded
-}
-
-- (NSDictionary *)_convertToUIKitTextAttributesForUTAttributesRecorder:(SJUTRecorder *)recorder {
-    NSMutableDictionary *attrs = [NSMutableDictionary dictionary];
-    attrs[NSFontAttributeName] = recorder->font;
-    attrs[NSForegroundColorAttributeName] = recorder->textColor;
-    if ( recorder->backgroundColor != nil ) attrs[NSBackgroundColorAttributeName] = recorder->backgroundColor;
-    attrs[NSParagraphStyleAttributeName] = [recorder paragraphStyle];
-    if ( recorder->kern != nil ) attrs[NSKernAttributeName] = recorder->kern;
-    SJUTStroke *_Nullable stroke = recorder->stroke;
-    if ( stroke != nil ) {
-        attrs[NSStrokeColorAttributeName] = stroke.color;
-        attrs[NSStrokeWidthAttributeName] = @(stroke.width);
-    }
-    if ( recorder->shadow != nil ) attrs[NSShadowAttributeName] = recorder->shadow;
-    SJUTDecoration *_Nullable underLine = recorder->underLine;
-    if ( underLine != nil ) {
-        attrs[NSUnderlineStyleAttributeName] = @(underLine.style);
-        attrs[NSUnderlineColorAttributeName] = underLine.color;
-    }
-    SJUTDecoration *_Nullable strikethrough = recorder->strikethrough;
-    if ( strikethrough != nil ) {
-        attrs[NSStrikethroughStyleAttributeName] = @(strikethrough.style);
-        attrs[NSStrikethroughColorAttributeName] = strikethrough.color;
-    }
-    if ( recorder->baseLineOffset != nil ) attrs[NSBaselineOffsetAttributeName] = recorder->baseLineOffset;
-    return attrs;
 }
 
 - (CGRect)_adjustVerticalOffsetOfImageAttachmentForBounds:(CGRect)bounds imageSize:(CGSize)imageSize alignment:(SJUTVerticalAlignment)alignment commonFont:(UIFont *)font {

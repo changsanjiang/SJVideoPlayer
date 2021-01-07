@@ -23,7 +23,7 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic, strong, nullable) NSString *leftText;
 @property (nonatomic, strong, nullable) NSString *rightText;
 
-@property (nonatomic, strong, nullable) UIColor *titleLabelColor;
+@property (nonatomic, strong, nullable) UIColor *titleColor;
 
 @property (nonatomic, strong, nullable) UIFont *font;
 

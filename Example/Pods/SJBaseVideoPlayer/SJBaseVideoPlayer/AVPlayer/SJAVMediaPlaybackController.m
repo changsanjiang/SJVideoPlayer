@@ -85,6 +85,11 @@ NS_ASSUME_NONNULL_BEGIN
     
     SJAVMediaPlayerLayerView *view = self.currentPlayerView;
     view.layer.player = self.currentPlayer.avPlayer;
+    
+    // fix: https://github.com/changsanjiang/SJVideoPlayer/issues/395
+    if ( self.currentPlayerView.isReadyForDisplay ) {
+        [self.currentPlayerView setScreenshot:nil];
+    }
 }
  
 - (void)receivedApplicationDidEnterBackgroundNotification {

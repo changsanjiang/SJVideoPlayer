@@ -31,8 +31,9 @@ NS_ASSUME_NONNULL_BEGIN
 - (CGSize)sj_textSizeForPreferredMaxLayoutHeight:(CGFloat)height {
     return sj_textSize(self, CGFLOAT_MAX, height);
 }
-
-static CGSize sj_textSize(NSAttributedString *attrStr, CGFloat width, CGFloat height) {
+ 
+static CGSize
+sj_textSize(NSAttributedString *attrStr, CGFloat width, CGFloat height) {
     if ( attrStr.length < 1 )
         return CGSizeZero;
     CGRect bounds = [attrStr boundingRectWithSize:CGSizeMake(width, height) options:NSStringDrawingUsesLineFragmentOrigin | NSStringDrawingUsesFontLeading context:nil];

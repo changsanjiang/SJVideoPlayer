@@ -209,23 +209,15 @@ static SJRunLoopTaskQueues *_queues;
                 --self.countDown;
             }
             else {
-                __auto_type task = self.queue.dequeue;
-                [self performSelector:@selector(_performTask:)
-                             onThread:self.onThread
-                           withObject:task
-                        waitUntilDone:NO
-                                modes:@[(__bridge NSString *)(self.observerRef.mode)]];
                 self.countDown = self.delayNum;
+                __auto_type task = self.queue.dequeue;
+                if ( task != nil ) task();
             }
         });
         CFRunLoopAddObserver(_observerRef.rlr, obr, _observerRef.mode);
         CFRelease(obr);
         _observerRef.obr = obr;
     }
-}
-
-- (void)_performTask:(SJRunLoopTaskHandler)task {
-    !task?:task();
 }
 @end
 NS_ASSUME_NONNULL_END

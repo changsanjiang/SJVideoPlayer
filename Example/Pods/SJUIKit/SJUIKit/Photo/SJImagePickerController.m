@@ -6,6 +6,7 @@
 //
 
 #import "SJImagePickerController.h"
+#import <AVFoundation/AVFoundation.h>
 
 NS_ASSUME_NONNULL_BEGIN
 @interface SJImagePickerController ()
@@ -17,55 +18,71 @@ NS_ASSUME_NONNULL_BEGIN
                                         message:(nullable NSString *)msg
                        presentingViewController:(UIViewController *)controller
                                        callback:(SJUIKitDidFinishPickingImageHandler)callback {
-    NSMutableArray<NSString *> *titlesM = [NSMutableArray new];
-    NSMutableArray<void(^)(void)> *actionsM = [NSMutableArray new];
+    [self alertPickerViewControllerWithTitle:title message:msg presentingViewController:controller additionalActions:nil callback:callback];
+}
+
++ (void)alertPickerViewControllerWithTitle:(nullable NSString *)title
+                                   message:(nullable NSString *)message
+                  presentingViewController:(UIViewController *)presentingViewController
+                         additionalActions:(nullable NSArray<UIAlertAction *> *)additionalActions
+                                  callback:(SJUIKitDidFinishPickingImageHandler)completionHandler {
+    NSMutableArray<UIAlertAction *> *actions = NSMutableArray.array;
+    if ( additionalActions.count != 0 ) {
+        [actions addObjectsFromArray:additionalActions];
+    }
     
     // 拍照
     if ( [UIImagePickerController isSourceTypeAvailable:UIImagePickerControllerSourceTypeCamera] ) {
-        [titlesM addObject:@"拍照"];
-        [actionsM addObject:^{
-            UIImagePickerController *pickerController = [UIImagePickerController new];
-            pickerController.edgesForExtendedLayout = UIRectEdgeNone;
-            pickerController.delegate = (id)self;
-            pickerController.sourceType = UIImagePickerControllerSourceTypeCamera;
-            pickerController.sj_didFinishPickingImageHandler = callback;
-            dispatch_async(dispatch_get_main_queue(), ^{
-                [controller presentViewController:pickerController animated:YES completion:nil];
-            });
-        }];
+        [actions addObject:[UIAlertAction actionWithTitle:@"拍照" style:UIAlertActionStyleDefault handler:^(UIAlertAction * _Nonnull action) {
+            [AVCaptureDevice requestAccessForMediaType:AVMediaTypeVideo completionHandler:^(BOOL granted) {
+                dispatch_async(dispatch_get_main_queue(), ^{
+                    if ( !granted ) {
+                        UIAlertController *alertController = [UIAlertController alertControllerWithTitle:@"提示" message:@"拍摄照片需要您开启相机权限! 您可以通过设置-隐私-蓝舞者中开启相机权限。" preferredStyle:UIAlertControllerStyleAlert];
+                        [alertController addAction:[UIAlertAction actionWithTitle:@"取消" style:UIAlertActionStyleCancel handler:nil]];
+                        [alertController addAction:[UIAlertAction actionWithTitle:@"去设置" style:UIAlertActionStyleDefault handler:^(UIAlertAction * _Nonnull action) {
+                            NSURL *openUrl = [NSURL URLWithString:UIApplicationOpenSettingsURLString];
+                            [[UIApplication sharedApplication] openURL:openUrl];
+                        }]];
+                        [presentingViewController presentViewController:alertController animated:YES completion:nil];
+                        return;
+                    }
+                    
+                    UIImagePickerController *pickerController = [UIImagePickerController new];
+                    pickerController.edgesForExtendedLayout = UIRectEdgeNone;
+                    pickerController.delegate = (id)self;
+                    pickerController.sourceType = UIImagePickerControllerSourceTypeCamera;
+                    pickerController.sj_didFinishPickingImageHandler = completionHandler;
+                    dispatch_async(dispatch_get_main_queue(), ^{
+                        [presentingViewController presentViewController:pickerController animated:YES completion:nil];
+                    });
+                });
+            }];
+        }]];
     }
     
+    // 相册
     if ( [UIImagePickerController isSourceTypeAvailable:UIImagePickerControllerSourceTypePhotoLibrary] ) {
-        // 相册
-        [titlesM addObject:@"相册"];
-        [actionsM addObject:^ {
+        [actions addObject:[UIAlertAction actionWithTitle:@"相册" style:UIAlertActionStyleDefault handler:^(UIAlertAction * _Nonnull action) {
             UIImagePickerController *pickerController = [UIImagePickerController new];
             pickerController.edgesForExtendedLayout = UIRectEdgeNone;
+            pickerController.automaticallyAdjustsScrollViewInsets = YES;
             pickerController.sourceType = UIImagePickerControllerSourceTypePhotoLibrary;
             pickerController.delegate = (id)self;
-            pickerController.sj_didFinishPickingImageHandler = callback;
+            pickerController.sj_didFinishPickingImageHandler = completionHandler;
             dispatch_async(dispatch_get_main_queue(), ^{
-                [controller presentViewController:pickerController animated:YES completion:nil];
+                [presentingViewController presentViewController:pickerController animated:YES completion:nil];
             });
-        }];
+        }]];
     }
     
+    if ( 0 == actions.count ) return;
     
-    if ( 0 == titlesM.count ) {
-        UIAlertController *alertController = [UIAlertController alertControllerWithTitle:@"提示" message:@"无法访问相册, 请确认是否授权!" preferredStyle:UIAlertControllerStyleAlert];
-        [controller presentViewController:alertController animated:YES completion:nil];
-        return;
-    }
-    
-    UIAlertController *alertController = [UIAlertController alertControllerWithTitle:title message:msg preferredStyle:UIAlertControllerStyleActionSheet];
+    UIAlertController *alertController = [UIAlertController alertControllerWithTitle:title message:message preferredStyle:UIAlertControllerStyleActionSheet];
     
     // actions
-    [titlesM enumerateObjectsUsingBlock:^(NSString * _Nonnull obj, NSUInteger idx, BOOL * _Nonnull stop) {
-        UIAlertAction *action = [UIAlertAction actionWithTitle:obj style:UIAlertActionStyleDefault handler:^(UIAlertAction * _Nonnull action) {
-            actionsM[idx]();
-        }];
-        [alertController addAction:action];
-    }];
+    for ( UIAlertAction *a in actions ) {
+        [alertController addAction:a];
+    }
     
     // cancel
     UIAlertAction *cancelAction = [UIAlertAction actionWithTitle:@"取消" style:UIAlertActionStyleCancel handler:nil];
@@ -74,7 +91,7 @@ NS_ASSUME_NONNULL_BEGIN
     dispatch_async(dispatch_get_main_queue(), ^{
         //if iPhone
         if ( UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPhone ) {
-            [controller presentViewController:alertController animated:YES completion:nil];
+            [presentingViewController presentViewController:alertController animated:YES completion:nil];
         }
         //if iPad
         else {
@@ -83,10 +100,9 @@ NS_ASSUME_NONNULL_BEGIN
             popPresenter.sourceView = [UIApplication sharedApplication].keyWindow;
             popPresenter.sourceRect = CGRectMake(0, [UIApplication sharedApplication].keyWindow.bounds.size.height, [UIApplication sharedApplication].keyWindow.bounds.size.width, 0);
             popPresenter.permittedArrowDirections = UIPopoverArrowDirectionDown;
-            [controller presentViewController:alertController animated:YES completion:nil];
+            [presentingViewController presentViewController:alertController animated:YES completion:nil];
         }
     });
-
 }
 
 + (void)imagePickerController:(UIImagePickerController *)picker didFinishPickingMediaWithInfo:(NSDictionary<NSString *,id> *)info {

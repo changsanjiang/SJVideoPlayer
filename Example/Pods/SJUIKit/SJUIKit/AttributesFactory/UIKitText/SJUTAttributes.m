@@ -9,6 +9,28 @@
 #import "SJUTAttributes.h"
 
 NS_ASSUME_NONNULL_BEGIN
+#define SJUT_BLOCK_SET_ATTRIBUTE_Obj(__type__, __attr__) \
+    ^id<SJUTAttributesProtocol>(__type__ __attr__) { \
+        self.recorder->__attr__ = __attr__; \
+        return self; \
+    }
+
+#define SJUT_BLOCK_SET_ATTRIBUTE_Obj_copy(__type__, __attr__) \
+    ^id<SJUTAttributesProtocol>(__type__ __attr__) { \
+        self.recorder->__attr__ = __attr__.copy; \
+        return self; \
+    }
+
+
+#define SJUT_BLOCK_SET_ATTRIBUTE_NSNumber(__type__, __attr__) \
+    ^id<SJUTAttributesProtocol>(__type__ __attr__) { \
+        self.recorder->__attr__ = @(__attr__); \
+        return self; \
+    }
+
+#define SJUT_BLOCK_SET_ATTRIBUTE_CGFloat(__attr__) SJUT_BLOCK_SET_ATTRIBUTE_NSNumber(CGFloat, __attr__)
+
+
 @implementation SJUTAttributes
 @synthesize recorder = _recorder;
 - (SJUTRecorder *)recorder {
@@ -19,42 +41,19 @@ NS_ASSUME_NONNULL_BEGIN
 }
 
 - (SJUTFontAttribute)font {
-    return ^id<SJUTAttributesProtocol>(UIFont *font) {
-        self.recorder->font = font;
-        return self;
-    };
+    return SJUT_BLOCK_SET_ATTRIBUTE_Obj(UIFont *, font);
 }
 
 - (SJUTColorAttribute)textColor {
-    return ^id<SJUTAttributesProtocol>(UIColor *color) {
-        self.recorder->textColor = color;
-        return self;
-    };
+    return SJUT_BLOCK_SET_ATTRIBUTE_Obj(UIColor *, textColor);
 }
 
-- (SJUTAlignmentAttribute)alignment {
-    return ^id<SJUTAttributesProtocol>(NSTextAlignment alignment) {
-        self.recorder->alignment = @(alignment);
-        return self;
-    };
-}
-
-- (SJUTLineSpacingAttribute)lineSpacing {
-    return ^id<SJUTAttributesProtocol>(CGFloat lineSpacing) {
-        self.recorder->lineSpacing = @(lineSpacing);
-        return self;
-    };
-}
-
+///
+/// Thanks @donggelaile
+/// https://github.com/changsanjiang/SJAttributesFactory/issues/9
+///
 - (SJUTKernAttribute)kern {
-    return ^id<SJUTAttributesProtocol>(CGFloat kern) {
-        ///
-        /// Thanks @donggelaile
-        /// https://github.com/changsanjiang/SJAttributesFactory/issues/9
-        ///
-        self.recorder->kern = @(kern);
-        return self;
-    };
+    return SJUT_BLOCK_SET_ATTRIBUTE_CGFloat(kern);
 }
 
 - (SJUTShadowAttribute)shadow {
@@ -69,10 +68,7 @@ NS_ASSUME_NONNULL_BEGIN
 }
 
 - (SJUTColorAttribute)backgroundColor {
-    return ^id<SJUTAttributesProtocol>(UIColor *color) {
-        self.recorder->backgroundColor = color;
-        return self;
-    };
+    return SJUT_BLOCK_SET_ATTRIBUTE_Obj(UIColor *, backgroundColor);
 }
 
 - (SJUTStrokeAttribute)stroke {
@@ -82,24 +78,6 @@ NS_ASSUME_NONNULL_BEGIN
             self.recorder->stroke = stroke = [SJUTStroke new];
         }
         block(stroke);
-        return self;
-    };
-}
-
-- (SJUTParagraphStyleAttribute)paragraphStyle {
-    return ^id<SJUTAttributesProtocol>(void(^block)(NSMutableParagraphStyle *style)) {
-        NSMutableParagraphStyle *_Nullable style = self.recorder->style;
-        if ( !style ) {
-            self.recorder->style = style = [[NSParagraphStyle defaultParagraphStyle] mutableCopy];
-        }
-        block(style);
-        return self;
-    };
-}
-
-- (SJUTLineBreakModeAttribute)lineBreakMode {
-    return ^id<SJUTAttributesProtocol>(NSLineBreakMode lineBreakMode) {
-        self.recorder->lineBreakMode = @(lineBreakMode);
         return self;
     };
 }
@@ -125,19 +103,98 @@ NS_ASSUME_NONNULL_BEGIN
         return self;
     };
 }
+//typedef id<SJUTAttributesProtocol>_Nonnull(^SJUTBaseLineOffsetAttribute)(double offset);
+//#define SJUT_BLOCK_SET_ATTRIBUTE_CGFloat(__attr__) SJUT_BLOCK_SET_ATTRIBUTE_NSNumber(CGFloat, __attr__)
+//#define SJUT_BLOCK_SET_ATTRIBUTE_NSNumber(__type__, __attr__) \
+//    ^id<SJUTAttributesProtocol>(__type__ __attr__) { \
+//        self.recorder->__attr__ = @(__attr__); \
+//        return self; \
+//    }
 
 - (SJUTBaseLineOffsetAttribute)baseLineOffset {
-    return ^id<SJUTAttributesProtocol>(double offset) {
-        self.recorder->baseLineOffset = @(offset);
-        return self;
-    };
+    return SJUT_BLOCK_SET_ATTRIBUTE_CGFloat(baseLineOffset);
+}
+
+#pragma mark - mark
+
+
+- (SJUTLineSpacingAttribute)lineSpacing {
+    return SJUT_BLOCK_SET_ATTRIBUTE_CGFloat(lineSpacing);
+}
+
+- (SJUTParagraphSpacingAttribute)paragraphSpacing {
+    return SJUT_BLOCK_SET_ATTRIBUTE_CGFloat(paragraphSpacing);
+}
+
+- (SJUTAlignmentAttribute)alignment {
+    return SJUT_BLOCK_SET_ATTRIBUTE_NSNumber(NSTextAlignment, alignment);
+}
+
+- (SJUTFirstLineHeadIndentAttribute)firstLineHeadIndent {
+    return SJUT_BLOCK_SET_ATTRIBUTE_CGFloat(firstLineHeadIndent);
+}
+
+- (SJUTHeadIndentAttribute)headIndent {
+    return SJUT_BLOCK_SET_ATTRIBUTE_CGFloat(headIndent);
+}
+
+- (SJUTTailIndentAttribute)tailIndent {
+    return SJUT_BLOCK_SET_ATTRIBUTE_CGFloat(tailIndent);
+}
+
+- (SJUTLineBreakModeAttribute)lineBreakMode {
+    return SJUT_BLOCK_SET_ATTRIBUTE_NSNumber(NSLineBreakMode, lineBreakMode);
+}
+
+- (SJUTMinimumLineHeightAttribute)minimumLineHeight {
+    return SJUT_BLOCK_SET_ATTRIBUTE_CGFloat(minimumLineHeight);
+}
+
+- (SJUTMaximumLineHeightAttribute)maximumLineHeight {
+    return SJUT_BLOCK_SET_ATTRIBUTE_CGFloat(maximumLineHeight);
+}
+
+- (SJUTBaseWritingDirectionAttribute)baseWritingDirection {
+    return SJUT_BLOCK_SET_ATTRIBUTE_NSNumber(NSWritingDirection, baseWritingDirection);
+}
+
+- (SJUTLineHeightMultipleAttribute)lineHeightMultiple {
+    return SJUT_BLOCK_SET_ATTRIBUTE_CGFloat(lineHeightMultiple);
+}
+
+- (SJUTParagraphSpacingBeforeAttribute)paragraphSpacingBefore {
+    return SJUT_BLOCK_SET_ATTRIBUTE_CGFloat(paragraphSpacingBefore);
+}
+
+- (SJUTHyphenationFactorAttribute)hyphenationFactor {
+    return SJUT_BLOCK_SET_ATTRIBUTE_NSNumber(float, hyphenationFactor);
+}
+
+- (SJUTTabStopsAttribute)tabStops {
+    return SJUT_BLOCK_SET_ATTRIBUTE_Obj_copy(NSArray<NSTextTab *> *, tabStops);
+}
+
+- (SJUTDefaultTabIntervalAttribute)defaultTabInterval {
+    return SJUT_BLOCK_SET_ATTRIBUTE_CGFloat(defaultTabInterval);
+}
+
+- (SJUTAllowsDefaultTighteningForTruncationAttribute)allowsDefaultTighteningForTruncation API_AVAILABLE(ios(9.0)) {
+    return SJUT_BLOCK_SET_ATTRIBUTE_NSNumber(BOOL, allowsDefaultTighteningForTruncation);
+}
+
+- (SJUTLineBreakStrategyAttribute)lineBreakStrategy API_AVAILABLE(ios(9.0)) {
+    return SJUT_BLOCK_SET_ATTRIBUTE_NSNumber(NSLineBreakStrategy, lineBreakStrategy);
 }
 
 - (SJUTSetAttribute)set {
     return ^id<SJUTAttributesProtocol>(id _Nullable value, NSString *forKey) {
-        [self.recorder setCustomValue:value forAttributeKey:forKey];
+        [self.recorder setValue:value forAttributeKey:forKey];
         return self;
     };
 }
 @end
+#undef SJUT_BLOCK_SET_ATTRIBUTE_CGFloat
+#undef SJUT_BLOCK_SET_ATTRIBUTE_NSNumber
+#undef SJUT_BLOCK_SET_ATTRIBUTE_Obj_copy
+#undef SJUT_BLOCK_SET_ATTRIBUTE_Obj
 NS_ASSUME_NONNULL_END

@@ -185,8 +185,6 @@ static NSString *const kReuseIdentifierForCell = @"1";
     if ( dataSource != _dataSource ) {
         _dataSource = dataSource;
         
-        _isResponse_heightForHeaderPinToVisibleBounds = [dataSource respondsToSelector:@selector(heightForHeaderPinToVisibleBoundsWithPageViewController:)];
-        _isResponse_modeForHeader = [dataSource respondsToSelector:@selector(modeForHeaderWithPageViewController:)];
         _isResponse_viewForHeader = [dataSource respondsToSelector:@selector(viewForHeaderInPageViewController:)];
         [self reloadPageViewController];
     }
@@ -196,6 +194,8 @@ static NSString *const kReuseIdentifierForCell = @"1";
     if ( delegate != _delegate ) {
         _delegate = delegate;
         
+        _isResponse_heightForHeaderPinToVisibleBounds = [delegate respondsToSelector:@selector(heightForHeaderPinToVisibleBoundsWithPageViewController:)];
+        _isResponse_modeForHeader = [delegate respondsToSelector:@selector(modeForHeaderWithPageViewController:)];
         _isResponse_focusedIndexDidChange = [delegate respondsToSelector:@selector(pageViewController:focusedIndexDidChange:)];
         _isResponse_willDisplayViewController = [delegate respondsToSelector:@selector(pageViewController:willDisplayViewController:atIndex:)];
         _isResponse_didEndDisplayingViewController = [delegate respondsToSelector:@selector(pageViewController:didEndDisplayingViewController:atIndex:)];
@@ -562,14 +562,14 @@ static NSString *const kReuseIdentifierForCell = @"1";
 
 - (CGFloat)heightForHeaderPinToVisibleBounds {
     if ( _isResponse_heightForHeaderPinToVisibleBounds ) {
-        return [self.dataSource heightForHeaderPinToVisibleBoundsWithPageViewController:self];
+        return [self.delegate heightForHeaderPinToVisibleBoundsWithPageViewController:self];
     }
     return 0;
 }
 
 - (SJPageViewControllerHeaderMode)modeForHeader {
     if ( _isResponse_modeForHeader )
-        return [self.dataSource modeForHeaderWithPageViewController:self];
+        return [self.delegate modeForHeaderWithPageViewController:self];
     return 0;
 }
 

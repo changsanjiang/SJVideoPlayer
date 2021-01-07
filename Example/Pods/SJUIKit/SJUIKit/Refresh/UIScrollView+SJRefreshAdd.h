@@ -10,7 +10,7 @@
 /// 此size用于标记请求不需要pageSize
 /// 当不需要页码大小时, 可以传入此size
 extern char const SJRefreshingNonePageSize;
-@class SJRefreshConfig, SJPlaceholderView;
+@class SJRefreshConfig, SJPlaceholderView, SJRefreshOptions;
 
 NS_ASSUME_NONNULL_BEGIN
 @interface UIScrollView (SJSetupRefresh)
@@ -18,15 +18,7 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic, readonly) NSInteger sj_pageSize;
 @property (nonatomic, readonly) NSInteger sj_pageNum;   // current PageNum
 
-- (void)sj_setupRefreshingWithRefreshingBlock:(void(^)(__kindof UIScrollView *scrollView, NSInteger requestPageNum))refreshingBlock;
-
-- (void)sj_setupRefreshingWithPageSize:(short)pageSize
-                          beginPageNum:(NSInteger)beginPageNum
-                       refreshingBlock:(void(^)(__kindof UIScrollView *scrollView, NSInteger requestPageNum))refreshingBlock;
-
-- (void)sj_setupFooterRefreshingWithPageSize:(short)pageSize
-                                beginPageNum:(NSInteger)beginPageNum
-                             refreshingBlock:(void(^)(__kindof UIScrollView *scrollView, NSInteger requestPageNum))refreshingBlock;
+- (void)sj_setupRefreshingWithOptions:(SJRefreshOptions *)options;
 
 - (void)sj_endRefreshing;
 - (void)sj_endRefreshingWithItemCount:(NSUInteger)itemCount;
@@ -38,6 +30,22 @@ NS_ASSUME_NONNULL_BEGIN
 - (void)sj_exeFooterRefreshing;
 
 - (void)sj_resetState;
+
+
+#pragma mark - deprecated
+
+- (void)sj_setupRefreshingWithRefreshingBlock:(void(^)(__kindof UIScrollView *scrollView, NSInteger requestPageNum))refreshingBlock;
+- (void)sj_setupRefreshingWithPageSize:(short)pageSize beginPageNum:(NSInteger)beginPageNum refreshingBlock:(void(^)(__kindof UIScrollView *scrollView, NSInteger requestPageNum))refreshingBlock;
+- (void)sj_setupFooterRefreshingWithPageSize:(short)pageSize beginPageNum:(NSInteger)beginPageNum refreshingBlock:(void(^)(__kindof UIScrollView *scrollView, NSInteger requestPageNum))refreshingBlock;
+@end
+
+@interface SJRefreshOptions : NSObject
+- (instancetype)initWithBeginPageNum:(NSInteger)beginPageNum pageSize:(short)pageSize disabledHeaderRefreshing:(BOOL)isDisabledHeaderRefreshing disabledFooterRefreshing:(BOOL)isDisabledFooterRefreshing refreshingExecuteBlock:(void(^)(__kindof UIScrollView *scrollView, NSInteger pageNum))refreshingExecuteBlock;
+@property (nonatomic) NSInteger beginPageNum;
+@property (nonatomic) short pageSize;
+@property (nonatomic, getter=isDisabledHeaderRefreshing) BOOL disabledHeaderRefreshing;
+@property (nonatomic, getter=isDisabledFooterRefreshing) BOOL disabledFooterRefreshing;
+@property (nonatomic, copy, nullable) void(^refreshingExecuteBlock)(__kindof UIScrollView *scrollView, NSInteger pageNum);
 @end
 
 @interface UIScrollView (SJRefreshUIConfig)

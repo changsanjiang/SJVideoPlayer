@@ -141,31 +141,64 @@ typedef void(^SJUTAppendImageHandler)(id<SJUTImageAttachment> make);
 
 typedef id<SJUTAttributesProtocol>_Nonnull(^SJUTFontAttribute)(UIFont *font);
 typedef id<SJUTAttributesProtocol>_Nonnull(^SJUTColorAttribute)(UIColor *color);
-typedef id<SJUTAttributesProtocol>_Nonnull(^SJUTAlignmentAttribute)(NSTextAlignment alignment);
-typedef id<SJUTAttributesProtocol>_Nonnull(^SJUTLineSpacingAttribute)(CGFloat lineSpacing);
 typedef id<SJUTAttributesProtocol>_Nonnull(^SJUTKernAttribute)(CGFloat kern);
 typedef id<SJUTAttributesProtocol>_Nonnull(^SJUTShadowAttribute)(void(^)(NSShadow *make));
 typedef id<SJUTAttributesProtocol>_Nonnull(^SJUTStrokeAttribute)(void(^block)(id<SJUTStroke> make));
-typedef id<SJUTAttributesProtocol>_Nonnull(^SJUTParagraphStyleAttribute)(void(^block)(NSMutableParagraphStyle *make));
-typedef id<SJUTAttributesProtocol>_Nonnull(^SJUTLineBreakModeAttribute)(NSLineBreakMode lineBreakMode);
 typedef id<SJUTAttributesProtocol>_Nonnull(^SJUTDecorationAttribute)(void(^)(id<SJUTDecoration> make));
-typedef id<SJUTAttributesProtocol>_Nonnull(^SJUTBaseLineOffsetAttribute)(double offset);
+typedef id<SJUTAttributesProtocol>_Nonnull(^SJUTBaseLineOffsetAttribute)(CGFloat offset);
+
+typedef id<SJUTAttributesProtocol>_Nonnull(^SJUTLineSpacingAttribute)(CGFloat lineSpacing);
+typedef id<SJUTAttributesProtocol>_Nonnull(^SJUTParagraphSpacingAttribute)(CGFloat paragraphSpacing);
+typedef id<SJUTAttributesProtocol>_Nonnull(^SJUTAlignmentAttribute)(NSTextAlignment alignment);
+typedef id<SJUTAttributesProtocol>_Nonnull(^SJUTFirstLineHeadIndentAttribute)(CGFloat firstLineHeadIndent);
+typedef id<SJUTAttributesProtocol>_Nonnull(^SJUTHeadIndentAttribute)(CGFloat headIndent);
+typedef id<SJUTAttributesProtocol>_Nonnull(^SJUTTailIndentAttribute)(CGFloat tailIndent);
+typedef id<SJUTAttributesProtocol>_Nonnull(^SJUTLineBreakModeAttribute)(NSLineBreakMode lineBreakMode);
+typedef id<SJUTAttributesProtocol>_Nonnull(^SJUTMinimumLineHeightAttribute)(CGFloat minimumLineHeight);
+typedef id<SJUTAttributesProtocol>_Nonnull(^SJUTMaximumLineHeightAttribute)(CGFloat maximumLineHeight);
+typedef id<SJUTAttributesProtocol>_Nonnull(^SJUTBaseWritingDirectionAttribute)(NSWritingDirection baseWritingDirection);
+typedef id<SJUTAttributesProtocol>_Nonnull(^SJUTLineHeightMultipleAttribute)(CGFloat lineHeightMultiple);
+typedef id<SJUTAttributesProtocol>_Nonnull(^SJUTParagraphSpacingBeforeAttribute)(CGFloat paragraphSpacingBefore);
+typedef id<SJUTAttributesProtocol>_Nonnull(^SJUTHyphenationFactorAttribute)(float hyphenationFactor);
+typedef id<SJUTAttributesProtocol>_Nonnull(^SJUTTabStopsAttribute)(NSArray<NSTextTab *> *tabStops);
+typedef id<SJUTAttributesProtocol>_Nonnull(^SJUTDefaultTabIntervalAttribute)(CGFloat defaultTabInterval);
+typedef id<SJUTAttributesProtocol>_Nonnull(^SJUTAllowsDefaultTighteningForTruncationAttribute)(BOOL allowsDefaultTighteningForTruncation) API_AVAILABLE(ios(9.0));
+typedef id<SJUTAttributesProtocol>_Nonnull(^SJUTLineBreakStrategyAttribute)(NSLineBreakStrategy lineBreakStrategy) API_AVAILABLE(ios(9.0));
+
 typedef id<SJUTAttributesProtocol>_Nonnull(^SJUTSetAttribute)(id _Nullable value, NSString *forKey);
 
 @protocol SJUTAttributesProtocol
+// text attributes
 @property (nonatomic, copy, readonly) SJUTFontAttribute font;
 @property (nonatomic, copy, readonly) SJUTColorAttribute textColor;
 @property (nonatomic, copy, readonly) SJUTColorAttribute backgroundColor;
-@property (nonatomic, copy, readonly) SJUTAlignmentAttribute alignment;
-@property (nonatomic, copy, readonly) SJUTLineSpacingAttribute lineSpacing;
 @property (nonatomic, copy, readonly) SJUTKernAttribute kern;
 @property (nonatomic, copy, readonly) SJUTShadowAttribute shadow;
 @property (nonatomic, copy, readonly) SJUTStrokeAttribute stroke;
-@property (nonatomic, copy, readonly) SJUTParagraphStyleAttribute paragraphStyle;
-@property (nonatomic, copy, readonly) SJUTLineBreakModeAttribute lineBreakMode;
 @property (nonatomic, copy, readonly) SJUTDecorationAttribute underLine;
 @property (nonatomic, copy, readonly) SJUTDecorationAttribute strikethrough;
 @property (nonatomic, copy, readonly) SJUTBaseLineOffsetAttribute baseLineOffset;
+
+// paragraph attributes
+@property (nonatomic, copy, readonly) SJUTLineSpacingAttribute lineSpacing;
+@property (nonatomic, copy, readonly) SJUTParagraphSpacingAttribute paragraphSpacing;
+@property (nonatomic, copy, readonly) SJUTAlignmentAttribute alignment;
+@property (nonatomic, copy, readonly) SJUTFirstLineHeadIndentAttribute firstLineHeadIndent;
+@property (nonatomic, copy, readonly) SJUTHeadIndentAttribute headIndent;
+@property (nonatomic, copy, readonly) SJUTTailIndentAttribute tailIndent;
+@property (nonatomic, copy, readonly) SJUTLineBreakModeAttribute lineBreakMode;
+@property (nonatomic, copy, readonly) SJUTMinimumLineHeightAttribute minimumLineHeight;
+@property (nonatomic, copy, readonly) SJUTMaximumLineHeightAttribute maximumLineHeight;
+@property (nonatomic, copy, readonly) SJUTBaseWritingDirectionAttribute baseWritingDirection;
+@property (nonatomic, copy, readonly) SJUTLineHeightMultipleAttribute lineHeightMultiple;
+@property (nonatomic, copy, readonly) SJUTParagraphSpacingBeforeAttribute paragraphSpacingBefore;
+@property (nonatomic, copy, readonly) SJUTHyphenationFactorAttribute hyphenationFactor;
+@property (nonatomic, copy, readonly) SJUTTabStopsAttribute tabStops;
+@property (nonatomic, copy, readonly) SJUTDefaultTabIntervalAttribute defaultTabInterval;
+@property (nonatomic, copy, readonly) SJUTAllowsDefaultTighteningForTruncationAttribute allowsDefaultTighteningForTruncation API_AVAILABLE(ios(9.0));
+@property (nonatomic, copy, readonly) SJUTLineBreakStrategyAttribute lineBreakStrategy API_AVAILABLE(ios(9.0));
+
+// custom attributes
 @property (nonatomic, copy, readonly) SJUTSetAttribute set; // 添加或删除自定义的attribute
 @end
 

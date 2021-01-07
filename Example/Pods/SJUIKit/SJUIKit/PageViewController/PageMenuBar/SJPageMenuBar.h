@@ -64,6 +64,8 @@ NS_ASSUME_NONNULL_BEGIN
 
 @property (nonatomic, getter=isEnabledFadeIn) BOOL enabledFadeIn;        ///< enable fade in on the left. default is `NO`.
 @property (nonatomic, getter=isEnabledFadeOut) BOOL enabledFadeOut;      ///< enable fade out on the right. default is `NO`.
+
+@property (nonatomic, copy, nullable) void(^layoutSubviewsExecuteBlock)(SJPageMenuBar *pageMenuBar);
 @end
 
 

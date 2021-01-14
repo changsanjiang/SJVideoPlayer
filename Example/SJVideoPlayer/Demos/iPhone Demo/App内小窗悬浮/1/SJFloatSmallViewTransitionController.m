@@ -11,38 +11,16 @@
 #import "UIView+SJBaseVideoPlayerExtended.h"
 #import "NSObject+SJObserverHelper.h"
 
-@interface SJFloatSmallViewContainerView : UIView
+@interface SJFloatSmallViewContainerView : UIView<SJFloatSmallView>
 @property (nonatomic, weak, nullable) SJFloatSmallViewTransitionController *transitionController;
 @end
 
 @implementation SJFloatSmallViewContainerView
-- (void)setX:(CGFloat)x {
-    CGRect frame = self.frame;
-    frame.origin.x = x;
-    self.frame = frame;
+
+- (UIView *)containerView {
+    return self;
 }
 
-- (CGFloat)x {
-    return self.frame.origin.x;
-}
-
-- (void)setY:(CGFloat)y {
-    CGRect frame = self.frame;
-    frame.origin.y = y;
-    self.frame = frame;
-}
-
-- (CGFloat)y {
-    return self.frame.origin.y;
-}
-
-- (CGFloat)w {
-    return self.frame.size.width;
-}
-
-- (CGFloat)h {
-    return self.frame.size.height;
-}
 @end
 
 
@@ -90,7 +68,6 @@
 @property (nonatomic, strong, nullable) UINavigationController *navigationController;
 @property (nonatomic, strong, nullable) UIViewController *playbackViewController;
 @property (nonatomic, strong, readonly) UIPanGestureRecognizer *panGesture;
-@property (nonatomic) CGRect from;
 @end
 
 @implementation SJFloatSmallViewTransitionController
@@ -128,6 +105,10 @@
     return self;
 }
 
+- (void)dealloc {
+    [_floatView performSelectorOnMainThread:@selector(removeFromSuperview) withObject:nil waitUntilDone:YES];
+}
+
 - (id<SJFloatSmallViewControllerObserverProtocol>)getObserver {
     return [[SJFloatSmallViewTransitionControllerObserver alloc] initWithController:self];
 }
@@ -136,7 +117,6 @@
     if ( _floatView == nil ) {
         _floatView = [[SJFloatSmallViewContainerView alloc] initWithFrame:CGRectZero];
         [(SJFloatSmallViewContainerView *)_floatView setTransitionController:self];
-        [self _addGesturesToFloatView:_floatView];
     }
     return _floatView;
 }
@@ -158,7 +138,8 @@
 // - gestures -
 
 - (void)_addGesturesToFloatView:(SJFloatSmallViewContainerView *)floatView {
-    [floatView addGestureRecognizer:self.panGesture];
+    if ( self.panGesture.view != floatView )
+        [floatView addGestureRecognizer:self.panGesture];
 }
 
 - (void)setSlidable:(BOOL)slidable {
@@ -204,21 +185,21 @@
                 }
 
                 CGFloat left = safeAreaInsets.left + self.layoutInsets.left;
-                CGFloat right = superview.bounds.size.width - view.w - self.layoutInsets.right - safeAreaInsets.right;
-                if ( view.x <= left ) {
-                    [view setX:left];
+                CGFloat right = superview.bounds.size.width - view.bounds.size.width - self.layoutInsets.right - safeAreaInsets.right;
+                if ( view.frame.origin.x <= left ) {
+                    SVTC_setX(view, left);
                 }
-                else if ( view.x >= right ) {
-                    [view setX:right];
+                else if ( view.frame.origin.x >= right ) {
+                    SVTC_setX(view, right);
                 }
                 
                 CGFloat top = safeAreaInsets.top + self.layoutInsets.top;
-                CGFloat bottom = superview.bounds.size.height - view.h - self.layoutInsets.bottom - safeAreaInsets.bottom;
-                if ( view.y <= top ) {
-                    [view setY:top];
+                CGFloat bottom = superview.bounds.size.height - view.bounds.size.height - self.layoutInsets.bottom - safeAreaInsets.bottom;
+                if ( view.frame.origin.y <= top ) {
+                    SVTC_setY(view, top);
                 }
-                else if ( view.y >= bottom ) {
-                    [view setY:bottom];
+                else if ( view.frame.origin.y >= bottom ) {
+                    SVTC_setY(view, bottom);
                 }
             } completion:nil];
         }
@@ -227,6 +208,20 @@
     }
 }
 
+UIKIT_STATIC_INLINE void
+SVTC_setX(UIView *view, CGFloat x) {
+    CGRect frame = view.frame;
+    frame.origin.x = x;
+    view.frame = frame;
+}
+ 
+UIKIT_STATIC_INLINE void
+SVTC_setY(UIView *view, CGFloat y) {
+    CGRect frame = view.frame;
+    frame.origin.y = y;
+    view.frame = frame;
+}
+ 
 #pragma mark -
 
 - (BOOL)floatMode {
@@ -248,14 +243,11 @@
     if ( _playbackViewController == nil || _navigationController == nil || window == nil )
         return NO;
       
-    // 2.
-    _from = [_targetSuperview convertRect:_targetSuperview.bounds toView:window];
-    CGRect to = self.floatView.frame;
-    _floatView.frame = _from;
-    if ( _floatView.superview != window ) {
+    if ( self.floatView.superview != window ) {
         // 首次显示, 将floatView添加到window并设置frame
         [window addSubview:_floatView];
-        
+        [self _addGesturesToFloatView:_floatView];
+
         CGRect windowBounds = window.bounds;
         CGFloat windowW = windowBounds.size.width;
         CGFloat windowH = windowBounds.size.height;
@@ -300,19 +292,19 @@
                 break;
         }
 
-        to = CGRectMake(x, y, w, h);
+        _floatView.frame = CGRectMake(x, y, w, h);
+        [_floatView layoutIfNeeded];
     }
-     
-    // 4.
-    [self->_floatView addSubview:self->_target];
-    self->_target.frame = self->_floatView.bounds;
-    [self->_target layoutSubviews];
-    [self->_target layoutIfNeeded];
+    
+    // 2.
+    CGRect from = [_targetSuperview convertRect:_targetSuperview.bounds toView:_floatView.containerView];
+    [_floatView.containerView addSubview:_target];
+    _target.frame = from;
+    [_target layoutSubviews];
+    [_target layoutIfNeeded];
     self->_floatView.hidden = NO;
     [UIView animateWithDuration:0.4 animations:^{
-        self->_floatView.frame = to;
-
-        self->_target.frame = self->_floatView.bounds;
+        self->_target.frame = self->_floatView.containerView.bounds;
         [self->_target layoutSubviews];
         [self->_target layoutIfNeeded];
     }];
@@ -328,23 +320,20 @@
     // 1. push`playbackController`
     // 2. 将播放器添加回去
     
-    // 2.
-    CGRect from = _floatView.frame;
-    CGRect to = _from;
+    CGRect to = [_targetSuperview convertRect:_targetSuperview.bounds toView:_floatView.containerView];
     [UIView animateWithDuration:0.4 animations:^{
-        self->_floatView.frame = to;
-        self->_target.frame = (CGRect){0, 0, to.size};
+        self->_target.frame = to;
         [self->_target layoutSubviews];
         [self->_target layoutIfNeeded];
     } completion:^(BOOL finished) {
-        self->_floatView.frame = from;
         self->_floatView.hidden = YES;
+        
         [self->_targetSuperview addSubview:self->_target];
         self->_target.frame = self->_targetSuperview.bounds;
         [self->_target layoutSubviews];
-        [self->_target layoutSubviews];
+        [self->_target layoutIfNeeded];
     }];
-     
+    
     _playbackViewController = nil;
     _navigationController = nil;
     self.isAppeared = NO;

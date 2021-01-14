@@ -9,6 +9,7 @@
 #import "SJFloatModeDemoViewController1.h"
 #import <SJVideoPlayer/SJVideoPlayer.h>
 #import <Masonry/Masonry.h>
+#import <SJUIKit/NSAttributedString+SJMake.h>
 #import "SJSourceURLs.h"
 #import "SJFloatSmallViewTransitionController.h"
 
@@ -53,6 +54,7 @@
     
     _player = SJVideoPlayer.player;
     _player.resumePlaybackWhenAppDidEnterForeground = YES;
+    _player.defaultEdgeControlLayer.fixesBackItem = YES;
     _player.URLAsset = [SJVideoPlayerURLAsset.alloc initWithURL:SourceURL0];
     if (@available(iOS 14.0, *)) {
         _player.defaultEdgeControlLayer.automaticallyShowsPictureInPictureItem = NO;
@@ -67,6 +69,11 @@
         make.left.right.offset(0);
         make.height.equalTo(self.view.mas_width).multipliedBy(9/16.0);
     }];
+    
+    [_player.prompt show:[NSAttributedString sj_UIKitText:^(id<SJUIKitTextMakerProtocol>  _Nonnull make) {
+        make.append(@"点击返回按钮, 进入小浮窗模式");
+        make.textColor(UIColor.whiteColor);
+    }] duration:3];
 
     // step 2
     _player.floatSmallViewController = SJFloatSmallViewTransitionController.alloc.init;

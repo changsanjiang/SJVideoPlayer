@@ -53,7 +53,7 @@
 + (NSArray<SJRouteObject *> *)routeObjectArrayForFloatModeDemo {
     return @[
         [SJRouteObject.alloc initWithPath:@"FloatMode/1" transitionMode:SJViewControllerTransitionModeNavigation createInstanceBlock:^(SJRouteRequest * _Nonnull request, SJCompletionHandler  _Nullable completionHandler) {
-            __auto_type vc = SJFloatModeDemoViewController1.new;
+            __auto_type vc = [SJFloatModeDemoViewController1 viewControllerWithVideoId:10];
             if ( completionHandler ) completionHandler(vc, nil);
         }],
         [SJRouteObject.alloc initWithPath:@"FloatMode/2" transitionMode:SJViewControllerTransitionModeNavigation createInstanceBlock:^(SJRouteRequest * _Nonnull request, SJCompletionHandler  _Nullable completionHandler) {

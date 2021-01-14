@@ -12,6 +12,7 @@
 #import "NSObject+SJObserverHelper.h"
 
 @interface SJFloatSmallViewContainerView : UIView
+@property (nonatomic, weak, nullable) SJFloatSmallViewTransitionController *transitionController;
 @end
 
 @implementation SJFloatSmallViewContainerView
@@ -134,6 +135,7 @@
 - (__kindof UIView *)floatView {
     if ( _floatView == nil ) {
         _floatView = [[SJFloatSmallViewContainerView alloc] initWithFrame:CGRectZero];
+        [(SJFloatSmallViewContainerView *)_floatView setTransitionController:self];
         [self _addGesturesToFloatView:_floatView];
     }
     return _floatView;
@@ -435,5 +437,22 @@ SVTC_exchangeImplementation(Class cls, SEL originSel, SEL swizzledSel) {
         }
     }
     [self SVTC_setViewControllers:viewControllers animated:animated];
+}
+@end
+
+@implementation UIWindow (SJFloatSmallViewTransitionControllerExtended)
+- (NSArray<__kindof UIViewController *> *_Nullable)SVTC_playbackInFloatingViewControllers {
+    NSMutableArray<__kindof UIViewController *> *_Nullable vcs = nil;
+    for ( __kindof UIView * subview in self.subviews ) {
+        if ( [subview isKindOfClass:SJFloatSmallViewContainerView.class] ) {
+            SJFloatSmallViewContainerView *containerView = subview;
+            UIViewController *playbackViewController = containerView.transitionController.playbackViewController;
+            if ( playbackViewController != nil ) {
+                if ( vcs == nil ) vcs = [NSMutableArray array];
+                [vcs addObject:playbackViewController];
+            }
+        }
+    }
+    return vcs.copy;
 }
 @end

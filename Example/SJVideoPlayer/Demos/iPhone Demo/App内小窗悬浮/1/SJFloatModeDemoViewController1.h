@@ -12,6 +12,8 @@ NS_ASSUME_NONNULL_BEGIN
 
 @interface SJFloatModeDemoViewController1 : UIViewController
 
++ (instancetype)viewControllerWithVideoId:(NSInteger)videoId;
+
 @end
 
 NS_ASSUME_NONNULL_END

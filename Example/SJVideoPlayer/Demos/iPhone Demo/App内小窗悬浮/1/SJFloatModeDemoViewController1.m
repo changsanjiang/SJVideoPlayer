@@ -14,9 +14,38 @@
 
 @interface SJFloatModeDemoViewController1 ()
 @property (nonatomic, strong) SJVideoPlayer *player;
+@property (nonatomic) NSInteger videoId;
 @end
 
 @implementation SJFloatModeDemoViewController1
+// step 1
++ (instancetype)viewControllerWithVideoId:(NSInteger)videoId {
+    UIWindow *window = UIApplication.sharedApplication.keyWindow;
+    SJFloatModeDemoViewController1 *instance = nil;
+    // compare videoId
+    for ( __kindof UIViewController *vc in window.SVTC_playbackInFloatingViewControllers ) {
+        if ( [vc isKindOfClass:SJFloatModeDemoViewController1.class] ) {
+            SJFloatModeDemoViewController1 *playbackViewController = vc;
+            if ( playbackViewController.videoId == videoId ) {
+                instance = playbackViewController;
+                break;
+            }
+        }
+    }
+    
+    if ( instance == nil ) {
+        instance = [SJFloatModeDemoViewController1.alloc initWithVideoId:videoId];
+    }
+    return instance;
+}
+
+- (instancetype)initWithVideoId:(NSInteger)videoId {
+    self = [super init];
+    if ( self ) {
+        _videoId = videoId;
+    }
+    return self;
+}
 
 - (void)viewDidLoad {
     [super viewDidLoad];
@@ -39,7 +68,7 @@
         make.height.equalTo(self.view.mas_width).multipliedBy(9/16.0);
     }];
 
-    // step 1
+    // step 2
     _player.floatSmallViewController = SJFloatSmallViewTransitionController.alloc.init;
     __weak typeof(self) _self = self;
     _player.floatSmallViewController.doubleTappedOnTheFloatViewExeBlock = ^(id<SJFloatSmallViewController>  _Nonnull controller) {
@@ -47,9 +76,11 @@
         if ( self == nil ) return;
         self.player.isPaused ? [self.player play] : [self.player pause];
     };
+
+    [self _test];
 }
 
-// step 2
+// step 3
 - (SJFloatSmallViewTransitionController *_Nullable)SVTC_floatSmallViewTransitionController {
     return (SJFloatSmallViewTransitionController *)_player.floatSmallViewController;
 }
@@ -65,14 +96,41 @@
 
 - (void)viewDidAppear:(BOOL)animated {
     [super viewDidAppear:animated];
-    // step 3
+    // step 4
     _player.vc_isDisappeared = NO;
 }
 
 - (void)viewWillDisappear:(BOOL)animated {
     [super viewWillDisappear:animated];
     [self.navigationController setNavigationBarHidden:NO animated:YES];
-    // step 4
+    // step 5
     _player.vc_isDisappeared = YES;
+}
+
+#pragma mark - test
+
+- (void)_test {
+    _player.defaultFloatSmallViewControlLayer.bottomHeight = 35;
+    
+    SJEdgeControlButtonItem *playItem = [SJEdgeControlButtonItem.alloc initWithTag:101];
+    [playItem addTarget:self action:@selector(playOrPause)];
+    [_player.defaultFloatSmallViewControlLayer.bottomAdapter addItem:playItem];
+    __weak typeof(self) _self = self;
+    _player.playbackObserver.playbackStatusDidChangeExeBlock = ^(__kindof SJBaseVideoPlayer * _Nonnull player) {
+        __strong typeof(_self) self = _self;
+        if ( self == nil ) return;
+        [self _updatePlayItem];
+    };
+    [self _updatePlayItem];
+}
+
+- (void)_updatePlayItem {
+    SJEdgeControlButtonItem *playItem = [_player.defaultFloatSmallViewControlLayer.bottomAdapter itemForTag:101];
+    playItem.image = self.player.isPaused ? SJVideoPlayerConfigurations.shared.resources.playImage : SJVideoPlayerConfigurations.shared.resources.pauseImage;
+    [self.player.defaultFloatSmallViewControlLayer.bottomAdapter reload];
+}
+
+- (void)playOrPause {
+    self.player.isPaused ? [self.player play] : [self.player pauseForUser];
 }
 @end

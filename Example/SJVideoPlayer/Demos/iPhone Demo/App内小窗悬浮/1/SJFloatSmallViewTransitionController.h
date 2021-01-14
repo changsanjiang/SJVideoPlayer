@@ -23,4 +23,8 @@ NS_ASSUME_NONNULL_BEGIN
 @interface UIViewController (SJFloatSmallViewTransitionControllerExtended)
 @property (nonatomic, strong, readonly, nullable) SJFloatSmallViewTransitionController *SVTC_floatSmallViewTransitionController;
 @end
+
+@interface UIWindow (SJFloatSmallViewTransitionControllerExtended)
+- (NSArray<__kindof UIViewController *> *_Nullable)SVTC_playbackInFloatingViewControllers;
+@end
 NS_ASSUME_NONNULL_END

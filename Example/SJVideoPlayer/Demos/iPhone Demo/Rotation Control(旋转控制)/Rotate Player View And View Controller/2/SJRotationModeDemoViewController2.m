@@ -53,25 +53,6 @@
     if ( _player == nil ) {
         _player = [SJVideoPlayer player];
         _player.allowHorizontalTriggeringOfPanGesturesInCells = YES;
-        // 开启小浮窗
-        _player.floatSmallViewController.enabled = YES;
-        __weak typeof(self) _self = self;
-        _player.floatSmallViewController.singleTappedOnTheFloatViewExeBlock = ^(id<SJFloatSmallViewController>  _Nonnull controller) {
-            [controller dismissFloatView];
-            __strong typeof(_self) self = _self;
-            if ( !self ) return;
-            UIViewController *vc = UIViewController.new;
-            vc.view.backgroundColor = [UIColor colorWithRed:arc4random() % 256 / 255.0
-                                                      green:arc4random() % 256 / 255.0
-                                                       blue:arc4random() % 256 / 255.0
-                                                      alpha:1];
-            [self.navigationController pushViewController:vc animated:YES];
-        };
-        _player.floatSmallViewController.doubleTappedOnTheFloatViewExeBlock = ^(id<SJFloatSmallViewController>  _Nonnull controller) {
-            __strong typeof(_self) self = _self;
-            if ( !self ) return;
-            self.player.isPaused ? [self.player play] : [self.player pause];
-        };
         [self _observePlayerViewAppearState];
         [self _addTestEdgeItemsToPlayer];
     }
@@ -218,29 +199,3 @@
 }
 
 @end
-
-
-
-/**
- 
- _player.pauseWhenScrollDisappeared = NO;            ///< 滚动消失后, 不暂停
- _player.resumePlaybackWhenScrollAppeared = NO;      ///< 滚动出现后, 如果暂停, 则不恢复播放
- _player.floatSmallViewController.enabled = YES;     ///< 开启小浮窗
- __weak typeof(self) _self = self;
- _player.floatSmallViewController.singleTappedOnTheFloatViewExeBlock =  ///< 单击小浮窗执行的block
- ^(id<SJFloatSmallViewController>  _Nonnull controller) {
- __strong typeof(_self) self = _self;
- if ( !self ) return ;
- [controller dismissFloatView];
- //            [self.navigationController pushViewController:[[ViewControllerContinuePlaying alloc] initWithAsset:self.player.URLAsset] animated:YES];
- };
- _player.floatSmallViewController.doubleTappedOnTheFloatViewExeBlock = ///< 双击小浮窗执行的block
- ^(id<SJFloatSmallViewController>  _Nonnull controller) {
- __strong typeof(_self) self = _self;
- if ( !self ) return ;
- if ( self.player.playStatus == SJVideoPlayerPlayStatusPlaying )
- [self.player pause];
- else
- [self.player play];
- };
- */

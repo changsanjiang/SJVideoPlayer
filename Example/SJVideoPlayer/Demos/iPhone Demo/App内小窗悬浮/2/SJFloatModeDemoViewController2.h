@@ -11,7 +11,7 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
-@interface SJUITableViewDemoViewController9 : UIViewController<UITableViewDataSource, UITableViewDelegate>
+@interface SJFloatModeDemoViewController2 : UIViewController<UITableViewDataSource, UITableViewDelegate>
 @property (nonatomic, strong, readonly) UITableView *tableView;
 @property (nonatomic, strong, nullable) SJVideoPlayer *player;
 @end

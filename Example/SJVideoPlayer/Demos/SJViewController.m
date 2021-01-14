@@ -73,6 +73,8 @@
     [m addObject:[[LWZTableSectionShrinker alloc] initWithTitle:@"DY" titleWhenShrank:nil dataArr:[self _DYDemoItems]]];
 
     [m addObject:[[LWZTableSectionShrinker alloc] initWithTitle:@"Rotation Control" titleWhenShrank:nil dataArr:[self _createRotationControlDemoItems]]];
+
+    [m addObject:[[LWZTableSectionShrinker alloc] initWithTitle:@"Playback of video in a floating" titleWhenShrank:nil dataArr:[self _FloatModeDemoItems]]];
     
     [m addObject:[[LWZTableSectionShrinker alloc] initWithTitle:@"UIScrollView Demo" titleWhenShrank:nil dataArr:[self _UIScrollViewDemoItems]]];
 
@@ -104,6 +106,13 @@
     
 
     _data = m.copy;
+}
+
+- (NSArray<Item *> *)_FloatModeDemoItems {
+    return @[
+        [Item.alloc initWithTitle:@"Mode 1" subTitle:@"当viewController退出时切换为小浮窗" path:@"FloatMode/1"],
+        [Item.alloc initWithTitle:@"Mode 2" subTitle:@"当在ScrollView中滑动消失时, 显示小浮窗视图" path:@"FloatMode/2"],
+    ];
 }
 
 - (NSArray<Item *> *)_UIScrollViewDemoItems {
@@ -157,9 +166,6 @@
         [Item.alloc initWithTitle:@"7 🔥 Play In `pageViewController.headerView`" subTitle:@"在`pageViewController.headerView`中播放" path:@"UITableViewDemo/7"],
 
         [Item.alloc initWithTitle:@"8 Autoplay In `tableView.cell`" subTitle:@"在`tableView.cell`中自动播放" path:@"UITableViewDemo/8"],
-        
-        [Item.alloc initWithTitle:@"9 Enable floatSmallView" subTitle:@"开启小浮窗 (注: 当播放器视图滑动消失时, 显示小浮窗视图)" path:@"UITableViewDemo/9"],
-
     ];
 }
 

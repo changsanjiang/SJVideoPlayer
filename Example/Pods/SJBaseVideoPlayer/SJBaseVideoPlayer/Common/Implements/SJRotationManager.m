@@ -86,8 +86,11 @@ NS_ASSUME_NONNULL_BEGIN
     [self.delegate fullscreenModeViewController:self willRotateToOrientation:_currentOrientation];
     
     BOOL isFullscreen = size.width > size.height;
-    [CATransaction begin];
-    [CATransaction setDisableActions:self.disableAnimations];
+    
+    if ( self.disableAnimations ) {
+        [CATransaction begin];
+        [CATransaction setDisableActions:YES];
+    }
     [coordinator animateAlongsideTransition:^(id<UIViewControllerTransitionCoordinatorContext> _Nonnull context) {
         if ( isFullscreen )
             self.delegate.target.frame = CGRectMake(0, 0, size.width, size.height);
@@ -96,7 +99,8 @@ NS_ASSUME_NONNULL_BEGIN
         
         [self.delegate.target layoutIfNeeded];
     } completion:^(id<UIViewControllerTransitionCoordinatorContext> _Nonnull context) {
-        [CATransaction commit];
+        if ( self.disableAnimations )
+            [CATransaction commit];
         self->_rotating = NO;
         [self.delegate fullscreenModeViewController:self didRotateFromOrientation:self.currentOrientation];
     }];

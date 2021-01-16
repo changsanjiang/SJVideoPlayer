@@ -232,6 +232,7 @@
     [self _reloadAdaptersIfNeeded];
     [self _updateContentForBottomCurrentTimeItemIfNeeded];
     [self _updateContentForBottomProgressSliderItemIfNeeded];
+    [self _updateAppearStateForBottomProgressIndicatorIfNeeded];
     if (@available(iOS 11.0, *)) {
         [self _reloadCustomStatusBarIfNeeded];
     }
@@ -243,6 +244,7 @@
     
     [self _updateAppearStateForResidentBackButtonIfNeeded];
     [self _updateAppearStateForContainerViews];
+    [self _updateAppearStateForBottomProgressIndicatorIfNeeded];
 }
 
 - (void)videoPlayer:(__kindof SJBaseVideoPlayer *)videoPlayer prepareToPlay:(SJVideoPlayerURLAsset *)asset {
@@ -252,6 +254,7 @@
     [self _updateContentForBottomProgressSliderItemIfNeeded];
     [self _updateContentForBottomProgressIndicatorIfNeeded];
     [self _updateAppearStateForResidentBackButtonIfNeeded];
+    [self _updateAppearStateForBottomProgressIndicatorIfNeeded];
     [self _reloadAdaptersIfNeeded];
     [self _showOrHiddenLoadingView];
 }
@@ -321,25 +324,12 @@
     [self _updateAppearStateForResidentBackButtonIfNeeded];
     [self _updateAppearStateForContainerViews];
     [self _reloadAdaptersIfNeeded];
-    
-    if ( !sj_view_isDisappeared(_bottomProgressIndicator) ) {
-        sj_view_makeDisappear(_bottomProgressIndicator, NO);
-    }
-}
-
-- (void)videoPlayer:(__kindof SJBaseVideoPlayer *)videoPlayer didEndRotation:(BOOL)isFull {
-    if ( !videoPlayer.isControlLayerAppeared )
-        sj_view_makeAppear(_bottomProgressIndicator, YES);
 }
 
 - (void)videoPlayer:(__kindof SJBaseVideoPlayer *)videoPlayer willFitOnScreen:(BOOL)isFitOnScreen {
     [self _updateAppearStateForResidentBackButtonIfNeeded];
     [self _updateAppearStateForContainerViews];
     [self _reloadAdaptersIfNeeded];
-    
-    if ( !sj_view_isDisappeared(_bottomProgressIndicator) ) {
-        sj_view_makeDisappear(_bottomProgressIndicator, NO);
-    }
 }
 
 /// 是否可以触发播放器的手势
@@ -433,12 +423,14 @@
 
 - (void)lockedVideoPlayer:(__kindof SJBaseVideoPlayer *)videoPlayer {
     [self _updateAppearStateForResidentBackButtonIfNeeded];
+    [self _updateAppearStateForBottomProgressIndicatorIfNeeded];
     [self _updateAppearStateForContainerViews];
     [self _reloadAdaptersIfNeeded];
     [self.lockStateTappedTimerControl start];
 }
 
 - (void)unlockedVideoPlayer:(__kindof SJBaseVideoPlayer *)videoPlayer {
+    [self _updateAppearStateForBottomProgressIndicatorIfNeeded];
     [self.lockStateTappedTimerControl clear];
     [videoPlayer controlLayerNeedAppear];
 }
@@ -519,10 +511,7 @@
         
         _bottomProgressIndicatorHeight = bottomProgressIndicatorHeight;
         dispatch_async(dispatch_get_main_queue(), ^{
-            self->_bottomProgressIndicator.trackHeight = bottomProgressIndicatorHeight;
-            [self->_bottomProgressIndicator mas_updateConstraints:^(MASConstraintMaker *make) {
-                make.height.offset(bottomProgressIndicatorHeight);
-            }];
+            [self _updateLayoutForBottomProgressIndicator];
         });
     }
 }
@@ -613,6 +602,7 @@
     _bottomProgressIndicator = [SJProgressSlider new];
     _bottomProgressIndicator.pan.enabled = NO;
     _bottomProgressIndicator.trackHeight = _bottomProgressIndicatorHeight;
+    _bottomProgressIndicator.round = NO;
     id<SJVideoPlayerControlLayerResources> sources = SJVideoPlayerConfigurations.shared.resources;
     UIColor *traceColor = sources.bottomIndicatorTraceColor ?: sources.progressTraceColor;
     UIColor *trackColor = sources.bottomIndicatorTrackColor ?: sources.progressTrackColor;
@@ -898,18 +888,18 @@
     /// 锁屏状态下, 使隐藏
     if ( _videoPlayer.isLockedScreen ) {
         sj_view_makeDisappear(_bottomContainerView, YES);
-        sj_view_makeAppear(_bottomProgressIndicator, YES);
+//        sj_view_makeAppear(_bottomProgressIndicator, YES);
         return;
     }
     
     /// 是否显示
     if ( _videoPlayer.isControlLayerAppeared ) {
         sj_view_makeAppear(_bottomContainerView, YES);
-        sj_view_makeDisappear(_bottomProgressIndicator, YES);
+//        sj_view_makeDisappear(_bottomProgressIndicator, YES);
     }
     else {
         sj_view_makeDisappear(_bottomContainerView, YES);
-        sj_view_makeAppear(_bottomProgressIndicator, YES);
+//        sj_view_makeAppear(_bottomProgressIndicator, YES);
     }
 }
 
@@ -942,6 +932,15 @@
     }
     
     sj_view_makeAppear(_centerContainerView, YES);
+}
+
+- (void)_updateAppearStateForBottomProgressIndicatorIfNeeded {
+    if ( _bottomProgressIndicator == nil )
+        return;
+    
+    _videoPlayer.isControlLayerAppeared && !_videoPlayer.isLockedScreen ?
+            sj_view_makeDisappear(_bottomProgressIndicator, YES) :
+            sj_view_makeAppear(_bottomProgressIndicator, YES);
 }
 
 - (void)_updateAppearStateForCustomStatusBar NS_AVAILABLE_IOS(11.0) {
@@ -1341,6 +1340,7 @@
 
 - (void)_updateLayoutForBottomProgressIndicator {
     if ( _bottomProgressIndicator == nil ) return;
+    _bottomProgressIndicator.trackHeight = _bottomProgressIndicatorHeight;
     _bottomProgressIndicator.frame = (CGRect){0, self.bounds.size.height - _bottomProgressIndicatorHeight, self.bounds.size.width, _bottomProgressIndicatorHeight};
 }
 

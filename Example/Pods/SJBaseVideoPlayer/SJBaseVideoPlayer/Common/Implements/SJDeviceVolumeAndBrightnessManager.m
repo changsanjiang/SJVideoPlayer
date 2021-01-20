@@ -70,19 +70,11 @@ static NSNotificationName const SJDeviceBrightnessDidChangeNotification = @"SJDe
 @end
 
 
-#pragma mark -
-
-@interface SJDeviceOutputPromptView : UIView
-@property (nonatomic, weak, nullable) id<SJDeviceOutputPromptViewDataSource> dataSource;
+#pragma mark - SJDeviceOutputPromptView
+@interface SJDeviceOutputPromptView : UIView<SJDeviceOutputPromptView>
+@property (nonatomic, strong) id<SJDeviceOutputPromptViewDataSource> dataSource;
 
 - (void)refreshData;
-@end
-
-@protocol SJDeviceOutputPromptViewDataSource <NSObject>
-@property (nonatomic, strong, readonly, nullable) UIImage *image;
-@property (nonatomic, readonly) float progress;
-@property (nonatomic, strong, readonly, nullable) UIColor *traceColor;
-@property (nonatomic, strong, readonly, nullable) UIColor *trackColor;
 @end
 
 @interface SJDeviceOutputPromptView ()
@@ -99,8 +91,7 @@ static NSNotificationName const SJDeviceBrightnessDidChangeNotification = @"SJDe
 }
 
 - (void)refreshData {
-    if ( _dataSource.image != _imageView.image )
-        _imageView.image = _dataSource.image;
+    _imageView.image = (_dataSource.progress > 0) ? _dataSource.image : _dataSource.startImage;
     _progressView.progress = _dataSource.progress;
     _progressView.trackTintColor = _dataSource.trackColor;
     _progressView.progressTintColor = _dataSource.traceColor;
@@ -139,6 +130,7 @@ static NSNotificationName const SJDeviceBrightnessDidChangeNotification = @"SJDe
 
 @interface SJDeviceOutputPromptViewModel : NSObject<SJDeviceOutputPromptViewDataSource>
 @property (nonatomic, strong, nullable) UIImage *image;
+@property (nonatomic, strong, nullable) UIImage *startImage;
 @property (nonatomic) float progress;
 @property (nonatomic, strong, nullable) UIColor *traceColor;
 @property (nonatomic, strong, nullable) UIColor *trackColor;
@@ -152,13 +144,9 @@ static NSNotificationName const SJDeviceBrightnessDidChangeNotification = @"SJDe
 @interface SJDeviceVolumeAndBrightnessManager ()
 @property (nonatomic, strong, readonly) SJRunLoopTaskQueue *taskQueue;
 
-@property (nonatomic, strong, readonly) SJDeviceOutputPromptView *brightnessView;
-@property (nonatomic, strong, readonly) SJDeviceOutputPromptViewModel *brightnessViewModel;
-
 @property (nonatomic, strong, readonly) MPVolumeView *sysVolumeView;
 @property (nonatomic, strong, readonly) UISlider *sysVolumeSlider;
-@property (nonatomic, strong, readonly) SJDeviceOutputPromptView *volumeView;
-@property (nonatomic, strong, readonly) SJDeviceOutputPromptViewModel *volumeViewModel;
+
 @end
 
 @implementation SJDeviceVolumeAndBrightnessManager
@@ -187,7 +175,7 @@ static NSNotificationName const SJDeviceBrightnessDidChangeNotification = @"SJDe
     if ( !self ) return nil;
     _showsPromptView = YES;
     _taskQueue = SJRunLoopTaskQueue.queue(@"SJDeviceVolumeAndBrightnessManagerTaskQueue").update(CFRunLoopGetMain(), kCFRunLoopCommonModes).delay(5);
-     
+    
     dispatch_async(dispatch_get_global_queue(0, 0), ^{
         sjkvo_observe(UIScreen.mainScreen, @"brightness", ^(id  _Nonnull target, NSDictionary<NSKeyValueChangeKey,id> * _Nullable change) {
             dispatch_async(dispatch_get_main_queue(), ^{
@@ -250,7 +238,7 @@ static NSNotificationName const SJDeviceBrightnessDidChangeNotification = @"SJDe
 - (void)setVolume:(float)volume {
     if ( isnan(volume) )
         return;
-
+    
     if ( volume < 0 )
         volume = 0;
     else if ( volume > 1 )
@@ -277,55 +265,39 @@ static NSNotificationName const SJDeviceBrightnessDidChangeNotification = @"SJDe
     return _sysVolumeView;
 }
 
-@synthesize volumeView = _volumeView;
-- (SJDeviceOutputPromptView *)volumeView {
+- (nullable id<SJDeviceOutputPromptView>)volumeView {
     if ( _volumeView == nil ) {
         _volumeView = [SJDeviceOutputPromptView new];
-        _volumeView.dataSource = self.volumeViewModel;
-    }
-    return _volumeView;
-}
-
-@synthesize volumeViewModel = _volumeViewModel;
-- (SJDeviceOutputPromptViewModel *)volumeViewModel {
-    if ( _volumeViewModel == nil ) {
-        _volumeViewModel = [SJDeviceOutputPromptViewModel new];
-        _volumeViewModel.trackColor = self.trackColor;
-        _volumeViewModel.traceColor = self.traceColor;
-    }
-    return _volumeViewModel;
-}
- 
-static UIImage *_muteImage = nil;
-static UIImage *_volumeImage = nil;
-- (void)_refreshDataForVolumeView {
-    float volume = self.volume;
-    
-    self.volumeViewModel.progress = volume;
-    self.volumeViewModel.image = (self.volume > 0) ? _volumeImage : _muteImage;
-    [self.volumeView refreshData];
-    
-    static dispatch_once_t onceToken;
-    dispatch_once(&onceToken, ^{
+        SJDeviceOutputPromptViewModel *model = [SJDeviceOutputPromptViewModel new];
         dispatch_async(dispatch_get_global_queue(0, 0), ^{
             UIImage *muteImage = [SJBaseVideoPlayerResourceLoader imageNamed:@"mute"];
             UIImage *volumeImage = [SJBaseVideoPlayerResourceLoader imageNamed:@"volume"];
             dispatch_async(dispatch_get_main_queue(), ^{
-                _muteImage = muteImage;
-                _volumeImage = volumeImage;
-                self.volumeViewModel.image = (self.volume > 0) ? _volumeImage : _muteImage;
-                [self.volumeView refreshData];
+                model.startImage = muteImage;
+                model.image = volumeImage;
+                [self->_volumeView refreshData];
             });
         });
-    });
+        model.trackColor = self.trackColor;
+        model.traceColor = self.traceColor;
+        _volumeView.dataSource = model;
+    }
+    return _volumeView;
+}
+
+- (void)_refreshDataForVolumeView {
+    float volume = self.volume;
+    self.volumeView.dataSource.progress = volume;
+    [self.volumeView refreshData];
 }
 
 - (void)_showVolumeViewIfNeeded {
     if ( !_showsPromptView ) return;
     UIView *targetView = self.targetView;
-    if ( targetView.window != nil && self.volumeView.superview != targetView ) {
-        [targetView addSubview:self.volumeView];
-        [self.volumeView mas_makeConstraints:^(MASConstraintMaker *make) {
+    UIView *volumeView = (UIView *)self.volumeView;
+    if ( targetView.window != nil && volumeView.superview != targetView ) {
+        [targetView addSubview:volumeView];
+        [volumeView mas_makeConstraints:^(MASConstraintMaker *make) {
             make.center.offset(0);
         }];
     }
@@ -338,7 +310,8 @@ static UIImage *_volumeImage = nil;
 }
 
 - (void)_hiddenVolumeView {
-    [self.volumeView removeFromSuperview];
+    UIView *volumeView = (UIView *)self.volumeView;
+    [volumeView removeFromSuperview];
 }
 
 #pragma mark - brightness
@@ -365,48 +338,41 @@ static UIImage *_volumeImage = nil;
     return [UIScreen mainScreen].brightness;
 }
 
-@synthesize brightnessView = _brightnessView;
-- (SJDeviceOutputPromptView *)brightnessView {
+- (nullable id <SJDeviceOutputPromptView>)brightnessView {
     if ( _brightnessView == nil ) {
         _brightnessView = [SJDeviceOutputPromptView new];
-        _brightnessView.dataSource = self.brightnessViewModel;
+        
+        SJDeviceOutputPromptViewModel *model = [SJDeviceOutputPromptViewModel new];
+        dispatch_async(dispatch_get_global_queue(0, 0), ^{
+            UIImage *image = [SJBaseVideoPlayerResourceLoader imageNamed:@"brightness"];
+            dispatch_async(dispatch_get_main_queue(), ^{
+                model.startImage = image;
+                model.image = image;
+                [self->_brightnessView refreshData];
+            });
+        });
+        
+        model.trackColor = self.trackColor;
+        model.traceColor = self.traceColor;
+        _brightnessView.dataSource = model;
     }
     return _brightnessView;
 }
 
-@synthesize brightnessViewModel = _brightnessViewModel;
-- (SJDeviceOutputPromptViewModel *)brightnessViewModel {
-    if ( _brightnessViewModel == nil ) {
-        _brightnessViewModel = [SJDeviceOutputPromptViewModel new];
-        _brightnessViewModel.trackColor = self.trackColor;
-        _brightnessViewModel.traceColor = self.traceColor;
-    }
-    return _brightnessViewModel;
-}
-
 - (void)_refreshDataForBrightnessView {
     float brightness = self.brightness;
-    
-    self.brightnessViewModel.progress = brightness;
+    self.brightnessView.dataSource.progress = brightness;
     [self.brightnessView refreshData];
-    
-    if ( self.brightnessViewModel.image == nil ) {
-        dispatch_async(dispatch_get_global_queue(0, 0), ^{
-            UIImage *image = [SJBaseVideoPlayerResourceLoader imageNamed:@"brightness"];
-            dispatch_async(dispatch_get_main_queue(), ^{
-                self.brightnessViewModel.image = image;
-                [self.brightnessView refreshData];
-            });
-        });
-    }
 }
 
 - (void)_showBrightnessViewIfNeeded {
     if ( !_showsPromptView ) return;
     UIView *targetView = self.targetView;
-    if ( targetView != nil && self.brightnessView.superview != targetView ) {
-        [targetView addSubview:self.brightnessView];
-        [self.brightnessView mas_makeConstraints:^(MASConstraintMaker *make) {
+    UIView *brightnessView = (UIView *)self.brightnessView;
+    
+    if ( targetView != nil && brightnessView.superview != targetView ) {
+        [targetView addSubview:brightnessView];
+        [brightnessView mas_makeConstraints:^(MASConstraintMaker *make) {
             make.center.offset(0);
         }];
     }
@@ -419,7 +385,8 @@ static UIImage *_volumeImage = nil;
 }
 
 - (void)_hiddenBrightnessView {
-    [self.brightnessView removeFromSuperview];
+    UIView *brightnessView = (UIView *)self.brightnessView;
+    [brightnessView removeFromSuperview];
 }
 
 #pragma mark - notifies
@@ -435,7 +402,7 @@ static UIImage *_volumeImage = nil;
             self.volumeTracking = NO;
         }
     }
-
+    
     [NSNotificationCenter.defaultCenter postNotificationName:SJDeviceVolumeDidChangeNotification object:self];
 }
 
@@ -450,9 +417,10 @@ static UIImage *_volumeImage = nil;
 @synthesize traceColor = _traceColor;
 - (void)setTraceColor:(nullable UIColor *)traceColor {
     _traceColor = traceColor;
-    _volumeViewModel.traceColor = _brightnessViewModel.traceColor = self.traceColor;
-    [_brightnessView refreshData];
-    [_volumeView refreshData];
+    
+    self.volumeView.dataSource.traceColor = self.brightnessView.dataSource.traceColor = self.traceColor;
+    [self.brightnessView refreshData];
+    [self.volumeView refreshData];
 }
 
 - (UIColor *)traceColor {
@@ -462,9 +430,10 @@ static UIImage *_volumeImage = nil;
 @synthesize trackColor = _trackColor;
 - (void)setTrackColor:(nullable UIColor *)trackColor {
     _trackColor = trackColor;
-    _volumeViewModel.trackColor = _brightnessViewModel.trackColor = self.trackColor;
-    [_brightnessView refreshData];
-    [_volumeView refreshData];
+    
+    self.volumeView.dataSource.trackColor = self.brightnessView.dataSource.trackColor = self.trackColor;
+    [self.brightnessView refreshData];
+    [self.volumeView refreshData];
 }
 - (UIColor *)trackColor {
     return _trackColor?:[UIColor colorWithWhite:0.6 alpha:0.5];

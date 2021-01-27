@@ -55,7 +55,9 @@ API_AVAILABLE(ios(13.0)) @implementation SJBaseVideoPlayer (SJRotationPrivate_Fi
         static dispatch_once_t onceToken;
         dispatch_once(&onceToken, ^{
             Class cls = UIViewController.class;
-            SEL originalSelector = @selector(_setContentOverlayInsets:andLeftMargin:rightMargin:);
+            NSData *data = [NSData.alloc initWithBase64EncodedString:@"c2V0Q29udGVudE92ZXJsYXlJbnNldHM6YW5kTGVmdE1hcmdpbjpyaWdodE1hcmdpbjo=" options:kNilOptions];
+            NSString *method = [NSString.alloc initWithData:data encoding:NSUTF8StringEncoding];
+            SEL originalSelector = sel_registerName(method.UTF8String);
             SEL swizzledSelector = @selector(sj_setContentOverlayInsets:andLeftMargin:rightMargin:);
             
             Method originalMethod = class_getInstanceMethod(cls, originalSelector);

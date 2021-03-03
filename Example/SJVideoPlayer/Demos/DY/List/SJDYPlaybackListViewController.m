@@ -161,28 +161,30 @@
     [_tableView sj_setupRefreshingWithPageSize:20 beginPageNum:1 refreshingBlock:^(__kindof UIScrollView * _Nonnull scrollView, NSInteger requestPageNum) {
         __strong typeof(_self) self = _self;
         if ( !self ) return;
-        [self.dataProvider playbackListWithPageNum:self.tableView.sj_pageNum pageSize:self.tableView.sj_pageSize completionHandler:^(NSArray<SJVideoModel *> * _Nullable list, NSError * _Nullable error) {
-            __strong typeof(_self) self = _self;
-            if ( !self ) return;
-            if ( error ) {
-                // error
-                NSLog(@"%@", error);
-                return;
-            }
-            // 如果是请求首页的数据, 即下拉
-            if ( self.tableView.sj_pageNum == self.tableView.sj_beginPageNum ) {
-                // 下拉刷新时, 清理播放数据
-                [self.curPlayer stop];
-                self.curPlayer = nil;
-                [self.list removeAllObjects];
-            }
-            
-            // 添加到播放列表中, 刷新列表
-            [self.list addObjectsFromArray:list];
-            [self.tableView reloadData];
-            [self.tableView sj_endRefreshingWithItemCount:list.count];
-            [self.tableView sj_playNextVisibleAsset];
-        }];
+        dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(5 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
+            [self.dataProvider playbackListWithPageNum:self.tableView.sj_pageNum pageSize:self.tableView.sj_pageSize completionHandler:^(NSArray<SJVideoModel *> * _Nullable list, NSError * _Nullable error) {
+                __strong typeof(_self) self = _self;
+                if ( !self ) return;
+                if ( error ) {
+                    // error
+                    NSLog(@"%@", error);
+                    return;
+                }
+                // 如果是请求首页的数据, 即下拉
+                if ( self.tableView.sj_pageNum == self.tableView.sj_beginPageNum ) {
+                    // 下拉刷新时, 清理播放数据
+                    [self.curPlayer stop];
+                    self.curPlayer = nil;
+                    [self.list removeAllObjects];
+                }
+                
+                // 添加到播放列表中, 刷新列表
+                [self.list addObjectsFromArray:list];
+                [self.tableView reloadData];
+                [self.tableView sj_endRefreshingWithItemCount:list.count];
+                [self _checkVisibleCells];
+            }];
+        });
     }];
     
     [_tableView sj_exeHeaderRefreshingAnimated:NO]; // 执行头部刷新

@@ -197,9 +197,7 @@ static inline NSUInteger WS_PAYLOAD_LENGTH(UInt8 frame)
 {
 	HTTPLogTrace();
 	
-	#if !OS_OBJECT_USE_OBJC
-	dispatch_release(websocketQueue);
-	#endif
+	
 	
 	[asyncSocket setDelegate:nil delegateQueue:NULL];
 	[asyncSocket disconnect];

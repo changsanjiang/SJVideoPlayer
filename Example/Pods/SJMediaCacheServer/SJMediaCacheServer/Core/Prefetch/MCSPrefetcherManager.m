@@ -8,17 +8,17 @@
 #import "MCSPrefetcherManager.h"
 #import "HLSPrefetcher.h"
 #import "FILEPrefetcher.h"
-#import "MCSURLRecognizer.h"
+#import "MCSURL.h"
 
 @interface MCSPrefetchOperation : NSOperation<MCSPrefetchTask>
 - (instancetype)initWithURL:(NSURL *)URL preloadSize:(NSUInteger)bytes progress:(void(^_Nullable)(float progress))progressBlock completed:(void(^_Nullable)(NSError *_Nullable error))completionBlock;
 
-- (instancetype)initWithURL:(NSURL *)URL numberOfPreloadFiles:(NSUInteger)num progress:(void(^_Nullable)(float progress))progressBlock completed:(void(^_Nullable)(NSError *_Nullable error))completionBlock;
+- (instancetype)initWithURL:(NSURL *)URL numberOfPreloadedFiles:(NSUInteger)num progress:(void(^_Nullable)(float progress))progressBlock completed:(void(^_Nullable)(NSError *_Nullable error))completionBlock;
 
 - (instancetype)initWithURL:(NSURL *)URL progress:(void(^_Nullable)(float progress))progressBlock completed:(void(^_Nullable)(NSError *_Nullable error))completionBlock;
 
 @property (nonatomic, readonly) NSUInteger preloadSize;
-@property (nonatomic, readonly) NSUInteger numberOfPreloadFiles;
+@property (nonatomic, readonly) NSUInteger numberOfPreloadedFiles;
 @property (nonatomic, strong, readonly) NSURL *URL;
 @property (nonatomic, copy, readonly, nullable) void(^mcs_progressBlock)(float progress);
 @property (nonatomic, copy, readonly, nullable) void(^mcs_completionBlock)(NSError *_Nullable error);
@@ -49,12 +49,12 @@
     return self;
 }
 
-- (instancetype)initWithURL:(NSURL *)URL numberOfPreloadFiles:(NSUInteger)num progress:(void(^_Nullable)(float progress))progressBlock completed:(void(^_Nullable)(NSError *_Nullable error))completionBlock {
+- (instancetype)initWithURL:(NSURL *)URL numberOfPreloadedFiles:(NSUInteger)num progress:(void(^_Nullable)(float progress))progressBlock completed:(void(^_Nullable)(NSError *_Nullable error))completionBlock {
     self = [super init];
     if ( self ) {
         _semaphore = dispatch_semaphore_create(1);
         _URL = URL;
-        _numberOfPreloadFiles = num;
+        _numberOfPreloadedFiles = num;
         _mcs_progressBlock = progressBlock;
         _mcs_completionBlock = completionBlock;
     }
@@ -102,10 +102,10 @@
     }
     dispatch_semaphore_signal(_semaphore);
     
-    MCSAssetType type = [MCSURLRecognizer.shared assetTypeForURL:_URL];
+    MCSAssetType type = [MCSURL.shared assetTypeForURL:_URL];
     switch ( type ) {
         case MCSAssetTypeFILE: {
-            _prefetcher = _isPrefetchAllMode ?
+            _prefetcher = _isPrefetchAllMode || _numberOfPreloadedFiles != 0 ?
                 [FILEPrefetcher.alloc initWithURL:_URL delegate:self delegateQueue:dispatch_get_main_queue()] :
                 [FILEPrefetcher.alloc initWithURL:_URL preloadSize:_preloadSize delegate:self delegateQueue:dispatch_get_main_queue()];
         }
@@ -115,9 +115,9 @@
                 _prefetcher = [HLSPrefetcher.alloc initWithURL:_URL delegate:self delegateQueue:dispatch_get_main_queue()];
             }
             else {
-                _prefetcher = _preloadSize != 0 ?
-                    [HLSPrefetcher.alloc initWithURL:_URL preloadSize:_preloadSize delegate:self delegateQueue:dispatch_get_main_queue()] :
-                    [HLSPrefetcher.alloc initWithURL:_URL numberOfPreloadFiles:_numberOfPreloadFiles delegate:self delegateQueue:dispatch_get_main_queue()];
+                _prefetcher = _numberOfPreloadedFiles != 0 ?
+                    [HLSPrefetcher.alloc initWithURL:_URL numberOfPreloadedFiles:_numberOfPreloadedFiles delegate:self delegateQueue:dispatch_get_main_queue()] :
+                    [HLSPrefetcher.alloc initWithURL:_URL preloadSize:_preloadSize delegate:self delegateQueue:dispatch_get_main_queue()];
             }
         }
             break;
@@ -232,9 +232,9 @@
     return operation;
 }
 
-- (nullable id<MCSPrefetchTask>)prefetchWithHLSURL:(NSURL *)HLSURL numberOfPreloadFiles:(NSUInteger)num progress:(void(^_Nullable)(float progress))progressBlock completed:(void(^_Nullable)(NSError *_Nullable error))completionBlock {
-    if ( HLSURL == nil || num == 0 ) return nil;
-    MCSPrefetchOperation *operation = [MCSPrefetchOperation.alloc initWithURL:HLSURL numberOfPreloadFiles:num progress:progressBlock completed:completionBlock];
+- (nullable id<MCSPrefetchTask>)prefetchWithURL:(NSURL *)URL numberOfPreloadedFiles:(NSUInteger)num progress:(void(^_Nullable)(float progress))progressBlock completed:(void(^_Nullable)(NSError *_Nullable error))completionBlock {
+    if ( URL == nil || num == 0 ) return nil;
+    MCSPrefetchOperation *operation = [MCSPrefetchOperation.alloc initWithURL:URL numberOfPreloadedFiles:num progress:progressBlock completed:completionBlock];
     [_operationQueue addOperation:operation];
     return operation;
 }

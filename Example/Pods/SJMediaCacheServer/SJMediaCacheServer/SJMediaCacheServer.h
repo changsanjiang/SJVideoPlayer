@@ -73,6 +73,22 @@ NS_ASSUME_NONNULL_BEGIN
 ///
 - (nullable id<MCSPrefetchTask>)prefetchWithURL:(NSURL *)URL preloadSize:(NSUInteger)bytes progress:(void(^_Nullable)(float progress))progressBlock completed:(void(^_Nullable)(NSError *_Nullable error))completionBlock; // 预加载指定大小的数据
 
+/// Prefetch some assets in the cache for future use. assets are downloaded in low priority.
+///
+/// @param URL      An instance of NSURL that references a media asset.
+///
+/// @param num      The number of preloaded files. HLS media usually contains multiple ts files, you can specify the number of files to be preloaded.
+///
+/// @param progressBlock   This block will be invoked when progress updates.
+///
+/// @param completionBlock This block will be invoked when the current prefetching is completed. If an error occurred, an error object indicating how the prefetch failed, otherwise nil.
+///
+/// @return The task to cancel the current prefetching.
+///
+/// @note return nil if URL is nil.
+///
+- (nullable id<MCSPrefetchTask>)prefetchWithURL:(NSURL *)URL numberOfPreloadedFiles:(NSUInteger)num progress:(void(^_Nullable)(float progress))progressBlock completed:(void(^_Nullable)(NSError *_Nullable error))completionBlock;
+
 /// Cancels all queued and executing prefetch tasks.
 ///
 - (void)cancelAllPrefetchTasks; // 取消所有的预加载任务
@@ -111,7 +127,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 /// Resolve the identifier of the asset referenced by the URL.
 ///
-///     The asset identifier represents a unique asset. When different URLs references the same asset, you can set the block to resolve the identifier.
+///     The asset identifier represents a unique asset. When different URLs references the same asset, you can return the same identifier in the block.
 ///
 ///     This identifier will be used to identify the local cache. The same identifier will references the same cache.
 ///
@@ -156,11 +172,11 @@ NS_ASSUME_NONNULL_BEGIN
 ///
 ///     If 0, there is no count limit. The default value is 0.
 ///
-///     This is not a strict limit—if the cache goes over the limit, a asset in the cache could be removed instantly, later, or possibly never, depending on the usage details of the asset.
+///     This is not a strict limit—if the cache goes over the limit, an asset in the cache could be removed instantly, later, or possibly never, depending on the usage details of the asset.
 ///
 @property (nonatomic) NSUInteger cacheCountLimit; // 个数限制
 
-/// The maximum length of time to keep a asset in the cache, in seconds.
+/// The maximum length of time to keep an asset in the cache, in seconds.
 ///
 ///     If 0, there is no expiring limit.  The default value is 0.
 ///

@@ -232,9 +232,7 @@ static const int httpLogLevel = HTTP_LOG_LEVEL_WARN; // | HTTP_LOG_FLAG_TRACE;
 	});
 	
 	int theFileFD = fileFD;
-	#if !OS_OBJECT_USE_OBJC
-	dispatch_source_t theReadSource = readSource;
-	#endif
+	
 	
 	dispatch_source_set_cancel_handler(readSource, ^{
 		
@@ -244,9 +242,7 @@ static const int httpLogLevel = HTTP_LOG_LEVEL_WARN; // | HTTP_LOG_FLAG_TRACE;
 		
 		HTTPLogTrace2(@"%@: cancelBlock - Close fd[%i]", THIS_FILE, theFileFD);
 		
-		#if !OS_OBJECT_USE_OBJC
-		dispatch_release(theReadSource);
-		#endif
+		
 		close(theFileFD);
 	});
 	
@@ -393,10 +389,6 @@ static const int httpLogLevel = HTTP_LOG_LEVEL_WARN; // | HTTP_LOG_FLAG_TRACE;
 - (void)dealloc
 {
 	HTTPLogTrace();
-	
-	#if !OS_OBJECT_USE_OBJC
-	if (readQueue) dispatch_release(readQueue);
-	#endif
 	
 	if (readBuffer)
 		free(readBuffer);

@@ -17,12 +17,13 @@
 #import <SJBaseVideoPlayer/SJAVMediaPlayer.h>
 #import <SJBaseVideoPlayer/UIScrollView+ListViewAutoplaySJAdd.h>
 #import <SJMediaCacheServer/SJMediaCacheServer.h>
+#import <SJBaseVideoPlayer/UIView+SJBaseVideoPlayerExtended.h>
 
-@interface SJDYPlaybackListViewController ()<UITableViewDataSource, UITableViewDelegate, SJPlayerAutoplayDelegate>
+@interface SJDYPlaybackListViewController ()<UITableViewDataSource, UITableViewDelegate>
 @property (nonatomic, strong) UITableView *tableView;
-@property (nonatomic, strong) SJBaseVideoPlayer *player;
 @property (nonatomic, strong) SJDYDataProvider *dataProvider;
 @property (nonatomic, strong) NSMutableArray<SJVideoModel *> *list;
+@property (nonatomic, strong) id<SJDYDemoPlayer> curPlayer;
 
 @property (nonatomic, strong, nullable) id<MCSPrefetchTask> prePrefetchTask;
 @property (nonatomic, strong, nullable) id<MCSPrefetchTask> nextPrefetchTask;
@@ -37,7 +38,6 @@
     [super viewDidLoad];
     [self _setupViews];
     [self _setupMediaCacheServer];
-    [self _setupVideoPlayer];
     [self _setupTableView];
 }
 
@@ -46,30 +46,14 @@
     [_nextPrefetchTask cancel];
 }
 
-- (void)sj_playerNeedPlayNewAssetAtIndexPath:(NSIndexPath *)indexPath {
-    if ( indexPath == nil )
-        return;
-    // 进行播放
-    NSURL *URL = _list[indexPath.row].URL;
-    NSURL *playbackURL = [SJMediaCacheServer.shared playbackURLWithURL:URL];
-    _player.URLAsset = [SJVideoPlayerURLAsset.alloc initWithURL:playbackURL playModel:[SJPlayModel playModelWithTableView:_tableView indexPath:indexPath]];
-    [_player play];
-    
-    // 进行预加载
-    [_prePrefetchTask cancel];
-    [_nextPrefetchTask cancel];
-    _prePrefetchTask = [self _prefetchTaskWithIndex:indexPath.row - 1]; // 预加载前一个视频
-    _nextPrefetchTask = [self _prefetchTaskWithIndex:indexPath.row + 1]; // 预加载后一个视频
-}
-
 // 当用户暂停时, 将不会调用播放
 - (void)playIfNeeded {
-    if ( !_player.isUserPaused ) [_player play];
+    if ( !_curPlayer.isUserPaused ) [_curPlayer play];
 }
 
 // 暂停播放. 如果该方法调用之前用户已暂停播放了, 当执行此操作时不会影响用户暂停态
 - (void)pause {
-    if ( !_player.isPaused ) [_player pause];
+    if ( !_curPlayer.isPaused ) [_curPlayer pause];
 }
 
 #pragma mark -
@@ -83,37 +67,69 @@
 }
 
 - (void)tableView:(UITableView *)tableView willDisplayCell:(SJDYTableViewCell *)cell forRowAtIndexPath:(NSIndexPath *)indexPath {
-    [self _refreshCell:cell atIndexPath:indexPath];
-}
-
-- (void)tableView:(UITableView *)tableView didEndDisplayingCell:(UITableViewCell *)cell forRowAtIndexPath:(NSIndexPath *)indexPath {
-    if ( [_tableView.sj_currentPlayingIndexPath isEqual:indexPath] ) {
-        [_player stop];
-        [_tableView sj_removeCurrentPlayerView];
+    NSURL *playbackURL = _list[indexPath.row].URL;
+    [cell.player configureWithURL:playbackURL];
+    __weak typeof(self) _self = self;
+    cell.player.allowsPlayback = ^BOOL(id<SJDYDemoPlayer>  _Nonnull player) {
+        __strong typeof(_self) self = _self;
+        if ( self == nil ) return NO;
+        return [self.delegate canPerformPlayForListViewController:self];
+    };
+    if ( _curPlayer == nil ) {
+        _curPlayer = cell.player;
     }
+    [_prePrefetchTask cancel];
+    [_nextPrefetchTask cancel];
+    _prePrefetchTask = [self _prefetchTaskWithIndex:indexPath.row - 1];
+    _nextPrefetchTask = [self _prefetchTaskWithIndex:indexPath.row + 1];
 }
 
 - (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath {
     return self.view.bounds.size.height;
 }
-
-- (void)viewDidAppear:(BOOL)animated {
-    [super viewDidAppear:animated];
-    [self.player vc_viewDidAppear];
-}
-
-- (void)viewWillDisappear:(BOOL)animated {
-    [super viewWillDisappear:animated];
-    [self.player vc_viewWillDisappear];
-}
-
-- (void)viewDidDisappear:(BOOL)animated {
-    [super viewDidDisappear:animated];
-    [self.player vc_viewDidDisappear];
-}
-
+ 
 - (BOOL)prefersHomeIndicatorAutoHidden {
     return YES;
+}
+
+- (void)scrollViewDidEndDecelerating:(UIScrollView *)scrollView {
+    [self _checkVisibleCells];
+}
+
+- (void)scrollViewDidEndDragging:(UIScrollView *)scrollView willDecelerate:(BOOL)decelerate {
+    if ( !decelerate ) [self _checkVisibleCells];
+}
+
+- (void)scrollViewDidScrollToTop:(UIScrollView *)scrollView {
+    [self _checkVisibleCells];
+}
+
+#pragma mark - mark
+
+- (void)_checkVisibleCells {
+    SJDYTableViewCell *target = nil;
+    CGRect max = CGRectZero;
+    for ( SJDYTableViewCell *cell in _tableView.visibleCells ) {
+        CGRect intersection = [cell intersectionWithView:_tableView insets:UIEdgeInsetsZero];
+        if ( intersection.size.height > max.size.height ) {
+            target = cell;
+            max = intersection;
+        }
+    }
+
+    if ( target == nil )
+        return;
+    
+    id<SJDYDemoPlayer> cur = target.player;
+    if ( cur != _curPlayer ) {
+        [_curPlayer pause];
+    }
+
+    _curPlayer = cur;
+
+    if ( !_curPlayer.isUserPaused ) {
+        [_curPlayer play];
+    }
 }
 
 #pragma mark -
@@ -125,52 +141,7 @@
     _list = NSMutableArray.alloc.init;
     _dataProvider = SJDYDataProvider.alloc.init;
 }
-
-- (void)_setupVideoPlayer {
-    _player = SJBaseVideoPlayer.player;
-    _player.view.backgroundColor = UIColor.clearColor;
-    _player.presentView.backgroundColor = UIColor.clearColor;
-    _player.videoGravity = AVLayerVideoGravityResizeAspectFill;
-    _player.autoplayWhenSetNewAsset = NO;
-    _player.autoManageViewToFitOnScreenOrRotation = NO;
-    _player.rotationManager.disabledAutorotation = YES;
-    _player.pauseWhenAppDidEnterBackground = NO;
-    _player.resumePlaybackWhenScrollAppeared = NO;
-    _player.resumePlaybackWhenAppDidEnterForeground = NO;
-
-    __weak typeof(self) _self = self;
-    // 调用play时, 询问代理是否允许播放
-    _player.canPlayAnAsset = ^BOOL(__kindof SJBaseVideoPlayer * _Nonnull player) {
-        __strong typeof(_self) self = _self;
-        if ( !self ) return NO;
-        return [self.delegate canPerformPlayForListViewController:self];
-    };
-    
-    // 播放完毕后, 重新播放. 也就是循环播放
-    _player.playbackObserver.playbackDidFinishExeBlock = ^(__kindof SJBaseVideoPlayer * _Nonnull player) {
-        [player replay];
-    };
-    
-    // 设置仅支持单击手势
-    _player.gestureControl.supportedGestureTypes = SJPlayerGestureTypeMask_SingleTap;
-    // 重新定义单击手势的处理, 这里为 单击暂停或播放
-    _player.gestureControl.singleTapHandler = ^(id<SJPlayerGestureControl>  _Nonnull control, CGPoint location) {
-        __strong typeof(_self) self = _self;
-        if ( !self ) return;
-        self.player.isPaused ? [self.player play] : [self.player pauseForUser];
-    };
-    
-    // 播放状态改变后刷新cell显示
-    _player.playbackObserver.timeControlStatusDidChangeExeBlock = ^(__kindof SJBaseVideoPlayer * _Nonnull player) {
-        __strong typeof(_self) self = _self;
-        if ( !self ) return;
-        NSIndexPath *indexPath = self.tableView.sj_currentPlayingIndexPath;
-        if ( indexPath == nil )
-            return;
-        [self _refreshCell:[self.tableView cellForRowAtIndexPath:indexPath] atIndexPath:indexPath];
-    };
-}
-
+ 
 - (void)_setupTableView {
     _tableView = [UITableView.alloc initWithFrame:CGRectZero style:UITableViewStylePlain];
     _tableView.backgroundColor = UIColor.blackColor;
@@ -198,12 +169,14 @@
                 NSLog(@"%@", error);
                 return;
             }
+            // 如果是请求首页的数据, 即下拉
             if ( self.tableView.sj_pageNum == self.tableView.sj_beginPageNum ) {
-                // 下拉刷新时, 清理所有的数据
+                // 下拉刷新时, 清理播放数据
+                [self.curPlayer stop];
+                self.curPlayer = nil;
                 [self.list removeAllObjects];
-                [self.tableView sj_removeCurrentPlayerView];
-                self.player.URLAsset = nil;
             }
+            
             // 添加到播放列表中, 刷新列表
             [self.list addObjectsFromArray:list];
             [self.tableView reloadData];
@@ -213,10 +186,6 @@
     }];
     
     [_tableView sj_exeHeaderRefreshingAnimated:NO]; // 执行头部刷新
-    
-    // 配置自动播放
-    SJPlayerAutoplayConfig *config = [SJPlayerAutoplayConfig configWithAutoplayDelegate:self];
-    [_tableView sj_enableAutoplayWithConfig:config];
 }
 
 // 配置边播边缓存模块
@@ -235,26 +204,10 @@
 
 #pragma mark -
 
-- (void)_refreshCell:(SJDYTableViewCell *)cell atIndexPath:(NSIndexPath *)indexPath {
-    NSIndexPath *current = _player.URLAsset.playModel.indexPath;
-    // 当前播放的indexPath是否一致
-    if ( [current isEqual:indexPath] ) {
-        // 如果播放器处于暂停状态, 并且是用户暂停的, 则显示暂停按钮
-        if ( _player.isPaused ) {
-            cell.isPlayImageViewHidden = !_player.isUserPaused;
-        }
-        else
-            cell.isPlayImageViewHidden = YES;
-    }
-    else {
-        cell.isPlayImageViewHidden = YES;
-    }
-}
-
-// 预加载指定位置的某个资源`10M`的内容
+// 预加载指定位置的某个资源`1M`的内容
 - (nullable id<MCSPrefetchTask>)_prefetchTaskWithIndex:(NSInteger)index {
     if ( index < 0 || index >= _list.count )
         return nil;
-    return [SJMediaCacheServer.shared prefetchWithURL:_list[index].URL preloadSize:10 * 1024 * 1024];
+    return [SJMediaCacheServer.shared prefetchWithURL:_list[index].URL preloadSize:1 * 1024 * 1024];
 }
 @end

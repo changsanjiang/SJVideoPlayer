@@ -47,7 +47,7 @@ static dispatch_queue_t mcs_queue;
 + (void)initialize {
     static dispatch_once_t onceToken;
     dispatch_once(&onceToken, ^{
-        mcs_queue = dispatch_queue_create("queue.FILEContentReader", DISPATCH_QUEUE_CONCURRENT);
+        mcs_queue = mcs_dispatch_queue_create("queue.FILEContentReader", DISPATCH_QUEUE_CONCURRENT);
     });
 }
 
@@ -182,11 +182,15 @@ static dispatch_queue_t mcs_queue;
 
 #pragma mark - MCSDownloadTaskDelegate
 
+- (void)downloadTask:(NSURLSessionTask *)task willPerformHTTPRedirection:(NSHTTPURLResponse *)response newRequest:(NSURLRequest *)request {
+    
+}
+
 - (void)downloadTask:(NSURLSessionTask *)task didReceiveResponse:(NSHTTPURLResponse *)response {
     dispatch_barrier_sync(mcs_queue, ^{
         if ( _isClosed )
             return;
-        _range = MCSGetResponseNSRange(MCSGetResponseContentRange(response));
+        _range = MCSResponseRange(MCSResponseGetContentRange(response));
         _content = [_asset createContentWithResponse:response];
         [_content readwriteRetain];
         

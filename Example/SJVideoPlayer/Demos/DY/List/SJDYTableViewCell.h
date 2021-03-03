@@ -7,13 +7,24 @@
 //
 
 #import "SJBaseTableViewCell.h"
+@protocol SJDYDemoPlayer, SJDYDemoPlayerDelegate;
 
 NS_ASSUME_NONNULL_BEGIN
-
 @interface SJDYTableViewCell : SJBaseTableViewCell
-
-@property (nonatomic) BOOL isPlayImageViewHidden;
-
+@property (nonatomic, strong, readonly) id<SJDYDemoPlayer> player;
 @end
 
+@protocol SJDYDemoPlayer <NSObject>
+- (void)configureWithURL:(NSURL *)URL;
+
+@property (nonatomic, copy, nullable) BOOL(^allowsPlayback)(id<SJDYDemoPlayer> player);
+
+@property (nonatomic, readonly) BOOL isUserPaused;
+@property (nonatomic, readonly) BOOL isPaused;
+
+- (void)play;
+- (void)pause;
+- (void)stop;
+- (void)pauseForUser;
+@end
 NS_ASSUME_NONNULL_END

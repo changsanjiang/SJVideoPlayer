@@ -7,11 +7,11 @@
 //
 
 #import <Foundation/Foundation.h>
-@protocol HLSParserDelegate;
+#import "MCSDefines.h"
+@protocol HLSParserDelegate, HLSURIItem;
 @class HLSAsset;
 
 NS_ASSUME_NONNULL_BEGIN
-
 @interface HLSParser : NSObject
 + (nullable instancetype)parserInAsset:(HLSAsset *)asset;
 
@@ -22,17 +22,25 @@ NS_ASSUME_NONNULL_BEGIN
 - (void)close;
 
 @property (nonatomic, weak, readonly, nullable) HLSAsset *asset;
-@property (nonatomic, readonly) NSUInteger TsCount;
+@property (nonatomic, readonly) NSUInteger allItemsCount;
+@property (nonatomic, readonly) NSUInteger tsCount;
+
+- (nullable id<HLSURIItem>)itemAtIndex:(NSUInteger)index;
+- (BOOL)isVariantItem:(id<HLSURIItem>)item;
+- (nullable NSArray<id<HLSURIItem>> *)renditionsItemsForVariantItem:(id<HLSURIItem>)item;
+
 @property (nonatomic, readonly) BOOL isClosed;
 @property (nonatomic, readonly) BOOL isDone;
-
-- (nullable NSString *)URIAtIndex:(NSUInteger)index;
 @end
-
 
 @protocol HLSParserDelegate <NSObject>
 - (void)parserParseDidFinish:(HLSParser *)parser;
 - (void)parser:(HLSParser *)parser anErrorOccurred:(NSError *)error;
 @end
 
+@protocol HLSURIItem <NSObject>
+@property (nonatomic, readonly) MCSDataType type;
+@property (nonatomic, copy, readonly) NSString *URI;
+@property (nonatomic, copy, readonly, nullable) NSDictionary *HTTPAdditionalHeaders;
+@end
 NS_ASSUME_NONNULL_END

@@ -29,6 +29,7 @@ NS_ASSUME_NONNULL_BEGIN
 @end
 
 @protocol MCSDownloadTaskDelegate <NSObject>
+- (void)downloadTask:(NSURLSessionTask *)task willPerformHTTPRedirection:(NSHTTPURLResponse *)response newRequest:(NSURLRequest *)request;
 - (void)downloadTask:(NSURLSessionTask *)task didReceiveResponse:(NSURLResponse *)response;
 - (void)downloadTask:(NSURLSessionTask *)task didReceiveData:(NSData *)data;
 - (void)downloadTask:(NSURLSessionTask *)task didCompleteWithError:(NSError *)error;

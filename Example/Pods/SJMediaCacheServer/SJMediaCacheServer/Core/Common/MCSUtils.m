@@ -7,20 +7,27 @@
 //
 
 #import "MCSUtils.h"
+#import "MCSConsts.h"
 #ifdef DEBUG
 #include <mach/mach_time.h>
 #endif
 
+BOOL
+MCSRequestIsRangeRequest(NSURLRequest *request) {
+    NSDictionary *requestHeaders = request.allHTTPHeaderFields;
+    return (requestHeaders[@"Range"] ?: requestHeaders[@"range"]) != nil;
+}
+
 MCSResponseContentRange
-MCSGetResponseContentRange(NSHTTPURLResponse *response) {
-    if      ( response.statusCode == 200 ) {
-        NSUInteger totalLength = MCSGetResponseContentLength(response);
+MCSResponseGetContentRange(NSHTTPURLResponse *response) {
+    if      ( response.statusCode == MCS_RESPONSE_CODE_OK ) {
+        NSUInteger totalLength = MCSResponseGetContentLength(response);
         if ( totalLength != 0 )
             return (MCSResponseContentRange){0, totalLength, totalLength};
     }
-    else if ( response.statusCode == 206 ) {
+    else if ( response.statusCode == MCS_RESPONSE_CODE_PARTIAL_CONTENT ) {
         NSDictionary *responseHeaders = response.allHeaderFields;
-        NSString *bytes = responseHeaders[@"Content-Range"];
+        NSString *bytes = responseHeaders[@"Content-Range"] ?: responseHeaders[@"content-range"];
         if ( bytes.length != 0 ) {
             NSString *prefix = @"bytes ";
             NSString *rangeString = [bytes substringWithRange:NSMakeRange(prefix.length, bytes.length - prefix.length)];
@@ -36,31 +43,41 @@ MCSGetResponseContentRange(NSHTTPURLResponse *response) {
 }
 
 NSRange
-MCSGetResponseNSRange(MCSResponseContentRange responseRange) {
+MCSResponseRange(MCSResponseContentRange responseRange) {
     return NSMakeRange(responseRange.start, responseRange.end + 1 - responseRange.start);
 }
 
 NSString *
-MCSGetResponseServer(NSHTTPURLResponse *response) {
+MCSResponseGetServer(NSHTTPURLResponse *response) {
     NSDictionary *responseHeaders = response.allHeaderFields;
-    return responseHeaders[@"Server"];
+    return responseHeaders[@"Server"] ?: responseHeaders[@"server"];
 }
 
 NSString *
-MCSGetResponseContentType(NSHTTPURLResponse *response) {
+MCSResponseGetContentType(NSHTTPURLResponse *response) {
     NSDictionary *responseHeaders = response.allHeaderFields;
-    return responseHeaders[@"Content-Type"];
+    return responseHeaders[@"Content-Type"] ?: responseHeaders[@"content-type"];
 }
 
 NSUInteger
-MCSGetResponseContentLength(NSHTTPURLResponse *response) {
+MCSResponseGetContentLength(NSHTTPURLResponse *response) {
     NSDictionary *responseHeaders = response.allHeaderFields;
     NSNumber *contentLength = responseHeaders[@"Content-Length"] ?: responseHeaders[@"content-length"];
     return (NSUInteger)[contentLength longLongValue];
 }
 
+MCSResponseContentRange const MCSResponseContentRangeUndefined = {NSNotFound, NSNotFound, NSNotFound};
+
+BOOL
+MCSResponseRangeIsUndefined(MCSResponseContentRange range) {
+    return
+        range.start == NSNotFound &&
+        range.end == NSNotFound &&
+        range.totalLength == NSNotFound;
+}
+
 MCSRequestContentRange
-MCSGetRequestContentRange(NSDictionary *requestHeaders) {
+MCSRequestGetContentRange(NSDictionary *requestHeaders) {
     if ( requestHeaders.count == 0 )
         return (MCSRequestContentRange){NSNotFound, NSNotFound};
     
@@ -153,7 +170,7 @@ MCSGetRequestContentRange(NSDictionary *requestHeaders) {
         anticipate potentially large decimal numerals and prevent parsing
         errors due to integer conversion overflows.
      */
-    NSString *bytes = requestHeaders[@"Range"];
+    NSString *bytes = requestHeaders[@"Range"] ?: requestHeaders[@"range"];
     NSString *prefix = @"bytes=";
     NSString *rangeString = [bytes substringWithRange:NSMakeRange(prefix.length, bytes.length - prefix.length)];
     NSArray<NSString *> *components = [rangeString componentsSeparatedByString:@"-"];
@@ -169,7 +186,7 @@ MCSGetRequestContentRange(NSDictionary *requestHeaders) {
 }
 
 NSRange
-MCSGetRequestNSRange(MCSRequestContentRange requestRange) {
+MCSRequestRange(MCSRequestContentRange requestRange) {
     NSUInteger length = 0;
     if ( requestRange.start == NSNotFound || requestRange.end == NSNotFound )
         length = NSNotFound;
@@ -177,6 +194,15 @@ MCSGetRequestNSRange(MCSRequestContentRange requestRange) {
         length = requestRange.end + 1 - requestRange.start;
     
     return NSMakeRange(requestRange.start, length);
+}
+
+MCSRequestContentRange const MCSRequestContentRangeUndefined = {NSNotFound, NSNotFound};
+
+BOOL
+MCSRequestRangeIsUndefined(MCSRequestContentRange range) {
+    return
+        range.start == NSNotFound &&
+        range.end == NSNotFound;
 }
 
 BOOL
@@ -195,7 +221,7 @@ MCSSuggestedFilePathExtension(NSHTTPURLResponse *response) {
     if ( extension.length != 0 )
         return extension;
     
-    NSString *contentType = MCSGetResponseContentType(response);
+    NSString *contentType = MCSResponseGetContentType(response);
     return contentType.lastPathComponent;
 }
 
@@ -222,5 +248,50 @@ MCSEndTime(uint64_t elapsed_time) {
     fTotalT = fTotalT * scale;          // convert this to nanoseconds...
     fTotalT = fTotalT / 1000000000.0;
     return fTotalT;
+}
+#endif
+
+#pragma mark -
+
+#ifdef MCS_QUEUE_ENABLE_DEBUG
+static NSHashTable<dispatch_queue_t> *queues = nil;
+static dispatch_queue_t checkQueue;
+static dispatch_queue_t serialQueue;
+void
+_checkRecursively() {
+    dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(MCS_QUEUE_CHECK_INTERVAL * NSEC_PER_SEC)), serialQueue, ^{
+        NSArray *array = NSAllHashTableObjects(queues);
+        if ( array.count == 0 ) return;
+        _checkRecursively();
+
+        dispatch_async(dispatch_get_global_queue(0, 0), ^{
+            dispatch_apply(array.count, checkQueue, ^(size_t idx) {
+                dispatch_queue_t cur = array[idx];
+                const char *label = dispatch_queue_get_label(cur);
+                printf("mcs_debug: will check <%s>.\n", label);
+                dispatch_sync(cur, ^{
+                    printf("mcs_debug: did perform sync task in <%s>.\n",label);
+                });
+            });
+        });
+    });
+}
+
+dispatch_queue_t
+__mcs_dispatch_queue_create(const char *_Nullable label, dispatch_queue_attr_t _Nullable attr) {
+    dispatch_queue_t queue = dispatch_queue_create(label, attr);
+    // 死锁检测
+    static dispatch_once_t onceToken;
+    dispatch_once(&onceToken, ^{
+        queues = NSHashTable.weakObjectsHashTable;
+        checkQueue = dispatch_queue_create("mcs.debug.queue.check", DISPATCH_QUEUE_CONCURRENT);
+        serialQueue = dispatch_queue_create("mcs.debug.queue.serial", DISPATCH_QUEUE_SERIAL);
+        _checkRecursively();
+    });
+    
+    dispatch_sync(serialQueue, ^{
+        [queues addObject:queue];
+    });
+    return queue;
 }
 #endif

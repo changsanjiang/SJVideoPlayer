@@ -16,12 +16,12 @@
     static dispatch_once_t onceToken;
     dispatch_once(&onceToken, ^{
         availableHeaderKeys = @[
-            @"User-Agent",
-            @"Connection",
-            @"Accept",
-            @"Accept-Encoding",
-            @"Accept-Language",
-            @"Range"
+            @"User-Agent", @"user-agent",
+            @"Connection", @"connection",
+            @"Accept", @"accept",
+            @"Accept-Encoding", @"accept-encoding",
+            @"Accept-Language", @"accept-language",
+            @"Range", @"range"
         ];
     });
     
@@ -43,7 +43,7 @@
 }
 
 - (NSRange)mcs_range {
-    return MCSGetRequestNSRange(MCSGetRequestContentRange(self.mcs_headers));
+    return MCSRequestRange(MCSRequestGetContentRange(self.mcs_headers));
 }
 
 - (NSDictionary *)mcs_headers {

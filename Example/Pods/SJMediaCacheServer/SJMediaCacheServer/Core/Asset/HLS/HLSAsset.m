@@ -8,7 +8,7 @@
 
 #import "HLSAsset.h"
 #import "MCSConfiguration.h"
-#import "MCSURLRecognizer.h"
+#import "MCSURL.h"
 #import "MCSUtils.h"
 #import "MCSConsts.h"
 #import "HLSContentProvider.h"
@@ -28,6 +28,7 @@ static dispatch_queue_t mcs_queue;
 @property (nonatomic) NSInteger id;
 @property (nonatomic, copy) NSString *name;
 @property (nonatomic, copy, nullable) NSString *TsContentType;
+@property (nonatomic, weak, nullable) HLSAsset *root;
 @end
 
 @implementation HLSAsset
@@ -39,7 +40,7 @@ static dispatch_queue_t mcs_queue;
 + (void)initialize {
     static dispatch_once_t onceToken;
     dispatch_once(&onceToken, ^{
-        mcs_queue = dispatch_queue_create("queue.HLSAsset", DISPATCH_QUEUE_CONCURRENT);
+        mcs_queue = mcs_dispatch_queue_create("queue.HLSAsset", DISPATCH_QUEUE_CONCURRENT);
     });
 }
 
@@ -52,7 +53,7 @@ static dispatch_queue_t mcs_queue;
 }
 
 + (NSArray<NSString *> *)sql_blacklist {
-    return @[@"readwriteCount", @"isStored", @"configuration", @"contents", @"parser"];
+    return @[@"readwriteCount", @"isStored", @"configuration", @"contents", @"parser", @"root"];
 }
 
 - (instancetype)initWithName:(NSString *)name {
@@ -78,10 +79,6 @@ static dispatch_queue_t mcs_queue;
 }
 
 #pragma mark - mark
-
-- (void)lock:(void (^)(void))block {
-    dispatch_barrier_sync(mcs_queue, block);
-}
 
 - (void)setParser:(nullable HLSParser *)parser {
     dispatch_barrier_sync(mcs_queue, ^{
@@ -122,7 +119,7 @@ static dispatch_queue_t mcs_queue;
 }
 
 - (NSString *)AESKeyFilePathWithURL:(NSURL *)URL {
-    return [_provider AESKeyFilePathWithName:[MCSURLRecognizer.shared nameWithUrl:URL.absoluteString suffix:HLS_SUFFIX_AES_KEY]];
+    return [_provider AESKeyFilePathWithName:[MCSURL.shared nameWithUrl:URL.absoluteString suffix:HLS_SUFFIX_AES_KEY]];
 }
 
 - (nullable NSString *)TsContentType {
@@ -133,12 +130,27 @@ static dispatch_queue_t mcs_queue;
     return TsContentType;
 }
 
-- (NSUInteger)TsCount {
-    return self.parser.TsCount;
+- (NSUInteger)tsCount {
+    return self.parser.tsCount;
+}
+
+@synthesize root = _root;
+- (void)setRoot:(nullable HLSAsset *)root {
+    dispatch_barrier_sync(mcs_queue, ^{
+        _root = root;
+    });
+}
+
+- (nullable HLSAsset *)root {
+    __block HLSAsset *root = nil;
+    dispatch_sync(mcs_queue, ^{
+        root = _root;
+    });
+    return root;
 }
 
 - (nullable id<MCSAssetContent>)createTsContentWithResponse:(NSHTTPURLResponse *)response {
-    NSString *TsContentType = MCSGetResponseContentType(response);
+    NSString *TsContentType = MCSResponseGetContentType(response);
     __block BOOL isUpdated = NO;
     __block HLSContentTs *content = nil;
     dispatch_barrier_sync(mcs_queue, ^{
@@ -147,9 +159,20 @@ static dispatch_queue_t mcs_queue;
             isUpdated = YES;
         }
         
-        NSString *name = [MCSURLRecognizer.shared nameWithUrl:response.URL.absoluteString suffix:HLS_SUFFIX_TS];
-        NSUInteger totalLength = response.expectedContentLength;
-        content = [_provider createTsContentWithName:name totalLength:totalLength];
+        NSString *name = [MCSURL.shared nameWithUrl:response.URL.absoluteString suffix:HLS_SUFFIX_TS];
+        MCSResponseContentRange range = MCSResponseContentRangeUndefined;
+        if ( response.statusCode == MCS_RESPONSE_CODE_PARTIAL_CONTENT ) {
+            range = MCSResponseGetContentRange(response);
+        }
+        
+        if ( MCSResponseRangeIsUndefined(range) ) {
+            NSUInteger totalLength = response.expectedContentLength;
+            content = [_provider createTsContentWithName:name totalLength:totalLength];
+        }
+        else {
+            content = [_provider createTsContentWithName:name totalLength:range.totalLength inRange:MCSResponseRange(range)];
+        }
+        
         [_contents addObject:content];
     });
     
@@ -162,12 +185,24 @@ static dispatch_queue_t mcs_queue;
     return [_provider TsContentFilePathForFilename:filename];
 }
 
-- (nullable id<MCSAssetContent>)TsContentForURL:(NSURL *)URL {
-    NSString *name = [MCSURLRecognizer.shared nameWithUrl:URL.absoluteString suffix:HLS_SUFFIX_TS];
+- (nullable id<MCSAssetContent>)TsContentForRequest:(NSURLRequest *)request {
+    NSString *name = [MCSURL.shared nameWithUrl:request.URL.absoluteString suffix:HLS_SUFFIX_TS];
     __block HLSContentTs *ts = nil;
     dispatch_barrier_sync(mcs_queue, ^{
+        // range
+        NSRange r = NSMakeRange(0, 0);
+        BOOL isRangeRequest = MCSRequestIsRangeRequest(request);
+        MCSRequestContentRange range = MCSRequestContentRangeUndefined;
+        if ( isRangeRequest ) {
+            range = MCSRequestGetContentRange(request.allHTTPHeaderFields);
+            r = MCSRequestRange(range);
+        }
+        
         for ( HLSContentTs *content in _contents ) {
-            if ( [content.name isEqualToString:name] && content.length == content.totalLength ) {
+            if ( ![content.name isEqualToString:name] ) continue;
+            if ( isRangeRequest && !NSEqualRanges(r, content.range) ) continue;
+            
+            if ( content.length == content.range.length ) {
                 ts = content;
                 break;
             }
@@ -181,7 +216,7 @@ static dispatch_queue_t mcs_queue;
 - (NSInteger)readwriteCount {
     __block NSInteger readwriteCount = 0;
     dispatch_sync(mcs_queue, ^{
-        readwriteCount = _readwriteCount;
+        readwriteCount = _root != nil ? _root->_readwriteCount : _readwriteCount;
     });
     return readwriteCount;
 }
@@ -189,7 +224,10 @@ static dispatch_queue_t mcs_queue;
 - (void)readwriteRetain {
     [self willChangeValueForKey:kReadwriteCount];
     dispatch_barrier_sync(mcs_queue, ^{
-        _readwriteCount += 1;
+        if ( _root != nil )
+            _root->_readwriteCount += 1;
+        else
+            _readwriteCount += 1;
     });
     [self didChangeValueForKey:kReadwriteCount];
 }
@@ -197,7 +235,11 @@ static dispatch_queue_t mcs_queue;
 - (void)readwriteRelease {
     [self willChangeValueForKey:kReadwriteCount];
     dispatch_barrier_sync(mcs_queue, ^{
-        if ( _readwriteCount > 0 ) {
+        if ( _root != nil) {
+            if ( _root->_readwriteCount > 0 )
+                _root->_readwriteCount -= 1;
+        }
+        else if ( _readwriteCount > 0 ) {
             _readwriteCount -= 1;
         }
     });
@@ -210,6 +252,7 @@ static dispatch_queue_t mcs_queue;
 // 合并文件
 - (void)_mergeContents {
     dispatch_barrier_sync(mcs_queue, ^{
+        if ( _root != nil && _root->_readwriteCount != 0 ) return;
         if ( _readwriteCount != 0 ) return;
         if ( _isStored ) return;
         
@@ -223,7 +266,7 @@ static dispatch_queue_t mcs_queue;
             HLSContentTs *obj1 = contents[i];
             for ( NSInteger j = i + 1 ; j < contents.count ; ++ j ) {
                 HLSContentTs *obj2 = contents[j];
-                if ( [obj1.name isEqualToString:obj2.name] ) {
+                if ( [obj1.name isEqualToString:obj2.name] && NSEqualRanges(obj1.range, obj2.range) ) {
                     [deletes addObject:obj1.length >= obj2.length ? obj2 : obj1];
                 }
             }
@@ -234,7 +277,7 @@ static dispatch_queue_t mcs_queue;
             [_contents removeObjectsInArray:deletes];
         }
 
-        if ( _contents.count != 0 && _contents.count == _parser.TsCount ) {
+        if ( _contents.count == _parser.tsCount ) {
             BOOL isStoredAllContents = YES;
             for ( HLSContentTs *content in _contents ) {
                 if ( content.length != content.totalLength ) {

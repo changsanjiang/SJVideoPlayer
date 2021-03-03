@@ -9,27 +9,35 @@
 #import <Foundation/Foundation.h>
 
 NS_ASSUME_NONNULL_BEGIN
+
+FOUNDATION_EXTERN BOOL
+MCSRequestIsRangeRequest(NSURLRequest *request);
+
 typedef struct response_content_range {
     NSUInteger start; // `NSNotFound` means undefined
     NSUInteger end;
     NSUInteger totalLength;
 } MCSResponseContentRange;
 
-
 FOUNDATION_EXTERN MCSResponseContentRange
-MCSGetResponseContentRange(NSHTTPURLResponse *response);
+MCSResponseGetContentRange(NSHTTPURLResponse *response);
 
 FOUNDATION_EXTERN NSRange
-MCSGetResponseNSRange(MCSResponseContentRange responseRange);
+MCSResponseRange(MCSResponseContentRange range);
 
 FOUNDATION_EXTERN NSString *
-MCSGetResponseServer(NSHTTPURLResponse *response);
+MCSResponseGetServer(NSHTTPURLResponse *response);
 
 FOUNDATION_EXTERN NSString *
-MCSGetResponseContentType(NSHTTPURLResponse *response);
+MCSResponseGetContentType(NSHTTPURLResponse *response);
 
 FOUNDATION_EXPORT NSUInteger
-MCSGetResponseContentLength(NSHTTPURLResponse *response);
+MCSResponseGetContentLength(NSHTTPURLResponse *response);
+
+FOUNDATION_EXTERN MCSResponseContentRange const MCSResponseContentRangeUndefined;
+
+FOUNDATION_EXPORT BOOL
+MCSResponseRangeIsUndefined(MCSResponseContentRange range);
 
 #pragma mark -
 
@@ -39,10 +47,15 @@ typedef struct request_content_range {
 } MCSRequestContentRange;
 
 FOUNDATION_EXTERN MCSRequestContentRange
-MCSGetRequestContentRange(NSDictionary *requestHeaders);
+MCSRequestGetContentRange(NSDictionary *requestHeaders);
 
 FOUNDATION_EXTERN NSRange
-MCSGetRequestNSRange(MCSRequestContentRange requestRange);
+MCSRequestRange(MCSRequestContentRange range);
+
+FOUNDATION_EXTERN MCSRequestContentRange const MCSRequestContentRangeUndefined;
+
+FOUNDATION_EXPORT BOOL
+MCSRequestRangeIsUndefined(MCSRequestContentRange range);
 
 #pragma mark -
 
@@ -65,5 +78,18 @@ MCSEndTime(uint64_t elapsed_time);
 #else
 #define MCSStartTime()
 #define MCSEndTime(...)
+#endif
+
+#pragma mark - DEBUG
+
+//#define MCS_QUEUE_ENABLE_DEBUG
+
+#ifdef MCS_QUEUE_ENABLE_DEBUG
+#define MCS_QUEUE_CHECK_INTERVAL 5
+#define mcs_dispatch_queue_create(__label__, __attr__) __mcs_dispatch_queue_create(__label__, __attr__)
+FOUNDATION_EXPORT dispatch_queue_t
+__mcs_dispatch_queue_create(const char *_Nullable label, dispatch_queue_attr_t _Nullable attr);
+#else
+#define mcs_dispatch_queue_create(__label__, __attr__) dispatch_queue_create(__label__, __attr__)
 #endif
 NS_ASSUME_NONNULL_END

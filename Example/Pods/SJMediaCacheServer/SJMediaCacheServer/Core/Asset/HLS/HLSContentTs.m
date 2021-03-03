@@ -7,6 +7,10 @@
 
 #import "HLSContentTs.h"
 
+@interface HLSContentTs ()
+@property (nonatomic) NSRange range;
+@end
+
 @implementation HLSContentTs {
     dispatch_semaphore_t _lock;
 }
@@ -25,8 +29,27 @@
         _filename = filename.copy;
         _totalLength = totalLength;
         _length = length;
+        _range = NSMakeRange(0, totalLength);
     }
     return self;
+}
+
+- (NSString *)description {
+    return [NSString stringWithFormat:@"%@:<%p> { name: %@, filename: %@, totalLength: %llu, length: %llu range: %@\n };", NSStringFromClass(self.class), self, _name, _filename, _totalLength, _length, NSStringFromRange(_range)];
+}
+
+/// #EXTINF:3.951478,
+/// #EXT-X-BYTERANGE:1544984@1007868
++ (instancetype)TsWithName:(NSString *)name filename:(NSString *)filename totalLength:(long long)totalLength inRange:(NSRange)range {
+    return [HLSContentTs TsWithName:name filename:filename totalLength:totalLength inRange:range length:0];
+}
+
+/// #EXTINF:3.951478,
+/// #EXT-X-BYTERANGE:1544984@1007868
++ (instancetype)TsWithName:(NSString *)name filename:(NSString *)filename totalLength:(long long)totalLength inRange:(NSRange)range length:(long long)length {
+    HLSContentTs *ts = [HLSContentTs.alloc initWithName:name filename:filename totalLength:totalLength length:length];
+    ts.range = range;
+    return ts;
 }
 
 - (void)didWriteDataWithLength:(NSUInteger)length {

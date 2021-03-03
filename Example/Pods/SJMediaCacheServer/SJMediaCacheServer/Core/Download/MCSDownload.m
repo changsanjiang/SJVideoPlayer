@@ -7,10 +7,12 @@
 //
 
 #import "MCSDownload.h"
+#import "MCSConsts.h"
 #import "MCSError.h"
 #import "MCSUtils.h"
 #import "MCSQueue.h"
 #import "MCSLogger.h"
+#import "NSURLRequest+MCS.h"
 
 static dispatch_queue_t mcs_queue;
 
@@ -28,7 +30,7 @@ static dispatch_queue_t mcs_queue;
 + (void)initialize {
     static dispatch_once_t onceToken;
     dispatch_once(&onceToken, ^{
-        mcs_queue = dispatch_queue_create("queue.MCSDownload", DISPATCH_QUEUE_CONCURRENT);
+        mcs_queue = mcs_dispatch_queue_create("queue.MCSDownload", DISPATCH_QUEUE_CONCURRENT);
     });
 }
 
@@ -82,7 +84,7 @@ static dispatch_queue_t mcs_queue;
     [self _setDelegate:delegate forTask:task];
     [task resume];
     
-    MCSDownloaderDebugLog(@"%@: <%p>.downloadWithRequest { task: %lu };\n", NSStringFromClass(self.class), self, (unsigned long)task.taskIdentifier);
+    MCSDownloaderDebugLog(@"%@: <%p>.downloadWithRequest { task: %lu, request: %@ };\n", NSStringFromClass(self.class), self, (unsigned long)task.taskIdentifier, [request mcs_description]);
 
     return task;
 }
@@ -111,6 +113,8 @@ static dispatch_queue_t mcs_queue;
 #pragma mark - mark
 
 - (void)URLSession:(NSURLSession *)session task:(NSURLSessionTask *)task willPerformHTTPRedirection:(NSHTTPURLResponse *)response newRequest:(NSURLRequest *)request completionHandler:(void (^)(NSURLRequest * _Nullable))completionHandler {
+    __auto_type delegate = [self _delegateForTask:task];
+    [delegate downloadTask:task willPerformHTTPRedirection:response newRequest:request];
     completionHandler(request);
 }
 
@@ -122,21 +126,21 @@ static dispatch_queue_t mcs_queue;
     if ( [response isKindOfClass:NSURLResponse.class] ) {
         NSHTTPURLResponse *res = response;
         
-        if      ( res.statusCode < 200 || res.statusCode > 400 ) {
+        if      ( res.statusCode < MCS_RESPONSE_CODE_OK || res.statusCode > MCS_RESPONSE_CODE_BAD ) {
             error = [NSError mcs_errorWithCode:MCSInvalidResponseError userInfo:@{
                 MCSErrorUserInfoObjectKey : response,
                 MCSErrorUserInfoReasonKey : [NSString stringWithFormat:@"响应无效: statusCode(%ld)!", (long)res.statusCode]
             }];
         }
-        else if ( res.statusCode == 206 && 0 == MCSGetResponseContentLength(res) ) {
+        else if ( res.statusCode == MCS_RESPONSE_CODE_PARTIAL_CONTENT && 0 == MCSResponseGetContentLength(res) ) {
             error = [NSError mcs_errorWithCode:MCSInvalidResponseError userInfo:@{
                 MCSErrorUserInfoObjectKey : response,
                 MCSErrorUserInfoReasonKey : @"响应无效: contentLength 为 0!"
             }];
         }
-        else if ( res.statusCode == 206 ) {
-            NSRange range1 = MCSGetRequestNSRange(MCSGetRequestContentRange(task.currentRequest.allHTTPHeaderFields));
-            NSRange range2 = MCSGetResponseNSRange(MCSGetResponseContentRange(res));
+        else if ( res.statusCode == MCS_RESPONSE_CODE_PARTIAL_CONTENT ) {
+            NSRange range1 = MCSRequestRange(MCSRequestGetContentRange(task.currentRequest.allHTTPHeaderFields));
+            NSRange range2 = MCSResponseRange(MCSResponseGetContentRange(res));
             if ( !MCSNSRangeIsUndefined(range1) && !NSEqualRanges(range1, range2)) {
                 if ( !MCSNSRangeIsUndefined(range2) && NSMaxRange(range1) <= NSMaxRange(range2) ) {
                     error = [NSError mcs_errorWithCode:MCSInvalidResponseError userInfo:@{

@@ -7,7 +7,7 @@
 //
 
 #import "MCSInterfaces.h"
-#import "MCSURLRecognizer.h"
+#import "MCSURL.h"
 @class FILEAsset, FILEReader, MCSAssetContent;
 @class MCSAsset;
 
@@ -19,11 +19,11 @@ NS_ASSUME_NONNULL_BEGIN
 ///
 ///     If 0, there is no count limit. The default value is 0.
 ///
-///     This is not a strict limit—if the cache goes over the limit, a asset in the cache could be removed instantly, later, or possibly never, depending on the usage details of the asset.
+///     This is not a strict limit—if the cache goes over the limit, an asset in the cache could be removed instantly, later, or possibly never, depending on the usage details of the asset.
 ///
 @property (nonatomic) NSUInteger cacheCountLimit; // 个数限制
 
-/// The maximum length of time to keep a asset in the cache, in seconds.
+/// The maximum length of time to keep an asset in the cache, in seconds.
 ///
 ///     If 0, there is no expiring limit.  The default value is 0.
 ///
@@ -68,7 +68,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (BOOL)isAssetStoredForURL:(NSURL *)URL;
 
-- (nullable id<MCSAssetReader>)readerWithRequest:(NSURLRequest *)request networkTaskPriority:(float)networkTaskPriority delegate:(nullable id<MCSAssetReaderDelegate>)delegate;
+- (nullable id<MCSAssetReader>)readerWithRequest:(NSURLRequest *)proxyRequest networkTaskPriority:(float)networkTaskPriority delegate:(nullable id<MCSAssetReaderDelegate>)delegate;
 
 - (void)willReadAssetForURL:(NSURL *)URL;
 @end

@@ -9,9 +9,9 @@
 #import "HLSAsset.h"
 #import "MCSError.h" 
 #import "MCSLogger.h"
-#import "MCSData.h"
+#import "MCSContents.h"
 #import "MCSUtils.h"
-#import "MCSURLRecognizer.h"
+#import "MCSURL.h"
 #import "MCSAssetFileRead.h"
 #import "MCSQueue.h"
 #import "NSURLRequest+MCS.h"
@@ -36,7 +36,7 @@ static dispatch_queue_t mcs_queue;
 + (void)initialize {
     static dispatch_once_t onceToken;
     dispatch_once(&onceToken, ^{
-        mcs_queue = dispatch_queue_create("queue.HLSContentAESKeyReader", DISPATCH_QUEUE_CONCURRENT);
+        mcs_queue = mcs_dispatch_queue_create("queue.HLSContentAESKeyReader", DISPATCH_QUEUE_CONCURRENT);
     });
 }
 
@@ -155,23 +155,15 @@ static dispatch_queue_t mcs_queue;
 }
 
 - (void)_downloadToFile:(NSString *)filePath {
-    dispatch_async(mcs_queue, ^{
-        NSError *downloadError = nil;
-        // Wait until the download is complete
-        NSData *contentData = [MCSData dataWithContentsOfRequest:[self->_request mcs_requestWithHTTPAdditionalHeaders:[self->_asset.configuration HTTPAdditionalHeadersForDataRequestsOfType:MCSDataTypeHLSAESKey]] networkTaskPriority:self->_networkTaskPriority error:&downloadError];
-        
-        // write to file
-        __block NSError *writeError = nil;
-        if ( contentData != nil ) {
-            [self->_asset lock:^{
-                if ( ![NSFileManager.defaultManager fileExistsAtPath:filePath] ) {
-                    [contentData writeToFile:filePath options:NSDataWritingAtomic error:&writeError];
-                }
-            }];
-        }
-
-        dispatch_barrier_async(mcs_queue, ^{
+    [MCSContents request:[_request mcs_requestWithHTTPAdditionalHeaders:[_asset.configuration HTTPAdditionalHeadersForDataRequestsOfType:MCSDataTypeHLSAESKey]] networkTaskPriority:_networkTaskPriority willPerformHTTPRedirection:nil completed:^(NSData * _Nullable data, NSError * _Nullable downloadError) {
+        dispatch_barrier_sync(mcs_queue, ^{
             if ( self->_isClosed ) return;
+            NSError *writeError = nil;
+            // write to file
+            if ( downloadError == nil && ![NSFileManager.defaultManager fileExistsAtPath:filePath] ) {
+                [data writeToFile:filePath options:NSDataWritingAtomic error:&writeError];
+            }
+            
             NSError *error = downloadError ?: writeError;
             if ( error != nil ) {
                 [self _onError:[NSError mcs_errorWithCode:MCSFileError userInfo:@{
@@ -183,7 +175,7 @@ static dispatch_queue_t mcs_queue;
             
             [self _prepareReaderForLocalFile:filePath];
         });
-    });
+    }];
 }
 
 - (void)_prepareReaderForLocalFile:(NSString *)filePath {

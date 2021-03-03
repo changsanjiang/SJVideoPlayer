@@ -116,13 +116,6 @@ static const int httpLogLevel = HTTP_LOG_LEVEL_INFO; // | HTTP_LOG_FLAG_TRACE;
 	// Stop the server if it's running
 	[self stop];
 	
-	// Release all instance variables
-	
-	#if !OS_OBJECT_USE_OBJC
-	dispatch_release(serverQueue);
-	dispatch_release(connectionQueue);
-	#endif
-	
 	[asyncSocket setDelegate:nil delegateQueue:NULL];
 }
 

@@ -18,6 +18,7 @@
 #import "NSURLRequest+MCS.h"
 #import "HLSContentTs.h"
 #import "NSFileManager+MCS.h"
+#import "MCSUtils.h"
 
 static dispatch_queue_t mcs_queue;
 
@@ -33,7 +34,7 @@ static dispatch_queue_t mcs_queue;
 
 @property (nonatomic, strong, nullable) HLSContentTs *content;
 @property (nonatomic) NSUInteger availableLength;
-@property (nonatomic) NSUInteger offset;
+@property (nonatomic) NSUInteger readLength;
 
 @property (nonatomic, strong, nullable) NSURLSessionTask *task;
 @property (nonatomic, strong, nullable) NSFileHandle *reader;
@@ -48,7 +49,7 @@ static dispatch_queue_t mcs_queue;
 + (void)initialize {
     static dispatch_once_t onceToken;
     dispatch_once(&onceToken, ^{
-        mcs_queue = dispatch_queue_create("queue.HLSContentTSReader", DISPATCH_QUEUE_CONCURRENT);
+        mcs_queue = mcs_dispatch_queue_create("queue.HLSContentTSReader", DISPATCH_QUEUE_CONCURRENT);
     });
 }
 
@@ -82,7 +83,7 @@ static dispatch_queue_t mcs_queue;
 
         _isCalledPrepare = YES;
         
-        HLSContentTs *content = [_asset TsContentForURL:_request.URL];
+        HLSContentTs *content = [_asset TsContentForRequest:_request];
         
         if ( content != nil ) {
             // go to read the content
@@ -103,37 +104,36 @@ static dispatch_queue_t mcs_queue;
         if ( _isClosed || _isDone || !_isPrepared )
             return;
         
+        NSError *error = nil;
         if ( _isSought ) {
             _isSought = NO;
-            NSError *error = nil;
-            [_reader mcs_seekToOffset:_offset error:&error];
-            if ( error != nil ) {
+            if ( ![_reader mcs_seekToOffset:_readLength error:&error] ) {
                 [self _onError:error];
                 return;
             }
         }
         
-        if ( _offset < _availableLength ) {
-            NSUInteger length = MIN(lengthParam, _availableLength - _offset);
-            if ( length > 0 ) {
-                NSError *error = nil;
-                data = [_reader mcs_readDataUpToLength:length error:&error];
-                if ( error != nil ) {
-                    [self _onError:error];
-                    return;
-                }
-                _offset += data.length;
-                _isDone = (_offset == NSMaxRange(_range));
-                MCSContentReaderDebugLog(@"%@: <%p>.read { offset: %lu, length: %lu };\n", NSStringFromClass(self.class), self, (unsigned long)_offset, (unsigned long)data.length);
-            }
+        data = [_reader mcs_readDataUpToLength:lengthParam error:&error];
+        if ( error != nil ) {
+            [self _onError:error];
+            return;
         }
+
+        NSUInteger readLength = data.length;
+        if ( readLength == 0 )
+            return;
         
+        _readLength += readLength;
+        _isDone = (_readLength == _range.length);
+        
+
 #ifdef DEBUG
+        MCSContentReaderDebugLog(@"%@: <%p>.read { offset: %lu, length: %lu };\n", NSStringFromClass(self.class), self, (unsigned long)(_range.location + _readLength), (unsigned long)readLength);
         if ( _isDone ) {
             MCSContentReaderDebugLog(@"%@: <%p>.done;\n", NSStringFromClass(self.class), self);
         }
 #endif
-        
+
         if ( _isDone ) [self _close];
     });
     return data;
@@ -142,13 +142,19 @@ static dispatch_queue_t mcs_queue;
 - (BOOL)seekToOffset:(NSUInteger)offset {
     __block BOOL result = NO;
     dispatch_barrier_sync(mcs_queue, ^{
-        if ( _isClosed || !_isPrepared || offset > _availableLength )
+        if ( _isClosed || !_isPrepared )
             return;
         
-        if ( offset != _offset ) {
+        NSRange range = NSMakeRange(_range.location, _availableLength);
+        if ( !NSLocationInRange(offset - 1, range) )
+            return;
+        
+        // offset   = range.location + readLength;
+        NSUInteger readLength = offset - range.location;
+        if ( readLength != _readLength ) {
             _isSought = YES;
-            _offset = offset;
-            _isDone = (_offset == NSMaxRange(_range));
+            _readLength = readLength;
+            _isDone = (_readLength == _range.length);
             if ( _isDone ) [self _close];
         }
         result = YES;
@@ -183,9 +189,17 @@ static dispatch_queue_t mcs_queue;
 - (NSUInteger)offset {
     __block NSUInteger offset = 0;
     dispatch_sync(mcs_queue, ^{
-        offset = _offset;
+        offset = _range.location + _readLength;
     });
     return offset;
+}
+
+- (NSUInteger)totalLength {
+    __block NSUInteger totalLength = 0;
+    dispatch_sync(mcs_queue, ^{
+        totalLength = _content.totalLength;
+    });
+    return totalLength;
 }
 
 - (BOOL)isPrepared {
@@ -205,6 +219,10 @@ static dispatch_queue_t mcs_queue;
 }
  
 #pragma mark - MCSDownloadTaskDelegate
+
+- (void)downloadTask:(NSURLSessionTask *)task willPerformHTTPRedirection:(NSHTTPURLResponse *)response newRequest:(NSURLRequest *)request {
+    
+}
 
 - (void)downloadTask:(NSURLSessionTask *)task didReceiveResponse:(NSHTTPURLResponse *)response {
     dispatch_barrier_sync(mcs_queue, ^{
@@ -276,7 +294,7 @@ static dispatch_queue_t mcs_queue;
     NSString *filePath = [_asset TsContentFilePathForFilename:content.filename];
     NSURL *fileURL = [NSURL fileURLWithPath:filePath];
     NSError *error = nil;
-    _range = NSMakeRange(0, _content.totalLength);
+    _range = content.range;
     _reader = [NSFileHandle mcs_fileHandleForReadingFromURL:fileURL error:&error];
     if ( error != nil ) {
         [self _onError:error];

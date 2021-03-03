@@ -14,7 +14,13 @@ FOUNDATION_EXPORT NSNotificationName const MCSAssetMetadataDidLoadNotification;
 FOUNDATION_EXPORT NSNotificationName const MCSAssetWillRemoveAssetNotification;
 FOUNDATION_EXPORT NSNotificationName const MCSAssetDidRemoveAssetNotification;
 
+FOUNDATION_EXPORT NSNotificationName const MCSFileWriteOutOfSpaceErrorNotification;
+
 FOUNDATION_EXPORT NSString *const HLS_SUFFIX_INDEX;
 FOUNDATION_EXPORT NSString *const HLS_SUFFIX_TS;
 FOUNDATION_EXPORT NSString *const HLS_SUFFIX_AES_KEY;
+
+FOUNDATION_EXPORT NSInteger const MCS_RESPONSE_CODE_OK;
+FOUNDATION_EXPORT NSInteger const MCS_RESPONSE_CODE_PARTIAL_CONTENT;
+FOUNDATION_EXPORT NSInteger const MCS_RESPONSE_CODE_BAD;
 NS_ASSUME_NONNULL_END

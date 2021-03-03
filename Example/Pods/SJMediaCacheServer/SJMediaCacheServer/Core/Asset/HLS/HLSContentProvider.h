@@ -19,6 +19,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (nullable NSArray<HLSContentTs *> *)TsContents;
 - (nullable HLSContentTs *)createTsContentWithName:(NSString *)name totalLength:(NSUInteger)totalLength;
+- (nullable HLSContentTs *)createTsContentWithName:(NSString *)name totalLength:(NSUInteger)totalLength inRange:(NSRange)range;
 - (nullable NSString *)TsContentFilePathForFilename:(NSString *)filename;
 
 - (void)removeTsContentForFilename:(NSString *)filename;

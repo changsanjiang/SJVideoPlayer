@@ -13,10 +13,14 @@
 #import "MCSQueue.h"
 #import "NSURLRequest+MCS.h"
 #import "NSFileManager+MCS.h"
+#import "MCSUtils.h"
 
 static dispatch_queue_t mcs_queue;
 
-@interface HLSContentIndexReader ()<HLSParserDelegate, MCSAssetDataReaderDelegate>
+@interface HLSContentIndexReader ()<HLSParserDelegate, MCSAssetDataReaderDelegate> {
+    HLSParser *_tmp;
+}
+
 @property (nonatomic, strong) NSURLRequest *request;
 
 @property (nonatomic) BOOL isCalledPrepare;
@@ -32,7 +36,7 @@ static dispatch_queue_t mcs_queue;
 + (void)initialize {
     static dispatch_once_t onceToken;
     dispatch_once(&onceToken, ^{
-        mcs_queue = dispatch_queue_create("queue.HLSContentIndexReader", DISPATCH_QUEUE_CONCURRENT);
+        mcs_queue = mcs_dispatch_queue_create("queue.HLSContentIndexReader", DISPATCH_QUEUE_CONCURRENT);
     });
 }
 
@@ -67,8 +71,8 @@ static dispatch_queue_t mcs_queue;
             [self _prepareReaderForParser:parser];
         }
         else {
-            parser = [HLSParser.alloc initWithAsset:_asset request:[_request mcs_requestWithHTTPAdditionalHeaders:[_asset.configuration HTTPAdditionalHeadersForDataRequestsOfType:MCSDataTypeHLSPlaylist]] networkTaskPriority:_networkTaskPriority delegate:self];
-            [parser prepare];
+            _tmp = [HLSParser.alloc initWithAsset:_asset request:[_request mcs_requestWithHTTPAdditionalHeaders:[_asset.configuration HTTPAdditionalHeadersForDataRequestsOfType:MCSDataTypeHLSPlaylist]] networkTaskPriority:_networkTaskPriority delegate:self];
+            [_tmp prepare];
         }
     });
 }

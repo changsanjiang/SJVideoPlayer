@@ -12,11 +12,11 @@
 #import "HLSContentTSReader.h" 
 #import "MCSLogger.h"
 #import "HLSAsset.h"
-#import "MCSAssetManager.h"
 #import "MCSError.h"
 #import "MCSQueue.h"
 #import "MCSResponse.h"
 #import "MCSConsts.h"
+#import "MCSUtils.h"
 
 static dispatch_queue_t mcs_queue;
 
@@ -38,7 +38,7 @@ static dispatch_queue_t mcs_queue;
 + (void)initialize {
     static dispatch_once_t onceToken;
     dispatch_once(&onceToken, ^{
-        mcs_queue = dispatch_queue_create("queue.HLSReader", DISPATCH_QUEUE_CONCURRENT);
+        mcs_queue = mcs_dispatch_queue_create("queue.HLSReader", DISPATCH_QUEUE_CONCURRENT);
     });
 }
 
@@ -46,7 +46,7 @@ static dispatch_queue_t mcs_queue;
     self = [super init];
     if ( self ) {
 #ifdef DEBUG
-        MCSAssetReaderDebugLog(@"%@: <%p>.init { URL: %@, asset: %@, proxyURL: %@, headers: %@ };\n", NSStringFromClass(self.class), self, [MCSURLRecognizer.shared URLWithProxyURL:request.URL], asset, request.URL, request.allHTTPHeaderFields);
+        MCSAssetReaderDebugLog(@"%@: <%p>.init { URL: %@, asset: %@, headers: %@ };\n", NSStringFromClass(self.class), self, request.URL, asset, request.allHTTPHeaderFields);
 #endif
 
         _asset = asset;
@@ -88,15 +88,14 @@ static dispatch_queue_t mcs_queue;
         if ( _isClosed || _isCalledPrepare )
             return;
         
-        MCSAssetReaderDebugLog(@"%@: <%p>.prepare { name: %@, request: %@ };\n", NSStringFromClass(self.class), self, _asset.name, _request);
+        MCSAssetReaderDebugLog(@"%@: <%p>.prepare { asset: %@, request: %@ };\n", NSStringFromClass(self.class), self, _asset.name, _request);
 
         NSParameterAssert(_asset);
          
         _isCalledPrepare = YES;
-        NSURL *URL = [MCSURLRecognizer.shared URLWithProxyURL:_request.URL];
-        NSMutableURLRequest *request = [_request mcs_requestWithRedirectURL:URL];
-        if      ( [_request.URL.absoluteString containsString:HLS_SUFFIX_INDEX] ) {
-            _reader = [HLSContentIndexReader.alloc initWithAsset:_asset request:request networkTaskPriority:_networkTaskPriority delegate:self];
+        
+        if      ( [_request.URL.lastPathComponent containsString:HLS_SUFFIX_INDEX] ) {
+            _reader = [HLSContentIndexReader.alloc initWithAsset:_asset request:_request networkTaskPriority:_networkTaskPriority delegate:self];
         }
         else {
             if ( _asset.parser == nil ) {
@@ -107,11 +106,11 @@ static dispatch_queue_t mcs_queue;
                 return;
             }
             
-            if ( [_request.URL.absoluteString containsString:HLS_SUFFIX_AES_KEY] ) {
-                _reader = [HLSContentAESKeyReader.alloc initWithAsset:_asset request:request networkTaskPriority:_networkTaskPriority delegate:self];
+            if ( [_request.URL.lastPathComponent containsString:HLS_SUFFIX_AES_KEY] ) {
+                _reader = [HLSContentAESKeyReader.alloc initWithAsset:_asset request:_request networkTaskPriority:_networkTaskPriority delegate:self];
             }
             else {
-                _reader = [HLSContentTSReader.alloc initWithAsset:_asset request:request networkTaskPriority:_networkTaskPriority delegate:self];
+                _reader = [HLSContentTSReader.alloc initWithAsset:_asset request:_request networkTaskPriority:_networkTaskPriority delegate:self];
             }
         }
         
@@ -238,7 +237,13 @@ static dispatch_queue_t mcs_queue;
 
 - (void)readerPrepareDidFinish:(id<MCSAssetDataReader>)reader {
     dispatch_barrier_sync(mcs_queue, ^{
-        _response = [MCSResponse.alloc initWithTotalLength:reader.range.length contentType:[reader isKindOfClass:HLSContentTSReader.class] ? _asset.TsContentType : nil];
+        if ( [reader isKindOfClass:HLSContentTSReader.class] ) {
+            HLSContentTSReader *r = reader;
+            _response = [MCSResponse.alloc initWithTotalLength:r.totalLength range:r.range contentType:r.asset.TsContentType];
+        }
+        else {
+            _response = [MCSResponse.alloc initWithTotalLength:reader.range.length];
+        }
         _isPrepared = YES;
     });
     [_delegate reader:self prepareDidFinish:self.response];

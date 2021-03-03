@@ -9,7 +9,7 @@
 #import "SJMediaCacheServer.h"
 #import "MCSProxyServer.h"
 #import "MCSAssetManager.h"
-#import "MCSURLRecognizer.h"
+#import "MCSURL.h"
 #import "MCSProxyTask.h"
 #import "MCSLogger.h"
 #import "MCSDownload.h"
@@ -31,11 +31,11 @@
 - (instancetype)init {
     self = [super init];
     if ( self ) {
-        _server = [MCSProxyServer.alloc initWithPort:2000];
+        _server = [MCSProxyServer.alloc init];
         _server.delegate = self;
         [_server start];
         
-        MCSURLRecognizer.shared.server = _server;
+        MCSURL.shared.serverURL = _server.serverURL;
     }
     return self;
 }
@@ -50,7 +50,7 @@
     // proxy URL
     if ( _server.isRunning ) {
         [MCSAssetManager.shared willReadAssetForURL:URL];
-        return [MCSURLRecognizer.shared proxyURLWithURL:URL];
+        return [MCSURL.shared proxyURLWithURL:URL];
     }
 
     // param URL
@@ -81,6 +81,12 @@
     if ( URL == nil )
         return nil;
     return [MCSPrefetcherManager.shared prefetchWithURL:URL progress:progressBlock completed:completionBlock];
+}
+
+- (nullable id<MCSPrefetchTask>)prefetchWithURL:(NSURL *)URL numberOfPreloadedFiles:(NSUInteger)num progress:(void(^_Nullable)(float progress))progressBlock completed:(void(^_Nullable)(NSError *_Nullable error))completionBlock {
+    if ( URL == nil )
+        return nil;
+    return [MCSPrefetcherManager.shared prefetchWithURL:URL numberOfPreloadedFiles:num progress:progressBlock completed:completionBlock];
 }
 
 - (void)cancelAllPrefetchTasks {
@@ -122,10 +128,10 @@
 
 @implementation SJMediaCacheServer (Convert)
 - (void)setResolveAssetIdentifier:(NSString * _Nonnull (^)(NSURL * _Nonnull))resolveAssetIdentifier {
-    MCSURLRecognizer.shared.resolveAssetIdentifier = resolveAssetIdentifier;
+    MCSURL.shared.resolveAssetIdentifier = resolveAssetIdentifier;
 }
 - (NSString * _Nonnull (^)(NSURL * _Nonnull))resolveAssetIdentifier {
-    return MCSURLRecognizer.shared.resolveAssetIdentifier;
+    return MCSURL.shared.resolveAssetIdentifier;
 }
 
 - (void)setWriteDataEncoder:(NSData * _Nonnull (^)(NSURLRequest * _Nonnull, NSUInteger, NSData * _Nonnull))writeDataEncoder {
@@ -220,7 +226,6 @@
 - (BOOL)isStoredForURL:(NSURL *)URL {
     if ( URL == nil )
         return NO;
-    id<MCSAsset> asset = [MCSAssetManager.shared assetWithURL:URL];
-    return asset.isStored;
+    return [MCSAssetManager.shared isAssetStoredForURL:URL];
 }
 @end

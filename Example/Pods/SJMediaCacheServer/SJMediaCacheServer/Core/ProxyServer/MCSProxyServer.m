@@ -40,7 +40,7 @@
 #pragma mark -
 
 @interface MCSProxyServer ()
-@property (nonatomic, strong) HTTPServer *localServer;
+@property (nonatomic, strong, nullable) HTTPServer *localServer;
 @property (nonatomic) UIBackgroundTaskIdentifier backgroundTask;
 
 - (id<MCSProxyTask>)taskWithRequest:(NSURLRequest *)request delegate:(id<MCSProxyTaskDelegate>)delegate;
@@ -48,17 +48,9 @@
 @end
 
 @implementation MCSProxyServer
-- (instancetype)initWithPort:(UInt16)port {
+- (instancetype)init {
     self = [super init];
     if ( self ) {
-        _port = port;
-        
-        _localServer = HTTPServer.alloc.init;
-        _localServer.mcs_server = self;
-        [_localServer setConnectionClass:MCSHTTPConnection.class];
-        [_localServer setType:@"_http._tcp"];
-        [_localServer setPort:port];
-        
         _backgroundTask = UIBackgroundTaskInvalid;
         
         [NSNotificationCenter.defaultCenter addObserver:self selector:@selector(applicationDidEnterBackground) name:UIApplicationDidEnterBackgroundNotification object:nil];
@@ -79,12 +71,22 @@
     if ( self.isRunning )
         return;
     
+    if ( _localServer == nil ) {
+        _localServer = HTTPServer.alloc.init;
+        _localServer.mcs_server = self;
+        [_localServer setConnectionClass:MCSHTTPConnection.class];
+        [_localServer setType:@"_http._tcp"];
+    }
+    
+    UInt16 port = 2000;
     for ( int i = 0 ; i < 10 ; ++ i ) {
+        [_localServer setPort:port];
         if ( [self _start:NULL] ) {
-            _serverURL = [NSURL URLWithString:[NSString stringWithFormat:@"http://127.0.0.1:%d", _port]];
+            _port = port;
+            _serverURL = [NSURL URLWithString:[NSString stringWithFormat:@"http://127.0.0.1:%d", port]];
             break;
         }
-        [_localServer setPort:_port += (UInt16)(arc4random() % 1000 + 1)];
+        port += (UInt16)(arc4random() % 1000 + 1);
     }
 }
 
@@ -99,11 +101,11 @@
 #pragma mark -
 
 - (void)applicationDidEnterBackground {
-    [self _beginBackgroundTask];
+    if ( _localServer != nil) [self _beginBackgroundTask];
 }
 
 - (void)applicationWillEnterForeground {
-    if ( self.backgroundTask == UIBackgroundTaskInvalid && !self.isRunning ) {
+    if ( _localServer != nil && _backgroundTask == UIBackgroundTaskInvalid && !self.isRunning ) {
         [self _start:nil];
     }
     [self _endBackgroundTask];

@@ -1,12 +1,12 @@
 //
-//  MCSURLRecognizer.m
+//  MCSURL.m
 //  SJMediaCacheServer_Example
 //
 //  Created by 畅三江 on 2020/6/2.
 //  Copyright © 2020 changsanjiang@gmail.com. All rights reserved.
 //
 
-#import "MCSURLRecognizer.h"
+#import "MCSURL.h"
 #import "MCSConsts.h"
 #include <CommonCrypto/CommonCrypto.h>
 
@@ -37,7 +37,7 @@ MCSMD5(NSString *str) {
     if ( range.location != NSNotFound ) {
         name = [name substringToIndex:range.location];
     }
-    return name;
+    return MCSMD5(name);
 }
 @end
 
@@ -51,7 +51,7 @@ MCSMD5(NSString *str) {
 @end
 
 
-@implementation MCSURLRecognizer
+@implementation MCSURL
 + (instancetype)shared {
     static id instance = nil;
     static dispatch_once_t onceToken;
@@ -62,9 +62,9 @@ MCSMD5(NSString *str) {
 }
 
 - (NSURL *)proxyURLWithURL:(NSURL *)URL {
-    NSParameterAssert(_server);
+    NSAssert(_serverURL != nil, @"The serverURL can't be nil!");
     
-    NSURL *serverURL = _server.serverURL;
+    NSURL *serverURL = _serverURL;
     if ( [URL.host isEqualToString:serverURL.host] )
         return URL;
     
@@ -88,17 +88,18 @@ MCSMD5(NSString *str) {
 
 // 此处的URL参数可能为代理URL也可能为原始URL
 - (NSString *)assetNameForURL:(NSURL *)URL {
+    NSAssert(_serverURL != nil, @"The serverURL can't be nil!");
+
     NSParameterAssert(URL.host);
     
     NSString *url = URL.absoluteString;
     
     // 判断是否为代理URL
-    if ( [URL.host isEqualToString:_server.serverURL.host] ) {
+    if ( [URL.host isEqualToString:_serverURL.host] ) {
         // 包含 mcsproxy 为 HLS 内部资源的请求, 此处返回path后面资源的名字
-        NSRange range = [url rangeOfString:mcsproxy];
-        if ( range.location != NSNotFound ) {
+        if ( [url containsString:mcsproxy] ) {
             // format: mcsproxy/asset/name.extension?url=base64EncodedUrl
-            return [[url substringFromIndex:NSMaxRange(range) + 1] componentsSeparatedByString:@"/"].firstObject;
+            return url.stringByDeletingLastPathComponent.lastPathComponent;
         }
         else {
             // 不包含 mcsproxy 时, 将代理URL转换为原始的URL
@@ -140,28 +141,35 @@ MCSMD5(NSString *str) {
 
 @end
 
-@implementation MCSURLRecognizer (HLS)
-- (NSURL *)proxyURLWithTsURI:(NSString *)TsURI {
-    return [NSURL URLWithString:[_server.serverURL.absoluteString stringByAppendingFormat:@"/%@", TsURI]];
-}
-
-- (NSString *)proxyTsURIWithUrl:(NSString *)url inAsset:(NSString *)asset {
-    NSParameterAssert(asset);
-    
-    // format: mcsproxy/asset/tsName.ts?url=base64EncodedUrl
-    return [self _proxyURIWithUrl:url inAsset:asset suffix:HLS_SUFFIX_TS];
-}
-
-- (NSString *)proxyAESKeyURIWithUrl:(NSString *)url inAsset:(NSString *)asset {
-    // format: mcsproxy/asset/AESName.key?url=base64EncodedUrl
-    return [self _proxyURIWithUrl:url inAsset:asset suffix:HLS_SUFFIX_AES_KEY];
-}
-
+@implementation MCSURL (HLS)
 // format: mcsproxy/asset/name.extension?url=base64EncodedUrl
-- (NSString *)_proxyURIWithUrl:(NSString *)url inAsset:(NSString *)asset suffix:(NSString *)suffix {
+- (NSString *)HLS_proxyURIWithURL:(NSString *)url suffix:(NSString *)suffix inAsset:(NSString *)asset {
     NSString *fname = [self nameWithUrl:url suffix:suffix];
     NSURLQueryItem *query = [self encodedURLQueryItemWithUrl:url];
     NSString *URI = [NSString stringWithFormat:@"%@/%@/%@?%@=%@", mcsproxy, asset, fname, query.name, query.value];
     return URI;
+}
+
+- (NSURL *)HLS_URLWithProxyURI:(NSString *)proxyURI {
+    return [self URLWithProxyURL:[NSURL URLWithString:proxyURI]];
+}
+
+- (NSURL *)HLS_proxyURLWithProxyURI:(NSString *)uri {
+    NSAssert(_serverURL != nil, @"The serverURL can't be nil!");
+    
+    return [_serverURL mcs_URLByAppendingPathComponent:uri];
+}
+@end
+
+
+@implementation NSURL (MCSExtended)
+- (NSURL *)mcs_URLByAppendingPathComponent:(NSString *)pathComponent {
+    if ( [pathComponent isEqualToString:@"/"] )
+        return self;
+    NSString *url = self.absoluteString;
+    while ( [url hasSuffix:@"/"] ) url = [url substringToIndex:url.length - 1];
+    NSString *path = pathComponent;
+    while ( [path hasSuffix:@"/"] ) path = [path substringFromIndex:1];
+    return [NSURL URLWithString:[NSString stringWithFormat:@"%@/%@", url, path]];
 }
 @end

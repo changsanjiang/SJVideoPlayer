@@ -11,7 +11,7 @@
 #import "MCSUtils.h"
 #import "MCSLogger.h"
 #import "NSURLRequest+MCS.h"
-#import "MCSURLRecognizer.h"
+#import "MCSURL.h"
 
 @interface MCSProxyTask ()<MCSAssetReaderDelegate>
 @property (nonatomic, weak) id<MCSProxyTaskDelegate> delegate;
@@ -30,7 +30,7 @@
     self = [super init];
     if ( self ) {
 #ifdef DEBUG
-        MCSProxyTaskDebugLog(@"%@: <%p>.init { URL: %@, proxyURL: %@, headers: %@ };\n", NSStringFromClass(self.class), self, [MCSURLRecognizer.shared URLWithProxyURL:request.URL], request.URL, request.allHTTPHeaderFields);
+        MCSProxyTaskDebugLog(@"%@: <%p>.init { URL: %@, proxyURL: %@, headers: %@ };\n", NSStringFromClass(self.class), self, [MCSURL.shared URLWithProxyURL:request.URL], request.URL, request.allHTTPHeaderFields);
 #endif
         
         _request = request;

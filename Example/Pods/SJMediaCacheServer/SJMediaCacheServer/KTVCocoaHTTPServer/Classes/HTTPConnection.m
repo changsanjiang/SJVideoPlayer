@@ -186,9 +186,7 @@ static NSMutableArray *recentNonces;
 		if (aConfig.queue)
 		{
 			connectionQueue = aConfig.queue;
-			#if !OS_OBJECT_USE_OBJC
-			dispatch_retain(connectionQueue);
-			#endif
+			
 		}
 		else
 		{
@@ -224,9 +222,7 @@ static NSMutableArray *recentNonces;
 {
 	HTTPLogTrace();
 	
-	#if !OS_OBJECT_USE_OBJC
-	dispatch_release(connectionQueue);
-	#endif
+	
 	
 	[asyncSocket setDelegate:nil delegateQueue:NULL];
 	[asyncSocket disconnect];
@@ -2694,9 +2690,7 @@ static NSMutableArray *recentNonces;
 		if (q)
 		{
 			queue = q;
-			#if !OS_OBJECT_USE_OBJC
-			dispatch_retain(queue);
-			#endif
+			
 		}
 	}
 	return self;
@@ -2704,9 +2698,7 @@ static NSMutableArray *recentNonces;
 
 - (void)dealloc
 {
-	#if !OS_OBJECT_USE_OBJC
-	if (queue) dispatch_release(queue);
-	#endif
+	
 }
 
 @end

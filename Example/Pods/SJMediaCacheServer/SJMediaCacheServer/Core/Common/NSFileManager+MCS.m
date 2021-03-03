@@ -10,10 +10,12 @@
 @implementation NSFileManager (MCS)
 
 - (unsigned long long)mcs_fileSizeAtPath:(NSString *)path {
-    return [NSFileManager.defaultManager attributesOfItemAtPath:path error:NULL].fileSize;
+    return path.length != 0 ? [NSFileManager.defaultManager attributesOfItemAtPath:path error:NULL].fileSize : 0;
 }
 
 - (unsigned long long)mcs_directorySizeAtPath:(NSString *)path {
+    if ( path.length == 0 )
+        return 0;
     NSUInteger size = 0;
     for ( NSString *subpath in [NSFileManager.defaultManager subpathsAtPath:path] )
         size += [self mcs_fileSizeAtPath:[path stringByAppendingPathComponent:subpath]];

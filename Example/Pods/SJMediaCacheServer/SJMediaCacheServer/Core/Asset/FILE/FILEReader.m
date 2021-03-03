@@ -7,8 +7,7 @@
 //
 
 #import "FILEReader.h"
-#import "FILEAsset.h" 
-#import "MCSAssetManager.h" 
+#import "FILEAsset.h"
 #import "MCSAssetFileRead.h"
 #import "MCSError.h"
 #import "MCSLogger.h" 
@@ -43,7 +42,7 @@ static dispatch_queue_t mcs_queue;
 + (void)initialize {
     static dispatch_once_t onceToken;
     dispatch_once(&onceToken, ^{
-        mcs_queue = dispatch_queue_create("queue.FILEReader", DISPATCH_QUEUE_CONCURRENT);
+        mcs_queue = mcs_dispatch_queue_create("queue.FILEReader", DISPATCH_QUEUE_CONCURRENT);
     });
 }
 
@@ -51,7 +50,7 @@ static dispatch_queue_t mcs_queue;
     self = [super init];
     if ( self ) {
 #ifdef DEBUG
-        MCSAssetReaderDebugLog(@"%@: <%p>.init { URL: %@, asset: %@, proxyURL: %@, headers: %@ };\n", NSStringFromClass(self.class), self, [MCSURLRecognizer.shared URLWithProxyURL:request.URL], asset, request.URL, request.allHTTPHeaderFields);
+        MCSAssetReaderDebugLog(@"%@: <%p>.init { URL: %@, asset: %@, headers: %@ };\n", NSStringFromClass(self.class), self, request.URL, asset, request.allHTTPHeaderFields);
 #endif
 
         _asset = asset;
@@ -98,7 +97,7 @@ static dispatch_queue_t mcs_queue;
         if ( _isClosed || _isCalledPrepare )
             return;
         
-        MCSAssetReaderDebugLog(@"%@: <%p>.prepare;\n", NSStringFromClass(self.class), self);
+        MCSAssetReaderDebugLog(@"%@: <%p>.prepare { asset: %@ };\n", NSStringFromClass(self.class), self, _asset.name);
         
         _isCalledPrepare = YES;
         
@@ -138,8 +137,11 @@ static dispatch_queue_t mcs_queue;
             if ( NSLocationInRange(offset - 1, reader.range) ) {
                 _currentIndex = i;
                 result = [reader seekToOffset:offset];
-                if ( reader.isDone ) [self _prepareNextReader];
-                return;
+                if ( result ) {
+                    _readLength = offset - _range.location;
+                    if ( reader.isDone ) [self _prepareNextReader];
+                }
+                break;
             }
         }
     });
@@ -216,14 +218,14 @@ static dispatch_queue_t mcs_queue;
     NSUInteger totalLength = _asset.totalLength;
     if ( totalLength == 0 ) {
         // create single sub reader to load asset total length
-        NSURL *URL = [MCSURLRecognizer.shared URLWithProxyURL:_request.URL];
+        NSURL *URL = _request.URL;
         NSMutableURLRequest *request = [_request mcs_requestWithRedirectURL:URL];
         _subreaders = @[
             [FILEContentReader.alloc initWithAsset:_asset request:request networkTaskPriority:_networkTaskPriority delegate:self]
         ];
     }
     else {
-        MCSRequestContentRange requestRange = MCSGetRequestContentRange(_request.mcs_headers);
+        MCSRequestContentRange requestRange = MCSRequestGetContentRange(_request.mcs_headers);
         NSRange current = NSMakeRange(0, 0);
         // 200
         if      ( requestRange.start == NSNotFound && requestRange.end == NSNotFound ) {
@@ -232,7 +234,7 @@ static dispatch_queue_t mcs_queue;
         // bytes=100-500
         else if ( requestRange.start != NSNotFound && requestRange.end != NSNotFound ) {
             NSUInteger location = requestRange.start;
-            NSUInteger length = totalLength > requestRange.end ? ((requestRange.end + 1) - location) : 0;
+            NSUInteger length = (totalLength > requestRange.end ? (requestRange.end + 1) : totalLength) - location;
             current = NSMakeRange(location, length);
         }
         // bytes=-500
@@ -259,7 +261,6 @@ static dispatch_queue_t mcs_queue;
         _range = current;
         
         NSMutableArray<id<MCSAssetDataReader>> *subreaders = NSMutableArray.array;
-        NSURL *URL = [MCSURLRecognizer.shared URLWithProxyURL:_request.URL];
         for ( FILEContent *content in contents ) {
             NSRange available = NSMakeRange(content.offset, content.length);
             NSRange intersection = NSIntersectionRange(current, available);
@@ -267,7 +268,7 @@ static dispatch_queue_t mcs_queue;
                 // undownloaded part
                 NSRange leftRange = NSMakeRange(current.location, intersection.location - current.location);
                 if ( leftRange.length != 0 ) {
-                    FILEContentReader *reader = [self _networkDataReaderWithURL:URL range:leftRange];
+                    FILEContentReader *reader = [self _networkDataReaderWithRange:leftRange];
                     [subreaders addObject:reader];
                 }
                 
@@ -287,7 +288,7 @@ static dispatch_queue_t mcs_queue;
         
         if ( current.length != 0 ) {
             // undownloaded part
-            FILEContentReader *reader = [self _networkDataReaderWithURL:URL range:current];
+            FILEContentReader *reader = [self _networkDataReaderWithRange:current];
             [subreaders addObject:reader];
         }
          
@@ -379,8 +380,8 @@ static dispatch_queue_t mcs_queue;
     });
 }
 
-- (FILEContentReader *)_networkDataReaderWithURL:(NSURL *)URL range:(NSRange)range {
-    NSMutableURLRequest *request = [_request mcs_requestWithRedirectURL:URL range:range];
+- (FILEContentReader *)_networkDataReaderWithRange:(NSRange)range {
+    NSMutableURLRequest *request = [_request mcs_requestWithRange:range];
     return [FILEContentReader.alloc initWithAsset:_asset request:request networkTaskPriority:_networkTaskPriority delegate:self];
 }
 @end

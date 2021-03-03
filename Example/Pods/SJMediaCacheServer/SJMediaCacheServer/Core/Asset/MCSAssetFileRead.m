@@ -11,6 +11,7 @@
 #import "MCSLogger.h" 
 #import "NSFileHandle+MCS.h"
 #import "MCSQueue.h"
+#import "MCSUtils.h"
 
 static dispatch_queue_t mcs_queue;
 
@@ -39,7 +40,7 @@ static dispatch_queue_t mcs_queue;
 + (void)initialize {
     static dispatch_once_t onceToken;
     dispatch_once(&onceToken, ^{
-        mcs_queue = dispatch_queue_create("queue.MCSAssetFileRead", DISPATCH_QUEUE_CONCURRENT);
+        mcs_queue = mcs_dispatch_queue_create("queue.MCSAssetFileRead", DISPATCH_QUEUE_CONCURRENT);
     });
 }
 
@@ -143,7 +144,7 @@ static dispatch_queue_t mcs_queue;
 - (BOOL)seekToOffset:(NSUInteger)offset {
     __block BOOL result = NO;
     dispatch_barrier_sync(mcs_queue, ^{
-        if ( _isClosed || !_isPrepared )
+        if ( _isClosed || !_isPrepared || _isDone )
             return;
         if ( !NSLocationInRange(offset - 1, _range) )
             return;

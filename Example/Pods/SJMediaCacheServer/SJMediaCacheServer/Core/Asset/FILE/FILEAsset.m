@@ -12,6 +12,8 @@
 #import "MCSConsts.h"
 #import "MCSConfiguration.h"
 #import "MCSRootDirectory.h"
+#import "NSFileHandle+MCS.h"
+#import "MCSUtils.h"
 
 static NSString *kLength = @"length";
 static NSString *kReadwriteCount = @"readwriteCount";
@@ -38,7 +40,7 @@ static dispatch_queue_t mcs_queue;
 + (void)initialize {
     static dispatch_once_t onceToken;
     dispatch_once(&onceToken, ^{
-        mcs_queue = dispatch_queue_create("queue.FILEAsset", DISPATCH_QUEUE_CONCURRENT);
+        mcs_queue = mcs_dispatch_queue_create("queue.FILEAsset", DISPATCH_QUEUE_CONCURRENT);
     });
 }
 
@@ -123,8 +125,8 @@ static dispatch_queue_t mcs_queue;
 
 - (nullable FILEContent *)createContentWithResponse:(NSHTTPURLResponse *)response {
     NSString *pathExtension = MCSSuggestedFilePathExtension(response);
-    NSString *contentType = MCSGetResponseContentType(response);
-    MCSResponseContentRange range = MCSGetResponseContentRange(response);
+    NSString *contentType = MCSResponseGetContentType(response);
+    MCSResponseContentRange range = MCSResponseGetContentRange(response);
     NSUInteger totalLength = range.totalLength;
     NSUInteger offset = range.start;
     __block FILEContent *content = nil;
@@ -237,7 +239,7 @@ static dispatch_queue_t mcs_queue;
                             NSData *data = [reader readDataOfLength:1024 * 1024 * 1];
                             if ( data.length == 0 )
                                 break;
-                            [writer writeData:data];
+                            if ( ![writer mcs_writeData:data error:NULL] ) break;
                         }
                     }
                     [write didWriteDataWithLength:readRange.length];

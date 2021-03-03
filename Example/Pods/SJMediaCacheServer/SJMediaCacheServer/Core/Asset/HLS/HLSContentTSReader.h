@@ -16,10 +16,12 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (instancetype)initWithAsset:(HLSAsset *)asset request:(NSURLRequest *)request networkTaskPriority:(float)networkTaskPriority delegate:(id<MCSAssetDataReaderDelegate>)delegate;
 
-- (void)prepare; 
+- (void)prepare;
+@property (nonatomic, weak, readonly, nullable) HLSAsset *asset;
 @property (nonatomic, readonly) NSRange range;
 @property (nonatomic, readonly) NSUInteger availableLength;
 @property (nonatomic, readonly) NSUInteger offset;
+@property (nonatomic, readonly) NSUInteger totalLength;
 @property (nonatomic, readonly) BOOL isPrepared;
 @property (nonatomic, readonly) BOOL isDone;
 - (nullable NSData *)readDataOfLength:(NSUInteger)length;

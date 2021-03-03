@@ -7,6 +7,7 @@
 
 #import "NSFileHandle+MCS.h"
 #import "MCSError.h"
+#import "MCSConsts.h"
 
 @implementation NSFileHandle (MCS)
 
@@ -95,6 +96,30 @@
             error = [NSError mcs_errorWithCode:MCSExceptionError userInfo:@{
                 MCSErrorUserInfoExceptionKey : exception
             }];
+        }
+    }
+    
+    if      ( error.code == NSFileWriteOutOfSpaceError ) {
+        dispatch_async(dispatch_get_global_queue(0, 0), ^{
+            [NSNotificationCenter.defaultCenter postNotificationName:MCSFileWriteOutOfSpaceErrorNotification object:nil];
+        });
+    }
+    else if ( error.code == MCSExceptionError ) {
+        NSException *exception = error.userInfo[MCSErrorUserInfoExceptionKey];
+        if ( exception != nil ) {
+            if ( exception.name == NSFileHandleOperationException ) {
+                for ( id value in exception.userInfo.allValues ) {
+                    if ( [value isKindOfClass:NSError.class] ) {
+                        NSError *error = value;
+                        if ( error.code == NSFileWriteOutOfSpaceError ) {
+                            dispatch_async(dispatch_get_global_queue(0, 0), ^{
+                                [NSNotificationCenter.defaultCenter postNotificationName:MCSFileWriteOutOfSpaceErrorNotification object:nil];
+                            });
+                            break;
+                        }
+                    }
+                }
+            }
         }
     }
     

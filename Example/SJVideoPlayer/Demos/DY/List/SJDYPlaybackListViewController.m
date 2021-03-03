@@ -67,7 +67,7 @@
 }
 
 - (void)tableView:(UITableView *)tableView willDisplayCell:(SJDYTableViewCell *)cell forRowAtIndexPath:(NSIndexPath *)indexPath {
-    NSURL *playbackURL = _list[indexPath.row].URL;
+    NSURL *playbackURL = [SJMediaCacheServer.shared playbackURLWithURL:_list[indexPath.row].URL];
     [cell.player configureWithURL:playbackURL];
     __weak typeof(self) _self = self;
     cell.player.allowsPlayback = ^BOOL(id<SJDYDemoPlayer>  _Nonnull player) {

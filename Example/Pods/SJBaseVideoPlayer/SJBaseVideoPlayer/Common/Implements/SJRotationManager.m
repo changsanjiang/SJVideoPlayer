@@ -303,7 +303,18 @@ static NSNotificationName const SJRotationManagerTransitioningValueDidChangeNoti
 }
 
 - (void)_setupWindow {
-    self->_window = [SJFullscreenModeWindow new];
+    //整个app 都使用一个SJFullscreenModeWindow
+    NSArray * allwindows = [UIApplication sharedApplication].windows;
+    BOOL hasSJFullscreenModeWindow = NO;
+    for (SJFullscreenModeWindow * subWindow in allwindows) {
+        if ([subWindow isKindOfClass:[SJFullscreenModeWindow class]]) {
+            hasSJFullscreenModeWindow = YES;
+            self->_window = subWindow;
+        }
+    }
+    if (!hasSJFullscreenModeWindow) {
+        self->_window = [SJFullscreenModeWindow new];
+    }
     self->_window.fullscreenModeViewController.delegate = self;
     self->_window.rootViewController.sj_delegate = self;
     self->_window.frame = UIScreen.mainScreen.bounds;

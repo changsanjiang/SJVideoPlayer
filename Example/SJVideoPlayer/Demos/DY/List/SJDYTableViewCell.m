@@ -101,7 +101,7 @@
         self.autoplayWhenSetNewAsset = NO;
         self.autoManageViewToFitOnScreenOrRotation = NO;
         self.rotationManager.disabledAutorotation = YES;
-        self.pauseWhenAppDidEnterBackground = NO;
+        self.pauseWhenAppDidEnterBackground = YES;
         self.resumePlaybackWhenScrollAppeared = NO;
         self.resumePlaybackWhenAppDidEnterForeground = NO;
     }

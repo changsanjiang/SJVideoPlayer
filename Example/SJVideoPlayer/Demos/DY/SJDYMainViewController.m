@@ -205,12 +205,12 @@ typedef enum : NSUInteger {
 
 - (void)pageMenuBar:(SJPageMenuBar *)bar focusedIndexDidChange:(NSUInteger)index {
     if ( ![_pageViewController isViewControllerVisibleAtIndex:index] ) {
-        if ( _pageViewController.focusedIndex != NSNotFound ) {
-            dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(0.1 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
-                [self playOrPause];
-            });
-        }
         [_pageViewController setViewControllerAtIndex:index];
+        SJDYPlaybackListViewController *cur = [_pageViewController viewControllerAtIndex:index];
+        for ( SJDYPlaybackListViewController *vc in _pageViewController.cachedViewControllers ) {
+            if ( cur != vc ) [vc pause];
+        }
+        [cur playIfNeeded];
     }
 }
 

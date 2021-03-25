@@ -97,7 +97,7 @@ NS_ASSUME_NONNULL_BEGIN
 }
 
 + (NSString *)version {
-    return @"v3.3.0";
+    return @"v3.3.1";
 }
 
 + (instancetype)player {
@@ -553,7 +553,7 @@ NS_ASSUME_NONNULL_BEGIN
             if ( _moreItem == nil ) {
                 _moreItem = [SJEdgeControlButtonItem placeholderWithType:SJButtonItemPlaceholderType_49x49 tag:SJEdgeControlLayerTopItem_More];
                 _moreItem.image = SJVideoPlayerConfigurations.shared.resources.moreImage;
-                [_moreItem addTarget:self action:@selector(_moreItemWasTapped:)];
+                [_moreItem addAction:[SJEdgeControlButtonItemAction actionWithTarget:self action:@selector(_moreItemWasTapped:)]];
                 [_defaultEdgeControlLayer.topAdapter addItem:_moreItem];
             }
             [self _updateAppearStateForMoteItemIfNeeded];
@@ -592,7 +592,7 @@ NS_ASSUME_NONNULL_BEGIN
             if ( _clipsItem == nil ) {
                 _clipsItem = [SJEdgeControlButtonItem placeholderWithType:SJButtonItemPlaceholderType_49x49 tag:SJEdgeControlLayerRightItem_Clips];
                 _clipsItem.image = SJVideoPlayerConfigurations.shared.resources.clipsImage;
-                [_clipsItem addTarget:self action:@selector(_clipsItemWasTapped:)];
+                [_clipsItem addAction:[SJEdgeControlButtonItemAction actionWithTarget:self action:@selector(_clipsItemWasTapped:)]];
                 [_defaultEdgeControlLayer.rightAdapter addItem:_clipsItem];
             }
             [self _updateAppearStateForClipsItemIfNeeded];
@@ -651,7 +651,7 @@ NS_ASSUME_NONNULL_BEGIN
     if ( definitionURLAssets != nil ) {
         if ( self.definitionItem == nil ) {
             self.definitionItem = [SJEdgeControlButtonItem placeholderWithType:SJButtonItemPlaceholderType_49xAutoresizing tag:SJEdgeControlLayerBottomItem_Definition];
-            [self.definitionItem addTarget:self action:@selector(_definitionItemWasTapped:)];
+            [self.definitionItem addAction:[SJEdgeControlButtonItemAction actionWithTarget:self action:@selector(_definitionItemWasTapped:)]];
             [adapter insertItem:self.definitionItem rearItem:SJEdgeControlLayerBottomItem_Full];
         }
         [self _updateContentForDefinitionItemIfNeeded];

@@ -125,7 +125,7 @@
 #pragma mark - item actions
 
 - (void)_fixedBackButtonWasTapped {
-    [self.backItem performAction];
+    [self.backItem performActions];
 }
 
 - (void)_backItemWasTapped {
@@ -360,7 +360,7 @@
     if ( !CGRectContainsPoint(adapter.view.frame, point) ) return YES;
     
     SJEdgeControlButtonItem *_Nullable item = [adapter itemAtPoint:point];
-    return item != nil ? ![item.target respondsToSelector:item.action] : YES;
+    return item != nil ? (item.actions.count == 0)  : YES;
 }
 
 - (void)videoPlayer:(__kindof SJBaseVideoPlayer *)videoPlayer panGestureTriggeredInTheHorizontalDirection:(SJPanGestureRecognizerState)state progressTime:(NSTimeInterval)progressTime {
@@ -667,7 +667,7 @@
 - (SJEdgeControlButtonItem *)pictureInPictureItem API_AVAILABLE(ios(14.0)) {
     if ( _pictureInPictureItem == nil ) {
         _pictureInPictureItem = [SJEdgeControlButtonItem.alloc initWithTag:SJEdgeControlLayerTopItem_PictureInPicture];
-        [_pictureInPictureItem addTarget:self action:@selector(pictureInPictureItemWasTapped)];
+        [_pictureInPictureItem addAction:[SJEdgeControlButtonItemAction actionWithTarget:self action:@selector(pictureInPictureItemWasTapped)]];
     }
     return _pictureInPictureItem;
 }
@@ -733,7 +733,7 @@
 - (void)_addItemsToTopAdapter {
     SJEdgeControlButtonItem *backItem = [SJEdgeControlButtonItem placeholderWithType:SJButtonItemPlaceholderType_49x49 tag:SJEdgeControlLayerTopItem_Back];
     backItem.resetsAppearIntervalWhenPerformingItemAction = NO;
-    [backItem addTarget:self action:@selector(_backItemWasTapped)];
+    [backItem addAction:[SJEdgeControlButtonItemAction actionWithTarget:self action:@selector(_backItemWasTapped)]];
     [self.topAdapter addItem:backItem];
     _backItem = backItem;
 
@@ -745,7 +745,7 @@
 
 - (void)_addItemsToLeftAdapter {
     SJEdgeControlButtonItem *lockItem = [SJEdgeControlButtonItem placeholderWithType:SJButtonItemPlaceholderType_49x49 tag:SJEdgeControlLayerLeftItem_Lock];
-    [lockItem addTarget:self action:@selector(_lockItemWasTapped)];
+    [lockItem addAction:[SJEdgeControlButtonItemAction actionWithTarget:self action:@selector(_lockItemWasTapped)]];
     [self.leftAdapter addItem:lockItem];
     
     [self.leftAdapter reload];
@@ -754,7 +754,7 @@
 - (void)_addItemsToBottomAdapter {
     // 播放按钮
     SJEdgeControlButtonItem *playItem = [SJEdgeControlButtonItem placeholderWithType:SJButtonItemPlaceholderType_49x49 tag:SJEdgeControlLayerBottomItem_Play];
-    [playItem addTarget:self action:@selector(_playItemWasTapped)];
+    [playItem addAction:[SJEdgeControlButtonItemAction actionWithTarget:self action:@selector(_playItemWasTapped)]];
     [self.bottomAdapter addItem:playItem];
     
     SJEdgeControlButtonItem *liveItem = [[SJEdgeControlButtonItem alloc] initWithTag:SJEdgeControlLayerBottomItem_LIVEText];
@@ -803,7 +803,7 @@
     // 全屏按钮
     SJEdgeControlButtonItem *fullItem = [SJEdgeControlButtonItem placeholderWithType:SJButtonItemPlaceholderType_49x49 tag:SJEdgeControlLayerBottomItem_Full];
     fullItem.resetsAppearIntervalWhenPerformingItemAction = NO;
-    [fullItem addTarget:self action:@selector(_fullItemWasTapped)];
+    [fullItem addAction:[SJEdgeControlButtonItemAction actionWithTarget:self action:@selector(_fullItemWasTapped)]];
     [self.bottomAdapter addItem:fullItem];
 
     [self.bottomAdapter reload];
@@ -817,7 +817,7 @@
     UILabel *replayLabel = [UILabel new];
     replayLabel.numberOfLines = 0;
     SJEdgeControlButtonItem *replayItem = [SJEdgeControlButtonItem frameLayoutWithCustomView:replayLabel tag:SJEdgeControlLayerCenterItem_Replay];
-    [replayItem addTarget:self action:@selector(_replayItemWasTapped)];
+    [replayItem addAction:[SJEdgeControlButtonItemAction actionWithTarget:self action:@selector(_replayItemWasTapped)]];
     [self.centerAdapter addItem:replayItem];
     [self.centerAdapter reload];
 }

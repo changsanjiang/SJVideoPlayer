@@ -62,7 +62,7 @@ NS_ASSUME_NONNULL_BEGIN
 }
 
 - (void)performAction {
-    [_item performAction];
+    [_item performActions];
 }
 
 - (void)reloadItemIfNeeded {

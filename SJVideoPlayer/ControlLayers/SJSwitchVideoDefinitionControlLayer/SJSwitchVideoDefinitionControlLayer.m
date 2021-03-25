@@ -113,7 +113,7 @@ NS_ASSUME_NONNULL_BEGIN
     NSMutableArray<SJEdgeControlButtonItem *> *m = [NSMutableArray new];
     [_assets enumerateObjectsUsingBlock:^(SJVideoPlayerURLAsset * _Nonnull obj, NSUInteger idx, BOOL * _Nonnull stop) {
         SJEdgeControlButtonItem *item = [SJEdgeControlButtonItem placeholderWithSize:38 tag:idx];
-        [item addTarget:self action:@selector(_clickedItem:)];
+        [item addAction:[SJEdgeControlButtonItemAction actionWithTarget:self action:@selector(_clickedItem:)]];
         [m addObject:item];
     }];
     self.items = m;

@@ -154,15 +154,15 @@ static SJControlLayerIdentifier SJClipsResultsControlLayerIdentifier = 3;
 
 - (void)_addItemToRightAdapter {
     SJEdgeControlButtonItem *screenshotItem = [SJEdgeControlButtonItem placeholderWithType:SJButtonItemPlaceholderType_49x49 tag:SJClipsControlLayerRightItem_Screenshot];
-    [screenshotItem addTarget:self action:@selector(screenshotItemWasTapped)];
+    [screenshotItem addAction:[SJEdgeControlButtonItemAction actionWithTarget:self action:@selector(screenshotItemWasTapped)]];
     [self.rightAdapter addItem:screenshotItem];
     
     SJEdgeControlButtonItem *exportVideoItem = [SJEdgeControlButtonItem placeholderWithType:SJButtonItemPlaceholderType_49x49 tag:SJClipsControlLayerRightItem_ExportVideo];
-    [exportVideoItem addTarget:self action:@selector(exportVideoItemWasTapped)];
+    [exportVideoItem addAction:[SJEdgeControlButtonItemAction actionWithTarget:self action:@selector(exportVideoItemWasTapped)]];
     [self.rightAdapter addItem:exportVideoItem];
     
     SJEdgeControlButtonItem *exportGIFItem = [SJEdgeControlButtonItem placeholderWithType:SJButtonItemPlaceholderType_49x49 tag:SJClipsControlLayerRightItem_ExportGIF];
-    [exportGIFItem addTarget:self action:@selector(exportGIFItemWasTapped)];
+    [exportGIFItem addAction:[SJEdgeControlButtonItemAction actionWithTarget:self action:@selector(exportGIFItemWasTapped)]];
     [self.rightAdapter addItem:exportGIFItem];
 }
 

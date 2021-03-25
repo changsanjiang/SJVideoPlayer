@@ -223,7 +223,7 @@ static SJEdgeControlButtonItemTag SJBottomItem_RightFill = 5;
 
 - (void)_addItemToRightAdapter {
     SJEdgeControlButtonItem *doneItem = [SJEdgeControlButtonItem placeholderWithType:SJButtonItemPlaceholderType_49x49 tag:SJRightItem_Done];
-    [doneItem addTarget:self action:@selector(clickedDoneItem:)];
+    [doneItem addAction:[SJEdgeControlButtonItemAction actionWithTarget:self action:@selector(clickedDoneItem:)]];
     [self.rightAdapter addItem:doneItem];
 }
 

@@ -120,7 +120,7 @@
     _player.defaultFloatSmallViewControlLayer.bottomHeight = 35;
     
     SJEdgeControlButtonItem *playItem = [SJEdgeControlButtonItem.alloc initWithTag:101];
-    [playItem addTarget:self action:@selector(playOrPause)];
+    [playItem addAction:[SJEdgeControlButtonItemAction actionWithTarget:self action:@selector(playOrPause)]];
     [_player.defaultFloatSmallViewControlLayer.bottomAdapter addItem:playItem];
     __weak typeof(self) _self = self;
     _player.playbackObserver.playbackStatusDidChangeExeBlock = ^(__kindof SJBaseVideoPlayer * _Nonnull player) {

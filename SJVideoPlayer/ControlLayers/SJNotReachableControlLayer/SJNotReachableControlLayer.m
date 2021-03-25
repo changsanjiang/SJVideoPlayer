@@ -144,7 +144,7 @@ SJEdgeControlButtonItemTag const SJNotReachableControlLayerTopItem_Back = 10000;
     id<SJVideoPlayerLocalizedStrings> strings = SJVideoPlayerConfigurations.shared.localizedStrings;
     
     SJEdgeControlButtonItem *backItem = [SJEdgeControlButtonItem placeholderWithType:SJButtonItemPlaceholderType_49x49 tag:SJNotReachableControlLayerTopItem_Back];
-    [backItem addTarget:self action:@selector(backItemWasTapped:)];
+    [backItem addAction:[SJEdgeControlButtonItemAction actionWithTarget:self action:@selector(backItemWasTapped:)]];
     backItem.image = sources.backImage;
     [self.topAdapter addItem:backItem];
     [self.topAdapter reload];

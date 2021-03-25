@@ -969,7 +969,7 @@
 				ORGANIZATIONNAME = changsanjiang;
 				TargetAttributes = {
 					6003F589195388D20070C39A = {
-						DevelopmentTeam = Q6TTFXGP8Q;
+						DevelopmentTeam = DVCY355DY9;
 						ProvisioningStyle = Automatic;
 						SystemCapabilities = {
 							com.apple.BackgroundModes = {
@@ -1329,7 +1329,7 @@
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CODE_SIGN_IDENTITY = "iPhone Developer";
 				CODE_SIGN_STYLE = Automatic;
-				DEVELOPMENT_TEAM = Q6TTFXGP8Q;
+				DEVELOPMENT_TEAM = DVCY355DY9;
 				ENABLE_BITCODE = NO;
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = "SJVideoPlayer/SJVideoPlayer-Prefix.pch";

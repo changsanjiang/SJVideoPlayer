@@ -16,6 +16,7 @@ NSNotificationName const SJEdgeControlButtonItemPerformedActionNotification = @"
     SJButtonItemPlaceholderType _placeholderType;
     CGFloat _size;
     BOOL _isFrameLayout;
+    NSMutableArray<SJEdgeControlButtonItemAction *> *_Nullable _actions;
 }
 - (instancetype)initWithTitle:(nullable NSAttributedString *)title
                        target:(nullable id)target
@@ -24,8 +25,9 @@ NSNotificationName const SJEdgeControlButtonItemPerformedActionNotification = @"
     self = [self initWithTag:tag];
     if ( !self ) return nil;
     _title = title;
-    _target = target;
-    _action = action;
+    if ( target != nil && action != NULL ) {
+        [self addAction:[SJEdgeControlButtonItemAction actionWithTarget:target action:action]];
+    }
     return self;
 }
 - (instancetype)initWithImage:(nullable UIImage *)image
@@ -35,8 +37,9 @@ NSNotificationName const SJEdgeControlButtonItemPerformedActionNotification = @"
     self = [self initWithTag:tag];
     if ( !self ) return nil;
     _image = image;
-    _target = target;
-    _action = action;
+    if ( target != nil && action != NULL ) {
+        [self addAction:[SJEdgeControlButtonItemAction actionWithTarget:target action:action]];
+    }
     return self;
 }
 - (instancetype)initWithCustomView:(nullable __kindof UIView *)customView
@@ -55,20 +58,41 @@ NSNotificationName const SJEdgeControlButtonItemPerformedActionNotification = @"
     return self;
 }
 
-- (void)addTarget:(id)target action:(nonnull SEL)action {
-    _target = target;
-    _action = action;
+- (nullable NSArray<SJEdgeControlButtonItemAction *> *)actions {
+    return _actions.count != 0 ? _actions : nil;
 }
 
-- (void)performAction {
-    if ( !_action ) return;
+- (void)addAction:(SJEdgeControlButtonItemAction *)action {
+    if ( action != nil ) {
+        if ( _actions == nil ) {
+            _actions = NSMutableArray.array;
+        }
+        [_actions addObject:action];
+    }
+}
+
+- (void)removeAction:(SJEdgeControlButtonItemAction *)action {
+    if ( action != nil )
+        [_actions removeObject:action];
+}
+
+- (void)removeAllActions {
+    [_actions removeAllObjects];
+}
+
+- (void)performActions {
+    for ( SJEdgeControlButtonItemAction *action in _actions ) {
+        if ( action.handler != nil ) {
+            action.handler(action);
+        }
+        else if ( [action.target respondsToSelector:action.action] ) {
 #pragma clang diagnostic push
 #pragma clang diagnostic ignored "-Warc-performSelector-leaks"
-    if ( [_target respondsToSelector:_action] ) {
-        [_target performSelector:_action withObject:self];
-        [NSNotificationCenter.defaultCenter postNotificationName:SJEdgeControlButtonItemPerformedActionNotification object:self];
-    }
+            [action.target performSelector:action.action withObject:self];
 #pragma clang diagnostic pop
+        }
+    }
+    [NSNotificationCenter.defaultCenter postNotificationName:SJEdgeControlButtonItemPerformedActionNotification object:self];
 }
 @end
 
@@ -98,6 +122,20 @@ NSNotificationName const SJEdgeControlButtonItemPerformedActionNotification = @"
 @end
 
 
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wdeprecated-declarations"
+@implementation SJEdgeControlButtonItem(SJDeprecated)
+- (void)addTarget:(id)target action:(nonnull SEL)action {
+    [self removeAllActions];
+    [self addAction:[SJEdgeControlButtonItemAction actionWithTarget:target action:action]];
+}
+
+- (void)performAction {
+    [self performActions];
+}
+@end
+#pragma clang diagnostic pop
+
 @implementation SJEdgeControlButtonItem(FrameLayout)
 + (instancetype)frameLayoutWithCustomView:(__kindof UIView *)customView tag:(SJEdgeControlButtonItemTag)tag {
     SJEdgeControlButtonItem *item = [[SJEdgeControlButtonItem alloc] initWithCustomView:customView tag:tag];
@@ -106,6 +144,32 @@ NSNotificationName const SJEdgeControlButtonItemPerformedActionNotification = @"
 }
 - (BOOL)isFrameLayout {
     return _isFrameLayout;
+}
+@end
+
+@implementation SJEdgeControlButtonItemAction
++ (instancetype)actionWithTarget:(id)target action:(SEL)action {
+    return [[self alloc] initWithTarget:target action:action];
+}
+
++ (instancetype)actionWithHandler:(void(^)(SJEdgeControlButtonItemAction *action))handler {
+    return [[self alloc] initWithHandler:handler];
+}
+
+- (instancetype)initWithTarget:(id)target action:(SEL)action {
+    self = [super init];
+    if ( self ) {
+        _target = target;
+        _action = action;
+    }
+    return self;
+}
+- (instancetype)initWithHandler:(void(^)(SJEdgeControlButtonItemAction *action))handler {
+    self = [super init];
+    if ( self ) {
+        _handler = handler;
+    }
+    return self;
 }
 @end
 NS_ASSUME_NONNULL_END

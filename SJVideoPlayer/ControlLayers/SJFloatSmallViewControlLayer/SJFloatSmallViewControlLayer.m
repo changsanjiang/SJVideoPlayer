@@ -49,7 +49,7 @@ SJEdgeControlButtonItemTag const SJFloatSmallViewControlLayerTopItem_Close = 100
                 item = [self->_centerAdapter itemAtPoint:[self convertPoint:point toView:self->_centerAdapter.view]];
             }
             
-            if ( item.action != NULL || item.customView != nil ) {
+            if ( item.actions != nil || item.customView != nil ) {
                 gesture.enabled = NO;
                 dispatch_async(dispatch_get_main_queue(), ^{
                     gesture.enabled = YES;
@@ -94,7 +94,7 @@ SJEdgeControlButtonItemTag const SJFloatSmallViewControlLayerTopItem_Close = 100
     [self.topAdapter addItem:fillItem];
     
     SJEdgeControlButtonItem *closeItem = [SJEdgeControlButtonItem placeholderWithType:SJButtonItemPlaceholderType_49x49 tag:SJFloatSmallViewControlLayerTopItem_Close];
-    [closeItem addTarget:self action:@selector(tappedCloseItem:)];
+    [closeItem addAction:[SJEdgeControlButtonItemAction actionWithTarget:self action:@selector(tappedCloseItem:)]];
     closeItem.image = SJVideoPlayerConfigurations.shared.resources.floatSmallViewCloseImage;
     [self.topAdapter addItem:closeItem];
     

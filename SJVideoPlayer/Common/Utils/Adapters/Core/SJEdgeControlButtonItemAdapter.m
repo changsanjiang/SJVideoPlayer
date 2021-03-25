@@ -259,7 +259,7 @@ NS_ASSUME_NONNULL_BEGIN
     if ( item.isHidden == YES || item.alpha < 0.01 )
         return NO;
     
-    if ( item.customView == nil && item.target == nil )
+    if ( item.customView == nil && item.actions == nil )
         return NO;
     
     return [super pointInside:point withEvent:event];

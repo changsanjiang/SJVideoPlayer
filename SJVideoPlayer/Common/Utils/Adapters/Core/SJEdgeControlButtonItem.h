@@ -9,7 +9,7 @@
 #import <UIKit/UIKit.h>
 #import <SJBaseVideoPlayer/SJPlayerGestureControlDefines.h>
 typedef NSInteger SJEdgeControlButtonItemTag;
-@class SJBaseVideoPlayer;
+@class SJBaseVideoPlayer, SJEdgeControlButtonItemAction;
 
 typedef struct SJEdgeInsets {
     // 前后间距
@@ -50,14 +50,15 @@ UIKIT_EXTERN NSNotificationName const SJEdgeControlButtonItemPerformedActionNoti
 @property (nonatomic, strong, nullable) UIImage *image;
 @property (nonatomic, getter=isHidden) BOOL hidden;
 @property (nonatomic) CGFloat alpha;
-@property (nonatomic, weak, nullable) id target;
-@property (nonatomic, nullable) SEL action;
 - (instancetype)init NS_UNAVAILABLE;
 + (instancetype)new  NS_UNAVAILABLE;
 @property (nonatomic) BOOL fill; // 当想要填充剩余空间时, 可以设置为`Yes`.
 
-- (void)addTarget:(id)target action:(nonnull SEL)action;
-- (void)performAction;
+@property (nonatomic, readonly, nullable) NSArray<SJEdgeControlButtonItemAction *> *actions;
+- (void)addAction:(SJEdgeControlButtonItemAction *)action;
+- (void)removeAction:(SJEdgeControlButtonItemAction *)action;
+- (void)removeAllActions;
+- (void)performActions;
 @end
 
 typedef enum : NSUInteger {
@@ -83,5 +84,25 @@ typedef enum : NSUInteger {
 @interface SJEdgeControlButtonItem (FrameLayout)
 + (instancetype)frameLayoutWithCustomView:(__kindof UIView *)customView tag:(SJEdgeControlButtonItemTag)tag;
 @property (nonatomic, readonly) BOOL isFrameLayout;
+@end
+
+
+@interface SJEdgeControlButtonItem (SJDeprecated)
+- (void)addTarget:(id)target action:(nonnull SEL)action __deprecated_msg("use `addAction:`;");
+- (void)performAction __deprecated_msg("use `performActions`;");
+@end
+
+#pragma mark - action
+
+@interface SJEdgeControlButtonItemAction : NSObject
++ (instancetype)actionWithTarget:(id)target action:(SEL)action;
+- (instancetype)initWithTarget:(id)target action:(SEL)action;
+
++ (instancetype)actionWithHandler:(void(^)(SJEdgeControlButtonItemAction *action))handler;
+- (instancetype)initWithHandler:(void(^)(SJEdgeControlButtonItemAction *action))handler;
+
+@property (nonatomic, weak, readonly, nullable) id target;
+@property (nonatomic, readonly, nullable) SEL action;
+@property (nonatomic, copy, readonly, nullable) void(^handler)(SJEdgeControlButtonItemAction *action);
 @end
 NS_ASSUME_NONNULL_END

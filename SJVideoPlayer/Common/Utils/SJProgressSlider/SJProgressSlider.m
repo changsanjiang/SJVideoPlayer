@@ -189,10 +189,10 @@ NS_ASSUME_NONNULL_BEGIN
     CGFloat value_old = _value;
     if      ( value_new < _minValue ) value_new = _minValue;
     else if ( value_new > _maxValue ) value_new = _maxValue;
-    if ( _showsStopNode ) {
-        CGFloat stop = _stopNodeLocation * _maxValue;
-        if ( value_new > stop ) value_new = stop;
-    }
+//    if ( _showsStopNode ) {
+//        CGFloat stop = _stopNodeLocation * _maxValue;
+//        if ( value_new > stop ) value_new = stop;
+//    }
     _value = value_new;
     
     if ( animated ) {
@@ -209,6 +209,20 @@ NS_ASSUME_NONNULL_BEGIN
     
     if ( [self.delegate respondsToSelector:@selector(slider:valueDidChange:)] ) {
         [self.delegate slider:self valueDidChange:_value];
+    }
+}
+
+- (void)setMinValue:(CGFloat)minValue {
+    if ( minValue != _minValue ) {
+        _minValue = minValue;
+        [self _needUpdateContainerLayout];
+    }
+}
+
+- (void)setMaxValue:(CGFloat)maxValue {
+    if ( maxValue != _maxValue ) {
+        _maxValue = maxValue;
+        [self _needUpdateContainerLayout];
     }
 }
 

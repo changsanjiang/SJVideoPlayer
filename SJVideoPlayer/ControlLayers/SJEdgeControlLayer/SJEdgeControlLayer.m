@@ -264,6 +264,7 @@
     [self _showOrHiddenLoadingView];
     [self _updateContentForBottomCurrentTimeItemIfNeeded];
     [self _updateContentForBottomDurationItemIfNeeded];
+    [self _updateContentForBottomProgressIndicatorIfNeeded];
 }
 
 - (void)videoPlayer:(__kindof SJBaseVideoPlayer *)videoPlayer pictureInPictureStatusDidChange:(SJPictureInPictureStatus)status API_AVAILABLE(ios(14.0)) {

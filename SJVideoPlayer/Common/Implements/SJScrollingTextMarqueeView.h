@@ -16,5 +16,6 @@ NS_ASSUME_NONNULL_BEGIN
 
 @property (nonatomic, readonly, getter=isScrolling) BOOL scrolling;
 @property (nonatomic, getter=isScrollEnabled) BOOL scrollEnabled;
+@property (nonatomic, getter=isCentered) BOOL centered;
 @end
 NS_ASSUME_NONNULL_END

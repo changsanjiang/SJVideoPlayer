@@ -19,6 +19,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 @property (nonatomic, readonly, getter=isScrolling) BOOL scrolling;
 @property (nonatomic, getter=isScrollEnabled) BOOL scrollEnabled; ///< default value is YES
+@property (nonatomic, getter=isCentered) BOOL centered; ///< default value is NO. 标题太短无法滚动时, 是否居中显示
 @end
 NS_ASSUME_NONNULL_END
 

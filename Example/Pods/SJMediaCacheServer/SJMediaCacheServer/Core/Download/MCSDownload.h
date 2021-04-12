@@ -6,19 +6,22 @@
 //  Copyright © 2020 changsanjiang@gmail.com. All rights reserved.
 //
 
-#import <Foundation/Foundation.h>
-@protocol MCSDownloadTaskDelegate;
+#import "MCSInterfaces.h"
+#import "MCSResponse.h"
+
 NS_ASSUME_NONNULL_BEGIN
-@interface MCSDownload : NSObject
+@interface MCSDownload : NSObject<MCSDownloader>
 + (instancetype)shared;
 
 @property (nonatomic) NSTimeInterval timeoutInterval;
 
 @property (nonatomic, copy, nullable) NSMutableURLRequest *_Nullable(^requestHandler)(NSMutableURLRequest *request);
 
-- (nullable NSURLSessionTask *)downloadWithRequest:(NSURLRequest *)request priority:(float)priority delegate:(id<MCSDownloadTaskDelegate>)delegate;
+- (nullable id<MCSDownloadTask>)downloadWithRequest:(NSURLRequest *)request priority:(float)priority delegate:(id<MCSDownloadTaskDelegate>)delegate;
 
 @property (nonatomic, copy, nullable) NSData *(^dataEncoder)(NSURLRequest *request, NSUInteger offset, NSData *data);
+
+@property (nonatomic, copy, nullable) void(^errorCallback)(NSURLRequest *request, NSError *error);
 
 - (void)cancelAllDownloadTasks;
 
@@ -28,10 +31,11 @@ NS_ASSUME_NONNULL_BEGIN
 - (instancetype)init NS_UNAVAILABLE;
 @end
 
-@protocol MCSDownloadTaskDelegate <NSObject>
-- (void)downloadTask:(NSURLSessionTask *)task willPerformHTTPRedirection:(NSHTTPURLResponse *)response newRequest:(NSURLRequest *)request;
-- (void)downloadTask:(NSURLSessionTask *)task didReceiveResponse:(NSURLResponse *)response;
-- (void)downloadTask:(NSURLSessionTask *)task didReceiveData:(NSData *)data;
-- (void)downloadTask:(NSURLSessionTask *)task didCompleteWithError:(NSError *)error;
+
+@interface MCSDownloadResponse : MCSResponse<MCSDownloadResponse>
+- (instancetype)initWithHTTPResponse:(NSHTTPURLResponse *)response;
+@property (nonatomic, readonly) NSInteger statusCode;
+@property (nonatomic, copy, readonly) NSString *pathExtension;
+@property (nonatomic, copy, readonly) NSURL *URL;
 @end
 NS_ASSUME_NONNULL_END

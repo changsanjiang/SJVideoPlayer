@@ -51,12 +51,7 @@ NS_ASSUME_NONNULL_BEGIN
 ///
 /// - default value is YES.
 @property (nonatomic) BOOL slidable;
-
-/// 是否将小浮窗添加到window中. (注意: 小浮窗默认会添加到播放器同级的控制器视图上)
-///
-/// - default value is NO.
-@property (nonatomic) BOOL addFloatViewToKeyWindow;
-
+ 
 @property (nonatomic, strong, readonly) __kindof UIView *floatView; ///< float view
   
 /// 以下属性由播放器维护

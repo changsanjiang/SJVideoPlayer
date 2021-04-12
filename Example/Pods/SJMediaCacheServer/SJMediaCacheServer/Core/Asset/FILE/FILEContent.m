@@ -27,6 +27,10 @@
     return self;
 }
 
+- (NSString *)description {
+    return [NSString stringWithFormat:@"%@: <%p> { filename: %@, readwriteCount: %ld };\n", NSStringFromClass(self.class), self, _filename, _readwriteCount];
+}
+
 - (void)didWriteDataWithLength:(NSUInteger)length {
     [self willChangeValueForKey:@"length"];
     dispatch_semaphore_wait(_lock, DISPATCH_TIME_FOREVER);

@@ -39,7 +39,7 @@
 - (BOOL)mcs_seekToOffset:(NSUInteger)offset error:(out NSError **)outError {
     NSError *error = nil;
     BOOL result = NO;
-    if ( @available(iOS 13.0, *) ) {
+    if ( @available(iOS 13.0, tvOS 13.0, *) ) {
         result = [self seekToOffset:offset error:&error];
     }
     else {
@@ -60,10 +60,38 @@
     return result;
 }
 
+- (BOOL)mcs_seekToEndReturningOffset:(out unsigned long long *_Nullable)outOffsetInFile error:(out NSError **)outError {
+    NSError *error = nil;
+    unsigned long long offsetInFile = 0;
+    BOOL result = NO;
+    if ( @available(iOS 13.0, tvOS 13.0, *) ) {
+        result = [self seekToEndReturningOffset:&offsetInFile error:&error];
+    }
+    else {
+        @try {
+            offsetInFile = [self seekToEndOfFile];
+            result = YES;
+        } @catch (NSException *exception) {
+            error = [NSError mcs_errorWithCode:MCSExceptionError userInfo:@{
+                MCSErrorUserInfoExceptionKey : exception
+            }];
+        }
+    }
+    
+    if ( error != nil && outError != NULL ) *outError = [NSError mcs_errorWithCode:MCSFileError userInfo:@{
+        MCSErrorUserInfoErrorKey : error,
+        MCSErrorUserInfoReasonKey : @"文件跳转失败!"
+    }];
+    
+    if ( error == nil && outOffsetInFile != NULL )
+        *outOffsetInFile = offsetInFile;
+    return result;
+}
+
 - (nullable NSData *)mcs_readDataUpToLength:(NSUInteger)length error:(out NSError **)outError {
     NSError *error = nil;
     NSData *data = nil;
-    if ( @available(iOS 13.0, *) ) {
+    if ( @available(iOS 13.0, tvOS 13.0, *) ) {
         data = [self readDataUpToLength:length error:&error];
     }
     else {
@@ -85,7 +113,7 @@
 - (BOOL)mcs_writeData:(NSData *)data error:(out NSError **)outError {
     NSError *error = nil;
     BOOL result = NO;
-    if ( @available(iOS 13.0, *) ) {
+    if ( @available(iOS 13.0, tvOS 13.0, *) ) {
         result = [self writeData:data error:&error];
     }
     else {
@@ -133,7 +161,7 @@
 - (BOOL)mcs_synchronizeAndReturnError:(out NSError **)outError {
     NSError *error = nil;
     BOOL result = NO;
-    if ( @available(iOS 13.0, *) ) {
+    if ( @available(iOS 13.0, tvOS 13.0, *) ) {
         result = [self synchronizeAndReturnError:&error];
     }
     else {
@@ -157,7 +185,7 @@
 - (BOOL)mcs_closeAndReturnError:(out NSError **)outError {
     NSError *error = nil;
     BOOL result = NO;
-    if ( @available(iOS 13.0, *) ) {
+    if ( @available(iOS 13.0, tvOS 13.0, *) ) {
         result = [self closeAndReturnError:&error];
     }
     else {

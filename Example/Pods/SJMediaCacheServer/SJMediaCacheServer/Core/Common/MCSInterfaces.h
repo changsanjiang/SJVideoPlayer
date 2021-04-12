@@ -49,6 +49,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 @end
 
+
 @protocol MCSReadwriteReference <NSObject>
 @property (nonatomic, readonly) NSInteger readwriteCount; // kvo
 
@@ -81,7 +82,6 @@ NS_ASSUME_NONNULL_BEGIN
 #pragma mark -
 
 @protocol MCSAssetReader <NSObject>
-- (instancetype)initWithAsset:(id<MCSAsset>)asset request:(NSURLRequest *)request networkTaskPriority:(float)networkTaskPriority readDataDecoder:(NSData *(^_Nullable)(NSURLRequest *request, NSUInteger offset, NSData *data))readDataDecoder delegate:(id<MCSAssetReaderDelegate>)delegate;
 
 - (void)prepare;
 @property (nonatomic, copy, readonly, nullable) NSData *(^readDataDecoder)(NSURLRequest *request, NSUInteger offset, NSData *data);
@@ -110,6 +110,32 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic, readonly) long long length;
 - (void)didWriteDataWithLength:(NSUInteger)length;
 @end
+
+
+#pragma mark - Download
+
+@protocol MCSDownloadResponse <MCSResponse>
+@property (nonatomic, readonly) NSInteger statusCode;
+@property (nonatomic, copy, readonly) NSString *pathExtension;
+@property (nonatomic, copy, readonly) NSURL *URL;
+@end
+
+@protocol MCSDownloadTask <NSObject>
+- (void)cancel;
+@end
+
+@protocol MCSDownloadTaskDelegate <NSObject>
+- (void)downloadTask:(id<MCSDownloadTask>)task didReceiveResponse:(id<MCSDownloadResponse>)response;
+- (void)downloadTask:(id<MCSDownloadTask>)task didReceiveData:(NSData *)data;
+- (void)downloadTask:(id<MCSDownloadTask>)task didCompleteWithError:(NSError *)error;
+- (void)downloadTask:(id<MCSDownloadTask>)task willPerformHTTPRedirectionWithNewRequest:(NSURLRequest *)request;
+@end
+
+@protocol MCSDownloader <NSObject>
+- (nullable id<MCSDownloadTask>)downloadWithRequest:(NSURLRequest *)request priority:(float)priority delegate:(id<MCSDownloadTaskDelegate>)delegate;
+- (void)cancelAllDownloadTasks;
+@end
+
 NS_ASSUME_NONNULL_END
 
 #endif /* MCSInterfaces_h */

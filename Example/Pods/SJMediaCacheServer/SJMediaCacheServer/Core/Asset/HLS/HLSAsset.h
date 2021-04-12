@@ -18,13 +18,14 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic, copy, readonly, nullable) NSString *TsContentType;
 @property (nonatomic, readonly) NSUInteger tsCount;
 @property (nonatomic, readonly) BOOL isStored;
-@property (nonatomic, strong, nullable) HLSParser *parser;
+@property (nonatomic, strong, nullable) HLSParser *parser; 
 
 - (NSString *)indexFilePath;
+- (NSString *)indexFileRelativePath;
 - (NSString *)AESKeyFilePathWithURL:(NSURL *)URL;
-- (nullable id<MCSAssetContent>)createTsContentWithResponse:(NSHTTPURLResponse *)response;
 - (nullable NSArray<id<MCSAssetContent>> *)TsContents;
 - (nullable NSString *)TsContentFilePathForFilename:(NSString *)filename;
-- (nullable id<MCSAssetContent>)TsContentForRequest:(NSURLRequest *)request;
+- (nullable id<MCSAssetContent>)createTsContentReadwriteWithResponse:(id<MCSDownloadResponse>)response;
+- (nullable id<MCSAssetContent>)TsContentReadwriteForRequest:(NSURLRequest *)request;
 @end
 NS_ASSUME_NONNULL_END

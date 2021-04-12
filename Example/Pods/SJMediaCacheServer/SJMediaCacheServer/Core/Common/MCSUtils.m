@@ -295,3 +295,9 @@ __mcs_dispatch_queue_create(const char *_Nullable label, dispatch_queue_attr_t _
     return queue;
 }
 #endif
+
+
+NSArray *_Nullable
+MCSAllHashTableObjects(NSHashTable *table) {
+    return table.count != 0 ? NSAllHashTableObjects(table) : nil;
+}

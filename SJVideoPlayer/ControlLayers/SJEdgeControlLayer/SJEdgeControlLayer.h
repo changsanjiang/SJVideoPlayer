@@ -101,6 +101,30 @@ NS_ASSUME_NONNULL_BEGIN
 ///
 @property (nonatomic, copy, null_resettable) BOOL(^shouldShowCustomStatusBar)(SJEdgeControlLayer *controlLayer) NS_AVAILABLE_IOS(11.0);
 
+///
+/// 是否自动选择`Rotation(旋转)`或`FitOnScreen(充满全屏)`
+///
+/// - Rotation(旋转): 播放器视图将会在横屏(全屏)与竖屏(小屏)之间切换
+///
+/// - FitOnScreen(充满全屏): 播放器视图将会在竖屏全屏与竖屏小屏之间切换
+///
+///     当视频`宽 > 高`时, 将执行 Rotation 相关方法.
+///     当视频`宽 < 高`时, 将执行 FitOnScreen 相关方法.
+///
+@property (nonatomic) BOOL automaticallyPerformRotationOrFitOnScreen;
+
+///
+/// 是否仅在竖屏全屏与竖屏小屏之间切换, 不触发旋转.
+///
+///     设置为YES后, 将会禁止旋转.
+///
+@property (nonatomic) BOOL onlyUsedFitOnScreen;
+
+///
+/// 处于小屏时, 当点击全屏按钮后, 是否先竖屏撑满全屏.
+///
+@property (nonatomic) BOOL usesFitOnScreenFirst;
+
 @property (nonatomic, weak, nullable) id<SJEdgeControlLayerDelegate> delegate;
 @end
 

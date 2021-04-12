@@ -70,7 +70,6 @@ static dispatch_queue_t mcs_queue;
 - (void)dealloc {
     [NSNotificationCenter.defaultCenter removeObserver:self];
     if ( !_isClosed ) [self _close];
-    [_asset readwriteRelease];
     MCSAssetReaderDebugLog(@"%@: <%p>.dealloc;\n", NSStringFromClass(self.class), self);
 }
 
@@ -336,6 +335,8 @@ static dispatch_queue_t mcs_queue;
     _subreaders = nil;
     _isClosed = YES;
 
+    [_asset readwriteRelease];
+    
     MCSAssetReaderDebugLog(@"%@: <%p>.close;\n", NSStringFromClass(self.class), self);
 }
 

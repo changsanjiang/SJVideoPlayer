@@ -103,7 +103,6 @@ NS_ASSUME_NONNULL_BEGIN
 @synthesize target = _target;
 @synthesize layoutInsets = _layoutInsets;
 @synthesize layoutPosition = _layoutPosition;
-@synthesize addFloatViewToKeyWindow = _addFloatViewToKeyWindow;
 @synthesize layoutSize = _layoutSize;
 
 - (instancetype)init {

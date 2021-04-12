@@ -61,6 +61,10 @@ MCSMD5(NSString *str) {
     return instance;
 }
 
+- (NSString *)proxyPath {
+    return mcsproxy;
+}
+
 - (NSURL *)proxyURLWithURL:(NSURL *)URL {
     NSAssert(_serverURL != nil, @"The serverURL can't be nil!");
     
@@ -99,7 +103,7 @@ MCSMD5(NSString *str) {
         // 包含 mcsproxy 为 HLS 内部资源的请求, 此处返回path后面资源的名字
         if ( [url containsString:mcsproxy] ) {
             // format: mcsproxy/asset/name.extension?url=base64EncodedUrl
-            return url.stringByDeletingLastPathComponent.lastPathComponent;
+            return URL.path.stringByDeletingLastPathComponent.lastPathComponent;
         }
         else {
             // 不包含 mcsproxy 时, 将代理URL转换为原始的URL
@@ -119,12 +123,31 @@ MCSMD5(NSString *str) {
            [URL.path containsString:HLS_SUFFIX_AES_KEY] ? MCSAssetTypeHLS : MCSAssetTypeFILE;
 }
 
+- (MCSDataType)dataTypeForProxyURL:(NSURL *)proxyURL {
+    NSString *last = proxyURL.lastPathComponent;
+    if ( [last containsString:HLS_SUFFIX_INDEX] )
+        return MCSDataTypeHLSPlaylist;
+    
+    if ( [last containsString:HLS_SUFFIX_AES_KEY] )
+        return MCSDataTypeHLSAESKey;
+
+    if ( [last containsString:HLS_SUFFIX_TS] )
+        return MCSDataTypeHLSTs;
+    
+    return MCSDataTypeFILE;
+}
+
 - (NSString *)nameWithUrl:(NSString *)url suffix:(NSString *)suffix {
     NSString *filename = url.mcs_fname;
     // 添加扩展名
     if ( ![filename hasSuffix:suffix] )
         filename = [filename stringByAppendingString:suffix];
     return filename;
+}
+
+- (NSURL *)proxyURLWithRelativePath:(NSString *)path inAsset:(NSString *)assetName {
+    // format: mcsproxy/asset/path
+    return [_serverURL URLByAppendingPathComponent:[NSString stringWithFormat:@"%@/%@/%@", mcsproxy, assetName, path]];
 }
 
 - (NSString *)encodeUrl:(NSString *)url {
@@ -169,7 +192,17 @@ MCSMD5(NSString *str) {
     NSString *url = self.absoluteString;
     while ( [url hasSuffix:@"/"] ) url = [url substringToIndex:url.length - 1];
     NSString *path = pathComponent;
-    while ( [path hasSuffix:@"/"] ) path = [path substringFromIndex:1];
+    while ( [path hasPrefix:@"/"] ) path = [path substringFromIndex:1];
     return [NSURL URLWithString:[NSString stringWithFormat:@"%@/%@", url, path]];
+}
+
+- (NSURL *)mcs_URLByDeletingLastPathComponentAndQuery {
+    NSString *query = self.query;
+    if ( query.length != 0 ) {
+        NSString *absoluteString = self.absoluteString;
+        NSString *url = [absoluteString substringToIndex:absoluteString.length - query.length - 1];
+        return [NSURL URLWithString:url].URLByDeletingLastPathComponent;
+    }
+    return self.URLByDeletingLastPathComponent;
 }
 @end

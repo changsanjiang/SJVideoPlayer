@@ -97,7 +97,7 @@ NS_ASSUME_NONNULL_BEGIN
 }
 
 + (NSString *)version {
-    return @"v3.3.1";
+    return @"v3.3.2";
 }
 
 + (instancetype)player {
@@ -678,6 +678,30 @@ NS_ASSUME_NONNULL_BEGIN
 }
 
 @end
+
+@implementation SJVideoPlayer (RotationOrFitOnScreen)
+- (void)setAutomaticallyPerformRotationOrFitOnScreen:(BOOL)automaticallyPerformRotationOrFitOnScreen {
+    self.defaultEdgeControlLayer.automaticallyPerformRotationOrFitOnScreen = automaticallyPerformRotationOrFitOnScreen;
+}
+- (BOOL)automaticallyPerformRotationOrFitOnScreen {
+    return self.defaultEdgeControlLayer.automaticallyPerformRotationOrFitOnScreen;
+}
+
+- (void)setOnlyUsedFitOnScreen:(BOOL)onlyUsedFitOnScreen {
+    self.defaultEdgeControlLayer.onlyUsedFitOnScreen = onlyUsedFitOnScreen;
+}
+- (BOOL)onlyUsedFitOnScreen {
+    return self.defaultEdgeControlLayer.onlyUsedFitOnScreen;
+}
+
+- (void)setUsesFitOnScreenFirst:(BOOL)usesFitOnScreenFirst {
+    self.defaultEdgeControlLayer.usesFitOnScreenFirst = usesFitOnScreenFirst;
+}
+- (BOOL)usesFitOnScreenFirst {
+    return self.defaultEdgeControlLayer.usesFitOnScreenFirst;
+}
+@end
+
 
 @implementation SJVideoPlayer (SJExtendedControlLayerSwitcher)
 - (void)switchControlLayerForIdentifier:(SJControlLayerIdentifier)identifier {

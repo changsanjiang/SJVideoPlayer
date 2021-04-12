@@ -29,7 +29,11 @@
 }
 
 - (NSString *)indexFilePath {
-    return [_directory stringByAppendingPathComponent:[NSString stringWithFormat:@"index%@", HLS_SUFFIX_INDEX]];
+    return [_directory stringByAppendingPathComponent:self.indexFileRelativePath];
+}
+
+- (NSString *)indexFileRelativePath {
+    return [NSString stringWithFormat:@"index%@", HLS_SUFFIX_INDEX];
 }
 
 - (NSString *)AESKeyFilePathWithName:(NSString *)AESKeyName {

@@ -28,6 +28,13 @@ NS_ASSUME_NONNULL_BEGIN
 - (void)prefetcher:(id<MCSPrefetcher>)prefetcher progressDidChange:(float)progress;
 - (void)prefetcher:(id<MCSPrefetcher>)prefetcher didCompleteWithError:(NSError *_Nullable)error;
 @end
+
+@protocol MCSPrefetchTask <NSObject>
+@property (nonatomic, readonly) NSUInteger preloadSize;
+@property (nonatomic, strong, readonly) NSURL *URL;
+@property (nonatomic, copy, nullable) void(^startedExecuteBlock)(id<MCSPrefetchTask> task);
+- (void)cancel;
+@end
 NS_ASSUME_NONNULL_END
 
 #endif /* MCSPrefetcherDefines_h */

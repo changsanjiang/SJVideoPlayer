@@ -9,7 +9,6 @@
 /* Begin PBXBuildFile section */
 		13FEB85DCAAE0D2C731299D6 /* libPods-SJVideoPlayer_Example.a in Frameworks */ = {isa = PBXBuildFile; fileRef = CCD2CA6C02217556CFBFA7AB /* libPods-SJVideoPlayer_Example.a */; };
 		3B070E8C25FC88C300960506 /* SJBaseVideoPlayer+ListPlaybackExtended.m in Sources */ = {isa = PBXBuildFile; fileRef = 3B070E8B25FC88C300960506 /* SJBaseVideoPlayer+ListPlaybackExtended.m */; };
-		3B070EA225FC916300960506 /* SJFloatSmallViewTransitionController.m in Sources */ = {isa = PBXBuildFile; fileRef = 3B070EA025FC916300960506 /* SJFloatSmallViewTransitionController.m */; };
 		6003F58E195388D20070C39A /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 6003F58D195388D20070C39A /* Foundation.framework */; };
 		6003F590195388D20070C39A /* CoreGraphics.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 6003F58F195388D20070C39A /* CoreGraphics.framework */; };
 		6003F592195388D20070C39A /* UIKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 6003F591195388D20070C39A /* UIKit.framework */; };
@@ -82,6 +81,7 @@
 		77D0CFBA235727D90081C855 /* MediaPlayer.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 77D0CFB9235727D80081C855 /* MediaPlayer.framework */; };
 		77E87F6622E84D4E0047A253 /* SJViewController10.m in Sources */ = {isa = PBXBuildFile; fileRef = 77E87F6422E84D4E0047A253 /* SJViewController10.m */; };
 		77E87F6722E84D4E0047A253 /* SJViewController10.xib in Resources */ = {isa = PBXBuildFile; fileRef = 77E87F6522E84D4E0047A253 /* SJViewController10.xib */; };
+		77EEC765262417A00066B57D /* SJFloatSmallViewTransitionController.m in Sources */ = {isa = PBXBuildFile; fileRef = 77EEC763262417A00066B57D /* SJFloatSmallViewTransitionController.m */; };
 		77F2F5DC22FAC43000EA0B91 /* SJViewController11.m in Sources */ = {isa = PBXBuildFile; fileRef = 77F2F5DA22FAC43000EA0B91 /* SJViewController11.m */; };
 		77F2F5DD22FAC43000EA0B91 /* SJViewController11.xib in Resources */ = {isa = PBXBuildFile; fileRef = 77F2F5DB22FAC43000EA0B91 /* SJViewController11.xib */; };
 		815EB5632535A55D002DAFF4 /* SJUIScrollViewDemoViewController2.m in Sources */ = {isa = PBXBuildFile; fileRef = 815EB5622535A55D002DAFF4 /* SJUIScrollViewDemoViewController2.m */; };
@@ -134,8 +134,6 @@
 		0913D8D9BFC4EE68E3F1EF64 /* Pods-SJVideoPlayer_Example.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-SJVideoPlayer_Example.release.xcconfig"; path = "Target Support Files/Pods-SJVideoPlayer_Example/Pods-SJVideoPlayer_Example.release.xcconfig"; sourceTree = "<group>"; };
 		3B070E8A25FC88C300960506 /* SJBaseVideoPlayer+ListPlaybackExtended.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "SJBaseVideoPlayer+ListPlaybackExtended.h"; sourceTree = "<group>"; };
 		3B070E8B25FC88C300960506 /* SJBaseVideoPlayer+ListPlaybackExtended.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = "SJBaseVideoPlayer+ListPlaybackExtended.m"; sourceTree = "<group>"; };
-		3B070EA025FC916300960506 /* SJFloatSmallViewTransitionController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SJFloatSmallViewTransitionController.m; sourceTree = "<group>"; };
-		3B070EA125FC916300960506 /* SJFloatSmallViewTransitionController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SJFloatSmallViewTransitionController.h; sourceTree = "<group>"; };
 		3DE6356926AEF70F060F33F3 /* SJVideoPlayer.podspec */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text; name = SJVideoPlayer.podspec; path = ../SJVideoPlayer.podspec; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.ruby; };
 		6003F58A195388D20070C39A /* 播放器.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "播放器.app"; sourceTree = BUILT_PRODUCTS_DIR; };
 		6003F58D195388D20070C39A /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = System/Library/Frameworks/Foundation.framework; sourceTree = SDKROOT; };
@@ -261,6 +259,8 @@
 		77E87F6322E84D4E0047A253 /* SJViewController10.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = SJViewController10.h; sourceTree = "<group>"; };
 		77E87F6422E84D4E0047A253 /* SJViewController10.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = SJViewController10.m; sourceTree = "<group>"; };
 		77E87F6522E84D4E0047A253 /* SJViewController10.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = SJViewController10.xib; sourceTree = "<group>"; };
+		77EEC763262417A00066B57D /* SJFloatSmallViewTransitionController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SJFloatSmallViewTransitionController.m; sourceTree = "<group>"; };
+		77EEC764262417A00066B57D /* SJFloatSmallViewTransitionController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SJFloatSmallViewTransitionController.h; sourceTree = "<group>"; };
 		77F2F5D922FAC43000EA0B91 /* SJViewController11.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = SJViewController11.h; sourceTree = "<group>"; };
 		77F2F5DA22FAC43000EA0B91 /* SJViewController11.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = SJViewController11.m; sourceTree = "<group>"; };
 		77F2F5DB22FAC43000EA0B91 /* SJViewController11.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = SJViewController11.xib; sourceTree = "<group>"; };
@@ -501,8 +501,8 @@
 			children = (
 				771BFDB925AFE1EC0026C277 /* SJFloatModeDemoViewController1.h */,
 				771BFDBA25AFE1EC0026C277 /* SJFloatModeDemoViewController1.m */,
-				3B070EA125FC916300960506 /* SJFloatSmallViewTransitionController.h */,
-				3B070EA025FC916300960506 /* SJFloatSmallViewTransitionController.m */,
+				77EEC764262417A00066B57D /* SJFloatSmallViewTransitionController.h */,
+				77EEC763262417A00066B57D /* SJFloatSmallViewTransitionController.m */,
 			);
 			path = 1;
 			sourceTree = "<group>";
@@ -1143,7 +1143,7 @@
 				A6C5D23422AC249800D63D1C /* SJRemoteCommandHandler.m in Sources */,
 				77357E622375523C00B81EE4 /* SJSubtitlesTestViewController.m in Sources */,
 				7784A7FA237D3860000BA67E /* SJBarrageTestViewController.m in Sources */,
-				3B070EA225FC916300960506 /* SJFloatSmallViewTransitionController.m in Sources */,
+				77EEC765262417A00066B57D /* SJFloatSmallViewTransitionController.m in Sources */,
 				77788FDF22C36CF300E26599 /* SJRecommendVideosTableViewCell.m in Sources */,
 				771BFDBB25AFE1EC0026C277 /* SJFloatModeDemoViewController1.m in Sources */,
 				3B070E8C25FC88C300960506 /* SJBaseVideoPlayer+ListPlaybackExtended.m in Sources */,

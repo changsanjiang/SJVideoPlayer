@@ -22,7 +22,7 @@ static dispatch_queue_t mcs_queue;
 @property (nonatomic, strong) NSURLRequest *request;
 @property (nonatomic) NSRange range;
 
-@property (nonatomic, strong, nullable) NSURLSessionTask *task;
+@property (nonatomic, strong, nullable) id<MCSDownloadTask> task;
 
 @property (nonatomic, strong, nullable) NSFileHandle *reader;
 @property (nonatomic, strong, nullable) NSFileHandle *writer;
@@ -64,7 +64,6 @@ static dispatch_queue_t mcs_queue;
 
 - (void)dealloc {
     if ( !_isClosed ) [self _close];
-    if ( _content != nil ) [_content readwriteRelease];
     MCSContentReaderDebugLog(@"%@: <%p>.dealloc;\n", NSStringFromClass(self.class), self);
 }
 
@@ -182,17 +181,14 @@ static dispatch_queue_t mcs_queue;
 
 #pragma mark - MCSDownloadTaskDelegate
 
-- (void)downloadTask:(NSURLSessionTask *)task willPerformHTTPRedirection:(NSHTTPURLResponse *)response newRequest:(NSURLRequest *)request {
-    
-}
+- (void)downloadTask:(id<MCSDownloadTask>)task willPerformHTTPRedirectionWithNewRequest:(NSURLRequest *)request { }
 
-- (void)downloadTask:(NSURLSessionTask *)task didReceiveResponse:(NSHTTPURLResponse *)response {
+- (void)downloadTask:(id<MCSDownloadTask>)task didReceiveResponse:(id<MCSDownloadResponse>)response {
     dispatch_barrier_sync(mcs_queue, ^{
         if ( _isClosed )
             return;
-        _range = MCSResponseRange(MCSResponseGetContentRange(response));
-        _content = [_asset createContentWithResponse:response];
-        [_content readwriteRetain];
+        _range = response.range;
+        _content = [_asset createContentReadwriteWithResponse:response];
         
         NSString *filePath = [_asset contentFilePathForFilename:_content.filename];
         NSURL *fileURL = [NSURL fileURLWithPath:filePath];
@@ -217,7 +213,7 @@ static dispatch_queue_t mcs_queue;
     });
 }
 
-- (void)downloadTask:(NSURLSessionTask *)task didReceiveData:(NSData *)data {
+- (void)downloadTask:(id<MCSDownloadTask>)task didReceiveData:(NSData *)data {
     dispatch_barrier_sync(mcs_queue, ^{
         if ( _isClosed )
             return;
@@ -244,7 +240,7 @@ static dispatch_queue_t mcs_queue;
     });
 }
 
-- (void)downloadTask:(NSURLSessionTask *)task didCompleteWithError:(NSError *)error {
+- (void)downloadTask:(id<MCSDownloadTask>)task didCompleteWithError:(NSError *)error {
     dispatch_barrier_sync(mcs_queue, ^{
         if ( _isClosed )
             return;
@@ -288,6 +284,8 @@ static dispatch_queue_t mcs_queue;
     _reader = nil;
     _isClosed = YES;
 
+    if ( _content != nil ) [_content readwriteRelease];
+    
     MCSContentReaderDebugLog(@"%@: <%p>.close;\n", NSStringFromClass(self.class), self);
 }
 @end

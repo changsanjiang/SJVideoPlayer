@@ -17,10 +17,11 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic, copy, readonly, nullable) NSString *pathExtension; // notify
 @property (nonatomic, copy, readonly, nullable) NSString *contentType; // notify
 @property (nonatomic, readonly) NSUInteger totalLength; // notify
-@property (nonatomic, readonly) BOOL isStored;
+@property (nonatomic, readonly) BOOL isStored; 
 
-- (nullable FILEContent *)createContentWithResponse:(NSHTTPURLResponse *)response;
+- (nullable FILEContent *)createContentReadwriteWithResponse:(id<MCSDownloadResponse>)response;
 - (nullable NSArray<FILEContent *> *)contents;
 - (nullable NSString *)contentFilePathForFilename:(NSString *)filename;
+- (nullable NSString *)contentFileRelativePathForFilename:(NSString *)filename;
 @end
 NS_ASSUME_NONNULL_END

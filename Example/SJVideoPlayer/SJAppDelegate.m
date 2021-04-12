@@ -51,6 +51,11 @@
         resources.progressThumbSize = 8;
         resources.progressTrackColor = [UIColor colorWithWhite:0.8 alpha:1];
         resources.progressBufferColor = [UIColor whiteColor];
+        
+        resources.progressThumbImage = [UIImage imageNamed:@"thumb"];
+        // or
+        // resources.progressThumbSize = 8;
+        // resources.progressThumbColor = UIColor.blueColor;
     });
     
     // Override point for customization after application launch.

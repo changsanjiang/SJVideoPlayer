@@ -14,7 +14,7 @@ NS_ASSUME_NONNULL_BEGIN
 - (instancetype)initWithDirectory:(NSString *)directory;
 
 - (NSString *)indexFilePath;
-
+- (NSString *)indexFileRelativePath;
 - (NSString *)AESKeyFilePathWithName:(NSString *)AESKeyName;
 
 - (nullable NSArray<HLSContentTs *> *)TsContents;

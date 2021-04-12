@@ -15,8 +15,6 @@
 #import "HLSReader.h"
 #import "MCSRootDirectory.h"
 
-static NSString *kLength = @"length";
-static NSString *kReadwriteCount = @"readwriteCount";
 static dispatch_queue_t mcs_queue;
 
 @interface HLSAsset () {
@@ -118,6 +116,10 @@ static dispatch_queue_t mcs_queue;
     return [_provider indexFilePath];
 }
 
+- (NSString *)indexFileRelativePath {
+    return [_provider indexFileRelativePath];
+}
+
 - (NSString *)AESKeyFilePathWithURL:(NSURL *)URL {
     return [_provider AESKeyFilePathWithName:[MCSURL.shared nameWithUrl:URL.absoluteString suffix:HLS_SUFFIX_AES_KEY]];
 }
@@ -149,8 +151,8 @@ static dispatch_queue_t mcs_queue;
     return root;
 }
 
-- (nullable id<MCSAssetContent>)createTsContentWithResponse:(NSHTTPURLResponse *)response {
-    NSString *TsContentType = MCSResponseGetContentType(response);
+- (nullable id<MCSAssetContent>)createTsContentWithResponse:(id<MCSDownloadResponse>)response {
+    NSString *TsContentType = response.contentType;
     __block BOOL isUpdated = NO;
     __block HLSContentTs *content = nil;
     dispatch_barrier_sync(mcs_queue, ^{
@@ -160,17 +162,12 @@ static dispatch_queue_t mcs_queue;
         }
         
         NSString *name = [MCSURL.shared nameWithUrl:response.URL.absoluteString suffix:HLS_SUFFIX_TS];
-        MCSResponseContentRange range = MCSResponseContentRangeUndefined;
-        if ( response.statusCode == MCS_RESPONSE_CODE_PARTIAL_CONTENT ) {
-            range = MCSResponseGetContentRange(response);
-        }
         
-        if ( MCSResponseRangeIsUndefined(range) ) {
-            NSUInteger totalLength = response.expectedContentLength;
-            content = [_provider createTsContentWithName:name totalLength:totalLength];
+        if ( response.statusCode == MCS_RESPONSE_CODE_PARTIAL_CONTENT ) {
+            content = [_provider createTsContentWithName:name totalLength:response.totalLength inRange:response.range];
         }
         else {
-            content = [_provider createTsContentWithName:name totalLength:range.totalLength inRange:MCSResponseRange(range)];
+            content = [_provider createTsContentWithName:name totalLength:response.totalLength];
         }
         
         [_contents addObject:content];
@@ -209,6 +206,81 @@ static dispatch_queue_t mcs_queue;
         }
     });
     return ts;
+}
+
+/// 该操作将会对 content 进行一次 readwriteRetain, 请在不需要时, 调用一次 readwriteRelease.
+- (nullable id<MCSAssetContent>)createTsContentReadwriteWithResponse:(id<MCSDownloadResponse>)response {
+    NSString *TsContentType = response.contentType;
+    __block BOOL isUpdated = NO;
+    __block HLSContentTs *content = nil;
+    dispatch_barrier_sync(mcs_queue, ^{
+        if ( ![TsContentType isEqualToString:_TsContentType] ) {
+            _TsContentType = TsContentType;
+            isUpdated = YES;
+        }
+        
+        NSString *name = [MCSURL.shared nameWithUrl:response.URL.absoluteString suffix:HLS_SUFFIX_TS];
+        
+        if ( response.statusCode == MCS_RESPONSE_CODE_PARTIAL_CONTENT ) {
+            content = [_provider createTsContentWithName:name totalLength:response.totalLength inRange:response.range];
+        }
+        else {
+            content = [_provider createTsContentWithName:name totalLength:response.totalLength];
+        }
+        [content readwriteRetain];
+        [_contents addObject:content];
+    });
+    
+    if ( isUpdated )
+        [NSNotificationCenter.defaultCenter postNotificationName:MCSAssetMetadataDidLoadNotification object:self];
+    return content;
+}
+
+/// 将返回如下两种content, 如果未满足条件, 则返回nil
+///
+///     - 如果ts已缓存完毕, 则返回完整的content
+///
+///     - 如果ts被缓存了一部分(可能存在多个), 则将返回长度最长的并且readwrite为0的content
+///
+/// 该操作将会对 content 进行一次 readwriteRetain, 请在不需要时, 调用一次 readwriteRelease.
+///
+- (nullable id<MCSAssetContent>)TsContentReadwriteForRequest:(NSURLRequest *)request {
+    NSString *name = [MCSURL.shared nameWithUrl:request.URL.absoluteString suffix:HLS_SUFFIX_TS];
+    __block HLSContentTs *_ts = nil;
+    dispatch_barrier_sync(mcs_queue, ^{
+        // range
+        BOOL isRangeRequest = MCSRequestIsRangeRequest(request);
+        NSRange requestRange = NSMakeRange(0, 0);
+        if ( isRangeRequest ) {
+            MCSRequestContentRange contentRange = MCSRequestGetContentRange(request.allHTTPHeaderFields);
+            requestRange = MCSRequestRange(contentRange);
+        }
+        
+        for ( HLSContentTs *cur in _contents ) {
+            if ( ![cur.name isEqualToString:name] )
+                continue;
+            if ( isRangeRequest && !NSEqualRanges(requestRange, cur.range) )
+                continue;
+
+            // 已缓存完毕
+            if ( cur.length == cur.range.length ) {
+                _ts = cur;
+                break;
+            }
+            
+            // 未缓存完成的, 则返回length最长的content
+            if ( cur.readwriteCount == 0 ) {
+                if ( _ts.length < cur.length ) {
+                    _ts = cur;
+                }
+            }
+        }
+        
+        if ( _ts != nil ) {
+            [_ts readwriteRetain];
+        }
+    });
+    return _ts;
 }
 
 #pragma mark - readwrite

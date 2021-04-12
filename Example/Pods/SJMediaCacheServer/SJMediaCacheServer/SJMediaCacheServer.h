@@ -11,7 +11,8 @@
 //
 
 #import <Foundation/Foundation.h>
-#import "MCSPrefetcherManager.h"
+#import "MCSPrefetcherDefines.h"
+#import "MCSAssetExporterDefines.h"
 #import "MCSDefines.h"
 
 NS_ASSUME_NONNULL_BEGIN
@@ -28,7 +29,11 @@ NS_ASSUME_NONNULL_BEGIN
 /// @note return nil if URL is nil.
 ///
 - (nullable NSURL *)playbackURLWithURL:(NSURL *)URL; // 获取播放地址
- 
+@end
+
+
+@interface SJMediaCacheServer (Prefetch)
+
 /// The maximum number of queued prefetch tasks that can execute at same time.
 ///
 ///     The default value is 1.
@@ -92,6 +97,7 @@ NS_ASSUME_NONNULL_BEGIN
 /// Cancels all queued and executing prefetch tasks.
 ///
 - (void)cancelAllPrefetchTasks; // 取消所有的预加载任务
+
 @end
 
 
@@ -196,19 +202,85 @@ NS_ASSUME_NONNULL_BEGIN
 ///
 @property (nonatomic) NSUInteger reservedFreeDiskSpace; // 剩余磁盘空间限制
 
-/// Empties the cache. This method may blocks the calling thread until file delete finished.
+/// Protected caches are not included.
 ///
-- (void)removeAllCaches; // 删除全部缓存
+@property (nonatomic, readonly) UInt64 countOfBytesRemovableCaches; // 可被删除的缓存所占用的大小
 
 /// Removes the cache of the specified URL.
 ///
-- (void)removeCacheForURL:(NSURL *)URL; // 删除某个缓存
-
-/// Returns the total cache size (in bytes).
+///     If the cache for asset is protected, it will not be removed.
 ///
-@property (nonatomic, readonly) unsigned long long cachedSize; // 返回已占用的缓存大小
+- (BOOL)removeCacheForURL:(NSURL *)URL; // 删除某个缓存
+
+/// Remove all unprotected caches for assets.
+///
+///     If the cache for asset is protected, it will not be removed.
+///
+///     This method may blocks the calling thread until file delete finished.
+///
+- (void)removeAllRemovableCaches; // 删除缓存
 
 - (BOOL)isStoredForURL:(NSURL *)URL;
 
-@end 
+@end
+
+
+/// What's the difference between export and prefetch?
+///
+/// The MCSAssetExporterManager manages the exported assets.
+///
+/// The MCSAssetCacheManager manages the cache generated during playback and the prefetched assets.
+///
+/// So, if you want to remove the an exported asset, you must use MCSAssetExporterManager to remove it.
+///
+@interface SJMediaCacheServer (Export)
+
+/// Register an observer to listen for export events
+///
+///     You do not need to unregister the observer. if you forget or are unable to remove the observer, the manager cleans up automatically.
+///
+- (void)registerExportObserver:(id<MCSAssetExportObserver>)observer; // 监听导出相关的事件
+ 
+/// Remove the listening.
+///
+///     You do not need to unregister the observer. if you forget or are unable to remove the observer, the manager cleans up automatically.
+///
+- (void)removeExportObserver:(id<MCSAssetExportObserver>)observer; // 移除监听
+
+/// The maximum number of queued export tasks that can execute at same time.
+///
+///     The default value is 1.
+///
+///     In fact, it is a variant of `maxConcurrentPrefetchCount`, which will indirectly set `maxConcurrentPrefetchCount`.
+///
+@property (nonatomic) NSInteger maxConcurrentExportCount;
+
+@property (nonatomic, strong, readonly, nullable) NSArray<id<MCSAssetExporter>> *allExporters;
+
+/// 
+///
+/// \code
+///     [SJMediaCacheServer.shared registerExportObserver:self];
+///
+///     id<MCSAssetExporter> exporter = [SJMediaCacheServer.shared exportAssetWithURL:URL];
+///     [exporter resume];
+/// \endcode
+///
+- (nullable id<MCSAssetExporter>)exportAssetWithURL:(NSURL *)URL;
+- (nullable id<MCSAssetExporter>)exportAssetWithURL:(NSURL *)URL resumes:(BOOL)resumes;
+ 
+- (MCSAssetExportStatus)exportStatusWithURL:(NSURL *)URL;
+- (float)exportProgressWithURL:(NSURL *)URL;
+- (nullable NSURL *)playbackURLForExportedAssetWithURL:(NSURL *)URL;
+
+/// Synchronize the cache to the exporter.
+///
+- (void)synchronizeForExporterWithAssetURL:(NSURL *)URL;
+- (void)synchronizeForExporters;
+
+@property (nonatomic, readonly) UInt64 countOfBytesAllExportedAssets; // 返回导出资源占用的缓存大小
+
+- (void)removeExportAssetWithURL:(NSURL *)URL;
+- (void)removeAllExportAssets;
+@end
 NS_ASSUME_NONNULL_END

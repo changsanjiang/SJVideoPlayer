@@ -44,8 +44,7 @@ static SJEdgeControlButtonItemTag const SJTestItemTag1 = 100;
         make.edges.offset(0);
     }];
     
-    _player.autoManageViewToFitOnScreenOrRotation = NO;
-    _player.useFitOnScreenAndDisableRotation = YES;
+    _player.onlyUsedFitOnScreen = YES;
     _player.assetURL = SourceURL0;
 }
 

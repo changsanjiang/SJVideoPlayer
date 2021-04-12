@@ -16,6 +16,9 @@ NS_ASSUME_NONNULL_BEGIN
 - (unsigned long long)mcs_directorySizeAtPath:(NSString *)path;
 
 - (unsigned long long)mcs_freeDiskSpace;
+
+- (void)mcs_createDirectoryAtPath:(NSString *)path backupable:(BOOL)backupable;
+
 @end
 
 NS_ASSUME_NONNULL_END

@@ -99,7 +99,6 @@
         self.presentView.backgroundColor = UIColor.clearColor;
         self.videoGravity = AVLayerVideoGravityResizeAspectFill;
         self.autoplayWhenSetNewAsset = NO;
-        self.autoManageViewToFitOnScreenOrRotation = NO;
         self.rotationManager.disabledAutorotation = YES;
         self.pauseWhenAppDidEnterBackground = YES;
         self.resumePlaybackWhenScrollAppeared = NO;

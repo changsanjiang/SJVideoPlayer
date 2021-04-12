@@ -165,7 +165,7 @@ static dispatch_queue_t mcs_queue;
 }
 
 - (instancetype)initWithURL:(NSURL *)URL delegate:(nullable id<MCSPrefetcherDelegate>)delegate delegateQueue:(dispatch_queue_t)delegateQueue {
-    return [self initWithURL:URL numberOfPreloadedFiles:NSUIntegerMax delegate:delegate delegateQueue:delegateQueue];
+    return [self initWithURL:URL numberOfPreloadedFiles:NSNotFound delegate:delegate delegateQueue:delegateQueue];
 }
 
 - (NSString *)description {
@@ -410,7 +410,8 @@ static dispatch_queue_t mcs_queue;
     [_reader close];
     
     _isClosed = YES;
-
+    
+    _reader = nil;
     MCSPrefetcherDebugLog(@"%@: <%p>.close;\n", NSStringFromClass(self.class), self);
 }
 @end

@@ -17,6 +17,8 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (BOOL)mcs_seekToOffset:(NSUInteger)offset error:(out NSError **)error;
 
+- (BOOL)mcs_seekToEndReturningOffset:(out unsigned long long *_Nullable)offsetInFile error:(out NSError **)error;
+
 - (nullable NSData *)mcs_readDataUpToLength:(NSUInteger)length error:(out NSError **)error;
 
 - (BOOL)mcs_writeData:(NSData *)data error:(out NSError **)error;

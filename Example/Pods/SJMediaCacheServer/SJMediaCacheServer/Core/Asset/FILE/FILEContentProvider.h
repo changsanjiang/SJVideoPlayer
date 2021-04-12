@@ -14,6 +14,7 @@ NS_ASSUME_NONNULL_BEGIN
 - (nullable NSArray<FILEContent *> *)contents;
 - (nullable FILEContent *)createContentAtOffset:(NSUInteger)offset pathExtension:(nullable NSString *)pathExtension;
 - (nullable NSString *)contentFilePathForFilename:(NSString *)filename;
+- (nullable NSString *)contentFileRelativePathForFilename:(NSString *)filename;
 - (void)removeContentForFilename:(NSString *)filename;
 @end
 NS_ASSUME_NONNULL_END

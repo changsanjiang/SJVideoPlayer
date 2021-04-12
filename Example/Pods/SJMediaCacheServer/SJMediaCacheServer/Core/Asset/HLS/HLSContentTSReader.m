@@ -36,7 +36,7 @@ static dispatch_queue_t mcs_queue;
 @property (nonatomic) NSUInteger availableLength;
 @property (nonatomic) NSUInteger readLength;
 
-@property (nonatomic, strong, nullable) NSURLSessionTask *task;
+@property (nonatomic, strong, nullable) id<MCSDownloadTask> task;
 @property (nonatomic, strong, nullable) NSFileHandle *reader;
 @property (nonatomic, strong, nullable) NSFileHandle *writer;
 @property (nonatomic) float networkTaskPriority;
@@ -66,7 +66,6 @@ static dispatch_queue_t mcs_queue;
 
 - (void)dealloc {
     if ( !_isClosed ) [self _close];
-    if ( _content != nil ) [_content readwriteRelease];
     MCSContentReaderDebugLog(@"%@: <%p>.dealloc;\n", NSStringFromClass(self.class), self);
 }
 
@@ -83,15 +82,17 @@ static dispatch_queue_t mcs_queue;
 
         _isCalledPrepare = YES;
         
-        HLSContentTs *content = [_asset TsContentForRequest:_request];
-        
+        HLSContentTs *content = [_asset TsContentReadwriteForRequest:_request];
         if ( content != nil ) {
-            // go to read the content
             [self _prepareForContent:content];
+            // broken point download
+            if ( content.range.length != content.length ) {
+                NSRange requestRange = NSMakeRange(content.range.location + content.length, content.range.length - content.length);
+                NSMutableURLRequest *newRequest = [_request mcs_requestWithRange:requestRange];
+                _task = [MCSDownload.shared downloadWithRequest:[newRequest mcs_requestWithHTTPAdditionalHeaders:[_asset.configuration HTTPAdditionalHeadersForDataRequestsOfType:MCSDataTypeHLSTs]] priority:_networkTaskPriority delegate:self];
+            }
             return;
         }
-        
-        MCSContentReaderDebugLog(@"%@: <%p>.download { request: %@\n };\n", NSStringFromClass(self.class), self, _request.mcs_description);
         
         // download the content
         _task = [MCSDownload.shared downloadWithRequest:[_request mcs_requestWithHTTPAdditionalHeaders:[_asset.configuration HTTPAdditionalHeadersForDataRequestsOfType:MCSDataTypeHLSTs]] priority:_networkTaskPriority delegate:self];
@@ -197,7 +198,7 @@ static dispatch_queue_t mcs_queue;
 - (NSUInteger)totalLength {
     __block NSUInteger totalLength = 0;
     dispatch_sync(mcs_queue, ^{
-        totalLength = _content.totalLength;
+        totalLength = (NSUInteger)_content.totalLength;
     });
     return totalLength;
 }
@@ -220,21 +221,21 @@ static dispatch_queue_t mcs_queue;
  
 #pragma mark - MCSDownloadTaskDelegate
 
-- (void)downloadTask:(NSURLSessionTask *)task willPerformHTTPRedirection:(NSHTTPURLResponse *)response newRequest:(NSURLRequest *)request {
-    
-}
+- (void)downloadTask:(id<MCSDownloadTask>)task willPerformHTTPRedirectionWithNewRequest:(NSURLRequest *)request { }
 
-- (void)downloadTask:(NSURLSessionTask *)task didReceiveResponse:(NSHTTPURLResponse *)response {
+- (void)downloadTask:(id<MCSDownloadTask>)task didReceiveResponse:(id<MCSDownloadResponse>)response {
     dispatch_barrier_sync(mcs_queue, ^{
         if ( _isClosed )
             return;
         
-        HLSContentTs *content = [_asset createTsContentWithResponse:response];
-        [self _prepareForContent:content];
+        if ( _content == nil ) {
+            HLSContentTs *content = [_asset createTsContentReadwriteWithResponse:response];
+            [self _prepareForContent:content];
+        }
     });
 }
 
-- (void)downloadTask:(NSURLSessionTask *)task didReceiveData:(NSData *)data {
+- (void)downloadTask:(id<MCSDownloadTask>)task didReceiveData:(NSData *)data {
     dispatch_barrier_sync(mcs_queue, ^{
         if ( _isClosed )
             return;
@@ -259,7 +260,7 @@ static dispatch_queue_t mcs_queue;
     });
 }
 
-- (void)downloadTask:(NSURLSessionTask *)task didCompleteWithError:(NSError *)error {
+- (void)downloadTask:(id<MCSDownloadTask>)task didCompleteWithError:(NSError *)error {
     dispatch_barrier_sync(mcs_queue, ^{
         if ( _isClosed )
             return;
@@ -290,7 +291,6 @@ static dispatch_queue_t mcs_queue;
 
 - (void)_prepareForContent:(HLSContentTs *)content {
     _content = content;
-    [_content readwriteRetain];
     NSString *filePath = [_asset TsContentFilePathForFilename:content.filename];
     NSURL *fileURL = [NSURL fileURLWithPath:filePath];
     NSError *error = nil;
@@ -303,6 +303,11 @@ static dispatch_queue_t mcs_queue;
     
     _writer = [NSFileHandle mcs_fileHandleForWritingToURL:fileURL error:&error];
     if ( error != nil ) {
+        [self _onError:error];
+        return;
+    }
+    
+    if ( ![_writer mcs_seekToEndReturningOffset:NULL error:&error] ) {
         [self _onError:error];
         return;
     }
@@ -339,6 +344,7 @@ static dispatch_queue_t mcs_queue;
     
     _isClosed = YES;
     
+    if ( _content != nil ) [_content readwriteRelease];
     MCSContentReaderDebugLog(@"%@: <%p>.close;\n", NSStringFromClass(self.class), self);
 }
 @end

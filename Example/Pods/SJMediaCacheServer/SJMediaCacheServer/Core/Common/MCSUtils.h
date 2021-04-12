@@ -92,4 +92,8 @@ __mcs_dispatch_queue_create(const char *_Nullable label, dispatch_queue_attr_t _
 #else
 #define mcs_dispatch_queue_create(__label__, __attr__) dispatch_queue_create(__label__, __attr__)
 #endif
+
+
+FOUNDATION_EXPORT NSArray *_Nullable
+MCSAllHashTableObjects(NSHashTable *table);
 NS_ASSUME_NONNULL_END

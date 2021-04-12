@@ -280,7 +280,7 @@ static dispatch_queue_t mcs_queue;
     
     __block NSURLRequest *currRequest = _request;
     __weak typeof(self) _self = self;
-    [MCSContents request:currRequest networkTaskPriority:_networkTaskPriority willPerformHTTPRedirection:^(NSHTTPURLResponse * _Nonnull response, NSURLRequest * _Nonnull newRequest) {
+    [MCSContents request:currRequest networkTaskPriority:_networkTaskPriority willPerformHTTPRedirection:^(NSURLRequest * _Nonnull newRequest) {
         currRequest = newRequest;
     } completed:^(NSData * _Nullable data, NSError * _Nullable error) {
         dispatch_barrier_sync(mcs_queue, ^{
@@ -483,13 +483,13 @@ static dispatch_queue_t mcs_queue;
         url = [rootDir mcs_URLByAppendingPathComponent:subpath].absoluteString;
     }
     else if ( [self hasPrefix:HLS_PREFIX_DIR_PARENT] ) {
-        NSURL *curDir = URL.URLByDeletingLastPathComponent;
-        NSURL *parentDir = curDir.URLByDeletingLastPathComponent;
+        NSURL *curDir = URL.mcs_URLByDeletingLastPathComponentAndQuery;
+        NSURL *parentDir = curDir.mcs_URLByDeletingLastPathComponentAndQuery;
         NSString *subpath = [self substringFromIndex:HLS_PREFIX_DIR_PARENT.length];
         url = [parentDir mcs_URLByAppendingPathComponent:subpath].absoluteString;
     }
     else if ( [self hasPrefix:HLS_PREFIX_DIR_CURRENT] ) {
-        NSURL *curDir = URL.URLByDeletingLastPathComponent;
+        NSURL *curDir = URL.mcs_URLByDeletingLastPathComponentAndQuery;
         NSString *subpath = [self substringFromIndex:HLS_PREFIX_DIR_CURRENT.length];
         url = [curDir mcs_URLByAppendingPathComponent:subpath].absoluteString;
     }
@@ -502,7 +502,7 @@ static dispatch_queue_t mcs_queue;
         url = self;
     }
     else {
-        NSURL *curDir = URL.URLByDeletingLastPathComponent;
+        NSURL *curDir = URL.mcs_URLByDeletingLastPathComponentAndQuery;
         NSString *subpath = self;
         url = [curDir mcs_URLByAppendingPathComponent:subpath].absoluteString;
     }

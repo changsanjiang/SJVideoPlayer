@@ -14,6 +14,10 @@
 #import "MCSLogger.h"
 #import "NSURLRequest+MCS.h"
 
+@interface NSURLSessionTask (MCSDownloadExtended)<MCSDownloadTask>
+
+@end
+
 static dispatch_queue_t mcs_queue;
 
 @interface MCSDownload () <NSURLSessionDataDelegate>
@@ -71,7 +75,7 @@ static dispatch_queue_t mcs_queue;
     [[NSNotificationCenter defaultCenter] removeObserver:self];
 }
  
-- (nullable NSURLSessionTask *)downloadWithRequest:(NSURLRequest *)requestParam priority:(float)priority delegate:(id<MCSDownloadTaskDelegate>)delegate {
+- (nullable id<MCSDownloadTask>)downloadWithRequest:(NSURLRequest *)requestParam priority:(float)priority delegate:(id<MCSDownloadTaskDelegate>)delegate {
     NSURLRequest *request = [self _requestWithParam:requestParam];
     if ( request == nil )
         return nil;
@@ -114,7 +118,7 @@ static dispatch_queue_t mcs_queue;
 
 - (void)URLSession:(NSURLSession *)session task:(NSURLSessionTask *)task willPerformHTTPRedirection:(NSHTTPURLResponse *)response newRequest:(NSURLRequest *)request completionHandler:(void (^)(NSURLRequest * _Nullable))completionHandler {
     __auto_type delegate = [self _delegateForTask:task];
-    [delegate downloadTask:task willPerformHTTPRedirection:response newRequest:request];
+    [delegate downloadTask:task willPerformHTTPRedirectionWithNewRequest:request];
     completionHandler(request);
 }
 
@@ -142,7 +146,7 @@ static dispatch_queue_t mcs_queue;
             NSRange range1 = MCSRequestRange(MCSRequestGetContentRange(task.currentRequest.allHTTPHeaderFields));
             NSRange range2 = MCSResponseRange(MCSResponseGetContentRange(res));
             if ( !MCSNSRangeIsUndefined(range1) && !NSEqualRanges(range1, range2)) {
-                if ( !MCSNSRangeIsUndefined(range2) && NSMaxRange(range1) <= NSMaxRange(range2) ) {
+                if ( !MCSNSRangeIsUndefined(range2) && NSMaxRange(range2) <= NSMaxRange(range1) ) {
                     error = [NSError mcs_errorWithCode:MCSInvalidResponseError userInfo:@{
                         MCSErrorUserInfoObjectKey : response,
                         MCSErrorUserInfoReasonKey : [NSString stringWithFormat:@"响应无效: requestRange(%@), responseRange(%@) range无效!", NSStringFromRange(range1), NSStringFromRange(range2)]
@@ -160,7 +164,7 @@ static dispatch_queue_t mcs_queue;
     
     id<MCSDownloadTaskDelegate> delegate = [self _delegateForTask:task];
     if ( delegate != nil ) {
-        [delegate downloadTask:task didReceiveResponse:response];
+        [delegate downloadTask:task didReceiveResponse:[MCSDownloadResponse.alloc initWithHTTPResponse:response]];
         completionHandler(NSURLSessionResponseAllow);
     }
 }
@@ -186,6 +190,10 @@ static dispatch_queue_t mcs_queue;
     
     __auto_type delegate = [self _delegateForTask:task];
     [delegate downloadTask:task didCompleteWithError:error];
+    
+    if ( error != nil && error.code != NSUserCancelledError ) {
+        if ( _errorCallback != nil ) _errorCallback(task.originalRequest, error);
+    }
     
     [self _setDelegate:nil forTask:task];
     [self _setError:nil forTask:task];
@@ -269,5 +277,29 @@ static dispatch_queue_t mcs_queue;
         error = self->_errorDictionary[@(task.taskIdentifier)];
     });
     return error;
+}
+@end
+
+
+@implementation MCSDownloadResponse
+- (instancetype)initWithHTTPResponse:(NSHTTPURLResponse *)response {
+    NSString *contentType = MCSResponseGetContentType(response);
+    if ( response.statusCode == MCS_RESPONSE_CODE_PARTIAL_CONTENT ) {
+        MCSResponseContentRange contentRange = MCSResponseGetContentRange(response);
+        NSUInteger totalLength = contentRange.totalLength;
+        NSRange range = MCSResponseRange(contentRange);
+        self = [super initWithTotalLength:totalLength range:range contentType:contentType];
+    }
+    else {
+        NSUInteger totalLength = response.expectedContentLength != NSURLResponseUnknownLength ? response.expectedContentLength : MCSResponseGetContentLength(response);
+        self = [super initWithTotalLength:totalLength contentType:contentType];
+    }
+    
+    if ( self ) {
+        _statusCode = response.statusCode;
+        _pathExtension = MCSSuggestedFilePathExtension(response);
+        _URL = response.URL;
+    }
+    return self;
 }
 @end

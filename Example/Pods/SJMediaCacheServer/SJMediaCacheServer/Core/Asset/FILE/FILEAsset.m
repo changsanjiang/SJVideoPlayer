@@ -15,8 +15,6 @@
 #import "NSFileHandle+MCS.h"
 #import "MCSUtils.h"
 
-static NSString *kLength = @"length";
-static NSString *kReadwriteCount = @"readwriteCount";
 static dispatch_queue_t mcs_queue;
 
 @interface FILEAsset () {
@@ -27,7 +25,7 @@ static dispatch_queue_t mcs_queue;
 @property (nonatomic, copy) NSString *name;
 @property (nonatomic, copy, nullable) NSString *pathExtension;
 @property (nonatomic, copy, nullable) NSString *contentType;
-@property (nonatomic) NSUInteger totalLength;
+@property (nonatomic) NSUInteger totalLength; 
 @end
 
 @implementation FILEAsset
@@ -123,12 +121,12 @@ static dispatch_queue_t mcs_queue;
     return totalLength;
 }
 
-- (nullable FILEContent *)createContentWithResponse:(NSHTTPURLResponse *)response {
-    NSString *pathExtension = MCSSuggestedFilePathExtension(response);
-    NSString *contentType = MCSResponseGetContentType(response);
-    MCSResponseContentRange range = MCSResponseGetContentRange(response);
-    NSUInteger totalLength = range.totalLength;
-    NSUInteger offset = range.start;
+/// 该操作将会对 content 进行一次 readwriteRetain, 请在不需要时, 调用一次 readwriteRelease.
+- (nullable FILEContent *)createContentReadwriteWithResponse:(id<MCSDownloadResponse>)response {
+    NSString *pathExtension = response.pathExtension;
+    NSString *contentType = response.contentType;
+    NSUInteger totalLength = response.totalLength;
+    NSUInteger offset = response.range.location;
     __block FILEContent *content = nil;
     __block BOOL isUpdated = NO;
     dispatch_barrier_sync(mcs_queue, ^{
@@ -140,6 +138,7 @@ static dispatch_queue_t mcs_queue;
         }
         
         content = [_provider createContentAtOffset:offset pathExtension:_pathExtension];
+        [content readwriteRetain];
         [_contents addObject:content];
     });
     
@@ -150,6 +149,10 @@ static dispatch_queue_t mcs_queue;
 
 - (nullable NSString *)contentFilePathForFilename:(NSString *)filename {
     return [_provider contentFilePathForFilename:filename];
+}
+
+- (nullable NSString *)contentFileRelativePathForFilename:(NSString *)filename {
+    return [_provider contentFileRelativePathForFilename:filename];
 }
 
 #pragma mark - readwrite

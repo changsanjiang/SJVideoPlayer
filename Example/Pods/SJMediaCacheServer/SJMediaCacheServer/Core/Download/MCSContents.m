@@ -11,10 +11,10 @@
     dispatch_semaphore_t _semaphore;
     NSMutableData *_m;
     NSError *_error;
-    void(^_willPerformHTTPRedirection)(NSHTTPURLResponse *response, NSURLRequest *newRequest);
+    void(^_willPerformHTTPRedirection)(NSURLRequest *newRequest);
 }
 
-+ (void)request:(NSURLRequest *)request networkTaskPriority:(float)networkTaskPriority willPerformHTTPRedirection:(void(^_Nullable)(NSHTTPURLResponse *response, NSURLRequest *newRequest))block completed:(void(^)(NSData *_Nullable data, NSError *_Nullable error))completionHandler {
++ (void)request:(NSURLRequest *)request networkTaskPriority:(float)networkTaskPriority willPerformHTTPRedirection:(void(^_Nullable)(NSURLRequest *newRequest))block completed:(void(^)(NSData *_Nullable data, NSError *_Nullable error))completionHandler {
     dispatch_async(dispatch_get_global_queue(0, 0), ^{
         @autoreleasepool {
             NSError *error = nil;
@@ -24,12 +24,12 @@
     });
 }
 
-+ (NSData *)dataWithContentsOfRequest:(NSURLRequest *)request networkTaskPriority:(float)networkTaskPriority error:(NSError **)error willPerformHTTPRedirection:(void(^_Nullable)(NSHTTPURLResponse *response, NSURLRequest *newRequest))block {
++ (NSData *)dataWithContentsOfRequest:(NSURLRequest *)request networkTaskPriority:(float)networkTaskPriority error:(NSError **)error willPerformHTTPRedirection:(void(^_Nullable)(NSURLRequest *newRequest))block {
     MCSContents *contents = [MCSContents.alloc initWithContentsOfRequest:request networkTaskPriority:networkTaskPriority error:error willPerformHTTPRedirection:block];
     return contents != nil ? contents->_m : nil;
 }
 
-- (instancetype)initWithContentsOfRequest:(NSURLRequest *)request networkTaskPriority:(float)networkTaskPriority error:(NSError **)error willPerformHTTPRedirection:(void(^)(NSHTTPURLResponse *response, NSURLRequest *newRequest))block {
+- (instancetype)initWithContentsOfRequest:(NSURLRequest *)request networkTaskPriority:(float)networkTaskPriority error:(NSError **)error willPerformHTTPRedirection:(void(^)(NSURLRequest *newRequest))block {
     self = [super init];
     if ( self ) {
         _willPerformHTTPRedirection = block;
@@ -42,17 +42,17 @@
     return self;
 }
 
-- (void)downloadTask:(NSURLSessionTask *)task willPerformHTTPRedirection:(NSHTTPURLResponse *)response newRequest:(NSURLRequest *)request {
-    if ( _willPerformHTTPRedirection != nil ) _willPerformHTTPRedirection(response, request);
+- (void)downloadTask:(id<MCSDownloadTask>)task willPerformHTTPRedirectionWithNewRequest:(NSURLRequest *)request {
+    if ( _willPerformHTTPRedirection != nil ) _willPerformHTTPRedirection(request);
 }
 
-- (void)downloadTask:(NSURLSessionTask *)task didReceiveResponse:(NSURLResponse *)response { }
+- (void)downloadTask:(id<MCSDownloadTask>)task didReceiveResponse:(id<MCSDownloadResponse>)response { }
 
-- (void)downloadTask:(NSURLSessionTask *)task didReceiveData:(NSData *)data {
+- (void)downloadTask:(id<MCSDownloadTask>)task didReceiveData:(NSData *)data {
     [_m appendData:data];
 }
 
-- (void)downloadTask:(NSURLSessionTask *)task didCompleteWithError:(NSError *)error {
+- (void)downloadTask:(id<MCSDownloadTask>)task didCompleteWithError:(NSError *)error {
     _error = error;
     dispatch_semaphore_signal(_semaphore);
 }

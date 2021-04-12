@@ -17,6 +17,8 @@ static void *kPlayer = &kPlayer;
 #ifdef DEBUG
     NSParameterAssert(media);
 #endif
+    if ( media == nil )
+        return nil;
     
     SJVideoPlayerURLAsset *target = media.original ?: media;
     SJAVMediaPlayer *__block _Nullable player = objc_getAssociatedObject(target, kPlayer);

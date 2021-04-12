@@ -197,6 +197,8 @@ NS_ASSUME_NONNULL_BEGIN
 }
 
 - (void)prepareToPlay {
+    if ( _media == nil ) return;
+    
     SJVideoPlayerURLAsset *media = _media;
     __weak typeof(self) _self = self;
     [self playerWithMedia:media completionHandler:^(id<SJMediaPlayer>  _Nullable player) {
@@ -262,6 +264,7 @@ NS_ASSUME_NONNULL_BEGIN
         self.reasonForWaitingToPlay = SJWaitingWhileEvaluatingBufferingRateReason;
         self.timeControlStatus = SJPlaybackTimeControlStatusWaitingToPlay;
         self.isPlaybackFinished ? [self.currentPlayer replay] : [self.currentPlayer play];
+        if ( self.currentPlayer.rate != self.rate ) self.currentPlayer.rate = self.rate;
         [self _toEvaluating];
     }
 }
@@ -470,8 +473,7 @@ NS_ASSUME_NONNULL_BEGIN
  
 - (void)setRate:(float)rate {
     _rate = rate;
-    if ( self.timeControlStatus == SJPlaybackTimeControlStatusPaused ) [self play];
-    _currentPlayer.rate = rate;
+    if ( self.timeControlStatus != SJPlaybackTimeControlStatusPaused ) _currentPlayer.rate = rate;
 }
 
 - (void)setVolume:(float)volume {
@@ -513,7 +515,64 @@ NS_ASSUME_NONNULL_BEGIN
             [self.delegate playbackController:self timeControlStatusDidChange:timeControlStatus];
         }
     });
+    
+#ifdef DEBUG
+    [self showLog_TimeControlStatus];
+#endif
 }
+#ifdef DEBUG
+- (void)showLog_TimeControlStatus {
+    SJPlaybackTimeControlStatus status = self.timeControlStatus;
+    NSString *statusStr = nil;
+    switch ( status ) {
+        case SJPlaybackTimeControlStatusPaused: {
+            statusStr = [NSString stringWithFormat:@"SJMediaPlaybackController<%p>.TimeControlStatus.Paused\n", self];
+        }
+            break;
+        case SJPlaybackTimeControlStatusWaitingToPlay: {
+            NSString *reasonStr = nil;
+            if      ( self.reasonForWaitingToPlay == SJWaitingToMinimizeStallsReason ) {
+                reasonStr = @"WaitingToMinimizeStallsReason";
+            }
+            else if ( self.reasonForWaitingToPlay == SJWaitingWhileEvaluatingBufferingRateReason ) {
+                reasonStr = @"WaitingWhileEvaluatingBufferingRateReason";
+            }
+            else if ( self.reasonForWaitingToPlay == SJWaitingWithNoAssetToPlayReason ) {
+                reasonStr = @"WaitingWithNoAssetToPlayReason";
+            }
+            statusStr = [NSString stringWithFormat:@"SJMediaPlaybackController<%p>.TimeControlStatus.WaitingToPlay(Reason: %@)\n", self, reasonStr];
+        }
+            break;
+        case SJPlaybackTimeControlStatusPlaying: {
+            statusStr = [NSString stringWithFormat:@"SJMediaPlaybackController<%p>.TimeControlStatus.Playing\n", self];
+        }
+            break;
+    }
+    
+    printf("%s", statusStr.UTF8String);
+}
+
+- (void)showLog_AssetStatus {
+    SJAssetStatus status = self.assetStatus;
+    NSString *statusStr = nil;
+    switch ( status ) {
+        case SJAssetStatusUnknown:
+            statusStr = [NSString stringWithFormat:@"SJMediaPlaybackController<%p>.assetStatus.Unknown\n", self];
+            break;
+        case SJAssetStatusPreparing:
+            statusStr = [NSString stringWithFormat:@"SJMediaPlaybackController<%p>.assetStatus.Preparing\n", self];
+            break;
+        case SJAssetStatusReadyToPlay:
+            statusStr = [NSString stringWithFormat:@"SJMediaPlaybackController<%p>.assetStatus.ReadyToPlay\n", self];
+            break;
+        case SJAssetStatusFailed:
+            statusStr = [NSString stringWithFormat:@"SJMediaPlaybackController<%p>.assetStatus.Failed\n", self];
+            break;
+    }
+    
+    printf("%s", statusStr.UTF8String);
+}
+#endif
 
 #pragma mark -
 
@@ -649,6 +708,10 @@ NS_ASSUME_NONNULL_BEGIN
                 [self.delegate playbackController:self assetStatusDidChange:self.assetStatus];
             }
         });
+        
+#ifdef DEBUG
+        [self showLog_AssetStatus];
+#endif
     }
 }
 

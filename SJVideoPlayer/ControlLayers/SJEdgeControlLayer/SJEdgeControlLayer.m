@@ -67,6 +67,7 @@
     self = [super initWithFrame:frame];
     if ( !self ) return nil;
     _bottomProgressIndicatorHeight = 1;
+    _automaticallyPerformRotationOrFitOnScreen = YES;
     [self _setupView];
     self.autoAdjustTopSpacing = YES;
     self.hiddenBottomProgressIndicator = YES;
@@ -143,7 +144,17 @@
 }
 
 - (void)_fullItemWasTapped {
-    _videoPlayer.useFitOnScreenAndDisableRotation ? _videoPlayer.fitOnScreen = !_videoPlayer.fitOnScreen : [self.videoPlayer rotate];
+    if ( _onlyUsedFitOnScreen ) {
+        [_videoPlayer setFitOnScreen:!_videoPlayer.isFitOnScreen];
+        return;
+    }
+    
+    if ( _usesFitOnScreenFirst && !_videoPlayer.isFitOnScreen ) {
+        [_videoPlayer setFitOnScreen:YES];
+        return;
+    }
+    
+    [_videoPlayer rotate];
 }
 
 - (void)_replayItemWasTapped {
@@ -321,6 +332,15 @@
     [self _showOrRemoveBottomProgressIndicator];
 }
 
+- (BOOL)canTriggerRotationOfVideoPlayer:(__kindof SJBaseVideoPlayer *)videoPlayer {
+    if ( _onlyUsedFitOnScreen )
+        return NO;
+    if ( _usesFitOnScreenFirst )
+        return videoPlayer.isFitOnScreen;
+    
+    return YES;
+}
+
 - (void)videoPlayer:(__kindof SJBaseVideoPlayer *)videoPlayer willRotateView:(BOOL)isFull {
     [self _updateAppearStateForResidentBackButtonIfNeeded];
     [self _updateAppearStateForContainerViews];
@@ -406,6 +426,12 @@
             }
                 break;
         }
+    }
+}
+
+- (void)videoPlayer:(__kindof SJBaseVideoPlayer *)videoPlayer presentationSizeDidChange:(CGSize)size {
+    if ( _automaticallyPerformRotationOrFitOnScreen && !videoPlayer.isFullScreen && !videoPlayer.isFitOnScreen ) {
+        _onlyUsedFitOnScreen = size.width < size.height;
     }
 }
 
@@ -564,6 +590,15 @@
     if ( automaticallyShowsPictureInPictureItem != _automaticallyShowsPictureInPictureItem ) {
         _automaticallyShowsPictureInPictureItem = automaticallyShowsPictureInPictureItem;
         [self _reloadTopAdapterIfNeeded];
+    }
+}
+
+- (void)setOnlyUsedFitOnScreen:(BOOL)onlyUsedFitOnScreen {
+    if ( onlyUsedFitOnScreen != _onlyUsedFitOnScreen ) {
+        _onlyUsedFitOnScreen = onlyUsedFitOnScreen;
+        if ( _onlyUsedFitOnScreen ) {
+            _automaticallyPerformRotationOrFitOnScreen = NO;
+        }
     }
 }
 

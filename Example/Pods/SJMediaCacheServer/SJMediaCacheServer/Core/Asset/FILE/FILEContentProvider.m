@@ -58,6 +58,10 @@
     return filename.length != 0 ? [_directory stringByAppendingPathComponent:filename] : nil;
 }
 
+- (nullable NSString *)contentFileRelativePathForFilename:(NSString *)filename {
+    return filename.length != 0 ? filename : nil;
+}
+
 - (void)removeContentForFilename:(NSString *)filename {
     NSString *filePath = [self contentFilePathForFilename:filename];
     [NSFileManager.defaultManager removeItemAtPath:filePath error:NULL];

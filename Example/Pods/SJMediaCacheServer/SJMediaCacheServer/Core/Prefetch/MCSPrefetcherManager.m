@@ -37,6 +37,7 @@
 @end
 
 @implementation MCSPrefetchOperation
+@synthesize startedExecuteBlock = _startedExecuteBlock;
 - (instancetype)initWithURL:(NSURL *)URL preloadSize:(NSUInteger)bytes progress:(void(^_Nullable)(float progress))progressBlock completed:(void(^_Nullable)(NSError *_Nullable error))completionBlock {
     self = [super init];
     if ( self ) {
@@ -123,6 +124,8 @@
             break;
     }
     [_prefetcher prepare];
+    
+    if ( _startedExecuteBlock != nil ) _startedExecuteBlock(self);
 }
 
 - (void)cancel {

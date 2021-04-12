@@ -25,6 +25,8 @@ NS_ASSUME_NONNULL_BEGIN
 - (void)setFitOnScreen:(BOOL)fitOnScreen animated:(BOOL)animated;
 - (void)setFitOnScreen:(BOOL)fitOnScreen animated:(BOOL)animated completionHandler:(nullable void(^)(id<SJFitOnScreenManager> mgr))completionHandler;
 
+@property (nonatomic, strong, readonly) UIView *superviewInFitOnScreen;
+
 - (instancetype)init NS_UNAVAILABLE;
 + (instancetype)new  NS_UNAVAILABLE;
 @end

@@ -9,7 +9,7 @@
 #import "HLSReader.h"
 #import "HLSContentIndexReader.h"
 #import "HLSContentAESKeyReader.h"
-#import "HLSContentTSReader.h" 
+#import "HLSContentTSReader.h"
 #import "MCSLogger.h"
 #import "HLSAsset.h"
 #import "MCSError.h"
@@ -20,7 +20,9 @@
 
 static dispatch_queue_t mcs_queue;
 
-@interface HLSReader ()<MCSAssetDataReaderDelegate>
+@interface HLSReader ()<MCSAssetDataReaderDelegate> {
+    MCSDataType _dataType;
+}
 @property (nonatomic) BOOL isCalledPrepare;
 @property (nonatomic, weak, nullable) HLSAsset *asset;
 @property (nonatomic, strong, nullable) NSURLRequest *request;
@@ -42,7 +44,7 @@ static dispatch_queue_t mcs_queue;
     });
 }
 
-- (instancetype)initWithAsset:(__weak HLSAsset *)asset request:(NSURLRequest *)request networkTaskPriority:(float)networkTaskPriority readDataDecoder:(NSData *(^_Nullable)(NSURLRequest *request, NSUInteger offset, NSData *data))readDataDecoder delegate:(id<MCSAssetReaderDelegate>)delegate {
+- (instancetype)initWithAsset:(__weak HLSAsset *)asset request:(NSURLRequest *)request dataType:(MCSDataType)dataType networkTaskPriority:(float)networkTaskPriority readDataDecoder:(NSData *(^_Nullable)(NSURLRequest *request, NSUInteger offset, NSData *data))readDataDecoder delegate:(id<MCSAssetReaderDelegate>)delegate {
     self = [super init];
     if ( self ) {
 #ifdef DEBUG
@@ -54,6 +56,7 @@ static dispatch_queue_t mcs_queue;
         _networkTaskPriority = networkTaskPriority;
         _readDataDecoder = readDataDecoder;
         _delegate = delegate;
+        _dataType = dataType;
         
         [_asset readwriteRetain];
         
@@ -65,7 +68,6 @@ static dispatch_queue_t mcs_queue;
 - (void)dealloc {
     [NSNotificationCenter.defaultCenter removeObserver:self];
     if ( !_isClosed ) [self _close];
-    [_asset readwriteRelease];
     MCSAssetReaderDebugLog(@"%@: <%p>.dealloc;\n", NSStringFromClass(self.class), self);
 }
 
@@ -91,13 +93,8 @@ static dispatch_queue_t mcs_queue;
         MCSAssetReaderDebugLog(@"%@: <%p>.prepare { asset: %@, request: %@ };\n", NSStringFromClass(self.class), self, _asset.name, _request);
 
         NSParameterAssert(_asset);
-         
-        _isCalledPrepare = YES;
         
-        if      ( [_request.URL.lastPathComponent containsString:HLS_SUFFIX_INDEX] ) {
-            _reader = [HLSContentIndexReader.alloc initWithAsset:_asset request:_request networkTaskPriority:_networkTaskPriority delegate:self];
-        }
-        else {
+        if ( _dataType == MCSDataTypeHLSTs || _dataType == MCSDataTypeHLSAESKey ) {
             if ( _asset.parser == nil ) {
                 [self _onError:[NSError mcs_errorWithCode:MCSUnknownError userInfo:@{
                     MCSErrorUserInfoObjectKey : _request,
@@ -105,14 +102,31 @@ static dispatch_queue_t mcs_queue;
                 }]];
                 return;
             }
-            
-            if ( [_request.URL.lastPathComponent containsString:HLS_SUFFIX_AES_KEY] ) {
+        }
+        
+        switch ( _dataType ) {
+            case MCSDataTypeHLSPlaylist: {
+                _reader = [HLSContentIndexReader.alloc initWithAsset:_asset request:_request networkTaskPriority:_networkTaskPriority delegate:self];
+            }
+                break;
+            case MCSDataTypeHLSAESKey: {
                 _reader = [HLSContentAESKeyReader.alloc initWithAsset:_asset request:_request networkTaskPriority:_networkTaskPriority delegate:self];
             }
-            else {
+                break;
+            case MCSDataTypeHLSTs: {
                 _reader = [HLSContentTSReader.alloc initWithAsset:_asset request:_request networkTaskPriority:_networkTaskPriority delegate:self];
             }
+                break;
+            default: {
+                [self _onError:[NSError mcs_errorWithCode:MCSFileError userInfo:@{
+                    MCSErrorUserInfoObjectKey : _request,
+                    MCSErrorUserInfoReasonKey : @"不支持的格式!"
+                }]];
+            }
+                return;
         }
+         
+        _isCalledPrepare = YES;
         
         [_reader prepare];
     });
@@ -229,6 +243,8 @@ static dispatch_queue_t mcs_queue;
     _reader = nil;
      
     _isClosed = YES;
+    
+    [_asset readwriteRelease];
     
     MCSAssetReaderDebugLog(@"%@: <%p>.close;\n", NSStringFromClass(self.class), self);
 }

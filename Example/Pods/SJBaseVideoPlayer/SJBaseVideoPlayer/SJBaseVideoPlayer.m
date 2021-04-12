@@ -138,8 +138,6 @@ typedef struct _SJPlayerControlInfo {
     /// Fit on screen manager
     id<SJFitOnScreenManager> _fitOnScreenManager;
     id<SJFitOnScreenManagerObserver> _fitOnScreenManagerObserver;
-    BOOL _useFitOnScreenAndDisableRotation;
-    BOOL _autoManageViewToFitOnScreenOrRotation;
     
     /// Flip Transition manager
     id<SJFlipTransitionManager> _flipTransitionManager;
@@ -161,7 +159,7 @@ typedef struct _SJPlayerControlInfo {
 }
 
 + (NSString *)version {
-    return @"v3.5.0";
+    return @"v3.6.0";
 }
 
 - (void)setVideoGravity:(SJVideoGravity)videoGravity {
@@ -178,13 +176,7 @@ typedef struct _SJPlayerControlInfo {
 }
 
 - (nullable __kindof UIViewController *)atViewController {
-    UIView *view = nil;
-    if ( self.useFitOnScreenAndDisableRotation )
-        view = _view;
-    else
-        view = _presentView;
-    
-    return [view lookupResponderForClass:UIViewController.class];
+    return [_presentView lookupResponderForClass:UIViewController.class];
 }
 
 - (instancetype)init {
@@ -201,7 +193,6 @@ typedef struct _SJPlayerControlInfo {
     _controlInfo->floatSmallViewControl.hiddenFloatSmallViewWhenPlaybackFinished = YES;
     _controlInfo->gestureControl.rateWhenLongPressGestureTriggered = 2.0;
     _controlInfo->pan.factor = 667;
-    self.autoManageViewToFitOnScreenOrRotation = YES;
     
     [self _setupViews];
     [self fitOnScreenManager];
@@ -541,29 +532,17 @@ typedef struct _SJPlayerControlInfo {
                         return NO;
                     
                     if ( self.isPlayOnScrollView ) {
-                        if ( NO == self.controlInfo->gestureControl.allowHorizontalTriggeringOfPanGesturesInCells ) {
-                            if ( YES == self.useFitOnScreenAndDisableRotation ) {
-                                if ( NO == self.isFitOnScreen )
-                                    return NO;
-                            }
-                            else {
-                                if ( NO == self.isFullScreen )
-                                    return NO;
-                            }
+                        if ( !self.controlInfo->gestureControl.allowHorizontalTriggeringOfPanGesturesInCells ) {
+                            if ( !self.isFitOnScreen && !self.isFullScreen )
+                                return NO;
                         }
                     }
                 }
                     break;
                 case SJPanGestureMovingDirection_V: {
                     if ( self.isPlayOnScrollView ) {
-                        if ( YES == self.useFitOnScreenAndDisableRotation ) {
-                            if ( NO == self.isFitOnScreen )
-                                return NO;
-                        }
-                        else {
-                            if ( NO == self.isFullScreen )
-                                return NO;
-                        }
+                        if ( !self.isFitOnScreen && !self.isFullScreen )
+                            return NO;
                     }
                     switch ( control.triggeredPosition ) {
                             /// Brightness
@@ -1188,10 +1167,6 @@ typedef struct _SJPlayerControlInfo {
 }
 
 - (void)playbackController:(id<SJVideoPlayerPlaybackController>)controller presentationSizeDidChange:(CGSize)presentationSize {
-    if ( _autoManageViewToFitOnScreenOrRotation && !self.isFullScreen && !self.isFitOnScreen ) {
-        _useFitOnScreenAndDisableRotation = presentationSize.width < presentationSize.height;
-    }
-    
     [self updateWatermarkViewLayout];
     
     if ( self.presentationSizeDidChangeExeBlock )
@@ -1597,26 +1572,10 @@ typedef struct _SJPlayerControlInfo {
 @end
 
 
-@implementation SJBaseVideoPlayer (AutoManageViewToFitOnScreenOrRotation)
-- (void)setAutoManageViewToFitOnScreenOrRotation:(BOOL)autoManageViewToFitOnScreenOrRotation {
-    _autoManageViewToFitOnScreenOrRotation = autoManageViewToFitOnScreenOrRotation;
-}
-- (BOOL)autoManageViewToFitOnScreenOrRotation {
-    return _autoManageViewToFitOnScreenOrRotation;
-}
-@end
-
-
 
 #pragma mark - 充满屏幕
 
 @implementation SJBaseVideoPlayer (FitOnScreen)
-- (void)setUseFitOnScreenAndDisableRotation:(BOOL)useFitOnScreenAndDisableRotation {
-    _useFitOnScreenAndDisableRotation = useFitOnScreenAndDisableRotation;
-}
-- (BOOL)useFitOnScreenAndDisableRotation {
-    return _useFitOnScreenAndDisableRotation;
-}
 
 - (void)setFitOnScreenManager:(id<SJFitOnScreenManager> _Nullable)fitOnScreenManager {
     _fitOnScreenManager = fitOnScreenManager;
@@ -1650,7 +1609,8 @@ typedef struct _SJPlayerControlInfo {
     _fitOnScreenManagerObserver.fitOnScreenWillBeginExeBlock = ^(id<SJFitOnScreenManager> mgr) {
         __strong typeof(_self) self = _self;
         if ( !self ) return;
-        self.useFitOnScreenAndDisableRotation = YES;
+        self.rotationManager.superview = mgr.isFitOnScreen ? self.fitOnScreenManager.superviewInFitOnScreen : self.view;
+        
         [self controlLayerNeedDisappear];
         
         if ( [self.controlLayerDelegate respondsToSelector:@selector(videoPlayer:willFitOnScreen:)] ) {
@@ -1665,10 +1625,7 @@ typedef struct _SJPlayerControlInfo {
     _fitOnScreenManagerObserver.fitOnScreenDidEndExeBlock = ^(id<SJFitOnScreenManager> mgr) {
         __strong typeof(_self) self = _self;
         if ( !self ) return;
-        if ( self.autoManageViewToFitOnScreenOrRotation && !mgr.isFitOnScreen ) {
-            CGSize presentationSize = self.playbackController.presentationSize;
-            self.useFitOnScreenAndDisableRotation = presentationSize.width < presentationSize.height;
-        }
+        
         if ( [self.controlLayerDelegate respondsToSelector:@selector(videoPlayer:didCompleteFitOnScreen:)] ) {
             [self.controlLayerDelegate videoPlayer:self didCompleteFitOnScreen:mgr.isFitOnScreen];
         }
@@ -1689,6 +1646,8 @@ typedef struct _SJPlayerControlInfo {
     [self setFitOnScreen:fitOnScreen animated:animated completionHandler:nil];
 }
 - (void)setFitOnScreen:(BOOL)fitOnScreen animated:(BOOL)animated completionHandler:(nullable void(^)(__kindof SJBaseVideoPlayer *player))completionHandler {
+    NSAssert(!self.isFullScreen, @"横屏全屏状态下, 无法执行竖屏全屏!");
+    
     __weak typeof(self) _self = self;
     [self.fitOnScreenManager setFitOnScreen:fitOnScreen animated:animated completionHandler:^(id<SJFitOnScreenManager> mgr) {
         __strong typeof(_self) self = _self;
@@ -1754,7 +1713,10 @@ typedef struct _SJPlayerControlInfo {
             if ( self.touchedOnTheScrollView ) return NO;
         }
         if ( self.isLockedScreen ) return NO;
-        if ( self.useFitOnScreenAndDisableRotation ) return NO;
+        
+        if ( self.isFitOnScreen )
+            return self.allowsRotationInFitOnScreen;
+        
         if ( self.viewControllerManager.isViewDisappeared ) return NO;
         if ( [self.controlLayerDelegate respondsToSelector:@selector(canTriggerRotationOfVideoPlayer:)] ) {
             if ( ![self.controlLayerDelegate canTriggerRotationOfVideoPlayer:self] )
@@ -1794,10 +1756,6 @@ typedef struct _SJPlayerControlInfo {
     _rotationManagerObserver.rotationDidEndExeBlock = ^(id<SJRotationManager>  _Nonnull mgr) {
         __strong typeof(_self) self = _self;
         if ( !self ) return ;
-        if ( self.autoManageViewToFitOnScreenOrRotation && !mgr.isFullscreen ) {
-            CGSize presentationSize = self.playbackController.presentationSize;
-            self.useFitOnScreenAndDisableRotation = presentationSize.width < presentationSize.height;
-        }
         [self.playModelObserver refreshAppearState];
         if ( [self.controlLayerDelegate respondsToSelector:@selector(videoPlayer:didEndRotation:)] ) {
             [self.controlLayerDelegate videoPlayer:self didEndRotation:mgr.isFullscreen];
@@ -1812,6 +1770,13 @@ typedef struct _SJPlayerControlInfo {
             }];
         }
     };
+}
+
+- (void)setAllowsRotationInFitOnScreen:(BOOL)allowsRotationInFitOnScreen {
+    objc_setAssociatedObject(self, @selector(allowsRotationInFitOnScreen), @(allowsRotationInFitOnScreen), OBJC_ASSOCIATION_RETAIN_NONATOMIC);
+}
+- (BOOL)allowsRotationInFitOnScreen {
+    return [objc_getAssociatedObject(self, _cmd) boolValue];
 }
 
 - (void)rotate {
@@ -2303,7 +2268,6 @@ typedef struct _SJPlayerControlInfo {
         self.playerViewWillDisappearExeBlock(self);
 }
 @end
-
 
 #pragma mark -
 

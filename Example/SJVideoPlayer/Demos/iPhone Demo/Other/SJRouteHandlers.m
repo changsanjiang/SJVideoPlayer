@@ -28,6 +28,7 @@
 #import "SJKeyboardDemoViewController1.h"
 
 #import "SJDYMainViewController.h"
+#import "DYHPlaybackListViewController.h"
 
 #import "SJUIScrollViewDemoViewController1.h"
 #import "SJUIScrollViewDemoViewController2.h"
@@ -80,6 +81,10 @@
     return @[
         [SJRouteObject.alloc initWithPath:@"dy/1" transitionMode:SJViewControllerTransitionModeNavigation createInstanceBlock:^(SJRouteRequest * _Nonnull request, SJCompletionHandler  _Nullable completionHandler) {
             __auto_type vc = SJDYMainViewController.new;
+            if ( completionHandler ) completionHandler(vc, nil);
+        }],
+        [SJRouteObject.alloc initWithPath:@"dy/2" transitionMode:SJViewControllerTransitionModeNavigation createInstanceBlock:^(SJRouteRequest * _Nonnull request, SJCompletionHandler  _Nullable completionHandler) {
+            __auto_type vc = DYHPlaybackListViewController.new;
             if ( completionHandler ) completionHandler(vc, nil);
         }],
     ];

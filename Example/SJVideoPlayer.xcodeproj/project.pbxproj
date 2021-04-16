@@ -26,7 +26,6 @@
 		7700905C24988F6900A99906 /* SJDYPlaybackListViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 7700905424988F6900A99906 /* SJDYPlaybackListViewController.m */; };
 		7700905D24988F6900A99906 /* SJDYTableViewCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 7700905524988F6900A99906 /* SJDYTableViewCell.m */; };
 		7700905E24988F6900A99906 /* SJDYDataProvider.m in Sources */ = {isa = PBXBuildFile; fileRef = 7700905624988F6900A99906 /* SJDYDataProvider.m */; };
-		7700905F24988F6900A99906 /* SJDYUserHomepageViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 7700905924988F6900A99906 /* SJDYUserHomepageViewController.m */; };
 		7700906024988F6900A99906 /* SJDYMainViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 7700905B24988F6900A99906 /* SJDYMainViewController.m */; };
 		771BFDBB25AFE1EC0026C277 /* SJFloatModeDemoViewController1.m in Sources */ = {isa = PBXBuildFile; fileRef = 771BFDBA25AFE1EC0026C277 /* SJFloatModeDemoViewController1.m */; };
 		77357E462373DA3E00B81EE4 /* SJTestAliViewController3.m in Sources */ = {isa = PBXBuildFile; fileRef = 77357E442373DA3E00B81EE4 /* SJTestAliViewController3.m */; };
@@ -78,6 +77,9 @@
 		7784A7FA237D3860000BA67E /* SJBarrageTestViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 7784A7F9237D3860000BA67E /* SJBarrageTestViewController.m */; };
 		7784A7FC237D4E97000BA67E /* SJBarrageTestViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 7784A7FB237D4E97000BA67E /* SJBarrageTestViewController.xib */; };
 		77A8DDE324B59B3400782C85 /* SJUIScrollViewDemoViewController1.m in Sources */ = {isa = PBXBuildFile; fileRef = 77A8DDE224B59B3400782C85 /* SJUIScrollViewDemoViewController1.m */; };
+		77B947F9262991B2001635AA /* DYHCollectionViewCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 77B947F5262991B2001635AA /* DYHCollectionViewCell.m */; };
+		77B947FA262991B2001635AA /* DYHPlaybackListViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 77B947F7262991B2001635AA /* DYHPlaybackListViewController.m */; };
+		77B94801262991FC001635AA /* SJDYUserHomepageViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 77B94800262991FC001635AA /* SJDYUserHomepageViewController.m */; };
 		77D0CFBA235727D90081C855 /* MediaPlayer.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 77D0CFB9235727D80081C855 /* MediaPlayer.framework */; };
 		77E87F6622E84D4E0047A253 /* SJViewController10.m in Sources */ = {isa = PBXBuildFile; fileRef = 77E87F6422E84D4E0047A253 /* SJViewController10.m */; };
 		77E87F6722E84D4E0047A253 /* SJViewController10.xib in Resources */ = {isa = PBXBuildFile; fileRef = 77E87F6522E84D4E0047A253 /* SJViewController10.xib */; };
@@ -162,8 +164,6 @@
 		7700905524988F6900A99906 /* SJDYTableViewCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SJDYTableViewCell.m; sourceTree = "<group>"; };
 		7700905624988F6900A99906 /* SJDYDataProvider.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SJDYDataProvider.m; sourceTree = "<group>"; };
 		7700905724988F6900A99906 /* SJDYPlaybackListViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SJDYPlaybackListViewController.h; sourceTree = "<group>"; };
-		7700905924988F6900A99906 /* SJDYUserHomepageViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SJDYUserHomepageViewController.m; sourceTree = "<group>"; };
-		7700905A24988F6900A99906 /* SJDYUserHomepageViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SJDYUserHomepageViewController.h; sourceTree = "<group>"; };
 		7700905B24988F6900A99906 /* SJDYMainViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SJDYMainViewController.m; sourceTree = "<group>"; };
 		771BFDB925AFE1EC0026C277 /* SJFloatModeDemoViewController1.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = SJFloatModeDemoViewController1.h; sourceTree = "<group>"; };
 		771BFDBA25AFE1EC0026C277 /* SJFloatModeDemoViewController1.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = SJFloatModeDemoViewController1.m; sourceTree = "<group>"; };
@@ -255,6 +255,12 @@
 		7784A7FB237D4E97000BA67E /* SJBarrageTestViewController.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = SJBarrageTestViewController.xib; sourceTree = "<group>"; };
 		77A8DDE124B59B3400782C85 /* SJUIScrollViewDemoViewController1.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = SJUIScrollViewDemoViewController1.h; sourceTree = "<group>"; };
 		77A8DDE224B59B3400782C85 /* SJUIScrollViewDemoViewController1.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = SJUIScrollViewDemoViewController1.m; sourceTree = "<group>"; };
+		77B947F5262991B2001635AA /* DYHCollectionViewCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = DYHCollectionViewCell.m; sourceTree = "<group>"; };
+		77B947F6262991B2001635AA /* DYHCollectionViewCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DYHCollectionViewCell.h; sourceTree = "<group>"; };
+		77B947F7262991B2001635AA /* DYHPlaybackListViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = DYHPlaybackListViewController.m; sourceTree = "<group>"; };
+		77B947F8262991B2001635AA /* DYHPlaybackListViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DYHPlaybackListViewController.h; sourceTree = "<group>"; };
+		77B947FF262991FC001635AA /* SJDYUserHomepageViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SJDYUserHomepageViewController.h; sourceTree = "<group>"; };
+		77B94800262991FC001635AA /* SJDYUserHomepageViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SJDYUserHomepageViewController.m; sourceTree = "<group>"; };
 		77D0CFB9235727D80081C855 /* MediaPlayer.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = MediaPlayer.framework; path = System/Library/Frameworks/MediaPlayer.framework; sourceTree = SDKROOT; };
 		77E87F6322E84D4E0047A253 /* SJViewController10.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = SJViewController10.h; sourceTree = "<group>"; };
 		77E87F6422E84D4E0047A253 /* SJViewController10.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = SJViewController10.m; sourceTree = "<group>"; };
@@ -481,8 +487,8 @@
 		7700905824988F6900A99906 /* UserHomepage */ = {
 			isa = PBXGroup;
 			children = (
-				7700905A24988F6900A99906 /* SJDYUserHomepageViewController.h */,
-				7700905924988F6900A99906 /* SJDYUserHomepageViewController.m */,
+				77B947FF262991FC001635AA /* SJDYUserHomepageViewController.h */,
+				77B94800262991FC001635AA /* SJDYUserHomepageViewController.m */,
 			);
 			path = UserHomepage;
 			sourceTree = "<group>";
@@ -574,6 +580,17 @@
 				7740C1BC2350A18500DD7ECE /* SJCustomControlLayerViewController.m */,
 			);
 			path = "CustomControlLayer(自定义控制层)";
+			sourceTree = "<group>";
+		};
+		7740F63C262990EF00A91EBE /* DYH */ = {
+			isa = PBXGroup;
+			children = (
+				77B947F8262991B2001635AA /* DYHPlaybackListViewController.h */,
+				77B947F7262991B2001635AA /* DYHPlaybackListViewController.m */,
+				77B947F6262991B2001635AA /* DYHCollectionViewCell.h */,
+				77B947F5262991B2001635AA /* DYHCollectionViewCell.m */,
+			);
+			path = DYH;
 			sourceTree = "<group>";
 		};
 		7756F57E22E1732D00F9DC7D /* Test */ = {
@@ -716,6 +733,7 @@
 				6003F5A5195388D20070C39A /* SJViewController.h */,
 				6003F5A6195388D20070C39A /* SJViewController.m */,
 				7700904F24988F6900A99906 /* DY */,
+				7740F63C262990EF00A91EBE /* DYH */,
 				77805D6D22BF7EBD007076B9 /* iPhone Demo */,
 				77805D6722BF7DC6007076B9 /* iPad Demo */,
 				7756F57E22E1732D00F9DC7D /* Test */,
@@ -1108,6 +1126,7 @@
 				A6F19DFB22D9C1390043B508 /* SJViewController6.m in Sources */,
 				77391C432468001300443844 /* SJFloatModeDemoViewController2.m in Sources */,
 				77E87F6622E84D4E0047A253 /* SJViewController10.m in Sources */,
+				77B947F9262991B2001635AA /* DYHCollectionViewCell.m in Sources */,
 				A6A2556B22AC015B00E42998 /* SJViewController4.m in Sources */,
 				A6A208FA22AB9E59001ED610 /* SJRotationModeDemoViewController1.m in Sources */,
 				A6A2554422ABCE9200E42998 /* SJViewController1.m in Sources */,
@@ -1122,6 +1141,7 @@
 				776EB8C623FE98D600085F94 /* SJTestPLPlayerViewController.m in Sources */,
 				77391C142467CD0100443844 /* SJRouteHandlers.m in Sources */,
 				77391C352467EF6300443844 /* SJUICollectionViewDemoViewController3.m in Sources */,
+				77B947FA262991B2001635AA /* DYHPlaybackListViewController.m in Sources */,
 				777829402351D4AB00A2D933 /* SJTestIJKViewController2.m in Sources */,
 				7740C1BD2350A18500DD7ECE /* SJCustomControlLayerViewController.m in Sources */,
 				77391C232467DAD500443844 /* SJUITableViewDemoViewController6.m in Sources */,
@@ -1141,6 +1161,7 @@
 				7748925E239100C7002825FC /* SJNavigationController.m in Sources */,
 				77391C172467D13500443844 /* SJUITableViewDemoViewController2.m in Sources */,
 				A6C5D23422AC249800D63D1C /* SJRemoteCommandHandler.m in Sources */,
+				77B94801262991FC001635AA /* SJDYUserHomepageViewController.m in Sources */,
 				77357E622375523C00B81EE4 /* SJSubtitlesTestViewController.m in Sources */,
 				7784A7FA237D3860000BA67E /* SJBarrageTestViewController.m in Sources */,
 				77EEC765262417A00066B57D /* SJFloatSmallViewTransitionController.m in Sources */,
@@ -1151,7 +1172,6 @@
 				774AF08722DC790D005FE462 /* SJView.m in Sources */,
 				77391C46246801D100443844 /* SJExtendedMediaCollectionViewModel.m in Sources */,
 				A6A2090322AB9EE6001ED610 /* LWZTableSectionShrinker.m in Sources */,
-				7700905F24988F6900A99906 /* SJDYUserHomepageViewController.m in Sources */,
 				7700905C24988F6900A99906 /* SJDYPlaybackListViewController.m in Sources */,
 				77391C292467DFA500443844 /* SJTopView.m in Sources */,
 				7756F58522E173D400F9DC7D /* SJTestViewController.m in Sources */,

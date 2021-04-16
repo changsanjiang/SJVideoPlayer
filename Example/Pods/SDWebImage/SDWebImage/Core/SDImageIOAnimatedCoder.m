@@ -13,6 +13,7 @@
 #import "SDImageCoderHelper.h"
 #import "SDAnimatedImageRep.h"
 #import "UIImage+ForceDecode.h"
+#import "SDInternalMacros.h"
 
 // Specify DPI for vector format in CGImageSource, like PDF
 static NSString * kSDCGImageSourceRasterizationDPI = @"kCGImageSourceRasterizationDPI";
@@ -29,6 +30,9 @@ static NSString * kSDCGImageDestinationRequestedFileSize = @"kCGImageDestination
 @implementation SDImageIOCoderFrame
 @end
 
+static BOOL applicationWillTerminate = NO;
+SD_LOCK_DECLARE_STATIC(applicationWillTerminateLock);
+
 @implementation SDImageIOAnimatedCoder {
     size_t _width, _height;
     CGImageSourceRef _imageSource;
@@ -42,8 +46,39 @@ static NSString * kSDCGImageDestinationRequestedFileSize = @"kCGImageDestination
     CGSize _thumbnailSize;
 }
 
-- (void)dealloc
-{
++ (void)initialize {
+    if (self == SDImageIOAnimatedCoder.class) {
+        SD_LOCK_INIT(applicationWillTerminateLock);
+#if SD_UIKIT
+        [[NSNotificationCenter defaultCenter] addObserver:self
+                                                 selector:@selector(applicationWillTerminate:)
+                                                     name:UIApplicationWillTerminateNotification
+                                                   object:nil];
+
+#endif
+#if SD_MAC
+        [[NSNotificationCenter defaultCenter] addObserver:self
+                                                 selector:@selector(applicationWillTerminate:)
+                                                     name:NSApplicationWillTerminateNotification
+                                                   object:nil];
+#endif
+    }
+}
+
++ (void)applicationWillTerminate:(NSNotification *)notification {
+    SD_LOCK(applicationWillTerminateLock);
+    applicationWillTerminate = YES;
+    SD_UNLOCK(applicationWillTerminateLock);
+}
+
++ (BOOL)willTerminate {
+    SD_LOCK(applicationWillTerminateLock);
+    BOOL willTerminate = applicationWillTerminate;
+    SD_UNLOCK(applicationWillTerminateLock);
+    return willTerminate;
+}
+
+- (void)dealloc {
     if (_imageSource) {
         CFRelease(_imageSource);
         _imageSource = NULL;
@@ -53,8 +88,7 @@ static NSString * kSDCGImageDestinationRequestedFileSize = @"kCGImageDestination
 #endif
 }
 
-- (void)didReceiveMemoryWarning:(NSNotification *)notification
-{
+- (void)didReceiveMemoryWarning:(NSNotification *)notification {
     if (_imageSource) {
         for (size_t i = 0; i < _frameCount; i++) {
             CGImageSourceRemoveCacheAtIndex(_imageSource, i);
@@ -188,6 +222,11 @@ static NSString * kSDCGImageDestinationRequestedFileSize = @"kCGImageDestination
 }
 
 + (UIImage *)createFrameAtIndex:(NSUInteger)index source:(CGImageSourceRef)source scale:(CGFloat)scale preserveAspectRatio:(BOOL)preserveAspectRatio thumbnailSize:(CGSize)thumbnailSize options:(NSDictionary *)options {
+    // Earily return when application will be terminated.
+    if (SDImageIOAnimatedCoder.willTerminate) {
+        return nil;
+    }
+    
     // Some options need to pass to `CGImageSourceCopyPropertiesAtIndex` before `CGImageSourceCreateImageAtIndex`, or ImageIO will ignore them because they parse once :)
     // Parse the image properties
     NSDictionary *properties = (__bridge_transfer NSDictionary *)CGImageSourceCopyPropertiesAtIndex(source, index, (__bridge CFDictionaryRef)options);
@@ -375,11 +414,11 @@ static NSString * kSDCGImageDestinationRequestedFileSize = @"kCGImageDestination
         CGSize thumbnailSize = CGSizeZero;
         NSValue *thumbnailSizeValue = options[SDImageCoderDecodeThumbnailPixelSize];
         if (thumbnailSizeValue != nil) {
-    #if SD_MAC
+#if SD_MAC
             thumbnailSize = thumbnailSizeValue.sizeValue;
-    #else
+#else
             thumbnailSize = thumbnailSizeValue.CGSizeValue;
-    #endif
+#endif
         }
         _thumbnailSize = thumbnailSize;
         BOOL preserveAspectRatio = YES;
@@ -396,6 +435,10 @@ static NSString * kSDCGImageDestinationRequestedFileSize = @"kCGImageDestination
 }
 
 - (void)updateIncrementalData:(NSData *)data finished:(BOOL)finished {
+    // Earily return when application will be terminated.
+    if (SDImageIOAnimatedCoder.willTerminate) {
+        return;
+    }
     if (_finished) {
         return;
     }
@@ -655,7 +698,7 @@ static NSString * kSDCGImageDestinationRequestedFileSize = @"kCGImageDestination
         return nil;
     }
     image.sd_imageFormat = self.class.imageFormat;
-    image.sd_isDecoded = YES;;
+    image.sd_isDecoded = YES;
     return image;
 }
 

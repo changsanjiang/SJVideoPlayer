@@ -117,6 +117,7 @@
 		29C5E1AF8AE16F1F32B96B212AC91C37 /* UIColor+SDHexString.m in Sources */ = {isa = PBXBuildFile; fileRef = 5EE43EBC3BC72F91C049497F1054DB3B /* UIColor+SDHexString.m */; };
 		2A0F1729EE17550AB4FE5F5EC7CCAC74 /* SJSubtitlesPromptController.m in Sources */ = {isa = PBXBuildFile; fileRef = 1D806745BFFD04E44605D80E29A94F95 /* SJSubtitlesPromptController.m */; };
 		2A1A99CEFE27204DBB115FEB3B1FD314 /* HLSContentTs.h in Headers */ = {isa = PBXBuildFile; fileRef = 4BEDC631C46E4EB59ED7A74931966622 /* HLSContentTs.h */; settings = {ATTRIBUTES = (Project, ); }; };
+		2CFCB4CF85B49C6B63BB759EA9D76575 /* GCDAsyncSocket.m in Sources */ = {isa = PBXBuildFile; fileRef = 8A5145CA524CCC8493240639292AF4C4 /* GCDAsyncSocket.m */; };
 		2D3F2E1463A243E0CF6B9CF58319AA09 /* SJVideoPlayer.m in Sources */ = {isa = PBXBuildFile; fileRef = 8C6D0BD99B56E4327A147144EB10F0CE /* SJVideoPlayer.m */; };
 		2D9DC33A472BFA8832FC944DC617C7AD /* SJBaseProtocols.h in Headers */ = {isa = PBXBuildFile; fileRef = E7EF31E720B44E6BF1D0862C013C9335 /* SJBaseProtocols.h */; settings = {ATTRIBUTES = (Project, ); }; };
 		2DB99E87328AB7C1FD3162AA94B0D3E7 /* NSButton+WebCache.h in Headers */ = {isa = PBXBuildFile; fileRef = 19C23103531AF95EB428D7D58B4234B7 /* NSButton+WebCache.h */; settings = {ATTRIBUTES = (Project, ); }; };
@@ -126,6 +127,7 @@
 		2EBF3535445644EAF525DB8990928271 /* MJRefreshFooter.m in Sources */ = {isa = PBXBuildFile; fileRef = 9727454E04EF84D47004157840466851 /* MJRefreshFooter.m */; settings = {COMPILER_FLAGS = "-w -Xanalyzer -analyzer-disable-all-checks"; }; };
 		2ECB81FC72C7BB5040F10C021225ADED /* SDInternalMacros.m in Sources */ = {isa = PBXBuildFile; fileRef = 1F7F29E24AF32983D2B40821541E8043 /* SDInternalMacros.m */; };
 		2ED00FC79A0A13785121B0478E945DD9 /* HTTPConnection.m in Sources */ = {isa = PBXBuildFile; fileRef = 1C9B35D7FF2CF10C0367D7BA3B343EAE /* HTTPConnection.m */; };
+		2EF451A980660F39F52CFE588EEC8F68 /* CocoaAsyncSocket-dummy.m in Sources */ = {isa = PBXBuildFile; fileRef = 35E70A6011FB1C3E7D09EB566E0F1B96 /* CocoaAsyncSocket-dummy.m */; };
 		2F085555A1BEE8638F3B1EFF1686E4D3 /* HLSReader.m in Sources */ = {isa = PBXBuildFile; fileRef = 9F840E3DA338DACD65BBDA02C5F10449 /* HLSReader.m */; };
 		2F0C010896955643EF27993D7C6C66AF /* SJFlipTransitionManagerDefines.h in Headers */ = {isa = PBXBuildFile; fileRef = D78AFFD77961193A1F175E6977693911 /* SJFlipTransitionManagerDefines.h */; settings = {ATTRIBUTES = (Project, ); }; };
 		2F3AA1EE09554C3B9EB77DC8DF192EE7 /* SJPresentationQueue.m in Sources */ = {isa = PBXBuildFile; fileRef = 422F4909F71844826F93015FDBC4ACB2 /* SJPresentationQueue.m */; };
@@ -157,7 +159,6 @@
 		38FC6723C49AC10FF5CAF0243CE6A1CC /* SJVideoPlayerClipsConfig.m in Sources */ = {isa = PBXBuildFile; fileRef = DB600A2B5CA714871D134C967B74BAB5 /* SJVideoPlayerClipsConfig.m */; };
 		390E8375B19FF12764C5AA730AF0F0F4 /* View+MASAdditions.m in Sources */ = {isa = PBXBuildFile; fileRef = CEE0804F6A32C8826A489B9B4111C5E2 /* View+MASAdditions.m */; settings = {COMPILER_FLAGS = "-w -Xanalyzer -analyzer-disable-all-checks"; }; };
 		3999613F3A4F703ADF0EC8F539968166 /* UIView+SJAnimationAdded.h in Headers */ = {isa = PBXBuildFile; fileRef = A39ECDB4D940A8F2ACAD1ED0506B242E /* UIView+SJAnimationAdded.h */; settings = {ATTRIBUTES = (Project, ); }; };
-		3A25A0B031EDD3B74BB39D3AD8967E3D /* GCDAsyncUdpSocket.m in Sources */ = {isa = PBXBuildFile; fileRef = 98C32D5DA32A3839B57001BD7E7A3E02 /* GCDAsyncUdpSocket.m */; settings = {COMPILER_FLAGS = "-DOS_OBJECT_USE_OBJC=0"; }; };
 		3A8C2F88BC19E0501773F158EB4ABF88 /* SJVideoPlayerClipsParameters.h in Headers */ = {isa = PBXBuildFile; fileRef = 46C824C75366318E5288BBF888AD5FB2 /* SJVideoPlayerClipsParameters.h */; settings = {ATTRIBUTES = (Project, ); }; };
 		3A9FAA5BD20B70FCB5966FD24C6152F4 /* SDImageFrame.m in Sources */ = {isa = PBXBuildFile; fileRef = 4D57ECE2C1BE2DA1AD06B2B7456B9576 /* SDImageFrame.m */; };
 		3B01BA3DBFB639ECC900A847CD54F34D /* SJAVMediaPlayerLoader.m in Sources */ = {isa = PBXBuildFile; fileRef = F0F3DED5AE8214AC82E416626CE048FA /* SJAVMediaPlayerLoader.m */; };
@@ -214,7 +215,6 @@
 		49ABC48273FA0DAD67A1499AD65AAC1D /* SJViewControllerManager.h in Headers */ = {isa = PBXBuildFile; fileRef = B7EB7E7B6538A10231D9676DADC8498D /* SJViewControllerManager.h */; settings = {ATTRIBUTES = (Project, ); }; };
 		49AE91BBFA543D0F1246B767B381E306 /* SJBaseCollectionReusableView.h in Headers */ = {isa = PBXBuildFile; fileRef = EB5A6BA4CB18EA94F2C0DCDFA4E1F10D /* SJBaseCollectionReusableView.h */; settings = {ATTRIBUTES = (Project, ); }; };
 		4A902A0B2167B7EFF593834F41B2EC0C /* SDWebImageManager.h in Headers */ = {isa = PBXBuildFile; fileRef = 266B55D4D53CE3CBE710E2DBE85B1088 /* SDWebImageManager.h */; settings = {ATTRIBUTES = (Project, ); }; };
-		4B3964B71F74D3D48482B3D853DA94E5 /* GCDAsyncSocket.m in Sources */ = {isa = PBXBuildFile; fileRef = 8A5145CA524CCC8493240639292AF4C4 /* GCDAsyncSocket.m */; settings = {COMPILER_FLAGS = "-DOS_OBJECT_USE_OBJC=0"; }; };
 		4B85780D2FB7D7569F9535F4AD913BF5 /* NSURLRequest+MCS.h in Headers */ = {isa = PBXBuildFile; fileRef = 7BFBC35F7F24F7B96CA1E8C907DE852B /* NSURLRequest+MCS.h */; settings = {ATTRIBUTES = (Project, ); }; };
 		4BA5BB5F687E579346F7C44661D98830 /* UIScrollView+SJBaseVideoPlayerExtended.h in Headers */ = {isa = PBXBuildFile; fileRef = 37A81AC2BE53175A54F72DD1A8F94643 /* UIScrollView+SJBaseVideoPlayerExtended.h */; settings = {ATTRIBUTES = (Project, ); }; };
 		4BC9351E4F674C10003BAD866DABE7C7 /* MCSContents.h in Headers */ = {isa = PBXBuildFile; fileRef = 934A884AC3A38FDAE56C8ED1B33FC579 /* MCSContents.h */; settings = {ATTRIBUTES = (Project, ); }; };
@@ -284,6 +284,7 @@
 		5D99006D6C33BDEC46599F810EF7F630 /* SJFloatSmallViewControllerDefines.h in Headers */ = {isa = PBXBuildFile; fileRef = DC94B52B7921158B5FFA7F3A4743105C /* SJFloatSmallViewControllerDefines.h */; settings = {ATTRIBUTES = (Project, ); }; };
 		5E09F160BDC1180231FFFD4E9CEF070A /* UIScrollView+MJRefresh.h in Headers */ = {isa = PBXBuildFile; fileRef = D74A3DB0C9288CDAE3B9605D5CD98BE9 /* UIScrollView+MJRefresh.h */; settings = {ATTRIBUTES = (Project, ); }; };
 		5E158E376FDF57A748D2A3514A84BFD8 /* SJLoadingViewDefines.h in Headers */ = {isa = PBXBuildFile; fileRef = D038BED15C69F6B4B88BFF462D3E440F /* SJLoadingViewDefines.h */; settings = {ATTRIBUTES = (Project, ); }; };
+		5E2500118A397A383D4018C3DF7F0583 /* GCDAsyncUdpSocket.m in Sources */ = {isa = PBXBuildFile; fileRef = 98C32D5DA32A3839B57001BD7E7A3E02 /* GCDAsyncUdpSocket.m */; };
 		5F861CE0A0D6AE20ED64761FC369E6E5 /* SJRouteObject.m in Sources */ = {isa = PBXBuildFile; fileRef = B358226556B5F97373B98CF33F2DEE12 /* SJRouteObject.m */; };
 		604757858CD0570DA88BBFC6CBD3F97E /* SJBarrageQueueController.h in Headers */ = {isa = PBXBuildFile; fileRef = 715B8C94BBEB033876D9DF3695A21639 /* SJBarrageQueueController.h */; settings = {ATTRIBUTES = (Project, ); }; };
 		608320766ED3066F8080E29D8BE0E1C6 /* SDFileAttributeHelper.m in Sources */ = {isa = PBXBuildFile; fileRef = 03E75095428DC90A5F93512F51A64794 /* SDFileAttributeHelper.m */; };
@@ -711,7 +712,6 @@
 		F92BB0328A9C33863DADFD14B0DBBD90 /* SJClipsGIFRecordsControlLayer.h in Headers */ = {isa = PBXBuildFile; fileRef = 8DDCA9C09DA65845ACB1BE42BCA013EC /* SJClipsGIFRecordsControlLayer.h */; settings = {ATTRIBUTES = (Project, ); }; };
 		F9D7205C29CE19300D4AB9D4014BD276 /* YYClassInfo.h in Headers */ = {isa = PBXBuildFile; fileRef = 28CE96864DBDE56BD8C22859C71CB60E /* YYClassInfo.h */; settings = {ATTRIBUTES = (Project, ); }; };
 		FA066D2B0CECD5D03FDA7EE6CBC45185 /* HLSAsset.m in Sources */ = {isa = PBXBuildFile; fileRef = D16EBF331B8382E1A3CABC897FE59E17 /* HLSAsset.m */; };
-		FA4347EF4A800F16CE57D834D4859D8D /* CocoaAsyncSocket-dummy.m in Sources */ = {isa = PBXBuildFile; fileRef = 35E70A6011FB1C3E7D09EB566E0F1B96 /* CocoaAsyncSocket-dummy.m */; };
 		FA7DFB408F4A73B37749C8A3D730F903 /* SDImageLoadersManager.h in Headers */ = {isa = PBXBuildFile; fileRef = 2869644BC221888BB42A0DF7FFE50DE5 /* SDImageLoadersManager.h */; settings = {ATTRIBUTES = (Project, ); }; };
 		FB3CA83767E075F24E193639316E7C97 /* SJVideoPlayer-dummy.m in Sources */ = {isa = PBXBuildFile; fileRef = 655EB80F8612533701711086FD8879FD /* SJVideoPlayer-dummy.m */; };
 		FB8776D4CD1789DCE6F3F8F36B1ADA13 /* MCSAssetUsageLog.m in Sources */ = {isa = PBXBuildFile; fileRef = 9F2DCDF678CD480DAA83F966D674BD65 /* MCSAssetUsageLog.m */; };
@@ -3863,7 +3863,7 @@
 			buildConfigurationList = BF535641E00BECC6FFAF53CFB25A8755 /* Build configuration list for PBXNativeTarget "CocoaAsyncSocket" */;
 			buildPhases = (
 				83268A4608982FCFF93FA48DCC883251 /* Headers */,
-				A6B708BDDA38EEF515F2383D1BB1E85A /* Sources */,
+				EE677DEB0818C5AF1142B26C6F07EB02 /* Sources */,
 				20BA100C85EA53F9E47A90738553B93B /* Frameworks */,
 			);
 			buildRules = (
@@ -4322,16 +4322,6 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
-		A6B708BDDA38EEF515F2383D1BB1E85A /* Sources */ = {
-			isa = PBXSourcesBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-				FA4347EF4A800F16CE57D834D4859D8D /* CocoaAsyncSocket-dummy.m in Sources */,
-				4B3964B71F74D3D48482B3D853DA94E5 /* GCDAsyncSocket.m in Sources */,
-				3A25A0B031EDD3B74BB39D3AD8967E3D /* GCDAsyncUdpSocket.m in Sources */,
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-		};
 		CFC5B708500C4F263E3F64832F5ABAEA /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
@@ -4514,6 +4504,16 @@
 			buildActionMask = 2147483647;
 			files = (
 				DF046830BBE9B67E21F8F21EC3BF276F /* Pods-SJVideoPlayer_Example-dummy.m in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		EE677DEB0818C5AF1142B26C6F07EB02 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				2EF451A980660F39F52CFE588EEC8F68 /* CocoaAsyncSocket-dummy.m in Sources */,
+				2CFCB4CF85B49C6B63BB759EA9D76575 /* GCDAsyncSocket.m in Sources */,
+				5E2500118A397A383D4018C3DF7F0583 /* GCDAsyncUdpSocket.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -4872,28 +4872,6 @@
 			};
 			name = Debug;
 		};
-		27E2325CC9679DB5646A88BD0B79FE79 /* Debug */ = {
-			isa = XCBuildConfiguration;
-			baseConfigurationReference = 6C139C3F7676C8DEA669E6510C61CEF1 /* CocoaAsyncSocket.debug.xcconfig */;
-			buildSettings = {
-				"CODE_SIGN_IDENTITY[sdk=appletvos*]" = "";
-				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "";
-				"CODE_SIGN_IDENTITY[sdk=watchos*]" = "";
-				GCC_PREFIX_HEADER = "Target Support Files/CocoaAsyncSocket/CocoaAsyncSocket-prefix.pch";
-				IPHONEOS_DEPLOYMENT_TARGET = 9.0;
-				OTHER_LDFLAGS = "";
-				OTHER_LIBTOOLFLAGS = "";
-				PRIVATE_HEADERS_FOLDER_PATH = "";
-				PRODUCT_MODULE_NAME = CocoaAsyncSocket;
-				PRODUCT_NAME = CocoaAsyncSocket;
-				PUBLIC_HEADERS_FOLDER_PATH = "";
-				SDKROOT = iphoneos;
-				SKIP_INSTALL = YES;
-				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "$(inherited) ";
-				TARGETED_DEVICE_FAMILY = "1,2";
-			};
-			name = Debug;
-		};
 		2911C19FBA05F06BE52E8826776F3F4A /* Debug */ = {
 			isa = XCBuildConfiguration;
 			baseConfigurationReference = 727DB2283D544FDCEB69CB998DEF72BD /* SJFullscreenPopGesture.debug.xcconfig */;
@@ -5030,6 +5008,29 @@
 			};
 			name = Debug;
 		};
+		48008434201DBC77F199FEE9462B12ED /* Release */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReference = 880E4396CE3748B426DCBE6851EDFC73 /* CocoaAsyncSocket.release.xcconfig */;
+			buildSettings = {
+				"CODE_SIGN_IDENTITY[sdk=appletvos*]" = "";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "";
+				"CODE_SIGN_IDENTITY[sdk=watchos*]" = "";
+				GCC_PREFIX_HEADER = "Target Support Files/CocoaAsyncSocket/CocoaAsyncSocket-prefix.pch";
+				IPHONEOS_DEPLOYMENT_TARGET = 9.0;
+				OTHER_LDFLAGS = "";
+				OTHER_LIBTOOLFLAGS = "";
+				PRIVATE_HEADERS_FOLDER_PATH = "";
+				PRODUCT_MODULE_NAME = CocoaAsyncSocket;
+				PRODUCT_NAME = CocoaAsyncSocket;
+				PUBLIC_HEADERS_FOLDER_PATH = "";
+				SDKROOT = iphoneos;
+				SKIP_INSTALL = YES;
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "$(inherited) ";
+				TARGETED_DEVICE_FAMILY = "1,2";
+				VALIDATE_PRODUCT = YES;
+			};
+			name = Release;
+		};
 		489826CB57F823D795569C4C26BB2209 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			baseConfigurationReference = D26B68DF9D9AD97C69EDD590CC2822DE /* SJBaseVideoPlayer.debug.xcconfig */;
@@ -5048,6 +5049,28 @@
 				PRIVATE_HEADERS_FOLDER_PATH = "";
 				PRODUCT_MODULE_NAME = SJBaseVideoPlayer;
 				PRODUCT_NAME = SJBaseVideoPlayer;
+				PUBLIC_HEADERS_FOLDER_PATH = "";
+				SDKROOT = iphoneos;
+				SKIP_INSTALL = YES;
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "$(inherited) ";
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Debug;
+		};
+		5143DB530E4F598359569FA3DA3C39B5 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReference = 6C139C3F7676C8DEA669E6510C61CEF1 /* CocoaAsyncSocket.debug.xcconfig */;
+			buildSettings = {
+				"CODE_SIGN_IDENTITY[sdk=appletvos*]" = "";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "";
+				"CODE_SIGN_IDENTITY[sdk=watchos*]" = "";
+				GCC_PREFIX_HEADER = "Target Support Files/CocoaAsyncSocket/CocoaAsyncSocket-prefix.pch";
+				IPHONEOS_DEPLOYMENT_TARGET = 9.0;
+				OTHER_LDFLAGS = "";
+				OTHER_LIBTOOLFLAGS = "";
+				PRIVATE_HEADERS_FOLDER_PATH = "";
+				PRODUCT_MODULE_NAME = CocoaAsyncSocket;
+				PRODUCT_NAME = CocoaAsyncSocket;
 				PUBLIC_HEADERS_FOLDER_PATH = "";
 				SDKROOT = iphoneos;
 				SKIP_INSTALL = YES;
@@ -5079,28 +5102,6 @@
 			};
 			name = Release;
 		};
-		5DE630FB78E4B3B3EC9E52F3827315E4 /* Debug */ = {
-			isa = XCBuildConfiguration;
-			baseConfigurationReference = E5AA174BA60C14D69580351B098515D1 /* SDWebImage.debug.xcconfig */;
-			buildSettings = {
-				"CODE_SIGN_IDENTITY[sdk=appletvos*]" = "";
-				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "";
-				"CODE_SIGN_IDENTITY[sdk=watchos*]" = "";
-				GCC_PREFIX_HEADER = "Target Support Files/SDWebImage/SDWebImage-prefix.pch";
-				IPHONEOS_DEPLOYMENT_TARGET = 9.0;
-				OTHER_LDFLAGS = "";
-				OTHER_LIBTOOLFLAGS = "";
-				PRIVATE_HEADERS_FOLDER_PATH = "";
-				PRODUCT_MODULE_NAME = SDWebImage;
-				PRODUCT_NAME = SDWebImage;
-				PUBLIC_HEADERS_FOLDER_PATH = "";
-				SDKROOT = iphoneos;
-				SKIP_INSTALL = YES;
-				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "$(inherited) ";
-				TARGETED_DEVICE_FAMILY = "1,2";
-			};
-			name = Debug;
-		};
 		69A63359CD786F7C70D9685F692F6D63 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			baseConfigurationReference = B66BAE0E6D2328E826BBB9F6D9B80B34 /* SJVideoPlayer.debug.xcconfig */;
@@ -5122,6 +5123,29 @@
 				TARGETED_DEVICE_FAMILY = "1,2";
 			};
 			name = Debug;
+		};
+		6B35E8482A7E09B435AFCE486B003D5E /* Release */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReference = 49D88F3249DF866E193A506FDF76EBFF /* SDWebImage.release.xcconfig */;
+			buildSettings = {
+				"CODE_SIGN_IDENTITY[sdk=appletvos*]" = "";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "";
+				"CODE_SIGN_IDENTITY[sdk=watchos*]" = "";
+				GCC_PREFIX_HEADER = "Target Support Files/SDWebImage/SDWebImage-prefix.pch";
+				IPHONEOS_DEPLOYMENT_TARGET = 9.0;
+				OTHER_LDFLAGS = "";
+				OTHER_LIBTOOLFLAGS = "";
+				PRIVATE_HEADERS_FOLDER_PATH = "";
+				PRODUCT_MODULE_NAME = SDWebImage;
+				PRODUCT_NAME = SDWebImage;
+				PUBLIC_HEADERS_FOLDER_PATH = "";
+				SDKROOT = iphoneos;
+				SKIP_INSTALL = YES;
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "$(inherited) ";
+				TARGETED_DEVICE_FAMILY = "1,2";
+				VALIDATE_PRODUCT = YES;
+			};
+			name = Release;
 		};
 		801ABBD3DFE67DD1095BF20FB152D4A3 /* Release */ = {
 			isa = XCBuildConfiguration;
@@ -5160,6 +5184,28 @@
 				PRIVATE_HEADERS_FOLDER_PATH = "";
 				PRODUCT_MODULE_NAME = YYModel;
 				PRODUCT_NAME = YYModel;
+				PUBLIC_HEADERS_FOLDER_PATH = "";
+				SDKROOT = iphoneos;
+				SKIP_INSTALL = YES;
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "$(inherited) ";
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Debug;
+		};
+		8D8083A979AA81D1EB9B2D067369D144 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReference = E5AA174BA60C14D69580351B098515D1 /* SDWebImage.debug.xcconfig */;
+			buildSettings = {
+				"CODE_SIGN_IDENTITY[sdk=appletvos*]" = "";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "";
+				"CODE_SIGN_IDENTITY[sdk=watchos*]" = "";
+				GCC_PREFIX_HEADER = "Target Support Files/SDWebImage/SDWebImage-prefix.pch";
+				IPHONEOS_DEPLOYMENT_TARGET = 9.0;
+				OTHER_LDFLAGS = "";
+				OTHER_LIBTOOLFLAGS = "";
+				PRIVATE_HEADERS_FOLDER_PATH = "";
+				PRODUCT_MODULE_NAME = SDWebImage;
+				PRODUCT_NAME = SDWebImage;
 				PUBLIC_HEADERS_FOLDER_PATH = "";
 				SDKROOT = iphoneos;
 				SKIP_INSTALL = YES;
@@ -5298,29 +5344,6 @@
 			};
 			name = Release;
 		};
-		D0E37D433D8D53B9D8041261A5CED1CD /* Release */ = {
-			isa = XCBuildConfiguration;
-			baseConfigurationReference = 49D88F3249DF866E193A506FDF76EBFF /* SDWebImage.release.xcconfig */;
-			buildSettings = {
-				"CODE_SIGN_IDENTITY[sdk=appletvos*]" = "";
-				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "";
-				"CODE_SIGN_IDENTITY[sdk=watchos*]" = "";
-				GCC_PREFIX_HEADER = "Target Support Files/SDWebImage/SDWebImage-prefix.pch";
-				IPHONEOS_DEPLOYMENT_TARGET = 9.0;
-				OTHER_LDFLAGS = "";
-				OTHER_LIBTOOLFLAGS = "";
-				PRIVATE_HEADERS_FOLDER_PATH = "";
-				PRODUCT_MODULE_NAME = SDWebImage;
-				PRODUCT_NAME = SDWebImage;
-				PUBLIC_HEADERS_FOLDER_PATH = "";
-				SDKROOT = iphoneos;
-				SKIP_INSTALL = YES;
-				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "$(inherited) ";
-				TARGETED_DEVICE_FAMILY = "1,2";
-				VALIDATE_PRODUCT = YES;
-			};
-			name = Release;
-		};
 		E27D77F7C6917A00F6A4E167BDC064C6 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			baseConfigurationReference = 780634E729C4D79FBA038A7CA9ED0127 /* Pods-SJVideoPlayer_Example.debug.xcconfig */;
@@ -5340,29 +5363,6 @@
 				TARGETED_DEVICE_FAMILY = "1,2";
 			};
 			name = Debug;
-		};
-		F7D027652B5EDA6EB34612D3495F2921 /* Release */ = {
-			isa = XCBuildConfiguration;
-			baseConfigurationReference = 880E4396CE3748B426DCBE6851EDFC73 /* CocoaAsyncSocket.release.xcconfig */;
-			buildSettings = {
-				"CODE_SIGN_IDENTITY[sdk=appletvos*]" = "";
-				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "";
-				"CODE_SIGN_IDENTITY[sdk=watchos*]" = "";
-				GCC_PREFIX_HEADER = "Target Support Files/CocoaAsyncSocket/CocoaAsyncSocket-prefix.pch";
-				IPHONEOS_DEPLOYMENT_TARGET = 9.0;
-				OTHER_LDFLAGS = "";
-				OTHER_LIBTOOLFLAGS = "";
-				PRIVATE_HEADERS_FOLDER_PATH = "";
-				PRODUCT_MODULE_NAME = CocoaAsyncSocket;
-				PRODUCT_NAME = CocoaAsyncSocket;
-				PUBLIC_HEADERS_FOLDER_PATH = "";
-				SDKROOT = iphoneos;
-				SKIP_INSTALL = YES;
-				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "$(inherited) ";
-				TARGETED_DEVICE_FAMILY = "1,2";
-				VALIDATE_PRODUCT = YES;
-			};
-			name = Release;
 		};
 /* End XCBuildConfiguration section */
 
@@ -5460,8 +5460,8 @@
 		B1FA491365904802AD9D5BF4683066A6 /* Build configuration list for PBXNativeTarget "SDWebImage" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
-				5DE630FB78E4B3B3EC9E52F3827315E4 /* Debug */,
-				D0E37D433D8D53B9D8041261A5CED1CD /* Release */,
+				8D8083A979AA81D1EB9B2D067369D144 /* Debug */,
+				6B35E8482A7E09B435AFCE486B003D5E /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
@@ -5469,8 +5469,8 @@
 		BF535641E00BECC6FFAF53CFB25A8755 /* Build configuration list for PBXNativeTarget "CocoaAsyncSocket" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
-				27E2325CC9679DB5646A88BD0B79FE79 /* Debug */,
-				F7D027652B5EDA6EB34612D3495F2921 /* Release */,
+				5143DB530E4F598359569FA3DA3C39B5 /* Debug */,
+				48008434201DBC77F199FEE9462B12ED /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;

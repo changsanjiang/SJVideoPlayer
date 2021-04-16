@@ -1,10 +1,10 @@
 PODS:
-  - CocoaAsyncSocket (7.6.4)
+  - CocoaAsyncSocket (7.6.5)
   - Masonry (1.1.0)
   - MJRefresh (3.4.3)
-  - SDWebImage (5.9.5):
-    - SDWebImage/Core (= 5.9.5)
-  - SDWebImage/Core (5.9.5)
+  - SDWebImage (5.11.0):
+    - SDWebImage/Core (= 5.11.0)
+  - SDWebImage/Core (5.11.0)
   - SJBaseVideoPlayer (3.6.0):
     - Masonry
     - SJBaseVideoPlayer/AVPlayer (= 3.6.0)
@@ -158,10 +158,10 @@ EXTERNAL SOURCES:
     :path: "../../SJVideoPlayer"
 
 SPEC CHECKSUMS:
-  CocoaAsyncSocket: 694058e7c0ed05a9e217d1b3c7ded962f4180845
+  CocoaAsyncSocket: 065fd1e645c7abab64f7a6a2007a48038fdc6a99
   Masonry: 678fab65091a9290e40e2832a55e7ab731aad201
   MJRefresh: 53e3e3219f204425ee6d3e62e8733d3295944cd6
-  SDWebImage: 0b2ba0d56479bf6a45ecddbfd5558bea93150d25
+  SDWebImage: 7acbb57630ac7db4a495547fb73916ff3e432f6b
   SJBaseVideoPlayer: cce3df2362ab1dee82a663394c0af1b9109cb4ac
   SJFullscreenPopGesture: 7be57b1014cb77f4b7c1e6df5e797da6d05dc75d
   SJMediaCacheServer: 74656385db09cf77d76a649143d1f870e344e4e9

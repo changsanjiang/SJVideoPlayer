@@ -125,6 +125,7 @@
 - (NSArray<Item *> *)_DYDemoItems {
     return @[
         [Item.alloc initWithTitle:@"1 DY" subTitle:nil path:@"dy/1"],
+        [Item.alloc initWithTitle:@"2 DYH" subTitle:nil path:@"dy/2"],
     ];
 }
 

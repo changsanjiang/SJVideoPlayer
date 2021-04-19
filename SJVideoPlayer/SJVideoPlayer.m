@@ -176,8 +176,13 @@ NS_ASSUME_NONNULL_BEGIN
     else {
         UIViewController *vc = [self.view lookupResponderForClass:UIViewController.class];
         [vc.view endEditing:YES];
-        vc.presentingViewController ? [vc dismissViewControllerAnimated:YES completion:nil] :
-                                      [vc.navigationController popViewControllerAnimated:YES];
+        if ( vc.navigationController.viewControllers.count > 1 ) {
+            [vc.navigationController popViewControllerAnimated:YES];
+        }
+        else {
+            vc.presentingViewController ? [vc dismissViewControllerAnimated:YES completion:nil] :
+                                          [vc.navigationController popViewControllerAnimated:YES];
+        }
     }
 }
 

@@ -10,10 +10,9 @@
 #import <SJUIKit/SJCornerMask.h>
 #import <SDWebImage/UIImageView+WebCache.h>
 #import <SDWebImage/UIView+WebCache.h>
-#import "SJPlayerSuperImageView.h"
 
 @interface SJVideoTableViewCell ()
-@property (weak, nonatomic) IBOutlet SJPlayerSuperImageView *coverImageView;
+@property (weak, nonatomic) IBOutlet UIImageView *coverImageView;
 @property (weak, nonatomic) IBOutlet UILabel *mediaTitleLabel;
 @property (weak, nonatomic) IBOutlet UIImageView *avatarImageView;
 @property (weak, nonatomic) IBOutlet UILabel *usernameLabel;

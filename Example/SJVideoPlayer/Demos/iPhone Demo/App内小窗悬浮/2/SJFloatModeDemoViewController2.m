@@ -49,7 +49,7 @@
         };
     }
     
-    _player.URLAsset = [[SJVideoPlayerURLAsset alloc] initWithURL:vm.url playModel:[SJPlayModel playModelWithTableView:_tableView indexPath:indexPath]];
+    _player.URLAsset = [[SJVideoPlayerURLAsset alloc] initWithURL:vm.url playModel:[SJPlayModel playModelWithTableView:_tableView indexPath:indexPath superviewKey:@"coverImageView"]];
     _player.URLAsset.title = vm.mediaTitle.string;
 }
 

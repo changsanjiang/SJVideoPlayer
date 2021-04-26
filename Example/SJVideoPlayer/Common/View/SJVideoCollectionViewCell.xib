@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="16096" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES">
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="17701" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES">
     <dependencies>
-        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="16087"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="17703"/>
         <capability name="Safe area layout guides" minToolsVersion="9.0"/>
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
     </dependencies>
@@ -18,7 +18,7 @@
                     <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="vfU-my-kYk">
                         <rect key="frame" x="0.0" y="0.0" width="320" height="266"/>
                         <subviews>
-                            <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="6y0-cS-dqs" customClass="SJPlayerSuperImageView">
+                            <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="6y0-cS-dqs" customClass="UIImageView">
                                 <rect key="frame" x="20" y="16" width="280" height="157.5"/>
                                 <subviews>
                                     <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="play" translatesAutoresizingMaskIntoConstraints="NO" id="NRc-f8-Qwq">
@@ -78,13 +78,13 @@
                     </view>
                 </subviews>
             </view>
+            <viewLayoutGuide key="safeArea" id="pVj-Pk-rJm"/>
             <constraints>
                 <constraint firstItem="vfU-my-kYk" firstAttribute="leading" secondItem="BAJ-k2-4Wn" secondAttribute="leading" id="O1B-5c-rTR"/>
                 <constraint firstItem="vfU-my-kYk" firstAttribute="top" secondItem="BAJ-k2-4Wn" secondAttribute="top" id="XiF-BZ-Uuc"/>
                 <constraint firstAttribute="bottom" secondItem="vfU-my-kYk" secondAttribute="bottom" id="tqD-Do-QFv"/>
                 <constraint firstAttribute="trailing" secondItem="vfU-my-kYk" secondAttribute="trailing" id="xd8-qm-Hyd"/>
             </constraints>
-            <viewLayoutGuide key="safeArea" id="pVj-Pk-rJm"/>
             <size key="customSize" width="332" height="149"/>
             <connections>
                 <outlet property="avatarImageView" destination="6Eu-ud-grn" id="QyD-qe-zWW"/>

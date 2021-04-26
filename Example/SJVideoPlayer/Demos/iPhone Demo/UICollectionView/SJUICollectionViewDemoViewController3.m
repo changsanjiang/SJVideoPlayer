@@ -8,7 +8,6 @@
 
 #import "SJUICollectionViewDemoViewController3.h"
 #import <Masonry/Masonry.h>
-#import "SJPlayerSuperview.h"
 #import <SJUIKit/SJBaseCollectionReusableView.h>
 #import <Masonry/Masonry.h>
 #import "SJSourceURLs.h"
@@ -16,7 +15,7 @@
 @interface SJUICollectionViewSectionFooterView : SJBaseCollectionReusableView
 @property (nonatomic, strong) UIImageView *avatarImageView;
 @property (nonatomic, strong) UILabel *usernameLabel;
-@property (nonatomic, strong) SJPlayerSuperview *playerSuperview;
+@property (nonatomic, strong) UIView *playerSuperview;
 @property (nonatomic, strong) UIImageView *playImageView;
 
 @property (nonatomic, copy, nullable) void(^playerSuperviewWasTapped)(SJUICollectionViewSectionFooterView *headerView);
@@ -46,7 +45,7 @@
             make.centerY.equalTo(self.avatarImageView);
         }];
         
-        _playerSuperview = [SJPlayerSuperview.alloc initWithFrame:CGRectZero];
+        _playerSuperview = [UIView.alloc initWithFrame:CGRectZero];
         _playerSuperview.backgroundColor = UIColor.blackColor;
         [self addSubview:_playerSuperview];
         [_playerSuperview mas_makeConstraints:^(MASConstraintMaker *make) {
@@ -103,7 +102,7 @@
 
         if ( self.player == nil ) self.player = SJVideoPlayer.player;
         
-        self.player.URLAsset = [SJVideoPlayerURLAsset.alloc initWithURL:SourceURL0 playModel:[SJPlayModel playModelWithCollectionView:collectionView inFooterForSection:indexPath.section]];
+        self.player.URLAsset = [SJVideoPlayerURLAsset.alloc initWithURL:SourceURL0 playModel:[SJPlayModel playModelWithCollectionView:collectionView inFooterForSection:indexPath.section superviewKey:@"playerSuperview"]];
     };
     return view;
 }

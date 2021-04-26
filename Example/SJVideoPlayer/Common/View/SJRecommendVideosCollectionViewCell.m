@@ -11,7 +11,7 @@
 NS_ASSUME_NONNULL_BEGIN
 @interface SJRecommendVideosCollectionViewCell ()<UICollectionViewDataSource, UICollectionViewDelegate, UICollectionViewDelegateFlowLayout, SJVideoCollectionViewCellDelegate>
 @property (weak, nonatomic) IBOutlet UICollectionViewFlowLayout *flowLayout;
-@property (weak, nonatomic) IBOutlet SJNestedCollectionView *collectionView;
+@property (weak, nonatomic) IBOutlet UICollectionView *collectionView;
 @end
 
 @implementation SJRecommendVideosCollectionViewCell

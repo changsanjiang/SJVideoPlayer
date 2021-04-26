@@ -1,1 +1,1 @@
-../../../SJBaseVideoPlayer/SJBaseVideoPlayer/Common/Implements/SJBarrageQueueController.h
+../../../../../../SJBaseVideoPlayer/SJBaseVideoPlayer/Common/Implements/SJBarrageQueueController.h

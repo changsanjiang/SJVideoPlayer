@@ -1,1 +1,1 @@
-../../../SJBaseVideoPlayer/SJBaseVideoPlayer/Common/Foundation/NSString+SJBaseVideoPlayerExtended.h
+../../../../../../SJBaseVideoPlayer/SJBaseVideoPlayer/Common/Foundation/NSString+SJBaseVideoPlayerExtended.h

@@ -1,1 +1,1 @@
-../../../SJBaseVideoPlayer/SJBaseVideoPlayer/Common/Implements/SJViewControllerManager.h
+../../../../../../SJBaseVideoPlayer/SJBaseVideoPlayer/Common/Implements/SJViewControllerManager.h

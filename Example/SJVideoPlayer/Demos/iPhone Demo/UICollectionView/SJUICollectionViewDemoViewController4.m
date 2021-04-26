@@ -49,10 +49,12 @@
     SJExtendedMediaCollectionViewModel *video = videos.medias[indexPath.item];
     
     // 视图层次第一层
-    SJPlayModel *playModel = [SJPlayModel playModelWithCollectionView:collectionView indexPath:indexPath];
+    SJPlayModel *playModel = [SJPlayModel playModelWithCollectionView:collectionView indexPath:indexPath superviewKey:@"coverImageView"];
     // 视图层次第二层
-    // 通过`nextPlayModel`把它们链起来. 有多少层, 就链多少层
-    playModel.nextPlayModel = [SJPlayModel playModelWithCollectionView:_collectionView indexPath:[_collectionView indexPathForCell:cell]];
+    // 通过`nextPlayModel`链起来
+    SJPlayModel *next = [SJPlayModel playModelWithCollectionView:_collectionView indexPath:[_collectionView indexPathForCell:cell]];
+    next.scrollViewKey = @"collectionView";
+    playModel.nextPlayModel = next;
     
     // 进行播放
     _player.URLAsset = [[SJVideoPlayerURLAsset alloc] initWithURL:video.url playModel:playModel];

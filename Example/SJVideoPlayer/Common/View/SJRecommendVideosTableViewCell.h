@@ -8,7 +8,7 @@
 
 #import "SJBaseTableViewCell.h"
 #import "SJVideoCollectionViewCell.h"
-#import "SJNestedCollectionView.h"
+
 @protocol SJRecommendVideosTableViewCellDelegate, SJRecommendVideosTableViewCellDataSource, SJExtendedMediaCollectionViewCellDataSource;
 
 NS_ASSUME_NONNULL_BEGIN
@@ -16,7 +16,7 @@ NS_ASSUME_NONNULL_BEGIN
 + (void)registerWithNib:(nullable UINib *)nib tableView:(UITableView *)tableView;
 @property (nonatomic, weak, nullable) id<SJRecommendVideosTableViewCellDataSource> dataSource;
 @property (nonatomic, weak, nullable) id<SJRecommendVideosTableViewCellDelegate> delegate;
-@property (weak, nonatomic) IBOutlet SJNestedCollectionView *collectionView;
+@property (weak, nonatomic) IBOutlet UICollectionView *collectionView;
 @end
 
 @protocol SJRecommendVideosTableViewCellDataSource <NSObject>

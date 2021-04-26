@@ -9,7 +9,7 @@
 #import <UIKit/UIKit.h>
 #import "SJVideoCollectionViewCell.h"
 #import "SJRecommendVideosTableViewCell.h"
-#import "SJNestedCollectionView.h"
+
 @protocol SJRecommendVideosCollectionViewCellDelegate, SJRecommendVideosCollectionViewCellDataSource, SJExtendedMediaCollectionViewCellDataSource;
 
 NS_ASSUME_NONNULL_BEGIN

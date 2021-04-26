@@ -8,9 +8,30 @@
 
 #import "SJUIScrollViewDemoViewController1.h"
 #import <Masonry/Masonry.h>
-#import "SJPlayerSuperview.h"
 #import <SJVideoPlayer/SJVideoPlayer.h>
 #import "SJSourceURLs.h"
+
+@interface SJDemoScrollView1 : UIScrollView
+@property (nonatomic, strong, readonly) UIView *playerSuperview;
+@end
+
+@implementation SJDemoScrollView1
+- (instancetype)initWithFrame:(CGRect)frame {
+    self = [super initWithFrame:frame];
+    if ( self ) {
+        _playerSuperview = [UIView.alloc initWithFrame:CGRectZero];
+        _playerSuperview.backgroundColor = UIColor.redColor;
+        [self addSubview:_playerSuperview];
+        [_playerSuperview mas_makeConstraints:^(MASConstraintMaker *make) {
+            make.top.offset(100);
+            make.centerX.offset(0);
+            make.width.offset(UIScreen.mainScreen.bounds.size.width);
+            make.height.equalTo(_playerSuperview.mas_width).multipliedBy(9/16.0);
+        }];
+    }
+    return self;
+}
+@end
 
 @interface SJUIScrollViewDemoViewController1 ()
 @property (nonatomic, strong) UIScrollView *scrollView;
@@ -24,29 +45,20 @@
     [self _setupViews];
     
     _player = SJVideoPlayer.player;
-    _player.URLAsset = [SJVideoPlayerURLAsset.alloc initWithURL:SourceURL0 playModel:[SJPlayModel playModelWithScrollView:_scrollView]];
+    SJPlayModel *model = [SJPlayModel playModelWithScrollView:_scrollView superviewKey:@"playerSuperview"];
+    _player.URLAsset = [SJVideoPlayerURLAsset.alloc initWithURL:SourceURL0 playModel:model];
     [_player play];
 }
 
 - (void)_setupViews {
     self.edgesForExtendedLayout = UIRectEdgeNone;
     
-    _scrollView = [UIScrollView.alloc initWithFrame:CGRectZero];
+    _scrollView = [SJDemoScrollView1.alloc initWithFrame:CGRectZero];
     _scrollView.contentSize = CGSizeMake(self.view.bounds.size.width, self.view.bounds.size.height * 3);
     _scrollView.backgroundColor = UIColor.purpleColor;
     [self.view addSubview:_scrollView];
     [_scrollView mas_makeConstraints:^(MASConstraintMaker *make) {
         make.edges.offset(0);
-    }];
-    
-    SJPlayerSuperview *playerSuperview = [SJPlayerSuperview.alloc initWithFrame:CGRectZero];
-    playerSuperview.backgroundColor = UIColor.redColor;
-    [_scrollView addSubview:playerSuperview];
-    [playerSuperview mas_makeConstraints:^(MASConstraintMaker *make) {
-        make.top.offset(100);
-        make.left.offset(0);
-        make.width.offset(self.view.bounds.size.width);
-        make.height.equalTo(playerSuperview.mas_width).multipliedBy(9/16.0);
     }];
 }
 

@@ -7,14 +7,13 @@
 //
 
 #import "SJUITableViewDemoViewController2.h"
-#import "SJPlayerSuperview.h" 
 #import <Masonry/Masonry.h>
 #import "SJSourceURLs.h"
 
 @interface SJUITableViewHeaderView : UIView
 @property (nonatomic, strong) UIImageView *avatarImageView;
 @property (nonatomic, strong) UILabel *usernameLabel;
-@property (nonatomic, strong) SJPlayerSuperview *playerSuperview;
+@property (nonatomic, strong) UIView *playerSuperview;
 @property (nonatomic, strong) UIImageView *playImageView;
 
 @property (nonatomic, copy, nullable) void(^playerSuperviewWasTapped)(SJUITableViewHeaderView *headerView);
@@ -44,7 +43,7 @@
             make.centerY.equalTo(self.avatarImageView);
         }];
         
-        _playerSuperview = [SJPlayerSuperview.alloc initWithFrame:CGRectZero];
+        _playerSuperview = [UIView.alloc initWithFrame:CGRectZero];
         _playerSuperview.backgroundColor = UIColor.blackColor;
         [self addSubview:_playerSuperview];
         [_playerSuperview mas_makeConstraints:^(MASConstraintMaker *make) {
@@ -91,7 +90,7 @@
         
         self.player = SJVideoPlayer.player;
         
-        self.player.URLAsset = [SJVideoPlayerURLAsset.alloc initWithURL:SourceURL0 playModel:[SJPlayModel playModelWithTableView:self.tableView tableHeaderView:headerView]];
+        self.player.URLAsset = [SJVideoPlayerURLAsset.alloc initWithURL:SourceURL0 playModel:[SJPlayModel playModelWithTableView:self.tableView tableHeaderView:headerView superviewKey:@"playerSuperview"]];
     };
 }
 - (BOOL)shouldAutorotate {

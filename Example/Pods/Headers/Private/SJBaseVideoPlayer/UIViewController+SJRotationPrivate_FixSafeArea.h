@@ -1,1 +1,1 @@
-../../../SJBaseVideoPlayer/SJBaseVideoPlayer/UIViewController+SJRotationPrivate_FixSafeArea.h
+../../../../../../SJBaseVideoPlayer/SJBaseVideoPlayer/UIViewController+SJRotationPrivate_FixSafeArea.h

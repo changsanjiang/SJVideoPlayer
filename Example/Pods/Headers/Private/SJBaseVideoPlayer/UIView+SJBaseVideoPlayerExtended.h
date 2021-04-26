@@ -1,1 +1,1 @@
-../../../SJBaseVideoPlayer/SJBaseVideoPlayer/Common/UIKit/UIView+SJBaseVideoPlayerExtended.h
+../../../../../../SJBaseVideoPlayer/SJBaseVideoPlayer/Common/UIKit/UIView+SJBaseVideoPlayerExtended.h

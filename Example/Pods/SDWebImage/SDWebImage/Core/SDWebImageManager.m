@@ -313,7 +313,7 @@ static id<SDImageLoader> _defaultImageLoader;
         }
     }
     // Get the original query cache type
-    SDImageCacheType originalQueryCacheType = SDImageCacheTypeNone;
+    SDImageCacheType originalQueryCacheType = SDImageCacheTypeDisk;
     if (context[SDWebImageContextOriginalQueryCacheType]) {
         originalQueryCacheType = [context[SDWebImageContextOriginalQueryCacheType] integerValue];
     }
@@ -332,6 +332,10 @@ static id<SDImageLoader> _defaultImageLoader;
                 // Image combined operation cancelled by user
                 [self callCompletionBlockForOperation:operation completion:completedBlock error:[NSError errorWithDomain:SDWebImageErrorDomain code:SDWebImageErrorCancelled userInfo:@{NSLocalizedDescriptionKey : @"Operation cancelled by user during querying the cache"}] url:url];
                 [self safelyRemoveOperationFromRunning:operation];
+                return;
+            } else if (context[SDWebImageContextImageTransformer] && !cachedImage) {
+                // Original image cache miss. Continue download process
+                [self callDownloadProcessForOperation:operation url:url options:options context:context cachedImage:nil cachedData:nil cacheType:originalQueryCacheType progress:progressBlock completed:completedBlock];
                 return;
             }
                         
@@ -461,7 +465,7 @@ static id<SDImageLoader> _defaultImageLoader;
         storeCacheType = [context[SDWebImageContextStoreCacheType] integerValue];
     }
     // the original store image cache type
-    SDImageCacheType originalStoreCacheType = SDImageCacheTypeNone;
+    SDImageCacheType originalStoreCacheType = SDImageCacheTypeDisk;
     if (context[SDWebImageContextOriginalStoreCacheType]) {
         originalStoreCacheType = [context[SDWebImageContextOriginalStoreCacheType] integerValue];
     }

@@ -59,8 +59,8 @@
     
     NSIndexPath *indexPath = [_tableView indexPathForCell:cell];
     SJVideoCellViewModel *item = _viewModel.tableItems[indexPath.row];
-    SJPlayModel *cellModel = [SJPlayModel playModelWithTableView:_tableView indexPath:indexPath];
-    _player.URLAsset = [[SJVideoPlayerURLAsset alloc] initWithURL:item.url playModel:cellModel];
+    SJPlayModel *playModel = [SJPlayModel playModelWithTableView:_tableView indexPath:indexPath superviewKey:@"coverImageView"];
+    _player.URLAsset = [[SJVideoPlayerURLAsset alloc] initWithURL:item.url playModel:playModel];
 }
 
 - (void)_observePlayerViewAppearState {

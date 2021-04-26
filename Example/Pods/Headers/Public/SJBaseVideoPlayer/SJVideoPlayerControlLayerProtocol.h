@@ -1,1 +1,1 @@
-../../../SJBaseVideoPlayer/SJBaseVideoPlayer/Common/Interfaces/SJVideoPlayerControlLayerProtocol.h
+../../../../../../SJBaseVideoPlayer/SJBaseVideoPlayer/Common/Interfaces/SJVideoPlayerControlLayerProtocol.h

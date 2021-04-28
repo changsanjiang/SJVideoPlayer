@@ -76,12 +76,12 @@
 }
 
 - (void)tap1 {
-    _player.URLAsset = [SJVideoPlayerURLAsset.alloc initWithURL:SourceURL0 playModel:[SJPlayModel playModelWithScrollView:_scrollView superviewKey:@"playerSuperview1"]];
+    _player.URLAsset = [SJVideoPlayerURLAsset.alloc initWithURL:SourceURL0 playModel:[SJPlayModel playModelWithScrollView:_scrollView superviewSelector:@selector(playerSuperview1)]];
     [_player play];
 }
 
 - (void)tap2 {
-    _player.URLAsset = [SJVideoPlayerURLAsset.alloc initWithURL:SourceURL1 playModel:[SJPlayModel playModelWithScrollView:_scrollView superviewKey:@"playerSuperview2"]];
+    _player.URLAsset = [SJVideoPlayerURLAsset.alloc initWithURL:SourceURL1 playModel:[SJPlayModel playModelWithScrollView:_scrollView superviewSelector:@selector(playerSuperview2)]];
     [_player play];
 }
  

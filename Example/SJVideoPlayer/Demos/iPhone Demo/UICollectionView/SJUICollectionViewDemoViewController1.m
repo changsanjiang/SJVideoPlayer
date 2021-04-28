@@ -29,7 +29,7 @@
         _player = [SJVideoPlayer player];
     }
     
-    _player.URLAsset = [[SJVideoPlayerURLAsset alloc] initWithURL:vm.url playModel:[SJPlayModel playModelWithCollectionView:_collectionView indexPath:indexPath superviewKey:@"coverImageView"]];
+    _player.URLAsset = [[SJVideoPlayerURLAsset alloc] initWithURL:vm.url playModel:[SJPlayModel playModelWithCollectionView:_collectionView indexPath:indexPath superviewSelector:NSSelectorFromString(@"coverImageView")]];
     _player.URLAsset.title = vm.mediaTitle.string;
 }
 

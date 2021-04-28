@@ -26,4 +26,8 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic) CGFloat sj_h;
 @property (nonatomic) CGSize sj_size;
 @end
+
+@interface NSObject (SJBaseVideoPlayerExtended)
+- (__kindof UIView *_Nullable)subviewForSelector:(SEL)selector;
+@end
 NS_ASSUME_NONNULL_END

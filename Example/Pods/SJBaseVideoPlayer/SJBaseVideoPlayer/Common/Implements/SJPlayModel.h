@@ -11,16 +11,15 @@
 
 NS_ASSUME_NONNULL_BEGIN
 @interface SJPlayModel: NSObject
-
 /**
- The key is `playerSuperView` key, the playModel will be get superview through KVC.
+ The selector of `playerSuperView`, the playModel will be get superview through the selector.
  
  \code
     /// case 1:
     ///
     /// `playerSuperView` => UICollectionViewCell => UICollectionView
     ///
-    /// The playerSuperview key is `playerSuperview`;
+    /// The selector is @selector(playerSuperview);
     @interface YourCollectionViewCell ()
     @property (nonatomic, strong) UIView *playerSuperview;
     @end
@@ -29,16 +28,16 @@ NS_ASSUME_NONNULL_BEGIN
     ///
     /// `playerSuperview` => UITableViewCell => UITableView
     ///
-    /// The playerSuperview key is `playerSuperview`;
+    /// The selector is @selector(playerSuperview2);
     @interface YourTableViewCell ()
-    @property (nonatomic, strong) UIView *playerSuperview;
+    @property (nonatomic, strong) UIView *playerSuperview2;
     @end
 
     /// case 3:
     ///
     /// `playerSuperview` => UIScrollView
     ///
-    /// The playerSuperview key is `playerSuperview`;
+    /// The selector is @selector(playerSuperview);
     @interface YourScrollView ()
     @property (nonatomic, strong) UIView *playerSuperview;
     @end
@@ -47,7 +46,7 @@ NS_ASSUME_NONNULL_BEGIN
     ///
     /// `playerSuperview` => TableHeaderView
     ///
-    /// The playerSuperview key is `playerSuperview`;
+    /// The selector is @selector(playerSuperview);
     @interface YourTableHeaderView ()
     @property (nonatomic, strong) UIView *playerSuperview;
     @end
@@ -57,7 +56,7 @@ NS_ASSUME_NONNULL_BEGIN
     ///
     /// `playerSuperview` => TableViewSectionHeaderFooterView
     ///
-    /// The playerSuperview key is `playerSuperview`;
+    /// The selector is @selector(playerSuperview);
     @interface YourTableViewSectionHeaderFooterView
     @property (nonatomic, strong) UIView *playerSuperview;
     @end
@@ -69,10 +68,10 @@ NS_ASSUME_NONNULL_BEGIN
 
  \endcode
  */
-@property (nonatomic, copy, nullable) NSString *superviewKey; // kvc
+@property (nonatomic, nullable) SEL superviewSelector;
 
 /**
- The nextPlayModel is used in nested view hierarchy. Specify nested view with `scrollViewKey`.
+ The nextPlayModel is used in nested view hierarchy. Specify nested view with `scrollViewSelector`.
  
  \code
     // view hierarchy case 1:
@@ -87,10 +86,10 @@ NS_ASSUME_NONNULL_BEGIN
     @end
  
     SJPlayModel *next = [SJPlayModel playModelWithCollectionView:(5) indexPath:indexPath for (4)];
-    next.scrollViewKey = (3) key;
+    next.scrollViewSelector = @selector(collectionView); // (3)
 
     SJPlayModel *one = [SJPlayModel playModelWithCollectionView:(3) indexPath:indexPath for (2)];
-    one.playerSuperviewKey = (1) Key;
+    one.superviewSelector = @selector(playerSuperview); // (1)
     one.nextPlayModel = next;
  
     // view hierarchy case 2:
@@ -105,23 +104,57 @@ NS_ASSUME_NONNULL_BEGIN
     @end
 
     SJPlayModel *next = [SJPlayModel playModelWithTableView:(5) indexPath:indexPath for (4)];
-    next.scrollViewKey = (3) key;
+    next.scrollViewSelector = @selector(collectionView); // (3)
 
     SJPlayModel *one = [SJPlayModel playModelWithCollectionView:(3) indexPath:indexPath for (2)];
-    one.playerSuperviewKey = (1) Key;
+    one.superviewSelector = @selector(playerSuperview); // (1)
     one.nextPlayModel = next;
  \endcode
 */
 @property (nonatomic, strong, nullable) __kindof SJPlayModel *nextPlayModel;
 
-///  The scrollViewKey is `UICollectionView` key in the below cases.
-///
-///     `playerSuperView` => UICollectionViewCell => `UICollectionView` => UICollectionViewCell => UICollectionView
-///
-///     `playerSuperview` => UICollectionViewCell => `UICollectionView` => UITableViewCell => UITableView
-///
-@property (nonatomic, copy, nullable) NSString *scrollViewKey; // kvc
+/**
+ The selector of `scrollView` in the below cases.
+ 
+ \code
+    // view hierarchy case 1:
+    //
+    // `playerSuperView`(1) => UICollectionViewCell(2) => `UICollectionView(nested view)`(3) => UICollectionViewCell(4) => UICollectionView(5)
+    @interface YourCollectionViewCell () // (2)
+    @property (nonatomic, strong) UIView *playerSuperview; // (1)
+    @end
 
+    @interface YourCollectionViewCell () // (4)
+    @property (nonatomic, strong) UICollectionView *collectionView; // (3)
+    @end
+
+    SJPlayModel *next = [SJPlayModel playModelWithCollectionView:(5) indexPath:indexPath for (4)];
+    next.scrollViewSelector = @selector(collectionView); // (3)
+
+    SJPlayModel *one = [SJPlayModel playModelWithCollectionView:(3) indexPath:indexPath for (2)];
+    one.superviewSelector = @selector(playerSuperview); // (1)
+    one.nextPlayModel = next;
+
+    // view hierarchy case 2:
+    //
+    // `playerSuperView`(1) => UICollectionViewCell(2) => `UICollectionView(nested view)`(3) => UITableViewCell(4) => UITableView(5)
+    @interface YourCollectionViewCell () // (2)
+    @property (nonatomic, strong) UIView *playerSuperview; // (1)
+    @end
+
+    @interface YourTableViewCell () // (4)
+    @property (nonatomic, strong) UICollectionView *collectionView; // (3)
+    @end
+
+    SJPlayModel *next = [SJPlayModel playModelWithTableView:(5) indexPath:indexPath for (4)];
+    next.scrollViewSelector = @selector(collectionView); // (3)
+
+    SJPlayModel *one = [SJPlayModel playModelWithCollectionView:(3) indexPath:indexPath for (2)];
+    one.superviewSelector = @selector(playerSuperview); // (1)
+    one.nextPlayModel = next;
+ \endcode
+ */
+@property (nonatomic, nullable) SEL scrollViewSelector;
 
 /// 可播区域的insets
 ///
@@ -138,7 +171,7 @@ NS_ASSUME_NONNULL_BEGIN
 ///     - PlayerSuperview<SJPlayModelPlayerSuperview>
 ///         - player
 + (instancetype)playModelWithScrollView:(__weak UIScrollView *)scrollView;
-+ (instancetype)playModelWithScrollView:(__weak UIScrollView *)scrollView superviewKey:(NSString *)superViewKey;
++ (instancetype)playModelWithScrollView:(__weak UIScrollView *)scrollView superviewSelector:(SEL)superviewSelector;
 
 #pragma mark - UITableView
 
@@ -147,35 +180,35 @@ NS_ASSUME_NONNULL_BEGIN
 ///         - PlayerSuperview<SJPlayModelPlayerSuperview>
 ///             - player
 + (instancetype)playModelWithTableView:(__weak UITableView *)tableView indexPath:(NSIndexPath *)indexPath;
-+ (instancetype)playModelWithTableView:(__weak UITableView *)tableView indexPath:(NSIndexPath *)indexPath superviewKey:(NSString *)superViewKey;
++ (instancetype)playModelWithTableView:(__weak UITableView *)tableView indexPath:(NSIndexPath *)indexPath superviewSelector:(SEL)superviewSelector;
 
 /// - UITableView
 ///     - UITableView.TableHeaderView
 ///         - PlayerSuperview<SJPlayModelPlayerSuperview>
 ///             - player
 + (instancetype)playModelWithTableView:(__weak UITableView *)tableView tableHeaderView:(__weak UIView *)tableHeaderView;
-+ (instancetype)playModelWithTableView:(__weak UITableView *)tableView tableHeaderView:(__weak UIView *)tableHeaderView superviewKey:(NSString *)superViewKey;
++ (instancetype)playModelWithTableView:(__weak UITableView *)tableView tableHeaderView:(__weak UIView *)tableHeaderView superviewSelector:(SEL)superviewSelector;
 
 /// - UITableView
 ///     - UITableView.TableFooterView
 ///         - PlayerSuperview<SJPlayModelPlayerSuperview>
 ///             - player
 + (instancetype)playModelWithTableView:(__weak UITableView *)tableView tableFooterView:(__weak UIView *)tableFooterView;
-+ (instancetype)playModelWithTableView:(__weak UITableView *)tableView tableFooterView:(__weak UIView *)tableFooterView superviewKey:(NSString *)superViewKey;
++ (instancetype)playModelWithTableView:(__weak UITableView *)tableView tableFooterView:(__weak UIView *)tableFooterView superviewSelector:(SEL)superviewSelector;
 
 /// - UITableView
 ///     - UITableViewSectionHeaderView
 ///         - PlayerSuperview<SJPlayModelPlayerSuperview>
 ///             - player
 + (instancetype)playModelWithTableView:(__weak UITableView *)tableView inHeaderForSection:(NSInteger)section;
-+ (instancetype)playModelWithTableView:(__weak UITableView *)tableView inHeaderForSection:(NSInteger)section superviewKey:(NSString *)superViewKey;
++ (instancetype)playModelWithTableView:(__weak UITableView *)tableView inHeaderForSection:(NSInteger)section superviewSelector:(SEL)superviewSelector;
 
 /// - UITableView
 ///     - UITableViewSectionFooterView
 ///         - PlayerSuperview<SJPlayModelPlayerSuperview>
 ///             - player
 + (instancetype)playModelWithTableView:(__weak UITableView *)tableView inFooterForSection:(NSInteger)section;
-+ (instancetype)playModelWithTableView:(__weak UITableView *)tableView inFooterForSection:(NSInteger)section superviewKey:(NSString *)superViewKey;
++ (instancetype)playModelWithTableView:(__weak UITableView *)tableView inFooterForSection:(NSInteger)section superviewSelector:(SEL)superviewSelector;
 
 
 #pragma mark - UICollectionView
@@ -185,21 +218,21 @@ NS_ASSUME_NONNULL_BEGIN
 ///         - PlayerSuperview<SJPlayModelPlayerSuperview>
 ///             - player
 + (instancetype)playModelWithCollectionView:(__weak UICollectionView *)collectionView indexPath:(NSIndexPath *)indexPath;
-+ (instancetype)playModelWithCollectionView:(__weak UICollectionView *)collectionView indexPath:(NSIndexPath *)indexPath superviewKey:(NSString *)superViewKey;
++ (instancetype)playModelWithCollectionView:(__weak UICollectionView *)collectionView indexPath:(NSIndexPath *)indexPath superviewSelector:(SEL)superviewSelector;
 
 /// - UICollectionView
 ///     - UICollectionElementKindSectionHeader
 ///         - PlayerSuperview<SJPlayModelPlayerSuperview>
 ///             - player
 + (instancetype)playModelWithCollectionView:(UICollectionView *__weak)collectionView inHeaderForSection:(NSInteger)section;
-+ (instancetype)playModelWithCollectionView:(UICollectionView *__weak)collectionView inHeaderForSection:(NSInteger)section superviewKey:(NSString *)superViewKey;
++ (instancetype)playModelWithCollectionView:(UICollectionView *__weak)collectionView inHeaderForSection:(NSInteger)section superviewSelector:(SEL)superviewSelector;
 
 /// - UICollectionView
 ///     - UICollectionElementKindSectionFooter
 ///         - PlayerSuperview<SJPlayModelPlayerSuperview>
 ///             - player
 + (instancetype)playModelWithCollectionView:(UICollectionView *__weak)collectionView inFooterForSection:(NSInteger)section;
-+ (instancetype)playModelWithCollectionView:(UICollectionView *__weak)collectionView inFooterForSection:(NSInteger)section superviewKey:(NSString *)superViewKey;
++ (instancetype)playModelWithCollectionView:(UICollectionView *__weak)collectionView inFooterForSection:(NSInteger)section superviewSelector:(SEL)superviewSelector;
 
 #pragma mark -
 
@@ -220,13 +253,13 @@ NS_ASSUME_NONNULL_BEGIN
 ///
 ///     当多个父视图设置不同的tag后, 管理类将通过此tag来定位对应父视图, 从而实现同一个页面中多个播放器同时播放的效果
 ///
-@property (nonatomic) NSUInteger superviewTag __deprecated_msg("use `playModel.superviewKey`;");
+@property (nonatomic) NSUInteger superviewTag __deprecated_msg("use `playModel.superviewSelector`;");
 @end
 
 
 /// 用于标识: 播放器父视图. 父视图需遵守该协议. 将来播放器视图会被管理类自动添加到此视图中.
 /// 已弃用, 已改为通过KVC获取父视图
-__deprecated_msg("use `playModel.superviewKey`;")
+__deprecated_msg("use `playModel.superviewSelector`;")
 @protocol SJPlayModelPlayerSuperview 
 
 @end
@@ -235,7 +268,7 @@ __deprecated_msg("use `playModel.superviewKey`;")
 /// 例如: UITableViewCell 中内嵌的一个 UICollectionView<SJPlayModelNestedView>, 播放器将来要在 UICollectionViewCell 中的某个视图上播放.
 ///      由于`tableView`以及`collectionView`都存在复用的情况, 因此需要添加该标记建立视图层次链. 管理类通过这条链来定位具体位置.
 /// 已弃用, 已改为通过KVC获取嵌套视图
-__deprecated_msg("use `playModel.scrollViewKey` and `playModel.nextPlayModel`;")
+__deprecated_msg("use `playModel.nextPlayModel` and `playModel.scrollViewSelector`;")
 @protocol SJPlayModelNestedView
 
 @end
@@ -343,4 +376,8 @@ __deprecated_msg("use `playModel.scrollViewKey` and `playModel.nextPlayModel`;")
                                                                          rootCollectionView:(__weak UICollectionView *)rootCollectionView __deprecated_msg("use `nextPlayModel`!");
 @end
 
+@protocol SJPlayerDefaultSelectors <NSObject>
+@property (nonatomic, readonly) id playerSuperview;
+@property (nonatomic, readonly) id collectionView;
+@end
 NS_ASSUME_NONNULL_END

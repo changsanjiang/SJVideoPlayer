@@ -238,7 +238,7 @@ static void sj_playNextAssetAfterEndScroll(__kindof __kindof UIScrollView *scrol
  
     SJPlayerAutoplayConfig *config = [scrollView sj_autoplayConfig];
     NSIndexPath *_Nullable current = [scrollView sj_currentPlayingIndexPath];
-    if ( config.playerSuperviewKey.length != 0 && [scrollView isViewAppearedForKey:config.playerSuperviewKey insets:config.playableAreaInsets atIndexPath:current] )
+    if ( config.playerSuperviewSelector != NULL && [scrollView isViewAppearedForSelector:config.playerSuperviewSelector insets:config.playableAreaInsets atIndexPath:current] )
         return;
 #pragma clang diagnostic push
 #pragma clang diagnostic ignored "-Wdeprecated-declarations"
@@ -254,8 +254,8 @@ static void sj_playNextAssetAfterEndScroll(__kindof __kindof UIScrollView *scrol
         case SJAutoplayPositionTop: {
             for ( NSIndexPath *indexPath in visibleIndexPaths ) {
                 UIView *_Nullable target = nil;
-                if ( config.playerSuperviewKey.length != 0 ) {
-                    target = [scrollView viewForKey:config.playerSuperviewKey atIndexPath:indexPath];
+                if ( config.playerSuperviewSelector != NULL ) {
+                    target = [scrollView viewForSelector:config.playerSuperviewSelector atIndexPath:indexPath];
                 }
                 else {
                     target = superviewTag != 0 ?
@@ -290,8 +290,8 @@ static void sj_playNextAssetAfterEndScroll(__kindof __kindof UIScrollView *scrol
             for ( NSInteger i = 0 ; i < count ; ++ i ) {
                 NSIndexPath *indexPath = visibleIndexPaths[i];
                 UIView *_Nullable target = nil;
-                if ( config.playerSuperviewKey.length != 0 ) {
-                    target = [scrollView viewForKey:config.playerSuperviewKey atIndexPath:indexPath];
+                if ( config.playerSuperviewSelector != NULL ) {
+                    target = [scrollView viewForSelector:config.playerSuperviewSelector atIndexPath:indexPath];
                 }
                 else {
                     target = superviewTag != 0 ?
@@ -375,8 +375,8 @@ static void sj_playNextVisibleAsset(__kindof UIScrollView *scrollView) {
 #pragma clang diagnostic pop
     for ( NSIndexPath *indexPath in remain ) {
         UIView *_Nullable target = nil;
-        if ( config.playerSuperviewKey.length != 0 ) {
-            target = [scrollView viewForKey:config.playerSuperviewKey atIndexPath:indexPath];
+        if ( config.playerSuperviewSelector != NULL ) {
+            target = [scrollView viewForSelector:config.playerSuperviewSelector atIndexPath:indexPath];
         }
         else {
             target = superviewTag != 0 ?

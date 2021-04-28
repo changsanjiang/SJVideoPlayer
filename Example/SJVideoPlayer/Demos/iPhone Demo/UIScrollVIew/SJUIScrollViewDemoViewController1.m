@@ -45,7 +45,7 @@
     [self _setupViews];
     
     _player = SJVideoPlayer.player;
-    SJPlayModel *model = [SJPlayModel playModelWithScrollView:_scrollView superviewKey:@"playerSuperview"];
+    SJPlayModel *model = [SJPlayModel playModelWithScrollView:_scrollView superviewSelector:NSSelectorFromString(@"playerSuperview")];
     _player.URLAsset = [SJVideoPlayerURLAsset.alloc initWithURL:SourceURL0 playModel:model];
     [_player play];
 }

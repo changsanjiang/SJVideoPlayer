@@ -49,11 +49,11 @@
     SJExtendedMediaCollectionViewModel *video = videos.medias[indexPath.item];
     
     // 视图层次第一层
-    SJPlayModel *playModel = [SJPlayModel playModelWithCollectionView:collectionView indexPath:indexPath superviewKey:@"coverImageView"];
+    SJPlayModel *playModel = [SJPlayModel playModelWithCollectionView:collectionView indexPath:indexPath superviewSelector:NSSelectorFromString(@"coverImageView")];
     // 视图层次第二层
     // 通过`nextPlayModel`链起来
     SJPlayModel *next = [SJPlayModel playModelWithCollectionView:_collectionView indexPath:[_collectionView indexPathForCell:cell]];
-    next.scrollViewKey = @"collectionView";
+    next.scrollViewSelector = NSSelectorFromString(@"collectionView");
     playModel.nextPlayModel = next;
     
     // 进行播放

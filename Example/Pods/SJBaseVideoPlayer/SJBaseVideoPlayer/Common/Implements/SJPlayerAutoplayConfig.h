@@ -22,9 +22,9 @@ typedef NS_ENUM(NSUInteger, SJAutoplayPosition) {
 };
 
 @interface SJPlayerAutoplayConfig : NSObject
-+ (instancetype)configWithPlayerSuperviewKey:(nullable NSString *)playerSuperviewKey autoplayDelegate:(id<SJPlayerAutoplayDelegate>)delegate;
++ (instancetype)configWithPlayerSuperviewSelector:(nullable SEL)playerSuperviewSelector autoplayDelegate:(id<SJPlayerAutoplayDelegate>)delegate;
 
-@property (nonatomic, copy, nullable) NSString *playerSuperviewKey;
+@property (nonatomic, nullable) SEL playerSuperviewSelector;
 
 @property (nonatomic, weak, nullable, readonly) id<SJPlayerAutoplayDelegate> autoplayDelegate;
 
@@ -45,9 +45,9 @@ typedef NS_ENUM(NSUInteger, SJAutoplayPosition) {
 
 /// 已弃用
 @interface SJPlayerAutoplayConfig (SJDeprecated)
-+ (instancetype)configWithAutoplayDelegate:(id<SJPlayerAutoplayDelegate>)autoplayDelegate  __deprecated_msg("use `configWithPlayerSuperviewKey:autoplayDelegate:`;");
++ (instancetype)configWithAutoplayDelegate:(id<SJPlayerAutoplayDelegate>)autoplayDelegate  __deprecated_msg("use `configWithPlayerSuperviewSelector:autoplayDelegate:`;");
 + (instancetype)configWithPlayerSuperviewTag:(NSInteger)playerSuperviewTag
-                            autoplayDelegate:(id<SJPlayerAutoplayDelegate>)autoplayDelegate __deprecated_msg("use `configWithPlayerSuperviewKey:autoplayDelegate:`;");
-@property (nonatomic, readonly) NSInteger playerSuperviewTag __deprecated_msg("use `config.playerSuperviewKey`");
+                            autoplayDelegate:(id<SJPlayerAutoplayDelegate>)autoplayDelegate __deprecated_msg("use `configWithPlayerSuperviewSelector:autoplayDelegate:`;");
+@property (nonatomic, readonly) NSInteger playerSuperviewTag __deprecated_msg("use `config.scrollViewSelector`");
 @end
 NS_ASSUME_NONNULL_END

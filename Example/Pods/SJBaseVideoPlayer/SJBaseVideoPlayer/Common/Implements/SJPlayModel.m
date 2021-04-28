@@ -14,7 +14,6 @@
 #pragma clang diagnostic push
 #pragma clang diagnostic ignored "-Wdeprecated-declarations"
 
-
 NS_ASSUME_NONNULL_BEGIN
 @implementation SJPlayModel
 - (instancetype)init {
@@ -27,9 +26,9 @@ NS_ASSUME_NONNULL_BEGIN
     return [SJScrollViewPlayModel.alloc initWithScrollView:scrollView];
 }
 
-+ (instancetype)playModelWithScrollView:(__weak UIScrollView *)scrollView superviewKey:(NSString *)superViewKey {
++ (instancetype)playModelWithScrollView:(__weak UIScrollView *)scrollView superviewSelector:(SEL)superviewSelector {
     SJScrollViewPlayModel *model = [SJScrollViewPlayModel.alloc initWithScrollView:scrollView];
-    model.superviewKey = superViewKey;
+    model.superviewSelector = superviewSelector;
     return model;
 }
 
@@ -37,9 +36,9 @@ NS_ASSUME_NONNULL_BEGIN
     return [SJTableViewCellPlayModel.alloc initWithTableView:tableView indexPath:indexPath];
 }
 
-+ (instancetype)playModelWithTableView:(__weak UITableView *)tableView indexPath:(NSIndexPath *)indexPath superviewKey:(NSString *)superViewKey {
++ (instancetype)playModelWithTableView:(__weak UITableView *)tableView indexPath:(NSIndexPath *)indexPath superviewSelector:(SEL)superviewSelector {
     SJTableViewCellPlayModel *model = [SJTableViewCellPlayModel.alloc initWithTableView:tableView indexPath:indexPath];
-    model.superviewKey = superViewKey;
+    model.superviewSelector = superviewSelector;
     return model;
 }
 
@@ -47,9 +46,9 @@ NS_ASSUME_NONNULL_BEGIN
     return [SJTableViewTableHeaderViewPlayModel.alloc initWithTableView:tableView tableHeaderView:tableHeaderView];
 }
 
-+ (instancetype)playModelWithTableView:(__weak UITableView *)tableView tableHeaderView:(__weak UIView *)tableHeaderView superviewKey:(NSString *)superViewKey {
++ (instancetype)playModelWithTableView:(__weak UITableView *)tableView tableHeaderView:(__weak UIView *)tableHeaderView superviewSelector:(SEL)superviewSelector {
     SJTableViewTableHeaderViewPlayModel *model = [SJTableViewTableHeaderViewPlayModel.alloc initWithTableView:tableView tableHeaderView:tableHeaderView];
-    model.superviewKey = superViewKey;
+    model.superviewSelector = superviewSelector;
     return model;
 }
 
@@ -57,9 +56,9 @@ NS_ASSUME_NONNULL_BEGIN
     return [SJTableViewTableFooterViewPlayModel.alloc initWithTableView:tableView tableFooterView:tableFooterView];
 }
 
-+ (instancetype)playModelWithTableView:(__weak UITableView *)tableView tableFooterView:(__weak UIView *)tableFooterView superviewKey:(NSString *)superViewKey {
++ (instancetype)playModelWithTableView:(__weak UITableView *)tableView tableFooterView:(__weak UIView *)tableFooterView superviewSelector:(SEL)superviewSelector {
     SJTableViewTableFooterViewPlayModel *model = [SJTableViewTableFooterViewPlayModel.alloc initWithTableView:tableView tableFooterView:tableFooterView];
-    model.superviewKey = superViewKey;
+    model.superviewSelector = superviewSelector;
     return model;
 }
 
@@ -67,9 +66,9 @@ NS_ASSUME_NONNULL_BEGIN
     return [SJTableViewSectionHeaderViewPlayModel.alloc initWithTableView:tableView inHeaderForSection:section];
 }
 
-+ (instancetype)playModelWithTableView:(__weak UITableView *)tableView inHeaderForSection:(NSInteger)section superviewKey:(NSString *)superViewKey {
++ (instancetype)playModelWithTableView:(__weak UITableView *)tableView inHeaderForSection:(NSInteger)section superviewSelector:(SEL)superviewSelector {
     SJTableViewSectionHeaderViewPlayModel *model = [SJTableViewSectionHeaderViewPlayModel.alloc initWithTableView:tableView inHeaderForSection:section];
-    model.superviewKey = superViewKey;
+    model.superviewSelector = superviewSelector;
     return model;
 }
 
@@ -77,9 +76,9 @@ NS_ASSUME_NONNULL_BEGIN
     return [SJTableViewSectionFooterViewPlayModel.alloc initWithTableView:tableView inFooterForSection:section];
 }
 
-+ (instancetype)playModelWithTableView:(__weak UITableView *)tableView inFooterForSection:(NSInteger)section superviewKey:(NSString *)superViewKey {
++ (instancetype)playModelWithTableView:(__weak UITableView *)tableView inFooterForSection:(NSInteger)section superviewSelector:(SEL)superviewSelector {
     SJTableViewSectionFooterViewPlayModel *model = [SJTableViewSectionFooterViewPlayModel.alloc initWithTableView:tableView inFooterForSection:section];
-    model.superviewKey = superViewKey;
+    model.superviewSelector = superviewSelector;
     return model;
 }
 
@@ -87,9 +86,9 @@ NS_ASSUME_NONNULL_BEGIN
     return [SJCollectionViewCellPlayModel.alloc initWithCollectionView:collectionView indexPath:indexPath];
 }
 
-+ (instancetype)playModelWithCollectionView:(__weak UICollectionView *)collectionView indexPath:(NSIndexPath *)indexPath superviewKey:(NSString *)superViewKey {
++ (instancetype)playModelWithCollectionView:(__weak UICollectionView *)collectionView indexPath:(NSIndexPath *)indexPath superviewSelector:(SEL)superviewSelector {
     SJCollectionViewCellPlayModel *model = [SJCollectionViewCellPlayModel.alloc initWithCollectionView:collectionView indexPath:indexPath];
-    model.superviewKey = superViewKey;
+    model.superviewSelector = superviewSelector;
     return model;
 }
 
@@ -97,9 +96,9 @@ NS_ASSUME_NONNULL_BEGIN
     return [SJCollectionViewSectionHeaderViewPlayModel.alloc initWithCollectionView:collectionView inHeaderForSection:section];
 }
 
-+ (instancetype)playModelWithCollectionView:(UICollectionView *__weak)collectionView inHeaderForSection:(NSInteger)section superviewKey:(NSString *)superViewKey {
++ (instancetype)playModelWithCollectionView:(UICollectionView *__weak)collectionView inHeaderForSection:(NSInteger)section superviewSelector:(SEL)superviewSelector {
     SJCollectionViewSectionHeaderViewPlayModel *model = [SJCollectionViewSectionHeaderViewPlayModel.alloc initWithCollectionView:collectionView inHeaderForSection:section];
-    model.superviewKey = superViewKey;
+    model.superviewSelector = superviewSelector;
     return model;
 }
 
@@ -107,9 +106,9 @@ NS_ASSUME_NONNULL_BEGIN
     return [SJCollectionViewSectionFooterViewPlayModel.alloc initWithCollectionView:collectionView inFooterForSection:section];
 }
 
-+ (instancetype)playModelWithCollectionView:(UICollectionView *__weak)collectionView inFooterForSection:(NSInteger)section superviewKey:(NSString *)superViewKey {
++ (instancetype)playModelWithCollectionView:(UICollectionView *__weak)collectionView inFooterForSection:(NSInteger)section superviewSelector:(SEL)superviewSelector {
     SJCollectionViewSectionFooterViewPlayModel *model = [SJCollectionViewSectionFooterViewPlayModel.alloc initWithCollectionView:collectionView inFooterForSection:section];
-    model.superviewKey = superViewKey;
+    model.superviewSelector = superviewSelector;
     return model;
 }
 
@@ -135,8 +134,8 @@ NS_ASSUME_NONNULL_BEGIN
 }
 
 - (nullable UIView *)playerSuperview {
-    if ( self.superviewKey.length != 0 ) {
-        return [_scrollView valueForKey:self.superviewKey];
+    if ( self.superviewSelector != NULL ) {
+        return [_scrollView subviewForSelector:self.superviewSelector];
     }
     return [_scrollView viewWithProtocol:@protocol(SJPlayModelPlayerSuperview) tag:self.superviewTag];
 }
@@ -161,8 +160,8 @@ NS_ASSUME_NONNULL_BEGIN
     return YES;
 }
 - (nullable UIView *)playerSuperview {
-    if ( self.superviewKey.length != 0 ) {
-        return [_tableView viewForKey:self.superviewKey atIndexPath:_indexPath];
+    if ( self.superviewSelector != NULL ) {
+        return [_tableView viewForSelector:self.superviewSelector atIndexPath:_indexPath];
     }
     return [_tableView viewWithProtocol:@protocol(SJPlayModelPlayerSuperview) tag:self.superviewTag atIndexPath:_indexPath];
 }
@@ -186,8 +185,8 @@ NS_ASSUME_NONNULL_BEGIN
     return YES;
 }
 - (nullable UIView *)playerSuperview {
-    if ( self.superviewKey.length != 0 ) {
-        return [_tableHeaderView valueForKey:self.superviewKey];
+    if ( self.superviewSelector != NULL ) {
+        return [_tableHeaderView subviewForSelector:self.superviewSelector];
     }
     return [_tableHeaderView viewWithProtocol:@protocol(SJPlayModelPlayerSuperview) tag:self.superviewTag];
 }
@@ -211,8 +210,8 @@ NS_ASSUME_NONNULL_BEGIN
     return YES;
 }
 - (nullable UIView *)playerSuperview {
-    if ( self.superviewKey.length != 0 ) {
-        return [_tableFooterView valueForKey:self.superviewKey];
+    if ( self.superviewSelector != NULL ) {
+        return [_tableFooterView subviewForSelector:self.superviewSelector];
     }
     return [_tableFooterView viewWithProtocol:@protocol(SJPlayModelPlayerSuperview) tag:self.superviewTag];
 }
@@ -236,8 +235,8 @@ NS_ASSUME_NONNULL_BEGIN
     return YES;
 }
 - (nullable UIView *)playerSuperview {
-    if ( self.superviewKey.length != 0 ) {
-        return [_tableView viewForKey:self.superviewKey inHeaderForSection:_section];
+    if ( self.superviewSelector != NULL ) {
+        return [_tableView viewForSelector:self.superviewSelector inHeaderForSection:_section];
     }
     return [_tableView viewWithProtocol:@protocol(SJPlayModelPlayerSuperview) tag:self.superviewTag inHeaderForSection:_section];
 }
@@ -261,8 +260,8 @@ NS_ASSUME_NONNULL_BEGIN
     return YES;
 }
 - (nullable UIView *)playerSuperview {
-    if ( self.superviewKey.length != 0 ) {
-        return [_tableView viewForKey:self.superviewKey inFooterForSection:_section];
+    if ( self.superviewSelector != NULL ) {
+        return [_tableView viewForSelector:self.superviewSelector inFooterForSection:_section];
     }
     return [_tableView viewWithProtocol:@protocol(SJPlayModelPlayerSuperview) tag:self.superviewTag inFooterForSection:_section];
 }
@@ -310,7 +309,7 @@ NS_ASSUME_NONNULL_BEGIN
         
         // 当前嵌入的CollectionView需要一个标识(SJPlayModelNestedView), 以便能够在复用的情况下也能获取到它
         
-        NSAssert([_collectionView conformsToProtocol:@protocol(SJPlayModelNestedView)] || nextPlayModel.scrollViewKey.length != 0, @"`collectionView` must implement `SJPlayModelNestedView` protocol! or specify nextPlayModel.scrollViewKey!");
+        NSAssert([_collectionView conformsToProtocol:@protocol(SJPlayModelNestedView)] || nextPlayModel.superviewSelector != NULL, @"`collectionView` must implement `SJPlayModelNestedView` protocol! or specify nextPlayModel.superviewSelector!");
     }
 }
 
@@ -319,8 +318,8 @@ NS_ASSUME_NONNULL_BEGIN
 }
 
 - (nullable UIView *)playerSuperview {
-    if ( self.superviewKey.length != 0 ) {
-        return [[self inScrollView] viewForKey:self.superviewKey atIndexPath:_indexPath];
+    if ( self.superviewSelector != NULL ) {
+        return [[self inScrollView] viewForSelector:self.superviewSelector atIndexPath:_indexPath];
     }
     return [[self inScrollView] viewWithProtocol:@protocol(SJPlayModelPlayerSuperview) tag:self.superviewTag atIndexPath:_indexPath];;
 }
@@ -332,20 +331,20 @@ NS_ASSUME_NONNULL_BEGIN
     }
 
     if ( [next isKindOfClass:SJCollectionViewCellPlayModel.class] || [next isKindOfClass:SJTableViewCellPlayModel.class] ) {
-        return next.scrollViewKey.length != 0 ?
-                [[next inScrollView] viewForKey:next.scrollViewKey atIndexPath:next.indexPath] :
+        return next.scrollViewSelector != NULL ?
+                [[next inScrollView] viewForSelector:next.scrollViewSelector atIndexPath:next.indexPath] :
                 [[next inScrollView] viewWithProtocol:@protocol(SJPlayModelNestedView) tag:next.superviewTag atIndexPath:next.indexPath];
     }
     
     if ( [next isKindOfClass:SJCollectionViewSectionHeaderViewPlayModel.class] || [next isKindOfClass:SJTableViewSectionHeaderViewPlayModel.class] ) {
-        return next.scrollViewKey.length != 0 ?
-                [[next inScrollView] viewForKey:next.scrollViewKey inHeaderForSection:next.section] :
+        return next.scrollViewSelector != NULL ?
+                [[next inScrollView] viewForSelector:next.scrollViewSelector inHeaderForSection:next.section] :
                 [[next inScrollView] viewWithProtocol:@protocol(SJPlayModelNestedView) tag:next.superviewTag inHeaderForSection:next.section];
     }
      
     if ( [next isKindOfClass:SJCollectionViewSectionFooterViewPlayModel.class] || [next isKindOfClass:SJTableViewSectionFooterViewPlayModel.class] ) {
-        return next.scrollViewKey.length != 0 ?
-                [[next inScrollView] viewForKey:next.scrollViewKey inFooterForSection:next.section] :
+        return next.scrollViewSelector != NULL ?
+                [[next inScrollView] viewForSelector:next.scrollViewSelector inFooterForSection:next.section] :
                 [[next inScrollView] viewWithProtocol:@protocol(SJPlayModelNestedView) tag:next.superviewTag inFooterForSection:next.section];
     }
     return nil;
@@ -368,8 +367,8 @@ NS_ASSUME_NONNULL_BEGIN
 }
 
 - (nullable UIView *)playerSuperview {
-    if ( self.superviewKey.length != 0 ) {
-        return [[self inScrollView] viewForKey:self.superviewKey inHeaderForSection:_section];
+    if ( self.superviewSelector != NULL ) {
+        return [[self inScrollView] viewForSelector:self.superviewSelector inHeaderForSection:_section];
     }
     return [[self inScrollView] viewWithProtocol:@protocol(SJPlayModelPlayerSuperview) tag:self.superviewTag inHeaderForSection:_section];;
 }
@@ -394,8 +393,8 @@ NS_ASSUME_NONNULL_BEGIN
 }
 
 - (nullable UIView *)playerSuperview {
-    if ( self.superviewKey.length != 0 ) {
-        return [[self inScrollView] viewForKey:self.superviewKey inFooterForSection:_section];
+    if ( self.superviewSelector != NULL ) {
+        return [[self inScrollView] viewForSelector:self.superviewSelector inFooterForSection:_section];
     }
     return [[self inScrollView] viewWithProtocol:@protocol(SJPlayModelPlayerSuperview) tag:self.superviewTag inFooterForSection:_section];;
 }

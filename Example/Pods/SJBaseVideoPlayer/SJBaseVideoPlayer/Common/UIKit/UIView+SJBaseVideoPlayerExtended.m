@@ -115,4 +115,17 @@ NS_ASSUME_NONNULL_BEGIN
     return self.frame.size;
 }
 @end
+
+@implementation NSObject (SJBaseVideoPlayerExtended)
+- (__kindof UIView *_Nullable)subviewForSelector:(SEL)selector {
+    if ( [self respondsToSelector:selector] ) {
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Warc-performSelector-leaks"
+        return [self performSelector:selector];
+#pragma clang diagnostic pop
+    }
+    return nil;
+}
+@end
+
 NS_ASSUME_NONNULL_END

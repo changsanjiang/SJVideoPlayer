@@ -52,11 +52,11 @@ NS_ASSUME_NONNULL_BEGIN
     
     
     // 视图层次第一层
-    SJPlayModel *playModel = [SJPlayModel playModelWithCollectionView:collectionView indexPath:indexPath superviewKey:@"coverImageView"];
+    SJPlayModel *playModel = [SJPlayModel playModelWithCollectionView:collectionView indexPath:indexPath superviewSelector:NSSelectorFromString(@"coverImageView")];
     // 视图层次第二层
     // 通过`next`链起来
     SJPlayModel *next = [SJPlayModel playModelWithTableView:_tableView indexPath:[_tableView indexPathForCell:cell]];
-    next.scrollViewKey = @"collectionView";
+    next.scrollViewSelector = NSSelectorFromString(@"collectionView");
     playModel.nextPlayModel = next;
     
     // 进行播放

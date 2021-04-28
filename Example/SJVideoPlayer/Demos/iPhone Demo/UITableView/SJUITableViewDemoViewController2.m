@@ -90,7 +90,7 @@
         
         self.player = SJVideoPlayer.player;
         
-        self.player.URLAsset = [SJVideoPlayerURLAsset.alloc initWithURL:SourceURL0 playModel:[SJPlayModel playModelWithTableView:self.tableView tableHeaderView:headerView superviewKey:@"playerSuperview"]];
+        self.player.URLAsset = [SJVideoPlayerURLAsset.alloc initWithURL:SourceURL0 playModel:[SJPlayModel playModelWithTableView:self.tableView tableHeaderView:headerView superviewSelector:NSSelectorFromString(@"playerSuperview")]];
     };
 }
 - (BOOL)shouldAutorotate {

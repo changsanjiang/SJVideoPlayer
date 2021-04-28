@@ -84,8 +84,8 @@ NS_ASSUME_NONNULL_BEGIN
     return !CGRectIsEmpty([self intersectionWithView:view insets:insets]);
 }
 
-- (nullable __kindof UIView *)viewForKey:(NSString *)key atIndexPath:(NSIndexPath *)indexPath {
-    if ( indexPath == nil || key.length == 0 ) return nil;
+- (nullable __kindof UIView *)viewForSelector:(SEL)selector atIndexPath:(NSIndexPath *)indexPath {
+    if ( indexPath == nil || selector == NULL ) return nil;
     __kindof UIView *_Nullable cell = nil;
     if      ( [self isKindOfClass:UITableView.class] ) {
         cell = [(UITableView *)self cellForRowAtIndexPath:indexPath];
@@ -93,11 +93,11 @@ NS_ASSUME_NONNULL_BEGIN
     else if ( [self isKindOfClass:UICollectionView.class] ) {
         cell = [(UICollectionView *)self cellForItemAtIndexPath:indexPath];
     }
-    return [cell valueForKey:key];
+    return [cell subviewForSelector:selector];
 }
 
-- (nullable __kindof UIView *)viewForKey:(NSString *)key inHeaderForSection:(NSInteger)section {
-    if ( key.length == 0 ) return nil;
+- (nullable __kindof UIView *)viewForSelector:(SEL)selector inHeaderForSection:(NSInteger)section {
+    if ( selector == NULL ) return nil;
     __kindof UIView *_Nullable headerView = nil;
     if      ( [self isKindOfClass:UITableView.class] ) {
         headerView = [(UITableView *)self headerViewForSection:section];
@@ -105,11 +105,11 @@ NS_ASSUME_NONNULL_BEGIN
     else if ( [self isKindOfClass:UICollectionView.class] ) {
         headerView = [(UICollectionView *)self supplementaryViewForElementKind:UICollectionElementKindSectionHeader atIndexPath:[NSIndexPath indexPathForItem:0 inSection:section]];
     }
-    return headerView != nil ? [headerView valueForKey:key] : nil;
+    return headerView != nil ? [headerView subviewForSelector:selector] : nil;
 }
 
-- (nullable __kindof UIView *)viewForKey:(NSString *)key inFooterForSection:(NSInteger)section {
-    if ( key.length == 0 ) return nil;
+- (nullable __kindof UIView *)viewForSelector:(SEL)selector inFooterForSection:(NSInteger)section {
+    if ( selector == NULL ) return nil;
     __kindof UIView *_Nullable footerView = nil;
     if      ( [self isKindOfClass:UITableView.class] ) {
         footerView = [(UITableView *)self footerViewForSection:section];
@@ -117,11 +117,11 @@ NS_ASSUME_NONNULL_BEGIN
     else if ( [self isKindOfClass:UICollectionView.class] ) {
         footerView = [(UICollectionView *)self supplementaryViewForElementKind:UICollectionElementKindSectionFooter atIndexPath:[NSIndexPath indexPathForItem:0 inSection:section]];
     }
-    return footerView != nil ? [footerView valueForKey:key] : nil;
+    return footerView != nil ? [footerView subviewForSelector:selector] : nil;
 }
 
-- (BOOL)isViewAppearedForKey:(NSString *)key insets:(UIEdgeInsets)insets atIndexPath:(NSIndexPath *)indexPath {
-    UIView *view = [self viewForKey:key atIndexPath:indexPath];
+- (BOOL)isViewAppearedForSelector:(SEL)selector insets:(UIEdgeInsets)insets atIndexPath:(NSIndexPath *)indexPath {
+    UIView *view = [self viewForSelector:selector atIndexPath:indexPath];
     return view != nil && !CGRectIsEmpty([self intersectionWithView:view insets:insets]);
 }
 @end

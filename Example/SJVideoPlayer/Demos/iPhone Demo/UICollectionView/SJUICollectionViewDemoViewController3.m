@@ -102,7 +102,7 @@
 
         if ( self.player == nil ) self.player = SJVideoPlayer.player;
         
-        self.player.URLAsset = [SJVideoPlayerURLAsset.alloc initWithURL:SourceURL0 playModel:[SJPlayModel playModelWithCollectionView:collectionView inFooterForSection:indexPath.section superviewKey:@"playerSuperview"]];
+        self.player.URLAsset = [SJVideoPlayerURLAsset.alloc initWithURL:SourceURL0 playModel:[SJPlayModel playModelWithCollectionView:collectionView inFooterForSection:indexPath.section superviewSelector:NSSelectorFromString(@"playerSuperview")]];
     };
     return view;
 }

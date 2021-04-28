@@ -10,7 +10,7 @@
 #import <UIKit/UIKit.h>
 
 NS_ASSUME_NONNULL_BEGIN
-typedef enum : NSUInteger {
+typedef NS_ENUM(NSUInteger, SJPlayerGestureType) {
     /// 单击手势
     SJPlayerGestureType_SingleTap,
     /// 双击手势
@@ -21,9 +21,9 @@ typedef enum : NSUInteger {
     SJPlayerGestureType_Pinch,
     /// 长按手势
     SJPlayerGestureType_LongPress,
-} SJPlayerGestureType;
+};
 
-typedef enum : NSUInteger {
+typedef NS_OPTIONS(NSUInteger, SJPlayerGestureTypeMask) {
     SJPlayerGestureTypeMask_None,
     SJPlayerGestureTypeMask_SingleTap   = 1 << 0,
     SJPlayerGestureTypeMask_DoubleTap   = 1 << 1,
@@ -35,33 +35,33 @@ typedef enum : NSUInteger {
     SJPlayerGestureTypeMask_Pan = SJPlayerGestureTypeMask_Pan_H | SJPlayerGestureTypeMask_Pan_V,
     SJPlayerGestureTypeMask_Default = SJPlayerGestureTypeMask_SingleTap | SJPlayerGestureTypeMask_DoubleTap | SJPlayerGestureTypeMask_Pan | SJPlayerGestureTypeMask_Pinch,
     SJPlayerGestureTypeMask_All = SJPlayerGestureTypeMask_Default | SJPlayerGestureTypeMask_LongPress,
-} SJPlayerGestureTypeMask;
+};
 
 /// 移动方向
-typedef enum : NSUInteger {
+typedef NS_ENUM(NSUInteger, SJPanGestureMovingDirection) {
     SJPanGestureMovingDirection_H,
     SJPanGestureMovingDirection_V,
-} SJPanGestureMovingDirection;
-
+};
+ 
 /// 移动手势触发时的位置
-typedef enum : NSUInteger {
+typedef NS_ENUM(NSUInteger, SJPanGestureTriggeredPosition) {
     SJPanGestureTriggeredPosition_Left,
     SJPanGestureTriggeredPosition_Right,
-} SJPanGestureTriggeredPosition;
+};
 
 /// 移动手势的状态
-typedef enum : NSUInteger {
+typedef NS_ENUM(NSUInteger, SJPanGestureRecognizerState) {
     SJPanGestureRecognizerStateBegan,
     SJPanGestureRecognizerStateChanged,
     SJPanGestureRecognizerStateEnded,
-} SJPanGestureRecognizerState;
+};
 
 /// 长按手势的状态
-typedef enum : NSUInteger {
+typedef NS_ENUM(NSUInteger, SJLongPressGestureRecognizerState) {
     SJLongPressGestureRecognizerStateBegan,
     SJLongPressGestureRecognizerStateChanged,
     SJLongPressGestureRecognizerStateEnded,
-} SJLongPressGestureRecognizerState;
+};
 
 @protocol SJPlayerGestureControl <NSObject>
 @property (nonatomic) SJPlayerGestureTypeMask supportedGestureTypes; ///< default value is .Default

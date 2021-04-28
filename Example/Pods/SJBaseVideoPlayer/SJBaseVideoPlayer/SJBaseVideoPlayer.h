@@ -57,7 +57,14 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic, weak, nullable) id <SJVideoPlayerControlLayerDataSource> controlLayerDataSource;
 @property (nonatomic, weak, nullable) id <SJVideoPlayerControlLayerDelegate> controlLayerDelegate;
 @end
-   
+
+
+@interface SJBaseVideoPlayer (SJAVAudioSessionExtended)
+- (void)setCategory:(AVAudioSessionCategory)category withOptions:(AVAudioSessionCategoryOptions)options;
+- (void)setActiveOptions:(AVAudioSessionSetActiveOptions)options;
+@end
+
+
 #pragma mark - present view
 
 @interface SJBaseVideoPlayer (Placeholder)

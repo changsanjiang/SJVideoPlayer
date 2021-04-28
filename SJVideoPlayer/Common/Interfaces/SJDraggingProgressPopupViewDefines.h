@@ -10,11 +10,11 @@
 #import <UIKit/UIKit.h>
 
 NS_ASSUME_NONNULL_BEGIN
-typedef enum : NSUInteger {
+typedef NS_ENUM(NSUInteger, SJDraggingProgressPopupViewStyle) {
     SJDraggingProgressPopupViewStyleNormal,
     SJDraggingProgressPopupViewStyleFullscreen,
     SJDraggingProgressPopupViewStyleFitOnScreen
-} SJDraggingProgressPopupViewStyle;
+};
 
 @protocol SJDraggingProgressPopupView <NSObject>
 @property (nonatomic) SJDraggingProgressPopupViewStyle style;

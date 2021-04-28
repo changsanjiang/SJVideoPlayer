@@ -152,6 +152,10 @@ typedef struct _SJPlayerControlInfo {
     
     id<SJSubtitlesPromptController> _Nullable _subtitlesPromptController;
     id<SJBarrageQueueController> _Nullable _barrageQueueController;
+    
+    AVAudioSessionCategory _mCategory;
+    AVAudioSessionCategoryOptions _mCategoryOptions;
+    AVAudioSessionSetActiveOptions _mSetActiveOptions;
 }
 
 + (instancetype)player {
@@ -159,7 +163,7 @@ typedef struct _SJPlayerControlInfo {
 }
 
 + (NSString *)version {
-    return @"v3.6.0";
+    return @"v3.6.2";
 }
 
 - (void)setVideoGravity:(SJVideoGravity)videoGravity {
@@ -193,6 +197,8 @@ typedef struct _SJPlayerControlInfo {
     _controlInfo->floatSmallViewControl.hiddenFloatSmallViewWhenPlaybackFinished = YES;
     _controlInfo->gestureControl.rateWhenLongPressGestureTriggered = 2.0;
     _controlInfo->pan.factor = 667;
+    _mCategory = AVAudioSessionCategoryPlayback;
+    _mSetActiveOptions = AVAudioSessionSetActiveOptionNotifyOthersOnDeactivation;
     
     [self _setupViews];
     [self fitOnScreenManager];
@@ -202,7 +208,6 @@ typedef struct _SJPlayerControlInfo {
     [self reachability];
     [self gestureControl];
     [self.deviceVolumeAndBrightnessManager prepare];
-    [self performSelectorInBackground:@selector(_configAVAudioSession) withObject:nil];
     [self _setupViewControllerManager];
     [self _showOrHiddenPlaceholderImageViewIfNeeded];
     return self;
@@ -475,16 +480,6 @@ typedef struct _SJPlayerControlInfo {
     }
 }
 
-- (void)_configAVAudioSession {
-    if ( AVAudioSession.sharedInstance.category != AVAudioSessionCategoryPlayback &&
-         AVAudioSession.sharedInstance.category != AVAudioSessionCategoryPlayAndRecord ) {
-        NSError *error = nil;
-        // 使播放器在静音状态下也能放出声音
-        [[AVAudioSession sharedInstance] setCategory:AVAudioSessionCategoryPlayback error:&error];
-        if ( error ) NSLog(@"%@", error.userInfo);
-    }
-}
-
 - (void)_postNotification:(NSNotificationName)name {
     [self _postNotification:name userInfo:nil];
 }
@@ -627,6 +622,29 @@ typedef struct _SJPlayerControlInfo {
 }
 @end
 
+@implementation SJBaseVideoPlayer (SJAVAudioSessionExtended)
+- (void)setCategory:(AVAudioSessionCategory)category withOptions:(AVAudioSessionCategoryOptions)options {
+    _mCategory = category;
+    _mCategoryOptions = options;
+    
+    NSError *error = nil;
+    if ( ![AVAudioSession.sharedInstance setCategory:_mCategory withOptions:_mCategoryOptions error:&error] ) {
+#ifdef DEBUG
+        NSLog(@"%@", error);
+#endif
+    }
+}
+
+- (void)setActiveOptions:(AVAudioSessionSetActiveOptions)options {
+    _mSetActiveOptions = options;
+    NSError *error = nil;
+    if ( ![AVAudioSession.sharedInstance setActive:YES withOptions:_mSetActiveOptions error:&error] ) {
+#ifdef DEBUG
+        NSLog(@"%@", error);
+#endif
+    }
+}
+@end
 
 @implementation SJBaseVideoPlayer (Placeholder)
 - (UIView<SJVideoPlayerPresentView> *)presentView {
@@ -837,7 +855,7 @@ typedef struct _SJPlayerControlInfo {
         return;
     }
 
-    if ( URLAsset.subtitles != nil ) {
+    if ( URLAsset.subtitles != nil || _subtitlesPromptController != nil ) {
         self.subtitlesPromptController.subtitles = URLAsset.subtitles;
     }
     
@@ -950,6 +968,18 @@ typedef struct _SJPlayerControlInfo {
     if ( self.assetStatus == SJAssetStatusFailed ) {
         [self refresh];
         return;
+    }
+    
+    NSError *error = nil;
+    if ( ![AVAudioSession.sharedInstance setCategory:_mCategory withOptions:_mCategoryOptions error:&error] ) {
+#ifdef DEBUG
+        NSLog(@"%@", error);
+#endif
+    }
+    if ( ![AVAudioSession.sharedInstance setActive:YES withOptions:_mSetActiveOptions error:&error] ) {
+#ifdef DEBUG
+        NSLog(@"%@", error);
+#endif
     }
 
     [_playbackController play];

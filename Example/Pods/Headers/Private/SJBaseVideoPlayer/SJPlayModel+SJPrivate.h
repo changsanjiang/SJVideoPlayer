@@ -1,1 +1,1 @@
-../../../../../../SJBaseVideoPlayer/SJBaseVideoPlayer/Common/Implements/SJPlayModel+SJPrivate.h
+../../../SJBaseVideoPlayer/SJBaseVideoPlayer/Common/Implements/SJPlayModel+SJPrivate.h

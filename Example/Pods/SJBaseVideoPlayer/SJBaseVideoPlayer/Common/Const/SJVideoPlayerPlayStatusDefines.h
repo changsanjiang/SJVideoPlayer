@@ -11,12 +11,12 @@
 @class SJBaseVideoPlayer;
 
 NS_ASSUME_NONNULL_BEGIN
-typedef enum : NSUInteger {
+typedef NS_ENUM(NSInteger, SJPlaybackType) {
     SJPlaybackTypeUnknown,
     SJPlaybackTypeLIVE,
     SJPlaybackTypeVOD,
     SJPlaybackTypeFILE
-} SJPlaybackType;
+};
 
 typedef NS_ENUM(NSInteger, SJAssetStatus) {
     ///

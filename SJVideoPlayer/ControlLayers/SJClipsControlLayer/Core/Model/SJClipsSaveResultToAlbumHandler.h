@@ -10,9 +10,9 @@
 @protocol SJVideoPlayerClipsResult;
 
 NS_ASSUME_NONNULL_BEGIN
-typedef enum : NSUInteger {
+typedef NS_ENUM(NSUInteger, SJClipsSaveResultToAlbumFailedReason) {
     SJClipsSaveResultToAlbumFailedReasonAuthDenied,
-} SJClipsSaveResultToAlbumFailedReason;
+} ;
 
 @protocol SJClipsSaveResultFailed <NSObject>
 @property (nonatomic, readonly) SJClipsSaveResultToAlbumFailedReason reason;

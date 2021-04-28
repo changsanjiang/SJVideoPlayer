@@ -22,28 +22,28 @@ typedef NS_ENUM(NSUInteger, SJClipsStatus) {
     SJClipsStatus_Finished,
 };
 
-typedef enum : NSUInteger {
+typedef NS_ENUM(NSUInteger, SJVideoPlayerClipsOperation) {
     SJVideoPlayerClipsOperation_Unknown,
     SJVideoPlayerClipsOperation_Screenshot,
     SJVideoPlayerClipsOperation_Export,
     SJVideoPlayerClipsOperation_GIF,
-} SJVideoPlayerClipsOperation;
+} ;
 
-typedef enum : NSUInteger {
+typedef NS_ENUM(NSUInteger, SJClipsResultUploadState) {
     SJClipsResultUploadStateUnknown,
     SJClipsResultUploadStateUploading,
     SJClipsResultUploadStateFailed,
     SJClipsResultUploadStateSuccessfully,
     SJClipsResultUploadStateCancelled,
-} SJClipsResultUploadState;
+} ;
 
-typedef enum : NSUInteger {
+typedef NS_ENUM(NSUInteger, SJClipsExportState) {
     SJClipsExportStateUnknown,
     SJClipsExportStateExporting,
     SJClipsExportStateFailed,
     SJClipsExportStateSuccess,
     SJClipsExportStateCancelled,
-} SJClipsExportState;
+} ;
 
 NS_ASSUME_NONNULL_BEGIN
 @protocol SJVideoPlayerClipsParameters <NSObject>

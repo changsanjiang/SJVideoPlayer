@@ -133,6 +133,16 @@ NS_ASSUME_NONNULL_BEGIN
     [self _postNotification:SJMediaPlayerPlaybackTypeDidChangeNotification];
 }
 
+- (nullable NSError *)error {
+    if ( _innerError != nil )
+        return _innerError;
+    if ( _avPlayer.currentItem.error != nil )
+        return _avPlayer.currentItem.error;
+    if ( _avPlayer.error != nil )
+        return _avPlayer.error;
+    return nil;
+}
+
 #pragma mark -
 
 - (void)setTrialEndPosition:(NSTimeInterval)trialEndPosition {

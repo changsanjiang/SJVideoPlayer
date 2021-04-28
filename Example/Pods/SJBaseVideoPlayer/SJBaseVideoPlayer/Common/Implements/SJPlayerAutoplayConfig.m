@@ -12,19 +12,24 @@
 @end
 
 @implementation SJPlayerAutoplayConfig
-+ (instancetype)configWithAutoplayDelegate:(id<SJPlayerAutoplayDelegate>)autoplayDelegate {
-    NSParameterAssert(autoplayDelegate != nil);
++ (instancetype)configWithPlayerSuperviewKey:(nullable NSString *)playerSuperviewKey autoplayDelegate:(id<SJPlayerAutoplayDelegate>)delegate {
+    NSParameterAssert(delegate != nil);
     
-    SJPlayerAutoplayConfig *config = [SJPlayerAutoplayConfig new];
-    config->_autoplayDelegate = autoplayDelegate;
+    SJPlayerAutoplayConfig *config = [[self alloc] init];
+    config->_autoplayDelegate = delegate;
     config->_animationType = SJAutoplayScrollAnimationTypeMiddle;
     config->_autoplayPosition = SJAutoplayPositionMiddle;
+    config->_playerSuperviewKey = playerSuperviewKey;
     return config;
 }
 @end
 
 
 @implementation SJPlayerAutoplayConfig (SJDeprecated)
++ (instancetype)configWithAutoplayDelegate:(id<SJPlayerAutoplayDelegate>)autoplayDelegate {
+    return [self configWithPlayerSuperviewKey:nil autoplayDelegate:autoplayDelegate];
+}
+
 + (instancetype)configWithPlayerSuperviewTag:(NSInteger)playerSuperviewTag
                             autoplayDelegate:(id<SJPlayerAutoplayDelegate>)autoplayDelegate {
     NSParameterAssert(playerSuperviewTag != 0);

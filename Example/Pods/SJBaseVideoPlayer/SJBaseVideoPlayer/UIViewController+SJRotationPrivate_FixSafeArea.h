@@ -13,7 +13,7 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
-typedef enum : NSUInteger {
+typedef NS_OPTIONS(NSUInteger, SJSafeAreaInsetsMask) {
     SJSafeAreaInsetsMaskNone = 0,
     SJSafeAreaInsetsMaskTop = 1 << 0,
     SJSafeAreaInsetsMaskLeft = 1 << 1,
@@ -23,7 +23,7 @@ typedef enum : NSUInteger {
     SJSafeAreaInsetsMaskHorizontal = SJSafeAreaInsetsMaskLeft | SJSafeAreaInsetsMaskRight,
     SJSafeAreaInsetsMaskVertical = SJSafeAreaInsetsMaskTop | SJSafeAreaInsetsMaskRight,
     SJSafeAreaInsetsMaskAll = SJSafeAreaInsetsMaskHorizontal | SJSafeAreaInsetsMaskVertical
-} SJSafeAreaInsetsMask NS_AVAILABLE_IOS(13.0);
+} NS_AVAILABLE_IOS(13.0);
 
 
 API_AVAILABLE(ios(13.0)) @interface UIViewController (SJRotationPrivate_FixSafeArea)

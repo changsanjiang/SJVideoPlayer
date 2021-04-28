@@ -238,23 +238,30 @@ static void sj_playNextAssetAfterEndScroll(__kindof __kindof UIScrollView *scrol
  
     SJPlayerAutoplayConfig *config = [scrollView sj_autoplayConfig];
     NSIndexPath *_Nullable current = [scrollView sj_currentPlayingIndexPath];
+    if ( config.playerSuperviewKey.length != 0 && [scrollView isViewAppearedForKey:config.playerSuperviewKey insets:config.playableAreaInsets atIndexPath:current] )
+        return;
 #pragma clang diagnostic push
 #pragma clang diagnostic ignored "-Wdeprecated-declarations"
     NSInteger superviewTag = config.playerSuperviewTag;
 #pragma clang diagnostic pop
-    
     if ( superviewTag != 0 && [scrollView isViewAppearedWithTag:superviewTag insets:config.playableAreaInsets atIndexPath:current] )
         return;
-    else if ( [scrollView isViewAppearedWithProtocol:@protocol(SJPlayModelPlayerSuperview) tag:0 insets:config.playableAreaInsets atIndexPath:current] )
+    if ( [scrollView isViewAppearedWithProtocol:@protocol(SJPlayModelPlayerSuperview) tag:0 insets:config.playableAreaInsets atIndexPath:current] )
         return;
     
     NSIndexPath *_Nullable next = nil;
     switch ( config.autoplayPosition ) {
         case SJAutoplayPositionTop: {
             for ( NSIndexPath *indexPath in visibleIndexPaths ) {
-                UIView *_Nullable target = superviewTag != 0 ?
-                                    [scrollView viewWithTag:superviewTag atIndexPath:indexPath] :
-                [scrollView viewWithProtocol:@protocol(SJPlayModelPlayerSuperview) tag:0 atIndexPath:indexPath];
+                UIView *_Nullable target = nil;
+                if ( config.playerSuperviewKey.length != 0 ) {
+                    target = [scrollView viewForKey:config.playerSuperviewKey atIndexPath:indexPath];
+                }
+                else {
+                    target = superviewTag != 0 ?
+                             [scrollView viewWithTag:superviewTag atIndexPath:indexPath] :
+                             [scrollView viewWithProtocol:@protocol(SJPlayModelPlayerSuperview) tag:0 atIndexPath:indexPath];
+                }
                 if ( !target ) continue;
                 CGRect intersection = [scrollView intersectionWithView:target insets:config.playableAreaInsets];
                 if ( floor(intersection.size.height) >= floor(target.bounds.size.height) ) {
@@ -282,9 +289,15 @@ static void sj_playNextAssetAfterEndScroll(__kindof __kindof UIScrollView *scrol
             CGFloat sub = CGFLOAT_MAX;
             for ( NSInteger i = 0 ; i < count ; ++ i ) {
                 NSIndexPath *indexPath = visibleIndexPaths[i];
-                UIView *_Nullable target = superviewTag != 0 ?
-                                    [scrollView viewWithTag:superviewTag atIndexPath:indexPath] :
-                                    [scrollView viewWithProtocol:@protocol(SJPlayModelPlayerSuperview) tag:0 atIndexPath:indexPath];
+                UIView *_Nullable target = nil;
+                if ( config.playerSuperviewKey.length != 0 ) {
+                    target = [scrollView viewForKey:config.playerSuperviewKey atIndexPath:indexPath];
+                }
+                else {
+                    target = superviewTag != 0 ?
+                             [scrollView viewWithTag:superviewTag atIndexPath:indexPath] :
+                             [scrollView viewWithProtocol:@protocol(SJPlayModelPlayerSuperview) tag:0 atIndexPath:indexPath];
+                }
                 if ( !target ) continue;
                 CGRect intersection = [scrollView intersectionWithView:target insets:config.playableAreaInsets];
                 CGFloat result = floor(ABS(mid - CGRectGetMidY(intersection)));
@@ -361,9 +374,15 @@ static void sj_playNextVisibleAsset(__kindof UIScrollView *scrollView) {
     NSInteger superviewTag = config.playerSuperviewTag;
 #pragma clang diagnostic pop
     for ( NSIndexPath *indexPath in remain ) {
-        UIView *_Nullable target = superviewTag != 0 ?
-                            [scrollView viewWithTag:superviewTag atIndexPath:indexPath] :
-                            [scrollView viewWithProtocol:@protocol(SJPlayModelPlayerSuperview) tag:0 atIndexPath:indexPath];
+        UIView *_Nullable target = nil;
+        if ( config.playerSuperviewKey.length != 0 ) {
+            target = [scrollView viewForKey:config.playerSuperviewKey atIndexPath:indexPath];
+        }
+        else {
+            target = superviewTag != 0 ?
+                     [scrollView viewWithTag:superviewTag atIndexPath:indexPath] :
+                     [scrollView viewWithProtocol:@protocol(SJPlayModelPlayerSuperview) tag:0 atIndexPath:indexPath];
+        }
         if ( !target ) continue;
         CGRect intersection = [scrollView intersectionWithView:target insets:config.playableAreaInsets];
         if ( floor(intersection.size.height) >= floor(target.bounds.size.height) ) {

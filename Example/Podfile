@@ -55,7 +55,7 @@ target 'SJVideoPlayer_Example' do
 #  pod 'SJBaseVideoPlayer/PLPlayer', :path => '../../SJBaseVideoPlayer'
 
   # 默认为 AVPlayer
-  pod 'SJBaseVideoPlayer', :path => '../../SJBaseVideoPlayer'
+  pod 'SJBaseVideoPlayer'#, :path => '../../SJBaseVideoPlayer'
   pod 'SJVideoPlayer', :path => '../../SJVideoPlayer'
   pod 'SJUIKit'#, :podspec => 'https://gitee.com/changsanjiang/SJUIKit/raw/master/SJUIKit-YYModel.podspec'
 

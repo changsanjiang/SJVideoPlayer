@@ -18,5 +18,10 @@ NS_ASSUME_NONNULL_BEGIN
 - (nullable __kindof UIView *)viewWithProtocol:(Protocol *)protocol tag:(NSInteger)tag inHeaderForSection:(NSInteger)section;
 - (nullable __kindof UIView *)viewWithProtocol:(Protocol *)protocol tag:(NSInteger)tag inFooterForSection:(NSInteger)section;
 - (BOOL)isViewAppearedWithProtocol:(Protocol *)protocol tag:(NSInteger)tag insets:(UIEdgeInsets)insets atIndexPath:(NSIndexPath *)indexPath;
+
+- (nullable __kindof UIView *)viewForKey:(NSString *)key atIndexPath:(NSIndexPath *)indexPath;
+- (nullable __kindof UIView *)viewForKey:(NSString *)key inHeaderForSection:(NSInteger)section;
+- (nullable __kindof UIView *)viewForKey:(NSString *)key inFooterForSection:(NSInteger)section;
+- (BOOL)isViewAppearedForKey:(NSString *)key insets:(UIEdgeInsets)insets atIndexPath:(NSIndexPath *)indexPath;
 @end
 NS_ASSUME_NONNULL_END

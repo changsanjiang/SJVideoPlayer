@@ -5,29 +5,29 @@ PODS:
   - SDWebImage (5.11.1):
     - SDWebImage/Core (= 5.11.1)
   - SDWebImage/Core (5.11.1)
-  - SJBaseVideoPlayer (3.6.1):
+  - SJBaseVideoPlayer (3.6.2):
     - Masonry
-    - SJBaseVideoPlayer/AVPlayer (= 3.6.1)
-    - SJBaseVideoPlayer/Common (= 3.6.1)
+    - SJBaseVideoPlayer/AVPlayer (= 3.6.2)
+    - SJBaseVideoPlayer/Common (= 3.6.2)
     - SJUIKit/AttributesFactory (>= 0.0.0.38)
     - SJUIKit/ObserverHelper
     - SJUIKit/Queues
     - SJUIKit/SQLite3
-  - SJBaseVideoPlayer/AVPlayer (3.6.1):
+  - SJBaseVideoPlayer/AVPlayer (3.6.2):
     - Masonry
     - SJBaseVideoPlayer/Common
     - SJUIKit/AttributesFactory (>= 0.0.0.38)
     - SJUIKit/ObserverHelper
     - SJUIKit/Queues
     - SJUIKit/SQLite3
-  - SJBaseVideoPlayer/Common (3.6.1):
+  - SJBaseVideoPlayer/Common (3.6.2):
     - Masonry
     - SJBaseVideoPlayer/ResourceLoader
     - SJUIKit/AttributesFactory (>= 0.0.0.38)
     - SJUIKit/ObserverHelper
     - SJUIKit/Queues
     - SJUIKit/SQLite3
-  - SJBaseVideoPlayer/ResourceLoader (3.6.1):
+  - SJBaseVideoPlayer/ResourceLoader (3.6.2):
     - Masonry
     - SJUIKit/AttributesFactory (>= 0.0.0.38)
     - SJUIKit/ObserverHelper
@@ -130,7 +130,7 @@ DEPENDENCIES:
   - Masonry
   - MJRefresh (= 3.4.3)
   - SDWebImage
-  - SJBaseVideoPlayer (from `../../SJBaseVideoPlayer`)
+  - SJBaseVideoPlayer
   - SJFullscreenPopGesture/ObjC
   - SJMediaCacheServer
   - SJPlaybackListController
@@ -145,6 +145,7 @@ SPEC REPOS:
     - Masonry
     - MJRefresh
     - SDWebImage
+    - SJBaseVideoPlayer
     - SJFullscreenPopGesture
     - SJMediaCacheServer
     - SJPlaybackListController
@@ -153,8 +154,6 @@ SPEC REPOS:
     - YYModel
 
 EXTERNAL SOURCES:
-  SJBaseVideoPlayer:
-    :path: "../../SJBaseVideoPlayer"
   SJVideoPlayer:
     :path: "../../SJVideoPlayer"
 
@@ -163,7 +162,7 @@ SPEC CHECKSUMS:
   Masonry: 678fab65091a9290e40e2832a55e7ab731aad201
   MJRefresh: 53e3e3219f204425ee6d3e62e8733d3295944cd6
   SDWebImage: a7f831e1a65eb5e285e3fb046a23fcfbf08e696d
-  SJBaseVideoPlayer: ab966fc9a9980b8d10df02ad7dc608ca16e9abb0
+  SJBaseVideoPlayer: b0541fc44a5c38ae854cc673a60821d847fc34e9
   SJFullscreenPopGesture: 7be57b1014cb77f4b7c1e6df5e797da6d05dc75d
   SJMediaCacheServer: 74656385db09cf77d76a649143d1f870e344e4e9
   SJPlaybackListController: e135c789fcd63d63a62d5e2e2965ab1e6d52a2bd
@@ -172,6 +171,6 @@ SPEC CHECKSUMS:
   SJVideoPlayer: 3a271ff92c7b9d611c537655fd1edcbae18b8587
   YYModel: 2a7fdd96aaa4b86a824e26d0c517de8928c04b30
 
-PODFILE CHECKSUM: 202c35fb0749dbba14f85cc9c1d65dd7c80ca8e5
+PODFILE CHECKSUM: f7beb076290a8efaaebb93dade92bb2c7513751f
 
 COCOAPODS: 1.10.1

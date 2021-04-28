@@ -12,7 +12,7 @@
 
 #import <Foundation/Foundation.h>
 #import "SJPlaybackHistoryController.h"
-typedef enum : NSUInteger {
+typedef NS_ENUM(NSUInteger, SJPlayerEvent) {
     ///
     /// 播放器资源将要改变时
     ///
@@ -43,9 +43,9 @@ typedef enum : NSUInteger {
     /// 播放器接收到App将要销毁时
     ///
     SJPlayerEventApplicationWillTerminate,
-} SJPlayerEvent;
+};
 
-typedef enum : NSUInteger {
+typedef NS_OPTIONS(NSUInteger, SJPlayerEventMask) {
     SJPlayerEventMaskURLAssetWillChange = 1 << SJPlayerEventURLAssetWillChange,
     
     SJPlayerEventMaskPlaybackControllerWillDeallocate = 1 << SJPlayerEventPlaybackControllerWillDeallocate,
@@ -61,7 +61,7 @@ typedef enum : NSUInteger {
     SJPlayerEventMaskApplicationEvents = SJPlayerEventMaskApplicationDidEnterBackground | SJPlayerEventMaskApplicationWillTerminate,
     
     SJPlayerEventMaskAll = (SJPlayerEventMaskURLAssetWillChange | SJPlayerEventMaskPlaybackEvents | SJPlayerEventMaskApplicationEvents),
-} SJPlayerEventMask;
+};
  
 NS_ASSUME_NONNULL_BEGIN
 @interface SJVideoPlayerURLAsset (SJPlaybackRecordSaveHandlerExtended)

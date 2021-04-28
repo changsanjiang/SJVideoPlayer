@@ -24,12 +24,12 @@ typedef NS_ENUM(NSUInteger, SJOrientation) {
     SJOrientation_LandscapeRight = UIDeviceOrientationLandscapeRight,
 };
 
-typedef enum : NSUInteger {
+typedef NS_OPTIONS(NSUInteger, SJOrientationMask) {
     SJOrientationMaskPortrait = 1 << SJOrientation_Portrait,
     SJOrientationMaskLandscapeLeft = 1 << SJOrientation_LandscapeLeft,
     SJOrientationMaskLandscapeRight = 1 << SJOrientation_LandscapeRight,
     SJOrientationMaskAll = SJOrientationMaskPortrait | SJOrientationMaskLandscapeLeft | SJOrientationMaskLandscapeRight,
-} SJOrientationMask;
+};
 
 NS_ASSUME_NONNULL_BEGIN
 @protocol SJRotationManager<NSObject>

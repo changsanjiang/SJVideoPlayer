@@ -60,14 +60,13 @@ UIKIT_EXTERN NSNotificationName const SJEdgeControlButtonItemPerformedActionNoti
 - (void)removeAllActions;
 - (void)performActions;
 @end
-
-typedef enum : NSUInteger {
+typedef NS_ENUM(NSUInteger, SJButtonItemPlaceholderType) { 
     SJButtonItemPlaceholderType_Unknown,
     SJButtonItemPlaceholderType_49x49,              // 49 * 49
     SJButtonItemPlaceholderType_49xAutoresizing,    // 49 * 自适应大小
     SJButtonItemPlaceholderType_49xFill,            // 49 * 填充父视图剩余空间
     SJButtonItemPlaceholderType_49xSpecifiedSize,   // 49 * 指定尺寸(水平布局时, 49为高度, `指定尺寸`为宽度. 相反的, 垂直布局时, 49为宽度, `指定尺寸`为高度)
-} SJButtonItemPlaceholderType;
+} ;
 /// 占位Item
 /// 先占好位置, 后更新属性
 @interface SJEdgeControlButtonItem(Placeholder)

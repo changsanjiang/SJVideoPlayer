@@ -1,1 +1,1 @@
-../../../../../../SJBaseVideoPlayer/SJBaseVideoPlayer/Common/Implements/SJPromptPopupController.h
+../../../SJBaseVideoPlayer/SJBaseVideoPlayer/Common/Implements/SJPromptPopupController.h

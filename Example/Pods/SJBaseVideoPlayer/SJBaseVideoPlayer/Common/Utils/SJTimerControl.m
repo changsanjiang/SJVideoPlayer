@@ -39,8 +39,8 @@ NS_ASSUME_NONNULL_BEGIN
             return ;
         }
         if ( (--self.point) <= 0 ) {
-            if ( self.exeBlock ) self.exeBlock(self);
             [self clear];
+            if ( self.exeBlock ) self.exeBlock(self);
         }
     } repeats:YES];
     

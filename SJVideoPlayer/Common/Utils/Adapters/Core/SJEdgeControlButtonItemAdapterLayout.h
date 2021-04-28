@@ -9,7 +9,7 @@
 #import "SJEdgeControlButtonItem.h"
 @class SJEdgeControlButtonItemLayoutAttributes;
 
-typedef enum : NSUInteger {
+typedef NS_ENUM(NSUInteger, SJAdapterLayoutType) {
     ///
     /// 垂直布局
     ///
@@ -24,7 +24,7 @@ typedef enum : NSUInteger {
     /// 帧布局(一层一层往上盖, 并居中显示)
     ///
     SJAdapterLayoutTypeFrameLayout,
-} SJAdapterLayoutType;
+} ;
 
 NS_ASSUME_NONNULL_BEGIN
 @interface SJEdgeControlButtonItemAdapterLayout : NSObject

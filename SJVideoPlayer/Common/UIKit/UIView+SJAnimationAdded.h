@@ -9,7 +9,7 @@
 #import <UIKit/UIKit.h>
 
 /// 视图
-typedef enum : NSUInteger {
+typedef NS_ENUM(NSUInteger, SJViewDisappearAnimation) {
     SJViewDisappearAnimation_None,
     SJViewDisappearAnimation_Top,
     SJViewDisappearAnimation_Left,
@@ -17,7 +17,7 @@ typedef enum : NSUInteger {
     SJViewDisappearAnimation_Right,
     SJViewDisappearAnimation_HorizontalScaling, // 水平缩放
     SJViewDisappearAnimation_VerticalScaling,   // 垂直缩放
-} SJViewDisappearAnimation;
+} ;
 
 NS_ASSUME_NONNULL_BEGIN
 extern BOOL

@@ -61,6 +61,7 @@ extern NSNotificationName const SJMediaPlayerViewReadyForDisplayNotification;
 @end
 
 @protocol SJMediaPlayer <NSObject>
+@property (nonatomic, strong, readonly, nullable) NSError *error;
 @property (nonatomic, readonly, nullable) SJWaitingReason reasonForWaitingToPlay;
 @property (nonatomic, readonly) SJPlaybackTimeControlStatus timeControlStatus;
 @property (nonatomic, readonly) SJAssetStatus assetStatus;

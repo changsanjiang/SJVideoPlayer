@@ -65,7 +65,8 @@ $ pod update --no-repo-update   (不要用 pod install 了, 用这个命令安�
 Email: changsanjiang@gmail.com
 
 QQGroup: 610197491 (iOS 开发 2)
-QQGroup: 930508201 (iOS 开发)
+
+QQGroup: 930508201 (iOS 开发)(这个群满员了, 请加2群吧)
 
 ## 赞助
 如果对您有所帮助，欢迎您的赞赏

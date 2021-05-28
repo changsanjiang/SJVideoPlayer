@@ -63,6 +63,10 @@ NS_ASSUME_NONNULL_BEGIN
 //}
 
 - (void)viewWillTransitionToSize:(CGSize)size withTransitionCoordinator:(id<UIViewControllerTransitionCoordinator>)coordinator {
+    if ( self.navigationController.view.window == nil || self.navigationController.view.window.isHidden ) {
+        [super viewWillTransitionToSize:size withTransitionCoordinator:coordinator];
+        return;
+    }
     _rotating = YES;
     
     [super viewWillTransitionToSize:size withTransitionCoordinator:coordinator];

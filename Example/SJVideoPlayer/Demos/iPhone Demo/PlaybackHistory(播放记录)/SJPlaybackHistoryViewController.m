@@ -66,6 +66,7 @@
             record = SJPlaybackRecord.alloc.init;
             record.mediaId = _media.id;
             record.userId = userId;
+            record.mediaType = SJMediaTypeVideo;
             // - 添加一些扩展属性, 便于开发者的业务逻辑开发
             record.title = _media.mediaTitle;
         }

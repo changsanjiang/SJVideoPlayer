@@ -57,15 +57,18 @@ target 'SJVideoPlayer_Example' do
   # 默认为 AVPlayer
   pod 'SJBaseVideoPlayer'#, :path => '../../SJBaseVideoPlayer'
   pod 'SJVideoPlayer', :path => '../../SJVideoPlayer'
-  pod 'SJUIKit'#, :podspec => 'https://gitee.com/changsanjiang/SJUIKit/raw/master/SJUIKit-YYModel.podspec'
+  pod 'SJUIKit'
+  
+  # 列表控制
+  pod 'SJUIKit/PlaybackListController'
 
   # 边播边缓存的库
   pod 'SJMediaCacheServer'
   
   # 全屏手势
   pod 'SJFullscreenPopGesture/ObjC'
-  # 列表控制
-  pod 'SJPlaybackListController'#, :path => '../../SJPlaybackListController'
+  
+  
   pod 'Masonry', :inhibit_warnings => true
   pod 'MJRefresh', '3.4.3', :inhibit_warnings => true
   pod 'SJRouter'

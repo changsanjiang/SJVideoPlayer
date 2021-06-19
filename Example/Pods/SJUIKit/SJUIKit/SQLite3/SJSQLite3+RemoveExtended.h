@@ -13,7 +13,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 @interface SJSQLite3 (RemoveExtended)
 
-- (void)removeAllObjectsForClass:(Class)cls conditions:(nullable NSArray<SJSQLite3Condition *> *)conditions error:(NSError *__autoreleasing  _Nullable *)error;
+- (BOOL)removeAllObjectsForClass:(Class)cls conditions:(nullable NSArray<SJSQLite3Condition *> *)conditions error:(NSError *__autoreleasing  _Nullable *)error;
 
 @end
 

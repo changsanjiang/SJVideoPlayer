@@ -67,12 +67,7 @@
 #define HLS_REGEX_TS_BYTERANGE_LENGTH   @"#EXT-X-BYTERANGE:([^@]+)"
 #define HLS_INDEX_TS_BYTERANGE_START    1
 #define HLS_INDEX_TS_BYTERANGE_LENGTH   1
-
-typedef NS_ENUM(NSUInteger, HLSMatchedContentsOperation) {
-    HLSMatchedContentsOperationReplaceToProxyURI,
-    HLSMatchedContentsOperationDelete,
-};
-
+ 
 static dispatch_queue_t mcs_queue;
 
 @interface NSString (MCSRegexMatching)
@@ -113,13 +108,30 @@ static dispatch_queue_t mcs_queue;
 }
 @end
 
+
+@interface HLS_EXT_X_URI : NSObject
+@property (nonatomic) MCSDataType type;
+@property (nonatomic) NSRange range;
+@end
+
+@implementation HLS_EXT_X_URI
+- (instancetype)initWithType:(MCSDataType)type inRange:(NSRange)range {
+    self = [super init];
+    if ( self ) {
+        _type = type;
+        _range = range;
+    }
+    return self;
+}
+@end
+
 @interface NSString (MCSHLSContents)
 - (nullable NSArray<NSString *> *)mcs_urlsByMatchingPattern:(NSString *)pattern contentsURL:(NSURL *)contentsURL options:(NSRegularExpressionOptions)options;
 - (nullable NSArray<NSString *> *)mcs_urlsByMatchingPattern:(NSString *)pattern atIndex:(NSInteger)index contentsURL:(NSURL *)contentsURL options:(NSRegularExpressionOptions)options;
 - (NSString *)mcs_convertToUrlByContentsURL:(NSURL *)contentsURL;
 
-- (nullable NSArray<NSValue *> *)mcs_TsURIRanges;
 - (nullable NSArray<HLSURIItem *> *)mcs_URIItems;
+- (nullable NSArray<HLS_EXT_X_URI *> *)mcs_URIs;
 
 @property (nonatomic, readonly) BOOL mcs_hasVariantStream;
 @end
@@ -321,42 +333,41 @@ static dispatch_queue_t mcs_queue;
         return;
     }
     
-    NSMutableString *indexFileContents = contents.mutableCopy;
-    
-    // #EXT-X-MEDIA:TYPE=AUDIO,GROUP-ID="audio",NAME="English stereo",LANGUAGE="en",AUTOSELECT=YES,URI="audio.m3u8"
-    [self _contents:indexFileContents matchingPattern:HLS_REGEX_MEDIA_URI atIndex:HLS_INDEX_MEDIA_URI suffix:HLS_SUFFIX_INDEX contentsURL:currRequest.URL options:kNilOptions operation:^HLSMatchedContentsOperation(NSUInteger idx) {
-        return HLSMatchedContentsOperationReplaceToProxyURI;
-    }];
-    
-    // #EXT-X-I-FRAME-STREAM-INF:PROGRAM-ID=1,BANDWIDTH=42029000,CODECS="avc1.4d001f",URI="iframe.m3u8"
-    [self _contents:indexFileContents matchingPattern:HLS_REGEX_I_FRAME_STREAM atIndex:HLS_INDEX_I_FRAME_STREAM suffix:HLS_SUFFIX_INDEX contentsURL:currRequest.URL options:kNilOptions operation:^HLSMatchedContentsOperation(NSUInteger idx) {
-        return HLSMatchedContentsOperationReplaceToProxyURI;
-    }];
-    
-    // #EXT-X-STREAM-INF:BANDWIDTH=928000,CODECS="avc1.42c00d,mp4a.40.2",RESOLUTION=480x270,AUDIO="audio"
-    // video.m3u8
-    [self _contents:indexFileContents matchingPattern:HLS_REGEX_VARIANT_STREAM atIndex:HLS_INDEX_VARIANT_STREAM suffix:HLS_SUFFIX_INDEX contentsURL:currRequest.URL options:kNilOptions operation:^HLSMatchedContentsOperation(NSUInteger idx) {
-        return idx == 0 ? HLSMatchedContentsOperationReplaceToProxyURI : HLSMatchedContentsOperationDelete;
-    }];
-    
-    // #EXT-X-KEY:METHOD=AES-128,URI="...",IV=...
-    [self _contents:indexFileContents matchingPattern:HLS_REGEX_AESKEY atIndex:HLS_INDEX_AESKEY_URI suffix:HLS_SUFFIX_AES_KEY contentsURL:currRequest.URL options:kNilOptions operation:^HLSMatchedContentsOperation(NSUInteger idx) {
-        return HLSMatchedContentsOperationReplaceToProxyURI;
-    }];
-    
-    // #EXTINF:10,
-    // #EXT-X-BYTERANGE:1007868@0
-    // 000000.ts
-    NSArray<NSValue *> *TsURIRanges = [indexFileContents mcs_TsURIRanges];
-    if ( TsURIRanges.count != 0 ) {
-        [TsURIRanges enumerateObjectsWithOptions:NSEnumerationReverse usingBlock:^(NSValue * _Nonnull obj, NSUInteger idx, BOOL * _Nonnull stop) {
-            NSRange range = [obj rangeValue];
-            NSString *matched = [indexFileContents substringWithRange:range];
-            NSString *url = [matched mcs_convertToUrlByContentsURL:currRequest.URL];
-            NSString *proxy = [MCSURL.shared HLS_proxyURIWithURL:url suffix:HLS_SUFFIX_TS inAsset:asset.name];
-            [indexFileContents replaceCharactersInRange:range withString:proxy];
-        }];
+    NSArray<NSString *> *components = [contents componentsSeparatedByCharactersInSet:NSCharacterSet.newlineCharacterSet];
+    NSMutableString *indexFileContents = NSMutableString.string;
+    for ( NSString *str in components ) {
+        if ( str.length != 0 )
+            [indexFileContents appendFormat:@"%@\n", str];
     }
+    [[indexFileContents mcs_URIs] enumerateObjectsWithOptions:NSEnumerationReverse usingBlock:^(HLS_EXT_X_URI * _Nonnull obj, NSUInteger idx, BOOL * _Nonnull stop) {
+        NSString *URI = [indexFileContents substringWithRange:obj.range];
+        NSString *url = [URI mcs_convertToUrlByContentsURL:currRequest.URL];
+        NSString *suffix = nil;
+        switch ( obj.type ) {
+            case MCSDataTypeHLSPlaylist:
+                suffix = HLS_SUFFIX_INDEX;
+                break;
+            case MCSDataTypeHLSAESKey:
+                suffix = HLS_SUFFIX_AES_KEY;
+                break;
+            case MCSDataTypeHLSTs:
+                suffix = HLS_SUFFIX_TS;
+                break;
+            default: break;
+        }
+        NSString *proxy = [MCSURL.shared HLS_proxyURIWithURL:url suffix:suffix inAsset:_asset.name];
+        [indexFileContents replaceCharactersInRange:obj.range withString:proxy];
+    }];
+    ///
+    /// 仅保留最前面的stream
+    ///
+    ///     #EXT-X-STREAM-INF:BANDWIDTH=928000,CODECS="avc1.42c00d,mp4a.40.2",RESOLUTION=480x270,AUDIO="audio"
+    ///     video.m3u8
+    [[indexFileContents mcs_textCheckingResultsByMatchPattern:HLS_REGEX_VARIANT_STREAM options:kNilOptions] enumerateObjectsWithOptions:NSEnumerationReverse usingBlock:^(NSTextCheckingResult * _Nonnull obj, NSUInteger idx, BOOL * _Nonnull stop) {
+        if ( idx != 0 ) {
+            [indexFileContents deleteCharactersInRange:obj.range];
+        }
+    }];
     
     NSString *indexFilePath = [asset indexFilePath];
     if ( ![NSFileManager.defaultManager fileExistsAtPath:indexFilePath] ) {
@@ -369,27 +380,7 @@ static dispatch_queue_t mcs_queue;
     
     [self _finished];
 }
-
-- (void)_contents:(NSMutableString *)contents matchingPattern:(NSString *)pattern atIndex:(NSInteger)index suffix:(NSString *)suffix contentsURL:(NSURL *)contentsURL options:(NSRegularExpressionOptions)options operation:(HLSMatchedContentsOperation(^)(NSUInteger idx))operationBlock {
-    [[contents mcs_textCheckingResultsByMatchPattern:pattern options:kNilOptions] enumerateObjectsWithOptions:NSEnumerationReverse usingBlock:^(NSTextCheckingResult * _Nonnull result, NSUInteger idx, BOOL * _Nonnull stop) {
-        HLSMatchedContentsOperation operation = operationBlock(idx);
-        switch ( operation ) {
-            case HLSMatchedContentsOperationReplaceToProxyURI: {
-                NSRange URIRange = [result rangeAtIndex:index];
-                NSString *URI = [contents substringWithRange:URIRange];
-                NSString *url = [URI mcs_convertToUrlByContentsURL:contentsURL];
-                NSString *proxy = [MCSURL.shared HLS_proxyURIWithURL:url suffix:suffix inAsset:_asset.name];
-                [contents replaceCharactersInRange:URIRange withString:proxy];
-            }
-                break;
-            case HLSMatchedContentsOperationDelete: {
-                [contents deleteCharactersInRange:result.range];
-            }
-                break;
-        }
-    }];
-}
-
+ 
 - (void)_onError:(NSError *)error {
 #ifdef DEBUG
     NSLog(@"%d - %s - %@", (int)__LINE__, __func__, error);
@@ -477,22 +468,33 @@ static dispatch_queue_t mcs_queue;
     static NSString *const HLS_PREFIX_DIR_CURRENT = @"./";
      
     NSString *url = nil;
+    /// /video/name.m3u8
+    ///
     if      ( [self hasPrefix:HLS_PREFIX_DIR_ROOT] ) {
         NSURL *rootDir = [NSURL URLWithString:[NSString stringWithFormat:@"%@://%@", URL.scheme, URL.host]];
         NSString *subpath = self;
         url = [rootDir mcs_URLByAppendingPathComponent:subpath].absoluteString;
     }
+    /// ../video/name.m3u8
+    /// ../../video/name.m3u8
+    ///
     else if ( [self hasPrefix:HLS_PREFIX_DIR_PARENT] ) {
         NSURL *curDir = URL.mcs_URLByDeletingLastPathComponentAndQuery;
-        NSURL *parentDir = curDir.mcs_URLByDeletingLastPathComponentAndQuery;
-        NSString *subpath = [self substringFromIndex:HLS_PREFIX_DIR_PARENT.length];
+        NSURL *parentDir = curDir;
+        NSString *subpath = self;
+        while ( [subpath hasPrefix:HLS_PREFIX_DIR_PARENT] ) {
+            parentDir = parentDir.mcs_URLByDeletingLastPathComponentAndQuery;
+            subpath = [subpath substringFromIndex:HLS_PREFIX_DIR_PARENT.length];
+        }
         url = [parentDir mcs_URLByAppendingPathComponent:subpath].absoluteString;
     }
+    /// ./video/name.m3u8
     else if ( [self hasPrefix:HLS_PREFIX_DIR_CURRENT] ) {
         NSURL *curDir = URL.mcs_URLByDeletingLastPathComponentAndQuery;
         NSString *subpath = [self substringFromIndex:HLS_PREFIX_DIR_CURRENT.length];
         url = [curDir mcs_URLByAppendingPathComponent:subpath].absoluteString;
     }
+    /// http://localhost
     else if ( [self hasPrefix:HLS_PREFIX_LOCALHOST] ) {
         NSURL *rootDir = [NSURL URLWithString:[NSString stringWithFormat:@"%@://%@", URL.scheme, URL.host]];
         NSString *subpath = [self substringFromIndex:HLS_PREFIX_LOCALHOST.length];
@@ -509,28 +511,8 @@ static dispatch_queue_t mcs_queue;
     return url;
 }
 
-- (nullable NSArray<NSValue *> *)mcs_TsURIRanges {
-    NSArray<NSString *> *lines = [self componentsSeparatedByString:@"\n"];
-    NSMutableArray<NSValue *> *m = nil;
-    BOOL tsFlag = NO;
-    NSInteger length = 0;
-    for ( NSString *line in lines ) {
-        if      ( [line hasPrefix:HLS_PREFIX_TS_DURATION] ) {
-            tsFlag = YES;
-        }
-        else if ( tsFlag && ![line hasPrefix:HLS_PREFIX_TAG] && ![line hasSuffix:HLS_SUFFIX_CONTINUE] ) {
-            if ( m == nil ) m = NSMutableArray.array;
-            [m addObject:[NSValue valueWithRange:NSMakeRange(length, line.length)]];
-            tsFlag = NO;
-        }
-        
-        length += line.length + 1;
-    }
-    return m.copy;
-}
-
 - (nullable NSArray<HLSURIItem *> *)mcs_URIItems {
-    NSArray<NSString *> *lines = [self componentsSeparatedByString:@"\n"];
+    NSArray<NSString *> *lines = [self componentsSeparatedByCharactersInSet:NSCharacterSet.newlineCharacterSet];
     NSMutableArray<HLSURIItem *> *m = NSMutableArray.array;
     NSMutableArray<HLSURIItem *> *audioRenditionsArray = nil;
     NSMutableArray<HLSURIItem *> *videoRenditionsArray = nil;
@@ -663,6 +645,87 @@ static dispatch_queue_t mcs_queue;
         }
     }
     return m.count != 0 ? m.copy : nil;
+}
+
+- (nullable NSArray<HLS_EXT_X_URI *> *)mcs_URIs {
+    NSArray<NSString *> *lines = [self componentsSeparatedByString:@"\n"];
+    NSMutableArray<HLS_EXT_X_URI *> *m = NSMutableArray.array;
+    NSInteger linePos = 0;
+    BOOL vsFlag = NO;
+    BOOL tsFlag = NO;
+    for ( NSString *line in lines ) {
+        // #EXT-X-MEDIA:TYPE=AUDIO,GROUP-ID="audio",NAME="English stereo",LANGUAGE="en",AUTOSELECT=YES,URI="audio.m3u8"
+        // #EXT-X-I-FRAME-STREAM-INF:PROGRAM-ID=1,BANDWIDTH=42029000,CODECS="avc1.4d001f",URI="iframe.m3u8"
+        if      ( [line hasPrefix:HLS_PREFIX_MEDIA] || [line hasPrefix:HLS_PREFIX_I_FRAME_STREAM] ) {
+            NSRange URIRange = [line mcs_rangeByFrontStr:@"URI=\"" rearStr:@"\"" isRearStrOptional:NO];
+            URIRange.location += linePos;
+            HLS_EXT_X_URI *obj = [HLS_EXT_X_URI.alloc initWithType:MCSDataTypeHLSPlaylist inRange:URIRange];
+            [m addObject:obj];
+        }
+        // #EXT-X-STREAM-INF:BANDWIDTH=928000,CODECS="avc1.42c00d,mp4a.40.2",RESOLUTION=480x270,AUDIO="...",SUBTITLES="...",VIDEO="..."
+        else if ( [line hasPrefix:HLS_PREFIX_VARIANT_STREAM] ) {
+            vsFlag = YES;
+        }
+        else if ( vsFlag ) {
+            if ( ![line hasPrefix:HLS_PREFIX_TAG] && ![line hasSuffix:HLS_SUFFIX_CONTINUE] ) {
+                NSRange URIRange = NSMakeRange(linePos, line.length);
+                HLS_EXT_X_URI *obj = [HLS_EXT_X_URI.alloc initWithType:MCSDataTypeHLSPlaylist inRange:URIRange];
+                [m addObject:obj];
+                vsFlag = NO;
+            }
+        }
+        //    #EXT-X-KEY:METHOD=AES-128,URI="key1.php"
+        //
+        //    #EXTINF:2.833,
+        //    example/0.ts
+        //    #EXTINF:15.0,
+        //    example/1.ts
+        //
+        //    #EXT-X-KEY:METHOD=AES-128,URI="key2.php"
+        //
+        else if ( [line hasPrefix:HLS_PREFIX_AESKEY] ) {
+            NSRange URIRange = [line mcs_rangeByFrontStr:@"URI=\"" rearStr:@"\"" isRearStrOptional:NO];
+            URIRange.location += linePos;
+            HLS_EXT_X_URI *obj = [HLS_EXT_X_URI.alloc initWithType:MCSDataTypeHLSAESKey inRange:URIRange];
+            [m addObject:obj];
+        }
+        // #EXTINF:10,
+        // #EXT-X-BYTERANGE:1007868@0
+        // 000000.ts
+        else if ( [line hasPrefix:HLS_PREFIX_TS_DURATION] ) {
+            tsFlag = YES;
+        }
+        else if ( tsFlag ) {
+            if ( ![line hasPrefix:HLS_PREFIX_TAG] && ![line hasSuffix:HLS_SUFFIX_CONTINUE] ) {
+                NSRange URIRange = NSMakeRange(linePos, line.length);
+                HLS_EXT_X_URI *obj = [HLS_EXT_X_URI.alloc initWithType:MCSDataTypeHLSTs inRange:URIRange];
+                [m addObject:obj];
+                tsFlag = NO;
+            }
+        }
+        
+        linePos += line.length + 1/* \n */;
+    }
+    return m.count != 0 ? m.copy : nil;
+}
+
+- (NSRange)mcs_rangeByFrontStr:(NSString *)front rearStr:(NSString *)rear isRearStrOptional:(BOOL)isRearStrOptional {
+    NSRange retv = NSMakeRange(NSNotFound, NSNotFound);
+    NSRange frontRange = [self rangeOfString:front];
+    if ( frontRange.length != NSNotFound ) {
+        BOOL isRetvValid = NO;
+        NSString *rearStr = [self substringFromIndex:NSMaxRange(frontRange)];
+        NSRange rearRange = [rearStr rangeOfString:rear];
+        if ( rearRange.length != NSNotFound ) {
+            retv = NSMakeRange(NSMaxRange(frontRange), rearRange.location);
+            isRetvValid = YES;
+        }
+        
+        if ( !isRetvValid && (isRearStrOptional || rear.length == 0 ) ) {
+            retv = NSMakeRange(NSMaxRange(frontRange), self.length - NSMaxRange(frontRange));
+        }
+    }
+    return retv;
 }
 
 - (BOOL)mcs_hasVariantStream {

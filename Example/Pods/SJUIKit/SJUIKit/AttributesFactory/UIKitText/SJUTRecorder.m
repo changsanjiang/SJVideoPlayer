@@ -172,10 +172,8 @@ static NSArray<NSAttributedStringKey> *SJUT_Keys;
 }
 
 - (void)setValuesForAttributedString:(NSAttributedString *)attributedString {
-    NSRange textRange = SJUTGetTextRange(attributedString);
-    NSRange longestEffectiveRange;
-    NSMutableDictionary<NSAttributedStringKey, id> *attrs = [attributedString attributesAtIndex:0 longestEffectiveRange:&longestEffectiveRange inRange:textRange].mutableCopy;
-    if ( SJUTRangeContains(longestEffectiveRange, textRange) ) {
+    NSMutableDictionary<NSAttributedStringKey, id> *attrs = [[self _getGlobalAttributesForAttributedString:attributedString] mutableCopy];
+    if ( attrs.count != 0 ) {
         
         // text attributes
         font = attrs[NSFontAttributeName];
@@ -238,6 +236,28 @@ static NSArray<NSAttributedStringKey> *SJUT_Keys;
         [attrs removeObjectsForKeys:SJUT_Keys];
         [self setValuesForAttributeKeysWithDictionary:attrs];
     }
+}
+
+- (nullable NSDictionary<NSAttributedStringKey, id> *)_getGlobalAttributesForAttributedString:(NSAttributedString *)attributedString {
+    NSRange textRange = SJUTGetTextRange(attributedString);
+    NSRange longestEffectiveRange;
+    NSDictionary<NSAttributedStringKey, id> *attrs = [attributedString attributesAtIndex:0 longestEffectiveRange:&longestEffectiveRange inRange:textRange];
+    if ( SJUTRangeContains(longestEffectiveRange, textRange) ) {
+        return attrs;
+    }
+    
+    NSDictionary<NSAttributedStringKey, id> *next = nil;
+    while ( attrs.count != 0 && NSMaxRange(longestEffectiveRange) != NSMaxRange(textRange) ) {
+        next = [attributedString attributesAtIndex:NSMaxRange(longestEffectiveRange) effectiveRange:&longestEffectiveRange];
+        
+        NSMutableDictionary<NSAttributedStringKey, id> *tmp = [attrs mutableCopy];
+        [attrs enumerateKeysAndObjectsUsingBlock:^(NSAttributedStringKey  _Nonnull key, id  _Nonnull obj, BOOL * _Nonnull stop) {
+            if ( ![obj isEqual:next[key]] )
+                tmp[key] = nil;
+        }];
+        attrs = tmp.copy;
+    }
+    return attrs;
 }
 @end
 NS_ASSUME_NONNULL_END

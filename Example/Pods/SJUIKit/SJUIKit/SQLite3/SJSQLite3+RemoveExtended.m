@@ -19,10 +19,10 @@
 ///
 /// @param error            执行出错. 当执行发生错误时, 会暂停执行后续的sql语句, 数据库将回滚到执行之前的状态.
 ///
-- (void)removeAllObjectsForClass:(Class)cls conditions:(nullable NSArray<SJSQLite3Condition *> *)conditions error:(NSError *__autoreleasing  _Nullable *)error {
+- (BOOL)removeAllObjectsForClass:(Class)cls conditions:(nullable NSArray<SJSQLite3Condition *> *)conditions error:(NSError *__autoreleasing  _Nullable *)error {
     SJSQLiteTableInfo *_Nullable table = [self tableInfoForClass:cls error:error];
     if ( table == nil ) {
-        return;
+        return NO;
     }
 
     NSMutableString *where = nil;
@@ -36,6 +36,14 @@
 
     NSMutableString *sql = NSMutableString.new;
     [sql appendFormat:@"DELETE FROM '%@' WHERE %@;", table.name, where];
-    [self execInTransaction:sql error:error];
+    
+    NSError *innerError = nil;
+    [self execInTransaction:sql error:&innerError];
+    if ( innerError != nil ) {
+        if ( error != NULL )
+            *error = innerError;
+        return NO;
+    }
+    return YES;
 }
 @end

@@ -39,6 +39,15 @@
         [_server start];
         
         MCSURL.shared.serverURL = _server.serverURL;
+        
+        self.resolveAssetIdentifier = ^NSString * _Nonnull(NSURL * _Nonnull URL) {
+            NSString *retv = URL.absoluteString;
+            NSString *query = URL.query;
+            if ( query.length != 0 ) {
+                retv = [retv substringToIndex:retv.length - (query.length + 1 /*?*/)];
+            }
+            return retv;
+        };
     }
     return self;
 }
@@ -254,7 +263,11 @@
 - (nullable NSArray<id<MCSAssetExporter>> *)allExporters {
     return MCSAssetExporterManager.shared.allExporters;
 }
- 
+
+- (nullable NSArray<id<MCSAssetExporter>> *)exportsForMask:(MCSAssetExportStatusQueryMask)mask {
+    return [MCSAssetExporterManager.shared exportsForMask:mask];
+}
+
 - (nullable id<MCSAssetExporter>)exportAssetWithURL:(NSURL *)URL {
     return [self exportAssetWithURL:URL resumes:NO];
 }

@@ -655,6 +655,14 @@ static NSNotificationName const MCSAssetExporterStatusDidChangeNotification = @"
     }];
 }
 
+- (nullable NSArray<id<MCSAssetExporter>> *)exportsForMask:(MCSAssetExportStatusQueryMask)mask {
+    __block NSArray<id<MCSAssetExporter>> *_Nullable retv = nil;;
+    [self _lockInBlock:^{
+        retv = [self _exportersInCachesForMask:mask];
+    }];
+    return retv;
+}
+
 #pragma mark - mark
 
 - (void)_lockInBlock:(void(^NS_NOESCAPE)(void))task {
@@ -676,6 +684,7 @@ static NSNotificationName const MCSAssetExporterStatusDidChangeNotification = @"
     return exporter;
 }
 
+// memory + disk
 - (nullable MCSAssetExporter *)_exporterInCachesForName:(NSString *)name {
     // memory
     MCSAssetExporter *exporter = [self _exporterInMemoryForName:name];
@@ -698,6 +707,71 @@ static NSNotificationName const MCSAssetExporterStatusDidChangeNotification = @"
             return exporter;
     }
     return nil;
+}
+
+// memory + disk
+- (nullable NSArray<MCSAssetExporter *> *)_exportersInCachesForMask:(MCSAssetExportStatusQueryMask)mask {
+    // memory
+    NSArray<MCSAssetExporter *> *_Nullable mem = [self _exportersInMemoryForMask:mask];
+    NSMutableArray<NSNumber *> *notIn = [NSMutableArray arrayWithObject:@(0)];
+    for ( MCSAssetExporter *exporter in mem ) {
+        [notIn addObject:@(exporter.id)];
+    }
+    
+    // disk
+    NSMutableArray<NSNumber *> *queryStatus = NSMutableArray.array;
+    if ( mask & MCSAssetExportStatusQueryMaskUnknown ) {
+        [queryStatus addObject:@(MCSAssetExportStatusUnknown)];
+    }
+    if ( mask & MCSAssetExportStatusQueryMaskWaiting ) {
+        [queryStatus addObject:@(MCSAssetExportStatusWaiting)];
+    }
+    if ( mask & MCSAssetExportStatusQueryMaskExporting ) {
+        [queryStatus addObject:@(MCSAssetExportStatusExporting)];
+    }
+    if ( mask & MCSAssetExportStatusQueryMaskFinished ) {
+        [queryStatus addObject:@(MCSAssetExportStatusFinished)];
+    }
+    if ( mask & MCSAssetExportStatusQueryMaskFailed ) {
+        [queryStatus addObject:@(MCSAssetExportStatusFailed)];
+    }
+    if ( mask & MCSAssetExportStatusQueryMaskSuspended ) {
+        [queryStatus addObject:@(MCSAssetExportStatusSuspended)];
+    }
+    if ( mask & MCSAssetExportStatusQueryMaskCancelled ) {
+        [queryStatus addObject:@(MCSAssetExportStatusCancelled)];
+    }
+    NSArray<MCSAssetExporter *> *_Nullable disk = [_sqlite3 objectsForClass:MCSAssetExporter.class conditions:@[
+        [SJSQLite3Condition conditionWithColumn:@"id" notIn:notIn],
+        [SJSQLite3Condition conditionWithColumn:@"status" in:queryStatus]
+    ] orderBy:nil error:NULL];
+    // add into memory
+    if ( disk.count != 0 ) {
+        [_exporters addObjectsFromArray:disk];
+    }
+    
+    NSMutableArray<MCSAssetExporter *> *_Nullable retv = nil;
+    if ( mem.count != 0 || disk.count != 0 ) {
+        retv = NSMutableArray.array;
+        if ( mem.count != 0 )
+            [retv addObjectsFromArray:mem];
+        if ( disk.count != 0 )
+            [retv addObjectsFromArray:disk];
+    }
+    return retv.copy;
+}
+
+- (nullable NSArray<MCSAssetExporter *> *)_exportersInMemoryForMask:(MCSAssetExportStatusQueryMask)mask {
+    NSMutableArray<MCSAssetExporter *> *_Nullable retv = nil;
+    for ( MCSAssetExporter *exporter in _exporters ) {
+        if ( mask & (1 << exporter.status) ) {
+            if ( retv == nil ) {
+                retv = NSMutableArray.array;
+            }
+            [retv addObject:exporter];
+        }
+    }
+    return retv.copy;
 }
 
 - (void)_statusDidChange:(MCSAssetExporter *)exporter {

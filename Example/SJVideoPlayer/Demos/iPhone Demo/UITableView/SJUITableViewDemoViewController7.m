@@ -17,8 +17,13 @@
 #import <SJVideoPlayer/SJVideoPlayer.h>
 #import <SJUIKit/NSAttributedString+SJMake.h>
 #import <SJFullscreenPopGesture/SJFullscreenPopGesture.h>
+
+typedef NS_ENUM(NSUInteger, SJTestPageItemType) {
+    SJTestPageItemTypeRecommend,
+    SJTestPageItemTypeHot,
+};
  
-@interface SJUITableViewDemoViewController7 ()<SJPageViewControllerDelegate, SJPageViewControllerDataSource, SJPageMenuBarDelegate, SJTopViewDelegate>
+@interface SJUITableViewDemoViewController7 ()<SJPageViewControllerDelegate, SJPageViewControllerDataSource, SJPageMenuBarDataSource, SJTopViewDelegate>
 @property (nonatomic, strong) UIButton *backButton;
 @property (nonatomic, strong) SJTopView *topView;
 @property (nonatomic, strong) SJVideoPlayer *player;
@@ -26,6 +31,7 @@
 @property (nonatomic, strong) SJPageViewController *pageViewController;
 @property (nonatomic, strong) UIView *pageHeaderView;
 @property (nonatomic, strong) SJPageMenuBar *pageMenuBar;
+@property (nonatomic, strong) SJPageItemManager *pageItemManager;
 @end
 
 @implementation SJUITableViewDemoViewController7
@@ -33,19 +39,17 @@
 - (void)viewDidLoad {
     [super viewDidLoad];
     [self _setupViews];
-    
-    // 模拟数据
-    NSMutableArray<SJPageMenuItemView *> *m = [NSMutableArray arrayWithCapacity:99];
-    for ( int i = 0 ; i < 99 ; ++ i  ) {
-        SJPageMenuItemView *view = [SJPageMenuItemView.alloc initWithFrame:CGRectZero];
-        view.text = @[@"从前", @"有", @"99", @"座", @"灵剑山AAAAAAAAAA"][i % 5];
-        view.font = [UIFont boldSystemFontOfSize:18];
-        [m addObject:view];
-    }
-    
-    self.pageMenuBar.itemViews = m;
+      
+    _pageItemManager = [SJPageItemManager.alloc init];
+    [_pageItemManager addPageItem:[self _pageItemWithType:SJTestPageItemTypeRecommend]];
+    [_pageItemManager addPageItem:[self _pageItemWithType:SJTestPageItemTypeHot]];
+    [_pageItemManager addPageItem:[self _pageItemWithType:SJTestPageItemTypeRecommend]];
+    [_pageItemManager addPageItem:[self _pageItemWithType:SJTestPageItemTypeHot]];
+    [_pageItemManager addPageItem:[self _pageItemWithType:SJTestPageItemTypeRecommend]];
+    [_pageItemManager addPageItem:[self _pageItemWithType:SJTestPageItemTypeHot]];
+     
     [self.pageViewController reloadPageViewController];
-    [self.pageMenuBar scrollToItemAtIndex:4 animated:NO];
+    [self.pageMenuBar scrollToItemAtIndex:1 animated:NO];
 }
 
 - (void)dealloc {
@@ -60,6 +64,20 @@
  
 - (void)playButtonWasTapped:(SJTopView *)bar {
     [_player play];
+}
+
+- (SJPageItem *)_pageItemWithType:(SJTestPageItemType)type {
+    SJPageMenuItemView *menuView = [SJPageMenuItemView.alloc initWithFrame:CGRectZero];
+    menuView.font = [UIFont boldSystemFontOfSize:18];
+    switch ( type ) {
+        case SJTestPageItemTypeRecommend:
+            menuView.text = @"推荐推荐推荐";
+            break;
+        case SJTestPageItemTypeHot:
+            menuView.text = @"最热";
+            break;
+    }
+    return [SJPageItem.alloc initWithType:type viewController:UITableViewController.new menuView:menuView];
 }
 
 #pragma mark -
@@ -85,7 +103,10 @@
     _pageMenuBar = [SJPageMenuBar.alloc initWithFrame:CGRectZero];
     _pageMenuBar.contentInsets = UIEdgeInsetsMake(0, 16, 0, 16);
     _pageMenuBar.scrollIndicatorLayoutMode = SJPageMenuBarScrollIndicatorLayoutModeEqualItemViewContentWidth;
-    _pageMenuBar.delegate = self;
+    _pageMenuBar.dataSource = self;
+    
+    // 将`PageMenuBar`与`PageViewController`相关联
+    _pageViewController.pageMenuBar = _pageMenuBar;
     
     [self addChildViewController:_pageViewController];
     [self.view addSubview:_pageViewController.view];
@@ -111,15 +132,25 @@
         make.width.equalTo(self.topView.contentView.mas_height);
     }];
 }
+
+#pragma mark - SJPageMenuBarDataSource
+
+- (NSUInteger)numberOfItemsInPageMenuBar:(SJPageMenuBar *)bar {
+    return _pageItemManager.numberOfPageItems;
+}
+
+- (__kindof UIView<SJPageMenuItemView> *)pageMenuBar:(SJPageMenuBar *)bar viewForItemAtIndex:(NSInteger)index {
+    return [_pageItemManager menuViewAtIndex:index];
+}
  
 #pragma mark - Page View Controller
 
 - (NSUInteger)numberOfViewControllersInPageViewController:(SJPageViewController *)pageViewController {
-    return self.pageMenuBar.numberOfItems;
+    return _pageItemManager.numberOfPageItems;
 }
 
 - (UIViewController *)pageViewController:(SJPageViewController *)pageViewController viewControllerAtIndex:(NSInteger)index {
-    return UITableViewController.new;
+    return [_pageItemManager viewControllerAtIndex:index];
 }
 
 - (SJPageViewControllerHeaderMode)modeForHeaderWithPageViewController:(SJPageViewController *)pageViewController {
@@ -203,10 +234,6 @@
 - (CGFloat)heightForHeaderPinToVisibleBoundsWithPageViewController:(SJPageViewController *)pageViewController {
     return _player.isPaused ? (_pageMenuBar.bounds.size.height + _topView.bounds.size.height) : _pageHeaderView.bounds.size.height;
 }
- 
-- (void)pageViewController:(SJPageViewController *)pageViewController didScrollInRange:(NSRange)range distanceProgress:(CGFloat)progress {
-    [_pageMenuBar scrollInRange:range distanceProgress:progress];
-}
 
 - (void)pageViewController:(SJPageViewController *)pageViewController headerViewVisibleRectDidChange:(CGRect)visibleRect {
     CGFloat progress = 0;
@@ -219,13 +246,6 @@
         progress = 1 - (visibleRect.size.height - pinnedHeight) / (pageHeaderViewHeight - pinnedHeight);
     }
     _topView.hidden = progress < 0.99;
-}
-
-#pragma mark - Page Menu Bar
-
-- (void)pageMenuBar:(SJPageMenuBar *)bar focusedIndexDidChange:(NSUInteger)index {
-    if ( [_pageViewController isViewControllerVisibleAtIndex:index] ) return;
-    [_pageViewController setViewControllerAtIndex:index];
 }
 
 #pragma mark -

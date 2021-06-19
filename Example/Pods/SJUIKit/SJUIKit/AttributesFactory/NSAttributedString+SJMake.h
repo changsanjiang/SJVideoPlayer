@@ -29,7 +29,7 @@ NS_ASSUME_NONNULL_BEGIN
  *
  * \endcode
  */
-+ (instancetype)sj_UIKitText:(void(^)(id<SJUIKitTextMakerProtocol> make))block;
++ (instancetype)sj_UIKitText:(void(^NS_NOESCAPE)(id<SJUIKitTextMakerProtocol> make))block;
 
 - (CGSize)sj_textSize;
 - (CGSize)sj_textSizeForRange:(NSRange)range;

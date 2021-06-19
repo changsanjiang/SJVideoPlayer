@@ -8,7 +8,7 @@
 #import <Foundation/Foundation.h>
 #import "MCSInterfaces.h"
 #import "MCSAssetExporterDefines.h"
- 
+
 NS_ASSUME_NONNULL_BEGIN
 @interface MCSAssetExporterManager : NSObject<MCSAssetExporterManager>
 + (instancetype)shared;
@@ -32,5 +32,7 @@ NS_ASSUME_NONNULL_BEGIN
  
 - (void)synchronizeForExporterWithAssetURL:(NSURL *)URL;
 - (void)synchronize;
+
+- (nullable NSArray<id<MCSAssetExporter>> *)exportsForMask:(MCSAssetExportStatusQueryMask)mask;
 @end
 NS_ASSUME_NONNULL_END

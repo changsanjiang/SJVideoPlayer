@@ -218,34 +218,53 @@ char const SJRefreshingNonePageSize = -1;
 
 - (void)sj_exeHeaderRefreshingAnimated:(BOOL)animated {
     if ( self.mj_header.state == MJRefreshStateRefreshing ) {
+        // resend request
+        if ( self.mj_header.refreshingBlock != nil )
+            self.mj_header.refreshingBlock();
         return;
     }
-    if ( self.mj_header.state != MJRefreshStateIdle ) [self.mj_header endRefreshing];
-    if ( animated ) {
-        [self.mj_header beginRefreshing];
-    }
-    else {
-        if ( self.mj_header.refreshingBlock != nil ) self.mj_header.refreshingBlock();
+    
+    if ( self.mj_header.state != MJRefreshStateIdle ) {
+        [self.mj_header endRefreshing];
     }
     
-    [self _showOrHiddenPlaceholderViewIfNeeded];
+    dispatch_async(dispatch_get_main_queue(), ^{
+        if ( animated ) {
+            [self.mj_header beginRefreshing];
+        }
+        else {
+            if ( self.mj_header.refreshingBlock != nil ) self.mj_header.refreshingBlock();
+        }
+        
+        [self _showOrHiddenPlaceholderViewIfNeeded];
+    });
 }
 
 - (void)sj_exeFooterRefreshing {
     if ( self.mj_footer.state == MJRefreshStateRefreshing ) {
+        // resend request
+        if ( self.mj_footer.refreshingBlock != nil )
+            self.mj_footer.refreshingBlock();
         return;
     }
+    
     self.mj_footer.hidden = NO;
-    if ( self.mj_footer.state != MJRefreshStateIdle ) [self.mj_footer endRefreshing];
-    if ( [self.mj_footer respondsToSelector:NSSelectorFromString(@"labelIsTrigger")] ) {
-        [self.mj_footer setValue:@(YES) forKey:@"labelIsTrigger"];
-        [self.mj_footer beginRefreshing];
-        [self.mj_footer setValue:@(NO) forKey:@"labelIsTrigger"];
+    
+    if ( self.mj_footer.state != MJRefreshStateIdle ) {
+        [self.mj_footer endRefreshing];
     }
-    else {
-        [self.mj_footer beginRefreshing];
-    }
-    [self _showOrHiddenPlaceholderViewIfNeeded];
+    
+    dispatch_async(dispatch_get_main_queue(), ^{
+        if ( [self.mj_footer respondsToSelector:NSSelectorFromString(@"labelIsTrigger")] ) {
+            [self.mj_footer setValue:@(YES) forKey:@"labelIsTrigger"];
+            [self.mj_footer beginRefreshing];
+            [self.mj_footer setValue:@(NO) forKey:@"labelIsTrigger"];
+        }
+        else {
+            [self.mj_footer beginRefreshing];
+        }
+        [self _showOrHiddenPlaceholderViewIfNeeded];
+    });
 }
 
 - (void)sj_resetState {

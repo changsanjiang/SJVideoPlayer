@@ -1,7 +1,0 @@
-#import "SJPlaybackListControllerProtocol.h"
-
-NS_ASSUME_NONNULL_BEGIN
-NSNotificationName const SJPlaybackListControllerPrepareToPlayMediaNotification = @"SJPlaybackListControllerPrepareToPlayMediaNotification";
-NSNotificationName const SJPlaybackListControllerPlaybackModeDidChangeNotification = @"SJPlaybackListControllerPlaybackModeDidChangeNotification";
-NSNotificationName const SJPlaybackListControllerListDidChangeNotification = @"SJPlaybackListControllerListDidChangeNotification";
-NS_ASSUME_NONNULL_END

@@ -11,7 +11,7 @@
 
 NS_ASSUME_NONNULL_BEGIN
 @implementation NSAttributedString (SJMake)
-+ (instancetype)sj_UIKitText:(void(^)(id<SJUIKitTextMakerProtocol> make))block {
++ (instancetype)sj_UIKitText:(void(^NS_NOESCAPE)(id<SJUIKitTextMakerProtocol> make))block {
     SJUIKitTextMaker *maker = [SJUIKitTextMaker new];
     block(maker);
     return maker.install;

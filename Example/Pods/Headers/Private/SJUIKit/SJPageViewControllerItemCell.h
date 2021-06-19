@@ -1,1 +1,1 @@
-../../../SJUIKit/SJUIKit/PageViewController/PageViewController/Core/SJPageViewControllerItemCell.h
+../../../SJUIKit/SJUIKit/PageViewController/Core/SJPageViewControllerItemCell.h

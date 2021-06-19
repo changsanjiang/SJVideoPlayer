@@ -37,8 +37,8 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (nullable id)objectForClass:(Class)cls primaryKeyValue:(id)value error:(NSError **)error;
 
-- (void)removeAllObjectsForClass:(Class)cls error:(NSError **)error;
-- (void)removeObjectsForClass:(Class)cls primaryKeyValues:(NSArray<id> *)values error:(NSError **)error;
-- (void)removeObjectForClass:(Class)cls primaryKeyValue:(id)value error:(NSError **)error;
+- (BOOL)removeAllObjectsForClass:(Class)cls error:(NSError **)error;
+- (BOOL)removeObjectsForClass:(Class)cls primaryKeyValues:(NSArray<id> *)values error:(NSError **)error;
+- (BOOL)removeObjectForClass:(Class)cls primaryKeyValue:(id)value error:(NSError **)error;
 @end
 NS_ASSUME_NONNULL_END

@@ -34,81 +34,74 @@ PODS:
     - SJUIKit/Queues
     - SJUIKit/SQLite3
   - SJFullscreenPopGesture/ObjC (1.5.4)
-  - SJMediaCacheServer (1.6.3):
-    - SJMediaCacheServer/Core (= 1.6.3)
-    - SJMediaCacheServer/KTVCocoaHTTPServer (= 1.6.3)
+  - SJMediaCacheServer (1.6.4):
+    - SJMediaCacheServer/Core (= 1.6.4)
+    - SJMediaCacheServer/KTVCocoaHTTPServer (= 1.6.4)
     - SJUIKit/SQLite3
-  - SJMediaCacheServer/Core (1.6.3):
+  - SJMediaCacheServer/Core (1.6.4):
     - SJMediaCacheServer/KTVCocoaHTTPServer
     - SJUIKit/SQLite3
-  - SJMediaCacheServer/KTVCocoaHTTPServer (1.6.3):
+  - SJMediaCacheServer/KTVCocoaHTTPServer (1.6.4):
     - CocoaAsyncSocket
     - SJUIKit/SQLite3
-  - SJPlaybackListController (0.0.5):
-    - SJPlaybackListController/Core (= 0.0.5)
-  - SJPlaybackListController/Core (0.0.5)
   - SJRouter (1.0.0):
     - SJRouter/Core (= 1.0.0)
   - SJRouter/Core (1.0.0)
-  - SJUIKit (0.0.0.52):
-    - SJUIKit/AsyncLoad (= 0.0.0.52)
-    - SJUIKit/AttributesFactory (= 0.0.0.52)
-    - SJUIKit/Base (= 0.0.0.52)
-    - SJUIKit/CornerMask (= 0.0.0.52)
-    - SJUIKit/Date (= 0.0.0.52)
-    - SJUIKit/ObserverHelper (= 0.0.0.52)
-    - SJUIKit/Other (= 0.0.0.52)
-    - SJUIKit/PageViewController (= 0.0.0.52)
-    - SJUIKit/Photo (= 0.0.0.52)
-    - SJUIKit/Queues (= 0.0.0.52)
-    - SJUIKit/Refresh (= 0.0.0.52)
-    - SJUIKit/SQLite3 (= 0.0.0.52)
-    - SJUIKit/Thread (= 0.0.0.52)
-    - SJUIKit/UIMaker (= 0.0.0.52)
-  - SJUIKit/AsyncLoad (0.0.0.52):
+  - SJUIKit (0.0.0.57):
+    - SJUIKit/AsyncLoad (= 0.0.0.57)
+    - SJUIKit/AttributesFactory (= 0.0.0.57)
+    - SJUIKit/Base (= 0.0.0.57)
+    - SJUIKit/CornerMask (= 0.0.0.57)
+    - SJUIKit/Date (= 0.0.0.57)
+    - SJUIKit/ObserverHelper (= 0.0.0.57)
+    - SJUIKit/Other (= 0.0.0.57)
+    - SJUIKit/PageViewController (= 0.0.0.57)
+    - SJUIKit/Photo (= 0.0.0.57)
+    - SJUIKit/PlaybackListController (= 0.0.0.57)
+    - SJUIKit/Queues (= 0.0.0.57)
+    - SJUIKit/Refresh (= 0.0.0.57)
+    - SJUIKit/SQLite3 (= 0.0.0.57)
+    - SJUIKit/Thread (= 0.0.0.57)
+    - SJUIKit/UIMaker (= 0.0.0.57)
+  - SJUIKit/AsyncLoad (0.0.0.57):
     - SJUIKit/CornerMask
-  - SJUIKit/AttributesFactory (0.0.0.52):
-    - SJUIKit/AttributesFactory/Deprecated (= 0.0.0.52)
-    - SJUIKit/AttributesFactory/UIKitText (= 0.0.0.52)
-  - SJUIKit/AttributesFactory/Deprecated (0.0.0.52)
-  - SJUIKit/AttributesFactory/UIKitText (0.0.0.52)
-  - SJUIKit/Base (0.0.0.52):
-    - SJUIKit/Base/Core (= 0.0.0.52)
+  - SJUIKit/AttributesFactory (0.0.0.57):
+    - SJUIKit/AttributesFactory/Deprecated (= 0.0.0.57)
+    - SJUIKit/AttributesFactory/UIKitText (= 0.0.0.57)
+  - SJUIKit/AttributesFactory/Deprecated (0.0.0.57)
+  - SJUIKit/AttributesFactory/UIKitText (0.0.0.57)
+  - SJUIKit/Base (0.0.0.57):
+    - SJUIKit/Base/Core (= 0.0.0.57)
     - SJUIKit/ObserverHelper
-  - SJUIKit/Base/Core (0.0.0.52):
+  - SJUIKit/Base/Core (0.0.0.57):
     - SJUIKit/ObserverHelper
-  - SJUIKit/CornerMask (0.0.0.52):
+  - SJUIKit/CornerMask (0.0.0.57):
     - SJUIKit/ObserverHelper
-  - SJUIKit/Date (0.0.0.52)
-  - SJUIKit/ObserverHelper (0.0.0.52)
-  - SJUIKit/Other (0.0.0.52):
+  - SJUIKit/Date (0.0.0.57)
+  - SJUIKit/ObserverHelper (0.0.0.57)
+  - SJUIKit/Other (0.0.0.57):
     - SJUIKit/Date
-  - SJUIKit/PageViewController (0.0.0.52):
-    - SJUIKit/PageViewController/PageMenuBar (= 0.0.0.52)
-    - SJUIKit/PageViewController/PageViewController (= 0.0.0.52)
-  - SJUIKit/PageViewController/PageMenuBar (0.0.0.52):
-    - SJUIKit/PageViewController/PageMenuBar/Core (= 0.0.0.52)
-  - SJUIKit/PageViewController/PageMenuBar/Core (0.0.0.52)
-  - SJUIKit/PageViewController/PageViewController (0.0.0.52):
-    - SJUIKit/PageViewController/PageViewController/Core (= 0.0.0.52)
-  - SJUIKit/PageViewController/PageViewController/Core (0.0.0.52)
-  - SJUIKit/Photo (0.0.0.52)
-  - SJUIKit/Queues (0.0.0.52)
-  - SJUIKit/Refresh (0.0.0.52):
+  - SJUIKit/PageViewController (0.0.0.57):
+    - SJUIKit/PageViewController/Core (= 0.0.0.57)
+  - SJUIKit/PageViewController/Core (0.0.0.57)
+  - SJUIKit/Photo (0.0.0.57)
+  - SJUIKit/PlaybackListController (0.0.0.57)
+  - SJUIKit/Queues (0.0.0.57)
+  - SJUIKit/Refresh (0.0.0.57):
     - MJRefresh
-  - SJUIKit/SQLite3 (0.0.0.52):
-    - SJUIKit/SQLite3/Core (= 0.0.0.52)
-    - SJUIKit/SQLite3/Protocol (= 0.0.0.52)
+  - SJUIKit/SQLite3 (0.0.0.57):
+    - SJUIKit/SQLite3/Core (= 0.0.0.57)
+    - SJUIKit/SQLite3/Protocol (= 0.0.0.57)
     - YYModel
-  - SJUIKit/SQLite3/Core (0.0.0.52):
+  - SJUIKit/SQLite3/Core (0.0.0.57):
     - SJUIKit/SQLite3/Protocol
     - YYModel
-  - SJUIKit/SQLite3/Protocol (0.0.0.52):
+  - SJUIKit/SQLite3/Protocol (0.0.0.57):
     - YYModel
-  - SJUIKit/Thread (0.0.0.52)
-  - SJUIKit/UIMaker (0.0.0.52):
-    - SJUIKit/UIMaker/Core (= 0.0.0.52)
-  - SJUIKit/UIMaker/Core (0.0.0.52)
+  - SJUIKit/Thread (0.0.0.57)
+  - SJUIKit/UIMaker (0.0.0.57):
+    - SJUIKit/UIMaker/Core (= 0.0.0.57)
+  - SJUIKit/UIMaker/Core (0.0.0.57)
   - SJVideoPlayer (3.3.2):
     - SJBaseVideoPlayer (>= 3.6.0)
     - SJVideoPlayer/Common (= 3.3.2)
@@ -133,9 +126,9 @@ DEPENDENCIES:
   - SJBaseVideoPlayer
   - SJFullscreenPopGesture/ObjC
   - SJMediaCacheServer
-  - SJPlaybackListController
   - SJRouter
   - SJUIKit
+  - SJUIKit/PlaybackListController
   - SJVideoPlayer (from `../../SJVideoPlayer`)
   - YYModel
 
@@ -148,7 +141,6 @@ SPEC REPOS:
     - SJBaseVideoPlayer
     - SJFullscreenPopGesture
     - SJMediaCacheServer
-    - SJPlaybackListController
     - SJRouter
     - SJUIKit
     - YYModel
@@ -164,13 +156,12 @@ SPEC CHECKSUMS:
   SDWebImage: a7f831e1a65eb5e285e3fb046a23fcfbf08e696d
   SJBaseVideoPlayer: 99957bb0d0fe1ccb8d6710bd9db9f52640c56a32
   SJFullscreenPopGesture: 7be57b1014cb77f4b7c1e6df5e797da6d05dc75d
-  SJMediaCacheServer: 74656385db09cf77d76a649143d1f870e344e4e9
-  SJPlaybackListController: e135c789fcd63d63a62d5e2e2965ab1e6d52a2bd
+  SJMediaCacheServer: b906d12ec71fd881ee3704400cf7c65a1543fd78
   SJRouter: a866e7884fc9219bed523be0a0318c3a84e85022
-  SJUIKit: 8246b1001e616b0dbd090309fd58cdd609ae3fd4
+  SJUIKit: 55e5ae2beee094abab143f45addc23690883040b
   SJVideoPlayer: 3a271ff92c7b9d611c537655fd1edcbae18b8587
   YYModel: 2a7fdd96aaa4b86a824e26d0c517de8928c04b30
 
-PODFILE CHECKSUM: f7beb076290a8efaaebb93dade92bb2c7513751f
+PODFILE CHECKSUM: 15535c4ec87318d1a42f08613c1f32951dd3cf7f
 
 COCOAPODS: 1.10.1

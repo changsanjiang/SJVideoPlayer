@@ -8,9 +8,9 @@
 
 #import "SJBaseVideoPlayer+ListPlaybackExtended.h"
 #import <objc/message.h>
-#import <SJPlaybackListController/SJPlaybackListController.h>
+#import <SJUIKit/SJPlaybackListController.h>
 
-@interface SJAssetItem : NSObject<SJMediaInfo>
+@interface SJAssetItem : NSObject<SJPlaybackItem>
 - (instancetype)initWithIdx:(NSInteger)idx;
 @property (nonatomic, readonly) NSInteger id;
 @end
@@ -23,19 +23,24 @@
     }
     return self;
 }
+
+- (id)itemKey {
+    return @(_id);
+}
 @end
 
-@interface SJBaseVideoPlayer (ListPrivate)<SJPlaybackListControllerDelegate>
-@property (nonatomic, strong, readonly) SJPlaybackListController *listController;
+@interface SJBaseVideoPlayer (ListPrivate)<SJPlaybackController>
+@property (nonatomic, strong, readonly) SJPlaybackListController<SJAssetItem *> *listController;
+@property (nonatomic, copy, nullable) SJPlaybackCompletionHandler playbackCompletionHandler;
 @property (nonatomic, strong, readonly) SJPlaybackObservation *mPrivatePlaybackObserver;
+@property (nonatomic, strong, nullable) SJAssetItem *curItem;
 @end
 
 @implementation SJBaseVideoPlayer (ListPrivate)
 - (SJPlaybackListController *)listController {
     SJPlaybackListController *listController = objc_getAssociatedObject(self, _cmd);
     if ( listController == nil ) {
-        listController = SJPlaybackListController.alloc.init;
-        listController.delegate = self;
+        listController = [SJPlaybackListController.alloc initWithPlaybackController:self];
         objc_setAssociatedObject(self, _cmd, listController, OBJC_ASSOCIATION_RETAIN_NONATOMIC);
     }
     return listController;
@@ -49,20 +54,29 @@
     }
     return observer;
 }
+ 
+- (void)setPlaybackCompletionHandler:(nullable SJPlaybackCompletionHandler)playbackCompletionHandler {
+    objc_setAssociatedObject(self, @selector(playbackCompletionHandler), playbackCompletionHandler, OBJC_ASSOCIATION_COPY);
+}
 
-- (void)listController:(id<SJPlaybackListController>)listController needToPlayMedia:(id<SJMediaInfo>)media {
-    SJVideoPlayerURLAsset *asset = [self.assetProvider videoPlayer:self assetAtIndex:media.id];
+- (nullable SJPlaybackCompletionHandler)playbackCompletionHandler {
+    return objc_getAssociatedObject(self, _cmd);
+}
+
+- (void)setCurItem:(nullable SJAssetItem *)curItem {
+    objc_setAssociatedObject(self, @selector(curItem), curItem, OBJC_ASSOCIATION_RETAIN_NONATOMIC);
+}
+
+- (nullable SJAssetItem *)curItem {
+    return objc_getAssociatedObject(self, _cmd);
+}
+
+- (void)playWithItem:(SJAssetItem *)item {
+    SJVideoPlayerURLAsset *asset = [self.assetProvider videoPlayer:self assetAtIndex:item.id];
     self.URLAsset = asset;
 }
-
-- (void)listController:(id<SJPlaybackListController>)listController needToReplayCurrentMedia:(id<SJMediaInfo>)media {
-    [self replay];
-}
-
-- (void)currentMediaForListControllerIsRemoved:(id<SJPlaybackListController>)listController { }
-
 @end
-
+ 
 @interface SJBaseVideoPlayerAssetProviderWeak : NSObject
 @property (nonatomic, weak, nullable) id<SJBaseVideoPlayerAssetProvider> assetProvider;
 @end
@@ -85,38 +99,38 @@
 }
 
 - (void)setNumberOfAssets:(NSInteger)numberOfAssets {
-    [self.listController removeAllMedias];
     NSMutableArray<SJAssetItem *> *m = [NSMutableArray arrayWithCapacity:numberOfAssets];
     for ( int i = 0 ; i < numberOfAssets ; ++ i ) {
         SJAssetItem *item = [SJAssetItem.alloc initWithIdx:i];
         [m addObject:item];
     }
-    [self.listController addMedias:m];
+    [self.listController removeAllItems];
+    [self.listController addItemsFromArray:m];
     
     if ( self.mPrivatePlaybackObserver.playbackDidFinishExeBlock == nil ) {
         self.mPrivatePlaybackObserver.playbackDidFinishExeBlock = ^(__kindof SJBaseVideoPlayer * _Nonnull player) {
-            [player.listController currentMediaFinishedPlaying];
+            if ( player.playbackCompletionHandler ) player.playbackCompletionHandler();
         };
     }
 }
 
 - (NSInteger)numberOfAssets {
-    return self.listController.medias.count;
+    return self.listController.numberOfItems;
 }
 
 - (NSInteger)currentAssetIndex {
-    return self.listController.currentMedia.id;
+    return self.listController.curIndex;
 }
 
 - (void)playPreviousAsset {
-    [self.listController playPreviousMedia];
+    [self.listController playPreviousItem];
 }
 
 - (void)playNextAsset {
-    [self.listController playNextMedia];
+    [self.listController playNextItem];
 }
 
 - (void)playAtIndex:(NSInteger)index {
-    [self.listController playAtIndex:index];
+    [self.listController playItemAtIndex:index];
 }
 @end

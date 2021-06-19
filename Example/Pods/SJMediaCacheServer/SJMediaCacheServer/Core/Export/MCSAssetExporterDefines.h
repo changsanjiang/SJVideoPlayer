@@ -21,6 +21,16 @@ typedef NS_ENUM(NSUInteger, MCSAssetExportStatus) {
     MCSAssetExportStatusCancelled,
 };
 
+typedef NS_OPTIONS(NSUInteger, MCSAssetExportStatusQueryMask) {
+    MCSAssetExportStatusQueryMaskUnknown     = 1 << MCSAssetExportStatusUnknown,
+    MCSAssetExportStatusQueryMaskWaiting     = 1 << MCSAssetExportStatusWaiting,
+    MCSAssetExportStatusQueryMaskExporting   = 1 << MCSAssetExportStatusExporting,
+    MCSAssetExportStatusQueryMaskFinished    = 1 << MCSAssetExportStatusFinished,
+    MCSAssetExportStatusQueryMaskFailed      = 1 << MCSAssetExportStatusFailed,
+    MCSAssetExportStatusQueryMaskSuspended   = 1 << MCSAssetExportStatusSuspended,
+    MCSAssetExportStatusQueryMaskCancelled   = 1 << MCSAssetExportStatusCancelled,
+};
+
 NS_ASSUME_NONNULL_BEGIN
 @protocol MCSAssetExporterManager <NSObject>
 - (void)registerObserver:(id<MCSAssetExportObserver>)observer;
@@ -29,7 +39,9 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic) NSInteger maxConcurrentExportCount;
 
 @property (nonatomic, strong, readonly, nullable) NSArray<id<MCSAssetExporter>> *allExporters;
- 
+
+- (nullable NSArray<id<MCSAssetExporter>> *)exportsForMask:(MCSAssetExportStatusQueryMask)mask;
+
 - (nullable id<MCSAssetExporter>)exportAssetWithURL:(NSURL *)URL;
 - (void)removeAssetWithURL:(NSURL *)URL;
 - (void)removeAllAssets;

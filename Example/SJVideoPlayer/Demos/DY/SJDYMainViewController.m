@@ -17,15 +17,23 @@
 
 #import "SJDYPlaybackListViewController.h"
 #import "SJDYUserHomepageViewController.h"
-
-typedef enum : NSUInteger {
+ 
+typedef NS_ENUM(NSUInteger, DYApplicationState) {
     DYApplicationStateBecomeActive,
     DYApplicationStateResignActive,
-} DYApplicationState;
+};
 
-@interface SJDYMainViewController ()<SJPageViewControllerDelegate, SJPageViewControllerDataSource, SJPageMenuBarDelegate, UIGestureRecognizerDelegate, SJDYPlaybackListViewControllerDelegate>
+typedef NS_ENUM(NSUInteger, DYPageItemType) {
+    DYPageItemTypeFollows,
+    DYPageItemTypeRecommend,
+};
+ 
+
+
+@interface SJDYMainViewController ()<SJPageViewControllerDelegate, SJPageViewControllerDataSource, SJPageMenuBarDataSource, SJPageMenuBarDelegate, UIGestureRecognizerDelegate, SJDYPlaybackListViewControllerDelegate>
 @property (nonatomic, strong, nullable) SJPageViewController *pageViewController;
 @property (nonatomic, strong, nullable) SJPageMenuBar *pageMenuBar;
+@property (nonatomic, strong, nullable) SJPageItemManager *pageItemManager;
 @property (nonatomic, strong, nullable) UIPanGestureRecognizer *panGesture;
 
 @property (nonatomic, strong, nullable) SJDYUserHomepageViewController *homepageViewController;
@@ -128,6 +136,7 @@ typedef enum : NSUInteger {
     
     _pageMenuBar = [SJPageMenuBar.alloc initWithFrame:CGRectZero];
     _pageMenuBar.backgroundColor = UIColor.clearColor;
+    _pageMenuBar.dataSource = self;
     _pageMenuBar.delegate = self;
     _pageMenuBar.distribution = SJPageMenuBarDistributionFillEqually;
     _pageMenuBar.scrollIndicatorLayoutMode = SJPageMenuBarScrollIndicatorLayoutModeSpecifiedWidth;
@@ -136,15 +145,11 @@ typedef enum : NSUInteger {
     _pageMenuBar.focusedItemTintColor = [UIColor colorWithRed:0.92 green:0.05 blue:0.5 alpha:1];
     _pageMenuBar.scrollIndicatorTintColor = _pageMenuBar.focusedItemTintColor;
     
-    SJPageMenuItemView *followsItemView = [SJPageMenuItemView.alloc initWithFrame:CGRectZero];
-    followsItemView.font = [UIFont boldSystemFontOfSize:20];
-    followsItemView.text = @"关注";
-    
-    SJPageMenuItemView *recommendItemView = [SJPageMenuItemView.alloc initWithFrame:CGRectZero];
-    recommendItemView.font = followsItemView.font;
-    recommendItemView.text = @"推荐";
-      
-    [_pageMenuBar setItemViews:@[followsItemView, recommendItemView]];
+    _pageItemManager = [SJPageItemManager.alloc init];
+    [_pageItemManager addPageItem:[self _pageItemWithType:DYPageItemTypeFollows]];
+    [_pageItemManager addPageItem:[self _pageItemWithType:DYPageItemTypeRecommend]];
+    [_pageMenuBar scrollToItemAtIndex:1 animated:NO];
+
     [_pageViewController.view addSubview:_pageMenuBar];
     [_pageMenuBar mas_makeConstraints:^(MASConstraintMaker *make) {
         if (@available(iOS 11.0, *)) {
@@ -156,8 +161,6 @@ typedef enum : NSUInteger {
         make.width.offset(160);
         make.height.offset(44);
     }];
-    
-    [_pageMenuBar scrollToItemAtIndex:1 animated:NO];
 }
 
 - (void)_setupGesture {
@@ -201,7 +204,18 @@ typedef enum : NSUInteger {
     return !_pageViewController.isDragging && !_pageViewController.isDecelerating;
 }
 
-#pragma mark - SJPageMenuBarDelegate, SJPageViewControllerDataSource, SJPageViewControllerDelegate
+#pragma mark - SJPageMenuBarDataSource, SJPageViewControllerDataSource, SJPageViewControllerDelegate
+
+
+// page menu bar
+
+- (NSUInteger)numberOfItemsInPageMenuBar:(SJPageMenuBar *)bar {
+    return _pageItemManager.numberOfPageItems;
+}
+
+- (__kindof UIView<SJPageMenuItemView> *)pageMenuBar:(SJPageMenuBar *)bar viewForItemAtIndex:(NSInteger)index {
+    return [_pageItemManager menuViewAtIndex:index];
+}
 
 - (void)pageMenuBar:(SJPageMenuBar *)bar focusedIndexDidChange:(NSUInteger)index {
     if ( ![_pageViewController isViewControllerVisibleAtIndex:index] ) {
@@ -214,18 +228,34 @@ typedef enum : NSUInteger {
     }
 }
 
+// page view controller
+
 - (NSUInteger)numberOfViewControllersInPageViewController:(SJPageViewController *)pageViewController {
-    return _pageMenuBar.numberOfItems;
+    return _pageItemManager.numberOfPageItems;
 }
 
 - (__kindof UIViewController *)pageViewController:(SJPageViewController *)pageViewController viewControllerAtIndex:(NSInteger)index {
-    SJDYPlaybackListViewController *vc = SJDYPlaybackListViewController.new;
-    vc.delegate = self;
-    return vc;
+    return [_pageItemManager viewControllerAtIndex:index];
 }
 
 - (void)pageViewController:(SJPageViewController *)pageViewController didScrollInRange:(NSRange)range distanceProgress:(CGFloat)progress {
     [_pageMenuBar scrollInRange:range distanceProgress:progress];
+}
+
+- (SJPageItem *)_pageItemWithType:(DYPageItemType)type {
+    SJPageMenuItemView *menuView = [SJPageMenuItemView.alloc initWithFrame:CGRectZero];
+    menuView.font = [UIFont boldSystemFontOfSize:20];
+    switch ( type ) {
+        case DYPageItemTypeFollows:
+            menuView.text = @"关注";
+            break;
+        case DYPageItemTypeRecommend:
+            menuView.text = @"推荐";
+            break;
+    }
+    SJDYPlaybackListViewController *vc = SJDYPlaybackListViewController.new;
+    vc.delegate = self;
+    return [SJPageItem.alloc initWithType:type viewController:vc menuView:menuView];
 }
 
 #pragma mark -

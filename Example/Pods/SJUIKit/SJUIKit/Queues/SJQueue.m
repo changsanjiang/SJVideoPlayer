@@ -48,11 +48,11 @@ SJFreeItem(SJItem *item) {
 }
 
 - (nullable id)firstObject {
-    return (__bridge id _Nullable)(_head->obj);
+    return _head != nil ? (__bridge id _Nullable)(_head->obj) : nil;
 }
 
 - (nullable id)lastObject {
-    return (__bridge id _Nullable)(_tail->obj);
+    return _tail != nil ? (__bridge id _Nullable)(_tail->obj) : nil;
 }
 
 - (void)enqueue:(id)obj {

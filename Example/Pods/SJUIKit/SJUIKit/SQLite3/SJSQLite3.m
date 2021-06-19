@@ -28,14 +28,18 @@ NS_ASSUME_NONNULL_BEGIN
 #define SJSQLite3_Lock()                        dispatch_semaphore_wait(_lock, DISPATCH_TIME_FOREVER)
 #define SJSQLite3_Unlock()                      dispatch_semaphore_signal(_lock)
 
-#define SJSQLite3_TANSACTION_BEGIN()            SJSQLite3_Lock(); \
+#define SJSQLite3_TRANSACTION_BEGIN()            SJSQLite3_Lock(); \
                                                 sj_sqlite3_obj_begin_transaction(self.db);
 
-#define SJSQLite3_TANSACTION_ROLLBACK()         sj_sqlite3_obj_rollback(self.db); \
+#define SJSQLite3_TRANSACTION_ROLLBACK()         sj_sqlite3_obj_rollback(self.db); \
                                                 SJSQLite3_Unlock();
 
-#define SJSQLite3_TANSACTION_COMMIT()           sj_sqlite3_obj_commit(self.db);    \
+#define SJSQLite3_TRANSACTION_COMMIT()           sj_sqlite3_obj_commit(self.db);    \
                                                 SJSQLite3_Unlock();
+
+#define SJSQLite3_TRANSACTION_UNLOCK_BEGIN()    sj_sqlite3_obj_begin_transaction(self.db);
+#define SJSQLite3_TRANSACTION_UNLOCK_COMMIT()   sj_sqlite3_obj_commit(self.db);
+#define SJSQLite3_TRANSACTION_UNLOCK_ROLLBACK() sj_sqlite3_obj_rollback(self.db);
  
 @interface SJSQLite3 ()
 @property (nonatomic, strong, readonly) SJSQLite3TableClassCache *tableClassCache;
@@ -51,7 +55,7 @@ NS_ASSUME_NONNULL_BEGIN
     dispatch_once(&onceToken, ^{
         NSString *defaultPath = [NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES)[0] stringByAppendingPathComponent:@"com.sj.databasesDefaultFolder"];
         defaultPath = [defaultPath stringByAppendingPathComponent:@"sjdb.db"];
-        _instance = [[SJSQLite3 alloc] initWithDatabasePath:defaultPath];
+        _instance = [[self alloc] initWithDatabasePath:defaultPath];
     });
     return _instance;
 }
@@ -109,14 +113,14 @@ NS_ASSUME_NONNULL_BEGIN
         return NO;
     }
     
-    SJSQLite3_TANSACTION_BEGIN();
+    SJSQLite3_TRANSACTION_BEGIN();
     NSError *_Nullable inner_error = [self _insertOrUpdateObjects:objectArray];
     if ( inner_error != nil ) {
         if ( error != NULL ) *error = inner_error;
-        SJSQLite3_TANSACTION_ROLLBACK();
+        SJSQLite3_TRANSACTION_ROLLBACK();
         return NO;
     }
-    SJSQLite3_TANSACTION_COMMIT();
+    SJSQLite3_TRANSACTION_COMMIT();
     return YES;
 }
 
@@ -166,7 +170,7 @@ NS_ASSUME_NONNULL_BEGIN
         return NO;
     }
     
-    SJSQLite3_TANSACTION_BEGIN();
+    SJSQLite3_TRANSACTION_BEGIN();
     NSError *inner_error = nil;
     for ( id object in objectArray ) {
         SJSQLiteObjectInfo *_Nullable objectInfo = [self objectInfoWithObject:object error:&inner_error];
@@ -177,10 +181,10 @@ NS_ASSUME_NONNULL_BEGIN
     
     if ( inner_error != nil ) {
         if ( error != NULL ) *error = inner_error;
-        SJSQLite3_TANSACTION_ROLLBACK();
+        SJSQLite3_TRANSACTION_ROLLBACK();
         return NO;
     }
-    SJSQLite3_TANSACTION_COMMIT();
+    SJSQLite3_TRANSACTION_COMMIT();
     return YES;
 }
 
@@ -221,20 +225,21 @@ NS_ASSUME_NONNULL_BEGIN
 ///
 /// @param error            执行出错. 当执行发生错误时, 会暂停执行后续的sql语句, 数据库将回滚到执行之前的状态.
 ///
-- (void)removeAllObjectsForClass:(Class)cls error:(NSError **)error {
+- (BOOL)removeAllObjectsForClass:(Class)cls error:(NSError **)error {
     SJSQLiteTableInfo *_Nullable table = [self tableInfoForClass:cls error:error];
-    if ( table == nil ) return;
+    if ( table == nil ) return NO;
 
-    SJSQLite3_TANSACTION_BEGIN();
+    SJSQLite3_TRANSACTION_BEGIN();
     NSError *inner_error = nil;
     sj_sqlite3_obj_drop_table(self.db, table.name, &inner_error);
     if ( inner_error != nil ) {
         if ( error != nil ) *error = inner_error;
-        SJSQLite3_TANSACTION_ROLLBACK();
-        return;
+        SJSQLite3_TRANSACTION_ROLLBACK();
+        return NO;
     }
     [self.tableClassCache removeClass:cls];
-    SJSQLite3_TANSACTION_COMMIT();
+    SJSQLite3_TRANSACTION_COMMIT();
+    return YES;
 }
 
 /// 删除指定的主键值的数据. 操作不可逆, 请谨慎操作. 该操作将会开启一个新的事务, 当执行出错时, 数据库将回滚到执行之前的状态.
@@ -245,8 +250,8 @@ NS_ASSUME_NONNULL_BEGIN
 ///
 /// @param error            执行出错. 当执行发生错误时, 会暂停执行后续的sql语句, 数据库将回滚到执行之前的状态.
 ///
-- (void)removeObjectForClass:(Class)cls primaryKeyValue:(id)value error:(NSError **)error {
-    [self removeObjectsForClass:cls primaryKeyValues:@[value] error:error];
+- (BOOL)removeObjectForClass:(Class)cls primaryKeyValue:(id)value error:(NSError **)error {
+    return [self removeObjectsForClass:cls primaryKeyValues:@[value] error:error];
 }
 
 /// 删除指定的主键值的数据. 操作不可逆, 请谨慎操作. 该操作将会开启一个新的事务, 当执行出错时, 数据库将回滚到执行之前的状态.
@@ -257,19 +262,20 @@ NS_ASSUME_NONNULL_BEGIN
 ///
 /// @param error            执行出错. 当执行发生错误时, 会暂停执行后续的sql语句, 数据库将回滚到执行之前的状态.
 ///
-- (void)removeObjectsForClass:(Class)cls primaryKeyValues:(NSArray<id> *)primaryKeyValues error:(NSError **)error {
+- (BOOL)removeObjectsForClass:(Class)cls primaryKeyValues:(NSArray<id> *)primaryKeyValues error:(NSError **)error {
     SJSQLiteTableInfo *_Nullable table = [self tableInfoForClass:cls error:error];
-    if ( table == nil ) return;
+    if ( table == nil ) return NO;
     
-    SJSQLite3_TANSACTION_BEGIN();
+    SJSQLite3_TRANSACTION_BEGIN();
     NSError *inner_error = nil;
     sj_sqlite3_obj_delete_row_datas(self.db, table, primaryKeyValues, error);
     if ( inner_error != nil ) {
         if ( error != nil ) *error = inner_error;
-        SJSQLite3_TANSACTION_ROLLBACK();
-        return;
+        SJSQLite3_TRANSACTION_ROLLBACK();
+        return NO;
     }
-    SJSQLite3_TANSACTION_COMMIT();
+    SJSQLite3_TRANSACTION_COMMIT();
+    return YES;
 }
 
 /// 执行自定义的sql(适合执行查询操作). 返回的结果需调用`objectsForClass:rowDatas:error:`来转换为相应的模型数据.
@@ -296,15 +302,15 @@ NS_ASSUME_NONNULL_BEGIN
 /// @return sql执行所返回的结果.
 ///
 - (nullable NSArray<SJSQLite3RowData *> *)execInTransaction:(NSString *)sql error:(NSError **)error {
-    SJSQLite3_TANSACTION_BEGIN();
-    NSError *innser_error = nil;
-    id result = sj_sqlite3_obj_exec(self.db, sql, &innser_error);
-    if ( innser_error != nil ) {
-        if ( error != nil ) *error = innser_error;
-        SJSQLite3_TANSACTION_ROLLBACK();
+    SJSQLite3_TRANSACTION_BEGIN();
+    NSError *inner_error = nil;
+    id result = sj_sqlite3_obj_exec(self.db, sql, &inner_error);
+    if ( inner_error != nil ) {
+        if ( error != nil ) *error = inner_error;
+        SJSQLite3_TRANSACTION_ROLLBACK();
         return nil;
     }
-    SJSQLite3_TANSACTION_COMMIT();
+    SJSQLite3_TRANSACTION_COMMIT();
     return result;
 }
 
@@ -314,12 +320,12 @@ NS_ASSUME_NONNULL_BEGIN
 ///
 - (void)execInTransaction:(BOOL (^)(SJSQLite3 * _Nonnull))block {
     if ( block != nil ) {
-        SJSQLite3_TANSACTION_BEGIN();
+        SJSQLite3_TRANSACTION_UNLOCK_BEGIN();
         if ( block(self) ) {
-            SJSQLite3_TANSACTION_COMMIT();
+            SJSQLite3_TRANSACTION_UNLOCK_COMMIT();
         }
         else {
-            SJSQLite3_TANSACTION_ROLLBACK();
+            SJSQLite3_TRANSACTION_UNLOCK_ROLLBACK();
         }
     }
 }

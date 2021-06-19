@@ -39,7 +39,7 @@ NS_ASSUME_NONNULL_BEGIN
 @end
 
 @protocol SJHiddenNavigationBarProtocol
-@property (nonatomic) BOOL needHiddenNavigationBar;
+@property (nonatomic) BOOL needsNavigationBarHidden;
 @end
 
 @protocol SJStatusBarManager <NSObject>

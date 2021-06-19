@@ -1,1 +1,1 @@
-../../../SJUIKit/SJUIKit/PageViewController/PageMenuBar/Core/SJPageMenuItemViewDefines.h
+../../../SJUIKit/SJUIKit/PageViewController/Core/SJPageMenuItemViewDefines.h

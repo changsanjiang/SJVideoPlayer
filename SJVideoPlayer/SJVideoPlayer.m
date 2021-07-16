@@ -16,6 +16,8 @@
 #import <SJBaseVideoPlayer/SJReachability.h>
 #import <SJBaseVideoPlayer/UIView+SJBaseVideoPlayerExtended.h>
 #import <SJBaseVideoPlayer/NSTimer+SJAssetAdd.h>
+#import <SJBaseVideoPlayer/SJVideoPlayerURLAsset+SJAliMediaPlaybackAdd.h>
+#import <SJBaseVideoPlayer/SJVideoPlayerURLAsset+SJAVMediaPlaybackAdd.h>
 #else
 #import "SJReachability.h"
 #import "SJBaseVideoPlayer.h"
@@ -445,8 +447,37 @@ NS_ASSUME_NONNULL_BEGIN
     return NO;
 }
 
+// 播放器链接是否为本地URL
+- (BOOL)isLocalFileUrl {
+    if (self.assetURL != nil && self.assetURL.isFileURL) {
+        return YES;
+    }
+    if (self.URLAsset != nil) {
+        if (self.URLAsset.mediaURL != nil && self.URLAsset.mediaURL.isFileURL) {
+            return YES;
+        }
+        if (self.URLAsset.avAsset != nil
+            && [self.URLAsset.avAsset isKindOfClass:[AVURLAsset class]]
+            && [((AVURLAsset *)self.URLAsset.avAsset).URL isFileURL]) {
+            return YES;
+        }
+        if (self.URLAsset.avPlayerItem != nil
+            && self.URLAsset.avPlayerItem.asset != nil
+            && [self.URLAsset.avPlayerItem.asset isKindOfClass:[AVURLAsset class]]
+            && [((AVURLAsset *)self.URLAsset.avPlayerItem.asset).URL isFileURL]) {
+            return YES;
+        }
+        if (self.URLAsset.source != nil
+            && [self.URLAsset.source isKindOfClass:[AVPUrlSource class]]
+            && [((AVPUrlSource *)self.URLAsset.source).playerUrl isFileURL]) {
+            return YES;
+        }
+    }
+    return NO;
+}
+
 - (void)_resumeOrStopTimeoutTimer {
-    if ( self.isBuffering || self.isEvaluating ) {
+    if ((self.isBuffering || self.isEvaluating) && ![self isLocalFileUrl]) {
         if ( SJReachability.shared.networkStatus == SJNetworkStatus_NotReachable && _sj_timeoutTimer == nil ) {
             __weak typeof(self) _self = self;
             _sj_timeoutTimer = [NSTimer sj_timerWithTimeInterval:3 repeats:YES usingBlock:^(NSTimer * _Nonnull timer) {

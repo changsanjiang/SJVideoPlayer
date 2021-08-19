@@ -27,8 +27,7 @@ NS_ASSUME_NONNULL_BEGIN
 - (void)removeAllAssets;
  
 - (MCSAssetExportStatus)statusWithURL:(NSURL *)URL;
-- (float)progressWithURL:(NSURL *)URL;
-- (nullable NSURL *)playbackURLForExportedAssetWithURL:(NSURL *)URL;
+- (float)progressWithURL:(NSURL *)URL; 
  
 - (void)synchronizeForExporterWithAssetURL:(NSURL *)URL;
 - (void)synchronize;

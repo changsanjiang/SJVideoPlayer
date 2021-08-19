@@ -198,6 +198,8 @@ UIKIT_EXTERN SJPageViewControllerOptionsKey const SJPageViewControllerOptionInte
 
 - (void)addPageItem:(SJPageItem *)pageItem;
 - (void)addPageItemWithType:(NSInteger)type viewController:(UIViewController *)viewController menuView:(UIView<SJPageMenuItemView> *)menuView;
+
+- (void)removeAllPageItems;
 @end
 NS_ASSUME_NONNULL_END
 

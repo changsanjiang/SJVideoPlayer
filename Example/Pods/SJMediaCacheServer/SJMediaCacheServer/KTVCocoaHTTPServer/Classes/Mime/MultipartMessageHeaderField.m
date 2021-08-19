@@ -34,6 +34,7 @@ NSString* extractParamValue(const char* bytes, NSUInteger length, NSStringEncodi
 @synthesize name,value,params;
 
 - (id) initWithData:(NSData *)data contentEncoding:(NSStringEncoding)encoding {
+    self = [super init];
 	params = [[NSMutableDictionary alloc] initWithCapacity:1];
 
 	char* bytes = (char*)data.bytes;
@@ -152,7 +153,7 @@ NSString* extractParamValue(const char* bytes, NSUInteger length, NSStringEncodi
 //		return YES;
 	}
 	if( currentParam ) {
-		NSString* paramValue = extractParamValue(bytes, length, encoding);
+        NSString* paramValue = extractParamValue(bytes, length, encoding) ?: @"";
 
 		if( nil == paramValue ) {
 			HTTPLogError(@"MultipartFormDataParser: Failed to exctract paramValue for key %@ in header %@",currentParam,name);

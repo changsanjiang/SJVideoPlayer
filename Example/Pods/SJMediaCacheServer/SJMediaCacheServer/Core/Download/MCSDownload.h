@@ -13,16 +13,12 @@ NS_ASSUME_NONNULL_BEGIN
 @interface MCSDownload : NSObject<MCSDownloader>
 + (instancetype)shared;
 
+@property (nonatomic, copy, nullable) NSMutableURLRequest *_Nullable(^requestHandler)(NSMutableURLRequest *request);
+@property (nonatomic, copy, nullable) NSData *(^dataEncoder)(NSURLRequest *request, NSUInteger offset, NSData *data);
+@property (nonatomic, copy, nullable) void(^errorCallback)(NSURLRequest *request, NSError *error);
 @property (nonatomic) NSTimeInterval timeoutInterval;
 
-@property (nonatomic, copy, nullable) NSMutableURLRequest *_Nullable(^requestHandler)(NSMutableURLRequest *request);
-
 - (nullable id<MCSDownloadTask>)downloadWithRequest:(NSURLRequest *)request priority:(float)priority delegate:(id<MCSDownloadTaskDelegate>)delegate;
-
-@property (nonatomic, copy, nullable) NSData *(^dataEncoder)(NSURLRequest *request, NSUInteger offset, NSData *data);
-
-@property (nonatomic, copy, nullable) void(^errorCallback)(NSURLRequest *request, NSError *error);
-
 - (void)cancelAllDownloadTasks;
 
 @property (nonatomic, readonly) NSInteger taskCount;

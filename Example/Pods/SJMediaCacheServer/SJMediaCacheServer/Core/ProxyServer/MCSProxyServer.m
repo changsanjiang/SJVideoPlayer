@@ -9,15 +9,118 @@
 #import "MCSProxyServer.h"
 #import "NSURLRequest+MCS.h"
 #import "MCSLogger.h"
+#import "MCSQueue.h"
 #import <objc/message.h>
-#import "HTTPServer.h"
-#import "HTTPConnection.h"
-#import "HTTPResponse.h"
-#import "HTTPMessage.h"
+#if __has_include(<KTVCocoaHTTPServer/KTVCocoaHTTPServer.h>)
+#import <KTVCocoaHTTPServer/KTVCocoaHTTPServer.h>
+#import <CocoaAsyncSocket/GCDAsyncSocket.h>
+#else
+#import "KTVCocoaHTTPServer.h"
+#import "GCDAsyncSocket.h"
+#endif
 
+@interface MCSTimer : NSObject
+- (instancetype)initWithQueue:(dispatch_queue_t)queue start:(NSTimeInterval)start interval:(NSTimeInterval)interval repeats:(BOOL)repeats block:(void (^)(MCSTimer *timer))block;
 
-@interface HTTPServer (MCSProxyServerExtended)
-@property (nonatomic, weak, nullable) MCSProxyServer *mcs_server;
+@property (nonatomic, readonly, getter=isValid) BOOL valid;
+
+- (void)resume;
+- (void)suspend;
+- (void)invalidate;
+@end
+ 
+@implementation MCSTimer {
+    dispatch_semaphore_t _semaphore;
+    dispatch_source_t _timer;
+    NSTimeInterval _timeInterval;
+    BOOL _repeats;
+    BOOL _valid;
+    BOOL _suspend;
+}
+
+/// @param start 启动后延迟多少秒回调block
+- (instancetype)initWithQueue:(dispatch_queue_t)queue start:(NSTimeInterval)start interval:(NSTimeInterval)interval repeats:(BOOL)repeats block:(void (^)(MCSTimer *timer))block {
+    self = [super init];
+    if ( self ) {
+        _repeats = repeats;
+        _timeInterval = interval;
+        _valid = YES;
+        _suspend = YES;
+        _semaphore = dispatch_semaphore_create(1);
+        _timer = dispatch_source_create(DISPATCH_SOURCE_TYPE_TIMER, 0, 0, queue);
+        dispatch_source_set_timer(_timer, dispatch_time(DISPATCH_TIME_NOW, (start * NSEC_PER_SEC)), (interval * NSEC_PER_SEC), 0);
+        __weak typeof(self) _self = self;
+        dispatch_source_set_event_handler(_timer, ^{
+            __strong typeof(_self) self = _self;
+            if ( self == nil ) return;
+            block(self);
+            if ( !repeats )
+                [self invalidate];
+        });
+    }
+    return self;
+}
+
+- (void)resume {
+    dispatch_semaphore_wait(_semaphore, DISPATCH_TIME_FOREVER);
+    if ( _valid && _suspend ) {
+        _suspend = NO;
+        dispatch_resume(_timer);
+    }
+    dispatch_semaphore_signal(_semaphore);
+}
+
+- (void)suspend {
+    dispatch_semaphore_wait(_semaphore, DISPATCH_TIME_FOREVER);
+    if ( _valid && !_suspend ) {
+        _suspend = YES;
+        dispatch_suspend(_timer);
+    }
+    dispatch_semaphore_signal(_semaphore);
+}
+
+- (void)invalidate {
+    dispatch_semaphore_wait(_semaphore, DISPATCH_TIME_FOREVER);
+    if ( _valid ) {
+        dispatch_source_cancel(_timer);
+        if ( _suspend )
+            dispatch_resume(_timer);
+        _timer = NULL;
+        _valid = NO;
+    }
+    dispatch_semaphore_signal(_semaphore);
+}
+
+- (BOOL)isValid {
+    dispatch_semaphore_wait(_semaphore, DISPATCH_TIME_FOREVER);
+    BOOL isValid = _valid;
+    dispatch_semaphore_signal(_semaphore);
+    return isValid;
+}
+
+- (void)dealloc {
+    [self invalidate];
+}
+
+@end
+
+@interface MCSHTTPServer : HTTPServer
+- (instancetype)initWithProxyServer:(__weak MCSProxyServer *)proxyServer;
+@property (nonatomic, weak, readonly, nullable) MCSProxyServer *mcs_server;
+@end
+
+@implementation MCSHTTPServer
+- (instancetype)initWithProxyServer:(__weak MCSProxyServer *)proxyServer {
+    self = [super init];
+    if ( self ) {
+        _mcs_server = proxyServer;
+    }
+    return self;
+}
+
+- (HTTPConfig *)config {
+    return [HTTPConfig.alloc initWithServer:self documentRoot:self->documentRoot queue:mcs_queue()];
+}
 @end
 
 @interface MCSHTTPConnection : HTTPConnection
@@ -40,11 +143,10 @@
 #pragma mark -
 
 @interface MCSProxyServer ()
-@property (nonatomic, strong, nullable) HTTPServer *localServer;
+@property (nonatomic, strong, nullable) MCSHTTPServer *localServer;
 @property (nonatomic) UIBackgroundTaskIdentifier backgroundTask;
-
 - (id<MCSProxyTask>)taskWithRequest:(NSURLRequest *)request delegate:(id<MCSProxyTaskDelegate>)delegate;
-
+@property (nonatomic, strong, nullable) MCSTimer *timer;
 @end
 
 @implementation MCSProxyServer
@@ -52,9 +154,9 @@
     self = [super init];
     if ( self ) {
         _backgroundTask = UIBackgroundTaskInvalid;
-        
-        [NSNotificationCenter.defaultCenter addObserver:self selector:@selector(applicationDidEnterBackground) name:UIApplicationDidEnterBackgroundNotification object:nil];
-        [NSNotificationCenter.defaultCenter addObserver:self selector:@selector(applicationWillEnterForeground) name:UIApplicationWillEnterForegroundNotification object:nil];
+        [NSNotificationCenter.defaultCenter addObserver:self selector:@selector(applicationWillEnterForegroundWithNote:) name:UIApplicationWillEnterForegroundNotification object:nil];
+        [NSNotificationCenter.defaultCenter addObserver:self selector:@selector(applicationDidEnterBackgroundWithNote:) name:UIApplicationDidEnterBackgroundNotification object:nil];
+        [NSNotificationCenter.defaultCenter addObserver:self selector:@selector(HTTPConnectionDidDieWithNote:) name:HTTPConnectionDidDieNotification object:nil];
     }
     return self;
 }
@@ -63,34 +165,30 @@
     [NSNotificationCenter.defaultCenter removeObserver:self];
 }
 
-- (BOOL)isRunning {
-    return _localServer.isRunning;
-}
-
 - (void)start {
-    if ( self.isRunning )
-        return;
-    
-    if ( _localServer == nil ) {
-        _localServer = HTTPServer.alloc.init;
-        _localServer.mcs_server = self;
+    _running = YES;
+    if ( _serverURL == nil ) {
+        _localServer = [MCSHTTPServer.alloc initWithProxyServer:self];
         [_localServer setConnectionClass:MCSHTTPConnection.class];
         [_localServer setType:@"_http._tcp"];
-    }
     
-    UInt16 port = 2000;
-    for ( int i = 0 ; i < 10 ; ++ i ) {
-        [_localServer setPort:port];
-        if ( [self _start:NULL] ) {
-            _port = port;
-            _serverURL = [NSURL URLWithString:[NSString stringWithFormat:@"http://127.0.0.1:%d", port]];
-            break;
+        UInt16 port = 2000;
+        for ( int i = 0 ; i < 10 ; ++ i ) {
+            [_localServer setPort:port];
+            if ( [self _start:NULL] ) {
+                _serverURL = [NSURL URLWithString:[NSString stringWithFormat:@"http://127.0.0.1:%d", port]];
+                break;
+            }
+            port += (UInt16)(arc4random() % 1000 + 1);
         }
-        port += (UInt16)(arc4random() % 1000 + 1);
+    }
+    else {
+        [self _start:NULL];
     }
 }
 
 - (void)stop {
+    _running = NO;
     [self _stop];
 }
 
@@ -98,57 +196,70 @@
     return [self.delegate server:self taskWithRequest:request delegate:delegate];
 }
 
-#pragma mark -
-
-- (void)applicationDidEnterBackground {
-    if ( _localServer != nil) [self _beginBackgroundTask];
+- (UInt16)port {
+    return _localServer.listeningPort;
 }
 
-- (void)applicationWillEnterForeground {
-    if ( _localServer != nil && _backgroundTask == UIBackgroundTaskInvalid && !self.isRunning ) {
-        [self _start:nil];
+#pragma mark -
+ 
+- (void)applicationDidEnterBackgroundWithNote:(NSNotification *)note {
+    [self _beginBackgroundTask];
+}
+ 
+- (void)applicationWillEnterForegroundWithNote:(NSNotification *)note {
+    if ( _running ) [self _start:nil];
+    [self _endBackgroundTaskIfNeeded];
+}
+
+- (void)HTTPConnectionDidDieWithNote:(NSNotification *)note {
+    [_timer invalidate];
+    _timer = [MCSTimer.alloc initWithQueue:dispatch_get_main_queue() start:1.0 interval:0 repeats:NO block:^(MCSTimer *timer) {
+        if ( self->_localServer.isRunning && UIApplication.sharedApplication.applicationState == UIApplicationStateBackground && self->_localServer.numberOfHTTPConnections == 0 ) {
+            [self _stop];
+        }
+        [timer invalidate];
+        self->_timer = nil;
+    }];
+    [_timer resume];
+}
+
+#pragma mark -
+
+- (BOOL)_start:(NSError **)errorPtr {
+    if ( _localServer != nil ) {
+        if ( [_localServer isRunning] && [_localServer numberOfHTTPConnections] == 0 ) {
+            [self _stop];
+        }
+        return [_localServer start:errorPtr];
     }
-    [self _endBackgroundTask];
-}
-
-#pragma mark -
-
-- (BOOL)_start:(NSError **)error {
-    return [_localServer start:error];
+    return NO;
 }
 
 - (void)_stop {
+    [_timer invalidate];
+    _timer = nil;
     [_localServer stop];
+    [self _endBackgroundTaskIfNeeded];
 }
 
 - (void)_beginBackgroundTask {
-    if ( self.backgroundTask == UIBackgroundTaskInvalid ) {
-        self.backgroundTask = [UIApplication.sharedApplication beginBackgroundTaskWithExpirationHandler:^{
-            [self _stop];
-            [self _endBackgroundTask];
+    [self _endBackgroundTaskIfNeeded];
+    if ( UIApplication.sharedApplication.applicationState == UIApplicationStateBackground ) {
+        _backgroundTask = [UIApplication.sharedApplication beginBackgroundTaskWithExpirationHandler:^{
+            [self _endBackgroundTaskIfNeeded];
         }];
     }
 }
 
-- (void)_endBackgroundTask {
-    if ( self.backgroundTask != UIBackgroundTaskInvalid ) {
-        [UIApplication.sharedApplication endBackgroundTask:self.backgroundTask];
-        self.backgroundTask = UIBackgroundTaskInvalid;
+- (void)_endBackgroundTaskIfNeeded {
+    if ( _backgroundTask != UIBackgroundTaskInvalid ) {
+        [UIApplication.sharedApplication endBackgroundTask:_backgroundTask];
+        _backgroundTask = UIBackgroundTaskInvalid;
     }
 }
 @end
 
 #pragma mark -
-
-@implementation HTTPServer (MCSProxyServerExtended)
-- (void)setMcs_server:(MCSProxyServer *)mcs_server {
-    objc_setAssociatedObject(self, @selector(mcs_server), mcs_server, OBJC_ASSOCIATION_ASSIGN);
-}
-
-- (MCSProxyServer *)mcs_server {
-    return objc_getAssociatedObject(self, _cmd);
-}
-@end
 
 @implementation MCSHTTPConnection
 - (id)initWithAsyncSocket:(GCDAsyncSocket *)newSocket configuration:(HTTPConfig *)aConfig {
@@ -173,7 +284,7 @@
 }
 
 - (MCSProxyServer *)mcs_server {
-    return config.server.mcs_server;
+    return ((MCSHTTPServer *)config.server).mcs_server;
 }
 
 - (void)finishResponse {
@@ -245,15 +356,15 @@
     return _task != nil ? !_task.isPrepared : YES;
 }
 
-- (void)taskPrepareDidFinish:(id<MCSProxyTask>)task {
+- (void)task:(id<MCSProxyTask>)task didReceiveResponse:(id<MCSResponse>)response {
     [_connection responseHasAvailableData:self];
 }
 
-- (void)taskHasAvailableData:(id<MCSProxyTask>)task {
+- (void)task:(id<MCSProxyTask>)task hasAvailableDataWithLength:(NSUInteger)length {
     [_connection responseHasAvailableData:self];
 }
 
-- (void)task:(id<MCSProxyTask>)task anErrorOccurred:(NSError *)error {
+- (void)task:(id<MCSProxyTask>)task didAbortWithError:(nullable NSError *)error {
     [_connection responseDidAbort:self];
 }
 

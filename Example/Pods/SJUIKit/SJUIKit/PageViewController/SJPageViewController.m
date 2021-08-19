@@ -698,12 +698,11 @@ static NSString *const kReuseIdentifierForCell = @"1";
         CGFloat progress = position - left;
         
         NSRange range = NSMakeRange(left, right - left);
-        if ( _pageMenuBar != nil ) {
-            [_pageMenuBar scrollInRange:range distanceProgress:progress];
-        }
         
         if ( _isResponse_didScrollInRange )
             [self.delegate pageViewController:self didScrollInRange:NSMakeRange(left, right - left) distanceProgress:progress];
+        else if ( _pageMenuBar != nil )
+            [_pageMenuBar scrollInRange:range distanceProgress:progress];
     }
 }
 
@@ -928,6 +927,10 @@ static NSString *const kReuseIdentifierForCell = @"1";
 
 - (void)addPageItemWithType:(NSInteger)type viewController:(UIViewController *)viewController menuView:(UIView<SJPageMenuItemView> *)menuView {
     return [self addPageItem:[SJPageItem.alloc initWithType:type viewController:viewController menuView:menuView]];
+}
+
+- (void)removeAllPageItems {
+    [_items removeAllObjects];
 }
 
 #pragma mark - mark

@@ -17,6 +17,7 @@ typedef NS_ENUM(NSUInteger, MCSErrorCode) {
     MCSInvalidRequestError,
     MCSInvalidResponseError,
     MCSInvalidParameterError,
+    MCSAbortError,
 };
 
 FOUNDATION_EXTERN NSString *const MCSErrorDomain;

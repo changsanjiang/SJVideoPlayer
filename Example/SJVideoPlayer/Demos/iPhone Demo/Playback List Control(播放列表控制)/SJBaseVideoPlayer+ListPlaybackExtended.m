@@ -24,26 +24,26 @@
     return self;
 }
 
-- (id)itemKey {
-    return @(_id);
+- (BOOL)isEqualToPlaybackItem:(SJAssetItem *)item {
+    return self.id == item.id;
 }
 @end
 
 @interface SJBaseVideoPlayer (ListPrivate)<SJPlaybackController>
-@property (nonatomic, strong, readonly) SJPlaybackListController<SJAssetItem *> *listController;
-@property (nonatomic, copy, nullable) SJPlaybackCompletionHandler playbackCompletionHandler;
-@property (nonatomic, strong, readonly) SJPlaybackObservation *mPrivatePlaybackObserver;
-@property (nonatomic, strong, nullable) SJAssetItem *curItem;
+@property (nonatomic, strong, readonly) NSHashTable<id<SJPlaybackControllerObserver>> *mPlaybackObservers;
+@property (nonatomic, strong, readonly) SJPlaybackListController<SJAssetItem *> *mPlaybackListController;
+@property (nonatomic, strong, nullable) SJAssetItem *currentItem;
 @end
 
 @implementation SJBaseVideoPlayer (ListPrivate)
-- (SJPlaybackListController *)listController {
-    SJPlaybackListController *listController = objc_getAssociatedObject(self, _cmd);
-    if ( listController == nil ) {
-        listController = [SJPlaybackListController.alloc initWithPlaybackController:self];
-        objc_setAssociatedObject(self, _cmd, listController, OBJC_ASSOCIATION_RETAIN_NONATOMIC);
+
+- (SJPlaybackListController *)mPlaybackListController {
+    SJPlaybackListController *mPlaybackListController = objc_getAssociatedObject(self, _cmd);
+    if ( mPlaybackListController == nil ) {
+        mPlaybackListController = [SJPlaybackListController.alloc initWithPlaybackController:self queue:dispatch_get_main_queue()];
+        objc_setAssociatedObject(self, _cmd, mPlaybackListController, OBJC_ASSOCIATION_RETAIN_NONATOMIC);
     }
-    return listController;
+    return mPlaybackListController;
 }
 
 - (SJPlaybackObservation *)mPrivatePlaybackObserver {
@@ -54,26 +54,52 @@
     }
     return observer;
 }
- 
-- (void)setPlaybackCompletionHandler:(nullable SJPlaybackCompletionHandler)playbackCompletionHandler {
-    objc_setAssociatedObject(self, @selector(playbackCompletionHandler), playbackCompletionHandler, OBJC_ASSOCIATION_COPY);
+
+#pragma mark - SJPlaybackController
+
+- (void)setCurrentItem:(nullable SJAssetItem *)currentItem {
+    objc_setAssociatedObject(self, @selector(currentItem), currentItem, OBJC_ASSOCIATION_RETAIN_NONATOMIC);
 }
 
-- (nullable SJPlaybackCompletionHandler)playbackCompletionHandler {
-    return objc_getAssociatedObject(self, _cmd);
-}
-
-- (void)setCurItem:(nullable SJAssetItem *)curItem {
-    objc_setAssociatedObject(self, @selector(curItem), curItem, OBJC_ASSOCIATION_RETAIN_NONATOMIC);
-}
-
-- (nullable SJAssetItem *)curItem {
+- (nullable SJAssetItem *)currentItem {
     return objc_getAssociatedObject(self, _cmd);
 }
 
 - (void)playWithItem:(SJAssetItem *)item {
     SJVideoPlayerURLAsset *asset = [self.assetProvider videoPlayer:self assetAtIndex:item.id];
     self.URLAsset = asset;
+}
+
+- (void)registerObserver:(id<SJPlaybackControllerObserver>)observer {
+    if ( observer != nil ) {
+        [self.mPlaybackObservers addObject:observer];
+        
+        SJPlaybackObservation *finishPlayingObserver = objc_getAssociatedObject(self, _cmd);
+        if ( finishPlayingObserver == nil ) {
+            finishPlayingObserver = [SJPlaybackObservation.alloc initWithPlayer:self];
+            finishPlayingObserver.playbackDidFinishExeBlock = ^(__kindof SJBaseVideoPlayer * _Nonnull player) {
+                if ( player.mPlaybackObservers.count != 0 ) {
+                    for ( id<SJPlaybackControllerObserver> observer in player.mPlaybackObservers ) {
+                        [observer playbackControllerDidFinishPlaying:player];
+                    }
+                }
+            };
+            objc_setAssociatedObject(self, _cmd, finishPlayingObserver, OBJC_ASSOCIATION_RETAIN_NONATOMIC);
+        }
+    }
+}
+
+- (void)removeObserver:(id<SJPlaybackControllerObserver>)observer {
+    [self.mPlaybackObservers removeObject:observer];
+}
+
+- (NSHashTable<id<SJPlaybackControllerObserver>> *)mPlaybackObservers {
+    NSHashTable<id<SJPlaybackControllerObserver>> *observers = objc_getAssociatedObject(self, _cmd);
+    if ( observers == nil ) {
+        observers = NSHashTable.weakObjectsHashTable;
+        objc_setAssociatedObject(self, _cmd, observers, OBJC_ASSOCIATION_RETAIN_NONATOMIC);
+    }
+    return observers;
 }
 @end
  
@@ -104,33 +130,26 @@
         SJAssetItem *item = [SJAssetItem.alloc initWithIdx:i];
         [m addObject:item];
     }
-    [self.listController removeAllItems];
-    [self.listController addItemsFromArray:m];
-    
-    if ( self.mPrivatePlaybackObserver.playbackDidFinishExeBlock == nil ) {
-        self.mPrivatePlaybackObserver.playbackDidFinishExeBlock = ^(__kindof SJBaseVideoPlayer * _Nonnull player) {
-            if ( player.playbackCompletionHandler ) player.playbackCompletionHandler();
-        };
-    }
+    [self.mPlaybackListController replaceItemsFromArray:m];
 }
 
 - (NSInteger)numberOfAssets {
-    return self.listController.numberOfItems;
+    return self.mPlaybackListController.numberOfItems;
 }
 
 - (NSInteger)currentAssetIndex {
-    return self.listController.curIndex;
+    return self.mPlaybackListController.curIndex;
 }
 
 - (void)playPreviousAsset {
-    [self.listController playPreviousItem];
+    [self.mPlaybackListController playPreviousItem];
 }
 
 - (void)playNextAsset {
-    [self.listController playNextItem];
+    [self.mPlaybackListController playNextItem];
 }
 
 - (void)playAtIndex:(NSInteger)index {
-    [self.listController playItemAtIndex:index];
+    [self.mPlaybackListController playItemAtIndex:index];
 }
 @end

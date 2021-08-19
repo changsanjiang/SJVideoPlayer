@@ -9,12 +9,22 @@
 
 NS_ASSUME_NONNULL_BEGIN
 @interface SJSQLite3 (FoundationExtended)
-- (BOOL)save:(id)value forKey:(NSString *)key error:(NSError **)error;
-- (void)removeValueForKey:(NSString *)key error:(NSError **)error;
+- (BOOL)save:(nullable id)value forKey:(NSString *)key error:(NSError **)error;
+- (BOOL)setValue:(nullable id)value forKey:(NSString *)key error:(NSError **)error;
+- (BOOL)setDictionary:(nullable NSDictionary *)value forKey:(NSString *)key error:(NSError **)error;
+- (BOOL)setArray:(nullable NSArray *)value forKey:(NSString *)key error:(NSError **)error;
+- (BOOL)setString:(nullable NSString *)value forKey:(NSString *)key error:(NSError **)error;
+- (BOOL)setURL:(nullable NSURL *)value forKey:(NSString *)key error:(NSError **)error;
+- (BOOL)setInteger:(NSInteger)value forKey:(NSString *)key error:(NSError **)error;
+- (BOOL)setDouble:(double)value forKey:(NSString *)key error:(NSError **)error;
+- (BOOL)setFloat:(float)value forKey:(NSString *)key error:(NSError **)error;
+- (BOOL)setBool:(BOOL)value forKey:(NSString *)key error:(NSError **)error;
 
-- (nullable NSString *)jsonStringForKey:(NSString *)key;
+- (BOOL)removeValueForKey:(NSString *)key error:(NSError **)error;
 
 // - container -
+- (nullable id)objectForKey:(NSString *)key objectClass:(Class)cls;
+- (nullable NSString *)jsonStringForKey:(NSString *)key;
 - (nullable NSDictionary *)dictionaryForKey:(NSString *)key;
 - (nullable NSArray *)arrayForKey:(NSString *)key;
 

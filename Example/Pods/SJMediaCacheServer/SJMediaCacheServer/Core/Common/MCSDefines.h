@@ -8,6 +8,8 @@
 #ifndef MCSDefines_h
 #define MCSDefines_h
 
+#import <Foundation/Foundation.h>
+
 typedef NS_ENUM(NSUInteger, MCSAssetType) {
     MCSAssetTypeFILE,
     MCSAssetTypeHLS
@@ -43,4 +45,12 @@ typedef NS_ENUM(NSUInteger, MCSLogLevel) {
     MCSLogLevelError,
 };
 
+
+typedef NS_ENUM(NSUInteger, MCSReaderStatus) {
+    MCSReaderStatusUnknown,
+    MCSReaderStatusPreparing,
+    MCSReaderStatusReadyToRead,
+    MCSReaderStatusFinished, 
+    MCSReaderStatusAborted,
+};
 #endif /* MCSDefines_h */

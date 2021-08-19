@@ -8,30 +8,60 @@
 
 #ifndef MCSAssetDefines_h
 #define MCSAssetDefines_h
-#import <Foundation/Foundation.h>
-@protocol MCSAssetDataReaderDelegate;
+#import "MCSInterfaces.h"
+@protocol MCSAssetContentReaderDelegate, MCSAssetContentObserver;
 
 NS_ASSUME_NONNULL_BEGIN
-@protocol MCSAssetDataReader <NSObject>
+@protocol MCSAssetContent <MCSReadwriteReference> 
+- (nullable NSData *)readDataAtPosition:(UInt64)positionInAsset capacity:(UInt64)capacity error:(out NSError **)error;
+- (BOOL)writeData:(NSData *)data error:(out NSError **)error;
+- (void)closeWrite;
+- (void)closeRead;
+- (void)close;
+@property (nonatomic, readonly) UInt64 startPositionInAsset;
+@property (nonatomic, readonly) UInt64 length;
 
-@property (nonatomic, weak, readonly, nullable) id<MCSAssetDataReaderDelegate> delegate;
+- (void)registerObserver:(id<MCSAssetContentObserver>)observer;
+- (void)removeObserver:(id<MCSAssetContentObserver>)observer;
+
+@end
+
+@protocol MCSAssetContentObserver <NSObject>
+- (void)content:(id<MCSAssetContent>)content didWriteDataWithLength:(NSUInteger)length;
+@end
+
+
+#pragma mark - mark
+
+@protocol MCSAssetContentReader <NSObject>
+
+@property (nonatomic, weak, readonly, nullable) id<MCSAssetContentReaderDelegate> delegate;
 
 - (void)prepare;
+@property (nonatomic, strong, readonly, nullable) __kindof id<MCSAssetContent> content;
 @property (nonatomic, readonly) NSRange range;
-@property (nonatomic, readonly) NSUInteger availableLength;
-@property (nonatomic, readonly) NSUInteger offset;
-@property (nonatomic, readonly) BOOL isPrepared;
-@property (nonatomic, readonly) BOOL isDone;
-- (nullable NSData *)readDataOfLength:(NSUInteger)length;
-- (BOOL)seekToOffset:(NSUInteger)offset;
-- (void)close;
+@property (nonatomic, readonly) UInt64 availableLength;
+@property (nonatomic, readonly) UInt64 offset;
+@property (nonatomic, readonly) MCSReaderStatus status;
+- (nullable NSData *)readDataOfLength:(UInt64)length;
+- (BOOL)seekToOffset:(UInt64)offset;
+- (void)abortWithError:(nullable NSError *)error;
 @end
 
-@protocol MCSAssetDataReaderDelegate <NSObject>
-- (void)readerPrepareDidFinish:(id<MCSAssetDataReader>)reader;
-- (void)reader:(id<MCSAssetDataReader>)reader hasAvailableDataWithLength:(NSUInteger)length;
-- (void)reader:(id<MCSAssetDataReader>)reader anErrorOccurred:(NSError *)error;
+@protocol MCSAssetContentReaderDelegate <NSObject>
+- (void)readerWasReadyToRead:(id<MCSAssetContentReader>)reader;
+- (void)reader:(id<MCSAssetContentReader>)reader hasAvailableDataWithLength:(NSUInteger)length;
+- (void)reader:(id<MCSAssetContentReader>)reader didAbortWithError:(nullable NSError *)error;
 @end
 
+
+@protocol MCSAssetContentReaderSubclass <NSObject>
+// hooks
+- (void)prepareContent;
+- (void)didAbortWithError:(nullable NSError *)error;
+
+// subclass callback
+- (void)preparationDidFinishWithContentReadwrite:(id<MCSAssetContent>)content range:(NSRange)range;
+@end
 NS_ASSUME_NONNULL_END
 #endif /* MCSAssetDefines_h */

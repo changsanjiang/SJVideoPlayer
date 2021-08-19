@@ -12,8 +12,7 @@
 #import "MCSUtils.h"
 #import "MCSAssetManager.h"
 #import "MCSDatabase.h"
-
-static dispatch_queue_t mcs_queue;
+#import "MCSQueue.h"
 
 typedef NS_ENUM(NSUInteger, MCSLimit) {
     MCSLimitNone,
@@ -63,7 +62,6 @@ typedef NS_ENUM(NSUInteger, MCSLimit) {
     static id obj = nil;
     static dispatch_once_t onceToken;
     dispatch_once(&onceToken, ^{
-        mcs_queue = mcs_dispatch_queue_create("queue.MCSAssetCacheManager", DISPATCH_QUEUE_CONCURRENT);
         obj = [[self alloc] init];
     });
     return obj;
@@ -87,14 +85,14 @@ typedef NS_ENUM(NSUInteger, MCSLimit) {
 
 @synthesize cacheCountLimit = _cacheCountLimit;
 - (void)setCacheCountLimit:(NSUInteger)cacheCountLimit {
-    dispatch_barrier_sync(mcs_queue, ^{
+    mcs_queue_sync(^{
         _cacheCountLimit = cacheCountLimit;
     });
 }
 
 - (NSUInteger)cacheCountLimit {
     __block NSUInteger cacheCountLimit = 0;
-    dispatch_sync(mcs_queue, ^{
+    mcs_queue_sync(^{
         cacheCountLimit = self->_cacheCountLimit;
     });
     return cacheCountLimit;
@@ -102,14 +100,14 @@ typedef NS_ENUM(NSUInteger, MCSLimit) {
 
 @synthesize maxDiskAgeForCache = _maxDiskAgeForCache;
 - (void)setMaxDiskAgeForCache:(NSTimeInterval)maxDiskAgeForCache {
-    dispatch_barrier_sync(mcs_queue, ^{
+    mcs_queue_sync(^{
         _maxDiskAgeForCache = maxDiskAgeForCache;
     });
 }
 
 - (NSTimeInterval)maxDiskAgeForCache {
     __block NSTimeInterval maxDiskAgeForCache = 0;
-    dispatch_sync(mcs_queue, ^{
+    mcs_queue_sync(^{
         maxDiskAgeForCache = _maxDiskAgeForCache;
     });
     return maxDiskAgeForCache;
@@ -117,13 +115,13 @@ typedef NS_ENUM(NSUInteger, MCSLimit) {
 
 @synthesize maxDiskSizeForCache = _maxDiskSizeForCache;
 - (void)setMaxDiskSizeForCache:(NSUInteger)maxDiskSizeForCache {
-    dispatch_barrier_sync(mcs_queue, ^{
+    mcs_queue_sync(^{
         _maxDiskSizeForCache = maxDiskSizeForCache;
     });
 }
 - (NSUInteger)maxDiskSizeForCache {
     __block NSUInteger maxDiskSizeForCache = 0;
-    dispatch_sync(mcs_queue, ^{
+    mcs_queue_sync(^{
         maxDiskSizeForCache = self->_maxDiskSizeForCache;
     });
     return maxDiskSizeForCache;
@@ -131,14 +129,14 @@ typedef NS_ENUM(NSUInteger, MCSLimit) {
 
 @synthesize reservedFreeDiskSpace = _reservedFreeDiskSpace;
 - (void)setReservedFreeDiskSpace:(NSUInteger)reservedFreeDiskSpace {
-    dispatch_barrier_sync(mcs_queue, ^{
+    mcs_queue_sync(^{
         _reservedFreeDiskSpace = reservedFreeDiskSpace;
     });
 }
 
 - (NSUInteger)reservedFreeDiskSpace {
     __block NSUInteger reservedFreeDiskSpace = 0;
-    dispatch_sync(mcs_queue, ^{
+    mcs_queue_sync(^{
         reservedFreeDiskSpace = self->_reservedFreeDiskSpace;
     });
     return reservedFreeDiskSpace;
@@ -146,7 +144,7 @@ typedef NS_ENUM(NSUInteger, MCSLimit) {
 
 @synthesize checkInterval = _checkInterval;
 - (void)setCheckInterval:(NSTimeInterval)checkInterval {
-    dispatch_barrier_sync(mcs_queue, ^{
+    mcs_queue_sync(^{
         if ( checkInterval != self->_checkInterval ) {
             self->_checkInterval = checkInterval;
         }
@@ -155,7 +153,7 @@ typedef NS_ENUM(NSUInteger, MCSLimit) {
 
 - (NSTimeInterval)checkInterval {
     __block NSUInteger checkInterval = 0;
-    dispatch_sync(mcs_queue, ^{
+    mcs_queue_sync(^{
         checkInterval = self->_checkInterval;
     });
     return checkInterval;
@@ -167,7 +165,7 @@ typedef NS_ENUM(NSUInteger, MCSLimit) {
 
 - (UInt64)countOfBytesRemovableCaches {
     __block UInt64 size = 0;
-    dispatch_sync(mcs_queue, ^{
+    mcs_queue_sync(^{
         size = [MCSAssetManager.shared countOfBytesNotIn:[self _allProtectedAssets]];
     });
     return size;
@@ -182,7 +180,7 @@ typedef NS_ENUM(NSUInteger, MCSLimit) {
 - (BOOL)isRemovableForCacheWithAsset:(id<MCSAsset>)asset {
     __block BOOL isRemovable = NO;
     if ( asset != nil ) {
-        dispatch_sync(mcs_queue, ^{
+        mcs_queue_sync(^{
             isRemovable = [self _isRemovableForCacheWithAsset:asset];
         });
     }
@@ -198,7 +196,7 @@ typedef NS_ENUM(NSUInteger, MCSLimit) {
 - (BOOL)removeCacheForAsset:(id<MCSAsset>)asset {
     __block BOOL isRemoved = NO;
     if ( asset != nil ) {
-        dispatch_barrier_sync(mcs_queue, ^{
+        mcs_queue_sync(^{
             BOOL isRemovable = [self _isRemovableForCacheWithAsset:asset];
             if ( isRemovable ) {
                 [MCSAssetManager.shared removeAsset:asset];
@@ -210,7 +208,7 @@ typedef NS_ENUM(NSUInteger, MCSLimit) {
 }
 
 - (void)removeAllRemovableCaches {
-    dispatch_barrier_sync(mcs_queue, ^{
+    mcs_queue_sync(^{
         NSDictionary<MCSAssetTypeNumber *, NSArray<MCSAssetIDNumber *> *> *protectedAssets = [self _allProtectedAssets];
         [MCSAssetManager.shared removeAssetsNotIn:protectedAssets];
         _countOfProtectedAssets = protectedAssets.count;
@@ -224,7 +222,7 @@ typedef NS_ENUM(NSUInteger, MCSLimit) {
 - (void)setProtected:(BOOL)isProtected forCacheWithAsset:(id<MCSAsset>)asset {
     if ( asset == nil )
         return;
-    dispatch_barrier_sync(mcs_queue, ^{
+    mcs_queue_sync(^{
         MCSAssetCacheTmpProtectedItem *item = (id)[_sqlite3 objectsForClass:MCSAssetCacheTmpProtectedItem.class conditions:@[
             [SJSQLite3Condition conditionWithColumn:@"assetType" value:@(asset.type)],
             [SJSQLite3Condition conditionWithColumn:@"asset" value:@(asset.id)]
@@ -256,7 +254,7 @@ typedef NS_ENUM(NSUInteger, MCSLimit) {
     if ( _checkInterval == 0 ) return;
     
     dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(_checkInterval * NSEC_PER_SEC)), dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_LOW, 0), ^{
-        dispatch_barrier_sync(mcs_queue, ^{
+        mcs_queue_sync(^{
             [self _trim];
         });
         
@@ -279,7 +277,7 @@ typedef NS_ENUM(NSUInteger, MCSLimit) {
 
 // 空间不足
 - (void)_fileWriteOutOfSpaceErrorWithNote:(NSNotification *)note {
-    dispatch_barrier_async(mcs_queue, ^{
+    mcs_queue_async(^{
         [self _trim];
     });
 }

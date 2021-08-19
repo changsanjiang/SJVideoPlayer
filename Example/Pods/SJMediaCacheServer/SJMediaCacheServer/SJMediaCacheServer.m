@@ -16,6 +16,7 @@
 #import "MCSLogger.h"
 #import "MCSDownload.h"
 #import "MCSPrefetcherManager.h"
+#import "MCSQueue.h"
 
 @interface SJMediaCacheServer ()<MCSProxyServerDelegate>
 @property (nonatomic, strong, readonly) MCSProxyServer *server;
@@ -34,6 +35,8 @@
 - (instancetype)init {
     self = [super init];
     if ( self ) {
+        mcs_queue_init();
+        
         _server = [MCSProxyServer.alloc init];
         _server.delegate = self;
         [_server start];
@@ -59,12 +62,23 @@
     if ( URL.isFileURL )
         return URL;
     
+    if ( !_server.isRunning )
+        [_server start];
+    
     // proxy URL
     if ( _server.isRunning )
         return [MCSURL.shared proxyURLWithURL:URL];
 
     // param URL
     return URL;
+}
+
+- (BOOL)isActive {
+    return _server.isRunning;
+}
+
+- (void)setActive:(BOOL)active {
+    active ? [_server start] : [_server stop];
 }
 
 #pragma mark - MCSProxyServerDelegate
@@ -284,10 +298,6 @@
 
 - (float)exportProgressWithURL:(NSURL *)URL {
     return [MCSAssetExporterManager.shared progressWithURL:URL];
-}
-
-- (nullable NSURL *)playbackURLForExportedAssetWithURL:(NSURL *)URL {
-    return [MCSAssetExporterManager.shared playbackURLForExportedAssetWithURL:URL];
 }
 
 - (void)synchronizeForExporterWithAssetURL:(NSURL *)URL {

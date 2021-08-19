@@ -7,6 +7,21 @@
 //
 
 #import <UIKit/UIKit.h>
+
+/** 刷新控件的状态 */
+typedef NS_ENUM(NSInteger, SJWrapRefreshState) {
+    /** 普通闲置状态 */
+    SJWrapRefreshStateIdle = 1,
+    /** 松开就可以进行刷新的状态 */
+    SJWrapRefreshStatePulling,
+    /** 正在刷新中的状态 */
+    SJWrapRefreshStateRefreshing,
+    /** 即将刷新的状态 */
+    SJWrapRefreshStateWillRefresh,
+    /** 所有数据加载完毕，没有更多的数据了 */
+    SJWrapRefreshStateNoMoreData
+};
+
 /// 此size用于标记请求不需要pageSize
 /// 当不需要页码大小时, 可以传入此size
 extern char const SJRefreshingNonePageSize;
@@ -14,6 +29,9 @@ extern char const SJRefreshingNonePageSize;
 
 NS_ASSUME_NONNULL_BEGIN
 @interface UIScrollView (SJSetupRefresh)
+@property (nonatomic, readonly) SJWrapRefreshState sj_headerRefreshState;
+@property (nonatomic, readonly) SJWrapRefreshState sj_footerRefreshState;
+
 @property (nonatomic, readonly) NSInteger sj_beginPageNum;
 @property (nonatomic, readonly) NSInteger sj_pageSize;
 @property (nonatomic, readonly) NSInteger sj_pageNum;   // current PageNum
@@ -30,7 +48,6 @@ NS_ASSUME_NONNULL_BEGIN
 - (void)sj_exeFooterRefreshing;
 
 - (void)sj_resetState;
-
 
 #pragma mark - deprecated
 

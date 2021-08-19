@@ -250,6 +250,7 @@ static NSNotificationName const MCSAssetExporterStatusDidChangeNotification = @"
 - (void)_prefetchTaskDidCompleteWithError:(NSError *_Nullable)error {
     [self synchronize];
     [self _lockInBlock:^{
+        _task = nil;
         _status = error != nil ? MCSAssetExportStatusFailed : MCSAssetExportStatusFinished;
     }];
     [NSNotificationCenter.defaultCenter postNotificationName:MCSAssetExporterStatusDidChangeNotification object:self];
@@ -270,22 +271,22 @@ static NSNotificationName const MCSAssetExporterStatusDidChangeNotification = @"
         float progress = _progress;
         NSUInteger totalLength = asset.totalLength;
         if ( totalLength != 0 ) {
-            NSMutableArray<FILEContent *> *contents = [asset.contents mutableCopy];
-            [contents sortUsingComparator:^NSComparisonResult(FILEContent *obj1, FILEContent *obj2) {
-                NSRange range1 = NSMakeRange(obj1.offset, obj1.length);
-                NSRange range2 = NSMakeRange(obj2.offset, obj2.length);
+            NSMutableArray<id<MCSAssetContent> > *contents = [asset.contents mutableCopy];
+            [contents sortUsingComparator:^NSComparisonResult(id<MCSAssetContent> obj1, id<MCSAssetContent> obj2) {
+                NSRange range1 = NSMakeRange(obj1.startPositionInAsset, obj1.length);
+                NSRange range2 = NSMakeRange(obj2.startPositionInAsset, obj2.length);
                 if ( range1.location == range2.location ) {
                     if ( obj1.length == obj2.length )
                         return NSOrderedSame;
                     return obj1.length > obj2.length ? NSOrderedAscending : NSOrderedDescending;
                 }
-                return range1.location < range2.location ? NSOrderedAscending : NSOrderedDescending;
+                return [@(range1.location) compare:@(range2.location)];
             }];
             
             NSUInteger current = 0;
-            FILEContent *pre = nil;
-            for ( FILEContent *content in contents ) {
-                if ( pre == nil || pre.offset != content.offset ) {
+            id<MCSAssetContent> pre = nil;
+            for ( id<MCSAssetContent> content in contents ) {
+                if ( pre == nil || pre.startPositionInAsset != content.startPositionInAsset ) {
                     current += content.length;
                 }
                 pre = content;
@@ -306,7 +307,7 @@ static NSNotificationName const MCSAssetExporterStatusDidChangeNotification = @"
             return;
         
         float progress = _progress;
-        HLSParser *parser = asset.parser;
+        HLSAssetParser *parser = asset.parser;
         if ( parser != nil ) {
             // 获取所有相关的asset, 计算进度
             NSMutableArray<HLSAsset *> *allAssets = [NSMutableArray arrayWithObject:asset];
@@ -334,9 +335,9 @@ static NSNotificationName const MCSAssetExporterStatusDidChangeNotification = @"
         return 1.0f;
     
     if ( asset.TsContents.count != 0 ) {
-        NSMutableArray<HLSContentTs *> *contents = [asset.TsContents mutableCopy];
-        [contents sortUsingComparator:^NSComparisonResult(HLSContentTs *obj1, HLSContentTs *obj2) {
-            if ( [obj1.name isEqualToString:obj2.name] && NSEqualRanges(obj1.range, obj2.range) ) {
+        NSMutableArray<id<HLSAssetTsContent>> *contents = [asset.TsContents mutableCopy];
+        [contents sortUsingComparator:^NSComparisonResult(id<HLSAssetTsContent>obj1, id<HLSAssetTsContent>obj2) {
+            if ( [obj1.name isEqualToString:obj2.name] && NSEqualRanges(obj1.rangeInAsset, obj2.rangeInAsset) ) {
                 if ( obj1.length == obj2.length )
                     return NSOrderedSame;
                 return obj1.length > obj2.length ? NSOrderedAscending : NSOrderedDescending;
@@ -345,10 +346,10 @@ static NSNotificationName const MCSAssetExporterStatusDidChangeNotification = @"
         }];
         
         float progress = 0;
-        HLSContentTs *pre = nil;
-        for ( HLSContentTs *content in contents ) {
-            if ( pre == nil || !([content.name isEqualToString:pre.name] && NSEqualRanges(content.range, pre.range)) ) {
-                progress += content.length * 1.0 / content.range.length;
+        id<HLSAssetTsContent>pre = nil;
+        for ( id<HLSAssetTsContent>content in contents ) {
+            if ( pre == nil || !([content.name isEqualToString:pre.name] && NSEqualRanges(content.rangeInAsset, pre.rangeInAsset)) ) {
+                progress += content.length * 1.0 / content.rangeInAsset.length;
             }
             pre = content;
         }
@@ -605,35 +606,6 @@ static NSNotificationName const MCSAssetExporterStatusDidChangeNotification = @"
     return progress;
 }
 
-/// 获取已导出的资源的播放地址
-///
-- (nullable NSURL *)playbackURLForExportedAssetWithURL:(NSURL *)URL {
-    if ( URL.absoluteString.length == 0 )
-        return nil;
- 
-    __block NSURL *playbackURL = nil;
-    [self _lockInBlock:^{
-        NSString *name = [MCSURL.shared assetNameForURL:URL];
-        MCSAssetExporter *exporter = [self _exporterInCachesForName:name];
-        if ( exporter.status == MCSAssetExportStatusFinished ) {
-            __kindof id<MCSAsset> a = [MCSAssetManager.shared assetWithName:exporter.name type:exporter.type];
-            switch ( a.type ) {
-                case MCSAssetTypeFILE: {
-                    FILEAsset *asset = a;
-                    FILEContent *content = asset.contents.firstObject;
-                    playbackURL = [MCSURL.shared proxyURLWithRelativePath:[asset contentFileRelativePathForFilename:content.filename] inAsset:asset.name];
-                }
-                    break;
-                case MCSAssetTypeHLS: {
-                    HLSAsset *asset = a;
-                    playbackURL = [MCSURL.shared proxyURLWithRelativePath:asset.indexFileRelativePath inAsset:asset.name];
-                }
-                    break;
-            }
-        }
-    }];
-    return playbackURL;
-}
 
 /// 同步缓存, 更新缓存进度
 ///

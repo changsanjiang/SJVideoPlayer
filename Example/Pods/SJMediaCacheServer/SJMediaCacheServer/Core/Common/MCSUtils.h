@@ -59,6 +59,8 @@ MCSRequestRangeIsUndefined(MCSRequestContentRange range);
 
 #pragma mark -
 
+FOUNDATION_EXTERN NSRange const MCSNSRangeUndefined;
+
 FOUNDATION_EXPORT BOOL
 MCSNSRangeIsUndefined(NSRange range);
 
@@ -66,7 +68,7 @@ FOUNDATION_EXPORT BOOL
 MCSNSRangeContains(NSRange main, NSRange sub);
 
 FOUNDATION_EXPORT NSString *_Nullable
-MCSSuggestedFilePathExtension(NSHTTPURLResponse *response);
+MCSSuggestedFilepathExtension(NSHTTPURLResponse *response);
 
 #ifdef DEBUG
 FOUNDATION_EXPORT uint64_t
@@ -82,7 +84,9 @@ MCSEndTime(uint64_t elapsed_time);
 
 #pragma mark - DEBUG
 
+//#ifdef DEBUG
 //#define MCS_QUEUE_ENABLE_DEBUG
+//#endif
 
 #ifdef MCS_QUEUE_ENABLE_DEBUG
 #define MCS_QUEUE_CHECK_INTERVAL 5

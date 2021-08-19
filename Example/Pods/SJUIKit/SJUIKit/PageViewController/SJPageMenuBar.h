@@ -65,7 +65,8 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic, strong, null_resettable) UIColor *scrollIndicatorTintColor;
 @property (nonatomic) SJPageMenuBarScrollIndicatorLayoutMode scrollIndicatorLayoutMode;
 
-@property (nonatomic) CGFloat centerlineOffset;                     ///< default is `0`.
+@property (nonatomic) CGFloat baselineOffset;                       ///< default is `0`.
+@property (nonatomic) CGFloat centerPositionOffset;                 ///< default is `0`.
 
 @property (nonatomic, strong, null_resettable) id<SJPageMenuBarGestureHandler> gestureHandler;
 @property (nonatomic, strong, null_resettable) UIView<SJPageMenuBarScrollIndicator> *scrollIndicator;

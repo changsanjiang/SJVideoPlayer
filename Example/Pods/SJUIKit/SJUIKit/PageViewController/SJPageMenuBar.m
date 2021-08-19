@@ -63,13 +63,12 @@ NS_ASSUME_NONNULL_BEGIN
         [_itemViews enumerateObjectsUsingBlock:^(UIView<SJPageMenuItemView> * _Nonnull obj, NSUInteger idx, BOOL * _Nonnull stop) {
             obj.focusedMenuItem = idx == focusedIndex;
         }];
-        
-        if ( self.pageViewController != nil && ![self.pageViewController isViewControllerVisibleAtIndex:focusedIndex] ) {
-            [self.pageViewController setViewControllerAtIndex:focusedIndex];
-        }
-        
+         
         if ( [self.delegate respondsToSelector:@selector(pageMenuBar:focusedIndexDidChange:)] ) {
             [self.delegate pageMenuBar:self focusedIndexDidChange:focusedIndex];
+        }
+        else if ( self.pageViewController != nil && ![self.pageViewController isViewControllerVisibleAtIndex:focusedIndex] ) {
+            [self.pageViewController setViewControllerAtIndex:focusedIndex];
         }
     }
 }
@@ -221,12 +220,7 @@ NS_ASSUME_NONNULL_BEGIN
         _needsReloadData = needsReloadData;
         
         if ( needsReloadData ) {
-            __weak typeof(self) _self = self;
-            CFRunLoopPerformBlock(CFRunLoopGetMain(), kCFRunLoopCommonModes, ^{
-                __strong typeof(_self) self = _self;
-                if ( self == nil ) return;
-                [self _reloadDataIfNeeded];
-            });
+            [self performSelectorOnMainThread:@selector(_reloadDataIfNeeded) withObject:nil waitUntilDone:NO];
         }
     }
 }
@@ -312,9 +306,9 @@ NS_ASSUME_NONNULL_BEGIN
     [self _remakeConstraintsForScrollIndicatorWithFocusedIndex:self.focusedIndex];
 }
 
-- (void)setCenterlineOffset:(CGFloat)centerlineOffset {
-    if ( centerlineOffset != _centerlineOffset ) {
-        _centerlineOffset = centerlineOffset;
+- (void)setBaselineOffset:(CGFloat)baselineOffset {
+    if ( baselineOffset != _baselineOffset ) {
+        _baselineOffset = baselineOffset;
         [self _remakeConstraints];
     }
 }
@@ -509,8 +503,8 @@ NS_ASSUME_NONNULL_BEGIN
         return focusedIndex == index ? 1 : 0;
     } tintColor:^UIColor * _Nonnull(NSUInteger index) {
         return focusedIndex == index ? self.focusedItemTintColor : self.itemTintColor;
-    } centerlineOffset:^CGFloat(NSUInteger index) {
-        return focusedIndex == index ? 0 : self.centerlineOffset;;
+    } baselineOffset:^CGFloat(NSUInteger index) {
+        return focusedIndex == index ? 0 : self.baselineOffset;;
     }];
 }
 
@@ -563,12 +557,12 @@ NS_ASSUME_NONNULL_BEGIN
             else if ( index == right )
                 return [self.itemTintColor transitionToColor:self.focusedItemTintColor progress:progress];
             return self.itemTintColor;
-        } centerlineOffset:^CGFloat(NSUInteger index) {
+        } baselineOffset:^CGFloat(NSUInteger index) {
             if      ( index == left )
-                return self.centerlineOffset * progress;
+                return self.baselineOffset * progress;
             else if ( index == right )
-                return (1 - progress) * self.centerlineOffset;
-            return self.centerlineOffset;
+                return (1 - progress) * self.baselineOffset;
+            return self.baselineOffset;
         }];
         
         __auto_type leftView = self.itemViews[left];
@@ -595,7 +589,7 @@ NS_ASSUME_NONNULL_BEGIN
     }
 }
 
-- (void)_remakeConstraintsForMenuItemViewWithBeginIndex:(NSUInteger)safeIndex  zoomScale:(CGFloat(^NS_NOESCAPE)(NSUInteger index))zoomScaleBlock transitionProgress:(CGFloat(^NS_NOESCAPE)(NSUInteger index))transitionProgress tintColor:(UIColor *(^NS_NOESCAPE)(NSUInteger index))tintColorBlock centerlineOffset:(CGFloat(^NS_NOESCAPE)(NSUInteger index))centerlineOffsetBlock {
+- (void)_remakeConstraintsForMenuItemViewWithBeginIndex:(NSUInteger)safeIndex  zoomScale:(CGFloat(^NS_NOESCAPE)(NSUInteger index))zoomScaleBlock transitionProgress:(CGFloat(^NS_NOESCAPE)(NSUInteger index))transitionProgress tintColor:(UIColor *(^NS_NOESCAPE)(NSUInteger index))tintColorBlock baselineOffset:(CGFloat(^NS_NOESCAPE)(NSUInteger index))baselineOffsetBlock {
     if ( self.bounds.size.height == 0 || self.bounds.size.width == 0 ) return;
     CGFloat contentLayoutHeight = self.bounds.size.height - self.contentInsets.top - self.contentInsets.bottom;
     CGFloat contentLayoutWidth = self.bounds.size.width - _contentInsets.left - _contentInsets.right;
@@ -628,7 +622,7 @@ NS_ASSUME_NONNULL_BEGIN
             center.x += prev.center.x + prev.bounds.size.width * 0.5 * presx + itemSpacing ;
         }
         // center.y
-        center.y = contentLayoutHeight * 0.5 + centerlineOffsetBlock(index);
+        center.y = contentLayoutHeight * 0.5 + baselineOffsetBlock(index);
         
         [self updateForItemView:curr zoomScale:zoomScale transitionProgress:progress tintColor:tintColor bounds:bounds center:center];
         prev = curr;
@@ -642,21 +636,14 @@ NS_ASSUME_NONNULL_BEGIN
         return;
     }
     __auto_type toView = [self viewForItemAtIndex:safeIndex];
-    CGFloat size = self.frame.size.width;
-    CGFloat middle = size * 0.5;
-    CGFloat min = middle;
-    CGFloat max = _scrollView.contentSize.width - middle + _contentInsets.left + _contentInsets.right;
-    CGFloat centerX = toView.center.x;
-    if ( centerX < min || max < middle ) {
-        centerX = -_contentInsets.left;
-    }
-    else if ( centerX > max ) {
-        centerX = _scrollView.contentSize.width - size + _contentInsets.right;
-    }
-    else {
-        centerX -= middle;
-    }
-    _scrollView.contentOffset = CGPointMake(centerX, 0);
+    CGFloat offsetX = toView.center.x + _centerPositionOffset - _scrollView.bounds.size.width * 0.5;
+    CGFloat minX = -_scrollView.contentInset.left;
+    CGFloat maxX = _scrollView.contentSize.width + _scrollView.contentInset.right - _scrollView.bounds.size.width;
+    if ( offsetX > maxX )
+        offsetX = maxX;
+    if ( offsetX < minX )
+        offsetX = minX;
+    _scrollView.contentOffset = CGPointMake(offsetX, 0);
 }
  
 - (void)_resetTintColorForMenuItemViews {

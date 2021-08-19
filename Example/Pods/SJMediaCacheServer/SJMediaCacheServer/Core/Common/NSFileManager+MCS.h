@@ -11,11 +11,11 @@ NS_ASSUME_NONNULL_BEGIN
 
 @interface NSFileManager (MCS)
 
-- (unsigned long long)mcs_fileSizeAtPath:(NSString *)path;
+- (UInt64)mcs_fileSizeAtPath:(NSString *)path;
 
-- (unsigned long long)mcs_directorySizeAtPath:(NSString *)path;
+- (UInt64)mcs_directorySizeAtPath:(NSString *)path;
 
-- (unsigned long long)mcs_freeDiskSpace;
+- (UInt64)mcs_freeDiskSpace;
 
 - (void)mcs_createDirectoryAtPath:(NSString *)path backupable:(BOOL)backupable;
 

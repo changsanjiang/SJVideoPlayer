@@ -28,7 +28,55 @@ NS_ASSUME_NONNULL_BEGIN
 ///
 /// @note return nil if URL is nil.
 ///
+/// \code
+/// @implementation YourPlayerController {
+///     AVPlayer *_player
+/// }
+///
+/// - (instancetype)initWithURL:(NSURL *)URL {
+///     self = [super init];
+///     if ( self ) {
+///         NSURL *playbackURL = [SJMediaCacheServer.shared playbackURLWithURL:URL];
+///         _player = [AVPlayer playerWithURL:playbackURL];
+///     }
+///     return self;
+/// }
+///
+/// - (void)play {
+///     [SJMediaCacheServer.shared setActive:YES];
+///     [_player play];
+/// }
+///
+/// - (void)seekToTime:(NSTimeInterval)time {
+///     [SJMediaCacheServer.shared setActive:YES];
+///     [_player seekToTime:time];
+/// }
+/// @end
+/// \endcode
+///
 - (nullable NSURL *)playbackURLWithURL:(NSURL *)URL; // 获取播放地址
+
+@property (nonatomic, readonly, getter=isActive) BOOL active;
+
+/// App进入后台后, 当所有链接关闭时`CacheServer`将会停止服务
+///
+///     请在播放时激活`CacheServer`
+///
+/// \code
+/// @implementation YourPlayerController
+/// - (void)play {
+///     [SJMediaCacheServer.shared setActive:YES];
+///     [_player play];
+/// }
+///
+/// - (void)seekToTime:(NSTimeInterval)time {
+///     [SJMediaCacheServer.shared setActive:YES];
+///     [_player seekToTime:time];
+/// }
+/// @end
+/// \endcode
+///
+- (void)setActive:(BOOL)active;
 @end
 
 
@@ -272,8 +320,7 @@ NS_ASSUME_NONNULL_BEGIN
 - (nullable id<MCSAssetExporter>)exportAssetWithURL:(NSURL *)URL resumes:(BOOL)resumes; // 获取exporter, 如果不存在将会创建.
  
 - (MCSAssetExportStatus)exportStatusWithURL:(NSURL *)URL; // 当前状态
-- (float)exportProgressWithURL:(NSURL *)URL; // 当前进度
-- (nullable NSURL *)playbackURLForExportedAssetWithURL:(NSURL *)URL; // 播放地址(请在缓存完毕后获取)
+- (float)exportProgressWithURL:(NSURL *)URL; // 当前进度 
 
 /// Synchronize the cache to the exporter.
 ///

@@ -7,25 +7,25 @@
 //
 
 #import "MCSInterfaces.h"
-#import "HLSParser.h"
-#import "HLSContentTs.h"
+#import "HLSAssetParser.h"
+#import "HLSAssetDefines.h"
+#import "MCSReadwrite.h"
 
 NS_ASSUME_NONNULL_BEGIN
-@interface HLSAsset : NSObject<MCSAsset>
+@interface HLSAsset : MCSReadwrite<MCSAsset>
 @property (nonatomic, readonly) MCSAssetType type;
 @property (nonatomic, copy, readonly) NSString *name;
 @property (nonatomic, strong, readonly) id<MCSConfiguration> configuration;
 @property (nonatomic, copy, readonly, nullable) NSString *TsContentType;
 @property (nonatomic, readonly) NSUInteger tsCount;
 @property (nonatomic, readonly) BOOL isStored;
-@property (nonatomic, strong, nullable) HLSParser *parser; 
+@property (nonatomic, strong, nullable) HLSAssetParser *parser; 
 
-- (NSString *)indexFilePath;
+- (NSString *)indexFilepath;
 - (NSString *)indexFileRelativePath;
-- (NSString *)AESKeyFilePathWithURL:(NSURL *)URL;
-- (nullable NSArray<id<MCSAssetContent>> *)TsContents;
-- (nullable NSString *)TsContentFilePathForFilename:(NSString *)filename;
-- (nullable id<MCSAssetContent>)createTsContentReadwriteWithResponse:(id<MCSDownloadResponse>)response;
-- (nullable id<MCSAssetContent>)TsContentReadwriteForRequest:(NSURLRequest *)request;
+- (NSString *)AESKeyFilepathWithURL:(NSURL *)URL;
+- (nullable NSArray<id<HLSAssetTsContent>> *)TsContents;
+- (nullable id<HLSAssetTsContent>)TsContentReadwriteForRequest:(NSURLRequest *)request;
+- (nullable id<MCSAssetContent>)createContentReadwriteWithDataType:(MCSDataType)dataType response:(id<MCSDownloadResponse>)response;
 @end
 NS_ASSUME_NONNULL_END

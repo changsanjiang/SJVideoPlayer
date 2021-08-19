@@ -10,9 +10,16 @@
 #define SJPlaybackListControllerInterfaces_h
 
 #import "SJPlaybackListControllerDefines.h"
-@protocol SJPlaybackItem, SJPlaybackController, SJPlaybackListControllerObserver;
+@protocol SJPlaybackItem, SJPlaybackListControllerObserver, SJPlaybackController, SJPlaybackControllerObserver;
 
 NS_ASSUME_NONNULL_BEGIN
+
+@protocol SJPlaybackItem <NSObject>
+- (BOOL)isEqualToPlaybackItem:(id<SJPlaybackItem>)item;
+@end
+
+#pragma mark - SJPlaybackListController
+
 @protocol SJPlaybackListController <NSObject>
 
 @property (nonatomic, weak, readonly, nullable) id<SJPlaybackController> playbackController;
@@ -27,7 +34,6 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic, readonly) NSInteger numberOfItems;
 - (nullable id<SJPlaybackItem>)itemAtIndex:(NSInteger)index;
 - (NSInteger)indexOfItem:(id<SJPlaybackItem>)item;
-- (NSInteger)indexOfItemForKey:(id)itemKey;
 
 - (void)addItem:(id<SJPlaybackItem>)item;
 - (void)addItemsFromArray:(NSArray<id<SJPlaybackItem>> *)items;
@@ -37,7 +43,7 @@ NS_ASSUME_NONNULL_BEGIN
 - (void)removeAllItems;
 - (void)removeItemAtIndex:(NSInteger)index;
 
-- (void)enumerateItemsUsingBlock:(void(NS_NOESCAPE ^)(id<SJPlaybackItem> item, NSInteger index, BOOL *stop))block;
+- (void)enumerateItemsUsingBlock:(void(NS_NOESCAPE ^)(__kindof id<SJPlaybackItem> item, NSInteger index, BOOL *stop))block;
 
 // playback mode
 
@@ -55,29 +61,28 @@ NS_ASSUME_NONNULL_BEGIN
 - (void)playPreviousItem;
 @end
 
-@protocol SJPlaybackItem <NSObject>
-@property (nonatomic, strong, readonly) id itemKey;
+@protocol SJPlaybackListControllerObserver <NSObject>
+@optional
+- (void)playbackListController:(id<SJPlaybackListController>)controller modeDidChange:(SJPlaybackMode)mode;
+- (void)itemListDidUpdateForPlaybackListController:(id<SJPlaybackListController>)controller;
 @end
 
-typedef void(^SJPlaybackCompletionHandler)(void);
+#pragma mark - SJPlaybackController
 
 @protocol SJPlaybackController <NSObject>
-/// 该block由列表控制进行设置.
-/// 播放控制请在播放完毕后调用该block.
-/// 列表控制将会通过该block来监听播放完成的时机, 以此来切换下一个item.
-@property (nonatomic, copy, nullable) SJPlaybackCompletionHandler playbackCompletionHandler;
-@property (nonatomic, strong, readonly, nullable) id<SJPlaybackItem> curItem;
 @property (nonatomic, readonly) BOOL isPaused;
+@property (nonatomic, strong, readonly, nullable) id<SJPlaybackItem> currentItem;
 - (void)playWithItem:(id<SJPlaybackItem>)item;
 - (void)replay;
 - (void)stop;
+
+- (void)registerObserver:(id<SJPlaybackControllerObserver>)observer;
+- (void)removeObserver:(id<SJPlaybackControllerObserver>)observer;
 @end
 
-@protocol SJPlaybackListControllerObserver <NSObject>
+@protocol SJPlaybackControllerObserver <NSObject>
 @optional
-- (void)playbackListController:(id<SJPlaybackListController>)controller didPlayItem:(id<SJPlaybackItem>)item;
-- (void)playbackListController:(id<SJPlaybackListController>)controller modeDidChange:(SJPlaybackMode)mode;
-- (void)itemListDidChangeForPlaybackListController:(id<SJPlaybackListController>)controller;
+- (void)playbackControllerDidFinishPlaying:(id<SJPlaybackController>)controller;
 @end
 NS_ASSUME_NONNULL_END
 

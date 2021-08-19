@@ -58,7 +58,7 @@ typedef void(^SJUTAppendImageHandler)(id<SJUTImageAttachment> make);
  *
  * \endcode
  */
-@property (nonatomic, copy, readonly) id<SJUTAttributesProtocol>(^appendImage)(SJUTAppendImageHandler block);
+@property (nonatomic, copy, readonly) id<SJUTAttributesProtocol>(^appendImage)(NS_NOESCAPE SJUTAppendImageHandler block);
 
 /**
  * - Append a `subtext` to the text.

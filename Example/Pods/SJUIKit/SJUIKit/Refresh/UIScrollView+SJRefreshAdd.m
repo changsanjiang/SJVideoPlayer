@@ -277,6 +277,14 @@ char const SJRefreshingNonePageSize = -1;
     self.sj_refreshConfig.sj_beginPageNum = sj_beginPageNum;
 }
 
+- (SJWrapRefreshState)sj_headerRefreshState {
+    return (SJWrapRefreshState)[self.mj_header state];
+}
+
+- (SJWrapRefreshState)sj_footerRefreshState {
+    return (SJWrapRefreshState)[self.mj_footer state];
+}
+
 - (NSInteger)sj_beginPageNum {
     return self.sj_refreshConfig.sj_beginPageNum;
 }

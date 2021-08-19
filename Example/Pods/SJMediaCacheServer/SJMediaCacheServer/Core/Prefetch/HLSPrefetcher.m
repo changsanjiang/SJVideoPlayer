@@ -9,13 +9,10 @@
 #import "MCSLogger.h"
 #import "MCSAssetManager.h"
 #import "NSURLRequest+MCS.h"  
-#import "HLSAsset.h"
-#import "HLSContentTSReader.h"
-#import "HLSContentIndexReader.h"
+#import "HLSAsset.h" 
 #import "MCSQueue.h"
 #import "MCSUtils.h"
-
-static dispatch_queue_t mcs_queue;
+#import "MCSError.h"
 
 @interface HLSURIItemProvider : NSObject
 @property (nonatomic, weak, nullable) HLSAsset *asset;
@@ -28,8 +25,15 @@ static dispatch_queue_t mcs_queue;
 
 @implementation HLSURIItemProvider
 
+- (void)dealloc {
+    [_asset readwriteRelease];
+}
+
 - (void)setAsset:(nullable HLSAsset *)asset {
     if ( asset != _asset ) {
+        [asset readwriteRetain];
+        [_asset readwriteRelease];
+        
         _asset = asset;
         _curFragmentIndex = NSNotFound;
         _curTsIndex = NSNotFound;
@@ -42,7 +46,7 @@ static dispatch_queue_t mcs_queue;
 
     NSUInteger nextIndex = NSNotFound;
     id<HLSURIItem> item = nil;
-    HLSParser *parser = _asset.parser;
+    HLSAssetParser *parser = _asset.parser;
     while ( YES ) {
         nextIndex = (_curFragmentIndex == NSNotFound) ? 0 : (_curFragmentIndex + 1);
         item = [parser itemAtIndex:nextIndex];
@@ -133,13 +137,6 @@ static dispatch_queue_t mcs_queue;
 @synthesize delegate = _delegate;
 @synthesize delegateQueue = _delegateQueue;
 
-+ (void)initialize {
-    static dispatch_once_t onceToken;
-    dispatch_once(&onceToken, ^{
-        mcs_queue = mcs_dispatch_queue_create("queue.HLSPrefetcher", DISPATCH_QUEUE_CONCURRENT);
-    });
-}
-
 - (instancetype)initWithURL:(NSURL *)URL preloadSize:(NSUInteger)bytes delegate:(nullable id<MCSPrefetcherDelegate>)delegate delegateQueue:(nonnull dispatch_queue_t)delegateQueue {
     self = [super init];
     if ( self ) {
@@ -177,7 +174,7 @@ static dispatch_queue_t mcs_queue;
 }
 
 - (void)prepare {
-    dispatch_barrier_async(mcs_queue, ^{
+    mcs_queue_async(^{
         if ( self->_isClosed || self->_isCalledPrepare )
             return;
 
@@ -193,44 +190,28 @@ static dispatch_queue_t mcs_queue;
 }
 
 - (void)close {
-    dispatch_barrier_sync(mcs_queue, ^{
+    mcs_queue_sync(^{
         [self _close];
     });
 }
 
 - (float)progress {
     __block float progress = 0;
-    dispatch_sync(mcs_queue, ^{
+    mcs_queue_sync(^{
         progress = (_TsProgress + _renditionsProgress) / (1 + (_renditionsItems.count != 0 ? 1 : 0));
     });
     return progress;
 }
-
-- (BOOL)isClosed {
-    __block BOOL isClosed = NO;
-    dispatch_sync(mcs_queue, ^{
-        isClosed = _isClosed;
-    });
-    return isClosed;
-}
-
-- (BOOL)isDone {
-    __block BOOL isDone = NO;
-    dispatch_sync(mcs_queue, ^{
-        isDone = _isDone;
-    });
-    return isDone;
-}
-
+ 
 - (void)setRenditionsProgress:(float)renditionsProgress {
-    dispatch_barrier_sync(mcs_queue, ^{
+    mcs_queue_sync(^{
         _renditionsProgress = renditionsProgress;
     });
 }
 
 - (float)renditionsProgress {
     __block float progress = 0;
-    dispatch_sync(mcs_queue, ^{
+    mcs_queue_sync(^{
         progress = _renditionsProgress;
     });
     return progress;
@@ -238,8 +219,8 @@ static dispatch_queue_t mcs_queue;
 
 #pragma mark - MCSAssetReaderDelegate
 
-- (void)reader:(id<MCSAssetReader>)reader prepareDidFinish:(id<MCSResponse>)response {
-    dispatch_barrier_sync(mcs_queue, ^{
+- (void)reader:(id<MCSAssetReader>)reader didReceiveResponse:(id<MCSResponse>)response {
+    mcs_queue_sync(^{
         if ( _cur.type == MCSDataTypeHLSTs ) {
             _TsResponsedSize += response.range.length;
         }
@@ -247,56 +228,19 @@ static dispatch_queue_t mcs_queue;
 }
 
 - (void)reader:(id<MCSAssetReader>)reader hasAvailableDataWithLength:(NSUInteger)length {
-    dispatch_barrier_sync(mcs_queue, ^{
-        if ( _isClosed ) {
-            [reader close];
-            return;
-        }
-        
-        if ( [reader seekToOffset:reader.offset + length] ) {
-            HLSAsset *asset = reader.asset;
-            CGFloat progress = 0;
-            
-            // `Ts reader`
-            if ( _cur.type == MCSDataTypeHLSTs ) {
-                _TsLoadedLength += length;
-
-                NSInteger totalLength = reader.response.range.length;
-                // size mode
-                if ( _preloadSize != 0 ) {
-                    NSUInteger all = _preloadSize > _TsResponsedSize ? _preloadSize : _TsResponsedSize;
-                    progress = _TsLoadedLength * 1.0 / all;
-                }
-                // num mode
-                else {
-                    CGFloat curProgress = (reader.offset - reader.response.range.location) * 1.0 / totalLength;
-                    NSUInteger all = asset.tsCount > _numberOfPreloadedFiles ? _numberOfPreloadedFiles : asset.tsCount;
-                    progress = (_itemProvider.curTsIndex + curProgress) / all;
-                }
-    
-                if ( progress > 1 ) progress = 1;
-                _TsProgress = progress;
-            }
-            
-            if ( _delegate != nil ) {
-                dispatch_async(_delegateQueue, ^{
-                    CGFloat progress = self.progress;
-                    MCSPrefetcherDebugLog(@"%@: <%p>.preload { progress: %f };\n", NSStringFromClass(self.class), self, progress);
-
-                    [self.delegate prefetcher:self progressDidChange:progress];
-                });
-            }
-            
-            if ( reader.isReadingEndOfData ) {
-                _TsProgress == 1 ? [self _prefetchRenditionsItems] : [self _prepareNextFragment];
-            }
-        }
+    mcs_queue_async(^{
+        [self _reader:reader hasAvailableDataWithLength:length];
     });
 }
   
-- (void)reader:(id<MCSAssetReader>)reader anErrorOccurred:(NSError *)error {
-    dispatch_barrier_sync(mcs_queue, ^{
-        [self _didCompleteWithError:error];
+- (void)reader:(id<MCSAssetReader>)reader didAbortWithError:(nullable NSError *)error {
+    mcs_queue_sync(^{
+        if ( _isClosed )
+            return;
+        [self _didCompleteWithError:error ?: [NSError mcs_errorWithCode:MCSAbortError userInfo:@{
+            MCSErrorUserInfoObjectKey : self,
+            MCSErrorUserInfoReasonKey : @"预加载已被终止!"
+        }]];
     });
 }
 
@@ -373,12 +317,58 @@ static dispatch_queue_t mcs_queue;
     }
     
     dispatch_group_notify(group, dispatch_get_global_queue(0, 0), ^{
-        dispatch_barrier_sync(mcs_queue, ^{
+        mcs_queue_sync(^{
             __strong typeof(_self) self = _self;
             if ( self == nil ) return;
             [self _didCompleteWithError:error];
         });
     });
+}
+
+- (void)_reader:(id<MCSAssetReader>)reader hasAvailableDataWithLength:(NSUInteger)length {
+    if ( _isClosed ) {
+        [reader abortWithError:nil];
+        return;
+    }
+    
+    if ( [reader seekToOffset:reader.offset + length] ) {
+        HLSAsset *asset = reader.asset;
+        CGFloat progress = 0;
+        
+        // `Ts reader`
+        if ( _cur.type == MCSDataTypeHLSTs ) {
+            _TsLoadedLength += length;
+
+            NSInteger totalLength = reader.response.range.length;
+            // size mode
+            if ( _preloadSize != 0 ) {
+                NSUInteger all = _preloadSize > _TsResponsedSize ? _preloadSize : _TsResponsedSize;
+                progress = _TsLoadedLength * 1.0 / all;
+            }
+            // num mode
+            else {
+                CGFloat curProgress = (reader.offset - reader.response.range.location) * 1.0 / totalLength;
+                NSUInteger all = asset.tsCount > _numberOfPreloadedFiles ? _numberOfPreloadedFiles : asset.tsCount;
+                progress = (_itemProvider.curTsIndex + curProgress) / all;
+            }
+
+            if ( progress > 1 ) progress = 1;
+            _TsProgress = progress;
+        }
+        
+        if ( _delegate != nil ) {
+            float progress = (_TsProgress + _renditionsProgress) / (1 + (_renditionsItems.count != 0 ? 1 : 0));
+            dispatch_async(_delegateQueue, ^{
+                MCSPrefetcherDebugLog(@"%@: <%p>.preload { progress: %f };\n", NSStringFromClass(self.class), self, progress);
+
+                [self.delegate prefetcher:self progressDidChange:progress];
+            });
+        }
+        
+        if ( reader.status == MCSReaderStatusFinished ) {
+            _TsProgress == 1 ? [self _prefetchRenditionsItems] : [self _prepareNextFragment];
+        }
+    }
 }
 
 - (void)_didCompleteWithError:(nullable NSError *)error {
@@ -407,9 +397,11 @@ static dispatch_queue_t mcs_queue;
     if ( _isClosed )
         return;
     
-    [_reader close];
-    
     _isClosed = YES;
+
+    [_reader abortWithError:nil];
+    _reader = nil;
+    
     
     _reader = nil;
     MCSPrefetcherDebugLog(@"%@: <%p>.close;\n", NSStringFromClass(self.class), self);

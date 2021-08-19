@@ -52,6 +52,8 @@
 	BOOL isRunning;
 }
 
+@property (nonatomic, strong, readonly) GCDAsyncSocket *asyncSocket;
+
 /**
  * Specifies the document root to serve files from.
  * For example, if you set this to "/Users/<your_username>/Sites",

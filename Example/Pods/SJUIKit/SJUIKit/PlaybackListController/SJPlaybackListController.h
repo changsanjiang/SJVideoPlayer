@@ -11,7 +11,7 @@
 NS_ASSUME_NONNULL_BEGIN
 
 @interface SJPlaybackListController<ItemType> : NSObject<SJPlaybackListController>
-- (instancetype)initWithPlaybackController:(nullable id<SJPlaybackController>)playbackController;
+- (instancetype)initWithPlaybackController:(nullable id<SJPlaybackController>)playbackController queue:(dispatch_queue_t)queue;
 - (instancetype)init NS_UNAVAILABLE;
 + (instancetype)new NS_UNAVAILABLE;
 
@@ -27,12 +27,13 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic, readonly) NSInteger numberOfItems;
 - (nullable ItemType <SJPlaybackItem>)itemAtIndex:(NSInteger)index;
 - (NSInteger)indexOfItem:(ItemType <SJPlaybackItem>)item;
-- (NSInteger)indexOfItemForKey:(id)itemKey;
 
 - (void)addItem:(ItemType <SJPlaybackItem>)item;
 - (void)addItemsFromArray:(NSArray<ItemType <SJPlaybackItem>> *)items;
 - (void)insertItemToNextPlay:(ItemType <SJPlaybackItem>)item;
+
 - (void)replaceItemsFromArray:(NSArray<id<SJPlaybackItem>> *)items;
+- (void)replaceItemAtIndex:(NSInteger)index withItem:(id<SJPlaybackItem>)item;
 
 - (void)removeAllItems;
 - (void)removeItemAtIndex:(NSInteger)index;

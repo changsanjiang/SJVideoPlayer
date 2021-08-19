@@ -13,8 +13,9 @@
 #import "MCSDefines.h"
 #import "NSURLRequest+MCS.h"
 
+@protocol MCSResponse, MCSAsset, MCSConfiguration, MCSAssetReader, MCSAssetContent, MCSDownloadResponse;
 @protocol MCSProxyTaskDelegate, MCSAssetReaderDelegate;
-@protocol MCSResponse, MCSAsset, MCSConfiguration, MCSAssetReader;
+@protocol MCSAssetReaderObserver;
 
 NS_ASSUME_NONNULL_BEGIN
 @protocol MCSProxyTask <NSObject>
@@ -30,9 +31,9 @@ NS_ASSUME_NONNULL_BEGIN
 @end
 
 @protocol MCSProxyTaskDelegate <NSObject>
-- (void)taskPrepareDidFinish:(id<MCSProxyTask>)task;
-- (void)taskHasAvailableData:(id<MCSProxyTask>)task;
-- (void)task:(id<MCSProxyTask>)task anErrorOccurred:(NSError *)error;
+- (void)task:(id<MCSProxyTask>)task didReceiveResponse:(id<MCSResponse>)response;
+- (void)task:(id<MCSProxyTask>)task hasAvailableDataWithLength:(NSUInteger)length;
+- (void)task:(id<MCSProxyTask>)task didAbortWithError:(nullable NSError *)error;
 @end
 
 #pragma mark -
@@ -68,6 +69,7 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic, strong, readonly) id<MCSConfiguration> configuration;
 @property (nonatomic, readonly) BOOL isStored;
 - (void)prepare;
+- (nullable id<MCSAssetContent>)createContentReadwriteWithDataType:(MCSDataType)dataType response:(id<MCSDownloadResponse>)response;
 @end
 
 #pragma mark -
@@ -84,31 +86,31 @@ NS_ASSUME_NONNULL_BEGIN
 @protocol MCSAssetReader <NSObject>
 
 - (void)prepare;
+@property (nonatomic, readonly) MCSReaderStatus status;
 @property (nonatomic, copy, readonly, nullable) NSData *(^readDataDecoder)(NSURLRequest *request, NSUInteger offset, NSData *data);
 @property (nonatomic, weak, readonly, nullable) id<MCSAssetReaderDelegate> delegate;
-@property (nonatomic, weak, readonly, nullable) id<MCSAsset> asset;
+@property (nonatomic, strong, readonly, nullable) id<MCSAsset> asset;
 @property (nonatomic, readonly) float networkTaskPriority;
 @property (nonatomic, strong, readonly, nullable) id<MCSResponse> response;
 @property (nonatomic, readonly) NSUInteger availableLength;
 @property (nonatomic, readonly) NSUInteger offset;
 - (nullable NSData *)readDataOfLength:(NSUInteger)length;
 - (BOOL)seekToOffset:(NSUInteger)offset;
-@property (nonatomic, readonly) BOOL isPrepared;
-@property (nonatomic, readonly) BOOL isReadingEndOfData;
-@property (nonatomic, readonly) BOOL isClosed;
-- (void)close;
+- (void)abortWithError:(nullable NSError *)error;
+
+- (void)registerObserver:(id<MCSAssetReaderObserver>)observer;
+- (void)removeObserver:(id<MCSAssetReaderObserver>)observer;
 @end
 
 @protocol MCSAssetReaderDelegate <NSObject>
-- (void)reader:(id<MCSAssetReader>)reader prepareDidFinish:(id<MCSResponse>)response;
+- (void)reader:(id<MCSAssetReader>)reader didReceiveResponse:(id<MCSResponse>)response;
 - (void)reader:(id<MCSAssetReader>)reader hasAvailableDataWithLength:(NSUInteger)length;
-- (void)reader:(id<MCSAssetReader>)reader anErrorOccurred:(NSError *)error;
+- (void)reader:(id<MCSAssetReader>)reader didAbortWithError:(nullable NSError *)error;
 @end
 
-@protocol MCSAssetContent <MCSReadwriteReference>
-@property (nonatomic, copy, readonly) NSString *filename;
-@property (nonatomic, readonly) long long length;
-- (void)didWriteDataWithLength:(NSUInteger)length;
+@protocol MCSAssetReaderObserver <NSObject>
+@optional
+- (void)reader:(id<MCSAssetReader>)reader statusDidChange:(MCSReaderStatus)status;
 @end
 
 

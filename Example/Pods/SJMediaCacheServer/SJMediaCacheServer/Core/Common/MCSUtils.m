@@ -205,6 +205,8 @@ MCSRequestRangeIsUndefined(MCSRequestContentRange range) {
         range.end == NSNotFound;
 }
 
+NSRange const MCSNSRangeUndefined = {NSNotFound, NSNotFound};
+
 BOOL
 MCSNSRangeIsUndefined(NSRange range) {
     return range.location == NSNotFound || range.length == NSNotFound;
@@ -216,7 +218,7 @@ MCSNSRangeContains(NSRange main, NSRange sub) {
 }
 
 NSString *
-MCSSuggestedFilePathExtension(NSHTTPURLResponse *response) {
+MCSSuggestedFilepathExtension(NSHTTPURLResponse *response) {
     NSString *extension = response.suggestedFilename.pathExtension;
     if ( extension.length != 0 )
         return extension;

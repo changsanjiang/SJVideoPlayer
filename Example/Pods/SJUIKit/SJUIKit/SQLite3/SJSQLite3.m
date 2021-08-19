@@ -508,8 +508,9 @@ NS_ASSUME_NONNULL_BEGIN
 - (nullable id)_transformRowData:(NSDictionary *)rowData toObjectOfClass:(Class)cls error:(NSError **)error {
     if ( rowData == nil || cls == nil ) return nil;
     NSError *inner_error = nil;
-    NSMutableDictionary *result = [rowData mutableCopy];
     SJSQLiteTableInfo *_Nullable table = [self tableInfoForClass:cls error:&inner_error];
+    NSMutableDictionary *commonValues = [rowData mutableCopy];
+    NSMutableDictionary *associatedValues = table.columnAssociatedTableInfos.count != 0 ? [NSMutableDictionary dictionaryWithCapacity:table.columnAssociatedTableInfos.count] : nil;
     if ( inner_error != nil ) goto handle_error;
     
     for ( SJSQLiteColumnInfo *column in table.columns ) {
@@ -530,14 +531,16 @@ NS_ASSUME_NONNULL_BEGIN
                 if ( subobj == nil ) { intact = NO; break; }
                 [subObjArr addObject:subobj];
             }
-            result[column.name] = intact?subObjArr.copy:nil;
+            commonValues[column.name] = nil;
+            associatedValues[column.name] = intact ? subObjArr.copy : nil;
         }
         else {
             NSDictionary *subrow = sj_sqlite3_obj_get_row_data(self.db, subtable, value, &inner_error);
             if ( inner_error != nil ) goto handle_error;
             id _Nullable subobj = [self _transformRowData:subrow toObjectOfClass:subtable.cls error:&inner_error];
             if ( inner_error != nil ) goto handle_error;
-            result[column.name] = subobj;
+            commonValues[column.name] = nil;
+            associatedValues[column.name] = subobj;
         }
     }
     
@@ -549,10 +552,11 @@ handle_error:
     
     id obj = nil;
 #if __has_include(<YYModel/YYModel.h>)
-    obj = [table.cls yy_modelWithDictionary:result];
+    obj = [table.cls yy_modelWithDictionary:commonValues];
 #elif __has_include(<YYKit/YYKit.h>)
-    obj = [table.cls modelWithDictionary:result];
+    obj = [table.cls modelWithDictionary:commonValues];
 #endif
+    [obj setValuesForKeysWithDictionary:associatedValues];
     return obj;
 }
 

@@ -36,7 +36,11 @@ NS_ASSUME_NONNULL_BEGIN
 ///
 /// @return                     操作是否成功.
 ///
-- (BOOL)save:(id)value forKey:(NSString *)key error:(NSError **)error {
+- (BOOL)save:(nullable id)value forKey:(NSString *)key error:(NSError **)error {
+    if ( value == nil ) {
+        return [self removeValueForKey:key error:error];
+    }
+    
     NSString *_Nullable data = nil;
     if ( [value isKindOfClass:NSString.class] ) {
         data = value;
@@ -64,14 +68,42 @@ NS_ASSUME_NONNULL_BEGIN
     return [self save:item error:error];
 }
 
+- (BOOL)setValue:(nullable id)value forKey:(NSString *)key error:(NSError **)error {
+    return [self save:value forKey:key error:error];
+}
+- (BOOL)setDictionary:(nullable NSDictionary *)value forKey:(NSString *)key error:(NSError **)error {
+    return [self save:value forKey:key error:error];
+}
+- (BOOL)setArray:(nullable NSArray *)value forKey:(NSString *)key error:(NSError **)error {
+    return [self save:value forKey:key error:error];
+}
+- (BOOL)setString:(nullable NSString *)value forKey:(NSString *)key error:(NSError **)error {
+    return [self save:value forKey:key error:error];
+}
+- (BOOL)setURL:(nullable NSURL *)value forKey:(NSString *)key error:(NSError **)error {
+    return [self save:value forKey:key error:error];
+}
+- (BOOL)setInteger:(NSInteger)value forKey:(NSString *)key error:(NSError **)error {
+    return [self save:@(value) forKey:key error:error];
+}
+- (BOOL)setDouble:(double)value forKey:(NSString *)key error:(NSError **)error {
+    return [self save:@(value) forKey:key error:error];
+}
+- (BOOL)setFloat:(float)value forKey:(NSString *)key error:(NSError **)error {
+    return [self save:@(value) forKey:key error:error];
+}
+- (BOOL)setBool:(BOOL)value forKey:(NSString *)key error:(NSError **)error {
+    return [self save:@(value) forKey:key error:error];
+}
+
 /// 删除指定键的值. 该操作将会开启一个新的事务, 当执行出错时, 数据库将回滚到执行之前的状态.
 ///
 /// @param key                  用来关联值的键.
 ///
 /// @param error                执行出错. 当执行发生错误时, 会暂停执行后续的sql语句, 数据库将回滚到执行之前的状态.
 ///
-- (void)removeValueForKey:(NSString *)key error:(NSError **)error {
-    [self removeObjectForClass:SJSQLite3BasicTypeItem.class primaryKeyValue:key error:error];
+- (BOOL)removeValueForKey:(NSString *)key error:(NSError **)error {
+    return [self removeObjectForClass:SJSQLite3BasicTypeItem.class primaryKeyValue:key error:error];
 }
 
 - (nullable NSString *)stringForKey:(NSString *)key {
@@ -80,6 +112,19 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (nullable NSArray *)arrayForKey:(NSString *)key {
     return [self _containerValueForKey:key];
+}
+
+- (nullable id)objectForKey:(NSString *)key objectClass:(Class)cls {
+    NSString *jsonStr = [self jsonStringForKey:key];
+    if ( jsonStr.length == 0 )
+        return nil;
+#if __has_include(<YYModel/YYModel.h>)
+    return [cls yy_modelWithJSON:jsonStr];
+#elif __has_include(<YYKit/YYKit.h>)
+    return [cls modelWithJSON:jsonStr];
+#else
+    NSAssert(NO, @"请导入YYModel或者YYKit");
+#endif
 }
 
 - (nullable NSString *)jsonStringForKey:(NSString *)key {

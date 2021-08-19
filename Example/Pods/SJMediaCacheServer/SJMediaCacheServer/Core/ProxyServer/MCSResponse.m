@@ -9,11 +9,11 @@
 
 @implementation MCSResponse
 - (instancetype)initWithTotalLength:(NSUInteger)totalLength {
-    return [self initWithTotalLength:totalLength range:NSMakeRange(0, 0)];
+    return [self initWithTotalLength:totalLength range:NSMakeRange(0, totalLength)];
 }
 
 - (instancetype)initWithTotalLength:(NSUInteger)totalLength contentType:(nullable NSString *)contentType {
-    return [self initWithTotalLength:totalLength range:NSMakeRange(0, 0) contentType:contentType];
+    return [self initWithTotalLength:totalLength range:NSMakeRange(0, totalLength) contentType:contentType];
 }
 
 - (instancetype)initWithTotalLength:(NSUInteger)totalLength range:(NSRange)range {

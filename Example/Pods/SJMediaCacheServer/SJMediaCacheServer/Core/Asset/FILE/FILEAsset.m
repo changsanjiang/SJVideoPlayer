@@ -7,40 +7,32 @@
 //
 
 #import "FILEAsset.h"
-#import "FILEContentProvider.h"
+#import "FILEAssetContentProvider.h"
 #import "MCSUtils.h"
 #import "MCSConsts.h"
 #import "MCSConfiguration.h"
 #import "MCSRootDirectory.h"
 #import "NSFileHandle+MCS.h"
-#import "MCSUtils.h"
-
-static dispatch_queue_t mcs_queue;
+#import "MCSQueue.h"
 
 @interface FILEAsset () {
-    FILEContentProvider *_provider;
-    NSMutableArray<FILEContent *> *_contents;
+    FILEAssetContentProvider *mProvider;
+    NSMutableArray<id<MCSAssetContent>> *mContents;
+    BOOL mIsPrepared;
 }
-@property (nonatomic) NSInteger id;
-@property (nonatomic, copy) NSString *name;
-@property (nonatomic, copy, nullable) NSString *pathExtension;
-@property (nonatomic, copy, nullable) NSString *contentType;
-@property (nonatomic) NSUInteger totalLength; 
+
+@property (nonatomic) NSInteger id; // saveable
+@property (nonatomic, copy) NSString *name; // saveable
+@property (nonatomic, copy, nullable) NSString *pathExtension; // saveable
+@property (nonatomic, copy, nullable) NSString *contentType; // saveable
+@property (nonatomic) NSUInteger totalLength;  // saveable
 @end
 
 @implementation FILEAsset
 @synthesize id = _id;
 @synthesize name = _name;
-@synthesize readwriteCount = _readwriteCount;
 @synthesize configuration = _configuration;
 @synthesize isStored = _isStored;
-
-+ (void)initialize {
-    static dispatch_once_t onceToken;
-    dispatch_once(&onceToken, ^{
-        mcs_queue = mcs_dispatch_queue_create("queue.FILEAsset", DISPATCH_QUEUE_CONCURRENT);
-    });
-}
 
 + (NSString *)sql_primaryKey {
     return @"id";
@@ -63,12 +55,16 @@ static dispatch_queue_t mcs_queue;
 }
 
 - (void)prepare {
-    NSParameterAssert(self.name != nil);
-    NSString *directory = [MCSRootDirectory assetPathForFilename:self.name];
-    _configuration = MCSConfiguration.alloc.init;
-    _provider = [FILEContentProvider contentProviderWithDirectory:directory];
-    _contents = [(_provider.contents ?: @[]) mutableCopy];
-    [self _mergeContents];
+    mcs_queue_sync(^{
+        NSParameterAssert(self.name != nil);
+        if ( mIsPrepared ) return;
+        mIsPrepared = YES;
+        NSString *directory = [MCSRootDirectory assetPathForFilename:self.name];
+        _configuration = MCSConfiguration.alloc.init;
+        mProvider = [FILEAssetContentProvider contentProviderWithDirectory:directory];
+        mContents = [(mProvider.contents ?: @[]) mutableCopy];
+        [self _mergeContents];
+    });
 }
 
 - (NSString *)path {
@@ -81,25 +77,29 @@ static dispatch_queue_t mcs_queue;
     return MCSAssetTypeFILE;
 }
 
-- (nullable NSArray<FILEContent *> *)contents {
-    __block NSArray<FILEContent *> *contents;
-    dispatch_sync(mcs_queue, ^{
-        contents = _contents;
+- (nullable NSArray<id<MCSAssetContent>> *)contents {
+    __block NSArray<id<MCSAssetContent>> *contents;
+    mcs_queue_sync(^{
+        contents = mContents.copy;
     });
     return contents;
 }
 
 - (BOOL)isStored {
     __block BOOL isStored = NO;
-    dispatch_sync(mcs_queue, ^{
+    mcs_queue_sync(^{
         isStored = _isStored;
     });
     return isStored;
 }
 
+- (nullable NSString *)filepathForContent:(id<MCSAssetContent>)content {
+    return [mProvider contentFilepath:content];
+}
+
 - (nullable NSString *)pathExtension {
     __block NSString *pathExtension = nil;
-    dispatch_sync(mcs_queue, ^{
+    mcs_queue_sync(^{
         pathExtension = _pathExtension;
     });
     return pathExtension;
@@ -107,7 +107,7 @@ static dispatch_queue_t mcs_queue;
 
 - (nullable NSString *)contentType {
     __block NSString *contentType = nil;
-    dispatch_sync(mcs_queue, ^{
+    mcs_queue_sync(^{
         contentType = _contentType;
     });
     return contentType;
@@ -115,21 +115,33 @@ static dispatch_queue_t mcs_queue;
 
 - (NSUInteger)totalLength {
     __block NSUInteger totalLength = 0;
-    dispatch_sync(mcs_queue, ^{
+    mcs_queue_sync(^{
         totalLength = _totalLength;
     });
     return totalLength;
 }
 
 /// 该操作将会对 content 进行一次 readwriteRetain, 请在不需要时, 调用一次 readwriteRelease.
-- (nullable FILEContent *)createContentReadwriteWithResponse:(id<MCSDownloadResponse>)response {
+- (nullable id<MCSAssetContent>)createContentReadwriteWithDataType:(MCSDataType)dataType response:(id<MCSDownloadResponse>)response {
+    switch ( dataType ) {
+        case MCSDataTypeHLSMask:
+        case MCSDataTypeHLSPlaylist:
+        case MCSDataTypeHLSAESKey:
+        case MCSDataTypeHLSTs:
+        case MCSDataTypeHLS:
+        case MCSDataTypeFILEMask:
+            /* return */
+            return nil;
+        case MCSDataTypeFILE:
+            break;
+    }
     NSString *pathExtension = response.pathExtension;
     NSString *contentType = response.contentType;
     NSUInteger totalLength = response.totalLength;
     NSUInteger offset = response.range.location;
-    __block FILEContent *content = nil;
+    __block id<MCSAssetContent>content = nil;
     __block BOOL isUpdated = NO;
-    dispatch_barrier_sync(mcs_queue, ^{
+    mcs_queue_sync(^{
         if ( _totalLength != totalLength || ![_pathExtension isEqualToString:pathExtension] || ![_contentType isEqualToString:contentType] ) {
             _totalLength = totalLength;
             _pathExtension = pathExtension;
@@ -137,9 +149,9 @@ static dispatch_queue_t mcs_queue;
             isUpdated = YES;
         }
         
-        content = [_provider createContentAtOffset:offset pathExtension:_pathExtension];
+        content = [mProvider createContentAtOffset:offset pathExtension:_pathExtension];
         [content readwriteRetain];
-        [_contents addObject:content];
+        if ( content != nil ) [mContents addObject:content];
     });
     
     if ( isUpdated )
@@ -147,128 +159,81 @@ static dispatch_queue_t mcs_queue;
     return content;
 }
 
-- (nullable NSString *)contentFilePathForFilename:(NSString *)filename {
-    return [_provider contentFilePathForFilename:filename];
-}
-
-- (nullable NSString *)contentFileRelativePathForFilename:(NSString *)filename {
-    return [_provider contentFileRelativePathForFilename:filename];
-}
-
-#pragma mark - readwrite
-
-- (NSInteger)readwriteCount {
-    __block NSInteger readwriteCount = 0;
-    dispatch_sync(mcs_queue, ^{
-        readwriteCount = _readwriteCount;
-    });
-    return readwriteCount;
-}
-
-- (void)readwriteRetain {
-    [self willChangeValueForKey:kReadwriteCount];
-    dispatch_barrier_sync(mcs_queue, ^{
-        _readwriteCount += 1;
-    });
-    [self didChangeValueForKey:kReadwriteCount];
-}
-
-- (void)readwriteRelease {
-    [self willChangeValueForKey:kReadwriteCount];
-    dispatch_barrier_sync(mcs_queue, ^{
-        if ( _readwriteCount > 0 ) {
-            _readwriteCount -= 1;
-        }
-    });
-    [self didChangeValueForKey:kReadwriteCount];
-    [self _mergeContents];
+- (void)readwriteCountDidChange:(NSInteger)count {
+    if ( count == 0 )
+        [self _mergeContents];
 }
 
 // 合并文件
 - (void)_mergeContents {
-    dispatch_barrier_sync(mcs_queue, ^{
-        if ( _readwriteCount != 0 ) return;
-        if ( _isStored ) return;
-        if ( _contents.count < 2 ) {
-            _isStored = _contents.count == 1 && _contents.lastObject.length == _totalLength;
-            return;
+    if ( self.readwriteCount != 0 ) return;
+    if ( _isStored ) return;
+    if ( mContents.count < 2 ) {
+        _isStored = mContents.count == 1 && mContents.lastObject.length == _totalLength;
+        return;
+    }
+     
+    NSMutableArray<id<MCSAssetContent>> *contents = [mContents mutableCopy];
+    NSMutableArray<id<MCSAssetContent>> *deletes = NSMutableArray.alloc.init;
+    [contents sortUsingComparator:^NSComparisonResult(id<MCSAssetContent>obj1, id<MCSAssetContent>obj2) {
+        NSRange range1 = NSMakeRange(obj1.startPositionInAsset, obj1.length);
+        NSRange range2 = NSMakeRange(obj2.startPositionInAsset, obj2.length);
+        
+        // 1 包含 2
+        if ( MCSNSRangeContains(range1, range2) ) {
+            if ( ![deletes containsObject:obj2] ) [deletes addObject:obj2];
+        }
+        // 2 包含 1
+        else if ( MCSNSRangeContains(range2, range1) ) {
+            if ( ![deletes containsObject:obj1] ) [deletes addObject:obj1];;
         }
         
-        NSMutableArray<FILEContent *> *contents = NSMutableArray.alloc.init;
-        for ( FILEContent *content in _contents ) { if ( content.readwriteCount == 0 ) [contents addObject:content]; }
+        return [@(range1.location) compare:@(range2.location)];
+    }];
+    
+    if ( deletes.count != 0 ) [contents removeObjectsInArray:deletes];
+    
+    // merge
+    UInt64 capacity = 1 * 1024 * 1024;
+    for ( NSInteger i = 0 ; i < contents.count - 1; i += 2 ) {
+        id<MCSAssetContent>write = contents[i];
+        id<MCSAssetContent>read  = contents[i + 1];
         
-        if ( contents.count == 0 ) return;
+        NSUInteger maxPosition1 = write.startPositionInAsset + write.length;
+        NSUInteger maxPosition2 = read.startPositionInAsset + read.length;
+        NSRange readRange = NSMakeRange(0, 0);
+        if ( maxPosition1 >= read.startPositionInAsset && maxPosition1 < maxPosition2 ) // 有交集
+            readRange = NSMakeRange(maxPosition1, maxPosition2 - maxPosition1); // 读取read中未相交的部分
         
-        NSMutableArray<FILEContent *> *deletes = NSMutableArray.alloc.init;
-        [contents sortUsingComparator:^NSComparisonResult(FILEContent *obj1, FILEContent *obj2) {
-            NSRange range1 = NSMakeRange(obj1.offset, obj1.length);
-            NSRange range2 = NSMakeRange(obj2.offset, obj2.length);
-            
-            // 1 包含 2
-            if ( MCSNSRangeContains(range1, range2) ) {
-                if ( ![deletes containsObject:obj2] ) [deletes addObject:obj2];
-            }
-            // 2 包含 1
-            else if ( MCSNSRangeContains(range2, range1) ) {
-                if ( ![deletes containsObject:obj1] ) [deletes addObject:obj1];;
-            }
-            
-            return range1.location < range2.location ? NSOrderedAscending : NSOrderedDescending;
-        }];
-        
-        if ( deletes.count != 0 ) [contents removeObjectsInArray:deletes];
-        
-        // merge
-        for ( NSInteger i = 0 ; i < contents.count - 1; i += 2 ) {
-            FILEContent *write = contents[i];
-            FILEContent *read  = contents[i + 1];
-            
-            NSUInteger maxRange1 = write.offset + write.length;
-            NSUInteger maxRange2 = read.offset + read.length;
-            NSRange readRange = NSMakeRange(0, 0);
-            if ( maxRange1 >= read.offset && maxRange1 < maxRange2 ) // 有交集
-                readRange = NSMakeRange(maxRange1 - read.offset, maxRange2 - maxRange1); // 读取read中未相交的部分
-            
-            if ( readRange.length != 0 ) {
-                NSFileHandle *writer = nil;
-                NSFileHandle *reader = nil;
-                @try {
-                    writer = [NSFileHandle fileHandleForWritingAtPath:[self contentFilePathForFilename:write.filename]];
-                    reader = [NSFileHandle fileHandleForReadingAtPath:[self contentFilePathForFilename:read.filename]];
-                    [writer seekToEndOfFile];
-                    [reader seekToFileOffset:readRange.location];
-                    while (true) {
-                        @autoreleasepool {
-                            NSData *data = [reader readDataOfLength:1024 * 1024 * 1];
-                            if ( data.length == 0 )
-                                break;
-                            if ( ![writer mcs_writeData:data error:NULL] ) break;
-                        }
-                    }
-                    [write didWriteDataWithLength:readRange.length];
-                    [deletes addObject:read];
-                } @catch (__unused NSException *exception) {
-                    
-                }
-                @finally {
-                    if ( reader != nil ) {
-                        [reader closeFile];
-                    }
-                    
-                    if ( writer != nil ) {
-                        [writer synchronizeFile];
-                        [writer closeFile];
-                    }
-                }
+        if ( readRange.length != 0 ) {
+            [write readwriteRetain];
+            [read readwriteRetain];
+            NSError *error = nil;
+            UInt64 positon = readRange.location;
+            while ( true ) { @autoreleasepool {
+                NSData *data = [read readDataAtPosition:positon capacity:capacity error:&error];
+                if ( error != nil || data.length == 0 )
+                    break;
+                if ( ![write writeData:data error:&error] )
+                    break;
+                positon += data.length;
+                if ( positon == NSMaxRange(readRange) ) break;
+            }}
+            [read readwriteRelease];
+            [write readwriteRelease];
+            [read closeRead];
+            [write closeWrite];
+            if ( error == nil ) {
+                [deletes addObject:read];
             }
         }
-        
-        if ( deletes.count != 0 ) {
-            for ( FILEContent *content in deletes ) { [_provider removeContentForFilename:content.filename]; }
-            [_contents removeObjectsInArray:deletes];
-        }
-        
-        _isStored = _contents.count == 1 && _contents.lastObject.length == _totalLength;
-    });
+    }
+    
+    if ( deletes.count != 0 ) {
+        for ( id<MCSAssetContent>content in deletes ) { [mProvider removeContent:content]; }
+        [mContents removeObjectsInArray:deletes];
+    }
+    
+    _isStored = mContents.count == 1 && mContents.lastObject.length == _totalLength;
 }
 @end

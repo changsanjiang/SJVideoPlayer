@@ -13,7 +13,7 @@
 #import "NSURLRequest+MCS.h"
 #import "MCSURL.h"
 
-@interface MCSProxyTask ()<MCSAssetReaderDelegate>
+@interface MCSProxyTask ()<MCSAssetReaderDelegate> 
 @property (nonatomic, weak) id<MCSProxyTaskDelegate> delegate;
 @property (nonatomic, strong) NSURLRequest * request;
 @property (nonatomic, strong) id<MCSAsset> asset;
@@ -52,11 +52,14 @@
 }
  
 - (nullable NSData *)readDataOfLength:(NSUInteger)length {
+#ifdef DEBUG
+    UInt64 offset = [_reader offset];
+#endif
     NSData *data = [_reader readDataOfLength:length];
 #ifdef DEBUG
     if ( data.length != 0 ) {
-        MCSProxyTaskDebugLog(@"%@: <%p>.read { length: %lu };\n", NSStringFromClass(self.class), self, (unsigned long)data.length);
-        if ( _reader.isReadingEndOfData )
+        MCSProxyTaskDebugLog(@"%@: <%p>.read { offset: %llu, length: %lu };\n", NSStringFromClass(self.class), self, offset, (unsigned long)data.length);
+        if ( _reader.status == MCSReaderStatusFinished )
             MCSProxyTaskDebugLog(@"%@: <%p>.done { after (%lf) seconds };\n", NSStringFromClass(self.class), self, MCSEndTime(_startTime));
     }
 #endif
@@ -72,35 +75,42 @@
 }
 
 - (BOOL)isPrepared {
-    return _reader.isPrepared;
+    switch ( _reader.status ) {
+        case MCSReaderStatusUnknown:
+        case MCSReaderStatusPreparing:
+        case MCSReaderStatusAborted:
+            return false;
+        case MCSReaderStatusReadyToRead:
+        case MCSReaderStatusFinished:
+            return true;
+    }
 }
 
 - (BOOL)isDone {
-    return _reader.isReadingEndOfData;
+    return _reader.status == MCSReaderStatusFinished;
 }
 
 - (void)close {
 #ifdef DEBUG
     MCSProxyTaskDebugLog(@"%@: <%p>.close { after (%lf) seconds };\n\n", NSStringFromClass(self.class), self, MCSEndTime(_startTime));
 #endif
-    [_reader close];
+    [_reader abortWithError:nil];
 }
 
 #pragma mark -
 
-- (void)reader:(id<MCSAssetReader>)reader prepareDidFinish:(id<MCSResponse>)response {
-    if ( !reader.isClosed ) [_delegate taskPrepareDidFinish:self];
+- (void)reader:(id<MCSAssetReader>)reader didReceiveResponse:(id<MCSResponse>)response {
+    if ( reader.status != MCSReaderStatusAborted ) [_delegate task:self didReceiveResponse:response];
 }
 
 - (void)reader:(id<MCSAssetReader>)reader hasAvailableDataWithLength:(NSUInteger)length {
-    if ( !reader.isClosed ) [_delegate taskHasAvailableData:self];
+    if ( reader.status != MCSReaderStatusAborted ) [_delegate task:self hasAvailableDataWithLength:length];
 }
 
-- (void)reader:(id<MCSAssetReader>)reader anErrorOccurred:(NSError *)error {
+- (void)reader:(id<MCSAssetReader>)reader didAbortWithError:(nullable NSError *)error {
 #ifdef DEBUG
     MCSProxyTaskErrorLog(@"%@: <%p>.error { error: %@ };\n\n", NSStringFromClass(self.class), self, error);
 #endif
-    [reader close];
-    [_delegate task:self anErrorOccurred:error];
+    [_delegate task:self didAbortWithError:error];
 }
 @end

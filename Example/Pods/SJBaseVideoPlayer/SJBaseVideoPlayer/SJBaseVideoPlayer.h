@@ -60,6 +60,13 @@ NS_ASSUME_NONNULL_BEGIN
 
 
 @interface SJBaseVideoPlayer (SJAVAudioSessionExtended)
+///
+/// 每次执行play的时候是否自动设置 AVAudioSession
+///
+///         default value is YES
+///
+@property (nonatomic) BOOL autoSetAudioSessionWhenPlay;
+
 - (void)setCategory:(AVAudioSessionCategory)category withOptions:(AVAudioSessionCategoryOptions)options;
 - (void)setActiveOptions:(AVAudioSessionSetActiveOptions)options;
 @end

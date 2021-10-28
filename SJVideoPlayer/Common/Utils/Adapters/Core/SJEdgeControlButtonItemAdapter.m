@@ -173,6 +173,17 @@ NS_ASSUME_NONNULL_BEGIN
     [self exchangeItemAtIndex:[self indexOfItemForTag:tag1] withItemAtIndex:[self indexOfItemForTag:tag2]];
 }
 
+- (nullable UIView *)viewForItemAtIndex:(NSInteger)idx {
+    if ( idx != NSNotFound ) {
+        return _views[idx];
+    }
+    return nil;
+}
+
+- (nullable UIView *)viewForItemForTag:(SJEdgeControlButtonItemTag)tag {
+    return [self viewForItemAtIndex:[self indexOfItemForTag:tag]];
+}
+
 #pragma mark -
 
 - (void)_reload {

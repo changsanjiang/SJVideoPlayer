@@ -22,11 +22,8 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic) CGSize layoutSize;
 @end
 
-@interface UIViewController (SJFloatSmallViewTransitionControllerExtended)
-@property (nonatomic, strong, readonly, nullable) SJFloatSmallViewTransitionController *SVTC_floatSmallViewTransitionController;
-@end
-
 @interface UIWindow (SJFloatSmallViewTransitionControllerExtended)
+/// 当前处于悬浮播放状态的视图控制器
 - (NSArray<__kindof UIViewController *> *_Nullable)SVTC_playbackInFloatingViewControllers;
 @end
 

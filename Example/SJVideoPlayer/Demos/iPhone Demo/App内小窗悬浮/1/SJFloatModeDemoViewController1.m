@@ -24,6 +24,7 @@
     UIWindow *window = UIApplication.sharedApplication.keyWindow;
     SJFloatModeDemoViewController1 *instance = nil;
     // compare videoId
+    // 比较videoId, 确认是否正在悬浮播放
     for ( __kindof UIViewController *vc in window.SVTC_playbackInFloatingViewControllers ) {
         if ( [vc isKindOfClass:SJFloatModeDemoViewController1.class] ) {
             SJFloatModeDemoViewController1 *playbackViewController = vc;
@@ -87,11 +88,6 @@
     [self _test];
 }
 
-// step 3
-- (SJFloatSmallViewTransitionController *_Nullable)SVTC_floatSmallViewTransitionController {
-    return (SJFloatSmallViewTransitionController *)_player.floatSmallViewController;
-}
-
 - (BOOL)shouldAutorotate {
     return NO;
 }
@@ -103,14 +99,14 @@
 
 - (void)viewDidAppear:(BOOL)animated {
     [super viewDidAppear:animated];
-    // step 4
+    // step 3
     _player.vc_isDisappeared = NO;
 }
 
 - (void)viewWillDisappear:(BOOL)animated {
     [super viewWillDisappear:animated];
     [self.navigationController setNavigationBarHidden:NO animated:YES];
-    // step 5
+    // step 4
     _player.vc_isDisappeared = YES;
 }
 

@@ -20,6 +20,12 @@ NS_ASSUME_NONNULL_BEGIN
 /// default value is UIEdgeInsetsMake(20, 12, 20, 12).
 @property (nonatomic) UIEdgeInsets layoutInsets;
 @property (nonatomic) CGSize layoutSize;
+/// vc退出时, 是否自动进入小浮窗模式. 默认 YES
+@property (nonatomic) BOOL automaticallyEnterFloatingMode;
+@end
+
+@interface UIViewController (SJFloatSmallViewTransitionControllerExtended)
+@property (nonatomic, strong, readonly, nullable) SJFloatSmallViewTransitionController *floatSmallViewTransitionController;
 @end
 
 @interface UIWindow (SJFloatSmallViewTransitionControllerExtended)

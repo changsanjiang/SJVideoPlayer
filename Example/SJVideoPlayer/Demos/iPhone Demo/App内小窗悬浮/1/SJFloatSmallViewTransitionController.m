@@ -10,19 +10,7 @@
 #import <objc/message.h>
 #import "UIView+SJBaseVideoPlayerExtended.h"
 #import "NSObject+SJObserverHelper.h"
-
-@interface UIViewController (SJFloatSmallViewTransitionControllerExtended)
-@property (nonatomic, strong, readonly, nullable) SJFloatSmallViewTransitionController *SVTC_floatSmallViewTransitionController;
-@end
-
-@implementation UIViewController (SJFloatSmallViewTransitionControllerExtended)
-- (void)setSVTC_floatSmallViewTransitionController:(nullable SJFloatSmallViewTransitionController *)SVTC_floatSmallViewTransitionController {
-    objc_setAssociatedObject(self, @selector(SVTC_floatSmallViewTransitionController), SVTC_floatSmallViewTransitionController, OBJC_ASSOCIATION_RETAIN_NONATOMIC);
-}
-- (nullable SJFloatSmallViewTransitionController *)SVTC_floatSmallViewTransitionController {
-    return objc_getAssociatedObject(self, _cmd);
-}
-@end
+#import "SJBaseVideoPlayerConst.h"
 
 @interface SJFloatSmallViewContainerView : UIView<SJFloatSmallView>
 @property (nonatomic, weak, nullable) SJFloatSmallViewTransitionController *transitionController;
@@ -107,6 +95,7 @@
 - (instancetype)init {
     self = [super init];
     if ( self ) {
+        _automaticallyEnterFloatingMode = YES;
         _layoutInsets = UIEdgeInsetsMake(20, 12, 20, 12);
         _layoutPosition = SJFloatViewLayoutPositionBottomRight;
         _enabled = YES;
@@ -251,7 +240,6 @@ SVTC_setY(UIView *view, CGFloat y) {
     
     // 1.
     _playbackViewController = [_targetSuperview lookupResponderForClass:UIViewController.class];
-    _playbackViewController.SVTC_floatSmallViewTransitionController = self;
     _navigationController = _playbackViewController.navigationController;
     UIWindow *window = UIApplication.sharedApplication.keyWindow;
     if ( _playbackViewController == nil || _navigationController == nil || window == nil )
@@ -347,8 +335,7 @@ SVTC_setY(UIView *view, CGFloat y) {
         [self->_target layoutSubviews];
         [self->_target layoutIfNeeded];
     }];
-    
-    _playbackViewController.SVTC_floatSmallViewTransitionController = nil;
+     
     _playbackViewController = nil;
     _navigationController = nil;
     self.isAppeared = NO;
@@ -372,7 +359,7 @@ SVTC_setY(UIView *view, CGFloat y) {
 
 UIKIT_STATIC_INLINE SJFloatSmallViewTransitionController *_Nullable
 SVTC_TransitionController(UIViewController *viewController) {
-    return viewController.SVTC_floatSmallViewTransitionController;
+    return [viewController respondsToSelector:@selector(floatSmallViewTransitionController)] ? viewController.floatSmallViewTransitionController : nil;
 }
 
 @implementation UINavigationController (SJFloatSmallViewTransitionControllerExtended)
@@ -397,7 +384,7 @@ SVTC_exchangeImplementation(Class cls, SEL originSel, SEL swizzledSel) {
 
 - (UIViewController *)SVTC_popViewControllerAnimated:(BOOL)animated {
     SJFloatSmallViewTransitionController *transitionController = SVTC_TransitionController(self.topViewController);
-    if ( transitionController != nil ) {
+    if ( transitionController != nil && transitionController.automaticallyEnterFloatingMode ) {
         [transitionController enterFloatingMode];
         return [self SVTC_popViewControllerAnimated:animated];
     }
@@ -421,7 +408,7 @@ SVTC_exchangeImplementation(Class cls, SEL originSel, SEL swizzledSel) {
     else {
         UIViewController *topViewController = self.topViewController;
         SJFloatSmallViewTransitionController *transitionController = SVTC_TransitionController(topViewController);
-        if ( transitionController != nil ) {
+        if ( transitionController != nil && transitionController.automaticallyEnterFloatingMode ) {
             [transitionController enterFloatingMode];
         }
         [self SVTC_pushViewController:viewController animated:animated];
@@ -431,7 +418,7 @@ SVTC_exchangeImplementation(Class cls, SEL originSel, SEL swizzledSel) {
 - (void)SVTC_setViewControllers:(NSArray<UIViewController *> *)viewControllers animated:(BOOL)animated {
     SJFloatSmallViewTransitionController *transitionController = SVTC_TransitionController(self.topViewController);
     if ( transitionController != nil ) {
-        if ( viewControllers.lastObject != self.topViewController )
+        if ( viewControllers.lastObject != self.topViewController  && transitionController.automaticallyEnterFloatingMode )
             [transitionController enterFloatingMode];
     }
     else {

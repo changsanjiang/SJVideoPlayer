@@ -309,7 +309,7 @@ NS_ASSUME_NONNULL_BEGIN
         
         // 当前嵌入的CollectionView需要一个标识(SJPlayModelNestedView), 以便能够在复用的情况下也能获取到它
         
-        NSAssert([_collectionView conformsToProtocol:@protocol(SJPlayModelNestedView)] || nextPlayModel.superviewSelector != NULL, @"`collectionView` must implement `SJPlayModelNestedView` protocol! or specify nextPlayModel.superviewSelector!");
+        NSAssert([_collectionView conformsToProtocol:@protocol(SJPlayModelNestedView)] || nextPlayModel.scrollViewSelector != NULL || nextPlayModel.superviewSelector != NULL, @"`collectionView` must implement `SJPlayModelNestedView` protocol! or specify nextPlayModel.superviewSelector!");
     }
 }
 

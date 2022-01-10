@@ -70,22 +70,39 @@
         make.left.right.offset(0);
         make.height.equalTo(self.view.mas_width).multipliedBy(9/16.0);
     }];
-    
-    [_player.prompt show:[NSAttributedString sj_UIKitText:^(id<SJUIKitTextMakerProtocol>  _Nonnull make) {
-        make.append(@"点击返回按钮, 进入小浮窗模式");
-        make.textColor(UIColor.whiteColor);
-    }] duration:3];
 
     // step 2
-    _player.floatSmallViewController = SJFloatSmallViewTransitionController.alloc.init;
+    SJFloatSmallViewTransitionController *floatSmallViewTransitionController = SJFloatSmallViewTransitionController.alloc.init;
+    // 退出vc时, 是否自动进入小浮窗模式
+    floatSmallViewTransitionController.automaticallyEnterFloatingMode = YES;
+    _player.floatSmallViewController = floatSmallViewTransitionController;
     __weak typeof(self) _self = self;
     _player.floatSmallViewController.doubleTappedOnTheFloatViewExeBlock = ^(id<SJFloatSmallViewController>  _Nonnull controller) {
         __strong typeof(_self) self = _self;
         if ( self == nil ) return;
         self.player.isPaused ? [self.player play] : [self.player pause];
     };
+    
+    // 添加播放按钮到小浮窗控制层
+    SJEdgeControlButtonItem *playItem = [SJEdgeControlButtonItem.alloc initWithTag:101];
+    [playItem addAction:[SJEdgeControlButtonItemAction actionWithTarget:self action:@selector(playOrPause)]];
+    [_player.defaultFloatSmallViewControlLayer.bottomAdapter addItem:playItem];
+    _player.defaultFloatSmallViewControlLayer.bottomHeight = 35;
+    _player.playbackObserver.playbackStatusDidChangeExeBlock = ^(__kindof SJBaseVideoPlayer * _Nonnull player) {
+        __strong typeof(_self) self = _self;
+        if ( self == nil ) return;
+        [self _updatePlayItemForFloatSmallViewControlLayer];
+    };
+    [self _updatePlayItemForFloatSmallViewControlLayer];
 
-    [self _test];
+    // 手动进入
+    SJEdgeControlButtonItem *fsItem = [SJEdgeControlButtonItem.alloc initWithTitle:[NSAttributedString sj_UIKitText:^(id<SJUIKitTextMakerProtocol>  _Nonnull make) {
+        make.append(@"点击此处手动进入小浮窗模式");
+        make.font([UIFont boldSystemFontOfSize:20]);
+        make.textColor(UIColor.whiteColor);
+    }] target:self action:@selector(enterFloatMode) tag:123];
+    [_player.defaultEdgeControlLayer.centerAdapter addItem:fsItem];
+
 }
 
 - (BOOL)shouldAutorotate {
@@ -110,24 +127,38 @@
     _player.vc_isDisappeared = YES;
 }
 
-#pragma mark - test
-
-- (void)_test {
-    _player.defaultFloatSmallViewControlLayer.bottomHeight = 35;
-    
-    SJEdgeControlButtonItem *playItem = [SJEdgeControlButtonItem.alloc initWithTag:101];
-    [playItem addAction:[SJEdgeControlButtonItemAction actionWithTarget:self action:@selector(playOrPause)]];
-    [_player.defaultFloatSmallViewControlLayer.bottomAdapter addItem:playItem];
-    __weak typeof(self) _self = self;
-    _player.playbackObserver.playbackStatusDidChangeExeBlock = ^(__kindof SJBaseVideoPlayer * _Nonnull player) {
-        __strong typeof(_self) self = _self;
-        if ( self == nil ) return;
-        [self _updatePlayItem];
-    };
-    [self _updatePlayItem];
+// step 5
+- (SJFloatSmallViewTransitionController *)floatSmallViewTransitionController {
+    return (id)_player.floatSmallViewController;
 }
 
-- (void)_updatePlayItem {
+#pragma mark - test
+// 手动进入
+- (void)enterFloatMode {
+    __weak typeof(self) _self = self;
+    if      ( _player.isFullScreen ) {
+        [_player rotate:SJOrientation_Portrait animated:YES completion:^(__kindof SJBaseVideoPlayer * _Nonnull player) {
+            __strong typeof(_self) self = _self;
+            if ( self == nil ) return;
+            [self.navigationController popViewControllerAnimated:YES];
+            [player.floatSmallViewController showFloatView];
+        }];
+    }
+    else if ( _player.isFitOnScreen ) {
+        [_player setFitOnScreen:NO animated:YES completionHandler:^(__kindof SJBaseVideoPlayer * _Nonnull player) {
+            __strong typeof(_self) self = _self;
+            if ( self == nil ) return;
+            [self.navigationController popViewControllerAnimated:YES];
+            [player.floatSmallViewController showFloatView];
+        }];
+    }
+    else {
+        [self.navigationController popViewControllerAnimated:YES];
+        [_player.floatSmallViewController showFloatView];
+    }
+}
+ 
+- (void)_updatePlayItemForFloatSmallViewControlLayer {
     SJEdgeControlButtonItem *playItem = [_player.defaultFloatSmallViewControlLayer.bottomAdapter itemForTag:101];
     playItem.image = self.player.isPaused ? SJVideoPlayerConfigurations.shared.resources.playImage : SJVideoPlayerConfigurations.shared.resources.pauseImage;
     [self.player.defaultFloatSmallViewControlLayer.bottomAdapter reload];

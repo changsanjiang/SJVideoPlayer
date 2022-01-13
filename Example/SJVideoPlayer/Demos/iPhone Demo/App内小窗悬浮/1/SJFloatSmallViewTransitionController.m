@@ -66,7 +66,6 @@
 
 @interface SJFloatSmallViewTransitionController ()<UIGestureRecognizerDelegate>
 @property (nonatomic) BOOL isAppeared;
-@property (nonatomic, strong, nullable) UINavigationController *navigationController;
 @property (nonatomic, strong, nullable) UIViewController *playbackViewController;
 @property (nonatomic, strong, readonly) UIPanGestureRecognizer *panGesture;
 @end
@@ -126,14 +125,15 @@
 - (void)setAddFloatViewToKeyWindow:(BOOL)addFloatViewToKeyWindow {}
 - (BOOL)addFloatViewToKeyWindow { return YES; }
 
+// 进入小浮窗模式
 - (void)showFloatView {
     [self enterFloatingMode];
 }
 
+// 关闭小浮窗
 - (void)dismissFloatView {
     if ( !_enabled ) return;
     _playbackViewController = nil;
-    _navigationController = nil;
     self.isAppeared = NO;
 }
 
@@ -224,6 +224,22 @@ SVTC_setY(UIView *view, CGFloat y) {
     view.frame = frame;
 }
  
+UIKIT_STATIC_INLINE __kindof UIViewController *
+SVTC_getTopViewController(void) {
+    UIViewController *vc = UIApplication.sharedApplication.keyWindow.rootViewController;
+    while (  [vc isKindOfClass:[UINavigationController class]] ||
+             [vc isKindOfClass:[UITabBarController class]] ||
+              vc.presentedViewController ) {
+        if ( [vc isKindOfClass:[UINavigationController class]] )
+            vc = [(UINavigationController *)vc topViewController];
+        if ( [vc isKindOfClass:[UITabBarController class]] )
+            vc = [(UITabBarController *)vc selectedViewController];
+        if ( vc.presentedViewController )
+            vc = vc.presentedViewController;
+    }
+    return vc;
+}
+
 #pragma mark -
 
 - (BOOL)enterFloatingMode {
@@ -250,9 +266,8 @@ SVTC_setY(UIView *view, CGFloat y) {
     }
     
     _playbackViewController = viewController;
-    _navigationController = _playbackViewController.navigationController;
     UIWindow *window = UIApplication.sharedApplication.keyWindow;
-    if ( _playbackViewController == nil || _navigationController == nil || window == nil )
+    if ( _playbackViewController == nil || window == nil )
         return NO;
       
     if ( self.floatView.superview != window ) {
@@ -347,23 +362,16 @@ SVTC_setY(UIView *view, CGFloat y) {
     }];
      
     _playbackViewController = nil;
-    _navigationController = nil;
     self.isAppeared = NO;
     return YES;
 }
 
 - (void)resume {
-    if ( _navigationController == nil || _playbackViewController == nil )
+    if ( _playbackViewController == nil )
         return;
     
-    NSInteger idx = [_navigationController.viewControllers indexOfObject:_playbackViewController];
-    if ( idx != NSNotFound ) {
-        NSRange range = NSMakeRange(0, idx + 1);
-        [_navigationController setViewControllers:[_navigationController.viewControllers subarrayWithRange:range] animated:YES];
-    }
-    else {
-        [_navigationController pushViewController:_playbackViewController animated:YES];
-    }
+    UIViewController *topViewController = SVTC_getTopViewController();
+    [topViewController.navigationController pushViewController:_playbackViewController animated:YES];
 }
 @end
 

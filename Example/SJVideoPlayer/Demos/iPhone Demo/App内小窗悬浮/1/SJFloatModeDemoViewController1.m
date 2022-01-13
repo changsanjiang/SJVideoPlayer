@@ -140,21 +140,21 @@
         [_player rotate:SJOrientation_Portrait animated:YES completion:^(__kindof SJBaseVideoPlayer * _Nonnull player) {
             __strong typeof(_self) self = _self;
             if ( self == nil ) return;
+            if ( !self.floatSmallViewTransitionController.automaticallyEnterFloatingMode ) [player.floatSmallViewController showFloatView];
             [self.navigationController popViewControllerAnimated:YES];
-            [player.floatSmallViewController showFloatView];
         }];
     }
     else if ( _player.isFitOnScreen ) {
         [_player setFitOnScreen:NO animated:YES completionHandler:^(__kindof SJBaseVideoPlayer * _Nonnull player) {
             __strong typeof(_self) self = _self;
             if ( self == nil ) return;
+            if ( !self.floatSmallViewTransitionController.automaticallyEnterFloatingMode ) [player.floatSmallViewController showFloatView];
             [self.navigationController popViewControllerAnimated:YES];
-            [player.floatSmallViewController showFloatView];
         }];
     }
     else {
+        if ( !self.floatSmallViewTransitionController.automaticallyEnterFloatingMode ) [_player.floatSmallViewController showFloatView];
         [self.navigationController popViewControllerAnimated:YES];
-        [_player.floatSmallViewController showFloatView];
     }
 }
  

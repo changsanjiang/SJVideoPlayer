@@ -239,7 +239,17 @@ SVTC_setY(UIView *view, CGFloat y) {
         return NO;
     
     // 1.
-    _playbackViewController = [_targetSuperview lookupResponderForClass:UIViewController.class];
+    UIViewController *viewController = [_targetSuperview lookupResponderForClass:UIViewController.class];
+    if ( viewController == nil )
+        return NO;
+    
+    UIViewController *parentViewController = viewController.parentViewController;
+    while ( parentViewController != nil && ![parentViewController isKindOfClass:UINavigationController.class] ) {
+        viewController = parentViewController;
+        parentViewController = parentViewController.parentViewController;
+    }
+    
+    _playbackViewController = viewController;
     _navigationController = _playbackViewController.navigationController;
     UIWindow *window = UIApplication.sharedApplication.keyWindow;
     if ( _playbackViewController == nil || _navigationController == nil || window == nil )
@@ -359,7 +369,8 @@ SVTC_setY(UIView *view, CGFloat y) {
 
 UIKIT_STATIC_INLINE SJFloatSmallViewTransitionController *_Nullable
 SVTC_TransitionController(UIViewController *viewController) {
-    return [viewController respondsToSelector:@selector(floatSmallViewTransitionController)] ? viewController.floatSmallViewTransitionController : nil;
+    id ctr = [viewController respondsToSelector:@selector(floatSmallViewTransitionController)] ? viewController.floatSmallViewTransitionController : nil;
+    return [ctr isKindOfClass:SJFloatSmallViewTransitionController.class] ? ctr : nil;
 }
 
 @implementation UINavigationController (SJFloatSmallViewTransitionControllerExtended)

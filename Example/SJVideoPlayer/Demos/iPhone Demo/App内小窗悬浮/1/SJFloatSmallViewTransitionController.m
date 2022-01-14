@@ -243,8 +243,8 @@ SVTC_getTopViewController(void) {
 #pragma mark -
 
 - (BOOL)enterFloatingMode {
-    if ( !_enabled )
-        return NO;
+    if ( !_enabled ) return NO;
+    if ( _isAppeared ) return YES;
 
     // 1 获取当前的vc
     // 2 转换到window中的位置
@@ -341,8 +341,8 @@ SVTC_getTopViewController(void) {
 }
 
 - (BOOL)resumeMode {
-    if ( !_enabled )
-        return NO;
+    if ( !_enabled )  return NO;
+    if ( !_isAppeared ) return YES;
     
     // 1. push`playbackController`
     // 2. 将播放器添加回去

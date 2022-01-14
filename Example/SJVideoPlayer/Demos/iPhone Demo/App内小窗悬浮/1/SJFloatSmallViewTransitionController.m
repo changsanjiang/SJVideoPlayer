@@ -371,7 +371,15 @@ SVTC_getTopViewController(void) {
         return;
     
     UIViewController *topViewController = SVTC_getTopViewController();
-    [topViewController.navigationController pushViewController:_playbackViewController animated:YES];
+    UINavigationController *nav = topViewController.navigationController;
+    NSInteger idx = [nav.viewControllers indexOfObject:_playbackViewController];
+    if ( idx != NSNotFound ) {
+        NSRange range = NSMakeRange(0, idx + 1);
+        [nav setViewControllers:[nav.viewControllers subarrayWithRange:range] animated:YES];
+    }
+    else {
+        [nav pushViewController:_playbackViewController animated:YES];
+    }
 }
 @end
 

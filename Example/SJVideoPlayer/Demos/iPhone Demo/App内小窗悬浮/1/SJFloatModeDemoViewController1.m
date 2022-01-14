@@ -102,7 +102,21 @@
         make.textColor(UIColor.whiteColor);
     }] target:self action:@selector(enterFloatMode) tag:123];
     [_player.defaultEdgeControlLayer.centerAdapter addItem:fsItem];
+    
+    
+    UIButton *btn = [UIButton buttonWithType:UIButtonTypeSystem];
+    [btn setTitle:@"Next VC" forState:UIControlStateNormal];
+    [btn addTarget:self action:@selector(pushToNextVC) forControlEvents:UIControlEventTouchUpInside];
+    [self.view addSubview:btn];
+    [btn mas_makeConstraints:^(MASConstraintMaker *make) {
+        make.center.offset(0);
+    }];
+}
 
+- (void)pushToNextVC {
+    UIViewController *vc = [UIViewController.alloc init];
+    vc.view.backgroundColor = UIColor.whiteColor;
+    [self.navigationController pushViewController:vc animated:YES];
 }
 
 - (BOOL)shouldAutorotate {

@@ -21,6 +21,7 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic, copy, nullable) NSString *avatar;
 @property (nonatomic, copy, nullable) NSString *username;
 @property (nonatomic, strong, nullable) NSURL *URL;
+@property (nonatomic) NSError *error;
 @end
 
 NS_ASSUME_NONNULL_END

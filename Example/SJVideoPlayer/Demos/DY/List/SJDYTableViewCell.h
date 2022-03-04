@@ -12,6 +12,7 @@
 NS_ASSUME_NONNULL_BEGIN
 @interface SJDYTableViewCell : SJBaseTableViewCell
 @property (nonatomic, strong, readonly) id<SJDYDemoPlayer> player;
+@property (nonatomic) NSIndexPath *indexPath;
 @end
 
 @protocol SJDYDemoPlayer <NSObject>

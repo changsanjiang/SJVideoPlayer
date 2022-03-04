@@ -97,7 +97,7 @@
     if ( self ) {
         self.view.backgroundColor = UIColor.clearColor;
         self.presentView.backgroundColor = UIColor.clearColor;
-        self.videoGravity = AVLayerVideoGravityResizeAspectFill;
+        self.videoGravity = AVLayerVideoGravityResizeAspect;
         self.autoplayWhenSetNewAsset = NO;
         self.rotationManager.disabledAutorotation = YES;
         self.pauseWhenAppDidEnterBackground = YES;

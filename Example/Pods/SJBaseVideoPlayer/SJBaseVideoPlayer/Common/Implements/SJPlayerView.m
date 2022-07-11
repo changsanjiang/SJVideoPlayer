@@ -6,17 +6,14 @@
 //
 
 #import "SJPlayerView.h"
-#import "SJBaseVideoPlayerConst.h"
+#import "SJPlayerViewInternal.h"
 
 NS_ASSUME_NONNULL_BEGIN
+@interface SJPlayerView ()
+@property (nonatomic, strong, nullable) UIView *presentView;
+@end
+
 @implementation SJPlayerView
-- (instancetype)initWithFrame:(CGRect)frame {
-    self = [super initWithFrame:frame];
-    if (self) {
-        self.tag = SJBaseVideoPlayerViewTag;
-    }
-    return self;
-}
 
 - (nullable UIView *)hitTest:(CGPoint)point withEvent:(nullable UIEvent *)event {
     UIView *_Nullable view = [super hitTest:point withEvent:event];
@@ -26,13 +23,6 @@ NS_ASSUME_NONNULL_BEGIN
     }
     
     return view;
-}
-
-- (void)layoutSubviews {
-    [super layoutSubviews];
-    if ( [self.delegate respondsToSelector:@selector(playerViewDidLayoutSubviews:)] ) {
-        [self.delegate playerViewDidLayoutSubviews:self];
-    }
 }
 
 - (void)willMoveToWindow:(nullable UIWindow *)newWindow {

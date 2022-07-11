@@ -8,7 +8,8 @@
 
 #import "SJBaseVideoPlayer.h"
 #import <objc/message.h>
-#import "SJRotationManager.h"
+#import "SJRotationManager_4.h"
+#import "SJRotationManagerInternal_4.h"
 #import "SJDeviceVolumeAndBrightnessManager.h"
 #import "SJVideoPlayerRegistrar.h"
 #import "SJVideoPlayerPresentView.h"
@@ -23,16 +24,17 @@
 #import "SJPlayerView.h"
 #import "SJFloatSmallViewController.h"
 #import "SJVideoDefinitionSwitchingInfo+Private.h"
-#import "SJPromptPopupController.h"
-#import "SJPrompt.h"
+#import "SJPromptingPopupController.h"
+#import "SJTextPopupController.h"
 #import "SJBaseVideoPlayerConst.h"
-#import "SJSubtitlesPromptController.h"
+#import "SJSubtitlePopupController.h"
 #import "SJBaseVideoPlayer+TestLog.h"
 #import "SJVideoPlayerURLAsset+SJSubtitlesAdd.h"
-#import "SJBarrageQueueController.h"
+#import "SJDanmakuPopupController.h"
 #import "SJViewControllerManager.h"
 #import "UIView+SJBaseVideoPlayerExtended.h"
 #import "NSString+SJBaseVideoPlayerExtended.h"
+#import "SJPlayerViewInternal.h"
 
 #if __has_include(<Masonry/Masonry.h>)
 #import <Masonry/Masonry.h>
@@ -55,7 +57,7 @@ typedef struct _SJPlayerControlInfo {
         SJPlayerGestureTypeMask disabledGestures;
         CGFloat rateWhenLongPressGestureTriggered;
         BOOL allowHorizontalTriggeringOfPanGesturesInCells;
-    } gestureControl;
+    } gestureController;
 
     struct {
         BOOL needToHiddenWhenPlayerIsReadyForDisplay;
@@ -85,6 +87,10 @@ typedef struct _SJPlayerControlInfo {
     struct {
         BOOL pausedToKeepAppearState;
     } controlLayer;
+    
+    struct {
+        BOOL isEnabled;
+    } audioSessionControl;
     
     struct {
         BOOL isAppeared;
@@ -150,8 +156,8 @@ typedef struct _SJPlayerControlInfo {
     id<SJFloatSmallViewController> _Nullable _floatSmallViewController;
     id<SJFloatSmallViewControllerObserverProtocol> _Nullable _floatSmallViewControllerObesrver;
     
-    id<SJSubtitlesPromptController> _Nullable _subtitlesPromptController;
-    id<SJBarrageQueueController> _Nullable _barrageQueueController;
+    id<SJSubtitlePopupController> _Nullable _subtitlePopupController;
+    id<SJDanmakuPopupController> _Nullable _danmakuPopupController;
     
     AVAudioSessionCategory _mCategory;
     AVAudioSessionCategoryOptions _mCategoryOptions;
@@ -163,7 +169,7 @@ typedef struct _SJPlayerControlInfo {
 }
 
 + (NSString *)version {
-    return @"v3.6.2";
+    return @"v3.7.0";
 }
 
 - (void)setVideoGravity:(SJVideoGravity)videoGravity {
@@ -195,22 +201,27 @@ typedef struct _SJPlayerControlInfo {
     _controlInfo->playbackControl.autoplayWhenSetNewAsset = YES;
     _controlInfo->playbackControl.resumePlaybackWhenPlayerHasFinishedSeeking = YES;
     _controlInfo->floatSmallViewControl.hiddenFloatSmallViewWhenPlaybackFinished = YES;
-    _controlInfo->gestureControl.rateWhenLongPressGestureTriggered = 2.0;
+    _controlInfo->gestureController.rateWhenLongPressGestureTriggered = 2.0;
+    _controlInfo->audioSessionControl.isEnabled = YES;
     _controlInfo->pan.factor = 667;
     _mCategory = AVAudioSessionCategoryPlayback;
     _mSetActiveOptions = AVAudioSessionSetActiveOptionNotifyOthersOnDeactivation;
     
     [self _setupViews];
+    [self performSelectorOnMainThread:@selector(_prepare) withObject:nil waitUntilDone:NO];
+    return self;
+}
+
+- (void)_prepare {
     [self fitOnScreenManager];
-    [self rotationManager];
+    if ( !self.onlyFitOnScreen ) [self rotationManager];
     [self controlLayerAppearManager];
     [self registrar];
     [self reachability];
-    [self gestureControl];
+    [self gestureController];
     [self.deviceVolumeAndBrightnessManager prepare];
     [self _setupViewControllerManager];
     [self _showOrHiddenPlaceholderImageViewIfNeeded];
-    return self;
 }
 
 - (void)dealloc {
@@ -223,12 +234,6 @@ typedef struct _SJPlayerControlInfo {
     free(_controlInfo);
 }
 
-- (void)playerViewDidLayoutSubviews:(SJPlayerView *)playerView {
-    if ( _presentView.superview == playerView ) {
-        _presentView.frame = playerView.bounds;
-    }
-}
-
 - (void)playerViewWillMoveToWindow:(SJPlayerView *)playerView {
     [self.playModelObserver refreshAppearState];
 }
@@ -238,7 +243,7 @@ typedef struct _SJPlayerControlInfo {
 ///
 - (nullable UIView *)playerView:(SJPlayerView *)playerView hitTestForView:(nullable __kindof UIView *)view {
 
-    if ( playerView.hidden ) return nil;
+    if ( playerView.hidden || playerView.alpha < 0.01 || !playerView.isUserInteractionEnabled ) return nil;
     
     for ( UIGestureRecognizer *gesture in playerView.superview.gestureRecognizers ) {
         if ( [gesture isKindOfClass:UITapGestureRecognizer.class] && gesture.isEnabled ) {
@@ -254,19 +259,19 @@ typedef struct _SJPlayerControlInfo {
 
 - (void)presentViewDidLayoutSubviews:(SJVideoPlayerPresentView *)presentView {
     [self updateWatermarkViewLayout];
-    if ( !CGSizeEqualToSize(_controlLayerDataSource.controlView.frame.size, presentView.bounds.size) ) {    
-        _controlLayerDataSource.controlView.frame = presentView.bounds;
+    if ( self.isRotating ) {
+        [UIView animateWithDuration:0.3 animations:^{
+            [presentView layoutIfNeeded];
+        }];
     }
 }
-
-//- (void)presentViewWillMoveToWindow:(nullable UIWindow *)window { }
 
 #pragma mark -
 
 - (void)_handleSingleTap:(CGPoint)location {
     if ( self.controlInfo->floatSmallViewControl.isAppeared ) {
-        if ( self.floatSmallViewController.singleTappedOnTheFloatViewExeBlock ) {
-            self.floatSmallViewController.singleTappedOnTheFloatViewExeBlock(self.floatSmallViewController);
+        if ( self.floatSmallViewController.onSingleTapped ) {
+            self.floatSmallViewController.onSingleTapped(self.floatSmallViewController);
         }
         return;
     }
@@ -283,8 +288,8 @@ typedef struct _SJPlayerControlInfo {
 
 - (void)_handleDoubleTap:(CGPoint)location {
     if ( self.controlInfo->floatSmallViewControl.isAppeared ) {
-        if ( self.floatSmallViewController.doubleTappedOnTheFloatViewExeBlock ) {
-            self.floatSmallViewController.doubleTappedOnTheFloatViewExeBlock(self.floatSmallViewController);
+        if ( self.floatSmallViewController.onDoubleTapped ) {
+            self.floatSmallViewController.onDoubleTapped(self.floatSmallViewController);
         }
         return;
     }
@@ -427,12 +432,191 @@ typedef struct _SJPlayerControlInfo {
     
     // install
     UIView *controlView = _controlLayerDataSource.controlView;
+    controlView.layer.zPosition = SJPlayerZIndexes.shared.controlLayerViewZIndex;
+    controlView.autoresizingMask = UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight;
     controlView.frame = self.presentView.bounds;
     [self.presentView addSubview:controlView];
     
     if ( [self.controlLayerDataSource respondsToSelector:@selector(installedControlViewToVideoPlayer:)] ) {
         [self.controlLayerDataSource installedControlViewToVideoPlayer:self];
     }
+}
+
+#pragma mark -
+
+- (void)_setupRotationManager:(id<SJRotationManager>)rotationManager {
+    _rotationManager = rotationManager;
+    _rotationManagerObserver = nil;
+    
+    if ( rotationManager == nil || self.onlyFitOnScreen )
+        return;
+    
+    self.viewControllerManager.rotationManager = rotationManager;
+    
+    rotationManager.superview = self.view;
+    rotationManager.target = self.presentView;
+    __weak typeof(self) _self = self;
+    rotationManager.shouldTriggerRotation = ^BOOL(id<SJRotationManager>  _Nonnull mgr) {
+        __strong typeof(_self) self = _self;
+        if ( !self ) return NO;
+        if ( mgr.isFullscreen == NO ) {
+            if ( self.playModelObserver.isScrolling ) return NO;
+            if ( !self.view.superview ) return NO;
+//            UIWindow *_Nullable window = self.view.window;
+//            if ( window && !window.isKeyWindow ) return NO;
+            if ( self.isPlayOnScrollView && !(self.isScrollAppeared || self.controlInfo->floatSmallViewControl.isAppeared) ) return NO;
+            if ( self.touchedOnTheScrollView ) return NO;
+        }
+        if ( self.isLockedScreen ) return NO;
+        
+        if ( self.isFitOnScreen )
+            return self.allowsRotationInFitOnScreen;
+        
+        if ( self.viewControllerManager.isViewDisappeared ) return NO;
+        if ( [self.controlLayerDelegate respondsToSelector:@selector(canTriggerRotationOfVideoPlayer:)] ) {
+            if ( ![self.controlLayerDelegate canTriggerRotationOfVideoPlayer:self] )
+                return NO;
+        }
+        if ( self.atViewController.presentedViewController ) return NO;
+        if ( self.shouldTriggerRotation && !self.shouldTriggerRotation(self) ) return NO;
+        return YES;
+    };
+    
+    _rotationManagerObserver = [rotationManager getObserver];
+    _rotationManagerObserver.onRotatingChanged = ^(id<SJRotationManager>  _Nonnull mgr, BOOL isRotating) {
+        __strong typeof(_self) self = _self;
+        if ( !self ) return ;
+        if ( isRotating ) {
+            if ( [self.controlLayerDelegate respondsToSelector:@selector(videoPlayer:willRotateView:)] ) {
+                [self.controlLayerDelegate videoPlayer:self willRotateView:mgr.isFullscreen];
+            }
+            
+            [self controlLayerNeedDisappear];
+        }
+        else {
+            [self.playModelObserver refreshAppearState];
+            if ( [self.controlLayerDelegate respondsToSelector:@selector(videoPlayer:didEndRotation:)] ) {
+                [self.controlLayerDelegate videoPlayer:self didEndRotation:mgr.isFullscreen];
+            }
+            
+            if ( mgr.isFullscreen ) {
+                [self.viewControllerManager setNeedsStatusBarAppearanceUpdate];
+            }
+            else {
+                [UIView animateWithDuration:0.25 animations:^{
+                    [self.viewControllerManager setNeedsStatusBarAppearanceUpdate];
+                }];
+            }
+        }
+    };
+    
+    _rotationManagerObserver.onTransitioningChanged = ^(id<SJRotationManager>  _Nonnull mgr, BOOL isTransitioning) {
+        __strong typeof(_self) self = _self;
+        if ( !self ) return ;
+        if ( [self.controlLayerDelegate respondsToSelector:@selector(videoPlayer:onRotationTransitioningChanged:)] ) {
+            [self.controlLayerDelegate videoPlayer:self onRotationTransitioningChanged:isTransitioning];
+        }
+    };
+}
+
+- (void)_clearRotationManager {
+    _viewControllerManager.rotationManager = nil;
+    _rotationManagerObserver = nil;
+    _rotationManager = nil;
+}
+
+#pragma mark -
+
+- (void)_setupFitOnScreenManager:(id<SJFitOnScreenManager>)fitOnScreenManager {
+    _fitOnScreenManager = fitOnScreenManager;
+    _fitOnScreenManagerObserver = nil;
+    
+    if ( fitOnScreenManager == nil ) return;
+    
+    self.viewControllerManager.fitOnScreenManager = fitOnScreenManager;
+    
+    _fitOnScreenManagerObserver = [fitOnScreenManager getObserver];
+    __weak typeof(self) _self = self;
+    _fitOnScreenManagerObserver.fitOnScreenWillBeginExeBlock = ^(id<SJFitOnScreenManager> mgr) {
+        __strong typeof(_self) self = _self;
+        if ( !self ) return;
+        self.rotationManager.superview = mgr.isFitOnScreen ? self.fitOnScreenManager.superviewInFitOnScreen : self.view;
+        
+        [self controlLayerNeedDisappear];
+        
+        if ( [self.controlLayerDelegate respondsToSelector:@selector(videoPlayer:willFitOnScreen:)] ) {
+            [self.controlLayerDelegate videoPlayer:self willFitOnScreen:mgr.isFitOnScreen];
+        }
+    };
+    
+    _fitOnScreenManagerObserver.fitOnScreenDidEndExeBlock = ^(id<SJFitOnScreenManager> mgr) {
+        __strong typeof(_self) self = _self;
+        if ( !self ) return;
+        
+        if ( [self.controlLayerDelegate respondsToSelector:@selector(videoPlayer:didCompleteFitOnScreen:)] ) {
+            [self.controlLayerDelegate videoPlayer:self didCompleteFitOnScreen:mgr.isFitOnScreen];
+        }
+        
+        [self.viewControllerManager setNeedsStatusBarAppearanceUpdate];
+    };
+}
+
+
+#pragma mark -
+
+- (void)_setupControlLayerAppearManager:(id<SJControlLayerAppearManager>)controlLayerAppearManager {
+    _controlLayerAppearManager = controlLayerAppearManager;
+    _controlLayerAppearManagerObserver = nil;
+    
+    if ( controlLayerAppearManager == nil ) return;
+    
+    self.viewControllerManager.controlLayerAppearManager = controlLayerAppearManager;
+    
+    __weak typeof(self) _self = self;
+    _controlLayerAppearManager.canAutomaticallyDisappear = ^BOOL(id<SJControlLayerAppearManager>  _Nonnull mgr) {
+        __strong typeof(_self) self = _self;
+        if ( !self ) return NO;
+
+        if ( [self.controlLayerDelegate respondsToSelector:@selector(controlLayerOfVideoPlayerCanAutomaticallyDisappear:)] ) {
+            if ( ![self.controlLayerDelegate controlLayerOfVideoPlayerCanAutomaticallyDisappear:self] ) {
+                return NO;
+            }
+        }
+        
+        if ( self.canAutomaticallyDisappear && !self.canAutomaticallyDisappear(self) ) {
+            return NO;
+        }
+        return YES;
+    };
+    
+    _controlLayerAppearManagerObserver = [_controlLayerAppearManager getObserver];
+    _controlLayerAppearManagerObserver.onAppearChanged = ^(id<SJControlLayerAppearManager> mgr) {
+        __strong typeof(_self) self = _self;
+        if ( !self ) return;
+        
+        if ( mgr.isAppeared ) {
+            if ( [self.controlLayerDelegate respondsToSelector:@selector(controlLayerNeedAppear:)] ) {
+                [self.controlLayerDelegate controlLayerNeedAppear:self];
+            }
+        }
+        else {
+            if ( [self.controlLayerDelegate respondsToSelector:@selector(controlLayerNeedDisappear:)] ) {
+                [self.controlLayerDelegate controlLayerNeedDisappear:self];
+            }
+        }
+        
+        if ( !self.isFullscreen || self.isRotating ) {
+            [UIView animateWithDuration:0 animations:^{
+            } completion:^(BOOL finished) {
+                [self.viewControllerManager setNeedsStatusBarAppearanceUpdate];
+            }];
+        }
+        else {
+            [UIView animateWithDuration:0.25 animations:^{
+                [self.viewControllerManager setNeedsStatusBarAppearanceUpdate];
+            }];
+        }
+    };
 }
 
 
@@ -455,27 +639,31 @@ typedef struct _SJPlayerControlInfo {
 
 - (void)_setupViews {
     _view = [SJPlayerView new];
+    _view.tag = SJPlayerViewTag;
     _view.delegate = self;
     _view.backgroundColor = [UIColor blackColor];
     
     _presentView = [SJVideoPlayerPresentView new];
+    _presentView.tag = SJPresentViewTag;
+    _presentView.frame = _view.bounds;
+    _presentView.autoresizingMask = UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight;
+    _presentView.placeholderImageView.layer.zPosition = SJPlayerZIndexes.shared.placeholderImageViewZIndex;
     _presentView.delegate = self;
-    [self _configGestureControl:_presentView];
+    [self _configGestureController:_presentView];
     [_view addSubview:_presentView];
+    _view.presentView = _presentView;
 }
 
 - (void)_setupViewControllerManager {
-    if ( _viewControllerManager == nil ) {
-        _viewControllerManager = SJViewControllerManager.alloc.init;
-    }
+    if ( _viewControllerManager == nil ) _viewControllerManager = SJViewControllerManager.alloc.init;
     _viewControllerManager.fitOnScreenManager = _fitOnScreenManager;
     _viewControllerManager.rotationManager = _rotationManager;
     _viewControllerManager.controlLayerAppearManager = _controlLayerAppearManager;
     _viewControllerManager.presentView = self.presentView;
     _viewControllerManager.lockedScreen = self.isLockedScreen;
     
-    if ( [_rotationManager isKindOfClass:SJRotationManager.class] ) {
-        SJRotationManager *mgr = _rotationManager;
+    if ( [_rotationManager isKindOfClass:SJRotationManager_4.class] ) {
+        SJRotationManager_4 *mgr = _rotationManager;
         mgr.delegate = _viewControllerManager;
     }
 }
@@ -493,22 +681,22 @@ typedef struct _SJPlayerControlInfo {
         if ( _controlInfo->placeholder.needToHiddenWhenPlayerIsReadyForDisplay ) {
             NSTimeInterval delay = _URLAsset.original != nil ? 0 : _controlInfo->placeholder.delayHidden;
             BOOL animated = _URLAsset.original == nil;
-            [self.presentView hiddenPlaceholderAnimated:animated delay:delay];
+            [self.presentView hidePlaceholderImageViewAnimated:animated delay:delay];
         }
     }
     else {
-        [self.presentView showPlaceholderAnimated:NO];
+        [self.presentView setPlaceholderImageViewHidden:NO animated:NO];
     }
 }
 
-- (void)_configGestureControl:(id<SJPlayerGestureControl>)gestureControl {
+- (void)_configGestureController:(id<SJGestureController>)gestureController {
     
     __weak typeof(self) _self = self;
-    gestureControl.gestureRecognizerShouldTrigger = ^BOOL(id<SJPlayerGestureControl>  _Nonnull control, SJPlayerGestureType type, CGPoint location) {
+    gestureController.gestureRecognizerShouldTrigger = ^BOOL(id<SJGestureController>  _Nonnull control, SJPlayerGestureType type, CGPoint location) {
         __strong typeof(_self) self = _self;
         if ( !self ) return NO;
         
-        if ( self.isTransitioning )
+        if ( self.isRotating )
             return NO;
         
         if ( type != SJPlayerGestureType_SingleTap && self.isLockedScreen )
@@ -527,8 +715,8 @@ typedef struct _SJPlayerControlInfo {
                         return NO;
                     
                     if ( self.isPlayOnScrollView ) {
-                        if ( !self.controlInfo->gestureControl.allowHorizontalTriggeringOfPanGesturesInCells ) {
-                            if ( !self.isFitOnScreen && !self.isFullScreen )
+                        if ( !self.controlInfo->gestureController.allowHorizontalTriggeringOfPanGesturesInCells ) {
+                            if ( !self.isFitOnScreen && !self.isRotating )
                                 return NO;
                         }
                     }
@@ -536,7 +724,7 @@ typedef struct _SJPlayerControlInfo {
                     break;
                 case SJPanGestureMovingDirection_V: {
                     if ( self.isPlayOnScrollView ) {
-                        if ( !self.isFitOnScreen && !self.isFullScreen )
+                        if ( !self.isFitOnScreen && !self.isRotating )
                             return NO;
                     }
                     switch ( control.triggeredPosition ) {
@@ -573,31 +761,31 @@ typedef struct _SJPlayerControlInfo {
         return YES;
     };
     
-    gestureControl.singleTapHandler = ^(id<SJPlayerGestureControl>  _Nonnull control, CGPoint location) {
+    gestureController.singleTapHandler = ^(id<SJGestureController>  _Nonnull control, CGPoint location) {
         __strong typeof(_self) self = _self;
         if ( !self ) return ;
         [self _handleSingleTap:location];
     };
     
-    gestureControl.doubleTapHandler = ^(id<SJPlayerGestureControl>  _Nonnull control, CGPoint location) {
+    gestureController.doubleTapHandler = ^(id<SJGestureController>  _Nonnull control, CGPoint location) {
         __strong typeof(_self) self = _self;
         if ( !self ) return ;
         [self _handleDoubleTap:location];
     };
     
-    gestureControl.panHandler = ^(id<SJPlayerGestureControl>  _Nonnull control, SJPanGestureTriggeredPosition position, SJPanGestureMovingDirection direction, SJPanGestureRecognizerState state, CGPoint translate) {
+    gestureController.panHandler = ^(id<SJGestureController>  _Nonnull control, SJPanGestureTriggeredPosition position, SJPanGestureMovingDirection direction, SJPanGestureRecognizerState state, CGPoint translate) {
         __strong typeof(_self) self = _self;
         if ( !self ) return ;
         [self _handlePan:position direction:direction state:state translate:translate];
     };
     
-    gestureControl.pinchHandler = ^(id<SJPlayerGestureControl>  _Nonnull control, CGFloat scale) {
+    gestureController.pinchHandler = ^(id<SJGestureController>  _Nonnull control, CGFloat scale) {
         __strong typeof(_self) self = _self;
         if ( !self ) return ;
         [self _handlePinch:scale];
     };
     
-    gestureControl.longPressHandler = ^(id<SJPlayerGestureControl>  _Nonnull control, SJLongPressGestureRecognizerState state) {
+    gestureController.longPressHandler = ^(id<SJGestureController>  _Nonnull control, SJLongPressGestureRecognizerState state) {
         __strong typeof(_self) self = _self;
         if ( !self ) return;
         [self _handleLongPress:state];
@@ -622,7 +810,15 @@ typedef struct _SJPlayerControlInfo {
 }
 @end
 
-@implementation SJBaseVideoPlayer (SJAVAudioSessionExtended)
+@implementation SJBaseVideoPlayer (AudioSession)
+- (void)setAudioSessionControlEnabled:(BOOL)audioSessionControlEnabled {
+    _controlInfo->audioSessionControl.isEnabled = audioSessionControlEnabled;
+}
+
+- (BOOL)isAudioSessionControlEnabled {
+    return _controlInfo->audioSessionControl.isEnabled;
+}
+
 - (void)setCategory:(AVAudioSessionCategory)category withOptions:(AVAudioSessionCategoryOptions)options {
     _mCategory = category;
     _mCategoryOptions = options;
@@ -693,7 +889,7 @@ typedef struct _SJPlayerControlInfo {
 @end
 
 #pragma mark - 控制
-@implementation SJBaseVideoPlayer (PlayControl)
+@implementation SJBaseVideoPlayer (Playback)
 - (void)setPlaybackController:(nullable __kindof id<SJVideoPlayerPlaybackController>)playbackController {
     if ( _playbackController != nil ) {
         [_playbackController.playerView removeFromSuperview];
@@ -715,17 +911,15 @@ typedef struct _SJPlayerControlInfo {
         return;
     
     _playbackController.delegate = self;
+    
     if ( _playbackController.playerView.superview != self.presentView ) {
         _playbackController.playerView.frame = self.presentView.bounds;
         _playbackController.playerView.autoresizingMask = UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight;
-        [_presentView insertSubview:_playbackController.playerView atIndex:0];
+        _playbackController.playerView.layer.zPosition = SJPlayerZIndexes.shared.playbackViewZIndex;
+        [_presentView addSubview:_playbackController.playerView];
     }
     
     _flipTransitionManager.target = _playbackController.playerView;
-    if ( _subtitlesPromptController.view != nil )
-        [self.presentView insertSubview:_subtitlesPromptController.view aboveSubview:_playbackController.playerView];
-    if ( self.watermarkView != nil )
-        [self.presentView insertSubview:self.watermarkView aboveSubview:_playbackController.playerView];
 }
 
 - (SJPlaybackObservation *)playbackObserver {
@@ -781,6 +975,10 @@ typedef struct _SJPlayerControlInfo {
 - (BOOL)isBuffering { return self.timeControlStatus == SJPlaybackTimeControlStatusWaitingToPlay && self.reasonForWaitingToPlay == SJWaitingToMinimizeStallsReason; }
 - (BOOL)isEvaluating { return self.timeControlStatus == SJPlaybackTimeControlStatusWaitingToPlay && self.reasonForWaitingToPlay == SJWaitingWhileEvaluatingBufferingRateReason; }
 - (BOOL)isNoAssetToPlay { return self.timeControlStatus == SJPlaybackTimeControlStatusWaitingToPlay && self.reasonForWaitingToPlay == SJWaitingWithNoAssetToPlayReason; }
+
+- (BOOL)isPlaybackFailed {
+    return self.assetStatus == SJAssetStatusFailed;
+}
 
 - (nullable SJWaitingReason)reasonForWaitingToPlay {
     return _playbackController.reasonForWaitingToPlay;
@@ -855,8 +1053,8 @@ typedef struct _SJPlayerControlInfo {
         return;
     }
 
-    if ( URLAsset.subtitles != nil || _subtitlesPromptController != nil ) {
-        self.subtitlesPromptController.subtitles = URLAsset.subtitles;
+    if ( URLAsset.subtitles != nil || _subtitlePopupController != nil ) {
+        self.subtitlePopupController.subtitles = URLAsset.subtitles;
     }
     
     [(SJMediaPlaybackController *)self.playbackController prepareToPlay];
@@ -900,19 +1098,16 @@ typedef struct _SJPlayerControlInfo {
 
 - (void)setPlayerVolume:(float)playerVolume {
     self.playbackController.volume = playerVolume;
-    [self _postNotification:SJVideoPlayerVolumeDidChangeNotification];
 }
+
 - (float)playerVolume {
     return self.playbackController.volume;
 }
 
 - (void)setMuted:(BOOL)muted {
     self.playbackController.muted = muted;
-    if ( [self.controlLayerDelegate respondsToSelector:@selector(videoPlayer:muteChanged:)] ) {
-        [self.controlLayerDelegate videoPlayer:self muteChanged:muted];
-    }
-    [self _postNotification:SJVideoPlayerMutedDidChangeNotification];
 }
+
 - (BOOL)isMuted {
     return self.playbackController.muted;
 }
@@ -970,16 +1165,18 @@ typedef struct _SJPlayerControlInfo {
         return;
     }
     
-    NSError *error = nil;
-    if ( ![AVAudioSession.sharedInstance setCategory:_mCategory withOptions:_mCategoryOptions error:&error] ) {
+    if (_controlInfo->audioSessionControl.isEnabled) {
+        NSError *error = nil;
+        if ( ![AVAudioSession.sharedInstance setCategory:_mCategory withOptions:_mCategoryOptions error:&error] ) {
 #ifdef DEBUG
-        NSLog(@"%@", error);
+            NSLog(@"%@", error);
 #endif
-    }
-    if ( ![AVAudioSession.sharedInstance setActive:YES withOptions:_mSetActiveOptions error:&error] ) {
+        }
+        if ( ![AVAudioSession.sharedInstance setActive:YES withOptions:_mSetActiveOptions error:&error] ) {
 #ifdef DEBUG
-        NSLog(@"%@", error);
+            NSLog(@"%@", error);
 #endif
+        }
     }
 
     [_playbackController play];
@@ -1010,7 +1207,7 @@ typedef struct _SJPlayerControlInfo {
     [self _postNotification:SJVideoPlayerPlaybackWillStopNotification];
 
     _controlInfo->playbackControl.isUserPaused = NO;
-    _subtitlesPromptController.subtitles = nil;
+    _subtitlePopupController.subtitles = nil;
     _playModelObserver = nil;
     _URLAsset = nil;
     [_playbackController stop];
@@ -1097,12 +1294,6 @@ typedef struct _SJPlayerControlInfo {
         return;
     
     self.playbackController.rate = rate;
-    
-    if ( [self.controlLayerDelegate respondsToSelector:@selector(videoPlayer:rateChanged:)] ) {
-        [self.controlLayerDelegate videoPlayer:self rateChanged:rate];
-    }
-    
-    [self _postNotification:SJVideoPlayerRateDidChangeNotification];
 }
 
 - (float)rate {
@@ -1158,6 +1349,25 @@ typedef struct _SJPlayerControlInfo {
 #endif
 }
 
+- (void)playbackController:(id<SJVideoPlayerPlaybackController>)controller volumeDidChange:(float)volume {
+    [self _postNotification:SJVideoPlayerVolumeDidChangeNotification];
+}
+
+- (void)playbackController:(id<SJVideoPlayerPlaybackController>)controller rateDidChange:(float)rate {
+    if ( [self.controlLayerDelegate respondsToSelector:@selector(videoPlayer:rateChanged:)] ) {
+        [self.controlLayerDelegate videoPlayer:self rateChanged:rate];
+    }
+    
+    [self _postNotification:SJVideoPlayerRateDidChangeNotification];
+}
+
+- (void)playbackController:(id<SJVideoPlayerPlaybackController>)controller mutedDidChange:(BOOL)isMuted {
+    if ( [self.controlLayerDelegate respondsToSelector:@selector(videoPlayer:muteChanged:)] ) {
+        [self.controlLayerDelegate videoPlayer:self muteChanged:isMuted];
+    }
+    [self _postNotification:SJVideoPlayerMutedDidChangeNotification];
+}
+
 - (void)playbackController:(id<SJVideoPlayerPlaybackController>)controller pictureInPictureStatusDidChange:(SJPictureInPictureStatus)status API_AVAILABLE(ios(14.0)) {
     if ( [self.controlLayerDelegate respondsToSelector:@selector(videoPlayer:pictureInPictureStatusDidChange:)] ) {
         [self.controlLayerDelegate videoPlayer:self pictureInPictureStatusDidChange:status];
@@ -1175,7 +1385,7 @@ typedef struct _SJPlayerControlInfo {
 }
 
 - (void)playbackController:(id<SJVideoPlayerPlaybackController>)controller currentTimeDidChange:(NSTimeInterval)currentTime {
-    _subtitlesPromptController.currentTime = currentTime;
+    _subtitlePopupController.currentTime = currentTime;
     
     if ( [self.controlLayerDelegate respondsToSelector:@selector(videoPlayer:currentTimeDidChange:)] ) {
         [self.controlLayerDelegate videoPlayer:self currentTimeDidChange:currentTime];
@@ -1265,7 +1475,8 @@ typedef struct _SJPlayerControlInfo {
 }
 
 - (void)applicationDidBecomeActiveWithPlaybackController:(id<SJVideoPlayerPlaybackController>)controller {
-    BOOL canPlay = self.isPaused &&
+    BOOL canPlay = self.URLAsset != nil &&
+                   self.isPaused &&
                    self.controlInfo->playbackControl.resumePlaybackWhenAppDidEnterForeground &&
                   !self.vc_isDisappeared;
     if ( self.isPlayOnScrollView ) {
@@ -1450,9 +1661,9 @@ typedef struct _SJPlayerControlInfo {
 
 #pragma mark - Gesture
 
-@implementation SJBaseVideoPlayer (GestureControl)
+@implementation SJBaseVideoPlayer (Gesture)
 
-- (id<SJPlayerGestureControl>)gestureControl {
+- (id<SJGestureController>)gestureController {
     return _presentView;
 }
 
@@ -1464,18 +1675,18 @@ typedef struct _SJPlayerControlInfo {
 }
 
 - (void)setAllowHorizontalTriggeringOfPanGesturesInCells:(BOOL)allowHorizontalTriggeringOfPanGesturesInCells {
-    _controlInfo->gestureControl.allowHorizontalTriggeringOfPanGesturesInCells = allowHorizontalTriggeringOfPanGesturesInCells;
+    _controlInfo->gestureController.allowHorizontalTriggeringOfPanGesturesInCells = allowHorizontalTriggeringOfPanGesturesInCells;
 }
 
 - (BOOL)allowHorizontalTriggeringOfPanGesturesInCells {
-    return _controlInfo->gestureControl.allowHorizontalTriggeringOfPanGesturesInCells;
+    return _controlInfo->gestureController.allowHorizontalTriggeringOfPanGesturesInCells;
 }
 
 - (void)setRateWhenLongPressGestureTriggered:(CGFloat)rateWhenLongPressGestureTriggered {
-    _controlInfo->gestureControl.rateWhenLongPressGestureTriggered = rateWhenLongPressGestureTriggered;
+    _controlInfo->gestureController.rateWhenLongPressGestureTriggered = rateWhenLongPressGestureTriggered;
 }
 - (CGFloat)rateWhenLongPressGestureTriggered {
-    return _controlInfo->gestureControl.rateWhenLongPressGestureTriggered;
+    return _controlInfo->gestureController.rateWhenLongPressGestureTriggered;
 }
 
 - (void)setOffsetFactorForHorizontalPanGesture:(CGFloat)offsetFactorForHorizontalPanGesture {
@@ -1502,13 +1713,12 @@ typedef struct _SJPlayerControlInfo {
 }
 
 - (void)setControlLayerAppearManager:(id<SJControlLayerAppearManager> _Nullable)controlLayerAppearManager {
-    _controlLayerAppearManager = controlLayerAppearManager;
-    [self _setupControlLayerAppearManager];
+    [self _setupControlLayerAppearManager:controlLayerAppearManager];
 }
 
 - (id<SJControlLayerAppearManager>)controlLayerAppearManager {
     if ( _controlLayerAppearManager == nil ) {
-        [self setControlLayerAppearManager:SJControlLayerAppearStateManager.alloc.init];
+        [self _setupControlLayerAppearManager:SJControlLayerAppearStateManager.alloc.init];
     }
     return _controlLayerAppearManager;
 }
@@ -1527,60 +1737,6 @@ typedef struct _SJPlayerControlInfo {
 }
 - (BOOL (^_Nullable)(__kindof SJBaseVideoPlayer * _Nonnull))canAutomaticallyDisappear {
     return objc_getAssociatedObject(self, _cmd);
-}
-
-- (void)_setupControlLayerAppearManager {
-    if ( !_controlLayerAppearManager )
-        return;
-    
-    self.viewControllerManager.controlLayerAppearManager = _controlLayerAppearManager;
-    
-    __weak typeof(self) _self = self;
-    _controlLayerAppearManager.canAutomaticallyDisappear = ^BOOL(id<SJControlLayerAppearManager>  _Nonnull mgr) {
-        __strong typeof(_self) self = _self;
-        if ( !self ) return NO;
-
-        if ( [self.controlLayerDelegate respondsToSelector:@selector(controlLayerOfVideoPlayerCanAutomaticallyDisappear:)] ) {
-            if ( ![self.controlLayerDelegate controlLayerOfVideoPlayerCanAutomaticallyDisappear:self] ) {
-                return NO;
-            }
-        }
-        
-        if ( self.canAutomaticallyDisappear && !self.canAutomaticallyDisappear(self) ) {
-            return NO;
-        }
-        return YES;
-    };
-    
-    _controlLayerAppearManagerObserver = [_controlLayerAppearManager getObserver];
-    _controlLayerAppearManagerObserver.appearStateDidChangeExeBlock = ^(id<SJControlLayerAppearManager> mgr) {
-        __strong typeof(_self) self = _self;
-        if ( !self ) return;
-        
-        if ( mgr.isAppeared ) {
-            if ( [self.controlLayerDelegate respondsToSelector:@selector(controlLayerNeedAppear:)] ) {
-                [self.controlLayerDelegate controlLayerNeedAppear:self];
-            }
-        }
-        else {
-            if ( [self.controlLayerDelegate respondsToSelector:@selector(controlLayerNeedDisappear:)] ) {
-                [self.controlLayerDelegate controlLayerNeedDisappear:self];
-            }
-        }
-        
-        if ( !self.rotationManager.isFullscreen ||
-              self.rotationManager.isTransitioning ) {
-            [UIView animateWithDuration:0 animations:^{
-            } completion:^(BOOL finished) {
-                [self.viewControllerManager setNeedsStatusBarAppearanceUpdate];
-            }];
-        }
-        else {
-            [UIView animateWithDuration:0.25 animations:^{
-                [self.viewControllerManager setNeedsStatusBarAppearanceUpdate];
-            }];
-        }
-    };
 }
 
 /// 控制层是否显示
@@ -1608,14 +1764,12 @@ typedef struct _SJPlayerControlInfo {
 @implementation SJBaseVideoPlayer (FitOnScreen)
 
 - (void)setFitOnScreenManager:(id<SJFitOnScreenManager> _Nullable)fitOnScreenManager {
-    _fitOnScreenManager = fitOnScreenManager;
-    [self _setupFitOnScreenManager];
+    [self _setupFitOnScreenManager:fitOnScreenManager];
 }
 
 - (id<SJFitOnScreenManager>)fitOnScreenManager {
     if ( _fitOnScreenManager == nil ) {
-        SJFitOnScreenManager *mgr = [[SJFitOnScreenManager alloc] initWithTarget:self.presentView targetSuperview:self.view];
-        [self setFitOnScreenManager:mgr];
+        [self _setupFitOnScreenManager:[[SJFitOnScreenManager alloc] initWithTarget:self.presentView targetSuperview:self.view]];
     }
     return _fitOnScreenManager;
 }
@@ -1629,41 +1783,18 @@ typedef struct _SJPlayerControlInfo {
     return observer;
 }
 
-- (void)_setupFitOnScreenManager {
-    if ( _fitOnScreenManager == nil ) return;
-    
-    self.viewControllerManager.fitOnScreenManager = _fitOnScreenManager;
-    
-    _fitOnScreenManagerObserver = [_fitOnScreenManager getObserver];
-    __weak typeof(self) _self = self;
-    _fitOnScreenManagerObserver.fitOnScreenWillBeginExeBlock = ^(id<SJFitOnScreenManager> mgr) {
-        __strong typeof(_self) self = _self;
-        if ( !self ) return;
-        self.rotationManager.superview = mgr.isFitOnScreen ? self.fitOnScreenManager.superviewInFitOnScreen : self.view;
-        
-        [self controlLayerNeedDisappear];
-        
-        if ( [self.controlLayerDelegate respondsToSelector:@selector(videoPlayer:willFitOnScreen:)] ) {
-            [self.controlLayerDelegate videoPlayer:self willFitOnScreen:mgr.isFitOnScreen];
-        }
-        
-        [UIView performWithoutAnimation:^{
-            [self.viewControllerManager setNeedsStatusBarAppearanceUpdate];
-        }];
-    };
-    
-    _fitOnScreenManagerObserver.fitOnScreenDidEndExeBlock = ^(id<SJFitOnScreenManager> mgr) {
-        __strong typeof(_self) self = _self;
-        if ( !self ) return;
-        
-        if ( [self.controlLayerDelegate respondsToSelector:@selector(videoPlayer:didCompleteFitOnScreen:)] ) {
-            [self.controlLayerDelegate videoPlayer:self didCompleteFitOnScreen:mgr.isFitOnScreen];
-        }
-        
-        [UIView performWithoutAnimation:^{
-            [self.viewControllerManager setNeedsStatusBarAppearanceUpdate];
-        }];
-    };
+- (void)setOnlyFitOnScreen:(BOOL)onlyFitOnScreen {
+    objc_setAssociatedObject(self, @selector(onlyFitOnScreen), @(onlyFitOnScreen), OBJC_ASSOCIATION_RETAIN_NONATOMIC);
+    if ( onlyFitOnScreen ) {
+        [self _clearRotationManager];
+    }
+    else {
+        [self rotationManager];
+    }
+}
+
+- (BOOL)onlyFitOnScreen {
+    return [objc_getAssociatedObject(self, _cmd) boolValue];
 }
 
 - (BOOL)isFitOnScreen {
@@ -1676,7 +1807,7 @@ typedef struct _SJPlayerControlInfo {
     [self setFitOnScreen:fitOnScreen animated:animated completionHandler:nil];
 }
 - (void)setFitOnScreen:(BOOL)fitOnScreen animated:(BOOL)animated completionHandler:(nullable void(^)(__kindof SJBaseVideoPlayer *player))completionHandler {
-    NSAssert(!self.isFullScreen, @"横屏全屏状态下, 无法执行竖屏全屏!");
+    NSAssert(!self.isFullscreen, @"横屏全屏状态下, 无法执行竖屏全屏!");
     
     __weak typeof(self) _self = self;
     [self.fitOnScreenManager setFitOnScreen:fitOnScreen animated:animated completionHandler:^(id<SJFitOnScreenManager> mgr) {
@@ -1693,15 +1824,14 @@ typedef struct _SJPlayerControlInfo {
 @implementation SJBaseVideoPlayer (Rotation)
 
 - (void)setRotationManager:(nullable id<SJRotationManager>)rotationManager {
-    _rotationManager = rotationManager;
     [self _setupRotationManager:rotationManager];
 }
 
-- (id<SJRotationManager>)rotationManager {
-    if ( _rotationManager == nil ) {
-        SJRotationManager *mgr = [SJRotationManager.alloc init];
-        mgr.delegate = _viewControllerManager;
-        [self setRotationManager:mgr];
+- (nullable id<SJRotationManager>)rotationManager {
+    if ( _rotationManager == nil && !self.onlyFitOnScreen ) {
+        SJRotationManager_4 *defaultManager = [SJRotationManager_4 rotationManager];
+        defaultManager.delegate = self.viewControllerManager;
+        [self _setupRotationManager:defaultManager];
     }
     return _rotationManager;
 }
@@ -1720,86 +1850,6 @@ typedef struct _SJPlayerControlInfo {
 }
 - (BOOL (^_Nullable)(__kindof SJBaseVideoPlayer * _Nonnull))shouldTriggerRotation {
     return objc_getAssociatedObject(self, _cmd);
-}
-
-- (void)_setupRotationManager:(id<SJRotationManager>)rotationManager {
-    if ( !rotationManager )
-        return;
-    
-    self.viewControllerManager.rotationManager = rotationManager;
-    
-    rotationManager.superview = self.view;
-    rotationManager.target = self.presentView;
-    __weak typeof(self) _self = self;
-    rotationManager.shouldTriggerRotation = ^BOOL(id<SJRotationManager>  _Nonnull mgr) {
-        __strong typeof(_self) self = _self;
-        if ( !self ) return NO;
-        if ( mgr.isFullscreen == NO ) {
-            if ( self.playModelObserver.isScrolling ) return NO;
-            if ( !self.view.superview ) return NO;
-//            UIWindow *_Nullable window = self.view.window;
-//            if ( window && !window.isKeyWindow ) return NO;
-            if ( self.isPlayOnScrollView && !(self.isScrollAppeared || self.controlInfo->floatSmallViewControl.isAppeared) ) return NO;
-            if ( self.touchedOnTheScrollView ) return NO;
-        }
-        if ( self.isLockedScreen ) return NO;
-        
-        if ( self.isFitOnScreen )
-            return self.allowsRotationInFitOnScreen;
-        
-        if ( self.viewControllerManager.isViewDisappeared ) return NO;
-        if ( [self.controlLayerDelegate respondsToSelector:@selector(canTriggerRotationOfVideoPlayer:)] ) {
-            if ( ![self.controlLayerDelegate canTriggerRotationOfVideoPlayer:self] )
-                return NO;
-        }
-        if ( self.atViewController.presentedViewController ) return NO;
-        if ( self.shouldTriggerRotation && !self.shouldTriggerRotation(self) ) return NO;
-        return YES;
-    };
-    
-    _rotationManagerObserver = [rotationManager getObserver];
-    _rotationManagerObserver.rotationDidStartExeBlock = ^(id<SJRotationManager>  _Nonnull mgr) {
-        __strong typeof(_self) self = _self;
-        if ( !self ) return ;
-        if ( [self.controlLayerDelegate respondsToSelector:@selector(videoPlayer:willRotateView:)] ) {
-            [self.controlLayerDelegate videoPlayer:self willRotateView:mgr.isFullscreen];
-        }
-        
-        [self controlLayerNeedDisappear];
-        
-//        UINavigationController *nav = [self.view lookupResponderForClass:UINavigationController.class];
-////        _updateBarsForCurrentInterfaceOrientation
-//        [nav performSelector:@selector(_updateBarsForCurrentInterfaceOrientation)];
-                
-        ///
-        /// Thanks @SuperEvilRabbit
-        /// https://github.com/changsanjiang/SJVideoPlayer/issues/58
-        ///
-        [UIView animateWithDuration:0 animations:^{ } completion:^(BOOL finished) {
-            if ( mgr.isFullscreen )
-                [self needHiddenStatusBar];
-            else
-                [self needShowStatusBar];
-        }];
-    };
-    
-    _rotationManagerObserver.rotationDidEndExeBlock = ^(id<SJRotationManager>  _Nonnull mgr) {
-        __strong typeof(_self) self = _self;
-        if ( !self ) return ;
-        [self.playModelObserver refreshAppearState];
-        if ( [self.controlLayerDelegate respondsToSelector:@selector(videoPlayer:didEndRotation:)] ) {
-            [self.controlLayerDelegate videoPlayer:self didEndRotation:mgr.isFullscreen];
-        }
-        
-        if ( mgr.isFullscreen ) {
-            [self.viewControllerManager setNeedsStatusBarAppearanceUpdate];
-        }
-        else {
-            [UIView animateWithDuration:0.25 animations:^{
-                [self.viewControllerManager setNeedsStatusBarAppearanceUpdate];
-            }];
-        }
-    };
 }
 
 - (void)setAllowsRotationInFitOnScreen:(BOOL)allowsRotationInFitOnScreen {
@@ -1826,16 +1876,16 @@ typedef struct _SJPlayerControlInfo {
     }];
 }
 
-- (BOOL)isTransitioning {
-    return self.rotationManager.isTransitioning;
+- (BOOL)isRotating {
+    return _rotationManager.isRotating;
 }
 
-- (BOOL)isFullScreen {
-    return self.rotationManager.isFullscreen;
+- (BOOL)isFullscreen {
+    return _rotationManager.isFullscreen;
 }
 
 - (UIInterfaceOrientation)currentOrientation {
-    return (NSInteger)self.rotationManager.currentOrientation;
+    return (NSInteger)_rotationManager.currentOrientation;
 }
 
 - (void)setLockedScreen:(BOOL)lockedScreen {
@@ -1991,6 +2041,10 @@ typedef struct _SJPlayerControlInfo {
 
 @implementation SJBaseVideoPlayer (ScrollView)
 
+- (void)refreshAppearStateForPlayerView {
+    [self.playModelObserver refreshAppearState];
+}
+
 - (void)setFloatSmallViewController:(nullable id<SJFloatSmallViewController>)floatSmallViewController {
     _floatSmallViewController = floatSmallViewController;
     [self _resetFloatSmallViewControllerObserver:floatSmallViewController];
@@ -2019,7 +2073,7 @@ typedef struct _SJPlayerControlInfo {
     
     __weak typeof(self) _self = self;
     _floatSmallViewControllerObesrver = [_floatSmallViewController getObserver];
-    _floatSmallViewControllerObesrver.appearStateDidChangeExeBlock = ^(id<SJFloatSmallViewController>  _Nonnull controller) {
+    _floatSmallViewControllerObesrver.onAppearChanged = ^(id<SJFloatSmallViewController>  _Nonnull controller) {
         __strong typeof(_self) self = _self;
         if ( !self ) return ;
         BOOL isAppeared = controller.isAppeared;
@@ -2081,12 +2135,13 @@ typedef struct _SJPlayerControlInfo {
 
 
 @implementation SJBaseVideoPlayer (Subtitles)
-- (void)setSubtitlesPromptController:(nullable id<SJSubtitlesPromptController>)subtitlesPromptController {
-    [_subtitlesPromptController.view removeFromSuperview];
-    _subtitlesPromptController = subtitlesPromptController;
-    if ( subtitlesPromptController ) {
-        [self.presentView insertSubview:subtitlesPromptController.view aboveSubview:self.playbackController.playerView];
-        [subtitlesPromptController.view mas_makeConstraints:^(MASConstraintMaker *make) {
+- (void)setSubtitlePopupController:(nullable id<SJSubtitlePopupController>)subtitlePopupController {
+    [_subtitlePopupController.view removeFromSuperview];
+    _subtitlePopupController = subtitlePopupController;
+    if ( subtitlePopupController != nil ) {
+        subtitlePopupController.view.layer.zPosition = SJPlayerZIndexes.shared.subtitleViewZIndex;
+        [self.presentView addSubview:subtitlePopupController.view];
+        [subtitlePopupController.view mas_makeConstraints:^(MASConstraintMaker *make) {
             make.left.mas_greaterThanOrEqualTo(self.subtitleHorizontalMinMargin);
             make.right.mas_lessThanOrEqualTo(-self.subtitleHorizontalMinMargin);
             make.centerX.offset(0);
@@ -2095,16 +2150,16 @@ typedef struct _SJPlayerControlInfo {
     }
 }
 
-- (id<SJSubtitlesPromptController>)subtitlesPromptController {
-    if ( _subtitlesPromptController == nil ) {
-        self.subtitlesPromptController = SJSubtitlesPromptController.alloc.init;
+- (id<SJSubtitlePopupController>)subtitlePopupController {
+    if ( _subtitlePopupController == nil ) {
+        self.subtitlePopupController = SJSubtitlePopupController.alloc.init;
     }
-    return _subtitlesPromptController;
+    return _subtitlePopupController;
 }
 
 - (void)setSubtitleBottomMargin:(CGFloat)subtitleBottomMargin {
     objc_setAssociatedObject(self, @selector(subtitleBottomMargin), @(subtitleBottomMargin), OBJC_ASSOCIATION_RETAIN_NONATOMIC);
-    [self.subtitlesPromptController.view mas_updateConstraints:^(MASConstraintMaker *make) {
+    [self.subtitlePopupController.view mas_updateConstraints:^(MASConstraintMaker *make) {
         make.bottom.offset(-subtitleBottomMargin);
     }];
 }
@@ -2115,7 +2170,7 @@ typedef struct _SJPlayerControlInfo {
 
 - (void)setSubtitleHorizontalMinMargin:(CGFloat)subtitleHorizontalMinMargin {
     objc_setAssociatedObject(self, @selector(subtitleHorizontalMinMargin), @(subtitleHorizontalMinMargin), OBJC_ASSOCIATION_RETAIN_NONATOMIC);
-    [self.subtitlesPromptController.view mas_updateConstraints:^(MASConstraintMaker *make) {
+    [self.subtitlePopupController.view mas_updateConstraints:^(MASConstraintMaker *make) {
         make.left.mas_greaterThanOrEqualTo(subtitleHorizontalMinMargin);
         make.right.mas_lessThanOrEqualTo(-subtitleHorizontalMinMargin);
     }];
@@ -2129,66 +2184,66 @@ typedef struct _SJPlayerControlInfo {
 
 #pragma mark - 提示
 
-@implementation SJBaseVideoPlayer (PromptControl)
-- (void)setPromptPopupController:(nullable id<SJPromptPopupController>)promptPopupController {
-    objc_setAssociatedObject(self, @selector(promptPopupController), promptPopupController, OBJC_ASSOCIATION_RETAIN_NONATOMIC);
-    if ( promptPopupController != nil ) {
-        [self _setupPromptPopupController];
-    }
+@implementation SJBaseVideoPlayer (Popup)
+- (void)setTextPopupController:(nullable id<SJTextPopupController>)controller {
+    objc_setAssociatedObject(self, @selector(textPopupController), controller, OBJC_ASSOCIATION_RETAIN_NONATOMIC);
+    if ( controller != nil ) [self _setupTextPopupController:controller];
 }
 
-- (id<SJPromptPopupController>)promptPopupController {
-    id<SJPromptPopupController>_Nullable controller = objc_getAssociatedObject(self, _cmd);
+- (id<SJTextPopupController>)textPopupController {
+    id<SJTextPopupController> controller = objc_getAssociatedObject(self, _cmd);
     if ( controller == nil ) {
-        controller = [SJPromptPopupController new];
+        controller = SJTextPopupController.alloc.init;
         objc_setAssociatedObject(self, _cmd, controller, OBJC_ASSOCIATION_RETAIN_NONATOMIC);
-        [self _setupPromptPopupController];
+        [self _setupTextPopupController:controller];
     }
     return controller;
 }
-- (void)_setupPromptPopupController {
-    id<SJPromptPopupController>_Nullable controller = objc_getAssociatedObject(self, @selector(promptPopupController));
+
+- (void)_setupTextPopupController:(id<SJTextPopupController>)controller {
     controller.target = self.presentView;
 }
 
-- (void)setPrompt:(nullable id<SJPromptProtocol>)prompt {
-    objc_setAssociatedObject(self, @selector(prompt), prompt, OBJC_ASSOCIATION_RETAIN_NONATOMIC);
-    [self _setupPrompt];
+- (void)setPromptingPopupController:(nullable id<SJPromptingPopupController>)controller {
+    objc_setAssociatedObject(self, @selector(promptingPopupController), controller, OBJC_ASSOCIATION_RETAIN_NONATOMIC);
+    if ( controller != nil ) [self _setupPromptingPopupController:controller];
 }
-- (id<SJPromptProtocol>)prompt {
-    id<SJPromptProtocol> prompt = objc_getAssociatedObject(self, _cmd);
-    if ( prompt == nil ) {
-        prompt = SJPrompt.alloc.init;
-        objc_setAssociatedObject(self, _cmd, prompt, OBJC_ASSOCIATION_RETAIN_NONATOMIC);
-        [self _setupPrompt];
+
+- (id<SJPromptingPopupController>)promptingPopupController {
+    id<SJPromptingPopupController>_Nullable controller = objc_getAssociatedObject(self, _cmd);
+    if ( controller == nil ) {
+        controller = [SJPromptingPopupController new];
+        objc_setAssociatedObject(self, _cmd, controller, OBJC_ASSOCIATION_RETAIN_NONATOMIC);
+        [self _setupPromptingPopupController:controller];
     }
-    return prompt;
+    return controller;
 }
-- (void)_setupPrompt {
-    id<SJPromptProtocol> prompt = objc_getAssociatedObject(self, @selector(prompt));
-    prompt.target = self.presentView;
+
+- (void)_setupPromptingPopupController:(id<SJPromptingPopupController>)controller {
+    controller.target = self.presentView;
 }
 @end
 
 
-@implementation SJBaseVideoPlayer (Barrages)
-- (void)setBarrageQueueController:(nullable id<SJBarrageQueueController>)barrageQueueController {
-    if ( _barrageQueueController != nil )
-        [_barrageQueueController.view removeFromSuperview];
+@implementation SJBaseVideoPlayer (Danmaku)
+- (void)setDanmakuPopupController:(nullable id<SJDanmakuPopupController>)danmakuPopupController {
+    if ( _danmakuPopupController != nil )
+        [_danmakuPopupController.view removeFromSuperview];
     
-    _barrageQueueController = barrageQueueController;
-    if ( barrageQueueController != nil ) {
-        [self.presentView insertSubview:barrageQueueController.view aboveSubview:self.presentView.placeholderImageView];
-        [barrageQueueController.view mas_makeConstraints:^(MASConstraintMaker *make) {
+    _danmakuPopupController = danmakuPopupController;
+    if ( danmakuPopupController != nil ) {
+        danmakuPopupController.view.layer.zPosition = SJPlayerZIndexes.shared.danmakuViewZIndex;
+        [self.presentView addSubview:danmakuPopupController.view];
+        [danmakuPopupController.view mas_makeConstraints:^(MASConstraintMaker *make) {
             make.top.left.right.offset(0);
         }];
     }
 }
-- (id<SJBarrageQueueController>)barrageQueueController {
-    id<SJBarrageQueueController> controller = _barrageQueueController;
+- (id<SJDanmakuPopupController>)danmakuPopupController {
+    id<SJDanmakuPopupController> controller = _danmakuPopupController;
     if ( controller == nil ) {
-        controller = [SJBarrageQueueController.alloc initWithNumberOfLines:4];
-        [self setBarrageQueueController:controller];
+        controller = [SJDanmakuPopupController.alloc initWithNumberOfTracks:4];
+        [self setDanmakuPopupController:controller];
     }
     return controller;
 }
@@ -2208,7 +2263,8 @@ typedef struct _SJPlayerControlInfo {
     objc_setAssociatedObject(self, @selector(watermarkView), watermarkView, OBJC_ASSOCIATION_RETAIN_NONATOMIC);
     
     if ( watermarkView != nil ) {
-        [self.presentView insertSubview:watermarkView aboveSubview:self.playbackController.playerView];
+        watermarkView.layer.zPosition = SJPlayerZIndexes.shared.watermarkViewZIndex;
+        [self.presentView addSubview:watermarkView];
         [watermarkView layoutWatermarkInRect:self.presentView.bounds videoPresentationSize:self.videoPresentationSize videoGravity:self.videoGravity];
     }
 }
@@ -2276,7 +2332,7 @@ typedef struct _SJPlayerControlInfo {
         return;
     }
     
-    if ( _rotationManager.isTransitioning )
+    if ( _rotationManager.isRotating )
         return;
 
     _controlInfo->scrollControl.isScrollAppeared = NO;

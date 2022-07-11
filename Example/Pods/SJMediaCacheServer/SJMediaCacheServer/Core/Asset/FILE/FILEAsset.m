@@ -15,9 +15,154 @@
 #import "NSFileHandle+MCS.h"
 #import "MCSQueue.h"
 
+@interface FILEAssetContentNode : NSObject<FILEAssetContentNode>
+@property (nonatomic, readonly) UInt64 startPositionInAsset;
+@property (nonatomic, readonly, nullable) id<MCSAssetContent> longestContent;
+@property (nonatomic, readonly, nullable) NSArray<id<MCSAssetContent>> *allContents;
+@end
+
+@interface FILEAssetContentNode ()
+- (instancetype)initWithContent:(id<MCSAssetContent>)content;
+@property (nonatomic, unsafe_unretained, nullable) FILEAssetContentNode *prev;
+@property (nonatomic, unsafe_unretained, nullable) FILEAssetContentNode *next;
+- (void)addContent:(id<MCSAssetContent>)content;
+- (void)removeContentAtIndex:(NSInteger)index;
+@end
+
+@implementation FILEAssetContentNode {
+    NSMutableArray<id<MCSAssetContent>> *mContents;
+}
+- (instancetype)initWithContent:(id<MCSAssetContent>)content {
+    self = [super init];
+    if ( self ) {
+        mContents = [NSMutableArray arrayWithObject:content];
+    }
+    return self;
+}
+
+- (UInt64)startPositionInAsset {
+    return mContents.firstObject.startPositionInAsset;
+}
+
+- (nullable id<MCSAssetContent>)longestContent {
+    id<MCSAssetContent> retv = mContents.firstObject;
+    for ( NSInteger i = 1 ; i < mContents.count ; ++ i ) {
+        id<MCSAssetContent> content = mContents[i];
+        if ( content.length > retv.length ) {
+            retv = content;
+        }
+    }
+    return retv;
+}
+
+- (void)addContent:(id<MCSAssetContent>)content {
+    [mContents addObject:content];
+}
+
+- (void)removeContentAtIndex:(NSInteger)index {
+    [mContents removeObjectAtIndex:index];
+}
+
+- (NSString *)description {
+    return [NSString stringWithFormat:@"%@: <%p> { startPositionInAsset: %llu, maximumLength: %llu, contents: %lu };\n", NSStringFromClass(self.class), self, self.startPositionInAsset, self.longestContent.length, (unsigned long)mContents.count];
+}
+@end
+
+@interface FILEAssetContentNodeList : NSObject
+- (instancetype)initWithContents:(nullable NSArray<id<MCSAssetContent>> *)contents;
+@property (nonatomic, readonly) NSUInteger count; // node count
+@property (nonatomic, readonly, nullable) FILEAssetContentNode *head;
+@property (nonatomic, readonly, nullable) FILEAssetContentNode *tail;
+- (void)bringContentToNode:(id<MCSAssetContent>)content;
+- (void)removeNode:(FILEAssetContentNode *)node;
+- (void)enumerateContentNodesUsingBlock:(void(NS_NOESCAPE ^)(id<FILEAssetContentNode> node, BOOL *stop))block;
+@end
+
+@implementation FILEAssetContentNodeList {
+    NSMutableDictionary<NSNumber *, FILEAssetContentNode *> *mNodes;
+}
+- (instancetype)initWithContents:(nullable NSArray<id<MCSAssetContent>> *)contents {
+    self = [super init];
+    mNodes = NSMutableDictionary.dictionary;
+    for ( id<MCSAssetContent> content in contents ) {
+        [self bringContentToNode:content];
+    }
+    return self;
+}
+
+- (NSUInteger)count {
+    return mNodes.count;
+}
+
+- (void)bringContentToNode:(id<MCSAssetContent>)content {
+    UInt64 curNodePosition = content.startPositionInAsset;
+    NSNumber *curNodeKey = @(curNodePosition);
+    FILEAssetContentNode *curNode = mNodes[curNodeKey];
+    if ( curNode == nil ) {
+        // create new node
+        //
+        curNode = [FILEAssetContentNode.alloc initWithContent:content];
+        mNodes[curNodeKey] = curNode;
+         
+        // restructure nodes position
+        //
+        // prevNode.position < curNode.position < nextNode.position
+        //
+        // preNode.next = curNode; curNode.prev = prevNode, curNode.next = nextNode; nextNode.prev = curNode;
+        //
+        FILEAssetContentNode *prevNode = _tail;
+        FILEAssetContentNode *nextNode = nil;
+        while ( prevNode.startPositionInAsset > curNodePosition ) {
+            nextNode = prevNode;
+            prevNode = prevNode.prev;
+        }
+        
+        prevNode.next = curNode;
+        curNode.prev = prevNode;
+        curNode.next = nextNode;
+        nextNode.prev = curNode;
+        
+        if ( _head == nil || _head.startPositionInAsset > curNodePosition ) {
+            _head = curNode;
+        }
+        
+        if ( _tail == nil || _tail.startPositionInAsset < curNodePosition ) {
+            _tail = curNode;
+        }
+    }
+    else {
+        [curNode addContent:content];
+    }
+}
+
+- (void)enumerateContentNodesUsingBlock:(void(NS_NOESCAPE ^)(id<FILEAssetContentNode> node, BOOL *stop))block {
+    BOOL stop = NO;
+    FILEAssetContentNode *cur = _head;
+    while ( cur != nil ) {
+        block(cur, &stop);
+        cur = cur.next;
+        if ( stop ) break;;
+    }
+}
+
+- (void)removeNode:(FILEAssetContentNode *)node {
+    FILEAssetContentNode *prevNode = node.prev;
+    FILEAssetContentNode *nextNode = node.next;
+    nextNode.prev = prevNode;
+    prevNode.next = nextNode;
+
+    if ( _head == node ) _head = nextNode;
+    if ( _tail == node ) _tail = prevNode;
+    
+    NSNumber *nodeKey = @(node.startPositionInAsset);
+    [mNodes removeObjectForKey:nodeKey];
+}
+@end
+
+
 @interface FILEAsset () {
     FILEAssetContentProvider *mProvider;
-    NSMutableArray<id<MCSAssetContent>> *mContents;
+    FILEAssetContentNodeList *mNodeList;
     BOOL mIsPrepared;
 }
 
@@ -62,8 +207,8 @@
         NSString *directory = [MCSRootDirectory assetPathForFilename:self.name];
         _configuration = MCSConfiguration.alloc.init;
         mProvider = [FILEAssetContentProvider contentProviderWithDirectory:directory];
-        mContents = [(mProvider.contents ?: @[]) mutableCopy];
-        [self _mergeContents];
+        mNodeList = [FILEAssetContentNodeList.alloc initWithContents:mProvider.contents];
+        [self _restructureContents];
     });
 }
 
@@ -77,12 +222,10 @@
     return MCSAssetTypeFILE;
 }
 
-- (nullable NSArray<id<MCSAssetContent>> *)contents {
-    __block NSArray<id<MCSAssetContent>> *contents;
+- (void)enumerateContentNodesUsingBlock:(void(NS_NOESCAPE ^)(id<FILEAssetContentNode> node, BOOL *stop))block {
     mcs_queue_sync(^{
-        contents = mContents.copy;
+        [mNodeList enumerateContentNodesUsingBlock:block];
     });
-    return contents;
 }
 
 - (BOOL)isStored {
@@ -151,7 +294,7 @@
         
         content = [mProvider createContentAtOffset:offset pathExtension:_pathExtension];
         [content readwriteRetain];
-        if ( content != nil ) [mContents addObject:content];
+        if ( content != nil ) [mNodeList bringContentToNode:content];
     });
     
     if ( isUpdated )
@@ -161,79 +304,71 @@
 
 - (void)readwriteCountDidChange:(NSInteger)count {
     if ( count == 0 )
-        [self _mergeContents];
+        [self _restructureContents];
 }
 
-// 合并文件
-- (void)_mergeContents {
-    if ( self.readwriteCount != 0 ) return;
-    if ( _isStored ) return;
-    if ( mContents.count < 2 ) {
-        _isStored = mContents.count == 1 && mContents.lastObject.length == _totalLength;
-        return;
-    }
-     
-    NSMutableArray<id<MCSAssetContent>> *contents = [mContents mutableCopy];
-    NSMutableArray<id<MCSAssetContent>> *deletes = NSMutableArray.alloc.init;
-    [contents sortUsingComparator:^NSComparisonResult(id<MCSAssetContent>obj1, id<MCSAssetContent>obj2) {
-        NSRange range1 = NSMakeRange(obj1.startPositionInAsset, obj1.length);
-        NSRange range2 = NSMakeRange(obj2.startPositionInAsset, obj2.length);
-        
-        // 1 包含 2
-        if ( MCSNSRangeContains(range1, range2) ) {
-            if ( ![deletes containsObject:obj2] ) [deletes addObject:obj2];
-        }
-        // 2 包含 1
-        else if ( MCSNSRangeContains(range2, range1) ) {
-            if ( ![deletes containsObject:obj1] ) [deletes addObject:obj1];;
-        }
-        
-        return [@(range1.location) compare:@(range2.location)];
-    }];
-    
-    if ( deletes.count != 0 ) [contents removeObjectsInArray:deletes];
-    
-    // merge
+// 拆分重组内容. 将内容按指定字节拆分重组
+- (void)_restructureContents {
+    if ( _isStored || self.readwriteCount != 0 ) return;
     UInt64 capacity = 1 * 1024 * 1024;
-    for ( NSInteger i = 0 ; i < contents.count - 1; i += 2 ) {
-        id<MCSAssetContent>write = contents[i];
-        id<MCSAssetContent>read  = contents[i + 1];
+    FILEAssetContentNode *curNode = mNodeList.head;
+    while ( curNode != nil ) {
+        [self _removeExcessContentsForNode:curNode];
+        FILEAssetContentNode *nextNode = curNode.next;
+        if ( nextNode == nil ) break;
+        [self _removeExcessContentsForNode:nextNode];
         
-        NSUInteger maxPosition1 = write.startPositionInAsset + write.length;
-        NSUInteger maxPosition2 = read.startPositionInAsset + read.length;
-        NSRange readRange = NSMakeRange(0, 0);
-        if ( maxPosition1 >= read.startPositionInAsset && maxPosition1 < maxPosition2 ) // 有交集
-            readRange = NSMakeRange(maxPosition1, maxPosition2 - maxPosition1); // 读取read中未相交的部分
+        id<MCSAssetContent> write = curNode.longestContent;
+        id<MCSAssetContent> read = nextNode.longestContent;
         
-        if ( readRange.length != 0 ) {
+        NSRange curRange = {write.startPositionInAsset, write.length};
+        NSRange nextRange = {read.startPositionInAsset, read.length};
+        if      ( MCSNSRangeContains(curRange, nextRange) ) {
+            [mProvider removeContent:read];
+            [mNodeList removeNode:nextNode];
+        }
+        else if ( NSIntersectionRange(curRange, nextRange).location != NSNotFound ) { // 连续的, 存在交集
+            NSRange readRange = {NSMaxRange(curRange), NSMaxRange(nextRange) - NSMaxRange(curRange)};   // 读取read中未相交的部分
             [write readwriteRetain];
             [read readwriteRetain];
             NSError *error = nil;
-            UInt64 positon = readRange.location;
+            UInt64 position = readRange.location;
             while ( true ) { @autoreleasepool {
-                NSData *data = [read readDataAtPosition:positon capacity:capacity error:&error];
+                NSData *data = [read readDataAtPosition:position capacity:capacity error:&error];
                 if ( error != nil || data.length == 0 )
                     break;
                 if ( ![write writeData:data error:&error] )
                     break;
-                positon += data.length;
-                if ( positon == NSMaxRange(readRange) ) break;
+                position += data.length;
+                if ( position == NSMaxRange(readRange) ) break;
             }}
             [read readwriteRelease];
-            [write readwriteRelease];
             [read closeRead];
+            [write readwriteRelease];
             [write closeWrite];
+            
             if ( error == nil ) {
-                [deletes addObject:read];
+                [mProvider removeContent:read];
+                [mNodeList removeNode:nextNode];
             }
         }
+        curNode = curNode.next;
     }
     
-    if ( deletes.count != 0 ) {
-        for ( id<MCSAssetContent>content in deletes ) { [mProvider removeContent:content]; }
-        [mContents removeObjectsInArray:deletes];
+    _isStored = mNodeList.head.longestContent.length == _totalLength;
+}
+
+- (void)_removeExcessContentsForNode:(FILEAssetContentNode *)node {
+    NSArray<id<MCSAssetContent>> *contents = node.allContents;
+    // 同一段位置可能存在多个文件
+    // 删除多余的无用的content
+    if ( contents.count > 1 ) {
+        [contents enumerateObjectsWithOptions:NSEnumerationReverse usingBlock:^(id<MCSAssetContent>  _Nonnull obj, NSUInteger idx, BOOL * _Nonnull stop) {
+            if ( idx != 0 && obj.readwriteCount == 0 ) {
+                [mProvider removeContent:obj];
+                [node removeContentAtIndex:idx];
+            }
+        }];
     }
-    
-    _isStored = mContents.count == 1 && mContents.lastObject.length == _totalLength;
 }
 @end

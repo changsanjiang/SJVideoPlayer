@@ -168,23 +168,18 @@ typedef NS_ENUM(NSUInteger, SJTestPageItemType) {
             __strong typeof(_self) self = _self;
             if ( !self ) return NO;
             if ( player.isPlaying ) return YES;
-            if ( player.isFullScreen ) return YES;
+            if ( player.isFullscreen ) return YES;
             return self.topView.isHidden; // 竖屏时, topView显示后, 禁止旋转
         };
-        _player.rotationObserver.rotationDidStartExeBlock = ^(id<SJRotationManager>  _Nonnull mgr) {
+        _player.rotationObserver.onRotatingChanged = ^(id<SJRotationManager>  _Nonnull mgr, BOOL isRotating) {
             __strong typeof(_self) self = _self;
-            if ( !self ) return;
-            self.backButton.hidden = YES; // 开始旋转的时候, 隐藏我们自己的返回按钮
-        };
-        _player.rotationObserver.rotationDidEndExeBlock = ^(id<SJRotationManager>  _Nonnull mgr) {
-            __strong typeof(_self) self = _self;
-            if ( !self ) return;
-            self.backButton.hidden = NO; // 完成旋转的时候, 显示我们自己的返回按钮
+            if ( !self ) return ;
+            self.backButton.hidden = isRotating; // 开始旋转的时候, 隐藏我们自己的返回按钮
         };
         _player.playbackObserver.timeControlStatusDidChangeExeBlock = ^(__kindof SJBaseVideoPlayer * _Nonnull player) {
             __strong typeof(_self) self = _self;
             if ( !self ) return;
-            [player.prompt show:[NSAttributedString sj_UIKitText:^(id<SJUIKitTextMakerProtocol>  _Nonnull make) {
+            [player.textPopupController show:[NSAttributedString sj_UIKitText:^(id<SJUIKitTextMakerProtocol>  _Nonnull make) {
                 make.append(player.isPaused ? @"已暂停" : @"正在播放中"); // 提示
                 make.textColor(UIColor.whiteColor);
             }] duration:-1];

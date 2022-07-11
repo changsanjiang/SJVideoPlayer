@@ -7,11 +7,9 @@
 //
 
 #import "SJVideoPlayerPresentView.h"
-#import "SJBaseVideoPlayerConst.h"
 #import "NSTimer+SJAssetAdd.h"
 #import <UIKit/UIGraphicsRendererSubclass.h>
 
-NS_ASSUME_NONNULL_BEGIN
 @interface SJVideoPlayerPresentView ()<UIGestureRecognizerDelegate>
 @property (nonatomic, strong, readonly) UIPanGestureRecognizer *pan;
 @property (nonatomic, strong, readonly) UIPinchGestureRecognizer *pinch;
@@ -46,22 +44,10 @@ NS_ASSUME_NONNULL_BEGIN
 }
 #endif
 
-- (void)layoutSubviews {
-    [super layoutSubviews];
-    if ( [self.delegate respondsToSelector:@selector(presentViewDidLayoutSubviews:)] ) {
-        [self.delegate presentViewDidLayoutSubviews:self];
-    }
-}
-
-- (void)willMoveToWindow:(nullable UIWindow *)newWindow {
-    [super willMoveToWindow:newWindow];
-    if ( [self.delegate respondsToSelector:@selector(presentViewWillMoveToWindow:)] ) {
-        [self.delegate presentViewWillMoveToWindow:newWindow];
-    }
-}
+#pragma mark -
 
 - (void)handleSingleTap:(UITouch *)tap {
-    if ( ![self _isSupported:SJPlayerGestureTypeMask_SingleTap ] )
+    if ( ![self _isGestureSupported:SJPlayerGestureTypeMask_SingleTap ] )
         return;
     
     CGPoint location = [tap locationInView:self];
@@ -72,7 +58,7 @@ NS_ASSUME_NONNULL_BEGIN
 }
 
 - (void)handleDoubleTap:(UITouch *)tap {
-    if ( ![self _isSupported:SJPlayerGestureTypeMask_DoubleTap] )
+    if ( ![self _isGestureSupported:SJPlayerGestureTypeMask_DoubleTap] )
         return;
     
     CGPoint location = [tap locationInView:self];
@@ -136,58 +122,6 @@ NS_ASSUME_NONNULL_BEGIN
     }
 }
 
-- (void)showPlaceholderAnimated:(BOOL)animated {
-    if ( _placeholderImageView.isHidden == NO )
-        return;
-    
-    [NSObject cancelPreviousPerformRequestsWithTarget:self];
-
-    _placeholderImageView.alpha = 0.001;
-    _placeholderImageView.hidden = NO;
-    
-    if ( animated ) {
-        [UIView animateWithDuration:0.4 animations:^{
-            self->_placeholderImageView.alpha = 1;
-        }];
-    }
-    else {
-        _placeholderImageView.alpha = 1;
-    }
-}
-
-- (void)hiddenPlaceholderAnimated:(BOOL)animated {
-    [self hiddenPlaceholderAnimated:animated delay:0];
-}
-
-- (void)hiddenPlaceholderAnimated:(BOOL)animated delay:(NSTimeInterval)secs {
-    if ( _placeholderImageView.isHidden == YES )
-        return;
-    
-    [NSObject cancelPreviousPerformRequestsWithTarget:self];
-    
-    if ( secs == 0 ) {
-        [self _hiddenPlaceholderAnimated:@(animated)];
-    }
-    else {
-        [self performSelector:@selector(_hiddenPlaceholderAnimated:)
-                   withObject:@(animated) afterDelay:secs inModes:@[NSRunLoopCommonModes]];
-    }
-}
-
-- (void)_hiddenPlaceholderAnimated:(NSNumber *)animated {
-    if ( [animated boolValue] ) {
-        [UIView animateWithDuration:0.4 animations:^{
-            self->_placeholderImageView.alpha = 0.001;
-        } completion:^(BOOL finished) {
-            self->_placeholderImageView.hidden = YES;
-        }];
-    }
-    else {
-        _placeholderImageView.alpha = 0.001;
-        _placeholderImageView.hidden = YES;
-    }
-}
-
 - (void)cancelGesture:(SJPlayerGestureType)type {
     UIGestureRecognizer *gesture = nil;
     switch ( type ) {
@@ -221,9 +155,88 @@ NS_ASSUME_NONNULL_BEGIN
 
 #pragma mark -
 
+- (void)setPlaceholderImageViewContentMode:(UIViewContentMode)placeholderImageViewContentMode {
+    self.placeholderImageView.contentMode = placeholderImageViewContentMode;
+}
+
+- (UIViewContentMode)placeholderImageViewContentMode {
+    return self.placeholderImageView.contentMode;
+}
+
+- (void)setPlaceholderImageViewHidden:(BOOL)isHidden animated:(BOOL)animated {
+    if ( isHidden ) {
+        [self _hidePlaceholderImageViewAnimated:animated delay:0];
+    }
+    else {
+        [self _showPlaceholderImageViewAnimated:animated];
+    }
+}
+
+- (void)hidePlaceholderImageViewAnimated:(BOOL)animated delay:(NSTimeInterval)secs {
+    [self _hidePlaceholderImageViewAnimated:animated delay:secs];
+}
+
+- (void)_showPlaceholderImageViewAnimated:(BOOL)animated {
+    if ( _placeholderImageView.isHidden == NO )
+        return;
+    
+    [NSObject cancelPreviousPerformRequestsWithTarget:self];
+
+    _placeholderImageView.alpha = 0.001;
+    _placeholderImageView.hidden = NO;
+    
+    if ( animated ) {
+        [UIView animateWithDuration:0.4 animations:^{
+            self->_placeholderImageView.alpha = 1;
+        }];
+    }
+    else {
+        _placeholderImageView.alpha = 1;
+    }
+}
+
+- (void)_hidePlaceholderImageViewAnimated:(BOOL)animated delay:(NSTimeInterval)secs {
+    if ( _placeholderImageView.isHidden == YES )
+        return;
+    
+    [NSObject cancelPreviousPerformRequestsWithTarget:self];
+    
+    if ( secs == 0 ) {
+        [self _hidePlaceholderImageViewAnimated:@(animated)];
+    }
+    else {
+        [self performSelector:@selector(_hidePlaceholderImageViewAnimated:)
+                   withObject:@(animated) afterDelay:secs inModes:@[NSRunLoopCommonModes]];
+    }
+}
+
+- (void)_hidePlaceholderImageViewAnimated:(NSNumber *)animated {
+    if ( [animated boolValue] ) {
+        [UIView animateWithDuration:0.4 animations:^{
+            self->_placeholderImageView.alpha = 0.001;
+        } completion:^(BOOL finished) {
+            self->_placeholderImageView.hidden = YES;
+        }];
+    }
+    else {
+        _placeholderImageView.alpha = 0.001;
+        _placeholderImageView.hidden = YES;
+    }
+}
+
+#pragma mark -
+
+- (void)layoutSubviews {
+    [super layoutSubviews];
+    if ( [self.delegate respondsToSelector:@selector(presentViewDidLayoutSubviews:)] ) {
+        [self.delegate presentViewDidLayoutSubviews:self];
+    }
+}
+
+#pragma mark -
+
 - (void)_setupViews {
     self.supportedGestureTypes = SJPlayerGestureTypeMask_Default;
-    self.tag = SJBaseVideoPlayerPresentViewTag;
     self.backgroundColor = [UIColor blackColor];
     self.placeholderImageView.frame = self.bounds;
     _placeholderImageView.autoresizingMask = UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight;
@@ -276,7 +289,7 @@ NS_ASSUME_NONNULL_BEGIN
     switch ( type ) {
         default: break;
         case SJPlayerGestureType_Pan: {
-            if ( ![self _isSupported:SJPlayerGestureTypeMask_Pan] )
+            if ( ![self _isGestureSupported:SJPlayerGestureTypeMask_Pan] )
                 return NO;
 
             CGPoint location = [_pan locationInView:self];
@@ -297,10 +310,10 @@ NS_ASSUME_NONNULL_BEGIN
                 _movingDirection = SJPanGestureMovingDirection_V;
             }
             
-            if ( _movingDirection == SJPanGestureMovingDirection_H && ![self _isSupported:SJPlayerGestureTypeMask_Pan_H] )
+            if ( _movingDirection == SJPanGestureMovingDirection_H && ![self _isGestureSupported:SJPlayerGestureTypeMask_Pan_H] )
                 return NO;
             
-            if ( _movingDirection == SJPanGestureMovingDirection_V && ![self _isSupported:SJPlayerGestureTypeMask_Pan_V] )
+            if ( _movingDirection == SJPanGestureMovingDirection_V && ![self _isGestureSupported:SJPlayerGestureTypeMask_Pan_V] )
                 return NO;
             
             if ( _longPress.state == UIGestureRecognizerStateChanged )
@@ -308,12 +321,12 @@ NS_ASSUME_NONNULL_BEGIN
         }
             break;
         case SJPlayerGestureType_Pinch: {
-            if ( ![self _isSupported:SJPlayerGestureTypeMask_Pinch] )
+            if ( ![self _isGestureSupported:SJPlayerGestureTypeMask_Pinch] )
                 return NO;
         }
             break;
         case SJPlayerGestureType_LongPress: {
-            if ( ![self _isSupported:SJPlayerGestureTypeMask_LongPress] )
+            if ( ![self _isGestureSupported:SJPlayerGestureTypeMask_LongPress] )
                 return NO;
         }
             break;
@@ -338,6 +351,23 @@ NS_ASSUME_NONNULL_BEGIN
         return NO;
     
     return YES;
+}
+
+/// 每个子视图需要重写该方法, 判断是否消费该事件;
+///
+- (UIView *)hitTest:(CGPoint)point withEvent:(UIEvent *)event {
+    UIView *prev = nil;
+    UIView *retv = nil;
+    for ( UIView *subview in self.subviews ) {
+        UIView *target = [subview hitTest:[self convertPoint:point toView:subview] withEvent:event];
+        if ( target != nil ) {
+            if ( retv == nil || subview.layer.zPosition > prev.layer.zPosition ) {
+                retv = target;
+                prev = subview;
+            }
+        }
+    }
+    return retv;
 }
 
 - (void)touchesBegan:(NSSet<UITouch *> *)touches withEvent:(nullable UIEvent *)event {
@@ -402,8 +432,7 @@ NS_ASSUME_NONNULL_BEGIN
     _numberOfTaps = 0;
 }
 
-- (BOOL)_isSupported:(SJPlayerGestureTypeMask)type {
+- (BOOL)_isGestureSupported:(SJPlayerGestureTypeMask)type {
     return _supportedGestureTypes & type;
 }
 @end
-NS_ASSUME_NONNULL_END

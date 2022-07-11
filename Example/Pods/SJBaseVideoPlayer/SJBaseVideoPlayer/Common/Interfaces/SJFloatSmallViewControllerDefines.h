@@ -36,11 +36,11 @@ NS_ASSUME_NONNULL_BEGIN
 
 /// 该block将会在单击小浮窗视图时被调用
 ///
-@property (nonatomic, copy, nullable) void(^singleTappedOnTheFloatViewExeBlock)(id<SJFloatSmallViewController> controller);
+@property (nonatomic, copy, nullable) void(^onSingleTapped)(id<SJFloatSmallViewController> controller);
 
 /// 该block将会在双击小浮窗视图时被调用
 ///
-@property (nonatomic, copy, nullable) void(^doubleTappedOnTheFloatViewExeBlock)(id<SJFloatSmallViewController> controller);
+@property (nonatomic, copy, nullable) void(^onDoubleTapped)(id<SJFloatSmallViewController> controller);
 
 /// 小浮窗视图是否已显示
 ///
@@ -68,8 +68,8 @@ NS_ASSUME_NONNULL_BEGIN
 @protocol SJFloatSmallViewControllerObserverProtocol
 @property (nonatomic, weak, readonly, nullable) id<SJFloatSmallViewController> controller;
 
-@property (nonatomic, copy, nullable) void(^appearStateDidChangeExeBlock)(id<SJFloatSmallViewController> controller);
-@property (nonatomic, copy, nullable) void(^enabledControllerExeBlock)(id<SJFloatSmallViewController> controller);
+@property (nonatomic, copy, nullable) void(^onAppearChanged)(id<SJFloatSmallViewController> controller);
+@property (nonatomic, copy, nullable) void(^onEnabled)(id<SJFloatSmallViewController> controller);
 @end
 NS_ASSUME_NONNULL_END
 

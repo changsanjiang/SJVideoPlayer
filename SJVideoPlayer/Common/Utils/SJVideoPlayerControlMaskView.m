@@ -44,4 +44,7 @@
     maskGradientLayer.colors = nil;
 }
 
+- (void)layoutSubviews {
+    [super layoutSubviews];
+}
 @end

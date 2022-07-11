@@ -128,8 +128,8 @@ NSNotificationName const SJVideoPlayerConfigurationsDidUpdateNotification = @"SJ
 @implementation SJVideoPlayerControlLayerResources
 - (void)_loadSJEdgeControlLayerResources {
     if (@available(iOS 14.0, *)) {
-        _pictureInPictureItemStartImage = [AVPictureInPictureController.pictureInPictureButtonStartImage imageWithTintColor:UIColor.whiteColor];
-        _pictureInPictureItemStopImage = [AVPictureInPictureController.pictureInPictureButtonStopImage imageWithTintColor:UIColor.whiteColor];
+        _pictureInPictureItemStartImage = [[AVPictureInPictureController.pictureInPictureButtonStartImage imageWithTintColor:UIColor.whiteColor] imageWithRenderingMode:UIImageRenderingModeAlwaysOriginal];
+        _pictureInPictureItemStopImage = [[AVPictureInPictureController.pictureInPictureButtonStopImage imageWithTintColor:UIColor.whiteColor] imageWithRenderingMode:UIImageRenderingModeAlwaysOriginal];
     }
 
     _speedupPlaybackTriangleColor = UIColor.whiteColor;

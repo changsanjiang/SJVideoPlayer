@@ -1,0 +1,1 @@
+../../../SJBaseVideoPlayer/SJBaseVideoPlayer/Common/Implements/SJRotationManagerInternal_4.h

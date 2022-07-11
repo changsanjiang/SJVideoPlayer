@@ -23,6 +23,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (void)prepare;
 - (nullable NSData *)readDataOfLength:(NSUInteger)length;
+@property (nonatomic, strong, readonly) NSURLRequest * request;
 @property (nonatomic, strong, readonly, nullable) id<MCSResponse> response;
 @property (nonatomic, readonly) NSUInteger offset;
 @property (nonatomic, readonly) BOOL isPrepared;

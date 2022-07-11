@@ -216,13 +216,6 @@
 #pragma mark -
 
 - (void)_prepare {
-    // `length`经常变动, 暂时这里排序吧
-    __auto_type contents = [mAsset.contents sortedArrayUsingComparator:^NSComparisonResult(id<MCSAssetContent> obj1, id<MCSAssetContent> obj2) {
-        if ( obj1.startPositionInAsset == obj2.startPositionInAsset )
-            return obj1.length >= obj2.length ? NSOrderedAscending : NSOrderedDescending;
-        return [@(obj1.startPositionInAsset) compare:@(obj2.startPositionInAsset)];
-    }];
-    
     NSUInteger totalLength = mAsset.totalLength;
     if ( totalLength == 0 ) {
         // create single sub reader to load asset total length
@@ -266,9 +259,10 @@
             return;
         }
         
-        NSRange curr = fixed;
+        __block NSRange curr = fixed;
         NSMutableArray<id<MCSAssetContentReader>> *subreaders = NSMutableArray.array;
-        for ( id<MCSAssetContent> content in contents ) {
+        [mAsset enumerateContentNodesUsingBlock:^(id<FILEAssetContentNode>  _Nonnull node, BOOL * _Nonnull stop) {
+            id<MCSAssetContent> content = node.longestContent;
             NSRange available = NSMakeRange(content.startPositionInAsset, content.length);
             NSRange intersection = NSIntersectionRange(curr, available);
             if ( intersection.length != 0 ) {
@@ -288,8 +282,11 @@
                 curr = NSMakeRange(NSMaxRange(intersection), NSMaxRange(fixed) - NSMaxRange(intersection));
             }
             
-            if ( curr.length == 0 || available.location > NSMaxRange(curr) ) break;
-        }
+            // stop
+            if ( curr.length == 0 || available.location > NSMaxRange(curr) ) {
+                *stop = YES;
+            }
+        }];
         
         if ( curr.length != 0 ) {
             // undownloaded part

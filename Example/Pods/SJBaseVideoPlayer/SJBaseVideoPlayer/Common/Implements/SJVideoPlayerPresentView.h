@@ -8,17 +8,16 @@
 
 #import <UIKit/UIKit.h>
 #import "SJVideoPlayerPresentViewDefines.h"
-#import "SJPlayerGestureControlDefines.h"
+#import "SJGestureControllerDefines.h"
 @protocol SJVideoPlayerPresentViewDelegate;
 
 NS_ASSUME_NONNULL_BEGIN
-@interface SJVideoPlayerPresentView : UIView<SJVideoPlayerPresentView, SJPlayerGestureControl>
+@interface SJVideoPlayerPresentView : UIView<SJVideoPlayerPresentView, SJGestureController>
 @property (nonatomic, weak, nullable) id<SJVideoPlayerPresentViewDelegate> delegate;
 @end
 
 @protocol SJVideoPlayerPresentViewDelegate <NSObject>
 @optional
 - (void)presentViewDidLayoutSubviews:(SJVideoPlayerPresentView *)presentView;
-- (void)presentViewWillMoveToWindow:(nullable UIWindow *)window;
 @end
 NS_ASSUME_NONNULL_END

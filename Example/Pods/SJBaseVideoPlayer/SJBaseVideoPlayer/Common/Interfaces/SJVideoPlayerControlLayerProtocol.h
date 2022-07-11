@@ -12,14 +12,14 @@
 #import "SJReachabilityDefines.h"
 #import "SJVideoPlayerPlayStatusDefines.h"
 #import "SJVideoPlayerPlaybackControllerDefines.h"
-#import "SJPlayerGestureControlDefines.h"
+#import "SJGestureControllerDefines.h"
 
 @protocol SJPlaybackInfoDelegate,
 SJNetworkStatusControlDelegate,
 SJLockScreenStateControlDelegate,
 SJAppActivityControlDelegate,
 SJVolumeBrightnessRateControlDelegate,
-SJGestureControlDelegate,
+SJGestureControllerDelegate,
 SJRotationControlDelegate,
 SJFitOnScreenControlDelegate,
 SJSwitchVideoDefinitionControlDelegate,
@@ -46,7 +46,7 @@ SJPlaybackControlDelegate;
 @protocol SJVideoPlayerControlLayerDelegate <
     SJPlaybackInfoDelegate, 
     SJRotationControlDelegate,
-    SJGestureControlDelegate,
+    SJGestureControllerDelegate,
     SJNetworkStatusControlDelegate,
     SJVolumeBrightnessRateControlDelegate,
     SJLockScreenStateControlDelegate,
@@ -141,6 +141,8 @@ SJPlaybackControlDelegate;
 /// 当播放器旋转完成的时候, 会回调这个方法
 /// isFull 标识是否是全屏
 - (void)videoPlayer:(__kindof SJBaseVideoPlayer *)videoPlayer didEndRotation:(BOOL)isFull;
+
+- (void)videoPlayer:(__kindof SJBaseVideoPlayer *)videoPlayer onRotationTransitioningChanged:(BOOL)isTransitioning;
 @end
 
 
@@ -156,7 +158,7 @@ SJPlaybackControlDelegate;
 
 
 
-@protocol SJGestureControlDelegate <NSObject>
+@protocol SJGestureControllerDelegate <NSObject>
 @optional
 /// Asks the delegate if gesture should trigger in the video player.
 /// 是否可以触发某个手势

@@ -9,6 +9,7 @@
 #import "MCSInterfaces.h"
 #import "MCSAssetDefines.h"
 #import "MCSReadwrite.h"
+@protocol FILEAssetContentNode;
 
 NS_ASSUME_NONNULL_BEGIN
 @interface FILEAsset : MCSReadwrite<MCSAsset>
@@ -21,7 +22,13 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic, readonly) BOOL isStored; 
 
 - (nullable id<MCSAssetContent>)createContentReadwriteWithDataType:(MCSDataType)dataType response:(id<MCSDownloadResponse>)response;
-- (nullable NSArray<id<MCSAssetContent>> *)contents;
 - (nullable NSString *)filepathForContent:(id<MCSAssetContent>)content;
+- (void)enumerateContentNodesUsingBlock:(void(NS_NOESCAPE ^)(id<FILEAssetContentNode> node, BOOL *stop))block;
+@end
+
+@protocol FILEAssetContentNode <NSObject>
+@property (nonatomic, readonly) UInt64 startPositionInAsset;
+@property (nonatomic, readonly, nullable) NSArray<id<MCSAssetContent>> *allContents;
+@property (nonatomic, readonly, nullable) id<MCSAssetContent> longestContent;
 @end
 NS_ASSUME_NONNULL_END

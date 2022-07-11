@@ -7,7 +7,7 @@
 //
 
 #import <UIKit/UIKit.h>
-#import <SJBaseVideoPlayer/SJPlayerGestureControlDefines.h>
+#import <SJBaseVideoPlayer/SJGestureControllerDefines.h>
 typedef NSInteger SJEdgeControlButtonItemTag;
 @class SJBaseVideoPlayer, SJEdgeControlButtonItemAction;
 

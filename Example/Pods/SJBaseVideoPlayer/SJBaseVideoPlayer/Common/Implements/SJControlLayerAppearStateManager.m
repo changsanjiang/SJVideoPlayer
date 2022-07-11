@@ -16,7 +16,7 @@ static NSNotificationName const SJControlLayerAppearStateDidChangeNotification =
 @end
 
 @implementation SJControlLayerAppearManagerObserver
-@synthesize appearStateDidChangeExeBlock = _appearStateDidChangeExeBlock;
+@synthesize onAppearChanged = _onAppearChanged;
 - (instancetype)initWithManager:(SJControlLayerAppearStateManager *)mgr {
     self = [super init];
     if ( !self )
@@ -33,8 +33,8 @@ static NSNotificationName const SJControlLayerAppearStateDidChangeNotification =
 
 - (void)appearStateDidChange:(NSNotification *)note {
     SJControlLayerAppearStateManager *mgr = note.object;
-    if ( _appearStateDidChangeExeBlock )
-        _appearStateDidChangeExeBlock(mgr);
+    if ( _onAppearChanged )
+        _onAppearChanged(mgr);
 }
 @end
 

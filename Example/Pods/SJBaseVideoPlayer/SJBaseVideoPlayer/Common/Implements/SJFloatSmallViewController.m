@@ -56,8 +56,8 @@ NS_ASSUME_NONNULL_BEGIN
 @end
 
 @implementation SJFloatSmallViewControllerObserver
-@synthesize appearStateDidChangeExeBlock = _appearStateDidChangeExeBlock;
-@synthesize enabledControllerExeBlock = _enabledControllerExeBlock;
+@synthesize onAppearChanged = _onAppearChanged;
+@synthesize onEnabled = _onEnabled;
 @synthesize controller = _controller;
 
 - (instancetype)initWithController:(id<SJFloatSmallViewController>)controller {
@@ -67,15 +67,15 @@ NS_ASSUME_NONNULL_BEGIN
         
         sjkvo_observe(controller, @"isAppeared", ^(id  _Nonnull target, NSDictionary<NSKeyValueChangeKey,id> * _Nullable change) {
             dispatch_async(dispatch_get_main_queue(), ^{
-                if ( self.appearStateDidChangeExeBlock )
-                    self.appearStateDidChangeExeBlock(target);
+                if ( self.onAppearChanged )
+                    self.onAppearChanged(target);
             });
         });
         
         sjkvo_observe(controller, @"enabled", ^(id  _Nonnull target, NSDictionary<NSKeyValueChangeKey,id> * _Nullable change) {
             dispatch_async(dispatch_get_main_queue(), ^{
-                if ( self.enabledControllerExeBlock )
-                    self.enabledControllerExeBlock(target);
+                if ( self.onEnabled )
+                    self.onEnabled(target);
             });
         });
     }
@@ -94,8 +94,8 @@ NS_ASSUME_NONNULL_BEGIN
 // 由于tap手势会阻断事件响应链, 为了避免此种情况, 此处无需添加单击和双击手势, 已改为由播放器主动调用这两个block.
 //
 // 这两个block将来可能会直接移动到播放器中.
-@synthesize singleTappedOnTheFloatViewExeBlock = _singleTappedOnTheFloatViewExeBlock;
-@synthesize doubleTappedOnTheFloatViewExeBlock = _doubleTappedOnTheFloatViewExeBlock;
+@synthesize onSingleTapped = _onSingleTapped;
+@synthesize onDoubleTapped = _onDoubleTapped;
 
 @synthesize floatViewShouldAppear = _floatViewShouldAppear;
 @synthesize targetSuperview = _targetSuperview;

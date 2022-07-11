@@ -14,9 +14,10 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic, strong, readonly) UIImageView *placeholderImageView;
 @property (nonatomic, readonly, getter=isPlaceholderImageViewHidden) BOOL placeholderImageViewHidden;
 
-- (void)showPlaceholderAnimated:(BOOL)animated;
-- (void)hiddenPlaceholderAnimated:(BOOL)animated;
-- (void)hiddenPlaceholderAnimated:(BOOL)animated delay:(NSTimeInterval)secs;
+@property (nonatomic) UIViewContentMode placeholderImageViewContentMode; // default value is UIViewContentModeScaleAspectFill;
+
+- (void)setPlaceholderImageViewHidden:(BOOL)isHidden animated:(BOOL)animated;
+- (void)hidePlaceholderImageViewAnimated:(BOOL)animated delay:(NSTimeInterval)secs;
 @end
 NS_ASSUME_NONNULL_END
 #endif /* SJVideoPlayerPresentViewDefines_h */

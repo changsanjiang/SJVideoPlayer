@@ -110,9 +110,10 @@ SJEdgeControlButtonItemTag const SJNotReachableControlLayerTopItem_Back = 10000;
 - (void)controlLayerNeedAppear:(__kindof SJBaseVideoPlayer *)videoPlayer {}
 - (void)controlLayerNeedDisappear:(__kindof SJBaseVideoPlayer *)videoPlayer {}
 
-- (void)videoPlayer:(__kindof SJBaseVideoPlayer *)videoPlayer willRotateView:(BOOL)isFull {
-    [self _updateItems:videoPlayer];
+- (void)videoPlayer:(__kindof SJBaseVideoPlayer *)videoPlayer onRotationTransitioningChanged:(BOOL)isTransitioning {
+    if ( isTransitioning ) [self _updateItems:videoPlayer];
 }
+
 - (void)videoPlayer:(__kindof SJBaseVideoPlayer *)videoPlayer willFitOnScreen:(BOOL)isFitOnScreen {
     [self _updateItems:videoPlayer];
 }
@@ -120,7 +121,7 @@ SJEdgeControlButtonItemTag const SJNotReachableControlLayerTopItem_Back = 10000;
 - (void)_updateItems:(__kindof SJBaseVideoPlayer *)videoPlayer {
     SJEdgeControlButtonItem *backItem = [_topAdapter itemForTag:SJNotReachableControlLayerTopItem_Back];
     BOOL isFitOnScreen = videoPlayer.isFitOnScreen;
-    BOOL isFull = videoPlayer.isFullScreen;
+    BOOL isFull = videoPlayer.isFullscreen;
     
     if ( backItem ) {
         if ( isFull || isFitOnScreen )

@@ -2,46 +2,46 @@ PODS:
   - CocoaAsyncSocket (7.6.5)
   - Masonry (1.1.0)
   - MJRefresh (3.4.3)
-  - SDWebImage (5.11.1):
-    - SDWebImage/Core (= 5.11.1)
-  - SDWebImage/Core (5.11.1)
-  - SJBaseVideoPlayer (3.6.3):
+  - SDWebImage (5.13.0):
+    - SDWebImage/Core (= 5.13.0)
+  - SDWebImage/Core (5.13.0)
+  - SJBaseVideoPlayer (3.7.0):
     - Masonry
-    - SJBaseVideoPlayer/AVPlayer (= 3.6.3)
-    - SJBaseVideoPlayer/Common (= 3.6.3)
+    - SJBaseVideoPlayer/AVPlayer (= 3.7.0)
+    - SJBaseVideoPlayer/Common (= 3.7.0)
     - SJUIKit/AttributesFactory (>= 0.0.0.38)
     - SJUIKit/ObserverHelper
     - SJUIKit/Queues
     - SJUIKit/SQLite3
-  - SJBaseVideoPlayer/AVPlayer (3.6.3):
+  - SJBaseVideoPlayer/AVPlayer (3.7.0):
     - Masonry
     - SJBaseVideoPlayer/Common
     - SJUIKit/AttributesFactory (>= 0.0.0.38)
     - SJUIKit/ObserverHelper
     - SJUIKit/Queues
     - SJUIKit/SQLite3
-  - SJBaseVideoPlayer/Common (3.6.3):
+  - SJBaseVideoPlayer/Common (3.7.0):
     - Masonry
     - SJBaseVideoPlayer/ResourceLoader
     - SJUIKit/AttributesFactory (>= 0.0.0.38)
     - SJUIKit/ObserverHelper
     - SJUIKit/Queues
     - SJUIKit/SQLite3
-  - SJBaseVideoPlayer/ResourceLoader (3.6.3):
+  - SJBaseVideoPlayer/ResourceLoader (3.7.0):
     - Masonry
     - SJUIKit/AttributesFactory (>= 0.0.0.38)
     - SJUIKit/ObserverHelper
     - SJUIKit/Queues
     - SJUIKit/SQLite3
   - SJFullscreenPopGesture/ObjC (1.5.4)
-  - SJMediaCacheServer (1.7.6):
-    - SJMediaCacheServer/Core (= 1.7.6)
-    - SJMediaCacheServer/KTVCocoaHTTPServer (= 1.7.6)
+  - SJMediaCacheServer (1.7.8):
+    - SJMediaCacheServer/Core (= 1.7.8)
+    - SJMediaCacheServer/KTVCocoaHTTPServer (= 1.7.8)
     - SJUIKit/SQLite3
-  - SJMediaCacheServer/Core (1.7.6):
+  - SJMediaCacheServer/Core (1.7.8):
     - SJMediaCacheServer/KTVCocoaHTTPServer
     - SJUIKit/SQLite3
-  - SJMediaCacheServer/KTVCocoaHTTPServer (1.7.6):
+  - SJMediaCacheServer/KTVCocoaHTTPServer (1.7.8):
     - CocoaAsyncSocket
     - SJUIKit/SQLite3
   - SJRouter (1.0.0):
@@ -102,21 +102,21 @@ PODS:
   - SJUIKit/UIMaker (0.0.0.58):
     - SJUIKit/UIMaker/Core (= 0.0.0.58)
   - SJUIKit/UIMaker/Core (0.0.0.58)
-  - SJVideoPlayer (3.3.2):
-    - SJBaseVideoPlayer (>= 3.6.0)
-    - SJVideoPlayer/Common (= 3.3.2)
-    - SJVideoPlayer/ControlLayers (= 3.3.2)
-    - SJVideoPlayer/ResourceLoader (= 3.3.2)
-  - SJVideoPlayer/Common (3.3.2):
+  - SJVideoPlayer (3.4.0):
+    - SJBaseVideoPlayer (>= 3.7.0)
+    - SJVideoPlayer/Common (= 3.4.0)
+    - SJVideoPlayer/ControlLayers (= 3.4.0)
+    - SJVideoPlayer/ResourceLoader (= 3.4.0)
+  - SJVideoPlayer/Common (3.4.0):
     - Masonry
-    - SJBaseVideoPlayer (>= 3.6.0)
+    - SJBaseVideoPlayer (>= 3.7.0)
     - SJUIKit/AttributesFactory
     - SJVideoPlayer/ResourceLoader
-  - SJVideoPlayer/ControlLayers (3.3.2):
-    - SJBaseVideoPlayer (>= 3.6.0)
+  - SJVideoPlayer/ControlLayers (3.4.0):
+    - SJBaseVideoPlayer (>= 3.7.0)
     - SJVideoPlayer/Common
-  - SJVideoPlayer/ResourceLoader (3.3.2):
-    - SJBaseVideoPlayer (>= 3.6.0)
+  - SJVideoPlayer/ResourceLoader (3.4.0):
+    - SJBaseVideoPlayer (>= 3.7.0)
   - YYModel (1.0.4)
 
 DEPENDENCIES:
@@ -153,15 +153,15 @@ SPEC CHECKSUMS:
   CocoaAsyncSocket: 065fd1e645c7abab64f7a6a2007a48038fdc6a99
   Masonry: 678fab65091a9290e40e2832a55e7ab731aad201
   MJRefresh: 53e3e3219f204425ee6d3e62e8733d3295944cd6
-  SDWebImage: a7f831e1a65eb5e285e3fb046a23fcfbf08e696d
-  SJBaseVideoPlayer: 99957bb0d0fe1ccb8d6710bd9db9f52640c56a32
+  SDWebImage: 0327043dbb9533e75f2eff8445b3df0f2ceca6ac
+  SJBaseVideoPlayer: c2b911b2e040973429682fc37f35c9d4b5732b29
   SJFullscreenPopGesture: 7be57b1014cb77f4b7c1e6df5e797da6d05dc75d
-  SJMediaCacheServer: 3a558208af572554583d956dbf14e4bb7818f0e4
+  SJMediaCacheServer: 95bebce42f281fccaff25a5e8284022478ff7ba5
   SJRouter: a866e7884fc9219bed523be0a0318c3a84e85022
   SJUIKit: 86d5b16f8b8b17274ef8805acf965e4014629e15
-  SJVideoPlayer: 3a271ff92c7b9d611c537655fd1edcbae18b8587
+  SJVideoPlayer: 583387d58278db0e9e56122066425fb05fd84ec7
   YYModel: 2a7fdd96aaa4b86a824e26d0c517de8928c04b30
 
-PODFILE CHECKSUM: 15535c4ec87318d1a42f08613c1f32951dd3cf7f
+PODFILE CHECKSUM: 806121bb2fec366be255af4703b69f0a92bb11e3
 
-COCOAPODS: 1.10.1
+COCOAPODS: 1.11.3

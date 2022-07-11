@@ -27,6 +27,7 @@
     UIBackgroundTaskIdentifier mBackgroundTask;
 
     NSMutableURLRequest *_Nullable(^mRequestHandler)(NSMutableURLRequest *request);
+    void (^mDidFinishCollectingMetrics)(NSURLSession *session, NSURLSessionTask *task, NSURLSessionTaskMetrics *metrics) API_AVAILABLE(ios(10.0));
     NSData *(^mDataEncoder)(NSURLRequest *request, NSUInteger offset, NSData *data);
     void(^mErrorCallback)(NSURLRequest *request, NSError *error);
     NSTimeInterval mTimeoutInterval;
@@ -46,11 +47,6 @@
 }
 
 - (instancetype)init {
-#ifdef DEBUG
-    NSLog(@"%d : %s", __LINE__, sel_getName(_cmd));
-#endif
-
-    
     if (self = [super init]) {
         mTimeoutInterval = 30.0f;
         mBackgroundTask = UIBackgroundTaskInvalid;
@@ -89,6 +85,20 @@
     __block id retv;
     mcs_queue_sync(^{
         retv = mRequestHandler;
+    });
+    return retv;
+}
+
+- (void)setDidFinishCollectingMetrics:(void (^)(NSURLSession * _Nonnull, NSURLSessionTask * _Nonnull, NSURLSessionTaskMetrics * _Nonnull))didFinishCollectingMetrics {
+    mcs_queue_sync(^{
+        mDidFinishCollectingMetrics = didFinishCollectingMetrics;
+    });
+}
+
+- (void (^)(NSURLSession * _Nonnull, NSURLSessionTask * _Nonnull, NSURLSessionTaskMetrics * _Nonnull))didFinishCollectingMetrics {
+    __block id retv;
+    mcs_queue_sync(^{
+        retv = mDidFinishCollectingMetrics;
     });
     return retv;
 }
@@ -174,6 +184,12 @@
         mTaskCount = 0;
     });
 }
+
+- (void)customSessionConfig:(void (^)(NSURLSessionConfiguration * _Nonnull))config {
+    mcs_queue_sync(^{
+        config(mSession.configuration);
+    });
+}
   
 #pragma mark - mark
 
@@ -223,6 +239,14 @@
         NSData *data = dataParam;
         if ( self->mDataEncoder != nil ) data = self->mDataEncoder(dataTask.currentRequest, (NSUInteger)(dataTask.countOfBytesReceived - dataParam.length), dataParam);
         [delegate downloadTask:dataTask didReceiveData:data];
+    });
+}
+
+- (void)URLSession:(NSURLSession *)session task:(NSURLSessionTask *)task didFinishCollectingMetrics:(NSURLSessionTaskMetrics *)metrics API_AVAILABLE(ios(10.0)) {
+    mcs_queue_async(^{
+        if (self->mDidFinishCollectingMetrics != nil) {
+            self->mDidFinishCollectingMetrics(session, task, metrics);
+        }
     });
 }
 

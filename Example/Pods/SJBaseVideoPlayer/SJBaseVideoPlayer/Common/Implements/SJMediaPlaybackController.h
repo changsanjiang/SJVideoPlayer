@@ -38,6 +38,9 @@ NS_ASSUME_NONNULL_BEGIN
 - (void)receivedApplicationWillResignActiveNotification;
 - (void)receivedApplicationWillEnterForegroundNotification;
 - (void)receivedApplicationDidEnterBackgroundNotification;
+
+/// PIP
+@property (nonatomic, copy, nullable) void(^restoreUserInterfaceForPictureInPictureStop)(id<SJVideoPlayerPlaybackController> controller, void(^completionHandler)(BOOL restored));
 @end
 
 ///
@@ -51,6 +54,9 @@ extern NSNotificationName const SJMediaPlayerPlaybackDidFinishNotification;
 extern NSNotificationName const SJMediaPlayerDidReplayNotification;
 extern NSNotificationName const SJMediaPlayerDurationDidChangeNotification;
 extern NSNotificationName const SJMediaPlayerPlayableDurationDidChangeNotification;
+extern NSNotificationName const SJMediaPlayerRateDidChangeNotification;
+extern NSNotificationName const SJMediaPlayerVolumeDidChangeNotification;
+extern NSNotificationName const SJMediaPlayerMutedDidChangeNotification;
 
 /// view
 extern NSNotificationName const SJMediaPlayerViewReadyForDisplayNotification;

@@ -33,7 +33,7 @@
         
         __weak typeof(self) _self = self;
         // 单击小浮窗时的回调
-        _player.floatSmallViewController.singleTappedOnTheFloatViewExeBlock = ^(id<SJFloatSmallViewController>  _Nonnull floatSmallViewController) {
+        _player.floatSmallViewController.onSingleTapped = ^(id<SJFloatSmallViewController>  _Nonnull floatSmallViewController) {
             __strong typeof(_self) self = _self;
             if ( !self ) return ;
             [floatSmallViewController dismissFloatView];
@@ -41,7 +41,7 @@
         };
         
         // 双击小浮窗时的回调
-        _player.floatSmallViewController.doubleTappedOnTheFloatViewExeBlock = ^(id<SJFloatSmallViewController>  _Nonnull controller) {
+        _player.floatSmallViewController.onDoubleTapped = ^(id<SJFloatSmallViewController>  _Nonnull controller) {
             __strong typeof(_self) self = _self;
             if ( !self ) return ;
             

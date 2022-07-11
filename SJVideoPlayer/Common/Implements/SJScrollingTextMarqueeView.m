@@ -113,6 +113,8 @@ NS_ASSUME_NONNULL_BEGIN
 #pragma mark -
 
 - (void)_setupViews {
+    self.userInteractionEnabled = NO;
+    
     _contentView = [UIView.alloc initWithFrame:CGRectZero];
     [self addSubview:_contentView];
     

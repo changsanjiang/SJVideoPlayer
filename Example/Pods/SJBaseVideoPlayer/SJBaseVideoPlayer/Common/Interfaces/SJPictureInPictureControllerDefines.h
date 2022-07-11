@@ -36,6 +36,8 @@ API_AVAILABLE(ios(14.0)) @protocol SJPictureInPictureController <NSObject>
 
 API_AVAILABLE(ios(14.0)) @protocol SJPictureInPictureControllerDelegate <NSObject>
 - (void)pictureInPictureController:(id<SJPictureInPictureController>)controller statusDidChange:(SJPictureInPictureStatus)status;
+
+- (void)pictureInPictureController:(id<SJPictureInPictureController>)controller restoreUserInterfaceForPictureInPictureStopWithCompletionHandler:(void (^)(BOOL restored))completionHandler;
 @end
 NS_ASSUME_NONNULL_END
 

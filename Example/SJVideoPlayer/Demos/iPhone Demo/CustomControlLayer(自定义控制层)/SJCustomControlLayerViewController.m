@@ -50,7 +50,7 @@ NS_ASSUME_NONNULL_BEGIN
 ///
 - (void)restartControlLayer {
     _restarted = YES;
-    if ( self.player.isFullScreen ) [self.player needHiddenStatusBar];
+    if ( self.player.isFullscreen ) [self.player needHiddenStatusBar];
     sj_view_makeAppear(self.controlView, YES);
     sj_view_makeAppear(self.rightContainerView, YES);
 }

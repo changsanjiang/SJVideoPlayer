@@ -97,7 +97,7 @@ NS_ASSUME_NONNULL_BEGIN
 }
 
 + (NSString *)version {
-    return @"v3.3.2";
+    return @"v3.4.0";
 }
 
 + (instancetype)player {
@@ -109,7 +109,6 @@ NS_ASSUME_NONNULL_BEGIN
     if ( !self ) return nil;
     [self.switcher switchControlLayerForIdentifier:SJControlLayer_Edge];   // 切换到添加的控制层
     self.defaultEdgeControlLayer.showsMoreItem = YES;                      // 显示更多按钮
-    self.defaultEdgeControlLayer.hiddenBottomProgressIndicator = NO;       // 显示底部进度条
     return self;
 }
 
@@ -167,7 +166,7 @@ NS_ASSUME_NONNULL_BEGIN
 /// 点击了返回按钮
 ///
 - (void)_backButtonWasTapped {
-    if ( self.isFullScreen && ![self _whetherToSupportOnlyOneOrientation] ) {
+    if ( self.isFullscreen && ![self _whetherToSupportOnlyOneOrientation] ) {
         [self rotate];
     }
     else if ( self.isFitOnScreen ) {
@@ -316,21 +315,21 @@ NS_ASSUME_NONNULL_BEGIN
                 case SJDefinitionSwitchStatusUnknown:
                     break;
                 case SJDefinitionSwitchStatusSwitching: {
-                    [self.promptPopupController show:[NSAttributedString sj_UIKitText:^(id<SJUIKitTextMakerProtocol>  _Nonnull make) {
+                    [self.promptingPopupController show:[NSAttributedString sj_UIKitText:^(id<SJUIKitTextMakerProtocol>  _Nonnull make) {
                         make.append([NSString stringWithFormat:@"%@ %@", SJVideoPlayerConfigurations.shared.localizedStrings.definitionSwitchingPrompt, info.switchingAsset.definition_fullName]);
                         make.textColor(UIColor.whiteColor);
                     }]];
                 }
                     break;
                 case SJDefinitionSwitchStatusFinished: {
-                    [self.promptPopupController show:[NSAttributedString sj_UIKitText:^(id<SJUIKitTextMakerProtocol>  _Nonnull make) {
+                    [self.promptingPopupController show:[NSAttributedString sj_UIKitText:^(id<SJUIKitTextMakerProtocol>  _Nonnull make) {
                         make.append([NSString stringWithFormat:@"%@ %@", SJVideoPlayerConfigurations.shared.localizedStrings.definitionSwitchSuccessfullyPrompt, info.currentPlayingAsset.definition_fullName]);
                         make.textColor(UIColor.whiteColor);
                     }]];
                 }
                     break;
                 case SJDefinitionSwitchStatusFailed: {
-                    [self.promptPopupController show:[NSAttributedString sj_UIKitText:^(id<SJUIKitTextMakerProtocol>  _Nonnull make) {
+                    [self.promptingPopupController show:[NSAttributedString sj_UIKitText:^(id<SJUIKitTextMakerProtocol>  _Nonnull make) {
                         make.append(SJVideoPlayerConfigurations.shared.localizedStrings.definitionSwitchFailedPrompt);
                         make.textColor(UIColor.whiteColor);
                     }]];
@@ -407,7 +406,7 @@ NS_ASSUME_NONNULL_BEGIN
     if ( _sj_floatSmallViewControllerObserver.controller != floatSmallViewController ) {
         _sj_floatSmallViewControllerObserver = [floatSmallViewController getObserver];
         __weak typeof(self) _self = self;
-        _sj_floatSmallViewControllerObserver.appearStateDidChangeExeBlock = ^(id<SJFloatSmallViewController>  _Nonnull controller) {
+        _sj_floatSmallViewControllerObserver.onAppearChanged = ^(id<SJFloatSmallViewController>  _Nonnull controller) {
             __strong typeof(_self) self = _self;
             if ( !self ) return ;
             if ( controller.isAppeared ) {
@@ -419,7 +418,7 @@ NS_ASSUME_NONNULL_BEGIN
             else {
                 if ( self.switcher.currentIdentifier == SJControlLayer_FloatSmallView ) {
                     [self.controlLayerDataSource.controlView removeFromSuperview];
-                    [self.switcher switchToPreviousControlLayer];
+                    [self.switcher switchControlLayerForIdentifier:SJControlLayer_Edge];
                 }
             }
         };
@@ -496,7 +495,7 @@ NS_ASSUME_NONNULL_BEGIN
     _sj_appearManagerObserver = [self.controlLayerAppearManager getObserver];
     
     __weak typeof(self) _self = self;
-    _sj_appearManagerObserver.appearStateDidChangeExeBlock = ^(id<SJControlLayerAppearManager>  _Nonnull mgr) {
+    _sj_appearManagerObserver.onAppearChanged = ^(id<SJControlLayerAppearManager>  _Nonnull mgr) {
         __strong typeof(_self) self = _self;
         if ( !self ) return ;
         // refresh edge button items
@@ -544,9 +543,13 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (void)_updateAppearStateForMoteItemIfNeeded {
     if ( _moreItem != nil ) {
-        BOOL isHidden = !self.isFullScreen;
+        BOOL isHidden = NO;
+        // 如果已经显示, 则小屏的时候隐藏;
+        if ( !self.moreItem.isHidden ) isHidden = !self.isFullscreen;
+        else isHidden = !(self.isFullscreen && !self.rotationManager.isRotating);
+        
         if ( isHidden != self.moreItem.isHidden ) {
-            self.moreItem.hidden = !self.isFullScreen;
+            self.moreItem.hidden = isHidden;
             [self.defaultEdgeControlLayer.topAdapter reload];
         }
     }
@@ -583,7 +586,7 @@ NS_ASSUME_NONNULL_BEGIN
         if (@available(iOS 14.0, *)) {
             isPictureInPictureEnabled = self.playbackController.pictureInPictureStatus != SJPictureInPictureStatusUnknown;
         }
-        BOOL isHidden = (self.URLAsset == nil) || !self.isFullScreen || isUnsupportedFormat || isPictureInPictureEnabled;
+        BOOL isHidden = (self.URLAsset == nil) || !self.isFullscreen || isUnsupportedFormat || isPictureInPictureEnabled;
         if ( isHidden != _clipsItem.isHidden ) {
             _clipsItem.hidden = isHidden;
             [_defaultEdgeControlLayer.rightAdapter reload];
@@ -692,18 +695,11 @@ NS_ASSUME_NONNULL_BEGIN
     return self.defaultEdgeControlLayer.automaticallyPerformRotationOrFitOnScreen;
 }
 
-- (void)setOnlyUsedFitOnScreen:(BOOL)onlyUsedFitOnScreen {
-    self.defaultEdgeControlLayer.onlyUsedFitOnScreen = onlyUsedFitOnScreen;
+- (void)setNeedsFitOnScreenFirst:(BOOL)needsFitOnScreenFirst {
+    self.defaultEdgeControlLayer.needsFitOnScreenFirst = needsFitOnScreenFirst;
 }
-- (BOOL)onlyUsedFitOnScreen {
-    return self.defaultEdgeControlLayer.onlyUsedFitOnScreen;
-}
-
-- (void)setUsesFitOnScreenFirst:(BOOL)usesFitOnScreenFirst {
-    self.defaultEdgeControlLayer.usesFitOnScreenFirst = usesFitOnScreenFirst;
-}
-- (BOOL)usesFitOnScreenFirst {
-    return self.defaultEdgeControlLayer.usesFitOnScreenFirst;
+- (BOOL)needsFitOnScreenFirst {
+    return self.defaultEdgeControlLayer.needsFitOnScreenFirst;
 }
 @end
 

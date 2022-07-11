@@ -21,6 +21,18 @@
 #import "SJEdgeControlLayerAdapters.h"
 
 NS_ASSUME_NONNULL_BEGIN
+
+FOUNDATION_STATIC_INLINE BOOL
+_isIPhoneXSeries(void) {
+    if (UIDevice.currentDevice.userInterfaceIdiom == UIUserInterfaceIdiomPhone) {
+        if ( @available(iOS 11.0, *) ) {
+            UIWindow *window = [UIApplication sharedApplication].delegate.window;
+            return window.safeAreaInsets.bottom > 0.0;
+        }
+    }
+    return NO;
+}
+
 @interface SJEdgeControlLayerAdapters ()
 @property (nonatomic, readonly) BOOL isFitOnScreen;
 @end
@@ -37,16 +49,14 @@ NS_ASSUME_NONNULL_BEGIN
     CGFloat screenH = UIScreen.mainScreen.bounds.size.height;
     CGFloat max = MAX(screenW, screenH);
     CGFloat min = MIN(screenW, screenH);
-    BOOL is_iPhoneX = (((float)((int)(min / max * 100))) / 100) ==
-                      (((float)((int)(1125.0 / 2436 * 100))) / 100);
-    _screen = (struct SJ_Screen){max, min, is_iPhoneX};
+    _screen = (struct SJ_Screen){max, min, _isIPhoneXSeries()};
 
     _topHeight = _leftWidth = _bottomHeight = _rightWidth = 49;
     _topMargin = 4;
     
-    [self _observeOrientationChangeOfStatusBarNotify];
+    [self _observeNotifies];
     self.autoAdjustTopSpacing = YES;
-    self.autoAdjustLayoutWhenDeviceIsiPhoneX = YES;
+    self.autoAdjustLayoutWhenDeviceIsIPhoneXSeries = YES;
     return self;
 }
 
@@ -55,18 +65,31 @@ NS_ASSUME_NONNULL_BEGIN
 }
 
 - (BOOL)isFitOnScreen {
-    return (_screen.min == self.bounds.size.width) && (_screen.max == self.bounds.size.height);
+    return ( _screen.min == self.bounds.size.width && _screen.max == self.bounds.size.height ) ||
+           ( _screen.min == self.bounds.size.height && _screen.max == self.bounds.size.width );
 }
 
-- (void)layoutSubviews {
-    [super layoutSubviews];
-    [self _updateLayoutIfNeeded];
+- (nullable UIView *)hitTest:(CGPoint)point withEvent:(nullable UIEvent *)event {
+    UIView *view = [super hitTest:point withEvent:event];
+    /// 自身不消费事件, 由子视图消费;
+    return view == self ? nil : view;
+}
+
+- (void)setFrame:(CGRect)frame {
+    [super setFrame:frame];
+    [self _updateLayout];
+}
+
+- (void)setBounds:(CGRect)bounds {
+    [super setBounds:bounds];
+    [self _updateLayout];
+}
+
+- (void)_updateLayout {
     _centerAdapter.itemFillSizeForFrameLayout = self.bounds.size;
-}
 
-- (void)_updateLayoutIfNeeded {
     CGRect curr = self.bounds;
-    if ( _screen.is_iPhoneX && _autoAdjustLayoutWhenDeviceIsiPhoneX ) {
+    if ( _screen.is_iPhoneXSeries && _autoAdjustLayoutWhenDeviceIsIPhoneXSeries ) {
         if ( !CGRectEqualToRect(_beforeBounds, curr) ) {
             CGFloat viewW = curr.size.width;
             CGFloat viewH = curr.size.height;
@@ -74,7 +97,7 @@ NS_ASSUME_NONNULL_BEGIN
             BOOL isFullscreen = (viewW == _screen.max) && (viewH == _screen.min);
             
             if ( isFullscreen ) {
-                [self _updateLayout_isFullScreen_iPhone_X];
+                [self _updateLayout_isFullscreen_iPhone_X];
             }
             else {
                 [self _updateLayout_isNormal_iPhone_X];
@@ -85,6 +108,12 @@ NS_ASSUME_NONNULL_BEGIN
         [self _updateTopLayout:nil];
     }
     _beforeBounds = curr;
+    
+    if ( self.window != nil ) {
+        [UIView animateWithDuration:0.3 animations:^{
+            [self layoutIfNeeded];
+        }];
+    }
 }
 
 - (void)_updateLayout_isNormal_iPhone_X {
@@ -123,7 +152,7 @@ NS_ASSUME_NONNULL_BEGIN
     }
 }
 
-- (void)_updateLayout_isFullScreen_iPhone_X {
+- (void)_updateLayout_isFullscreen_iPhone_X {
     if (@available(iOS 11.0, *)) {
         CGFloat safeWidth = ceil(_screen.min * 16 / 9.0);
         CGFloat safeLeftMargin = ceil((_screen.max - safeWidth) * 0.5);
@@ -168,7 +197,7 @@ NS_ASSUME_NONNULL_BEGIN
     }
 }
 
-- (void)_observeOrientationChangeOfStatusBarNotify {
+- (void)_observeNotifies {
     __weak typeof(self) _self = self;
     _notifyToken = [NSNotificationCenter.defaultCenter addObserverForName:UIApplicationWillChangeStatusBarOrientationNotification object:nil queue:nil usingBlock:^(NSNotification * _Nonnull note) {
         __strong typeof(_self) self = _self;
@@ -179,7 +208,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (void)_updateTopLayout:(nullable NSNotification *)notify {
     if ( !_topAdapter ) return;
-    if ( _screen.is_iPhoneX && _autoAdjustLayoutWhenDeviceIsiPhoneX ) return;
+    if ( _screen.is_iPhoneXSeries && _autoAdjustLayoutWhenDeviceIsIPhoneXSeries ) return;
     [UIView animateWithDuration:0 animations:^{} completion:^(BOOL finished) {
         UIInterfaceOrientation orientation = notify?[notify.userInfo[UIApplicationStatusBarOrientationUserInfoKey] integerValue]: UIApplication.sharedApplication.statusBarOrientation;
         switch ( orientation ) {
@@ -192,7 +221,7 @@ NS_ASSUME_NONNULL_BEGIN
                         make.left.equalTo(self.topContainerView.mas_safeAreaLayoutGuideLeft);
                         make.right.equalTo(self.topContainerView.mas_safeAreaLayoutGuideRight);
                     } else {
-                        make.top.offset(self.topMargin + ((self.isFitOnScreen && self.autoAdjustTopSpacing)?20:0));
+                        make.top.offset(self.topMargin + ((self.isFitOnScreen && self.autoAdjustTopSpacing) ? 20 : 0));
                         make.left.right.offset(0);
                     }
                     make.bottom.offset(0);
@@ -203,7 +232,7 @@ NS_ASSUME_NONNULL_BEGIN
             case UIInterfaceOrientationLandscapeLeft:
             case UIInterfaceOrientationLandscapeRight: {
                 [self.topAdapter.view mas_remakeConstraints:^(MASConstraintMaker *make) {
-                    make.top.offset(self.topMargin + (self.autoAdjustTopSpacing?20:0)); // 统一 20
+                    make.top.offset(self.topMargin + (self.isFitOnScreen && self.autoAdjustTopSpacing ? 20 : 0)); // 统一 20
                     if (@available(iOS 11.0, *)) {
                         make.left.equalTo(self.topContainerView.mas_safeAreaLayoutGuideLeft);
                         make.right.equalTo(self.topContainerView.mas_safeAreaLayoutGuideRight);
@@ -430,7 +459,7 @@ NS_ASSUME_NONNULL_BEGIN
 - (void)setTopMargin:(CGFloat)topMargin {
     _topMargin = topMargin;
     
-    [self _updateLayoutIfNeeded];
+    [self _updateLayout];
 }
 
 - (void)setLeftMargin:(CGFloat)leftMargin {

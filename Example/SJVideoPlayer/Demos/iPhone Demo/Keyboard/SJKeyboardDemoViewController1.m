@@ -10,7 +10,7 @@
 #import <SJVideoPlayer/SJVideoPlayer.h>
 #import <SJUIKit/NSAttributedString+SJMake.h>
 #import <Masonry/Masonry.h>
-#import <SJBaseVideoPlayer/SJBarrageItem.h>
+#import <SJBaseVideoPlayer/SJDanmakuItem.h>
 
 @protocol SJSendCommentViewControllerDelegate;
 
@@ -80,7 +80,7 @@ static SJEdgeControlButtonItemTag SJKeyboardDemoSendCommentItemTag = 1;
 
 - (void)sendComment:(NSString *)text {
     // 创建一条弹幕
-    SJBarrageItem *item = [SJBarrageItem.alloc initWithContent:[NSAttributedString sj_UIKitText:^(id<SJUIKitTextMakerProtocol>  _Nonnull make) {
+    SJDanmakuItem *item = [SJDanmakuItem.alloc initWithContent:[NSAttributedString sj_UIKitText:^(id<SJUIKitTextMakerProtocol>  _Nonnull make) {
         make.append(text ?: @"就开始交罚款劳动竞赛");
         make.font([UIFont boldSystemFontOfSize:16]);
         make.textColor(UIColor.whiteColor);
@@ -91,7 +91,7 @@ static SJEdgeControlButtonItemTag SJKeyboardDemoSendCommentItemTag = 1;
     }]];
 
     // 发送一条弹幕, 弹幕将自动显示
-    [self.player.barrageQueueController enqueue:item];
+    [self.player.danmakuPopupController enqueue:item];
 }
 
 #pragma mark -

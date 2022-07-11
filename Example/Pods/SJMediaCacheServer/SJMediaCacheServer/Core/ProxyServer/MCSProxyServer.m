@@ -366,6 +366,8 @@
 
 - (void)task:(id<MCSProxyTask>)task didAbortWithError:(nullable NSError *)error {
     [_connection responseDidAbort:self];
+    MCSProxyServer *server = [_connection mcs_server];
+    [server.delegate server:server performTask:task failure:error];
 }
 
 #pragma mark - Chunked

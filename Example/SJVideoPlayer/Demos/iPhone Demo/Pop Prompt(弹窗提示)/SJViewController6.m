@@ -45,21 +45,21 @@ NS_ASSUME_NONNULL_BEGIN
     ///
     /// 显示富文本提示
     ///
-    [_player.promptPopupController show:text duration:duration];
+    [_player.promptingPopupController show:text duration:duration];
 }
 
 ///
 /// 清空所有提示
 ///
 - (IBAction)clear:(id)sender {
-    [_player.promptPopupController clear];
+    [_player.promptingPopupController clear];
 }
 
 ///
 /// 显示自定义视图
 ///
 - (IBAction)showCustomView:(id)sender {
-    [_player.promptPopupController showCustomView:SJPopPromptCustomView.new duration:3];
+    [_player.promptingPopupController showCustomView:SJPopPromptCustomView.new duration:3];
 }
 
 #pragma mark -
@@ -74,14 +74,14 @@ NS_ASSUME_NONNULL_BEGIN
     }];
     
     __weak typeof(self) _self = self;
-    _player.controlLayerAppearObserver.appearStateDidChangeExeBlock = ^(id<SJControlLayerAppearManager>  _Nonnull mgr) {
+    _player.controlLayerAppearObserver.onAppearChanged = ^(id<SJControlLayerAppearManager>  _Nonnull mgr) {
         __strong typeof(_self) self = _self;
         if ( !self ) return ;
         if ( mgr.isAppeared ) {
-            self.player.promptPopupController.bottomMargin = self.player.defaultEdgeControlLayer.bottomContainerView.bounds.size.height + 8;
+            self.player.promptingPopupController.bottomMargin = self.player.defaultEdgeControlLayer.bottomContainerView.bounds.size.height + 8;
         }
         else {
-            self.player.promptPopupController.bottomMargin = 16;
+            self.player.promptingPopupController.bottomMargin = 16;
         }
     };
 }
@@ -105,7 +105,7 @@ NS_ASSUME_NONNULL_END
 @implementation SJViewController6 (RouteHandler)
 
 + (NSString *)routePath {
-    return @"demo/prompt1";
+    return @"demo/promptingPopup";
 }
 
 + (void)handleRequest:(SJRouteRequest *)request topViewController:(UIViewController *)topViewController completionHandler:(SJCompletionHandler)completionHandler {

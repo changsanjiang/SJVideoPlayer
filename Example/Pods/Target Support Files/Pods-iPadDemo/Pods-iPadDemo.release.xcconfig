@@ -1,0 +1,12 @@
+CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = NO
+GCC_PREPROCESSOR_DEFINITIONS = $(inherited) COCOAPODS=1
+HEADER_SEARCH_PATHS = $(inherited) "${PODS_ROOT}/Headers/Public" "${PODS_ROOT}/Headers/Public/CocoaAsyncSocket" "${PODS_ROOT}/Headers/Public/MJRefresh" "${PODS_ROOT}/Headers/Public/Masonry" "${PODS_ROOT}/Headers/Public/SDWebImage" "${PODS_ROOT}/Headers/Public/SJBaseVideoPlayer" "${PODS_ROOT}/Headers/Public/SJFullscreenPopGesture" "${PODS_ROOT}/Headers/Public/SJMediaCacheServer" "${PODS_ROOT}/Headers/Public/SJRouter" "${PODS_ROOT}/Headers/Public/SJUIKit" "${PODS_ROOT}/Headers/Public/SJVideoPlayer" "${PODS_ROOT}/Headers/Public/YYModel"
+LIBRARY_SEARCH_PATHS = $(inherited) "${PODS_CONFIGURATION_BUILD_DIR}/MJRefresh" "${PODS_CONFIGURATION_BUILD_DIR}/Masonry" "${PODS_CONFIGURATION_BUILD_DIR}/SJBaseVideoPlayer" "${PODS_CONFIGURATION_BUILD_DIR}/SJUIKit-68d28646" "${PODS_CONFIGURATION_BUILD_DIR}/SJVideoPlayer" "${PODS_CONFIGURATION_BUILD_DIR}/YYModel"
+OTHER_CFLAGS = $(inherited) -isystem "${PODS_ROOT}/Headers/Public" -isystem "${PODS_ROOT}/Headers/Public/MJRefresh" -isystem "${PODS_ROOT}/Headers/Public/Masonry"
+OTHER_LDFLAGS = $(inherited) -ObjC -l"MJRefresh" -l"Masonry" -l"SJBaseVideoPlayer" -l"SJUIKit-68d28646" -l"SJVideoPlayer" -l"YYModel" -framework "AVFoundation" -framework "CoreFoundation" -framework "Foundation" -framework "UIKit"
+PODS_BUILD_DIR = ${BUILD_DIR}
+PODS_CONFIGURATION_BUILD_DIR = ${PODS_BUILD_DIR}/$(CONFIGURATION)$(EFFECTIVE_PLATFORM_NAME)
+PODS_PODFILE_DIR_PATH = ${SRCROOT}/.
+PODS_ROOT = ${SRCROOT}/Pods
+PODS_XCFRAMEWORKS_BUILD_DIR = $(PODS_CONFIGURATION_BUILD_DIR)/XCFrameworkIntermediates
+USE_RECURSIVE_SCRIPT_INPUTS_IN_SCRIPT_PHASES = YES

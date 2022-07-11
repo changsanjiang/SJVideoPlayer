@@ -28,7 +28,7 @@ NS_ASSUME_NONNULL_BEGIN
     _player.defaultEdgeControlLayer.clipsConfig.saveResultToAlbum = YES;
     
     
-    [_player.prompt show:[NSAttributedString sj_UIKitText:^(id<SJUIKitTextMakerProtocol>  _Nonnull make) {
+    [_player.textPopupController show:[NSAttributedString sj_UIKitText:^(id<SJUIKitTextMakerProtocol>  _Nonnull make) {
         make.append(@"请旋转至全屏后, 点击右侧剪辑按钮");
         make.textColor(UIColor.whiteColor);
     }] duration:3];
@@ -46,14 +46,14 @@ NS_ASSUME_NONNULL_BEGIN
     }];
     
     __weak typeof(self) _self = self;
-    _player.controlLayerAppearObserver.appearStateDidChangeExeBlock = ^(id<SJControlLayerAppearManager>  _Nonnull mgr) {
+    _player.controlLayerAppearObserver.onAppearChanged = ^(id<SJControlLayerAppearManager>  _Nonnull mgr) {
         __strong typeof(_self) self = _self;
         if ( !self ) return ;
         if ( mgr.isAppeared ) {
-            self.player.promptPopupController.bottomMargin = self.player.defaultEdgeControlLayer.bottomContainerView.bounds.size.height;
+            self.player.promptingPopupController.bottomMargin = self.player.defaultEdgeControlLayer.bottomContainerView.bounds.size.height;
         }
         else {
-            self.player.promptPopupController.bottomMargin = 16;
+            self.player.promptingPopupController.bottomMargin = 16;
         }
     };
 }

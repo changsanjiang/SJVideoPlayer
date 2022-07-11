@@ -30,7 +30,7 @@ NS_ASSUME_NONNULL_BEGIN
 @end
 
 @protocol SJControlLayerAppearManagerObserver
-@property (nonatomic, copy, nullable) void(^appearStateDidChangeExeBlock)(id<SJControlLayerAppearManager> mgr);
+@property (nonatomic, copy, nullable) void(^onAppearChanged)(id<SJControlLayerAppearManager> mgr);
 @end
 NS_ASSUME_NONNULL_END
 #endif /* SJControlLayerAppearManagerProtocol_h */

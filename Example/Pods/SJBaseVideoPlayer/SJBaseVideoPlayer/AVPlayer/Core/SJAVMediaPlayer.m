@@ -22,7 +22,7 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic) NSTimeInterval playableDuration;
 @property (nonatomic, nullable) SJWaitingReason reasonForWaitingToPlay;
 @property (nonatomic) NSTimeInterval startPosition;
-@property (nonatomic) BOOL needSeekToStartPosition;
+@property (nonatomic) BOOL needsSeekToStartPosition;
 @property (nonatomic) BOOL isPlaybackFinished;                        ///< 播放结束
 @property (nonatomic, nullable) SJFinishedReason finishedReason;      ///< 播放结束的reason
 @property (nonatomic, strong, nullable) NSTimer *refreshTimer;
@@ -47,7 +47,7 @@ NS_ASSUME_NONNULL_BEGIN
         _avPlayer = player;
         _assetStatus = SJAssetStatusPreparing;
         _startPosition = time;
-        _needSeekToStartPosition = time != 0;
+        _needsSeekToStartPosition = time != 0;
         _minBufferedDuration = 8;
         [self _prepareToPlay];
     }
@@ -196,6 +196,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (void)setMuted:(BOOL)muted {
     _avPlayer.muted = muted;
+    [self _postNotification:SJMediaPlayerMutedDidChangeNotification];
 }
 - (BOOL)isMuted {
     return _avPlayer.isMuted;
@@ -203,6 +204,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (void)setVolume:(float)volume {
     _avPlayer.volume = volume;
+    [self _postNotification:SJMediaPlayerVolumeDidChangeNotification];
 }
 - (float)volume {
     return _avPlayer.volume;
@@ -217,6 +219,8 @@ NS_ASSUME_NONNULL_BEGIN
     else {
         [self pause];
     }
+    
+    [self _postNotification:SJMediaPlayerRateDidChangeNotification];
 }
 
 - (void)setInnerError:(nullable NSError *)innerError {
@@ -406,12 +410,12 @@ static NSString *kTimeControlStatus = @"timeControlStatus";
             return ;
         }
         
-        if ( self.needSeekToStartPosition && !self.seekingInfo.isSeeking && assetStatus == SJAssetStatusReadyToPlay ) {
+        if ( self.needsSeekToStartPosition && !self.seekingInfo.isSeeking && assetStatus == SJAssetStatusReadyToPlay ) {
             __weak typeof(self) _self = self;
             [self seekToTime:CMTimeMakeWithSeconds(self.startPosition, NSEC_PER_SEC) toleranceBefore:kCMTimeZero toleranceAfter:kCMTimeZero completionHandler:^(BOOL f) {
                 __strong typeof(_self) self = _self;
                 if ( !self ) return;
-                self.needSeekToStartPosition = NO;
+                self.needsSeekToStartPosition = NO;
                 [self _toEvaluating];
             }];
             return;

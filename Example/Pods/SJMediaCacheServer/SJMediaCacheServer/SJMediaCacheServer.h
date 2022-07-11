@@ -17,6 +17,18 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
+/// MCSPlayBackRequestTaskDidFailedNotification:
+///     Playback request failure will past by this notificaion.
+///     One playback item may has multiple request task.
+///     So this notification may be posted multiple time.
+/// MCSPlayBackRequestURLUserInfoKey:
+///     Request URL in this key, Type URL
+/// MCSPlayBackFailureUserInfoKey:
+///     Request error in this key, type NSError
+extern NSNotificationName const MCSPlayBackRequestTaskDidFailedNotification;
+extern NSString *const MCSPlayBackRequestURLUserInfoKey;
+extern NSString *const MCSPlayBackRequestFailureUserInfoKey;
+
 @interface SJMediaCacheServer : NSObject
 + (instancetype)shared;
 
@@ -174,10 +186,17 @@ NS_ASSUME_NONNULL_BEGIN
 ///     Note that these headers are added to the request only if not already present.
 ///
 - (nullable NSDictionary<NSString *, NSString *> *)assetURL:(NSURL *)URL HTTPAdditionalHeadersForDataRequestsOfType:(MCSDataType)type;
+
+/// custom URLSessionConfiguration
+/// @param config the using config, to be customed
+- (void)customSessionConfig:(nullable void(^)(NSURLSessionConfiguration *))config;
 @end
 
 
 @interface SJMediaCacheServer (Convert)
+
+/// Access metrics in this block. This may not be executed in main thread.
+@property (nonatomic, copy, nullable) void (^didFinishCollectingMetrics)(NSURLSession *session, NSURLSessionTask *task, NSURLSessionTaskMetrics *metrics) API_AVAILABLE(ios(10.0));
 
 /// Resolve the identifier of the asset referenced by the URL.
 ///

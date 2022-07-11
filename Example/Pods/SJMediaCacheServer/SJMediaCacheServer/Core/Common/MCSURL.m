@@ -32,12 +32,7 @@ MCSMD5(NSString *str) {
 
 @implementation NSString (MCSFileManagerExtended)
 - (NSString *)mcs_fname {
-    NSString *name = self.lastPathComponent;
-    NSRange range = [name rangeOfString:@"?"];
-    if ( range.location != NSNotFound ) {
-        name = [name substringToIndex:range.location];
-    }
-    return MCSMD5(name);
+    return MCSMD5(self);
 }
 @end
 

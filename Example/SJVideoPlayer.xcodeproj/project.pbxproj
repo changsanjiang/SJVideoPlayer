@@ -8,6 +8,7 @@
 
 /* Begin PBXBuildFile section */
 		13FEB85DCAAE0D2C731299D6 /* libPods-SJVideoPlayer_Example.a in Frameworks */ = {isa = PBXBuildFile; fileRef = CCD2CA6C02217556CFBFA7AB /* libPods-SJVideoPlayer_Example.a */; };
+		2E5187B651B9ECE360D0557C /* libPods-iPadDemo.a in Frameworks */ = {isa = PBXBuildFile; fileRef = E71EFE1686BFE92368A9E891 /* libPods-iPadDemo.a */; };
 		3B070E8C25FC88C300960506 /* SJBaseVideoPlayer+ListPlaybackExtended.m in Sources */ = {isa = PBXBuildFile; fileRef = 3B070E8B25FC88C300960506 /* SJBaseVideoPlayer+ListPlaybackExtended.m */; };
 		6003F58E195388D20070C39A /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 6003F58D195388D20070C39A /* Foundation.framework */; };
 		6003F590195388D20070C39A /* CoreGraphics.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 6003F58F195388D20070C39A /* CoreGraphics.framework */; };
@@ -67,12 +68,11 @@
 		77788FE422C36D8300E26599 /* SJVideoCollectionViewCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 77788FE222C36D8300E26599 /* SJVideoCollectionViewCell.m */; };
 		77788FE522C36D8300E26599 /* SJVideoCollectionViewCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = 77788FE322C36D8300E26599 /* SJVideoCollectionViewCell.xib */; };
 		77788FEA22C37C0800E26599 /* SJRecommendVideosViewModel.m in Sources */ = {isa = PBXBuildFile; fileRef = 77788FE922C37C0800E26599 /* SJRecommendVideosViewModel.m */; };
-		77805D6B22BF7DE1007076B9 /* SJiPadDemoViewController1.m in Sources */ = {isa = PBXBuildFile; fileRef = 77805D6922BF7DE1007076B9 /* SJiPadDemoViewController1.m */; };
 		77805D6F22BF7EDB007076B9 /* iPadMain.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 77805D6E22BF7EDB007076B9 /* iPadMain.storyboard */; };
 		7784A7D1237CF75F000BA67E /* SJTestAliVodPlayerViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 7784A7CF237CF75F000BA67E /* SJTestAliVodPlayerViewController.m */; };
 		7784A7D2237CF75F000BA67E /* SJTestAliVodPlayerViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 7784A7D0237CF75F000BA67E /* SJTestAliVodPlayerViewController.xib */; };
-		7784A7FA237D3860000BA67E /* SJBarrageTestViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 7784A7F9237D3860000BA67E /* SJBarrageTestViewController.m */; };
-		7784A7FC237D4E97000BA67E /* SJBarrageTestViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 7784A7FB237D4E97000BA67E /* SJBarrageTestViewController.xib */; };
+		7784A7FA237D3860000BA67E /* SJDanmakuTestViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 7784A7F9237D3860000BA67E /* SJDanmakuTestViewController.m */; };
+		7784A7FC237D4E97000BA67E /* SJDanmakuTestViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 7784A7FB237D4E97000BA67E /* SJDanmakuTestViewController.xib */; };
 		77A8DDE324B59B3400782C85 /* SJUIScrollViewDemoViewController1.m in Sources */ = {isa = PBXBuildFile; fileRef = 77A8DDE224B59B3400782C85 /* SJUIScrollViewDemoViewController1.m */; };
 		77B947F9262991B2001635AA /* DYHCollectionViewCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 77B947F5262991B2001635AA /* DYHCollectionViewCell.m */; };
 		77B947FA262991B2001635AA /* DYHPlaybackListViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 77B947F7262991B2001635AA /* DYHPlaybackListViewController.m */; };
@@ -88,6 +88,15 @@
 		A601803C22DB5CAC00ED840D /* SJRotationModeDemoViewController3.m in Sources */ = {isa = PBXBuildFile; fileRef = A601803A22DB5CAC00ED840D /* SJRotationModeDemoViewController3.m */; };
 		A601803D22DB5CAC00ED840D /* SJRotationModeDemoViewController3.xib in Resources */ = {isa = PBXBuildFile; fileRef = A601803B22DB5CAC00ED840D /* SJRotationModeDemoViewController3.xib */; };
 		A65FE539248A891700A5D4A6 /* SJKeyboardDemoViewController1.m in Sources */ = {isa = PBXBuildFile; fileRef = A65FE538248A891700A5D4A6 /* SJKeyboardDemoViewController1.m */; };
+		A697AC7E287BEF4500569C2B /* AppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = A697AC7D287BEF4500569C2B /* AppDelegate.m */; };
+		A697AC84287BEF4500569C2B /* ViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = A697AC83287BEF4500569C2B /* ViewController.m */; };
+		A697AC87287BEF4500569C2B /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = A697AC85287BEF4500569C2B /* Main.storyboard */; };
+		A697AC89287BEF4700569C2B /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = A697AC88287BEF4700569C2B /* Assets.xcassets */; };
+		A697AC8C287BEF4700569C2B /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = A697AC8A287BEF4700569C2B /* LaunchScreen.storyboard */; };
+		A697AC8F287BEF4700569C2B /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = A697AC8E287BEF4700569C2B /* main.m */; };
+		A697AC99287BEF4700569C2B /* iPadDemoTests.m in Sources */ = {isa = PBXBuildFile; fileRef = A697AC98287BEF4700569C2B /* iPadDemoTests.m */; };
+		A697ACA3287BEF4800569C2B /* iPadDemoUITests.m in Sources */ = {isa = PBXBuildFile; fileRef = A697ACA2287BEF4800569C2B /* iPadDemoUITests.m */; };
+		A697ACA5287BEF4800569C2B /* iPadDemoUITestsLaunchTests.m in Sources */ = {isa = PBXBuildFile; fileRef = A697ACA4287BEF4800569C2B /* iPadDemoUITestsLaunchTests.m */; };
 		A69FD22B22D9F5280031E4E7 /* SJViewController8.m in Sources */ = {isa = PBXBuildFile; fileRef = A69FD22922D9F5280031E4E7 /* SJViewController8.m */; };
 		A69FD22C22D9F5280031E4E7 /* SJViewController8.xib in Resources */ = {isa = PBXBuildFile; fileRef = A69FD22A22D9F5280031E4E7 /* SJViewController8.xib */; };
 		A6A208F922AB9E59001ED610 /* SJRotationModeDemoViewController1.xib in Resources */ = {isa = PBXBuildFile; fileRef = A6A208E322AB9E59001ED610 /* SJRotationModeDemoViewController1.xib */; };
@@ -127,10 +136,25 @@
 			remoteGlobalIDString = 6003F589195388D20070C39A;
 			remoteInfo = SJVideoPlayer;
 		};
+		A697AC95287BEF4700569C2B /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 6003F582195388D10070C39A /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = A697AC79287BEF4500569C2B;
+			remoteInfo = iPadDemo;
+		};
+		A697AC9F287BEF4800569C2B /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 6003F582195388D10070C39A /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = A697AC79287BEF4500569C2B;
+			remoteInfo = iPadDemo;
+		};
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
 		0913D8D9BFC4EE68E3F1EF64 /* Pods-SJVideoPlayer_Example.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-SJVideoPlayer_Example.release.xcconfig"; path = "Target Support Files/Pods-SJVideoPlayer_Example/Pods-SJVideoPlayer_Example.release.xcconfig"; sourceTree = "<group>"; };
+		29015EDA298D269CBC7AD126 /* Pods-iPadDemo.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-iPadDemo.release.xcconfig"; path = "Target Support Files/Pods-iPadDemo/Pods-iPadDemo.release.xcconfig"; sourceTree = "<group>"; };
 		3B070E8A25FC88C300960506 /* SJBaseVideoPlayer+ListPlaybackExtended.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "SJBaseVideoPlayer+ListPlaybackExtended.h"; sourceTree = "<group>"; };
 		3B070E8B25FC88C300960506 /* SJBaseVideoPlayer+ListPlaybackExtended.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = "SJBaseVideoPlayer+ListPlaybackExtended.m"; sourceTree = "<group>"; };
 		3DE6356926AEF70F060F33F3 /* SJVideoPlayer.podspec */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text; name = SJVideoPlayer.podspec; path = ../SJVideoPlayer.podspec; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.ruby; };
@@ -235,15 +259,13 @@
 		77788FE322C36D8300E26599 /* SJVideoCollectionViewCell.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = SJVideoCollectionViewCell.xib; sourceTree = "<group>"; };
 		77788FE822C37C0800E26599 /* SJRecommendVideosViewModel.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = SJRecommendVideosViewModel.h; sourceTree = "<group>"; };
 		77788FE922C37C0800E26599 /* SJRecommendVideosViewModel.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = SJRecommendVideosViewModel.m; sourceTree = "<group>"; };
-		77805D6822BF7DE1007076B9 /* SJiPadDemoViewController1.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = SJiPadDemoViewController1.h; sourceTree = "<group>"; };
-		77805D6922BF7DE1007076B9 /* SJiPadDemoViewController1.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = SJiPadDemoViewController1.m; sourceTree = "<group>"; };
 		77805D6E22BF7EDB007076B9 /* iPadMain.storyboard */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; path = iPadMain.storyboard; sourceTree = "<group>"; };
 		7784A7CE237CF75F000BA67E /* SJTestAliVodPlayerViewController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = SJTestAliVodPlayerViewController.h; sourceTree = "<group>"; };
 		7784A7CF237CF75F000BA67E /* SJTestAliVodPlayerViewController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = SJTestAliVodPlayerViewController.m; sourceTree = "<group>"; };
 		7784A7D0237CF75F000BA67E /* SJTestAliVodPlayerViewController.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = SJTestAliVodPlayerViewController.xib; sourceTree = "<group>"; };
-		7784A7F8237D3860000BA67E /* SJBarrageTestViewController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = SJBarrageTestViewController.h; sourceTree = "<group>"; };
-		7784A7F9237D3860000BA67E /* SJBarrageTestViewController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = SJBarrageTestViewController.m; sourceTree = "<group>"; };
-		7784A7FB237D4E97000BA67E /* SJBarrageTestViewController.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = SJBarrageTestViewController.xib; sourceTree = "<group>"; };
+		7784A7F8237D3860000BA67E /* SJDanmakuTestViewController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = SJDanmakuTestViewController.h; sourceTree = "<group>"; };
+		7784A7F9237D3860000BA67E /* SJDanmakuTestViewController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = SJDanmakuTestViewController.m; sourceTree = "<group>"; };
+		7784A7FB237D4E97000BA67E /* SJDanmakuTestViewController.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = SJDanmakuTestViewController.xib; sourceTree = "<group>"; };
 		77A8DDE124B59B3400782C85 /* SJUIScrollViewDemoViewController1.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = SJUIScrollViewDemoViewController1.h; sourceTree = "<group>"; };
 		77A8DDE224B59B3400782C85 /* SJUIScrollViewDemoViewController1.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = SJUIScrollViewDemoViewController1.m; sourceTree = "<group>"; };
 		77B947F5262991B2001635AA /* DYHCollectionViewCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = DYHCollectionViewCell.m; sourceTree = "<group>"; };
@@ -270,6 +292,21 @@
 		A601803B22DB5CAC00ED840D /* SJRotationModeDemoViewController3.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = SJRotationModeDemoViewController3.xib; sourceTree = "<group>"; };
 		A65FE537248A891700A5D4A6 /* SJKeyboardDemoViewController1.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = SJKeyboardDemoViewController1.h; sourceTree = "<group>"; };
 		A65FE538248A891700A5D4A6 /* SJKeyboardDemoViewController1.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = SJKeyboardDemoViewController1.m; sourceTree = "<group>"; };
+		A697AC7A287BEF4500569C2B /* iPadDemo.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = iPadDemo.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		A697AC7C287BEF4500569C2B /* AppDelegate.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = AppDelegate.h; sourceTree = "<group>"; };
+		A697AC7D287BEF4500569C2B /* AppDelegate.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = AppDelegate.m; sourceTree = "<group>"; };
+		A697AC82287BEF4500569C2B /* ViewController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = ViewController.h; sourceTree = "<group>"; };
+		A697AC83287BEF4500569C2B /* ViewController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = ViewController.m; sourceTree = "<group>"; };
+		A697AC86287BEF4500569C2B /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/Main.storyboard; sourceTree = "<group>"; };
+		A697AC88287BEF4700569C2B /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
+		A697AC8B287BEF4700569C2B /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/LaunchScreen.storyboard; sourceTree = "<group>"; };
+		A697AC8D287BEF4700569C2B /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		A697AC8E287BEF4700569C2B /* main.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = main.m; sourceTree = "<group>"; };
+		A697AC94287BEF4700569C2B /* iPadDemoTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = iPadDemoTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
+		A697AC98287BEF4700569C2B /* iPadDemoTests.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = iPadDemoTests.m; sourceTree = "<group>"; };
+		A697AC9E287BEF4800569C2B /* iPadDemoUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = iPadDemoUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
+		A697ACA2287BEF4800569C2B /* iPadDemoUITests.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = iPadDemoUITests.m; sourceTree = "<group>"; };
+		A697ACA4287BEF4800569C2B /* iPadDemoUITestsLaunchTests.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = iPadDemoUITestsLaunchTests.m; sourceTree = "<group>"; };
 		A69FD22822D9F5280031E4E7 /* SJViewController8.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = SJViewController8.h; sourceTree = "<group>"; };
 		A69FD22922D9F5280031E4E7 /* SJViewController8.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = SJViewController8.m; sourceTree = "<group>"; };
 		A69FD22A22D9F5280031E4E7 /* SJViewController8.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = SJViewController8.xib; sourceTree = "<group>"; };
@@ -319,6 +356,8 @@
 		A6F19DFF22D9D8050043B508 /* SJViewController7.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = SJViewController7.m; sourceTree = "<group>"; };
 		A6F19E0022D9D8050043B508 /* SJViewController7.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = SJViewController7.xib; sourceTree = "<group>"; };
 		CCD2CA6C02217556CFBFA7AB /* libPods-SJVideoPlayer_Example.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-SJVideoPlayer_Example.a"; sourceTree = BUILT_PRODUCTS_DIR; };
+		E71EFE1686BFE92368A9E891 /* libPods-iPadDemo.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-iPadDemo.a"; sourceTree = BUILT_PRODUCTS_DIR; };
+		EC7D2ADB76D2D75618F47694 /* Pods-iPadDemo.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-iPadDemo.debug.xcconfig"; path = "Target Support Files/Pods-iPadDemo/Pods-iPadDemo.debug.xcconfig"; sourceTree = "<group>"; };
 		FD50424EAFCFA1AF356F36DF /* Pods-SJVideoPlayer_Example.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-SJVideoPlayer_Example.debug.xcconfig"; path = "Target Support Files/Pods-SJVideoPlayer_Example/Pods-SJVideoPlayer_Example.debug.xcconfig"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -345,6 +384,28 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
+		A697AC77287BEF4500569C2B /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				2E5187B651B9ECE360D0557C /* libPods-iPadDemo.a in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		A697AC91287BEF4700569C2B /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		A697AC9B287BEF4800569C2B /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
@@ -353,6 +414,8 @@
 			children = (
 				FD50424EAFCFA1AF356F36DF /* Pods-SJVideoPlayer_Example.debug.xcconfig */,
 				0913D8D9BFC4EE68E3F1EF64 /* Pods-SJVideoPlayer_Example.release.xcconfig */,
+				EC7D2ADB76D2D75618F47694 /* Pods-iPadDemo.debug.xcconfig */,
+				29015EDA298D269CBC7AD126 /* Pods-iPadDemo.release.xcconfig */,
 			);
 			path = Pods;
 			sourceTree = "<group>";
@@ -363,6 +426,9 @@
 				60FF7A9C1954A5C5007DD14C /* Podspec Metadata */,
 				6003F593195388D20070C39A /* Example for SJVideoPlayer */,
 				6003F5B5195388D20070C39A /* Tests */,
+				A697AC7B287BEF4500569C2B /* iPadDemo */,
+				A697AC97287BEF4700569C2B /* iPadDemoTests */,
+				A697ACA1287BEF4800569C2B /* iPadDemoUITests */,
 				6003F58C195388D20070C39A /* Frameworks */,
 				6003F58B195388D20070C39A /* Products */,
 				02F7066D2C4467A7A42C9C71 /* Pods */,
@@ -374,6 +440,9 @@
 			children = (
 				6003F58A195388D20070C39A /* 播放器.app */,
 				6003F5AE195388D20070C39A /* SJVideoPlayer_Tests.xctest */,
+				A697AC7A287BEF4500569C2B /* iPadDemo.app */,
+				A697AC94287BEF4700569C2B /* iPadDemoTests.xctest */,
+				A697AC9E287BEF4800569C2B /* iPadDemoUITests.xctest */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -387,6 +456,7 @@
 				6003F591195388D20070C39A /* UIKit.framework */,
 				6003F5AF195388D20070C39A /* XCTest.framework */,
 				CCD2CA6C02217556CFBFA7AB /* libPods-SJVideoPlayer_Example.a */,
+				E71EFE1686BFE92368A9E891 /* libPods-iPadDemo.a */,
 			);
 			name = Frameworks;
 			sourceTree = "<group>";
@@ -622,26 +692,19 @@
 			path = "第三方播放器";
 			sourceTree = "<group>";
 		};
-		77805D6722BF7DC6007076B9 /* iPad Demo */ = {
-			isa = PBXGroup;
-			children = (
-				77805D6822BF7DE1007076B9 /* SJiPadDemoViewController1.h */,
-				77805D6922BF7DE1007076B9 /* SJiPadDemoViewController1.m */,
-			);
-			path = "iPad Demo";
-			sourceTree = "<group>";
-		};
 		77805D6D22BF7EBD007076B9 /* iPhone Demo */ = {
 			isa = PBXGroup;
 			children = (
-				771BFDB825AFE1910026C277 /* App内小窗悬浮 */,
+				7700904F24988F6900A99906 /* DY */,
+				7740F63C262990EF00A91EBE /* DYH */,
 				A6A208DF22AB9E59001ED610 /* Rotation Control(旋转控制) */,
+				771BFDB825AFE1910026C277 /* App内小窗悬浮 */,
 				77A8DDE024B59B0F00782C85 /* UIScrollVIew */,
 				77391C0D2467CC2B00443844 /* UITableView */,
 				77391C0E2467CC3800443844 /* UICollectionView */,
 				A65FE536248A88D200A5D4A6 /* Keyboard */,
 				77633AB823FD97A000D7A269 /* PlaybackHistory(播放记录) */,
-				7784A7F7237D384F000BA67E /* Barrage( 弹幕) */,
+				7784A7F7237D384F000BA67E /* Danmaku( 弹幕) */,
 				77357E5F2375522800B81EE4 /* Subtitles(字幕) */,
 				A6A2555522ABDA8400E42998 /* Add Button Item To Control Layer(添加按钮到控制层) */,
 				A6A2554022ABCE2800E42998 /* Playback List Control(播放列表控制) */,
@@ -651,19 +714,20 @@
 				A6F19DFD22D9D7C30043B508 /* Switch Video Definition(切换清晰度) */,
 				77E87F6222E84D2B0047A253 /* GIF Screenshot Export */,
 				7740C1B72350A14200DD7ECE /* CustomControlLayer(自定义控制层) */,
+				776EB8D523FF912500085F94 /* 第三方播放器 */,
 				77F2F5D822FAC41B00EA0B91 /* Other */,
 			);
 			path = "iPhone Demo";
 			sourceTree = "<group>";
 		};
-		7784A7F7237D384F000BA67E /* Barrage( 弹幕) */ = {
+		7784A7F7237D384F000BA67E /* Danmaku( 弹幕) */ = {
 			isa = PBXGroup;
 			children = (
-				7784A7F8237D3860000BA67E /* SJBarrageTestViewController.h */,
-				7784A7F9237D3860000BA67E /* SJBarrageTestViewController.m */,
-				7784A7FB237D4E97000BA67E /* SJBarrageTestViewController.xib */,
+				7784A7F8237D3860000BA67E /* SJDanmakuTestViewController.h */,
+				7784A7F9237D3860000BA67E /* SJDanmakuTestViewController.m */,
+				7784A7FB237D4E97000BA67E /* SJDanmakuTestViewController.xib */,
 			);
-			path = "Barrage( 弹幕)";
+			path = "Danmaku( 弹幕)";
 			sourceTree = "<group>";
 		};
 		77A8DDE024B59B0F00782C85 /* UIScrollVIew */ = {
@@ -718,17 +782,46 @@
 			path = Keyboard;
 			sourceTree = "<group>";
 		};
+		A697AC7B287BEF4500569C2B /* iPadDemo */ = {
+			isa = PBXGroup;
+			children = (
+				A697AC7C287BEF4500569C2B /* AppDelegate.h */,
+				A697AC7D287BEF4500569C2B /* AppDelegate.m */,
+				A697AC82287BEF4500569C2B /* ViewController.h */,
+				A697AC83287BEF4500569C2B /* ViewController.m */,
+				A697AC85287BEF4500569C2B /* Main.storyboard */,
+				A697AC88287BEF4700569C2B /* Assets.xcassets */,
+				A697AC8A287BEF4700569C2B /* LaunchScreen.storyboard */,
+				A697AC8D287BEF4700569C2B /* Info.plist */,
+				A697AC8E287BEF4700569C2B /* main.m */,
+			);
+			path = iPadDemo;
+			sourceTree = "<group>";
+		};
+		A697AC97287BEF4700569C2B /* iPadDemoTests */ = {
+			isa = PBXGroup;
+			children = (
+				A697AC98287BEF4700569C2B /* iPadDemoTests.m */,
+			);
+			path = iPadDemoTests;
+			sourceTree = "<group>";
+		};
+		A697ACA1287BEF4800569C2B /* iPadDemoUITests */ = {
+			isa = PBXGroup;
+			children = (
+				A697ACA2287BEF4800569C2B /* iPadDemoUITests.m */,
+				A697ACA4287BEF4800569C2B /* iPadDemoUITestsLaunchTests.m */,
+			);
+			path = iPadDemoUITests;
+			sourceTree = "<group>";
+		};
 		A6A208DE22AB9E59001ED610 /* Demos */ = {
 			isa = PBXGroup;
 			children = (
 				6003F5A5195388D20070C39A /* SJViewController.h */,
 				6003F5A6195388D20070C39A /* SJViewController.m */,
-				7700904F24988F6900A99906 /* DY */,
-				7740F63C262990EF00A91EBE /* DYH */,
 				77805D6D22BF7EBD007076B9 /* iPhone Demo */,
-				77805D6722BF7DC6007076B9 /* iPad Demo */,
 				7756F57E22E1732D00F9DC7D /* Test */,
-				776EB8D523FF912500085F94 /* 第三方播放器 */,
 			);
 			path = Demos;
 			sourceTree = "<group>";
@@ -736,19 +829,11 @@
 		A6A208DF22AB9E59001ED610 /* Rotation Control(旋转控制) */ = {
 			isa = PBXGroup;
 			children = (
-				A6A208E022AB9E59001ED610 /* Rotate Player View And View Controller */,
-			);
-			path = "Rotation Control(旋转控制)";
-			sourceTree = "<group>";
-		};
-		A6A208E022AB9E59001ED610 /* Rotate Player View And View Controller */ = {
-			isa = PBXGroup;
-			children = (
 				A6A208E122AB9E59001ED610 /* 1 */,
 				A6A208E522AB9E59001ED610 /* 2 */,
 				A601803322DB5C4200ED840D /* 3 */,
 			);
-			path = "Rotate Player View And View Controller";
+			path = "Rotation Control(旋转控制)";
 			sourceTree = "<group>";
 		};
 		A6A208E122AB9E59001ED610 /* 1 */ = {
@@ -961,6 +1046,61 @@
 			productReference = 6003F5AE195388D20070C39A /* SJVideoPlayer_Tests.xctest */;
 			productType = "com.apple.product-type.bundle.unit-test";
 		};
+		A697AC79287BEF4500569C2B /* iPadDemo */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = A697ACA6287BEF4800569C2B /* Build configuration list for PBXNativeTarget "iPadDemo" */;
+			buildPhases = (
+				F3755AD3B4CE238197EAECD8 /* [CP] Check Pods Manifest.lock */,
+				A697AC76287BEF4500569C2B /* Sources */,
+				A697AC77287BEF4500569C2B /* Frameworks */,
+				A697AC78287BEF4500569C2B /* Resources */,
+				3C0F7DAEF40D93A97A95B8DA /* [CP] Copy Pods Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = iPadDemo;
+			productName = iPadDemo;
+			productReference = A697AC7A287BEF4500569C2B /* iPadDemo.app */;
+			productType = "com.apple.product-type.application";
+		};
+		A697AC93287BEF4700569C2B /* iPadDemoTests */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = A697ACA9287BEF4800569C2B /* Build configuration list for PBXNativeTarget "iPadDemoTests" */;
+			buildPhases = (
+				A697AC90287BEF4700569C2B /* Sources */,
+				A697AC91287BEF4700569C2B /* Frameworks */,
+				A697AC92287BEF4700569C2B /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				A697AC96287BEF4700569C2B /* PBXTargetDependency */,
+			);
+			name = iPadDemoTests;
+			productName = iPadDemoTests;
+			productReference = A697AC94287BEF4700569C2B /* iPadDemoTests.xctest */;
+			productType = "com.apple.product-type.bundle.unit-test";
+		};
+		A697AC9D287BEF4800569C2B /* iPadDemoUITests */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = A697ACAC287BEF4800569C2B /* Build configuration list for PBXNativeTarget "iPadDemoUITests" */;
+			buildPhases = (
+				A697AC9A287BEF4800569C2B /* Sources */,
+				A697AC9B287BEF4800569C2B /* Frameworks */,
+				A697AC9C287BEF4800569C2B /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				A697ACA0287BEF4800569C2B /* PBXTargetDependency */,
+			);
+			name = iPadDemoUITests;
+			productName = iPadDemoUITests;
+			productReference = A697AC9E287BEF4800569C2B /* iPadDemoUITests.xctest */;
+			productType = "com.apple.product-type.bundle.ui-testing";
+		};
 /* End PBXNativeTarget section */
 
 /* Begin PBXProject section */
@@ -983,6 +1123,23 @@
 					6003F5AD195388D20070C39A = {
 						TestTargetID = 6003F589195388D20070C39A;
 					};
+					A697AC79287BEF4500569C2B = {
+						CreatedOnToolsVersion = 14.0;
+						DevelopmentTeam = DVCY355DY9;
+						ProvisioningStyle = Automatic;
+					};
+					A697AC93287BEF4700569C2B = {
+						CreatedOnToolsVersion = 14.0;
+						DevelopmentTeam = DVCY355DY9;
+						ProvisioningStyle = Automatic;
+						TestTargetID = A697AC79287BEF4500569C2B;
+					};
+					A697AC9D287BEF4800569C2B = {
+						CreatedOnToolsVersion = 14.0;
+						DevelopmentTeam = DVCY355DY9;
+						ProvisioningStyle = Automatic;
+						TestTargetID = A697AC79287BEF4500569C2B;
+					};
 				};
 			};
 			buildConfigurationList = 6003F585195388D10070C39A /* Build configuration list for PBXProject "SJVideoPlayer" */;
@@ -1000,6 +1157,9 @@
 			targets = (
 				6003F589195388D20070C39A /* SJVideoPlayer_Example */,
 				6003F5AD195388D20070C39A /* SJVideoPlayer_Tests */,
+				A697AC79287BEF4500569C2B /* iPadDemo */,
+				A697AC93287BEF4700569C2B /* iPadDemoTests */,
+				A697AC9D287BEF4800569C2B /* iPadDemoUITests */,
 			);
 		};
 /* End PBXProject section */
@@ -1010,7 +1170,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				776EB8C723FE98D600085F94 /* SJTestPLPlayerViewController.xib in Resources */,
-				7784A7FC237D4E97000BA67E /* SJBarrageTestViewController.xib in Resources */,
+				7784A7FC237D4E97000BA67E /* SJDanmakuTestViewController.xib in Resources */,
 				873B8AEB1B1F5CCA007FD442 /* Main.storyboard in Resources */,
 				77391C3D2467F04C00443844 /* SJRecommendVideosCollectionViewCell.xib in Resources */,
 				7784A7D2237CF75F000BA67E /* SJTestAliVodPlayerViewController.xib in Resources */,
@@ -1048,6 +1208,30 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
+		A697AC78287BEF4500569C2B /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				A697AC8C287BEF4700569C2B /* LaunchScreen.storyboard in Resources */,
+				A697AC89287BEF4700569C2B /* Assets.xcassets in Resources */,
+				A697AC87287BEF4500569C2B /* Main.storyboard in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		A697AC92287BEF4700569C2B /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		A697AC9C287BEF4800569C2B /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 /* End PBXResourcesBuildPhase section */
 
 /* Begin PBXShellScriptBuildPhase section */
@@ -1073,6 +1257,28 @@
 			shellScript = "\"${PODS_ROOT}/Target Support Files/Pods-SJVideoPlayer_Example/Pods-SJVideoPlayer_Example-resources.sh\"\n";
 			showEnvVarsInLog = 0;
 		};
+		3C0F7DAEF40D93A97A95B8DA /* [CP] Copy Pods Resources */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputPaths = (
+				"${PODS_ROOT}/Target Support Files/Pods-iPadDemo/Pods-iPadDemo-resources.sh",
+				"${PODS_ROOT}/MJRefresh/MJRefresh/MJRefresh.bundle",
+				"${PODS_ROOT}/SJBaseVideoPlayer/SJBaseVideoPlayer/ResourceLoader/SJBaseVideoPlayerResources.bundle",
+				"${PODS_ROOT}/../../SJVideoPlayer/ResourceLoader/SJVideoPlayer.bundle",
+			);
+			name = "[CP] Copy Pods Resources";
+			outputPaths = (
+				"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/MJRefresh.bundle",
+				"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/SJBaseVideoPlayerResources.bundle",
+				"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/SJVideoPlayer.bundle",
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "\"${PODS_ROOT}/Target Support Files/Pods-iPadDemo/Pods-iPadDemo-resources.sh\"\n";
+			showEnvVarsInLog = 0;
+		};
 		E81B7FEC30068D32F95F4D37 /* [CP] Check Pods Manifest.lock */ = {
 			isa = PBXShellScriptBuildPhase;
 			buildActionMask = 2147483647;
@@ -1089,6 +1295,28 @@
 			);
 			outputPaths = (
 				"$(DERIVED_FILE_DIR)/Pods-SJVideoPlayer_Example-checkManifestLockResult.txt",
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "diff \"${PODS_PODFILE_DIR_PATH}/Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [ $? != 0 ] ; then\n    # print error to STDERR\n    echo \"error: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\" >&2\n    exit 1\nfi\n# This output is used by Xcode 'outputs' to avoid re-running this script phase.\necho \"SUCCESS\" > \"${SCRIPT_OUTPUT_FILE_0}\"\n";
+			showEnvVarsInLog = 0;
+		};
+		F3755AD3B4CE238197EAECD8 /* [CP] Check Pods Manifest.lock */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputFileListPaths = (
+			);
+			inputPaths = (
+				"${PODS_PODFILE_DIR_PATH}/Podfile.lock",
+				"${PODS_ROOT}/Manifest.lock",
+			);
+			name = "[CP] Check Pods Manifest.lock";
+			outputFileListPaths = (
+			);
+			outputPaths = (
+				"$(DERIVED_FILE_DIR)/Pods-iPadDemo-checkManifestLockResult.txt",
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
@@ -1117,7 +1345,6 @@
 				77F2F5DC22FAC43000EA0B91 /* SJViewController11.m in Sources */,
 				7740C1BA2350A16700DD7ECE /* SJViewController12.m in Sources */,
 				7700905D24988F6900A99906 /* SJDYTableViewCell.m in Sources */,
-				77805D6B22BF7DE1007076B9 /* SJiPadDemoViewController1.m in Sources */,
 				77391C262467DF4500443844 /* SJUITableViewDemoViewController7.m in Sources */,
 				815EB5632535A55D002DAFF4 /* SJUIScrollViewDemoViewController2.m in Sources */,
 				A6A208FF22AB9E59001ED610 /* SJVideoModel.m in Sources */,
@@ -1145,7 +1372,7 @@
 				A6C5D23422AC249800D63D1C /* SJRemoteCommandHandler.m in Sources */,
 				77B94801262991FC001635AA /* SJDYUserHomepageViewController.m in Sources */,
 				77357E622375523C00B81EE4 /* SJSubtitlesTestViewController.m in Sources */,
-				7784A7FA237D3860000BA67E /* SJBarrageTestViewController.m in Sources */,
+				7784A7FA237D3860000BA67E /* SJDanmakuTestViewController.m in Sources */,
 				77EEC765262417A00066B57D /* SJFloatSmallViewTransitionController.m in Sources */,
 				77788FDF22C36CF300E26599 /* SJRecommendVideosTableViewCell.m in Sources */,
 				771BFDBB25AFE1EC0026C277 /* SJFloatModeDemoViewController1.m in Sources */,
@@ -1185,6 +1412,33 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
+		A697AC76287BEF4500569C2B /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				A697AC84287BEF4500569C2B /* ViewController.m in Sources */,
+				A697AC7E287BEF4500569C2B /* AppDelegate.m in Sources */,
+				A697AC8F287BEF4700569C2B /* main.m in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		A697AC90287BEF4700569C2B /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				A697AC99287BEF4700569C2B /* iPadDemoTests.m in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		A697AC9A287BEF4800569C2B /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				A697ACA3287BEF4800569C2B /* iPadDemoUITests.m in Sources */,
+				A697ACA5287BEF4800569C2B /* iPadDemoUITestsLaunchTests.m in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 /* End PBXSourcesBuildPhase section */
 
 /* Begin PBXTargetDependency section */
@@ -1192,6 +1446,16 @@
 			isa = PBXTargetDependency;
 			target = 6003F589195388D20070C39A /* SJVideoPlayer_Example */;
 			targetProxy = 6003F5B3195388D20070C39A /* PBXContainerItemProxy */;
+		};
+		A697AC96287BEF4700569C2B /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = A697AC79287BEF4500569C2B /* iPadDemo */;
+			targetProxy = A697AC95287BEF4700569C2B /* PBXContainerItemProxy */;
+		};
+		A697ACA0287BEF4800569C2B /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = A697AC79287BEF4500569C2B /* iPadDemo */;
+			targetProxy = A697AC9F287BEF4800569C2B /* PBXContainerItemProxy */;
 		};
 /* End PBXTargetDependency section */
 
@@ -1216,6 +1480,22 @@
 			isa = PBXVariantGroup;
 			children = (
 				71719F9E1E33DC2100824A3D /* Base */,
+			);
+			name = LaunchScreen.storyboard;
+			sourceTree = "<group>";
+		};
+		A697AC85287BEF4500569C2B /* Main.storyboard */ = {
+			isa = PBXVariantGroup;
+			children = (
+				A697AC86287BEF4500569C2B /* Base */,
+			);
+			name = Main.storyboard;
+			sourceTree = "<group>";
+		};
+		A697AC8A287BEF4700569C2B /* LaunchScreen.storyboard */ = {
+			isa = PBXVariantGroup;
+			children = (
+				A697AC8B287BEF4700569C2B /* Base */,
 			);
 			name = LaunchScreen.storyboard;
 			sourceTree = "<group>";
@@ -1329,7 +1609,7 @@
 			baseConfigurationReference = FD50424EAFCFA1AF356F36DF /* Pods-SJVideoPlayer_Example.debug.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
-				CODE_SIGN_IDENTITY = "iPhone Developer";
+				CODE_SIGN_IDENTITY = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
 				DEVELOPMENT_TEAM = DVCY355DY9;
 				ENABLE_BITCODE = NO;
@@ -1341,7 +1621,7 @@
 					SJDEBUG,
 				);
 				INFOPLIST_FILE = "SJVideoPlayer/SJVideoPlayer-Info.plist";
-				IPHONEOS_DEPLOYMENT_TARGET = 9.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 11.0;
 				MODULE_NAME = ExampleApp;
 				PRODUCT_BUNDLE_IDENTIFIER = org.cocoapods.demo.SJVideoPlayer;
 				PRODUCT_NAME = "播放器";
@@ -1355,9 +1635,9 @@
 			baseConfigurationReference = 0913D8D9BFC4EE68E3F1EF64 /* Pods-SJVideoPlayer_Example.release.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
-				CODE_SIGN_IDENTITY = "iPhone Developer";
+				CODE_SIGN_IDENTITY = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
-				DEVELOPMENT_TEAM = Q6TTFXGP8Q;
+				DEVELOPMENT_TEAM = DVCY355DY9;
 				ENABLE_BITCODE = NO;
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = "SJVideoPlayer/SJVideoPlayer-Prefix.pch";
@@ -1366,7 +1646,7 @@
 					"COCOAPODS=1",
 				);
 				INFOPLIST_FILE = "SJVideoPlayer/SJVideoPlayer-Info.plist";
-				IPHONEOS_DEPLOYMENT_TARGET = 9.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 11.0;
 				MODULE_NAME = ExampleApp;
 				PRODUCT_BUNDLE_IDENTIFIER = org.cocoapods.demo.SJVideoPlayer;
 				PRODUCT_NAME = "播放器";
@@ -1417,6 +1697,195 @@
 			};
 			name = Release;
 		};
+		A697ACA7287BEF4800569C2B /* Debug */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReference = EC7D2ADB76D2D75618F47694 /* Pods-iPadDemo.debug.xcconfig */;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++17";
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = "$(inherited)";
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEBUG_INFORMATION_FORMAT = dwarf;
+				DEVELOPMENT_TEAM = DVCY355DY9;
+				GCC_C_LANGUAGE_STANDARD = gnu11;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = iPadDemo/Info.plist;
+				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
+				INFOPLIST_KEY_UILaunchStoryboardName = LaunchScreen;
+				INFOPLIST_KEY_UIMainStoryboardFile = Main;
+				INFOPLIST_KEY_UISupportedInterfaceOrientations = "UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight UIInterfaceOrientationPortrait";
+				IPHONEOS_DEPLOYMENT_TARGET = 11.0;
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
+				MARKETING_VERSION = 1.0;
+				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
+				MTL_FAST_MATH = YES;
+				PRODUCT_BUNDLE_IDENTIFIER = com.sanjiang.iPadDemo;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Debug;
+		};
+		A697ACA8287BEF4800569C2B /* Release */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReference = 29015EDA298D269CBC7AD126 /* Pods-iPadDemo.release.xcconfig */;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++17";
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = "$(inherited)";
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CODE_SIGN_STYLE = Automatic;
+				COPY_PHASE_STRIP = NO;
+				CURRENT_PROJECT_VERSION = 1;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				DEVELOPMENT_TEAM = DVCY355DY9;
+				GCC_C_LANGUAGE_STANDARD = gnu11;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = iPadDemo/Info.plist;
+				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
+				INFOPLIST_KEY_UILaunchStoryboardName = LaunchScreen;
+				INFOPLIST_KEY_UIMainStoryboardFile = Main;
+				INFOPLIST_KEY_UISupportedInterfaceOrientations = "UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight UIInterfaceOrientationPortrait";
+				IPHONEOS_DEPLOYMENT_TARGET = 11.0;
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
+				MARKETING_VERSION = 1.0;
+				MTL_ENABLE_DEBUG_INFO = NO;
+				MTL_FAST_MATH = YES;
+				PRODUCT_BUNDLE_IDENTIFIER = com.sanjiang.iPadDemo;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Release;
+		};
+		A697ACAA287BEF4800569C2B /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				BUNDLE_LOADER = "$(TEST_HOST)";
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++17";
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEBUG_INFORMATION_FORMAT = dwarf;
+				DEVELOPMENT_TEAM = DVCY355DY9;
+				GCC_C_LANGUAGE_STANDARD = gnu11;
+				GENERATE_INFOPLIST_FILE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 16.0;
+				MARKETING_VERSION = 1.0;
+				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
+				MTL_FAST_MATH = YES;
+				PRODUCT_BUNDLE_IDENTIFIER = com.sanjiang.iPadDemoTests;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_EMIT_LOC_STRINGS = NO;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/iPadDemo.app/$(BUNDLE_EXECUTABLE_FOLDER_PATH)/iPadDemo";
+			};
+			name = Debug;
+		};
+		A697ACAB287BEF4800569C2B /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				BUNDLE_LOADER = "$(TEST_HOST)";
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++17";
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CODE_SIGN_STYLE = Automatic;
+				COPY_PHASE_STRIP = NO;
+				CURRENT_PROJECT_VERSION = 1;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				DEVELOPMENT_TEAM = DVCY355DY9;
+				GCC_C_LANGUAGE_STANDARD = gnu11;
+				GENERATE_INFOPLIST_FILE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 16.0;
+				MARKETING_VERSION = 1.0;
+				MTL_ENABLE_DEBUG_INFO = NO;
+				MTL_FAST_MATH = YES;
+				PRODUCT_BUNDLE_IDENTIFIER = com.sanjiang.iPadDemoTests;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_EMIT_LOC_STRINGS = NO;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/iPadDemo.app/$(BUNDLE_EXECUTABLE_FOLDER_PATH)/iPadDemo";
+			};
+			name = Release;
+		};
+		A697ACAD287BEF4800569C2B /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++17";
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEBUG_INFORMATION_FORMAT = dwarf;
+				DEVELOPMENT_TEAM = DVCY355DY9;
+				GCC_C_LANGUAGE_STANDARD = gnu11;
+				GENERATE_INFOPLIST_FILE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 16.0;
+				MARKETING_VERSION = 1.0;
+				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
+				MTL_FAST_MATH = YES;
+				PRODUCT_BUNDLE_IDENTIFIER = com.sanjiang.iPadDemoUITests;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_EMIT_LOC_STRINGS = NO;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				TEST_TARGET_NAME = iPadDemo;
+			};
+			name = Debug;
+		};
+		A697ACAE287BEF4800569C2B /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++17";
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CODE_SIGN_STYLE = Automatic;
+				COPY_PHASE_STRIP = NO;
+				CURRENT_PROJECT_VERSION = 1;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				DEVELOPMENT_TEAM = DVCY355DY9;
+				GCC_C_LANGUAGE_STANDARD = gnu11;
+				GENERATE_INFOPLIST_FILE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 16.0;
+				MARKETING_VERSION = 1.0;
+				MTL_ENABLE_DEBUG_INFO = NO;
+				MTL_FAST_MATH = YES;
+				PRODUCT_BUNDLE_IDENTIFIER = com.sanjiang.iPadDemoUITests;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_EMIT_LOC_STRINGS = NO;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				TEST_TARGET_NAME = iPadDemo;
+			};
+			name = Release;
+		};
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
@@ -1443,6 +1912,33 @@
 			buildConfigurations = (
 				6003F5C3195388D20070C39A /* Debug */,
 				6003F5C4195388D20070C39A /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		A697ACA6287BEF4800569C2B /* Build configuration list for PBXNativeTarget "iPadDemo" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				A697ACA7287BEF4800569C2B /* Debug */,
+				A697ACA8287BEF4800569C2B /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		A697ACA9287BEF4800569C2B /* Build configuration list for PBXNativeTarget "iPadDemoTests" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				A697ACAA287BEF4800569C2B /* Debug */,
+				A697ACAB287BEF4800569C2B /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		A697ACAC287BEF4800569C2B /* Build configuration list for PBXNativeTarget "iPadDemoUITests" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				A697ACAD287BEF4800569C2B /* Debug */,
+				A697ACAE287BEF4800569C2B /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;

@@ -163,7 +163,7 @@ static void sj_removeContentOffsetObserver(UIScrollView *scrollView);
 
 - (void)sj_removeCurrentPlayerView {
     self.sj_currentPlayingIndexPath = nil;
-    [[self viewWithTag:SJBaseVideoPlayerViewTag] removeFromSuperview];
+    [[self viewWithTag:SJPlayerViewTag] removeFromSuperview];
 }
 
 - (void)sj_playNextAssetAfterEndScroll {

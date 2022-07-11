@@ -19,6 +19,8 @@
 static NSNotificationName const MCSAssetExporterProgressDidChangeNotification = @"MCSAssetExporterProgressDidChangeNotification";
 static NSNotificationName const MCSAssetExporterStatusDidChangeNotification = @"MCSAssetExporterStatusDidChangeNotification";
 
+static NSString *const MCSAssetExporterErrorUserInfoKey = @"MCSAssetExporterErrorUserInfoKey";
+
 @interface MCSAssetExporter : NSObject<MCSSaveable, MCSAssetExporter>
 - (instancetype)initWithURLString:(NSString *)URLStr name:(NSString *)name type:(MCSAssetType)type;
 @property (nonatomic, strong, readonly) NSURL *URL;
@@ -253,7 +255,11 @@ static NSNotificationName const MCSAssetExporterStatusDidChangeNotification = @"
         _task = nil;
         _status = error != nil ? MCSAssetExportStatusFailed : MCSAssetExportStatusFinished;
     }];
-    [NSNotificationCenter.defaultCenter postNotificationName:MCSAssetExporterStatusDidChangeNotification object:self];
+    NSDictionary *userInfo = nil;
+    if ( error != nil ) {
+        userInfo = @{MCSAssetExporterErrorUserInfoKey: error};
+    }
+    [NSNotificationCenter.defaultCenter postNotificationName:MCSAssetExporterStatusDidChangeNotification object:self userInfo:userInfo];
 }
 
 - (void)_lockInBlock:(void(^NS_NOESCAPE)(void))task {
@@ -271,27 +277,16 @@ static NSNotificationName const MCSAssetExporterStatusDidChangeNotification = @"
         float progress = _progress;
         NSUInteger totalLength = asset.totalLength;
         if ( totalLength != 0 ) {
-            NSMutableArray<id<MCSAssetContent> > *contents = [asset.contents mutableCopy];
-            [contents sortUsingComparator:^NSComparisonResult(id<MCSAssetContent> obj1, id<MCSAssetContent> obj2) {
-                NSRange range1 = NSMakeRange(obj1.startPositionInAsset, obj1.length);
-                NSRange range2 = NSMakeRange(obj2.startPositionInAsset, obj2.length);
-                if ( range1.location == range2.location ) {
-                    if ( obj1.length == obj2.length )
-                        return NSOrderedSame;
-                    return obj1.length > obj2.length ? NSOrderedAscending : NSOrderedDescending;
-                }
-                return [@(range1.location) compare:@(range2.location)];
+            __block id<MCSAssetContent> prev = nil;
+            __block UInt64 length = 0;
+            [asset enumerateContentNodesUsingBlock:^(id<FILEAssetContentNode>  _Nonnull node, BOOL * _Nonnull stop) {
+                id<MCSAssetContent> cur = node.longestContent;
+                length += cur.length;
+                UInt64 prevPosition = prev.startPositionInAsset + prev.length;
+                if ( prevPosition > cur.startPositionInAsset ) length -= (prevPosition - cur.startPositionInAsset);
+                prev = cur;
             }];
-            
-            NSUInteger current = 0;
-            id<MCSAssetContent> pre = nil;
-            for ( id<MCSAssetContent> content in contents ) {
-                if ( pre == nil || pre.startPositionInAsset != content.startPositionInAsset ) {
-                    current += content.length;
-                }
-                pre = content;
-            }
-            progress = current * 1.0 / totalLength;
+            progress = length * 1.0 / totalLength;
         }
         isChanged = progress != _progress;
         if ( isChanged ) _progress = progress;
@@ -402,7 +397,8 @@ static NSNotificationName const MCSAssetExporterStatusDidChangeNotification = @"
             dispatch_async(dispatch_get_global_queue(0, 0), ^{
                 __strong typeof(_self) self = _self;
                 if ( self == nil ) return;
-                [self _statusDidChange:note.object];
+                NSError *error = [note.userInfo objectForKey:MCSAssetExporterErrorUserInfoKey];
+                [self _statusDidChange:note.object error:error];
             });
         }];
     }
@@ -746,7 +742,7 @@ static NSNotificationName const MCSAssetExporterStatusDidChangeNotification = @"
     return retv.copy;
 }
 
-- (void)_statusDidChange:(MCSAssetExporter *)exporter {
+- (void)_statusDidChange:(MCSAssetExporter *)exporter error:(nullable NSError *)error {
     MCSAssetExportStatus status = exporter.status;
     if ( status == MCSAssetExportStatusCancelled ) {
         [self _lockInBlock:^{
@@ -783,6 +779,14 @@ static NSNotificationName const MCSAssetExporterStatusDidChangeNotification = @"
         for ( id<MCSAssetExportObserver> observer in MCSAllHashTableObjects(self->_observers) ) {
             if ( [observer respondsToSelector:@selector(exporter:statusDidChange:)] ) {
                 [observer exporter:exporter statusDidChange:status];
+            }
+        }
+        
+        if ( status == MCSAssetExportStatusFailed ) {
+            for ( id<MCSAssetExportObserver> observer in MCSAllHashTableObjects(self->_observers) ) {
+                if ( [observer respondsToSelector:@selector(exporter:statusDidChange:)] ) {
+                    [observer exporter:exporter failedWithError:error];
+                }
             }
         }
     });

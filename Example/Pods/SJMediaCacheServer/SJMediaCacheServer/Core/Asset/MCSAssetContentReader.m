@@ -238,7 +238,7 @@
     });
 }
 
-#pragma mark - MCSAssetContentObsever
+#pragma mark - MCSAssetContentObserver
 
 - (void)content:(id<MCSAssetContent>)content didWriteDataWithLength:(NSUInteger)length {
     mcs_queue_sync(^{
@@ -296,22 +296,22 @@
 
 @implementation MCSAssetFileContentReader {
     id<MCSAssetContent> mFileContent;
-    NSRange mTempRange;
+    NSRange mReadRange;
 }
 
 - (instancetype)initWithAsset:(id<MCSAsset>)asset fileContent:(id<MCSAssetContent>)content rangeInAsset:(NSRange)range delegate:(id<MCSAssetContentReaderDelegate>)delegate {
     self = [super initWithAsset:asset delegate:delegate];
     if ( self ) {
         mFileContent = content;
-        mTempRange = range;
+        mReadRange = range;
     }
     return self;
 }
  
 - (void)prepareContent {
-    MCSContentReaderDebugLog(@"%@: <%p>.prepareContent { range: %@, file: %@ };\n", NSStringFromClass(self.class), self, NSStringFromRange(mTempRange), mFileContent);
+    MCSContentReaderDebugLog(@"%@: <%p>.prepareContent { range: %@, file: %@ };\n", NSStringFromClass(self.class), self, NSStringFromRange(mReadRange), mFileContent);
     
-    if ( mTempRange.location < mFileContent.startPositionInAsset || NSMaxRange(mTempRange) > (mFileContent.startPositionInAsset + mFileContent.length) ) {
+    if ( mReadRange.location < mFileContent.startPositionInAsset || NSMaxRange(mReadRange) > (mFileContent.startPositionInAsset + mFileContent.length) ) {
         [self abortWithError:[NSError mcs_errorWithCode:MCSInvalidParameterError userInfo:@{
             MCSErrorUserInfoObjectKey : self,
             MCSErrorUserInfoReasonKey : @"请求范围错误, 请求范围未在内容范围中!"
@@ -320,7 +320,7 @@
     }
     
     [mFileContent readwriteRetain];
-    [self preparationDidFinishWithContentReadwrite:mFileContent range:mTempRange];
+    [self preparationDidFinishWithContentReadwrite:mFileContent range:mReadRange];
 }
 @end
 
@@ -335,7 +335,7 @@
     id<MCSAsset> mAsset;
     NSURLRequest *mRequest;
     MCSDataType mDataType;
-    NSRange mTempRange;
+    NSRange mReadRange;
     id<MCSAssetContent>_Nullable mHTTPContent;
     id<MCSDownloadTask>_Nullable mTask;
     float mNetworkTaskPriority;
@@ -354,7 +354,7 @@
         mRequest = request;
         mDataType = dataType;
         mHTTPContent = content;
-        mTempRange = range;
+        mReadRange = range;
         mNetworkTaskPriority = priority;
     }
     return self;
@@ -369,14 +369,14 @@
     
     if ( mHTTPContent != nil ) {
         // broken point download
-        if ( mTempRange.length > mHTTPContent.length ) {
-            NSUInteger start = mTempRange.location + mHTTPContent.length;
-            NSUInteger length = NSMaxRange(mTempRange) - start;
+        if ( mReadRange.length > mHTTPContent.length ) {
+            NSUInteger start = mReadRange.location + mHTTPContent.length;
+            NSUInteger length = NSMaxRange(mReadRange) - start;
             NSRange newRange = NSMakeRange(start, length);
             NSMutableURLRequest *newRequest = [[mRequest mcs_requestWithRange:newRange] mcs_requestWithHTTPAdditionalHeaders:[mAsset.configuration HTTPAdditionalHeadersForDataRequestsOfType:mDataType]];
             mTask = [MCSDownload.shared downloadWithRequest:newRequest priority:mNetworkTaskPriority delegate:self];
         }
-        [self preparationDidFinishWithContentReadwrite:mHTTPContent range:mTempRange];
+        [self preparationDidFinishWithContentReadwrite:mHTTPContent range:mReadRange];
     }
     // download ts all content
     else {

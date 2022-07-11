@@ -18,6 +18,10 @@
 #import "MCSPrefetcherManager.h"
 #import "MCSQueue.h"
 
+NSNotificationName const MCSPlayBackRequestTaskDidFailedNotification = @"MCSPlayBackRequestTaskDidFailedNotification";
+NSString *const MCSPlayBackRequestURLUserInfoKey = @"MCSPlayBackRequestURLUserInfoKey";
+NSString *const MCSPlayBackRequestFailureUserInfoKey = @"MCSPlayBackRequestFailureUserInfoKey";
+
 @interface SJMediaCacheServer ()<MCSProxyServerDelegate>
 @property (nonatomic, strong, readonly) MCSProxyServer *server;
 @end
@@ -47,7 +51,7 @@
             NSString *retv = URL.absoluteString;
             NSString *query = URL.query;
             if ( query.length != 0 ) {
-                retv = [retv substringToIndex:retv.length - (query.length + 1 /*?*/)];
+                retv = [retv substringToIndex:retv.length - (query.length + 1 /*'?'.length*/)];
             }
             return retv;
         };
@@ -86,6 +90,18 @@
 - (id<MCSProxyTask>)server:(MCSProxyServer *)server taskWithRequest:(NSURLRequest *)request delegate:(id<MCSProxyTaskDelegate>)delegate {
     return [MCSProxyTask.alloc initWithRequest:request delegate:delegate];
 }
+
+- (void)server:(MCSProxyServer *)server performTask:(id<MCSProxyTask>)task failure:(NSError *)error {
+    NSMutableDictionary *userInfo = [[NSMutableDictionary alloc] initWithCapacity:2];
+    NSURL *proxyURL = task.request.URL;
+    NSURL *URL = [MCSURL.shared URLWithProxyURL:proxyURL];
+    userInfo[MCSPlayBackRequestURLUserInfoKey] = URL;
+    userInfo[MCSPlayBackRequestFailureUserInfoKey] = error;
+    
+    [NSNotificationCenter.defaultCenter postNotificationName:MCSPlayBackRequestTaskDidFailedNotification
+                                                      object:nil userInfo:userInfo];
+}
+
 @end
 
 
@@ -151,11 +167,25 @@
     id<MCSAsset> asset = [MCSAssetManager.shared assetWithURL:URL];
     return [asset.configuration HTTPAdditionalHeadersForDataRequestsOfType:type];
 }
+
+- (void)customSessionConfig:(nullable void(^)(NSURLSessionConfiguration *))config {
+    [MCSDownload.shared customSessionConfig:config];
+}
+
 @end
 
 
 
 @implementation SJMediaCacheServer (Convert)
+
+- (void)setDidFinishCollectingMetrics:(void (^)(NSURLSession * _Nonnull, NSURLSessionTask * _Nonnull, NSURLSessionTaskMetrics * _Nonnull))didFinishCollectingMetrics {
+    MCSDownload.shared.didFinishCollectingMetrics = didFinishCollectingMetrics;
+}
+
+- (void (^)(NSURLSession * _Nonnull, NSURLSessionTask * _Nonnull, NSURLSessionTaskMetrics * _Nonnull))didFinishCollectingMetrics {
+    return MCSDownload.shared.didFinishCollectingMetrics;
+}
+
 - (void)setResolveAssetIdentifier:(NSString * _Nonnull (^)(NSURL * _Nonnull))resolveAssetIdentifier {
     MCSURL.shared.resolveAssetIdentifier = resolveAssetIdentifier;
 }

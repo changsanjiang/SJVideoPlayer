@@ -307,11 +307,8 @@
     }
     
     if ( error != nil ) {
-        [self _onError:[NSError mcs_errorWithCode:MCSUnknownError userInfo:@{
-            MCSErrorUserInfoObjectKey : currRequest,
-            MCSErrorUserInfoErrorKey : error,
-            MCSErrorUserInfoReasonKey : @"下载数据失败!"
-        }]];
+        //Just deliver the original error, do not package again
+        [self _onError:error];
         return;
     }
     

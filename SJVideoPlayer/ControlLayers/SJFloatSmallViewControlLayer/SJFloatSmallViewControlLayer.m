@@ -31,35 +31,6 @@ SJEdgeControlButtonItemTag const SJFloatSmallViewControlLayerTopItem_Close = 100
     return self;
 }
 
-- (nullable UIView *)hitTest:(CGPoint)point withEvent:(nullable UIEvent *)event {
-    for ( UIGestureRecognizer *gesture in self.controlView.superview.superview.gestureRecognizers ) {
-        if ( [gesture isKindOfClass:UITapGestureRecognizer.class] && gesture.isEnabled ) {
-            SJEdgeControlButtonItem *_Nullable item = [self.topAdapter itemAtPoint:[self convertPoint:point toView:self.topAdapter.view]];
-            
-            if ( item == nil && self->_leftAdapter != nil ) {
-                item = [self->_leftAdapter itemAtPoint:[self convertPoint:point toView:self->_leftAdapter.view]];
-            }
-            if ( item == nil && self->_bottomAdapter != nil ) {
-                item = [self->_bottomAdapter itemAtPoint:[self convertPoint:point toView:self->_bottomAdapter.view]];
-            }
-            if ( item == nil && self->_rightAdapter != nil ) {
-                item = [self->_rightAdapter itemAtPoint:[self convertPoint:point toView:self->_rightAdapter.view]];
-            }
-            if ( item == nil && self->_centerAdapter != nil ) {
-                item = [self->_centerAdapter itemAtPoint:[self convertPoint:point toView:self->_centerAdapter.view]];
-            }
-            
-            if ( item.actions != nil || item.customView != nil ) {
-                gesture.enabled = NO;
-                dispatch_async(dispatch_get_main_queue(), ^{
-                    gesture.enabled = YES;
-                });
-            }
-        }
-    }
-    return [super hitTest:point withEvent:event];
-}
-
 - (UIView *)controlView {
     return self;
 }

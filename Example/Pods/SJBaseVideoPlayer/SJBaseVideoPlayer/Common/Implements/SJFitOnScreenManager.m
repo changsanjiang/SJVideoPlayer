@@ -70,16 +70,12 @@ static NSNotificationName const SJFitOnScreenManagerTransitioningValueDidChangeN
 @implementation SJFitOnScreenModeNavigationController
 - (void)viewDidLoad {
     [super viewDidLoad];
-    self.navigationBarHidden = YES;
+    [super setNavigationBarHidden:YES animated:NO];
 }
 
-- (void)setNavigationBarHidden:(BOOL)navigationBarHidden {
-    [super setNavigationBarHidden:YES];
-}
+- (void)setNavigationBarHidden:(BOOL)navigationBarHidden { }
 
-- (void)setNavigationBarHidden:(BOOL)hidden animated:(BOOL)animated {
-    [super setNavigationBarHidden:YES animated:animated];
-}
+- (void)setNavigationBarHidden:(BOOL)hidden animated:(BOOL)animated { }
 
 - (BOOL)shouldAutorotate {
     return self.topViewController.shouldAutorotate;

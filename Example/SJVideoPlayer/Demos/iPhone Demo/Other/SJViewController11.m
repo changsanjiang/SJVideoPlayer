@@ -26,7 +26,7 @@ NS_ASSUME_NONNULL_BEGIN
     [super viewDidLoad];
     [self _setupViews];
     // 1. 开启所有手势
-    _player.gestureControl.supportedGestureTypes |= SJPlayerGestureTypeMask_LongPress;
+    _player.gestureController.supportedGestureTypes |= SJPlayerGestureTypeMask_LongPress;
     // 2. 设置长按播放器界面时的播放速率
     _player.rateWhenLongPressGestureTriggered = 2.0;
 }

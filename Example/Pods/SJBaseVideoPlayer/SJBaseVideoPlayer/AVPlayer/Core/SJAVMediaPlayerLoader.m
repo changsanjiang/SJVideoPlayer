@@ -29,6 +29,20 @@ static void *kPlayer = &kPlayer;
     AVPlayer *avPlayer = target.avPlayer;
     if ( avPlayer == nil ) {
         AVPlayerItem *avPlayerItem = target.avPlayerItem;
+        // fix: https://github.com/changsanjiang/SJBaseVideoPlayer/pull/17 & https://github.com/changsanjiang/SJBaseVideoPlayer/issues/18
+        //
+        // 重新创建playerItem规避`An AVPlayerItem cannot be associated with more than one instance of AVPlayer`错误.
+        if (avPlayerItem != nil && avPlayerItem.status == AVPlayerStatusFailed) {
+            NSURL *URL = nil;
+            if ( [avPlayerItem.asset isKindOfClass:AVURLAsset.class] ) {
+                URL = [(AVURLAsset *)avPlayerItem.asset URL];
+            }
+            if ( URL == nil )
+                return nil;
+            avPlayerItem = [AVPlayerItem playerItemWithURL:URL];
+            target.avPlayerItem = avPlayerItem;
+        }
+        
         if ( avPlayerItem == nil ) {
             AVAsset *avAsset = target.avAsset;
             if ( avAsset == nil ) {

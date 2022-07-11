@@ -29,6 +29,9 @@ NS_ASSUME_NONNULL_BEGIN
     if ( self ) {
         [NSNotificationCenter.defaultCenter addObserver:self selector:@selector(_av_playbackTypeDidChange:) name:SJMediaPlayerPlaybackTypeDidChangeNotification object:nil];
         [NSNotificationCenter.defaultCenter addObserver:self selector:@selector(_av_playerViewReadyForDisplay:) name:SJMediaPlayerViewReadyForDisplayNotification object:nil];
+        [NSNotificationCenter.defaultCenter addObserver:self selector:@selector(_av_rateDidChange:) name:SJMediaPlayerRateDidChangeNotification object:nil];
+        [NSNotificationCenter.defaultCenter addObserver:self selector:@selector(_av_volumeDidChange:) name:SJMediaPlayerVolumeDidChangeNotification object:nil];
+        [NSNotificationCenter.defaultCenter addObserver:self selector:@selector(_av_mutedDidChange:) name:SJMediaPlayerMutedDidChangeNotification object:nil];
     }
     return self;
 }
@@ -73,14 +76,17 @@ NS_ASSUME_NONNULL_BEGIN
     }
     
     if ( @available(iOS 14.0, *) ) {
-        if ( self.pauseWhenAppDidEnterBackground ) {
-            if ( self.media.isM3u8 && self.timeControlStatus == SJPlaybackTimeControlStatusPaused ) {
-                self.needsToRefresh_fix339 = YES;
-//                [self refresh];
-//                [self pause];
-                return;
+        if ( self.media.isM3u8 ) {
+            if ( self.pauseWhenAppDidEnterBackground ||
+                 // fix: https://github.com/changsanjiang/SJVideoPlayer/issues/535
+                 self.timeControlStatus == SJPlaybackTimeControlStatusPaused ) {
+                if ( self.timeControlStatus == SJPlaybackTimeControlStatusPaused ) {
+                    self.needsToRefresh_fix339 = YES;
+                    return;
+                }
             }
         }
+        
     }
     
     SJAVMediaPlayerLayerView *view = self.currentPlayerView;
@@ -112,7 +118,7 @@ NS_ASSUME_NONNULL_BEGIN
             return;
     }
     
-    if ( self.pauseWhenAppDidEnterBackground )
+    if ( self.pauseWhenAppDidEnterBackground && self.assetStatus == SJAssetStatusReadyToPlay /*fix #430 */ )
         [self.currentPlayerView setScreenshot:self.screenshot];
     
     // 修复 14.0 后台播放失效的问题
@@ -166,6 +172,15 @@ NS_ASSUME_NONNULL_BEGIN
 - (void)pictureInPictureController:(id<SJPictureInPictureController>)controller statusDidChange:(SJPictureInPictureStatus)status API_AVAILABLE(ios(14.0)) {
     if ( [self.delegate respondsToSelector:@selector(playbackController:pictureInPictureStatusDidChange:)] ) {
         [self.delegate playbackController:self pictureInPictureStatusDidChange:status];
+    }
+}
+
+- (void)pictureInPictureController:(id<SJPictureInPictureController>)controller restoreUserInterfaceForPictureInPictureStopWithCompletionHandler:(void (^)(BOOL))completionHandler API_AVAILABLE(ios(14.0)) {
+    if ( self.restoreUserInterfaceForPictureInPictureStop != nil ) {
+        self.restoreUserInterfaceForPictureInPictureStop(self, completionHandler);
+    }
+    else {
+        completionHandler(NO);
     }
 }
 
@@ -246,6 +261,24 @@ NS_ASSUME_NONNULL_BEGIN
         if ( self.currentPlayerView.isReadyForDisplay ) {
             [self.currentPlayerView setScreenshot:nil];
         }
+    }
+}
+
+- (void)_av_rateDidChange:(NSNotification *)note {
+    if ( self.currentPlayer == note.object && self.rate != self.currentPlayer.rate ) {
+        self.rate = self.currentPlayer.rate;
+    }
+}
+
+- (void)_av_volumeDidChange:(NSNotification *)note {
+    if ( self.currentPlayer == note.object && self.volume != self.currentPlayer.volume ) {
+        self.volume = self.currentPlayer.volume;
+    }
+}
+
+- (void)_av_mutedDidChange:(NSNotification *)note {
+    if ( self.currentPlayer == note.object && self.isMuted != self.currentPlayer.isMuted ) {
+        self.muted = self.currentPlayer.isMuted;
     }
 }
 

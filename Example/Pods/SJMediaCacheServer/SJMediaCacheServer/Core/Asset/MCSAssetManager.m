@@ -240,20 +240,18 @@
         
         NSString *s0 = [readwriteFileAssets.allObjects componentsJoinedByString:@","];
         NSString *s1 = [readwriteHLSAssets.allObjects componentsJoinedByString:@","];
-
+        
         NSArray<SJSQLite3RowData *> *rows = nil;
         if ( countLimit != NSNotFound ) {
             rows = [mSqlite3 exec:[NSString stringWithFormat:
-                                   @"SELECT * FROM MCSAssetUsageLog WHERE (asset NOT IN (%@) AND assetType = 0) \
-                                                                       OR (asset NOT IN (%@) AND assetType = 1) \
+                                   @"SELECT * FROM MCSAssetUsageLog WHERE ( (asset NOT IN (%@) AND assetType = 0) OR (asset NOT IN (%@) AND assetType = 1) ) \
                                                                       AND updatedTime <= %lf \
                                                                  ORDER BY updatedTime ASC, usageCount ASC \
                                                                     LIMIT 0, %ld;", s0, s1, timeLimit, (long)countLimit] error:NULL];
         }
         else {
             rows = [mSqlite3 exec:[NSString stringWithFormat:
-                            @"SELECT * FROM MCSAssetUsageLog WHERE (asset NOT IN (%@) AND assetType = 0) \
-                                                                OR (asset NOT IN (%@) AND assetType = 1) \
+                            @"SELECT * FROM MCSAssetUsageLog WHERE ( (asset NOT IN (%@) AND assetType = 0) OR (asset NOT IN (%@) AND assetType = 1) ) \
                                                                AND updatedTime <= %lf;", s0, s1, timeLimit] error:NULL];
         }
         NSArray<MCSAssetUsageLog *> *logs = [mSqlite3 objectsForClass:MCSAssetUsageLog.class rowDatas:rows error:NULL];

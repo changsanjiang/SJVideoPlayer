@@ -79,7 +79,7 @@
         self.player.URLAsset = asset;
         // - 如果之前播放过, 这里提示一下用户从上次的位置进行播放
         if ( record.position != 0 ) {
-            [_player.prompt show:[NSAttributedString sj_UIKitText:^(id<SJUIKitTextMakerProtocol>  _Nonnull make) {
+            [_player.textPopupController show:[NSAttributedString sj_UIKitText:^(id<SJUIKitTextMakerProtocol>  _Nonnull make) {
                 make.append([NSString stringWithFormat:@"从上次的位置 %@ 处开始播放", [self.player stringForSeconds:record.position]]);
                 make.textColor(UIColor.whiteColor);
             }] duration:5];

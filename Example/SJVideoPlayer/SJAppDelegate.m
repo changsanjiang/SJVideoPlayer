@@ -7,11 +7,8 @@
 //
 
 #import "SJAppDelegate.h"
-#import "SJVideoPlayer.h"
-
-@protocol SJTestProtocol <NSObject>
-@end
-
+#import "SJVideoPlayer.h" 
+#import "SJRotationManager_4.h"
 
 @implementation SJAppDelegate
 + (void)initialize {
@@ -30,7 +27,7 @@
 }
 
 - (UIInterfaceOrientationMask)application:(UIApplication *)application supportedInterfaceOrientationsForWindow:(UIWindow *)window {
-    return UIInterfaceOrientationMaskAll;
+    return window.sj_4_supportedInterfaceOrientations;
 }
 
 - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions {
@@ -41,8 +38,7 @@
     
     _window = [[UIWindow alloc] initWithFrame:[[UIScreen mainScreen] bounds]];
     _window.backgroundColor = [UIColor whiteColor];
-    NSString *name = UIUserInterfaceIdiomPhone == UI_USER_INTERFACE_IDIOM()?@"Main":@"iPadMain";
-    _window.rootViewController = [[UIStoryboard storyboardWithName:name bundle:nil] instantiateInitialViewController];
+    _window.rootViewController = [[UIStoryboard storyboardWithName:@"Main" bundle:nil] instantiateInitialViewController];
     [_window makeKeyAndVisible];
 
 
@@ -67,24 +63,13 @@
 #pragma mark -
 
 
-#warning Configuring rotation control. 请配置旋转控制!
+#warning Configuring rotation. 请配置旋转!!
 
-@implementation UIViewController (RotationControl)
+@implementation UIViewController (RotationConfiguration)
 ///
 /// 控制器是否可以旋转
 ///
 - (BOOL)shouldAutorotate {
-    // iPhone的demo用到了播放器的旋转, 这里返回NO, 除播放器外, 项目中的其他视图控制器都禁止旋转
-    if ( UIUserInterfaceIdiomPhone == UI_USER_INTERFACE_IDIOM() ) {
-        return NO;
-    }
-    
-    // iPad的demo未用到播放器的旋转, 这里返回YES, 允许所有控制器旋转
-    else if ( UIUserInterfaceIdiomPad == UI_USER_INTERFACE_IDIOM() ) {
-        return YES;
-    }
-    
-    // 如果你的项目仅支持竖屏, 可以直接返回NO, 无需进行上述的判断区分.
     return NO;
 }
 
@@ -92,24 +77,12 @@
 /// 控制器旋转支持的方向
 ///
 - (UIInterfaceOrientationMask)supportedInterfaceOrientations {
-    // 此处为设置 iPhone demo 仅支持竖屏的方向
-    if ( UIUserInterfaceIdiomPhone == UI_USER_INTERFACE_IDIOM() ) {
-        return UIInterfaceOrientationMaskPortrait;
-    }
-    
-    // 此处为设置 iPad demo 仅支持横屏的方向
-    else if ( UIUserInterfaceIdiomPad == UI_USER_INTERFACE_IDIOM() ) {
-        return UIInterfaceOrientationMaskLandscape;
-    }
-    
-    // 如果你的项目仅支持竖屏, 可以直接返回UIInterfaceOrientationMaskPortrait, 无需进行上述的判断区分.
     return UIInterfaceOrientationMaskPortrait;
 }
-
 @end
 
 
-@implementation UITabBarController (RotationControl)
+@implementation UITabBarController (RotationConfiguration)
 - (UIViewController *)sj_topViewController {
     if ( self.selectedIndex == NSNotFound )
         return self.viewControllers.firstObject;
@@ -129,7 +102,7 @@
 }
 @end
 
-@implementation UINavigationController (RotationControl)
+@implementation UINavigationController (RotationConfiguration)
 - (BOOL)shouldAutorotate {
     return self.topViewController.shouldAutorotate;
 }

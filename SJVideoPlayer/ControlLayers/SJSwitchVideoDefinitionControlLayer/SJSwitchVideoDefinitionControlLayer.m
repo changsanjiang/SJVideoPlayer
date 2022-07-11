@@ -65,7 +65,7 @@ NS_ASSUME_NONNULL_BEGIN
 - (void)restartControlLayer {
     _restarted = YES;
     
-    if ( self.videoPlayer.isFullScreen )
+    if ( self.videoPlayer.isFullscreen )
         [self.videoPlayer needHiddenStatusBar];
     [self _refreshItems];
     [self.rightAdapter reload];

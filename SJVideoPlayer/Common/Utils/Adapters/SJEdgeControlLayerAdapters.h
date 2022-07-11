@@ -14,7 +14,7 @@ NS_ASSUME_NONNULL_BEGIN
 struct SJ_Screen {
     CGFloat max;
     CGFloat min;
-    BOOL is_iPhoneX;
+    BOOL is_iPhoneXSeries;
 };
 
 @interface SJEdgeControlLayerAdapters : UIView {
@@ -52,7 +52,7 @@ struct SJ_Screen {
 @property (nonatomic) BOOL autoAdjustTopSpacing; // 自动调整顶部间距, 让出状态栏
 
 /// default is Yes.
-@property (nonatomic) BOOL autoAdjustLayoutWhenDeviceIsiPhoneX; // 自动调整布局, 如果是iPhone X
+@property (nonatomic) BOOL autoAdjustLayoutWhenDeviceIsIPhoneXSeries; // 自动调整布局, 如果是iPhone X
 
 #ifdef DEBUG
 @property (nonatomic) BOOL showBackgroundColor;

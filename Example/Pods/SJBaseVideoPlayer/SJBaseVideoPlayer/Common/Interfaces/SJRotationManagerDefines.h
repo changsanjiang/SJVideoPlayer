@@ -77,8 +77,8 @@ NS_ASSUME_NONNULL_BEGIN
 /// - landscapeRight 或者 landscapeLeft 即为全屏
 ///
 @property (nonatomic, readonly) BOOL isFullscreen;
-@property (nonatomic, readonly, getter=isTransitioning) BOOL transitioning; // 是否正在旋转
-
+@property (nonatomic, readonly, getter=isRotating) BOOL rotating; // 是否正在旋转
+@property (nonatomic, readonly, getter=isTransitioning) BOOL transitioning; // 是否正在进行转场
 
 ///
 /// 以下属性由播放器维护
@@ -90,8 +90,8 @@ NS_ASSUME_NONNULL_BEGIN
 @protocol SJRotationManagerProtocol <SJRotationManager> @end
 
 @protocol SJRotationManagerObserver <NSObject>
-@property (nonatomic, copy, nullable) void(^rotationDidStartExeBlock)(id<SJRotationManager> mgr);
-@property (nonatomic, copy, nullable) void(^rotationDidEndExeBlock)(id<SJRotationManager> mgr);
+@property (nonatomic, copy, nullable) void(^onRotatingChanged)(id<SJRotationManager> mgr, BOOL isRotating);
+@property (nonatomic, copy, nullable) void(^onTransitioningChanged)(id<SJRotationManager> mgr, BOOL isTransitioning);
 @end
 NS_ASSUME_NONNULL_END
 #endif

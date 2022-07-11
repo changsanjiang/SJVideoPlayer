@@ -92,7 +92,7 @@
     
     [m addObject:[[LWZTableSectionShrinker alloc] initWithTitle:@"Add Button Item To Control Layer" titleWhenShrank:nil dataArr:[self _createAddButtonItemToControlLayerDemoItems]]];
     
-    [m addObject:[[LWZTableSectionShrinker alloc] initWithTitle:@"Pop Prompt Control" titleWhenShrank:nil dataArr:[self _createPromptDemoItems]]];
+    [m addObject:[[LWZTableSectionShrinker alloc] initWithTitle:@"Text Popup" titleWhenShrank:nil dataArr:[self _createTextPopupDemoItems]]];
     
     [m addObject:[[LWZTableSectionShrinker alloc] initWithTitle:@"Switch Video Definition" titleWhenShrank:nil dataArr:[self _createSwitchVideoDefinitionDemoItems]]];
     
@@ -223,16 +223,16 @@
       ];
 }
 
-- (NSArray<Item *> *)_createPromptDemoItems {
+- (NSArray<Item *> *)_createTextPopupDemoItems {
     return
     @[
-      [[Item alloc] initWithTitle:@"Prompt 1"
-                         subTitle:@"弹出提示(左下角)"
-                             path:@"demo/prompt1"],
-      
-      [[Item alloc] initWithTitle:@"Prompt 2"
-                         subTitle:@"弹出提示(中间)"
-                             path:@"demo/prompt2"],
+        [[Item alloc] initWithTitle:@"TextPopup 1"
+                           subTitle:@"弹出提示(中间)"
+                               path:@"demo/textPopup"],
+        
+        [[Item alloc] initWithTitle:@"PromptingPopup 2"
+                           subTitle:@"弹出提示(左下角)"
+                               path:@"demo/promptingPopup"],
       ];
 }
 
@@ -260,9 +260,9 @@
         [[Item alloc] initWithTitle:@"Test subtitles"
                            subTitle:@"测试 字幕"
                                path:@"subtitles/demo"],
-        [[Item alloc] initWithTitle:@"Test barrages"
+        [[Item alloc] initWithTitle:@"Test danmaku"
                            subTitle:@"测试 弹幕"
-                               path:@"barrage/demo"],
+                               path:@"danmaku/demo"],
         [[Item alloc] initWithTitle:@"Test playback history"
                            subTitle:@"测试 播放记录"
                                path:@"playbackHistory"],

@@ -77,7 +77,7 @@
     floatSmallViewTransitionController.automaticallyEnterFloatingMode = YES;
     _player.floatSmallViewController = floatSmallViewTransitionController;
     __weak typeof(self) _self = self;
-    _player.floatSmallViewController.doubleTappedOnTheFloatViewExeBlock = ^(id<SJFloatSmallViewController>  _Nonnull controller) {
+    _player.floatSmallViewController.onDoubleTapped = ^(id<SJFloatSmallViewController>  _Nonnull controller) {
         __strong typeof(_self) self = _self;
         if ( self == nil ) return;
         self.player.isPaused ? [self.player play] : [self.player pause];
@@ -150,7 +150,7 @@
 // 手动进入
 - (void)enterFloatMode {
     __weak typeof(self) _self = self;
-    if      ( _player.isFullScreen ) {
+    if      ( _player.isFullscreen ) {
         [_player rotate:SJOrientation_Portrait animated:YES completion:^(__kindof SJBaseVideoPlayer * _Nonnull player) {
             __strong typeof(_self) self = _self;
             if ( self == nil ) return;

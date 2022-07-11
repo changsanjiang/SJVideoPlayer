@@ -11,7 +11,6 @@
 #import <Masonry/Masonry.h>
 #import <SJUIKit/NSAttributedString+SJMake.h>
 #import "SJSourceURLs.h"
-#import "SJRotationManager.h"
 
 static SJEdgeControlButtonItemTag const SJTestItemTag1 = 100;
 static SJEdgeControlButtonItemTag const SJTestImageItemTag = 101;
@@ -53,7 +52,7 @@ static SJEdgeControlButtonItemTag const SJTestCustomItemTag = 103;
     
 // 以下方法为显示控制层
     [_player controlLayerNeedAppear];
-    [_player.prompt show:[NSAttributedString sj_UIKitText:^(id<SJUIKitTextMakerProtocol>  _Nonnull make) {
+    [_player.textPopupController show:[NSAttributedString sj_UIKitText:^(id<SJUIKitTextMakerProtocol>  _Nonnull make) {
         make.append(@"已添加到右侧 `text item`");
         make.textColor(UIColor.whiteColor);
     }] duration:3];
@@ -66,7 +65,7 @@ static SJEdgeControlButtonItemTag const SJTestCustomItemTag = 103;
     
 // 以下方法为显示控制层
     [_player controlLayerNeedAppear];
-    [_player.prompt show:[NSAttributedString sj_UIKitText:^(id<SJUIKitTextMakerProtocol>  _Nonnull make) {
+    [_player.textPopupController show:[NSAttributedString sj_UIKitText:^(id<SJUIKitTextMakerProtocol>  _Nonnull make) {
         make.append(@"已交换底部 `时长item`与`进度item`的位置");
         make.textColor(UIColor.whiteColor);
     }] duration:3];
@@ -78,7 +77,7 @@ static SJEdgeControlButtonItemTag const SJTestCustomItemTag = 103;
     
     // 以下方法为显示控制层
     [_player controlLayerNeedAppear];
-    [_player.prompt show:[NSAttributedString sj_UIKitText:^(id<SJUIKitTextMakerProtocol>  _Nonnull make) {
+    [_player.textPopupController show:[NSAttributedString sj_UIKitText:^(id<SJUIKitTextMakerProtocol>  _Nonnull make) {
         make.append(@"已删除底部 `分割线item`");
         make.textColor(UIColor.whiteColor);
     }] duration:3];
@@ -92,7 +91,7 @@ static SJEdgeControlButtonItemTag const SJTestCustomItemTag = 103;
     
     // 以下方法为显示控制层
     [_player controlLayerNeedAppear];
-    [_player.prompt show:[NSAttributedString sj_UIKitText:^(id<SJUIKitTextMakerProtocol>  _Nonnull make) {
+    [_player.textPopupController show:[NSAttributedString sj_UIKitText:^(id<SJUIKitTextMakerProtocol>  _Nonnull make) {
         make.append(@"已添加到顶部 `image item`");
         make.textColor(UIColor.whiteColor);
     }] duration:3];
@@ -109,7 +108,7 @@ static SJEdgeControlButtonItemTag const SJTestCustomItemTag = 103;
     
     // 以下方法为显示控制层
     [_player controlLayerNeedAppear];
-    [_player.prompt show:[NSAttributedString sj_UIKitText:^(id<SJUIKitTextMakerProtocol>  _Nonnull make) {
+    [_player.textPopupController show:[NSAttributedString sj_UIKitText:^(id<SJUIKitTextMakerProtocol>  _Nonnull make) {
         make.append(@"已添加到顶部 `text item`");
         make.textColor(UIColor.whiteColor);
     }] duration:3];
@@ -124,7 +123,7 @@ static SJEdgeControlButtonItemTag const SJTestCustomItemTag = 103;
 
     // 以下方法为显示控制层
     [_player controlLayerNeedAppear];
-    [_player.prompt show:[NSAttributedString sj_UIKitText:^(id<SJUIKitTextMakerProtocol>  _Nonnull make) {
+    [_player.textPopupController show:[NSAttributedString sj_UIKitText:^(id<SJUIKitTextMakerProtocol>  _Nonnull make) {
         make.append(@"已添加到顶部 `custom view`");
         make.textColor(UIColor.whiteColor);
     }] duration:3];

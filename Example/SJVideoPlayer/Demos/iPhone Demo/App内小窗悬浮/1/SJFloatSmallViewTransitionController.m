@@ -30,8 +30,8 @@
 @end
 
 @implementation SJFloatSmallViewTransitionControllerObserver
-@synthesize appearStateDidChangeExeBlock = _appearStateDidChangeExeBlock;
-@synthesize enabledControllerExeBlock = _enabledControllerExeBlock;
+@synthesize onAppearChanged = _onAppearChanged;
+@synthesize onEnabled = _onEnabled;
 @synthesize controller = _controller;
 
 - (instancetype)initWithController:(id<SJFloatSmallViewController>)controller {
@@ -41,15 +41,15 @@
         
         sjkvo_observe(controller, @"isAppeared", ^(id  _Nonnull target, NSDictionary<NSKeyValueChangeKey,id> * _Nullable change) {
             dispatch_async(dispatch_get_main_queue(), ^{
-                if ( self.appearStateDidChangeExeBlock )
-                    self.appearStateDidChangeExeBlock(target);
+                if ( self.onAppearChanged )
+                    self.onAppearChanged(target);
             });
         });
         
         sjkvo_observe(controller, @"enabled", ^(id  _Nonnull target, NSDictionary<NSKeyValueChangeKey,id> * _Nullable change) {
             dispatch_async(dispatch_get_main_queue(), ^{
-                if ( self.enabledControllerExeBlock )
-                    self.enabledControllerExeBlock(target);
+                if ( self.onEnabled )
+                    self.onEnabled(target);
             });
         });
     }
@@ -74,8 +74,8 @@
 @synthesize enabled = _enabled;
 @synthesize slidable = _slidable;
 @synthesize floatViewShouldAppear = _floatViewShouldAppear;
-@synthesize singleTappedOnTheFloatViewExeBlock = _singleTappedOnTheFloatViewExeBlock;
-@synthesize doubleTappedOnTheFloatViewExeBlock = _doubleTappedOnTheFloatViewExeBlock;
+@synthesize onSingleTapped = _onSingleTapped;
+@synthesize onDoubleTapped = _onDoubleTapped;
 ///// - target 为播放器呈现视图
 ///// - targetSuperview 为播放器视图
 ///// 当显示小浮窗时, 可以将target添加到小浮窗中
@@ -98,7 +98,7 @@
         _layoutInsets = UIEdgeInsetsMake(20, 12, 20, 12);
         _layoutPosition = SJFloatViewLayoutPositionBottomRight;
         _enabled = YES;
-        self.singleTappedOnTheFloatViewExeBlock = ^(id<SJFloatSmallViewController>  _Nonnull controller) {
+        self.onSingleTapped = ^(id<SJFloatSmallViewController>  _Nonnull controller) {
             SJFloatSmallViewTransitionController *transitionController = (id)controller;
             [transitionController resume];
         };

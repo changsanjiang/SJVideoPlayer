@@ -10,8 +10,34 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
-NSInteger const SJBaseVideoPlayerViewTag = 0xFFFFFFF0;
-NSInteger const SJBaseVideoPlayerPresentViewTag = 0xFFFFFFF1;
+NSInteger const SJPlayerViewTag = 0xFFFFFFF0;
+NSInteger const SJPresentViewTag = 0xFFFFFFF1;
+
+@implementation SJPlayerZIndexes
++ (instancetype)shared {
+    static id instance;
+    static dispatch_once_t onceToken;
+    dispatch_once(&onceToken, ^{
+        instance = [[self alloc] _init];
+    });
+    return instance;
+}
+
+- (instancetype)_init {
+    self = [super init];
+    if ( self ) {
+        _textPopupViewZIndex = -10;
+        _promptingPopupViewZIndex = -20;
+        _controlLayerViewZIndex = -30;
+        _danmakuViewZIndex = -40;
+        _placeholderImageViewZIndex = -50;
+        _watermarkViewZIndex = -60;
+        _subtitleViewZIndex = -70;
+        _playbackViewZIndex = -80;
+    }
+    return self;
+}
+@end
 
 ///
 /// assetStatus 改变的通知

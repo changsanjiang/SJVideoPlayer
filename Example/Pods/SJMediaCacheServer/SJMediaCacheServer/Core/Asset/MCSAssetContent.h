@@ -12,10 +12,10 @@ NS_ASSUME_NONNULL_BEGIN
 
 @interface MCSAssetContent : MCSReadwrite<MCSAssetContent>
 
-// used in existing file
+/// Used for existing files
 /// @param position 不是文件偏移量, 是该内容在整个资源中的位置
 - (instancetype)initWithFilepath:(NSString *)filepath startPositionInAsset:(UInt64)position length:(UInt64)length;
-// used in new file
+/// Used for new files
 - (instancetype)initWithFilepath:(NSString *)filepath startPositionInAsset:(UInt64)position;
 
 - (nullable NSData *)readDataAtPosition:(UInt64)positionInAsset capacity:(UInt64)capacity error:(out NSError **)error;

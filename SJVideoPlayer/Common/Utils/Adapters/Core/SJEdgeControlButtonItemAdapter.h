@@ -33,6 +33,7 @@ NS_ASSUME_NONNULL_BEGIN
 - (nullable SJEdgeControlButtonItem *)itemAtIndex:(NSInteger)index;
 - (nullable SJEdgeControlButtonItem *)itemForTag:(SJEdgeControlButtonItemTag)tag;
 - (NSInteger)indexOfItemForTag:(SJEdgeControlButtonItemTag)tag;
+- (NSInteger)indexOfItem:(SJEdgeControlButtonItem *)item;
 - (nullable NSArray<SJEdgeControlButtonItem *> *)itemsWithRange:(NSRange)range;
 - (BOOL)isHiddenWithRange:(NSRange)range; // 此范围的items是否已隐藏
 - (BOOL)itemContainsPoint:(CGPoint)point; // 某个点是否在item中

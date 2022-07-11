@@ -253,7 +253,7 @@ NS_ASSUME_NONNULL_BEGIN
 ///
 ///     当多个父视图设置不同的tag后, 管理类将通过此tag来定位对应父视图, 从而实现同一个页面中多个播放器同时播放的效果
 ///
-@property (nonatomic) NSUInteger superviewTag __deprecated_msg("use `playModel.superviewSelector`;");
+@property (nonatomic) NSUInteger superviewTag;
 @end
 
 

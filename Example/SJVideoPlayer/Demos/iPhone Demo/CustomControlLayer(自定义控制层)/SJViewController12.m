@@ -53,7 +53,7 @@ static SJControlLayerIdentifier SJTestControlLayerIdentifier = 101;
 /// 切换控制层
 ///
 - (void)switchControlLayer {
-    if ( _player.isFullScreen == NO ) {
+    if ( _player.isFullscreen == NO ) {
         [_player rotate:SJOrientation_LandscapeLeft animated:YES completion:^(SJVideoPlayer * _Nonnull player) {
            [player.switcher switchControlLayerForIdentifier:SJTestControlLayerIdentifier];
         }];

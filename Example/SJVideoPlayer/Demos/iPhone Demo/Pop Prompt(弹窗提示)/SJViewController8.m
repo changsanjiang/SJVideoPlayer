@@ -35,14 +35,14 @@ NS_ASSUME_NONNULL_BEGIN
     });
     
     // show
-    [_player.prompt show:[NSAttributedString sj_UIKitText:^(id<SJUIKitTextMakerProtocol>  _Nonnull make) {
+    [_player.textPopupController show:[NSAttributedString sj_UIKitText:^(id<SJUIKitTextMakerProtocol>  _Nonnull make) {
         make.append(arr[arc4random() % arr.count]);
         make.textColor(UIColor.whiteColor);
     }] duration:arc4random() % 10 + 2];
 }
 
 - (IBAction)hidden:(id)sender {
-    [_player.prompt hidden];
+    [_player.textPopupController hidden];
 }
 
 
@@ -56,10 +56,10 @@ NS_ASSUME_NONNULL_BEGIN
     }];
     
     __weak typeof(self) _self = self;
-    _player.controlLayerAppearObserver.appearStateDidChangeExeBlock = ^(id<SJControlLayerAppearManager>  _Nonnull mgr) {
+    _player.controlLayerAppearObserver.onAppearChanged = ^(id<SJControlLayerAppearManager>  _Nonnull mgr) {
         __strong typeof(_self) self = _self;
         if ( !self ) return ;
-        self.player.promptPopupController.bottomMargin = mgr.isAppeared ? self.player.defaultEdgeControlLayer.bottomContainerView.bounds.size.height : 16;
+        self.player.promptingPopupController.bottomMargin = mgr.isAppeared ? self.player.defaultEdgeControlLayer.bottomContainerView.bounds.size.height : 16;
     };
 }
 
@@ -82,7 +82,7 @@ NS_ASSUME_NONNULL_END
 @implementation SJViewController8 (RouteHandler)
 
 + (NSString *)routePath {
-    return @"demo/prompt2";
+    return @"demo/textPopup";
 }
 
 + (void)handleRequest:(SJRouteRequest *)request topViewController:(UIViewController *)topViewController completionHandler:(SJCompletionHandler)completionHandler {

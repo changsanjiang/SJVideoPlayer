@@ -91,7 +91,7 @@ static SJControlLayerIdentifier SJClipsResultsControlLayerIdentifier = 3;
 
 - (void)_start:(SJVideoPlayerClipsOperation)operation {
     if ( _player.assetStatus != SJAssetStatusReadyToPlay ) {
-        [self.player.prompt show:[NSAttributedString sj_UIKitText:^(id<SJUIKitTextMakerProtocol>  _Nonnull make) {
+        [self.player.textPopupController show:[NSAttributedString sj_UIKitText:^(id<SJUIKitTextMakerProtocol>  _Nonnull make) {
             make.append(SJVideoPlayerConfigurations.shared.localizedStrings.operationFailedPrompt);
             make.textColor(UIColor.whiteColor);
         }]];

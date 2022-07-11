@@ -13,8 +13,24 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
-extern NSInteger const SJBaseVideoPlayerViewTag;
-extern NSInteger const SJBaseVideoPlayerPresentViewTag;
+extern NSInteger const SJPlayerViewTag;
+extern NSInteger const SJPresentViewTag;
+
+
+@interface SJPlayerZIndexes : NSObject
++ (instancetype)shared;
+- (instancetype)init NS_UNAVAILABLE;
++ (instancetype)new NS_UNAVAILABLE;
+
+@property (nonatomic) NSInteger textPopupViewZIndex;
+@property (nonatomic) NSInteger promptingPopupViewZIndex;
+@property (nonatomic) NSInteger controlLayerViewZIndex;
+@property (nonatomic) NSInteger danmakuViewZIndex;
+@property (nonatomic) NSInteger placeholderImageViewZIndex;
+@property (nonatomic) NSInteger watermarkViewZIndex;
+@property (nonatomic) NSInteger subtitleViewZIndex;
+@property (nonatomic) NSInteger playbackViewZIndex;
+@end
 
 // - Playback Notifications -
 

@@ -114,16 +114,9 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic) BOOL automaticallyPerformRotationOrFitOnScreen;
 
 ///
-/// 是否仅在竖屏全屏与竖屏小屏之间切换, 不触发旋转.
-///
-///     设置为YES后, 将会禁止旋转.
-///
-@property (nonatomic) BOOL onlyUsedFitOnScreen;
-
-///
 /// 处于小屏时, 当点击全屏按钮后, 是否先竖屏撑满全屏.
 ///
-@property (nonatomic) BOOL usesFitOnScreenFirst;
+@property (nonatomic) BOOL needsFitOnScreenFirst;
 
 @property (nonatomic, weak, nullable) id<SJEdgeControlLayerDelegate> delegate;
 @end

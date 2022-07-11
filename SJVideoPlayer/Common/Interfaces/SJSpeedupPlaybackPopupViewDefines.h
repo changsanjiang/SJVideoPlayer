@@ -9,7 +9,7 @@
 #define SJSpeedupPlaybackPopupViewDefines_h
 
 #import <UIKit/UIKit.h>
-#import <SJBaseVideoPlayer/SJPlayerGestureControlDefines.h>
+#import <SJBaseVideoPlayer/SJGestureControllerDefines.h>
 
 NS_ASSUME_NONNULL_BEGIN
 @protocol SJSpeedupPlaybackPopupView <NSObject>

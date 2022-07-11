@@ -48,9 +48,9 @@ NS_ASSUME_NONNULL_BEGIN
     }
     asset.subtitles = subtitles;
 
-//    self.player.subtitlesPromptController.view.backgroundColor = [UIColor colorWithWhite:0 alpha:0.8];
-//    self.player.subtitlesPromptController.view.layer.cornerRadius = 5;
-//    self.player.subtitlesPromptController.contentInsets = UIEdgeInsetsMake(12, 22, 12, 22);
+//    self.player.subtitlePopupController.view.backgroundColor = [UIColor colorWithWhite:0 alpha:0.8];
+//    self.player.subtitlePopupController.view.layer.cornerRadius = 5;
+//    self.player.subtitlePopupController.contentInsets = UIEdgeInsetsMake(12, 22, 12, 22);
     self.player.URLAsset = asset;
 }
 

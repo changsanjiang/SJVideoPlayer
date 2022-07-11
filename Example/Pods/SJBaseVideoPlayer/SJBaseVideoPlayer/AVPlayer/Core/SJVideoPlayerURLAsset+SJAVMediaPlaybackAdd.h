@@ -34,9 +34,9 @@ NS_ASSUME_NONNULL_BEGIN
                             startPosition:(NSTimeInterval)startPosition
                                 playModel:(__kindof SJPlayModel *)playModel;
 
-@property (nonatomic, strong, readonly, nullable) __kindof AVAsset *avAsset;
-@property (nonatomic, strong, readonly, nullable) AVPlayerItem *avPlayerItem;
-@property (nonatomic, strong, readonly, nullable) AVPlayer *avPlayer;
+@property (nonatomic, strong, nullable) __kindof AVAsset *avAsset;
+@property (nonatomic, strong, nullable) AVPlayerItem *avPlayerItem;
+@property (nonatomic, strong, nullable) AVPlayer *avPlayer;
 
 - (nullable instancetype)initWithOtherAsset:(SJVideoPlayerURLAsset *)otherAsset
                                   playModel:(nullable __kindof SJPlayModel *)playModel;

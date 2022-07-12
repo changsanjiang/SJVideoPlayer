@@ -5,7 +5,7 @@
 [![Platform](https://img.shields.io/badge/platform-iOS-blue.svg)](https://github.com/changsanjiang)
 [![License](https://img.shields.io/github/license/changsanjiang/SJVideoPlayer.svg)](https://github.com/changsanjiang/SJVideoPlayer/blob/master/LICENSE.md)
 
-## [文档](https://github.com/changsanjiang/SJVideoPlayer/wiki)
+## [前往文档](https://github.com/changsanjiang/SJVideoPlayer/wiki)
 
 # 安装
  

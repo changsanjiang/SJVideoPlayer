@@ -73,7 +73,7 @@ NS_ASSUME_NONNULL_BEGIN
 @end
 
 @interface SJVideoPlayer ()<SJSwitchVideoDefinitionControlLayerDelegate, SJMoreSettingControlLayerDelegate, SJNotReachableControlLayerDelegate, SJEdgeControlLayerDelegate>
-@property (nonatomic, strong, nullable) id<SJFloatSmallViewControllerObserverProtocol> sj_floatSmallViewControllerObserver;
+@property (nonatomic, strong, nullable) id<SJSmallViewFloatingControllerObserverProtocol> sj_smallViewFloatingControllerObserver;
 @property (nonatomic, strong, readonly) SJVideoDefinitionSwitchingInfoObserver *sj_switchingInfoObserver;
 @property (nonatomic, strong, readonly) id<SJControlLayerAppearManagerObserver> sj_appearManagerObserver;
 @property (nonatomic, strong, readonly) id<SJControlLayerSwitcherObserver> sj_switcherObserver;
@@ -228,9 +228,9 @@ NS_ASSUME_NONNULL_BEGIN
 
 #pragma mark -
 
-- (void)setFloatSmallViewController:(nullable id<SJFloatSmallViewController>)floatSmallViewController {
-    [super setFloatSmallViewController:floatSmallViewController];
-    [self _initializeFloatSmallViewControllerObserverIfNeeded:floatSmallViewController];
+- (void)setSmallViewFloatingController:(nullable id<SJSmallViewFloatingController>)smallViewFloatingController {
+    [super setSmallViewFloatingController:smallViewFloatingController];
+    [self _initializeSmallViewFloatingControllerObserverIfNeeded:smallViewFloatingController];
 }
 
 #pragma mark -
@@ -342,10 +342,10 @@ NS_ASSUME_NONNULL_BEGIN
     return _sj_switchingInfoObserver;
 }
 
-- (id<SJFloatSmallViewController>)floatSmallViewController {
-    id<SJFloatSmallViewController> floatSmallViewController = [super floatSmallViewController];
-    [self _initializeFloatSmallViewControllerObserverIfNeeded:floatSmallViewController];
-    return floatSmallViewController;
+- (id<SJSmallViewFloatingController>)smallViewFloatingController {
+    id<SJSmallViewFloatingController> smallViewFloatingController = [super smallViewFloatingController];
+    [self _initializeSmallViewFloatingControllerObserverIfNeeded:smallViewFloatingController];
+    return smallViewFloatingController;
 }
 
 #pragma mark -
@@ -402,11 +402,11 @@ NS_ASSUME_NONNULL_BEGIN
     [NSNotificationCenter.defaultCenter addObserver:self selector:@selector(_configurationsDidUpdate) name:SJVideoPlayerConfigurationsDidUpdateNotification object:nil];
 }
 
-- (void)_initializeFloatSmallViewControllerObserverIfNeeded:(nullable id<SJFloatSmallViewController>)floatSmallViewController {
-    if ( _sj_floatSmallViewControllerObserver.controller != floatSmallViewController ) {
-        _sj_floatSmallViewControllerObserver = [floatSmallViewController getObserver];
+- (void)_initializeSmallViewFloatingControllerObserverIfNeeded:(nullable id<SJSmallViewFloatingController>)smallViewFloatingController {
+    if ( _sj_smallViewFloatingControllerObserver.controller != smallViewFloatingController ) {
+        _sj_smallViewFloatingControllerObserver = [smallViewFloatingController getObserver];
         __weak typeof(self) _self = self;
-        _sj_floatSmallViewControllerObserver.onAppearChanged = ^(id<SJFloatSmallViewController>  _Nonnull controller) {
+        _sj_smallViewFloatingControllerObserver.onAppearChanged = ^(id<SJSmallViewFloatingController>  _Nonnull controller) {
             __strong typeof(_self) self = _self;
             if ( !self ) return ;
             if ( controller.isAppeared ) {

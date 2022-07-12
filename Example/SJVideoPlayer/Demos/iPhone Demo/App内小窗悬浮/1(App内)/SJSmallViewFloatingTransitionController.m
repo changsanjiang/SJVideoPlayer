@@ -1,22 +1,22 @@
 //
-//  SJFloatSmallViewTransitionController.m
+//  SJSmallViewFloatingTransitionController.m
 //  SJVideoPlayer_Example
 //
 //  Created by BlueDancer on 2021/1/13.
 //  Copyright © 2021 changsanjiang. All rights reserved.
 //
 
-#import "SJFloatSmallViewTransitionController.h"
+#import "SJSmallViewFloatingTransitionController.h"
 #import <objc/message.h>
 #import "UIView+SJBaseVideoPlayerExtended.h"
 #import "NSObject+SJObserverHelper.h"
 #import "SJBaseVideoPlayerConst.h"
 
-@interface SJFloatSmallViewContainerView : UIView<SJFloatSmallView>
-@property (nonatomic, weak, nullable) SJFloatSmallViewTransitionController *transitionController;
+@interface SJSmallViewFloatingTransitionView : UIView<SJSmallViewFloatingTransitionView>
+@property (nonatomic, weak, nullable) SJSmallViewFloatingTransitionController *transitionController;
 @end
 
-@implementation SJFloatSmallViewContainerView
+@implementation SJSmallViewFloatingTransitionView
 
 - (UIView *)containerView {
     return self;
@@ -25,16 +25,16 @@
 @end
 
 
-@interface SJFloatSmallViewTransitionControllerObserver : NSObject<SJFloatSmallViewControllerObserverProtocol>
-- (instancetype)initWithController:(id<SJFloatSmallViewController>)controller;
+@interface SJSmallViewFloatingTransitionControllerObserver : NSObject<SJSmallViewFloatingControllerObserverProtocol>
+- (instancetype)initWithController:(id<SJSmallViewFloatingController>)controller;
 @end
 
-@implementation SJFloatSmallViewTransitionControllerObserver
+@implementation SJSmallViewFloatingTransitionControllerObserver
 @synthesize onAppearChanged = _onAppearChanged;
 @synthesize onEnabled = _onEnabled;
 @synthesize controller = _controller;
 
-- (instancetype)initWithController:(id<SJFloatSmallViewController>)controller {
+- (instancetype)initWithController:(id<SJSmallViewFloatingController>)controller {
     self = [super init];
     if ( self ) {
         _controller = controller;
@@ -57,32 +57,32 @@
 }
 @end
 
-@interface UINavigationController (SJFloatSmallViewTransitionControllerExtended)
+@interface UINavigationController (SJSmallViewFloatingTransitionControllerExtended)
 + (void)SVTC_initialize;
 - (UIViewController *)SVTC_popViewControllerAnimated:(BOOL)animated;
 - (void)SVTC_pushViewController:(UIViewController *)viewController animated:(BOOL)animated;
 - (void)SVTC_setViewControllers:(NSArray<UIViewController *> *)viewControllers animated:(BOOL)animated;
 @end
 
-@interface SJFloatSmallViewTransitionController ()<UIGestureRecognizerDelegate>
+@interface SJSmallViewFloatingTransitionController ()<UIGestureRecognizerDelegate>
 @property (nonatomic) BOOL isAppeared;
 @property (nonatomic, strong, nullable) UIViewController *playbackViewController;
 @property (nonatomic, strong, readonly) UIPanGestureRecognizer *panGesture;
 @end
 
-@implementation SJFloatSmallViewTransitionController
+@implementation SJSmallViewFloatingTransitionController
 @synthesize enabled = _enabled;
 @synthesize slidable = _slidable;
-@synthesize floatViewShouldAppear = _floatViewShouldAppear;
+@synthesize floatingViewShouldAppear = _floatingViewShouldAppear;
 @synthesize onSingleTapped = _onSingleTapped;
 @synthesize onDoubleTapped = _onDoubleTapped;
+@synthesize floatingView = _floatingView;
 ///// - target 为播放器呈现视图
 ///// - targetSuperview 为播放器视图
 ///// 当显示小浮窗时, 可以将target添加到小浮窗中
 ///// 当隐藏小浮窗时, 可以将target恢复到targetSuperview中
 @synthesize target = _target;
 @synthesize targetSuperview = _targetSuperview;
-@synthesize floatView = _floatView;
 
 + (void)initialize {
     static dispatch_once_t onceToken;
@@ -96,10 +96,10 @@
     if ( self ) {
         _automaticallyEnterFloatingMode = YES;
         _layoutInsets = UIEdgeInsetsMake(20, 12, 20, 12);
-        _layoutPosition = SJFloatViewLayoutPositionBottomRight;
+        _layoutPosition = SJSmallViewLayoutPositionBottomRight;
         _enabled = YES;
-        self.onSingleTapped = ^(id<SJFloatSmallViewController>  _Nonnull controller) {
-            SJFloatSmallViewTransitionController *transitionController = (id)controller;
+        self.onSingleTapped = ^(id<SJSmallViewFloatingController>  _Nonnull controller) {
+            SJSmallViewFloatingTransitionController *transitionController = (id)controller;
             [transitionController resume];
         };
     }
@@ -107,31 +107,31 @@
 }
 
 - (void)dealloc {
-    [_floatView performSelectorOnMainThread:@selector(removeFromSuperview) withObject:nil waitUntilDone:YES];
+    [_floatingView performSelectorOnMainThread:@selector(removeFromSuperview) withObject:nil waitUntilDone:YES];
 }
 
-- (id<SJFloatSmallViewControllerObserverProtocol>)getObserver {
-    return [[SJFloatSmallViewTransitionControllerObserver alloc] initWithController:self];
+- (id<SJSmallViewFloatingControllerObserverProtocol>)getObserver {
+    return [[SJSmallViewFloatingTransitionControllerObserver alloc] initWithController:self];
 }
 
-- (__kindof UIView *)floatView {
-    if ( _floatView == nil ) {
-        _floatView = [[SJFloatSmallViewContainerView alloc] initWithFrame:CGRectZero];
-        [(SJFloatSmallViewContainerView *)_floatView setTransitionController:self];
+- (__kindof UIView *)floatingView {
+    if ( _floatingView == nil ) {
+        _floatingView = [[SJSmallViewFloatingTransitionView alloc] initWithFrame:CGRectZero];
+        [(SJSmallViewFloatingTransitionView *)_floatingView setTransitionController:self];
     }
-    return _floatView;
+    return _floatingView;
 }
 
 - (void)setAddFloatViewToKeyWindow:(BOOL)addFloatViewToKeyWindow {}
 - (BOOL)addFloatViewToKeyWindow { return YES; }
 
 // 进入小浮窗模式
-- (void)showFloatView {
+- (void)show {
     [self enterFloatingMode];
 }
 
 // 关闭小浮窗
-- (void)dismissFloatView {
+- (void)dismiss {
     if ( !_enabled ) return;
     _playbackViewController = nil;
     self.isAppeared = NO;
@@ -139,9 +139,9 @@
 
 // - gestures -
 
-- (void)_addGesturesToFloatView:(SJFloatSmallViewContainerView *)floatView {
-    if ( self.panGesture.view != floatView )
-        [floatView addGestureRecognizer:self.panGesture];
+- (void)_addGesturesToFloatView:(SJSmallViewFloatingTransitionView *)floatingView {
+    if ( self.panGesture.view != floatingView )
+        [floatingView addGestureRecognizer:self.panGesture];
 }
 
 - (void)setSlidable:(BOOL)slidable {
@@ -169,7 +169,7 @@
 }
 
 - (void)_handlePanGesture:(UIPanGestureRecognizer *)panGesture {
-    SJFloatSmallViewContainerView *view = _floatView;
+    SJSmallViewFloatingTransitionView *view = _floatingView;
     UIView *superview = view.superview;
     CGPoint offset = [panGesture translationInView:superview];
     CGPoint center = view.center;
@@ -251,7 +251,7 @@ SVTC_getTopViewController(void) {
     // 3 退出`playbackViewController`
     // 4 设置转场动画
     
-    if ( _floatViewShouldAppear && !_floatViewShouldAppear(self) )
+    if ( _floatingViewShouldAppear && !_floatingViewShouldAppear(self) )
         return NO;
     
     // 1.
@@ -270,10 +270,10 @@ SVTC_getTopViewController(void) {
     if ( _playbackViewController == nil || window == nil )
         return NO;
       
-    if ( self.floatView.superview != window ) {
-        // 首次显示, 将floatView添加到window并设置frame
-        [window addSubview:_floatView];
-        [self _addGesturesToFloatView:_floatView];
+    if ( self.floatingView.superview != window ) {
+        // 首次显示, 将floatingView添加到window并设置frame
+        [window addSubview:_floatingView];
+        [self _addGesturesToFloatView:_floatingView];
 
         CGRect windowBounds = window.bounds;
         CGFloat windowW = windowBounds.size.width;
@@ -298,40 +298,40 @@ SVTC_getTopViewController(void) {
         }
         
         switch ( _layoutPosition ) {
-            case SJFloatViewLayoutPositionTopLeft:
-            case SJFloatViewLayoutPositionBottomLeft:
+            case SJSmallViewLayoutPositionTopLeft:
+            case SJSmallViewLayoutPositionBottomLeft:
                 x = safeAreaInsets.left + _layoutInsets.left;
                 break;
-            case SJFloatViewLayoutPositionTopRight:
-            case SJFloatViewLayoutPositionBottomRight:
+            case SJSmallViewLayoutPositionTopRight:
+            case SJSmallViewLayoutPositionBottomRight:
                 x = windowW - w - _layoutInsets.right - safeAreaInsets.right;
                 break;
         }
           
         switch ( _layoutPosition ) {
-            case SJFloatViewLayoutPositionTopLeft:
-            case SJFloatViewLayoutPositionTopRight:
+            case SJSmallViewLayoutPositionTopLeft:
+            case SJSmallViewLayoutPositionTopRight:
                 y = safeAreaInsets.top + _layoutInsets.top;
                 break;
-            case SJFloatViewLayoutPositionBottomLeft:
-            case SJFloatViewLayoutPositionBottomRight:
+            case SJSmallViewLayoutPositionBottomLeft:
+            case SJSmallViewLayoutPositionBottomRight:
                 y = windowH - h - _layoutInsets.bottom - safeAreaInsets.bottom;
                 break;
         }
 
-        _floatView.frame = CGRectMake(x, y, w, h);
-        [_floatView layoutIfNeeded];
+        _floatingView.frame = CGRectMake(x, y, w, h);
+        [_floatingView layoutIfNeeded];
     }
     
     // 2.
-    CGRect from = [_targetSuperview convertRect:_targetSuperview.bounds toView:_floatView.containerView];
-    [_floatView.containerView addSubview:_target];
+    CGRect from = [_targetSuperview convertRect:_targetSuperview.bounds toView:_floatingView.containerView];
+    [_floatingView.containerView addSubview:_target];
     _target.frame = from;
     [_target layoutSubviews];
     [_target layoutIfNeeded];
-    self->_floatView.hidden = NO;
+    self->_floatingView.hidden = NO;
     [UIView animateWithDuration:0.4 animations:^{
-        self->_target.frame = self->_floatView.containerView.bounds;
+        self->_target.frame = self->_floatingView.containerView.bounds;
         [self->_target layoutSubviews];
         [self->_target layoutIfNeeded];
     }];
@@ -347,13 +347,13 @@ SVTC_getTopViewController(void) {
     // 1. push`playbackController`
     // 2. 将播放器添加回去
     
-    CGRect to = [_targetSuperview convertRect:_targetSuperview.bounds toView:_floatView.containerView];
+    CGRect to = [_targetSuperview convertRect:_targetSuperview.bounds toView:_floatingView.containerView];
     [UIView animateWithDuration:0.4 animations:^{
         self->_target.frame = to;
         [self->_target layoutSubviews];
         [self->_target layoutIfNeeded];
     } completion:^(BOOL finished) {
-        self->_floatView.hidden = YES;
+        self->_floatingView.hidden = YES;
         
         [self->_targetSuperview addSubview:self->_target];
         self->_target.frame = self->_targetSuperview.bounds;
@@ -383,13 +383,13 @@ SVTC_getTopViewController(void) {
 }
 @end
 
-UIKIT_STATIC_INLINE SJFloatSmallViewTransitionController *_Nullable
+UIKIT_STATIC_INLINE SJSmallViewFloatingTransitionController *_Nullable
 SVTC_TransitionController(UIViewController *viewController) {
-    id ctr = [viewController respondsToSelector:@selector(floatSmallViewTransitionController)] ? viewController.floatSmallViewTransitionController : nil;
-    return [ctr isKindOfClass:SJFloatSmallViewTransitionController.class] ? ctr : nil;
+    id ctr = [viewController respondsToSelector:@selector(smallViewFloatingTransitionController)] ? viewController.smallViewFloatingTransitionController : nil;
+    return [ctr isKindOfClass:SJSmallViewFloatingTransitionController.class] ? ctr : nil;
 }
 
-@implementation UINavigationController (SJFloatSmallViewTransitionControllerExtended)
+@implementation UINavigationController (SJSmallViewFloatingTransitionControllerExtended)
 UIKIT_STATIC_INLINE void
 SVTC_exchangeImplementation(Class cls, SEL originSel, SEL swizzledSel) {
     Method originalMethod = class_getInstanceMethod(cls, originSel);
@@ -410,7 +410,7 @@ SVTC_exchangeImplementation(Class cls, SEL originSel, SEL swizzledSel) {
 }
 
 - (UIViewController *)SVTC_popViewControllerAnimated:(BOOL)animated {
-    SJFloatSmallViewTransitionController *transitionController = SVTC_TransitionController(self.topViewController);
+    SJSmallViewFloatingTransitionController *transitionController = SVTC_TransitionController(self.topViewController);
     if ( transitionController != nil && transitionController.automaticallyEnterFloatingMode ) {
         [transitionController enterFloatingMode];
         return [self SVTC_popViewControllerAnimated:animated];
@@ -418,7 +418,7 @@ SVTC_exchangeImplementation(Class cls, SEL originSel, SEL swizzledSel) {
     else {
         UIViewController *vc = [self SVTC_popViewControllerAnimated:animated];
         UIViewController *topViewController = self.topViewController;
-        SJFloatSmallViewTransitionController *transitionController = SVTC_TransitionController(topViewController);
+        SJSmallViewFloatingTransitionController *transitionController = SVTC_TransitionController(topViewController);
         if ( transitionController != nil ) {
             [transitionController resumeMode];
         }
@@ -427,14 +427,14 @@ SVTC_exchangeImplementation(Class cls, SEL originSel, SEL swizzledSel) {
 }
 
 - (void)SVTC_pushViewController:(UIViewController *)viewController animated:(BOOL)animated {
-    SJFloatSmallViewTransitionController *transitionController = SVTC_TransitionController(viewController);
+    SJSmallViewFloatingTransitionController *transitionController = SVTC_TransitionController(viewController);
     if ( transitionController != nil ) {
         [self SVTC_pushViewController:viewController animated:animated];
         [transitionController resumeMode];
     }
     else {
         UIViewController *topViewController = self.topViewController;
-        SJFloatSmallViewTransitionController *transitionController = SVTC_TransitionController(topViewController);
+        SJSmallViewFloatingTransitionController *transitionController = SVTC_TransitionController(topViewController);
         if ( transitionController != nil && transitionController.automaticallyEnterFloatingMode ) {
             [transitionController enterFloatingMode];
         }
@@ -443,13 +443,13 @@ SVTC_exchangeImplementation(Class cls, SEL originSel, SEL swizzledSel) {
 }
 
 - (void)SVTC_setViewControllers:(NSArray<UIViewController *> *)viewControllers animated:(BOOL)animated {
-    SJFloatSmallViewTransitionController *transitionController = SVTC_TransitionController(self.topViewController);
+    SJSmallViewFloatingTransitionController *transitionController = SVTC_TransitionController(self.topViewController);
     if ( transitionController != nil ) {
         if ( viewControllers.lastObject != self.topViewController  && transitionController.automaticallyEnterFloatingMode )
             [transitionController enterFloatingMode];
     }
     else {
-        SJFloatSmallViewTransitionController *transitionController = SVTC_TransitionController(viewControllers.lastObject);
+        SJSmallViewFloatingTransitionController *transitionController = SVTC_TransitionController(viewControllers.lastObject);
         if ( transitionController != nil ) {
             [transitionController resumeMode];
         }
@@ -458,12 +458,12 @@ SVTC_exchangeImplementation(Class cls, SEL originSel, SEL swizzledSel) {
 }
 @end
 
-@implementation UIWindow (SJFloatSmallViewTransitionControllerExtended)
+@implementation UIWindow (SJSmallViewFloatingTransitionControllerExtended)
 - (NSArray<__kindof UIViewController *> *_Nullable)SVTC_playbackInFloatingViewControllers {
     NSMutableArray<__kindof UIViewController *> *_Nullable vcs = nil;
     for ( __kindof UIView * subview in self.subviews ) {
-        if ( [subview isKindOfClass:SJFloatSmallViewContainerView.class] ) {
-            SJFloatSmallViewContainerView *containerView = subview;
+        if ( [subview isKindOfClass:SJSmallViewFloatingTransitionView.class] ) {
+            SJSmallViewFloatingTransitionView *containerView = subview;
             UIViewController *playbackViewController = containerView.transitionController.playbackViewController;
             if ( playbackViewController != nil ) {
                 if ( vcs == nil ) vcs = [NSMutableArray array];

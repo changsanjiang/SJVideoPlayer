@@ -24,6 +24,11 @@
 			<key>isShown</key>
 			<false/>
 		</dict>
+		<key>Pods-iPadDemo.xcscheme</key>
+		<dict>
+			<key>isShown</key>
+			<false/>
+		</dict>
 		<key>SDWebImage.xcscheme</key>
 		<dict>
 			<key>isShown</key>
@@ -49,7 +54,12 @@
 			<key>isShown</key>
 			<false/>
 		</dict>
-		<key>SJUIKit.xcscheme</key>
+		<key>SJUIKit-68d28646.xcscheme</key>
+		<dict>
+			<key>isShown</key>
+			<false/>
+		</dict>
+		<key>SJUIKit-98d45660.xcscheme</key>
 		<dict>
 			<key>isShown</key>
 			<false/>

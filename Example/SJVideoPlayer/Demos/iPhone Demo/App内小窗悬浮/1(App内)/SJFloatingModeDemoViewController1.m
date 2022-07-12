@@ -1,33 +1,33 @@
 //
-//  SJFloatModeDemoViewController1.m
+//  SJFloatingModeDemoViewController1.m
 //  SJVideoPlayer_Example
 //
 //  Created by BlueDancer on 2021/1/14.
 //  Copyright © 2021 changsanjiang. All rights reserved.
 //
 
-#import "SJFloatModeDemoViewController1.h"
+#import "SJFloatingModeDemoViewController1.h"
 #import <SJVideoPlayer/SJVideoPlayer.h>
 #import <Masonry/Masonry.h>
 #import <SJUIKit/NSAttributedString+SJMake.h>
 #import "SJSourceURLs.h"
-#import "SJFloatSmallViewTransitionController.h"
+#import "SJSmallViewFloatingTransitionController.h"
 
-@interface SJFloatModeDemoViewController1 ()
+@interface SJFloatingModeDemoViewController1 ()
 @property (nonatomic, strong) SJVideoPlayer *player;
 @property (nonatomic) NSInteger videoId;
 @end
 
-@implementation SJFloatModeDemoViewController1
+@implementation SJFloatingModeDemoViewController1
 // step 1
 + (instancetype)viewControllerWithVideoId:(NSInteger)videoId {
     UIWindow *window = UIApplication.sharedApplication.keyWindow;
-    SJFloatModeDemoViewController1 *instance = nil;
+    SJFloatingModeDemoViewController1 *instance = nil;
     // compare videoId
     // 比较videoId, 确认是否正在悬浮播放
     for ( __kindof UIViewController *vc in window.SVTC_playbackInFloatingViewControllers ) {
-        if ( [vc isKindOfClass:SJFloatModeDemoViewController1.class] ) {
-            SJFloatModeDemoViewController1 *playbackViewController = vc;
+        if ( [vc isKindOfClass:SJFloatingModeDemoViewController1.class] ) {
+            SJFloatingModeDemoViewController1 *playbackViewController = vc;
             if ( playbackViewController.videoId == videoId ) {
                 instance = playbackViewController;
                 break;
@@ -36,7 +36,7 @@
     }
     
     if ( instance == nil ) {
-        instance = [SJFloatModeDemoViewController1.alloc initWithVideoId:videoId];
+        instance = [SJFloatingModeDemoViewController1.alloc initWithVideoId:videoId];
     }
     return instance;
 }
@@ -72,12 +72,12 @@
     }];
 
     // step 2
-    SJFloatSmallViewTransitionController *floatSmallViewTransitionController = SJFloatSmallViewTransitionController.alloc.init;
+    SJSmallViewFloatingTransitionController *smallViewFloatingTransitionController = SJSmallViewFloatingTransitionController.alloc.init;
     // 退出vc时, 是否自动进入小浮窗模式
-    floatSmallViewTransitionController.automaticallyEnterFloatingMode = YES;
-    _player.floatSmallViewController = floatSmallViewTransitionController;
+    smallViewFloatingTransitionController.automaticallyEnterFloatingMode = YES;
+    _player.smallViewFloatingController = smallViewFloatingTransitionController;
     __weak typeof(self) _self = self;
-    _player.floatSmallViewController.onDoubleTapped = ^(id<SJFloatSmallViewController>  _Nonnull controller) {
+    _player.smallViewFloatingController.onDoubleTapped = ^(id<SJSmallViewFloatingController>  _Nonnull controller) {
         __strong typeof(_self) self = _self;
         if ( self == nil ) return;
         self.player.isPaused ? [self.player play] : [self.player pause];
@@ -100,7 +100,7 @@
         make.append(@"点击此处手动进入小浮窗模式");
         make.font([UIFont boldSystemFontOfSize:20]);
         make.textColor(UIColor.whiteColor);
-    }] target:self action:@selector(enterFloatMode) tag:123];
+    }] target:self action:@selector(enterFloatingMode) tag:123];
     [_player.defaultEdgeControlLayer.centerAdapter addItem:fsItem];
     
     
@@ -142,19 +142,19 @@
 }
 
 // step 5
-- (SJFloatSmallViewTransitionController *)floatSmallViewTransitionController {
-    return (id)_player.floatSmallViewController;
+- (SJSmallViewFloatingTransitionController *)smallViewFloatingTransitionController {
+    return (id)_player.smallViewFloatingController;
 }
 
 #pragma mark - test
 // 手动进入
-- (void)enterFloatMode {
+- (void)enterFloatingMode {
     __weak typeof(self) _self = self;
     if      ( _player.isFullscreen ) {
         [_player rotate:SJOrientation_Portrait animated:YES completion:^(__kindof SJBaseVideoPlayer * _Nonnull player) {
             __strong typeof(_self) self = _self;
             if ( self == nil ) return;
-            if ( !self.floatSmallViewTransitionController.automaticallyEnterFloatingMode ) [player.floatSmallViewController showFloatView];
+            if ( !self.smallViewFloatingTransitionController.automaticallyEnterFloatingMode ) [player.smallViewFloatingController show];
             [self.navigationController popViewControllerAnimated:YES];
         }];
     }
@@ -162,12 +162,12 @@
         [_player setFitOnScreen:NO animated:YES completionHandler:^(__kindof SJBaseVideoPlayer * _Nonnull player) {
             __strong typeof(_self) self = _self;
             if ( self == nil ) return;
-            if ( !self.floatSmallViewTransitionController.automaticallyEnterFloatingMode ) [player.floatSmallViewController showFloatView];
+            if ( !self.smallViewFloatingTransitionController.automaticallyEnterFloatingMode ) [player.smallViewFloatingController show];
             [self.navigationController popViewControllerAnimated:YES];
         }];
     }
     else {
-        if ( !self.floatSmallViewTransitionController.automaticallyEnterFloatingMode ) [_player.floatSmallViewController showFloatView];
+        if ( !self.smallViewFloatingTransitionController.automaticallyEnterFloatingMode ) [_player.smallViewFloatingController show];
         [self.navigationController popViewControllerAnimated:YES];
     }
 }

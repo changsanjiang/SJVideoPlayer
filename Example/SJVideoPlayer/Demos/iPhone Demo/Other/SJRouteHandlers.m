@@ -17,7 +17,7 @@
 #import "SJUITableViewDemoViewController6.h"
 #import "SJUITableViewDemoViewController7.h"
 #import "SJUITableViewDemoViewController8.h"
-#import "SJFloatModeDemoViewController2.h"
+#import "SJFloatingModeDemoViewController2.h"
 
 #import "SJUICollectionViewDemoViewController1.h"
 #import "SJUICollectionViewDemoViewController2.h"
@@ -33,7 +33,9 @@
 #import "SJUIScrollViewDemoViewController1.h"
 #import "SJUIScrollViewDemoViewController2.h"
 
-#import "SJFloatModeDemoViewController1.h"
+#import "SJFloatingModeDemoViewController1.h"
+
+#import "SJPIPDemoViewController.h"
 
 @implementation SJRouteHandlers
 + (void)addRoutesToRouter:(SJRouter *)router {
@@ -43,7 +45,7 @@
         }
     };
     
-    addBlock([self routeObjectArrayForFloatModeDemo]);
+    addBlock([self routeObjectArrayForFloatingModeDemo]);
     addBlock([self routeObjectArrayForUIScrollViewDemo]);
     addBlock([self routeObjectArrayForDYDemo]);
     addBlock([self routeObjectArrayForUITableViewDemo]);
@@ -51,14 +53,18 @@
     addBlock([self routeObjectArrayForKeyboardDemo]);
 }
 
-+ (NSArray<SJRouteObject *> *)routeObjectArrayForFloatModeDemo {
++ (NSArray<SJRouteObject *> *)routeObjectArrayForFloatingModeDemo {
     return @[
-        [SJRouteObject.alloc initWithPath:@"FloatMode/1" transitionMode:SJViewControllerTransitionModeNavigation createInstanceBlock:^(SJRouteRequest * _Nonnull request, SJCompletionHandler  _Nullable completionHandler) {
-            __auto_type vc = [SJFloatModeDemoViewController1 viewControllerWithVideoId:10];
+        [SJRouteObject.alloc initWithPath:@"FloatingMode/1" transitionMode:SJViewControllerTransitionModeNavigation createInstanceBlock:^(SJRouteRequest * _Nonnull request, SJCompletionHandler  _Nullable completionHandler) {
+            __auto_type vc = [SJFloatingModeDemoViewController1 viewControllerWithVideoId:10];
             if ( completionHandler ) completionHandler(vc, nil);
         }],
-        [SJRouteObject.alloc initWithPath:@"FloatMode/2" transitionMode:SJViewControllerTransitionModeNavigation createInstanceBlock:^(SJRouteRequest * _Nonnull request, SJCompletionHandler  _Nullable completionHandler) {
-            __auto_type vc = SJFloatModeDemoViewController2.new;
+        [SJRouteObject.alloc initWithPath:@"FloatingMode/2" transitionMode:SJViewControllerTransitionModeNavigation createInstanceBlock:^(SJRouteRequest * _Nonnull request, SJCompletionHandler  _Nullable completionHandler) {
+            __auto_type vc = SJFloatingModeDemoViewController2.new;
+            if ( completionHandler ) completionHandler(vc, nil);
+        }],
+        [SJRouteObject.alloc initWithPath:@"FloatingMode/3" transitionMode:SJViewControllerTransitionModeNavigation createInstanceBlock:^(SJRouteRequest * _Nonnull request, SJCompletionHandler  _Nullable completionHandler) {
+            __auto_type vc = SJPIPDemoViewController.new;
             if ( completionHandler ) completionHandler(vc, nil);
         }]
     ];

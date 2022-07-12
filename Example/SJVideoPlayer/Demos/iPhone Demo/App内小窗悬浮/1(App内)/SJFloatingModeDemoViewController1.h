@@ -1,5 +1,5 @@
 //
-//  SJFloatModeDemoViewController1.h
+//  SJFloatingModeDemoViewController1.h
 //  SJVideoPlayer_Example
 //
 //  Created by BlueDancer on 2021/1/14.
@@ -10,7 +10,7 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
-@interface SJFloatModeDemoViewController1 : UIViewController
+@interface SJFloatingModeDemoViewController1 : UIViewController
 
 + (instancetype)viewControllerWithVideoId:(NSInteger)videoId;
 

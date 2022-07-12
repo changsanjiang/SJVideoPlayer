@@ -1,5 +1,5 @@
 //
-//  SJFloatSmallViewTransitionController.h
+//  SJSmallViewFloatingTransitionController.h
 //  SJVideoPlayer_Example
 //
 //  Created by BlueDancer on 2021/1/13.
@@ -7,16 +7,16 @@
 //
 
 #import <Foundation/Foundation.h>
-#import "SJFloatSmallViewController.h"
-@protocol SJFloatSmallView;
+#import "SJSmallViewFloatingController.h"
+@protocol SJSmallViewFloatingTransitionView;
 
 NS_ASSUME_NONNULL_BEGIN
-@interface SJFloatSmallViewTransitionController : NSObject<SJFloatSmallViewController>
+@interface SJSmallViewFloatingTransitionController : NSObject<SJSmallViewFloatingController>
 - (void)resume;
-@property (nonatomic, strong, null_resettable) __kindof UIView<SJFloatSmallView> *floatView;
+@property (nonatomic, strong, null_resettable) __kindof UIView<SJSmallViewFloatingTransitionView> *floatingView;
 @property (nonatomic) BOOL ignoreSafeAreaInsets API_AVAILABLE(ios(11.0));
-/// default value is SJFloatViewLayoutPositionBottomRight.
-@property (nonatomic) SJFloatViewLayoutPosition layoutPosition;
+/// default value is SJSmallViewLayoutPositionBottomRight.
+@property (nonatomic) SJSmallViewLayoutPosition layoutPosition;
 /// default value is UIEdgeInsetsMake(20, 12, 20, 12).
 @property (nonatomic) UIEdgeInsets layoutInsets;
 @property (nonatomic) CGSize layoutSize;
@@ -24,16 +24,16 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic) BOOL automaticallyEnterFloatingMode;
 @end
 
-@interface UIViewController (SJFloatSmallViewTransitionControllerExtended)
-@property (nonatomic, strong, readonly, nullable) SJFloatSmallViewTransitionController *floatSmallViewTransitionController;
+@interface UIViewController (SJSmallViewFloatingTransitionControllerExtended)
+@property (nonatomic, strong, readonly, nullable) SJSmallViewFloatingTransitionController *smallViewFloatingTransitionController;
 @end
 
-@interface UIWindow (SJFloatSmallViewTransitionControllerExtended)
+@interface UIWindow (SJSmallViewFloatingTransitionControllerExtended)
 /// 当前处于悬浮播放状态的视图控制器
 - (NSArray<__kindof UIViewController *> *_Nullable)SVTC_playbackInFloatingViewControllers;
 @end
 
-@protocol SJFloatSmallView <NSObject>
+@protocol SJSmallViewFloatingTransitionView <NSObject>
 // The player view will be added to the container view.
 @property (nonatomic, strong, readonly) UIView *containerView;
 @end

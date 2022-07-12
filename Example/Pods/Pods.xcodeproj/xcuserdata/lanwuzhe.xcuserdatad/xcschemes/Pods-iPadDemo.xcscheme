@@ -14,9 +14,9 @@
             buildForAnalyzing = "YES">
             <BuildableReference
                BuildableIdentifier = "primary"
-               BlueprintIdentifier = "6083682834ABE0AE7BD1CBF06CADD036"
-               BuildableName = "libCocoaAsyncSocket.a"
-               BlueprintName = "CocoaAsyncSocket"
+               BlueprintIdentifier = "E95BFD3FC545F9A50EDF5DE6F8304C68"
+               BuildableName = "libPods-iPadDemo.a"
+               BlueprintName = "Pods-iPadDemo"
                ReferencedContainer = "container:Pods.xcodeproj">
             </BuildableReference>
          </BuildActionEntry>

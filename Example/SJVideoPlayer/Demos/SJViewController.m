@@ -74,7 +74,7 @@
 
     [m addObject:[[LWZTableSectionShrinker alloc] initWithTitle:@"Rotation Control" titleWhenShrank:nil dataArr:[self _createRotationControlDemoItems]]];
 
-    [m addObject:[[LWZTableSectionShrinker alloc] initWithTitle:@"Playback of video in a floating" titleWhenShrank:nil dataArr:[self _FloatModeDemoItems]]];
+    [m addObject:[[LWZTableSectionShrinker alloc] initWithTitle:@"Floating Mode" titleWhenShrank:nil dataArr:[self _FloatingModeDemoItems]]];
     
     [m addObject:[[LWZTableSectionShrinker alloc] initWithTitle:@"UIScrollView Demo" titleWhenShrank:nil dataArr:[self _UIScrollViewDemoItems]]];
 
@@ -108,10 +108,11 @@
     _data = m.copy;
 }
 
-- (NSArray<Item *> *)_FloatModeDemoItems {
+- (NSArray<Item *> *)_FloatingModeDemoItems {
     return @[
-        [Item.alloc initWithTitle:@"Mode 1" subTitle:@"当viewController退出时切换为小浮窗" path:@"FloatMode/1"],
-        [Item.alloc initWithTitle:@"Mode 2" subTitle:@"当在ScrollView中滑动消失时, 显示小浮窗视图" path:@"FloatMode/2"],
+        [Item.alloc initWithTitle:@"Mode 1" subTitle:@"当viewController退出时切换为小浮窗" path:@"FloatingMode/1"],
+        [Item.alloc initWithTitle:@"Mode 2" subTitle:@"当在ScrollView中滑动消失时, 显示小浮窗视图" path:@"FloatingMode/2"],
+        [Item.alloc initWithTitle:@"Mode 3" subTitle:@"画中画" path:@"FloatingMode/3"],
     ];
 }
 

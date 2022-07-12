@@ -6,16 +6,16 @@
 //  Copyright © 2020 changsanjiang. All rights reserved.
 //
 
-#import "SJFloatModeDemoViewController2.h"
+#import "SJFloatingModeDemoViewController2.h"
 #import <Masonry/Masonry.h>
 #import "SJVideoCellViewModel.h"
 #import "SJViewController4.h"
 
-@interface SJFloatModeDemoViewController2 ()<SJVideoTableViewCellDelegate>
+@interface SJFloatingModeDemoViewController2 ()<SJVideoTableViewCellDelegate>
 @property (nonatomic, strong, readonly) NSMutableArray<SJVideoCellViewModel *> *models;
 @end
 
-@implementation SJFloatModeDemoViewController2
+@implementation SJFloatingModeDemoViewController2
 
 - (void)viewDidLoad {
     [super viewDidLoad];
@@ -29,19 +29,19 @@
     if ( !_player ) {
         _player = [SJVideoPlayer player];
         // 开启小浮窗(当播放器视图滑动消失时, 显示小浮窗视图)
-        _player.floatSmallViewController.enabled = YES;
+        _player.smallViewFloatingController.enabled = YES;
         
         __weak typeof(self) _self = self;
         // 单击小浮窗时的回调
-        _player.floatSmallViewController.onSingleTapped = ^(id<SJFloatSmallViewController>  _Nonnull floatSmallViewController) {
+        _player.smallViewFloatingController.onSingleTapped = ^(id<SJSmallViewFloatingController>  _Nonnull smallViewFloatingController) {
             __strong typeof(_self) self = _self;
             if ( !self ) return ;
-            [floatSmallViewController dismissFloatView];
+            [smallViewFloatingController dismiss];
             [self.navigationController pushViewController:[[SJViewController4 alloc] initWithAsset:self.player.URLAsset] animated:YES];
         };
         
         // 双击小浮窗时的回调
-        _player.floatSmallViewController.onDoubleTapped = ^(id<SJFloatSmallViewController>  _Nonnull controller) {
+        _player.smallViewFloatingController.onDoubleTapped = ^(id<SJSmallViewFloatingController>  _Nonnull controller) {
             __strong typeof(_self) self = _self;
             if ( !self ) return ;
             

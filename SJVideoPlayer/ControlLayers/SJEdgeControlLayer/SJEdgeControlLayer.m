@@ -463,7 +463,7 @@
     if (@available(iOS 11.0, *)) {
         [self _reloadCustomStatusBarIfNeeded];
     }
-    if ( _disabledPromptWhenNetworkStatusChanges ) return;
+    if ( _disabledPromptingWhenNetworkStatusChanges ) return;
     if ( [self.videoPlayer.assetURL isFileURL] ) return; // return when is local video.
     
     switch ( status ) {
@@ -579,8 +579,8 @@
     }
 }
 
-- (void)setShouldShowCustomStatusBar:(BOOL (^)(SJEdgeControlLayer * _Nonnull))shouldShowCustomStatusBar NS_AVAILABLE_IOS(11.0) {
-    _shouldShowCustomStatusBar = shouldShowCustomStatusBar;
+- (void)setShouldShowsCustomStatusBar:(BOOL (^)(SJEdgeControlLayer * _Nonnull))shouldShowsCustomStatusBar NS_AVAILABLE_IOS(11.0) {
+    _shouldShowsCustomStatusBar = shouldShowsCustomStatusBar;
     [self _updateAppearStateForCustomStatusBar];
 }
 
@@ -714,11 +714,11 @@
     return _customStatusBar;
 }
 
-@synthesize shouldShowCustomStatusBar = _shouldShowCustomStatusBar;
-- (BOOL (^)(SJEdgeControlLayer * _Nonnull))shouldShowCustomStatusBar {
-    if ( _shouldShowCustomStatusBar == nil ) {
+@synthesize shouldShowsCustomStatusBar = _shouldShowsCustomStatusBar;
+- (BOOL (^)(SJEdgeControlLayer * _Nonnull))shouldShowsCustomStatusBar {
+    if ( _shouldShowsCustomStatusBar == nil ) {
         BOOL is_iPhoneXSeries = _screen.is_iPhoneXSeries;
-        [self setShouldShowCustomStatusBar:^BOOL(SJEdgeControlLayer * _Nonnull controlLayer) {
+        [self setShouldShowsCustomStatusBar:^BOOL(SJEdgeControlLayer * _Nonnull controlLayer) {
             if ( UIUserInterfaceIdiomPad == UI_USER_INTERFACE_IDIOM() ) return NO;
             
             if ( controlLayer.videoPlayer.isFitOnScreen ) return NO;
@@ -749,7 +749,7 @@
             return shouldShow;
         }];
     }
-    return _shouldShowCustomStatusBar;
+    return _shouldShowsCustomStatusBar;
 }
 
 @synthesize dateTimerControl = _dateTimerControl;
@@ -982,7 +982,7 @@
 }
 
 - (void)_updateAppearStateForCustomStatusBar NS_AVAILABLE_IOS(11.0) {
-    BOOL shouldShow = self.shouldShowCustomStatusBar(self);
+    BOOL shouldShow = self.shouldShowsCustomStatusBar(self);
     if ( shouldShow ) {
         if ( self.customStatusBar.superview == nil ) {
             static dispatch_once_t onceToken;

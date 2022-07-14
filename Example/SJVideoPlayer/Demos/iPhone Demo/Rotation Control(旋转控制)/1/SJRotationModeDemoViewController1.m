@@ -52,7 +52,7 @@
     
     _player = [SJVideoPlayer player];
     _player.defaultEdgeControlLayer.fixesBackItem = YES; // 返回按钮一直显示
-    _player.pauseWhenAppDidEnterBackground = NO;
+    _player.pausedInBackground = NO;
     _player.controlLayerAppearManager.interval = 5; // 设置控制层隐藏间隔
 //    _player.resumePlaybackWhenAppDidEnterForeground = YES;
 

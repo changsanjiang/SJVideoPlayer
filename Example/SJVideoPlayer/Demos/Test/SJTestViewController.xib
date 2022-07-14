@@ -1,11 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="14490.70" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES">
-    <device id="retina6_1" orientation="portrait">
-        <adaptation id="fullscreen"/>
-    </device>
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="21208.1" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES">
+    <device id="retina6_1" orientation="portrait" appearance="light"/>
     <dependencies>
         <deployment identifier="iOS"/>
-        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="14490.49"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="21191"/>
         <capability name="Safe area layout guides" minToolsVersion="9.0"/>
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
     </dependencies>
@@ -28,17 +26,43 @@
                         <constraint firstAttribute="width" secondItem="mU5-kz-6dG" secondAttribute="height" multiplier="16:9" id="Jk9-Eo-aIx"/>
                     </constraints>
                 </view>
+                <stackView opaque="NO" contentMode="scaleToFill" distribution="fillEqually" spacing="8" translatesAutoresizingMaskIntoConstraints="NO" id="p9D-MX-vcZ">
+                    <rect key="frame" x="0.0" y="297" width="414" height="44"/>
+                    <subviews>
+                        <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="e9B-5u-r9C">
+                            <rect key="frame" x="0.0" y="0.0" width="203" height="44"/>
+                            <state key="normal" title="Button"/>
+                            <buttonConfiguration key="configuration" style="plain" title="Rotate"/>
+                            <connections>
+                                <action selector="rotate:" destination="-1" eventType="touchUpInside" id="GJK-J0-75H"/>
+                            </connections>
+                        </button>
+                        <switch opaque="NO" contentMode="scaleToFill" horizontalHuggingPriority="750" verticalHuggingPriority="750" contentHorizontalAlignment="center" contentVerticalAlignment="center" on="YES" translatesAutoresizingMaskIntoConstraints="NO" id="0wW-Yl-dFf">
+                            <rect key="frame" x="211" y="0.0" width="205" height="44"/>
+                            <connections>
+                                <action selector="onSwitch:" destination="-1" eventType="valueChanged" id="LDp-KP-JXP"/>
+                            </connections>
+                        </switch>
+                    </subviews>
+                    <constraints>
+                        <constraint firstAttribute="height" constant="44" id="Om3-ra-Shv"/>
+                    </constraints>
+                </stackView>
             </subviews>
+            <viewLayoutGuide key="safeArea" id="Q5M-cg-NOt"/>
             <color key="backgroundColor" red="1" green="1" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
             <constraints>
                 <constraint firstItem="mU5-kz-6dG" firstAttribute="leading" secondItem="i5M-Pr-FkT" secondAttribute="leading" id="0i0-cC-fh8"/>
                 <constraint firstItem="mU5-kz-6dG" firstAttribute="width" secondItem="mU5-kz-6dG" secondAttribute="height" multiplier="16:9" id="LoK-Sm-osd"/>
                 <constraint firstItem="mU5-kz-6dG" firstAttribute="top" secondItem="Q5M-cg-NOt" secondAttribute="top" id="Un0-Go-DPr"/>
                 <constraint firstItem="mU5-kz-6dG" firstAttribute="width" secondItem="mU5-kz-6dG" secondAttribute="height" multiplier="16:9" id="agy-Tp-Heg"/>
+                <constraint firstItem="Q5M-cg-NOt" firstAttribute="trailing" secondItem="p9D-MX-vcZ" secondAttribute="trailing" id="m8H-yh-uUU"/>
                 <constraint firstItem="Q5M-cg-NOt" firstAttribute="trailing" secondItem="mU5-kz-6dG" secondAttribute="trailing" id="ohN-Ha-ZLS"/>
+                <constraint firstItem="p9D-MX-vcZ" firstAttribute="leading" secondItem="Q5M-cg-NOt" secondAttribute="leading" id="pOI-QZ-XSQ"/>
                 <constraint firstItem="mU5-kz-6dG" firstAttribute="width" secondItem="mU5-kz-6dG" secondAttribute="height" multiplier="16:9" id="uJR-Lu-zWk"/>
+                <constraint firstItem="p9D-MX-vcZ" firstAttribute="top" secondItem="mU5-kz-6dG" secondAttribute="bottom" constant="20" id="uPN-SE-shP"/>
             </constraints>
-            <viewLayoutGuide key="safeArea" id="Q5M-cg-NOt"/>
+            <point key="canvasLocation" x="139" y="50"/>
         </view>
     </objects>
 </document>

@@ -137,7 +137,7 @@ UIKIT_EXTERN NSNotificationName const SJVideoPlayerConfigurationsDidUpdateNotifi
 
 @property (nonatomic, strong, nullable) UIColor *noNetworkButtonBackgroundColor;
 
-#pragma mark - SJFloatSmallViewControlLayer Resources
+#pragma mark - SJSmallViewControlLayer Resources
 
 @property (nonatomic, strong, nullable) UIImage *floatSmallViewCloseImage;
 

@@ -1,5 +1,5 @@
 //
-//  SJSwitchVideoDefinitionControlLayer.h
+//  SJVideoDefinitionSwitchingControlLayer.h
 //  Pods
 //
 //  Created by 畅三江 on 2019/7/12.
@@ -11,22 +11,22 @@
 
 #pragma mark - 切换清晰度时的控制层
 
-@protocol SJSwitchVideoDefinitionControlLayerDelegate;
+@protocol SJVideoDefinitionSwitchingControlLayerDelegate;
 
 NS_ASSUME_NONNULL_BEGIN
 
-@interface SJSwitchVideoDefinitionControlLayer : SJEdgeControlLayerAdapters<SJControlLayer>
+@interface SJVideoDefinitionSwitchingControlLayer : SJEdgeControlLayerAdapters<SJControlLayer>
 
 @property (nonatomic, copy, nullable) NSArray<SJVideoPlayerURLAsset *> *assets;
 
-@property (nonatomic, weak, nullable) id<SJSwitchVideoDefinitionControlLayerDelegate> delegate;
+@property (nonatomic, weak, nullable) id<SJVideoDefinitionSwitchingControlLayerDelegate> delegate;
 
 @property (nonatomic, strong, null_resettable) UIColor *selectedTextColor;
 @end
 
-@protocol SJSwitchVideoDefinitionControlLayerDelegate <NSObject>
+@protocol SJVideoDefinitionSwitchingControlLayerDelegate <NSObject>
 
-- (void)controlLayer:(SJSwitchVideoDefinitionControlLayer *)controlLayer didSelectAsset:(SJVideoPlayerURLAsset *)asset;
+- (void)controlLayer:(SJVideoDefinitionSwitchingControlLayer *)controlLayer didSelectAsset:(SJVideoPlayerURLAsset *)asset;
 
 - (void)tappedBlankAreaOnTheControlLayer:(id<SJControlLayer>)controlLayer;
 

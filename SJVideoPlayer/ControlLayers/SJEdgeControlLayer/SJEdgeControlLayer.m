@@ -993,13 +993,13 @@
             [NSNotificationCenter.defaultCenter addObserver:self selector:@selector(_reloadCustomStatusBarIfNeeded) name:UIDeviceBatteryLevelDidChangeNotification object:nil];
             [NSNotificationCenter.defaultCenter addObserver:self selector:@selector(_reloadCustomStatusBarIfNeeded) name:UIDeviceBatteryStateDidChangeNotification object:nil];
             
-            CGFloat containerW = self.topContainerView.frame.size.width;
-            CGFloat statusBarW = self.topAdapter.frame.size.width;
-            CGFloat startX = (containerW - statusBarW) * 0.5;
-            self.customStatusBar.frame = CGRectMake(startX, 0, self.topAdapter.bounds.size.width, 20);
             self.customStatusBar.autoresizingMask = UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleBottomMargin;
             [self.topContainerView addSubview:self.customStatusBar];
         }
+        CGFloat containerW = self.topContainerView.frame.size.width;
+        CGFloat statusBarW = self.topAdapter.frame.size.width;
+        CGFloat startX = (containerW - statusBarW) * 0.5;
+        self.customStatusBar.frame = CGRectMake(startX, 0, self.topAdapter.bounds.size.width, 20);
     }
     
     _customStatusBar.hidden = !shouldShow;

@@ -33,38 +33,50 @@
     [self _setupViews];
 }
 
+- (UIInterfaceOrientationMask)supportedInterfaceOrientations {
+    return UIInterfaceOrientationMaskPortrait;
+}
+
+- (BOOL)prefersStatusBarHidden {
+    return NO;
+}
+
+- (UIStatusBarStyle)preferredStatusBarStyle {
+    return UIStatusBarStyleDefault;
+}
+
 - (void)_setupViews {
     self.title = NSStringFromClass(self.class);
     self.view.backgroundColor = [UIColor whiteColor];
     self.edgesForExtendedLayout = UIRectEdgeNone;
     
-    _player = [SJVideoPlayer player]; 
-    _player.defaultEdgeControlLayer.fixesBackItem = YES; // 返回按钮一直显示
-    _player.pauseWhenAppDidEnterBackground = NO;
-    _player.controlLayerAppearManager.interval = 5; // 设置控制层隐藏间隔
-    _player.resumePlaybackWhenAppDidEnterForeground = YES;
-    
-    SJVideoPlayerURLAsset *asset = [[SJVideoPlayerURLAsset alloc] initWithURL:SourceURL0];
-    asset.startPosition = 5;
-//    asset.trialEndPosition = 30; // 试看30秒
-    asset.attributedTitle = [NSAttributedString sj_UIKitText:^(id<SJUIKitTextMakerProtocol>  _Nonnull make) {
-        make.append(@"SJVideoPlayerURLAsset *asset = [[SJVideoPlayerURLAsset");
-        make.textColor(UIColor.whiteColor);
-    }];
-    _player.URLAsset = asset;
-    [_playerContainerView addSubview:_player.view];
-    [_player.view mas_makeConstraints:^(MASConstraintMaker *make) {
-        make.edges.offset(0);
-    }];
-    
-    __weak typeof(self) _self = self;
-    _player.rotationObserver.onRotatingChanged = ^(id<SJRotationManager>  _Nonnull mgr, BOOL isRotating) {
-        __strong typeof(_self) self = _self;
-        if ( !self ) return ;
-#ifdef DEBUG
-        NSLog(@"onRotatingChanged: %d \t %s", (int)__LINE__, __func__);
-#endif
-    };
+//    _player = [SJVideoPlayer player];
+//    _player.defaultEdgeControlLayer.fixesBackItem = YES; // 返回按钮一直显示
+//    _player.pauseWhenAppDidEnterBackground = NO;
+//    _player.controlLayerAppearManager.interval = 5; // 设置控制层隐藏间隔
+////    _player.resumePlaybackWhenAppDidEnterForeground = YES;
+//
+//    SJVideoPlayerURLAsset *asset = [[SJVideoPlayerURLAsset alloc] initWithURL:SourceURL0];
+//    asset.startPosition = 5;
+////    asset.trialEndPosition = 30; // 试看30秒
+//    asset.attributedTitle = [NSAttributedString sj_UIKitText:^(id<SJUIKitTextMakerProtocol>  _Nonnull make) {
+//        make.append(@"SJVideoPlayerURLAsset *asset = [[SJVideoPlayerURLAsset");
+//        make.textColor(UIColor.whiteColor);
+//    }];
+//    _player.URLAsset = asset;
+//    [_playerContainerView addSubview:_player.view];
+//    [_player.view mas_makeConstraints:^(MASConstraintMaker *make) {
+//        make.edges.offset(0);
+//    }];
+//
+//    __weak typeof(self) _self = self;
+//    _player.rotationObserver.onRotatingChanged = ^(id<SJRotationManager>  _Nonnull mgr, BOOL isRotating) {
+//        __strong typeof(_self) self = _self;
+//        if ( !self ) return ;
+//#ifdef DEBUG
+//        NSLog(@"onRotatingChanged: %d \t %s", (int)__LINE__, __func__);
+//#endif
+//    };
 }
 
 // 手动开启画中画

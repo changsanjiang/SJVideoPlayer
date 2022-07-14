@@ -86,14 +86,14 @@
     // 添加播放按钮到小浮窗控制层
     SJEdgeControlButtonItem *playItem = [SJEdgeControlButtonItem.alloc initWithTag:101];
     [playItem addAction:[SJEdgeControlButtonItemAction actionWithTarget:self action:@selector(playOrPause)]];
-    [_player.defaultFloatSmallViewControlLayer.bottomAdapter addItem:playItem];
-    _player.defaultFloatSmallViewControlLayer.bottomHeight = 35;
+    [_player.defaultSmallViewControlLayer.bottomAdapter addItem:playItem];
+    _player.defaultSmallViewControlLayer.bottomHeight = 35;
     _player.playbackObserver.playbackStatusDidChangeExeBlock = ^(__kindof SJBaseVideoPlayer * _Nonnull player) {
         __strong typeof(_self) self = _self;
         if ( self == nil ) return;
-        [self _updatePlayItemForFloatSmallViewControlLayer];
+        [self _updatePlayItemForSmallViewControlLayer];
     };
-    [self _updatePlayItemForFloatSmallViewControlLayer];
+    [self _updatePlayItemForSmallViewControlLayer];
 
     // 手动进入
     SJEdgeControlButtonItem *fsItem = [SJEdgeControlButtonItem.alloc initWithTitle:[NSAttributedString sj_UIKitText:^(id<SJUIKitTextMakerProtocol>  _Nonnull make) {
@@ -172,10 +172,10 @@
     }
 }
  
-- (void)_updatePlayItemForFloatSmallViewControlLayer {
-    SJEdgeControlButtonItem *playItem = [_player.defaultFloatSmallViewControlLayer.bottomAdapter itemForTag:101];
+- (void)_updatePlayItemForSmallViewControlLayer {
+    SJEdgeControlButtonItem *playItem = [_player.defaultSmallViewControlLayer.bottomAdapter itemForTag:101];
     playItem.image = self.player.isPaused ? SJVideoPlayerConfigurations.shared.resources.playImage : SJVideoPlayerConfigurations.shared.resources.pauseImage;
-    [self.player.defaultFloatSmallViewControlLayer.bottomAdapter reload];
+    [self.player.defaultSmallViewControlLayer.bottomAdapter reload];
 }
 
 - (void)playOrPause {

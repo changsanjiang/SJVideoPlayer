@@ -1,1 +1,1 @@
-../../../../../SJVideoPlayer/ControlLayers/SJSwitchVideoDefinitionControlLayer/SJVideoPlayerURLAsset+SJExtendedDefinition.h
+../../../../../SJVideoPlayer/ControlLayers/SJVideoDefinitionSwitchingControlLayer/SJVideoPlayerURLAsset+SJExtendedDefinition.h

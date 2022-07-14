@@ -43,7 +43,7 @@
     [_player controlLayerNeedAppear];
 }
 
-- (IBAction)switchTOSJFloatSmallViewControlLayer:(id)sender {
+- (IBAction)switchTOSJSmallViewControlLayer:(id)sender {
     [_player.switcher switchControlLayerForIdentifier:SJControlLayer_FloatSmallView];
     
     [_player.textPopupController show:[NSAttributedString sj_UIKitText:^(id<SJUIKitTextMakerProtocol>  _Nonnull make) {

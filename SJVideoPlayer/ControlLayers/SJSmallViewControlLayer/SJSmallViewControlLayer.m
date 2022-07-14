@@ -1,11 +1,11 @@
 //
-//  SJFloatSmallViewControlLayer.m
+//  SJSmallViewControlLayer.m
 //  Pods
 //
 //  Created by 畅三江 on 2019/6/6.
 //
 
-#import "SJFloatSmallViewControlLayer.h"
+#import "SJSmallViewControlLayer.h"
 #import "UIView+SJAnimationAdded.h"
 #import "SJVideoPlayerConfigurations.h"
 #if __has_include(<SJBaseVideoPlayer/SJBaseVideoPlayer.h>)
@@ -15,13 +15,13 @@
 #endif
 
 NS_ASSUME_NONNULL_BEGIN
-SJEdgeControlButtonItemTag const SJFloatSmallViewControlLayerTopItem_Close = 10000;
+SJEdgeControlButtonItemTag const SJSmallViewControlLayerTopItem_Close = 10000;
 
-@interface SJFloatSmallViewControlLayer ()
+@interface SJSmallViewControlLayer ()
 @property (nonatomic, weak, nullable) __kindof SJBaseVideoPlayer *player;
 @end
 
-@implementation SJFloatSmallViewControlLayer
+@implementation SJSmallViewControlLayer
 @synthesize restarted = _restarted;
 
 - (instancetype)initWithFrame:(CGRect)frame {
@@ -64,7 +64,7 @@ SJEdgeControlButtonItemTag const SJFloatSmallViewControlLayerTopItem_Close = 100
     fillItem.fill = YES;
     [self.topAdapter addItem:fillItem];
     
-    SJEdgeControlButtonItem *closeItem = [SJEdgeControlButtonItem placeholderWithType:SJButtonItemPlaceholderType_49x49 tag:SJFloatSmallViewControlLayerTopItem_Close];
+    SJEdgeControlButtonItem *closeItem = [SJEdgeControlButtonItem placeholderWithType:SJButtonItemPlaceholderType_49x49 tag:SJSmallViewControlLayerTopItem_Close];
     [closeItem addAction:[SJEdgeControlButtonItemAction actionWithTarget:self action:@selector(tappedCloseItem:)]];
     closeItem.image = SJVideoPlayerConfigurations.shared.resources.floatSmallViewCloseImage;
     [self.topAdapter addItem:closeItem];

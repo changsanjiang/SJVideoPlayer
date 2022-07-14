@@ -1,11 +1,11 @@
 //
-//  SJSwitchVideoDefinitionControlLayer.m
+//  SJVideoDefinitionSwitchingControlLayer.m
 //  Pods
 //
 //  Created by 畅三江 on 2019/7/12.
 //
 
-#import "SJSwitchVideoDefinitionControlLayer.h"
+#import "SJVideoDefinitionSwitchingControlLayer.h"
 #if __has_include(<SJUIKit/SJAttributesFactory.h>)
 #import <SJUIKit/SJAttributesFactory.h>
 #else
@@ -21,12 +21,12 @@
 #import "UIView+SJAnimationAdded.h"
 
 NS_ASSUME_NONNULL_BEGIN
-@interface SJSwitchVideoDefinitionControlLayer ()
+@interface SJVideoDefinitionSwitchingControlLayer ()
 @property (nonatomic, weak, nullable) SJBaseVideoPlayer *videoPlayer;
 @property (nonatomic, copy, nullable) NSArray<SJEdgeControlButtonItem *> *items;
 @end
 
-@implementation SJSwitchVideoDefinitionControlLayer
+@implementation SJVideoDefinitionSwitchingControlLayer
 @synthesize restarted = _restarted;
 
 - (instancetype)initWithFrame:(CGRect)frame {

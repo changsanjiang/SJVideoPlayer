@@ -27,7 +27,9 @@
 }
 
 - (UIInterfaceOrientationMask)application:(UIApplication *)application supportedInterfaceOrientationsForWindow:(UIWindow *)window {
-    return window.sj_4_supportedInterfaceOrientations;
+    UIInterfaceOrientationMask mask = window.sj_4_supportedInterfaceOrientations;
+    NSLog(@"orientations: %ld, %@", mask, NSStringFromClass(window.class));
+    return mask;
 }
 
 - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions {

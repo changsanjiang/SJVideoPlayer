@@ -22,7 +22,7 @@
 #import "SJVideoPlayerURLAsset+SJAVMediaPlaybackAdd.h"
 #import "SJGestureControllerDefines.h"
 #import "SJDeviceVolumeAndBrightnessManagerDefines.h"
-#import "SJFloatSmallViewControllerDefines.h"
+#import "SJSmallViewFloatingControllerDefines.h"
 #import "SJVideoDefinitionSwitchingInfo.h"
 #import "SJPromptingPopupControllerDefines.h"
 #import "SJPlaybackObservation.h"
@@ -91,7 +91,7 @@ NS_ASSUME_NONNULL_BEGIN
 ///
 ///         default value is YES
 ///
-@property (nonatomic) BOOL hiddenPlaceholderImageViewWhenPlayerIsReadyForDisplay;
+@property (nonatomic) BOOL automaticallyHidesPlaceholderImageView;
 
 ///
 /// 将要隐藏占位图时, 延迟多少秒才去隐藏
@@ -234,10 +234,10 @@ NS_ASSUME_NONNULL_BEGIN
 /// 关于后台播放视频, 引用自: https://juejin.im/post/5a38e1a0f265da4327185a26
 ///
 /// 当您想在后台播放视频时:
-/// 1. 需要设置 videoPlayer.pauseWhenAppDidEnterBackground = NO; (该值默认为YES, 即App进入后台默认暂停).
+/// 1. 需要设置 videoPlayer.pausedInBackground = NO; (该值默认为YES, 即App进入后台默认暂停).
 /// 2. 前往 `TARGETS` -> `Capability` -> enable `Background Modes` -> select this mode `Audio, AirPlay, and Picture in Picture`
 ///
-@property (nonatomic) BOOL pauseWhenAppDidEnterBackground;
+@property (nonatomic, getter=isPausedInBackground) BOOL pausedInBackground; ///< 进入后台是否暂停;
 @property (nonatomic) BOOL autoplayWhenSetNewAsset;                    ///< 设置新的资源后, 是否自动调用播放. 默认为 YES
 @property (nonatomic) BOOL resumePlaybackWhenAppDidEnterForeground;    ///< 进入前台时, 是否恢复播放. 默认为 NO
 @property (nonatomic) BOOL resumePlaybackWhenPlayerHasFinishedSeeking; ///< 当`seekToTime:`操作完成后, 是否恢复播放. 默认为 YES
@@ -725,27 +725,27 @@ NS_ASSUME_NONNULL_BEGIN
 ///
 /// 小浮窗控制
 ///
-/// 默认不启用, 当需要开启时, 请设置`player.floatSmallViewController.enabled = YES;`
+/// 默认不启用, 当需要开启时, 请设置`player.smallViewFloatingController.enabled = YES;`
 ///
 /// \code
 ///
 ///     // 1. 开启小浮窗控制. 滑动列表当视图消失时, 将显示小浮窗视图
-///     _player.floatSmallViewController.enabled = YES;
+///     _player.smallViewFloatingController.enabled = YES;
 ///     // 2. 设置单击小浮窗执行的block
-///     _player.floatSmallViewController.onSingleTapped = ...;
+///     _player.smallViewFloatingController.onSingleTapped = ...;
 ///     // 3. 设置双击小浮窗执行的block
-///     _player.floatSmallViewController.onDoubleTapped = ...;
+///     _player.smallViewFloatingController.onDoubleTapped = ...;
 ///
 ///     // more
-/// #import <SJBaseVideoPlayer/SJFloatSmallViewController.h>
+/// #import <SJBaseVideoPlayer/SJSmallViewFloatingController.h>
 ///
-///     SJFloatSmallViewController *floatSmallViewController = _player.floatSmallViewController;
-///     floatSmallViewController.layoutPosition = SJFloatViewLayoutPositionTopRight;
-///     floatSmallViewController.layoutInsets = UIEdgeInsetsMake(20, 12, 20, 12);
-///     floatSmallViewController.layoutSize = CGSize(300, 300 * 9 / 16.0);
+///     SJSmallViewFloatingController *smallViewFloatingController = _player.smallViewFloatingController;
+///     smallViewFloatingController.layoutPosition = SJSmallViewLayoutPositionTopRight;
+///     smallViewFloatingController.layoutInsets = UIEdgeInsetsMake(20, 12, 20, 12);
+///     smallViewFloatingController.layoutSize = CGSize(300, 300 * 9 / 16.0);
 /// \endcode
 ///
-@property (nonatomic, strong, null_resettable) id<SJFloatSmallViewController> floatSmallViewController;
+@property (nonatomic, strong, null_resettable) id<SJSmallViewFloatingController> smallViewFloatingController;
 
 ///
 /// 当开启小浮窗控制时, 播放结束后, 会默认隐藏小浮窗
@@ -759,7 +759,7 @@ NS_ASSUME_NONNULL_BEGIN
 ///
 /// - default value is YES.
 ///
-@property (nonatomic) BOOL pauseWhenScrollDisappeared;
+@property (nonatomic) BOOL pausedWhenScrollDisappeared;
 
 ///
 /// 滚动进入时, 是否恢复播放. 默认为YES

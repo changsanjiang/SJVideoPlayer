@@ -60,7 +60,7 @@ static NSString *const SJTableViewCell1ID = @"SJTableViewCell1";
 
 - (void)_setupVideoPlayer {
     _player = [SJVideoPlayer player];
-    _player.pauseWhenAppDidEnterBackground = NO; ///< 开启后台播放
+    _player.pausedInBackground = NO; ///< 开启后台播放
     [_player.defaultEdgeControlLayer.bottomAdapter removeItemForTag:SJEdgeControlLayerBottomItem_Separator];
     [_player.defaultEdgeControlLayer.bottomAdapter exchangeItemForTag:SJEdgeControlLayerBottomItem_DurationTime withItemForTag:SJEdgeControlLayerBottomItem_Progress];
     

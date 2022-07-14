@@ -1,11 +1,11 @@
 //
-//  SJFloatSmallViewController.m
+//  SJSmallViewFloatingController.m
 //  Pods
 //
 //  Created by 畅三江 on 2019/6/6.
 //
 
-#import "SJFloatSmallViewController.h"
+#import "SJSmallViewFloatingController.h"
 #import <UIKit/UIGraphicsRendererSubclass.h>
 #import "UIView+SJBaseVideoPlayerExtended.h"
 #if __has_include(<SJUIKit/NSObject+SJObserverHelper.h>)
@@ -15,10 +15,10 @@
 #endif
 
 NS_ASSUME_NONNULL_BEGIN
-@interface SJFloatSmallView : UIView
+@interface SJSmallFloatingView : UIView
 @end
 
-@implementation SJFloatSmallView
+@implementation SJSmallFloatingView
 - (void)setX:(CGFloat)x {
     CGRect frame = self.frame;
     frame.origin.x = x;
@@ -51,16 +51,16 @@ NS_ASSUME_NONNULL_BEGIN
 
 
 
-@interface SJFloatSmallViewControllerObserver : NSObject<SJFloatSmallViewControllerObserverProtocol>
-- (instancetype)initWithController:(id<SJFloatSmallViewController>)controller;
+@interface SJSmallViewFloatingControllerObserver : NSObject<SJSmallViewFloatingControllerObserverProtocol>
+- (instancetype)initWithController:(id<SJSmallViewFloatingController>)controller;
 @end
 
-@implementation SJFloatSmallViewControllerObserver
+@implementation SJSmallViewFloatingControllerObserver
 @synthesize onAppearChanged = _onAppearChanged;
 @synthesize onEnabled = _onEnabled;
 @synthesize controller = _controller;
 
-- (instancetype)initWithController:(id<SJFloatSmallViewController>)controller {
+- (instancetype)initWithController:(id<SJSmallViewFloatingController>)controller {
     self = [super init];
     if ( self ) {
         _controller = controller;
@@ -83,21 +83,21 @@ NS_ASSUME_NONNULL_BEGIN
 }
 @end
 
-@interface SJFloatSmallViewController ()<UIGestureRecognizerDelegate> {
-    SJFloatSmallView *_Nullable _floatView;
+@interface SJSmallViewFloatingController ()<UIGestureRecognizerDelegate> {
+    SJSmallFloatingView *_Nullable _floatingView;
 }
 @property (nonatomic) BOOL isAppeared;
 @property (nonatomic, strong, readonly) UIPanGestureRecognizer *panGesture;
 @end
 
-@implementation SJFloatSmallViewController
+@implementation SJSmallViewFloatingController
 // 由于tap手势会阻断事件响应链, 为了避免此种情况, 此处无需添加单击和双击手势, 已改为由播放器主动调用这两个block.
 //
 // 这两个block将来可能会直接移动到播放器中.
 @synthesize onSingleTapped = _onSingleTapped;
 @synthesize onDoubleTapped = _onDoubleTapped;
 
-@synthesize floatViewShouldAppear = _floatViewShouldAppear;
+@synthesize floatingViewShouldAppear = _floatingViewShouldAppear;
 @synthesize targetSuperview = _targetSuperview;
 @synthesize enabled = _enabled;
 @synthesize target = _target;
@@ -109,28 +109,28 @@ NS_ASSUME_NONNULL_BEGIN
     self = [super init];
     if ( self ) {
         _layoutInsets = UIEdgeInsetsMake(20, 12, 20, 12);
-        _layoutPosition = SJFloatViewLayoutPositionBottomRight;
+        _layoutPosition = SJSmallViewLayoutPositionBottomRight;
     }
     return self;
 }
 
 - (void)dealloc {
-    [_floatView performSelectorOnMainThread:@selector(removeFromSuperview) withObject:nil waitUntilDone:YES];
+    [_floatingView performSelectorOnMainThread:@selector(removeFromSuperview) withObject:nil waitUntilDone:YES];
 }
 
-- (__kindof UIView *)floatView {
-    if ( _floatView == nil ) {
-        _floatView = [[SJFloatSmallView alloc] initWithFrame:CGRectZero];
-        [self _addGesturesToFloatView:_floatView];
+- (__kindof UIView *)floatingView {
+    if ( _floatingView == nil ) {
+        _floatingView = [[SJSmallFloatingView alloc] initWithFrame:CGRectZero];
+        [self _addGesturesToFloatView:_floatingView];
     }
-    return _floatView;
+    return _floatingView;
 }
 
-- (void)showFloatView {
+- (void)show {
     if ( !self.isEnabled ) return;
     
     //
-    if ( _floatViewShouldAppear && _floatViewShouldAppear(self) ) {
+    if ( _floatingViewShouldAppear && _floatingViewShouldAppear(self) ) {
         //
         UIView *superview = nil;
         if ( _addFloatViewToKeyWindow == NO ) {
@@ -141,8 +141,8 @@ NS_ASSUME_NONNULL_BEGIN
             superview = UIApplication.sharedApplication.keyWindow;
         }
         
-        if ( self.floatView.superview != superview ) {
-            [superview addSubview:_floatView];
+        if ( self.floatingView.superview != superview ) {
+            [superview addSubview:_floatingView];
             CGRect superViewBounds = superview.bounds;
             CGFloat superViewWidth = superViewBounds.size.width;
             CGFloat superViewHeight = superViewBounds.size.height;
@@ -166,44 +166,44 @@ NS_ASSUME_NONNULL_BEGIN
             }
             
             switch ( _layoutPosition ) {
-                case SJFloatViewLayoutPositionTopLeft:
-                case SJFloatViewLayoutPositionBottomLeft:
+                case SJSmallViewLayoutPositionTopLeft:
+                case SJSmallViewLayoutPositionBottomLeft:
                     x = safeAreaInsets.left + _layoutInsets.left;
                     break;
-                case SJFloatViewLayoutPositionTopRight:
-                case SJFloatViewLayoutPositionBottomRight:
+                case SJSmallViewLayoutPositionTopRight:
+                case SJSmallViewLayoutPositionBottomRight:
                     x = superViewWidth - w - _layoutInsets.right - safeAreaInsets.right;
                     break;
             }
               
             switch ( _layoutPosition ) {
-                case SJFloatViewLayoutPositionTopLeft:
-                case SJFloatViewLayoutPositionTopRight:
+                case SJSmallViewLayoutPositionTopLeft:
+                case SJSmallViewLayoutPositionTopRight:
                     y = safeAreaInsets.top + _layoutInsets.top;
                     break;
-                case SJFloatViewLayoutPositionBottomLeft:
-                case SJFloatViewLayoutPositionBottomRight:
+                case SJSmallViewLayoutPositionBottomLeft:
+                case SJSmallViewLayoutPositionBottomRight:
                     y = superViewHeight - h - _layoutInsets.bottom - safeAreaInsets.bottom;
                     break;
             }
  
-            _floatView.frame = CGRectMake(x, y, w, h);
+            _floatingView.frame = CGRectMake(x, y, w, h);
         }
         
         //
-        self.target.frame = _floatView.bounds;
-        [_floatView addSubview:self.target];
+        self.target.frame = _floatingView.bounds;
+        [_floatingView addSubview:self.target];
         [self.target layoutIfNeeded];
 
         [UIView animateWithDuration:0.3 animations:^{
-            self->_floatView.alpha = 1;
+            self->_floatingView.alpha = 1;
         }];
         
         self.isAppeared = YES;
     }
 }
 
-- (void)dismissFloatView {
+- (void)dismiss {
     if ( !self.isEnabled ) return;
     
     self.target.frame = self.targetSuperview.bounds;
@@ -211,26 +211,26 @@ NS_ASSUME_NONNULL_BEGIN
     [self.target layoutIfNeeded];
     
     [UIView animateWithDuration:0.3 animations:^{
-        self->_floatView.alpha = 0.001;
+        self->_floatingView.alpha = 0.001;
     }];
     
     self.isAppeared = NO;
 }
 
-- (id<SJFloatSmallViewControllerObserverProtocol>)getObserver {
-    return [[SJFloatSmallViewControllerObserver alloc] initWithController:self];
+- (id<SJSmallViewFloatingControllerObserverProtocol>)getObserver {
+    return [[SJSmallViewFloatingControllerObserver alloc] initWithController:self];
 }
 
 // - gestures -
 
-- (void)_addGesturesToFloatView:(SJFloatSmallView *)floatView {
-    [floatView addGestureRecognizer:self.panGesture];
+- (void)_addGesturesToFloatView:(SJSmallFloatingView *)floatingView {
+    [floatingView addGestureRecognizer:self.panGesture];
 }
 
 - (void)setSlidable:(BOOL)slidable {
     self.panGesture.enabled = slidable;
 }
-- (BOOL)slidable {
+- (BOOL)isSlidable {
     return self.panGesture.enabled;
 }
 
@@ -252,7 +252,7 @@ NS_ASSUME_NONNULL_BEGIN
 }
 
 - (void)_handlePanGesture:(UIPanGestureRecognizer *)panGesture {
-    SJFloatSmallView *view = _floatView;
+    SJSmallFloatingView *view = _floatingView;
     UIView *superview = view.superview;
     CGPoint offset = [panGesture translationInView:superview];
     CGPoint center = view.center;

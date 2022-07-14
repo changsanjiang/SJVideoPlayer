@@ -111,7 +111,7 @@ NSNotificationName const SJVideoPlayerConfigurationsDidUpdateNotification = @"SJ
 
 @property (nonatomic, strong, nullable) UIColor *noNetworkButtonBackgroundColor;
 
-#pragma mark - SJFloatSmallViewControlLayer Resources
+#pragma mark - SJSmallViewControlLayer Resources
 
 @property (nonatomic, strong, nullable) UIImage *floatSmallViewCloseImage;
 
@@ -205,7 +205,7 @@ NSNotificationName const SJVideoPlayerConfigurationsDidUpdateNotification = @"SJ
     _noNetworkButtonBackgroundColor = [UIColor colorWithRed:36/255.0 green:171/255.0 blue:1 alpha:1];
 }
 
-- (void)_loadSJFloatSmallViewControlLayerResources {
+- (void)_loadSJSmallViewControlLayerResources {
     _floatSmallViewCloseImage = [SJVideoPlayerResourceLoader imageNamed:@"close"];
 }
 
@@ -381,7 +381,7 @@ NSNotificationName const SJVideoPlayerConfigurationsDidUpdateNotification = @"SJ
             [resources _loadSJNotReachableControlLayerResources];
         });
         dispatch_group_async(_group, dispatch_get_global_queue(0, 0), ^{
-            [resources _loadSJFloatSmallViewControlLayerResources];
+            [resources _loadSJSmallViewControlLayerResources];
         });
         dispatch_group_async(_group, dispatch_get_global_queue(0, 0), ^{
             [resources _loadSJClipsControlLayerResources];

@@ -29,8 +29,8 @@
 #import "SJMoreSettingControlLayer.h"
 #import "SJLoadFailedControlLayer.h"
 #import "SJNotReachableControlLayer.h"
-#import "SJFloatSmallViewControlLayer.h"
-#import "SJSwitchVideoDefinitionControlLayer.h"
+#import "SJSmallViewControlLayer.h"
+#import "SJVideoDefinitionSwitchingControlLayer.h"
 #import "SJVideoPlayerResourceLoader.h"
 
 NS_ASSUME_NONNULL_BEGIN
@@ -90,12 +90,12 @@ NS_ASSUME_NONNULL_BEGIN
 ///
 /// 默认的小浮窗模式下的控制层
 ///
-@property (nonatomic, strong, readonly) SJFloatSmallViewControlLayer *defaultFloatSmallViewControlLayer;
+@property (nonatomic, strong, readonly) SJSmallViewControlLayer *defaultSmallViewControlLayer;
 
 ///
 /// 默认的切换清晰度时的控制层
 ///
-@property (nonatomic, strong, readonly) SJSwitchVideoDefinitionControlLayer *defaultSwitchVideoDefinitionControlLayer;
+@property (nonatomic, strong, readonly) SJVideoDefinitionSwitchingControlLayer *defaultVideoDefinitionSwitchingControlLayer;
 
 
 - (instancetype)_init;
@@ -133,7 +133,7 @@ NS_ASSUME_NONNULL_BEGIN
 @end
 
 
-@interface SJVideoPlayer (SJExtendedSwitchVideoDefinitionControlLayer)
+@interface SJVideoPlayer (SJExtendedVideoDefinitionSwitchingControlLayer)
 
 ///
 /// 切换清晰度

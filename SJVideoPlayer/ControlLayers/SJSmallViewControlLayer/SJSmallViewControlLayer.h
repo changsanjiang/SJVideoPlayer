@@ -1,5 +1,5 @@
 //
-//  SJFloatSmallViewControlLayer.h
+//  SJSmallViewControlLayer.h
 //  Pods
 //
 //  Created by 畅三江 on 2019/6/6.
@@ -14,9 +14,9 @@
 
 
 NS_ASSUME_NONNULL_BEGIN
-extern SJEdgeControlButtonItemTag const SJFloatSmallViewControlLayerTopItem_Close;
+extern SJEdgeControlButtonItemTag const SJSmallViewControlLayerTopItem_Close;
 
-@interface SJFloatSmallViewControlLayer : SJEdgeControlLayerAdapters<SJControlLayer>
+@interface SJSmallViewControlLayer : SJEdgeControlLayerAdapters<SJControlLayer>
 
 @end
 NS_ASSUME_NONNULL_END

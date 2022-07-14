@@ -22,7 +22,7 @@
 #import "SJFitOnScreenManager.h"
 #import "SJFlipTransitionManager.h"
 #import "SJPlayerView.h"
-#import "SJFloatSmallViewController.h"
+#import "SJSmallViewFloatingController.h"
 #import "SJVideoDefinitionSwitchingInfo+Private.h"
 #import "SJPromptingPopupController.h"
 #import "SJTextPopupController.h"
@@ -60,13 +60,13 @@ typedef struct _SJPlayerControlInfo {
     } gestureController;
 
     struct {
-        BOOL needToHiddenWhenPlayerIsReadyForDisplay;
+        BOOL automaticallyHides;
         NSTimeInterval delayHidden;
     } placeholder;
     
     struct {
         BOOL isScrollAppeared;
-        BOOL pauseWhenScrollDisappeared;
+        BOOL pausedWhenScrollDisappeared;
         BOOL hiddenPlayerViewWhenScrollDisappeared;
         BOOL resumePlaybackWhenScrollAppeared;
     } scrollControl;
@@ -153,8 +153,8 @@ typedef struct _SJPlayerControlInfo {
     id<SJReachabilityObserver> _reachabilityObserver;
     
     /// Scroll
-    id<SJFloatSmallViewController> _Nullable _floatSmallViewController;
-    id<SJFloatSmallViewControllerObserverProtocol> _Nullable _floatSmallViewControllerObesrver;
+    id<SJSmallViewFloatingController> _Nullable _smallViewFloatingController;
+    id<SJSmallViewFloatingControllerObserverProtocol> _Nullable _smallViewFloatingControllerObserver;
     
     id<SJSubtitlePopupController> _Nullable _subtitlePopupController;
     id<SJDanmakuPopupController> _Nullable _danmakuPopupController;
@@ -169,7 +169,7 @@ typedef struct _SJPlayerControlInfo {
 }
 
 + (NSString *)version {
-    return @"v3.7.0";
+    return @"v3.7.1";
 }
 
 - (void)setVideoGravity:(SJVideoGravity)videoGravity {
@@ -193,9 +193,9 @@ typedef struct _SJPlayerControlInfo {
     self = [super init];
     if ( !self ) return nil;
     _controlInfo = (_SJPlayerControlInfo *)calloc(1, sizeof(struct _SJPlayerControlInfo));
-    _controlInfo->placeholder.needToHiddenWhenPlayerIsReadyForDisplay = YES;
+    _controlInfo->placeholder.automaticallyHides = YES;
     _controlInfo->placeholder.delayHidden = 0.8;
-    _controlInfo->scrollControl.pauseWhenScrollDisappeared = YES;
+    _controlInfo->scrollControl.pausedWhenScrollDisappeared = YES;
     _controlInfo->scrollControl.hiddenPlayerViewWhenScrollDisappeared = YES;
     _controlInfo->scrollControl.resumePlaybackWhenScrollAppeared = YES;
     _controlInfo->playbackControl.autoplayWhenSetNewAsset = YES;
@@ -259,10 +259,13 @@ typedef struct _SJPlayerControlInfo {
 
 - (void)presentViewDidLayoutSubviews:(SJVideoPlayerPresentView *)presentView {
     [self updateWatermarkViewLayout];
-    if ( self.isRotating ) {
-        [UIView animateWithDuration:0.3 animations:^{
-            [presentView layoutIfNeeded];
-        }];
+    if ( @available(iOS 16.0, *) ) { /** next... */ }
+    else {
+        if ( self.isRotating ) {
+            [UIView animateWithDuration:0.3 animations:^{
+                [presentView layoutIfNeeded];
+            }];
+        }
     }
 }
 
@@ -270,8 +273,8 @@ typedef struct _SJPlayerControlInfo {
 
 - (void)_handleSingleTap:(CGPoint)location {
     if ( self.controlInfo->floatSmallViewControl.isAppeared ) {
-        if ( self.floatSmallViewController.onSingleTapped ) {
-            self.floatSmallViewController.onSingleTapped(self.floatSmallViewController);
+        if ( self.smallViewFloatingController.onSingleTapped ) {
+            self.smallViewFloatingController.onSingleTapped(self.smallViewFloatingController);
         }
         return;
     }
@@ -288,8 +291,8 @@ typedef struct _SJPlayerControlInfo {
 
 - (void)_handleDoubleTap:(CGPoint)location {
     if ( self.controlInfo->floatSmallViewControl.isAppeared ) {
-        if ( self.floatSmallViewController.onDoubleTapped ) {
-            self.floatSmallViewController.onDoubleTapped(self.floatSmallViewController);
+        if ( self.smallViewFloatingController.onDoubleTapped ) {
+            self.smallViewFloatingController.onDoubleTapped(self.smallViewFloatingController);
         }
         return;
     }
@@ -540,7 +543,12 @@ typedef struct _SJPlayerControlInfo {
     _fitOnScreenManagerObserver.fitOnScreenWillBeginExeBlock = ^(id<SJFitOnScreenManager> mgr) {
         __strong typeof(_self) self = _self;
         if ( !self ) return;
-        self.rotationManager.superview = mgr.isFitOnScreen ? self.fitOnScreenManager.superviewInFitOnScreen : self.view;
+        if ( self->_rotationManager != nil ) {
+            self->_rotationManager.superview = mgr.isFitOnScreen ? self.fitOnScreenManager.superviewInFitOnScreen : self.view;
+        }
+        if ( self->_smallViewFloatingController != nil ) {
+            self->_smallViewFloatingController.targetSuperview = mgr.isFitOnScreen ? self.fitOnScreenManager.superviewInFitOnScreen : self.view;
+        }
         
         [self controlLayerNeedDisappear];
         
@@ -622,6 +630,28 @@ typedef struct _SJPlayerControlInfo {
 
 #pragma mark -
 
+- (void)_setupSmallViewFloatingController:(id<SJSmallViewFloatingController>)smallViewFloatingController {
+    _smallViewFloatingController = smallViewFloatingController;
+    _smallViewFloatingControllerObserver = nil;
+    
+    if ( smallViewFloatingController == nil ) return;
+    
+    smallViewFloatingController.targetSuperview = self.view;
+    smallViewFloatingController.target = self.presentView;
+    
+    __weak typeof(self) _self = self;
+    _smallViewFloatingControllerObserver = [smallViewFloatingController getObserver];
+    _smallViewFloatingControllerObserver.onAppearChanged = ^(id<SJSmallViewFloatingController>  _Nonnull controller) {
+        __strong typeof(_self) self = _self;
+        if ( !self ) return ;
+        BOOL isAppeared = controller.isAppeared;
+        self.controlInfo->floatSmallViewControl.isAppeared = isAppeared;
+        self.rotationManager.superview = isAppeared ? controller.floatingView : self.view;
+    };
+}
+
+#pragma mark -
+
 - (SJVideoPlayerRegistrar *)registrar {
     if ( _registrar ) return _registrar;
     _registrar = [SJVideoPlayerRegistrar new];
@@ -678,7 +708,7 @@ typedef struct _SJPlayerControlInfo {
 
 - (void)_showOrHiddenPlaceholderImageViewIfNeeded {
     if ( _playbackController.isReadyForDisplay ) {
-        if ( _controlInfo->placeholder.needToHiddenWhenPlayerIsReadyForDisplay ) {
+        if ( _controlInfo->placeholder.automaticallyHides ) {
             NSTimeInterval delay = _URLAsset.original != nil ? 0 : _controlInfo->placeholder.delayHidden;
             BOOL animated = _URLAsset.original == nil;
             [self.presentView hidePlaceholderImageViewAnimated:animated delay:delay];
@@ -847,11 +877,11 @@ typedef struct _SJPlayerControlInfo {
     return _presentView;
 }
 
-- (void)setHiddenPlaceholderImageViewWhenPlayerIsReadyForDisplay:(BOOL)isHidden {
-    _controlInfo->placeholder.needToHiddenWhenPlayerIsReadyForDisplay = isHidden;
+- (void)setAutomaticallyHidesPlaceholderImageView:(BOOL)isHidden {
+    _controlInfo->placeholder.automaticallyHides = isHidden;
 }
-- (BOOL)hiddenPlaceholderImageViewWhenPlayerIsReadyForDisplay {
-    return _controlInfo->placeholder.needToHiddenWhenPlayerIsReadyForDisplay;
+- (BOOL)automaticallyHidesPlaceholderImageView {
+    return _controlInfo->placeholder.automaticallyHides;
 }
 
 
@@ -1065,11 +1095,11 @@ typedef struct _SJPlayerControlInfo {
 }
 
 - (void)_tryToPlayIfNeeded {
-    if ( self.registrar.state == SJVideoPlayerAppState_Background && self.pauseWhenAppDidEnterBackground )
+    if ( self.registrar.state == SJVideoPlayerAppState_Background && self.isPausedInBackground )
         return;
     if ( _controlInfo->playbackControl.autoplayWhenSetNewAsset == NO )
         return;
-    if ( self.isPlayOnScrollView && self.isScrollAppeared == NO && self.pauseWhenScrollDisappeared )
+    if ( self.isPlayOnScrollView && self.isScrollAppeared == NO && self.pausedWhenScrollDisappeared )
         return;
     
     [self play];
@@ -1119,10 +1149,10 @@ typedef struct _SJPlayerControlInfo {
     return _controlInfo->playbackControl.autoplayWhenSetNewAsset;
 }
 
-- (void)setPauseWhenAppDidEnterBackground:(BOOL)pauseWhenAppDidEnterBackground {
-    self.playbackController.pauseWhenAppDidEnterBackground = pauseWhenAppDidEnterBackground;
+- (void)setPausedInBackground:(BOOL)pausedInBackground {
+    self.playbackController.pauseWhenAppDidEnterBackground = pausedInBackground;
 }
-- (BOOL)pauseWhenAppDidEnterBackground {
+- (BOOL)isPausedInBackground {
     return self.playbackController.pauseWhenAppDidEnterBackground;
 }
 
@@ -1156,7 +1186,7 @@ typedef struct _SJPlayerControlInfo {
     if ( self.canPlayAnAsset && !self.canPlayAnAsset(self) )
         return;
     
-    if ( self.registrar.state == SJVideoPlayerAppState_Background && self.pauseWhenAppDidEnterBackground ) return;
+    if ( self.registrar.state == SJVideoPlayerAppState_Background && self.isPausedInBackground ) return;
 
     _controlInfo->playbackControl.isUserPaused = NO;
     
@@ -1395,8 +1425,8 @@ typedef struct _SJPlayerControlInfo {
 }
 
 - (void)playbackController:(id<SJVideoPlayerPlaybackController>)controller playbackDidFinish:(SJFinishedReason)reason {
-    if ( _floatSmallViewController.isAppeared && self.hiddenFloatSmallViewWhenPlaybackFinished ) {
-        [_floatSmallViewController dismissFloatView];
+    if ( _smallViewFloatingController.isAppeared && self.hiddenFloatSmallViewWhenPlaybackFinished ) {
+        [_smallViewFloatingController dismiss];
     }
     
     if ( [self.controlLayerDelegate respondsToSelector:@selector(videoPlayerPlaybackStatusDidChange:)] ) {
@@ -2045,41 +2075,22 @@ typedef struct _SJPlayerControlInfo {
     [self.playModelObserver refreshAppearState];
 }
 
-- (void)setFloatSmallViewController:(nullable id<SJFloatSmallViewController>)floatSmallViewController {
-    _floatSmallViewController = floatSmallViewController;
-    [self _resetFloatSmallViewControllerObserver:floatSmallViewController];
+- (void)setSmallViewFloatingController:(nullable id<SJSmallViewFloatingController>)smallViewFloatingController {
+    [self _setupSmallViewFloatingController:smallViewFloatingController];
 }
-- (id<SJFloatSmallViewController>)floatSmallViewController {
-    if ( _floatSmallViewController == nil ) {
+
+- (id<SJSmallViewFloatingController>)smallViewFloatingController {
+    if ( _smallViewFloatingController == nil ) {
         __weak typeof(self) _self = self;
-        SJFloatSmallViewController *controller = SJFloatSmallViewController.alloc.init;
-        controller.floatViewShouldAppear = ^BOOL(id<SJFloatSmallViewController>  _Nonnull controller) {
+        SJSmallViewFloatingController *controller = SJSmallViewFloatingController.alloc.init;
+        controller.floatingViewShouldAppear = ^BOOL(id<SJSmallViewFloatingController>  _Nonnull controller) {
             __strong typeof(_self) self = _self;
             if ( !self ) return NO;
             return self.timeControlStatus != SJPlaybackTimeControlStatusPaused && self.assetStatus != SJAssetStatusUnknown;
         };
-        [self setFloatSmallViewController:controller];
+        [self _setupSmallViewFloatingController:controller];
     }
-    return _floatSmallViewController;
-}
-- (void)_resetFloatSmallViewControllerObserver:(nullable id<SJFloatSmallViewController>)floatSmallViewController {
-    if ( _floatSmallViewController == nil ) {
-        _floatSmallViewControllerObesrver = nil;
-        return;
-    }
-    
-    floatSmallViewController.targetSuperview = self.view;
-    floatSmallViewController.target = self.presentView;
-    
-    __weak typeof(self) _self = self;
-    _floatSmallViewControllerObesrver = [_floatSmallViewController getObserver];
-    _floatSmallViewControllerObesrver.onAppearChanged = ^(id<SJFloatSmallViewController>  _Nonnull controller) {
-        __strong typeof(_self) self = _self;
-        if ( !self ) return ;
-        BOOL isAppeared = controller.isAppeared;
-        self.controlInfo->floatSmallViewControl.isAppeared = isAppeared;
-        self.rotationManager.superview = isAppeared?controller.floatView:self.view;
-    };
+    return _smallViewFloatingController;
 }
 
 - (void)setHiddenFloatSmallViewWhenPlaybackFinished:(BOOL)hiddenFloatSmallViewWhenPlaybackFinished {
@@ -2089,11 +2100,11 @@ typedef struct _SJPlayerControlInfo {
     return _controlInfo->floatSmallViewControl.hiddenFloatSmallViewWhenPlaybackFinished;
 }
 
-- (void)setPauseWhenScrollDisappeared:(BOOL)pauseWhenScrollDisappeared {
-    _controlInfo->scrollControl.pauseWhenScrollDisappeared = pauseWhenScrollDisappeared;
+- (void)setPausedWhenScrollDisappeared:(BOOL)pausedWhenScrollDisappeared {
+    _controlInfo->scrollControl.pausedWhenScrollDisappeared = pausedWhenScrollDisappeared;
 }
-- (BOOL)pauseWhenScrollDisappeared {
-    return _controlInfo->scrollControl.pauseWhenScrollDisappeared;
+- (BOOL)pausedWhenScrollDisappeared {
+    return _controlInfo->scrollControl.pausedWhenScrollDisappeared;
 }
 
 - (void)setHiddenViewWhenScrollDisappeared:(BOOL)hiddenViewWhenScrollDisappeared {
@@ -2316,8 +2327,8 @@ typedef struct _SJPlayerControlInfo {
         }];
     }
     
-    if ( _floatSmallViewController.isAppeared ) {
-        [_floatSmallViewController dismissFloatView];
+    if ( _smallViewFloatingController.isAppeared ) {
+        [_smallViewFloatingController dismiss];
     }
     
     if ( [self.controlLayerDelegate respondsToSelector:@selector(videoPlayerWillAppearInScrollView:)] ) {
@@ -2339,10 +2350,10 @@ typedef struct _SJPlayerControlInfo {
     
     _view.hidden = _controlInfo->scrollControl.hiddenPlayerViewWhenScrollDisappeared;
     
-    if ( _floatSmallViewController.isEnabled ) {
-        [_floatSmallViewController showFloatView];
+    if ( _smallViewFloatingController.isEnabled ) {
+        [_smallViewFloatingController show];
     }
-    else if ( _controlInfo->scrollControl.pauseWhenScrollDisappeared ) {
+    else if ( _controlInfo->scrollControl.pausedWhenScrollDisappeared ) {
         [self pause];
     }
     

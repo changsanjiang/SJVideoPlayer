@@ -13,81 +13,46 @@
 #import "SJSourceURLs.h"
 #import <SDWebImage.h>
 
-NS_ASSUME_NONNULL_BEGIN
-@interface SJTestViewController ()<UITableViewDelegate, UITableViewDataSource>
+#import <SJBaseVideoPlayer/SJRotationManager_4.h>
+
+#import "AppDelegate.h"
+
+@interface SJTestViewController ()
 @property (weak, nonatomic) IBOutlet UIView *playerContainerView;
-@property (nonatomic, strong) SJVideoPlayer *player;
-
-
-@property (nonatomic, strong) UITableView *tableView;
+@property (nonatomic, strong) SJRotationManager_4 *rotationManager;
 @end
 
 @implementation SJTestViewController
 
 - (void)viewDidLoad {
     [super viewDidLoad];
-    [self _setupViews];
+ 
+    _rotationManager = [SJRotationManager_4 rotationManager];
+
+    UIView *greenView = [UIView.alloc initWithFrame:CGRectZero];
+    greenView.backgroundColor = UIColor.greenColor;
+    greenView.frame = _playerContainerView.bounds;
+    greenView.autoresizingMask = UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight;
+    [greenView addGestureRecognizer:[UITapGestureRecognizer.alloc initWithTarget:self action:@selector(rotate:)]];
+    [_playerContainerView addSubview:greenView];
     
-    _tableView = [[UITableView alloc] initWithFrame:CGRectMake(0, 0, 200, 200)];
-    _tableView.backgroundColor = UIColor.whiteColor;
-    _tableView.delegate = self;
-    _tableView.dataSource = self;
-
-    [_tableView registerClass:UITableViewCell.class forCellReuseIdentifier:@"123"];
+    UIView *subview = [UIView.alloc initWithFrame:CGRectMake(44, 44, 20, 20)];
+    subview.backgroundColor = UIColor.orangeColor;
+    subview.autoresizingMask = UIViewAutoresizingFlexibleBottomMargin | UIViewAutoresizingFlexibleRightMargin;
+    [greenView addSubview:subview];
     
-    SJEdgeControlButtonItem *item = [SJEdgeControlButtonItem frameLayoutWithCustomView:_tableView tag:1001];
-    [self.player.defaultEdgeControlLayer.centerAdapter addItem:item];
-    [self.player.defaultEdgeControlLayer.centerAdapter reload];
+//    _rotationManager.disabledAutorotation = YES;
+    _rotationManager.superview = _playerContainerView;
+    _rotationManager.target = greenView;
 }
 
-- (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section {
-    return 99;
+- (IBAction)rotate:(id)sender {
+    [_rotationManager rotate];
 }
-
-- (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath {
-    return [tableView dequeueReusableCellWithIdentifier:@"123" forIndexPath:indexPath];
+- (IBAction)onSwitch:(UISwitch *)st {
+    _rotationManager.disabledAutorotation = !st.isOn;
 }
-
-- (void)tableView:(UITableView *)tableView willDisplayCell:(UITableViewCell *)cell forRowAtIndexPath:(NSIndexPath *)indexPath {
-    cell.textLabel.text = [NSString stringWithFormat:@"%ld", indexPath.row];
-}
-
-- (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath {
-#ifdef DEBUG
-    NSLog(@"%d \t %s", (int)__LINE__, __func__);
-#endif
-}
-
-#pragma mark -
-- (void)_setupViews {
-    self.title = NSStringFromClass(self.class);
-    self.edgesForExtendedLayout = UIRectEdgeNone;
-    
-    _player = [SJVideoPlayer player];
-    [_playerContainerView addSubview:self.player.view];
-    [_player.view mas_makeConstraints:^(MASConstraintMaker *make) {
-        make.edges.offset(0);
-    }];
-    
-    __weak typeof(self) _self = self;
-    _player.controlLayerAppearObserver.onAppearChanged = ^(id<SJControlLayerAppearManager>  _Nonnull mgr) {
-        __strong typeof(_self) self = _self;
-        if ( !self ) return ;
-        self.player.promptingPopupController.bottomMargin = mgr.isAppeared ? self.player.defaultEdgeControlLayer.bottomContainerView.bounds.size.height : 16;
-    };
-}
-
-- (BOOL)shouldAutorotate {
-    return NO;
-}
-
-
-- (BOOL)prefersHomeIndicatorAutoHidden {
-    return YES;
-}
-
 @end
-NS_ASSUME_NONNULL_END
 
 #import <SJRouter/SJRouter.h>
 @interface SJTestViewController (RouteHandler)<SJRouteHandler>

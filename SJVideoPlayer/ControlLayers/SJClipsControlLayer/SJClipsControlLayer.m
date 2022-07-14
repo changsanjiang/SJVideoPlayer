@@ -34,6 +34,8 @@
 #import "SJControlLayerSwitcher.h"
 #import "SJVideoPlayerConfigurations.h"
 
+#import "SJEdgeControlButtonItemInternal.h"
+
 NS_ASSUME_NONNULL_BEGIN
 // right items
 static SJEdgeControlButtonItemTag SJClipsControlLayerRightItem_Screenshot = 10000;
@@ -170,15 +172,15 @@ static SJControlLayerIdentifier SJClipsResultsControlLayerIdentifier = 3;
     id<SJVideoPlayerControlLayerResources> sources = SJVideoPlayerConfigurations.shared.resources;
     SJEdgeControlButtonItem *screenshotItem = [self.rightAdapter itemForTag:SJClipsControlLayerRightItem_Screenshot];
     screenshotItem.image = sources.screenshotImage;
-    screenshotItem.hidden = _config.disableScreenshot;
+    screenshotItem.innerHidden = _config.disableScreenshot;
     
     SJEdgeControlButtonItem *exportVideoItem = [self.rightAdapter itemForTag:SJClipsControlLayerRightItem_ExportVideo];
     exportVideoItem.image = sources.videoClipImage;
-    exportVideoItem.hidden = _config.disableRecord;
+    exportVideoItem.innerHidden = _config.disableRecord;
     
     SJEdgeControlButtonItem *exportGIFItem = [self.rightAdapter itemForTag:SJClipsControlLayerRightItem_ExportGIF];
     exportGIFItem.image = sources.GIFClipImage;
-    exportGIFItem.hidden = _config.disableGIF;
+    exportGIFItem.innerHidden = _config.disableGIF;
     
     [self.rightAdapter reload];
 }

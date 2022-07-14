@@ -30,6 +30,8 @@
 #import "SJAttributesFactory.h"
 #endif
 
+#import "SJEdgeControlButtonItemInternal.h"
+
 NS_ASSUME_NONNULL_BEGIN
 #define SJEdgeControlLayerShowsMoreItemNotification @"SJEdgeControlLayerShowsMoreItemNotification"
 #define SJEdgeControlLayerIsEnabledClipsNotification @"SJEdgeControlLayerIsEnabledClipsNotification"
@@ -549,7 +551,7 @@ NS_ASSUME_NONNULL_BEGIN
         else isHidden = !(self.isFullscreen && !self.rotationManager.isRotating);
         
         if ( isHidden != self.moreItem.isHidden ) {
-            self.moreItem.hidden = isHidden;
+            self.moreItem.innerHidden = isHidden;
             [self.defaultEdgeControlLayer.topAdapter reload];
         }
     }
@@ -588,7 +590,7 @@ NS_ASSUME_NONNULL_BEGIN
         }
         BOOL isHidden = (self.URLAsset == nil) || !self.isFullscreen || isUnsupportedFormat || isPictureInPictureEnabled;
         if ( isHidden != _clipsItem.isHidden ) {
-            _clipsItem.hidden = isHidden;
+            _clipsItem.innerHidden = isHidden;
             [_defaultEdgeControlLayer.rightAdapter reload];
         }
     }

@@ -21,6 +21,8 @@
 #import "Masonry.h"
 #endif
 
+#import "SJEdgeControlButtonItemInternal.h"
+
 NS_ASSUME_NONNULL_BEGIN
 SJEdgeControlButtonItemTag const SJNotReachableControlLayerTopItem_Back = 10000;
 
@@ -125,12 +127,12 @@ SJEdgeControlButtonItemTag const SJNotReachableControlLayerTopItem_Back = 10000;
     
     if ( backItem ) {
         if ( isFull || isFitOnScreen )
-            backItem.hidden = NO;
+            backItem.innerHidden = NO;
         else {
             if ( _hiddenBackButtonWhenOrientationIsPortrait )
-                backItem.hidden = YES;
+                backItem.innerHidden = YES;
             else
-                backItem.hidden = videoPlayer.isPlayOnScrollView;
+                backItem.innerHidden = videoPlayer.isPlayOnScrollView;
         }
     }
     [_topAdapter reload];

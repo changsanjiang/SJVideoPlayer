@@ -37,6 +37,7 @@
 #import "SJScrollingTextMarqueeView.h"
 #import "SJFullscreenModeStatusBar.h"
 #import "SJSpeedupPlaybackPopupView.h"
+#import "SJEdgeControlButtonItemInternal.h"
 #import <objc/message.h>
 
 #pragma mark - Top
@@ -219,8 +220,11 @@
 ///
 - (BOOL)controlLayerOfVideoPlayerCanAutomaticallyDisappear:(__kindof SJBaseVideoPlayer *)videoPlayer {
     SJEdgeControlButtonItem *progressItem = [_bottomAdapter itemForTag:SJEdgeControlLayerBottomItem_Progress];
-    SJProgressSlider *slider = progressItem.customView;
-    return !slider.isDragging;
+    if ( progressItem != nil && !progressItem.isHidden ) {
+        SJProgressSlider *slider = progressItem.customView;
+        return !slider.isDragging;
+    }
+    return YES;
 }
 
 - (void)controlLayerNeedAppear:(__kindof SJBaseVideoPlayer *)videoPlayer {
@@ -300,22 +304,21 @@
     SJEdgeControlButtonItem *liveItem = [_bottomAdapter itemForTag:SJEdgeControlLayerBottomItem_LIVEText];
     switch ( playbackType ) {
         case SJPlaybackTypeLIVE: {
-            currentTimeItem.hidden = YES;
-            separatorItem.hidden = YES;
-            durationTimeItem.hidden = YES;
-            progressItem.hidden = YES;
-            liveItem.hidden = NO;
+            currentTimeItem.innerHidden = YES;
+            separatorItem.innerHidden = YES;
+            durationTimeItem.innerHidden = YES;
+            progressItem.innerHidden = YES;
+            liveItem.innerHidden = NO;
         }
             break;
         case SJPlaybackTypeUnknown:
         case SJPlaybackTypeVOD:
         case SJPlaybackTypeFILE: {
-            currentTimeItem.hidden = NO;
-            separatorItem.hidden = NO;
-            durationTimeItem.hidden = NO;
-            progressItem.hidden = NO;
-            liveItem.hidden = YES;
-            [_bottomAdapter removeItemForTag:SJEdgeControlLayerBottomItem_LIVEText];
+            currentTimeItem.innerHidden = NO;
+            separatorItem.innerHidden = NO;
+            durationTimeItem.innerHidden = NO;
+            progressItem.innerHidden = NO;
+            liveItem.innerHidden = YES;
         }
             break;
     }
@@ -795,7 +798,7 @@
     [self.bottomAdapter addItem:playItem];
     
     SJEdgeControlButtonItem *liveItem = [[SJEdgeControlButtonItem alloc] initWithTag:SJEdgeControlLayerBottomItem_LIVEText];
-    liveItem.hidden = YES;
+    liveItem.innerHidden = YES;
     [self.bottomAdapter addItem:liveItem];
     
     // 当前时间
@@ -1045,17 +1048,17 @@
         if ( backItem != nil ) {
             if ( _fixesBackItem ) {
                 if ( !isFullscreen && _hiddenBackButtonWhenOrientationIsPortrait )
-                    backItem.hidden = YES;
+                    backItem.innerHidden = YES;
                 else
-                    backItem.hidden = NO;
+                    backItem.innerHidden = NO;
             }
             else {
                 if ( isFullscreen || isFitOnScreen )
-                    backItem.hidden = NO;
+                    backItem.innerHidden = NO;
                 else if ( _hiddenBackButtonWhenOrientationIsPortrait )
-                    backItem.hidden = YES;
+                    backItem.innerHidden = YES;
                 else
-                    backItem.hidden = isPlayOnScrollView;
+                    backItem.innerHidden = isPlayOnScrollView;
             }
 
             if ( backItem.hidden == NO ) {
@@ -1074,7 +1077,7 @@
         SJEdgeControlButtonItem *titleItem = [self.topAdapter itemForTag:SJEdgeControlLayerTopItem_Title];
         if ( titleItem != nil ) {
             if ( self.isHiddenTitleItemWhenOrientationIsPortrait && isSmallscreen ) {
-                titleItem.hidden = YES;
+                titleItem.innerHidden = YES;
             }
             else {
                 if ( titleItem.customView != self.titleView )
@@ -1082,7 +1085,7 @@
                 SJVideoPlayerURLAsset *asset = _videoPlayer.URLAsset.original ?: _videoPlayer.URLAsset;
                 NSAttributedString *_Nullable attributedTitle = asset.attributedTitle;
                 self.titleView.attributedText = attributedTitle;
-                titleItem.hidden = (attributedTitle.length == 0);
+                titleItem.innerHidden = (attributedTitle.length == 0);
             }
 
             if ( titleItem.hidden == NO ) {
@@ -1122,7 +1125,7 @@
 
     SJEdgeControlButtonItem *lockItem = [self.leftAdapter itemForTag:SJEdgeControlLayerLeftItem_Lock];
     if ( lockItem != nil ) {
-        lockItem.hidden = !showsLockItem;
+        lockItem.innerHidden = !showsLockItem;
         if ( showsLockItem ) {
             id<SJVideoPlayerControlLayerResources> sources = SJVideoPlayerConfigurations.shared.resources;
             lockItem.image = isLockedScreen ? sources.lockImage : sources.unlockImage;
@@ -1205,7 +1208,7 @@
     
     SJEdgeControlButtonItem *replayItem = [self.centerAdapter itemForTag:SJEdgeControlLayerCenterItem_Replay];
     if ( replayItem != nil ) {
-        replayItem.hidden = !_videoPlayer.isPlaybackFinished;
+        replayItem.innerHidden = !_videoPlayer.isPlaybackFinished;
         if ( replayItem.hidden == NO && replayItem.title == nil ) {
             id<SJVideoPlayerControlLayerResources> resources = SJVideoPlayerConfigurations.shared.resources;
             id<SJVideoPlayerLocalizedStrings> strings = SJVideoPlayerConfigurations.shared.localizedStrings;
@@ -1271,10 +1274,12 @@
 - (void)_updateContentForBottomProgressSliderItemIfNeeded {
     if ( !sj_view_isDisappeared(_bottomContainerView) ) {
         SJEdgeControlButtonItem *progressItem = [_bottomAdapter itemForTag:SJEdgeControlLayerBottomItem_Progress];
-        SJProgressSlider *slider = progressItem.customView;
-        slider.maxValue = _videoPlayer.duration ? : 1;
-        if ( !slider.isDragging ) slider.value = _videoPlayer.currentTime;
-        slider.bufferProgress = _videoPlayer.playableDuration / slider.maxValue;
+        if ( progressItem != nil && !progressItem.isHidden ) {
+            SJProgressSlider *slider = progressItem.customView;
+            slider.maxValue = _videoPlayer.duration ? : 1;
+            if ( !slider.isDragging ) slider.value = _videoPlayer.currentTime;
+            slider.bufferProgress = _videoPlayer.playableDuration / slider.maxValue;
+        }
     }
 }
 

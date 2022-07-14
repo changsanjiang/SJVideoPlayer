@@ -7,6 +7,7 @@
 //
 
 #import "SJEdgeControlButtonItem.h"
+#import "SJEdgeControlButtonItemInternal.h"
 #import <objc/message.h>
 
 NS_ASSUME_NONNULL_BEGIN
@@ -17,6 +18,7 @@ NSNotificationName const SJEdgeControlButtonItemPerformedActionNotification = @"
     CGFloat _size;
     BOOL _isFrameLayout;
     NSMutableArray<SJEdgeControlButtonItemAction *> *_Nullable _actions;
+    BOOL _innerHidden;
 }
 - (instancetype)initWithTitle:(nullable NSAttributedString *)title
                        target:(nullable id)target
@@ -93,6 +95,17 @@ NSNotificationName const SJEdgeControlButtonItemPerformedActionNotification = @"
         }
     }
     [NSNotificationCenter.defaultCenter postNotificationName:SJEdgeControlButtonItemPerformedActionNotification object:self];
+}
+
+- (void)setInnerHidden:(BOOL)innerHidden {
+    _innerHidden = innerHidden;
+}
+- (BOOL)isInnerHidden {
+    return _innerHidden;
+}
+
+- (BOOL)isHidden {
+    return _hidden || _innerHidden;
 }
 @end
 

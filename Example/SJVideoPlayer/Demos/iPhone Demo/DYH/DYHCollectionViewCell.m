@@ -100,7 +100,7 @@
         self.videoGravity = AVLayerVideoGravityResizeAspectFill;
         self.autoplayWhenSetNewAsset = NO;
         self.rotationManager.disabledAutorotation = YES;
-        self.pauseWhenAppDidEnterBackground = YES;
+        self.pausedInBackground = YES;
         self.resumePlaybackWhenScrollAppeared = NO;
         self.resumePlaybackWhenAppDidEnterForeground = NO;
     }

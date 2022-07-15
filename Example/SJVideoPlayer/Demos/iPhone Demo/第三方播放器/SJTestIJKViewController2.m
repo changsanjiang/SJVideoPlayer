@@ -12,9 +12,9 @@
 #import "Masonry.h"
 #import <SJUIKit/NSAttributedString+SJMake.h>
 
-#if __has_include(<IJKMediaFrameworkWithSSL/IJKMediaFrameworkWithSSL.h>)
+#if __has_include(<PodIJKPlayer/PodIJKPlayer.h>)
 #import "SJIJKMediaPlaybackController.h"
-#import <IJKMediaFrameworkWithSSL/IJKFFOptions.h>
+#import <PodIJKPlayer/PodIJKPlayer.h>
 #endif
 
 @interface SJTestIJKViewController2 ()
@@ -28,12 +28,12 @@
     self.view.backgroundColor = UIColor.whiteColor;
     
     _player = SJVideoPlayer.player;
-#if __has_include(<IJKMediaFrameworkWithSSL/IJKMediaFrameworkWithSSL.h>)
+#if __has_include(<PodIJKPlayer/PodIJKPlayer.h>)
     SJIJKMediaPlaybackController *controller = SJIJKMediaPlaybackController.new;
     IJKFFOptions *options = [IJKFFOptions optionsByDefault];
     controller.options = options;
     _player.playbackController = controller;
-    SJVideoPlayerURLAsset *asset = [SJVideoPlayerURLAsset.alloc initWithURL:[NSURL URLWithString:@"http://ali-gh.live.5gtv.com.cn//live/XP_CCTV1HD.m3u8?t=1&v=100"]];
+    SJVideoPlayerURLAsset *asset = [SJVideoPlayerURLAsset.alloc initWithURL:SourceURL0];
 //    asset.trialEndPosition = 30; // 试看30秒
     _player.URLAsset = asset;
 #else

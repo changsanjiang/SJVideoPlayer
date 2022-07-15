@@ -21,7 +21,7 @@
   "requires_arc": true,
   "dependencies": {
     "SJBaseVideoPlayer": [
-      ">= 3.7.0"
+      ">= 3.7.1"
     ]
   },
   "source_files": "SJVideoPlayer/*.{h,m}",

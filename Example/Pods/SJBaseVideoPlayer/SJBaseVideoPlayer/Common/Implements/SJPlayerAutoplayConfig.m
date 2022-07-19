@@ -17,8 +17,6 @@
     
     SJPlayerAutoplayConfig *config = [[self alloc] init];
     config->_autoplayDelegate = delegate;
-    config->_animationType = SJAutoplayScrollAnimationTypeMiddle;
-    config->_autoplayPosition = SJAutoplayPositionMiddle;
     config->_playerSuperviewSelector = playerSuperviewSelector;
     return config;
 }

@@ -745,7 +745,7 @@ API_AVAILABLE(ios(16.0))
     [self.window.rootViewController setNeedsUpdateOfSupportedInterfaceOrientations];
 #else
     [(id)UIApplication.sharedApplication.keyWindow.rootViewController setNeedsUpdateOfSupportedInterfaceOrientations];
-    [(id)self.window setNeedsUpdateOfSupportedInterfaceOrientations];
+    [(id)self.window.rootViewController setNeedsUpdateOfSupportedInterfaceOrientations];
 #endif
 }
 

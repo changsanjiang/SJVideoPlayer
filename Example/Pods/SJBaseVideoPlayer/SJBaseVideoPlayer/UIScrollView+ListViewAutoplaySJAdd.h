@@ -20,11 +20,6 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic, readonly) BOOL sj_enabledAutoplay;
 
 ///
-/// 指定位置播放
-///
-- (void)sj_playAssetAtIndexPath:(NSIndexPath *)indexPath scrollAnimated:(BOOL)animated;
-
-///
 /// enable autoplay
 /// 开启
 ///
@@ -33,12 +28,7 @@ NS_ASSUME_NONNULL_BEGIN
 ///
 /// 关闭
 ///
-- (void)sj_disenableAutoplay;
-
-///
-/// 播放下一个(在已显示的cell中查找)
-///
-- (void)sj_playNextVisibleAsset;
+- (void)sj_disableAutoplay;
 
 ///
 /// 移除当前播放视图
@@ -49,13 +39,8 @@ NS_ASSUME_NONNULL_BEGIN
 
 /// Developers don't need to care, this category is automatically maintained by the SJBaseVideoPlayer.
 /// 开发者无需关心, 此分类由播放器自动维护
-@interface UIScrollView (SJAutoplayPrivate)
+@interface UIScrollView (SJAutoplayPlayerAssigns)
 @property (nonatomic, strong, nullable, readonly) NSIndexPath *sj_currentPlayingIndexPath;
 - (void)setSj_currentPlayingIndexPath:(nullable NSIndexPath *)sj_currentPlayingIndexPath;
-@end
-
-
-@interface UIScrollView (SJAutoplayDeprecated)
-- (void)sj_needPlayNextAsset __deprecated_msg("use `sj_playNextVisibleAsset`");
 @end
 NS_ASSUME_NONNULL_END

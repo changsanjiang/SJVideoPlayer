@@ -10,17 +10,6 @@
 NS_ASSUME_NONNULL_BEGIN
 @protocol SJPlayerAutoplayDelegate;
 
-typedef NS_ENUM(NSUInteger, SJAutoplayScrollAnimationType) {
-    SJAutoplayScrollAnimationTypeNone,
-    SJAutoplayScrollAnimationTypeTop,
-    SJAutoplayScrollAnimationTypeMiddle,
-};
-
-typedef NS_ENUM(NSUInteger, SJAutoplayPosition) {
-    SJAutoplayPositionTop,
-    SJAutoplayPositionMiddle,
-};
-
 @interface SJPlayerAutoplayConfig : NSObject
 + (instancetype)configWithPlayerSuperviewSelector:(nullable SEL)playerSuperviewSelector autoplayDelegate:(id<SJPlayerAutoplayDelegate>)delegate;
 
@@ -28,11 +17,9 @@ typedef NS_ENUM(NSUInteger, SJAutoplayPosition) {
 
 @property (nonatomic, weak, nullable, readonly) id<SJPlayerAutoplayDelegate> autoplayDelegate;
 
-/// 滚动的动画类型
-/// default is .Middle;
-@property (nonatomic) SJAutoplayScrollAnimationType animationType;
-/// default is .Middle;
-@property (nonatomic) SJAutoplayPosition autoplayPosition;
+/// 滑动方向默认为 垂直方向, 当 UICollectionView 水平滑动时, 记得设置此属性;
+@property (nonatomic) UICollectionViewScrollDirection scrollDirection;
+
 /// 可播区域的insets
 @property (nonatomic) UIEdgeInsets playableAreaInsets;
 @end

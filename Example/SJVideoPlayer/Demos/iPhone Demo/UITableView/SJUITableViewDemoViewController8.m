@@ -27,7 +27,7 @@
     
     // 开启滑动自动播放
     SJPlayerAutoplayConfig *config = [SJPlayerAutoplayConfig configWithPlayerSuperviewSelector:NSSelectorFromString(@"coverImageView") autoplayDelegate:self];
-    config.autoplayPosition = SJAutoplayPositionMiddle; // 播放距离中线最近的视频
+    config.playableAreaInsets = UIEdgeInsetsMake(200, 0, 200, 0);
     [self.tableView sj_enableAutoplayWithConfig:config];
 }
 

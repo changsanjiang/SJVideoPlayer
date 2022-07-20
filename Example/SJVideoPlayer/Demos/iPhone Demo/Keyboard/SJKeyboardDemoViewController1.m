@@ -75,7 +75,7 @@ static SJEdgeControlButtonItemTag SJKeyboardDemoSendCommentItemTag = 1;
 - (void)presentCommentVC {
     SJSendCommentViewController *vc = SJSendCommentViewController.new;
     vc.delegate = self;
-    [UIApplication.sharedApplication.keyWindow.rootViewController presentViewController:vc animated:YES completion:nil];
+    [_player.presentView.window.rootViewController presentViewController:vc animated:YES completion:nil];
 }
 
 - (void)sendComment:(NSString *)text {

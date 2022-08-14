@@ -29,8 +29,8 @@ NS_ASSUME_NONNULL_BEGIN
     _point = interval;
 }
 
-- (void)start {
-    [self clear];
+- (void)resume {
+    [self interrupt];
     __weak typeof(self) _self = self;
     _timer = [NSTimer assetAdd_timerWithTimeInterval:1 block:^(NSTimer *timer) {
         __strong typeof(_self) self = _self;
@@ -39,7 +39,7 @@ NS_ASSUME_NONNULL_BEGIN
             return ;
         }
         if ( (--self.point) <= 0 ) {
-            [self clear];
+            [self interrupt];
             if ( self.exeBlock ) self.exeBlock(self);
         }
     } repeats:YES];
@@ -48,7 +48,7 @@ NS_ASSUME_NONNULL_BEGIN
     [_timer assetAdd_fire];
 }
 
-- (void)clear {
+- (void)interrupt {
     [_timer invalidate];
     _timer = nil;
     _point = _interval;

@@ -142,6 +142,7 @@ NS_ASSUME_NONNULL_BEGIN
 @end
 
 @implementation SJMediaPlaybackController
+@synthesize canStartPictureInPictureAutomaticallyFromInline = _canStartPictureInPictureAutomaticallyFromInline;
 @synthesize requiresLinearPlaybackInPictureInPicture = _requiresLinearPlaybackInPictureInPicture;
 @synthesize pauseWhenAppDidEnterBackground = _pauseWhenAppDidEnterBackground;
 @synthesize periodicTimeInterval = _periodicTimeInterval;

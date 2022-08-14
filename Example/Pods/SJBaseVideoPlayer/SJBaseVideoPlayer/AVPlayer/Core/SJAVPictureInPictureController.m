@@ -55,6 +55,14 @@ static NSString *kPictureInPicturePossible = @"pictureInPicturePossible";
 #endif
 }
 
+- (void)setCanStartPictureInPictureAutomaticallyFromInline:(BOOL)canStartPictureInPictureAutomaticallyFromInline API_AVAILABLE(ios(14.2)) {
+    _pictureInPictureController.canStartPictureInPictureAutomaticallyFromInline = canStartPictureInPictureAutomaticallyFromInline;
+}
+
+- (BOOL)canStartPictureInPictureAutomaticallyFromInline API_AVAILABLE(ios(14.2)) {
+    return _pictureInPictureController.canStartPictureInPictureAutomaticallyFromInline;
+}
+
 - (BOOL)isAvailable {
     return _status != SJPictureInPictureStatusStopping && _status != SJPictureInPictureStatusStopped;
 }

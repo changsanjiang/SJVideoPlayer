@@ -215,8 +215,7 @@ static NSNotificationName const SJDeviceBrightnessDidChangeNotification = @"SJDe
 }
 
 - (nullable UIView *)targetView {
-    SJPlayerView *playerView = (SJPlayerView *)[UIApplication.sharedApplication.keyWindow viewWithTag:SJPlayerViewTag];
-    return playerView != nil ? playerView.presentView : nil;
+    return [UIApplication.sharedApplication.keyWindow viewWithTag:SJPresentViewTag];
 }
 
 - (void)_addOrRemoveSysVolumeView:(nullable UIWindow *)newWindow {

@@ -108,12 +108,6 @@ _isIPhoneXSeries(void) {
         [self _updateTopLayout:nil];
     }
     _beforeBounds = curr;
-    
-    if ( self.window != nil ) {
-        [UIView animateWithDuration:0.3 animations:^{
-            [self layoutIfNeeded];
-        }];
-    }
 }
 
 - (void)_updateLayout_isNormal_iPhone_X {
@@ -246,9 +240,9 @@ _isIPhoneXSeries(void) {
                 break;
         }
         
-        [UIView animateWithDuration:0.4 animations:^{
-            [self layoutIfNeeded];
-        }];
+//        [UIView animateWithDuration:0.4 animations:^{
+//            [self layoutIfNeeded];
+//        }];
     }];
 }
 

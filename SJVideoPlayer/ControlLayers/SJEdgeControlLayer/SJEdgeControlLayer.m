@@ -56,7 +56,7 @@
 @property (nonatomic, strong, readonly) SJTimerControl *dateTimerControl API_AVAILABLE(ios(11.0)); // refresh date for custom status bar
 @property (nonatomic, strong, readonly) SJEdgeControlButtonItem *pictureInPictureItem API_AVAILABLE(ios(14.0));
 
-@property (nonatomic) BOOL usesFitOnScreen;
+@property (nonatomic) BOOL autousesFitOnScreen;
 @end
 
 @implementation SJEdgeControlLayer
@@ -134,7 +134,7 @@
 }
 
 - (void)_fullItemWasTapped {
-    if ( _videoPlayer.onlyFitOnScreen || _usesFitOnScreen ) {
+    if ( _videoPlayer.onlyFitOnScreen || _autousesFitOnScreen ) {
         [_videoPlayer setFitOnScreen:!_videoPlayer.isFitOnScreen];
         return;
     }
@@ -252,7 +252,7 @@
 }
 
 - (void)videoPlayer:(__kindof SJBaseVideoPlayer *)videoPlayer prepareToPlay:(SJVideoPlayerURLAsset *)asset {
-    _usesFitOnScreen = NO;
+    _autousesFitOnScreen = NO;
     [self _reloadSizeForBottomTimeLabel];
     [self _updateContentForBottomDurationItemIfNeeded];
     [self _updateContentForBottomCurrentTimeItemIfNeeded];
@@ -327,7 +327,7 @@
 }
 
 - (BOOL)canTriggerRotationOfVideoPlayer:(__kindof SJBaseVideoPlayer *)videoPlayer {
-    if ( _needsFitOnScreenFirst )
+    if ( _needsFitOnScreenFirst || _autousesFitOnScreen )
         return videoPlayer.isFitOnScreen;
     
     return YES;
@@ -431,7 +431,7 @@
 
 - (void)videoPlayer:(__kindof SJBaseVideoPlayer *)videoPlayer presentationSizeDidChange:(CGSize)size {
     if ( _automaticallyPerformRotationOrFitOnScreen && !videoPlayer.isFullscreen && !videoPlayer.isFitOnScreen ) {
-        _usesFitOnScreen = size.width < size.height;
+        _autousesFitOnScreen = size.width < size.height;
     }
 }
 
@@ -620,6 +620,8 @@
                           self.bottomContainerView, self.rightContainerView]);
     
     [NSNotificationCenter.defaultCenter addObserver:self selector:@selector(_resetControlLayerAppearIntervalForItemIfNeeded:) name:SJEdgeControlButtonItemPerformedActionNotification object:nil];
+    
+//    [NSNotificationCenter.defaultCenter addObserver:self selector:@selector(configurationsDidUpdate:) name:SJVideoPlayerConfigurationsDidUpdateNotification object:nil];
 }
 
 @synthesize fixedBackButton = _fixedBackButton;
@@ -1465,6 +1467,14 @@
     if ( _draggingObserver.didEndDraggingExeBlock )
         _draggingObserver.didEndDraggingExeBlock(time);
 }
+
+//#pragma mark - mark
+//
+//- (void)configurationsDidUpdate:(NSNotification *)note {
+//    if ( @available(iOS 14.0, *) ) [self _updateContentForPictureInPictureItem];
+//    [self _updateContentForBottomProgressSliderItemIfNeeded];
+//}
+
 @end
 
 

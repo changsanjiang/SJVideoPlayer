@@ -20,7 +20,7 @@ pod 'SJVideoPlayer'
 ![](https://user-images.githubusercontent.com/25744224/101907041-ebdb2a00-3bf4-11eb-8d90-6faf1f9a73c8.png)
 
 - step 2:
-前往`AppDelegate`, 导入头文件`#import "SJRotationManager.h"`, 在`application:supportedInterfaceOrientationsForWindow:`中返回`window.sj_4_supportedInterfaceOrientations`;
+前往`AppDelegate`, 导入头文件`#import "SJRotationManager.h"`, 在`application:supportedInterfaceOrientationsForWindow:`中返回`[SJRotationManager supportedInterfaceOrientationsForWindow:window]`;
 ```Objective-C
 #import "SJRotationManager.h"
 

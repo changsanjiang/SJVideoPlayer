@@ -74,6 +74,9 @@ API_AVAILABLE(ios(16.0)) @protocol _SJ_iOS_16_IDE_InvisibleMethods <NSObject>
         [self.target setFrame:sourceFrame];
         [sourceWindow addSubview:self.target];
         [self.target layoutIfNeeded];
+        
+        if ( self.window.isHidden ) [self.window makeKeyAndVisible];
+        [self setNeedsUpdateOfSupportedInterfaceOrientations];
     }
     else if ( toOrientation == SJOrientation_Portrait ) {
         [self.target removeFromSuperview];
@@ -89,10 +92,12 @@ API_AVAILABLE(ios(16.0)) @protocol _SJ_iOS_16_IDE_InvisibleMethods <NSObject>
                 break;
         }
         [sourceWindow addSubview:self.target];
-        [self.target layoutIfNeeded];
         [sourceWindow makeKeyWindow];
-        [self.window setHidden:YES];
-        [UIView performWithoutAnimation:^{ [self setNeedsUpdateOfSupportedInterfaceOrientations]; }];
+        [self.target layoutIfNeeded];
+        [UIView performWithoutAnimation:^{
+            [self.window setHidden:YES];
+            [self setNeedsUpdateOfSupportedInterfaceOrientations];
+        }];
     }
     
     CGRect rotationBounds = CGRectZero;
@@ -171,7 +176,6 @@ API_AVAILABLE(ios(16.0)) @protocol _SJ_iOS_16_IDE_InvisibleMethods <NSObject>
                 };
             }
             else {
-                if ( self.window.isHidden ) [self.window makeKeyAndVisible];
                 [self setNeedsUpdateOfSupportedInterfaceOrientations];
                 if ( self.target.superview != self.rotationFullscreenViewController.view ) [self.rotationFullscreenViewController.view addSubview:self.target];
                 self.target.transform = CGAffineTransformIdentity;

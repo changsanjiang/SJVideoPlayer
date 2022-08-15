@@ -12,6 +12,17 @@
 #import <SJVideoPlayer/SJVideoPlayer.h>
 #import <Masonry/Masonry.h>
 
+@implementation UIAlertController (SJAdditions)
+- (UIInterfaceOrientationMask)supportedInterfaceOrientations {
+    return UIInterfaceOrientationMaskAll;
+}
+ 
+- (BOOL)shouldAutorotate {
+    return NO;
+}
+@end
+
+
 @interface SJRotationModeDemoViewController2 ()<UITableViewDelegate, UITableViewDataSource, SJVideoTableViewCellDelegate>
 @property (weak, nonatomic) IBOutlet UITableView *tableView;
 @property (nonatomic, strong, nullable) SJRotationMode2ViewModel *viewModel;

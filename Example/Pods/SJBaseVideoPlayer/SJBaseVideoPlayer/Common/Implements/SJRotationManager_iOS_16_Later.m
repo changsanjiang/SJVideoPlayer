@@ -56,7 +56,7 @@ API_AVAILABLE(ios(16.0)) @protocol _SJ_iOS_16_IDE_InvisibleMethods <NSObject>
         if ( completionHandler != nil ) completionHandler(self);
         return;
     }
-    
+
     self.currentOrientation = orientation;
     [self rotationBegin];
     

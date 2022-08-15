@@ -146,8 +146,8 @@ API_DEPRECATED("deprecated!", ios(9.0, 16.0)) @interface SJRotationFullscreenVie
         }];
     }
     else {
-        [self _fixNavigationBarLayout];
         [UIView animateWithDuration:0.0 animations:^{ /* preparing */ } completion:^(BOOL finished) {
+            [self _fixNavigationBarLayout];
             [UIView animateWithDuration:0.3 animations:^{
                 self.rotationFullscreenViewController.playerSuperview.frame = [self.superview convertRect:self.superview.bounds toView:self.superview.window];
                 [self.target layoutIfNeeded];

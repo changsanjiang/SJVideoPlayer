@@ -58,7 +58,7 @@ static NSNotificationName const SJControlLayerAppearStateDidChangeNotification =
         __strong typeof(_self) self = _self;
         if ( !self ) return;
         if ( self.isDisabled ) {
-            [control clear];
+            [control interrupt];
             return;
         }
         if ( self.canAutomaticallyDisappear ) {
@@ -135,11 +135,11 @@ static NSNotificationName const SJControlLayerAppearStateDidChangeNotification =
 - (void)_start {
     if ( _disabled )
         return;
-    [_timer start];
+    [_timer resume];
 }
 
 - (void)_clear {
-    [_timer clear];
+    [_timer interrupt];
 }
 @end
 NS_ASSUME_NONNULL_END

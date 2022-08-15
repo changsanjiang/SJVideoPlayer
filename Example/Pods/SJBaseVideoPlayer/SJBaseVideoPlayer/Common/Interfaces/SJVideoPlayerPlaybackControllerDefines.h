@@ -69,6 +69,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (BOOL)isPictureInPictureSupported API_AVAILABLE(ios(14.0));
 @property (nonatomic) BOOL requiresLinearPlaybackInPictureInPicture API_AVAILABLE(ios(14.0));
+@property (nonatomic) BOOL canStartPictureInPictureAutomaticallyFromInline API_AVAILABLE(ios(14.2));
 @property (nonatomic, readonly) SJPictureInPictureStatus pictureInPictureStatus API_AVAILABLE(ios(14.0));
 @property (nonatomic, copy, nullable) void(^restoreUserInterfaceForPictureInPictureStop)(id<SJVideoPlayerPlaybackController> controller, void(^completionHandler)(BOOL restored));
 - (void)startPictureInPicture API_AVAILABLE(ios(14.0));

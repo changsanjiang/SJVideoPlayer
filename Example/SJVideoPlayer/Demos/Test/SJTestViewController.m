@@ -13,13 +13,13 @@
 #import "SJSourceURLs.h"
 #import <SDWebImage.h>
 
-#import <SJBaseVideoPlayer/SJRotationManager_4.h>
+#import <SJBaseVideoPlayer/SJRotationManager.h>
 
 #import "AppDelegate.h"
 
 @interface SJTestViewController ()
 @property (weak, nonatomic) IBOutlet UIView *playerContainerView;
-@property (nonatomic, strong) SJRotationManager_4 *rotationManager;
+@property (nonatomic, strong) SJRotationManager *rotationManager;
 @end
 
 @implementation SJTestViewController
@@ -27,7 +27,7 @@
 - (void)viewDidLoad {
     [super viewDidLoad];
  
-    _rotationManager = [SJRotationManager_4 rotationManager];
+    _rotationManager = [SJRotationManager rotationManager];
 
     UIView *greenView = [UIView.alloc initWithFrame:CGRectZero];
     greenView.backgroundColor = UIColor.greenColor;

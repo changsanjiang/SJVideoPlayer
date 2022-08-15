@@ -20,20 +20,20 @@ pod 'SJVideoPlayer'
 ![](https://user-images.githubusercontent.com/25744224/101907041-ebdb2a00-3bf4-11eb-8d90-6faf1f9a73c8.png)
 
 - step 2:
-前往`AppDelegate`, 导入头文件`#import "SJRotationManager_4.h"`, 在`application:supportedInterfaceOrientationsForWindow:`中返回`window.sj_4_supportedInterfaceOrientations`;
+前往`AppDelegate`, 导入头文件`#import "SJRotationManager.h"`, 在`application:supportedInterfaceOrientationsForWindow:`中返回`window.sj_4_supportedInterfaceOrientations`;
 ```Objective-C
-#import "SJRotationManager_4.h"
+#import "SJRotationManager.h"
 
 @implementation AppDelegate
 - (UIInterfaceOrientationMask)application:(UIApplication *)application supportedInterfaceOrientationsForWindow:(UIWindow *)window {
-    return window.sj_4_supportedInterfaceOrientations;
+    return [SJRotationManager supportedInterfaceOrientationsForWindow:window];
 }
 @end
 
 /// swift
 /// class AppDelegate: UIResponder, UIApplicationDelegate {
 ///     func application(_ application: UIApplication, supportedInterfaceOrientationsFor window: UIWindow?) -> /// UIInterfaceOrientationMask {
-///         return window.sj_4_supportedInterfaceOrientations
+///         return window.supportedInterfaceOrientations(window)
 ///     }
 /// }
 ```

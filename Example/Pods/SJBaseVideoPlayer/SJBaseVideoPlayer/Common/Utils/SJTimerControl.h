@@ -16,9 +16,9 @@ NS_ASSUME_NONNULL_BEGIN
 
 @property (nonatomic, copy, nullable) void(^exeBlock)(SJTimerControl *control);
 
-- (void)start;
+- (void)resume;
 
-- (void)clear;
+- (void)interrupt;
 
 @end
 NS_ASSUME_NONNULL_END

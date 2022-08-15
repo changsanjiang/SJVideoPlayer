@@ -15,6 +15,7 @@ API_AVAILABLE(ios(14.0)) @interface SJAVPictureInPictureController : NSObject<SJ
 - (nullable instancetype)initWithLayer:(AVPlayerLayer *)layer delegate:(id<SJPictureInPictureControllerDelegate>)delegate;
 
 @property (nonatomic) BOOL requiresLinearPlayback;
+@property (nonatomic) BOOL canStartPictureInPictureAutomaticallyFromInline API_AVAILABLE(ios(14.2));
 @property (nonatomic, readonly) SJPictureInPictureStatus status;
 @property (nonatomic, readonly) BOOL wantsPictureInPictureStart;
 @property (nonatomic, readonly, getter=isAvailable) BOOL available;

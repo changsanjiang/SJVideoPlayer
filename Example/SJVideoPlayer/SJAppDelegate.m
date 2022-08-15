@@ -8,7 +8,7 @@
 
 #import "SJAppDelegate.h"
 #import "SJVideoPlayer.h" 
-#import "SJRotationManager_4.h"
+#import "SJRotationManager.h"
 
 @implementation SJAppDelegate
 + (void)initialize {
@@ -27,7 +27,7 @@
 }
 
 - (UIInterfaceOrientationMask)application:(UIApplication *)application supportedInterfaceOrientationsForWindow:(UIWindow *)window {
-    UIInterfaceOrientationMask mask = window.sj_4_supportedInterfaceOrientations;
+    UIInterfaceOrientationMask mask = [SJRotationManager supportedInterfaceOrientationsForWindow:window];
     NSLog(@"orientations: %ld, %@", mask, NSStringFromClass(window.class));
     return mask;
 }

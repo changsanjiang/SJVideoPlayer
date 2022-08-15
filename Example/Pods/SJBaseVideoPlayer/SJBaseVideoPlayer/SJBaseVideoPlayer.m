@@ -8,8 +8,7 @@
 
 #import "SJBaseVideoPlayer.h"
 #import <objc/message.h>
-#import "SJRotationManager_4.h"
-#import "SJRotationManagerInternal_4.h"
+#import "SJRotationManager.h"
 #import "SJDeviceVolumeAndBrightnessManager.h"
 #import "SJVideoPlayerRegistrar.h"
 #import "SJVideoPlayerPresentView.h"
@@ -169,7 +168,7 @@ typedef struct _SJPlayerControlInfo {
 }
 
 + (NSString *)version {
-    return @"v3.7.2";
+    return @"v3.7.3";
 }
 
 - (void)setVideoGravity:(SJVideoGravity)videoGravity {
@@ -259,14 +258,6 @@ typedef struct _SJPlayerControlInfo {
 
 - (void)presentViewDidLayoutSubviews:(SJVideoPlayerPresentView *)presentView {
     [self updateWatermarkViewLayout];
-    if ( @available(iOS 16.0, *) ) { /** next... */ }
-    else {
-        if ( self.isRotating ) {
-            [UIView animateWithDuration:0.3 animations:^{
-                [presentView layoutIfNeeded];
-            }];
-        }
-    }
 }
 
 #pragma mark -
@@ -692,9 +683,9 @@ typedef struct _SJPlayerControlInfo {
     _viewControllerManager.presentView = self.presentView;
     _viewControllerManager.lockedScreen = self.isLockedScreen;
     
-    if ( [_rotationManager isKindOfClass:SJRotationManager_4.class] ) {
-        SJRotationManager_4 *mgr = _rotationManager;
-        mgr.delegate = _viewControllerManager;
+    if ( [_rotationManager isKindOfClass:SJRotationManager.class] ) {
+        SJRotationManager *mgr = _rotationManager;
+        mgr.actionForwarder = _viewControllerManager;
     }
 }
 
@@ -1859,8 +1850,8 @@ typedef struct _SJPlayerControlInfo {
 
 - (nullable id<SJRotationManager>)rotationManager {
     if ( _rotationManager == nil && !self.onlyFitOnScreen ) {
-        SJRotationManager_4 *defaultManager = [SJRotationManager_4 rotationManager];
-        defaultManager.delegate = self.viewControllerManager;
+        SJRotationManager *defaultManager = [SJRotationManager rotationManager];
+        defaultManager.actionForwarder = self.viewControllerManager;
         [self _setupRotationManager:defaultManager];
     }
     return _rotationManager;
@@ -2354,7 +2345,14 @@ typedef struct _SJPlayerControlInfo {
         [_smallViewFloatingController show];
     }
     else if ( _controlInfo->scrollControl.pausedWhenScrollDisappeared ) {
-        [self pause];
+        if (@available(iOS 14.0, *)) {
+            if ( _playbackController.pictureInPictureStatus != SJPictureInPictureStatusRunning ) {
+                [self pause];
+            }
+        }
+        else {
+            [self pause];
+        }
     }
     
     if ( [self.controlLayerDelegate respondsToSelector:@selector(videoPlayerWillDisappearInScrollView:)] ) {

@@ -440,11 +440,11 @@
 - (void)tappedPlayerOnTheLockedState:(__kindof SJBaseVideoPlayer *)videoPlayer {
     if ( sj_view_isDisappeared(_leftContainerView) ) {
         sj_view_makeAppear(_leftContainerView, YES);
-        [self.lockStateTappedTimerControl start];
+        [self.lockStateTappedTimerControl resume];
     }
     else {
         sj_view_makeDisappear(_leftContainerView, YES);
-        [self.lockStateTappedTimerControl clear];
+        [self.lockStateTappedTimerControl interrupt];
     }
 }
 
@@ -453,12 +453,12 @@
     [self _updateAppearStateForBottomProgressIndicatorIfNeeded];
     [self _updateAppearStateForContainerViews];
     [self _reloadAdaptersIfNeeded];
-    [self.lockStateTappedTimerControl start];
+    [self.lockStateTappedTimerControl resume];
 }
 
 - (void)unlockedVideoPlayer:(__kindof SJBaseVideoPlayer *)videoPlayer {
     [self _updateAppearStateForBottomProgressIndicatorIfNeeded];
-    [self.lockStateTappedTimerControl clear];
+    [self.lockStateTappedTimerControl interrupt];
     [videoPlayer controlLayerNeedAppear];
 }
 
@@ -681,7 +681,7 @@
         __strong typeof(_self) self = _self;
         if ( !self ) return;
         sj_view_makeDisappear(self.leftContainerView, YES);
-        [control clear];
+        [control interrupt];
     };
     return _lockStateTappedTimerControl;
 }
@@ -766,7 +766,7 @@
         _dateTimerControl.exeBlock = ^(SJTimerControl * _Nonnull control) {
             __strong typeof(_self) self = _self;
             if ( !self ) return;
-            self.customStatusBar.isHidden ? [control clear] : [self _reloadCustomStatusBarIfNeeded];
+            self.customStatusBar.isHidden ? [control interrupt] : [self _reloadCustomStatusBarIfNeeded];
         };
     }
     return _dateTimerControl;
@@ -1008,7 +1008,7 @@
     }
     
     _customStatusBar.hidden = !shouldShow;
-    _customStatusBar.isHidden ? [self.dateTimerControl clear] : [self.dateTimerControl start];
+    _customStatusBar.isHidden ? [self.dateTimerControl interrupt] : [self.dateTimerControl resume];
 }
 
 - (void)_updateContentForPictureInPictureItem API_AVAILABLE(ios(14.0)) {

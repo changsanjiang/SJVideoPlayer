@@ -154,11 +154,12 @@ NS_ASSUME_NONNULL_BEGIN
     // 填充剩余空间
     CGFloat max_h = _preferredMaxLayoutSize.height;
     if ( fillIndexes.count != 0 ) {
-        CGFloat remanentH = max_h - content_h;
-        CGFloat itemH = remanentH / fillIndexes.count;
+        CGFloat allFillItemsHeight = max_h - content_h;
+        CGFloat fillItemHeight = allFillItemsHeight / fillIndexes.count;
         for ( NSNumber *idx in fillIndexes ) {
-            bounds_arr[[idx integerValue]] = (CGRect){CGPointZero, (CGSize){width, itemH}};
+            bounds_arr[[idx integerValue]] = (CGRect){CGPointZero, (CGSize){width, fillItemHeight}};
         }
+        if ( fillItemHeight > 0 ) content_h = max_h;
     }
     
     CGFloat current_y = floor((max_h - content_h) * 0.5);

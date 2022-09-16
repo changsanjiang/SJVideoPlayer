@@ -56,7 +56,7 @@
 @property (nonatomic, strong, readonly) SJTimerControl *dateTimerControl API_AVAILABLE(ios(11.0)); // refresh date for custom status bar
 @property (nonatomic, strong, readonly) SJEdgeControlButtonItem *pictureInPictureItem API_AVAILABLE(ios(14.0));
 
-@property (nonatomic) BOOL autousesFitOnScreen;
+@property (nonatomic) BOOL automaticallyFitOnScreen;
 @end
 
 @implementation SJEdgeControlLayer
@@ -134,7 +134,7 @@
 }
 
 - (void)_fullItemWasTapped {
-    if ( _videoPlayer.onlyFitOnScreen || _autousesFitOnScreen ) {
+    if ( _videoPlayer.onlyFitOnScreen || _automaticallyFitOnScreen ) {
         [_videoPlayer setFitOnScreen:!_videoPlayer.isFitOnScreen];
         return;
     }
@@ -252,7 +252,7 @@
 }
 
 - (void)videoPlayer:(__kindof SJBaseVideoPlayer *)videoPlayer prepareToPlay:(SJVideoPlayerURLAsset *)asset {
-    _autousesFitOnScreen = NO;
+    _automaticallyFitOnScreen = NO;
     [self _reloadSizeForBottomTimeLabel];
     [self _updateContentForBottomDurationItemIfNeeded];
     [self _updateContentForBottomCurrentTimeItemIfNeeded];
@@ -327,8 +327,13 @@
 }
 
 - (BOOL)canTriggerRotationOfVideoPlayer:(__kindof SJBaseVideoPlayer *)videoPlayer {
-    if ( _needsFitOnScreenFirst || _autousesFitOnScreen )
+    if ( _needsFitOnScreenFirst || _automaticallyFitOnScreen )
         return videoPlayer.isFitOnScreen;
+    
+    if ( _automaticallyFitOnScreen ) {
+        if ( videoPlayer.isFitOnScreen ) return videoPlayer.allowsRotationInFitOnScreen;
+        return NO;
+    }
     
     return YES;
 }
@@ -431,7 +436,7 @@
 
 - (void)videoPlayer:(__kindof SJBaseVideoPlayer *)videoPlayer presentationSizeDidChange:(CGSize)size {
     if ( _automaticallyPerformRotationOrFitOnScreen && !videoPlayer.isFullscreen && !videoPlayer.isFitOnScreen ) {
-        _autousesFitOnScreen = size.width < size.height;
+        _automaticallyFitOnScreen = size.width < size.height;
     }
 }
 

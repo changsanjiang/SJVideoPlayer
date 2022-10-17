@@ -13,7 +13,7 @@
 #import <SJUIKit/NSAttributedString+SJMake.h>
 #import "SJViewController4.h"
 #import <AVKit/AVPictureInPictureController.h>
- 
+
 @interface SJRotationModeDemoViewController1 ()
 @property (weak, nonatomic) IBOutlet UIView *playerContainerView;
 @property (nonatomic, strong) SJVideoPlayer *player;

@@ -255,7 +255,7 @@ typedef NS_ENUM(NSUInteger, DYPageItemType) {
     }
     SJDYPlaybackListViewController *vc = SJDYPlaybackListViewController.new;
     vc.delegate = self;
-    return [SJPageItem.alloc initWithType:type viewController:vc menuView:menuView];
+    return [SJPageItem.alloc initWithTag:type viewController:vc menuView:menuView];
 }
 
 #pragma mark -

@@ -99,7 +99,7 @@ NS_ASSUME_NONNULL_BEGIN
 }
 
 + (NSString *)version {
-    return @"v3.4.2.1";
+    return @"v3.4.2.2";
 }
 
 + (instancetype)player {

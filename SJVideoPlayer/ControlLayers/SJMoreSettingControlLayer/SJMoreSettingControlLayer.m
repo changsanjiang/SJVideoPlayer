@@ -120,20 +120,20 @@ SJEdgeControlButtonItemTag const SJMoreSettingControlLayerItem_Rate = 10002;
 
 - (void)sliderWillBeginDragging:(SJProgressSlider *)slider {
     if ( slider.tag == SJMoreSettingControlLayerItem_Volume ) {
-        _videoPlayer.deviceVolumeAndBrightnessManager.volumeTracking = YES;
+        _videoPlayer.deviceVolumeAndBrightnessController.volumeTracking = YES;
     }
     else if ( slider.tag == SJMoreSettingControlLayerItem_Brightness ) {
-        _videoPlayer.deviceVolumeAndBrightnessManager.brightnessTracking = YES;
+        _videoPlayer.deviceVolumeAndBrightnessController.brightnessTracking = YES;
     }
 }
 
 - (void)slider:(SJProgressSlider *)slider valueDidChange:(CGFloat)value {
     if ( slider.isDragging ) {
         if ( slider.tag == SJMoreSettingControlLayerItem_Volume ) {
-            _videoPlayer.deviceVolumeAndBrightnessManager.volume = slider.value;
+            _videoPlayer.deviceVolumeAndBrightnessController.volume = slider.value;
         }
         else if ( slider.tag == SJMoreSettingControlLayerItem_Brightness ) {
-            _videoPlayer.deviceVolumeAndBrightnessManager.brightness = slider.value;
+            _videoPlayer.deviceVolumeAndBrightnessController.brightness = slider.value;
         }
         else {
             _videoPlayer.rate = slider.value;
@@ -143,10 +143,10 @@ SJEdgeControlButtonItemTag const SJMoreSettingControlLayerItem_Rate = 10002;
 
 - (void)sliderDidEndDragging:(SJProgressSlider *)slider {
     if ( slider.tag == SJMoreSettingControlLayerItem_Volume ) {
-        _videoPlayer.deviceVolumeAndBrightnessManager.volumeTracking = NO;
+        _videoPlayer.deviceVolumeAndBrightnessController.volumeTracking = NO;
     }
     else if ( slider.tag == SJMoreSettingControlLayerItem_Brightness ) {
-        _videoPlayer.deviceVolumeAndBrightnessManager.brightnessTracking = NO;
+        _videoPlayer.deviceVolumeAndBrightnessController.brightnessTracking = NO;
     }
 }
 
@@ -194,8 +194,8 @@ SJEdgeControlButtonItemTag const SJMoreSettingControlLayerItem_Rate = 10002;
 }
 
 - (void)_refreshValueForSliderItems {
-    [self _setSliderValueForItemTag:SJMoreSettingControlLayerItem_Volume value:_videoPlayer.deviceVolumeAndBrightnessManager.volume];
-    [self _setSliderValueForItemTag:SJMoreSettingControlLayerItem_Brightness value:_videoPlayer.deviceVolumeAndBrightnessManager.brightness];
+    [self _setSliderValueForItemTag:SJMoreSettingControlLayerItem_Volume value:_videoPlayer.deviceVolumeAndBrightnessController.volume];
+    [self _setSliderValueForItemTag:SJMoreSettingControlLayerItem_Brightness value:_videoPlayer.deviceVolumeAndBrightnessController.brightness];
     [self _setSliderValueForItemTag:SJMoreSettingControlLayerItem_Rate value:_videoPlayer.rate];
 }
 

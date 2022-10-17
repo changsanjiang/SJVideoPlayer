@@ -10,6 +10,25 @@
 #import "SJRotationManagerInternal.h"
 #import "SJRotationFullscreenViewController.h"
 
+API_AVAILABLE(ios(16.0))
+@interface SJRotationPortraitOrientationFixingWindow : UIWindow
++ (instancetype)shared;
+@end
+
+@implementation SJRotationPortraitOrientationFixingWindow
++ (instancetype)shared {
+    static id instance;
+    static dispatch_once_t onceToken;
+    dispatch_once(&onceToken, ^{
+        instance = [SJRotationPortraitOrientationFixingWindow.alloc initWithWindowScene:UIApplication.sharedApplication.keyWindow.windowScene ?: (UIWindowScene *)UIApplication.sharedApplication.connectedScenes.anyObject];
+    });
+    return instance;
+}
+
+- (void)setBackgroundColor:(nullable UIColor *)backgroundColor {}
+
+@end
+
 #if __IPHONE_OS_VERSION_MAX_ALLOWED >= 160000
 #else
 API_AVAILABLE(ios(16.0)) @protocol _SJ_iOS_16_IDE_InvisibleMethods <NSObject>
@@ -34,7 +53,13 @@ API_AVAILABLE(ios(16.0)) @protocol _SJ_iOS_16_IDE_InvisibleMethods <NSObject>
     return YES;
 }
 
+- (BOOL)prefersStatusBarHiddenForRotationFullscreenViewController:(SJRotationFullscreenViewController *)viewController {
+    return NO;
+}
+
 - (UIInterfaceOrientationMask)supportedInterfaceOrientationsForWindow:(nullable UIWindow *)window {
+    if ( window == SJRotationPortraitOrientationFixingWindow.shared )
+        return 1 << UIInterfaceOrientationPortrait;
     if ( window == self.window )
         return 1 << self.currentOrientation;
     return UIInterfaceOrientationMaskPortrait;
@@ -91,10 +116,12 @@ API_AVAILABLE(ios(16.0)) @protocol _SJ_iOS_16_IDE_InvisibleMethods <NSObject>
                 self.target.transform = CGAffineTransformMakeRotation(-M_PI_2);
                 break;
         }
+        
         [sourceWindow addSubview:self.target];
-        [sourceWindow makeKeyWindow];
+        [self.target snapshotViewAfterScreenUpdates:YES];
         [self.target layoutIfNeeded];
         [UIView performWithoutAnimation:^{
+            [SJRotationPortraitOrientationFixingWindow.shared makeKeyAndVisible];
             [self.window setHidden:YES];
             [self setNeedsUpdateOfSupportedInterfaceOrientations];
         }];
@@ -167,6 +194,8 @@ API_AVAILABLE(ios(16.0)) @protocol _SJ_iOS_16_IDE_InvisibleMethods <NSObject>
         } completion:^(BOOL finished) {
             [self.target setAutoresizingMask:UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight];
             if      ( toOrientation == SJOrientation_Portrait ) {
+                [sourceWindow becomeKeyWindow];
+                [SJRotationPortraitOrientationFixingWindow.shared setHidden:YES];
                 [self.superview addSubview:self.target];
                 self.target.transform = CGAffineTransformIdentity;
                 self.target.bounds = self.superview.bounds;
@@ -198,8 +227,13 @@ API_AVAILABLE(ios(16.0)) @protocol _SJ_iOS_16_IDE_InvisibleMethods <NSObject>
     [UIApplication.sharedApplication.keyWindow.rootViewController setNeedsUpdateOfSupportedInterfaceOrientations];
     [self.window.rootViewController setNeedsUpdateOfSupportedInterfaceOrientations];
 #else
-    [(id)UIApplication.sharedApplication.keyWindow.rootViewController setNeedsUpdateOfSupportedInterfaceOrientations];
-    [(id)self.window.rootViewController setNeedsUpdateOfSupportedInterfaceOrientations];
+    if ( [self.window.rootViewController respondsToSelector:@selector(setNeedsUpdateOfSupportedInterfaceOrientations)] ) {
+        [(id)UIApplication.sharedApplication.keyWindow.rootViewController setNeedsUpdateOfSupportedInterfaceOrientations];
+        [(id)self.window.rootViewController setNeedsUpdateOfSupportedInterfaceOrientations];
+    }
+    else {
+        [UIViewController attemptRotationToDeviceOrientation];
+    }
 #endif
 }
 @end

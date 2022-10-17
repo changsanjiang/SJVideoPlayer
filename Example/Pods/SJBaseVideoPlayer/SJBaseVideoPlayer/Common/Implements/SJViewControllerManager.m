@@ -47,10 +47,14 @@ NS_ASSUME_NONNULL_BEGIN
     return UIStatusBarStyleDefault;
 }
 - (void)pushViewController:(UIViewController *)viewController animated:(BOOL)animated {
-    UINavigationController *nav = [_presentView lookupResponderForClass:UINavigationController.class];
-    if ( nav == nil ) return;
+    __weak typeof(self) _self = self;
     [_rotationManager rotate:SJOrientation_Portrait animated:YES completionHandler:^(id<SJRotationManager>  _Nonnull mgr) {
-        [nav pushViewController:viewController animated:animated];
+        __strong typeof(_self) self = _self;
+        if ( !self ) return ;
+        UINavigationController *nav = [self->_presentView lookupResponderForClass:UINavigationController.class];
+        if ( nav != nil ) {
+            [nav pushViewController:viewController animated:animated];
+        }
     }];
 }
   

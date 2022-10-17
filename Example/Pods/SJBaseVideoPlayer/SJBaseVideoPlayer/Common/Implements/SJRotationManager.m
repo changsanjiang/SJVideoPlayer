@@ -253,7 +253,7 @@
 
 - (void)_prepareWindowForRotation {
     if ( @available(iOS 13.0, *) ) {
-        _window = [SJRotationFullscreenWindow.alloc initWithWindowScene:UIApplication.sharedApplication.keyWindow.windowScene delegate:self];
+        _window = [SJRotationFullscreenWindow.alloc initWithWindowScene:UIApplication.sharedApplication.keyWindow.windowScene ?: (UIWindowScene *)UIApplication.sharedApplication.connectedScenes.anyObject delegate:self];
     }
     else {
         _window = [SJRotationFullscreenWindow.alloc initWithFrame:UIScreen.mainScreen.bounds delegate:self];

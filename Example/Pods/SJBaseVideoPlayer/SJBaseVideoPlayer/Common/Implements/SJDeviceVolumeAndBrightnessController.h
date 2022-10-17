@@ -1,18 +1,18 @@
 //
-//  SJDeviceVolumeAndBrightnessManagerDefines.h
-//  SJDeviceVolumeAndBrightnessManager
+//  SJDeviceVolumeAndBrightnessControllerDefines.h
+//  SJDeviceVolumeAndBrightnessController
 //
 //  Created by 畅三江 on 2017/12/10.
 //  Copyright © 2017年 changsanjiang. All rights reserved.
 //
 
 #import <UIKit/UIKit.h>
-#import "SJDeviceVolumeAndBrightnessManagerDefines.h"
+#import "SJDeviceVolumeAndBrightnessControllerDefines.h"
 
 NS_ASSUME_NONNULL_BEGIN
 
-#pragma mark - SJDeviceOutputPromptView
-@protocol SJDeviceOutputPromptViewDataSource <NSObject>
+#pragma mark - SJDeviceVolumeAndBrightnessPopupView
+@protocol SJDeviceVolumeAndBrightnessPopupViewDataSource <NSObject>
 
 /// 普通状态
 @property (nonatomic, strong, nullable) UIImage *image;
@@ -24,8 +24,8 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic, strong, nullable) UIColor *trackColor;
 @end
 
-@protocol SJDeviceOutputPromptView <NSObject>
-@property (nonatomic, strong) id<SJDeviceOutputPromptViewDataSource> dataSource;
+@protocol SJDeviceVolumeAndBrightnessPopupView <NSObject>
+@property (nonatomic, strong) id<SJDeviceVolumeAndBrightnessPopupViewDataSource> dataSource;
 
 - (void)refreshData;
 @end
@@ -33,11 +33,9 @@ NS_ASSUME_NONNULL_BEGIN
 
 #pragma mark -
 
-@interface SJDeviceVolumeAndBrightnessManager : NSObject<SJDeviceVolumeAndBrightnessManager>
-+ (instancetype)shared;
-
-@property (nonatomic, strong, nullable) id<SJDeviceOutputPromptView> brightnessView;
-@property (nonatomic, strong, nullable) id<SJDeviceOutputPromptView> volumeView;
+@interface SJDeviceVolumeAndBrightnessController : NSObject<SJDeviceVolumeAndBrightnessController>
+@property (nonatomic, strong, nullable) UIView<SJDeviceVolumeAndBrightnessPopupView> *brightnessView;
+@property (nonatomic, strong, nullable) UIView<SJDeviceVolumeAndBrightnessPopupView> *volumeView;
 
 /// 以下属性 优先于 brightnessView，volumeView中的dataSource的配置
 @property (nonatomic, strong, null_resettable) UIColor *traceColor;
@@ -48,7 +46,7 @@ NS_ASSUME_NONNULL_BEGIN
 ///
 ///     default value is YES.
 ///
-@property (nonatomic) BOOL showsPromptView;
+@property (nonatomic) BOOL showsPopupView;
 @end
 NS_ASSUME_NONNULL_END
 

@@ -29,10 +29,11 @@ static void *kPlayer = &kPlayer;
     AVPlayer *avPlayer = target.avPlayer;
     if ( avPlayer == nil ) {
         AVPlayerItem *avPlayerItem = target.avPlayerItem;
-        // fix: https://github.com/changsanjiang/SJBaseVideoPlayer/pull/17 & https://github.com/changsanjiang/SJBaseVideoPlayer/issues/18
-        //
-        // 重新创建playerItem规避`An AVPlayerItem cannot be associated with more than one instance of AVPlayer`错误.
-        if (avPlayerItem != nil && avPlayerItem.status == AVPlayerStatusFailed) {
+        /// fix: https://github.com/changsanjiang/SJBaseVideoPlayer/pull/17 & https://github.com/changsanjiang/SJBaseVideoPlayer/issues/18
+        ///      & https://github.com/changsanjiang/SJBaseVideoPlayer/pull/20/files
+        /// 重新创建playerItem规避`An AVPlayerItem cannot be associated with more than one instance of AVPlayer`错误.
+        /// 发现播放视频(缓冲一部分)然后断网, 出现重新播放点击后,依然会出现上述崩溃 其状态为 AVPlayerStatusReadyToPlay
+        if (avPlayerItem != nil && avPlayerItem.status != AVPlayerStatusUnknown) {
             NSURL *URL = nil;
             if ( [avPlayerItem.asset isKindOfClass:AVURLAsset.class] ) {
                 URL = [(AVURLAsset *)avPlayerItem.asset URL];

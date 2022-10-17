@@ -54,10 +54,13 @@ NS_ASSUME_NONNULL_BEGIN
         if ( self.contentView.superview != self.target ) {
             [self.target addSubview:self.contentView];
             self.contentView.center = CGPointMake(CGRectGetWidth(bounds) * 0.5, CGRectGetHeight(bounds) * 0.5);
-            [self.contentView addSubview:self.label];
             [self.contentView mas_makeConstraints:^(MASConstraintMaker *make) {
                 make.center.offset(0);
             }];
+        }
+        
+        if ( self.label.superview == nil ) {
+            [self.contentView addSubview:self.label];
         }
         
         self.label.preferredMaxLayoutWidth = self.maxLayoutWidth ? : CGRectGetWidth(bounds) * 0.6;

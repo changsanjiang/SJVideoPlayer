@@ -9,7 +9,7 @@
 #import "SJBaseVideoPlayer.h"
 #import <objc/message.h>
 #import "SJRotationManager.h"
-#import "SJDeviceVolumeAndBrightnessManager.h"
+#import "SJDeviceVolumeAndBrightnessController.h"
 #import "SJVideoPlayerRegistrar.h"
 #import "SJVideoPlayerPresentView.h"
 #import "SJPlayModelPropertiesObserver.h"
@@ -124,8 +124,8 @@ typedef struct _SJPlayerControlInfo {
     id<SJVideoPlayerURLAssetObserver> _Nullable _mpc_assetObserver;
     
     /// device volume And brightness manager
-    id<SJDeviceVolumeAndBrightnessManager> _deviceVolumeAndBrightnessManager;
-    id<SJDeviceVolumeAndBrightnessManagerObserver> _deviceVolumeAndBrightnessManagerObserver;
+    id<SJDeviceVolumeAndBrightnessController> _deviceVolumeAndBrightnessController;
+    id<SJDeviceVolumeAndBrightnessControllerObserver> _deviceVolumeAndBrightnessControllerObserver;
 
     /// playback controller
     NSError *_Nullable _error;
@@ -168,7 +168,7 @@ typedef struct _SJPlayerControlInfo {
 }
 
 + (NSString *)version {
-    return @"v3.7.3.2";
+    return @"v3.7.5";
 }
 
 - (void)setVideoGravity:(SJVideoGravity)videoGravity {
@@ -215,10 +215,10 @@ typedef struct _SJPlayerControlInfo {
     [self fitOnScreenManager];
     if ( !self.onlyFitOnScreen ) [self rotationManager];
     [self controlLayerAppearManager];
+    [self deviceVolumeAndBrightnessController];
     [self registrar];
     [self reachability];
     [self gestureController];
-    [self.deviceVolumeAndBrightnessManager prepare];
     [self _setupViewControllerManager];
     [self _showOrHiddenPlaceholderImageViewIfNeeded];
 }
@@ -310,12 +310,12 @@ typedef struct _SJPlayerControlInfo {
                     switch ( position ) {
                             /// brightness
                         case SJPanGestureTriggeredPosition_Left: {
-                            self.deviceVolumeAndBrightnessManager.brightnessTracking = YES;
+                            self.deviceVolumeAndBrightnessController.brightnessTracking = YES;
                         }
                             break;
                             /// volume
                         case SJPanGestureTriggeredPosition_Right: {
-                            self.deviceVolumeAndBrightnessManager.volumeTracking = YES;
+                            self.deviceVolumeAndBrightnessController.volumeTracking = YES;
                         }
                             break;
                     }
@@ -340,18 +340,19 @@ typedef struct _SJPlayerControlInfo {
                     break;
                     /// 垂直
                 case SJPanGestureMovingDirection_V: {
+                    CGFloat value = translate.y * 0.005;
                     switch ( position ) {
                             /// brightness
                         case SJPanGestureTriggeredPosition_Left: {
-                            CGFloat value = self.deviceVolumeAndBrightnessManager.brightness - translate.y * 0.005;
-                            if ( value < 0 ) value = 0;
-                            self.deviceVolumeAndBrightnessManager.brightness = value;
+                            float old = self.deviceVolumeAndBrightnessController.brightness;
+                            float new = old - value;
+                            NSLog(@"brightness.set: old: %lf, new: %lf", old, new);
+                            self.deviceVolumeAndBrightnessController.brightness = new;
                         }
                             break;
                             /// volume
                         case SJPanGestureTriggeredPosition_Right: {
-                            CGFloat value = translate.y * 0.005;
-                            self.deviceVolumeAndBrightnessManager.volume -= value;
+                            self.deviceVolumeAndBrightnessController.volume -= value;
                         }
                             break;
                     }
@@ -369,12 +370,12 @@ typedef struct _SJPlayerControlInfo {
                         switch ( position ) {
                                 /// brightness
                             case SJPanGestureTriggeredPosition_Left: {
-                                self.deviceVolumeAndBrightnessManager.brightnessTracking = NO;
+                                self.deviceVolumeAndBrightnessController.brightnessTracking = NO;
                             }
                                 break;
                                 /// volume
                             case SJPanGestureTriggeredPosition_Right: {
-                                self.deviceVolumeAndBrightnessManager.volumeTracking = NO;
+                                self.deviceVolumeAndBrightnessController.volumeTracking = NO;
                             }
                                 break;
                         }
@@ -745,7 +746,7 @@ typedef struct _SJPlayerControlInfo {
                     break;
                 case SJPanGestureMovingDirection_V: {
                     if ( self.isPlayOnScrollView ) {
-                        if ( !self.isFitOnScreen && !self.isRotating )
+                        if ( !self.isFullscreen && !self.isFitOnScreen )
                             return NO;
                     }
                     switch ( control.triggeredPosition ) {
@@ -1353,7 +1354,7 @@ typedef struct _SJPlayerControlInfo {
 - (void)playbackController:(id<SJVideoPlayerPlaybackController>)controller timeControlStatusDidChange:(SJPlaybackTimeControlStatus)status {
     
     BOOL isBuffering = self.isBuffering || self.assetStatus == SJAssetStatusPreparing;
-    isBuffering ? [self.reachability startRefresh] : [self.reachability stopRefresh];
+    isBuffering && !self.URLAsset.mediaURL.isFileURL ? [self.reachability startRefresh] : [self.reachability stopRefresh];
     
     if ( [self.controlLayerDelegate respondsToSelector:@selector(videoPlayerPlaybackStatusDidChange:)] ) {
         [self.controlLayerDelegate videoPlayerPlaybackStatusDidChange:self];
@@ -1580,23 +1581,24 @@ typedef struct _SJPlayerControlInfo {
 
 @implementation SJBaseVideoPlayer (DeviceVolumeAndBrightness)
 
-- (void)setDeviceVolumeAndBrightnessManager:(id<SJDeviceVolumeAndBrightnessManager> _Nullable)deviceVolumeAndBrightnessManager {
-    _deviceVolumeAndBrightnessManager = deviceVolumeAndBrightnessManager;
-    [self _configDeviceVolumeAndBrightnessManager:self.deviceVolumeAndBrightnessManager];
+- (void)setDeviceVolumeAndBrightnessController:(id<SJDeviceVolumeAndBrightnessController> _Nullable)deviceVolumeAndBrightnessController {
+    _deviceVolumeAndBrightnessController = deviceVolumeAndBrightnessController;
+    [self _configDeviceVolumeAndBrightnessController:self.deviceVolumeAndBrightnessController];
 }
 
-- (id<SJDeviceVolumeAndBrightnessManager>)deviceVolumeAndBrightnessManager {
-    if ( _deviceVolumeAndBrightnessManager )
-        return _deviceVolumeAndBrightnessManager;
-    _deviceVolumeAndBrightnessManager = [SJDeviceVolumeAndBrightnessManager shared];
-    [self _configDeviceVolumeAndBrightnessManager:_deviceVolumeAndBrightnessManager];
-    return _deviceVolumeAndBrightnessManager;
+- (id<SJDeviceVolumeAndBrightnessController>)deviceVolumeAndBrightnessController {
+    if ( _deviceVolumeAndBrightnessController )
+        return _deviceVolumeAndBrightnessController;
+    _deviceVolumeAndBrightnessController = [SJDeviceVolumeAndBrightnessController.alloc init];
+    [self _configDeviceVolumeAndBrightnessController:_deviceVolumeAndBrightnessController];
+    return _deviceVolumeAndBrightnessController;
 }
 
-- (void)_configDeviceVolumeAndBrightnessManager:(id<SJDeviceVolumeAndBrightnessManager>)mgr {
-    _deviceVolumeAndBrightnessManagerObserver = [mgr getObserver];
+- (void)_configDeviceVolumeAndBrightnessController:(id<SJDeviceVolumeAndBrightnessController>)mgr {
+    mgr.target = self.presentView;
+    _deviceVolumeAndBrightnessControllerObserver = [mgr getObserver];
     __weak typeof(self) _self = self;
-    _deviceVolumeAndBrightnessManagerObserver.volumeDidChangeExeBlock = ^(id<SJDeviceVolumeAndBrightnessManager>  _Nonnull mgr, float volume) {
+    _deviceVolumeAndBrightnessControllerObserver.volumeDidChangeExeBlock = ^(id<SJDeviceVolumeAndBrightnessController>  _Nonnull mgr, float volume) {
         __strong typeof(_self) self = _self;
         if ( !self ) return ;
         if ( [self.controlLayerDelegate respondsToSelector:@selector(videoPlayer:volumeChanged:)] ) {
@@ -1604,7 +1606,7 @@ typedef struct _SJPlayerControlInfo {
         }
     };
     
-    _deviceVolumeAndBrightnessManagerObserver.brightnessDidChangeExeBlock = ^(id<SJDeviceVolumeAndBrightnessManager>  _Nonnull mgr, float brightness) {
+    _deviceVolumeAndBrightnessControllerObserver.brightnessDidChangeExeBlock = ^(id<SJDeviceVolumeAndBrightnessController>  _Nonnull mgr, float brightness) {
         __strong typeof(_self) self = _self;
         if ( !self ) return ;
         if ( [self.controlLayerDelegate respondsToSelector:@selector(videoPlayer:brightnessChanged:)] ) {
@@ -1613,10 +1615,10 @@ typedef struct _SJPlayerControlInfo {
     };
 }
 
-- (id<SJDeviceVolumeAndBrightnessManagerObserver>)deviceVolumeAndBrightnessObserver {
-    id<SJDeviceVolumeAndBrightnessManagerObserver> observer = objc_getAssociatedObject(self, _cmd);
+- (id<SJDeviceVolumeAndBrightnessControllerObserver>)deviceVolumeAndBrightnessObserver {
+    id<SJDeviceVolumeAndBrightnessControllerObserver> observer = objc_getAssociatedObject(self, _cmd);
     if ( observer == nil ) {
-        observer = [self.deviceVolumeAndBrightnessManager getObserver];
+        observer = [self.deviceVolumeAndBrightnessController getObserver];
         objc_setAssociatedObject(self, _cmd, observer, OBJC_ASSOCIATION_RETAIN_NONATOMIC);
     }
     return observer;

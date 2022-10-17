@@ -241,6 +241,12 @@ NS_ASSUME_NONNULL_BEGIN
 #endif
 }
 
+- (void)cancelPictureInPicture API_AVAILABLE(ios(14.0)) {
+#ifdef DEBUG
+    NSLog(@"%@ 暂不支持画中画", NSStringFromClass(self.class));
+#endif
+}
+
 #pragma mark -
 
 - (void)pause {

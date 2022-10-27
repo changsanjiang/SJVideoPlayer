@@ -92,7 +92,7 @@
     _itemImageView.hidden = YES;
     _itemTitleLabel.hidden = YES;
     
-    if ( _item == nil ) {
+    if ( _item == nil || _item.isHidden) {
         // clean
         [_containerView removeCustomView];
         return;

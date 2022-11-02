@@ -233,6 +233,13 @@
     }
 }
 
+- (void)didMoveToWindow {
+    [super didMoveToWindow];
+    if ( [self.delegate respondsToSelector:@selector(presentViewDidMoveToWindow:)] ) {
+        [self.delegate presentViewDidMoveToWindow:self];
+    }
+}
+
 #pragma mark -
 
 - (void)_setupViews {

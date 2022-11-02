@@ -8,7 +8,7 @@
 #import "UIColor+SJPageMenuBarExtended.h"
 
 @implementation UIColor (SJPageMenuBarExtended)
-- (UIColor *)transitionToColor:(UIColor *)color progress:(CGFloat)progress {
+- (UIColor *)sj_transitionToColor:(UIColor *)color progress:(CGFloat)progress {
     if ( [self isEqual:color] )
         return self;
     

@@ -11,7 +11,9 @@
 #import "SJPageCollectionView.h"
 #import "UIViewController+SJPageViewControllerExtended.h"
 #import "UIScrollView+SJPageViewControllerExtended.h"
+#if __has_include("SJPageMenuBar.h")
 #import "SJPageMenuBar.h"
+#endif
 #import <UIKit/UIGestureRecognizerSubclass.h>
 #import <objc/message.h>
 
@@ -25,9 +27,11 @@ static NSString *const kBounds = @"bounds";
 static NSString *const kFrame = @"frame";
 static NSString *const kReuseIdentifierForCell = @"1";
 
+#if __has_include("SJPageMenuBar.h")
 @interface SJPageMenuBar (SJPageMenuBarPrivate)
 @property (nonatomic, weak, nullable) SJPageViewController *pageViewController;
 @end
+#endif
 
 @interface SJPageViewController ()<UICollectionViewDataSource, SJPageCollectionViewDelegate, UICollectionViewDelegateFlowLayout> {
     NSDictionary<SJPageViewControllerOptionsKey, id> *_Nullable _options;
@@ -42,7 +46,6 @@ static NSString *const kReuseIdentifierForCell = @"1";
     BOOL _isResponse_minimumBottomInsetForViewController;
     BOOL _isResponse_maximumTopInsetForViewController;
     BOOL _isResponse_heightForHeaderPinToVisibleBounds;
-    BOOL _isResponse_heightForHeaderBounds;
     BOOL _isResponse_modeForHeader;
     BOOL _isResponse_viewForHeader;
      
@@ -52,20 +55,24 @@ static NSString *const kReuseIdentifierForCell = @"1";
     BOOL _isResponse_willBeginDecelerating;
     BOOL _isResponse_didEndDecelerating;
     BOOL _isResponse_willLayoutSubviews;
+    
+    BOOL _needsReloadPageViewController;
+    NSInteger _numberOfViewControllers;
+    __kindof UIView *_headerView;
+    BOOL _hasHeader;
 }
-@property (nonatomic, getter=isDataSourceLoaded) BOOL dataSourceLoaded;
 @property (nonatomic, strong, readonly) NSMutableDictionary<NSNumber *, __kindof UIViewController *> *viewControllers;
 @property (nonatomic, strong, readonly, nullable) __kindof UIViewController *currentVisibleViewController;
 @property (nonatomic, strong, readonly) SJPageCollectionView *collectionView;
 @property (nonatomic) NSInteger focusedIndex;
 
-@property (nonatomic) BOOL hasHeader;
-@property (nonatomic, strong, nullable) __kindof UIView *headerView;
 @property (nonatomic, readonly) CGFloat heightForIntersectionBounds;
 @property (nonatomic, readonly) SJPageViewControllerHeaderMode modeForHeader;
 @property (nonatomic) CGFloat heightForHeaderBounds;
 
+#if __has_include("SJPageMenuBar.h")
 @property (nonatomic, strong, nullable) SJPageMenuBar *pageMenuBar;
+#endif
 @end
 
 @implementation SJPageViewController
@@ -84,34 +91,27 @@ static NSString *const kReuseIdentifierForCell = @"1";
         _focusedIndex = NSNotFound;
         _options = options;
         _viewControllers = NSMutableDictionary.new;
+        _needsReloadPageViewController = YES;
     }
     return self;
 }
 
 - (void)dealloc {
-    [self _cleanHeaderView];
-    [self _cleanScrollViewItems];
+    [self _removeHeaderView];
+    [self _removeViewControllers];
 }
 
 - (void)viewDidLoad {
     [super viewDidLoad];
     [self _setupViews];
-    [self reloadPageViewController];
-}
-
-- (void)viewWillAppear:(BOOL)animated {
-    [super viewWillAppear:animated];
-    [self setViewControllerAtIndex:_focusedIndex];
 }
 
 - (void)reloadPageViewController {
-    if ( self.isViewLoaded ) {
-        [NSObject cancelPreviousPerformRequestsWithTarget:self selector:@selector(_reloadPageViewController) object:nil];
-        [self performSelector:@selector(_reloadPageViewController) withObject:nil afterDelay:0 inModes:@[NSRunLoopCommonModes]];
-    }
+    [self _setNeedsReloadPageViewController];
 }
 
 - (void)setViewControllerAtIndex:(NSInteger)index {
+    [self _reloadPageViewControllerIfNeeded];
     if ( [self _isSafeIndex:index] ) {
         [UIView performWithoutAnimation:^{
             if ( self.collectionView.bounds.size.width != 0 ) {
@@ -124,6 +124,7 @@ static NSString *const kReuseIdentifierForCell = @"1";
 }
 
 - (nullable __kindof UIViewController *)viewControllerAtIndex:(NSInteger)index {
+    [self _reloadPageViewControllerIfNeeded];
     if ( [self _isSafeIndex:index] ) {
         NSNumber *idx = @(index);
         __auto_type _Nullable vc = self.viewControllers[idx];
@@ -138,6 +139,7 @@ static NSString *const kReuseIdentifierForCell = @"1";
 }
 
 - (NSInteger)indexOfViewController:(UIViewController *)viewController {
+    [self _reloadPageViewControllerIfNeeded];
     __block NSInteger index = NSNotFound;
     [self.viewControllers enumerateKeysAndObjectsUsingBlock:^(NSNumber * _Nonnull key, __kindof UIViewController * _Nonnull obj, BOOL * _Nonnull stop) {
         if ( viewController == obj ) {
@@ -188,6 +190,7 @@ static NSString *const kReuseIdentifierForCell = @"1";
 }
 
 - (void)setPageMenuBar:(nullable SJPageMenuBar *)pageMenuBar {
+#if __has_include("SJPageMenuBar.h")
     _pageMenuBar.pageViewController = nil;
     _pageMenuBar = pageMenuBar;
     _pageMenuBar.pageViewController = self;
@@ -195,6 +198,7 @@ static NSString *const kReuseIdentifierForCell = @"1";
     if ( focusedIndex != NSNotFound && focusedIndex != self.focusedIndex ) {
         [self setViewControllerAtIndex:focusedIndex];
     }
+#endif
 }
 
 #pragma mark -
@@ -405,8 +409,8 @@ static NSString *const kReuseIdentifierForCell = @"1";
         [_headerView sj_unlock];
         if ( headerMode == SJPageViewControllerHeaderModeAspectFill ) [_headerView layoutIfNeeded];
         
-        CGFloat indictorTopInset = maxTopOffset;
-        if ( y <= -maxTopOffset ) indictorTopInset = -y;
+        CGFloat indictorTopInset = headerHeight;
+        if ( y <= -headerHeight ) indictorTopInset = -y;
         if ( childScrollView.scrollIndicatorInsets.top != indictorTopInset ) {
             childScrollView.scrollIndicatorInsets = UIEdgeInsetsMake(indictorTopInset, 0, 0, 0);
         }
@@ -456,7 +460,7 @@ static NSString *const kReuseIdentifierForCell = @"1";
 #pragma mark -
 
 - (NSInteger)collectionView:(UICollectionView *)collectionView numberOfItemsInSection:(NSInteger)section {
-    return self.isDataSourceLoaded ? self.numberOfViewControllers : 0;
+    return _numberOfViewControllers;
 }
 
 - (UICollectionViewCell *)collectionView:(UICollectionView *)collectionView cellForItemAtIndexPath:(NSIndexPath *)indexPath {
@@ -475,6 +479,7 @@ static NSString *const kReuseIdentifierForCell = @"1";
         [self addChildViewController:newViewController];
         [newViewController.view setFrame:cell.bounds];
         [cell.contentView addSubview:newViewController.view];
+        [newViewController.view layoutIfNeeded];
         
         if ( _hasHeader ) {
             UIScrollView *childScrollView = [newViewController sj_lookupScrollView];
@@ -636,7 +641,7 @@ static NSString *const kReuseIdentifierForCell = @"1";
 }
 
 - (NSInteger)numberOfViewControllers {
-    return [self.dataSource numberOfViewControllersInPageViewController:self];
+    return _numberOfViewControllers;
 }
 
 - (CGFloat)heightForHeaderPinToVisibleBounds {
@@ -653,14 +658,6 @@ static NSString *const kReuseIdentifierForCell = @"1";
 }
 
 - (__kindof UIView *_Nullable)headerView {
-    if ( _headerView == nil ) {
-        if ( _isResponse_viewForHeader ) {
-            _headerView = [self.dataSource viewForHeaderInPageViewController:self];
-            UIView *target = [_headerView conformsToProtocol:@protocol(SJPageViewControllerHeaderViewProtocol)] ? [(id<SJPageViewControllerHeaderViewProtocol>)_headerView contentView] : _headerView;
-            [target addObserver:self forKeyPath:kBounds options:NSKeyValueObservingOptionNew | NSKeyValueObservingOptionInitial context:(void *)&kBounds];
-            [target addObserver:self forKeyPath:kFrame options:NSKeyValueObservingOptionNew | NSKeyValueObservingOptionInitial context:(void *)&kFrame];
-        }
-    }
     return _headerView;
 }
 
@@ -668,8 +665,8 @@ static NSString *const kReuseIdentifierForCell = @"1";
     return [(SJPageViewControllerItemCell *)self.collectionView.visibleCells.lastObject viewController];
 }
 
-- (void)viewWillLayoutSubviews {
-    [super viewWillLayoutSubviews];
+- (void)viewDidLayoutSubviews {
+    [super viewDidLayoutSubviews];
     CGRect bounds = self.view.bounds;
     if ( !CGRectEqualToRect(_previousBounds, bounds) ) {
         _previousBounds = bounds;
@@ -701,8 +698,10 @@ static NSString *const kReuseIdentifierForCell = @"1";
         
         if ( _isResponse_didScrollInRange )
             [self.delegate pageViewController:self didScrollInRange:NSMakeRange(left, right - left) distanceProgress:progress];
+#if __has_include("SJPageMenuBar.h")
         else if ( _pageMenuBar != nil )
             [_pageMenuBar scrollInRange:range distanceProgress:progress];
+#endif
     }
 }
 
@@ -768,28 +767,6 @@ static NSString *const kReuseIdentifierForCell = @"1";
     return rect;
 }
 
-- (void)_cleanScrollViewItems {
-    for ( UIViewController *vc in self.viewControllers.allValues ) {
-        SJPageScrollViewItem *item = vc.sj_scrollViewItem;
-        if ( item != nil ) {
-            [item.scrollView.panGestureRecognizer removeObserver:self forKeyPath:kState];
-            [item.scrollView removeObserver:self forKeyPath:kContentOffset];
-            vc.sj_scrollViewItem = nil;
-        }
-    }
-}
-
-- (void)_cleanHeaderView {
-    if ( _headerView != nil ) {
-        UIView *target = [_headerView conformsToProtocol:@protocol(SJPageViewControllerHeaderViewProtocol)] ? [(id<SJPageViewControllerHeaderViewProtocol>)_headerView contentView] : _headerView;
-        [target removeObserver:self forKeyPath:kBounds];
-        [target removeObserver:self forKeyPath:kFrame];
-        [_headerView removeFromSuperview];
-        _headerView = nil;
-        _hasHeader = NO;
-    }
-}
-
 - (void)_setupContentInsetForChildScrollView:(UIScrollView *)childScrollView {
     if ( !childScrollView ) return;
     CGFloat heightForHeaderBounds = self.heightForHeaderBounds;
@@ -817,23 +794,25 @@ static NSString *const kReuseIdentifierForCell = @"1";
     }
 }
 
-- (void)_reloadPageViewController {
-    self.dataSourceLoaded = YES;
-    [self _cleanHeaderView];
-    [self _cleanScrollViewItems];
-    [self.viewControllers removeAllObjects];
-    [self.collectionView reloadData];
-    
-    NSInteger numberOfViewControllers = self.numberOfViewControllers;
-    if ( numberOfViewControllers != 0 ) {
-        _hasHeader = self.headerView != nil;
-        NSInteger focusedIndex = _focusedIndex;
-        if ( focusedIndex == NSNotFound )
-            focusedIndex = 0;
-        else if ( focusedIndex >= numberOfViewControllers )
-            focusedIndex = numberOfViewControllers - 1;
-        [self setViewControllerAtIndex:focusedIndex];
+- (void)_setNeedsReloadPageViewController {
+    _needsReloadPageViewController = YES;
+    [self performSelectorOnMainThread:@selector(_reloadPageViewControllerIfNeeded) withObject:nil waitUntilDone:NO modes:@[NSRunLoopCommonModes]];
+}
+
+- (void)_reloadPageViewControllerIfNeeded {
+    if ( _needsReloadPageViewController ) {
+        [self _reloadPageViewController];
     }
+}
+
+- (void)_reloadPageViewController {
+    _needsReloadPageViewController = NO;
+     
+    [self _removeHeaderView];
+    [self _removeViewControllers];
+    [self _reloadViewControllers];
+    if ( _numberOfViewControllers != 0 ) [self _reloadHeaderView];
+    [self _fixFocusedIndex];
 }
 
 - (void)_remakeConstraints {
@@ -855,7 +834,59 @@ static NSString *const kReuseIdentifierForCell = @"1";
         }
     }
     
+    [self.collectionView reloadData];
     [self setViewControllerAtIndex:self.focusedIndex];
+}
+
+- (void)_fixFocusedIndex {
+    if ( _numberOfViewControllers != 0 ) {
+        NSInteger focusedIndex = _focusedIndex;
+        if ( focusedIndex == NSNotFound )
+            focusedIndex = 0;
+        else if ( focusedIndex >= _numberOfViewControllers )
+            focusedIndex = _numberOfViewControllers - 1;
+        [self setViewControllerAtIndex:focusedIndex];
+    }
+}
+
+- (void)_reloadViewControllers {
+    _numberOfViewControllers = [_dataSource numberOfViewControllersInPageViewController:self];
+    [self.collectionView reloadData];
+}
+
+- (void)_reloadHeaderView {
+    if ( _isResponse_viewForHeader ) {
+        _headerView = [_dataSource viewForHeaderInPageViewController:self];
+        if ( _headerView != nil ) {
+            _hasHeader = YES;
+            UIView *target = [_headerView conformsToProtocol:@protocol(SJPageViewControllerHeaderViewProtocol)] ? [(id<SJPageViewControllerHeaderViewProtocol>)_headerView contentView] : _headerView;
+            [target addObserver:self forKeyPath:kBounds options:NSKeyValueObservingOptionNew | NSKeyValueObservingOptionInitial context:(void *)&kBounds];
+            [target addObserver:self forKeyPath:kFrame options:NSKeyValueObservingOptionNew | NSKeyValueObservingOptionInitial context:(void *)&kFrame];
+        }
+    }
+}
+
+- (void)_removeViewControllers {
+    for ( UIViewController *vc in self.viewControllers.allValues ) {
+        SJPageScrollViewItem *item = vc.sj_scrollViewItem;
+        if ( item != nil ) {
+            [item.scrollView.panGestureRecognizer removeObserver:self forKeyPath:kState];
+            [item.scrollView removeObserver:self forKeyPath:kContentOffset];
+            vc.sj_scrollViewItem = nil;
+        }
+    }
+    [self.viewControllers removeAllObjects];
+}
+
+- (void)_removeHeaderView {
+    if ( _headerView != nil ) {
+        UIView *target = [_headerView conformsToProtocol:@protocol(SJPageViewControllerHeaderViewProtocol)] ? [(id<SJPageViewControllerHeaderViewProtocol>)_headerView contentView] : _headerView;
+        [target removeObserver:self forKeyPath:kBounds];
+        [target removeObserver:self forKeyPath:kFrame];
+        [_headerView removeFromSuperview];
+        _headerView = nil;
+        _hasHeader = NO;
+    }
 }
 
 - (void)_removePageChildViewController:(UIViewController *)viewController {
@@ -867,15 +898,95 @@ static NSString *const kReuseIdentifierForCell = @"1";
 }
 @end
 
-@implementation SJPageItem
-- (instancetype)initWithType:(NSInteger)type viewController:(UIViewController *)viewController menuView:(UIView<SJPageMenuItemView> *)menuView {
-    self = [super init];
+@implementation SJPageItem {
+    CGSize _size;
+    UIViewController *(^_Nullable _viewControllerLoader)(void);
+    UIView<SJPageMenuItemView> *(^_Nullable _menuViewLoader)(void);
+}
+
+- (instancetype)initWithViewControllerLoader:(nullable UIViewController *_Nullable(^)(void))viewControllerLoader menuViewLoader:(nullable UIView<SJPageMenuItemView> *_Nullable(^)(void))menuViewLoader {
+    return [self initWithTag:0 viewControllerLoader:viewControllerLoader menuViewLoader:menuViewLoader];
+}
+- (instancetype)initWithViewControllerLoader:(nullable UIViewController *_Nullable(^)(void))viewControllerLoader {
+    return [self initWithTag:0 viewControllerLoader:viewControllerLoader menuViewLoader:nil];
+}
+- (instancetype)initWithViewController:(nullable UIViewController *)viewController menuView:(nullable UIView<SJPageMenuItemView> *)menuView {
+    return [self initWithTag:0 viewController:viewController menuView:menuView];
+}
+- (instancetype)initWithViewController:(nullable UIViewController *)viewController {
+    return [self initWithTag:0 viewController:viewController menuView:nil];
+}
+
+- (instancetype)initWithMenuViewLoader:(nullable UIView<SJPageMenuItemView> *_Nullable(^)(void))menuViewLoader {
+    return [self initWithTag:0 viewControllerLoader:nil menuViewLoader:menuViewLoader];
+}
+- (instancetype)initWithMenuView:(nullable UIView<SJPageMenuItemView> *)menuView {
+    return [self initWithTag:0 viewController:nil menuView:menuView];
+}
+
+- (instancetype)initWithTag:(NSInteger)tag viewControllerLoader:(nullable UIViewController *_Nullable(^)(void))viewControllerLoader menuViewLoader:(nullable UIView<SJPageMenuItemView> *_Nullable(^)(void))menuViewLoader {
+    self = [self initWithTag:tag];
     if ( self ) {
-        _type = type;
-        _viewController = viewController;
-        _menuView = menuView;
+        if ( viewControllerLoader != nil ) _viewControllerLoader = viewControllerLoader;
+        if ( menuViewLoader != nil ) _menuViewLoader = menuViewLoader;
     }
     return self;
+}
+- (instancetype)initWithTag:(NSInteger)tag viewControllerLoader:(nullable UIViewController *_Nullable(^)(void))viewControllerLoader {
+    return [self initWithTag:tag viewControllerLoader:viewControllerLoader menuViewLoader:nil];
+}
+- (instancetype)initWithTag:(NSInteger)tag viewController:(nullable UIViewController *)viewController menuView:(nullable UIView<SJPageMenuItemView> *)menuView {
+    self = [self initWithTag:tag];
+    if ( self ) {
+        if ( viewController != nil ) _viewController = viewController;
+        if ( menuView != nil ) _menuView = menuView;
+    }
+    return self;
+}
+- (instancetype)initWithTag:(NSInteger)tag viewController:(nullable UIViewController *)viewController {
+    return [self initWithTag:tag viewController:viewController menuView:nil];
+}
+- (instancetype)initWithTag:(NSInteger)tag menuViewLoader:(nullable UIView<SJPageMenuItemView> *_Nullable(^)(void))menuViewLoader {
+    return [self initWithTag:tag viewControllerLoader:nil menuViewLoader:menuViewLoader];
+}
+- (instancetype)initWithTag:(NSInteger)tag menuView:(nullable UIView<SJPageMenuItemView> *)menuView {
+    return [self initWithTag:tag viewController:nil menuView:menuView];
+}
+- (instancetype)initWithTag:(NSInteger)tag {
+    self = [super init];
+    if ( self ) {
+        if ( tag != 0 ) _tag = tag;
+    }
+    return self;
+}
+ 
+@synthesize menuView = _menuView;
+- (nullable __kindof UIView<SJPageMenuItemView> *)menuView {
+    if ( _menuView == nil && _menuViewLoader != nil ) {
+        _menuView = _menuViewLoader();
+    }
+    return _menuView;
+}
+
+@synthesize viewController = _viewController;
+- (nullable __kindof UIViewController *)viewController {
+    if ( _viewController == nil && _viewControllerLoader != nil ) {
+        _viewController = _viewControllerLoader();
+    }
+    return _viewController;
+}
+
+- (CGSize)sizeForMenuViewWithTransitionProgress:(CGFloat)transitionProgress {
+    if ( _size.width == 0 ) {
+        [self sizeToFit];
+    }
+    return _size;
+}
+
+- (void)sizeToFit {
+    UIView<SJPageMenuItemView> *view = [self menuView];
+    [view sizeToFit];
+    _size = view.bounds.size;
 }
 @end
 
@@ -901,9 +1012,9 @@ static NSString *const kReuseIdentifierForCell = @"1";
     return nil;
 }
 
-- (nullable SJPageItem *)pageItemForType:(NSInteger)type {
+- (nullable SJPageItem *)pageItemForTag:(NSInteger)tag {
     for ( SJPageItem *item in _items ) {
-        if ( item.type == type )
+        if ( item.tag == tag )
             return item;
     }
     return nil;
@@ -917,6 +1028,14 @@ static NSString *const kReuseIdentifierForCell = @"1";
     return nil;
 }
 
+- (nullable SJPageItem *)pageItemAtIndex:(NSInteger)index {
+    return _items[index];
+}
+
+- (CGSize)sizeForMenuViewAtIndex:(NSInteger)index transitionProgress:(CGFloat)transitionProgress {
+    return [_items[index] sizeForMenuViewWithTransitionProgress:transitionProgress];
+}
+
 - (void)addPageItem:(SJPageItem *)pageItem {
     if ( pageItem == nil )
         return;
@@ -926,7 +1045,7 @@ static NSString *const kReuseIdentifierForCell = @"1";
 }
 
 - (void)addPageItemWithType:(NSInteger)type viewController:(UIViewController *)viewController menuView:(UIView<SJPageMenuItemView> *)menuView {
-    return [self addPageItem:[SJPageItem.alloc initWithType:type viewController:viewController menuView:menuView]];
+    return [self addPageItem:[SJPageItem.alloc initWithTag:type viewController:viewController menuView:menuView]];
 }
 
 - (void)removeAllPageItems {

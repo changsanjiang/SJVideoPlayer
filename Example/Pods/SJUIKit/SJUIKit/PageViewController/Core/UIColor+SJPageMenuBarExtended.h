@@ -11,7 +11,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 @interface UIColor (SJPageMenuBarExtended)
 
-- (UIColor *)transitionToColor:(UIColor *)color progress:(CGFloat)progress;
+- (UIColor *)sj_transitionToColor:(UIColor *)color progress:(CGFloat)progress;
 
 @end
 

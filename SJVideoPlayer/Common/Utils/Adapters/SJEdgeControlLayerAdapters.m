@@ -25,6 +25,14 @@ NS_ASSUME_NONNULL_BEGIN
 FOUNDATION_STATIC_INLINE BOOL
 _isIPhoneXSeries(void) {
     if (UIDevice.currentDevice.userInterfaceIdiom == UIUserInterfaceIdiomPhone) {
+        if ( @available(iOS 13.0, *) ) {
+            for ( UIScene *scene in UIApplication.sharedApplication.connectedScenes ) {
+                if ( [scene isKindOfClass:UIWindowScene.class] ) {
+                    UIWindow *window = [(UIWindowScene *)scene windows].firstObject;
+                    if ( window.isKeyWindow ) return window.safeAreaInsets.bottom > 0.0;
+                }
+            }
+        }
         if ( @available(iOS 11.0, *) ) {
             UIWindow *window = [UIApplication sharedApplication].delegate.window;
             return window.safeAreaInsets.bottom > 0.0;

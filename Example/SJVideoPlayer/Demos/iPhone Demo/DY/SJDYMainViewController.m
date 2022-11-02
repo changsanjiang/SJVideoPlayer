@@ -217,6 +217,10 @@ typedef NS_ENUM(NSUInteger, DYPageItemType) {
     return [_pageItemManager menuViewAtIndex:index];
 }
 
+- (CGSize)pageMenuBar:(SJPageMenuBar *)bar sizeForItemAtIndex:(NSUInteger)index transitionProgress:(CGFloat)transitionProgress {
+    return [_pageItemManager sizeForMenuViewAtIndex:index transitionProgress:transitionProgress];
+}
+
 - (void)pageMenuBar:(SJPageMenuBar *)bar focusedIndexDidChange:(NSUInteger)index {
     if ( ![_pageViewController isViewControllerVisibleAtIndex:index] ) {
         [_pageViewController setViewControllerAtIndex:index];
@@ -255,7 +259,7 @@ typedef NS_ENUM(NSUInteger, DYPageItemType) {
     }
     SJDYPlaybackListViewController *vc = SJDYPlaybackListViewController.new;
     vc.delegate = self;
-    return [SJPageItem.alloc initWithType:type viewController:vc menuView:menuView];
+    return [SJPageItem.alloc initWithViewController:vc menuView:menuView];
 }
 
 #pragma mark -

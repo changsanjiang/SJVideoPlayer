@@ -10,6 +10,10 @@
 
 NS_ASSUME_NONNULL_BEGIN
 @implementation SJPageViewControllerItemCell
-
+- (void)layoutSubviews {
+    [super layoutSubviews];
+    UIViewController *vc = _viewController;
+    if ( vc != nil ) vc.view.frame = self.bounds;
+}
 @end
 NS_ASSUME_NONNULL_END

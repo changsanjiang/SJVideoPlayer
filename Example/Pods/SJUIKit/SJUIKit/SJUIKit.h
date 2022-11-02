@@ -12,7 +12,6 @@
 #import "SJBase.h"
 #import "NSDate+SJAdded.h"
 #import "SJObjectContainer.h"
-#import "UIScrollView+SJRefreshAdd.h"
 #import "SJRunLoopTaskQueue.h"
 #import "SJTaskQueue.h"
 #import "SJQueue.h"
@@ -20,4 +19,5 @@
 #import "SJAttributesFactory.h"
 #import "NSObject+SJObserverHelper.h"
 #import "SJImagePickerController.h"
+#import "UIScrollView+SJRefreshAdd.h"
 #endif /* SJUIKit_h */

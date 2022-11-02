@@ -52,8 +52,8 @@ UIKIT_EXTERN SJPageViewControllerOptionsKey const SJPageViewControllerOptionInte
 @property (nonatomic) CGFloat minimumBottomInset; // childScrollView.contentInset.bottom
 @property (nonatomic) BOOL bounces;
 
-@property (nonatomic, readonly) NSInteger focusedIndex;
 @property (nonatomic, readonly) NSInteger numberOfViewControllers;
+@property (nonatomic, readonly) NSInteger focusedIndex;
 @property (nonatomic, readonly, nullable) __kindof UIViewController *focusedViewController;
 @property (nonatomic, readonly, nullable) NSArray<__kindof UIViewController *> *cachedViewControllers;
 @property (nonatomic, readonly, nullable) __kindof UIView *headerView;
@@ -183,18 +183,37 @@ UIKIT_EXTERN SJPageViewControllerOptionsKey const SJPageViewControllerOptionInte
 
 
 @interface SJPageItem : NSObject
-- (instancetype)initWithType:(NSInteger)type viewController:(UIViewController *)viewController menuView:(UIView<SJPageMenuItemView> *)menuView;
-@property (nonatomic, readonly) NSInteger type;
-@property (nonatomic, strong, readonly) UIViewController *viewController;
-@property (nonatomic, strong, readonly) UIView<SJPageMenuItemView> *menuView;
+- (instancetype)initWithViewControllerLoader:(nullable UIViewController *_Nullable(^)(void))viewControllerLoader menuViewLoader:(nullable UIView<SJPageMenuItemView> *_Nullable(^)(void))menuViewLoader;
+- (instancetype)initWithViewControllerLoader:(nullable UIViewController *_Nullable(^)(void))viewControllerLoader;
+- (instancetype)initWithViewController:(nullable UIViewController *)viewController menuView:(nullable UIView<SJPageMenuItemView> *)menuView;
+- (instancetype)initWithViewController:(nullable UIViewController *)viewController;
+
+- (instancetype)initWithMenuViewLoader:(nullable UIView<SJPageMenuItemView> *_Nullable(^)(void))menuViewLoader;
+- (instancetype)initWithMenuView:(nullable UIView<SJPageMenuItemView> *)menuView;
+
+- (instancetype)initWithTag:(NSInteger)tag viewControllerLoader:(nullable UIViewController *_Nullable(^)(void))viewControllerLoader menuViewLoader:(nullable UIView<SJPageMenuItemView> *_Nullable(^)(void))menuViewLoader;
+- (instancetype)initWithTag:(NSInteger)tag viewControllerLoader:(nullable UIViewController *_Nullable(^)(void))viewControllerLoader;
+- (instancetype)initWithTag:(NSInteger)tag viewController:(nullable UIViewController *)viewController menuView:(nullable UIView<SJPageMenuItemView> *)menuView;
+- (instancetype)initWithTag:(NSInteger)tag viewController:(nullable UIViewController *)viewController;
+- (instancetype)initWithTag:(NSInteger)tag menuViewLoader:(nullable UIView<SJPageMenuItemView> *_Nullable(^)(void))menuViewLoader;
+- (instancetype)initWithTag:(NSInteger)tag menuView:(nullable UIView<SJPageMenuItemView> *)menuView;
+- (instancetype)initWithTag:(NSInteger)tag;
+
+@property (nonatomic, readonly) NSInteger tag;
+@property (nonatomic, strong, nullable) __kindof UIViewController *viewController;
+@property (nonatomic, strong, nullable) __kindof UIView<SJPageMenuItemView> *menuView;
+- (CGSize)sizeForMenuViewWithTransitionProgress:(CGFloat)transitionProgress;
+- (void)sizeToFit;
 @end
 
 @interface SJPageItemManager : NSObject
 @property (nonatomic, readonly) NSInteger numberOfPageItems;
 - (nullable __kindof UIViewController *)viewControllerAtIndex:(NSInteger)index;
 - (nullable __kindof UIView<SJPageMenuItemView> *)menuViewAtIndex:(NSInteger)index;
-- (nullable SJPageItem *)pageItemForType:(NSInteger)type;
+- (nullable SJPageItem *)pageItemForTag:(NSInteger)tag;
 - (nullable SJPageItem *)pageItemForViewController:(UIViewController *)viewController;
+- (nullable SJPageItem *)pageItemAtIndex:(NSInteger)index;
+- (CGSize)sizeForMenuViewAtIndex:(NSInteger)index transitionProgress:(CGFloat)transitionProgress;
 
 - (void)addPageItem:(SJPageItem *)pageItem;
 - (void)addPageItemWithType:(NSInteger)type viewController:(UIViewController *)viewController menuView:(UIView<SJPageMenuItemView> *)menuView;

@@ -21,7 +21,7 @@
 #import "SJVideoPlayerPlaybackControllerDefines.h"
 #import "SJVideoPlayerURLAsset+SJAVMediaPlaybackAdd.h"
 #import "SJGestureControllerDefines.h"
-#import "SJDeviceVolumeAndBrightnessManagerDefines.h"
+#import "SJDeviceVolumeAndBrightnessControllerDefines.h"
 #import "SJSmallViewFloatingControllerDefines.h"
 #import "SJVideoDefinitionSwitchingInfo.h"
 #import "SJPromptingPopupControllerDefines.h"
@@ -295,12 +295,12 @@ NS_ASSUME_NONNULL_BEGIN
 ///
 /// 设备 音量和亮度调整管理类
 ///
-@property (nonatomic, strong, null_resettable) id<SJDeviceVolumeAndBrightnessManager> deviceVolumeAndBrightnessManager;
+@property (nonatomic, strong, null_resettable) id<SJDeviceVolumeAndBrightnessController> deviceVolumeAndBrightnessController;
 
 ///
 /// 观察者
 ///
-@property (nonatomic, strong, readonly) id<SJDeviceVolumeAndBrightnessManagerObserver> deviceVolumeAndBrightnessObserver;
+@property (nonatomic, strong, readonly) id<SJDeviceVolumeAndBrightnessControllerObserver> deviceVolumeAndBrightnessObserver;
 
 ///
 /// 禁止设置亮度

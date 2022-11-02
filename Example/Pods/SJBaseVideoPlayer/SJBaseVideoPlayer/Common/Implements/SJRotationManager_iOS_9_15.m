@@ -93,8 +93,8 @@ API_DEPRECATED("deprecated!", ios(9.0, 16.0)) @interface SJRotationFullscreenVie
 
 - (void)rotationBegin {
     if ( self.window.isHidden ) [self.window makeKeyAndVisible];
-    [super rotationBegin];
     self.currentOrientation = self.deviceOrientation;
+    [super rotationBegin];
     [UIView animateWithDuration:0.0 animations:^{ } completion:^(BOOL finished) {
         [self.window.rootViewController setNeedsStatusBarAppearanceUpdate];
     }];

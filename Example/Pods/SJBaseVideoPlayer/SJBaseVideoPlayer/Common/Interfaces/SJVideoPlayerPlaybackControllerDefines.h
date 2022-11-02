@@ -74,6 +74,7 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic, copy, nullable) void(^restoreUserInterfaceForPictureInPictureStop)(id<SJVideoPlayerPlaybackController> controller, void(^completionHandler)(BOOL restored));
 - (void)startPictureInPicture API_AVAILABLE(ios(14.0));
 - (void)stopPictureInPicture API_AVAILABLE(ios(14.0));
+- (void)cancelPictureInPicture API_AVAILABLE(ios(14.0));
 @end
 
 /// screenshot`

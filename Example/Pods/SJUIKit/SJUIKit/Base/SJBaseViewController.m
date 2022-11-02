@@ -21,7 +21,7 @@ NS_ASSUME_NONNULL_BEGIN
 #pragma mark - 
 @implementation SJBaseViewController {
     /// navigation bar
-    BOOL _needsNavigationBarHidden;
+    BOOL _mNeedsNavigationBarHidden;
     
     /// once methods
     BOOL _is_invoked_once_viewDidAppear_method;
@@ -82,7 +82,7 @@ NS_ASSUME_NONNULL_BEGIN
 /// Show Or Hidden NavigationBar
 - (void)_base_showOrHiddenNavigationBarIfNeeded {
     if ( SJAppearState_WillAppear == _appearState ) {
-        if ( _needsNavigationBarHidden ) {
+        if ( _mNeedsNavigationBarHidden ) {
             [self.navigationController setNavigationBarHidden:YES animated:YES];
         }
         else if ( [self.navigationController isNavigationBarHidden] &&
@@ -94,10 +94,10 @@ NS_ASSUME_NONNULL_BEGIN
         /// 是否恢复导航栏显示
         /// - 当前导航栏已隐藏
         /// - 只需考虑`push`的情况
-        if ( _needsNavigationBarHidden && !self.presentedViewController ) {
+        if ( _mNeedsNavigationBarHidden && !self.presentedViewController ) {
             UIViewController *appear = self.navigationController.childViewControllers.lastObject;
             if ( [appear isKindOfClass:[SJBaseViewController class]] &&
-                ((SJBaseViewController *)appear).needsNavigationBarHidden )
+                ((SJBaseViewController *)appear).mNeedsNavigationBarHidden )
                 return;
             [self.navigationController setNavigationBarHidden:NO animated:YES]; // 恢复显示
         }
@@ -126,15 +126,15 @@ NS_ASSUME_NONNULL_END
 
 NS_ASSUME_NONNULL_BEGIN
 @implementation SJBaseViewController (HiddenNavigationBar)
-- (void)setNeedsNavigationBarHidden:(BOOL)needsNavigationBarHidden {
-    if ( needsNavigationBarHidden == _needsNavigationBarHidden )
+- (void)setMNeedsNavigationBarHidden:(BOOL)mNeedsNavigationBarHidden {
+    if ( mNeedsNavigationBarHidden == _mNeedsNavigationBarHidden )
         return;
-    _needsNavigationBarHidden = needsNavigationBarHidden;
+    _mNeedsNavigationBarHidden = mNeedsNavigationBarHidden;
     [self _base_showOrHiddenNavigationBarIfNeeded];
 }
 
-- (BOOL)needsNavigationBarHidden {
-    return _needsNavigationBarHidden;
+- (BOOL)mNeedsNavigationBarHidden {
+    return _mNeedsNavigationBarHidden;
 }
 @end
 NS_ASSUME_NONNULL_END

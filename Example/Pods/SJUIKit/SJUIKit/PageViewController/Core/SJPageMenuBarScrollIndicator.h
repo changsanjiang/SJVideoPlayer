@@ -7,7 +7,7 @@
 //
 
 #import <UIKit/UIKit.h>
-#import "SJPageMenuItemViewDefines.h"
+#import "SJPageMenuBarInterfaces.h"
 
 NS_ASSUME_NONNULL_BEGIN
 

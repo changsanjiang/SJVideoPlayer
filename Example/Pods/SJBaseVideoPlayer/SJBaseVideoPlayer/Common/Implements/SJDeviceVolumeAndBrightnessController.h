@@ -8,20 +8,25 @@
 
 #import <UIKit/UIKit.h>
 #import "SJDeviceVolumeAndBrightnessControllerDefines.h"
+@protocol SJDeviceVolumeAndBrightnessPopupView, SJDeviceVolumeAndBrightnessPopupViewDataSource;
 
 NS_ASSUME_NONNULL_BEGIN
+@interface SJDeviceVolumeAndBrightnessController : NSObject<SJDeviceVolumeAndBrightnessController>
+@property (nonatomic, strong, nullable) UIView<SJDeviceVolumeAndBrightnessPopupView> *brightnessView;
+@property (nonatomic, strong, nullable) UIView<SJDeviceVolumeAndBrightnessPopupView> *volumeView;
+@end
 
-#pragma mark - SJDeviceVolumeAndBrightnessPopupView
+
+#pragma mark -
+
 @protocol SJDeviceVolumeAndBrightnessPopupViewDataSource <NSObject>
-
+/// 起始状态(progress == 0)
+@property (nonatomic, strong, nullable) UIImage *startImage;
 /// 普通状态
 @property (nonatomic, strong, nullable) UIImage *image;
-/// 其实状态
-@property (nonatomic, strong, nullable) UIImage *startImage;
-
-@property (nonatomic, assign) float progress;
-@property (nonatomic, strong, nullable) UIColor *traceColor;
-@property (nonatomic, strong, nullable) UIColor *trackColor;
+@property (nonatomic) float progress;
+@property (nonatomic, strong, null_resettable) UIColor *traceColor;
+@property (nonatomic, strong, null_resettable) UIColor *trackColor;
 @end
 
 @protocol SJDeviceVolumeAndBrightnessPopupView <NSObject>
@@ -31,22 +36,24 @@ NS_ASSUME_NONNULL_BEGIN
 @end
 
 
+
 #pragma mark -
 
-@interface SJDeviceVolumeAndBrightnessController : NSObject<SJDeviceVolumeAndBrightnessController>
-@property (nonatomic, strong, nullable) UIView<SJDeviceVolumeAndBrightnessPopupView> *brightnessView;
-@property (nonatomic, strong, nullable) UIView<SJDeviceVolumeAndBrightnessPopupView> *volumeView;
+/// 系统音量条的显示管理
+@interface SJDeviceSystemVolumeViewDisplayManager : NSObject
++ (instancetype)shared;
 
-/// 以下属性 优先于 brightnessView，volumeView中的dataSource的配置
-@property (nonatomic, strong, null_resettable) UIColor *traceColor;
-@property (nonatomic, strong, null_resettable) UIColor *trackColor;
+/// 是否自动控制系统音量条显示, default value is YES;
+///
+///     如需直接使用系统音量条, 请设置 NO 关闭自动控制;
+///
+@property (nonatomic) BOOL automaticallyDisplaySystemVolumeView;
 
-///
-/// 是否在播放器中显示音量或亮度提示视图
-///
-///     default value is YES.
-///
-@property (nonatomic) BOOL showsPopupView;
+
+// internal methods
+
+- (void)update;
+- (void)addController:(nullable id<SJDeviceVolumeAndBrightnessController>)controller;
+- (void)removeController:(nullable id<SJDeviceVolumeAndBrightnessController>)controller;
 @end
 NS_ASSUME_NONNULL_END
-

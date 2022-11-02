@@ -158,6 +158,10 @@ static void sj_removeContentOffsetObserver(UIScrollView *scrollView) {
 #pragma mark -
 
 static void sj_playNextAssetAfterEndScroll(__kindof __kindof UIScrollView *self) {
+    if ( self.window == nil ) {
+        return;
+    }
+    
     NSArray<NSIndexPath *> *_Nullable sortedVisibleIndexPaths = [self sj_sortedVisibleIndexPaths];
     if ( sortedVisibleIndexPaths.count < 1 )
         return;

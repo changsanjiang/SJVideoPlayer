@@ -30,7 +30,6 @@
 #endif
 @protocol SJDeviceVolumeAndBrightnessPopupViewDataSource;
 
-NS_ASSUME_NONNULL_BEGIN
 static NSNotificationName const SJDeviceVolumeDidChangeNotification = @"SJDeviceVolumeDidChangeNotification";
 static NSNotificationName const SJDeviceBrightnessDidChangeNotification = @"SJDeviceBrightnessDidChangeNotification";
 
@@ -74,6 +73,7 @@ static NSNotificationName const SJDeviceBrightnessDidChangeNotification = @"SJDe
 
 
 #pragma mark - SJDeviceVolumeAndBrightnessPopupView
+
 @interface SJDeviceVolumeAndBrightnessPopupView : UIView<SJDeviceVolumeAndBrightnessPopupView>
 @property (nonatomic, strong) id<SJDeviceVolumeAndBrightnessPopupViewDataSource> dataSource;
 
@@ -94,7 +94,7 @@ static NSNotificationName const SJDeviceBrightnessDidChangeNotification = @"SJDe
 }
 
 - (void)refreshData {
-    _imageView.image = (_dataSource.progress > 0) ? _dataSource.image : _dataSource.startImage;
+    _imageView.image = (_dataSource.progress > 0) ? _dataSource.image : (_dataSource.startImage ?: _dataSource.image);
     _progressView.progress = _dataSource.progress;
     _progressView.trackTintColor = _dataSource.trackColor;
     _progressView.progressTintColor = _dataSource.traceColor;
@@ -132,14 +132,20 @@ static NSNotificationName const SJDeviceBrightnessDidChangeNotification = @"SJDe
 @end
 
 @interface SJDeviceVolumeAndBrightnessPopupItem : NSObject<SJDeviceVolumeAndBrightnessPopupViewDataSource>
-@property (nonatomic, strong, nullable) UIImage *image;
 @property (nonatomic, strong, nullable) UIImage *startImage;
+@property (nonatomic, strong, nullable) UIImage *image;
 @property (nonatomic) float progress;
-@property (nonatomic, strong, nullable) UIColor *traceColor;
-@property (nonatomic, strong, nullable) UIColor *trackColor;
+@property (nonatomic, strong, null_resettable) UIColor *traceColor;
+@property (nonatomic, strong, null_resettable) UIColor *trackColor;
 @end
 @implementation SJDeviceVolumeAndBrightnessPopupItem
+- (UIColor *)traceColor {
+    return _traceColor?:UIColor.whiteColor;
+}
 
+- (UIColor *)trackColor {
+    return _trackColor?:[UIColor colorWithWhite:0.6 alpha:0.5];
+}
 @end
 
 #pragma mark -
@@ -150,22 +156,21 @@ static NSNotificationName const SJDeviceBrightnessDidChangeNotification = @"SJDe
 @end
 
 @implementation SJDeviceVolumeAndBrightnessController
-@synthesize showsPopupView = _showsPopupView;
 @synthesize target = _target;
-@synthesize volumeTracking = _volumeTracking;
-@synthesize brightnessTracking = _brightnessTracking;
+@synthesize targetViewContext = _targetViewContext;
 
 - (instancetype)init {
     self = [super init];
     if ( !self ) return nil;
-    _showsPopupView = YES;
     _sysVolumeView = SJDeviceVolumeAndBrightness.shared.sysVolumeView;
     [SJDeviceVolumeAndBrightness.shared addObserver:self];
+    [SJDeviceSystemVolumeViewDisplayManager.shared addController:self];
     return self;
 }
 
 - (void)dealloc {
     [SJDeviceVolumeAndBrightness.shared removeObserver:self];
+    [SJDeviceSystemVolumeViewDisplayManager.shared removeController:self];
 }
 
 - (void)device:(SJDeviceVolumeAndBrightness *)device onVolumeChanged:(float)volume {
@@ -180,23 +185,17 @@ static NSNotificationName const SJDeviceBrightnessDidChangeNotification = @"SJDe
     return [[SJDeviceVolumeAndBrightnessControllerObserver alloc] initWithMgr:self];
 }
 
+- (void)onTargetViewMoveToWindow {
+    [SJDeviceSystemVolumeViewDisplayManager.shared update];
+}
+
+- (void)onTargetViewContextUpdated {
+    [SJDeviceSystemVolumeViewDisplayManager.shared update];
+}
+
 #pragma mark - volume
 
-- (void)_showSysVolumeViewIfPossible {
-    UIView *targetView = self.target;
-    UIWindow *targetWindow = targetView.window;
-    if ( ![targetWindow isViewAppeared:targetView insets:UIEdgeInsetsZero] ) {
-        if ( _sysVolumeView.superview != targetWindow ) [targetWindow addSubview:_sysVolumeView];
-    }
-}
-
-- (void)_hideSysVolumeView {
-    UIView *sysVolumeView = SJDeviceVolumeAndBrightness.shared.sysVolumeView;
-    if ( sysVolumeView.superview != nil ) [sysVolumeView removeFromSuperview];
-}
-
 - (void)_onVolumeChanged {
-    [self _showSysVolumeViewIfPossible];
     [self _showVolumeViewIfNeeded];
     [self _updateContentsForVolumeViewIfNeeded];
     [NSNotificationCenter.defaultCenter postNotificationName:SJDeviceVolumeDidChangeNotification object:self];
@@ -223,15 +222,13 @@ static NSNotificationName const SJDeviceBrightnessDidChangeNotification = @"SJDe
                 [self->_volumeView refreshData];
             });
         });
-        model.trackColor = self.trackColor;
-        model.traceColor = self.traceColor;
         _volumeView.dataSource = model;
     }
     return _volumeView;
 }
 
 - (void)_showVolumeViewIfNeeded {
-    if ( !_showsPopupView ) return;
+    if ( _sysVolumeView.superview == nil || !SJDeviceSystemVolumeViewDisplayManager.shared.automaticallyDisplaySystemVolumeView ) return;
     UIView *targetView = self.target;
     UIView *volumeView = self.volumeView;
     if ( targetView.window != nil && volumeView.superview != targetView ) {
@@ -248,23 +245,22 @@ static NSNotificationName const SJDeviceBrightnessDidChangeNotification = @"SJDe
                   inModes:@[NSRunLoopCommonModes]];
 }
 
+- (void)_hideVolumeView {
+    UIView *volumeView = self.volumeView;
+    [volumeView removeFromSuperview];
+}
+
 - (void)_updateContentsForVolumeViewIfNeeded {
-    if ( !_showsPopupView || self.volumeView.superview == nil ) return;
+    if ( self.volumeView.superview == nil ) return;
     float volume = self.volume;
     self.volumeView.dataSource.progress = volume;
     [self.volumeView refreshData];
 }
 
-- (void)_hideVolumeView {
-    UIView *volumeView = self.volumeView;
-    [volumeView removeFromSuperview];
-    [self _hideSysVolumeView];
-}
-
 #pragma mark - brightness
 
 - (void)_onBrightnessChanged {
-    [self _showBrightnessViewIfNeeded];
+    [self _showBrightnessView];
     [self _updateContentsForBrightnessViewIfNeeded];
     [NSNotificationCenter.defaultCenter postNotificationName:SJDeviceBrightnessDidChangeNotification object:self];
 }
@@ -290,16 +286,19 @@ static NSNotificationName const SJDeviceBrightnessDidChangeNotification = @"SJDe
                 [self->_brightnessView refreshData];
             });
         });
-        
-        model.trackColor = self.trackColor;
-        model.traceColor = self.traceColor;
         _brightnessView.dataSource = model;
     }
     return _brightnessView;
 }
 
-- (void)_showBrightnessViewIfNeeded {
-    if ( !_showsPopupView ) return;
+- (void)_updateContentsForBrightnessViewIfNeeded {
+    if (self.brightnessView.superview == nil ) return;
+    float brightness = self.brightness;
+    self.brightnessView.dataSource.progress = brightness;
+    [self.brightnessView refreshData];
+}
+
+- (void)_showBrightnessView {
     UIView *targetView = self.target;
     UIView *brightnessView = self.brightnessView;
     
@@ -317,66 +316,112 @@ static NSNotificationName const SJDeviceBrightnessDidChangeNotification = @"SJDe
                   inModes:@[NSRunLoopCommonModes]];
 }
 
-- (void)_updateContentsForBrightnessViewIfNeeded {
-    if ( !_showsPopupView || self.brightnessView.superview == nil ) return;
-    float brightness = self.brightness;
-    self.brightnessView.dataSource.progress = brightness;
-    [self.brightnessView refreshData];
-}
-
 - (void)_hideBrightnessView {
     UIView *brightnessView = self.brightnessView;
     [brightnessView removeFromSuperview];
 }
+@end
 
-#pragma mark - notifies
 
-//- (void)handleVolumeDidChangeEvent {
-//    UIView *targetView = self.targetView;
-//    [self _addOrRemoveSysVolumeView:targetView.window];
-//    if ( self.isVolumeTracking == NO ) {
-//        [self _syncVolume];
-//        if ( targetView.window != nil ) {
-//            self.volumeTracking = YES;
-//            [self _volumeDidChange];
-//            self.volumeTracking = NO;
-//        }
-//    }
-//
-//    [NSNotificationCenter.defaultCenter postNotificationName:SJDeviceVolumeDidChangeNotification object:self];
-//}
-//
-//- (void)handleBrightnessDidChangeNotification {
-//    if ( !self.isBrightnessTracking )
-//        [self _refreshDataForBrightnessView];
-//    [NSNotificationCenter.defaultCenter postNotificationName:SJDeviceBrightnessDidChangeNotification object:self];
-//}
-
-#pragma mark - colors
-
-@synthesize traceColor = _traceColor;
-- (void)setTraceColor:(nullable UIColor *)traceColor {
-    _traceColor = traceColor;
-    
-    self.volumeView.dataSource.traceColor = self.brightnessView.dataSource.traceColor = self.traceColor;
-    [self.brightnessView refreshData];
-    [self.volumeView refreshData];
+@implementation SJDeviceSystemVolumeViewDisplayManager {
+    NSHashTable<id<SJDeviceVolumeAndBrightnessController>> *mControllers;
+    UIView *mSysVolumeView;
 }
 
-- (UIColor *)traceColor {
-    return _traceColor?:UIColor.whiteColor;
++ (instancetype)shared {
+    static id _instance;
+    static dispatch_once_t onceToken;
+    dispatch_once(&onceToken, ^{
+        _instance = [self new];
+    });
+    return _instance;
 }
 
-@synthesize trackColor = _trackColor;
-- (void)setTrackColor:(nullable UIColor *)trackColor {
-    _trackColor = trackColor;
-    
-    self.volumeView.dataSource.trackColor = self.brightnessView.dataSource.trackColor = self.trackColor;
-    [self.brightnessView refreshData];
-    [self.volumeView refreshData];
+- (instancetype)init {
+    self = [super init];
+    if ( self ) {
+        _automaticallyDisplaySystemVolumeView = YES;
+        mControllers = NSHashTable.weakObjectsHashTable;
+        mSysVolumeView = SJDeviceVolumeAndBrightness.shared.sysVolumeView;
+        [self _makeHidingForSysVolumeView];
+    }
+    return self;
 }
-- (UIColor *)trackColor {
-    return _trackColor?:[UIColor colorWithWhite:0.6 alpha:0.5];
+
+- (void)addController:(nullable id<SJDeviceVolumeAndBrightnessController>)controller {
+    [mControllers addObject:controller];
+}
+
+- (void)removeController:(nullable id<SJDeviceVolumeAndBrightnessController>)controller {
+    [mControllers removeObject:controller];
+}
+
+- (void)update {
+//    1. 未显示或不在keyWindow中时则略过
+//    2. 根据状态确定是否显示系统音量条
+//       2.1 处于 fullscreen or fitOnScreen 隐藏系统条
+//       2.2 小屏状态
+//           2.2.1 在cell中播放, 显示系统条
+//           2.2.2 小浮窗模式, 显示系统条
+//           2.2.3 画中画模式, 显示系统条
+//           2.2.x 常规模式隐藏系统条
+    BOOL needsShowing = YES;
+    if ( _automaticallyDisplaySystemVolumeView ) {
+        for ( id<SJDeviceVolumeAndBrightnessController> controller in mControllers ) {
+            UIView *targetView = controller.target;
+            UIWindow *targetViewWindow = targetView.window;
+            UIWindow *appKeyWindow = UIApplication.sharedApplication.keyWindow;
+            if ( targetViewWindow == nil || targetViewWindow != appKeyWindow ) {
+                // 1. 未显示或不在keyWindow中时则略过
+                continue;
+            }
+            
+            id<SJDeviceVolumeAndBrightnessTargetViewContext> ctx = controller.targetViewContext;
+            // 2.1
+            if ( ctx.isFullscreen || ctx.isFitOnScreen ) {
+                needsShowing = NO;
+                [self _makeHidingForSysVolumeView];
+                break;
+            }
+            // 2.2
+            else {
+                // 2.2.1
+                if ( ctx.isPlayOnScrollView ) {
+                    needsShowing = NO;
+                    [self _makeShowingForSysVolumeView];
+                    break;
+                }
+                // 2.2.2
+                if ( ctx.isFloatingMode ) {
+                    needsShowing = NO;
+                    [self _makeShowingForSysVolumeView];
+                    break;
+                }
+                // 2.2.3
+                if ( ctx.isPictureInPictureMode ) {
+                    needsShowing = NO;
+                    [self _makeShowingForSysVolumeView];
+                    break;
+                }
+                // 2.2.x
+                needsShowing = NO;
+                [self _makeHidingForSysVolumeView];
+            }
+        }
+    }
+    if ( needsShowing ) [self _makeShowingForSysVolumeView];
+}
+
+#pragma mark - mark
+
+// 隐藏系统音量条
+- (void)_makeHidingForSysVolumeView {
+    UIWindow *window = UIApplication.sharedApplication.keyWindow;
+    if ( mSysVolumeView.superview != window ) [window addSubview:mSysVolumeView];
+}
+
+// 显示系统音量条
+- (void)_makeShowingForSysVolumeView {
+    if ( mSysVolumeView.superview != nil ) [mSysVolumeView removeFromSuperview];
 }
 @end
-NS_ASSUME_NONNULL_END

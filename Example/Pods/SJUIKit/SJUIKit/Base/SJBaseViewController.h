@@ -23,7 +23,7 @@ NS_ASSUME_NONNULL_BEGIN
 @interface SJBaseViewController (HiddenNavigationBar)<SJHiddenNavigationBarProtocol>
 /// Whether to hide the navigation bar.
 /// Default value is NO.
-@property (nonatomic) BOOL needsNavigationBarHidden;
+@property (nonatomic) BOOL mNeedsNavigationBarHidden;
 @end
 
 

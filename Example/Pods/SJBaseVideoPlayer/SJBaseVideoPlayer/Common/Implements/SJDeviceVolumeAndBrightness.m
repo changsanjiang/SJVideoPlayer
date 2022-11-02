@@ -149,7 +149,7 @@ static void*kVolumeContext = &kVolumeContext;
 - (void)_onVolumeChanged {
     if ( mObservers.count > 0 ) {
         for ( id<SJDeviceVolumeAndBrightnessObserver>observer in mObservers ) {
-            [observer device:self onVolumeChanged:_volume];
+            if ( [observer respondsToSelector:@selector(device:onVolumeChanged:)] ) [observer device:self onVolumeChanged:_volume];
         }
     }
 }
@@ -157,7 +157,7 @@ static void*kVolumeContext = &kVolumeContext;
 - (void)_onBrightnessChanged {
     if ( mObservers.count > 0 ) {
         for ( id<SJDeviceVolumeAndBrightnessObserver>observer in mObservers ) {
-            [observer device:self onBrightnessChanged:_brightness];
+            if ( [observer respondsToSelector:@selector(device:onBrightnessChanged:)] ) [observer device:self onBrightnessChanged:_brightness];
         }
     }
 }

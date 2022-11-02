@@ -22,6 +22,7 @@ NS_ASSUME_NONNULL_BEGIN
 @end
 
 @protocol SJDeviceVolumeAndBrightnessObserver <NSObject>
+@optional
 - (void)device:(SJDeviceVolumeAndBrightness *)device onVolumeChanged:(float)volume;
 - (void)device:(SJDeviceVolumeAndBrightness *)device onBrightnessChanged:(float)brightness;
 @end

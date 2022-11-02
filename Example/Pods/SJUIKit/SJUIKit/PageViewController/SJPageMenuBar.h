@@ -6,8 +6,7 @@
 //  Copyright © 2020 changsanjiang@gmail.com. All rights reserved.
 //
 
-#import <UIKit/UIKit.h>
-#import "SJPageMenuItemViewDefines.h"
+#import "SJPageMenuBarInterfaces.h"
 @protocol SJPageMenuBarDataSource, SJPageMenuBarDelegate, SJPageMenuBarGestureHandler, SJPageMenuBarScrollIndicator;
 @class SJPageMenuBarScrollInRangeTransitionContext;
 
@@ -86,6 +85,9 @@ NS_ASSUME_NONNULL_BEGIN
 
 
 @protocol SJPageMenuBarDelegate <NSObject>
+/// @param transitionProgress 0..1, 1 => isFocused
+- (CGSize)pageMenuBar:(SJPageMenuBar *)bar sizeForItemAtIndex:(NSUInteger)index transitionProgress:(CGFloat)transitionProgress;
+
 @optional
 - (void)pageMenuBar:(SJPageMenuBar *)bar focusedIndexDidChange:(NSUInteger)index;
 

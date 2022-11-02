@@ -29,7 +29,13 @@ typedef NS_ENUM(NSUInteger, SJModalAction) {
 - (void)setModalViewController:(nullable UIViewController *)modalViewController {
     _modalViewController = modalViewController;
     modalViewController.transitioningDelegate  = self;
-    modalViewController.modalPresentationStyle = UIModalPresentationCustom;
+    if (@available(iOS 16.0, *)) {
+        modalViewController.modalPresentationStyle = UIModalPresentationCustom;
+    } else {
+        // https://github.com/changsanjiang/SJBaseVideoPlayer/pull/36
+        // 16以下的系统, 如果当前界面是横屏,fitOn后是竖屏问题
+        modalViewController.modalPresentationStyle = UIModalPresentationFullScreen;
+    }
 }
 
 - (NSTimeInterval)transitionDuration:(nullable id<UIViewControllerContextTransitioning>)transitionContext {

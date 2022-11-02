@@ -10,6 +10,7 @@
 #import <objc/message.h>
 #import "SJRotationManager.h"
 #import "SJDeviceVolumeAndBrightnessController.h"
+#import "SJDeviceVolumeAndBrightnessTargetViewContext.h"
 #import "SJVideoPlayerRegistrar.h"
 #import "SJVideoPlayerPresentView.h"
 #import "SJPlayModelPropertiesObserver.h"
@@ -125,6 +126,7 @@ typedef struct _SJPlayerControlInfo {
     
     /// device volume And brightness manager
     id<SJDeviceVolumeAndBrightnessController> _deviceVolumeAndBrightnessController;
+    SJDeviceVolumeAndBrightnessTargetViewContext *_deviceVolumeAndBrightnessTargetViewContext;
     id<SJDeviceVolumeAndBrightnessControllerObserver> _deviceVolumeAndBrightnessControllerObserver;
 
     /// playback controller
@@ -221,6 +223,15 @@ typedef struct _SJPlayerControlInfo {
     [self gestureController];
     [self _setupViewControllerManager];
     [self _showOrHiddenPlaceholderImageViewIfNeeded];
+    
+    _deviceVolumeAndBrightnessTargetViewContext = [SJDeviceVolumeAndBrightnessTargetViewContext.alloc init];
+    _deviceVolumeAndBrightnessTargetViewContext.isFullscreen = _rotationManager.isFullscreen;
+    _deviceVolumeAndBrightnessTargetViewContext.isFitOnScreen = _fitOnScreenManager.isFitOnScreen;
+    _deviceVolumeAndBrightnessTargetViewContext.isPlayOnScrollView = self.isPlayOnScrollView;
+    _deviceVolumeAndBrightnessTargetViewContext.isScrollAppeared = self.isScrollAppeared;
+    _deviceVolumeAndBrightnessTargetViewContext.isFloatingMode = _smallViewFloatingController.isAppeared;
+    _deviceVolumeAndBrightnessController.targetViewContext = _deviceVolumeAndBrightnessTargetViewContext;
+    [_deviceVolumeAndBrightnessController onTargetViewContextUpdated];
 }
 
 - (void)dealloc {
@@ -258,6 +269,10 @@ typedef struct _SJPlayerControlInfo {
 
 - (void)presentViewDidLayoutSubviews:(SJVideoPlayerPresentView *)presentView {
     [self updateWatermarkViewLayout];
+}
+
+- (void)presentViewDidMoveToWindow:(SJVideoPlayerPresentView *)presentView {
+    if ( _deviceVolumeAndBrightnessController != nil ) [_deviceVolumeAndBrightnessController onTargetViewMoveToWindow];
 }
 
 #pragma mark -
@@ -306,20 +321,7 @@ typedef struct _SJPlayerControlInfo {
                 }
                     break;
                     /// 垂直
-                case SJPanGestureMovingDirection_V: {
-                    switch ( position ) {
-                            /// brightness
-                        case SJPanGestureTriggeredPosition_Left: {
-                            self.deviceVolumeAndBrightnessController.brightnessTracking = YES;
-                        }
-                            break;
-                            /// volume
-                        case SJPanGestureTriggeredPosition_Right: {
-                            self.deviceVolumeAndBrightnessController.volumeTracking = YES;
-                        }
-                            break;
-                    }
-                }
+                case SJPanGestureMovingDirection_V: { }
                     break;
             }
         }
@@ -365,22 +367,7 @@ typedef struct _SJPlayerControlInfo {
             switch ( direction ) {
                 case SJPanGestureMovingDirection_H: { }
                     break;
-                case SJPanGestureMovingDirection_V: {
-                    dispatch_async(dispatch_get_main_queue(), ^{
-                        switch ( position ) {
-                                /// brightness
-                            case SJPanGestureTriggeredPosition_Left: {
-                                self.deviceVolumeAndBrightnessController.brightnessTracking = NO;
-                            }
-                                break;
-                                /// volume
-                            case SJPanGestureTriggeredPosition_Right: {
-                                self.deviceVolumeAndBrightnessController.volumeTracking = NO;
-                            }
-                                break;
-                        }
-                    });
-                }
+                case SJPanGestureMovingDirection_V: { }
                     break;
             }
         }
@@ -481,6 +468,9 @@ typedef struct _SJPlayerControlInfo {
     _rotationManagerObserver.onRotatingChanged = ^(id<SJRotationManager>  _Nonnull mgr, BOOL isRotating) {
         __strong typeof(_self) self = _self;
         if ( !self ) return ;
+        self->_deviceVolumeAndBrightnessTargetViewContext.isFullscreen = mgr.isFullscreen;
+        [self->_deviceVolumeAndBrightnessController onTargetViewContextUpdated];
+        
         if ( isRotating ) {
             if ( [self.controlLayerDelegate respondsToSelector:@selector(videoPlayer:willRotateView:)] ) {
                 [self.controlLayerDelegate videoPlayer:self willRotateView:mgr.isFullscreen];
@@ -535,6 +525,9 @@ typedef struct _SJPlayerControlInfo {
     _fitOnScreenManagerObserver.fitOnScreenWillBeginExeBlock = ^(id<SJFitOnScreenManager> mgr) {
         __strong typeof(_self) self = _self;
         if ( !self ) return;
+        self->_deviceVolumeAndBrightnessTargetViewContext.isFitOnScreen = mgr.isFitOnScreen;
+        [self->_deviceVolumeAndBrightnessController onTargetViewContextUpdated];
+        
         if ( self->_rotationManager != nil ) {
             self->_rotationManager.superview = mgr.isFitOnScreen ? self.fitOnScreenManager.superviewInFitOnScreen : self.view;
         }
@@ -637,6 +630,8 @@ typedef struct _SJPlayerControlInfo {
         __strong typeof(_self) self = _self;
         if ( !self ) return ;
         BOOL isAppeared = controller.isAppeared;
+        self->_deviceVolumeAndBrightnessTargetViewContext.isFloatingMode = isAppeared;
+        [self->_deviceVolumeAndBrightnessController onTargetViewContextUpdated];
         self.controlInfo->floatSmallViewControl.isAppeared = isAppeared;
         self.rotationManager.superview = isAppeared ? controller.floatingView : self.view;
     };
@@ -1108,6 +1103,10 @@ typedef struct _SJPlayerControlInfo {
         [self _updateCurrentPlayingIndexPathIfNeeded:asset.playModel];
         [self _updatePlayModelObserver:asset.playModel];
     };
+    
+    _deviceVolumeAndBrightnessTargetViewContext.isPlayOnScrollView = self.isPlayOnScrollView;
+    _deviceVolumeAndBrightnessTargetViewContext.isScrollAppeared = self.isScrollAppeared;
+    [_deviceVolumeAndBrightnessController onTargetViewContextUpdated];
 }
 
 - (void)refresh {
@@ -1395,6 +1394,9 @@ typedef struct _SJPlayerControlInfo {
         [self.controlLayerDelegate videoPlayer:self pictureInPictureStatusDidChange:status];
     }
     
+    _deviceVolumeAndBrightnessTargetViewContext.isPictureInPictureMode = (status == SJPictureInPictureStatusRunning);
+    [_deviceVolumeAndBrightnessController onTargetViewContextUpdated];
+    
     [self _postNotification:SJVideoPlayerPictureInPictureStatusDidChangeNotification];
 }
 
@@ -1595,6 +1597,7 @@ typedef struct _SJPlayerControlInfo {
 }
 
 - (void)_configDeviceVolumeAndBrightnessController:(id<SJDeviceVolumeAndBrightnessController>)mgr {
+    mgr.targetViewContext = _deviceVolumeAndBrightnessTargetViewContext;
     mgr.target = self.presentView;
     _deviceVolumeAndBrightnessControllerObserver = [mgr getObserver];
     __weak typeof(self) _self = self;
@@ -1613,6 +1616,9 @@ typedef struct _SJPlayerControlInfo {
             [self.controlLayerDelegate videoPlayer:self brightnessChanged:brightness];
         }
     };
+    
+    [mgr onTargetViewMoveToWindow];
+    [mgr onTargetViewContextUpdated];
 }
 
 - (id<SJDeviceVolumeAndBrightnessControllerObserver>)deviceVolumeAndBrightnessObserver {
@@ -2298,6 +2304,8 @@ typedef struct _SJPlayerControlInfo {
     }
     
     _controlInfo->scrollControl.isScrollAppeared = YES;
+    _deviceVolumeAndBrightnessTargetViewContext.isScrollAppeared = YES;
+    [_deviceVolumeAndBrightnessController onTargetViewContextUpdated];
     
     if ( _controlInfo->scrollControl.hiddenPlayerViewWhenScrollDisappeared ) {
         _view.hidden = NO;
@@ -2340,6 +2348,8 @@ typedef struct _SJPlayerControlInfo {
         return;
 
     _controlInfo->scrollControl.isScrollAppeared = NO;
+    _deviceVolumeAndBrightnessTargetViewContext.isScrollAppeared = NO;
+    [_deviceVolumeAndBrightnessController onTargetViewContextUpdated];
     
     _view.hidden = _controlInfo->scrollControl.hiddenPlayerViewWhenScrollDisappeared;
     

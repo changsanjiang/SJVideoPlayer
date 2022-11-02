@@ -23,7 +23,7 @@ typedef NS_ENUM(NSUInteger, SJTestPageItemType) {
     SJTestPageItemTypeHot,
 };
  
-@interface SJUITableViewDemoViewController7 ()<SJPageViewControllerDelegate, SJPageViewControllerDataSource, SJPageMenuBarDataSource, SJTopViewDelegate>
+@interface SJUITableViewDemoViewController7 ()<SJPageViewControllerDelegate, SJPageViewControllerDataSource, SJPageMenuBarDataSource, SJPageMenuBarDelegate, SJTopViewDelegate>
 @property (nonatomic, strong) UIButton *backButton;
 @property (nonatomic, strong) SJTopView *topView;
 @property (nonatomic, strong) SJVideoPlayer *player;
@@ -147,7 +147,11 @@ typedef NS_ENUM(NSUInteger, SJTestPageItemType) {
 - (__kindof UIView<SJPageMenuItemView> *)pageMenuBar:(SJPageMenuBar *)bar viewForItemAtIndex:(NSInteger)index {
     return [_pageItemManager menuViewAtIndex:index];
 }
- 
+
+- (CGSize)pageMenuBar:(SJPageMenuBar *)bar sizeForItemAtIndex:(NSUInteger)index transitionProgress:(CGFloat)transitionProgress {
+    return [_pageItemManager sizeForMenuViewAtIndex:index transitionProgress:transitionProgress];
+}
+
 #pragma mark - Page View Controller
 
 - (NSUInteger)numberOfViewControllersInPageViewController:(SJPageViewController *)pageViewController {

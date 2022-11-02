@@ -152,8 +152,11 @@ static NSNotificationName const SJPlayerDidEndSwitchControlLayerNotification = @
     
     // lazy loading
     id<SJControlLayer> controlLayer = ((id<SJControlLayer>(^)(SJControlLayerIdentifier))controlLayerOrBlock)(identifier);
-    [self.map setObject:controlLayer forKey:@(identifier)];
-    return controlLayer;
+    if (controlLayer) {
+        [self.map setObject:controlLayer forKey:@(identifier)];
+        return controlLayer;
+    }
+    return nil;
 }
 
 - (BOOL)containsControlLayer:(SJControlLayerIdentifier)identifier {

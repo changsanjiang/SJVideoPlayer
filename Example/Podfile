@@ -55,7 +55,7 @@ target 'SJVideoPlayer_Example' do
 
   # 默认为 AVPlayer
   pod 'SJBaseVideoPlayer'#, :path => '../../SJBaseVideoPlayer'
-  pod 'SJVideoPlayer', :path => '../../SJVideoPlayer'
+  pod 'SJVideoPlayer', :path => '../'
   pod 'SJUIKit'
   
   # 列表控制
@@ -77,7 +77,7 @@ end
 
 target 'iPadDemo' do
   pod 'SJBaseVideoPlayer'#, :path => '../../SJBaseVideoPlayer'
-  pod 'SJVideoPlayer', :path => '../../SJVideoPlayer'
+  pod 'SJVideoPlayer', :path => '../'
 
   pod 'Masonry', :inhibit_warnings => true
   pod 'MJRefresh', '3.4.3', :inhibit_warnings => true

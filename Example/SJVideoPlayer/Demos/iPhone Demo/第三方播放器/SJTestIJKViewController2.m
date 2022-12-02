@@ -43,6 +43,16 @@
         make.textColor(UIColor.whiteColor);
     }] duration:-1];
 #endif
+    
+    [_player.controlLayerAppearManager keepAppearState];
+    _player.controlLayerAppearManager.disabled = YES;
+    
+    __weak typeof(self) _self = self;
+    _player.gestureController.singleTapHandler = ^(id<SJGestureController>  _Nonnull control, CGPoint location) {
+        __strong typeof(_self) self = _self;
+        if ( !self ) return ;
+        [self.player rotate];
+    };
         
     _player.view.backgroundColor = UIColor.blackColor;
     [self.view addSubview:_player.view];

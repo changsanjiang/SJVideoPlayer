@@ -45,6 +45,9 @@
     }] duration:-1];
 #endif
     
+    if ( @available(iOS 15.0, *) ) {
+        _player.playbackController.canStartPictureInPictureAutomaticallyFromInline = YES;
+    }
     [self.view addSubview:_player.view];
     [_player.view mas_makeConstraints:^(MASConstraintMaker *make) {
         make.top.offset(100);

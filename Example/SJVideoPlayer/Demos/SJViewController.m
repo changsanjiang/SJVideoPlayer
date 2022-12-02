@@ -9,9 +9,7 @@
 #import "SJViewController.h"
 #import <Masonry/Masonry.h>
 #import <SJRouter/SJRouter.h>
-#import "LWZTableSectionShrinker.h"
 #import <SJVideoPlayer/SJVideoPlayer.h>
-
 #import <SJUIKit/SJPageViewController.h>
 
 @interface Item : NSObject
@@ -20,23 +18,17 @@
 @property (nonatomic, strong, readonly) NSString *subTitle;
 @property (nonatomic, strong, readonly) NSString *path;
 @end
-@implementation Item
-- (instancetype)initWithTitle:(NSString *)title subTitle:(NSString *)subTitle path:(NSString *)path {
-    self = [super init];
-    if ( !self ) return nil;
-    _title = title;
-    _subTitle = subTitle;
-    _path = path;
-    
-    
-    
-    return self;
-}
+
+@interface Section : NSObject
+- (instancetype)initWithTitle:(NSString *)title items:(NSArray<Item *> *)items;
+@property (nonatomic, strong, readonly) NSString *title;
+@property (nonatomic, strong, readonly) NSArray<Item *> *items;
 @end
+
 
 @interface SJViewController ()<UITableViewDelegate, UITableViewDataSource>
 @property (nonatomic, strong) UITableView *tableView;
-@property (nonatomic, strong) NSArray<LWZTableSectionShrinker<Item *> *> *data;
+@property (nonatomic, strong) NSArray<Section *> *sections;
 @end
 
 @implementation SJViewController
@@ -68,44 +60,45 @@
 }
 
 - (void)_createDemoData {
-    NSMutableArray<LWZTableSectionShrinker<Item *> *> *m = [NSMutableArray new];
+    NSMutableArray<Section *> *m = [NSMutableArray new];
     
-    [m addObject:[[LWZTableSectionShrinker alloc] initWithTitle:@"DY" titleWhenShrank:nil dataArr:[self _DYDemoItems]]];
+    [m addObject:[[Section alloc] initWithTitle:@"DY" items:[self _DYDemoItems]]];
 
-    [m addObject:[[LWZTableSectionShrinker alloc] initWithTitle:@"Rotation Control" titleWhenShrank:nil dataArr:[self _createRotationControlDemoItems]]];
+    [m addObject:[[Section alloc] initWithTitle:@"Rotation Demo" items:[self _RotationDemoItems]]];
 
-    [m addObject:[[LWZTableSectionShrinker alloc] initWithTitle:@"Floating Mode" titleWhenShrank:nil dataArr:[self _FloatingModeDemoItems]]];
+    [m addObject:[[Section alloc] initWithTitle:@"Floating Mode" items:[self _FloatingModeDemoItems]]];
     
-    [m addObject:[[LWZTableSectionShrinker alloc] initWithTitle:@"UIScrollView Demo" titleWhenShrank:nil dataArr:[self _UIScrollViewDemoItems]]];
+    [m addObject:[[Section alloc] initWithTitle:@"UIScrollView Demo" items:[self _UIScrollViewDemoItems]]];
 
-    [m addObject:[[LWZTableSectionShrinker alloc] initWithTitle:@"UITableView Demo" titleWhenShrank:nil dataArr:[self _UITableViewDemoItems]]];
+    [m addObject:[[Section alloc] initWithTitle:@"UITableView Demo" items:[self _UITableViewDemoItems]]];
     
-    [m addObject:[[LWZTableSectionShrinker alloc] initWithTitle:@"UITableView Demo" titleWhenShrank:nil dataArr:[self _UICollectionViewDemoItems]]];
+    [m addObject:[[Section alloc] initWithTitle:@"UICollectionView Demo" items:[self _UICollectionViewDemoItems]]];
+
+    [m addObject:[[Section alloc] initWithTitle:@"PageViewController Demo" items:[self _PageViewControllerDemoItems]]];
+
+    [m addObject:[[Section alloc] initWithTitle:@"Keyboard Handle Demo" items:[self _KeyboardHandleDemoItems]]];
     
-    [m addObject:[[LWZTableSectionShrinker alloc] initWithTitle:@"Keyboard Handle Demo" titleWhenShrank:nil dataArr:[self _KeyboardHandleDemoItems]]];
+    [m addObject:[[Section alloc] initWithTitle:@"Switching Control Layer" items:[self _SwitchingControlLayerDemoItems]]];
     
-    [m addObject:[[LWZTableSectionShrinker alloc] initWithTitle:@"Switching Control Layer" titleWhenShrank:nil dataArr:[self _createSwitchingControlLayerDemoItems]]];
-    
-    [m addObject:[[LWZTableSectionShrinker alloc] initWithTitle:@"Custom Control Layer" titleWhenShrank:nil dataArr:[self _createCustomControlLayerDemoItems]]];
+    [m addObject:[[Section alloc] initWithTitle:@"Custom Control Layer" items:[self _CustomControlLayerDemoItems]]];
      
-    [m addObject:[[LWZTableSectionShrinker alloc] initWithTitle:@"Playback List Control" titleWhenShrank:nil dataArr:[self _createPlaybackListControlDemoItems]]];
+    [m addObject:[[Section alloc] initWithTitle:@"Playback List Control" items:[self _PlaybackListControlDemoItems]]];
     
-    [m addObject:[[LWZTableSectionShrinker alloc] initWithTitle:@"Add Button Item To Control Layer" titleWhenShrank:nil dataArr:[self _createAddButtonItemToControlLayerDemoItems]]];
+    [m addObject:[[Section alloc] initWithTitle:@"Add Button Item To Control Layer" items:[self _AddButtonItemToControlLayerDemoItems]]];
     
-    [m addObject:[[LWZTableSectionShrinker alloc] initWithTitle:@"Text Popup" titleWhenShrank:nil dataArr:[self _createTextPopupDemoItems]]];
+    [m addObject:[[Section alloc] initWithTitle:@"Text Popup" items:[self _TextPopupDemoItems]]];
     
-    [m addObject:[[LWZTableSectionShrinker alloc] initWithTitle:@"Switch Video Definition" titleWhenShrank:nil dataArr:[self _createSwitchVideoDefinitionDemoItems]]];
+    [m addObject:[[Section alloc] initWithTitle:@"Switch Video Definition" items:[self _SwitchVideoDefinitionDemoItems]]];
     
-    [m addObject:[[LWZTableSectionShrinker alloc] initWithTitle:@"GIF Screenshot Export" titleWhenShrank:nil dataArr:[self _createExportDemoItems]]];
+    [m addObject:[[Section alloc] initWithTitle:@"GIF Screenshot Export" items:[self _ExportDemoItems]]];
     
-    [m addObject:[[LWZTableSectionShrinker alloc] initWithTitle:@"Other" titleWhenShrank:nil dataArr:[self _createOtherItems]]];
+    [m addObject:[[Section alloc] initWithTitle:@"Other" items:[self _OtherItems]]];
     
-    [m addObject:[[LWZTableSectionShrinker alloc] initWithTitle:@"Test" titleWhenShrank:nil dataArr:[self _createTestItems]]];
+    [m addObject:[[Section alloc] initWithTitle:@"Test" items:[self _TestItems]]];
 
-    [m addObject:[[LWZTableSectionShrinker alloc] initWithTitle:@"Third-party Player" titleWhenShrank:nil dataArr:[self _thirdpartyPlayerItems]]];
+    [m addObject:[[Section alloc] initWithTitle:@"Third-party Player" items:[self _thirdpartyPlayerItems]]];
     
-
-    _data = m.copy;
+    _sections = m.copy;
 }
 
 - (NSArray<Item *> *)_FloatingModeDemoItems {
@@ -151,6 +144,12 @@
     ];
 }
 
+- (NSArray<Item *> *)_PageViewControllerDemoItems {
+    return @[
+        [Item.alloc initWithTitle:@"PageViewController Demo 1" subTitle:@"" path:@"PageViewController/1"],
+    ];
+}
+
 - (NSArray<Item *> *)_UITableViewDemoItems {
     return @[
         [Item.alloc initWithTitle:@"1 Play In `tableView.cell`" subTitle:@"在`tableView.cell`中播放" path:@"UITableViewDemo/1"],
@@ -171,7 +170,7 @@
     ];
 }
 
-- (NSArray<Item *> *)_createRotationControlDemoItems {
+- (NSArray<Item *> *)_RotationDemoItems {
     return
     @[
       [[Item alloc] initWithTitle:@"Rotation Control 1"
@@ -188,7 +187,7 @@
       ];
 }
 
-- (NSArray<Item *> *)_createPlaybackListControlDemoItems {
+- (NSArray<Item *> *)_PlaybackListControlDemoItems {
     return
     @[
       [[Item alloc] initWithTitle:@"Playback List Control"
@@ -197,7 +196,7 @@
       ];
 }
 
-- (NSArray<Item *> *)_createAddButtonItemToControlLayerDemoItems {
+- (NSArray<Item *> *)_AddButtonItemToControlLayerDemoItems {
     return
     @[
       [[Item alloc] initWithTitle:@"Add Button Item To Control Layer"
@@ -206,7 +205,7 @@
       ];
 }
 
-- (NSArray<Item *> *)_createSwitchingControlLayerDemoItems {
+- (NSArray<Item *> *)_SwitchingControlLayerDemoItems {
     return
     @[
       [[Item alloc] initWithTitle:@"Switching Control Layer"
@@ -215,7 +214,7 @@
       ];
 }
 
-- (NSArray<Item *> *)_createCustomControlLayerDemoItems {
+- (NSArray<Item *> *)_CustomControlLayerDemoItems {
     return
     @[
       [[Item alloc] initWithTitle:@"Custom Control Layer"
@@ -224,7 +223,7 @@
       ];
 }
 
-- (NSArray<Item *> *)_createTextPopupDemoItems {
+- (NSArray<Item *> *)_TextPopupDemoItems {
     return
     @[
         [[Item alloc] initWithTitle:@"TextPopup 1"
@@ -237,7 +236,7 @@
       ];
 }
 
-- (NSArray<Item *> *)_createSwitchVideoDefinitionDemoItems {
+- (NSArray<Item *> *)_SwitchVideoDefinitionDemoItems {
     return
     @[
       [[Item alloc] initWithTitle:@"Switch Video Definition"
@@ -246,7 +245,7 @@
       ];
 }
 
-- (NSArray<Item *> *)_createExportDemoItems {
+- (NSArray<Item *> *)_ExportDemoItems {
     return
     @[
       [[Item alloc] initWithTitle:@"GIF Screenshot Export"
@@ -255,7 +254,7 @@
       ];
 }
 
-- (NSArray<Item *> *)_createTestItems {
+- (NSArray<Item *> *)_TestItems {
     return
     @[
         [[Item alloc] initWithTitle:@"Test subtitles"
@@ -292,7 +291,7 @@
 
 }
 
-- (NSArray<Item *> *)_createOtherItems {
+- (NSArray<Item *> *)_OtherItems {
     return
     @[
       [[Item alloc] initWithTitle:@"Long Press Fast-forward"
@@ -305,15 +304,15 @@
 #pragma mark -
 
 - (NSInteger)numberOfSectionsInTableView:(UITableView *)tableView {
-    return _data.count;
+    return _sections.count;
 }
 
 - (NSString *)tableView:(UITableView *)tableView titleForHeaderInSection:(NSInteger)section {
-    return _data[section].titleForShrinkStatus;
+    return _sections[section].title;
 }
 
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section {
-    return _data[section].dataArrByShrinkStatus.count;
+    return _sections[section].items.count;
 }
 
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath {
@@ -328,12 +327,36 @@
 }
 
 - (void)tableView:(UITableView *)tableView willDisplayCell:(UITableViewCell *)cell forRowAtIndexPath:(NSIndexPath *)indexPath {
-    cell.textLabel.text = _data[indexPath.section].dataArrByShrinkStatus[indexPath.row].title;
-    cell.detailTextLabel.text = _data[indexPath.section].dataArrByShrinkStatus[indexPath.row].subTitle;
+    cell.textLabel.text = _sections[indexPath.section].items[indexPath.row].title;
+    cell.detailTextLabel.text = _sections[indexPath.section].items[indexPath.row].subTitle;
 }
 
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath {
-    SJRouteRequest *reqeust = [[SJRouteRequest alloc] initWithPath:_data[indexPath.section].dataArrByShrinkStatus[indexPath.row].path parameters:nil];
-    [SJRouter.shared handleRequest:reqeust completionHandler:nil];
+    SJRouteRequest *request = [[SJRouteRequest alloc] initWithPath:_sections[indexPath.section].items[indexPath.row].path parameters:nil];
+    [SJRouter.shared handleRequest:request completionHandler:nil];
+}
+@end
+
+
+@implementation Section
+- (instancetype)initWithTitle:(NSString *)title items:(NSArray<Item *> *)items {
+    self = [super init];
+    if ( self ) {
+        _title = title;
+        _items = items;
+    }
+    return self;
+}
+@end
+
+
+@implementation Item
+- (instancetype)initWithTitle:(NSString *)title subTitle:(NSString *)subTitle path:(NSString *)path {
+    self = [super init];
+    if ( !self ) return nil;
+    _title = title;
+    _subTitle = subTitle;
+    _path = path;
+    return self;
 }
 @end

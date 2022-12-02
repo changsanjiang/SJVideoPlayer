@@ -109,7 +109,6 @@
 		A6A208FE22AB9E59001ED610 /* SJVideoCellViewModel.m in Sources */ = {isa = PBXBuildFile; fileRef = A6A208F122AB9E59001ED610 /* SJVideoCellViewModel.m */; };
 		A6A208FF22AB9E59001ED610 /* SJVideoModel.m in Sources */ = {isa = PBXBuildFile; fileRef = A6A208F522AB9E59001ED610 /* SJVideoModel.m */; };
 		A6A2090022AB9E59001ED610 /* SJVideoTableViewCell.m in Sources */ = {isa = PBXBuildFile; fileRef = A6A208F822AB9E59001ED610 /* SJVideoTableViewCell.m */; };
-		A6A2090322AB9EE6001ED610 /* LWZTableSectionShrinker.m in Sources */ = {isa = PBXBuildFile; fileRef = A6A2090122AB9EE5001ED610 /* LWZTableSectionShrinker.m */; };
 		A6A2090522AB9FD7001ED610 /* SJVideoTableViewCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = A6A2090422AB9FD7001ED610 /* SJVideoTableViewCell.xib */; };
 		A6A2554422ABCE9200E42998 /* SJViewController1.m in Sources */ = {isa = PBXBuildFile; fileRef = A6A2554222ABCE9200E42998 /* SJViewController1.m */; };
 		A6A2554522ABCE9200E42998 /* SJViewController1.xib in Resources */ = {isa = PBXBuildFile; fileRef = A6A2554322ABCE9200E42998 /* SJViewController1.xib */; };
@@ -124,6 +123,8 @@
 		A6A2562622AC1C3500E42998 /* SJViewController5.m in Sources */ = {isa = PBXBuildFile; fileRef = A6A2562422AC1C3500E42998 /* SJViewController5.m */; };
 		A6A2562722AC1C3500E42998 /* SJViewController5.xib in Resources */ = {isa = PBXBuildFile; fileRef = A6A2562522AC1C3500E42998 /* SJViewController5.xib */; };
 		A6C5D23422AC249800D63D1C /* SJRemoteCommandHandler.m in Sources */ = {isa = PBXBuildFile; fileRef = A6C5D23322AC249800D63D1C /* SJRemoteCommandHandler.m */; };
+		A6E4487D28AF861D00880525 /* SJMainPageViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = A6E4487C28AF861D00880525 /* SJMainPageViewController.m */; };
+		A6E4488028AF8C3000880525 /* SJMainPageHeaderView.m in Sources */ = {isa = PBXBuildFile; fileRef = A6E4487F28AF8C3000880525 /* SJMainPageHeaderView.m */; };
 		A6F19DFB22D9C1390043B508 /* SJViewController6.m in Sources */ = {isa = PBXBuildFile; fileRef = A6F19DF922D9C1390043B508 /* SJViewController6.m */; };
 		A6F19DFC22D9C1390043B508 /* SJViewController6.xib in Resources */ = {isa = PBXBuildFile; fileRef = A6F19DFA22D9C1390043B508 /* SJViewController6.xib */; };
 		A6F19E0122D9D8050043B508 /* SJViewController7.m in Sources */ = {isa = PBXBuildFile; fileRef = A6F19DFF22D9D8050043B508 /* SJViewController7.m */; };
@@ -331,8 +332,6 @@
 		A6A208F522AB9E59001ED610 /* SJVideoModel.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SJVideoModel.m; sourceTree = "<group>"; };
 		A6A208F722AB9E59001ED610 /* SJVideoTableViewCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SJVideoTableViewCell.h; sourceTree = "<group>"; };
 		A6A208F822AB9E59001ED610 /* SJVideoTableViewCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SJVideoTableViewCell.m; sourceTree = "<group>"; };
-		A6A2090122AB9EE5001ED610 /* LWZTableSectionShrinker.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = LWZTableSectionShrinker.m; sourceTree = "<group>"; };
-		A6A2090222AB9EE6001ED610 /* LWZTableSectionShrinker.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = LWZTableSectionShrinker.h; sourceTree = "<group>"; };
 		A6A2090422AB9FD7001ED610 /* SJVideoTableViewCell.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = SJVideoTableViewCell.xib; sourceTree = "<group>"; };
 		A6A2554122ABCE9200E42998 /* SJViewController1.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = SJViewController1.h; sourceTree = "<group>"; };
 		A6A2554222ABCE9200E42998 /* SJViewController1.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = SJViewController1.m; sourceTree = "<group>"; };
@@ -355,6 +354,10 @@
 		A6A2562522AC1C3500E42998 /* SJViewController5.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = SJViewController5.xib; sourceTree = "<group>"; };
 		A6C5D23222AC249800D63D1C /* SJRemoteCommandHandler.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SJRemoteCommandHandler.h; sourceTree = "<group>"; };
 		A6C5D23322AC249800D63D1C /* SJRemoteCommandHandler.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SJRemoteCommandHandler.m; sourceTree = "<group>"; };
+		A6E4487B28AF861D00880525 /* SJMainPageViewController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = SJMainPageViewController.h; sourceTree = "<group>"; };
+		A6E4487C28AF861D00880525 /* SJMainPageViewController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = SJMainPageViewController.m; sourceTree = "<group>"; };
+		A6E4487E28AF8C3000880525 /* SJMainPageHeaderView.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = SJMainPageHeaderView.h; sourceTree = "<group>"; };
+		A6E4487F28AF8C3000880525 /* SJMainPageHeaderView.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = SJMainPageHeaderView.m; sourceTree = "<group>"; };
 		A6F19DF822D9C1390043B508 /* SJViewController6.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = SJViewController6.h; sourceTree = "<group>"; };
 		A6F19DF922D9C1390043B508 /* SJViewController6.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = SJViewController6.m; sourceTree = "<group>"; };
 		A6F19DFA22D9C1390043B508 /* SJViewController6.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = SJViewController6.xib; sourceTree = "<group>"; };
@@ -487,10 +490,8 @@
 				77805D6E22BF7EDB007076B9 /* iPadMain.storyboard */,
 				71719F9D1E33DC2100824A3D /* LaunchScreen.storyboard */,
 				6003F5A8195388D20070C39A /* Images.xcassets */,
-				A6A2090222AB9EE6001ED610 /* LWZTableSectionShrinker.h */,
 				7748925C239100C7002825FC /* SJNavigationController.h */,
 				7748925D239100C7002825FC /* SJNavigationController.m */,
-				A6A2090122AB9EE5001ED610 /* LWZTableSectionShrinker.m */,
 				6003F595195388D20070C39A /* SJVideoPlayer-Info.plist */,
 				6003F596195388D20070C39A /* InfoPlist.strings */,
 				6003F599195388D20070C39A /* main.m */,
@@ -709,6 +710,7 @@
 				77A8DDE024B59B0F00782C85 /* UIScrollVIew */,
 				77391C0D2467CC2B00443844 /* UITableView */,
 				77391C0E2467CC3800443844 /* UICollectionView */,
+				A6E4487A28AF85F400880525 /* PageViewController */,
 				A65FE536248A88D200A5D4A6 /* Keyboard */,
 				77633AB823FD97A000D7A269 /* PlaybackHistory(播放记录) */,
 				7784A7F7237D384F000BA67E /* Danmaku( 弹幕) */,
@@ -999,6 +1001,17 @@
 			path = "Switching Control Layer(切换控制层)";
 			sourceTree = "<group>";
 		};
+		A6E4487A28AF85F400880525 /* PageViewController */ = {
+			isa = PBXGroup;
+			children = (
+				A6E4487B28AF861D00880525 /* SJMainPageViewController.h */,
+				A6E4487C28AF861D00880525 /* SJMainPageViewController.m */,
+				A6E4487E28AF8C3000880525 /* SJMainPageHeaderView.h */,
+				A6E4487F28AF8C3000880525 /* SJMainPageHeaderView.m */,
+			);
+			path = PageViewController;
+			sourceTree = "<group>";
+		};
 		A6F19DF722D9C1090043B508 /* Pop Prompt(弹窗提示) */ = {
 			isa = PBXGroup;
 			children = (
@@ -1036,6 +1049,7 @@
 				6003F587195388D20070C39A /* Frameworks */,
 				6003F588195388D20070C39A /* Resources */,
 				09CC984351C8AA5FD418E7BC /* [CP] Copy Pods Resources */,
+				9BFB0FFF2018840913AD09C6 /* [CP] Embed Pods Frameworks */,
 			);
 			buildRules = (
 			);
@@ -1261,7 +1275,7 @@
 			inputPaths = (
 				"${PODS_ROOT}/Target Support Files/Pods-SJVideoPlayer_Example/Pods-SJVideoPlayer_Example-resources.sh",
 				"${PODS_ROOT}/MJRefresh/MJRefresh/MJRefresh.bundle",
-				"${PODS_ROOT}/SJBaseVideoPlayer/SJBaseVideoPlayer/ResourceLoader/SJBaseVideoPlayerResources.bundle",
+				"${PODS_ROOT}/../../../SJBaseVideoPlayer/SJBaseVideoPlayer/ResourceLoader/SJBaseVideoPlayerResources.bundle",
 				"${PODS_ROOT}/../../SJVideoPlayer/ResourceLoader/SJVideoPlayer.bundle",
 			);
 			name = "[CP] Copy Pods Resources";
@@ -1283,7 +1297,7 @@
 			inputPaths = (
 				"${PODS_ROOT}/Target Support Files/Pods-iPadDemo/Pods-iPadDemo-resources.sh",
 				"${PODS_ROOT}/MJRefresh/MJRefresh/MJRefresh.bundle",
-				"${PODS_ROOT}/SJBaseVideoPlayer/SJBaseVideoPlayer/ResourceLoader/SJBaseVideoPlayerResources.bundle",
+				"${PODS_ROOT}/../../../SJBaseVideoPlayer/SJBaseVideoPlayer/ResourceLoader/SJBaseVideoPlayerResources.bundle",
 				"${PODS_ROOT}/../../SJVideoPlayer/ResourceLoader/SJVideoPlayer.bundle",
 			);
 			name = "[CP] Copy Pods Resources";
@@ -1295,6 +1309,28 @@
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
 			shellScript = "\"${PODS_ROOT}/Target Support Files/Pods-iPadDemo/Pods-iPadDemo-resources.sh\"\n";
+			showEnvVarsInLog = 0;
+		};
+		9BFB0FFF2018840913AD09C6 /* [CP] Embed Pods Frameworks */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputPaths = (
+				"${PODS_ROOT}/Target Support Files/Pods-SJVideoPlayer_Example/Pods-SJVideoPlayer_Example-frameworks.sh",
+				"${PODS_ROOT}/AliPlayerSDK_iOS/AliyunPlayer.framework",
+				"${PODS_ROOT}/AliPlayerSDK_iOS/alivcffmpeg.framework",
+				"${PODS_ROOT}/AliPlayerSDK_iOS/AliyunMediaDownloader.framework",
+			);
+			name = "[CP] Embed Pods Frameworks";
+			outputPaths = (
+				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/AliyunPlayer.framework",
+				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/alivcffmpeg.framework",
+				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/AliyunMediaDownloader.framework",
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "\"${PODS_ROOT}/Target Support Files/Pods-SJVideoPlayer_Example/Pods-SJVideoPlayer_Example-frameworks.sh\"\n";
 			showEnvVarsInLog = 0;
 		};
 		E81B7FEC30068D32F95F4D37 /* [CP] Check Pods Manifest.lock */ = {
@@ -1371,6 +1407,7 @@
 				77391C352467EF6300443844 /* SJUICollectionViewDemoViewController3.m in Sources */,
 				77B947FA262991B2001635AA /* DYHPlaybackListViewController.m in Sources */,
 				777829402351D4AB00A2D933 /* SJTestIJKViewController2.m in Sources */,
+				A6E4487D28AF861D00880525 /* SJMainPageViewController.m in Sources */,
 				7740C1BD2350A18500DD7ECE /* SJCustomControlLayerViewController.m in Sources */,
 				77391C232467DAD500443844 /* SJUITableViewDemoViewController6.m in Sources */,
 				A6A208FD22AB9E59001ED610 /* SJRotationModeDemoViewController2.m in Sources */,
@@ -1399,10 +1436,10 @@
 				A65FE539248A891700A5D4A6 /* SJKeyboardDemoViewController1.m in Sources */,
 				774AF08722DC790D005FE462 /* SJView.m in Sources */,
 				77391C46246801D100443844 /* SJExtendedMediaCollectionViewModel.m in Sources */,
-				A6A2090322AB9EE6001ED610 /* LWZTableSectionShrinker.m in Sources */,
 				7700905C24988F6900A99906 /* SJDYPlaybackListViewController.m in Sources */,
 				77391C292467DFA500443844 /* SJTopView.m in Sources */,
 				7756F58522E173D400F9DC7D /* SJTestViewController.m in Sources */,
+				A6E4488028AF8C3000880525 /* SJMainPageHeaderView.m in Sources */,
 				77391C1A2467D62200443844 /* SJUITableViewDemoViewController3.m in Sources */,
 				77391C1D2467D6EF00443844 /* SJUITableViewDemoViewController4.m in Sources */,
 				77391C382467F01500443844 /* SJUICollectionViewDemoViewController4.m in Sources */,

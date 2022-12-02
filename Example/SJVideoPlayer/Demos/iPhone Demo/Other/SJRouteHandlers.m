@@ -37,6 +37,8 @@
 
 #import "SJPIPDemoViewController.h"
 
+#import "SJMainPageViewController.h"
+
 @implementation SJRouteHandlers
 + (void)addRoutesToRouter:(SJRouter *)router {
     __auto_type addBlock = ^(NSArray<SJRouteObject *> *array) {
@@ -51,6 +53,16 @@
     addBlock([self routeObjectArrayForUITableViewDemo]);
     addBlock([self routeObjectArrayForUICollectionViewDemo]);
     addBlock([self routeObjectArrayForKeyboardDemo]);
+    addBlock([self routeObjectArrayForPageViewControllerDemo]);
+}
+
++ (NSArray<SJRouteObject *> *)routeObjectArrayForPageViewControllerDemo {
+    return @[
+        [SJRouteObject.alloc initWithPath:@"PageViewController/1" transitionMode:SJViewControllerTransitionModeNavigation createInstanceBlock:^(SJRouteRequest * _Nonnull request, SJCompletionHandler  _Nullable completionHandler) {
+            __auto_type vc = [SJMainPageViewController.alloc init];
+            if ( completionHandler ) completionHandler(vc, nil);
+        }],
+    ];
 }
 
 + (NSArray<SJRouteObject *> *)routeObjectArrayForFloatingModeDemo {

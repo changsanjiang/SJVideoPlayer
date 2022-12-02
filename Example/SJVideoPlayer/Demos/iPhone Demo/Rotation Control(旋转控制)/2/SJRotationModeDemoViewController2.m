@@ -10,6 +10,7 @@
 #import "SJRotationMode2ViewModel.h"
 #import <SJUIKit/SJUIKit.h>
 #import <SJVideoPlayer/SJVideoPlayer.h>
+#import <SJBaseVideoPlayer/UIScrollView+ListViewAutoplaySJAdd.h>
 #import <Masonry/Masonry.h>
 
 @implementation UIAlertController (SJAdditions)
@@ -137,6 +138,8 @@
         
         if ( requestPageNum == tableView.sj_beginPageNum ) {
             [self.viewModel removeAllItems];
+            [self.player stop];
+            [self.tableView sj_removeCurrentPlayerView];
         }
 
         [self.viewModel addItems:m];

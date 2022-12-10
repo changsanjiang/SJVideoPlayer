@@ -102,20 +102,20 @@ PODS:
   - SJUIKit/UIMaker (0.0.0.59):
     - SJUIKit/UIMaker/Core (= 0.0.0.59)
   - SJUIKit/UIMaker/Core (0.0.0.59)
-  - SJVideoPlayer (3.4.2.2):
+  - SJVideoPlayer (3.4.3):
     - SJBaseVideoPlayer (>= 3.7.5)
-    - SJVideoPlayer/Common (= 3.4.2.2)
-    - SJVideoPlayer/ControlLayers (= 3.4.2.2)
-    - SJVideoPlayer/ResourceLoader (= 3.4.2.2)
-  - SJVideoPlayer/Common (3.4.2.2):
+    - SJVideoPlayer/Common (= 3.4.3)
+    - SJVideoPlayer/ControlLayers (= 3.4.3)
+    - SJVideoPlayer/ResourceLoader (= 3.4.3)
+  - SJVideoPlayer/Common (3.4.3):
     - Masonry
     - SJBaseVideoPlayer (>= 3.7.5)
     - SJUIKit/AttributesFactory
     - SJVideoPlayer/ResourceLoader
-  - SJVideoPlayer/ControlLayers (3.4.2.2):
+  - SJVideoPlayer/ControlLayers (3.4.3):
     - SJBaseVideoPlayer (>= 3.7.5)
     - SJVideoPlayer/Common
-  - SJVideoPlayer/ResourceLoader (3.4.2.2):
+  - SJVideoPlayer/ResourceLoader (3.4.3):
     - SJBaseVideoPlayer (>= 3.7.5)
   - YYModel (1.0.4)
 
@@ -129,7 +129,7 @@ DEPENDENCIES:
   - SJRouter
   - SJUIKit
   - SJUIKit/PlaybackListController
-  - SJVideoPlayer (from `../../SJVideoPlayer`)
+  - SJVideoPlayer (from `../`)
   - YYModel
 
 SPEC REPOS:
@@ -147,7 +147,7 @@ SPEC REPOS:
 
 EXTERNAL SOURCES:
   SJVideoPlayer:
-    :path: "../../SJVideoPlayer"
+    :path: "../"
 
 SPEC CHECKSUMS:
   CocoaAsyncSocket: 065fd1e645c7abab64f7a6a2007a48038fdc6a99
@@ -159,9 +159,9 @@ SPEC CHECKSUMS:
   SJMediaCacheServer: 95bebce42f281fccaff25a5e8284022478ff7ba5
   SJRouter: a866e7884fc9219bed523be0a0318c3a84e85022
   SJUIKit: a40111941e408cc17d4c1c23495aa92999e814b0
-  SJVideoPlayer: 43f660a18751199e8abbc97e8df6f80f9ad3d464
+  SJVideoPlayer: 4f09814f58522e0975cb2dccfda925f6c8643467
   YYModel: 2a7fdd96aaa4b86a824e26d0c517de8928c04b30
 
-PODFILE CHECKSUM: 806121bb2fec366be255af4703b69f0a92bb11e3
+PODFILE CHECKSUM: 8bf00d93cc4b352cdae6fdfd5c34c8ae88a85bc4
 
 COCOAPODS: 1.11.3

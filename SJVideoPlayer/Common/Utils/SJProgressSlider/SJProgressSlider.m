@@ -187,8 +187,8 @@ NS_ASSUME_NONNULL_BEGIN
     if ( isnan(value_new) ) return;
     if ( value_new == _value ) return;
     CGFloat value_old = _value;
-    if      ( value_new < _minValue ) value_new = _minValue;
-    else if ( value_new > _maxValue ) value_new = _maxValue;
+//    if      ( value_new < _minValue ) value_new = _minValue;
+//    else if ( value_new > _maxValue ) value_new = _maxValue;
 //    if ( _showsStopNode ) {
 //        CGFloat stop = _stopNodeLocation * _maxValue;
 //        if ( value_new > stop ) value_new = stop;
